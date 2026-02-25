@@ -69,6 +69,12 @@ The following isDefEq checks are the root causes of the failure:
 theorem testSimpZero (a : ℤ) : 0 = a ↔ a = a + a := by
   #defeq_abuse in simp only [sorriedResult]
 
+-- Tactic mode: fails regardless of transparency setting
+/-- warning: #defeq_abuse: tactic fails regardless of `backward.isDefEq.respectTransparency` setting. -/
+#guard_msgs (warning, drop error) in
+example (n : Nat) : n = n + 1 := by
+  #defeq_abuse in rfl
+
 /-! ## Synthetic test cases
 
 These do not depend on library defeq abuses and should remain stable even after

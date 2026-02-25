@@ -132,11 +132,37 @@ private partial def collectIsDefEqSuccesses (msg : MessageData) : BaseIO (Std.Ha
       return result
   ) (·.union ·) {} msg
 
+/-- Collect rendered check strings from failing `Meta.isDefEq` trace nodes.
+Returns a `HashSet` of emoji-stripped header strings. Used to filter out ambiguous transition
+points: if a check both succeeds and fails in the permissive trace, the failure may not be
+caused by the transparency setting. -/
+private partial def collectIsDefEqFailures (msg : MessageData) : BaseIO (Std.HashSet String) :=
+  foldTraces (fun td header children go => do
+    if td.cls == `Meta.isDefEq.onFailure then return {}
+    if Name.isPrefixOf `Meta.isDefEq td.cls then
+      let headerStr ← header.toString
+      let mut result : Std.HashSet String := {}
+      if headerStr.startsWith "❌" then
+        result := result.insert (stripStatusEmoji headerStr)
+      -- Recurse into all children (failures can be nested inside successful subtrees)
+      for child in children do
+        result := result.union (← go child)
+      return result
+    else
+      let mut result : Std.HashSet String := {}
+      for child in children do
+        result := result.union (← go child)
+      return result
+  ) (·.union ·) {} msg
+
 /-- Find the deepest `Meta.isDefEq` transition points: nodes that fail in the strict trace
-but whose check string appears as a success in the permissive trace.
+but whose check string appears as a success in the permissive trace and does NOT also appear
+as a failure in the permissive trace (which would indicate the check is context-dependent
+rather than transparency-dependent).
 A "deepest transition point" has no descendant transition points.
 Falls back to `findLeafFailures` behavior when `permSuccesses` is empty. -/
 private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
+    (permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array MessageData) :=
   if permSuccesses.isEmpty then findLeafFailures msg
   else foldTraces (fun td header children go => do
@@ -145,8 +171,8 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
       let headerStr ← header.toString
       if headerStr.startsWith "❌" then
         let checkStr := stripStatusEmoji headerStr
-        if permSuccesses.contains checkStr then
-          -- Transition point: fails strict, succeeds permissive.
+        if permSuccesses.contains checkStr && !permFailures.contains checkStr then
+          -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
           -- Look for deeper transition points among children.
           let mut childTransitions := #[]
           for child in children do
@@ -154,7 +180,7 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
           -- Deepest transition point: no deeper transition-point children.
           if childTransitions.isEmpty then return #[header] else return childTransitions
         else
-          -- Not a transition point (fails in both modes or strict-only).
+          -- Not a transition point (fails in both modes, strict-only, or ambiguous).
           -- Still recurse: children may contain transition points.
           let mut results := #[]
           for child in children do
@@ -171,7 +197,7 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
 
 /-- Within a synthesis trace, find failing `apply @Instance to Goal` nodes
 and their `isDefEq` transition failures. -/
-private partial def findSynthAppFailures (permSuccesses : Std.HashSet String)
+private partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
   foldTraces (fun td header children go => do
     if td.cls == `Meta.isDefEq.onFailure then return #[]
@@ -180,7 +206,8 @@ private partial def findSynthAppFailures (permSuccesses : Std.HashSet String)
       if headerStr.startsWith "❌" && headerStr.contains "apply" then
         let mut failures := #[]
         for child in children do
-          failures := failures.append (← findTransitionFailures permSuccesses child)
+          failures := failures.append
+            (← findTransitionFailures permSuccesses permFailures child)
         if failures.isEmpty then
           -- No isDefEq failures here; recurse for sub-synthesis failures
           let mut results := #[]
@@ -202,7 +229,7 @@ private partial def findSynthAppFailures (permSuccesses : Std.HashSet String)
 
 /-- Find top-level synthesis failures and their `isDefEq` root causes.
 Only enters failing synthesis nodes to avoid reporting recovered sub-attempts. -/
-private partial def findSynthFailures (permSuccesses : Std.HashSet String)
+private partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
   foldTraces (fun td header children go => do
     if td.cls == `Meta.isDefEq.onFailure then return #[]
@@ -211,7 +238,8 @@ private partial def findSynthFailures (permSuccesses : Std.HashSet String)
       if headerStr.startsWith "❌" then
         let mut results := #[]
         for child in children do
-          results := results.append (← findSynthAppFailures permSuccesses child)
+          results := results.append
+            (← findSynthAppFailures permSuccesses permFailures child)
         return results
       else
         return #[]
@@ -269,84 +297,64 @@ during debugging.
 elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainContext do
     let tk ← getRef
     let s ← saveState
-    -- First, try with respectTransparency true (the strict/new default)
-    let strictResult ← try
-      withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency true) do
-        evalTactic tac
-        pure (Except.ok ())
-    catch
-      | .internal id ref => throw (.internal id ref)
-      | e => pure (Except.error e.toMessageData)
-    match strictResult with
-    | .ok () =>
-      -- Tactic works fine with strict setting, nothing to report.
-      -- The tactic has already been executed, so proof state is updated.
-      logInfoAt tk
-        "#defeq_abuse: tactic succeeds with \
-          `backward.isDefEq.respectTransparency true`. No abuse detected."
-    | .error _ =>
-      s.restore
-      -- Try with respectTransparency false (the permissive/old setting)
-      let permissiveResult ← try
-        withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
+    let oldTraces ← getTraces
+    -- Helper: run tactic with given options and tracing, capturing traces.
+    let runAndCapture (strict : Bool) :
+        TacticM (Except MessageData Unit × PersistentArray TraceElem) := do
+      modifyTraces (fun _ => {})
+      let result ← try
+        withOptions (fun o =>
+            (o.setBool `backward.isDefEq.respectTransparency strict)
+              |>.setBool `trace.Meta.isDefEq true) do
           evalTactic tac
           pure (Except.ok ())
       catch
-        | .internal id ref => throw (.internal id ref)
+        | .internal id ref =>
+          modifyTraces (fun _ => oldTraces)
+          throw (.internal id ref)
         | e => pure (Except.error e.toMessageData)
+      let traces ← getTraces
+      modifyTraces (fun _ => oldTraces)
+      return (result, traces)
+    -- Pass 1: strict + tracing.
+    -- If it succeeds, no abuse; if it fails, we already have the traces.
+    let (strictResult, strictTraces) ← runAndCapture true
+    s.restore
+    match strictResult with
+    | .ok () =>
+      -- Tactic works fine with strict setting, nothing to report.
+      logInfoAt tk
+        "#defeq_abuse: tactic succeeds with \
+          `backward.isDefEq.respectTransparency true`. No abuse detected."
+      -- Re-run without tracing so proof state is updated cleanly.
+      withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency true) do
+        evalTactic tac
+    | .error _ =>
+      -- Pass 2: permissive + tracing.
+      -- If it fails, command fails regardless; if it succeeds, we have the traces.
+      let (permissiveResult, permTraces) ← runAndCapture false
+      s.restore
       match permissiveResult with
       | .error _ =>
-        s.restore
         logWarningAt tk
           "#defeq_abuse: tactic fails regardless of \
             `backward.isDefEq.respectTransparency` setting."
         -- Still run the tactic so the user sees the original error
         evalTactic tac
       | .ok () =>
-        s.restore
-        -- Now we know: strict fails, permissive works.
-        -- Run with strict + tracing to capture the strict failure details.
-        let oldTraces ← getTraces
-        modifyTraces (fun _ => {})
-        _ ← try
-          withOptions (fun o =>
-              (o.setBool `backward.isDefEq.respectTransparency true)
-                |>.setBool `trace.Meta.isDefEq true) do
-            evalTactic tac
-            pure (Except.ok ())
-        catch
-          | .internal id ref =>
-            modifyTraces (fun _ => oldTraces)
-            throw (.internal id ref)
-          | e => pure (Except.error e.toMessageData)
-        let strictTraces ← getTraces
-        modifyTraces (fun _ => oldTraces)
-        s.restore
-        -- Run with permissive + tracing to collect successful isDefEq checks.
-        modifyTraces (fun _ => {})
-        _ ← try
-          withOptions (fun o =>
-              (o.setBool `backward.isDefEq.respectTransparency false)
-                |>.setBool `trace.Meta.isDefEq true) do
-            evalTactic tac
-            pure (Except.ok ())
-        catch
-          | .internal id ref =>
-            modifyTraces (fun _ => oldTraces)
-            throw (.internal id ref)
-          | e => pure (Except.error e.toMessageData)
-        let permTraces ← getTraces
-        modifyTraces (fun _ => oldTraces)
-        s.restore
-        -- Build set of permissive successes for transition-point detection.
+        -- Strict fails, permissive works. Analyze traces from passes 1 and 2.
+        -- Build sets of permissive successes and failures for transition-point detection.
         let mut permSuccesses : Std.HashSet String := {}
+        let mut permFailures : Std.HashSet String := {}
         for trace in permTraces do
           permSuccesses := permSuccesses.union (← collectIsDefEqSuccesses trace.msg)
+          permFailures := permFailures.union (← collectIsDefEqFailures trace.msg)
         -- Find deepest transition points in the strict trace tree.
         let mut transitionFailures : Array MessageData := #[]
         for trace in strictTraces do
           transitionFailures :=
-            transitionFailures ++ (← findTransitionFailures permSuccesses trace.msg)
+            transitionFailures ++
+              (← findTransitionFailures permSuccesses permFailures trace.msg)
         let uniqueFailures ← dedup transitionFailures
         if uniqueFailures.isEmpty then
           logWarningAt tk
@@ -360,7 +368,7 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
             m!"#defeq_abuse: tactic fails with \
               `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
               The following isDefEq checks are the root causes of the failure:\n{failureList}"
-        -- Run the tactic with permissive setting so it actually succeeds
+        -- Pass 3: run the tactic with permissive setting so it actually succeeds
         withOptions (fun o => o.setBool `backward.isDefEq.respectTransparency false) do
           evalTactic tac
 
@@ -422,10 +430,12 @@ elab_rules : command
         elabCommand cmd
       | .ok () =>
         -- Strict fails, permissive works. Analyze traces from passes 1 and 2.
-        -- Build set of permissive isDefEq successes for transition-point detection.
+        -- Build sets of permissive successes and failures for transition-point detection.
         let mut permSuccesses : Std.HashSet String := {}
+        let mut permFailures : Std.HashSet String := {}
         for m in permissiveMsgs do
           permSuccesses := permSuccesses.union (← collectIsDefEqSuccesses m.data)
+          permFailures := permFailures.union (← collectIsDefEqFailures m.data)
         -- Collect instance names that SUCCEED with permissive setting.
         -- Only strict-failing applications that succeed permissively are due
         -- to the transparency change.
@@ -436,7 +446,8 @@ elab_rules : command
         -- Find synthesis failures with isDefEq root causes (strict only)
         let mut synthResults : Array (MessageData × Array MessageData) := #[]
         for m in strictMsgs do
-          synthResults := synthResults.append (← findSynthFailures permSuccesses m.data)
+          synthResults := synthResults.append
+            (← findSynthFailures permSuccesses permFailures m.data)
         -- Filter to only applications that succeed with permissive transparency.
         let filteredResults ← synthResults.filterM fun (app, _) => do
           return permissiveSuccessApps.contains (extractInstName (← app.toString))
@@ -445,7 +456,8 @@ elab_rules : command
           let mut transitionFailures : Array MessageData := #[]
           for m in strictMsgs do
             transitionFailures :=
-              transitionFailures.append (← findTransitionFailures permSuccesses m.data)
+              transitionFailures.append
+                (← findTransitionFailures permSuccesses permFailures m.data)
           let uniqueFailures ← dedup transitionFailures
           if uniqueFailures.isEmpty then
             logWarningAt tk
