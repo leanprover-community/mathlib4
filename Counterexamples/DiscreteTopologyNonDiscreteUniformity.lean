@@ -91,7 +91,6 @@ noncomputable local instance : PseudoMetricSpace ℕ where
 @[simp]
 lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Int.eq_of_pow_sub_le {d : ℕ} {m n : ℤ} (hd1 : 1 < d)
     (h : |(d : ℝ) ^ (-m) - d ^ (-n)| < d ^ (-n - 1)) : m = n := by
   have hd0 : 0 < d := one_pos.trans hd1

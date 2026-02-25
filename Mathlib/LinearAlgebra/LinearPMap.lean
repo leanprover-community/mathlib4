@@ -396,7 +396,6 @@ theorem neg_domain (f : E →ₗ.[R] F) : (-f).domain = f.domain := rfl
 theorem neg_apply (f : E →ₗ.[R] F) (x) : (-f) x = -f x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance instInvolutiveNeg : InvolutiveNeg (E →ₗ.[R] F) :=
   ⟨fun f => by
     ext x y hxy

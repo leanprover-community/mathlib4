@@ -337,7 +337,6 @@ variable {𝕜}
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
   simp [sq_pos_iff]
 
@@ -917,6 +916,7 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
+set_option backward.whnf.reducibleClassField false in
 /-- A general inner product space structure implies a real inner product structure.
 
 This is not registered as an instance since

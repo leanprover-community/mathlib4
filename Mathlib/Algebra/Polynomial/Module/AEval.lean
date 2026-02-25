@@ -56,7 +56,8 @@ instance instModuleOrig : Module R <| AEval R M a := inferInstanceAs (Module R M
 instance instFiniteOrig [Module.Finite R M] : Module.Finite R <| AEval R M a :=
   ‹Module.Finite R M›
 
-instance instModulePolynomial : Module R[X] <| AEval R M a := compHom M (aeval a).toRingHom
+noncomputable instance instModulePolynomial : Module R[X] <| AEval R M a :=
+  compHom M (aeval a).toRingHom
 
 variable (R M)
 /--
@@ -135,7 +136,7 @@ variable (R M)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
-def mapSubmodule :
+noncomputable def mapSubmodule :
     (Algebra.lsmul R R M a).invtSubmodule ≃o Submodule R[X] (AEval R M a) where
   toFun p :=
     { toAddSubmonoid := (p : Submodule R M).toAddSubmonoid.map (of R M a)
