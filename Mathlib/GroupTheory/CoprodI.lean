@@ -471,6 +471,7 @@ theorem equivPair_head {i : ι} {w : Word M} :
     · subst hi; simp
     · simp [hi, Ne.symm hi]
 
+set_option backward.whnf.reducibleClassField false in
 instance summandAction (i) : MulAction (M i) (Word M) where
   smul m w := rcons { equivPair i w with head := m * (equivPair i w).head }
   one_smul w := by
@@ -841,7 +842,7 @@ theorem lift_word_prod_nontrivial_of_head_eq_last {i} (w : NeWord H i i) :
 
 theorem lift_word_prod_nontrivial_of_head_card {i j} (w : NeWord H i j)
     (hcard : 3 ≤ #(H i)) (hheadtail : i ≠ j) : lift f w.prod ≠ 1 := by
-  obtain ⟨h, hn1, hnh⟩ := Cardinal.three_le hcard 1 w.head⁻¹
+  obtain ⟨h, hn1, hnh⟩ := Cardinal.exists_ne_ne_of_three_le hcard 1 w.head⁻¹
   have hnot1 : h * w.head ≠ 1 := by
     rw [← div_inv_eq_mul]
     exact div_ne_one_of_ne hnh
@@ -859,7 +860,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
     lift f w.prod ≠ 1 := by
   classical
     rcases hcard with hcard | hcard
-    · obtain ⟨i, h1, h2⟩ := Cardinal.three_le hcard i j
+    · obtain ⟨i, h1, h2⟩ := Cardinal.exists_ne_ne_of_three_le hcard i j
       exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w h1 h2
     · obtain ⟨k, hcard⟩ := hcard
       by_cases hh : i = k <;> by_cases hl : j = k
