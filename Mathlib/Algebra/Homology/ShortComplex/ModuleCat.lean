@@ -223,6 +223,7 @@ theorem LinearMap.shortExact_shortComplexKer {f : M →ₗ[R] N} (h : Function.S
 
 variable {L : Type v} [AddCommGroup L] [Module R L]
 
+/-- The short complex in `ModuleCat` obtained from two linear map with composition equal to zero. -/
 abbrev ModuleCat.shortComplexOfCompEqZero (f : M →ₗ[R] N) (g : N →ₗ[R] L) (eq0 : g.comp f = 0) :
     ShortComplex (ModuleCat.{v} R) where
   f := ModuleCat.ofHom f
