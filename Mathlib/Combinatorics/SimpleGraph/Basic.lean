@@ -717,7 +717,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
   refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
-  intro _ (rfl : _ = s(a, b))
+  intro _ rfl
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 
 theorem adj_of_mem_incidenceSet (h : a ≠ b) (ha : e ∈ G.incidenceSet a)
