@@ -27,6 +27,7 @@ open scoped Polynomial
 example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
 
+set_option backward.isDefEq.respectTransparency false in
 example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule := by
   with_reducible_and_instances rfl
 
@@ -56,6 +57,7 @@ open scoped TensorProduct
 
 open Complex
 
+set_option backward.isDefEq.respectTransparency false in
 /- `TensorProduct.Algebra.module` forms a diamond with `instSMulOfMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
@@ -82,7 +84,7 @@ example :
   rw [SMul.ext_iff, SMul.smul_eq_hSMul, @SMul.smul_eq_hSMul _ _ (_)] at contra
   replace contra := congr_fun (congr_fun contra (1 ⊗ₜ I)) (I ⊗ₜ 1)
   rw [TensorProduct.Algebra.smul_def (R := ℝ) (1 : ℂ) I (I ⊗ₜ[ℝ] (1 : ℂ))] at contra
-  simpa only [Algebra.id.smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
+  simpa only [smul_eq_mul, Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one,
     one_smul, TensorProduct.smul_tmul', I_mul_I] using contra
 
 end TensorProduct
@@ -229,12 +231,14 @@ example :
       ZMod.commRing p := by
   with_reducible_and_instances rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- We need `open Fin.CommRing`, as otherwise `Fin.instCommRing` is not an instance,
 -- so `with_reducible_and_instances` doesn't have the desired effect.
 open Fin.CommRing in
 example (n : ℕ) : ZMod.commRing (n + 1) = Fin.instCommRing (n + 1) := by
   with_reducible_and_instances rfl
 
+set_option backward.isDefEq.respectTransparency false in
 example : ZMod.commRing 0 = Int.instCommRing := by
   with_reducible_and_instances rfl
 

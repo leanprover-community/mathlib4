@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.NatAntidiagonal
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Data.Multiset.Antidiagonal
+module
+
+public import Mathlib.Data.Finset.NatAntidiagonal
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Data.Multiset.Antidiagonal
 
 /-!
 # The `Finsupp` counterpart of `Multiset.antidiagonal`.
@@ -13,6 +15,8 @@ import Mathlib.Data.Multiset.Antidiagonal
 The antidiagonal of `s : α →₀ ℕ` consists of
 all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 -/
+
+@[expose] public section
 
 namespace Finsupp
 
@@ -25,13 +29,13 @@ variable {α : Type u} [DecidableEq α]
 /-- The `Finsupp` counterpart of `Multiset.antidiagonal`: the antidiagonal of
 `s : α →₀ ℕ` consists of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)` such that `t₁ + t₂ = s`.
 The finitely supported function `antidiagonal s` is equal to the multiplicities of these pairs. -/
-def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →₀ ℕ :=
+noncomputable def antidiagonal' (f : α →₀ ℕ) : (α →₀ ℕ) × (α →₀ ℕ) →₀ ℕ :=
   Multiset.toFinsupp
     ((Finsupp.toMultiset f).antidiagonal.map (Prod.map Multiset.toFinsupp Multiset.toFinsupp))
 
 /-- The antidiagonal of `s : α →₀ ℕ` is the finset of all pairs `(t₁, t₂) : (α →₀ ℕ) × (α →₀ ℕ)`
 such that `t₁ + t₂ = s`. -/
-instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
+noncomputable instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
   antidiagonal f := f.antidiagonal'.support
   mem_antidiagonal {f} {p} := by
     rcases p with ⟨p₁, p₂⟩

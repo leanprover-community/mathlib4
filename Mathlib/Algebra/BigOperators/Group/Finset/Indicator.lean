@@ -3,13 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.CompleteLattice.Finset
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Interaction of big operators with indicator functions
 -/
+
+public section
 
 namespace Finset
 
@@ -17,6 +21,7 @@ variable {ι κ α β : Type*} [CommMonoid β]
 
 open Set
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider a product of `g i (f i)` over a finset.  Suppose `g` is a function such as
 `n ↦ (· ^ n)`, which maps a second argument of `1` to `1`. Then if `f` is replaced by the
 corresponding multiplicative indicator function, the finset may be replaced by a possibly larger

@@ -3,7 +3,9 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Reduced root pairings
@@ -26,9 +28,11 @@ provide both `RootPairing.linearIndependent_iff_coxeterWeight_ne_four` and
 
 Several ways to avoid this duplication exist. We leave explorations of this for future work. One
 possible solution is to drop `RootPairing.pairing` and `RootPairing.coxeterWeight` entirely and rely
-solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.`
+solely on `RootPairing.pairingIn` and `RootPairing.coxeterWeightIn`.
 
 -/
+
+@[expose] public section
 
 open Module Set Function
 
@@ -38,7 +42,11 @@ variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommG
 namespace RootPairing
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
-sign. -/
+sign.
+
+TODO Consider redefining this to make it perfectly symemtric between roots and coroots (i.e., so
+that the same demand is made of coroots) and turning `RootPairing.instFlipIsReduced` into a
+convenience constructor. -/
 @[mk_iff] class IsReduced : Prop where
   eq_or_eq_neg (i j : ι) (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.root i = P.root j ∨ P.root i = - P.root j
@@ -81,14 +89,11 @@ lemma nsmul_notMem_range_root [CharZero R] [IsAddTorsionFree M] [P.IsReduced]
   · replace hj : (1 : ℤ) • P.root j = (n : ℤ) • P.root j := by simpa
     rw [(smul_left_injective ℤ <| P.ne_zero j).eq_iff, eq_comm] at hj
     have : 2 ≤ n := Nat.AtLeastTwo.prop
-    cutsat
+    lia
   · rw [← one_smul ℤ (P.root i), ← neg_smul, hj] at this
     replace this : (n : ℤ) • P.root i = -1 • P.root i := by simpa
     rw [(smul_left_injective ℤ <| P.ne_zero i).eq_iff] at this
-    cutsat
-
-@[deprecated (since := "2025-07-06")] alias two_smul_notMem_range_root := nsmul_notMem_range_root
-@[deprecated (since := "2025-05-24")] alias two_smul_nmem_range_root := two_smul_notMem_range_root
+    lia
 
 lemma linearIndependent_of_add_mem_range_root
     [CharZero R] [IsAddTorsionFree M] [P.IsReduced] {i j : ι}
@@ -111,14 +116,14 @@ lemma linearIndependent_of_add_mem_range_root' [CharZero R] [IsDomain R] [P.IsRe
     (h : P.root i + P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   P.linearIndependent_of_add_mem_range_root h
 
 lemma linearIndependent_of_sub_mem_range_root' [CharZero R] [IsDomain R] [P.IsReduced] {i j : ι}
     (h : P.root i - P.root j ∈ range P.root) :
     LinearIndependent R ![P.root i, P.root j] :=
   have : IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   P.linearIndependent_of_sub_mem_range_root h
 
 lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [IsAddTorsionFree M]
@@ -140,8 +145,8 @@ lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [IsAddTo
     rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
     exact hl
 
-lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [NoZeroSMulDivisors R M]
-    (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
+lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [IsDomain R]
+    [Module.IsTorsionFree R M] (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.pairing j i • P.root i = (2 : R) • P.root j := by
   rw [LinearIndependent.pair_iff] at h
   push_neg at h
@@ -155,7 +160,7 @@ lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [NoZeroSMul
     · exact False.elim <| h₂ <| (smul_eq_zero_iff_left <| P.ne_zero i).mp <| by simpa using h₁
     · assumption
   replace h₁ : s • P.root i = -t • P.root j := by rwa [← eq_neg_iff_add_eq_zero, ← neg_smul] at h₁
-  have h₄ : s * 2 = - (t * P.pairing j i) := by simpa using congr_arg (P.coroot' i) h₁
+  have h₄ : s * 2 = -(t * P.pairing j i) := by simpa using congr_arg (P.coroot' i) h₁
   replace h₁ : (2 : R) • (s • P.root i) = (2 : R) • (-t • P.root j) := by rw [h₁]
   rw [smul_smul, mul_comm, h₄, smul_comm, ← neg_mul, ← smul_smul] at h₁
   exact smul_right_injective M (neg_ne_zero.mpr h₃) h₁
@@ -171,12 +176,12 @@ lemma coxeterWeight_ne_four_of_linearIndependent [NeZero (2 : R)] [IsAddTorsionF
   have := P.infinite_of_linearIndependent_coxeterWeight_four hl contra
   exact not_finite ι
 
-variable [CharZero R] [NoZeroSMulDivisors R M]
+variable [CharZero R] [IsDomain R] [Module.IsTorsionFree R M]
 
 /-- See also `RootPairing.linearIndependent_iff_coxeterWeightIn_ne_four`. -/
 lemma linearIndependent_iff_coxeterWeight_ne_four :
     LinearIndependent R ![P.root i, P.root j] ↔ P.coxeterWeight i j ≠ 4 := by
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   refine ⟨coxeterWeight_ne_four_of_linearIndependent P, fun h ↦ ?_⟩
   contrapose! h
   have h₁ := P.pairing_smul_root_eq_of_not_linearIndependent h
@@ -193,6 +198,15 @@ lemma linearIndependent_iff_coxeterWeight_ne_four :
 lemma coxeterWeight_eq_four_iff_not_linearIndependent :
     P.coxeterWeight i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [P.linearIndependent_iff_coxeterWeight_ne_four, not_not]
+
+instance instFlipIsReduced [P.IsReduced] [IsTorsionFree R N] : P.flip.IsReduced := by
+  refine ⟨fun i j h ↦ ?_⟩
+  rcases eq_or_ne i j with rfl | hij; · tauto
+  right
+  rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight_flip,
+    coxeterWeight_eq_four_iff_not_linearIndependent, IsReduced.linearIndependent_iff] at h
+  push_neg at h
+  simp [P.root_eq_neg_iff.mp (h hij)]
 
 variable (i j)
 
@@ -214,12 +228,12 @@ lemma pairing_neg_two_neg_two_iff :
   simpa [eq_comm (a := -P.root i), eq_comm (b := j)] using
     P.pairing_two_two_iff (P.reflectionPerm i i) j
 
-variable [NoZeroSMulDivisors R N]
+variable [Module.IsTorsionFree R N]
 
 lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i := by
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
-  have : IsAddTorsionFree N := .of_noZeroSMulDivisors R N
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
+  have : IsAddTorsionFree N := .of_isTorsionFree R N
   refine ⟨fun ⟨h₁, h₂⟩ ↦ ?_, fun h ↦ ?_⟩
   · have : ¬ LinearIndependent R ![P.root i, P.root j] := by
       rw [← coxeterWeight_eq_four_iff_not_linearIndependent, coxeterWeight, h₁, h₂]; simp
@@ -239,13 +253,13 @@ lemma pairing_neg_one_neg_four_iff' (h2 : IsSMulRegular R (2 : R)) :
 
 /-- See also `RootPairing.pairingIn_one_four_iff`. -/
 @[simp]
-lemma pairing_one_four_iff [IsDomain R] :
+lemma pairing_one_four_iff :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i :=
   P.pairing_one_four_iff' i j <| smul_right_injective R two_ne_zero
 
 /-- See also `RootPairing.pairingIn_neg_one_neg_four_iff`. -/
 @[simp]
-lemma pairing_neg_one_neg_four_iff [IsDomain R] :
+lemma pairing_neg_one_neg_four_iff :
     P.pairing i j = -1 ∧ P.pairing j i = -4 ↔ P.root j = (-2 : R) • P.root i :=
   P.pairing_neg_one_neg_four_iff' i j <| smul_right_injective R two_ne_zero
 
@@ -254,7 +268,7 @@ section IsValuedIn
 open FaithfulSMul
 
 variable [CommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
-omit [NoZeroSMulDivisors R N]
+omit [Module.IsTorsionFree R N]
 variable {i j}
 
 lemma linearIndependent_iff_coxeterWeightIn_ne_four :
@@ -285,15 +299,15 @@ lemma pairingIn_neg_two_neg_two_iff :
   simp only [← P.pairing_neg_two_neg_two_iff, ← P.algebraMap_pairingIn S,
     ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff, ← map_neg]
 
-variable [NoZeroSMulDivisors R N]
+variable [Module.IsTorsionFree R N]
 
-lemma pairingIn_one_four_iff [IsDomain R] :
+lemma pairingIn_one_four_iff :
     P.pairingIn S i j = 1 ∧ P.pairingIn S j i = 4 ↔ P.root j = (2 : R) • P.root i := by
   rw [← P.pairing_one_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
     ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff,
     (algebraMap_injective S R).eq_iff]
 
-lemma pairingIn_neg_one_neg_four_iff [IsDomain R] :
+lemma pairingIn_neg_one_neg_four_iff :
     P.pairingIn S i j = -1 ∧ P.pairingIn S j i = -4 ↔ P.root j = (-2 : R) • P.root i := by
   rw [← P.pairing_neg_one_neg_four_iff, ← P.algebraMap_pairingIn S, ← P.algebraMap_pairingIn S,
     ← map_one (algebraMap S R), ← map_ofNat (algebraMap S R), ← map_neg, ← map_neg,

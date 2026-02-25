@@ -3,10 +3,12 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.GroupTheory.Torsion
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.GroupTheory.Torsion
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Units of a number field
@@ -30,6 +32,8 @@ field `K` and its torsion subgroup.
 number field, units
 -/
 
+@[expose] public section
+
 open scoped NumberField
 
 noncomputable section
@@ -38,6 +42,7 @@ open NumberField Units
 
 section Rat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
@@ -225,6 +230,7 @@ section odd
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem torsion_eq_one_or_neg_one_of_odd_finrank
     (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
   by_cases! hc : 2 < orderOf (x : (𝓞 K)ˣ)

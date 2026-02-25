@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-import Mathlib.Topology.Algebra.Group.AddTorsor
-import Mathlib.Topology.MetricSpace.IsometricSMul
+module
+
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Submodule
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+public import Mathlib.Topology.Algebra.Group.AddTorsor
+public import Mathlib.Topology.MetricSpace.IsometricSMul
 
 /-!
 # Torsors of additive normed group actions.
@@ -16,6 +18,8 @@ This file defines torsors of additive normed group actions, with a
 metric space structure.  The motivating case is Euclidean affine
 spaces.
 -/
+
+@[expose] public section
 
 
 noncomputable section

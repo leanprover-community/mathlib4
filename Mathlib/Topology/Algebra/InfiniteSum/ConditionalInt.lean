@@ -3,13 +3,14 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Interval
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Order.Filter.AtTopBot.Interval
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
-import Mathlib.Tactic.FinCases
+public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Order.Filter.AtTopBot.Interval
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 
 
 /-!
@@ -22,6 +23,8 @@ In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` and `symm
 We also prove that these filters are all `NeBot` and `LeAtTop`.
 
 -/
+
+@[expose] public section
 
 open Finset Topology Function Filter SummationFilter
 
@@ -115,24 +118,32 @@ lemma symmetricIcc_eq_symmetricIoo_int : symmetricIcc ℤ = symmetricIoo ℤ := 
   simp only [← Nat.map_cast_int_atTop, Filter.map_map, Filter.mem_map, mem_atTop_sets, ge_iff_le,
     Set.mem_preimage, comp_apply]
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨a + 1, fun b hb ↦ ?_⟩, fun ⟨a, ha⟩ ↦ ⟨a - 1, fun b hb ↦ ?_⟩⟩ <;>
-  [ convert ha (b - 1) (by grind) using 1; convert ha (b + 1) (by grind) using 1 ] <;>
+  [convert ha (b - 1) (by grind) using 1; convert ha (b + 1) (by grind) using 1] <;>
   simpa [Finset.ext_iff] using by grind
 
 @[to_additive]
-lemma HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
+lemma _root_.HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc {a : α}
     (hf : HasProd f a (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     HasProd f a (symmetricIco ℤ) := by
   simp only [HasProd, tendsto_map'_iff, symmetricIcc_eq_map_Icc_nat,
     ← Nat.map_cast_int_atTop, symmetricIco] at *
   apply tendsto_of_div_tendsto_one _ hf
-  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_mul f (show (-N : ℤ) ≤ N by omega)]
+  simpa [Pi.div_def, fun N : ℕ ↦ prod_Icc_eq_prod_Ico_mul f (show (-N : ℤ) ≤ N by lia)]
     using hf2
 
+@[deprecated (since := "2025-12-15")]
+alias HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc :=
+  _root_.HasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc
+
 @[to_additive]
-lemma multipliable_symmetricIco_of_multiplible_symmetricIcc
+lemma multipliable_symmetricIco_of_multipliable_symmetricIcc
     (hf : Multipliable f (symmetricIcc ℤ)) (hf2 : Tendsto (fun N : ℕ ↦ (f N)⁻¹) atTop (𝓝 1)) :
     Multipliable f (symmetricIco ℤ) :=
   (hf.hasProd.hasProd_symmetricIco_of_hasProd_symmetricIcc hf2).multipliable
+
+@[deprecated (since := "2025-12-15")]
+alias multipliable_symmetricIco_of_multiplible_symmetricIcc :=
+  multipliable_symmetricIco_of_multipliable_symmetricIcc
 
 @[to_additive]
 lemma tprod_symmetricIcc_eq_tprod_symmetricIco [T2Space α]
@@ -157,6 +168,26 @@ lemma hasProd_symmetricIoc_int_iff {α : Type*} [CommMonoid α] [TopologicalSpac
     {f : ℤ → α} {a : α} : HasProd f a (symmetricIoc ℤ) ↔
     Tendsto (fun N : ℕ ↦ ∏ n ∈ Ioc (-(N : ℤ)) (N : ℤ), f n) atTop (𝓝 a) := by
   simp [HasProd, symmetricIoc, ← Nat.map_cast_int_atTop, comp_def]
+
+lemma _root_.Summable.tendsto_zero_of_even_summable_symmetricIcc {F : Type*} [NormedAddCommGroup F]
+    [NormSMulClass ℤ F] {f : ℤ → F} (hf : Summable f (symmetricIcc ℤ)) (hs : f.Even) :
+    Tendsto f atTop (𝓝 0) := by
+  rw [tendsto_zero_iff_norm_tendsto_zero]
+  obtain ⟨L, hL⟩ := hf
+  rw [HasSum, symmetricIcc_filter, tendsto_map'_iff, Function.comp_def] at hL
+  have := hL.sub (hL.comp (tendsto_atTop_add_const_right _ (-1) tendsto_id))
+  simp only [id_eq, Int.reduceNeg, Function.comp_apply, sub_self, ← sub_eq_add_neg] at this
+  rw [tendsto_zero_iff_norm_tendsto_zero] at this
+  refine (mul_zero (_ : ℝ) ▸ this.const_mul 2⁻¹).congr' ?_
+  filter_upwards [eventually_ge_atTop 1] with x hx
+  have : Finset.Icc (-x) x = Icc (-(x - 1)) (x - 1) ∪ {-x, x} := by
+    lift x to ℕ using by positivity
+    convert Finset.Icc_succ_succ (x - 1) (x - 1) <;> grind
+  rw [this, Finset.sum_union, Finset.sum_insert, Finset.sum_singleton,
+    hs x, add_comm, add_sub_cancel_right, ← two_zsmul, norm_smul, Int.norm_eq_abs,
+    Int.cast_two, abs_two, inv_mul_cancel_left₀ two_ne_zero] <;>
+  · simp only [disjoint_iff_ne, mem_insert, mem_singleton, mem_Icc]
+    omega
 
 end Int
 

@@ -15,7 +15,7 @@ $a = (a_1, a_2, \dots, a_n)$ of $\{1, 2, \dots, n\}$, define $S(a) = \sum_{i=1}^
 Prove that there exist two permutations $a ≠ b$ of $\{1, 2, \dots, n\}$ such that
 $n!$ is a divisor of $S(a) - S(b)$.
 
-# Solution
+## Solution
 
 Suppose for contradiction that all the $S(a)$ have distinct residues modulo $n!$, then
 $$\sum_{i=0}^{n!-1} i ≡ \sum_a S(a) = \sum_i c_i \sum_a a_i = (n-1)! \frac{n(n+1)}2 \sum_i c_i$$
@@ -35,6 +35,7 @@ variable {n : ℕ} {c : Fin n → ℤ}
 rather than `Icc 1 n`, and as such contains `+ 1` to compensate. -/
 def S (c : Fin n → ℤ) (a : Perm (Fin n)) : ℤ := ∑ i, c i * (a i + 1)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assuming the opposite of what is to be proved, the sum of `S` over all permutations is
 congruent to the sum of all residues modulo `n!`, i.e. `n! * (n! - 1) / 2`. -/
 lemma sum_range_modEq_sum_of_contra (hS : ¬∃ a b, a ≠ b ∧ (n ! : ℤ) ∣ S c a - S c b) :

@@ -3,12 +3,16 @@ Copyright (c) 2025 Javier Burroni. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Javier Burroni
 -/
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # Order related instances for `ℕ+`
 -/
+
+@[expose] public section
 
 namespace PNat
 open Nat

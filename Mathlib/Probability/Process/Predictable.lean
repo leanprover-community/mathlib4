@@ -3,7 +3,9 @@ Copyright (c) 2025 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Process.Adapted
+module
+
+public import Mathlib.Probability.Process.Adapted
 
 /-!
 # Predictable σ-algebra
@@ -29,6 +31,8 @@ and adapted. We also give an equivalent characterization of predictability for d
 predictable, previsible
 
 -/
+
+@[expose] public section
 
 open Filter Order TopologicalSpace
 
@@ -70,6 +74,7 @@ lemma measurableSet_predictable_Ioi_prod [LinearOrder ι] [OrderBot ι]
     MeasurableSet[𝓕.predictable] <| Set.Ioi i ×ˢ s :=
   MeasurableSpace.measurableSet_generateFrom <| Or.inr ⟨i, s, hs, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Sets of the form `(i, j] × A` for any `A ∈ 𝓕 i` are measurable with respect to the predictable
 σ-algebra. -/
 lemma measurableSet_predictable_Ioc_prod [LinearOrder ι] [OrderBot ι]
@@ -123,8 +128,8 @@ lemma progMeasurable {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsP
 
 /-- A predictable process is adapted. -/
 lemma adapted {𝓕 : Filtration ι m} {u : ι → Ω → E} (h𝓕 : IsPredictable 𝓕 u) :
-    Adapted 𝓕 u :=
-  h𝓕.progMeasurable.adapted
+    StronglyAdapted 𝓕 u :=
+  h𝓕.progMeasurable.stronglyAdapted
 
 omit [SecondCountableTopology E] in
 lemma measurableSet_prodMk_add_one_of_predictable {𝓕 : Filtration ℕ m} {s : Set (ℕ × Ω)}
@@ -184,7 +189,7 @@ lemma measurableSet_predictable_singleton_prod
   · exact measurableSet_predictable_Ioc_prod _ _ hs
   · ext m
     simp only [Set.mem_singleton_iff, Set.mem_Ioc]
-    omega
+    lia
 
 lemma isPredictable_of_measurable_add_one [SecondCountableTopology E]
     {𝓕 : Filtration ℕ m} {u : ℕ → Ω → E}

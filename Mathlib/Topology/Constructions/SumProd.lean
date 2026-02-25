@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Maps.Basic
-import Mathlib.Topology.Separation.SeparatedNhds
+module
+
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Maps.Basic
+public import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!
 # Disjoint unions and products of topological spaces
@@ -33,6 +35,8 @@ neighborhood filters and so on.
 product, sum, disjoint union
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -380,8 +384,8 @@ alias Continuous.along_snd := Continuous.curry_right
 theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : Set (Set Y)}
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
     @instTopologicalSpaceProd X Y (generateFrom s) (generateFrom t) =
-      generateFrom (image2 (·  ×ˢ ·) s t) :=
-  let G := generateFrom (image2  (·  ×ˢ ·) s t)
+      generateFrom (image2 (· ×ˢ ·) s t) :=
+  let G := generateFrom (image2 (· ×ˢ ·) s t)
   le_antisymm
     (le_generateFrom fun _ ⟨_, hu, _, hv, g_eq⟩ =>
       g_eq.symm ▸
@@ -586,10 +590,14 @@ lemma isEmbedding_prodMkLeft (y : Y) : IsEmbedding (fun x : X ↦ (x, y)) :=
 lemma isEmbedding_prodMkRight (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
   .of_comp (.prodMk_right x) continuous_snd .id
 
-@[deprecated (since := "2025-06-12")] alias isEmbedding_prodMk := isEmbedding_prodMkRight
 theorem IsOpenQuotientMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenQuotientMap f)
     (hg : IsOpenQuotientMap g) : IsOpenQuotientMap (Prod.map f g) :=
   ⟨.prodMap hf.1 hg.1, .prodMap hf.2 hg.2, .prodMap hf.3 hg.3⟩
+
+theorem TopologicalSpace.prod_mono {α β : Type*} {σ₁ σ₂ : TopologicalSpace α}
+    {τ₁ τ₂ : TopologicalSpace β} (hσ : σ₁ ≤ σ₂) (hτ : τ₁ ≤ τ₂) :
+    @instTopologicalSpaceProd α β σ₁ τ₁ ≤ @instTopologicalSpaceProd α β σ₂ τ₂ :=
+  le_inf (inf_le_left.trans <| induced_mono hσ) (inf_le_right.trans <| induced_mono hτ)
 
 -- Homeomorphisms between the various product: products of two homeomorphisms,
 -- as well as commutativity and associativity. See below for the analogous results for sums,

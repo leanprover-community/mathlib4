@@ -3,10 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.FieldTheory.KummerPolynomial
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.FieldTheory.KummerPolynomial
+public import Mathlib.FieldTheory.Separable
 
 /-!
 
@@ -32,6 +34,8 @@ prime characteristic.
   and `L` is also a perfect field.
 
 -/
+
+@[expose] public section
 
 open Function Polynomial
 
@@ -166,9 +170,13 @@ theorem coe_frobeniusEquiv_symm_comp_coe_frobenius :
 theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
   frobenius_apply_frobeniusEquiv_symm R p x
 
+/-- Variant with `· ^ p` inside of `frobeniusEquiv`. -/
+lemma frobeniusEquiv_symm_pow (x : R) : (frobeniusEquiv R p).symm (x ^ p) = x :=
+  (frobeniusEquiv R p).symm_apply_apply x
+
 @[simp]
 theorem iterate_frobeniusEquiv_symm_pow_p_pow (x : R) (n : ℕ) :
-    ((frobeniusEquiv R p).symm ^[n]) x ^ (p ^ n) = x := by
+    ((frobeniusEquiv R p).symm^[n]) x ^ (p ^ n) = x := by
   induction n generalizing x with
   | zero => simp
   | succ n ih => simp [pow_succ, pow_mul, ih]
@@ -193,7 +201,7 @@ theorem RingHom.map_frobeniusEquiv_symm (f : R →+* S) (x : R) :
   simp [← RingHom.map_frobenius]
 
 theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : R) :
-    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := by
+    f (((frobeniusEquiv R p).symm^[n]) x) = ((frobeniusEquiv S p).symm^[n]) (f x) := by
   apply_fun (frobeniusEquiv S p)^[n]
   · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
     · rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
@@ -205,7 +213,7 @@ theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : 
   simp
 
 theorem RingHom.map_iterate_frobeniusEquiv_symm (f : R →+* S) (n : ℕ) (x : R) :
-    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) :=
+    f (((frobeniusEquiv R p).symm^[n]) x) = ((frobeniusEquiv S p).symm^[n]) (f x) :=
   MonoidHom.map_iterate_frobeniusEquiv_symm p (f.toMonoidHom) n x
 
 end commute
@@ -214,7 +222,7 @@ theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv
 
 lemma polynomial_expand_eq (f : R[X]) :
     expand R p f = (f.map (frobeniusEquiv R p).symm) ^ p := by
-  rw [← (f.map (S := R) (frobeniusEquiv R p).symm).expand_char p, map_expand, map_map,
+  rw [← (f.map (S := R) (frobeniusEquiv R p).symm).map_frobenius_expand p, map_expand, map_map,
     frobenius_comp_frobeniusEquiv_symm, map_id]
 
 @[simp]

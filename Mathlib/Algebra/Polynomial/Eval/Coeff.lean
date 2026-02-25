@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Eval.Defs
+module
+
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 /-!
 # Evaluation of polynomials
 
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.coeff`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -36,8 +40,8 @@ variable (f : R →+* S) (x : S)
 @[simp]
 theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
   simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
-    mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff,
-    RingHom.map_zero, imp_true_iff]
+    mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff, map_zero,
+    imp_true_iff]
 
 @[simp]
 theorem eval₂_C_X : eval₂ C X p = p :=
@@ -142,21 +146,21 @@ theorem eval_zero_map (f : R →+* S) (p : R[X]) : (p.map f).eval 0 = f (p.eval 
 @[simp]
 theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1) := by
   induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, map_add, eval_add]
   | monomial n r => simp only [one_pow, mul_one, eval_monomial, map_monomial]
 
 @[simp]
 theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     (p.map f).eval (n : S) = f (p.eval n) := by
   induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, map_add, eval_add]
   | monomial n r => simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
 
 @[simp]
 theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
   induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, map_add, eval_add]
   | monomial n r => simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
 
 end Map

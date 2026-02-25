@@ -3,7 +3,9 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 /-! # Ideals in free modules over PIDs
 
@@ -13,6 +15,8 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
   can be written as a product of quotients of `R` by principal ideals.
 
 -/
+
+@[expose] public section
 
 open Module
 open scoped DirectSum

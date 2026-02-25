@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.IsSheafFor
+module
+
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.IsSheafFor
 
 /-!
 # Sheaves of types on a Grothendieck topology
@@ -45,6 +47,8 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
 
 -/
+
+@[expose] public section
 
 
 universe w w' v u
@@ -154,12 +158,18 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
 
 /-- Any presheaf is a sheaf for the bottom (trivial) Grothendieck topology. -/
 theorem isSheaf_bot : IsSheaf (⊥ : GrothendieckTopology C) P := fun X => by
-  simp [isSheafFor_top_sieve]
+  simp [isSheafFor_top]
+
+/-- A presheaf is a sheaf after composiing with a universe lift if and only if it is a sheaf. -/
+@[simp]
+theorem isSheaf_comp_uliftFunctor_iff : IsSheaf J (P ⋙ uliftFunctor.{w'}) ↔ IsSheaf J P :=
+  (isSheaf_iff_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl)).symm
 
 /-- The composition of a sheaf with a ULift functor is still a sheaf. -/
-theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) :=
-  isSheaf_of_nat_equiv (fun _ => Equiv.ulift.symm) (fun _ _ _ _ => rfl) h
+theorem isSheaf_comp_uliftFunctor (h : IsSheaf J P) : IsSheaf J (P ⋙ uliftFunctor.{w'}) := by
+  rwa [isSheaf_comp_uliftFunctor_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For a presheaf of the form `yoneda.obj W`, a compatible family of elements on a sieve
 is the same as a co-cone over the sieve. Constructing a co-cone from a compatible family works for
@@ -199,16 +209,16 @@ theorem yonedaFamily_fromCocone_compatible (S : Sieve X) (s : Cocone (diagram S.
     FamilyOfElements.Compatible <| yonedaFamilyOfElements_fromCocone S.arrows s := by
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ hf₁ hf₂ hgf
   have Hs := s.ι.naturality
-  simp only [Functor.id_obj, yoneda_obj_obj, Opposite.unop_op, yoneda_obj_map, Quiver.Hom.unop_op]
+  simp only [yoneda_obj_obj, Opposite.unop_op, yoneda_obj_map, Quiver.Hom.unop_op]
   dsimp [yonedaFamilyOfElements_fromCocone]
   have hgf₁ : S.arrows (g₁ ≫ f₁) := by exact Sieve.downward_closed S hf₁ g₁
   have hgf₂ : S.arrows (g₂ ≫ f₂) := by exact Sieve.downward_closed S hf₂ g₂
   let F : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk (g₂ ≫ f₂) : Over X) := Over.homMk (𝟙 Z)
   let F₁ : (Over.mk (g₁ ≫ f₁) : Over X) ⟶ (Over.mk f₁ : Over X) := Over.homMk g₁
   let F₂ : (Over.mk (g₂ ≫ f₂) : Over X) ⟶ (Over.mk f₂ : Over X) := Over.homMk g₂
-  have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ F
-  have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ F₁
-  have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ F₂
+  have hF := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ (ObjectProperty.homMk F)
+  have hF₁ := @Hs ⟨Over.mk (g₁ ≫ f₁), hgf₁⟩ ⟨Over.mk f₁, hf₁⟩ (ObjectProperty.homMk F₁)
+  have hF₂ := @Hs ⟨Over.mk (g₂ ≫ f₂), hgf₂⟩ ⟨Over.mk f₂, hf₂⟩ (ObjectProperty.homMk F₂)
   cat_disch
 
 /--

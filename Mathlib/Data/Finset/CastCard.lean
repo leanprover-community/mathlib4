@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Int.Cast.Basic
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Int.Cast.Basic
 
 /-!
 # Cardinality of a finite set and subtraction
@@ -19,6 +21,8 @@ cardinality as element of an `AddGroupWithOne`.
 * `Finset.cast_card_inter`, `Finset.cast_card_union`: inclusion/exclusion principle.
 * `Finset.cast_card_sdiff`: cardinality of `t \ s` is the difference of cardinalities if `s ⊆ t`.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero IsOrderedMonoid
 

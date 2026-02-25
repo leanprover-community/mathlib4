@@ -3,11 +3,13 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.NumberTheory.Divisors
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Lemmas about squarefreeness of natural numbers
@@ -21,6 +23,8 @@ A number is squarefree when it is not divisible by any squares except the square
 squarefree, multiplicity
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -79,7 +83,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
-    cutsat
+    lia
   rw [factorization_eq_zero_of_not_prime _ hp, factorization_eq_zero_of_not_prime _ hp]
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
@@ -154,7 +158,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     have := ih p pp (dvd_trans ⟨_, rfl⟩ d)
     have := Nat.mul_le_mul this this
     exact not_le_of_gt h (le_trans this (le_of_dvd n0 d))
-  have k2 : 2 ≤ k := by omega
+  have k2 : 2 ≤ k := by lia
   have k0 : 0 < k := lt_of_lt_of_le (by decide) k2
   have IH : ∀ n', n' ∣ n → ¬k ∣ n' → MinSqFacProp n' (n'.minSqFacAux (k + 2)) := by
     intro n' nd' nk
@@ -173,7 +177,7 @@ theorem minSqFacAux_has_prop {n : ℕ} (k) (n0 : 0 < n) (i) (e : k = 2 * i + 3)
     change 2 * (i + 2) ∣ n' at d
     have := ih _ prime_two (dvd_trans (dvd_of_mul_right_dvd d) nd')
     rw [e] at this
-    exact absurd this (by cutsat)
+    exact absurd this (by lia)
   have pk : k ∣ n → Prime k := by
     refine fun dk => prime_def_minFac.2 ⟨k2, le_antisymm (minFac_le k0) ?_⟩
     exact ih _ (minFac_prime (ne_of_gt k2)) (dvd_trans (minFac_dvd _) dk)

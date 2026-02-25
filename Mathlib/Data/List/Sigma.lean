@@ -3,11 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Lookmap
-import Mathlib.Data.Sigma.Basic
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Pairwise
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Lookmap
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # Utilities for lists of sigmas
@@ -28,6 +31,8 @@ If `α : Type*` and `β : α → Type*`, then we regard `s : Sigma β` as having
 - `List.kunion` computes the union of two stores.
 - `List.kextract` returns a value with a given key and the rest of the values.
 -/
+
+@[expose] public section
 
 universe u u' v v'
 
@@ -69,13 +74,8 @@ theorem mem_keys {a} {l : List (Sigma β)} : a ∈ l.keys ↔ ∃ b : β a, Sigm
 theorem notMem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, Sigma.mk a b ∉ l := by
   grind
 
-@[deprecated (since := "2025-05-23")] alias not_mem_keys := notMem_keys
-
 theorem ne_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 := by
   grind
-
-@[deprecated (since := "2025-04-27")]
-alias not_eq_key := ne_key
 
 /-! ### `NodupKeys` -/
 
@@ -106,9 +106,6 @@ theorem nodupKeys_middle {s : Sigma β} :
 
 theorem notMem_keys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     s.1 ∉ l.keys := by grind
-
-@[deprecated (since := "2025-05-23")]
-alias not_mem_keys_of_nodupKeys_cons := notMem_keys_of_nodupKeys_cons
 
 theorem nodupKeys_of_nodupKeys_cons {s : Sigma β} {l : List (Sigma β)} (h : NodupKeys (s :: l)) :
     NodupKeys l :=
@@ -141,7 +138,6 @@ theorem nodupKeys_flatten {L : List (List (Sigma β))} :
     NodupKeys (flatten L) ↔ (∀ l ∈ L, NodupKeys l) ∧ Pairwise Disjoint (L.map keys) := by
   rw [nodupKeys_iff_pairwise, pairwise_flatten, pairwise_map]
   refine and_congr (forall₂_congr fun l _ => by simp [nodupKeys_iff_pairwise]) ?_
-  apply iff_of_eq; congr! with (l₁ l₂)
   simp [keys, disjoint_iff_ne, Sigma.forall]
 
 theorem nodup_zipIdx_map_snd (l : List α) : (l.zipIdx.map Prod.snd).Nodup := by
@@ -231,8 +227,10 @@ theorem dlookup_map₂ {γ δ : α → Type*} {l : List (Σ a, γ a)} {f : ∀ a
     (l.map (.map id f) : List (Σ a, δ a)).dlookup a = (l.dlookup a).map (f a) :=
   dlookup_map l Function.injective_id _ _
 
+omit [DecidableEq α] [DecidableEq α'] in
 theorem NodupKeys.map₁ {β : Type v} (f : α → α') (hf : Function.Injective f) {l : List (Σ _ : α, β)}
     (nd : l.NodupKeys) : (l.map (.map f fun _ => id) : List (Σ _ : α', β)).NodupKeys := by
+  classical
   induction l with
   | nil => grind [nodupKeys_nil]
   | cons hd tl =>
@@ -407,8 +405,6 @@ theorem kerase_of_notMem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : ker
   | nil => rfl
   | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
 
-@[deprecated (since := "2025-05-23")] alias kerase_of_not_mem_keys := kerase_of_notMem_keys
-
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
   eraseP_sublist
 
@@ -483,8 +479,6 @@ theorem notMem_keys_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :
     · subst h
       simp [nd.1]
     · simp [h, ih nd.2]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_keys_kerase := notMem_keys_kerase
 
 @[simp]
 theorem dlookup_kerase (a) {l : List (Sigma β)} (nd : l.NodupKeys) :

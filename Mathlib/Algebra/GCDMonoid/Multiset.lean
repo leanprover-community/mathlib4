@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Multiset.FinsetOps
-import Mathlib.Data.Multiset.Fold
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Multiset.FinsetOps
+public import Mathlib.Data.Multiset.Fold
 
 /-!
 # GCD and LCM operations on multisets
@@ -25,9 +27,11 @@ TODO: simplify with a tactic and `Data.Multiset.Lattice`
 multiset, gcd
 -/
 
+@[expose] public section
+
 namespace Multiset
 
-variable {α : Type*} [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
+variable {α : Type*} [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
 /-! ### LCM -/
 
@@ -197,8 +201,8 @@ end
 
 theorem extract_gcd' (s t : Multiset α) (hs : ∃ x, x ∈ s ∧ x ≠ (0 : α))
     (ht : s = t.map (s.gcd * ·)) : t.gcd = 1 :=
-  ((@mul_right_eq_self₀ _ _ s.gcd _).1 <| by
-        conv_lhs => rw [← normalize_gcd, ← gcd_map_mul, ← ht]).resolve_right <| by
+  ((mul_right_eq_self₀ (a := s.gcd)).1 <| by
+      conv_lhs => rw [← normalize_gcd, ← gcd_map_mul, ← ht]).resolve_right <| by
     contrapose! hs
     exact s.gcd_eq_zero_iff.1 hs
 

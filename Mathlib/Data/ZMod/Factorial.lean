@@ -3,8 +3,10 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Facts about factorials in ZMod
@@ -22,6 +24,8 @@ For the prime case and involving `factorial` rather than `descFactorial`, see Wi
 * Nat.prime_iff_fac_equiv_neg_one
 
 -/
+
+public section
 
 assert_not_exists TwoSidedIdeal
 

@@ -3,12 +3,16 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Logic.Small.Set
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.Logic.Small.Set
 
 /-!
 # Small instances for pointwise operations
 -/
+
+@[expose] public section
 
 universe u
 

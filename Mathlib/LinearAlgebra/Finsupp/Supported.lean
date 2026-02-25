@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Finsupp.LSum
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # `Finsupp`s supported on a given submodule
@@ -22,6 +24,8 @@ import Mathlib.LinearAlgebra.Span.Defs
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -54,6 +58,7 @@ variable {M}
 theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔ ↑p.support ⊆ s :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_supported' {s : Set α} (p : α →₀ M) :
     p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
   simp [mem_supported, Set.subset_def, not_imp_comm]
@@ -74,6 +79,13 @@ theorem supported_eq_span_single (s : Set α) :
     refine sum_mem fun i il => ?_
     rw [show single i (l i) = l i • single i 1 by simp]
     exact smul_mem _ (l i) (subset_span (mem_image_of_mem _ (hl il)))
+
+lemma single_mem_span_single [Nontrivial R] {a : α} {s : Set α} :
+    single a 1 ∈ Submodule.span R ((single · (1 : R)) '' s) ↔ a ∈ s := by
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem _ h⟩
+  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
+    Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
+  simpa using h
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
     span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
@@ -176,9 +188,8 @@ lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     Codisjoint (supported M R s) (supported M R t) ↔ Codisjoint s t := by
   refine ⟨fun h ↦ codisjoint_iff.mpr (eq_top_iff.mpr fun a ↦ ?_), codisjoint_supported_supported⟩
   obtain ⟨x, hx⟩ := exists_ne (0 : M)
-  rw [codisjoint_iff, eq_top_iff, ← supported_union] at h
-  have : Finsupp.single a x ∈ supported M R (s ∪ t) := h (show Finsupp.single a x ∈ _ from trivial)
-  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using this
+  rw [codisjoint_iff, ← supported_union, eq_top_iff'] at h
+  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using h (Finsupp.single a x)
 
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
@@ -231,6 +242,7 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
     refine (mapDomain_congr fun c hc => ?_).trans mapDomain_id
     exact Function.invFunOn_eq (by simpa using hl hc)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     (H : ∀ a ∈ s, ∀ b ∈ s, f a = f b → a = b) :
     Disjoint (supported M R s) (ker (lmapDomain M R f)) := by

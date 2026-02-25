@@ -3,7 +3,9 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Polynomial.Factorization
+module
+
+public import Mathlib.Analysis.Polynomial.Factorization
 
 /-!
 # A (new?) proof of the Gelfand-Mazur Theorem
@@ -108,6 +110,8 @@ which is bounded by `(M ^ n + c ^ n) / M ^ (n - 1) = M * (1 + (c / M) ^ n)`, whe
 `c = ‖(a' - a) • x - (b' - b) • 1‖ < M`. So, letting `n` tend to infinity, we obtain that
 `M ≤ ‖x ^ 2 - a' • x + b' • 1‖ ≤ M`, as desired.
 -/
+
+@[expose] public section
 
 /-!
 ### Auxiliary results used in both cases
@@ -321,6 +325,7 @@ private lemma norm_φ_eq_norm_φ_of_isMinOn {x : F} {z : ℝ × ℝ} (h : IsMinO
   exact (norm_sub_le ..).trans <| by simp [q, aeval_eq_φ, hw]
 
 open Filter Topology Bornology in
+omit [NormMulClass F] in
 /- Assuming that `‖x - algebraMap ℝ F ·‖` is bounded below by a positive constant, we show that
 `φ x w` grows unboundedly as `w : ℝ × ℝ` does. We will use this to obtain a contradiction
 when `φ x` does not attain the value zero. -/
@@ -358,6 +363,7 @@ private lemma tendsto_φ_cobounded {x : F} {c : ℝ} (hc₀ : 0 < c)
     exact tendsto_fst
 
 open Bornology Filter Set in
+omit [NormMulClass F] in
 /- The norm of `‖φ x ·‖` attains a minimum on `ℝ × ℝ`. -/
 private lemma exists_isMinOn_norm_φ (x : F) : ∃ z : ℝ × ℝ, IsMinOn (‖φ x ·‖) univ z := by
   -- use that `‖x - algebraMap ℝ F ·‖` has a minimum.

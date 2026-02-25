@@ -3,54 +3,64 @@ Copyright (c) 2020 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Analysis.RCLike.Extend
-import Mathlib.Analysis.Normed.Operator.Basic
+module
+
+public import Mathlib.Analysis.RCLike.Extend
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 # Norm properties of the extension of continuous `ℝ`-linear functionals to `𝕜`-linear functionals
 
-This file shows that `ContinuousLinearMap.extendTo𝕜` preserves the norm of the functional.
+This file shows that `StrongDual.extendRCLike` preserves the norm of the functional.
 -/
 
-open RCLike
+public section
+
+open RCLike ContinuousLinearMap
 open scoped ComplexConjugate
 
-namespace ContinuousLinearMap
+namespace StrongDual
+
 
 variable {𝕜 F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-section ScalarTower
-
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]
 
 /-- The norm of the extension is bounded by `‖fr‖`. -/
-theorem norm_extendTo𝕜'_bound (fr : StrongDual ℝ F) (x : F) :
-    ‖(fr.extendTo𝕜' x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
-  set lm : F →L[𝕜] 𝕜 := fr.extendTo𝕜'
+theorem norm_extendRCLike_bound (fr : StrongDual ℝ F) (x : F) :
+    ‖(fr.extendRCLike x : 𝕜)‖ ≤ ‖fr‖ * ‖x‖ := by
+  set lm : StrongDual 𝕜 F := fr.extendRCLike
   by_cases h : lm x = 0
   · rw [h, norm_zero]
     positivity
   rw [← mul_le_mul_iff_right₀ (norm_pos_iff.2 h), ← sq]
   calc
-    ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := fr.toLinearMap.norm_extendTo𝕜'_apply_sq x
+    ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := Module.Dual.norm_extendRCLike_apply_sq fr.toLinearMap x
     _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := le_abs_self _
     _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := le_opNorm _ _
     _ = ‖(lm x : 𝕜)‖ * (‖fr‖ * ‖x‖) := by rw [norm_smul, norm_conj, mul_left_comm]
 
 @[simp]
-theorem norm_extendTo𝕜' (fr : StrongDual ℝ F) : ‖(fr.extendTo𝕜' : StrongDual 𝕜 F)‖ = ‖fr‖ :=
-  le_antisymm (ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fr.norm_extendTo𝕜'_bound) <|
+theorem norm_extendRCLike (fr : StrongDual ℝ F) : ‖(fr.extendRCLike : StrongDual 𝕜 F)‖ = ‖fr‖ :=
+  le_antisymm (ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fr.norm_extendRCLike_bound) <|
     opNorm_le_bound _ (norm_nonneg _) fun x =>
       calc
-        ‖fr x‖ = ‖re (fr.extendTo𝕜' x : 𝕜)‖ := congr_arg norm (fr.extendTo𝕜'_apply_re x).symm
-        _ ≤ ‖(fr.extendTo𝕜' x : 𝕜)‖ := abs_re_le_norm _
-        _ ≤ ‖(fr.extendTo𝕜' : StrongDual 𝕜 F)‖ * ‖x‖ := le_opNorm _ _
+        ‖fr x‖ = ‖re (fr.extendRCLike x : 𝕜)‖ := by simp
+        _ ≤ ‖(fr.extendRCLike x : 𝕜)‖ := abs_re_le_norm _
+        _ ≤ ‖(fr.extendRCLike : StrongDual 𝕜 F)‖ * ‖x‖ := le_opNorm _ _
 
-end ScalarTower
+/-- `StrongDual.extendRCLike` bundled into a linear isometry equivalence. -/
+@[expose, simps! -isSimp apply symm_apply]
+noncomputable def extendRCLikeₗᵢ : StrongDual ℝ F ≃ₗᵢ[ℝ] StrongDual 𝕜 F where
+  toLinearEquiv := StrongDual.extendRCLikeₗ
+  norm_map' := norm_extendRCLike
 
-@[simp]
-theorem norm_extendTo𝕜 (fr : StrongDual ℝ (RestrictScalars ℝ 𝕜 F)) :
-    ‖fr.extendTo𝕜‖ = ‖fr‖ :=
-  fr.norm_extendTo𝕜'
+end StrongDual
+
+namespace ContinuousLinearMap
+open StrongDual
+
+@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜'_bound := norm_extendRCLike_bound
+@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜' := norm_extendRCLike
+@[deprecated (since := "2026-02-24")] alias norm_extendTo𝕜 := norm_extendRCLike
 
 end ContinuousLinearMap

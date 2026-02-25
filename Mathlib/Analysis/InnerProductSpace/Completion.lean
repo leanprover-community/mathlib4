@@ -3,8 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.InnerProductSpace.Continuous
 
 /-!
 # Completion of an inner product space
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Module.Completion
 We show that the separation quotient and the completion of an inner product space are inner
 product spaces.
 -/
+
+@[expose] public section
 
 noncomputable section
 

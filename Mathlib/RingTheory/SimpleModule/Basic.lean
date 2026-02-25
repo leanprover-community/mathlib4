@@ -3,18 +3,21 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.Order.Atoms.Finite
-import Mathlib.Order.CompactlyGenerated.Intervals
-import Mathlib.Order.JordanHolder
-import Mathlib.RingTheory.Ideal.Colon
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Data.Finite.Card
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Finsupp.Span
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Order.Atoms.Finite
+public import Mathlib.Order.CompactlyGenerated.Intervals
+public import Mathlib.Order.JordanHolder
+public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.Noetherian.Defs
+
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Simple Modules
@@ -49,6 +52,8 @@ import Mathlib.RingTheory.Noetherian.Defs
 
 -/
 
+@[expose] public section
+
 
 variable {ι : Type*} (R S : Type*) [Ring R] [Ring S] (M : Type*) [AddCommGroup M] [Module R M]
 
@@ -68,9 +73,13 @@ instance (R) [DivisionRing R] : IsSimpleModule R R where
 /-- A ring is semisimple if it is semisimple as a module over itself. -/
 abbrev IsSemisimpleRing := IsSemisimpleModule R R
 
+instance (priority := low) [Subsingleton R] : IsSemisimpleRing R :=
+  (isSemisimpleModule_iff R R).mpr Subsingleton.instComplementedLattice
+
 variable {R S} in
 theorem RingEquiv.isSemisimpleRing (e : R ≃+* S) [IsSemisimpleRing R] : IsSemisimpleRing S where
-  __ := (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
+  __ := have := RingHomInvPair.of_ringEquiv e; have := this.symm
+    (Submodule.orderIsoMapComap e.toSemilinearEquiv).complementedLattice
 
 variable {R S} in
 theorem RingEquiv.isSemisimpleRing_iff (e : R ≃+* S) : IsSemisimpleRing R ↔ IsSemisimpleRing S :=
@@ -97,6 +106,7 @@ theorem IsSimpleModule.congr (e : M ≃ₗ[R] N) [IsSimpleModule R N] : IsSimple
 theorem LinearEquiv.isSimpleModule_iff (e : M ≃ₗ[R] N) : IsSimpleModule R M ↔ IsSimpleModule R N :=
   ⟨(·.congr e.symm), (·.congr e)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSimpleModule_iff_isAtom : IsSimpleModule R m ↔ IsAtom m := by
   rw [← Set.isSimpleOrder_Iic_iff_isAtom, isSimpleModule_iff]
   exact m.mapIic.isSimpleOrder_iff
@@ -105,6 +115,7 @@ theorem isSimpleModule_iff_isCoatom : IsSimpleModule R (M ⧸ m) ↔ IsCoatom m 
   rw [← Set.isSimpleOrder_Ici_iff_isCoatom, isSimpleModule_iff]
   exact (Submodule.comapMkQRelIso m).isSimpleOrder_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem covBy_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
     A ⋖ B ↔ IsSimpleModule R (B ⧸ Submodule.comap B.subtype A) := by
   set f : Submodule R B ≃o Set.Iic B := B.mapIic with hf
@@ -113,6 +124,7 @@ theorem covBy_iff_quot_is_simple {A B : Submodule R M} (hAB : A ≤ B) :
 
 namespace IsSimpleModule
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem isAtom [IsSimpleModule R m] : IsAtom m :=
   isSimpleModule_iff_isAtom.1 ‹_›
@@ -183,6 +195,7 @@ theorem isSimpleModule_self_iff_isUnit :
     obtain ⟨z, hzy : z * y = 1⟩ := h y hy 1
     exact ⟨⟨x, y, left_inv_eq_right_inv hzy hyx ▸ hzy, hyx⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsSemisimpleModule.of_sSup_simples_eq_top
     (h : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤) : IsSemisimpleModule R M where
   __ := complementedLattice_of_sSup_atoms_eq_top (by simp_rw [← h, isSimpleModule_iff_isAtom])
@@ -220,6 +233,7 @@ end Module.Finite
 
 namespace IsSemisimpleModule
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_or_exists_simple_le (N : Submodule R M) [IsSemisimpleModule R N] :
     N = ⊥ ∨ ∃ m ≤ N, IsSimpleModule R m := by
   rw [← N.subsingleton_iff_eq_bot, ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top]
@@ -228,6 +242,14 @@ theorem eq_bot_or_exists_simple_le (N : Submodule R M) [IsSemisimpleModule R N] 
   exact .congr (m.equivMapOfInjective _ N.subtype_injective).symm
 
 variable [IsSemisimpleModule R M]
+
+theorem exists_submodule_linearEquiv_quotient (N : Submodule R M) :
+    ∃ (P : Submodule R M), Nonempty (P ≃ₗ[R] M ⧸ N) :=
+  have ⟨P, compl⟩ := exists_isCompl N; ⟨P, ⟨(N.quotientEquivOfIsCompl P compl).symm⟩⟩
+
+theorem exists_quotient_linearEquiv_submodule (N : Submodule R M) :
+    ∃ (P : Submodule R M), Nonempty (N ≃ₗ[R] M ⧸ P) :=
+  have ⟨P, compl⟩ := exists_isCompl N; ⟨P, ⟨(P.quotientEquivOfIsCompl N compl.symm).symm⟩⟩
 
 theorem extension_property {P} [AddCommGroup P] [Module R P] (f : N →ₗ[R] M)
     (hf : Function.Injective f) (g : N →ₗ[R] P) :
@@ -245,30 +267,36 @@ theorem lifting_property {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N)
   simp only [LinearMap.comp_apply, ← eq, LinearEquiv.coe_coe, e.symm_apply_apply]
   simp [e]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSup_simples_le (N : Submodule R M) :
     sSup { m : Submodule R M | IsSimpleModule R m ∧ m ≤ N } = N := by
   simpa only [isSimpleModule_iff_isAtom] using sSup_atoms_le_eq _
 
 variable (R M)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_simple_submodule [Nontrivial M] : ∃ m : Submodule R M, IsSimpleModule R m := by
   simpa only [isSimpleModule_iff_isAtom] using IsAtomic.exists_atom _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
   simpa only [isSimpleModule_iff_isAtom] using sSup_atoms_eq_top
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_sSupIndep_sSup_simples_eq_top :
     ∃ s : Set (Submodule R M), sSupIndep s ∧ sSup s = ⊤ ∧ ∀ m ∈ s, IsSimpleModule R m := by
   have := sSup_simples_eq_top R M
   simp_rw [isSimpleModule_iff_isAtom] at this ⊢
   exact exists_sSupIndep_of_sSup_atoms_eq_top this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The annihilator of a semisimple module over a commutative ring is a radical ideal. -/
 theorem annihilator_isRadical (R) [CommRing R] [Module R M] [IsSemisimpleModule R M] :
     (Module.annihilator R M).IsRadical := by
   rw [← Submodule.annihilator_top, ← sSup_simples_eq_top, sSup_eq_iSup', Submodule.annihilator_iSup]
   exact Ideal.isRadical_iInf _ fun i ↦ (i.2.annihilator_isMaximal).isPrime.isRadical
 
+set_option backward.isDefEq.respectTransparency false in
 instance submodule {m : Submodule R M} : IsSemisimpleModule R m where
   __ := m.mapIic.complementedLattice_iff.2 IsModularLattice.complementedLattice_Iic
 
@@ -278,17 +306,22 @@ open LinearMap
 theorem congr (e : N ≃ₗ[R] M) : IsSemisimpleModule R N where
   __ := (Submodule.orderIsoMapComap e.symm).complementedLattice
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_injective (f : N →ₗ[R] M) (hf : Function.Injective f) : IsSemisimpleModule R N :=
   congr (Submodule.topEquiv.symm.trans <| Submodule.equivMapOfInjective f hf _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance quotient : IsSemisimpleModule R (M ⧸ m) :=
-  have ⟨P, compl⟩ := exists_isCompl m
-  .congr (m.quotientEquivOfIsCompl P compl)
+  have ⟨_, ⟨e⟩⟩ := exists_submodule_linearEquiv_quotient m
+  .congr e.symm
 
 instance (priority := low) [Module.Finite R M] : IsNoetherian R M where
-  noetherian m := have ⟨P, compl⟩ := exists_isCompl m
-    Module.Finite.iff_fg.mp (Module.Finite.equiv <| P.quotientEquivOfIsCompl m compl.symm)
+  noetherian m :=
+    have ⟨_, ⟨e⟩⟩ := exists_quotient_linearEquiv_submodule m
+    letI := Module.Finite.equiv e.symm
+    .of_finite
 
+set_option backward.isDefEq.respectTransparency false in
 -- does not work as an instance, not sure why
 protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
   congr (quotKerEquivRange _).symm
@@ -323,11 +356,13 @@ theorem LinearEquiv.isSemisimpleModule_iff (e : M ≃ₗ[R] N) :
     IsSemisimpleModule R M ↔ IsSemisimpleModule R N :=
   ⟨(·.congr e.symm), (·.congr e)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A module is semisimple iff it is generated by its simple submodules. -/
 theorem sSup_simples_eq_top_iff_isSemisimpleModule :
     sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ ↔ IsSemisimpleModule R M :=
   ⟨.of_sSup_simples_eq_top, fun _ ↦ IsSemisimpleModule.sSup_simples_eq_top _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A module generated by semisimple submodules is itself semisimple. -/
 lemma isSemisimpleModule_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
     (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) (hp' : ⨆ i ∈ s, p i = ⊤) :
@@ -336,6 +371,7 @@ lemma isSemisimpleModule_of_isSemisimpleModule_submodule {s : Set ι} {p : ι �
   refine complementedLattice_of_complementedLattice_Iic (fun i hi ↦ ?_) hp'
   simpa only [← (p i).mapIic.complementedLattice_iff] using hp i hi
 
+set_option backward.isDefEq.respectTransparency false in
 open Submodule in
 lemma isSemisimpleModule_biSup_of_isSemisimpleModule_submodule {s : Set ι} {p : ι → Submodule R M}
     (hp : ∀ i ∈ s, IsSemisimpleModule R (p i)) :
@@ -345,6 +381,7 @@ lemma isSemisimpleModule_biSup_of_isSemisimpleModule_submodule {s : Set ι} {p :
     (biSup_comap_subtype_eq_top ..)
   simp_rw [range_subtype, le_biSup p ‹_›]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSemisimpleModule_of_isSemisimpleModule_submodule' {p : ι → Submodule R M}
     (hp : ∀ i, IsSemisimpleModule R (p i)) (hp' : ⨆ i, p i = ⊤) :
     IsSemisimpleModule R M :=
@@ -356,6 +393,7 @@ instance {ι} (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M
   exact isSemisimpleModule_of_isSemisimpleModule_submodule'
     (fun _ ↦ .range _) DFinsupp.iSup_range_lsingle
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 theorem IsSemisimpleModule.exists_linearEquiv_dfinsupp [IsSemisimpleModule R M] :
     ∃ (s : Set (Submodule R M)) (_ : M ≃ₗ[R] Π₀ m : s, m.1),
@@ -367,12 +405,14 @@ theorem IsSemisimpleModule.exists_linearEquiv_dfinsupp [IsSemisimpleModule R M] 
   exact .symm <| .trans (.ofInjective _ ind.dfinsupp_lsum_injective) <| .trans (.ofEq _ ⊤ <|
     by rw [← Submodule.iSup_eq_range_dfinsupp_lsum, ← sSup, sSup_eq_iSup']) Submodule.topEquiv
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleModule_iff_exists_linearEquiv_dfinsupp : IsSemisimpleModule R M ↔
     ∃ (s : Set (Submodule R M)) (_ : M ≃ₗ[R] Π₀ m : s, m.1), ∀ m : s, IsSimpleModule R m.1 := by
   refine ⟨fun _ ↦ ?_, fun ⟨s, e, h⟩ ↦ .congr e⟩
   have ⟨s, e, h⟩ := IsSemisimpleModule.exists_linearEquiv_dfinsupp R M
   exact ⟨s, e, h.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 theorem IsSemisimpleModule.exists_linearEquiv_fin_dfinsupp [IsSemisimpleModule R M]
     [Module.Finite R M] : ∃ (n : ℕ) (S : Fin n → Submodule R M)
@@ -389,6 +429,7 @@ instance {ι} [Finite ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i,
   exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single _ _ ·))
     (fun i ↦ .range _) (by simp_rw [range_eq_map, Submodule.iSup_map_single, Submodule.pi_top])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsSemisimpleModule.sup {p q : Submodule R M}
     (_ : IsSemisimpleModule R p) (_ : IsSemisimpleModule R q) :
     IsSemisimpleModule R ↥(p ⊔ q) := by
@@ -397,15 +438,26 @@ theorem IsSemisimpleModule.sup {p q : Submodule R M}
   exact isSemisimpleModule_biSup_of_isSemisimpleModule_submodule
     (by rintro (_ | _) _ <;> assumption)
 
-instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
-  have : IsSemisimpleModule R (M →₀ R) := isSemisimpleModule_of_isSemisimpleModule_submodule'
+variable (R M) in
+theorem IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule [IsSemisimpleRing R]
+    [h : IsSimpleModule R M] : ∃ I : Ideal R, Nonempty (M ≃ₗ[R] I) :=
+  have ⟨J, _, ⟨e⟩⟩ := isSimpleModule_iff_quot_maximal.mp h
+  have ⟨I, ⟨e'⟩⟩ := IsSemisimpleModule.exists_submodule_linearEquiv_quotient J
+  ⟨I, ⟨e.trans e'.symm⟩⟩
+
+set_option backward.isDefEq.respectTransparency false in
+instance (ι) [IsSemisimpleModule R M] : IsSemisimpleModule R (ι →₀ M) :=
+  isSemisimpleModule_of_isSemisimpleModule_submodule'
     (fun _ ↦ .congr (LinearMap.quotKerEquivRange _).symm) Finsupp.iSup_lsingle_range
+
+instance IsSemisimpleRing.isSemisimpleModule [IsSemisimpleRing R] : IsSemisimpleModule R M :=
   .congr (LinearMap.quotKerEquivOfSurjective _ <| Finsupp.linearCombination_id_surjective R M).symm
 
 instance IsSemisimpleModule.isCoatomic_submodule [IsSemisimpleModule R M] :
     IsCoatomic (Submodule R M) :=
   isCoatomic_of_isAtomic_of_complementedLattice_of_isModular
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 /-- A finite product of semisimple rings is semisimple. -/
 instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisimpleRing (R i)] :
@@ -417,6 +469,7 @@ instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisi
     ((e i).isSemisimpleModule_iff_of_bijective Function.bijective_id).mpr inferInstance
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A binary product of semisimple rings is semisimple. -/
 instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing (R × S) := by
   letI : Module (R × S) R := Module.compHom _ (.fst R S)
@@ -442,31 +495,12 @@ theorem IsSemisimpleRing.ideal_eq_span_idempotent [IsSemisimpleRing R] (I : Idea
     ∃ e : R, IsIdempotentElem e ∧ I = .span {e} := by
   obtain ⟨J, h⟩ := exists_isCompl I
   obtain ⟨f, idem, rfl⟩ := I.isIdempotentElemEquiv.symm (I.isComplEquivProj ⟨J, h⟩)
-  exact ⟨f 1, LinearMap.isIdempotentElem_apply_one_iff.mpr idem, by
+  exact ⟨f 1, LinearMap.isIdempotentElem_map_one_iff.mpr idem, by
     rw [LinearMap.range_eq_map, ← Ideal.span_one, ← Ideal.submodule_span_eq, LinearMap.map_span,
       Set.image_one, Ideal.submodule_span_eq]⟩
 
 instance [IsSemisimpleRing R] : IsPrincipalIdealRing R where
   principal I := have ⟨e, _, he⟩ := IsSemisimpleRing.ideal_eq_span_idempotent I; ⟨e, he⟩
-
-variable (ι R)
-
-proof_wanted IsSemisimpleRing.mulOpposite [IsSemisimpleRing R] : IsSemisimpleRing Rᵐᵒᵖ
-
-proof_wanted IsSemisimpleRing.module_end [IsSemisimpleModule R M] [Module.Finite R M] :
-    IsSemisimpleRing (Module.End R M)
-
-proof_wanted IsSemisimpleRing.matrix [Fintype ι] [DecidableEq ι] [IsSemisimpleRing R] :
-    IsSemisimpleRing (Matrix ι ι R)
-
-universe u in
-/-- The existence part of the Artin–Wedderburn theorem. -/
-proof_wanted isSemisimpleRing_iff_pi_matrix_divisionRing {R : Type u} [Ring R] :
-    IsSemisimpleRing R ↔
-    ∃ (n : ℕ) (S : Fin n → Type u) (d : Fin n → ℕ) (_ : Π i, DivisionRing (S i)),
-      Nonempty (R ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (S i))
-
-variable {ι R}
 
 namespace LinearMap
 
@@ -502,6 +536,7 @@ theorem isCoatom_ker_of_surjective [IsSimpleModule R N] {f : M →ₗ[R] N}
   rw [← isSimpleModule_iff_isCoatom]
   exact IsSimpleModule.congr (f.quotKerEquivOfSurjective hf)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem linearEquiv_of_ne_zero [IsSemisimpleModule R M] [IsSimpleModule R N]
     {f : M →ₗ[R] N} (h : f ≠ 0) : ∃ S : Submodule R M, Nonempty (N ≃ₗ[R] S) :=
   have ⟨m, (_ : IsSimpleModule R m), ne⟩ :=
@@ -522,10 +557,17 @@ noncomputable instance _root_.Module.End.instDivisionRing
   qsmul := _
   qsmul_def := fun _ _ => rfl
 
+instance (R) [DivisionRing R] [Module R M] [Nontrivial M] : IsSimpleModule (Module.End R M) M :=
+  isSimpleModule_iff_toSpanSingleton_surjective.mpr <| .intro ‹_› fun v hv w ↦
+    have ⟨f, eq⟩ := IsSemisimpleModule.extension_property _
+      (ker_eq_bot.mp (ker_toSpanSingleton R hv)) (toSpanSingleton R M w)
+    ⟨f, by simpa using congr($eq 1)⟩
+
 end LinearMap
 
 namespace JordanHolderModule
 
+set_option backward.isDefEq.respectTransparency false in
 instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
   IsMaximal := (· ⋖ ·)
   lt_of_isMaximal := CovBy.lt
@@ -541,3 +583,37 @@ instance instJordanHolderLattice : JordanHolderLattice (Submodule R M) where
     exact (LinearMap.quotientInfEquivSupQuotient Y X).symm
 
 end JordanHolderModule
+
+section jacobson_density
+
+open Module (End)
+open Submodule IsCompl
+
+variable [IsSemisimpleModule R M]
+
+-- Statement and proof follow [Lorenz2008], Chapter 28, F20.
+theorem jacobson_density (f : End (End R M) M) (s : Finset M) :
+    ∃ r : R, ∀ m ∈ s, f m = r • m :=
+  let x := Finsupp.equivFunOnFinite.symm (·.1 : s → M)
+  have ⟨_, h⟩ := exists_isCompl (R ∙ x)
+  let p := projection h
+  let f := End.ringHomEndFinsupp s f
+  have : f (p • x) = f x := congr(f $(projection_apply_left h ⟨x, mem_span_singleton_self x⟩))
+  have : f x ∈ R ∙ x := by rw [← this, map_smul, End.smul_def]; apply projection_apply_mem
+  have ⟨r, hr⟩ := mem_span_singleton.mp this
+  ⟨r, fun m hm ↦ by simpa [x] using congr($hr ⟨m, hm⟩).symm⟩
+
+/-- The Jacobson density theorem for a module finite over its endomorphism ring. -/
+protected theorem Module.Finite.toModuleEnd_moduleEnd_surjective [Module.Finite (End R M) M] :
+    Function.Surjective (Module.toModuleEnd (End R M) (S := R) M) := by
+  have ⟨s, hs⟩ := Module.Finite.fg_top (R := End R M) (M := M)
+  intro f
+  have ⟨r, hr⟩ := jacobson_density f s
+  refine ⟨r, LinearMap.ext fun m ↦ ?_⟩
+  induction hs.ge (trivial : m ∈ ⊤) using Submodule.span_induction with
+  | mem m hm => exact (hr m hm).symm
+  | zero => simp
+  | add _ _ _ _ h₁ h₂ => simpa using congr($h₁ + $h₂)
+  | smul g _ _ h => simp_rw [map_smul, h]
+
+end jacobson_density

@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ExtremalEpi
-import Mathlib.CategoryTheory.Generator.Basic
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.ExtremalEpi
+public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Strong generators
@@ -28,6 +30,8 @@ then `S` is a strong generator.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w' w v u
 
@@ -112,6 +116,7 @@ lemma mk_of_exists_extremalEpi
     exact ExtremalEpi.isIso p (Cofan.IsColimit.desc hc φ) _
       (Cofan.IsColimit.hom_ext hc _ _ (by simp [hφ]))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma extremalEpi_coproductFrom
     (hP : IsStrongGenerator P) (X : C) [HasCoproduct (P.coproductFromFamily X)] :
     ExtremalEpi (P.coproductFrom X) where
@@ -134,6 +139,7 @@ lemma isStrongGenerator_iff_exists_extremalEpi
     (coproductIsCoproduct (P.coproductFromFamily X)).whiskerEquivalence
     (Discrete.equivalence (equivShrink.{w} _)).symm, _, hP.extremalEpi_coproductFrom X⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsStrongGenerator.mk_of_exists_colimitsOfShape
     (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
     P.IsStrongGenerator := by

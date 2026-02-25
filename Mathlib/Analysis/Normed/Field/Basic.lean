@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Normed division rings and fields
@@ -21,6 +23,8 @@ given in:
 * AbsoluteValue.toNormedField
 -/
 
+@[expose] public section
+
 -- Guard against import creep.
 assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_sup_of_nonneg
   IsOfFinOrder Isometry.norm_map_of_map_one NNReal.isOpen_Ico_zero Rat.norm_cast_real
@@ -35,7 +39,7 @@ open scoped Topology NNReal ENNReal
 `‖x y‖ = ‖x‖ ‖y‖`. -/
 class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
@@ -115,9 +119,8 @@ lemma norm_eq_one_iff_ne_zero_of_discrete {x : 𝕜} : ‖x‖ = 1 ↔ x ≠ 0 :
   · have : IsOpen {(0 : 𝕜)} := isOpen_discrete {0}
     simp_rw [Metric.isOpen_singleton_iff, dist_eq_norm, sub_zero] at this
     obtain ⟨ε, εpos, h'⟩ := this
-    wlog h : ‖x‖ < 1 generalizing 𝕜 with H
-    · push_neg at h
-      rcases h.eq_or_lt with h|h
+    wlog! h : ‖x‖ < 1 generalizing 𝕜 with H
+    · rcases h.eq_or_lt with h | h
       · rw [h]
       replace h := norm_inv x ▸ inv_lt_one_of_one_lt₀ h
       rw [← inv_inj, inv_one, ← norm_inv]
@@ -147,7 +150,7 @@ end NormedDivisionRing
 /-- A normed field is a field with a norm satisfying ‖x y‖ = ‖x‖ ‖y‖. -/
 class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is multiplicative. -/
   protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.Submodule.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Decompositions of additive monoids, groups, and modules into direct sums
@@ -27,6 +29,8 @@ we choose to avoid heavily bundling `DirectSum.decompose`, instead making copies
 `AddEquiv`, `LinearEquiv`, etc. This means we have to repeat statements that follow from these
 bundled homs, but means we don't have to repeat statements for different types of decomposition.
 -/
+
+@[expose] public section
 
 
 variable {ι R M σ : Type*}

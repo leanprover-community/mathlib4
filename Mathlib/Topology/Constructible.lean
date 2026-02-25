@@ -3,12 +3,14 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanSubalgebra
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.Spectral.Hom
-import Mathlib.Topology.Spectral.Prespectral
+module
+
+public import Mathlib.Order.BooleanSubalgebra
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.Topology.QuasiSeparated
+public import Mathlib.Topology.Spectral.Hom
+public import Mathlib.Topology.Spectral.Prespectral
 
 /-!
 # Constructible sets
@@ -34,6 +36,8 @@ morphism of schemes is a constructible set (and this is *not* true at the level 
   partitionable along an open cover such that each of its parts is constructible in the
   respective open subspace.
 -/
+
+@[expose] public section
 
 open Set TopologicalSpace Topology
 open scoped Set.Notation
@@ -61,6 +65,7 @@ lemma IsRetrocompact.union (hs : IsRetrocompact s) (ht : IsRetrocompact t) :
 private lemma supClosed_isRetrocompact : SupClosed {s : Set X | IsRetrocompact s} :=
   fun _s hs _t ht ↦ hs.union ht
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsRetrocompact.finsetSup {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsRetrocompact (t i)) : IsRetrocompact (s.sup t) := by
   induction s using Finset.cons_induction with
@@ -396,7 +401,7 @@ lemma IsLocallyConstructible.inter (hs : IsLocallyConstructible s) (ht : IsLocal
   exact .inter (hsU.preimage_of_isOpenEmbedding <| .inclusion _ <|
       .preimage continuous_subtype_val <| hU.inter hV)
     (htV.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV )
+      .preimage continuous_subtype_val <| hU.inter hV)
 
 lemma IsLocallyConstructible.finsetInf {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsLocallyConstructible (t i)) : IsLocallyConstructible (s.inf t) := by
@@ -435,7 +440,7 @@ lemma IsLocallyConstructible.union (hs : IsLocallyConstructible s) (ht : IsLocal
   exact .union (hsU.preimage_of_isOpenEmbedding <| .inclusion _ <|
       .preimage continuous_subtype_val <| hU.inter hV)
     (htV.preimage_of_isOpenEmbedding <| .inclusion _ <|
-      .preimage continuous_subtype_val <| hU.inter hV )
+      .preimage continuous_subtype_val <| hU.inter hV)
 
 lemma IsLocallyConstructible.iUnion [Finite ι] {f : ι → Set X}
     (hf : ∀ i, IsLocallyConstructible (f i)) : IsLocallyConstructible (⋃ i, f i) :=
@@ -465,7 +470,7 @@ lemma IsLocallyConstructible.isConstructible_of_subset_of_isCompact
     have ⟨U, hxU, hU, hUs⟩ := hs x
     have ⟨V, ⟨hV₁, hV₂⟩, hxV, hVU⟩ := PrespectralSpace.isTopologicalBasis.mem_nhds_iff.mp hxU
     have : IsConstructible (V ↓∩ s) :=
-      (hUs.preimage_of_isOpenEmbedding (IsOpenEmbedding.id.restrict hVU hV₁):)
+      (hUs.preimage_of_isOpenEmbedding (IsOpenEmbedding.id.restrict hVU hV₁) :)
     have : IsConstructible (V ∩ s) := by
       have := this.image_of_isOpenEmbedding hV₁.isOpenEmbedding_subtypeVal
         (by simpa using hV₂.isRetrocompact hV₁)

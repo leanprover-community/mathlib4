@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # The factorization axiom
@@ -31,11 +33,13 @@ is `MorphismProperty.comp_eq_top_iff`).
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace MorphismProperty
 
-variable {C : Type*} [Category C] (W₁ W₂ : MorphismProperty C)
+variable {C : Type*} [Category* C] (W₁ W₂ : MorphismProperty C)
 
 /-- Given two classes of morphisms `W₁` and `W₂` on a category `C`, this is
 the data of the factorization of a morphism `f : X ⟶ Y` as `i ≫ p` with
@@ -134,6 +138,7 @@ def ofLE {W₁' W₂' : MorphismProperty C} (le₁ : W₁ ≤ W₁') (le₂ : W�
   hi f := le₁ _ (data.hi f)
   hp f := le₂ _ (data.hp f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The term in `FactorizationData W₁ W₂` that is deduced from a functorial factorization. -/
 def factorizationData : FactorizationData W₁ W₂ := fun f =>
   { Z := data.Z.obj (Arrow.mk f)
@@ -176,8 +181,9 @@ end
 
 section
 
-variable (J : Type*) [Category J]
+variable (J : Type*) [Category* J]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `FunctorialFactorizationData.functorCategory`. -/
 @[simps]
 def functorCategory.Z : Arrow (J ⥤ C) ⥤ J ⥤ C where
@@ -243,7 +249,7 @@ noncomputable def functorialFactorizationData [HasFunctorialFactorization W₁ W
 instance [HasFunctorialFactorization W₁ W₂] : HasFactorization W₁ W₂ where
   nonempty_mapFactorizationData f := ⟨(functorialFactorizationData W₁ W₂).factorizationData f⟩
 
-instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category J] :
+instance [HasFunctorialFactorization W₁ W₂] (J : Type*) [Category* J] :
     HasFunctorialFactorization (W₁.functorCategory J) (W₂.functorCategory J) :=
   ⟨⟨(functorialFactorizationData W₁ W₂).functorCategory J⟩⟩
 

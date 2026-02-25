@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Prod
-import Mathlib.Probability.Kernel.Basic
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Prod
+public import Mathlib.Probability.Kernel.Basic
 
 /-!
 # Measurability of the integral against a kernel
@@ -18,6 +20,8 @@ The Lebesgue integral of a measurable function against a kernel is measurable.
   is measurable.
 
 -/
+
+public section
 
 
 open MeasureTheory ProbabilityTheory Function Set Filter
@@ -136,7 +140,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
       (fun a => ∫⁻ b, g₁ (a, b) + g₂ (a, b) ∂κ a) =
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by
       ext1 a
-      rw [Pi.add_apply, lintegral_add_left (g₁.measurable.comp' measurable_prodMk_left)]
+      rw [Pi.add_apply, lintegral_add_left (by fun_prop)]
     rw [h_add]
     exact Measurable.add hm₁ hm₂
 

@@ -3,14 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.Zip
-import Mathlib.Data.Multiset.Bind
-import Mathlib.Data.Multiset.Range
+module
+
+public import Mathlib.Data.List.Sublists
+public import Mathlib.Data.List.Zip
+public import Mathlib.Data.Multiset.Bind
+public import Mathlib.Data.Multiset.Range
 
 /-!
 # The powerset of a multiset
 -/
+
+@[expose] public section
 
 namespace Multiset
 

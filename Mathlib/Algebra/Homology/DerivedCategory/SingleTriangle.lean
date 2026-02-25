@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 
 /-!
 # The distinguished triangle of a short exact sequence in an abelian category
@@ -18,6 +20,8 @@ the associated distinguished triangle in the derived category:
   exact sequence in the heart of a t-structure
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -52,6 +56,7 @@ noncomputable def singleTriangle : Triangle (DerivedCategory C) :=
   Triangle.mk ((singleFunctor C 0).map S.f)
     ((singleFunctor C 0).map S.g) hS.singleδ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact complex `S` in `C` that is short exact (`hS`), this is the
 canonical isomorphism between the triangle `hS.singleTriangle` in the derived category
 and the triangle attached to the corresponding short exact sequence of cochain complexes

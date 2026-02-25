@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.UniformConvergence
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.UniformConvergence
 
 /-!
 # Algebraic facts about the topology of uniform convergence
@@ -37,6 +39,8 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 uniform convergence, strong dual
 
 -/
+
+public section
 
 open Filter Topology
 open scoped Pointwise UniformConvergence Uniformity
@@ -94,7 +98,7 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
     (h : ∀ u : H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 ((φ u : α → E) '' s)) :
     ContinuousSMul 𝕜 H := by
   obtain rfl := hφ.eq_induced; clear hφ
-  simp only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
+  simp +instances only [induced_iInf, UniformOnFun.topologicalSpace_eq, induced_compose]
   refine continuousSMul_iInf fun s ↦ continuousSMul_iInf fun hs ↦ ?_
   letI : TopologicalSpace H :=
     .induced (UniformFun.ofFun ∘ s.restrict ∘ φ) (UniformFun.topologicalSpace s E)
@@ -105,6 +109,7 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
   refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
   simpa only [Set.image_eq_range] using h u s hs
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,
 equipped with the topology of `𝔖`-convergence, is a TVS.

@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
-import Mathlib.Init
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public import Mathlib.Tactic.Basic
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -17,8 +19,10 @@ TODO: Add sections about interactions with topological typeclasses, and order ty
 
 -/
 
+@[expose] public section
 
-library_note2 «the algebraic hierarchy» /-- # The algebraic hierarchy
+
+library_note «the algebraic hierarchy» /-- # The algebraic hierarchy
 
 In any theorem proving environment,
 there are difficult decisions surrounding the design of the "algebraic hierarchy".
@@ -65,7 +69,7 @@ when applicable:
   instance Prod.Z [Z M] [Z N] : Z (M × N) := ...
   ```
 * Instances transferred elementwise to pi types, like `Pi.Monoid`.
-  See `Mathlib/Algebra/Group/Pi.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pi/Basic.lean` for more examples.
   ```
   instance Pi.Z [∀ i, Z <| f i] : Z (Π i : I, f i) := ...
   ```
@@ -97,12 +101,13 @@ when applicable:
   instance Finsupp.Z [Z β] : Z (α →₀ β) := ...
   ```
 * Instances transferred elementwise to `Set`s, like `Set.monoid`.
-  See `Mathlib/Algebra/Pointwise.lean` for more examples.
+  See `Mathlib/Algebra/Group/Pointwise/Set/Basic.lean` for more examples.
   ```
   instance Set.Z [Z α] : Z (Set α) := ...
   ```
 * Definitions for transferring the entire structure across an equivalence, like `Equiv.monoid`.
-  See `Mathlib/Data/Equiv/TransferInstance.lean` for more examples. See also the `transport` tactic.
+  See `Mathlib/Algebra/Group/TransferInstance.lean` for more examples. See also the `transport`
+  tactic.
   ```
   def Equiv.Z (e : α ≃ β) [Z β] : Z α := ...
   /-- When there is a new notion of `Z`-equiv: -/
@@ -184,7 +189,7 @@ Hopefully this document makes it easy to assemble this list.
 Another alternative to a TODO list in the doc-strings is adding Github issues.
 -/
 
-library_note2 «reducible non-instances» /--
+library_note «reducible non-instances» /--
 Some definitions that define objects of a class cannot be instances, because they have an
 explicit argument that does not occur in the conclusion. An example is `Preorder.lift` that has a
 function `f : α → β` as an explicit argument to lift a preorder on `β` to a preorder on `α`.
@@ -201,18 +206,27 @@ sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
 Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
 -/
 
-library_note2 «implicit instance arguments» /--
+library_note «implicit instance arguments» /--
 There are places where typeclass arguments are specified with implicit `{}` brackets instead of
 the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
-arguments to the type of one of the other arguments. When they can be inferred from these other
-arguments, it is faster to use this method than to use type class inference.
+arguments to the type of one of the other arguments. There are several reasons for doing so.
 
+When they can be inferred from these other arguments,
+it is faster to use this method than to use type class inference.
 For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
 and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
 `[Semiring α] [Semiring β]`.
+
+When handling non-canonical instances, it is necessary that the relevant declarations take these
+instance arguments implicitly, otherwise Lean will refuse to apply them.
+For example, in measure theory a space `X` will often come equipped with a canonical base
+sigma-algebra `MeasurableSpace X` along with many sub-sigma algebras, also of type
+`MeasurableSpace X`. In homological algebra, `ModuleCat ℤ` appears regularly as the category of
+abelian groups, but terms `A : ModuleCat ℤ` come with two (propeq) `Module ℤ A` instances:
+one from being `ℤ`-modules, and one from being abelian groups.
 -/
 
-library_note2 «lower instance priority» /--
+library_note «lower instance priority» /--
 Certain instances always apply during type-class resolution. For example, the instance
 `AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
 resolution problems of the form `AddGroup _`, and type-class inference will then do an
@@ -229,7 +243,7 @@ Therefore, if we create an instance that always applies, we set the priority of 
 100 (or something similar, which is below the default value of 1000).
 -/
 
-library_note2 «instance argument order» /--
+library_note «instance argument order» /--
 When type class inference applies an instance, it attempts to solve the sub-goals from left to
 right (it used to be from right to left in lean 3). For example in
 ```

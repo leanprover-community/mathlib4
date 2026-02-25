@@ -3,9 +3,11 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.LinearAlgebra.CrossProduct
-import Mathlib.LinearAlgebra.Matrix.DotProduct
-import Mathlib.LinearAlgebra.Projectivization.Basic
+module
+
+public import Mathlib.LinearAlgebra.CrossProduct
+public import Mathlib.LinearAlgebra.Matrix.DotProduct
+public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 
@@ -21,6 +23,8 @@ This file defines the dot product and cross product on projective spaces.
 
 -/
 
+@[expose] public section
+
 variable {F : Type*} [Field F] {m : Type*} [Fintype m]
 
 namespace Projectivization
@@ -29,6 +33,7 @@ open scoped LinearAlgebra.Projectivization
 
 section DotProduct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Orthogonality on the projective plane. -/
 def orthogonal : ℙ F (m → F) → ℙ F (m → F) → Prop :=
   Quotient.lift₂ (fun v w ↦ v.1 ⬝ᵥ w.1 = 0) (fun _ _ _ _ ⟨_, h1⟩ ⟨_, h2⟩ ↦ by
@@ -64,6 +69,7 @@ lemma mk_eq_mk_iff_crossProduct_eq_zero {v w : Fin 3 → F} (hv : v ≠ 0) (hw :
 
 variable [DecidableEq F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Cross product on the projective plane. -/
 def cross : ℙ F (Fin 3 → F) → ℙ F (Fin 3 → F) → ℙ F (Fin 3 → F) :=
   Quotient.map₂ (fun v w ↦ if h : crossProduct v.1 w.1 = 0 then v else ⟨crossProduct v.1 w.1, h⟩)

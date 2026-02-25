@@ -3,7 +3,9 @@ Copyright (c) 2025 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Scaling Haar measure by a continuous isomorphism
@@ -19,6 +21,8 @@ real constant which we call `mulEquivHaarChar φ`.
 * `addEquivAddHaarChar φ`: the additive version.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory.Measure
 
@@ -119,5 +123,12 @@ lemma mulEquivHaarChar_trans {φ ψ : G ≃ₜ* G} :
   have h_reg : (haar.map ψ).Regular := Regular.map ψ.toHomeomorph
   rw [MeasureTheory.Measure.haarScalarFactor_eq_mul haar (haar.map ψ),
     ← mulEquivHaarChar_eq (haar.map ψ)]
+
+@[to_additive]
+lemma mulEquivHaarChar_symm {φ : G ≃ₜ* G} :
+    mulEquivHaarChar φ.symm = (mulEquivHaarChar φ)⁻¹ := by
+  symm
+  apply inv_eq_of_mul_eq_one_right
+  simp [← mulEquivHaarChar_trans]
 
 end MeasureTheory

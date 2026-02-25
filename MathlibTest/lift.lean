@@ -21,7 +21,7 @@ example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   lift n to ℕ using hn
   guard_target =ₛ 0 ≤ (n : Int) + 1
-  exact Int.le_add_one (Int.ofNat_zero_le _)
+  exact Int.le_add_one (Int.natCast_nonneg _)
 
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   have hn' := hn

@@ -3,7 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
 
 /-!
 # Saturated subgroups
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Group.Subgroup.Ker
 subgroup, subgroups
 
 -/
+
+@[expose] public section
 
 
 namespace Subgroup
@@ -38,7 +42,7 @@ theorem saturated_iff_zpow {H : Subgroup G} :
   · intro hH n g hgn
     cases n with
     | ofNat n =>
-      simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢
+      simp only [Int.natCast_eq_zero, Int.ofNat_eq_natCast, zpow_natCast] at hgn ⊢
       exact hH hgn
     | negSucc n =>
       suffices g ^ (n + 1) ∈ H by

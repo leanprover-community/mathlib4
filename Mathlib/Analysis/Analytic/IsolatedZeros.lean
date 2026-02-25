@@ -3,12 +3,14 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.Topology.Perfect
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Order.Filter.EventuallyConst
+public import Mathlib.Topology.Perfect
 
 /-!
 # Principle of isolated zeros
@@ -36,7 +38,9 @@ in this setup.
   within `f '' U` is codiscrete within `U`.
 -/
 
-open Filter Function Nat FormalMultilinearSeries EMetric Set
+public section
+
+open Filter Function Module Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology
 
@@ -151,8 +155,8 @@ lemma unique_eventuallyEq_zpow_smul_nonzero {m n : ℤ}
     (hm : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ m • g z)
     (hn : ∃ g, AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] z₀, f z = (z - z₀) ^ n • g z) :
     m = n := by
-  wlog h_le : n ≤ m generalizing m n
-  · exact ((this hn hm) (not_le.mp h_le).le).symm
+  wlog! h_le : n ≤ m generalizing m n
+  · exact ((this hn hm) h_le.le).symm
   let ⟨g, hg_an, _, hg_eq⟩ := hm
   let ⟨j, hj_an, hj_ne, hj_eq⟩ := hn
   contrapose! hj_ne
@@ -266,15 +270,15 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 section Mul
 /-!
-### Vanishing of products of analytic functions
+### Vanishing of products of analytic functions
 -/
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
+variable {A : Type*} [NormedRing A] [IsDomain A] [NormedAlgebra 𝕜 A]
   {B : Type*} [NormedAddCommGroup B] [NormedSpace 𝕜 B] [Module A B]
 
 /-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f • g = 0`
 on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
-lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
+lemma eq_zero_or_eq_zero_of_smul_eq_zero [IsTorsionFree A B]
     {f : 𝕜 → A} {g : 𝕜 → B} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hfg : ∀ z ∈ U, f z • g z = 0) (hU : IsPreconnected U) :
     (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) := by
@@ -298,9 +302,8 @@ lemma eq_zero_or_eq_zero_of_smul_eq_zero [NoZeroSMulDivisors A B]
 
 /-- If `f, g` are analytic on a neighbourhood of the preconnected open set `U`, and `f * g = 0`
 on `U`, then either `f = 0` on `U` or `g = 0` on `U`. -/
-lemma eq_zero_or_eq_zero_of_mul_eq_zero [NoZeroDivisors A]
-    {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
-    (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
+lemma eq_zero_or_eq_zero_of_mul_eq_zero {f g : 𝕜 → A} (hf : AnalyticOnNhd 𝕜 f U)
+    (hg : AnalyticOnNhd 𝕜 g U) (hfg : ∀ z ∈ U, f z * g z = 0) (hU : IsPreconnected U) :
     (∀ z ∈ U, f z = 0) ∨ (∀ z ∈ U, g z = 0) :=
   eq_zero_or_eq_zero_of_smul_eq_zero hf hg hfg hU
 
@@ -308,7 +311,7 @@ end Mul
 end AnalyticOnNhd
 
 /-!
-### Preimages of codiscrete sets
+### Preimages of codiscrete sets
 -/
 
 section PreimgCodiscrete
@@ -355,7 +358,8 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
   rw [preimage_union, preimage_compl]
   apply union_subset_union_right (f ⁻¹' s)
   intro x hx
-  simp only [mem_compl_iff, mem_preimage, mem_image, not_exists, not_and] at hx ⊢
+  push _ ∈ _ at hx ⊢
+  push_neg at hx
   tauto
 
 /-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and

@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Cocompact continuous maps
@@ -11,6 +13,8 @@ import Mathlib.Topology.ContinuousMap.Basic
 The type of *cocompact continuous maps* are those which tend to the cocompact filter on the
 codomain along the cocompact filter on the domain. When the domain and codomain are Hausdorff, this
 is equivalent to many other conditions, including that preimages of compact sets are compact. -/
+
+@[expose] public section
 
 
 universe u v w

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Order.Hom.BoundedLattice
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # Complete lattice homomorphisms
@@ -36,6 +38,8 @@ be satisfied by itself and all stricter types.
 
 Frame homs are Heyting homs.
 -/
+
+@[expose] public section
 assert_not_exists Monoid
 
 open Function OrderDual Set
@@ -131,7 +135,7 @@ theorem map_iInf₂ [InfSet α] [InfSet β] [sInfHomClass F α β] (f : F) (g : 
 -- See note [lower instance priority]
 instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
     [CompleteLattice β] [sSupHomClass F α β] : SupBotHomClass F α β :=
-  {  ‹sSupHomClass F α β› with
+  { ‹sSupHomClass F α β› with
     map_sup := fun f a b => by
       rw [← sSup_pair, map_sSup]
       simp only [Set.image_pair, sSup_insert, sSup_singleton]
@@ -199,6 +203,7 @@ end Equiv
 
 variable [FunLike F α β]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reinterpret an order isomorphism as a morphism of complete lattices. -/
 @[simps] def OrderIso.toCompleteLatticeHom [CompleteLattice α] [CompleteLattice β]
     (f : OrderIso α β) : CompleteLatticeHom α β where
@@ -327,7 +332,6 @@ instance : Bot (sSupHom α β) :=
       · rw [hs.image_const, sSup_singleton]⟩⟩
 
 instance : OrderBot (sSupHom α β) where
-  bot := ⊥
   bot_le := fun _ _ ↦ OrderBot.bot_le _
 
 @[simp]
@@ -448,7 +452,6 @@ instance : Top (sInfHom α β) :=
       · rw [hs.image_const, sInf_singleton]⟩⟩
 
 instance : OrderTop (sInfHom α β) where
-  top := ⊤
   le_top := fun _ _ => OrderTop.le_top _
 
 @[simp]

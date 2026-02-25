@@ -3,9 +3,11 @@ Copyright (c) 2024 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Big operators on a finset in the natural numbers
@@ -13,6 +15,8 @@ import Mathlib.SetTheory.Cardinal.Finite
 This file contains the results concerning the interaction of finset big operators with natural
 numbers.
 -/
+
+public section
 
 variable {ι : Type*}
 
@@ -30,6 +34,7 @@ lemma odd_sum_iff_odd_card_odd {s : Finset ι} (f : ι → ℕ) :
     Odd (∑ i ∈ s, f i) ↔ Odd #{x ∈ s | Odd (f x)} := by
   simp only [← Nat.not_even_iff_odd, even_sum_iff_even_card_odd]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_preimage_eq_sum_card_image_eq {M : Type*} {f : ι → M} {s : Finset M}
     (hb : ∀ b ∈ s, Set.Finite {a | f a = b}) :
     Nat.card (f ⁻¹' s) = ∑ b ∈ s, Nat.card {a // f a = b} := by

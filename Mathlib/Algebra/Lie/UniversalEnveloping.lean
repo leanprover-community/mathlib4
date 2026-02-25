@@ -3,9 +3,11 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.RingQuot
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # Universal enveloping algebra
@@ -32,6 +34,8 @@ enveloping algebra of `L`, together with its universal property.
 
 lie algebra, universal enveloping algebra, tensor algebra
 -/
+
+@[expose] public section
 
 
 universe u₁ u₂ u₃
@@ -78,6 +82,7 @@ def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
 
 variable {A : Type u₃} [Ring A] [Algebra R A] (f : L →ₗ⁅R⁆ A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of the universal enveloping algebra: Lie algebra morphisms into
 associative algebras lift to associative algebra morphisms from the universal enveloping algebra. -/
 def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) where

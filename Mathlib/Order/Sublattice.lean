@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.SupClosed
+module
+
+public import Mathlib.Order.SupClosed
 
 /-!
 # Sublattices
@@ -18,6 +20,8 @@ Subsemilattices, if people care about them.
 
 sublattice
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -39,6 +43,8 @@ variable {L M : Sublattice α} {f : LatticeHom α β} {s t : Set α} {a b : α}
 instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
+
+instance : PartialOrder (Sublattice α) := .ofSetLike (Sublattice α) α
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (L : Sublattice α) : Set α := L
@@ -96,12 +102,12 @@ instance instInfCoe : Min L where
 
 /-- A sublattice of a lattice inherits a lattice structure. -/
 instance instLatticeCoe (L : Sublattice α) : Lattice L :=
-  Subtype.coe_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.coe_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- A sublattice of a distributive lattice inherits a distributive lattice structure. -/
 instance instDistribLatticeCoe {α : Type*} [DistribLattice α] (L : Sublattice α) :
     DistribLattice L :=
-  Subtype.coe_injective.distribLattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  Subtype.coe_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The natural lattice hom from a sublattice to the original lattice. -/
 def subtype (L : Sublattice α) : LatticeHom L α where
@@ -181,8 +187,6 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
 @[simp] lemma mem_iInf {f : ι → Sublattice α} : a ∈ ⨅ i, f i ↔ ∀ i, a ∈ f i := by
   rw [← SetLike.mem_coe]; simp
 
-@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where
   bot := ⊥
@@ -240,17 +244,21 @@ lemma map_mono : Monotone (map f) := fun _ _ ↦ image_mono
 @[simp] lemma map_map (g : LatticeHom β γ) (f : LatticeHom α β) :
     (L.map f).map g = L.map (g.comp f) := SetLike.coe_injective <| image_image _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_map_equiv {f : α ≃o β} {a : β} : a ∈ L.map f ↔ f.symm a ∈ L := Set.mem_image_equiv
 
 lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.mem_set_image
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : Sublattice α) :
     L.map f = L.comap (f.symm : LatticeHom β α) :=
   SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : Sublattice α) :
     L.comap f = L.map (f.symm : LatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_symm_eq_iff_eq_map {M : Sublattice β} {e : β ≃o α} :
     L.map ↑e.symm = M ↔ L = M.map ↑e := by
   simp_rw [← coe_inj]; exact (Equiv.eq_image_iff_symm_image_eq _ _ _).symm
@@ -261,6 +269,7 @@ lemma map_le_iff_le_comap {f : LatticeHom α β} {M : Sublattice β} : L.map f �
 lemma gc_map_comap (f : LatticeHom α β) : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_bot (f : LatticeHom α β) : (⊥ : Sublattice α).map f = ⊥ := (gc_map_comap f).l_bot
 
 lemma map_sup (f : LatticeHom α β) (L M : Sublattice α) : (L ⊔ M).map f = L.map f ⊔ M.map f :=
@@ -269,6 +278,7 @@ lemma map_sup (f : LatticeHom α β) (L M : Sublattice α) : (L ⊔ M).map f = L
 lemma map_iSup (f : LatticeHom α β) (L : ι → Sublattice α) : (⨆ i, L i).map f = ⨆ i, (L i).map f :=
   (gc_map_comap f).l_iSup
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma comap_top (f : LatticeHom α β) : (⊤ : Sublattice β).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
@@ -383,7 +393,7 @@ attribute [norm_cast] coe_pi
 lemma pi_univ_bot [Nonempty κ] : (pi univ fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ := by simp
 
 lemma le_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {M : Sublattice (∀ i, π i)} :
-    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; aesop
+    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; grind
 
 @[simp] lemma pi_univ_eq_bot_iff {L : ∀ i, Sublattice (π i)} : pi univ L = ⊥ ↔ ∃ i, L i = ⊥ := by
   simp_rw [← coe_inj]; simp

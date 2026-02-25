@@ -3,10 +3,12 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Set.Operations
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Data.Set.Operations
 
 /-!
 # Squares and even elements
@@ -36,6 +38,8 @@ This file defines square and even elements in a monoid.
 `Mathlib/Algebra/Ring/Parity.lean` for the definition of odd elements as well as facts about
 `Even` / `IsSquare` in rings.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

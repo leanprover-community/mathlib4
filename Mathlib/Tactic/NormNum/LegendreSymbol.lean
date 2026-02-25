@@ -3,7 +3,10 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
+module
+
+public meta import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
+public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 
 /-!
 # A `norm_num` extension for Jacobi and Legendre symbols
@@ -44,6 +47,8 @@ where we encode the residue classes mod 2, mod 4, or mod 8 by using hypotheses l
 are the ones occurring in the use of QR above.
 -/
 
+public meta section
+
 
 section Lemmas
 
@@ -73,7 +78,7 @@ theorem jacobiSymNat.zero_left (b : ℕ) (hb : Nat.beq (b / 2) 0 = false) : jaco
   calc
     1 < 2 * 1       := by decide
     _ ≤ 2 * (b / 2) :=
-      Nat.mul_le_mul_left _ (Nat.succ_le.mpr (Nat.pos_of_ne_zero (Nat.ne_of_beq_eq_false hb)))
+      Nat.mul_le_mul_left _ (Nat.succ_le_of_lt (Nat.pos_of_ne_zero (Nat.ne_of_beq_eq_false hb)))
     _ ≤ b           := Nat.mul_div_le b 2
 
 theorem jacobiSymNat.one_left (b : ℕ) : jacobiSymNat 1 b = 1 := by
@@ -202,22 +207,27 @@ namespace Mathlib.Meta.NormNum
 
 open Lean Elab Tactic Qq
 
+-- TODO: redefined here for reduction; should this be special-handled in quote4?
+private meta def mkRawIntLit' (n : ℤ) : Q(ℤ) :=
+  let lit : Q(ℕ) := .lit <| .natVal n.natAbs
+  if 0 ≤ n then q(.ofNat $lit) else q(.negOfNat $lit)
+
 /-- This evaluates `r := jacobiSymNat a b` recursively using quadratic reciprocity
 and produces a proof term for the equality, assuming that `a < b` and `b` is odd. -/
 partial def proveJacobiSymOdd (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat $ea $eb = $er) :=
   match eb.natLit! with
   | 1 =>
     haveI : $eb =Q 1 := ⟨⟩
-    ⟨mkRawIntLit 1, q(jacobiSymNat.one_right $ea)⟩
+    ⟨mkRawIntLit' 1, q(jacobiSymNat.one_right $ea)⟩
   | b =>
     match ea.natLit! with
     | 0 =>
       haveI : $ea =Q 0 := ⟨⟩
       have hb : Q(Nat.beq ($eb / 2) 0 = false) := (q(Eq.refl false) : Expr)
-      ⟨mkRawIntLit 0, q(jacobiSymNat.zero_left $eb $hb)⟩
+      ⟨mkRawIntLit' 0, q(jacobiSymNat.zero_left $eb $hb)⟩
     | 1 =>
       haveI : $ea =Q 1 := ⟨⟩
-      ⟨mkRawIntLit 1, q(jacobiSymNat.one_left $eb)⟩
+      ⟨mkRawIntLit' 1, q(jacobiSymNat.one_left $eb)⟩
     | a =>
       match a % 2 with
       | 0 =>
@@ -279,10 +289,10 @@ partial def proveJacobiSymNat (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
   match eb.natLit! with
   | 0 =>
     haveI : $eb =Q 0 := ⟨⟩
-    ⟨mkRawIntLit 1, q(jacobiSymNat.zero_right $ea)⟩
+    ⟨mkRawIntLit' 1, q(jacobiSymNat.zero_right $ea)⟩
   | 1 =>
     haveI : $eb =Q 1 := ⟨⟩
-    ⟨mkRawIntLit 1, q(jacobiSymNat.one_right $ea)⟩
+    ⟨mkRawIntLit' 1, q(jacobiSymNat.one_right $ea)⟩
   | b =>
     match b % 2 with
     | 0 =>
@@ -290,17 +300,17 @@ partial def proveJacobiSymNat (ea eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jacobiSymNat
       | 0 =>
         have hb : Q(Nat.beq ($eb / 2) 0 = false) := (q(Eq.refl false) : Expr)
         show (er : Q(ℤ)) × Q(jacobiSymNat 0 $eb = $er) from
-          ⟨mkRawIntLit 0, q(jacobiSymNat.zero_left $eb $hb)⟩
+          ⟨mkRawIntLit' 0, q(jacobiSymNat.zero_left $eb $hb)⟩
       | 1 =>
         show (er : Q(ℤ)) × Q(jacobiSymNat 1 $eb = $er) from
-          ⟨mkRawIntLit 1, q(jacobiSymNat.one_left $eb)⟩
+          ⟨mkRawIntLit' 1, q(jacobiSymNat.one_left $eb)⟩
       | a =>
         match a % 2 with
         | 0 =>
           have hb₀ : Q(Nat.beq ($eb / 2) 0 = false) := (q(Eq.refl false) : Expr)
           have ha : Q(Nat.mod $ea 2 = 0) := (q(Eq.refl 0) : Expr)
           have hb₁ : Q(Nat.mod $eb 2 = 0) := (q(Eq.refl 0) : Expr)
-          ⟨mkRawIntLit 0, q(jacobiSymNat.even_even $ea $eb $hb₀ $ha $hb₁)⟩
+          ⟨mkRawIntLit' 0, q(jacobiSymNat.even_even $ea $eb $hb₀ $ha $hb₁)⟩
         | _ =>
           have ha : Q(Nat.mod $ea 2 = 1) := (q(Eq.refl 1) : Expr)
           have hb : Q(Nat.mod $eb 2 = 0) := (q(Eq.refl 0) : Expr)
@@ -324,10 +334,10 @@ partial def proveJacobiSym (ea : Q(ℤ)) (eb : Q(ℕ)) : (er : Q(ℤ)) × Q(jaco
   match eb.natLit! with
   | 0 =>
     haveI : $eb =Q 0 := ⟨⟩
-    ⟨mkRawIntLit 1, q(jacobiSym.zero_right $ea)⟩
+    ⟨mkRawIntLit' 1, q(jacobiSym.zero_right $ea)⟩
   | 1 =>
     haveI : $eb =Q 1 := ⟨⟩
-    ⟨mkRawIntLit 1, q(jacobiSym.one_right $ea)⟩
+    ⟨mkRawIntLit' 1, q(jacobiSym.one_right $ea)⟩
   | b =>
     have eb' := mkRawIntLit b
     have hb' : Q(($eb : ℤ) = $eb') := (q(Eq.refl $eb') : Expr)

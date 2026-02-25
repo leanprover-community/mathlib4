@@ -3,8 +3,10 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
 # Modules over a Dedekind domain
@@ -14,6 +16,8 @@ submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in prime id
 Therefore, as any finitely generated torsion module is `I`-torsion for some `I`, it is an internal
 direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`.
 -/
+
+public section
 
 
 universe u v
@@ -64,7 +68,7 @@ theorem isInternal_prime_power_torsion [DecidableEq (Ideal R)] [Module.Finite R 
   have hM' := Module.isTorsionBySet_annihilator_top R M
   have hI := Submodule.annihilator_top_inter_nonZeroDivisors hM
   refine isInternal_prime_power_torsion_of_is_torsion_by_ideal ?_ hM'
-  rw [← Set.nonempty_iff_ne_empty] at hI; rw [Submodule.ne_bot_iff]
+  rw [Submodule.ne_bot_iff]
   obtain ⟨x, H, hx⟩ := hI; exact ⟨x, H, nonZeroDivisors.ne_zero hx⟩
 
 /-- A finitely generated torsion module over a Dedekind domain is an internal direct sum of its

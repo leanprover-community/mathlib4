@@ -3,11 +3,13 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jiedong Jiang
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
@@ -25,6 +27,8 @@ to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 ## Main results
 -/
 
+@[expose] public section
+
 /- Since `Mathlib/LinearAlgebra/Quotient/Basic.lean` and
 `Mathlib/RingTheory/Ideal/Quotient/Defs.lean` do not import each other, and the first file that
 imports both of them is `Mathlib/RingTheory/Ideal/Quotient/Operations.lean`, which has already
@@ -36,6 +40,7 @@ open Ideal Quotient
 variable {R : Type*} [Ring R] {I J K : Ideal R}
     {M : Type*} [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
     RingHom.ker (factor H) = J.map (Ideal.Quotient.mk I) := by
   ext x
@@ -61,7 +66,7 @@ lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
     subst this
     rw [ih (m.le_add_right k) (by simp), h]
     · simp
-    · cutsat
+    · lia
 
 lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
     (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))
@@ -154,6 +159,7 @@ lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
   apply Ideal.map_mk_comap_factor
   exact pow_le_self (Nat.ne_zero_of_lt apos)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
     (h : IsUnit (factorPow I n.le_succ a)) : IsUnit a := by

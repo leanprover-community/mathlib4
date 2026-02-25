@@ -3,11 +3,14 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Finitely generated monoids and groups
@@ -25,6 +28,8 @@ finitely-generated modules.
   group.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -125,7 +130,7 @@ theorem Submonoid.iSup_map_mulSingle [DecidableEq ι] :
     ⨆ i, map (MonoidHom.mulSingle M i) (P i) = pi Set.univ P := by
   haveI := Fintype.ofFinite ι
   refine iSup_map_mulSingle_le.antisymm fun x hx => ?_
-  rw [← Finset.noncommProd_mul_single x]
+  rw [← Finset.noncommProd_mulSingle x]
   exact noncommProd_mem _ _ _ _ fun i _ => mem_iSup_of_mem _ (mem_map_of_mem _ (hx i trivial))
 
 /-- Finite product of finitely generated submonoids is finitely generated. -/

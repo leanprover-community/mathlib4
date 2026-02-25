@@ -3,19 +3,23 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 
 # Some results on free modules over rings satisfying strong rank condition
 
 This file contains some results on free modules over rings satisfying strong rank condition.
-Most of them are generalized from the same result assuming the base ring being division ring,
+Most of them are generalized from the same result assuming the base ring being a division ring,
 and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
-and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
+and `Mathlib/LinearAlgebra/FiniteDimensional/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 open Cardinal Module Module Set Submodule
 
@@ -83,13 +87,13 @@ theorem rank_le_one_iff [Module.Free K V] :
       intro v
       simp [h' v]
     · use b i
-      have h' : (K ∙ b i) = ⊤ :=
+      have h' : K ∙ b i = ⊤ :=
         (subsingleton_range b).eq_singleton_of_mem (mem_range_self i) ▸ b.span_eq
       intro v
       have hv : v ∈ (⊤ : Submodule K V) := mem_top
       rwa [← h', mem_span_singleton] at hv
   · rintro ⟨v₀, hv₀⟩
-    have h : (K ∙ v₀) = ⊤ := by
+    have h : K ∙ v₀ = ⊤ := by
       ext
       simp [mem_span_singleton, hv₀]
     rw [← rank_top, ← h]
@@ -114,6 +118,7 @@ theorem rank_eq_one_iff [Module.Free K V] :
     haveI := b.repr.toEquiv.subsingleton
     exact h (Subsingleton.elim _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector in the submodule such that the submodule is contained in
 its span. -/
@@ -122,6 +127,7 @@ theorem rank_submodule_le_one_iff (s : Submodule K V) [Module.Free K s] :
   simp_rw [rank_le_one_iff, le_span_singleton_iff]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension `1` if and only if there is a
 single non-zero vector in the submodule such that the submodule is contained in
 its span. -/
@@ -137,6 +143,7 @@ theorem rank_submodule_eq_one_iff (s : Submodule K V) [Module.Free K s] :
   · obtain ⟨r, hr⟩ := h v hv
     exact ⟨r, by rwa [Subtype.ext_iff, coe_smul]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A submodule has dimension at most `1` if and only if there is a
 single vector, not necessarily in the submodule, such that the
 submodule is contained in its span. -/
@@ -152,6 +159,7 @@ theorem rank_submodule_le_one_iff' (s : Submodule K V) [Module.Free K s] :
     simpa [b.mk_eq_rank''] using b.linearIndependent.map' _ (ker_inclusion _ _ h)
       |>.cardinal_le_rank.trans (rank_span_le {v₀})
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.rank_le_one_iff_isPrincipal (W : Submodule K V) [Module.Free K W] :
     Module.rank K W ≤ 1 ↔ W.IsPrincipal := by
   simp only [rank_le_one_iff, Submodule.isPrincipal_iff, le_antisymm_iff, le_span_singleton_iff,
@@ -170,7 +178,8 @@ theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 
 /-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
--/
+
+See also `Module.Basis.nonempty_unique_index_of_finrank_eq_one` -/
 theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
     finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor
@@ -234,6 +243,7 @@ namespace Subalgebra
 variable {F E : Type*} [CommRing F] [StrongRankCondition F] [Ring E] [Algebra F E]
   {S : Subalgebra F E}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S = ⊥ := by
   nontriviality E
   obtain ⟨κ, b⟩ := Module.Free.exists_basis (R := F) (M := S)
@@ -248,11 +258,13 @@ theorem eq_bot_of_rank_le_one (h : Module.rank F S ≤ 1) [Module.Free F S] : S 
   haveI := b.repr.toEquiv.subsingleton
   exact False.elim <| one_ne_zero congr(S.val $(Subsingleton.elim 1 0))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_of_finrank_one (h : finrank F S = 1) [Module.Free F S] : S = ⊥ := by
   refine Subalgebra.eq_bot_of_rank_le_one ?_
   rw [finrank, toNat_eq_one] at h
   rw [h]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 ↔ S = ⊥ := by
   refine ⟨fun h ↦ Subalgebra.eq_bot_of_rank_le_one h.le, ?_⟩
@@ -268,16 +280,19 @@ theorem rank_eq_one_iff [Nontrivial E] [Module.Free F S] : Module.rank F S = 1 �
     haveI := b.repr.toEquiv.subsingleton
     exact one_ne_zero congr((⊥ : Subalgebra F E).val $(Subsingleton.elim 1 0))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem finrank_eq_one_iff [Nontrivial E] [Module.Free F S] : finrank F S = 1 ↔ S = ⊥ := by
   rw [← Subalgebra.rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bot_eq_top_iff_rank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ Module.rank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm
   rw [← rank_top, Subalgebra.rank_eq_one_iff, eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem bot_eq_top_iff_finrank_eq_one [Nontrivial E] [Module.Free F E] :
     (⊥ : Subalgebra F E) = ⊤ ↔ finrank F E = 1 := by
   haveI := Module.Free.of_equiv (Subalgebra.topEquiv (R := F) (A := E)).toLinearEquiv.symm

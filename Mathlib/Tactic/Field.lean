@@ -3,8 +3,10 @@ Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Ring.Basic
+module
+
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Ring.Basic
 
 
 /-! # A tactic for proving algebraic goals in a field
@@ -13,6 +15,8 @@ This file contains the `field` tactic, a finishing tactic which roughly consists
 `field_simp; ring1`.
 
 -/
+
+public meta section
 
 open Lean Meta Qq
 
@@ -77,4 +81,5 @@ elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : 
 end Mathlib.Tactic.FieldSimp
 
 /-! We register `field` with the `hint` tactic. -/
-register_hint field
+register_hint 850 field
+register_try?_tactic (priority := 850) field

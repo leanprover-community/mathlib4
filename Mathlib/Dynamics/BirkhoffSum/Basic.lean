@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Dynamics.FixedPoints.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Birkhoff sums
@@ -16,6 +18,8 @@ saying that these averages converge to the "space average" `⨍ x, g x ∂μ` in
 
 See also `birkhoffAverage` defined in `Dynamics/BirkhoffSum/Average`.
 -/
+
+@[expose] public section
 
 open Finset Function
 

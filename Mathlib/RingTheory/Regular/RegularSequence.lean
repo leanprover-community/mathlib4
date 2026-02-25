@@ -3,10 +3,12 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Regular.IsSMulRegular
+module
+
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -22,6 +24,8 @@ TODO: Koszul regular sequences, H_1-regular sequences, quasi-regular sequences, 
 
 module, regular element, regular sequence, commutative algebra
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -103,7 +107,7 @@ lemma quotOfListConsSMulTopEquivQuotSMulTopInner_naturality (f : M →ₗ[R] M�
 lemma top_eq_ofList_cons_smul_iff :
     (⊤ : Submodule R M) = Ideal.ofList (r :: rs) • ⊤ ↔
       (⊤ : Submodule R (QuotSMulTop r M)) = Ideal.ofList rs • ⊤ := by
-  conv => congr <;> rw [eq_comm, ← subsingleton_quotient_iff_eq_top]
+  conv => congr <;> rw [eq_comm, ← Quotient.subsingleton_iff]
   exact (quotOfListConsSMulTopEquivQuotSMulTopInner M r rs).toEquiv.subsingleton_congr
 
 end Submodule
@@ -199,11 +203,10 @@ lemma _root_.LinearEquiv.isWeaklyRegular_congr [Module R M₂] (e : M ≃ₗ[R] 
 lemma _root_.AddEquiv.isRegular_congr {e : M ≃+ M₂} {as bs}
     (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :
     IsRegular M as ↔ IsRegular M₂ bs := by
-  conv => congr <;> rw [isRegular_iff, ne_eq, eq_comm,
-    ← subsingleton_quotient_iff_eq_top]
+  conv => congr <;> rw [isRegular_iff, ne_comm, ← Quotient.nontrivial_iff]
   let e' := QuotientAddGroup.congr _ _ e <|
     AddHom.map_smul_top_toAddSubgroup_of_surjective e.surjective h
-  exact and_congr (e.isWeaklyRegular_congr h) e'.subsingleton_congr.not
+  exact and_congr (e.isWeaklyRegular_congr h) e'.nontrivial_congr
 
 lemma _root_.LinearEquiv.isRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs : List R) :
     IsRegular M rs ↔ IsRegular M₂ (rs.map σ) :=
@@ -237,6 +240,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
         (isWeaklyRegular_iff_Fin _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧
@@ -252,6 +256,7 @@ lemma isRegular_cons_iff (r : R) (rs : List R) :
   rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
     ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
     IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M)
@@ -494,8 +499,8 @@ def ndrecIterModByRegularWithRing
 
 lemma quot_ofList_smul_nontrivial {rs : List R} (h : IsRegular M rs)
     (N : Submodule R M) : Nontrivial (M ⧸ Ideal.ofList rs • N) :=
-  Submodule.Quotient.nontrivial_of_lt_top _ <|
-    lt_of_le_of_lt (smul_mono_right _ le_top) h.top_ne_smul.symm.lt_top
+  Submodule.Quotient.nontrivial_iff.mpr <|
+    ne_top_of_le_ne_top h.top_ne_smul.symm (smul_mono_right _ le_top)
 
 lemma nontrivial {rs : List R} (h : IsRegular M rs) : Nontrivial M :=
   haveI := quot_ofList_smul_nontrivial h ⊤

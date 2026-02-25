@@ -3,10 +3,11 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
+module
 
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Limits of intervals along filters
@@ -14,6 +15,8 @@ import Mathlib.Order.Interval.Finset.Defs
 This file contains some lemmas about how filters `Ixx` behave as the endpoints tend to `±∞`.
 
 -/
+
+public section
 
 namespace Finset
 
@@ -23,21 +26,25 @@ section Asymmetric
 
 variable {α : Type*} [Preorder α] [LocallyFiniteOrder α]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Icc_atBot_prod_atTop :
     Tendsto (fun p : α × α ↦ Icc p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]
     using fun b i _ ↦ (eventually_le_atBot i).prod_mk (eventually_ge_atTop i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Ioc_atBot_prod_atTop [NoBotOrder α] :
     Tendsto (fun p : α × α ↦ Ioc p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]
     using fun b i _ ↦ (eventually_lt_atBot i).prod_mk (eventually_ge_atTop i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Ico_atBot_prod_atTop [NoTopOrder α] :
     Tendsto (fun p : α × α ↦ Finset.Ico p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]
     using fun b i _ ↦ (eventually_le_atBot i).prod_mk (eventually_gt_atTop i)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_Ioo_atBot_prod_atTop [NoBotOrder α] [NoTopOrder α] :
     Tendsto (fun p : α × α ↦ Finset.Ioo p.1 p.2) (atBot ×ˢ atTop) atTop := by
   simpa [tendsto_atTop, ← coe_subset, Set.subset_def, -eventually_and]

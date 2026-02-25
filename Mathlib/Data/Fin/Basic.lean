@@ -3,10 +3,12 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Int.DivMod
-import Mathlib.Order.Lattice
-import Mathlib.Tactic.Common
-import Batteries.Data.Fin.Basic
+module
+
+public import Mathlib.Data.Int.DivMod
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Common
+public import Batteries.Data.Fin.Basic
 
 /-!
 # The finite type with `n` elements
@@ -22,12 +24,22 @@ Further definitions and eliminators can be found in `Init.Data.Fin.Lemmas`
 
 -/
 
+@[expose] public section
+
 
 assert_not_exists Monoid Finset
 
 open Fin Nat Function
 
 attribute [simp] Fin.succ_ne_zero Fin.castSucc_lt_last
+
+theorem Nat.forall_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
+    (∀ k hk, p k hk) ↔ ∀ k : Fin n, p k k.is_lt :=
+  .symm <| Fin.forall_iff
+
+theorem Nat.exists_lt_iff_fin {n : ℕ} {p : ∀ k, k < n → Prop} :
+    (∃ k hk, p k hk) ↔ ∃ k : Fin n, p k k.is_lt :=
+  .symm <| Fin.exists_iff
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
 def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
@@ -77,6 +89,8 @@ lemma ne_last_of_lt {a b : Fin (n + 1)} (hab : a < b) : a ≠ last n :=
 def equivSubtype : Fin n ≃ { i // i < n } where
   toFun a := ⟨a.1, a.2⟩
   invFun a := ⟨a.1, a.2⟩
+
+lemma neZero {n : ℕ} (i : Fin n) : NeZero n := ⟨Nat.ne_zero_of_lt i.isLt⟩
 
 section coe
 
@@ -169,10 +183,6 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem mk_zero' (n : ℕ) [NeZero n] : (⟨0, pos_of_neZero n⟩ : Fin n) = 0 := rfl
 
-@[deprecated Fin.zero_le (since := "2025-05-13")]
-protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
-  Nat.zero_le a.val
-
 @[simp, norm_cast]
 theorem val_pos_iff [NeZero n] {a : Fin n} : 0 < a.val ↔ 0 < a := by
   rw [← val_fin_lt, val_zero]
@@ -196,7 +206,7 @@ lemma cast_injective {k l : ℕ} (h : k = l) : Injective (Fin.cast h) :=
 theorem last_pos' [NeZero n] : 0 < last n := n.pos_of_neZero
 
 theorem one_lt_last [NeZero n] : 1 < last (n + 1) := by
-  rw [lt_iff_val_lt_val, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
+  rw [lt_def, val_one, val_last, Nat.lt_add_left_iff_pos, Nat.pos_iff_ne_zero]
   exact NeZero.ne n
 
 end Order
@@ -223,8 +233,8 @@ theorem coe_int_add_eq_ite {n : Nat} (u v : Fin n) :
     ((u + v : Fin n) : Int) = if (u + v : ℕ) < n then (u + v : Int) else (u + v : Int) - n := by
   rw [Fin.add_def]
   split
-  · rw [natCast_emod, Int.emod_eq_of_lt] <;> omega
-  · rw [natCast_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> omega
+  · rw [natCast_emod, Int.emod_eq_of_lt] <;> lia
+  · rw [natCast_emod, Int.emod_eq_sub_self_emod, Int.emod_eq_of_lt] <;> lia
 
 theorem coe_int_add_eq_mod {n : Nat} (u v : Fin n) :
     ((u + v : Fin n) : Int) = ((u : Int) + (v : Int)) % n := by
@@ -260,7 +270,7 @@ theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 
 theorem nontrivial_iff_two_le : Nontrivial (Fin n) ↔ 2 ≤ n := by
-  simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; cutsat
+  simp [← not_subsingleton_iff_nontrivial, subsingleton_iff_le_one]; lia
 
 instance instNontrivial [n.AtLeastTwo] : Nontrivial (Fin n) :=
   nontrivial_iff_two_le.2 Nat.AtLeastTwo.one_lt
@@ -268,17 +278,17 @@ instance instNontrivial [n.AtLeastTwo] : Nontrivial (Fin n) :=
 /-- If working with more than two elements, we can always pick a third distinct from two existing
 elements. -/
 theorem exists_ne_and_ne_of_two_lt (i j : Fin n) (h : 2 < n) : ∃ k, k ≠ i ∧ k ≠ j := by
-  have : NeZero n := ⟨by cutsat⟩
+  have : NeZero n := ⟨by lia⟩
   rcases i with ⟨i, hi⟩
   rcases j with ⟨j, hj⟩
   simp_rw [← Fin.val_ne_iff]
   by_cases h0 : 0 ≠ i ∧ 0 ≠ j
   · exact ⟨0, h0⟩
   · by_cases h1 : 1 ≠ i ∧ 1 ≠ j
-    · exact ⟨⟨1, by cutsat⟩, h1⟩
-    · refine ⟨⟨2, by cutsat⟩, ?_⟩
+    · exact ⟨⟨1, by lia⟩, h1⟩
+    · refine ⟨⟨2, by lia⟩, ?_⟩
       dsimp only
-      cutsat
+      lia
 
 section Monoid
 
@@ -310,18 +320,26 @@ lemma sub_val_lt_sub {n : ℕ} {i j : Fin n} (hij : i ≤ j) : (j - i).val < n -
   simp [sub_val_of_le hij, Nat.sub_lt_sub_right hij j.isLt]
 
 lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
-    letI : NeZero (n - i.1) := neZero_iff.mpr (by cutsat)
+    haveI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
-  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by cutsat
+  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by lia
 
-lemma one_le_of_ne_zero {n : ℕ} [NeZero n] {k : Fin n} (hk : k ≠ 0) : 1 ≤ k := by
+lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
+    haveI := k.neZero
+    (hk : k ≠ 0) → 1 ≤ k := by
+  have : NeZero n := k.neZero
+  intro hk
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   cases n with
   | zero => simp only [Fin.isValue, Fin.zero_le]
   | succ n => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, val_ne_zero_iff]
 
-lemma val_sub_one_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) : (i - 1).val = i - 1 := by
+lemma val_sub_one_of_ne_zero {i : Fin n} :
+    haveI := i.neZero
+    (hi : i ≠ 0) → (i - 1).val = i - 1 := by
+  have := i.neZero
+  intro hi
   obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
   rw [Fin.sub_val_of_le (one_le_of_ne_zero hi), Fin.val_one', Nat.mod_eq_of_lt
     (Nat.succ_le_iff.mpr (nontrivial_iff_two_le.mp <| nontrivial_of_ne i 0 hi))]
@@ -335,9 +353,6 @@ open Fin.NatCast
 theorem ofNat_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat n a = (a : Fin n) :=
   rfl
 
-@[deprecated ofNat_eq_cast (since := "2025-05-30")]
-alias ofNat'_eq_cast := ofNat_eq_cast
-
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
@@ -345,9 +360,11 @@ whose value is the original number. -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
   Nat.mod_eq_of_lt h
 
-/-- If `n` is non-zero, converting the value of a `Fin n` to `Fin n` results
-in the same value. -/
-@[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} [NeZero n] (a : Fin n) : (a.val : Fin n) = a :=
+/-- Converting the value of a `Fin n` to `Fin n` results in the same value. -/
+@[simp, norm_cast] theorem cast_val_eq_self {n : ℕ} (a : Fin n) :
+    haveI := a.neZero
+    (a.val : Fin n) = a :=
+  have := a.neZero
   Fin.ext <| val_cast_of_lt a.isLt
 
 -- This is a special case of `CharP.cast_eq_zero` that doesn't require typeclass search
@@ -355,6 +372,9 @@ in the same value. -/
 
 @[simp] lemma natCast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
   simp [Fin.ext_iff, Nat.dvd_iff_mod_eq_zero]
+
+@[simp] lemma natCast_zero {n : ℕ} [NeZero n] : ((0 : ℕ) : Fin n) = 0 := by
+  simp
 
 @[simp]
 theorem natCast_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp
@@ -378,7 +398,7 @@ lemma natCast_le_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) ≤
   simp [le_iff_val_le_val, -val_fin_le, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_lt_natCast (han : a ≤ n) (hbn : b ≤ n) : (a : Fin (n + 1)) < b ↔ a < b := by
-  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_iff_val_lt_val, Nat.mod_eq_of_lt, han, hbn]
+  rw [← Nat.lt_succ_iff] at han hbn; simp [lt_def, Nat.mod_eq_of_lt, han, hbn]
 
 lemma natCast_mono (hbn : b ≤ n) (hab : a ≤ b) : (a : Fin (n + 1)) ≤ b :=
   (natCast_le_natCast (hab.trans hbn) hbn).2 hab
@@ -388,10 +408,10 @@ lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :
 
 @[simp]
 lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
-    letI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
+    haveI : NeZero n := ⟨Nat.pos_iff_ne_zero.mp (lt_of_lt_of_le m.pos_of_neZero h)⟩
     Fin.castLE h (a.cast : Fin m) = (a % m : ℕ) := by
   ext
-  simp only [coe_castLE, val_natCast]
+  simp only [val_castLE, val_natCast]
   rw [Nat.mod_eq_of_lt (a := a % m) (lt_of_lt_of_le (Nat.mod_lt _ m.pos_of_neZero) h)]
 
 end OfNatCoe
@@ -443,16 +463,13 @@ section AddGroup
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
 
-lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by fin_omega
-
-@[deprecated (since := "2025-04-27")]
-alias eq_one_of_neq_zero := eq_one_of_ne_zero
+lemma eq_one_of_ne_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by lia
 
 @[simp]
 theorem coe_neg_one : ↑(-1 : Fin (n + 1)) = n := by
   cases n
   · simp
-  rw [Fin.coe_neg, Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
+  rw [Fin.val_neg', Fin.val_one, Nat.add_one_sub_one, Nat.mod_eq_of_lt]
   constructor
 
 theorem last_sub (i : Fin (n + 1)) : last n - i = Fin.rev i :=
@@ -463,16 +480,16 @@ theorem add_one_le_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) : a + 1 ≤ b
 
 theorem exists_eq_add_of_le {n : ℕ} {a b : Fin n} (h : a ≤ b) : ∃ k ≤ b, b = a + k := by
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k := Nat.exists_eq_add_of_le h
-  have hkb : k ≤ b := by omega
+  have hkb : k ≤ b := by lia
   refine ⟨⟨k, hkb.trans_lt b.is_lt⟩, hkb, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
 theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
     ∃ k < b, k + 1 ≤ b ∧ b = a + k + 1 := by
   cases n
-  · cutsat
+  · lia
   obtain ⟨k, hk⟩ : ∃ k : ℕ, (b : ℕ) = a + k + 1 := Nat.exists_eq_add_of_lt h
-  have hkb : k < b := by omega
+  have hkb : k < b := by lia
   refine ⟨⟨k, hkb.trans b.is_lt⟩, hkb, by fin_omega, ?_⟩
   simp [Fin.ext_iff, Fin.val_add, ← hk, Nat.mod_eq_of_lt b.is_lt]
 
@@ -495,9 +512,10 @@ theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
     ((ofNat(n) : Fin m) : ℕ) = ofNat(n) % m :=
   rfl
 
-theorem val_add_one_of_lt' {n : ℕ} [NeZero n] {i : Fin n} (h : i + 1 < n) :
+theorem val_add_one_of_lt' {n : ℕ} {i : Fin n} (h : i + 1 < n) :
+    haveI := i.neZero
     (i + 1).val = i.val + 1 := by
-  simpa [add_def] using Nat.mod_eq_of_lt (by cutsat)
+  simpa [add_def] using Nat.mod_eq_of_lt (by lia)
 
 instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) := by
   suffices m % (n + m) = m by simpa [neZero_iff, Fin.ext_iff, OfNat.ofNat, this] using NeZero.ne m

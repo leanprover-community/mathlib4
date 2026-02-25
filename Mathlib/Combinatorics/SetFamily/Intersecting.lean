@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Intersecting families
@@ -23,6 +25,8 @@ This file defines intersecting families and proves their basic properties.
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -45,9 +49,6 @@ theorem Intersecting.mono (h : t ⊆ s) (hs : s.Intersecting) : t.Intersecting :
   hs (h ha) (h hb)
 
 theorem Intersecting.bot_notMem (hs : s.Intersecting) : ⊥ ∉ s := fun h => hs h h disjoint_bot_left
-
-@[deprecated (since := "2025-05-24")]
-alias Intersecting.not_bot_mem := Intersecting.bot_notMem
 
 theorem Intersecting.ne_bot (hs : s.Intersecting) (ha : a ∈ s) : a ≠ ⊥ :=
   ne_of_mem_of_not_mem ha hs.bot_notMem
@@ -134,13 +135,8 @@ variable [BooleanAlgebra α]
 theorem Intersecting.compl_notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : a ∈ s) :
     aᶜ ∉ s := fun h => hs ha h disjoint_compl_right
 
-@[deprecated (since := "2025-05-24")]
-alias Intersecting.not_compl_mem := Intersecting.compl_notMem
-
 theorem Intersecting.notMem {s : Set α} (hs : s.Intersecting) {a : α} (ha : aᶜ ∈ s) : a ∉ s :=
   fun h => hs ha h disjoint_compl_left
-
-@[deprecated (since := "2025-05-23")] alias Intersecting.not_mem := Intersecting.notMem
 
 theorem Intersecting.disjoint_map_compl {s : Finset α} (hs : (s : Set α).Intersecting) :
     Disjoint s (s.map ⟨compl, compl_injective⟩) := by

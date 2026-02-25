@@ -3,10 +3,12 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Analysis.Normed.MulAction
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Topology.Algebra.Module.Equiv
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 
@@ -27,6 +29,8 @@ constructions of continuous linear maps between normed spaces.
 This file is meant to be lightweight (it is imported by much of the analysis library); think twice
 before adding imports!
 -/
+
+@[expose] public section
 
 open Metric ContinuousLinearMap
 

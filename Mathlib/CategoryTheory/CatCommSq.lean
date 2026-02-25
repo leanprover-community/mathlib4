@@ -3,12 +3,14 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # 2-commutative squares of functors
 
-Similarly as `CommSq.lean` defines the notion of commutative squares,
+Similarly to `Mathlib/CategoryTheory/CommSq.lean`, which defines the notion of commutative squares,
 this file introduces the notion of 2-commutative squares of functors.
 
 If `T : C₁ ⥤ C₂`, `L : C₁ ⥤ C₃`, `R : C₂ ⥤ C₄`, `B : C₃ ⥤ C₄` are functors,
@@ -19,12 +21,14 @@ Future work: using this notion in the development of the localization of categor
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Functor
 
-variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category C₁] [Category C₂] [Category C₃] [Category C₄]
-  [Category C₅] [Category C₆]
+variable {C₁ C₂ C₃ C₄ C₅ C₆ : Type*} [Category* C₁] [Category* C₂] [Category* C₃] [Category* C₄]
+  [Category* C₅] [Category* C₆]
 
 /-- `CatCommSq T L R B` expresses that there is a 2-commutative square of functors, where
 the functors `T`, `L`, `R` and `B` are respectively the left, top, right and bottom functors
@@ -40,7 +44,7 @@ variable (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ �
 namespace CatCommSq
 
 /-- The vertical identity `CatCommSq` -/
-@[simps!]
+@[instance_reducible, simps!]
 def vId : CatCommSq T (𝟭 C₁) (𝟭 C₂) T where
   iso := (Functor.leftUnitor _) ≪≫ (Functor.rightUnitor _).symm
 
@@ -103,9 +107,10 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
   iso := isoWhiskerLeft _ (L.rightUnitor.symm ≪≫ isoWhiskerLeft L B.unitIso ≪≫
       (associator _ _ _).symm ≪≫
       isoWhiskerRight (iso T.functor L R B.functor).symm B.inverse ≪≫
-      associator _ _ _  ) ≪≫ (associator _ _ _).symm ≪≫
+      associator _ _ _) ≪≫ (associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ leftUnitor _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
     hInv T.symm R L B.symm (hInv T L R B h) = h := by
   ext X
@@ -143,9 +148,10 @@ def vInv (_ : CatCommSq T L.functor R.functor B) : CatCommSq B L.inverse R.inver
       associator _ _ _ ≪≫
       isoWhiskerLeft L.inverse (iso T L.functor R.functor B).symm) R.inverse ≪≫
       associator _ _ _ ≪≫ isoWhiskerLeft _ (associator _ _ _) ≪≫
-      (associator _ _ _ ).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
+      (associator _ _ _).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
       rightUnitor _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
     vInv B L.symm R.symm T (vInv T L R B h) = h := by
   ext X

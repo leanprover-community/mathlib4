@@ -3,9 +3,11 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
-import Mathlib.CategoryTheory.Monoidal.Grp_
-import Mathlib.Algebra.Category.Grp.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
+public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
 # `Grp (Type u) ≌ GrpCat.{u}`
@@ -15,6 +17,8 @@ is equivalent to the category of "native" bundled groups.
 
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -32,7 +36,7 @@ instance grpGroup (A : Type u) [GrpObj A] : Group A :=
 /-- Converting a group object in `Type u` into a group. -/
 noncomputable def functor : Grp (Type u) ⥤ GrpCat.{u} where
   obj A := GrpCat.of A.X
-  map f := GrpCat.ofHom (MonTypeEquivalenceMon.functor.map f).hom
+  map f := GrpCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/
 noncomputable def inverse : GrpCat.{u} ⥤ Grp (Type u) where
@@ -46,7 +50,7 @@ noncomputable def inverse : GrpCat.{u} ⥤ Grp (Type u) where
           right_inv := by
             ext x
             exact mul_inv_cancel (G := A) x } }
-  map f := MonTypeEquivalenceMon.inverse.map ((forget₂ GrpCat MonCat).map f)
+  map f := Grp.homMk' (MonTypeEquivalenceMon.inverse.map ((forget₂ GrpCat MonCat).map f))
 
 end GrpTypeEquivalenceGrp
 

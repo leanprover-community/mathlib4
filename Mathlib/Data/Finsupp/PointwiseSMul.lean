@@ -3,10 +3,12 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Set.SMulAntidiagonal
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
 # Scalar multiplication by finitely supported functions.
@@ -20,6 +22,8 @@ finitely supported `R`-valued functions on `G` on the space of `V`-valued functi
 * Finsupp.vaddAntidiagonal : The finset of pairs that vector-add to a given element.
 
 -/
+
+@[expose] public section
 
 open Finset Function
 
@@ -45,6 +49,7 @@ def vaddAntidiagonal [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V] (f : G 
     (p : P) :
     Finset (G × P) := (finite_vaddAntidiagonal f x p).toFinset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_vaddAntidiagonal_iff [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [Zero V] (f : G →₀ R)
     (x : P → V) (p : P) (gh : G × P) :
     gh ∈ vaddAntidiagonal f x p ↔ f gh.1 ≠ 0 ∧ x gh.2 ≠ 0 ∧ gh.1 +ᵥ gh.2 = p := by
@@ -64,6 +69,7 @@ theorem smul_eq [VAdd G P] [IsLeftCancelVAdd G P] [Zero R] [AddCommMonoid V] [SM
     (f : G →₀ R) (x : P → V) (p : P) :
     (f • x) p = ∑ G ∈ f.vaddAntidiagonal x p, f G.1 • x G.2 := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_apply_addAction [AddGroup G] [AddAction G P] [Zero R] [AddCommMonoid V]
     [SMulWithZero R V] (f : G →₀ R) (x : P → V) (p : P) :
     (f • x) p = ∑ i ∈ f.support, (f i) • x (-i +ᵥ p) := by

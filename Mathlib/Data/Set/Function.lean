@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Prod
-import Mathlib.Data.Set.Restrict
+module
+
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Data.Set.Restrict
 
 /-!
 # Functions over sets
@@ -21,6 +23,8 @@ This file contains basic results on the following predicates of functions and se
 * `Set.InvOn f' f s t` : `f'` is a two-side inverse of `f` on `s` and `t`, i.e.
   we have `Set.LeftInvOn f' f s` and `Set.RightInvOn f' f t`.
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
@@ -155,11 +159,8 @@ theorem MapsTo.iterate {f : α → α} {s : Set α} (h : MapsTo f s s) : ∀ n, 
 
 theorem MapsTo.iterate_restrict {f : α → α} {s : Set α} (h : MapsTo f s s) (n : ℕ) :
     (h.restrict f s s)^[n] = (h.iterate n).restrict _ _ _ := by
-  funext x
-  rw [Subtype.ext_iff, MapsTo.val_restrict_apply]
-  induction n generalizing x with
-  | zero => rfl
-  | succ n ihn => simp [Nat.iterate, ihn]
+  ext
+  simpa using coe_iterate_restrict _ _ _
 
 lemma mapsTo_of_subsingleton' [Subsingleton β] (f : α → β) (h : s.Nonempty → t.Nonempty) :
     MapsTo f s t :=
@@ -226,6 +227,9 @@ lemma MapsTo.comp_right {s : Set β} {t : Set γ} (hg : MapsTo g s t) (f : α �
 @[simp]
 lemma mapsTo_univ_iff : MapsTo f univ t ↔ ∀ x, f x ∈ t :=
   ⟨fun h _ => h (mem_univ _), fun h x _ => h x⟩
+
+lemma mapsTo_univ_iff_range_subset : MapsTo f univ t ↔ range f ⊆ t :=
+  mapsTo_univ_iff.trans range_subset_iff.symm
 
 @[simp]
 lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
@@ -385,6 +389,7 @@ lemma InjOn.image_ssubset_image_iff (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : 
     f '' s₁ ⊂ f '' s₂ ↔ s₁ ⊂ s₂ := by
   simp_rw [ssubset_def, h.image_subset_image_iff h₁ h₂, h.image_subset_image_iff h₂ h₁]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: can this move to a better place?
 theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t) (hf : u.InjOn f)
     (hs : s ⊆ u) (ht : t ⊆ u) : Disjoint (f '' s) (f '' t) := by
@@ -537,6 +542,9 @@ lemma surjOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Su
 
 protected lemma _root_.Function.Surjective.surjOn (hf : Surjective f) : SurjOn f univ t :=
   (surjOn_univ.2 hf).mono .rfl (subset_univ _)
+
+lemma SurjOn.surjective (hf : SurjOn f s .univ) : f.Surjective :=
+  surjOn_univ.1 <| hf.mono s.subset_univ .rfl
 
 @[deprecated surjOn_univ (since := "2025-10-31")]
 theorem surjective_iff_surjOn_univ : Surjective f ↔ SurjOn f univ univ := surjOn_univ.symm
@@ -711,7 +719,7 @@ lemma bijOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Bij
 theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) :=
   ⟨fun x y h' => Subtype.ext <| h.injOn x.2 y.2 <| Subtype.ext_iff.1 h', fun ⟨_, hy⟩ =>
     let ⟨x, hx, hxy⟩ := h.surjOn hy
-    ⟨⟨x, hx⟩, Subtype.eq hxy⟩⟩
+    ⟨⟨x, hx⟩, Subtype.ext hxy⟩⟩
 
 @[simp] lemma bijOn_univ : BijOn f univ univ ↔ Bijective f := by simp [Bijective, BijOn]
 
@@ -1078,8 +1086,6 @@ theorem preimage_invFun_of_notMem [n : Nonempty α] {f : α → β} (hf : Inject
   · have : x ∉ f '' s := fun h' => hx (image_subset_range _ _ h')
     simp only [mem_preimage, invFun_neg hx, h, this]
 
-@[deprecated (since := "2025-05-23")] alias preimage_invFun_of_not_mem := preimage_invFun_of_notMem
-
 lemma BijOn.symm {g : β → α} (h : InvOn f g t s) (hf : BijOn f s t) : BijOn g t s :=
   ⟨h.2.mapsTo hf.surjOn, h.1.injOn, h.2.surjOn hf.mapsTo⟩
 
@@ -1175,16 +1181,10 @@ theorem update_comp_eq_of_notMem_range' {α : Sort*} {β : Type*} {γ : β → S
     (fun j => update g i a (f j)) = fun j => g (f j) :=
   (update_comp_eq_of_forall_ne' _ _) fun x hx => h ⟨x, hx⟩
 
-@[deprecated (since := "2025-05-23")]
-alias update_comp_eq_of_not_mem_range' := update_comp_eq_of_notMem_range'
-
 /-- Non-dependent version of `Function.update_comp_eq_of_notMem_range'` -/
 theorem update_comp_eq_of_notMem_range {α : Sort*} {β : Type*} {γ : Sort*} [DecidableEq β]
     (g : β → γ) {f : α → β} {i : β} (a : γ) (h : i ∉ Set.range f) : update g i a ∘ f = g ∘ f :=
   update_comp_eq_of_notMem_range' g a h
-
-@[deprecated (since := "2025-05-23")]
-alias update_comp_eq_of_not_mem_range := update_comp_eq_of_notMem_range
 
 theorem insert_injOn (s : Set α) : sᶜ.InjOn fun a => insert a s := fun _a ha _ _ =>
   (insert_inj ha).1

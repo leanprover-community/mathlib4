@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Units.Equiv
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological group with zero
@@ -29,6 +31,8 @@ consistency of notation.
 On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
 as homeomorphisms.
 -/
+
+@[expose] public section
 open Topology Filter Function
 
 /-!
@@ -143,6 +147,17 @@ the set of nonzero elements. -/
 noncomputable def unitsHomeomorphNeZero : G₀ˣ ≃ₜ {g : G₀ // g ≠ 0} :=
   Units.isEmbedding_val₀.toHomeomorph.trans <| show _ ≃ₜ {g | _} from .setCongr <|
     Set.ext fun x ↦ (Units.exists_iff_ne_zero (p := (· = x))).trans <| by simp
+
+variable (G₀) in
+/-- If a group with zero has continuous inversion, then the inversion map restricts to an
+auto-homeomorphism on the set of nonzero elements. -/
+def Homeomorph.inv₀ : {g : G₀ // g ≠ 0} ≃ₜ {g : G₀ // g ≠ 0} where
+  toFun g := ⟨g⁻¹, inv_ne_zero g.2⟩
+  invFun g := ⟨g⁻¹, inv_ne_zero g.2⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  continuous_toFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
+  continuous_invFun := continuous_induced_rng.mpr continuousOn_inv₀.restrict
 
 end GroupWithZero
 
@@ -330,7 +345,7 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [ContinuousInv₀ G₀] [C
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
   rcases m with m | m
-  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
+  · simpa only [Int.ofNat_eq_natCast, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
     have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_ge
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)

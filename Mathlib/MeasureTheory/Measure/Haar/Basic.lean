@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.Topology.Algebra.Group.Compact
+module
+
+public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
 # Haar measure
@@ -59,6 +61,8 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
     invalid.
 * https://en.wikipedia.org/wiki/Haar_measure
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -380,6 +384,7 @@ theorem chaar_self (K₀ : PositiveCompacts G) : chaar K₀ K₀.toCompacts = 1 
     rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive addCHaar_mono]
 theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂) :
     chaar K₀ K₁ ≤ chaar K₀ K₂ := by
@@ -392,6 +397,7 @@ theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K�
     apply prehaar_mono _ h; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_Ici
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive addCHaar_sup_le]
 theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
     chaar K₀ (K₁ ⊔ K₂) ≤ chaar K₀ K₁ + chaar K₀ K₂ := by
@@ -604,13 +610,13 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
 
 /-- **Steinhaus Theorem** for finite mass sets.
 
-In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+In any locally compact group `G` with a Haar measure `μ` that's inner regular on finite measure
 sets, for any measurable set `E` of finite positive measure, the set `E / E` is a neighbourhood of
 `1`. -/
 @[to_additive
 /-- **Steinhaus Theorem** for finite mass sets.
 
-In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+In any locally compact group `G` with a Haar measure `μ` that's inner regular on finite measure
 sets, for any measurable set `E` of finite positive measure, the set `E - E` is a neighbourhood of
 `0`. -/]
 theorem div_mem_nhds_one_of_haar_pos_ne_top (μ : Measure G) [IsHaarMeasure μ]
@@ -653,7 +659,7 @@ variable [SecondCountableTopology G]
 @[to_additive
 /-- **Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
   any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
-  This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
+  This is slightly weaker than assuming that `μ` is an additive Haar measure (in particular we don't
   require `μ ≠ 0`).
   See also `isAddLeftInvariant_eq_smul_of_regular`
   for a statement not assuming second-countability. -/]

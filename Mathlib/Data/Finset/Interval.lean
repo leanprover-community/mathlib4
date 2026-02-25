@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Grade
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Grade
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals of finsets as finsets
@@ -22,6 +24,8 @@ and
 In addition, this file gives characterizations of monotone and strictly monotone functions
 out of `Finset α` in terms of `Finset.insert`
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -43,7 +47,7 @@ instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (Finset α
     if s ⊆ t then
       (t \ s).powerset.attach.map ⟨fun u ↦ u.1.disjUnion s <|
         disjoint_sdiff_self_left.mono_left <| mem_powerset.mp u.2, fun u₁ u₂ h ↦ by
-          simpa only [disjUnion_inj_left, Subtype.eq_iff] using h⟩
+          simpa only [disjUnion_inj_left, Subtype.ext_iff] using h⟩
     else ∅) fun s t u ↦ by
       by_cases hst : s ⊆ t
       · suffices (∃ a ⊆ t, Disjoint a s ∧ a ∪ s = u) ↔ s ⊆ u ∧ u ⊆ t by
@@ -67,6 +71,7 @@ theorem Iio_eq_ssubsets : Iio s = s.ssubsets := by ext; simp
 
 variable {s t}
 
+set_option backward.whnf.reducibleClassField false in
 theorem Icc_eq_image_powerset (h : s ⊆ t) : Icc s t = (t \ s).powerset.image (s ∪ ·) := by
   unfold Finset.Icc instLocallyFiniteOrder LocallyFiniteOrder.ofIcc
   ext
@@ -81,6 +86,7 @@ theorem Ico_eq_image_ssubsets (h : s ⊆ t) : Ico s t = (t \ s).ssubsets.image (
   · rintro ⟨v, hv, rfl⟩
     exact ⟨le_sup_left, sup_lt_of_lt_sdiff_left hv h⟩
 
+set_option backward.whnf.reducibleClassField false in
 /-- Cardinality of a non-empty `Icc` of finsets. -/
 theorem card_Icc_finset (h : s ⊆ t) : (Icc s t).card = 2 ^ (t.card - s.card) := by
   unfold Finset.Icc instLocallyFiniteOrder LocallyFiniteOrder.ofIcc

@@ -3,7 +3,9 @@ Copyright (c) 2025 Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Strahinja Gvozdić, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 
 /-!
 # Convolution
@@ -13,6 +15,8 @@ that maps `x ∈ G` to the number of distinct representations of `x` in the form
 `a ∈ A`, `b ∈ B`. It is shown how convolution behaves under the change of order of `A` and `B`, as
 well as under the left and right actions on `A`, `B`, and the function argument.
 -/
+
+@[expose] public section
 
 open MulOpposite MulAction
 open scoped Pointwise RightActions
@@ -28,6 +32,7 @@ convolution of `A` and `B` is a map `G → ℕ` that maps `x ∈ G` to the numbe
 representations of `x` in the form `x = a + b`, where `a ∈ A`, `b ∈ B`. -/]
 def convolution (A B : Finset G) : G → ℕ := fun x => #{ab ∈ A ×ˢ B | ab.1 * ab.2 = x}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma card_smul_inter_smul (A B : Finset G) (x y : G) :
     #((x • A) ∩ (y • B)) = A.convolution B⁻¹ (x⁻¹ * y) :=
@@ -60,7 +65,7 @@ lemma convolution_pos : 0 < A.convolution B x ↔ x ∈ A * B := by
 @[to_additive addConvolution_ne_zero]
 lemma convolution_ne_zero : A.convolution B x ≠ 0 ↔ x ∈ A * B := by
   suffices A.convolution B x ≠ 0 ↔ 0 < A.convolution B x by simp [this]
-  cutsat
+  lia
 
 @[to_additive (attr := simp) addConvolution_eq_zero]
 lemma convolution_eq_zero : A.convolution B x = 0 ↔ x ∉ A * B := by

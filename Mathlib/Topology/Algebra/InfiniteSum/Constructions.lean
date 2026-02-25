@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Filter.AtTopBot.Finset
-import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Algebra.Star
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Finset
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Topology.Algebra.Star
 
 /-!
 # Topological sums and functorial constructions
@@ -14,6 +16,8 @@ Lemmas on the interaction of `tprod`, `tsum`, `HasProd`, `HasSum` etc. with prod
 types, `MulOpposite`, etc.
 
 -/
+
+public section
 
 noncomputable section
 
@@ -316,7 +320,7 @@ theorem hasSum_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
   ⟨HasSum.op, HasSum.unop⟩
 
 @[simp]
-theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L:=
+theorem summable_op : (Summable (fun a ↦ op (f a)) L) ↔ Summable f L :=
   ⟨Summable.unop, Summable.op⟩
 
 theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable (fun a ↦ unop (f a)) L) ↔ Summable f L :=

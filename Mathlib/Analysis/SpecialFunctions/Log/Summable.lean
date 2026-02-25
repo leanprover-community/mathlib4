@@ -3,17 +3,20 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Topology.Algebra.InfiniteSum.Field
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!
 # Summability of logarithms
 
-We give conditions under which the logarithms of a summble sequence is summable. We also use this
+We give conditions under which the logarithms of a summable sequence are summable. We also use this
 to relate summability of `f` to multipliability of `1 + f`.
 
 -/
+
+public section
 
 variable {ι : Type*}
 
@@ -37,6 +40,7 @@ lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (
     cexp (∑' i, log (f i)) = ∏' i, f i :=
   (hasProd_of_hasSum_log hfn hf.hasSum).tprod_eq.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma summable_log_one_add_of_summable {f : ι → ℂ} (hf : Summable f) :
     Summable (fun i ↦ log (1 + f i)) := by
   apply (hf.norm.mul_left (3 / 2)).of_norm_bounded_eventually

@@ -3,7 +3,9 @@ Copyright (c) 2023 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Affine.AddTorsorBases
+module
+
+public import Mathlib.Analysis.Normed.Affine.AddTorsorBases
 
 /-!
 # Intrinsic frontier and interior
@@ -42,6 +44,8 @@ The main results are:
 * `IsClosed s → IsExtreme 𝕜 s (intrinsicFrontier 𝕜 s)`
 * `x ∈ s → y ∈ intrinsicInterior 𝕜 s → openSegment 𝕜 x y ⊆ intrinsicInterior 𝕜 s`
 -/
+
+@[expose] public section
 
 open AffineSubspace Set Topology
 open scoped Pointwise
@@ -307,6 +311,7 @@ private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] 
 
 variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/
 protected theorem Set.Nonempty.intrinsicInterior (hscv : Convex ℝ s) (hsne : s.Nonempty) :
     (intrinsicInterior ℝ s).Nonempty := by

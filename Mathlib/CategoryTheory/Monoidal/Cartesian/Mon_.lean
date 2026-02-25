@@ -3,9 +3,11 @@ Copyright (c) 2025 Markus Himmel, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Andrew Yang
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # Yoneda embedding of `Mon C`
@@ -14,6 +16,8 @@ We show that monoid objects in Cartesian monoidal categories are exactly those w
 is a presheaf of monoids, by constructing the yoneda embedding `Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
+
+@[expose] public section
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
@@ -64,6 +68,7 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 instance : CartesianMonoidalCategory (Mon C) where
   isTerminalTensorUnit := .ofUniqueHom (fun M ↦ ⟨toUnit _⟩) fun M f ↦ by ext; exact toUnit_unique ..
@@ -96,6 +101,7 @@ instance [IsCommMonObj M.X] : IsCommMonObj M where
 
 end Mon
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 @[simps]
@@ -171,10 +177,7 @@ variable (F : C ⥤ D) [F.Monoidal]
 open scoped Obj
 
 protected lemma map_mul (f g : X ⟶ M) : F.map (f * g) = F.map f * F.map g := by
-  simp only [Hom.mul_def, map_comp, obj.μ_def, ← Category.assoc]
-  congr 1
-  rw [← IsIso.comp_inv_eq]
-  ext <;> simp
+  simp [Hom.mul_def]
 
 @[simp] protected lemma map_one : F.map (1 : X ⟶ M) = 1 := by simp [Hom.one_def]
 
@@ -231,6 +234,7 @@ def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
   map_id _ := MonCat.hom_ext (MonoidHom.ext Category.id_comp)
   map_comp _ _ := MonCat.hom_ext (MonoidHom.ext (Category.assoc _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
@@ -286,6 +290,7 @@ alias Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy :=
 alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
   MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding for `Mon_C` is fully faithful. -/
 def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
   preimage {M N} α :=
@@ -381,4 +386,10 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
   ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
 
 end Hom
+
+/-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
+lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
+    IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
+  exact ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩
+
 end CategoryTheory

@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Carranza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Carranza
 -/
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 
@@ -22,6 +24,8 @@ equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then
 an enriched ordinary category.
 
 -/
+
+@[expose] public section
 
 universe v₁ u₁ v u
 
@@ -92,6 +96,7 @@ def forgetEnrichmentOppositeEquivalence.functor :
       leftUnitor_inv_braiding_assoc, ← unitors_inv_equal, ← Category.assoc]
     congr 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor going from the opposite of the underlying category of the enriched category `C`
 to the underlying category of the enriched category `Cᵒᵖ`. -/
 def forgetEnrichmentOppositeEquivalence.inverse :
@@ -109,6 +114,7 @@ def forgetEnrichmentOppositeEquivalence.inverse :
     rw [this, ← Category.assoc]
     congr 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the underlying category of the enriched category `Cᵒᵖ` and
 the opposite of the underlying category of the enriched category `C`. -/
 @[simps]

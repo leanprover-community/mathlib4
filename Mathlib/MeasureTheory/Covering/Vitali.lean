@@ -3,9 +3,11 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.Data.Set.Pairwise.Lattice
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Covering.VitaliFamily
+public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # Vitali covering theorems
@@ -33,6 +35,8 @@ covering a fixed proportion `1/C` of the ball `closedBall x (3 * diam a)` forms 
 This version is given in `Vitali.vitaliFamily`.
 -/
 
+@[expose] public section
+
 
 variable {α ι : Type*}
 
@@ -41,6 +45,7 @@ open scoped NNReal ENNReal Topology
 
 namespace Vitali
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Vitali covering theorem**: given a set `t` of subsets of a type, one may extract a disjoint
 subfamily `u` such that the `τ`-enlargement of this family covers all elements of `t`, where `τ > 1`
 is any fixed number.
@@ -149,6 +154,7 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
 extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
 dilations of balls in `u`, for some `τ > 3`. -/
@@ -381,6 +387,33 @@ theorem exists_disjoint_covering_ae
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
     _ ≤ C * (ε / C) := by gcongr
     _ ≤ ε := ENNReal.mul_div_le
+
+/-- The measurable **Vitali covering theorem**, filter version.
+
+Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
+included in a ball `B (x, r)` and covers a definite proportion of the ball `B (x, 3 r)` for a given
+measure `μ` (think of the situation where `μ` is a doubling measure and `t` is a family of balls).
+Consider a (possibly non-measurable) set `s` at which the family is fine, i.e., every point of `s`
+belongs to arbitrarily small elements of `t`. Then one can extract from `t` a disjoint subfamily
+that covers almost all `s`.
+
+For more flexibility, we give a statement with a parameterized family of sets.
+-/
+theorem exists_disjoint_covering_ae'
+    [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    [SecondCountableTopology α] (μ : Measure α) [IsLocallyFiniteMeasure μ] (s : Set α) (t : Set ι)
+    (C : ℝ≥0) (r : ι → ℝ) (c : ι → α) (B : ι → Set α) (hB : ∀ a ∈ t, B a ⊆ closedBall (c a) (r a))
+    (μB : ∀ a ∈ t, μ (closedBall (c a) (3 * r a)) ≤ C * μ (B a))
+    (ht : ∀ a ∈ t, (interior (B a)).Nonempty) (h't : ∀ a ∈ t, IsClosed (B a))
+    (hf : ∀ x ∈ s, ∃ᶠ ε in 𝓝[>] 0, ∃ a ∈ t, r a = ε ∧ c a = x) :
+    ∃ u ⊆ t, u.Countable ∧ u.PairwiseDisjoint B ∧ μ (s \ ⋃ a ∈ u, B a) = 0 := by
+  suffices ∀ x ∈ s, ∀ ε > (0 : ℝ), ∃ a ∈ t, r a ≤ ε ∧ c a = x from
+    exists_disjoint_covering_ae μ s t C r c B hB μB ht h't this
+  intro x hx ε hε
+  specialize hf x hx
+  rw [frequently_nhdsWithin_iff, frequently_nhds_iff] at hf
+  obtain ⟨_, _, ⟨a, ha₁, ha₂, ha₃⟩, _⟩ := hf (Ioo (-ε) ε) (by grind) isOpen_Ioo
+  exact ⟨a, ha₁, by grind, ha₃⟩
 
 /-- Assume that around every point there are arbitrarily small scales at which the measure is
 doubling. Then the set of closed sets `a` with nonempty interior contained in `closedBall x r` and

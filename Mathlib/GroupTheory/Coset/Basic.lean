@@ -3,10 +3,12 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Coset.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.Coset.Defs
 
 /-!
 # Cosets
@@ -15,11 +17,13 @@ This file develops the basic theory of left and right cosets.
 
 When `G` is a group and `a : G`, `s : Set G`, with  `open scoped Pointwise` we can write:
 * the left coset of `s` by `a` as `a • s`
-* the right coset of `s` by `a` as `MulOpposite.op a • s` (or `op a • s` with `open MulOpposite`)
+* the right coset of `s` by `a` as `MulOpposite.op a • s` (or `op a • s` with `open MulOpposite`,
+  or `s <• a` with `open scoped Pointwise RightActions`)
 
 If instead `G` is an additive group, we can write (with  `open scoped Pointwise` still)
 * the left coset of `s` by `a` as `a +ᵥ s`
-* the right coset of `s` by `a` as `AddOpposite.op a +ᵥ s` (or `op a • s` with `open AddOpposite`)
+* the right coset of `s` by `a` as `AddOpposite.op a +ᵥ s` (or `op a +ᵥ s` with `open AddOpposite`,
+  or `s <+ᵥ a` with `open scoped Pointwise RightActions`)
 
 ## Main definitions
 
@@ -34,6 +38,8 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Multiset
 
@@ -314,13 +320,13 @@ variable [Group α] {s : Subgroup α}
 @[to_additive /-- The natural bijection between the cosets `g + s` and `s`. -/]
 def leftCosetEquivSubgroup (g : α) : (g • s : Set α) ≃ s :=
   ⟨fun x => ⟨g⁻¹ * x.1, (mem_leftCoset_iff _).1 x.2⟩, fun x => ⟨g * x.1, x.1, x.2, rfl⟩,
-    fun ⟨x, _⟩ => Subtype.eq <| by simp, fun ⟨g, _⟩ => Subtype.eq <| by simp⟩
+    fun ⟨x, _⟩ => Subtype.ext <| by simp, fun ⟨g, _⟩ => Subtype.ext <| by simp⟩
 
 /-- The natural bijection between a right coset `s * g` and `s`. -/
 @[to_additive /-- The natural bijection between the cosets `s + g` and `s`. -/]
 def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
   ⟨fun x => ⟨x.1 * g⁻¹, (mem_rightCoset_iff _).1 x.2⟩, fun x => ⟨x.1 * g, x.1, x.2, rfl⟩,
-    fun ⟨x, _⟩ => Subtype.eq <| by simp, fun ⟨g, _⟩ => Subtype.eq <| by simp⟩
+    fun ⟨x, _⟩ => Subtype.ext <| by simp, fun ⟨g, _⟩ => Subtype.ext <| by simp⟩
 
 /-- A (non-canonical) bijection between a group `α` and the product `(α/s) × s` -/
 @[to_additive addGroupEquivQuotientProdAddSubgroup
@@ -426,6 +432,7 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
     quotientMapOfLE h (QuotientGroup.mk g) = QuotientGroup.mk g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) /-- The natural embedding
 `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`. -/]
@@ -437,12 +444,15 @@ def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : S
       simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, QuotientGroup.eq, mem_subgroupOf,
         mem_iInf, imp_self, forall_const]
 
-@[to_additive (attr := simp)]
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
+@[to_additive]
 theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α)
     (g : H) (i : ι) :
     quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i = QuotientGroup.mk g :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
 @[to_additive (attr := simps) /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/]
 def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i where
@@ -452,7 +462,9 @@ def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i,
       simp_rw [funext_iff, quotientMapOfLE_apply_mk, QuotientGroup.eq, mem_iInf, imp_self,
         forall_const]
 
-@[to_additive (attr := simp)]
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
+@[to_additive]
 theorem quotientiInfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (g : α) (i : ι) :
     quotientiInfEmbedding f (QuotientGroup.mk g) i = QuotientGroup.mk g :=
   rfl
@@ -533,7 +545,7 @@ noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α 
       show QuotientGroup.mk _ ∈ t by
         rw [mk_mul_of_mem _ a.1.2, out_eq']
         exact a.2.2⟩
-  left_inv := fun ⟨a, _⟩ => Subtype.eq <| show _ * _ = a by simp
+  left_inv := fun ⟨a, _⟩ => Subtype.ext <| show _ * _ = a by simp
   right_inv := fun ⟨⟨a, ha⟩, ⟨x, hx⟩⟩ => by ext <;> simp [ha]
 
 open MulAction in

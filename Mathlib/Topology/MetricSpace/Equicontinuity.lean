@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.Equicontinuity
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+module
+
+public import Mathlib.Topology.UniformSpace.Equicontinuity
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Equicontinuity in metric spaces
@@ -30,6 +32,8 @@ and we prove that functions sharing a common (local or global) continuity modulu
 
 equicontinuity, continuity modulus
 -/
+
+public section
 
 
 open Filter Topology Uniformity

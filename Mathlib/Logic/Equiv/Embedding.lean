@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Equivalences on embeddings
@@ -12,11 +14,14 @@ This file shows some advanced equivalences on embeddings, useful for constructin
 embeddings from smaller ones.
 -/
 
+@[expose] public section
+
 
 open Function.Embedding
 
 namespace Equiv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Embeddings from a sum type are equivalent to two separate embeddings with disjoint ranges. -/
 def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     (α ⊕ β ↪ γ) ≃ { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } where

@@ -3,15 +3,19 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Indicator
-import Mathlib.Topology.Bornology.BoundedOperation
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Topology.Algebra.Indicator
+public import Mathlib.Topology.Bornology.BoundedOperation
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Bounded continuous functions
 
 The type of bounded continuous functions taking values in a metric space, with the uniform distance.
 -/
+
+@[expose] public section
 
 assert_not_exists CStarRing
 
@@ -94,6 +98,11 @@ protected theorem continuous (f : α →ᵇ β) : Continuous f :=
 theorem ext (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
+@[simp]
+theorem coe_mk (f : α → β) (h : _) (h' : _) :
+    BoundedContinuousFunction.mk ⟨f, h⟩ h' = f :=
+  rfl
+
 theorem isBounded_range (f : α →ᵇ β) : IsBounded (range f) :=
   isBounded_range_iff.2 f.bounded
 
@@ -143,6 +152,7 @@ theorem dist_coe_le_dist (x : α) : dist (f x) (g x) ≤ dist f g :=
 /- This lemma will be needed in the proof of the metric space instance, but it will become
 useless afterwards as it will be superseded by the general result that the distance is nonnegative
 in metric spaces. -/
+set_option backward.privateInPublic true in
 private theorem dist_nonneg' : 0 ≤ dist f g :=
   le_csInf dist_set_exists fun _ => And.left
 
@@ -178,6 +188,8 @@ theorem dist_lt_iff_of_nonempty_compact [Nonempty α] [CompactSpace α] :
     dist f g < C ↔ ∀ x : α, dist (f x) (g x) < C :=
   ⟨fun w x => lt_of_le_of_lt (dist_coe_le_dist x) w, dist_lt_of_nonempty_compact⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The type of bounded continuous functions, with the uniform distance, is a pseudometric space. -/
 instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
   dist_self f := le_antisymm ((dist_le le_rfl).2 fun x => by simp) dist_nonneg'
@@ -194,7 +206,7 @@ instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) wher
 theorem nndist_eq : nndist f g = sInf { C | ∀ x : α, nndist (f x) (g x) ≤ C } :=
   Subtype.ext <| dist_eq.trans <| by
     rw [val_eq_coe, coe_sInf, coe_image]
-    simp_rw [mem_setOf_eq, ← NNReal.coe_le_coe, coe_mk, exists_prop, coe_nndist]
+    simp_rw [mem_setOf_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nndist]
 
 theorem nndist_set_exists : ∃ C, ∀ x : α, nndist (f x) (g x) ≤ C :=
   Subtype.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ => ⟨ha, h⟩
@@ -261,24 +273,31 @@ theorem const_apply' (a : α) (b : β) : (const α b : α → β) a = b := rfl
 instance [Inhabited β] : Inhabited (α →ᵇ β) :=
   ⟨const α default⟩
 
-theorem lipschitz_evalx (x : α) : LipschitzWith 1 fun f : α →ᵇ β => f x :=
+theorem lipschitz_eval_const (x : α) : LipschitzWith 1 fun f : α →ᵇ β => f x :=
   LipschitzWith.mk_one fun _ _ => dist_coe_le_dist x
 
+@[deprecated (since := "2025-11-29")]
+alias lipschitz_evalx := lipschitz_eval_const
+
 theorem uniformContinuous_coe : @UniformContinuous (α →ᵇ β) (α → β) _ _ (⇑) :=
-  uniformContinuous_pi.2 fun x => (lipschitz_evalx x).uniformContinuous
+  uniformContinuous_pi.2 fun x => (lipschitz_eval_const x).uniformContinuous
 
 theorem continuous_coe : Continuous fun (f : α →ᵇ β) x => f x :=
   UniformContinuous.continuous uniformContinuous_coe
 
-/-- When `x` is fixed, `(f : α →ᵇ β) ↦ f x` is continuous. -/
-@[continuity]
-theorem continuous_eval_const {x : α} : Continuous fun f : α →ᵇ β => f x :=
-  (continuous_apply x).comp continuous_coe
-
 /-- The evaluation map is continuous, as a joint function of `u` and `x`. -/
-@[continuity]
-theorem continuous_eval : Continuous fun p : (α →ᵇ β) × α => p.1 p.2 :=
-  (continuous_prod_of_continuous_lipschitzWith _ 1 fun f => f.continuous) <| lipschitz_evalx
+instance : ContinuousEval (α →ᵇ β) α β where
+  continuous_eval := continuous_prod_of_continuous_lipschitzWith _ 1
+    (fun f ↦ f.continuous) lipschitz_eval_const
+
+/-- When `x` is fixed, `(f : α →ᵇ β) ↦ f x` is continuous. -/
+instance : ContinuousEvalConst (α →ᵇ β) α β := inferInstance
+
+@[deprecated (since := "2025-11-29")] protected alias continuous_eval_const :=
+  ContinuousEvalConst.continuous_eval_const
+
+@[deprecated (since := "2025-11-29")] protected alias continuous_eval :=
+  ContinuousEval.continuous_eval
 
 /-- Bounded continuous functions taking values in a complete space form a complete space. -/
 instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
@@ -303,7 +322,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
         refine ((tendsto_order.1 b_lim).2 ε ε0).mono fun n hn x => ?_
         rw [dist_comm]
         exact lt_of_le_of_lt (fF_bdd x n) hn
-      exact this.continuous (Eventually.of_forall fun N => (f N).continuous)
+      exact this.continuous (Frequently.of_forall fun N => (f N).continuous)
     · -- Check that `F` is bounded
       rcases (f 0).bounded with ⟨C, hC⟩
       refine ⟨C + (b 0 + b 0), fun x y => ?_⟩
@@ -441,6 +460,7 @@ theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α
 
 end Extend
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The indicator function of a clopen set, as a bounded continuous function. -/
 @[simps]
 noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where
@@ -522,14 +542,13 @@ theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α 
 
 @[to_additive]
 instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
-    Monoid (α →ᵇ R) :=
+    Monoid (α →ᵇ R) := fast_instance%
   Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
-    CommMonoid (α →ᵇ R) where
-  __ := instMonoid
-  mul_comm f g := by ext x; simp [mul_apply, mul_comm]
+    CommMonoid (α →ᵇ R) := fast_instance%
+  Injective.commMonoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- Coercion of a `BoundedContinuousFunction` is a `MonoidHom`. Similar to `MonoidHom.coeFn`. -/
 @[to_additive (attr := simps) /-- Coercion of a `BoundedContinuousFunction` is an `AddMonoidHom`.
@@ -567,7 +586,7 @@ lemma prod_apply {ι : Type*} (s : Finset ι) [CommMonoid R] [BoundedMul R] [Con
 
 @[to_additive]
 instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
-  DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
+  fast_instance% DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
 
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
 `MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
@@ -667,7 +686,7 @@ end casts
 
 instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
     [Semiring R] [BoundedMul R] [ContinuousMul R] [BoundedAdd R] [ContinuousAdd R] :
-    Semiring (α →ᵇ R) :=
+    Semiring (α →ᵇ R) := fast_instance%
   Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
@@ -737,7 +756,7 @@ section MulAction
 
 variable [MonoidWithZero 𝕜] [Zero β] [MulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 
-instance instMulAction : MulAction 𝕜 (α →ᵇ β) :=
+instance instMulAction : MulAction 𝕜 (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.mulAction _ coe_smul
 
 end MulAction
@@ -747,7 +766,7 @@ section DistribMulAction
 variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 variable [BoundedAdd β] [ContinuousAdd β]
 
-instance instDistribMulAction : DistribMulAction 𝕜 (α →ᵇ β) :=
+instance instDistribMulAction : DistribMulAction 𝕜 (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
 
 end DistribMulAction
@@ -758,7 +777,7 @@ variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [IsBoundedSMul 𝕜
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 variable [BoundedAdd β] [ContinuousAdd β]
 
-instance instModule : Module 𝕜 (α →ᵇ β) :=
+instance instModule : Module 𝕜 (α →ᵇ β) := fast_instance%
   DFunLike.coe_injective.module _ ⟨⟨_, coe_zero⟩, coe_add⟩  coe_smul
 
 variable (𝕜)

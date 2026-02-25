@@ -3,10 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.LinearAlgebra.Trace
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Trace
 
 /-!
 # Linear maps between direct sums
@@ -15,6 +17,8 @@ This file contains results about linear maps which respect direct sum decomposit
 domain and codomain.
 
 -/
+
+public section
 
 open DirectSum Module Set
 
@@ -78,6 +82,7 @@ lemma trace_eq_sum_trace_restrict' (h : IsInternal N) (hN : {i | N i ≠ ⊥}.Fi
   rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) (hf ·)]
   exact Fintype.sum_equiv hN.subtypeEquivToFinset _ _ (fun i ↦ rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
     (σ : ι → ι) (hσ : ∀ i, σ i ≠ i) {f : Module.End R M}
     (hf : ∀ i, MapsTo f (N i) (N <| σ i)) :
@@ -93,6 +98,7 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
     diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
     Pi.zero_apply, Finset.sum_const_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are commuting endomorphisms of a finite, free `R`-module `M`, such that `f`
 is triangularizable, then to prove that the trace of `g ∘ f` vanishes, it is sufficient to prove
 that the trace of `g` vanishes on each generalized eigenspace of `f`. -/
@@ -133,6 +139,7 @@ lemma mapsTo_biSup_of_mapsTo {ι : Type*} {N : ι → Submodule R M}
 
 end IsInternal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
 Note that it is important the statement gives the user definitional control over `p` since the

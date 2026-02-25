@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euxo pipefail
+
+BENCH="scripts/bench"
+
+"$BENCH/repeatedly.py" -n 5 -- \
+  "$BENCH/measure.py" -t open-mathlib -m instructions -m maxrss -m task-clock -m wall-clock -- \
+  lake lean Mathlib.lean

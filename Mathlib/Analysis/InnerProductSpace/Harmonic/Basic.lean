@@ -3,13 +3,17 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.InnerProductSpace.Laplacian
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Laplacian
 
 /-!
 # Harmonic Functions
 
 This file defines harmonic functions on real, finite-dimensional, inner product spaces `E`.
 -/
+
+@[expose] public section
 
 variable
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
@@ -18,7 +22,7 @@ variable
   {f f₁ f₂ : E → F}
   {x : E} {s t : Set E} {c : ℝ}
 
-open Topology
+open Topology Laplacian
 
 namespace InnerProductSpace
 

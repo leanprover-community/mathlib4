@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Ideal.Maximal
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.RingTheory.Ideal.Maximal
+public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -26,6 +28,8 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 variable {ι α β F : Type*}
@@ -88,7 +92,7 @@ theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
   · rw [hab.pow_pow]
     exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    cutsat
+    lia
 
 theorem add_pow_add_pred_mem_of_pow_mem_of_commute {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
@@ -196,6 +200,17 @@ theorem prod_mem {ι : Type*} {f : ι → α} {s : Finset ι}
   rw [Finset.prod_eq_prod_diff_singleton_mul hi]
   exact Ideal.mul_mem_left _ _ hfi
 
+lemma span_single_eq_top {ι : Type*} [DecidableEq ι] [Finite ι] (R : ι → Type*)
+    [∀ i, Semiring (R i)] : Ideal.span (Set.range fun i ↦ (Pi.single i 1 : Π i, R i)) = ⊤ := by
+  rw [_root_.eq_top_iff]
+  rintro x -
+  induction x using Pi.single_induction with
+  | zero => simp
+  | add f g hf hg => exact Ideal.add_mem _ hf hg
+  | single i r =>
+      rw [show Pi.single i r = Pi.single i r * Pi.single i 1 by simp [← Pi.single_mul_left]]
+      exact Ideal.mul_mem_left _ _ (Ideal.subset_span ⟨i, rfl⟩)
+
 end Ideal
 
 end CommSemiring
@@ -240,28 +255,35 @@ theorem exists_not_isUnit_of_not_isField [Nontrivial R] (hf : ¬IsField R) :
   obtain ⟨x, hx, not_unit⟩ := this
   exact ⟨x, hx, not_unit⟩
 
+open Ideal in
+theorem isField_iff_maximal_bot [Nontrivial R] : IsField R ↔ (⊥ : Ideal R).IsMaximal := by
+  refine ⟨fun h ↦ let := h.toSemifield; bot_isMaximal, fun hmax ↦ ?_⟩
+  by_contra hf
+  obtain ⟨x, hx0, hxu⟩ := exists_not_isUnit_of_not_isField hf
+  exact hx0 <| span_singleton_eq_bot.mp (hmax.eq_of_le (span_singleton_ne_top hxu) bot_le).symm
+
+theorem exists_maximal_of_not_isField [Nontrivial R] (h : ¬ IsField R) :
+    ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsMaximal := by
+  contrapose! h
+  simp only [← bot_lt_iff_ne_bot] at h
+  refine isField_iff_maximal_bot.mpr ⟨⟨bot_ne_top, Ideal.maximal_of_no_maximal h⟩⟩
+
+theorem not_isField_of_ne_of_ne [Nontrivial R] {I : Ideal R} (h_bot : I ≠ ⊥) (h_top : I ≠ ⊤) :
+    ¬ IsField R := by
+  contrapose! h_bot
+  exact ((isField_iff_maximal_bot.mp h_bot).eq_of_le h_top bot_le).symm
+
 theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
     ¬IsField R ↔ ∃ I : Ideal R, ⊥ < I ∧ I < ⊤ := by
-  constructor
-  · intro h
-    obtain ⟨x, nz, nu⟩ := exists_not_isUnit_of_not_isField h
-    use Ideal.span {x}
-    rw [bot_lt_iff_ne_bot, lt_top_iff_ne_top]
-    exact ⟨mt Ideal.span_singleton_eq_bot.mp nz, mt Ideal.span_singleton_eq_top.mp nu⟩
-  · rintro ⟨I, bot_lt, lt_top⟩ hf
-    obtain ⟨x, mem, ne_zero⟩ := SetLike.exists_of_lt bot_lt
-    rw [Submodule.mem_bot] at ne_zero
-    obtain ⟨y, hy⟩ := hf.mul_inv_cancel ne_zero
-    rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, ← hy] at lt_top
-    exact lt_top (I.mul_mem_right _ mem)
+  refine ⟨fun h ↦ ?_, fun ⟨I, h_bot, h_top⟩ ↦ not_isField_of_ne_of_ne h_bot.ne' h_top.ne⟩
+  obtain ⟨I, hI, hIm⟩ := exists_maximal_of_not_isField h
+  exact ⟨I, bot_lt_iff_ne_bot.mpr hI, lt_top_iff_ne_top.mpr hIm.ne_top⟩
 
 theorem not_isField_iff_exists_prime [Nontrivial R] :
-    ¬IsField R ↔ ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsPrime :=
-  not_isField_iff_exists_ideal_bot_lt_and_lt_top.trans
-    ⟨fun ⟨I, bot_lt, lt_top⟩ =>
-      let ⟨p, hp, le_p⟩ := I.exists_le_maximal (lt_top_iff_ne_top.mp lt_top)
-      ⟨p, bot_lt_iff_ne_bot.mp (lt_of_lt_of_le bot_lt le_p), hp.isPrime⟩,
-      fun ⟨p, ne_bot, Prime⟩ => ⟨p, bot_lt_iff_ne_bot.mpr ne_bot, lt_top_iff_ne_top.mpr Prime.1⟩⟩
+    ¬IsField R ↔ ∃ p : Ideal R, p ≠ ⊥ ∧ p.IsPrime := by
+  refine ⟨fun h ↦ ?_, fun ⟨I, h_bot, h_top⟩ ↦ not_isField_of_ne_of_ne h_bot h_top.ne_top⟩
+  obtain ⟨I, hI, hIm⟩ := exists_maximal_of_not_isField h
+  exact ⟨I, hI, hIm.isPrime⟩
 
 /-- Also see `Ideal.isSimpleOrder` for the forward direction as an instance when `R` is a
 division (semi)ring.
@@ -272,19 +294,17 @@ theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) 
   · exact
       ⟨fun h => (not_isField_of_subsingleton _ h).elim, fun h =>
         (false_of_nontrivial_of_subsingleton <| Ideal R).elim⟩
-  rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top, ← not_iff_not]
-  push_neg
-  simp_rw [lt_top_iff_ne_top, bot_lt_iff_ne_bot, ← or_iff_not_imp_left, not_ne_iff]
+  rw [← not_iff_not, Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+  contrapose! +distrib
+  simp_rw [not_lt_top_iff, not_bot_lt_iff]
   exact ⟨fun h => ⟨h⟩, fun h => h.2⟩
 
 /-- When a ring is not a field, the maximal ideals are nontrivial. -/
 theorem ne_bot_of_isMaximal_of_not_isField [Nontrivial R] {M : Ideal R} (max : M.IsMaximal)
     (not_field : ¬IsField R) : M ≠ ⊥ := by
-  rintro h
-  rw [h] at max
-  rcases max with ⟨⟨_h1, h2⟩⟩
+  rintro rfl
   obtain ⟨I, hIbot, hItop⟩ := not_isField_iff_exists_ideal_bot_lt_and_lt_top.mp not_field
-  exact ne_of_lt hItop (h2 I hIbot)
+  exact hIbot.ne (max.eq_of_le hItop.ne bot_le)
 
 end Ring
 
@@ -292,13 +312,7 @@ namespace Ideal
 
 variable {R : Type*} [CommSemiring R] [Nontrivial R]
 
-theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M := by
-  rcases Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top.1 non_field with ⟨I, Ibot, Itop⟩
-  constructor; · simp
-  intro mle
-  apply lt_irrefl (⊤ : Ideal R)
-  have : M = ⊥ := eq_bot_iff.mpr mle
-  rw [← this] at Ibot
-  rwa [hm.1.2 I Ibot] at Itop
+theorem bot_lt_of_maximal (M : Ideal R) [hm : M.IsMaximal] (non_field : ¬IsField R) : ⊥ < M :=
+  (Ring.ne_bot_of_isMaximal_of_not_isField hm non_field).bot_lt
 
 end Ideal

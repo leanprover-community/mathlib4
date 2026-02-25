@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Constructions
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.NhdsWithin
+module
+
+public import Mathlib.Data.Set.Constructions
+public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.NhdsWithin
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -43,7 +45,7 @@ conditions are equivalent in this case).
   the space.
 
 ## Implementation Notes
-For our applications we are interested that there exists a countable basis, but we do not need the
+For our applications we are interested in the existence of a countable basis, but we do not need the
 concrete basis itself. This allows us to declare these type classes as `Prop` to use them as mixins.
 
 ## TODO
@@ -51,6 +53,8 @@ concrete basis itself. This allows us to declare these type classes as `Prop` to
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 
@@ -354,6 +358,28 @@ theorem _root_.Topology.IsQuotientMap.separableSpace [SeparableSpace α] [Topolo
     {f : α → β} (hf : IsQuotientMap f) : SeparableSpace β :=
   hf.surjective.denseRange.separableSpace hf.continuous
 
+theorem _root_.IsOpenMap.separableSpace_of_isInducing [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenMap f) (h' : IsInducing f) : SeparableSpace α := by
+  cases isEmpty_or_nonempty α
+  · infer_instance
+  obtain ⟨s, s_cnt, s_dense⟩ := exists_countable_dense β
+  refine ⟨f.invFun '' s, s_cnt.image _, ?_⟩
+  simp_rw [h'.dense_iff, mem_closure_iff]
+  intro x U hU hx
+  obtain ⟨-, ⟨hx'U, x', rfl⟩, hx's⟩ :=
+    s_dense.inter_open_nonempty (U ∩ range f) (hU.inter h.isOpen_range) ⟨f x, hx, mem_range_self _⟩
+  refine ⟨f <| f.invFun <| f x', ?_, mem_image_of_mem _ <| mem_image_of_mem _ hx's⟩
+  rwa [Function.apply_invFun_apply (f := f)]
+
+theorem _root_.IsOpenMap.separableSpace_of_injective [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenMap f) (h' : Function.Injective f) : SeparableSpace α :=
+  let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense β
+  ⟨f ⁻¹' s, s_cnt.preimage h', s_dense.preimage h⟩
+
+theorem _root_.Topology.IsOpenEmbedding.separableSpace [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenEmbedding f) : SeparableSpace α :=
+  h.isOpenMap.separableSpace_of_injective h.injective
+
 /-- The product of two separable spaces is a separable space. -/
 instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
@@ -385,6 +411,19 @@ instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) 
 instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
   isQuotientMap_quot_mk.separableSpace
 
+instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α ⊕ β) := by
+  obtain ⟨s, hsc, hsd⟩ := exists_countable_dense α
+  obtain ⟨t, htc, htd⟩ := exists_countable_dense β
+  refine ⟨Sum.inl '' s ∪ Sum.inr '' t, (hsc.image _).union (htc.image _), ?_⟩
+  simp_rw [dense_iff_closure_eq, closure_union, IsClosedEmbedding.inl.closure_image_eq,
+    hsd.closure_eq, IsClosedEmbedding.inr.closure_image_eq, htd.closure_eq, image_univ,
+    range_inl_union_range_inr]
+
+theorem separableSpace_sum_iff [TopologicalSpace β] :
+    SeparableSpace (α ⊕ β) ↔ SeparableSpace α ∧ SeparableSpace β :=
+  ⟨fun _ => ⟨(IsOpenEmbedding.inl (Y := β)).separableSpace,
+    (IsOpenEmbedding.inr (X := α)).separableSpace⟩, fun ⟨_, _⟩ => inferInstance⟩
+
 /-- A topological space with discrete topology is separable iff it is countable. -/
 theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
   simp [separableSpace_iff, countable_univ_iff]
@@ -415,7 +454,7 @@ theorem _root_.Set.PairwiseDisjoint.countable_of_nonempty_interior [SeparableSpa
 /-- A set `s` in a topological space is separable if it is contained in the closure of a countable
 set `c`. Beware that this definition does not require that `c` is contained in `s` (to express the
 latter, use `TopologicalSpace.SeparableSpace s` or
-`TopologicalSpace.IsSeparable (univ : Set s))`. In metric spaces, the two definitions are
+`TopologicalSpace.IsSeparable (univ : Set s)`). In metric spaces, the two definitions are
 equivalent, see `TopologicalSpace.IsSeparable.separableSpace`. -/
 def IsSeparable (s : Set α) :=
   ∃ c : Set α, c.Countable ∧ s ⊆ closure c
@@ -721,8 +760,6 @@ instance encodableCountableBasis [SecondCountableTopology α] : Encodable (count
 
 theorem empty_notMem_countableBasis [SecondCountableTopology α] : ∅ ∉ countableBasis α :=
   (exists_countable_basis α).choose_spec.2.1
-
-@[deprecated (since := "2025-05-24")] alias empty_nmem_countableBasis := empty_notMem_countableBasis
 
 theorem isBasis_countableBasis [SecondCountableTopology α] :
     IsTopologicalBasis (countableBasis α) :=

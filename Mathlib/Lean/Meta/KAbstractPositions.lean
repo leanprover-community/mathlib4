@@ -3,10 +3,12 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Init
-import Lean.HeadIndex
-import Lean.Meta.ExprLens
-import Lean.Meta.Check
+module
+
+public import Mathlib.Init
+public import Lean.HeadIndex
+public import Lean.Meta.ExprLens
+public import Lean.Meta.Check
 
 /-!
 
@@ -23,6 +25,8 @@ the subexpression using `kabstract` (which is what `rw` uses to find the positio
 whether this is the case.
 
 -/
+
+@[expose] public section
 
 namespace Lean.Meta
 

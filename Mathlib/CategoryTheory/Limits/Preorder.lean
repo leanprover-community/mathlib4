@@ -3,9 +3,10 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour, Joël Riou, Fernando Chu
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.Order.Bounds.Defs
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # (Co)limits in a preorder category
@@ -16,6 +17,8 @@ We provide basic results about (co)limits in the associated category of a preord
 - We show that (co)products correspond to infima (suprema).
 
 -/
+
+@[expose] public section
 
 universe v u u'
 
@@ -32,6 +35,7 @@ variable {J : Type u'} [Category.{v} J]
 variable (F : J ⥤ C)
 
 /-- The cone associated to a lower bound of a functor. -/
+@[simps]
 def coneOfLowerBound {x : C} (h : x ∈ lowerBounds (Set.range F.obj)) : Cone F where
   pt := x
   π := { app i := homOfLE (h (Set.mem_range_self _)) }
@@ -44,43 +48,54 @@ lemma conePt_mem_lowerBounds (c : Cone F) : c.pt ∈ lowerBounds (Set.range F.ob
 lemma isGLB_of_isLimit {c : Cone F} (h : IsLimit c) : IsGLB (Set.range F.obj) c.pt :=
   ⟨(conePt_mem_lowerBounds F c), fun _ k ↦ (h.lift (coneOfLowerBound F k)).le⟩
 
-/-- If the point of cone is a glb, the cone is a limi.t -/
+/-- If the point of cone is a glb, the cone is a limit. -/
 def isLimitOfIsGLB (c : Cone F) (h : IsGLB (Set.range F.obj) c.pt) : IsLimit c where
   lift d := (h.2 (conePt_mem_lowerBounds F d)).hom
 
-/-- A functor has a limit iff there exists a glb. -/
-lemma hasLimit_iff_hasGLB : HasLimit F ↔ ∃ x, IsGLB (Set.range F.obj) x := by
-  constructor <;> intro h
-  · let limitCone := getLimitCone F
-    exact ⟨limitCone.cone.pt, isGLB_of_isLimit F limitCone.isLimit⟩
-  · obtain ⟨l, isGLB⟩ := h
-    exact ⟨⟨⟨coneOfLowerBound F isGLB.1, isLimitOfIsGLB F _ isGLB⟩⟩⟩
+/-- The limit cone for a functor `F : J ⥤ C` to a preorder when `pt : C`
+is the greatest lower bound of `Set.range F.obj` -/
+@[simps]
+def limitConeOfIsGLB {pt : C} (h : IsGLB (Set.range F.obj) pt) :
+    LimitCone F where
+  cone := coneOfLowerBound _ h.1
+  isLimit := isLimitOfIsGLB _ _ h
 
-/-- The cocone associated to an upper bound of a functor -/
-def coconePt_mem_upperBounds {x : C} (h : x ∈ upperBounds (Set.range F.obj)) : Cocone F where
+/-- A functor has a limit iff there exists a glb. -/
+lemma hasLimit_iff_hasGLB : HasLimit F ↔ ∃ x, IsGLB (Set.range F.obj) x :=
+  ⟨fun _ ↦ ⟨_, isGLB_of_isLimit _ (limit.isLimit _)⟩,
+    fun ⟨_, h⟩ ↦ ⟨⟨limitConeOfIsGLB _ h⟩⟩⟩
+
+/-- The cocone associated to an upper bound of a functor. -/
+@[simps]
+def coconeOfUpperBound {x : C} (h : x ∈ upperBounds (Set.range F.obj)) : Cocone F where
   pt := x
   ι := { app i := homOfLE (h (Set.mem_range_self _)) }
 
 /-- The point of a cocone is an upper bound. -/
-lemma upperBoundOfCocone (c : Cocone F) : c.pt ∈ upperBounds (Set.range F.obj) := by
+lemma coconePt_mem_upperBounds (c : Cocone F) : c.pt ∈ upperBounds (Set.range F.obj) := by
   intro x ⟨i, p⟩; rw [← p]; exact (c.ι.app i).le
 
 /-- If a cocone is a colimit, its point is a lub. -/
 lemma isLUB_of_isColimit {c : Cocone F} (h : IsColimit c) : IsLUB (Set.range F.obj) c.pt :=
-  ⟨(upperBoundOfCocone F c), fun _ k ↦ (h.desc (coconePt_mem_upperBounds F k)).le⟩
+  ⟨(coconePt_mem_upperBounds F c), fun _ k ↦ (h.desc (coconeOfUpperBound F k)).le⟩
 
 /-- If the point of cocone is a lub, the cocone is a .colimit -/
 def isColimitOfIsLUB (c : Cocone F) (h : IsLUB (Set.range F.obj) c.pt) : IsColimit c where
-  desc d := (h.2 (upperBoundOfCocone F d)).hom
+  desc d := (h.2 (coconePt_mem_upperBounds F d)).hom
+
+/-- The colimit cocone for a functor `F : J ⥤ C` to a preorder when `pt : C`
+is the least upper bound of `Set.range F.obj` -/
+@[simps]
+def colimitCoconeOfIsLUB {pt : C} (h : IsLUB (Set.range F.obj) pt) :
+    ColimitCocone F where
+  cocone := coconeOfUpperBound _ h.1
+  isColimit := isColimitOfIsLUB _ _ h
 
 /-- A functor has a colimit iff there exists a lub. -/
 lemma hasColimit_iff_hasLUB :
-    HasColimit F ↔ ∃ x, IsLUB (Set.range F.obj) x := by
-  constructor <;> intro h
-  · let limitCocone := getColimitCocone F
-    exact ⟨limitCocone.cocone.pt, isLUB_of_isColimit F limitCocone.isColimit⟩
-  · obtain ⟨l, isLUB⟩ := h
-    exact ⟨⟨⟨coconePt_mem_upperBounds F isLUB.1, isColimitOfIsLUB F _ isLUB⟩⟩⟩
+    HasColimit F ↔ ∃ x, IsLUB (Set.range F.obj) x :=
+  ⟨fun _ ↦ ⟨_, isLUB_of_isColimit _ (colimit.isColimit _)⟩,
+    fun ⟨_, h⟩ ↦ ⟨⟨colimitCoconeOfIsLUB _ h⟩⟩⟩
 
 end
 
@@ -135,7 +150,7 @@ def semilatticeInfOfIsLimitBinaryFan
   le_inf _ _ _ le_fst le_snd := leOfHom <| (h _ _).lift (BinaryFan.mk le_fst.hom le_snd.hom)
 
 variable (C) in
-/-- If a partial order has binary products, then it is a inf-semilattice -/
+/-- If a partial order has binary products, then it is an inf-semilattice -/
 noncomputable def semilatticeInfOfHasBinaryProducts [HasBinaryProducts C] : SemilatticeInf C :=
   semilatticeInfOfIsLimitBinaryFan
     (fun _ _ ↦ BinaryFan.mk prod.fst prod.snd) (fun X Y ↦ prodIsProd X Y)

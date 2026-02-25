@@ -3,12 +3,16 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.GroupTheory.Congruence.Basic
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
 # Congruence relations respecting scalar multiplication
 -/
+
+@[expose] public section
 
 variable (R S M N : Type*)
 
@@ -121,10 +125,12 @@ instance [Monoid S] [Add M] [MulAction S M] (c : ModuleCon S M) : MulAction S c.
 instance [AddZeroClass M] [DistribSMul S M] (c : ModuleCon S M) : DistribSMul S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.distribSMul c.mk' fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Monoid S] [AddMonoid M] [DistribMulAction S M] (c : ModuleCon S M) :
     DistribMulAction S c.Quotient := fast_instance%
   Quotient.mk''_surjective.distribMulAction c.mk' fun _ _ ↦ rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Semiring S] [AddCommMonoid M] [Module S M] (c : ModuleCon S M) : Module S c.Quotient :=
   fast_instance% Quotient.mk''_surjective.module _ c.mk' fun _ _ ↦ rfl
 

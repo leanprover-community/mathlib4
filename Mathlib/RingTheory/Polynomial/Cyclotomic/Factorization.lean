@@ -3,10 +3,12 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.RingTheory.SimpleModule.Basic
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.Algebra.CharP.CharAndCard
+module
+
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.Algebra.CharP.CharAndCard
 
 /-!
 # Factorization of cyclotomic polynomials over finite fields
@@ -22,6 +24,8 @@ field of characteristic `p`, where `p` and `n` are coprime.
 
 -/
 
+public section
+
 namespace Polynomial
 
 variable {K : Type*} [Field K] [Fintype K] {p f n : ℕ} {P : K[X]}
@@ -36,6 +40,7 @@ private lemma f_ne_zero : f ≠ 0 := fun h0 ↦ not_subsingleton K <|
 
 variable [hp : Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The degree of an irreducible monic factor of the `n`-th cyclotomic polynomial over a finite
   field. This is a special case of `natDegree_of_dvd_cyclotomic_of_irreducible` below. -/
 private theorem natDegree_of_dvd_cyclotomic_of_irreducible_of_monic (hP : P ∣ cyclotomic n K)
@@ -154,14 +159,14 @@ theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K))
     exact hp.out.coprime_iff_not_dvd.mp ((coprime_pow_left_iff
       (pos_of_ne_zero <| f_ne_zero hK) _ _).mp (hn.pow_left f))
         ((CharP.cast_eq_zero_iff K p _).mp H)
-  have hP : P ∈ normalizedFactors (cyclotomic n K) := count_pos.mp (by omega)
+  have hP : P ∈ normalizedFactors (cyclotomic n K) := count_pos.mp (by lia)
   refine (prime_of_normalized_factor _ hP).not_unit (squarefree_cyclotomic n K P ?_)
   have : {P, P} ≤ normalizedFactors (cyclotomic n K) := by
     refine le_iff_count.mpr (fun Q ↦ ?_)
     by_cases hQ : Q = P
     · simp only [hQ, insert_eq_cons, count_cons_self, nodup_singleton, mem_singleton,
         count_eq_one_of_mem, reduceAdd]
-      cutsat
+      lia
     · simp [hQ]
   have := prod_dvd_prod_of_le this
   simp only [insert_eq_cons, prod_cons, prod_singleton] at this

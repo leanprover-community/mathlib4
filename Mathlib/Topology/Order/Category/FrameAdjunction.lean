@@ -3,7 +3,9 @@ Copyright (c) 2023 Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Sam van Gool, Leo Mayer, Brendan Murphy
 -/
-import Mathlib.Topology.Category.Locale
+module
+
+public import Mathlib.Topology.Category.Locale
 
 /-!
 # Adjunction between Locales and Topological Spaces
@@ -37,6 +39,8 @@ This adjunction provides a framework in which several Stone-type dualities fit.
 topological space, frame, locale, Stone duality, adjunction, points
 -/
 
+@[expose] public section
+
 open CategoryTheory Order Set Topology TopologicalSpace
 
 namespace Locale
@@ -50,6 +54,7 @@ variable (L : Type*) [CompleteLattice L]
 by definition, a frame homomorphism from `L` to `Prop`. -/
 abbrev PT := FrameHom L Prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The frame homomorphism from a complete lattice `L` to the complete lattice of sets of
 points of `L`. -/
 @[simps]
@@ -100,6 +105,7 @@ def localePointOfSpacePoint (x : X) : PT (Opens X) where
   map_top' := rfl
   map_sSup' S := by simp [Prop.exists_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit is a frame homomorphism. -/
 def counitAppCont : FrameHom L (Opens <| PT L) where
   toFun u := ⟨openOfElementHom L u, u, rfl⟩

@@ -3,8 +3,9 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Idempotents in topological semigroups
@@ -15,6 +16,8 @@ right-multiplication by constants is continuous.
 
 We also state a corresponding lemma guaranteeing that a subset of `M` contains an idempotent.
 -/
+
+public section
 
 
 /-- Any nonempty compact Hausdorff semigroup where right-multiplication is continuous contains
@@ -82,7 +85,7 @@ theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [Topological
   let M' := { m // m ∈ s }
   letI : Semigroup M' :=
     { mul := fun p q => ⟨p.1 * q.1, s_add _ p.2 _ q.2⟩
-      mul_assoc := fun p q r => Subtype.eq (mul_assoc _ _ _) }
+      mul_assoc := fun p q r => Subtype.ext (mul_assoc _ _ _) }
   haveI : CompactSpace M' := isCompact_iff_compactSpace.mp s_compact
   haveI : Nonempty M' := nonempty_subtype.mpr snemp
   have : ∀ p : M', Continuous (· * p) := fun p =>

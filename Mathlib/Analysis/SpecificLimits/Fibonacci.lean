@@ -3,14 +3,18 @@ Copyright (c) 2025 Snir Broshi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Snir Broshi
 -/
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.NumberTheory.Real.GoldenRatio
+module
+
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.NumberTheory.Real.GoldenRatio
 
 /-!
 # The ratio of consecutive Fibonacci numbers
 
 We prove that the ratio of consecutive Fibonacci numbers tends to the golden ratio.
 -/
+
+public section
 
 open Nat Real Filter Tendsto
 open scoped Topology goldenRatio

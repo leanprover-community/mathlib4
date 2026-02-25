@@ -3,11 +3,13 @@ Copyright (c) 2023 Matias Heikkilä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matias Heikkilä
 -/
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Topology.Order.Lattice
-import Mathlib.Analysis.Real.Cardinality
+module
+
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # Completely regular topological spaces.
@@ -50,6 +52,8 @@ space.
 * [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
 -/
 
+@[expose] public section
+
 universe u v
 
 noncomputable section
@@ -86,6 +90,7 @@ instance CompletelyRegularSpace.instRegularSpace [CompletelyRegularSpace X] :
   apply Disjoint.mono (cf.tendsto_nhdsSet_nhds hhf) cf.continuousAt
   exact disjoint_nhds_nhds.mpr (hf.symm ▸ zero_ne_one).symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance NormalSpace.instCompletelyRegularSpace [NormalSpace X] [R0Space X] :
     CompletelyRegularSpace X := by
   rw [completelyRegularSpace_iff]
@@ -122,6 +127,7 @@ lemma completelyRegularSpace_induced
     (f : X → Y) : @CompletelyRegularSpace X (t.induced f) :=
   @IsInducing.completelyRegularSpace _ (t.induced f) _ t _ _ (IsInducing.induced f)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @CompletelyRegularSpace X (t i)) : @CompletelyRegularSpace X (⨅ i, t i) := by
   letI := (⨅ i, t i) -- register this as default topological space to reduce `@`s
@@ -146,6 +152,7 @@ lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     specialize hfsU i (by tauto_set)
     exists i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
     (ht₁ : @CompletelyRegularSpace X t₁) (ht₂ : @CompletelyRegularSpace X t₂) :
     @CompletelyRegularSpace X (t₁ ⊓ t₂) := by

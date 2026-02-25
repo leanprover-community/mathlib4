@@ -3,9 +3,11 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
-import Mathlib.Tactic.WithoutCDot
-import Lean.Meta.Tactic.Util
-import Lean.Elab.Tactic.Basic
+module
+
+public meta import Lean.Meta.Tactic.Util
+public meta import Lean.Elab.Tactic.Basic
+public import Mathlib.Init
 
 /-!
 # The `use` tactic
@@ -19,6 +21,8 @@ that more closely matches `use` from mathlib3.
 Note: The `use!` tactic is almost exactly the mathlib3 `use` except that it does not try
 applying `exists_prop`. See the failing test in `MathlibTest/Use.lean`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic
@@ -170,7 +174,12 @@ example : ∃ x : Nat, x = x := by use 42
 
 example : ∃ x : Nat, ∃ y : Nat, x = y := by use 42, 42
 
-example : ∃ x : String × String, x.1 = x.2 := by use ("forty-two", "forty-two")
+example : Nonempty Nat := by use 5
+
+example : Nonempty (PNat ≃ Nat) := by
+  use PNat.natPred, Nat.succPNat
+  · exact PNat.succPNat_natPred
+  · intro; rfl
 ```
 
 `use! e₁, e₂, ⋯` is similar but it applies constructors everywhere rather than just for
@@ -180,7 +189,7 @@ leaves and nodes of the tree of constructors.
 With `use!` one can feed in each `42` one at a time:
 
 ```lean
-example : ∃ p : Nat × Nat, p.1 = p.2 := by use! 42, 42
+example : ∃ n : {n : Nat // n % 2 = 0}, n.val > 10 := by use! 20; simp
 
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use! (42, 42)
 ```
@@ -199,7 +208,7 @@ elab (name := useSyntax)
     "use" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse false (← mkUseDischarger discharger?) args.getElems.toList
 
-@[inherit_doc useSyntax]
+@[tactic_alt useSyntax]
 elab "use!" discharger?:(Parser.Tactic.discharger)? ppSpace args:term,+ : tactic => do
   runUse true (← mkUseDischarger discharger?) args.getElems.toList
 

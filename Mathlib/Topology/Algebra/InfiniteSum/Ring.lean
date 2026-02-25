@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Topology.Algebra.InfiniteSum.Constructions
-import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
+public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Infinite sum in a ring
@@ -22,6 +24,8 @@ This file provides lemmas about the interaction between infinite sums and multip
 * `Summable.tsum_pow_mul_one_sub`, `Summable.one_sub_mul_tsum_pow`: geometric series formula.
 * `tprod_one_add`: expanding `∏' i : ι, (1 + f i)` as infinite sum.
 -/
+
+public section
 
 open Filter Finset Function
 
@@ -80,7 +84,7 @@ theorem HasSum.div_const (h : HasSum f a L) (b : α) : HasSum (fun i ↦ f i / b
 theorem Summable.div_const (h : Summable f L) (b : α) : Summable (fun i ↦ f i / b) L :=
   (h.hasSum.div_const _).summable
 
-theorem hasSum_mul_left_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) L ↔ HasSum f a₁ L:=
+theorem hasSum_mul_left_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) L ↔ HasSum f a₁ L :=
   ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a₂⁻¹, HasSum.mul_left _⟩
 
 theorem hasSum_mul_right_iff (h : a₂ ≠ 0) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) L ↔ HasSum f a₁ L :=
@@ -93,7 +97,7 @@ theorem hasSum_div_const_iff (h : a₂ ≠ 0) :
 theorem summable_mul_left_iff (h : a ≠ 0) : (Summable (fun i ↦ a * f i) L) ↔ Summable f L :=
   ⟨fun H ↦ by simpa only [inv_mul_cancel_left₀ h] using H.mul_left a⁻¹, fun H ↦ H.mul_left _⟩
 
-theorem summable_mul_right_iff (h : a ≠ 0) : (Summable (fun i ↦ f i * a) L) ↔ Summable f L:=
+theorem summable_mul_right_iff (h : a ≠ 0) : (Summable (fun i ↦ f i * a) L) ↔ Summable f L :=
   ⟨fun H ↦ by simpa only [mul_inv_cancel_right₀ h] using H.mul_right a⁻¹, fun H ↦ H.mul_right _⟩
 
 theorem summable_div_const_iff (h : a ≠ 0) : (Summable (fun i ↦ f i / a) L) ↔ Summable f L := by
@@ -125,7 +129,7 @@ theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x) L) (b : α) :
   (h.hasSum.const_div b).summable
 
 theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
-    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) L ↔ HasSum (1/ f) a₁ L := by
+    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) L ↔ HasSum (1 / f) a₁ L := by
   simpa only [div_eq_mul_inv, one_mul] using hasSum_mul_left_iff h
 
 theorem summable_const_div_iff (h : a ≠ 0) :
@@ -302,5 +306,42 @@ theorem multipliable_one_add_of_summable_prod (h : Summable (∏ i ∈ ·, f i))
 theorem tprod_one_add [T2Space α] (h : Summable (∏ i ∈ ·, f i)) :
     ∏' i, (1 + f i) = ∑' s, ∏ i ∈ s, f i :=
   HasProd.tprod_eq <| hasProd_one_add_of_hasSum_prod h.hasSum
+
+section Ordered
+variable [LinearOrder ι] [LocallyFiniteOrderBot ι] [T2Space α]
+
+/-- The infinite version of `Finset.prod_one_add_ordered`. -/
+theorem tprod_one_add_ordered [ContinuousAdd α]
+    (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 + f j))
+    (hprod : Multipliable (1 + f ·)) :
+    ∏' i, (1 + f i) = 1 + ∑' i, f i * ∏ j ∈ Iio i, (1 + f j) := by
+  rcases isEmpty_or_nonempty ι with _ | _
+  · simp
+  obtain ⟨x, hx⟩ := hprod
+  obtain ⟨a, ha⟩ := hsum
+  convert hx.tprod_eq
+  unfold HasProd at hx
+  conv at hx in fun _ ↦ _ => ext _; rw [prod_one_add_ordered] -- simp_rw would cause loop
+  rw [ha.tsum_eq]
+  refine (tendsto_nhds_unique (hx.comp tendsto_finset_Iic_atTop_atTop) ?_).symm
+  apply Tendsto.const_add
+  convert ha.comp tendsto_finset_Iic_atTop_atTop using 2 with s
+  refine sum_congr rfl (fun i hi ↦ ?_)
+  congr
+  grind
+
+omit [CommSemiring α] in
+/-- The infinite version of `Finset.prod_one_sub_ordered`. -/
+theorem tprod_one_sub_ordered [CommRing α] [IsTopologicalAddGroup α]
+    (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 - f j))
+    (hprod : Multipliable (1 - f ·)) :
+    ∏' i, (1 - f i) = 1 - ∑' i, f i * ∏ j ∈ Iio i, (1 - f j) := by
+  simp_rw [sub_eq_add_neg] at hsum hprod ⊢
+  obtain hsum' := hsum.neg
+  simp_rw [← neg_mul] at hsum'
+  simp_rw [← tsum_neg, ← neg_mul]
+  exact tprod_one_add_ordered hsum' hprod
+
+end Ordered
 
 end ProdOneSum

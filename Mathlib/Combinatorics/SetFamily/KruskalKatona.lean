@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Combinatorics.Colex
-import Mathlib.Combinatorics.SetFamily.Compression.UV
-import Mathlib.Combinatorics.SetFamily.Intersecting
-import Mathlib.Data.Finset.Fin
+module
+
+public import Mathlib.Combinatorics.Colex
+public import Mathlib.Combinatorics.SetFamily.Compression.UV
+public import Mathlib.Combinatorics.SetFamily.Intersecting
+public import Mathlib.Data.Finset.Fin
 
 /-!
 # Kruskal-Katona theorem
@@ -41,6 +43,8 @@ The key results proved here are:
 
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
+
+public section
 
 open Nat
 open scoped FinsetFamily
@@ -134,6 +138,7 @@ lemma toColex_compress_lt_toColex {hU : U.Nonempty} {hV : V.Nonempty} (h : max' 
   have : a ∉ U := fun H ↦ ha.not_gt ((le_max' _ _ H).trans_lt h)
   simp [‹a ∉ U›, ‹a ∉ V›]
 
+set_option backward.privateInPublic true in
 /-- These are the compressions which we will apply to decrease the "measure" of a family of sets. -/
 private def UsefulCompression (U V : Finset α) : Prop :=
   Disjoint U V ∧ #U = #V ∧ ∃ (HU : U.Nonempty) (HV : V.Nonempty), max' U HU < max' V HV
@@ -164,6 +169,8 @@ private lemma compression_improved (𝒜 : Finset (Finset α)) (h₁ : UsefulCom
   · exact (Finset.max'_subset _ <| erase_subset _ _).trans_lt (max_lt.trans_le <| le_max' _ _ <|
       mem_erase.2 ⟨(min'_lt_max'_of_card _ (by rwa [← same_size])).ne', max'_mem _ _⟩)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- If we're compressed by all useful compressions, then we're an initial segment. This is the other
 key Kruskal-Katona part. -/
 lemma isInitSeg_of_compressed {ℬ : Finset (Finset α)} {r : ℕ} (h₁ : (ℬ : Set (Finset α)).Sized r)
@@ -203,14 +210,14 @@ private lemma familyMeasure_compression_lt_familyMeasure {U V : Finset (Fin n)} 
   rw [compression] at a ⊢
   have q : ∀ Q ∈ {A ∈ 𝒜 | compress U V A ∉ 𝒜}, compress U V Q ≠ Q := by grind
   have uA : {A ∈ 𝒜 | compress U V A ∈ 𝒜} ∪ {A ∈ 𝒜 | compress U V A ∉ 𝒜} = 𝒜 :=
-    filter_union_filter_neg_eq _ _
+    filter_union_filter_not_eq _ _
   have ne₂ : {A ∈ 𝒜 | compress U V A ∉ 𝒜}.Nonempty := by
-    refine nonempty_iff_ne_empty.2 fun z ↦ a ?_
-    rw [filter_image, z, image_empty, union_empty]
-    rwa [z, union_empty] at uA
+    contrapose! a
+    rw [filter_image, a, image_empty, union_empty]
+    rwa [a, union_empty] at uA
   rw [familyMeasure, familyMeasure, sum_union compress_disjoint]
   conv_rhs => rw [← uA]
-  rw [sum_union (disjoint_filter_filter_neg _ _ _), add_lt_add_iff_left, filter_image,
+  rw [sum_union (disjoint_filter_filter_not _ _ _), add_lt_add_iff_left, filter_image,
     sum_image compress_injOn]
   refine sum_lt_sum_of_nonempty ne₂ fun A hA ↦ ?_
   simp_rw [← sum_image Fin.val_injective.injOn]
@@ -317,7 +324,7 @@ theorem kruskal_katona_lovasz_form (hir : i ≤ r) (hrk : r ≤ k) (hkn : k ≤ 
         rw [mem_powersetCard] at Ah
         refine ⟨hBA.trans Ah.1, eq_tsub_of_add_eq ?_⟩
         rw [← Ah.2, ← card_sdiff_i, add_comm, card_sdiff_add_card_eq_card hBA]
-    _ ≤ #(∂ ^[i] 𝒜) := by
+    _ ≤ #(∂^[i] 𝒜) := by
       refine iterated_kk h₁ ?_ ⟨‹_›, ?_⟩
       · rwa [card_powersetCard, card_attachFin, card_range]
       simp_rw [𝒞, mem_powersetCard]
@@ -363,9 +370,9 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   -- and everything in 𝒜ᶜˢ has size n-r.
   have h𝒜bar : (𝒜ᶜˢ : Set (Finset (Fin n))).Sized (n - r) := by simpa using h₂.compls
   -- We can use the Lovasz form of Kruskal-Katona to get |∂^[n-2k] 𝒜ᶜˢ| ≥ (n-1) choose r
-  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by cutsat)
+  have kk := kruskal_katona_lovasz_form (i := n - 2 * r) (by lia)
     ((tsub_le_tsub_iff_left ‹1 ≤ n›).2 h1r) tsub_le_self h𝒜bar z.le
-  have : n - r - (n - 2 * r) = r := by omega
+  have : n - r - (n - 2 * r) = r := by lia
   rw [this] at kk
   -- But this gives a contradiction: `n choose r < |𝒜| + |∂^[n-2k] 𝒜ᶜˢ|`
   have := calc
@@ -379,6 +386,6 @@ theorem erdos_ko_rado {𝒜 : Finset (Finset (Fin n))} {r : ℕ}
   rw [coe_union, Set.sized_union]
   refine ⟨‹_›, ?_⟩
   convert h𝒜bar.shadow_iterate
-  cutsat
+  lia
 
 end Finset

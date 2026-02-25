@@ -3,9 +3,10 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
+module
 
-import Mathlib.RingTheory.WittVector.Complete
-import Mathlib.RingTheory.WittVector.Teichmuller
+public import Mathlib.RingTheory.WittVector.Complete
+public import Mathlib.RingTheory.WittVector.Teichmuller
 
 /-!
 # Teichmuller Series
@@ -27,6 +28,8 @@ then they are equal.
 ## TODO
 Show that the Teichmuller series is unique.
 -/
+
+public section
 
 open Ideal Quotient
 namespace WittVector
@@ -54,8 +57,7 @@ theorem sum_coeff_eq_coeff_sum {α : Type*} {S : Finset α} (x : α → 𝕎 R)
     simp only [ha, not_false_eq_true, Finset.sum_insert]
     have : ∀ (n : ℕ), (x a).coeff n = 0 ∨ (∑ s ∈ S', x s).coeff n = 0 := by
       simp only [hind]
-      by_contra! h
-      obtain ⟨m, hma, hmS'⟩ := h
+      by_contra! ⟨m, hma, hmS'⟩
       have := Finset.sum_eq_zero.mt hmS'
       push_neg at this
       choose b hb hb' using this

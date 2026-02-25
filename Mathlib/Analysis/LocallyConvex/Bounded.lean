@@ -3,14 +3,15 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.GroupTheory.GroupAction.Pointwise
-import Mathlib.Analysis.LocallyConvex.Basic
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Seminorm
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.UniformSpace.Cauchy
+module
+
+public import Mathlib.GroupTheory.GroupAction.Pointwise
+public import Mathlib.Analysis.LocallyConvex.Basic
+public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Topology.Bornology.Basic
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Von Neumann Boundedness
@@ -39,6 +40,8 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
 -/
+
+@[expose] public section
 
 
 variable {𝕜 𝕜' E F ι : Type*}
@@ -218,8 +221,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕜} {l : Filter ι} [l
     (hε : ∀ᶠ n in l, ε n ≠ 0) {S : Set E}
     (H : ∀ x : ι → E, (∀ n, x n ∈ S) → Tendsto (ε • x) l (𝓝 0)) : IsVonNBounded 𝕜 S := by
   rw [(nhds_basis_balanced 𝕜 E).isVonNBounded_iff]
-  by_contra! H'
-  rcases H' with ⟨V, ⟨hV, hVb⟩, hVS⟩
+  by_contra! ⟨V, ⟨hV, hVb⟩, hVS⟩
   have : ∀ᶠ n in l, ∃ x : S, ε n • (x : E) ∉ V := by
     filter_upwards [hε] with n hn
     rw [absorbs_iff_norm] at hVS
@@ -263,7 +265,20 @@ theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
 section NormedField
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
+variable [TopologicalSpace E]
+
+/-- The closure of a bounded set is bounded. -/
+theorem IsVonNBounded.closure [T1Space E] [RegularSpace E] [ContinuousConstSMul 𝕜 E]
+    {a : Set E} (ha : IsVonNBounded 𝕜 a) : IsVonNBounded 𝕜 (closure a) := by
+  intro V hV
+  rcases exists_mem_nhds_isClosed_subset hV with ⟨W, hW₁, hW₂, hW₃⟩
+  specialize ha hW₁
+  filter_upwards [ha] with b ha'
+  grw [closure_mono ha', closure_smul₀ b]
+  apply smul_set_mono
+  grw [closure_subset_iff_isClosed.mpr hW₂, hW₃]
+
+variable [ContinuousSMul 𝕜 E]
 
 /-- Singletons are bounded. -/
 theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fun _ hV =>
@@ -343,9 +358,12 @@ theorem isVonNBounded_sub :
 end IsTopologicalAddGroup
 
 /-- The union of all bounded set is the whole space. -/
-theorem isVonNBounded_covers : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
+theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
+
+@[deprecated (since := "2025-11-14")]
+alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
 
 variable (𝕜 E)
 
@@ -407,6 +425,7 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
   haveI := isUniformAddGroup_of_addCommGroup (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝕜) in
 protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
     [NormedField 𝕜] [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] [Nontrivial 𝕜']
