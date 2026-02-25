@@ -68,6 +68,7 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 
 * [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].
 * [Singer, Ivan., Bases in Banach spaces][Singer_1970].
+* [Marti, Jürg T., Introduction to the theory of bases][MartiJürg1969].
 
 -/
 
@@ -118,9 +119,10 @@ abbrev SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
 An unconditional Schauder basis indexed by `β`.
 
 In the literature, this is known as:
-* An **Extended Basis** (Marti, 1969): Defined via convergence of the net of finite partial sums.
-* An **Unconditional Basis** (Singer, 1981): On an arbitrary set, convergence is necessarily
-  unconditional.
+* An **Extended Basis** [Marti, Jürg T., Introduction to the theory of bases][MartiJürg1969]:
+Defined via convergence of the net of finite partial sums.
+* An **Unconditional Basis** [Singer, Ivan., Bases in Banach spaces][Singer_1970]: On an arbitrary
+set, convergence is necessarily unconditional.
 
 This structure generalizes the classical Schauder basis by replacing sequential
 convergence with summability over the directed set of finite subsets.
@@ -215,8 +217,7 @@ theorem proj_uniformly_bound [CompleteSpace X] : ∃ C : ℝ, ∀ A : Finset β,
   apply banach_steinhaus
   intro x
   obtain ⟨A₀, hA₀⟩ := summable_iff_vanishing_norm.mp (b.expansion x).summable 1 zero_lt_one
-  let M := (A₀.powerset.image fun B ↦ ‖b.proj B x‖).sup'
-    ((Finset.powerset_nonempty A₀).image _) id
+  let M := (A₀.powerset.image fun B ↦ ‖b.proj B x‖).sup' ((Finset.powerset_nonempty A₀).image _) id
   use M + 1
   intro A
   have hdecomp : b.proj A x = b.proj (A ∩ A₀) x + b.proj (A \ A₀) x := by
@@ -224,11 +225,11 @@ theorem proj_uniformly_bound [CompleteSpace X] : ∃ C : ℝ, ∀ A : Finset β,
     rw [← Finset.sum_union (Finset.disjoint_sdiff_inter A A₀).symm,
       Finset.union_comm, Finset.sdiff_union_inter]
   rw [hdecomp]
-  -- The projection on (A ∩ A₀) is bounded by M
+  -- The projection on (A ∩ A₀) at `x` is bounded by M
   have hhead : ‖b.proj (A ∩ A₀) x‖ ≤ M :=
     Finset.le_sup' id <| Finset.mem_image_of_mem (fun B ↦ ‖b.proj B x‖)
       (Finset.mem_powerset.2 Finset.inter_subset_right)
-  -- The projection on the tail (A \ A₀) is bounded by 1
+  -- The projection on the tail (A \ A₀) at `x` is bounded by 1
   have htail : ‖b.proj (A \ A₀) x‖ < 1 := by
     rw [GeneralSchauderBasis.proj_apply]
     exact hA₀ (A \ A₀) Finset.sdiff_disjoint
