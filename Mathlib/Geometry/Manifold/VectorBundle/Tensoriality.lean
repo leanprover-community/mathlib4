@@ -89,8 +89,8 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
   have x_mem := (FiberBundle.mem_baseSet_trivializationAt F V x)
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
-  let s := b.localFrame (trivializationAt F V x)
-  let c := Basis.localFrame_coeff I t b
+  let s := t.localFrame b
+  let c := t.localFrame_coeff I b
   have hs (i) : MDiffAt (T% (s i)) x:=
     (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt (by simp)
   have hc {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) (i) :
@@ -149,8 +149,8 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
   have x_mem := (FiberBundle.mem_baseSet_trivializationAt F V x)
   let b := Basis.ofVectorSpace ℝ F
   let t := trivializationAt F V x
-  let s := b.localFrame (trivializationAt F V x)
-  let c := Basis.localFrame_coeff (I := I) t b
+  let s := t.localFrame b
+  let c := t.localFrame_coeff (I := I) b
   rw [locality (b.localFrame_eventually_eq_sum_coeff_smul (I := I) x_mem σ),
     locality (b.localFrame_eventually_eq_sum_coeff_smul (I := I) x_mem σ'), sum_phi, sum_phi]
   change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
