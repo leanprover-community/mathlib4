@@ -186,7 +186,7 @@ variable [IsDomain R] [IsDiscreteValuationRing R]
 /--
 In a discrete valuation ring, the order of vanishing of an irreducible element is `1`.
 -/
-theorem ord_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
+theorem ord_of_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
   rw [Ring.ord, Module.length_eq_one_iff]
   have : (Ideal.span {ϖ}).IsMaximal :=
     PrincipalIdealRing.isMaximal_of_irreducible hϖ
@@ -297,11 +297,11 @@ of `R`), for `f : K` and `a : S`, we have that `ordFrac R f ≤ ordFrac R (a •
 `algebraMap S R a ≠ 0`.
 -/
 lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
-    [l : IsScalarTower S R K] (a : S) (ha : algebraMap S R a ≠ 0) (f : K) :
+    [IsScalarTower S R K] (a : S) (ha : algebraMap S R a ≠ 0) (f : K) :
     Ring.ordFrac R f ≤ Ring.ordFrac R (a • f) := by
   by_cases j : f = 0
   · simp[j]
-  suffices (ordFrac R) f ≤ (ordFrac R) ((algebraMap S K) a • f) by simp_all only [ne_eq,
+  suffices ordFrac R f ≤ ordFrac R (algebraMap S K a • f) by simp_all only [ne_eq,
     algebraMap_smul]
   simp only [smul_eq_mul, map_mul]
   suffices (ordFrac R) ((algebraMap S K) a) ≥ 1 by exact le_mul_of_one_le_left' this

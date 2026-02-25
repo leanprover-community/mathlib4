@@ -53,7 +53,7 @@ property `P`. -/
 abbrev Obj (X : B) := (P.prop X).FullSubcategory
 
 /-- If `P` is a property of objects for a pseudofunctor `F` to `Cat`,
-this is the condition that `P` is preserved by the application of the functors `F.obj`. -/
+this is the condition that `P` is preserved by the application of the functors `F.map`. -/
 class IsClosedUnderMapObj (P : F.ObjectProperty) : Prop where
   map_obj (P) {X Y : B} {M : F.obj X} (hM : P.prop X M) (f : X ⟶ Y) :
     P.prop Y ((F.map f).toFunctor.obj M)
@@ -123,7 +123,7 @@ lemma mapComp_inv_app {X Y Z : B} (f : X ⟶ Y) (g : Y ⟶ Z) (M : P.Obj X) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a property of objects `P` for a pseudofunctor from `B` to `Cat`, this is
-the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj B`
+the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj X`
 consisting of objects satisfying `P`. -/
 @[simps]
 def fullsubcategory : Pseudofunctor B Cat where
