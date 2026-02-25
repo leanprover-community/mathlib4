@@ -626,7 +626,7 @@ section Set
 
 variable {ι : Type*} (μ : ι → Measure Prop)
 
-noncomputable def independent_set_measure : Measure (Set ι) :=
+noncomputable def independentSetMeasure : Measure (Set ι) :=
   (infinitePi μ).comap (fun s i ↦ i ∈ s)
 
 theorem independent_set_measure_eq_map :
