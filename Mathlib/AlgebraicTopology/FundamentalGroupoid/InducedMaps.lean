@@ -31,6 +31,7 @@ universe u v
 open FundamentalGroupoid CategoryTheory FundamentalGroupoidFunctor
 open scoped FundamentalGroupoid unitInterval
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `F` be a homotopy between two continuous maps `f g : C(X, Y)`.
 Given a path `p : Path x₁ x₂` in the domain, consider the following two paths in the codomain.
 One path goes along the image of `p` under `f`, then along the trajectory of `x₂` under `F`.
@@ -61,6 +62,7 @@ open scoped FundamentalGroupoid ContinuousMap
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
   {f g : C(X, Y)}
 
+set_option backward.isDefEq.respectTransparency false in
 set_option pp.proofs.withType true in
 /-- Given a homotopy H : f ∼ g, we have an associated natural isomorphism between the induced
 functors `map f` and `map g` on fundamental groupoids. -/
@@ -158,6 +160,7 @@ private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [
 set_option backward.privateInPublic true in
 private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Path.target]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 theorem eq_path_of_eq_image :
@@ -242,6 +245,7 @@ theorem apply_one_path : (πₘ (TopCat.ofHom g)).map p = hcast (H.apply_one x�
     rw [Path.prod_coe, ulift_apply H]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Proof that `H.evalAt x = H(0 ⟶ 1, x ⟶ x)`, with the appropriate casts -/
 theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
     (πₘ (TopCat.ofHom H.uliftMap)).map (prodToProdTopI uhpath01 (𝟙 (fromTop x))) ≫
@@ -252,6 +256,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
   simp only [map_eq]
   apply Path.Homotopic.hpath_hext; intro; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 -- Finally, we show `d = f(p) ≫ H₁ = H₀ ≫ g(p)`
 theorem eq_diag_path : (πₘ (TopCat.ofHom f)).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath' p ∧
     (⟦H.evalAt x₀⟧ ≫ (πₘ (TopCat.ofHom g)).map p :

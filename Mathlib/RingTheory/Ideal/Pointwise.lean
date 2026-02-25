@@ -38,6 +38,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 /-- The action on an ideal corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseDistribMulAction : DistribMulAction M (Ideal R) where
   smul a := Ideal.map (MulSemiringAction.toRingHom _ _ a)
   one_smul I :=
@@ -54,6 +55,7 @@ open Pointwise
 /-- The action on an ideal corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulSemiringAction {R : Type*} [CommRing R] [MulSemiringAction M R] :
     MulSemiringAction M (Ideal R) where
   smul_one a := by simp only [Ideal.one_eq_top]; exact Ideal.map_top _
