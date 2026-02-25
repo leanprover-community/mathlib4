@@ -303,6 +303,10 @@ lemma ofFun_smul {f : E → F} {μ : Measure E} (c : ℝ) : ofFun Ω (c • f) �
   congr with x
   module
 
+lemma ofFun_inj {f f' : E → F} {μ : Measure E} (h : ofFun Ω f μ = ofFun Ω f' μ) :
+    f =ᵐ[μ.restrict Ω] f' := by
+  sorry
+
 end ofFun
 
 variable [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]

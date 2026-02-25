@@ -99,6 +99,13 @@ lemma isRepresentedBy_zero : IsRepresentedBy (0 : 𝓓'(Ω, F)) (0 : E → F) μ
 
 namespace IsRepresentedBy
 
+lemma unique_left (h : IsRepresentedBy T f μ) (h' : IsRepresentedBy T' f μ) : T = T' :=
+  h.eq_ofFun.trans h'.eq_ofFun.symm
+
+lemma unique_right (h : IsRepresentedBy T f μ) (h' : IsRepresentedBy T f' μ) :
+    f =ᵐ[μ.restrict Ω] f' :=
+  ofFun_inj <| h.eq_ofFun.symm.trans h'.eq_ofFun
+
 lemma add (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
     IsRepresentedBy (T + T') (f + f') μ where
   locallyIntegrable := hT.locallyIntegrable.add hT'.locallyIntegrable
@@ -230,6 +237,11 @@ lemma hasWeakderiv_const [μ.IsAddHaarMeasure] [CompleteSpace F] {a : F} :
 
 namespace HasWeakDeriv
 
+nonrec lemma unique_right (h : HasWeakDeriv Ω f g μ) (h' : HasWeakDeriv Ω f' g' μ)
+    (hf : f =ᵐ[μ.restrict Ω] f') : g =ᵐ[μ.restrict Ω] g' := by
+  rw [HasWeakDeriv, weakDeriv_congr hf] at h
+  exact h.unique_right h'
+
 lemma add (hf : HasWeakDeriv Ω f g μ) (hf' : HasWeakDeriv Ω f' g' μ)
     (hfint : LocallyIntegrableOn f Ω μ) (hfint' : LocallyIntegrableOn f' Ω μ) :
     HasWeakDeriv Ω (f + f') (g + g') μ := by
@@ -264,13 +276,34 @@ namespace HasWTaylorSeriesUpTo
 
 variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
 
+lemma congr (hf : f =ᵐ[μ.restrict Ω] f')
+    (hg : g =ᵐ[μ.restrict Ω] g') (k : ℕ∞) (h : HasWTaylorSeriesUpTo Ω f g k p μ) :
+    HasWTaylorSeriesUpTo Ω f' g' k p μ where
+  zero_aeEq := by
+    filter_upwards [hf, hg, h.zero_aeEq] with x hfx hgx hx using by simp_rw [← hfx, ← hgx, ← hx]
+  hasWeakDeriv m hm := by
+    refine (h.hasWeakDeriv m hm).congr ?_ ?_
+    all_goals { filter_upwards [hg] with x hx using by rw [hx] }
+  memLp m hm := by
+    refine (h.memLp m hm).ae_eq ?_
+    filter_upwards [hg] with x hx using by rw [hx]
+
 lemma _root_.hasWTaylorSeriesUpTo_congr (hf : f =ᵐ[μ.restrict Ω] f')
-    (hg : g =ᵐ[μ.restrict Ω] g') (k : ℕ∞) (μ : Measure E) :
-    HasWTaylorSeriesUpTo Ω f g k p μ ↔ HasWTaylorSeriesUpTo Ω f' g' k p μ := by
-  sorry
+    (hg : g =ᵐ[μ.restrict Ω] g') (k : ℕ∞) :
+    HasWTaylorSeriesUpTo Ω f g k p μ ↔ HasWTaylorSeriesUpTo Ω f' g' k p μ :=
+  ⟨(·.congr hf hg), (·.congr hf.symm hg.symm)⟩
 
-alias ⟨congr, _⟩ := hasWTaylorSeriesUpTo_congr
-
+lemma unique (h : HasWTaylorSeriesUpTo Ω f g k p μ) (h' : HasWTaylorSeriesUpTo Ω f' g' k p μ)
+    (hf : f =ᵐ[μ.restrict Ω] f') ⦃m : ℕ⦄ (hm : m ≤ k) : (g · m) =ᵐ[μ.restrict Ω] (g' · m) := by
+  induction m with
+  | zero =>
+    filter_upwards [h.zero_aeEq, h'.zero_aeEq, hf] with x hgx hg'x hfx
+    ext v
+    simpa [Unique.eq_default v] using hgx.trans <| hfx.trans hg'x.symm
+  | succ m ih =>
+    have hm : m < k := lt_of_lt_of_le (mod_cast lt_add_one m) hm
+    filter_upwards [(h.hasWeakDeriv m hm).unique_right (h'.hasWeakDeriv m hm) (ih hm.le)] with x hx
+    exact (continuousMultilinearCurryLeftEquiv _ _ _).injective hx
 
 lemma locallyIntegrableOn [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
     (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {n : ℕ} (hn : n ≤ k) :
@@ -354,13 +387,15 @@ def MemSobolev (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : Pr
 
 namespace MemSobolev
 
-variable {c : ℝ}
-
 lemma memLp (hf : MemSobolev Ω f n p μ) : MemLp f p (μ.restrict Ω) := by
   obtain ⟨g, hg⟩ := hf
   refine MemLp.ae_eq hg.zero_aeEq ?_
   exact hg.memLp 0 (zero_le _) |>.continuousLinearMap_comp
     (L := (continuousMultilinearCurryFin0 ℝ E F).toContinuousLinearEquiv.toContinuousLinearMap)
+
+lemma aestronglyMeasurable (hf : MemSobolev Ω f k p μ) :
+    AEStronglyMeasurable f (μ.restrict Ω) :=
+  hf.memLp.aestronglyMeasurable
 
 section monotonicity
 
@@ -438,12 +473,11 @@ lemma aeEq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p μ) :
     MemSobolev Ω f' k p μ :=
   memSobolev_congr h |>.mp hf
 
-lemma aestronglyMeasurable (hf : MemSobolev Ω f k p μ) :
-  AEStronglyMeasurable f (μ.restrict Ω) := sorry
-
+-- is this true?
 lemma indicator {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
   MemSobolev Ω (s.indicator f) k p μ := sorry
 
+-- is this true?
 lemma restrict {s : Set E} (hs : MeasurableSet s) (hf : MemSobolev Ω f k p μ) :
   MemSobolev Ω f k p (μ.restrict s) := sorry
 
@@ -453,12 +487,22 @@ theorem aeeqFunMk (hf : MemSobolev Ω f k p μ) :
 
 end MemSobolev
 
+section sobolevNorm
+
+variable {g g' : E → FormalMultilinearSeries ℝ E F}
+
+variable (Ω) in
 open Finset in
 /-- Only used to write API. Use `sobolevNorm` instead. -/
 /- to do: this feels natural for `k = ∞`, but might not give the desired result. -/
 def sobolevNormAux (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) :
     ℝ≥0∞ :=
-  ‖WithLp.toLp p fun i : {i : ℕ // i ≤ k} ↦ eLpNorm (g · i) p μ‖ₑ
+  ‖WithLp.toLp p fun i : {i : ℕ // i ≤ k} ↦ eLpNorm (g · i) p (μ.restrict Ω)‖ₑ
+
+lemma sobolevNormAux_congr (h : ∀ (i : ℕ), i ≤ k → (g · i) =ᵐ[μ.restrict Ω] (g' · i)) :
+    sobolevNormAux Ω g k p μ = sobolevNormAux Ω g' k p μ := by
+  sorry
+
 
 open Classical Finset in
 variable (Ω) in
@@ -466,7 +510,14 @@ variable (Ω) in
 derivative instead of the `L^p`-norm of partial derivatives. These definitions are equivalent
 for finite dimensional `E` and `k < ∞` [argument todo]. -/
 def sobolevNorm (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : ℝ≥0∞ :=
-  if h : MemSobolev Ω f k p μ then sobolevNormAux h.choose k p μ else ∞
+  if h : MemSobolev Ω f k p μ then sobolevNormAux Ω h.choose k p μ else ∞
+
+lemma sobolevNorm_eq_sobolevNormAux (h : HasWTaylorSeriesUpTo Ω f g k p μ) :
+    sobolevNorm Ω f k p μ = sobolevNormAux Ω g k p μ := by
+  have : MemSobolev Ω f k p μ := ⟨g, h⟩
+  rw [sobolevNorm, dif_pos this]
+  exact sobolevNormAux_congr (this.choose_spec.unique h .rfl)
+
 
 lemma sobolevNorm_lt_top_iff : sobolevNorm Ω f k p μ < ∞ ↔ MemSobolev Ω f k p μ := by sorry
 
@@ -498,9 +549,11 @@ theorem sobolevNorm_eq_zero_iff (hf : AEStronglyMeasurable f μ) (hp : p ≠ 0) 
   refine ⟨fun h ↦ ?_, fun h ↦ (sobolevNorm_congr h).trans sobolevNorm_zero⟩
   simp_rw [← eLpNorm_eq_zero_iff hf.restrict hp, ← le_zero_iff, ← h, eLpNorm_le_sobolevNorm]
 
+end sobolevNorm
+
 end FinDim
 
-/-! potential alternative definition -/
+/-! potential alternative definition (to delete) -/
 namespace Distribution
 
 def IsRegular (T : 𝓓'(Ω, F)) (μ : Measure E) : Prop :=
@@ -527,8 +580,6 @@ Has junk-value `0` for non-regular distributions. -/
 def out (T : 𝓓'(Ω, F)) (μ : Measure E) : E → F :=
   if h : IsRegular T μ then Ω.1.indicator h.choose else 0
 
-lemma ofFun_inj {f f' : E → F} (h : ofFun Ω f μ = ofFun Ω f' μ) : f =ᵐ[μ.restrict Ω] f' := sorry
-
 structure MemLp (T : 𝓓'(Ω, F)) (p : ℝ≥0∞) (μ : Measure E) : Prop where
   isRegular : IsRegular T μ
   memLp : MeasureTheory.MemLp (T.out μ) p μ
@@ -544,7 +595,7 @@ derivative instead of the `L^p`-norm of partial derivatives. These definitions a
 for finite dimensional `E` and `k < ∞` [argument todo]. -/
 def sobolevNorm (T : 𝓓'(Ω, F)) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) : ℝ≥0∞ :=
   if MemSobolev T k p μ then
-    sobolevNormAux (fun x i ↦ (iteratedFDerivCLM (E := E) (F := F) i T).out μ x) k p μ
+    sobolevNormAux Ω (fun x i ↦ (iteratedFDerivCLM (E := E) (F := F) i T).out μ x) k p μ
   else ∞
 
 end Distribution
