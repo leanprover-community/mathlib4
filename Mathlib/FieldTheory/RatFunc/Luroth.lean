@@ -134,37 +134,31 @@ theorem transcendental_of_ne_C : Transcendental K f := by
   rw [Algebra.transcendental_iff_not_isAlgebraic] at tr
   exact tr <| Algebra.IsAlgebraic.trans _ _ _ (alg := f.isAlgebraic_adjoin_simple_X' hf)
 
-theorem irreducible_minpolyX : Irreducible f.minpolyX := by
-  let e := Polynomial.algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
-  have : UniqueFactorizationMonoid K[f] := e.toMulEquiv.uniqueFactorizationMonoid inferInstance
-  let φ : K[f][X] := f.num.map (algebraMap ..) -
+/-- The minimal polynomial of `X` over `K⟮f⟯`, as a polynomial with coefficients in `K[f]`. -/
+noncomputable def minpolyX' : K[f][X] := f.num.map (algebraMap ..) -
     Polynomial.C (⟨f, Algebra.self_mem_adjoin_singleton K f⟩ : K[f]) * f.denom.map (algebraMap ..)
-  suffices Irreducible φ by
-    have φ_map : φ.map (algebraMap ..) = f.minpolyX := by
-      simp only [φ, Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_C]
-      congr 1
-      · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
-      · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
-        simp only [mul_eq_mul_right_iff, Polynomial.C_inj]
-        exact .inl rfl
-    rw [← φ_map, ← Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map]
-    · exact this
-    · apply this.isPrimitive
-      intro H
-      have := Polynomial.natDegree_map_le (f := algebraMap K[f] K⟮f⟯) (p := φ)
-      rw [φ_map, H, nonpos_iff_eq_zero, f.natDegree_minpolyX, Nat.max_eq_zero_iff,
-        ← f.eq_C_iff] at this
-      exact hf this
-  let φ' : K[X][X] := f.num.map (algebraMap ..) -
+
+omit hf in
+theorem minpolyX'_map : f.minpolyX'.map (algebraMap ..) = f.minpolyX := by
+  rw [minpolyX', Polynomial.map_sub, Polynomial.map_mul, Polynomial.map_C]
+  congr 1
+  · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
+  · rw [Polynomial.map_map, ← IsScalarTower.algebraMap_eq]
+    simp only [mul_eq_mul_right_iff, Polynomial.C_inj]
+    exact .inl rfl
+
+theorem irreducible_minpolyX' : Irreducible f.minpolyX' := by
+  let e := Polynomial.algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
+  let φ : K[X][X] := f.num.map (algebraMap ..) -
     Polynomial.C Polynomial.X * f.denom.map (algebraMap ..)
-  have φ'_map : φ'.mapEquiv e.toRingEquiv = φ := by
+  have φ_map : φ.mapEquiv e.toRingEquiv = f.minpolyX' := by
     simp only [AlgEquiv.toRingEquiv_eq_coe, Polynomial.algebraMap_eq, Polynomial.mapEquiv_apply,
       AlgEquiv.toRingEquiv_toRingHom, Polynomial.algEquivOfTranscendental_apply,
       Polynomial.map_sub, Polynomial.map_map, Polynomial.map_mul, Polynomial.map_C, RingHom.coe_coe,
-      Polynomial.aeval_X, φ', e]
+      Polynomial.aeval_X, φ, e]
     congr 2 <;> ext <;> simp
-  rw [← φ'_map, MulEquiv.irreducible_iff]
-  have : φ' = Polynomial.Bivariate.swap
+  rw [← φ_map, MulEquiv.irreducible_iff]
+  have : φ = Polynomial.Bivariate.swap
       (Polynomial.C f.num - Polynomial.X * Polynomial.C f.denom) := by
     simp only [Polynomial.X_mul_C, Polynomial.Bivariate.swap_apply, AlgHom.coe_comp,
       AlgHom.coe_restrictScalars', Polynomial.coe_aeval_eq_eval, Function.comp_apply,
@@ -178,6 +172,18 @@ theorem irreducible_minpolyX : Irreducible f.minpolyX := by
     ((IsCoprime.neg_right_iff _ _).mpr f.isCoprime_num_denom).symm.isRelPrime using 1
   rw [add_comm, Polynomial.X_mul_C, map_neg, neg_mul]
   exact sub_eq_add_neg (Polynomial.C f.num) (Polynomial.C f.denom * Polynomial.X)
+
+theorem irreducible_minpolyX : Irreducible f.minpolyX := by
+  haveI : UniqueFactorizationMonoid K[f] :=
+    (f.transcendental_of_ne_C hf).uniqueFactorizationMonoid_adjoin
+  rw [← f.minpolyX'_map, ← Polynomial.IsPrimitive.irreducible_iff_irreducible_map_fraction_map]
+  · exact f.irreducible_minpolyX' hf
+  · apply (f.irreducible_minpolyX' hf).isPrimitive
+    intro H
+    have := Polynomial.natDegree_map_le (f := algebraMap K[f] K⟮f⟯) (p := f.minpolyX')
+    rw [f.minpolyX'_map, H, nonpos_iff_eq_zero, f.natDegree_minpolyX, Nat.max_eq_zero_iff,
+      ← f.eq_C_iff] at this
+    exact hf this
 
 end FNeC
 
