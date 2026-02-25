@@ -9,6 +9,8 @@ public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.OrderOfVanishing.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.Valuation.Discrete.Basic
 
 /-!
 # Order of vanishing properties
@@ -107,8 +109,18 @@ lemma ord_neg (x : R) : ord R (-x) = ord R x:= by
   all_goals exact Ideal.span_singleton_neg x
 
 @[simp]
-lemma ord_mul_of_isUnit (a : R) (h : IsUnit a) (x : R) : ord R (a * x) = ord R x := by
+lemma ord_mul_of_isUnit_left (a : R) (h : IsUnit a) (x : R) : ord R (a * x) = ord R x := by
   rw [ord, ord, Ideal.span_singleton_mul_left_unit h x]
+
+@[simp]
+lemma ord_mul_of_isUnit_right (a : R) (h : IsUnit a) (x : R) : ord R (x * a) = ord R x := by
+  rw [ord, ord, Ideal.span_singleton_mul_right_unit h x]
+
+@[simp]
+lemma ord_mul_of_associated (x y : R) (h : Associated x y) : ord R x = ord R y := by
+  obtain ⟨a, rfl⟩ := h
+  simp
+
 /--
 In an `S` algebra `R`, the order of vanishing of `x : R` is equal to the order of vanishing
 of `a • x` for `a` a unit in `S`.
@@ -117,7 +129,7 @@ of `a • x` for `a` a unit in `S`.
 lemma ord_smul_of_isUnit {S : Type*} [CommRing S] [Algebra S R]
     (a : S) (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
   rw [Algebra.smul_def a x]
-  exact ord_mul_of_isUnit ((algebraMap S R) a) (RingHom.isUnit_map (algebraMap S R) h) x
+  exact ord_mul_of_isUnit_left ((algebraMap S R) a) (RingHom.isUnit_map (algebraMap S R) h) x
 
 /-
 Simple lemma saying `ord (x) ≤ ord (a * x)`. One should note that the order here
@@ -185,15 +197,17 @@ theorem ord_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
 
 variable (R) in
 lemma IsDiscreteValutationRing.not_krullDimLE_zero : ¬ KrullDimLE 0 R := by
-  intro a
-  have : IsLocalRing R := by exact IsLocalRing.of_singleton_maximalSpectrum
-  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-  have c := Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal (x := ϖ)
-  have : ϖ ∈ IsLocalRing.maximalIdeal R := by
-    rw [Irreducible.maximalIdeal_eq hϖ]
-    exact Ideal.mem_span_singleton_self ϖ
-  have := c.mpr this
-  aesop
+  by_contra!
+  have : IsDomain R := by infer_instance
+  have h1 : IsField R := KrullDimLE.isField_of_isDomain
+  have h2 : ¬ IsField R := IsDiscreteValuationRing.not_isField R
+  exact h2 h1
+
+lemma IsDiscreteValutationRing.zero_ge_krullDim : 0 < ringKrullDim R := by
+  have : ¬ KrullDimLE 0 R := not_krullDimLE_zero R
+  have : ¬ ringKrullDim R ≤ 0 := by
+    rwa [Ring.krullDimLE_iff] at this
+  simp_all
 
 lemma ord_eq_addVal (x : R) : ord R x = IsDiscreteValuationRing.addVal R x := by
   by_cases hx : x = 0
@@ -300,10 +314,9 @@ lemma ordFrac_le_smul {S : Type*} [CommRing S] [Algebra S R] [Algebra S K]
 The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
 unit `x`.
 -/
-lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) :
-    ordFrac R (algebraMap R K x) = 1 := by
-  have : x ≠ 0 := by exact IsUnit.ne_zero hx
-  have thing : x ∈ nonZeroDivisors R := by exact IsUnit.mem_nonZeroDivisors hx
+lemma ordFrac_of_isUnit (x : R) (hx : IsUnit x) : ordFrac R (algebraMap R K x) = 1 := by
+  have : x ≠ 0 := IsUnit.ne_zero hx
+  have thing : x ∈ nonZeroDivisors R := IsUnit.mem_nonZeroDivisors hx
   simp only [ordFrac_eq_ord R x this, thing, ordMonoidWithZeroHom_eq_ord]
   rw [ord_of_isUnit x hx]
   aesop
@@ -318,7 +331,109 @@ lemma ordFrac_irreducible [IsDiscreteValuationRing R]
   simp only [ordFrac_eq_ord R ϖ this, mem_nonZeroDivisors_of_ne_zero this,
       ordMonoidWithZeroHom_eq_ord, ord_irreducible ϖ hϖ]
   rfl
+/--
+The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
+unit `x`.
+-/
+lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing [IsDiscreteValuationRing R] (x : R) :
+  IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
+  refine ⟨ordFrac_of_isUnit x, fun h ↦ ?_⟩
+  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
+  by_cases hx0 : algebraMap R K x = 0
+  · simp_all
+  obtain ⟨m, α, hx⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hx0
+  rw [hx] at h
+  have : m = 0 := by
+    rw [Units.smul_def, Algebra.smul_def, map_mul, map_zpow₀,
+      ordFrac_of_isUnit α.1 (Units.isUnit α), ordFrac_irreducible ϖ hϖ] at h
+    simpa using h
+  rw [this] at hx
+  rw [Units.smul_def, Algebra.smul_def] at hx
+  simp only [zpow_zero, mul_one, algebraMap.coe_inj] at hx
+  rw [hx]
+  exact Units.isUnit α
 
+
+/--
+For a discrete valuation ring `R` with fraction ring `K`,
+multiplicative kernel of `ordFrac R` is precisely the elements of `K`
+which are in the image of a unit of `R` under the algebra map.
+-/
+lemma mker_ordFrac_eq_units [IsDiscreteValuationRing R] :
+    MonoidHom.mker (ordFrac R) = (IsUnit.submonoid R).map (algebraMap R K) := by
+  ext a
+  simp only [MonoidHom.mem_mker, Submonoid.mem_map]
+  constructor
+  · intro h
+    obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
+    by_cases ha0 : a = 0
+    · simp_all
+    obtain ⟨m, α, hx⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ ha0
+    rw [hx] at h
+    have : m = 0 := by
+      rw [Units.smul_def, Algebra.smul_def, map_mul, map_zpow₀,
+        ordFrac_of_isUnit α.1 (Units.isUnit α), ordFrac_irreducible ϖ hϖ] at h
+      simpa using h
+    rw [this, Units.smul_def, Algebra.smul_def] at hx
+    simp only [zpow_zero, mul_one] at hx
+    rw [hx]
+    use α.1
+    exact ⟨Units.isUnit α, rfl⟩
+  · intro h
+    obtain ⟨x, h1, rfl⟩ := h
+    exact ordFrac_of_isUnit x h1
+
+theorem ordFrac_eq_valuation [IsDiscreteValuationRing R] (ϖ : R) (hϖ : Irreducible ϖ) :
+  ordFrac R = (IsDedekindDomain.HeightOneSpectrum.valuation K
+  (IsDiscreteValuationRing.maximalIdeal R)).toMonoidWithZeroHom := by
+  --simp [ordFrac, IsDedekindDomain.HeightOneSpectrum.valuation, prime]
+  ext a
+  by_cases ha : a = 0
+  · simp_all
+  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
+  obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ ha
+  rw [Units.smul_def, Algebra.smul_def]
+  simp only [map_mul, map_zpow₀, Valuation.toMonoidWithZeroHom_coe_eq_coe]
+  have : (ordFrac R) ((algebraMap R K) ϖ) = WithZero.exp 1 := by
+    exact ordFrac_irreducible ϖ hϖ
+  rw [this]
+  have : (IsDedekindDomain.HeightOneSpectrum.valuation K (IsDiscreteValuationRing.maximalIdeal R))
+      ((algebraMap R K) ϖ) = WithZero.exp 1 := by
+    rw [@IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap]
+    --rw [@IsDedekindDomain.HeightOneSpectrum.intValuation_apply]
+    have : ¬ ϖ = 0 := sorry
+    simp [IsDedekindDomain.HeightOneSpectrum.intValuation_def, this]
+    -- Why is this not a theorem?
+
+
+    sorry
+    /-have : ¬ ϖ = 0 := sorry
+    simp [IsDedekindDomain.HeightOneSpectrum.valuation]
+    rw [@IsDedekindDomain.HeightOneSpectrum.intValuation_def]
+    simp [this]
+    refine inv_eq_of_mul_eq_one_right ?_
+    have : IsLocalRing.maximalIdeal R = Ideal.span {ϖ} := sorry
+    simp [IsDiscreteValuationRing.maximalIdeal]
+    --rw [this]
+    simp [Associates.count]
+    have : Irreducible (Associates.mk (IsLocalRing.maximalIdeal R)) := sorry
+    simp [this, Associates.factors']
+    sorry-/
+  rw [this]
+  have : (IsDedekindDomain.HeightOneSpectrum.valuation K (IsDiscreteValuationRing.maximalIdeal R))
+      ((algebraMap R K) ↑α) = 1 := by sorry
+  rw [this]
+  #check ordFrac_of_isUnit
+  have : (ordFrac R) ((algebraMap R K) ↑α) = 1 := by sorry
+  rw [this]
+
+
+theorem ordFrac_add' [IsDiscreteValuationRing R] (x y : K) :
+    Ring.ordFrac R (x + y) ≤ max (Ring.ordFrac R x) (Ring.ordFrac R y) := by
+  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
+  rw [ordFrac_eq_valuation ϖ hϖ]
+  exact Valuation.map_add
+    (IsDedekindDomain.HeightOneSpectrum.valuation K (IsDiscreteValuationRing.maximalIdeal R)) x y
 
 /--
 For `x y : R`, if `x + y ≠ 0` then `min (ordFrac R x) (ordFrac R y) ≤ ordFrac R (x + y)`. The
@@ -328,6 +443,10 @@ uses the ordering on `ℕ∞`), since these orders correspond on non `⊤` eleme
 -/
 theorem ordFrac_add [IsDiscreteValuationRing R] (x y : K) (h : x + y ≠ 0) :
     min (Ring.ordFrac R x) (Ring.ordFrac R y) ≤ Ring.ordFrac R (x + y) := by
+  --rw [ordFrac_eq_valuation]
+  --have := Valuation.map_add_le_max' (IsDedekindDomain.HeightOneSpectrum.valuation K (IsDiscreteValuationRing.maximalIdeal R)) x y
+  --rw [ordFrac_eq_valuation]
+  --exact AddValuation.map_add (IsDedekindDomain.HeightOneSpectrum.addValuation K (IsDiscreteValuationRing.maximalIdeal R)) x y
   classical
   obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
   by_cases hx0 : x = 0
@@ -370,19 +489,21 @@ theorem ordFrac_add [IsDiscreteValuationRing R] (x y : K) (h : x + y ≠ 0) :
 In a discrete valuation ring `R` with fraction ring `K`, if `x y : K` and
 `ordFrac R x = ordFrac R y`, then `x` must only differ from `y` by a unit of `R`.
 -/
-theorem associated_of_ordFrac_eq [IsDiscreteValuationRing R] (x y : K) (hx : x ≠ 0) (hy : y ≠ 0)
+theorem associated_of_ordFrac_eq [IsDiscreteValuationRing R] (x y : K)
     (h : ordFrac R x = ordFrac R y) : ∃ u : Rˣ, u • x = y := by
-  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-  obtain ⟨m, α, rfl⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hx
-  obtain ⟨n, β, rfl⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hy
-  rw [Units.smul_def, Algebra.smul_def, Units.smul_def, Algebra.smul_def] at ⊢ h
-  nth_rewrite 2 [mul_comm] at h
-  rw [mul_comm, map_mul, map_mul, map_zpow₀, map_zpow₀] at h
-  simp only [ordFrac_irreducible ϖ hϖ, ← WithZero.exp_zsmul, Int.zsmul_eq_mul, mul_one,
-    Units.isUnit, ordFrac_of_isUnit, WithZero.exp_inj] at h
-  use β * α⁻¹
-  rw[Units.smul_def, Algebra.smul_def]
-  simp only [Units.val_mul, map_mul, map_units_inv, h]
+  by_cases hx : x = 0
+  · simp_all only [map_zero, smul_zero, exists_const]
+    by_contra!
+    have : ordFrac R y ≠ 0 := by simp [this.symm]
+    exact this h.symm
+  by_cases hy : y = 0
+  · simp_all
+  have : (y / x) ∈ MonoidHom.mker (ordFrac R) := by simp_all
+  rw [mker_ordFrac_eq_units] at this
+  obtain ⟨u, h⟩ := this
+  use IsUnit.unit h.1
+  simp only [Units.smul_def, Algebra.smul_def, IsUnit.unit_spec, h.2]
   field_simp
+
 
 end ordFrac
