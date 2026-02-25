@@ -159,12 +159,11 @@ lemma mem_associatedPrimes [DecidableEq (Submodule R M)] {N : Submodule R M}
   exact Set.mem_image_of_mem _ hq
 
 open LocalizedModule in
-lemma comap_localized₀_eq_ite
-    {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] [DecidableEq (Ideal R)]
-    {I : Submodule R M}
-    (s₀ : Finset I.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set I.associatedPrimes))
+lemma comap_localized₀_eq_ite {R M : Type*} [CommRing R] [DecidableEq (Ideal R)] [AddCommMonoid M]
+    [Module R M] {N : Submodule R M}
+    (s₀ : Finset N.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set N.associatedPrimes))
     (q : Submodule R M) (hqp : q.IsPrimary)
-    (p : I.associatedPrimes) (hq : (q.colon Set.univ).radical = p) :
+    (p : N.associatedPrimes) (hq : (q.colon Set.univ).radical = p) :
     letI S := ⨅ q ∈ s₀, q.1.primeCompl
     letI f := mkLinearMap S M
     (localized₀ S f q).comap f = if p ∈ s₀ then q else ⊤ := by
@@ -172,21 +171,18 @@ lemma comap_localized₀_eq_ite
   set f := mkLinearMap S M
   split_ifs with hp
   · refine le_antisymm (fun x hx ↦ ?_) (map_le_iff_le_comap.mp (map_le_localized₀ S f q))
-    simp only [mem_comap, mem_localized₀] at hx
     obtain ⟨b, hb, a, ha⟩ := hx
     rw [IsLocalizedModule.mk'_eq_iff, ← LinearMap.map_smul_of_tower] at ha
     obtain ⟨c, hc⟩ := (IsLocalizedModule.eq_iff_exists S f).mp ha
-    have key : (c * a) • x ∈ q := by rw [mul_smul, ← hc]; exact q.smul_mem c hb
-    apply (hqp.mem_or_mem key).resolve_right
-    rw [hq]
-    have := (c * a).2
-    simp only [S, Submonoid.mem_iInf] at this
-    exact this p hp
-  · replace hq : ¬ ((q.colon Set.univ) : Set R) ⊆ ⋃ r ∈ s₀, r := by
+    replace hb := q.smul_mem c hb
+    rw [← Submonoid.smul_def, hc, smul_smul] at hb
+    apply (hqp.mem_or_mem hb).resolve_right
+    grind [Submonoid.mem_iInf, mem_primeCompl_iff]
+  · replace hq : ¬ (q.colon Set.univ : Set R) ⊆ ⋃ r ∈ s₀, r := by
       contrapose! hp
       obtain ⟨r, hrs, h⟩ := (subset_union_prime p p fun i _ _ _ ↦ i.2.1).mp hp
       rw [← r.2.1.radical_le_iff, hq] at h
-      apply hs₀ h hrs
+      exact hs₀ h hrs
     obtain ⟨y, hy1, hy2⟩ := Set.not_subset_iff_exists_mem_notMem.mp hq
     replace hy2 : y ∈ S := by
       simp only [Submonoid.mem_iInf, Ideal.mem_primeCompl_iff, Subtype.forall, S]
@@ -200,16 +196,15 @@ lemma comap_localized₀_eq_ite
 
 open LocalizedModule IsLocalizedModule in
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
-lemma comap_localized₀_eq_iInf
-    {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] [DecidableEq (Submodule R M)]
-    [DecidableEq (Ideal R)]
-    {I : Submodule R M} {t : Finset (Submodule R M)} (ht : I.IsMinimalPrimaryDecomposition t)
-    (s₀ : Finset I.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set I.associatedPrimes))
+lemma comap_localized₀_eq_iInf {R M : Type*} [CommRing R] [DecidableEq (Ideal R)] [AddCommMonoid M]
+    [Module R M] [DecidableEq (Submodule R M)] {N : Submodule R M}
+    {t : Finset (Submodule R M)} (ht : N.IsMinimalPrimaryDecomposition t)
+    (s₀ : Finset N.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set N.associatedPrimes))
     (s : Finset (Submodule R M)) (hs : s ⊆ t)
     (hs' : (s.image fun q ↦ (q.colon Set.univ).radical) = s₀.image (↑)) :
     letI S := ⨅ q ∈ s₀, q.1.primeCompl
     letI f := mkLinearMap S M
-    (I.localized₀ S f).comap f = ⨅ q ∈ s, q := by
+    (N.localized₀ S f).comap f = ⨅ q ∈ s, q := by
   set S := ⨅ q ∈ s₀, q.1.primeCompl
   set f := mkLinearMap S M
   rw [← ht.inf_eq, ← localized₀FrameHom_apply, map_finset_inf, Submodule.comap_finsetInf]
