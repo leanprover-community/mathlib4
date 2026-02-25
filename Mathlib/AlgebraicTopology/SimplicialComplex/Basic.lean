@@ -89,14 +89,7 @@ instance : InfSet (PreAbstractSimplicialComplex ι) where
   sInf s :=
     { faces := (⋂ K ∈ s, K.faces) ∩ { t | t.Nonempty }
       isRelLowerSet_faces := fun {_} ⟨hx, hn⟩ => by
-        constructor
-        · exact hn
-        · intro b hb_le hb_nonempty
-          constructor
-          · apply Set.mem_iInter₂.mpr
-            intro K hK
-            exact (K.isRelLowerSet_faces (Set.mem_iInter₂.mp hx K hK)).2 hb_le hb_nonempty
-          · exact hb_nonempty }
+        grind [IsRelLowerSet.mem_of_le, isRelLowerSet_faces, mem_iInter] }
 
 instance : Top (PreAbstractSimplicialComplex ι) where
   top :=
