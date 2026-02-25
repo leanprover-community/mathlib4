@@ -50,179 +50,135 @@ open Lean Meta Elab Tactic Command
 
 namespace Mathlib.Tactic.CheckDefEqAbuse
 
-/-- Check if a string contains a given substring. -/
-private def hasSubstr (s sub : String) : Bool := (s.splitOn sub).length > 1
+-- Note on string matching: Lean's `TraceData` has no structured success/failure field.
+-- `withTraceNodeBefore` in Lean core prepends ✅/❌ emoji to the rendered header message,
+-- and `Meta.synthInstance` "apply" nodes use the same trace class as other synthesis nodes.
+-- String matching on the rendered header is the only way to determine trace node outcomes.
 
-/-- Recursively walk a `MessageData` tree to find the deepest failing
-`Meta.isDefEq` trace nodes.
+/-- Extract the instance name from a rendered `apply @Foo to Goal` trace header.
+Returns the string between `"apply "` and `" to "`. -/
+private def extractInstName (s : String) : String :=
+  match s.splitOn "apply " with
+  | [_, rest] => match rest.splitOn " to " with
+    | name :: _ => name.trimAscii.toString
+    | _ => s
+  | _ => s
 
-The algorithm:
-- Skips nodes with `cls = Meta.isDefEq.onFailure` (retry traces)
-- Only follows ❌ branches — failures inside ✅ nodes were recovered
-  from and are not root causes
-- A "leaf failure" is a ❌ node whose only ❌ children are onFailure
-- Returns the header messages of all leaf failures
--/
-partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) := do
+/-- Generic fold over a `MessageData` trace tree. Automatically recurses through `.compose`,
+`.nest`, `.group`, `.tagged`, `.withContext`, `.withNamingContext`, delegating `.trace` nodes
+to `onTrace`. The fourth argument to `onTrace` continues the fold through a child node. -/
+private partial def foldTraces {α : Type} (onTrace : TraceData → MessageData → Array MessageData →
+    (MessageData → BaseIO α) → BaseIO α) (combine : α → α → α) (empty : α)
+    (msg : MessageData) : BaseIO α :=
   match msg with
   | .trace td header children =>
-    -- Skip onFailure retry nodes (cls is Meta.isDefEq.onFailure)
-    if td.cls == `Meta.isDefEq.onFailure then
-      return #[]
-    -- Only analyze Meta.isDefEq trace nodes for success/failure
+    onTrace td header children (foldTraces onTrace combine empty)
+  | .compose a b => do
+    return combine (← foldTraces onTrace combine empty a)
+                   (← foldTraces onTrace combine empty b)
+  | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m =>
+    foldTraces onTrace combine empty m
+  | _ => return empty
+
+/-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
+Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes). -/
+private partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
+  foldTraces (fun td header children go => do
+    if td.cls == `Meta.isDefEq.onFailure then return #[]
     if Name.isPrefixOf `Meta.isDefEq td.cls then
       let headerStr ← header.toString
-      if hasSubstr headerStr "❌" then
-        -- Failing node. Recurse into children to find deeper failures.
-        -- Note: ✅ children will return #[] (we don't follow recovered paths).
+      if headerStr.startsWith "❌" then
         let mut childFailures := #[]
         for child in children do
-          childFailures := childFailures.append (← findLeafFailures child)
-        if childFailures.isEmpty then
-          -- This is a leaf failure - the deepest point of divergence
-          return #[header]
-        else
-          return childFailures
+          childFailures := childFailures.append (← go child)
+        -- Leaf failure: deepest ❌ node with no deeper ❌ children
+        if childFailures.isEmpty then return #[header] else return childFailures
       else
-        -- ✅ node: failures inside were recovered from, not root causes.
         return #[]
     else
-      -- Non-isDefEq trace node: recurse through children to find nested isDefEq traces.
       let mut results := #[]
       for child in children do
-        results := results.append (← findLeafFailures child)
+        results := results.append (← go child)
       return results
-  | .compose a b =>
-    return (← findLeafFailures a) ++ (← findLeafFailures b)
-  | .nest _ m => findLeafFailures m
-  | .group m => findLeafFailures m
-  | .tagged _ m => findLeafFailures m
-  | .withContext _ m => findLeafFailures m
-  | .withNamingContext _ m => findLeafFailures m
-  | _ => return #[]
+  ) (· ++ ·) #[] msg
 
-/-- Within a synthesis trace, find failing instance application attempts
-(`apply @Instance to Goal`) and their `isDefEq` root causes.
-
-Returns an array of `(instanceApp, isDefEqLeafFailures)` pairs. Only reports
-applications that have isDefEq leaf failures. -/
-partial def findSynthAppFailures (msg : MessageData) :
-    BaseIO (Array (MessageData × Array MessageData)) := do
-  match msg with
-  | .trace td header children =>
+/-- Within a synthesis trace, find failing `apply @Instance to Goal` nodes
+and their `isDefEq` leaf failures. -/
+private partial def findSynthAppFailures (msg : MessageData) :
+    BaseIO (Array (MessageData × Array MessageData)) :=
+  foldTraces (fun td header children go => do
     if td.cls == `Meta.isDefEq.onFailure then return #[]
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if hasSubstr headerStr "❌" && hasSubstr headerStr "apply" then
-        -- Instance application that failed. Find isDefEq leaf failures.
+      if headerStr.startsWith "❌" && headerStr.contains "apply" then
         let mut failures := #[]
         for child in children do
           failures := failures.append (← findLeafFailures child)
         if failures.isEmpty then
-          -- No isDefEq failures here; maybe a sub-synthesis failed. Recurse.
+          -- No isDefEq failures here; recurse for sub-synthesis failures
           let mut results := #[]
           for child in children do
-            results := results.append (← findSynthAppFailures child)
+            results := results.append (← go child)
           return results
         else
           return #[(header, failures)]
-      else if hasSubstr headerStr "❌" then
-        -- Other failing synthInstance node, recurse into children
-        let mut results := #[]
-        for child in children do
-          results := results.append (← findSynthAppFailures child)
-        return results
       else
-        -- Successful synthesis can still contain failed sub-attempts. Recurse.
         let mut results := #[]
         for child in children do
-          results := results.append (← findSynthAppFailures child)
+          results := results.append (← go child)
         return results
-    -- Recurse through non-synthInstance children
     let mut results := #[]
     for child in children do
-      results := results.append (← findSynthAppFailures child)
+      results := results.append (← go child)
     return results
-  | .compose a b =>
-    return (← findSynthAppFailures a) ++ (← findSynthAppFailures b)
-  | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m =>
-    findSynthAppFailures m
-  | _ => return #[]
+  ) (· ++ ·) #[] msg
 
-/-- Walk a combined `Meta.synthInstance` + `Meta.isDefEq` trace tree to find synthesis failures
-and their `isDefEq` root causes.
-
-Returns an array of `(instanceApp, isDefEqLeafFailures)` pairs where:
-- `instanceApp` is the header of a failing `apply @Instance to Goal` node
-- `isDefEqLeafFailures` are the deepest `isDefEq` failures within that application
-
-Only enters failing top-level synthesis nodes (to avoid reporting failed sub-attempts
-that were recovered from within a successful synthesis). -/
-partial def findSynthFailures (msg : MessageData) :
-    BaseIO (Array (MessageData × Array MessageData)) := do
-  match msg with
-  | .trace td header children =>
+/-- Find top-level synthesis failures and their `isDefEq` root causes.
+Only enters failing synthesis nodes to avoid reporting recovered sub-attempts. -/
+private partial def findSynthFailures (msg : MessageData) :
+    BaseIO (Array (MessageData × Array MessageData)) :=
+  foldTraces (fun td header children go => do
     if td.cls == `Meta.isDefEq.onFailure then return #[]
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if hasSubstr headerStr "❌" then
-        -- Failing synthesis. Look for child instance application attempts.
+      if headerStr.startsWith "❌" then
         let mut results := #[]
         for child in children do
           results := results.append (← findSynthAppFailures child)
         return results
       else
         return #[]
-    -- For non-synthInstance, non-isDefEq trace nodes, recurse to find nested synthInstance.
+    -- Skip isDefEq/synthInstance subtrees that aren't top-level synthesis
     if !Name.isPrefixOf `Meta.isDefEq td.cls &&
         !Name.isPrefixOf `Meta.synthInstance td.cls then
       let mut results := #[]
       for child in children do
-        results := results.append (← findSynthFailures child)
+        results := results.append (← go child)
       return results
     return #[]
-  | .compose a b =>
-    return (← findSynthFailures a) ++ (← findSynthFailures b)
-  | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m =>
-    findSynthFailures m
-  | _ => return #[]
+  ) (· ++ ·) #[] msg
 
-/-- Walk a synthesis trace tree and collect the instance names from successful
-`apply @Instance to Goal` nodes. Returns a set of instance name strings
-(the part between "apply " and " to "). -/
-partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) := do
-  match msg with
-  | .trace td header children =>
+/-- Collect instance names from successful `apply @Instance to Goal` trace nodes. -/
+private partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
+  foldTraces (fun td header children go => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if hasSubstr headerStr "apply" && !hasSubstr headerStr "❌" then
-        -- Successful application. Extract instance name.
-        let parts : List String := headerStr.splitOn "apply "
-        let instName := match parts with
-          | [_, rest] => match (rest.splitOn " to ") with
-            | name :: _ => name.trimAscii.toString
-            | _ => headerStr
-          | _ => headerStr
+      if headerStr.contains "apply" && !headerStr.startsWith "❌" then
         let mut result : Std.HashSet String := {}
-        result := result.insert instName
-        -- Also recurse into children for nested successes
+        result := result.insert (extractInstName headerStr)
         for child in children do
-          result := result.union (← findSynthSuccessApps child)
+          result := result.union (← go child)
         return result
       else
         let mut result : Std.HashSet String := {}
         for child in children do
-          result := result.union (← findSynthSuccessApps child)
+          result := result.union (← go child)
         return result
     let mut result : Std.HashSet String := {}
     for child in children do
-      result := result.union (← findSynthSuccessApps child)
+      result := result.union (← go child)
     return result
-  | .compose a b =>
-    return (← findSynthSuccessApps a).union (← findSynthSuccessApps b)
-  | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m =>
-    findSynthSuccessApps m
-  | _ => return {}
+  ) (·.union ·) {} msg
 
 /-- Deduplicate an array of `MessageData` by rendering to string. -/
 private def dedup (failures : Array MessageData) : BaseIO (Array MessageData) := do
@@ -404,15 +360,7 @@ elab_rules : command
           synthResults := synthResults.append (← findSynthFailures m.data)
         -- Filter to only applications that succeed with permissive transparency.
         let filteredResults ← synthResults.filterM fun (app, _) => do
-          let appStr ← app.toString
-          -- Extract instance name between "apply " and " to "
-          let parts : List String := appStr.splitOn "apply "
-          let instName := match parts with
-            | [_, rest] => match (rest.splitOn " to ") with
-              | name :: _ => name.trimAscii.toString
-              | _ => appStr
-            | _ => appStr
-          return permissiveSuccessApps.contains instName
+          return permissiveSuccessApps.contains (extractInstName (← app.toString))
         if filteredResults.isEmpty then
           -- Fall back to flat isDefEq leaf failures
           let mut leafFailures : Array MessageData := #[]
