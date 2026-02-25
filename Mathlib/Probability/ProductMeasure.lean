@@ -630,19 +630,19 @@ noncomputable def independentSetMeasure : Measure (Set ι) :=
   (infinitePi μ).comap (fun s i ↦ i ∈ s)
 
 theorem independent_set_measure_eq_map :
-    independent_set_measure μ = (infinitePi μ).map setOf :=
+    independentSetMeasure μ = (infinitePi μ).map setOf :=
   MeasurableEquiv.setOf.comap_symm
 
-instance [∀ i, IsProbabilityMeasure (μ i)] : IsProbabilityMeasure (independent_set_measure μ) := by
+instance [∀ i, IsProbabilityMeasure (μ i)] : IsProbabilityMeasure (independentSetMeasure μ) := by
   rw [independent_set_measure_eq_map, isProbabilityMeasure_map_iff (by fun_prop)]
   infer_instance
 
 lemma independent_set_measure_apply (S : Set (Set ι)) :
-    independent_set_measure μ S = (infinitePi μ) ((fun t i ↦ i ∈ t) '' S) :=
+    independentSetMeasure μ S = (infinitePi μ) ((fun t i ↦ i ∈ t) '' S) :=
   MeasurableEquiv.setOf.symm.measurableEmbedding.comap_apply ..
 
 lemma independent_set_measure_apply' (S : Set (Set ι)) :
-    independent_set_measure μ S  = (infinitePi μ) ((fun p ↦ {i | p i}) ⁻¹' S) :=
+    independentSetMeasure μ S  = (infinitePi μ) ((fun p ↦ {i | p i}) ⁻¹' S) :=
   MeasurableEquiv.setOf.symm.comap_apply ..
 
 end Set

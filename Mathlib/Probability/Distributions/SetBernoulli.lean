@@ -40,26 +40,26 @@ on `Set V` such that each element of `u` is taken with probability `p`, and the 
 `u` are never taken. -/
 @[expose]
 noncomputable def setBernoulli : Measure (Set ι) :=
-  independent_set_measure (fun i ↦ bernoulli_measure (i ∈ u) False p)
+  independentSetMeasure (fun i ↦ bernoulliMeasure (i ∈ u) False p)
 
 @[inherit_doc] scoped notation "setBer(" u ", " p ")" => setBernoulli u p
 
 variable (u p) in
 theorem setBernoulli_def :
-  setBer(u, p) = independent_set_measure (fun i ↦ bernoulli_measure (i ∈ u) False p) := rfl
+  setBer(u, p) = independentSetMeasure (fun i ↦ bernoulliMeasure (i ∈ u) False p) := rfl
 
 instance : IsProbabilityMeasure setBer(u, p) := by rw [setBernoulli_def]; infer_instance
 
 variable (u p) in
 lemma setBernoulli_eq_map :
     setBer(u, p) = .map (fun p : ι → Prop ↦ {i | p i})
-    (infinitePi fun i ↦ bernoulli_measure (i ∈ u) False p) :=
+    (infinitePi fun i ↦ bernoulliMeasure (i ∈ u) False p) :=
   MeasurableEquiv.setOf.comap_symm
 
 variable (u p) in
 lemma setBernoulli_eq_independent_set_measure_ite [∀ i, Decidable (i ∈ u)] :
-    setBer(u, p) = independent_set_measure
-      (fun i ↦ if i ∈ u then bernoulli_measure True False p else dirac false) := by
+    setBer(u, p) = independentSetMeasure
+      (fun i ↦ if i ∈ u then bernoulliMeasure True False p else dirac false) := by
   rw [setBernoulli_def]
   congr
   ext i s hs
@@ -80,8 +80,8 @@ variable [Countable ι]
 
 variable (u p) in
 theorem hasLaw_setBernoulli_of_bernoulli_iid [IsProbabilityMeasure P] (B : ι → Ω → Prop)
-    (hU : ∀ i, HasLaw (B i) (bernoulli_measure True False p) P) (hU' : iIndepFun B P) :
-    HasLaw ({i ∈ u | B i ·}) setBer(u, p) P where
+    (hU : ∀ i, HasLaw (B i) (bernoulliMeasure True False p) P) (hU' : iIndepFun B P) :
+    HasLaw ({i ∈ u | B i ·}) (setBer(u, p)) P where
   map_eq := by
     simp_rw [← Function.comp_def (f := fun B ↦ {i ∈ u | B i}) (g := fun ω : Ω ↦ (B · ω)),
       ← Function.comp_def (f := fun p ↦ {i | p i}) (g := fun (p : ι → Prop) i ↦ i ∈ u ∧ p i)]
@@ -105,7 +105,7 @@ theorem hasLaw_setBernoulli_of_uniform_iid [IsProbabilityMeasure P] (p : I) (U :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma setBernoulli_ae_subset : ∀ᵐ s ∂setBer(u, p), s ⊆ u := by
-  obtain ⟨Ω, hΩ, P, B, _, hB_law, hB_indep, _⟩ := exists_iid ι (bernoulli_measure True False p)
+  obtain ⟨_, _, _, B, _, hB_law, hB_indep, _⟩ := exists_iid ι (bernoulliMeasure True False p)
   rw [← (hasLaw_setBernoulli_of_bernoulli_iid u p B hB_law hB_indep).map_eq,
     ae_map_iff (by fun_prop) (by measurability)]
   filter_upwards with ω using by grind
@@ -161,7 +161,7 @@ section UpperSet
 theorem monotone_setBernoulli {S : Set (Set ι)} (hS_meas : MeasurableSet S) (hS : IsUpperSet S) :
     Monotone fun p ↦ setBer(Set.univ, p) S := by
   intro p q hpq
-  obtain ⟨Ω, hΩ, P, U, _, hU_law, hU_indep, _⟩ := exists_iid ι (ℙ : Measure I)
+  obtain ⟨_, _, _, U, _, hU_law, hU_indep, _⟩ := exists_iid ι (ℙ : Measure I)
   simp only [Set.mem_univ, true_and,
     ← (hasLaw_setBernoulli_of_uniform_iid p U hU_law hU_indep).map_eq,
     ← (hasLaw_setBernoulli_of_uniform_iid q U hU_law hU_indep).map_eq]
