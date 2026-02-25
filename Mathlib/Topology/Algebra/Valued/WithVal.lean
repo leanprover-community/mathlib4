@@ -464,13 +464,7 @@ instance : CoeHead (𝓞 (WithVal v)) (WithVal v) where
   coe x := RingOfIntegers.val x
 
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
-    IsIntegralClosure R ℤ (WithVal v) where
-  algebraMap_injective := WithVal.algebraMap_right_injective _
-    (IsIntegralClosure.algebraMap_injective R ℤ K)
-  isIntegral_iff := by
-    simp [← isIntegral_algHom_iff (WithVal.algEquiv ℤ v).toAlgHom (WithVal.algEquiv ℤ v).injective,
-      IsIntegralClosure.isIntegral_iff (A := R), WithVal.algebraMap_right_apply,
-      (WithVal.toVal_injective v).eq_iff]
+    IsIntegralClosure R ℤ (WithVal v) := .map _ (WithVal.algEquiv ℤ v).symm (fun _ ↦ rfl)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
