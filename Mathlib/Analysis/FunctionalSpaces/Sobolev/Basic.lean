@@ -29,7 +29,7 @@ variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] --[RCLike 𝕂]
   {F' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
     -- [NormedSpace 𝕂 F]
   {f f' : E → F} {n : ℕ∞} {k : ℕ∞} {p : ℝ≥0∞} {μ ν : Measure E}
-
+variable {T T' : 𝓓'(Ω, F)} {g g' : E → E →L[ℝ] F} {c : ℝ} {g g' : E → E →L[ℝ] F}
 section move
 
 lemma MeasureTheory.aeEq_iff {α β : Type*} [MeasurableSpace α] {μ : Measure α} {f g : α → β} :
@@ -77,29 +77,27 @@ structure IsRepresentedBy (T : 𝓓'(Ω, F)) (f : E → F) (μ : Measure E) : Pr
   locallyIntegrable : LocallyIntegrableOn f Ω μ
   eq_ofFun : T = ofFun Ω f μ
 
-lemma isRepresentedBy_of_ae (T : 𝓓'(Ω, F)) (h : f =ᵐ[μ.restrict Ω] f')
-    (hf : IsRepresentedBy T f μ) : IsRepresentedBy T f' μ := by
-  rcases hf with ⟨h1, h2⟩
-  refine ⟨fun x hx ↦ ?_, by rwa [h2, ofFun_ae_congr]⟩
-  obtain ⟨s, hs, hsf⟩ := h1 x hx
-  refine ⟨s ∩ Ω, Filter.inter_mem hs self_mem_nhdsWithin, ?_⟩
-  apply (hsf.mono_set inter_subset_left).congr_fun_ae
-  have : ae (μ.restrict (s ∩ Ω)) ≤ ae (μ.restrict Ω) := by
-    rw [Measure.ae_le_iff_absolutelyContinuous]
-    exact (Measure.restrict_mono inter_subset_right (by rfl)).absolutelyContinuous
-  exact h.filter_mono this
-
-lemma isRepresentedBy_congr_ae (T : 𝓓'(Ω, F)) (hf : f =ᵐ[μ.restrict Ω] f') :
+lemma isRepresentedBy_congr (hf : f =ᵐ[μ.restrict Ω] f') :
     IsRepresentedBy T f μ ↔ IsRepresentedBy T f' μ :=
-  ⟨isRepresentedBy_of_ae T hf, isRepresentedBy_of_ae T hf.symm⟩
+  ⟨isRepresentedBy_of_ae hf, isRepresentedBy_of_ae hf.symm⟩
+  where
+  isRepresentedBy_of_ae {f f' : E → F} (h : f =ᵐ[μ.restrict Ω] f')
+      (hf : IsRepresentedBy T f μ) : IsRepresentedBy T f' μ := by
+    rcases hf with ⟨h1, h2⟩
+    refine ⟨fun x hx ↦ ?_, by rwa [h2, ofFun_ae_congr]⟩
+    obtain ⟨s, hs, hsf⟩ := h1 x hx
+    refine ⟨s ∩ Ω, Filter.inter_mem hs self_mem_nhdsWithin, ?_⟩
+    apply (hsf.mono_set inter_subset_left).congr_fun_ae
+    have : ae (μ.restrict (s ∩ Ω)) ≤ ae (μ.restrict Ω) := by
+      rw [Measure.ae_le_iff_absolutelyContinuous]
+      exact (Measure.restrict_mono inter_subset_right (by rfl)).absolutelyContinuous
+    exact h.filter_mono this
 
 lemma isRepresentedBy_zero : IsRepresentedBy (0 : 𝓓'(Ω, F)) (0 : E → F) μ where
   locallyIntegrable := locallyIntegrable_zero.locallyIntegrableOn _
   eq_ofFun := by simp
 
 namespace IsRepresentedBy
-
-variable {T T' : 𝓓'(Ω, F)} {f f' : E → F} {c : ℝ}
 
 lemma add (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
     IsRepresentedBy (T + T') (f + f') μ where
@@ -135,13 +133,11 @@ this is 0 if the function is not locally integrable -/
 def weakDeriv (f : E → F) (μ : Measure E) : 𝓓'(Ω, E →L[ℝ] F) :=
   fderivCLM (ofFun Ω f μ)
 
-lemma weakDeriv_congr_ae /- (f f' : E → F) -/ (μ : Measure E) (h : f =ᵐ[μ] f') :
-    weakDeriv Ω f μ = weakDeriv Ω f' μ :=
-  sorry
-
+lemma weakDeriv_congr (h : f =ᵐ[μ.restrict Ω] f') : weakDeriv Ω f μ = weakDeriv Ω f' μ := by
+  simp_rw [weakDeriv, ofFun_ae_congr h]
 
 -- useful on its own?
-lemma weakDeriv_of_not_locallyIntegrableOn {f : E → F} (hf : ¬LocallyIntegrableOn f Ω μ) :
+lemma weakDeriv_of_not_locallyIntegrableOn (hf : ¬LocallyIntegrableOn f Ω μ) :
     weakDeriv Ω f μ = 0 := by
   simp [weakDeriv, ofFun_of_not_locallyIntegrable hf]
 
@@ -197,7 +193,6 @@ lemma weakDeriv_const [μ.IsAddHaarMeasure] [CompleteSpace F] (a : F) :
     exact φ.hasCompactSupport.smul_right
   · exact φ.contDiff.differentiable (mod_cast le_top)
 
-
 -- /-- `g` represents distribution `f` and is in `L^p`. -/
 -- structure Distribution.MemLpWith (f : 𝓓'(Ω, F)) (g : E → F) (p : ℝ≥0∞) (μ : Measure E) :
 --     Prop where
@@ -217,13 +212,10 @@ def HasWeakDeriv (f : E → F) (g : E → E →L[ℝ] F) (μ : Measure E) : Prop
   IsRepresentedBy (weakDeriv Ω f μ) g μ
   -- note(F): should we add `LocallyIntegrableOn f Ω μ` as condition here?
 
-lemma hasWeakDeriv_of_ae (h : f =ᵐ[μ.restrict Ω] f') (g : E → E →L[ℝ] F)
-    (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω f' g μ := by
-  sorry
-
-lemma hasWeakDeriv_congr_ae (h : f =ᵐ[μ.restrict Ω] f') (g : E → E →L[ℝ] F) :
-    HasWeakDeriv Ω f g μ ↔ HasWeakDeriv Ω f' g μ :=
-  ⟨fun hf ↦ hasWeakDeriv_of_ae h g hf, fun hf ↦ hasWeakDeriv_of_ae h.symm g hf⟩
+lemma hasWeakDeriv_congr (hf : f =ᵐ[μ.restrict Ω] f') (hg : g =ᵐ[μ.restrict Ω] g') :
+    HasWeakDeriv Ω f g μ ↔ HasWeakDeriv Ω f' g' μ := by
+  simp_rw [HasWeakDeriv, weakDeriv_congr hf]
+  apply isRepresentedBy_congr hg
 
 @[simp]
 lemma hasWeakDeriv_zero : HasWeakDeriv Ω (0 : E → F) 0 μ := by
@@ -235,8 +227,6 @@ lemma hasWeakderiv_const [μ.IsAddHaarMeasure] [CompleteSpace F] {a : F} :
   simp [HasWeakDeriv, weakDeriv_const, isRepresentedBy_zero]
 
 namespace HasWeakDeriv
-
-variable {g g' : E → E →L[ℝ] F} {c : ℝ}
 
 lemma add (hf : HasWeakDeriv Ω f g μ) (hf' : HasWeakDeriv Ω f' g' μ)
     (hfint : LocallyIntegrableOn f Ω μ) (hfint' : LocallyIntegrableOn f' Ω μ) :
@@ -268,15 +258,16 @@ structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries 
   hasWeakDeriv : ∀ m : ℕ, m < k → HasWeakDeriv Ω (g · m) (g · m.succ |>.curryLeft) μ
   memLp : ∀ m : ℕ, m ≤ k → MemLp (g · m) p (μ.restrict Ω)
 
--- Note(F): if we want this lemma, we have to weaken `HasWTaylorSeriesUpTo.zero_eq`.
-lemma hasWTaylorSeriesUpTo_congr_ae (h : f =ᵐ[μ.restrict Ω] f')
-  (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ∞) (μ : Measure E) :
-    HasWTaylorSeriesUpTo Ω f g k p μ ↔ HasWTaylorSeriesUpTo Ω f' g k p μ := by
-  sorry
-
 namespace HasWTaylorSeriesUpTo
 
 variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
+
+
+-- Note(F): if we want this lemma, we have to weaken `HasWTaylorSeriesUpTo.zero_eq`.
+lemma _root_.hasWTaylorSeriesUpTo_congr (hf : f =ᵐ[μ.restrict Ω] f')
+  (hg : g =ᵐ[μ.restrict Ω] g') (k : ℕ∞) (μ : Measure E) :
+    HasWTaylorSeriesUpTo Ω f g k p μ ↔ HasWTaylorSeriesUpTo Ω f' g k p μ := by
+  sorry
 
 lemma locallyIntegrableOn [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
     (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {n : ℕ} (hn : n ≤ k) :
@@ -291,13 +282,13 @@ lemma mono {k' : ℕ∞} (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hk : k' ≤ 
 
 -- TODO: add doc-string!
 def shrink_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {ν : Measure E}
-    (hν : (ν.restrict Ω) ≤ (μ.restrict Ω)) : E → FormalMultilinearSeries ℝ E F := by
+    (hν : ν.restrict Ω ≤ μ.restrict Ω) : E → FormalMultilinearSeries ℝ E F := by
   intro x k
   have aux := g x k
   sorry -- define a new power series, which are the weak derivatives w.r.t. ν instead
 
 lemma mono_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ)
-    {ν : Measure E} (hν : (ν.restrict Ω) ≤ (μ.restrict Ω)) :
+    {ν : Measure E} (hν : ν.restrict Ω ≤ μ.restrict Ω) :
     HasWTaylorSeriesUpTo Ω f (hf.shrink_measure hν) k p ν where
   zero_eq := sorry -- hf.zero_eq
   hasWeakDeriv m hm := by sorry -- should follow by construction
@@ -356,57 +347,48 @@ namespace MemSobolev
 
 variable {c : ℝ}
 
-section monotonicity
-
-lemma memLp (hf : MemSobolev Ω f 0 p μ) : MemLp f p (μ.restrict Ω) := by
+lemma memLp (hf : MemSobolev Ω f n p μ) : MemLp f p (μ.restrict Ω) := by
   obtain ⟨g, hg⟩ := hf
-  have aux' : (fun x ↦ (g x 0).curry0) = f := by
-    ext x
-    exact hg.zero_eq x
-  simp_rw [← aux']
-  have := hg.memLp 0 (by simp)
-  -- TODO: curry0 is linear, so this is fine here?
-  sorry
+  simp_rw [← funext hg.zero_eq]
+  exact hg.memLp 0 (zero_le _) |>.continuousLinearMap_comp
+    (L := (continuousMultilinearCurryFin0 ℝ E F).toContinuousLinearEquiv.toContinuousLinearMap)
+
+
+section monotonicity
 
 lemma memSobolev_zero_middle :
     MemSobolev Ω f 0 p μ ↔ MemLp f p (μ.restrict Ω) := by
   refine ⟨fun hf ↦ hf.memLp, fun hf ↦ ?_⟩
-  let S : E → FormalMultilinearSeries ℝ E F := fun x k ↦
-    if hk : k = 0 then
-      sorry --f.curry0--fun _a ↦ sorry
-    else 0
-  use S
+  use fun x ↦ Nat.rec (ContinuousMultilinearMap.uncurry0 _ _ (f x)) 0
   refine {
-    zero_eq x := sorry -- should be true by definition
-    hasWeakDeriv := by
-      intro m hm
-      apply False.elim
-      simp_all
-    memLp m hm := by
-      simp only [nonpos_iff_eq_zero, Nat.cast_eq_zero] at hm
-      rw [hm]
-      sorry -- similar to the step above: hf should imply this...
-  }
+    zero_eq x := by simp
+    hasWeakDeriv m := by simp
+    memLp m hm := ?_ }
+  simp_rw [nonpos_iff_eq_zero, Nat.cast_eq_zero] at hm
+  rw [hm]
+  simp_rw [Nat.rec_zero]
+  exact hf.continuousLinearMap_comp
+    (L := (continuousMultilinearCurryFin0 ℝ E F).symm.toContinuousLinearEquiv.toContinuousLinearMap)
 
 /-- `MemSobolev Ω f k p μ` is monotone in `k`:
 if `f ∈ W^{k,p}(Ω)` and `k' ≤ k`, then also `f ∈ W^{k',p}(Ω)`. -/
 lemma mono_k {k' : ℕ∞} (hf : MemSobolev Ω f k p μ) (hk' : k' ≤ k) : MemSobolev Ω f k' p μ := by
-  revert hf
-  exact fun ⟨g, hg⟩ ↦ ⟨g, hg.mono hk'⟩
+  obtain ⟨g, hg⟩ := hf
+  exact ⟨g, hg.mono hk'⟩
 
 /-- `MemSobolev Ω f k p μ` is monotone in the measure `μ`:
 if `ν ≤ μ` on `Ω`, then `MemSobolev Ω f k p μ` implies `MemSobolev Ω f k p ν`. -/
 lemma mono_measure (hf : MemSobolev Ω f k p μ)
     {ν : Measure E} (hν : (ν.restrict Ω) ≤ (μ.restrict Ω)) : MemSobolev Ω f k p ν := by
-  revert hf
-  exact fun ⟨g, hg⟩ ↦ ⟨hg.shrink_measure hν, hg.mono_measure hν⟩
+  obtain ⟨g, hg⟩ := hf
+  exact ⟨hg.shrink_measure hν, hg.mono_measure hν⟩
 
 /-- If `Ω` is bounded, `MemSobolev Ω f k p μ` is monotone in `p`:
 `f ∈ W^{k,p}(Ω)` and `q ≤ p`, then also `f ∈ W^{k,q}(Ω)`. -/
 lemma mono_p_of_measure_lt_top [IsFiniteMeasure μ] (hf : MemSobolev Ω f k p μ)
     {p' : ℝ≥0∞} (hp' : p' ≤ p) : MemSobolev Ω f k p' μ := by
-  revert hf
-  exact fun ⟨g, hg⟩ ↦ ⟨g, hg.mono_exponent hp'⟩
+  obtain ⟨g, hg⟩ := hf
+  exact ⟨g, hg.mono_exponent hp'⟩
 
 end monotonicity
 
@@ -440,13 +422,13 @@ lemma const (a : F) [IsFiniteMeasure μ] : MemSobolev Ω (fun _ : E ↦ a) k p �
   sorry
 
 /- Add analogous lemmas for RepresentedBy and HasWeakDeriv-/
-lemma _root_.memSobolev_congr_ae (h : f =ᵐ[μ.restrict Ω] f') :
+lemma _root_.memSobolev_congr (h : f =ᵐ[μ.restrict Ω] f') :
     MemSobolev Ω f k p μ ↔ MemSobolev Ω f' k p μ := by
   sorry
 
 lemma aeEq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p μ) :
     MemSobolev Ω f' k p μ :=
-  memSobolev_congr_ae h |>.mp hf
+  memSobolev_congr h |>.mp hf
 
 lemma aestronglyMeasurable (hf : MemSobolev Ω f k p μ) :
   AEStronglyMeasurable f (μ.restrict Ω) := sorry
@@ -482,7 +464,7 @@ lemma sobolevNorm_lt_top_iff : sobolevNorm Ω f k p μ < ∞ ↔ MemSobolev Ω f
 
 alias ⟨_, MemSobolev.sobolevNorm_lt_top⟩ := sobolevNorm_lt_top_iff
 
-lemma sobolevNorm_congr_ae (h : f =ᵐ[μ.restrict Ω] f') :
+lemma sobolevNorm_congr (h : f =ᵐ[μ.restrict Ω] f') :
     sobolevNorm Ω f k p μ = sobolevNorm Ω f' k p μ := by
   sorry
 
@@ -505,7 +487,7 @@ lemma eLpNorm_le_sobolevNorm : eLpNorm f p (μ.restrict Ω) ≤ sobolevNorm Ω f
 
 theorem sobolevNorm_eq_zero_iff (hf : AEStronglyMeasurable f μ) (hp : p ≠ 0) :
     sobolevNorm Ω f k p μ = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ (sobolevNorm_congr_ae h).trans sobolevNorm_zero⟩
+  refine ⟨fun h ↦ ?_, fun h ↦ (sobolevNorm_congr h).trans sobolevNorm_zero⟩
   simp_rw [← eLpNorm_eq_zero_iff hf.restrict hp, ← le_zero_iff, ← h, eLpNorm_le_sobolevNorm]
 
 end FinDim
@@ -567,9 +549,9 @@ def Sobolev (k : ℕ∞) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (μ : Measure E 
     [IsLocallyFiniteMeasure μ] :
     AddSubgroup (E →ₘ[μ.restrict Ω] F) where
   carrier := {f | MemSobolev Ω f k p μ}
-  zero_mem' := by simp [memSobolev_congr_ae AEEqFun.coeFn_zero, MemSobolev.zero]
-  add_mem' {f g} hf hg := by simp [memSobolev_congr_ae (AEEqFun.coeFn_add f g), hf.add hg]
-  neg_mem' {f} hf := by simp [memSobolev_congr_ae (AEEqFun.coeFn_neg f), hf.neg]
+  zero_mem' := by simp [memSobolev_congr AEEqFun.coeFn_zero, MemSobolev.zero]
+  add_mem' {f g} hf hg := by simp [memSobolev_congr (AEEqFun.coeFn_add f g), hf.add hg]
+  neg_mem' {f} hf := by simp [memSobolev_congr (AEEqFun.coeFn_neg f), hf.neg]
 
 open AEEqFun
 
@@ -720,7 +702,7 @@ theorem enorm_def (f : Sobolev Ω F k p μ) : ‖f‖ₑ = sobolevNorm Ω f k p 
 @[simp]
 lemma norm_toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) :
     ‖hf.toSobolev f‖ = (sobolevNorm Ω f k p μ).toReal := by
-  rw [norm_def, sobolevNorm_congr_ae hf.coeFn_toSobolev]
+  rw [norm_def, sobolevNorm_congr hf.coeFn_toSobolev]
 
 @[simp]
 theorem nnnorm_toSobolev (f : E → F) (hf : MemSobolev Ω f k p μ) :
@@ -734,13 +716,13 @@ lemma enorm_toSobolev {f : E → F} (hf : MemSobolev Ω f k p μ) :
 theorem dist_def (f g : Sobolev Ω F k p μ) : dist f g = (sobolevNorm Ω (⇑f - ⇑g) k p μ).toReal := by
   simp_rw [dist, norm_def]
   congr 1
-  apply sobolevNorm_congr_ae (coeFn_sub _ _)
+  apply sobolevNorm_congr (coeFn_sub _ _)
 
 theorem edist_def (f g : Sobolev Ω F k p μ) : edist f g = sobolevNorm Ω (⇑f - ⇑g) k p μ :=
   rfl
 
 protected theorem edist_dist (f g : Sobolev Ω F k p μ) : edist f g = .ofReal (dist f g) := by
-  rw [edist_def, dist_def, ← sobolevNorm_congr_ae (coeFn_sub _ _),
+  rw [edist_def, dist_def, ← sobolevNorm_congr (coeFn_sub _ _),
     ENNReal.ofReal_toReal (sobolevNorm_ne_top (f - g))]
 
 protected theorem dist_edist (f g : Sobolev Ω F k p μ) : dist f g = (edist f g).toReal :=
@@ -752,7 +734,7 @@ theorem dist_eq_norm (f g : Sobolev Ω F k p μ) : dist f g = ‖f - g‖ := rfl
 theorem edist_toSobolev_toSobolev (hf : MemSobolev Ω f k p μ) (hg : MemSobolev Ω g k p μ) :
     edist (hf.toSobolev f) (hg.toSobolev g) = sobolevNorm Ω (f - g) k p μ := by
   rw [edist_def]
-  exact sobolevNorm_congr_ae (hf.coeFn_toSobolev.sub hg.coeFn_toSobolev)
+  exact sobolevNorm_congr (hf.coeFn_toSobolev.sub hg.coeFn_toSobolev)
 
 @[simp]
 theorem edist_toSobolev_zero (hf : MemSobolev Ω f k p μ) :
@@ -761,7 +743,7 @@ theorem edist_toSobolev_zero (hf : MemSobolev Ω f k p μ) :
 
 @[simp]
 theorem nnnorm_zero : ‖(0 : Sobolev Ω F k p μ)‖₊ = 0 := by
-  rw [nnnorm_def, ZeroMemClass.coe_zero, sobolevNorm_congr_ae AEEqFun.coeFn_zero, sobolevNorm_zero,
+  rw [nnnorm_def, ZeroMemClass.coe_zero, sobolevNorm_congr AEEqFun.coeFn_zero, sobolevNorm_zero,
     ENNReal.toNNReal_zero]
 
 @[simp]
@@ -786,7 +768,7 @@ theorem norm_eq_zero_iff {f : Sobolev Ω F k p μ} : ‖f‖ = 0 ↔ f = 0 := by
 
 @[simp]
 theorem norm_neg (f : Sobolev Ω F k p μ) : ‖-f‖ = ‖f‖ := by
-  simp_rw [norm_def, sobolevNorm_congr_ae (coeFn_neg _), sobolevNorm_neg]
+  simp_rw [norm_def, sobolevNorm_congr (coeFn_neg _), sobolevNorm_neg]
 
 @[simp]
 theorem nnnorm_neg (f : Sobolev Ω F k p μ) : ‖-f‖₊ = ‖f‖₊ := by
@@ -801,7 +783,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Sobo
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             simpa only [ge_iff_le, enorm, ←ENNReal.coe_add, ENNReal.coe_le_coe] using this
           simp only [Sobolev.enorm_def]
-          exact (sobolevNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
+          exact (sobolevNorm_congr (AEEqFun.coeFn_add _ _)).trans_le
             (sobolevNorm_add_le (Sobolev.aestronglyMeasurable _) (Sobolev.aestronglyMeasurable _))
         eq_zero_of_map_eq_zero' _ := norm_eq_zero_iff.1 } with
     edist := edist
