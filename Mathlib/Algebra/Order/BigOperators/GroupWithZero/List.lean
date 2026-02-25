@@ -63,6 +63,11 @@ lemma SublistForall₂.prod_le_prod₀ {l₁ l₂ : List R}
   let ⟨_, hall, hsub⟩ := sublistForall₂_iff.1 h
   (hall.prod_le_prod₀ h0).trans <| hsub.prod_le_prod₀ h₁
 
+lemma prod_le_prod₀ {ι : Type*} {l : List ι} {f g : ι → R}
+    (h0 : ∀ i ∈ l, 0 ≤ f i) (h : ∀ i ∈ l, f i ≤ g i) :
+    (l.map f).prod ≤ (l.map g).prod :=
+  Forall₂.prod_le_prod₀ (by simpa) (by simpa)
+
 lemma one_le_prod₀ {s : List R} (h : ∀ a ∈ s, 1 ≤ a) : 1 ≤ s.prod := by
   induction s with
   | nil => simp
@@ -109,6 +114,29 @@ lemma prod_pos {s : List R} (h : ∀ a ∈ s, 0 < a) : 0 < s.prod := by
     simp only [prod_cons]
     simp only [mem_cons, forall_eq_or_imp] at h
     exact mul_pos h.1 (hind h.2)
+
+lemma prod_lt_prod₀ {ι : Type*} {l : List ι} (f g : ι → R)
+    (hf : ∀ i ∈ l, 0 < f i) (h₁ : ∀ i ∈ l, f i ≤ g i) (h₂ : ∃ i ∈ l, f i < g i) :
+    (l.map f).prod < (l.map g).prod := by
+  induction l with
+  | nil => simp at h₂
+  | cons i l ihl =>
+    simp only [forall_mem_cons, map_cons, prod_cons] at hf h₁ ⊢
+    simp only [mem_cons, exists_eq_or_imp] at h₂
+    have := posMulStrictMono_iff_mulPosStrictMono.1 ‹PosMulStrictMono R›
+    cases h₂ with
+    | inl h =>
+      exact mul_lt_mul h (prod_le_prod₀ (fun j hj => (hf.2 j hj).le) h₁.2)
+        (prod_pos (by simpa using hf.2)) (hf.1.trans_le h₁.1).le
+    | inr h =>
+      exact (mul_le_mul_of_nonneg_right h₁.1 (prod_pos (by simpa using hf.2)).le).trans_lt
+        (mul_lt_mul_of_pos_left (ihl hf.2 h₁.2 h) (hf.1.trans_le h₁.1))
+
+lemma prod_lt_prod_of_ne_nil₀ {ι : Type*} {l : List ι} (hl : l ≠ []) (f g : ι → R)
+    (hf : ∀ i ∈ l, 0 < f i) (hlt : ∀ i ∈ l, f i < g i) :
+    (l.map f).prod < (l.map g).prod :=
+  prod_lt_prod₀ f g hf (fun i hi => (hlt i hi).le) <|
+    (exists_mem_of_ne_nil l hl).imp fun i hi => ⟨hi, hlt i hi⟩
 
 theorem prod_map_lt_prod_map {ι : Type*} {s : List ι} (hs : s ≠ [])
     (f : ι → R) (g : ι → R) (h0 : ∀ i ∈ s, 0 < f i) (h : ∀ i ∈ s, f i < g i) :
