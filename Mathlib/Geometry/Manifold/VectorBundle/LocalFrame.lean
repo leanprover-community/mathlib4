@@ -418,7 +418,7 @@ lemma localFrame_coeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (i : ι) :
 variable (e b) in
 @[simp]
 lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
-    (localFrame_coeff I e b i x) (s x) = (e.basisAt b hx).repr (s x) i := by
+    localFrame_coeff I e b i x (s x) = (e.basisAt b hx).repr (s x) i := by
   have he := e.isLocalFrameOn_localFrame_baseSet I 1 b
   have hbasis : e.basisAt b hx = he.toBasisAt hx := by
     ext j
@@ -630,9 +630,31 @@ lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
     (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) :
     e.localFrame_coeff I b i x' (localExtensionOn b e v x') =
       e.localFrame_coeff I b i x (localExtensionOn b e v x) := by
-  simp [localExtensionOn, hx, hx']
+  have : (Trivialization.localFrame_coeff I e b i x) (localExtensionOn b e v x) = (Trivialization.localFrame_coeff I e b i x) v := by
+    simp [localExtensionOn, hx]
+  have : (Trivialization.localFrame_coeff I e b i x') (localExtensionOn b e v x') = (Trivialization.localFrame_coeff I e b i x) v := by
+    simp only [localExtensionOn, hx, ↓reduceDIte]
+    --simp [localExtensionOn, hx, hx']
+    set bx := e.basisAt b hx
+    set bx' := e.basisAt b hx'
+    rw [bx.sum_repr (u := v)]
+  simp [localExtensionOn, hx, hx', ↓reduceDIte]
+  simp
+  simp only [Basis.sum_repr]
+  simp only [map_sum, map_smul]
+  simp only [hx, hx', Trivialization.localFrame_apply_of_mem_baseSet]
+
+  simp only [smul_eq_mul, hx, Trivialization.localFrame_apply_of_mem_baseSet]
+  --simp
+  --simp only [Trivialization.localFrame_apply_of_mem_baseSet, ]
+  --simp only [hx,
+  --  Trivialization.localFrame_apply_of_mem_baseSet, Basis.sum_repr]
+  --rw [Module.Basis.sum_repr]
+
+  simp [hx, hx']
   sorry -- TODO: proof was done now
 
+#exit
 -- By construction, localExtensionOn is a linear map.
 
 variable (b e) in
