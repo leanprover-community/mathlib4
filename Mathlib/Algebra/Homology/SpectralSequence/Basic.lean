@@ -17,7 +17,7 @@ in an abelian category `C` with `Eᵣ`-pages defined from `r₀ : ℤ` having di
 given by complex shapes `c : ℤ → ComplexShape ι`, where `ι` is the index type
 for the objects on each page (e.g. `ι := ℤ × ℤ` or `ι := ℕ × ℕ`).
 A spectral sequence is defined as the data of a sequence of homological complexes
-(the pages) and a sequence of isomorphism between the homology of a page and the
+(the pages) and a sequence of isomorphisms between the homology of a page and the
 next page.
 
 -/
