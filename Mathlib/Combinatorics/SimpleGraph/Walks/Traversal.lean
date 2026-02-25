@@ -29,6 +29,7 @@ walks
 @[expose] public section
 
 namespace SimpleGraph
+open HasAdj
 
 namespace Walk
 
@@ -196,14 +197,14 @@ lemma support_getElem_length_sub_one_eq_penultimate {p : G.Walk u v} :
 
 /-- The first dart of a walk. -/
 @[simps]
-def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
+def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : Dart G where
   fst := v
   snd := p.snd
   adj := p.adj_snd hp
 
 /-- The last dart of a walk. -/
 @[simps]
-def lastDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
+def lastDart (p : G.Walk v w) (hp : ¬ p.Nil) : Dart G where
   fst := p.penultimate
   snd := w
   adj := p.adj_penultimate hp

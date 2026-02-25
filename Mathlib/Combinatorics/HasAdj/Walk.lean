@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.HasAdj.Basic
 public import Mathlib.Data.List.Chain
 
 /-!
+# Walks in graphs
+
+This file defines walks for a general `HasAdj` structure.
 
 -/
 
@@ -19,6 +22,7 @@ namespace HasAdj
 
 variable {α : Type*} {Gr : Type*} [HasAdj α Gr]
 
+/-- A walk is a sequence of adjacent vertices. -/
 structure Walk (G : Gr) where
   support : List α
   support_verts (u : α) (hu : u ∈ support) : u ∈ verts G := by aesop

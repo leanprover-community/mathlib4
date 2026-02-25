@@ -47,6 +47,7 @@ acyclic graphs, trees
 namespace SimpleGraph
 
 open Walk
+open HasAdj
 
 variable {V V' : Type*} (G : SimpleGraph V) (G' : SimpleGraph V')
 

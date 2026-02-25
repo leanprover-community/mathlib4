@@ -39,6 +39,7 @@ walks
 @[expose] public section
 
 namespace SimpleGraph
+open HasAdj
 
 universe u
 variable {V : Type u} (G : SimpleGraph V) {u v w : V}
@@ -123,7 +124,7 @@ def support {u v : V} : G.Walk u v → List V
   | cons _ p => u :: p.support
 
 /-- The `darts` of a walk is the list of darts it visits in order. -/
-def darts {u v : V} : G.Walk u v → List G.Dart
+def darts {u v : V} : G.Walk u v → List (Dart G)
   | nil => []
   | cons h p => ⟨(u, _), h⟩ :: p.darts
 
@@ -193,13 +194,13 @@ theorem isChain_adj_support {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.Adj
 
 @[deprecated (since := "2025-09-24")] alias chain'_adj_support := isChain_adj_support
 
-theorem isChain_dartAdj_cons_darts {d : G.Dart} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
-    List.IsChain G.DartAdj (d :: p.darts) := by
+theorem isChain_dartAdj_cons_darts {d : Dart G} {v w : V} (h : d.snd = v) (p : G.Walk v w) :
+    List.IsChain (DartAdj G) (d :: p.darts) := by
   induction p generalizing d with
   | nil => exact .singleton _
   | cons h' p ih => exact .cons_cons h (ih rfl)
 
-theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain G.DartAdj p.darts
+theorem isChain_dartAdj_darts {u v : V} : ∀ (p : G.Walk u v), List.IsChain (DartAdj G) p.darts
   | nil => .nil
   -- Porting note: needed to defer `rfl` to help elaboration
   | cons h p => isChain_dartAdj_cons_darts (by rfl) p
@@ -284,12 +285,12 @@ theorem mem_darts_iff_infix_support {u' v'} {p : G.Walk u v} (h : G.Adj u' v') :
     convert p.darts.getElem_mem (n := i) (by grind)
       <;> grind [fst_darts_getElem, snd_darts_getElem]
 
-theorem mem_darts_iff_fst_snd_infix_support {p : G.Walk u v} {d : G.Dart} :
+theorem mem_darts_iff_fst_snd_infix_support {p : G.Walk u v} {d : Dart G} :
     d ∈ p.darts ↔ [d.fst, d.snd] <:+: p.support :=
   mem_darts_iff_infix_support ..
 
 theorem dart_fst_mem_support_of_mem_darts {u v : V} :
-    ∀ (p : G.Walk u v) {d : G.Dart}, d ∈ p.darts → d.fst ∈ p.support
+    ∀ (p : G.Walk u v) {d : Dart G}, d ∈ p.darts → d.fst ∈ p.support
   | cons h p', d, hd => by
     simp only [support_cons, darts_cons, List.mem_cons] at hd ⊢
     rcases hd with rfl | hd
@@ -323,7 +324,7 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
     obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₃] using h
     rw [edges_injective h₃]
 
-theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
+theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List (Dart G)) :=
   edges_injective.of_comp
 
 /-- The `Set` of edges of a walk. -/
@@ -422,7 +423,7 @@ theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : G.Walk u v}
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
-    ∃ d : G.Dart, d ∈ p.darts ∧ d.fst ∈ S ∧ d.snd ∉ S := by
+    ∃ d : (Dart G), d ∈ p.darts ∧ d.fst ∈ S ∧ d.snd ∉ S := by
   induction p with
   | nil => cases vS uS
   | cons a p' ih =>
