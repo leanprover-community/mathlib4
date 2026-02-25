@@ -133,6 +133,7 @@ abbrev closureCommGroupOfComm {k : Set G} (hcomm : ∀ x ∈ k, ∀ y ∈ k, x *
       have := closure_le_centralizer_centralizer k
       Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
+set_option backward.whnf.reducibleClassField false in
 /-- The conjugation action of N(H) on H. -/
 @[simps]
 instance : MulDistribMulAction H.normalizer H where

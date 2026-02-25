@@ -67,6 +67,22 @@ theorem rayleighQuotient_add (S : E →L[𝕜] E) {x : E} :
     (T + S).rayleighQuotient x = T.rayleighQuotient x + S.rayleighQuotient x := by
   simp [rayleighQuotient, reApplyInnerSelf_apply, inner_add_left, add_div]
 
+@[simp]
+theorem rayleighQuotient_zero_apply (x : E) : rayleighQuotient (0 : E →L[𝕜] E) x = 0 := by
+  simp [reApplyInnerSelf_apply]
+
+@[simp]
+theorem rayleighQuotient_apply_zero : rayleighQuotient T 0 = 0 := by
+  simp [reApplyInnerSelf_apply]
+
+@[simp]
+theorem rayleighQuotient_neg_apply (x : E) : rayleighQuotient (-T) x = -rayleighQuotient T x := by
+  simp [rayleighQuotient, reApplyInnerSelf_apply, neg_div]
+
+@[simp]
+theorem rayleighQuotient_apply_neg (x : E) : rayleighQuotient T (-x) = rayleighQuotient T x := by
+  simp [rayleighQuotient, reApplyInnerSelf_apply]
+
 theorem image_rayleigh_eq_image_rayleigh_sphere {r : ℝ} (hr : 0 < r) :
     rayleighQuotient T '' {0}ᶜ = rayleighQuotient T '' sphere 0 r := by
   ext a
@@ -112,7 +128,6 @@ section Real
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F →L[ℝ] F}
     (hT : (T : F →ₗ[ℝ] F).IsSymmetric) (x₀ : F) :
     HasStrictFDerivAt T.reApplyInnerSelf (2 • (innerSL ℝ (T x₀))) x₀ := by
@@ -124,7 +139,6 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
 
 variable [CompleteSpace F] {T : F →L[ℝ] F}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem linearly_dependent_of_isLocalExtrOn (hT : IsSelfAdjoint T) {x₀ : F}
     (hextr : IsLocalExtrOn T.reApplyInnerSelf (sphere (0 : F) ‖x₀‖) x₀) :
     ∃ a b : ℝ, (a, b) ≠ 0 ∧ a • x₀ + b • T x₀ = 0 := by

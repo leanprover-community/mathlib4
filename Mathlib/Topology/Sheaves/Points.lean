@@ -31,27 +31,19 @@ open CategoryTheory GrothendieckTopology TopologicalSpace
 
 variable {X : Type u} [TopologicalSpace X] (x : X)
 
-/-- Given a topological space `X` and `x : X`, this is the functor `Opens X ⥤ Type u`
-which sends `V` to a singleton when `x : X` and to the empty type otherwise. -/
-def pointGrothendieckTopology.fiber : Opens X ⥤ Type u where
-  obj U := ULift.{u} (PLift (x ∈ U))
-  map f h := ⟨⟨leOfHom f h.down.down⟩⟩
-
-instance : IsCofiltered (pointGrothendieckTopology.fiber x).Elements where
-  nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
-  cone_objs := by
-    rintro ⟨U, ⟨⟨hU⟩⟩⟩ ⟨V, ⟨⟨hV⟩⟩⟩
-    exact ⟨⟨U ⊓ V, ⟨⟨⟨hU, hV⟩⟩⟩⟩, ⟨homOfLE (by simp), rfl⟩,
-      ⟨homOfLE (by simp), rfl⟩, ⟨⟩⟩
-  cone_maps _ _ _ _ := ⟨_, 𝟙 _, rfl⟩
-
-instance : InitiallySmall.{u} (pointGrothendieckTopology.fiber x).Elements :=
-  initiallySmall_of_essentiallySmall _
-
 /-- Given a topological space `X` and `x : X`, this is the point of the site
 `(Opens X, Opens.grothendieckTopology X)` corresponding to `x`. -/
 def pointGrothendieckTopology : Point.{u} (grothendieckTopology X) where
-  fiber := pointGrothendieckTopology.fiber x
+  fiber.obj U := ULift.{u} (PLift (x ∈ U))
+  fiber.map f h := ⟨⟨leOfHom f h.down.down⟩⟩
+  isCofiltered :=
+    { nonempty := ⟨⊤, ⟨⟨by simp⟩⟩⟩
+      cone_objs := by
+        rintro ⟨U, ⟨⟨hU⟩⟩⟩ ⟨V, ⟨⟨hV⟩⟩⟩
+        exact ⟨⟨U ⊓ V, ⟨⟨⟨hU, hV⟩⟩⟩⟩, ⟨homOfLE (by simp), rfl⟩,
+          ⟨homOfLE (by simp), rfl⟩, ⟨⟩⟩
+      cone_maps _ _ _ _ := ⟨_, 𝟙 _, rfl⟩ }
+  initiallySmall := initiallySmall_of_essentiallySmall _
   jointly_surjective := by
     rintro U R hR ⟨⟨hU⟩⟩
     obtain ⟨V, f, hf, hV⟩ := hR x hU

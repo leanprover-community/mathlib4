@@ -155,6 +155,7 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
 the fields `whiskerList_eq` and following were all filled by the `cat_disch` auto_param. -/
 attribute [local simp] transportStruct in
 set_option backward.isDefEq.respectTransparency false in
+set_option backward.whnf.reducibleClassField false in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=

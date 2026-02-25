@@ -53,7 +53,6 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
   · lia
   · assumption
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem not_power_nat_pow {n p q : ℕ}
     (h_coprime : p.Coprime q)
     (hq : 0 < q)
@@ -156,7 +155,6 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   apply Nat.Coprime.symm
   simpa [hx'] using (show x'.natAbs.Coprime y from Rat.reduced q)
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem not_power_rat_of_num {a b d : ℕ}
     (h_coprime : a.Coprime b) (ha : ∀ x, a ≠ x ^ d) (q : ℚ) :
     (a / b : ℚ) ≠ q ^ d := by
@@ -169,7 +167,6 @@ private theorem not_power_rat_of_num {a b d : ℕ}
     rw [← h_odd.pow_nonneg_iff, ← hq]
     positivity
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_den k_num : ℕ}
     (hx_isNNRat : IsNNRat x x_num x_den)
     (hy_isNNRat : IsNNRat y y_num y_den)
@@ -200,7 +197,6 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     · apply not_power_nat_pow_of_bounds hy_den_pos hy_coprime hn1 hn2
   · positivity
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_den k_den : ℕ}
     (hx_isNNRat : IsNNRat x x_num x_den)
     (hy_isNNRat : IsNNRat y y_num y_den)
@@ -226,6 +222,7 @@ private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     Irrational (x ^ y) :=
   irrational_rpow_rat_rat_of_num hx_isNat.to_isNNRat hy_isNNRat (by simp) hy_coprime hn1 hn2
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)
@@ -237,6 +234,7 @@ private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     hn1 hn2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     (hx_isNNRat : IsNNRat x num den)
     (hx_coprime : Nat.Coprime num den)

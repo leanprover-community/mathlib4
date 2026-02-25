@@ -328,7 +328,6 @@ theorem exists_genWeightSpace_zero_le_ker_of_isNoetherian
     ∃ k : ℕ, genWeightSpace M (0 : L → R) ≤ LinearMap.ker (toEnd R L M x ^ k) := by
   simpa using exists_genWeightSpace_le_ker_of_isNoetherian M (0 : L → R) x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_toEnd_sub_algebraMap [IsNoetherian R M] (χ : L → R) (x : L) :
     _root_.IsNilpotent <| toEnd R L (genWeightSpace M χ) x - algebraMap R _ (χ x) := by
   have : toEnd R L (genWeightSpace M χ) x - algebraMap R _ (χ x) =

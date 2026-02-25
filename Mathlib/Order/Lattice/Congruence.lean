@@ -114,6 +114,7 @@ variable [FunLike F α β]
 
 open Function
 
+set_option backward.whnf.reducibleClassField false in
 /-- The kernel of a lattice homomorphism as a lattice congruence. -/
 @[simps!]
 def ker [LatticeHomClass F α β] (f : F) : LatticeCon α where
