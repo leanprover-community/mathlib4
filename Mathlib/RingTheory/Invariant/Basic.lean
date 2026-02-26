@@ -94,7 +94,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 instance (H : Subgroup G) [H.Normal] :
-    MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
+    MulSemiringAction (G ⧸ H) (FixedPoints.subring H B) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
     simpa [mul_smul] using congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
     rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
@@ -108,15 +108,15 @@ instance (H : Subgroup G) [H.Normal] :
   smul_mul := Quotient.ind fun _ _ _ ↦ Subtype.ext (MulSemiringAction.smul_mul _ _ _)
 
 instance (H : Subgroup G) [H.Normal] :
-    MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra A B H) :=
-  inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
+    MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra H A B) :=
+  inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring H B))
 
 instance (H : Subgroup G) [H.Normal] :
-    SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra A B H) where
+    SMulCommClass (G ⧸ H) A (FixedPoints.subalgebra H A B) where
   smul_comm := Quotient.ind fun g r h ↦ Subtype.ext (smul_comm g r h.1)
 
 instance (H : Subgroup G) [H.Normal] [Algebra.IsInvariant A B G] :
-    Algebra.IsInvariant A (FixedPoints.subalgebra A B H) (G ⧸ H) where
+    Algebra.IsInvariant A (FixedPoints.subalgebra H A B) (G ⧸ H) where
   isInvariant x hx := by
     obtain ⟨y, hy⟩ := Algebra.IsInvariant.isInvariant (A := A) (G := G) x.1
       (fun g ↦ congr_arg Subtype.val (hx g))
