@@ -129,18 +129,18 @@ normed vector spaces `F`. In fact, we only take in the same universe as `⨂[�
 prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the same result.
 -/
 noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
-  sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : SeminormedAddCommGroup G)
+  sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : AddCommGroup G) (_ : SeminormedAddCommGroup G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
   (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}
 
 lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
-    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
+    (_ : AddCommGroup G) (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
     p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))} := by
   existsi projectiveSeminorm
   rw [mem_upperBounds]
   simp only [Set.mem_setOf_eq, forall_exists_index]
-  intro p G _ _ hp
+  intro p G _ _ _ hp
   rw [hp]
   intro x
   simp only [Seminorm.comp_apply, coe_normSeminorm]
@@ -148,13 +148,15 @@ lemma dualSeminorms_bounded : BddAbove {p | ∃ (G : Type (max uι u𝕜 uE))
 
 theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     injectiveSeminorm x = ⨆ p : {p | ∃ (G : Type (max uι u𝕜 uE))
-    (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜
+    (_ : AddCommGroup G) (_ : SeminormedAddCommGroup G) (_ : NormedSpace 𝕜 G),
+    p = Seminorm.comp (normSeminorm 𝕜
     (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
     (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}, p.1 x := by
   simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
 set_option backward.isDefEq.respectTransparency false in
+set_option maxHeartbeats 600000 in
 theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
     /- If `F` were in `Type (max uι u𝕜 uE)` (which is the type of `⨂[𝕜] i, E i`), then the
@@ -201,7 +203,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
     simp only [injectiveSeminorm]
     refine le_csSup dualSeminorms_bounded ?_
     rw [Set.mem_setOf]
-    existsi G, inferInstance, inferInstance
+    existsi G, inferInstance, inferInstance, inferInstance
     rfl
   refine le_trans ?_ (mul_le_mul_of_nonneg_left (hle x) (norm_nonneg f'))
   simp only [Seminorm.comp_apply, coe_normSeminorm, ← toDualContinuousMultilinearMap_apply_apply]
@@ -214,14 +216,14 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
   refine csSup_le ?_ ?_
   · existsi 0
     simp only [Set.mem_setOf_eq]
-    existsi PUnit, inferInstance, inferInstance
+    existsi PUnit, inferInstance, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
     rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit.{(max (max uE uι) u𝕜) + 1} x) 0,
       norm_zero]
   · intro p hp
     simp only [Set.mem_setOf_eq] at hp
-    obtain ⟨G, _, _, h⟩ := hp
+    obtain ⟨G, _, _, _, h⟩ := hp
     rw [h]; intro x; simp only [Seminorm.comp_apply, coe_normSeminorm]
     exact toDualContinuousMultilinearMap_le_projectiveSeminorm _
 
@@ -394,8 +396,10 @@ protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
 -- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.
 open Function in
 private theorem mapL_add_smul_aux {ι : Type uι}
-    {E : ι → Type uE} [(i : ι) → SeminormedAddCommGroup (E i)] [(i : ι) → NormedSpace 𝕜 (E i)]
-    {E' : ι → Type u_1} [(i : ι) → SeminormedAddCommGroup (E' i)] [(i : ι) → NormedSpace 𝕜 (E' i)]
+    {E : ι → Type uE} [(i : ι) → AddCommGroup (E i)] [(i : ι) → SeminormedAddCommGroup (E i)]
+    [(i : ι) → NormedSpace 𝕜 (E i)]
+    {E' : ι → Type u_1} [(i : ι) → AddCommGroup (E' i)]
+    [(i : ι) → SeminormedAddCommGroup (E' i)] [(i : ι) → NormedSpace 𝕜 (E' i)]
     (f : (i : ι) → E i →L[𝕜] E' i)
     [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =

@@ -481,8 +481,10 @@ theorem toLp_eq_mk (f : α →ₛ E) (hf : MemLp f p μ) :
     (toLp f hf : α →ₘ[μ] E) = AEEqFun.mk f f.aestronglyMeasurable :=
   rfl
 
-theorem toLp_zero : toLp (0 : α →ₛ E) MemLp.zero = (0 : Lp.simpleFunc E p μ) :=
-  rfl
+theorem toLp_zero : toLp (0 : α →ₛ E) (MemLp.zero (α := α) (ε := E) (p := p) (μ := μ)) =
+    (0 : Lp.simpleFunc E p μ) := by
+  apply SetCoe.ext
+  exact Subtype.ext rfl
 
 theorem toLp_add (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
     toLp (f + g) (hf.add hg) = toLp f hf + toLp g hg :=
@@ -911,7 +913,7 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
 section Integrable
 
 @[inherit_doc MeasureTheory.Lp.simpleFunc]
-notation:25 α " →₁ₛ[" μ "] " E => @MeasureTheory.Lp.simpleFunc α E _ _ 1 μ
+notation:25 α " →₁ₛ[" μ "] " E => @MeasureTheory.Lp.simpleFunc α E _ _ _ 1 μ
 
 theorem L1.SimpleFunc.toLp_one_eq_toL1 (f : α →ₛ E) (hf : Integrable f μ) :
     (Lp.simpleFunc.toLp f (memLp_one_iff_integrable.2 hf) : α →₁[μ] E) = hf.toL1 f :=

@@ -883,17 +883,17 @@ def nontriviallyNormedField [CompleteSpace K] : NontriviallyNormedField L where
     ⟨algebraMap K L x, hx.trans_eq <| (spectralNorm_extends _).symm⟩
 
 /-- `L` with the spectral norm is a `normed_add_comm_group`. -/
-def normedAddCommGroup : NormedAddCommGroup L := by
-  haveI : NormedField L := normedField K L
-  infer_instance
+def normedAddCommGroup : NormedAddCommGroup L :=
+  letI := normedField K L
+  NonUnitalNormedRing.toNormedAddCommGroup
 
 /-- `L` with the spectral norm is a `seminormed_add_comm_group`. -/
-def seminormedAddCommGroup : SeminormedAddCommGroup L := by
-  have : NormedField L := normedField K L
-  infer_instance
+def seminormedAddCommGroup : SeminormedAddCommGroup L :=
+  letI := normedField K L
+  NonUnitalSeminormedRing.toSeminormedAddCommGroup
 
 /-- `L` with the spectral norm is a `normed_space` over `K`. -/
-def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
+def normedSpace : @NormedSpace K L _ _ (seminormedAddCommGroup K L) :=
   letI _ := seminormedAddCommGroup K L
   { (inferInstance : Module K L) with
     norm_smul_le r x := by

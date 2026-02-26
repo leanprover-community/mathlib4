@@ -56,7 +56,7 @@ universe u wE wF wG v
 variable {𝕜 : Type u} {n : ℕ} {E : Type wE} {F : Type wF} {G : Type wG} {ι : Type v}
   [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
   [AddCommGroup G] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 /-!
