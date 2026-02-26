@@ -176,12 +176,12 @@ variable [DecidableEq I] [DecidableEq J]
 
 @[simp]
 theorem isUnit_comp_iff {M : Matrix I I (Matrix J J R)} : IsUnit (comp _ _ _ _ _ M) ↔ IsUnit M :=
-  isUnit_map_iff (compAlgEquiv _ _ _ ℕ) M
+  isUnit_map_iff (compAlgEquiv _ _ R ℕ) M
 
 @[simp]
 theorem isUnit_comp_symm_iff {M : Matrix (I × J) (I × J) R} :
     IsUnit (comp _ _ _ _ _ |>.symm M) ↔ IsUnit M :=
-  isUnit_map_iff (compAlgEquiv _ _ _ ℕ).symm M
+  isUnit_map_iff (compAlgEquiv _ _ R ℕ).symm M
 
 end Algebra
 
