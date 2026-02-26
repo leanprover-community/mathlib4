@@ -175,7 +175,7 @@ lemma midπ_w (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) :
   limit.w _ _
 
 @[reassoc (attr := simp)]
-lemma midπ_w_f (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) (i : ℤ):
+lemma midπ_w_f (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) (i : ℤ) :
     (midπ f n₀ q₂).f i ≫ ((functor f n₀).map (homOfLE hq).op).hom.h.f i =
       (midπ f n₀ q₁).f i := by
   rw [← midπ_w f n₀ q₁ q₂ hq]
@@ -213,7 +213,18 @@ lemma ι_midπ_f (q : ℕ) (i : ℤ) : (ι f n₀).f i ≫ (midπ f n₀ q).f i 
 noncomputable def π : mid f n₀ ⟶ L := midπ f n₀ 0 ≫ ((functor f n₀).obj (op 0)).obj.π
 
 @[reassoc (attr := simp)]
-lemma ι_π : ι f n₀ ≫ π f n₀ = f := by simp [π]
+lemma ι_π : ι f n₀ ≫ π f n₀ = f := by
+  simp [π]
+
+@[reassoc (attr := simp)]
+lemma midπ_π (q : ℕ) : midπ f n₀ q ≫ ((functor f n₀).obj (op q)).obj.π = π f n₀ := by
+  simp [π, ← midπ_w_assoc f n₀ 0 q (by lia)]
+
+@[reassoc (attr := simp)]
+lemma midπ_π_f (q : ℕ) (i : ℤ) :
+    (midπ f n₀ q).f i ≫ ((functor f n₀).obj (op q)).obj.π.f i = (π f n₀).f i := by
+  rw [← midπ_π f n₀ q]
+  dsimp
 
 instance : (mid f n₀).IsStrictlyGE (n₀ + 1) := by
   rw [isStrictlyGE_iff]
@@ -235,7 +246,13 @@ instance : QuasiIso (ι f n₀) where
     refine (CofFibFactorizationQuasiIsoLE.sequence f n₀ q).property i (by lia)
 
 lemma prop_π : degreewiseEpiWithInjectiveKernel (π f n₀) := by
-  sorry
+  intro i
+  obtain ⟨q, hq⟩ : ∃ (q : ℕ), i ≤ n₀ + q := ⟨(i - n₀).natAbs, by lia⟩
+  rw [← midπ_π_f f n₀ q]
+  have := isIso_midπ_f f n₀ q i hq
+  exact MorphismProperty.comp_mem _ _ _
+    (epiWithInjectiveKernel_of_iso _)
+    ((CofFibFactorizationQuasiIsoLE.sequence f n₀ q).obj.property.2 i)
 
 end cm5a_cof
 
