@@ -507,10 +507,12 @@ theorem one_div_le_one_div_of_neg (ha : a < 0) (hb : b < 0) : 1 / a ≤ 1 / b �
 theorem one_div_lt_one_div_of_neg (ha : a < 0) (hb : b < 0) : 1 / a < 1 / b ↔ b < a := by
   simpa [one_div] using inv_lt_inv_of_neg ha hb
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_div_lt_neg_one (h1 : a < 0) (h2 : -1 < a) : 1 / a < -1 :=
   suffices 1 / a < 1 / -1 by rwa [one_div_neg_one_eq_neg_one] at this
   one_div_lt_one_div_of_neg_of_lt h1 h2
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
   suffices 1 / a ≤ 1 / -1 by rwa [one_div_neg_one_eq_neg_one] at this
   one_div_le_one_div_of_neg_of_le h1 h2

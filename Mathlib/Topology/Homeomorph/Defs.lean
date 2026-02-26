@@ -150,6 +150,9 @@ theorem apply_symm_apply (h : X ≃ₜ Y) (y : Y) : h (h.symm y) = y :=
 theorem symm_apply_apply (h : X ≃ₜ Y) (x : X) : h.symm (h x) = x :=
   h.toEquiv.symm_apply_apply x
 
+theorem symm_apply_eq (h : X ≃ₜ Y) {x : X} {y : Y} : h.symm y = x ↔ y = h x :=
+  Equiv.symm_apply_eq _
+
 @[simp]
 theorem self_trans_symm (h : X ≃ₜ Y) : h.trans h.symm = Homeomorph.refl X := by
   ext
@@ -422,9 +425,7 @@ theorem toHomeomorphOfContinuousClosed_symm_apply
     ⇑(e.toHomeomorphOfContinuousClosed h₁ h₂).symm = e.symm := rfl
 
 /-- Any bijection between discrete spaces is a homeomorphism. -/
-def toHomeomorphOfDiscrete
-    [TopologicalSpace X] [DiscreteTopology X]
-    [TopologicalSpace Y] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
+def toHomeomorphOfDiscrete [DiscreteTopology X] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
   e.toHomeomorph (by simp)
 
 end Equiv

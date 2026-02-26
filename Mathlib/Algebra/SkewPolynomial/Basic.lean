@@ -118,6 +118,7 @@ def support (p : SkewPolynomial R) : Finset ℕ :=
 
 @[simp] lemma support_zero : (0 : SkewPolynomial R).support = ∅ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma support_eq_empty : p.support = ∅ ↔ p = 0 := by simp [support]
 
 lemma card_support_eq_zero : p.support.card = 0 ↔ p = 0 := by simp
