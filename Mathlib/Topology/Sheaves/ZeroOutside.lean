@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Category.Grp.EpiMono
 public import Mathlib.Algebra.Category.Grp.FilteredColimits
 public import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Limits.Shapes.Countable
 public import Mathlib.CategoryTheory.Sites.Abelian
 public import Mathlib.Topology.Sheaves.Sheaf
 
@@ -72,6 +71,8 @@ lemma zeroOutside_le {W : Opens X} (h : W ≤ U) : (zeroOutside U F).obj (op W) 
 variable {V : Opens X} (h : V ≤ U)
 
 open Classical in
+/-- Given an inclusion of open sets `V ≤ U`, we get a morphism `F.zeroOutside V ⟶ F.zeroOutside U`
+which is the identity on sections of `W` when `W ≤ V` and it `0` otherwise -/
 @[simps]
 def zeroOutside_openHom : F.zeroOutside V ⟶ F.zeroOutside U where
   app W := if hW : (unop W) ≤ V then
@@ -99,23 +100,22 @@ end
 
 open AddCommGrpCat
 
-abbrev zeroOutsideInt : Presheaf AddCommGrpCat.{u} X :=
-    zeroOutside U ((Functor.const _).obj (AddCommGrpCat.of (ULift ℤ)))
+abbrev constZ : Presheaf AddCommGrpCat.{u} X := (Functor.const _).obj (AddCommGrpCat.of (ULift ℤ))
 
-namespace zeroOutsideInt
+namespace zeroOutside
 
-/-- `1` as a section of `zeroOutsideInt U` -/
-def generator : (zeroOutsideInt U).obj (op U) :=
-  (eqToHom (by simp) : (AddCommGrpCat.of (ULift ℤ)) ⟶ (Presheaf.zeroOutsideInt U).obj (op U)) 1
+/-- `1` as a section of `constZ.zeroOutside U` -/
+def generator : (constZ.zeroOutside U).obj (op U) :=
+  (eqToHom (by simp) : (AddCommGrpCat.of (ULift ℤ)) ⟶ (constZ.zeroOutside U).obj (op U)) 1
 
 variable {U}
 
 open Classical in
 /-- Section hom: Given a section `s` of `F` on `U`, we obtain a presheaf morphism
-`zeroOutsideInt U ⟶ F` that maps `generator U` to `s` -/
+`constZ.zeroOutside U ⟶ F` that maps `generator U` to `s` -/
 @[simps]
 def sHom {F : Presheaf AddCommGrpCat.{u} X} (s : F.obj (op U)) :
-    zeroOutsideInt U ⟶ F where
+    constZ.zeroOutside U ⟶ F where
   app {W} :=
     if h : (unop W) ≤ U then
       eqToHom (by simp_all) ≫ (uliftZMultiplesAddEquiv (F.obj W)).symm (F.map (homOfLE h).op s)
@@ -132,7 +132,7 @@ def sHom {F : Presheaf AddCommGrpCat.{u} X} (s : F.obj (op U)) :
         AddCommGrpCat.hom_ofHom, AddMonoidHom.coe_comp, Function.comp_apply,
         uliftZMultiplesHom_apply_apply, Category.assoc, map_zsmul, ← comp_apply, ← F.map_comp]
       congr
-    have : IsZero ((zeroOutsideInt U).obj W) := by
+    have : IsZero ((constZ.zeroOutside U).obj W) := by
       simp_all [isZero_zero]
     apply this.eq_of_src
 
@@ -141,59 +141,56 @@ theorem sHom_app_generator {F : Presheaf AddCommGrpCat.{u} X}
   simp [generator, ← comp_apply, uliftZMultiplesAddEquiv, homAddEquiv, AddEquiv.mk',
     homEquiv, uliftZMultiplesHom, AddEquiv.ulift]
 
-/-- `zeroOutside_openHom` in the case of `zeroOutsideInt` -/
-def openHom {V : Opens X} (h : V ≤ U) : zeroOutsideInt V ⟶ zeroOutsideInt U :=
-  zeroOutside_openHom _ h
-
 theorem openHom_generator {V : Opens X} (h : V ≤ U) :
-    (openHom h).app (op V) (generator V) = (generator U) |_ V := by
-  simp [generator, openHom, Presheaf.restrictOpen, Presheaf.restrict, ← comp_apply]
+    (zeroOutside_openHom constZ h).app (op V) (generator V) = (generator U) |_ V := by
+  simp [generator, Presheaf.restrictOpen, Presheaf.restrict, ← comp_apply]
 
-end zeroOutsideInt
+end zeroOutside
 
 end Presheaf
 
 namespace Sheaf
 
-/-- The sheafification of `Presheaf.zeroOutsideInt` -/
+/-- The sheafification of `constZ.zeroOutside U` -/
 def zeroOutsideInt : Sheaf AddCommGrpCat.{u} X :=
-  (presheafToSheaf _ _).obj (Presheaf.zeroOutsideInt U)
+  (presheafToSheaf _ _).obj (Presheaf.constZ.zeroOutside U)
 
 namespace zeroOutsideInt
 
 def generator : (zeroOutsideInt U).presheaf.obj (op U) :=
-  (toSheafify _ (Presheaf.zeroOutsideInt U)).app (op U) (Presheaf.zeroOutsideInt.generator U)
+  (toSheafify _ (Presheaf.constZ.zeroOutside U)).app (op U) (Presheaf.zeroOutside.generator U)
 
 variable {U}
 
+/-- The sheafification of `zeroOutside_openHom` applied to `constZ.zeroOutside U` -/
 @[simps]
 def openHom {V : Opens X} (h : V ≤ U) : zeroOutsideInt V ⟶ zeroOutsideInt U where
-  val := sheafifyMap _ (Presheaf.zeroOutsideInt.openHom h)
+  val := sheafifyMap _ (Presheaf.zeroOutside_openHom Presheaf.constZ h)
 
 theorem openHom_generator {V : Opens X} (h : V ≤ U) :
     (openHom h).val.app (op V) (generator V) = (generator U) |_ V := by
   simp only [openHom, generator, Presheaf.zeroOutside_obj, Functor.const_obj_obj]
   erw [← ConcreteCategory.comp_apply, ← NatTrans.comp_app, ← toSheafify_naturality,
-    NatTrans.comp_app, ConcreteCategory.comp_apply, Presheaf.zeroOutsideInt.openHom_generator,
+    NatTrans.comp_app, ConcreteCategory.comp_apply, Presheaf.zeroOutside.openHom_generator,
     Presheaf.map_restrict]
   rfl
 
 instance {V : Opens X} (h : V ≤ U) :
     Mono (openHom h) := by
   have := Presheaf.zeroOutside_hom_mono ((Functor.const _).obj (AddCommGrpCat.of (ULift.{u,0} ℤ))) h
-  delta openHom Presheaf.zeroOutsideInt.openHom
+  delta openHom
   apply Functor.map_mono (presheafToSheaf _ _)
 
 @[simps]
 def sHom {F : Sheaf AddCommGrpCat.{u} X} (s : F.presheaf.obj (op U)) :
     zeroOutsideInt U ⟶ F where
-  val := sheafifyLift _ (Presheaf.zeroOutsideInt.sHom s) F.cond
+  val := sheafifyLift _ (Presheaf.zeroOutside.sHom s) F.cond
 
 theorem sHom_app_generator {F : Sheaf AddCommGrpCat.{u} X}
     (s : F.presheaf.obj (op U)) : (sHom s).val.app (op U) (generator U) = s := by
   delta generator
   erw [sHom_val, ← ConcreteCategory.comp_apply, ← NatTrans.comp_app, toSheafify_sheafifyLift]
-  exact Presheaf.zeroOutsideInt.sHom_app_generator s
+  exact Presheaf.zeroOutside.sHom_app_generator s
 
 end zeroOutsideInt
 
