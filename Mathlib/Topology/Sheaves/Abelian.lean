@@ -55,7 +55,9 @@ end
 /-- The stalk functor is additive -/
 instance (p₀ : X) {C : Type v} [Category.{u} C] [Abelian C] [HasColimits C] :
     (Presheaf.stalkFunctor C p₀).Additive := by
-  apply @Functor.instAdditiveComp _ _ _ _ _ _ ((Functor.whiskeringLeft _ _ _).obj _) ⟨by cat_disch⟩
+  dsimp [Presheaf.stalkFunctor]
+  have : ((Functor.whiskeringLeft _ _ C).obj (OpenNhds.inclusion p₀).op).Additive := ⟨by cat_disch⟩
+  infer_instance
 
 namespace Sheaf
 
