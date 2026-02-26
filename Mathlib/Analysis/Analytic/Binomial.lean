@@ -98,6 +98,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type*} [RCLike 𝕂] {𝔸 : Type*}
 
 namespace Complex
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_add_cpow_hasFPowerSeriesOnBall_zero {a : ℂ} :
     HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ a) (binomialSeries ℂ a) 0 1 := by
   suffices (binomialSeries ℂ a = FormalMultilinearSeries.ofScalars ℂ
@@ -234,6 +235,7 @@ end Complex
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp← ] Complex.ofReal_choose in
 attribute [-simp] FormalMultilinearSeries.apply_eq_prod_smul_coeff in
 theorem one_add_rpow_hasFPowerSeriesOnBall_zero {a : ℝ} :
@@ -256,6 +258,7 @@ theorem one_add_rpow_hasFPowerSeriesAt_zero {a : ℝ} :
 @[deprecated (since := "2025-12-08")]
 alias _root_.one_add_rpow_hasFPowerSeriesAt_zero := one_add_rpow_hasFPowerSeriesAt_zero
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (1 - x) ^ a)
       (.ofScalars ℝ fun n ↦ Ring.choose (a + n - 1) n) 0 1 := by
@@ -274,6 +277,7 @@ theorem one_div_one_sub_rpow_hasFPowerSeriesOnBall_zero (a : ℝ) :
     have : 0 ≤ 1 - x := by grind
     simp [-Complex.inv_re, ← Complex.ofReal_one, ← Complex.ofReal_sub, ← Complex.ofReal_cpow this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {r : ℝ} (hr : r ≠ 0) :
     HasFPowerSeriesOnBall (fun x ↦ 1 / (r - x) ^ (a + 1))
       (.ofScalars ℝ (𝕜 := ℝ) fun n ↦ (r ^ (n + a + 1))⁻¹ * ↑(Nat.choose (a + n) a)) 0 ‖r‖ₑ := by

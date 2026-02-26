@@ -51,7 +51,7 @@ lemma isCompactOpenCovered_of_isCompact [QuasiCompactCover 𝒰]
     {U : S.Opens} (hU : IsCompact (U : Set S)) :
     IsCompactOpenCovered (𝒰.f ·) (U : Set S) := by
   obtain ⟨Us, hUs, hUf, hUc⟩ := S.isBasis_affineOpens.exists_finite_of_isCompact hU
-  refine .of_biUnion_eq_of_finite (SetLike.coe '' Us) (by aesop) (hUf.image _) ?_
+  refine .of_biUnion_eq_of_finite (SetLike.coe '' Us) (by simp_all) (hUf.image _) ?_
   simpa using fun t ht ↦ IsAffineOpen.isCompactOpenCovered 𝒰 (hUs ht)
 
 variable {𝒰 : PreZeroHypercover.{v} S} {K : Precoverage Scheme.{u}}
@@ -88,6 +88,7 @@ lemma of_hom {𝒱 : PreZeroHypercover.{w'} S} (f : 𝒱.Hom 𝒰) [QuasiCompact
     (fun _ ↦ Scheme.Hom.continuous _) (fun i ↦ funext <| by simp [← Scheme.Hom.comp_apply])
     (fun _ ↦ Scheme.Hom.continuous _) U.2 (hU.isCompactOpenCovered 𝒱)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝒰) in
 @[stacks 022D "(3)"]
 instance [QuasiCompactCover 𝒰] {T : Scheme.{u}} (f : T ⟶ S) :
@@ -165,6 +166,60 @@ instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒰] : QuasiCompactCov
 
 instance {𝒱 : PreZeroHypercover S} [QuasiCompactCover 𝒱] : QuasiCompactCover (𝒰.sum 𝒱) :=
   .of_hom (PreZeroHypercover.sumInr _ _)
+
+set_option backward.isDefEq.respectTransparency false in
+lemma exists_hom {S : Scheme.{u}} (𝒰 : S.Cover (Scheme.precoverage P))
+    [P.RespectsLeft @IsOpenImmersion] [CompactSpace S] [QuasiCompactCover 𝒰.toPreZeroHypercover] :
+    ∃ (𝒱 : Scheme.AffineCover.{w} P S) (f : 𝒱.cover ⟶ 𝒰),
+      Finite 𝒱.I₀ ∧ ∀ j, IsOpenImmersion (f.h₀ j) := by
+  obtain ⟨n, f, V, hV, h⟩ := QuasiCompactCover.exists_isAffineOpen_of_isCompact 𝒰.1
+    (show IsCompact (⊤ : TopologicalSpace.Opens S).carrier from isCompact_univ)
+  simp only [coe_top, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_iUnion,
+    Set.mem_image, SetLike.mem_coe, forall_const] at h
+  choose idx x hmem hx using h
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · exact
+      { I₀ := ULift (Fin n)
+        X i := Γ(_, V i.down)
+        f i := (hV _).fromSpec ≫ 𝒰.f (f _)
+        idx s := ⟨idx s⟩
+        covers s := by
+          use (hV _).isoSpec.hom.base ⟨x s, hmem s⟩
+          rw [← Scheme.Hom.comp_apply, ← IsAffineOpen.isoSpec_inv_ι, Category.assoc,
+            Iso.hom_inv_id_assoc]
+          simp [hx]
+        map_prop i :=
+          RespectsLeft.precomp (Q := IsOpenImmersion) _ inferInstance _ (𝒰.map_prop _) }
+  · exact
+      { s₀ i := f i.down
+        h₀ i := (hV i.down).fromSpec }
+  · infer_instance
+  · infer_instance
+
+/--
+Lift a quasi-compact cover of a `u`-scheme in an arbitrary universe to `u`. The indexing
+type is constructed by choosing finitely many compact opens above every affine open.
+This cover is again quasi-compact.
+-/
+noncomputable def ulift {S : Scheme.{u}} (𝒰 : PreZeroHypercover.{w} S) [QuasiCompactCover 𝒰] :
+    PreZeroHypercover.{u} S :=
+  𝒰.restrictIndex
+      fun i : (Σ U : S.affineOpens, Fin (exists_isAffineOpen_of_isCompact 𝒰 U.2.isCompact).choose) ↦
+    (exists_isAffineOpen_of_isCompact 𝒰 i.1.2.isCompact).choose_spec.choose i.2
+
+/-- The refinement morphism of the lifted cover. -/
+noncomputable def uliftHom {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
+    (ulift 𝒰).Hom 𝒰 :=
+  𝒰.restrictIndexHom _
+
+instance {S : Scheme.{u}} (𝒰 : PreZeroHypercover S) [QuasiCompactCover 𝒰] :
+    QuasiCompactCover (ulift 𝒰) where
+  isCompactOpenCovered_of_isAffineOpen {U} hU :=
+    let H := exists_isAffineOpen_of_isCompact 𝒰 hU.isCompact
+    .of_finite (fun i : Fin H.choose ↦ ⟨⟨U, hU⟩, i⟩)
+      (fun _ ↦ H.choose_spec.choose_spec.choose _)
+      (fun _ ↦ H.choose_spec.choose_spec.choose_spec.left _ |>.isCompact)
+      H.choose_spec.choose_spec.choose_spec.right
 
 end QuasiCompactCover
 

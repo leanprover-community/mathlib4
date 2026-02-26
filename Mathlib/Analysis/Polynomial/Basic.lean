@@ -340,7 +340,8 @@ open Bornology
 
 variable {R : Type*} [NormedRing R] [NormMulClass R] {P Q : R[X]}
 
-lemma isEquivalent_cobounded_lead : P.eval ~[cobounded R] (P.leadingCoeff * · ^ P.natDegree) := by
+lemma isEquivalent_cobounded_leading_monomial :
+    P.eval ~[cobounded R] (P.leadingCoeff * · ^ P.natDegree) := by
   by_cases h : P = 0
   · simp [h, IsEquivalent.refl]
   · simp only [eval_eq_sum_range, sum_range_succ]
@@ -352,26 +353,25 @@ theorem isLittleO_cobounded_of_degree_lt (h : P.degree < Q.degree) :
     P.eval =o[cobounded R] Q.eval := by
   by_cases hP : P = 0
   · simp [hP]
-  · refine isEquivalent_cobounded_lead.trans_isLittleO <|
-      (IsLittleO.const_mul_left (IsLittleO.const_mul_right ?_ ?_) _).trans_isEquivalent
-        isEquivalent_cobounded_lead.symm
-    · simpa using ne_zero_of_degree_gt h
-    · exact isLittleO_pow_pow_cobounded_of_lt ((natDegree_lt_natDegree_iff hP).mpr h)
+  · refine isEquivalent_cobounded_leading_monomial.trans_isLittleO <|
+      ((IsLittleO.const_mul_right ?_ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
+    · exact leadingCoeff_ne_zero.mpr (ne_zero_of_degree_gt h)
+    · exact isLittleO_pow_pow_cobounded_of_lt (natDegree_lt_natDegree hP h)
 
 theorem isBigO_cobounded_of_degree_le (h : P.degree ≤ Q.degree) :
     P.eval =O[cobounded R] Q.eval := by
-  by_cases hP : P = 0
-  · simpa [hP] using isBigO_zero ..
-  · refine isEquivalent_cobounded_lead.trans_isBigO <|
-      (IsBigO.const_mul_left (IsBigO.const_mul_right ?_ ?_) _).trans_isEquivalent
-        isEquivalent_cobounded_lead.symm
-    · simpa using ne_zero_of_degree_ge_degree h hP
-    · exact isBigO_pow_pow_cobounded_of_le (natDegree_le_natDegree h)
+  by_cases hQ : Q.leadingCoeff = 0
+  · aesop
+  · refine isEquivalent_cobounded_leading_monomial.trans_isBigO <|
+      ((IsBigO.const_mul_right hQ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
+    exact isBigO_pow_pow_cobounded_of_le (natDegree_le_natDegree h)
 
 end Cobounded
 
 /-- If `deg Q < deg P`, there are only finitely many integers `x` where `|P(x)| ≤ |Q(x)|`. -/
-lemma finite_abs_eval_lt_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
+lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
     {x | |P.eval x| ≤ |Q.eval x|}.Finite := by
   have o := isLittleO_cobounded_of_degree_lt h
   rw [Int.cobounded_eq, ← Int.cofinite_eq] at o
@@ -388,7 +388,7 @@ theorem dvd_of_infinite_eval_dvd_eval
   rw [← modByMonic_eq_zero_iff_dvd mQ]
   set R := P %ₘ Q
   apply eq_zero_of_infinite_isRoot
-  refine (h.diff (finite_abs_eval_lt_of_degree_lt degR)).mono fun x mx ↦ ?_
+  refine (h.diff (finite_abs_eval_le_of_degree_lt degR)).mono fun x mx ↦ ?_
   simp only [Set.mem_diff, Set.mem_setOf_eq, not_le] at mx
   rw [← eqR, eval_add, eval_mul, Int.dvd_add_self_mul, ← abs_dvd] at mx
   exact Int.eq_zero_of_abs_lt_dvd mx.1 mx.2

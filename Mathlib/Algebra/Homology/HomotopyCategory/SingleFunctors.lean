@@ -67,6 +67,7 @@ instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [Ring R] (n : ℤ) [Linear R C] :
     Functor.Linear R ((singleFunctors C).functor n) where
   map_smul f r := by

@@ -43,26 +43,22 @@ variable {R : Type*} [NormedRing R] [NormMulClass R] {p q : ℕ}
 open Bornology
 
 theorem Asymptotics.isLittleO_pow_pow_cobounded_of_lt (hpq : p < q) :
-    (fun x ↦ x ^ p) =o[cobounded R] fun x ↦ x ^ q := by
+    (· ^ p) =o[cobounded R] (· ^ q) := by
   nontriviality R
   have noc : NormOneClass R := NormMulClass.toNormOneClass
-  refine isLittleO_iff_nat_mul_le.mpr fun n ↦ ?_
+  refine IsLittleO.of_bound fun c cpos ↦ ?_
   rw [← (Nat.sub_add_cancel hpq.le)]
   simp_rw [pow_add, norm_mul, norm_pow, eventually_iff_exists_mem]
-  refine ⟨{y | n ≤ ‖y‖ ^ (q - p)}, ?_, fun y my ↦ ?_⟩
-  · rw [← isCobounded_def, ← isBounded_compl_iff, Set.compl_setOf, isBounded_iff_forall_norm_le]
-    refine ⟨n, fun a (ma : ¬_ ≤ _) ↦ ?_⟩
-    contrapose! ma
-    rcases le_or_gt ‖a‖ 1 with ha | ha
-    · replace ma := ma.trans_le ha
-      rw [Nat.cast_lt_one] at ma
-      simp [ma]
-    · exact ma.le.trans (le_self_pow₀ ha.le (Nat.sub_ne_zero_iff_lt.mpr hpq))
-  · gcongr
-    exact my
+  refine ⟨{y | c⁻¹ ≤ ‖y‖ ^ (q - p)}, ?_, fun y my ↦ ?_⟩
+  · have key : Tendsto (fun y ↦ ‖y‖ ^ (q - p)) (cobounded R) atTop :=
+      (tendsto_pow_atTop (Nat.sub_ne_zero_iff_lt.mpr hpq)).comp tendsto_norm_cobounded_atTop
+    rw [tendsto_atTop] at key
+    exact mem_map.mp (key c⁻¹)
+  · rw [← inv_mul_le_iff₀ cpos]
+    exact mul_le_mul_of_nonneg_right my (by positivity)
 
 theorem Asymptotics.isBigO_pow_pow_cobounded_of_le (hpq : p ≤ q) :
-    (fun x ↦ x ^ p) =O[cobounded R] fun x ↦ x ^ q := by
+    (· ^ p) =O[cobounded R] (· ^ q) := by
   rcases hpq.eq_or_lt with rfl | h
   · exact isBigO_refl ..
   · exact (isLittleO_pow_pow_cobounded_of_lt h).isBigO
