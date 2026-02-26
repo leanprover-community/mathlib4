@@ -5,11 +5,11 @@ Authors: Yi Yuan
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Analysis.SpecialFunctions.Choose
-public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Probability.ProbabilityMassFunction.Binomial
+import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Analysis.SpecialFunctions.Choose
+import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 
 /-!
 # Poisson limit of binomial probabilities
