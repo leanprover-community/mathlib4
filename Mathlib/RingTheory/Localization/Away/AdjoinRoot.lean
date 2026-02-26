@@ -23,7 +23,10 @@ attribute [local instance] AdjoinRoot.algHom_subsingleton
 
 /-- The `R`-`AlgEquiv` between the localization of `R` away from `r` and
 `R` with an inverse of `r` adjoined. -/
-noncomputable def Localization.awayEquivAdjoin (r : R) : Away r ≃ₐ[R] AdjoinRoot (C r * X - 1) :=
+noncomputable def Localization.awayEquivAdjoin (r : R) :
+    -- why is this `have` needed??
+    have : Module R (AdjoinRoot (C r * X - 1)) := Algebra.toModule
+    Away r ≃ₐ[R] AdjoinRoot (C r * X - 1) :=
   AlgEquiv.ofAlgHom
     { awayLift _ r _ with
       commutes' :=

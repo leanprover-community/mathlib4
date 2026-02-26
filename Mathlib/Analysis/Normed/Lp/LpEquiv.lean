@@ -182,10 +182,12 @@ noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →
 
 variable {α 𝕜}
 
-theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) : (AlgEquiv.lpBCF α 𝕜 f : α → A) = f :=
+theorem coe_algEquiv_lpBCF (f : lp (fun _ : α ↦ A) ∞) :
+    -- why is the `A := A` needed?
+    (AlgEquiv.lpBCF α 𝕜 (A := A) f : α → A) = f :=
   rfl
 
-theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α 𝕜).symm f : α → A) = f :=
+theorem coe_algEquiv_lpBCF_symm (f : α →ᵇ A) : ((AlgEquiv.lpBCF α 𝕜 (A := A)).symm f : α → A) = f :=
   rfl
 
 end RingAlgebra
