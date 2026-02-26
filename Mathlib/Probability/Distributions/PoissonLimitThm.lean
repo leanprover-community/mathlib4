@@ -93,8 +93,9 @@ Another version of Possion Limit Theorem: convergence of `PMF.binomial` to `pois
 under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
 -/
 lemma PMFbinomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} (h : ∀ n, p n ≤ 1)
-    (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) : Tendsto (fun n ↦ PMF.binomial (p n) (h n) n
-    (Fin.ofNat (n + 1) k)) atTop (𝓝 (poissonPMF r k)) := by
+    (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
+    Tendsto (fun n ↦ PMF.binomial (p n) (h n) n (Fin.ofNat (n + 1) k))
+    atTop (𝓝 (poissonPMF r k)) := by
   have t1 : Tendsto (fun n => (ENNReal.ofReal (n.choose k * (p n) ^ k * (1 - p n) ^ (n - k) : ℝ)))
     atTop (𝓝 (ENNReal.ofReal (poissonPMFReal r k))) :=
     tendsto_ofReal (tendsto_choose_mul_pow_of_tendsto_mul_atTop k (by norm_cast))
