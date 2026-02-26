@@ -130,7 +130,7 @@ namespace CategoryTheory.Adjunction
 
 variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂]
     [Category* C₃] {L : C₁ ⥤ C₂} {R : C₂ ⥤ C₁} {T : C₁ ⥤ C₃} {S : C₃ ⥤ C₂} {X : C₁} {Y : C₃}
-    (adj1 : L ⊣ R) (adj2 : T ⊣ S ⋙ R) (h : R.FullyFaithful) (x : (T.obj (R.obj (L.obj X)) ⟶ Y))
+    (adj1 : L ⊣ R) (adj2 : T ⊣ S ⋙ R) (h : R.FullyFaithful)
 
 include adj2 h in
 theorem isIso_map_unit_of_isLeftAdjoint_comp : IsIso (T.map (adj1.unit.app X)) := by
