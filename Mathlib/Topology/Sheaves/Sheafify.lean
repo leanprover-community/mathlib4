@@ -126,24 +126,6 @@ def sheafifyStalkIso (x : X) : F.sheafify.presheaf.stalk x ≅ F.stalk x :=
 -- PROJECT functoriality, and that sheafification is the left adjoint of the forgetful functor.
 end TopCat.Presheaf
 
-namespace CategoryTheory.Adjunction
-
-variable {C₁ C₂ C₃ : Type*} [Category* C₁] [Category* C₂]
-    [Category* C₃] {L : C₁ ⥤ C₂} {R : C₂ ⥤ C₁} {T : C₁ ⥤ C₃} {S : C₃ ⥤ C₂} {X : C₁} {Y : C₃}
-    (adj1 : L ⊣ R) (adj2 : T ⊣ S ⋙ R) (h : R.FullyFaithful)
-
-include adj2 h in
-theorem isIso_map_unit_of_isLeftAdjoint_comp : IsIso (T.map (adj1.unit.app X)) := by
-  apply isIso_of_coyoneda_map_bijective
-  intro Y
-  convert ((adj2.homEquiv (R.obj (L.obj X)) Y).trans <| h.homEquiv.symm.trans <|
-    (adj1.homEquiv X (S.obj Y)).trans (adj2.homEquiv X Y).symm).bijective using 1
-  ext x
-  have := adj2.counit_naturality x
-  simp_all [Adjunction.homEquiv]
-
-end CategoryTheory.Adjunction
-
 namespace TopCat.Presheaf
 
 variable (p₀ : X) (C : Type u) [Category.{v} C] [Limits.HasColimits C]
@@ -155,6 +137,6 @@ theorem stalkFunctor_map_unit_toSheafify_isIso : IsIso ((Presheaf.stalkFunctor C
     (CategoryTheory.toSheafify (Opens.grothendieckTopology X) 𝓕)) := by
   classical
   exact Adjunction.isIso_map_unit_of_isLeftAdjoint_comp (sheafificationAdjunction _ C)
-    (skyscraperSheafForgetAdjunction p₀) (fullyFaithfulSheafToPresheaf _ C)
+    (skyscraperSheafForgetAdjunction p₀)
 
 end TopCat.Presheaf
