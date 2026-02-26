@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Kim Morrison. All rights reserved.
+Copyright (c) 2026 Brian Nugent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Brian Nugent, Kim Morrison
 -/
 module
 
@@ -60,32 +60,32 @@ We now construct as morphisms various inclusions of closed sets.
 -- This is tedious, but necessary because we decided not to allow Prop as morphisms in a category...
 /-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of closed sets.
 -/
-noncomputable def infLELeft (U V : Closeds X) : U ⊓ V ⟶ U :=
+def infLELeft (U V : Closeds X) : U ⊓ V ⟶ U :=
   inf_le_left.hom
 
 /-- The inclusion `U ⊓ V ⟶ V` as a morphism in the category of closed sets.
 -/
-noncomputable def infLERight (U V : Closeds X) : U ⊓ V ⟶ V :=
+def infLERight (U V : Closeds X) : U ⊓ V ⟶ V :=
   inf_le_right.hom
 
 /-- The inclusion `U i ⟶ iSup U` as a morphism in the category of closed sets.
 -/
-noncomputable def leSupr {ι : Type*} (U : ι → Closeds X) (i : ι) : U i ⟶ iSup U :=
+def leSupr {ι : Type*} (U : ι → Closeds X) (i : ι) : U i ⟶ iSup U :=
   (le_iSup U i).hom
 
 /-- The inclusion `iInf U ⟶ U i` as a morphism in the category of closed sets.
 -/
-noncomputable def leInfr {ι : Type*} (U : ι → Closeds X) (i : ι) : iInf U ⟶ U i :=
+def leInfr {ι : Type*} (U : ι → Closeds X) (i : ι) : iInf U ⟶ U i :=
   (iInf_le U i).hom
 
 /-- The inclusion `⊥ ⟶ U` as a morphism in the category of closed sets.
 -/
-noncomputable def botLE (U : Closeds X) : ⊥ ⟶ U :=
+def botLE (U : Closeds X) : ⊥ ⟶ U :=
   bot_le.hom
 
 /-- The inclusion `U ⟶ ⊤` as a morphism in the category of closed sets.
 -/
-noncomputable def leTop (U : Closeds X) : U ⟶ ⊤ :=
+def leTop (U : Closeds X) : U ⟶ ⊤ :=
   le_top.hom
 
 -- We do not mark this as a simp lemma because it breaks open `x`.
