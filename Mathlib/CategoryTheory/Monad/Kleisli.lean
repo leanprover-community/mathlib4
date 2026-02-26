@@ -32,7 +32,6 @@ variable {C : Type u} [Category.{v} C]
 /-- The objects for the Kleisli category of the monad `T : Monad C`, which are the same
 thing as objects of the base category `C`.
 -/
-@[nolint unusedArguments]
 structure Kleisli (T : Monad C) where mk (T) ::
   /-- The underlying object of the base category. -/
   of : C
