@@ -85,6 +85,8 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
   hasColimitsOfShape_of_finallySmall _ _
 
+instance : IsSifted Φ.fiber.Elementsᵒᵖ := IsFiltered.isSifted
+
 instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
   hasExactColimitsOfShape_of_final _
@@ -129,6 +131,17 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiber.map g =
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
+
+/-- The (colimit) cocone which defines the fiber of a presheaf. -/
+noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
+    Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ P) where
+  pt := Φ.presheafFiber.obj P
+  ι.app x := Φ.toPresheafFiber x.unop.1 x.unop.2 P
+
+/-- The cocone `Φ.presheafFiberCocone P` is a colimit. -/
+noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
+    IsColimit (Φ.presheafFiberCocone P) :=
+  colimit.isColimit _
 
 section
 
@@ -252,6 +265,13 @@ noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A]
   (NatIso.ofComponents
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
       (by simp [← Functor.map_comp])).symm
+
+noncomputable instance [HasWeakSheafify J A]
+    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
+    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
+    Localization.Lifting (presheafToSheaf J A) J.W
+        Φ.presheafFiber Φ.sheafFiber where
+  iso := Φ.presheafToSheafCompSheafFiber A
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=

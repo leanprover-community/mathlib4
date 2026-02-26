@@ -916,7 +916,6 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
-set_option backward.whnf.reducibleClassField false in
 /-- A general inner product space structure implies a real inner product structure.
 
 This is not registered as an instance since
