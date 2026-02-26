@@ -29,7 +29,7 @@ variable (A K L : Type*) {B : Type*} [Field K] [Field L] [Algebra K L] [CommRing
 
 open MulAction Pointwise Ideal
 
-noncomputable section basic
+section basic
 
 variable (D : Type*) [Field D] [Algebra D L]
 
@@ -85,5 +85,15 @@ theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) D L] :
   · obtain ⟨y, z, _, rfl⟩ := IsFractionRing.div_surjective (A := B) x
     simp_rw [smul_div₀', subgroup_smul_def, ← algebraMap.smul', ← subgroup_smul_def,
       inertiaEquiv_symm_apply_smul]
+
+noncomputable def IsDecompositionField.ringEquiv (D' : Type*) [Field D'] [Algebra D' L]
+    [h : IsDecompositionField K L P D] [h' : IsDecompositionField K L P D'] :
+    D ≃+* D' :=
+  IsGaloisGroup.ringEquiv (stabilizer Gal(L/K) P) D D' L
+
+noncomputable def IsInertiaField.ringEquiv (E' : Type*) [Field E'] [Algebra E' L]
+    [h : IsInertiaField K L P E] [IsInertiaField K L P E'] :
+    E ≃+* E' :=
+  IsGaloisGroup.ringEquiv (inertia Gal(L/K) P) E E' L
 
 end basic
