@@ -174,9 +174,8 @@ IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
     let α := Fin n
     use α, inferInstance, f
 
--- TODO this statement can actually be upgraded to an if and only if but it makes usage difficult
--- due to universe inference.
-
+-- TODO this following statement can actually be upgraded to an if and only if but it makes usage
+-- difficult due to universe inference.
 /-- A group is finitely presented if there exists a surjective homomorphism from
 a free group on an arbitrary `Finite type` such that the kernel is finitely generated as
 a normal subgroup. -/
