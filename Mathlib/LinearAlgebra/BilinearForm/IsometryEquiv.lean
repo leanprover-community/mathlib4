@@ -37,7 +37,6 @@ structure IsometryEquiv (B₁ : LinearMap.BilinForm R M₁) (B₂ : LinearMap.Bi
     extends M₁ ≃ₗ[R] M₂ where
   map_app' : ∀ n m, B₂ (toFun n) (toFun m) = B₁ n m
 
-
 /-- Two bilinear forms over a ring `R` are equivalent
 if there exists an isometric equivalence between them:
 a linear equivalence that transforms one bilinear form into the other. -/
