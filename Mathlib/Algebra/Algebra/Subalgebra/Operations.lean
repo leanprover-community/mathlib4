@@ -79,8 +79,8 @@ end Subalgebra
 
 section MulSemiringAction
 
-variable (G A B B' : Type*) [CommSemiring A] [Ring B] [Semiring B'] [Algebra A B] [Algebra A B']
-variable [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
+variable (A B B' : Type*) [CommSemiring A] [Ring B] [Semiring B'] [Algebra A B] [Algebra A B']
+variable (G : Type*) [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
   [MulSemiringAction G B'] [SMulCommClass G A B']
 
 /-- The set of fixed points under a group action, as a subring. -/
@@ -95,7 +95,7 @@ def FixedPoints.subring : Subring B where
 
 /-- The set of fixed points under a group action, as a subalgebra. -/
 def FixedPoints.subalgebra : Subalgebra A B' where
-  __ := FixedPoints.subsemiring G B'
+  __ := FixedPoints.subsemiring B' G
   algebraMap_mem' r g := smul_algebraMap g r
 
 end MulSemiringAction
