@@ -315,7 +315,7 @@ protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
 
 /-- Reinterpret a submodule as an additive subgroup. -/
-@[implicit_reducible]
+@[reducible]
 def toAddSubgroup : AddSubgroup M :=
   { p.toAddSubmonoid with neg_mem' := fun {_} => p.neg_mem }
 
