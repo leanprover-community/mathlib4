@@ -172,12 +172,24 @@ jobs:
               --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
-      - name: Checkout CI scripts
+      - name: Checkout mathlib-ci
         if: ${{ ! steps.merge_or_delegate.outputs.secrets == '' &&
           (! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' )) }}
-        uses: ./.github/actions/checkout-ci-scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: main
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        if: ${{ ! steps.merge_or_delegate.outputs.secrets == '' &&
+          (! steps.merge_or_delegate.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.merge_or_delegate.outputs.bot == 'true' )) }}
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       - name: Set up Python
         if: ${{ ! steps.merge_or_delegate.outputs.secrets == '' &&

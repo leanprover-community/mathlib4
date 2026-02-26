@@ -33,8 +33,16 @@ jobs:
         fetch-depth: 0  # Fetch all branches and history
         token: ${{ steps.app-token.outputs.token }}
 
-    - name: Checkout CI scripts
-      uses: ./.github/actions/checkout-ci-scripts
+    - name: Checkout mathlib-ci
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: main
+        fetch-depth: 1
+        path: ci-tools
+
+    - name: Set up CI scripts paths
+      uses: ./ci-tools/.github/actions/setup-ci-scripts
 
     - name: Set up Git
       run: |

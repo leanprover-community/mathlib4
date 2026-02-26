@@ -30,10 +30,20 @@ jobs:
           printf 'PR title:"%s"\n' "${TITLE}"
           printf 'issue number: "%s"\npull request number: "%s"\n' "${{ github.event.issue.number }}" "${{ github.event.pull_request.number }}"
 
-      - name: Checkout CI scripts
+      - name: Checkout mathlib-ci
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
                 github.event_name == 'reopened' }}
-        uses: ./.github/actions/checkout-ci-scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: main
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
+                github.event_name == 'reopened' }}
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       - name: Set up Python
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
