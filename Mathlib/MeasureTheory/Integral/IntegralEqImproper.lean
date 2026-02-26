@@ -429,7 +429,7 @@ theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGene
     hφ.aestronglyMeasurable fun i => (hfi i).aestronglyMeasurable
   refine hφ.integrable_of_lintegral_enorm_bounded I hfm ?_
   conv at hbounded in integral _ _ =>
-    rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ (f x))
+    rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ _ (f x))
         hfm.norm.restrict]
   conv at hbounded in ENNReal.ofReal _ =>
     rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]

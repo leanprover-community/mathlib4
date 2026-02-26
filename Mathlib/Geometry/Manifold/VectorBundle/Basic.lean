@@ -680,7 +680,8 @@ theorem mk_contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)
 variable (IB) in
 /-- Make a `ContMDiffVectorBundle` from a `ContMDiffVectorPrebundle`. -/
 theorem contMDiffVectorBundle : @ContMDiffVectorBundle n
-    _ _ F E _ _ _ _ _ _ IB _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle a.toVectorBundle :=
+    _ _ F E _ _ _ _ _ _ _ IB _ _ _ _ _ _ _ a.totalSpaceTopology _ a.toFiberBundle
+    a.toVectorBundle :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; letI := a.toVectorBundle
   { contMDiffOn_coordChangeL := by
       rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
