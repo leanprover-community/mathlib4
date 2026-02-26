@@ -343,9 +343,18 @@ jobs:
         fetch-depth: 0 # checkout all branches
         token: ${{ steps.app-token-2.outputs.token }}
 
-    - name: Checkout CI scripts
+    - name: Checkout mathlib-ci
       if: steps.check_branch.outputs.result == 'false'
-      uses: ./.github/actions/checkout-ci-scripts
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: main
+        fetch-depth: 1
+        path: ci-tools
+
+    - name: Set up CI scripts paths
+      if: steps.check_branch.outputs.result == 'false'
+      uses: ./ci-tools/.github/actions/setup-ci-scripts
 
     - name: Attempt automatic PR creation
       id: auto_pr

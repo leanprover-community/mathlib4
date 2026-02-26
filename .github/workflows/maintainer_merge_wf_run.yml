@@ -85,9 +85,18 @@ jobs:
           username: ${{ steps.extract-data.outputs.author }}
           GITHUB_TOKEN: ${{ secrets.MATHLIB_REVIEWERS_TEAM_KEY }} # (Requires scope: `read:org`)
 
-      - name: Checkout CI scripts
+      - name: Checkout mathlib-ci
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
-        uses: ./.github/actions/checkout-ci-scripts
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: main
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       - name: Determine Zulip topic
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}

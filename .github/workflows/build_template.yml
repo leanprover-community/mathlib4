@@ -91,8 +91,16 @@ jobs:
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
           path: tools-branch
 
-      - name: Checkout CI scripts
-        uses: ./.github/actions/checkout-ci-scripts
+      - name: Checkout mathlib-ci
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: main
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
