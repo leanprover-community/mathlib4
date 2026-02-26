@@ -255,8 +255,9 @@ def addMonoidAlgebraRingEquivDirectSum [DecidableEq ι] [AddMonoid ι] [Semiring
 
 /-- The algebra version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
 @[simps! -fullyApplied]
-def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A]
-    [Algebra R A] [∀ m : A, Decidable (m ≠ 0)] : AddMonoidAlgebra A ι ≃ₐ[R] ⨁ _ : ι, A :=
+noncomputable def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemiring R]
+    [Semiring A] [Algebra R A] [∀ m : A, Decidable (m ≠ 0)] :
+    AddMonoidAlgebra A ι ≃ₐ[R] ⨁ _ : ι, A :=
   .ofCommutes (addMonoidAlgebraRingEquivDirectSum : AddMonoidAlgebra A ι ≃+* ⨁ _ : ι, A)
     fun _r => AddMonoidAlgebra.toDirectSum_single _ _
 

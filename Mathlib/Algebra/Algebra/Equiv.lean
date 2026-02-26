@@ -33,8 +33,9 @@ as well.
 In certain contexts where the `Algebra` structure is avaiable it is easier to define an `AlgEquiv`
 by providing the `AlgHom.commutes'` field. For this reason a convenience constructor
 `AlgEquiv.ofCommutes` is provided to the user. -/
-structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [Add A] [Add B] [Mul A] [Mul B]
-    [SMul R A] [SMul R B] extends A ≃ B, A ≃+ B, A ≃* B, A ≃+* B where
+structure AlgEquiv (R : Type u) (A : Type v) (B : Type w) [Monoid R] [NonUnitalNonAssocSemiring A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R A] [DistribMulAction R B]
+    extends A ≃ B, A ≃+ B, A ≃* B, A ≃+* B where
   /-- An equivalence of algebras commutes with the action of scalars. -/
   protected map_smul' : ∀ r : R, ∀ a : A, toFun (r • a) = r • toFun a
 
@@ -48,9 +49,9 @@ notation:50 A " ≃ₐ[" R "] " A' => AlgEquiv R A A'
 
 /-- `AlgEquivClass F R A B` states that `F` is a type of algebra structure preserving
   equivalences. You should extend this class when you extend `AlgEquiv`. -/
-class AlgEquivClass (F : Type*) (R A B : outParam (Type*)) [Add A] [Add B] [Mul A] [Mul B]
-    [SMul R A] [SMul R B] [EquivLike F A B] extends RingEquivClass F A B,
-      MulActionHomClass F R A B where
+class AlgEquivClass (F : Type*) (R A B : outParam (Type*)) [Monoid R] [NonUnitalNonAssocSemiring A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R A] [DistribMulAction R B] [EquivLike F A B]
+    extends RingEquivClass F A B, MulActionHomClass F R A B where
 
 namespace AlgEquivClass
 
@@ -68,11 +69,13 @@ instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Sem
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
-def toAlgEquiv {F R A B : Type*} [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
+def toAlgEquiv {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R A] [DistribMulAction R B]
     [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃+* B) with map_smul' := map_smul f }
 
-instance (F R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
+instance (F R A B : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
+    [NonUnitalNonAssocSemiring B] [DistribMulAction R A] [DistribMulAction R B]
     [EquivLike F A B] [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
   ⟨toAlgEquiv⟩
 end AlgEquivClass
@@ -97,10 +100,11 @@ def ofCommutes [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
   map_mul' := map_mul e
   map_smul' r a := show e (r • a) = r • (e a) by simp [Algebra.smul_def, commutes']
 
-variable [Add A₁] [Add A₂] [Add A₃] [Mul A₁] [Mul A₂] [Mul A₃]
-variable [Add A₁'] [Add A₂'] [Add A₃'] [Mul A₁'] [Mul A₂'] [Mul A₃']
-variable [SMul R A₁] [SMul R A₂] [SMul R A₃]
-variable [SMul R A₁'] [SMul R A₂'] [SMul R A₃']
+variable [Monoid R] [NonUnitalNonAssocSemiring A₁] [NonUnitalNonAssocSemiring A₂]
+  [NonUnitalNonAssocSemiring A₃] [NonUnitalNonAssocSemiring A₁'] [NonUnitalNonAssocSemiring A₂']
+  [NonUnitalNonAssocSemiring A₃']
+variable [DistribMulAction R A₁] [DistribMulAction R A₂] [DistribMulAction R A₃]
+variable [DistribMulAction R A₁'] [DistribMulAction R A₂'] [DistribMulAction R A₃']
 variable (e : A₁ ≃ₐ[R] A₂)
 
 section coe
@@ -170,7 +174,8 @@ theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
 
 @[simp, norm_cast]
 lemma toRingEquiv_toRingHom {A₁ A₂ : Type*} [NonAssocSemiring A₁] [NonAssocSemiring A₂]
-    [SMul R A₁] [SMul R A₂] (e : A₁ ≃ₐ[R] A₂) : ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
+    [DistribMulAction R A₁] [DistribMulAction R A₂] (e : A₁ ≃ₐ[R] A₂) :
+    ((e : A₁ ≃+* A₂) : A₁ →+* A₂) = e :=
   rfl
 
 @[simp, norm_cast]
@@ -184,12 +189,12 @@ theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A�
   fun _ _ h => ext <| RingEquiv.congr_fun h
 
 @[simp]
-theorem commutes {A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
+theorem commutes {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
     [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂) : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
   AlgHomClass.commutes e
 
 section toAlgHom
-variable {A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
+variable {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
   [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 lemma ofCommutes_apply (e' : A₁ ≃+* A₂) (h_comm) (x : A₁) :
@@ -258,9 +263,9 @@ def refl : A₁ ≃ₐ[R] A₁ :=
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
 
-@[simp, norm_cast] lemma refl_toAlgHom {A₁ : Type*} [CommSemiring R] [Semiring A₁] [Algebra R A₁] :
-    (refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ := rfl
-@[simp, norm_cast] lemma refl_toRingHom {A₁ : Type*} [NonAssocSemiring A₁] [SMul R A₁] :
+@[simp, norm_cast] lemma refl_toAlgHom {R A₁ : Type*} [CommSemiring R] [Semiring A₁]
+    [Algebra R A₁] : (refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ := rfl
+@[simp, norm_cast] lemma refl_toRingHom {A₁ : Type*} [NonAssocSemiring A₁] [DistribMulAction R A₁] :
     (refl : A₁ ≃ₐ[R] A₁) = RingHom.id A₁ := rfl
 
 @[simp]
@@ -362,7 +367,7 @@ theorem eq_symm_apply (e : A₁ ≃ₐ[R] A₂) {x y} : y = e.symm x ↔ e y = x
   e.toEquiv.eq_symm_apply
 
 section AlgHomComp
-variable {A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
+variable {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
   [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 @[simp]
@@ -429,8 +434,9 @@ theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A�
 
 @[simp, norm_cast]
 lemma toRingHom_trans {A₁ A₂ A₃ : Type*} [NonAssocSemiring A₁] [NonAssocSemiring A₂]
-    [NonAssocSemiring A₃] [SMul R A₁] [SMul R A₂] [SMul R A₃] (e₁ : A₁ ≃ₐ[R] A₂)
-    (e₂ : A₂ ≃ₐ[R] A₃) : (e₁.trans e₂ : A₁ →+* A₃) = RingHom.comp e₂ (e₁ : A₁ →+* A₂) := rfl
+    [NonAssocSemiring A₃] [DistribMulAction R A₁] [DistribMulAction R A₂] [DistribMulAction R A₃]
+    (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) :
+    (e₁.trans e₂ : A₁ →+* A₃) = RingHom.comp e₂ (e₁ : A₁ →+* A₂) := rfl
 
 end trans
 
@@ -439,13 +445,13 @@ end trans
 Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
 to avoid having to deal with an equality of the algebraic structure itself. -/
 @[simps!]
-protected def cast {ι : Type*} {A : ι → Type*} [∀ i, Mul (A i)] [∀ i, Add (A i)] [∀ i, SMul R (A i)]
-    {i j : ι} (h : i = j) : A i ≃ₐ[R] A j where
+protected def cast {ι : Type*} {A : ι → Type*} [∀ i, NonUnitalNonAssocSemiring (A i)]
+    [∀ i, DistribMulAction R (A i)] {i j : ι} (h : i = j) : A i ≃ₐ[R] A j where
   __ := RingEquiv.cast h
   map_smul' _ := by cases h; simp
 
 section arrowCongr
-variable {A₁ A₂ A₃ A₁' A₂' A₃' : Type*} [CommSemiring R]
+variable {R A₁ A₂ A₃ A₁' A₂' A₃' : Type*} [CommSemiring R]
 variable [Semiring A₁] [Semiring A₂] [Semiring A₃] [Semiring A₁'] [Semiring A₂'] [Semiring A₃']
 variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
@@ -518,7 +524,7 @@ theorem equivCongr_trans (e₁₂ : A₁ ≃ₐ[R] A₂) (e₁₂' : A₁' ≃�
   rfl
 
 section ofAlgHom
-variable {A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
+variable {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂] [Algebra R A₁]
   [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 /-- If an algebra morphism has an inverse, it is an algebra isomorphism. -/
@@ -548,7 +554,7 @@ theorem ofAlgHom_symm (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ 
 end ofAlgHom
 
 section toLinearEquiv
-variable {A₁ A₂ A₃ : Type*} [Semiring R]
+variable {R A₁ A₂ A₃ : Type*} [Semiring R]
 variable [NonUnitalNonAssocSemiring A₁] [NonUnitalNonAssocSemiring A₂]
   [NonUnitalNonAssocSemiring A₃]
 variable [Module R A₁] [Module R A₂] [Module R A₃] (e : A₁ ≃ₐ[R] A₂)
@@ -606,7 +612,7 @@ theorem trans_toLinearMap (f : A₁ ≃ₐ[R] A₂) (g : A₂ ≃ₐ[R] A₃) :
 end toLinearEquiv
 
 section algHom_linearMap_ofBijective
-variable {A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂]
+variable {R A₁ A₂ : Type*} [CommSemiring R] [Semiring A₁] [Semiring A₂]
 variable [Algebra R A₁] [Algebra R A₂] (e : A₁ ≃ₐ[R] A₂)
 
 @[simp]
@@ -660,7 +666,7 @@ lemma ofBijective_symm_apply_apply (f : A₁ →ₐ[R] A₂) (hf : Function.Bije
 end algHom_linearMap_ofBijective
 
 section OfLinearEquiv
-variable {A₁ A₂ : Type*} [Semiring R]
+variable {R A₁ A₂ : Type*} [Semiring R]
 variable [NonUnitalNonAssocSemiring A₁] [NonUnitalNonAssocSemiring A₂]
 variable [Module R A₁] [Module R A₂] (e : A₁ ≃ₐ[R] A₂)
 variable (l : A₁ ≃ₗ[R] A₂) (map_mul : ∀ x y : A₁, l (x * y) = l x * l y)
@@ -758,7 +764,8 @@ theorem autCongr_trans (ϕ : A₁ ≃ₐ[R] A₂) (ψ : A₂ ≃ₐ[R] A₃) :
   rfl
 
 section mulSemiringAction
-variable {R A₁ A₂ : Type*} [Semiring A₁] [Semiring A₂] [SMul R A₁] [SMul R A₂]
+variable {R A₁ A₂ : Type*} [Monoid R] [Semiring A₁] [Semiring A₂]
+  [DistribMulAction R A₁] [DistribMulAction R A₂]
 
 /-- The tautological action by `A₁ ≃ₐ[R] A₁` on `A₁`.
 
@@ -862,7 +869,7 @@ end AlgEquiv
 
 namespace MulSemiringAction
 
-variable {M G : Type*} (R A : Type*) [Semiring A] [SMul R A]
+variable {M G : Type*} (R A : Type*) [Monoid R] [Semiring A] [DistribMulAction R A]
 
 section
 
