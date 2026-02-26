@@ -468,7 +468,7 @@ lemma iSupIndep.of_coe_Iic_comp {ι : Sort*} {a : α} {t : ι → Set.Iic a}
   exact @ht x
 
 set_option backward.isDefEq.respectTransparency false in
-theorem iSupIndep_iff_supIndep {s : Finset ι} {f : ι → α} :
+theorem iSupIndep_comp_coe_iff_supIndep {s : Finset ι} {f : ι → α} :
     iSupIndep (f ∘ ((↑) : s → ι)) ↔ s.SupIndep f := by
   classical
     rw [Finset.supIndep_iff_disjoint_erase]
@@ -479,12 +479,12 @@ theorem iSupIndep_iff_supIndep {s : Finset ι} {f : ι → α} :
     congr! 1
     simp [iSup_and, @iSup_comm _ (_ ∈ s)]
 
-alias ⟨iSupIndep.supIndep, Finset.SupIndep.independent⟩ := iSupIndep_iff_supIndep
+alias ⟨iSupIndep.supIndep, Finset.SupIndep.independent⟩ := iSupIndep_comp_coe_iff_supIndep
 
 theorem iSupIndep.supIndep' {f : ι → α} (s : Finset ι) (h : iSupIndep f) : s.SupIndep f :=
   iSupIndep.supIndep (h.comp Subtype.coe_injective)
 
-/-- A variant of `CompleteLattice.iSupIndep_iff_supIndep` for `Fintype`s. -/
+/-- A variant of `iSupIndep_comp_coe_iff_supIndep` for `Fintype`s. -/
 theorem iSupIndep_iff_supIndep_univ [Fintype ι] {f : ι → α} :
     iSupIndep f ↔ Finset.univ.SupIndep f := by
   classical

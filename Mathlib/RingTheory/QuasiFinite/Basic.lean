@@ -51,6 +51,7 @@ attribute [-instance] Module.Free.instFaithfulSMulOfNontrivial Algebra.IsIntegra
 
 namespace Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /--
 We say that an `R`-algebra `S` is quasi-finite
@@ -279,6 +280,7 @@ lemma eq_of_le_of_under_eq [QuasiFinite R S] (P Q : Ideal S) [P.IsPrime] [Q.IsPr
     (a := ⟨P, ‹_›⟩) (b := ⟨Q, ‹_›⟩) (by simpa [← PrimeSpectrum.le_iff_specializes]) rfl
     (PrimeSpectrum.ext h₂.symm)).1)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver P] :
     Module.Finite P.ResidueField Q.ResidueField :=
   have : QuasiFinite P.ResidueField Q.ResidueField := .of_restrictScalars R _ _

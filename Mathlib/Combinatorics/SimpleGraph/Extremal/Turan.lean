@@ -181,6 +181,7 @@ lemma not_adj_iff_part_eq [DecidableEq V] :
   change t ∈ fp.part s ↔ fp.part s = fp.part t
   rw [fp.mem_part_iff_part_eq_part (mem_univ t) (mem_univ s), eq_comm]
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma degree_eq_card_sub_part_card [DecidableEq V] :
     G.degree s = card V - #(h.finpartition.part s) :=
@@ -418,7 +419,6 @@ theorem mul_card_edgeFinset_turanGraph_le :
   rw [Nat.sub_one_mul, Nat.sub_one_mul, mul_comm]
   exact Nat.sub_le_sub_left (Nat.mod_lt _ hr).le _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem CliqueFree.card_edgeFinset_le (cf : G.CliqueFree (r + 1)) :
     let n := Fintype.card V;
     #G.edgeFinset ≤ (n ^ 2 - (n % r) ^ 2) * (r - 1) / (2 * r) + (n % r).choose 2 := by

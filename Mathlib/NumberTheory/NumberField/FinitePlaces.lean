@@ -182,6 +182,7 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
     IsFinitePlace v ↔ ∃ w : FinitePlace K, w.val = v :=
   ⟨fun H ↦ ⟨⟨v, H⟩, rfl⟩, fun ⟨w, hw⟩ ↦ hw ▸ w.isFinitePlace⟩
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/

@@ -586,7 +586,7 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     Set.toFinset_card, edgeSet_deleteEdges]
   simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
     Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,
-    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
+    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.compl_iUnion,
     Fintype.card_ofFinset, f]
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
