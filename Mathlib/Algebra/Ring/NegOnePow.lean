@@ -42,7 +42,8 @@ lemma negOnePow_zero : negOnePow 0 = 1 := rfl
 lemma negOnePow_one : negOnePow 1 = -1 := rfl
 
 lemma negOnePow_succ (n : ℤ) : (n + 1).negOnePow = -n.negOnePow := by
-  rw [negOnePow_add, negOnePow_one, mul_neg, mul_one]
+  simp [negOnePow_def, zpow_add]
+
 
 lemma negOnePow_even (n : ℤ) (hn : Even n) : n.negOnePow = 1 := by
   obtain ⟨k, rfl⟩ := hn

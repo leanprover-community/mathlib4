@@ -108,7 +108,7 @@ lemma isCofibrant_iff (X : Minus C) :
     IsCofibrant X ↔ ∀ (n : ℤ), Projective (X.obj.X n) := by
   rw [HomotopicalAlgebra.isCofibrant_iff, cofibration_iff,
     degreewiseMonoWithProjectiveCokernel_iff_of_isZero]
-  exact Functor.map_isZero (Minus.ι C) (IsZero.of_mono_zero _ X)
+  exact Functor.map_isZero (Minus.ι C) initialIsInitial.isZero
 
 end modelCategoryQuillen
 
