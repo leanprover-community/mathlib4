@@ -297,10 +297,7 @@ variable [LieModule.IsTriangularizable K H L]
 
 lemma lieIdeal_eq_iSup_inf_genWeightSpace (I : LieIdeal K L) :
     I.restr H = ⨆ χ : Weight K H L, I.restr H ⊓ genWeightSpace L χ := by
-  nth_rw 1 [← inf_top_eq (I.restr H), ← iSup_genWeightSpace_eq_top']
-  -- My guess is this goal is now true for any modular complete lattice (might also need compactly
-  -- generated) e.g., maybe with some `iSup` variant of `IsModularLattice.inf_sup_inf_assoc`?
-  sorry
+  exact eq_iSup_inf_genWeightSpace (N := I.restr H)
 
 lemma lieIdeal_eq_inf_cartan_sup_biSup_inf_rootSpace (I : LieIdeal K L) :
     I.restr H = (I.restr H ⊓ H.toLieSubmodule) ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero),
