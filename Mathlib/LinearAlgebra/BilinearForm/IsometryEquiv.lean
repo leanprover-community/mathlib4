@@ -98,7 +98,6 @@ def toIsometry (g : B₁.IsometryEquiv B₂) : B₁ →bᵢ B₂ where
   toFun x := g x
   __ := g
 
-
 end IsometryEquiv
 
 namespace Equivalent
