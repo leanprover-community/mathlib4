@@ -135,6 +135,7 @@ jobs:
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.extract-data.outputs.bot == 'true' ) }}
+        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: update zulip emoji reactions
@@ -146,4 +147,4 @@ jobs:
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
-          python ci-tools/scripts/zulip/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"
+          python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"

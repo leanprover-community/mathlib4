@@ -74,6 +74,7 @@ jobs:
 
     - name: Checkout CI scripts
       if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
+      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Set up Python
@@ -95,4 +96,4 @@ jobs:
         ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
         ZULIP_SITE: https://leanprover.zulipchat.com
       run: |
-        python ci-tools/scripts/zulip/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.action.outputs.ci_action }}" "none" "${{ steps.pr.outputs.pr_number }}"
+        python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.action.outputs.ci_action }}" "none" "${{ steps.pr.outputs.pr_number }}"

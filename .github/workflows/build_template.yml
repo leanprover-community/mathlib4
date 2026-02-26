@@ -92,6 +92,7 @@ jobs:
           path: tools-branch
 
       - name: Checkout CI scripts
+        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       # Checkout the PR branch into a subdirectory
@@ -636,8 +637,8 @@ jobs:
           TEST_OUTCOME: ${{ steps.test.outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
-          ci-tools/scripts/maintainer/lean-pr-testing-comments.sh lean
-          ci-tools/scripts/maintainer/lean-pr-testing-comments.sh batteries
+          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" lean
+          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
 
   upload_cache:
     name: Upload to cache

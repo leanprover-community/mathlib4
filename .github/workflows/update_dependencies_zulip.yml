@@ -20,6 +20,7 @@ jobs:
           fetch-depth: 2  # Need previous commit for diff
 
       - name: Checkout CI scripts
+        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: Set up Python
@@ -30,7 +31,7 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          output="$(./ci-tools/scripts/zulip/parse_lake_manifest_changes.py)"
+          output="$("${CI_SCRIPTS_DIR}/zulip/parse_lake_manifest_changes.py")"
           echo "Dependency changes:"
           echo "$output"
           delimiter="EOF"
@@ -97,6 +98,7 @@ jobs:
           fetch-depth: 2  # Need previous commit for diff
 
       - name: Checkout CI scripts
+        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: Set up Python
@@ -107,7 +109,7 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          output="$(./ci-tools/scripts/zulip/parse_lake_manifest_changes.py)"
+          output="$("${CI_SCRIPTS_DIR}/zulip/parse_lake_manifest_changes.py")"
           echo "Dependency changes:"
           echo "$output"
           delimiter="EOF"

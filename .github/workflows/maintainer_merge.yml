@@ -121,13 +121,14 @@ jobs:
 
       - name: Checkout CI scripts
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
+        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: Determine Zulip topic
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
         id: determine_topic
         run: |
-          ./ci-tools/scripts/maintainer/get_tlabel.sh "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
+          "${CI_SCRIPTS_DIR}/maintainer/get_tlabel.sh" "/repos/leanprover-community/mathlib4/issues/${PR_NUMBER}" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -140,7 +141,7 @@ jobs:
 
           echo ""
           message="$(
-            ./ci-tools/scripts/maintainer/maintainer_merge_message.sh "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}" "${PR_AUTHOR}"
+            "${CI_SCRIPTS_DIR}/maintainer/maintainer_merge_message.sh" "${AUTHOR}" "${{ steps.merge_or_delegate.outputs.mOrD }}" "${EVENT_NAME}" "${PR_NUMBER}" "${PR_URL}" "${PR_TITLE_ISSUE}${PR_TITLE_PR}" "${COMMENT_EVENT}${COMMENT_REVIEW}" "${PR_AUTHOR}"
           )"
           printf 'title<<EOF\n%s\nEOF' "${message}" | tee "$GITHUB_OUTPUT"
 

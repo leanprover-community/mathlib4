@@ -345,6 +345,7 @@ jobs:
 
     - name: Checkout CI scripts
       if: steps.check_branch.outputs.result == 'false'
+      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Attempt automatic PR creation
@@ -367,7 +368,7 @@ jobs:
         echo "  bumpversion: ${bump_branch_suffix}"
         echo "  nightlydate: ${current_version}"
         echo "  nightlysha: ${SHA}"
-        ./ci-tools/scripts/nightly/create-adaptation-pr.sh --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
+        "${CI_SCRIPTS_DIR}/nightly/create-adaptation-pr.sh" --bumpversion="${bump_branch_suffix}" --nightlydate="${current_version}" --nightlysha="${SHA}" --auto=yes
 
     - name: Fallback to manual instructions
       if: steps.auto_pr.outcome == 'failure' && steps.check_branch.outputs.result == 'false'

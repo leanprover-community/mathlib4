@@ -20,6 +20,7 @@ jobs:
         fetch-depth: 0 # download the full repository
 
     - name: Checkout CI scripts
+      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Set up Python
@@ -45,5 +46,5 @@ jobs:
           printf $'Scanning commits:\n%s\n\nContinuing\n' "$(git log --since="10 minutes ago" --pretty=oneline)"
           while read -r pr_number; do
             printf $'Running the python script with pr "%s"\n' "${pr_number}"
-            python ci-tools/scripts/zulip/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "none" "${pr_number}"
+            python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "none" "${pr_number}"
           done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')

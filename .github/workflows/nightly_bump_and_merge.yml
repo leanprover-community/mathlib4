@@ -34,6 +34,7 @@ jobs:
         token: ${{ steps.app-token.outputs.token }}
 
     - name: Checkout CI scripts
+      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Set up Git
@@ -221,7 +222,7 @@ jobs:
         FAILED_MERGES=""
 
         # Ensure the merge script is executable
-        chmod +x ci-tools/scripts/nightly/merge-lean-testing-pr.sh
+        chmod +x "${CI_SCRIPTS_DIR}/nightly/merge-lean-testing-pr.sh"
 
         # Process each branch
         for BRANCH in $BRANCHES; do
@@ -267,7 +268,7 @@ jobs:
 
           # Run the merge script and capture exit code
           # Note: The merge script does its own commit but NOT push
-          if ./ci-tools/scripts/nightly/merge-lean-testing-pr.sh "$PR_NUMBER"; then
+          if "${CI_SCRIPTS_DIR}/nightly/merge-lean-testing-pr.sh" "$PR_NUMBER"; then
             echo "Successfully merged $BRANCH"
             SUCCESSFUL_MERGES="$SUCCESSFUL_MERGES$PR_NUMBER|$GITHUB_DIFF|$BRANCH "
           else

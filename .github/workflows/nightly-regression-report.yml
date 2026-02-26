@@ -31,6 +31,7 @@ jobs:
         ref: nightly-testing-green
 
     - name: Checkout CI scripts
+      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Configure Lean
@@ -77,7 +78,7 @@ jobs:
         SHA=${{ github.sha }} \
         REPO=${{ github.repository }} \
         RUN_ID=${{ github.run_id }} \
-          ./ci-tools/scripts/reporting/zulip_build_report.sh "${lean_outfile}" > "${GITHUB_OUTPUT}"
+          "${CI_SCRIPTS_DIR}/reporting/zulip_build_report.sh" "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper
       uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23

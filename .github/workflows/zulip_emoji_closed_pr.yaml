@@ -47,6 +47,7 @@ jobs:
       - name: Checkout CI scripts
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
                 github.event_name == 'reopened' }}
+        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: Update zulip emoji reactions
@@ -60,4 +61,4 @@ jobs:
           # ${{ github.event.action }} is either "closed" or "reopened"
           # We add the "closed-pr" emoji to the message, if it is "closed"
           # and remove the emoji if the action is "reopen".
-          python ci-tools/scripts/zulip/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"
+          python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ github.event.action }}" "none" "${{ github.event.pull_request.number }}"

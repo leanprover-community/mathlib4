@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout CI scripts
+      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Set up Python
@@ -40,4 +41,4 @@ jobs:
         PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
       run: |
         printf $'Running the python script with:\nPR number: "%s"\nlabel status: "%s"\nlabel: "%s"\nPR labels: "%s"\n' "$PR_NUMBER" "$LABEL_STATUS" "$LABEL" "$PR_LABELS"
-        python ci-tools/scripts/zulip/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER" "$PR_LABELS"
+        python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER" "$PR_LABELS"

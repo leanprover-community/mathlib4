@@ -40,14 +40,9 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           # Fetch full history to access all PR commits
           fetch-depth: 0
-
       - name: Checkout CI scripts
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          repository: leanprover-community/mathlib-ci
-          ref: main
-          path: ci-tools
-
+        id: checkout_ci_scripts
+        uses: ./.github/actions/checkout-ci-scripts
       - name: Check for special commits
         id: check
         run: |
@@ -76,7 +71,7 @@ jobs:
 
           # Run verification (human-readable to stdout, JSON to file)
           set +e
-          ./ci-tools/scripts/verification/verify_commits.sh "$BASE_SHA" --json-file verification_result.json
+          "${CI_SCRIPTS_DIR}/verification/verify_commits.sh" "$BASE_SHA" --json-file verification_result.json
           EXIT_CODE=$?
           set -e
 
@@ -94,7 +89,7 @@ jobs:
           REPO="${{ github.repository }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
 
-          COMMENT=$(cat verification_result.json | ./ci-tools/scripts/verification/verify_commits_summary.sh "$REPO" "$PR_NUMBER")
+          COMMENT=$(cat verification_result.json | "${CI_SCRIPTS_DIR}/verification/verify_commits_summary.sh" "$REPO" "$PR_NUMBER")
 
           # Save to file (GitHub Actions has issues with multiline outputs)
           echo "$COMMENT" > comment_body.md
