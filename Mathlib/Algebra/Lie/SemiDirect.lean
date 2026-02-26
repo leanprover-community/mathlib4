@@ -51,6 +51,14 @@ variable {G : Type*} [LieRing G] [LieAlgebra R G]
 variable {H : Type*} [LieRing H] [LieAlgebra R H]
 variable (ψ : G →ₗ⁅R⁆ (LieDerivation R H H))
 
+variable {ψ} in
+/-- As raw types, the semidirect product is just a product. -/
+def toProd : H ⋊⁅ψ⁆ G ≃ H × G where
+  toFun x := ⟨x.left, x.right⟩
+  invFun x := ⟨x.fst, x.snd⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 
 instance : AddCommGroup (H ⋊⁅ψ⁆ G) := by
   unfold SemiDirectSum
