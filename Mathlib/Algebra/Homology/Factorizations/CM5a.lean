@@ -24,9 +24,9 @@ on the available bounds for `K` and `L`).
 
 open CategoryTheory Limits Opposite Abelian HomologicalComplex
 
-variable {C : Type*} [Category* C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C] [EnoughInjectives C]
 
-namespace CochainComplex
+namespace CochainComplex.Plus.modelCategoryQuillen
 
 variable {K L : CochainComplex C ℤ} (f : K ⟶ L)
 
@@ -39,34 +39,34 @@ instance (F : (cofFib f).FullSubcategory) : Mono F.obj.ι :=
   F.property.1
 
 variable {f} in
-def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
-  fun F ↦ ∀ i ≤ n, IsIso (F.obj.π.f i)
-
-variable {f} in
 def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, QuasiIsoAt F.obj.ι i
 
+variable {f} in
+def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
+  fun F ↦ ∀ i ≤ n, IsIso (F.obj.π.f i)
+
 lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) :
-    ∃ (F : (cofFib f).FullSubcategory), isIsoLE n₀ F ∧ quasiIsoLE n₀ F ∧
+    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₀ F ∧ isIsoLE n₀ F ∧
       Mono (homologyMap F.obj.ι n₁) := by
   sorry
 
 lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] :
-    ∃ (F : (cofFib f).FullSubcategory), isIsoLE n₁ F ∧ quasiIsoLE n₁ F := by
+    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₁ F := by
   sorry
 
-lemma step₁₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+lemma step [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) :
-    ∃ (F : (cofFib f).FullSubcategory), isIsoLE n₀ F ∧ quasiIsoLE n₁ F := by
+    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F := by
   obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hn₁ hf
-  obtain ⟨F₂, h₃, h₄⟩ := step₂ F₁.obj.ι n₀ n₁ hn₁ h₂
+  obtain ⟨F₂, h₃, h₄⟩ := step₂ F₁.obj.ι n₀ n₁ hn₁ h₁
   refine ⟨.mk { mid := _, ι := F₂.obj.ι , π := F₂.obj.π ≫ F₁.obj.π }
     ⟨by dsimp; infer_instance, MorphismProperty.comp_mem _ _ _ F₂.property.2 F₁.property.2⟩,
-    ⟨fun i hi ↦ ?_, h₄⟩⟩
-  have := h₁ i hi
-  have := h₃ i (by lia)
+    ⟨h₃, fun i hi ↦ ?_⟩⟩
+  have := h₂ i hi
+  have := h₄ i (by lia)
   dsimp
   infer_instance
 
@@ -91,11 +91,11 @@ lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.1 ⟶ F.1),
       ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (g.hom.h.f i) := by
-  obtain ⟨F₁₂, h₁, h₂⟩ := step₁₂ F.obj.obj.ι n₀ n₁ hn₁ F.property
+  obtain ⟨F₁₂, h₁, h₂⟩ := step F.obj.obj.ι n₀ n₁ hn₁ F.property
   exact ⟨.mk (.mk { mid := _, ι := F₁₂.obj.ι, π := F₁₂.obj.π ≫ F.obj.obj.π }
     ⟨by dsimp; infer_instance,
-      MorphismProperty.comp_mem _ _ _ F₁₂.property.2 F.obj.property.2⟩) h₂,
-      ObjectProperty.homMk { h := F₁₂.obj.π }, h₁⟩
+      MorphismProperty.comp_mem _ _ _ F₁₂.property.2 F.obj.property.2⟩) h₁,
+      ObjectProperty.homMk { h := F₁₂.obj.π }, h₂⟩
 
 variable {f} in
 noncomputable def next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
@@ -123,7 +123,8 @@ noncomputable def sequence
 
 variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
 
-noncomputable def toSequenceNext (q : ℕ) : (sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj :=
+noncomputable def toSequenceNext (q : ℕ) :
+    (sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj :=
   (sequence f n₀ q).fromNext _ (by lia)
 
 end CofFibFactorizationQuasiIsoLE
@@ -243,9 +244,9 @@ instance : QuasiIso (ι f n₀) where
     obtain ⟨q, hq⟩ : ∃ (q : ℕ), i + 1 ≤ n₀ + q := ⟨(i + 1 - n₀).natAbs, by lia⟩
     have := quasiIsoAt_midπ f n₀ q i hq
     rw [← quasiIsoAt_iff_comp_right _ (midπ f n₀ q), ι_midπ]
-    refine (CofFibFactorizationQuasiIsoLE.sequence f n₀ q).property i (by lia)
+    exact (CofFibFactorizationQuasiIsoLE.sequence f n₀ q).property i (by lia)
 
-lemma prop_π : degreewiseEpiWithInjectiveKernel (π f n₀) := by
+lemma degreewiseEpiWithInjectiveKernel_π : degreewiseEpiWithInjectiveKernel (π f n₀) := by
   intro i
   obtain ⟨q, hq⟩ : ∃ (q : ℕ), i ≤ n₀ + q := ⟨(i - n₀).natAbs, by lia⟩
   rw [← midπ_π_f f n₀ q]
@@ -262,6 +263,15 @@ public lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE n] [L.IsStrictlyGE n] [Mono f] :
       Mono ι ∧ QuasiIso ι ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f := by
   obtain ⟨n, rfl⟩ : ∃ (q : ℤ), n = q + 1 := ⟨n - 1, by simp⟩
   exact ⟨mid f n, inferInstance, ι f n, π f n, inferInstance,
-    inferInstance, prop_π f n, ι_π f n⟩
+    inferInstance, degreewiseEpiWithInjectiveKernel_π f n, ι_π f n⟩
 
-end CochainComplex
+lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
+    ∃ (K' : CochainComplex C ℤ) (_hK' : K'.IsStrictlyGE n) (ι : K ⟶ K') (π : K' ⟶ L),
+      Mono ι ∧ QuasiIso ι ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f := by
+  have : K.IsStrictlyGE n := K.isStrictlyGE_of_ge n (n + 1) (by lia)
+  obtain ⟨L', _, i, p, _, hp, _, rfl⟩ := cm5b f n
+  obtain ⟨K', _, ι, π, _, _, hπ, rfl⟩ := cm5a_cof i n
+  exact ⟨K', inferInstance, ι, π ≫ p, inferInstance, inferInstance,
+    MorphismProperty.comp_mem _ _ _ hπ hp, by simp⟩
+
+end CochainComplex.Plus.modelCategoryQuillen
