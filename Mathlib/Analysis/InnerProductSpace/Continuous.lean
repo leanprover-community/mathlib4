@@ -94,7 +94,7 @@ end Continuous
 
 open Submodule
 
-variable {𝕜 E F ι : Type*}
+variable {E F ι : Type*}
 variable (𝕜 : Type*) [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
