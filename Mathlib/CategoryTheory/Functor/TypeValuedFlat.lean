@@ -60,6 +60,7 @@ namespace FunctorToTypes
 
 variable (F : C ⥤ Type w) {X : C} (x : F.obj X)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F : C ⥤ Type w`, an object `X : C` and `x : F.obj X`,
 this is the subfunctor of the functor `Over.forget X ⋙ F : Over X ⥤ Type w`
 which sends an object of `Over X` corresponding to a morphism `f : Y ⟶ X`
@@ -79,6 +80,7 @@ corresponding to a morphism `f : Y ⟶ X` to the subtype of `F.obj Y`
 consisting of those elements `y : F.obj Y` such that `F.map f y = x`. -/
 abbrev fromOverFunctor : Over X ⥤ Type w := (fromOverSubfunctor F x).toFunctor
 
+set_option backward.isDefEq.respectTransparency false in
 open CategoryOfElements in
 /-- Given a functor `F : C ⥤ Type w`, an object `X : C` and `x : F.obj X`,
 this is the equivalence between the category of elements of `fromOverFunctor F x`

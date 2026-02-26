@@ -154,6 +154,7 @@ theorem iff_quotient_mvPolynomial' :
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
     simpa using Submodule.fg_bot
 
+set_option backward.isDefEq.respectTransparency false in
 universe v in
 /-- If `A` is a finitely presented `R`-algebra, then `MvPolynomial (Fin n) A` is finitely presented
 as `R`-algebra. -/
@@ -205,6 +206,7 @@ instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
 
 open MvPolynomial
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: extract out helper lemmas and tidy proof.
 @[stacks 0561]
 theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A B]

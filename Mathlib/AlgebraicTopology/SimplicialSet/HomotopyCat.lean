@@ -141,6 +141,7 @@ lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
 end
 end OneTruncation₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]

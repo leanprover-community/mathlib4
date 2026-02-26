@@ -46,6 +46,7 @@ theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R 
   rw [piQuotientLift, lsum_apply, sum_apply, ← mkQ_apply, lsum_apply, sum_apply, _root_.map_sum]
   simp only [coe_proj, mapQ_apply, mkQ_apply, comp_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem piQuotientLift_single [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (i)
@@ -101,6 +102,7 @@ theorem left_inv : Function.LeftInverse (invFun p) (toFun p) := fun x =>
     rw [quotientPiLift_mk p, funext fun i => (mkQ_apply (p i) (x' i)), piQuotientLift_mk p,
       lsum_single, id_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem right_inv : Function.RightInverse (invFun p) (toFun p) := by
   dsimp only [toFun, invFun]
   rw [Function.rightInverse_iff_comp, ← coe_comp, ← @id_coe R]
