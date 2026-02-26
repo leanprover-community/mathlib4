@@ -3,6 +3,7 @@ Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles
 -/
+
 module
 
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
@@ -160,28 +161,6 @@ lemma ord_of_isUnit (x : R) (hx : IsUnit x) : ord R x = 0 := by
 
 section IsDiscreteValuationRing
 
-/--
-Given a commutative ring `R`, an `R`-algebra `S` and an `R`-module `M` with a scalar tower
-`IsScalarTower R S M`, if the algebra map from `R` to `S` is surjective, then this induces an order
-isomorphism `Submodule S M ≃o Submodule R M`.
--/
-def Submodule.orderIsoOfAlgebraMapSurjective
-    {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
-    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
-    (h : Function.Surjective (algebraMap R S)) : Submodule S M ≃o Submodule R M where
-  toFun N := N.restrictScalars R
-  invFun N := ⟨N.toAddSubmonoid, by simpa [h.forall] using N.2⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-  map_rel_iff' := .rfl
-
-lemma isSimpleModule_iff_isSimpleModule_of_algebraMap_surjective
-    {R S M : Type*} [CommRing R] [Ring S] [AddCommGroup M]
-    [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
-    (h : Function.Surjective (algebraMap R S)) : IsSimpleModule R M ↔ IsSimpleModule S M := by
-  rw [isSimpleModule_iff, isSimpleModule_iff,
-    (Submodule.orderIsoOfAlgebraMapSurjective h).isSimpleOrder_iff]
-
 variable [IsDomain R] [IsDiscreteValuationRing R]
 /--
 In a discrete valuation ring, the order of vanishing of an irreducible element is `1`.
@@ -332,27 +311,6 @@ lemma ordFrac_irreducible [IsDiscreteValuationRing R]
   simp only [ordFrac_eq_ord R ϖ this, mem_nonZeroDivisors_of_ne_zero this,
       ordMonoidWithZeroHom_eq_ord, ord_of_irreducible ϖ hϖ]
   rfl
-/--
-The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
-unit `x`.
--/
-lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing [IsDiscreteValuationRing R] (x : R) :
-  IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
-  refine ⟨ordFrac_of_isUnit x, fun h ↦ ?_⟩
-  obtain ⟨ϖ, hϖ⟩ := IsDiscreteValuationRing.exists_irreducible R
-  by_cases hx0 : algebraMap R K x = 0
-  · simp_all
-  obtain ⟨m, α, hx⟩ := IsDiscreteValuationRing.exists_units_eq_smul_zpow_of_irreducible hϖ _ hx0
-  rw [hx] at h
-  have : m = 0 := by
-    rw [Units.smul_def, Algebra.smul_def, map_mul, map_zpow₀,
-      ordFrac_of_isUnit α.1 (Units.isUnit α), ordFrac_irreducible ϖ hϖ] at h
-    simpa using h
-  rw [this] at hx
-  rw [Units.smul_def, Algebra.smul_def] at hx
-  simp only [zpow_zero, mul_one, algebraMap.coe_inj] at hx
-  rw [hx]
-  exact Units.isUnit α
 
 
 /--
@@ -383,6 +341,16 @@ lemma mker_ordFrac_eq_units [IsDiscreteValuationRing R] :
   · intro h
     obtain ⟨x, h1, rfl⟩ := h
     exact ordFrac_of_isUnit x h1
+
+/--
+The analogue of `ord_of_isUnit` for `ordFrac`, saying `ordFrac R (algebraMap R K x) = 1` for some
+unit `x`.
+-/
+lemma isUnit_iff_ordFrac_one_of_isDiscreteValuationRing [IsDiscreteValuationRing R] (x : R) :
+    IsUnit x ↔ ordFrac R (algebraMap R K x) = 1 := by
+  change IsUnit x ↔ algebraMap R K x ∈ MonoidHom.mker (ordFrac R)
+  simp [mker_ordFrac_eq_units, IsUnit.mem_submonoid_iff]
+
 /--
 `ordFrac R` is precisely the inverse of the valuation
 `IsDedekindDomain.HeightOneSpectrum.valuation K (IsDiscreteValuationRing.maximalIdeal R)`.
