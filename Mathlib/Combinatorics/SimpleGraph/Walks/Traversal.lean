@@ -134,12 +134,10 @@ theorem getVert_of_edge {u v a b} (p : G.Walk u v) (h : s(a, b) ∈ p.edges) :
       Prod.swap_prod_mk] at h
     cases h
     · use 0
-      simp only [length_cons, Nat.zero_lt_succ, getVert_zero, zero_add, getVert_cons_succ, true_and]
-      grind
+      grind [length_cons, getVert_zero, getVert_cons_succ]
     · obtain ⟨k, _, _⟩ := ih ‹_›
       use k + 1
-      simp only [length_cons, Nat.add_lt_add_iff_right, getVert_cons_succ]
-      grind
+      grind [length_cons, getVert_cons_succ]
 
 theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.length) :
     p.darts[n] = ⟨⟨p.getVert n, p.getVert (n + 1)⟩, p.adj_getVert_succ (p.length_darts ▸ h)⟩ := by
