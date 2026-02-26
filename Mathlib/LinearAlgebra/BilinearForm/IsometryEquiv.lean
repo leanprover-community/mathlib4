@@ -80,8 +80,7 @@ def symm (f : B₁.IsometryEquiv B₂) : B₂.IsometryEquiv B₁ :=
   { (f : M₁ ≃ₗ[R] M₂).symm with
     map_app' := by
       intro _ _; rw [← f.map_app]; congr
-      repeat exact f.toLinearEquiv.apply_symm_apply _
-  }
+      repeat exact f.toLinearEquiv.apply_symm_apply _ }
 
 /-- The composition of two isometric equivalences between bilinear forms. -/
 @[trans]
