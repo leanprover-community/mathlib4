@@ -330,4 +330,67 @@ theorem isBigO_atBot_of_degree_le (h : P.degree ≤ Q.degree) : P.eval =O[atBot]
 
 @[deprecated (since := "2026-02-05")] alias isBigO_of_degree_le := isBigO_atTop_of_degree_le
 
+section Cobounded
+
+lemma eventually_cofinite_not_isRoot {R : Type*} [CommRing R] [IsDomain R] {P : R[X]} (hP : P ≠ 0) :
+    ∀ᶠ x in cofinite, ¬P.IsRoot x :=
+  (finite_setOf_isRoot hP).compl_mem_cofinite
+
+open Bornology
+
+variable {R : Type*} [NormedRing R] [NormMulClass R] {P Q : R[X]}
+
+lemma isEquivalent_cobounded_leading_monomial :
+    P.eval ~[cobounded R] (P.leadingCoeff * · ^ P.natDegree) := by
+  by_cases h : P = 0
+  · simp [h, IsEquivalent.refl]
+  · simp only [eval_eq_sum_range, sum_range_succ]
+    exact (IsLittleO.sum fun i hi ↦
+      ((isLittleO_pow_pow_cobounded_of_lt (mem_range.mp hi)).const_mul_right
+        (leadingCoeff_ne_zero.mpr h)).const_mul_left _).add_isEquivalent .refl
+
+theorem isLittleO_cobounded_of_degree_lt (h : P.degree < Q.degree) :
+    P.eval =o[cobounded R] Q.eval := by
+  by_cases hP : P = 0
+  · simp [hP]
+  · refine isEquivalent_cobounded_leading_monomial.trans_isLittleO <|
+      ((IsLittleO.const_mul_right ?_ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
+    · exact leadingCoeff_ne_zero.mpr (ne_zero_of_degree_gt h)
+    · exact isLittleO_pow_pow_cobounded_of_lt (natDegree_lt_natDegree hP h)
+
+theorem isBigO_cobounded_of_degree_le (h : P.degree ≤ Q.degree) :
+    P.eval =O[cobounded R] Q.eval := by
+  by_cases hQ : Q.leadingCoeff = 0
+  · aesop
+  · refine isEquivalent_cobounded_leading_monomial.trans_isBigO <|
+      ((IsBigO.const_mul_right hQ ?_).const_mul_left _).trans_isEquivalent
+        isEquivalent_cobounded_leading_monomial.symm
+    exact isBigO_pow_pow_cobounded_of_le (natDegree_le_natDegree h)
+
+end Cobounded
+
+/-- If `deg Q < deg P`, there are only finitely many integers `x` where `|P(x)| ≤ |Q(x)|`. -/
+lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
+    {x | |P.eval x| ≤ |Q.eval x|}.Finite := by
+  have o := isLittleO_cobounded_of_degree_lt h
+  rw [Int.cobounded_eq, ← Int.cofinite_eq] at o
+  have nr := eventually_cofinite_not_isRoot (ne_zero_of_degree_gt h)
+  have key := o.eventuallyLT_norm_of_eventually_pos (nr.congr (.of_forall (by simp)))
+  simp_rw [eventually_cofinite, not_lt, Int.norm_eq_abs] at key
+  norm_cast at key
+
+/-- If `Q(x) ∣ P(x)` at infinitely many integers `x` and `Q` is monic, `Q ∣ P`. -/
+theorem dvd_of_infinite_eval_dvd_eval
+    {P Q : ℤ[X]} (mQ : Q.Monic) (h : {a | Q.eval a ∣ P.eval a}.Infinite) : Q ∣ P := by
+  have eqR := modByMonic_add_div P mQ
+  have degR := degree_modByMonic_lt P mQ
+  rw [← modByMonic_eq_zero_iff_dvd mQ]
+  set R := P %ₘ Q
+  apply eq_zero_of_infinite_isRoot
+  refine (h.diff (finite_abs_eval_le_of_degree_lt degR)).mono fun x mx ↦ ?_
+  simp only [Set.mem_diff, Set.mem_setOf_eq, not_le] at mx
+  rw [← eqR, eval_add, eval_mul, Int.dvd_add_self_mul, ← abs_dvd] at mx
+  exact Int.eq_zero_of_abs_lt_dvd mx.1 mx.2
+
 end Polynomial

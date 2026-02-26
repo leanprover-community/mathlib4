@@ -167,7 +167,6 @@ lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
   rw [← B.measure_eq] at A
   exact A.trans_le (measure_mono hu)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsEverywherePos.smul_measure (hs : IsEverywherePos μ s) {c : ℝ≥0∞} (hc : c ≠ 0) :
     IsEverywherePos (c • μ) s :=
   fun x hx n hn ↦ by simpa [hc.bot_lt, hs x hx n hn] using hc.bot_lt
