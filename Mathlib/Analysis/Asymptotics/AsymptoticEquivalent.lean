@@ -349,7 +349,7 @@ open Filter Asymptotics
 
 open Asymptotics
 
-variable {α β β₂ : Type*} [NormedAddCommGroup β] [Norm β₂] {l : Filter α}
+variable {α β β₂ : Type*} [AddCommGroup β] [NormedAddCommGroup β] [Norm β₂] {l : Filter α}
 
 theorem Filter.EventuallyEq.isEquivalent {u v : α → β} (h : u =ᶠ[l] v) : u ~[l] v :=
   IsEquivalent.congr_right (isLittleO_refl_left _ _) h

@@ -87,7 +87,7 @@ In most cases, `exists_fun_of_mem_tangentConeAt` and/or `mem_tangentConeAt_of_se
 can be used to generalize a proof using this lemma to topological vector spaces.
 -/
 theorem mem_tangentConeAt_iff_exists_seq_norm_tendsto_atTop {𝕜 E : Type*}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {s : Set E} {x y : E} :
     y ∈ tangentConeAt 𝕜 s x ↔
       ∃ (c : ℕ → 𝕜) (d : ℕ → E), Tendsto (‖c ·‖) atTop atTop ∧ (∀ᶠ n in atTop, x + d n ∈ s) ∧

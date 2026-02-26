@@ -1310,7 +1310,8 @@ end
 
 namespace LinearIsometryEquiv
 variable {𝕜 V W G : Type*} [RCLike 𝕜] [AddCommGroup V] [SeminormedAddCommGroup V] [Module 𝕜 V]
-  [AddCommGroup W] [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [AddCommGroup W] [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [AddCommGroup G]
+  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 /-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
 as a linear isometric equivalence. -/

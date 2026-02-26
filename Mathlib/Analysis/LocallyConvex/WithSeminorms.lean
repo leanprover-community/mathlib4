@@ -445,13 +445,13 @@ theorem SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf [IsTopological
     IsTopologicalAddGroup.ext_iff inferInstance (topologicalAddGroup_iInf fun i => inferInstance),
     nhds_iInf]
   congrm _ = ⨅ i, ?_
-  exact @comap_norm_nhds_zero _ (p i).toSeminormedAddGroup
+  exact @comap_norm_nhds_zero _ _ (p i).toSeminormedAddGroup
 
 theorem WithSeminorms.continuous_seminorm {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p)
     (i : ι) : Continuous (p i) := by
   have := hp.topologicalAddGroup
   rw [p.withSeminorms_iff_topologicalSpace_eq_iInf.mp hp]
-  exact continuous_iInf_dom (@continuous_norm _ (p i).toSeminormedAddGroup)
+  exact continuous_iInf_dom (@continuous_norm _ _ (p i).toSeminormedAddGroup)
 
 theorem WithSeminorms.toPolynormableSpace {p : SeminormFamily 𝕜 E ι} (hp : WithSeminorms p) :
     PolynormableSpace 𝕜 E where
@@ -479,20 +479,21 @@ theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace 
     IsUniformAddGroup.ext_iff inferInstance (isUniformAddGroup_iInf fun i => inferInstance),
     UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
   congrm _ = ⨅ i, ?_
-  exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
+  exact @comap_norm_nhds_zero _ _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
 
 end IsTopologicalAddGroup
 
 section NormedSpace
 
 /-- The topology of a `NormedSpace 𝕜 E` is induced by the seminorm `normSeminorm 𝕜 E`. -/
-theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+theorem norm_withSeminorms (𝕜 E) [NormedField 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] :
     WithSeminorms fun _ : Fin 1 => normSeminorm 𝕜 E := by
   rw [SeminormFamily.withSeminorms_iff_nhds_eq_iInf, iInf_const, coe_normSeminorm,
     comap_norm_nhds_zero]
 
 /-- A (semi-)normed space is polynormable. -/
-instance [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
+instance [NormedField 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] :
     PolynormableSpace 𝕜 E :=
   norm_withSeminorms 𝕜 E |>.toPolynormableSpace
 
@@ -671,14 +672,16 @@ theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFami
   simp_rw [map_sum, Finset.sum_apply]
   exact (continuous_finset_sum _ fun i _ ↦ (hp.continuous_seminorm i).const_smul (C : ℝ))
 
-theorem cont_withSeminorms_normedSpace (F) [SeminormedAddCommGroup F] [NormedSpace 𝕝₂ F]
+theorem cont_withSeminorms_normedSpace (F) [AddCommGroup F] [SeminormedAddCommGroup F]
+    [NormedSpace 𝕝₂ F]
     [TopologicalSpace E] {p : ι → Seminorm 𝕝 E} (hp : WithSeminorms p)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∃ (s : Finset ι) (C : ℝ≥0), (normSeminorm 𝕝₂ F).comp f ≤ C • s.sup p) :
     Continuous f := by
   rw [← Seminorm.isBounded_const (Fin 1)] at hf
   exact continuous_from_bounded hp (norm_withSeminorms 𝕝₂ F) f hf
 
-theorem cont_normedSpace_to_withSeminorms (E) [SeminormedAddCommGroup E] [NormedSpace 𝕝 E]
+theorem cont_normedSpace_to_withSeminorms (E) [AddCommGroup E] [SeminormedAddCommGroup E]
+    [NormedSpace 𝕝 E]
     [TopologicalSpace F] {q : ι → Seminorm 𝕝₂ F} (hq : WithSeminorms q)
     (f : E →ₛₗ[τ₁₂] F) (hf : ∀ i : ι, ∃ C : ℝ≥0, (q i).comp f ≤ C • normSeminorm 𝕝 E) :
     Continuous f := by
@@ -825,7 +828,7 @@ section bounded_of_continuous
 namespace Seminorm
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
   {p : SeminormFamily 𝕜 E ι}
 
 /-- In a semi-`NormedSpace`, a continuous seminorm is zero on elements of norm `0`. -/
@@ -919,7 +922,7 @@ end LocallyConvexSpace
 
 section NormedSpace
 
-variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [SeminormedAddCommGroup E]
+variable (𝕜) [NormedField 𝕜] [NormedSpace ℝ 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E]
 
 /-- Not an instance since `𝕜` can't be inferred. See `NormedSpace.toLocallyConvexSpace` for a
 slightly weaker instance version. -/
