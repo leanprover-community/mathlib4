@@ -35,8 +35,10 @@ The semi-direct sum of two Lie algebras `H` and `G` over `R`, relative to A Lie 
 `ψ: G → Liederivation R H H `. As a set it just `H × G`, however the Lie bracket is twisted by `ψ`.
 -/
 @[nolint unusedArguments]
-def SemiDirectSum {R : Type*} [CommRing R] (H : Type*) [LieRing H] [LieAlgebra R H]
-    (G : Type*) [LieRing G] [LieAlgebra R G] (_ : G →ₗ⁅R⁆ (LieDerivation R H H)) := H × G
+structure SemiDirectSum {R : Type*} [CommRing R] (H : Type*) [LieRing H] [LieAlgebra R H]
+    (G : Type*) [LieRing G] [LieAlgebra R G] (_ : G →ₗ⁅R⁆ LieDerivation R H H) where
+  left : H
+  right : G
 
 @[inherit_doc]
 notation:35 H " ⋊⁅" ψ:35 "⁆ " G:35 => SemiDirectSum H G ψ
