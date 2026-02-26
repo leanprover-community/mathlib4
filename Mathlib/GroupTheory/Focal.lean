@@ -103,9 +103,9 @@ lemma focalSubgroupOf.mk'_conj_eq {h : G} (hh : h ∈ H) (g : G)
     (QuotientGroup.mk' (focalSubgroupOf H)) ⟨g⁻¹ * h * g, hconj⟩ =
     (QuotientGroup.mk' (focalSubgroupOf H)) ⟨h, hh⟩ := by
   apply QuotientGroup.eq.mpr
-  rw [focalSubgroupOf, mem_subgroupOf]
+  rw [focalSubgroupOf_def, mem_subgroupOf]
   apply subset_closure
-  simp only [Subgroup.coe_mul, Subgroup.coe_inv]
+  simp only [coe_mul, coe_inv]
   exact ⟨H.mul_mem (H.inv_mem hconj) hh, _, H.inv_mem hconj, g, by group⟩
 
 theorem focalSubgroupOf_eq_closure :
