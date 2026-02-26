@@ -41,14 +41,17 @@ section
 
 variable {F₁ : J₁ ⥤ C} {F₂ : J₂ ⥤ C} {c₁ : Cocone F₁} {c₂ : Cocone F₂}
 
+lemma test :(Functor.uncurry.obj
+      ((((Functor.whiskeringLeft₂ C).obj F₁).obj F₂).obj (curriedTensor C)))  =
+      externalProduct F₁ F₂
+      := rfl
 variable (c₁ c₂) in
-/-- The "external" tensor product of two cocones. -/
+/-- The external tensor product of two cocones. -/
 abbrev Cocone.tensor₂ :
-    Cocone (Functor.uncurry.obj
-      ((((Functor.whiskeringLeft₂ C).obj F₁).obj F₂).obj (curriedTensor C))) :=
+    Cocone (externalProduct F₁ F₂) :=
   (curriedTensor C).mapCocone₂ c₁ c₂
 
-/-- The "external" tensor product of colimit cocones for functors `F₁ : J₁ ⥤ C`
+/-- The external tensor product of colimit cocones for functors `F₁ : J₁ ⥤ C`
 and `F₂ : J₂ ⥤ C` is a colimit cocone when `PreservesColimit₂ F₁ F₂ (curriedTensor C)`
 holds. -/
 noncomputable def IsColimit.tensor₂ [PreservesColimit₂ F₁ F₂ (curriedTensor C)]
