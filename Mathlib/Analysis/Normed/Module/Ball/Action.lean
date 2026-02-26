@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Normed.Field.UnitBall
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Multiplicative actions of/on balls and spheres
@@ -40,7 +39,7 @@ instance mulActionClosedBallBall : MulAction (closedBall (0 : 𝕜) 1) (ball (0 
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_closedBall_ball : ContinuousSMul (closedBall (0 : 𝕜) 1) (ball (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance mulActionClosedBallClosedBall :
     MulAction (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) where
@@ -55,7 +54,7 @@ instance mulActionClosedBallClosedBall :
 
 instance continuousSMul_closedBall_closedBall :
     ContinuousSMul (closedBall (0 : 𝕜) 1) (closedBall (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 end ClosedBall
 
@@ -67,7 +66,7 @@ instance mulActionSphereBall : MulAction (sphere (0 : 𝕜) 1) (ball (0 : E) r) 
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_sphere_ball : ContinuousSMul (sphere (0 : 𝕜) 1) (ball (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance mulActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) where
   smul c x := inclusion sphere_subset_closedBall c • x
@@ -76,7 +75,7 @@ instance mulActionSphereClosedBall : MulAction (sphere (0 : 𝕜) 1) (closedBall
 
 instance continuousSMul_sphere_closedBall :
     ContinuousSMul (sphere (0 : 𝕜) 1) (closedBall (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E) r) where
   smul c x :=
@@ -88,7 +87,7 @@ instance mulActionSphereSphere : MulAction (sphere (0 : 𝕜) 1) (sphere (0 : E)
   mul_smul _ _ _ := Subtype.ext <| mul_smul _ _ _
 
 instance continuousSMul_sphere_sphere : ContinuousSMul (sphere (0 : 𝕜) 1) (sphere (0 : E) r) :=
-  ⟨(continuous_subtype_val.fst'.smul continuous_subtype_val.snd').subtype_mk _⟩
+  ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 end Sphere
 

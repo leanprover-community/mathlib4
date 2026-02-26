@@ -92,11 +92,36 @@ lemma algebraMap_mem_map_algebraMap_iff (I : Ideal R) (x : R) :
       ∃ m ∈ M, m * x ∈ I := by
   rw [← IsLocalization.mk'_one (M := M), mk'_mem_map_algebraMap_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
     I.map (algebraMap R S) ≠ ⊤ ↔ Disjoint (M : Set R) (I : Set R) := by
   simp only [ne_eq, Ideal.eq_top_iff_one, ← map_one (algebraMap R S), not_iff_comm,
     IsLocalization.algebraMap_mem_map_algebraMap_iff M]
   simp [Set.disjoint_left]
+
+include M in
+protected theorem map_inf (I J : Ideal R) :
+    (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
+  refine le_antisymm (Ideal.map_inf_le (algebraMap R S)) fun x hx ↦ ?_
+  simp only [Ideal.mem_inf, IsLocalization.mem_map_algebraMap_iff M, Prod.exists] at hx ⊢
+  obtain ⟨⟨⟨i, hi⟩, mi, hi'⟩, ⟨j, hj⟩, mj, hj'⟩ := hx
+  simp only [← IsLocalization.eq_mk'_iff_mul_eq] at hi' hj'
+  obtain ⟨m, hm⟩ := IsLocalization.eq.mp (hi'.symm.trans hj')
+  rw [← mul_assoc, ← mul_assoc, mul_comm, ← mul_comm (j : R)] at hm
+  refine ⟨⟨i * (m * mj : M), I.mul_mem_right _ hi, hm ▸ J.mul_mem_right _ hj⟩, mi * (m * mj), ?_⟩
+  rwa [← IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, IsLocalization.mk'_cancel]
+
+/-- `IsLocalization.map_inf` as an `FrameHom`. -/
+def mapFrameHom : FrameHom (Ideal R) (Ideal S) where
+  toFun := Ideal.map (algebraMap R S)
+  map_inf' := IsLocalization.map_inf M S
+  map_top' := Ideal.map_top (algebraMap R S)
+  map_sSup' _ := (Ideal.gc_map_comap (algebraMap R S)).l_sSup.trans sSup_image.symm
+
+@[simp]
+lemma mapFrameHom_apply (I : Ideal R) :
+    IsLocalization.mapFrameHom M S I = I.map (algebraMap R S) :=
+  rfl
 
 include M in
 theorem map_comap (J : Ideal S) :
@@ -110,6 +135,7 @@ theorem map_comap (J : Ideal S) :
           (show (algebraMap R S) r ∈ J from
             mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_map_of_isPrimary_disjoint
     {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
@@ -183,6 +209,7 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S hp hd]
   exact ⟨hp, hd⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_comap_iff (J : Ideal S) :
     Disjoint (M : Set R) (J.comap (algebraMap R S)) ↔ J ≠ ⊤ := by
   rw [← iff_not_comm, Set.not_disjoint_iff]
@@ -250,6 +277,7 @@ section CommRing
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 variable [Algebra R S] [IsLocalization M S]
 
+set_option backward.isDefEq.respectTransparency false in
 include M in
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,

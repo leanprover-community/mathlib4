@@ -56,8 +56,6 @@ def symmMeasurableEquiv : I ≃ᵐ I where
   invFun := σ
   left_inv := symm_symm
   right_inv := symm_symm
-  measurable_toFun := measurable_symm
-  measurable_invFun := measurable_symm
 
 @[simp]
 lemma symm_symmMeasurableEquiv : symmMeasurableEquiv.symm = symmMeasurableEquiv := rfl

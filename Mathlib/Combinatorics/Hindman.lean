@@ -49,7 +49,7 @@ Ramsey theory, ultrafilter
 open Filter
 
 /-- Multiplication of ultrafilters given by `∀ᶠ m in U*V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m*m')`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
 /-- Addition of ultrafilters given by `∀ᶠ m in U+V, p m ↔ ∀ᶠ m in U, ∀ᶠ m' in V, p (m+m')`. -/]
 def Ultrafilter.mul {M} [Mul M] : Mul (Ultrafilter M) where mul U V := (· * ·) <$> U <*> V
 
@@ -63,7 +63,8 @@ theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → 
   Iff.rfl
 
 /-- Semigroup structure on `Ultrafilter M` induced by a semigroup structure on `M`. -/
-@[to_additive /-- Additive semigroup structure on `Ultrafilter M` induced by an additive semigroup
+@[to_additive (attr := instance_reducible)
+/-- Additive semigroup structure on `Ultrafilter M` induced by an additive semigroup
 structure on `M`. -/]
 def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.mul with
