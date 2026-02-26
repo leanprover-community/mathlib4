@@ -516,7 +516,6 @@ lemma from_truncGE_obj_ext {n : ℤ} {X : C} {Y : C}
   have hg' := t.zero_of_isLE_of_isGE g (n-2) n (by lia)
     (by exact t.isLE_shift _ (n-1) 1 (n-2) (by lia)) inferInstance
   rw [hg, hg', comp_zero]
-  rfl
 
 lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
     {f₁ f₂ : Y ⟶ (t.truncLT n).obj X}
@@ -531,7 +530,6 @@ lemma to_truncLT_obj_ext {n : ℤ} {Y : C} {X : C}
   have hg' := t.zero_of_isLE_of_isGE g (n - 1) (n + 1) (by lia) inferInstance
     (by dsimp; apply (t.isGE_shift _ n (-1) (n + 1) (by lia)))
   rw [hg, hg', zero_comp]
-  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
