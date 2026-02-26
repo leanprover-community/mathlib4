@@ -651,19 +651,26 @@ lemma one_lt_iff_one_lt (h : v₁.IsEquiv v₂) {x : R} :
     1 < v₁ x ↔ 1 < v₂ x := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
+theorem isTrivialOn {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂)
+    (h₁ : IsTrivialOn A v₁) : IsTrivialOn A v₂ where
+  eq_one _ ha := h.eq_one_iff_eq_one.mp (IsTrivialOn.eq_one _ ha)
+
+theorem isTrivialOn_iff {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂) :
+    IsTrivialOn A v₁ ↔ IsTrivialOn A v₂ :=
+  ⟨fun h₁ ↦ h.isTrivialOn h₁, fun h₂ ↦ h.symm.isTrivialOn h₂⟩
+
 end IsEquiv
 
 section LinearOrderedCommMonoidWithZero
 
-variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+  {v : Valuation R Γ₀} {v' : Valuation R Γ'₀}
 
-theorem isEquiv_map_self_of_strictMono [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
-    (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
+theorem isEquiv_map_self_of_strictMono (f : Γ₀ →*₀ Γ'₀) (H : StrictMono f) :
+    IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 
-variable {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
-
-theorem isEquiv_iff_val_lt_val : v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
+theorem isEquiv_iff_val_lt_val : v.IsEquiv v' ↔ ∀ {x y : R}, v x < v y ↔ v' x < v' y := by
   simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
   exact forall_comm
 
@@ -844,6 +851,7 @@ section Basic
 
 section Monoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where

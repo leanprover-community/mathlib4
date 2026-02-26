@@ -91,3 +91,39 @@ theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fu
   continuous_iff_continuousAt.2 fun _x => by fun_prop
 
 end Continuous
+
+open Submodule
+
+variable {𝕜 E F ι : Type*} [RCLike 𝕜]
+variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
+variable {x y : E} {S : Set E} {f : ι → E}
+
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
+
+variable (𝕜) in
+theorem Dense.eq_zero_of_inner_left (hS : Dense S) (h : ∀ v ∈ S, ⟪x, v⟫ = 0) : x = 0 := by
+  let K := span 𝕜 S
+  have hK : Dense (K : Set E) := hS.mono subset_span
+  have : (⟪x, ·⟫) = 0 := (continuous_const.inner continuous_id).ext_on
+    hK continuous_const fun v ↦ Submodule.span_induction h (by simp)
+      (by simp +contextual [inner_add_right]) (by simp +contextual [inner_smul_right])
+  simpa using congr_fun this x
+
+variable (𝕜) in
+theorem Dense.eq_zero_of_inner_right (hS : Dense S) (h : ∀ v ∈ S, ⟪v, x⟫ = 0) : x = 0 :=
+  hS.eq_zero_of_inner_left 𝕜 fun v hv ↦ by rw! [← inner_conj_symm]; simp [-inner_conj_symm, h, hv]
+
+variable (𝕜) in
+theorem Dense.eq_of_inner_left (hS : Dense S) (h : ∀ v ∈ S, ⟪x, v⟫ = ⟪y, v⟫) : x = y := by
+  rw [← sub_eq_zero]; exact hS.eq_zero_of_inner_left 𝕜 (by simpa [inner_sub_left, sub_eq_zero])
+
+variable (𝕜) in
+theorem Dense.eq_of_inner_right (hS : Dense S) (h : ∀ v ∈ S, ⟪v, x⟫ = ⟪v, y⟫) : x = y := by
+  rw [← sub_eq_zero]; exact hS.eq_zero_of_inner_right 𝕜 (by simpa [inner_sub_right, sub_eq_zero])
+
+nonrec theorem DenseRange.eq_zero_of_inner_left (hf : DenseRange f) (h : ∀ i, ⟪x, f i⟫ = 0) :
+    x = 0 := hf.eq_zero_of_inner_left 𝕜 (by simpa)
+
+nonrec theorem DenseRange.eq_zero_of_inner_right (hf : DenseRange f) (h : ∀ i, ⟪f i, x⟫ = 0) :
+    x = 0 := hf.eq_zero_of_inner_right 𝕜 (by simpa)

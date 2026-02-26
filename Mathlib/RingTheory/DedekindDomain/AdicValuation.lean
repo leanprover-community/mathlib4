@@ -266,6 +266,10 @@ theorem intValuation_exists_uniformizer :
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at notMem
   exact Nat.eq_of_le_of_lt_succ mem notMem
 
+instance : v.intValuation.IsNontrivial :=
+  have ⟨π, hπ⟩ := v.intValuation_exists_uniformizer
+  ⟨π, by aesop⟩
+
 /-- The `I`-adic valuation of a generator of `I` equals `(-1 : ℤᵐ⁰)` -/
 theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.span {r}) :
     v.intValuation r = exp (-1 : ℤ) := by
@@ -368,6 +372,7 @@ theorem valuation_uniformizer_ne_zero : Classical.choose (v.valuation_exists_uni
   haveI hu := Classical.choose_spec (v.valuation_exists_uniformizer K)
   (Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hu WithZero.coe_ne_zero)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_integers_of_valuation_le_one (x : K)
     (h : ∀ v : HeightOneSpectrum R, v.valuation K x ≤ 1) : x ∈ (algebraMap R K).range := by
   obtain ⟨⟨n, d, hd⟩, hx⟩ := IsLocalization.surj (nonZeroDivisors R) x
@@ -499,6 +504,7 @@ theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionI
   rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
   exact v.valuation_le_one _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
@@ -521,7 +527,7 @@ instance : Algebra R (v.adicCompletionIntegers K) where
     rw [mul_comm]
   smul_def' r x := by
     ext
-    simp only [Algebra.smul_def]
+    simp +instances only [Algebra.smul_def]
     rfl
 
 @[simp]
@@ -529,6 +535,7 @@ lemma algebraMap_adicCompletionIntegers_apply (r : R) :
     algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
   rw [faithfulSMul_iff_algebraMap_injective]
   intro x y

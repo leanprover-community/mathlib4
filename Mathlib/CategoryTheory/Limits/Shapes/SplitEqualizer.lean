@@ -111,6 +111,7 @@ def IsSplitEqualizer.asFork {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
 theorem IsSplitEqualizer.asFork_ι {W : C} {h : W ⟶ X} (t : IsSplitEqualizer f g h) :
     t.asFork.ι = h := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The fork induced by a split equalizer is an equalizer, justifying the name. In some cases it
 is more convenient to show a given fork is an equalizer by showing it is split.

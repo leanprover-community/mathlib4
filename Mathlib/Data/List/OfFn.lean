@@ -37,15 +37,10 @@ namespace List
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   simp; congr
 
-@[simp]
-theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
-    map g (ofFn f) = ofFn (g ∘ f) :=
-  ext_get (by simp) fun i h h' => by simp
-
 /-- Useful if `rw [← map_ofFn]` complains that `g ∘ f` is not the same as `fun i => g (f i)`. -/
 theorem ofFn_comp' {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     ofFn (fun i => g (f i)) = map g (ofFn f) :=
-  (map_ofFn f g).symm
+  map_ofFn.symm
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
@@ -89,16 +84,9 @@ theorem ofFn_mul' {m n} (f : Fin (m * n) → α) :
         (Nat.add_lt_add_left j.prop _).trans_eq (by rw [Nat.mul_add, Nat.mul_one])
       _ ≤ _ := Nat.mul_le_mul_left _ i.prop⟩) := by simp_rw [m.mul_comm, ofFn_mul, Fin.cast_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
-  | [] => by rw [ofFn_zero]
-  | a :: l => by
-    rw [ofFn_succ]
-    congr
-    exact ofFn_get l
-
-@[simp]
-theorem ofFn_getElem : ∀ l : List α, (ofFn (fun i : Fin l.length => l[(i : Nat)])) = l
   | [] => by rw [ofFn_zero]
   | a :: l => by
     rw [ofFn_succ]
