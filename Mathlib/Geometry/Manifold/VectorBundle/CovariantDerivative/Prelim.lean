@@ -401,7 +401,30 @@ end any_proj
 section fiber_bundle
 variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   (e : Trivialization F (π F E))
-  [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
+
+lemma Trivialization.proj_invFun_eventuallyEq
+    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
+  filter_upwards [e.baseSet_prod_univ_mem_nhds  hv] with ⟨x, f⟩ ⟨hx, hf⟩
+  exact symm_coe_proj e hx
+
+lemma Trivialization.injective_symm [(x : B) → Zero (E x)]
+  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    Function.Injective (e.symm v.proj) := by
+  intro f f' hff'
+  simpa [hv] using congr(e $hff')
+
+lemma Trivialization.surjective_symm [(x : B) → Zero (E x)]
+  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    Function.Surjective (e.symm v.proj) :=
+  fun u ↦ ⟨(e u).2, symm_apply_apply_mk e hv u⟩
+
+lemma Trivialization.bijective_symm [(x : B) → Zero (E x)]
+  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
+    Function.Bijective (e.symm v.proj) :=
+  ⟨e.injective_symm hv, e.surjective_symm hv⟩
+
+variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
 
 lemma Trivialization.preimage_baseSet_mem_nhds
    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
@@ -502,6 +525,11 @@ lemma Trivialization.symm_map_add [Trivialization.IsLinear R e] {x : B}
     e.symm x (f + f') = e.symm x f + e.symm x f' :=
   (symmL R e x).map_add f f'
 
+@[simp]
+lemma Trivialization.symm_map_zero [Trivialization.IsLinear R e] {x : B} :
+    e.symm x 0 = 0 :=
+  (symmL R e x).map_zero
+
 variable {R}
 
 lemma Trivialization.symm_map_smul [Trivialization.IsLinear R e] {x : B} (a : R) (f : F) :
@@ -581,6 +609,44 @@ lemma Trivialization.derivInv_deriv_apply
     (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
     (e.derivInv I v (e.deriv I v u)) = u :=
   show ((e.derivInv I v) ∘L (e.deriv I v)) u = u by simp [hv]
+
+@[simp]
+lemma Trivialization.mfderiv_proj_fst_deriv
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
+    (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
+    mfderiv (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v u = (e.deriv I v u).1 := by
+  have := e.fst_comp_eventuallyEq hv
+  rw [← this.mfderiv_eq, mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt (I := I) hv v.2)]
+  simp
+  rfl -- TODO: understand why `simp` does not handle `ContinuousLinearMap.fst`
+
+@[simp]
+lemma Trivialization.mfderiv_proj_derivInv_apply
+    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
+    (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
+    mfderiv (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v (e.derivInv I v u) = u.1 := by
+  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
+  rw [mk_proj_snd' e hv] at D₁
+  have diff : MDifferentiableAt (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v :=
+    mdifferentiableAt_proj _
+  have eq : e.invFun (e v) = v := by
+    simp [symm_apply_apply e ((mem_source e).mpr hv)]
+  rw [← eq] at diff
+  have := mfderiv_comp (e v) diff D₁
+  have C : (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
+    filter_upwards [e.baseSet_prod_univ_mem_nhds  hv] with ⟨x, f⟩ ⟨hx, hf⟩
+    exact symm_coe_proj e hx
+  rw [C.mfderiv_eq, eq] at this
+  have := congr($this u).symm
+  change mfderiv (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v _ = _ at this
+  -- Why all this pain??
+  convert this
+  ext x
+  simp
+  rfl
+
 
 @[simp]
 lemma Trivialization.deriv_derivInv

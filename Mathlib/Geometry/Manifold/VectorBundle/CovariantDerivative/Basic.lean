@@ -1013,6 +1013,10 @@ noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
   (cov.proj v).ker
 
+lemma mem_horiz_iff_proj {cov : CovariantDerivative I F V} {v : TotalSpace F V} (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
+  u ∈ cov.horiz v ↔ cov.proj v u = 0 := by
+  simp [horiz]
+
 lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     letI t := trivializationAt F V v.proj
     haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
