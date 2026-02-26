@@ -362,7 +362,7 @@ section
 
 omit [Algebra S A] [IsScalarTower R S A]
 
-attribute [-instance] leftHasSMul in
+attribute [-instance] leftDistribMulAction leftModule in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /-- `S`-linear version of `Algebra.TensorProduct.comm` when `A ⊗[R] S`
 is viewed as an `S`-algebra via the right component. -/
@@ -374,7 +374,7 @@ variable {S A} in
 lemma commRight_tmul (s : S) (a : A) : commRight R S A (s ⊗ₜ a) = a ⊗ₜ s := rfl
 
 variable {S A} in
-attribute [-instance] leftHasSMul in
+attribute [-instance] leftDistribMulAction leftModule in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 @[simp]
 lemma Algebra.TensorProduct.commRight_symm_tmul (s : S) (a : A) :

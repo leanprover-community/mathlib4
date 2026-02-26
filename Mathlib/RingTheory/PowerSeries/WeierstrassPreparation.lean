@@ -718,6 +718,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem algEquivQuotient_symm_apply [IsAdicComplete I A] (x : A⟦X⟧ ⧸ Ideal.span {g}) :
     H.algEquivQuotient.symm x = Ideal.Quotient.mk _
       (H.isDistinguishedAt.isWeierstrassDivisorAt'.mod' <| Ideal.quotientEquivAlgOfEq A
+        (I := Ideal.span _) (J := Ideal.span _)
         (by rw [H.eq_mul, Ideal.span_singleton_mul_right_unit H.isUnit]) x) := by
   simp [algEquivQuotient]
 
