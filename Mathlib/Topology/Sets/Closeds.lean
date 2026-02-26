@@ -509,74 +509,20 @@ lemma map_preimage_nonemtpy (f : β → α) (h : Continuous f) (T : IrreducibleC
   (Nonempty.mono (closure_subset_preimage_closure_image h (s := T))
       (closure_nonempty_iff.mpr T.2.nonempty))
 
-/--
-Map induced by the preimage under a continuous closed embedding on irreducible closed subsets.
--/
-def comap (f : β → α) (h : IsOpenEmbedding f) (V : IrreducibleCloseds α) (hV : (f ⁻¹' V).Nonempty) :
-    IrreducibleCloseds β where
-  carrier := f ⁻¹' V
-  isIrreducible' := ⟨hV,
-    IsPreirreducible.preimage (IsIrreducible.isPreirreducible V.2) h⟩
-  isClosed' := V.3.preimage h.continuous
+lemma IsPreirreducible.closure_image_preimage (f : β → α) (h : IsOpenMap f) (s : Set α)
+    (hne : (f ⁻¹' s).Nonempty) (hs : IsPreirreducible s) (hs' : IsClosed s) :
+    closure (f '' (f ⁻¹' s)) = s := by
+  refine subset_antisymm (closure_minimal (by simp) hs') ?_
+  refine subset_trans (subset_closure_inter_of_isPreirreducible_of_isOpen hs h.isOpen_range ?_) ?_
+  · exact Set.nonempty_of_nonempty_preimage (f := f) (by simpa)
+  · gcongr
+    grind
 
-/--
-Variant of map which packages the information that sets `V` in the image satisfy
-`(f ⁻¹' V).Nonempty`.
--/
-def mapSubtype (f : β → α) (hf : Continuous f) (T : IrreducibleCloseds β) :
-    {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} :=
-  ⟨map f hf T, map_preimage_nonemtpy f hf T⟩
-
-/--
-Variant of comap which takes the information `(f ⁻¹' V).Nonempty` as a subtype rather than an
-extra argument as in `comap`.
--/
-def comapSubtype (f : β → α) (h : IsOpenEmbedding f)
-    (V : {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty}) :=
-  comap f h V.1 V.2
-
-/--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is left inverse to the preimage
-when `f` is an open embedding
--/
-lemma map_comap_leftInverse (f : β → α) (h : IsOpenEmbedding f) :
-    Function.LeftInverse (mapSubtype f h.continuous) (comapSubtype f h) := by
-  intro V
-  simp only [coe_setOf]
-  have : (V.1.1 ∩ range f).Nonempty := by
-    have := V.2
-    dsimp at this
-    rw[← Set.preimage_inter_range] at this
-    have : (f ⁻¹' (↑↑V ∩ range f)).Nonempty := this
-    exact Set.nonempty_of_nonempty_preimage this
-  have lem := subset_closure_inter_of_isPreirreducible_of_isOpen (S := V.1.1) (U := range f)
-    (IsIrreducible.isPreirreducible V.1.2) (h.isOpen_range) this
-  refine le_antisymm (((IsClosed.closure_subset_iff (IrreducibleCloseds.isClosed V.1)).mpr
-    (image_preimage_subset f ↑↑V))) ?_
-  suffices V.1.1 ⊆ closure (f '' (f ⁻¹' V.1.1)) from this
-  convert lem
-  exact image_preimage_eq_inter_range
-
-/--
-The map taking an irreducible closed set `T` to `closure (f '' T)` is right inverse to the preimage
-when `f` is an open embedding
--/
-lemma map_comap_rightInverse (f : β → α) (h : IsOpenEmbedding f) :
-    Function.RightInverse (mapSubtype f h.continuous) (comapSubtype f h) := by
-  intro V
-  simp only [comapSubtype, comap, mem_setOf_eq, mapSubtype, map,
-    IrreducibleCloseds.coe_mk]
-  apply le_antisymm
-  · apply le_trans (b := closure V.carrier)
-    · rw[Topology.isOpenEmbedding_iff_continuous_injective_isOpenMap] at h
-      simp only [IrreducibleCloseds.coe_mk, le_eq_subset,
-          IsOpenMap.preimage_closure_eq_closure_preimage h.2.2 h.1]
-      rw [preimage_image_eq]
-      · rfl
-      exact h.2.1
-    · rw [IsClosed.closure_eq V.3]
-      rfl
-  · apply le_trans subset_closure (closure_subset_preimage_closure_image h.continuous)
+lemma IsOpenMap.preimage_closure_image (f : β → α) (h₁ : IsOpenMap f)
+    (h₂ : Function.Injective f) (h₃ : Continuous f) (s : Set β)
+    (hs' : IsClosed s) :
+    f ⁻¹' closure (f '' s) = s := by
+  rw [h₁.preimage_closure_eq_closure_preimage h₃, Set.preimage_image_eq _ h₂, hs'.closure_eq]
 
 /--
 Given `f : U → X` a continuous open embedding, the irreducble closeds of `U` are order isomorphic
@@ -585,10 +531,25 @@ to the irreducible closeds of `X` nontrivially intersecting the range of `f`.
 noncomputable
 def mapOrderIso (f : β → α) (h : IsOpenEmbedding f) :
     IrreducibleCloseds β ≃o {V : IrreducibleCloseds α | (f ⁻¹' V).Nonempty} where
-  toFun := mapSubtype f (h.continuous)
-  invFun := comapSubtype f h
-  left_inv := map_comap_rightInverse f h
-  right_inv := map_comap_leftInverse f h
+  toFun T := ⟨map f h.continuous T, map_preimage_nonemtpy f h.continuous T⟩
+  invFun V := {
+      carrier := f ⁻¹' V
+      isIrreducible' := ⟨V.2, IsPreirreducible.preimage (IsIrreducible.isPreirreducible V.1.2) h⟩
+      isClosed' := V.1.3.preimage h.continuous
+      }
+  left_inv := by
+    intro V
+    simp only [map]
+    ext x
+    dsimp
+    rw [IsOpenMap.preimage_closure_image f h.isOpenMap h.injective h.continuous]
+    exact isClosed V
+  right_inv := by
+    intro V
+    simp only [map]
+    ext x
+    dsimp
+    rw [IsPreirreducible.closure_image_preimage f h.isOpenMap V V.2 V.1.2.2 V.1.3]
   map_rel_iff' := by
     intro a b
     simp only [coe_setOf, mem_setOf_eq, Equiv.coe_fn_mk]
