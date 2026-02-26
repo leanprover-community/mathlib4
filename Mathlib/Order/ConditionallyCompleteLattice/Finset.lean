@@ -51,6 +51,23 @@ theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a �
 theorem Set.Finite.lt_csInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
   @Set.Finite.csSup_lt_iff αᵒᵈ _ _ _ hs h
 
+section ConditionallyCompleteLattice
+
+variable [ConditionallyCompleteLattice β] {f : α → β} (hmono : Monotone f)
+include hmono
+
+theorem csSup_eq_csSup_image {s : Set α} (hne : s.Nonempty) (hfin : s.Finite) :
+    f (sSup s) = sSup (f '' s) :=
+  le_antisymm (hmono.le_csSup_image (hne.csSup_mem hfin) hfin.bddAbove)
+    (hmono.csSup_image_le_csSup hne hfin.bddAbove)
+
+theorem csInf_eq_csInf_image {s : Set α} (hne : s.Nonempty) (hfin : s.Finite) :
+    f (sInf s) = sInf (f '' s) :=
+  le_antisymm (hmono.csInf_le_csInf_image hne hfin.bddBelow)
+    (hmono.csInf_image_le (hne.csInf_mem hfin) hfin.bddBelow)
+
+end ConditionallyCompleteLattice
+
 variable (f : ι → α)
 
 theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x)
