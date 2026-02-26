@@ -18,7 +18,7 @@ Among the basic results, we show that
 
 ## Main Definition
 
-* `IsPerfect`: a group `G` is *perfect* if it equals its own commutator,
+* `Group.IsPerfect`: a group `G` is *perfect* if it equals its own commutator,
   that is `⁅⊤, ⊤⁆ = ⊤`, where `⊤` is the full subgroup `G`.
 
 ## Main Theorems
