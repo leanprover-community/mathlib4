@@ -35,7 +35,7 @@ variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R 
 /-- An isometry between two bilinear spaces `M₁, B₁` and `M₂, B₂` over a ring `R`,
 is a linear map between `M₁` and `M₂` that commutes with the bilinear forms. -/
 structure Isometry (B₁ : LinearMap.BilinForm R M₁) (B₂ : LinearMap.BilinForm R M₂)
-extends M₁ →ₗ[R] M₂ where
+    extends M₁ →ₗ[R] M₂ where
   /-- The bilinear forms agree across the map. -/
   map_app (m m' : M₁) : B₂ (toFun m) (toFun m') = B₁ m m'
 
