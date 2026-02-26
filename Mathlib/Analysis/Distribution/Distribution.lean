@@ -244,6 +244,7 @@ lemma ofFunWithOrder_of_not_locallyIntegrable {f : E → F} {μ : Measure E}
   dsimp
   congr -- TODO: this line used to be not necessary!
 
+-- rename: ofFun_of_not_locallyIntegrableOn
 lemma ofFun_of_not_locallyIntegrable {f : E → F} {μ : Measure E} (hf : ¬LocallyIntegrableOn f Ω μ) :
     ofFun Ω f μ = 0 := by
   ext φ

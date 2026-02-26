@@ -69,12 +69,38 @@ def PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} [Fintype ι] (β : ι → Type*
     else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑ i, ‖f i‖ₑ ^ p.toReal) ^ p.toReal⁻¹
 
 attribute [fun_prop] TestFunction.contDiff
+attribute [gcongr] ae_mono
 
 -- temporary lemma for fun_prop
 @[fun_prop]
 lemma TestFunction.contDiff_one {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
     [NormedAddCommGroup F] [NormedSpace ℝ F] (φ : 𝓓(Ω, F)) : ContDiff ℝ 1 φ :=
   φ.contDiff.of_le (mod_cast le_top)
+
+lemma MeasureTheory.IntegrableAtFilter.congr {X ε : Type*} [MeasurableSpace X] [TopologicalSpace X]
+    [SecondCountableTopology X] [TopologicalSpace ε] [ContinuousENorm ε] [PseudoMetrizableSpace ε]
+    {f f' : X → ε} {l : Filter X} {μ : Measure X}
+    (h : f =ᵐ[μ] f') (hf : IntegrableAtFilter f l μ) : IntegrableAtFilter f' l μ :=
+  _
+
+lemma MeasureTheory.LocallyIntegrableOn.congr {X ε : Type*} [MeasurableSpace X] [TopologicalSpace X]
+    [SecondCountableTopology X] [TopologicalSpace ε] [ContinuousENorm ε] [PseudoMetrizableSpace ε]
+    {f f' : X → ε} {s : Set X} {μ : Measure X}
+    (h : f =ᵐ[μ.restrict s] f') (hf : LocallyIntegrableOn f s μ) : LocallyIntegrableOn f' s μ := by
+  intro x hx
+  obtain ⟨t, hxt, hft⟩ := hf x hx
+  refine ⟨t, hxt, ?_⟩
+  refine hft.congr ?_
+  refine h.filter_mono ?_
+  refine ae_mono ?_
+
+
+
+lemma MeasureTheory.locallyIntegrableOn_congr {X ε : Type*} [MeasurableSpace X] [TopologicalSpace X]
+    [TopologicalSpace ε] [ContinuousENorm ε] [PseudoMetrizableSpace ε]
+    {f f' : X → ε} {s : Set X} {μ : Measure X}
+    (h : f =ᵐ[μ.restrict s] f') : LocallyIntegrableOn f s μ ↔ LocallyIntegrableOn f' s μ := by
+
 
 section count
 variable {ι α : Type*} [MeasurableSpace ι] [MeasurableSingletonClass ι] [ENorm α]
@@ -106,9 +132,8 @@ end move
 
 namespace Distribution
 
-/- maybe inline this definition in `HasWeakDeriv`? -/
 structure IsRepresentedBy (T : 𝓓'(Ω, F)) (f : E → F) (μ : Measure E) : Prop where
-  locallyIntegrable : LocallyIntegrableOn f Ω μ
+  locallyIntegrableOn : LocallyIntegrableOn f Ω μ
   eq_ofFun : T = ofFun Ω f μ
 
 lemma IsRepresentedBy.congr {f f' : E → F} (h : f =ᵐ[μ.restrict Ω] f')
@@ -128,7 +153,7 @@ lemma isRepresentedBy_congr (hf : f =ᵐ[μ.restrict Ω] f') :
   ⟨.congr hf, .congr hf.symm⟩
 
 lemma isRepresentedBy_zero : IsRepresentedBy (0 : 𝓓'(Ω, F)) (0 : E → F) μ where
-  locallyIntegrable := locallyIntegrable_zero.locallyIntegrableOn _
+  locallyIntegrableOn := locallyIntegrable_zero.locallyIntegrableOn _
   eq_ofFun := by simp
 
 namespace IsRepresentedBy
@@ -142,12 +167,12 @@ lemma unique_right (h : IsRepresentedBy T f μ) (h' : IsRepresentedBy T f' μ) :
 
 lemma add (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
     IsRepresentedBy (T + T') (f + f') μ where
-  locallyIntegrable := hT.locallyIntegrable.add hT'.locallyIntegrable
+  locallyIntegrableOn := hT.locallyIntegrableOn.add hT'.locallyIntegrableOn
   eq_ofFun := by
-    simp [hT.eq_ofFun, hT'.eq_ofFun, ofFun_add hT.locallyIntegrable hT'.locallyIntegrable]
+    simp [hT.eq_ofFun, hT'.eq_ofFun, ofFun_add hT.locallyIntegrableOn hT'.locallyIntegrableOn]
 
 lemma neg (hT : IsRepresentedBy T f μ) : IsRepresentedBy (-T) (-f) μ where
-  locallyIntegrable := hT.locallyIntegrable.neg
+  locallyIntegrableOn := hT.locallyIntegrableOn.neg
   eq_ofFun := by simp [hT.eq_ofFun, ofFun_neg]
 
 lemma sub (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
@@ -156,7 +181,7 @@ lemma sub (hT : IsRepresentedBy T f μ) (hT' : IsRepresentedBy T' f' μ) :
   exact hT.add hT'.neg
 
 lemma smul (hT : IsRepresentedBy T f μ) : IsRepresentedBy (c • T) (c • f) μ where
-  locallyIntegrable := hT.locallyIntegrable.smul c
+  locallyIntegrableOn := hT.locallyIntegrableOn.smul c
   eq_ofFun := by simp [hT.eq_ofFun]
 
 end IsRepresentedBy
@@ -249,13 +274,15 @@ lemma weakDeriv_const [μ.IsAddHaarMeasure] [CompleteSpace F] (a : F) :
 
 variable (Ω) in
 /-- `f` has weak derivative represented by `g`. -/
-def HasWeakDeriv (f : E → F) (g : E → E →L[ℝ] F) (μ : Measure E) : Prop :=
-  IsRepresentedBy (weakDeriv Ω f μ) g μ
+@[mk_iff]
+structure HasWeakDeriv (f : E → F) (g : E → E →L[ℝ] F) (μ : Measure E) : Prop where
+  isRepresentedBy : IsRepresentedBy (weakDeriv Ω f μ) g μ
+  locallyIntegrableOn : LocallyIntegrableOn f Ω μ
   -- note(F): should we add `LocallyIntegrableOn f Ω μ` as condition here?
 
 lemma hasWeakDeriv_congr (hf : f =ᵐ[μ.restrict Ω] f') (hg : g =ᵐ[μ.restrict Ω] g') :
     HasWeakDeriv Ω f g μ ↔ HasWeakDeriv Ω f' g' μ := by
-  simp_rw [HasWeakDeriv, weakDeriv_congr hf]
+  simp_rw [hasWeakDeriv_iff, weakDeriv_congr hf, locallyIntegrableOn_congr]
   apply isRepresentedBy_congr hg
 
 alias ⟨HasWeakDeriv.congr, _⟩ := hasWeakDeriv_congr
@@ -270,6 +297,9 @@ lemma hasWeakderiv_const [μ.IsAddHaarMeasure] [CompleteSpace F] {a : F} :
   simp [HasWeakDeriv, weakDeriv_const, isRepresentedBy_zero]
 
 namespace HasWeakDeriv
+
+lemma locallyIntegrableOn_right (h : HasWeakDeriv Ω f g μ) : LocallyIntegrableOn g Ω μ :=
+  h.isRepresentedBy.locallyIntegrableOn
 
 nonrec lemma unique_right (h : HasWeakDeriv Ω f g μ) (h' : HasWeakDeriv Ω f' g' μ)
     (hf : f =ᵐ[μ.restrict Ω] f') : g =ᵐ[μ.restrict Ω] g' := by
@@ -342,7 +372,7 @@ lemma unique (h : HasWTaylorSeriesUpTo Ω f g k p μ) (h' : HasWTaylorSeriesUpTo
 lemma locallyIntegrableOn [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
     (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {n : ℕ} (hn : n ≤ k) :
     LocallyIntegrableOn (fun x ↦ g x n) Ω μ :=
-  locallyIntegrableOn_of_locallyIntegrable_restrict <| (hf.memLp n hn).locallyIntegrable hp.out
+  locallyIntegrableOn_of_locallyIntegrable_restrict <| (hf.memLp n hn).locallyIntegrableOn hp.out
 
 lemma mono {k' : ℕ∞} (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hk : k' ≤ k) :
     HasWTaylorSeriesUpTo Ω f g k' p μ where
