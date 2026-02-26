@@ -201,9 +201,9 @@ lemma index_eq_sum_minimalPeriod (g : G) [Finite (G ⧸ H)]
     [Fintype (Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)))] :
     H.index = ∑ q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)),
       Function.minimalPeriod (g • ·) q.out := by
-  haveI : Fintype (G ⧸ H) := Fintype.ofFinite _
-  haveI : ∀ q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)),
-      Fintype (MulAction.orbit (zpowers g) q.out) := fun q => Fintype.ofFinite _
+  have : Fintype (G ⧸ H) := Fintype.ofFinite _
+  have (q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H))) :
+      Fintype (MulAction.orbit (zpowers g) q.out) := Fintype.ofFinite _
   simp only [MulAction.minimalPeriod_eq_card, index_eq_card, Nat.card_eq_fintype_card]
   rw [← Fintype.card_sigma]
   exact Fintype.card_congr (MulAction.selfEquivSigmaOrbits (zpowers g) (G ⧸ H))
