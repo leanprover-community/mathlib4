@@ -73,7 +73,7 @@ lemma focalSubgroup_le : focalSubgroup H ≤ H := by
   rintro g ⟨h, -, -, -, -⟩
   exact h
 
-theorem map_focalSubgroupOf : H.focalSubgroupOf.map H.subtype = H.focalSubgroup :=
+@[simp] theorem map_focalSubgroupOf : H.focalSubgroupOf.map H.subtype = H.focalSubgroup :=
   map_subgroupOf_eq_of_le H.focalSubgroup_le
 
 /-- Lemma: H* is a normal subgroup of H. -/
