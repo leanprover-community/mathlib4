@@ -139,18 +139,19 @@ lemma isNonloopAt_eqOn_of_le (hHG : H ≤ G) : EqOn H.IsNonloopAt G.IsNonloopAt 
   ext x
   exact isNonloopAt_iff_of_le hHG he
 
+@[gcongr]
 lemma Adj.mono (hHG : H ≤ G) (h : H.Adj x y) : G.Adj x y :=
   (h.choose_spec.mono hHG).adj
 
-lemma compatible_iff_le_of_subset_subset (hV : V(H₁) ⊆ V(H₂)) (hE : E(H₁) ⊆ E(H₂)) :
-    Compatible H₁ H₂ ↔ H₁ ≤ H₂ := by
-  refine ⟨fun h ↦ ⟨hV, fun e x y hxy ↦ ?_⟩, Compatible.of_le⟩
-  rwa [← h hxy.edge_mem (hE hxy.edge_mem)]
-alias ⟨Compatible.le_of_subset_subset, _⟩ := compatible_iff_le_of_subset_subset
+lemma le_iff_compatible_subset_subset : G ≤ H ↔ Compatible G H ∧ V(G) ⊆ V(H) ∧ E(G) ⊆ E(H) :=
+  ⟨fun h ↦ ⟨Compatible.of_le h, h.1, edgeSet_mono h⟩, fun ⟨h, hV, hE⟩ ↦
+    ⟨hV, fun _ _ _ hxy ↦ h hxy.edge_mem (hE hxy.edge_mem) .. |>.mp hxy⟩⟩
+
+lemma Compatible.le_iff (hH : Compatible H₁ H₂) : H₁ ≤ H₂ ↔ V(H₁) ⊆ V(H₂) ∧ E(H₁) ⊆ E(H₂) :=
+  le_iff_compatible_subset_subset.trans (by tauto)
 
 lemma Compatible.ext (hV : V(H₁) = V(H₂)) (hE : E(H₁) = E(H₂)) (h : Compatible H₁ H₂) : H₁ = H₂ :=
-  (h.le_of_subset_subset hV.subset hE.subset).antisymm <|
-    h.symm.le_of_subset_subset hV.superset hE.superset
+  (h.le_iff.mpr ⟨hV.subset, hE.subset⟩).antisymm <| h.symm.le_iff.mpr ⟨hV.superset, hE.superset⟩
 
 lemma vertexSet_ssubset_or_edgeSet_ssubset_of_lt (hGH : G < H) : V(G) ⊂ V(H) ∨ E(G) ⊂ E(H) := by
   rw [lt_iff_le_and_ne] at hGH
@@ -274,7 +275,7 @@ lemma mem_iff_of_adj (hxy : G.Adj x y) (hHG : H ≤c G) : x ∈ V(H) ↔ y ∈ V
   obtain ⟨e, hexy⟩ := hxy
   exact hHG.mem_iff_of_isLink hexy
 
-lemma anti_right (hHG : H ≤c G) (hHG₁ : H ≤ G₁) (hG₁ : G₁ ≤ G) : H ≤c G₁ where
+lemma anti_right (hHG₁ : H ≤ G₁) (hG₁ : G₁ ≤ G) (hHG : H ≤c G) : H ≤c G₁ where
   le := hHG₁
   closed _ _ he hx := hHG.inc_iff_of_mem hx |>.mpr (he.mono hG₁) |>.edge_mem
 
