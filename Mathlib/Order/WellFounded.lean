@@ -179,7 +179,7 @@ theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
   by_contra! H
-  obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min _ H
+  obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min {i | f i < i} H
   exact hm' _ (hf hm) hm
 
 theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) {x} : x ≤ f x :=
@@ -250,15 +250,15 @@ theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
   not_lt.mp <| not_lt_argmin f a
 
 theorem isMinimalFor_argmin [Nonempty α] :
-    MinimalFor Set.univ f (argmin f) :=
-  ⟨Set.mem_univ (argmin f), fun a _ _ ↦ argmin_le f a⟩
+    MinimalFor (fun _ ↦ True) f (argmin f) :=
+  ⟨trivial, fun a _ _ ↦ argmin_le f a⟩
 
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f s ha hs
 
 theorem isMinimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
-    MinimalFor s f (argminOn f s hs) :=
+    MinimalFor (· ∈ s) f (argminOn f s hs) :=
   ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h hs⟩
 
 end LinearOrder

@@ -100,7 +100,6 @@ lemma dual_injective_of_surjective (f : A →ₗ[R] B) (hf : Function.Surjective
   change (dual f) φ _ = (dual f) ψ _
   rw [eq]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
     Function.Surjective (dual f) :=
   (Module.Baer.of_divisible _).extension_property_addMonoidHom _ hf

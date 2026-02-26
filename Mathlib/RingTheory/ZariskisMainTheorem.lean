@@ -730,6 +730,7 @@ lemma QuasiFiniteAt.of_weaklyQuasiFiniteAt
     Algebra.QuasiFiniteAt R p :=
   ZariskisMainProperty.quasiFiniteAt _ (.of_finiteType_of_weaklyQuasiFiniteAt _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma QuasiFiniteAt.of_quasiFiniteAt_residueField
     [FiniteType R S] (p : Ideal R) (q : Ideal S) [q.IsPrime]
     [p.IsPrime] [q.LiesOver p]
@@ -753,6 +754,7 @@ lemma QuasiFiniteAt.of_isOpen_singleton_fiber
   refine .of_isOpen_singleton _ ?_
   rwa [← Set.image_singleton, e.isOpen_image]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiFiniteAt_iff_isOpen_singleton_fiber
     [FiniteType R S] (q : PrimeSpectrum S) :
     Algebra.QuasiFiniteAt R q.asIdeal ↔

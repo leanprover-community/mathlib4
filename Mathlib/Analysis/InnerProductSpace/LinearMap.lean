@@ -227,7 +227,6 @@ end ContinuousLinearMap
 
 variable (𝕜)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `innerSL` is an isometry. Note that the associated `LinearIsometry` is defined in
 `InnerProductSpace.Dual` as `toDualMap`. -/
 @[simp]
@@ -406,3 +405,21 @@ theorem exists_of_rankOne_eq_rankOne {a c : F} {b d : H}
 end Normed
 
 end InnerProductSpace
+
+namespace ContinuousLinearMap
+
+open InnerProductSpace
+
+variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+
+theorem opNorm_le_of_re_inner_le {T : E →L[𝕜] F} {C : ℝ} (hC : 0 ≤ C)
+    (h : ∀ x y, ‖x‖ = 1 → ‖y‖ = 1 → re ⟪T x, y⟫_𝕜 ≤ C) : ‖T‖ ≤ C := by
+  refine opNorm_le_of_unit_norm hC fun x hx ↦ ?_
+  by_cases hTx : ‖T x‖ = 0
+  · rwa [hTx]
+  · specialize h x (((‖T x‖⁻¹ : ℝ) : 𝕜) • T x) hx (by simp [norm_smul, hTx])
+    rwa [inner_smul_right, re_ofReal_mul, ← norm_sq_eq_re_inner,
+      inv_mul_eq_div, sq, mul_self_div_self] at h
+
+end ContinuousLinearMap
