@@ -178,6 +178,7 @@ theorem Submodule.topologicalClosure_minimal (s : Submodule R M) {t : Submodule 
     (ht : IsClosed (t : Set M)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
 theorem Submodule.topologicalClosure_mono {s : Submodule R M} {t : Submodule R M} (h : s ≤ t) :
     s.topologicalClosure ≤ t.topologicalClosure :=
   closure_mono h
