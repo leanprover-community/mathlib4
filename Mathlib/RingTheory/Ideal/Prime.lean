@@ -35,7 +35,14 @@ namespace Ideal
 
 variable [Semiring α] (I : Ideal α) {a b : α}
 
-/-- An ideal `P` of a ring `R` is prime if `P ≠ R` and `(∀ a, x * a * y ∈ P) → x ∈ P ∨ y ∈ P`. -/
+/-- An ideal `P` of a ring `R` is prime if `P ≠ R` and `(∀ a, x * a * y ∈ P) → x ∈ P ∨ y ∈ P`.
+
+For commutative rings, you can use the alternative constructor `Ideal.IsPrime.of_comm`,
+which requires the standard condition `x * y ∈ P → x ∈ P ∨ y ∈ P`.
+
+For the stronger condition `x * y ∈ P → x ∈ P ∨ y ∈ P` in noncommutative rings,
+see `Ideal.IsCompletelyPrime`.
+-/
 class IsPrime (I : Ideal α) : Prop where
   /-- The prime ideal is not the entire ring. -/
   ne_top' : I ≠ ⊤
@@ -44,7 +51,7 @@ class IsPrime (I : Ideal α) : Prop where
   mem_or_mem_of_forall' : ∀ {x y : α}, (∀ a, x * a * y ∈ I) → x ∈ I ∨ y ∈ I
 
 /--
-An ideal `P` of a ring `R` is completely prime if `P ≠ R` and `xy ∈ P → x ∈ P ∨ y ∈ P`.
+An ideal `P` of a ring `R` is completely prime if `P ≠ R` and `x * y ∈ P → x ∈ P ∨ y ∈ P`.
 
 It's equivalent to `Ideal.IsPrime` in commutative rings.
 -/
