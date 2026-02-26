@@ -9,6 +9,7 @@ public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.ProductFormula
 public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.RingTheory.Ideal.Int
 
 /-!
 # The adele ring of a number field
@@ -99,6 +100,45 @@ theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
   simpa [Function.mulSupport, Valued.toNormedField.norm_eq_one_iff] using
     FiniteAdeleRing.unitsEquiv_finite_valued_eq_one x
 
+lemma two_le_of_one_lt (v : HeightOneSpectrum (𝓞 K)) (x : v.adicCompletion K) (h : 1 < ‖x‖) :
+    2 ≤ ‖x‖ := by
+  change 2 ≤ Valued.norm x
+  rw [Valued.norm_def]
+  have hx₀ : x ≠ 0 := by
+    contrapose! h
+    simp [h]
+  rw [Valued.toNormedField.one_lt_norm_iff] at h
+  change 2 ≤ WithZeroMulInt.toNNReal (absNorm_ne_zero v) (Valued.v x)
+  rw [WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by simpa)]
+  have : v.asIdeal.IsPrime := v.isPrime
+  have : NeZero v.asIdeal := ⟨v.ne_bot⟩
+  let p := Ideal.absNorm (Ideal.under ℤ v.asIdeal)
+  let hp := (Nat.absNorm_under_prime v.asIdeal)
+  rw [Ideal.absNorm_eq_pow_inertiaDeg' v.asIdeal (Nat.absNorm_under_prime v.asIdeal)]
+  have : (2 : NNReal) ≤ p := by simp [p, hp.two_le]
+  apply this.trans
+  have : (p : NNReal) ≤ p ^ (Ideal.span {(p : ℤ)}).inertiaDeg v.asIdeal := by
+    rw [← Nat.cast_pow, Nat.cast_le]
+    apply Nat.le_self_pow
+    have : Ideal.span {(p : ℤ)} |>.IsMaximal := by
+      apply Ideal.IsPrime.isMaximal
+      · rw [Ideal.span_singleton_prime (mod_cast hp.ne_zero)]
+        rw [← Nat.prime_iff_prime_int]
+        exact hp
+      · simp
+        exact hp.ne_zero
+    exact Ideal.inertiaDeg_ne_zero _ _
+  apply this.trans
+  rw [← zpow_one (p ^ _ : NNReal)]
+  rw [Nat.cast_pow]
+  apply zpow_le_zpow_right₀
+  · apply le_trans ?_ this
+    exact mod_cast hp.one_le
+  · simp [← Int.sub_one_lt_iff]
+    rw [← toAdd_one, Multiplicative.toAdd_lt]
+    rw [WithZero.lt_unzero_iff]
+    exact mod_cast h
+
 theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x) :
     HasProd (fun v ↦ ‖x.1 v‖) 0 := by
   by_cases hx₀ : ∃ v, x v = 0
@@ -134,7 +174,10 @@ theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUn
   have hT' : T.Infinite := by
     push_neg at hx₀
     specialize hx hx₀
-    have : {v | Valued.v (x v) ≠ 1} = S ∪ T := sorry
+    have : {v | Valued.v (x v) ≠ 1} = S ∪ T := by
+      ext v
+      simp [S, T, S', S₁]
+      grind
     rw [this] at hx
     simp at hx
     rcases hx with (hSi | hTi)
@@ -148,8 +191,17 @@ theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUn
       have h : ∀ v ∈ T, 2 ≤ ‖x v‖⁻¹ := by
         intro v hv
         simp [T, S', S, S₁] at hv
-        -- need some liesover stuff
-        sorry
+        rw [← norm_inv]
+        apply two_le_of_one_lt
+        rw [Valued.toNormedField.one_lt_norm_iff]
+        simp
+        rw [one_lt_inv_iff₀]
+        simp at hx₀
+        constructor
+        · contrapose! hx₀
+          use v
+          simp_all
+        · grind
       have h_le : ∀ S : Finset T, 2 ^ S.card ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
         intro S
         have : ∀ v ∈ S, 2 ≤ ‖x v‖⁻¹  := by
