@@ -207,7 +207,7 @@ end Topology
 noncomputable section Seminormed
 
 section Ring
-variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
+variable [SeminormedCommRing S] [SeminormedRing R] [AddCommGroup M] [SeminormedAddCommGroup M]
 variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
@@ -263,7 +263,7 @@ end Ring
 
 section CommRing
 
-variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
+variable [SeminormedCommRing R] [AddCommGroup M] [SeminormedAddCommGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
@@ -279,7 +279,7 @@ noncomputable section Normed
 
 section Ring
 
-variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
+variable [NormedRing R] [AddCommGroup M] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
@@ -293,7 +293,7 @@ end Ring
 
 section CommRing
 
-variable [NormedCommRing R] [NormedAddCommGroup M]
+variable [NormedCommRing R] [AddCommGroup M] [NormedAddCommGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
 variable [IsBoundedSMul R M]
 
@@ -305,7 +305,7 @@ end CommRing
 
 section Algebra
 
-variable [NormedField 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [NormedField 𝕜] [NormedRing R] [AddCommGroup M] [NormedAddCommGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
@@ -323,7 +323,7 @@ end Normed
 
 section
 
-variable [NormedRing R] [NormedAddCommGroup M]
+variable [NormedRing R] [AddCommGroup M] [NormedAddCommGroup M]
 variable [NormedAlgebra ℚ R] [NormedSpace ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]
