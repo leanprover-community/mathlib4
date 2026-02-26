@@ -748,10 +748,6 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
   rw [← N.toEnd_restrict_eq_toEnd y]
   exact Module.End.genEigenspace_restrict_eq_top _ (IsTriangularizable.maxGenEigenspace_eq_top y)
 
-instance instIsTriangularizableLieIdeal [FiniteDimensional K L] (H : LieSubalgebra K L)
-    [IsTriangularizable K H L] (I : LieIdeal K L) : IsTriangularizable K H I :=
-  inferInstanceAs (IsTriangularizable K H (I.restr H))
-
 /-- For a triangularizable Lie module in finite dimensions, the weight spaces span the entire space.
 
 See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
