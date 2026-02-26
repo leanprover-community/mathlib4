@@ -354,7 +354,8 @@ theorem filter_union_right (s : Finset α) :
     s.filter p ∪ s.filter q = s.filter fun x => p x ∨ q x := by grind
 
 theorem filter_mem_eq_inter {s t : Finset α} [∀ i, Decidable (i ∈ t)] :
-    (s.filter fun i => i ∈ t) = s ∩ t := by grind
+    (s.filter fun i => i ∈ t) = s ∩ t := by
+  ext; simp
 
 theorem filter_notMem_eq_sdiff {s t : Finset α} [∀ i, Decidable (i ∉ t)] :
     (s.filter fun i => i ∉ t) = s \ t := by grind
