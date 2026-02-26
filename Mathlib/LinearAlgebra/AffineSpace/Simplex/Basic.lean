@@ -636,9 +636,7 @@ theorem closedInterior_face_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} (
   rw [affineCombination_mem_closedInterior_face_iff_mem_Icc _ _ hw1] at hp
   rw [affineCombination_mem_closedInterior_iff hw1]
   intro i
-  by_cases hi : i ∈ fs
-  · exact hp.1 i hi
-  · simp [hp.2 i hi]
+  by_cases hi : i ∈ fs <;> aesop
 
 theorem closedInterior_faceOpposite_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} [NeZero n]
     (s : Simplex k P n) (i : Fin (n + 1)) :
