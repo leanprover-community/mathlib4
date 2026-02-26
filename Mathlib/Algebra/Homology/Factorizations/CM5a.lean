@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.CategoryTheory.Category.Factorisation
+public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 /-!
 # Factorization lemma
@@ -20,7 +22,7 @@ on the available bounds for `K` and `L`).
 
 -/
 
-open CategoryTheory Limits Abelian HomologicalComplex
+open CategoryTheory Limits Opposite Abelian HomologicalComplex
 
 variable {C : Type*} [Category* C] [Abelian C]
 
@@ -84,8 +86,7 @@ def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
       · rw [← exactAt_iff_isZero_homology]
         exact exactAt_of_isGE _ (n + 1) i)
 
-variable {f}
-
+variable {f} in
 lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.1 ⟶ F.1),
@@ -96,16 +97,19 @@ lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
       MorphismProperty.comp_mem _ _ _ F₁₂.property.2 F.obj.property.2⟩) h₂,
       ObjectProperty.homMk { h := F₁₂.obj.π }, h₁⟩
 
+variable {f} in
 noncomputable def next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     CofFibFactorizationQuasiIsoLE f n₁ :=
   (F.exists_next n₁ hn₁).choose
 
+variable {f} in
 noncomputable def fromNext {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     (F.next n₁ hn₁).obj ⟶ F.obj :=
   (F.exists_next n₁ hn₁).choose_spec.choose
 
+variable {f} in
 lemma isIso_fromNext_hom_h_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (i : ℤ) (hi : i ≤ n₀) :
     IsIso ((F.fromNext n₁ hn₁).hom.h.f i) :=
@@ -117,7 +121,42 @@ noncomputable def sequence
   | 0 => zero f n₀
   | q + 1 => (sequence n₀ q).next _ (by lia)
 
+variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
+
+noncomputable def toSequenceNext (q : ℕ) : (sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj :=
+  (sequence f n₀ q).fromNext _ (by lia)
+
 end CofFibFactorizationQuasiIsoLE
+
+variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
+
+noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
+  (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
+
+lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :
+    IsIso (((functor f n₀).map (homOfLE hq).op).hom.h.f i) := by
+  wlog hq' : q₁ + 1 = q₂ generalizing q₁ q₂
+  · clear hq'
+    obtain ⟨k, hk⟩ := Nat.le.dest hq
+    induction k generalizing q₁ q₂ with
+    | zero =>
+      obtain rfl : q₁ = q₂ := by simpa using hk
+      simp only [homOfLE_refl, op_id, CategoryTheory.Functor.map_id,
+        ObjectProperty.FullSubcategory.id_hom, Factorisation.id_h, id_f]
+      infer_instance
+    | succ k h =>
+      rw [← homOfLE_comp (show q₁ ≤ q₁ + k by lia) (show q₁ + k ≤ q₂ by lia),
+        op_comp, Functor.map_comp]
+      exact IsIso.comp_isIso' (this _ (by lia) (by lia)) (h _ (by lia) rfl)
+  subst hq'
+  dsimp [functor]
+  rw [Functor.ofSequence_map_homOfLE_succ]
+  exact CofFibFactorizationQuasiIsoLE.isIso_fromNext_hom_h_f _ _ _ _ hi
+
+def isEventuallyConstantTo (i : ℤ) (q : ℕ) (h : i ≤ n₀ + q) :
+    (functor f n₀ ⋙ ObjectProperty.ι _ ⋙ Factorisation.forget ⋙
+      eval _ _ i).IsEventuallyConstantTo (op q) :=
+  fun _ _ ↦ isIso_functor_map_hom_h_f _ _ _ _ (by lia)
 
 end cm5a_cof
 

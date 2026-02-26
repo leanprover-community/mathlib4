@@ -58,25 +58,20 @@ protected structure Hom (d e : Factorisation f) : Type (max u v) where
   /-- The right commuting triangle of the factorization morphism. -/
   h_π : h ≫ e.π = d.π := by cat_disch
 
-attribute [simp] Factorisation.Hom.ι_h Factorisation.Hom.h_π
-
-/-- The identity morphism of `Factorisation f`. -/
-@[simps]
-protected def Hom.id (d : Factorisation f) : Factorisation.Hom d d where
-  h := 𝟙 _
-
-/-- Composition of morphisms in `Factorisation f`. -/
-@[simps]
-protected def Hom.comp {d₁ d₂ d₃ : Factorisation f}
-    (f : Factorisation.Hom d₁ d₂) (g : Factorisation.Hom d₂ d₃) : Factorisation.Hom d₁ d₃ where
-  h := f.h ≫ g.h
-  ι_h := by rw [← Category.assoc, f.ι_h, g.ι_h]
-  h_π := by rw [Category.assoc, g.h_π, f.h_π]
+attribute [reassoc (attr := simp)] Factorisation.Hom.ι_h Factorisation.Hom.h_π
 
 instance : Category.{max u v} (Factorisation f) where
   Hom d e := Factorisation.Hom d e
-  id d := Factorisation.Hom.id d
-  comp f g := Factorisation.Hom.comp f g
+  id d := { h := 𝟙 _ }
+  comp f g := { h := f.h ≫ g.h }
+
+@[simp]
+lemma id_h (d : Factorisation f) :
+    Hom.h (𝟙 d) = 𝟙 d.mid := rfl
+
+@[reassoc (attr := simp)]
+lemma comp_h {d₀ d₁ d₂ : Factorisation f} (a : d₀ ⟶ d₁) (b : d₁ ⟶ d₂) :
+    (a ≫ b).h = a.h ≫ b.h := rfl
 
 variable (d : Factorisation f)
 
