@@ -46,7 +46,7 @@ namespace SpectralSequence
 
 variable {C c r₀}
 
-/-- A morphism of spectral sequence is a sequence of morphisms between the
+/-- A morphism of spectral sequences is a sequence of morphisms between the
 pages which commutes with the isomorphisms in homology. -/
 @[ext]
 structure Hom (E E' : SpectralSequence C c r₀) where
