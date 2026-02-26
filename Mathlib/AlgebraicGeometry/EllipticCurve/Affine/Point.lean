@@ -110,6 +110,7 @@ noncomputable instance : Algebra R[X] W'.CoordinateRing :=
 instance : IsScalarTower R R[X] W'.CoordinateRing :=
   Quotient.isScalarTower R R[X] _
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Subsingleton R] : Subsingleton W'.CoordinateRing :=
   Module.subsingleton R[X] _
 
@@ -118,6 +119,7 @@ variable (W') in
 noncomputable abbrev mk : R[X][Y] →+* W'.CoordinateRing :=
   AdjoinRoot.mk W'.polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 variable (W') in
 /-- The power basis `{1, Y}` for `R[W]` over `R[X]`. -/
@@ -125,6 +127,7 @@ protected noncomputable def basis : Basis (Fin 2) R[X] W'.CoordinateRing :=
   (subsingleton_or_nontrivial R).by_cases (fun _ => default) fun _ =>
     (AdjoinRoot.powerBasis' monic_polynomial).basis.reindex <| finCongr natDegree_polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 lemma basis_apply (n : Fin 2) :
     CoordinateRing.basis W' n = (AdjoinRoot.powerBasis' monic_polynomial).gen ^ (n : ℕ) := by
   classical
@@ -145,15 +148,18 @@ lemma coe_basis : (CoordinateRing.basis W' : Fin 2 → W'.CoordinateRing) = ![1,
   fin_cases n
   exacts [basis_zero, basis_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smul (x : R[X]) (y : W'.CoordinateRing) : x • y = mk W' (C x) * y :=
   (algebraMap_smul W'.CoordinateRing x y).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smul_basis_eq_zero {p q : R[X]} (hpq : p • (1 : W'.CoordinateRing) + q • mk W' Y = 0) :
     p = 0 ∧ q = 0 := by
   have h := Fintype.linearIndependent_iff.mp (CoordinateRing.basis W').linearIndependent ![p, q]
   rw [Fin.sum_univ_succ, basis_zero, Fin.sum_univ_one, Fin.succ_zero_eq_one, basis_one] at h
   exact ⟨h hpq 0, h hpq 1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_smul_basis_eq (x : W'.CoordinateRing) :
     ∃ p q : R[X], p • (1 : W'.CoordinateRing) + q • mk W' Y = x := by
   have h := (CoordinateRing.basis W').sum_equivFun x
@@ -191,6 +197,7 @@ protected lemma map_smul (f : R →+* S) (x : R[X]) (y : W'.CoordinateRing) :
   rw [smul, map_mul, map_mk, map_C, smul]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_injective {f : R →+* S} (hf : Function.Injective f) : Function.Injective <| map W' f :=
   (injective_iff_map_eq_zero _).mpr fun y hy => by
     obtain ⟨p, q, rfl⟩ := exists_smul_basis_eq y
@@ -658,7 +665,6 @@ variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebr
   [IsScalarTower R S K] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (f : F →ₐ[S] K)
   (g : K →ₐ[S] L)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The group homomorphism from `W⟮F⟯` to `W⟮K⟯` induced by an algebra homomorphism `f : F →ₐ[S] K`,
 where `W` is defined over a subring of a ring `S`, and `F` and `K` are field extensions of `S`. -/
 noncomputable def map : W'⟮F⟯ →+ W'⟮K⟯ where

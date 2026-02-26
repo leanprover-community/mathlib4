@@ -270,7 +270,6 @@ lemma _root_.MeasureTheory.measurePreserving_snd [IsProbabilityMeasure μ] :
     MeasurePreserving Prod.snd (μ.prod ν) ν :=
   ⟨measurable_snd, by rw [map_snd_prod, measure_univ, one_smul]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsOpenPosMeasure μ] {m' : MeasurableSpace Y}
     {ν : Measure Y} [IsOpenPosMeasure ν] [SFinite ν] : IsOpenPosMeasure (μ.prod ν) := by

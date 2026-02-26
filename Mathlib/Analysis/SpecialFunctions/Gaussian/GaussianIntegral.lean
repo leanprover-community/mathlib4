@@ -286,7 +286,6 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl (div_ne_zero (ofReal_ne_zero.mpr pi_ne_zero) (nv hc))
 
-set_option backward.isDefEq.respectTransparency false in
 -- The Gaussian integral on the half-line, `∫ x in Ioi 0, exp (-b * x^2)`, for complex `b`.
 theorem integral_gaussian_complex_Ioi {b : ℂ} (hb : 0 < re b) :
     ∫ x : ℝ in Ioi 0, cexp (-b * (x : ℂ) ^ 2) = (π / b) ^ (1 / 2 : ℂ) / 2 := by

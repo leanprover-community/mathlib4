@@ -24,7 +24,7 @@ First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself s
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
 Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
 different monomials of `f` to polynomials with different degrees in `X_0`.
-See `degreeOf_t_neq_of_neq`.
+See `degreeOf_t_ne_of_ne`.
 
 Secondly, we construct the following maps: let `I` be an ideal containing `f` and
 let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
@@ -86,16 +86,15 @@ private lemma t1_comp_t1_neg (c : k) : (T1 f c).comp (T1 f (-c)) = AlgHom.id _ _
 private noncomputable abbrev T := AlgEquiv.ofAlgHom (T1 f 1) (T1 f (-1))
   (t1_comp_t1_neg f 1) (by simpa using t1_comp_t1_neg f (-1))
 
-private lemma sum_r_mul_neq (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq : v ≠ w) :
+private lemma sum_r_mul_ne (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (ne : v ≠ w) :
     ∑ x : Fin (n + 1), r x * v x ≠ ∑ x : Fin (n + 1), r x * w x := by
   intro h
-  refine neq <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
+  refine ne <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
   apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
     (by simp) (lt_up vlt) (lt_up wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
     Fin.val_cast, mul_comm, sum_ofFn] using h
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
     ∑ i : Fin (n + 1), (r i) * v i := by
   rw [← natDegree_finSuccEquiv, monomial_eq, Finsupp.prod_pow v fun a ↦ X a]
@@ -113,15 +112,14 @@ private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).de
     rw [add_comm (Polynomial.C _), natDegree_X_pow_add_C, mul_comm])
 
 /- `T` maps different monomials of `f` to polynomials with different degrees in `X_0`. -/
-private lemma degreeOf_t_neq_of_neq (hv : v ∈ f.support) (hw : w ∈ f.support) (neq : v ≠ w) :
+private lemma degreeOf_t_ne_of_ne (hv : v ∈ f.support) (hw : w ∈ f.support) (ne : v ≠ w) :
     (T f <| monomial v <| coeff v f).degreeOf 0 ≠
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
-  refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
+  refine sum_r_mul_ne f v w (fun i ↦ ?_) (fun i ↦ ?_) ne <;>
   exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
     (by lia)
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma leadingCoeff_finSuccEquiv_t :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
     algebraMap k _ (coeff v f) := by
@@ -154,7 +152,7 @@ private lemma T_leadingcoeff_isUnit (fne : f ≠ 0) :
     obtain ⟨h1, h2⟩ := Finset.mem_sdiff.mp hx
     apply degree_lt_degree <| lt_of_le_of_ne (vs x h1) ?_
     simpa only [natDegree_finSuccEquiv]
-      using degreeOf_t_neq_of_neq f _ _ h1 vin <| ne_of_not_mem_cons h2
+      using degreeOf_t_ne_of_ne f _ _ h1 vin <| ne_of_not_mem_cons h2
   have coeff : (finSuccEquiv k n ((T f) (h v + ∑ x ∈ f.support \ {v}, h x))).leadingCoeff =
       (finSuccEquiv k n ((T f) (h v))).leadingCoeff := by
     simp only [map_add, map_sum]
@@ -244,9 +242,9 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     refine ⟨0, le_rfl, Quotient.mkₐ k I, fun a b hab ↦ ?_,
       isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)⟩
     rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
-    by_contra neq
+    by_contra ne
     have eq := eq_C_of_isEmpty (a - b)
-    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne neq <| map_zero _
+    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne ne <| map_zero _
     obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
     have one : c • (a - b) = 1 := by
       rw [MvPolynomial.smul_eq_C_mul, eq, ← map_mul, eqr, MvPolynomial.C_1]

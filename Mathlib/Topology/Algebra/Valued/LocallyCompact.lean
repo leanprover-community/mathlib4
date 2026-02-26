@@ -42,7 +42,6 @@ namespace Valued.integer
 
 -- should we do this all in the Valuation namespace instead?
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An element is in the valuation ring if the norm is bounded by 1. This is a variant of
 `Valuation.mem_integer_iff`, phrased using norms instead of the valuation. -/
 lemma mem_iff {x : K} : x ∈ 𝒪[K] ↔ ‖x‖ ≤ 1 := by
@@ -334,7 +333,6 @@ lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_resi
     rw [isCompact_iff_totallyBounded_isComplete]
     exact ⟨h, completeSpace_iff_isComplete_univ.mp ‹_›⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma properSpace_iff_compactSpace_integer [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompactSpace 𝒪[K] := by
   simp only [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ, Subtype.range_coe_subtype,
@@ -345,7 +343,6 @@ lemma properSpace_iff_compactSpace_integer [(Valued.v : Valuation K Γ₀).RankO
     exact IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup h <|
       Metric.closedBall_mem_nhds 0 zero_lt_one
 
-set_option backward.isDefEq.respectTransparency false in
 lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField
     [(Valued.v : Valuation K Γ₀).RankOne] :
     ProperSpace K ↔ CompleteSpace K ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by

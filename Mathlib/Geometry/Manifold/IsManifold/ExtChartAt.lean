@@ -756,11 +756,13 @@ variable {G G' F F' N N' : Type*}
   [ChartedSpace G N] [ChartedSpace G' N']
 
 set_option backward.isDefEq.respectTransparency false in
-lemma writtenInExtChart_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
+lemma writtenInExtChartAt_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
     (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
       Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
   ext p <;>
   simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
+
+@[deprecated (since := "2026-02-18")] alias writtenInExtChart_prod := writtenInExtChartAt_prod
 
 end
 

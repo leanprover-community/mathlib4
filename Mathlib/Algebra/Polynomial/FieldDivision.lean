@@ -68,7 +68,6 @@ theorem isRoot_iterate_derivative_of_lt_rootMultiplicity {p : R[X]} {t : R} {n :
   dvd_iff_isRoot.mp <| (dvd_pow_self _ <| Nat.sub_ne_zero_of_lt hn).trans
     (pow_sub_dvd_iterate_derivative_of_pow_dvd _ <| p.pow_rootMultiplicity_dvd t)
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
     (derivative^[p.rootMultiplicity t] p).eval t =
@@ -159,7 +158,6 @@ theorem derivative_rootMultiplicity_of_root [CharZero R] {p : R[X]} {t : R} (hpt
   exact derivative_rootMultiplicity_of_root_of_mem_nonZeroDivisors hpt <|
     mem_nonZeroDivisors_of_ne_zero <| Nat.cast_ne_zero.2 ((rootMultiplicity_pos h).2 hpt).ne'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rootMultiplicity_sub_one_le_derivative_rootMultiplicity [CharZero R] (p : R[X]) (t : R) :
     p.rootMultiplicity t - 1 ≤ p.derivative.rootMultiplicity t := by
   by_cases h : p.IsRoot t
@@ -594,7 +592,6 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
         one_mul]⟩,
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
     (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
@@ -617,7 +614,7 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
   have : Prime (normalize p) :=
     Monic.prime_of_degree_eq_one (hp1 ▸ degree_normalize)
-      (monic_normalize fun hp0 => absurd hp1 (hp0.symm ▸ by simp [degree_zero]))
+      (monic_normalize fun hp0 ↦ absurd hp1 (by simp [hp0]))
   exact (normalize_associated _).prime this
 
 theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
@@ -696,7 +693,6 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
-set_option backward.isDefEq.respectTransparency false in
 open UniqueFactorizationMonoid in
 /--
 The normalized factors of a polynomial over a field times its leading coefficient give
