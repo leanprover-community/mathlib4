@@ -640,6 +640,11 @@ theorem closedInterior_face_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} (
   · exact hp.1 i hi
   · simp [hp.2 i hi]
 
+theorem closedInterior_faceOpposite_subset_closedInterior [ZeroLEOneClass k] {n : ℕ} [NeZero n]
+    (s : Simplex k P n) (i : Fin (n + 1)) :
+    (s.faceOpposite i).closedInterior ⊆ s.closedInterior :=
+  s.closedInterior_face_subset_closedInterior _
+
 end PartialOrder
 
 section LinearOrder
@@ -669,7 +674,7 @@ theorem closedInterior_eq_interior_union [IsOrderedAddMonoid k] [ZeroLEOneClass 
     rw [faceOpposite, affineCombination_mem_closedInterior_face_iff_mem_Icc _ _ hw1]
     exact ⟨fun k _ ↦ hp k, by simpa using hj⟩
   · refine Set.union_subset s.interior_subset_closedInterior (Set.iUnion_subset fun i ↦ ?_)
-    apply closedInterior_face_subset_closedInterior
+    exact s.closedInterior_faceOpposite_subset_closedInterior i
 
 end LinearOrder
 
