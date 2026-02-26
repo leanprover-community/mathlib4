@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.BilinearForm.Isometry
 
-
 /-!
 # Isometric equivalences with respect to bilinear forms
 
