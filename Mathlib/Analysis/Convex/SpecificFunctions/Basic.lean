@@ -37,7 +37,6 @@ public section
 
 open Real Set NNReal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Real.exp` is strictly convex on the whole real line. -/
 theorem strictConvexOn_exp : StrictConvexOn ℝ univ exp := by
   apply strictConvexOn_of_slope_strict_mono_adjacent convex_univ

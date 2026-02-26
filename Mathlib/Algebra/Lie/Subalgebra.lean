@@ -235,7 +235,6 @@ instance lieRingModule : LieRingModule L' M where
 
 variable [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
 instance lieModule [LieModule R L M] : LieModule R L' M where

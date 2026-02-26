@@ -495,6 +495,15 @@ lemma finrank_le_of_span_eq_top {ι : Type*} [Fintype ι] {v : ι → M}
   rw [← finrank_top, ← hv]
   exact (finrank_span_le_card _).trans (by convert Fintype.card_range_le v; rw [Set.toFinset_card])
 
+@[simp]
+lemma Pi.dim_spanSubset [Finite ι] [Nontrivial R] {s : Set ι} :
+    Module.finrank R (Pi.spanSubset R s) = s.ncard := by
+  classical
+  have := Fintype.ofFinite ι
+  rw [Pi.spanSubset, finrank_span_set_eq_card <| (Pi.basisFun R ι).linearIndepOn _ |>.id_image,
+    Set.toFinset_card, Fintype.card_eq_nat_card, Nat.card_coe_set_eq]
+  exact Set.ncard_image_of_injective s <| (Pi.basisFun R ι).injective
+
 end Span
 
 section SubalgebraRank

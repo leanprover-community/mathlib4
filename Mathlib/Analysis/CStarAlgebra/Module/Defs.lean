@@ -271,7 +271,7 @@ lemma normedSpaceCore : NormedSpace.Core ℂ E where
 variable (A) in
 /-- This is not listed as an instance because we often want to replace the topology, uniformity
 and bornology instead of inheriting them from the norm. -/
-abbrev normedAddCommGroup : NormedAddCommGroup E :=
+noncomputable abbrev normedAddCommGroup : NormedAddCommGroup E :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
 open scoped InnerProductSpace in
