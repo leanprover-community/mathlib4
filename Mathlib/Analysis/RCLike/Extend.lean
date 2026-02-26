@@ -91,7 +91,7 @@ end ScalarTower
 
 section RestrictScalars
 
-variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 instance : NormedSpace 𝕜 (RestrictScalars ℝ 𝕜 F) :=
   inferInstanceAs (NormedSpace 𝕜 F)
@@ -109,7 +109,7 @@ end LinearMap
 
 namespace ContinuousLinearMap
 
-variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section ScalarTower
 

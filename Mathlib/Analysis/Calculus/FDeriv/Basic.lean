@@ -792,7 +792,7 @@ end NormedCodomain
 -- statement.
 section not_TVS
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {f : E → F}

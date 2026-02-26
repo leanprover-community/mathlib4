@@ -461,7 +461,7 @@ def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
 @[simp]
 theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
 
-variable {𝕜} [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
+variable {𝕜} [AddCommGroup β] [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
 
 /-! ### Structure as normed module over scalar functions
 
@@ -496,7 +496,7 @@ end NormedAlgebra
 section NormedLatticeOrderedGroup
 
 variable [TopologicalSpace α]
-  [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+  [AddCommGroup β] [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])

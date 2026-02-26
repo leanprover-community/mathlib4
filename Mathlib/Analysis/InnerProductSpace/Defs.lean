@@ -506,7 +506,7 @@ lemma topology_eq
     (h : ContinuousAt (fun (v : F) ↦ cd.inner v v) 0)
     (h' : IsVonNBounded 𝕜 {v : F | re (cd.inner v v) < 1}) :
     tF = cd.toNormedAddCommGroup.toMetricSpace.toUniformSpace.toTopologicalSpace := by
-  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
+  let p : Seminorm 𝕜 F := @normSeminorm 𝕜 F _ _ cd.toNormedAddCommGroup.toSeminormedAddCommGroup
     InnerProductSpace.Core.toNormedSpace
   suffices WithSeminorms (fun (i : Fin 1) ↦ p) by
     rw [(SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _).1 this]

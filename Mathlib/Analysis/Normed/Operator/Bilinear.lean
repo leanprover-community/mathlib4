@@ -284,8 +284,7 @@ theorem _root_.Continuous.const_clm_comp {X} [TopologicalSpace X] {f : X → E �
 theorem _root_.Continuous.clm_comp_const {X} [TopologicalSpace X] {g : X → F →SL[σ₂₃] G}
     (hg : Continuous g) (f : E →SL[σ₁₂] F) :
     Continuous (fun x => (g x).comp f : X → E →SL[σ₁₃] G) :=
-  (@ContinuousLinearMap.flip _ _ _ _ _ (E →SL[σ₁₃] G) _ _ _ _ _ _ _ _ _ _ _ _ _
-    (compSL E F G σ₁₂ σ₂₃) f).continuous.comp hg
+  ((compSL E F G σ₁₂ σ₂₃).flip f).continuous.comp hg
 
 variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
 
