@@ -51,20 +51,16 @@ In the context of algebraic cycles, gradings tend to be defined using functions 
 the components of the cycles (mainly different notions of dimension and codimension).
 Here we define a notion of grading defined by such a dimension/codimension function.
 -/
-structure Grading [AddMonoid R] (N : Type*) where
-  /--
-  The "dimension function" associated with the grading.
-  -/
-  dim : X → N
-  /--
-  Given `d` in `N`, we have an additive submonoid of `d`-homogeneous cycles.
-  -/
-  homogeneousCycles (d : N) : AddSubmonoid (AlgebraicCycle X R)
-  /--
-  Proof that `homogeneousCycles d` is the set of `d`-homogeneous cycles.
-  -/
-  homogeneousCycles_carrier (d : N) : (homogeneousCycles d).carrier =
-    {c : AlgebraicCycle X R | ∀ x ∈ c.support, dim x = d} := by aesop
+def Grading (N : Type*) := X → N
+
+variable {X} in
+def Grading.homogeneousCycles {N : Type*} (G : Grading X N) (R : Type*) [AddMonoid R] (d : N) :
+    AddSubmonoid (AlgebraicCycle X R) where
+  carrier := { c | ∀ x ∈ c.support, G x = d }
+  add_mem' {c₁} c₂ hc₁ hc₂ := by
+    simp at hc₁ hc₂ ⊢
+    grind
+  zero_mem' := by simp
 
 /--
 Submonoid of cycles of pure dimension `d`.
@@ -89,26 +85,7 @@ contexts where there are some equidimensionality hypotheses. In these contexts, 
 dimension functions is more appropriate to use.
 -/
 noncomputable
-def dimensionGrading [AddMonoid R] : Grading X R ℕ∞ where
-  dim := Order.height
-  homogeneousCycles := dimensionGradingAddSubmonoid X R
-
-/--
-Submonoid of cycles of pure codimension `d`.
--/
-def codimensionGradingAddSubmonoid [AddMonoid R] (d : ℕ∞) :
-    AddSubmonoid (AlgebraicCycle X R) where
-  carrier := {c : AlgebraicCycle X R | ∀ x ∈ c.support, coheight x = d}
-  add_mem' c₁ c₂ := by
-    rename_i a b
-    simp_all only [Function.mem_support, ne_eq, mem_setOf_eq,
-      Function.locallyFinsuppWithin.coe_add, Pi.add_apply]
-    intro x hx
-    have : ¬ a x = 0 ∨ ¬ b x = 0 := by
-      by_contra h
-      simp_all
-    exact Or.elim this (c₁ x) (c₂ x)
-  zero_mem' := by simp
+def dimensionGrading : Grading X ℕ∞ := Order.height
 
 /--
 Grading on `AlgebraicCycle X Z` by codimension, where codimension of a point is defined to be the
@@ -117,9 +94,7 @@ contexts where there are some equidimensionality hypotheses. In these contexts, 
 dimension functions is more appropriate to use.
 -/
 noncomputable
-def codimensionGrading [AddMonoid R] : Grading X R ℕ∞ where
-  dim := Order.coheight
-  homogeneousCycles := codimensionGradingAddSubmonoid X R
+def codimensionGrading : Grading X ℕ∞ := Order.coheight
 
 variable {X R}
 
@@ -197,14 +172,14 @@ of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
 noncomputable
 def mapAux {N : Type*} [Semiring R] [HasDegree R] {Y : Scheme}
-    (gx : Grading X R N) (gy : Grading Y R N)
+    (gx : Grading X N) (gy : Grading Y N)
     (f : X ⟶ Y) (x : X) : R :=
-  if gx.dim x = gy.dim (f.base x) then HasDegree.degree f x else 0
+  if gx x = gy (f.base x) then HasDegree.degree f x else 0
 
 section map
 
-variable {Z : Type*} [Semiring Z] {W : Y.Opens} (hW : IsAffineOpen W)
-  (f : X ⟶ Y) (c : AlgebraicCycle X Z)
+variable [Semiring R] {W : Y.Opens} (hW : IsAffineOpen W)
+  (f : X ⟶ Y) (c : AlgebraicCycle X R)
 
 lemma preimageSupport_inter_subset : W.carrier ∩ {z | (preimageSupport f c z).Nonempty} ⊆
     f.base '' (f.base ⁻¹' ((W.carrier ∩ {z | (preimageSupport f c z).Nonempty})) ∩ c.support) := by
@@ -257,12 +232,12 @@ lemma inter_nonempty_finite (hW : IsAffineOpen W)
     exact ⟨hx.1, ⟨Nonempty.intro y, hx.2.2⟩⟩
   exact iUnion_preimage_inter_support_finite_of_isAffineOpen f c hW
 
-variable {N : Type*} [HasDegree Z]
+variable {N : Type*} [HasDegree R]
 
 /--
 The pushforward of an algebraic cycle has locally finite support.
 -/
-lemma map_locally_finite (gx : Grading X Z N) (gy : Grading Y Z N) :
+lemma map_locally_finite (gx : Grading X N) (gy : Grading Y N) :
     ∀ z : Y, ∃ t ∈ 𝓝 z, (t ∩ Function.support fun z ↦
     ∑ x ∈ (preimageSupport_finite f c z).toFinset, (c x) * mapAux gx gy f x).Finite := by
   intro y
@@ -288,7 +263,7 @@ Note that usually the pushforward is only defined for proper morphisms, and inde
 properness to prove that the pushforward preserves rational equivalence.
 -/
 noncomputable
-def map (gx : Grading X Z N) (gy : Grading Y Z N) : AlgebraicCycle Y Z
+def map (gx : Grading X N) (gy : Grading Y N) : AlgebraicCycle Y R
     where
   toFun z := (∑ x ∈ (preimageSupport_finite f c z).toFinset, (c x) * mapAux gx gy f x)
   supportWithinDomain' := by simp
@@ -297,10 +272,10 @@ def map (gx : Grading X Z N) (gy : Grading Y Z N) : AlgebraicCycle Y Z
 /--
 Pushforward preserves cycles of pure dimension `d` in the dimension grading.
 -/
-lemma map_homogeneneous {d : ℕ∞} (c : AlgebraicCycle X Z)
-    (hc : c ∈ (dimensionGrading X Z).homogeneousCycles d) :
-    map f c (dimensionGrading X Z) (dimensionGrading Y Z) ∈
-    (dimensionGrading Y Z).homogeneousCycles d := by
+lemma map_homogeneneous {d : ℕ∞} (c : AlgebraicCycle X R)
+    (hc : c ∈ (dimensionGrading X).homogeneousCycles R d) :
+    map f c (dimensionGrading X) (dimensionGrading Y) ∈
+    (dimensionGrading Y).homogeneousCycles R d := by
   simp only [dimensionGrading]
   intro y hy
   simp only [map, preimageSupport, mapAux, mul_ite, mul_zero, Function.mem_support,
@@ -315,7 +290,7 @@ lemma map_homogeneneous {d : ℕ∞} (c : AlgebraicCycle X Z)
 The pushforward of `c` along the identity morphism is `c`.
 -/
 @[simp]
-lemma map_id (g : Grading X Z N) : map (𝟙 X) c g g = c := by
+lemma map_id (g : Grading X N) : map (𝟙 X) c g g = c := by
    ext z
    have : (c z ≠ 0 ∧ (preimageSupport_finite (𝟙 X) c z).toFinset = {z}) ∨
           (c z = 0 ∧ (preimageSupport_finite (𝟙 X) c z).toFinset = ∅) := by
