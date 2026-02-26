@@ -602,6 +602,7 @@ public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.Algebra.Homology.HomologySequenceLemmas
 public import Mathlib.Algebra.Homology.Homotopy

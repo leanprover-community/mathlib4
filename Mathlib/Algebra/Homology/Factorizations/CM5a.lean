@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
+public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 public import Mathlib.CategoryTheory.Category.Factorisation
 public import Mathlib.CategoryTheory.Functor.OfSequence
-public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 
 /-!
 # Factorization lemma
@@ -153,19 +153,98 @@ lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ)
   rw [Functor.ofSequence_map_homOfLE_succ]
   exact CofFibFactorizationQuasiIsoLE.isIso_fromNext_hom_h_f _ _ _ _ hi
 
-def isEventuallyConstantTo (i : ℤ) (q : ℕ) (h : i ≤ n₀ + q) :
-    (functor f n₀ ⋙ ObjectProperty.ι _ ⋙ Factorisation.forget ⋙
-      eval _ _ i).IsEventuallyConstantTo (op q) :=
+noncomputable abbrev cochainComplexFunctor : ℕᵒᵖ ⥤ CochainComplex C ℤ :=
+  functor f n₀ ⋙ ObjectProperty.ι _ ⋙ Factorisation.forget
+
+lemma isEventuallyConstantTo (i : ℤ) (q : ℕ) (h : i ≤ n₀ + q) :
+    (cochainComplexFunctor f n₀ ⋙ eval _ _ i).IsEventuallyConstantTo (op q) :=
   fun _ _ ↦ isIso_functor_map_hom_h_f _ _ _ _ (by lia)
+
+instance (i : ℤ) : HasLimit (cochainComplexFunctor f n₀ ⋙ eval _ _ i) :=
+  (isEventuallyConstantTo f n₀ i (n₀ - i).natAbs (by lia)).hasLimit
+
+noncomputable abbrev mid : CochainComplex C ℤ := limit (cochainComplexFunctor f n₀)
+
+noncomputable def midπ (q : ℕ) : mid f n₀ ⟶ ((functor f n₀).obj (op q)).obj.mid :=
+  limit.π _ (op q)
+
+@[reassoc (attr := simp)]
+lemma midπ_w (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) :
+    midπ f n₀ q₂ ≫ ((functor f n₀).map (homOfLE hq).op).hom.h =
+      midπ f n₀ q₁ :=
+  limit.w _ _
+
+@[reassoc (attr := simp)]
+lemma midπ_w_f (q₁ q₂ : ℕ) (hq : q₁ ≤ q₂) (i : ℤ):
+    (midπ f n₀ q₂).f i ≫ ((functor f n₀).map (homOfLE hq).op).hom.h.f i =
+      (midπ f n₀ q₁).f i := by
+  rw [← midπ_w f n₀ q₁ q₂ hq]
+  dsimp
+
+lemma isIso_midπ_f (q : ℕ) (i : ℤ) (h : i ≤ n₀ + q) : IsIso ((midπ f n₀ q).f i) :=
+  isIso_π_f_of_isLimit_of_isEventuallyConstantTo _ (limit.isLimit _) _ _
+    (isEventuallyConstantTo f n₀ _ _ h)
+
+lemma quasiIsoAt_midπ (q : ℕ) (i : ℤ) (h : i + 1 ≤ n₀ + q) :
+    QuasiIsoAt (midπ f n₀ q) i :=
+  quasiIsoAt_π_of_isLimit_of_isEventuallyConstantTo _ (limit.isLimit _)
+    (i - 1) i (i + 1) (by simp) (by simp) _
+    (isEventuallyConstantTo f n₀ _ _ (by lia))
+    (isEventuallyConstantTo f n₀ _ _ (by lia))
+    (isEventuallyConstantTo f n₀ _ _ (by lia))
+
+@[simps]
+noncomputable def cone : Cone (cochainComplexFunctor f n₀) where
+  pt := K
+  π.app q := ((functor f n₀).obj q).obj.ι
+
+noncomputable def ι : K ⟶ mid f n₀ := limit.lift _ (cone f n₀)
+
+@[reassoc (attr := simp)]
+lemma ι_midπ (q : ℕ) : ι f n₀ ≫ midπ f n₀ q = ((functor f n₀).obj (op q)).obj.ι := by
+  simp [ι, midπ]
+
+@[reassoc (attr := simp)]
+lemma ι_midπ_f (q : ℕ) (i : ℤ) : (ι f n₀).f i ≫ (midπ f n₀ q).f i =
+    ((functor f n₀).obj (op q)).obj.ι.f i := by
+  rw [← ι_midπ]
+  dsimp
+
+noncomputable def π : mid f n₀ ⟶ L := midπ f n₀ 0 ≫ ((functor f n₀).obj (op 0)).obj.π
+
+@[reassoc (attr := simp)]
+lemma ι_π : ι f n₀ ≫ π f n₀ = f := by simp [π]
+
+instance : (mid f n₀).IsStrictlyGE (n₀ + 1) := by
+  rw [isStrictlyGE_iff]
+  intro i hi
+  have := isIso_midπ_f f n₀ 0 i (by lia)
+  exact (L.isZero_of_isStrictlyGE (n₀ + 1) i).of_iso (asIso ((midπ f n₀ 0).f i))
+
+instance : Mono (ι f n₀) :=
+  HomologicalComplex.mono_of_mono_f _ (fun i ↦ by
+    obtain ⟨q, _⟩ : ∃ (q : ℕ), IsIso ((midπ f n₀ q).f i) :=
+      ⟨(i - n₀).natAbs, isIso_midπ_f f n₀ _ i (by lia)⟩
+    exact mono_of_mono_fac (ι_midπ_f f n₀ q i))
+
+instance : QuasiIso (ι f n₀) where
+  quasiIsoAt i := by
+    obtain ⟨q, hq⟩ : ∃ (q : ℕ), i + 1 ≤ n₀ + q := ⟨(i + 1 - n₀).natAbs, by lia⟩
+    have := quasiIsoAt_midπ f n₀ q i hq
+    rw [← quasiIsoAt_iff_comp_right _ (midπ f n₀ q), ι_midπ]
+    refine (CofFibFactorizationQuasiIsoLE.sequence f n₀ q).property i (by lia)
+
+lemma prop_π : degreewiseEpiWithInjectiveKernel (π f n₀) := by
+  sorry
 
 end cm5a_cof
 
-public lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
+open cm5a_cof in
+public lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE n] [L.IsStrictlyGE n] [Mono f] :
     ∃ (K' : CochainComplex C ℤ) (_hK' : K'.IsStrictlyGE n) (ι : K ⟶ K') (π : K' ⟶ L),
-      Mono ι ∧ QuasiIso π ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f := by
-  let n₀ := n - 1
-  have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_ge (n₀ + 1) (n + 1) (by lia)
-  have : L.IsStrictlyGE (n₀ + 1) := L.isStrictlyGE_of_ge (n₀ + 1) n (by lia)
-  sorry
+      Mono ι ∧ QuasiIso ι ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f := by
+  obtain ⟨n, rfl⟩ : ∃ (q : ℤ), n = q + 1 := ⟨n - 1, by simp⟩
+  exact ⟨mid f n, inferInstance, ι f n, π f n, inferInstance,
+    inferInstance, prop_π f n, ι_π f n⟩
 
 end CochainComplex
