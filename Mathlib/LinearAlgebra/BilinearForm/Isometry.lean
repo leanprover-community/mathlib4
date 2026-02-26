@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.BilinearMap
 
 ## Main definitions
 
-* ` LinearMap.BilinForm.Isometry`: `LinearMap`s which map between two different bilinear forms
+* ` LinearMap.BilinForm.Isometry`: `LinearMap`s which respect a given pair of bilinear forms
 
 ## Notation
 
