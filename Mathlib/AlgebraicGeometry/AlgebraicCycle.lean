@@ -54,9 +54,13 @@ Here we define a notion of grading defined by such a dimension/codimension funct
 def Grading (N : Type*) := X → N
 
 variable {X} in
-def Grading.homogeneousCycles {N : Type*} (G : Grading X N) (R : Type*) [AddMonoid R] (d : N) :
+/--
+Given an addivive monoid `R`, a grading function `G` from `X` to `N`, and `d` in `N`,
+we have an additive submonoid of `d`-homogeneous cycles with coefficients in `R`.
+-/
+def Grading.homogeneousCycles {N : Type*} (g : Grading X N) (R : Type*) [AddMonoid R] (d : N) :
     AddSubmonoid (AlgebraicCycle X R) where
-  carrier := { c | ∀ x ∈ c.support, G x = d }
+  carrier := { c | ∀ x ∈ c.support, g x = d }
   add_mem' {c₁} c₂ hc₁ hc₂ := by
     simp at hc₁ hc₂ ⊢
     grind
