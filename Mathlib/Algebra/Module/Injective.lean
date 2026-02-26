@@ -483,22 +483,9 @@ theorem Module.Injective.of_ringEquiv {R : Type u} [Ring R] [Small.{v} R] {S : T
     (e₁ : R ≃+* S) (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] N)
     [inj : Module.Injective R M] : Module.Injective S N := by
   apply Module.Baer.injective (fun I g ↦ ?_)
-  let I' := Ideal.comap e₁ I
-  have {x : S} (h : x ∈ I) : e₁.symm x ∈ I' := by
-    rw [← Ideal.mem_comap, Ideal.comap_symm]
-    simpa [I', Ideal.map_comap_eq_self_of_equiv e₁ I] using h
-  let e : I' ≃ₛₗ[RingHomClass.toRingHom e₁] I := {
-    toFun x := ⟨e₁ x.1, x.2⟩
-    map_add' x y := SetCoe.ext (by simp)
-    map_smul' r x := SetCoe.ext (by simp)
-    invFun x := ⟨e₁.symm x.1, this x.2⟩
-    left_inv := by simp [Function.LeftInverse]
-    right_inv := by simp [Function.RightInverse, Function.LeftInverse] }
+  let I' := Submodule.map e₁.symm.toSemilinearEquiv.toLinearMap I
+  let e : I' ≃ₛₗ[RingHomClass.toRingHom e₁] I := (e₁.symm.toSemilinearEquiv.submoduleMap I).symm
   let f : I' →ₗ[R] M := e₂.symm.toLinearMap.comp (g.comp e.toLinearMap)
-  have MB : Module.Baer R M := Module.Baer.of_injective ‹_›
-  rcases MB I' f with ⟨f', hf'⟩
-  use e₂.toLinearMap.comp (f'.comp e₁.toSemilinearEquiv.symm.toLinearMap)
-  intro x hx
-  change e₂ (f' (e₁.symm x)) = g ⟨x, hx⟩
-  rw [hf' _ (this hx)]
-  simp [f, e]
+  have hf (x) (hx : x ∈ I') : f ⟨x, hx⟩ = e₂.symm (g ⟨e₁ x, by simp_all [I']⟩) := rfl
+  obtain ⟨f', hf'⟩ := Module.Baer.of_injective ‹_› I' f
+  exact ⟨e₂.toLinearMap ∘ₛₗ f' ∘ₛₗ e₁.toSemilinearEquiv.symm.toLinearMap, by simp_all [I']⟩
