@@ -56,7 +56,7 @@ theorem algebraMap_apply (c : R) : algebraMap R Aᵐᵒᵖ c = op (algebraMap R 
 end MulOpposite
 
 namespace AlgEquiv
-variable (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
+variable (R A : Type*) [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
 /-- An algebra is isomorphic to the opposite of its opposite. -/
 @[simps!]
@@ -134,8 +134,8 @@ def opComm : (A →ₐ[R] Bᵐᵒᵖ) ≃ (Aᵐᵒᵖ →ₐ[R] B) :=
 end AlgHom
 
 namespace AlgEquiv
-variable {R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-  [DistribMulAction R A] [DistribMulAction R B]
+variable {R A B : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+  [Module R A] [Module R B]
 
 /-- An algebra iso `A ≃ₐ[R] B` can equivalently be viewed as an algebra iso `Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ`.
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
@@ -195,7 +195,7 @@ end AlgEquiv
 end Semiring
 
 section CommSemiring
-variable (R A : Type*) [Monoid R] [NonUnitalCommSemiring A] [DistribMulAction R A]
+variable (R A : Type*) [Semiring R] [NonUnitalCommSemiring A] [Module R A]
 
 namespace AlgEquiv
 
