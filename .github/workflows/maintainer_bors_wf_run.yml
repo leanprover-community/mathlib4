@@ -115,6 +115,12 @@ jobs:
               --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
+      - name: Checkout CI scripts
+        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.extract-data.outputs.bot == 'true' ) }}
+        uses: ./.github/actions/checkout-ci-scripts
+
       - name: Set up Python
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
@@ -129,13 +135,7 @@ jobs:
             steps.extract-data.outputs.bot == 'true' ) }}
         run: |
           python -m pip install --upgrade pip
-          pip install zulip
-
-      - name: Checkout CI scripts
-        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
-        uses: ./.github/actions/checkout-ci-scripts
+          pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
       - name: update zulip emoji reactions
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
