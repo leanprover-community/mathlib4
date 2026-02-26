@@ -330,10 +330,9 @@ lemma height_eq_of_strictMono (f : α → β) (hf : StrictMono f) (a : α)
     Order.height_le_height_apply_of_strictMono _ hf _
   refine height_le_iff'.mpr (fun p hp ↦ ?_)
   obtain ⟨p', hp'⟩ := h p hp
-  exact hp'.2 ▸ LTSeries.map_length p' f hf ▸
-        (Order.height_eq_iSup_last_eq a) ▸
-        (ciSup_pos hp'.1 : (⨆ (_ : RelSeries.last p' = a), p'.length : ℕ∞) = p'.length) ▸
-        le_iSup (α := ℕ∞) (fun p ↦ ⨆ (_ : RelSeries.last p = a), p.length) p'
+  rw [hp'.2, LTSeries.map_length p' f hf, (Order.height_eq_iSup_last_eq a)]
+  have := le_iSup (α := ℕ∞) (fun p ↦ ⨆ (_ : RelSeries.last p = a), p.length) p'
+  rwa [(ciSup_pos hp'.1 : (⨆ (_ : RelSeries.last p' = a), p'.length : ℕ∞) = p'.length)] at this
 
 lemma coheight_eq_of_strictMono (f : α → β) (hf : StrictMono f) (a : α)
     (h : ∀ p : LTSeries β, p.head = f a → ∃ p' :
@@ -341,11 +340,10 @@ lemma coheight_eq_of_strictMono (f : α → β) (hf : StrictMono f) (a : α)
   apply le_antisymm <|
     Order.coheight_le_coheight_apply_of_strictMono _ hf _
   refine coheight_le_iff'.mpr (fun p hp ↦ ?_)
-  choose p' hp' using (h p hp)
-  exact hp'.2 ▸ LTSeries.map_length p' f hf ▸
-        (Order.coheight_eq_iSup_head_eq a) ▸
-        (ciSup_pos hp'.1 : (⨆ (_ : RelSeries.head p' = a), p'.length : ℕ∞) = p'.length) ▸
-        le_iSup (α := ℕ∞) (fun p ↦ ⨆ (_ : RelSeries.head p = a), p.length) p'
+  obtain ⟨p', hp'⟩ := h p hp
+  rw [hp'.2, LTSeries.map_length p' f hf, (Order.coheight_eq_iSup_head_eq a)]
+  have := le_iSup (α := ℕ∞) (fun p ↦ ⨆ (_ : RelSeries.head p = a), p.length) p'
+  rwa [(ciSup_pos hp'.1 : (⨆ (_ : RelSeries.head p' = a), p'.length : ℕ∞) = p'.length)] at this
 
 @[simp]
 lemma height_orderIso (f : α ≃o β) (x : α) : height (f x) = height x := by
