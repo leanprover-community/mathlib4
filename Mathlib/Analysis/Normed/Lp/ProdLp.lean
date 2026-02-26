@@ -965,10 +965,13 @@ def idemSnd : AddMonoid.End (WithLp p (α × β)) where
   map_zero' := by simp
   map_add' := by simp [← toLp_add]
 
+omit [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] in
 lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = toLp p (x.fst, 0) := rfl
 
+omit [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] in
 lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = toLp p (0, x.snd) := rfl
 
+omit [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma idemFst_add_idemSnd :
@@ -978,9 +981,11 @@ lemma idemFst_add_idemSnd :
       ← toLp_add, Prod.mk_add_mk, zero_add, add_zero]
     rfl
 
+omit [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] in
 lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idemSnd := by
   rw [← idemFst_add_idemSnd, add_sub_cancel_left]
 
+omit [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] in
 lemma idemSnd_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemSnd = idemFst := by
   rw [← idemFst_add_idemSnd, add_sub_cancel_right]
 

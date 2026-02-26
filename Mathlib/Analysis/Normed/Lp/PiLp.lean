@@ -107,22 +107,27 @@ variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommG
 variable [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
+omit [∀ i, SeminormedAddCommGroup (β i)] in
 @[simp]
 theorem zero_apply : (0 : PiLp p β) i = 0 :=
   rfl
 
+omit [∀ i, SeminormedAddCommGroup (β i)] in
 @[simp]
 theorem add_apply : (x + y) i = x i + y i :=
   rfl
 
+omit [∀ i, SeminormedAddCommGroup (β i)] in
 @[simp]
 theorem sub_apply : (x - y) i = x i - y i :=
   rfl
 
+omit [∀ i, SeminormedAddCommGroup (β i)] in
 @[simp]
 theorem smul_apply : (c • x) i = c • x i :=
   rfl
 
+omit [∀ i, SeminormedAddCommGroup (β i)] in
 @[simp]
 theorem neg_apply : (-x) i = -x i :=
   rfl

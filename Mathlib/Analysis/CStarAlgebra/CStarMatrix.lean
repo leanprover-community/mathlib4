@@ -500,9 +500,11 @@ noncomputable def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A
       WithCStarModule.smul_apply, RingHom.id_apply]
     rw [Matrix.vecMul_smul, Pi.smul_apply]
 
+omit [StarOrderedRing A] [PartialOrder A] in
 lemma toCLM_apply {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)} :
     toCLM M v = (WithCStarModule.equiv _ _).symm (M.vecMul v) := rfl
 
+omit [StarOrderedRing A] [PartialOrder A] in
 lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)} :
     toCLM M v = (WithCStarModule.equiv _ _).symm (fun j => ∑ i, v i * M i j) := by
   ext i
@@ -528,6 +530,7 @@ noncomputable def toCLMNonUnitalAlgHom [Fintype n] :
 lemma toCLMNonUnitalAlgHom_eq_toCLM [Fintype n] {M : CStarMatrix n n A} :
     toCLMNonUnitalAlgHom (A := A) M = MulOpposite.op (toCLM M) := rfl
 
+omit [StarOrderedRing A] [PartialOrder A] in
 set_option backward.isDefEq.respectTransparency false in
 open WithCStarModule in
 @[simp high]
@@ -536,6 +539,7 @@ lemma toCLM_apply_single [DecidableEq m] {M : CStarMatrix m n A} {i : m} (a : A)
   ext
   simp [toCLM_apply, equiv, Equiv.refl]
 
+omit [PartialOrder A] in
 open WithCStarModule in
 lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
@@ -547,6 +551,7 @@ lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
       = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
   simp [mul_assoc, inner_def]
 
+omit [PartialOrder A] [StarOrderedRing A] in
 set_option backward.isDefEq.respectTransparency false in
 lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
   classical

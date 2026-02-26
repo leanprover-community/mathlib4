@@ -58,6 +58,7 @@ noncomputable def normedMk : NormedAddGroupHom M (SeparationQuotient M) where
 theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
   NormedAddGroupHom.opNorm_le_bound _ zero_le_one fun m => by simp
 
+omit [SeminormedAddCommGroup N] in
 lemma apply_eq_apply_of_inseparable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N] (f : F)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : ∀ x y, Inseparable x y → f x = f y :=
   fun x y h ↦ eq_of_sub_eq_zero <| by

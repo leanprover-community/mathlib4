@@ -105,6 +105,7 @@ namespace QuotientGroup
 variable {M : Type*} [CommGroup M] [SeminormedCommGroup M]
     {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
 
+omit [SeminormedCommGroup M] in
 @[to_additive add_norm_aux]
 private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Quot.exists_rep x
 

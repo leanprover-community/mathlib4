@@ -363,6 +363,7 @@ theorem controlled_prod_of_mem_closure {s : Subgroup E} (hg : a ∈ closure (s :
       mul_inv_rev, inv_inv, v]
     apply hφ
 
+omit [SeminormedCommGroup E] in
 @[to_additive]
 theorem controlled_prod_of_mem_closure_range {j : E →* F} {b : F}
     (hb : b ∈ closure (j.range : Set F)) {f : ℕ → ℝ} (b_pos : ∀ n, 0 < f n) :
