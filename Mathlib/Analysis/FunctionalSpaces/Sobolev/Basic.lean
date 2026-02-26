@@ -32,6 +32,11 @@ variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] --[RCLike 𝕂]
 variable {T T' : 𝓓'(Ω, F)} {g g' : E → E →L[ℝ] F} {c : ℝ} {g g' : E → E →L[ℝ] F}
 section move
 
+omit [MeasurableSpace E] in
+@[simp]
+lemma TestFunction.eq_zero (f : 𝓓^{n}(Ω, F)) {x : E} (hx : x ∉ Ω) : f x = 0 :=
+  image_eq_zero_of_notMem_tsupport <| mt (f.tsupport_subset ·) hx
+
 lemma Finset.fin_univ_image {n : ℕ} :
     (Finset.univ (α := Fin n)).image Fin.val = Finset.range n := by
   ext
@@ -370,6 +375,38 @@ lemma smul (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (c • f) (c • g) �
   simp [hasWeakDeriv_iff, weakDeriv_smul, hf.1.smul, hf.2]
 
 end HasWeakDeriv
+
+lemma HasFDerivAt.hasWeakDeriv [μ.IsAddHaarMeasure] (hf : ∀ x ∈ Ω, HasFDerivAt f (g x) x)
+    (hg : ContinuousOn g Ω) : HasWeakDeriv Ω f g μ := by
+  have h0f : LocallyIntegrableOn f Ω μ := by
+    have : DifferentiableOn ℝ f Ω := fun x hx ↦ (hf x hx).differentiableAt.differentiableWithinAt
+    exact this.continuousOn.locallyIntegrableOn Ω.isOpen.measurableSet
+  have h0g : LocallyIntegrableOn g Ω μ :=
+    hg.locallyIntegrableOn Ω.isOpen.measurableSet
+  exact
+  { locallyIntegrableOn := h0f
+    isRepresentedBy.locallyIntegrableOn := h0g
+    isRepresentedBy.eq_ofFun := by
+      ext φ x
+      have h y : φ y • fderiv ℝ f y x = φ y • g y x := by
+        by_cases hy : y ∈ Ω
+        · rw [(hf y hy).fderiv]
+        · simp [hy]
+      simp_rw [weakDeriv_apply h0f, ofFun_apply h0g, neg_smul, integral_neg,
+        ContinuousLinearMap.integral_apply (φ.integrable_smul h0g),
+        ContinuousLinearMap.coe_smul', Pi.smul_apply, ← h]
+      rw [integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable]
+      · exact (TestFunction.lineDerivCLM x φ).integrable_smul h0f
+      · simp_rw [h]
+        apply φ.integrable_smul
+        exact (hg.clm_apply continuousOn_const).locallyIntegrableOn Ω.isOpen.measurableSet
+      · exact φ.integrable_smul h0f
+      · exact φ.differentiable
+      · sorry
+        -- false: need a version of integration by parts where we only have to check
+        -- differentiability on the (t)support of the other function.
+        -- This starts with the lemma `ContinuousLinearMap.hasDerivAt_of_bilinear.`.
+    }
 
 variable (Ω) in
 /-- `f` has "weak taylor series" g, which are all L^p

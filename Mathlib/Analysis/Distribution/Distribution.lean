@@ -267,10 +267,11 @@ lemma ofFun_zero {μ : Measure E} : ofFun Ω (0 : E → F) μ = 0 := by
   ext φ
   simp [ofFun]
 
--- TODO: find a better name!
-lemma integrable_smul {f : E → F} {μ : Measure E} (φ : 𝓓(Ω, ℝ)) (hf : LocallyIntegrableOn f Ω μ) :
-    Integrable (fun x ↦ φ x • f x) μ := by
-  sorry -- φ has support inside Ω, and f is integrable on Ω
+-- move
+lemma _root_.TestFunction.integrable_smul {f : E → F} {μ : Measure E} (φ : 𝓓(Ω, ℝ))
+    (hf : LocallyIntegrableOn f Ω μ) :
+    Integrable (fun x ↦ φ x • f x) μ :=
+  φ.integrable_bilin (ContinuousLinearMap.lsmul ℝ ℝ) hf
 
 @[simp]
 lemma ofFun_add {f g : E → F} {μ : Measure E}
@@ -278,7 +279,7 @@ lemma ofFun_add {f g : E → F} {μ : Measure E}
     ofFun Ω (f + g) μ = ofFun Ω f μ + ofFun Ω g μ := by
   ext φ
   rw [ContinuousLinearMap.add_apply, ofFun_apply hf, ofFun_apply hg, ofFun_apply (hf.add hg),
-    ← integral_add (integrable_smul φ hf) (integrable_smul φ hg)]
+    ← integral_add (φ.integrable_smul hf) (φ.integrable_smul hg)]
   simp
 
 lemma ofFun_neg {f : E → F} {μ : Measure E} : ofFun Ω (-f) μ = -ofFun Ω f μ := by
