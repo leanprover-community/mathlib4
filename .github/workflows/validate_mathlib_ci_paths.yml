@@ -48,11 +48,44 @@ jobs:
           pattern = re.compile(r"(?:\$\{CI_SCRIPTS_DIR\}|\$CI_SCRIPTS_DIR)/([A-Za-z0-9._/-]+)")
           references = defaultdict(list)
 
+          def strip_yaml_comment(line: str) -> str:
+            """Strip YAML comments, preserving # characters inside quotes."""
+            in_single = False
+            in_double = False
+            escaped = False
+            for i, ch in enumerate(line):
+              if in_double:
+                if escaped:
+                  escaped = False
+                elif ch == "\\":
+                  escaped = True
+                elif ch == '"':
+                  in_double = False
+              elif in_single:
+                if ch == "'":
+                  in_single = False
+              else:
+                if ch == '"':
+                  in_double = True
+                elif ch == "'":
+                  in_single = True
+                elif ch == "#":
+                  return line[:i]
+            return line
+
           workflow_files = sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml"))
           for workflow in workflow_files:
+            # Skip this validator workflow to avoid matching its own example strings.
+            if workflow.name == "validate_mathlib_ci_paths.yml":
+              continue
             for line_number, line in enumerate(workflow.read_text().splitlines(), start=1):
-              for match in pattern.finditer(line):
+              if line.lstrip().startswith("#"):
+                continue
+              content = strip_yaml_comment(line)
+              for match in pattern.finditer(content):
                 rel_path = match.group(1)
+                if rel_path == "...":
+                  continue
                 references[rel_path].append(f"{workflow}:{line_number}")
 
           if not references:
