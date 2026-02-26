@@ -72,7 +72,6 @@ instance : Category (SpectralSequence C c r₀) where
   comp f g :=
     { hom r hr := f.hom r ≫ g.hom r
       comm r r' hrr' pq hr := by
-        dsimp
         simp [HomologicalComplex.homologyMap_comp, assoc, g.comm r r', f.comm_assoc r r'] }
 
 @[ext]
