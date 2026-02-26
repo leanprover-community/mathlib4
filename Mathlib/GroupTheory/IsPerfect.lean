@@ -18,116 +18,120 @@ Among the basic results, we show that
 
 ## Main Definition
 
-* `IsPerfect`: a subgroup `H` of a group `G` is *perfect* if it equals its own commutator,
-  that is `⁅H, H⁆ = H`.
+* `IsPerfect`: a group `G` is *perfect* if it equals its own commutator,
+  that is `⁅⊤, ⊤⁆ = ⊤`, where `⊤` is the full subgroup `G`.
 
 ## Main Theorems
 
-* `IsPerfect.map`: The image of a perfect subgroup under a monoid homomorphism is perfect.
+* `IsPerfect.map`: The image of a perfect group under a monoid homomorphism is perfect.
 * `IsPerfect.instQuotient`: The quotient of a perfect group by a normal subgroup is perfect.
 * `IsPerfect.map_surjective`: The image of a perfect group under a surjective monoid homomorphism
   is perfect.
-
-## Implementation Notes
-
-The definition of `IsPerfect` takes a *sub*group `H` of `G`, instead of the whole group.
-Hence, the expected spelling for the whole group being perfect is `(⊤ : Subgroup G).IsPerfect`.
-
-This definition makes it easier to work with perfect subgroups, which are often encountered
-in the informal setting.
-
-For instance, a *quasi-simple* subgroup of a group is a perfect subgroup whose quotient by the
-centre is simple.
-
-Such groups play a fundamental role in the classification of finite simple groups.
 -/
 
 @[expose] public section
 
-namespace Subgroup
-open Group
+namespace Group
+open Subgroup
 
 variable {G} [Group G] {H K : Subgroup G}
 
-/-- A subgroup `H` of a group `G` is perfect if `H` equals its commutator subgroup `⁅H, H⁆`. -/
-class IsPerfect (H : Subgroup G) where
-  /-- The commutator of the subgroup `H` with itself is the whole subgroup `H`. -/
-  commutator_eq_top : ⁅H, H⁆ = H
+variable (G) in
+/-- A group `G` is perfect if `G` equals its commutator subgroup `⁅G, G⁆`. -/
+class IsPerfect where
+  /-- The commutator of the group `G` with itself is the whole group `G`. -/
+  commutator_eq_top : ⁅(⊤ : Subgroup G), ⊤⁆ = (⊤ : Subgroup G)
 
 attribute [simp] IsPerfect.commutator_eq_top
 
+lemma isPerfect_def : IsPerfect G ↔ commutator G = ⊤ :=
+  ⟨fun h ↦ h.commutator_eq_top, fun h ↦ ⟨h⟩⟩
+
+lemma _root_.Subgroup.isPerfect_iff : IsPerfect H ↔ ⁅H, H⁆ = H := by
+  rw [Group.isPerfect_def, ← (map_injective H.subtype_injective).eq_iff,
+    map_subtype_commutator, ← MonoidHom.range_eq_map, range_subtype]
+
 namespace IsPerfect
 
-lemma mem_comm_iff [hP : H.IsPerfect] {g : G} : g ∈ ⁅H, H⁆ ↔ g ∈ H := by
+lemma mem_comm [hP : IsPerfect G] {g : G} : g ∈ ⁅(⊤ : Subgroup G), (⊤ : Subgroup G)⁆ := by
   simp
 
 /-- The trivial subgroup `⊥` is always perfect. -/
-instance instIsPerfectBot : (⊥ : Subgroup G).IsPerfect where
-  commutator_eq_top := commutator_bot_right _
+instance instIsPerfectBot : IsPerfect (⊥ : Subgroup G) where
+  commutator_eq_top := of_decide_eq_true rfl
 
 /--
-If a subgroup `H` of `G` is perfect, then also viewing `H` as the top subgroup of itself
+If a group `G` is perfect, then also viewing `G` as the top subgroup of itself
 it is a perfect group.
 -/
-instance instIsPerfectTop [hC : H.IsPerfect] : (⊤ : Subgroup H).IsPerfect where
+instance instIsPerfectTop [hC : IsPerfect G] : IsPerfect (⊤ : Subgroup G) where
   commutator_eq_top := by
     ext ⟨h, hh⟩
     rw [← hC.commutator_eq_top, ← map_subtype_commutator] at hh
-    rw [← _root_.commutator_def]
-    simp_all
+    aesop
 
 /--
-If a subgroup `H` of `G` is perfect, when viewed as the top subgroup of `H`, then also viewing
-`H` as a subgroup of `G` it is perfect.
+If a group `G` is perfect, when viewed as the top subgroup of `G`, then also `G` itself is perfect.
 -/
 -- Should *not* be an instance!
-lemma instIsPerfectTop' [hC : (⊤ : Subgroup H).IsPerfect] : H.IsPerfect where
+lemma instIsPerfectTop' [hC : IsPerfect (⊤ : Subgroup G)] : IsPerfect G where
   commutator_eq_top := by
-    apply le_antisymm (commutator_le_self H)
+    apply le_antisymm (commutator_le_self (⊤ : Subgroup G))
     intro h hh
     rw [← map_subtype_commutator, _root_.commutator_def]
     simp [*]
 
-lemma not_isSolvable (G) [Group G] [Nontrivial G] [IsPerfect (⊤ : Subgroup G)] :
+lemma not_isSolvable (G) [Group G] [Nontrivial G] [IsPerfect G] :
     ¬ IsSolvable G := by
   intro h
   have comm_lt := IsSolvable.commutator_lt_of_ne_bot (bot_ne_top (α := Subgroup G)).symm
   grind only [commutator_eq_top]
 
-lemma not_isNilpotent (G) [Group G] [Nontrivial G] [IsPerfect (⊤ : Subgroup G)] :
+lemma not_isNilpotent (G) [Group G] [Nontrivial G] [IsPerfect G] :
     ¬ IsNilpotent G :=
   fun _ ↦ (not_isSolvable G) IsNilpotent.to_isSolvable
 
-lemma not_isMulCommutative (G) [Group G] [Nontrivial G] [IsPerfect (⊤ : Subgroup G)] :
+lemma not_isMulCommutative (G) [Group G] [Nontrivial G] [IsPerfect G] :
     ¬ IsMulCommutative G :=
   fun _ ↦ (not_isSolvable G) CommGroup.isSolvable
 
 instance subsingleton_of_isMulCommutative
-    [hG : IsPerfect (⊤ : Subgroup G)] [h_comm : IsMulCommutative G] : Subsingleton G := by
+    [hG : IsPerfect G] [h_comm : IsMulCommutative G] : Subsingleton G := by
   by_contra! h_not_subsingleton
   exact not_isMulCommutative G h_comm
 
 /-- The image of a perfect subgroup under a homomorphism is perfect. -/
 protected
-lemma map {G'} [Group G'] [hP : IsPerfect H] (f : G →* G') :
-    IsPerfect (map f H) where
-  commutator_eq_top := by
-    cases hP with
-    | mk commutator_eq_top => grind only [map_commutator]
+lemma map {G'} [Group G'] [hP : IsPerfect G] (f : G →* G') :
+    IsPerfect (map f ⊤) := by
+  rw [Subgroup.isPerfect_iff, ← map_commutator, hP.commutator_eq_top]
 
-instance instQuotient [H.Normal] [hP : IsPerfect (⊤ : Subgroup G)] :
+/--
+The subgroup `⊤` of `G ⧸ H` is perfect if the group `G` is.
+
+See `Group.IsPerfect.instQuotient'` for the analogous stattement about the type `G ⧸ H` itself.
+-/
+instance instQuotient [H.Normal] [hP : IsPerfect G] :
     IsPerfect (⊤ : Subgroup (G ⧸ H)) := by
   rw [← map_top_of_surjective _ (QuotientGroup.mk'_surjective H)]
   exact hP.map _
 
 /--
+The group `G ⧸ H` is perfect if the group `G` is.
+
+The difference with `Group.IsPerfect.instQuotient` is that the conclusion here is the type
+`G ⧸ H`, rather than the subgroup `(⊤ : Subgroup (G ⧸ H))`.
+-/
+instance instQuotient' [hH : H.Normal] [hP : IsPerfect G] : IsPerfect (G ⧸ H) :=
+  instIsPerfectTop'
+
+/--
 This lemma is a version of `map`, except that the image is the simpler `⊤ : Subgroup G'`, but
 there is a surjectivity assumption on `f` instead.
 -/
-lemma map_surjective {G'} [Group G'] [IsPerfect (⊤ : Subgroup G)] {f : G →* G'}
-    (hf : Function.Surjective f) :
-    IsPerfect (⊤ : Subgroup G') := by
-  rw [← map_top_of_surjective f hf]
-  exact IsPerfect.map _
+lemma map_surjective {G'} [Group G'] [IsPerfect G] {f : G →* G'} (hf : Function.Surjective f) :
+    IsPerfect G' :=
+  have : IsPerfect (map f ⊤) := IsPerfect.map f
+  instIsPerfectTop' (hC := by rwa [map_top_of_surjective f hf] at this)
 
-end Subgroup.IsPerfect
+end Group.IsPerfect
