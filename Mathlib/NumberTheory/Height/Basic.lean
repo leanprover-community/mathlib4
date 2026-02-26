@@ -207,7 +207,7 @@ namespace Height
 
 open AdmissibleAbsValues Real
 
-variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*}
+variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι ι' : Type*}
 
 /-- The multiplicative height of a tuple of elements of `K`.
 For the zero tuple we take the junk value `1`. -/
@@ -234,7 +234,7 @@ lemma mulHeight_one : mulHeight (1 : ι → K) = 1 := by
     simp [mulHeight_eq hx]
 
 /-- The multiplicative height does not change under re-indexing. -/
-lemma mulHeight_comp_equiv {ι' : Type*} (e : ι ≃ ι') (x : ι' → K) :
+lemma mulHeight_comp_equiv (e : ι ≃ ι') (x : ι' → K) :
     mulHeight (x ∘ e) = mulHeight x := by
   have H (v : AbsoluteValue K ℝ) : ⨆ i, v (x (e i)) = ⨆ i, v (x i) := e.iSup_congr (congrFun rfl)
   rcases eq_or_ne x 0 with rfl | hx
@@ -255,14 +255,14 @@ def logHeight (x : ι → K) : ℝ := log (mulHeight x)
 lemma logHeight_eq_log_mulHeight (x : ι → K) : logHeight x = log (mulHeight x) := rfl
 
 @[to_fun (attr := simp)]
-lemma logHeight_zero {ι : Type*} : logHeight (0 : ι → K) = 0 := by
+lemma logHeight_zero : logHeight (0 : ι → K) = 0 := by
   simp [logHeight_eq_log_mulHeight]
 
 @[to_fun (attr := simp)]
-lemma logHeight_one {ι : Type*} : logHeight (1 : ι → K) = 0 := by
+lemma logHeight_one : logHeight (1 : ι → K) = 0 := by
   simp [logHeight_eq_log_mulHeight]
 
-lemma logHeight_comp_equiv {ι ι' : Type*} (e : ι ≃ ι') (x : ι' → K) :
+lemma logHeight_comp_equiv (e : ι ≃ ι') (x : ι' → K) :
     logHeight (x ∘ ⇑e) = logHeight x := by
   simp only [logHeight_eq_log_mulHeight, mulHeight_comp_equiv]
 
@@ -289,7 +289,7 @@ private lemma max_eq_iSup {α : Type*} [ConditionallyCompleteLattice α] (a b : 
     max a b = iSup ![a, b] :=
   eq_of_forall_ge_iff <| by simp [ciSup_le_iff, Fin.forall_fin_two]
 
-variable [Finite ι]
+variable [Finite ι] [Finite ι']
 
 private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0) :
     (fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).mulSupport.Finite := by
@@ -347,7 +347,7 @@ lemma logHeight_nonneg (x : ι → K) : 0 ≤ logHeight x :=
   log_nonneg <| one_le_mulHeight x
 
 open Function in
-lemma mulHeight_comp_le {ι ι' : Type*} [Finite ι] [Finite ι'] (f : ι → ι') (x : ι' → K) :
+lemma mulHeight_comp_le (f : ι → ι') (x : ι' → K) :
     mulHeight (x ∘ f) ≤ mulHeight x := by
   rcases eq_or_ne (x ∘ f) 0 with h₀ | h₀
   · simpa [h₀] using one_le_mulHeight _
@@ -366,7 +366,7 @@ lemma mulHeight_comp_le {ι ι' : Type*} [Finite ι] [Finite ι'] (f : ι → ι
       (fun v ↦ v.val.iSup_abv_nonneg) (mulSupport_iSup_nonarchAbsVal_finite hx) fun v ↦ H v.val
 
 open Real in
-lemma logHeight_comp_le {ι ι' : Type*} [Finite ι] [Finite ι'] (f : ι → ι') (x : ι' → K) :
+lemma logHeight_comp_le (f : ι → ι') (x : ι' → K) :
     logHeight (x ∘ f) ≤ logHeight x := by
   simp only [logHeight_eq_log_mulHeight]
   exact log_le_log (mulHeight_pos _) <| mulHeight_comp_le ..
@@ -526,10 +526,9 @@ We also show the corresponding statements for product with arbitrarily many fact
 
 namespace AbsoluteValue
 
-variable {R : Type*} [Semiring R]
+variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
 
-lemma iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue R ℝ) {ι ι' : Type*}
-    [Finite ι] [Finite ι'] (x : ι → R) (y : ι' → R) :
+lemma iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue R ℝ) (x : ι → R) (y : ι' → R) :
     ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
   rcases isEmpty_or_nonempty ι
   · simp
