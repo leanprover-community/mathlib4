@@ -97,7 +97,6 @@ namespace CStarRing
 
 section NonUnital
 
-set_option backward.isDefEq.respectTransparency false in
 lemma of_le_norm_mul_star_self
     [NonUnitalNormedRing E] [StarRing E]
     (h : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x * x⋆‖) : CStarRing E :=
@@ -111,7 +110,6 @@ lemma of_le_norm_mul_star_self
 
 variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 
-set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 /-- In a C*-ring, star preserves the norm. -/
 instance (priority := 100) to_normedStarGroup : NormedStarGroup E where

@@ -54,6 +54,7 @@ theorem binomialFamily_apply_of_orderTop_nonpos {x : A⟦Γ⟧} (hx : ¬ 0 < (x 
   rw [binomialFamily, powerSeriesFamily_of_not_orderTop_pos hx]
   by_cases hn : n = 0 <;> simp [hn]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem binomialFamily_orderTop_pos {x : A⟦Γ⟧} (hx : 0 < (x - 1).orderTop) (r : R) {n : ℕ}
     (hn : 0 < n) :
     0 < (binomialFamily x r n).orderTop := by

@@ -238,7 +238,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     _ = g₂.right := by
       symm
       apply hc.uniq (c.extend _)
-      aesop
+      simp
   -- Finally, since `fᵢ` factors through `F(gᵢ)`, the result follows.
   calc
     f₁ = 𝟙 _ ≫ f₁ := by simp

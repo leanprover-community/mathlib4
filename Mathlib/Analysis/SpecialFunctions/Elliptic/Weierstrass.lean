@@ -79,7 +79,6 @@ protected def basis : Basis (Fin 2) ℝ ℂ :=
 /-- The lattice spanned by a pair of periods. -/
 def lattice : Submodule ℤ ℂ := Submodule.span ℤ {L.ω₁, L.ω₂}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_lattice {L : PeriodPair} {x : ℂ} :
     x ∈ L.lattice ↔ ∃ m n : ℤ, m * L.ω₁ + n * L.ω₂ = x := by
   simp only [lattice, Submodule.mem_span_pair, zsmul_eq_mul]
@@ -128,7 +127,6 @@ lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
   @AddSubgroup.isClosed_of_discrete _ _ _ _ _ L.lattice.toAddSubgroup
     (inferInstanceAs (DiscreteTopology L.lattice))
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
   convert L.isClosed_lattice.isClosedMap_subtype_val _
     (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
@@ -586,7 +584,6 @@ lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
 lemma periodic_derivWeierstrassP (l : L.lattice) : ℘'[L].Periodic l :=
   (L.derivWeierstrassP_add_coe · l)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_zero : ℘'[L] 0 = 0 := by
   rw [← CharZero.eq_neg_self_iff, ← L.derivWeierstrassP_neg, neg_zero]
@@ -638,7 +635,6 @@ def weierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ �
   .ofScalars _ fun i ↦ if i = 0 then (℘[L - l₀] x) else (i + 1) *
     (L.sumInvPow x (i + 2) - if l₀ ∈ L.lattice then ((l₀ - x) ^ (i + 2))⁻¹ else 0)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma coeff_weierstrassPExceptSeries (l₀ x : ℂ) (i : ℕ) :
     (L.weierstrassPExceptSeries l₀ x).coeff i =
       ∑' l : L.lattice, L.weierstrassPExceptSummand l₀ x i l := by
@@ -758,13 +754,17 @@ lemma hasFPowerSeriesOnBall_weierstrassPExcept (l₀ x : ℂ) (r : NNReal) (hr0 
     · simp
     · simp
     · intro l hl
-      simpa using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
+      simpa [-Metric.mem_closedBall, mem_closedBall_iff_norm]
+        using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
   · exact ENNReal.coe_pos.mpr hr0
   · intro z hz
     replace hz : ‖z‖ < r := by simpa using hz
     have := L.weierstrassPExceptSeries_hasSum l₀ (x + z) x
     simp only [add_sub_cancel_left] at this
-    convert this (fun l hl ↦ hz.trans (by simpa using Set.subset_compl_comm.mp hr ⟨l.2, hl⟩)) with i
+    have A (l : ↥L.lattice) (hl : ↑l ≠ l₀) : r < ‖↑l - x‖ := by
+      simpa [-Metric.mem_closedBall, mem_closedBall_iff_norm] using
+        Set.subset_compl_comm.mp hr ⟨l.2, hl⟩
+    convert this (fun l hl ↦ hz.trans (A l hl)) with i
     rw [weierstrassPExceptSeries, FormalMultilinearSeries.ofScalars_apply_eq,
       FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul]
 

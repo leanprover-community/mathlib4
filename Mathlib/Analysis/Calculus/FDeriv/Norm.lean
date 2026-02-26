@@ -191,7 +191,6 @@ theorem fderiv_norm_smul_neg (ht : t < 0) :
     fderiv ℝ (‖·‖) (t • x) = -fderiv ℝ (‖·‖) x := by
   simp [fderiv_norm_smul, ht]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_fderiv_norm [Nontrivial E] (h : DifferentiableAt ℝ (‖·‖) x) :
     ‖fderiv ℝ (‖·‖) x‖ = 1 := by
   have : x ≠ 0 := fun hx ↦ not_differentiableAt_norm_zero E (hx ▸ h)

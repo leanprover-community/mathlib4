@@ -20,7 +20,7 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 This file shows that if `K` is a nonarchimedean normed field and `L/K` is an algebraic extension,
 then there is a natural extension of the norm on `K` to a `K`-algebra norm on `L`, the so-called
 *spectral norm*. The spectral norm of an element of `L` only depends on its minimal polynomial
-over `K`, so for `K ⊆ L ⊆ M` are two extensions of `K`, the spectral norm on `M` restricts to the
+over `K`, so for `K ⊆ L ⊆ M` two extensions of `K`, the spectral norm on `M` restricts to the
 spectral norm on `L`. This work can be used to uniquely extend the `p`-adic norm on `ℚ_[p]` to an
 algebraic closure of `ℚ_[p]`, for example.
 
@@ -239,7 +239,6 @@ open Real
 
 variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 
-set_option backward.isDefEq.respectTransparency false in
 open Nat in
 /-- The norm of any root of `p` is bounded by the spectral value of `p`. See
 [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
@@ -870,7 +869,9 @@ def normedField : NormedField L :=
     eq_of_dist_eq_zero hxy := by
       rw [← sub_eq_zero]
       exact (map_eq_zero_iff_eq_zero (spectralMulAlgNorm K L)).mp hxy
-    dist_eq x y := rfl
+    dist_eq x y := by
+      rw [← spectralNorm_neg, sub_eq_add_neg, neg_add, neg_neg]
+      exact Algebra.IsAlgebraic.isAlgebraic (x - y)
     norm_mul x y := by simp [← spectralMulAlgNorm_def, map_mul]
     edist_dist x y := by rw [ENNReal.ofReal_eq_coe_nnreal] }
 
