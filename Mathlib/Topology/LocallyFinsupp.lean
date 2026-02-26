@@ -248,7 +248,7 @@ defined pointwise.
 
 variable (U) in
 /--
-Functions with locally finite support within `U` form an additive subgroup of functions X → Y.
+Functions with locally finite support within `U` form an additive submonoid of functions `X → Y`.
 -/
 protected def addSubmonoid [AddMonoid Y] : AddSubmonoid (X → Y) where
   carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
@@ -279,7 +279,7 @@ protected lemma memAddSubmonoid [AddMonoid Y] (D : locallyFinsuppWithin U Y) :
 
 variable (U) in
 /--
-Functions with locally finite support within `U` form an additive subgroup of functions X → Y.
+Functions with locally finite support within `U` form an additive subgroup of functions `X → Y`.
 -/
 protected def addSubgroup [AddGroup Y] : AddSubgroup (X → Y) where
   carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
