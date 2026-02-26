@@ -606,6 +606,7 @@ example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
   guard_target = P 2
   exact test_sorry
 
+set_option backward.isDefEq.respectTransparency false in
 example (P : ℝ → Prop) {x y : ℝ} (hx : 0 < x) (hy : 0 < y) :
     P ((4 * x + y) / x / (x / (3 * x + y)) - (5 * x + y) / x / (x / (2 * x + y))) := by
   field_simp
