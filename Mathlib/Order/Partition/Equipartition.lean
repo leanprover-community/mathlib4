@@ -98,6 +98,7 @@ theorem IsEquipartition.card_small_parts_eq_mod (hP : P.IsEquipartition) :
     rw [← card_filter_add_card_filter_not (p := fun p ↦ #p = #s / #P.parts + 1)]
   rw [hP.card_large_parts_eq_mod, add_tsub_cancel_left, hP.filter_ne_average_add_one_eq_average]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There exists an enumeration of an equipartition's parts where
 larger parts map to smaller numbers and vice versa. -/
 theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :

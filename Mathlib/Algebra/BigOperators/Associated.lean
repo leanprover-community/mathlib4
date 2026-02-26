@@ -57,6 +57,8 @@ theorem Prod.associated_iff {M N : Type*} [Monoid M] [Monoid N] {x z : M × N} :
   fun ⟨⟨u₁, h₁⟩, ⟨u₂, h₂⟩⟩ =>
     ⟨MulEquiv.prodUnits.invFun (u₁, u₂), Prod.eq_iff_fst_eq_snd_eq.2 ⟨h₁, h₂⟩⟩⟩
 
+-- TODO: this seems to trigger a bug in the mergeWithGrind linter
+set_option linter.tacticAnalysis.mergeWithGrind false in
 theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
     (g : ι → M) (h : ∀ i, i ∈ s → (f i) ~ᵤ (g i)) : (∏ i ∈ s, f i) ~ᵤ (∏ i ∈ s, g i) := by
   induction s using Finset.induction with
@@ -89,7 +91,7 @@ theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M�
   induction m using Multiset.induction generalizing x y with
   | empty =>
     apply subset_closure
-    simp only [Set.mem_setOf]
+    push _ ∈ _
     simp only [Multiset.prod_zero] at hprod
     left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>

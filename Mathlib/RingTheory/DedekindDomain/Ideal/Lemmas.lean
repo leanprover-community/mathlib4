@@ -276,6 +276,7 @@ and the lcm is their infimum, and use this to instantiate `NormalizedGCDMonoid (
 -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sup_mul_inf (I J : Ideal A) : (I ⊔ J) * (I ⊓ J) = I * J := by
   letI := UniqueFactorizationMonoid.toNormalizedGCDMonoid (Ideal A)
@@ -576,6 +577,7 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
 
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between ideals of `R` dividing `I` and the ideals of `A` dividing `J` induced by
   an isomorphism `f : R/I ≅ A/J`. -/
 def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A | p ∣ J } := by
@@ -618,6 +620,7 @@ theorem idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFact
   rw [Subtype.coe_mk, Subtype.coe_mk]
   apply idealFactorsEquivOfQuotEquiv_is_dvd_iso f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between the sets of normalized factors of I and J induced by a ring
 isomorphism `f : R/I ≅ A/J`. -/
 def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
@@ -1004,6 +1007,7 @@ noncomputable abbrev primesOverFinset {A : Type*} [CommRing A] (p : Ideal A) (B 
 variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
   (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [IsDomain A] [IsTorsionFree A B]
 
+set_option backward.isDefEq.respectTransparency false in
 include hpb in
 theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
   ext

@@ -169,6 +169,7 @@ end bernsteinApproximation
 
 open bernsteinApproximation
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Bernstein approximations
 ```
 ∑ k : Fin (n+1), f (k/n : ℝ) * n.choose k * x^k * (1-x)^(n-k)

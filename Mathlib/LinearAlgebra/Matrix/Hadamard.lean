@@ -98,20 +98,66 @@ theorem zero_hadamard : (0 : Matrix m n α) ⊙ A = 0 :=
 
 end Zero
 
+section Diagonal
+
+variable [DecidableEq n] [MulZeroClass α]
+
+theorem hadamard_diagonal (M) (w : n → α) :
+    M ⊙ diagonal w = diagonal (M.diag * w) := by aesop (add simp diagonal)
+
+theorem diagonal_hadamard (M) (w : n → α) :
+    diagonal w ⊙ M = diagonal (w * M.diag) := by aesop (add simp diagonal)
+
+theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
+    diagonal v ⊙ diagonal w = diagonal (v * w) := by simp [diagonal_hadamard]
+
+theorem diagonal_hadamard_eq_diagonal_iff {A : Matrix n n α} {d e} :
+    diagonal d ⊙ A = diagonal e ↔ d * A.diag = e := by
+  simp [diagonal_hadamard, diagonal_eq_diagonal_iff, funext_iff]
+
+theorem hadamard_diagonal_eq_diagonal_iff {A : Matrix n n α} {d e} :
+    A ⊙ diagonal d = diagonal e ↔ A.diag * d = e := by
+  simp [hadamard_diagonal, diagonal_eq_diagonal_iff, funext_iff]
+
+end Diagonal
+
 section One
 
 variable [DecidableEq n] [MulZeroOneClass α]
 variable (M : Matrix n n α)
 
-theorem hadamard_one : M ⊙ (1 : Matrix n n α) = diagonal fun i => M i i := by
-  ext i j
-  by_cases h : i = j <;> simp [h]
+theorem hadamard_one : M ⊙ 1 = diagonal M.diag := mul_one M.diag ▸ hadamard_diagonal M 1
 
-theorem one_hadamard : (1 : Matrix n n α) ⊙ M = diagonal fun i => M i i := by
-  ext i j
-  by_cases h : i = j <;> simp [h]
+theorem one_hadamard : 1 ⊙ M = diagonal M.diag := one_mul M.diag ▸ diagonal_hadamard M 1
+
+theorem one_hadamard_eq_diagonal_iff {A : Matrix n n α} {d} : 1 ⊙ A = diagonal d ↔ A.diag = d := by
+  simpa using diagonal_hadamard_eq_diagonal_iff (A := A) (d := 1)
+
+theorem hadamard_one_eq_diagonal_iff {A : Matrix n n α} {d} : A ⊙ 1 = diagonal d ↔ A.diag = d := by
+  simpa using hadamard_diagonal_eq_diagonal_iff (A := A) (d := 1)
+
+theorem one_hadamard_eq_zero_iff {A : Matrix n n α} : 1 ⊙ A = 0 ↔ A.diag = 0 := by
+  simpa using one_hadamard_eq_diagonal_iff (A := A) (d := 0)
+
+theorem hadamard_one_eq_zero_iff {A : Matrix n n α} : A ⊙ 1 = 0 ↔ A.diag = 0 := by
+  simpa using hadamard_one_eq_diagonal_iff (A := A) (d := 0)
+
+theorem one_hadamard_eq_one_iff {A : Matrix n n α} : 1 ⊙ A = 1 ↔ A.diag = 1 :=
+  one_hadamard_eq_diagonal_iff
+
+theorem hadamard_one_eq_one_iff {A : Matrix n n α} : A ⊙ 1 = 1 ↔ A.diag = 1 :=
+  hadamard_one_eq_diagonal_iff
 
 end One
+
+@[simp] theorem hadamard_of_one [MulOneClass α] (A : Matrix m n α) :
+    A ⊙ of 1 = A := by ext; simp
+
+@[simp] theorem of_one_hadamard [MulOneClass α] (A : Matrix m n α) :
+    of 1 ⊙ A = A := by ext; simp
+
+theorem hadamard_self_eq_self_iff [Mul α] {A : Matrix m n α} :
+    A ⊙ A = A ↔ ∀ i j, IsIdempotentElem (A i j) := ext_iff.symm
 
 section single
 
@@ -128,16 +174,6 @@ theorem single_hadamard_single_of_ne
   cases h <;> (simp only [single]; aesop)
 
 end single
-
-section Diagonal
-
-variable [DecidableEq n] [MulZeroClass α]
-
-theorem diagonal_hadamard_diagonal (v : n → α) (w : n → α) :
-    diagonal v ⊙ diagonal w = diagonal (v * w) :=
-  ext fun _ _ => (apply_ite₂ _ _ _ _ _ _).trans (congr_arg _ <| zero_mul 0)
-
-end Diagonal
 
 section trace
 

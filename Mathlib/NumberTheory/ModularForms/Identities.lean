@@ -23,6 +23,7 @@ open ModularForm UpperHalfPlane Matrix CongruenceSubgroup Matrix.SpecialLinearGr
 
 namespace SlashInvariantForm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem vAdd_apply_of_mem_strictPeriods {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
     {F : Type*} [FunLike F ℍ ℂ] [SlashInvariantFormClass F Γ k]
     (f : F) (τ : ℍ) {h : ℝ} (hH : h ∈ Γ.strictPeriods) :

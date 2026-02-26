@@ -167,7 +167,7 @@ instance {α} [IsLocalizedModule S f] :
   let e : Localization S ⊗[R] M ≃ₗ[R] M' :=
     (LocalizedModule.equivTensorProduct S M).symm.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
   let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ M') :=
-    finsuppRight R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
+    finsuppRight R R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
     convert this.of_linearEquiv (e := e')
     ext
@@ -175,11 +175,11 @@ instance {α} [IsLocalizedModule S f] :
   rw [isLocalizedModule_iff_isBaseChange S (Localization S)]
   convert TensorProduct.isBaseChange R (α →₀ M) (Localization S) using 1
   ext a m
-  apply (finsuppRight R (Localization S) M α).injective
+  apply (finsuppRight R R (Localization S) M α).injective
   ext b
   apply e.injective
   suffices (if a = b then f m else 0) = e (1 ⊗ₜ[R] if a = b then m else 0) by
-    simpa [e', Finsupp.single_apply, -EmbeddingLike.apply_eq_iff_eq, apply_ite e]
+    simpa [e', Finsupp.single_apply, -EmbeddingLike.apply_eq_iff_eq, apply_ite]
   split_ifs with h
   · simp [e]
   · simp only [tmul_zero, map_zero]
