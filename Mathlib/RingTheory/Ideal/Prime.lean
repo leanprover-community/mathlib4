@@ -80,7 +80,7 @@ theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
 theorem IsCompletelyPrime.ne_top {I : Ideal α} (hI : I.IsCompletelyPrime) : I ≠ ⊤ :=
   hI.1
 
-lemma IsPrime.notMem_of_isUnit (I : Ideal α) [I.IsPrime] {x : α} (hx : IsUnit x) : x ∉ I :=
+lemma notMem_of_isUnit (I : Ideal α) [I.IsPrime] {x : α} (hx : IsUnit x) : x ∉ I :=
   fun h ↦ ‹I.IsPrime›.ne_top (eq_top_of_isUnit_mem _ h hx)
 
 theorem IsPrime.one_notMem {I : Ideal α} (hI : I.IsPrime) : 1 ∉ I :=
@@ -150,13 +150,13 @@ theorem not_isCompletelyPrime_iff {I : Ideal α} :
       ⟨fun ⟨x, y, hxy, hx, hy⟩ => ⟨x, hx, y, hy, hxy⟩, fun ⟨x, hx, y, hy, hxy⟩ =>
         ⟨x, y, hxy, hx, hy⟩⟩
 
+@[deprecated isPrime_bot (since := "2026-01-10")]
+theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime := isPrime_bot
+
 theorem IsCompletelyPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsCompletelyPrime) {r : α}
     (n : ℕ) (hn : 0 < n) :
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
-
-@[deprecated isPrime_bot (since := "2026-01-10")]
-theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime := isPrime_bot
 
 /-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
 def primeCompl (P : Ideal α) [hp : P.IsCompletelyPrime] : Submonoid α where
@@ -187,7 +187,7 @@ theorem IsPrime.mem_or_mem (hI : I.IsPrime) {x y : α} (h : x * y ∈ I) :
     x ∈ I ∨ y ∈ I :=
   hI.mem_or_mem_of_forall fun a ↦ by simpa [mul_right_comm] using I.mul_mem_right _ h
 
-instance (priority := 50) IsPrime.isCompletelyPrime [I.IsPrime] : I.IsCompletelyPrime where
+instance (priority := 100) IsPrime.isCompletelyPrime [I.IsPrime] : I.IsCompletelyPrime where
   ne_top' := IsPrime.ne_top'
   mem_or_mem' := IsPrime.mem_or_mem inferInstance
 

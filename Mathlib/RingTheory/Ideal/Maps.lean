@@ -134,9 +134,8 @@ theorem IsPrime.comap_of_equiv {F : Type*} [EquivLike F R S] (f : F) [RingHomCla
     refine fun h ↦ hK.2 fun a ↦ ?_
     simpa using h (EquivLike.inv f a)⟩
 
-theorem IsPrime.comap {R S F : Type*}
-    [CommSemiring R] [CommSemiring S] [FunLike F R S] (f : F) {K : Ideal S} [RingHomClass F R S]
-    [hK : K.IsPrime] : (comap f K).IsPrime :=
+instance IsPrime.comap {R S F : Type*} [CommSemiring R] [CommSemiring S] [FunLike F R S] (f : F)
+    {K : Ideal S} [RingHomClass F R S] [hK : K.IsPrime] : (comap f K).IsPrime :=
   inferInstance
 
 variable (I J K L)
