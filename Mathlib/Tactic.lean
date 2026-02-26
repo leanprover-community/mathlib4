@@ -47,7 +47,6 @@ public import Mathlib.Tactic.CategoryTheory.Slice
 public import Mathlib.Tactic.CategoryTheory.ToApp
 public import Mathlib.Tactic.Change
 public import Mathlib.Tactic.Check
-public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.Choose
 public import Mathlib.Tactic.Clean
 public import Mathlib.Tactic.ClearExcept
@@ -71,6 +70,7 @@ public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Core
 public import Mathlib.Tactic.DeclarationNames
+public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
 public import Mathlib.Tactic.DepRewrite
 public import Mathlib.Tactic.DeprecateTo
