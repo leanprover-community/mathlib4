@@ -550,9 +550,5 @@ lemma conjAct_pointwise_smul_eq_self {H : Subgroup G} {g : G} (hg : g ∈ normal
     ConjAct.toConjAct g • H = H :=
   conjAct_pointwise_smul_iff.2 hg
 
-lemma conjAct_bijective (g : ConjAct G) :
-    Function.Bijective ((MulDistribMulAction.toMonoidEnd (ConjAct G) G) g) :=
-  Function.bijective_iff_has_inverse.mpr ⟨(g⁻¹ • ·), ⟨inv_smul_smul g, smul_inv_smul g⟩⟩
-
 end Group
 end Subgroup
