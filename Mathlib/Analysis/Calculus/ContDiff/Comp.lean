@@ -39,7 +39,7 @@ open Set Filter Function
 
 open scoped Topology ContDiff
 
-attribute [local instance 1001] NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
+attribute [local instance 1001] AddCommGroup.toAddCommMonoid
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]

@@ -76,8 +76,10 @@ end SeminormedGroup
 /-- A Borel-measurable group hom from a locally compact normed group to a real normed space is
 continuous. -/
 lemma AddMonoidHom.continuous_of_measurable {G H : Type*}
-    [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G] [LocallyCompactSpace G]
-    [SeminormedAddCommGroup H] [MeasurableSpace H] [OpensMeasurableSpace H] [NormedSpace ℝ H]
+    [AddCommGroup G] [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G]
+    [LocallyCompactSpace G]
+    [AddCommGroup H] [SeminormedAddCommGroup H] [MeasurableSpace H] [OpensMeasurableSpace H]
+    [NormedSpace ℝ H]
     (f : G →+ H) (hf : Measurable f) : Continuous f :=
   let ⟨_s, hs, hbdd⟩ := f.exists_nhds_isBounded hf 0; f.continuous_of_isBounded_nhds_zero hs hbdd
 
