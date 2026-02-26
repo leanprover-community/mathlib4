@@ -477,9 +477,10 @@ def _parse_all_imports(
     The output entries are matched to input files by position (``lean`` emits
     one entry per input file in the same order).
     """
-    cmd = ["lake", "env", "lean", "--deps-json"] + [str(f) for f in filepaths]
+    cmd = ["lake", "env", "lean", "--deps-json", "--stdin"]
+    stdin_data = "\n".join(str(f) for f in filepaths)
     proc = subprocess.run(
-        cmd, capture_output=True, text=True, cwd=project_root,
+        cmd, input=stdin_data, capture_output=True, text=True, cwd=project_root,
     )
     if proc.returncode != 0:
         raise RuntimeError(
