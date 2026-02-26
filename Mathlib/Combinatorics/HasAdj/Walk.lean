@@ -13,6 +13,9 @@ public import Mathlib.Data.List.Chain
 
 This file defines walks for a general `HasAdj` structure.
 
+We say that a walk *visits* the vertices it contains.  The set of vertices a
+walk visits is `HasAdj.Walk.support`.
+
 -/
 
 @[expose] public section
@@ -24,6 +27,7 @@ variable {α : Type*} {Gr : Type*} [HasAdj α Gr]
 
 /-- A walk is a sequence of adjacent vertices. -/
 structure Walk (G : Gr) where
+  /-- The `support` of a walk is the list of vertices it visits in order. -/
   support : List α
   support_verts (u : α) (hu : u ∈ support) : u ∈ verts G := by aesop
   non_empty_support : support ≠ [] := by aesop
@@ -76,7 +80,7 @@ lemma support_nil {u : α} (hu : u ∈ verts G) : (nil hu).support = [u] := rfl
 lemma mem_support_nil_iff {u : α} (hu : u ∈ verts G) (v : α) : v ∈ (nil hu).support ↔ v = u := by
   simp [support_nil]
 
-/- Wether a walk is a "nil" walk, i.e. consists of a single vertex. -/
+/-- Wether a walk is a "nil" walk, i.e. consists of a single vertex. -/
 def IsNil (p : Walk G) : Prop := p.support = [p.head]
 
 lemma isNil_nil {u : α} (hu : u ∈ verts G) : IsNil (nil hu) := by
@@ -259,6 +263,10 @@ lemma adj_head_last_of_length_eq_one {p : Walk G} (h : p.length = 1) : Adj G p.h
   have := length_eq_one_iff_support_eq_head_last.mp h ▸ p.chainAdj
   simp only [List.isChain_cons_cons, List.IsChain.singleton, and_true] at this
   exact this
+
+theorem isChain_adj_cons_support {u : α} {p : Walk G} (h : Adj G u p.head) :
+    (u :: p.support).IsChain (Adj G) :=
+  p.chainAdj.cons_of_ne_nil p.non_empty_support h
 
 end Walk
 
