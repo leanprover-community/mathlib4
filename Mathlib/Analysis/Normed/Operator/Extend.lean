@@ -117,7 +117,7 @@ norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
 theorem opNorm_extend_le (h_dense : DenseRange e) (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) :
     ‖f.extend e‖ ≤ N * ‖f‖ := by
   -- Add `opNorm_le_of_dense`?
-  refine opNorm_le_bound _ ?_ (isClosed_property h_dense (isClosed_le ?_ ?_) fun x ↦ ?_)
+  refine opNorm_le_bound _ ?_ (isClosed_property h_dense (isClosed_le ?_ (by fun_prop)) fun x ↦ ?_)
   · cases le_total 0 N with
     | inl hN => exact mul_nonneg hN (norm_nonneg _)
     | inr hN =>
@@ -126,7 +126,6 @@ theorem opNorm_extend_le (h_dense : DenseRange e) (h_e : ∀ x, ‖x‖ ≤ N * 
       obtain rfl : f = 0 := Subsingleton.elim ..
       simp
   · exact (cont _).norm
-  · exact continuous_const.mul continuous_norm
   · rw [extend_eq _ h_dense (isUniformEmbedding_of_bound _ h_e).isUniformInducing]
     calc
       ‖f x‖ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _

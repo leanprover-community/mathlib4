@@ -1158,8 +1158,7 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   toFun x := re x + im x * (I : 𝕜')
   map_add' _ _ := by simp only [map_add, add_mul]; ring
   map_smul' _ _ := by simp [real_smul_eq_coe_mul, mul_assoc]
-  cont := .add (.comp continuous_ofReal reCLM.continuous)
-    (.mul (.comp continuous_ofReal imCLM.continuous) continuous_const)
+  cont := by fun_prop
 
 @[simp] theorem map_same_eq_id : map K K = .id ℝ K := by ext; simp
 

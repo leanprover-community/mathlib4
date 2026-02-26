@@ -193,51 +193,105 @@ def inv : G ≃ᵢ G where
 
 end IsometryEquiv
 
-namespace EMetric
+namespace Metric
 
 @[to_additive (attr := simp)]
-theorem smul_ball (c : G) (x : X) (r : ℝ≥0∞) : c • ball x r = ball (c • x) r :=
-  (IsometryEquiv.constSMul c).image_emetric_ball _ _
+theorem smul_eball (c : G) (x : X) (r : ℝ≥0∞) :
+    c • eball x r = eball (c • x) r :=
+  (IsometryEquiv.constSMul c).image_eball _ _
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_ball (c : G) (x : X) (r : ℝ≥0∞) :
-    (c • ·) ⁻¹' ball x r = ball (c⁻¹ • x) r := by
-  rw [preimage_smul, smul_ball]
+theorem preimage_smul_eball (c : G) (x : X) (r : ℝ≥0∞) :
+    (c • ·) ⁻¹' eball x r = eball (c⁻¹ • x) r := by
+  rw [preimage_smul, smul_eball]
 
 @[to_additive (attr := simp)]
-theorem smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) : c • closedBall x r = closedBall (c • x) r :=
-  (IsometryEquiv.constSMul c).image_emetric_closedBall _ _
+theorem smul_closedEBall (c : G) (x : X) (r : ℝ≥0∞) :
+    c • closedEBall x r = closedEBall (c • x) r :=
+  (IsometryEquiv.constSMul c).image_closedEBall _ _
 
 @[to_additive (attr := simp)]
-theorem preimage_smul_closedBall (c : G) (x : X) (r : ℝ≥0∞) :
-    (c • ·) ⁻¹' closedBall x r = closedBall (c⁻¹ • x) r := by
-  rw [preimage_smul, smul_closedBall]
+theorem preimage_smul_closedEBall (c : G) (x : X) (r : ℝ≥0∞) :
+    (c • ·) ⁻¹' closedEBall x r = closedEBall (c⁻¹ • x) r := by
+  rw [preimage_smul, smul_closedEBall]
 
 variable [PseudoEMetricSpace G]
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_ball [IsIsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
-    (a * ·) ⁻¹' ball b r = ball (a⁻¹ * b) r :=
-  preimage_smul_ball a b r
+theorem preimage_mul_left_eball [IsIsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
+    (a * ·) ⁻¹' eball b r = eball (a⁻¹ * b) r :=
+  preimage_smul_eball a b r
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_right_ball [IsIsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
-    (fun x => x * a) ⁻¹' ball b r = ball (b / a) r := by
+theorem preimage_mul_right_eball [IsIsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
+    (fun x => x * a) ⁻¹' eball b r = eball (b / a) r := by
   rw [div_eq_mul_inv]
-  exact preimage_smul_ball (MulOpposite.op a) b r
+  exact preimage_smul_eball (MulOpposite.op a) b r
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_left_closedBall [IsIsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
-    (a * ·) ⁻¹' closedBall b r = closedBall (a⁻¹ * b) r :=
-  preimage_smul_closedBall a b r
+theorem preimage_mul_left_closedEBall [IsIsometricSMul G G] (a b : G) (r : ℝ≥0∞) :
+    (a * ·) ⁻¹' closedEBall b r = closedEBall (a⁻¹ * b) r :=
+  preimage_smul_closedEBall a b r
 
 @[to_additive (attr := simp)]
-theorem preimage_mul_right_closedBall [IsIsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
-    (fun x => x * a) ⁻¹' closedBall b r = closedBall (b / a) r := by
+theorem preimage_mul_right_closedEBall [IsIsometricSMul Gᵐᵒᵖ G] (a b : G) (r : ℝ≥0∞) :
+    (fun x => x * a) ⁻¹' closedEBall b r = closedEBall (b / a) r := by
   rw [div_eq_mul_inv]
-  exact preimage_smul_closedBall (MulOpposite.op a) b r
+  exact preimage_smul_closedEBall (MulOpposite.op a) b r
+
+end Metric
 
 end EMetric
+
+namespace EMetric
+open Metric
+
+@[deprecated (since := "2026-01-24")]
+alias vadd_ball := vadd_eball
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias smul_ball := smul_eball
+
+@[deprecated (since := "2026-01-24")] alias preimage_vadd_ball := preimage_vadd_eball
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias preimage_smul_ball := preimage_smul_eball
+
+@[deprecated (since := "2026-01-24")]
+alias vadd_closedBall := vadd_closedEBall
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias smul_closedBall := smul_closedEBall
+
+@[deprecated (since := "2026-01-24")]
+alias preimage_vadd_closedBall := preimage_vadd_closedEBall
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias preimage_smul_closedBall := preimage_smul_closedEBall
+
+@[deprecated (since := "2026-01-24")]
+alias preimage_add_left_ball := preimage_add_left_eball
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias preimage_mul_left_ball := preimage_mul_left_eball
+
+@[deprecated (since := "2026-01-24")]
+alias preimage_add_right_ball := preimage_add_right_eball
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias preimage_mul_right_ball := preimage_mul_right_eball
+
+@[deprecated (since := "2026-01-24")]
+alias preimage_add_left_closedBall := preimage_add_left_closedEBall
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias preimage_mul_left_closedBall := preimage_mul_left_closedEBall
+
+@[deprecated (since := "2026-01-24")]
+alias preimage_add_right_closedBall := preimage_add_right_closedEBall
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias preimage_mul_right_closedBall := preimage_mul_right_closedEBall
 
 end EMetric
 

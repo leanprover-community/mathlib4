@@ -45,6 +45,8 @@ instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (Closeds α) := .ofSetLike (Closeds α) α
+
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
 
@@ -302,6 +304,8 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (Clopens α) := .ofSetLike (Clopens α) α
+
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
 
@@ -387,6 +391,8 @@ namespace IrreducibleCloseds
 instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
   coe_injective' s t h := by cases s; cases t; congr
+
+instance : PartialOrder (IrreducibleCloseds α) := .ofSetLike (IrreducibleCloseds α) α
 
 instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
   prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩

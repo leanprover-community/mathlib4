@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 module
 
 public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.LinearAlgebra.Basis.Basic
@@ -127,6 +128,9 @@ instance. -/
 theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R P)
     (e : P ≃ₗ[R] N) : Module.Free R N :=
   of_equiv e
+
+instance Module.free_shrink [Module.Free R M] [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
+  Module.Free.of_equiv (Shrink.linearEquiv R M).symm
 
 attribute [local instance] RingHomInvPair.of_ringEquiv in
 lemma of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]

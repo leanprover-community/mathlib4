@@ -187,7 +187,7 @@ theorem IsEquiv.uniformContinuous_equivWithVal
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
-  use .mk0 (v r / v s) (by simp [h.ne_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
+  use .mk0 (v r / v s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
   rw [← hr, Set.mem_setOf_eq, ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
     lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul, ← map_mul, ← lt_def,
     ← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,

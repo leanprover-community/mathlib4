@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.Analysis.Normed.Lp.Matrix
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.Util.Superscript
@@ -1176,35 +1177,35 @@ namespace Matrix
 
 variable [Fintype n] [DecidableEq n]
 
-/-- `Matrix.toLin'` adapted for `EuclideanSpace 𝕜 _`. -/
-def toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
-  Matrix.toLin' ≪≫ₗ
-    LinearEquiv.arrowCongr (WithLp.linearEquiv _ 𝕜 (n → 𝕜)).symm
-      (WithLp.linearEquiv _ 𝕜 (m → 𝕜)).symm
+/-- A shorthand for `Matrix.toLpLin 2 2`. -/
+abbrev toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] EuclideanSpace 𝕜 n →ₗ[𝕜] EuclideanSpace 𝕜 m :=
+  toLpLin 2 2
 
-@[simp]
+@[deprecated toLpLin_toLp (since := "2026-01-22")]
 lemma toEuclideanLin_toLp (A : Matrix m n 𝕜) (x : n → 𝕜) :
     Matrix.toEuclideanLin A (toLp _ x) = toLp _ (Matrix.toLin' A x) := rfl
 
-@[simp]
+@[deprecated ofLp_toLpLin (since := "2026-01-22")]
 theorem piLp_ofLp_toEuclideanLin (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ofLp (Matrix.toEuclideanLin A x) = Matrix.toLin' A (ofLp x) :=
   rfl
 
+@[deprecated toLpLin_apply (since := "2026-01-22")]
 theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
     toEuclideanLin M v = toLp _ (M *ᵥ ofLp v) := rfl
 
-@[simp]
+@[deprecated ofLp_toLpLin (since := "2026-01-22")]
 theorem ofLp_toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
     ofLp (toEuclideanLin M v) = M *ᵥ ofLp v :=
   rfl
 
-@[simp]
+@[deprecated toLpLin_toLp (since := "2026-01-22")]
 theorem toEuclideanLin_apply_piLp_toLp (M : Matrix m n 𝕜) (v : n → 𝕜) :
     toEuclideanLin M (toLp _ v) = toLp _ (M *ᵥ v) :=
   rfl
 
 -- `Matrix.toEuclideanLin` is the same as `Matrix.toLin` applied to `PiLp.basisFun`,
+@[deprecated toLpLin_eq_toLin (since := "2026-01-22")]
 theorem toEuclideanLin_eq_toLin [Finite m] :
     (toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] _) =
       Matrix.toLin (PiLp.basisFun _ _ _) (PiLp.basisFun _ _ _) :=
@@ -1257,4 +1258,4 @@ open Matrix LinearMap EuclideanSpace in
 theorem InnerProductSpace.symm_toEuclideanLin_rankOne {𝕜 m n : Type*} [RCLike 𝕜] [Fintype m]
     [Fintype n] [DecidableEq n] (x : EuclideanSpace 𝕜 m) (y : EuclideanSpace 𝕜 n) :
     toEuclideanLin.symm (rankOne 𝕜 x y) = .vecMulVec x (star y) := by
-  simp [toEuclideanLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]
+  simp [toLpLin, toMatrix', ← ext_iff, vecMulVec_apply, inner_single_right, mul_comm]

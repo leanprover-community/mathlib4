@@ -16,7 +16,7 @@ colagebra structure if it has an algebra structure, where
 the comultiplication and counit maps are given by taking adjoints of the
 multiplication and algebra linear maps, respectively.
 This is implemented by providing a linear equivalence between the inner product space
-and a normed algebra.
+and an algebra.
 
 And similarly, a finite-dimensional inner product space has an algebra
 structure if it has a coalgebra structure, where `x * y = (adjoint comul) (x ⊗ₜ y)`,
@@ -35,21 +35,38 @@ variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 
 open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 
+open EuclideanSpace in
+/-- The comultiplication on `n → 𝕜` corresponds to the Euclidean space adjoint of the
+multiplication map. -/
+theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
+    comul = map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap ∘ₗ
+      ((equiv n 𝕜).symm.toLinearMap ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ
+        map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
+      (equiv n 𝕜).symm.toLinearMap := by
+  ext
+  simp only [comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe, ← LinearEquiv.symm_apply_eq]
+  simp [TensorProduct.ext_iff_inner_left, adjoint_inner_right, inner_eq_star_dotProduct]
+
+open EuclideanSpace in
+/-- The counit on `n → 𝕜` corresponds to the Euclidean space adjoint of the algebra linear map. -/
+theorem Pi.counit_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
+    counit = ((equiv n 𝕜).symm.toLinearMap ∘ₗ Algebra.linearMap 𝕜 (n → 𝕜)).adjoint ∘ₗ
+      (equiv n 𝕜).symm.toLinearMap := by
+  ext
+  simp [← toSpanSingleton_one_eq_algebraLinearMap, comp_toSpanSingleton,
+    adjoint_toSpanSingleton, inner_eq_star_dotProduct]
+
 namespace InnerProductSpace
 
 section coalgebraOfAlgebra
-variable {A : Type*} [NormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+variable {A : Type*} [Ring A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
-/- TODO: This does not require submultiplicativity of the norm. When we unbundle the algebra
-and analysis hierachies, we should generalise this from `NormedRing` to `Ring`
-and `NormedAddCommGroup`.
-PR#24040 addresses this. -/
 /-- A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
 and the counit is given by the adjoint of the algebra map.
 
 This is implemented by providing a linear equivalence between the inner product
-space and a normed algebra.
+space and an algebra.
 
 See note [reducible non-instances]. -/
 noncomputable abbrev coalgebraOfAlgebra (e : E ≃ₗ[𝕜] A) : Coalgebra 𝕜 E where
@@ -104,7 +121,8 @@ noncomputable abbrev ringOfCoalgebra :
     simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← comp_apply, ← adjoint_rTensor,
       ← adjoint_comp, ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply,
       ← toLinearEquiv_assocIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp only [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_coe, assoc_tmul,
+      lTensor_tmul]
   one := adjoint (counit (R := 𝕜) (A := E)) 1
   one_mul x := by
     dsimp [OfNat.ofNat]
@@ -147,13 +165,13 @@ noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
       ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
       ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp
   smul_def' r x := by
     dsimp
     simp_rw [← rTensor_tmul, ← adjoint_rTensor, ← comp_apply, ← adjoint_comp,
       rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp
 
 end algebraOfCoalgebra
 end InnerProductSpace

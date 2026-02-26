@@ -338,15 +338,6 @@ theorem IsPreirreducible.open_subset {U : Set X} (ht : IsPreirreducible t) (hU :
 theorem IsPreirreducible.interior (ht : IsPreirreducible t) : IsPreirreducible (interior t) :=
   ht.open_subset isOpen_interior interior_subset
 
-theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
-    (hf : IsOpenEmbedding f) : IsPreirreducible (f ⁻¹' t) := by
-  rintro U V hU hV ⟨x, hx, hx'⟩ ⟨y, hy, hy'⟩
-  obtain ⟨_, h₁, ⟨y, h₂, rfl⟩, ⟨y', h₃, h₄⟩⟩ :=
-    ht _ _ (hf.isOpenMap _ hU) (hf.isOpenMap _ hV) ⟨f x, hx, Set.mem_image_of_mem f hx'⟩
-      ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
-  cases hf.injective h₄
-  exact ⟨y, h₁, h₂, h₃⟩
-
 section
 
 open Set.Notation
@@ -371,26 +362,44 @@ lemma IsPreirreducible.preimage_of_isPreirreducible_fiber
   refine hV.preimage_of_dense_isPreirreducible_fiber f hf' ?_
   simp [hf'', subset_closure]
 
+lemma IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X} (hf : IsOpenEmbedding f) :
+    IsPreirreducible (f ⁻¹' t) :=
+  ht.preimage_of_isPreirreducible_fiber f hf.isOpenMap
+    fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible
+
+lemma IsIrreducible.preimage_of_isPreirreducible_fiber (ht : IsIrreducible t)
+    (f : Y → X) (hf₂ : IsOpenMap f) (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x}))
+    (h : (t ∩ Set.range f).Nonempty) :
+    IsIrreducible (f ⁻¹' t) := by
+  refine ⟨?_, IsPreirreducible.preimage_of_isPreirreducible_fiber ht.2 f hf₂ hf₃⟩
+  obtain ⟨-, hx, x, rfl⟩ := h
+  exact ⟨x, hx⟩
+
+lemma IsIrreducible.preimage (ht : IsIrreducible t) {f : Y → X}
+    (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) : IsIrreducible (f ⁻¹' t) := by
+  refine ht.preimage_of_isPreirreducible_fiber f hf.isOpenMap
+    (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
+
+lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
+    (ht : t ∈ irreducibleComponents X) {f : Y → X} (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
+    (hf₃ : ∀ x, IsPreirreducible (f ⁻¹'{x})) (h : (t ∩ range f).Nonempty) :
+    f ⁻¹' t ∈ irreducibleComponents Y := by
+  refine ⟨ht.1.preimage_of_isPreirreducible_fiber f hf₂ hf₃ h, fun u hu htu ↦ image_subset_iff.mp
+    (subset_closure.trans (ht.2 (hu.image f hf₁.continuousOn).closure ?_))⟩
+  suffices t ≤ closure (f '' (f ⁻¹' t)) from this.trans (closure_mono (image_mono htu))
+  rw [image_preimage_eq_inter_range]
+  exact subset_closure_inter_of_isPreirreducible_of_isOpen ht.1.2 hf₂.isOpen_range h
+
+lemma preimage_mem_irreducibleComponents (ht : t ∈ irreducibleComponents X) {f : Y → X}
+    (hf : IsOpenEmbedding f) (h : (t ∩ Set.range f).Nonempty) :
+    f ⁻¹' t ∈ irreducibleComponents Y := by
+  refine preimage_mem_irreducibleComponents_of_isPreirreducible_fiber ht hf.continuous hf.isOpenMap
+    (fun _ ↦ (subsingleton_singleton.preimage hf.injective).isPreirreducible) h
+
 variable (f : X → Y) (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
 variable (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (hf₄ : Function.Surjective f)
 
 include hf₁ hf₂ hf₃ hf₄
-
-lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
-    {V : Set Y} (hV : V ∈ irreducibleComponents Y) :
-    f ⁻¹' V ∈ irreducibleComponents X := by
-  obtain ⟨Z, hZ, hWZ, H⟩ :=
-    exists_preirreducible _ (hV.1.2.preimage_of_isPreirreducible_fiber f hf₂ hf₃)
-  have hZ' : IsIrreducible Z := by
-    obtain ⟨x, hx⟩ := hV.1.1
-    obtain ⟨x, rfl⟩ := hf₄ x
-    exact ⟨⟨_, hWZ hx⟩, hZ⟩
-  have hWZ' : f ⁻¹' V = Z := by
-    refine hWZ.antisymm (Set.image_subset_iff.mp ?_)
-    exact hV.2 (IsIrreducible.image hZ' f hf₁.continuousOn)
-      ((Set.image_preimage_eq V hf₄).symm.trans_le (Set.image_mono hWZ))
-  rw [hWZ']
-  exact ⟨hZ', fun s hs hs' ↦ (H s hs.2 hs').le⟩
 
 lemma image_mem_irreducibleComponents_of_isPreirreducible_fiber
     {V : Set X} (hV : V ∈ irreducibleComponents X) :
@@ -409,7 +418,8 @@ def irreducibleComponentsEquivOfIsPreirreducibleFiber :
   invFun W := ⟨f '' W.1,
     image_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.2⟩
   toFun W := ⟨f ⁻¹' W.1,
-    preimage_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.2⟩
+    preimage_mem_irreducibleComponents_of_isPreirreducible_fiber W.2 hf₁ hf₂ hf₃
+      (by simp [hf₄.range_eq, W.2.1.1])⟩
   right_inv W := Subtype.ext <| by
     refine (Set.subset_preimage_image _ _).antisymm' (W.2.2 ?_ (Set.subset_preimage_image _ _))
     refine ⟨?_, (W.2.1.image _ hf₁.continuousOn).2.preimage_of_isPreirreducible_fiber _ hf₂ hf₃⟩

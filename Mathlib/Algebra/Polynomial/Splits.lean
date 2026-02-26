@@ -249,7 +249,8 @@ end Ring
 
 section CommRing
 
-variable [CommRing R] {f g : R[X]}
+variable [CommRing R] {f g : R[X]} {A B : Type*} [CommRing A] [CommRing B]
+  [IsDomain A] [IsDomain B] [Algebra R A] [Algebra R B]
 
 theorem splits_iff_exists_multiset :
     Splits f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X - C ·)).prod := by
@@ -303,16 +304,16 @@ theorem Splits.eval_eq_prod_roots_of_monic (hf : Splits f) (hm : Monic f) (x : R
   simp [hf.eval_eq_prod_roots, hm]
 
 omit [IsDomain R] in
-theorem Splits.aeval_eq_prod_aroots {A : Type*} [CommRing A] [IsDomain A]
-    [IsSimpleRing R] [Algebra R A] (hf : (f.map (algebraMap R A)).Splits) (x : A) :
+theorem Splits.aeval_eq_prod_aroots [IsSimpleRing R]
+    (hf : (f.map (algebraMap R A)).Splits) (x : A) :
     f.aeval x = algebraMap R A f.leadingCoeff * ((f.aroots A).map (x - ·)).prod := by
   simp [← eval_map_algebraMap, hf.eval_eq_prod_roots]
 
 omit [IsDomain R] in
-theorem Splits.aeval_eq_prod_aroots_of_monic {A : Type*} [CommRing A] [IsDomain A]
-    [IsSimpleRing R] [Algebra R A] (hf : (f.map (algebraMap R A)).Splits) (hm : Monic f) (x : A) :
+theorem Splits.aeval_eq_prod_aroots_of_monic
+    (hf : (f.map (algebraMap R A)).Splits) (hm : Monic f) (x : A) :
     f.aeval x = ((f.aroots A).map (x - ·)).prod := by
-  simp [hf.aeval_eq_prod_aroots, hm]
+  simp [hf.eval_eq_prod_roots_of_monic (hm.map (algebraMap R A)), ← eval_map_algebraMap]
 
 theorem Splits.eval_derivative [DecidableEq R] (hf : f.Splits) (x : R) :
     eval x f.derivative = f.leadingCoeff *
@@ -374,32 +375,55 @@ theorem Splits.roots_ne_zero (hf : Splits f) (hf0 : natDegree f ≠ 0) :
     f.roots ≠ 0 := by
   simpa [hf.natDegree_eq_card_roots] using hf0
 
-theorem Splits.map_roots {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
+theorem Splits.roots_map_of_ne_zero {S : Type*} [CommRing S] [IsDomain S]
+    {f : R[X]} (hf : Splits f) {φ : R →+* S} (hφ : f.map φ ≠ 0) :
+    (f.map φ).roots = f.roots.map φ := by
+  induction hf using Submonoid.closure_induction with
+  | mem p hp => obtain (⟨r, rfl⟩ | ⟨a, rfl⟩) := hp <;> simp
+  | one => simp
+  | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by aesop]
+
+theorem Splits.roots_map_of_injective {S : Type*} [CommRing S] [IsDomain S]
+    (hf : f.Splits) {i : R →+* S} (hi : Function.Injective i) : (f.map i).roots = f.roots.map i :=
+  (roots_map_of_injective_of_card_eq_natDegree hi hf.natDegree_eq_card_roots.symm).symm
+
+theorem Splits.roots_map {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
     (hf : f.Splits) (i : R →+* S) : (f.map i).roots = f.roots.map i :=
-  (roots_map_of_injective_of_card_eq_natDegree i.injective hf.natDegree_eq_card_roots.symm).symm
+  hf.roots_map_of_injective i.injective
+
+@[deprecated (since := "2025-11-27")]
+alias Splits.map_roots := Splits.roots_map
 
 theorem Splits.mem_range_of_isRoot {S : Type*} [CommRing S] [IsDomain S] [IsSimpleRing R]
     (hf : f.Splits) (hf0 : f ≠ 0) {i : R →+* S} {x : S} (hx : (f.map i).IsRoot x) :
     x ∈ i.range := by
-  rw [← mem_roots (map_ne_zero hf0), hf.map_roots, Multiset.mem_map] at hx
+  rw [← mem_roots (map_ne_zero hf0), hf.roots_map, Multiset.mem_map] at hx
   obtain ⟨x, -, hx⟩ := hx
   exact ⟨x, hx⟩
 
 omit [IsDomain R] in
-theorem Splits.image_rootSet {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B]
-    [IsSimpleRing A] [Algebra R A] [Algebra R B] (hf : (f.map (algebraMap R A)).Splits)
+theorem Splits.image_rootSet [IsSimpleRing A] (hf : (f.map (algebraMap R A)).Splits)
     (g : A →ₐ[R] B) : g '' f.rootSet A = f.rootSet B := by
   classical
   rw [rootSet, ← Finset.coe_image, ← Multiset.toFinset_map, ← g.coe_toRingHom,
-    ← hf.map_roots, map_map, g.comp_algebraMap, ← rootSet]
+    ← hf.roots_map, map_map, g.comp_algebraMap, ← rootSet]
 
 omit [IsDomain R] in
-theorem Splits.adjoin_rootSet_eq_range {A B : Type*} [CommRing A] [CommRing B]
-    [IsDomain A] [IsDomain B] [IsSimpleRing A] [Algebra R A] [Algebra R B]
+theorem Splits.adjoin_rootSet_eq_range [IsSimpleRing A]
     (hf : (f.map (algebraMap R A)).Splits) (g : A →ₐ[R] B) :
     Algebra.adjoin R (f.rootSet B) = g.range ↔ Algebra.adjoin R (f.rootSet A) = ⊤ := by
   rw [← hf.image_rootSet g, Algebra.adjoin_image, ← Algebra.map_top]
   exact (Subalgebra.map_injective g.injective).eq_iff
+
+omit [IsDomain R] in
+theorem Splits.image_rootSet_of_map_ne_zero (hf : (f.map (algebraMap R A)).Splits)
+    (φ : A →ₐ[R] B) (hφ : f.map (algebraMap R B) ≠ 0) : φ '' f.rootSet A = f.rootSet B := by
+  classical
+  replace hφ : (f.map (algebraMap R A)).map (φ : A →+* B) ≠ 0 := by
+    rwa [map_map, φ.comp_algebraMap]
+  replace hf := hf.roots_map_of_ne_zero hφ
+  rw [map_map, φ.comp_algebraMap] at hf
+  simp [rootSet, aroots, hf, Multiset.toFinset_map]
 
 theorem Splits.coeff_zero_eq_leadingCoeff_mul_prod_roots (hf : Splits f) :
     f.coeff 0 = (-1) ^ f.natDegree * f.leadingCoeff * f.roots.prod := by

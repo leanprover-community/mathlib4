@@ -6,7 +6,6 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Polynomial.Mirror
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.Data.Int.Order.Units
 public import Mathlib.RingTheory.Coprime.Basic
 

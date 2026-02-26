@@ -76,6 +76,56 @@ theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
   rw [← powerset_empty]
   exact ⟨isClosed_empty.powerset_vietoris, isOpen_empty.powerset_vietoris⟩
 
+private theorem isCompact_aux {K : Set α} (hK : IsCompact K)
+    {s : Set (Set α)} (hsK : s ⊆ K.powerset) (hs : ∀ L ∈ s, IsCompact L) :
+    IsCompact {t ⊆ K | ∀ L ∈ s, (t ∩ L).Nonempty} := by
+  refine isCompact_generateFrom rfl fun S hS hKS => ?_
+  let u := {U | IsOpen U ∧ {s | (s ∩ U).Nonempty} ∈ S}
+  by_cases! hsu : ∃ L ∈ s, L ⊆ ⋃₀ u
+  · obtain ⟨L, hL, hLu⟩ := hsu
+    rw [sUnion_eq_biUnion] at hLu
+    obtain ⟨T, hTS, hT, hLT⟩ := (hs L hL).elim_finite_subcover_image (fun _ h => h.1) hLu
+    refine ⟨(fun U => {s | (s ∩ U).Nonempty}) '' T, by grind [image_subset_iff], hT.image _, ?_⟩
+    simp_rw [sUnion_image, ← setOf_exists, ← nonempty_iUnion, ← inter_iUnion]
+    grw [← hLT]
+    grind
+  · simp_rw [← diff_nonempty] at hsu
+    replace hsu L (h : L ∈ s) : (K \ ⋃₀ u ∩ L).Nonempty := (hsu L h).mono <| by grind
+    obtain ⟨_, hUS, hUu⟩ := mem_sUnion.mp <| hKS ⟨diff_subset, hsu⟩
+    rcases hS hUS with ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩
+    · rw [mem_powerset_iff, diff_subset_comm, sUnion_eq_biUnion] at hUu
+      obtain ⟨T, hTS, hT, hKT⟩ := (hK.diff hU).elim_finite_subcover_image (fun _ h => h.1) hUu
+      refine ⟨insert U.powerset ((fun V => {s | (s ∩ V).Nonempty}) '' T),
+        insert_subset hUS <| Set.image_subset_iff.mpr <| hTS.trans fun _ h => h.2,
+        (hT.image _).insert _, ?_⟩
+      rw [sUnion_insert, ← diff_subset_iff, sUnion_image]
+      rintro t ⟨⟨htK, -⟩, htU⟩
+      rw [mem_powerset_iff, not_subset] at htU
+      obtain ⟨x, hxt, hxU⟩ := htU
+      obtain ⟨V, hVT, hxV⟩ := mem_iUnion₂.mp <| hKT ⟨htK hxt, hxU⟩
+      exact mem_biUnion hVT ⟨x, hxt, hxV⟩
+    · obtain ⟨x, hxu, hxU⟩ := hUu
+      cases hxu.2 <| mem_sUnion_of_mem hxU ⟨hU, hUS⟩
+
+theorem _root_.IsCompact.powerset_vietoris {K : Set α} (hK : IsCompact K) :
+    IsCompact K.powerset := by
+  simpa using isCompact_aux hK (s := ∅)
+
+instance [CompactSpace α] : CompactSpace (Set α) :=
+  ⟨powerset_univ ▸ isCompact_univ.powerset_vietoris⟩
+
+theorem specializes_of_subset_closure {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) :
+    s ⤳ t := by
+  simp_rw [Specializes, nhds_generateFrom, le_iInf₂_iff]
+  rintro _ ⟨hs, ⟨U, hU, rfl⟩ | ⟨U, hU, rfl⟩⟩
+  · exact iInf₂_le U.powerset ⟨hst.trans hs, .inl <| mem_image_of_mem _ hU⟩
+  · obtain ⟨x, hxt, hxU⟩ := hs
+    obtain ⟨y, hyU, hys⟩ := mem_closure_iff.mp (hts hxt) U hU hxU
+    exact iInf₂_le {t | (t ∩ U).Nonempty} ⟨⟨y, hys, hyU⟩, .inr <| mem_image_of_mem _ hU⟩
+
+theorem specializes_closure {s : Set α} : s ⤳ closure s :=
+  specializes_of_subset_closure subset_closure .rfl
+
 end vietoris
 
 namespace Compacts
@@ -114,6 +164,46 @@ theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by
   convert vietoris.isClopen_singleton_empty.preimage continuous_coe
   rw [← coe_bot, ← image_singleton (f := SetLike.coe), SetLike.coe_injective.preimage_image]
+
+theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
+    IsCompact {L : Compacts α | ↑L ⊆ K} := by
+  rw [isEmbedding_coe.isCompact_iff]
+  refine .of_subset_of_specializes hK.powerset_vietoris (by grind) (fun s hs => ?_)
+  let L : Compacts α := ⟨K ∩ closure s, hK.inter_right isClosed_closure⟩
+  exact ⟨L, mem_image_of_mem _ inter_subset_left,
+    vietoris.specializes_of_subset_closure (subset_inter hs subset_closure) inter_subset_right⟩
+
+instance [CompactSpace α] : CompactSpace (Compacts α) :=
+  ⟨by simpa using isCompact_subsets_of_isCompact isCompact_univ⟩
+
+theorem isCompact_biUnion_coe_of_isCompact {S : Set (Compacts α)} (hS : IsCompact S) :
+    IsCompact (⋃ K ∈ S, (K : Set α)) := by
+  rw [isCompact_iff_finite_subcover]
+  intro ι U hU h
+  rw [iUnion₂_subset_iff] at h
+  obtain ⟨s, hs⟩ := hS.elim_finite_subcover
+    (fun s : Finset ι => {K | (K : Set α) ⊆ ⋃ i ∈ s, U i})
+    (fun s => isOpen_subsets_of_isOpen <| isOpen_biUnion fun _ _ => hU _)
+    (fun K hK => mem_iUnion.mpr <| K.isCompact.elim_finite_subcover U hU <| h K hK)
+  classical
+  refine ⟨s.biUnion id, (biUnion_subset_biUnion_left hs).trans ?_⟩
+  simp_rw [biUnion_iUnion, iUnion_subset_iff, Finset.set_biUnion_biUnion]
+  exact fun t ht K hK => subset_iUnion₂_of_subset t ht hK
+
+@[simp]
+theorem compactSpace_iff : CompactSpace (Compacts α) ↔ CompactSpace α := by
+  refine ⟨fun h => ⟨?_⟩, fun _ => inferInstance⟩
+  convert isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
+  symm
+  simp_rw [biUnion_univ, eq_univ_iff_forall, mem_iUnion]
+  exact fun x => ⟨{x}, Set.mem_singleton x⟩
+
+@[simp]
+theorem noncompactSpace_iff : NoncompactSpace (Compacts α) ↔ NoncompactSpace α := by
+  simp_rw [← not_compactSpace_iff, compactSpace_iff]
+
+instance [NoncompactSpace α] : NoncompactSpace (Compacts α) :=
+  noncompactSpace_iff.mpr ‹_›
 
 end Compacts
 
@@ -170,6 +260,33 @@ theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : NonemptyCompacts α | (↑K ∩ F).Nonempty} :=
   (vietoris.isClosed_inter_nonempty_of_isClosed h).preimage continuous_coe
+
+instance [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
+  isClosedEmbedding_toCompacts.compactSpace
+
+theorem isCompact_subsets_of_isCompact {K : Set α} (hK : IsCompact K) :
+    IsCompact {L : NonemptyCompacts α | ↑L ⊆ K} :=
+  isClosedEmbedding_toCompacts.isCompact_preimage (Compacts.isCompact_subsets_of_isCompact hK)
+
+theorem isCompact_biUnion_coe_of_isCompact {S : Set (NonemptyCompacts α)} (hs : IsCompact S) :
+    IsCompact (⋃ K ∈ S, (K : Set α)) := by
+  convert Compacts.isCompact_biUnion_coe_of_isCompact (hs.image continuous_toCompacts)
+  simp_rw [biUnion_image, coe_toCompacts]
+
+@[simp]
+theorem compactSpace_iff : CompactSpace (NonemptyCompacts α) ↔ CompactSpace α := by
+  refine ⟨fun h => ⟨?_⟩, fun _ => inferInstance⟩
+  convert isCompact_biUnion_coe_of_isCompact (α := α) isCompact_univ
+  symm
+  simp_rw [biUnion_univ, eq_univ_iff_forall, mem_iUnion]
+  exact fun x => ⟨{x}, Set.mem_singleton x⟩
+
+@[simp]
+theorem noncompactSpace_iff : NoncompactSpace (NonemptyCompacts α) ↔ NoncompactSpace α := by
+  simp_rw [← not_compactSpace_iff, compactSpace_iff]
+
+instance [NoncompactSpace α] : NoncompactSpace (NonemptyCompacts α) :=
+  noncompactSpace_iff.mpr ‹_›
 
 end NonemptyCompacts
 

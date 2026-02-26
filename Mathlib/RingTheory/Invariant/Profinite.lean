@@ -181,7 +181,8 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     ⟨fun N ↦ (s N).1.1, (fun {N N'} f ↦ congr($(hs f).1.1))⟩
   have (N : OpenNormalSubgroup G) : QuotientGroup.mk (s := N.1.1) a = (s N).1 :=
     congr_fun (congr_arg Subtype.val (ConcreteCategory.congr_hom (ProfiniteGrp.of
-      G).isoLimittoFiniteQuotientFunctor.inv_hom_id (Subtype.mk (fun N ↦ (s N).1.1) _))) N
+      G).isoLimittoFiniteQuotientFunctor.inv_hom_id
+        _)) N
   refine ⟨⟨a, ?_⟩, ?_⟩
   · ext x
     obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one

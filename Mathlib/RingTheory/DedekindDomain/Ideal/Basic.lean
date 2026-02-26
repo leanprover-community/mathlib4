@@ -22,7 +22,7 @@ Further results on the structure of ideals in a Dedekind domain are found in
 
 - `IsDedekindDomainInv` alternatively defines a Dedekind domain as an integral domain where
   every nonzero fractional ideal is invertible.
-- `isDedekindDomainInv_iff` shows that this does note depend on the choice of field of
+- `isDedekindDomainInv_iff` shows that this does not depend on the choice of field of
   fractions.
 
 ## Main results:
@@ -310,8 +310,7 @@ theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalI
   have x_mul_mem : ∀ b ∈ (I⁻¹ : FractionalIdeal A⁰ K), x * b ∈ (I⁻¹ : FractionalIdeal A⁰ K) := by
     intro b hb
     rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI0)]
-    dsimp only at hx
-    rw [val_eq_coe, mem_coe, mem_inv_iff hJ0] at hx
+    rw [mem_inv_iff hJ0] at hx
     simp only [mul_assoc, mul_comm b] at hx ⊢
     intro y hy
     exact hx _ (mul_mem_mul hy hb)

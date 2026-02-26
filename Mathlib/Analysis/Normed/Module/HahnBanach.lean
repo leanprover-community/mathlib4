@@ -80,38 +80,26 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
   let fr := reCLM.comp (f.restrictScalars ℝ)
   -- Use the real version to get a norm-preserving extension of `fr`, which
   -- we'll call `g : StrongDual ℝ E`.
-  rcases Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr with ⟨g, ⟨hextends, hnormeq⟩⟩
+  -- the type ascription on `hextends` is necessary to make sure the quantification
+  -- happens over `x : p` instead of `x : p.restrictScalars ℝ`.
+  obtain ⟨g, ⟨(hextends : ∀ x : p, g x = fr x), hnormeq⟩⟩ :=
+    Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr
   -- Now `g` can be extended to the `StrongDual 𝕜 E` we need.
-  refine ⟨g.extendTo𝕜, ?_⟩
+  refine ⟨g.extendTo𝕜', ?_⟩
   -- It is an extension of `f`.
-  have h : ∀ x : p, g.extendTo𝕜 x = f x := by
-    intro x
-    rw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    -- The goal has a coercion from `RestrictScalars ℝ 𝕜 StrongDual ℝ E`, but
-    -- `hextends` involves a coercion from `StrongDual ℝ E`.
-    erw [hextends]
-    erw [hextends]
-    have :
-        (fr x : 𝕜) - I * ↑(fr ((I : 𝕜) • x)) = (re (f x) : 𝕜) - (I : 𝕜) * re (f ((I : 𝕜) • x)) := by
-      rfl
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [this]
-    apply ext
-    · simp only [add_zero, smul_eq_mul, I_re, ofReal_im, map_add, zero_sub,
-        I_im', zero_mul, ofReal_re, sub_zero, mul_neg, ofReal_neg,
-        mul_re, mul_zero, sub_neg_eq_add, map_smul]
-    · simp only [smul_eq_mul, I_re, ofReal_im, map_add, zero_sub, I_im',
-        zero_mul, ofReal_re, mul_neg, mul_im, zero_add, ofReal_neg, mul_re,
-        sub_neg_eq_add, map_smul]
+  have h (x : p) : g.extendTo𝕜' x = f x := by
+    rw [ContinuousLinearMap.extendTo𝕜'_apply, ← Submodule.coe_smul,
+      hextends, hextends]
+    simp [fr, RCLike.algebraMap_eq_ofReal, mul_comm I, RCLike.re_add_im]
   -- And we derive the equality of the norms by bounding on both sides.
   refine ⟨h, le_antisymm ?_ ?_⟩
   · calc
-      ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
+      ‖g.extendTo𝕜'‖ = ‖g‖ := g.norm_extendTo𝕜'
       _ = ‖fr‖ := hnormeq
       _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
-  · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x => h x ▸ g.extendTo𝕜.le_opNorm x
+  · exact f.opNorm_le_bound (g.extendTo𝕜' (𝕜 := 𝕜)).opNorm_nonneg
+      fun x ↦ h x ▸ (g.extendTo𝕜' (𝕜 := 𝕜) |>.le_opNorm x)
 
 open Module
 

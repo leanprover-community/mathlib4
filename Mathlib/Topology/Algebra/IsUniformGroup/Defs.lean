@@ -568,6 +568,13 @@ theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β
     suffices Tendsto f (𝓝 1) (𝓝 (f 1)) by rwa [map_one] at this
     h.tendsto 1
 
+@[to_additive]
+theorem MonoidHom.isUniformInducing_of_isInducing {Hom : Type*} [UniformSpace β] [Group β]
+    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom α β] {f : Hom} (h : IsInducing f) :
+    IsUniformInducing f where
+  comap_uniformity := by
+    simp [uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def, h.nhds_eq_comap]
+
 end IsUniformGroup
 
 section IsTopologicalGroup

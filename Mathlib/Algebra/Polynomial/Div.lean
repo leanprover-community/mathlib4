@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Field.IsField
 public import Mathlib.Algebra.Polynomial.Inductions
 public import Mathlib.Algebra.Polynomial.Monic
-public import Mathlib.Algebra.Ring.Regular
 public import Mathlib.RingTheory.Multiplicity
 public import Mathlib.Data.Nat.Lattice
 

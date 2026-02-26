@@ -49,9 +49,9 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
 section
 
-variable (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
-variable (C : Type u₂) [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)]
-variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (a ⟶ b)]
+variable (B : Type u₁) [Quiver.{v₁} B] [∀ a b : B, Quiver.{w₁} (a ⟶ b)]
+variable (C : Type u₂) [Quiver.{v₂} C] [∀ a b : C, Quiver.{w₂} (a ⟶ b)]
+variable {D : Type u₃} [Quiver.{v₃} D] [∀ a b : D, Quiver.{w₃} (a ⟶ b)]
 
 /-- A `PrelaxFunctorStruct` between bicategories consists of functions between objects,
 1-morphisms, and 2-morphisms. This structure will be extended to define `PrelaxFunctor`.
@@ -80,7 +80,7 @@ def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a
 
 /-- The identity lax prefunctor. -/
 @[simps]
-def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] :
+def id (B : Type u₁) [Quiver.{v₁} B] [∀ a b : B, Quiver.{w₁} (a ⟶ b)] :
     PrelaxFunctorStruct B B :=
   { Prefunctor.id B with map₂ := fun η => η }
 

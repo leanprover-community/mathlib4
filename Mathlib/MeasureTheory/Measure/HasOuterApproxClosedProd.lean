@@ -212,9 +212,7 @@ lemma ext_of_integral_prod_mul_boundedContinuousFunction {μ ν : Measure ((Π i
     { toFun p := ⟨fun i ↦ p.1 i, fun _ ↦ p.2⟩
       invFun p := ⟨fun i ↦ p.1 i, p.2 ()⟩
       left_inv p := by simp
-      right_inv p := by simp
-      measurable_toFun := by simp; fun_prop
-      measurable_invFun := by simp; fun_prop }
+      right_inv p := by simp }
   rw [← e.map_measurableEquiv_injective.eq_iff]
   refine ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map_equiv, integral_map_equiv]
@@ -233,10 +231,7 @@ lemma ext_of_integral_mul_prod_boundedContinuousFunction {μ ν : Measure (Z × 
     (h : ∀ (f : Z →ᵇ ℝ) (g : (j : κ) → Y j →ᵇ ℝ),
       ∫ p, f p.1 * ∏ j, g j (p.2 j) ∂μ = ∫ p, f p.1 * ∏ j, g j (p.2 j) ∂ν) :
     μ = ν := by
-  let e : (Z × (Π i, Y i)) ≃ᵐ ((Π i, Y i) × Z) :=
-    { toEquiv := Equiv.prodComm _ _
-      measurable_toFun := measurable_swap
-      measurable_invFun := measurable_swap }
+  let e : (Z × (Π i, Y i)) ≃ᵐ ((Π i, Y i) × Z) := .prodComm
   rw [← e.map_measurableEquiv_injective.eq_iff]
   refine ext_of_integral_prod_mul_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map_equiv, integral_map_equiv]
@@ -258,12 +253,7 @@ lemma ext_of_integral_mul_boundedContinuousFunction {μ ν : Measure (Z × T)}
     (h : ∀ (f : Z →ᵇ ℝ) (g : T →ᵇ ℝ), ∫ p, f p.1 * g p.2 ∂μ = ∫ p, f p.1 * g p.2 ∂ν) :
     μ = ν := by
   let e : (Z × T) ≃ᵐ ((Unit → Z) × (Unit → T)) :=
-    { toFun p := ⟨fun _ ↦ p.1, fun _ ↦ p.2⟩
-      invFun p := ⟨p.1 (), p.2 ()⟩
-      left_inv p := by simp
-      right_inv p := by simp
-      measurable_toFun := by simp; fun_prop
-      measurable_invFun := by simp; fun_prop }
+    .symm <| .prodCongr (.funUnique ..) (.funUnique ..)
   rw [← e.map_measurableEquiv_injective.eq_iff]
   refine ext_of_integral_prod_mul_prod_boundedContinuousFunction fun f g ↦ ?_
   rw [integral_map_equiv, integral_map_equiv]

@@ -5,7 +5,8 @@ Authors: Kim Morrison, Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.BicartesianSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Pullbacks in the category of types

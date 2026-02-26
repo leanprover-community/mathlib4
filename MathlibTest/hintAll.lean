@@ -184,7 +184,7 @@ info: Try these:
   Remaining subgoals:
   ⊢ False
 ---
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 -/
 #guard_msgs in
 example : 2 ≤ 1 := by hint

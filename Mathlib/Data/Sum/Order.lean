@@ -95,13 +95,8 @@ instance [Std.Total r] [Std.Total s] : Std.Total (Lex r s) :=
     | inr _, inl _ => Or.inr (Lex.sep _ _)
     | inr a, inr b => (total_of s a b).imp Lex.inr Lex.inr⟩
 
-instance [IsTrichotomous α r] [IsTrichotomous β s] : IsTrichotomous (α ⊕ β) (Lex r s) :=
-  ⟨fun a b =>
-    match a, b with
-    | inl a, inl b => (trichotomous_of r a b).imp3 Lex.inl (congr_arg _) Lex.inl
-    | inl _, inr _ => Or.inl (Lex.sep _ _)
-    | inr _, inl _ => Or.inr (Or.inr <| Lex.sep _ _)
-    | inr a, inr b => (trichotomous_of s a b).imp3 Lex.inr (congr_arg _) Lex.inr⟩
+instance [Std.Trichotomous r] [Std.Trichotomous s] : Std.Trichotomous (Lex r s) := by
+  grind [Std.Trichotomous, Lex]
 
 instance [IsWellOrder α r] [IsWellOrder β s] :
     IsWellOrder (α ⊕ β) (Sum.Lex r s) where wf := Sum.lex_wf IsWellFounded.wf IsWellFounded.wf
@@ -683,8 +678,7 @@ def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ
   { Equiv.sumComm α β with
     map_rel_iff' := fun {a b} => by
       rcases a with (a | a) <;> rcases b with (b | b)
-      · simp only [ge_iff_le]
-        change
+      · change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔
             toDual (toLex <| inl a) ≤ toDual (toLex <| inl b)
         simp [toDual_le_toDual]

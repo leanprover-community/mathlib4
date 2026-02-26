@@ -685,6 +685,69 @@ theorem isThreeCycle_swap_mul_swap_same {a b c : α} (ab : a ≠ b) (ac : a ≠ 
   · simp only [mem_support, coe_mul]
     grind
 
+theorem IsThreeCycle.support_eq_iff_mem_support
+    {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    g.support = {a, g a, g (g a)} ↔ a ∈ g.support := by
+  constructor
+  · intro hg; simp [hg]
+  · intro ha
+    symm
+    apply Finset.eq_of_subset_of_card_le
+    · apply Finset.insert_subset ha
+      apply Finset.insert_subset
+      · rwa [Perm.apply_mem_support]
+      simpa only [Finset.singleton_subset_iff, Perm.apply_mem_support]
+    · rw [hg3.card_support]
+      simp only [mem_support, ne_eq] at ha
+      rw [Finset.card_insert_eq_ite, if_neg]
+      · rw [Finset.card_insert_eq_ite, if_neg]
+        · simp
+        · simpa using Ne.symm ha
+      · simp only [Finset.mem_insert, Finset.mem_singleton]
+        contrapose ha
+        rcases ha with ha | ha
+        · exact ha.symm
+        · suffices (g ^ 3) a = a by simpa [pow_succ, ← ha] using this
+          simp [← hg3.orderOf]
+
+theorem IsThreeCycle.nodup_iff_mem_support {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    [a, g a, g (g a)].Nodup ↔ a ∈ g.support := by
+  constructor
+  · intro ha
+    rw [mem_support]
+    grind
+  rw [← support_eq_iff_mem_support hg3]
+  intro ha
+  suffices g.support.card = 3 by grind
+  exact hg3.card_support
+
+theorem IsThreeCycle.eq_swap_mul_swap_iff_mem_support
+    {g : Perm α} {a : α} (hg3 : g.IsThreeCycle) :
+    g = (swap a (g a)) * (swap (g a) (g (g a))) ↔ a ∈ g.support := by
+  constructor
+  · intro hg
+    rw [mem_support]
+    intro hx
+    apply hg3.isCycle.ne_one
+    simpa [hx] using hg
+  intro ha
+  have ha' := hg3.support_eq_iff_mem_support.mpr ha
+  have ha'' := hg3.nodup_iff_mem_support.mpr ha
+  ext x
+  simp only [coe_mul, Function.comp_apply]
+  by_cases h : x ∈ g.support
+  · simp only [ha', Finset.mem_insert, Finset.mem_singleton] at h
+    rcases h with rfl | (rfl | rfl)
+    · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+      simp
+    · rw [swap_apply_left, swap_apply_of_ne_of_ne (by grind) (by grind)]
+    · simp only [swap_apply_right]
+      suffices (g ^ 3) a = a by simpa
+      simp [← hg3.orderOf]
+  · rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+    rw [swap_apply_of_ne_of_ne (x := x) (by grind) (by grind)]
+    simpa [notMem_support] using h
+
 open Subgroup
 
 theorem swap_mul_swap_same_mem_closure_three_cycles {a b c : α} (ab : a ≠ b) (ac : a ≠ c) :
@@ -707,6 +770,20 @@ theorem IsSwap.mul_mem_closure_three_cycles {σ τ : Perm α} (hσ : IsSwap σ) 
   exact
     mul_mem (swap_mul_swap_same_mem_closure_three_cycles ab ac)
       (swap_mul_swap_same_mem_closure_three_cycles (Ne.symm ac) cd)
+
+end
+
+section
+
+variable [DecidableEq α]
+
+theorem cycleType_swap_mul_swap_of_nodup {x y z t : α} (h : [x, y, z, t].Nodup) :
+    (swap x y * swap z t).cycleType = {2, 2} := by
+  rw [(disjoint_swap_swap h).cycleType_mul]
+  rw [isSwap_iff_cycleType.mp ?_, isSwap_iff_cycleType.mp ?_]
+  · simp
+  · rw [swap_isSwap_iff]; grind
+  · rw [swap_isSwap_iff]; grind
 
 end
 

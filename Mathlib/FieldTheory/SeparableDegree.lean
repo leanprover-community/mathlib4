@@ -369,7 +369,7 @@ theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).
     f.natSepDegree = (f.aroots E).toFinset.card := by
   classical
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
-    (SplittingField.splits f).map_roots,
+    (SplittingField.splits f).roots_map,
     Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _), natSepDegree]
 
 variable (E) in

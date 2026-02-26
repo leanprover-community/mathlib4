@@ -162,6 +162,14 @@ protected lemma add_lt_add_right [LT α] [AddRightStrictMono α] (hz : z ≠ ⊤
     x < y → x + z < y + z := by
   lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]; simpa using fun _ ↦ by gcongr
 
+@[gcongr]
+protected theorem add_lt_add [Preorder α] [AddLeftStrictMono α] [AddRightStrictMono α]
+    (xz : x < z) (yw : y < w) : x + y < z + w := by
+  apply (WithTop.add_lt_add_left xz.ne_top yw).trans_le
+  cases w
+  · simp
+  · exact (WithTop.add_lt_add_right coe_ne_top xz).le
+
 protected lemma add_le_add_iff_left [LE α] [AddLeftMono α] [AddLeftReflectLE α] (hx : x ≠ ⊤) :
     x + y ≤ x + z ↔ y ≤ z := ⟨WithTop.le_of_add_le_add_left hx, fun _ ↦ by gcongr⟩
 

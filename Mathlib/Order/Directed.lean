@@ -129,6 +129,9 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
 theorem Std.Total.directed [Std.Total r] (f : ι → α) : Directed r f := fun i j =>
   Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
 
+theorem Std.Total.directedOn [Std.Total r] (s : Set α) : DirectedOn r s := fun a ha b hb =>
+  Or.casesOn (total_of r a b) (fun h => ⟨b, hb, h, refl _⟩) fun h => ⟨a, ha, refl _, h⟩
+
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
 class IsDirected (α : Type*) (r : α → α → Prop) : Prop where

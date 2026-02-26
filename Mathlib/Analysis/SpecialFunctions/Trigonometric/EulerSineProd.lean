@@ -77,12 +77,8 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
       ← integral_neg, ← integral_const_mul]
     refine integral_congr fun x _ => ?_
     ring
-  · apply Continuous.intervalIntegrable
-    exact
-      (continuous_const.mul (Complex.continuous_ofReal.comp continuous_sin)).mul
-        ((Complex.continuous_ofReal.comp continuous_cos).pow (n - 1))
-  · apply Continuous.intervalIntegrable
-    exact Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)
+  · apply Continuous.intervalIntegrable (by fun_prop)
+  · apply Continuous.intervalIntegrable <| by fun_prop
 
 theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     (∫ x in (0 : ℝ)..π / 2, Complex.sin (2 * z * x) * sin x * (cos x : ℂ) ^ (n - 1)) =
@@ -116,16 +112,8 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
       mul_zero, zero_mul, zero_mul, sub_zero, zero_sub, ←
       integral_neg, ← integral_const_mul, ← integral_const_mul, ← integral_sub]
     rotate_left
-    · apply Continuous.intervalIntegrable
-      exact
-        continuous_const.mul
-          ((Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).mul
-            ((Complex.continuous_ofReal.comp continuous_cos).pow n))
-    · apply Continuous.intervalIntegrable
-      exact
-        continuous_const.mul
-          ((Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).mul
-            ((Complex.continuous_ofReal.comp continuous_cos).pow (n - 2)))
+    · apply Continuous.intervalIntegrable <| by fun_prop
+    · apply Continuous.intervalIntegrable <| by fun_prop
     · exact Nat.sub_ne_zero_of_lt hn
     refine integral_congr fun x _ => ?_
     dsimp only
@@ -137,13 +125,8 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
       conv_lhs => rw [← Nat.sub_add_cancel hn, pow_add]
     rw [this]
     ring
-  · apply Continuous.intervalIntegrable
-    exact
-      ((Complex.continuous_ofReal.comp continuous_cos).pow n).sub
-        ((continuous_const.mul ((Complex.continuous_ofReal.comp continuous_sin).pow 2)).mul
-          ((Complex.continuous_ofReal.comp continuous_cos).pow (n - 2)))
-  · apply Continuous.intervalIntegrable
-    exact Complex.continuous_sin.comp (continuous_const.mul Complex.continuous_ofReal)
+  · apply Continuous.intervalIntegrable <| by fun_prop
+  · apply Continuous.intervalIntegrable <| by fun_prop
 
 /-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
 theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
@@ -302,8 +285,7 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
         (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) /
           (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ)) atTop (𝓝 1) from
     this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
-  have : ContinuousOn (fun x : ℝ => Complex.cos (2 * z * x)) (Icc 0 (π / 2)) :=
-    (Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).continuousOn
+  have : ContinuousOn (fun x : ℝ ↦ Complex.cos (2 * z * x)) (Icc 0 (π / 2)) := by fun_prop
   convert tendsto_integral_cos_pow_mul_div this using 1
   · ext1 n; congr 2 with x : 1; rw [mul_comm]
   · rw [Complex.ofReal_zero, mul_zero, Complex.cos_zero]

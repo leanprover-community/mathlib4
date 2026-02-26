@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Order.Nonneg.Floor
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Basic results on nonnegative real numbers
@@ -111,6 +112,18 @@ theorem finset_sup_mul {α} (s : Finset α) (f : α → ℝ≥0) (r : ℝ≥0) :
 theorem finset_sup_div {α} {f : α → ℝ≥0} {s : Finset α} (r : ℝ≥0) :
     s.sup f / r = s.sup fun a => f a / r := by simp only [div_eq_inv_mul, mul_finset_sup]
 
+section Set
+
+@[simp] lemma bddAbove_natCast_image_iff {s : Set ℕ} : BddAbove ((↑) '' s : Set ℝ≥0) ↔ BddAbove s :=
+  ⟨.imp' Nat.floor (by simp [upperBounds, Nat.le_floor_iff]), .imp' (↑) (by simp [upperBounds])⟩
+
+@[simp, norm_cast] lemma bddAbove_range_natCast_iff {ι : Sort*} (f : ι → ℕ) :
+    BddAbove (Set.range (f ·) : Set NNReal) ↔ BddAbove (Set.range f) := by
+  rw [← bddAbove_natCast_image_iff, ← Set.range_comp]
+  rfl
+
+end Set
+
 open Real
 
 section Sub
@@ -177,6 +190,20 @@ theorem le_iInf_mul {a : ℝ≥0} {g : ι → ℝ≥0} {h : ℝ≥0} (H : ∀ i,
 theorem le_iInf_mul_iInf {a : ℝ≥0} {g h : ι → ℝ≥0} (H : ∀ i j, a ≤ g i * h j) :
     a ≤ iInf g * iInf h :=
   le_iInf_mul fun i => le_mul_iInf <| H i
+
+@[simp, norm_cast] lemma natCast_iSup {ι : Sort*} (f : ι → ℕ) :
+    ⨆ i, f i = (⨆ i, f i : NNReal) := by
+  by_cases h : BddAbove (Set.range f)
+  · apply eq_of_forall_ge_iff
+    simp [ciSup_le_iff', ← Nat.le_floor_iff, *]
+  · simp [*]
+
+@[simp, norm_cast] lemma natCast_iInf {ι : Sort*} (f : ι → ℕ) :
+    ⨅ i, f i = (⨅ i, f i : NNReal) := by
+  obtain hι | hι := isEmpty_or_nonempty ι
+  · simp [iInf_empty]
+  apply eq_of_forall_le_iff
+  simp [le_ciInf_iff, ← Nat.ceil_le]
 
 end Csupr
 

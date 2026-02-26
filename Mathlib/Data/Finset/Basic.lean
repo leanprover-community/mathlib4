@@ -444,6 +444,12 @@ variable {n m l : ℕ}
 @[simp]
 theorem range_filter_eq {n m : ℕ} : (range n).filter (· = m) = if m < n then {m} else ∅ := by grind
 
+@[simp]
+theorem range_inter_range (m n : ℕ) : range m ∩ range n = range (min m n) := by ext; simp
+
+@[simp]
+theorem range_union_range (m n : ℕ) : range m ∪ range n = range (max m n) := by ext; simp
+
 end Range
 
 end Finset

@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Ring.Associated
-public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`

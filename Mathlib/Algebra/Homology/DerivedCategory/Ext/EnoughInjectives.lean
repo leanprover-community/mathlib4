@@ -104,6 +104,10 @@ lemma eq_zero_of_injective [HasExt.{w} C] {X I : C} {n : ℕ} [Injective I]
     (by lia)).hom.app _), zero_hom, Limits.zero_comp]
   exact to_singleFunctor_obj_eq_zero_of_injective (K := K) (n := -n) _ (by lia)
 
+lemma subsingleton_of_injective [HasExt.{w} C]
+    (X I : C) [Injective I] (n : ℕ) : Subsingleton (Ext.{w} X I (n + 1)) :=
+  subsingleton_of_forall_eq 0 Ext.eq_zero_of_injective
+
 end Abelian.Ext
 
 variable (C)

@@ -13,6 +13,8 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.Push.Attr
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Basic definitions about sets
 

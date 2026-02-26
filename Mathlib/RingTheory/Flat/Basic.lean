@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Flat modules

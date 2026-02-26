@@ -132,7 +132,7 @@ variable [HasPullbacks C]
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
 but we reuse all the names from `SemilatticeInf` because they will be used to construct
-`SemilatticeInf (subobject A)` shortly.
+`SemilatticeInf (Subobject A)` shortly.
 -/
 @[simps]
 def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
@@ -362,6 +362,16 @@ instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
   inf_le_right := inf_le_right
   le_inf := le_inf
 
+@[reassoc]
+lemma inf_comp_left {A : C} (f g : Subobject A) :
+   (ofLE (f ⊓ g) f (by simp)) ≫ f.arrow = (f ⊓ g).arrow :=
+  ofLE_arrow (inf_le_left f g)
+
+@[reassoc]
+lemma inf_comp_right {A : C} (f g : Subobject A) :
+   (ofLE (f ⊓ g) g (by simp)) ≫ g.arrow = (f ⊓ g).arrow :=
+  ofLE_arrow (inf_le_right f g)
+
 theorem factors_left_of_inf_factors {A B : C} {X Y : Subobject B} {f : A ⟶ B}
     (h : (X ⊓ Y).Factors f) : X.Factors f :=
   factors_of_le _ (inf_le_left _ _) h
@@ -378,6 +388,17 @@ theorem inf_factors {A B : C} {X Y : Subobject B} (f : A ⟶ B) :
     apply Quotient.ind₂'
     rintro X Y ⟨⟨g₁, rfl⟩, ⟨g₂, hg₂⟩⟩
     exact ⟨_, pullback.lift_snd_assoc _ _ hg₂ _⟩⟩
+
+theorem inf_isPullback {A : C} (f g : Subobject A) :
+    IsPullback (ofLE (f ⊓ g) f (by simp)) (ofLE (f ⊓ g) g (by simp)) f.arrow g.arrow := by
+  refine ⟨⟨by simp⟩, ⟨PullbackCone.IsLimit.mk _ (fun s ↦ (f ⊓ g).factorThru (s.fst ≫ f.arrow) ?_)
+    ?_ (fun s ↦ ?_) fun _ _ h _ ↦ ?_⟩⟩
+  · simpa using ⟨factors_comp_arrow s.fst, by simpa [s.condition] using factors_comp_arrow s.snd⟩
+  · cat_disch
+  · ext
+    simp [s.condition]
+  · ext
+    simp [← h]
 
 theorem inf_arrow_factors_left {B : C} (X Y : Subobject B) : X.Factors (X ⊓ Y).arrow :=
   (factors_iff _ _).mpr ⟨ofLE (X ⊓ Y) X (inf_le_left X Y), by simp⟩

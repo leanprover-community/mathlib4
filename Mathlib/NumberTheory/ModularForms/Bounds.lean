@@ -279,10 +279,8 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
     · grw [hn' _ (by simp [← UpperHalfPlane.coe_im])]
       simp [← UpperHalfPlane.coe_im, Real.rpow_neg_eq_inv_rpow, hne]
   refine (intervalIntegral.integral_mono (by positivity) ?_ ?_ this).trans (le_of_eq ?_)
-  · refine continuous_const.mul (.mul ?_ ?_) |>.norm |>.intervalIntegrable _ _
-    · simp only [Function.Periodic.qParam, ← Complex.exp_nat_mul, one_div, ← Complex.exp_neg]
-      fun_prop
-    · exact (continuous f).comp (by fun_prop)
+  · apply Continuous.intervalIntegrable
+    fun_prop (disch := simp [Function.Periodic.qParam_ne_zero])
   · exact continuous_const.intervalIntegrable ..
   · simp [field, intervalIntegral.integral_const, hne]
 

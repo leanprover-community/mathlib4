@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Init
 public import Aesop
-public import Aesop.Frontend.Basic
 
 /-!
 # Aesop rule set for finsets

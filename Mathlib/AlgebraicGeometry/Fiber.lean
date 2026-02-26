@@ -88,9 +88,12 @@ instance (f : X ⟶ Y) [QuasiCompact f] (y : Y) : CompactSpace (f.fiber y) :=
   HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)
     (f := f.fiberToSpecResidueField y).mp inferInstance
 
-lemma QuasiCompact.isCompact_preimage_singleton (f : X ⟶ Y) [QuasiCompact f] (y : Y) :
+lemma Scheme.Hom.isCompact_preimage_singleton (f : X ⟶ Y) [QuasiCompact f] (y : Y) :
     IsCompact (f ⁻¹' {y}) :=
   f.range_fiberι y ▸ isCompact_range (f.fiberι y).continuous
+
+@[deprecated (since := "2026-02-05")]
+alias QuasiCompact.isCompact_preimage_singleton := Scheme.Hom.isCompact_preimage_singleton
 
 instance (f : X ⟶ Y) [IsAffineHom f] (y : Y) : IsAffine (f.fiber y) :=
   haveI : IsAffineHom (f.fiberToSpecResidueField y) :=
@@ -102,24 +105,30 @@ instance (f : X ⟶ Y) (y : Y) [LocallyOfFiniteType f] : JacobsonSpace (f.fiber 
     MorphismProperty.pullback_snd _ _ inferInstance
   LocallyOfFiniteType.jacobsonSpace (f.fiberToSpecResidueField y)
 
-instance (f : X ⟶ Y) (y : Y) [IsFinite f] : Finite (f.fiber y) := by
-  have H : IsFinite (f.fiberToSpecResidueField y) := MorphismProperty.pullback_snd _ _ inferInstance
-  have : IsArtinianRing Γ(f.fiber y, ⊤) :=
-    @IsArtinianRing.of_finite (Y.residueField y) Γ(f.fiber y, ⊤) _ _ (show _ from _) _ _
-      ((HasAffineProperty.iff_of_isAffine.mp H).2.comp (.of_surjective _ (Scheme.ΓSpecIso
-        (Y.residueField y)).commRingCatIsoToRingEquiv.symm.surjective))
-  exact .of_injective (β := PrimeSpectrum _) _ (f.fiber y).isoSpec.hom.homeomorph.injective
+/-- The `κ(x)`-point of `f ⁻¹' {f x}` corresponding to `x`. -/
+def Scheme.Hom.asFiberHom (f : X ⟶ Y) (x : X) : Spec (X.residueField x) ⟶ f.fiber (f x) :=
+  pullback.lift (X.fromSpecResidueField x) (Spec.map (f.residueFieldMap _)) (by simp)
 
-lemma IsFinite.finite_preimage_singleton (f : X ⟶ Y) [IsFinite f] (y : Y) :
-    (f ⁻¹' {y}).Finite :=
-  f.range_fiberι y ▸ Set.finite_range (f.fiberι y)
+@[reassoc (attr := simp)]
+lemma Scheme.Hom.asFiberHom_fiberι (f : X ⟶ Y) (x : X) :
+    f.asFiberHom x ≫ f.fiberι _ = X.fromSpecResidueField x := pullback.lift_fst ..
 
-lemma Scheme.Hom.finite_preimage (f : X ⟶ Y) [IsFinite f] {s : Set Y} (hs : s.Finite) :
-    (f ⁻¹' s).Finite := by
-  rw [← Set.biUnion_of_singleton s, Set.preimage_iUnion₂]
-  exact hs.biUnion fun _ _ ↦ IsFinite.finite_preimage_singleton f _
+@[reassoc (attr := simp)]
+lemma Scheme.Hom.asFiberHom_fiberToSpecResidueField (f : X ⟶ Y) (x : X) :
+    f.asFiberHom x ≫ f.fiberToSpecResidueField _ = Spec.map (f.residueFieldMap _) :=
+  pullback.lift_snd ..
 
-instance Scheme.Hom.discrete_fiber (f : X ⟶ Y) (y : Y) [IsFinite f] :
-    DiscreteTopology (f.fiber y) := inferInstance
+@[simp]
+lemma Scheme.Hom.asFiberHom_apply (f : X ⟶ Y) (x : X) (y) :
+    f.asFiberHom x y = f.asFiber x :=
+  (f.fiberι _).isEmbedding.injective (by simp [← Scheme.Hom.comp_apply])
+
+@[simp]
+lemma Scheme.Hom.range_asFiberHom (f : X ⟶ Y) (x : X) :
+    Set.range (f.asFiberHom x) = {f.asFiber x} := by aesop
+
+instance (f : X ⟶ Y) (x : X) : IsPreimmersion (f.asFiberHom x) :=
+  have : IsPreimmersion (f.asFiberHom x ≫ f.fiberι _) := f.asFiberHom_fiberι x ▸ inferInstance
+  .of_comp _ (f.fiberι _)
 
 end AlgebraicGeometry

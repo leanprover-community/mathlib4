@@ -392,7 +392,7 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
     simp [Set.Finite, ← Cardinal.mk_lt_aleph0_iff, ht.cardinalMk_eq hs, Cardinal.natCast_lt_aleph0]
   lift t to Finset E using this
   have : Module.Finite (adjoin F (s : Set E)) E := by
-    apply (config := { allowSynthFailures := true }) Algebra.finite_of_essFiniteType_of_isAlgebraic
+    apply +allowSynthFailures Algebra.finite_of_essFiniteType_of_isAlgebraic
     · exact .of_comp F _ _
     · convert hs.isAlgebraic_field <;> simp [s]
   have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=

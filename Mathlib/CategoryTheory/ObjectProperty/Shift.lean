@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-public import Mathlib.CategoryTheory.Shift.Basic
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Properties of objects on categories equipped with shift
@@ -26,6 +26,7 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C] (P Q : ObjectProperty C)
   {A : Type*} [AddMonoid A] [HasShift C A]
+  {E : Type*} [Category* E] [HasShift E A]
 
 namespace ObjectProperty
 
@@ -92,6 +93,38 @@ lemma prop_shift_iff_of_isStableUnderShift {G : Type*} [AddGroup G] [HasShift C 
   refine ⟨fun hX ↦ ?_, P.le_shift g _⟩
   rw [← P.shift_zero G, ← P.shift_shift g (-g) 0 (by simp)]
   exact P.le_shift (-g) _ hX
+
+variable [P.IsStableUnderShift A]
+
+noncomputable instance hasShift :
+    HasShift P.FullSubcategory A :=
+  P.fullyFaithfulι.hasShift (fun n ↦ ObjectProperty.lift _ (P.ι ⋙ shiftFunctor C n)
+    (fun X ↦ P.le_shift n _ X.2)) (fun _ => P.liftCompιIso _ _)
+
+instance commShiftι : P.ι.CommShift A :=
+  Functor.CommShift.ofHasShiftOfFullyFaithful _ _ _
+
+-- these definitions are made irreducible to prevent any abuse of defeq
+attribute [irreducible] hasShift commShiftι
+
+section
+
+variable (F : E ⥤ C) (hF : ∀ (X : E), P (F.obj X))
+
+noncomputable instance [F.CommShift A] :
+    (P.lift F hF).CommShift A :=
+  Functor.CommShift.ofComp (P.liftCompιIso F hF) A
+
+noncomputable instance [F.CommShift A] :
+    NatTrans.CommShift (P.liftCompιIso F hF).hom A :=
+  Functor.CommShift.ofComp_compatibility _ _
+
+end
+
+instance [P.IsClosedUnderIsomorphisms] (F : E ⥤ C) [F.CommShift A] :
+    (P.inverseImage F).IsStableUnderShift A where
+  isStableUnderShiftBy n :=
+    { le_shift _ hY := P.prop_of_iso ((F.commShiftIso n).symm.app _) (P.le_shift n _ hY) }
 
 end ObjectProperty
 

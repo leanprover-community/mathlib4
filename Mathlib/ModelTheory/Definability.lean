@@ -301,6 +301,8 @@ instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
+instance : PartialOrder (L.DefinableSet A α) := .ofSetLike (L.DefinableSet A α) (α → M)
+
 instance instTop : Top (L.DefinableSet A α) :=
   ⟨⟨⊤, definable_univ⟩⟩
 

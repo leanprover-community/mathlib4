@@ -21,7 +21,7 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
   and the composition is bilinear.
 
 See `RingTheory.Derivation.Lie` for
-- `derivation.lie_algebra`: The `R`-derivations from `A` to `A` form a lie algebra over `R`.
+- `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
 
 and `RingTheory.Derivation.ToSquareZero` for
 - `derivationToSquareZeroEquivLift`: The `R`-derivations from `A` into a square-zero ideal `I`

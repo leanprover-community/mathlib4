@@ -6,11 +6,11 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
-public import Mathlib.Algebra.Ring.Nat
 public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Data.Int.GCD
 public import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Algebra.CharZero.Defs
 
 /-!
 # Congruences modulo a natural number
@@ -590,5 +590,14 @@ theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
 
 lemma mod_eq_of_modEq {a b n} (h : a ≡ b [MOD n]) (hb : b < n) : a % n = b :=
   Eq.trans h (mod_eq_of_lt hb)
+
+theorem ext_div_modEq {n a b : ℕ} (h0 : a / n = b / n) (h1 : a ≡ b [MOD n]) : a = b :=
+    ext_div_mod h0 h1
+
+theorem ext_div_modEq_iff (n a b : ℕ) : a = b ↔ a / n = b / n ∧ a ≡ b [MOD n] :=
+  ext_div_mod_iff _ _ _
+
+theorem modEq_iff_eq_of_div_eq {n a b : ℕ} (h : a / n = b / n) :
+    a ≡ b [MOD n] ↔ a = b := by grind [ext_div_modEq_iff]
 
 end Nat

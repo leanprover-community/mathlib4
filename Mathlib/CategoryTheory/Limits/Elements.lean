@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Creates
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # Limits in the category of elements
@@ -16,6 +17,14 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 We show that if `C` has limits of shape `I` and `A : C ⥤ Type w` preserves limits of shape `I`, then
 the category of elements of `A` has limits of shape `I` and the forgetful functor
 `π : A.Elements ⥤ C` creates them.
+
+## Further results
+
+- If `A` is (co)representable, then `A.Elements` has an initial object.
+
+## TODOs
+
+- Show that `A` is (co)representable if `A.Elements` has an initial object.
 
 -/
 
@@ -104,6 +113,16 @@ noncomputable instance : CreatesLimitsOfShape I (π A) where
 
 instance : HasLimitsOfShape I A.Elements :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (π A)
+
+section Initial
+
+instance {F : Cᵒᵖ ⥤ Type*} [F.IsRepresentable] : HasInitial F.Elements :=
+  (Functor.Elements.isInitialOfRepresentableBy F.representableBy).hasInitial
+
+instance {F : C ⥤ Type*} [F.IsCorepresentable] : HasInitial F.Elements :=
+  (Functor.Elements.isInitialOfCorepresentableBy F.corepresentableBy).hasInitial
+
+end Initial
 
 end CategoryOfElements
 

@@ -381,7 +381,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if mainModule == `Mathlib then return
   let fm ← getFileMap
   let mdDocs := (getMainModuleDoc (← getEnv)).toArray
-  let versoDocs := (getVersoModuleDocs (← getEnv)).snippets
+  let versoDocs := (getMainVersoModuleDocs (← getEnv)).snippets
   -- The end of the first module doc-string, or the end of the file if there is none.
   -- For robustness, we assume Markdown and Verso docstrings can be arbitrarily mixed,
   -- so we get the end pos for both types of docstrings and take their minimum as the first.

@@ -806,10 +806,10 @@ def algNormFromConst (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1) {x : L}
         rw [spectralNorm_extends, ← Algebra.smul_def, ← spectralAlgNorm_def,
           map_smul_eq_mul _ _ _, spectralAlgNorm_def]
       have h : spectralNorm K L (algebraMap K L k) =
-        seminormFromConst' h1 hx' isPowMul_spectralNorm (algebraMap K L k) := by
-          rw [seminormFromConst_apply_of_isMul h1 hx' _ h_mul]; rfl
+        seminormFromConst' x (spectralAlgNorm K L).toRingSeminorm (algebraMap K L k) := by
+          rw [seminormFromConst_apply_of_isMul h1 hx' spectralAlgNorm_isPowMul h_mul]; rfl
       rw [← @spectralNorm_extends K _ L _ _ k, Algebra.smul_def, h]
-      exact seminormFromConst_isMul_of_isMul _ _ _ h_mul _ }
+      exact seminormFromConst_isMul_of_isMul h1 hx' spectralAlgNorm_isPowMul h_mul y }
 
 theorem algNormFromConst_def (h1 : (spectralAlgNorm K L).toRingSeminorm 1 ≤ 1) {x y : L}
     (hx : x ≠ 0) :
