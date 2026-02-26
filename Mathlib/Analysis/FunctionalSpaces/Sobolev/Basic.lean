@@ -32,6 +32,16 @@ variable {𝕜 𝕂 : Type*} [NontriviallyNormedField 𝕜] --[RCLike 𝕂]
 variable {T T' : 𝓓'(Ω, F)} {g g' : E → E →L[ℝ] F} {c : ℝ} {g g' : E → E →L[ℝ] F}
 section move
 
+lemma Finset.fin_univ_image {n : ℕ} :
+    (Finset.univ (α := Fin n)).image Fin.val = Finset.range n := by
+  ext
+  simp [Fin.exists_iff]
+
+@[simp]
+lemma Finset.sup_fin_univ {α : Type*} [SemilatticeSup α] [OrderBot α] {n : ℕ} (f : ℕ → α) :
+    (Finset.univ (α := Fin n)).sup (fun n ↦ f n) = (Finset.range n).sup f := by
+  rw [← fin_univ_image, sup_image, Function.comp_def]
+
 lemma MeasureTheory.aeEq_iff {α β : Type*} [MeasurableSpace α] {μ : Measure α} {f g : α → β} :
     f =ᵐ[μ] g ↔ μ {x | f x ≠ g x} = 0 := by
   rfl
@@ -50,14 +60,13 @@ instance [hμ : IsLocallyFiniteMeasure μ] : IsLocallyFiniteMeasure (μ.restrict
     exact ⟨s, hs, lt_of_le_of_lt (Measure.restrict_apply_le Ω s) hmus⟩
 
 /- to do: the Norm instance on PiLp also induces a non-defeq ENorm on PiLp,
-we maybe should disable the Norm → ENorm instance. -/
-/- to do: the EDist instance on PiLp for p = 0 is wrong. -/
-/- to do: do we indeed want this for non-fintypes? -/
-instance PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} (β : ι → Type*) [(i : ι) → ENorm (β i)] :
+we should disable the Norm → ENorm instance if we want to make this an instance. -/
+@[reducible, simps -isSimp]
+def PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} [Fintype ι] (β : ι → Type*) [(i : ι) → ENorm (β i)] :
     ENorm (PiLp p β) where
   enorm f :=
     if p = 0 then {i | ‖f i‖ₑ ≠ 0}.encard
-    else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑' i, ‖f i‖ₑ ^ p.toReal) ^ (1 / p.toReal)
+    else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑ i, ‖f i‖ₑ ^ p.toReal) ^ p.toReal⁻¹
 
 attribute [fun_prop] TestFunction.contDiff
 
@@ -67,6 +76,31 @@ lemma TestFunction.contDiff_one {E F : Type*} [NormedAddCommGroup E] [NormedSpac
     [NormedAddCommGroup F] [NormedSpace ℝ F] (φ : 𝓓(Ω, F)) : ContDiff ℝ 1 φ :=
   φ.contDiff.of_le (mod_cast le_top)
 
+section count
+variable {ι α : Type*} [MeasurableSpace ι] [MeasurableSingletonClass ι] [ENorm α]
+lemma enorm_le_eLpNorm_count (f : ι → α) {p : ℝ≥0∞} {i : ι} :
+    ‖f i‖ₑ ≤ eLpNorm f p .count := by
+  sorry
+
+lemma eLpNorm_count_lt_top [Finite ι] {f : ι → α} (p : ℝ≥0∞) :
+    eLpNorm f p .count < ∞ ↔ ∀ i, ‖f i‖ₑ < ∞ := by
+  letI _ := Fintype.ofFinite ι
+  refine ⟨fun h i ↦ (enorm_le_eLpNorm_count f).trans_lt h, fun h ↦ ?_⟩
+  simp_rw [eLpNorm]
+  split_ifs with h2 h3
+  · exact ENNReal.zero_lt_top
+  · refine (essSup_le_of_ae_le (Finset.univ.sup (‖f ·‖ₑ)) ?_).trans_lt ?_
+    · filter_upwards with x
+      exact Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ _)
+    · simp_rw [Finset.sup_lt_iff ENNReal.zero_lt_top, h, implies_true]
+  · refine (ENNReal.rpow_lt_top_iff_of_pos ?_).mpr ?_
+    · rw [one_div, inv_pos]
+      exact ENNReal.toReal_pos h2 h3
+    · simp_rw [lintegral_count, tsum_eq_sum (s := Finset.univ) (by simp), ENNReal.sum_lt_top,
+        Finset.mem_univ, forall_const, ENNReal.rpow_lt_top_iff_of_pos (ENNReal.toReal_pos h2 h3), h,
+        implies_true]
+
+end count
 
 end move
 
@@ -469,6 +503,8 @@ lemma _root_.memSobolev_congr (h : f =ᵐ[μ.restrict Ω] f') :
     MemSobolev Ω f k p μ ↔ MemSobolev Ω f' k p μ := by
   sorry
 
+alias ⟨congr, _⟩ := memSobolev_congr
+
 lemma aeEq (h : f =ᵐ[μ.restrict Ω] f') (hf : MemSobolev Ω f k p μ) :
     MemSobolev Ω f' k p μ :=
   memSobolev_congr h |>.mp hf
@@ -489,46 +525,84 @@ end MemSobolev
 
 section sobolevNorm
 
-variable {g g' : E → FormalMultilinearSeries ℝ E F}
+variable {g g' : E → FormalMultilinearSeries ℝ E F} {k : ℕ}
 
 variable (Ω) in
+attribute [local instance] PiLp.instENorm in
 open Finset in
-/-- Only used to write API. Use `sobolevNorm` instead. -/
-/- to do: this feels natural for `k = ∞`, but might not give the desired result. -/
-def sobolevNormAux (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) :
+/- The seminorm of a `FormalMultiLinearSeries`. -/
+def sobolevNormAux (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) :
     ℝ≥0∞ :=
-  ‖WithLp.toLp p fun i : {i : ℕ // i ≤ k} ↦ eLpNorm (g · i) p (μ.restrict Ω)‖ₑ
+  -- ‖WithLp.toLp p fun i : Fin (k + 1) ↦ eLpNorm (g · i) p (μ.restrict Ω)‖ₑ
+  eLpNorm (fun i : Fin (k + 1) ↦ eLpNorm (g · i) p (μ.restrict Ω)) p .count
+
+lemma sobolevNormAux_def :
+    sobolevNormAux Ω g k p μ = sobolevNormAux Ω g' k p μ := by
+  sorry
 
 lemma sobolevNormAux_congr (h : ∀ (i : ℕ), i ≤ k → (g · i) =ᵐ[μ.restrict Ω] (g' · i)) :
     sobolevNormAux Ω g k p μ = sobolevNormAux Ω g' k p μ := by
   sorry
 
+lemma sobolevNormAux_lt_top (h : HasWTaylorSeriesUpTo Ω f g k p μ) :
+    sobolevNormAux Ω g k p μ < ∞ := by
+  simp_rw [sobolevNormAux, eLpNorm.eq_1 (μ := .count)]
+  have : ∀ l ≤ k, eLpNorm (g · l) p (μ.restrict Ω) < ∞ :=
+    fun l hl ↦ (h.memLp l (mod_cast hl)).eLpNorm_lt_top
+  split_ifs with h2 h3
+  · norm_cast
+    rw [Set.Finite.encard_eq_coe_toFinset_card (Set.toFinite _)]
+    apply ENat.coe_lt_top
+  · simp_rw [enorm_eq_self, ← Finset.sup_univ_eq_ciSup]
+    rw [Finset.sup_fin_univ fun i ↦ eLpNorm (g · i) p _]
+    simp_rw [Finset.sup_lt_iff ENNReal.zero_lt_top, Finset.mem_range, Nat.lt_add_one_iff,
+      eq_true_intro this]
+  · refine (ENNReal.rpow_lt_top_iff_of_pos ?_).mpr ?_
+    · rw [inv_pos]
+      exact ENNReal.toReal_pos h2 h3
+    · apply ENNReal.sum_lt_top.mpr
+      simp_rw [Finset.mem_univ, enorm_eq_self, forall_const, Fin.forall_iff, Nat.lt_add_one_iff]
+      exact fun i hi ↦ (ENNReal.rpow_lt_top_iff_of_pos (ENNReal.toReal_pos h2 h3)).mpr (this i hi)
 
 open Classical Finset in
 variable (Ω) in
 /-- This definition is different than in (most) textbooks, since we use the `L^p`-norm of the total
 derivative instead of the `L^p`-norm of partial derivatives. These definitions are equivalent
-for finite dimensional `E` and `k < ∞` [argument todo]. -/
-def sobolevNorm (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : ℝ≥0∞ :=
+for finite dimensional `E` and `k < ∞` [argument todo].
+Note that for `k = ∞` the space `W^{∞, p}` is not normable in general,
+so we only define this for `k : ℕ`. -/
+def sobolevNorm (f : E → F) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) : ℝ≥0∞ :=
   if h : MemSobolev Ω f k p μ then sobolevNormAux Ω h.choose k p μ else ∞
 
 lemma sobolevNorm_eq_sobolevNormAux (h : HasWTaylorSeriesUpTo Ω f g k p μ) :
     sobolevNorm Ω f k p μ = sobolevNormAux Ω g k p μ := by
   have : MemSobolev Ω f k p μ := ⟨g, h⟩
   rw [sobolevNorm, dif_pos this]
-  exact sobolevNormAux_congr (this.choose_spec.unique h .rfl)
+  exact sobolevNormAux_congr fun m hm ↦ this.choose_spec.unique h .rfl (mod_cast hm)
 
-
-lemma sobolevNorm_lt_top_iff : sobolevNorm Ω f k p μ < ∞ ↔ MemSobolev Ω f k p μ := by sorry
+lemma sobolevNorm_lt_top_iff : sobolevNorm Ω f k p μ < ∞ ↔ MemSobolev Ω f k p μ := by
+  refine ⟨fun h ↦ ?_, fun ⟨g, hg⟩ ↦ ?_⟩
+  · simp [sobolevNorm] at h
+    split_ifs at h with h'
+    · exact h'
+    · contradiction
+  simp_rw [sobolevNorm_eq_sobolevNormAux hg, sobolevNormAux_lt_top hg]
 
 alias ⟨_, MemSobolev.sobolevNorm_lt_top⟩ := sobolevNorm_lt_top_iff
 
 lemma sobolevNorm_congr (h : f =ᵐ[μ.restrict Ω] f') :
     sobolevNorm Ω f k p μ = sobolevNorm Ω f' k p μ := by
-  sorry
+  rw [sobolevNorm]
+  split_ifs with h2
+  · rw [sobolevNorm, dif_pos (h2.congr h)]
+    refine sobolevNormAux_congr fun m hm ↦ ?_
+    exact h2.choose_spec.unique (h2.congr h).choose_spec h (mod_cast hm)
+  · rw [sobolevNorm, dif_neg]
+    rwa [memSobolev_congr h.symm]
 
 lemma sobolevNorm_zero : sobolevNorm Ω (0 : E → F) k p μ = 0 := by
-  sorry
+  simp +contextual [sobolevNorm_eq_sobolevNormAux .zero, sobolevNormAux, PiLp.instENorm_enorm,
+    ENNReal.toReal_pos_iff, pos_iff_ne_zero, lt_top_iff_ne_top]
 
 lemma sobolevNorm_measure_zero : sobolevNorm Ω f k p 0 = 0 := by
   sorry
@@ -537,9 +611,17 @@ lemma sobolevNorm_neg :
     sobolevNorm Ω (-f) k p μ = sobolevNorm Ω f k p μ := by
   sorry
 
-lemma sobolevNorm_add_le (hf : AEStronglyMeasurable f μ) (hf' : AEStronglyMeasurable f' μ) :
+lemma sobolevNorm_add_le [IsLocallyFiniteMeasure (μ.restrict Ω)] [Fact (1 ≤ p)] :
     sobolevNorm Ω (f + f') k p μ ≤ sobolevNorm Ω f k p μ + sobolevNorm Ω f' k p μ := by
-  sorry
+  by_cases hf : MemSobolev Ω f k p μ
+  swap; simp [sobolevNorm, hf]
+  by_cases hf' : MemSobolev Ω f' k p μ
+  swap; simp [sobolevNorm, hf']
+  obtain ⟨g, hg⟩ := hf
+  obtain ⟨g', hg'⟩ := hf'
+  rw [sobolevNorm_eq_sobolevNormAux hg, sobolevNorm_eq_sobolevNormAux hg',
+    sobolevNorm_eq_sobolevNormAux (hg.add hg')]
+
 
 lemma eLpNorm_le_sobolevNorm : eLpNorm f p (μ.restrict Ω) ≤ sobolevNorm Ω f k p μ := by
   sorry
@@ -676,10 +758,6 @@ theorem mem_sobolev_iff_memSobolev {f : E →ₘ[μ.restrict Ω] F} :
 
 alias ⟨_, _root_.MemSobolev.mem_sobolev ⟩ := mem_sobolev_iff_memSobolev
 
-theorem mem_sobolev_iff_sobolevNorm_lt_top {f : E →ₘ[μ.restrict Ω] F} :
-    f ∈ Sobolev Ω F k p μ ↔ sobolevNorm Ω f k p μ < ∞ := by
-  rw [mem_sobolev_iff_memSobolev, sobolevNorm_lt_top_iff]
-
 -- protected theorem antitone [IsFiniteMeasure μ] {p q : ℝ≥0∞} (hpq : p ≤ q) :
 --     Sobolev Ω F k q μ ≤ Sobolev Ω F k p μ :=
 --   fun f hf => (MemSobolev.mono_exponent ⟨f.aestronglyMeasurable, hf⟩ hpq).2
@@ -701,13 +779,6 @@ theorem toSobolev_coeFn (f : Sobolev Ω F k p μ) (hf : MemSobolev Ω f k p μ) 
 
 theorem memSobolev (f : Sobolev Ω F k p μ) : MemSobolev Ω f k p μ :=
   f.prop
-
-theorem sobolevNorm_lt_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ < ∞ :=
-  (memSobolev f).sobolevNorm_lt_top
-
-@[aesop (rule_sets := [finiteness]) safe apply]
-theorem sobolevNorm_ne_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ ≠ ∞ :=
-  (sobolevNorm_lt_top f).ne
 
 @[fun_prop]
 protected theorem stronglyMeasurable (f : Sobolev Ω F k p μ) : StronglyMeasurable f :=
@@ -733,6 +804,21 @@ theorem coeFn_sub (f g : Sobolev Ω F k p μ) : ⇑(f - g) =ᵐ[μ.restrict Ω] 
 theorem const_mem_sobolev (c : F) [IsFiniteMeasure μ] :
     AEEqFun.const E c ∈ Sobolev Ω F k p μ :=
   (MemSobolev.const c).aeeqFunMk.mem_sobolev
+
+section norm
+/-! The Sobolev norm is only defined for `k < ∞` -/
+variable {k : ℕ}
+
+theorem sobolevNorm_lt_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ < ∞ :=
+  (memSobolev f).sobolevNorm_lt_top
+
+@[aesop (rule_sets := [finiteness]) safe apply]
+theorem sobolevNorm_ne_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ ≠ ∞ :=
+  (sobolevNorm_lt_top f).ne
+
+theorem mem_sobolev_iff_sobolevNorm_lt_top {f : E →ₘ[μ.restrict Ω] F} :
+    f ∈ Sobolev Ω F k p μ ↔ sobolevNorm Ω f k p μ < ∞ := by
+  rw [mem_sobolev_iff_memSobolev, sobolevNorm_lt_top_iff]
 
 instance instNorm : Norm (Sobolev Ω F k p μ) where norm f := (sobolevNorm Ω f k p μ).toReal
 
@@ -811,7 +897,6 @@ theorem norm_zero : ‖(0 : Sobolev Ω F k p μ)‖ = 0 :=
 
 @[simp]
 theorem norm_measure_zero (f : Sobolev Ω F k p 0) : ‖f‖ = 0 := by
-  -- Squeezed for performance reasons
   simp_rw [norm_def, sobolevNorm_measure_zero, ENNReal.toReal_zero]
 
 theorem eq_zero_iff_aeEq_zero {f : Sobolev Ω F k p μ} : f = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
@@ -849,6 +934,7 @@ instance instNormedAddCommGroup : NormedAddCommGroup (Sobolev Ω F k p μ) :=
     edist := edist
     edist_dist := Sobolev.edist_dist }
 
+end norm
 end Sobolev
 
 /-
