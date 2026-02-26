@@ -1180,6 +1180,7 @@ open Lean
 /-- Given proofs
 - that `a` is a natural number `na`;
 - that `b` is a nonnegative rational number `nb / db`;
+
 returns a tuple of
 - a natural number `r` (result);
 - the same number, as an expression;
