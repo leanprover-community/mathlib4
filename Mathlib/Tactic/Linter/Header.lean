@@ -426,6 +426,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   match afterImports with
     | none => return
     | some (.node _ ``Lean.Parser.Command.moduleDoc _) => return
+    | some (.node _ ``Lean.Parser.Command.eoi _) => return
     | some rest =>
     Linter.logLint linter.style.header rest
       m!"The module doc-string for a file should be the first command after the imports.\n\
