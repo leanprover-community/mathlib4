@@ -67,14 +67,27 @@ instance : AddCommGroup (H ⋊⁅ψ⁆ G) := toProd.addCommGroup
 @[simp] lemma toProd_sub (x y : H ⋊⁅ψ⁆ G) : (x - y).toProd = x.toProd - y.toProd := rfl
 @[simp] lemma toProd_neg (x : H ⋊⁅ψ⁆ G) : (-x).toProd = -x.toProd := rfl
 
-instance : Module R (H ⋊⁅ψ⁆ G) := by
-  unfold SemiDirectSum
-  infer_instance
+instance : Module R (H ⋊⁅ψ⁆ G) := toProd.module R
 
+@[simp] lemma toProd_smul (t : R) (x : H ⋊⁅ψ⁆ G) : (t • x).toProd = t • x.toProd := rfl
 
 instance : Bracket (H ⋊⁅ψ⁆ G) (H ⋊⁅ψ⁆ G) where
-  bracket x y := (⁅x.1, y.1⁆ + (ψ x.2) y.1 - (ψ y.2) x.1, ⁅x.2, y.2⁆)
+  bracket x y := toProd.symm
+    (⁅x.toProd.1, y.toProd.1⁆ + ψ x.toProd.2 y.toProd.1 - ψ y.toProd.2 x.toProd.1,
+     ⁅x.toProd.2, y.toProd.2⁆)
 
+lemma lie_def (x y : H ⋊⁅ψ⁆ G) :
+    ⁅x, y⁆ = toProd.symm
+      (⁅x.toProd.1, y.toProd.1⁆ + ψ x.toProd.2 y.toProd.1 - ψ y.toProd.2 x.toProd.1,
+       ⁅x.toProd.2, y.toProd.2⁆) :=
+  rfl
+
+@[simp]
+lemma toProd_lie (x y : H ⋊⁅ψ⁆ G) :
+    toProd ⁅x, y⁆ =
+      (⁅x.toProd.1, y.toProd.1⁆ + ψ x.toProd.2 y.toProd.1 - ψ y.toProd.2 x.toProd.1,
+       ⁅x.toProd.2, y.toProd.2⁆) := by
+  simp [lie_def]
 
 instance : LieRing (H ⋊⁅ψ⁆ G) where
   add_lie _ _ _ := by
