@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.FieldTheory.Galois.IsGaloisGroup
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
