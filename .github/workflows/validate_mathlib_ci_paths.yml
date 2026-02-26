@@ -1,3 +1,10 @@
+# Prevent CI breakages caused by stale or mistyped `CI_SCRIPTS_DIR` paths
+# in workflow files by validating references against a fresh checkout of
+# `leanprover-community/mathlib-ci`.
+# On workflow changes, this job scans `.github/workflows/*.{yml,yaml}`
+# for `$CI_SCRIPTS_DIR/...` and `${CI_SCRIPTS_DIR}/...` literals (excluding comments
+# and this validator file), then fails if any referenced path is missing or escapes
+# the checked out scripts directory.
 name: Validate mathlib-ci script paths
 
 on:
