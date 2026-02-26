@@ -34,7 +34,7 @@ open derangements Equiv Fintype
 
 variable {α : Type*} [DecidableEq α] [Fintype α]
 
-instance : DecidablePred (derangements α) := fun _ => Fintype.decidableForallFintype
+instance : DecidablePred (· ∈ derangements α) := fun _ => Fintype.decidableForallFintype
 
 instance : Fintype (derangements α) :=
   inferInstanceAs <| Fintype { f : Perm α | ∀ x : α, f x ≠ x }
@@ -44,7 +44,6 @@ theorem card_derangements_invariant {α β : Type*} [Fintype α] [DecidableEq α
     [DecidableEq β] (h : card α = card β) : card (derangements α) = card (derangements β) :=
   Fintype.card_congr (Equiv.derangementsCongr <| equivOfCardEq h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_derangements_fin_add_two (n : ℕ) :
     card (derangements (Fin (n + 2))) =
       (n + 1) * card (derangements (Fin n)) + (n + 1) * card (derangements (Fin (n + 1))) := by

@@ -107,7 +107,7 @@ lemma FamilyOfElements.ext {R : Presieve X} {x y : R.FamilyOfElements P}
 `R₁`.
 -/
 def FamilyOfElements.restrict {R₁ R₂ : Presieve X} (h : R₁ ≤ R₂) :
-    FamilyOfElements P R₂ → FamilyOfElements P R₁ := fun x _ f hf => x f (h _ hf)
+    FamilyOfElements P R₂ → FamilyOfElements P R₁ := fun x _ f hf => x f (h _ _ hf)
 
 /-- The image of a family of elements by a morphism of presheaves. -/
 def FamilyOfElements.map (p : FamilyOfElements P R) (φ : P ⟶ Q) :
