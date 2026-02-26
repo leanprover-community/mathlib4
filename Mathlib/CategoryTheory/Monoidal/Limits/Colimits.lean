@@ -41,10 +41,6 @@ section
 
 variable {F₁ : J₁ ⥤ C} {F₂ : J₂ ⥤ C} {c₁ : Cocone F₁} {c₂ : Cocone F₂}
 
-lemma test :(Functor.uncurry.obj
-      ((((Functor.whiskeringLeft₂ C).obj F₁).obj F₂).obj (curriedTensor C)))  =
-      externalProduct F₁ F₂
-      := rfl
 variable (c₁ c₂) in
 /-- The external tensor product of two cocones. -/
 abbrev Cocone.tensor₂ :
