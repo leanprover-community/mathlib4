@@ -32,7 +32,7 @@ namespace PointwiseConvergenceCLM
 
 section NormedSpace
 
-variable [NormedAddCommGroup F] [NormedSpace 𝕜₂ F]
+variable [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜₂ F]
 
 /-- The family of seminorms that induce the topology of pointwise convergence, namely `‖A x‖` for
 all `x : E`. -/
@@ -87,7 +87,7 @@ end Tendsto
 section ContinuousLinearMap
 
 variable [AddCommGroup D] [TopologicalSpace D] [Module 𝕜₃ D]
-  [NormedAddCommGroup G] [NormedSpace 𝕜₂ G]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜₂ G]
 
 open NNReal ContinuousLinearMap
 

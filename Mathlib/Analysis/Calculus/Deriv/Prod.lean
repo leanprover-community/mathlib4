@@ -29,7 +29,7 @@ universe u v w
 open Topology Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type v} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f₁ : 𝕜 → F} {f₁' : F} {x : 𝕜} {s : Set 𝕜} {L : Filter (𝕜 × 𝕜)}
 
 section CartesianProduct
@@ -37,7 +37,7 @@ section CartesianProduct
 /-! ### Derivative of the Cartesian product of two functions -/
 
 
-variable {G : Type w} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {G : Type w} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f₂ : 𝕜 → G} {f₂' : G}
 
 theorem HasDerivAtFilter.prodMk (hf₁ : HasDerivAtFilter f₁ f₁' L)
@@ -62,7 +62,7 @@ section Pi
 
 /-! ### Derivatives of functions `f : 𝕜 → Π i, E i` -/
 
-variable {ι : Type*} {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
+variable {ι : Type*} {E' : ι → Type*} [∀ i, AddCommGroup (E' i)] [∀ i, NormedAddCommGroup (E' i)]
   [∀ i, NormedSpace 𝕜 (E' i)] {φ : 𝕜 → ∀ i, E' i} {φ' : ∀ i, E' i}
 
 @[simp]
@@ -110,7 +110,7 @@ as `Matrix.vecCons` is defeq to `Fin.cons`.
 section PiFin
 
 variable {n : Nat} {F' : Fin n.succ → Type*}
-variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
+variable [∀ i, AddCommGroup (F' i)] [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
 variable {φ : 𝕜 → F' 0} {φs : 𝕜 → ∀ i, F' (Fin.succ i)}
 
 theorem hasStrictDerivAt_finCons {φ' : Π i, F' i} :

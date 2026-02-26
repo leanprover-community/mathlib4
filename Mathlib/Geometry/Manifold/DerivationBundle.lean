@@ -24,7 +24,7 @@ case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 @[expose] public section
 
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (M : Type*)
   [TopologicalSpace M] [ChartedSpace H M] (n : WithTop ℕ∞)
 
@@ -122,7 +122,7 @@ theorem evalAt_apply (x : M) : evalAt x X f = (X f) x :=
 
 end Derivation
 
-variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+variable {I} {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M']
 
@@ -167,7 +167,7 @@ theorem fdifferential_apply (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDeri
 theorem hfdifferential_apply {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y)
     (v : PointDerivation I x) (g : C^∞⟮I', M'; 𝕜⟯) : 𝒅ₕ h v g = 𝒅 f x v g :=
   rfl
-variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*}
+variable {E'' : Type*} [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*}
   [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M'']
   [ChartedSpace H'' M'']
 

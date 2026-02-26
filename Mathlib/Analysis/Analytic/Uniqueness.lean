@@ -21,8 +21,8 @@ in `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`.
 public section
 
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open Set
 

@@ -81,7 +81,7 @@ end Basic
 
 namespace HasGaussianLaw
 
-variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
+variable [AddCommGroup E] [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
 
 set_option backward.isDefEq.respectTransparency false in
 lemma charFun_map_eq [InnerProductSpace ℝ E] (t : E) (hX : HasGaussianLaw X P) :
@@ -138,7 +138,7 @@ lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussian
     Integrable X P :=
   memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
 
-variable [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
+variable [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
 
 lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
   hX.map_of_measurable L (by fun_prop)
@@ -202,7 +202,7 @@ end Prod
 
 section Pi
 
-variable {E : ι → Type*} [∀ i, NormedAddCommGroup (E i)]
+variable {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
   [∀ i, NormedSpace ℝ (E i)] [∀ i, MeasurableSpace (E i)] [∀ i, BorelSpace (E i)]
   {X : (i : ι) → Ω → E i}
 
@@ -222,14 +222,14 @@ lemma toLp_pi (p : ℝ≥0∞) [Fact (1 ≤ p)] (hX : HasGaussianLaw (fun ω ↦
     HasGaussianLaw (fun ω ↦ toLp p (X · ω)) P :=
   hX.map_equiv (PiLp.continuousLinearEquiv p ℝ E).symm
 
-lemma sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+lemma sum {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (∑ i, X i) P := by
   convert hX.map (∑ i, .proj i)
   ext; simp
 
-lemma fun_sum {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+lemma fun_sum {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ ∑ i, X i ω) P := by

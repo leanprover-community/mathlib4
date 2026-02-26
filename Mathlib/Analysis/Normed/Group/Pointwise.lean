@@ -25,7 +25,7 @@ variable {E : Type*}
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] {s t : Set E}
+variable [Group E] [SeminormedGroup E] {s t : Set E}
 
 -- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsIsometricSMul E E]`
 @[to_additive]
@@ -55,7 +55,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] {δ : ℝ} {s : Set E} {x y : E}
+variable [CommGroup E] [SeminormedCommGroup E] {δ : ℝ} {s : Set E} {x y : E}
 
 section EMetric
 

@@ -38,7 +38,7 @@ open Filter TopologicalSpace Set
 section NormedField
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type v} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f : 𝕜 → F}
 variable {f' : F}
 variable {x : 𝕜}
@@ -243,7 +243,7 @@ section RealSpace
 
 open Metric
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E} {f' : E} {s : Set ℝ}
+variable {E : Type u} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E} {f' : E} {s : Set ℝ}
   {x r : ℝ}
 
 /-- If `f` has derivative `f'` within `s` at `x`, then for any `r > ‖f'‖` the ratio

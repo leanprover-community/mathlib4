@@ -41,8 +41,8 @@ open Set LinearMap Pointwise
 open scoped RealInnerProductSpace
 
 variable {R E F : Type*}
-  [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-  [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
+  [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
+  [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
   {s t : Set E} {x x₀ y : E}
 
 open Function
@@ -143,7 +143,7 @@ end ProperCone
 
 section Dual
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
+variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace ℝ H] (s t : Set H)
 
 open RealInnerProductSpace
 

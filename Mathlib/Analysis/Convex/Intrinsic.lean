@@ -215,7 +215,7 @@ end AddTorsor
 
 namespace AffineIsometry
 
-variable [NormedField 𝕜] [SeminormedAddCommGroup V] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V]
+variable [NormedField 𝕜] [SeminormedAddCommGroup V] [AddCommGroup W] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V]
   [NormedSpace 𝕜 W] [MetricSpace P] [PseudoMetricSpace Q] [NormedAddTorsor V P]
   [NormedAddTorsor W Q]
 

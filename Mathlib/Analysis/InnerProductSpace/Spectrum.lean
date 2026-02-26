@@ -60,7 +60,7 @@ self-adjoint operator, spectral theorem, diagonalization theorem
 @[expose] public section
 
 variable {𝕜 : Type*} [RCLike 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

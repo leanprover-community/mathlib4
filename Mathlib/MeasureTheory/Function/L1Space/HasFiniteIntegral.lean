@@ -36,7 +36,7 @@ open Topology ENNReal MeasureTheory NNReal
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
 
 variable {α β γ ε ε' ε'' : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
-variable [NormedAddCommGroup β] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
+variable [AddCommGroup β] [NormedAddCommGroup β] [AddCommGroup γ] [NormedAddCommGroup γ] [ENorm ε] [ENorm ε']
   [TopologicalSpace ε''] [AddMonoid ε''] [ESeminormedAddMonoid ε'']
 
 namespace MeasureTheory
@@ -448,7 +448,7 @@ section NormedSpace
 variable {𝕜 : Type*}
 
 @[fun_prop]
-theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
+theorem HasFiniteIntegral.smul [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β]
     (c : 𝕜) {f : α → β} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]
@@ -462,7 +462,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
 -- once such a typeclass exists.
 -- This will let us unify with `HasFiniteIntegral.smul` above.
 @[fun_prop]
-theorem HasFiniteIntegral.smul_enorm [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENormSMulClass 𝕜 ε'']
+theorem HasFiniteIntegral.smul_enorm [AddGroup 𝕜] [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENormSMulClass 𝕜 ε'']
     (c : 𝕜) {f : α → ε''} (hf : HasFiniteIntegral f μ) : HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]
   calc
@@ -510,7 +510,7 @@ end count
 
 section restrict
 
-variable {E : Type*} [NormedAddCommGroup E] {f : α → ε}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {f : α → ε}
 
 @[fun_prop]
 lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :

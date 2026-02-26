@@ -72,8 +72,8 @@ noncomputable section
 section Manifold
 
 variable {E F H M : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   [TopologicalSpace M] [ChartedSpace H M] [IsManifold I ∞ M] [SigmaCompactSpace M] [T2Space M]
 
@@ -116,8 +116,8 @@ end Manifold
 section NormedSpace
 
 variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 variable {f : E → F} {ε : E → ℝ}
 

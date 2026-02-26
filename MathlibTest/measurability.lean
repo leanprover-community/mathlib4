@@ -89,7 +89,7 @@ example [AddCommMonoid β] [MeasurableAdd₂ β] {s : Finset ℕ} {F : ℕ → �
   measurability
 
 -- even with many assumptions, the tactic is not trapped by a bad lemma
-example [TopologicalSpace α] [BorelSpace α] [NormedAddCommGroup β] [BorelSpace β]
+example [TopologicalSpace α] [BorelSpace α] [AddCommGroup β] [NormedAddCommGroup β] [BorelSpace β]
     [MeasurableAdd₂ β] [MeasurableSub₂ β] {s : Finset ℕ} {F : ℕ → α → β}
     (hF : ∀ i, Measurable (F i)) : AEMeasurable (∑ i ∈ s, (fun x => F (i+1) x - F i x)) μ := by
   measurability
@@ -99,7 +99,7 @@ open scoped RealInnerProductSpace
 /- We use a general inner product space to prevent the inner product from being simplified to
 multiplication. An earlier version of the tactic failed on the following examples without this
 simplification. -/
-variable {E : Type*} (v : E) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
+variable {E : Type*} (v : E) [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
   [OpensMeasurableSpace E] [SecondCountableTopology E]
 
 example : Measurable (fun x : E => Real.exp (2 * ⟪v, x⟫)) := by measurability

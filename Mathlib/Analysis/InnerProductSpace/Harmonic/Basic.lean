@@ -16,9 +16,9 @@ This file defines harmonic functions on real, finite-dimensional, inner product 
 @[expose] public section
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f f₁ f₂ : E → F}
   {x : E} {s t : Set E} {c : ℝ}
 

@@ -93,7 +93,7 @@ theorem volume_eq_smul_haarAddCircle :
     (volume : Measure (AddCircle T)) = ENNReal.ofReal T • (@haarAddCircle T _) :=
   rfl
 
-lemma integral_haarAddCircle {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integral_haarAddCircle {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : AddCircle T → E} : ∫ t, f t ∂haarAddCircle = T⁻¹ • ∫ t, f t := by
   rw [volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     inv_smul_smul₀ hT.out.ne']
@@ -293,7 +293,7 @@ variable [hT : Fact (0 < T)]
 
 section fourierCoeff
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `n`-th Fourier coefficient of a function `AddCircle T → E`, for `E` a complete normed
 `ℂ`-vector space, defined as the integral over `AddCircle T` of `fourier (-n) t • f t`. -/

@@ -22,7 +22,7 @@ open scoped Manifold ContDiff
 section ContMDiffRing
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {n : WithTop ℕ∞}
 
 -- See note [Design choices about smooth algebraic structures]
 /-- A `C^n` (semi)ring is a (semi)ring `R` where addition and multiplication are `C^n`.
@@ -61,7 +61,7 @@ instance (priority := 100) instFieldContMDiffRing
       exact contDiff_mul }
 
 variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ChartedSpace H R] (I : ModelWithCorners 𝕜 E H)
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ChartedSpace H R] (I : ModelWithCorners 𝕜 E H)
   (n : WithTop ℕ∞)
 
 /-- A `C^n` (semi)ring is a topological (semi)ring. This is not an instance for technical reasons,

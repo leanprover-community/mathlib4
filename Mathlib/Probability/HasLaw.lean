@@ -110,7 +110,7 @@ lemma IndepFun.hasLaw_fun_mul {M : Type*} [Monoid M] {mM : MeasurableSpace M} [M
     (hX : HasLaw X μ P) (hY : HasLaw Y ν P) (hXY : X ⟂ᵢ[P] Y) :
     HasLaw (fun ω ↦ X ω * Y ω) (μ ∗ₘ ν) P := hXY.hasLaw_mul hX hY
 
-lemma HasLaw.integral_comp {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma HasLaw.integral_comp {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     {X : Ω → 𝓧} (hX : HasLaw X μ P) {f : 𝓧 → E} (hf : AEStronglyMeasurable f μ) :
     P[f ∘ X] = ∫ x, f x ∂μ := by
   rw [← hX.map_eq, integral_map hX.aemeasurable, Function.comp_def]
@@ -121,7 +121,7 @@ lemma HasLaw.lintegral_comp {X : Ω → 𝓧} (hX : HasLaw X μ P) {f : 𝓧 →
   rw [← hX.map_eq, lintegral_map' _ hX.aemeasurable]
   rwa [hX.map_eq]
 
-lemma HasLaw.integral_eq {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma HasLaw.integral_eq {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     [SecondCountableTopology E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
     {X : Ω → E} (hX : HasLaw X μ P) : P[X] = ∫ x, x ∂μ := by
   rw [← Function.id_comp X, hX.integral_comp aestronglyMeasurable_id]

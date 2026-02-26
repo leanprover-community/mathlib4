@@ -70,9 +70,9 @@ open Set Filter TopologicalSpace ENNReal
 
 namespace MeasureTheory
 
-variable {α E F F' G 𝕜 : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup F'] [NormedSpace ℝ F']
-  [NormedAddCommGroup G] {m : MeasurableSpace α} {μ : Measure α}
+variable {α E F F' G 𝕜 : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace ℝ F']
+  [AddCommGroup G] [NormedAddCommGroup G] {m : MeasurableSpace α} {μ : Measure α}
 
 namespace L1
 
@@ -226,8 +226,8 @@ theorem setToL1S_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F}
 section Order
 
 variable {G'' G' : Type*}
-  [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
-  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [AddCommGroup G'] [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
+  [AddCommGroup G''] [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
   {T : Set α → G'' →L[ℝ] G'}
 
 theorem setToL1S_mono_left {T T' : Set α → E →L[ℝ] G''} (hTT' : ∀ s x, T s x ≤ T' s x)
@@ -349,8 +349,8 @@ theorem setToL1SCLM_const [IsFiniteMeasure μ] {T : Set α → E →L[ℝ] F} {C
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
-  [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
+  [AddCommGroup G''] [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [AddCommGroup G'] [NormedAddCommGroup G'] [PartialOrder G'] [IsOrderedAddMonoid G'] [NormedSpace ℝ G']
 
 theorem setToL1SCLM_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -522,9 +522,9 @@ theorem setToL1_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T C
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
+  [AddCommGroup G''] [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G''] [CompleteSpace G'']
-  [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
+  [AddCommGroup G'] [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
 theorem setToL1_mono_left' [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')
@@ -796,9 +796,9 @@ theorem setToFun_const [IsFiniteMeasure μ] (hT : DominatedFinMeasAdditive μ T 
 section Order
 
 variable {G' G'' : Type*}
-  [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
+  [AddCommGroup G''] [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
   [NormedSpace ℝ G''] [CompleteSpace G'']
-  [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
+  [AddCommGroup G'] [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
 theorem setToFun_mono_left' [OrderClosedTopology G''] {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')

@@ -68,8 +68,8 @@ open scoped Topology Manifold ContDiff
 
 noncomputable section
 
-variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {F : Type uF} [NormedAddCommGroup F] [NormedSpace ℝ F] {H : Type uH}
+variable {ι : Type uι} {E : Type uE} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {F : Type uF} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] {H : Type uH}
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) {M : Type uM} [TopologicalSpace M]
   [ChartedSpace H M]
 
@@ -297,7 +297,7 @@ end SmoothPartitionOfUnity
 namespace BumpCovering
 
 -- Repeat variables to drop `[FiniteDimensional ℝ E]` and `[IsManifold I ∞ M]`
-theorem contMDiff_toPartitionOfUnity {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem contMDiff_toPartitionOfUnity {E : Type uE} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM}
     [TopologicalSpace M] [ChartedSpace H M] {s : Set M} (f : BumpCovering ι M s)
     (hf : ∀ i, ContMDiff I 𝓘(ℝ) ∞ (f i)) (i : ι) : ContMDiff I 𝓘(ℝ) ∞ (f.toPartitionOfUnity i) :=
@@ -600,7 +600,7 @@ Then there exists a global $C^n$ smooth section `s : Cₛ^n⟮I_M; F_fiber, V⟯
 `s x ∈ t x` for all `x : M`.
 -/
 theorem exists_contMDiffSection_forall_mem_convex_of_local
-    {F_fiber : Type*} [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
+    {F_fiber : Type*} [AddCommGroup F_fiber] [NormedAddCommGroup F_fiber] [NormedSpace ℝ F_fiber]
     (V : M → Type*) [∀ x, AddCommGroup (V x)] [∀ x, TopologicalSpace (V x)] [∀ x, Module ℝ (V x)]
     [TopologicalSpace (TotalSpace F_fiber V)] [FiberBundle F_fiber V] [VectorBundle ℝ F_fiber V]
     (t : ∀ x, Set (V x)) (ht_conv : ∀ x, Convex ℝ (t x))

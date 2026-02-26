@@ -27,7 +27,7 @@ namespace Theorems100
 
 local notation "√" => Real.sqrt
 
-variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 set_option backward.isDefEq.respectTransparency false in

@@ -55,7 +55,7 @@ absolutely continuous
 
 @[expose] public section
 
-variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddCommGroup F]
+variable {X F : Type*} [PseudoMetricSpace X] [AddCommGroup F] [SeminormedAddCommGroup F]
 
 open Set Filter Function MeasureTheory
 

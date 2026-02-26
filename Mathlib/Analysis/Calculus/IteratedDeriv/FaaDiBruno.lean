@@ -40,7 +40,7 @@ open scoped ContDiff
 section vcomp
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {g : E → F} {f : 𝕜 → E} {s : Set 𝕜} {t : Set E} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
 
 theorem iteratedDerivWithin_vcomp_eq_sum_orderedFinpartition
@@ -128,7 +128,7 @@ end vcomp
 
 section scomp
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {g : 𝕜 → E} {f : 𝕜 → 𝕜} {s : Set 𝕜} {t : Set 𝕜} {x : 𝕜} {n : WithTop ℕ∞} {i : ℕ}
 
 theorem iteratedDerivWithin_scomp_eq_sum_orderedFinpartition

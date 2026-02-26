@@ -623,7 +623,7 @@ theorem lintegral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) →
     ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ :=
   lintegral_traj₀ x₀ mf.aemeasurable
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 theorem integrable_traj {a b : ℕ} (hab : a ≤ b) {f : (Π n, X n) → E}
     (x₀ : Π i : Iic a, X i) (i_f : Integrable f (traj κ a x₀)) :

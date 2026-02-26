@@ -296,7 +296,7 @@ lemma isBigO_linear_add_const_vec (z : ℍ) (a b : ℤ) :
   (aux_isBigO_linear z a b).trans (vec_add_const_isTheta a b).isBigO
 
 /-- If a function `ℤ² → ℂ` is `O (‖n‖ ^ a)⁻¹` for `2 < a`, then the function is summable. -/
-lemma summable_of_isBigO_rpow_norm {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+lemma summable_of_isBigO_rpow_norm {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [CompleteSpace E]
     {f : (Fin 2 → ℤ) → E} {a : ℝ} (hab : 2 < a)
     (hf : f =O[cofinite] fun n ↦ (‖n‖ ^ a)⁻¹) : Summable f :=
   summable_of_isBigO

@@ -29,8 +29,8 @@ noncomputable section
 open RCLike Real Filter Topology ComplexConjugate Finsupp
 open LinearMap (BilinForm)
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-  [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+  [AddCommGroup F] [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace F :=

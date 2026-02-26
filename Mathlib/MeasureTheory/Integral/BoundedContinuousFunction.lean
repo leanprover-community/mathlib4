@@ -78,7 +78,7 @@ section BochnerIntegral
 
 variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
 variable (μ : Measure X)
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma lintegral_nnnorm_le (f : X →ᵇ E) :

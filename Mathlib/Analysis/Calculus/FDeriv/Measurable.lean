@@ -91,8 +91,8 @@ open scoped Topology
 
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 theorem measurable_apply₂ [MeasurableSpace E] [OpensMeasurableSpace E]
     [SecondCountableTopologyEither (E →L[𝕜] F) E]
@@ -104,8 +104,8 @@ end ContinuousLinearMap
 section fderiv
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F} (K : Set (E →L[𝕜] F))
 
 namespace FDerivMeasurableAux
@@ -422,7 +422,7 @@ end fderiv
 
 section RightDeriv
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable {f : ℝ → F} (K : Set F)
 
 namespace RightDerivMeasurableAux
@@ -781,8 +781,8 @@ then the proofs in the previous sections adapt readily, as the set `A` defined a
 that the differentiability set `D` is measurable. -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [LocallyCompactSpace E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {α : Type*} [TopologicalSpace α]
   {f : α → E → F}
 

@@ -108,7 +108,7 @@ to compute bordism groups; for the definition, this makes no difference.)
 
 This is parametrised on the universe `M` lives in; ensure `u` is the first universe argument. -/
 structure SingularManifold.{u} (X : Type*) [TopologicalSpace X] (k : WithTop ℕ∞)
-    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {E H : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
   /-- The manifold `M` of a singular `n`-manifold `(M, f)` -/
   M : Type u
@@ -128,7 +128,7 @@ namespace SingularManifold
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   {k : WithTop ℕ∞}
-  {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {E H M : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] {I : ModelWithCorners ℝ E H} [TopologicalSpace M] [ChartedSpace H M]
   [IsManifold I k M] [CompactSpace M] [BoundarylessManifold I M]
 
@@ -145,7 +145,7 @@ instance {s : SingularManifold X k I} : BoundarylessManifold I s.M := s.boundary
 /-- A map of topological spaces induces a corresponding map of singular manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
 def map.{u} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {k : WithTop ℕ∞}
-    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    {E H : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     [TopologicalSpace H] {I : ModelWithCorners ℝ E H} (s : SingularManifold.{u} X k I)
     {φ : X → Y} (hφ : Continuous φ) : SingularManifold.{u} Y k I where
   M := s.M
@@ -167,7 +167,7 @@ lemma map_comp (s : SingularManifold X k I)
     ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
   simp [Function.comp_def]
 
-variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [TopologicalSpace H']
+variable {E' H' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace ℝ E'] [TopologicalSpace H']
 
 variable (M I) in
 /-- If `M` is a closed `C^k` manifold, it is a singular manifold over itself. -/

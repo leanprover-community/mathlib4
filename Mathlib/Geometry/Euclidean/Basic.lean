@@ -54,7 +54,7 @@ Euclidean affine spaces.
 
 
 variable {V : Type*} {P : Type*}
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 /-- The inner product of two vectors given with `weightedVSub`, in

@@ -58,15 +58,15 @@ open scoped Topology Manifold ContDiff
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- Prerequisite typeclasses to say that `M` is a manifold over the pair `(E, H)`
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- Prerequisite typeclasses to say that `M'` is a manifold over the pair `(E', H')`
   {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   -- Prerequisite typeclasses to say that `M''` is a manifold over the pair `(E'', H'')`
   {E'' : Type*}
-  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {e : OpenPartialHomeomorph M H}

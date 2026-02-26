@@ -20,8 +20,8 @@ analytic.
 
 @[expose] public section
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 open scoped Topology
 open Set Filter Asymptotics NNReal ENNReal
@@ -108,7 +108,7 @@ We show that continuous multilinear maps are continuously polynomial, and theref
 
 namespace ContinuousMultilinearMap
 
-variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
+variable {ι : Type*} {Em : ι → Type*} [∀ i, AddCommGroup (Em i)] [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 Em F) {x : Π i, Em i} {s : Set (Π i, Em i)}
 
 open FormalMultilinearSeries
@@ -146,7 +146,7 @@ We show that a continuous linear map into continuous multilinear maps is continu
 
 namespace ContinuousLinearMap
 
-variable {ι : Type*} {Em : ι → Type*} [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
+variable {ι : Type*} {Em : ι → Type*} [∀ i, AddCommGroup (Em i)] [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
   [Fintype ι] (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 Em F)
   {s : Set (G × (Π i, Em i))} {x : G × (Π i, Em i)}
 
@@ -201,8 +201,8 @@ end ContinuousLinearMap
 namespace ContinuousMultilinearMap
 
 variable {ι : Type*} {Em Fm : ι → Type*}
-  [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
-  [∀ i, NormedAddCommGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
+  [∀ i, AddCommGroup (Em i)] [∀ i, NormedAddCommGroup (Em i)] [∀ i, NormedSpace 𝕜 (Em i)]
+  [∀ i, AddCommGroup (Fm i)] [∀ i, NormedAddCommGroup (Fm i)] [∀ i, NormedSpace 𝕜 (Fm i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 Em (G →L[𝕜] F))
   {s : Set ((Π i, Em i) × G)} {x : (Π i, Em i) × G}
 

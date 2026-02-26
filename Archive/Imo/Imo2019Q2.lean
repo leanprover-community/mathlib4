@@ -65,7 +65,7 @@ open scoped Affine EuclideanGeometry Real
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable (V : Type*) (Pt : Type*)
-variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
+variable [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
 variable [NormedAddTorsor V Pt]
 
 namespace Imo2019Q2

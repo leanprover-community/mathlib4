@@ -25,7 +25,7 @@ open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ E F Fₗ : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup Fₗ] [NormedAddCommGroup Fₗ]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ]
@@ -35,7 +35,7 @@ namespace ContinuousLinearMap
 
 section Completeness
 
-variable {E' : Type*} [SeminormedAddCommGroup E'] [NormedSpace 𝕜 E'] [RingHomIsometric σ₁₂]
+variable {E' : Type*} [AddCommGroup E'] [SeminormedAddCommGroup E'] [NormedSpace 𝕜 E'] [RingHomIsometric σ₁₂]
 
 /-- Construct a bundled continuous (semi)linear map from a map `f : E → F` and a proof of the fact
 that it belongs to the closure of the image of a bounded set `s : Set (E →SL[σ₁₂] F)` under coercion

@@ -42,7 +42,7 @@ open scoped RealInnerProductSpace
 
 namespace ProbabilityTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
 
 /-- Covariance of a measure on an inner product space, as a continuous bilinear form. -/
@@ -108,7 +108,7 @@ lemma isPosSemidef_covarianceBilin :
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
 
-lemma covarianceBilin_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+lemma covarianceBilin_map {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology F] [CompleteSpace F]
     [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L : E →L[ℝ] F) (u v : F) :
     covarianceBilin (μ.map L) u v = covarianceBilin μ (L.adjoint u) (L.adjoint v) := by

@@ -22,7 +22,7 @@ open scoped ENNReal Topology
 
 namespace MeasureTheory
 
-variable {α E ε ε' : Type*} {m : MeasurableSpace α} [NormedAddCommGroup E]
+variable {α E ε ε' : Type*} {m : MeasurableSpace α} [AddCommGroup E] [NormedAddCommGroup E]
   [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε] [TopologicalSpace ε'] [AddCommMonoid ε'] [ESeminormedAddCommMonoid ε']
   {p : ℝ≥0∞} {q : ℝ} {μ : Measure α} {f g : α → ε}
 

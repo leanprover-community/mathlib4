@@ -65,9 +65,9 @@ open Module Real Set Filter RCLike Submodule Function Uniformity Topology NNReal
 noncomputable section
 
 variable {ι ι' 𝕜 : Type*} [RCLike 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-variable {F' : Type*} [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F' : Type*} [AddCommGroup F'] [NormedAddCommGroup F'] [InnerProductSpace ℝ F']
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -77,7 +77,7 @@ then `Π i, f i` is an inner product space as well. Since `Π i, f i` is endowed
 we use instead `PiLp 2 f` for the product space, which is endowed with the `L^2` norm.
 -/
 instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
-    [∀ i, NormedAddCommGroup (f i)] [∀ i, InnerProductSpace 𝕜 (f i)] :
+    [∀ i, AddCommGroup (f i)] [∀ i, NormedAddCommGroup (f i)] [∀ i, InnerProductSpace 𝕜 (f i)] :
     InnerProductSpace 𝕜 (PiLp 2 f) where
   inner x y := ∑ i, ⟪x i, y i⟫
   norm_sq_eq_re_inner x := by
@@ -96,7 +96,7 @@ instance PiLp.innerProductSpace {ι : Type*} [Fintype ι] (f : ι → Type*)
     show (∑ i : ι, ⟪r • x i, y i⟫ = conj r * ∑ i, ⟪x i, y i⟫) by
       simp only [Finset.mul_sum, inner_smul_left]
 
-theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, NormedAddCommGroup (f i)]
+theorem PiLp.inner_apply {ι : Type*} [Fintype ι] {f : ι → Type*} [∀ i, AddCommGroup (f i)] [∀ i, NormedAddCommGroup (f i)]
     [∀ i, InnerProductSpace 𝕜 (f i)] (x y : PiLp 2 f) : ⟪x, y⟫ = ∑ i, ⟪x i, y i⟫ :=
   rfl
 
@@ -495,14 +495,14 @@ lemma sum_sq_norm_inner_left (b : OrthonormalBasis ι 𝕜 E) (x : E) :
   rw [← inner_conj_symm, RCLike.norm_conj]
 
 open scoped RealInnerProductSpace in
-theorem sum_sq_inner_right {E : Type*} [NormedAddCommGroup E]
+theorem sum_sq_inner_right {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (x : E) :
     ∑ i : ι, ⟪b i, x⟫ ^ 2 = ‖x‖ ^ 2 := by
   rw [← b.sum_sq_norm_inner_right]
   simp
 
 open scoped RealInnerProductSpace in
-theorem sum_sq_inner_left {ι E : Type*} [NormedAddCommGroup E]
+theorem sum_sq_inner_left {ι E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [Fintype ι] (b : OrthonormalBasis ι ℝ E) (x : E) :
     ∑ i : ι, ⟪x, b i⟫ ^ 2 = ‖x‖ ^ 2 := by
   simp_rw [← b.sum_sq_inner_right, real_inner_comm]
@@ -547,17 +547,17 @@ lemma sum_rankOne_eq_id (b : OrthonormalBasis ι 𝕜 E) :
     ∑ i, InnerProductSpace.rankOne 𝕜 (b i) (b i) = .id 𝕜 E := by ext; simp [b.sum_repr']
 
 /-- Mapping an orthonormal basis along a `LinearIsometryEquiv`. -/
-protected def map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+protected def map {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) : OrthonormalBasis ι 𝕜 G where
   repr := L.symm.trans b.repr
 
 @[simp]
-protected theorem map_apply {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+protected theorem map_apply {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) (i : ι) : b.map L i = L (b i) :=
   rfl
 
 @[simp]
-protected theorem toBasis_map {G : Type*} [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+protected theorem toBasis_map {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
     (b : OrthonormalBasis ι 𝕜 E) (L : E ≃ₗᵢ[𝕜] G) :
     (b.map L).toBasis = b.toBasis.map L.toLinearEquiv :=
   rfl
@@ -634,7 +634,7 @@ end Singleton
 /-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
 `Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
 protected def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
-    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
     OrthonormalBasis ((i : η) × ι i) 𝕜 (PiLp 2 E) where
   repr := .trans
@@ -642,7 +642,7 @@ protected def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → 
       (.symm <| .piLpCurry 𝕜 2 fun _ _ => 𝕜)
 
 theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η → Type*}
-    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
     (Pi.orthonormalBasis B).toBasis =
       ((Pi.basis fun i : η ↦ (B i).toBasis).map (WithLp.linearEquiv 2 _ _).symm) := by ext; rfl
@@ -650,7 +650,7 @@ theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η �
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq η] {ι : η → Type*}
-    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
     (j : (i : η) × (ι i)) :
     Pi.orthonormalBasis B j = toLp _ (Pi.single _ (B j.fst j.snd)) := by
@@ -668,7 +668,7 @@ theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq 
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → Type*}
-    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) (x : (i : η) → E i)
     (j : (i : η) × (ι i)) :
     (Pi.orthonormalBasis B).repr (toLp 2 x) j = (B j.fst).repr (x j.fst) j.snd := rfl
@@ -797,7 +797,7 @@ instance OrthonormalBasis.instInhabited : Inhabited (OrthonormalBasis ι 𝕜 (E
 
 namespace OrthonormalBasis
 
-variable {E' : Type*} [Fintype ι'] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {E' : Type*} [Fintype ι'] [AddCommGroup E'] [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
     (b : OrthonormalBasis ι 𝕜 E) (b' : OrthonormalBasis ι' 𝕜 E') (e : ι ≃ ι')
 
 /-- The `LinearIsometryEquiv` which maps an orthonormal basis to another. This is a convenience
@@ -1128,7 +1128,7 @@ def OrthonormalBasis.fromOrthogonalSpanSingleton (n : ℕ) [Fact (finrank 𝕜 E
 
 section LinearIsometry
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [FiniteDimensional 𝕜 V]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [FiniteDimensional 𝕜 V]
 variable {S : Submodule 𝕜 V} {L : S →ₗᵢ[𝕜] V}
 
 open Module
@@ -1277,7 +1277,7 @@ end Matrix
 
 open ContinuousLinearMap LinearMap in
 theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike 𝕜]
-    [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
+    [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
     [Finite ι] [Fintype ι'] [DecidableEq ι'] (x : E) (y : F) (b : Module.Basis ι 𝕜 E)
     (b' : OrthonormalBasis ι' 𝕜 F) :
     (rankOne 𝕜 x y).toMatrix b'.toBasis b = .vecMulVec (b.repr x) (star (b'.repr y)) := by

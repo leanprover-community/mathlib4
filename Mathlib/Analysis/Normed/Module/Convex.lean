@@ -36,7 +36,7 @@ variable {E : Type*}
 open Metric Set
 
 section SeminormedAddCommGroup
-variable [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 variable {s : Set E}
 
 /-- The norm on a real normed space is convex on any convex set. See also `Seminorm.convexOn`
@@ -90,7 +90,7 @@ theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) 
   | coe r => simp [closedEBall_coe, convex_closedBall]
 
 open Pointwise in
-theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+theorem convexHull_sphere_eq_closedBall {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
     [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
     convexHull ℝ (sphere x r) = closedBall x r := by
   suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by

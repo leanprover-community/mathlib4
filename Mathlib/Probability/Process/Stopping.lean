@@ -1047,7 +1047,7 @@ theorem stoppedProcess_eq'' [LinearOrder ι] [LocallyFiniteOrderBot ι] [AddComm
 
 section StoppedValue
 
-variable [PartialOrder ι] {ℱ : Filtration ι m} [NormedAddCommGroup E]
+variable [PartialOrder ι] {ℱ : Filtration ι m} [AddCommGroup E] [NormedAddCommGroup E]
 
 theorem memLp_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, MemLp (u n) p μ)
     {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ WithTop.some '' s) :
@@ -1094,7 +1094,7 @@ end StoppedValue
 section StoppedProcess
 
 variable [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι] [FirstCountableTopology ι]
-  {ℱ : Filtration ι m} [NormedAddCommGroup E]
+  {ℱ : Filtration ι m} [AddCommGroup E] [NormedAddCommGroup E]
 
 theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀ n, MemLp (u n) p μ)
     (n : ι) {s : Finset ι} (hbdd : ∀ ω, τ ω < n → τ ω ∈ WithTop.some '' s) :
@@ -1302,7 +1302,7 @@ section Condexp
 
 
 variable [LinearOrder ι] {μ : Measure Ω} {ℱ : Filtration ι m} {τ σ : Ω → WithTop ι} {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {f : Ω → E}
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {f : Ω → E}
 
 theorem condExp_stopping_time_ae_eq_restrict_eq_of_countable_range [SigmaFiniteFiltration μ ℱ]
     (hτ : IsStoppingTime ℱ τ) (h_countable : (Set.range τ).Countable)

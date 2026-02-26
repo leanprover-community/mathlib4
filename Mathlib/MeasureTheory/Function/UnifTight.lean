@@ -44,7 +44,7 @@ namespace MeasureTheory
 
 open Set Filter Topology MeasureTheory NNReal ENNReal
 
-variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [AddCommGroup β] [NormedAddCommGroup β]
 
 section UnifTight
 

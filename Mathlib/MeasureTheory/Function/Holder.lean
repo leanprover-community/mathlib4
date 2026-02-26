@@ -37,7 +37,7 @@ section Bilinear
 
 variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
     {p q r : ENNReal} [hpqr : HolderTriple p q r] [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G]
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
     (B : E →L[𝕜] F →L[𝕜] G)
 
@@ -169,7 +169,7 @@ variable {α 𝕜' 𝕜 E : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
 section MulActionWithZero
 
-variable [NormedRing 𝕜] [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [MulActionWithZero 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- Heterogeneous scalar multiplication of `MeasureTheory.Lp` functions by `MeasureTheory.Lp`
 functions when the exponents satisfy `ENNReal.HolderTriple p q r`. -/
@@ -196,7 +196,7 @@ end MulActionWithZero
 
 section Module
 
-variable [NormedRing 𝕜] [NormedAddCommGroup E] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 protected lemma smul_add (f₁ f₂ : Lp 𝕜 p μ) (g : Lp E q μ) :
     (f₁ + f₂) • g = f₁ • g + f₂ • g := by

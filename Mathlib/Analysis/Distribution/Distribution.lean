@@ -145,7 +145,7 @@ open Set TopologicalSpace
 open scoped Distributions CompactConvergenceCLM
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
   {F' : Type*} [AddCommGroup F'] [Module ℝ F'] [TopologicalSpace F']
   {n k : ℕ∞}

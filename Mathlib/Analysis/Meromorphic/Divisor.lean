@@ -20,7 +20,7 @@ of divisors and of meromorphic functions to subsets of their domain of definitio
 @[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 open Filter Topology
 

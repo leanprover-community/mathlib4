@@ -22,7 +22,7 @@ public section
 open Complex Filter Function Metric Real Set Topology
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
   {f : ℂ → E} {R : ℝ} {c w : ℂ} {s : Set ℂ}
 
 /-!

@@ -25,7 +25,7 @@ section reflection
 open Submodule RCLike
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -116,14 +116,14 @@ theorem reflection_mem_subspace_eq_self {x : E} (hx : x ∈ K) : K.reflection x 
   (reflection_eq_self_iff x).mpr hx
 
 /-- Reflection in the `Submodule.map` of a subspace. -/
-theorem reflection_map_apply {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup E']
+theorem reflection_map_apply {E E' : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup E'] [NormedAddCommGroup E']
     [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') (K : Submodule 𝕜 E)
     [K.HasOrthogonalProjection] (x : E') :
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x = f (K.reflection (f.symm x)) := by
   simp [reflection_apply, starProjection_map_apply f K x]
 
 /-- Reflection in the `Submodule.map` of a subspace. -/
-theorem reflection_map {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup E']
+theorem reflection_map {E E' : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup E'] [NormedAddCommGroup E']
     [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') (K : Submodule 𝕜 E)
     [K.HasOrthogonalProjection] :
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) = f.symm.trans (K.reflection.trans f) :=

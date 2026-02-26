@@ -31,15 +31,15 @@ open scoped Manifold ContDiff
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare the prerequisites for a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
   -- declare the prerequisites for a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   -- declare the prerequisites for a charted space `M''` over the pair `(E'', H'')`.
   {E'' : Type*}
-  [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*} [TopologicalSpace M'']
 
 section ChartedSpace
@@ -298,7 +298,7 @@ lemma ContMDiff.piecewise
 /-- Given two `C^n` functions `f` and `g` from `ℝ` to a real manifold which coincide locally
 around a point `s`, then the piecewise function using `f` before `t` and `g` after is `C^n`. -/
 lemma ContMDiff.piecewise_Iic
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
     {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
     {f g : ℝ → M} {s : ℝ}
     (hf : ContMDiff 𝓘(ℝ) I n f) (hg : ContMDiff 𝓘(ℝ) I n g) (hfg : f =ᶠ[𝓝 s] g) :

@@ -103,9 +103,9 @@ open scoped uniformity Filter Topology
 
 section LimitsOfDerivatives
 
-variable {ι : Type*} {l : Filter ι} {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*}
+variable {ι : Type*} {l : Filter ι} {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {𝕜 : Type*}
   [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+  [NormedSpace 𝕜 E] {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -260,8 +260,8 @@ set_option backward.isDefEq.respectTransparency false in
 in fact for a fixed `y`, the difference quotients `‖z - y‖⁻¹ • (f_n z - f_n y)` converge
 _uniformly_ to `‖z - y‖⁻¹ • (g z - g y)` -/
 theorem difference_quotients_converge_uniformly
-    {E : Type*} [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
-    [NormedSpace 𝕜 E] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
+    [NormedSpace 𝕜 E] {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
     {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)
@@ -449,7 +449,7 @@ In this section, we provide `deriv` equivalents of the `fderiv` lemmas in the pr
 
 
 variable {ι : Type*} {l : Filter ι} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {G : Type*} [NormedAddCommGroup G]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G]
   [NormedSpace 𝕜 G] {f : ι → 𝕜 → G} {g : 𝕜 → G} {f' : ι → 𝕜 → G} {g' : 𝕜 → G} {x : 𝕜}
 
 /-- If our derivatives converge uniformly, then the Fréchet derivatives converge uniformly -/

@@ -42,9 +42,9 @@ open scoped unitInterval Topology NNReal
 open Asymptotics Filter Set
 
 variable {E F G : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
   {k l m : ℕ} {α β : I} {f : E → F} {a : E}
 
 /-- A map `f` is said to be $C^{k+(α)}$ at `a`, where `k` is a natural number and `0 ≤ α ≤ 1`,
@@ -199,7 +199,7 @@ theorem comp {g : F → G} (hg : ContDiffPointwiseHolderAt k α g (f a))
   hg.comp_of_differentiableAt a hf (.inl <| hg.differentiableAt hk)
 
 variable (a) in
-theorem comp₂_of_differentiableAt {H : Type*} [NormedAddCommGroup H] [NormedSpace ℝ H]
+theorem comp₂_of_differentiableAt {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace ℝ H]
     {g : F × G → H} {f₁ : E → F} {f₂ : E → G} (hg : ContDiffPointwiseHolderAt k α g (f₁ a, f₂ a))
     (hf₁ : ContDiffPointwiseHolderAt k α f₁ a) (hf₂ : ContDiffPointwiseHolderAt k α f₂ a)
     (hdiff : DifferentiableAt ℝ g (f₁ a, f₂ a) ∨

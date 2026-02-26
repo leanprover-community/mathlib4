@@ -48,10 +48,10 @@ noncomputable section
 open Set Filter Function
 open scoped Manifold Topology
 
-variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [TopologicalSpace H] [TopologicalSpace M] {n : WithTop ℕ∞}
   (f f' : OpenPartialHomeomorph M H)
-  {I : ModelWithCorners 𝕜 E H} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
+  {I : ModelWithCorners 𝕜 E H} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
   [TopologicalSpace M'] {I' : ModelWithCorners 𝕜 E' H'} {s t : Set M}
 
 section ExtendedCharts
@@ -750,7 +750,7 @@ theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChart
 section
 
 variable {G G' F F' N N' : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   [TopologicalSpace G] [TopologicalSpace N] [TopologicalSpace G'] [TopologicalSpace N']
   {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
   [ChartedSpace G N] [ChartedSpace G' N']
@@ -816,7 +816,7 @@ section Topology
 -- Let `M` be a topological manifold over the field 𝕜.
 variable
   {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 /-- A finite-dimensional manifold modelled on a locally compact field

@@ -424,13 +424,13 @@ example {α : Type*} [Fintype α] [Nonempty α] : 0 < Fintype.card α := by posi
 
 section Norms
 
-example [SeminormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
-example [NormedGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
-example [NormedGroup E] {a : E} (ha : a ≠ 1) : 0 < ‖a‖ := by positivity
+example [Group E] [SeminormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
+example [Group E] [NormedGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
+example [Group E] [NormedGroup E] {a : E} (ha : a ≠ 1) : 0 < ‖a‖ := by positivity
 
-example [SeminormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
-example [NormedAddGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
-example [NormedAddGroup E] {a : E} (ha : a ≠ 0) : 0 < ‖a‖ := by positivity
+example [AddGroup E] [SeminormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
+example [AddGroup E] [NormedAddGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
+example [AddGroup E] [NormedAddGroup E] {a : E} (ha : a ≠ 0) : 0 < ‖a‖ := by positivity
 
 example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
 example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
@@ -541,8 +541,8 @@ section Integral
 
 open MeasureTheory
 
-variable {D : Type*} [NormedAddCommGroup D] [NormedSpace ℝ D]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace D] [BorelSpace D]
+variable {D : Type*} [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace D] [BorelSpace D]
   (μ : Measure D)
 
 example (f : D → E) : 0 ≤ ∫ x, ‖f x‖ ∂μ := by positivity

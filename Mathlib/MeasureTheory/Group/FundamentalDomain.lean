@@ -80,7 +80,7 @@ variable {G H α β E : Type*}
 namespace IsFundamentalDomain
 
 variable [Group G] [Group H] [MulAction G α] [MeasurableSpace α] [MulAction H β] [MeasurableSpace β]
-  [NormedAddCommGroup E] {s t : Set α} {μ : Measure α}
+  [AddCommGroup E] [NormedAddCommGroup E] {s t : Set α} {μ : Measure α}
 
 /-- If for each `x : α`, exactly one of `g • x`, `g : G`, belongs to a measurable set `s`, then `s`
 is a fundamental domain for the action of `G` on `α`. -/

@@ -46,7 +46,7 @@ open InnerProductSpace RCLike LinearMap ContinuousLinearMap
 open scoped InnerProduct ComplexConjugate
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -71,7 +71,7 @@ theorem IsPositive.re_inner_nonneg_right {T : E →ₗ[𝕜] E} (hT : IsPositive
 
 section Complex
 
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
+variable {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
 
 theorem isPositive_iff_complex (T : E' →ₗ[ℂ] E') :
     IsPositive T ↔ ∀ x, (re ⟪T x, x⟫_ℂ : ℂ) = ⟪T x, x⟫_ℂ ∧ 0 ≤ re ⟪T x, x⟫_ℂ := by
@@ -418,7 +418,7 @@ theorem IsPositive.orthogonalProjection_comp {T : E →L[𝕜] E} (hT : T.IsPosi
 
 open scoped NNReal
 
-lemma antilipschitz_of_forall_le_inner_map {H : Type*} [NormedAddCommGroup H]
+lemma antilipschitz_of_forall_le_inner_map {H : Type*} [AddCommGroup H] [NormedAddCommGroup H]
     [InnerProductSpace 𝕜 H] (f : H →L[𝕜] H) {c : ℝ≥0} (hc : 0 < c)
     (h : ∀ x, ‖x‖ ^ 2 * c ≤ ‖⟪f x, x⟫_𝕜‖) : AntilipschitzWith c⁻¹ f := by
   refine f.antilipschitz_of_bound (K := c⁻¹) fun x ↦ ?_
@@ -441,7 +441,7 @@ lemma isUnit_of_forall_le_norm_inner_map [CompleteSpace E] (f : E →L[𝕜] E) 
   aesop
 
 section Complex
-variable {E' : Type*} [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
+variable {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [InnerProductSpace ℂ E']
 
 theorem isPositive_iff_complex (T : E' →L[ℂ] E') :
     IsPositive T ↔ ∀ x, (re ⟪T x, x⟫_ℂ : ℂ) = ⟪T x, x⟫_ℂ ∧ 0 ≤ re ⟪T x, x⟫_ℂ := by

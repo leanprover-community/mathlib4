@@ -42,8 +42,8 @@ noncomputable section
 open scoped NNReal ENNReal Topology
 open Filter Set
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-[NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+[AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace FormalMultilinearSeries
 

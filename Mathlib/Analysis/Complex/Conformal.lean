@@ -66,7 +66,7 @@ theorem isConformalMap_conj : IsConformalMap (conjLIE : ℂ →L[ℝ] ℂ) :=
 
 section ConformalIntoComplexNormed
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace ℂ E]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem isConformalMap_complex_linear {map : ℂ →L[ℂ] E} (nonzero : map ≠ 0) :
@@ -140,7 +140,7 @@ end ConformalIntoComplexPlane
 /-! ### Conformality of real-differentiable complex maps -/
 
 section Conformality
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {z : ℂ} {f : ℂ → E}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] {z : ℂ} {f : ℂ → E}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A real differentiable function of the complex plane into some complex normed space `E` is
@@ -182,7 +182,7 @@ section CauchyRiemann
 open Complex
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
   {f : ℂ → E} {x : ℂ} {s : Set ℂ}
 
 set_option backward.isDefEq.respectTransparency false in

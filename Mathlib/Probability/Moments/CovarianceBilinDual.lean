@@ -45,7 +45,7 @@ The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in th
 open MeasureTheory ProbabilityTheory Complex NormedSpace
 open scoped ENNReal NNReal Real Topology
 
-variable {E : Type*} [NormedAddCommGroup E] {mE : MeasurableSpace E} {μ : Measure E} {p : ℝ≥0∞}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {mE : MeasurableSpace E} {μ : Measure E} {p : ℝ≥0∞}
 
 namespace StrongDual
 

@@ -46,7 +46,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 namespace MeasureTheory
 
 variable {Ω E ι : Type*} [Preorder ι] {m0 : MeasurableSpace Ω} {μ : Measure Ω}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {f g : ι → Ω → E} {ℱ : Filtration ι m0}
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] {f g : ι → Ω → E} {ℱ : Filtration ι m0}
 
 /-- A family of functions `f : ι → Ω → E` is a martingale with respect to a filtration `ℱ` if `f`
 is strongly adapted with respect to `ℱ` and for all `i ≤ j`, `μ[f j | ℱ i] =ᵐ[μ] f i`. -/
@@ -311,7 +311,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E]
 
 section
 
-variable {F : Type*} [NormedAddCommGroup F] [PartialOrder F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [PartialOrder F] [NormedSpace ℝ F] [CompleteSpace F]
   [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
@@ -334,7 +334,7 @@ namespace Submartingale
 
 section
 
-variable {F : Type*} [NormedAddCommGroup F] [PartialOrder F] [IsOrderedAddMonoid F]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [PartialOrder F] [IsOrderedAddMonoid F]
   [NormedSpace ℝ F] [CompleteSpace F] [IsOrderedModule ℝ F]
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Submartingale f ℱ μ) :
@@ -493,7 +493,7 @@ theorem Martingale.eq_zero_of_predictable [SigmaFiniteFiltration μ 𝒢] {f : �
 
 section IsPredictable
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
 
 /-- A predictable submartingale is a.e. greater than or equal to its initial state.

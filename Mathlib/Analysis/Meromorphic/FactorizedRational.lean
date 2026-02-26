@@ -34,7 +34,7 @@ public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {U : Set 𝕜}
 
 open Filter Function Real Set

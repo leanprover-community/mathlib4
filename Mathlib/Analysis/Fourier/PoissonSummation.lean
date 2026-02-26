@@ -121,7 +121,7 @@ alias Real.tsum_eq_tsum_fourierIntegral := Real.tsum_eq_tsum_fourier
 
 section RpowDecay
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
 `fun x ↦ ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/

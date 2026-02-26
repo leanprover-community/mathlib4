@@ -65,7 +65,7 @@ end PseudoMetricSpace
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E]
+variable [AddCommGroup E] [NormedAddCommGroup E]
 
 lemma tendsto_measure_norm_gt_of_isTightMeasureSet (hS : IsTightMeasureSet S) :
     Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}) atTop (𝓝 0) := by

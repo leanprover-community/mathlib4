@@ -51,7 +51,7 @@ open TopologicalSpace
 open Filter hiding prod_eq map
 
 variable {α β E : Type*} [MeasurableSpace α] [MeasurableSpace β] {μ : Measure α} {ν : Measure β}
-variable [NormedAddCommGroup E]
+variable [AddCommGroup E] [NormedAddCommGroup E]
 
 /-! ### Measurability
 
@@ -307,7 +307,7 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
   hf.swap.integral_norm_prod_left
 
 omit [SFinite ν] in
-theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
+theorem Integrable.op_fst_snd {F G : Type*} [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G]
     {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
     {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z ↦ op (f z.1) (g z.2)) (μ.prod ν) := by
@@ -402,7 +402,7 @@ theorem setIntegral_prod_swap (s : Set α) (t : Set β) (f : α × β → E) :
     ∫ (z : β × α) in t ×ˢ s, f z.swap ∂ν.prod μ = ∫ (z : α × β) in s ×ˢ t, f z ∂μ.prod ν := by
   rw [← Measure.prod_restrict, ← Measure.prod_restrict, integral_prod_swap]
 
-variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
+variable {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace ℝ E']
 
 /-! Some rules about the sum/difference of double integrals. They follow from `integral_add`, but
   we separate them out as separate lemmas, because they involve quite some steps. -/
@@ -582,9 +582,9 @@ theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = ν.real u
 
 section ContinuousLinearMap
 
-variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
-  [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
-  [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
+variable {E F G : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
   {L : E × F →L[ℝ] G}
 

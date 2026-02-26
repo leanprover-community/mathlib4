@@ -48,11 +48,11 @@ open scoped ContDiff Topology
 section
 
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB] [NormedSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, NormedAddCommGroup (E x)]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, AddCommGroup (E x)] [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 
@@ -95,7 +95,7 @@ instance [IsContMDiffRiemannianBundle IB 3 F E] : IsContMDiffRiemannianBundle IB
 
 section Trivial
 
-variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
+variable {F₁ : Type*} [AddCommGroup F₁] [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A trivial vector bundle, in which the model fiber has a scalar product,
@@ -112,7 +112,7 @@ end Trivial
 section ContMDiff
 
 variable
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace ℝ EM]
+  {EM : Type*} [AddCommGroup EM] [NormedAddCommGroup EM] [NormedSpace ℝ EM]
   {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners ℝ EM HM}
   {M : Type*} [TopologicalSpace M] [ChartedSpace HM M]
   [h : IsContMDiffRiemannianBundle IB n F E]
@@ -167,7 +167,7 @@ end ContMDiff
 section MDifferentiable
 
 variable
-  {EM : Type*} [NormedAddCommGroup EM] [NormedSpace ℝ EM]
+  {EM : Type*} [AddCommGroup EM] [NormedAddCommGroup EM] [NormedSpace ℝ EM]
   {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners ℝ EM HM}
   {M : Type*} [TopologicalSpace M] [ChartedSpace HM M]
   [h : IsContMDiffRiemannianBundle IB 1 F E]
@@ -227,10 +227,10 @@ namespace Bundle
 section Construction
 
 variable
-  {EB : Type*} [NormedAddCommGroup EB] [NormedSpace ℝ EB]
+  {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB] [NormedSpace ℝ EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
   {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   [∀ b, TopologicalSpace (E b)] [∀ b, AddCommGroup (E b)] [∀ b, Module ℝ (E b)]
   [∀ b, IsTopologicalAddGroup (E b)] [∀ b, ContinuousConstSMul ℝ (E b)]

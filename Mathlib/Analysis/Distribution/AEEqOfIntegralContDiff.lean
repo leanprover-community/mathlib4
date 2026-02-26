@@ -29,8 +29,8 @@ open MeasureTheory Filter Metric Function Set TopologicalSpace
 
 open scoped Topology Manifold ContDiff
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
 
 section Manifold
 

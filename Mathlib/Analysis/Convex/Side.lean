@@ -734,7 +734,7 @@ end LinearOrderedField
 
 section Normed
 
-variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
+variable [AddCommGroup V] [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
 variable [NormedAddTorsor V P]
 
 set_option backward.isDefEq.respectTransparency false in

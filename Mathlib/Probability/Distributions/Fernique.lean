@@ -95,7 +95,7 @@ end Aux
 
 namespace ProbabilityTheory
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The rotation in `E × E` with angle `θ`, as a continuous linear map. -/
 noncomputable

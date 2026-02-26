@@ -42,14 +42,14 @@ variable {R R₂ R₃ R₄ E E₂ E₃ E₄ F 𝓕 : Type*} [Semiring R] [Semiri
   [RingHomInvPair σ₄₃ σ₃₄] [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
   [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
   [RingHomCompTriple σ₄₂ σ₂₁ σ₄₁] [RingHomCompTriple σ₄₃ σ₃₂ σ₄₂] [RingHomCompTriple σ₄₃ σ₃₁ σ₄₁]
-  [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [SeminormedAddCommGroup E₃]
-  [SeminormedAddCommGroup E₄] [Module R E] [Module R₂ E₂] [Module R₃ E₃] [Module R₄ E₄]
-  [NormedAddCommGroup F] [Module R F]
+  [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup E₂] [SeminormedAddCommGroup E₂] [AddCommGroup E₃] [SeminormedAddCommGroup E₃]
+  [AddCommGroup E₄] [SeminormedAddCommGroup E₄] [Module R E] [Module R₂ E₂] [Module R₃ E₃] [Module R₄ E₄]
+  [AddCommGroup F] [NormedAddCommGroup F] [Module R F]
 
 /-- A `σ₁₂`-semilinear isometric embedding of a normed `R`-module into an `R₂`-module,
 denoted as `f : E →ₛₗᵢ[σ₁₂] E₂`. -/
-structure LinearIsometry (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedAddCommGroup E]
-  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] extends E →ₛₗ[σ₁₂] E₂ where
+structure LinearIsometry (σ₁₂ : R →+* R₂) (E E₂ : Type*) [AddCommGroup E] [SeminormedAddCommGroup E]
+  [AddCommGroup E₂] [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] extends E →ₛₗ[σ₁₂] E₂ where
   norm_map' : ∀ x, ‖toLinearMap x‖ = ‖x‖
 
 @[inherit_doc]
@@ -70,8 +70,8 @@ A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ :
 is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R] [Semiring R₂]
-    (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
-    [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] : Prop
+    (σ₁₂ : outParam <| R →+* R₂) (E E₂ : outParam Type*) [AddCommGroup E] [SeminormedAddCommGroup E]
+    [AddCommGroup E₂] [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [FunLike 𝓕 E E₂] : Prop
     extends SemilinearMapClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 
@@ -81,7 +81,7 @@ class SemilinearIsometryClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring
 This is an abbreviation for `SemilinearIsometryClass F (RingHom.id R) E E₂`.
 -/
 abbrev LinearIsometryClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
-    [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
+    [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup E₂] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [FunLike 𝓕 E E₂] :=
   SemilinearIsometryClass 𝓕 (RingHom.id R) E E₂
 
@@ -163,8 +163,8 @@ theorem coe_injective : @Injective (E →ₛₗᵢ[σ₁₂] E₂) (E → E₂) 
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
-def Simps.apply (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedAddCommGroup E]
-    [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] (h : E →ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
+def Simps.apply (σ₁₂ : R →+* R₂) (E E₂ : Type*) [AddCommGroup E] [SeminormedAddCommGroup E]
+    [AddCommGroup E₂] [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] (h : E →ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
   h
 
 initialize_simps_projections LinearIsometry (toFun → apply)
@@ -375,7 +375,7 @@ theorem coe_pow (f : E →ₗᵢ[R] E) (n : ℕ) : ⇑(f ^ n) = f^[n] :=
 section submoduleMap
 
 variable {R R₁ R₂ M M₁ : Type*}
-variable [Ring R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₁]
+variable [Ring R] [AddCommGroup M] [SeminormedAddCommGroup M] [AddCommGroup M₁] [SeminormedAddCommGroup M₁]
 variable [Module R M] [Module R M₁]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -427,7 +427,7 @@ end Submodule
 /-- A semilinear isometric equivalence between two normed vector spaces,
 denoted as `f : E ≃ₛₗᵢ[σ₁₂] E₂`. -/
 structure LinearIsometryEquiv (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
-  [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂]
+  [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type*) [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup E₂] [SeminormedAddCommGroup E₂]
   [Module R E] [Module R₂ E₂] extends E ≃ₛₗ[σ₁₂] E₂ where
   norm_map' : ∀ x, ‖toLinearEquiv x‖ = ‖x‖
 
@@ -450,8 +450,8 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Semiring R]
   [Semiring R₂] (σ₁₂ : outParam <| R →+* R₂) {σ₂₁ : outParam <| R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
-  [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam Type*) [SeminormedAddCommGroup E]
-  [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [EquivLike 𝓕 E E₂] : Prop
+  [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : outParam Type*) [AddCommGroup E] [SeminormedAddCommGroup E]
+  [AddCommGroup E₂] [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] [EquivLike 𝓕 E E₂] : Prop
   extends SemilinearEquivClass 𝓕 σ₁₂ E E₂ where
   norm_map : ∀ (f : 𝓕) (x : E), ‖f x‖ = ‖x‖
 
@@ -461,7 +461,7 @@ class SemilinearIsometryEquivClass (𝓕 : Type*) {R R₂ : outParam Type*} [Sem
 This is an abbreviation for `SemilinearIsometryEquivClass F (RingHom.id R) E E₂`.
 -/
 abbrev LinearIsometryEquivClass (𝓕 : Type*) (R E E₂ : outParam Type*) [Semiring R]
-    [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
+    [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup E₂] [SeminormedAddCommGroup E₂] [Module R E] [Module R E₂]
     [EquivLike 𝓕 E E₂] :=
   SemilinearIsometryEquivClass 𝓕 (RingHom.id R) E E₂
 
@@ -703,13 +703,13 @@ theorem coe_symm_toHomeomorph : ⇑e.toHomeomorph.symm = e.symm := rfl
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
-    (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂] [Module R E]
+    (E E₂ : Type*) [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup E₂] [SeminormedAddCommGroup E₂] [Module R E]
     [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
   h
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
-    [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂]
+    [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type*) [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup E₂] [SeminormedAddCommGroup E₂]
     [Module R E] [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E₂ → E :=
   h.symm
 
@@ -1060,7 +1060,7 @@ theorem ofEq_rfl : ofEq p p rfl = LinearIsometryEquiv.refl R' p := rfl
 section submoduleMap
 
 variable {R R₁ R₂ M M₂ : Type*}
-variable [Ring R] [Ring R₂] [SeminormedAddCommGroup M] [SeminormedAddCommGroup M₂]
+variable [Ring R] [Ring R₂] [AddCommGroup M] [SeminormedAddCommGroup M] [AddCommGroup M₂] [SeminormedAddCommGroup M₂]
 variable [Module R M] [Module R₂ M₂] {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
 
@@ -1098,7 +1098,7 @@ noncomputable def LinearIsometry.equivRange {R S : Type*} [Semiring R] [Ring S] 
   { f with toLinearEquiv := LinearEquiv.ofInjective f.toLinearMap f.injective }
 
 namespace MulOpposite
-variable {R H : Type*} [Semiring R] [SeminormedAddCommGroup H] [Module R H]
+variable {R H : Type*} [Semiring R] [AddCommGroup H] [SeminormedAddCommGroup H] [Module R H]
 
 theorem isometry_opLinearEquiv : Isometry (opLinearEquiv R (M := H)) := fun _ _ => rfl
 

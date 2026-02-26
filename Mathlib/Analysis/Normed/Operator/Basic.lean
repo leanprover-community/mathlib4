@@ -46,8 +46,8 @@ variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G 𝓕 : Type*}
 
 section SemiNormed
 
-variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Fₗ]
-  [SeminormedAddCommGroup G]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F] [SeminormedAddCommGroup F] [AddCommGroup Fₗ] [SeminormedAddCommGroup Fₗ]
+  [AddCommGroup G] [SeminormedAddCommGroup G]
 
 variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ] [NormedSpace 𝕜₃ G]
@@ -78,7 +78,7 @@ theorem closedBall_subset_range_iff_surjective [RingHomSurjective σ₁₂] {f :
   ⟨fun h ↦ (ball_subset_range_iff_surjective hr).mp <| subset_trans ball_subset_closedBall h,
     by simp_all⟩
 
-variable {F' 𝓕' : Type*} [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
+variable {F' 𝓕' : Type*} [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace ℝ F'] [Nontrivial F']
 {τ : 𝕜 →+* ℝ} [FunLike 𝓕' E F'] [SemilinearMapClass 𝓕' τ E F']
 
 theorem sphere_subset_range_iff_surjective [RingHomSurjective τ] {f : 𝓕'} {x : F'} {r : ℝ}
@@ -320,7 +320,7 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : E, ‖x‖ ≠ 0) : ‖Conti
   norm_id
 
 theorem opNorm_smul_le {𝕜' : Type*} [DistribSMul 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F]
-    [SeminormedAddCommGroup 𝕜'] [IsBoundedSMul 𝕜' F]
+    [AddCommGroup 𝕜'] [SeminormedAddCommGroup 𝕜'] [IsBoundedSMul 𝕜' F]
     (c : 𝕜') (f : E →SL[σ₁₂] F) : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
   (c • f).opNorm_le_bound (mul_nonneg (norm_nonneg _) (opNorm_nonneg _)) fun _ => by
     grw [smul_apply, norm_smul_le, mul_assoc, le_opNorm]
@@ -455,7 +455,7 @@ theorem restrictScalarsIsometry_toLinearMap :
 end RestrictScalars
 
 lemma norm_pi_le_of_le {ι : Type*} [Fintype ι]
-    {M : ι → Type*} [∀ i, SeminormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
+    {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, SeminormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)] {C : ℝ}
     {L : (i : ι) → (E →L[𝕜] M i)} (hL : ∀ i, ‖L i‖ ≤ C) (hC : 0 ≤ C) :
     ‖pi L‖ ≤ C := by
   refine opNorm_le_bound _ hC (fun x ↦ ?_)

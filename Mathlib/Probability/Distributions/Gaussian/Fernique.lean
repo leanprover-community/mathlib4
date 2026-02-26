@@ -37,7 +37,7 @@ open scoped ENNReal NNReal Real Topology
 
 namespace ProbabilityTheory.IsGaussian
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   {μ : Measure E} [IsGaussian μ]
 
 section Rotation

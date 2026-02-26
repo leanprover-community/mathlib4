@@ -103,7 +103,7 @@ Note that `NormedSpace` does not assume that `‖x‖=0` implies `x=0` (it is ra
 
 To construct a seminorm from an inner product, see `PreInnerProductSpace.ofCore`.
 -/
-class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [SeminormedAddCommGroup E] extends
+class InnerProductSpace (𝕜 : Type*) (E : Type*) [RCLike 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] extends
     NormedSpace 𝕜 E, Inner 𝕜 E where
   /-- The inner product induces the norm. -/
   norm_sq_eq_re_inner : ∀ x : E, ‖x‖ ^ 2 = re (inner x x)
@@ -170,7 +170,7 @@ instance (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
 `PreInnerProductSpace.Core` for `PreInnerProductSpace`s. Note that the `Seminorm` instance provided
 by `PreInnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
-def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def PreInnerProductSpace.toCore [AddCommGroup E] [SeminormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     PreInnerProductSpace.Core 𝕜 E where
   __ := c
   re_inner_nonneg x := by rw [← InnerProductSpace.norm_sq_eq_re_inner]; apply sq_nonneg
@@ -179,7 +179,7 @@ def PreInnerProductSpace.toCore [SeminormedAddCommGroup E] [c : InnerProductSpac
 `InnerProductSpace.Core` for `InnerProductSpace`s. Note that the `Norm` instance provided by
 `InnerProductSpace.Core.norm` is propositionally but not definitionally equal to the original
 norm. -/
-def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
+def InnerProductSpace.toCore [AddCommGroup E] [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
     re_inner_nonneg := fun x => by
@@ -595,6 +595,6 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
 /-- A Hilbert space is a complete normed inner product space. -/
 @[variable_alias]
 structure HilbertSpace (𝕜 E : Type*) [RCLike 𝕜]
-  [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
+  [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 end

@@ -41,7 +41,7 @@ public section
 
 open ContinuousLinearMap Filter NNReal Real Set
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {n : WithTop ℕ∞} {f : StrongDual ℝ E} {x : E} {t : ℝ}
 
 variable (E) in

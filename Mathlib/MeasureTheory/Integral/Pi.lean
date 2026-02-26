@@ -126,7 +126,7 @@ theorem integral_fintype_prod_volume_eq_pow {E : Type*} (f : E → 𝕜)
     ∫ x : ι → E, ∏ i, f (x i) = (∫ x, f x) ^ (card ι) := integral_fintype_prod_eq_pow _
 
 variable {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)} {μ : (i : ι) → Measure (X i)}
-    {E : Type*} [NormedAddCommGroup E]
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 lemma integrable_comp_eval [∀ i, IsFiniteMeasure (μ i)] {i : ι} {f : X i → E}
     (hf : Integrable f (μ i)) :

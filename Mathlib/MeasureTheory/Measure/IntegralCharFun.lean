@@ -150,7 +150,7 @@ end Real
 
 /-- For a probability measure on a normed space `E` and `L : Dual ℝ E`, a bound on the measure
 of the set `{x | r < |L x|}` in terms of the integral of the characteristic function. -/
-lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddCommGroup E]
+lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     [NormedSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] (L : StrongDual ℝ E) {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |L x|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFunDual μ (t • L)‖ := by
@@ -164,7 +164,7 @@ lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddComm
 set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |⟪a, x⟫|}` in terms of the integral of
 the characteristic function, for a probability measure on an inner product space. -/
-lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCommGroup E]
+lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E]
     [InnerProductSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] {a : E} {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖ := by

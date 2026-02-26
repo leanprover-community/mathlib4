@@ -72,7 +72,7 @@ lemma tendstoInMeasure_of_ne_top [EDist E] {f : ι → α → E} {l : Filter ι}
   · exact h ε hε hε_top
 
 /-- `TendstoInMeasure` expressed with an extended norm instead of a distance. -/
-theorem tendstoInMeasure_iff_enorm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
+theorem tendstoInMeasure_iff_enorm [AddCommGroup E] [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
     {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ₑ }) l (𝓝 0) := by
@@ -84,7 +84,7 @@ an extended norm.
 
 The `IsFiniteMeasure` hypothesis is necessary, otherwise `μ.real {...}` could be zero because
 the measure of the set is infinite. -/
-theorem tendstoInMeasure_iff_measureReal_enorm [SeminormedAddCommGroup E] [IsFiniteMeasure μ]
+theorem tendstoInMeasure_iff_measureReal_enorm [AddCommGroup E] [SeminormedAddCommGroup E] [IsFiniteMeasure μ]
     {l : Filter ι} {f : ι → α → E} {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i ↦ μ.real { x | ε ≤ ‖f i x - g x‖ₑ }) l (𝓝 0) := by
@@ -116,7 +116,7 @@ lemma tendstoInMeasure_iff_measureReal_dist [PseudoMetricSpace E] [IsFiniteMeasu
   simp_rw [measureReal_def, ENNReal.tendsto_toReal_zero_iff (fun _ ↦ measure_ne_top _ _)]
 
 /-- `TendstoInMeasure` expressed with a norm instead of a distance. -/
-theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
+theorem tendstoInMeasure_iff_norm [AddCommGroup E] [SeminormedAddCommGroup E] {l : Filter ι} {f : ι → α → E}
     {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
@@ -126,7 +126,7 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
 
 The `IsFiniteMeasure` hypothesis is necessary, otherwise `μ.real {...}` could be zero because
 the measure of the set is infinite. -/
-lemma tendstoInMeasure_iff_measureReal_norm [SeminormedAddCommGroup E] [IsFiniteMeasure μ]
+lemma tendstoInMeasure_iff_measureReal_norm [AddCommGroup E] [SeminormedAddCommGroup E] [IsFiniteMeasure μ]
     {l : Filter ι} {f : ι → α → E} {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → Tendsto (fun i ↦ μ.real { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
@@ -359,7 +359,7 @@ end ExistsSeqTendstoAe
 
 /-- If the `eLpNorm` of a collection of `AEStronglyMeasurable` functions that converges in measure
 is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by `C`. -/
-lemma eLpNorm_le_of_tendstoInMeasure {ι : Type*} [SeminormedAddGroup E]
+lemma eLpNorm_le_of_tendstoInMeasure {ι : Type*} [AddGroup E] [SeminormedAddGroup E]
     {u : Filter ι} [NeBot u] [IsCountablyGenerated u] {f : ι → α → E} {g : α → E} {C : ℝ≥0∞}
     {p : ℝ≥0∞} (bound : ∀ᶠ i in u, eLpNorm (f i) p μ ≤ C) (h_tendsto : TendstoInMeasure μ f u g)
     (hf : ∀ i, AEStronglyMeasurable (f i) μ) : eLpNorm g p μ ≤ C := by
@@ -406,7 +406,7 @@ variable {f : ι → α → E} {g : α → E}
 
 /-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞` and only require `AEStronglyMeasurable`. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAddCommGroup E]
+theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [AddCommGroup E] [SeminormedAddCommGroup E]
     (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
     {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) :
@@ -429,7 +429,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable [SeminormedAdd
 
 /-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞`. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
+theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [AddCommGroup E] [SeminormedAddCommGroup E]
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ) {l : Filter ι}
     (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) : TendstoInMeasure μ f l g := by
@@ -443,7 +443,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
 
 /-- See also `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` which work for general
 Lp-convergence for all `p ≠ 0`. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {f : ι → α → E}
+theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [AddCommGroup E] [SeminormedAddCommGroup E] {f : ι → α → E}
     {g : α → E} {l : Filter ι} (hfg : Tendsto (fun n => eLpNorm (f n - g) ∞ μ) l (𝓝 0)) :
     TendstoInMeasure μ f l g := by
   refine tendstoInMeasure_of_ne_top fun δ hδ hδ_top ↦ ?_
@@ -460,7 +460,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {
   simp [edist_eq_enorm_sub]
 
 /-- Convergence in Lp implies convergence in measure. -/
-theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E]
+theorem tendstoInMeasure_of_tendsto_eLpNorm [AddCommGroup E] [NormedAddCommGroup E]
     {l : Filter ι} (hp_ne_zero : p ≠ 0)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ)
     (hfg : Tendsto (fun n => eLpNorm (f n - g) p μ) l (𝓝 0)) : TendstoInMeasure μ f l g := by
@@ -470,7 +470,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E]
   · exact tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top hp_ne_zero hp_ne_top hf hg hfg
 
 /-- Convergence in Lp implies convergence in measure. -/
-theorem tendstoInMeasure_of_tendsto_Lp [NormedAddCommGroup E] [hp : Fact (1 ≤ p)]
+theorem tendstoInMeasure_of_tendsto_Lp [AddCommGroup E] [NormedAddCommGroup E] [hp : Fact (1 ≤ p)]
     {f : ι → Lp E p μ} {g : Lp E p μ}
     {l : Filter ι} (hfg : Tendsto f l (𝓝 g)) : TendstoInMeasure μ (fun n => f n) l g :=
   tendstoInMeasure_of_tendsto_eLpNorm (zero_lt_one.trans_le hp.elim).ne.symm

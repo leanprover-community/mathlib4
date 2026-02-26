@@ -61,7 +61,7 @@ theorem AEStronglyMeasurable.comp_ae_measurable' {α β γ : Type*} [Topological
 variable {α F 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section LpMeas
 

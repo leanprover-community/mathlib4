@@ -18,7 +18,7 @@ open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal ComplexConjugate
 
 variable {α E F G : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
+  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G]
 
 namespace MeasureTheory
 
@@ -216,7 +216,7 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
 
 section Star
 
-variable {R : Type*} [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
+variable {R : Type*} [AddCommGroup R] [NormedAddCommGroup R] [StarAddMonoid R] [NormedStarGroup R]
 
 @[simp]
 theorem eLpNorm_star {p : ℝ≥0∞} {f : α → R} : eLpNorm (star f) p μ = eLpNorm f p μ :=

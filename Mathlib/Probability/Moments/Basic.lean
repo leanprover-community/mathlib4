@@ -512,7 +512,7 @@ end ProbabilityTheory
 
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
     [NormedSpace 𝕜 E] [NormedSpace ℝ E] [NormedSpace 𝕜 F] [NormedSpace ℝ F] [CompleteSpace E]
     [CompleteSpace F] [MeasurableSpace E] {μ : Measure E}
 

@@ -73,7 +73,7 @@ universe u v v' wE wE₁ wE' wG wG'
 section continuous_eval
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
-    [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    [NormedField 𝕜] [Finite ι] [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
     [TopologicalSpace F] [AddCommGroup F] [IsTopologicalAddGroup F] [Module 𝕜 F]
 
 instance ContinuousMultilinearMap.instContinuousEval :
@@ -115,9 +115,9 @@ section Seminorm
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {E : ι → Type wE} {E₁ : ι → Type wE₁}
   {E' : ι' → Type wE'} {G : Type wG} {G' : Type wG'}
-  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)]
-  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, SeminormedAddCommGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
+  [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)]
+  [∀ i, NormedSpace 𝕜 (E i)] [∀ i, AddCommGroup (E₁ i)] [∀ i, SeminormedAddCommGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
+  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [AddCommGroup G'] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 /-!
 ### Continuity properties of multilinear maps
@@ -394,7 +394,7 @@ theorem le_opNorm_mul_pow_card_of_le (f : ContinuousMultilinearMap 𝕜 E G) {m 
     ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι := by
   simpa only [prod_const] using f.le_opNorm_mul_prod_of_le fun i => (norm_le_pi_norm m i).trans hm
 
-theorem le_opNorm_mul_pow_of_le {n : ℕ} {Ei : Fin n → Type*} [∀ i, SeminormedAddCommGroup (Ei i)]
+theorem le_opNorm_mul_pow_of_le {n : ℕ} {Ei : Fin n → Type*} [∀ i, AddCommGroup (Ei i)] [∀ i, SeminormedAddCommGroup (Ei i)]
     [∀ i, NormedSpace 𝕜 (Ei i)] (f : ContinuousMultilinearMap 𝕜 Ei G) {m : ∀ i, Ei i} {b : ℝ}
     (hm : ‖m‖ ≤ b) : ‖f m‖ ≤ ‖f‖ * b ^ n := by
   simpa only [Fintype.card_fin] using f.le_opNorm_mul_pow_card_of_le hm
@@ -549,12 +549,12 @@ theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMulti
   congr_arg NNReal.toReal (opNNNorm_prod f g)
 
 theorem opNNNorm_pi
-    [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
+    [∀ i', AddCommGroup (E' i')] [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
     (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) : ‖pi f‖₊ = ‖f‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by simpa [opNNNorm_le_iff, pi_nnnorm_le_iff] using forall_swap
 
 theorem opNorm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
-    [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
+    [∀ i', AddCommGroup (E' i')] [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
     (f : ∀ i', ContinuousMultilinearMap 𝕜 E (E' i')) :
     ‖pi f‖ = ‖f‖ :=
   congr_arg NNReal.toReal (opNNNorm_pi f)
@@ -624,7 +624,7 @@ def prodL :
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
 @[simps! apply symm_apply]
-def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', NormedAddCommGroup (E' i')]
+def piₗᵢ {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'} [∀ i', AddCommGroup (E' i')] [∀ i', NormedAddCommGroup (E' i')]
     [∀ i', NormedSpace 𝕜 (E' i')] :
     (Π i', ContinuousMultilinearMap 𝕜 E (E' i'))
       ≃ₗᵢ[𝕜] (ContinuousMultilinearMap 𝕜 E (Π i, E' i)) where
@@ -880,7 +880,7 @@ theorem mkContinuousLinear_norm_le (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G')
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : ‖mkContinuousLinear f C H‖ ≤ C :=
   (mkContinuousLinear_norm_le' f C H).trans_eq (max_eq_left hC)
 
-variable [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
+variable [∀ i, AddCommGroup (E' i)] [∀ i, SeminormedAddCommGroup (E' i)] [∀ i, NormedSpace 𝕜 (E' i)]
 
 /-- Given a map `f : MultilinearMap 𝕜 E (MultilinearMap 𝕜 E' G)` and an estimate
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `MultilinearMap`s in the type to
@@ -1347,8 +1347,8 @@ namespace ContinuousMultilinearMap
 `SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : Type wG'} [Fintype ι]
-  [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
+  [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [AddCommGroup G'] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 /-- A continuous linear map is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff {f : ContinuousMultilinearMap 𝕜 E G} : ‖f‖ = 0 ↔ f = 0 := by
@@ -1385,8 +1385,8 @@ section Norm
 `SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Fintype ι]
-  [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+  [AddCommGroup G] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 namespace MultilinearMap
 

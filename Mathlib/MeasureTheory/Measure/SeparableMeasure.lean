@@ -71,7 +71,7 @@ open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
 namespace MeasureTheory
 
-variable {X E : Type*} [m : MeasurableSpace X] [NormedAddCommGroup E] {μ : Measure X}
+variable {X E : Type*} [m : MeasurableSpace X] [AddCommGroup E] [NormedAddCommGroup E] {μ : Measure X}
 variable {p : ℝ≥0∞} [one_le_p : Fact (1 ≤ p)] [p_ne_top : Fact (p ≠ ∞)] {𝒜 : Set (Set X)}
 
 section MeasureDense

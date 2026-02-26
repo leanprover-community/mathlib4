@@ -18,7 +18,7 @@ for composition of functions with coercion of a seminormed group to its completi
 
 public section
 
-variable {α E F : Type*} [Norm E] [SeminormedAddCommGroup F]
+variable {α E F : Type*} [Norm E] [AddCommGroup F] [SeminormedAddCommGroup F]
   {f : α → E} {g : α → F} {l : Filter α}
 
 local postfix:100 "̂" => UniformSpace.Completion

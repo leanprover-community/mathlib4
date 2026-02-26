@@ -66,7 +66,7 @@ open scoped Topology
 
 -- Let `M` be a manifold with corners over the pair `(E, H)`.
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
@@ -143,7 +143,7 @@ lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
 /-- Type class for manifold without boundary. This differs from `ModelWithCorners.Boundaryless`,
 which states that the `ModelWithCorners` maps to the whole model vector space. -/
 class _root_.BoundarylessManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : Prop where
   isInteriorPoint' : ∀ x : M, IsInteriorPoint I x
@@ -234,7 +234,7 @@ end opens
 section prod
 
 variable
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
@@ -295,7 +295,7 @@ end prod
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
 
 open Topology

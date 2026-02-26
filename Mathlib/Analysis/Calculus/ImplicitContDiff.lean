@@ -33,9 +33,9 @@ implicit function, inverse function
 
 variable
   {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
 
 namespace ImplicitFunctionData
 

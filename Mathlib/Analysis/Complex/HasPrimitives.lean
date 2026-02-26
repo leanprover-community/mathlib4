@@ -87,7 +87,7 @@ private lemma mem_ball_of_map_im_aux₂ {w : ℂ} (hw : w ∈ ball z (r - dist z
 
 end AuxiliaryLemmata
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The `(z, w)`-wedge-integral of `f`, is the integral of `f` over two sides of the rectangle
   determined by `z` and `w`. -/

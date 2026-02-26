@@ -29,7 +29,7 @@ noncomputable section
 
 open Module
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable [FiniteDimensional ℝ E] {L : Submodule ℤ E} [DiscreteTopology L]
 variable {ι : Type*} (b : Basis ι ℤ L)
 

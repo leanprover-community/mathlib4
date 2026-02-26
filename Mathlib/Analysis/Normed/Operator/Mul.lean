@@ -26,7 +26,7 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜]
 
 section SemiNormed
 
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace ContinuousLinearMap
 
@@ -229,7 +229,7 @@ section Normed
 
 namespace ContinuousLinearMap
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (𝕜) (R : Type*)
 
 section

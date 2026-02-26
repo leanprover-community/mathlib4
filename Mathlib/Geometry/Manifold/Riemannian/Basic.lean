@@ -59,7 +59,7 @@ local notation "⟪" x ", " y "⟫" => inner ℝ x y
 noncomputable section
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
@@ -94,7 +94,7 @@ satisfies the `IsRiemannianManifold 𝓘(ℝ, E) E` predicate, i.e., the extende
 two points is the infimum of the length of paths between these points.
 -/
 
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (F) in

@@ -40,9 +40,9 @@ F`. This section provides convenience API to convert between these notions.
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 variable (𝕜) in
 /--
@@ -116,9 +116,9 @@ end secondDerivativeAPI
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [IsScalarTower ℝ 𝕜 F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f f₁ f₂ : E → F} {x : E} {s : Set E}
 
 namespace InnerProductSpace

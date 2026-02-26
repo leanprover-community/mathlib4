@@ -24,7 +24,7 @@ This file proves various versions of Ceva's theorem in a `NormedAddTorsor`.
 
 open scoped Affine
 
-variable {𝕜 V P : Type*} [SeminormedAddCommGroup V] [NormedField 𝕜] [NormedSpace 𝕜 V]
+variable {𝕜 V P : Type*} [AddCommGroup V] [SeminormedAddCommGroup V] [NormedField 𝕜] [NormedSpace 𝕜 V]
 
 namespace Affine.Triangle
 

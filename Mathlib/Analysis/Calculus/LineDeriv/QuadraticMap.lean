@@ -21,7 +21,7 @@ In particular, it applies to discontinuous quadratic forms on infinite-dimension
 public section
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace QuadraticMap
 

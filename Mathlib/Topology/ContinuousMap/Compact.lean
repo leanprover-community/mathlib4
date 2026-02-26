@@ -35,7 +35,7 @@ open NNReal BoundedContinuousFunction Set Metric
 namespace ContinuousMap
 
 variable {α β E : Type*}
-variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [SeminormedAddCommGroup E]
+variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [AddCommGroup E] [SeminormedAddCommGroup E]
 
 section
 
@@ -176,7 +176,7 @@ instance : SeminormedAddCommGroup C(α, E) where
   dist := dist
   norm := norm
 
-instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
+instance {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
   __ : SeminormedAddCommGroup C(α, E) := inferInstance
   __ : MetricSpace C(α, E) := inferInstance
 
@@ -334,12 +334,12 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma nnnorm_smul_const {R β : Type*} [AddCommGroup β] [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
-@[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma norm_smul_const {R β : Type*} [AddCommGroup β] [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
@@ -402,7 +402,7 @@ of `C(X, E)` (i.e. locally uniform convergence). -/
 open TopologicalSpace
 
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
-variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [CompleteSpace E]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
@@ -432,7 +432,7 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 section NormedSpace
 
 variable {α : Type*} {β : Type*}
-variable [TopologicalSpace α] [SeminormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [TopologicalSpace α] [AddCommGroup β] [SeminormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
     mkOfCompact (star f) = star (mkOfCompact f) :=

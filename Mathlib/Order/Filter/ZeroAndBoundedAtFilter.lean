@@ -75,7 +75,7 @@ if `f =O[l] 1`. -/
 def BoundedAtFilter [Norm β] (l : Filter α) (f : α → β) : Prop :=
   Asymptotics.IsBigO l f (1 : α → ℝ)
 
-theorem ZeroAtFilter.boundedAtFilter [SeminormedAddGroup β] {l : Filter α} {f : α → β}
+theorem ZeroAtFilter.boundedAtFilter [AddGroup β] [SeminormedAddGroup β] {l : Filter α} {f : α → β}
     (hf : ZeroAtFilter l f) : BoundedAtFilter l f :=
   ((Asymptotics.isLittleO_one_iff _).mpr hf).isBigO
 
@@ -85,16 +85,16 @@ theorem const_boundedAtFilter [Norm β] (l : Filter α) (c : β) :
 
 -- TODO(https://github.com/leanprover-community/mathlib4/issues/19288): Remove all Comm in the next
 -- three lemmas. This would require modifying the corresponding general asymptotics lemma.
-nonrec theorem BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
+nonrec theorem BoundedAtFilter.add [AddCommGroup β] [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f + g) := by
   simpa using hf.add hg
 
-theorem BoundedAtFilter.neg [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
+theorem BoundedAtFilter.neg [AddCommGroup β] [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
     (hf : BoundedAtFilter l f) : BoundedAtFilter l (-f) :=
   hf.neg_left
 
 theorem BoundedAtFilter.smul
-    [SeminormedRing 𝕜] [SeminormedAddCommGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
+    [SeminormedRing 𝕜] [AddCommGroup β] [SeminormedAddCommGroup β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
     {l : Filter α} {f : α → β} (c : 𝕜) (hf : BoundedAtFilter l f) : BoundedAtFilter l (c • f) :=
   hf.const_smul_left c
 

@@ -34,7 +34,7 @@ namespace RCLike
 variable [RCLike 𝕜]
 
 section Pi
-variable [∀ i, SeminormedAddCommGroup (E i)] [∀ i, InnerProductSpace 𝕜 (E i)] {w : ι → ℝ}
+variable [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, InnerProductSpace 𝕜 (E i)] {w : ι → ℝ}
 
 /-- Weighted inner product giving rise to the L2 norm, denoted as `⟪g, f⟫_[𝕜, w]`. -/
 def wInner (w : ι → ℝ) (f g : ∀ i, E i) : 𝕜 := ∑ i, w i • ⟪f i, g i⟫_𝕜

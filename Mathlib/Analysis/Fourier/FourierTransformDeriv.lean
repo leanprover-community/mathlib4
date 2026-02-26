@@ -108,8 +108,8 @@ lemma differentiable_fourierChar : Differentiable ℝ (𝐞 · : ℝ → ℂ) :=
 lemma deriv_fourierChar (x : ℝ) : deriv (𝐞 · : ℝ → ℂ) x = 2 * π * I * 𝐞 x :=
   (Real.hasDerivAt_fourierChar x).deriv
 
-variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-  [NormedAddCommGroup W] [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ)
+variable {V W : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V]
+  [AddCommGroup W] [NormedAddCommGroup W] [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma hasFDerivAt_fourierChar_neg_bilinear_right (v : V) (w : W) :
@@ -154,12 +154,12 @@ lemma differentiable_fourierChar_neg_bilinear_left (w : W) :
 
 end Real
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 namespace VectorFourier
 
-variable {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-  [NormedAddCommGroup W] [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E)
+variable {V W : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V]
+  [AddCommGroup W] [NormedAddCommGroup W] [NormedSpace ℝ W] (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E)
 
 /-- Send a function `f : V → E` to the function `f : V → Hom (W, E)` given by
 `v ↦ (w ↦ -2 * π * I * L (v, w) • f v)`. This is designed so that the Fourier transform of
@@ -682,7 +682,7 @@ end VectorFourier
 namespace Real
 open VectorFourier
 
-variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V] {f : V → E}
 
 /-- The Fréchet derivative of the Fourier transform of `f` is the Fourier transform of

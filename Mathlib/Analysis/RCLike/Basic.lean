@@ -657,11 +657,11 @@ set_option backward.isDefEq.respectTransparency false in
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
 
 variable (K) in
-lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
+lemma norm_nsmul [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
-lemma nnnorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+lemma nnnorm_nsmul [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
     ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnnorm_smul (n : K) x
 
 section NormedField
@@ -1309,8 +1309,8 @@ noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
 end
 
 namespace LinearIsometryEquiv
-variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
-  [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 V W G : Type*} [RCLike 𝕜] [AddCommGroup V] [SeminormedAddCommGroup V] [Module 𝕜 V]
+  [AddCommGroup W] [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 /-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
 as a linear isometric equivalence. -/

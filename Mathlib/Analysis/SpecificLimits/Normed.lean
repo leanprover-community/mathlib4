@@ -550,7 +550,7 @@ end MulGeometric
 
 section SummableLeGeometric
 
-variable [SeminormedAddCommGroup α] {r C : ℝ} {f : ℕ → α}
+variable [AddCommGroup α] [SeminormedAddCommGroup α] {r C : ℝ} {f : ℕ → α}
 
 nonrec theorem SeminormedAddCommGroup.cauchySeq_of_le_geometric {C : ℝ} {r : ℝ} (hr : r < 1)
     {u : ℕ → α} (h : ∀ n, ‖u n - u (n + 1)‖ ≤ C * r ^ n) : CauchySeq u :=
@@ -626,7 +626,7 @@ end SummableLeGeometric
 
 /-! ### Summability tests based on comparison with geometric series -/
 
-theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGroup α]
+theorem summable_of_ratio_norm_eventually_le {α : Type*} [AddCommGroup α] [SeminormedAddCommGroup α]
     [CompleteSpace α] {f : ℕ → α} {r : ℝ} (hr₁ : r < 1)
     (h : ∀ᶠ n in atTop, ‖f (n + 1)‖ ≤ r * ‖f n‖) : Summable f := by
   by_cases! hr₀ : 0 ≤ r
@@ -645,7 +645,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
 
-theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup α] [CompleteSpace α]
+theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [AddCommGroup α] [NormedAddCommGroup α] [CompleteSpace α]
     {f : ℕ → α} {l : ℝ} (hl₁ : l < 1) (hf : ∀ᶠ n in atTop, f n ≠ 0)
     (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) : Summable f := by
   rcases exists_between hl₁ with ⟨r, hr₀, hr₁⟩
@@ -653,7 +653,7 @@ theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup �
   filter_upwards [h.eventually_le_const hr₀, hf] with _ _ h₁
   rwa [← div_le_iff₀ (norm_pos_iff.mpr h₁)]
 
-theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddCommGroup α] {f : ℕ → α}
+theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [AddCommGroup α] [SeminormedAddCommGroup α] {f : ℕ → α}
     {r : ℝ} (hr : 1 < r) (hf : ∃ᶠ n in atTop, ‖f n‖ ≠ 0)
     (h : ∀ᶠ n in atTop, r * ‖f n‖ ≤ ‖f (n + 1)‖) : ¬Summable f := by
   rw [eventually_atTop] at h
@@ -671,7 +671,7 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddComm
     exact hN h''.symm
   · grind
 
-theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCommGroup α]
+theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [AddCommGroup α] [SeminormedAddCommGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
     ¬Summable f := by
   have key : ∀ᶠ n in atTop, ‖f n‖ ≠ 0 := by
@@ -713,7 +713,7 @@ section
 /-! ### Dirichlet and alternating series tests -/
 
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {b : ℝ} {f : ℕ → ℝ} {z : ℕ → E}
 
 /-- **Dirichlet's test** for monotone sequences. -/
@@ -915,7 +915,7 @@ open Bornology
 variable {R K : Type*}
 
 section NormedAddCommGroup
-variable [NormedRing K] [IsDomain K] [NormedAddCommGroup R]
+variable [NormedRing K] [IsDomain K] [AddCommGroup R] [NormedAddCommGroup R]
 variable [Module K R] [IsTorsionFree K R] [NormSMulClass K R]
 
 lemma tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded {f : α → K} {g : α → R}

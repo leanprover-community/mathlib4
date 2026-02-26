@@ -535,7 +535,7 @@ theorem differentiableWithinAt_Ioi_iff_Ici [PartialOrder 𝕜] :
     h.hasDerivWithinAt.Ioi_of_Ici.differentiableWithinAt⟩
 
 -- Golfed while splitting the file
-theorem derivWithin_Ioi_eq_Ici {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (f : ℝ → E)
+theorem derivWithin_Ioi_eq_Ici {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] (f : ℝ → E)
     (x : ℝ) : derivWithin f (Ioi x) x = derivWithin f (Ici x) x := by
   by_cases H : DifferentiableWithinAt ℝ f (Ioi x) x
   · have A := H.hasDerivWithinAt.Ici_of_Ioi
@@ -902,7 +902,7 @@ end MeanValue
 section Semilinear
 
 variable {σ σ' : RingHom 𝕜 𝕜} [RingHomIsometric σ] [RingHomInvPair σ σ']
-  {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] (L : F →SL[σ] F')
+  {F' : Type*} [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] (L : F →SL[σ] F')
 
 variable (σ')
 

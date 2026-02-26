@@ -133,7 +133,7 @@ theorem polarCoord_source_ae_eq_univ : polarCoord.source =ᵐ[volume] univ := by
   simp only [ae_eq_univ]
   exact le_antisymm ((measure_mono A).trans (le_of_eq B)) bot_le
 
-theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_polarCoord_symm {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : ℝ × ℝ → E) :
     (∫ p in polarCoord.target, p.1 • f (polarCoord.symm p)) = ∫ p, f p := by
   symm
@@ -203,7 +203,7 @@ theorem norm_polarCoord_symm (p : ℝ × ℝ) :
     ‖Complex.polarCoord.symm p‖ = |p.1| := by simp
 
 set_option backward.isDefEq.respectTransparency false in
-protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
+protected theorem integral_comp_polarCoord_symm {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :
     (∫ p in polarCoord.target, p.1 • f (Complex.polarCoord.symm p)) = ∫ p, f p := by
   rw [← (Complex.volume_preserving_equiv_real_prod.symm).integral_comp
@@ -263,7 +263,7 @@ theorem pi_polarCoord_symm_target_ae_eq_univ :
   rw [Set.piMap_image_univ_pi, polarCoord.symm_image_target_eq_source, volume_pi, ← Set.pi_univ]
   exact ae_eq_set_pi fun _ _ ↦ polarCoord_source_ae_eq_univ
 
-theorem integral_comp_pi_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_pi_polarCoord_symm {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : (ι → ℝ × ℝ) → E) :
     (∫ p in (Set.univ.pi fun _ : ι ↦ polarCoord.target),
       (∏ i, (p i).1) • f (fun i ↦ polarCoord.symm (p i))) = ∫ p, f p := by
@@ -275,7 +275,7 @@ theorem integral_comp_pi_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Nor
   simp_rw [det_fderivPiPolarCoordSymm, Finset.abs_prod, abs_fst_of_mem_pi_polarCoord_target hx]
 
 set_option backward.isDefEq.respectTransparency false in
-protected theorem Complex.integral_comp_pi_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
+protected theorem Complex.integral_comp_pi_polarCoord_symm {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : (ι → ℂ) → E) :
     (∫ p in (Set.univ.pi fun _ : ι ↦ Complex.polarCoord.target),
       (∏ i, (p i).1) • f (fun i ↦ Complex.polarCoord.symm (p i))) = ∫ p, f p := by

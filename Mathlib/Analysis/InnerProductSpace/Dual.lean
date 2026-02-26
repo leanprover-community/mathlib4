@@ -52,7 +52,7 @@ variable (𝕜 E : Type*)
 
 section Seminormed
 
-variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [RCLike 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -80,7 +80,7 @@ theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := r
 
 variable {𝕜} in
 @[simp]
-theorem _root_.innerSL_inj {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
+theorem _root_.innerSL_inj {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] {x y : E} :
     innerSL 𝕜 x = innerSL 𝕜 y ↔ x = y :=
   (toDualMap 𝕜 E).injective.eq_iff
 
@@ -101,7 +101,7 @@ end NullSubmodule
 end Seminormed
 
 section Normed
-variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -221,7 +221,7 @@ theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪
 
 end Normed
 
-instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
+instance [AddCommGroup E] [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
     (innerₗ E).IsContPerfPair where
   continuous_uncurry := continuous_inner
   bijective_left := (toDual ℝ E).bijective
@@ -231,8 +231,8 @@ instance [NormedAddCommGroup E] [CompleteSpace E] [InnerProductSpace ℝ E] :
     simp
 
 /-- A nonzero rank-one operator has rank one. -/
-lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
+lemma rank_rankOne {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] {x : E} {y : F} (hx : x ≠ 0) (hy : y ≠ 0) :
     (rankOne 𝕜 x y).rank = 1 := by
   rw [LinearMap.rank, rankOne_def, range_smulRight_apply, Module.rank_eq_one_iff_finrank_eq_one]
   · exact finrank_span_singleton hx

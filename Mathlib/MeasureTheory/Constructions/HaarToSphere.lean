@@ -41,7 +41,7 @@ local notation "dim" => Module.finrank ℝ
 noncomputable section
 namespace MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [MeasurableSpace E]
 
 namespace Measure
@@ -164,7 +164,7 @@ For a non-private lemma, we should aim for a more precise and a more general fac
 (e.g., an estimate on the radius of a ball centered at `t • x`
 that is guaranteed to be a subset of the cone. -/
 private lemma ball_subset_sector_of_small_epsilon
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
     (x : E) (hx : ‖x‖ = 1) (ε : ℝ) (hε : 0 < ε) (hε2 : ε ≤ 2) :
     ball ((1 - ε / 4) • x) (ε / 4) ⊆
       Ioo (0 : ℝ) 1 • (ball x ε ∩ sphere (0 : E) 1) := by
@@ -251,7 +251,7 @@ theorem toSphereBallBound_mul_measureReal_unitBall_le_toSphere_ball
 
 end Measure
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
   [Nontrivial E] (μ : Measure E) [FiniteDimensional ℝ E] [BorelSpace E] [μ.IsAddHaarMeasure]
 
 lemma integrable_fun_norm_addHaar {f : ℝ → F} :

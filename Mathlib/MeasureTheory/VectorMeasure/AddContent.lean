@@ -26,7 +26,7 @@ open scoped symmDiff
 
 namespace MeasureTheory.VectorMeasure
 
-variable {α : Type*} {hα : MeasurableSpace α} {E : Type*} [NormedAddCommGroup E]
+variable {α : Type*} {hα : MeasurableSpace α} {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 [CompleteSpace E] {μ : Measure α}
 
 set_option backward.isDefEq.respectTransparency false in

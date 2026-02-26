@@ -32,7 +32,7 @@ variable {ι : Type*} [Fintype ι]
 
 section normed
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable (𝕜 E F) in
 /-- The set of `C^n` functions supported in a set `s`, as a submodule of the space of functions. -/

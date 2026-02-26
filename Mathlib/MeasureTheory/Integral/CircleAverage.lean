@@ -34,8 +34,8 @@ Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative
 open Complex Filter Metric Real
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
   {𝕜 : Type*} [NormedDivisionRing 𝕜] [Module 𝕜 E] [NormSMulClass 𝕜 E] [SMulCommClass ℝ 𝕜 E]
   {f f₁ f₂ : ℂ → E} {c : ℂ} {R : ℝ} {a : 𝕜}
 
@@ -93,7 +93,7 @@ lemma circleAverage_map_add_const :
 /--
 Expression of the `circleAverage` in terms of a `circleIntegral`.
 -/
-theorem circleAverage_eq_circleIntegral {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
+theorem circleAverage_eq_circleIntegral {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℂ F]
     {f : ℂ → F} (h : R ≠ 0) :
     circleAverage f c R = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) := by
   calc circleAverage f c R

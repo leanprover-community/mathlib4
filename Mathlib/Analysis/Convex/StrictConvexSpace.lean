@@ -65,11 +65,11 @@ then prove that any closed ball is strictly convex in `strictConvex_closedBall` 
 See also `StrictConvexSpace.of_strictConvex_unitClosedBall`. -/
 @[mk_iff]
 class StrictConvexSpace (𝕜 E : Type*) [NormedField 𝕜] [PartialOrder 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop where
+    [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop where
   strictConvex_closedBall : ∀ r : ℝ, 0 < r → StrictConvex 𝕜 (closedBall (0 : E) r)
 
 variable (𝕜 : Type*) {E : Type*} [NormedField 𝕜] [PartialOrder 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- A closed ball in a strictly convex space is strictly convex. -/
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :

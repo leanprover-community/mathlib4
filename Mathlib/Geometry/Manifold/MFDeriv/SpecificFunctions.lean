@@ -33,29 +33,29 @@ section SpecificFunctions
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
-  {E : Type*} [NormedAddCommGroup E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M]
   -- declare a charted space `M'` over the pair `(E', H')`.
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   -- declare a charted space `M''` over the pair `(E'', H'')`.
-  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {E'' : Type*} [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
   {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*}
   [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare a charted space `N` over the pair `(F, G)`.
   {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   -- declare a charted space `N'` over the pair `(F', G')`.
   {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   -- F₁, F₂, F₃, F₄ are normed spaces
   {F₁ : Type*}
-  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
-  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
+  [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [AddCommGroup F₂] [NormedAddCommGroup F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [AddCommGroup F₃] [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
+  [AddCommGroup F₄] [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
 
 namespace ContinuousLinearMap
 

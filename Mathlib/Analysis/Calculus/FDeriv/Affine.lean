@@ -23,8 +23,8 @@ continuous affine maps.
 public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   (f : E →ᴬ[𝕜] F) {x : E} {s : Set E} {L : Filter (E × E)}
 
 namespace ContinuousAffineMap

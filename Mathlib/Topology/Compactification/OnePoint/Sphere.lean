@@ -23,7 +23,7 @@ noncomputable section
 /-- A homeomorphism from the one-point compactification of a hyperplane in Euclidean space to the
 sphere. -/
 def onePointHyperplaneHomeoUnitSphere
-    {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
     {v : E} (hv : ‖v‖ = 1) :
     OnePoint (ℝ ∙ v)ᗮ ≃ₜ sphere (0 : E) 1 :=
   OnePoint.equivOfIsEmbeddingOfRangeEq _ _

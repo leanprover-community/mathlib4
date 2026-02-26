@@ -93,8 +93,8 @@ open scoped Pointwise unitInterval
 
 section Defs
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b : E}
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b : E}
 
 /-- The function `t ↦ ω (γ t) (γ' t)` which appears in the definition of a curve integral.
 
@@ -159,8 +159,8 @@ end Defs
 
 section PathOperations
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b c d : E} {ω : E → E →L[𝕜] F}
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b c d : E} {ω : E → E →L[𝕜] F}
   {γ γab : Path a b} {γbc : Path b c} {t : ℝ}
 
 @[simp]
@@ -347,8 +347,8 @@ end PathOperations
 
 section Algebra
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b : E}
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b : E}
   {ω ω₁ ω₂ : E → E →L[𝕜] F} {γ : Path a b} {t : ℝ}
 
 @[simp]
@@ -486,8 +486,8 @@ end Algebra
 
 section FDeriv
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {a b : E} {s : Set E} {ω : E → E →L[𝕜] F}
 
 /-!

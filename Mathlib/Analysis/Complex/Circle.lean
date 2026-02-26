@@ -185,7 +185,7 @@ instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [Continuous
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
+protected lemma norm_smul {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :
     ‖u • v‖ = ‖v‖ := by
   rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]

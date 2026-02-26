@@ -63,8 +63,8 @@ Schwartz space, tempered distributions
 open scoped Nat NNReal ContDiff
 
 variable {ι 𝕜 𝕜' D E F G H V : Type*}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 variable (E F) in
 /-- A function is a Schwartz function if it is smooth and all derivatives decay faster than
@@ -578,9 +578,9 @@ section CLM
 
 
 variable [NormedField 𝕜] [NormedField 𝕜']
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+variable [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 variable {σ : 𝕜 →+* 𝕜'}
 
 /-- Create a semilinear map between Schwartz spaces.
@@ -645,7 +645,7 @@ end CLM
 section EvalCLM
 
 variable [NormedField 𝕜]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
+variable [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
 
 variable (𝕜 E G) in
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
@@ -674,8 +674,8 @@ end EvalCLM
 section Multiplication
 
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-  [NormedAddCommGroup D] [NormedSpace ℝ D]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 F]
 
 section bilin
@@ -917,7 +917,7 @@ section Comp
 
 variable (𝕜)
 variable [RCLike 𝕜]
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -1037,8 +1037,8 @@ section Integration
 open Real Complex Filter MeasureTheory MeasureTheory.Measure Module
 
 variable [RCLike 𝕜]
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
+variable [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
+variable [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedSpace 𝕜 V]
 variable [MeasurableSpace D]
 
 variable {μ : Measure D} [hμ : HasTemperateGrowth μ]
@@ -1188,7 +1188,7 @@ section Lp
 open MeasureTheory
 open scoped NNReal ENNReal
 
-variable [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
+variable [AddCommGroup D] [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 variable (𝕜 F) in
@@ -1308,9 +1308,9 @@ section L2
 
 open MeasureTheory
 
-variable [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
+variable [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace ℝ H] [FiniteDimensional ℝ H]
   [MeasurableSpace H] [BorelSpace H]
-  [NormedAddCommGroup V] [InnerProductSpace ℂ V]
+  [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℂ V]
 
 @[simp]
 theorem inner_toL2_toL2_eq (f g : 𝓢(H, V)) (μ : Measure H := by volume_tac) [μ.HasTemperateGrowth] :

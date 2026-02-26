@@ -24,8 +24,8 @@ variable {ι 𝕜 R D E F G H : Type*}
 
 namespace Function
 
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
 polynomially bounded. -/
@@ -132,7 +132,7 @@ set_option backward.isDefEq.respectTransparency false in
 
 Version where the outer function `g` is only of temperate growth on the image of inner function
 `f`. -/
-theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
+theorem HasTemperateGrowth.comp' [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
     {t : Set E} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn ℝ t) (hg₁ : ContDiffOn ℝ ∞ g t)
     (hg₂ : ∀ N, ∃ k C, ∃ (_hC : 0 ≤ C), ∀ n ≤ N, ∀ x ∈ t,
     ‖iteratedFDerivWithin ℝ n g t x‖ ≤ C * (1 + ‖x‖) ^ k)
@@ -173,7 +173,7 @@ theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g :
 
 /-- Composition of two temperate growth functions is of temperate growth. -/
 @[fun_prop]
-theorem HasTemperateGrowth.comp [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
+theorem HasTemperateGrowth.comp [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
     (hg : g.HasTemperateGrowth) (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
   apply hf.comp' (t := Set.univ)
   · simp
@@ -228,8 +228,8 @@ end Addition
 section Multiplication
 
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-  [NormedAddCommGroup D] [NormedSpace ℝ D]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
+  [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -314,7 +314,7 @@ variable (𝕜) in
 theorem RCLike.hasTemperateGrowth_ofReal [RCLike 𝕜] : (RCLike.ofReal (K := 𝕜)).HasTemperateGrowth :=
   (RCLike.ofRealCLM (K := 𝕜)).hasTemperateGrowth
 
-variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+variable [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace ℝ H]
 
 @[fun_prop]
 theorem hasTemperateGrowth_inner_left (c : H) : (inner ℝ · c).HasTemperateGrowth :=
@@ -417,7 +417,7 @@ end Function
 
 namespace MeasureTheory.Measure
 
-variable [NormedAddCommGroup E] [MeasurableSpace E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [MeasurableSpace E]
 
 open Module
 open scoped ENNReal
@@ -476,7 +476,7 @@ lemma _root_.pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f :
       · exact Real.rpow_le_rpow_of_nonpos (by positivity) (by linarith) (by simp)
       · exact h₂.trans (by linarith)
 
-variable [NormedAddCommGroup F]
+variable [AddCommGroup F] [NormedAddCommGroup F]
 
 variable [BorelSpace E] [SecondCountableTopology E] in
 /-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then

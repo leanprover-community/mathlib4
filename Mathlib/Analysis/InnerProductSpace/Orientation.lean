@@ -40,7 +40,7 @@ This file provides definitions and proves lemmas about orientations of real inne
 
 noncomputable section
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 open Module InnerProductSpace
 
@@ -289,7 +289,7 @@ theorem abs_volumeForm_apply_of_orthonormal (v : OrthonormalBasis (Fin n) ℝ E)
     |o.volumeForm v| = 1 := by
   simpa [o.volumeForm_robust' v v] using congr_arg abs v.toBasis.det_self
 
-theorem volumeForm_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem volumeForm_map {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = n)] (φ : E ≃ₗᵢ[ℝ] F) (x : Fin n → F) :
     (Orientation.map (Fin n) φ.toLinearEquiv o).volumeForm x = o.volumeForm (φ.symm ∘ x) := by
   rcases n with - | n

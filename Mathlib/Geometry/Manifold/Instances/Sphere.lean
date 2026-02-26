@@ -69,7 +69,7 @@ Relate the stereographic projection to the inversion of the space.
 @[expose] public section
 
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 noncomputable section
 
@@ -434,7 +434,7 @@ theorem contMDiff_coe_sphere {m : WithTop ℕ∞} {n : ℕ} [Fact (finrank ℝ E
       ((contDiff_stereoInvFunAux.comp (ℝ ∙ (-v : E))ᗮ.subtypeL.contDiff).comp
           U.symm.contDiff).contDiffOn
 
-variable {m : WithTop ℕ∞} {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {m : WithTop ℕ∞} {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I m M]
 

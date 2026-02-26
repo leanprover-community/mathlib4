@@ -34,7 +34,7 @@ manifold, smooth bump function
 
 universe uE uF uH uM
 
-variable {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type uE} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type uH} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type uM} [TopologicalSpace M]
   [ChartedSpace H M]
 
@@ -304,7 +304,7 @@ protected theorem continuous : Continuous f :=
 
 /-- If `f : SmoothBumpFunction I c` is a smooth bump function and `g : M → G` is a function smooth
 on the source of the chart at `c`, then `f • g` is smooth on the whole manifold. -/
-theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
+theorem contMDiff_smul {G} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M → G}
     (hg : ContMDiffOn I 𝓘(ℝ, G) ∞ g (chartAt H c).source) :
     ContMDiff I 𝓘(ℝ, G) ∞ fun x => f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_

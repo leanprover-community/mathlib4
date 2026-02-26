@@ -72,7 +72,7 @@ open scoped Topology ContDiff
 section General
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
+  {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {s t : Set E} {f : E → F} {x : E}
 
 variable (𝕜) in
@@ -204,7 +204,7 @@ end General
 
 section Real
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
+variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace ℝ F] {s : Set E} (s_conv : Convex ℝ s) {f : E → F} {f' : E → E →L[ℝ] F}
   {f'' : E →L[ℝ] E →L[ℝ] F} (hf : ∀ x ∈ interior s, HasFDerivAt f (f' x) x) {x : E} (xs : x ∈ s)
   (hx : HasFDerivWithinAt f' f'' (interior s) x)
@@ -456,7 +456,7 @@ end Real
 section IsRCLikeNormedField
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
+  {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
 set_option backward.isDefEq.respectTransparency false in

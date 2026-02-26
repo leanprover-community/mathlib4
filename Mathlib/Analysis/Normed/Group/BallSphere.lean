@@ -18,7 +18,7 @@ closed balls in a seminormed group.
 
 open Metric Set Topology
 
-variable {E : Type*} [i : SeminormedAddCommGroup E] {r : ℝ}
+variable {E : Type*} [AddCommGroup E] [i : SeminormedAddCommGroup E] {r : ℝ}
 
 /-- We equip the sphere, in a seminormed group, with a formal operation of negation, namely the
 antipodal map. -/

@@ -45,18 +45,18 @@ namespace MeasureTheory
 variable {α E E' F G G' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- E for an inner product space
-  [NormedAddCommGroup E]
+  [AddCommGroup E] [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [CompleteSpace E]
   -- E' for an inner product space on which we compute integrals
-  [NormedAddCommGroup E']
+  [AddCommGroup E'] [NormedAddCommGroup E']
   [InnerProductSpace 𝕜 E'] [CompleteSpace E'] [NormedSpace ℝ E']
   -- F for a Lp submodule
-  [NormedAddCommGroup F]
+  [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F]
   -- G for a Lp add_subgroup
-  [NormedAddCommGroup G]
+  [AddCommGroup G] [NormedAddCommGroup G]
   -- G' for integrals on a Lp add_subgroup
-  [NormedAddCommGroup G']
+  [AddCommGroup G'] [NormedAddCommGroup G']
   [NormedSpace ℝ G'] [CompleteSpace G']
 
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {s t : Set α}
@@ -253,7 +253,7 @@ theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
     setIntegral_congr_ae (hm s hs) (h_ae_eq_f.mono fun x hx _ => hx)]
   exact integral_condExpL2_eq_of_fin_meas_real _ hs hμs
 
-variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
+variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [AddCommGroup E''] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
   [CompleteSpace E''] [NormedSpace ℝ E'']
 
 variable (𝕜 𝕜')
@@ -461,7 +461,7 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
     exact ENNReal.toReal_nonneg
 
 theorem condExpIndSMul_nonneg {E}
-    [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E] [IsOrderedModule ℝ E]
+    [AddCommGroup E] [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E] [IsOrderedModule ℝ E]
     [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     (0 : α → E) ≤ᵐ[μ] condExpIndSMul hm hs hμs x := by
   refine EventuallyLE.trans_eq ?_ (condExpIndSMul_ae_eq_smul hm hs hμs x).symm

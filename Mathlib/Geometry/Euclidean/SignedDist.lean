@@ -34,7 +34,7 @@ reference point.
 open EuclideanGeometry NormedSpace
 open scoped RealInnerProductSpace
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
 variable [NormedAddTorsor V P]
 
 section signedDist

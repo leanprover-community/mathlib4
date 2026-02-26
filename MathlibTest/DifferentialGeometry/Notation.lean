@@ -10,12 +10,12 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (F : Type*) [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
   (n : WithTop ℕ∞)
   (V : M → Type*) [TopologicalSpace (TotalSpace F V)]
@@ -153,7 +153,7 @@ end TotalSpace
 /-! Tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
 section differentiability
 
-variable {EM' : Type*} [NormedAddCommGroup EM']
+variable {EM' : Type*} [AddCommGroup EM'] [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
@@ -487,7 +487,7 @@ section smoothness
 
 -- Copy-pasted the tests for differentiability mutatis mutandis.
 -- Start with some basic tests: a simple function, both in applied and unapplied form.
-variable {EM' : Type*} [NormedAddCommGroup EM']
+variable {EM' : Type*} [AddCommGroup EM'] [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
@@ -883,7 +883,7 @@ end smoothness
 -- Inferring the type of `x` for all ContMDiff/MDifferentiable{Within}At elaborators.
 section
 
-variable {EM' : Type*} [NormedAddCommGroup EM']
+variable {EM' : Type*} [AddCommGroup EM'] [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {f : M → M'} {s : Set M}
@@ -922,7 +922,7 @@ end
 /-! Products of models with corners: TODO, add lots of further tests -/
 section
 
-variable {EM' : Type*} [NormedAddCommGroup EM']
+variable {EM' : Type*} [AddCommGroup EM'] [NormedAddCommGroup EM']
   [NormedSpace 𝕜 EM'] {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 EM' H')
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {f g : M → M'} {h h₂ : M → 𝕜} {h' : E → M'} {k k' : M × E → M'} {φ φ' : OpenPartialHomeomorph M H}

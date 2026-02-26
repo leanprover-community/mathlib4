@@ -48,7 +48,7 @@ open Filter Function MeromorphicOn Metric Real Set
 
 namespace Function.locallyFinsuppWithin
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 /--
 Shorthand notation for the restriction of a function with locally finite support to the closed unit
@@ -71,7 +71,7 @@ lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : Meromorphic f) :
     (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
   simp_all [locallyFinsuppWithin.toClosedBall]
 
-lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] {r : ℝ}
+lemma toClosedBall_support_subset_closedBall {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {r : ℝ}
     (f : locallyFinsupp E ℤ) :
     (toClosedBall r f).support ⊆ closedBall 0 |r| := by
   simp_all [toClosedBall, restrict_apply]
@@ -93,7 +93,7 @@ Hyperbolic Spaces](https://link.springer.com/book/10.1007/978-1-4757-1945-1) for
 to the lemma `countingFunction_finsum_eq_finsum_add` in
 `Mathlib/Analysis/Complex/JensenFormula.lean` for a formal statement.
 -/
-noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E] :
+noncomputable def logCounting {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [ProperSpace E] :
     locallyFinsupp E ℤ →+ (ℝ → ℝ) where
   toFun D := fun r ↦ ∑ᶠ z, D.toClosedBall r z * log (r * ‖z‖⁻¹) + (D 0) * log r
   map_zero' := by aesop
@@ -119,7 +119,7 @@ noncomputable def logCounting {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
 /--
 Evaluation of the logarithmic counting function at zero yields zero.
 -/
-@[simp] lemma logCounting_eval_zero {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+@[simp] lemma logCounting_eval_zero {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [ProperSpace E]
     (D : locallyFinsupp E ℤ) :
     logCounting D 0 = 0 := by
   simp [logCounting]
@@ -171,7 +171,7 @@ lemma logCounting_mono [ProperSpace E] {D : locallyFinsupp E ℤ} (hD : 0 ≤ D)
 /--
 For `1 ≤ r`, the logarithmic counting function is non-negative.
 -/
-theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+theorem logCounting_nonneg {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [ProperSpace E]
     {f : locallyFinsupp E ℤ} {r : ℝ} (h : 0 ≤ f) (hr : 1 ≤ r) :
     0 ≤ logCounting f r := by
   have h₃r : 0 < r := by linarith
@@ -190,7 +190,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 For `1 ≤ r`, the logarithmic counting function respects the `≤` relation.
 -/
-theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+theorem logCounting_le {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [ProperSpace E]
     {f₁ f₂ : locallyFinsupp E ℤ} {r : ℝ} (h : f₁ ≤ f₂) (hr : 1 ≤ r) :
     logCounting f₁ r ≤ logCounting f₂ r := by
   rw [← sub_nonneg] at h ⊢
@@ -199,7 +199,7 @@ theorem logCounting_le {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
 /--
 The logarithmic counting function respects the `≤` relation asymptotically.
 -/
-theorem logCounting_eventuallyLE {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
+theorem logCounting_eventuallyLE {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [ProperSpace E]
     {f₁ f₂ : locallyFinsupp E ℤ} (h : f₁ ≤ f₂) :
     logCounting f₁ ≤ᶠ[atTop] logCounting f₂ := by
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ logCounting_le h hr
@@ -216,7 +216,7 @@ namespace ValueDistribution
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {U : Set 𝕜} {f g : 𝕜 → E} {a : WithTop E} {a₀ : E}
 
 variable (f a) in

@@ -21,7 +21,7 @@ open scoped ComplexConjugate
 
 namespace ContinuousLinearMap
 
-variable {𝕜 F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 F : Type*} [RCLike 𝕜] [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section ScalarTower
 

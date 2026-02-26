@@ -24,7 +24,7 @@ open Module
 open scoped InnerProductSpace
 
 variable {𝕜 ι₁ ι₂ E F : Type*}
-variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
+variable [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F]
   [InnerProductSpace 𝕜 F]
 
 namespace WithLp

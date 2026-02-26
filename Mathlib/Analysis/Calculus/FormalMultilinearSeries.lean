@@ -392,7 +392,7 @@ lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAd
 lemma compContinuousLinearMap_zero [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
     (p : FormalMultilinearSeries 𝕜 F G) :
     p.compContinuousLinearMap (0 : E →L[𝕜] F) = constFormalMultilinearSeries 𝕜 E (p 0 0) := by
   ext n v
@@ -410,8 +410,8 @@ end Const
 section Linear
 
 variable [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace ContinuousLinearMap
 

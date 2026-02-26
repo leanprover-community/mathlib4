@@ -25,7 +25,7 @@ open scoped Manifold Topology
 
 
 variable {𝕜 B F : Type*} [TopologicalSpace B]
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace FiberwiseLinear
 
@@ -108,7 +108,7 @@ theorem target_trans_openPartialHomeomorph (hU : IsOpen U)
 
 end FiberwiseLinear
 
-variable {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*}
+variable {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*}
   [TopologicalSpace HB] [ChartedSpace HB B] {IB : ModelWithCorners 𝕜 EB HB}
 
 /-- Let `e` be an open partial homeomorphism of `B × F`.  Suppose that at every point `p` in the

@@ -28,9 +28,9 @@ open Asymptotics ContinuousLinearMap Topology
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f : E → F}
 variable {f' : E →L[𝕜] F}
 variable {x : E}
@@ -40,7 +40,7 @@ section CLMCompApply
 
 /-! ### Derivative of the pointwise composition/application of continuous linear maps -/
 
-variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
+variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
   {c' : E →L[𝕜] G →L[𝕜] H} {d : E → F →L[𝕜] G} {d' : E →L[𝕜] F →L[𝕜] G} {u : E → G} {u' : E →L[𝕜] G}
 
 @[fun_prop]
@@ -151,8 +151,8 @@ section ContinuousMultilinearApplyConst
 /-! ### Derivative of the application of continuous multilinear maps to a constant -/
 
 variable {ι : Type*}
-  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
-  {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+  {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+  {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
   {c : E → ContinuousMultilinearMap 𝕜 M H}
   {c' : E →L[𝕜] ContinuousMultilinearMap 𝕜 M H}
 

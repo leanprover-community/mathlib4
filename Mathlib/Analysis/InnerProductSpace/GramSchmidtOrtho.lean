@@ -38,7 +38,7 @@ and outputs a set of orthogonal vectors which have the same span.
 
 open Finset Submodule Module
 
-variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
 attribute [local instance] IsWellOrder.toHasWellFounded

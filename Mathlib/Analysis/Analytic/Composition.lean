@@ -284,7 +284,7 @@ end FormalMultilinearSeries
 end Topological
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
+  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [AddCommGroup H] [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
 namespace FormalMultilinearSeries

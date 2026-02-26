@@ -450,12 +450,12 @@ protected theorem dist {β : Type*} [PseudoMetricSpace β] {f g : α → β}
   continuous_dist.comp_aestronglyMeasurable (hf.prodMk hg)
 
 @[fun_prop]
-protected theorem norm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem norm {β : Type*} [AddCommGroup β] [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖) μ :=
   continuous_norm.comp_aestronglyMeasurable hf
 
 @[fun_prop]
-protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem nnnorm {β : Type*} [AddCommGroup β] [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖₊) μ :=
   continuous_nnnorm.comp_aestronglyMeasurable hf
 
@@ -905,7 +905,7 @@ end AEFinStronglyMeasurable
 
 section SecondCountableTopology
 
-variable {G : Type*} [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G]
+variable {G : Type*} [AddCommGroup G] [SeminormedAddCommGroup G] [MeasurableSpace G] [BorelSpace G]
   [SecondCountableTopology G] {f : α → G}
 
 /-- In a space with second countable topology and a sigma-finite measure,

@@ -22,7 +22,7 @@ public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {n : ℕ} {x : 𝕜} {s : Set 𝕜} (hx : x ∈ s) (h : UniqueDiffOn 𝕜 s) {f g : 𝕜 → F}
   -- For maximum generality, results about `smul` involve a second type besides `𝕜`,
   -- with varying hypotheses.
@@ -51,7 +51,7 @@ theorem Filter.EventuallyEq.iteratedDerivWithin_eq (hfg : f =ᶠ[𝓝[s] x] g) (
 
 theorem Filter.EventuallyEq.iteratedDerivWithin_eq_of_nhds_insert
     {𝕜 F : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
+    [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
     (hfg : f =ᶠ[𝓝[insert x s] x] g) :
     iteratedDerivWithin n f s x = iteratedDerivWithin n g s x :=
   (hfg.filter_mono (by simp)).iteratedDerivWithin_eq (hfg.eq_of_nhdsWithin (by simp))

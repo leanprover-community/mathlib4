@@ -80,7 +80,7 @@ open scoped Nat NNReal Topology
 field `f` satisfies the conditions to admit an integral curve `α : ℝ → E` to `f` defined on
 `Icc tmin tmax` with the initial condition `α t₀ = x`, where `‖x - x₀‖ ≤ r`. Note that the initial
 point `x` is allowed to differ from the point `x₀` about which the conditions on `f` are stated. -/
-structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
+structure IsPicardLindelof {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a r L K : ℝ≥0) : Prop where
   /-- The vector field at any time is Lipschitz with constant `K` within a closed ball. -/
   lipschitzOnWith : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ a)
@@ -101,7 +101,7 @@ equivalent to the initial value problem defined by `f`.
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
   {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
 
 /-- The Picard iteration. It will be shown that if `α : ℝ → E` and `picard f t₀ x₀ α` agree on an
@@ -149,7 +149,7 @@ within a closed ball.
 -/
 
 /-- The space of `L`-Lipschitz functions `α : Icc tmin tmax → E` -/
-structure FunSpace {E : Type*} [NormedAddCommGroup E]
+structure FunSpace {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
     {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (r L : ℝ≥0) where
   /-- The domain is `Icc tmin tmax`. -/
   toFun : Icc tmin tmax → E
@@ -158,7 +158,7 @@ structure FunSpace {E : Type*} [NormedAddCommGroup E]
 
 namespace FunSpace
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 section
 
@@ -488,7 +488,7 @@ end FunSpace
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
 
 -- TODO: generalise to open sets and `Ici` and `Iic`
@@ -614,7 +614,7 @@ namespace IsPicardLindelof
 
 section
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
   {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
 
 lemma continuousOn_uncurry (hf : IsPicardLindelof f t₀ x₀ a r L K) :
@@ -730,7 +730,7 @@ end
 
 open ODE
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
 
 /-- **Picard-Lindelöf (Cauchy-Lipschitz) theorem**, integral form. This version shows the existence
@@ -828,7 +828,7 @@ end IsPicardLindelof
 
 namespace ContDiffAt
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {f : E → E} {x₀ : E}
 
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits an

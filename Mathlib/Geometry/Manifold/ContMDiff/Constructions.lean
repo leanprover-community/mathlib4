@@ -29,23 +29,23 @@ open scoped Topology Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a charted space `M` over the pair `(E, H)`.
   {E : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   -- declare a charted space `M'` over the pair `(E', H')`.
   {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   -- declare a charted space `N` over the pair `(F, G)`.
   {F : Type*}
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   -- declare a charted space `N'` over the pair `(F', G')`.
   {F' : Type*}
-  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   -- declare a few vector spaces
-  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
-  {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
+  {F₁ : Type*} [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   -- declare functions, sets, points and smoothness indices
   {f : M → M'} {s : Set M} {x : M} {n : WithTop ℕ∞}
 
@@ -352,7 +352,7 @@ use `𝓘(𝕜, Π i, F i)` as the model space.
 -/
 
 
-variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGroup (Fi i)]
+variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, AddCommGroup (Fi i)] [∀ i, NormedAddCommGroup (Fi i)]
   [∀ i, NormedSpace 𝕜 (Fi i)] {φ : M → ∀ i, Fi i}
 
 theorem contMDiffWithinAt_pi_space :
@@ -379,7 +379,7 @@ end PiSpace
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
   {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
 

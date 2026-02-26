@@ -70,11 +70,11 @@ open scoped MeasureTheory Topology Pointwise
 elements within a distance `δ` of a point of order `n`. -/
 @[to_additive /-- In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
 `approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`. -/]
-def approxOrderOf (A : Type*) [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :=
+def approxOrderOf (A : Type*) [Group A] [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :=
   thickening δ {y | orderOf y = n}
 
 @[to_additive mem_approx_add_orderOf_iff]
-theorem mem_approxOrderOf_iff {A : Type*} [SeminormedGroup A] {n : ℕ} {δ : ℝ} {a : A} :
+theorem mem_approxOrderOf_iff {A : Type*} [Group A] [SeminormedGroup A] {n : ℕ} {δ : ℝ} {a : A} :
     a ∈ approxOrderOf A n δ ↔ ∃ b : A, orderOf b = n ∧ a ∈ ball b δ := by
   simp only [approxOrderOf, thickening_eq_biUnion_ball, mem_iUnion₂, mem_setOf_eq, exists_prop]
 
@@ -85,18 +85,18 @@ lie in infinitely many of the sets `approxOrderOf A n δₙ`. -/
 distances `δ₁, δ₂, ...`, `addWellApproximable A δ` is the limsup as `n → ∞` of the sets
 `approxAddOrderOf A n δₙ`. Thus, it is the set of points that lie in infinitely many of the sets
 `approxAddOrderOf A n δₙ`. -/]
-def wellApproximable (A : Type*) [SeminormedGroup A] (δ : ℕ → ℝ) : Set A :=
+def wellApproximable (A : Type*) [Group A] [SeminormedGroup A] (δ : ℕ → ℝ) : Set A :=
   blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n
 
 @[to_additive mem_add_wellApproximable_iff]
-theorem mem_wellApproximable_iff {A : Type*} [SeminormedGroup A] {δ : ℕ → ℝ} {a : A} :
+theorem mem_wellApproximable_iff {A : Type*} [Group A] [SeminormedGroup A] {δ : ℕ → ℝ} {a : A} :
     a ∈ wellApproximable A δ ↔
       a ∈ blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n :=
   Iff.rfl
 
 namespace approxOrderOf
 
-variable {A : Type*} [SeminormedCommGroup A] {a : A} {m n : ℕ} (δ : ℝ)
+variable {A : Type*} [CommGroup A] [SeminormedCommGroup A] {a : A} {m n : ℕ} (δ : ℝ)
 
 @[to_additive]
 theorem image_pow_subset_of_coprime (hm : 0 < m) (hmn : n.Coprime m) :
@@ -319,7 +319,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
 
 See also `AddCircle.exists_norm_nsmul_le`. -/
 lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
-    [NormedAddCommGroup A] [CompactSpace A] [PreconnectedSpace A]
+    [AddCommGroup A] [NormedAddCommGroup A] [CompactSpace A] [PreconnectedSpace A]
     [MeasurableSpace A] [BorelSpace A] {μ : Measure A} [μ.IsAddHaarMeasure]
     (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ / 2))) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by

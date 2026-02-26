@@ -37,8 +37,8 @@ namespace SchwartzMap
 
 variable
   (𝕜 : Type*) [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
-  {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E]
+  {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
 section definition
@@ -160,8 +160,8 @@ end definition
 section eval
 
 variable {𝕜' : Type*} [NormedField 𝕜']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℂ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (𝕜') in
@@ -237,8 +237,8 @@ end deriv
 section fubini
 
 variable
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℂ G]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℂ F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℂ G]
 
 variable [CompleteSpace E] [CompleteSpace F]
 
@@ -305,7 +305,7 @@ end fubini
 
 section L2
 
-variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 /-- Plancherel's theorem for Schwartz functions. -/
 @[simp] theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :

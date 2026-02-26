@@ -61,7 +61,7 @@ open RCLike
 
 open scoped ComplexConjugate
 
-variable {𝕜 : Type*} [RCLike 𝕜] (E : Type*) [NormedAddCommGroup E]
+variable {𝕜 : Type*} [RCLike 𝕜] (E : Type*) [AddCommGroup E] [NormedAddCommGroup E]
 
 /-- Predicate for the parallelogram identity to hold in a normed group. This is a scalar-less
 version of `InnerProductSpace`. If you have an `InnerProductSpaceable` assumption, you can

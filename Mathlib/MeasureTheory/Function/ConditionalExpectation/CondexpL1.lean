@@ -43,15 +43,15 @@ namespace MeasureTheory
 variable {α F F' G G' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
-  [NormedAddCommGroup F]
+  [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F]
   -- F' for integrals on a Lp submodule
-  [NormedAddCommGroup F']
+  [AddCommGroup F'] [NormedAddCommGroup F']
   [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
   -- G for a Lp add_subgroup
-  [NormedAddCommGroup G]
+  [AddCommGroup G] [NormedAddCommGroup G]
   -- G' for integrals on a Lp add_subgroup
-  [NormedAddCommGroup G']
+  [AddCommGroup G'] [NormedAddCommGroup G']
   [NormedSpace ℝ G'] [CompleteSpace G']
 
 section CondexpInd
@@ -297,7 +297,7 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
   rw [hx]
   by_cases hx_mem : x ∈ s <;> simp [hx_mem]
 
-theorem condExpInd_nonneg {E} [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E]
+theorem condExpInd_nonneg {E} [AddCommGroup E] [NormedAddCommGroup E] [PartialOrder E] [NormedSpace ℝ E]
     [IsOrderedModule ℝ E] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     0 ≤ condExpInd E hm μ s x := by
   rw [← coeFn_le]
@@ -504,7 +504,7 @@ theorem condExpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable[m] f μ)
   exact hfm.congr hfi.coeFn_toL1.symm
 
 theorem condExpL1_mono {E}
-    [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
+    [AddCommGroup E] [NormedAddCommGroup E] [PartialOrder E] [ClosedIciTopology E] [IsOrderedAddMonoid E]
     [CompleteSpace E] [NormedSpace ℝ E] [IsOrderedModule ℝ E] {f g : α → E} (hf : Integrable f μ)
     (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condExpL1 hm μ f ≤ᵐ[μ] condExpL1 hm μ g := by

@@ -18,7 +18,7 @@ A set of unique differentiability for `ℝ` is also a set of unique differentiab
 public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [h𝕜 : IsRCLikeNormedField 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace ℝ E]
   {s : Set E} {x : E}
 
 set_option backward.isDefEq.respectTransparency false in

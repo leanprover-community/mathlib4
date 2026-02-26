@@ -21,7 +21,7 @@ section PiLp
 open ContinuousLinearMap WithLp
 
 variable {𝕜 ι : Type*} {E : ι → Type*} {H : Type*}
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup H] [∀ i, NormedAddCommGroup (E i)]
+variable [NontriviallyNormedField 𝕜] [AddCommGroup H] [NormedAddCommGroup H] [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)] [NormedSpace 𝕜 H] [Fintype ι] (p) [Fact (1 ≤ p)]
   {n : WithTop ℕ∞} {f : H → PiLp p E} {f' : H →L[𝕜] PiLp p E} {t : Set H} {y : H}
 
@@ -96,7 +96,7 @@ end PiLp
 
 namespace WithLp
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {p : ℝ≥0∞} [Fact (1 ≤ p)] {n : WithTop ℕ∞}
 
 lemma contDiff_ofLp : ContDiff 𝕜 n (@ofLp p (E × F)) :=

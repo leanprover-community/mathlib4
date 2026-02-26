@@ -27,7 +27,7 @@ variable {𝕜 E : Type*}
 
 section SMulZeroClass
 
-variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
+variable [AddCommGroup 𝕜] [SeminormedAddCommGroup 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E]
 variable [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem ediam_smul_le (c : 𝕜) (s : Set E) : ediam (c • s) ≤ ‖c‖₊ • ediam s :=
@@ -37,7 +37,7 @@ end SMulZeroClass
 
 section DivisionRing
 
-variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
+variable [NormedDivisionRing 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E]
 variable [Module 𝕜 E] [NormSMulClass 𝕜 E]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -79,7 +79,7 @@ variable [NormedField 𝕜]
 
 section SeminormedAddCommGroup
 
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem smul_ball {c : 𝕜} (hc : c ≠ 0) (x : E) (r : ℝ) : c • ball x r = ball (c • x) (‖c‖ * r) := by
   ext y
@@ -368,7 +368,7 @@ end SeminormedAddCommGroup
 
 section NormedAddCommGroup
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem smul_closedBall (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     c • closedBall x r = closedBall (c • x) (‖c‖ * r) := by

@@ -30,7 +30,7 @@ instance [Inner 𝕜 H] : Inner 𝕜 Hᵐᵒᵖ where inner x y := inner 𝕜 x.
 @[simp] theorem inner_op [Inner 𝕜 H] (x y : H) : inner 𝕜 (op x) (op y) = inner 𝕜 x y := rfl
 
 section InnerProductSpace
-variable [RCLike 𝕜] [SeminormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+variable [RCLike 𝕜] [AddCommGroup H] [SeminormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 
 instance : InnerProductSpace 𝕜 Hᵐᵒᵖ where
   norm_sq_eq_re_inner x := (inner_self_eq_norm_sq x.unop).symm
@@ -43,7 +43,7 @@ section orthonormal
 theorem _root_.Module.Basis.mulOpposite_is_orthonormal_iff {ι : Type*} (b : Module.Basis ι 𝕜 H) :
     Orthonormal 𝕜 b.mulOpposite ↔ Orthonormal 𝕜 b := Iff.rfl
 
-variable {ι H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [Fintype ι]
+variable {ι H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [Fintype ι]
 
 /-- The multiplicative opposite of an orthonormal basis `b`, i.e., `b i ↦ op (b i)`. -/
 noncomputable def _root_.OrthonormalBasis.mulOpposite (b : OrthonormalBasis ι 𝕜 H) :

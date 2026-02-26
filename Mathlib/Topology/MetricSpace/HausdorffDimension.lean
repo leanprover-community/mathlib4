@@ -411,8 +411,8 @@ end IsometryEquiv
 
 namespace ContinuousLinearEquiv
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 @[simp]
 theorem dimH_image (e : E ≃L[𝕜] F) (s : Set E) : dimH (e '' s) = dimH s :=
@@ -435,7 +435,7 @@ end ContinuousLinearEquiv
 
 namespace Real
 
-variable {E : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [Fintype ι] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
 
 theorem dimH_ball_pi (x : ι → ℝ) {r : ℝ} (hr : 0 < r) :
     dimH (Metric.ball x r) = Fintype.card ι := by
@@ -522,8 +522,8 @@ theorem dimH_segment {x y : E} (h : x ≠ y) :
 
 end Real
 
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 theorem dense_compl_of_dimH_lt_finrank {s : Set E} (hs : dimH s < finrank ℝ E) : Dense sᶜ := by
   refine fun x => mem_closure_iff_nhds.2 fun t ht => nonempty_iff_ne_empty.2 fun he => hs.not_ge ?_
@@ -578,7 +578,7 @@ The Hausdorff dimension of the orthogonal projection of a set `s` onto a subspac
 is less than or equal to the Hausdorff dimension of `s`.
 -/
 theorem dimH_orthogonalProjection_le {𝕜 E : Type*} [RCLike 𝕜]
-    [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
     (K : Submodule 𝕜 E) [K.HasOrthogonalProjection] (s : Set E) :
     dimH (K.orthogonalProjection '' s) ≤ dimH s :=
   K.lipschitzWith_orthogonalProjection.dimH_image_le s

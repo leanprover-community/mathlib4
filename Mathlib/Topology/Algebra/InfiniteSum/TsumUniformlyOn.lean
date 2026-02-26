@@ -30,7 +30,7 @@ open scoped Topology NNReal
 
 section UniformlyOn
 
-variable {α β F : Type*} [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
+variable {α β F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [CompleteSpace F] {u : α → ℝ}
 
 theorem HasSumUniformlyOn.of_norm_le_summable {f : α → β → F} (hu : Summable u) {s : Set β}
     (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) : HasSumUniformlyOn f (fun x ↦ ∑' n, f n x) s := by
@@ -65,7 +65,7 @@ lemma SummableLocallyUniformlyOn_of_locally_bounded [TopologicalSpace β] [Local
 end UniformlyOn
 
 variable {ι 𝕜 F : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] {s : Set 𝕜}
+    [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {s : Set 𝕜}
 
 /-- The `derivWithin` of a sum whose derivative is absolutely and uniformly convergent sum on an
 open set `s` is the sum of the derivatives of sequence of functions on the open set `s` -/

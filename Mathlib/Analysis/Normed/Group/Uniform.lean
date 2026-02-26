@@ -25,7 +25,7 @@ open Filter Function Metric Bornology
 open scoped ENNReal NNReal Uniformity Pointwise Topology
 
 section SeminormedGroup
-variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
+variable [Group E] [SeminormedGroup E] [Group F] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul : IsIsometricSMul E E :=
@@ -193,7 +193,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
+variable [CommGroup E] [SeminormedCommGroup E] [CommGroup F] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
 
 @[to_additive]
 instance NormedGroup.to_isIsometricSMul_right : IsIsometricSMul Eᵐᵒᵖ E :=
@@ -262,7 +262,7 @@ theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
   apply nndist_mul_mul_le
 
 section PseudoEMetricSpace
-variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
+variable {α E : Type*} [CommGroup E] [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}
   {f g : α → E} {s : Set α}
 
 @[to_additive (attr := simp)]
@@ -426,7 +426,7 @@ theorem cauchySeq_prod_of_eventually_eq {u v : ℕ → E} {N : ℕ} (huv : ∀ n
   simp [huv m (le_of_lt hm)]
 
 @[to_additive CauchySeq.norm_bddAbove]
-lemma CauchySeq.mul_norm_bddAbove {G : Type*} [SeminormedGroup G] {u : ℕ → G}
+lemma CauchySeq.mul_norm_bddAbove {G : Type*} [Group G] [SeminormedGroup G] {u : ℕ → G}
     (hu : CauchySeq u) : BddAbove (Set.range (fun n ↦ ‖u n‖)) := by
   obtain ⟨C, -, hC⟩ := cauchySeq_bdd hu
   simp_rw [SeminormedGroup.dist_eq] at hC

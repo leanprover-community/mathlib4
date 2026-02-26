@@ -42,8 +42,8 @@ section BasicProperties_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -305,8 +305,8 @@ end BasicProperties_Seminormed
 
 section BasicProperties
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -368,8 +368,8 @@ section Norm_Seminormed
 
 open scoped InnerProductSpace
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -643,8 +643,8 @@ section Norm
 
 open scoped InnerProductSpace
 
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 variable {ι : Type*}
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -908,7 +908,7 @@ open scoped InnerProductSpace
 
 variable {G : Type*}
 variable (𝕜 E)
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -953,7 +953,7 @@ theorem real_inner_I_smul_self (x : E) :
 /-- A complex inner product implies a real inner product. This cannot be an instance since it
 creates a diamond with `PiLp.innerProductSpace` because `re (sum i, ⟪x i, y i⟫)` and
 `sum i, re ⟪x i, y i⟫` are not defeq. -/
-def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
+def InnerProductSpace.complexToReal [AddCommGroup G] [SeminormedAddCommGroup G] [InnerProductSpace ℂ G] :
     InnerProductSpace ℝ G :=
   InnerProductSpace.rclikeToReal ℂ G
 

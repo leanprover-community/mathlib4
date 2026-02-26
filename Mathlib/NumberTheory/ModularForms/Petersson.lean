@@ -126,7 +126,7 @@ lemma petersson_exp_decay_right (f : F) {f' : F'} (h_bd : IsZeroAtImInfty f') :
 
 omit Γ in
 -- this lemma can't go in `UpperHalfPlane.FunctionsBoundedAtInfty` because it needs `Real.exp`
-lemma of_exp_decay {E : Type*} [NormedAddCommGroup E] {f : ℍ → E}
+lemma of_exp_decay {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {f : ℍ → E}
     (hf : ∃ c > 0, f =O[atImInfty] fun τ ↦ Real.exp (-c * τ.im)) :
     IsZeroAtImInfty f := by
   obtain ⟨a, ha, ha'⟩ := hf

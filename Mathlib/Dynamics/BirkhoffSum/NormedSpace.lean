@@ -41,7 +41,7 @@ theorem Function.IsFixedPt.tendsto_birkhoffAverage
   tendsto_const_nhds.congr' <| (eventually_ne_atTop 0).mono fun _n hn ↦
     (h.birkhoffAverage_eq R g (Nat.cast_ne_zero.mpr hn)).symm
 
-variable [NormedAddCommGroup E]
+variable [AddCommGroup E] [NormedAddCommGroup E]
 
 theorem dist_birkhoffSum_apply_birkhoffSum (f : α → α) (g : α → E) (n : ℕ) (x : α) :
     dist (birkhoffSum f g n (f x)) (birkhoffSum f g n x) = dist (g (f^[n] x)) (g x) := by
@@ -101,7 +101,7 @@ theorem tendsto_birkhoffAverage_apply_sub_birkhoffAverage' {g : α → E}
 end
 
 variable (𝕜 : Type*) {X E : Type*}
-  [PseudoEMetricSpace X] [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [PseudoEMetricSpace X] [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f : X → X} {g : X → E} {l : X → E}
 
 /-- If `f` is a non-strictly contracting map (i.e., it is Lipschitz with constant `1`)

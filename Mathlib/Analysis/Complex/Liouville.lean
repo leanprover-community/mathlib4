@@ -30,7 +30,7 @@ open scoped Topology Filter NNReal Real
 
 universe u v
 
-variable {E : Type u} [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type v} [NormedAddCommGroup F]
+variable {E : Type u} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] {F : Type v} [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace ℂ F]
 
 local postfix:100 "̂" => UniformSpace.Completion

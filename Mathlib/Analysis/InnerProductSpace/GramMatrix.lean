@@ -44,7 +44,7 @@ lemma gram_apply [Inner 𝕜 E] (v : n → E) (i j : n) :
 variable [RCLike 𝕜]
 
 section SemiInnerProductSpace
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 @[simp]
 lemma gram_zero : gram 𝕜 (0 : n → E) = 0 := Matrix.ext fun _ _ ↦ inner_zero_left _
@@ -97,7 +97,7 @@ theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram �
 end SemiInnerProductSpace
 
 section NormedInnerProductSpace
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Finite n]
+variable [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [Finite n]
 
 /-- In a normed space, linear independence of `v` implies positive definiteness of `gram 𝕜 v`. -/
 theorem posDef_gram_of_linearIndependent

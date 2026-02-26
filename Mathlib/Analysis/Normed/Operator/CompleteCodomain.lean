@@ -27,8 +27,8 @@ open scoped Topology
 
 namespace SeparatingDual
 
-variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [SeparatingDual 𝕜 E] [Nontrivial E]
+variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [SeparatingDual 𝕜 E] [Nontrivial E]
 
 /-- If a space of linear maps from `E` to `F` is complete, and `E` is nontrivial, then `F` is
 complete. -/
@@ -52,7 +52,7 @@ lemma completeSpace_continuousLinearMap_iff :
 
 open ContinuousMultilinearMap
 
-variable {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)]
+variable {ι : Type*} [Finite ι] {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, NormedAddCommGroup (M i)]
   [∀ i, NormedSpace 𝕜 (M i)] [∀ i, SeparatingDual 𝕜 (M i)]
 
 /-- If a space of multilinear maps from `Π i, E i` to `F` is complete, and each `E i` has a nonzero

@@ -31,7 +31,7 @@ noncomputable section
 open Metric Function AffineMap Set AffineSubspace
 open scoped Topology
 
-variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]
 
 namespace EuclideanGeometry

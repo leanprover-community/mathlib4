@@ -56,7 +56,7 @@ noncomputable section
 
 namespace Besicovitch
 
-variable {E : Type*} [NormedAddCommGroup E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
 
 namespace SatelliteConfig
 
@@ -96,7 +96,7 @@ end SatelliteConfig
 
 /-- The maximum cardinality of a `1`-separated set in the ball of radius `2`. This is also the
 optimal number of families in the Besicovitch covering theorem. -/
-def multiplicity (E : Type*) [NormedAddCommGroup E] :=
+def multiplicity (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] :=
   sSup {N | ∃ s : Finset E, s.card = N ∧ (∀ c ∈ s, ‖c‖ ≤ 2) ∧ ∀ c ∈ s, ∀ d ∈ s, c ≠ d → 1 ≤ ‖c - d‖}
 
 section

@@ -55,8 +55,8 @@ namespace NormedSpace
 section General
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable (E : Type*) [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable (E : Type*) [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (F : Type*) [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The inclusion of a normed space in its double (topological) strong dual, considered
 as a bounded linear map. -/
@@ -86,7 +86,7 @@ variable (𝕜 : Type v) [RCLike 𝕜] {E : Type u}
 
 section Seminormed
 
-variable [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 /-- The inclusion of a normed space in its double strong dual is an isometry onto its image. -/
 def inclusionInDoubleDualLi : E →ₗᵢ[𝕜] StrongDual 𝕜 (StrongDual 𝕜 E) :=
@@ -106,7 +106,7 @@ theorem norm_le_dual_bound (x : E) {M : ℝ} (hMp : 0 ≤ M)
 
 end Seminormed
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem eq_zero_of_forall_dual_eq_zero {x : E} (h : ∀ f : StrongDual 𝕜 E, f x = (0 : 𝕜)) : x = 0 :=
   norm_le_zero_iff.mp (norm_le_dual_bound 𝕜 x le_rfl fun f => by simp [h f])
@@ -126,7 +126,7 @@ section PolarSets
 open Metric Set StrongDual
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem isClosed_polar (s : Set E) : IsClosed (StrongDual.polar 𝕜 s) := by
   dsimp only [StrongDual.polar]
@@ -188,7 +188,7 @@ theorem closedBall_inv_subset_polar_closedBall {r : ℝ} :
 set_option backward.isDefEq.respectTransparency false in
 /-- The `polar` of closed ball in a normed space `E` is the closed ball of the dual with inverse
 radius. -/
-theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) :
     StrongDual.polar 𝕜 (closedBall (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
   refine Subset.antisymm ?_ (closedBall_inv_subset_polar_closedBall 𝕜)
@@ -198,7 +198,7 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
 set_option backward.isDefEq.respectTransparency false in
-theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
     (hr : 0 < r) : StrongDual.polar 𝕜 (ball (0 : E) r) = closedBall (0 : StrongDual 𝕜 E) r⁻¹ := by
   apply le_antisymm
   · intro x hx
@@ -225,7 +225,7 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhds : s ∈ 𝓝 (0 : E
     (((topDualPairing 𝕜 E).flip.polar_antitone r_ball).trans <|
       polar_ball_subset_closedBall_div ha r_pos)
 
-theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {r : ℝ} (hr : 0 < r) :
     ⋂₀ (StrongDual.polar 𝕜 '' { F | F.Finite ∧ F ⊆ closedBall (0 : E) r⁻¹ }) = closedBall 0 r := by
   conv_rhs => rw [← inv_inv r]

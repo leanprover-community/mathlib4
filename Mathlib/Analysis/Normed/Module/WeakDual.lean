@@ -173,7 +173,7 @@ by the dual-norm (i.e. the operator-norm).
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 namespace NormedSpace
 
@@ -254,7 +254,7 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
 
 open TopologicalSpace
 
-variable (𝕜 V : Type*) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable (𝕜 V : Type*) [NontriviallyNormedField 𝕜] [AddCommGroup V] [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable [TopologicalSpace.SeparableSpace V] (K : Set (WeakDual 𝕜 V))
 
 /-- In a separable normed space, there exists a sequence of continuous functions that

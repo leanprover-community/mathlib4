@@ -30,9 +30,9 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
 section IndepFun
 
 variable [IsFiniteMeasure P] {E F : Type*}
-  {mE : MeasurableSpace E} [NormedAddCommGroup E]
+  {mE : MeasurableSpace E} [AddCommGroup E] [NormedAddCommGroup E]
   [BorelSpace E] [SecondCountableTopology E]
-  {mF : MeasurableSpace F} [NormedAddCommGroup F] [CompleteSpace F]
+  {mF : MeasurableSpace F} [AddCommGroup F] [NormedAddCommGroup F] [CompleteSpace F]
   [BorelSpace F] [SecondCountableTopology F]
   {X : Ω → E} {Y : Ω → F}
 
@@ -99,7 +99,7 @@ end IndepFun
 section iIndepFun
 
 variable [IsProbabilityMeasure P] {ι : Type*} [Fintype ι] {E : ι → Type*}
-  {mE : ∀ i, MeasurableSpace (E i)} [∀ i, NormedAddCommGroup (E i)] [∀ i, CompleteSpace (E i)]
+  {mE : ∀ i, MeasurableSpace (E i)} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, CompleteSpace (E i)]
   [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)] {X : (i : ι) → Ω → E i}
 
 section InnerProductSpace

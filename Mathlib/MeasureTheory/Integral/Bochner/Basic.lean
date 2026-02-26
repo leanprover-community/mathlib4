@@ -152,9 +152,9 @@ Define the Bochner integral on functions generally to be the `L1` Bochner integr
 functions, and 0 otherwise; prove its basic properties.
 -/
 
-variable [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedDivisionRing 𝕜]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 open Classical in
 /-- The Bochner integral -/
@@ -512,13 +512,13 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
       rw [Real.norm_eq_abs, abs_of_nonneg h]
     rw [this, hfi, toReal_top]
 
-theorem integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
+theorem integral_norm_eq_lintegral_enorm {P : Type*} [AddCommGroup P] [NormedAddCommGroup P] {f : α → P}
     (hf : AEStronglyMeasurable f μ) : ∫ x, ‖f x‖ ∂μ = (∫⁻ x, ‖f x‖ₑ ∂μ).toReal := by
   rw [integral_eq_lintegral_of_nonneg_ae _ hf.norm]
   · simp_rw [ofReal_norm_eq_enorm]
   · filter_upwards; simp_rw [Pi.zero_apply, norm_nonneg, imp_true_iff]
 
-theorem ofReal_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
+theorem ofReal_integral_norm_eq_lintegral_enorm {P : Type*} [AddCommGroup P] [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ENNReal.ofReal (∫ x, ‖f x‖ ∂μ) = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal]
   exact lt_top_iff_ne_top.mp (hasFiniteIntegral_iff_enorm.mpr hf.2)
@@ -554,7 +554,7 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace
 -- We redeclare `E` here to temporarily avoid
 -- the `[CompleteSpace E]` and `[NormedSpace ℝ E]` instances.
 theorem tendsto_integral_norm_approxOn_sub
-    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {f : α → E}
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {f : α → E}
     (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
     Tendsto (fun n ↦ ∫ x, ‖SimpleFunc.approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ ∂μ)
       atTop (𝓝 0) := by
@@ -899,7 +899,7 @@ lemma tendsto_of_integral_tendsto_of_antitone {μ : Measure α} {f : ℕ → α 
 
 section NormedAddCommGroup
 
-variable {H : Type*} [NormedAddCommGroup H]
+variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H]
 
 theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a‖ ∂μ := by
   simp only [eLpNorm, eLpNorm'_eq_lintegral_enorm, ENNReal.toReal_one, ENNReal.rpow_one,
@@ -1191,7 +1191,7 @@ theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ
 /-- Hölder's inequality for the integral of a product of norms. The integral of the product of two
 norms of functions is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are
 conjugate exponents. -/
-theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → E} {p q : ℝ}
+theorem integral_mul_norm_le_Lp_mul_Lq {E} [AddCommGroup E] [NormedAddCommGroup E] {f g : α → E} {p q : ℝ}
     (hpq : p.HolderConjugate q) (hf : MemLp f (ENNReal.ofReal p) μ)
     (hg : MemLp g (ENNReal.ofReal q) μ) :
     ∫ a, ‖f a‖ * ‖g a‖ ∂μ ≤ (∫ a, ‖f a‖ ^ p ∂μ) ^ (1 / p) * (∫ a, ‖g a‖ ^ q ∂μ) ^ (1 / q) := by

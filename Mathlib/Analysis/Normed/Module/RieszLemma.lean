@@ -35,8 +35,8 @@ open Set Metric
 open Topology
 
 variable {𝕜 : Type*} [NormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace ℝ F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-- Riesz's lemma, which usually states that it is possible to find a
 vector with norm 1 whose distance to a closed proper subspace is
@@ -128,7 +128,7 @@ For a version with weaker assumptions on the underlying field, see `riesz_lemma`
 `riesz_lemma_of_norm_lt`.
 -/
 theorem riesz_lemma_of_lt_one {𝕜 : Type*} [RCLike 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃ (x : E), x ∉ F) {r : ℝ} (hr : r < 1) :
     ∃ x₀ ∉ F, ‖x₀‖ = 1 ∧ ∀ y ∈ F, r ≤ ‖x₀ - y‖ := by
   obtain ⟨x₀, hx₀, h⟩ := riesz_lemma hFc hF hr

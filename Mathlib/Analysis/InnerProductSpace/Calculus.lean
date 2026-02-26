@@ -37,8 +37,8 @@ open RCLike Real Filter
 section DerivInner
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
-variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
@@ -64,7 +64,7 @@ theorem differentiable_inner : Differentiable ℝ fun p : E × E => ⟪p.1, p.2�
   isBoundedBilinearMap_inner.differentiableAt
 
 variable (𝕜)
-variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} {f' g' : G →L[ℝ] E}
+variable {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} {f' g' : G →L[ℝ] E}
   {s : Set G} {x : G} {n : WithTop ℕ∞}
 
 theorem ContDiffWithinAt.inner (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x) :
@@ -286,7 +286,7 @@ section PiLike
 
 open ContinuousLinearMap
 
-variable {𝕜 ι H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+variable {𝕜 ι H : Type*} [RCLike 𝕜] [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
   {f : H → EuclideanSpace 𝕜 ι} {f' : H →L[𝕜] EuclideanSpace 𝕜 ι} {t : Set H} {y : H}
 
 section finite
@@ -347,7 +347,7 @@ section DiffeomorphUnitBall
 
 open Metric hiding mem_nhds_iff
 
-variable {n : ℕ∞} {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+variable {n : ℕ∞} {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 
 theorem OpenPartialHomeomorph.contDiff_univUnitBall : ContDiff ℝ n (univUnitBall : E → E) := by
   suffices ContDiff ℝ n fun x : E => (√(1 + ‖x‖ ^ 2 : ℝ))⁻¹ from this.smul contDiff_id

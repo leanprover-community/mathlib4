@@ -21,7 +21,7 @@ is conformal at `x` iff the derivative preserves inner products up to a scalar m
 noncomputable section
 
 variable {E F : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
 variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
 open RealInnerProductSpace
