@@ -586,6 +586,7 @@ theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlg
 
 namespace Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a transcendental element `s : S` over `R`, the `R`-algebra equivalence
 between `R[X]` and `Algebra.adjoin R {s}` given by sending `X` to `s`. -/
 noncomputable def algEquivOfTranscendental (s : S) (h : Transcendental R s) :
