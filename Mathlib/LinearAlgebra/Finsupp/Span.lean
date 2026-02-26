@@ -128,22 +128,26 @@ theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
   · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert rfl; grind
     simpa only [Finset.mem_preimage, iSup_subtype, iSup_and', this]
 
+section lsumSmulRange
+
+variable {R M N σ : Type*} [CommSemiring R] [AddCommMonoid M]
+variable [AddCommMonoid N] [Module R M] [Module R N]
+
 open scoped Pointwise in
-lemma Submodule.range_lsum_smul {R M N σ : Type*} [CommSemiring R] [AddCommMonoid M]
-    [AddCommMonoid N] [Module R M] [Module R N] (φ : M →ₗ[R] N) (f : σ → R) :
+lemma Submodule.range_lsum_smul (φ : M →ₗ[R] N) (f : σ → R) :
     (lsum (S := R) (f · • φ)).range = Set.range f • φ.range := by
   simp_rw [range_eq_map, ← span_single_eq_top, ← span_univ, map_span, set_smul_span]
   congr 1
   aesop (add simp Set.mem_smul)
 
 open scoped Pointwise in
-theorem Submodule.image_smul_top_eq_range_lsum {R M σ : Type*} [CommSemiring R] [AddCommGroup M]
-    [Module R M] (s : Set σ) (f : σ → R) : (f '' s • ⊤ : Submodule R M) =
-      (lsum (S := R) fun i : s ↦ f i • .id).range := by
+theorem Submodule.image_smul_top_eq_range_lsum (s : Set σ) (f : σ → R) :
+    (f '' s • ⊤ : Submodule R M) = (lsum (S := R) fun i : s ↦ f i • .id).range := by
   simpa [Set.range_comp] using (range_lsum_smul (.id (R := R) (M := M)) (f ∘ (↑) : s → R)).symm
 
 open scoped Pointwise in
-theorem Submodule.smul_top_eq_range_lsum {R M : Type*} [CommSemiring R] [AddCommGroup M]
-    [Module R M] (s : Set R) : (s • ⊤ : Submodule R M) =
-      (lsum (S := R) fun i : s ↦ i.val • .id).range := by
+theorem Submodule.smul_top_eq_range_lsum (s : Set R) :
+    (s • ⊤ : Submodule R M) = (lsum (S := R) fun i : s ↦ i.val • .id).range := by
   simpa using image_smul_top_eq_range_lsum (M := M) s id
+
+end lsumSmulRange
