@@ -121,7 +121,6 @@ jobs:
 
       - name: Checkout CI scripts
         if: ${{ steps.actorTeams.outputs.isTeamMember == 'true' }}
-        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: Determine Zulip topic

@@ -345,7 +345,6 @@ jobs:
 
     - name: Checkout CI scripts
       if: steps.check_branch.outputs.result == 'false'
-      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Attempt automatic PR creation

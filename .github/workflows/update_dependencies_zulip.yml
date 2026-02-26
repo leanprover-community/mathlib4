@@ -20,7 +20,6 @@ jobs:
           fetch-depth: 2  # Need previous commit for diff
 
       - name: Checkout CI scripts
-        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: Set up Python
@@ -98,7 +97,6 @@ jobs:
           fetch-depth: 2  # Need previous commit for diff
 
       - name: Checkout CI scripts
-        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: Set up Python

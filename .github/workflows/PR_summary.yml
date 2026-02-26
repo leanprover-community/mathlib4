@@ -24,7 +24,6 @@ jobs:
         path: pr-branch
 
     - name: Checkout CI scripts
-      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Update the merge-conflict label

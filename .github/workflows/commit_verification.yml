@@ -41,7 +41,6 @@ jobs:
           # Fetch full history to access all PR commits
           fetch-depth: 0
       - name: Checkout CI scripts
-        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
       - name: Check for special commits
         id: check

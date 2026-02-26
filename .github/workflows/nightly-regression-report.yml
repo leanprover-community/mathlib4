@@ -31,7 +31,6 @@ jobs:
         ref: nightly-testing-green
 
     - name: Checkout CI scripts
-      id: checkout_ci_scripts
       uses: ./.github/actions/checkout-ci-scripts
 
     - name: Configure Lean

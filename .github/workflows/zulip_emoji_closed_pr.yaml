@@ -47,7 +47,6 @@ jobs:
       - name: Checkout CI scripts
         if: ${{ ! startsWith(github.event.pull_request.title, '[Merged by Bors]') ||
                 github.event_name == 'reopened' }}
-        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: Update zulip emoji reactions

@@ -195,7 +195,6 @@ jobs:
           (! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' )) }}
-        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       - name: update zulip emoji reactions

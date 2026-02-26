@@ -92,7 +92,6 @@ jobs:
           path: tools-branch
 
       - name: Checkout CI scripts
-        id: checkout_ci_scripts
         uses: ./.github/actions/checkout-ci-scripts
 
       # Checkout the PR branch into a subdirectory
