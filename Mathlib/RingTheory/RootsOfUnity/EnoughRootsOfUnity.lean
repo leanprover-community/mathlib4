@@ -120,7 +120,7 @@ instance {G M : Type*} [Group G] [Finite G] [CommMonoid M]
     Finite (G →* Mˣ) := by
   let S := rootsOfUnity (Monoid.exponent G) M
   have : Finite (G →* S) := .of_injective _ DFunLike.coe_injective
-  refine .of_surjective (fun f : G →* S ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
+  refine .of_surjective S.subtype.comp fun f ↦ ?_
   have H a : f a ∈ S := by
     rw [mem_rootsOfUnity, ← map_pow, Monoid.pow_exponent_eq_one, map_one]
   exact ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ by simp⟩

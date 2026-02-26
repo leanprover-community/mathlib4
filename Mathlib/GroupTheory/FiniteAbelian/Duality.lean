@@ -73,9 +73,8 @@ variable {M} in
  theorem forall_apply_eq_apply_iff {g g' : G} :
     (∀ φ : G →* Mˣ, φ g = φ g') ↔ g = g' := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
-  simp_rw (config := {singlePass := true}) [← mul_inv_eq_one, ← map_inv, ← map_mul] at h ⊢
-  contrapose! h
-  exact exists_apply_ne_one_of_hasEnoughRootsOfUnity G M h
+  simpa [← not_forall, not_imp_not, mul_inv_eq_one, h] using
+    exists_apply_ne_one_of_hasEnoughRootsOfUnity G M (a := g * g'⁻¹)
 
 /-- A finite commutative group `G` is (noncanonically) isomorphic to the group `G →* Mˣ`
 when `M` is a commutative monoid with enough `n`th roots of unity, where `n` is the exponent
@@ -126,12 +125,8 @@ theorem forall_monoidHom_apply_eq_one_iff (H : Subgroup G) (x : G) :
   have : HasEnoughRootsOfUnity M (Monoid.exponent (G ⧸ H)) :=
     hM.of_dvd M <| Group.exponent_quotient_dvd H
   refine ⟨fun h ↦ ?_, fun hx φ hφ ↦ hφ x hx⟩
-  contrapose! h
-  rw [← (QuotientGroup.eq_one_iff x).not] at h
-  obtain ⟨ψ, hψ⟩ := exists_apply_ne_one_of_hasEnoughRootsOfUnity (G ⧸ H) M h
-  refine ⟨ψ.comp (QuotientGroup.mk' H), fun x hx ↦ ?_, hψ⟩
-  rw [coe_comp, Function.comp_apply, QuotientGroup.coe_mk', (QuotientGroup.eq_one_iff _).mpr hx,
-    map_one]
+  simp only [← QuotientGroup.eq_one_iff, ← forall_apply_eq_apply_iff _ (M := M), map_one] at h ⊢
+  exact fun φ ↦ h (φ.comp (QuotientGroup.mk' H)) fun y hy ↦ hy φ
 
 variable (G) in
 /--
@@ -170,10 +165,9 @@ noncomputable def subgroupOrderIsoSubgroupMonoidHom : Subgroup G ≃o (Subgroup 
   toFun H := OrderDual.toDual (restrictHom H Mˣ).ker
   invFun Φ := (monoidHomMonoidHomEquiv G M).mapSubgroup (restrictHom Φ.ofDual Mˣ).ker
   map_rel_iff' {H₁} {H₂} := by
-    simp_rw (config := {singlePass := true}) [MulEquiv.mapSubgroup_apply, Equiv.coe_fn_mk,
-      ge_iff_le, OrderDual.toDual_le_toDual, SetLike.le_def, mem_ker, restrictHom_apply,
-      restrict_eq_one_iff, ← forall_monoidHom_apply_eq_one_iff M H₂]
-    grind
+    simp_rw [Equiv.coe_fn_mk, OrderDual.toDual_le_toDual,
+      SetLike.le_def, mem_ker, restrictHom_apply, restrict_eq_one_iff]
+    grind [forall_monoidHom_apply_eq_one_iff M H₂]
   left_inv H := by
     ext x
     rw [MulEquiv.coe_mapSubgroup, Subgroup.mem_map_equiv, MonoidHom.mem_ker]
@@ -193,7 +187,7 @@ theorem mem_subgroupOrderIsoSubgroupMonoidHom_iff (H : Subgroup G) (φ : G →* 
 @[simp]
 theorem mem_subgroupOrderIsoSubgroupMonoidHom_symm_iff (Φ : Subgroup (G →* Mˣ)) (g : G) :
     g ∈ (subgroupOrderIsoSubgroupMonoidHom G M).symm (OrderDual.toDual Φ) ↔ ∀ φ ∈ Φ, φ g = 1 := by
-  simp only [subgroupOrderIsoSubgroupMonoidHom, OrderIso.symm_mk, RelIso.coe_fn_mk,
+  simp_rw [subgroupOrderIsoSubgroupMonoidHom, OrderIso.symm_mk, RelIso.coe_fn_mk,
     Equiv.coe_fn_symm_mk, OrderDual.ofDual_toDual, MulEquiv.coe_mapSubgroup,
     Subgroup.mem_map_equiv, mem_ker, restrictHom_apply, restrict_eq_one_iff,
     monoidHomMonoidHomEquiv_symm_apply_apply]
