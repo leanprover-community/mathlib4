@@ -39,7 +39,7 @@ is a linear map between `M₁` and `M₂` that commutes with the bilinear forms.
 structure Isometry (B₁ : LinearMap.BilinForm R M₁) (B₂ : LinearMap.BilinForm R M₂)
     extends M₁ →ₗ[R] M₂ where
   /-- The bilinear forms agree across the map. -/
-  map_app (m m' : M₁) : B₂ (toFun m) (toFun m') = B₁ m m'
+  map_app' (m m' : M₁) : B₂ (toFun m) (toFun m') = B₁ m m'
 
 namespace Isometry
 
