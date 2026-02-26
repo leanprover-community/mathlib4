@@ -29,7 +29,7 @@ variable (A K L : Type*) {B : Type*} [Field K] [Field L] [Algebra K L] [CommRing
 
 open MulAction Pointwise Ideal
 
-noncomputable section basic
+section basic
 
 variable (D : Type*) [Field D] [Algebra D L]
 
