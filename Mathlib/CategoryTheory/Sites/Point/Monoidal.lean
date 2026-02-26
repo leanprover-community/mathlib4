@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
+public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 public import Mathlib.CategoryTheory.Localization.Monoidal.Functor
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Sites.Monoidal
@@ -93,25 +93,13 @@ instance (M : A) :
 
 attribute [local instance] IsFiltered.isConnected in
 instance : IsIso (OplaxMonoidal.η (Φ.presheafFiber (A := A))) :=
-  (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+  (IsColimit.coconePointUniqueUpToIso (Φ.isColimitPresheafFiberCocone (𝟙_ _))
     (isColimitConstCocone _ (𝟙_ A))).isIso_hom
 
-attribute [local simp] tensorHom_def toPresheafFiber OplaxMonoidal.δ presheafFiberDesc in
 instance (P₁ P₂ : Cᵒᵖ ⥤ A) :
-    IsIso (OplaxMonoidal.δ Φ.presheafFiber P₁ P₂) := by
-  let e := IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-    ((Final.isColimitWhiskerEquiv (diag _) _ ).2
-      (isColimitOfPreserves₂ (curriedTensor A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P₁))
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P₂))))
-  rw [show OplaxMonoidal.δ Φ.presheafFiber P₁ P₂ =
-      colimMap { app _ := by exact 𝟙 _ } ≫ e.hom by cat_disch,
-    isIso_comp_right_iff]
-  apply +allowSynthFailures isIso_colimMap
-  rw [NatTrans.isIso_iff_isIso_app]
-  intro
-  dsimp
-  infer_instance
+    IsIso (OplaxMonoidal.δ Φ.presheafFiber P₁ P₂) :=
+  (IsColimit.coconePointUniqueUpToIso (Φ.isColimitPresheafFiberCocone (P₁ ⊗ P₂))
+    ((Φ.isColimitPresheafFiberCocone P₁).tensor (Φ.isColimitPresheafFiberCocone P₂))).isIso_hom
 
 noncomputable instance : (Φ.presheafFiber (A := A)).Monoidal :=
   .ofOplaxMonoidal _
