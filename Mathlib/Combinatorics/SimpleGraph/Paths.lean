@@ -745,7 +745,7 @@ lemma isPath_append_isCycle' {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsP
     obtain ⟨z, hz₁, hz₂⟩ := Walk.IsPath.exists_of_edges hp h₁ h₂ hn
     exact h hz₁ hz₂
   · rw [ne_eq, ← Walk.nil_iff_eq_nil, Walk.not_nil_iff_lt_length, Walk.length_append]
-    omega
+    lia
   · rw [Walk.tail_support_append, List.nodup_append]
     exact ⟨p.support.tail_sublist.nodup (p.isPath_def.mp hp), q.support.tail_sublist.nodup
       (q.isPath_def.mp hq), fun _ x _ y ↦ ne_of_mem_of_not_mem x (h.symm y)⟩
