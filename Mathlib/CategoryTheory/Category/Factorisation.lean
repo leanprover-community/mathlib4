@@ -41,7 +41,7 @@ structure Factorisation {X Y : C} (f : X ⟶ Y) where
   /-- The factorisation condition. -/
   ι_π : ι ≫ π = f := by cat_disch
 
-attribute [simp] Factorisation.ι_π
+attribute [reassoc (attr := simp)] Factorisation.ι_π
 
 namespace Factorisation
 
