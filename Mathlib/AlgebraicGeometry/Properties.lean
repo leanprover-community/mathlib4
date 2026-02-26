@@ -348,14 +348,18 @@ lemma coheight_eq_of_isOpenImmersion {U X : Scheme} {x : U} (f : U ⟶ X)
     [IsOpenImmersion f] : Order.coheight (f.base x) = Order.coheight x :=
   f.isOpenEmbedding.coheight_eq
 
+lemma primeSpectrum_preorder_eq_orderDual_spec_preorder (R : CommRingCat) :
+    PrimeSpectrum.instPartialOrder.toPreorder = OrderDual.instPreorder ↥(Spec R) := by
+  ext
+  simp only [PrimeSpectrum.instPartialOrder, PartialOrder.lift, PrimeSpectrum.le_iff_specializes]
+  exact Eq.to_iff rfl
+
 open Order in
 lemma ideal_height_eq_coheight (R : CommRingCat) (x : Spec R) :
     x.asIdeal.height = coheight x := by
   rw [Ideal.height_eq_primeHeight x.asIdeal, Ideal.primeHeight]
   congr
-  ext
-  simp only [PrimeSpectrum.instPartialOrder, PartialOrder.lift, PrimeSpectrum.le_iff_specializes]
-  exact Eq.to_iff rfl
+  exact primeSpectrum_preorder_eq_orderDual_spec_preorder R
 
 open Order in
 @[stacks 02IZ]
