@@ -120,9 +120,9 @@ namespace AlgEquiv
 
 section
 
-variable {R S T A B : Type*} [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
+variable {R S T A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
   [NonUnitalNonAssocSemiring S] [NonUnitalNonAssocSemiring T]
-  [SMul R S] [SMul R T] [SMul R A] [SMul R B]
+  [DistribMulAction R S] [DistribMulAction R T] [DistribMulAction R A] [DistribMulAction R B]
 
 /-- Product of algebra isomorphisms. -/
 def prodCongr (l : S ≃ₐ[R] A) (r : T ≃ₐ[R] B) : (S × T) ≃ₐ[R] A × B :=
@@ -142,7 +142,8 @@ lemma prodCongr_symm_apply (x : A × B) :
 end
 
 section
-variable {A B : Type*} [NonAssocSemiring A] [NonAssocSemiring B] [SMul R A] [SMul R B]
+variable {R A B : Type*} [Monoid R] [NonAssocSemiring A] [NonAssocSemiring B] [DistribMulAction R A]
+    [DistribMulAction R B]
 
 /-- Multiplying by the trivial algebra from the right does not change the structure.
 This is the `AlgEquiv` version of `LinearEquiv.prodUnique` and `RingEquiv.prodZeroRing.symm`. -/
