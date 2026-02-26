@@ -69,7 +69,7 @@ instance : Category.{max u v} (Factorisation f) where
 lemma id_h (d : Factorisation f) :
     Hom.h (𝟙 d) = 𝟙 d.mid := rfl
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma comp_h {d₀ d₁ d₂ : Factorisation f} (a : d₀ ⟶ d₁) (b : d₁ ⟶ d₂) :
     (a ≫ b).h = a.h ≫ b.h := rfl
 
