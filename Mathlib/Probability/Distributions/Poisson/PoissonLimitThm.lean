@@ -89,7 +89,7 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
   · simpa using tendsto_const_nhds.sub (tendsto_zero_of_tendsto_mul_atTop hr)
 
 /--
-Another version of Possion Limit Theorem: convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
+Another version of Poisson Limit Theorem: convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
 under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
 -/
 lemma PMFbinomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} (h : ∀ n, p n ≤ 1)
