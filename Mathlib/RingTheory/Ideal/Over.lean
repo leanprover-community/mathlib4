@@ -250,7 +250,7 @@ theorem ne_bot_of_liesOver_of_ne_bot (hp : p ≠ ⊥) (P : Ideal B) [P.LiesOver 
 
 end CommRing
 
-instance {K A : Type*} [Field K] [Semiring A] [Algebra K A] (P : Ideal A) [P.IsPrime] :
+instance {K A : Type*} [Field K] [Semiring A] [Algebra K A] (P : Ideal A) [P.IsCompletelyPrime] :
     P.LiesOver (⊥ : Ideal K) :=
   ⟨((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right Ideal.IsPrime.ne_top').symm⟩
 namespace Quotient
