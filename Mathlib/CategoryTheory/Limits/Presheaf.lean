@@ -709,4 +709,116 @@ theorem final_toCostructuredArrow_comp_pre {c : Cocone (F ⋙ yoneda)} (hc : IsC
 
 end Presheaf
 
+namespace Functor.Elements
+
+variable [LocallySmall.{w} C] (F : C ⥤ Type w)
+
+/-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
+this is the colimit cocone which identifies `F.obj X` to the colimit of
+`(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
+@[simps]
+noncomputable def coconeπOpCompShrinkYonedaObj (X : C) :
+    Cocone ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X) where
+  pt := F.obj X
+  ι.app u t := F.map (shrinkYonedaObjObjEquiv t) u.unop.snd
+  ι.naturality u₁ u₂ g := by
+    ext f
+    obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
+    dsimp at f ⊢
+    rw [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm]
+    simp
+
+/-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
+`F.obj X` identifies to the colimit of
+`(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
+noncomputable def isColimitCoconeπOpCompShrinkYonedaObj (X : C) :
+    IsColimit (coconeπOpCompShrinkYonedaObj F X) := by
+  refine Nonempty.some ((Types.isColimit_iff_coconeTypesIsColimit _).2
+    ⟨?_, fun x ↦ ?_⟩)
+  · let G := (CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj X
+    let c := G.coconeTypesEquiv.symm (coconeπOpCompShrinkYonedaObj F X)
+    have (u : G.ColimitType) (x : F.obj X) (h : G.descColimitType c u = x) :
+        G.ιColimitType (op (elementsMk _ _ x))
+          (shrinkYonedaObjObjEquiv.symm (𝟙 X)) = u := by
+      obtain ⟨⟨u⟩, v, rfl⟩ := Functor.ιColimitType_jointly_surjective _ u
+      obtain ⟨v, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective v
+      dsimp [c] at v h
+      simp only [Equiv.apply_symm_apply] at h
+      rw [← G.ιColimitType_map (show u ⟶ F.elementsMk _ x from ⟨v, h⟩).op]
+      dsimp [G]
+      rw [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm]
+      simp
+    intro u₁ u₂ hu
+    generalize hx₁ : G.descColimitType c u₁ = x
+    have hx₂ : G.descColimitType c u₂ = x := by rw [← hx₁]; exact hu.symm
+    rw [← this _ _ hx₁, ← this _ _ hx₂]
+  · exact ⟨Functor.ιColimitType _ (op (elementsMk _ _ x))
+      (shrinkYonedaObjObjEquiv.symm (𝟙 X)), by simp⟩
+
+@[reassoc (attr := simp)]
+lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
+    {X₁ X₂ : C} (f : X₁ ⟶ X₂) (u : F.Elements) :
+    (shrinkYoneda.{w}.map f).app (op u.fst) ≫
+      (coconeπOpCompShrinkYonedaObj F X₂).ι.app (op u) =
+      (coconeπOpCompShrinkYonedaObj F X₁).ι.app (op u) ≫ F.map f := by
+  ext g
+  obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
+  dsimp
+  simp only [Equiv.apply_symm_apply]
+  rw [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
+  simp
+
+/-- If `C` is a locally `w`-small category, this is a (colimit) cocone
+expressing `F : C ⥤ Type w` as a colimit of corepresentable functors. -/
+noncomputable def coconeπOpCompShrinkYonedaFlip :
+    Cocone ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.flip) where
+  pt := F
+  ι.app u :=
+    { app X := (coconeπOpCompShrinkYonedaObj F X).ι.app u
+      naturality {X Y} f := by
+        dsimp
+        ext x
+        obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
+        dsimp
+        rw [Equiv.apply_symm_apply, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm,
+          Equiv.apply_symm_apply, FunctorToTypes.map_comp_apply] }
+  ι.naturality u v g := by
+    ext X x
+    obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
+    dsimp at x ⊢
+    rw [Equiv.apply_symm_apply, ← shrinkYonedaObjObjEquiv_symm_comp,
+      Equiv.apply_symm_apply, FunctorToTypes.map_comp_apply, CategoryOfElements.map_snd]
+
+/-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then `F` identifies to the colimit
+of `(CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.flip`. -/
+noncomputable def isColimitCoconeπOpCompShrinkYonedaFlip :
+    IsColimit (coconeπOpCompShrinkYonedaFlip F) :=
+  evaluationJointlyReflectsColimits _ (isColimitCoconeπOpCompShrinkYonedaObj F)
+
+/-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then `F` identifies to the composition
+`shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim`. -/
+noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
+    [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] :
+    shrinkYoneda.{w} ⋙
+      (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim ≅ F :=
+  NatIso.ofComponents (fun X ↦
+    IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+      (isColimitCoconeπOpCompShrinkYonedaObj F X)) (fun {X₁ X₂} f ↦ colimit.hom_ext (by
+        intro u
+        simp [shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app F f u.unop]))
+
+lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
+    [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] (u : F.Elements) :
+      (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app _ u.snd =
+      (colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u)
+        (shrinkYonedaObjObjEquiv.symm (𝟙 _))) := by
+  have :
+      (coconeπOpCompShrinkYonedaObj F u.fst).ι.app (op u) ≫
+        (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app u.fst =
+      colimit.ι ((CategoryOfElements.π F).op ⋙ shrinkYoneda.{w}.obj u.fst) (op u) :=
+    IsColimit.comp_coconePointUniqueUpToIso_inv (colimit.isColimit _) _ (op u)
+  simpa using congr_fun this (shrinkYonedaObjObjEquiv.symm (𝟙 _))
+
+end Functor.Elements
+
 end CategoryTheory
