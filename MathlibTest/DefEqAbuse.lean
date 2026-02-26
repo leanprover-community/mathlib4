@@ -208,4 +208,16 @@ The following isDefEq checks are the root causes of the failure:
 example (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
   #defeq_abuse in rw [zo_eq_iff]
 
+-- A potential fix: a unif_hint telling Lean that two different `Num'` instances applied to
+-- the same type at `0` should unify. This bridges the gap between `Int.ofNat 0`
+-- (from the specific `Num' Int n` instance) and `Zo'.zo` (from the generic
+-- `Num' α 0` instance via `Zo'`).
+unif_hint (α : Type _) (inst₁ : Num' α 0) (inst₂ : Num' α 0) where ⊢
+    @Num'.fromNat α 0 inst₁ ≟ @Num'.fromNat α 0 inst₂
+
+/-- info: #defeq_abuse: tactic succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
+#guard_msgs in
+example (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
+  #defeq_abuse in rw [zo_eq_iff]
+
 end ZeroInstanceAbuse
