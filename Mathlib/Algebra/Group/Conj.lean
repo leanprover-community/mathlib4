@@ -84,8 +84,12 @@ theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
   (map_inv (MulAut.conj b) a).symm
 
 @[simp]
-theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) * b⁻¹ := by
-  exact (map_mul (MulAut.conj b) a c).symm
+theorem conj_add {α} [AddGroup α] {a b c : α} : b + a + -b + (b + c + -b) = b + (a + c) + -b :=
+  ((AddAut.conj b).map_add' _ _).symm
+
+@[to_additive existing, simp]
+theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) * b⁻¹ :=
+  (map_mul (MulAut.conj b) a c).symm
 
 @[simp]
 theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
