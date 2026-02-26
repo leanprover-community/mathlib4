@@ -29,7 +29,7 @@ lemma E2_mdifferentiable : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) E2 := by
   rw [UpperHalfPlane.mdifferentiable_iff]
   have hη : DifferentiableOn ℂ η _ :=
     fun z hz ↦ (differentiableAt_eta_of_mem_upperHalfPlaneSet hz).differentiableWithinAt
-  have hlog : DifferentiableOn ℂ (logDeriv η) {z | 0 < z.im} :=
+  have hlog : DifferentiableOn ℂ (logDeriv η) _ :=
     (hη.deriv isOpen_upperHalfPlaneSet).div hη fun _ hz ↦ by simpa using eta_ne_zero hz
   exact (hlog.const_mul ((↑π * I / 12)⁻¹)).congr fun z hz => by
     simp [ofComplex_apply_of_im_pos hz,
