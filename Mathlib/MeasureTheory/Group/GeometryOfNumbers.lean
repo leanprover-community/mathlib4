@@ -10,10 +10,6 @@ public import Mathlib.Analysis.Convex.Body
 public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.MeasureTheory.Group.FundamentalDomain
-public import Mathlib.LinearAlgebra.Span.TensorProduct
-public import Mathlib.RingTheory.Flat.Basic
-public import Mathlib.RingTheory.RingHom.Flat
-public import Mathlib.Data.NNReal.Defs
 
 /-!
 # Geometry of numbers
