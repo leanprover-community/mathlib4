@@ -216,8 +216,6 @@ namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
 
-
-
 theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
     (hP0 : P ≠ ⊥) : ramificationIdx f p P = (normalizedFactors (map f p)).count P := by
