@@ -399,8 +399,12 @@ elab_rules : command
         | e => pure (Except.error e.toMessageData)
       let newMsgs := ((← get).messages.toList).drop savedMsgCount
       return (result, newMsgs)
+    -- We set `Elab.async false` to force synchronous proof checking,
+    -- otherwise `theorem` proofs are elaborated in a background task and errors
+    -- won't appear in `messages` until after `elabCommand` returns.
     let traceOpts (strict : Bool) (scope : Scope) : Scope :=
-      { scope with opts := (scope.opts.setBool `backward.isDefEq.respectTransparency strict)
+      { scope with opts := (scope.opts.setBool `Elab.async false)
+          |>.setBool `backward.isDefEq.respectTransparency strict
           |>.setBool `trace.Meta.isDefEq true
           |>.setBool `trace.Meta.synthInstance true }
     -- Pass 1: strict + tracing.
@@ -430,7 +434,8 @@ elab_rules : command
         reportDefEqAbuse "command" uniqueFailures synthResults
         -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
-          { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do
+          { scope with opts := (scope.opts.setBool `Elab.async false)
+              |>.setBool `backward.isDefEq.respectTransparency false }) do
           elabCommand cmd
 
 end Mathlib.Tactic.DefEqAbuse

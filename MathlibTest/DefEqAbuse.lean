@@ -208,6 +208,32 @@ The following isDefEq checks are the root causes of the failure:
 example (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
   #defeq_abuse in rw [zo_eq_iff]
 
+-- Command-level test: same abuse should be detected for a theorem with `by rw`.
+/--
+warning: #defeq_abuse: command fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
+The following isDefEq checks are the root causes of the failure:
+  ❌️ Int.ofNat 0 =?= Zo'.zo
+-/
+#guard_msgs in
+#defeq_abuse in
+theorem test_zo_cmd_abuse (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
+  rw [zo_eq_iff]
+
+-- Verify: abuse is detected even when the outer scope has `respectTransparency false`.
+-- This simulates the Mathlib lakefile setting.
+-- (Must appear BEFORE the unif_hint below, which fixes the underlying issue.)
+section
+set_option backward.isDefEq.respectTransparency false
+/--
+warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.
+The following isDefEq checks are the root causes of the failure:
+  ❌️ Int.ofNat 0 =?= Zo'.zo
+-/
+#guard_msgs in
+example (a : Int) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := by
+  #defeq_abuse in rw [zo_eq_iff]
+end
+
 -- A potential fix: a unif_hint telling Lean that two different `Num'` instances applied to
 -- the same type at `0` should unify. This bridges the gap between `Int.ofNat 0`
 -- (from the specific `Num' Int n` instance) and `Zo'.zo` (from the generic
