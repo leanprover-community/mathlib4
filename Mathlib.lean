@@ -7235,6 +7235,7 @@ public import Mathlib.Topology.Connected.Separation
 public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.Constructions.Graph
 public import Mathlib.Topology.Constructions.SumProd
 public import Mathlib.Topology.Continuous
 public import Mathlib.Topology.ContinuousMap.Algebra
