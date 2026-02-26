@@ -36,7 +36,7 @@ Fix `k : ℕ`. Assuming `n * p n → r` as `n → ∞`, we show
 binomial distribution, Poisson distribution, asymptotics, limits, probability mass function
 -/
 
-@[expose] public section
+public section
 
 namespace ProbabilityTheory
 
