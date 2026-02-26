@@ -29,8 +29,8 @@ variable {R} in
 lemma isGoresteinLocalRing_localization [IsGorensteinLocalRing R] [IsNoetherianRing R]
     (p : Ideal R) [p.IsPrime] : IsGorensteinLocalRing (Localization.AtPrime p) := by
   rw [isGorensteinLocalRing_def]
-  let le := injectiveDimension_le_injectiveDimension_of_isLocalizedModule p.primeCompl
-    (ModuleCat.of R R)
+  let le := (ModuleCat.of R R).injectiveDimension_le_injectiveDimension_of_isLocalizedModule
+    p.primeCompl
   have : injectiveDimension ((ModuleCat.of R R).localizedModule p.primeCompl) ≠ ⊤ :=
     ne_top_of_le_ne_top ((isGorensteinLocalRing_def R).mp ‹_›) le
   let e' : LocalizedModule p.primeCompl R ≃ₗ[R] Localization.AtPrime p :=
