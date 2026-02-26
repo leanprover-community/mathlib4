@@ -67,46 +67,49 @@ theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group 
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
+variable (R : Type*) [Ring R] [Algebra A R] [FaithfulSMul A R] [MulSemiringAction G R]
+  [hA : IsGaloisGroup G A R]
+
+/--
+If `R/A` is Galois with Galois group `G`, then `A` is isomorphic to the subring of elements of `B`
+fixed by `G`.
+-/
+@[simps apply_coe]
+noncomputable def IsGaloisGroup.ringEquivFixedPoints :
+    A ≃+* FixedPoints.subring R G :=
+  { toFun := fun x ↦ ⟨algebraMap A R x, fun _ ↦ by rw [smul_algebraMap]⟩
+    invFun := fun x ↦ (hA.isInvariant.isInvariant x x.prop).choose
+    map_mul' _ _ := by simp [Subtype.ext_iff]
+    map_add' := by simp [Subtype.ext_iff]
+    left_inv _ := by simp
+    right_inv x := by
+      simpa [Subtype.ext_iff] using (hA.isInvariant.isInvariant x x.prop).choose_spec }
+
+@[simp]
+theorem IsGaloisGroup.ringEquivFixedPoints_symm_map_apply (x : FixedPoints.subring R G) :
+    algebraMap A R ((ringEquivFixedPoints G A R).symm x) = x :=
+ (hA.isInvariant.isInvariant x x.prop).choose_spec
+
+variable [CommSemiring A'] [Algebra A' R] [FaithfulSMul A' R] [hA' : IsGaloisGroup G A' R]
+
 /--
 If `B/A` and `B/A'` are Galois with the same Galois group, then `A ≃+* A'`.
 -/
-noncomputable def IsGaloisGroup.ringEquiv [CommSemiring A'] [Algebra A' B] [FaithfulSMul A B]
-    [FaithfulSMul A' B] [hA : IsGaloisGroup G A B] [hA' : IsGaloisGroup G A' B] :
-    A ≃+* A' :=
-  haveI h : ∀ x : A, ∃ y : A', algebraMap A' B y = algebraMap A B x :=
-    fun x ↦ hA'.isInvariant.isInvariant (algebraMap A B x) (fun g ↦ by rw [smul_algebraMap])
-  haveI h' : ∀ x : A', ∃ y : A, algebraMap A B y = algebraMap A' B x :=
-    fun x ↦ hA.isInvariant.isInvariant (algebraMap A' B x) (fun g ↦ by rw [smul_algebraMap])
-  { toFun := fun x ↦ (h x).choose
-    invFun := fun x ↦ (h' x).choose
-    map_mul' _ _ := by
-      apply FaithfulSMul.algebraMap_injective A' B
-      rw [(h _).choose_spec, map_mul, map_mul, (h _).choose_spec, (h _).choose_spec]
-    map_add' _ _ := by
-      apply FaithfulSMul.algebraMap_injective A' B
-      rw [(h _).choose_spec, map_add, map_add, (h _).choose_spec, (h _).choose_spec]
-    left_inv _ := by
-      apply FaithfulSMul.algebraMap_injective A B
-      rw [(h' _).choose_spec, (h _).choose_spec]
-    right_inv _ := by
-      apply FaithfulSMul.algebraMap_injective A' B
-      rw [(h _).choose_spec, (h' _).choose_spec] }
+noncomputable def IsGaloisGroup.ringEquiv :
+    A ≃+* A' := by
+  let f := ringEquivFixedPoints G A R
+  let g := ringEquivFixedPoints G A' R
+  exact f.trans g.symm
 
 @[simp]
-theorem IsGaloisGroup.ringEquiv_map_apply [CommSemiring A'] [Algebra A' B] [FaithfulSMul A B]
-    [FaithfulSMul A' B] [hA : IsGaloisGroup G A B] [hA' : IsGaloisGroup G A' B] (x : A) :
-    algebraMap A' B (IsGaloisGroup.ringEquiv G A A' B x) = algebraMap A B x :=
-  have h : ∀ x : A, ∃ y : A', algebraMap A' B y = algebraMap A B x :=
-    fun x ↦ hA'.isInvariant.isInvariant (algebraMap A B x) (fun g ↦ by rw [smul_algebraMap])
-  (h x).choose_spec
+theorem IsGaloisGroup.ringEquiv_map_apply (x : A) :
+    algebraMap A' R (IsGaloisGroup.ringEquiv G A A' R x) = algebraMap A R x := by
+  simp [ringEquiv]
 
 @[simp]
-theorem IsGaloisGroup.ringEquiv_symm_map_apply [CommSemiring A'] [Algebra A' B] [FaithfulSMul A B]
-    [FaithfulSMul A' B] [hA : IsGaloisGroup G A B] [hA' : IsGaloisGroup G A' B] (x : A') :
-    algebraMap A B ((IsGaloisGroup.ringEquiv G A A' B).symm x) = algebraMap A' B x :=
-  have h' : ∀ x : A', ∃ y : A, algebraMap A B y = algebraMap A' B x :=
-    fun x ↦ hA.isInvariant.isInvariant (algebraMap A' B x) (fun g ↦ by rw [smul_algebraMap])
-  (h' x).choose_spec
+theorem IsGaloisGroup.ringEquiv_symm_map_apply (x : A') :
+    algebraMap A R ((IsGaloisGroup.ringEquiv G A A' R).symm x) = algebraMap A' R x := by
+  simp [ringEquiv]
 
 end CommRing
 
