@@ -133,7 +133,7 @@ lemma dft_apply_zero (Φ : ZMod N → E) : 𝓕 Φ 0 = ∑ j, Φ j := by
 The discrete Fourier transform agrees with the general one (assuming the target space is a complete
 normed space).
 -/
-lemma dft_eq_fourier {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
+lemma dft_eq_fourier {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
     (Φ : ZMod N → E) (k : ZMod N) :
     𝓕 Φ k = Fourier.fourierIntegral toCircle Measure.count Φ k := by
   simp only [dft_apply, stdAddChar_apply, Fourier.fourierIntegral_def, Circle.smul_def,

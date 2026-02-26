@@ -293,7 +293,7 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
   ext1
   grw [indicatorConstLp_coeFn, condExpInd_ae_eq_condExpIndSMul, condExpIndSMul_ae_eq_smul]
   rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
-  filter_upwards [@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)] with x hx
+  filter_upwards [@indicatorConstLp_coeFn α _ _ 2 μ _ _ s (hm s hs) hμs (1 : ℝ)] with x hx
   rw [hx]
   by_cases hx_mem : x ∈ s <;> simp [hx_mem]
 
@@ -337,7 +337,7 @@ theorem condExpL1CLM_indicatorConst (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
 /-- Auxiliary lemma used in the proof of `setIntegral_condExpL1CLM`. -/
 theorem setIntegral_condExpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : MeasurableSet[m] s)
     (hμs : μ s ≠ ∞) : ∫ x in s, condExpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
-  refine @Lp.induction _ _ _ _ _ _ _ ENNReal.one_ne_top
+  refine @Lp.induction _ _ _ _ _ _ _ _ ENNReal.one_ne_top
     (fun f : α →₁[μ] F' => ∫ x in s, condExpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ) ?_ ?_
     (isClosed_eq ?_ ?_) f
   · intro x t ht hμt
@@ -396,7 +396,7 @@ theorem setIntegral_condExpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
 
 theorem aestronglyMeasurable_condExpL1CLM (f : α →₁[μ] F') :
     AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ := by
-  refine @Lp.induction _ _ _ _ _ _ _ ENNReal.one_ne_top
+  refine @Lp.induction _ _ _ _ _ _ _ _ ENNReal.one_ne_top
     (fun f : α →₁[μ] F' => AEStronglyMeasurable[m] (condExpL1CLM F' hm μ f) μ) ?_ ?_ ?_ f
   · intro c s hs hμs
     rw [condExpL1CLM_indicatorConst hs hμs.ne c]
@@ -417,7 +417,7 @@ theorem condExpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
   have hfg : f = (lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g := by
     simp only [g, LinearIsometryEquiv.symm_apply_apply]
   rw [hfg]
-  refine @Lp.induction α F' m _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
+  refine @Lp.induction α F' m _ _ 1 (μ.trim hm) _ ENNReal.coe_ne_top (fun g : α →₁[μ.trim hm] F' =>
     condExpL1CLM F' hm μ ((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g : α →₁[μ] F') =
     ↑((lpMeasToLpTrimLie F' ℝ 1 μ hm).symm g)) ?_ ?_ ?_ g
   · intro c s hs hμs

@@ -177,7 +177,7 @@ where the choice of `F` enters.
 If you need stronger control over the complement `F`, use `IsImmersionAtOfComplement` instead.
 -/
 irreducible_def IsImmersionAt (f : M → N) (x : M) : Prop :=
-  ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
+  ∃ (F : Type u) (_ : AddCommGroup F) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
     IsImmersionAtOfComplement F I J n f x
 
 variable {f g : M → N} {x : M}
@@ -330,6 +330,11 @@ def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
   haveI := hf.small
   Shrink.{u} F
 
+instance (hf : IsImmersionAtOfComplement F I J n f x) : AddCommGroup hf.smallComplement := by
+  haveI := hf.small
+  unfold smallComplement
+  infer_instance
+
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
   haveI := hf.small
   unfold smallComplement
@@ -393,7 +398,7 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 lemma isImmersionAt (h : IsImmersionAtOfComplement F I J n f x) :
     IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
-  use h.smallComplement, by infer_instance, by infer_instance
+  use h.smallComplement, by infer_instance, by infer_instance, by infer_instance
   exact (IsImmersionAtOfComplement.congr_F h.smallEquiv).mp h
 
 open IsManifold in
@@ -428,7 +433,7 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'')
   rw [IsImmersionAt_def]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
-  use aux.smallComplement, by infer_instance, by infer_instance
+  use aux.smallComplement, by infer_instance, by infer_instance, by infer_instance
   rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
@@ -445,7 +450,7 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
   rw [IsImmersionAt_def]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
-  use aux.smallComplement, by infer_instance, by infer_instance
+  use aux.smallComplement, by infer_instance, by infer_instance, by infer_instance
   rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
@@ -454,18 +459,24 @@ def complement (h : IsImmersionAt I J n f x) : Type u := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose h
 
-noncomputable instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement := by
+noncomputable instance (h : IsImmersionAt I J n f x) : AddCommGroup h.complement := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec h
 
-noncomputable instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
+noncomputable instance (h : IsImmersionAt I J n f x) : NormedAddCommGroup h.complement := by
   rw [IsImmersionAt_def] at h
   exact Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
+
+noncomputable instance (h : IsImmersionAt I J n f x) : NormedSpace 𝕜 h.complement := by
+  rw [IsImmersionAt_def] at h
+  exact Classical.choose <| Classical.choose_spec <| Classical.choose_spec <|
+    Classical.choose_spec h
 
 lemma isImmersionAtOfComplement_complement (h : IsImmersionAt I J n f x) :
     IsImmersionAtOfComplement h.complement I J n f x := by
   rw [IsImmersionAt_def] at h
-  exact Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
+  exact Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec <|
+    Classical.choose_spec h
 
 /-- A choice of chart on the domain `M` of an immersion `f` at `x`:
 w.r.t. this chart and the data `h.codChart` and `h.equiv`,
@@ -551,7 +562,7 @@ then `g` is an immersion at `x`. -/
 lemma congr_of_eventuallyEq (hf : IsImmersionAt I J n f x) (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAt I J n g x := by
   rw [IsImmersionAt_def]
-  use hf.complement, by infer_instance, by infer_instance
+  use hf.complement, by infer_instance, by infer_instance, by infer_instance
   exact hf.isImmersionAtOfComplement_complement.congr_of_eventuallyEq hfg
 
 /-- If `f = g` on some neighbourhood of `x`,
@@ -581,7 +592,7 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) (hx : x ∈ s) :
     IsImmersionAt I I n (Subtype.val : s → M) ⟨x, hx⟩ := by
   rw [IsImmersionAt_def]
-  use PUnit, by infer_instance, by infer_instance
+  use PUnit, by infer_instance, by infer_instance, by infer_instance
   apply Manifold.IsImmersionAtOfComplement.of_opens
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
@@ -614,7 +625,8 @@ Note that our global choice of complement is a bit stronger than asking `f` to b
 each `x ∈ M` w.r.t. potentially varying complements: see `isImmersionAt` for details.
 -/
 def IsImmersion (f : M → N) : Prop :=
-  ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
+  ∃ (F : Type u) (_ : AddCommGroup F) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
+    IsImmersionOfComplement F I J n f
 
 namespace IsImmersionOfComplement
 
@@ -655,11 +667,11 @@ the model normed space of `N`. This is solved by `smallComplement` and `smallEqu
 lemma isImmersion (h : IsImmersionOfComplement F I J n f) : IsImmersion I J n f := by
   by_cases! hM : IsEmpty M
   · rw [IsImmersion]
-    use PUnit, by infer_instance, by infer_instance
+    use PUnit, by infer_instance, by infer_instance, by infer_instance
     exact fun x ↦ (IsEmpty.false x).elim
   inhabit M
   let x : M := Inhabited.default
-  use (h x).smallComplement, by infer_instance, by infer_instance
+  use (h x).smallComplement, by infer_instance, by infer_instance, by infer_instance
   exact (IsImmersionOfComplement.congr_F (h x).smallEquiv).mp h
 
 open IsManifold in
@@ -691,15 +703,19 @@ variable {f g : M → N}
 `E'` of `N` -/
 def complement (h : IsImmersion I J n f) : Type u := Classical.choose h
 
-noncomputable instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
+noncomputable instance (h : IsImmersion I J n f) : AddCommGroup h.complement :=
   Classical.choose <| Classical.choose_spec h
 
-noncomputable instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+noncomputable instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
   Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
+
+noncomputable instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+  Classical.choose <| Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
 lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
     IsImmersionOfComplement h.complement I J n f :=
-  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
+  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec <|
+    Classical.choose_spec h
 
 /-- If `f` is an immersion, it is an immersion at each point.
 
@@ -714,7 +730,8 @@ different connected components of `M`.
 -/
 lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
-  use h.complement, by infer_instance, by infer_instance, h.isImmersionOfComplement_complement x
+  use h.complement, by infer_instance, by infer_instance, by infer_instance,
+    h.isImmersionOfComplement_complement x
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion I J n f) (heq : f = g) : IsImmersion I J n g :=
@@ -731,12 +748,13 @@ theorem prodMap {f : M → N} {g : M' → N'}
 open IsManifold in
 /-- The identity map is an immersion. -/
 protected lemma id [IsManifold I n M] : IsImmersion I I n (@id M) :=
-  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.id⟩
+  ⟨PUnit, by infer_instance, by infer_instance, by infer_instance, IsImmersionOfComplement.id⟩
 
 /- The inclusion of an open subset `s` of a smooth manifold `M` is an immersion. -/
 lemma of_opens [IsManifold I n M] (s : TopologicalSpace.Opens M) :
     IsImmersion I I n (Subtype.val : s → M) :=
-  ⟨PUnit, by infer_instance, by infer_instance, IsImmersionOfComplement.of_opens s⟩
+  ⟨PUnit, by infer_instance, by infer_instance, by infer_instance,
+    IsImmersionOfComplement.of_opens s⟩
 
 @[deprecated (since := "2025-12-16")] alias ofOpen := of_opens
 

@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Algebra.Group.Shrink
 public import Mathlib.Analysis.Normed.Module.TransferInstance
 
 /-!
@@ -19,9 +20,6 @@ namespace Shrink
 
 universe v
 variable {R 𝕜 α : Type*} [Small.{v} α] [Semiring R] [NormedField 𝕜]
-
-instance [AddCommGroup α] : AddCommGroup (Shrink.{v} α) :=
-  (equivShrink α).symm.addCommGroup
 
 instance [AddCommGroup α] [SeminormedAddCommGroup α] : SeminormedAddCommGroup (Shrink.{v} α) :=
   (equivShrink α).symm.seminormedAddCommGroup

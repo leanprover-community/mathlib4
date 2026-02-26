@@ -349,7 +349,7 @@ section InnerProductSpace
 
 open Filter Pointwise Topology Bornology
 
-variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 

@@ -51,13 +51,13 @@ variable {S : Matrix n n 𝕜} [Fintype n] (hS : S.PosDef)
 applying Gram-Schmidt-Orthogonalization w.r.t. the inner product induced by `Sᵀ` on the standard
 basis vectors `Pi.basisFun`. -/
 noncomputable def LDL.lowerInv : Matrix n n 𝕜 :=
-  @gramSchmidt 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
+  @gramSchmidt 𝕜 (n → 𝕜) _ _ (Sᵀ.toNormedAddCommGroup hS.transpose)
     (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ (Pi.basisFun 𝕜 n)
 
 theorem LDL.lowerInv_eq_gramSchmidtBasis :
     LDL.lowerInv hS =
       ((Pi.basisFun 𝕜 n).toMatrix
-          (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
+          (@gramSchmidtBasis 𝕜 (n → 𝕜) _ _ (Sᵀ.toNormedAddCommGroup hS.transpose)
             (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ (Pi.basisFun 𝕜 n)))ᵀ := by
   letI := (Sᵀ.toNormedAddCommGroup hS.transpose)
   letI := (Sᵀ.toInnerProductSpace hS.transpose.posSemidef)
@@ -70,13 +70,13 @@ noncomputable instance LDL.invertibleLowerInv : Invertible (LDL.lowerInv hS) := 
   rw [LDL.lowerInv_eq_gramSchmidtBasis]
   haveI :=
     Basis.invertibleToMatrix (Pi.basisFun 𝕜 n)
-      (@gramSchmidtBasis 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
+      (@gramSchmidtBasis 𝕜 (n → 𝕜) _ _ (Sᵀ.toNormedAddCommGroup hS.transpose)
         (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ (Pi.basisFun 𝕜 n))
   infer_instance
 
 theorem LDL.lowerInv_orthogonal {i j : n} (h₀ : i ≠ j) :
     ⟪LDL.lowerInv hS i, Sᵀ *ᵥ LDL.lowerInv hS j⟫ₑ = 0 :=
-  @gramSchmidt_orthogonal 𝕜 _ _ (Sᵀ.toNormedAddCommGroup hS.transpose)
+  @gramSchmidt_orthogonal 𝕜 _ _ _ (Sᵀ.toNormedAddCommGroup hS.transpose)
     (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) _ _ _ _ _ _ _ h₀
 
 /-- The entries of the diagonal matrix `D` of the LDL decomposition. -/
@@ -89,7 +89,7 @@ noncomputable def LDL.diag : Matrix n n 𝕜 :=
 
 set_option backward.isDefEq.respectTransparency false in
 theorem LDL.lowerInv_triangular {i j : n} (hij : i < j) : LDL.lowerInv hS i j = 0 := by
-  rw [← @gramSchmidt_triangular 𝕜 (n → 𝕜) _ (Sᵀ.toNormedAddCommGroup hS.transpose)
+  rw [← @gramSchmidt_triangular 𝕜 (n → 𝕜) _ _ (Sᵀ.toNormedAddCommGroup hS.transpose)
       (Sᵀ.toInnerProductSpace hS.transpose.posSemidef) n _ _ _ i j hij (Pi.basisFun 𝕜 n),
     Pi.basisFun_repr, LDL.lowerInv]
 
