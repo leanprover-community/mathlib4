@@ -68,8 +68,7 @@ theorem binomial_apply_of_le {k b : ℕ} (hb : k ≤ b) {x : ℝ≥0} (h : x ≤
   have eq1 : 1 - (x : ℝ≥0∞) = ENNReal.ofReal (1 - x : ℝ) := by norm_cast
   have : (1 - (x : ℝ)) ≥ 0 := by simpa
   rwa [Fin.ofNat_eq_cast, PMF.binomial_apply, Fin.val_natCast, Fin.val_last, eq0, eq1,
-    coe_nnreal_eq x, mul_rotate ((b.choose k : ℝ)) (x ^ k) ((1 - x) ^ (b - k)), ofReal_mul,
-    ENNReal.ofReal_mul, ofReal_pow, ofReal_pow, ofReal_natCast]
+    coe_nnreal_eq x, mul_rotate, ofReal_mul, ofReal_mul, ofReal_pow, ofReal_pow, ofReal_natCast]
   repeat positivity
 
 end PMF
