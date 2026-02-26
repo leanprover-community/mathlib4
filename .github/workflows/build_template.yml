@@ -20,6 +20,10 @@ on:
       runs_on:
         type: string
         required: true
+      mathlib_ci_ref:
+        type: string
+        required: false
+        default: main
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -95,7 +99,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: leanprover-community/mathlib-ci
-          ref: main
+          ref: ${{ inputs.mathlib_ci_ref }}
           fetch-depth: 1
           path: ci-tools
 
