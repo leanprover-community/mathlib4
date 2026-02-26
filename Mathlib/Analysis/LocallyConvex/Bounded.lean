@@ -458,7 +458,7 @@ namespace NormedSpace
 section NormedField
 
 variable (𝕜)
-variable [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NormedField 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem isVonNBounded_of_isBounded {s : Set E} (h : Bornology.IsBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
@@ -479,7 +479,7 @@ theorem isVonNBounded_closedBall (r : ℝ) :
 end NormedField
 
 variable (𝕜)
-variable [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 theorem isVonNBounded_iff {s : Set E} : Bornology.IsVonNBounded 𝕜 s ↔ Bornology.IsBounded s := by
   refine ⟨fun h ↦ ?_, isVonNBounded_of_isBounded _⟩

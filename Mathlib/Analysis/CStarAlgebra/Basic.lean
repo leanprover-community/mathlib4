@@ -81,7 +81,7 @@ end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
     RingHomIsometric (starRingEnd E) :=
-  ⟨@norm_star _ _ _ _⟩
+  ⟨@norm_star _ _ _ _ _⟩
 
 /-- A C*-ring is a normed star ring that satisfies the stronger condition `‖x‖ ^ 2 ≤ ‖x⋆ * x‖`
 for every `x`. Note that this condition actually implies equality, as is shown in
@@ -280,7 +280,7 @@ end SelfAdjoint
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]
-variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
 
 variable (𝕜) in

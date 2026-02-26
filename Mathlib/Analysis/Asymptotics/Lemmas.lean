@@ -575,7 +575,7 @@ theorem isLittleO_pow_id {n : ℕ} (h : 1 < n) : (fun x : 𝕜 => x ^ n) =o[𝓝
 
 theorem isLittleO_norm_pow_id {n : ℕ} (h : 1 < n) :
     (fun x : E' => ‖x‖ ^ n) =o[𝓝 0] fun x => x := by
-  have := @isLittleO_norm_pow_norm_pow E' _ _ _ h
+  have := @isLittleO_norm_pow_norm_pow E' _ _ _ _ h
   simp only [pow_one] at this
   exact isLittleO_norm_right.mp this
 
@@ -872,7 +872,7 @@ end IsBigO
 
 section IsBigORev
 
-variable [AddGroup E] [NormedAddGroup E] [SeminormedAddGroup F]
+variable [AddGroup E] [NormedAddGroup E] [AddGroup F] [SeminormedAddGroup F]
 
 protected theorem isBigOWith_rev_principal
     (hf : ContinuousOn f s) (hs : IsCompact s) (hC : ∀ i ∈ s, f i ≠ 0) (c : F) :

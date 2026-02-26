@@ -32,9 +32,9 @@ structure SemiNormedGrp : Type (u + 1) where
   of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
-  [AddCommGroup carrier] [str : SeminormedAddCommGroup carrier]
+  [instAddCommGroup : AddCommGroup carrier] [str : SeminormedAddCommGroup carrier]
 
-attribute [instance] SemiNormedGrp.str
+attribute [instance] SemiNormedGrp.instAddCommGroup SemiNormedGrp.str
 
 namespace SemiNormedGrp
 
@@ -215,9 +215,9 @@ structure SemiNormedGrp₁ : Type (u + 1) where
   of ::
   /-- The underlying seminormed abelian group. -/
   carrier : Type u
-  [AddCommGroup carrier] [str : SeminormedAddCommGroup carrier]
+  [instAddCommGroup : AddCommGroup carrier] [str : SeminormedAddCommGroup carrier]
 
-attribute [instance] SemiNormedGrp₁.str
+attribute [instance] SemiNormedGrp₁.instAddCommGroup SemiNormedGrp₁.str
 
 namespace SemiNormedGrp₁
 

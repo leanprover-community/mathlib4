@@ -312,7 +312,8 @@ end Pi
 
 section SeminormedAddCommGroup
 
-variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
 
 lemma div_le_egauge_closedBall (r : ℝ≥0) (x : E) : ‖x‖ₑ / r ≤ egauge 𝕜 (closedBall 0 r) x := by
   rw [le_egauge_iff]
