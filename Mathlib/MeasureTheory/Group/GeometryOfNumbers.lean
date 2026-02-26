@@ -57,7 +57,6 @@ namespace NNReal
 
 end NNReal
 
-
 namespace MeasureTheory
 
 open ENNReal Module MeasureTheory MeasureTheory.Measure Set Submodule Filter
@@ -173,7 +172,6 @@ lemma exists_linearIndependent_of_successiveMin_lt {r : ℝ≥0} (hsc : Convex �
   · refine ((hf_li.comp _ (Fin.castLE_injective hri)).restrict_scalars ?_).of_comp L.subtype
     exact fun a b h ↦ by simpa using h
 
-open Submodule in
 lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s ∈ 𝓝 0)
     (hi : i < finrank ℤ L) :
     IsClosed {r : ℝ≥0 | i < finrank ℝ (span ℝ (r • s ∩ L))} := by
