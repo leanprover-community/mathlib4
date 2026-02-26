@@ -1026,6 +1026,7 @@ section Postcomp
 variable [RCLike 𝕜]
   [NormedSpace 𝕜 F]
   [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+  [NormedAddCommGroup H] [NormedSpace ℝ H] [NormedSpace 𝕜 H]
 
 /-- Postcomposition with a continuous linear map is a continuous linear map on Schwartz
 functions. -/
@@ -1048,8 +1049,13 @@ def postcompCLM (L : F →L[𝕜] G) : 𝓢(E, F) →L[𝕜] 𝓢(E, G) := by
     _ ≤ ‖L‖ * (SchwartzMap.seminorm 𝕜 k n) f := by
       grw [le_seminorm 𝕜 k n f x]
 
+@[simp]
 theorem postcompCLM_apply (L : F →L[𝕜] G) (f : 𝓢(E, F)) (x : E) : f.postcompCLM L x = L (f x) :=
   rfl
+
+@[simp]
+theorem postcompCLM_postcompCLM (L₁ : F →L[𝕜] G) (L₂ : G →L[𝕜] H) (f : 𝓢(E, F)) :
+  (f.postcompCLM L₁).postcompCLM L₂ = f.postcompCLM (L₂ ∘L L₁) := rfl
 
 end Postcomp
 
