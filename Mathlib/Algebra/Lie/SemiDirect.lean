@@ -90,29 +90,10 @@ lemma toProd_lie (x y : H ⋊⁅ψ⁆ G) :
   simp [lie_def]
 
 instance : LieRing (H ⋊⁅ψ⁆ G) where
-  add_lie _ _ _ := by
-    unfold SemiDirectSum
-    simp [Bracket.bracket]
-    grind
-  lie_add _ _ _:= by
-    unfold SemiDirectSum
-    simp [Bracket.bracket]
-    grind
-  lie_self _ := by
-    unfold SemiDirectSum
-    simp [Bracket.bracket]
-  leibniz_lie x y z:= by
-    unfold SemiDirectSum
-    simp only [Bracket.bracket, lie_sub, lie_add, map_sub, map_add, LieDerivation.apply_lie_eq_sub,
-      LieHom.map_lie, LieDerivation.coeFn_coe, Module.End.smul_def, LieDerivation.mk_coe,
-      LinearMap.coe_mk, AddHom.coe_mk, sub_lie, add_lie, lie_lie, Prod.mk_add_mk, sub_add_cancel,
-      Prod.mk.injEq, and_true]
-    apply sub_eq_zero.mp
-    abel_nf
-    rw [←lie_skew]
-    abel_nf
-    rw [←lie_skew]
-    abel_nf
+  add_lie _ _ _ := toProd.injective <| by simp; abel
+  lie_add _ _ _:= toProd.injective <| by simp; abel
+  lie_self _ := toProd.injective <| by simp
+  leibniz_lie x y z:= toProd.injective <| by simp; grind [lie_skew]
 
 
 instance : LieAlgebra R (H ⋊⁅ψ⁆ G) where
