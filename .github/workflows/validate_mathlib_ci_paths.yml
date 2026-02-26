@@ -1,0 +1,73 @@
+name: Validate mathlib-ci script paths
+
+on:
+  # Validate the action + check references whenever workflow files change.
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/actions/checkout-ci-scripts/action.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-ci-scripts-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Checkout CI scripts
+        id: checkout_ci_scripts
+        uses: ./.github/actions/checkout-ci-scripts
+
+      # We scan literal "$CI_SCRIPTS_DIR/..." and "${CI_SCRIPTS_DIR}/..."
+      # references in workflow text and check those paths in mathlib-ci's default ref; dynamically
+      # constructed paths or non-default variable names not covered by this best-effort check,
+      # but this should catch the common cases and prevent simple typos or missing files in mathlib-ci
+      - name: Validate CI_SCRIPTS_DIR references
+        env:
+          CI_SCRIPTS_DIR: ${{ steps.checkout_ci_scripts.outputs.scripts_dir }}
+        shell: python
+        run: |
+          import os
+          import re
+          import sys
+          from collections import defaultdict
+          from pathlib import Path
+
+          workflows_dir = Path(".github/workflows")
+          scripts_dir = Path(os.environ["CI_SCRIPTS_DIR"])
+
+          # Match both ${CI_SCRIPTS_DIR}/... and $CI_SCRIPTS_DIR/... forms.
+          pattern = re.compile(r"(?:\$\{CI_SCRIPTS_DIR\}|\$CI_SCRIPTS_DIR)/([A-Za-z0-9._/-]+)")
+          references = defaultdict(list)
+
+          workflow_files = sorted(workflows_dir.glob("*.yml")) + sorted(workflows_dir.glob("*.yaml"))
+          for workflow in workflow_files:
+            for line_number, line in enumerate(workflow.read_text().splitlines(), start=1):
+              for match in pattern.finditer(line):
+                rel_path = match.group(1)
+                references[rel_path].append(f"{workflow}:{line_number}")
+
+          if not references:
+            print("No CI_SCRIPTS_DIR references found.")
+            sys.exit(0)
+
+          missing = []
+          scripts_root = scripts_dir.resolve()
+          for rel_path, locations in sorted(references.items()):
+            full_path = (scripts_dir / rel_path).resolve()
+            # Reject any path that escapes the checked out scripts directory.
+            if scripts_root not in full_path.parents and full_path != scripts_root:
+              missing.append((rel_path, locations))
+              continue
+            if not full_path.exists():
+              missing.append((rel_path, locations))
+
+          if missing:
+            print("Missing paths in mathlib-ci checkout:")
+            for rel_path, locations in missing:
+              print(f"- {rel_path}")
+              print(f"  used at: {', '.join(locations)}")
+            sys.exit(1)
+
+          print(f"Validated {len(references)} CI_SCRIPTS_DIR reference(s).")
