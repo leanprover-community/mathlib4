@@ -202,7 +202,7 @@ instance [SeminormedCommRing α] : NormedCommRing (SeparationQuotient α) where
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
   norm_mul_le := Quotient.ind₂ norm_mul_le
 
-instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+instance [AddCommGroup α] [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     NormOneClass (SeparationQuotient α) where
   norm_one := norm_one (α := α)
 

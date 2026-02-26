@@ -179,11 +179,11 @@ instance (priority := 100) NonUnitalSeminormedRing.toSeminormedAddCommGroup
     [NonUnitalSeminormedRing α] : SeminormedAddCommGroup α :=
   { ‹NonUnitalSeminormedRing α› with }
 
-instance ULift.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+instance ULift.normOneClass [AddCommGroup α] [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     NormOneClass (ULift α) :=
   ⟨by simp [ULift.norm_def]⟩
 
-instance Prod.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α]
+instance Prod.normOneClass [AddCommGroup α] [SeminormedAddCommGroup α] [One α] [NormOneClass α]
     [AddCommGroup β] [SeminormedAddCommGroup β] [One β] [NormOneClass β] : NormOneClass (α × β) :=
   ⟨by simp [Prod.norm_def]⟩
 
@@ -192,7 +192,7 @@ instance Pi.normOneClass {ι : Type*} {α : ι → Type*} [Nonempty ι] [Fintype
     NormOneClass (∀ i, α i) :=
   ⟨by simpa [Pi.norm_def] using Finset.sup_const Finset.univ_nonempty 1⟩
 
-instance MulOpposite.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
+instance MulOpposite.normOneClass [AddCommGroup α] [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     NormOneClass αᵐᵒᵖ :=
   ⟨@norm_one α _ _ _⟩
 
@@ -645,7 +645,7 @@ end NNReal
 
 /-- A restatement of `MetricSpace.tendsto_atTop` in terms of the norm. -/
 theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirectedOrder α]
-    {β : Type*} [SeminormedAddCommGroup β] {f : α → β} {b : β} :
+    {β : Type*} [AddCommGroup β] [SeminormedAddCommGroup β] {f : α → β} {b : β} :
     Tendsto f atTop (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N ≤ n → ‖f n - b‖ < ε :=
   (atTop_basis.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
 
@@ -653,7 +653,7 @@ theorem NormedAddCommGroup.tendsto_atTop [Nonempty α] [Preorder α] [IsDirected
 uses `∃ N, ∀ n > N, ...` rather than `∃ N, ∀ n ≥ N, ...`
 -/
 theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirectedOrder α]
-    [NoMaxOrder α] {β : Type*} [SeminormedAddCommGroup β] {f : α → β} {b : β} :
+    [NoMaxOrder α] {β : Type*} [AddCommGroup β] [SeminormedAddCommGroup β] {f : α → β} {b : β} :
     Tendsto f atTop (𝓝 b) ↔ ∀ ε, 0 < ε → ∃ N, ∀ n, N < n → ‖f n - b‖ < ε :=
   (atTop_basis_Ioi.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
 
@@ -701,7 +701,7 @@ class NormMulClass (α : Type*) [Norm α] [Mul α] : Prop where
 
 section SeminormedAddCommGroup
 
-variable [SeminormedAddCommGroup α] [Mul α] [NormMulClass α] (a b : α)
+variable [AddCommGroup α] [SeminormedAddCommGroup α] [Mul α] [NormMulClass α] (a b : α)
 
 @[simp] lemma nnnorm_mul : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ := NNReal.eq <| norm_mul a b
 
@@ -762,7 +762,7 @@ theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ 
 end SeminormedCommRing
 
 section NormedAddCommGroup
-variable [NormedAddCommGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial α]
+variable [AddCommGroup α] [NormedAddCommGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial α]
 
 /-- Deduce `NormOneClass` from `NormMulClass` under a suitable nontriviality hypothesis. Not
 an instance, in order to avoid loops with `NormOneClass.nontrivial`. -/

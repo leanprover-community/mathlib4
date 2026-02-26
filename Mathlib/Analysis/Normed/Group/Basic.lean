@@ -726,8 +726,7 @@ abbrev SeminormedGroup.induced [Group E] [Group F] [SeminormedGroup F] [MonoidHo
 abbrev SeminormedCommGroup.induced
     [CommGroup E] [Group F] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedCommGroup E :=
-  { SeminormedGroup.induced E F f with
-    mul_comm := mul_comm }
+  { SeminormedGroup.induced E F f with }
 
 -- See note [reducible non-instances].
 /-- An injective group homomorphism from a `Group` to a `NormedGroup` induces a `NormedGroup`
@@ -746,14 +745,14 @@ abbrev NormedGroup.induced
 `NormedCommGroup` induces a `NormedCommGroup` structure on the domain. -/]
 abbrev NormedCommGroup.induced [CommGroup E] [Group F] [NormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕)
     (h : Injective f) : NormedCommGroup E :=
-  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with
-    mul_comm := mul_comm }
+  { SeminormedGroup.induced E F f, MetricSpace.induced f h _ with }
 
 end Induced
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [CommGroup F] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [CommGroup E] [SeminormedCommGroup E] [CommGroup F] [SeminormedCommGroup F] {a b : E}
+  {r : ℝ}
 variable {ε : Type*} [TopologicalSpace ε] [CommMonoid ε] [ESeminormedCommMonoid ε]
 
 @[to_additive]
@@ -987,7 +986,7 @@ end SeminormedCommGroup
 
 section NormedGroup
 
-variable [NormedGroup E] {a b : E}
+variable [Group E] [NormedGroup E] {a b : E}
 
 @[to_additive (attr := simp) norm_le_zero_iff]
 lemma norm_le_zero_iff' : ‖a‖ ≤ 0 ↔ a = 1 := by rw [← dist_one_right, dist_le_zero]
@@ -1074,6 +1073,7 @@ on non-one inputs. -/
 meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let _group_E ← synthInstanceQ q(Group $E)
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
@@ -1096,6 +1096,7 @@ on non-zero inputs. -/
 meta def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let _addGroup_E ← synthInstanceQ q(AddGroup $E)
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
     assertInstancesCommute
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption

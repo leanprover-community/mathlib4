@@ -144,13 +144,11 @@ instance Multiplicative.seminormedGroup [AddGroup E] [SeminormedAddGroup E] :
 
 instance Additive.seminormedCommGroup [CommGroup E] [SeminormedCommGroup E] :
     SeminormedAddCommGroup (Additive E) :=
-  { Additive.seminormedAddGroup with
-    add_comm := add_comm }
+  { Additive.seminormedAddGroup with }
 
 instance Multiplicative.seminormedAddCommGroup [AddCommGroup E] [SeminormedAddCommGroup E] :
     SeminormedCommGroup (Multiplicative E) :=
-  { Multiplicative.seminormedGroup with
-    mul_comm := mul_comm }
+  { Multiplicative.seminormedGroup with }
 
 instance Additive.normedAddGroup [Group E] [NormedGroup E] : NormedAddGroup (Additive E) :=
   { Additive.seminormedAddGroup with
@@ -162,13 +160,11 @@ instance Multiplicative.normedGroup [AddGroup E] [NormedAddGroup E] : NormedGrou
 
 instance Additive.normedAddCommGroup [CommGroup E] [NormedCommGroup E] : NormedAddCommGroup (Additive E) :=
   { Additive.seminormedAddGroup with
-    add_comm := add_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 instance Multiplicative.normedCommGroup [AddCommGroup E] [NormedAddCommGroup E] :
     NormedCommGroup (Multiplicative E) :=
   { Multiplicative.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end AdditiveMultiplicative
@@ -268,8 +264,7 @@ namespace Prod
 @[to_additive /-- Product of seminormed groups, using the sup norm. -/]
 instance seminormedCommGroup [CommGroup E] [SeminormedCommGroup E] [CommGroup F] [SeminormedCommGroup F] :
     SeminormedCommGroup (E × F) :=
-  { Prod.seminormedGroup with
-    mul_comm := mul_comm }
+  { Prod.seminormedGroup with }
 
 /-- Product of normed groups, using the sup norm. -/
 @[to_additive /-- Product of normed groups, using the sup norm. -/]
@@ -281,7 +276,6 @@ instance normedGroup [Group E] [NormedGroup E] [Group F] [NormedGroup F] : Norme
 @[to_additive /-- Product of normed groups, using the sup norm. -/]
 instance normedCommGroup [CommGroup E] [NormedCommGroup E] [CommGroup F] [NormedCommGroup F] : NormedCommGroup (E × F) :=
   { Prod.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 end Prod
@@ -381,8 +375,7 @@ end SeminormedGroup
 /-- Finite product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.seminormedCommGroup [∀ i, CommGroup (G i)] [∀ i, SeminormedCommGroup (G i)] : SeminormedCommGroup (∀ i, G i) :=
-  { Pi.seminormedGroup with
-    mul_comm := mul_comm }
+  { Pi.seminormedGroup with }
 
 /-- Finite product of normed groups, using the sup norm. -/
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
@@ -394,7 +387,6 @@ instance Pi.normedGroup [∀ i, Group (G i)] [∀ i, NormedGroup (G i)] : Normed
 @[to_additive /-- Finite product of seminormed groups, using the sup norm. -/]
 instance Pi.normedCommGroup [∀ i, CommGroup (G i)] [∀ i, NormedCommGroup (G i)] : NormedCommGroup (∀ i, G i) :=
   { Pi.seminormedGroup with
-    mul_comm := mul_comm
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 set_option backward.isDefEq.respectTransparency false in
