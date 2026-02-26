@@ -442,7 +442,13 @@ theorem ne_insert_of_notMem (s t : Finset α) {a : α} (h : a ∉ s) : s ≠ ins
   contrapose! h
   simp [h]
 
-theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by grind
+theorem insert_subset_iff : insert a s ⊆ t ↔ a ∈ t ∧ s ⊆ t := by
+  constructor
+  · intro h
+    exact ⟨h (mem_insert_self a s), fun _x hx => h (mem_insert_of_mem hx)⟩
+  · rintro ⟨ha, hs⟩ x hx
+    rw [mem_insert] at hx
+    exact hx.elim (fun h => h ▸ ha) (hs ·)
 
 theorem insert_subset (ha : a ∈ t) (hs : s ⊆ t) : insert a s ⊆ t :=
   insert_subset_iff.mpr ⟨ha,hs⟩

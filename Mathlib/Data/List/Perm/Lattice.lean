@@ -32,7 +32,33 @@ variable [DecidableEq α]
 
 theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂) :
     l₁.bagInter t ~ l₂.bagInter t := by
-  induction h generalizing t with grind
+  induction h generalizing t with
+  | nil => simp
+  | cons a _ ih =>
+    by_cases ha : a ∈ t
+    · rw [cons_bagInter_of_pos _ ha, cons_bagInter_of_pos _ ha]
+      exact (ih _).cons _
+    · rw [cons_bagInter_of_neg _ ha, cons_bagInter_of_neg _ ha]
+      exact ih _
+  | swap a b l =>
+    by_cases ha : a ∈ t <;> by_cases hb : b ∈ t
+    · by_cases hab : a = b
+      · subst hab; exact Perm.refl _
+      · have ha' : a ∈ t.erase b := (mem_erase_of_ne hab).mpr ha
+        have hb' : b ∈ t.erase a := (mem_erase_of_ne (Ne.symm hab)).mpr hb
+        rw [cons_bagInter_of_pos _ ha, cons_bagInter_of_pos _ hb',
+            cons_bagInter_of_pos _ hb, cons_bagInter_of_pos _ ha',
+            ← erase_comm a b]
+        exact Perm.swap _ _ _
+    · have hb' : b ∉ t.erase a := fun h => hb (mem_of_mem_erase h)
+      rw [cons_bagInter_of_pos _ ha, cons_bagInter_of_neg _ hb',
+          cons_bagInter_of_neg _ hb, cons_bagInter_of_pos _ ha]
+    · have ha' : a ∉ t.erase b := fun h => ha (mem_of_mem_erase h)
+      rw [cons_bagInter_of_neg _ ha, cons_bagInter_of_pos _ hb,
+          cons_bagInter_of_pos _ hb, cons_bagInter_of_neg _ ha']
+    · rw [cons_bagInter_of_neg _ ha, cons_bagInter_of_neg _ hb,
+          cons_bagInter_of_neg _ hb, cons_bagInter_of_neg _ ha]
+  | trans _ _ ih₁ ih₂ => exact (ih₁ t).trans (ih₂ t)
 
 theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
     l.bagInter t₁ = l.bagInter t₂ := by

@@ -155,10 +155,8 @@ lemma eq_union_right (h : s ≤ t) : s ∪ t = t := by rw [union_comm, eq_union_
 
 lemma union_le_add (s t : Multiset α) : s ∪ t ≤ s + t := union_le (le_add_right ..) (le_add_left ..)
 
-lemma union_add_distrib (s t u : Multiset α) : s ∪ t + u = s + u ∪ (t + u) := by
-  simpa [(· ∪ ·), union, eq_comm, Multiset.add_assoc, Multiset.add_left_inj] using
-    show s + u - (t + u) = s - t by
-      rw [t.add_comm, Multiset.sub_add_eq_sub_sub, Multiset.add_sub_cancel_right]
+lemma union_add_distrib (s t u : Multiset α) : s ∪ t + u = s + u ∪ (t + u) :=
+  ext' fun a ↦ by simp
 
 lemma add_union_distrib (s t u : Multiset α) : s + (t ∪ u) = s + t ∪ (s + u) := by
   rw [Multiset.add_comm, union_add_distrib, s.add_comm, s.add_comm]

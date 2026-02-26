@@ -113,7 +113,14 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
     powerset (insert a s) = s.powerset ∪ s.powerset.image (insert a) := by
   ext t
   simp only [mem_powerset, mem_image, mem_union, subset_insert_iff]
-  grind
+  constructor
+  · intro h
+    by_cases ha : a ∈ t
+    · exact Or.inr ⟨t.erase a, h, insert_erase ha⟩
+    · exact Or.inl ((erase_eq_of_notMem ha) ▸ h)
+  · rintro (hs | ⟨u, hu, rfl⟩)
+    · exact (erase_subset _ _).trans hs
+    · rw [erase_insert_eq_erase]; exact (erase_subset _ _).trans hu
 
 lemma pairwiseDisjoint_pair_insert [DecidableEq α] {a : α} (ha : a ∉ s) :
     (s.powerset : Set (Finset α)).PairwiseDisjoint fun t ↦ ({t, insert a t} : Set (Finset α)) := by
