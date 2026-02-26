@@ -16,9 +16,9 @@ public import Mathlib.Algebra.DirectSum.Decomposition
 /-!
 # Algebraic Cycles
 
-In this file we define algebraic cycles on a scheme `X` with coefficients in a type `Z` and provide some
-basic API for working with them. We define an algebraic cycle on a scheme `X` with coefficients
-in a type `Z` to be functions `c : X → Z` whose support is locally finite.
+In this file we define algebraic cycles on a scheme `X` with coefficients in a type `R` and provide
+some basic API for working with them. We define an algebraic cycle on a scheme `X` with
+coefficients in a type `R` to be functions `c : X → R` whose support is locally finite.
 
 Here we're making use of the equivalence between irreducible closed subsets of a scheme and their
 generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
@@ -31,7 +31,7 @@ open AlgebraicGeometry Set Order LocallyRingedSpace Topology TopologicalSpace
   CategoryTheory
 
 universe u v
-variable (R : Type*) [CommRing R] (i : ℕ) (X : Scheme.{u}) {Y : Scheme.{u}} (Z : Type*)
+variable (X : Scheme.{u}) {Y : Scheme.{u}} (R : Type*)
 
 /--
 Algebraic cycle on a scheme `X` with coefficients in a type `Z` is just a function from `X` to `Z`
@@ -41,8 +41,8 @@ Here we're making use of the equivalence between irreducible closed subsets of a
 generic points in order to reuse the API in Function.locallyFinsupp, hence the slightly
 nonstandard definition.
 -/
-abbrev AlgebraicCycle (X : Scheme.{u}) (Z : Type*) [Zero Z] :=
-    Function.locallyFinsupp X Z
+abbrev AlgebraicCycle (X : Scheme.{u}) (R : Type*) [Zero R] :=
+    Function.locallyFinsupp X R
 
 namespace AlgebraicCycle
 
@@ -51,7 +51,7 @@ In the context of algebraic cycles, gradings tend to be defined using functions 
 the components of the cycles (mainly different notions of dimension and codimension).
 Here we define a notion of grading defined by such a dimension/codimension function.
 -/
-structure Grading [AddMonoid Z] (N : Type*) where
+structure Grading [AddMonoid R] (N : Type*) where
   /--
   The "dimension function" associated with the grading.
   -/
@@ -59,19 +59,19 @@ structure Grading [AddMonoid Z] (N : Type*) where
   /--
   Given `d` in `N`, we have an additive submonoid of `d`-homogeneous cycles.
   -/
-  homogeneousCycles (d : N) : AddSubmonoid (AlgebraicCycle X Z)
+  homogeneousCycles (d : N) : AddSubmonoid (AlgebraicCycle X R)
   /--
   Proof that `homogeneousCycles d` is the set of `d`-homogeneous cycles.
   -/
   homogeneousCycles_carrier (d : N) : (homogeneousCycles d).carrier =
-    {c : AlgebraicCycle X Z | ∀ x ∈ c.support, dim x = d} := by aesop
+    {c : AlgebraicCycle X R | ∀ x ∈ c.support, dim x = d} := by aesop
 
 /--
 Submonoid of cycles of pure dimension `d`.
 -/
-def dimensionGradingAddSubmonoid [AddMonoid Z] (d : ℕ∞) :
-    AddSubmonoid (AlgebraicCycle X Z) where
-  carrier := {c : AlgebraicCycle X Z | ∀ x ∈ c.support, height x = d}
+def dimensionGradingAddSubmonoid [AddMonoid R] (d : ℕ∞) :
+    AddSubmonoid (AlgebraicCycle X R) where
+  carrier := {c : AlgebraicCycle X R | ∀ x ∈ c.support, height x = d}
   add_mem' {a} b c₁ c₂ := by
     simp_all only [Function.mem_support, ne_eq, mem_setOf_eq,
       Function.locallyFinsuppWithin.coe_add, Pi.add_apply]
@@ -89,16 +89,16 @@ contexts where there are some equidimensionality hypotheses. In these contexts, 
 dimension functions is more appropriate to use.
 -/
 noncomputable
-def dimensionGrading [AddMonoid Z] : Grading X Z ℕ∞ where
+def dimensionGrading [AddMonoid R] : Grading X R ℕ∞ where
   dim := Order.height
-  homogeneousCycles := dimensionGradingAddSubmonoid X Z
+  homogeneousCycles := dimensionGradingAddSubmonoid X R
 
 /--
 Submonoid of cycles of pure codimension `d`.
 -/
-def codimensionGradingAddSubmonoid [AddMonoid Z] (d : ℕ∞) :
-    AddSubmonoid (AlgebraicCycle X Z) where
-  carrier := {c : AlgebraicCycle X Z | ∀ x ∈ c.support, coheight x = d}
+def codimensionGradingAddSubmonoid [AddMonoid R] (d : ℕ∞) :
+    AddSubmonoid (AlgebraicCycle X R) where
+  carrier := {c : AlgebraicCycle X R | ∀ x ∈ c.support, coheight x = d}
   add_mem' c₁ c₂ := by
     rename_i a b
     simp_all only [Function.mem_support, ne_eq, mem_setOf_eq,
@@ -117,25 +117,21 @@ contexts where there are some equidimensionality hypotheses. In these contexts, 
 dimension functions is more appropriate to use.
 -/
 noncomputable
-def codimensionGrading [AddMonoid Z] : Grading X Z ℕ∞ where
+def codimensionGrading [AddMonoid R] : Grading X R ℕ∞ where
   dim := Order.coheight
-  homogeneousCycles := codimensionGradingAddSubmonoid X Z
+  homogeneousCycles := codimensionGradingAddSubmonoid X R
 
-variable {X Z}
+variable {X R}
 
 section Zero
 
-variable (f : X ⟶ Y)
-         [Zero Z]
-         (c : AlgebraicCycle X Z)
-         (x : X)
-         (z : Y)
+variable (f : X ⟶ Y) [Zero R] (c : AlgebraicCycle X R) (x : X) (z : Y)
 
 /--
 The cycle containing a single point with a chosen coefficient
 -/
 noncomputable
-def single (coeff : Z) : AlgebraicCycle X Z where
+def single (coeff : R) : AlgebraicCycle X R where
   toFun := Set.indicator {x} (Function.const X coeff)
   supportWithinDomain' := by simp only [support_indicator]; exact LE.le.subset fun _ a_1 ↦ trivial
   supportLocallyFiniteWithinDomain' z hz :=
@@ -143,7 +139,7 @@ def single (coeff : Z) : AlgebraicCycle X Z where
 
 /--
 Implementation detail for the pushforward; the support of a cycle on X intersected with the preimage
-of a point z : Y along a morphism f : X ⟶ Y.
+of a point z : Y along a morphism `f : X ⟶ Y`.
 -/
 def preimageSupport : Set X :=
   f.base ⁻¹' {z} ∩ c.support
@@ -200,9 +196,9 @@ Implementation detail for pushforward: function used to define the coefficient o
 of a cycle `c` at a point `z = f x`, as in stacks `02R3`.
 -/
 noncomputable
-def mapAux {N : Type*} [Semiring Z] [HasDegree Z] {Y : Scheme}
-    (gx : Grading X Z N) (gy : Grading Y Z N)
-    (f : X ⟶ Y) (x : X) : Z :=
+def mapAux {N : Type*} [Semiring R] [HasDegree R] {Y : Scheme}
+    (gx : Grading X R N) (gy : Grading Y R N)
+    (f : X ⟶ Y) (x : X) : R :=
   if gx.dim x = gy.dim (f.base x) then HasDegree.degree f x else 0
 
 section map
