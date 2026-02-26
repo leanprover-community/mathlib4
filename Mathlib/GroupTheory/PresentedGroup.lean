@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
@@ -22,6 +23,7 @@ given by generators `x : α` and relations `r ∈ rels`.
 * `of`: The canonical map from `α` to a presented group with generators `α`.
 * `toGroup f`: the canonical group homomorphism `PresentedGroup rels → G`, given a function
   `f : α → G` from a type `α` to a group `G` which satisfies the relations `rels`.
+* `IsPresented G`: a group `G` is isomorphic to some `PresentedGroup rels`.
 
 ## Tags
 
@@ -29,6 +31,8 @@ generators, relations, group presentations
 -/
 
 @[expose] public section
+
+universe u
 
 
 variable {α : Type*}
@@ -142,6 +146,8 @@ theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) 
 
 variable {β : Type*}
 
+
+
 /-- Presented groups of isomorphic types are isomorphic. -/
 def equivPresentedGroup (rels : Set (FreeGroup α)) (e : α ≃ β) :
     PresentedGroup rels ≃* PresentedGroup (FreeGroup.freeGroupCongr e '' rels) :=
@@ -159,6 +165,31 @@ theorem equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (
       PresentedGroup.of (rels := rels) (e.symm x) := rfl
 
 end ToGroup
+
+/-- A group is presented if it admits an isomorphism to a presented group. -/
+def IsPresented (G : Type u) [Group G] : Prop :=
+  ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
+
+/-- Every group is isomorphic to a presented group. -/
+theorem isPresented (G : Type u) [Group G] : IsPresented G := by
+  let F : FreeGroup (ULift G) →* G := FreeGroup.lift ULift.down
+  have hF : Function.Surjective F := by
+    intro g
+    refine ⟨FreeGroup.of (ULift.up g), ?_⟩
+    simp [F]
+  refine ⟨ULift G, (MonoidHom.ker F : Set (FreeGroup (ULift G))), ?_⟩
+  refine ⟨?_⟩
+  let e₁ : FreeGroup (ULift G) ⧸ MonoidHom.ker F ≃* G :=
+    QuotientGroup.quotientKerEquivOfSurjective (φ := F) hF
+  let e₂ : FreeGroup (ULift G) ⧸ MonoidHom.ker F ≃*
+      PresentedGroup (MonoidHom.ker F : Set (FreeGroup (ULift G))) :=
+    by
+      simpa [PresentedGroup] using
+        (QuotientGroup.quotientMulEquivOfEq (G := FreeGroup (ULift G))
+          (M := MonoidHom.ker F)
+          (N := Subgroup.normalClosure (MonoidHom.ker F : Set (FreeGroup (ULift G))))
+          (Subgroup.normalClosure_eq_self (MonoidHom.ker F)).symm)
+  exact e₁.symm.trans e₂
 
 instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=
   ⟨1⟩
