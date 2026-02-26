@@ -94,7 +94,7 @@ variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 instance (H : Subgroup G) [H.Normal] :
-    MulSemiringAction (G ⧸ H) (FixedPoints.subring H B) where
+    MulSemiringAction (G ⧸ H) (FixedPoints.subring B H) where
   smul := Quotient.lift (fun g x ↦ ⟨g • x, fun h ↦ by
     simpa [mul_smul] using congr(g • $(x.2 ⟨_, ‹H.Normal›.conj_mem' _ h.2 g⟩))⟩) (by
     rintro _ a ⟨⟨⟨b⟩, hb⟩, rfl⟩
@@ -108,7 +108,7 @@ instance (H : Subgroup G) [H.Normal] :
   smul_mul := Quotient.ind fun _ _ _ ↦ Subtype.ext (MulSemiringAction.smul_mul _ _ _)
 
 instance (H : Subgroup G) [H.Normal] :
-    MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra H A B) :=
+    MulSemiringAction (G ⧸ H) (FixedPoints.subalgebra A B H) :=
   inferInstanceAs (MulSemiringAction (G ⧸ H) (FixedPoints.subring B H))
 
 instance (H : Subgroup G) [H.Normal] :
