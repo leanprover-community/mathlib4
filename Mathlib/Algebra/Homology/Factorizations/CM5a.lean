@@ -13,11 +13,11 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 /-!
 # Factorization lemma
 
-In this file, we show that if `f : K ⟶ L` is a morphism of between bounded below
+In this file, we show that if `f : K ⟶ L` is a morphism between bounded below
 cochain complexes in an abelian category with enough injectives,
-there exists a factorization `ι ≫ π = f` with `ι : K ⟶ L'` a monomorphism that is also
-a quasimorphism and `π : L' ⟶ L` a morphism which degreewise is an epimorphism with
-an injective kernel, while `L'` is also bounded below (with precise bounds depending
+there exists a factorization `ι ≫ π = f` with `ι : K ⟶ K'` a monomorphism that is also
+a quasimorphism and `π : K' ⟶ L` a morphism which degreewise is an epimorphism with
+an injective kernel, while `K'` is also bounded below (with precise bounds depending
 on the available bounds for `K` and `L`).
 
 -/
@@ -161,7 +161,7 @@ def isEventuallyConstantTo (i : ℤ) (q : ℕ) (h : i ≤ n₀ + q) :
 end cm5a_cof
 
 public lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
-    ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (ι : K ⟶ L') (π : L' ⟶ L),
+    ∃ (K' : CochainComplex C ℤ) (_hK' : K'.IsStrictlyGE n) (ι : K ⟶ K') (π : K' ⟶ L),
       Mono ι ∧ QuasiIso π ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f := by
   let n₀ := n - 1
   have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_ge (n₀ + 1) (n + 1) (by lia)
