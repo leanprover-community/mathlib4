@@ -5,6 +5,7 @@ Authors: Youheng Luo
 -/
 module
 public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 
 /-!
 # Isolate Vertices
@@ -32,5 +33,9 @@ lemma isolateVerts_bot : (⊥ : SimpleGraph V).isolateVerts s = ⊥ := by
 @[simp]
 lemma isolateVerts_le : G.isolateVerts s ≤ G :=
   fun _ _ h ↦ h.2.2
+
+@[simp]
+lemma isolateVerts_singleton (v : V) : G.isolateVerts {v} = G.deleteIncidenceSet v := by
+  ext; simp [isolateVerts, deleteIncidenceSet_adj]; tauto
 
 end SimpleGraph
