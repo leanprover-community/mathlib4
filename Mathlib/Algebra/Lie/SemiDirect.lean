@@ -60,10 +60,12 @@ def toProd : H ⋊⁅ψ⁆ G ≃ H × G where
   right_inv _ := rfl
 
 
-instance : AddCommGroup (H ⋊⁅ψ⁆ G) := by
-  unfold SemiDirectSum
-  infer_instance
+instance : AddCommGroup (H ⋊⁅ψ⁆ G) := toProd.addCommGroup
 
+@[simp] lemma toProd_zero : (0 : H ⋊⁅ψ⁆ G).toProd = 0 := rfl
+@[simp] lemma toProd_add (x y : H ⋊⁅ψ⁆ G) : (x + y).toProd = x.toProd + y.toProd := rfl
+@[simp] lemma toProd_sub (x y : H ⋊⁅ψ⁆ G) : (x - y).toProd = x.toProd - y.toProd := rfl
+@[simp] lemma toProd_neg (x : H ⋊⁅ψ⁆ G) : (-x).toProd = -x.toProd := rfl
 
 instance : Module R (H ⋊⁅ψ⁆ G) := by
   unfold SemiDirectSum
