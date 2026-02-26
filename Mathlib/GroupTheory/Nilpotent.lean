@@ -369,13 +369,26 @@ variable [hG : IsNilpotent G]
 variable (G) in
 open scoped Classical in
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that
-the `n`-th term of the upper central series is `G`. -/
-noncomputable def Group.nilpotencyClass : ℕ := Nat.find (IsNilpotent.nilpotent G)
+the `n`-th term of the upper central series is `G`. If `G` is not nilpotent then the nilpotency
+class takes the junk value 0. -/
+noncomputable def Group.nilpotencyClass : ℕ :=
+  if hG : IsNilpotent G then Nat.find hG.nilpotent else 0
 
 open scoped Classical in
+theorem Group.nilpotencyClass_def :
+    Group.nilpotencyClass G = Nat.find (IsNilpotent.nilpotent G) :=
+  dif_pos hG
+
+omit hG in
+theorem Group.nilpotencyClass_of_not_nilpotent (hG : ¬ IsNilpotent G) :
+    Group.nilpotencyClass G = 0 :=
+  dif_neg hG
+
 @[simp]
-theorem upperCentralSeries_nilpotencyClass : upperCentralSeries G (Group.nilpotencyClass G) = ⊤ :=
-  Nat.find_spec (IsNilpotent.nilpotent G)
+theorem upperCentralSeries_nilpotencyClass :
+    upperCentralSeries G (Group.nilpotencyClass G) = ⊤ := by
+  classical
+  rw [nilpotencyClass_def, Nat.find_spec (IsNilpotent.nilpotent G)]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
@@ -383,6 +396,7 @@ theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
   classical
   constructor
   · intro h
+    rw [nilpotencyClass_def]
     exact Nat.find_le h
   · intro h
     rw [eq_top_iff, ← upperCentralSeries_nilpotencyClass]
@@ -395,6 +409,7 @@ central series reaches `G` in its `n`-th term. -/
 theorem least_ascending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_ascending_central_series G).mp hG) =
     Group.nilpotencyClass G := by
+  rw [nilpotencyClass_def]
   refine le_antisymm (Nat.find_mono ?_) (Nat.find_mono ?_)
   · intro n hn
     exact ⟨upperCentralSeries G, upperCentralSeries_isAscendingCentralSeries G, hn⟩
@@ -524,7 +539,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The preimage of a nilpotent group is nilpotent if the kernel of the homomorphism is contained
 in the center -/
 theorem isNilpotent_of_ker_le_center {H : Type*} [Group H] (f : G →* H) (hf1 : f.ker ≤ center G)
-    (hH : IsNilpotent H) : IsNilpotent G := by
+    [hH : IsNilpotent H] : IsNilpotent G := by
   rw [nilpotent_iff_lowerCentralSeries] at *
   rcases hH with ⟨n, hn⟩
   use n + 1
@@ -533,10 +548,9 @@ theorem isNilpotent_of_ker_le_center {H : Type*} [Group H] (f : G →* H) (hf1 :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem nilpotencyClass_le_of_ker_le_center {H : Type*} [Group H] (f : G →* H)
-    (hf1 : f.ker ≤ center G) (hH : IsNilpotent H) :
-    Group.nilpotencyClass (hG := isNilpotent_of_ker_le_center f hf1 hH) ≤
-      Group.nilpotencyClass H + 1 := by
-  haveI : IsNilpotent G := isNilpotent_of_ker_le_center f hf1 hH
+    (hf1 : f.ker ≤ center G) [IsNilpotent H] :
+    Group.nilpotencyClass G ≤ Group.nilpotencyClass H + 1 := by
+  have : IsNilpotent G := isNilpotent_of_ker_le_center f hf1
   rw [← lowerCentralSeries_length_eq_nilpotencyClass]
   classical apply Nat.find_min'
   refine lowerCentralSeries_succ_eq_bot (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)
@@ -562,7 +576,9 @@ set_option backward.isDefEq.respectTransparency false in
 nilpotent group is less or equal the nilpotency class of the domain -/
 theorem nilpotencyClass_le_of_surjective {G' : Type*} [Group G'] (f : G →* G')
     (hf : Function.Surjective f) [h : IsNilpotent G] :
-    Group.nilpotencyClass (hG := nilpotent_of_surjective _ hf) ≤ Group.nilpotencyClass G := by
+    Group.nilpotencyClass G' ≤ Group.nilpotencyClass G := by
+  have := nilpotent_of_surjective _ hf
+  rw [nilpotencyClass_def, nilpotencyClass_def]
   classical apply Nat.find_mono
   intro n hn
   rw [eq_top_iff]
@@ -614,7 +630,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem nilpotencyClass_zero_iff_subsingleton [IsNilpotent G] :
     Group.nilpotencyClass G = 0 ↔ Subsingleton G := by
   classical
-  rw [Group.nilpotencyClass, Nat.find_eq_zero, upperCentralSeries_zero,
+  rw [Group.nilpotencyClass_def, Nat.find_eq_zero, upperCentralSeries_zero,
     subsingleton_iff_bot_eq_top, Subgroup.subsingleton_iff]
 
 /-- Quotienting the `center G` reduces the nilpotency class by 1 -/
@@ -634,7 +650,7 @@ theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
       calc
         n + 1 = Group.nilpotencyClass G := hn.symm
         _ ≤ Group.nilpotencyClass (G ⧸ center G) + 1 :=
-          nilpotencyClass_le_of_ker_le_center _ (le_of_eq (ker_mk' _)) _
+          nilpotencyClass_le_of_ker_le_center _ (le_of_eq (ker_mk' _))
 
 /-- The nilpotency class of a non-trivial group is one more than its quotient by the center -/
 theorem nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontrivial G] :
