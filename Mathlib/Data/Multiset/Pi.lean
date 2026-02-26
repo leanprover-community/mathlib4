@@ -145,16 +145,14 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
   specialize ht a (mem_cons_self _ _)
   revert ih ht
   refine Quot.induction_on (t a) <| fun la ↦ Quot.induction_on (pi s t) (fun lp hlp hla ↦ ?_)
-  change Nodup ((la : Multiset (β a)).bind fun b ↦ (lp : Multiset _).map (Pi.cons s a b))
-  simp only [map_coe]
-  rw [coe_bind la (fun b => lp.map (Pi.cons s a b)), coe_nodup, List.nodup_flatMap]
+  simp only [quot_mk_to_coe', map_coe, coe_bind, coe_nodup, List.nodup_flatMap]
   refine ⟨fun b _ ↦ hlp.map (Pi.cons_injective (nodup_cons.1 hs).1), hla.imp
     (@fun b₁ b₂ hne x hx₁ hx₂ ↦ hne ?_)⟩
   obtain ⟨g₁, _, rfl⟩ := List.mem_map.1 hx₁
   obtain ⟨g₂, _, heq⟩ := List.mem_map.1 hx₂
   have h : Pi.cons s a b₁ g₁ a (mem_cons_self _ _) = Pi.cons s a b₂ g₂ a (mem_cons_self _ _) :=
     congr_fun (congr_fun heq a).symm (mem_cons_self _ _)
-  rwa [Pi.cons_same, Pi.cons_same] at h
+  rwa [Pi.cons_same (mem_cons_self a s), Pi.cons_same] at h
 
 theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) (f : ∀ a ∈ m, β a) :
     f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
