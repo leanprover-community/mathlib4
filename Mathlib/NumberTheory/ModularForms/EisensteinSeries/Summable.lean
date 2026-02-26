@@ -280,7 +280,7 @@ private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
   simp [abs_of_pos (r_pos _)]
 
 lemma isLittleO_const_left_of_properSpace_of_discreteTopology
-    {α : Type*} (a : α) [NormedAddCommGroup α] [DiscreteTopology α]
+    {α : Type*} (a : α) [AddCommGroup α] [NormedAddCommGroup α] [DiscreteTopology α]
     [ProperSpace α] : (fun _ : α ↦ a) =o[cofinite] (‖·‖) := by
   simpa [isLittleO_const_left, Function.comp_def] using
     .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding IsClosedEmbedding.id

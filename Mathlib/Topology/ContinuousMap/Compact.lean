@@ -168,17 +168,20 @@ theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ 
 
 open BoundedContinuousFunction
 
-instance : SeminormedAddCommGroup C(α, E) where
+instance instSeminormedAddCommGroup : SeminormedAddCommGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
-  __ := ContinuousMap.instAddCommGroupContinuousMap
-  dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
-    mkOfCompact_add, mkOfCompact_neg]
+  dist_eq x y := by
+    rw [show dist x y = dist (mkOfCompact x) (mkOfCompact y) from rfl,
+      show (norm : C(α, E) → ℝ) = fun x => ‖mkOfCompact x‖ from rfl]
+    exact dist_eq_norm_neg_add _ _
   dist := dist
   norm := norm
 
 instance {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
-  __ : SeminormedAddCommGroup C(α, E) := inferInstance
-  __ : MetricSpace C(α, E) := inferInstance
+  __ := ContinuousMap.instSeminormedAddCommGroup
+  eq_of_dist_eq_zero {f g} h := by
+    have : dist (mkOfCompact f) (mkOfCompact g) = 0 := h
+    exact (equivBoundedOfCompact α E).injective (eq_of_dist_eq_zero this)
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
@@ -198,19 +201,19 @@ theorem dist_le_two_norm (x y : α) : dist (f x) (f y) ≤ 2 * ‖f‖ :=
 
 /-- The norm of a function is controlled by the supremum of the pointwise norms. -/
 theorem norm_le {C : ℝ} (C0 : (0 : ℝ) ≤ C) : ‖f‖ ≤ C ↔ ∀ x : α, ‖f x‖ ≤ C :=
-  @BoundedContinuousFunction.norm_le _ _ _ _ (mkOfCompact f) _ C0
+  @BoundedContinuousFunction.norm_le _ _ _ _ _ (mkOfCompact f) _ C0
 
 theorem norm_le_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ ≤ M ↔ ∀ x, ‖f x‖ ≤ M :=
-  @BoundedContinuousFunction.norm_le_of_nonempty _ _ _ _ _ (mkOfCompact f) _
+  @BoundedContinuousFunction.norm_le_of_nonempty _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem norm_lt_iff {M : ℝ} (M0 : 0 < M) : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
-  @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ (mkOfCompact f) _ M0
+  @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ _ (mkOfCompact f) _ M0
 
 theorem nnnorm_lt_iff {M : ℝ≥0} (M0 : 0 < M) : ‖f‖₊ < M ↔ ∀ x : α, ‖f x‖₊ < M :=
   f.norm_lt_iff M0
 
 theorem norm_lt_iff_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
-  @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ (mkOfCompact f) _
+  @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ _ (mkOfCompact f) _
 
 theorem nnnorm_lt_iff_of_nonempty [Nonempty α] {M : ℝ≥0} : ‖f‖₊ < M ↔ ∀ x, ‖f x‖₊ < M :=
   f.norm_lt_iff_of_nonempty

@@ -676,7 +676,8 @@ lemma prod_isometry_ofLp_infty [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 
 /-- Seminormed group instance on the product of two normed groups, using the `L^p`
 norm. -/
-instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] :
+instance instProdSeminormedAddCommGroup [AddCommGroup α] [SeminormedAddCommGroup α]
+    [AddCommGroup β] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup (WithLp p (α × β)) where
   dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
@@ -694,48 +695,55 @@ lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
 section
 variable {β p}
 
-theorem enorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem enorm_fst_le [AddCommGroup α] [SeminormedAddCommGroup α] [AddCommGroup β]
+    [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_fst_le x 0
 
-theorem enorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem enorm_snd_le [AddCommGroup α] [SeminormedAddCommGroup α] [AddCommGroup β]
+    [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.snd‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_snd_le x 0
 
-theorem nnnorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem nnnorm_fst_le [AddCommGroup α] [SeminormedAddCommGroup α] [AddCommGroup β]
+    [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_fst_le x 0
 
-theorem nnnorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem nnnorm_snd_le [AddCommGroup α] [SeminormedAddCommGroup α] [AddCommGroup β]
+    [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.snd‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_snd_le x 0
 
-theorem norm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem norm_fst_le [AddCommGroup α] [SeminormedAddCommGroup α] [AddCommGroup β]
+    [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖ ≤ ‖x‖ := by
   simpa using dist_fst_le x 0
 
-theorem norm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
+theorem norm_snd_le [AddCommGroup α] [SeminormedAddCommGroup α] [AddCommGroup β]
+    [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.snd‖ ≤ ‖x‖ := by
   simpa using dist_snd_le x 0
 
 end
 
 /-- normed group instance on the product of two normed groups, using the `L^p` norm. -/
-instance instProdNormedAddCommGroup [NormedAddCommGroup α] [NormedAddCommGroup β] :
+instance instProdNormedAddCommGroup [AddCommGroup α] [NormedAddCommGroup α] [AddCommGroup β]
+    [NormedAddCommGroup β] :
     NormedAddCommGroup (WithLp p (α × β)) :=
   { instProdSeminormedAddCommGroup p α β with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [AddCommGroup α] [NormedAddCommGroup α] [AddCommGroup β] [NormedAddCommGroup β] :
     (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace.toTopologicalSpace =
     instProdTopologicalSpace p α β :=
   rfl
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [AddCommGroup α] [NormedAddCommGroup α] [AddCommGroup β] [NormedAddCommGroup β] :
     (instProdNormedAddCommGroup p α β).toMetricSpace.toUniformSpace = instProdUniformSpace p α β :=
   rfl
 
-example [NormedAddCommGroup α] [NormedAddCommGroup β] :
+example [AddCommGroup α] [NormedAddCommGroup α] [AddCommGroup β] [NormedAddCommGroup β] :
     (instProdNormedAddCommGroup p α β).toMetricSpace.toBornology = instProdBornology p α β :=
   rfl
 
@@ -749,7 +757,7 @@ theorem prod_norm_eq_of_nat [Norm α] [Norm β] (n : ℕ) (h : p = n) (f : WithL
   simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
     prod_norm_eq_add this]
 
-variable [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
+variable [AddCommGroup α] [SeminormedAddCommGroup α] [AddCommGroup β] [SeminormedAddCommGroup β]
 
 theorem prod_nnnorm_eq_add (hp : p ≠ ∞) (f : WithLp p (α × β)) :
     ‖f‖₊ = (‖f.fst‖₊ ^ p.toReal + ‖f.snd‖₊ ^ p.toReal) ^ (1 / p.toReal) := by

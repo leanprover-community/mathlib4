@@ -446,16 +446,16 @@ field `𝕜` whenever `β` is as well.
 
 section NormedSpace
 
-noncomputable instance instSeminormedAddCommGroup [SeminormedAddCommGroup β] :
+noncomputable instance instSeminormedAddCommGroup [AddCommGroup β] [SeminormedAddCommGroup β] :
     SeminormedAddCommGroup C₀(α, β) := fast_instance%
   SeminormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
 
-noncomputable instance instNormedAddCommGroup [NormedAddCommGroup β] :
+noncomputable instance instNormedAddCommGroup [AddCommGroup β] [NormedAddCommGroup β] :
     NormedAddCommGroup C₀(α, β) := fast_instance%
   NormedAddCommGroup.induced _ _ (⟨⟨toBCF, rfl⟩, fun _ _ => rfl⟩ : C₀(α, β) →+ α →ᵇ β)
     (toBCF_injective α β)
 
-variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
+variable [AddCommGroup β] [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSpace 𝕜 β]
 
 @[simp]
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
@@ -526,7 +526,7 @@ end Star
 
 section NormedStar
 
-variable [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
+variable [AddCommGroup β] [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 instance instNormedStarGroup : NormedStarGroup C₀(α, β) where
   norm_star_le f := (norm_star f.toBCF :).le

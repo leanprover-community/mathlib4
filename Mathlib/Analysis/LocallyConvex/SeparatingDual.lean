@@ -51,7 +51,8 @@ instance {E : Type*} [TopologicalSpace E] [AddCommGroup E] [IsTopologicalAddGrou
     simp only [map_zero] at hf
     exact ⟨f, hf.ne'⟩⟩
 
-instance {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SeparatingDual 𝕜 E :=
+instance {E 𝕜 : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] :
+    SeparatingDual 𝕜 E :=
   ⟨fun x hx ↦
     let : NormedSpace ℝ E := RestrictScalars.normedSpace ℝ 𝕜 E
     let : Module ℝ E := RestrictScalars.module ℝ 𝕜 E

@@ -215,9 +215,9 @@ end AddTorsor
 
 namespace AffineIsometry
 
-variable [NormedField 𝕜] [SeminormedAddCommGroup V] [AddCommGroup W] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V]
-  [NormedSpace 𝕜 W] [MetricSpace P] [PseudoMetricSpace Q] [NormedAddTorsor V P]
-  [NormedAddTorsor W Q]
+variable [NormedField 𝕜] [AddCommGroup V] [SeminormedAddCommGroup V] [AddCommGroup W]
+  [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [MetricSpace P]
+  [PseudoMetricSpace Q] [NormedAddTorsor V P] [NormedAddTorsor W Q]
 
 @[simp]
 theorem image_intrinsicInterior (φ : P →ᵃⁱ[𝕜] Q) (s : Set P) :
@@ -262,8 +262,8 @@ end AffineIsometry
 
 section NormedAddTorsor
 
-variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
-  [FiniteDimensional 𝕜 V] [MetricSpace P] [NormedAddTorsor V P] (s : Set P)
+variable (𝕜) [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜] [AddCommGroup V] [NormedAddCommGroup V]
+  [NormedSpace 𝕜 V] [FiniteDimensional 𝕜 V] [MetricSpace P] [NormedAddTorsor V P] (s : Set P)
 
 @[simp]
 theorem intrinsicClosure_eq_closure : intrinsicClosure 𝕜 s = closure s := by
@@ -309,7 +309,8 @@ private theorem aux {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] 
     (s : Set β) : (interior s).Nonempty ↔ (interior (φ ⁻¹' s)).Nonempty := by
   rw [← φ.image_symm, ← φ.symm.image_interior, image_nonempty]
 
-variable [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] {s : Set V}
+variable [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
+  {s : Set V}
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The intrinsic interior of a nonempty convex set is nonempty. -/

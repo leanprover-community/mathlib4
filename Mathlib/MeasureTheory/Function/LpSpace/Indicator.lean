@@ -301,7 +301,7 @@ theorem indicatorConstLp_eq_toSpanSingleton_compLp {s : Set α} [NormedSpace ℝ
     (ContinuousLinearMap.toSpanSingleton ℝ x).coeFn_compLp (indicatorConstLp 2 hs hμs (1 : ℝ))
   rw [← EventuallyEq] at h_compLp
   refine EventuallyEq.trans ?_ h_compLp.symm
-  refine (@indicatorConstLp_coeFn _ _ _ 2 μ _ s hs hμs (1 : ℝ)).mono fun y hy => ?_
+  refine (@indicatorConstLp_coeFn _ _ _ 2 μ _ _ s hs hμs (1 : ℝ)).mono fun y hy => ?_
   dsimp only
   rw [hy]
   simp_rw [ContinuousLinearMap.toSpanSingleton_apply]

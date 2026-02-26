@@ -117,7 +117,7 @@ variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {E : ι → Type wE} {E�
   {E' : ι' → Type wE'} {G : Type wG} {G' : Type wG'}
   [Fintype ι'] [NontriviallyNormedField 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)]
   [∀ i, NormedSpace 𝕜 (E i)] [∀ i, AddCommGroup (E₁ i)] [∀ i, SeminormedAddCommGroup (E₁ i)] [∀ i, NormedSpace 𝕜 (E₁ i)]
-  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [AddCommGroup G'] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
+  [AddCommGroup G] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [AddCommGroup G'] [SeminormedAddCommGroup G'] [NormedSpace 𝕜 G']
 
 /-!
 ### Continuity properties of multilinear maps

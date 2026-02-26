@@ -229,7 +229,7 @@ theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠
 end TVS
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {F : Type v} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 variable {f f₀ f₁ : 𝕜 → F}
 variable {f' f₀' f₁' g' : F}
