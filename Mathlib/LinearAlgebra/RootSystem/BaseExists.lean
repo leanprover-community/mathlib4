@@ -193,7 +193,7 @@ lemma eq_baseOf_iff (s : Set ι) (f : M →+ ℚ)
   refine ⟨?_, fun ⟨hli, sp⟩ ↦ P.eq_baseOf_of_linearIndepOn_of_mem_or_neg_mem_closure s hli sp f hf⟩
   rintro rfl
   exact ⟨P.linearIndepOn_root_baseOf f hf', fun i ↦
-    mem_or_neg_mem_closure_baseOf P.root f i (by aesop) (by simp)⟩
+    mem_or_neg_mem_closure_baseOf P.root f i (by simp_all) (by simp)⟩
 
 variable [P.IsReduced]
 
@@ -266,9 +266,7 @@ private lemma baseOf_root_eq_baseOf_coroot_aux
     exact ⟨q, -1, by simp [Rat.cast_smul_eq_qsmul, hq'], by simp⟩
   rcases IsReduced.eq_or_eq_neg i j hij with hij | hij
   · simpa using hij
-  · obtain ⟨rfl⟩ : q = -1 := smul_left_injective ℚ (P.ne_zero j) <| by
-      simp_rw [neg_smul, ← neg_eq_iff_eq_neg, ← smul_neg, ← hij, one_smul, hq']
-    grind
+  · grind
 
 lemma baseOf_root_eq_baseOf_coroot
     (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0)
@@ -278,7 +276,6 @@ lemma baseOf_root_eq_baseOf_coroot
   subset_antisymm (P.baseOf_root_eq_baseOf_coroot_aux f g hf hfg)
     (P.flip.baseOf_root_eq_baseOf_coroot_aux g f hg (by aesop))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is really just an auxiliary result en route to `RootPairing.Base.mk'`. -/
 lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
     (hli : LinearIndepOn R P.root s)
@@ -294,7 +291,7 @@ lemma coroot_mem_or_neg_mem_closure_of_root (s : Set ι)
   obtain ⟨f, hf'⟩ := exists_dual_forall_apply_eq_one (hli.restrict_scalars' ℚ)
   have hf := P.eq_baseOf_of_linearIndepOn_of_mem_or_neg_mem_closure s hli hsp f hf'
   have hf₀ (i : ι) : f (P.root i) ≠ 0 :=
-    AddSubmonoid.apply_ne_zero_of_mem_or_neg_mem_closure P.root (f : M →+ ℚ) s (by aesop) i
+    AddSubmonoid.apply_ne_zero_of_mem_or_neg_mem_closure P.root (f : M →+ ℚ) s (by simp_all) i
       (P.ne_zero i) (by simp) (hsp i)
   have aux (i : ι) : ∃ q : ℚ, 0 < q ∧ q = 2 / P.RootForm (P.root i) (P.root i) := by
     refine ⟨2 / P.RootFormIn ℚ (P.rootSpanMem ℚ i) (P.rootSpanMem ℚ i), ?_, ?_⟩

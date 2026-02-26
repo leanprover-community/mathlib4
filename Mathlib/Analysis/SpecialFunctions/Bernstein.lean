@@ -110,7 +110,6 @@ theorem probability (n : ℕ) (x : I) : (∑ k : Fin (n + 1), bernstein n k x) =
   apply_fun fun p => Polynomial.aeval (x : ℝ) p at this
   simpa [Finset.sum_range]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem variance {n : ℕ} (hn : n ≠ 0) (x : I) :
     (∑ k : Fin (n + 1), (x - k/ₙ : ℝ) ^ 2 * bernstein n k x) = (x : ℝ) * (1 - x) / n := by
   convert congr(Polynomial.aeval (x : ℝ) $(bernsteinPolynomial.variance ℝ n) / n ^ 2) using 1
@@ -158,12 +157,10 @@ theorem apply (n : ℕ) (f : C(I, E)) (x : I) :
     bernsteinApproximation n f x = ∑ k : Fin (n + 1), bernstein n k x • f k/ₙ := by
   simp [bernsteinApproximation]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem apply_zero (n : ℕ) (f : C(I, E)) : bernsteinApproximation n f 0 = f 0 := by
   simp [apply, Fin.sum_univ_succ, bernstein_apply, z]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem apply_one {n : ℕ} (hn : n ≠ 0) (f : C(I, E)) : bernsteinApproximation n f 1 = f 1 := by
   simp [apply, Fin.sum_univ_castSucc, bernstein_apply, hn, Nat.sub_eq_zero_iff_le]
