@@ -63,31 +63,28 @@ namespace Sheaf
 
 open Presheaf
 
-variable {X : TopCat.{u}} (p₀ : X) {C : Type v} [Category.{u} C] [HasColimits C] [HasLimits C]
+variable {C : Type v} [Category.{u} C] [HasColimits C] [HasLimits C]
   {FC : C → C → Type*} {CC : C → Type u} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-  [ConcreteCategory C FC] [PreservesFilteredColimits (CategoryTheory.forget C)]
+  [instCC : ConcreteCategory C FC] [PreservesFilteredColimits (CategoryTheory.forget C)]
   [PreservesLimits (CategoryTheory.forget C)] [Abelian C]
-  [HasSheafify (Opens.grothendieckTopology X) C]
-
-/-- Taking stalks of sheaves is exact. -/
-instance : (forget C X ⋙ stalkFunctor C p₀).PreservesHomology := by
-  simp only [(forget C X ⋙ stalkFunctor C p₀).exact_tfae.out 2 0]
-  intro S h
-  have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 3 0).mp
-    (inferInstanceAs (PreservesFiniteColimits _))
-  refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
-  have := h.2
-  exact Functor.map_mono (forget C X ⋙ stalkFunctor C p₀) _
+  {X : TopCat.{u}} (p₀ : X)
 
 instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
+  have : (forget C X ⋙ stalkFunctor C p₀).PreservesHomology := by
+    simp only [(forget C X ⋙ stalkFunctor C p₀).exact_tfae.out 2 0]
+    intro S h
+    have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 3 0).mp
+      (inferInstanceAs (PreservesFiniteColimits _))
+    refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
+    have := h.2
+    exact Functor.map_mono (forget C X ⋙ stalkFunctor C p₀) _
   (forget C X ⋙ stalkFunctor C p₀).preservesFiniteLimits_of_preservesHomology
 
 open ZeroObject
 
-omit [PreservesLimits (CategoryTheory.forget C)]
+include instCC in
 /-- A sheaf is zero if and only if its stalks are all zero. -/
-lemma isZero_iff_stalkFunctor_obj_isZero (F : Sheaf C X)
-    [PreservesLimits (CategoryTheory.forget C)] :
+lemma isZero_iff_stalkFunctor_obj_isZero (F : Sheaf C X) :
     IsZero F ↔ ∀ x : X, IsZero ((forget C X ⋙ stalkFunctor C x).obj F) := by
   refine ⟨fun h _ => Functor.map_isZero _ h, ?_⟩
   intro h
@@ -98,9 +95,9 @@ lemma isZero_iff_stalkFunctor_obj_isZero (F : Sheaf C X)
       ((forget C X ⋙ stalkFunctor C x).map_isZero (isZero_zero _)).isoZero
   exact (isZero_zero _).of_iso (asIso f)
 
+include instCC in
 /-- Exactness can be checked on stalks for complexes of sheaves. -/
-theorem exact_iff_stalkFunctor_map_exact [PreservesLimits (CategoryTheory.forget C)]
-    (S : ShortComplex (Sheaf C X)) :
+theorem exact_iff_stalkFunctor_map_exact (S : ShortComplex (Sheaf C X)) :
     S.Exact ↔ ∀ x : X, (S.map (forget C X ⋙ stalkFunctor C x)).Exact := by
   constructor
   · intro h x
@@ -108,7 +105,7 @@ theorem exact_iff_stalkFunctor_map_exact [PreservesLimits (CategoryTheory.forget
     exact this.mp inferInstance S h
   intro h
   simp_rw [ShortComplex.exact_iff_isZero_homology] at h
-  rw[ShortComplex.exact_iff_isZero_homology, isZero_iff_stalkFunctor_obj_isZero S.homology]
+  rw [ShortComplex.exact_iff_isZero_homology, isZero_iff_stalkFunctor_obj_isZero S.homology]
   exact fun x => (h x).of_iso
     (ShortComplex.mapHomologyIso S (forget C X ⋙ stalkFunctor C x)).symm
 
