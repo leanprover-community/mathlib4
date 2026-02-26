@@ -44,6 +44,10 @@ def ManyOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop)
 @[inherit_doc ManyOneReducible]
 infixl:1000 " ≤₀ " => ManyOneReducible
 
+theorem ManyOneReducible.exists_computable_eq {α β} [Primcodable α] [Primcodable β]
+    {p : α → Prop} {q : β → Prop} (h : p ≤₀ q) : ∃ f, Computable f ∧ p = q ∘ f :=
+  h.imp fun _f hf ↦ hf.imp_right fun hpq ↦ funext fun _ ↦ propext (hpq _)
+
 theorem ManyOneReducible.mk {α β} [Primcodable α] [Primcodable β] {f : α → β} (q : β → Prop)
     (h : Computable f) : (fun a => q (f a)) ≤₀ q :=
   ⟨f, h, fun _ => Iff.rfl⟩
@@ -116,8 +120,7 @@ open Computable
 
 theorem computable_of_manyOneReducible {p : α → Prop} {q : β → Prop} (h₁ : p ≤₀ q)
     (h₂ : ComputablePred q) : ComputablePred p := by
-  rcases h₁ with ⟨f, c, hf⟩
-  rw [show p = fun a => q (f a) from Set.ext hf]
+  rcases h₁.exists_computable_eq with ⟨f, c, rfl⟩
   rcases computable_iff.1 h₂ with ⟨g, hg, rfl⟩
   exact ⟨by infer_instance, by simpa using hg.comp c⟩
 
@@ -274,19 +277,20 @@ variable {α : Type u} [Primcodable α] [Inhabited α] {β : Type v} [Primcodabl
 /-- Computable and injective mapping of predicates to sets of natural numbers.
 -/
 def toNat (p : Set α) : Set ℕ :=
-  { n | p ((Encodable.decode (α := α) n).getD default) }
+  { n | (Encodable.decode (α := α) n).getD default ∈ p }
 
 @[simp]
-theorem toNat_manyOneReducible {p : Set α} : toNat p ≤₀ p :=
+theorem toNat_manyOneReducible {p : Set α} : (· ∈ toNat p) ≤₀ (· ∈ p) :=
   ⟨fun n => (Encodable.decode (α := α) n).getD default,
     Computable.option_getD Computable.decode (Computable.const _), fun _ => Iff.rfl⟩
 
 @[simp]
-theorem manyOneReducible_toNat {p : Set α} : p ≤₀ toNat p :=
-  ⟨Encodable.encode, Computable.encode, by simp [toNat, setOf]⟩
+theorem manyOneReducible_toNat {p : Set α} : (· ∈ p) ≤₀ (· ∈ toNat p) :=
+  ⟨Encodable.encode, Computable.encode, by simp [toNat]⟩
 
 @[simp]
-theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} : toNat p ≤₀ toNat q ↔ p ≤₀ q :=
+theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} :
+    (· ∈ toNat p) ≤₀ (· ∈ toNat q) ↔ (· ∈ p) ≤₀ (· ∈ q) :=
   ⟨fun h => manyOneReducible_toNat.trans (h.trans toNat_manyOneReducible), fun h =>
     toNat_manyOneReducible.trans (h.trans manyOneReducible_toNat)⟩
 
