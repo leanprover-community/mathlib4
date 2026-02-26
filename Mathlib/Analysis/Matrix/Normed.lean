@@ -239,7 +239,7 @@ matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpSeminormedAddCommGroup [AddCommGroup α] [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
-  @Pi.seminormedAddCommGroup m _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
+  @Pi.seminormedAddCommGroup m _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- Normed group instance (using sup norm of L1 norm) for matrices over a normed ring.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -247,7 +247,7 @@ matrix. -/
 @[instance_reducible, local instance]
 protected def linftyOpNormedAddCommGroup [AddCommGroup α] [NormedAddCommGroup α] :
     NormedAddCommGroup (Matrix m n α) :=
-  @Pi.normedAddCommGroup m _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
+  @Pi.normedAddCommGroup m _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 1 (fun _ : n ↦ α))
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
@@ -500,21 +500,22 @@ open scoped Matrix
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusSeminormedAddCommGroup [SeminormedAddCommGroup α] :
+def frobeniusSeminormedAddCommGroup [AddCommGroup α] [SeminormedAddCommGroup α] :
     SeminormedAddCommGroup (Matrix m n α) :=
-  @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
+  @PiLp.seminormedAddCommGroupToPi 2 _ _ _ _ _ (fun _ ↦ PiLp.seminormedAddCommGroupToPi 2 _)
 
 /-- Normed group instance (using the Frobenius norm) for matrices over a normed group.  Not
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
-  @PiLp.normedAddCommGroupToPi 2 _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
+def frobeniusNormedAddCommGroup [AddCommGroup α] [NormedAddCommGroup α] :
+    NormedAddCommGroup (Matrix m n α) :=
+  @PiLp.normedAddCommGroupToPi 2 _ _ _ _ _ (fun _ ↦ PiLp.normedAddCommGroupToPi 2 _)
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
-theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
-    [IsBoundedSMul R α] :
+theorem frobeniusIsBoundedSMul [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α]
+    [Module R α] [IsBoundedSMul R α] :
     IsBoundedSMul R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
   letI := PiLp.isBoundedSMulSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
@@ -522,8 +523,8 @@ theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [M
 
 /-- This applies to the Frobenius norm. -/
 @[local instance]
-theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
-    [NormSMulClass R α] :
+theorem frobeniusNormSMulClass [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α]
+    [Module R α] [NormSMulClass R α] :
     NormSMulClass R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
   letI := PiLp.normSMulClassSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
@@ -533,15 +534,15 @@ theorem frobeniusNormSMulClass [SeminormedRing R] [SeminormedAddCommGroup α] [M
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-def frobeniusNormedSpace [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α] :
-    NormedSpace R (Matrix m n α) :=
+def frobeniusNormedSpace [NormedField R] [AddCommGroup α] [SeminormedAddCommGroup α]
+    [NormedSpace R α] : NormedSpace R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 2 (fun _ : n ↦ α)
   letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 2 (fun _ : n ↦ α)
   PiLp.normedSpaceSeminormedAddCommGroupToPi 2 _
 
 section SeminormedAddCommGroup
 
-variable [SeminormedAddCommGroup α] [AddCommGroup β] [SeminormedAddCommGroup β]
+variable [AddCommGroup α] [SeminormedAddCommGroup α] [AddCommGroup β] [SeminormedAddCommGroup β]
 
 theorem frobenius_nnnorm_def (A : Matrix m n α) :
     ‖A‖₊ = (∑ i, ∑ j, ‖A i j‖₊ ^ (2 : ℝ)) ^ (1 / 2 : ℝ) := by
@@ -620,7 +621,7 @@ lemma frobenius_norm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖ 
 
 end SeminormedAddCommGroup
 
-theorem frobenius_nnnorm_one [DecidableEq n] [SeminormedAddCommGroup α] [One α] :
+theorem frobenius_nnnorm_one [DecidableEq n] [AddCommGroup α] [SeminormedAddCommGroup α] [One α] :
     ‖(1 : Matrix n n α)‖₊ = .sqrt (Fintype.card n) * ‖(1 : α)‖₊ := by
   calc
     ‖(diagonal 1 : Matrix n n α)‖₊

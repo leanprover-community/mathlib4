@@ -178,7 +178,8 @@ end AddCommGroup
 
 section NormedSpace
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+  [NormedSpace ℝ E] [NormedSpace ℝ F]
 
 namespace Module.Basis
 

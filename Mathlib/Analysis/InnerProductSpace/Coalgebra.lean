@@ -36,13 +36,17 @@ variable {𝕜 E : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E]
 open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 
 set_option backward.isDefEq.respectTransparency false in
+set_option maxHeartbeats 800000 in
 open EuclideanSpace in
 /-- The comultiplication on `n → 𝕜` corresponds to the Euclidean space adjoint of the
 multiplication map. -/
 theorem Pi.comul_eq_adjoint {n : Type*} [Fintype n] [DecidableEq n] :
     comul = map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap ∘ₗ
-      ((equiv n 𝕜).symm.toLinearMap ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ
-        map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap).adjoint ∘ₗ
+      (@LinearMap.adjoint 𝕜
+        (EuclideanSpace 𝕜 n ⊗[𝕜] EuclideanSpace 𝕜 n)
+        (EuclideanSpace 𝕜 n) _ _ _ _ _ _ _ _ _
+        ((equiv n 𝕜).symm.toLinearMap ∘ₗ mul' 𝕜 (n → 𝕜) ∘ₗ
+          map (equiv n 𝕜).toLinearMap (equiv n 𝕜).toLinearMap)) ∘ₗ
       (equiv n 𝕜).symm.toLinearMap := by
   ext
   simp only [comp_apply, ← toLinearMap_congr, LinearEquiv.coe_coe, ← LinearEquiv.symm_apply_eq]

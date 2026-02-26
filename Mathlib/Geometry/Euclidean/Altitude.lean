@@ -258,7 +258,7 @@ open Qq Mathlib.Meta.Positivity in
 @[positivity height _ _]
 meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
+  | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $i5 $n $hn $s $i) =>
     assertInstancesCommute
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"

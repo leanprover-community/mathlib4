@@ -1374,9 +1374,9 @@ theorem integral_trim (hm : m ≤ m0) {f : β → G} (hf : StronglyMeasurable[m]
     exact SimpleFunc.tendsto_approxOn_range_L1_enorm (hf.mono hm).measurable hf_int
   have h_lim_2 : atTop.Tendsto (fun n => ∫ x, f_seq n x ∂μ) (𝓝 (∫ x, f x ∂μ.trim hm)) := by
     simp_rw [hf_seq_eq]
-    refine @tendsto_integral_of_L1 β G _ _ m (μ.trim hm) _ f (hf_int.trim hm hf) _ _
+    refine @tendsto_integral_of_L1 β G _ _ _ m (μ.trim hm) _ f (hf_int.trim hm hf) _ _
       (Eventually.of_forall hf_seq_int_m) ?_
-    exact @SimpleFunc.tendsto_approxOn_range_L1_enorm β G m _ _ _ f _ _ hf.measurable
+    exact @SimpleFunc.tendsto_approxOn_range_L1_enorm β G m _ _ _ _ f _ _ hf.measurable
       (hf_int.trim hm hf)
   exact tendsto_nhds_unique h_lim_1 h_lim_2
 
@@ -1456,7 +1456,7 @@ requires more assumptions. -/
 @[positivity MeasureTheory.integral _ _]
 meta def evalIntegral : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
-  | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ $inst2 _ _ $f) =>
+  | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ _ $inst2 _ _ $f) =>
     let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque
     have body : Q(ℝ) := .betaRev f #[i]
     let rbody ← core zα pα body

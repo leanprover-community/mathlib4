@@ -46,8 +46,8 @@ class WStarAlgebra (M : Type u) [CStarAlgebra M] : Prop where
   /-- There is a Banach space `X` whose dual is isometrically (conjugate-linearly) isomorphic
   to the `WStarAlgebra`. -/
   exists_predual :
-    ∃ (X : Type u) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X) (_ : CompleteSpace X),
-      Nonempty (StrongDual ℂ X ≃ₗᵢ⋆[ℂ] M)
+    ∃ (X : Type u) (_ : AddCommGroup X) (_ : NormedAddCommGroup X) (_ : NormedSpace ℂ X)
+      (_ : CompleteSpace X), Nonempty (StrongDual ℂ X ≃ₗᵢ⋆[ℂ] M)
 
 -- TODO: Without this, `VonNeumannAlgebra` times out. Why?
 /-- The double commutant definition of a von Neumann algebra,
