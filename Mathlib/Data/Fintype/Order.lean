@@ -11,6 +11,8 @@ public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Finite.Range
 public import Mathlib.Order.Atoms
 
+import Mathlib.Order.ConditionallyCompleteLattice.Finset
+
 /-!
 # Order structures on finite types
 
@@ -238,6 +240,8 @@ section ciSup
 
 namespace Finite
 
+section CCL
+
 variable {α ι : Type*} [Finite ι] [ConditionallyCompleteLattice α]
 
 lemma le_ciSup_of_le {a : α} {f : ι → α} (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
@@ -267,6 +271,54 @@ lemma ciSup_sup [Nonempty ι] {f : ι → α} {a : α} :
 lemma ciInf_inf [Nonempty ι] {f : ι → α} {a : α} :
     (⨅ i, f i) ⊓ a = ⨅ i, f i ⊓ a :=
   ciSup_sup (α := αᵒᵈ) ..
+
+end CCL
+
+section CCLO
+
+variable {α β ι : Type*} [ConditionallyCompleteLinearOrder α] [ConditionallyCompleteLinearOrder β]
+  [Finite ι] [Nonempty ι]
+
+lemma map_iSup_of_monotoneOn {s : Set α} {f : ι → α} {g : α → β} (hg : MonotoneOn g s)
+    (hs : ∀ i, f i ∈ s) :
+    g (⨆ i, f i) = ⨆ i, g (f i) := by
+  obtain ⟨j, hj⟩ : ∃ j, f j = ⨆ i, f i := exists_eq_ciSup_of_finite
+  rw [← hj]
+  exact le_antisymm (le_ciSup_of_le j le_rfl) <|
+    ciSup_le fun i ↦ hg (hs i) (hs j) (hj ▸ le_ciSup f i)
+
+lemma map_iInf_of_monotoneOn {s : Set α} {f : ι → α} {g : α → β} (hg : MonotoneOn g s)
+    (hs : ∀ i, f i ∈ s) :
+    g (⨅ i, f i) = ⨅ i, g (f i) :=
+  map_iSup_of_monotoneOn (α := αᵒᵈ) (β := βᵒᵈ) (fun _ hi _ hj h ↦ hg hj hi h) hs
+
+lemma map_iSup_of_antitoneOn {s : Set α} {f : ι → α} {g : α → β} (hg : AntitoneOn g s)
+    (hs : ∀ i, f i ∈ s) :
+    g (⨆ i, f i) = ⨅ i, g (f i) :=
+  map_iSup_of_monotoneOn (β := βᵒᵈ) hg hs
+
+lemma map_iInf_of_antitoneOn {s : Set α} {f : ι → α} {g : α → β} (hg : AntitoneOn g s)
+    (hs : ∀ i, f i ∈ s) :
+    g (⨅ i, f i) = ⨆ i, g (f i) :=
+  map_iInf_of_monotoneOn (β := βᵒᵈ) hg hs
+
+lemma map_iSup_of_monotone (f : ι → α) {g : α → β} (hg : Monotone g) :
+    g (⨆ i, f i) = ⨆ i, g (f i) :=
+  map_iSup_of_monotoneOn (monotoneOn_univ.mpr hg) (fun i ↦ Set.mem_univ (f i))
+
+lemma map_iInf_of_monotone (f : ι → α) {g : α → β} (hg : Monotone g) :
+    g (⨅ i, f i) = ⨅ i, g (f i) :=
+  map_iSup_of_monotone (α := αᵒᵈ) (β := βᵒᵈ) f fun _ _ h ↦ hg h
+
+lemma map_iSup_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
+    g (⨆ i, f i) = ⨅ i, g (f i) :=
+  map_iSup_of_monotone (β := βᵒᵈ) f hg
+
+lemma map_iInf_of_antitone (f : ι → α) {g : α → β} (hg : Antitone g) :
+    g (⨅ i, f i) = ⨆ i, g (f i) :=
+  map_iInf_of_monotone (β := βᵒᵈ) f hg
+
+end CCLO
 
 end Finite
 
