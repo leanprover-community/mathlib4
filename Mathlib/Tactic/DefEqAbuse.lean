@@ -295,7 +295,6 @@ The tactic still executes (using the permissive setting if needed), so proofs re
 during debugging.
 -/
 elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainContext do
-    let tk ← getRef
     let s ← saveState
     let oldTraces ← getTraces
     -- Helper: run tactic with given options and tracing, capturing traces.
@@ -319,11 +318,11 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
     -- Pass 1: strict + tracing.
     -- If it succeeds, no abuse; if it fails, we already have the traces.
     let (strictResult, strictTraces) ← runAndCapture true
-    s.restore
+    s.restore (restoreInfo := true)
     match strictResult with
     | .ok () =>
       -- Tactic works fine with strict setting, nothing to report.
-      logInfoAt tk
+      logInfo
         "#defeq_abuse: tactic succeeds with \
           `backward.isDefEq.respectTransparency true`. No abuse detected."
       -- Re-run without tracing so proof state is updated cleanly.
@@ -333,10 +332,10 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
       -- Pass 2: permissive + tracing.
       -- If it fails, command fails regardless; if it succeeds, we have the traces.
       let (permissiveResult, permTraces) ← runAndCapture false
-      s.restore
+      s.restore (restoreInfo := true)
       match permissiveResult with
       | .error _ =>
-        logWarningAt tk
+        logWarning
           "#defeq_abuse: tactic fails regardless of \
             `backward.isDefEq.respectTransparency` setting."
         -- Still run the tactic so the user sees the original error
@@ -357,14 +356,14 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
               (← findTransitionFailures permSuccesses permFailures trace.msg)
         let uniqueFailures ← dedup transitionFailures
         if uniqueFailures.isEmpty then
-          logWarningAt tk
+          logWarning
             m!"#defeq_abuse: tactic fails with \
               `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
               Could not identify specific failing isDefEq checks from traces."
         else
           let failureList := MessageData.joinSep
             (uniqueFailures.toList.map fun f => m!"  {f}") "\n"
-          logWarningAt tk
+          logWarning
             m!"#defeq_abuse: tactic fails with \
               `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
               The following isDefEq checks are the root causes of the failure:\n{failureList}"
@@ -385,7 +384,7 @@ The command is re-executed with the permissive setting so that it actually takes
 syntax (name := defeqAbuseCmd) "#defeq_abuse " "in" command : command
 
 elab_rules : command
-  | `(command| #defeq_abuse%$tk in $cmd) => do
+  | `(command| #defeq_abuse in $cmd) => do
     let saved ← get
     -- Helper: run command with given scope options, capturing new messages.
     -- Returns (result, newMessages). elabCommand doesn't throw on synth failures,
@@ -415,7 +414,7 @@ elab_rules : command
     set saved
     match strictResult with
     | .ok () =>
-      logInfoAt tk "#defeq_abuse: command succeeds with \
+      logInfo "#defeq_abuse: command succeeds with \
         `backward.isDefEq.respectTransparency true`. No abuse detected."
       elabCommand cmd
     | .error _ =>
@@ -425,7 +424,7 @@ elab_rules : command
       set saved
       match permissiveResult with
       | .error _ =>
-        logWarningAt tk "#defeq_abuse: command fails regardless of \
+        logWarning "#defeq_abuse: command fails regardless of \
           `backward.isDefEq.respectTransparency` setting."
         elabCommand cmd
       | .ok () =>
@@ -460,14 +459,14 @@ elab_rules : command
                 (← findTransitionFailures permSuccesses permFailures m.data)
           let uniqueFailures ← dedup transitionFailures
           if uniqueFailures.isEmpty then
-            logWarningAt tk
+            logWarning
               m!"#defeq_abuse: command fails with \
                 `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
                 Could not identify specific failing isDefEq checks from traces."
           else
             let failureList := MessageData.joinSep
               (uniqueFailures.toList.map fun f => m!"  {f}") "\n"
-            logWarningAt tk
+            logWarning
               m!"#defeq_abuse: command fails with \
                 `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
                 The following isDefEq checks are the root causes of the failure:\n{failureList}"
@@ -480,7 +479,7 @@ elab_rules : command
               (uniqueFailures.toList.map fun f => m!"    {f}") "\n"
             entries := entries.push m!"  {app}\n{failureList}"
           let report := MessageData.joinSep entries.toList "\n"
-          logWarningAt tk
+          logWarning
             m!"#defeq_abuse: command fails with \
               `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
               The following synthesis applications fail due to transparency:\n{report}"
