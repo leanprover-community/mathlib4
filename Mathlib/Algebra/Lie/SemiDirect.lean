@@ -36,7 +36,9 @@ The semi-direct sum of two Lie algebras `H` and `G` over `R`, relative to a Lie 
 -/
 structure SemiDirectSum {R : Type*} [CommRing R] (H : Type*) [LieRing H] [LieAlgebra R H]
     (G : Type*) [LieRing G] [LieAlgebra R G] (_ : G →ₗ⁅R⁆ LieDerivation R H H) where
+  /-- The element of H -/
   left : H
+  /-- The element of G -/
   right : G
 
 @[inherit_doc]
@@ -108,6 +110,7 @@ def in_left : H →ₗ⁅R⁆ (H ⋊⁅ψ⁆ G) where
 @[simp]
 lemma in_left_injective :  (Function.Injective (in_left ψ)) := by intro _ _; simp [in_left]
 
+/-- The canonical projection of the semi-direct sum H ⋊⁅ψ⁆ G to G. -/
 def pr_right : (H ⋊⁅ψ⁆ G) →ₗ⁅R⁆ G where
   toFun x := (toProd x).2
   map_add' _ _ := Prod.snd_eq_iff.mpr rfl
