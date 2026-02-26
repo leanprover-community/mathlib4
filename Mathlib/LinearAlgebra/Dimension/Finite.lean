@@ -296,7 +296,6 @@ section
 
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a finset has cardinality larger than the rank of a module,
 then there is a nontrivial linear relation amongst its elements. -/
 theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
