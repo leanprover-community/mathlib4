@@ -8,10 +8,6 @@ module
 public import Mathlib.Algebra.RingQuot
 public import Mathlib.RingTheory.DividedPowers.Basic
 
-noncomputable section
-
-open Finset Ideal Ideal.Quotient MvPolynomial RingQuot Function
-
 /-!
 # The universal divided power algebra
 
@@ -40,6 +36,9 @@ divided_powers.
 -/
 
 @[expose] public section
+noncomputable section
+
+open Finset Ideal MvPolynomial RingQuot
 
 variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 
