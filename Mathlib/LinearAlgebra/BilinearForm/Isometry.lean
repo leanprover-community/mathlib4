@@ -10,8 +10,8 @@ public import Mathlib.LinearAlgebra.BilinearMap
 /-!
 # Isometric linear maps
 
-In this file, we define isometries of bilinear spaces as linear maps that respect the 
-associated bilinear forms. 
+In this file, we define isometries of bilinear spaces as linear maps that respect the
+associated bilinear forms.
 This file should be kept in sync with the corresponding file for quadratic maps, namely
 `Mathlib/LinearAlgebra/QuadraticForm/Isometry.lean`
 
