@@ -16,9 +16,8 @@ has binary biproducts
 (`CategoryTheory.Limits.BinaryBiproduct.functorCategoryHasBinaryBiproducts`).
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
-open CategoryTheory Limits
 namespace CategoryTheory.Limits
 
 variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasBinaryBiproducts C]
@@ -26,8 +25,6 @@ variable {C : Type*} [Category* C] [HasZeroMorphisms C] [HasBinaryBiproducts C]
 variable {D : Type*} [Category* D]
 
 variable (F G : D ⥤ C)
-
-noncomputable section
 
 /-- The binary bicone associated to the biproduct of functors `F` and `G` -/
 @[simps]
@@ -44,17 +41,13 @@ def pointwiseBinaryBicone : BinaryBicone F G where
 @[simps]
 def pointwiseBinaryBicone.isBilimit : (pointwiseBinaryBicone F G).IsBilimit where
   isLimit := evaluationJointlyReflectsLimits _ fun d => by
-    refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ ((BinaryBiproduct.isLimit) (F.obj d) (G.obj d))
+    refine IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_ (BinaryBiproduct.isLimit (F.obj d) (G.obj d))
     · exact (pairComp F G ((evaluation D C).obj d)).symm
-    · refine Cones.ext (Iso.refl _) ?_
-      rintro (_ | _ | _) <;>
-      cat_disch
+    · exact Cones.ext (Iso.refl _) <| by rintro (_ | _ | _)<;> cat_disch
   isColimit := evaluationJointlyReflectsColimits _ fun d => by
-    refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ ((BinaryBiproduct.isColimit) (F.obj d) (G.obj d))
+    refine IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_ (BinaryBiproduct.isColimit (F.obj d) (G.obj d))
     · exact (pairComp F G ((evaluation D C).obj d)).symm
-    · refine Cocones.ext (Iso.refl _) ?_
-      rintro (_ | _ | _) <;>
-      cat_disch
+    · exact Cocones.ext (Iso.refl _) <| by rintro (_ | _ | _)<;> cat_disch
 
 /-- Construction of the binary biproduct data for functors `F` and `G` -/
 @[simps]
@@ -66,8 +59,4 @@ def pointwiseBinaryBiproductData : BinaryBiproductData F G where
 instance functorCategoryHasBinaryBiproducts : HasBinaryBiproducts (D ⥤ C) where
   has_binary_biproduct F G := ⟨⟨pointwiseBinaryBiproductData F G⟩⟩
 
-end
-
-end Limits
-
-end CategoryTheory
+end CategoryTheory.Limits
