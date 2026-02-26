@@ -109,7 +109,7 @@ lemma map {G'} [Group G'] [hP : IsPerfect G] (f : G →* G') :
 /--
 The subgroup `⊤` of `G ⧸ H` is perfect if the group `G` is.
 
-See `Group.IsPerfect.instQuotient'` for the analogous stattement about the type `G ⧸ H` itself.
+See `Group.IsPerfect.instQuotient'` for the analogous statement about the type `G ⧸ H` itself.
 -/
 instance instQuotient [H.Normal] [hP : IsPerfect G] :
     IsPerfect (⊤ : Subgroup (G ⧸ H)) := by
