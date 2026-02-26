@@ -17,7 +17,7 @@ This file develops the theory of prime numbers: natural numbers `p ≥ 2` whose 
 
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 variable {n : ℕ}
@@ -216,9 +216,9 @@ theorem prime_eq_prime_of_dvd_pow {m p q} (pp : Prime p) (pq : Prime q) (h : p �
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
   simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 
-theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_neq : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
+theorem Prime.dvd_mul_of_dvd_ne {p1 p2 n : ℕ} (h_ne : p1 ≠ p2) (pp1 : Prime p1) (pp2 : Prime p2)
     (h1 : p1 ∣ n) (h2 : p2 ∣ n) : p1 * p2 ∣ n :=
-  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_neq) h1 h2
+  Coprime.mul_dvd_of_dvd_of_dvd ((coprime_primes pp1 pp2).mpr h_ne) h1 h2
 
 /-- If `p` is prime,
 and `a` doesn't divide `p^k`, but `a` does divide `p^(k+1)`

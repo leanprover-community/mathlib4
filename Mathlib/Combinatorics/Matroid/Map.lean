@@ -157,7 +157,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       refine ⟨J₀, hIJ₀, hJ, hbj.injOn, hJ₀X, fun K hK hKinj hKX hJ₀K ↦ ?_⟩
       rw [← hKinj.image_eq_image_iff hJ₀K Subset.rfl, hJmax hK (image_subset_range _ _)
         (image_mono hKX) (image_mono hJ₀K)]
-    subset_ground := fun _ hI e heI  ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
+    subset_ground := fun _ hI e heI ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
 
 @[simp] lemma comap_indep_iff : (N.comap f).Indep I ↔ N.Indep (f '' I) ∧ InjOn f I := Iff.rfl
 
@@ -290,6 +290,7 @@ instance comapOn_rankFinite [N.RankFinite] : (N.comapOn E f).RankFinite := by
 end comapOn
 section mapSetEmbedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Map a matroid `M` to an isomorphic copy in `β` using an embedding `M.E ↪ β`. -/
 def mapSetEmbedding (M : Matroid α) (f : M.E ↪ β) : Matroid β := Matroid.ofExistsMatroid
   (E := range f)

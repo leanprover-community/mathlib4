@@ -21,7 +21,7 @@ Add more similar lemmas: limit at `-∞`, versions with $e^{cx}$ etc.
 polynomial, limit, exponential
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology Real
 

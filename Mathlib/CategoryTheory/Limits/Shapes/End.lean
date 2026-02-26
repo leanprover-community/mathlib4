@@ -224,9 +224,6 @@ lemma end_.hom_ext {X : C} {f g : X ⟶ end_ F} (h : ∀ j, f ≫ end_.π F j = 
     f = g :=
   Multiequalizer.hom_ext _ _ _ (fun _ ↦ h _)
 
-@[deprecated (since := "2025-06-06")] alias _root_.CategoryTheory.Limits.hom_ext :=
-  end_.hom_ext
-
 section
 
 variable {X : C} (f : ∀ j, X ⟶ (F.obj (op j)).obj j)

@@ -13,7 +13,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 We show the titular result `AlgebraicGeometry.IsOpenImmersion.of_flat_of_mono` by fpqc descent.
 -/
 
-@[expose] public section
+public section
 
 universe u
 

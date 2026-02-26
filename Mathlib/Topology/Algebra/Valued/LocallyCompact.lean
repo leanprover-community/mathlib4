@@ -25,7 +25,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuedField
 norm, nonarchimedean, rank one, compact, locally compact
 -/
 
-@[expose] public section
+public section
 
 open NNReal
 
@@ -54,6 +54,7 @@ lemma norm_coe_unit (u : 𝒪[K]ˣ) : ‖((u : 𝒪[K]) : K)‖ = 1 := by
   simpa [← NNReal.coe_inj] using
     (Valuation.integer.integers (NormedField.valuation (K := K))).valuation_unit u
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_unit (u : 𝒪[K]ˣ) : ‖(u : 𝒪[K])‖ = 1 := by
   simp
 
@@ -67,15 +68,18 @@ lemma norm_irreducible_lt_one {ϖ : 𝒪[K]} (h : Irreducible ϖ) : ‖ϖ‖ < 1
 lemma norm_irreducible_pos {ϖ : 𝒪[K]} (h : Irreducible ϖ) : 0 < ‖ϖ‖ :=
   Valuation.integer.v_irreducible_pos h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_span_singleton_eq_closedBall (x : 𝒪[K]) :
     (Ideal.span {x} : Set 𝒪[K]) = Metric.closedBall 0 ‖x‖ := by
   simp [Valuation.integer.coe_span_singleton_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Irreducible.maximalIdeal_eq_closedBall [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
     (𝓂[K] : Set 𝒪[K]) = Metric.closedBall 0 ‖ϖ‖ := by
   simp [h.maximalIdeal_eq_setOf_le_v_coe, Set.ext_iff, ← NNReal.coe_le_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) (n : ℕ) :
     ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K]) = Metric.closedBall 0 (‖ϖ‖ ^ n) := by
@@ -125,6 +129,8 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuati
         (Ideal.powQuotPowSuccEquivMapMkPowSuccPow _ n))
 
 open scoped Valued
+
+set_option backward.isDefEq.respectTransparency false in
 lemma totallyBounded_iff_finite_residueField [(Valued.v : Valuation K Γ₀).RankOne]
     [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
@@ -173,6 +179,7 @@ section CompactDVR
 
 open Valued
 
+set_option backward.isDefEq.respectTransparency false in
 lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     Nonempty (LocallyFiniteOrder (MonoidHom.mrange (Valued.v : Valuation K Γ₀))ˣ) := by
   -- TODO: generalize to `Valuation.Integer`, which will require showing that `IsCompact`
@@ -263,12 +270,14 @@ lemma locallyFiniteOrder_units_mrange_of_isCompact_integer (hc : IsCompact (X :=
       rw [dif_neg hcj]
       simp [← hj', hc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mulArchimedean_mrange_of_isCompact_integer (hc : IsCompact (X := K) 𝒪[K]) :
     MulArchimedean (MonoidHom.mrange (Valued.v : Valuation K Γ₀)) := by
   rw [← Units.mulArchimedean_iff]
   obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
   exact MulArchimedean.of_locallyFiniteOrder
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
     IsPrincipalIdealRing 𝒪[K] := by
   -- The strategy to show that we have a PIR is by contradiction,

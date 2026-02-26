@@ -79,6 +79,7 @@ instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower
   rw [IsScalarTower.algebraMap_eq R₀ R, IsScalarTower.algebraMap_eq R₁ R,
     RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq R₀ R₁ R]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <| by
   rw [IsScalarTower.algebraMap_eq R₀ R P.Ring, ← RingHom.comp_assoc,
@@ -315,7 +316,7 @@ instance Cotangent.module : Module S P.Cotangent where
   smul_zero := fun r ↦ ext (smul_zero (P.σ r))
   smul_add := fun r x y ↦ ext (smul_add (P.σ r) x.val y.val)
   add_smul := fun r s x ↦ by
-    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp ) x
+    have := smul_eq_zero_of_mem (P.σ (r + s) - (P.σ r + P.σ s) : P.Ring) (by simp) x
     simpa only [sub_smul, add_smul, sub_eq_zero]
   zero_smul := fun x ↦ smul_eq_zero_of_mem (P.σ 0 : P.Ring) (by simp) x
   one_smul := fun x ↦ by
@@ -439,7 +440,7 @@ lemma Cotangent.map_comp (f : Hom P P') (g : Hom P' P'') :
 
 lemma Cotangent.finite (hP : P.ker.FG) :
     Module.Finite S P.Cotangent := by
-  refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
+  refine ⟨.of_restrictScalars (R := P.Ring) ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
   exact ((Submodule.fg_top P.ker).mpr hP).map _

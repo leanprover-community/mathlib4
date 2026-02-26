@@ -28,7 +28,7 @@ Note that we make no guarantees of being the longest sublist with this property;
 adjacent, chain, duplicates, remove, list, stutter, destutter
 -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -281,7 +281,7 @@ If the elements of a list `l` are related pairwise by an antisymmetric relation 
 destuttering `l` by disequality produces the same result as deduplicating `l`.
 This is most useful when `r` is a strict or weak ordering.
 -/
-lemma Pairwise.destutter_eq_dedup [DecidableEq α] {r : α → α → Prop} [IsAntisymm α r] :
+lemma Pairwise.destutter_eq_dedup [DecidableEq α] {r : α → α → Prop} [Std.Antisymm r] :
     ∀ {l : List α}, l.Pairwise r → l.destutter (· ≠ ·) = l.dedup
   | [], h => by simp
   | [x], h => by simp

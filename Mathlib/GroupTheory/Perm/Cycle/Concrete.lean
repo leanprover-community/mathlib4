@@ -434,6 +434,7 @@ section Finite
 
 variable [Finite α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
     ∃! s : Cycle α, ∃ h : s.Nodup, s.formPerm h = f := by
   cases nonempty_fintype α
@@ -497,6 +498,7 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Represents a permutation as product of disjoint cycles:
 ```
 #eval (c[0, 1, 2, 3] : Perm (Fin 4))

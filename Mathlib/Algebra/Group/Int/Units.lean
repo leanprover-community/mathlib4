@@ -14,7 +14,7 @@ public import Mathlib.Algebra.Group.Nat.Units
 # Units in the integers
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

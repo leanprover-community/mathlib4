@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 
@@ -26,6 +26,7 @@ variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   [S₁.HasHomology] [T₁.HasHomology] [S₂.HasHomology] [T₂.HasHomology]
   {f₁ : S₁ ⟶ T₁} {f₂ : S₂ ⟶ T₂}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_of_retract (h : RetractArrow f₁ f₂) [hf₂ : QuasiIso f₂] :
     QuasiIso f₁ := by
   rw [quasiIso_iff] at hf₂ ⊢

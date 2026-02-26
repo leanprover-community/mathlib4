@@ -56,8 +56,8 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
 
 ### Implementation notes
 
-This file follows closely `GroupTheory/Submonoid/Operations.lean`, omitting only that which is
-necessary.
+This file follows closely `Mathlib/Algebra/Group/Submonoid/Operations.lean`, omitting only that
+which is necessary.
 
 ## Tags
 

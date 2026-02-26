@@ -26,7 +26,7 @@ is analytic on the interior of `integrableExpSet X μ`, the interval on which it
 
 -/
 
-@[expose] public section
+public section
 
 
 open MeasureTheory Filter Finset Real
@@ -37,6 +37,7 @@ namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure Ω} {t u v : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `t : ℝ` with `t ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `x ↦ μ[X ^ n * exp (x * X)]` at `t` is `μ[X ^ (n + 1) * exp (t * X)]`. -/
 lemma hasDerivAt_integral_pow_mul_exp_real (ht : t ∈ interior (integrableExpSet X μ)) (n : ℕ) :
@@ -236,11 +237,12 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     convert (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω)] / mgf X μ v := by
   by_cases hμ : μ = 0
-  · simp [hμ, iteratedDeriv_succ]
+  · simp [hμ]
   rw [iteratedDeriv_two_cgf h]
   calc (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ - 2 * (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (cgf X μ) v

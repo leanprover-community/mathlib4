@@ -73,11 +73,14 @@ theorem IsPrime.ne_top {I : Ideal α} (hI : I.IsPrime) : I ≠ ⊤ :=
 theorem IsCompletelyPrime.ne_top {I : Ideal α} (hI : I.IsCompletelyPrime) : I ≠ ⊤ :=
   hI.1
 
+lemma IsPrime.notMem_of_isUnit (I : Ideal α) [I.IsPrime] {x : α} (hx : IsUnit x) : x ∉ I :=
+  fun h ↦ ‹I.IsPrime›.ne_top (eq_top_of_isUnit_mem _ h hx)
+
 theorem IsPrime.one_notMem {I : Ideal α} (hI : I.IsPrime) : 1 ∉ I :=
-  mt (eq_top_iff_one I).2 hI.1
+  notMem_of_isUnit _ isUnit_one
 
 theorem IsCompletelyPrime.one_notMem {I : Ideal α} (hI : I.IsCompletelyPrime) : 1 ∉ I :=
-  mt (eq_top_iff_one I).2 hI.1
+  hI.isPrime.one_notMem
 
 theorem one_notMem (I : Ideal α) [hI : I.IsPrime] : 1 ∉ I :=
   hI.one_notMem
@@ -96,12 +99,13 @@ theorem IsPrime.mem_or_mem_of_forall {I : Ideal α} (hI : I.IsPrime) {x y : α} 
     (∀ a, x * a * y ∈ I) → x ∈ I ∨ y ∈ I :=
   hI.2
 
-theorem bot_isCompletelyPrime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsCompletelyPrime :=
+instance isCompletelyPrime_bot [Nontrivial α] [NoZeroDivisors α] :
+    (⊥ : Ideal α).IsCompletelyPrime :=
   ⟨fun h => one_ne_zero (α := α) (by rwa [Ideal.eq_top_iff_one, Submodule.mem_bot] at h), fun h =>
     mul_eq_zero.mp (by simpa only [Submodule.mem_bot] using h)⟩
 
-theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
-  bot_isCompletelyPrime.isPrime
+instance isPrime_bot [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime :=
+  inferInstance
 
 lemma IsCompletelyPrime.mul_mem_left_iff {I : Ideal α} [I.IsTwoSided] [I.IsCompletelyPrime]
     {x y : α} (hx : x ∉ I) : x * y ∈ I ↔ y ∈ I := by
@@ -144,6 +148,9 @@ theorem IsCompletelyPrime.pow_mem_iff_mem {I : Ideal α} (hI : I.IsCompletelyPri
     r ^ n ∈ I ↔ r ∈ I :=
   ⟨hI.mem_of_pow_mem n, fun hr => I.pow_mem_of_mem hr n hn⟩
 
+@[deprecated isPrime_bot (since := "2026-01-10")]
+theorem bot_prime [Nontrivial α] [NoZeroDivisors α] : (⊥ : Ideal α).IsPrime := isPrime_bot
+
 /-- The complement of a prime ideal `P ⊆ R` is a submonoid of `R`. -/
 def primeCompl (P : Ideal α) [hp : P.IsCompletelyPrime] : Submonoid α where
   carrier := (Pᶜ : Set α)
@@ -151,8 +158,8 @@ def primeCompl (P : Ideal α) [hp : P.IsCompletelyPrime] : Submonoid α where
   mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
 
 @[simp]
-theorem mem_primeCompl_iff [I.IsCompletelyPrime] {x : α} :
-    x ∈ I.primeCompl ↔ x ∉ I := Iff.rfl
+theorem mem_primeCompl_iff {P : Ideal α} [P.IsCompletelyPrime] {x : α} :
+    x ∈ P.primeCompl ↔ x ∉ P := Iff.rfl
 
 end Ideal
 

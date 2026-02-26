@@ -7,14 +7,8 @@ to learn about it as well!
 
 ## Current scripts and their purpose
 
-**Installation scripts**
-- `install_debian.sh`, `install_macos.sh`
-  Installation scripts referenced from the leanprover community install pages.
-  https://leanprover-community.github.io/install/debian.html
-  https://leanprover-community.github.io/install/macos.html
-  If these web pages are deprecated or removed, we should remove these scripts.
-
 **Repository analysis and reporting**
+- `bench` is mathlib's benchmark suite. View its [README.md](bench/README.md) for more details.
 - `user_activity_report.py`
   Generates a comprehensive report of all users with repository access and their last commit activity.
   Shows username, age of last commit, and access level, sorted by commit recency (most recent first).
@@ -80,12 +74,56 @@ to learn about it as well!
   Other subcommands to automate git-related actions may be added in the future.
 
 **Analyzing Mathlib's import structure**
-- `unused_in_pole.sh` (followed by an optional `<target>`, defaulting to `Mathlib`)
-  calls `lake exe pole --loc --to <target>` to compute the longest
-  pole to a given target module, and then feeds this into
-  `lake exe unused` to analyze transitively unused imports.
-  Generates `unused.md` containing a markdown table showing the unused imports,
-  and suggests `lake exe graph` commands to visualize the largest "rectangles" of unused imports.
+- `topological_sort.py`
+  Prints Mathlib modules in topological (import-DAG) order. By default leaves come last
+  (roots first); use `--reverse` for leaves first. If filenames or module names are
+  provided on stdin, outputs only those modules in topological order.
+  Usage: `python3 scripts/topological_sort.py [--reverse]`
+
+**Backward-compatibility `set_option` migration tools**
+
+These scripts help with testing Lean PRs that change backward-compatibility option
+behaviour. They share a common DAG traversal library that parallelises work in import-graph order.
+
+- `dag_traversal.py`
+  Reusable parallel DAG traversal for Lean import graphs. Parses the import DAG from `.lean`
+  source files and parallelises an action over a forward or backward traversal. Each module is
+  submitted to the thread pool the moment its last in-DAG dependency finishes.
+
+  **Library usage:**
+  ```python
+  from dag_traversal import DAG, traverse_dag
+
+  dag = DAG.from_directories(Path("."))
+  results = traverse_dag(dag, my_action, direction="forward", stop_on_failure=True)
+  ```
+
+  **CLI usage:**
+  ```bash
+  scripts/dag_traversal.py --forward 'lake build {}'       # {} = file path
+  scripts/dag_traversal.py --backward --module 'echo {}'   # {} = module name
+  scripts/dag_traversal.py --forward -j4 'my_script {}'
+  ```
+
+- `set_option_utils.py`
+  Shared configuration for `add_set_option.py` and `rm_set_option.py`. Contains the list of
+  managed options (`backward.isDefEq.respectTransparency`, `backward.whnf.reducibleClassField`)
+  and helpers for generating `set_option` lines and regex patterns.
+
+- `add_set_option.py`
+  Adds `set_option ... false in` before declarations that fail to build. Traverses the DAG
+  **forward** (roots first) so each module is only built after all its imports are clean. For
+  each error, finds the enclosing declaration and tries candidate option combinations
+  (most-recently-successful first, then each single option, then all together).
+  Usage: `python3 scripts/add_set_option.py [--option NAME] [--max-workers N] [--timeout N] [--files FILE ...]`
+
+- `rm_set_option.py`
+  Removes unnecessary `set_option ... false in` lines. Only targets lines without a trailing
+  comment; lines like `set_option ... false in -- reason` are left untouched. Traverses the DAG
+  **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
+  cached builds of downstream files. Tries removing all occurrences at once; if that fails,
+  falls back to one-at-a-time removal.
+  Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...]`
 
 **CI workflow**
 - `lake-build-with-retry.sh`
@@ -107,14 +145,24 @@ to learn about it as well!
 - `lean-pr-testing-comments.sh`
   Generate comments and labels on a Lean or Batteries PR after CI has finished on a
   `*-pr-testing-NNNN` branch.
-- `assign_reviewers.py` is used to automatically assign a reviewer to each stale github PR on the review queue.
-  This script downloads a .json file with proposed assignments and makes the
-  corresponding github API calls.
 - `declarations_diff.sh`
   Attempts to find which declarations have been removed and which have been added in the current PR
   with respect to `master`, and posts a comment on github with the result.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
+- `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
+  `x scripts/auto_commit.sh <command>` enables a rebase workflow: during interactive rebase,
+  you can convert `pick abc # x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
+  (by deleting the "pick abc # " prefix), and git will re-run the command via exec.
+  Example: `scripts/auto_commit.sh lake exe mk_all`
+- `verify_commits.sh` verifies special commits in a PR:
+  - **Transient commits** (prefix `transient: `) must have zero net effect on the final tree
+  - **Automated commits** (prefix `x <command>`; or legacy `x: <command>`)
+    must match the effect of re-running the command.
+  Supports `--json` for machine-readable output and `--json-file PATH` to write JSON while
+  displaying human-readable output.
+- `verify_commits_summary.sh` generates a markdown PR comment from `verify_commits.sh` JSON output.
+  Used by CI to post verification summaries on pull requests.
 
 **Managing nightly-testing and bump branches**
 - `create-adaptation-pr.sh` implements some of the steps in the workflow described at

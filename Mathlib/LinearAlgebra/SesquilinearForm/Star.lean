@@ -14,7 +14,7 @@ This file provides some properties about sesquilinear forms `M →ₗ⋆[R] M �
 `StarRing`.
 -/
 
-@[expose] public section
+public section
 
 open Module LinearMap
 

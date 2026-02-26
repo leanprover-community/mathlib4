@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.Algebra.Central.End
 public import Mathlib.Algebra.Central.TensorProduct
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.RingTheory.TensorProduct.Maps

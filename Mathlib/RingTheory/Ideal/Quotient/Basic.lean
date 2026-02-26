@@ -102,7 +102,7 @@ theorem isDomain_iff_isCompletelyPrime : IsDomain (R ⧸ I) ↔ I.IsCompletelyPr
     haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
-theorem isDomain_iff_prime {R : Type*} [CommRing R] (I : Ideal R) [I.IsTwoSided] :
+theorem isDomain_iff_prime {R : Type*} [CommRing R] (I : Ideal R) :
     IsDomain (R ⧸ I) ↔ I.IsPrime :=
   (isDomain_iff_isCompletelyPrime I).trans isCompletelyPrime_iff_isPrime
 

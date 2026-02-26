@@ -33,10 +33,13 @@ noncomputable def ortho (x y : V) : V := y - (ℝ ∙ x).starProjection y
 lemma ortho_eq_sub_inner (x : V) {y : V} (hy : ‖y‖ = 1) : ortho y x = x - inner ℝ y x • y := by
   rw [ortho, Submodule.starProjection_unit_singleton _ hy]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inner_ortho_nonneg {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : 0 ≤ ⟪x, ortho y x⟫ := by
   rw [ortho_eq_sub_inner x hy, inner_sub_right,
     inner_self_eq_one_of_norm_eq_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
   grw [← sq, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
+
+@[deprecated (since := "2025-12-20")] alias inner_ortho_nonneg_of_norm_eq_one := inner_ortho_nonneg
 
 lemma inner_normalize_ortho (x y : V) : ⟪y, normalize (ortho y x)⟫ = 0 := by
   simp only [NormedSpace.normalize, real_inner_smul_right, mul_eq_zero, inv_eq_zero, norm_eq_zero]
@@ -53,7 +56,7 @@ lemma inner_normalized_ortho_sq_add_inner_sq_eq_one :
     real_inner_smul_right]
   by_cases h₁ : x = y
   · simp [*]
-  by_cases h₂ : x = - y
+  by_cases h₂ : x = -y
   · simp [*]
   rw [real_inner_self_eq_norm_sq, hx]
   have H1 : ‖x - ⟪y, x⟫ • y‖ ≠ 0 := by
@@ -172,7 +175,7 @@ lemma angle_expression_of_angle_eq_angle_sum :
   ring_nf at H6
   have Hw : Real.sin (angle x y) * Real.sin (angle y z) ≠ 0 := by
     grind [sin_eq_zero_iff_angle_eq_zero_or_angle_eq_pi]
-  have H8 : ⟪normalize (ortho y x), normalize (ortho y z)⟫ = - 1 := by
+  have H8 : ⟪normalize (ortho y x), normalize (ortho y z)⟫ = -1 := by
     grind
   have H9 : ortho y x ≠ 0 := by
     grind [ortho_ne_zero_of_not_collinear, angle_comm]
@@ -200,6 +203,7 @@ public theorem angle_le_angle_add_angle (x y z : V) :
   simpa using angle_le_angle_add_angle_of_norm_eq_one (norm_normalize_eq_one_iff.mpr hx)
     (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triangle inequality is an equality if the middle vector is a nonnegative linear combination
 of the other two vectors. See `angle_add_angle_eq_pi_of_angle_eq_pi` for the other equality case. -/
 public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y ≠ 0)
@@ -219,12 +223,14 @@ public theorem angle_eq_angle_add_add_angle_add_of_mem_span {x y z : V} (hy : y 
       simpa [hkx, hkz, NNReal.smul_def] using
         angle_eq_angle_add_add_angle_add (kz • z) (smul_ne_zero hkx.ne' hx)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_span_of_linear_combination {x y z : V} {kx ky kz : ℝ≥0} (hy : ky ≠ 0)
     (hlincomb : ky • y = kx • x + kz • z) : y ∈ Submodule.span ℝ≥0 {x, z} := by
   have h₁ : ky • y ∈ Submodule.span ℝ≥0 {x, z} := by
     rw [Submodule.mem_span_pair]; grind
   rwa [Submodule.smul_mem_iff _ hy] at h₁
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The triangle inequality on vectors `x`, `y`, `z` is an equality if and only if
 `angle x z = π`, or `y` is a nonnegative linear combination of `x` and `z`. -/
 public theorem angle_eq_angle_add_angle_iff {x y z : V} (hy : y ≠ 0) :

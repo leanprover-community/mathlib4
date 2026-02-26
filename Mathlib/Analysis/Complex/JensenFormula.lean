@@ -22,7 +22,7 @@ equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that ac
 poles of `g` within the ball.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeromorphicAt MeromorphicOn Metric Real
 
@@ -116,6 +116,8 @@ correction term that accounts for the zeros and poles of `f` within the ball.
 See `Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const` for a
 reformulation in terms of the logarithmic counting function of Value Distribution Theory.
 -/
+
+set_option backward.isDefEq.respectTransparency false in
 theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → ℂ} (hR : R ≠ 0)
     (h₁f : MeromorphicOn f (closedBall c |R|)) :
     circleAverage (log ‖f ·‖) c R

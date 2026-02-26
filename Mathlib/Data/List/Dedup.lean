@@ -21,7 +21,7 @@ occurrence of each.
 duplicate, multiplicity, nodup, `nub`
 -/
 
-@[expose] public section
+public section
 
 
 universe u

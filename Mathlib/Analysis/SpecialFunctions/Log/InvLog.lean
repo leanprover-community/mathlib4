@@ -19,12 +19,13 @@ We prove properties of the function `x ↦ (log x)⁻¹`.
 - `deriv_inv_log` gives a formula for the derivative which holds for all values.
 -/
 
-@[expose] public section
+public section
 
 namespace Real
 
 open Filter
 
+set_option backward.isDefEq.respectTransparency false in
 lemma not_differentiableAt_inv_log_zero : ¬ DifferentiableAt ℝ (fun x ↦ (log x)⁻¹) 0 := by
   simp only [← hasDerivAt_deriv_iff, hasDerivAt_iff_tendsto_slope_zero, zero_add, log_zero,
     inv_zero, sub_zero, smul_eq_mul, ← mul_inv, mul_comm _ (log _)]

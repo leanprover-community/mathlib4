@@ -5,8 +5,8 @@ Authors: Judith Ludwig, Christian Merten
 -/
 module
 
-public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.Smooth.Basic
+public import Mathlib.RingTheory.AdicCompletion.Algebra
 
 /-!
 # Formally smooth algebras and adic completion

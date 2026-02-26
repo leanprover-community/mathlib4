@@ -18,7 +18,7 @@ A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4`
 
 -/
 
-@[expose] public section
+public section
 
 
 open Zsqrtd Complex

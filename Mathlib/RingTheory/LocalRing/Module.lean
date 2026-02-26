@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Torsion.Basic
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Flat.EquationalCriterion
 public import Mathlib.RingTheory.Ideal.Quotient.ChineseRemainder
@@ -16,6 +15,8 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.Support
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Finite modules over local rings
@@ -34,7 +35,7 @@ This file gathers various results about finite modules over a local ring `(R, �
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
-@[expose] public section
+public section
 
 open Module
 
@@ -72,6 +73,7 @@ theorem map_mkQ_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (Submodule.mkQ (𝔪 • ⊤)) = ⊤ ↔ N = ⊤ := by
   rw [← map_mkQ_eq (N₁ := N) le_top Module.Finite.fg_top, Submodule.map_top, Submodule.range_mkQ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
   constructor
@@ -98,6 +100,7 @@ theorem subsingleton_tensorProduct [Module.Finite R M] :
     ← Submodule.subsingleton_iff R, ← subsingleton_iff_bot_eq_top,
     ← map_tensorProduct_mk_eq_top (M := M), Submodule.map_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
     (f : ι → M) (b : Basis ι k (k ⊗[R] M))
     (hb : ∀ i, 1 ⊗ₜ f i = b i) : Submodule.span R (Set.range f) = ⊤ := by
@@ -108,6 +111,7 @@ theorem span_eq_top_of_tmul_eq_basis [Module.Finite R M] {ι}
 
 end IsLocalRing
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.mem_support_iff_nontrivial_residueField_tensorProduct [Module.Finite R M]
     (p : PrimeSpectrum R) :
     p ∈ Module.support R M ↔ Nontrivial (p.asIdeal.ResidueField ⊗[R] M) := by
@@ -159,6 +163,7 @@ namespace Module
 
 variable [IsLocalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is of finite presentation over a local ring `(R, 𝔪, k)` such that
 `𝔪 ⊗ M → M` is injective, then every family of elements that is a `k`-basis of
 `k ⊗ M` is an `R`-basis of `M`. -/
@@ -175,9 +180,8 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
     refine IsLocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := v) bk
       (fun _ ↦ by simp [bk])
-  have : Module.Finite R (LinearMap.ker i) := by
-    constructor
-    exact (Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker i hi)
+  have : Module.Finite R (LinearMap.ker i) :=
+    .of_fg (Module.FinitePresentation.fg_ker i hi)
   -- We claim that `i` is actually a bijection,
   -- hence `v` induces an isomorphism `M ≃[R] Rᴵ` showing that `v` is a basis.
   let iequiv : (ι →₀ R) ≃ₗ[R] M := by
@@ -215,6 +219,7 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   intro j
   simp [iequiv, i]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `M` is a finitely presented module over a local ring `(R, 𝔪)` such that `m ⊗ M → M` is
 injective, then every generating family contains a basis.
@@ -250,6 +255,7 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   obtain ⟨_, _, b, _⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
   exact Free.of_basis b
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
     (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
   rw [linearIndependent_iff']; intro s f hfv i hi
@@ -287,6 +293,7 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
     intro i hi; rw [ih i hi, zero_mul]
   · exact ih i hi
 
+set_option backward.isDefEq.respectTransparency false in
 open Finsupp in
 theorem IsLocalRing.linearCombination_bijective_of_flat [Module.Finite R M] [Flat R M] {ι : Type u}
     (v : ι → M) (h : Function.Bijective (linearCombination k (TensorProduct.mk R k M 1 ∘ v))) :
@@ -297,6 +304,7 @@ theorem IsLocalRing.linearCombination_bijective_of_flat [Module.Finite R M] [Fla
   · simpa only [top_le_iff, ← range_linearCombination, LinearMap.range_eq_top] using h.2
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00NZ]
 theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   let w := Free.chooseBasis k (k ⊗[R] P)
@@ -304,6 +312,7 @@ theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
   .of_basis <| .mk (IsLocalRing.linearIndependent_of_flat _ (eq ▸ w.linearIndependent)) <| by
     exact (span_eq_top_of_tmul_eq_basis _ w <| congr_fun eq).ge
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
 `M` finite and `N` finite free, then injectivity of `k ⊗ M → k ⊗ N` implies that `P` is free.
@@ -323,6 +332,7 @@ theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f 
 
 end Module
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a linear map `l : M → N` over a local ring `(R, 𝔪, k)`
 with `M` finite and `N` finite free,
@@ -387,6 +397,7 @@ open Ideal TensorProduct Submodule
 
 variable (R M) [Finite (MaximalSpectrum R)] [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `M` is a finite flat module over a commutative semilocal ring `R` that has the same rank `n`
 at every maximal ideal, then `M` is free of rank `n`. -/
 @[stacks 02M9] theorem nonempty_basis_of_flat_of_finrank_eq [Module.Finite R M] [Flat R M]
@@ -412,7 +423,7 @@ at every maximal ideal, then `M` is free of rank `n`. -/
   apply IsLocalRing.linearCombination_bijective_of_flat
   rw [← (AlgebraTensorModule.cancelBaseChange _ _ P.ResidueField ..).comp_bijective,
     ← (AlgebraTensorModule.cancelBaseChange R (R ⧸ P) P.ResidueField ..).symm.comp_bijective]
-  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ P.ResidueField _).symm.bijective
+  convert ((b' ⟨P, ‹_›⟩).repr.lTensor _ ≪≫ₗ finsuppScalarRight _ _ P.ResidueField _).symm.bijective
   refine funext fun r ↦ Finsupp.induction_linear r (by simp) (by simp +contextual) fun _ _ ↦ ?_
   simp [smul_tmul', ← funext_iff.mp (hb _)]
 

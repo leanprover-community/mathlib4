@@ -264,6 +264,12 @@ theorem trace_mul_single [NonUnitalNonAssocSemiring R] [Fintype m]
 
 end single
 
+theorem trace_surjective [AddCommMonoid R] [Nonempty n] :
+    Function.Surjective (trace : Matrix n n R → R) := fun r ↦ by
+  classical
+  inhabit n
+  exact ⟨single default default r, trace_single_eq_same default r⟩
+
 /-- Matrices `A` and `B` are equal iff `(x * A).trace = (x * B).trace` for all `x`. -/
 theorem ext_iff_trace_mul_left [NonAssocSemiring R] {A B : Matrix m n R} :
     A = B ↔ ∀ x, (x * A).trace = (x * B).trace := by

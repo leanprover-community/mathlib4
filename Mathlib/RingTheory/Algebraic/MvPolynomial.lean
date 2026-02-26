@@ -16,7 +16,7 @@ This file lists some results on some elements in `MvPolynomial σ R` being trans
 over the base ring `R` and subrings `MvPolynomial.supported` of `MvPolynomial σ R`.
 -/
 
-@[expose] public section
+public section
 
 universe u v w
 
@@ -26,6 +26,7 @@ namespace MvPolynomial
 
 variable {σ : Type*} (R : Type*) [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i ∉ s)
     {f : R[X]} (hf : Transcendental R f) :
     Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
@@ -62,6 +63,7 @@ theorem transcendental_supported_polynomial_aeval_X {i : σ} {s : Set σ} (h : i
   simpa only [h2, v, AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EquivLike.injective_comp, AlgHom.coe_restrictScalars'] using hf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_polynomial_aeval_X (i : σ) {f : R[X]} (hf : Transcendental R f) :
     Transcendental R (Polynomial.aeval (X i : MvPolynomial σ R) f) := by
   have := transcendental_supported_polynomial_aeval_X R (Set.notMem_empty i) hf
@@ -76,6 +78,7 @@ theorem transcendental_polynomial_aeval_X_iff (i : σ) {f : R[X]} :
   simp_rw [Transcendental, not_imp_not]
   exact fun h ↦ h.algHom _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_supported_polynomial_aeval_X_iff
     [Nontrivial R] {i : σ} {s : Set σ} {f : R[X]} :
     Transcendental (supported R s) (Polynomial.aeval (X i : MvPolynomial σ R) f) ↔
@@ -91,6 +94,7 @@ theorem transcendental_supported_polynomial_aeval_X_iff
     simp_rw [← MvPolynomial.algebraMap_eq]
     exact congr($(heq).1)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
     Transcendental (supported R s) (X i : MvPolynomial σ R) := by
   simpa using transcendental_supported_polynomial_aeval_X R h (Polynomial.transcendental_X R)
@@ -98,6 +102,7 @@ theorem transcendental_supported_X {i : σ} {s : Set σ} (h : i ∉ s) :
 theorem transcendental_X (i : σ) : Transcendental R (X i : MvPolynomial σ R) := by
   simpa using transcendental_polynomial_aeval_X R i (Polynomial.transcendental_X R)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_supported_X_iff [Nontrivial R] {i : σ} {s : Set σ} :
     Transcendental (supported R s) (X i : MvPolynomial σ R) ↔ i ∉ s := by
   simpa [Polynomial.transcendental_X] using

@@ -50,7 +50,7 @@ The functions are also defined outside the interval `Icc 0 1` due to `log x = lo
 entropy, Shannon, binary, nit, nepit
 -/
 
-@[expose] public section
+public section
 
 namespace Real
 variable {q : ℕ} {p : ℝ}
@@ -63,7 +63,10 @@ is the Shannon entropy of a Bernoulli random variable with success probability `
 @[pp_nodot] noncomputable def binEntropy (p : ℝ) : ℝ := p * log p⁻¹ + (1 - p) * log (1 - p)⁻¹
 
 @[simp] lemma binEntropy_zero : binEntropy 0 = 0 := by simp [binEntropy]
+
 @[simp] lemma binEntropy_one : binEntropy 1 = 0 := by simp [binEntropy]
+
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma binEntropy_two_inv : binEntropy 2⁻¹ = log 2 := by norm_num [binEntropy]; simp; ring
 
 lemma binEntropy_eq_negMulLog_add_negMulLog_one_sub (p : ℝ) :
@@ -271,6 +274,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     linarith [hx.2]
   · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsGT_zero
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[<] 1) atBot := by
   apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
@@ -362,6 +366,7 @@ lemma deriv2_binEntropy : deriv^[2] binEntropy p = -1 / (p * (1 - p)) :=
 
 /-! ### Strict monotonicity of entropy -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Qary entropy is strictly increasing in the interval [0, 1 - q⁻¹]. -/
 lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
     StrictMonoOn (qaryEntropy q) (Icc 0 (1 - 1 / q)) := by
@@ -390,6 +395,7 @@ lemma qaryEntropy_strictMonoOn (qLe2 : 2 ≤ q) :
         linarith
     exact (ne_of_gt (lt_add_neg_iff_lt.mp this : p < 1)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Qary entropy is strictly decreasing in the interval [1 - q⁻¹, 1]. -/
 lemma qaryEntropy_strictAntiOn (qLe2 : 2 ≤ q) :
     StrictAntiOn (qaryEntropy q) (Icc (1 - 1 / q) 1) := by

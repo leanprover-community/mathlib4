@@ -15,7 +15,7 @@ public import Mathlib.Data.List.Nodup
 This file develops some results on `finRange n`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Monoid
 

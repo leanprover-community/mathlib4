@@ -12,7 +12,7 @@ public import Mathlib.Dynamics.FixedPoints.Basic
 # Results about pointwise operations on sets with iteration.
 -/
 
-@[expose] public section
+public section
 
 
 open Pointwise

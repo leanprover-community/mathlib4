@@ -46,13 +46,13 @@ this definition. -/
 def dayConvolutionInternalHomDiagramFunctor (F : C ⥤ V) :
     (C ⥤ V) ⥤ C ⥤ Cᵒᵖ ⥤ C ⥤ V where
   obj G :=
-    { obj c := Functor.whiskeringLeft₂ _|>.obj F.op|>.obj
-        (tensorRight c ⋙ G)|>.obj MonoidalClosed.internalHom
-      map {c c'} f := Functor.whiskeringLeft₂ _|>.obj F.op|>.map
-        (Functor.whiskerRight (curriedTensor C|>.flip.map f) G)|>.app
+    { obj c := Functor.whiskeringLeft₂ _ |>.obj F.op |>.obj
+        (tensorRight c ⋙ G) |>.obj MonoidalClosed.internalHom
+      map {c c'} f := Functor.whiskeringLeft₂ _ |>.obj F.op |>.map
+        (Functor.whiskerRight (curriedTensor C |>.flip.map f) G) |>.app
           MonoidalClosed.internalHom }
   map {G G'} η :=
-    { app c := Functor.whiskeringLeft₂ _|>.obj F.op|>.map
+    { app c := Functor.whiskeringLeft₂ _ |>.obj F.op |>.map
         (Functor.whiskerLeft _ η) |>.app MonoidalClosed.internalHom
       naturality {c c'} f := by
         ext j k
@@ -94,6 +94,7 @@ attribute [reassoc] hπ
 
 variable {F : C ⥤ V} {G : C ⥤ V} {H : C ⥤ V}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we have a map `G ⟶ G'` and a `DayConvolutionInternalHom F G' H'`, then
 there is a unique map `H ⟶ H'` induced by functoriality of ends and functoriality
 of `internalHomDiagramFunctor F`. -/
@@ -103,11 +104,11 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
   app c := Wedge.IsLimit.lift (ℌ'.isLimitWedge c)
     (fun j ↦ (ℌ.π c j) ≫
       (dayConvolutionInternalHomDiagramFunctor
-        F|>.map f|>.app c|>.app (op j)|>.app j))
+        F |>.map f |>.app c |>.app (op j) |>.app j))
     (fun ⦃j j'⦄ φ ↦ by
       have := congrArg (fun t ↦ t.app j') <|
         dayConvolutionInternalHomDiagramFunctor
-          F|>.map f|>.app c|>.naturality φ.op
+          F |>.map f |>.app c |>.naturality φ.op
       dsimp at this ⊢
       rw [Category.assoc, ← (ihom (F.obj j)).map_comp, ← f.naturality,
         Functor.map_comp, reassoc_of% ℌ.hπ]
@@ -118,15 +119,16 @@ def map (ℌ : DayConvolutionInternalHom F G H) {G' : C ⥤ V} {H' : C ⥤ V}
     dsimp
     simp only [Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c')
         (H'.obj c') (ℌ'.π c') (ℌ'.hπ c'),
       ← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
         (H'.obj c) (ℌ'.π c) (ℌ'.hπ c),
       Wedge.IsLimit.lift_ι (ℌ'.isLimitWedge c'),
-      Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c) ]
+      Wedge.IsLimit.lift_ι_assoc (ℌ'.isLimitWedge c)]
     simp [← Functor.map_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma map_app_comp_π (ℌ : DayConvolutionInternalHom F G H)
     {G' : C ⥤ V} {H' : C ⥤ V} (f : G ⟶ G')
@@ -143,6 +145,7 @@ section ev
 
 variable [DayConvolution F H] (ℌ : DayConvolutionInternalHom F G H)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `ℌ : DayConvolutionInternalHom F H`, if we think of `H.obj G`
 as the internal hom `[F, G]`, then this is the transformation
 corresponding to the component at `G` of the "evaluation" natural morphism
@@ -163,6 +166,7 @@ def ev_app : F ⊛ H ⟶ G :=
         rw [reassoc_of% this]
         simp }
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma unit_app_ev_app_app (x y : C) :
     ((DayConvolution.unit F H).app (x, y) ≫ (ℌ.ev_app).app (x ⊗ y)) =
@@ -172,6 +176,7 @@ lemma unit_app_ev_app_app (x y : C) :
   dsimp at this
   simp [this, ev_app]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ev_naturality_app {G' H' : C ⥤ V} (ℌ' : DayConvolutionInternalHom F G' H')
     [DayConvolution F H'] (η : G ⟶ G') :
     DayConvolution.map (𝟙 F) (ℌ.map η ℌ') ≫ ℌ'.ev_app = ℌ.ev_app ≫ η := by
@@ -187,6 +192,7 @@ section coev
 variable {G : C ⥤ V} [DayConvolution F G]
     (ℌ : DayConvolutionInternalHom F (F ⊛ G) H)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `ℌ : DayConvolutionInternalHom F H`, if we think of `H.obj G`
 as the internal hom `[F, G]`, then this is the transformation
 corresponding to the component at `G` of the "coevaluation" natural morphism
@@ -212,10 +218,10 @@ def coev_app : G ⟶ H where
       dayConvolutionInternalHomDiagramFunctor_obj_obj_obj_obj, Multifork.ofι_pt,
       Wedge.mk_ι, Category.assoc, map_comp_π]
     rw [← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c)
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c)
         (H.obj c) (ℌ.π c) (ℌ.hπ c),
       ← Wedge.mk_ι
-        (F := dayConvolutionInternalHomDiagramFunctor F|>.obj _|>.obj c')
+        (F := dayConvolutionInternalHomDiagramFunctor F |>.obj _ |>.obj c')
         (H.obj c') (ℌ.π c') (ℌ.hπ c'),
       Wedge.IsLimit.lift_ι_assoc, Wedge.IsLimit.lift_ι]
     have := DayConvolution.unit_naturality F G (𝟙 j) f
@@ -225,6 +231,7 @@ def coev_app : G ⟶ H where
     rw [← this]
     simp [MonoidalClosed.curry_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coev_app_π (c j : C) :
     ℌ.coev_app.app c ≫ ℌ.π c j =
@@ -235,6 +242,7 @@ lemma coev_app_π (c j : C) :
       (H.obj c) (ℌ.π c) (ℌ.hπ c),
     Wedge.IsLimit.lift_ι]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G')
     (ℌ' : DayConvolutionInternalHom F (F ⊛ G') H') :
     η ≫ ℌ'.coev_app =
@@ -253,6 +261,7 @@ lemma coev_naturality_app {G' H' : C ⥤ V} [DayConvolution F G'] (η : G ⟶ G'
 
 end coev
 
+set_option backward.isDefEq.respectTransparency false in
 theorem left_triangle_components (G : C ⥤ V) [DayConvolution F G]
     (ℌ : DayConvolutionInternalHom F (F ⊛ G) H) [DayConvolution F H] :
     DayConvolution.map (𝟙 F) ℌ.coev_app ≫ ℌ.ev_app = 𝟙 (F ⊛ G) := by
@@ -262,6 +271,7 @@ theorem left_triangle_components (G : C ⥤ V) [DayConvolution F G]
   apply MonoidalClosed.curry_injective
   simp [MonoidalClosed.curry_natural_left]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem right_triangle_components (G : C ⥤ V) [DayConvolution F H]
     (ℌ : DayConvolutionInternalHom F G H) {H' : C ⥤ V}
     (ℌ' : DayConvolutionInternalHom F (F ⊛ H) H') :

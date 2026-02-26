@@ -6,14 +6,14 @@ Authors: Yakov Pechersky, Yury Kudryashov
 module
 
 public import Mathlib.Data.Set.Image
-public import Mathlib.Data.List.InsertIdx
+public import Mathlib.Data.List.Basic
 
 /-! # Some lemmas about lists involving sets
 
 Split out from `Data.List.Basic` to reduce its dependencies.
 -/
 
-@[expose] public section
+public section
 
 variable {α β γ : Type*}
 

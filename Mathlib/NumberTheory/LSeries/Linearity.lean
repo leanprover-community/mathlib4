@@ -15,7 +15,7 @@ We show that the `LSeries` of `f : ℕ → ℂ` is a linear function of `f` (ass
 of both L-series when adding two functions).
 -/
 
-@[expose] public section
+public section
 
 /-!
 ### Addition

@@ -19,6 +19,14 @@ open Lean Meta Elab
 
 namespace Mathlib.Tactic
 
+/-- An `(attr := ...)` argument for applying the same attributes to multiple declarations. -/
+syntax optAttrArg := atomic(" (" &"attr" " := " Parser.Term.attrInstance,* ")")?
+
+/-- Elaborate an `(attr := ...)` argument. -/
+def elabOptAttrArg : TSyntax ``optAttrArg → TermElabM (Array Attribute)
+  | `(optAttrArg| (attr := $[$attrs],*)) => elabAttrs attrs
+  | _ => pure #[]
+
 /-- A helper function for constructing a related declaration from an existing one.
 
 This is currently used by the attributes `reassoc` and `elementwise`,
@@ -50,33 +58,21 @@ Arguments:
   Warning: As a result, the original doc-string of `ref` will not be visible,
   and go-to-def on `ref` will not go to the definition of `ref`.
 -/
-def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
-    (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
+def addRelatedDecl (src tgt : Name) (ref : Syntax)
+    (attrs : TSyntax ``optAttrArg)
     (construct : Expr → List Name → MetaM (Expr × List Name))
     (docstringPrefix? : Option String := none)
     (hoverInfo : Bool := false) :
     MetaM Unit := do
-  let tgt := match src with
-    | Name.str n s => Name.mkStr n <| prefix_ ++ s ++ suffix
-    | x => x
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← withoutExporting <| getConstInfo src
   let value := .const src (info.levelParams.map mkLevelParam)
   let (newValue, newLevels) ← construct value info.levelParams
   let newValue ← instantiateMVars newValue
   let newType ← instantiateMVars (← inferType newValue)
-  match info with
-  | ConstantInfo.thmInfo info =>
-    addAndCompile <| .thmDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-  | ConstantInfo.defnInfo info =>
-    -- Structure fields are created using `def`, even when they are propositional,
-    -- so we don't rely on this to decide whether we should be constructing a `theorem` or a `def`.
-    addAndCompile <| if ← isProp newType then .thmDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-      else .defnDecl
-      { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
-  | _ => throwError "Constant {src} is not a theorem or definition."
+  unless ← isProp newType do throwError "Related declaration is not a proposition: {newType}"
+  addDecl <| ← mkThmOrUnsafeDef
+    { levelParams := newLevels, type := newType, name := tgt, value := newValue }
   if isProtected (← getEnv) src then
     setEnv <| addProtected (← getEnv) tgt
   match docstringPrefix?, ← findDocString? (← getEnv) src with
@@ -84,9 +80,8 @@ def addRelatedDecl (src : Name) (prefix_ suffix : String) (ref : Syntax)
   | some doc, none | none, some doc => addDocStringCore tgt doc
   | some docPre, some docPost => addDocStringCore tgt s!"{docPre}\n\n---\n\n{docPost}"
   inferDefEqAttr tgt
-  let attrs := match attrs? with | some attrs => attrs | none => #[]
   Term.TermElabM.run' do
-    let attrs ← elabAttrs attrs
+    let attrs ← elabOptAttrArg attrs
     Term.applyAttributes src attrs
     Term.applyAttributes tgt attrs
     if hoverInfo then

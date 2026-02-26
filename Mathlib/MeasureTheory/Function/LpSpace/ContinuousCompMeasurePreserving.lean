@@ -23,7 +23,7 @@ defined on `MeasureTheory.Lp E p ν × {f : C(X, Y) // MeasurePreserving f μ ν
 Finally, we provide dot notation convenience lemmas.
 -/
 
-@[expose] public section
+public section
 
 open Filter Set MeasureTheory
 open scoped ENNReal Topology symmDiff

@@ -12,7 +12,7 @@ public import Mathlib.Data.ENat.Lattice
 # Sum of suprema in `ENat`
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Field
 

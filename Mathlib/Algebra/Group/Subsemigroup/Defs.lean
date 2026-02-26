@@ -98,6 +98,8 @@ namespace Subsemigroup
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
+@[to_additive] instance : PartialOrder (Subsemigroup M) := .ofSetLike (Subsemigroup M) M
+
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
 
@@ -192,6 +194,14 @@ theorem coe_top : ((⊤ : Subsemigroup M) : Set M) = Set.univ :=
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
   rfl
+
+@[to_additive (attr := simp)]
+lemma mk_eq_top (carrier : Set M) (mul_mem') : mk carrier mul_mem' = ⊤ ↔ carrier = .univ := by
+  simp [← SetLike.coe_set_eq]
+
+@[to_additive (attr := simp)]
+lemma mk_eq_bot (carrier : Set M) (mul_mem') : mk carrier mul_mem' = ⊥ ↔ carrier = ∅ := by
+  simp [← SetLike.coe_set_eq]
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive /-- The inf of two `AddSubsemigroup`s is their intersection. -/]

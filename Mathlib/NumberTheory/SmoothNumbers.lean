@@ -290,9 +290,6 @@ lemma smoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
   simp_rw [mem_factoredNumbers'] at hm ⊢
   exact fun p hp hp' ↦ mem_primesBelow.mpr ⟨Finset.mem_range.mp <| hm p hp hp', hp⟩
 
-@[deprecated (since := "2025-07-08")]
-alias smmoothNumbers_eq_factoredNumbers_primesBelow := smoothNumbers_eq_factoredNumbers_primesBelow
-
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
   inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n}
@@ -429,7 +426,7 @@ def smoothNumbersUpTo (N k : ℕ) : Finset ℕ :=
 
 lemma mem_smoothNumbersUpTo {N k n : ℕ} :
     n ∈ smoothNumbersUpTo N k ↔ n ≤ N ∧ n ∈ smoothNumbers k := by
-  simp [smoothNumbersUpTo, Nat.lt_succ_iff]
+  simp [smoothNumbersUpTo]
 
 /-- The positive non-`k`-smooth (so "`k`-rough") numbers up to and including `N` as a `Finset` -/
 def roughNumbersUpTo (N k : ℕ) : Finset ℕ :=
@@ -447,7 +444,7 @@ lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
       simp only [ne_eq, H, not_false_eq_true, true_and, or_not]
     rwa [Finset.filter_congr (s := Finset.range (succ N)) fun n _ ↦ hn' n]
   rw [Finset.filter_ne', Finset.card_erase_of_mem <| Finset.mem_range_succ_iff.mpr <| zero_le N]
-  simp only [Finset.card_range, succ_sub_succ_eq_sub, tsub_zero]
+  simp only [Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 
 /-- A `k`-smooth number can be written as a square times a product of distinct primes `< k`. -/
 lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNumbers k) :
@@ -491,7 +488,7 @@ lemma smoothNumbersUpTo_card_le (N k : ℕ) :
   convert (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans <|
     Finset.card_image_le
   simp only [Finset.card_product, Finset.card_powerset, Finset.mem_range, zero_lt_succ,
-    Finset.card_erase_of_mem, Finset.card_range, succ_sub_succ_eq_sub, tsub_zero]
+    Finset.card_erase_of_mem, Finset.card_range, succ_sub_succ_eq_sub, Nat.sub_zero]
 
 /-- The set of `k`-rough numbers `≤ N` can be written as the union of the sets of multiples `≤ N`
 of primes `k ≤ p ≤ N`. -/
@@ -506,9 +503,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
   simp_rw [← exists_and_left, ← not_lt]
   refine exists_congr fun p ↦ ?_
-  have H₁ : m ≠ 0 → p ∣ m → m < N + 1 → p < N + 1 :=
-    fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
-  have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
+  have H : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
   grind
 

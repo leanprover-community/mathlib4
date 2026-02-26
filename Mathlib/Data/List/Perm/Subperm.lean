@@ -7,6 +7,7 @@ module
 
 public import Batteries.Data.List.Perm
 public import Mathlib.Data.List.Basic
+public import Batteries.Tactic.Trans
 
 /-!
 # List Sub-permutations
@@ -18,7 +19,7 @@ This file develops theory about the `List.Subperm` relation.
 The notation `<+~` is used for sub-permutations.
 -/
 
-@[expose] public section
+public section
 
 open Nat
 

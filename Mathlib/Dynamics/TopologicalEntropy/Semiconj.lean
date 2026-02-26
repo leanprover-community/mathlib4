@@ -53,7 +53,7 @@ the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly c
 entropy, semiconjugacy
 -/
 
-@[expose] public section
+public section
 
 open Function Prod Set Uniformity UniformSpace
 open scoped SetRel

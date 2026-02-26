@@ -17,7 +17,7 @@ This file contains lemmas about integers, which require further imports than
 
 -/
 
-@[expose] public section
+public section
 
 
 open Nat

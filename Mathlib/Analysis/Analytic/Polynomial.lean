@@ -17,7 +17,7 @@ This file combines the analysis and algebra libraries and shows that evaluation 
 is an analytic function.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E A B : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [CommSemiring A] {z : E} {s : Set E}

@@ -212,6 +212,17 @@ theorem IsClosed.continuous_piecewise_of_specializes [DecidablePred (· ∈ s)] 
     Continuous (s.piecewise f g) := by
   simpa only [piecewise_compl] using hs.isOpen_compl.continuous_piecewise_of_specializes hg hf hspec
 
+theorem Specializes.clusterPt {f : Filter X} (h : x ⤳ y) (hx : ClusterPt x f) :
+    ClusterPt y f :=
+  Filter.NeBot.mono hx <| inf_le_inf_right _ h
+
+theorem IsCompact.of_subset_of_specializes {s t : Set X} (hs : IsCompact s) (hts : t ⊆ s)
+    (h : ∀ x ∈ s, ∃ y ∈ t, x ⤳ y) : IsCompact t := by
+  intro f _ hf
+  obtain ⟨x, hxs, hxf⟩ := hs <| hf.trans <| Filter.monotone_principal hts
+  obtain ⟨y, hyt, hxy⟩ := h x hxs
+  exact ⟨y, hyt, hxy.clusterPt hxf⟩
+
 attribute [local instance] specializationPreorder
 
 /-- A continuous function is monotone with respect to the specialization preorders on the domain and
@@ -583,17 +594,23 @@ instance [Subsingleton X] : Subsingleton (SeparationQuotient X) :=
   surjective_mk.subsingleton
 
 @[simp]
-theorem inseparableSetoid_eq_top_iff {t : TopologicalSpace α} :
-    inseparableSetoid α = ⊤ ↔ t = ⊤ :=
-  Setoid.eq_top_iff.trans TopologicalSpace.eq_top_iff_forall_inseparable.symm
+theorem inseparableSetoid_eq_top_iff [TopologicalSpace α] :
+    inseparableSetoid α = ⊤ ↔ IndiscreteTopology α :=
+  Setoid.eq_top_iff.trans TopologicalSpace.indiscrete_iff_forall_inseparable.symm
 
-theorem subsingleton_iff {t : TopologicalSpace α} :
-    Subsingleton (SeparationQuotient α) ↔ t = ⊤ :=
+theorem subsingleton_iff [TopologicalSpace α] :
+    Subsingleton (SeparationQuotient α) ↔ IndiscreteTopology α :=
   Quotient.subsingleton_iff.trans inseparableSetoid_eq_top_iff
 
-theorem nontrivial_iff {t : TopologicalSpace α} :
-    Nontrivial (SeparationQuotient α) ↔ t ≠ ⊤ := by
-  simpa only [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+instance [TopologicalSpace α] [IndiscreteTopology α] : Subsingleton (SeparationQuotient α) :=
+  subsingleton_iff.2 ‹_›
+
+theorem nontrivial_iff [TopologicalSpace α] :
+    Nontrivial (SeparationQuotient α) ↔ NontrivialTopology α := by
+  simpa [not_subsingleton_iff_nontrivial] using subsingleton_iff.not
+
+instance [TopologicalSpace α] [NontrivialTopology α] : Nontrivial (SeparationQuotient α) :=
+  nontrivial_iff.2 ‹_›
 
 @[to_additive] instance [One X] : One (SeparationQuotient X) := ⟨mk 1⟩
 

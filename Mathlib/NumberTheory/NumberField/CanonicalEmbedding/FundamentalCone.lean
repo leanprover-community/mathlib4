@@ -222,6 +222,7 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
   · rw [Set.mem_setOf_eq, mixedEmbedding.norm_smul, mul_eq_zero, not_or]
     exact ⟨pow_ne_zero _ (abs_ne_zero.mpr hc), hx.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
@@ -534,6 +535,7 @@ theorem intNorm_idealSetEquiv_apply (a : idealSet K J) :
 
 variable (K J)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For an integer `n`, The equivalence between the elements of `idealSet K` of norm `n` and
 the product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
 torsion of `K`. -/
@@ -590,14 +592,14 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
             × torsion K := Equiv.prodCongrLeft fun _ ↦ (Equiv.subtypeSubtypeEquivSubtypeInter
         (p := fun I : (Ideal (𝓞 K))⁰ ↦ J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 ≤ ⌊s⌋₊)
         (q := fun I ↦ absNorm I.1 = i))
-      _   ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = i}
-            × torsion K := Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by aesop
-      _   ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) = i} :=
+      _ ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = i}
+            × torsion K := Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by grind
+      _ ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) = i} :=
             (idealSetEquivNorm K J i).symm
-      _   ≃ {a : idealSet K J // intNorm (idealSetEquiv K J a).1 = i} := by
+      _ ≃ {a : idealSet K J // intNorm (idealSetEquiv K J a).1 = i} := by
         simp_rw [← intNorm_idealSetEquiv_apply, Nat.cast_inj]
         rfl
-      _   ≃ {b : {a : idealSet K J // intNorm (idealSetEquiv K J a).1 ≤ ⌊s⌋₊} //
+      _ ≃ {b : {a : idealSet K J // intNorm (idealSetEquiv K J a).1 ≤ ⌊s⌋₊} //
             intNorm (idealSetEquiv K J b).1 = i} :=
         (Equiv.subtypeSubtypeEquivSubtype fun h ↦ Finset.mem_Iic.mp (h ▸ hi)).symm
   · simp_rw [lt_iff_not_ge.mp (lt_of_lt_of_le hs (Nat.cast_nonneg _)), lt_iff_not_ge.mp

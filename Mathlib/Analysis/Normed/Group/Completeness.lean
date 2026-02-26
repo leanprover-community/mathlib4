@@ -30,7 +30,7 @@ series.
 CompleteSpace, CauchySeq
 -/
 
-@[expose] public section
+public section
 
 open scoped Topology
 open Filter Finset

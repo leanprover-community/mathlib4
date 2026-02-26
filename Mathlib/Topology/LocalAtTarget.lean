@@ -28,7 +28,7 @@ We show that the following properties of continuous maps are local at the source
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Set TopologicalSpace Topology
 
@@ -235,6 +235,7 @@ end LocalAtSource
 end TopologicalSpace.IsOpenCover
 
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a continuous map `f : X → Y` between topological spaces.
 Suppose we have an open cover `U i` of the range of `f`, and a family of continuous maps `V i → X`

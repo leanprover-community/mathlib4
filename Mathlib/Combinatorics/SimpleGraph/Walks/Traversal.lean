@@ -104,14 +104,16 @@ lemma getVert_eq_support_getElem? {u v : V} {n : ℕ} (p : G.Walk u v) (h : n �
     some (p.getVert n) = p.support[n]? := by
   rw [getVert_eq_support_getElem p h, ← List.getElem?_eq_getElem]
 
-@[deprecated (since := "2025-06-10")]
-alias getVert_eq_support_get? := getVert_eq_support_getElem?
-
 lemma getVert_eq_getD_support {u v : V} (p : G.Walk u v) (n : ℕ) :
     p.getVert n = p.support.getD n v := by
   by_cases h : n ≤ p.length
   · simp [← getVert_eq_support_getElem? p h]
   grind [getVert_of_length_le, length_support]
+
+@[simp]
+lemma getVert_support_idxOf [DecidableEq V] (p : G.Walk u v) (h : w ∈ p.support) :
+    p.getVert (p.support.idxOf w) = w := by
+  grind [getVert_eq_support_getElem]
 
 theorem getVert_comp_val_eq_get_support {u v : V} (p : G.Walk u v) :
     p.getVert ∘ Fin.val = p.support.get := by
@@ -125,15 +127,15 @@ theorem range_getVert_eq_range_support_getElem {u v : V} (p : G.Walk u v) :
 theorem darts_getElem_eq_getVert {u v : V} {p : G.Walk u v} (n : ℕ) (h : n < p.darts.length) :
     p.darts[n] = ⟨⟨p.getVert n, p.getVert (n + 1)⟩, p.adj_getVert_succ (p.length_darts ▸ h)⟩ := by
   rw [p.length_darts] at h
-  ext
-  · simp only [p.getVert_eq_support_getElem (le_of_lt h)]
-    by_cases h' : n = 0
-    · cases p
-      · contradiction
-      · simp [h']
-    · have := p.isChain_dartAdj_darts.getElem (n - 1) (by grind)
-      grind [DartAdj, =_ cons_map_snd_darts]
-  · simp [p.getVert_eq_support_getElem h, ← p.cons_map_snd_darts]
+  ext <;> simp [p.getVert_eq_support_getElem (le_of_lt h), p.getVert_eq_support_getElem h]
+
+theorem adj_of_infix_support {u v u' v'} {p : G.Walk u v} (h : [u', v'] <:+: p.support) :
+    G.Adj u' v' := by
+  have ⟨k, hk, h⟩ := List.infix_iff_getElem?.mp h
+  have h₀ := Nat.zero_add _ ▸ h 0 Nat.zero_lt_two
+  have h₁ := Nat.add_comm .. ▸ h 1 Nat.one_lt_two
+  rw [← getVert_eq_support_getElem? _ <| by grind, Option.some.injEq] at h₀ h₁
+  exact h₀ ▸ h₁ ▸ p.adj_getVert_succ (i := k) <| by grind
 
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1

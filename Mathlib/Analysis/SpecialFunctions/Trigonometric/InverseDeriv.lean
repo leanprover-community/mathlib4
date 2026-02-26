@@ -14,7 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 Derivatives of `arcsin` and `arccos`.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -54,6 +54,7 @@ theorem hasDerivAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) :
     HasDerivAt arcsin (1 / √(1 - x ^ 2)) x :=
   (hasStrictDerivAt_arcsin h₁ h₂).hasDerivAt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiffAt_arcsin {x : ℝ} (h₁ : x ≠ -1) (h₂ : x ≠ 1) {n : WithTop ℕ∞} :
     ContDiffAt ℝ n arcsin x :=
   (deriv_arcsin_aux h₁ h₂).2.of_le le_top

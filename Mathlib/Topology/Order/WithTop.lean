@@ -29,6 +29,7 @@ instance [TopologicalSpace ι] [OrderTopology ι] : TopologicalSpace (WithTop ι
 
 instance [TopologicalSpace ι] [OrderTopology ι] : OrderTopology (WithTop ι) := ⟨rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopology ι] :
     SecondCountableTopology (WithTop ι) := by
   classical
@@ -52,8 +53,7 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
     refine ⟨{s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a}, ?_, by rw [← H]⟩
     have d_count : d.Countable :=
       (((c_count.image _).union (c'_count.image _)).union (by simp)).union (by simp)
-    have : {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} = Ioi '' d ∪ Iio '' d := by
-      ext; simp; grind
+    have : {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a} = Ioi '' d ∪ Iio '' d := by grind
     rw [this]
     exact (d_count.image _).union (d_count.image _)
   -- We should check the easy direction that all the elements in our generating set are open.
@@ -181,11 +181,13 @@ variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 
 section Coe
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
   refine WithTop.coe_strictMono.isEmbedding_of_ordConnected (α := ι) ?_
   rw [WithTop.range_coe]
   exact Set.ordConnected_Iio
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isOpenEmbedding_coe : Topology.IsOpenEmbedding ((↑) : ι → WithTop ι) :=
   ⟨isEmbedding_coe, by rw [WithTop.range_coe]; exact isOpen_Iio⟩
 
@@ -233,6 +235,7 @@ def neTopHomeomorph : { a : WithTop ι | a ≠ ⊤ } ≃ₜ ι where
   continuous_toFun := continuous_untop
   continuous_invFun := continuous_coe.subtype_mk _
 
+set_option backward.isDefEq.respectTransparency false in
 variable (ι) in
 /-- If `ι` has a top element, then `WithTop ι` is homeomorphic to `ι ⊕ Unit`. -/
 noncomputable
@@ -254,5 +257,24 @@ def sumHomeomorph [OrderTop ι] : WithTop ι ≃ₜ ι ⊕ Unit where
     refine continuous_if' (by simp [h_fr]) (by simp [h_fr]) (by simp) ?_
     exact Continuous.comp_continuousOn (by fun_prop) continuousOn_untopA
   continuous_invFun := continuous_sum_dom.mpr ⟨by fun_prop, by fun_prop⟩
+
+set_option backward.isDefEq.respectTransparency false in
+lemma tendsto_nhds_top_iff {α : Type*} {f : Filter α} (x : α → WithTop ι) :
+    Tendsto x f (𝓝 ⊤) ↔ ∀ (i : ι), ∀ᶠ (a : α) in f, i < x a := by
+  obtain (h | h) := isEmpty_or_nonempty ι
+  · simpa using .of_forall fun _ ↦ Subsingleton.elim ..
+  refine nhds_top_basis.tendsto_right_iff.trans ?_
+  rw [← Set.forall_mem_range (p := (∀ᶠ a in f, · < x a)), WithTop.range_coe]
+  simp
+
+set_option backward.isDefEq.respectTransparency false in
+lemma tendsto_coe_atTop [NoMaxOrder ι] :
+    Tendsto ((↑) : ι → WithTop ι) atTop (𝓝 ⊤) := by
+  obtain (h | h) := isEmpty_or_nonempty ι
+  · simpa using Subsingleton.elim ..
+  rw [tendsto_nhds_top_iff]
+  intro i
+  filter_upwards [atTop_basis_Ioi.mem_of_mem (i := i) trivial]
+  simp
 
 end WithTop

@@ -150,8 +150,6 @@ theorem uniformity_eq_comap_nhds_one_swapped :
   rw [← comap_swap_uniformity, uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def]
   simp
 
-variable {Gₗ Gᵣ}
-
 end LeftRight
 
 section IsUniformGroup
@@ -412,8 +410,6 @@ theorem IsUniformGroup.uniformity_countably_generated [(𝓝 (1 : α)).IsCountab
   rw [uniformity_eq_comap_nhds_one]
   exact Filter.comap.isCountablyGenerated _ _
 
-open MulOpposite
-
 end
 
 section OfLeftAndRight
@@ -572,6 +568,13 @@ theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β
     suffices Tendsto f (𝓝 1) (𝓝 (f 1)) by rwa [map_one] at this
     h.tendsto 1
 
+@[to_additive]
+theorem MonoidHom.isUniformInducing_of_isInducing {Hom : Type*} [UniformSpace β] [Group β]
+    [IsUniformGroup β] [FunLike Hom α β] [MonoidHomClass Hom α β] {f : Hom} (h : IsInducing f) :
+    IsUniformInducing f where
+  comap_uniformity := by
+    simp [uniformity_eq_comap_nhds_one, comap_comap, Function.comp_def, h.nhds_eq_comap]
+
 end IsUniformGroup
 
 section IsTopologicalGroup
@@ -586,7 +589,8 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
 commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
 `IsUniformGroup.of_compactSpace`). -/
-@[to_additive /-- The right uniformity on a topological additive group (as opposed to the left
+@[to_additive (attr := instance_reducible)
+/-- The right uniformity on a topological additive group (as opposed to the left
 uniformity).
 
 Warning: in general the right and left uniformities do not coincide and so one does not obtain a
@@ -594,9 +598,9 @@ Warning: in general the right and left uniformities do not coincide and so one d
 commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
 additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
 def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
-  uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
+  uniformity := comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 1)
   symm :=
-    have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
+    have : Tendsto (fun p : G × G ↦ (p.2 * p.1⁻¹)⁻¹) (comap (fun p : G × G ↦ p.2 * p.1⁻¹) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
     by simpa [tendsto_comap_iff]
   comp := Tendsto.le_comap fun U H ↦ by
@@ -604,7 +608,8 @@ def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₂ _ hz₁
-  nhds_eq_comap_uniformity _ := by simp only [comap_comap, Function.comp_def, nhds_translation_div]
+  nhds_eq_comap_uniformity _ := by
+    simp only [comap_comap, Function.comp_def, nhds_translation_mul_inv]
 
 @[deprecated (since := "2025-09-26")]
 alias IsTopologicalAddGroup.toUniformSpace := IsTopologicalAddGroup.rightUniformSpace
@@ -614,7 +619,51 @@ alias IsTopologicalGroup.toUniformSpace := IsTopologicalGroup.rightUniformSpace
 attribute [local instance] IsTopologicalGroup.rightUniformSpace
 
 @[to_additive]
-theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G)) :=
+theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 * p.1⁻¹) (𝓝 (1 : G)) :=
+  rfl
+
+end IsTopologicalGroup
+
+
+section IsTopologicalGroup
+
+open Filter
+
+variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+/-- The left uniformity on a topological group (as opposed to the right uniformity).
+
+Warning: in general the right and left uniformities do not coincide and so one does not obtain a
+`IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
+commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
+`IsUniformGroup.of_compactSpace`). -/
+@[to_additive (attr := instance_reducible)
+/-- The left uniformity on a topological additive group (as opposed to the right
+uniformity).
+
+Warning: in general the right and left uniformities do not coincide and so one does not obtain a
+`IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
+commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
+additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
+def IsTopologicalGroup.leftUniformSpace : UniformSpace G where
+  uniformity := comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)
+  symm :=
+    have : Tendsto (fun p : G × G ↦ (p.1⁻¹ * p.2)⁻¹) (comap (fun p : G × G ↦ p.1⁻¹ * p.2) (𝓝 1))
+      (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
+    by simpa [tendsto_comap_iff]
+  comp := Tendsto.le_comap fun U H ↦ by
+    rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
+    refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
+    rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
+    simpa using V_mul _ hz₁ _ hz₂
+  nhds_eq_comap_uniformity _ := by
+    simp only [comap_comap, Function.comp_def, nhds_translation_inv_mul]
+
+attribute [local instance] IsTopologicalGroup.leftUniformSpace
+
+@[to_additive]
+theorem uniformity_eq_comap_nhds_one_left :
+    𝓤 G = comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 (1 : G)) :=
   rfl
 
 end IsTopologicalGroup
@@ -636,13 +685,22 @@ variable {G}
 @[to_additive]
 theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   constructor
-  simp only [UniformContinuous, uniformity_prod_eq_prod, uniformity_eq_comap_nhds_one',
-    tendsto_comap_iff, tendsto_map'_iff, prod_comap_comap_eq, Function.comp_def,
-    div_div_div_comm _ (Prod.snd (Prod.snd _)), ← nhds_prod_eq]
-  exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
+  have : (fun (x : (G × G) × (G × G)) ↦ x.1.2 * x.2.2⁻¹ * (x.2.1 * x.1.1⁻¹)) =
+    (fun (p : G × G) ↦ p.1 * p.2⁻¹)
+      ∘ (fun (p : (G × G) × (G × G)) ↦ (p.1.2 * p.1.1⁻¹, p.2.2 * p.2.1⁻¹)) := by
+    ext x
+    simp only [Function.comp_apply, mul_inv_rev, inv_inv]
+    rw [mul_assoc, mul_comm x.2.2⁻¹, mul_comm x.2.1]
+    simp [mul_assoc]
+  simp only [UniformContinuous, div_eq_mul_inv, uniformity_prod_eq_prod,
+    uniformity_eq_comap_nhds_one', prod_comap_comap_eq, ← nhds_prod_eq, tendsto_comap_iff,
+    Function.comp_def, mul_inv_rev, inv_inv, tendsto_map'_iff]
+  rw [this]
+  apply Tendsto.comp ?_ tendsto_comap
+  nth_rewrite 3 [show (1 : G) = 1 * 1⁻¹ by simp]
+  apply Continuous.tendsto (by fun_prop)
 
 alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
-open Set
 
 end
 
@@ -650,7 +708,7 @@ end
 theorem IsUniformGroup.rightUniformSpace_eq {G : Type*} [u : UniformSpace G] [Group G]
     [IsUniformGroup G] : IsTopologicalGroup.rightUniformSpace G = u := by
   ext : 1
-  rw [uniformity_eq_comap_nhds_one' G, uniformity_eq_comap_nhds_one G]
+  rw [uniformity_eq_comap_nhds_one' G, uniformity_eq_comap_mul_inv_nhds_one]
 
 @[deprecated (since := "2025-09-26")]
 alias IsUniformAddGroup.toUniformSpace_eq := IsUniformAddGroup.rightUniformSpace_eq

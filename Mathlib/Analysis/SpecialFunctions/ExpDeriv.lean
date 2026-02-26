@@ -21,7 +21,7 @@ In this file we prove that `Complex.exp` and `Real.exp` are analytic functions.
 exp, derivative
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsConformalMap Conformal
 
@@ -36,8 +36,8 @@ section
 
 open Complex
 
-variable {E : Type} [NormedAddCommGroup E] [NormedSpace ℂ E]
-variable {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {f g : E → ℂ} {z : ℂ} {x : E} {s : Set E}
 
 /-- The function `Complex.exp` is complex analytic. -/
 theorem analyticOnNhd_cexp : AnalyticOnNhd ℂ exp univ := by
@@ -84,6 +84,7 @@ namespace Complex
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The complex exponential is everywhere differentiable, with the derivative `exp x`. -/
 theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
   rw [hasDerivAt_iff_isLittleO_nhds_zero]
