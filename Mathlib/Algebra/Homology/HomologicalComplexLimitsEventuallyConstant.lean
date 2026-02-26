@@ -12,6 +12,12 @@ public import Mathlib.Algebra.Homology.QuasiIso
 /-!
 # Limits of eventually constant systems
 
+Let `F : J ⥤ HomologicalComplex C c` be a functor from a cofiltered category
+such that for any degree `q`, the functor `F ⋙ eval C c q : J ⥤ C` is
+eventually constant. Let `cF` be a limit cone for `F`. For a given degree `q`,
+we show that for suitable `j : J`, the map `(cF.π.app j).f q` is an
+isomorphism, and that `cf.π.app j` is a quasi-isomorphism in degree `q`.
+
 -/
 
 @[expose] public section
