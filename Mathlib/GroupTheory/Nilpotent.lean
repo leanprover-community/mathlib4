@@ -724,9 +724,9 @@ lemma nilpotencyClass_le_of_upperCentralSeries_eq [IsNilpotent G] {a b : ℕ} (a
 
 variable (G) in
 lemma upperCentralSeries.StrictMonoOn [IsNilpotent G] :
-    StrictMonoOn (upperCentralSeries G) {a | a ≤ nilpotencyClass G} := by
+    StrictMonoOn (upperCentralSeries G) (Set.Iic (nilpotencyClass G)) := by
   intros a ha b hb ab
-  simp only [Set.mem_setOf_eq] at ha hb
+  simp only [Set.mem_Iic] at ha hb
   apply lt_of_le_of_ne
   · exact upperCentralSeries_mono _ ab.le
   · grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, eq_top,
@@ -734,7 +734,7 @@ lemma upperCentralSeries.StrictMonoOn [IsNilpotent G] :
 
 lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass [IsNilpotent G] {a : ℕ}
     (h2 : a ≤ nilpotencyClass G) :
-    (upperCentralSeries G '' {i | i ≤ a}).ncard = a + 1 := by
+    (upperCentralSeries G '' (Set.Iic a)).ncard = a + 1 := by
   refine Set.ncard_eq_of_bijective (fun _ => upperCentralSeries G ·) ?_ ?_ ?_
   · grind
   · grind
