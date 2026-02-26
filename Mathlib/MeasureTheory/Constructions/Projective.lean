@@ -50,6 +50,7 @@ namespace IsProjectiveMeasureFamily
 
 variable {I J : Finset ι}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_isEmpty [h : IsEmpty (Π i, α i)]
     (hP : IsProjectiveMeasureFamily P) (I : Finset ι) :
     P I = 0 := by
@@ -86,12 +87,7 @@ lemma congr_cylinder_of_subset (hP : IsProjectiveMeasureFamily P)
     suffices ∀ I, P I univ = 0 by
       simp only [Measure.measure_univ_eq_zero] at this
       simp [this]
-    intro I
-    simp only [isEmpty_pi] at h
-    obtain ⟨i, hi_empty⟩ := h
-    rw [measure_univ_eq hP I {i}]
-    have : (univ : Set ((j : {x // x ∈ ({i} : Finset ι)}) → α j)) = ∅ := by simp [hi_empty]
-    simp [this]
+    simpa using eq_zero_of_isEmpty hP
   | inr h =>
     have : S = Finset.restrict₂ hJI ⁻¹' T :=
       eq_of_cylinder_eq_of_subset h_eq hJI

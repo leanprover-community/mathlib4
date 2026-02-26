@@ -133,6 +133,26 @@ instance [DecidableEq α] {c : α} :
     DecidablePred (· ∈ C.colorClass c) :=
   inferInstanceAs <| DecidablePred (· ∈ { v | C v = c })
 
+instance [Nonempty <| G.Coloring α] [Nontrivial α] [Nonempty V] : Nontrivial <| G.Coloring α := by
+  classical
+  have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
+  have ⟨v⟩ := ‹Nonempty V›
+  have ⟨c, hc⟩ := nontrivial_iff_exists_ne (C v) |>.mp inferInstance
+  refine ⟨(Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C, C, fun h ↦ hc ?_⟩
+  have := congrFun (congrArg RelHom.toFun h) v
+  dsimp [Iso.completeGraph] at this
+  grind
+
+instance [Nonempty <| G.Coloring α] [Infinite α] [Nonempty V] : Infinite <| G.Coloring α := by
+  classical
+  have ⟨C⟩ := ‹Nonempty <| G.Coloring α›
+  have ⟨v⟩ := ‹Nonempty V›
+  let f c := (Iso.completeGraph <| Equiv.swap (C v) c).toHom.comp C
+  refine Infinite.of_injective f fun a b h ↦ ?_
+  have := congrFun (congrArg RelHom.toFun h) v
+  dsimp [f, Iso.completeGraph] at this
+  grind
+
 variable (G) in
 /-- Whether a graph can be colored by at most `n` colors. -/
 def Colorable (n : ℕ) : Prop := Nonempty (G.Coloring (Fin n))
@@ -207,14 +227,7 @@ variable (G) in
 /-- Given an embedding, there is an induced embedding of colorings. -/
 def recolorOfEmbedding {α β : Type*} (f : α ↪ β) : G.Coloring α ↪ G.Coloring β where
   toFun C := (Embedding.completeGraph f).toHom.comp C
-  inj' := by -- this was strangely painful; seems like missing lemmas about embeddings
-    intro C C' h
-    dsimp only at h
-    ext v
-    apply (Embedding.completeGraph f).inj'
-    change ((Embedding.completeGraph f).toHom.comp C) v = _
-    rw [h]
-    rfl
+  inj' C C' h := RelHom.mk.injEq C _ C' _ |>.mpr <| f.injective.comp_left <| RelHom.mk.inj h
 
 variable (G) in
 @[simp] lemma coe_recolorOfEmbedding (f : α ↪ β) :
@@ -313,6 +326,7 @@ theorem chromaticNumber_ne_top_iff_exists : G.chromaticNumber ≠ ⊤ ↔ ∃ n,
   rw [← lt_top_iff_ne_top, ENat.iInf_coe_lt_top]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔ G.Colorable n := by
   refine ⟨fun h ↦ ?_, Colorable.chromaticNumber_le⟩
   have : G.chromaticNumber ≠ ⊤ := (trans h (WithTop.coe_lt_top n)).ne
@@ -454,6 +468,7 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_of_chromaticNumber_eq_card [Fintype V]
     (h : G.chromaticNumber = Fintype.card V) : G = ⊤ := by
   classical
@@ -536,6 +551,10 @@ theorem IsClique.card_le_of_coloring {s : Finset V} (h : G.IsClique s) [Fintype 
 theorem IsClique.card_le_chromaticNumber {s : Finset V} (h : G.IsClique s) :
     s.card ≤ G.chromaticNumber :=
   le_chromaticNumber_of_pairwise_adj (by simp) (Subtype.val : s → V) <| by simpa [Pairwise] using h
+
+theorem cliqueNum_le_chromaticNumber : G.cliqueNum ≤ G.chromaticNumber := by
+  have ⟨s, hs⟩ := G.exists_isNClique_cliqueNum
+  exact hs.card_eq ▸ hs.isClique.card_le_chromaticNumber
 
 protected theorem Colorable.cliqueFree {n m : ℕ} (hc : G.Colorable n) (hm : n < m) :
     G.CliqueFree m := by

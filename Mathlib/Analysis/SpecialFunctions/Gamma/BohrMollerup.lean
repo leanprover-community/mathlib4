@@ -92,9 +92,8 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
       congr 1
       exact (norm_of_nonneg (posf _ _ x hx)).symm
     · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
-      refine (Continuous.continuousOn ?_).mul (continuousOn_of_forall_continuousAt fun x hx => ?_)
-      · exact continuous_exp.comp (continuous_const.mul continuous_id')
-      · exact continuousAt_rpow_const _ _ (Or.inl (mem_Ioi.mp hx).ne')
+      refine .mul (by fun_prop) (continuousOn_of_forall_continuousAt fun x hx ↦ ?_)
+      exact continuousAt_rpow_const _ _ (Or.inl (mem_Ioi.mp hx).ne')
   -- now apply Hölder:
   rw [Gamma_eq_integral hs, Gamma_eq_integral ht, Gamma_eq_integral hst]
   convert
@@ -178,6 +177,7 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
   simpa only [smul_eq_mul] using
     hf_conv.2 hn' (by linarith : 0 < (n + 1 : ℝ)) (by linarith : 0 ≤ 1 - x) hx.le (by linarith)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear lower bound for `f (x + n)` on unit interval -/
 theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn : 2 ≤ n) (hx : 0 < x) :

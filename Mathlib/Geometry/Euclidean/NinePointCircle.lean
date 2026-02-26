@@ -83,6 +83,7 @@ theorem ninePointCircle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [Inner
   · simp [ninePointCircle_center, centroid_map]
   · simp [ninePointCircle_radius]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ninePointCircle_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -118,7 +119,7 @@ being $1/n$th of the way from the Monge point to a vertex. Specifically for tria
 the midpoints between the orthocenter and a given vertex
 (`Affine.Triangle.eulerPoint_eq_midpoint`). -/
 def eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1)) :=
-    (n : ℝ)⁻¹ • (s.points i -ᵥ s.mongePoint) +ᵥ s.mongePoint
+  (n : ℝ)⁻¹ • (s.points i -ᵥ s.mongePoint) +ᵥ s.mongePoint
 
 @[simp]
 theorem eulerPoint_reindex {m n : ℕ} (s : Simplex ℝ P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
