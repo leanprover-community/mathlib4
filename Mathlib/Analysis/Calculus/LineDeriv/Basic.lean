@@ -238,7 +238,7 @@ section NormedSpace
 Results that need a normed space structure on `E`
 -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {f f₀ f₁ : E → F} {f' : F} {s t : Set E} {x v : E} {L : E →L[𝕜] F}
 
 theorem HasLineDerivWithinAt.mono_of_mem_nhdsWithin
