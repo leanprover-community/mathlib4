@@ -46,7 +46,7 @@ lemma ext_quotient_one_subsingleton_iff [Small.{v} R] (M : ModuleCat.{v} R) (I :
   have inj : Function.Injective Sf := by simpa [Sf] using (Shrink.linearEquiv R I).injective
   have surj : Function.Surjective Sg := by simpa [Sg] using Ideal.Quotient.mk_surjective
   let S := ModuleCat.shortComplexOfCompEqZero Sf Sg exac.linearMap_comp_eq_zero
-  have S_exact := ModuleCat.shortComplex_shortExact_of_hom S exac inj surj
+  have S_exact := ModuleCat.shortComplex_shortExact S exac inj surj
   have : Subsingleton (Ext (ModuleCat.of R (Shrink.{v} (R ⧸ I))) M 1) ↔
     Function.Surjective ((Ext.mk₀ S.f).precomp M (add_zero 0)) := by
     apply Iff.trans _ ((Ext.contravariant_sequence_exact₁' S_exact M 0 1 rfl).epi_f_iff.symm.trans
