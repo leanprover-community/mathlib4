@@ -23,12 +23,21 @@ and analysis of trace trees embedded in `MessageData`.
 - `❌️` (`crossEmoji`) for failure
 - `💥️` (`bombEmoji`) for exceptions
 
-The `TraceStatus` type and `traceStatusOf` function provide structured access to this encoding.
+The `TraceResult` type and `traceResultOf` function provide structured access to this encoding.
 
 ## Upstream Candidates
 
-`foldTraceNodes`, `TraceStatus`, and `traceStatusOf` are candidates for upstreaming to lean4,
+`foldTraceNodes`, `TraceResult`, and `traceResultOf` are candidates for upstreaming to lean4,
 alongside `MessageData.hasTag` in `Lean/Message.lean`.
+
+## Pending lean4 PRs
+
+- https://github.com/leanprover/lean4/pull/12698 adds `TraceResult` (`.success`/`.failure`)
+  to `TraceData`. Once available, `TraceResult`/`traceResultOf` become thin wrappers around
+  `td.result?`, and callers can avoid rendering the header to a string just to check status.
+- https://github.com/leanprover/lean4/pull/12699 adds a `Meta.synthInstance.apply` trace class,
+  so synthesis "apply" nodes can be identified structurally via `td.cls` instead of
+  string-matching on the header.
 -/
 
 public section
@@ -36,16 +45,17 @@ public section
 namespace Lean.MessageData
 
 /-- The success/failure status of a trace node, as encoded by `withTraceNodeBefore`
-via emoji prefix on the rendered header. -/
-inductive TraceStatus where
+via emoji prefix on the rendered header.
+Intended to match `TraceResult` from https://github.com/leanprover/lean4/pull/12698,
+wrapped in `Option` (where `none` = no recognized emoji prefix).
+Once that PR is available, callers should prefer `td.result?` over parsing the header string. -/
+inductive TraceResult where
   /-- Header starts with ✅️ (checkEmoji) -/
   | success
   /-- Header starts with ❌️ (crossEmoji) -/
   | failure
-  /-- Header starts with 💥️ (bombEmoji) -/
+  /-- Header starts with 💥️ (bombEmoji) — an exception was thrown -/
   | error
-  /-- No recognized emoji prefix -/
-  | unknown
   deriving DecidableEq, Repr
 
 /-- Determine the status of a trace node from its rendered header string.
@@ -55,11 +65,11 @@ Lean's `withTraceNodeBefore` prepends `checkEmoji`/`crossEmoji`/`bombEmoji`
 
 Note: the emoji constants include a variation selector (U+FE0F), but `String.startsWith`
 handles this since we check for the base codepoint which is always the prefix. -/
-def traceStatusOf (headerStr : String) : TraceStatus :=
-  if headerStr.startsWith "✅" then .success
-  else if headerStr.startsWith "❌" then .failure
-  else if headerStr.startsWith "💥" then .error
-  else .unknown
+def traceResultOf (headerStr : String) : Option TraceResult :=
+  if headerStr.startsWith "✅" then some .success
+  else if headerStr.startsWith "❌" then some .failure
+  else if headerStr.startsWith "💥" then some .error
+  else none
 
 /-- Strip the leading status emoji and space from a trace header string,
 leaving just the semantic content for comparison across trace runs.
@@ -67,8 +77,8 @@ leaving just the semantic content for comparison across trace runs.
 Trace headers from `withTraceNodeBefore` have the form `"{emoji}[{VS16}] {content}"`.
 This strips everything through the first space. Returns the string unchanged if
 no recognized status prefix is present. -/
-def stripTraceStatusPrefix (s : String) : String :=
-  if traceStatusOf s == .unknown then s
+def stripTraceResultPrefix (s : String) : String :=
+  if (traceResultOf s).isNone then s
   else match s.splitOn " " with
   | _ :: rest@(_ :: _) => " ".intercalate rest
   | _ => s

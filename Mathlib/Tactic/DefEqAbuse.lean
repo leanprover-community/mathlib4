@@ -48,7 +48,7 @@ will report the synthesis failures grouped by instance application.
 public meta section
 
 open Lean Meta Elab Tactic Command
-open Lean.MessageData (TraceStatus traceStatusOf stripTraceStatusPrefix)
+open Lean.MessageData (TraceResult traceResultOf stripTraceResultPrefix)
 
 namespace Mathlib.Tactic.DefEqAbuse
 
@@ -56,7 +56,10 @@ namespace Mathlib.Tactic.DefEqAbuse
 Returns the string between `"apply "` and `" to "`.
 
 Note: this is fragile string matching against Lean's `Meta.synthInstance` trace format.
-If the trace format changes, this function will silently return the original string. -/
+If the trace format changes, this function will silently return the original string.
+Once https://github.com/leanprover/lean4/pull/12699 is available,
+these nodes will have trace class `Meta.synthInstance.apply` and can be identified
+structurally via `td.cls` instead of string-matching on the header. -/
 private def extractInstName (s : String) : String :=
   match s.splitOn "apply " with
   | [_, rest] => match rest.splitOn " to " with
@@ -65,20 +68,22 @@ private def extractInstName (s : String) : String :=
   | _ => s
 
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
-Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes). -/
+Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes).
+Note: status is currently determined by parsing emoji from the rendered header string.
+Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
 private partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
   msg.foldTraceNodes (fun td header children go => do
     if td.cls == `Meta.isDefEq.onFailure then return #[]
     if Name.isPrefixOf `Meta.isDefEq td.cls then
       let headerStr ← header.toString
-      if traceStatusOf headerStr == .failure then
+      match traceResultOf headerStr with
+      | some .failure =>
         let mut childFailures := #[]
         for child in children do
           childFailures := childFailures.append (← go child)
         -- Leaf failure: deepest ❌ node with no deeper ❌ children
         if childFailures.isEmpty then return #[header] else return childFailures
-      else
-        return #[]
+      | _ => return #[]
     else
       let mut results := #[]
       for child in children do
@@ -88,15 +93,16 @@ private partial def findLeafFailures (msg : MessageData) : BaseIO (Array Message
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
 Returns a `HashSet` of emoji-stripped header strings. -/
-private partial def collectIsDefEqChecks (pred : TraceStatus → Bool)
+private partial def collectIsDefEqChecks (pred : TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.foldTraceNodes (fun td header children go => do
     if td.cls == `Meta.isDefEq.onFailure then return {}
     if Name.isPrefixOf `Meta.isDefEq td.cls then
       let headerStr ← header.toString
       let mut result : Std.HashSet String := {}
-      if pred (traceStatusOf headerStr) then
-        result := result.insert (stripTraceStatusPrefix headerStr)
+      if let some status := traceResultOf headerStr then
+        if pred status then
+          result := result.insert (stripTraceResultPrefix headerStr)
       for child in children do
         result := result.union (← go child)
       return result
@@ -121,8 +127,9 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
     if td.cls == `Meta.isDefEq.onFailure then return #[]
     if Name.isPrefixOf `Meta.isDefEq td.cls then
       let headerStr ← header.toString
-      if traceStatusOf headerStr == .failure then
-        let checkStr := stripTraceStatusPrefix headerStr
+      match traceResultOf headerStr with
+      | some .failure =>
+        let checkStr := stripTraceResultPrefix headerStr
         if permSuccesses.contains checkStr && !permFailures.contains checkStr then
           -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
           -- Look for deeper transition points among children.
@@ -138,8 +145,7 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
           for child in children do
             results := results.append (← go child)
           return results
-      else
-        return #[]
+      | _ => return #[]
     else
       let mut results := #[]
       for child in children do
@@ -148,14 +154,16 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
   ) (· ++ ·) #[]
 
 /-- Within a synthesis trace, find failing `apply @Instance to Goal` nodes
-and their `isDefEq` transition failures. -/
+and their `isDefEq` transition failures.
+Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
+check can be replaced with `td.cls == `Meta.synthInstance.apply``. -/
 private partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
   msg.foldTraceNodes (fun td header children go => do
     if td.cls == `Meta.isDefEq.onFailure then return #[]
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if traceStatusOf headerStr == .failure && headerStr.contains "apply" then
+      if traceResultOf headerStr == some .failure && headerStr.contains "apply" then
         let mut failures := #[]
         for child in children do
           failures := failures.append
@@ -187,7 +195,7 @@ private partial def findSynthFailures (permSuccesses permFailures : Std.HashSet 
     if td.cls == `Meta.isDefEq.onFailure then return #[]
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if traceStatusOf headerStr == .failure then
+      if traceResultOf headerStr == some .failure then
         let mut results := #[]
         for child in children do
           results := results.append
@@ -205,12 +213,14 @@ private partial def findSynthFailures (permSuccesses permFailures : Std.HashSet 
     return #[]
   ) (· ++ ·) #[]
 
-/-- Collect instance names from successful `apply @Instance to Goal` trace nodes. -/
+/-- Collect instance names from successful `apply @Instance to Goal` trace nodes.
+Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
+check can be replaced with `td.cls == `Meta.synthInstance.apply``. -/
 private partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.foldTraceNodes (fun td header children go => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if headerStr.contains "apply" && traceStatusOf headerStr == .success then
+      if headerStr.contains "apply" && traceResultOf headerStr == some .success then
         let mut result : Std.HashSet String := {}
         result := result.insert (extractInstName headerStr)
         for child in children do
