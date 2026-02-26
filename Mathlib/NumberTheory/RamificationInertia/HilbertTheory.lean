@@ -6,6 +6,8 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients
 
 /-!
 
@@ -87,3 +89,68 @@ theorem IsInertiaField.of_isGaloisGroup [h : IsGaloisGroup (inertia G P) D L] :
       inertiaEquiv_symm_apply_smul]
 
 end basic
+
+section rank
+
+attribute [local instance] Ideal.Quotient.field
+
+variable [FiniteDimensional K L] [MulSemiringAction Gal(L/K) B]
+  [IsGaloisGroup Gal(L/K) A B] [IsDedekindDomain A] [IsDedekindDomain B] [Module.Finite A B]
+  [Module.IsTorsionFree A B] [Ring.HasFiniteQuotients A] [P.IsMaximal]
+
+variable (D : Type*) [Field D] [Algebra D L] [IsDecompositionField K L P D]
+
+include K P in
+theorem IsDecompositionField.rank_left (hp : p ≠ ⊥) :
+    Module.finrank D L = p.ramificationIdxIn B * p.inertiaDegIn B := by
+  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
+  rw [← IsGaloisGroup.card_eq_finrank (stabilizer Gal(L/K) P) D L, card_stabilizer_eq p hp]
+
+include P in
+theorem IsDecompositionField.rank_right [IsGalois K L] [Algebra K D] [IsScalarTower K D L]
+    (hp : p ≠ ⊥) :
+    Module.finrank K D = (p.primesOver B).ncard := by
+  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have : FiniteDimensional D L := FiniteDimensional.right K D L
+  refine mul_left_injective₀ (b := Module.finrank D L) ?_ ?_
+  · exact Nat.pos_iff_ne_zero.mp <| Module.finrank_pos
+  · dsimp only
+    rw [Module.finrank_mul_finrank, rank_left A K L P D hp,
+      ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B Gal(L/K),
+      IsGaloisGroup.card_eq_finrank Gal(L/K) K L]
+
+variable (E : Type*) [Field E] [Algebra E L] [IsInertiaField K L P E]
+
+include K P in
+theorem IsInertiaField.rank_left (hp : p ≠ ⊥) :
+    Module.finrank E L = p.ramificationIdxIn B := by
+  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have : Finite (A ⧸ p) := Ring.HasFiniteQuotients.finiteQuotient hp
+  rw [← IsGaloisGroup.card_eq_finrank (inertia Gal(L/K) P) E L,
+    card_inertia_eq_ramificationIdxIn p hp]
+
+include P in
+theorem IsInertiaField.rank_right [IsGalois K L] [Algebra K E] [IsScalarTower K E L] (hp : p ≠ ⊥) :
+    Module.finrank K E = (p.primesOver B).ncard * p.inertiaDegIn B := by
+  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have : FiniteDimensional E L := FiniteDimensional.right K E L
+  refine mul_left_injective₀ (b := Module.finrank E L) ?_ ?_
+  · exact Nat.pos_iff_ne_zero.mp <| Module.finrank_pos
+  · dsimp only
+    rw [Module.finrank_mul_finrank, rank_left A K L P E hp, mul_assoc, mul_comm (p.inertiaDegIn B),
+      ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp B Gal(L/K),
+      IsGalois.card_aut_eq_finrank]
+
+include P in
+theorem IsInertiaField.rank_decompositionField [IsGalois K L] [Algebra K D] [Algebra K E]
+    [Algebra D E] [IsScalarTower K D E] [IsScalarTower K E L] [IsScalarTower K D L]
+    (hp : p ≠ ⊥) :
+    Module.finrank D E = p.inertiaDegIn B := by
+  have : p.IsMaximal := over_def P p ▸ Ideal.IsMaximal.under A P
+  have := Module.finrank_mul_finrank K D E
+  rwa [IsInertiaField.rank_right A K L P E hp, IsDecompositionField.rank_right A K L P D hp,
+    mul_right_inj'] at this
+  exact primesOver_ncard_ne_zero p B
+
+end rank
