@@ -76,7 +76,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd {L : Type*} {F s : Set E} [Mea
   exact ((fund.measure_eq_tsum _).trans (measure_iUnion₀
     (Pairwise.mono h fun i j hij => (hij.mono inf_le_left inf_le_left).aedisjoint)
       fun _ => (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
-      (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right)
+      (measure_mono <| iUnion_subset fun _ => inter_subset_right)
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] {L : Submodule ℤ E} {s : Set E} {i j : ℕ}
 
@@ -101,7 +101,7 @@ variable [FiniteDimensional ℝ E]
 @[simp] lemma successiveMin_of_finrank_span_le
     (hi : finrank ℝ (span ℝ (L : Set E)) ≤ i) : successiveMin L s i = 0 := by
   simp [successiveMin, fun r : ℝ≥0 =>
-    ((Submodule.finrank_mono (span_mono (Set.inter_subset_right (s := r • s)))).trans hi).not_gt]
+    ((Submodule.finrank_mono (span_mono (inter_subset_right (s := r • s)))).trans hi).not_gt]
 
 variable [hL : DiscreteTopology L]
 
@@ -109,7 +109,7 @@ theorem finrank_real_span_range_eq_finrank_int {ι : Type*} {v : ι → L} :
     finrank ℝ (span ℝ <| .range (Subtype.val ∘ v)) =
       finrank ℤ (span ℤ <| .range (Subtype.val ∘ v)) := by
   have hd : DiscreteTopology (span ℤ (.range (Subtype.val ∘ v))) :=
-    hL.of_subset (span_le.mpr <| Set.range_subset_iff.mpr fun j => (v j).prop)
+    hL.of_subset (span_le.mpr <| range_subset_iff.mpr fun j => (v j).prop)
   simpa only [Set.finrank] using Real.finrank_eq_int_finrank_of_discrete hd
 
 theorem successiveMin_of_finrank_int_le (hi : finrank ℤ L ≤ i) : successiveMin L s i = 0 := by
@@ -122,7 +122,7 @@ theorem successiveMin_of_finrank_int_le (hi : finrank ℤ L ≤ i) : successiveM
 lemma exists_lt_finrank_span_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank ℤ L) :
     ∃ r : ℝ≥0, i < finrank ℝ (span ℝ <| r • s ∩ L) := by
   obtain ⟨ι, b⟩ := Free.exists_basis ℤ L
-  have : Set.Finite (Set.range (Subtype.val ∘ b)) := by
+  have : (Set.range (Subtype.val ∘ b)).Finite := by
     refine (finite_range_iff ?_).mpr (Module.Finite.finite_basis b)
     simp [b.injective]
   obtain ⟨r, hr, hr0⟩ :=
@@ -130,18 +130,18 @@ lemma exists_lt_finrank_span_smul_inter (hs : Absorbent ℝ s) (hi : i < finrank
       (eventually_ge_atTop (0 : ℝ))).exists
   use ⟨r, hr0⟩
   have hspan_eq : span ℤ (.range (Subtype.val ∘ b)) = L := by
-    have h : (span ℤ (Set.range b)).map L.subtype = L := by
-      rw [b.span_eq, Submodule.map_subtype_top]
-    rwa [Submodule.map_span, ← Set.range_comp] at h
+    have h : (span ℤ (.range b)).map L.subtype = L := by
+      rw [b.span_eq, map_subtype_top]
+    rwa [map_span, ← range_comp] at h
   calc
     i < finrank ℤ L := hi
     _ = finrank ℤ (span ℤ (.range (Subtype.val ∘ b))) := by rw [hspan_eq]
     _ = finrank ℝ (span ℝ (.range (Subtype.val ∘ b))) := finrank_real_span_range_eq_finrank_int.symm
     _ ≤ finrank ℝ (span ℝ <| r • s ∩ L) := by
-      refine Submodule.finrank_mono <| Submodule.span_mono ?_
+      refine finrank_mono <| span_mono ?_
       rintro x ⟨j, rfl⟩
       refine mem_inter ?_ (by simp)
-      simp_rw [Set.subset_def, mem_range] at hr
+      simp_rw [subset_def, mem_range] at hr
       simp [hr]
 
 lemma exists_lt_finrank_span_smul_inter_zLattice [IsZLattice ℝ L] (hs : Absorbent ℝ s)
@@ -156,16 +156,12 @@ lemma exists_linearIndependent_of_successiveMin_lt {r : ℝ≥0} (hsc : Convex �
     (hi : i < finrank ℤ L) (hr : successiveMin L s i < r) :
     ∃ v : Fin (i + 1) → L, (∀ j, (v j : E) ∈ r • s ∩ L) ∧ (LinearIndependent ℤ v) := by
   have h0s : (0 : E) ∈ s := mem_of_mem_nhds hs₀
-  -- Get r' in the defining set with r' < r
   obtain ⟨r', hr'mem, hr'r⟩ := exists_lt_of_csInf_lt
     (exists_lt_finrank_span_smul_inter (absorbent_nhds_zero hs₀) hi) hr
-  -- r' • s ⊆ r • s by convexity, so finrank goes up
   have hri : i < finrank ℝ (span ℝ (r • s ∩ L)) :=
-    lt_of_lt_of_le hr'mem (Submodule.finrank_mono (span_mono (Set.inter_subset_inter_left _
+    lt_of_lt_of_le hr'mem (finrank_mono (span_mono (inter_subset_inter_left _
       (hsc.smul_mono_of_zero_mem h0s r'.coe_nonneg (by exact_mod_cast hr'r.le)))))
-  -- Extract linearly independent vectors from the set r • s ∩ ↑L
   obtain ⟨f, hf_mem, -, hf_li⟩ := exists_fun_fin_finrank_span_eq ℝ (r • s ∩ L)
-  -- Restrict to first i + 1 vectors and lift to L
   use fun j ↦ ⟨f (Fin.castLE hri j), (hf_mem _).2⟩
   constructor
   · intro j; exact hf_mem _
@@ -178,7 +174,7 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
   have hs₀' : (0 : E) ∈ s := mem_of_mem_nhds hs₀
   apply IsSeqClosed.isClosed
   intro r r₀ hr hlim
-  simp only [Set.mem_setOf_eq] at hr ⊢
+  simp only [mem_setOf_eq] at hr ⊢
   have hr₀ : successiveMin L s i ≤ r₀ := ge_of_tendsto' hlim fun n => csInf_le' (hr n)
   have hbdd := hlim.eventually_le_const (lt_add_of_pos_right r₀ one_pos)
   have hL_closed : IsClosed (L : Set E) := by
@@ -187,20 +183,20 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
     simpa using this
   have hfin : ((r₀ + 1) • s ∩ (L : Set E)).Finite :=
     ((hs.smul (↑(r₀ + 1) : ℝ)).inter_right hL_closed).finite
-      (DiscreteTopology.isDiscrete.mono Set.inter_subset_right)
+      (DiscreteTopology.isDiscrete.mono inter_subset_right)
   let S := {v : Fin (i + 1) → L | ∀ j, (v j : E) ∈ ((r₀ + 1) • s ∩ (L : Set E))}
   have hS : S.Finite := by
     have h1 : Set.Finite {x : L | (x : E) ∈ (r₀ + 1) • s ∩ (L : Set E)} :=
       hfin.preimage (fun _ _ _ _ h => Subtype.coe_injective h)
     have h2 : Set.Finite {v : Fin (i + 1) → L | ∀ j, (v j : E) ∈ (r₀ + 1) • s ∩ (L : Set E)} :=
-      Set.Finite.pi' (fun _ => h1)
+      Finite.pi' (fun _ => h1)
     simp only [S, h2]
   by_cases! hn : ∃ n, r n ≤ r₀
   · obtain ⟨n, hn'⟩ := hn
     calc
       i < finrank ℝ (span ℝ <| r n • s ∩ L) := hr n
       _ ≤ finrank ℝ (span ℝ <| r₀ • s ∩ L) := by
-        refine finrank_mono <| span_mono (Set.inter_subset_inter_left _ ?_)
+        refine finrank_mono <| span_mono (inter_subset_inter_left _ ?_)
         exact (hsc.smul_mono_of_zero_mem hs₀' (by simp) hn')
   have : ∀ n, ∃ vₙ : Fin (i + 1) → L,
     (∀ j, (vₙ j : E) ∈ (r n • s ∩ (L : Set E))) ∧ LinearIndependent ℤ vₙ :=
@@ -209,7 +205,7 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
   have : ∀ᶠ n in atTop, v n ∈ S := by
     filter_upwards [hbdd] with n hn
     intro j
-    refine Set.mem_of_subset_of_mem ?_ ((hv n).1 j)
+    refine mem_of_subset_of_mem ?_ ((hv n).1 j)
     gcongr
     exact hsc.smul_mono_of_zero_mem hs₀' (by simp) hn
   obtain ⟨v₀, hv₀, hfreq⟩ : ∃ v₀ ∈ S, ∃ᶠ n in atTop, v n = v₀ :=
@@ -222,7 +218,7 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
     _ = finrank ℝ (span ℝ (.range (Subtype.val ∘ v₀))) := by
         trans finrank ℤ (span ℤ (.range (Subtype.val ∘ v₀)))
         · have : .range (Subtype.val ∘ v₀) = L.subtype '' .range v₀ := by
-            rw [Set.range_comp]; rfl
+            rw [range_comp]; rfl
           rw [this, ← Submodule.map_span, Submodule.finrank_map_subtype_eq]
         · exact finrank_real_span_range_eq_finrank_int.symm
     _ ≤ finrank ℝ (span ℝ <| r₀ • s ∩ L) := by
@@ -243,7 +239,7 @@ lemma isClosed_lt_finrank_span_smul_inter (hsc : Convex ℝ s) (hs : IsCompact s
         hfreq.and_eventually
           (hlim.eventually (eventually_lt_nhds (a := r₀) (b := r'') hr')) |>.exists
       apply mem_of_subset_of_mem (hsc.smul_mono_of_zero_mem hs₀' (by simp) hn.le)
-      exact Set.mem_of_mem_inter_left ((hv n).1 j)
+      exact mem_of_mem_inter_left ((hv n).1 j)
 
 lemma lt_finrank_span_successiveMin (hsc : Convex ℝ s) (hs : IsCompact s)
     (hs₀ : s ∈ 𝓝 0) (hi : i < finrank ℤ L) :
@@ -272,7 +268,7 @@ lemma exists_directional_set' (hsc : Convex ℝ s) (hs : IsCompact s) (hs₀ : s
   | succ d ih =>
   obtain ⟨v, hv, hvli⟩ := ih (by omega)
   have hd' : d < finrank ℤ L := by omega
-  obtain ⟨w, hwv, hw⟩ : ∃ w ∉ span ℝ (Set.range v),
+  obtain ⟨w, hwv, hw⟩ : ∃ w ∉ span ℝ (.range v),
       w ∈ successiveMin L s d • s ∩ ↑L := by
     by_contra! h
     apply lt_irrefl d
@@ -341,9 +337,9 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
     rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top, one_pow, one_mul]
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
-  obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h
+  obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := not_disjoint_iff.mp h
   refine ⟨x - y, sub_ne_zero.2 hxy, ?_⟩
-  rw [Set.mem_inv_smul_set_iff₀ (two_ne_zero' ℝ)] at hv hw
+  rw [mem_inv_smul_set_iff₀ (two_ne_zero' ℝ)] at hv hw
   simp_rw [AddSubgroup.vadd_def, vadd_eq_add, add_comm _ w, ← sub_eq_sub_iff_add_eq_add, ←
     AddSubgroup.coe_sub] at hvw
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
@@ -373,18 +369,18 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [Nontrivial
   -- it follows that `s` contains a nonzero point of `L`.
   have h_zero : 0 ∈ K := K.zero_mem_of_symmetric h_symm
   suffices Set.Nonempty (⋂ n, Z n) by
-    erw [← Set.iInter_inter, K.iInter_smul_eq_self h_zero] at this
+    erw [← iInter_inter, K.iInter_smul_eq_self h_zero] at this
     · obtain ⟨x, hx⟩ := this
       exact ⟨⟨x, by simp_all⟩, by aesop⟩
     · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2
   have h_clos : IsClosed ((L : Set E) \ {0}) := by
     rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧ U ∩ L = {0}
-    · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
+    · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [inter_comm .. ▸ hU.2, zero_mem])]
       exact AddSubgroup.isClosed_of_discrete.sdiff hU.1
     exact isOpen_inter_eq_singleton_of_mem_discrete ⟨inferInstance⟩ (zero_mem L)
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed Z (fun n => ?_)
     (fun n => ?_) ((S 0).isCompact.inter_right h_clos) (fun n => (S n).isClosed.inter h_clos)
-  · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
+  · refine inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
     refine ConvexBody.smul_le_of_le K h_zero ?_
     rw [add_le_add_iff_left]
     exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt_add_one n)
