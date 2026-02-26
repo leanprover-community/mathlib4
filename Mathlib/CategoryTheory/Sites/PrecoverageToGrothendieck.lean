@@ -111,7 +111,7 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       (∀ {X Y : C} {f : Y ⟶ X} (R : Presieve X), R ∈ J X →
         Presieve.IsSheafFor P ((Sieve.generate R).pullback f).arrows) := by
   constructor
-  · refine fun H _ _ _ _ hR => H.isSheafFor _ _ ?_
+  · refine fun H _ _ _ _ hR => H.isSheafFor _ ?_
     rw [Sieve.generate_sieve]
     exact J.toGrothendieck.pullback_stable _ (Saturate.of _ _ hR)
   · intro H X S hS
