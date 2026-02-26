@@ -171,6 +171,16 @@ lemma hom_ofHom {X Y : TypeCat.{u}} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 def homEquiv {X Y : TypeCat.{u}} : (X ⟶ Y) ≃ (X → Y) :=
   (ConcreteCategory.homEquiv (C := TypeCat)).trans (Fun.homEquiv _ _)
 
+@[simp]
+lemma homEquiv_apply {X Y : TypeCat.{u}} (f : X ⟶ Y) :
+    homEquiv f = f :=
+  rfl
+
+@[simp]
+lemma homEquiv_symm_apply {X Y : TypeCat.{u}} (f : X → Y) :
+    homEquiv.symm f = ofHom ⟨f⟩ :=
+  rfl
+
 end TypeCat
 
 namespace CategoryTheory
@@ -425,17 +435,15 @@ def toEquiv (i : X ≅ Y) : X ≃ Y where
 theorem toEquiv_fun (i : X ≅ Y) : (i.toEquiv : X → Y) = i.hom :=
   rfl
 
--- @[simp]
--- theorem toEquiv_fun' (i : X ≅ Y) : TypeCat.ofHom ⟨(i.toEquiv : X → Y)⟩ = i.hom :=
---   rfl
-
-@[simp]
-theorem toEquiv_symm_fun (i : X ≅ Y) : (i.toEquiv.symm : Y → X) = i.inv :=
+theorem toEquiv_fun_apply (i : X ≅ Y) (x : X) : i.toEquiv x = i.hom x :=
   rfl
 
--- @[simp]
--- theorem toEquiv_symm_fun' (i : X ≅ Y) : TypeCat.ofHom ⟨(i.toEquiv.symm : Y → X)⟩ = i.inv :=
---   rfl
+@[simp]
+theorem toEquiv_symm_fun (i : X ≅ Y) : (i.toEquiv.symm :) = (ConcreteCategory.hom i.inv).as :=
+  rfl
+
+theorem toEquiv_symm_fun_apply (i : X ≅ Y) (y : Y) : i.toEquiv.symm y = i.inv y :=
+  rfl
 
 @[simp]
 theorem toEquiv_id (X : TypeCat.{u}) : (Iso.refl X).toEquiv = Equiv.refl X :=

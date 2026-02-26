@@ -475,7 +475,7 @@ end Final
 /-- If `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit` for all `d : D`, then `F` is final.
 -/
 theorem final_of_colimit_comp_coyoneda_iso_pUnit
-    (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit) : Final F :=
+    (I : ∀ d, colimit (F ⋙ coyoneda.obj (op d)) ≅ TypeCat.of PUnit) : Final F :=
   ⟨fun d => by
     have : Nonempty (StructuredArrow d F) := by
       have := (I d).inv PUnit.unit
@@ -508,7 +508,7 @@ then `colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit`
 (simply because `colimit (coyoneda.obj (op d)) ≅ PUnit`).
 -/
 def Final.colimitCompCoyonedaIso (d : D) [IsIso (colimit.pre (coyoneda.obj (op d)) F)] :
-    colimit (F ⋙ coyoneda.obj (op d)) ≅ PUnit :=
+    colimit (F ⋙ coyoneda.obj (op d)) ≅ TypeCat.of PUnit :=
   asIso (colimit.pre (coyoneda.obj (op d)) F) ≪≫ Coyoneda.colimitCoyonedaIso (op d)
 
 end LocallySmall
@@ -517,7 +517,7 @@ section SmallCategory
 
 variable {C : Type v} [Category.{v} C] {D : Type v} [Category.{v} D] (F : C ⥤ D)
 
-theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ Type v, IsIso (colimit.pre G F) :=
+theorem final_iff_isIso_colimit_pre : Final F ↔ ∀ G : D ⥤ TypeCat.{v}, IsIso (colimit.pre G F) :=
   ⟨fun _ => inferInstance,
    fun _ => final_of_colimit_comp_coyoneda_iso_pUnit _ fun _ => Final.colimitCompCoyonedaIso _ _⟩
 
@@ -1097,7 +1097,7 @@ fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H
 functor `H : Grothendieck G ⥤ Type`. -/
 def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
     {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [∀ X, Final (α.app X).toFunctor]
-    (H : Grothendieck G ⥤ Type u₂) : fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
+    (H : Grothendieck G ⥤ TypeCat.{u₂}) : fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
   NatIso.ofComponents
     (fun X =>
       HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫

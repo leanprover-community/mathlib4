@@ -151,10 +151,10 @@ end GrothendieckTopology
 The presheaf sending each object to the set of `J`-closed sieves on it. This presheaf is a `J`-sheaf
 (and will turn out to be a subobject classifier for the category of `J`-sheaves).
 -/
-@[simps]
-def Functor.closedSieves : Cᵒᵖ ⥤ Type max v u where
-  obj X := { S : Sieve X.unop // J₁.IsClosed S }
-  map f S := ⟨S.1.pullback f.unop, J₁.isClosed_pullback f.unop _ S.2⟩
+@[simps obj map]
+def Functor.closedSieves : Cᵒᵖ ⥤ TypeCat.{max v u} where
+  obj X := .of { S : Sieve X.unop // J₁.IsClosed S }
+  map f := TypeCat.ofHom ⟨fun S => ⟨S.1.pullback f.unop, J₁.isClosed_pullback f.unop _ S.2⟩⟩
 
 /-- The presheaf of `J`-closed sieves is a `J`-sheaf.
 The proof of this is adapted from [MM92], Chapter III, Section 7, Lemma 1.
@@ -233,7 +233,7 @@ theorem le_topology_of_closedSieves_isSheaf {J₁ J₂ : GrothendieckTopology C}
 
 /-- If being a sheaf for `J₁` is equivalent to being a sheaf for `J₂`, then `J₁ = J₂`. -/
 theorem topology_eq_iff_same_sheaves {J₁ J₂ : GrothendieckTopology C} :
-    J₁ = J₂ ↔ ∀ P : Cᵒᵖ ⥤ Type max v u, Presieve.IsSheaf J₁ P ↔ Presieve.IsSheaf J₂ P := by
+    J₁ = J₂ ↔ ∀ P : Cᵒᵖ ⥤ TypeCat.{max v u}, Presieve.IsSheaf J₁ P ↔ Presieve.IsSheaf J₂ P := by
   constructor
   · rintro rfl
     intro P
