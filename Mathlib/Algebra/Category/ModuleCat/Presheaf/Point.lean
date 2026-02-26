@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 public import Mathlib.Algebra.Category.ModuleCat.Stalk
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 
 /-!
 #
@@ -21,66 +22,21 @@ universe w v u
 
 open CategoryTheory Limits GrothendieckTopology MonoidalCategory
 
-namespace CategoryTheory
+attribute [local instance] hasColimitsOfShape_of_finallySmall
 
-variable {C : Type u} [Category.{v} C]
+attribute [local instance] IsFiltered.isSifted
 
-namespace Limits.Cocone
-
-variable {D : Type*} [Category D]
-  [CartesianMonoidalCategory D] {F₁ F₂ : C ⥤ D}
-  (c₁ : Cocone F₁) (c₂ : Cocone F₂)
-
-@[simps]
-noncomputable def tensor (c₁ : Cocone F₁) (c₂ : Cocone F₂) : Cocone (F₁ ⊗ F₂) where
-  pt := c₁.pt ⊗ c₂.pt
-  ι.app X := c₁.ι.app X ⊗ₘ c₂.ι.app X
-
-end Limits.Cocone
-
-namespace Limits.Types
-
-variable {F₁ F₂ : C ⥤ Type w} {c₁ : Cocone F₁} {c₂ : Cocone F₂}
-  (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂)
-
--- this could be provable more generally in suitable monoidal categories `D`
--- where tensorLeft and tensorRight commute with colimits of shape `C`
--- and `C` is sifted?
-open IsFiltered in
-noncomputable def isColimitCoconeTensor [IsFiltered C] :
-    IsColimit (c₁.tensor c₂) := by
-  refine Nonempty.some ((isColimit_iff_coconeTypesIsColimit ..).2 ⟨?_, ?_⟩)
-  · intro x y h
-    obtain ⟨i, x, rfl⟩ := Functor.ιColimitType_jointly_surjective _ x
-    obtain ⟨j, y, rfl⟩ := Functor.ιColimitType_jointly_surjective _ y
-    wlog hij : i = j generalizing i j
-    · rw [Prod.ext_iff] at h
-      dsimp at h
-      have := this _ ((F₁ ⊗ F₂).map (leftToMax i j) x) _ ((F₁ ⊗ F₂).map (rightToMax i j) y)
-        (by cat_disch) rfl
-      simpa only [Functor.ιColimitType_map] using this
-    subst hij
-    rw [Prod.ext_iff] at h
-    dsimp at h
-    obtain ⟨k, f, h₁, h₂⟩ :
-        ∃ (k : C) (f : i ⟶ k), F₁.map f x.1 = F₁.map f y.1 ∧
-          F₂.map f x.2 = F₂.map f y.2 := by
-      obtain ⟨j₁, f₁, h₁⟩ := (Types.FilteredColimit.isColimit_eq_iff' hc₁ _ _).1 h.1
-      obtain ⟨j₂, f₂, h₂⟩ := (Types.FilteredColimit.isColimit_eq_iff' hc₂ _ _).1 h.2
-      obtain ⟨k, g₁, g₂, fac⟩  := IsFiltered.span f₁ f₂
-      exact ⟨k, f₁ ≫ g₁, by simp [h₁], by simp [fac, h₂]⟩
-    simp [← Functor.ιColimitType_map _ f, h₁, h₂]
-  · intro ⟨x₁, x₂⟩
-    obtain ⟨j₁, x₁, rfl⟩  := Types.jointly_surjective_of_isColimit hc₁ x₁
-    obtain ⟨j₂, x₂, rfl⟩  := Types.jointly_surjective_of_isColimit hc₂ x₂
-    exact ⟨(F₁ ⊗ F₂).ιColimitType (max j₁ j₂) ⟨F₁.map (leftToMax _ _) x₁,
-      F₂.map (rightToMax _ _) x₂⟩, by cat_disch⟩
-
-end Limits.Types
-
-end CategoryTheory
+-- this should be moved
+local instance {J C D : Type*} [Category* J] [Category* C] [Category* D]
+    (F : C ⥤ D) [PreservesFilteredColimitsOfSize.{w, w} F]
+    [FinallySmall.{w} J] [LocallySmall.{w} J] [IsFiltered J] :
+    PreservesColimitsOfShape J F :=
+  Functor.Final.preservesColimitsOfShape_of_final
+    (FinallySmall.fromFilteredFinalModel.{w} J) _
 
 namespace PresheafOfModules
+-- this part should go in a separate file
+-- `Algebra/Category/ModuleCat/Presheaf/ColimitModule`
 
 section
 
@@ -88,37 +44,23 @@ variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   [IsCofiltered C] [InitiallySmall.{w} C]
   {R : Cᵒᵖ ⥤ RingCat.{w}} {cR : Cocone R} (hcR : IsColimit cR)
 
-local instance : HasColimitsOfShape Cᵒᵖ AddCommGrpCat.{w} :=
-  hasColimitsOfShape_of_finallySmall _ _
-
-local instance : PreservesColimitsOfShape Cᵒᵖ (forget RingCat.{w}) :=
-  Functor.Final.preservesColimitsOfShape_of_final
-    (FinallySmall.fromFilteredFinalModel.{w} Cᵒᵖ) _
-
-local instance : PreservesColimitsOfShape Cᵒᵖ (forget AddCommGrpCat.{w}) :=
-  Functor.Final.preservesColimitsOfShape_of_final
-    (FinallySmall.fromFilteredFinalModel.{w} Cᵒᵖ) _
-
 section
 
 variable {M : PresheafOfModules.{w} R} {cM : Cocone M.presheaf} (hcM : IsColimit cM)
 
 def ModuleColimit (_ : IsColimit cR) (_ : IsColimit cM) : Type w := cM.pt
-
-instance : AddCommGroup (ModuleColimit hcR hcM) :=
-    inferInstanceAs (AddCommGroup cM.pt)
+  deriving AddCommGroup
 
 namespace ModuleColimit
 
 variable (cR cM) in
 noncomputable def coconeTensorForget :
     Cocone (R ⋙ forget _ ⊗ M.presheaf ⋙ forget _) :=
-  Cocone.tensor ((forget _).mapCocone  cR) ((forget _).mapCocone cM)
+  ((forget _).mapCocone  cR).tensor ((forget _).mapCocone cM)
 
 noncomputable def isColimitCoconeTensorForget :
     IsColimit (coconeTensorForget cR cM) :=
-  Types.isColimitCoconeTensor (isColimitOfPreserves (forget _) hcR)
-    (isColimitOfPreserves (forget _) hcM)
+  (isColimitOfPreserves (forget _) hcR).tensor (isColimitOfPreserves (forget _) hcM)
 
 @[simps]
 noncomputable def coconeSMul :
@@ -162,7 +104,7 @@ lemma jointly_surjective₂ (r : cR.pt) (m : ModuleColimit hcR hcM) :
     ∃ (U : Cᵒᵖ) (a : R.obj U) (x : M.obj U),
       ιR cR a = r ∧ ιM x = m := by
   obtain ⟨U, ⟨a, x⟩, h⟩ := Types.jointly_surjective_of_isColimit
-    (Types.isColimitCoconeTensor (isColimitOfPreserves (forget RingCat) hcR)
+    ((isColimitOfPreserves (forget RingCat) hcR).tensor
       (isColimitOfPreserves (forget AddCommGrpCat) hcM)) ⟨r, m⟩
   rw [Prod.ext_iff] at h
   obtain ⟨rfl, rfl⟩ := h
@@ -173,9 +115,8 @@ lemma jointly_surjective₃ (r₁ r₂ : cR.pt) (m : ModuleColimit hcR hcM) :
     ∃ (U : Cᵒᵖ) (a₁ a₂ : R.obj U) (x : M.obj U),
       ιR cR a₁ = r₁ ∧ ιR cR a₂ = r₂ ∧ ιM x = m := by
   obtain ⟨U, ⟨a₁, a₂, x⟩, h⟩ := Types.jointly_surjective_of_isColimit
-    (Types.isColimitCoconeTensor (isColimitOfPreserves (forget RingCat) hcR)
-      (Types.isColimitCoconeTensor
-        (isColimitOfPreserves (forget RingCat) hcR)
+    ((isColimitOfPreserves (forget RingCat) hcR).tensor
+      ((isColimitOfPreserves (forget RingCat) hcR).tensor
         (isColimitOfPreserves (forget AddCommGrpCat) hcM))) ⟨r₁, r₂, m⟩
   rw [Prod.ext_iff, Prod.ext_iff] at h
   obtain ⟨rfl, rfl, rfl⟩ := h
@@ -186,9 +127,8 @@ lemma jointly_surjective₃' (r : cR.pt) (m₁ m₂ : ModuleColimit hcR hcM) :
     ∃ (U : Cᵒᵖ) (a : R.obj U) (x₁ x₂ : M.obj U),
       ιR cR a = r ∧ ιM x₁ = m₁ ∧ ιM x₂ = m₂ := by
   obtain ⟨U, ⟨a, x₁, x₂⟩, h⟩ := Types.jointly_surjective_of_isColimit
-    (Types.isColimitCoconeTensor (isColimitOfPreserves (forget RingCat) hcR)
-      (Types.isColimitCoconeTensor
-        (isColimitOfPreserves (forget AddCommGrpCat) hcM)
+    ((isColimitOfPreserves (forget RingCat) hcR).tensor
+      ((isColimitOfPreserves (forget AddCommGrpCat) hcM).tensor
         (isColimitOfPreserves (forget AddCommGrpCat) hcM))) ⟨r, m₁, m₂⟩
   rw [Prod.ext_iff, Prod.ext_iff] at h
   obtain ⟨rfl, rfl, rfl⟩ := h
@@ -271,11 +211,6 @@ end
 noncomputable def presheafOfModulesFiberOfRing {R : Cᵒᵖ ⥤ RingCat.{w}} :
     PresheafOfModules.{w} R ⥤ ModuleCat.{w} (Φ.presheafFiber.obj R :) :=
   Φ.fiberOfIsColimit (colimit.isColimit _)
-
-local instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ
-    (forget₂ CommRingCat.{w} RingCat.{w}) :=
-  Functor.Final.preservesColimitsOfShape_of_final
-    (FinallySmall.fromFilteredFinalModel.{w} _) _
 
 noncomputable def presheafOfModulesFiber {R : Cᵒᵖ ⥤ CommRingCat.{w}} :
     PresheafOfModules.{w} (R ⋙ forget₂ _ _) ⥤
