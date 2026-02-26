@@ -119,6 +119,12 @@ theorem Dense.eq_of_inner_left (hS : Dense S) (h : ∀ v ∈ S, ⟪x, v⟫ = ⟪
 theorem Dense.eq_of_inner_right (hS : Dense S) (h : ∀ v ∈ S, ⟪v, x⟫ = ⟪v, y⟫) : x = y := by
   rw [← sub_eq_zero]; exact hS.eq_zero_of_inner_right 𝕜 (by simpa [inner_sub_right, sub_eq_zero])
 
+nonrec theorem DenseRange.eq_of_inner_left (hf : DenseRange f) (h : ∀ i, ⟪x, f i⟫ = ⟪y, f i⟫) :
+    x = y := hf.eq_of_inner_left 𝕜 (by simpa)
+
+nonrec theorem DenseRange.eq_of_inner_right (hf : DenseRange f) (h : ∀ i, ⟪f i, x⟫ = ⟪f i, y⟫) :
+    x = y := hf.eq_of_inner_right 𝕜 (by simpa)
+
 nonrec theorem DenseRange.eq_zero_of_inner_left (hf : DenseRange f) (h : ∀ i, ⟪x, f i⟫ = 0) :
     x = 0 := hf.eq_zero_of_inner_left 𝕜 (by simpa)
 
