@@ -2,6 +2,8 @@ import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Tactic.DefEqAbuse
 
+private axiom test_sorry : ∀ {α}, α
+
 /-- info: #defeq_abuse: tactic succeeds with `backward.isDefEq.respectTransparency true`. No abuse detected. -/
 #guard_msgs in
 example (a b : ℕ) (h : a = b) : a = b := by
@@ -53,8 +55,8 @@ instance : Membership ℕ (MyPred ℕ) where mem s a := s a
 noncomputable instance : Singleton ℕ (MyPred ℕ) where singleton a x := x = a
 
 lemma myPred_disjoint_singleton_right (s : MyPred ℕ) (a : ℕ) :
-    Disjoint s {a} ↔ a ∉ s := by
-  sorry
+    Disjoint s {a} ↔ a ∉ s :=
+  test_sorry
 
 -- Defined AFTER the lemma, so the lemma's elaborated type uses the DistribLattice path,
 -- while this provides PartialOrder/OrderBot through a different path (CompleteSemilatticeInf).
@@ -197,7 +199,7 @@ instance : Gr' Int where
   add a b := a + b
   inv a := -a
 
-theorem zo_eq_iff {α} [Gr' α] (a : α) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := sorry
+theorem zo_eq_iff {α} [Gr' α] (a : α) : Num'.fromNat 0 = a ↔ a = Gr'.add a a := test_sorry
 
 /--
 warning: #defeq_abuse: tactic fails with `backward.isDefEq.respectTransparency true` but succeeds with `false`.

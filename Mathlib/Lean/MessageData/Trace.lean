@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
+import Mathlib.Init
 public import Lean.Message
 public import Std.Data.HashSet.Basic
 
