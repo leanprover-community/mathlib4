@@ -341,6 +341,15 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
   rw [← hvw, ← inv_smul_smul₀ (two_ne_zero' ℝ) (_ - _), smul_sub, sub_eq_add_neg, smul_add]
   refine h_conv hw (h_symm _ hv) ?_ ?_ ?_ <;> norm_num
 
+set_option linter.unusedSectionVars false in
+/-- The second **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E`
+whose volume is large enough compared to its successive minima and the covolume
+of a lattice `L` of `E`, then it contains a non-zero lattice point of `L`. -/
+proof_wanted exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure_mul_prod_successiveMin
+    (hF : IsAddFundamentalDomain L F μ) (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s)
+    (h : μ F * 2 ^ finrank ℝ E < μ s * ∏ i < Module.finrank ℝ E, successiveMin L s i) :
+    ∃ x ≠ 0, ((x : L) : E) ∈ s
+
 set_option backward.isDefEq.respectTransparency false in
 /-- The **Minkowski Convex Body Theorem for compact domain**. If `s` is a convex compact symmetric
 domain of `E` whose volume is large enough compared to the covolume of a lattice `L` of `E`, then it
