@@ -30,14 +30,14 @@ The `TraceResult` type and `traceResultOf` function provide structured access to
 `foldTraceNodes`, `TraceResult`, and `traceResultOf` are candidates for upstreaming to lean4,
 alongside `MessageData.hasTag` in `Lean/Message.lean`.
 
-## Pending lean4 PRs
+## Pending lean4 PRs (not required for this module)
 
-- https://github.com/leanprover/lean4/pull/12698 adds `TraceResult` (`.success`/`.failure`)
-  to `TraceData`. Once available, `TraceResult`/`traceResultOf` become thin wrappers around
-  `td.result?`, and callers can avoid rendering the header to a string just to check status.
+These lean4 PRs will simplify things further but are not prerequisites:
+
+- https://github.com/leanprover/lean4/pull/12698 adds `TraceResult` to `TraceData`.
+  Once available, callers can use `td.result?` instead of parsing the header string.
 - https://github.com/leanprover/lean4/pull/12699 adds a `Meta.synthInstance.apply` trace class,
-  so synthesis "apply" nodes can be identified structurally via `td.cls` instead of
-  string-matching on the header.
+  so synthesis "apply" nodes can be identified via `td.cls` instead of string-matching.
 -/
 
 public section
