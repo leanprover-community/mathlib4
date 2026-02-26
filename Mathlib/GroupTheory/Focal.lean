@@ -186,10 +186,11 @@ lemma ker_transferFocal_inf_eq_focalSubgroup : P.transferFocal.ker ⊓ P = P.foc
 For a Sylow p-subgroup P of a finite group G, `P ∩ G' = P*`,
 where `P*` is the focal subgroup of `P`.
 -/
-theorem commutator_inf_eq_focalSubgroup :  _root_.commutator G ⊓ P = P.focalSubgroup :=
-  le_antisymm ((inf_le_inf_right _ (Abelianization.commutator_subset_ker P.transferFocal)).trans
-    (ker_transferFocal_inf_eq_focalSubgroup P).le)
-      (le_inf P.focalSubgroup_le_commutator P.focalSubgroup_le)
+theorem commutator_inf_eq_focalSubgroup :  _root_.commutator G ⊓ P = P.focalSubgroup := by
+  apply le_antisymm
+  · apply le_trans ?_ (ker_transferFocal_inf_eq_focalSubgroup P).le
+    exact inf_le_inf_right _ (Abelianization.commutator_subset_ker P.transferFocal)
+  · exact le_inf P.focalSubgroup_le_commutator P.focalSubgroup_le
 
 end FocalSubgroupTheorem
 
