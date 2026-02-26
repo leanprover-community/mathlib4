@@ -11,6 +11,8 @@ public import Mathlib.LinearAlgebra.BilinearForm.Isometry
 /-!
 # Isometric equivalences with respect to bilinear forms
 
+In this file, we define isometry equivalences of bilinear spaces as linear equivalences that respect the associated bilinear forms. This file should be kept in sync with the corresponding file for quadratic maps, namely `Mathlib/LinearAlgebra/QuadraticForm/IsometryEquiv.lean`
+
 ## Main definitions
 
 * `LinearMap.BilinForm.IsometryEquiv`: `LinearEquiv`s which map between two different bilinear forms
