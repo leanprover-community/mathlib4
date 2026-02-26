@@ -128,7 +128,7 @@ theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
   · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert rfl; grind
     simpa only [Finset.mem_preimage, iSup_subtype, iSup_and', this]
 
-section lsumSmulRange
+section CommSemiring
 
 variable {R M N σ : Type*} [CommSemiring R] [AddCommMonoid M]
 variable [AddCommMonoid N] [Module R M] [Module R N]
