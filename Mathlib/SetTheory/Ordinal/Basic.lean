@@ -635,8 +635,15 @@ def lift (o : Ordinal.{v}) : Ordinal.{max v u} :=
       ⟨(RelIso.preimage Equiv.ulift r).trans <| f.trans (RelIso.preimage Equiv.ulift s).symm⟩
 
 @[simp]
-theorem type_uLift (r : α → α → Prop) [IsWellOrder α r] :
+theorem type_ulift (r : α → α → Prop) [IsWellOrder α r] :
     type (ULift.down ⁻¹'o r) = lift.{v} (type r) :=
+  rfl
+
+@[deprecated (since := "2026-02-20")] alias type_uLift := type_ulift
+
+@[simp]
+theorem type_lt_ulift [LinearOrder α] [WellFoundedLT α] :
+    typeLT (ULift α) = lift.{v} (typeLT α) :=
   rfl
 
 theorem _root_.RelIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → β → Prop}
@@ -893,7 +900,7 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
-@[simp]
+-- TODO: deprecate this in favor of `Order.succ_eq_add_one`
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 
@@ -948,6 +955,34 @@ instance uniqueToTypeOne : Unique (ToType 1) where
 
 theorem one_toType_eq (x : ToType 1) : x = enum (· < ·) ⟨0, by simp⟩ :=
   Unique.eq_default x
+
+theorem type_lt_mem_range_succ_iff [LinearOrder α] [WellFoundedLT α] :
+    typeLT α ∈ range succ ↔ ∃ x : α, IsMax x := by
+  simp_rw [← isTop_iff_isMax]
+  constructor <;> intro ⟨a, ha⟩
+  · refine ⟨enum (α := α) (· < ·) ⟨a, ?_⟩, fun b ↦ ?_⟩
+    · rw [mem_Iio, ← ha, lt_succ_iff]
+    · rw [← enum_typein (α := α) (· < ·) b, ← not_lt, enum_le_enum (r := (· < ·)),
+        Subtype.mk_le_mk, ← lt_succ_iff, ha]
+      exact typein_lt_type ..
+  · refine ⟨typein (α := α) (· < ·) a, eq_of_forall_lt_iff fun o ↦ ?_⟩
+    rw [lt_succ_iff]
+    refine ⟨fun h ↦ h.trans_lt (typein_lt_type _ _), fun h ↦ ?_⟩
+    rw [← typein_enum _ h, typein_le_typein, not_lt]
+    apply ha
+
+theorem type_lt_mem_range_succ [LinearOrder α] [WellFoundedLT α] [OrderTop α] :
+    typeLT α ∈ range succ :=
+  type_lt_mem_range_succ_iff.2 ⟨⊤, isMax_top⟩
+
+theorem isSuccPrelimit_type_lt_iff [LinearOrder α] [WellFoundedLT α] :
+    IsSuccPrelimit (typeLT α) ↔ NoMaxOrder α := by
+  rw [← not_iff_not, noMaxOrder_iff, not_isSuccPrelimit_iff', type_lt_mem_range_succ_iff]
+  simp [IsMax]
+
+theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrder α] :
+    IsSuccPrelimit (typeLT α) :=
+  isSuccPrelimit_type_lt_iff.2 h
 
 /-! ### Extra properties of typein and enum -/
 
