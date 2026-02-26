@@ -69,7 +69,6 @@ theorem qParam_left_inv_mod_period (hh : h ≠ 0) (z : ℂ) :
   refine ⟨m, by rw [hm, mul_div_assoc, mul_comm (m : ℂ), ← mul_add, ← mul_assoc,
     div_mul_cancel₀ _ two_pi_I_ne_zero, mul_add, mul_div_cancel₀ _ (mod_cast hh), mul_comm]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_qParam_lt_iff (hh : 0 < h) (A : ℝ) (z : ℂ) :
     ‖qParam h z‖ < Real.exp (-2 * π * A / h) ↔ A < im z := by
   rw [norm_qParam, Real.exp_lt_exp, div_lt_div_iff_of_pos_right hh, mul_lt_mul_left_of_neg]

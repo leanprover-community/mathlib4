@@ -39,7 +39,7 @@ Commands:
 Options:
   --repo=OWNER/REPO  Override the repository to fetch/push cache from
   --staging-dir=<output-directory> Required for 'stage', 'stage!', 'unstage' and 'put-staged': staging directory.
-  --include-proofwidgets  Include fetching/building ProofWidgets release assets during 'get'
+  --skip-proofwidgets  Skip fetching/building ProofWidgets release assets during 'get'
 
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
@@ -101,9 +101,7 @@ def main (args : List String) : IO Unit := do
   -- parse relevant options, ignore the rest
   let repo? ← parseNamedOpt "repo" options
   let stagingDir? ← parseNamedOpt "staging-dir" options
-  let includeProofWidgets := parseFlagOpt "include-proofwidgets" options
-  let inGitHubActions := (← IO.getEnv "GITHUB_ACTIONS") == some "true"
-  let skipProofWidgets := inGitHubActions && !includeProofWidgets
+  let skipProofWidgets := parseFlagOpt "skip-proofwidgets" options
 
   let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
   if roots.isEmpty then do

@@ -34,11 +34,11 @@ the compatibility condition on `adj.unit` for a fixed `a` in `A` and for isomorp
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`. We then prove that:
 - If `e₁` and `e₂` satisfy this condition, then `e₁` uniquely determines `e₂` and vice versa.
 - If `a = 0`, the isomorphisms `Functor.CommShift.isoZero F` and `Functor.CommShift.isoZero G`
-satisfy the condition.
+  satisfy the condition.
 - The condition is stable by addition on `A`, if we use `Functor.CommShift.isoAdd` to deduce
-commutation isomorphism for `a + b` from such isomorphism from `a` and `b`.
+  commutation isomorphism for `a + b` from such isomorphism from `a` and `b`.
 - Given commutation isomorphisms for `F`, our candidate commutation isomorphisms for `G`,
-constructed in `Adjunction.RightAdjointCommShift.iso`, satisfy the compatibility condition.
+  constructed in `Adjunction.RightAdjointCommShift.iso`, satisfy the compatibility condition.
 
 Once we have established all this, the compatibility of the commutation isomorphism for
 `F` expressed in `CommShift.zero` and `CommShift.add` immediately implies the similar

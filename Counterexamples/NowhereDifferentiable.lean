@@ -146,7 +146,6 @@ theorem weierstrass_partial {a : ℝ} (ha : 0 < a) {b : ℕ} (hab : 1 < a * b) (
   refine div_le_div_of_nonneg_right ?_ (sub_nonneg.mpr hab.le)
   simp [sub_one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The remainder has lower bound in absolute value $|B| \ge |x_m - x| 2 (ab)^m / 3$ -/
 theorem weierstrass_remainder {a : ℝ} (ha : 0 < a) {b : ℕ} (hb : Odd b) {x : ℝ} {m : ℕ}
     (hsum : Summable fun n ↦

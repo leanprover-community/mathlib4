@@ -90,8 +90,8 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
   have hf' : ∀ n, StronglyMeasurable (f' n) := by
     intro n; refine StronglyMeasurable.indicator ?_ (measurableSet_kernel_integrable hf)
     have : ∀ x, ((s' n x).range.filter fun x => x ≠ 0) ⊆ (s n).range := by
-      intro x; refine Finset.Subset.trans (Finset.filter_subset _ _) ?_; intro y
-      simp_rw [SimpleFunc.mem_range]; rintro ⟨z, rfl⟩; exact ⟨(x, z), rfl⟩
+      intro
+      exact Finset.Subset.trans (Finset.filter_subset _ _) (SimpleFunc.range_comp_subset_range _ _)
     simp only [SimpleFunc.integral_eq_sum_of_subset (this _)]
     refine Finset.stronglyMeasurable_fun_sum _ fun x _ => ?_
     refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
