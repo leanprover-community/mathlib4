@@ -103,7 +103,8 @@ end deriv
 
 section fderiv
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {n : WithTop ℕ∞}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : E → ℝ} {n : WithTop ℕ∞}
   {s : Set E} {x : E} {f' : StrongDual ℝ E}
 
 theorem HasFDerivAt.sqrt (hf : HasFDerivAt f f' x) (hx : f x ≠ 0) :

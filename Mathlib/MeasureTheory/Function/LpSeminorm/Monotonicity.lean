@@ -18,7 +18,8 @@ open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal ComplexConjugate
 
 variable {α E F G : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ : Measure α}
-  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G]
+  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G]
+    [NormedAddCommGroup G]
 
 namespace MeasureTheory
 

@@ -45,7 +45,8 @@ variable {𝕜 𝕜₂ E F G : Type*}
 section SeminormedAddCommGroup
 
 variable [Ring 𝕜] [Ring 𝕜₂]
-variable [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F] [SeminormedAddCommGroup F] [AddCommGroup G] [SeminormedAddCommGroup G]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F] [SeminormedAddCommGroup F]
+    [AddCommGroup G] [SeminormedAddCommGroup G]
 variable [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 G]
 variable {σ : 𝕜 →+* 𝕜₂} (f : E →ₛₗ[σ] F)
 
@@ -155,7 +156,8 @@ end SeminormedBounded
 
 section Normed
 variable [Ring 𝕜] [Ring 𝕜₂]
-variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [Module 𝕜 E] [Module 𝕜₂ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+    [Module 𝕜 E] [Module 𝕜₂ F]
 variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 
 theorem ContinuousLinearMap.isUniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :

@@ -693,7 +693,8 @@ end Complex
 
 section realPart_imaginaryPart
 
-variable {A : Type*} [AddCommGroup A] [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedSpace ℂ A] [StarModule ℂ A]
+variable {A : Type*} [AddCommGroup A] [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedSpace ℂ A]
+    [StarModule ℂ A]
   [NormedStarGroup A]
 
 lemma realPart.norm_le (x : A) : ‖realPart x‖ ≤ ‖x‖ := by

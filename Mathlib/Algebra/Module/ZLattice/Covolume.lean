@@ -75,7 +75,8 @@ end General
 
 section Basic
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [FiniteDimensional ℝ E]
 variable [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
@@ -102,7 +103,8 @@ theorem covolume_pos : 0 < covolume L μ :=
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
-theorem covolume_comap {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
+theorem covolume_comap {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [FiniteDimensional ℝ F]
     [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac) [Measure.IsAddHaarMeasure ν]
     {e : F ≃L[ℝ] E} (he : MeasurePreserving e ν μ) :
     covolume (ZLattice.comap ℝ L e.toLinearMap) ν = covolume L μ := by
@@ -349,7 +351,8 @@ section InnerProductSpace
 
 open Filter Pointwise Topology Bornology
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+  [FiniteDimensional ℝ E]
   [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 

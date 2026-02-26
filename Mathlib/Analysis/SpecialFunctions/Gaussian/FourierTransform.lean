@@ -247,7 +247,8 @@ alias _root_.fourierIntegral_gaussian_pi := _root_.fourier_gaussian_pi
 
 section InnerProductSpace
 
-variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [FiniteDimensional ℝ V]
   [MeasurableSpace V] [BorelSpace V]
 
 theorem integrable_cexp_neg_sum_mul_add {ι : Type*} [Fintype ι] {b : ι → ℂ}

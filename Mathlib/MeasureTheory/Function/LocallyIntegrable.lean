@@ -34,7 +34,8 @@ variable {X Y ε ε' ε'' E F R : Type*} [MeasurableSpace X] [TopologicalSpace X
 variable [MeasurableSpace Y] [TopologicalSpace Y]
 variable [TopologicalSpace ε] [ContinuousENorm ε] [TopologicalSpace ε'] [ContinuousENorm ε']
   [TopologicalSpace ε''] [AddMonoid ε''] [ESeminormedAddMonoid ε'']
-  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] {f g : X → ε} {μ : Measure X} {s : Set X}
+  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+    {f g : X → ε} {μ : Measure X} {s : Set X}
 
 namespace MeasureTheory
 
@@ -340,7 +341,8 @@ protected theorem LocallyIntegrable.sub {f g : X → E}
 protected theorem LocallyIntegrable.neg {f : X → E} (hf : LocallyIntegrable f μ) :
     LocallyIntegrable (-f) μ := fun x ↦ (hf x).neg
 
-protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜]
+protected theorem LocallyIntegrable.smul {f : X → E} {𝕜 : Type*} [AddCommGroup 𝕜]
+    [NormedAddCommGroup 𝕜]
     [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E] (hf : LocallyIntegrable f μ) (c : 𝕜) :
     LocallyIntegrable (c • f) μ := fun x ↦ (hf x).smul c
 

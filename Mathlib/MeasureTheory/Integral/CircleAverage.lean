@@ -93,7 +93,8 @@ lemma circleAverage_map_add_const :
 /--
 Expression of the `circleAverage` in terms of a `circleIntegral`.
 -/
-theorem circleAverage_eq_circleIntegral {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℂ F]
+theorem circleAverage_eq_circleIntegral {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace ℂ F]
     {f : ℂ → F} (h : R ≠ 0) :
     circleAverage f c R = (2 * π * I)⁻¹ • (∮ z in C(c, R), (z - c)⁻¹ • f z) := by
   calc circleAverage f c R

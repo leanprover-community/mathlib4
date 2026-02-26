@@ -31,7 +31,8 @@ open ContinuousLinearMap ContinuousLinearEquiv
 
 section
 variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup V] [SeminormedAddCommGroup V]
-  [AddCommGroup W] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W] [SeparatingDual 𝕜 V]
+  [AddCommGroup W] [SeminormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+    [SeparatingDual 𝕜 V]
   [SeparatingDual 𝕜 W]
 
 /-- This is the continuous version of `AlgEquiv.eq_linearEquivConjAlgEquiv`. -/
@@ -96,7 +97,8 @@ public theorem ContinuousLinearEquiv.conjContinuousAlgEquiv_surjective :
 
 end
 
-variable {𝕜 V W : Type*} [RCLike 𝕜] [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [CompleteSpace V]
+variable {𝕜 V W : Type*} [RCLike 𝕜] [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V]
+    [CompleteSpace V]
   [AddCommGroup W] [NormedAddCommGroup W] [InnerProductSpace 𝕜 W] [CompleteSpace W]
 
 section auxiliaryDefs

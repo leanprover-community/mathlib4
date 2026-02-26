@@ -645,7 +645,8 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [AddCommGroup α] [Sem
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)
 
-theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [AddCommGroup α] [NormedAddCommGroup α] [CompleteSpace α]
+theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [AddCommGroup α] [NormedAddCommGroup α]
+    [CompleteSpace α]
     {f : ℕ → α} {l : ℝ} (hl₁ : l < 1) (hf : ∀ᶠ n in atTop, f n ≠ 0)
     (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) : Summable f := by
   rcases exists_between hl₁ with ⟨r, hr₀, hr₁⟩
@@ -653,7 +654,8 @@ theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [AddCommGroup α] [No
   filter_upwards [h.eventually_le_const hr₀, hf] with _ _ h₁
   rwa [← div_le_iff₀ (norm_pos_iff.mpr h₁)]
 
-theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [AddCommGroup α] [SeminormedAddCommGroup α] {f : ℕ → α}
+theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [AddCommGroup α]
+    [SeminormedAddCommGroup α] {f : ℕ → α}
     {r : ℝ} (hr : 1 < r) (hf : ∃ᶠ n in atTop, ‖f n‖ ≠ 0)
     (h : ∀ᶠ n in atTop, r * ‖f n‖ ≤ ‖f (n + 1)‖) : ¬Summable f := by
   rw [eventually_atTop] at h
@@ -671,7 +673,8 @@ theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [AddCommGroup α] 
     exact hN h''.symm
   · grind
 
-theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [AddCommGroup α] [SeminormedAddCommGroup α]
+theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [AddCommGroup α]
+    [SeminormedAddCommGroup α]
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
     ¬Summable f := by
   have key : ∀ᶠ n in atTop, ‖f n‖ ≠ 0 := by

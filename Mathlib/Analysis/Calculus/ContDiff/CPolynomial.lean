@@ -52,7 +52,8 @@ end fderiv
 
 namespace ContinuousMultilinearMap
 
-variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F) {n : WithTop ℕ∞} {x : Π i, E i}
 
 open FormalMultilinearSeries

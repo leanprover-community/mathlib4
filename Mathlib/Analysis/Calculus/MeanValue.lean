@@ -52,7 +52,8 @@ In this file we prove the following facts:
 
 @[expose] public section
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
   [NormedSpace ℝ F]
 
 open Metric Set Asymptotics ContinuousLinearMap Filter
@@ -801,7 +802,8 @@ make sense and are enough. Many formulations of the mean value inequality could 
 balls over `ℝ` or `ℂ`. For now, we only include the ones that we need.
 -/
 
-variable {𝕜 : Type*} [RCLike 𝕜] {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] {H : Type*}
+variable {𝕜 : Type*} [RCLike 𝕜] {G : Type*} [AddCommGroup G] [NormedAddCommGroup G]
+    [NormedSpace 𝕜 G] {H : Type*}
   [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace 𝕜 H] {f : G → H} {f' : G → G →L[𝕜] H} {x : G}
 
 /-- Over the reals or the complexes, a continuously differentiable function is strictly

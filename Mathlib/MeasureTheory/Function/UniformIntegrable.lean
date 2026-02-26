@@ -55,7 +55,8 @@ namespace MeasureTheory
 
 open Set Filter TopologicalSpace
 
-variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [AddCommGroup β] [NormedAddCommGroup β]
+variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [AddCommGroup β]
+    [NormedAddCommGroup β]
 
 /-- Uniform integrability in the measure theory sense.
 

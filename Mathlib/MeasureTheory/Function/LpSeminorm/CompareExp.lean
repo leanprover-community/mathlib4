@@ -161,7 +161,8 @@ end SameSpace
 section Bilinear
 
 variable {α E F G : Type*} {m : MeasurableSpace α}
-  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G] {μ : Measure α}
+  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G]
+    [NormedAddCommGroup G] {μ : Measure α}
   {f : α → E} {g : α → F}
 
 open NNReal

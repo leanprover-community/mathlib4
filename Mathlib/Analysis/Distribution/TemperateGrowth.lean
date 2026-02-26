@@ -132,7 +132,8 @@ set_option backward.isDefEq.respectTransparency false in
 
 Version where the outer function `g` is only of temperate growth on the image of inner function
 `f`. -/
-theorem HasTemperateGrowth.comp' [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
+theorem HasTemperateGrowth.comp' [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
+    {g : E → F} {f : D → E}
     {t : Set E} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn ℝ t) (hg₁ : ContDiffOn ℝ ∞ g t)
     (hg₂ : ∀ N, ∃ k C, ∃ (_hC : 0 ≤ C), ∀ n ≤ N, ∀ x ∈ t,
     ‖iteratedFDerivWithin ℝ n g t x‖ ≤ C * (1 + ‖x‖) ^ k)
@@ -173,7 +174,8 @@ theorem HasTemperateGrowth.comp' [AddCommGroup D] [NormedAddCommGroup D] [Normed
 
 /-- Composition of two temperate growth functions is of temperate growth. -/
 @[fun_prop]
-theorem HasTemperateGrowth.comp [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
+theorem HasTemperateGrowth.comp [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
+    {g : E → F} {f : D → E}
     (hg : g.HasTemperateGrowth) (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
   apply hf.comp' (t := Set.univ)
   · simp

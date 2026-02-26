@@ -74,7 +74,8 @@ local notation "⟪" x ", " y "⟫" => y x
 
 variable (𝕜)
 
-theorem ae_eq_zero_of_forall_dual_of_isSeparable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem ae_eq_zero_of_forall_dual_of_isSeparable [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
     {t : Set E} (ht : TopologicalSpace.IsSeparable t) {f : α → E}
     (hf : ∀ c : StrongDual 𝕜 E, (fun x => ⟪f x, c⟫) =ᵐ[μ] 0) (h't : ∀ᵐ x ∂μ, f x ∈ t) :
     f =ᵐ[μ] 0 := by

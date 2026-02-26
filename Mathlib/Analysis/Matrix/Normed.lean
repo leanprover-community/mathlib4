@@ -181,7 +181,8 @@ end SeminormedAddCommGroup
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible]
-protected def normedAddCommGroup [AddCommGroup α] [NormedAddCommGroup α] : NormedAddCommGroup (Matrix m n α) :=
+protected def normedAddCommGroup [AddCommGroup α] [NormedAddCommGroup α]
+    : NormedAddCommGroup (Matrix m n α) :=
   Pi.normedAddCommGroup
 
 section NormedSpace
@@ -189,12 +190,14 @@ section NormedSpace
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 /-- This applies to the sup norm of sup norm. -/
-protected theorem isBoundedSMul [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α] [Module R α]
+protected theorem isBoundedSMul [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α]
+    [Module R α]
     [IsBoundedSMul R α] : IsBoundedSMul R (Matrix m n α) :=
   Pi.instIsBoundedSMul
 
 /-- This applies to the sup norm of sup norm. -/
-protected theorem normSMulClass [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α] [Module R α]
+protected theorem normSMulClass [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α]
+    [Module R α]
     [NormSMulClass R α] : NormSMulClass R (Matrix m n α) :=
   Pi.instNormSMulClass
 
@@ -252,7 +255,8 @@ protected def linftyOpNormedAddCommGroup [AddCommGroup α] [NormedAddCommGroup �
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
 protected theorem linftyOpIsBoundedSMul
-    [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α] [Module R α] [IsBoundedSMul R α] :
+    [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α] [Module R α] [IsBoundedSMul R α]
+      :
     IsBoundedSMul R (Matrix m n α) :=
   letI := PiLp.pseudoMetricSpaceToPi 1 (fun _ : n ↦ α)
   letI := PiLp.isBoundedSMulSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
@@ -261,7 +265,8 @@ protected theorem linftyOpIsBoundedSMul
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
 protected theorem linftyOpNormSMulClass
-    [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α] [Module R α] [NormSMulClass R α] :
+    [SeminormedRing R] [AddCommGroup α] [SeminormedAddCommGroup α] [Module R α] [NormSMulClass R α]
+      :
     NormSMulClass R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
   letI := PiLp.normSMulClassSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
@@ -271,7 +276,8 @@ protected theorem linftyOpNormSMulClass
 declared as an instance because there are several natural choices for defining the norm of a
 matrix. -/
 @[instance_reducible, local instance]
-protected def linftyOpNormedSpace [NormedField R] [AddCommGroup α] [SeminormedAddCommGroup α] [NormedSpace R α] :
+protected def linftyOpNormedSpace [NormedField R] [AddCommGroup α] [SeminormedAddCommGroup α]
+    [NormedSpace R α] :
     NormedSpace R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
   letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)

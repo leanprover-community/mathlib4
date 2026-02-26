@@ -335,14 +335,16 @@ variable {𝕜 B B' F M : Type*} {E : B → Type*}
 variable
   -- Let `E` be a fiber bundle with base `B` and fiber `F` (a vector space over `𝕜`)
   [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
-  [AddCommGroup F] [NormedAddCommGroup F] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F] [FiberBundle F E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 F]
+    [FiberBundle F E]
   -- Moreover let `E` be a vector bundle
   [(x : B) → AddCommGroup (E x)] [(x : B) → Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
   -- Let the base `B` be charted over a fixed model space `HB`
   {HB : Type*} [TopologicalSpace HB] [ChartedSpace HB B]
   -- Moreover let `HB` be modelled on a normed space `EB` so that `B` (and hence `E`) have
   -- differentiable structures
-  {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {I : ModelWithCorners 𝕜 EB HB}
+  {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+    {I : ModelWithCorners 𝕜 EB HB}
 
 variable {f : B → 𝕜} {a : 𝕜} {s t : Π x : B, E x} {u : Set B} {x₀ : B}
 
@@ -625,15 +627,18 @@ and two vector bundles `E₁` and `E₂` respectively over `B₁` and `B₂` (wi
 Also a third manifold `M`, which will be the source of all our maps.
 -/
 variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁]
+    [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
   {EB₁ : Type*}
-  [AddCommGroup EB₁] [NormedAddCommGroup EB₁] [NormedSpace 𝕜 EB₁] {HB₁ : Type*} [TopologicalSpace HB₁]
+  [AddCommGroup EB₁] [NormedAddCommGroup EB₁] [NormedSpace 𝕜 EB₁]
+    {HB₁ : Type*} [TopologicalSpace HB₁]
   {IB₁ : ModelWithCorners 𝕜 EB₁ HB₁} [TopologicalSpace B₁] [ChartedSpace HB₁ B₁]
   {EB₂ : Type*}
-  [AddCommGroup EB₂] [NormedAddCommGroup EB₂] [NormedSpace 𝕜 EB₂] {HB₂ : Type*} [TopologicalSpace HB₂]
+  [AddCommGroup EB₂] [NormedAddCommGroup EB₂] [NormedSpace 𝕜 EB₂]
+    {HB₂ : Type*} [TopologicalSpace HB₂]
   {IB₂ : ModelWithCorners 𝕜 EB₂ HB₂} [TopologicalSpace B₂] [ChartedSpace HB₂ B₂]
   {EM : Type*}
   [AddCommGroup EM] [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]

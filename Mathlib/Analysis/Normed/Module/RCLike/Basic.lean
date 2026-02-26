@@ -105,7 +105,8 @@ in practice this means `f` is a linear map, but we allow the flexibility so it i
 to apply for eg continuous linear maps also, without a coercion in the goal.
 -/
 lemma antilipschitz_of_bound_of_norm_one {𝓕 E F : Type*}
-    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+      [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
     [FunLike 𝓕 E F] [AddMonoidHomClass 𝓕 E F] [MulActionHomClass 𝓕 𝕜 E F]
     (f : 𝓕) {K : NNReal} (h : ∀ x, ‖x‖ = 1 → 1 ≤ K * ‖f x‖) :
     AntilipschitzWith K f :=

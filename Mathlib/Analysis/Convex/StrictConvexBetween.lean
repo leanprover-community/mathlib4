@@ -107,7 +107,8 @@ theorem dist_lt_dist_add_dist_iff {a b c : P} :
 
 end MetricSpace
 
-variable {E F PE PF : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E]
+variable {E F PE PF : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F]
+    [NormedAddCommGroup F] [NormedSpace ℝ E]
   [NormedSpace ℝ F] [StrictConvexSpace ℝ E] [MetricSpace PE] [MetricSpace PF] [NormedAddTorsor E PE]
   [NormedAddTorsor F PF] {r : ℝ} {f : PF → PE} {x y z : PE}
 

@@ -72,7 +72,8 @@ namespace MeasureTheory
 
 section NormedAddCommGroup
 
-theorem HasFiniteIntegral.restrict_of_bounded [AddCommGroup E] [NormedAddCommGroup E] {f : α → E} {s : Set α}
+theorem HasFiniteIntegral.restrict_of_bounded [AddCommGroup E] [NormedAddCommGroup E]
+    {f : α → E} {s : Set α}
     {μ : Measure α} (C : ℝ) (hs : μ s < ∞) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
@@ -332,7 +333,8 @@ theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) 
     IntegrableOn (indicator t f) s μ :=
   Integrable.indicator h ht
 
-theorem integrable_indicatorConstLp {E} [AddCommGroup E] [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
+theorem integrable_indicatorConstLp {E} [AddCommGroup E] [NormedAddCommGroup E]
+    {p : ℝ≥0∞} {s : Set α}
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
     Integrable (indicatorConstLp p hs hμs c) μ := by
   rw [integrable_congr indicatorConstLp_coeFn, integrable_indicator_iff hs, IntegrableOn,
@@ -363,7 +365,8 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
 -- TODO: investigate generalising this section to e-seminormed monoids
 section ENormedAddMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [AddMonoid ε'] [ENormedAddMonoid ε'] [PseudoMetrizableSpace ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [AddMonoid ε'] [ENormedAddMonoid ε']
+    [PseudoMetrizableSpace ε']
 
 -- TODO: generalise this to e-seminormed commutative monoids,
 -- by merely assuming ‖f x‖ₑ vanishes on t \ s
@@ -426,7 +429,8 @@ theorem integrableOn_iff_integrable_of_support_subset
 
 end ENormedAddMonoid
 
-theorem integrableOn_Lp_of_measure_ne_top {E} [AddCommGroup E] [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
+theorem integrableOn_Lp_of_measure_ne_top {E} [AddCommGroup E] [NormedAddCommGroup E]
+    {p : ℝ≥0∞} {s : Set α}
     (f : Lp E p μ) (hp : 1 ≤ p) (hμs : μ s ≠ ∞) : IntegrableOn f s μ := by
   refine memLp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
@@ -504,7 +508,8 @@ protected theorem IntegrableAtFilter.sub {f g : α → E}
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
-protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
+protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜]
+    [SMulZeroClass 𝕜 E]
     [IsBoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩

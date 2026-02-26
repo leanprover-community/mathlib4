@@ -965,8 +965,10 @@ section Semilinear
 ## Results involving semilinear maps
 -/
 variable {𝕜 V V' W W' : Type*} [NontriviallyNormedField 𝕜] {σ σ' : RingHom 𝕜 𝕜}
-  [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V] [AddCommGroup V'] [NormedAddCommGroup V'] [NormedSpace 𝕜 V']
-  [AddCommGroup W] [NormedAddCommGroup W] [NormedSpace 𝕜 W] [AddCommGroup W'] [NormedAddCommGroup W'] [NormedSpace 𝕜 W']
+  [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V] [AddCommGroup V']
+    [NormedAddCommGroup V'] [NormedSpace 𝕜 V']
+  [AddCommGroup W] [NormedAddCommGroup W] [NormedSpace 𝕜 W] [AddCommGroup W']
+    [NormedAddCommGroup W'] [NormedSpace 𝕜 W']
   [RingHomIsometric σ] [RingHomInvPair σ σ'] (L : W →SL[σ] W') (R : V' →SL[σ'] V)
 
 /-- If `L` and `R` are semilinear maps whose composite is linear, and `f` has Fréchet derivative

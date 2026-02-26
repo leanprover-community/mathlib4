@@ -64,7 +64,8 @@ theorem differentiable_inner : Differentiable ℝ fun p : E × E => ⟪p.1, p.2�
   isBoundedBilinearMap_inner.differentiableAt
 
 variable (𝕜)
-variable {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} {f' g' : G →L[ℝ] E}
+variable {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
+    {f g : G → E} {f' g' : G →L[ℝ] E}
   {s : Set G} {x : G} {n : WithTop ℕ∞}
 
 theorem ContDiffWithinAt.inner (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x) :

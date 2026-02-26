@@ -102,7 +102,8 @@ noncomputable section
 open Metric Set Topology NNReal
 
 namespace QuotientGroup
-variable {M : Type*} [CommGroup M] [SeminormedCommGroup M] {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
+variable {M : Type*} [CommGroup M] [SeminormedCommGroup M]
+    {S T : Subgroup M} {x : M ⧸ S} {m : M} {r ε : ℝ}
 
 @[to_additive add_norm_aux]
 private lemma norm_aux (x : M ⧸ S) : {m : M | (m : M ⧸ S) = x}.Nonempty := Quot.exists_rep x
@@ -261,7 +262,8 @@ end QuotientGroup
 
 open QuotientAddGroup Metric Set Topology NNReal
 
-variable {M N : Type*} [AddCommGroup M] [SeminormedAddCommGroup M] [AddCommGroup N] [SeminormedAddCommGroup N]
+variable {M N : Type*} [AddCommGroup M] [SeminormedAddCommGroup M] [AddCommGroup N]
+    [SeminormedAddCommGroup N]
 
 /-- The norm of the image under the natural morphism to the quotient. -/
 theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :

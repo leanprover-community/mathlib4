@@ -380,7 +380,8 @@ section composition
 -/
 
 variable
-  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
+    [IsScalarTower 𝕜 𝕜' F]
   {x : 𝕜}
 
 /--

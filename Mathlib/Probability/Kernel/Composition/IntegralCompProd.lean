@@ -462,7 +462,8 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.ae_of_compProd [SFinite μ] [IsS
     ∀ᵐ x ∂μ, AEStronglyMeasurable (f x) (κ x) := by
   simpa using hf.compProd_mk_left
 
-lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [AddCommGroup E]
+    [NormedAddCommGroup E]
     {f : α × β → E} (hf : AEStronglyMeasurable f (μ ⊗ₘ κ)) :
     Integrable f (μ ⊗ₘ κ) ↔
       (∀ᵐ x ∂μ, Integrable (fun y => f (x, y)) (κ x)) ∧

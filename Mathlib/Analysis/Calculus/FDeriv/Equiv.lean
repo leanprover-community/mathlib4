@@ -478,7 +478,8 @@ open scoped Pointwise
 section TangentCone
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
+  [NormedSpace 𝕜 E] {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F} {x : E}
 
 /-- The image of a tangent cone under the differential of a map is included in the tangent cone to
@@ -548,7 +549,8 @@ end TangentCone
 section SMulLeft
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : E → F} {s : Set E}
+  [NormedSpace 𝕜 E] {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {f : E → F} {s : Set E}
   {f' : E →L[𝕜] F} {x : E}
 
 set_option backward.isDefEq.respectTransparency false in

@@ -607,22 +607,26 @@ lemma isUniformInducing_toLp [Finite ι] [∀ i, PseudoEMetricSpace (β i)] :
 section
 variable {β p}
 
-theorem enorm_apply_le [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
+theorem enorm_apply_le [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
+    (x : PiLp p β) (i : ι) :
     ‖x i‖ₑ ≤ ‖x‖ₑ := by
   simpa using edist_apply_le x 0 i
 
-theorem nnnorm_apply_le [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
+theorem nnnorm_apply_le [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
+    (x : PiLp p β) (i : ι) :
     ‖x i‖₊ ≤ ‖x‖₊ := by
   simpa using nndist_apply_le x 0 i
 
-theorem norm_apply_le [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
+theorem norm_apply_le [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
+    (x : PiLp p β) (i : ι) :
     ‖x i‖ ≤ ‖x‖ := by
   simpa using dist_apply_le x 0 i
 
 end
 
 /-- normed group instance on the product of finitely many normed groups, using the `L^p` norm. -/
-instance normedAddCommGroup [∀ i, AddCommGroup (α i)] [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGroup (PiLp p α) :=
+instance normedAddCommGroup [∀ i, AddCommGroup (α i)] [∀ i, NormedAddCommGroup (α i)]
+    : NormedAddCommGroup (PiLp p α) :=
   { PiLp.seminormedAddCommGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
@@ -651,7 +655,8 @@ theorem nnnorm_eq_ciSup (f : PiLp ∞ β) : ‖f‖₊ = ⨆ i, ‖f i‖₊ := 
 end Linfty
 
 theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
-    [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
+    [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
+      (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
   have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
   simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_natCast,
@@ -692,7 +697,8 @@ theorem nnnorm_eq_of_L2 (x : PiLp 2 β) :
     push_cast
     exact norm_eq_of_L2 x
 
-theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
+theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, AddCommGroup (β i)]
+    [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
     ‖x‖ ^ 2 = ∑ i : ι, ‖x i‖ ^ 2 := by
   suffices ‖x‖₊ ^ 2 = ∑ i : ι, ‖x i‖₊ ^ 2 by
     simpa only [NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) this
@@ -717,7 +723,8 @@ theorem edist_eq_of_L2 (x y : PiLp 2 β) :
 
 end L2
 
-instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
+instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, AddCommGroup (β i)]
+    [∀ i, SeminormedAddCommGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, IsBoundedSMul 𝕜 (β i)] :
     IsBoundedSMul 𝕜 (PiLp p β) :=
   .of_nnnorm_smul_le fun c f => by
@@ -733,7 +740,8 @@ instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, AddCommGroup (β i)] [�
       gcongr
       apply nnnorm_smul_le
 
-instance instNormSMulClass [SeminormedRing 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
+instance instNormSMulClass [SeminormedRing 𝕜] [∀ i, AddCommGroup (β i)]
+    [∀ i, SeminormedAddCommGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, NormSMulClass 𝕜 (β i)] :
     NormSMulClass 𝕜 (PiLp p β) :=
   .of_nnnorm_smul fun c f => by
@@ -752,7 +760,8 @@ instance normedSpace [NormedField 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, Sem
   norm_smul_le := norm_smul_le
 
 variable {𝕜 p α}
-variable [Semiring 𝕜] [∀ i, AddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (α i)] [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
+variable [Semiring 𝕜] [∀ i, AddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (α i)]
+    [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (α i)] [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 
 /-- The canonical map `WithLp.equiv` between `PiLp ∞ β` and `Π i, β i` as a linear isometric
@@ -857,7 +866,8 @@ section piLpCurry
 
 variable {ι : Type*} {κ : ι → Type*} (p : ℝ≥0∞) [Fact (1 ≤ p)]
   [Fintype ι] [∀ i, Fintype (κ i)]
-  (α : ∀ i, κ i → Type*) [∀ i k, AddCommGroup (α i k)] [∀ i k, SeminormedAddCommGroup (α i k)] [∀ i k, Module 𝕜 (α i k)]
+  (α : ∀ i, κ i → Type*) [∀ i k, AddCommGroup (α i k)] [∀ i k, SeminormedAddCommGroup (α i k)]
+    [∀ i k, Module 𝕜 (α i k)]
 
 variable (𝕜) in
 /-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
@@ -1026,7 +1036,8 @@ end Fintype
 
 section
 
-variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
+variable [Semiring 𝕜] [∀ i, AddCommGroup (β i)] [∀ i, SeminormedAddCommGroup (β i)]
+    [∀ i, Module 𝕜 (β i)]
 
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
@@ -1133,10 +1144,12 @@ abbrev seminormedAddCommGroupToPi [∀ i, AddCommGroup (α i)] [∀ i, Seminorme
   dist_eq x y := by
     rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
 
-lemma norm_seminormedAddCommGroupToPi [∀ i, AddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
+lemma norm_seminormedAddCommGroupToPi [∀ i, AddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (α i)]
+    (x : Π i, α i) :
     @Norm.norm _ (seminormedAddCommGroupToPi p α).toNorm x = ‖toLp p x‖ := rfl
 
-lemma nnnorm_seminormedAddCommGroupToPi [∀ i, AddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
+lemma nnnorm_seminormedAddCommGroupToPi [∀ i, AddCommGroup (α i)]
+    [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
     @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 

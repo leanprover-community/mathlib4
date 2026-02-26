@@ -41,8 +41,10 @@ open scoped Topology ContDiff
 
 attribute [local instance 1001] AddCommGroup.toAddCommMonoid
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G]
+    [NormedSpace 𝕜 G]
   {X : Type*} [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
   {g : F → G} {x x₀ : E} {m n : WithTop ℕ∞}
 
@@ -387,7 +389,8 @@ theorem contDiffWithinAt_snd {s : Set (E × F)} {p : E × F} :
 section NAry
 
 variable {E₁ E₂ E₃ : Type*}
-variable [AddCommGroup E₁] [NormedAddCommGroup E₁] [AddCommGroup E₂] [NormedAddCommGroup E₂] [AddCommGroup E₃] [NormedAddCommGroup E₃]
+variable [AddCommGroup E₁] [NormedAddCommGroup E₁] [AddCommGroup E₂] [NormedAddCommGroup E₂]
+    [AddCommGroup E₃] [NormedAddCommGroup E₃]
   [NormedSpace 𝕜 E₁] [NormedSpace 𝕜 E₂] [NormedSpace 𝕜 E₃]
 
 theorem ContDiff.comp₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} (hg : ContDiff 𝕜 n g)

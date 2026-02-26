@@ -53,7 +53,8 @@ namespace Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E₁ E₂ E₃ E₄ : Type*} [AddCommGroup E₁] [NormedAddCommGroup E₁] [NormedSpace 𝕜 E₁]
   [AddCommGroup E₂] [NormedAddCommGroup E₂] [NormedSpace 𝕜 E₂]
-  [AddCommGroup E₃] [NormedAddCommGroup E₃] [NormedSpace 𝕜 E₃] [AddCommGroup E₄] [NormedAddCommGroup E₄] [NormedSpace 𝕜 E₄]
+  [AddCommGroup E₃] [NormedAddCommGroup E₃] [NormedSpace 𝕜 E₃] [AddCommGroup E₄]
+    [NormedAddCommGroup E₄] [NormedSpace 𝕜 E₄]
   {H H' G G' : Type*} [TopologicalSpace H] [TopologicalSpace H']
   [TopologicalSpace G] [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E₁ H} {I' : ModelWithCorners 𝕜 E₂ H'}

@@ -253,7 +253,8 @@ theorem integral_condExpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
     setIntegral_congr_ae (hm s hs) (h_ae_eq_f.mono fun x hx _ => hx)]
   exact integral_condExpL2_eq_of_fin_meas_real _ hs hμs
 
-variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [AddCommGroup E''] [NormedAddCommGroup E''] [InnerProductSpace 𝕜' E'']
+variable {E'' 𝕜' : Type*} [RCLike 𝕜'] [AddCommGroup E''] [NormedAddCommGroup E'']
+    [InnerProductSpace 𝕜' E'']
   [CompleteSpace E''] [NormedSpace ℝ E'']
 
 variable (𝕜 𝕜')

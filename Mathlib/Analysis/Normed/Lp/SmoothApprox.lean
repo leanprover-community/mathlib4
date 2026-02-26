@@ -27,7 +27,8 @@ open MeasureTheory Pointwise ENNReal
 
 namespace HasCompactSupport
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [BorelSpace E]
   [NormedSpace ℝ F]
   (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ]
 
@@ -65,7 +66,8 @@ end HasCompactSupport
 
 namespace MeasureTheory.MemLp
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [BorelSpace E]
   [NormedSpace ℝ F]
   {μ : Measure E} [IsFiniteMeasureOnCompacts μ]
 

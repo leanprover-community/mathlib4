@@ -138,7 +138,8 @@ lemma integrable [CompleteSpace E] [SecondCountableTopology E] (hX : HasGaussian
     Integrable X P :=
   memLp_one_iff_integrable.1 <| hX.memLp (by norm_num)
 
-variable [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
+variable [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F]
+    [BorelSpace F]
 
 lemma map (hX : HasGaussianLaw X P) (L : E →L[ℝ] F) : HasGaussianLaw (L ∘ X) P :=
   hX.map_of_measurable L (by fun_prop)
@@ -229,7 +230,8 @@ lemma sum {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E
   convert hX.map (∑ i, .proj i)
   ext; simp
 
-lemma fun_sum {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+lemma fun_sum {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [MeasurableSpace E]
     [BorelSpace E] [SecondCountableTopology E]
     {X : ι → Ω → E} (hX : HasGaussianLaw (fun ω ↦ (X · ω)) P) :
     HasGaussianLaw (fun ω ↦ ∑ i, X i ω) P := by

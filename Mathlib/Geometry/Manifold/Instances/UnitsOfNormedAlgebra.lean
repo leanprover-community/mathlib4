@@ -75,7 +75,8 @@ instance : LieGroup 𝓘(𝕜, R) n Rˣ where
     rw [contMDiffAt_iff_contDiffAt]
     exact contDiffAt_ringInverse _ _
 
-example {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V] (n : WithTop ℕ∞) :
+example {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V]
+    (n : WithTop ℕ∞) :
     LieGroup 𝓘(𝕜, V →L[𝕜] V) n (V →L[𝕜] V)ˣ := inferInstance
 
 end Units

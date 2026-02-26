@@ -64,7 +64,8 @@ namespace SimpleFunc
 
 section Lp
 
-variable [MeasurableSpace β] [MeasurableSpace E] [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+variable [MeasurableSpace β] [MeasurableSpace E] [AddCommGroup E] [NormedAddCommGroup E]
+    [AddCommGroup F] [NormedAddCommGroup F]
   {q : ℝ} {p : ℝ≥0∞}
 
 theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
@@ -179,7 +180,8 @@ theorem tendsto_approxOn_range_Lp [BorelSpace E] {f : β → E} [hp : Fact (1 �
 
 /-- Any function in `ℒp` can be approximated by a simple function if `p < ∞`. -/
 theorem _root_.MeasureTheory.MemLp.exists_simpleFunc_eLpNorm_sub_lt {E : Type*}
-    [AddCommGroup E] [NormedAddCommGroup E] {f : β → E} {μ : Measure β} (hf : MemLp f p μ) (hp_ne_top : p ≠ ∞)
+    [AddCommGroup E] [NormedAddCommGroup E]
+      {f : β → E} {μ : Measure β} (hf : MemLp f p μ) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) : ∃ g : β →ₛ E, eLpNorm (f - ⇑g) p μ < ε ∧ MemLp g p μ := by
   borelize E
   let f' := hf.1.mk f
@@ -375,7 +377,8 @@ namespace Lp
 
 open AEEqFun
 
-variable [MeasurableSpace α] [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] (p : ℝ≥0∞)
+variable [MeasurableSpace α] [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F]
+    [NormedAddCommGroup F] (p : ℝ≥0∞)
   (μ : Measure α)
 
 variable (E)
@@ -799,7 +802,8 @@ end simpleFunc
 
 end Lp
 
-variable [MeasurableSpace α] [AddCommGroup E] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
+variable [MeasurableSpace α] [AddCommGroup E] [NormedAddCommGroup E]
+    {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
 
 /-- To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
 suffices to show that

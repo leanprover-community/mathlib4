@@ -58,7 +58,8 @@ open AffineSubspace RealInnerProductSpace
 open scoped Affine
 
 variable {V P : Type*}
-variable [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P] [NormedAddTorsor V P]
+variable [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+    [NormedAddTorsor V P]
 
 /-- The affine subspace `as` is tangent to the sphere `s` at the point `p`. -/
 structure IsTangentAt (s : Sphere P) (p : P) (as : AffineSubspace ℝ P) : Prop where

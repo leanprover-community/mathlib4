@@ -246,7 +246,8 @@ lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
   · rw [gaussianReal_of_var_ne_zero _ hv]
     exact Measure.rnDeriv_withDensity _ (measurable_gaussianPDF μ v)
 
-lemma integral_gaussianReal_eq_integral_smul {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+lemma integral_gaussianReal_eq_integral_smul {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
     {μ : ℝ} {v : ℝ≥0} {f : ℝ → E} (hv : v ≠ 0) :
     ∫ x, f x ∂(gaussianReal μ v) = ∫ x, gaussianPDFReal μ v x • f x := by
   simp [gaussianReal, hv,

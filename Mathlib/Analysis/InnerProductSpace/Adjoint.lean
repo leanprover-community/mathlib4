@@ -52,7 +52,8 @@ open Module RCLike
 open scoped ComplexConjugate
 
 variable {𝕜 E F G : Type*} [RCLike 𝕜]
-variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+    [AddCommGroup G] [NormedAddCommGroup G]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F] [InnerProductSpace 𝕜 G]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
@@ -277,8 +278,10 @@ theorem innerSL_apply_comp_of_isSymmetric (x : E) {f : E →L[𝕜] E} (hf : f.I
     adjoint (rankOne 𝕜 x y) = rankOne 𝕜 y x := by
   simp [rankOne_def', adjoint_comp, ← adjoint_innerSL_apply]
 
-lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [AddCommGroup E] [SeminormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [AddCommGroup G] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G] [CompleteSpace G]
+lemma _root_.InnerProductSpace.rankOne_comp {E G : Type*} [AddCommGroup E]
+    [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [AddCommGroup G] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+      [CompleteSpace G]
     (x : E) (y : F) (f : G →L[𝕜] F) :
     rankOne 𝕜 x y ∘L f = rankOne 𝕜 x (adjoint f y) := by
   simp_rw [rankOne_def', comp_assoc, innerSL_apply_comp]
@@ -661,10 +664,12 @@ end LinearMap
 
 section Unitary
 
-variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
+variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+    [CompleteSpace H]
 
 section linearIsometryEquiv
-variable {K : Type*} [AddCommGroup K] [NormedAddCommGroup K] [InnerProductSpace 𝕜 K] [CompleteSpace K]
+variable {K : Type*} [AddCommGroup K] [NormedAddCommGroup K] [InnerProductSpace 𝕜 K]
+    [CompleteSpace K]
 
 namespace ContinuousLinearMap
 
@@ -741,7 +746,8 @@ lemma conjStarAlgEquiv_apply (e : H ≃ₗᵢ[𝕜] K) (x : H →L[𝕜] H) :
 
 @[simp] theorem conjStarAlgEquiv_refl : conjStarAlgEquiv (.refl 𝕜 H) = .refl := rfl
 
-theorem conjStarAlgEquiv_trans {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
+theorem conjStarAlgEquiv_trans {G : Type*} [AddCommGroup G] [NormedAddCommGroup G]
+    [InnerProductSpace 𝕜 G]
     [CompleteSpace G] (e : H ≃ₗᵢ[𝕜] K) (f : K ≃ₗᵢ[𝕜] G) :
     (e.trans f).conjStarAlgEquiv = e.conjStarAlgEquiv.trans f.conjStarAlgEquiv := rfl
 

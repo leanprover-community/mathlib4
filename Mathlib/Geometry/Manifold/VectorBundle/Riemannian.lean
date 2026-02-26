@@ -52,7 +52,8 @@ variable
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners ℝ EB HB} {n n' : WithTop ℕ∞}
   {B : Type*} [TopologicalSpace B] [ChartedSpace HB B]
   {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, AddCommGroup (E x)] [∀ x, NormedAddCommGroup (E x)]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, AddCommGroup (E x)]
+    [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 

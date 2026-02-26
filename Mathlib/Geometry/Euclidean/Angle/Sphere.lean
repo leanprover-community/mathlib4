@@ -71,7 +71,8 @@ end Orientation
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MetricSpace P]
   [NormedAddTorsor V P]
 
 namespace Sphere
@@ -163,7 +164,8 @@ theorem IsTangentAt_iff_angle_eq_pi_div_two {s : Sphere P} {p q : P} (hp : p ∈
 
 end Sphere
 
-variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation
@@ -332,7 +334,8 @@ namespace Triangle
 
 open EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MetricSpace P]
   [NormedAddTorsor V P]
 
 section Oriented
@@ -461,7 +464,8 @@ end Affine
 
 namespace EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 local notation "o" => Module.Oriented.positiveOrientation

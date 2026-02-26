@@ -71,7 +71,8 @@ theorem isZeroAtImInfty_iff {α : Type*} [AddGroup α] [SeminormedAddGroup α] {
     IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
   (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
 
-theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [AddGroup α] [SeminormedAddGroup α] {f : ℍ → α}
+theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [AddGroup α] [SeminormedAddGroup α]
+    {f : ℍ → α}
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
   hf.boundedAtFilter
 

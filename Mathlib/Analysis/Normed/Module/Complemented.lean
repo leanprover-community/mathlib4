@@ -25,8 +25,10 @@ complemented subspace, normed vector space
 @[expose] public section
 
 
-variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G]
+    [NormedSpace 𝕜 G]
 
 noncomputable section
 

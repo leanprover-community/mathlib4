@@ -21,7 +21,8 @@ open Set Real Metric ContinuousLinearMap
 
 section SemiNormed
 
-variable [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F] [SeminormedAddCommGroup F] [AddCommGroup G] [SeminormedAddCommGroup G]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F] [SeminormedAddCommGroup F]
+    [AddCommGroup G] [SeminormedAddCommGroup G]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 namespace ContinuousLinearMap

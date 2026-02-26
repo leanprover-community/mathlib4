@@ -55,7 +55,8 @@ variable {E V : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ 
 
 section InnerProductSpace
 
-variable [AddCommGroup V] [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V] [InnerProductSpace ℝ V]
+variable [AddCommGroup V] [NormedAddCommGroup V] [MeasurableSpace V] [BorelSpace V]
+    [InnerProductSpace ℝ V]
   [FiniteDimensional ℝ V]
 
 local notation3 "i" => fun (w : V) => (1 / (2 * ‖w‖ ^ 2) : ℝ) • w

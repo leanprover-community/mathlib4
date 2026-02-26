@@ -46,7 +46,8 @@ open scoped Topology
 variable
   {B : Type*} [TopologicalSpace B]
   {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, AddCommGroup (E x)] [∀ x, NormedAddCommGroup (E x)]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)] [∀ x, AddCommGroup (E x)]
+    [∀ x, NormedAddCommGroup (E x)]
   [∀ x, InnerProductSpace ℝ (E x)]
   [FiberBundle F E] [VectorBundle ℝ F E]
 

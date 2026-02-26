@@ -402,7 +402,8 @@ end Metric
 
 section SeminormedAddCommGroup
 
-variable [PseudoMetricSpace X] [AddCommGroup Y] [SeminormedAddCommGroup Y] {C C' r : ℝ≥0} {f g : X → Y}
+variable [PseudoMetricSpace X] [AddCommGroup Y] [SeminormedAddCommGroup Y]
+    {C C' r : ℝ≥0} {f g : X → Y}
 
 namespace HolderWith
 
@@ -413,7 +414,8 @@ lemma add (hf : HolderWith C r f) (hg : HolderWith C' r g) :
   grw [edist_add_add_le, hf x₁ x₂, hg x₁ x₂]
   rw [add_mul]
 
-lemma smul {α} [AddCommGroup α] [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul α Y] (a : α)
+lemma smul {α} [AddCommGroup α] [SeminormedAddCommGroup α] [SMulZeroClass α Y] [IsBoundedSMul α Y]
+    (a : α)
     (hf : HolderWith C r f) : HolderWith (C * ‖a‖₊) r (a • f) := fun x₁ x₂ => by
   refine edist_smul_le _ _ _ |>.trans ?_
   rw [ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul, mul_comm (C : ℝ≥0∞), mul_assoc]

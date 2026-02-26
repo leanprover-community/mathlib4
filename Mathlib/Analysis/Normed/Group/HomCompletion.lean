@@ -57,7 +57,8 @@ open Set NormedAddGroupHom UniformSpace
 
 section Completion
 
-variable {G : Type*} [AddCommGroup G] [SeminormedAddCommGroup G] {H : Type*} [AddCommGroup H] [SeminormedAddCommGroup H]
+variable {G : Type*} [AddCommGroup G] [SeminormedAddCommGroup G] {H : Type*} [AddCommGroup H]
+    [SeminormedAddCommGroup H]
   {K : Type*} [AddCommGroup K] [SeminormedAddCommGroup K]
 
 /-- The normed group hom induced between completions. -/

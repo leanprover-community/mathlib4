@@ -211,7 +211,8 @@ section Pi
 open scoped InnerProductSpace
 
 variable {ι : Type*} {E : ι → Type*} [Fintype ι]
-variable [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, Module ℂ (E i)] [∀ i, SMul A (E i)]
+variable [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, Module ℂ (E i)]
+    [∀ i, SMul A (E i)]
 variable [∀ i, CStarModule A (E i)]
 
 noncomputable instance : Norm C⋆ᵐᵒᵈ(A, Π i, E i) where

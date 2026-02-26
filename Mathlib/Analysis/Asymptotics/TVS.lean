@@ -752,7 +752,8 @@ end TopologicalSpace
 section NormedSpace
 
 variable [NontriviallyNormedField 𝕜]
-variable [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F] [SeminormedAddCommGroup F]
+    [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 variable {f : α → E} {g : α → F} {l : Filter α}
 
 lemma isLittleOTVS_iff_isLittleO : f =o[𝕜; l] g ↔ f =o[l] g := by

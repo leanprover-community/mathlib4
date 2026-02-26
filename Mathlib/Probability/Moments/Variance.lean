@@ -489,7 +489,8 @@ end Prod
 
 section NormedSpace
 
-variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+variable {E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {mE : MeasurableSpace E}
   [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]
 

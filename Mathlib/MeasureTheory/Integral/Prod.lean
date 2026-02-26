@@ -307,7 +307,8 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
   hf.swap.integral_norm_prod_left
 
 omit [SFinite ν] in
-theorem Integrable.op_fst_snd {F G : Type*} [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G]
+theorem Integrable.op_fst_snd {F G : Type*} [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G]
+    [NormedAddCommGroup G]
     {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
     {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z ↦ op (f z.1) (g z.2)) (μ.prod ν) := by
@@ -582,7 +583,8 @@ theorem integral_fun_fst (f : α → E) : ∫ z, f z.1 ∂μ.prod ν = ν.real u
 
 section ContinuousLinearMap
 
-variable {E F G : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {mE : MeasurableSpace E}
+variable {E F G : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {mE : MeasurableSpace E}
   [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] {mF : MeasurableSpace F}
   [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] {mG : MeasurableSpace G}
   {μ : Measure E} [IsProbabilityMeasure μ] {ν : Measure F} [IsProbabilityMeasure ν]

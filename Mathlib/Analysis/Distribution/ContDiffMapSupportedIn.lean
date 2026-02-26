@@ -85,7 +85,8 @@ open scoped BoundedContinuousFunction Topology NNReal ContDiff
 variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-  [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
+  [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
+    [SMulCommClass ℝ 𝕜 F']
   {n k : ℕ∞} {K : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
@@ -111,7 +112,8 @@ open Distributions
 /-- `ContDiffMapSupportedInClass B E F n K` states that `B` is a type of bundled `n`-times
 continuously differentiable functions with support in the compact set `K`. -/
 class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
-    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+      [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     extends FunLike B E F where
   map_contDiff (f : B) : ContDiff ℝ n f
@@ -122,14 +124,16 @@ open ContDiffMapSupportedInClass
 namespace ContDiffMapSupportedInClass
 
 instance (B : Type*) (E F : outParam <| Type*)
-    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+      [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     ContinuousMapClass B E F where
   map_continuous f := (map_contDiff f).continuous
 
 instance (B : Type*) (E F : outParam <| Type*)
-    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
+    [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+      [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
     [ContDiffMapSupportedInClass B E F n K] :
     BoundedContinuousMapClass B E F where

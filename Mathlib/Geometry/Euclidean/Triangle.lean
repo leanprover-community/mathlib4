@@ -199,7 +199,8 @@ namespace Orientation
 
 open Module InnerProductGeometry
 
-variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [Fact (finrank ℝ V = 2)]
+variable {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [Fact (finrank ℝ V = 2)]
 variable (o : Orientation ℝ V (Fin 2))
 
 /-- **Converse of pons asinorum**, oriented vector angle form (given equality of angles mod `π`). -/
@@ -235,7 +236,8 @@ This section develops some geometrical definitions and results on
 open InnerProductGeometry
 open scoped EuclideanGeometry
 
-variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- **Law of cosines** (cosine rule), angle-at-point form. -/

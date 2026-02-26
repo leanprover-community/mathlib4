@@ -44,7 +44,8 @@ variable {ι 𝕜 E F F₁ F₂ : Type*}
 
 section definition
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 set_option backward.isDefEq.respectTransparency false in
 variable (E F) in
@@ -66,7 +67,8 @@ end definition
 
 section Embeddings
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 namespace MeasureTheory.Measure
 
@@ -353,7 +355,8 @@ section lineDeriv
 
 open LineDeriv
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℂ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace ℝ E] [NormedSpace ℂ F]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The partial derivative (or directional derivative) in the direction `m : E` as a

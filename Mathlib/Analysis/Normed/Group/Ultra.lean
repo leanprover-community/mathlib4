@@ -41,7 +41,8 @@ namespace IsUltrametricDist
 
 section Group
 
-variable {S S' ι : Type*} [Group S] [SeminormedGroup S] [Group S'] [SeminormedGroup S'] [IsUltrametricDist S]
+variable {S S' ι : Type*} [Group S] [SeminormedGroup S] [Group S'] [SeminormedGroup S']
+    [IsUltrametricDist S]
 
 @[to_additive]
 lemma norm_mul_le_max (x y : S) :
@@ -79,15 +80,18 @@ lemma isUltrametricDist_of_forall_nnnorm_mul_le_max_nnnorm
     (h : ∀ x y : S', ‖x * y‖₊ ≤ max ‖x‖₊ ‖y‖₊) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_norm_mul_le_max_norm h
 
-lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [AddGroup S'] [SeminormedAddGroup S']
+lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [AddGroup S']
+    [SeminormedAddGroup S']
     (h : IsNonarchimedean (nnnorm : S' → ℝ≥0)) : IsUltrametricDist S' :=
   isUltrametricDist_of_forall_nnnorm_add_le_max_nnnorm h
 
-lemma isNonarchimedean_nnnorm {R} [AddCommGroup R] [SeminormedAddCommGroup R] [IsUltrametricDist R] :
+lemma isNonarchimedean_nnnorm {R} [AddCommGroup R] [SeminormedAddCommGroup R] [IsUltrametricDist R]
+    :
     IsNonarchimedean (‖·‖₊ : R → ℝ) := by
   simpa using isNonarchimedean_norm
 
-lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [AddCommGroup R] [SeminormedAddCommGroup R] :
+lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [AddCommGroup R] [SeminormedAddCommGroup R]
+    :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
   ⟨fun h => h.isNonarchimedean_norm, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 

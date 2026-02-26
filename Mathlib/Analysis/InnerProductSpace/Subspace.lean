@@ -87,7 +87,8 @@ def OrthogonalFamily (G : ι → Type*) [∀ i, AddCommGroup (G i)] [∀ i, Semi
   Pairwise fun i j => ∀ v : G i, ∀ w : G j, ⟪V i v, V j w⟫ = 0
 
 variable {𝕜}
-variable {G : ι → Type*} [∀ i, AddCommGroup (G i)] [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable {G : ι → Type*} [∀ i, AddCommGroup (G i)] [∀ i, NormedAddCommGroup (G i)]
+    [∀ i, InnerProductSpace 𝕜 (G i)]
   {V : ∀ i, G i →ₗᵢ[𝕜] E}
 
 theorem Orthonormal.orthogonalFamily {v : ι → E} (hv : Orthonormal 𝕜 v) :

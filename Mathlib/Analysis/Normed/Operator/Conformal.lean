@@ -47,13 +47,17 @@ open Function LinearIsometry ContinuousLinearMap
 
 /-- A continuous linear map `f'` is said to be conformal if it's
 a nonzero multiple of a linear isometry. -/
-def IsConformalMap {R : Type*} {X Y : Type*} [NormedField R] [AddCommGroup X] [SeminormedAddCommGroup X]
-    [AddCommGroup Y] [SeminormedAddCommGroup Y] [NormedSpace R X] [NormedSpace R Y] (f' : X →L[R] Y) :=
+def IsConformalMap {R : Type*} {X Y : Type*} [NormedField R] [AddCommGroup X]
+    [SeminormedAddCommGroup X]
+    [AddCommGroup Y] [SeminormedAddCommGroup Y] [NormedSpace R X] [NormedSpace R Y] (f' : X →L[R]
+      Y) :=
   ∃ c ≠ (0 : R), ∃ li : X →ₗᵢ[R] Y, f' = c • li.toContinuousLinearMap
 
-variable {R M N G M' : Type*} [NormedField R] [AddCommGroup M] [SeminormedAddCommGroup M] [AddCommGroup N] [SeminormedAddCommGroup N]
+variable {R M N G M' : Type*} [NormedField R] [AddCommGroup M] [SeminormedAddCommGroup M]
+    [AddCommGroup N] [SeminormedAddCommGroup N]
   [AddCommGroup G] [SeminormedAddCommGroup G] [NormedSpace R M] [NormedSpace R N] [NormedSpace R G]
-  [AddCommGroup M'] [NormedAddCommGroup M'] [NormedSpace R M'] {f : M →L[R] N} {g : N →L[R] G} {c : R}
+  [AddCommGroup M'] [NormedAddCommGroup M'] [NormedSpace R M'] {f : M →L[R] N} {g : N →L[R]
+    G} {c : R}
 
 theorem isConformalMap_id : IsConformalMap (.id R M) :=
   ⟨1, one_ne_zero, id, by simp⟩

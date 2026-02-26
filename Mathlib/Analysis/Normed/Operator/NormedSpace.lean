@@ -29,7 +29,8 @@ variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G : Type*}
 
 section Normed
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+    [AddCommGroup G] [NormedAddCommGroup G]
   [AddCommGroup Fₗ] [NormedAddCommGroup Fₗ]
 
 open Metric ContinuousLinearMap
@@ -170,7 +171,8 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [Nontr
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ]
   {σ₂₃ : 𝕜₂ →+* 𝕜₃}
 
-variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [AddCommGroup F'] [NormedAddCommGroup F']
+variable {𝕜₂' : Type*} [NontriviallyNormedField 𝕜₂'] {F' : Type*} [AddCommGroup F']
+    [NormedAddCommGroup F']
   [NormedSpace 𝕜₂' F'] {σ₂' : 𝕜₂' →+* 𝕜₂} {σ₂'' : 𝕜₂ →+* 𝕜₂'} {σ₂₃' : 𝕜₂' →+* 𝕜₃}
   [RingHomInvPair σ₂' σ₂''] [RingHomInvPair σ₂'' σ₂'] [RingHomCompTriple σ₂' σ₂₃ σ₂₃']
   [RingHomCompTriple σ₂'' σ₂₃' σ₂₃] [RingHomIsometric σ₂₃] [RingHomIsometric σ₂']
@@ -274,13 +276,15 @@ end Normed
 /-- A bounded bilinear form `B` in a real normed space is *coercive*
 if there is some positive constant C such that `C * ‖u‖ * ‖u‖ ≤ B u u`.
 -/
-def IsCoercive [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ] ℝ) : Prop :=
+def IsCoercive [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →L[ℝ]
+    ℝ) : Prop :=
   ∃ C, 0 < C ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u
 
 section Equicontinuous
 
 variable {ι : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [RingHomIsometric σ₁₂] [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F] [SeminormedAddCommGroup F]
+  [RingHomIsometric σ₁₂] [AddCommGroup E] [SeminormedAddCommGroup E] [AddCommGroup F]
+    [SeminormedAddCommGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] (f : ι → E →SL[σ₁₂] F)
 
 /-- Equivalent characterizations for equicontinuity of a family of continuous linear maps
@@ -341,16 +345,19 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι]
     (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : ι → Type*)
 
 /-- The injection `x ↦ Pi.single i x` as a linear isometry. -/
-protected def LinearIsometry.single [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+protected def LinearIsometry.single [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)]
     (i : ι) : E i →ₗᵢ[𝕜] Π j, E j :=
   (LinearMap.single 𝕜 E i).toLinearIsometry (.single i)
 
-lemma ContinuousLinearMap.norm_single_le_one [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)]
+lemma ContinuousLinearMap.norm_single_le_one [∀ i, AddCommGroup (E i)]
+    [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (i : ι) :
     ‖ContinuousLinearMap.single 𝕜 E i‖ ≤ 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_single [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+lemma ContinuousLinearMap.norm_single [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)]
     (i : ι) [Nontrivial (E i)] :
     ‖ContinuousLinearMap.single 𝕜 E i‖ = 1 :=
   (LinearIsometry.single 𝕜 E i).norm_toContinuousLinearMap
@@ -381,12 +388,14 @@ lemma LinearIsometry.inr_apply [AddCommGroup E] [SeminormedAddCommGroup E] [Norm
     [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] (y : F) :
     LinearIsometry.inr 𝕜 E F y = (0, y) := rfl
 
-lemma ContinuousLinearMap.norm_inl_le_one [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+lemma ContinuousLinearMap.norm_inl_le_one [AddCommGroup E] [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
     [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inl 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inl 𝕜 E F).norm_toContinuousLinearMap_le
 
-lemma ContinuousLinearMap.norm_inr_le_one [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+lemma ContinuousLinearMap.norm_inr_le_one [AddCommGroup E] [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
     [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] :
     ‖ContinuousLinearMap.inr 𝕜 E F‖ ≤ 1 :=
   (LinearIsometry.inr 𝕜 E F).norm_toContinuousLinearMap_le

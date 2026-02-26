@@ -199,7 +199,8 @@ theorem comp {g : F → G} (hg : ContDiffPointwiseHolderAt k α g (f a))
   hg.comp_of_differentiableAt a hf (.inl <| hg.differentiableAt hk)
 
 variable (a) in
-theorem comp₂_of_differentiableAt {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace ℝ H]
+theorem comp₂_of_differentiableAt {H : Type*} [AddCommGroup H] [NormedAddCommGroup H]
+    [NormedSpace ℝ H]
     {g : F × G → H} {f₁ : E → F} {f₂ : E → G} (hg : ContDiffPointwiseHolderAt k α g (f₁ a, f₂ a))
     (hf₁ : ContDiffPointwiseHolderAt k α f₁ a) (hf₂ : ContDiffPointwiseHolderAt k α f₂ a)
     (hdiff : DifferentiableAt ℝ g (f₁ a, f₂ a) ∨

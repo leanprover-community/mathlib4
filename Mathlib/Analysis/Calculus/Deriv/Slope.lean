@@ -243,7 +243,8 @@ section RealSpace
 
 open Metric
 
-variable {E : Type u} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {f : ℝ → E} {f' : E} {s : Set ℝ}
+variable {E : Type u} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : ℝ → E} {f' : E} {s : Set ℝ}
   {x r : ℝ}
 
 /-- If `f` has derivative `f'` within `s` at `x`, then for any `r > ‖f'‖` the ratio

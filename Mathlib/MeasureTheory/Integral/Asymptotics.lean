@@ -31,7 +31,8 @@ public section
 
 open Asymptotics MeasureTheory Set Filter
 
-variable {α E F : Type*} [AddCommGroup E] [NormedAddCommGroup E] {f : α → E} {g : α → F} {a : α} {l : Filter α}
+variable {α E F : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    {f : α → E} {g : α → F} {a : α} {l : Filter α}
 
 namespace Asymptotics
 

@@ -25,7 +25,8 @@ instance seminormedAddCommGroup [Ring 𝕜] [AddCommGroup E] [SeminormedAddCommG
 /-- If `x` is an element of a submodule `s` of a normed group `E`, its norm in `s` is equal to its
 norm in `E`. -/
 @[simp]
-theorem coe_norm [Ring 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
+theorem coe_norm [Ring 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [Module 𝕜 E]
+    {s : Submodule 𝕜 E}
     (x : s) : ‖x‖ = ‖(x : E)‖ :=
   rfl
 
@@ -34,7 +35,8 @@ norm in `s`.
 
 This is a reversed version of the `simp` lemma `Submodule.coe_norm` for use by `norm_cast`. -/
 @[norm_cast]
-theorem norm_coe [Ring 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [Module 𝕜 E] {s : Submodule 𝕜 E}
+theorem norm_coe [Ring 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [Module 𝕜 E]
+    {s : Submodule 𝕜 E}
     (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
 

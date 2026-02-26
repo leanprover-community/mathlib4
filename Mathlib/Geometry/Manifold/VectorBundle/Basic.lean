@@ -260,12 +260,14 @@ end
 /-! ### `C^n` vector bundles -/
 
 
-variable [NontriviallyNormedField 𝕜] {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+variable [NontriviallyNormedField 𝕜] {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB]
+    [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
   [ChartedSpace HB B] {EM : Type*} [AddCommGroup EM] [NormedAddCommGroup EM]
   [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM] {IM : ModelWithCorners 𝕜 EM HM}
   [TopologicalSpace M] [ChartedSpace HM M]
-  [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F]
 
 section WithTopology
 

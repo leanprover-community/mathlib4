@@ -39,11 +39,13 @@ class NormedAddTorsor (V : outParam Type*) (P : Type*) [AddCommGroup V] [Seminor
   dist_eq_norm' : ∀ x y : P, dist x y = ‖(x -ᵥ y : V)‖
 
 /-- Shortcut instance to help typeclass inference out. -/
-instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V]
+instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [AddCommGroup V]
+    [NormedAddCommGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
 
-variable {α V P W Q : Type*} [AddCommGroup V] [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+variable {α V P W Q : Type*} [AddCommGroup V] [SeminormedAddCommGroup V] [PseudoMetricSpace P]
+    [NormedAddTorsor V P]
   [AddCommGroup W] [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
@@ -181,7 +183,8 @@ theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [AddCommGroup V] [SeminormedAddCommGroup V]
+def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [AddCommGroup V]
+    [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   dist_self x := by simp

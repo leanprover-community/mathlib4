@@ -125,7 +125,8 @@ open Filter Topology Set in
 /- The key step: show that the norm of a suitable function is constant if the norm takes
 a positive minimum and condition `H` below is satisfied. -/
 private lemma norm_eq_of_isMinOn_of_forall_le {X E : Type*} [TopologicalSpace X]
-    [PreconnectedSpace X] [AddCommGroup E] [SeminormedAddCommGroup E] {f : X → E} {M : ℝ} {x : X} (hM : 0 < M)
+    [PreconnectedSpace X] [AddCommGroup E] [SeminormedAddCommGroup E]
+      {f : X → E} {M : ℝ} {x : X} (hM : 0 < M)
     (hx : ‖f x‖ = M) (h : IsMinOn (‖f ·‖) univ x) (hf : Continuous f)
     (H : ∀ {y} z, ‖f y‖ = M → ∀ n > 0, ‖f z‖ ≤ M * (1 + (‖f z - f y‖ / M) ^ n)) (y : X) :
     ‖f y‖ = M := by

@@ -390,17 +390,20 @@ def _root_.NormedSpace.toDiffeology (X : Type*)
       exact toEuclidean.continuous.isOpen_preimage _ (h _ toEuclidean.symm.contDiff) }
 
 attribute [local instance] NormedSpace.toDiffeology in
-instance {X : Type*} [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X] [FiniteDimensional ℝ X] :
+instance {X : Type*} [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X]
+    [FiniteDimensional ℝ X] :
     IsContDiffCompatible X :=
   ⟨Iff.rfl⟩
 
 lemma _root_.NormedSpace.isContDiffCompatible_iff_eq_toDiffeology {X : Type*}
-    [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X] [FiniteDimensional ℝ X] [d : DiffeologicalSpace X] :
+    [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X] [FiniteDimensional ℝ X]
+      [d : DiffeologicalSpace X] :
     IsContDiffCompatible X ↔ d = NormedSpace.toDiffeology X :=
   ⟨fun _ ↦ by ext n p; exact IsContDiffCompatible.isPlot_iff, fun h ↦ h ▸ inferInstance⟩
 
 attribute [local instance] NormedSpace.toDiffeology in
-instance {X : Type*} [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X] [FiniteDimensional ℝ X] :
+instance {X : Type*} [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X]
+    [FiniteDimensional ℝ X] :
     IsDTopologyCompatible X :=
   ⟨rfl⟩
 
@@ -429,7 +432,8 @@ lemma isPlot_id' : IsPlot fun x : 𝔼ⁿ ↦ x := isPlot_id
 
 variable {Y : Type*}
   [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X] [IsContDiffCompatible X]
-  [AddCommGroup Y] [NormedAddCommGroup Y] [NormedSpace ℝ Y] [DiffeologicalSpace Y] [IsContDiffCompatible Y]
+  [AddCommGroup Y] [NormedAddCommGroup Y] [NormedSpace ℝ Y] [DiffeologicalSpace Y]
+    [IsContDiffCompatible Y]
 
 theorem isPlot_iff_contDiff {p : 𝔼ⁿ → X} : IsPlot p ↔ ContDiff ℝ ∞ p :=
   IsContDiffCompatible.isPlot_iff

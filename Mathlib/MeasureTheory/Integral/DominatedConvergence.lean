@@ -320,7 +320,8 @@ section ContinuousPrimitive
 
 open scoped Interval
 
-variable {E X : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
+variable {E X : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [TopologicalSpace X]
   {a b b₀ b₁ b₂ : ℝ} {μ : Measure ℝ} {f : ℝ → E}
 
 theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)

@@ -30,8 +30,10 @@ open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E F G H : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [AddCommGroup H] [NormedAddCommGroup H]
+variable {E F G H : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [AddCommGroup F] [NormedAddCommGroup F]
+  [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [AddCommGroup H]
+    [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]

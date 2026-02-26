@@ -78,7 +78,8 @@ add more properties if they are useful and satisfied in the examples of inner pr
 and finite-dimensional vector spaces, notably derivative norm control in terms of `R - 1`.
 
 TODO: do we ever need `f x = 1 ↔ ‖x‖ ≤ 1`? -/
-structure ContDiffBumpBase (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] where
+structure ContDiffBumpBase (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    where
   /-- The function underlying this family of bump functions -/
   toFun : ℝ → E → ℝ
   mem_Icc : ∀ (R : ℝ) (x : E), toFun R x ∈ Icc (0 : ℝ) 1
@@ -90,7 +91,8 @@ structure ContDiffBumpBase (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] [
 /-- A class registering that a real vector space admits bump functions. This will be instantiated
 first for inner product spaces, and then for finite-dimensional normed spaces.
 We use a specific class instead of `Nonempty (ContDiffBumpBase E)` for performance reasons. -/
-class HasContDiffBump (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] : Prop where
+class HasContDiffBump (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    : Prop where
   out : Nonempty (ContDiffBumpBase E)
 
 /-- In a space with `C^∞` bump functions, register some function that will be used as a basis
@@ -111,7 +113,8 @@ theorem one_lt_rOut_div_rIn {c : E} (f : ContDiffBump c) : 1 < f.rOut / f.rIn :=
 instance (c : E) : Inhabited (ContDiffBump c) :=
   ⟨⟨1, 2, zero_lt_one, one_lt_two⟩⟩
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace ℝ X]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [AddCommGroup X]
+    [NormedAddCommGroup X] [NormedSpace ℝ X]
   [HasContDiffBump E] {c : E} (f : ContDiffBump c) {x : E} {n : ℕ∞}
 
 /-- The function defined by `f : ContDiffBump c`. Use automatic coercion to

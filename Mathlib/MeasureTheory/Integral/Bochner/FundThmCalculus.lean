@@ -25,7 +25,8 @@ public section
 
 open Filter MeasureTheory Topology Asymptotics Metric
 
-variable {X E ι : Type*} [MeasurableSpace X] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {X E ι : Type*} [MeasurableSpace X] [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
   [CompleteSpace E]
 
 /-- Fundamental theorem of calculus for set integrals:

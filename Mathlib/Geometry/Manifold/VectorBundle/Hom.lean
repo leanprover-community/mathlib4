@@ -32,7 +32,8 @@ section
 
 variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
   {E₁ : B → Type*} {E₂ : B → Type*} [NontriviallyNormedField 𝕜]
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁]
+    [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
@@ -143,15 +144,18 @@ and two vector bundles `E₁` and `E₂` respectively over `B₁` and `B₂` (wi
 Also a third manifold `M`, which will be the source of all our maps.
 -/
 variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁]
+    [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
   {EB₁ : Type*}
-  [AddCommGroup EB₁] [NormedAddCommGroup EB₁] [NormedSpace 𝕜 EB₁] {HB₁ : Type*} [TopologicalSpace HB₁]
+  [AddCommGroup EB₁] [NormedAddCommGroup EB₁] [NormedSpace 𝕜 EB₁]
+    {HB₁ : Type*} [TopologicalSpace HB₁]
   {IB₁ : ModelWithCorners 𝕜 EB₁ HB₁} [TopologicalSpace B₁] [ChartedSpace HB₁ B₁]
   {EB₂ : Type*}
-  [AddCommGroup EB₂] [NormedAddCommGroup EB₂] [NormedSpace 𝕜 EB₂] {HB₂ : Type*} [TopologicalSpace HB₂]
+  [AddCommGroup EB₂] [NormedAddCommGroup EB₂] [NormedSpace 𝕜 EB₂]
+    {HB₂ : Type*} [TopologicalSpace HB₂]
   {IB₂ : ModelWithCorners 𝕜 EB₂ HB₂} [TopologicalSpace B₂] [ChartedSpace HB₂ B₂]
   {EM : Type*}
   [AddCommGroup EM] [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
@@ -238,7 +242,8 @@ Also a second manifold `M`, which will be the source of all our maps.
 -/
 variable {𝕜 B F₁ F₂ F₃ M : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {E₁ : B → Type*}
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁]
+    [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
   {E₂ : B → Type*} [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]

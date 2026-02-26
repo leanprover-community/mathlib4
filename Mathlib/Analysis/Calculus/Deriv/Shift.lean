@@ -20,7 +20,8 @@ public section
 
 open scoped Pointwise
 
-variable {𝕜 F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F]
   {f : 𝕜 → F} {f' : F}
 
 /-- Translation in the domain does not change the derivative. -/

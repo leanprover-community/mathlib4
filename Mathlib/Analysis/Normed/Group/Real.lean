@@ -118,7 +118,8 @@ end Real
 
 section SeminormedCommGroup
 
-variable [CommGroup E] [SeminormedCommGroup E] [CommGroup F] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [CommGroup E] [SeminormedCommGroup E] [CommGroup F] [SeminormedCommGroup F]
+    {a b : E} {r : ℝ}
 variable {ε : Type*} [TopologicalSpace ε] [CommMonoid ε] [ESeminormedCommMonoid ε]
 
 @[to_additive (attr := simp high) norm_norm] -- Higher priority as a shortcut lemma.

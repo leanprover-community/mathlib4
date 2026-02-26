@@ -131,12 +131,14 @@ instance (priority := 100) : ENormSMulClass α β where
   enorm_smul r x := by simp [enorm, nnnorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
-    [∀ i, AddGroup (β i)] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)] [∀ i, NormSMulClass α (β i)] :
+    [∀ i, AddGroup (β i)] [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)]
+      [∀ i, NormSMulClass α (β i)] :
     NormSMulClass α (Π i, β i) where
   norm_smul r x := by
     simp [nnnorm_def, ← coe_nnnorm, nnnorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
 
-instance Prod.instNormSMulClass {γ : Type*} [AddGroup γ] [SeminormedAddGroup γ] [SMul α γ] [NormSMulClass α γ] :
+instance Prod.instNormSMulClass {γ : Type*} [AddGroup γ] [SeminormedAddGroup γ] [SMul α γ]
+    [NormSMulClass α γ] :
     NormSMulClass α (β × γ) where
   norm_smul := fun r ⟨v₁, v₂⟩ ↦ by simp only [smul_def, ← coe_nnnorm, nnnorm_def,
     nnnorm_smul r, ← NNReal.coe_mul, NNReal.mul_sup]
@@ -148,7 +150,8 @@ end NormSMulClass
 
 section NormSMulClassModule
 
-variable [SeminormedRing α] [AddCommGroup β] [SeminormedAddCommGroup β] [Module α β] [NormSMulClass α β]
+variable [SeminormedRing α] [AddCommGroup β] [SeminormedAddCommGroup β] [Module α β]
+    [NormSMulClass α β]
 
 theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * dist x y := by
   simp_rw [dist_eq_norm, (norm_smul s (x - y)).symm, smul_sub]

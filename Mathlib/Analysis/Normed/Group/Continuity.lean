@@ -136,7 +136,8 @@ instance NormedGroup.toENormedMonoid {F : Type*} [Group F] [NormedGroup F] : ENo
   enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
 
 @[to_additive]
-instance NormedCommGroup.toENormedCommMonoid [CommGroup E] [NormedCommGroup E] : ENormedCommMonoid E where
+instance NormedCommGroup.toENormedCommMonoid [CommGroup E] [NormedCommGroup E]
+    : ENormedCommMonoid E where
   __ := NormedGroup.toENormedMonoid
   __ := ‹NormedCommGroup E›
 
@@ -144,7 +145,8 @@ end Instances
 
 section SeminormedGroup
 
-variable [Group E] [SeminormedGroup E] [Group F] [SeminormedGroup F] [Group G] [SeminormedGroup G] {s : Set E} {a : E}
+variable [Group E] [SeminormedGroup E] [Group F] [SeminormedGroup F] [Group G] [SeminormedGroup G]
+    {s : Set E} {a : E}
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -214,7 +216,8 @@ end ContinuousENorm
 
 section SeminormedGroup
 
-variable [Group E] [SeminormedGroup E] [Group F] [SeminormedGroup F] [Group G] [SeminormedGroup G] {s : Set E} {a : E}
+variable [Group E] [SeminormedGroup E] [Group F] [SeminormedGroup F] [Group G] [SeminormedGroup G]
+    {s : Set E} {a : E}
 
 section
 
@@ -295,7 +298,8 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [CommGroup E] [SeminormedCommGroup E] [CommGroup F] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [CommGroup E] [SeminormedCommGroup E] [CommGroup F] [SeminormedCommGroup F]
+    {a b : E} {r : ℝ}
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :

@@ -42,7 +42,8 @@ open Set Filter ENNReal Finset
 namespace MeasureTheory
 
 variable {α E F F' G 𝕜 : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace ℝ F']
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup F']
+    [NormedAddCommGroup F'] [NormedSpace ℝ F']
   [AddCommGroup G] [NormedAddCommGroup G] {m : MeasurableSpace α} {μ : Measure α}
 
 local infixr:25 " →ₛ " => SimpleFunc
@@ -134,7 +135,8 @@ end FinMeasAdditive
 
 /-- A `FinMeasAdditive` set function whose norm on every set is less than the measure of the
 set (up to a multiplicative constant). -/
-def DominatedFinMeasAdditive {β} [AddCommGroup β] [SeminormedAddCommGroup β] {_ : MeasurableSpace α} (μ : Measure α)
+def DominatedFinMeasAdditive {β} [AddCommGroup β] [SeminormedAddCommGroup β]
+    {_ : MeasurableSpace α} (μ : Measure α)
     (T : Set α → β) (C : ℝ) : Prop :=
   FinMeasAdditive μ T ∧ ∀ s, MeasurableSet s → μ s < ∞ → ‖T s‖ ≤ C * μ.real s
 
@@ -148,14 +150,16 @@ theorem zero {m : MeasurableSpace α} (μ : Measure α) (hC : 0 ≤ C) :
   rw [Pi.zero_apply, norm_zero]
   exact mul_nonneg hC toReal_nonneg
 
-theorem eq_zero_of_measure_zero {β : Type*} [AddCommGroup β] [NormedAddCommGroup β] {T : Set α → β} {C : ℝ}
+theorem eq_zero_of_measure_zero {β : Type*} [AddCommGroup β] [NormedAddCommGroup β]
+    {T : Set α → β} {C : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) {s : Set α} (hs : MeasurableSet s) (hs_zero : μ s = 0) :
     T s = 0 := by
   refine norm_eq_zero.mp ?_
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
   rw [measureReal_def, hs_zero, ENNReal.toReal_zero, mul_zero]
 
-theorem eq_zero {β : Type*} [AddCommGroup β] [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
+theorem eq_zero {β : Type*} [AddCommGroup β] [NormedAddCommGroup β]
+    {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
     T s = 0 :=
   eq_zero_of_measure_zero hT hs (by simp only [Measure.coe_zero, Pi.zero_apply])
@@ -425,7 +429,8 @@ theorem setToSimpleFunc_smul {E} [AddCommGroup E] [NormedAddCommGroup E] [SMulZe
 section Order
 
 variable {G' G'' : Type*}
-  [AddCommGroup G''] [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G''] [NormedSpace ℝ G'']
+  [AddCommGroup G''] [NormedAddCommGroup G''] [PartialOrder G''] [IsOrderedAddMonoid G'']
+    [NormedSpace ℝ G'']
   [AddCommGroup G'] [NormedAddCommGroup G'] [PartialOrder G'] [NormedSpace ℝ G']
 
 theorem setToSimpleFunc_mono_left {m : MeasurableSpace α} (T T' : Set α → F →L[ℝ] G'')

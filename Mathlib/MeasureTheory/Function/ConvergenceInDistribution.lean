@@ -241,7 +241,8 @@ lemma TendstoInMeasure.tendstoInDistribution [l.NeBot] [l.IsCountablyGenerated]
 /-- **Slutsky's theorem**: if `X n` converges in distribution to `Z`, and `Y n` converges in
 probability to a constant `c`, then the pair `(X n, Y n)` converges in distribution to `(Z, c)`. -/
 theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
-    {E' : Type*} {mE' : MeasurableSpace E'} [AddCommGroup E'] [SeminormedAddCommGroup E'] [SecondCountableTopology E']
+    {E' : Type*} {mE' : MeasurableSpace E'} [AddCommGroup E'] [SeminormedAddCommGroup E']
+      [SecondCountableTopology E']
     [BorelSpace E']
     [l.IsCountablyGenerated] (X : ι → Ω → E) (Y : ι → Ω → E') (Z : Ω → E)
     {c : E'} (hXZ : TendstoInDistribution X l Z μ)
@@ -273,7 +274,8 @@ theorem TendstoInDistribution.prodMk_of_tendstoInMeasure_const
  `Y n` converges in probability to a constant `c`, and `g` is a continuous function, then
  `g (X n, Y n)` converges in distribution to `g (Z, c)`. -/
 theorem TendstoInDistribution.continuous_comp_prodMk_of_tendstoInMeasure_const {E' F : Type*}
-    {mE' : MeasurableSpace E'} [AddCommGroup E'] [SeminormedAddCommGroup E'] [SecondCountableTopology E']
+    {mE' : MeasurableSpace E'} [AddCommGroup E'] [SeminormedAddCommGroup E']
+      [SecondCountableTopology E']
     [BorelSpace E']
     [TopologicalSpace F] [MeasurableSpace F] [BorelSpace F] {g : E × E' → F} (hg : Continuous g)
     [l.IsCountablyGenerated] {X : ι → Ω → E} {Y : ι → Ω → E'}

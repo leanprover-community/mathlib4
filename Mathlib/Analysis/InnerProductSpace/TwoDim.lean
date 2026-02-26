@@ -80,7 +80,8 @@ open Module
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
 
 namespace Orientation
@@ -292,7 +293,8 @@ theorem rightAngleRotation_trans_neg_orientation :
     (-o).rightAngleRotation = o.rightAngleRotation.trans (LinearIsometryEquiv.neg ℝ) :=
   LinearIsometryEquiv.ext <| o.rightAngleRotation_neg_orientation
 
-theorem rightAngleRotation_map {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem rightAngleRotation_map {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+    [InnerProductSpace ℝ F]
     [hF : Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) (x : F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).rightAngleRotation x =
       φ (o.rightAngleRotation (φ.symm x)) := by
@@ -314,7 +316,8 @@ theorem linearIsometryEquiv_comp_rightAngleRotation (φ : E ≃ₗᵢ[ℝ] E)
     rwa [← o.map_eq_iff_det_pos φ.toLinearEquiv] at hφ
     rw [@Fact.out (finrank ℝ E = 2), Fintype.card_fin]
 
-theorem rightAngleRotation_map' {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+theorem rightAngleRotation_map' {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+    [InnerProductSpace ℝ F]
     [Fact (finrank ℝ F = 2)] (φ : E ≃ₗᵢ[ℝ] F) :
     (Orientation.map (Fin 2) φ.toLinearEquiv o).rightAngleRotation =
       (φ.symm.trans o.rightAngleRotation).trans φ :=

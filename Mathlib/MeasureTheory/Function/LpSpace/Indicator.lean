@@ -29,7 +29,8 @@ noncomputable section
 open MeasureTheory Filter
 open scoped NNReal ENNReal Topology symmDiff
 
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [AddCommGroup E] [NormedAddCommGroup E]
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [AddCommGroup E]
+    [NormedAddCommGroup E]
 
 namespace MeasureTheory
 

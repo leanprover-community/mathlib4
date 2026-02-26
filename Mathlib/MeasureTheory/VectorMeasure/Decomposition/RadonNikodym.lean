@@ -51,7 +51,8 @@ theorem absolutelyContinuous_iff_withDensityᵥ_rnDeriv_eq (s : SignedMeasure α
 
 end SignedMeasure
 
-theorem withDensityᵥ_rnDeriv_smul {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem withDensityᵥ_rnDeriv_smul {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
     {μ ν : Measure α} [μ.HaveLebesgueDecomposition ν] [SigmaFinite μ] {f : α → E}
     (hμν : μ ≪ ν) (hf : Integrable f μ) :
     ν.withDensityᵥ (fun x ↦ (μ.rnDeriv ν x).toReal • f x) = μ.withDensityᵥ f := by

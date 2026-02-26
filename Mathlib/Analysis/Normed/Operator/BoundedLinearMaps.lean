@@ -282,7 +282,8 @@ variable {𝕜 A : Type*} [CommSemiring 𝕜] [SeminormedRing A] [Algebra 𝕜 A
 
 /-- Scalar multiplication (for a normed `𝕜`-algebra acting on a normed `𝕜`-module) as a bounded
 bilinear map. -/
-theorem isBoundedBilinearMap_smul {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E] [Module 𝕜 E]
+theorem isBoundedBilinearMap_smul {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E]
+    [Module 𝕜 E]
     [Module A E] [IsBoundedSMul A E] [IsScalarTower 𝕜 A E] :
     IsBoundedBilinearMap 𝕜 fun p : A × E ↦ p.1 • p.2 where
   add_left := add_smul
@@ -298,8 +299,10 @@ theorem isBoundedBilinearMap_mul :
 
 end CommSemiring
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type*} [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E]
+    [SeminormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [AddCommGroup F] [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+    {G : Type*}
   [AddCommGroup G] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 /-- A continuous linear map satisfies `IsBoundedLinearMap` -/
@@ -324,7 +327,8 @@ variable {ι : Type*} [Fintype ι]
 
 /-- Taking the Cartesian product of two continuous multilinear maps is a bounded linear
 operation. -/
-theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, SeminormedAddCommGroup (E i)]
+theorem isBoundedLinearMap_prod_multilinear {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+    [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] :
     IsBoundedLinearMap 𝕜 fun p : ContinuousMultilinearMap 𝕜 E F × ContinuousMultilinearMap 𝕜 E G =>
       p.1.prod p.2 :=

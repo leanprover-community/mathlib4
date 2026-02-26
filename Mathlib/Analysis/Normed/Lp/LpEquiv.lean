@@ -47,7 +47,8 @@ open scoped ENNReal
 section LpPiLp
 
 
-variable {α : Type*} {E : α → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] {p : ℝ≥0∞}
+variable {α : Type*} {E : α → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
+    {p : ℝ≥0∞}
 
 section Finite
 

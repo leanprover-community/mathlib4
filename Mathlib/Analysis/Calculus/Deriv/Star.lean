@@ -25,7 +25,8 @@ public section
 universe u v w
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [StarRing 𝕜]
-  {F : Type v} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [StarAddMonoid F] [StarModule 𝕜 F]
+  {F : Type v} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [StarAddMonoid F]
+    [StarModule 𝕜 F]
   [ContinuousStar F] {f : 𝕜 → F} {f' : F} {x : 𝕜}
 
 /-! ### Derivative of `x ↦ star x` -/

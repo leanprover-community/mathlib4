@@ -23,7 +23,8 @@ multiplicative actions.
 
 open Metric Set
 
-variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [AddCommGroup E] [SeminormedAddCommGroup E]
+variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [AddCommGroup E]
+    [SeminormedAddCommGroup E]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] {r : ℝ}
 
 section ClosedBall

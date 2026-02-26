@@ -27,7 +27,8 @@ open scoped Manifold
 variable {𝕜 B B' : Type*} (F : Type*) (E : B → Type*) {n : WithTop ℕ∞}
 variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Module 𝕜 (E x)]
   [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [TopologicalSpace (TotalSpace F E)]
-  [∀ x, TopologicalSpace (E x)] {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB] [NormedSpace 𝕜 EB]
+  [∀ x, TopologicalSpace (E x)] {EB : Type*} [AddCommGroup EB] [NormedAddCommGroup EB]
+    [NormedSpace 𝕜 EB]
   {HB : Type*} [TopologicalSpace HB] {IB : ModelWithCorners 𝕜 EB HB} [TopologicalSpace B]
   [ChartedSpace HB B] {EB' : Type*} [AddCommGroup EB'] [NormedAddCommGroup EB']
   [NormedSpace 𝕜 EB'] {HB' : Type*} [TopologicalSpace HB'] (IB' : ModelWithCorners 𝕜 EB' HB')

@@ -64,7 +64,8 @@ Thus we can't say that the bounded operators `H →L[ℂ] H` form a `VonNeumannA
 (although we will later construct the instance `WStarAlgebra (H →L[ℂ] H)`),
 and instead will use `⊤ : VonNeumannAlgebra H`.
 -/
-structure VonNeumannAlgebra (H : Type u) [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+structure VonNeumannAlgebra (H : Type u) [AddCommGroup H] [NormedAddCommGroup H]
+    [InnerProductSpace ℂ H]
     [CompleteSpace H] extends StarSubalgebra ℂ (H →L[ℂ] H) where
   /-- The double commutant (a.k.a. centralizer) of a `VonNeumannAlgebra` is itself. -/
   centralizer_centralizer' : Set.centralizer (Set.centralizer carrier) = carrier
@@ -77,7 +78,8 @@ add_decl_doc VonNeumannAlgebra.toStarSubalgebra
 
 namespace VonNeumannAlgebra
 
-variable {H : Type u} [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+variable {H : Type u} [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace ℂ H]
+    [CompleteSpace H]
 
 instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier

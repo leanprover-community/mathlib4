@@ -247,7 +247,8 @@ namespace LinearEquiv
 section extend
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂]
-  [AddCommGroup E] [AddCommGroup Eₗ] [NormedAddCommGroup Eₗ] [AddCommGroup F] [AddCommGroup Fₗ] [NormedAddCommGroup Fₗ]
+  [AddCommGroup E] [AddCommGroup Eₗ] [NormedAddCommGroup Eₗ] [AddCommGroup F] [AddCommGroup Fₗ]
+    [NormedAddCommGroup Fₗ]
   [Module 𝕜 E] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ] [Module 𝕜₂ F] [Module 𝕜₂ Fₗ] [IsBoundedSMul 𝕜₂ Fₗ]
   [CompleteSpace Eₗ] [CompleteSpace Fₗ]
 

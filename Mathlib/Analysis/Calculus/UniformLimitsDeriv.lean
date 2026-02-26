@@ -105,7 +105,8 @@ section LimitsOfDerivatives
 
 variable {ι : Type*} {l : Filter ι} {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {𝕜 : Type*}
   [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
-  [NormedSpace 𝕜 E] {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+  [NormedSpace 𝕜 E] {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    {f : ι → E → G}
   {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -261,7 +262,8 @@ in fact for a fixed `y`, the difference quotients `‖z - y‖⁻¹ • (f_n z -
 _uniformly_ to `‖z - y‖⁻¹ • (g z - g y)` -/
 theorem difference_quotients_converge_uniformly
     {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {𝕜 : Type*} [RCLike 𝕜]
-    [NormedSpace 𝕜 E] {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G] {f : ι → E → G}
+    [NormedSpace 𝕜 E] {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+      {f : ι → E → G}
     {g : E → G} {f' : ι → E → E →L[𝕜] G} {g' : E → E →L[𝕜] G} {x : E}
     (hf' : TendstoUniformlyOnFilter f' g' l (𝓝 x))
     (hf : ∀ᶠ n : ι × E in l ×ˢ 𝓝 x, HasFDerivAt (f n.1) (f' n.1 n.2) n.2)

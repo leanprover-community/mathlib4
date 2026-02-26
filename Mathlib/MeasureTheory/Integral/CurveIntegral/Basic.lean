@@ -486,7 +486,8 @@ end Algebra
 
 section FDeriv
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E]
+variable {𝕜 E F : Type*} [RCLike 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
   {a b : E} {s : Set E} {ω : E → E →L[𝕜] F}
 

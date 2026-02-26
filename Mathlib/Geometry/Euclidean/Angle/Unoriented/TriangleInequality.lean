@@ -286,7 +286,8 @@ end InnerProductGeometry
 
 namespace EuclideanGeometry
 
-variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MetricSpace P]
   [NormedAddTorsor V P]
 
 /-- **Triangle inequality** for angles in Euclidean geometry. -/

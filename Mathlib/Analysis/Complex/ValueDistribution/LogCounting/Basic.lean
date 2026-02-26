@@ -71,7 +71,8 @@ lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : Meromorphic f) :
     (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
   simp_all [locallyFinsuppWithin.toClosedBall]
 
-lemma toClosedBall_support_subset_closedBall {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] {r : ℝ}
+lemma toClosedBall_support_subset_closedBall {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    {r : ℝ}
     (f : locallyFinsupp E ℤ) :
     (toClosedBall r f).support ⊆ closedBall 0 |r| := by
   simp_all [toClosedBall, restrict_apply]
@@ -119,7 +120,8 @@ noncomputable def logCounting {E : Type*} [AddCommGroup E] [NormedAddCommGroup E
 /--
 Evaluation of the logarithmic counting function at zero yields zero.
 -/
-@[simp] lemma logCounting_eval_zero {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [ProperSpace E]
+@[simp] lemma logCounting_eval_zero {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [ProperSpace E]
     (D : locallyFinsupp E ℤ) :
     logCounting D 0 = 0 := by
   simp [logCounting]

@@ -27,7 +27,8 @@ open scoped Pointwise Topology
 variable {α E F G : Type*}
 
 section SeminormedGroup
-variable [Group E] [SeminormedGroup E] [Group F] [SeminormedGroup F] [Group G] [SeminormedGroup G] {s : Set E}
+variable [Group E] [SeminormedGroup E] [Group F] [SeminormedGroup F] [Group G] [SeminormedGroup G]
+    {s : Set E}
 
 @[to_additive (attr := simp) comap_norm_atTop]
 lemma comap_norm_atTop' : comap norm atTop = cobounded E := by

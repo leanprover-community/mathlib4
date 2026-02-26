@@ -43,8 +43,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   [IsManifold J' n N']
   -- F₁, F₂, F₃, F₄ are normed spaces
-  {F₁ : Type*} [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [AddCommGroup F₂] [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [AddCommGroup F₃] [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
+  {F₁ : Type*} [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+    {F₂ : Type*} [AddCommGroup F₂] [NormedAddCommGroup F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [AddCommGroup F₃] [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+    {F₄ : Type*}
   [AddCommGroup F₄] [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {f f₁ : M → M'} {s t : Set M} {x : M} {m n : ℕ∞}

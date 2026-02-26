@@ -17,5 +17,6 @@ in earlier files.
 @[expose] public section
 
 noncomputable
-instance {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E] :
+instance {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+    [CompleteSpace E] :
     CStarAlgebra (E →L[ℂ] E) where

@@ -411,7 +411,8 @@ end ESeminormedAddMonoid
 
 section ESeminormedAddCommMonoid
 
-variable {ε' : Type*} [TopologicalSpace ε'] [AddCommMonoid ε'] [ESeminormedAddCommMonoid ε'] [ContinuousAdd ε']
+variable {ε' : Type*} [TopologicalSpace ε'] [AddCommMonoid ε'] [ESeminormedAddCommMonoid ε']
+    [ContinuousAdd ε']
 
 @[fun_prop]
 theorem integrable_finset_sum' {ι} (s : Finset ι) {f : ι → α → ε'}
@@ -937,13 +938,15 @@ variable {𝕜 : Type*}
   {ε : Type*} [TopologicalSpace ε] [AddMonoid ε] [ESeminormedAddMonoid ε]
 
 @[to_fun (attr := fun_prop)]
-theorem Integrable.smul [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
+theorem Integrable.smul [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
+    [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ := by
   constructor <;> fun_prop
 
 @[to_fun (attr := fun_prop)]
 theorem Integrable.smul_enorm
-    [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε] [ENormSMulClass 𝕜 ε] (c : 𝕜)
+    [AddCommGroup 𝕜] [NormedAddCommGroup 𝕜] [SMul 𝕜 ε] [ContinuousConstSMul 𝕜 ε]
+      [ENormSMulClass 𝕜 ε] (c : 𝕜)
     {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ := by
   constructor <;> fun_prop
 
@@ -1104,7 +1107,8 @@ end RCLike
 
 section Trim
 
-variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] {m0 : MeasurableSpace α} {μ' : Measure α} {f : α → H}
+variable {H : Type*} [AddCommGroup H] [NormedAddCommGroup H]
+    {m0 : MeasurableSpace α} {μ' : Measure α} {f : α → H}
 
 theorem Integrable.trim (hm : m ≤ m0) (hf_int : Integrable f μ') (hf : StronglyMeasurable[m] f) :
     Integrable f (μ'.trim hm) := by
@@ -1156,7 +1160,8 @@ section ContinuousLinearMap
 
 open MeasureTheory
 
-variable {E H : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup H] [NormedAddCommGroup H]
+variable {E H : Type*} [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup H]
+    [NormedAddCommGroup H]
   {𝕜 𝕜' : Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
   [NormedSpace 𝕜' E] [NormedSpace 𝕜 H]
 

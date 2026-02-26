@@ -32,7 +32,8 @@ namespace EuclideanGeometry
 
 open InnerProductGeometry
 
-variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MetricSpace P]
   [NormedAddTorsor V P] {p p₀ : P}
 
 /-- The undirected angle at `p₂` between the line segments to `p₁` and

@@ -25,7 +25,8 @@ open MeasureTheory RCLike
 open scoped ENNReal NNReal
 
 variable {X Y E F Fₗ : Type*} [MeasurableSpace X] {μ : Measure X} {𝕜 𝕜' : Type*} [RCLike 𝕜]
-  [RCLike 𝕜'] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜' F]
+  [RCLike 𝕜'] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F]
+    [NormedAddCommGroup F] [NormedSpace 𝕜' F]
   [AddCommGroup Fₗ] [NormedAddCommGroup Fₗ] [NormedSpace 𝕜 Fₗ] {p : ℝ≥0∞}
 
 namespace ContinuousLinearMap
@@ -69,7 +70,8 @@ theorem integral_comp_commSL [CompleteSpace E] (hσ : ∀ (r : ℝ) (x : 𝕜), 
 theorem integral_comp_comm [CompleteSpace E] (L : E →L[𝕜] Fₗ) {φ : X → E} (φ_int : Integrable φ μ) :
     ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := integral_comp_commSL (by simp) L φ_int
 
-theorem integral_apply {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace 𝕜 H] {φ : X → H →L[𝕜] E}
+theorem integral_apply {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
+    {φ : X → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm

@@ -45,7 +45,8 @@ namespace MeasureTheory
 
 variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω}
   {E F G : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup G] [NormedAddCommGroup G]
+    [NormedSpace ℝ G]
   [CompleteSpace G] (B : F →L[ℝ] E →L[ℝ] G)
 
 /-- Auxiliary lemma for `condExp_bilin_of_stronglyMeasurable_left`. -/

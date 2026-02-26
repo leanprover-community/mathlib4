@@ -58,7 +58,8 @@ open MeasureTheory Set Filter Function TopologicalSpace
 open scoped Topology Filter ENNReal Interval NNReal
 
 variable {ι 𝕜 ε ε' E F A : Type*} [AddCommGroup E] [NormedAddCommGroup E]
-  [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε] [TopologicalSpace ε'] [AddMonoid ε'] [ENormedAddMonoid ε']
+  [TopologicalSpace ε] [AddMonoid ε] [ENormedAddMonoid ε] [TopologicalSpace ε'] [AddMonoid ε']
+    [ENormedAddMonoid ε']
 
 /-!
 ### Integrability on an interval
@@ -267,7 +268,8 @@ theorem mono_fun_enorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
     (hle : (‖g ·‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] (‖f ·‖ₑ)) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono_enorm hgm hle
 
-theorem mono_fun {f : ℝ → E} [AddCommGroup F] [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
+theorem mono_fun {f : ℝ → E} [AddCommGroup F] [NormedAddCommGroup F]
+    {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (fun x => ‖g x‖) ≤ᵐ[μ.restrict (Ι a b)] fun x => ‖f x‖) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
@@ -304,7 +306,8 @@ end
 
 variable [NormedRing A] {f g : ℝ → ε} {a b : ℝ} {μ : Measure ℝ}
 
-theorem smul {R : Type*} [AddCommGroup R] [NormedAddCommGroup R] [SMulZeroClass R E] [IsBoundedSMul R E] {f : ℝ → E}
+theorem smul {R : Type*} [AddCommGroup R] [NormedAddCommGroup R] [SMulZeroClass R E]
+    [IsBoundedSMul R E] {f : ℝ → E}
     (h : IntervalIntegrable f μ a b) (r : R) :
     IntervalIntegrable (r • f) μ a b :=
   ⟨h.1.smul r, h.2.smul r⟩
@@ -327,7 +330,8 @@ theorem sum {ε} [TopologicalSpace ε] [AddCommMonoid ε] [ENormedAddCommMonoid 
 /-- Finite sums of interval integrable functions are interval integrable. -/
 @[simp]
 protected theorem finsum
-    {ε} [TopologicalSpace ε] [AddCommMonoid ε] [ENormedAddCommMonoid ε] [ContinuousAdd ε] [PseudoMetrizableSpace ε]
+    {ε} [TopologicalSpace ε] [AddCommMonoid ε] [ENormedAddCommMonoid ε] [ContinuousAdd ε]
+      [PseudoMetrizableSpace ε]
     {f : ι → ℝ → ε} (h : ∀ i, IntervalIntegrable (f i) μ a b) :
     IntervalIntegrable (∑ᶠ i, f i) μ a b := by
   by_cases h₁ : f.support.Finite

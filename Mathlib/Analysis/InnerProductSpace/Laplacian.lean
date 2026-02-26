@@ -116,8 +116,10 @@ end secondDerivativeAPI
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
-  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [IsScalarTower ℝ 𝕜 F]
+  {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace ℝ E]
+    [FiniteDimensional ℝ E]
+  {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
+    [IsScalarTower ℝ 𝕜 F]
   {G : Type*} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
   {f f₁ f₂ : E → F} {x : E} {s : Set E}
 

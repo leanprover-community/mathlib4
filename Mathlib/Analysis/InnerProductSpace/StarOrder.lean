@@ -27,7 +27,8 @@ namespace ContinuousLinearMap
 open RCLike
 open scoped NNReal
 
-variable {𝕜 H : Type*} [RCLike 𝕜] [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
+variable {𝕜 H : Type*} [RCLike 𝕜] [AddCommGroup H] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
+    [CompleteSpace H]
 variable [Algebra ℝ (H →L[𝕜] H)] [IsScalarTower ℝ 𝕜 (H →L[𝕜] H)]
 
 set_option backward.isDefEq.respectTransparency false in

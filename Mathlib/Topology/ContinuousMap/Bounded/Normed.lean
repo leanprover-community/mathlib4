@@ -115,13 +115,15 @@ theorem norm_const_eq [h : Nonempty α] (b : β) : ‖const α b‖ = ‖b‖ :=
 
 /-- Constructing a bounded continuous function from a uniformly bounded continuous
 function taking values in a normed group. -/
-def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [AddCommGroup β] [SeminormedAddCommGroup β]
+def ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α] [AddCommGroup β]
+    [SeminormedAddCommGroup β]
     (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) : α →ᵇ β :=
   ⟨⟨fun n => f n, Hf⟩, ⟨_, dist_le_two_norm' H⟩⟩
 
 @[simp]
 theorem coe_ofNormedAddCommGroup {α : Type u} {β : Type v} [TopologicalSpace α]
-    [AddCommGroup β] [SeminormedAddCommGroup β] (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
+    [AddCommGroup β] [SeminormedAddCommGroup β]
+      (f : α → β) (Hf : Continuous f) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
     (ofNormedAddCommGroup f Hf C H : α → β) = f := rfl
 
 theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : ℝ} (hC : 0 ≤ C)
@@ -131,12 +133,14 @@ theorem norm_ofNormedAddCommGroup_le {f : α → β} (hfc : Continuous f) {C : �
 /-- Constructing a bounded continuous function from a uniformly bounded
 function on a discrete space, taking values in a normed group. -/
 def ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [TopologicalSpace α] [DiscreteTopology α]
-    [AddCommGroup β] [SeminormedAddCommGroup β] (f : α → β) (C : ℝ) (H : ∀ x, norm (f x) ≤ C) : α →ᵇ β :=
+    [AddCommGroup β] [SeminormedAddCommGroup β]
+      (f : α → β) (C : ℝ) (H : ∀ x, norm (f x) ≤ C) : α →ᵇ β :=
   ofNormedAddCommGroup f continuous_of_discreteTopology C H
 
 @[simp]
 theorem coe_ofNormedAddCommGroupDiscrete {α : Type u} {β : Type v} [TopologicalSpace α]
-    [DiscreteTopology α] [AddCommGroup β] [SeminormedAddCommGroup β] (f : α → β) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
+    [DiscreteTopology α] [AddCommGroup β] [SeminormedAddCommGroup β]
+      (f : α → β) (C : ℝ) (H : ∀ x, ‖f x‖ ≤ C) :
     (ofNormedAddCommGroupDiscrete f C H : α → β) = f := rfl
 
 /-- Taking the pointwise norm of a bounded continuous function with values in a

@@ -17,10 +17,12 @@ bundled maps.
 @[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+  [NormedSpace 𝕜 E] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H : Type*}
   [TopologicalSpace H] {H' : Type*} [TopologicalSpace H'] {I : ModelWithCorners 𝕜 E H}
   {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M] (M' : Type*)
-  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [AddCommGroup E''] [NormedAddCommGroup E'']
+  [TopologicalSpace M'] [ChartedSpace H' M'] {E'' : Type*} [AddCommGroup E'']
+    [NormedAddCommGroup E'']
   [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''}
   {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M'']
   -- declare a manifold `N` over the pair `(F, G)`.

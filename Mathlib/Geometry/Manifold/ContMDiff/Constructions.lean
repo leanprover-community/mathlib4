@@ -352,7 +352,8 @@ use `𝓘(𝕜, Π i, F i)` as the model space.
 -/
 
 
-variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, AddCommGroup (Fi i)] [∀ i, NormedAddCommGroup (Fi i)]
+variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, AddCommGroup (Fi i)]
+    [∀ i, NormedAddCommGroup (Fi i)]
   [∀ i, NormedSpace 𝕜 (Fi i)] {φ : M → ∀ i, Fi i}
 
 theorem contMDiffWithinAt_pi_space :
@@ -379,7 +380,8 @@ end PiSpace
 section disjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
-  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H' : Type*} [TopologicalSpace H']
   {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
   {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
 

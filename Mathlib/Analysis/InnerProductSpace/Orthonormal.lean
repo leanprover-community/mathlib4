@@ -400,7 +400,8 @@ end
 
 section
 
-variable {ι : Type*} {ι' : Type*} {E' : Type*} [AddCommGroup E'] [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
+variable {ι : Type*} {ι' : Type*} {E' : Type*} [AddCommGroup E'] [SeminormedAddCommGroup E']
+    [InnerProductSpace 𝕜 E']
 
 @[simp]
 theorem Orthonormal.equiv_refl {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) :

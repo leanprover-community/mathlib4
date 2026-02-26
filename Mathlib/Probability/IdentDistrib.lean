@@ -200,7 +200,8 @@ theorem integral_eq [AddCommGroup γ] [NormedAddCommGroup γ] [NormedSpace ℝ �
     rw [h.aestronglyMeasurable_iff] at hf
     rw [integral_non_aestronglyMeasurable hf]
 
-theorem eLpNorm_eq [AddCommGroup γ] [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν)
+theorem eLpNorm_eq [AddCommGroup γ] [NormedAddCommGroup γ] [OpensMeasurableSpace γ]
+    (h : IdentDistrib f g μ ν)
     (p : ℝ≥0∞) : eLpNorm f p μ = eLpNorm g p ν := by
   by_cases h0 : p = 0
   · simp [h0]
@@ -215,26 +216,31 @@ theorem eLpNorm_eq [AddCommGroup γ] [NormedAddCommGroup γ] [OpensMeasurableSpa
   exact h.comp (Measurable.pow_const (measurable_coe_nnreal_ennreal.comp measurable_nnnorm)
     p.toReal)
 
-theorem memLp_snd [AddCommGroup γ] [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
+theorem memLp_snd [AddCommGroup γ] [NormedAddCommGroup γ] [BorelSpace γ]
+    {p : ℝ≥0∞} (h : IdentDistrib f g μ ν)
     (hf : MemLp f p μ) : MemLp g p ν := by
   refine ⟨h.aestronglyMeasurable_snd hf.aestronglyMeasurable, ?_⟩
   rw [← h.eLpNorm_eq]
   exact hf.2
 
-theorem memLp_iff [AddCommGroup γ] [NormedAddCommGroup γ] [BorelSpace γ] {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
+theorem memLp_iff [AddCommGroup γ] [NormedAddCommGroup γ] [BorelSpace γ]
+    {p : ℝ≥0∞} (h : IdentDistrib f g μ ν) :
     MemLp f p μ ↔ MemLp g p ν :=
   ⟨fun hf => h.memLp_snd hf, fun hg => h.symm.memLp_snd hg⟩
 
-theorem integrable_snd [AddCommGroup γ] [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν)
+theorem integrable_snd [AddCommGroup γ] [NormedAddCommGroup γ] [BorelSpace γ]
+    (h : IdentDistrib f g μ ν)
     (hf : Integrable f μ) : Integrable g ν := by
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact h.memLp_snd hf
 
-theorem integrable_iff [AddCommGroup γ] [NormedAddCommGroup γ] [BorelSpace γ] (h : IdentDistrib f g μ ν) :
+theorem integrable_iff [AddCommGroup γ] [NormedAddCommGroup γ] [BorelSpace γ]
+    (h : IdentDistrib f g μ ν) :
     Integrable f μ ↔ Integrable g ν :=
   ⟨fun hf => h.integrable_snd hf, fun hg => h.symm.integrable_snd hg⟩
 
-protected theorem norm [AddCommGroup γ] [NormedAddCommGroup γ] [OpensMeasurableSpace γ] (h : IdentDistrib f g μ ν) :
+protected theorem norm [AddCommGroup γ] [NormedAddCommGroup γ] [OpensMeasurableSpace γ]
+    (h : IdentDistrib f g μ ν) :
     IdentDistrib (fun x => ‖f x‖) (fun x => ‖g x‖) μ ν :=
   h.comp measurable_norm
 

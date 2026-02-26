@@ -167,7 +167,8 @@ lemma map_comp (s : SingularManifold X k I)
     ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
   simp [Function.comp_def]
 
-variable {E' H' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace ℝ E'] [TopologicalSpace H']
+variable {E' H' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace ℝ E']
+    [TopologicalSpace H']
 
 variable (M I) in
 /-- If `M` is a closed `C^k` manifold, it is a singular manifold over itself. -/

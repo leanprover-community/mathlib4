@@ -23,7 +23,8 @@ namespace EuclideanGeometry
 open Module
 open scoped Real
 
-variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V P : Type*} [AddCommGroup V] [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+    [MetricSpace P]
 variable [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 lemma oangle_self_orthogonalProjection (p : P) {p' : P} {s : AffineSubspace ℝ P}

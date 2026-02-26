@@ -90,7 +90,8 @@ theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) 
   | coe r => simp [closedEBall_coe, convex_closedBall]
 
 open Pointwise in
-theorem convexHull_sphere_eq_closedBall {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+theorem convexHull_sphere_eq_closedBall {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace ℝ F]
     [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
     convexHull ℝ (sphere x r) = closedBall x r := by
   suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by

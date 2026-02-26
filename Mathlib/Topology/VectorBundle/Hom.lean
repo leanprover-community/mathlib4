@@ -313,7 +313,8 @@ over `B₁` and `B₂` (with model fibers `F₁` and `F₂`).
 Also a third space `M`, which will be the source of all our maps.
 -/
 variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B₂ → Type*} [NontriviallyNormedField 𝕜]
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁]
+    [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   [TopologicalSpace (TotalSpace F₂ E₂)] [∀ x, TopologicalSpace (E₂ x)]
@@ -398,7 +399,8 @@ Also a second space `M`, which will be the source of all our maps.
 -/
 variable {𝕜 B F₁ F₂ F₃ M : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {E₁ : B → Type*}
-  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [AddCommGroup F₁] [NormedAddCommGroup F₁]
+    [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)]
   {E₂ : B → Type*} [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [AddCommGroup F₂] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]

@@ -657,7 +657,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : K)‖₊ = q := by simp [nnnorm]
 
 variable (K) in
-lemma norm_nsmul [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
+lemma norm_nsmul [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace K E]
+    (n : ℕ) (x : E) : ‖n • x‖ = n • ‖x‖ := by
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in

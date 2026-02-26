@@ -121,7 +121,8 @@ We use the names `MDifferentiable` and `mfderiv`, where the prefix letter `m` me
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E']
+    [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*}
   [TopologicalSpace M'] [ChartedSpace H' M']
 

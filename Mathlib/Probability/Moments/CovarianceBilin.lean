@@ -108,7 +108,8 @@ lemma isPosSemidef_covarianceBilin :
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
 
-lemma covarianceBilin_map {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+lemma covarianceBilin_map {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+    [InnerProductSpace ℝ F]
     [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology F] [CompleteSpace F]
     [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L : E →L[ℝ] F) (u v : F) :
     covarianceBilin (μ.map L) u v = covarianceBilin μ (L.adjoint u) (L.adjoint v) := by

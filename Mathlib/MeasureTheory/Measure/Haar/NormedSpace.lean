@@ -27,7 +27,8 @@ namespace Measure
 
 /- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
 an additive Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
-example {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
+example {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+    [FiniteDimensional ℝ E]
     [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
   infer_instance
 
@@ -83,8 +84,10 @@ lemma AddMonoidHom.continuous_of_measurable {G H : Type*}
     (f : G →+ H) (hf : Measurable f) : Continuous f :=
   let ⟨_s, hs, hbdd⟩ := f.exists_nhds_isBounded hf 0; f.continuous_of_isBounded_nhds_zero hs hbdd
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
-  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+    [BorelSpace E]
+  [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {F : Type*} [AddCommGroup F]
+    [NormedAddCommGroup F]
   [NormedSpace ℝ F]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -175,7 +178,8 @@ end Measure
 variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem integrable_comp_smul_iff {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integrable_comp_smul_iff {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
     [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
     (f : E → F) {R : ℝ} (hR : R ≠ 0) : Integrable (fun x => f (R • x)) μ ↔ Integrable f μ := by
   -- reduce to one-way implication

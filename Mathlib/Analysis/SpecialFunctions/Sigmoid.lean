@@ -148,7 +148,8 @@ end Real
 
 open Set Real
 
-variable {x : ℝ} {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {s : Set E}
+variable {x : ℝ} {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : E → ℝ} {s : Set E}
 
 @[fun_prop]
 lemma analyticAt_sigmoid : AnalyticAt ℝ sigmoid x :=

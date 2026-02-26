@@ -65,8 +65,10 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R : Type*} {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-variable [AddCommGroup E'] [SeminormedAddCommGroup E'] [AddCommGroup F'] [SeminormedAddCommGroup F'] [AddCommGroup G'] [SeminormedAddCommGroup G']
-  [AddCommGroup E''] [NormedAddCommGroup E''] [AddCommGroup F''] [NormedAddCommGroup F''] [AddCommGroup G''] [NormedAddCommGroup G''] [SeminormedRing R]
+variable [AddCommGroup E'] [SeminormedAddCommGroup E'] [AddCommGroup F'] [SeminormedAddCommGroup F']
+  [AddCommGroup G'] [SeminormedAddCommGroup G']
+  [AddCommGroup E''] [NormedAddCommGroup E''] [AddCommGroup F''] [NormedAddCommGroup F'']
+    [AddCommGroup G''] [NormedAddCommGroup G''] [SeminormedRing R]
   [AddGroup E'''] [SeminormedAddGroup E''']
   [SeminormedRing R']
 

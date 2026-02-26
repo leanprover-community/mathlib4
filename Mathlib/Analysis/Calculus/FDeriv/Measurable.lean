@@ -91,7 +91,8 @@ open scoped Topology
 
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
   [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 theorem measurable_apply₂ [MeasurableSpace E] [OpensMeasurableSpace E]

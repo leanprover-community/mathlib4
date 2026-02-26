@@ -42,7 +42,8 @@ open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type uE} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
-  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [AddCommGroup G]
+    [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {X : Type*} [AddCommGroup X] [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
   {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
 
@@ -52,7 +53,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Pi
 
-variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, AddCommGroup (F' i)] [∀ i, NormedAddCommGroup (F' i)]
+variable {ι ι' : Type*} [Fintype ι] [Fintype ι'] {F' : ι → Type*} [∀ i, AddCommGroup (F' i)]
+    [∀ i, NormedAddCommGroup (F' i)]
   [∀ i, NormedSpace 𝕜 (F' i)] {φ : ∀ i, E → F' i} {p' : ∀ i, E → FormalMultilinearSeries 𝕜 E (F' i)}
   {Φ : E → ∀ i, F' i} {P' : E → FormalMultilinearSeries 𝕜 E (∀ i, F' i)}
 
@@ -686,8 +688,10 @@ theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' 
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
 @[fun_prop]
-theorem ContDiffOn.prodMap {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {F' : Type*}
-    [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
+theorem ContDiffOn.prodMap {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {F' : Type*}
+    [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+      {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'}
     (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g t) : ContDiffOn 𝕜 n (Prod.map f g) (s ×ˢ t) :=
   (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))

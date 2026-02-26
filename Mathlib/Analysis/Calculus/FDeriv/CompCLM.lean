@@ -151,7 +151,8 @@ section ContinuousMultilinearApplyConst
 /-! ### Derivative of the application of continuous multilinear maps to a constant -/
 
 variable {ι : Type*}
-  {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace 𝕜 (M i)]
+  {M : ι → Type*} [∀ i, AddCommGroup (M i)] [∀ i, NormedAddCommGroup (M i)]
+    [∀ i, NormedSpace 𝕜 (M i)]
   {H : Type*} [AddCommGroup H] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
   {c : E → ContinuousMultilinearMap 𝕜 M H}
   {c' : E →L[𝕜] ContinuousMultilinearMap 𝕜 M H}

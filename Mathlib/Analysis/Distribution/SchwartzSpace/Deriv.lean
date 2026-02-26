@@ -44,7 +44,8 @@ variable {ι 𝕜 𝕜' D E F V F F₁ F₂ F₃ : Type*}
 
 namespace SchwartzMap
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace ℝ F]
 
 section Derivatives
 

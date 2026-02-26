@@ -99,7 +99,8 @@ end IndepFun
 section iIndepFun
 
 variable [IsProbabilityMeasure P] {ι : Type*} [Fintype ι] {E : ι → Type*}
-  {mE : ∀ i, MeasurableSpace (E i)} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, CompleteSpace (E i)]
+  {mE : ∀ i, MeasurableSpace (E i)} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, CompleteSpace (E i)]
   [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)] {X : (i : ι) → Ω → E i}
 
 section InnerProductSpace

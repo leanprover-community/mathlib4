@@ -393,7 +393,8 @@ end Lintegral
 
 section Integrable
 
-variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [AddCommGroup E] [NormedAddCommGroup E]
+variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [AddCommGroup E]
+    [NormedAddCommGroup E]
 
 theorem AECover.integrable_of_lintegral_enorm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
@@ -460,7 +461,8 @@ end Integrable
 
 section Integral
 
-variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [AddCommGroup E] [NormedAddCommGroup E]
+variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [AddCommGroup E]
+    [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated] {φ : ι → Set α}
@@ -629,7 +631,8 @@ open scoped Interval
 
 section IoiFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [AddCommGroup E] [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [AddCommGroup E]
+    [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
@@ -1158,7 +1161,8 @@ end IoiIntegrability
 section IntegrationByPartsBilinear
 
 variable {E F G : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [AddCommGroup G] [NormedAddCommGroup G]
+    [NormedSpace ℝ G]
   {L : E →L[ℝ] F →L[ℝ] G} {u : ℝ → E} {v : ℝ → F} {u' : ℝ → E} {v' : ℝ → F}
   {m n : G}
 

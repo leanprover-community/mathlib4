@@ -25,7 +25,8 @@ open scoped ContDiff
 
 open Set
 
-variable {𝕜 F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace 𝕜 F]
   {m n : WithTop ℕ∞} {f : 𝕜 → F} {s : Set 𝕜}
 
 /-- A function is `C^(n + 1)` on a domain with unique derivatives if and only if it is

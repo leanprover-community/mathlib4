@@ -34,7 +34,8 @@ the inverse map sends `(x, r)` to `r • x`.
 In the case of the unit sphere `r = `,
 one may think about it as generalization of polar coordinates to any normed space. -/
 @[simps apply_fst_coe apply_snd_coe symm_apply_coe]
-noncomputable def homeomorphSphereProd (E : Type*) [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+noncomputable def homeomorphSphereProd (E : Type*) [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
     (r : ℝ) (hr : 0 < r) :
     ({0}ᶜ : Set E) ≃ₜ (sphere (0 : E) r × Ioi (0 : ℝ)) where
   toFun x :=

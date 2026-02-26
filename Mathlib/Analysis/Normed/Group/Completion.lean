@@ -34,7 +34,8 @@ instance [UniformSpace E] [Norm E] : Norm (Completion E) where
   norm := Completion.extension Norm.norm
 
 @[simp]
-theorem norm_coe {E} [AddCommGroup E] [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ = ‖x‖ :=
+theorem norm_coe {E} [AddCommGroup E] [SeminormedAddCommGroup E]
+    (x : E) : ‖(x : Completion E)‖ = ‖x‖ :=
   Completion.extension_coe uniformContinuous_norm x
 
 instance [AddCommGroup E] [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
@@ -46,11 +47,13 @@ instance [AddCommGroup E] [SeminormedAddCommGroup E] : NormedAddCommGroup (Compl
         dist_eq_norm_neg_add]
 
 @[simp]
-theorem nnnorm_coe {E} [AddCommGroup E] [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
+theorem nnnorm_coe {E} [AddCommGroup E] [SeminormedAddCommGroup E]
+    (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
   simp [nnnorm]
 
 @[simp]
-lemma enorm_coe {E} [AddCommGroup E] [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by
+lemma enorm_coe {E} [AddCommGroup E] [SeminormedAddCommGroup E]
+    (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by
   simp [enorm]
 
 end Completion

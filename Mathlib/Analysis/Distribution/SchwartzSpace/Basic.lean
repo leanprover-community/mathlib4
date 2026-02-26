@@ -580,7 +580,8 @@ section CLM
 variable [NormedField 𝕜] [NormedField 𝕜']
 variable [AddCommGroup D] [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-variable [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G] [SMulCommClass ℝ 𝕜' G]
+variable [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜' G]
+    [SMulCommClass ℝ 𝕜' G]
 variable {σ : 𝕜 →+* 𝕜'}
 
 /-- Create a semilinear map between Schwartz spaces.
@@ -645,7 +646,8 @@ end CLM
 section EvalCLM
 
 variable [NormedField 𝕜]
-variable [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G]
+variable [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+    [SMulCommClass ℝ 𝕜 G]
 
 variable (𝕜 E G) in
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
@@ -1188,7 +1190,8 @@ section Lp
 open MeasureTheory
 open scoped NNReal ENNReal
 
-variable [AddCommGroup D] [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E] [OpensMeasurableSpace E]
+variable [AddCommGroup D] [NormedAddCommGroup D] [MeasurableSpace D] [MeasurableSpace E]
+    [OpensMeasurableSpace E]
   [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
 variable (𝕜 F) in

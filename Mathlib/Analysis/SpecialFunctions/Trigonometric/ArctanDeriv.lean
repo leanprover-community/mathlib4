@@ -140,7 +140,8 @@ end deriv
 
 section fderiv
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : StrongDual ℝ E}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {f : E → ℝ} {f' : StrongDual ℝ E}
   {x : E} {s : Set E} {n : ℕ∞}
 
 theorem HasStrictFDerivAt.arctan (hf : HasStrictFDerivAt f f' x) :

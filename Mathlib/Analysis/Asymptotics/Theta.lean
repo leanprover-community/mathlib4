@@ -30,8 +30,10 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-variable [AddCommGroup E'] [SeminormedAddCommGroup E'] [AddCommGroup F'] [SeminormedAddCommGroup F'] [AddCommGroup G'] [SeminormedAddCommGroup G']
-  [AddCommGroup E''] [NormedAddCommGroup E''] [AddCommGroup F''] [NormedAddCommGroup F''] [AddCommGroup G''] [NormedAddCommGroup G''] [SeminormedRing R]
+variable [AddCommGroup E'] [SeminormedAddCommGroup E'] [AddCommGroup F'] [SeminormedAddCommGroup F']
+    [AddCommGroup G'] [SeminormedAddCommGroup G']
+  [AddCommGroup E''] [NormedAddCommGroup E''] [AddCommGroup F''] [NormedAddCommGroup F'']
+    [AddCommGroup G''] [NormedAddCommGroup G''] [SeminormedRing R]
   [SeminormedRing R']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
@@ -322,7 +324,8 @@ end Asymptotics
 
 namespace ContinuousOn
 
-variable {α E F : Type*} [AddGroup E] [NormedAddGroup E] [AddGroup F] [SeminormedAddGroup F] [TopologicalSpace α]
+variable {α E F : Type*} [AddGroup E] [NormedAddGroup E] [AddGroup F] [SeminormedAddGroup F]
+    [TopologicalSpace α]
   {s : Set α} {f : α → E} {c : F}
 
 protected theorem isTheta_principal

@@ -43,7 +43,8 @@ open Topology
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
-class NormedStarGroup (E : Type*) [AddCommGroup E] [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
+class NormedStarGroup (E : Type*) [AddCommGroup E] [SeminormedAddCommGroup E] [StarAddMonoid E]
+    : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
 variable {𝕜 E α : Type*}

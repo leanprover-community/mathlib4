@@ -66,7 +66,8 @@ instance Int.hasSolidNorm : HasSolidNorm ℤ where
 
 end SolidNorm
 
-variable {α : Type*} [AddCommGroup α] [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
+variable {α : Type*} [AddCommGroup α] [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α]
+    [IsOrderedAddMonoid α]
 
 open HasSolidNorm
 
@@ -139,7 +140,8 @@ instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
 set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) HasSolidNorm.continuousSup {α : Type*}
-    [AddCommGroup α] [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α] : ContinuousSup α :=
+    [AddCommGroup α] [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
+      : ContinuousSup α :=
   OrderDual.continuousSup αᵒᵈ
 
 -- see Note [lower instance priority]

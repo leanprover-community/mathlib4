@@ -51,7 +51,8 @@ namespace ContinuousLinearMap
 section Pi
 
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
-  {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace ℝ (E i)]
+  {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, NormedSpace ℝ (E i)]
   {L : (i : ι) → StrongDual ℝ (E i) →L[ℝ] StrongDual ℝ (E i) →L[ℝ] ℝ}
 
 /-- Given `L i : (E i)' × (E i)' → ℝ` a family of continuous bilinear forms,
@@ -97,7 +98,8 @@ end Pi
 section Prod
 
 variable {E F : Type*}
-  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace ℝ F]
   {L₁ : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ}
   {L₂ : StrongDual ℝ F →L[ℝ] StrongDual ℝ F →L[ℝ] ℝ}
 
@@ -387,7 +389,8 @@ end IndepFun
 
 section AddSub
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+    [BorelSpace E]
   [SecondCountableTopology E]
 
 lemma iIndepFun.hasGaussianLaw_sum [CompleteSpace E] {ι : Type*} [Fintype ι] {X : ι → Ω → E}

@@ -129,7 +129,8 @@ public section
 section NormedSpace
 
 variable {E F : Type*}
-  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℂ F]
+  [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] [AddCommGroup F] [NormedAddCommGroup F]
+    [NormedSpace ℂ F]
   {R R₁ R₂ : ℝ} {f : E → F} {c z : E}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -246,7 +247,8 @@ end NormedSpace
 
 section DimOne
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E] {R R₁ R₂ : ℝ} {f : ℂ → E}
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℂ E]
+    {R R₁ R₂ : ℝ} {f : ℂ → E}
   {c z z₀ : ℂ}
 
 /-- The **Schwarz Lemma**: if `f : ℂ → E` is complex analytic

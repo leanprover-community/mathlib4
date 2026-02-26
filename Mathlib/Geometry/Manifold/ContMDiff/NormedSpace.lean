@@ -31,8 +31,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {F' : Type*} [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  {F₁ : Type*} [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [AddCommGroup F₂] [NormedAddCommGroup F₂]
-  [NormedSpace 𝕜 F₂] {F₃ : Type*} [AddCommGroup F₃] [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
+  {F₁ : Type*} [AddCommGroup F₁] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+    {F₂ : Type*} [AddCommGroup F₂] [NormedAddCommGroup F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [AddCommGroup F₃] [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃]
+    {F₄ : Type*}
   [AddCommGroup F₄] [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
   {s : Set M} {x : M} {n : WithTop ℕ∞}

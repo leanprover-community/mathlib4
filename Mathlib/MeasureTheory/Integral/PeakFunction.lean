@@ -48,7 +48,8 @@ open scoped Topology ENNReal
 open Set
 
 variable {α E ι : Type*} {hm : MeasurableSpace α} {μ : Measure α} [TopologicalSpace α]
-  [BorelSpace α] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] {g : α → E} {l : Filter ι} {x₀ : α}
+  [BorelSpace α] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {g : α → E} {l : Filter ι} {x₀ : α}
   {s t : Set α} {φ : ι → α → ℝ} {a : E}
 
 set_option backward.isDefEq.respectTransparency false in
@@ -388,7 +389,8 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuou
 
 open Module Bornology
 
-variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
+variable {F : Type*} [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
 
 set_option backward.isDefEq.respectTransparency false in

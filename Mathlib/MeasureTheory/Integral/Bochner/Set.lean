@@ -900,7 +900,8 @@ We prove that for any set `s`, the function
 section ContinuousSetIntegral
 
 variable [AddCommGroup E] [NormedAddCommGroup E]
-  {𝕜 : Type*} [NormedRing 𝕜] [AddCommGroup F] [NormedAddCommGroup F] [Module 𝕜 F] [IsBoundedSMul 𝕜 F]
+  {𝕜 : Type*} [NormedRing 𝕜] [AddCommGroup F] [NormedAddCommGroup F] [Module 𝕜 F]
+    [IsBoundedSMul 𝕜 F]
   {p : ℝ≥0∞} {μ : Measure X}
 
 /-- For `f : Lp E p μ`, we can define an element of `Lp E p (μ.restrict s)` by
@@ -986,7 +987,8 @@ end OpenPos
 
 section Support
 
-variable {M : Type*} [AddCommGroup M] [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
+variable {M : Type*} [AddCommGroup M] [NormedAddCommGroup M] [NormedSpace ℝ M]
+    {mX : MeasurableSpace X}
   {ν : Measure X} {F : X → M}
 
 theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
@@ -1064,7 +1066,8 @@ section ParametricIntegral
 variable {G 𝕜 : Type*} [TopologicalSpace X]
   [TopologicalSpace Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] {μ : Measure Y}
   [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup G] [NormedAddCommGroup G]
+    [NormedSpace 𝕜 G]
 
 open Metric ContinuousLinearMap
 

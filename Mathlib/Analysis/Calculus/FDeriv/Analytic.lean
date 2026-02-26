@@ -568,7 +568,8 @@ end deriv
 
 namespace ContinuousMultilinearMap
 
-variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, NormedSpace 𝕜 (E i)]
   [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
 
 open FormalMultilinearSeries
@@ -821,7 +822,8 @@ theorem iteratedFDeriv_zero_apply_diag : iteratedFDeriv 𝕜 0 f x = p 0 := by
 
 open ContinuousLinearMap
 
-private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [AddCommGroup F] [NormedAddCommGroup F]
+private theorem factorial_smul' {n : ℕ} : ∀ {F : Type max u v} [AddCommGroup F]
+    [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] {p : FormalMultilinearSeries 𝕜 E F}
     {f : E → F}, HasFPowerSeriesOnBall f p x r →
     n ! • p n (fun _ ↦ y) = iteratedFDeriv 𝕜 n f x (fun _ ↦ y) := by
@@ -860,7 +862,8 @@ end HasFPowerSeriesOnBall
 
 namespace ContinuousLinearMap
 
-variable {ι : Type*} {G : ι → Type*} [∀ i, AddCommGroup (G i)] [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
+variable {ι : Type*} {G : ι → Type*} [∀ i, AddCommGroup (G i)] [∀ i, NormedAddCommGroup (G i)]
+    [∀ i, NormedSpace 𝕜 (G i)]
   [Fintype ι] {H : Type*} [AddCommGroup H] [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 

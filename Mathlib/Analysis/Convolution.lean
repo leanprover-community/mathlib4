@@ -97,7 +97,8 @@ universe u𝕜 uG uE uE' uE'' uF uF' uF'' uP
 variable {𝕜 : Type u𝕜} {G : Type uG} {E : Type uE} {E' : Type uE'} {E'' : Type uE''} {F : Type uF}
   {F' : Type uF'} {F'' : Type uF''} {P : Type uP}
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup E'] [NormedAddCommGroup E'] [AddCommGroup E''] [NormedAddCommGroup E'']
+variable [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup E'] [NormedAddCommGroup E']
+    [AddCommGroup E''] [NormedAddCommGroup E'']
   [AddCommGroup F] [NormedAddCommGroup F] {f f' : G → E} {g g' : G → E'} {x x' : G} {y y' : E}
 
 namespace MeasureTheory
@@ -828,8 +829,10 @@ variable (L : E →L[𝕜] E' →L[𝕜] F)
 
 section Assoc
 variable [CompleteSpace F]
-variable [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [CompleteSpace F']
-variable [AddCommGroup F''] [NormedAddCommGroup F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F''] [CompleteSpace F'']
+variable [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F']
+    [CompleteSpace F']
+variable [AddCommGroup F''] [NormedAddCommGroup F''] [NormedSpace ℝ F''] [NormedSpace 𝕜 F'']
+    [CompleteSpace F'']
 variable {k : G → E''}
 variable (L₂ : F →L[𝕜] E'' →L[𝕜] F')
 variable (L₃ : E →L[𝕜] F'' →L[𝕜] F')

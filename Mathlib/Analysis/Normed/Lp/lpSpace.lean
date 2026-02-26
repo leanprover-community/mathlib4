@@ -63,7 +63,8 @@ noncomputable section
 
 open scoped NNReal ENNReal Function
 
-variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
+variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, AddCommGroup (E i)]
+    [∀ i, NormedAddCommGroup (E i)]
 
 /-!
 ### `Memℓp` predicate
@@ -295,7 +296,8 @@ instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
 
 /-- lp space
 The `p=∞` case has notation `ℓ^∞(ι, E)` resp. `ℓ^∞(ι)` (for `E = ℝ`) in the `lp` namespace. -/
-def lp (E : α → Type*) [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
+def lp (E : α → Type*) [∀ i, AddCommGroup (E i)] [∀ i, NormedAddCommGroup (E i)]
+    (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
   add_mem' := Memℓp.add

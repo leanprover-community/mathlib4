@@ -41,7 +41,8 @@ section
 
 open SeparationQuotient NNReal
 
-variable {M N : Type*} [AddCommGroup M] [SeminormedAddCommGroup M] [AddCommGroup N] [SeminormedAddCommGroup N]
+variable {M N : Type*} [AddCommGroup M] [SeminormedAddCommGroup M] [AddCommGroup N]
+    [SeminormedAddCommGroup N]
 
 namespace SeparationQuotient
 
@@ -84,7 +85,8 @@ theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
 /-- The equivalence between `NormedAddGroupHom M N` vanishing on the inseparable setoid and
 `NormedAddGroupHom (SeparationQuotient M) N`. -/
 @[simps]
-noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [AddCommGroup N] [SeminormedAddCommGroup N] :
+noncomputable def liftNormedAddGroupHomEquiv {N : Type*} [AddCommGroup N] [SeminormedAddCommGroup N]
+    :
     {f : NormedAddGroupHom M N // ∀ x, ‖x‖ = 0 → f x = 0} ≃
     NormedAddGroupHom (SeparationQuotient M) N where
   toFun f := liftNormedAddGroupHom f f.prop

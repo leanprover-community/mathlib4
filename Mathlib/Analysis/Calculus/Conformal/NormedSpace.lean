@@ -47,7 +47,8 @@ Maps such as the complex conjugate are considered to be conformal.
 
 noncomputable section
 
-variable {X Y Z : Type*} [AddCommGroup X] [NormedAddCommGroup X] [AddCommGroup Y] [NormedAddCommGroup Y] [AddCommGroup Z] [NormedAddCommGroup Z]
+variable {X Y Z : Type*} [AddCommGroup X] [NormedAddCommGroup X] [AddCommGroup Y]
+    [NormedAddCommGroup Y] [AddCommGroup Z] [NormedAddCommGroup Z]
   [NormedSpace ℝ X] [NormedSpace ℝ Y] [NormedSpace ℝ Z]
 
 section LocConformality

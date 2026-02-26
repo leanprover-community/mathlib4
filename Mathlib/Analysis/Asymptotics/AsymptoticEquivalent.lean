@@ -222,7 +222,8 @@ end NormedField
 
 section SMul
 
-theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
     {a b : α → 𝕜} {u v : α → E} {l : Filter α} (hab : a ~[l] b) (huv : u ~[l] v) :
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩

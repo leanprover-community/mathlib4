@@ -90,7 +90,8 @@ noncomputable section
 
 variable {ι 𝕜 : Type*} [RCLike 𝕜] {E : Type*}
 variable [AddCommGroup E] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {G : ι → Type*} [∀ i, AddCommGroup (G i)] [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
+variable {G : ι → Type*} [∀ i, AddCommGroup (G i)] [∀ i, NormedAddCommGroup (G i)]
+    [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 

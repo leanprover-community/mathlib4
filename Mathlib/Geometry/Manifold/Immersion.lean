@@ -103,10 +103,13 @@ namespace Manifold
 -- We manually name the universe of `E''` as `IsImmersionAt` will use it.
 universe u
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E E' E''' : Type*} {E'' : Type u} {F F' : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E E' E''' : Type*} {E'' : Type u} {F F' : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E]
   [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [AddCommGroup E'''] [NormedAddCommGroup E'''] [NormedSpace 𝕜 E''']
-  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup F'] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] [AddCommGroup E''']
+    [NormedAddCommGroup E'''] [NormedSpace 𝕜 E''']
+  [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F] [AddCommGroup F']
+    [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}

@@ -23,10 +23,12 @@ open scoped Manifold ContDiff
 open TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+  [NormedSpace 𝕜 E] {E' : Type*} [AddCommGroup E'] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {N : Type*} [TopologicalSpace N] [ChartedSpace H N]
-  {E'' : Type*} [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace 𝕜 E''] {H'' : Type*} [TopologicalSpace H'']
+  {E'' : Type*} [AddCommGroup E''] [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+    {H'' : Type*} [TopologicalSpace H'']
   {I'' : ModelWithCorners 𝕜 E'' H''} {N' : Type*} [TopologicalSpace N'] [ChartedSpace H'' N']
   {n : WithTop ℕ∞}
 
@@ -319,7 +321,8 @@ instance instSMul' {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSp
 
 /-- The left multiplication with a `C^n` scalar function commutes with composition. -/
 @[simp]
-theorem smul_comp' {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : C^n⟮I'', N'; 𝕜⟯)
+theorem smul_comp' {V : Type*} [AddCommGroup V] [NormedAddCommGroup V] [NormedSpace 𝕜 V]
+    (f : C^n⟮I'', N'; 𝕜⟯)
     (g : C^n⟮I'', N'; 𝓘(𝕜, V), V⟯) (h : C^n⟮I, N; I'', N'⟯) :
     (f • g).comp h = f.comp h • g.comp h :=
   rfl

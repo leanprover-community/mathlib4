@@ -28,7 +28,8 @@ open scoped NNReal ENNReal Topology
 
 universe u v
 
-variable {ι : Type u} {E : Type v} [Fintype ι] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι : Type u} {E : Type v} [Fintype ι] [AddCommGroup E] [NormedAddCommGroup E]
+    [NormedSpace ℝ E]
 
 open MeasureTheory Metric Set Finset Filter BoxIntegral
 

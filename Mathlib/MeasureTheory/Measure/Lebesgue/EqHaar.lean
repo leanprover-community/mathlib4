@@ -93,7 +93,8 @@ theorem parallelepiped_eq_map {ι E : Type*} [Fintype ι] [AddCommGroup E] [Norm
 
 open MeasureTheory MeasureTheory.Measure
 
-theorem map_addHaar {ι E F : Type*} [Fintype ι] [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F]
+theorem map_addHaar {ι E F : Type*} [Fintype ι] [AddCommGroup E] [NormedAddCommGroup E]
+    [AddCommGroup F] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F] [BorelSpace E]
     [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
@@ -137,7 +138,8 @@ open scoped Function -- required for scoped `on` notation
 
 /-- If a set is disjoint from its translates by infinitely many bounded vectors, then it has measure
 zero. This auxiliary lemma proves this assuming additionally that the set is bounded. -/
-theorem addHaar_eq_zero_of_disjoint_translates_aux {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+theorem addHaar_eq_zero_of_disjoint_translates_aux {E : Type*} [AddCommGroup E]
+    [NormedAddCommGroup E]
     [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E)
     [IsAddHaarMeasure μ] {s : Set E} (u : ℕ → E) (sb : IsBounded s) (hu : IsBounded (range u))
     (hs : Pairwise (Disjoint on fun n => {u n} + s)) (h's : MeasurableSet s) : μ s = 0 := by
@@ -173,7 +175,8 @@ theorem addHaar_eq_zero_of_disjoint_translates {E : Type*} [AddCommGroup E] [Nor
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A strict vector subspace has measure zero. -/
-theorem addHaar_submodule {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+theorem addHaar_submodule {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [MeasurableSpace E]
     [BorelSpace E] [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] (s : Submodule ℝ E)
     (hs : s ≠ ⊤) : μ s = 0 := by
   obtain ⟨x, hx⟩ : ∃ x, x ∉ s := by
@@ -229,7 +232,8 @@ theorem map_linearMap_addHaar_pi_eq_smul_addHaar {ι : Type*} [Finite ι] {f : (
   rw [this, addHaarMeasure_eq_volume_pi, Measure.map_smul,
     Real.map_linearMap_volume_pi_eq_smul_volume_pi hf, smul_comm]
 
-variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E]
+    [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
 
 theorem map_linearMap_addHaar_eq_smul_addHaar {f : E →ₗ[ℝ] E} (hf : LinearMap.det f ≠ 0) :
@@ -422,23 +426,27 @@ general Haar measures on general commutative groups. -/
 
 /-! ### Measure of balls -/
 
-theorem addHaar_ball_center {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+theorem addHaar_ball_center {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [MeasurableSpace E]
+    [BorelSpace E]
     (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) : μ (ball x r) = μ (ball (0 : E) r) := by
   have : ball (0 : E) r = (x + ·) ⁻¹' ball x r := by simp [preimage_add_ball]
   rw [this, measure_preimage_add]
 
-theorem addHaar_real_ball_center {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [MeasurableSpace E]
+theorem addHaar_real_ball_center {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
     μ.real (ball x r) = μ.real (ball (0 : E) r) := by
   simp [measureReal_def, addHaar_ball_center]
 
-theorem addHaar_closedBall_center {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [MeasurableSpace E]
+theorem addHaar_closedBall_center {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (closedBall (0 : E) r) := by
   have : closedBall (0 : E) r = (x + ·) ⁻¹' closedBall x r := by simp [preimage_add_closedBall]
   rw [this, measure_preimage_add]
 
-theorem addHaar_real_closedBall_center {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [MeasurableSpace E]
+theorem addHaar_real_closedBall_center {E : Type*} [AddCommGroup E] [NormedAddCommGroup E]
+    [MeasurableSpace E]
     [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] (x : E) (r : ℝ) :
     μ.real (closedBall x r) = μ.real (closedBall (0 : E) r) := by
   simp [measureReal_def, addHaar_closedBall_center]
@@ -568,7 +576,8 @@ section
 ### The Lebesgue measure associated to an alternating map
 -/
 
-variable {ι G : Type*} [Fintype ι] [DecidableEq ι] [AddCommGroup G] [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable {ι G : Type*} [Fintype ι] [DecidableEq ι] [AddCommGroup G] [NormedAddCommGroup G]
+    [NormedSpace ℝ G]
   [MeasurableSpace G] [BorelSpace G]
 
 theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :

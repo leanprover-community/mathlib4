@@ -21,7 +21,8 @@ open TopologicalSpace MeasureTheory Filter
 open scoped NNReal ENNReal Topology ComplexConjugate
 
 variable {α ε ε' E F G : Type*} {m m0 : MeasurableSpace α} {p : ℝ≥0∞} {q : ℝ} {μ ν : Measure α}
-  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G] [NormedAddCommGroup G] [ENorm ε] [ENorm ε']
+  [AddCommGroup E] [NormedAddCommGroup E] [AddCommGroup F] [NormedAddCommGroup F] [AddCommGroup G]
+    [NormedAddCommGroup G] [ENorm ε] [ENorm ε']
 
 namespace MeasureTheory
 
@@ -211,7 +212,8 @@ end Indicator
 section UnifTight
 
 /-- A single function that is `MemLp f p μ` is tight with respect to `μ`. -/
-theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [AddCommGroup β] [NormedAddCommGroup β] (hp_top : p ≠ ∞)
+theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [AddCommGroup β] [NormedAddCommGroup β]
+    (hp_top : p ≠ ∞)
     {f : α → β} (hf : MemLp f p μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ eLpNorm (sᶜ.indicator f) p μ < ε := by
   rcases eq_or_ne p 0 with rfl | hp₀

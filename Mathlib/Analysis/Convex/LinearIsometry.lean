@@ -46,7 +46,8 @@ lemma StrictConvex.linearIsometry_preimage [AddCommGroup E] [NormedAddCommGroup 
     (hs : StrictConvex 𝕜 s) (e : E →ₗᵢ[𝕜] F) : StrictConvex 𝕜 (e ⁻¹' s) :=
   hs.linear_preimage _ e.continuous e.injective
 
-variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [AddCommGroup F]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 protected lemma LinearIsometryEquiv.strictConvexSpace_iff (e : E ≃ₗᵢ[𝕜] F) :
     StrictConvexSpace 𝕜 E ↔ StrictConvexSpace 𝕜 F := by

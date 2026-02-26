@@ -215,7 +215,8 @@ theorem IsSymmetric.inner_map_polarization {T : E →ₗ[𝕜] E} (hT : T.IsSymm
       ← mul_assoc, mul_neg, h, neg_neg, one_mul, neg_one_mul]
     ring
 
-theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [AddCommGroup F] [SeminormedAddCommGroup F]
+theorem isSymmetric_linearIsometryEquiv_conj_iff {F : Type*} [AddCommGroup F]
+    [SeminormedAddCommGroup F]
     [InnerProductSpace 𝕜 F] (T : E →ₗ[𝕜] E) (f : E ≃ₗᵢ[𝕜] F) :
     (f.toLinearMap ∘ₗ T ∘ₗ f.symm.toLinearMap).IsSymmetric ↔ T.IsSymmetric := by
   refine ⟨fun h x y => ?_, fun h x y => ?_⟩

@@ -27,7 +27,8 @@ Uniformize API between analytic and meromorphic functions
 open Filter Set
 open scoped Topology
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E]
 
 /-!
 ## Vanishing Order at a Point: Definition and Characterization
