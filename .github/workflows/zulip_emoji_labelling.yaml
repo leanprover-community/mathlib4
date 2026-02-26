@@ -17,9 +17,6 @@ jobs:
     steps:
     - name: Checkout CI scripts
       uses: ./.github/actions/checkout-ci-scripts
-      with:
-          sparse_checkout: |
-            scripts/zulip_emoji_reactions.py
 
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -42,4 +39,4 @@ jobs:
         PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
       run: |
         printf $'Running the python script with:\nPR number: "%s"\nlabel status: "%s"\nlabel: "%s"\nPR labels: "%s"\n' "$PR_NUMBER" "$LABEL_STATUS" "$LABEL" "$PR_LABELS"
-        python ci-tools/scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER" "$PR_LABELS"
+        python ci-tools/scripts/zulip/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "$LABEL_STATUS" "$LABEL_NAME" "$PR_NUMBER" "$PR_LABELS"

@@ -12,7 +12,8 @@ inputs:
     default: main
   sparse_checkout:
     description: Newline-separated sparse checkout patterns.
-    required: true
+    required: false
+    default: ""
   path:
     description: Destination path for the checkout.
     required: false
@@ -21,10 +22,18 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+    - if: ${{ inputs.sparse_checkout != '' }}
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.ref }}
         fetch-depth: 1
         sparse-checkout: ${{ inputs.sparse_checkout }}
+        path: ${{ inputs.path }}
+    - if: ${{ inputs.sparse_checkout == '' }}
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: ${{ inputs.repository }}
+        ref: ${{ inputs.ref }}
+        fetch-depth: 1
         path: ${{ inputs.path }}

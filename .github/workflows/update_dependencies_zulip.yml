@@ -21,9 +21,6 @@ jobs:
 
       - name: Checkout CI scripts
         uses: ./.github/actions/checkout-ci-scripts
-        with:
-          sparse_checkout: |
-            scripts/parse_lake_manifest_changes.py
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -33,7 +30,7 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          output="$(./ci-tools/scripts/parse_lake_manifest_changes.py)"
+          output="$(./ci-tools/scripts/zulip/parse_lake_manifest_changes.py)"
           echo "Dependency changes:"
           echo "$output"
           delimiter="EOF"
@@ -101,9 +98,6 @@ jobs:
 
       - name: Checkout CI scripts
         uses: ./.github/actions/checkout-ci-scripts
-        with:
-          sparse_checkout: |
-            scripts/parse_lake_manifest_changes.py
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -113,7 +107,7 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          output="$(./ci-tools/scripts/parse_lake_manifest_changes.py)"
+          output="$(./ci-tools/scripts/zulip/parse_lake_manifest_changes.py)"
           echo "Dependency changes:"
           echo "$output"
           delimiter="EOF"

@@ -46,9 +46,6 @@ jobs:
         with:
           repository: leanprover-community/mathlib-ci
           ref: main
-          sparse-checkout: |
-            scripts/verify_commits.sh
-            scripts/verify_commits_summary.sh
           path: ci-tools
 
       - name: Check for special commits
@@ -79,7 +76,7 @@ jobs:
 
           # Run verification (human-readable to stdout, JSON to file)
           set +e
-          ./ci-tools/scripts/verify_commits.sh "$BASE_SHA" --json-file verification_result.json
+          ./ci-tools/scripts/verification/verify_commits.sh "$BASE_SHA" --json-file verification_result.json
           EXIT_CODE=$?
           set -e
 
@@ -97,7 +94,7 @@ jobs:
           REPO="${{ github.repository }}"
           PR_NUMBER="${{ github.event.pull_request.number }}"
 
-          COMMENT=$(cat verification_result.json | ./ci-tools/scripts/verify_commits_summary.sh "$REPO" "$PR_NUMBER")
+          COMMENT=$(cat verification_result.json | ./ci-tools/scripts/verification/verify_commits_summary.sh "$REPO" "$PR_NUMBER")
 
           # Save to file (GitHub Actions has issues with multiline outputs)
           echo "$COMMENT" > comment_body.md

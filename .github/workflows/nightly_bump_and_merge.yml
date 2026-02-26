@@ -35,9 +35,6 @@ jobs:
 
     - name: Checkout CI scripts
       uses: ./.github/actions/checkout-ci-scripts
-      with:
-        sparse_checkout: |
-          scripts/merge-lean-testing-pr.sh
 
     - name: Set up Git
       run: |
@@ -224,7 +221,7 @@ jobs:
         FAILED_MERGES=""
 
         # Ensure the merge script is executable
-        chmod +x ci-tools/scripts/merge-lean-testing-pr.sh
+        chmod +x ci-tools/scripts/nightly/merge-lean-testing-pr.sh
 
         # Process each branch
         for BRANCH in $BRANCHES; do
@@ -270,7 +267,7 @@ jobs:
 
           # Run the merge script and capture exit code
           # Note: The merge script does its own commit but NOT push
-          if ./ci-tools/scripts/merge-lean-testing-pr.sh "$PR_NUMBER"; then
+          if ./ci-tools/scripts/nightly/merge-lean-testing-pr.sh "$PR_NUMBER"; then
             echo "Successfully merged $BRANCH"
             SUCCESSFUL_MERGES="$SUCCESSFUL_MERGES$PR_NUMBER|$GITHUB_DIFF|$BRANCH "
           else
@@ -326,7 +323,7 @@ jobs:
             IFS='|' read -r PR_NUMBER GITHUB_DIFF _ <<< "$MERGE_INFO"
             MESSAGE+="- [lean-pr-testing-${PR_NUMBER}](${GITHUB_DIFF}) (adaptations for lean#${PR_NUMBER})"$'\n\n'
             MESSAGE+=$'```bash\n'
-            MESSAGE+="ci-tools/scripts/merge-lean-testing-pr.sh ${PR_NUMBER}"$'\n'
+            MESSAGE+="ci-tools/scripts/nightly/merge-lean-testing-pr.sh ${PR_NUMBER}"$'\n'
             MESSAGE+=$'```\n\n'
           done
         else

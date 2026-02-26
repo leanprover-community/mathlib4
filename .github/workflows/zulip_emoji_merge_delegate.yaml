@@ -19,9 +19,6 @@ jobs:
 
     - name: Checkout CI scripts
       uses: ./.github/actions/checkout-ci-scripts
-      with:
-        sparse_checkout: |
-          scripts/zulip_emoji_reactions.py
 
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -46,5 +43,5 @@ jobs:
           printf $'Scanning commits:\n%s\n\nContinuing\n' "$(git log --since="10 minutes ago" --pretty=oneline)"
           while read -r pr_number; do
             printf $'Running the python script with pr "%s"\n' "${pr_number}"
-            python ci-tools/scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "none" "${pr_number}"
+            python ci-tools/scripts/zulip/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "none" "${pr_number}"
           done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')

@@ -25,14 +25,6 @@ jobs:
 
     - name: Checkout CI scripts
       uses: ./.github/actions/checkout-ci-scripts
-      with:
-        sparse_checkout: |
-          scripts/count-trans-deps.py
-          scripts/import-graph-report.py
-          scripts/import_trans_difference.sh
-          scripts/declarations_diff.sh
-          scripts/technical-debt-metrics.sh
-          scripts/update_PR_comment.sh
 
     - name: Update the merge-conflict label
       run: |
@@ -155,13 +147,13 @@ jobs:
         printf 'currentHash=%s\n' "${currentHash}"
 
         echo "Compute the counts for the HEAD of the PR"
-        python ../ci-tools/scripts/count-trans-deps.py "Mathlib/" > head.json
+        python ../ci-tools/scripts/pr_summary/count-trans-deps.py "Mathlib/" > head.json
 
         # Checkout the merge base
         git checkout "$(git merge-base master ${{ github.event.pull_request.head.sha }})"
 
         echo "Compute the counts for the merge base"
-        python ../ci-tools/scripts/count-trans-deps.py "Mathlib/" > base.json
+        python ../ci-tools/scripts/pr_summary/count-trans-deps.py "Mathlib/" > base.json
 
         # switch back to the current branch: the `declarations_diff` script should be here
         git checkout "${currentHash}" --
@@ -176,12 +168,12 @@ jobs:
         PR="${{ github.event.pull_request.number }}"
         title="### PR summary"
 
-        graphAndHighPercentReports=$(python ../ci-tools/scripts/import-graph-report.py base.json head.json changed_files.txt)
+        graphAndHighPercentReports=$(python ../ci-tools/scripts/pr_summary/import-graph-report.py base.json head.json changed_files.txt)
 
         echo "Produce import count comment"
         importCount=$(
           printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
-          ../ci-tools/scripts/import_trans_difference.sh
+          ../ci-tools/scripts/pr_summary/import_trans_difference.sh
         )
 
         echo "Produce high percentage imports"
@@ -205,7 +197,7 @@ jobs:
         fi
 
         echo "Compute Declarations' diff comment"
-        declDiff=$(../ci-tools/scripts/declarations_diff.sh)
+        declDiff=$(../ci-tools/scripts/pr_summary/declarations_diff.sh)
         if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
         then
           declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
@@ -217,7 +209,7 @@ jobs:
         printf 'hashURL: %s' "${hashURL}"
 
         echo "Compute technical debt changes"
-        techDebtVar="$(../ci-tools/scripts/technical-debt-metrics.sh pr_summary)"
+        techDebtVar="$(../ci-tools/scripts/reporting/technical-debt-metrics.sh pr_summary)"
 
         echo "Compute documentation reminder"
         workflowFilesChanged="$(grep '^\.github/workflows/' changed_files.txt || true)"
@@ -251,7 +243,7 @@ jobs:
         fi
 
         cat please_merge_master.md
-        ../ci-tools/scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
+        ../ci-tools/scripts/pr_summary/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"
 
     - name: Update the file-removed label
       run: |

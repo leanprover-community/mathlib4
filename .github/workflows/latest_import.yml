@@ -30,9 +30,6 @@ jobs:
 
     - name: Checkout CI scripts
       uses: ./.github/actions/checkout-ci-scripts
-      with:
-        sparse_checkout: |
-          scripts/late_importers.sh
 
     - name: Configure Lean
       uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
@@ -72,13 +69,13 @@ jobs:
 
     - name: Full report
       run: |
-        ./ci-tools/scripts/late_importers.sh Mathlib 0 0 "${{ github.run_id }}"
+        ./ci-tools/scripts/reporting/late_importers.sh Mathlib 0 0 "${{ github.run_id }}"
 
     - name: Zulip report
       id: late_importers
       run: |
         jobID="${{ github.run_id }}"
-        printf $'summary<<EOF\n%s\nEOF' "$(./ci-tools/scripts/late_importers.sh Mathlib 15 10 "${jobID}")" |
+        printf $'summary<<EOF\n%s\nEOF' "$(./ci-tools/scripts/reporting/late_importers.sh Mathlib 15 10 "${jobID}")" |
           tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
