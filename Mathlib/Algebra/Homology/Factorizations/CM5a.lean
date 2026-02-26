@@ -1050,11 +1050,11 @@ end CM5aCof
 
 section
 
-lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] [Mono f] :
+lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE n] [L.IsStrictlyGE n] [Mono f] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
       (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f := by
   let n₀ := n - 1
-  have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_ge (n₀ + 1) (n + 1) (by omega)
+  have : K.IsStrictlyGE (n₀ + 1) := K.isStrictlyGE_of_ge (n₀ + 1) n (by omega)
   have : L.IsStrictlyGE (n₀ + 1) := L.isStrictlyGE_of_ge (n₀ + 1) n (by omega)
   have : (CM5aCof.I f n₀).IsStrictlyGE n := by
     rw [isStrictlyGE_iff]
@@ -1070,6 +1070,7 @@ end
 lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
     ∃ (L' : CochainComplex C ℤ) (_hL' : L'.IsStrictlyGE n) (i : K ⟶ L') (p : L' ⟶ L)
       (_hi : Mono i) (_hi' : QuasiIso i) (_hp : degreewiseEpiWithInjectiveKernel p), i ≫ p = f := by
+  have : K.IsStrictlyGE n := K.isStrictlyGE_of_ge n (n + 1) (by lia)
   obtain ⟨L', _, i₁, p₁, _, hp₁, _, rfl⟩ := cm5b f n
   obtain ⟨L'', _, i₂, p₂, _, _, hp₂, rfl⟩ := cm5a_cof i₁ n
   refine ⟨L'', inferInstance, i₂, p₂ ≫ p₁, inferInstance, inferInstance,
