@@ -100,6 +100,7 @@ end
 
 open AddCommGrpCat
 
+/-- The constant presheaf that assigns `ℤ` to every open -/
 abbrev constZ : Presheaf AddCommGrpCat.{u} X := (Functor.const _).obj (AddCommGrpCat.of (ULift ℤ))
 
 namespace zeroOutside
@@ -157,6 +158,7 @@ def zeroOutsideInt : Sheaf AddCommGrpCat.{u} X :=
 
 namespace zeroOutsideInt
 
+/-- `1` as a section of `zeroOutsideInt U` -/
 def generator : (zeroOutsideInt U).presheaf.obj (op U) :=
   (toSheafify _ (Presheaf.constZ.zeroOutside U)).app (op U) (Presheaf.zeroOutside.generator U)
 
@@ -181,6 +183,7 @@ instance {V : Opens X} (h : V ≤ U) :
   delta openHom
   apply Functor.map_mono (presheafToSheaf _ _)
 
+/-- The induced map on `zeroOutsideInt U` coming from `Presheaf.zeroOutside.sHom` -/
 @[simps]
 def sHom {F : Sheaf AddCommGrpCat.{u} X} (s : F.presheaf.obj (op U)) :
     zeroOutsideInt U ⟶ F where
