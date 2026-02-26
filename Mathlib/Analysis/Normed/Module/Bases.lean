@@ -216,23 +216,21 @@ theorem proj_uniformly_bound [CompleteSpace X] : ∃ C : ℝ, ∀ A : Finset β,
   apply banach_steinhaus
   intro x
   obtain ⟨A₀, hA₀⟩ := summable_iff_vanishing_norm.mp (b.expansion x).summable 1 zero_lt_one
-  let M := (A₀.powerset.image fun B ↦ ‖b.proj B x‖).sup' ((Finset.powerset_nonempty A₀).image _) id
-  use M + 1
+  use (A₀.powerset.image fun B ↦ ‖b.proj B x‖).sup' ((Finset.powerset_nonempty A₀).image _) id + 1
   intro A
   have hdecomp : b.proj A x = b.proj (A ∩ A₀) x + b.proj (A \ A₀) x := by
     simp only [GeneralSchauderBasis.proj_apply]
     rw [← Finset.sum_union (Finset.disjoint_sdiff_inter A A₀).symm,
       Finset.union_comm, Finset.sdiff_union_inter]
   rw [hdecomp]
-  -- The projection on (A ∩ A₀) at `x` is bounded by M
-  have hhead : ‖b.proj (A ∩ A₀) x‖ ≤ M :=
-    Finset.le_sup' id <| Finset.mem_image_of_mem (fun B ↦ ‖b.proj B x‖)
-      (Finset.mem_powerset.2 Finset.inter_subset_right)
-  -- The projection on the tail (A \ A₀) at `x` is bounded by 1
+  -- -- The projection on the tail (A \ A₀) at `x` is bounded by 1
   have htail : ‖b.proj (A \ A₀) x‖ < 1 := by
     rw [GeneralSchauderBasis.proj_apply]
     exact hA₀ (A \ A₀) Finset.sdiff_disjoint
-  exact (norm_add_le _ _).trans (add_le_add hhead htail.le)
+  apply (norm_add_le _ _).trans (add_le_add _ htail.le)
+  -- The projection on (A ∩ A₀) at `x` is bounded by the `sup'`.
+  exact Finset.le_sup' id <| Finset.mem_image_of_mem (fun B ↦ ‖b.proj B x‖)
+      (Finset.mem_powerset.2 Finset.inter_subset_right)
 
 /-- The basis constant for unconditional bases (supremum over all finite sets) as `nnnorm`.
     It requires completeness to guarantee that the supremum is finite. -/
