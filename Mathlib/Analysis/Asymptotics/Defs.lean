@@ -671,7 +671,7 @@ theorem isBigOWith_norm_right : (IsBigOWith c l f fun x => ‖g' x‖) ↔ IsBig
 
 @[simp]
 theorem isBigOWith_abs_right : (IsBigOWith c l f fun x => |u x|) ↔ IsBigOWith c l f u :=
-  @isBigOWith_norm_right _ _ _ _ _ _ f u l
+  @isBigOWith_norm_right _ _ _ _ _ _ _ f u l
 
 alias ⟨IsBigOWith.of_norm_right, IsBigOWith.norm_right⟩ := isBigOWith_norm_right
 
@@ -684,7 +684,7 @@ theorem isBigO_norm_right : (f =O[l] fun x => ‖g' x‖) ↔ f =O[l] g' := by
 
 @[simp]
 theorem isBigO_abs_right : (f =O[l] fun x => |u x|) ↔ f =O[l] u :=
-  @isBigO_norm_right _ _ ℝ _ _ _ _ _
+  @isBigO_norm_right _ _ ℝ _ _ _ _ _ _
 
 alias ⟨IsBigO.of_norm_right, IsBigO.norm_right⟩ := isBigO_norm_right
 
@@ -697,7 +697,7 @@ theorem isLittleO_norm_right : (f =o[l] fun x => ‖g' x‖) ↔ f =o[l] g' := b
 
 @[simp]
 theorem isLittleO_abs_right : (f =o[l] fun x => |u x|) ↔ f =o[l] u :=
-  @isLittleO_norm_right _ _ ℝ _ _ _ _ _
+  @isLittleO_norm_right _ _ ℝ _ _ _ _ _ _
 
 alias ⟨IsLittleO.of_norm_right, IsLittleO.norm_right⟩ := isLittleO_norm_right
 
@@ -709,7 +709,7 @@ theorem isBigOWith_norm_left : IsBigOWith c l (fun x => ‖f' x‖) g ↔ IsBigO
 
 @[simp]
 theorem isBigOWith_abs_left : IsBigOWith c l (fun x => |u x|) g ↔ IsBigOWith c l u g :=
-  @isBigOWith_norm_left _ _ _ _ _ _ g u l
+  @isBigOWith_norm_left _ _ _ _ _ _ _ g u l
 
 alias ⟨IsBigOWith.of_norm_left, IsBigOWith.norm_left⟩ := isBigOWith_norm_left
 
@@ -722,7 +722,7 @@ theorem isBigO_norm_left : (fun x => ‖f' x‖) =O[l] g ↔ f' =O[l] g := by
 
 @[simp]
 theorem isBigO_abs_left : (fun x => |u x|) =O[l] g ↔ u =O[l] g :=
-  @isBigO_norm_left _ _ _ _ _ g u l
+  @isBigO_norm_left _ _ _ _ _ _ g u l
 
 alias ⟨IsBigO.of_norm_left, IsBigO.norm_left⟩ := isBigO_norm_left
 
@@ -735,7 +735,7 @@ theorem isLittleO_norm_left : (fun x => ‖f' x‖) =o[l] g ↔ f' =o[l] g := by
 
 @[simp]
 theorem isLittleO_abs_left : (fun x => |u x|) =o[l] g ↔ u =o[l] g :=
-  @isLittleO_norm_left _ _ _ _ _ g u l
+  @isLittleO_norm_left _ _ _ _ _ _ g u l
 
 alias ⟨IsLittleO.of_norm_left, IsLittleO.norm_left⟩ := isLittleO_norm_left
 

@@ -35,7 +35,7 @@ instance Real.punctured_nhds_module_neBot {E : Type*} [AddCommGroup E] [Topologi
 
 section Seminormed
 
-variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace ℝ E]
 
 theorem inv_norm_smul_mem_unitClosedBall (x : E) :
     ‖x‖⁻¹ • x ∈ closedBall (0 : E) 1 := by
@@ -136,7 +136,7 @@ end Seminormed
 
 section Normed
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
+variable {E : Type*} [AddCommGroup E] [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E]
 
 theorem interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = ball x r := by
   rcases eq_or_ne r 0 with (rfl | hr)

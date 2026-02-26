@@ -134,7 +134,7 @@ theorem coe_toAddMonoidHom : ⇑f.toAddMonoidHom = f :=
   rfl
 
 theorem toAddMonoidHom_injective :
-    Function.Injective (@NormedAddGroupHom.toAddMonoidHom V₁ V₂ _ _) := fun f g h =>
+    Function.Injective (@NormedAddGroupHom.toAddMonoidHom V₁ V₂ _ _ _ _) := fun f g h =>
   coe_inj <| by rw [← coe_toAddMonoidHom f, ← coe_toAddMonoidHom g, h]
 
 @[simp]

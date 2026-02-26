@@ -1193,11 +1193,11 @@ lemma uniformSpace_eq_of_hasBasis
   refine IsUniformAddGroup.ext ‹_›
     p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_isUniformAddGroup ?_
   apply le_antisymm
-  · rw [← @comap_norm_nhds_zero E p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
+  · rw [← @comap_norm_nhds_zero E _ p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)
     rcases h₁ with ⟨r, hr⟩
     exact p.continuous' hr
-  · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
+  · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E _
       p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
     simpa only [subset_def, mem_ball_zero] using h₂
 
@@ -1313,7 +1313,8 @@ end Seminorm
 
 section normSeminorm
 
-variable (𝕜) (E) [NormedField 𝕜] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+variable (𝕜) (E) [NormedField 𝕜] [AddCommGroup E] [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {r : ℝ}
 
 /-- The norm of a seminormed group as a seminorm. -/
 def normSeminorm : Seminorm 𝕜 E :=
