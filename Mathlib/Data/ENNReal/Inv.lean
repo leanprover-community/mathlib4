@@ -184,7 +184,7 @@ protected theorem mul_div_right_comm : a * b / c = a / c * b := by
   simp only [div_eq_mul_inv, mul_right_comm]
 
 /-- Division decomposition: `a / c = a / b * (b / c)` when `b` is finite and nonzero. -/
-protected protected theorem div_mul_div_cancel {a b c : ℝ≥0∞}
+protected theorem div_mul_div_cancel {a b c : ℝ≥0∞}
     (hb0 : b ≠ 0) (hbt : b ≠ ⊤) :
     a / c = a / b * (b / c) := by
   simp only [div_eq_mul_inv, mul_assoc]
