@@ -97,32 +97,27 @@ lemma mem_invariants_iff_of_forall_mem_zpowers
 variable {ρ σ} in
 lemma mem_linHom_invariants_iff_isIntertwining (f : V →ₗ[k] W) :
     f ∈ (linHom ρ σ).invariants ↔ IsIntertwiningMap ρ σ f := by
-  constructor <;> intro hf
-  · constructor
-    intro γ v
-    specialize hf γ
+  refine ⟨fun hf ↦ ⟨fun γ v ↦ ?_⟩, fun hf γ ↦ ?_⟩
+  · specialize hf γ
     rw [linHom_apply] at hf
     nth_rewrite 1 [← hf]
     simp
-  · intro γ
-    rw [linHom_apply]
-    ext v
+  · ext v
     simp [hf.isIntertwining]
 
 /-- The invariants of the representation `linHom ρ σ` correspond to intertwining maps
  from `ρ` to `σ`. -/
 def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] IntertwiningMap ρ σ where
-  toFun f := { f.val with
-               isIntertwining' :=
-               ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining }
+  toFun f :=
+    { f.val with
+      isIntertwining' :=
+        ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining }
   map_add' _ _ := IntertwiningMap.ext_iff.mpr rfl
   map_smul' _ _ := IntertwiningMap.ext_iff.mpr rfl
-  invFun g := { val := g.toLinearMap
-                property := by
-                  exact (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
-                    {isIntertwining := g.isIntertwining'} }
-  left_inv _ := rfl
-  right_inv _ := rfl
+  invFun g :=
+    { val := g.toLinearMap
+      property := (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
+        {isIntertwining := g.isIntertwining'} }
 
 section
 

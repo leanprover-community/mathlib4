@@ -65,12 +65,8 @@ theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
   exact LinearMap.bijective_or_eq_zero (equivLinearMapAsModule ρ σ f)
 
-theorem zero_of_empty_equiv [IsIrreducible σ] (h : IsEmpty (Equiv ρ σ)) : f = 0 := by
-  have hf := bijective_or_eq_zero f
-  suffices ¬ Bijective f by tauto
-  contrapose h
-  push_neg
-  exact Nonempty.intro (f.ofBijective h)
+theorem zero_of_empty_equiv [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : f = 0 :=
+  (bijective_or_eq_zero f).resolve_left fun hf ↦ isEmpty_iff.mp inferInstance <| f.ofBijective hf
 
 variable [FiniteDimensional k V] [IsAlgClosed k]
 
@@ -83,7 +79,7 @@ theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
   exact (Bijective.of_comp_iff' (IntertwiningMap.equivAlgEnd (ρ:=ρ)).bijective _).1 this
 
 variable (ρ) in
-theorem finrank_hom_eq_one_of_isIrreducible : Module.finrank k (IntertwiningMap ρ ρ) = 1 := by
+@[simp] theorem finrank_intertwiningMap_self : Module.finrank k (IntertwiningMap ρ ρ) = 1 := by
   rw [LinearEquiv.finrank_eq (LinearEquiv.ofBijective (Algebra.linearMap k (IntertwiningMap ρ ρ))
       algebraMap_intertwiningMap_bijective_of_isAlgClosed).symm]
   exact CommSemiring.finrank_self k

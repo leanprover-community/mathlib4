@@ -222,8 +222,9 @@ add_decl_doc Equiv.toIntertwiningMap
 
 variable {ρ σ} in
 /-- A bijective intertwining map is an equivalence of representations. -/
-noncomputable def IntertwiningMap.ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f)
-    : Equiv ρ σ where
+noncomputable
+def IntertwiningMap.ofBijective (f : IntertwiningMap ρ σ) (hf : Function.Bijective f) :
+    Equiv ρ σ where
   isIntertwining' := f.isIntertwining'
   toLinearEquiv :=  LinearEquiv.ofBijective f.toLinearMap hf
 
