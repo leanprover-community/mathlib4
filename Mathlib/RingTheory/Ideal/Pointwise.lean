@@ -148,10 +148,17 @@ theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
 
 theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-    P.toAddSubgroup.inertia M ≤ MulAction.stabilizer M P := by
+    inertia M P ≤ MulAction.stabilizer M P := by
   refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
   rw [Ideal.mem_pointwise_smul_iff_inv_smul_mem,
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
+
+instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
+  ((inertia M P).subgroupOf (MulAction.stabilizer M P)).Normal := by
+  refine (Subgroup.normal_subgroupOf_iff (inertia_le_stabilizer P)).mpr fun g s hg hs x ↦ ?_
+  rw [Submodule.mem_toAddSubgroup, ← Ideal.smul_mem_pointwise_smul_iff (a := s⁻¹), smul_sub,
+    smul_smul, ← mul_assoc, inv_mul_cancel_left, mul_smul, Subgroup.inv_mem _ hs]
+  exact hg (s⁻¹ • x)
 
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 

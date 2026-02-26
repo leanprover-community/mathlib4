@@ -5,9 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureCofibrant
-public import Mathlib.AlgebraicTopology.ModelCategory.DerivabilityStructureFibrant
-public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.OfAdjunction
+public import Mathlib.AlgebraicTopology.ModelCategory.CofibrantObjectHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.FibrantObjectHomotopy
 
 /-!
 # The homotopy category of bifibrant objects

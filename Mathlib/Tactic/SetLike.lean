@@ -8,6 +8,7 @@ module
 public import Aesop
 public meta import Batteries.Util.LibraryNote
 public import Mathlib.Tactic.Basic
+public import Aesop.Frontend.Basic
 
 /-!
 # SetLike Rule Set

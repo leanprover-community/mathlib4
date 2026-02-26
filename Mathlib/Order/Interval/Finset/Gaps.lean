@@ -6,7 +6,7 @@ Authors: Yizheng Zhu
 module
 
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Order.Interval.Lex
+public import Mathlib.Data.Prod.Lex
 
 /-!
 # Gaps of disjoint closed intervals

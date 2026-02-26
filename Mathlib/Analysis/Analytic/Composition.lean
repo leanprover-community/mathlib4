@@ -795,7 +795,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
         _ ≤ ‖compAlongComposition q p c‖ * (r : ℝ) ^ n := by
           rw [Finset.prod_const, Finset.card_fin]
           gcongr
-          rw [Metric.mem_eball, edist_zero_eq_enorm] at hy
+          rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C

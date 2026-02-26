@@ -8,7 +8,8 @@ module
 public import Mathlib.Topology.MetricSpace.PiNat
 public import Mathlib.Topology.MetricSpace.UniformConvergence
 public import Mathlib.Topology.MetricSpace.Contracting
-public import Mathlib.Data.Seq.Basic
+public import Mathlib.Data.Seq.Defs
+public import Mathlib.Tactic.ENatToNat
 
 /-!
 # Non-primitive corecursion for sequences

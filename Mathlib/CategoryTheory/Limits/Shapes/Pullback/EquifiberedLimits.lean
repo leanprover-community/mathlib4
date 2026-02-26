@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 
 import Mathlib.CategoryTheory.Adjunction.Evaluation
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 import Mathlib.CategoryTheory.WithTerminal.Cone
 

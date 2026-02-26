@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Topology.Bornology.Constructions
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Products of pseudometric spaces and other constructions

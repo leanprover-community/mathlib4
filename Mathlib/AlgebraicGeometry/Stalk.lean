@@ -213,25 +213,6 @@ section Spec
 
 variable (R : CommRingCat) (x)
 
-/-- The stalk of `Spec R` at `x` is isomorphic to `Rₚ`,
-where `p` is the prime corresponding to `x`. -/
-noncomputable
-def Spec.stalkIso : (Spec R).presheaf.stalk x ≅ .of (Localization.AtPrime x.asIdeal) :=
-  StructureSheaf.stalkIso ..
-
-@[reassoc (attr := simp)]
-lemma Spec.algebraMap_stalkIso_inv :
-    CommRingCat.ofHom (algebraMap R _) ≫ (stalkIso R x).inv =
-      (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.germ ⊤ x trivial := by
-  ext s : 2
-  exact (IsLocalization.algEquiv _ ((structureSheaf R).presheaf.stalk _) _).symm.commutes s
-
-@[reassoc (attr := simp)]
-lemma Spec.germ_stalkMapIso_hom :
-    (Spec R).presheaf.germ ⊤ _ trivial ≫ (stalkIso R x).hom =
-      (Scheme.ΓSpecIso R).hom ≫ CommRingCat.ofHom (algebraMap R _) := by
-  simp [← Iso.inv_comp_eq, ← Spec.algebraMap_stalkIso_inv_assoc]
-
 lemma Spec.fromSpecStalk_eq :
     (Spec R).fromSpecStalk x =
       Spec.map ((Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.germ ⊤ x trivial) := by
@@ -260,13 +241,13 @@ this is the isomorphism between the stalk of `Spec R` at `𝔪` and `R`. -/
 noncomputable
 def stalkClosedPointIso :
     (Spec R).presheaf.stalk (closedPoint R) ≅ R :=
-  StructureSheaf.stalkIso _ _ ≪≫ (IsLocalization.atUnits R
+  Spec.stalkIso _ _ ≪≫ (IsLocalization.atUnits R
       (closedPoint R).asIdeal.primeCompl fun _ ↦ not_not.mp).toRingEquiv.toCommRingCatIso.symm
 
 lemma stalkClosedPointIso_inv :
     (stalkClosedPointIso R).inv = StructureSheaf.toStalk R _ := by
   ext x
-  exact StructureSheaf.localizationToStalk_of _ _ _
+  exact (StructureSheaf.stalkIso _ _).commutes _
 
 lemma ΓSpecIso_hom_stalkClosedPointIso_inv :
     (Scheme.ΓSpecIso R).hom ≫ (stalkClosedPointIso R).inv =

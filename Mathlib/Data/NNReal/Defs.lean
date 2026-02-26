@@ -997,7 +997,7 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
 
-/-- Extension for the `positivity` tactic: `Real.toNNReal. -/
+/-- Extension for the `positivity` tactic: `Real.toNNReal` -/
 @[positivity Real.toNNReal _]
 meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
@@ -1010,7 +1010,7 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
 
 alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
-/-- Extension for the `positivity` tactic: `Real.nnabs. -/
+/-- Extension for the `positivity` tactic: `Real.nnabs` -/
 @[positivity Real.nnabs _]
 meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with

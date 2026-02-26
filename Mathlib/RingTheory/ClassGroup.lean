@@ -359,9 +359,7 @@ theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup 
     (I : FractionalIdeal R⁰ K) (hI : IsUnit I) :
     (I : Submodule R K).IsPrincipal := by
   rcases hI with ⟨I, rfl⟩
-  have hmk : ClassGroup.mk I = 1 := by
-    simpa using (Subsingleton.elim (ClassGroup.mk I) 1)
-  exact (ClassGroup.mk_eq_one_iff).1 hmk
+  rw [← ClassGroup.mk_eq_one_iff, Subsingleton.elim (ClassGroup.mk I) 1]
 
 /-- If the class group is trivial, any integral ideal that is a unit as a fractional ideal
 is principal. -/

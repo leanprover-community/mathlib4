@@ -638,6 +638,9 @@ theorem mk_subtype_le_of_subset {α : Type u} {p q : α → Prop} (h : ∀ ⦃x�
 theorem mk_le_mk_of_subset {α} {s t : Set α} (h : s ⊆ t) : #s ≤ #t :=
   ⟨Set.embeddingOfSubset s t h⟩
 
+theorem mk_monotone : Monotone (α := Set α) (mk ∘ (↑)) :=
+  fun _ _ ↦ mk_le_mk_of_subset
+
 @[deprecated mk_eq_zero (since := "2026-01-31")]
 theorem mk_emptyCollection (α : Type u) : #(∅ : Set α) = 0 :=
   mk_eq_zero _
@@ -843,6 +846,22 @@ theorem mk_le_iff_forall_finset_subset_card_le {α : Type u} {n : ℕ} {t : Set 
 theorem mk_subtype_mono {p q : α → Prop} (h : ∀ x, p x → q x) :
     #{ x // p x } ≤ #{ x // q x } :=
   ⟨embeddingOfSubset _ _ h⟩
+
+lemma card_lt_card_of_right_finite {A B : Set α} (hfin : B.Finite) (hlt : A ⊂ B) : #A < #B := by
+  have : Fintype A := (hfin.subset hlt.subset).fintype
+  have : Fintype B := hfin.fintype
+  simpa using Finset.card_lt_card <| Set.toFinset_ssubset_toFinset.mpr hlt
+
+lemma card_lt_card_of_left_finite {A B : Set α} (hfin : A.Finite) (hlt : A ⊂ B) : #A < #B := by
+  rcases finite_or_infinite B with hfin | hinf
+  · exact card_lt_card_of_right_finite hfin hlt
+  · exact (lt_aleph0_iff_subtype_finite.mpr hfin).trans_le <| Cardinal.aleph0_le_mk_iff.mpr hinf
+
+theorem mk_strictMono [Finite α] : StrictMono (α := Set α) (mk ∘ (↑)) :=
+  fun _ s ↦ card_lt_card_of_right_finite s.toFinite
+
+theorem mk_strictMonoOn : StrictMonoOn (mk ∘ (↑)) {s : Set α | s.Finite} :=
+  fun _ _ _ ↦ card_lt_card_of_right_finite
 
 theorem le_mk_diff_add_mk (S T : Set α) : #S ≤ #(S \ T : Set α) + #T :=
   (mk_le_mk_of_subset <| subset_diff_union _ _).trans <| mk_union_le _ _

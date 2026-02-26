@@ -22,7 +22,6 @@ about these definitions.
 
 @[expose] public section
 
-
 variable {𝕜 𝕜' E F α : Type*}
 
 open Filter Metric Function Set Topology Bornology

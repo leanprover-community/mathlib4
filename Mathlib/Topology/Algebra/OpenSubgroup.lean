@@ -5,7 +5,6 @@ Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
