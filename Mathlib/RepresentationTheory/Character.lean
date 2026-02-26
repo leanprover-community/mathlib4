@@ -231,11 +231,11 @@ open scoped Classical in
 algebraically closed field whose characteristic doesn't divide the order of the group. -/
 theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
     (Nat.card G : k)⁻¹ • ∑ g : G, ρ.character g * σ.character g⁻¹ =
-      if Nonempty (Equiv ρ σ) then ↑1 else ↑0 := by
-  by_cases h : Nonempty (Equiv ρ σ) <;> simp only [h, ↓reduceIte]
+      if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
+  by_cases h : Nonempty (Equiv σ ρ) <;> simp only [h, ↓reduceIte]
   · obtain ⟨φ⟩ := h
     rw [char_iso φ, scalar_product_char_eq_finrank_equivariant,
-      IsIrreducible.finrank_hom_eq_one_of_isIrreducible, Nat.cast_one]
+      IsIrreducible.finrank_intertwiningMap_self, Nat.cast_one]
   · push_neg at h
     rw [scalar_product_char_eq_finrank_equivariant]
     suffices (finrank k (σ.IntertwiningMap ρ)) = 0 by rw [this, Nat.cast_zero]
@@ -243,9 +243,6 @@ theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
     rw [rank_zero_iff_forall_zero]
     intro φ
     apply IsIrreducible.zero_of_empty_equiv φ
-    rw [isEmpty_iff] at h ⊢
-    intro ψ
-    exact h ψ.symm
 
 end Orthogonality
 
