@@ -12,8 +12,8 @@ public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 /-!
 # Tensor product of colimits
 
-In this file, we apply the `PreservesColimit₂` API for the bifunctor `curriedTensor C`
-on a monoidal category `C`.
+In this file, we apply the `PreservesColimit₂` API to the bifunctor
+`curriedTensor C` on a monoidal category `C`.
 
 Given cocones `c₁` and `c₂` for functors `F₁ : J₁ ⥤ C` and `F₂ : J₂ ⥤ C`,
 we define a cocone `c₁.tensor₂ c₂` for the functor `J₁ × J₂ ⥤ C` obtained
