@@ -86,7 +86,7 @@ noncomputable def IsGaloisGroup.ringEquivFixedPoints :
       simpa [Subtype.ext_iff] using (hA.isInvariant.isInvariant x x.prop).choose_spec }
 
 @[simp]
-theorem IsGaloisGroup.ringEquivFixedPoints_symm_map_apply (x : FixedPoints.subring R G) :
+theorem IsGaloisGroup.ringEquivFixedPoints_map_symm_apply (x : FixedPoints.subring R G) :
     algebraMap A R ((ringEquivFixedPoints G A R).symm x) = x :=
  (hA.isInvariant.isInvariant x x.prop).choose_spec
 
@@ -96,10 +96,7 @@ variable [CommSemiring A'] [Algebra A' R] [FaithfulSMul A' R] [hA' : IsGaloisGro
 If `B/A` and `B/A'` are Galois with the same Galois group, then `A ≃+* A'`.
 -/
 noncomputable def IsGaloisGroup.ringEquiv :
-    A ≃+* A' := by
-  let f := ringEquivFixedPoints G A R
-  let g := ringEquivFixedPoints G A' R
-  exact f.trans g.symm
+    A ≃+* A' := (ringEquivFixedPoints G A R).trans (ringEquivFixedPoints G A' R).symm
 
 @[simp]
 theorem IsGaloisGroup.ringEquiv_map_apply (x : A) :
