@@ -31,10 +31,9 @@ forms an extension of `G`.
 namespace LieAlgebra
 
 /--
-The semi-direct sum of two Lie algebras `H` and `G` over `R`, relative to A Lie algebra homomorphism
+The semi-direct sum of two Lie algebras `H` and `G` over `R`, relative to a Lie algebra homomorphism
 `ψ: G → Liederivation R H H `. As a set it just `H × G`, however the Lie bracket is twisted by `ψ`.
 -/
-@[nolint unusedArguments]
 structure SemiDirectSum {R : Type*} [CommRing R] (H : Type*) [LieRing H] [LieAlgebra R H]
     (G : Type*) [LieRing G] [LieAlgebra R G] (_ : G →ₗ⁅R⁆ LieDerivation R H H) where
   left : H
@@ -95,50 +94,50 @@ instance : LieRing (H ⋊⁅ψ⁆ G) where
   lie_self _ := toProd.injective <| by simp
   leibniz_lie x y z:= toProd.injective <| by simp; grind [lie_skew]
 
-
 instance : LieAlgebra R (H ⋊⁅ψ⁆ G) where
-  lie_smul r x y := by
-    unfold SemiDirectSum
-    simp only [Bracket.bracket, Prod.smul_fst, lie_smul, map_smul, Prod.smul_snd,
-      LieDerivation.coe_smul, Pi.smul_apply, Prod.smul_mk, Prod.mk.injEq, and_true]
-    rw [← smul_add,← smul_sub]
-
+  lie_smul r x y:= toProd.injective <| by
+    simp [toProd_smul, smul_sub, smul_add]
 
 /-- The canonical inclusion of H into the semi-direct sum H ⋊⁅ψ⁆ G. -/
-def inclusion : H →ₗ⁅R⁆ (H ⋊⁅ψ⁆ G) where
-  toLinearMap := LinearMap.inl R H G
-  map_lie' := by
-    intros x y
-    unfold SemiDirectSum
-    simp [Bracket.bracket]
+def in_left : H →ₗ⁅R⁆ (H ⋊⁅ψ⁆ G) where
+  toFun x := toProd.symm (x ,0)
+  map_add' _ _ := toProd.injective <| by simp
+  map_smul' _ _ := toProd.injective <| by simp
+  map_lie' {_ _}:= toProd.injective <| by simp
 
+@[simp]
+lemma in_left_injective :  (Function.Injective (in_left ψ)) := by intro _ _; simp [in_left]
 
-/-- The canonical projection from the semi-direct sum H ⋊⁅ψ⁆ G to G. -/
-def projection : (H ⋊⁅ψ⁆ G) →ₗ⁅R⁆ G where
-  toLinearMap := LinearMap.snd R H G
-  map_lie' := by
-    unfold SemiDirectSum
-    intros x y
-    simp [Bracket.bracket]
+def pr_right : (H ⋊⁅ψ⁆ G) →ₗ⁅R⁆ G where
+  toFun x := (toProd x).2
+  map_add' _ _ := Prod.snd_eq_iff.mpr rfl
+  map_smul' _ _ := Prod.snd_eq_iff.mpr rfl
+  map_lie' {_ _}:= Prod.snd_eq_iff.mpr rfl
 
+@[simp]
+lemma pr_right_surjective :  (Function.Surjective (pr_right ψ)) := by
+  intro g
+  use (toProd.symm (0,g))
+  simp [pr_right]
 
-instance : LieAlgebra.IsExtension (inclusion ψ) (projection ψ)  where
-  ker_eq_bot := by
-    simp only [LieHom.ker_eq_bot]
-    exact LinearMap.inl_injective
-  range_eq_top := by
-    simp only [LieHom.range_eq_top]
-    exact LinearMap.snd_surjective
+instance : LieAlgebra.IsExtension (in_left ψ) (pr_right ψ) where
+  ker_eq_bot := by simp [LieHom.ker_eq_bot]
+  range_eq_top := by simp [LieHom.range_eq_top]
   exact := by
-    refine (LieHom.range_eq_ker_iff (inclusion ψ) (projection ψ)).mpr ?_
-    refine Function.Exact.of_comp_of_mem_range rfl ?_
-    refine fun x a ↦ ?_
-    use x.1
-    unfold inclusion
-    exact Prod.ext rfl (id (Eq.symm a))
+    ext x
+    simp only [in_left, LieHom.mem_range, LieHom.coe_mk, LieIdeal.toLieSubalgebra, pr_right,
+      LieHom.ker_toSubmodule, LieSubalgebra.mem_mk_iff', LinearMap.mem_ker, LinearMap.coe_mk,
+      AddHom.coe_mk, Prod.snd_eq_iff]
+    constructor
+    case mp =>
+      intro hyp
+      obtain ⟨y, hy⟩ := hyp
+      simp [← hy]
+    case mpr =>
+      intro hyp
+      use (toProd x).1
+      simp [← hyp]
 
 end SemiDirectSum
-
 end LieAlgebra
-
 end
