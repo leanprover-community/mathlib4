@@ -124,9 +124,8 @@ instance hasZeroOfSubsingleton [Subsingleton M₁] : Zero (B₁ →bᵢ B₂) wh
   zero :=
   { (0 : M₁ →ₗ[R] M₂) with
     map_app' := fun x y => by
-      rw[Subsingleton.elim x 0, Subsingleton.elim y 0]
-      simp
-       }
+      rw [Subsingleton.elim x 0, Subsingleton.elim y 0]
+      simp }
 
 /-- Maps into the zero module are trivial -/
 instance [Subsingleton M₂] : Subsingleton (B₁ →bᵢ B₂) :=
