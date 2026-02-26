@@ -263,6 +263,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
   · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact Algebra.IsSeparable.isSeparable K _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
     algebraMap K L (Algebra.trace K L x) = ∑ σ : Gal(L/K), σ x := by
   apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)

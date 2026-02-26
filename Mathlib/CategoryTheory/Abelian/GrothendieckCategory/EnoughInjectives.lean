@@ -294,7 +294,7 @@ lemma exists_transfiniteCompositionOfShape :
     Nonempty ((generatingMonomorphisms G).pushouts.TransfiniteCompositionOfShape J f) := by
   obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk f)
   letI : OrderBot o.ToType := Ordinal.toTypeOrderBot (by
-    simpa only [← Ordinal.toType_nonempty_iff_ne_zero] using Nonempty.intro j)
+    simpa only [← Ordinal.nonempty_toType_iff] using Nonempty.intro j)
   exact ⟨_, _, _, _, _, ⟨transfiniteCompositionOfShapeOfEqTop hG hj⟩⟩
 
 end generatingMonomorphisms
