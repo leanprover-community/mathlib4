@@ -41,11 +41,6 @@ and the typeclass `IsFirstQuadrant`).
 
 -/
 
-/-!
-# The spectral sequence of a spectral object
-
--/
-
 @[expose] public section
 
 namespace CategoryTheory
