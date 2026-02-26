@@ -516,7 +516,6 @@ theorem meromorphicOrderAt_add_of_top_right
     meromorphicOrderAt (f₁ + f₂) x = meromorphicOrderAt f₁ x := by
   rw [add_comm, meromorphicOrderAt_add_of_top_left hf₂]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The order of a sum is at least the minimum of the orders of the summands.
 -/
