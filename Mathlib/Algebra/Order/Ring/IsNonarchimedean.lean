@@ -30,7 +30,6 @@ theorem add_le [IsStrictOrderedRing R] {α : Type*} [Add α] {f : α → R} (hf 
   rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
   exact ⟨hf _, hf _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a nonnegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
   `n : ℕ` and `a : α`, we have `f (n • a) ≤ (f a)`. -/
 theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F α R]

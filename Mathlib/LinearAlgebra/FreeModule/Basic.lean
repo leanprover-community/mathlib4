@@ -115,8 +115,20 @@ instance [Module.Free R M] [Nontrivial M] : FaithfulSMul R M :=
 
 variable {R M N}
 
-theorem of_equiv (e : M ≃ₗ[R] N) : Module.Free R N :=
-  of_basis <| (chooseBasis R M).map e
+lemma of_equiv {R R' M M' : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+    [Semiring R'] [AddCommMonoid M'] [Module R' M']
+    {σ : R →+* R'} {σ' : R' →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    (e₂ : M ≃ₛₗ[σ] M') [Module.Free R M] :
+    Module.Free R' M' := by
+  let e₁ : R ≃+* R' := RingHomInvPair.toRingEquiv σ σ'
+  let I := Module.Free.ChooseBasisIndex R M
+  obtain ⟨e₃ : M ≃ₗ[R] I →₀ R⟩ := Module.Free.chooseBasis R M
+  let e : M' ≃+ (I →₀ R') :=
+    (e₂.symm.trans e₃).toAddEquiv.trans (Finsupp.mapRange.addEquiv (ι := I) e₁.toAddEquiv)
+  have he (x) : e x = Finsupp.mapRange.addEquiv (ι := I) e₁.toAddEquiv (e₃ (e₂.symm x)) := rfl
+  let e' : M' ≃ₗ[R'] (I →₀ R') :=
+    { __ := e, map_smul' := fun m x ↦ Finsupp.ext fun i ↦ by simp [e₁, he, map_smulₛₗ] }
+  exact of_basis (.ofRepr e')
 
 /-- A variation of `of_equiv`: the assumption `Module.Free R P` here is explicit rather than an
 instance. -/
@@ -124,29 +136,18 @@ theorem of_equiv' {P : Type v} [AddCommMonoid P] [Module R P] (_ : Module.Free R
     (e : P ≃ₗ[R] N) : Module.Free R N :=
   of_equiv e
 
+lemma iff_of_equiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
+    [Semiring R'] [AddCommMonoid M'] [Module R' M']
+    {σ : R →+* R'} {σ' : R' →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    (e₂ : M ≃ₛₗ[σ] M') :
+    Module.Free R M ↔ Module.Free R' M' :=
+  ⟨fun _ ↦ of_equiv e₂, fun _ ↦ of_equiv e₂.symm⟩
+
+@[deprecated (since := "2026-02-14")] alias of_ringEquiv := of_equiv
+@[deprecated (since := "2026-02-14")] alias iff_of_ringEquiv := iff_of_equiv
+
 instance Module.free_shrink [Module.Free R M] [Small.{w} M] : Module.Free R (Shrink.{w} M) :=
   Module.Free.of_equiv (Shrink.linearEquiv R M).symm
-
-attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
-    [Semiring R'] [AddCommMonoid M'] [Module R' M']
-    (e₁ : R ≃+* R') (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] M') [Module.Free R M] :
-    Module.Free R' M' := by
-  let I := Module.Free.ChooseBasisIndex R M
-  obtain ⟨e₃ : M ≃ₗ[R] I →₀ R⟩ := Module.Free.chooseBasis R M
-  let e : M' ≃+ (I →₀ R') :=
-    (e₂.symm.trans e₃).toAddEquiv.trans (Finsupp.mapRange.addEquiv (ι := I) e₁.toAddEquiv)
-  have he (x) : e x = Finsupp.mapRange.addEquiv (ι := I) e₁.toAddEquiv (e₃ (e₂.symm x)) := rfl
-  let e' : M' ≃ₗ[R'] (I →₀ R') :=
-    { __ := e, map_smul' := fun m x ↦ Finsupp.ext fun i ↦ by simp [he, map_smulₛₗ] }
-  exact of_basis (.ofRepr e')
-
-attribute [local instance] RingHomInvPair.of_ringEquiv in
-lemma iff_of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
-    [Semiring R'] [AddCommMonoid M'] [Module R' M']
-    (e₁ : R ≃+* R') (e₂ : M ≃ₛₗ[RingHomClass.toRingHom e₁] M') :
-    Module.Free R M ↔ Module.Free R' M' :=
-  ⟨fun _ ↦ of_ringEquiv e₁ e₂, fun _ ↦ of_ringEquiv e₁.symm e₂.symm⟩
 
 variable (R M N)
 

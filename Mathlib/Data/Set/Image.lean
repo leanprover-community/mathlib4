@@ -243,6 +243,9 @@ theorem image_empty (f : α → β) : f '' ∅ = ∅ := by grind
 theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f '' s ∩ f '' t :=
   subset_inter (image_mono inter_subset_left) (image_mono inter_subset_right)
 
+theorem image_diff_subset (f : α → β) (s t : Set α) : f '' (s \ t) ⊆ f '' s ∩ f '' tᶜ :=
+  image_inter_subset f s tᶜ
+
 theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
     f '' (s ∩ t) = f '' s ∩ f '' t :=
   (image_inter_subset _ _ _).antisymm
@@ -362,7 +365,7 @@ theorem subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t :=
 
 theorem image_diff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
-    (Subset.trans (image_inter_subset _ _ _) <| inter_subset_inter_right _ <| image_compl_subset hf)
+    (Subset.trans (image_diff_subset f s t) <| inter_subset_inter_right _ <| image_compl_subset hf)
     (subset_image_diff f s t)
 
 open scoped symmDiff in
@@ -417,15 +420,16 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
     s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
   rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
 
--- Note defeq abuse identifying `preimage` with function composition in the following two proofs.
+@[simp]
+theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
+  rw [← Injective.of_comp_iff Set.mem_injective, ← Injective.of_comp_iff' _ Set.setOf_bijective]
+  exact injective_comp_right_iff_surjective
 
 @[simp]
-theorem preimage_injective : Injective (preimage f) ↔ Surjective f :=
-  injective_comp_right_iff_surjective
-
-@[simp]
-theorem preimage_surjective : Surjective (preimage f) ↔ Injective f :=
-  surjective_comp_right_iff_injective
+theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
+  rw [← Surjective.of_comp_iff _ Set.setOf_bijective.surjective,
+    ← Surjective.of_comp_iff' Set.mem_bijective]
+  exact surjective_comp_right_iff_injective
 
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
@@ -458,7 +462,7 @@ theorem compl_image : image (compl : Set α → Set α) = preimage compl :=
   image_eq_preimage_of_inverse compl_compl compl_compl
 
 theorem compl_image_set_of {p : Set α → Prop} : compl '' { s | p s } = { s | p sᶜ } :=
-  congr_fun compl_image p
+  congr_fun compl_image {x | p x}
 
 theorem inter_preimage_subset (s : Set α) (t : Set β) (f : α → β) :
     s ∩ f ⁻¹' t ⊆ f ⁻¹' (f '' s ∩ t) := fun _ h => ⟨mem_image_of_mem _ h.left, h.right⟩
