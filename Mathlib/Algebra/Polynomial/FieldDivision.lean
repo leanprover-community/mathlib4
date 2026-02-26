@@ -592,7 +592,6 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
         one_mul]⟩,
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
     (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
@@ -694,7 +693,6 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
 
-set_option backward.isDefEq.respectTransparency false in
 open UniqueFactorizationMonoid in
 /--
 The normalized factors of a polynomial over a field times its leading coefficient give
