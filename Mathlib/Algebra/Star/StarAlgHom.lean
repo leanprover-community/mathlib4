@@ -624,8 +624,8 @@ end StarAlgHom
 /-- A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar
 multiplication and the star operation, which allows for considering both unital and non-unital
 equivalences with a single structure. -/
-structure StarAlgEquiv (R A B : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
+structure StarAlgEquiv (R A B : Type*) [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [NonUnitalNonAssocSemiring B] [Module R B]
     [Star A] [Star B] extends A ≃⋆+* B, A ≃ₐ[R] B
 
 @[inherit_doc StarAlgEquiv] infixr:25 " ≃⋆ₐ " => StarAlgEquiv _
@@ -646,14 +646,14 @@ Mostly an implementation detail for the ⋆-algebra equivalence class
 which is currently: `[NonUnitalAlgEquivClass]` and `[StarHomClass]`.
 -/
 @[deprecated AlgEquivClass (since := "2025-14-09")]
-class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*) [Monoid R]
-    [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [NonUnitalNonAssocSemiring B]
-    [DistribMulAction R B] [EquivLike F A B] : Prop
+class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*) [Semiring R]
+    [NonUnitalNonAssocSemiring A] [Module R A] [NonUnitalNonAssocSemiring B]
+    [Module R B] [EquivLike F A B] : Prop
   extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
 
 -- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [EquivLike F A B]
+instance (priority := 100) {F R A B : Type*} [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [NonUnitalNonAssocSemiring B] [Module R B] [EquivLike F A B]
     [AlgEquivClass F R A B] :
     NonUnitalAlgHomClass F R A B :=
   { }
@@ -663,16 +663,16 @@ namespace StarAlgEquivClass
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
 @[coe]
-def toStarAlgEquiv {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star A] [Star B] [EquivLike F A B]
+def toStarAlgEquiv {F R A B : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+    [NonUnitalNonAssocSemiring B] [Module R B] [Star A] [Star B] [EquivLike F A B]
     [AlgEquivClass F R A B] [StarHomClass F A B] (f : F) : A ≃⋆ₐ[R] B :=
   { (f : A ≃ₐ[R] B) with
     map_star' := map_star f }
 
 /-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
 `StarAlgEquivClass.toStarAlgEquiv`. -/
-instance instCoeHead {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star A] [Star B]
+instance instCoeHead {F R A B : Type*} [Semiring R] [NonUnitalNonAssocSemiring A]
+    [Module R A] [NonUnitalNonAssocSemiring B] [Module R B] [Star A] [Star B]
     [EquivLike F A B] [AlgEquivClass F R A B] [StarHomClass F A B] : CoeHead F (A ≃⋆ₐ[R] B) :=
   ⟨toStarAlgEquiv⟩
 
@@ -682,9 +682,9 @@ namespace StarAlgEquiv
 
 section Basic
 
-variable {F R A B C : Type*} [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
-    [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star A] [Star B]
-    [NonUnitalNonAssocSemiring C] [DistribMulAction R C] [Star C]
+variable {F R A B C : Type*} [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+    [NonUnitalNonAssocSemiring B] [Module R B] [Star A] [Star B]
+    [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
 
 instance : EquivLike (A ≃⋆ₐ[R] B) A B where
   coe f := f.toFun
@@ -873,9 +873,9 @@ end Basic
 
 section Bijective
 
-variable {F G R A B : Type*} [Monoid R]
-variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
-variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
+variable {F G R A B : Type*} [Semiring R]
+variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
+variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [StarHomClass G B A]
 
@@ -913,7 +913,7 @@ theorem ofBijective_apply {f : F} (hf : Function.Bijective f) (a : A) :
 end Bijective
 
 section Group
-variable {S R : Type*} [Monoid S] [NonUnitalNonAssocSemiring R] [Star R] [DistribMulAction S R]
+variable {S R : Type*} [Semiring S] [NonUnitalNonAssocSemiring R] [Star R] [Module S R]
 
 @[simps -isSimp one mul]
 instance aut : Group (R ≃⋆ₐ[S] R) where

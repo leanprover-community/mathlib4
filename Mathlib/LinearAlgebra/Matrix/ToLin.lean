@@ -521,7 +521,7 @@ theorem Matrix.toLinAlgEquiv'_symm :
 
 @[simp]
 theorem LinearMap.toMatrixAlgEquiv'_toLinAlgEquiv' (M : Matrix n n R) :
-    LinearMap.toMatrixAlgEquiv' (Matrix.toLinAlgEquiv' M) = M :=
+    LinearMap.toMatrixAlgEquiv' (Matrix.toLinAlgEquiv' (R := R) M) (R := R) = M :=
   LinearMap.toMatrixAlgEquiv'.apply_symm_apply M
 
 @[simp]
