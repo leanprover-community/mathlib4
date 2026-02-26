@@ -189,6 +189,8 @@ lemma FormallySmooth.of_formallySmooth_residueField_tensor (M : Submonoid P)
 
 end IsLocalRing
 
+set_option maxHeartbeats 220000 in
+-- needed after refactoring `AlgEquiv`
 set_option backward.isDefEq.respectTransparency false in
 -- It is not hard to generalize the proof to get the full generality of the stacks tag.
 -- The hard part is figuring out the right way to state the result. Hence we refrain from this
@@ -232,7 +234,7 @@ lemma IsSmoothAt.of_formallySmooth_fiber
     have : e'.toAlgHom.comp (IsScalarTower.toAlgHom R p.ResidueField _) =
         IsScalarTower.toAlgHom _ _ _ := by ext
     let e'' : (𝓀[Rp] ⊗[R] S) ⊗[S] Sq ≃ₐ[𝓀[Rp]] 𝓀[Rp] ⊗[Rp] Sq :=
-      .ofCommutes e' fun r ↦ congr($this r)
+      .ofCommutes (R := 𝓀[Rp]) e'.toRingEquiv fun r ↦ congr($this r)
     exact .of_equiv e''
   have := FormallySmooth.of_formallySmooth_residueField_tensor
     (R := Rp) (S := Sq) (P := Sp) (algebraMapSubmonoid _ q.primeCompl)

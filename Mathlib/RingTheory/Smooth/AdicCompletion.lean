@@ -29,6 +29,8 @@ open RingHom
 
 variable [FormallySmooth R A]
 
+set_option synthInstance.maxHeartbeats 210000 in
+-- needed after refactoring `AlgEquiv`
 /--
 (Implementation): Lift `A →ₐ[R] S ⧸ I` inductively to `A →ₐ[R] S ⧸ I ^ m` using formal
 smoothness.
