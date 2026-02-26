@@ -159,7 +159,6 @@ lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSub
     Algebra.IsPushout R T A B :=
   (Algebra.isLocalization_iff_isPushout S _).mp inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 variable (R M) in
 open TensorProduct in
 instance {α} [IsLocalizedModule S f] :

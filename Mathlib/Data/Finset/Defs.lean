@@ -96,11 +96,12 @@ theorem val_inj {s t : Finset α} : s.1 = t.1 ↔ s = t :=
 instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
   | _, _ => decidable_of_iff _ val_inj
 
-/-! ### membership -/
+/-! ### set coercion -/
 
-
-instance : Membership α (Finset α) :=
-  ⟨fun s a => a ∈ s.1⟩
+/-- Convert a finset to a set in the natural way. -/
+instance : SetLike (Finset α) α where
+  coe s := {a | a ∈ s.1}
+  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
@@ -119,13 +120,6 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 @[simp] lemma forall_mem_not_eq {s : Finset α} {a : α} : (∀ b ∈ s, ¬ a = b) ↔ a ∉ s := by grind
 @[simp] lemma forall_mem_not_eq' {s : Finset α} {a : α} : (∀ b ∈ s, ¬ b = a) ↔ a ∉ s := by grind
-
-/-! ### set coercion -/
-
-/-- Convert a finset to a set in the natural way. -/
-instance : SetLike (Finset α) α where
-  coe s := {a | a ∈ s}
-  coe_injective' s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
 instance : PartialOrder (Finset α) := .ofSetLike (Finset α) α
 

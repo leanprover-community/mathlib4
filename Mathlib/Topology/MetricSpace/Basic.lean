@@ -222,7 +222,6 @@ abbrev replaceEDist : PseudoEMetricSpace X where
 
 lemma replaceEDist_eq : m.replaceEDist d hd = m := by ext : 2; exact hd
 
-set_option backward.whnf.reducibleClassField false in
 -- Check uniformity is unchanged
 example : (replaceEDist m d hd).toUniformSpace = m.toUniformSpace := by
   dsimp +instances [replaceEDist]
@@ -249,12 +248,10 @@ abbrev replaceDist : PseudoMetricSpace X where
 
 lemma replaceDist_eq : m.replaceDist d hd = m := by ext : 2; exact hd
 
-set_option backward.whnf.reducibleClassField false in
 -- Check uniformity is unchanged
 example : (replaceDist m d hd).toUniformSpace = m.toUniformSpace := by
   dsimp +instances [replaceDist]
 
-set_option backward.whnf.reducibleClassField false in
 -- Check Bornology is unchanged
 example : (replaceDist m d hd).toBornology = m.toBornology := by
   dsimp +instances [replaceDist]
