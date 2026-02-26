@@ -116,6 +116,7 @@ def finsetWalkLengthLT (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
       have hl' : p.length = l' := mem_finsetWalkLength_iff.mp (hsl' hp)
       False.elim <| hne <| hl.symm.trans hl')
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
@@ -230,6 +231,7 @@ end Fintype
 infinite components. -/
 abbrev oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd {c ∈ G.oddComponents | c.supp ⊆ c'.supp}.ncard ↔ Odd c'.supp.ncard := by

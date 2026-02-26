@@ -39,6 +39,7 @@ section TopologicalVectorSpace
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
   [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
 connected. -/
 theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
@@ -254,6 +255,7 @@ section
 variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
 theorem isPathConnected_compl_of_one_lt_codim {E : Submodule ℝ F}
