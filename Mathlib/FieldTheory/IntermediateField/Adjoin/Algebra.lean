@@ -36,6 +36,10 @@ namespace algebraAdjoinAdjoin
 scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
   (Subalgebra.inclusion <| algebra_adjoin_le_adjoin F S).toAlgebra
 
+@[simp]
+theorem coe_algebraMap (x : Algebra.adjoin F S) :
+    (algebraMap (Algebra.adjoin F S) (adjoin F S) x : E) = x := rfl
+
 scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
   Subalgebra.inclusion.isScalarTower_left (algebra_adjoin_le_adjoin F S) _
