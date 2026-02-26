@@ -633,9 +633,18 @@ theorem nilpotencyClass_zero_iff_subsingleton [IsNilpotent G] :
   rw [Group.nilpotencyClass_def, Nat.find_eq_zero, upperCentralSeries_zero,
     subsingleton_iff_bot_eq_top, Subgroup.subsingleton_iff]
 
+/-- If the quotient by `center G` is nilpotent, then so is G. -/
+theorem of_quotient_center_nilpotent (h : IsNilpotent (G ⧸ center G)) : IsNilpotent G := by
+  obtain ⟨n, hn⟩ := h.nilpotent
+  use n.succ
+  simp [← comap_upperCentralSeries_quotient_center, hn]
+
 /-- Quotienting the `center G` reduces the nilpotency class by 1 -/
-theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
+theorem nilpotencyClass_quotient_center :
     Group.nilpotencyClass (G ⧸ center G) = Group.nilpotencyClass G - 1 := by
+  by_cases hH : IsNilpotent G; swap
+  · rw [nilpotencyClass_of_not_nilpotent hH, zero_tsub, nilpotencyClass_of_not_nilpotent]
+    exact mt of_quotient_center_nilpotent hH
   generalize hn : Group.nilpotencyClass G = n
   rcases n with (rfl | n)
   · simp only [nilpotencyClass_zero_iff_subsingleton, zero_tsub] at *
@@ -661,12 +670,6 @@ theorem nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontri
     rw [nilpotencyClass_zero_iff_subsingleton] at h
     apply false_of_nontrivial_of_subsingleton G
   · simp
-
-/-- If the quotient by `center G` is nilpotent, then so is G. -/
-theorem of_quotient_center_nilpotent (h : IsNilpotent (G ⧸ center G)) : IsNilpotent G := by
-  obtain ⟨n, hn⟩ := h.nilpotent
-  use n.succ
-  simp [← comap_upperCentralSeries_quotient_center, hn]
 
 /-- A custom induction principle for nilpotent groups. The base case is a trivial group
 (`subsingleton G`), and in the induction step, one can assume the hypothesis for
