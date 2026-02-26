@@ -27,7 +27,7 @@ Fix `k : ℕ`. Assuming `n * p n → r` as `n → ∞`, we show
 * `ProbabilityTheory.tendsto_poissonPMFReal_pow_of_tendsto_mul_atTop`:
   the same limit rewritten using `poissonPMFReal` (with `r : ℝ≥0`).
 
-* `ProbabilityTheory.PMFbinomial_tendsto_poissonPMFReal_atTop`:
+* `ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop`:
   convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞` under the natural hypotheses
   (`p n ≤ 1` and `n * p n → r`).
 
@@ -92,7 +92,7 @@ theorem tendsto_choose_mul_pow_of_tendsto_mul_atTop (hr : Tendsto (fun n => n * 
 Another version of Poisson Limit Theorem: convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞`
 under the natural hypotheses (`∀ n, p n ≤ 1` and `r ≥ 0`).
 -/
-lemma PMFbinomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} (h : ∀ n, p n ≤ 1)
+lemma binomial_tendsto_poissonPMFReal_atTop {r : ℝ≥0} {p : ℕ → ℝ≥0} (h : ∀ n, p n ≤ 1)
     (hr : Tendsto (fun n => n * p n) atTop (𝓝 r)) :
     Tendsto (fun n ↦ PMF.binomial (p n) (h n) n (Fin.ofNat (n + 1) k))
     atTop (𝓝 (poissonPMF r k)) := by
