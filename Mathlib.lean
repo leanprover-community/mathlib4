@@ -3561,6 +3561,7 @@ public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.Data.DFinsupp.Submonoid
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.DList.Instances
+public import Mathlib.Data.ENNReal.AbsDiff
 public import Mathlib.Data.ENNReal.Action
 public import Mathlib.Data.ENNReal.Basic
 public import Mathlib.Data.ENNReal.BigOperators
@@ -5953,6 +5954,7 @@ public import Mathlib.Probability.ProbabilityMassFunction.Binomial
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 public import Mathlib.Probability.ProbabilityMassFunction.Integrals
 public import Mathlib.Probability.ProbabilityMassFunction.Monad
+public import Mathlib.Probability.ProbabilityMassFunction.TotalVariation
 public import Mathlib.Probability.Process.Adapted
 public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.FiniteDimensionalLaws
