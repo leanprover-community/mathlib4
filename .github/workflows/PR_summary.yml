@@ -82,6 +82,10 @@ jobs:
         echo "Saving the changed files to 'changed_files.txt'..."
         git diff --name-only origin/${{ github.base_ref }}... | tee changed_files.txt
 
+        # Get all newly added files.
+        echo "Checking for added files..."
+        git diff --name-only --diff-filter A origin/${{ github.base_ref }}... | tee added_files.txt
+
         # Get all files which were removed or renamed.
         echo "Checking for removed files..."
 
@@ -230,11 +234,26 @@ jobs:
           workflowDocsReminder=""
         fi
 
+        echo "Compute scripts-location reminder"
+        scriptsFilesAdded="$(grep '^scripts/' added_files.txt || true)"
+        if [ -n "${scriptsFilesAdded}" ]
+        then
+          # Format each added scripts path as a Markdown bullet: "- `path`"
+          scriptsFilesAddedMarkdown="$(sed "s|^|- \`|; s|\$|\`|" <<< "${scriptsFilesAdded}")"
+          scriptsLocationReminder="$(printf "### Scripts folder reminder\nThis PR adds files under \`scripts/\`.\nPlease consider whether each added script belongs in this repository or in \`leanprover-community/mathlib-ci\`.\n\nAdded scripts files:\n%s\n" "${scriptsFilesAddedMarkdown}")"
+        else
+          scriptsLocationReminder=""
+        fi
+
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
         if [ -n "${workflowDocsReminder}" ]
         then
           printf '\n\n---\n\n%s\n' "${workflowDocsReminder}" >> please_merge_master.md
+        fi
+        if [ -n "${scriptsLocationReminder}" ]
+        then
+          printf '\n\n---\n\n%s\n' "${scriptsLocationReminder}" >> please_merge_master.md
         fi
 
         echo "Include any errors about removed or renamed files without deprecation,"
