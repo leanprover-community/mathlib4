@@ -50,7 +50,7 @@ namespace SemiDirectSum
 variable {R : Type*} [CommRing R]
 variable {G : Type*} [LieRing G] [LieAlgebra R G]
 variable {H : Type*} [LieRing H] [LieAlgebra R H]
-variable (ψ : G →ₗ⁅R⁆ (LieDerivation R H H))
+variable (ψ : G →ₗ⁅R⁆ LieDerivation R H H)
 
 variable {ψ} in
 /-- As raw types, the semidirect product is just a product. -/
