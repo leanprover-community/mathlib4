@@ -119,6 +119,7 @@ instance : P.isoModSerre.HasRightCalculusOfFractions where
     · simpa only [Preadditive.comp_sub, sub_eq_zero] using kernel.condition (f₁ - f₂)
 
 noncomputable example : Preadditive P.isoModSerre.Localization := inferInstance
+noncomputable example : P.isoModSerre.Q.Additive := inferInstance
 
 variable [L.IsLocalization P.isoModSerre] [Preadditive D] [L.Additive]
 
