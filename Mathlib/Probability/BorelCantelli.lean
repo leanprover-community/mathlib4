@@ -40,6 +40,7 @@ section BorelCantelli
 variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddCommGroup β]
   [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
     (hfi : iIndepFun f μ) (hij : i < j) :
     Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ := by

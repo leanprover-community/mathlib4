@@ -28,6 +28,7 @@ variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D) (W : MorphismPr
 
 open ComposableArrows
 
+set_option backward.isDefEq.respectTransparency false in
 lemma essSurj_mapComposableArrows_of_hasRightCalculusOfFractions
     [W.HasRightCalculusOfFractions] (n : ℕ) :
     (L.mapComposableArrows n).EssSurj where

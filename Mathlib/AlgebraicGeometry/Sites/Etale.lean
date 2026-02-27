@@ -57,8 +57,10 @@ def smallEtalePretopology (X : Scheme.{u}) : Pretopology X.Etale :=
 instance {S : Scheme.{u}} (𝒰 : S.Cover (precoverage @Etale)) (i : 𝒰.I₀) : Etale (𝒰.f i) :=
   𝒰.map_prop i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A separably closed field `Ω` defines a point on the étale topology by the fiber
 functor `X ↦ Hom(Spec Ω, X)`. -/
+noncomputable
 def geometricFiber (Ω : Type u) [Field Ω] [IsSepClosed Ω] : etaleTopology.Point where
   fiber := coyoneda.obj ⟨Spec (.of Ω)⟩
   jointly_surjective {S} R hR (f : Spec (.of Ω) ⟶ S) := by
@@ -66,7 +68,7 @@ def geometricFiber (Ω : Type u) [Field Ω] [IsSepClosed Ω] : etaleTopology.Poi
     rw [mem_grothendieckTopology_iff] at hR
     obtain ⟨𝒰, hle⟩ := hR
     obtain ⟨i, y, rfl⟩ := 𝒰.exists_eq x
-    refine ⟨𝒰.X i, 𝒰.f i, hle _ ⟨i⟩, ?_⟩
+    refine ⟨𝒰.X i, 𝒰.f i, hle _ _ ⟨i⟩, ?_⟩
     let k := (𝒰.X i).residueField y
     let m : S.residueField (𝒰.f i y) ⟶ (𝒰.X i).residueField y :=
       (𝒰.f i).residueFieldMap y

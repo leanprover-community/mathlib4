@@ -236,6 +236,7 @@ instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDom
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := ‹IsIntegralClosure R ℤ K›
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]

@@ -67,6 +67,7 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithTop α where
   inj' := WithTop.coe_injective
   map_rel_iff' := WithTop.coe_le_coe
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any `OrderTop` is equivalent to `WithTop` of the subtype excluding `⊤`.
 
 See also `Equiv.optionSubtypeNe`. -/
@@ -140,6 +141,7 @@ def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
   inj' := WithBot.coe_injective
   map_rel_iff' := WithBot.coe_le_coe
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any `OrderBot` is equivalent to `WithBot` of the subtype excluding `⊥`.
 
 See also `Equiv.optionSubtypeNe`. -/
@@ -424,6 +426,7 @@ theorem withBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
   DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/
 @[simps!]
 def withTopWithBot (f : LatticeHom α β) :
@@ -440,10 +443,12 @@ lemma withTopWithBot_apply (f : LatticeHom α β) (a : WithTop <| WithBot α) :
     f.withTopWithBot a = a.map (WithBot.map f) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem withTopWithBot_id : (LatticeHom.id α).withTopWithBot = BoundedLatticeHom.id _ :=
   DFunLike.coe_injective <| by simp [WithTop.map_id, WithBot.map_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withTopWithBot = f.withTopWithBot.comp g.withTopWithBot := by
@@ -459,6 +464,7 @@ def withTop' [OrderTop β] (f : LatticeHom α β) : LatticeHom (WithTop α) β :
 def withBot' [OrderBot β] (f : LatticeHom α β) : LatticeHom (WithBot α) β :=
   { f.toSupHom.withBot', f.toInfHom.withBot' with }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Adjoins a `⊤` and `⊥` to the codomain of a `LatticeHom`. -/
 @[simps!]
 def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :

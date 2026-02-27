@@ -20,7 +20,7 @@ As corollaries, an isomorphism `α : X ≅ Y` defines
   `CategoryTheory.Iso.conj : End X ≃* End Y` by `α.conj f = α.inv ≫ f ≫ α.hom`;
 - a group isomorphism `CategoryTheory.Iso.conjAut : Aut X ≃* Aut Y` by
   `α.conjAut f = α.symm ≪≫ f ≪≫ α`
-which can be found in  `CategoryTheory.Conj`.
+  which can be found in  `CategoryTheory.Conj`.
 -/
 
 @[expose] public section
