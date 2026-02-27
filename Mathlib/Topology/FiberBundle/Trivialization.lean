@@ -529,7 +529,7 @@ theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj �
   Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp`
-with `Trivialization.preimageHomeomorph_symm_apply`. -/
+with `Bundle.Trivialization.preimageHomeomorph_symm_apply`. -/
 protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSet) :=
   (e.preimageHomeomorph hb).symm
 
@@ -549,7 +549,7 @@ theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
   e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
 
 /-- Auxiliary definition to avoid looping in `dsimp`
-with `Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
+with `Bundle.Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
 protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBaseSetProd.symm
 
 @[simp]
@@ -582,7 +582,7 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 theorem continuousOn_proj : ContinuousOn proj e.source :=
   continuousOn_of_forall_continuousAt fun _ ↦ e.continuousAt_proj
 
-/-- Pre-composition of a `Trivialization` and a `Homeomorph`. -/
+/-- Pre-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
   toOpenPartialHomeomorph := h.transOpenPartialHomeomorph e.toOpenPartialHomeomorph
@@ -594,7 +594,7 @@ protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z
     have hp : h p ∈ e.source := by simpa using hp
     simp [hp]
 
-/-- Post-composition of a `Trivialization` and a `Homeomorph`. -/
+/-- Post-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
 protected def homeomorphComp {B' : Type*} [TopologicalSpace B'] (h : B ≃ₜ B') :
     Trivialization F (h ∘ proj) where
   toOpenPartialHomeomorph := e.toOpenPartialHomeomorph.transHomeomorph (h.prodCongr <| .refl _)
@@ -715,7 +715,7 @@ theorem transFiberHomeomorph_apply {F' : Type*} [TopologicalSpace F'] (e : Trivi
   rfl
 
 /-- Coordinate transformation in the fiber induced by a pair of bundle trivializations. See also
-`Trivialization.coordChangeHomeomorph` for a version bundled as `F ≃ₜ F`. -/
+`Bundle.Trivialization.coordChangeHomeomorph` for a version bundled as `F ≃ₜ F`. -/
 def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
   (e₂ <| e₁.toOpenPartialHomeomorph.symm (b, x)).2
 

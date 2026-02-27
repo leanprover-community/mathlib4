@@ -156,8 +156,8 @@ end Pretrivialization
 
 variable [TopologicalSpace (TotalSpace F E)]
 
-/-- A mixin class for `Trivialization`, stating that a trivialization is fiberwise linear with
-respect to given module structures on its fibers and the model fiber. -/
+/-- A mixin class for `Bundle.Trivialization`, stating that a trivialization is fiberwise linear
+with respect to given module structures on its fibers and the model fiber. -/
 protected class Trivialization.IsLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module R (E x)] (e : Trivialization F (π F E)) : Prop where
   linear : ∀ b ∈ e.baseSet, IsLinearMap R fun x : E b => (e ⟨b, x⟩).2
@@ -873,8 +873,9 @@ change of this continuous linear map w.r.t. the chart around `x₀` and the char
 
 It is defined by composing `ϕ` with appropriate coordinate changes given by the vector bundles
 `E` and `E'`.
-We use the operations `Trivialization.continuousLinearMapAt` and `Trivialization.symmL` in the
-definition, instead of `Trivialization.continuousLinearEquivAt`, so that
+We use the operations `Bundle.Trivialization.continuousLinearMapAt` and
+`Bundle.Trivialization.symmL` in the definition, instead of
+`Bundle.Trivialization.continuousLinearEquivAt`, so that
 `ContinuousLinearMap.inCoordinates` is defined everywhere (but see
 `ContinuousLinearMap.inCoordinates_eq`).
 
