@@ -36,7 +36,7 @@ open scoped AlgebraicGeometry
 
 namespace TopCat
 
-variable {X : TopCat.{u}} {U V : Opens X}
+variable {X : TopCat.{u}} {U : Opens X}
 
 theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
@@ -48,21 +48,19 @@ theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf A
     exact this ⟨inferInstance, inferInstance⟩ S hS
   exact h
 
-namespace Sheaf.AddCommGrpCat
-
-lemma restrict_sum {F : Presheaf AddCommGrpCat X} (h : V ≤ U) (s t : F.obj (op U)) :
-    (s + t) |_ V = s |_V + t |_V := by
+lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V ≤ U)
+    (s t : F.obj (op U)) : (s + t) |_ V = s |_V + t |_V := by
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
 
-lemma shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)} (s : S.X₂.val.obj (op U))
-    (h : S.g.val.app (op U) s = 0) (hS : S.ShortExact) :
+namespace Sheaf
+
+lemma addCommGrpCat_shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)}
+    (s : S.X₂.val.obj (op U)) (h : S.g.val.app (op U) s = 0) (hS : S.Exact) (hf : Mono S.f) :
     ∃(t : S.X₁.val.obj (op U)), S.f.val.app (op U) t = s := by
   have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
     (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
-  exact Presheaf.addCommGrpCat_shortExact_app_zero h (this S ⟨hS.1, hS.2⟩).left
-
-end AddCommGrpCat
+  exact Presheaf.addCommGrpCat_shortExact_app_zero h (this S ⟨hS, hf⟩).left
 
 noncomputable section
 
@@ -72,7 +70,7 @@ instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCo
   hasExt_of_enoughInjectives _
 
 /-- The cohomology of a sheaf of abelian groups in degree `n`. -/
-def H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) := CategoryTheory.Sheaf.H F n
+def H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
 
 /-- Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology `H 𝓕 n ⟶ H 𝓖 n` -/
 def H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n → H G n :=
@@ -93,8 +91,7 @@ theorem H.equiv₀_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : H F 0) 
     f.val.app (op ⊤) ((H.equiv₀ F) x) = H.equiv₀ G (H.map f 0 x) :=
   CategoryTheory.Sheaf.H.equiv₀_comp Limits.isTerminalTop f x
 
-theorem H.equiv₀_symm_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G)
-    (x : F.val.obj (op ⊤)) :
+theorem H.equiv₀_symm_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : F.val.obj (op ⊤)) :
     H.map f 0 ((H.equiv₀ F).symm x) = (H.equiv₀ G).symm (f.val.app (op ⊤) x)
   := CategoryTheory.Sheaf.H.equiv₀_symm_comp Limits.isTerminalTop f x
 
