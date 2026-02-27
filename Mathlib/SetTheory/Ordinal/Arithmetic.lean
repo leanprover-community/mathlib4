@@ -70,10 +70,12 @@ theorem lift_add (a b : Ordinal.{v}) : lift.{u} (a + b) = lift.{u} a + lift.{u} 
       ⟨(RelIso.preimage Equiv.ulift _).trans
           (RelIso.sumLexCongr (RelIso.preimage Equiv.ulift _) (RelIso.preimage Equiv.ulift _)).symm⟩
 
-@[simp]
-theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := by
-  rw [← add_one_eq_succ, lift_add, lift_one]
-  rfl
+theorem lift_add_one (a : Ordinal.{v}) : lift.{u} (a + 1) = lift.{u} a + 1 := by
+  simp
+
+-- TODO: deprecate
+theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
+  lift_add_one a
 
 instance instAddLeftReflectLE :
     AddLeftReflectLE Ordinal.{u} where
@@ -263,8 +265,12 @@ def pred (o : Ordinal) : Ordinal :=
   isSuccPrelimitRecOn o (fun a _ ↦ a) (fun a _ ↦ a)
 
 @[simp]
-theorem pred_succ (o) : pred (succ o) = o :=
+theorem pred_add_one (o) : pred (o + 1) = o :=
   isSuccPrelimitRecOn_succ ..
+
+-- TODO: deprecate
+theorem pred_succ (o) : pred (succ o) = o :=
+  pred_add_one o
 
 theorem pred_eq_of_isSuccPrelimit {o} : IsSuccPrelimit o → pred o = o :=
   isSuccPrelimitRecOn_of_isSuccPrelimit _ _
@@ -289,7 +295,7 @@ theorem lt_pred_iff_succ_lt {a b} : a < pred b ↔ succ a < b :=
   le_iff_le_iff_lt_iff_lt.1 pred_le_iff_le_succ
 
 theorem pred_le_self (o) : pred o ≤ o := by
-  simpa using le_succ o
+  simp
 
 /-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
 def pred_succ_gi : GaloisInsertion pred succ :=
@@ -303,7 +309,7 @@ theorem self_le_succ_pred (o) : o ≤ succ (pred o) :=
 
 theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
-  · simpa using (lt_succ a).ne
+  · simp
   · simp_rw [ho.ordinalPred_eq, ho]
 
 theorem pred_lt_iff_not_isSuccPrelimit {o} : pred o < o ↔ ¬ IsSuccPrelimit o := by
@@ -684,7 +690,7 @@ theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
   refine .of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
-  · simpa [mul_succ] using (add_lt_add_iff_left (a * b)).2 h
+  · simpa [mul_add_one] using (add_lt_add_iff_left (a * b)).2 h
   · simpa [IsLUB, IsLeast, upperBounds, lowerBounds, mul_le_iff_of_isSuccLimit hb] using
       fun c hc ↦ mul_le_mul_right hc.le a
 

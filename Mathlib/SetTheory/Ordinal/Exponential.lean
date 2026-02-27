@@ -56,10 +56,15 @@ theorem opow_zero (a : Ordinal) : a ^ (0 : Ordinal) = 1 := by
   · rw [opow_of_ne_zero h, limitRecOn_zero]
 
 @[simp]
-theorem opow_succ (a b : Ordinal) : a ^ succ b = a ^ b * a := by
+theorem opow_add_one (a b : Ordinal) : a ^ (b + 1) = a ^ b * a := by
   obtain rfl | h := eq_or_ne a 0
-  · rw [zero_opow (succ_ne_zero b), mul_zero]
-  · rw [opow_of_ne_zero h, opow_of_ne_zero h, limitRecOn_succ]
+  · rw [zero_opow (add_one_ne_zero b), mul_zero]
+  · rw [opow_of_ne_zero h, opow_of_ne_zero h]
+    exact limitRecOn_succ ..
+
+-- TODO: deprecate
+theorem opow_succ (a b : Ordinal) : a ^ succ b = a ^ b * a :=
+  opow_add_one a b
 
 theorem opow_limit {a b : Ordinal} (ha : a ≠ 0) (hb : IsSuccLimit b) :
     a ^ b = ⨆ x : Iio b, a ^ x.1 := by
