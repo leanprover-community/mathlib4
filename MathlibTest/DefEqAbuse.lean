@@ -259,7 +259,7 @@ structure A {u : Level} where
 structure B {u : Level} where
 
 instance testCoersion (u : Level) : Coe (B (u := u)) (A (u := u)) where
-  coe x := ⟨⟩
+  coe _ := ⟨⟩
 
 def b : B (u := Lean.Level.zero) := ⟨⟩
 
