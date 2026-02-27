@@ -91,6 +91,7 @@ protected lemma map {G'} [Group G'] [IsPerfect H] (f : G →* G') : IsPerfect (H
 
 protected lemma range {G'} [Group G'] [IsPerfect G] (f : G →* G') : IsPerfect f.range := by
   rw [MonoidHom.range_eq_map]
+  have : IsPerfect (⊤ : Subgroup G) := top_iff.mpr inferInstance
   apply IsPerfect.map
 
 lemma ofSurjective {G'} [Group G'] [IsPerfect G] {f : G →* G'} (hf : Function.Surjective f) :
