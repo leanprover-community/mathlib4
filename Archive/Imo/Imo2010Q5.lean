@@ -86,7 +86,7 @@ lemma push {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 5) :
     · simp_rw [single_eq_of_ne hk, tsub_zero]
       rcases eq_or_ne k (i + 1) with rfl | hk'
       · simp_rw [single_eq_same, single_succ]; grind
-      · simp_rw [single_eq_of_ne hk']
+      · simp_rw [single_eq_of_ne hk', add_zero]
 termination_by B i
 
 /-- `(0, 0, 5, 11, 0, 0)` is reachable. -/
@@ -118,15 +118,15 @@ lemma double {B : Fin 6 → ℕ} {i : Fin 6}
   ext k; simp only [comp_apply, add_apply, sub_apply]
   have (j : Fin 6) : j + 1 + 1 = j + 2 := by grind
   rcases eq_or_ne k i with rfl | hk
-  · rw [swap_apply_of_ne_of_ne (by simp) (by simp), single_succ, this, single_add_two]
+  · rw [swap_apply_of_ne_of_ne (by simp) (by simp), single_succ, this, single_add_two, Nat.sub_zero]
   · rcases eq_or_ne k (i + 1) with rfl | hk'
     · grind [swap_apply_left, single_eq_same]
     · rw [single_eq_of_ne hk']
       rcases eq_or_ne k (i + 2) with rfl | hk''
       · grind [swap_apply_right, single_eq_same, single_succ]
-      · rw [swap_apply_of_ne_of_ne hk' hk'', single_eq_of_ne hk', this, single_eq_of_ne hk'']
+      · rw [swap_apply_of_ne_of_ne hk' hk'', single_eq_of_ne hk', this, single_eq_of_ne hk'',
+          tsub_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `double` as many times as possible, emptying $B_i$ and doubling $B_{i+1}$ that many times. -/
 lemma doubles {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 4) (zB : B (i + 2) = 0) :
     Reachable (update (B - single i (B i)) (i + 1) (B (i + 1) * 2 ^ B i)) := by
@@ -142,10 +142,9 @@ lemma doubles {B : Fin 6 → ℕ} {i : Fin 6} (rB : Reachable B) (hi : i < 4) (z
     · simp_rw [update_of_ne hk', sub_apply, add_apply, single_eq_of_ne hk', add_zero]
       rcases eq_or_ne k i with rfl | hk
       · simp_rw [single_eq_same, tsub_self]
-      · simp_rw [single_eq_of_ne hk]
+      · simp_rw [single_eq_of_ne hk, tsub_zero]
 termination_by B i
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Empty $B_i$ and set $B_{i+1} = 2^{B_i}$, assuming $B_{i+1} = B_{i+2} = 0$. -/
 lemma exp {B : Fin 6 → ℕ} {i : Fin 6}
     (rB : Reachable B) (hi : i < 4) (pB : 0 < B i) (zB : B (i + 1) = 0) (zB' : B (i + 2) = 0) :
@@ -161,7 +160,7 @@ lemma exp {B : Fin 6 → ℕ} {i : Fin 6}
   · simp only [update_of_ne hk', sub_apply, add_apply, single_eq_of_ne hk', add_zero]
     rcases eq_or_ne k i with rfl | hk
     · simp_rw [single_eq_same, tsub_self]
-    · simp_rw [single_eq_of_ne hk]
+    · simp_rw [single_eq_of_ne hk, tsub_zero]
 
 /-- From `(0, 0, k+1, n, 0, 0)` with `n > 0` we can reach `(0, 0, k, 2^n, 0, 0)`. -/
 lemma exp_mid {k n : ℕ} (h : Reachable (single 2 (k + 1) + single 3 n)) (hn : 0 < n) :

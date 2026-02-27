@@ -24,7 +24,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 - We prove that `ChosenPullbacksAlong` has good closure properties: isos have chosen pullbacks,
   and composition of morphisms with chosen pullbacks have chosen pullbacks.
 
--  We prove that chosen pullbacks yields usual pullbacks: `ChosenPullbacksAlong.isPullback`
+- We prove that chosen pullbacks yield usual pullbacks: `ChosenPullbacksAlong.isPullback`
   proves that for morphisms `f` and `g` with the same codomain, the object
   `ChosenPullbacksAlong.pullbackObj f g` together with morphisms
   `ChosenPullbacksAlong.fst f g` and `ChosenPullbacksAlong.snd f g` form a pullback square
