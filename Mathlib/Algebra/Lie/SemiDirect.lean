@@ -108,7 +108,7 @@ def in_left : H →ₗ⁅R⁆ (H ⋊⁅ψ⁆ G) where
   map_lie' {_ _}:= toProd.injective <| by simp
 
 @[simp]
-lemma in_left_injective :  (Function.Injective (in_left ψ)) := by intro _ _; simp [in_left]
+lemma inl_injective : Function.Injective (inl ψ) := by intro; simp [inl]
 
 /-- The canonical projection of the semi-direct sum H ⋊⁅ψ⁆ G to G. -/
 def pr_right : (H ⋊⁅ψ⁆ G) →ₗ⁅R⁆ G where
