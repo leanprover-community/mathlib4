@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # Colimit of representables
@@ -724,9 +725,7 @@ noncomputable def coconeπOpCompShrinkYonedaObj (X : C) :
   ι.naturality u₁ u₂ g := by
     ext f
     obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
-    dsimp at f ⊢
-    rw [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm]
-    simp
+    simp [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
 
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
 `F.obj X` identifies to the colimit of
@@ -745,9 +744,7 @@ noncomputable def isColimitCoconeπOpCompShrinkYonedaObj (X : C) :
       dsimp [c] at v h
       simp only [Equiv.apply_symm_apply] at h
       rw [← G.ιColimitType_map (show u ⟶ F.elementsMk _ x from ⟨v, h⟩).op]
-      dsimp [G]
-      rw [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm]
-      simp
+      simp [G, shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
     intro u₁ u₂ hu
     generalize hx₁ : G.descColimitType c u₁ = x
     have hx₂ : G.descColimitType c u₂ = x := by rw [← hx₁]; exact hu.symm
@@ -776,12 +773,9 @@ noncomputable def coconeπOpCompShrinkYonedaFlip :
   ι.app u :=
     { app X := (coconeπOpCompShrinkYonedaObj F X).ι.app u
       naturality {X Y} f := by
-        dsimp
         ext x
         obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
-        dsimp
-        rw [Equiv.apply_symm_apply, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm,
-          Equiv.apply_symm_apply, FunctorToTypes.map_comp_apply] }
+        simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}] }
   ι.naturality u v g := by
     ext X x
     obtain ⟨x, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective x
