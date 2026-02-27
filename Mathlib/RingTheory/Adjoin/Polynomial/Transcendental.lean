@@ -36,11 +36,11 @@ abbrev equivPolynomialRangeAEval (x : A) (hx : Transcendental R x) :
 
 @[simp]
 theorem equivPolynomialRangeAEval_def (x : A) (hx : Transcendental R x) (p : R[X]) :
-    equivPolynomialRangeAEval x hx p = aeval (R := R) x p := rfl
+    equivPolynomialRangeAEval x hx p = aeval x p := rfl
 
 @[simp]
 theorem equivPolynomialRangeAEval_def' (x : A) (hx : Transcendental R x) (p : R[X]) :
-    equivPolynomialRangeAEval x hx p = (⟨aeval (R := R) x p, by simp⟩ : (aeval x).range) := rfl
+    equivPolynomialRangeAEval x hx p = (⟨aeval x p, by simp⟩ : (aeval x).range) := rfl
 
 /--
 If `x` is a transcendental element over `R` then `R[X] ≃ R[x]`. -/
@@ -50,11 +50,11 @@ def equivPolynomialAdjoin (x : A) (hx : Transcendental R x) :
 
 @[simp]
 theorem equivPolynomialAdjoin_def (x : A) (hx : Transcendental R x) (p : R[X]) :
-    equivPolynomialAdjoin x hx p = (⟨aeval (R := R) x p, by simp⟩ : Algebra.adjoin R {x}) := rfl
+    equivPolynomialAdjoin x hx p = (⟨aeval x p, by simp⟩ : Algebra.adjoin R {x}) := rfl
 
 @[simp]
 theorem equivPolynomialAdjoin_coe_eq (x : A) (hx : Transcendental R x) (p : R[X]) :
-    equivPolynomialAdjoin x hx p = aeval (R := R) x p := rfl
+    equivPolynomialAdjoin x hx p = aeval x p := rfl
 
 theorem equivPolynomialAdjoin_apply_X (x : A) (hx : Transcendental R x) :
     equivPolynomialAdjoin x hx X = x := by simp

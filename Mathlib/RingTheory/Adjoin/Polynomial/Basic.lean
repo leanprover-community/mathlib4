@@ -70,9 +70,8 @@ theorem adjoin_eq_exists_aeval (a : Algebra.adjoin R {x}) :
   simp_all
 
 @[elab_as_elim]
-theorem adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
-    (a : adjoin R {x}) (f : ∀ (p : Polynomial R),
-    M (⟨aeval x p, aeval_mem_adjoin_singleton R x⟩ : adjoin R {x})) :
+theorem adjoin_singleton_induction {M : (adjoin R {x}) → Prop} (a : adjoin R {x})
+    (f : ∀ (p : Polynomial R), M (⟨aeval x p, aeval_mem_adjoin_singleton R x⟩ : adjoin R {x})) :
     M a := by
   obtain ⟨p, hp⟩ := Algebra.adjoin_eq_exists_aeval _ x a
   grind
@@ -105,11 +104,11 @@ def equivRangeAevalAdjoinSingleton (x : A) :
   commutes' r := by simp
 
 @[simp]
-theorem equivRangeAevalAdjoinSingleton_apply (x a : A) {h : a ∈ (aeval (R := R) x).range} :
+theorem equivRangeAevalAdjoinSingleton_apply (x a : A) (h : a ∈ (aeval (R := R) x).range) :
     equivRangeAevalAdjoinSingleton R x ⟨a, h⟩ = ⟨a, by rwa [adjoin_singleton_eq_range_aeval]⟩ := rfl
 
 @[simp]
-theorem equivRangeAevalAdjoinSingleton_apply' (x : A) {s : (aeval (R := R) x).range} :
+theorem equivRangeAevalAdjoinSingleton_apply' (x : A) (s : (aeval (R := R) x).range) :
     equivRangeAevalAdjoinSingleton R x s = ⟨s, by simp_all [adjoin_singleton_eq_range_aeval]⟩ := rfl
 
 end AlgHom
