@@ -68,17 +68,6 @@ theorem isCompactOperator_zero {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace
     [TopologicalSpace M₂] [Zero M₂] : IsCompactOperator (0 : M₁ → M₂) :=
   ⟨{0}, isCompact_singleton, mem_of_superset univ_mem fun _ _ => rfl⟩
 
-/--
-The identity of a topological additive group is a compact operator implies it is weakly
-locally compact.
--/
-lemma WeaklyLocallyCompactSpace.of_isCompactOperator_id
-    {M₁ : Type*} [TopologicalSpace M₁] [AddCommGroup M₁] [ContinuousAdd M₁]
-    (h : IsCompactOperator (id : M₁ → M₁)) : WeaklyLocallyCompactSpace M₁ where
-  exists_compact_mem_nhds x := by
-    obtain ⟨V, hV, hVK⟩ := h
-    exact ⟨x +ᵥ V, hV.vadd _, vadd_mem_nhds_self.2 hVK⟩
-
 section Characterizations
 
 section
