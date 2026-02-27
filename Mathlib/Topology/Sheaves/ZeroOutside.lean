@@ -17,6 +17,8 @@ public import Mathlib.Topology.Sheaves.Sheaf
 /-!
 # Zero Outside Presheaf
 
+
+
 -/
 
 @[expose] public section

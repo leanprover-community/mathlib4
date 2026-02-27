@@ -28,6 +28,12 @@ We define and prove basic properties about flasque sheaves on topological spaces
 * `TopCat.Sheaf.IsFlasque.X₃_shortExact_isFlasque_X₁_isFlasque_X₂`: Given a short exact sequence of
   sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque, then `𝓗` is flasque.
 
+* `TopCat.Sheaf.IsFlasque.of_injective`: Injective sheaves are flasque.
+
+* `TopCat.Sheaf.IsFlasque.H_isZero`: Flasque sheaves have no higher cohomology. For most
+  applications, it is probably better to use `Subsingleton (H F (n + 1))` which can be proven by
+  `infer_instance`
+
 -/
 
 @[expose] public section
@@ -47,10 +53,10 @@ def IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) : Prop :=
 
 namespace IsFlasque
 
-variable {U V : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.val.obj (op U))
+variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.val.obj (op U))
 
-/-- Given a morphism of sheaves `g: F ⟶ G` and a section of `G(U)`, `Under g s` is comprised of an
-open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. This is not likely to be useful
+/-- Given a morphism of sheaves `g: F ⟶ G` and a section `s` of `G(U)`, `Under g s` is comprised of
+an open `V` and a section of `F(V)` that maps to `s |_ V` via `g`. This is not likely to be useful
 elsewhere so we leave it in the `IsFlasque` namespace. -/
 structure Under : Type u where
   /-- the open subset that our section is on -/
@@ -71,7 +77,7 @@ structure Under.R (t₁ t₂ : Under g s) : Prop where
 
 open Under
 
-/- The next two lemmas prove that the relation R satisfies the requirements for applying Zorn's
+/- The next two lemmas prove that the relation `R` satisfies the requirements for applying Zorn's
 lemma -/
 lemma Under.R.trans {a b c : Under g s} (h1 : (R g s) a b) (h2 : (R g s) b c) : (R g s) a c := by
   apply R.mk (le_trans h1.le h2.le)
@@ -183,6 +189,8 @@ theorem of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I
   intro _ _ i
   exact epi_map_of_injective I (leOfHom i)
 
+/-- Flasque sheaves have no higher cohomology. For most applications, it is probably better to use
+  `Subsingleton (H F (n + 1))` which can be proven by `infer_instance` -/
 theorem H_isZero {F : Sheaf AddCommGrpCat X} (hF : IsFlasque F) (n : ℕ) :
     IsZero (AddCommGrpCat.of (H F (n+1))) := by
   induction n generalizing F with
@@ -198,7 +206,7 @@ theorem H_isZero {F : Sheaf AddCommGrpCat X} (hF : IsFlasque F) (n : ℕ) :
     apply (ShortComplex.Exact.epi_f_iff (hLS.exact 1)).mp
     rw [AddCommGrpCat.epi_iff_surjective, ← Equiv.surjective_comp (H.equiv₀ I).symm.toEquiv]
     change Function.Surjective ((H.map S.g 0) ∘ (H.equiv₀ I).symm.toEquiv)
-    conv => arg 1 ; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ (((sheafSections Ab).obj (op ⊤)).map S.g)
+    conv => arg 1 ; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ ((sheafSections Ab X).obj (op ⊤)).map S.g
       => ext x ; exact H.equiv₀_symm_comp S.g x
     rw [Equiv.comp_surjective, ← AddCommGrpCat.epi_iff_surjective]
     exact epi_of_shortExact hS hF
