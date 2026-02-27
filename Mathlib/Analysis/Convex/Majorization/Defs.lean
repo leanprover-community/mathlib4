@@ -135,6 +135,15 @@ instance transIsSubmajorizedByIsSubmajorizedBy {o : Type*} [Fintype o] :
   trans := IsSubmajorizedBy.trans
 
 @[trans]
+lemma IsSubmajorizedBy.trans_isMajorizedBy {o : Type*} [Fintype o] {x : m → R} {y : n → R}
+    {z : o → R} (h₁ : x ≼ₛ y) (h₂ : y ≼ z) : x ≼ₛ z :=
+  h₁.trans <| ((isMajorizedBy_def _ _).mp h₂).1
+
+instance transIsSubmajorizedByIsMajorizedBy {o : Type*} [Fintype o] :
+    @Trans (m → R) (n → R) (o → R) (· ≼ₛ ·) (· ≼ ·) (· ≼ₛ ·) where
+  trans := IsSubmajorizedBy.trans_isMajorizedBy
+
+@[trans]
 lemma IsSupermajorizedBy.trans {o : Type*} [Fintype o] {x : m → R} {y : n → R} {z : o → R}
     (h₁ : x ≼ˢ y) (h₂ : y ≼ˢ z) : x ≼ˢ z := by
   rw [isSupermajorizedBy_def] at h₁ h₂ ⊢
@@ -154,5 +163,13 @@ instance transIsMajorizedByIsMajorizedBy {o : Type*} [Fintype o] :
     @Trans (m → R) (n → R) (o → R) (· ≼ ·) (· ≼ ·) (· ≼ ·) where
   trans := IsMajorizedBy.trans
 
+@[trans]
+lemma IsMajorizedBy.trans_isSubmajorizedBy {o : Type*} [Fintype o] {x : m → R} {y : n → R}
+    {z : o → R} (h₁ : x ≼ y) (h₂ : y ≼ₛ z) : x ≼ₛ z :=
+  ((isMajorizedBy_def x y).mp h₁).1.trans h₂
+
+instance transIsMajorizedByIsSubmajorizedBy {o : Type*} [Fintype o] :
+    @Trans (m → R) (n → R) (o → R) (· ≼ ·) (· ≼ₛ ·) (· ≼ₛ ·) where
+  trans := IsMajorizedBy.trans_isSubmajorizedBy
 
 end majorization

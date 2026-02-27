@@ -27,14 +27,6 @@ iff `A *ᵥ x ≼ x` for all `x`.
 * `mem_doublyStochastic_iff_forall_mulVec_isMajorizedBy`: A matrix `A` is doubly stochastic iff
   `A *ᵥ x ≼ x` for all `x`.
 
-## Implementation notes
-
-There are several characterizations of this notion, and one that is more amenable to
-formalization (since it avoids having to introduce equivs to sort values), is the one that
-makes use of the fact that
-`∑ i ≤ k, x↓ i = max_{s, #s = k} ∑ i ∈ s, x i`
-and likewise for the increasing sum. This is what we take as the definition here.
-
 ## References
 
 * [Rajendra Bhatia, *Matrix Analysis*, Chapter 2][bhatia1997]
@@ -339,6 +331,24 @@ lemma isSubmajorizedBy_iff_isSupermajorizedBy [IsStrictOrderedRing R] {x : m →
 lemma IsMajorizedBy.isSupermajorizedBy [IsStrictOrderedRing R] {x : m → R} {y : n → R}
     (hxy : x ≼ y) (hcard : card m = card n) : x ≼ˢ y :=
   (isSubmajorizedBy_iff_isSupermajorizedBy (x := x) (y := y) hxy.2 hcard).mp hxy.1
+
+@[trans]
+lemma IsSupermajorizedBy.trans_isMajorizedBy [IsStrictOrderedRing R]
+    {x : m → R} {y : n → R} {z : n → R} (h₁ : x ≼ˢ y) (h₂ : y ≼ z) : x ≼ˢ z :=
+  h₁.trans (h₂.isSupermajorizedBy rfl)
+
+instance transIsSubmajorizedByIsMajorizedBy [IsStrictOrderedRing R] :
+    @Trans (m → R) (n → R) (n → R) (· ≼ˢ ·) (· ≼ ·) (· ≼ˢ ·) where
+  trans := IsSupermajorizedBy.trans_isMajorizedBy
+
+@[trans]
+lemma IsMajorizedBy.trans_isSupermajorizedBy [IsStrictOrderedRing R] {x : m → R} {y : m → R}
+    {z : n → R} (h₁ : x ≼ y) (h₂ : y ≼ˢ z) : x ≼ˢ z :=
+  h₁.isSupermajorizedBy rfl |>.trans h₂
+
+instance transIsMajorizedByIsSupermajorizedBy [IsStrictOrderedRing R] :
+    @Trans (m → R) (m → R) (n → R) (· ≼ ·) (· ≼ˢ ·) (· ≼ˢ ·) where
+  trans := IsMajorizedBy.trans_isSupermajorizedBy
 
 @[simp, grind =]
 lemma IsSubmajorizedBy.equiv_left {o : Type*} [Fintype o] {x : m → R} {y : n → R} (e : o ≃ m) :
