@@ -154,7 +154,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
        `a` is not a unit then `b` is a unit -/
   refine
     ⟨fun hp =>
-      irreducible_iff.mpr
+      _root_.irreducible_iff.mpr
         ⟨hp.not_isUnit.imp h.isPrimitive.isUnit_iff_isUnit_map.mpr, fun a b H =>
           or_iff_not_imp_left.mpr fun hₐ => ?_⟩,
       fun hp =>
