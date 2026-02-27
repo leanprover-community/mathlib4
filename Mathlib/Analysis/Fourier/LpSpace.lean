@@ -106,7 +106,6 @@ theorem SchwartzMap.toLp_fourier_eq (f : 𝓢(E, F)) : 𝓕 (f.toLp 2) = (𝓕 f
 @[deprecated (since := "2025-12-31")]
 alias SchwartzMap.toLp_fourierTransform_eq := SchwartzMap.toLp_fourier_eq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem SchwartzMap.toLp_fourierInv_eq (f : 𝓢(E, F)) : 𝓕⁻ (f.toLp 2) = (𝓕⁻ f).toLp 2 := by
   apply LinearMap.extendOfNorm_eq

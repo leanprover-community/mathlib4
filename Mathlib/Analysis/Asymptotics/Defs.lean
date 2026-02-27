@@ -209,6 +209,12 @@ theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
 theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
   simpa using h.def zero_lt_one
 
+theorem IsLittleO.eventuallyLT_norm_of_eventually_pos (h : f =o[l] g) (hg : ∀ᶠ x in l, 0 < ‖g x‖) :
+    ∀ᶠ x in l, ‖f x‖ < ‖g x‖ := by
+  refine ((h.def (show 0 < 2⁻¹ by simp)).and hg).mono fun x ⟨hx₁, hx₂⟩ ↦ hx₁.trans_lt ?_
+  rw [mul_lt_iff_lt_one_left hx₂]
+  norm_num
+
 /-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
   (denoted as `u ~[l] v` in the `Asymptotics` namespace)
   when `u x - v x = o(v x)` as `x` converges along `l`. -/

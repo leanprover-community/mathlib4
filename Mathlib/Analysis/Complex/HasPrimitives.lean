@@ -203,7 +203,7 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
   have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s :=
-    f_cont.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn <|
+    f_cont.comp ((continuous_add_const _).comp continuous_ofReal).continuousOn <|
       fun _ ↦ mem_ball_re_aux
   have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re :=
     ContinuousOn.intervalIntegrable <| f_contOn.mono <| by simpa
@@ -211,8 +211,7 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
     f_contOn.stronglyMeasurableAtFilter isOpen_Ioo _ zRe_mem_s
   have int3 : ContinuousAt (fun (x : ℝ) ↦ f (x + z.im * I)) z.re :=
     isOpen_Ioo.continuousOn_iff.mp f_contOn zRe_mem_s
-  simpa [HasDerivAt, HasDerivAtFilter, hasFDerivAtFilter_iff_isLittleO] using
-    intervalIntegral.integral_hasDerivAt_right int1 int2 int3
+  simpa using intervalIntegral.integral_hasDerivAt_right int1 int2 int3 |>.isLittleO
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
