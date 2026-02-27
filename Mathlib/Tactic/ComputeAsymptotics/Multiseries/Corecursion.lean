@@ -478,7 +478,6 @@ theorem FriendlyOperation.coind_comp_friend_left {op : Seq α → Seq α}
   rintro _ ⟨opf, op, rfl, h_opf, h_op⟩
   specialize h_step _ h_op
   obtain ⟨T, hT⟩ := h_step
-  -- obtain ⟨F, hF⟩ := FriendlyOperation.destruct h_opf
   use fun hd? ↦
     match (T hd?) with
     | none => (h_opf.unfold none).map fun (hd, opf') =>
