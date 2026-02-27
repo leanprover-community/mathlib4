@@ -584,7 +584,7 @@ end AKS
 
 @[expose] public section
 
-/-- The AKS primality test. If `(X + a) ^ n = X ^ n + a` modulo `(ZMod n)[X] / X ^ r - 1`
+/-- The **AKS primality test**. If `(X + a) ^ n = X ^ n + a` modulo `(ZMod n)[X] / X ^ r - 1`
   and some other minor conditions hold, then `n` is a prime power. -/
 theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial
     {n r a : ℕ} (hc : n.Coprime r) (hn : 3 ≤ n)
