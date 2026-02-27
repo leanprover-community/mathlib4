@@ -734,7 +734,7 @@ lemma restrict_killingForm_eq_sum :
 with the Cartan subalgebra plus a sum of root spaces corresponding to some subset of roots. -/
 lemma lieIdeal_eq_inf_cartan_sup_biSup_rootSpace (I : LieIdeal K L) :
     I.restr H = (I.restr H ⊓ H.toLieSubmodule) ⊔
-    ⨆ (α : H.root) (_ : rootSpace H α.1 ≤ I.restr H), rootSpace H α.1 := by
+      ⨆ (α : H.root) (_ : rootSpace H α.val ≤ I.restr H), rootSpace H α.val := by
   refine le_antisymm ?_ (sup_le inf_le_left (iSup₂_le fun _ hα ↦ hα))
   conv_lhs => rw [lieIdeal_eq_inf_cartan_sup_biSup_inf_rootSpace]
   refine sup_le_sup_left (iSup₂_le fun α hα ↦ ?_) _
