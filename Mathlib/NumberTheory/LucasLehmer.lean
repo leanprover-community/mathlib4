@@ -632,8 +632,7 @@ def sModNat (q : ℕ) : ℕ → ℕ
   | i + 1 => (sModNat q i ^ 2 + (q - 2)) % q
 
 theorem sModNat_eq_sMod (p k : ℕ) (hp : 2 ≤ p) : (sModNat (2 ^ p - 1) k : ℤ) = sMod p k := by
-  have : 4 ≤ 2 ^ p := by grind [Int.two_pow_pred_sub_two_pow']
-  induction k with grind [sModNat, sMod, Int.emod_eq_add_self_emod]
+  induction k with grind [sModNat, sMod, Int.emod_eq_add_self_emod, Int.two_pow_pred_sub_two_pow']
 
 /-- Tail-recursive version of `sModNat`. -/
 meta def sModNatTR (q k : ℕ) : ℕ :=
