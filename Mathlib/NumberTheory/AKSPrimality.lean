@@ -164,7 +164,7 @@ structure Conditions (r p n a q : ℕ) (μ : K) [Fact p.Prime] [ExpChar K p]
   nlogb_lt_od : (Real.logb 2 n) ^ 2 < orderOf (n : ZMod r)
   icc_coprime: ∀ y ∈ Icc 1 a, n.Coprime y
   icc_introspective: ∀ y : Icc 0 a, introspective ((X : K[X]) - C (y : K)) n r
-  is_primitive_root :  IsPrimitiveRoot μ r
+  is_primitive_root : IsPrimitiveRoot μ r
   p_prime : p.Prime
   q_prime : q.Prime
   p_dvd_n : p ∣ n
