@@ -46,7 +46,7 @@ lemma exists_epiModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
 
 lemma exists_isoModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (X' : C) (s : X' ⟶ X) (_ : P.isoModSerre s), s ≫ f = 0) ↔
-        P (Abelian.image f) := by
+      P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
   · rintro ⟨Y', s, hs, eq⟩
     rw [← exists_epiModSerre_comp_eq_zero_iff P]
