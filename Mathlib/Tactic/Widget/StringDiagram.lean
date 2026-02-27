@@ -210,12 +210,12 @@ def NormalExpr.nodes (e : NormalExpr) : CoherenceM ρ (List (List Node)) :=
   | NormalExpr.nil _ _ => return []
   | NormalExpr.cons _ _ η _ => return (← topNodes η) :: (← e.nodesAux 1)
 
-@[deprecated (since := "2026-02-26")] alias pairs := List.pairs
+@[deprecated (since := "2026-02-26")] alias pairs := List.consecutivePairs
 
 /-- The list of strands associated with a 2-morphism. -/
 def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
   let l ← e.nodes
-  (l.pairs).mapM fun (x, y) ↦ do
+  (l.consecutivePairs).mapM fun (x, y) ↦ do
     let xs := (x.map (fun n ↦ n.tarList)).flatten
     let ys := (y.map (fun n ↦ n.srcList)).flatten
     -- sanity check
@@ -277,10 +277,10 @@ def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
     | .id _ => do addPenroseVar "Id" x.toPenroseVar
   /- Add constraints. -/
   for l in nodes do
-    for (x₁, x₂) in l.pairs do
+    for (x₁, x₂) in l.consecutivePairs do
       addInstruction s!"Left({x₁.toPenroseVar}, {x₂.toPenroseVar})"
   /- Add constraints. -/
-  for (l₁, l₂) in nodes.pairs do
+  for (l₁, l₂) in nodes.consecutivePairs do
     if let some x₁ := l₁.head? then
       if let some x₂ := l₂.head? then
         addInstruction s!"Above({x₁.toPenroseVar}, {x₂.toPenroseVar})"
