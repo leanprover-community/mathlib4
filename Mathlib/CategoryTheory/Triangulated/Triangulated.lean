@@ -248,7 +248,6 @@ instance (X : C) :
    (contractible_distinguished (0 : C)) _ <| Triangle.isoMk _ (contractibleTriangle (0 : C))
      (Functor.mapZeroObject _) (Functor.mapZeroObject _) (Functor.mapZeroObject _)⟩⟩
 
-
 namespace Octahedron'
 
 attribute [reassoc] comm₁ comm₂ comm₃ comm₄
