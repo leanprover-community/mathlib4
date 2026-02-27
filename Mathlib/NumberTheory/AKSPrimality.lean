@@ -317,7 +317,7 @@ private theorem sp2_lt_sp3 (h : Conditions r p n a q μ) : (se2 h).ncard < (se3 
   exact Real.real_sqrt_lt_nat_sqrt_succ
 
 private theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 h)) :
-    x ≤ n ^ (floor √ (se2 h).ncard) := by
+    x ≤ n ^ ⌊√(se2 h).ncard⌋₊ := by
   unfold se3 f at hx
   simp only [Set.Icc_prod_Icc, Set.mem_image, Set.mem_Icc,
     Prod.exists, Prod.mk_le_mk, _root_.zero_le, and_self, true_and] at hx
@@ -377,7 +377,7 @@ private theorem aux_le (h : Conditions r p n a q μ) :
     replace heq : x ≡ y [MOD r] := by rw [← ZMod.natCast_eq_natCast_iff x y r, heq]
     exact pow_eq_pow_of_modEq heq is_primitive_root.pow_eq_one
   refine ⟨ ?_ , Set.Finite.subset hf hss ⟩
-  suffices (sp2 h).ncard ≤ n ^ floor (√ (se2 h).ncard) by
+  suffices (sp2 h).ncard ≤ n ^ ⌊√(se2 h).ncard⌋₊ by
     rify at this
     apply le_trans this
     rw [← Real.rpow_natCast]
@@ -596,7 +596,7 @@ end AKS
   and some other minor conditions hold, then `n` is a prime power. -/
 theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial
     {n r a : ℕ} (hc : n.Coprime r) (hn : 3 ≤ n)
-    (ha : a = Nat.floor ((√(φ r)) * (Real.logb 2 n))) (hc2 : ∀ y ∈ Icc 1 a, n.Coprime y)
+    (ha : a = ⌊√(φ r) * (Real.logb 2 n)⌋₊) (hc2 : ∀ y ∈ Icc 1 a, n.Coprime y)
     (hod : (Real.logb 2 n) ^ 2 < orderOf (n : (ZMod r))) (heq : ∀ y ∈ Icc 1 a,
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
       ((X : (ZMod n)[X]) ^ n - (C (y : (ZMod n)))) =
