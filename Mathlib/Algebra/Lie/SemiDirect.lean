@@ -90,6 +90,15 @@ lemma toProd_lie (x y : H ⋊⁅ψ⁆ G) :
        ⁅x.toProd.2, y.toProd.2⁆) := by
   simp [lie_def]
 
+lemma zero_eq_mk : (0 : H ⋊⁅ψ⁆ G) = ⟨0, 0⟩ := rfl
+lemma add_eq_mk (x y : H ⋊⁅ψ⁆ G) : x + y = ⟨x.left + y.left, x.right + y.right⟩ := rfl
+lemma sub_eq_mk (x y : H ⋊⁅ψ⁆ G) : x - y = ⟨x.left - y.left, x.right - y.right⟩ := rfl
+lemma neg_eq_mk (x : H ⋊⁅ψ⁆ G) : -x = ⟨-x.left, -x.right⟩ := rfl
+lemma smul_eq_mk (t : R) (x : H ⋊⁅ψ⁆ G) : t • x = ⟨t • x.left, t • x.right⟩ := rfl
+lemma lie_eq_mk (x y : H ⋊⁅ψ⁆ G) :
+    ⁅x, y⁆ = ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩ :=
+  rfl
+
 instance : LieRing (H ⋊⁅ψ⁆ G) where
   add_lie _ _ _ := toProd.injective <| by simp; abel
   lie_add _ _ _:= toProd.injective <| by simp; abel
