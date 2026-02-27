@@ -10,6 +10,8 @@ public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
 
+import Mathlib.RingTheory.Polynomial.Subring
+
 /-!
 # Algebraic elements and integral elements
 

@@ -349,7 +349,7 @@ def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
 /--
 For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
 ``traverseConstructor `foo1 `Foo applInst f `α `β [`(x : List α), `(y : ℕ)]``
-synthesizes `foo1 <$> traverse f x <*> pure y.` -/
+synthesizes `foo1 <$> traverse f x <*> pure y`. -/
 def traverseConstructor (c n : Name) (applInst f α β : Expr) (args₀ : List Expr)
     (args₁ : List (Bool × Expr)) (m : MVarId) : TermElabM Unit := do
   let ad ← getAuxDefOfDeclName

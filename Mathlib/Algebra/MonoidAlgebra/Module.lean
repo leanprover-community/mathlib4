@@ -7,10 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Algebra.MonoidAlgebra.Lift
-public import Mathlib.LinearAlgebra.Span.Defs
-
-import Mathlib.LinearAlgebra.Finsupp.Supported
-public import Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Module structure on monoid algebras
@@ -66,6 +63,16 @@ instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k] [Nonem
     FaithfulSMul R k[G] :=
   Finsupp.faithfulSMul
 
+/-- The standard basis for a monoid algebra. -/
+@[to_additive /-- The standard basis for an additive monoid algebra. -/]
+def basis (R k) [Semiring k] : Module.Basis R k (MonoidAlgebra k R) where
+  repr := LinearEquiv.refl k (R →₀ k)
+
+@[to_additive (dont_translate := k) (attr := simp)]
+lemma basis_apply (k) [Semiring k] (r : R) :
+    MonoidAlgebra.basis R k r = MonoidAlgebra.single r 1 :=
+  rfl
+
 /-- This is not an instance as it conflicts with `MonoidAlgebra.distribMulAction` when `G = kˣ`.
 
 TODO: Change the type to `DistribMulAction Gᵈᵐᵃ k[G]` and then it can be an instance.
@@ -88,14 +95,14 @@ section ExtLemmas
 variable [Semiring k]
 
 /-- `MonoidAlgebra.single` as a `DistribMulActionHom`. -/
-@[to_additive (dont_translate := R) (relevant_arg := G) singleDistribMulActionHom
+@[to_additive (dont_translate := R) singleDistribMulActionHom
 /-- `AddMonoidAlgebra.single` as a `DistribMulActionHom`. -/]
 def singleDistribMulActionHom [Monoid R] [DistribMulAction R k] (a : G) : k →+[R] k[G] where
   __ := singleAddHom a
   map_smul' k m := by simp
 
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `MonoidAlgebra`. -/
-@[to_additive (dont_translate := R) (relevant_arg := N) (attr := ext) distribMulActionHom_ext'
+@[to_additive (dont_translate := R) (attr := ext) distribMulActionHom_ext'
 /-- A copy of `Finsupp.distribMulActionHom_ext'` for `AddMonoidAlgebra`. -/]
 theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMulAction R N]
     [DistribMulAction R k] {f g : k[G] →+[R] N}
@@ -104,8 +111,7 @@ theorem distribMulActionHom_ext' {N : Type*} [Monoid R] [AddMonoid N] [DistribMu
   Finsupp.distribMulActionHom_ext' h
 
 /-- A copy of `Finsupp.lsingle` for `MonoidAlgebra`. -/
-@[to_additive (dont_translate := R) (relevant_arg := G)
-/-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
+@[to_additive (dont_translate := R) /-- A copy of `Finsupp.lsingle` for `AddMonoidAlgebra`. -/]
 abbrev lsingle [Semiring R] [Module R k] (a : G) : k →ₗ[R] k[G] := Finsupp.lsingle a
 
 @[to_additive (attr := simp)]

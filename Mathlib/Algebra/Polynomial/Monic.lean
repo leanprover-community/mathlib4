@@ -53,9 +53,6 @@ theorem Monic.as_sum (hp : p.Monic) :
   suffices C (p.coeff p.natDegree) = 1 by rw [this, one_mul]
   exact congr_arg C hp
 
-@[deprecated (since := "2025-08-14")] alias ne_zero_of_ne_zero_of_monic :=
-  Monic.ne_zero_of_polynomial_ne
-
 theorem Monic.map [Semiring S] (f : R →+* S) (hp : Monic p) : Monic (p.map f) :=
   subsingleton_or_nontrivial S |>.elim (·.elim ..) fun _ ↦
     f.map_one ▸ hp ▸ leadingCoeff_map_eq_of_isUnit_leadingCoeff _ <| hp ▸ isUnit_one

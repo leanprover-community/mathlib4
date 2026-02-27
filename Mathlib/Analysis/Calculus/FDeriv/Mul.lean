@@ -642,10 +642,10 @@ TODO (low prio): prove a version without assumption `[HasSummableGeomSeries R]` 
 of units. -/
 @[fun_prop]
 theorem hasFDerivAt_ringInverse (x : Rˣ) :
-    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x :=
+    HasFDerivAt Ring.inverse (-mulLeftRight 𝕜 R ↑x⁻¹ ↑x⁻¹) x := by
   have : (fun t : R => Ring.inverse (↑x + t) - ↑x⁻¹ + ↑x⁻¹ * t * ↑x⁻¹) =o[𝓝 0] id :=
     (inverse_add_norm_diff_second_order x).trans_isLittleO (isLittleO_norm_pow_id one_lt_two)
-  by simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
+  simpa [hasFDerivAt_iff_isLittleO_nhds_zero] using this
 
 @[fun_prop]
 theorem differentiableAt_inverse {x : R} (hx : IsUnit x) :

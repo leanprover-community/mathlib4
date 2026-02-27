@@ -98,7 +98,7 @@ lemma coe_comp {X Y Z : BddDistLat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X �
 
 @[simp]
 lemma forget_map {X Y : BddDistLat} (f : X ⟶ Y) :
-    (forget BddDistLat).map f = f := rfl
+    (forget BddDistLat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BddDistLat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

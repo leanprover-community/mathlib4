@@ -16,17 +16,17 @@ Given a functor `F : D ⥤ C`, we define a functor
 `F.partialLeftAdjoint : F.PartialLeftAdjointSource ⥤ D` which is
 defined on the full subcategory of `C` consisting of those objects `X : C`
 such that `F ⋙ coyoneda.obj (op X) : D ⥤ Type _` is corepresentable.
-We have a natural bijection
+For `X : F.PartialLeftAdjointSource` and `Y : D`, we have a natural bijection
 `(F.partialLeftAdjoint.obj X ⟶ Y) ≃ (X.obj ⟶ F.obj Y)`
 that is similar to what we would expect for the image of the object `X`
 by the left adjoint of `F`, if such an adjoint existed.
 
-Indeed, if the predicate `F.LeftAdjointObjIsDefined` which defines
+Indeed, if the predicate `F.leftAdjointObjIsDefined` which defines
 the `F.PartialLeftAdjointSource` holds for all
 objects `X : C`, then `F` has a left adjoint.
 
 When colimits indexed by a category `J` exist in `D`, we show that
-the predicate `F.LeftAdjointObjIsDefined` is stable under colimits indexed by `J`.
+the predicate `F.leftAdjointObjIsDefined` is stable under colimits indexed by `J`.
 
 ## TODO
 * consider dualizing the results to right adjoints
@@ -223,7 +223,7 @@ instance (Y : F.PartialRightAdjointSource) :
 
 /-- Given `F : C ⥤ D`, this is `F.partialRightAdjoint` on objects: it sends
 `X : D` such that `F.rightAdjointObjIsDefined X` holds to an object of `C`
-which represents the functor `F ⋙ coyoneda.obj (op X.obj)`. -/
+which represents the functor `F.op ⋙ yoneda.obj X.obj`. -/
 noncomputable def partialRightAdjointObj (Y : F.PartialRightAdjointSource) : C :=
   (F.op ⋙ yoneda.obj Y.obj).reprX
 
@@ -273,7 +273,7 @@ lemma partialRightAdjointHomEquiv_symm_comp {X : C} {Y Y' : F.PartialRightAdjoin
       F.partialRightAdjointHomEquiv.symm (f ≫ g.hom) := by
   simp [Equiv.eq_symm_apply, partialRightAdjointHomEquiv_map_comp]
 
-/-- Given `F : C ⥤ D`, this is the partial adjoint functor `F.PartialLeftAdjointSource ⥤ C`. -/
+/-- Given `F : C ⥤ D`, this is the partial adjoint functor `F.PartialRightAdjointSource ⥤ C`. -/
 @[simps]
 noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
   obj := F.partialRightAdjointObj

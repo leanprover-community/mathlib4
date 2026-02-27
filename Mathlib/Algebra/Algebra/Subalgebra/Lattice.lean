@@ -819,6 +819,11 @@ theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) 
     φ₁ = φ₂ := by
   subst hS; exact adjoin_ext h
 
+theorem _root_.Algebra.forall_mem_adjoin_smul_eq_self_iff (S : Set A) {M : Type*} [Monoid M]
+    [MulSemiringAction M A] [SMulCommClass M R A] (m : M) :
+    (∀ x ∈ adjoin R S, m • x = x) ↔ (∀ x ∈ S, m • x = x) :=
+  AlgHom.eqOn_adjoin_iff (φ := MulSemiringAction.toAlgHom R A m) (ψ := .id R A)
+
 end AlgHom
 
 section NatInt

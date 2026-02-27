@@ -469,11 +469,7 @@ theorem restrictScalars_adjoin_of_algEquiv
     (adjoin L S).restrictScalars F = (adjoin L' S).restrictScalars F := by
   apply_fun toSubfield using (fun K K' h ↦ by
     ext x; change x ∈ K.toSubfield ↔ x ∈ K'.toSubfield; rw [h])
-  change Subfield.closure _ = Subfield.closure _
-  congr
-  ext x
-  exact ⟨fun ⟨y, h⟩ ↦ ⟨i y, by rw [← h, hi]; rfl⟩,
-    fun ⟨y, h⟩ ↦ ⟨i.symm y, by rw [← h, hi, Function.comp_apply, AlgEquiv.apply_symm_apply]⟩⟩
+  simp [hi]
 
 @[elab_as_elim]
 theorem adjoin_induction {s : Set E} {p : ∀ x ∈ adjoin F s, Prop}

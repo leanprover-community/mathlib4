@@ -55,7 +55,7 @@ noncomputable def multilinearMap [Finite ι] [∀ i, Finite (κ i)] :
     LinearEquiv.multilinearMapCongrLeft (fun i => (b i).repr.symm) ≪≫ₗ
       (b'.repr).multilinearMapCongrRight R ≪≫ₗ freeFinsuppEquiv.symm
 
-variable [Fintype ι] [∀ i, Fintype (κ i)]
+variable [Fintype ι] [∀ i, Finite (κ i)]
 
 theorem multilinearMap_apply (i : (Π i, κ i) × ι') :
     Basis.multilinearMap b b' i =

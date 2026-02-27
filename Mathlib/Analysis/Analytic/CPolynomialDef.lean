@@ -246,7 +246,7 @@ theorem HasFiniteFPowerSeriesOnBall.bound_zero_of_eq_zero (hf : ∀ y ∈ Metric
     · convert hasSum_zero
       rw [hp, ContinuousMultilinearMap.zero_apply]
     · rwa [Metric.mem_eball, edist_eq_enorm_sub, add_comm, add_sub_cancel_right,
-        ← edist_zero_eq_enorm, ← Metric.mem_eball]
+        ← edist_zero_right, ← Metric.mem_eball]
 
 /-- If `f` has a formal power series at `x` bounded by `0`, then `f` is equal to `0` in a
 neighborhood of `x`. -/

@@ -44,11 +44,11 @@ namespace MeasureTheory
 /-! ### Some results about the Lebesgue integral involving a normed group -/
 
 lemma lintegral_enorm_eq_lintegral_edist (f : α → β) :
-    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_eq_enorm]
+    ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_right]
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [ofReal_norm_eq_enorm, edist_zero_eq_enorm]
+  simp only [ofReal_norm_eq_enorm, edist_zero_right]
 
 theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable f μ)
     (hh : AEStronglyMeasurable h μ) :
@@ -190,15 +190,9 @@ theorem HasFiniteIntegral.of_bounded_enorm [IsFiniteMeasure μ] {f : α → ε} 
     (hC' : ‖C‖ₑ ≠ ∞ := by finiteness) (hC : ∀ᵐ a ∂μ, ‖f a‖ₑ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const_enorm hC').mono'_enorm hC
 
-@[deprecated (since := "2025-07-26")]
-alias hasFiniteIntegral_of_bounded_enorm := HasFiniteIntegral.of_bounded_enorm
-
 theorem HasFiniteIntegral.of_bounded [IsFiniteMeasure μ] {f : α → β} {C : ℝ}
     (hC : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const C).mono' hC
-
-@[deprecated (since := "2025-07-26")]
-alias hasFiniteIntegral_of_bounded := HasFiniteIntegral.of_bounded
 
 -- TODO: generalise this to f with codomain ε
 -- requires generalising `norm_le_pi_norm` and friends to enorms

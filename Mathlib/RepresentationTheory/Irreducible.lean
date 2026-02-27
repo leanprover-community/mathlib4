@@ -27,18 +27,21 @@ variable {G k V W : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V] [A
 
 /-- A representation `ρ` is irreducible if it is non-trivial and has no proper non-trivial
 subrepresentations. -/
-@[mk_iff] class IsIrreducible extends
+abbrev IsIrreducible :=
   IsSimpleOrder (Subrepresentation ρ)
 
 theorem irreducible_iff_isSimpleModule_asModule :
     IsIrreducible ρ ↔ IsSimpleModule k[G] ρ.asModule := by
-  rw [isSimpleModule_iff, isIrreducible_iff]
+  rw [isSimpleModule_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
-theorem is_simple_module_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Module k[G] M] :
+theorem isSimpleModule_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Module k[G] M] :
     IsSimpleModule k[G] M ↔ IsIrreducible (ofModule (k := k) (G := G) M) := by
-  rw [isSimpleModule_iff, isIrreducible_iff]
+  rw [isSimpleModule_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.submoduleSubrepresentationOrderIso
+
+@[deprecated (since := "2026-02-09")]
+alias is_simple_module_iff_irreducible_ofModule := isSimpleModule_iff_irreducible_ofModule
 
 namespace IsIrreducible
 

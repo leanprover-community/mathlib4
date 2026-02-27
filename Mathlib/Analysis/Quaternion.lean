@@ -181,7 +181,7 @@ theorem continuous_coe : Continuous (coe : ℝ → ℍ) :=
 @[continuity]
 theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
   simpa [← normSq_eq_norm_mul_self] using
-    (continuous_norm.mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
+    (continuous_norm.fun_mul continuous_norm : Continuous fun q : ℍ => ‖q‖ * ‖q‖)
 
 @[continuity]
 theorem continuous_re : Continuous fun q : ℍ => q.re :=

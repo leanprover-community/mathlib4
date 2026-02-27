@@ -47,7 +47,7 @@ lemma mapDomain_add (f : M → N) (x y : R[M]) :
 lemma mapDomain_sum (f : M → N) (x : S[M]) (v : M → S → R[M]) :
     mapDomain f (x.sum v) = x.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
 
-@[to_additive (relevant_arg := M)]
+@[to_additive]
 lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := by ext; simp
 
 @[to_additive]

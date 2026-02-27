@@ -31,7 +31,8 @@ of `HasForget₂` instances.
 
 open CategoryTheory Limits
 
-variable (V : Type*) [Category* V] [HasForget V] [HasForget₂ V TopCat]
+variable (V : Type*) [Category* V] {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)] [ConcreteCategory V FV] [HasForget₂ V TopCat]
 variable (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Action
@@ -142,12 +143,9 @@ namespace DiscreteContAction
 instance : Category (DiscreteContAction V G) :=
   ObjectProperty.FullSubcategory.category (IsDiscrete (V := V) (G := G))
 
-instance : HasForget (DiscreteContAction V G) :=
-  FullSubcategory.hasForget (IsDiscrete (V := V) (G := G))
+example : HasForget₂ V TopCat := inferInstance
 
-instance {FV : V → V → Type*} {CV : V → Type*} [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
-    [ConcreteCategory V FV] :
-    ConcreteCategory (DiscreteContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
+instance : ConcreteCategory (DiscreteContAction V G) (fun X Y => Action.HomSubtype V G X.1 Y.1) :=
   FullSubcategory.concreteCategory (IsDiscrete (V := V) (G := G))
 
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
@@ -166,9 +164,12 @@ end DiscreteContAction
 
 namespace CategoryTheory
 
-variable {V W : Type*} [Category* V] [HasForget V] [HasForget₂ V TopCat]
-  [Category* W] [HasForget W] [HasForget₂ W TopCat]
-  (G : Type*) [Monoid G] [TopologicalSpace G]
+variable {V W : Type*} [Category* V] {FV : V → V → Type*} {CV : V → Type*}
+    [∀ X Y, FunLike (FV X Y) (CV X) (CV Y)]
+    [ConcreteCategory V FV] [HasForget₂ V TopCat]
+    [Category* W] {FW : W → W → Type*} {CW : W → Type*} [∀ X Y, FunLike (FW X Y) (CW X) (CW Y)]
+    [ConcreteCategory W FW] [HasForget₂ W TopCat]
+    (G : Type*) [Monoid G] [TopologicalSpace G]
 
 namespace Functor
 
@@ -180,7 +181,9 @@ def mapContAction (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).ob
 
 /-- Continuous version of `Functor.mapActionComp`. -/
 @[simps! hom inv]
-def mapContActionComp {T : Type*} [Category* T] [HasForget T] [HasForget₂ T TopCat]
+def mapContActionComp {T : Type*} [Category* T]
+    {FT : T → T → Type*} {CT : T → Type*} [∀ X Y, FunLike (FT X Y) (CT X) (CT Y)]
+    [ConcreteCategory T FT] [HasForget₂ T TopCat]
     (F : V ⥤ W) (H : ∀ X : ContAction V G, ((F.mapAction G).obj X.obj).IsContinuous)
     (F' : W ⥤ T) (H' : ∀ X : ContAction W G, ((F'.mapAction G).obj X.obj).IsContinuous) :
     Functor.mapContAction G (F ⋙ F') (fun X ↦ H' ((F.mapContAction G H).obj X)) ≅

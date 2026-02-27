@@ -327,7 +327,7 @@ instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
   simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
     relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     model_preorder, and_true]
-  exact fun _ _ => le_antisymm
+  infer_instance
 
 section LinearOrder
 
@@ -337,7 +337,7 @@ instance model_linearOrder : M ⊨ L.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_insert_iff, Relations.realize_total, relMap_leSymb,
     Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, model_partialOrder,
     and_true]
-  exact le_total
+  infer_instance
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ L.dlo := by
@@ -382,16 +382,16 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
 /-- Any model of a theory of partial orders is a partial order. -/
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
-  le_antisymm := Relations.realize_antisymmetric.1 ((Theory.model_iff _).1 h _
-    (by simp only [partialOrderTheory, Set.mem_insert_iff, true_or]))
+  le_antisymm := (Relations.realize_antisymmetric.mp <|
+    Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
   __ := L.partialOrderOfModels M
-  le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _
-    (by simp only [linearOrderTheory, Set.mem_insert_iff, true_or]))
+  le_total := (Relations.realize_total.1 <| (Theory.model_iff _).1 h _ <|
+    by simp only [linearOrderTheory, Set.mem_insert_iff, true_or]).total
   toDecidableLE := inferInstance
 
 end structure_to_order

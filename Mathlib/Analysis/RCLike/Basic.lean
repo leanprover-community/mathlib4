@@ -222,8 +222,16 @@ theorem re_ofReal_mul (r : ℝ) (z : K) : re (↑r * z) = r * re z := by
   simp only [mul_re, ofReal_im, zero_mul, ofReal_re, sub_zero]
 
 @[rclike_simps]
+theorem re_mul_ofReal (z : K) (r : ℝ) : re (z * ↑r) = re z * r := by
+  rw [mul_comm, re_ofReal_mul, mul_comm]
+
+@[rclike_simps]
 theorem im_ofReal_mul (r : ℝ) (z : K) : im (↑r * z) = r * im z := by
   simp only [add_zero, ofReal_im, zero_mul, ofReal_re, mul_im]
+
+@[rclike_simps]
+theorem im_mul_ofReal (z : K) (r : ℝ) : im (z * ↑r) = im z * r := by
+  rw [mul_comm, im_ofReal_mul, mul_comm]
 
 @[rclike_simps]
 theorem smul_re (r : ℝ) (z : K) : re (r • z) = r * re z := by
@@ -1167,6 +1175,15 @@ lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
 
 @[simp] theorem map_from_real : map ℝ K = ofRealCLM := by ext; simp
 
+open scoped ComplexOrder in
+lemma instOrderClosedTopology : OrderClosedTopology K where
+  isClosed_le' := by
+    conv in _ ≤ _ => rw [RCLike.le_iff_re_im]
+    simp_rw [Set.setOf_and]
+    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+
+scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology
+
 end LinearMaps
 
 /-!
@@ -1287,3 +1304,36 @@ noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
   exact p.copy_of_normedField hk hp
 
 end
+
+namespace LinearIsometryEquiv
+variable {𝕜 V W G : Type*} [RCLike 𝕜] [SeminormedAddCommGroup V] [Module 𝕜 V]
+  [SeminormedAddCommGroup W] [NormedSpace 𝕜 W] [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
+
+/-- Left scalar multiplication of a unit with norm one and a linear isometric equivalence,
+as a linear isometric equivalence. -/
+instance : SMul (unitary 𝕜) (V ≃ₗᵢ[𝕜] W) where smul α e :=
+  { __ := Unitary.toUnits α • e.toLinearEquiv
+    norm_map' _ := by simp [norm_smul] }
+
+@[simp] theorem smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : V) :
+    (α • e) x = (α : 𝕜) • e x := rfl
+
+theorem symm_smul_apply (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : 𝕜) • e.symm x := rfl
+
+@[simp] theorem symm_units_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).symm = α⁻¹ • e.symm := by ext; simp [symm_smul_apply]
+
+@[simp] theorem toLinearEquiv_smul (e : V ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).toLinearEquiv = Unitary.toUnits α • e.toLinearEquiv := rfl
+
+@[simp] theorem toContinuousLinearEquiv_smul (e : G ≃ₗᵢ[𝕜] W) (α : unitary 𝕜) :
+    (α • e).toContinuousLinearEquiv = Unitary.toUnits α • e.toContinuousLinearEquiv := rfl
+
+theorem smul_trans (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    (α • e).trans f = α • (e.trans f) := by ext; simp
+
+theorem trans_smul (α : unitary 𝕜) (e : V ≃ₗᵢ[𝕜] G) (f : G ≃ₗᵢ[𝕜] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
+
+end LinearIsometryEquiv

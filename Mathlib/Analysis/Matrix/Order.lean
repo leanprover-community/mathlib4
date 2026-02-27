@@ -21,9 +21,9 @@ This allows us to use more general results from C⋆-algebras, like `CFC.sqrt`.
 
 * `Matrix.instPartialOrder`: the partial order on matrices given by `x ≤ y := (y - x).PosSemidef`.
 * `Matrix.PosSemidef.dotProduct_mulVec_zero_iff`: for a positive semi-definite matrix `A`,
-we have `x⋆ A x = 0` iff `A x = 0`.
+  we have `x⋆ A x = 0` iff `A x = 0`.
 * `Matrix.toMatrixInnerProductSpace`: the inner product on matrices induced by a
-positive semi-definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
+  positive semi-definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
 
 ## Implementation notes
 
@@ -294,9 +294,6 @@ A matrix is positive definite if and only if it has the form `Bᴴ * B` for some
 lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
     PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B :=
   isStrictlyPositive_iff_posDef.symm.trans CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
-
-@[deprecated (since := "2025-08-07")] alias PosDef.posDef_iff_eq_conjTranspose_mul_self :=
-  CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
 
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for

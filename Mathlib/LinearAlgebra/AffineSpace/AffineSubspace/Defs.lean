@@ -377,8 +377,6 @@ theorem direction_mk' (p : P) (direction : Submodule k V) :
     simpa using direction.sub_mem hp₁ hp₂
   · exact fun hv => ⟨v +ᵥ p, vadd_mem_mk' _ hv, p, self_mem_mk' _ _, (vadd_vsub _ _).symm⟩
 
-@[deprecated (since := "2025-08-15")] alias mem_mk'_iff_vsub_mem := mem_mk'
-
 /-- Constructing an affine subspace from a point in a subspace and that subspace's direction
 yields the original subspace. -/
 @[simp]

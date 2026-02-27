@@ -638,9 +638,10 @@ noncomputable def quotNilradicalEquivPi :
 
 /-- A reduced commutative Artinian ring is isomorphic to a finite product of fields,
 namely the quotients by the maximal ideals. -/
-noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
-  .trans (.symm <| .quotientBot R) <| .trans
+noncomputable def equivPi [IsReduced R] : R ≃ₐ[R] ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal where
+  __ := RingEquiv.trans (.symm <| .quotientBot R) <| .trans
     (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
+  commutes' _ := rfl
 
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing

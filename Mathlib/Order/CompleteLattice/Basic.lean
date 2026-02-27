@@ -445,8 +445,10 @@ theorem sInf_eq_iInf {s : Set α} : sInf s = ⨅ a ∈ s, a :=
 lemma sSup_lowerBounds_eq_sInf (s : Set α) : sSup (lowerBounds s) = sInf s :=
   (isLUB_sSup _).unique (isGLB_sInf _).isLUB
 
-lemma sInf_upperBounds_eq_csSup (s : Set α) : sInf (upperBounds s) = sSup s :=
+lemma sInf_upperBounds_eq_sSup (s : Set α) : sInf (upperBounds s) = sSup s :=
   (isGLB_sInf _).unique (isLUB_sSup _).isGLB
+
+@[deprecated (since := "2026-02-01")] alias sInf_upperBounds_eq_csSup := sInf_upperBounds_eq_sSup
 
 theorem Monotone.le_map_iSup [CompleteLattice β] {f : α → β} (hf : Monotone f) :
     ⨆ i, f (s i) ≤ f (iSup s) :=
@@ -1376,16 +1378,16 @@ congr_arg₂ Prod.mk (congr_arg sSup <| fst_image_prod _ ht) (congr_arg sSup <| 
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
-protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
-    [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
+protected abbrev Function.Injective.completeLattice [Max α] [Min α] [LE α] [LT α]
+    [SupSet α] [InfSet α] [Top α] [Bot α] [CompleteLattice β]
+    (f : α → β) (hf : Function.Injective f)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) (lt : ∀ {x y}, f x < f y ↔ x < y)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)
     (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥) : CompleteLattice α where
-  -- we cannot use BoundedOrder.lift here as the `LE` instance doesn't exist yet
-  __ := hf.lattice f map_sup map_inf
-  le_sSup _ a h := (le_iSup₂ a h).trans (map_sSup _).ge
-  sSup_le _ _ h := (map_sSup _).trans_le <| iSup₂_le h
-  sInf_le _ a h := (map_sInf _).trans_le <| iInf₂_le a h
-  le_sInf _ _ h := (le_iInf₂ h).trans (map_sInf _).ge
-  le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot_le _ := map_bot.le.trans bot_le
+  __ := hf.lattice f le lt map_sup map_inf
+  __ := BoundedOrder.lift f (fun _ _ ↦ le.1) map_top map_bot
+  le_sSup _ a h := le.1 <| (le_iSup₂ a h).trans (map_sSup _).ge
+  sSup_le _ _ h := le.1 <| (map_sSup _).trans_le <| iSup₂_le fun a ha ↦ le.2 <| h a ha
+  sInf_le _ a h := le.1 <| (map_sInf _).trans_le <| iInf₂_le a h
+  le_sInf _ _ h := le.1 <| (le_iInf₂ fun a ha ↦ le.2 <| h a ha).trans (map_sInf _).ge

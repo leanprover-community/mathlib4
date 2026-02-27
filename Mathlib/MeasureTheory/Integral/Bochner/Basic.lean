@@ -919,7 +919,7 @@ theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
     eLpNorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
   have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖ₑ ^ p.toReal ∂μ := by
     simp_rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_enorm]
-  simp only [eLpNorm_eq_lintegral_rpow_enorm hp1 hp2, one_div]
+  simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal hp1 hp2, one_div]
   rw [integral_eq_lintegral_of_nonneg_ae]; rotate_left
   · exact ae_of_all _ fun x => by positivity
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
@@ -1218,13 +1218,13 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   refine ENNReal.toReal_mono ?_ ?_
   · refine ENNReal.mul_ne_top ?_ ?_
     · convert hf.eLpNorm_ne_top
-      rw [eLpNorm_eq_lintegral_rpow_enorm]
+      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal]
       · rw [ENNReal.toReal_ofReal hpq.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.pos
       · finiteness
     · convert hg.eLpNorm_ne_top
-      rw [eLpNorm_eq_lintegral_rpow_enorm]
+      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal]
       · rw [ENNReal.toReal_ofReal hpq.symm.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.symm.pos

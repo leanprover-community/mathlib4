@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # The concrete (co)kernels in the category of modules are (co)kernels in the categorical sense.
@@ -25,7 +27,7 @@ variable {R : Type u} [Ring R]
 
 section
 
-variable {M N : ModuleCat.{v} R} (f : M ⟶ N)
+variable {M N P : ModuleCat.{v} R} (f : M ⟶ N)
 
 /-- The kernel cone induced by the concrete kernel. -/
 def kernelCone : KernelFork f :=
@@ -40,6 +42,16 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
         LinearMap.mem_ker.2 <| by simp [← ConcreteCategory.comp_apply])
     (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
       hom_ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
+
+/-- Construct an `IsLimit` structure of kernels given `Function.Exact`. -/
+noncomputable
+def isLimitKernelFork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.hom)
+    (H₂ : Function.Injective f.hom) :
+    IsLimit (KernelFork.ofι (f := g) f (by ext; exact H.apply_apply_eq_zero _)) := by
+  refine IsLimit.ofIsoLimit (kernelIsLimit g) <|
+    Cones.ext ((LinearEquiv.ofInjective _ H₂).trans
+        (LinearEquiv.ofEq _ _ (LinearMap.exact_iff.mp H).symm)).toModuleIso.symm ?_
+  · rintro ⟨⟩ <;> ext x <;> simp [kernelCone]
 
 /-- The cokernel cocone induced by the projection onto the quotient. -/
 def cokernelCocone : CokernelCofork f :=
@@ -57,6 +69,18 @@ def cokernelIsColimit : IsColimit (cokernelCocone f) :=
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation
     apply (cancel_epi (ofHom (LinearMap.range f.hom).mkQ)).1
     exact h
+
+/-- Construct an `IsColimit` structure of cokernels given `Function.Exact`. -/
+noncomputable
+def isColimitCokernelCofork (f : M ⟶ N) (g : N ⟶ P) (H : Function.Exact f.hom g.hom)
+    (H₂ : Function.Surjective g.hom) :
+    IsColimit (CokernelCofork.ofπ (f := f) g (by ext; exact H.apply_apply_eq_zero _)) := by
+  refine IsColimit.ofIsoColimit (ModuleCat.cokernelIsColimit f) <|
+    Cocones.ext (((Submodule.quotEquivOfEq _ _ (LinearMap.exact_iff.mp H)).toModuleIso).symm
+    ≪≫ ((LinearMap.quotKerEquivOfSurjective _ H₂).toModuleIso)) ?_
+  · rintro ⟨⟩ <;> ext x
+    · simpa using (Function.Exact.apply_apply_eq_zero H x).symm
+    · rfl
 
 end
 

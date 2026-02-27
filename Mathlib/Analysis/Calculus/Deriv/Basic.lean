@@ -289,11 +289,28 @@ theorem HasDerivAtFilter.isBigO_sub (h : HasDerivAtFilter f f' x L) :
     (fun x' => f x' - f x) =O[L] fun x' => x' - x :=
   HasFDerivAtFilter.isBigO_sub h
 
-nonrec theorem HasDerivAtFilter.isBigO_sub_rev (hf : HasDerivAtFilter f f' x L) (hf' : f' ≠ 0) :
+/-- This theorem holds for any T2 TVS, see `isClosedEmbedding_smul_left`,
+but this would require more imports.
+
+The proof for a TVS is more complicated, and we wouldn't benefit from that form here,
+so we prove a weaker version as a private lemma instead. -/
+private lemma isInducing_toSpanSingleton (hf' : f' ≠ 0) :
+    Topology.IsInducing (toSpanSingleton 𝕜 f') := by
+  refine AntilipschitzWith.isInducing (K := ‖f'‖₊⁻¹) ?_ (map_continuous _)
+  simp [antilipschitzWith_iff_le_mul_dist, dist_eq_norm, ← sub_smul, norm_smul, field]
+
+theorem HasDerivAtFilter.isEquivalent_sub (hf : HasDerivAtFilter f f' x L) (hf' : f' ≠ 0) :
+    (f · - f x) ~[L] (fun x' ↦ (x' - x) • f') :=
+  HasFDerivAtFilter.isEquivalent_sub hf <| isInducing_toSpanSingleton hf'
+
+theorem HasDerivAtFilter.isTheta_sub (hf : HasDerivAtFilter f f' x L) (hf' : f' ≠ 0) :
+    (f · - f x) =Θ[L] (· - x) :=
+  HasFDerivAtFilter.isTheta_sub hf <| isInducing_toSpanSingleton hf'
+
+@[deprecated HasDerivAtFilter.isTheta_sub (since := "2026-02-04")]
+theorem HasDerivAtFilter.isBigO_sub_rev (hf : HasDerivAtFilter f f' x L) (hf' : f' ≠ 0) :
     (fun x' => x' - x) =O[L] fun x' => f x' - f x :=
-  suffices AntilipschitzWith ‖f'‖₊⁻¹ (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') from hf.isBigO_sub_rev this
-  AddMonoidHomClass.antilipschitz_of_bound (smulRight (1 : 𝕜 →L[𝕜] 𝕜) f') fun x => by
-    simp [norm_smul, ← div_eq_inv_mul, mul_div_cancel_right₀ _ (mt norm_eq_zero.1 hf')]
+  hf.isTheta_sub hf' |>.isBigO_symm
 
 theorem HasStrictDerivAt.hasDerivAt (h : HasStrictDerivAt f f' x) : HasDerivAt f f' x :=
   h.hasFDerivAt

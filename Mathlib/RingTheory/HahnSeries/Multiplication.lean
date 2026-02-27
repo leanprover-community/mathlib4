@@ -552,9 +552,6 @@ theorem orderTop_add_le_mul {x y : R⟦Γ⟧} : x.orderTop + y.orderTop ≤ (x *
   rw [← smul_eq_mul]
   exact HahnModule.orderTop_vAdd_le_orderTop_smul fun i j ↦ rfl
 
-@[deprecated (since := "2025-08-11")] alias orderTop_add_orderTop_le_orderTop_mul :=
-  orderTop_add_le_mul
-
 theorem order_mul_of_ne_zero {x y : R⟦Γ⟧}
     (h : x.leadingCoeff * y.leadingCoeff ≠ 0) : (x * y).order = x.order + y.order := by
   have hx : x.leadingCoeff ≠ 0 := by aesop

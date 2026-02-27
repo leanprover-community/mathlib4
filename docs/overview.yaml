@@ -397,7 +397,7 @@ Probability Theory:
     variance of a real-valued random variable: 'ProbabilityTheory.variance'
     independence of random variables: 'ProbabilityTheory.iIndepFun'
     Kolmogorov's $0$-$1$ law: 'ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop'
-    mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_of_integrable'
+    mean of product of independent random variables: 'ProbabilityTheory.IndepFun.integral_mul_eq_mul_integral'
     moment of a random variable: 'ProbabilityTheory.moment'
     Bernoulli law: 'PMF.bernoulli'
   Convergence of a sequence of random variables:
