@@ -290,6 +290,7 @@ instance comapOn_rankFinite [N.RankFinite] : (N.comapOn E f).RankFinite := by
 end comapOn
 section mapSetEmbedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Map a matroid `M` to an isomorphic copy in `β` using an embedding `M.E ↪ β`. -/
 def mapSetEmbedding (M : Matroid α) (f : M.E ↪ β) : Matroid β := Matroid.ofExistsMatroid
   (E := range f)

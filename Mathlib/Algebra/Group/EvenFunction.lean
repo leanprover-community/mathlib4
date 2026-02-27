@@ -142,9 +142,15 @@ lemma zero_of_even_and_odd [Neg α] (he : f.Even) (ho : f.Odd) : f = 0 := by
   ext r
   rw [Pi.zero_apply, ← neg_eq_self, ← ho, he]
 
+/-- The sum of values of an odd function over a symmetric finite set is zero. -/
+lemma Odd.finset_sum_eq_zero [InvolutiveNeg α] {f : α → β} (hf : f.Odd) {s : Finset α}
+    (hs : Finset.map (Equiv.neg α).toEmbedding s = s) :
+    s.sum f = 0 := by
+  simpa [neg_eq_self, funext hf, hs] using (Finset.sum_map s (Equiv.neg α).toEmbedding f).symm
+
 /-- The sum of the values of an odd function is 0. -/
-lemma Odd.sum_eq_zero [Fintype α] [InvolutiveNeg α] {f : α → β} (hf : f.Odd) : ∑ a, f a = 0 := by
-  simpa [neg_eq_self, Finset.sum_neg_distrib, funext hf] using Equiv.sum_comp (.neg α) f
+lemma Odd.sum_eq_zero [Fintype α] [InvolutiveNeg α] {f : α → β} (hf : f.Odd) : ∑ a, f a = 0 :=
+  hf.finset_sum_eq_zero <| Finset.map_univ_equiv (Equiv.neg α)
 
 /-- An odd function vanishes at zero. -/
 lemma Odd.map_zero [NegZeroClass α] (hf : f.Odd) : f 0 = 0 := by simp [← neg_eq_self, ← hf 0]

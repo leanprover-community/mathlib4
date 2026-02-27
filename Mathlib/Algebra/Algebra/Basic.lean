@@ -218,19 +218,19 @@ theorem End.algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' where
   mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
-  mpr H :=
-    H.symm ▸ by
-      apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
-      simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
+  mpr H := by
+    apply_fun ⇑h.unit.val using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using Module.End.isUnit_apply_inv_apply_of_isUnit h (x • m')
 
 theorem End.algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
     m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
   mp H := H ▸ (isUnit_apply_inv_apply_of_isUnit h m).symm
-  mpr H :=
-    H.symm ▸ by
-      apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
-      simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
+  mpr H := by
+    apply_fun (↑h.unit : M → M) using ((isUnit_iff _).mp h).injective
+    rw [H]
+    simpa using isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
 
 end
 
@@ -461,23 +461,6 @@ alias NoZeroSMulDivisors.iff_algebraMap_injective := isTorsionFree_iff_algebraMa
 
 @[deprecated (since := "2026-01-21")]
 alias NoZeroSMulDivisors.iff_faithfulSMul := isTorsionFree_iff_faithfulSMul
-
-/-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
-to `Algebra/Module/Submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
-are all defined in `LinearAlgebra/Basic.lean`. -/
-
-section Module
-
-variable (R : Type*) {S M N : Type*} [Semiring R] [Semiring S] [SMul R S]
-variable [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
-variable [AddCommMonoid N] [Module R N] [Module S N] [IsScalarTower R S N]
-
-@[simp]
-theorem LinearMap.ker_restrictScalars (f : M →ₗ[S] N) :
-    LinearMap.ker (f.restrictScalars R) = (LinearMap.ker f).restrictScalars R :=
-  rfl
-
-end Module
 
 example {R A} [CommSemiring R] [Semiring A] [Module R A] [SMulCommClass R A A]
     [IsScalarTower R A A] : Algebra R A :=

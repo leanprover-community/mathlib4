@@ -116,7 +116,7 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   use p
   apply mem_biInter
   intro i hi
-  let i : s := ⟨i, hi⟩
+  lift i to s using hi
   /- It suffices to show that for any subcollection `J` of `s` containing `i`, the convex
   hull of `a '' (s \ J)` is contained in `F i`. -/
   suffices ∀ J : Set s, (i ∈ J) → (convexHull 𝕜) (a '' Jᶜ) ⊆ F i by
@@ -132,13 +132,8 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   /- Since `j ∈ Jᶜ` and `i ∈ J`, we conclude that `i ≠ j`, and hence by the definition of `a`:
   `a j ∈ ⋂ F '' (Set.univ \ {j}) ⊆ F i`. -/
   apply mem_of_subset_of_mem (s₁ := ⋂ k ∈ (s.erase j), F k)
-  · apply biInter_subset_of_mem
-    simp only [erase_val]
-    suffices h : i.val ∈ s.erase j by assumption
-    simp only [mem_erase]
-    constructor
-    · exact fun h' ↦ hj ((show i = j from SetCoe.ext h') ▸ hi)
-    · assumption
+  · apply iInter₂_subset
+    simp [mem_erase, ne_of_mem_of_not_mem hi hj]
   · apply Nonempty.some_mem
 
 /-- **Helly's theorem** for finite families of convex sets in its classical form.
@@ -156,6 +151,7 @@ theorem helly_theorem {F : ι → Set E} {s : Finset ι}
   apply Set.Nonempty.mono <| biInter_mono hI_ss_J (fun _ _ ↦ Set.Subset.rfl)
   exact h_inter J hJ_ss hJ_card
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Helly's theorem** for finite sets of convex sets.
 
 If `F` is a finite set of convex sets in a vector space of finite dimension `d`, and any `k ≤ d + 1`
@@ -239,6 +235,7 @@ theorem helly_theorem_compact [TopologicalSpace E] [T2Space E] {F : ι → Set E
   apply Set.Nonempty.mono <| biInter_mono hJ_ss (by intro _ _; rfl)
   exact h_inter J hJ_card
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Helly's theorem** for sets of compact convex sets.
 
 If `F` is a set of compact convex sets in a vector space of finite dimension `d`, and any

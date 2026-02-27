@@ -127,6 +127,7 @@ lemma _root_.Module.Finite.of_exact {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     exact Module.Finite.fg_top
   · simp [LinearMap.exact_iff.1 h_exact]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.Module.Finite.of_submodule_quotient (N : Submodule R M) [Module.Finite R N]
     [Module.Finite R (M ⧸ N)] : Module.Finite R M :=
   .of_exact (LinearMap.exact_subtype_mkQ N) (Quotient.mk_surjective _)
