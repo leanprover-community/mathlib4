@@ -423,7 +423,7 @@ private theorem claim6 (h : Conditions r p n a q μ) :
           rw [Set.univ_finite_iff_nonempty_fintype]
           exact ⟨ inferInstance ⟩
         grind [Set.Finite.subset]
-      let emb := Function.Embedding.mk (fun a : ZMod r => μ^a.val) (by
+      let emb := Function.Embedding.mk (fun a : ZMod r => μ ^ a.val) (by
         intro b c hbc
         simp only at hbc
         apply ZMod.val_injective
