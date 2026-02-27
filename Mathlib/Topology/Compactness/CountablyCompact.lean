@@ -126,16 +126,18 @@ theorem IsCountablyCompact.elim_finite_subcover_image (hA : IsCountablyCompact A
     {b : Set ι} (hb : b.Countable) {U : ι → Set E} (hUo : ∀ i ∈ b, IsOpen (U i))
     (hAU : A ⊆ ⋃ i ∈ b, U i) : ∃ t ⊆ b, t.Finite ∧ A ⊆ ⋃ i ∈ t, U i := by
   haveI := hb.to_subtype
-  obtain ⟨t, ht⟩ := hA.elim_finite_subcover (fun (i : b) => hUo i i.prop) (by simpa using hAU)
+  obtain ⟨t, ht⟩ := hA.elim_finite_subcover (fun (i : b) ↦ hUo i i.prop) (by simpa using hAU)
   classical
   let t' := t.image Subtype.val
-  refine ⟨↑t', ?_, t'.finite_toSet, ?_⟩
-  · intro x hx
-    rcases Finset.mem_image.mp hx with ⟨i, _, rfl⟩
+  have ht_subset : ↑t' ⊆ b := by
+    intro x hx
+    obtain ⟨i, _, rfl⟩ := Finset.mem_image.mp hx
     exact i.prop
-  · intro x hx
-    rcases mem_iUnion₂.mp (ht hx) with ⟨i, hit, hxi⟩
+  have ht_cover : A ⊆ ⋃ i ∈ t', U i := by
+    intro x hx
+    obtain ⟨i, hit, hxi⟩ := mem_iUnion₂.mp (ht hx)
     exact mem_iUnion₂.mpr ⟨i, Finset.mem_image_of_mem _ hit, hxi⟩
+  exact ⟨↑t', ht_subset, t'.finite_toSet, ht_cover⟩
   -- letI : Countable b := hb.to_subtype
   -- let V : b → Set E := fun i => U i
   -- have hV : ∀ (i : b), IsOpen (V i) := fun i => hUo i i.prop
