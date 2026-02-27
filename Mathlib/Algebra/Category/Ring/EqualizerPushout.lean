@@ -40,8 +40,7 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 R --f-->
         S ---inr---> pushout f f
 ```
-is an equalizer diagram.
-See `isLimitForkPushoutCoconeSelfOfFaithfullyFlat` for the pushoutCocone version. -/
+is an equalizer diagram. -/
 noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
     IsLimit (Fork.ofι f pushout.condition) := by
   algebraize [f.hom]

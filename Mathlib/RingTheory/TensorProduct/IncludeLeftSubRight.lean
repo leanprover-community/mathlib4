@@ -164,14 +164,14 @@ def codRestrictEqLocusPushoutCocone :
     ((CommRingCat.pushoutCocone R S S).inl.hom.eqLocus (CommRingCat.pushoutCocone R S S).inr.hom)
     (by simp)
 
-/-- Injectivity of `algebraMap R S` implies `codRestrictEqLocusPushoutCocone f` is injective. -/
+/-- Injectivity of `algebraMap R S` implies injectivity of `codRestrictEqLocusPushoutCocone f`. -/
 lemma codRestrictEqLocusPushoutCocone.inj_of_inj (hf : Function.Injective (algebraMap R S)) :
     Function.Injective (codRestrictEqLocusPushoutCocone R S) :=
   RingHom.injective_codRestrict.mpr hf
 
-/-- `Algebra.IsEffective R S` implies `codRestrictEqLocusPushoutCocone` is surjective. -/
+/-- `Algebra.IsEffective R S` implies surjectivity op `codRestrictEqLocusPushoutCocone`. -/
 lemma codRestrictEqLocusPushoutCocone.surj_of_isEffective (hf : Algebra.IsEffective R S) :
-    Function.Surjective (codRestrictEqLocusPushoutCocone (R := R) (S := S)) := by
+    Function.Surjective (codRestrictEqLocusPushoutCocone R S) := by
   intro s
   have := Set.mem_range.mp <|
     Algebra.IsEffective.eqLocus_includeLeft_includeRight hf ▸ SetLike.mem_coe.mpr s.property
@@ -179,7 +179,7 @@ lemma codRestrictEqLocusPushoutCocone.surj_of_isEffective (hf : Algebra.IsEffect
   apply Subtype.ext
   erw [RingHom.codRestrict_apply, this.choose_spec]
 
-/-- Faithfully flat `algebraMap R S` implies `codRestrictEqLocusPushoutCocone` is bijective. -/
+/-- Faithfully flat `algebraMap R S` implies bijectivity of `codRestrictEqLocusPushoutCocone`. -/
 lemma codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat (hf : (algebraMap R S).FaithfullyFlat) :
     Function.Bijective (codRestrictEqLocusPushoutCocone R S) := by
   constructor
