@@ -22,7 +22,7 @@ on:
         description: ref for mathlib-ci checkout (defaults to 'master')
         required: false
         type: string
-        default: 'main'
+        default: 'master'
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
