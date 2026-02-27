@@ -350,22 +350,18 @@ set_option backward.isDefEq.respectTransparency false in
   rw [neg_comp, comp_neg, neg_inj] at eq₄
   refine ⟨m₁, m₃, ?_, ?_, ?_, ?_, ?_⟩
   · rw [← shiftFunctorCompIsoId_naturality_1 v₁₃ 1 (-1) (Int.add_right_neg 1)]
-    unfold m₁
-    dsimp
+    dsimp [m₁]
     rw [assoc, assoc, Iso.hom_inv_id_app_assoc]
     nth_rw 2 [← assoc]
     rw [← Functor.map_comp, eq₂, shiftFunctorCompIsoId_naturality_1]
-  · unfold m₁
-    dsimp
+  · dsimp [m₁]
     rw [Functor.map_comp, Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app,
       shift_shiftFunctorCompIsoId_inv_app, shiftFunctorCompIsoId_naturality_1, eq₁]
-  · unfold m₃
-    dsimp
+  · dsimp [m₃]
     rw [Functor.map_comp, Functor.map_comp, shift_shiftFunctorCompIsoId_hom_app,
       shift_shiftFunctorCompIsoId_inv_app, shiftFunctorCompIsoId_naturality_1, eq₃]
   · rw [← shiftFunctorCompIsoId_naturality_1 v₂₃ 1 (-1) (Int.add_right_neg 1)]
-    unfold m₃
-    dsimp
+    dsimp [m₃]
     rw [assoc, assoc, Iso.hom_inv_id_app_assoc]
     nth_rw 2 [← assoc]
     rw [← Functor.map_comp, ← eq₄, ← Functor.map_comp, shiftFunctorCompIsoId_naturality_1]
