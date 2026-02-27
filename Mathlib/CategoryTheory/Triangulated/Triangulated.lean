@@ -380,7 +380,6 @@ set_option backward.isDefEq.respectTransparency false in
       shiftFunctorComm_hom_app_of_add_eq_zero _ _ (Int.add_right_neg 1)]
     simp
 
-
 /-- Constructor for `IsTriangulated C` which shows that it suffices to obtain an octahedron
 for a suitable isomorphic diagram instead of the given diagram. -/
 lemma IsTriangulated.mk' (h : ∀ ⦃X₁' X₂' X₃' : C⦄ (u₁₂' : X₁' ⟶ X₂') (u₂₃' : X₂' ⟶ X₃'),
