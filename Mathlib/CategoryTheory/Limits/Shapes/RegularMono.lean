@@ -633,20 +633,32 @@ lemma isRegularMono_op_iff_isRegularEpi {X Y : C} (f : X ⟶ Y) :
     IsRegularMono f.op ↔ IsRegularEpi f :=
   ⟨fun hf ↦ ⟨⟨hf.regularMono.some.unop⟩⟩, fun hf ↦ ⟨⟨hf.regularEpi.some.op⟩⟩⟩
 
+instance {X Y : C} (f : X ⟶ Y) [IsRegularEpi f] : IsRegularMono f.op := by
+  simpa
+
 @[simp]
 lemma isRegularMono_unop_iff_isRegularEpi {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     IsRegularMono f.unop ↔ IsRegularEpi f :=
   ⟨fun hf ↦ ⟨⟨hf.regularMono.some.op⟩⟩, fun hf ↦ ⟨⟨hf.regularEpi.some.unop⟩⟩⟩
+
+instance {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsRegularEpi f] : IsRegularMono f.unop := by
+  simpa
 
 @[simp]
 lemma isRegularEpi_op_iff_isRegularMono {X Y : C} (f : X ⟶ Y) :
     IsRegularEpi f.op ↔ IsRegularMono f :=
   ⟨fun hf ↦ ⟨⟨hf.regularEpi.some.unop⟩⟩, fun hf ↦ ⟨⟨hf.regularMono.some.op⟩⟩⟩
 
+instance {X Y : C} (f : X ⟶ Y) [IsRegularMono f] : IsRegularEpi f.op := by
+  simpa
+
 @[simp]
 lemma isRegularEpi_unop_iff_isRegularMono {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     IsRegularEpi f.unop ↔ IsRegularMono f :=
   ⟨fun hf ↦ ⟨⟨hf.regularEpi.some.op⟩⟩, fun hf ↦ ⟨⟨hf.regularMono.some.unop⟩⟩⟩
+
+instance {X Y : Cᵒᵖ} (f : X ⟶ Y) [IsRegularMono f] : IsRegularEpi f.unop := by
+  simpa
 
 end
 
