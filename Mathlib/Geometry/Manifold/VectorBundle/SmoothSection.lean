@@ -9,6 +9,7 @@ public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 public import Mathlib.Topology.ContinuousMap.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # `C^n` sections
