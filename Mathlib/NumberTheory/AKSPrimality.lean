@@ -589,7 +589,7 @@ end AKS
 theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial
     {n r a : ℕ} (hc : n.Coprime r) (hn : 3 ≤ n)
     (ha : a = ⌊√(φ r) * (Real.logb 2 n)⌋₊) (hc2 : ∀ y ∈ Icc 1 a, n.Coprime y)
-    (hod : (Real.logb 2 n) ^ 2 < orderOf (n : (ZMod r))) (heq : ∀ y ∈ Icc 1 a,
+    (hod : Real.logb 2 n ^ 2 < orderOf (n : ZMod r)) (heq : ∀ y ∈ Icc 1 a,
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
       ((X : (ZMod n)[X]) ^ n - (C (y : (ZMod n)))) =
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
