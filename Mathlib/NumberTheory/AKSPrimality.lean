@@ -39,6 +39,7 @@ The paper by the original authors is
 <https://www.cse.iitk.ac.in/users/manindra/algebra/primality_v6.pdf>.
 
 ## Main Theorems
+
 - `is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial` this is the AKS
   Primality test. If `(X + a) ^ n = X ^ n + a` modulo `(ZMod n)[X] / X ^ r - 1` and some other
   minor conditions hold, then `n` is a prime power. The coefficients `a` are polynomially bounded
