@@ -375,6 +375,8 @@ lemma ιMulti_family_mul_of_not_disjoint {m n : ℕ} {I : Type*} [LinearOrder I]
   · apply ne_of_lt
     apply lt_of_lt_of_le (b := m) <;> simp
 
+/-- The permutation of `Fin (m + n)` corresponding to adjoining a `Finset` of card `m`
+to a `Finset` of card `n` and sorting the resulting set. -/
 def ιMulti_perm {m n : ℕ} {I : Type*} [LinearOrder I] {s : powersetCard I m}
     {t : powersetCard I n} (h : Disjoint s.val t.val) :
     Equiv.Perm (Fin (m + n)) :=
