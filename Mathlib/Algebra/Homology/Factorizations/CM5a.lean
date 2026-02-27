@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
+public import Mathlib.Algebra.Homology.Refinements
+public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
 public import Mathlib.CategoryTheory.Category.Factorisation
 public import Mathlib.CategoryTheory.Functor.OfSequence
 
@@ -23,6 +25,20 @@ on the available bounds for `K` and `L`).
 -/
 
 open CategoryTheory Limits Opposite Abelian HomologicalComplex
+
+namespace HomologicalComplex
+
+instance {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
+    {ι : Type*} [DecidableEq ι] (c : ComplexShape ι) (i j : ι) (I : C)
+    [Injective I] :
+    Injective (((single C c i).obj I).X j) := by
+  by_cases hij : j = i
+  · subst hij
+    simp only [single_obj_X_self]
+    infer_instance
+  · exact (isZero_single_obj_X _ _ _ _ hij).injective
+
+end HomologicalComplex
 
 variable {C : Type*} [Category* C] [Abelian C] [EnoughInjectives C]
 
@@ -46,11 +62,113 @@ variable {f} in
 def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, IsIso (F.obj.π.f i)
 
+namespace step₁
+
+variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
+
+variable (K) in
+noncomputable abbrev S : CochainComplex C ℤ :=
+    ((single C _ n₁).obj (Injective.under (K.opcycles n₁)))
+
+variable (K L) in
+noncomputable abbrev mid := biprod (S K n₁) L
+
+variable (K) in
+noncomputable def i : K ⟶ S K n₁ := mkHomToSingle (K.pOpcycles n₁ ≫ Injective.ι _) (by simp)
+
+noncomputable abbrev ι : K ⟶ mid K L n₁ := biprod.lift (i K n₁) f
+
+variable (K L) in
+noncomputable abbrev π : mid K L n₁ ⟶ L := biprod.snd
+
+variable (K L) in
+noncomputable abbrev σ : L ⟶ mid K L n₁ := biprod.inr
+
+@[reassoc]
+lemma ι_π : ι f n₁ ≫ π K L n₁ = f := by simp
+
+@[reassoc]
+lemma σ_π : σ K L n₁ ≫ π K L n₁ = 𝟙 L := by simp
+
+instance [Mono f] : Mono (ι f n₁) := mono_of_mono_fac (ι_π f n₁)
+
+variable (K L) in
+lemma degreewiseEpiWithInjectiveKernel_π :
+    degreewiseEpiWithInjectiveKernel (π K L n₁) := by
+  intro q
+  rw [Abelian.epiWithInjectiveKernel_iff]
+  exact ⟨(S K n₁).X q, inferInstance, (biprod.inl : _ ⟶ mid K L n₁).f q, by simp,
+    ⟨{ r := (biprod.fst : mid K L n₁ ⟶ _).f q, s := (biprod.inr : _ ⟶ mid K L n₁).f q }⟩⟩
+
+variable (K L) in
+lemma isIso_π_f (i : ℤ) (hi : i ≠ n₁) :
+    IsIso ((π K L n₁).f i) := by
+  refine ⟨(biprod.inr : _ ⟶ mid K L n₁).f i, ?_, by simp⟩
+  rw [biprodX_ext_to_iff]
+  constructor
+  · apply (isZero_single_obj_X (.up ℤ) _ _ _ hi).eq_of_tgt
+  · simp
+
+include hn₁ in
+variable (K L) in
+lemma quasiIsoAt_π (i : ℤ) (hi : i ≤ n₀) :
+    QuasiIsoAt (π K L n₁) i := by
+  obtain (hi | rfl) := hi.lt_or_eq
+  · rw [quasiIsoAt_iff' _ (i - 1) i (i + 1) (by simp) (by simp)]
+    let φ := (shortComplexFunctor' C _ (i - 1) i (i + 1)).map (π K L n₁)
+    have : IsIso φ.τ₁ := isIso_π_f _ _ _ _ (by lia)
+    have : IsIso φ.τ₂ := isIso_π_f _ _ _ _ (by lia)
+    have : IsIso φ.τ₃ := isIso_π_f _ _ _ _ (by lia)
+    exact ShortComplex.quasiIso_of_epi_of_isIso_of_mono φ
+  · rw [quasiIsoAt_iff_isIso_homologyMap]
+    have : homologyMap (biprod.inl : _ ⟶ mid K L n₁) i = 0 :=
+      (ShortComplex.isZero_homology_of_isZero_X₂ _
+        (isZero_single_obj_X (.up ℤ) _ _ _ (by lia))).eq_of_src _ _
+    refine ⟨homologyMap (σ K L n₁) i, ?_, ?_⟩
+    · simp [← homologyMap_id, ← biprod.total, homologyMap_comp, this]
+    · simp [← homologyMap_comp, homologyMap_id]
+
+variable (hf : ∀ i ≤ n₀, QuasiIsoAt f i)
+
+include hn₁ hf in
+lemma quasiIsoAt_ι (i : ℤ) (hi : i ≤ n₀) :
+    QuasiIsoAt (ι f n₁) i := by
+  have := quasiIsoAt_π K L n₀ n₁ hn₁ i hi
+  rw [← quasiIsoAt_iff_comp_right _ (π K L n₁), ι_π]
+  exact hf i hi
+
+instance : Mono (homologyMap (ι f n₁) n₁) := by
+  let n₀ := n₁ - 1
+  rw [mono_homologyMap_iff_up_to_refinements _ n₀ n₁ (n₁ + 1) (by simp; lia) (by simp)]
+  intro A x₁ _ y₀ hy₀
+  obtain ⟨y₀, rfl⟩ : ∃ (z₁ : A ⟶ L.X n₀), z₁ ≫ (σ K L n₁).f n₀ = y₀ := by
+    refine ⟨y₀ ≫ (π K L n₁).f n₀, Eq.trans ?_ (Category.comp_id _)⟩
+    have : (biprod.inl : _ ⟶ mid K L n₁).f n₀ = 0 :=
+      (isZero_single_obj_X (.up ℤ) _ _ _ (by lia)).eq_of_src _ _
+    simp [this, ← biprod_total_f]
+  simp only [Category.assoc, Hom.comm, biprodX_ext_to_iff, biprod_lift_fst_f,
+    biprod_inr_fst_f, comp_zero, biprod_lift_snd_f, biprod_inr_snd_f,
+    Category.comp_id] at hy₀
+  obtain ⟨h₁, h₂⟩ := hy₀
+  replace h₁ : x₁ ≫ K.pOpcycles n₁ = 0 := by
+    rw [← cancel_mono (Injective.ι _)]
+    simpa [i, ← cancel_mono (singleObjXSelf (.up ℤ) n₁ _).hom] using h₁
+  obtain ⟨A₁, π, _, x₀, hx₀⟩ :=
+    (K.comp_pOpcycles_eq_zero_iff_up_to_refinements x₁ n₀ (by simp; lia)).1 h₁
+  exact ⟨A₁, π, inferInstance, x₀, hx₀⟩
+
+end step₁
+
+open step₁ in
 lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) :
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₀ F ∧ isIsoLE n₀ F ∧
-      Mono (homologyMap F.obj.ι n₁) := by
-  sorry
+      Mono (homologyMap F.obj.ι n₁) :=
+  ⟨.mk { mid := mid K L n₁, ι := ι f n₁, π := π K L n₁ }
+    ⟨inferInstance, degreewiseEpiWithInjectiveKernel_π K L n₁⟩,
+    fun i hi ↦ quasiIsoAt_ι f n₀ n₁ hn₁ hf i hi,
+    fun i hi ↦ isIso_π_f K L n₁ i (by lia),
+    inferInstance⟩
 
 lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] :
@@ -62,7 +180,7 @@ lemma step [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₀ F := by
   obtain ⟨F₁, h₁, h₂, _⟩ := step₁ f n₀ n₁ hn₁ hf
   obtain ⟨F₂, h₃, h₄⟩ := step₂ F₁.obj.ι n₀ n₁ hn₁ h₁
-  refine ⟨.mk { mid := _, ι := F₂.obj.ι , π := F₂.obj.π ≫ F₁.obj.π }
+  refine ⟨.mk { mid := F₂.obj.mid, ι := F₂.obj.ι , π := F₂.obj.π ≫ F₁.obj.π }
     ⟨by dsimp; infer_instance, MorphismProperty.comp_mem _ _ _ F₂.property.2 F₁.property.2⟩,
     ⟨h₃, fun i hi ↦ ?_⟩⟩
   have := h₂ i hi
@@ -92,7 +210,7 @@ lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.1 ⟶ F.1),
       ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (g.hom.h.f i) := by
   obtain ⟨F₁₂, h₁, h₂⟩ := step F.obj.obj.ι n₀ n₁ hn₁ F.property
-  exact ⟨.mk (.mk { mid := _, ι := F₁₂.obj.ι, π := F₁₂.obj.π ≫ F.obj.obj.π }
+  exact ⟨.mk (.mk { mid := F₁₂.obj.mid, ι := F₁₂.obj.ι, π := F₁₂.obj.π ≫ F.obj.obj.π }
     ⟨by dsimp; infer_instance,
       MorphismProperty.comp_mem _ _ _ F₁₂.property.2 F.obj.property.2⟩) h₁,
       ObjectProperty.homMk { h := F₁₂.obj.π }, h₂⟩
