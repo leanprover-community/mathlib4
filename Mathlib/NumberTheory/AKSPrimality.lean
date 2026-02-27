@@ -209,9 +209,8 @@ private theorem se2_ncard_ne_zero (h : Conditions r p n a q μ) : (se2 h).ncard 
 /-- All relevant exponents and polynomials are introspective. -/
 private theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a q μ) :
     ∀ e ∈ se1 h, ∀ f ∈ sp1 h '' Set.univ, introspective f e r := by
-  have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
-    icc_coprime , icc_introspective , is_primitive_root , p_prime ,
-    q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := h
+  obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
+    is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   intro e he f hf
   simp only [Set.image_univ, Set.mem_range] at hf
   obtain ⟨ s , hs ⟩ := hf
@@ -228,9 +227,8 @@ private theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a
 
 private theorem se2_subset_units (h : Conditions r p n a q μ) :
     se2 h ⊆ (fun x : (ZMod r)ˣ ↦ x.val) '' Set.univ := by
-  have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
-    icc_coprime , icc_introspective , is_primitive_root , p_prime ,
-    q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := h
+  obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
+    is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   intro x hx
   simp only [Set.image_univ, Set.mem_range]
   have hu : IsUnit x := by
@@ -250,9 +248,8 @@ private theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := b
   unfold f
   intro ⟨ d₁ , d₂ ⟩ ⟨ e₁ , e₂ ⟩ heq
   by_contra! hcon
-  have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
-    icc_coprime , icc_introspective , is_primitive_root , p_prime ,
-    q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := h
+  obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
+    is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   have hn : 0 < n := by lia
   have hpn0 := Nat.Prime.ne_zero p_prime
   have _ : n / p ≠ 0 := by grind [Nat.div_ne_zero_iff, Nat.le_of_dvd hn p_dvd_n]
@@ -323,9 +320,8 @@ private theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 
     Prod.exists, Prod.mk_le_mk, _root_.zero_le, and_self, true_and] at hx
   obtain ⟨ a , b , ⟨ ha, hb ⟩ , heq ⟩ := hx
   rw [← heq]
-  have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
-    icc_coprime , icc_introspective , is_primitive_root , p_prime ,
-    q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
+  obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
+    is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   have hn : 0 < n := by lia
   have hppos := (Nat.ne_zero_iff_zero_lt.mp (Nat.Prime.ne_zero p_prime))
   have hnppos : 0 < (n / p)  := by grind [Nat.div_ne_zero_iff, Nat.le_of_dvd hn p_dvd_n]
@@ -345,9 +341,8 @@ private theorem natDegree_eq (h : Conditions r p n a q μ) (s : Multiset (Fin (a
 /-- Here we use the assumption that `p` is not a prime power. -/
 private theorem aux_le (h : Conditions r p n a q μ) :
     (sp2 h).ncard ≤ (n : ℝ) ^ (√(se2 h).ncard) ∧ (sp2 h).Finite := by
-  have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
-    icc_coprime , icc_introspective , is_primitive_root , p_prime ,
-    q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
+  obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
+    is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   have hm : ∀ a ∈ se3 h, ↑a ∈ se2 h := by
     unfold se3 se2 se1
     intro b _
@@ -399,11 +394,10 @@ private theorem aux_le (h : Conditions r p n a q μ) :
       rw [natDegree_monomial_eq x (one_ne_zero' K), natDegree_monomial_eq y (one_ne_zero' K)]
     _ ≤ _ := max_le (se3_le hx) (se3_le hy)
 
-private theorem claim6 (h : Conditions r p n a q μ) :
+private theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
     ((se2 h).ncard + a).choose ((se2 h).ncard - 1) ≤ (sp2 h).ncard := by
-  have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
-    icc_coprime , icc_introspective , is_primitive_root , p_prime ,
-    q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
+  obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
+    is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   have hsinj : Set.InjOn (eval μ ·) (sp1 h '' {x | x.card ≤ (se2 h).ncard - 1}) := by
     intro f hf g hg heq
     by_contra! hcon
@@ -474,7 +468,7 @@ private theorem claim6 (h : Conditions r p n a q μ) :
   · nth_rw 3 [← Nat.sub_one_add_one (se2_ncard_ne_zero h)]
     rw [add_assoc, add_comm 1 a, add_comm _ (a + 1), ← choose_symm_add]
     rw [add_comm (a + 1) _, ← sum_range_multichoose]
-    have dd := finsum_mem_eq_finite_toFinset_sum (s:= Set.Icc 0 ((se2 h).ncard - 1))
+    have dd := finsum_mem_eq_finite_toFinset_sum (s := Set.Icc 0 ((se2 h).ncard - 1))
         (fun i ↦ {x : Multiset (Fin (a + 1)) | x.card = i}.ncard) hsiccf
     simp only [dd, range_succ_eq_Icc_zero, Set.toFinite_toFinset, Set.toFinset_Icc]
     apply Finset.sum_congr rfl
@@ -485,7 +479,7 @@ private theorem claim6 (h : Conditions r p n a q μ) :
     exact Equiv.mk (fun x ↦ ⟨ Sym.mk x.1 x.2 , by simp ⟩) (fun x ↦ ⟨ x , by simp ⟩)
       (fun _ ↦ rfl) (fun _ ↦ rfl)
 
-private theorem claim71 {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
+private theorem pow_2_le_choose {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
   have _ : Nat.choose 5 2 = 10 := rfl
   induction x, h using Nat.le_induction (m := 2)
   · grind
@@ -493,9 +487,8 @@ private theorem claim71 {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choo
 
 private theorem not_aux_le (h : Conditions r p n a q μ) :
     (n : ℝ) ^ (√(se2 h).ncard) < (sp2 h).ncard := by
-  have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
-    icc_coprime , icc_introspective , is_primitive_root , p_prime ,
-    q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
+  obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
+    is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   have _ : NeZero n := .mk (by lia)
   have h1 := Real.rpow_logb (b := 2) (x := n) (by grind) (by grind) (by norm_cast; grind)
   rw [← h1, ← Real.rpow_mul (by grind)]
@@ -542,8 +535,8 @@ private theorem not_aux_le (h : Conditions r p n a q μ) :
         apply Real.logb_le_logb_of_le (by norm_num) (by norm_num)
         norm_cast
         grind [Nat.pow_le_pow_left n_ge_3 2]
-  apply lt_of_lt_of_le (claim71 h1)
-  refine le_trans ?_ (claim6 h)
+  apply lt_of_lt_of_le (pow_2_le_choose h1)
+  refine le_trans ?_ (se2_choose_le_sp2 h)
   replace logb_pos : 0 ≤ Real.logb 2 n := by grind
   have _ : ⌊Real.logb 2 n * √e⌋₊ ≤ e - 1 := by
     suffices ⌊Real.logb 2 n * √e⌋₊ < e by grind
