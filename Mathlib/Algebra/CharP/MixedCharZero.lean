@@ -156,6 +156,7 @@ Note: Property `(2)` is denoted as `EqualCharZero` in the statement names below.
 
 namespace EqualCharZero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `ℚ`-algebra implies equal characteristic. -/
 lemma of_algebraRat [Algebra ℚ R] : ∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I) := by
   intro I hI
@@ -175,6 +176,7 @@ section ConstructionAlgebraRat
 
 variable {R}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma PNat.isUnit_natCast [h : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I))]
     (n : ℕ+) : IsUnit (n : R) := by
   -- `n : R` is a unit iff `(n)` is not a proper ideal in `R`.

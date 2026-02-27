@@ -83,6 +83,7 @@ theorem ninePointCircle_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [Inner
   · simp [ninePointCircle_center, centroid_map]
   · simp [ninePointCircle_radius]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ninePointCircle_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance

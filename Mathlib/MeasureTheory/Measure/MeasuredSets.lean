@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 public import Mathlib.MeasureTheory.SetSemiring
+import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Measured sets
@@ -43,6 +44,7 @@ instance : SetLike (MeasuredSets μ) α where
   coe s := s.1
   coe_injective' := Subtype.coe_injective
 
+set_option backward.isDefEq.respectTransparency false in
 instance : PseudoEMetricSpace (MeasuredSets μ) where
   edist s t := μ ((s : Set α) ∆ t)
   edist_self := by simp
@@ -51,41 +53,16 @@ instance : PseudoEMetricSpace (MeasuredSets μ) where
 
 lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : edist s t = μ ((s : Set α) ∆ t) := rfl
 
+/-- Measure on `MeasuredSets` is a 1-lipschitz function.
+
+We cannot state this in terms of `LipschitzWith`, because `ℝ≥0∞` is not a `PseudoEMetricSpace`. -/
+lemma MeasuredSets.sub_le_edist (s t : MeasuredSets μ) : μ s - μ t ≤ edist s t :=
+  le_measure_diff.trans <| measure_mono subset_union_left
+
 lemma MeasuredSets.continuous_measure : Continuous (fun (s : MeasuredSets μ) ↦ μ s) := by
-  apply continuous_iff_continuousAt.2 (fun x ↦ ?_)
-  simp only [ContinuousAt]
-  rcases eq_top_or_lt_top (μ x) with hx | hx
-  · simp only [hx]
-    apply tendsto_const_nhds.congr'
-    filter_upwards [Metric.eball_mem_nhds _ zero_lt_one] with y hy
-    simp only [Metric.mem_eball, edist_def] at hy
-    contrapose! hy
-    simp [measure_symmDiff_eq_top hy.symm hx]
-  · apply (ENNReal.hasBasis_nhds_of_ne_top hx.ne).tendsto_right_iff.2 (fun ε εpos ↦ ?_)
-    filter_upwards [Metric.eball_mem_nhds _ εpos] with a ha
-    simp only [Metric.mem_eball, edist_def] at ha
-    refine ⟨?_, ?_⟩
-    · apply tsub_le_iff_right.mpr
-      calc μ x
-      _ ≤ μ a + μ (x \ a) := by
-        rw [← measure_union Set.disjoint_sdiff_right (by exact x.2.diff a.2)]
-        apply measure_mono
-        exact Set.diff_subset_iff.mp fun ⦃a_1⦄ a ↦ a
-      _ ≤ μ a + μ (a ∆ x) := by
-        gcongr
-        simp [symmDiff]
-      _ ≤ μ a + ε := by
-        gcongr
-    · calc μ a
-      _ ≤ μ x + μ (a \ x) := by
-        rw [← measure_union Set.disjoint_sdiff_right (by exact a.2.diff x.2)]
-        apply measure_mono
-        exact Set.diff_subset_iff.mp fun ⦃a_1⦄ a ↦ a
-      _ ≤ μ x + μ (a ∆ x) := by
-        gcongr
-        simp [symmDiff]
-      _ ≤ μ x + ε := by
-        gcongr
+  refine continuous_of_le_add_edist 1 ENNReal.one_ne_top fun s t ↦ ?_
+  rw [one_mul, ← tsub_le_iff_left]
+  exact sub_le_edist s t
 
 instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
@@ -95,7 +72,17 @@ instance [IsFiniteMeasure μ] : PseudoMetricSpace (MeasuredSets μ) :=
 lemma MeasuredSets.dist_def [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
     dist s t = μ.real ((s : Set α) ∆ t) := rfl
 
-/- Given a ring of sets `C` covering the space modulo `0` and generating the measurable space
+lemma MeasuredSets.real_sub_real_le_dist [IsFiniteMeasure μ] (s t : MeasuredSets μ) :
+    μ.real s - μ.real t ≤ dist s t := by
+  grw [dist_edist, ← sub_le_edist]
+  exacts [ENNReal.le_toReal_sub (measure_ne_top _ _), edist_ne_top _ _]
+
+lemma MeasuredSets.lipschitzWith_measureReal [IsFiniteMeasure μ] :
+    LipschitzWith 1 (fun s : MeasuredSets μ ↦ μ.real s) :=
+  .of_le_add fun s t ↦ sub_le_iff_le_add'.mp <| real_sub_real_le_dist s t
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Given a ring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, any measurable set can be approximated by elements of `C`. -/
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetRing C)
@@ -129,7 +116,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
       have fC n : Set.accumulate f n ∈ C := hC.accumulate_mem (fun n ↦ DC (by simp [hf])) n
       have : Tendsto (fun n ↦ μ (Set.accumulate f n)ᶜ) atTop (𝓝 0) := by
         have : ⋃₀ D = ⋃ n, Set.accumulate f n := by simp [hf, iUnion_accumulate]
-        rw [show (⋃₀ D)ᶜ = ⋂ n, (Set.accumulate f n)ᶜ by simp [this]] at hD
+        rw [show (⋃₀ D)ᶜ = ⋂ n, (Set.accumulate f n)ᶜ by simp [this, accumulate]] at hD
         rw [← hD]
         apply tendsto_measure_iInter_atTop (fun i ↦ ?_)
           (fun i j hij ↦ by simpa using monotone_accumulate hij) ⟨0, by simp⟩
@@ -174,9 +161,9 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     _ ≤ ∑' i, δ i + μ (⋃ i ∈ Ici n, f i) := by
       gcongr; exact ENNReal.sum_le_tsum (Finset.range n)
     _ < ε / 2 + ε / 2 := by gcongr
-    _ = ε :=  ENNReal.add_halves ε
+    _ = ε := ENNReal.add_halves ε
 
-/- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
+/-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, any measurable set can be approximated by finite unions of elements of `C`. -/
 lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetSemiring C)
@@ -191,7 +178,7 @@ lemma exists_measure_symmDiff_lt_of_generateFrom_isSetSemiring [IsFiniteMeasure 
     apply generateFrom_le (fun t ht ↦ ?_)
     apply measurableSet_generateFrom_of_mem_supClosure ht
 
-/- A ring of sets covering the space modulo `0` and generating the measurable space
+/-- A ring of sets covering the space modulo `0` and generating the measurable space
 structure is dense among measurable sets. -/
 lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetRing C)
@@ -204,7 +191,7 @@ lemma dense_of_generateFrom_isSetRing [IsFiniteMeasure μ]
   refine ⟨⟨t, t_meas⟩, ?_, tC⟩
   simpa [MeasuredSets.edist_def] using ht
 
-/- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
+/-- Given a semiring of sets `C` covering the space modulo `0` and generating the measurable space
 structure, finite unions of elements of `C` are dense among measurable sets. -/
 lemma dense_of_generateFrom_isSetSemiring [IsFiniteMeasure μ]
     {C : Set (Set α)} (hC : IsSetSemiring C)
