@@ -45,7 +45,9 @@ section
 
 variable {P Q : Cᵒᵖ ⥤ A} {M N : A} [HasColimitsOfSize.{w, w} A]
 
-/-- Auxiliary definition for `skyscraperPresheafAdjunction`. -/
+/-- If `Φ` is a point of a site `(C, J)`, `P : Cᵒᵖ ⥤ A` and `M : A`, this is
+the bijection `(Φ.presheafFiber.obj P ⟶ M) ≃ (P ⟶ Φ.skyscraperPresheaf M)`
+that is part of the adjunction `skyscraperPresheafAdjunction`. -/
 @[simps -isSimp apply_app symm_apply]
 noncomputable def skyscraperPresheafHomEquiv :
     (Φ.presheafFiber.obj P ⟶ M) ≃ (P ⟶ Φ.skyscraperPresheaf M) where
