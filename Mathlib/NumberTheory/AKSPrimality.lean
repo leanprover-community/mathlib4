@@ -460,7 +460,7 @@ private theorem claim6 (h : Conditions r p n a q μ) :
   apply le_of_eq
   have hsiccf := Set.finite_Icc 0 ((se2 h).ncard - 1)
   have key1 : ∀ i ∈ Set.Icc 0 ((se2 h).ncard - 1),
-      ((fun y ↦ {x : Multiset (Fin (a+1)) | x.card = y}) i).Finite := by
+      ((fun y ↦ {x : Multiset (Fin (a + 1)) | x.card = y}) i).Finite := by
     intro z _
     exact Finite.of_equiv (Sym (Fin (a + 1)) z) (Equiv.cast rfl)
   have key2 : (Set.Icc 0 ((se2 h).ncard - 1)).PairwiseDisjoint
@@ -479,7 +479,7 @@ private theorem claim6 (h : Conditions r p n a q μ) :
     rw [add_assoc, add_comm 1 a, add_comm _ (a + 1), ← choose_symm_add]
     rw[add_comm (a + 1) _, ← sum_range_multichoose]
     have dd := finsum_mem_eq_finite_toFinset_sum (s:= Set.Icc 0 ((se2 h).ncard - 1))
-        (fun i => {x : Multiset (Fin (a + 1)) | x.card = i}.ncard) hsiccf
+        (fun i ↦ {x : Multiset (Fin (a + 1)) | x.card = i}.ncard) hsiccf
     simp only [dd, range_succ_eq_Icc_zero, Set.toFinite_toFinset, Set.toFinset_Icc]
     apply Finset.sum_congr rfl
     intro z hz
@@ -504,7 +504,7 @@ private theorem not_aux_le (h : Conditions r p n a q μ) :
   have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
     icc_coprime , icc_introspective , is_primitive_root , p_prime ,
     q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
-  haveI : NeZero n := .mk (by lia)
+  have _ : NeZero n := .mk (by lia)
   have h1 := Real.rpow_logb (b := 2) (x := n) (by grind) (by grind) (by norm_cast; grind)
   rw [← h1, ← Real.rpow_mul (by grind)]
   set e := (se2 h).ncard
@@ -591,11 +591,8 @@ private theorem not_aux_le (h : Conditions r p n a q μ) :
       apply Real.sqrt_le_sqrt
       exact_mod_cast h2
 
-
-
 private theorem aux (h : Conditions r p n a q μ) : False := by
   grind [aux_le h, not_aux_le h]
-
 
 end Rest
 
@@ -640,7 +637,7 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     replace heq := heq y yy
     let f := by
       refine Ideal.Quotient.lift
-        (Ideal.span {(X : (ZMod n)[X])^r-1}) (eval₂RingHom (ZMod.castHom hp K) μ) ?_
+        (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}) (eval₂RingHom (ZMod.castHom hp K) μ) ?_
       intro s hs
       rw [Ideal.mem_span_singleton, dvd_iff_exists_eq_mul_left] at hs
       obtain ⟨ c , hc ⟩ := hs
@@ -664,7 +661,7 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
       change (eval₂RingHom (ZMod.castHom hp K)) μ (X ^ n - y.cast ) = _
       simp
     rw[← hoh]
-    replace hoh :  f ⟦ (X - y.cast)^n ⟧ = (μ - y.cast)^n := by
+    replace hoh : f ⟦ (X - y.cast)^n ⟧ = (μ - y.cast)^n := by
       change (eval₂RingHom (ZMod.castHom hp K)) μ ((X - y.cast ) ^ n) = _
       simp [eval₂_pow]
     rw[← hoh]
