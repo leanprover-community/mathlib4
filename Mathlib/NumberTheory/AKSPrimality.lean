@@ -414,13 +414,13 @@ private theorem claim6 (h : Conditions r p n a q μ) :
       grind [natDegree_eq h hf, natDegree_eq h hg]
     refine and_not_self (a := (f - g).roots.card ≤ (se2 h).ncard - 1) ⟨ ?_ , ?_ ⟩
     · calc
-        _ ≤ _ := card_roots' (f-g)
+        _ ≤ _ := card_roots' (f - g)
         _ ≤ _ := natDegree_sub_le f g
         _ ≤ _ := hk
     · simp only [not_le, lt_iff_add_one_le, sub_one_add_one (se2_ncard_ne_zero h)]
       have fs : (se2 h).Finite := by
         have ss : Set.univ.Finite (α := (ZMod r)) := by
-          rw[Set.univ_finite_iff_nonempty_fintype]
+          rw [Set.univ_finite_iff_nonempty_fintype]
           exact ⟨ inferInstance ⟩
         grind [Set.Finite.subset]
       let emb := Function.Embedding.mk (fun a : ZMod r => μ^a.val) (by
@@ -464,7 +464,7 @@ private theorem claim6 (h : Conditions r p n a q μ) :
     intro x hx y hy hne
     grind
   have key := Set.Finite.ncard_biUnion
-      (s:= (fun y : ℕ ↦ {x : Multiset (Fin (a+1)) | x.card = y})) hsiccf key1 key2
+      (s:= (fun y ↦ {x : Multiset (Fin (a+1)) | x.card = y})) hsiccf key1 key2
   symm
   revert key
   refine (Eq.congr ?_ ?_).mp
@@ -473,14 +473,14 @@ private theorem claim6 (h : Conditions r p n a q μ) :
     simp
   · nth_rw 3 [← Nat.sub_one_add_one (se2_ncard_ne_zero h)]
     rw [add_assoc, add_comm 1 a, add_comm _ (a + 1), ← choose_symm_add]
-    rw[add_comm (a + 1) _, ← sum_range_multichoose]
+    rw [add_comm (a + 1) _, ← sum_range_multichoose]
     have dd := finsum_mem_eq_finite_toFinset_sum (s:= Set.Icc 0 ((se2 h).ncard - 1))
         (fun i ↦ {x : Multiset (Fin (a + 1)) | x.card = i}.ncard) hsiccf
     simp only [dd, range_succ_eq_Icc_zero, Set.toFinite_toFinset, Set.toFinset_Icc]
     apply Finset.sum_congr rfl
     intro z hz
     simp only [mem_Icc, _root_.zero_le, true_and] at hz
-    rw[← Sym.card_sym_fin_eq_multichoose, Fintype.card, ← Set.ncard_coe_finset]
+    rw [← Sym.card_sym_fin_eq_multichoose, Fintype.card, ← Set.ncard_coe_finset]
     apply Set.ncard_congr'
     exact Equiv.mk (fun x ↦ ⟨ Sym.mk x.1 x.2 , by simp ⟩) (fun x ↦ ⟨ x , by simp ⟩)
       (fun _ ↦ rfl) (fun _ ↦ rfl)
@@ -652,10 +652,10 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     replace hoh : f ⟦ X ^ n - y.cast ⟧ = μ ^ n - y.cast := by
       change (eval₂RingHom (ZMod.castHom hp K)) μ (X ^ n - y.cast ) = _
       simp
-    rw[← hoh]
+    rw [← hoh]
     replace hoh : f ⟦ (X - y.cast)^n ⟧ = (μ - y.cast)^n := by
       change (eval₂RingHom (ZMod.castHom hp K)) μ ((X - y.cast ) ^ n) = _
       simp [eval₂_pow]
-    rw[← hoh]
+    rw [← hoh]
     apply congr_arg
     exact heq
