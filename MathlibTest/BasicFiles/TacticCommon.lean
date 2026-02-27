@@ -28,9 +28,9 @@ theorem test_check_tactic : True := by
 whatsnew in
 theorem test_whatsnew : True := trivial
 
-/-- info: Used 3 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used approximately 0 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-#count_heartbeats in
+#count_heartbeats approximately in
 theorem test_count_heartbeats : True := trivial
 
 /--
