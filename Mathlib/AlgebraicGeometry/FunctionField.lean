@@ -128,7 +128,6 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
         ⟨genericPoint X,
           ((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩ =
       genericPoint (Spec Γ(X, U)) := by
-  haveI : IsAffine _ := hU
   delta IsAffineOpen.primeIdealOf
   convert
     genericPoint_eq_of_isOpenImmersion
@@ -141,10 +140,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : X.Opens)
     (hU : IsAffineOpen U) [Nonempty U] :
     IsFractionRing Γ(X, U) X.functionField := by
-  haveI : IsAffine _ := hU
-  haveI : IsIntegral U :=
-    @isIntegral_of_isAffine_of_isDomain _ _ _ (by rw [Scheme.Opens.toScheme_presheaf_obj,
-      U.ι.image_top_eq_opensRange, U.opensRange_ι]; infer_instance)
   delta IsFractionRing Scheme.functionField
   convert hU.isLocalization_stalk ⟨genericPoint X,
     (((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using ‹Nonempty U›))⟩ using 1
