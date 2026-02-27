@@ -77,12 +77,6 @@ theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E)
 
 variable [IsTopologicalGroup C] [LocallyCompactSpace B]
 
-theorem dist_integral_le_lintegral_edist {A : Type*} [MeasurableSpace A] {μA : Measure A}
-    {f g : A → E} (hf : Integrable f μA) (hg : Integrable g μA) :
-    dist (∫ a : A, f a ∂μA) (∫ a : A, g a ∂μA) ≤ (∫⁻ a : A, edist (f a) (g a) ∂μA).toReal := by
-  grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
-  simp only [ofReal_norm, edist_eq_enorm_sub, le_refl]
-
 /-- Pushforward a continuous comapctly supported function on `B` to a
 continuous compactly supported function on `C` by integrating over `A`. -/
 @[to_additive /-- Pushforward a continuous comapctly supported function on `B` to a
