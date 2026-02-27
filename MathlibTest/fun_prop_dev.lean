@@ -558,7 +558,7 @@ example [Add α] (y : α):
 
 
 
---- pefromance tests - mainly testing fast failure ---
+--- performance tests - mainly testing fast failure ---
 ------------------------------------------------------
 
 
