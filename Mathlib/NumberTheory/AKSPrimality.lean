@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: metakunt
 -/
 module
+
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
 public import Mathlib.Data.Finite.Vector
@@ -52,7 +53,7 @@ open Polynomial Finset Nat
 
 namespace AKS
 
-section claim1
+section Introspective
 
 variable {K : Type*} [CommRing K] [IsDomain K]
 
@@ -65,7 +66,7 @@ variable {r : ℕ} [NeZero r]
 
 theorem introspective_eq {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
     (hi : introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n := by
-  have _ : r ≠ 0 := NeZero.out
+  haveI : r ≠ 0 := NeZero.out
   exact hi μ ((mem_primitiveRoots (by lia)).mpr h)
 
 theorem introspective_one {f : K[X]} : introspective f 1 r := by
@@ -111,8 +112,8 @@ theorem introspective_mul_of_coprime {d e : ℕ} {f : K[X]} (hf : introspective 
     (hg : introspective f d r) (h : e.Coprime r) : introspective f (e * d) r := by
   intro μ hm
   have mu : μ ^ e ∈ primitiveRoots r K := by
-    have ll : 0 < r := Nat.pos_of_neZero r
-    simp only [mem_primitiveRoots ll] at ⊢ hm
+    have hl : 0 < r := Nat.pos_of_neZero r
+    simp only [mem_primitiveRoots hl] at ⊢ hm
     exact IsPrimitiveRoot.pow_of_coprime hm e h
   rw [pow_mul, hg (μ ^ e) mu, hf μ hm]
   ring
@@ -123,7 +124,7 @@ theorem introspective_of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar K p] (d 
     (hcprm: n.Coprime r) (hdiv : p ∣ n) :
     (introspective (ofMultiset (s.map (fun x => (x.val : K)))) (p ^ d * (n / p) ^ e) r) := by
   simp only [ofMultiset_apply]
-  have hcprm2 := Nat.Coprime.coprime_mul_right (Eq.symm (Nat.mul_div_cancel' hdiv) ▸ hcprm)
+  have hcprm2 := Coprime.coprime_mul_right (Eq.symm (Nat.mul_div_cancel' hdiv) ▸ hcprm)
   induction s using Multiset.induction_on with
   | empty => simp [introspective]
   | cons x l h1 =>
@@ -144,13 +145,12 @@ theorem introspective_of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar K p] (d 
         · have hsx := hs x
           simp only [ofMultiset_apply, Multiset.map_singleton, Multiset.prod_singleton] at hsx
           exact introspective_n_div_p hsx hdiv hcprm2
-        · exact Nat.Coprime.coprime_div_left hcprm hdiv
-    · exact Nat.Coprime.pow_left d hcprm2
+        · exact Coprime.coprime_div_left hcprm hdiv
+    · exact Coprime.pow_left d hcprm2
 
-end claim1
+end Introspective
 
-section rest
-
+section Rest
 
 variable {K : Type*} [CommRing K] [IsDomain K]
 
@@ -178,14 +178,14 @@ variable {r : ℕ} [NeZero r]
 def f (_ : Conditions r p n a q μ) : ℕ × ℕ → ℕ := fun x : ℕ × ℕ => p ^ x.1 * (n / p) ^ x.2
 
 /-- Set used in the AKS proof. -/
-def se1 (h : Conditions r p n a q μ) := (f h) '' Set.univ
+def se1 (h : Conditions r p n a q μ) := f h '' Set.univ
 
 /-- Set used in the AKS proof. -/
 def se2 (h : Conditions r p n a q μ) := (Nat.cast (R := ZMod r)) '' se1 h
 
 /-- Set used in the AKS proof, subset of `se1` -/
 def se3 (h : Conditions r p n a q μ) :=
-  (f h) '' ((Set.Icc 0 (floor √ (se2 h).ncard)) ×ˢ (Set.Icc 0 (floor √ (se2 h).ncard)))
+  f h '' Set.Icc 0 (floor √ (se2 h).ncard) ×ˢ Set.Icc 0 (floor √ (se2 h).ncard)
 
 theorem se3_subset_se1 (h : Conditions r p n a q μ) : (se3 h) ⊆ (se1 h) := by
   grind [se3, se1]
@@ -200,7 +200,7 @@ def sp2 (h : Conditions r p n a q μ) := (sp1 h '' Set.univ).image (fun g => eva
 
 
 theorem se2_ncard_ne_zero (h : Conditions r p n a q μ) : (se2 h).ncard ≠ 0 := by
-  have h1 :  1 ∈ (se2 h) := by
+  have h1 : 1 ∈ se2 h := by
     unfold se2 se1 f
     simp only [Set.image_univ, Set.mem_image, Set.mem_range, Prod.exists,
       exists_exists_exists_and_eq, cast_mul, cast_pow]
@@ -597,17 +597,14 @@ theorem aux (h : Conditions r p n a q μ) : False := by
   grind [aux_le h, not_aux_le h]
 
 
-end rest
+end Rest
+
 end AKS
-
-
-
 
 @[expose] public section
 
 /-- The AKS primality test. If `(X + a) ^ n = X ^ n + a` modulo `(ZMod n)[X] / X ^ r - 1`
-  and some other minor conditions hold, then `n` is a prime power.
-  TODO: Finish the proof. -/
+  and some other minor conditions hold, then `n` is a prime power. -/
 theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polynomial
     {n r a : ℕ} (hc : n.Coprime r) (hn : 3 ≤ n)
     (ha : a = Nat.floor ((√(φ r)) * (Real.logb 2 n))) (hc2 : ∀ y ∈ Icc 1 a, n.Coprime y)
