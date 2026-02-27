@@ -502,15 +502,23 @@ instance map_constants_inclusion_isExpansionOn :
 
 variable {L} (A) {N : Type w'} [L.Structure N] (f : M ↪[L] N)
 
-/-- Lifts a structure to the expanded language with respect to an embedding. -/
-def Embedding.withConstantsStructure : L[[A]].Structure N :=
-  letI : (constantsOn A).Structure N := constantsOn.structure fun a => f a
-  L.withConstantsStructure A
+/-- Type synonym for `N` used to equip it with an `L[[A]]`-structure where the new constants on `A`
+are interpreted via the embedding `f`. -/
+@[nolint unusedArguments]
+def Embedding.withConstants (f : M ↪[L] N) (A : Set M) : Type w' := N
+
+instance : L.Structure (f.withConstants A) := by
+  dsimp [Embedding.withConstants]
+  infer_instance
+
+instance (f : M ↪[L] N) : (constantsOn A).Structure (f.withConstants A) :=
+  constantsOn.structure fun a => f a
+
+instance : L[[A]].Structure (f.withConstants A) := L.withConstantsStructure A
 
 /-- Lifts an embedding to the expanded language with constants. -/
 def Embedding.liftWithConstants :
-    @Embedding (L[[A]]) M N _ (f.withConstantsStructure A) := by
-  letI : L[[A]].Structure N := f.withConstantsStructure A
+    M ↪[L[[A]]] f.withConstants A := by
   refine ⟨f.toEmbedding, ?_, ?_⟩
   · intro n g x
     cases g with

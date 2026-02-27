@@ -196,14 +196,17 @@ theorem comp_assoc (f : M ↪ₑ[L] N) (g : N ↪ₑ[L] P) (h : P ↪ₑ[L] Q) :
 
 /-- Lifts an elementary embedding to the expanded language with constants -/
 def liftWithConstants (f : M ↪ₑ[L] N) (A : Set M) :
-    @ElementaryEmbedding (L[[A]]) M N _ (f.toEmbedding.withConstantsStructure A) := by
-  letI : L[[A]].Structure N := f.toEmbedding.withConstantsStructure A
+    M ↪ₑ[L[[A]]] (f.toEmbedding.withConstants A) := by
   refine ⟨f, ?_⟩
   intro n φ x
-  have h : Sum.elim (fun a ↦ ↑(L.con a)) (f ∘ x) = f ∘ Sum.elim (fun a : ↑A ↦ ↑(L.con a)) x :=
+  have h :
+    (Sum.elim (fun a ↦ ↑(L.con a)) (⇑f ∘ x) :
+      ↑A ⊕ Fin n → f.toEmbedding.withConstants A) =
+    f ∘ Sum.elim (fun a ↦ ↑(L.con a)) x :=
     (Sum.comp_elim _ _ _).symm
   have h' : (default : Fin 0 → N) = f ∘ (default : Fin 0 → M) := List.ofFn_inj.mp rfl
-  simp [Formula.Realize, h', ← BoundedFormula.realize_constantsVarsEquiv, h]
+  simp only [Formula.Realize, h', ← BoundedFormula.realize_constantsVarsEquiv, h]
+  exact f.map_boundedFormula _ _ _
 
 end ElementaryEmbedding
 
