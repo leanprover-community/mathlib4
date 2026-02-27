@@ -190,14 +190,12 @@ private def se3 (h : Conditions r p n a q μ) :=
 private theorem se3_subset_se1 (h : Conditions r p n a q μ) : se3 h ⊆ se1 h := by
   grind [se3, se1]
 
-
 /-- Function used in the AKS proof. -/
 noncomputable def sp1 (_ : Conditions r p n a q μ) :=
   fun s : Multiset (Fin (a + 1)) ↦ ofMultiset (s.map (fun x => (x.val : K)))
 
 /-- Set used in the AKS proof. -/
 private def sp2 (h : Conditions r p n a q μ) := (sp1 h '' Set.univ).image (eval μ ·)
-
 
 private theorem se2_ncard_ne_zero (h : Conditions r p n a q μ) : (se2 h).ncard ≠ 0 := by
   have h1 : 1 ∈ se2 h := by
@@ -247,7 +245,6 @@ private theorem se2_subset_units (h : Conditions r p n a q μ) :
     · exact Coprime.pow_left _ (Coprime.of_dvd_left p_dvd_n n_coprime_r)
     · exact Coprime.pow_left _ (Coprime.of_dvd_left (div_dvd_of_dvd p_dvd_n) n_coprime_r)
   exact ⟨ hu.unit, rfl ⟩
-
 
 private theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := by
   unfold f
@@ -402,7 +399,6 @@ private theorem aux_le (h : Conditions r p n a q μ) :
       rw [natDegree_monomial_eq x (one_ne_zero' K), natDegree_monomial_eq y (one_ne_zero' K)]
     _ ≤ _ := max_le (se3_le hx) (se3_le hy)
 
-
 private theorem claim6 (h : Conditions r p n a q μ) :
     ((se2 h).ncard + a).choose ((se2 h).ncard - 1) ≤ (sp2 h).ncard := by
   have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
@@ -489,15 +485,11 @@ private theorem claim6 (h : Conditions r p n a q μ) :
     exact Equiv.mk (fun x ↦ ⟨ Sym.mk x.1 x.2 , by simp ⟩) (fun x ↦ ⟨ x , by simp ⟩)
       (fun _ ↦ rfl) (fun _ ↦ rfl)
 
-
 private theorem claim71 {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
   have _ : Nat.choose 5 2 = 10 := rfl
   induction x, h using Nat.le_induction (m := 2)
   · grind
   · grind [choose_succ_succ, choose_le_succ, choose_le_middle]
-
-
-
 
 private theorem not_aux_le (h : Conditions r p n a q μ) :
     (n : ℝ) ^ (√(se2 h).ncard) < (sp2 h).ncard := by
