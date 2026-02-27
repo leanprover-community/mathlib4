@@ -533,7 +533,6 @@ def SymmetricCategory.ofFaithful {C D : Type*} [Category* C] [Category* D] [Mono
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 
-set_option backward.whnf.reducibleClassField false in
 /-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
 noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category* C] [Category* D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
@@ -872,7 +871,6 @@ lemma SymmetricCategory.reverseBraiding_eq (C : Type u₁) [Category.{v₁} C]
   funext X Y
   exact Iso.ext (braiding_swap_eq_inv_braiding Y X).symm
 
-set_option backward.whnf.reducibleClassField false in
 /-- The identity functor from `C` to `C`, where the codomain is given the
 reversed braiding, upgraded to a braided functor. -/
 def SymmetricCategory.equivReverseBraiding (C : Type u₁) [Category.{v₁} C]
