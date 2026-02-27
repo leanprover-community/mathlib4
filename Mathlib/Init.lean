@@ -135,3 +135,7 @@ run_cmd liftTermElabM do
     let some cinfo := env.find? mlRes | throwError "{mlRes}: this code should be unreachable."
     if !cinfo.type.isAppOf ``Lean.Option then
       throwError "{.ofConstName mlRes} is not an option, it is a{indentD cinfo.type}"
+
+/- Local workaround until https://github.com/leanprover/lean4/pull/12719 lands -/
+set_option allowUnsafeReducibility true in
+attribute [implicit_reducible] Lean.levelZero Lean.Level.ofNat
