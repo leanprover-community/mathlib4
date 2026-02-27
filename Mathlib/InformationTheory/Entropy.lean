@@ -166,9 +166,9 @@ lemma shannonEntropy_eq_zero_iff (p : PMF α) [Finite α] :
     have ha_lt_one : (p a).toReal < 1 := toReal_lt_one_of_mem_support_of_not_pure p a ha h
     have ha'_lt_one : (p a').toReal < 1 := toReal_lt_one_of_mem_support_of_not_pure p a' ha' h
     have h1 : 0 < Real.negMulLog ((p a).toReal) :=
-      Real.negMulLog_pos_of_pos_lt_one ha_pos ha_lt_one
+      Real.negMulLog_pos ha_pos ha_lt_one
     have h2 : 0 < Real.negMulLog ((p a').toReal) :=
-      Real.negMulLog_pos_of_pos_lt_one ha'_pos ha'_lt_one
+      Real.negMulLog_pos ha'_pos ha'_lt_one
     have h_sum := shannonEntropy_tsum_ite_ge p a a' (ne_comm.1 haa')
     have h_summable : Summable (fun b : α => Real.negMulLog (ENNReal.toReal (p b))) :=
       Summable.of_finite
