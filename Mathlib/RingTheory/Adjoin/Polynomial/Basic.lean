@@ -95,14 +95,14 @@ A version of `adjoin_singleton_eq_range_aeval` as an `R`-algebra isomorphism.
 
 This is useful when rewriting using `adjoin_singleton_eq_range_aeval` fails. -/
 def equivRangeAevalAdjoinSingleton (x : A) :
-  (aeval (R := R) x).range ≃ₐ[R] adjoin R {x} where
-    toFun a := ⟨a.val, by simp [adjoin_singleton_eq_range_aeval _ x]⟩
-    invFun a := ⟨a.val, by simp [← adjoin_singleton_eq_range_aeval _ x]⟩
-    left_inv := by simp [Function.LeftInverse]
-    right_inv := by simp [Function.RightInverse, Function.LeftInverse]
-    map_mul' := by simp
-    map_add' := by simp
-    commutes' r := by simp
+    (aeval (R := R) x).range ≃ₐ[R] adjoin R {x} where
+  toFun a := ⟨a.val, by simp [adjoin_singleton_eq_range_aeval _ x]⟩
+  invFun a := ⟨a.val, by simp [← adjoin_singleton_eq_range_aeval _ x]⟩
+  left_inv := by simp [Function.LeftInverse]
+  right_inv := by simp [Function.RightInverse, Function.LeftInverse]
+  map_mul' := by simp
+  map_add' := by simp
+  commutes' r := by simp
 
 @[simp]
 theorem equivRangeAevalAdjoinSingleton_apply (x a : A) {h : a ∈ (aeval (R := R) x).range} :
