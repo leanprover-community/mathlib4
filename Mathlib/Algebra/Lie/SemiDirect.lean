@@ -34,7 +34,7 @@ namespace LieAlgebra
 The semi-direct sum of two Lie algebras `H` and `G` over `R`, relative to a Lie algebra homomorphism
 `ψ: G → Liederivation R H H `. As a set it just `H × G`, however the Lie bracket is twisted by `ψ`.
 -/
-structure SemiDirectSum {R : Type*} [CommRing R] (H : Type*) [LieRing H] [LieAlgebra R H]
+@[ext] structure SemiDirectSum {R : Type*} [CommRing R] (H : Type*) [LieRing H] [LieAlgebra R H]
     (G : Type*) [LieRing G] [LieAlgebra R G] (_ : G →ₗ⁅R⁆ LieDerivation R H H) where
   /-- The element of H -/
   left : H
