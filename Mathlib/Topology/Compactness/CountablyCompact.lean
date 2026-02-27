@@ -114,11 +114,8 @@ theorem isCountablyCompact_iff_countable_open_cover :
     let V : ℕ → Set E := fun n => (closure (x '' Ici n))ᶜ
     have hVmono : Monotone V := fun _ _ hmn =>
       compl_subset_compl.2 <| closure_mono <| image_mono <| Ici_subset_Ici.2 hmn
-    have hAV : A ⊆ ⋃ n, V n := by
-      intro a haA
-      simp only [mapClusterPt_atTop_iff_forall_mem_closure, not_forall] at hac
-      rcases hac a haA with ⟨n, hna⟩
-      exact mem_iUnion.2 ⟨n, hna⟩
+    simp only [mapClusterPt_atTop_iff_forall_mem_closure, not_forall] at hac
+    have hAV : A ⊆ ⋃ n, V n := fun a haA => mem_iUnion.2 (hac a haA)
     obtain ⟨t, ht⟩ := h V (fun _ => isClosed_closure.isOpen_compl) hAV
     let m := t.sup id
     obtain ⟨j, hjt, hjV⟩ := mem_iUnion₂.mp (ht (hx m))
@@ -187,9 +184,6 @@ theorem IsCountablyCompact.isSeqCompact [FirstCountableTopology E]
     (hA : IsCountablyCompact A) : IsSeqCompact A := fun x hx =>
     let ⟨a, haA, hac⟩ := hA x hx
     ⟨a, haA, TopologicalSpace.FirstCountableTopology.tendsto_subseq hac⟩
-
-theorem IsCountablyCompact.isSeqCompact' [SequentialSpace E]
-    (hA : IsCountablyCompact A) : IsSeqCompact A := sorry
 
 /-- Every infinite subset of a countably compact set has an accumulation point in the set. -/
 theorem IsCountablyCompact.exists_accPt_of_infinite
