@@ -760,9 +760,7 @@ lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
   ext g
   obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
   dsimp
-  simp only [Equiv.apply_symm_apply]
-  rw [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
-  simp
+  simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]
 
 /-- If `C` is a locally `w`-small category, this is a (colimit) cocone
 expressing `F : C ⥤ Type w` as a colimit of corepresentable functors. -/
