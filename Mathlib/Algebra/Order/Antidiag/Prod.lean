@@ -174,6 +174,7 @@ theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
 
 end OrderedSub
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the product
     `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/
 @[simps]

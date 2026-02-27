@@ -283,6 +283,7 @@ theorem le_boundedBy' {μ : OuterMeasure α} :
   intro s
   rcases s.eq_empty_or_nonempty with h | h <;> simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem boundedBy_top : boundedBy (⊤ : Set α → ℝ≥0∞) = ⊤ := by
   rw [eq_top_iff, le_boundedBy']

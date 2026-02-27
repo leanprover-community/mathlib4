@@ -222,6 +222,7 @@ hypothesis on the interval, but assuming the measure is the volume.
 theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
   IntervalIntegrable.log continuousOn_id fun _ hx => ne_of_mem_of_not_mem hx h
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The real logarithm is interval integrable (with respect to the volume measure) on every interval.
 See `intervalIntegrable_log` for a version applying to any locally finite measure, but with an
