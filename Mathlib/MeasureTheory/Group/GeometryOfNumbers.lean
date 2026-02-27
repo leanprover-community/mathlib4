@@ -320,14 +320,14 @@ lemma exists_directional_basis [IsZLattice ℝ L] (hsc : Convex ℝ s) (hs : IsC
 end successiveMin
 
 variable {E : Type*} [MeasurableSpace E] {μ : Measure E} {F s : Set E} [NormedAddCommGroup E]
-  [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure] {L : AddSubgroup E}
-  [Countable L]
+  [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [μ.IsAddHaarMeasure]
 
 set_option linter.unusedSectionVars false in
 /-- The second **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E`
 whose volume is large enough compared to its successive minima and the covolume
 of a lattice `L` of `E`, then it contains a non-zero lattice point of `L`. -/
 proof_wanted exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure_mul_prod_successiveMin
+    {L : Submodule ℤ E}
     (hF : IsAddFundamentalDomain L F μ) (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s)
     (h : μ F * 2 ^ finrank ℝ E < μ s * ∏ i < Module.finrank ℝ E, successiveMin L s i) :
     ∃ x ≠ 0, ((x : L) : E) ∈ s
@@ -336,6 +336,7 @@ proof_wanted exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure_mul_pr
 is large enough compared to the covolume of a lattice `L` of `E`, then it contains a non-zero
 lattice point of `L`. -/
 theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+    {L : AddSubgroup E} [Countable L]
     (fund : IsAddFundamentalDomain L F μ) (h_symm : ∀ x ∈ s, -x ∈ s) (h_conv : Convex ℝ s)
     (h : μ F * 2 ^ finrank ℝ E < μ s) : ∃ x ≠ 0, ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
