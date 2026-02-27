@@ -23,7 +23,7 @@ on:
       mathlib_ci_ref:
         type: string
         required: false
-        default: main
+        default: master
 
 env:
   # Disable Lake's automatic fetching of cloud builds.

@@ -19,7 +19,7 @@ on:
         type: boolean
         default: false # We shouldn't need this job in typical experiments
       mathlib_ci_ref:
-        description: ref for mathlib-ci checkout (defaults to 'main')
+        description: ref for mathlib-ci checkout (defaults to 'master')
         required: false
         type: string
         default: 'main'
