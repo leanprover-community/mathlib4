@@ -50,7 +50,7 @@ instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
 will report the synthesis failures grouped by instance application.
 -/
 
-public meta section
+meta section
 
 open Lean MessageData Meta Elab Tactic Command
 
@@ -137,7 +137,7 @@ end Lean.MessageData
 namespace Mathlib.Tactic.DefEqAbuse
 
 /-- Only applies `f` to `Meta.isDefEq` trace nodes. Skips `Meta.isDefEq.onFailure` nodes. -/
-@[inline] private def onlyOnDefEqNodes {m} [Monad m] {α}
+@[inline] def onlyOnDefEqNodes {m} [Monad m] {α}
     (f : TraceData → MessageData → Array MessageData → m (VisitStep α)) :
     TraceData → MessageData → Array MessageData → m (VisitStep α) :=
   fun td header children => do
@@ -149,7 +149,7 @@ namespace Mathlib.Tactic.DefEqAbuse
 Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes).
 Note: status is currently determined by parsing emoji from the rendered header string.
 Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
-private partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
+partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
     unless traceResultOf (← header.toString) matches some .failure do
       return .ascend
@@ -159,7 +159,7 @@ private partial def findLeafFailures (msg : MessageData) : BaseIO (Array Message
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
 Returns a `HashSet` of emoji-stripped header strings. -/
-private partial def collectIsDefEqChecks (pred : TraceResult → Bool)
+partial def collectIsDefEqChecks (pred : TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
     let headerStr ← header.toString
@@ -174,7 +174,7 @@ as a failure in the permissive trace (which would indicate the check is context-
 rather than transparency-dependent).
 A "deepest transition point" has no descendant transition points.
 Falls back to `findLeafFailures` behavior when `permSuccesses` is empty. -/
-private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
+partial def findTransitionFailures (permSuccesses : Std.HashSet String)
     (permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array MessageData) :=
   if permSuccesses.isEmpty then findLeafFailures msg
@@ -199,7 +199,7 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
 and their `isDefEq` transition failures.
 Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
 check can be replaced with ``td.cls == `Meta.synthInstance.apply``. -/
-private partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet String)
+partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
@@ -214,7 +214,7 @@ private partial def findSynthAppFailures (permSuccesses permFailures : Std.HashS
 
 /-- Find top-level synthesis failures and their `isDefEq` root causes.
 Only enters failing synthesis nodes to avoid reporting recovered sub-attempts. -/
-private partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
+partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
@@ -230,8 +230,8 @@ private partial def findSynthFailures (permSuccesses permFailures : Std.HashSet 
 
 /-- Collect instance names from successful `apply @Instance to Goal` trace nodes.
 Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
-check can be replaced with `td.cls == `Meta.synthInstance.apply``. -/
-private partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
+check can be replaced with ``td.cls == `Meta.synthInstance.apply``. -/
+partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
@@ -242,8 +242,7 @@ private partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashS
 /-- Analyze strict and permissive trace messages to find isDefEq transition failures
 and (optionally) synthesis-grouped failures.
 Returns `(flatFailures, synthGroupedFailures)`. -/
-private def analyzeTraces (strictMsgs permMsgs : Array MessageData)
-    (includeSynth : Bool := false) :
+def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool := false) :
     BaseIO (Array MessageData × Array (MessageData × Array MessageData)) := do
   -- Build sets of permissive successes and failures for transition-point detection.
   let mut permSuccesses : Std.HashSet String := {}
@@ -277,7 +276,7 @@ private def analyzeTraces (strictMsgs permMsgs : Array MessageData)
 
 /-- Format and log the `#defeq_abuse` diagnostic report.
 `kind` is `"tactic"` or `"command"`. -/
-private def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
+def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
     [MonadOptions m] (kind : String) (uniqueFailures : Array MessageData)
     (synthResults : Array (MessageData × Array MessageData)) : m Unit := do
   if !synthResults.isEmpty then
