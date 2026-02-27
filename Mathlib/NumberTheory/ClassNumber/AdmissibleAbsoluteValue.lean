@@ -62,9 +62,10 @@ theorem exists_partition {ι : Type*} [Finite ι] {ε : ℝ} (hε : 0 < ε) {b :
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   obtain ⟨t, ht⟩ := h.exists_partition' n hε hb (A ∘ e.symm)
   refine ⟨t ∘ e, fun i₀ i₁ h ↦ ?_⟩
-  convert (config := {transparency := .default})
+  convert (config := { transparency := .default })
     ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any large enough family of vectors in `R^n` has a pair of elements
 whose remainders are close together, pointwise. -/
 theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :

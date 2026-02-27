@@ -32,9 +32,9 @@
   title  : Gödel’s Incompleteness Theorem
   authors: Shogo Saito
   links  :
-    First incompleteness theorem: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
-    Second incompleteness theorem: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
-    website: https://formalizedformallogic.github.io/Book/
+    First incompleteness theorem: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/First.lean#L24-L53
+    Second incompleteness theorem: https://github.com/FormalizedFormalLogic/Foundation/blob/7c74089c2442ee211abfa1e2dd5a75091800f57b/Foundation/FirstOrder/Incompleteness/Second.lean#L15-L18
+    website: https://formalizedformallogic.github.io/Catalogue/
 7:
   title  : Law of Quadratic Reciprocity
   decls  :
@@ -243,6 +243,8 @@
   authors: mathlib
 61:
   title  : Theorem of Ceva
+  decl   : Affine.Triangle.prod_dist_div_dist_eq_one_of_mem_line_of_mem_line
+  authors: Joseph Myers
 62:
   title  : Fair Games Theorem
   decl   : MeasureTheory.submartingale_iff_expected_stoppedValue_mono

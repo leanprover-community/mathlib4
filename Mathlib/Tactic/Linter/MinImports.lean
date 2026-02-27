@@ -5,8 +5,9 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import ImportGraph.Imports
-public meta import Mathlib.Tactic.MinImports
+public meta import ImportGraph.Imports.ImportGraph
+public meta import ImportGraph.Graph.TransitiveClosure
+public import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 

@@ -365,7 +365,7 @@ theorem exponent_dvd_of_monoidHom (e : G →* H) (e_inj : Function.Injective e) 
 /--
 The exponent of a submonoid `H ≤ G` divides the exponent of `G`.
 -/
-@[to_additive /-- The exponent of a additive submonoid `H ≤ G` divides the exponent of `G`. -/]
+@[to_additive /-- The exponent of an additive submonoid `H ≤ G` divides the exponent of `G`. -/]
 theorem exponent_submonoid_dvd (H : Submonoid G) :
     Monoid.exponent H ∣ Monoid.exponent G :=
   Monoid.exponent_dvd_of_monoidHom H.subtype H.subtype_injective
@@ -506,7 +506,6 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid G]
 
-set_option backward.proofsInPublic true in
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by
@@ -658,10 +657,8 @@ variable [Group G]
 If `H` is a normal subgroup of `G`, then the exponent of `G ⧸ H` divides the exponent of `G`.
 -/
 @[to_additive
-/--
-If `H` is a normal additive subgroup of `G`, then the exponent of `G ⧸ H` divides the
-exponent of `G`.
--/]
+/-- If `H` is a normal additive subgroup of `G`, then the exponent of `G ⧸ H` divides the
+exponent of `G`. -/]
 theorem Group.exponent_quotient_dvd (H : Subgroup G) [H.Normal] :
     Monoid.exponent (G ⧸ H) ∣ Monoid.exponent G :=
   MonoidHom.exponent_dvd (QuotientGroup.mk'_surjective H)

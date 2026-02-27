@@ -5,10 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-public meta import Mathlib.Analysis.SpecialFunctions.Pow.Real
-public meta import Mathlib.NumberTheory.Real.Irrational
-public meta import Mathlib.Tactic.NormNum.GCD
-public meta import Mathlib.Tactic.Rify
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Qify
+public import Mathlib.Tactic.Rify
 
 /-! # `norm_num` extension for `Irrational`
 
@@ -37,6 +38,7 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
 set_option linter.flexible false in
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}

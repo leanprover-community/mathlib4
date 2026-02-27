@@ -43,7 +43,7 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 /-! ### Cofinality of orders -/
 
-attribute [local instance] IsRefl.swap
+attribute [local instance] Std.Refl.swap
 
 namespace Order
 
@@ -53,14 +53,14 @@ def cof (r : α → α → Prop) : Cardinal :=
   sInf { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }
 
 /-- The set in the definition of `Order.cof` is nonempty. -/
-private theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
+private theorem cof_nonempty (r : α → α → Prop) [Std.Refl r] :
     { c | ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = c }.Nonempty :=
   ⟨_, Set.univ, fun a => ⟨a, ⟨⟩, refl _⟩, rfl⟩
 
 theorem cof_le (r : α → α → Prop) {S : Set α} (h : ∀ a, ∃ b ∈ S, r a b) : cof r ≤ #S :=
   csInf_le' ⟨S, h, rfl⟩
 
-theorem le_cof [IsRefl α r] (c : Cardinal) :
+theorem le_cof [Std.Refl r] (c : Cardinal) :
     c ≤ cof r ↔ ∀ {S : Set α}, (∀ a, ∃ b ∈ S, r a b) → c ≤ #S := by
   rw [cof, le_csInf_iff'' (cof_nonempty r)]
   use fun H S h => H _ ⟨S, h, rfl⟩
@@ -71,7 +71,7 @@ end Order
 
 namespace RelIso
 
-private theorem cof_le_lift [IsRefl β s] (f : r ≃r s) :
+private theorem cof_le_lift [Std.Refl s] (f : r ≃r s) :
     Cardinal.lift.{v} (Order.cof r) ≤ Cardinal.lift.{u} (Order.cof s) := by
   rw [Order.cof, Order.cof, lift_sInf, lift_sInf, le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
@@ -81,12 +81,12 @@ private theorem cof_le_lift [IsRefl β s] (f : r ≃r s) :
   refine ⟨f.symm b, mem_image_of_mem _ hb, f.map_rel_iff.1 ?_⟩
   rwa [RelIso.apply_symm_apply]
 
-theorem cof_eq_lift [IsRefl β s] (f : r ≃r s) :
+theorem cof_eq_lift [Std.Refl s] (f : r ≃r s) :
     Cardinal.lift.{v} (Order.cof r) = Cardinal.lift.{u} (Order.cof s) :=
-  have := f.toRelEmbedding.isRefl
+  have := f.toRelEmbedding.stdRefl
   (f.cof_le_lift).antisymm (f.symm.cof_le_lift)
 
-theorem cof_eq {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
+theorem cof_eq {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [Std.Refl s] (f : r ≃r s) :
     Order.cof r = Order.cof s :=
   lift_inj.1 (f.cof_eq_lift)
 
@@ -208,7 +208,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
 @[simp]
 theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o) := by
   refine inductionOn o fun α r _ ↦ ?_
-  rw [← type_uLift, cof_type, cof_type, ← Cardinal.lift_id'.{v, u} (Order.cof _),
+  rw [← type_ulift, cof_type, cof_type, ← Cardinal.lift_id'.{v, u} (Order.cof _),
     ← Cardinal.lift_umax]
   apply RelIso.cof_eq_lift ⟨Equiv.ulift.symm, _⟩
   simp [swap]
@@ -383,7 +383,7 @@ theorem cof_eq_zero {o} : cof o = 0 ↔ o = 0 :=
 theorem cof_ne_zero {o} : cof o ≠ 0 ↔ o ≠ 0 :=
   cof_eq_zero.not
 
-@[simp]
+-- TODO: deprecate in favor of `cof_add_one`
 theorem cof_succ (o) : cof (succ o) = 1 := by
   apply le_antisymm
   · refine inductionOn o fun α r _ => ?_
@@ -396,6 +396,13 @@ theorem cof_succ (o) : cof (succ o) = 1 := by
   · rw [← Cardinal.succ_zero, succ_le_iff]
     simpa [lt_iff_le_and_ne, Cardinal.zero_le] using fun h =>
       succ_ne_zero o (cof_eq_zero.1 (Eq.symm h))
+
+theorem cof_add_one (o) : cof (o + 1) = 1 :=
+  cof_succ o
+
+@[simp]
+theorem cof_one : cof 1 = 1 := by
+  simpa using cof_add_one 0
 
 -- TODO: find a good way to fix the non-terminal simp
 -- it is called on four goals, only one of which requires the `exact`
@@ -426,7 +433,7 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
           change (a : α) = ↑(⟨a', aS⟩ : S)
           have := le_one_iff_subsingleton.1 (le_of_eq e)
           congr!,
-    fun ⟨a, e⟩ => by simp [e]⟩
+    fun ⟨a, e⟩ => by simp [e, cof_add_one]⟩
 
 /-! ### Fundamental sequences -/
 

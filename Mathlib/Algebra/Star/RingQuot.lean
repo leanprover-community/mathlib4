@@ -24,6 +24,7 @@ section StarRing
 
 variable [StarRing R]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem Rel.star (hr : ∀ a b, r a b → r (star a) (star b))
     ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
   induction h with

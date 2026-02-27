@@ -9,8 +9,9 @@ public meta import Lean.Elab.Command
 public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-public meta import Mathlib.Tactic.Linter.Header
-public meta import Mathlib.Tactic.DeclarationNames
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Command
+public import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters
@@ -448,7 +449,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
           using a '\\' at the end of a line allows you to continue the string on the following \
           line, removing all intervening whitespace."
         else ""
-        Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
+        Linter.logLint linter.style.longLine (.ofRange ⟨(line.drop 100).startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
 initialize addLinter longLineLinter
 

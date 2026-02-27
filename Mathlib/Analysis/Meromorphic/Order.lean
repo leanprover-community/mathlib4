@@ -6,6 +6,7 @@ Authors: David Loeffler, Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.Basic
+public import Mathlib.Algebra.Order.WithTop.Untop0
 
 /-!
 # Orders of Meromorphic Functions
@@ -143,6 +144,7 @@ theorem meromorphicOrderAt_ne_top_iff_eventually_ne_zero {f : 𝕜 → E} (hf : 
     simp_all [zpow_ne_zero, sub_ne_zero]
   · simp_all [meromorphicOrderAt_eq_top_iff, Eventually.frequently]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the order of a meromorphic function is negative, then this function converges to infinity
 at this point. See also the iff version `tendsto_cobounded_iff_meromorphicOrderAt_neg`. -/
 lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x < 0) :
@@ -158,8 +160,7 @@ lemma tendsto_cobounded_of_meromorphicOrderAt_neg (ho : meromorphicOrderAt f x <
       g_an.continuousAt.continuousWithinAt.tendsto.norm
     have : Tendsto (fun z ↦ z - x) (𝓝[≠] x) (𝓝[≠] 0) := by
       refine tendsto_nhdsWithin_iff.2 ⟨?_, ?_⟩
-      · have : ContinuousWithinAt (fun z ↦ z - x) ({x}ᶜ) x :=
-          ContinuousAt.continuousWithinAt (by fun_prop)
+      · have : ContinuousWithinAt (fun z ↦ z - x) {x}ᶜ x := by fun_prop
         simpa using this.tendsto
       · filter_upwards [self_mem_nhdsWithin] with y hy
         simpa [sub_eq_zero] using hy
@@ -177,6 +178,7 @@ lemma tendsto_ne_zero_of_meromorphicOrderAt_eq_zero
   apply g_an.continuousAt.continuousWithinAt.tendsto.congr'
   filter_upwards [hg] with y hy using by simp [hy]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the order of a meromorphic function is positive, then this function converges to zero
 at this point. See also the iff version `tendsto_zero_iff_meromorphicOrderAt_pos`. -/
 lemma tendsto_zero_of_meromorphicOrderAt_pos (ho : 0 < meromorphicOrderAt f x) :
@@ -207,6 +209,7 @@ lemma tendsto_nhds_of_meromorphicOrderAt_nonneg
     exact ⟨c, hc⟩
   · exact ⟨0, tendsto_zero_of_meromorphicOrderAt_pos ho⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A meromorphic function converges to infinity iff its order is negative. -/
 lemma tendsto_cobounded_iff_meromorphicOrderAt_neg (hf : MeromorphicAt f x) :
     Tendsto f (𝓝[≠] x) (Bornology.cobounded E) ↔ meromorphicOrderAt f x < 0 := by
@@ -216,6 +219,7 @@ lemma tendsto_cobounded_iff_meromorphicOrderAt_neg (hf : MeromorphicAt f x) :
     obtain ⟨c, hc⟩ := tendsto_nhds_of_meromorphicOrderAt_nonneg hf ho
     exact not_tendsto_atTop_of_tendsto_nhds hc.norm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A meromorphic function converges to a limit iff its order is nonnegative. -/
 lemma tendsto_nhds_iff_meromorphicOrderAt_nonneg (hf : MeromorphicAt f x) :
     (∃ c, Tendsto f (𝓝[≠] x) (𝓝 c)) ↔ 0 ≤ meromorphicOrderAt f x := by
@@ -241,6 +245,7 @@ lemma tendsto_ne_zero_iff_meromorphicOrderAt_eq_zero (hf : MeromorphicAt f x) :
   · apply c_ne
     exact tendsto_nhds_unique hc (tendsto_zero_of_meromorphicOrderAt_pos ho)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A meromorphic function converges to zero iff its order is positive. -/
 lemma tendsto_zero_iff_meromorphicOrderAt_pos (hf : MeromorphicAt f x) :
     (Tendsto f (𝓝[≠] x) (𝓝 0)) ↔ 0 < meromorphicOrderAt f x := by
@@ -292,6 +297,7 @@ theorem AnalyticAt.meromorphicOrderAt_nonneg (hf : AnalyticAt 𝕜 f x) :
     0 ≤ meromorphicOrderAt f x := by
   simp [hf.meromorphicOrderAt_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function is both meromorphic and continuous at a point, then it is analytic there. -/
 protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
     (h : MeromorphicAt f x) (h' : ContinuousAt f x) :
@@ -319,6 +325,13 @@ protected theorem MeromorphicAt.analyticAt {f : 𝕜 → E} {x : 𝕜}
       filter_upwards [hg] with z hz using by simpa using hz.symm
     exact AnalyticAt.congr (by fun_prop) A
 
+lemma AnalyticAt.of_meromorphicOrderAt_pos {f : 𝕜 → E} {x : 𝕜}
+    (h : 0 < meromorphicOrderAt f x) (hf : f x = 0) :
+    AnalyticAt 𝕜 f x := by
+  refine (meromorphicAt_of_meromorphicOrderAt_ne_zero h.ne').analyticAt ?_
+  rw [continuousAt_iff_punctured_nhds, hf]
+  exact tendsto_zero_of_meromorphicOrderAt_pos h
+
 /--
 The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
 -/
@@ -327,6 +340,10 @@ theorem meromorphicOrderAt_const (z₀ : 𝕜) (e : E) [Decidable (e = 0)] :
   split_ifs with he
   · simp [he, meromorphicOrderAt_eq_top_iff]
   · exact (meromorphicOrderAt_eq_int_iff (.const e z₀)).2 ⟨fun _ ↦ e, by fun_prop, by simpa⟩
+
+@[simp]
+lemma meromorphicOrderAt_id : meromorphicOrderAt (𝕜 := 𝕜) id 0 = 1 := by
+  simp [analyticAt_id.meromorphicOrderAt_eq]
 
 /--
 The order of a constant function is `⊤` if the constant is zero and `0` otherwise.
@@ -350,6 +367,23 @@ The order of a constant function is `⊤` if the constant is zero and `0` otherw
   convert meromorphicOrderAt_const z₀ (n : 𝕜)
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
+/-- The order of `(· - x) ^ n` at `x` is `n`. -/
+@[simp, to_fun] theorem meromorphicOrderAt_zpow_id_sub_const {n : ℤ} :
+    meromorphicOrderAt ((· - x) ^ n) x = n := by
+  rw [meromorphicOrderAt_eq_int_iff (by fun_prop)]
+  exact ⟨fun z ↦ 1, by fun_prop, one_ne_zero, by aesop⟩
+
+/-- The order of `(· - x) ^ n` at `x` is `n`. -/
+@[simp, to_fun] theorem meromorphicOrderAt_pow_id_sub_const {n : ℕ} :
+    meromorphicOrderAt ((· - x) ^ n) x = n := by
+  convert meromorphicOrderAt_zpow_id_sub_const
+  simp only [zpow_natCast]
+
+/-- The order of `· - x` at `x` is `1`. -/
+@[simp] theorem meromorphicOrderAt_id_sub_const :
+    meromorphicOrderAt (· - x) x = 1 := by
+  rw [← WithTop.coe_one, ← meromorphicOrderAt_zpow_id_sub_const (𝕜 := 𝕜), zpow_one]
+
 /-!
 ## Order at a Point: Behaviour under Ring Operations
 
@@ -357,7 +391,7 @@ We establish additivity of the order under multiplication and taking powers.
 -/
 
 /-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
-theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
+@[to_fun] theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
     (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     meromorphicOrderAt (f • g) x = meromorphicOrderAt f x + meromorphicOrderAt g x := by
   -- Trivial cases: one of the functions vanishes around z₀
@@ -379,12 +413,13 @@ theorem meromorphicOrderAt_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E}
       simp [hfa, hga, smul_comm (F a), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
 
 /-- The order is additive when multiplying meromorphic functions. -/
-theorem meromorphicOrderAt_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+@[to_fun] theorem meromorphicOrderAt_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x)
+    (hg : MeromorphicAt g x) :
     meromorphicOrderAt (f * g) x = meromorphicOrderAt f x + meromorphicOrderAt g x :=
   meromorphicOrderAt_smul hf hg
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
-theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
+@[to_fun] theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℕ} :
     meromorphicOrderAt (f ^ n) x = n * meromorphicOrderAt f x := by
   induction n
   case zero =>
@@ -402,7 +437,7 @@ theorem meromorphicOrderAt_pow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicA
       ring
 
 /-- The order multiplies by `n` when taking a meromorphic function to its `n`th power. -/
-theorem meromorphicOrderAt_zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℤ} :
+@[to_fun] theorem meromorphicOrderAt_zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) {n : ℤ} :
     meromorphicOrderAt (f ^ n) x = n * meromorphicOrderAt f x := by
   -- Trivial case: n = 0
   by_cases hn : n = 0
@@ -431,7 +466,7 @@ theorem meromorphicOrderAt_zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : Meromorphic
     rw [mul_comm, zpow_mul]
 
 /-- The order of the inverse is the negative of the order. -/
-theorem meromorphicOrderAt_inv {f : 𝕜 → 𝕜} :
+@[to_fun] theorem meromorphicOrderAt_inv {f : 𝕜 → 𝕜} :
     meromorphicOrderAt (f⁻¹) x = -meromorphicOrderAt f x := by
   by_cases hf : MeromorphicAt f x; swap
   · have : ¬ MeromorphicAt (f⁻¹) x := by
@@ -452,6 +487,14 @@ theorem meromorphicOrderAt_inv {f : 𝕜 → 𝕜} :
   intro _ h₁a h₂a
   simp only [Pi.inv_apply, h₁a h₂a, smul_eq_mul, mul_inv_rev, zpow_neg]
   ring
+
+/--
+The order of a quotient is the difference of the orders.
+-/
+@[to_fun] theorem meromorphicOrderAt_div {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x)
+    (hg : MeromorphicAt g x) :
+    meromorphicOrderAt (f / g) x = meromorphicOrderAt f x - meromorphicOrderAt g x := by
+  rw [div_eq_mul_inv, meromorphicOrderAt_mul hf hg.inv, meromorphicOrderAt_inv, sub_eq_add_neg]
 
 /--
 Adding a locally vanishing function does not change the order.
@@ -508,6 +551,7 @@ theorem meromorphicOrderAt_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromorph
   rw [meromorphicOrderAt_congr this, meromorphicOrderAt_smul t₀ h₁g.meromorphicAt, t₁]
   exact le_add_of_nonneg_right h₁g.meromorphicOrderAt_nonneg
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Helper lemma for meromorphicOrderAt_add_of_ne.
 -/
@@ -547,6 +591,7 @@ lemma meromorphicOrderAt_add_eq_right_of_lt (hf₁ : MeromorphicAt f₁ x)
   rw [add_comm]
   exact meromorphicOrderAt_add_eq_left_of_lt hf₁ h
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If two meromorphic functions have unequal orders, then the order of their sum is
 exactly the minimum of the orders of the summands.
@@ -583,7 +628,7 @@ theorem isClopen_setOf_meromorphicOrderAt_eq_top (hf : MeromorphicOn f U) :
       use Subtype.val ⁻¹' t'
       constructor
       · intro w hw
-        simp only [mem_compl_iff, mem_setOf_eq]
+        push _ ∈ _
         by_cases h₁w : w = z
         · rwa [h₁w]
         · rw [meromorphicOrderAt_eq_top_iff, not_eventually]

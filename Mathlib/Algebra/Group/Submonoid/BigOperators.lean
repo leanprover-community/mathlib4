@@ -145,6 +145,7 @@ end Monoid
 section CommMonoid
 variable [CommMonoid M] {x : M}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mem_closure_iff_exists_finset_subset {s : Set M} :
     x ∈ closure s ↔
@@ -170,6 +171,7 @@ lemma mem_closure_iff_exists_finset_subset {s : Set M} :
   mpr := by
     rintro ⟨n, t, hts, -, rfl⟩; exact prod_mem _ fun x hx ↦ pow_mem (subset_closure <| hts hx) _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mem_closure_finset {s : Finset M} :
     x ∈ closure s ↔ ∃ f : M → ℕ, f.support ⊆ s ∧ ∏ a ∈ s, a ^ f a = x where

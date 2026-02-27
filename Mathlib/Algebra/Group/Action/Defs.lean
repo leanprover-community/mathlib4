@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Opposites
 public import Mathlib.Tactic.Spread
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Definitions of group actions
@@ -152,7 +153,7 @@ export AddSemigroupAction (add_vadd)
 export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
-library_note2 «bundled maps over different rings» /--
+library_note «bundled maps over different rings» /--
 Frequently, we find ourselves wanting to express a bilinear map `M →ₗ[R] N →ₗ[R] P` or an
 equivalence between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')` where the maps have an associated ring
 `R`. Unfortunately, using definitions like these requires that `R` satisfy `CommSemiring R`, and
@@ -613,6 +614,7 @@ end MulDistribMulAction
 section IsCancelSMul
 
 variable (G P : Type*)
+-- TODO: IsRightCancelSmul
 
 /-- A vector addition is left-cancellative if it is pointwise injective on the left. -/
 class IsLeftCancelVAdd [VAdd G P] : Prop where

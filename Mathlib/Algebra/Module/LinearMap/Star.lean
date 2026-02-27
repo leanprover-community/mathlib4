@@ -6,7 +6,7 @@ Authors: Frédéric Dupuis
 module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Star.Basic  -- shake: keep (used in `notation` only)
 
 /-!
 # Notation for star-linear maps

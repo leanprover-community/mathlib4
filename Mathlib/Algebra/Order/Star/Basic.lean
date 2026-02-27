@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Group.Nat
@@ -409,7 +409,7 @@ instance : IsOrderedModule R A where
     obtain ⟨r, hr, rfl⟩ := hrs
     exact ⟨r • a, smul_mem_closure_star_mul hr ha, add_smul ..⟩
 
-variable [IsCancelAdd A] [NoZeroSMulDivisors R A]
+variable [IsDomain R] [IsCancelAdd A] [Module.IsTorsionFree R A]
 
 instance : PosSMulStrictMono R A where
   smul_lt_smul_of_pos_left r hr a b hab := by
@@ -450,9 +450,8 @@ lemma NonUnitalStarRingHom.map_le_map_of_map_star (f : R →⋆ₙ+* S) {x y : R
   all_goals aesop
 
 instance (priority := 100) StarRingHomClass.instOrderHomClass [FunLike F R S]
-    [NonUnitalSemiring R] [StarRing R] [StarOrderedRing R] [NonUnitalSemiring S]
-    [StarRing S] [StarOrderedRing S] [NonUnitalRingHomClass F R S]
-    [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
+    [StarOrderedRing R] [StarOrderedRing S]
+    [NonUnitalRingHomClass F R S] [NonUnitalStarRingHomClass F R S] : OrderHomClass F R S where
   map_rel f := (f : R →⋆ₙ+* S).map_le_map_of_map_star
 
 instance (priority := 100) StarRingEquivClass.instOrderIsoClass [EquivLike F R S]

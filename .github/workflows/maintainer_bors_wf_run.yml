@@ -13,9 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.MATHLIB_TRIAGE_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_TRIAGE_PRIVATE_KEY }}
+
       - name: Download artifact
         id: download-artifact
-        uses: dawidd6/action-download-artifact@0bd50d53a6d7fb5cb921e607957e9cc12b4ce392 # v12
+        uses: dawidd6/action-download-artifact@5c98f0b039f36ef966fdb7dfa9779262785ecb05 # v14
         with:
           workflow: maintainer_bors.yml
           name: workflow-data
@@ -80,7 +87,8 @@ jobs:
           issue_number: ${{ steps.extract-data.outputs.pr_number }}
           labels: '["${{ steps.extract-data.outputs.mOrD }}"]'
         env:
-          GITHUB_TOKEN: ${{ secrets.TRIAGE_TOKEN }}
+          # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
@@ -93,7 +101,7 @@ jobs:
           for label in awaiting-author maintainer-merge; do
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.extract-data.outputs.pr_number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: On bors r/d-, remove ready-to-merge or delegated label
@@ -104,14 +112,14 @@ jobs:
           for label in ready-to-merge delegated; do
             curl --request DELETE \
               --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.extract-data.outputs.pr_number }}/labels/${label}" \
-              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+              --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
       - name: Set up Python
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.extract-data.outputs.bot == 'true' ) }}
-        uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # v6.1.0
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
           python-version: '3.x'
 
@@ -126,7 +134,7 @@ jobs:
       - if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.extract-data.outputs.bot == 'true' ) }}
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: master
           sparse-checkout: |

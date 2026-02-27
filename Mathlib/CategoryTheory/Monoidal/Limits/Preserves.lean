@@ -9,9 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
-# Miscellany about preservations of (co)limits in monoidal categories
+# Miscellany about preservation of (co)limits in monoidal categories
 
-This file records some `PreservesColimits` instance on tensors products on monoidal categories. -/
+This file records some `PreservesColimits` instances on tensor products in monoidal categories. -/
 
 @[expose] public section
 

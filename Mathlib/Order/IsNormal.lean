@@ -56,11 +56,6 @@ theorem isLUB_image_Iio_of_isSuccLimit {f : α → β} (hf : IsNormal f) {a : α
   rintro - ⟨b, hb, rfl⟩
   exact (hf.1 hb).le
 
-@[deprecated "use the default constructor of `IsNormal` directly" (since := "2025-07-08")]
-theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
-    (hl : ∀ {a}, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f :=
-  ⟨hf, hl⟩
-
 theorem le_iff_forall_le (hf : IsNormal f) (ha : IsSuccLimit a) {b : β} :
     f a ≤ b ↔ ∀ a' < a, f a' ≤ b := by
   simpa [mem_upperBounds] using isLUB_le_iff (hf.isLUB_image_Iio_of_isSuccLimit ha)
@@ -111,6 +106,12 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
   simp_rw [Function.comp_apply, mem_upperBounds, forall_mem_image] at hb
   simpa [hg.le_iff_forall_le (hf.map_isSuccLimit ha), hf.lt_iff_exists_lt ha] using
     fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
+
+theorem to_Iio (hf : IsNormal f) (a : α) :
+    IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
+  rw [isNormal_iff]
+  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
+  simpa [upperBounds] using fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
 
 section WellFoundedLT
 variable [WellFoundedLT α] [SuccOrder α]

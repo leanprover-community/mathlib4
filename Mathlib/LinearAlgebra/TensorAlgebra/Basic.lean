@@ -100,6 +100,7 @@ example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra 
 
 variable {M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
 irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
@@ -175,6 +176,7 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M 
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.injective w
 
+set_option backward.isDefEq.respectTransparency false in
 -- This proof closely follows `FreeAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `TensorAlgebra R M`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `TensorAlgebra R M`.
@@ -264,6 +266,7 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x ↦ by
   simp [ιInv]
 
@@ -315,8 +318,6 @@ def tprod (n : ℕ) : MultilinearMap R (fun _ : Fin n => M) (TensorAlgebra R M) 
 @[simp]
 theorem tprod_apply {n : ℕ} (x : Fin n → M) : tprod R M n x = (List.ofFn fun i => ι R (x i)).prod :=
   rfl
-
-variable {R M}
 
 end TensorAlgebra
 
