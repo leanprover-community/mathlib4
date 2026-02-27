@@ -333,7 +333,7 @@ lemma extendCoordChange_source :
     (I.extendCoordChange e e').source = I '' (e.symm ≫ₕ e').source := by
   simp_rw [extendCoordChange, PartialEquiv.trans_source, I.image_eq, e'.extend_source,
     PartialEquiv.symm_source, e.extend_target, inter_right_comm _ (range I)]
-  rfl
+  simp [Set.preimage_comp]
 
 lemma extendCoordChange_target :
     (I.extendCoordChange e e').target = I '' (e.symm ≫ₕ e').target := by
