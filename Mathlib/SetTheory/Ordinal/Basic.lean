@@ -469,6 +469,10 @@ theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
     Set.SurjOn (typein r) Set.univ (Set.Iio (type r)) :=
   (typein r).surjOn
 
+theorem typein_lt_eq_type_Iio_lt [Preorder α] [IsWellOrder α (· < ·)] (x : α)
+    [IsWellOrder (Iio x) (· < ·)] : typein (· < ·) x = type (α := Iio x) (· < ·) :=
+  rfl
+
 /-- A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.
 `enum r ⟨o, h⟩` is the `o`-th element of `α` ordered by `r`.
 
