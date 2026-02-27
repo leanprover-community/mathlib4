@@ -187,7 +187,7 @@ def se2 (h : Conditions r p n a q μ) := (Nat.cast (R := ZMod r)) '' se1 h
 def se3 (h : Conditions r p n a q μ) :=
   f h '' Set.Icc 0 ⌊√(se2 h).ncard⌋₊ ×ˢ Set.Icc 0 ⌊√(se2 h).ncard⌋₊
 
-theorem se3_subset_se1 (h : Conditions r p n a q μ) : (se3 h) ⊆ (se1 h) := by
+theorem se3_subset_se1 (h : Conditions r p n a q μ) : se3 h ⊆ se1 h := by
   grind [se3, se1]
 
 
@@ -229,7 +229,7 @@ theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a q μ) :
   exact heq
 
 theorem se2_subset_units (h : Conditions r p n a q μ) :
-    (se2 h) ⊆ (fun x : (ZMod r)ˣ ↦ x.val) '' Set.univ := by
+    se2 h ⊆ (fun x : (ZMod r)ˣ ↦ x.val) '' Set.univ := by
   have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
     icc_coprime , icc_introspective , is_primitive_root , p_prime ,
     q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := h
@@ -335,10 +335,10 @@ theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 h)) :
   calc
     _ ≤ p ^ ⌊√↑(se2 h).ncard⌋₊ * (n / p) ^ ⌊√↑(se2 h).ncard⌋₊ :=
       Nat.mul_le_mul (Nat.pow_le_pow_right hppos ha) (Nat.pow_le_pow_right hnppos hb)
-    _ = _ := by rw [← mul_pow, Nat.mul_div_eq_iff_dvd.mpr p_dvd_n]
+    _ = _ := by rw [← mul_pow, mul_div_eq_iff_dvd.mpr p_dvd_n]
 
 theorem natDegree_eq (h : Conditions r p n a q μ) (s : Multiset (Fin (a + 1))) :
-    (sp1 h s).natDegree ≤ s.card  := by
+    (sp1 h s).natDegree ≤ s.card := by
   unfold sp1
   simp only [ofMultiset_apply, Multiset.map_map, Function.comp_apply]
   calc
@@ -351,10 +351,10 @@ theorem aux_le (h : Conditions r p n a q μ) :
   have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
     icc_coprime , icc_introspective , is_primitive_root , p_prime ,
     q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
-  have hm : ∀ a ∈ (se3 h), ↑a ∈ (se2 h) := by
+  have hm : ∀ a ∈ se3 h, ↑a ∈ se2 h := by
     unfold se3 se2 se1
     intro b _
-    have _ : b ∈ (f h) '' Set.univ := by
+    have _ : b ∈ f h '' Set.univ := by
       revert b
       exact Set.image_mono (by grind)
     grind
@@ -372,9 +372,9 @@ theorem aux_le (h : Conditions r p n a q μ) :
     simp only [Set.image_univ, IsRoot.def, Set.image_subset_iff, Set.preimage_setOf_eq, sp2]
     intro o ho
     simp only [eval_sub, eval_pow, eval_X, Set.mem_setOf_eq, sub_eq_zero]
-    have ho : o ∈ (sp1 h) '' Set.univ := by grind
-    have hi1 := (forall_in_se1_in_image_sp1_introspective h) x (by grind [se3_subset_se1]) o ho
-    have hi2 := (forall_in_se1_in_image_sp1_introspective h) y (by grind [se3_subset_se1]) o ho
+    have ho : o ∈ sp1 h '' Set.univ := by grind
+    have hi1 := forall_in_se1_in_image_sp1_introspective h x (by grind [se3_subset_se1]) o ho
+    have hi2 := forall_in_se1_in_image_sp1_introspective h y (by grind [se3_subset_se1]) o ho
     rw [← introspective_eq is_primitive_root hi1, ← introspective_eq is_primitive_root hi2]
     suffices μ ^ x = μ ^ y by rw [this]
     replace heq : x ≡ y [MOD r] := by rw [← ZMod.natCast_eq_natCast_iff x y r, heq]
@@ -395,7 +395,7 @@ theorem aux_le (h : Conditions r p n a q μ) :
     simp [mem_rootSet, hn0]
   calc
     _ ≤ _ := hrs
-    _ ≤ _ := (ncard_rootSet_le ((X : K[X]) ^ x - X ^ y) K)
+    _ ≤ _ := ncard_rootSet_le ((X : K[X]) ^ x - X ^ y) K
     _ ≤ _ := natDegree_sub_le (X ^ x) (X ^ y)
     _ ≤ max x y := by
       repeat rw [← monomial_one_right_eq_X_pow]
@@ -408,7 +408,7 @@ theorem claim6 (h : Conditions r p n a q μ) :
   have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
     icc_coprime , icc_introspective , is_primitive_root , p_prime ,
     q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
-  have hsinj : Set.InjOn (eval μ ·) ((sp1 h) '' {x | x.card ≤ (se2 h).ncard - 1}) := by
+  have hsinj : Set.InjOn (eval μ ·) (sp1 h '' {x | x.card ≤ (se2 h).ncard - 1}) := by
     intro f hf g hg heq
     by_contra! hcon
     simp only [Set.mem_image, Set.mem_setOf_eq] at hf hg heq
@@ -416,7 +416,7 @@ theorem claim6 (h : Conditions r p n a q μ) :
     obtain ⟨ hg , hg1 , hg2 ⟩ := hg
     have hk : max f.natDegree g.natDegree ≤ (se2 h).ncard - 1 := by
       grind [natDegree_eq h hf, natDegree_eq h hg]
-    refine and_not_self (a := (f - g).roots.card ≤ (se2 h).ncard - 1 ) ⟨ ?_ , ?_ ⟩
+    refine and_not_self (a := (f - g).roots.card ≤ (se2 h).ncard - 1) ⟨ ?_ , ?_ ⟩
     · calc
         _ ≤ _ := card_roots' (f-g)
         _ ≤ _ := natDegree_sub_le f g
@@ -433,7 +433,7 @@ theorem claim6 (h : Conditions r p n a q μ) :
         apply ZMod.val_injective
         refine IsPrimitiveRoot.pow_inj is_primitive_root (by grind) (by grind) hbc)
       let ss := fs.toFinset.map emb
-      have hd : ∀ s ∈ ss, eval s (f-g) = 0 := by
+      have hd : ∀ s ∈ ss, eval s (f - g) = 0 := by
         intro s hs
         simp only [emb,mem_map, Set.Finite.mem_toFinset, Function.Embedding.coeFn_mk, ss] at hs
         rw [eval_sub, sub_eq_iff_eq_add, zero_add]
@@ -455,7 +455,7 @@ theorem claim6 (h : Conditions r p n a q μ) :
       simp [hn, ss, ← Set.ncard_eq_toFinset_card]
   rw [sp2]
   refine le_trans (b := ((fun x ↦ eval μ x) '' ((sp1 h) '' {x | x.card ≤ (se2 h).ncard - 1}
-  )).ncard) ?_ (Set.ncard_le_ncard (by grind) (aux_le h).2)
+    )).ncard) ?_ (Set.ncard_le_ncard (by grind) (aux_le h).2)
   rw [hsinj.ncard_image , Set.ncard_image_of_injective _ (injective_sp1 h)]
   apply le_of_eq
   have hsiccf := Set.finite_Icc 0 ((se2 h).ncard - 1)
@@ -476,8 +476,8 @@ theorem claim6 (h : Conditions r p n a q μ) :
     ext z
     simp
   · nth_rw 3 [← Nat.sub_one_add_one (se2_ncard_ne_zero h)]
-    rw [add_assoc, add_comm 1 a, add_comm _ (a + 1), ← Nat.choose_symm_add]
-    rw[add_comm (a + 1) _, ← Nat.sum_range_multichoose]
+    rw [add_assoc, add_comm 1 a, add_comm _ (a + 1), ← choose_symm_add]
+    rw[add_comm (a + 1) _, ← sum_range_multichoose]
     have dd := finsum_mem_eq_finite_toFinset_sum (s:= Set.Icc 0 ((se2 h).ncard - 1))
         (fun i => {x : Multiset (Fin (a + 1)) | x.card = i}.ncard) hsiccf
     simp only [dd, range_succ_eq_Icc_zero, Set.toFinite_toFinset, Set.toFinset_Icc]
@@ -486,8 +486,8 @@ theorem claim6 (h : Conditions r p n a q μ) :
     simp only [mem_Icc, _root_.zero_le, true_and] at hz
     rw[← Sym.card_sym_fin_eq_multichoose, Fintype.card, ← Set.ncard_coe_finset]
     apply Set.ncard_congr'
-    exact Equiv.mk (fun x => ⟨ Sym.mk x.1 x.2 , by simp ⟩) (fun x => ⟨ x , by simp ⟩)
-      (fun _ => rfl) (fun _ => rfl)
+    exact Equiv.mk (fun x ↦ ⟨ Sym.mk x.1 x.2 , by simp ⟩) (fun x ↦ ⟨ x , by simp ⟩)
+      (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 
 theorem claim71 {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
@@ -509,7 +509,7 @@ theorem not_aux_le (h : Conditions r p n a q μ) :
   rw [← h1, ← Real.rpow_mul (by grind)]
   set e := (se2 h).ncard
   have henz : e ≠ 0 := se2_ncard_ne_zero h
-  replace h1 := Nat.lt_floor_add_one (Real.logb 2 n * √e)
+  replace h1 := lt_floor_add_one (Real.logb 2 n * √e)
   replace h1 := (Real.rpow_lt_rpow_left_iff (x := (2 : ℝ)) (by grind)).mpr h1
   have h3 : (Real.logb 2 n) ^ 2 < e := by
     apply lt_of_lt_of_le nlogb_lt_od
@@ -575,18 +575,18 @@ theorem not_aux_le (h : Conditions r p n a q μ) :
   calc
     _ = (⌊Real.logb 2 n * √e⌋₊ + (⌊Real.logb 2 n * √e⌋₊ + 1)).choose ⌊Real.logb 2 n * √e⌋₊ := by
       grind
-    _ = _ := Nat.choose_symm_add
+    _ = _ := choose_symm_add
     _ ≤ (e + ⌊Real.logb 2 n * √e⌋₊).choose (⌊Real.logb 2 n * √e⌋₊ + 1) := by
-      apply Nat.choose_le_choose
+      apply choose_le_choose
       grind
     _ = (e + ⌊Real.logb 2 n * √e⌋₊).choose (e - 1) := by
-      apply Nat.choose_symm_of_eq_add
+      apply choose_symm_of_eq_add
       grind
     _ ≤ _ := by
       apply choose_le_choose
       suffices ⌊Real.logb 2 ↑n * √↑e⌋₊ ≤ a by grind
       rw [a_def, mul_comm]
-      apply Nat.floor_le_floor
+      apply floor_le_floor
       refine mul_le_mul_of_nonneg_right ?_ logb_pos
       apply Real.sqrt_le_sqrt
       exact_mod_cast h2
@@ -624,10 +624,10 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
   set K := (AlgebraicClosure (ZMod p))
   have nz : NeZero (r:K) := by
     apply NeZero.of_not_dvd K
-    exact (Nat.Prime.coprime_iff_not_dvd (n:=r) pp).mp (Coprime.coprime_dvd_left hp hc)
+    exact (Nat.Prime.coprime_iff_not_dvd (n := r) pp).mp (Coprime.coprime_dvd_left hp hc)
   have nz1 : NeZero r := NeZero.of_neZero_natCast K
   have henough : HasEnoughRootsOfUnity K r := inferInstance
-  obtain ⟨ ν , hν ⟩  := henough.1
+  obtain ⟨ ν , hν ⟩ := henough.1
   refine AKS.aux (AKS.Conditions.mk hc hn ha hod hc2 ?_ hν pp pq hp hq hpq)
   intro ⟨ y, hyy⟩
   unfold AKS.introspective
