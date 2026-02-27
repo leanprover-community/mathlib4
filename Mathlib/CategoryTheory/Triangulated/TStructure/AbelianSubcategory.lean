@@ -36,7 +36,7 @@ namespace Triangulated
 
 variable {C A : Type*} [Category* C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
-  [Category A] {ι : A ⥤ C}
+  [Category* A] {ι : A ⥤ C}
 
 namespace AbelianSubcategory
 
