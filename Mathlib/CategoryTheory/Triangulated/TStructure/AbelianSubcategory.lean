@@ -44,7 +44,7 @@ variable (hι : ∀ ⦃X Y : A⦄ ⦃n : ℤ⦄ (f : ι.obj X ⟶ (ι.obj Y)⟦n
 
 include hι in
 omit [HasZeroObject C] [Pretriangulated C] in
-lemma vanishing_from_positive_shift
+lemma eq_zero_of_hom_shift_pos
     {X Y : A} {n : ℤ} (f : (ι.obj X)⟦n⟧ ⟶ ι.obj Y) (hn : 0 < n) :
     f = 0 :=
   (shiftFunctor C (-n)).map_injective (by
@@ -109,12 +109,12 @@ lemma mono_ιK : Mono (ιK f₃ α) := by
   simp only [Functor.comp_obj, Functor.comp_map, Functor.map_comp,
     shift_ι_map_ιK, Functor.map_zero, ← assoc] at hk ⊢
   obtain ⟨l, hl⟩ := Triangle.coyoneda_exact₃ _ hT _ hk
-  rw [vanishing_from_positive_shift hι l (by lia), zero_comp] at hl
+  rw [eq_zero_of_hom_shift_pos hι l (by lia), zero_comp] at hl
   obtain ⟨m, hm⟩ := Triangle.coyoneda_exact₁ _ hT' ((ι.map k)⟦(1 : ℤ)⟧'⟦(1 : ℤ)⟧')
     (by simp [← Functor.map_comp, hl])
   obtain rfl : m = 0 := by
     rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by lia)).hom.app _), comp_zero]
-    exact vanishing_from_positive_shift hι _ (by lia)
+    exact eq_zero_of_hom_shift_pos hι _ (by lia)
   rw [zero_comp] at hm
   exact (shiftFunctor C (1 : ℤ)).map_injective (by rw [hm, Functor.map_zero])
 
@@ -124,11 +124,11 @@ lemma epi_πQ : Epi (πQ f₂ β) := by
   replace hk := ι.congr_map hk
   simp only [Functor.map_comp, ι_map_πQ, assoc, Functor.map_zero] at hk
   obtain ⟨l, hl⟩ := Triangle.yoneda_exact₃ _ hT _ hk
-  rw [vanishing_from_positive_shift hι l (by lia), comp_zero] at hl
+  rw [eq_zero_of_hom_shift_pos hι l (by lia), comp_zero] at hl
   obtain ⟨m, hm⟩ := Triangle.yoneda_exact₃ _ hT' (ι.map k) hl
   obtain rfl : m = 0 := by
     rw [← cancel_epi ((shiftFunctorAdd' C (1 : ℤ) 1 2 (by lia)).hom.app _), comp_zero]
-    exact vanishing_from_positive_shift hι _ (by lia)
+    exact eq_zero_of_hom_shift_pos hι _ (by lia)
   exact ι.map_injective (by rw [hm, comp_zero, ι.map_zero])
 
 lemma exists_lift_ιK {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
@@ -143,7 +143,7 @@ lemma exists_lift_ιK {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
   obtain ⟨x₃, hx₃⟩ := Triangle.coyoneda_exact₁ _ hT ((ι.map x₁)⟦(1 : ℤ)⟧')
     (by simp [← Functor.map_comp, hx₁])
   obtain ⟨k', hk'⟩ := Triangle.coyoneda_exact₂ _ hT' x₃
-    (vanishing_from_positive_shift hι _ (by lia))
+    (eq_zero_of_hom_shift_pos hι _ (by lia))
   exact ⟨k', by cat_disch⟩
 
 /-- `ιK` is a kernel. -/
@@ -158,7 +158,7 @@ lemma exists_desc_πQ {B : A} (x₂ : X₂ ⟶ B) (hx₂ : f₁ ≫ x₂ = 0) :
     ∃ (k : Q ⟶ B), πQ f₂ β ≫ k = x₂ := by
   obtain ⟨x₁, hx₁⟩ := Triangle.yoneda_exact₂ _ hT (ι.map x₂) (by simp [← ι.map_comp, hx₂])
   obtain ⟨k, hk⟩ := Triangle.yoneda_exact₂ _ hT' x₁
-    (vanishing_from_positive_shift hι _ (by lia))
+    (eq_zero_of_hom_shift_pos hι _ (by lia))
   exact ⟨ι.preimage k, ι.map_injective (by cat_disch)⟩
 
 /-- `πQ` is a cokernel. -/
@@ -251,9 +251,7 @@ noncomputable def isColimitCokernelCoforkOfDistTriang {X₁ X₂ X₃ : A}
         Functor.map_zero, Functor.map_zero]
     · dsimp
       rw [IsZero.iff_id_eq_zero, ← Functor.map_id, id_zero, Functor.map_zero]
-    · simp
-    · simp
-    · simp
+    all_goals simp
   refine IsColimit.ofIsoColimit (AbelianSubcategory.isColimitCokernelCofork hι hT hT') ?_
   exact Cofork.ext (Iso.refl _) (ι.map_injective (by simp))
 
