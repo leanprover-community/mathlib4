@@ -678,6 +678,11 @@ theorem Subgroup.topologicalClosure_minimal (s : Subgroup G) {t : Subgroup G} (h
     (ht : IsClosed (t : Set G)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[to_additive (attr := gcongr)]
+theorem Subgroup.topologicalClosure_mono {s t : Subgroup G} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 @[to_additive]
 theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H]
     [IsTopologicalGroup H] {f : G →* H} (hf : Continuous f) (hf' : DenseRange f) {s : Subgroup G}

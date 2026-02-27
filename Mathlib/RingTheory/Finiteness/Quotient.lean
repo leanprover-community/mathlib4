@@ -37,5 +37,5 @@ instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B
 instance QuotientMapQuotient.isNoetherian [IsNoetherian A B] :
     IsNoetherian (A ⧸ p) (B ⧸ p.map (algebraMap A B)) :=
   isNoetherian_of_tower A <|
-    isNoetherian_of_surjective B (Ideal.Quotient.mkₐ A _).toLinearMap <|
+    isNoetherian_of_surjective (Ideal.Quotient.mkₐ A _).toLinearMap <|
       LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective
