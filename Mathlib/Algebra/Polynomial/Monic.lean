@@ -218,6 +218,28 @@ theorem Monic.eq_one_of_isUnit (hm : Monic p) (hpu : IsUnit p) : p = 1 := by
 theorem Monic.isUnit_iff (hm : p.Monic) : IsUnit p ↔ p = 1 :=
   ⟨hm.eq_one_of_isUnit, fun h => h.symm ▸ isUnit_one⟩
 
+/-- A reducible monic polynomial can be written as a product of monic polynomials -/
+lemma Monic.irreducible_iff {p : ℤ[X]} (hp : p.Monic) :
+    Irreducible p ↔ ¬IsUnit p ∧ ∀ ⦃a b : ℤ[X]⦄,
+      a.Monic → b.Monic → p = a * b → IsUnit a ∨ IsUnit b := by
+  constructor
+  · intros hp_irred
+    rw [_root_.irreducible_iff] at hp_irred
+    exact ⟨hp_irred.1, fun a b ha hb hab ↦ hp_irred.2 hab⟩
+  · contrapose!
+    intros hp_irred hp_unit
+    rw [_root_.irreducible_iff] at hp_irred
+    push_neg at hp_irred
+    obtain ⟨a, b, rfl, ha, hb⟩ := hp_irred hp_unit
+    refine ⟨(C b.leadingCoeff) * a, C a.leadingCoeff * b, ?_, ?_, ?_, ?_, ?_⟩
+    · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul, mul_comm]
+    · rwa [Monic, leadingCoeff_mul, leadingCoeff_C, ← leadingCoeff_mul]
+    · ring_nf
+      rw [mul_assoc, ← C_mul, mul_comm b.leadingCoeff, ← leadingCoeff_mul, hp.leadingCoeff,
+        eq_intCast, Int.cast_one, mul_one]
+    · simp [ha]
+    · simp [hb]
+
 theorem eq_of_monic_of_associated (hp : p.Monic) (hq : q.Monic) (hpq : Associated p q) : p = q := by
   obtain ⟨u, rfl⟩ := hpq
   rw [(hp.of_mul_monic_left hq).eq_one_of_isUnit u.isUnit, mul_one]
