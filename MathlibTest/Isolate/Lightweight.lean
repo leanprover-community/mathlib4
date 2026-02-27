@@ -99,7 +99,7 @@ example {x y : ℝ} : x + 3 = y := by
 -- isolate on the RHS of a symmetric relation
 example {x y z : ℝ} (_hy : 0 < y) : z = (x + 3) * y ^ 2 - 2 := by
   isolate x + 3
-  guard_target = x + 3 = (z + 2) / y ^ 2
+  guard_target = (z + 2) / y ^ 2 = x + 3
   exact test_sorry
 
 -- isolation of an expression will proceed as far as possible, even if the expression cannot be
@@ -179,6 +179,20 @@ theorem foo (a b c : Nat) : Prime a ↔ a = b + c := test_sorry
 #guard_msgs in
 @[isolate]
 theorem eq_add_right_iff [AddGroup X] (a b c : X) : c = a + b ↔ a = c - b := test_sorry
+
+/--
+error: Since the relation Eq in a + b =
+  c is symmetric, the @[isolate] attribute expects that the relation LE.le in a ≤ c - b should also be symmetric.
+-/
+#guard_msgs in
+@[isolate]
+theorem this_is_false [AddGroup X] [LE X] (a b c : X) : a + b = c ↔ a ≤ c - b :=
+  test_sorry
+
+/-- error: Please rephrase this lemma in the symmetric form _ ↔ a ~ c - b. -/
+#guard_msgs in
+@[isolate]
+theorem add_right_eq_iff [AddGroup X] (a b c : X) : a + b = c ↔ c - b = a := test_sorry
 
 /-- error: f should be a concrete function, for example it cannot be a variable -/
 #guard_msgs in

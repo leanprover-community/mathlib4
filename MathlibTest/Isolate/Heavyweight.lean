@@ -31,10 +31,10 @@ example {x : ℝ} : log (exp (x - 3) + 2) < 11 := by
   guard_target = 0 < exp 11 - 2
   exact test_sorry
 
-example {t : ℝ} (ht : 10 ≤ t) : (√t - 3) ^ (3:ℝ) = 1 := by
+example {t : ℝ} (ht : 10 ≤ t) : 1 = (√t - 3) ^ (3:ℝ) := by
   isolate t
   · norm_num
-    guard_target = t = 16
+    guard_target = 16 = t
     exact test_sorry
   isolate t
   norm_num
