@@ -101,11 +101,11 @@ instance : LieAlgebra R (H ⋊⁅ψ⁆ G) where
     simp [toProd_smul, smul_sub, smul_add]
 
 /-- The canonical inclusion of H into the semi-direct sum H ⋊⁅ψ⁆ G. -/
-def in_left : H →ₗ⁅R⁆ (H ⋊⁅ψ⁆ G) where
-  toFun x := toProd.symm (x ,0)
+def inl : H →ₗ⁅R⁆ H ⋊⁅ψ⁆ G where
+  toFun x := toProd.symm (x, 0)
   map_add' _ _ := toProd.injective <| by simp
   map_smul' _ _ := toProd.injective <| by simp
-  map_lie' {_ _}:= toProd.injective <| by simp
+  map_lie' := toProd.injective <| by simp
 
 @[simp]
 lemma inl_injective : Function.Injective (inl ψ) := by intro; simp [inl]
