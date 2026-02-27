@@ -435,7 +435,7 @@ private theorem claim6 (h : Conditions r p n a q μ) :
       let ss := fs.toFinset.map emb
       have hd : ∀ s ∈ ss, eval s (f - g) = 0 := by
         intro s hs
-        simp only [emb,mem_map, Set.Finite.mem_toFinset, Function.Embedding.coeFn_mk, ss] at hs
+        simp only [emb, mem_map, Set.Finite.mem_toFinset, Function.Embedding.coeFn_mk, ss] at hs
         rw [eval_sub, sub_eq_iff_eq_add, zero_add]
         obtain ⟨ m, hm, hs ⟩ := hs
         simp only [se2, Set.mem_image] at hm
@@ -443,8 +443,8 @@ private theorem claim6 (h : Conditions r p n a q μ) :
         have ht : μ ^ (e : (ZMod r)).val = μ ^ e := by
           refine pow_eq_pow_of_modEq ?_ is_primitive_root.pow_eq_one
           simp [ModEq]
-        have hif := ((forall_in_se1_in_image_sp1_introspective h) e he1 ((sp1 h) hf) (by grind))
-        have hig := ((forall_in_se1_in_image_sp1_introspective h) e he1 ((sp1 h) hg) (by grind))
+        have hif := (forall_in_se1_in_image_sp1_introspective h) e he1 (sp1 h hf) (by grind)
+        have hig := (forall_in_se1_in_image_sp1_introspective h) e he1 (sp1 h hg) (by grind)
         rw [← hs, ← hf2, ← hg2, ← he2, ht, introspective_eq is_primitive_root hif,
           introspective_eq is_primitive_root hig]
         grind
@@ -454,7 +454,7 @@ private theorem claim6 (h : Conditions r p n a q μ) :
       have hn := roots_eq_of_natDegree_le_card_of_ne_zero hd hs (by grind)
       simp [hn, ss, ← Set.ncard_eq_toFinset_card]
   rw [sp2]
-  refine le_trans (b := ((fun x ↦ eval μ x) '' ((sp1 h) '' {x | x.card ≤ (se2 h).ncard - 1}
+  refine le_trans (b := ((eval μ ·) '' (sp1 h '' {x | x.card ≤ (se2 h).ncard - 1}
     )).ncard) ?_ (Set.ncard_le_ncard (by grind) (aux_le h).2)
   rw [hsinj.ncard_image , Set.ncard_image_of_injective _ (injective_sp1 h)]
   apply le_of_eq
