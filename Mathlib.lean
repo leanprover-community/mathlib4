@@ -696,6 +696,7 @@ public import Mathlib.Algebra.Lie.Normalizer
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Quotient
 public import Mathlib.Algebra.Lie.Rank
+public import Mathlib.Algebra.Lie.SemiDirect
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.Algebra.Lie.Semisimple.Defs
 public import Mathlib.Algebra.Lie.Semisimple.Lemmas
