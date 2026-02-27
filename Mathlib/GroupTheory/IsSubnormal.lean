@@ -267,7 +267,6 @@ lemma quotient [K.Normal] (hS : H.IsSubnormal) :
 @[to_additive /-- The inverse image of a subnormal additive subgroup under an additive group
 homomorphism is a subnormal additive subgroup. -/]
 protected
-nonrec
 lemma comap {G'} [Group G'] {H' : Subgroup G'} (f : G →* G') (h : H'.IsSubnormal) :
     (comap f H').IsSubnormal := by
   induction h with
