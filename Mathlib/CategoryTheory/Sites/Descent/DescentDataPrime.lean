@@ -89,22 +89,22 @@ lemma pullHom'₂₃_eq_pullHom_of_chosenPullback₃ (i₁ i₂ i₃ : ι) :
 
 @[reassoc]
 lemma pullHom_pullHom' ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S)
-  ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂)
-  (hq : g ≫ q = q' := by cat_disch)
-  (hf₁ : f₁ ≫ f i₁ = q := by cat_disch) (hf₂ : f₂ ≫ f i₂ = q := by cat_disch)
-  (hgf₁ : g ≫ f₁ = gf₁ := by cat_disch) (hgf₂ : g ≫ f₂ = gf₂ := by cat_disch) :
-  pullHom (pullHom' hom q f₁ f₂ hf₁ hf₂) g gf₁ gf₂ =
-    pullHom' hom q' gf₁ gf₂ := by
-let p := (sq i₁ i₂).isPullback.lift f₁ f₂ (by cat_disch)
-rw [pullHom'_eq_pullHom _ _ _ _ p, pullHom'_eq_pullHom _ _ _ _ (g ≫ p)]
-dsimp [pullHom]
-simp only [Functor.map_comp, Category.assoc]
-rw [F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc
-  _ _ _ _ _ _ (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_fst])
-  rfl (by cat_disch),
-  F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _
-    (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_snd]) rfl (by cat_disch)]
-simp
+    ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂)
+    (hq : g ≫ q = q' := by cat_disch)
+    (hf₁ : f₁ ≫ f i₁ = q := by cat_disch) (hf₂ : f₂ ≫ f i₂ = q := by cat_disch)
+    (hgf₁ : g ≫ f₁ = gf₁ := by cat_disch) (hgf₂ : g ≫ f₂ = gf₂ := by cat_disch) :
+    pullHom (pullHom' hom q f₁ f₂ hf₁ hf₂) g gf₁ gf₂ =
+      pullHom' hom q' gf₁ gf₂ := by
+  let p := (sq i₁ i₂).isPullback.lift f₁ f₂ (by cat_disch)
+  rw [pullHom'_eq_pullHom _ _ _ _ p, pullHom'_eq_pullHom _ _ _ _ (g ≫ p)]
+  dsimp [pullHom]
+  simp only [Functor.map_comp, Category.assoc]
+  rw [F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc
+    _ _ _ _ _ _ (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_fst])
+    rfl (by cat_disch),
+    F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _
+      (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_snd]) rfl (by cat_disch)]
+  simp
 
 end
 
