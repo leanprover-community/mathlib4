@@ -835,7 +835,7 @@ theorem tendsto_addHaar_inter_smul_one_of_density_one (s : Set E) (x : E)
   congr 1
   apply measure_toMeasurable_inter_of_sFinite
   simp only [image_add_left, singleton_add]
-  apply (continuous_add_left (-x)).measurable (ht.const_smul₀ r)
+  apply (continuous_const_add (-x)).measurable (ht.const_smul₀ r)
 
 /-- Consider a point `x` at which a set `s` has density one, with respect to closed balls (i.e.,
 a Lebesgue density point of `s`). Then `s` intersects the rescaled copies `{x} + r • t` of a given

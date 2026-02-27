@@ -300,7 +300,6 @@ theorem integrableOn_theta_div_id_mul_log_sq (x : ℝ) :
   have : x * log x ^ 2 ≠ 0 := mul_ne_zero this <| by simp; grind
   fun_prop (disch := assumption)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Expresses the prime counting function `π` in terms of `θ` by using Abel summation. -/
 theorem primeCounting_eq_theta_div_log_add_integral {x : ℝ} (hx : 2 ≤ x) :
     π ⌊x⌋₊ = θ x / log x + ∫ t in 2..x, θ t / (t * log t ^ 2) := by
