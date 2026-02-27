@@ -51,6 +51,20 @@ lemma liftCycles_comp_homologyπ_eq_iff_up_to_refinements
   subst hi'
   apply (K.sc i).liftCycles_comp_homologyπ_eq_iff_up_to_refinements
 
+lemma comp_homologyπ_eq_zero_iff_up_to_refinements
+    {A : C} {i : ι} (z : A ⟶ K.cycles i) (j : ι) (hj : c.prev i = j) :
+    z ≫ K.homologyπ i = 0 ↔
+      ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ K.X j), π ≫ z = x ≫ K.toCycles j i := by
+  subst hj
+  apply ShortComplex.comp_homologyπ_eq_zero_iff_up_to_refinements
+
+lemma comp_pOpcycles_eq_zero_iff_up_to_refinements
+      {A : C} {i : ι} (z : A ⟶ K.X i) (j : ι) (hj : c.prev i = j) :
+      z ≫ K.pOpcycles i = 0 ↔
+        ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ K.X j), π ≫ z = x ≫ K.d j i := by
+  subst hj
+  apply (K.sc i).comp_pOpcycles_eq_zero_iff_up_to_refinements
+
 variable {K L}
 
 lemma mono_homologyMap_iff_up_to_refinements (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k) :
