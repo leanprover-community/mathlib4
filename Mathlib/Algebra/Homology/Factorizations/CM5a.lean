@@ -5,7 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 public import Mathlib.Algebra.Homology.Refinements
 public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
@@ -24,11 +26,13 @@ on the available bounds for `K` and `L`).
 
 -/
 
-open CategoryTheory Limits Opposite Abelian HomologicalComplex
+open CategoryTheory Limits Opposite Abelian HomologicalComplex Pretriangulated
+
+variable {C : Type*} [Category* C]
 
 namespace HomologicalComplex
 
-instance {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
+instance [HasZeroMorphisms C] [HasZeroObject C]
     {ι : Type*} [DecidableEq ι] (c : ComplexShape ι) (i j : ι) (I : C)
     [Injective I] :
     Injective (((single C c i).obj I).X j) := by
@@ -40,7 +44,7 @@ instance {C : Type*} [Category* C] [HasZeroMorphisms C] [HasZeroObject C]
 
 end HomologicalComplex
 
-variable {C : Type*} [Category* C] [Abelian C] [EnoughInjectives C]
+variable [Abelian C] [EnoughInjectives C]
 
 namespace CochainComplex.Plus.modelCategoryQuillen
 
@@ -170,10 +174,184 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     fun i hi ↦ isIso_π_f K L n₁ i (by lia),
     inferInstance⟩
 
+namespace step₂
+
+open HomComplex
+
+variable (n : ℤ)
+
+omit [EnoughInjectives C] in
+lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
+  exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
+
+noncomputable abbrev S :=
+  (single C (.up ℤ) n).obj (Injective.under (((cokernel f).truncGE n).X n))
+
+noncomputable def p : (cokernel f).truncGE n ⟶ S f n :=
+  mkHomToSingle (Injective.ι _) (fun i hi ↦ by
+    simp only [ComplexShape.up_Rel] at hi
+    exact (isZero_of_isStrictlyGE _ n _ (by lia)).eq_of_src _ _)
+
+instance : Mono ((p f n).f n) := by
+  simp only [p, mkHomToSingle_f, mono_comp_iff_of_mono]
+  infer_instance
+
+noncomputable def α : L ⟶ S f n := cokernel.π f ≫ (cokernel f).πTruncGE n ≫ p f n
+
+@[reassoc (attr := simp)]
+lemma comp_α : f ≫ α f n = 0 := by simp [α]
+
+@[reassoc (attr := simp)]
+lemma comp_α_f (i : ℤ) : f.f i ≫ (α f n).f i = 0 := by simp [← comp_f]
+
+noncomputable abbrev mid := (mappingCone (α f n))⟦(-1 : ℤ)⟧
+
+noncomputable def ι' : Cocycle K (mappingCone (α f n)) (-1) :=
+  mappingCone.liftCocycle (α f n) (Cocycle.ofHom f) 0 (neg_add_cancel 1) (by cat_disch)
+
+noncomputable def ι : K ⟶ mid f n :=
+  ((ι' f n).rightShift (-1) 0 (zero_add _)).homOf
+
+noncomputable def π : mid f n ⟶ L :=
+  -((mappingCone.fst (α f n)).leftShift (-1) 0 (add_neg_cancel 1)).homOf
+
+noncomputable def inl (q : ℤ) : L.X q ⟶ (mid f n).X q :=
+  (mappingCone.inl (α f n)).v _ _ rfl
+
+noncomputable def inr (p q : ℤ) (hpq : p + 1 = q) : (S f n).X p ⟶ (mid f n).X q :=
+  ((Cochain.ofHom (mappingCone.inr (α f n))).rightShift (-1) 1 (by lia)).v p q hpq
+
+noncomputable def snd (p q : ℤ) (hpq : q + 1 = p) : (mid f n).X p ⟶ (S f n).X q :=
+  (mappingCone.snd (α f n)).v _ _ (by lia)
+
+@[reassoc (attr := simp)]
+lemma inl_π_f (p : ℤ) :
+    inl f n p ≫ (π f n).f p = 𝟙 _ := by
+  simp [inl, π, Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia)]
+
+@[reassoc (attr := simp)]
+lemma inl_snd (p q : ℤ) (hpq : q + 1 = p) :
+    inl f n p ≫ snd f n p q hpq = 0 := by
+  obtain rfl : q = p + -1 := by lia
+  simp [inl, snd]
+
+@[reassoc (attr := simp)]
+lemma inr_π_f (p q : ℤ) (hpq : p + 1 = q) :
+    inr f n p q hpq ≫ (π f n).f q = 0 := by
+  simp [inr, π, Cochain.rightShift_v (n := 0) _ _ _ _ p _ _ p (by lia),
+    Cochain.leftShift_v (n := 1) _ _ _ _ _ _ _ _ hpq]
+
+@[reassoc (attr := simp)]
+lemma inr_snd (p q : ℤ) (hpq : p + 1 = q) :
+    inr f n p q hpq ≫ snd f n q p hpq = 𝟙 _ := by
+  obtain rfl : p = q + -1 := by lia
+  simp [inr, snd, Cochain.rightShift_v (n := 0) _ _ _ _ _ _ _ _ (add_zero _)]
+
+@[reassoc (attr := simp)]
+lemma ι_π : ι f n ≫ π f n = f := by
+  ext i
+  simp [ι, ι', π, Cochain.rightShift_v (n := -1) _ (-1) 0 _ i i _ (i + -1) (by lia),
+    Cochain.leftShift_v (n := 1) _ _ _ _ _ i _ (i + -1) (by lia)]
+
+@[simp]
+lemma id (p q : ℤ) (hpq : q + 1 = p) :
+    (π f n).f p ≫ inl f n p + snd f n p q hpq ≫ inr f n q p hpq = 𝟙 _ := by
+  obtain rfl : q = p + -1 := by lia
+  simpa [π, inr, Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia),
+    Cochain.rightShift_v (n := 0) _ _ _ _ (p + -1) _ _ (p + -1) (by lia)] using
+    mappingCone.id_X (α f n) (p + -1) p (by lia)
+
+instance [Mono f] : Mono (ι f n) := mono_of_mono_fac (ι_π f n)
+
+lemma degreewiseEpiWithInjectiveKernel_π :
+    degreewiseEpiWithInjectiveKernel (π f n) := by
+  intro i
+  rw [epiWithInjectiveKernel_iff]
+  refine ⟨_, inferInstance, inr f n (i - 1) i (by lia), by simp,
+    ⟨{r := snd f n i (i - 1) (by lia)
+      s := inl f n i
+      f_r := by simp
+      s_g := by simp
+      id := (add_comm _ _).trans (id f n i (i - 1) (by lia)) }⟩⟩
+
+lemma isIso_π_f (i : ℤ) (hi : i ≤ n) : IsIso ((π f n).f i) := by
+  refine ⟨inl f n i, ?_, by simp⟩
+  simp only [← id f n i (i - 1) (by lia), left_eq_add, comp_zero,
+    (isZero_single_obj_X _ _ _ _ (by lia)).eq_of_src (inr f n (i - 1) i (by lia)) 0]
+
+noncomputable def δ : S f n ⟶ (mid f n)⟦(1 : ℤ)⟧ :=
+  -- sign?_
+  (mappingCone.triangle (α f n)).mor₂ ≫
+    (shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).inv.app _
+
+@[simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃]
+noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
+  Triangle.mk (π f n) (α f n) (δ f n)
+
+noncomputable def rotateTriangleIso :
+    (triangle f n).rotate ≅ mappingCone.triangle (α f n) := by
+  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+    ((shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).app _) ?_ ?_ ?_
+  · dsimp
+    simp
+  · dsimp
+    simp [δ]
+  · dsimp
+    ext p
+    simp [π, mappingCone.triangle, Cochain.leftShift_v _ _ _ _ _ _ _ _ rfl,
+      Cochain.rightShift_v _ _ _ _ _ _ _ _ rfl,
+      shiftFunctorCompIsoId, shiftFunctorAdd'_inv_app_f', shiftFunctorZero_hom_app_f]
+
+lemma triangle_distinguished [HasDerivedCategory C] :
+    DerivedCategory.Q.mapTriangle.obj (triangle f n) ∈ distTriang _ := by
+  sorry
+
+variable (hf : ∀ i < n, QuasiIsoAt f i)
+
+include hf
+omit [EnoughInjectives C] in
+lemma isGE_cokernel [Mono f] [Mono (homologyMap f n)] : (cokernel f).IsGE n := by
+  rw [isGE_iff]
+  intro i hi
+  rw [exactAt_iff_isZero_homology]
+  refine ((shortExact f).homology_exact₃ i (i + 1) (by simp)).isZero_X₂ ?_ ?_
+  · have := hf i hi
+    rw [← ((shortExact f).homology_exact₂ i).epi_f_iff]
+    infer_instance
+  · rw [← ((shortExact f).homology_exact₁ i (i + 1) (by simp)).mono_g_iff]
+    dsimp
+    by_cases hi' : i + 1 < n
+    · have := hf (i + 1) (by lia)
+      infer_instance
+    · obtain rfl : n = i + 1 := by lia
+      infer_instance
+
+omit [EnoughInjectives C] in
+lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
+    QuasiIso ((cokernel f).πTruncGE n) := by
+  rw [quasiIso_πTruncGE_iff]
+  exact isGE_cokernel f n hf
+
+include hf in
+lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (i : ℤ) (hi : i ≤ n) :
+    QuasiIsoAt (ι f n) i := by
+  obtain hi | rfl := hi.lt_or_eq'
+  · sorry
+  · let S₁ := ShortComplex.mk (homologyMap (π f n) n) (homologyMap (α f n) n) (by
+      simp only [← homologyMap_comp]
+      sorry)
+    sorry
+
+end step₂
+
+open step₂ in
 lemma step₂ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) [Mono (homologyMap f n₁)] :
-    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₁ F := by
-  sorry
+    ∃ (F : (cofFib f).FullSubcategory), quasiIsoLE n₁ F ∧ isIsoLE n₁ F :=
+  ⟨.mk { mid := mid f n₁, ι := ι f n₁, π := π f n₁}
+    ⟨inferInstance, degreewiseEpiWithInjectiveKernel_π f n₁⟩,
+    fun i hi ↦ quasiIsoAt_ι f n₁ (fun j hj ↦ hf j (by lia)) _ hi,
+    isIso_π_f f n₁⟩
 
 lemma step [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
     (hf : ∀ i ≤ n₀, QuasiIsoAt f i) :
