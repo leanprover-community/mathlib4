@@ -457,27 +457,37 @@ lemma of_iso' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y
 
 section
 
-variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X} [Epi f]
+variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X}
 
-lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) : IsIso inl :=
-  h.cocone.isIso_inl_of_epi_of_isColimit h.isColimit
+lemma isIso_inl_iso_of_epi (h : IsPushout f f inl inr) (inst : Epi f := by infer_instance) :
+    IsIso inl := h.cocone.isIso_inl_of_epi_of_isColimit h.isColimit
 
-lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) : IsIso inr :=
-  h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
+lemma isIso_inr_iso_of_epi (h : IsPushout f f inl inr) (inst : Epi f := by infer_instance) :
+    IsIso inr := h.cocone.isIso_inr_of_epi_of_isColimit h.isColimit
 
 end
 
 section
 
-lemma isIso_inl_of_isIso (h : IsPushout f g inl inr) [IsIso g] : IsIso inl := by
+lemma epi_inl_of_epi (h : IsPushout f g inl inr) (inst : Epi g := by infer_instance) :
+    Epi inl := by
+  constructor
+  intro W fst' snd' heq
+  apply h.hom_ext heq
+  rw [← cancel_epi g]
+  simp [← h.w_assoc,heq]
+
+lemma epi_inr_of_epi (h : IsPushout f g inl inr) (inst : Epi f := by infer_instance) :
+    Epi inr := h.flip.epi_inl_of_epi
+
+lemma isIso_inl_of_isIso (h : IsPushout f g inl inr) (inst : IsIso g := by infer_instance) :
+    IsIso inl := by
   have := h.hasPushout
   rw [← h.inl_isoPushout_inv]
   infer_instance
 
-lemma isIso_inr_of_isIso (h : IsPushout f g inl inr) [IsIso f] : IsIso inr := by
-  have := h.hasPushout
-  rw [← h.inr_isoPushout_inv]
-  infer_instance
+lemma isIso_inr_of_isIso (h : IsPushout f g inl inr) (inst : IsIso f := by infer_instance) :
+    IsIso inr := h.flip.isIso_inl_of_isIso
 
 end
 
