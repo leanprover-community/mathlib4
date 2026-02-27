@@ -66,14 +66,12 @@ private def extractInstName (s : String) : String :=
     | _ => s
   | _ => s
 
-/-- Only applies `f` to `Meta.isDefEq` trace nodes. if `skipRetry` is `true` (the default), skips
-`Meta.isDefEq.onFailure` nodes. -/
-@[inline] def onlyOnDefEqNodes {m} [Monad m] {α}
-    (f : TraceData → MessageData → Array MessageData → m (VisitStep α))
-    (skipRetry := true) :
+/-- Only applies `f` to `Meta.isDefEq` trace nodes. Skips `Meta.isDefEq.onFailure` nodes. -/
+@[inline] private def onlyOnDefEqNodes {m} [Monad m] {α}
+    (f : TraceData → MessageData → Array MessageData → m (VisitStep α)) :
     TraceData → MessageData → Array MessageData → m (VisitStep α) :=
   fun td header children => do
-    if skipRetry && td.cls == `Meta.isDefEq.onFailure then return .ascend
+    if td.cls == `Meta.isDefEq.onFailure then return .ascend
     unless (`Meta.isDefEq).isPrefixOf td.cls do return .descend
     f td header children
 
