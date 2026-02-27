@@ -460,11 +460,11 @@ private theorem claim6 (h : Conditions r p n a q μ) :
     intro z _
     exact Finite.of_equiv (Sym (Fin (a + 1)) z) (Equiv.cast rfl)
   have key2 : (Set.Icc 0 ((se2 h).ncard - 1)).PairwiseDisjoint
-      fun y ↦ {x : Multiset (Fin (a+1)) | x.card = y} := by
+      fun y ↦ {x : Multiset (Fin (a + 1)) | x.card = y} := by
     intro x hx y hy hne
     grind
   have key := Set.Finite.ncard_biUnion
-      (s:= (fun y ↦ {x : Multiset (Fin (a+1)) | x.card = y})) hsiccf key1 key2
+      (s := fun y ↦ {x : Multiset (Fin (a+1)) | x.card = y}) hsiccf key1 key2
   symm
   revert key
   refine (Eq.congr ?_ ?_).mp
@@ -530,7 +530,7 @@ private theorem not_aux_le (h : Conditions r p n a q μ) :
     apply le_floor
     suffices 2 ≤ (Real.logb 2 n) ^ 2 by
       grind [(le_trans this), sq, mul_le_mul_iff_of_pos_left logb_pos, Real.le_sqrt' logb_pos]
-    suffices 3/2 ≤ Real.logb 2 n by
+    suffices 3 / 2 ≤ Real.logb 2 n by
       calc
         (2 : ℝ) ≤ (3 / 2) ^ 2 := by norm_num
         _ ≤ _ := pow_le_pow_left₀ (by norm_num) this 2
