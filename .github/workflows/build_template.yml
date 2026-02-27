@@ -742,6 +742,14 @@ jobs:
           print(f"jwt_aud={aud}")
           print(f"jwt_iss={payload.get('iss', '')}")
           print(f"jwt_tid={payload.get('tid', '')}")
+          oid = str(payload.get("oid", ""))
+          appid = str(payload.get("appid", ""))
+          def redact(value: str) -> str:
+              if len(value) <= 12:
+                  return value
+              return f"{value[:6]}...{value[-6:]}"
+          print(f"jwt_oid_redacted={redact(oid)}")
+          print(f"jwt_appid_redacted={redact(appid)}")
           print(f"jwt_exp={payload.get('exp', '')}")
           print(f"jwt_nbf={payload.get('nbf', '')}")
           print(f"jwt_iat={payload.get('iat', '')}")
@@ -814,6 +822,33 @@ jobs:
                   print(f"{key}: {value}")
           print("py_probe_selected_headers_end")
           PY
+        env:
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
+
+      - name: Probe Azure Blob read access (safe)
+        shell: bash
+        run: |
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN="$(printf '%s' "$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW" | tr -d '[:space:]')"
+          export MATHLIB_CACHE_AZURE_BEARER_TOKEN
+
+          PROBE_URL="https://lakecache.blob.core.windows.net/mathlib4?restype=container&comp=list&maxresults=1"
+          HEADER_FILE="$RUNNER_TEMP/cache-read-probe-headers.txt"
+
+          HTTP_CODE="$(
+            curl --silent --show-error \
+              --output /dev/null \
+              --dump-header "$HEADER_FILE" \
+              --write-out "%{http_code}" \
+              --oauth2-bearer "${MATHLIB_CACHE_AZURE_BEARER_TOKEN}" \
+              -H "x-ms-version: 2026-02-06" \
+              -H "x-ms-date: $(LC_ALL=C date -u '+%a, %d %b %Y %H:%M:%S GMT')" \
+              "$PROBE_URL"
+          )"
+
+          echo "read_probe_http_code=$HTTP_CODE"
+          echo "read_probe_selected_headers_begin"
+          grep -i -E '^(www-authenticate|x-ms-error-code|x-ms-request-id|date):' "$HEADER_FILE" || true
+          echo "read_probe_selected_headers_end"
         env:
           MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
 
