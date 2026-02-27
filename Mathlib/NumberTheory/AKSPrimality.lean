@@ -60,27 +60,27 @@ variable {K : Type*} [CommRing K] [IsDomain K]
 
 /-- The introspective relation, named by the original authors, only used for the construction of the
 final theorem, and thus made private. -/
-private def introspective (f : K[X]) (n : ℕ) (r : ℕ) [NeZero r] : Prop :=
+def introspective (f : K[X]) (n : ℕ) (r : ℕ) [NeZero r] : Prop :=
   ∀ μ ∈ (primitiveRoots r K), f.eval (μ ^ n) = f.eval μ ^ n
 
 variable {r : ℕ} [NeZero r]
 
-private theorem introspective_eq {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
+theorem introspective_eq {μ : K} {f : K[X]} {n : ℕ} (h : IsPrimitiveRoot μ r)
     (hi : introspective f n r) : f.eval (μ ^ n) = f.eval μ ^ n := by
   haveI : r ≠ 0 := NeZero.out
   exact hi μ ((mem_primitiveRoots (by lia)).mpr h)
 
-private theorem introspective_one {f : K[X]} : introspective f 1 r := by
+theorem introspective_one {f : K[X]} : introspective f 1 r := by
   grind [introspective]
 
-private theorem introspective_p {p a : ℕ} [Fact p.Prime] [ExpChar K p] :
+theorem introspective_p {p a : ℕ} [Fact p.Prime] [ExpChar K p] :
     introspective (X - C (a : K)) p r := by
   intro μ hμ
   simp only [eval_sub, eval_X, eval_C]
   change (frobenius K p) μ - _ = (frobenius K p) (μ - a)
   simp
 
-private theorem introspective_n_div_p {p a n : ℕ} [Fact p.Prime] [ExpChar K p]
+theorem introspective_n_div_p {p a n : ℕ} [Fact p.Prime] [ExpChar K p]
     (h : introspective (X - C (a : K)) n r) (hd : p ∣ n) (hc : p.Coprime r) :
     introspective (X - C (a : K)) (n / p) r := by
   simp only [map_natCast, introspective] at ⊢ h
@@ -102,14 +102,14 @@ private theorem introspective_n_div_p {p a n : ℕ} [Fact p.Prime] [ExpChar K p]
     simp
 
 /-- The product of two polynomials is introspective. -/
-private theorem introspective_mul_poly {n : ℕ} {f g : K[X]} (hf : introspective f n r)
+theorem introspective_mul_poly {n : ℕ} {f g : K[X]} (hf : introspective f n r)
     (hg : introspective g n r) : introspective (f * g) n r := by
   intro μ hm
   simp only [eval_mul, hf μ hm, hg μ hm]
   ring
 
 /-- The product of coprime exponents is introspective. -/
-private theorem introspective_mul_of_coprime {d e : ℕ} {f : K[X]} (hf : introspective f e r)
+theorem introspective_mul_of_coprime {d e : ℕ} {f : K[X]} (hf : introspective f e r)
     (hg : introspective f d r) (h : e.Coprime r) : introspective f (e * d) r := by
   intro μ hm
   have mu : μ ^ e ∈ primitiveRoots r K := by
@@ -120,7 +120,7 @@ private theorem introspective_mul_of_coprime {d e : ℕ} {f : K[X]} (hf : intros
   ring
 
 /-- Necessary condition for the auxilliary proof. -/
-private theorem introspective_of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar K p] (d e : ℕ)
+theorem introspective_of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar K p] (d e : ℕ)
     (s : Multiset (Fin b)) (hs : ∀ x : Fin b, introspective (ofMultiset {(x.val : K)}) n r)
     (hcprm : n.Coprime r) (hdiv : p ∣ n) :
     (introspective (ofMultiset (s.map fun x ↦ (x.val : K))) (p ^ d * (n / p) ^ e) r) := by
@@ -176,19 +176,19 @@ variable {p n a q : ℕ} {μ : K} [Fact p.Prime] [CharP K p] [ExpChar K p]
 variable {r : ℕ} [NeZero r]
 
 /-- Function used in the AKS proof. -/
-private def f (_ : Conditions r p n a q μ) : ℕ × ℕ → ℕ := fun x : ℕ × ℕ ↦ p ^ x.1 * (n / p) ^ x.2
+def f (_ : Conditions r p n a q μ) : ℕ × ℕ → ℕ := fun x : ℕ × ℕ ↦ p ^ x.1 * (n / p) ^ x.2
 
 /-- Set used in the AKS proof. -/
-private def se1 (h : Conditions r p n a q μ) := f h '' Set.univ
+def se1 (h : Conditions r p n a q μ) := f h '' Set.univ
 
 /-- Set used in the AKS proof. -/
-private def se2 (h : Conditions r p n a q μ) := (Nat.cast (R := ZMod r)) '' se1 h
+def se2 (h : Conditions r p n a q μ) := (Nat.cast (R := ZMod r)) '' se1 h
 
 /-- Set used in the AKS proof, subset of `se1` -/
-private def se3 (h : Conditions r p n a q μ) :=
+def se3 (h : Conditions r p n a q μ) :=
   f h '' Set.Icc 0 ⌊√(se2 h).ncard⌋₊ ×ˢ Set.Icc 0 ⌊√(se2 h).ncard⌋₊
 
-private theorem se3_subset_se1 (h : Conditions r p n a q μ) : se3 h ⊆ se1 h := by
+theorem se3_subset_se1 (h : Conditions r p n a q μ) : se3 h ⊆ se1 h := by
   grind [se3, se1]
 
 /-- Function used in the AKS proof. -/
@@ -196,9 +196,9 @@ noncomputable def sp1 (_ : Conditions r p n a q μ) :=
   fun s : Multiset (Fin (a + 1)) ↦ ofMultiset (s.map (fun x ↦ (x.val : K)))
 
 /-- Set used in the AKS proof. -/
-private def sp2 (h : Conditions r p n a q μ) := (sp1 h '' Set.univ).image (eval μ ·)
+def sp2 (h : Conditions r p n a q μ) := (sp1 h '' Set.univ).image (eval μ ·)
 
-private theorem se2_ncard_ne_zero (h : Conditions r p n a q μ) : (se2 h).ncard ≠ 0 := by
+theorem se2_ncard_ne_zero (h : Conditions r p n a q μ) : (se2 h).ncard ≠ 0 := by
   have h1 : 1 ∈ se2 h := by
     unfold se2 se1 f
     simp only [Set.image_univ, Set.mem_image, Set.mem_range, Prod.exists,
@@ -208,7 +208,7 @@ private theorem se2_ncard_ne_zero (h : Conditions r p n a q μ) : (se2 h).ncard 
   exact Set.ncard_ne_zero_of_mem h1
 
 /-- All relevant exponents and polynomials are introspective. -/
-private theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a q μ) :
+theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a q μ) :
     ∀ e ∈ se1 h, ∀ f ∈ sp1 h '' Set.univ, introspective f e r := by
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -226,7 +226,7 @@ private theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a
     Multiset.prod_singleton] at heq ⊢
   exact heq
 
-private theorem se2_subset_units (h : Conditions r p n a q μ) :
+theorem se2_subset_units (h : Conditions r p n a q μ) :
     se2 h ⊆ (fun x : (ZMod r)ˣ ↦ x.val) '' Set.univ := by
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -245,7 +245,7 @@ private theorem se2_subset_units (h : Conditions r p n a q μ) :
     · exact Coprime.pow_left _ (Coprime.of_dvd_left (div_dvd_of_dvd p_dvd_n) n_coprime_r)
   exact ⟨hu.unit, rfl⟩
 
-private theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := by
+theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := by
   unfold f
   intro ⟨d₁, d₂⟩ ⟨e₁, e₂⟩ heq
   by_contra! hcon
@@ -285,7 +285,7 @@ private theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := b
       exact hf
     grind
 
-private theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective := by
+theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective := by
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   have _ := Nat.Prime.ne_zero p_prime
@@ -302,7 +302,7 @@ private theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective 
       ((ModEq.dvd_iff rfl p_dvd_n).mp p_dvd_n) (dvd_refl p) (icc_coprime p (by grind))
   grind [(CharP.natCast_injOn_Iio K p) (hm x2) (hm y2)]
 
-private theorem sp2_lt_sp3 (h : Conditions r p n a q μ) : (se2 h).ncard < (se3 h).ncard := by
+theorem sp2_lt_sp3 (h : Conditions r p n a q μ) : (se2 h).ncard < (se3 h).ncard := by
   unfold se3
   rw [Set.ncard_image_of_injective _ (injective_f h), Set.ncard_prod, ← sq,
     Set.ncard_Icc_nat, Nat.sub_zero]
@@ -313,7 +313,7 @@ private theorem sp2_lt_sp3 (h : Conditions r p n a q μ) : (se2 h).ncard < (se3 
   rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
   exact Real.real_sqrt_lt_nat_sqrt_succ
 
-private theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 h)) :
+theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 h)) :
     x ≤ n ^ ⌊√(se2 h).ncard⌋₊ := by
   unfold se3 f at hx
   simp only [Set.Icc_prod_Icc, Set.mem_image, Set.mem_Icc,
@@ -330,7 +330,7 @@ private theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 
       Nat.mul_le_mul (Nat.pow_le_pow_right hppos ha) (Nat.pow_le_pow_right hnppos hb)
     _ = _ := by rw [← mul_pow, mul_div_eq_iff_dvd.mpr p_dvd_n]
 
-private theorem natDegree_eq (h : Conditions r p n a q μ) (s : Multiset (Fin (a + 1))) :
+theorem natDegree_eq (h : Conditions r p n a q μ) (s : Multiset (Fin (a + 1))) :
     (sp1 h s).natDegree ≤ s.card := by
   unfold sp1
   simp only [ofMultiset_apply, Multiset.map_map, Function.comp_apply]
@@ -339,7 +339,7 @@ private theorem natDegree_eq (h : Conditions r p n a q μ) (s : Multiset (Fin (a
     _ ≤ _ := by simp [-map_natCast]
 
 /-- Here we use the assumption that `p` is not a prime power. -/
-private theorem aux_le (h : Conditions r p n a q μ) :
+theorem aux_le (h : Conditions r p n a q μ) :
     (sp2 h).ncard ≤ (n : ℝ) ^ (√(se2 h).ncard) ∧ (sp2 h).Finite := by
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -393,7 +393,7 @@ private theorem aux_le (h : Conditions r p n a q μ) :
       rw [natDegree_monomial_eq x (one_ne_zero' K), natDegree_monomial_eq y (one_ne_zero' K)]
     _ ≤ _ := max_le (se3_le hx) (se3_le hy)
 
-private theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
+theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
     ((se2 h).ncard + a).choose ((se2 h).ncard - 1) ≤ (sp2 h).ncard := by
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -478,13 +478,13 @@ private theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
     exact Equiv.mk (fun x ↦ ⟨Sym.mk x.1 x.2, by simp⟩) (fun x ↦ ⟨x , by simp⟩)
       (fun _ ↦ rfl) (fun _ ↦ rfl)
 
-private theorem pow_2_le_choose {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
+theorem pow_2_le_choose {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
   have _ : Nat.choose 5 2 = 10 := rfl
   induction x, h using Nat.le_induction (m := 2)
   · grind
   · grind [choose_succ_succ, choose_le_succ, choose_le_middle]
 
-private theorem not_aux_le (h : Conditions r p n a q μ) :
+theorem not_aux_le (h : Conditions r p n a q μ) :
     (n : ℝ) ^ (√(se2 h).ncard) < (sp2 h).ncard := by
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -575,7 +575,7 @@ private theorem not_aux_le (h : Conditions r p n a q μ) :
       apply Real.sqrt_le_sqrt
       exact_mod_cast h2
 
-private theorem aux (h : Conditions r p n a q μ) : False := by
+theorem aux (h : Conditions r p n a q μ) : False := by
   grind [aux_le h, not_aux_le h]
 
 end Rest
