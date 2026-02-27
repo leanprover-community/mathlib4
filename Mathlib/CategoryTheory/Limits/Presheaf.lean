@@ -756,10 +756,9 @@ lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
     {X₁ X₂ : C} (f : X₁ ⟶ X₂) (u : F.Elements) :
     (shrinkYoneda.{w}.map f).app (op u.fst) ≫
       (coconeπOpCompShrinkYonedaObj F X₂).ι.app (op u) =
-      (coconeπOpCompShrinkYonedaObj F X₁).ι.app (op u) ≫ F.map f := by
+    (coconeπOpCompShrinkYonedaObj F X₁).ι.app (op u) ≫ F.map f := by
   ext g
   obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
-  dsimp
   simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]
 
 /-- If `C` is a locally `w`-small category, this is a (colimit) cocone
