@@ -425,7 +425,6 @@ theorem mgf_sum_of_identDistrib
 
 section Chernoff
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :

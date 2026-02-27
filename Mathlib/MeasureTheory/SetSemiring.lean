@@ -379,7 +379,7 @@ lemma sUnion_union_sUnion_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
     hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion hs hI]
 
 lemma sUnion_union_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) [DecidableEq (Set α)] :
+    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) :
     ⋃₀ ↑(I ∪ hC.disjointOfDiffUnion hs hI) = s := by
   conv_rhs => rw [← sUnion_union_sUnion_disjointOfDiffUnion_of_subset hC hs hI hI_ss]
   simp_rw [coe_union]
@@ -535,18 +535,14 @@ protected lemma Ioc [LinearOrder α] [Nonempty α] :
     classical
     rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
     rcases le_or_gt u' u with hu | hu
-    · have : Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc (max u v') v := by
-        ext; simp; grind
-      rcases Ioc_mem_setOf_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
-      rw [this, heq]
-      exact ⟨{Set.Ioc u'' v''}, by grind, by simp, by simp⟩
+    · rcases Ioc_mem_setOf_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
+      exists {Set.Ioc u'' v''}
+      grind [coe_singleton, pairwiseDisjoint_singleton]
     rcases le_or_gt v v' with hv | hv
-    · have : Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u (min u' v) := by
-        ext; simp; grind
-      rcases Ioc_mem_setOf_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
-      rw [this, heq]
-      exact ⟨{Set.Ioc u'' v''}, by grind, by simp, by simp⟩
-    rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by ext; simp; grind]
+    · rcases Ioc_mem_setOf_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
+      exists {Set.Ioc u'' v''}
+      grind [coe_singleton, pairwiseDisjoint_singleton]
+    rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
     refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
     intro a ha b hb hab
     simp [Function.onFun]

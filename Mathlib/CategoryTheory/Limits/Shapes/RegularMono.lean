@@ -20,9 +20,11 @@ In this file, we give the following definitions.
   monomorphism. That is, it carries a fork and data specifying `f` as the equalizer of that fork.
 * `IsRegularMono f`, which is a `Prop`-valued class stating that `f` is a regular monomorphism. In
   particular, this doesn't carry any data.
+
 and constructions
 * `IsSplitMono f → RegularMono f` and
 * `RegularMono f → Mono f`
+
 as well as the dual definitions/constructions for regular epimorphisms.
 
 Additionally, we give the constructions
@@ -30,7 +32,6 @@ Additionally, we give the constructions
   strong.
 * `regularEpiOfEffectiveEpi`: constructs a `RegularEpi f` instance from `EffectiveEpi f` and
   `HasPullback f f`.
-
 
 We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
@@ -447,6 +448,15 @@ def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
   right := pullback.snd f f
   w := pullback.condition
   isColimit := hc
+
+lemma IsRegularEpi.of_epi_of_exists {X B : C} {f : X ⟶ B} [HasPullback f f] [Epi f]
+    (h : ∀ ⦃Z : C⦄ ⦃g : X ⟶ Z⦄, pullback.fst f f ≫ g = pullback.snd f f ≫ g →
+      ∃ (u : B ⟶ Z), f ≫ u = g) :
+    IsRegularEpi f := by
+  refine ⟨⟨regularEpiOfKernelPair _ <| Cofork.IsColimit.mk' _ fun s ↦ ?_⟩⟩
+  choose g hg using h s.condition
+  refine ⟨g, hg, fun hm ↦ ?_⟩
+  rwa [← cancel_epi f, hg]
 
 /-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
 def effectiveEpiStructOfRegularEpi {B X : C} {f : X ⟶ B} (hf : RegularEpi f) :

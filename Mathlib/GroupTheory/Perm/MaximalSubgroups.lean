@@ -248,13 +248,7 @@ lemma subsingleton_of_ssubset_of_stabilizer_le
       toFun := Subtype.val
       map_smul' _ _ := rfl }
     exact hB.preimage f'
-  let φ : stabilizer M (s : Set α) → Perm (s : Set α) := MulAction.toPerm
-  let f : (s : Set α) →ₑ[φ] (s : Set α) := {
-    toFun := id
-    map_smul' _ _ := rfl }
-  have hf : Function.Bijective f := Function.bijective_id
-  rw [isPreprimitive_congr hG hf]
-  infer_instance
+  exact isPreprimitive_stabilizer_of_surjective _ hG
 
 @[deprecated (since := "2025-12-16")]
 alias _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le :=
@@ -283,7 +277,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
       rw [← inter_eq_self_of_subset_right hBs, ← Subtype.image_preimage_val]
       apply Set.Subsingleton.image hB'
     · -- `Subtype.val ⁻¹' B = s`
-      have hBs' : B = s := Set.Subset.antisymm hBs (by aesop)
+      have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
       obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's

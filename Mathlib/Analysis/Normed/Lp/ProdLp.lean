@@ -680,10 +680,10 @@ instance instProdSeminormedAddCommGroup [SeminormedAddCommGroup α] [SeminormedA
     SeminormedAddCommGroup (WithLp p (α × β)) where
   dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
-    · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm]
+    · simp only [prod_dist_eq_sup, prod_norm_eq_sup, dist_eq_norm, ← norm_neg_add]
       rfl
     · simp only [prod_dist_eq_add (zero_lt_one.trans_le h),
-        prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm]
+        prod_norm_eq_add (zero_lt_one.trans_le h), dist_eq_norm, ← norm_neg_add]
       rfl
 
 lemma isUniformInducing_toLp [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
@@ -1039,7 +1039,7 @@ abbrev seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCo
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
 
 lemma norm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [SeminormedAddCommGroup β]
     (x : α × β) :
@@ -1087,7 +1087,7 @@ abbrev normedAddCommGroupToProd [NormedAddCommGroup α] [NormedAddCommGroup β] 
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToProd p α β
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToProd, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
   eq_of_dist_eq_zero {x y} h := by
     rw [dist_pseudoMetricSpaceToProd] at h
     exact toLp_injective p (eq_of_dist_eq_zero h)

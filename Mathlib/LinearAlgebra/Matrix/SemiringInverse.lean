@@ -32,16 +32,20 @@ namespace Matrix
 def detp : R := ∑ σ ∈ ofSign s, ∏ k, A k (σ k)
 
 @[simp]
-lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
+lemma detp_one_diagonal (d : n → R) : detp 1 (diagonal d) = ∏ i, d i := by
   rw [detp, sum_eq_single_of_mem 1]
-  · simp [one_apply]
+  · simp
   · simp [ofSign]
   · rintro σ - hσ1
     obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
-    exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
+    exact prod_eq_zero (mem_univ i) (diagonal_apply_ne' _ hi)
 
 @[simp]
-lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
+lemma detp_one_one : detp 1 (1 : Matrix n n R) = 1 := by
+  rw [← diagonal_one, detp_one_diagonal, prod_const_one]
+
+@[simp]
+lemma detp_neg_one_diagonal (d : n → R) : detp (-1) (diagonal d) = 0 := by
   rw [detp, sum_eq_zero]
   intro σ hσ
   have hσ1 : σ ≠ 1 := by
@@ -49,7 +53,11 @@ lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
     rw [hσ, mem_ofSign, sign_one]
     decide
   obtain ⟨i, hi⟩ := not_forall.mp (mt Perm.ext_iff.mpr hσ1)
-  exact prod_eq_zero (mem_univ i) (one_apply_ne' hi)
+  exact prod_eq_zero (mem_univ i) (diagonal_apply_ne' _ hi)
+
+@[simp]
+lemma detp_neg_one_one : detp (-1) (1 : Matrix n n R) = 0 := by
+  rw [← diagonal_one, detp_neg_one_diagonal]
 
 /-- The adjugate matrix, but only the terms of a given sign. -/
 def adjp : Matrix n n R :=
@@ -142,12 +150,13 @@ theorem mul_adjp_add_detp : A * adjp 1 A + detp (-1) A • 1 = A * adjp (-1) A +
 
 variable {A B}
 
-theorem isAddUnit_mul (hAB : A * B = 1) (i j k : n) (hij : i ≠ j) : IsAddUnit (A i k * B k j) := by
+theorem isAddUnit_mul {d : n → R} (hAB : A * B = diagonal d) (i j k : n) (hij : i ≠ j) :
+    IsAddUnit (A i k * B k j) := by
   revert k
-  rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, one_apply_ne hij]
+  rw [← IsAddUnit.sum_univ_iff, ← mul_apply, hAB, diagonal_apply_ne _ hij]
   exact isAddUnit_zero
 
-theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
+theorem isAddUnit_detp_mul_detp {d : n → R} (hAB : A * B = diagonal d) :
     IsAddUnit (detp 1 A * detp (-1) B + detp (-1) A * detp 1 B) := by
   suffices h : ∀ {s t}, s ≠ t → IsAddUnit (detp s A * detp t B) from
     (h (by decide)).add (h (by decide))
@@ -164,7 +173,7 @@ theorem isAddUnit_detp_mul_detp (hAB : A * B = 1) :
     ← mul_prod_erase univ _ (mem_univ k), ← smul_eq_mul]
   exact (isAddUnit_mul hAB k (τ (σ k)) (σ k) hk).smul_right _
 
-theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
+theorem isAddUnit_detp_smul_mul_adjp {d : n → R} (hAB : A * B = diagonal d) :
     IsAddUnit (detp 1 A • (B * adjp (-1) B) + detp (-1) A • (B * adjp 1 B)) := by
   suffices h : ∀ {s t}, s ≠ t → IsAddUnit (detp s A • (B * adjp t B)) from
     (h (by decide)).add (h (by decide))

@@ -166,7 +166,6 @@ theorem sum_subgroup_units_eq_zero [Ring K] [NoZeroDivisors K]
   ext
   rwa [← sub_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sum of a subgroup of the units of a field is 1 if the subgroup is trivial and 1 otherwise -/
 @[simp]
 theorem sum_subgroup_units [Ring K] [NoZeroDivisors K]
@@ -611,7 +610,6 @@ theorem pow_card_sub_one_eq_one {a : ZMod p} (ha : a ≠ 0) :
   have h := FiniteField.pow_card_sub_one_eq_one a ha
   rwa [ZMod.card p] at h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pow_card_sub_one (a : ZMod p) :
     a ^ (p - 1) = if a ≠ 0 then 1 else 0 := by
   split_ifs with ha
@@ -653,7 +651,6 @@ theorem Int.ModEq.pow_prime_eq_self {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : n ^
 theorem Int.prime_dvd_pow_self_sub {p : ℕ} (hp : Nat.Prime p) (n : ℤ) : (p : ℤ) ∣ n ^ p - n :=
   (ModEq.pow_prime_eq_self hp n).symm.dvd
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Int.ModEq.pow_eq_pow {p x y : ℕ} (hp : Nat.Prime p) (h : p - 1 ∣ x - y) (hxy : y ≤ x)
     (hy : 0 < y) (n : ℤ) : n ^ x ≡ n ^ y [ZMOD p] := by
   rw [← Nat.mul_div_eq_iff_dvd] at h
@@ -676,7 +673,6 @@ theorem Nat.pow_card_sub_one_sub_one_mod_card {p : ℕ} (hp : p.Prime) {n : ℕ}
     (n ^ (p - 1) - 1) % p = 0 :=
   Nat.sub_mod_eq_zero_of_mod_eq (Nat.ModEq.pow_card_sub_one_eq_one hp hpn)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
   induction m with
   | zero => exact Nat.modEq_one
