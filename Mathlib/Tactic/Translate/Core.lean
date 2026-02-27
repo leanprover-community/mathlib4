@@ -614,6 +614,11 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) :
     MetaM (ConstantInfo × Option RelevantArg) := do
   let mut decl := srcDecl.updateName tgt
+  let env ← getEnv
+  let newAll := srcDecl.all.map fun n =>
+    if n == srcDecl.name then tgt
+    else (findTranslationName? env t n).getD n
+  decl := decl.updateAll newAll
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   let mut value := decl.value! (allowOpaque := true)
