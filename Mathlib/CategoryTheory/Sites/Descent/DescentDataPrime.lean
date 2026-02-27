@@ -209,7 +209,7 @@ structure Hom (D₁ D₂ : F.DescentData' sq sq₃) where
   /-- The morphisms between the `obj` fields of descent data. -/
   hom (i : ι) : D₁.obj i ⟶ D₂.obj i
   comm (i₁ i₂ : ι) :
-    (F.map (sq i₁ i₂).p₁.op.toLoc).toFunctor.map (hom i₁) ≫ D₂.hom i₁ i₂  =
+    (F.map (sq i₁ i₂).p₁.op.toLoc).toFunctor.map (hom i₁) ≫ D₂.hom i₁ i₂ =
     D₁.hom i₁ i₂ ≫ (F.map (sq i₁ i₂).p₂.op.toLoc).toFunctor.map (hom i₂) := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
