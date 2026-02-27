@@ -9,8 +9,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Tensor
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Idempotents
-public import Mathlib.RingTheory.LocalProperties.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 # Pure ideals
@@ -108,18 +107,6 @@ lemma Ideal.le_ker_atPrime_of_forall_exists_eq_mul {I : Ideal R}
     exact Ideal.add_mem _ hz (hle hy)
   have hzero : x * (1 - y) = 0 := by simp [mul_sub, ← heq]
   simp only [RingHom.mem_ker, ← this.mul_left_eq_zero, ← RingHom.map_mul, hzero, RingHom.map_zero]
-
-lemma Ideal.ker_piRingHom_atPrime_le (I : Ideal R) :
-    RingHom.ker
-      (Pi.ringHom fun p : zeroLocus (I : Set R) ↦
-        algebraMap R (Localization.AtPrime p.val.asIdeal)) ≤ I := by
-  intro x hx
-  rw [RingHom.mem_ker, funext_iff] at hx
-  refine Ideal.mem_of_localization_maximal fun m hm ↦ ?_
-  by_cases hle : I ≤ m
-  · convert Ideal.zero_mem _
-    exact hx ⟨⟨m, hm.isPrime⟩, hle⟩
-  · simp [IsLocalization.AtPrime.map_eq_top_of_not_le _ hle]
 
 lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     RingHom.ker

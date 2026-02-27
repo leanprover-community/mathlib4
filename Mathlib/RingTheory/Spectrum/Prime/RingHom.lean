@@ -8,6 +8,7 @@ module
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # Functoriality of the prime spectrum
@@ -289,6 +290,18 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
   rw [Ideal.comap_map_eq_self_iff_of_isPrime]
   rintro ⟨q, _, hq⟩
   exact ⟨⟨q, inferInstance⟩, PrimeSpectrum.ext hq⟩
+
+lemma Ideal.ker_piRingHom_atPrime_le (I : Ideal R) :
+    RingHom.ker
+      (Pi.ringHom fun p : zeroLocus (I : Set R) ↦
+        algebraMap R (Localization.AtPrime p.val.asIdeal)) ≤ I := by
+  intro x hx
+  rw [RingHom.mem_ker, funext_iff] at hx
+  refine Ideal.mem_of_localization_maximal fun m hm ↦ ?_
+  by_cases hle : I ≤ m
+  · convert Ideal.zero_mem _
+    exact hx ⟨⟨m, hm.isPrime⟩, hle⟩
+  · simp [IsLocalization.AtPrime.map_eq_top_of_not_le _ hle]
 
 open TensorProduct
 
