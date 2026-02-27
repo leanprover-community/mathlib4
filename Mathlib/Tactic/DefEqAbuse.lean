@@ -47,8 +47,7 @@ will report the synthesis failures grouped by instance application.
 
 public meta section
 
-open Lean Meta Elab Tactic Command
-open Lean.MessageData (TraceResult traceResultOf stripTraceResultPrefix)
+open Lean MessageData Meta Elab Tactic Command
 
 namespace Mathlib.Tactic.DefEqAbuse
 
@@ -67,51 +66,37 @@ private def extractInstName (s : String) : String :=
     | _ => s
   | _ => s
 
+/-- Only applies `f` to `Meta.isDefEq` trace nodes. Skips `Meta.isDefEq.onFailure` nodes. -/
+@[inline] private def onlyOnDefEqNodes {m} [Monad m] {α}
+    (f : TraceData → MessageData → Array MessageData → m (VisitStep α)) :
+    TraceData → MessageData → Array MessageData → m (VisitStep α) :=
+  fun td header children => do
+    if td.cls == `Meta.isDefEq.onFailure then return .ascend
+    unless (`Meta.isDefEq).isPrefixOf td.cls do return .descend
+    f td header children
+
 /-- Find the deepest failing `Meta.isDefEq` trace nodes (leaf failures).
 Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes).
 Note: status is currently determined by parsing emoji from the rendered header string.
 Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
 private partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
-  msg.foldTraceNodes (fun td header children go => do
-    if td.cls == `Meta.isDefEq.onFailure then return #[]
-    if Name.isPrefixOf `Meta.isDefEq td.cls then
-      let headerStr ← header.toString
-      match traceResultOf headerStr with
-      | some .failure =>
-        let mut childFailures := #[]
-        for child in children do
-          childFailures := childFailures.append (← go child)
-        -- Leaf failure: deepest ❌ node with no deeper ❌ children
-        if childFailures.isEmpty then return #[header] else return childFailures
-      | _ => return #[]
-    else
-      let mut results := #[]
-      for child in children do
-        results := results.append (← go child)
-      return results
-  ) (· ++ ·) #[]
+  msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
+    unless traceResultOf (← header.toString) matches some .failure do
+      return .ascend
+    let childFailures ← visitWithM children findLeafFailures
+    -- Leaf failure: deepest `❌` node with no deeper `❌` children
+    return .ascend <| if childFailures.isEmpty then #[header] else childFailures
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
 Returns a `HashSet` of emoji-stripped header strings. -/
 private partial def collectIsDefEqChecks (pred : TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
-  msg.foldTraceNodes (fun td header children go => do
-    if td.cls == `Meta.isDefEq.onFailure then return {}
-    if Name.isPrefixOf `Meta.isDefEq td.cls then
-      let headerStr ← header.toString
-      let mut result : Std.HashSet String := {}
-      if let some status := traceResultOf headerStr then
-        if pred status then
-          result := result.insert (stripTraceResultPrefix headerStr)
-      for child in children do
-        result := result.union (← go child)
-      return result
-    else
-      let mut result : Std.HashSet String := {}
-      for child in children do
-        result := result.union (← go child)
-      return result
-  ) (·.union ·) {}
+  msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
+    let headerStr ← header.toString
+    if let some status := traceResultOf headerStr then
+      if pred status then
+        return .descend (butFirst := some {stripTraceResultPrefix headerStr})
+    return .descend
 
 /-- Find the deepest `Meta.isDefEq` transition points: nodes that fail in the strict trace
 but whose check string appears as a success in the permissive trace and does NOT also appear
@@ -123,119 +108,66 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
     (permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array MessageData) :=
   if permSuccesses.isEmpty then findLeafFailures msg
-  else msg.foldTraceNodes (fun td header children go => do
-    if td.cls == `Meta.isDefEq.onFailure then return #[]
-    if Name.isPrefixOf `Meta.isDefEq td.cls then
-      let headerStr ← header.toString
-      match traceResultOf headerStr with
-      | some .failure =>
-        let checkStr := stripTraceResultPrefix headerStr
-        if permSuccesses.contains checkStr && !permFailures.contains checkStr then
-          -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
-          -- Look for deeper transition points among children.
-          let mut childTransitions := #[]
-          for child in children do
-            childTransitions := childTransitions.append (← go child)
-          -- Deepest transition point: no deeper transition-point children.
-          if childTransitions.isEmpty then return #[header] else return childTransitions
-        else
-          -- Not a transition point (fails in both modes, strict-only, or ambiguous).
-          -- Still recurse: children may contain transition points.
-          let mut results := #[]
-          for child in children do
-            results := results.append (← go child)
-          return results
-      | _ => return #[]
+  else msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
+    let headerStr ← header.toString
+    unless traceResultOf headerStr matches some .failure do return .descend
+    let checkStr := stripTraceResultPrefix headerStr
+    if permSuccesses.contains checkStr && !permFailures.contains checkStr then
+      -- Transition point: fails strict, succeeds permissive, doesn't also fail permissive.
+      -- Look for deeper transition points among children.
+      let childTransitions ← visitWithM children <|
+        findTransitionFailures permSuccesses permFailures
+      return .ascend <|
+        -- Deepest transition point: no deeper transition-point children.
+        if childTransitions.isEmpty then return #[header] else return childTransitions
     else
-      let mut results := #[]
-      for child in children do
-        results := results.append (← go child)
-      return results
-  ) (· ++ ·) #[]
+      -- Not a transition point (fails in both modes, strict-only, or ambiguous).
+      -- Still recurse: children may contain transition points.
+      return .descend
 
 /-- Within a synthesis trace, find failing `apply @Instance to Goal` nodes
 and their `isDefEq` transition failures.
 Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
-check can be replaced with `td.cls == `Meta.synthInstance.apply``. -/
+check can be replaced with ``td.cls == `Meta.synthInstance.apply``. -/
 private partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
-  msg.foldTraceNodes (fun td header children go => do
-    if td.cls == `Meta.isDefEq.onFailure then return #[]
+  msg.visitTraceNodesM fun td header children => do
+    if td.cls == `Meta.isDefEq.onFailure then return .ascend
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if traceResultOf headerStr == some .failure && headerStr.contains "apply" then
-        let mut failures := #[]
-        for child in children do
-          failures := failures.append
-            (← findTransitionFailures permSuccesses permFailures child)
-        if failures.isEmpty then
-          -- No isDefEq failures here; recurse for sub-synthesis failures
-          let mut results := #[]
-          for child in children do
-            results := results.append (← go child)
-          return results
-        else
-          return #[(header, failures)]
-      else
-        let mut results := #[]
-        for child in children do
-          results := results.append (← go child)
-        return results
-    let mut results := #[]
-    for child in children do
-      results := results.append (← go child)
-    return results
-  ) (· ++ ·) #[]
+      if traceResultOf headerStr matches some .failure && headerStr.contains "apply " then
+        let failures ← visitWithM children <|
+          findTransitionFailures permSuccesses permFailures
+        if !failures.isEmpty then
+          return .ascend #[(header, failures)]
+    return .descend
 
 /-- Find top-level synthesis failures and their `isDefEq` root causes.
 Only enters failing synthesis nodes to avoid reporting recovered sub-attempts. -/
 private partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
-  msg.foldTraceNodes (fun td header children go => do
-    if td.cls == `Meta.isDefEq.onFailure then return #[]
+  msg.visitTraceNodesM fun td header children => do
+    if td.cls == `Meta.isDefEq.onFailure then return .ascend
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
-      if traceResultOf headerStr == some .failure then
-        let mut results := #[]
-        for child in children do
-          results := results.append
-            (← findSynthAppFailures permSuccesses permFailures child)
-        return results
-      else
-        return #[]
+      if traceResultOf headerStr matches some .failure then
+        visitWithAndAscendM children <| findSynthAppFailures permSuccesses permFailures
+      else return .ascend
     -- Skip isDefEq/synthInstance subtrees that aren't top-level synthesis
-    if !Name.isPrefixOf `Meta.isDefEq td.cls &&
-        !Name.isPrefixOf `Meta.synthInstance td.cls then
-      let mut results := #[]
-      for child in children do
-        results := results.append (← go child)
-      return results
-    return #[]
-  ) (· ++ ·) #[]
+    else if !(`Meta.isDefEq).isPrefixOf td.cls && !(`Meta.synthInstance).isPrefixOf td.cls then
+      return .descend
+    else return .ascend
 
 /-- Collect instance names from successful `apply @Instance to Goal` trace nodes.
 Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
 check can be replaced with `td.cls == `Meta.synthInstance.apply``. -/
 private partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
-  msg.foldTraceNodes (fun td header children go => do
+  msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
       if headerStr.contains "apply" && traceResultOf headerStr == some .success then
-        let mut result : Std.HashSet String := {}
-        result := result.insert (extractInstName headerStr)
-        for child in children do
-          result := result.union (← go child)
-        return result
-      else
-        let mut result : Std.HashSet String := {}
-        for child in children do
-          result := result.union (← go child)
-        return result
-    let mut result : Std.HashSet String := {}
-    for child in children do
-      result := result.union (← go child)
-    return result
-  ) (·.union ·) {}
+        return .descend (butFirst := some {extractInstName headerStr})
+    return .descend
 
 /-- Analyze strict and permissive trace messages to find isDefEq transition failures
 and (optionally) synthesis-grouped failures.
@@ -254,7 +186,7 @@ private def analyzeTraces (strictMsgs permMsgs : Array MessageData)
   for msg in strictMsgs do
     transitionFailures := transitionFailures ++
       (← findTransitionFailures permSuccesses permFailures msg)
-  let uniqueFailures ← MessageData.dedupByString transitionFailures
+  let uniqueFailures ← dedupByString transitionFailures
   -- Optionally find synthesis-grouped failures.
   if !includeSynth then
     return (uniqueFailures, #[])
@@ -270,7 +202,7 @@ private def analyzeTraces (strictMsgs permMsgs : Array MessageData)
     return permissiveSuccessApps.contains (extractInstName (← app.toString))
   -- Dedup failures within each synth result.
   let dedupedResults ← filteredResults.mapM fun (app, failures) => do
-    return (app, ← MessageData.dedupByString failures)
+    return (app, ← dedupByString failures)
   return (uniqueFailures, dedupedResults)
 
 /-- Format and log the `#defeq_abuse` diagnostic report.
@@ -282,10 +214,10 @@ private def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMess
     -- Structured report: group by instance application
     let mut entries : Array MessageData := #[]
     for (app, failures) in synthResults do
-      let failureList := MessageData.joinSep
+      let failureList := joinSep
         (failures.toList.map fun f => m!"    {f}") "\n"
       entries := entries.push m!"  {app}\n{failureList}"
-    let report := MessageData.joinSep entries.toList "\n"
+    let report := joinSep entries.toList "\n"
     logWarning
       m!"#defeq_abuse: {kind} fails with \
         `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
@@ -296,7 +228,7 @@ private def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMess
         `backward.isDefEq.respectTransparency true` but succeeds with `false`.\n\
         Could not identify specific failing isDefEq checks from traces."
   else
-    let failureList := MessageData.joinSep
+    let failureList := joinSep
       (uniqueFailures.toList.map fun f => m!"  {f}") "\n"
     logWarning
       m!"#defeq_abuse: {kind} fails with \
