@@ -23,7 +23,8 @@ given by generators `x : α` and relations `r ∈ rels`.
 * `of`: The canonical map from `α` to a presented group with generators `α`.
 * `toGroup f`: the canonical group homomorphism `PresentedGroup rels → G`, given a function
   `f : α → G` from a type `α` to a group `G` which satisfies the relations `rels`.
-* `IsPresented G`: a group `G` is isomorphic to some `PresentedGroup rels`.
+* `exists_presentation G`: every group `G` is isomorphic to some
+  `PresentedGroup rels`.
 
 ## Tags
 
@@ -166,12 +167,9 @@ theorem equivPresentedGroup_symm_apply_of (x : β) (rels : Set (FreeGroup α)) (
 
 end ToGroup
 
-/-- A group is presented if it admits an isomorphism to a presented group. -/
-def IsPresented (G : Type u) [Group G] : Prop :=
-  ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels)
-
 /-- Every group is isomorphic to a presented group. -/
-theorem isPresented (G : Type u) [Group G] : IsPresented G := by
+theorem exists_presentation (G : Type u) [Group G] :
+    ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels) := by
   let F : FreeGroup (ULift G) →* G := FreeGroup.lift ULift.down
   have hF : Function.Surjective F := by
     intro g
