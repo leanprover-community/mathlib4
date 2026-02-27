@@ -653,8 +653,8 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
       change (eval₂RingHom (ZMod.castHom hp K)) μ (X ^ n - y.cast ) = _
       simp
     rw [← hoh]
-    replace hoh : f ⟦ (X - y.cast)^n ⟧ = (μ - y.cast)^n := by
-      change (eval₂RingHom (ZMod.castHom hp K)) μ ((X - y.cast ) ^ n) = _
+    replace hoh : f ⟦(X - y.cast) ^ n⟧ = (μ - y.cast) ^ n := by
+      change (eval₂RingHom (ZMod.castHom hp K)) μ ((X - y.cast) ^ n) = _
       simp [eval₂_pow]
     rw [← hoh]
     apply congr_arg
