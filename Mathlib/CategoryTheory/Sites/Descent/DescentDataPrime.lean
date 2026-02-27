@@ -105,7 +105,6 @@ lemma pullHom'₂₃_eq_pullHom_of_chosenPullback₃ (i₁ i₂ i₃ : ι) :
 
 end
 
-
 section
 
 variable {obj : ∀ (i : ι), F.obj (.mk (op (X i)))}
