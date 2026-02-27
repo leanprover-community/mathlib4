@@ -116,6 +116,13 @@ def inl : H →ₗ⁅R⁆ H ⋊⁅ψ⁆ G where
   map_smul' _ _ := toProd.injective <| by simp
   map_lie' := toProd.injective <| by simp
 
+/-- The canonical inclusion of G into the semi-direct sum H ⋊⁅ψ⁆ G. -/
+def inr : G →ₗ⁅R⁆ H ⋊⁅ψ⁆ G where
+  toFun x := toProd.symm (0, x)
+  map_add' _ _ := toProd.injective <| by simp
+  map_smul' _ _ := toProd.injective <| by simp
+  map_lie' := toProd.injective <| by simp
+
 @[simp]
 lemma inl_injective : Function.Injective (inl ψ) := by intro; simp [inl]
 
@@ -126,8 +133,18 @@ def projr : H ⋊⁅ψ⁆ G →ₗ⁅R⁆ G where
   map_smul' _ _ := by simp
   map_lie' := by simp
 
+/-- The canonical projection of the semi-direct sum H ⋊⁅ψ⁆ G to G.
+It is not, in general, a Lie algebra homomorphism, just a linear map. -/
+def projl : H ⋊⁅ψ⁆ G →ₗ[R] H where
+  toFun x := x.toProd.fst
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+
+
+
 @[simp] lemma inl_eq_mk (x : H) : inl ψ x = ⟨x, 0⟩ := rfl
 @[simp] lemma inr_eq_mk (x : G) : inr ψ x = ⟨0, x⟩ := rfl
+
 @[simp] lemma projr_mk (x : H ⋊⁅ψ⁆ G) : projr ψ x = x.right := rfl
 lemma projr_inl_apply {x : H} : projr ψ (inl ψ x) = 0 := by simp
 lemma projr_inr_apply {x : G} : projr ψ (inr ψ x) = x := by simp
