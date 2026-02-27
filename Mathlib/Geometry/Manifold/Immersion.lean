@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
+public import Mathlib.Geometry.Manifold.ImmersedPoint
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
@@ -422,6 +423,40 @@ theorem contMDiffOn (h : IsImmersionAtOfComplement F I J n f x) :
 /-- A `C^n` immersion at `x` is `C^n` at `x`. -/
 theorem contMDiffAt (h : IsImmersionAtOfComplement F I J n f x) : CMDiffAt n f x :=
   h.contMDiffOn.contMDiffAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
+
+lemma isImmersedPoint (h : IsImmersionAtOfComplement F I J n f x) (hn : n ≠ 0) :
+    IsImmersedPoint I J f x := by
+  -- The local representative of f in the nice charts at x, as a continuous linear map.
+  let rhs : E →L[𝕜] E'' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
+
+  -- issue 1: reducing to the local representative having an immersed point also assumes
+  -- no boundary in other places...
+  suffices hx : IsImmersedPoint 𝓘(𝕜, E) 𝓘(𝕜, E'')
+      ((h.codChart.extend J) ∘ f ∘ (h.domChart.extend I).symm) ((h.domChart.extend I) x) by
+    have aux :
+        IsImmersedPoint 𝓘(𝕜, E) J (f ∘ (h.domChart.extend I).symm) (h.domChart.extend I x) := by
+      apply IsImmersedPoint.of_comp _ _ hx
+      · apply MDifferentiableAt.comp (I' := I)
+        · convert h.contMDiffAt.mdifferentiableAt hn
+          simp [h.domChart.left_inv (mem_domChart_source h)]
+        apply ContMDiffAt.mdifferentiableAt ?_ hn
+        have aux2 := contMDiffAt_extend h.domChart_mem_maximalAtlas h.mem_domChart_source
+        have aux3 := contMDiffOn_extend_symm h.domChart_mem_maximalAtlas --h.mem_domChart_source
+        apply aux3.contMDiffAt
+        simp
+        sorry -- true if boundaryless...
+      · have : MDiffAt rhs ((h.domChart.extend I) x) := sorry
+        sorry -- apply this.congr_of_eventuallyEq
+    --apply IsImmersedPoint.comp_isInvertible_mfderiv_left (hf := aux)
+    sorry
+  have : IsImmersedPoint 𝓘(𝕜, E) 𝓘(𝕜, E'') rhs (h.domChart.extend I x) := by
+    -- Maybe extract as lemma: a CLE has immersed points everywhere (would be the first term).
+    apply ((h.equiv.toDiffeomorph.isLocalDiffeomorph _).isImmersedPoint (by simp)).comp
+    dsimp
+    rw [isImmersedPoint_iff, mfderiv_eq_fderiv, ContinuousLinearMap.fderiv]
+    apply ContinuousLinearMap.HasLeftInverse.inl
+  -- now, argue rhs and φ have the same fderiv: needs a small detour, see my voice message
+  sorry
 
 end IsImmersionAtOfComplement
 
