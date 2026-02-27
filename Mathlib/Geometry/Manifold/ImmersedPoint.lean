@@ -110,6 +110,8 @@ lemma of_comp {g : M' → N} (hf : MDifferentiableAt I I' f x) (hg : MDifferenti
   rw [isImmersedPoint_iff, mfderiv_comp x hg hf] at hfg
   exact ContinuousLinearMap.HasLeftInverse.of_comp hfg
 
+-- TODO: are these the lemmas I want, or should one rather have them with "differential is
+-- invertible" instead of "is local diffeo"? (This difference matters for extended charts!)
 lemma comp_isLocalDiffeomorphAt_left (hf : IsImmersedPoint I I' f x)
     {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : n ≠ 0) :
     IsImmersedPoint J I' (f ∘ f₀) y :=
