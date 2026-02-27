@@ -780,6 +780,43 @@ jobs:
         env:
           MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
 
+      - name: Probe Azure Blob auth via Python urllib (safe)
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os
+          import urllib.error
+          import urllib.request
+          from email.utils import formatdate
+
+          token = "".join(os.environ.get("MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW", "").split())
+          url = "https://lakecache.blob.core.windows.net/mathlib4?restype=container&comp=metadata"
+          req = urllib.request.Request(url=url, method="GET")
+          req.add_header("Authorization", f"Bearer {token}")
+          req.add_header("x-ms-version", "2026-02-06")
+          req.add_header("x-ms-date", formatdate(usegmt=True))
+
+          try:
+              with urllib.request.urlopen(req) as resp:
+                  print(f"py_probe_http_code={resp.status}")
+                  headers = resp.headers
+          except urllib.error.HTTPError as err:
+              print(f"py_probe_http_code={err.code}")
+              headers = err.headers
+          except Exception as exc:
+              print(f"py_probe_error={type(exc).__name__}")
+              raise SystemExit(0)
+
+          print("py_probe_selected_headers_begin")
+          for key in ("www-authenticate", "x-ms-error-code", "x-ms-request-id", "date"):
+              value = headers.get(key)
+              if value is not None:
+                  print(f"{key}: {value}")
+          print("py_probe_selected_headers_end")
+          PY
+        env:
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
+
       - name: Upload staged cache to Azure
         shell: bash
         run: |
