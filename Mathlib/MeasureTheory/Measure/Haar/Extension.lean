@@ -77,6 +77,12 @@ theorem integral_pullback_invFun_apply (f : CompactlySupportedContinuousMap B E)
 
 variable [IsTopologicalGroup C] [LocallyCompactSpace B]
 
+theorem dist_integral_le_lintegral_edist {A : Type*} [MeasurableSpace A] {μA : Measure A}
+    {f g : A → E} (hf : Integrable f μA) (hg : Integrable g μA) :
+    dist (∫ a : A, f a ∂μA) (∫ a : A, g a ∂μA) ≤ (∫⁻ a : A, edist (f a) (g a) ∂μA).toReal := by
+  grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
+  simp only [ofReal_norm, edist_eq_enorm_sub, le_refl]
+
 /-- Pushforward a continuous comapctly supported function on `B` to a
 continuous compactly supported function on `C` by integrating over `A`. -/
 @[to_additive /-- Pushforward a continuous comapctly supported function on `B` to a
@@ -89,63 +95,48 @@ noncomputable def pushforward :
       obtain ⟨K, hK, hf⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
       refine exists_compact_iff_hasCompactSupport.mp
         ⟨ψ '' K, hK.image H.isOpenQuotientMap.continuous, fun x hx ↦ ?_⟩
-      suffices ∀ a : A, f (Function.invFun ψ x * φ a) = 0 by simp [this, pullback]
-      intro a
-      apply hf
-      contrapose! hx
-      refine ⟨_, hx, ?_⟩
-      rw [map_mul, Function.rightInverse_invFun H.isOpenQuotientMap.surjective,
+      suffices ∀ a : A, f (Function.invFun ψ x * φ a) = 0 by simp [this, pullback_def]
+      refine fun a ↦ hf _ (mt (Set.mem_image_of_mem ψ) ?_)
+      rwa [map_mul, Function.rightInverse_invFun H.isOpenQuotientMap.surjective,
         H.mulExact.apply_apply_eq_one, mul_one]
     continuous_toFun := by
-      rw [← H.isOpenQuotientMap.continuous_comp_iff, Function.comp_def]
-      simp only [integral_pullback_invFun_apply]
-      let p : B → A → E := fun b a ↦ f (b * φ a)
-      have hp (b : B) : MemLp (p b) 1 μA :=
-        (pullback H f b).continuous.memLp_of_hasCompactSupport (pullback H f b).hasCompactSupport
-      suffices Continuous (fun b ↦ MemLp.toLp (p b) (hp b)) from by
-        refine (continuous_congr (fun b ↦ integral_congr_ae (hp b).coeFn_toLp)).mp ?_
-        exact continuous_integral.comp this
-      simp only [p]
       let := IsTopologicalGroup.rightUniformSpace B
-      rw [Metric.continuous_iff']
+      simp_rw [← H.isOpenQuotientMap.continuous_comp_iff, Function.comp_def,
+        integral_pullback_invFun_apply, Metric.continuous_iff']
       intro b ε hε
       obtain ⟨U₀, hU₀, hb⟩ := exists_compact_mem_nhds b
-      have hf₀ := f.hasCompactSupport
-      rw [← exists_compact_iff_hasCompactSupport] at hf₀
-      obtain ⟨K, hK, hf₀⟩ := hf₀
+      obtain ⟨K, hK, hf₀⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
       let S : Set A := φ ⁻¹' (U₀⁻¹ * K)
-      have hS : IsCompact S := H.isClosedEmbedding.isCompact_preimage (hU₀.inv.mul hK)
-      have hS' : ∀ x ∈ U₀, ∀ y : A, f (x * φ y) ≠ 0 → y ∈ S := by
-        intro x hx y h
+      have hSc : IsCompact S := H.isClosedEmbedding.isCompact_preimage (hU₀.inv.mul hK)
+      have hδ : ∃ δ > 0, ENNReal.ofReal δ * μA S < ENNReal.ofReal ε := by
+        rw [← ENNReal.ofReal_toReal hSc.measure_ne_top, ← measureReal_def]
+        by_cases hS' : μA.real S = 0
+        · simp [hS', hε, exists_gt]
+        · use ε / 2 / μA.real S
+          refine ⟨by positivity, ?_⟩
+          rwa [← ENNReal.ofReal_mul' measureReal_nonneg, ENNReal.ofReal_lt_ofReal_iff hε,
+            div_mul_cancel₀ _ hS', half_lt_self_iff]
+      obtain ⟨δ, hδ0, hδ⟩ := hδ
+      have hS {x} (hx : x ∈ U₀) {y} (hy : y ∉ S) : H.pullback f x y = 0 := by
+        contrapose! hy
         exact Set.mem_mul.mpr ⟨x⁻¹, Set.inv_mem_inv.mpr hx, x * φ y,
-          not_imp_comm.mp (hf₀ (x * φ y)) h, inv_mul_cancel_left x (φ y)⟩
-      obtain ⟨v, hv0, hv⟩ := exists_pos_mul_lt hε (ENNReal.toReal (μA S))
-      simp only [dist_eq_norm_sub, ← MemLp.toLp_sub, MeasureTheory.Lp.norm_toLp]
+          not_imp_comm.mp (hf₀ (x * φ y)) hy, inv_mul_cancel_left x (φ y)⟩
       have ha := f.hasCompactSupport.uniformContinuous_of_continuous f.continuous
-      rw [UniformContinuous, Filter.tendsto_iff_forall_eventually_mem] at ha
-      obtain ⟨U, hU, hf⟩ := ha _ (Metric.dist_mem_uniformity hv0)
+      rw [uniformContinuous_iff_eventually] at ha
+      obtain ⟨U, hU, hf⟩ := ha _ (Metric.dist_mem_uniformity hδ0)
       refine Filter.mem_of_superset (Filter.inter_mem
         (mul_singleton_mem_nhds_of_nhds_one b (inv_mem_nhds_one B hU)) hb) ?_
       rintro - ⟨⟨t, ht, b, rfl, -, rfl⟩, htb⟩
-      have hd (a : A) : dist (f (t * b * φ a)) (f (b * φ a)) < v := by
-        simpa using @hf ⟨t * b * φ a, b * φ a⟩ (by simpa)
-      replace hd (a : A) : ‖f (t * b * φ a) - f (b * φ a)‖ₑ ≤ ENNReal.ofReal v := by
-        rw [← ofReal_norm_eq_enorm, ← dist_eq_norm_sub]
-        exact ENNReal.ofReal_le_ofReal (hd a).le
-      apply ENNReal.toReal_lt_of_lt_ofReal
-      rw [MeasureTheory.eLpNorm_one_eq_lintegral_enorm,
-        ← MeasureTheory.setLIntegral_eq_of_support_subset (s := S)]
-      · apply (MeasureTheory.lintegral_mono hd).trans_lt
-        rwa [lintegral_const, Measure.restrict_apply_univ,
-          ← ENNReal.ofReal_toReal hS.measure_ne_top, ← ENNReal.ofReal_mul hv0.le,
-          ENNReal.ofReal_lt_ofReal_iff_of_nonneg (by positivity), mul_comm]
-      · intro x hx
-        have : f (t * b * φ x) ≠ 0 ∨ f (b * φ x) ≠ 0 := by
-          contrapose! hx
-          simp [hx.1, hx.2]
-        rcases this with h | h
-        · exact hS' (t * b) htb x h
-        · exact hS' b (mem_of_mem_nhds hb) x h }
+      have h (a) (ha : a ∈ S) : edist (H.pullback f (t * b) a) (H.pullback f b a) ≤ .ofReal δ := by
+        rw [edist_dist]
+        exact ENNReal.ofReal_le_ofReal (@hf ⟨t * b * φ a, b * φ a⟩ (by simpa)).le
+      grw [Set.mem_setOf_eq, dist_integral_le_lintegral_edist (H.pullback f (t * b)).integrable
+        (H.pullback f b).integrable, ← setLIntegral_eq_of_support_subset]
+      · refine ENNReal.toReal_lt_of_lt_ofReal ((setLIntegral_mono measurable_const h).trans_lt ?_)
+        rwa [lintegral_const, restrict_apply_univ]
+      · intro y hy
+        contrapose! hy
+        rw [Function.notMem_support, hS htb hy, hS (mem_of_mem_nhds hb) hy, edist_self] }
   map_add' f g := by
     ext c
     exact integral_add (pullback H f _).integrable (pullback H g _).integrable
@@ -165,13 +156,8 @@ theorem pushforward_apply (f : CompactlySupportedContinuousMap B E) (b : B) :
 
 @[to_additive]
 theorem pushforward_mono (f g : CompactlySupportedContinuousMap B ℝ) (h : f ≤ g) :
-    pushforward H μA f ≤ pushforward H μA g := by
-  intro c
-  apply integral_mono
-  · exact (pullback H f _).integrable
-  · exact (pullback H g _).integrable
-  · intro a
-    apply h
+    pushforward H μA f ≤ pushforward H μA g :=
+  fun _ ↦ integral_mono (pullback H f _).integrable (pullback H g _).integrable (fun _ ↦ h _)
 
 variable [MeasurableSpace C] [BorelSpace C] (μC : Measure C) [hμC : IsHaarMeasure μC]
 
