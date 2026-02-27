@@ -3,11 +3,13 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.DedekindDomain
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Module.DedekindDomain
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Structure of finitely generated modules over a PID
@@ -45,6 +47,8 @@ Then we get the general result using that a torsion free module is free (which h
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
 
+public section
+
 -- We shouldn't need to know about topology to prove
 -- the structure theorem for finitely generated modules over a PID.
 assert_not_exists TopologicalSpace
@@ -60,6 +64,7 @@ open Submodule
 
 open UniqueFactorizationMonoid
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible a) :
     IsSemisimpleModule R (torsionBy R M a) :=
   haveI := PrincipalIdealRing.isMaximal_of_irreducible h
@@ -121,7 +126,7 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
     (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by
-  by_cases hk : k ≤ pOrder hM y
+  by_cases! hk : k ≤ pOrder hM y
   · let f :=
       ((R ∙ p ^ (pOrder hM y - k) * p ^ k).quotEquivOfEq _ ?_).trans
         (quotTorsionOfEquivSpanSingleton R M y)
@@ -140,11 +145,12 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
     · symm; convert Ideal.torsionOf_eq_span_pow_pOrder hp hM y
       rw [← pow_add, Nat.sub_add_cancel hk]
   · use 0
-    rw [zero_smul, smul_zero, ← Nat.sub_add_cancel (le_of_not_ge hk), pow_add, mul_smul, hM',
+    rw [zero_smul, smul_zero, ← Nat.sub_add_cancel hk.le, pow_add, mul_smul, hM',
       smul_zero]
 
 open Submodule.Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ pOrder hM z))
     {k : ℕ} (f : (R ⧸ R ∙ p ^ k) →ₗ[R] M ⧸ R ∙ z) :
     ∃ x : M, p ^ k • x = 0 ∧ Submodule.Quotient.mk (p := span R {z}) x = f 1 := by
@@ -152,7 +158,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
   have : p ^ k • f1.choose ∈ R ∙ z := by
     rw [← Quotient.mk_eq_zero, mk_smul, f1.choose_spec, ← f.map_smul]
     convert f.map_zero; change _ • Submodule.Quotient.mk _ = _
-    rw [← mk_smul, Quotient.mk_eq_zero, Algebra.id.smul_eq_mul, mul_one]
+    rw [← mk_smul, Quotient.mk_eq_zero, smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
   refine ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], ?_⟩
@@ -161,6 +167,7 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
 
 open Finset Multiset
 
+set_option backward.isDefEq.respectTransparency false in
 omit dec in
 /-- A finitely generated `p ^ ∞`-torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p ^ e i)` for some `e i`. -/
@@ -210,7 +217,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
           ext i : 3
           simp only [LinearMap.coe_comp, Function.comp_apply, mkQ_apply]
           rw [LinearEquiv.coe_toLinearMap, LinearMap.id_apply, DirectSum.toModule_lof,
-            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_one, Ideal.Quotient.mk_eq_mk,
+            liftQSpanSingleton_apply, LinearMap.toSpanSingleton_apply_one, Ideal.Quotient.mk_eq_mk,
             map_one (Ideal.Quotient.mk _), (this i).choose_spec.right]
     · exact (mk_surjective _).forall.mpr fun x =>
         ⟨(@hM x).choose, by rw [← Quotient.mk_smul, (@hM x).choose_spec, Quotient.mk_zero]⟩
@@ -224,6 +231,7 @@ theorem torsion_by_prime_power_decomposition (hM : Module.IsTorsion' M (Submonoi
 
 end PTorsion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finitely generated torsion module over a PID is isomorphic to a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
 theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTorsion R M) :
@@ -249,6 +257,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R M] (hM : Module.IsTor
 
 variable (R M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated
   module over a PID is isomorphic to the product of a free module and a direct sum of some
   `R ⧸ R ∙ (p i ^ e i)` where the `p i ^ e i` are prime powers. -/
@@ -265,6 +274,7 @@ theorem equiv_free_prod_directSum [h' : Module.Finite R M] :
           (h.prodCongr g).trans <| LinearEquiv.prodComm.{u, u} R _ (Fin n →₀ R) ⟩⟩
   rw [range_subtype, ker_mkQ]
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem exists_ker_toSpanSingleton_eq_annihilator [Module.Finite R M] :
     ∃ x : M, ker (toSpanSingleton R _ x) = annihilator R M := by

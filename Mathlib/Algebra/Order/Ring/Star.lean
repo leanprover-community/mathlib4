@@ -3,8 +3,10 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Star.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
 # Commutative star-ordered rings are ordered rings
@@ -19,9 +21,11 @@ ordered ring, then it is commutative.
 In this file we prove the converse: a *commutative* star-ordered ring is an ordered ring.
 -/
 
+@[expose] public section
+
 namespace StarOrderedRing
 
-/- This example shows that nonnegative elements in a ordered semiring which is also star-ordered
+/- This example shows that nonnegative elements in an ordered semiring which is also star-ordered
 must commute. We provide this only as an example as opposed to a lemma because we never expect the
 type class assumptions to be satisfied without a `CommSemiring` instance already in scope; not that
 it is impossible, only that it shouldn't occur in practice. -/

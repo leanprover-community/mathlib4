@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-import Mathlib.RingTheory.AlgebraicIndependent.Defs
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
 
 /-!
 # Algebraic Independence
@@ -20,6 +22,8 @@ This file concerns adjoining an algebraic independent family to a field.
   algebraic independent family into the rational function field. It is the inverse of
   `AlgebraicIndependent.aevalEquivField`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -47,6 +51,7 @@ theorem aevalEquivField_apply_coe (a : FractionRing (MvPolynomial ι F)) :
     hx.aevalEquivField a =
       IsFractionRing.lift (algebraicIndependent_iff_injective_aeval.2 hx) a := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem aevalEquivField_algebraMap_apply_coe (a : MvPolynomial ι F) :
     hx.aevalEquivField (algebraMap _ _ a) = aeval x a := by
   simp

@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementarySubstructures
+module
+
+public import Mathlib.ModelTheory.ElementarySubstructures
 
 /-!
 # Skolem Functions and Downward Löwenheim–Skolem
@@ -23,6 +25,8 @@ import Mathlib.ModelTheory.ElementarySubstructures
 
 - Use `skolem₁` recursively to construct an actual Skolemization of a language.
 -/
+
+@[expose] public section
 
 
 universe u v w w'

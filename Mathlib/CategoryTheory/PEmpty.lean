@@ -3,13 +3,17 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The empty category
 
 Defines a category structure on `PEmpty`, and the unique functor `PEmpty ⥤ C` for any category `C`.
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 -- morphism levels before object levels. See note [category theory universes].

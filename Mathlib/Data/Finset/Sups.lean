@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Data.Finset.Slice
-import Mathlib.Data.Set.Sups
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Data.Finset.Slice
+public import Mathlib.Data.Set.Sups
 
 /-!
 # Set family operations
@@ -35,6 +37,8 @@ We define the following notation in scope `FinsetFamily`:
 [B. Bollobás, *Combinatorics*][bollobas1986]
 -/
 
+@[expose] public section
+
 open Function
 
 open SetFamily
@@ -49,6 +53,7 @@ variable [SemilatticeSup α] [SemilatticeSup β] [FunLike F α β] [SupHomClass 
 variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s ⊻ t` is the finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t`. -/
+@[instance_reducible]
 protected def hasSups : HasSups (Finset α) :=
   ⟨image₂ (· ⊔ ·)⟩
 
@@ -193,6 +198,7 @@ variable [SemilatticeInf α] [SemilatticeInf β] [FunLike F α β] [InfHomClass 
 variable (s s₁ s₂ t t₁ t₂ u v : Finset α)
 
 /-- `s ⊼ t` is the finset of elements of the form `a ⊓ b` where `a ∈ s`, `b ∈ t`. -/
+@[instance_reducible]
 protected def hasInfs : HasInfs (Finset α) :=
   ⟨image₂ (· ⊓ ·)⟩
 

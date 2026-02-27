@@ -3,10 +3,12 @@ Copyright (c) 2023 Antoine Chambert-Loir and María Inés de Frutos-Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Bhavik Mehta, Eric Wieser
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Finset.Basic
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Sub.Defs
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-! # Antidiagonal with values in general types
 
@@ -46,6 +48,8 @@ def s : Multiset ℕ := {0, 0, 0}
 * Define `HasMulAntidiagonal` (for monoids).
   For `PNat`, we will recover the set of divisors of a strictly positive integer.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -170,6 +174,7 @@ theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
 
 end OrderedSub
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The disjoint union of antidiagonals `Σ (n : A), antidiagonal n` is equivalent to the product
     `A × A`. This is such an equivalence, obtained by mapping `(n, (k, l))` to `(k, l)`. -/
 @[simps]

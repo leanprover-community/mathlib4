@@ -3,12 +3,14 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Data.PNat.Basic
-import Mathlib.Data.PNat.Interval
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Multiset.Sort
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.PNat.Interval
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`
@@ -34,6 +36,8 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 * `pqr.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
 
 -/
+
+@[expose] public section
 
 
 namespace ADEInequality
@@ -220,17 +224,17 @@ theorem admissible_of_one_lt_sumInv_aux' {p q r : ℕ+} (hpq : p ≤ q) (hqr : q
   · exact admissible_E8
 
 theorem admissible_of_one_lt_sumInv_aux :
-    ∀ {pqr : List ℕ+} (_ : pqr.Sorted (· ≤ ·)) (_ : pqr.length = 3) (_ : 1 < sumInv pqr),
+    ∀ {pqr : List ℕ+} (_ : pqr.SortedLE) (_ : pqr.length = 3) (_ : 1 < sumInv pqr),
       Admissible pqr
   | [p, q, r], hs, _, H => by
-    obtain ⟨⟨hpq, -⟩, hqr⟩ : (p ≤ q ∧ p ≤ r) ∧ q ≤ r := by simpa using hs
+    obtain ⟨⟨hpq, -⟩, hqr⟩ : (p ≤ q ∧ p ≤ r) ∧ q ≤ r := by simpa using hs.pairwise
     exact admissible_of_one_lt_sumInv_aux' hpq hqr H
 
 theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
     Admissible {p, q, r} := by
   simp only [Admissible]
   let S := sort (α := ℕ+) {p, q, r}
-  have hS : S.Sorted (· ≤ ·) := sort_sorted _ _
+  have hS : S.SortedLE := (pairwise_sort _ _).sortedLE
   have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq {p, q, r} LE.le).symm
   rw [hpqr]
   rw [hpqr] at H

@@ -3,7 +3,9 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Equicontinuity of a family of functions
@@ -76,6 +78,8 @@ types, and in that case one should go back to the family definition rather than 
 
 equicontinuity, uniform convergence, ascoli
 -/
+
+@[expose] public section
 
 
 section
@@ -531,9 +535,9 @@ theorem uniformEquicontinuousOn_iff_uniformContinuousOn {F : ι → β → α} {
   rfl
 
 theorem equicontinuousWithinAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
-    {S : Set X} {x₀ : X} : EquicontinuousWithinAt (uα :=  ⨅ k, u k) F S x₀ ↔
-      ∀ k, EquicontinuousWithinAt (uα :=  u k) F S x₀ := by
-  simp only [equicontinuousWithinAt_iff_continuousWithinAt (uα := _), topologicalSpace]
+    {S : Set X} {x₀ : X} : EquicontinuousWithinAt (uα := ⨅ k, u k) F S x₀ ↔
+      ∀ k, EquicontinuousWithinAt (uα := u k) F S x₀ := by
+  simp +instances only [equicontinuousWithinAt_iff_continuousWithinAt (uα := _), topologicalSpace]
   unfold ContinuousWithinAt
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]
 
@@ -544,7 +548,7 @@ theorem equicontinuousAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X �
 
 theorem equicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'} :
     Equicontinuous (uα := ⨅ k, u k) F ↔ ∀ k, Equicontinuous (uα := u k) F := by
-  simp_rw [equicontinuous_iff_continuous (uα := _), UniformFun.topologicalSpace]
+  simp_rw +instances [equicontinuous_iff_continuous (uα := _), UniformFun.topologicalSpace]
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, continuous_iInf_rng]
 
 theorem equicontinuousOn_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}

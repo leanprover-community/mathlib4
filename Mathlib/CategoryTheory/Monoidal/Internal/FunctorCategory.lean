@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.CommMon_
-import Mathlib.CategoryTheory.Monoidal.Comon_
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Monoidal.CommMon_
+public import Mathlib.CategoryTheory.Monoidal.Comon_
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # `Mon (C ⥤ D) ≌ C ⥤ Mon D`
@@ -25,6 +27,8 @@ Presumably this statement is not specific to monoids,
 and could be generalised to any internal algebraic objects,
 if the appropriate framework was available.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -51,6 +55,7 @@ def functorObjObj (A : C ⥤ D) [MonObj A] (X : C) : Mon D where
     mul_one := congr_app (mul_one A) X
     mul_assoc := congr_app (mul_assoc A) X }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object in a functor category induces a functor to the category of monoid objects. -/
 @[simps]
 def functorObj (A : C ⥤ D) [MonObj A] : C ⥤ Mon D where
@@ -103,6 +108,7 @@ def unitIso : 𝟭 (Mon (C ⥤ D)) ≅ functor ⋙ inverse :=
   { hom := .mk' { app := fun _ => 𝟙 _ }
     inv := .mk' { app := fun _ => 𝟙 _ } })
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the equivalence `Mon (C ⥤ D) ≌ C ⥤ Mon D`.
 -/
 @[simps!]
@@ -140,6 +146,7 @@ def functorObjObj (A : C ⥤ D) [ComonObj A] (X : C) : Comon D where
     comul_counit := congr_app (comul_counit A) X
     comul_assoc := congr_app (comul_assoc A) X }
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A comonoid object in a functor category induces a functor to the category of comonoid objects.
 -/
@@ -154,6 +161,7 @@ def functorObj (A : (C ⥤ D)) [ComonObj A] : C ⥤ Comon D where
   map_id X := by ext; dsimp; rw [CategoryTheory.Functor.map_id]
   map_comp f g := by ext; dsimp; rw [Functor.map_comp]
 
+set_option backward.privateInPublic true in
 /-- Functor translating a comonoid object in a functor category
 to a functor into the category of comonoid objects.
 -/
@@ -175,6 +183,7 @@ def inverseObj (F : C ⥤ Comon D) : Comon (C ⥤ D) where
   { counit := { app X := ε[(F.obj X).X] }
     comul := { app X := Δ[(F.obj X).X] } }
 
+set_option backward.privateInPublic true in
 /-- Functor translating a functor into the category of comonoid objects
 to a comonoid object in the functor category
 -/
@@ -188,6 +197,7 @@ private def inverse : (C ⥤ Comon D) ⥤ Comon (C ⥤ D) where
       isComonHom_hom.hom_counit := by ext x; dsimp; rw [IsComonHom.hom_counit (α.app x).hom]
       isComonHom_hom.hom_comul := by ext x; dsimp; rw [IsComonHom.hom_comul (α.app x).hom] }
 
+set_option backward.privateInPublic true in
 /-- The unit for the equivalence `Comon (C ⥤ D) ≌ C ⥤ Comon D`.
 -/
 @[simps!]
@@ -196,17 +206,23 @@ private def unitIso : 𝟭 (Comon (C ⥤ D)) ≅ functor ⋙ inverse :=
     { hom := .mk' { app := fun _ => 𝟙 _ }
       inv := .mk' { app := fun _ => 𝟙 _ } })
 
+set_option backward.isDefEq.respectTransparency false in
+-- probably this was originally also intended to be a private def
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The counit for the equivalence `Mon (C ⥤ D) ≌ C ⥤ Mon D`.
 -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ Comon D) :=
   NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }))
 
 end ComonFunctorCategoryEquivalence
 
 open ComonFunctorCategoryEquivalence
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- When `D` is a monoidal category,
 comonoid objects in `C ⥤ D` are the same thing
 as functors from `C` into the comonoid objects of `D`.
@@ -230,11 +246,14 @@ to a functor into the category of commutative monoid objects.
 @[simps!]
 def functor : CommMon (C ⥤ D) ⥤ C ⥤ CommMon D where
   obj A :=
-    { (monFunctorCategoryEquivalence C D).functor.obj A.toMon with
-      obj := fun X =>
+    { obj X :=
         { ((monFunctorCategoryEquivalence C D).functor.obj A.toMon).obj X with
-          comm := { mul_comm := congr_app (IsCommMonObj.mul_comm A.X) X } } }
-  map f := { app := fun X => ((monFunctorCategoryEquivalence C D).functor.map f).app X }
+          comm := { mul_comm := congr_app (IsCommMonObj.mul_comm A.X) X } }
+      map f :=
+        CommMon.homMk (((monFunctorCategoryEquivalence C D).functor.obj A.toMon).map f) }
+  map f :=
+    { app X :=
+        CommMon.homMk (((monFunctorCategoryEquivalence C D).functor.map f.hom).app X) }
 
 /-- Functor translating a functor into the category of commutative monoid objects
 to a commutative monoid object in the functor category
@@ -244,22 +263,20 @@ def inverse : (C ⥤ CommMon D) ⥤ CommMon (C ⥤ D) where
   obj F :=
     { (monFunctorCategoryEquivalence C D).inverse.obj (F ⋙ CommMon.forget₂Mon D) with
       comm := { mul_comm := by ext X; exact IsCommMonObj.mul_comm (F.obj X).X } }
-  map α := (monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _)
+  map α :=
+    CommMon.homMk ((monFunctorCategoryEquivalence C D).inverse.map (Functor.whiskerRight α _))
 
 /-- The unit for the equivalence `CommMon (C ⥤ D) ≌ C ⥤ CommMon D`.
 -/
 @[simps!]
 def unitIso : 𝟭 (CommMon (C ⥤ D)) ≅ functor ⋙ inverse :=
-  NatIso.ofComponents (fun A =>
-    { hom := .mk' { app := fun _ => 𝟙 _ }
-      inv := .mk' { app := fun _ => 𝟙 _ } })
+  NatIso.ofComponents (fun A => CommMon.mkIso (Iso.refl _))
 
 /-- The counit for the equivalence `CommMon (C ⥤ D) ≌ C ⥤ CommMon D`.
 -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (C ⥤ CommMon D) :=
-  NatIso.ofComponents (fun A =>
-    NatIso.ofComponents (fun X => { hom := { hom := 𝟙 _ }, inv := { hom := 𝟙 _ } }) )
+  NatIso.ofComponents (fun A ↦ NatIso.ofComponents (fun X ↦ Iso.refl _))
 
 end CommMonFunctorCategoryEquivalence
 

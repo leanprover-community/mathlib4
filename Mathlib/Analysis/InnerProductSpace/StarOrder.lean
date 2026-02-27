@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.InnerProductSpace.Positive
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 # Continuous linear maps on a Hilbert space are a `StarOrderedRing`
@@ -18,6 +20,8 @@ equipped with all the usual instances of the continuous functional calculus.
 
 -/
 
+@[expose] public section
+
 namespace ContinuousLinearMap
 
 open RCLike
@@ -26,6 +30,7 @@ open scoped NNReal
 variable {𝕜 H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H] [CompleteSpace H]
 variable [Algebra ℝ (H →L[𝕜] H)] [IsScalarTower ℝ 𝕜 (H →L[𝕜] H)]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped InnerProductSpace in
 lemma IsPositive.spectrumRestricts {f : H →L[𝕜] H} (hf : f.IsPositive) :
     SpectrumRestricts f ContinuousMap.realToNNReal := by
@@ -71,6 +76,7 @@ lemma instStarOrderedRingRCLike
       | zero => exact isPositive_zero
       | add f g _ _ hf hg => exact hf.add hg
 
+set_option backward.isDefEq.respectTransparency false in
 instance instStarOrderedRing {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] [CompleteSpace H] : StarOrderedRing (H →L[ℂ] H) :=
   instStarOrderedRingRCLike

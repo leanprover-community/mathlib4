@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.MapFold
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.MapFold
 
 /-!
 # Attaching a proof of membership to a finite set
@@ -19,6 +21,8 @@ import Mathlib.Data.Multiset.MapFold
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -50,6 +54,7 @@ theorem attach_val (s : Finset α) : s.attach.1 = s.1.attach :=
 theorem mem_attach (s : Finset α) : ∀ x, x ∈ s.attach :=
   Multiset.mem_attach _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_attach (s : Finset α) : (s.attach : Set s) = Set.univ := by ext; simp
 

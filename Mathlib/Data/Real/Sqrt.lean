@@ -3,9 +3,11 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Tactic.Isolate
+module
+
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.Order.MonotoneContinuity
+public import Mathlib.Tactic.Isolate
 
 /-!
 # Square root of a real number
@@ -30,6 +32,8 @@ Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`.
 
 square root
 -/
+
+@[expose] public section
 
 open Set Filter
 open scoped Filter NNReal Topology
@@ -112,7 +116,7 @@ namespace Real
 /-- The square root of a real number. This returns 0 for negative inputs.
 
 This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`. -/
-noncomputable def sqrt (x : ℝ) : ℝ :=
+@[irreducible] noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
 
 -- TODO: replace this with a typeclass
@@ -125,13 +129,28 @@ variable {x y : ℝ}
 theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = √(x : ℝ) := by
   rw [Real.sqrt, Real.toNNReal_coe]
 
-@[continuity]
-theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) :=
-  NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
+@[continuity, fun_prop]
+theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by unfold sqrt; fun_prop
 
-theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
+@[simp]
+lemma map_sqrt_atTop : map (√·) atTop = atTop := by
+  unfold sqrt
+  simp_rw [← Function.comp_def]
+  simp [← map_map]
 
-@[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := NNReal.coe_nonneg _
+@[simp]
+lemma comap_sqrt_atTop : comap (√·) atTop = atTop := by
+  unfold sqrt
+  simp_rw [← Function.comp_def]
+  simp [← comap_comap]
+
+lemma tendsto_sqrt_atTop : Tendsto (√·) atTop atTop := map_sqrt_atTop.le
+
+theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : √x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
+
+@[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := by
+  unfold sqrt
+  exact NNReal.coe_nonneg _
 
 @[simp]
 theorem mul_self_sqrt (h : 0 ≤ x) : √x * √x = x := by
@@ -202,6 +221,9 @@ theorem sqrt_le_sqrt (h : x ≤ y) : √x ≤ √y := by
 @[gcongr]
 theorem sqrt_monotone : Monotone Real.sqrt :=
   fun _ _ ↦ sqrt_le_sqrt
+
+theorem strictMonoOn_sqrt : StrictMonoOn sqrt (Ici 0) :=
+  fun _ ha _ _ h => (sqrt_lt_sqrt_iff ha).mpr h
 
 @[gcongr, bound]
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
@@ -301,10 +323,10 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
-    let ra ← core  q(inferInstance) q(inferInstance) a
+    let ra ← core q(inferInstance) q(inferInstance) a
     assertInstancesCommute
     match ra with
     | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
@@ -314,7 +336,7 @@ def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity √_]
-def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
     let ra ← catchNone <| core q(inferInstance) q(inferInstance) a
@@ -331,9 +353,8 @@ namespace Real
 lemma one_lt_sqrt_two : 1 < √2 := by rw [← Real.sqrt_one]; gcongr; simp
 
 lemma sqrt_two_lt_three_halves : √2 < 3 / 2 := by
-  suffices 2 * √2 < 3 by linarith
-  rw [← sq_lt_sq₀ (by positivity) (by positivity), mul_pow, Real.sq_sqrt (by positivity)]
-  norm_num
+  rw [← sq_lt_sq₀ (by positivity) (by positivity)]
+  grind
 
 lemma inv_sqrt_two_sub_one : (√2 - 1)⁻¹ = √2 + 1 := by
   grind
@@ -419,6 +440,11 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
   calc 1 + x
     _ ≤ 1 + x + (x / 2) ^ 2 := le_add_of_nonneg_right <| sq_nonneg _
     _ = _ := by ring
+
+theorem sqrt_prod {ι : Type*} (s : Finset ι) {x : ι → ℝ} (hx : ∀ i ∈ s, 0 ≤ x i) :
+    √(∏ i ∈ s, x i) = ∏ i ∈ s, √(x i) := by
+  convert congr_arg NNReal.toReal <| map_prod NNReal.sqrtHom (Real.toNNReal ∘ x) s <;>
+    simp +contextual [-map_prod, NNReal.sqrtHom, hx]
 
 end Real
 

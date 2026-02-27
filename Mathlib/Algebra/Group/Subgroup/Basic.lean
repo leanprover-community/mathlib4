@@ -3,10 +3,12 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Torsion
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups
@@ -45,6 +47,8 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset Ring
 
@@ -212,6 +216,7 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
 
 end Pi
 
+@[to_additive]
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
   pow_left_injective n hn a b := by
     have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
@@ -260,6 +265,16 @@ end AddSubgroup
 
 namespace Subgroup
 
+/-- The whole group `G` is normal. -/
+@[to_additive (attr := simp) /-- The whole group `G` is normal. -/]
+instance normal_top : (⊤ : Subgroup G).Normal where
+  conj_mem _ a _ := a
+
+/-- The trivial subgroup `{1}` is normal. -/
+@[to_additive (attr := simp) /-- The trivial subgroup `{0}` is normal. -/]
+instance normal_bot : (⊥ : Subgroup G).Normal where
+  conj_mem := by simp
+
 variable {H K : Subgroup G}
 
 @[to_additive]
@@ -293,10 +308,12 @@ theorem characteristic_iff_le_map : H.Characteristic ↔ ∀ ϕ : G ≃* G, H �
   simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_le_comap.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
   characteristic_iff_le_map.mpr fun _ϕ => bot_le
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
@@ -308,6 +325,7 @@ section Normalizer
 
 variable {H}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem normalizer_eq_top_iff : H.normalizer = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
@@ -396,10 +414,8 @@ This may be easier to work with, as it avoids inequalities and negations. -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
   apply forall_congr'; intro H
-  simp only [lt_iff_le_and_ne, le_normalizer, le_top, Ne]
+  simp only [lt_iff_le_and_ne, le_normalizer, Ne]
   tauto
-
-variable (H)
 
 end Normalizer
 
@@ -511,6 +527,11 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
 
+/-- The normal closure of an empty set is the trivial subgroup. -/
+@[simp]
+lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
+  rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
+
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
 def normalCore (H : Subgroup G) : Subgroup G where
@@ -585,6 +606,7 @@ namespace Subgroup
 
 variable {N : Type*} [Group N] (H : Subgroup G)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Normal.map {H : Subgroup G} (h : H.Normal) (f : G →* N) (hf : Function.Surjective f) :
     (H.map f).Normal := by
@@ -767,7 +789,7 @@ theorem map_normalClosure (s : Set G) (f : G →* N) (hf : Surjective f) :
 
 theorem comap_normalClosure (s : Set N) (f : G ≃* N) :
     normalClosure (f ⁻¹' s) = (normalClosure s).comap f := by
-  have := Set.preimage_equiv_eq_image_symm s f.toEquiv
+  have := f.toEquiv.image_symm_eq_preimage s
   simp_all [comap_equiv_eq_map_symm, map_normalClosure s (f.symm : N →* G) f.symm.surjective]
 
 lemma Normal.of_map_injective {G H : Type*} [Group G] [Group H] {φ : G →* H}
@@ -840,6 +862,7 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
   have := (normal_subgroupOf_iff hK).mp hN (a * b) b h hb
   rwa [mul_assoc, mul_assoc, mul_inv_cancel, mul_one] at this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive /-- Elements of disjoint, normal subgroups commute. -/]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
@@ -876,6 +899,7 @@ namespace IsConj
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg : g ∈ N}
     {hg' : g' ∈ N} (hc : IsConj g g') (ht : normalClosure ({⟨g, hg⟩} : Set N) = ⊤) :
     normalClosure ({⟨g', hg'⟩} : Set N) = ⊤ := by
@@ -923,3 +947,15 @@ def AddSubgroup.inertia {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
 
 @[simp] lemma AddSubgroup.mem_inertia {M : Type*} [AddGroup M] {I : AddSubgroup M} {G : Type*}
     [Group G] [MulAction G M] {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
+
+@[simp]
+lemma AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
+    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    (I.inertia G).subgroupOf H = I.inertia H :=
+  rfl
+
+@[simp]
+lemma AddSubgroup.inertia_map_subtype {M : Type*} [AddGroup M] (I : AddSubgroup M)
+    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
+  rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]

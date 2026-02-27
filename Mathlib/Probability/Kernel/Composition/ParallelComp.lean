@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Probability.Kernel.Composition.MapComap
-import Mathlib.Probability.Kernel.MeasurableLIntegral
+module
+
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Probability.Kernel.Composition.MapComap
+public import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 
@@ -25,6 +27,8 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
 * `κ ∥ₖ η = ProbabilityTheory.Kernel.parallelComp κ η`
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 

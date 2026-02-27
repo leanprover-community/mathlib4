@@ -3,8 +3,10 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Num.Basic
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Data.Num.Basic
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Bitwise operations using binary representation of integers
@@ -15,6 +17,8 @@ import Mathlib.Data.Vector.Basic
 * `SNum`, a type that represents integers as a bit string with a sign bit at the end,
 * arithmetic operations for `SNum`.
 -/
+
+@[expose] public section
 
 open List (Vector)
 
@@ -109,6 +113,7 @@ instance : HShiftLeft PosNum Nat PosNum where hShiftLeft := PosNum.shiftl
 
 @[simp] lemma shiftl_eq_shiftLeft (p : PosNum) (n : Nat) : p.shiftl n = p <<< n := rfl
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 -- This shows that the tail-recursive definition is the same as the more naïve recursion.
 theorem shiftl_succ_eq_bit0_shiftl : ∀ (p : PosNum) (n : Nat), p <<< n.succ = bit0 (p <<< n)
   | _, 0       => rfl

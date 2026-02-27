@@ -3,12 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Some facts about finite rings
 -/
+
+public section
 
 
 open Finset ZMod
@@ -17,6 +21,7 @@ section Ring
 
 variable {R : Type*} [Ring R] [Fintype R] [DecidableEq R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Finset.univ_of_card_le_two (h : Fintype.card R ≤ 2) :
     (univ : Finset R) = {0, 1} := by
   rcases subsingleton_or_nontrivial R

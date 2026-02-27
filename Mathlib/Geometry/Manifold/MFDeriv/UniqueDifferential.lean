@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
 # Unique derivative sets in manifolds
@@ -18,6 +20,8 @@ In this file, we prove various properties of unique derivative sets in manifolds
 * `tangentBundle_proj_preimage`: if `s` has the unique differential property,
   its preimage under the tangent bundle projection also has
 -/
+
+public section
 
 noncomputable section
 
@@ -134,6 +138,7 @@ open Bundle
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type*}
   [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)] [FiberBundle F Z]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
     (hs : UniqueMDiffWithinAt I s p.proj) (h's : s ⊆ (trivializationAt F Z p.proj).baseSet) :
     UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
@@ -195,6 +200,6 @@ variable [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle �
 theorem Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]
     (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
     e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
-  ⟨e.contMDiffOn.mdifferentiableOn le_rfl, e.contMDiffOn_symm.mdifferentiableOn le_rfl⟩
+  ⟨e.contMDiffOn.mdifferentiableOn one_ne_zero, e.contMDiffOn_symm.mdifferentiableOn one_ne_zero⟩
 
 end UniqueMDiff

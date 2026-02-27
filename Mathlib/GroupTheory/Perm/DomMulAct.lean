@@ -3,11 +3,13 @@ Copyright (c) 2023 Junyan Xu, Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Data.Set.Card
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Subgroup of `Equiv.Perm α` preserving a function
@@ -32,6 +34,8 @@ Let `α` and `ι` by types and let `f : α → ι`
   formula, where the product is restricted to `Finset.univ.image f`.
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Equiv MulAction
@@ -45,7 +49,7 @@ lemma mem_stabilizer_iff {g : (Perm α)ᵈᵐᵃ} :
   simp only [MulAction.mem_stabilizer_iff]; rfl
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) f`
-  to the product of the `Equiv.Perm {a // f a = i} -/
+  to the product of the `Equiv.Perm {a // f a = i}`. -/
 def stabilizerEquiv_invFun (g : ∀ i, Perm {a // f a = i}) (a : α) : α := g (f a) ⟨a, rfl⟩
 
 lemma stabilizerEquiv_invFun_eq (g : ∀ i, Perm {a // f a = i}) {a : α} {i : ι} (h : f a = i) :
@@ -56,7 +60,7 @@ lemma comp_stabilizerEquiv_invFun (g : ∀ i, Perm {a // f a = i}) (a : α) :
   (g (f a) ⟨a, rfl⟩).prop
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) p`
-  to the product of the `Equiv.Perm {a | f a = i} (as an `Equiv.Perm α`) -/
+  to the product of the `Equiv.Perm {a | f a = i}` (as an `Equiv.Perm α`). -/
 def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // f a = i}) : Perm α where
   toFun := stabilizerEquiv_invFun g
   invFun := stabilizerEquiv_invFun (fun i ↦ (g i).symm)
@@ -113,6 +117,7 @@ theorem stabilizer_ncard [Finite α] [Fintype ι] :
 
 variable [DecidableEq α] [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cardinality of the type of permutations preserving a function
   (without the finiteness assumption on target) -/
 theorem stabilizer_card' :
@@ -124,7 +129,7 @@ theorem stabilizer_card' :
     simp only [this, stabilizer_card]
     apply Finset.prod_bij (fun g _ => g.val)
     · exact fun g _ => Finset.coe_mem g
-    · exact fun g _ g' _ =>  SetCoe.ext
+    · exact fun g _ g' _ => SetCoe.ext
     · simp
     · intro i _
       apply congr_arg

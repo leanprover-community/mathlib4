@@ -3,8 +3,10 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Semisimple.Defs
-import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
+module
+
+public import Mathlib.Algebra.Lie.Semisimple.Defs
+public import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 
 /-!
 # Lie algebras with non-degenerate invariant bilinear forms are semisimple
@@ -12,7 +14,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 In this file we prove that a finite-dimensional Lie algebra over a field is semisimple
 if it does not have non-trivial abelian ideals and it admits a
 non-degenerate reflexive invariant bilinear form.
-Here a form is *invariant* if it invariant under the Lie bracket
+Here a form is *invariant* if it is invariant under the Lie bracket
 in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ z = Φ x ⁅y, z⁆`.
 
 ## Main results
@@ -29,6 +31,8 @@ in the sense that `⁅x, Φ⁆ = 0` for all `x` or equivalently, `Φ ⁅x, y⁆ 
 
 We follow the short and excellent paper [dieudonne1953].
 -/
+
+@[expose] public section
 
 namespace LieAlgebra
 
@@ -103,7 +107,7 @@ lemma orthogonal_disjoint
       LieSubmodule.lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
   rintro _ ⟨x, y, rfl⟩
   simp only [LieSubmodule.bot_coe, Set.mem_singleton_iff]
-  apply hΦ_nondeg
+  apply hΦ_nondeg.1
   intro z
   rw [hΦ_inv, neg_eq_zero]
   have hyz : ⁅(x : L), z⁆ ∈ I := lie_mem_left _ _ _ _ _ x.2

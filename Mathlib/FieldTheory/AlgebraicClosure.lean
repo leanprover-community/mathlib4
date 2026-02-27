@@ -3,9 +3,11 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Jiedong Jiang
 -/
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.IntermediateField.Algebraic
+module
+
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Relative Algebraic Closure
@@ -18,6 +20,8 @@ In this file we construct the relative algebraic closure of a field extension.
   of the field extension `E / F`, which is defined to be the integral closure of `F` in `E`.
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Polynomial FiniteDimensional IntermediateField Field
@@ -111,12 +115,14 @@ instance isIntegralClosure : IsIntegralClosure (algebraicClosure F E) F E :=
 
 end algebraicClosure
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem Transcendental.algebraicClosure {a : E} (ha : Transcendental F a) :
     Transcendental (algebraicClosure F E) a :=
   ha.extendScalars _
 
 variable (F E K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An intermediate field of `E / F` is contained in the algebraic closure of `F` in `E`
 if all of its elements are algebraic over `F`. -/
 theorem le_algebraicClosure' {L : IntermediateField F E} (hs : ∀ x : L, IsAlgebraic F x) :
@@ -129,6 +135,7 @@ if it is algebraic over `F`. -/
 theorem le_algebraicClosure (L : IntermediateField F E) [Algebra.IsAlgebraic F L] :
     L ≤ algebraicClosure F E := le_algebraicClosure' F E (Algebra.IsAlgebraic.isAlgebraic)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An intermediate field of `E / F` is contained in the algebraic closure of `F` in `E`
 if and only if it is algebraic over `F`. -/
 theorem le_algebraicClosure_iff (L : IntermediateField F E) :
@@ -140,12 +147,14 @@ theorem le_algebraicClosure_iff (L : IntermediateField F E) :
 
 namespace algebraicClosure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The algebraic closure in `E` of the algebraic closure of `F` in `E` is equal to itself. -/
 theorem algebraicClosure_eq_bot :
     algebraicClosure (algebraicClosure F E) E = ⊥ :=
   bot_unique fun x hx ↦ mem_bot.2
     ⟨⟨x, isIntegral_trans x (mem_algebraicClosure_iff'.1 hx)⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The normal closure in `E/F` of the algebraic closure of `F` in `E` is equal to itself. -/
 theorem normalClosure_eq_self :
     normalClosure F (algebraicClosure F E) E = algebraicClosure F E :=
@@ -166,7 +175,7 @@ theorem IsAlgClosed.algebraicClosure_eq_bot_iff [IsAlgClosed E] :
     ne_zero_of_dvd_ne_zero hmon.ne_zero (minpoly.dvd _ x hx))
   exact ⟨x, by simpa [Algebra.ofId_apply] using hx⟩
 
-/-- `F(S) / F` is a algebraic extension if and only if all elements of `S` are
+/-- `F(S) / F` is an algebraic extension if and only if all elements of `S` are
 algebraic elements. -/
 theorem IntermediateField.isAlgebraic_adjoin_iff_isAlgebraic {S : Set E} :
     Algebra.IsAlgebraic F (adjoin F S) ↔ ∀ x ∈ S, IsAlgebraic F x :=
@@ -175,6 +184,7 @@ theorem IntermediateField.isAlgebraic_adjoin_iff_isAlgebraic {S : Set E} :
 
 namespace algebraicClosure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is algebraically closed, then the algebraic closure of `F` in `E` is an absolute
 algebraic closure of `F`. -/
 instance isAlgClosure [IsAlgClosed E] : IsAlgClosure F (algebraicClosure F E) :=
@@ -213,6 +223,6 @@ variable {F}
 Let `E / F` be a field extension. If a polynomial `p`
 splits in `E`, then it splits in the relative algebraic closure of `F` in `E` already.
 -/
-theorem Splits.algebraicClosure {p : F[X]} (h : p.Splits (algebraMap F E)) :
-    p.Splits (algebraMap F (algebraicClosure F E)) :=
+theorem Splits.algebraicClosure {p : F[X]} (h : (p.map (algebraMap F E)).Splits) :
+    (p.map (algebraMap F (algebraicClosure F E))).Splits :=
   splits_of_splits h fun _ hx ↦ (isAlgebraic_of_mem_rootSet hx).isIntegral

@@ -3,10 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Fourier.ZMod
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.Analysis.Fourier.ZMod
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # L-series of functions on `ZMod N`
@@ -48,12 +49,14 @@ Results for completed L-functions:
   `LFunction_eq_completed_div_gammaFactor_odd`: we have
   `LFunction Φ s = completedLFunction Φ s / Gammaℝ s` for `Φ` even, and
   `LFunction Φ s = completedLFunction Φ s / Gammaℝ (s + 1)` for `Φ` odd. (We formulate it this way
-  around so it is still valid at the poles of the Gamma factor.)
+  so that it is still valid at the poles of the Gamma factor.)
 * `ZMod.differentiableAt_completedLFunction`: `ZMod.completedLFunction Φ` is differentiable at
   `s ∈ ℂ`, unless `s = 1` and `∑ j, Φ j ≠ 0`, or `s = 0` and `Φ 0 ≠ 0`.
 * `ZMod.completedLFunction_one_sub_even` and `ZMod.completedLFunction_one_sub_odd`:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 -/
+
+@[expose] public section
 
 open HurwitzZeta Complex ZMod Finset Topology Filter Set
 
@@ -86,6 +89,7 @@ lemma LFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
   simp only [LFunction, Nat.cast_one, one_cpow, ← singleton_eq_univ (0 : ZMod 1), sum_singleton,
     map_zero, hurwitzZeta_zero, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `1 < re s` the congruence L-function agrees with the sum of the Dirichlet series. -/
 lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LFunction Φ s = LSeries (Φ ·) s := by
@@ -158,6 +162,7 @@ private lemma LFunction_stdAddChar_eq_expZeta_of_one_lt_re (j : ZMod N) {s : ℂ
   conv_rhs at this => rw [Int.cast_mul, Int.cast_natCast, Int.cast_natCast, mul_div_assoc]
   rw [← this, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_zmod_val]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The `LFunction` of the function `x ↦ e (j * x)`, where `e : ZMod N → ℂ` is the standard additive
 character, is `expZeta (j / N)`.
@@ -450,6 +455,7 @@ private lemma completedLFunction_one_sub_of_one_lt_odd (hΦ : Φ.Odd) {s : ℂ} 
     ring
   _ = I * LFunction (𝓕 Φ) s := by rw [inv_I, neg_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Functional equation for completed L-functions (even case), valid at all points of differentiability.
 -/

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Monomorphisms and epimorphisms in functor categories
@@ -15,6 +17,8 @@ at least when `C` has pullbacks (resp. pushouts),
 see `NatTrans.mono_iff_mono_app` and `NatTrans.epi_iff_epi_app`.
 
 -/
+
+@[expose] public section
 
 universe v v' v'' u u' u''
 

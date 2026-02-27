@@ -3,11 +3,15 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Basic
 
 /-!
 # Unbundled functors, as a typeclass decorating the object-level function.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

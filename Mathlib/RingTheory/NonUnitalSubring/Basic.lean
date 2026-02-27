@@ -3,11 +3,13 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.GroupTheory.Subsemigroup.Center
-import Mathlib.RingTheory.NonUnitalSubring.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.GroupTheory.Subsemigroup.Center
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
 # `NonUnitalSubring`s
@@ -63,6 +65,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 non-unital subring
 -/
 
+@[expose] public section
+
 
 universe u v w
 
@@ -104,6 +108,18 @@ theorem mem_top (x : R) : x ∈ (⊤ : NonUnitalSubring R) :=
 @[simp]
 theorem coe_top : ((⊤ : NonUnitalSubring R) : Set R) = Set.univ :=
   rfl
+
+@[simp]
+lemma toNonUnitalSubsemiring_top : (⊤ : NonUnitalSubring R).toNonUnitalSubsemiring = ⊤ := rfl
+
+@[simp] lemma toAddSubgroup_top : (⊤ : NonUnitalSubring R).toAddSubgroup = ⊤ := rfl
+
+@[simp]
+lemma toNonUnitalSubsemiring_eq_top {S : NonUnitalSubring R} :
+    S.toNonUnitalSubsemiring = ⊤ ↔ S = ⊤ := by simp [← SetLike.coe_set_eq]
+
+@[simp] lemma toAddSubgroup_eq_top {S : NonUnitalSubring R} : S.toAddSubgroup = ⊤ ↔ S = ⊤ := by
+  simp [← SetLike.coe_set_eq]
 
 /-- The ring equiv between the top element of `NonUnitalSubring R` and `R`. -/
 @[simps!]
@@ -221,7 +237,7 @@ theorem mem_range_self (f : R →ₙ+* S) (x : R) : f x ∈ f.range :=
 theorem map_range : f.range.map g = (g.comp f).range := by
   simpa only [range_eq_map] using (⊤ : NonUnitalSubring R).map_map g f
 
-/-- The range of a ring homomorphism is a fintype, if the domain is a fintype.
+/-- The range of a ring homomorphism is a fintype if the domain is a fintype.
 Note: this instance can form a diamond with `Subtype.fintype` in the
   presence of `Fintype S`. -/
 instance fintypeRange [Fintype R] [DecidableEq S] (f : R →ₙ+* S) : Fintype (range f) :=
@@ -277,6 +293,7 @@ theorem coe_sInf (S : Set (NonUnitalSubring R)) :
     ((sInf S : NonUnitalSubring R) : Set R) = ⋂ s ∈ S, ↑s :=
   rfl
 
+@[simp]
 theorem mem_sInf {S : Set (NonUnitalSubring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
   Set.mem_iInter₂
 
@@ -284,8 +301,9 @@ theorem mem_sInf {S : Set (NonUnitalSubring R)} {x : R} : x ∈ sInf S ↔ ∀ p
 theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 
+@[simp]
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalSubring R} {x : R} :
-    (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
+    x ∈ ⨅ i, S i ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
 @[simp]
 theorem sInf_toSubsemigroup (s : Set (NonUnitalSubring R)) :
@@ -311,6 +329,7 @@ instance : CompleteLattice (NonUnitalSubring R) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
 
@@ -358,6 +377,7 @@ end NonUnitalNonAssocRing
 section NonUnitalRing
 variable [NonUnitalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
       NonUnitalSubringClass.toNonUnitalRing (center R) := by
@@ -398,8 +418,6 @@ theorem mem_closure_of_mem {s : Set R} {x : R} (hx : x ∈ s) : x ∈ closure s 
 
 theorem notMem_of_notMem_closure {s : Set R} {P : R} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
 
 /-- A `NonUnitalSubring` `t` includes `closure s` if and only if it includes `s`. -/
 @[simp]
@@ -517,6 +535,7 @@ protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
 theorem closure_eq (s : NonUnitalSubring R) : closure (s : Set R) = s :=
   (NonUnitalSubring.gi R).l_u_eq s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem closure_empty : closure (∅ : Set R) = ⊥ :=
   (NonUnitalSubring.gi R).gc.l_bot
@@ -556,10 +575,12 @@ theorem comap_iInf {ι : Sort*} (f : F) (s : ι → NonUnitalSubring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_bot (f : R →ₙ+* S) : (⊥ : NonUnitalSubring R).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_top (f : R →ₙ+* S) : (⊤ : NonUnitalSubring S).comap f = ⊤ :=
   (gc_map_comap f).u_top
@@ -641,7 +662,7 @@ theorem mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubring R} {x : S} :
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : NonUnitalSubring R) :
     K.map (f : R →ₙ+* S) = K.comap f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : NonUnitalSubring S) :
     K.comap (f : R →ₙ+* S) = K.map f.symm :=

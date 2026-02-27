@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.MeasureTheory.PiSystem
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+public import Mathlib.MeasureTheory.PiSystem
+public import Mathlib.Topology.Constructions
 
 /-!
 # π-systems of cylinders and square cylinders
@@ -40,6 +42,8 @@ a product set.
 
 -/
 
+@[expose] public section
+
 open Function Set
 
 namespace MeasureTheory
@@ -51,7 +55,7 @@ section squareCylinders
 /-- Given a finite set `s` of indices, a square cylinder is the product of a set `S` of
 `∀ i : s, α i` and of `univ` on the other indices. The set `S` is a product of sets `t i` such that
 for all `i : s`, `t i ∈ C i`.
-`squareCylinders` is the set of all such squareCylinders. -/
+`squareCylinders` is the set of all such square cylinders. -/
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
@@ -228,6 +232,7 @@ theorem cylinder_eq_cylinder_union [DecidableEq ι] (I : Finset ι) (S : Set (�
       cylinder (I ∪ J) (Finset.restrict₂ Finset.subset_union_left ⁻¹' S) := by
   ext1 f; simp only [mem_cylinder, Finset.restrict_def, Finset.restrict₂_def, mem_preimage]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_cylinder_iff [Nonempty (∀ i, α i)] {s t : Finset ι} {S : Set (∀ i : s, α i)}
     {T : Set (∀ i : t, α i)} [DecidableEq ι] :
     Disjoint (cylinder s S) (cylinder t T) ↔
@@ -402,17 +407,16 @@ lemma measurable_cylinderEvents_iff {g : α → ∀ i, X i} :
   simp_rw [measurable_iff_comap_le, cylinderEvents, MeasurableSpace.comap_iSup,
     MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 lemma measurable_cylinderEvent_apply (hi : i ∈ Δ) :
     Measurable[cylinderEvents Δ] fun f : ∀ i, X i => f i :=
   measurable_cylinderEvents_iff.1 measurable_id hi
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma Measurable.eval_cylinderEvents {g : α → ∀ i, X i} (hi : i ∈ Δ)
     (hg : @Measurable _ _ _ (cylinderEvents Δ) g) : Measurable fun a ↦ g a i :=
   (measurable_cylinderEvent_apply hi).comp hg
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 lemma measurable_cylinderEvents_lambda (f : α → ∀ i, X i) (hf : ∀ i, Measurable fun a ↦ f a i) :
     Measurable f :=
   measurable_pi_iff.mpr hf
@@ -437,7 +441,7 @@ lemma measurable_uniqueElim_cylinderEvents [Unique ι] :
 /-- The function `update f a : X a → Π a, X a` is always measurable.
 This doesn't require `f` to be measurable.
 This should not be confused with the statement that `update f a x` is measurable. -/
-@[measurability]
+@[fun_prop]
 lemma measurable_update_cylinderEvents (f : ∀ a : ι, X a) {a : ι} [DecidableEq ι] :
     @Measurable _ _ _ (cylinderEvents Δ) (update f a) :=
   measurable_update_cylinderEvents'.comp measurable_prodMk_left

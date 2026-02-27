@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.IdempotentFG
-import Mathlib.RingTheory.Unramified.Basic
-import Mathlib.RingTheory.Flat.Stability
+module
+
+public import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.RingTheory.Unramified.Basic
+public import Mathlib.RingTheory.Flat.Stability
 
 /-!
 # Various results about unramified algebras
@@ -29,6 +31,8 @@ of formally unramified algebras which are essentially of finite type.
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
 -/
+
+@[expose] public section
 
 open Algebra Module
 open scoped TensorProduct
@@ -192,7 +196,7 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   -- Then `∑ Fᵢⱼ(bⱼ ⊗ bᵢ) = ∑ fⱼx ⊗ bᵢ = ∑ fⱼ ⊗ xbᵢ = ∑ aᵢⱼ(fⱼ ⊗ bᵢ) = ∑ Gᵢⱼ(bⱼ ⊗ bᵢ)`.
   -- Since `bⱼ ⊗ bᵢ` forms an `R`-basis of `S ⊗ S`, we conclude that `F = G`.
   have : F = G := by
-    apply Finsupp.finsuppProdEquiv.symm.injective
+    apply Finsupp.curryEquiv.symm.injective
     apply (Finsupp.equivCongrLeft (Equiv.prodComm I I)).injective
     apply (b.tensorProduct b).repr.symm.injective
     suffices (F.sum fun a f ↦ f.sum fun b' c ↦ c • b b' ⊗ₜ[R] b a) =
@@ -227,8 +231,8 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
 
 /--
 Proposition I.2.3 of [iversen]
-If `S` is an unramified `R`-algebra, and `M` is a `S`-module, then the map
-`S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits a `S`-linear section. -/
+If `S` is an unramified `R`-algebra, and `M` is an `S`-module, then the map
+`S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits an `S`-linear section. -/
 noncomputable
 def sec :
     M →ₗ[S] S ⊗[R] M where

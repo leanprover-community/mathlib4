@@ -3,11 +3,13 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Sign.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Sign.Defs
 
 /-!
 # Sign function
@@ -15,6 +17,8 @@ import Mathlib.Data.Sign.Defs
 This file defines the sign function for types with zero and a decidable less-than relation, and
 proves some basic theorems about it.
 -/
+
+@[expose] public section
 
 universe u
 variable {α : Type u}
@@ -31,6 +35,7 @@ theorem pow_odd (s : SignType) {n : ℕ} (hn : Odd n) : s ^ n = s := by
   rw [pow_add, pow_one, pow_mul, sq]
   cases s <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem zpow_odd (s : SignType) {z : ℤ} (hz : Odd z) : s ^ z = s := by
   obtain rfl | hs := eq_or_ne s 0
   · rw [zero_zpow]
@@ -44,6 +49,7 @@ lemma pow_even (s : SignType) {n : ℕ} (hn : Even n) (hs : s ≠ 0) :
     s ^ n = 1 := by
   cases s <;> simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 lemma zpow_even (s : SignType) {z : ℤ} (hz : Even z) (hs : s ≠ 0) :
     s ^ z = 1 := by
   cases s <;> simp_all [Even.neg_one_zpow]
@@ -116,6 +122,7 @@ is required; consider ℂ with the order `z ≤ w` iff they have the same imagin
 `z - w ≤ 0` in the reals; then `1 + I` and `1 - I` are incomparable to zero, and thus we have:
 `0 * 0 = SignType.sign (1 + I) * SignType.sign (1 - I) ≠ SignType.sign 2 = 1`.
 (`Complex.orderedCommRing`) -/
+@[simps -fullyApplied]
 def signHom : α →*₀ SignType where
   toFun := sign
   map_zero' := sign_zero
@@ -152,6 +159,7 @@ because Lean creates a fresh universe variable for the type whose existence is a
 But we want the type to live in the same universe as the input type.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem exists_signed_sum_aux [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u) (t : Finset β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧

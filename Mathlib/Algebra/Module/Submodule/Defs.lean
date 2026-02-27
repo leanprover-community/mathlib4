@@ -3,9 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Algebra.Group.Submonoid.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 
@@ -22,6 +24,8 @@ In this file we define
 
 submodule, subspace, linear map
 -/
+
+@[expose] public section
 
 assert_not_exists DivisionRing
 
@@ -50,6 +54,8 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M) M
 
 initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
@@ -107,7 +113,7 @@ theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule 
 theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 
-@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+@[simp] theorem eta (h) : ({ p with smul_mem' := h } : Submodule R M) = p :=
   rfl
 
 @[simp]

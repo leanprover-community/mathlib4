@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-! # Functions integrable on a set and at a filter
 
@@ -17,6 +19,8 @@ at `l` with respect to `μ` provided that `f` is bounded above at `l ⊓ ae μ` 
 at `l`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -73,9 +77,6 @@ theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α →
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rwa [Measure.restrict_apply_univ]⟩
   .of_bounded hf
-
-@[deprecated (since := "2025-07-26")]
-alias hasFiniteIntegral_restrict_of_bounded := HasFiniteIntegral.restrict_of_bounded
 
 variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
   [TopologicalSpace ε] [ContinuousENorm ε]
@@ -233,6 +234,7 @@ theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : �
   cases nonempty_fintype β
   simpa using integrableOn_finset_iUnion (f := f) (μ := μ) (s := Finset.univ) (t := t)
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: generalise this lemma and the next to enorm classes; this entails assuming that
 -- f is finite on almost every element of `s`
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
@@ -310,10 +312,21 @@ theorem IntegrableOn.integrable_indicator (h : IntegrableOn f s μ) (hs : Measur
     Integrable (indicator s f) μ :=
   (integrable_indicator_iff hs).2 h
 
+theorem IntegrableOn.integrable_indicator₀ (h : IntegrableOn f s μ) (hs : NullMeasurableSet s μ) :
+    Integrable (indicator s f) μ :=
+  (h.congr_set_ae hs.toMeasurable_ae_eq).integrable_indicator
+    (measurableSet_toMeasurable μ s) |>.congr
+    (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq)
+
 @[fun_prop]
 theorem Integrable.indicator (h : Integrable f μ) (hs : MeasurableSet s) :
     Integrable (indicator s f) μ :=
   h.integrableOn.integrable_indicator hs
+
+@[fun_prop]
+theorem Integrable.indicator₀ (h : Integrable f μ) (hs : NullMeasurableSet s μ) :
+    Integrable (s.indicator f) μ :=
+  h.integrableOn.integrable_indicator₀ hs
 
 theorem IntegrableOn.indicator (h : IntegrableOn f s μ) (ht : MeasurableSet t) :
     IntegrableOn (indicator t f) s μ :=
@@ -393,18 +406,11 @@ theorem IntegrableOn.integrable_of_ae_notMem_eq_zero
   apply hf.of_ae_diff_eq_zero nullMeasurableSet_univ
   filter_upwards [h't] with x hx h'x using hx h'x.2
 
-@[deprecated (since := "2025-05-23")]
-alias IntegrableOn.integrable_of_ae_not_mem_eq_zero := IntegrableOn.integrable_of_ae_notMem_eq_zero
-
 /-- If a function is integrable on a set `s` and vanishes everywhere on its complement,
 then it is integrable. -/
 theorem IntegrableOn.integrable_of_forall_notMem_eq_zero
     {f : α → ε'} (hf : IntegrableOn f s μ) (h't : ∀ x, x ∉ s → f x = 0) : Integrable f μ :=
   hf.integrable_of_ae_notMem_eq_zero (Eventually.of_forall fun x hx => h't x hx)
-
-@[deprecated (since := "2025-05-23")]
-alias IntegrableOn.integrable_of_forall_not_mem_eq_zero :=
-  IntegrableOn.integrable_of_forall_notMem_eq_zero
 
 theorem IntegrableOn.of_inter_support {f : α → ε'}
     (hs : MeasurableSet s) (hf : IntegrableOn f (s ∩ support f) μ) :
@@ -469,15 +475,13 @@ protected theorem IntegrableAtFilter.eventually (h : IntegrableAtFilter f l μ) 
     ∀ᶠ s in l.smallSets, IntegrableOn f s μ :=
   Iff.mpr (eventually_smallSets' fun _s _t hst ht => ht.mono_set hst) h
 
-theorem integrableAtFilter_atBot_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≥ x2]
-    [Nonempty α] :
+theorem integrableAtFilter_atBot_iff [Preorder α] [IsCodirectedOrder α] [Nonempty α] :
     IntegrableAtFilter f atBot μ ↔ ∃ a, IntegrableOn f (Iic a) μ := by
   refine ⟨fun ⟨s, hs, hi⟩ ↦ ?_, fun ⟨a, ha⟩ ↦ ⟨Iic a, Iic_mem_atBot a, ha⟩⟩
   obtain ⟨t, ht⟩ := mem_atBot_sets.mp hs
   exact ⟨t, hi.mono_set fun _ hx ↦ ht _ hx⟩
 
-theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirected α fun (x1 x2 : α) => x1 ≤ x2]
-    [Nonempty α] :
+theorem integrableAtFilter_atTop_iff [Preorder α] [IsDirectedOrder α] [Nonempty α] :
     IntegrableAtFilter f atTop μ ↔ ∃ a, IntegrableOn f (Ici a) μ :=
   integrableAtFilter_atBot_iff (α := αᵒᵈ)
 
@@ -670,17 +674,30 @@ theorem ContinuousOn.aestronglyMeasurable [TopologicalSpace α] [TopologicalSpac
   · exact .of_separableSpace _
 
 /-- A function which is continuous on a compact set `s` is almost everywhere strongly measurable
+with respect to `μ.restrict t` for any measurable subset `t` of `s`. -/
+theorem ContinuousOn.aestronglyMeasurable_of_subset_isCompact
+    [TopologicalSpace α] [OpensMeasurableSpace α]
+    [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β} {s t : Set α} {μ : Measure α}
+    (hf : ContinuousOn f s) (hs : IsCompact s) (ht : MeasurableSet t) (hts : t ⊆ s) :
+    AEStronglyMeasurable f (μ.restrict t) := by
+  borelize β
+  rw [aestronglyMeasurable_iff_aemeasurable_separable]
+  refine ⟨(hf.mono hts).aemeasurable ht, f '' s, ?_, ?_⟩
+  · exact (hs.image_of_continuousOn hf).isSeparable
+  · filter_upwards [ae_restrict_mem ht] with a ha using image_mono hts (mem_image_of_mem f ha)
+
+/-- A function which is continuous on a compact set `s` is almost everywhere strongly measurable
 with respect to `μ.restrict s`. -/
 theorem ContinuousOn.aestronglyMeasurable_of_isCompact [TopologicalSpace α] [OpensMeasurableSpace α]
     [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β} {s : Set α} {μ : Measure α}
     (hf : ContinuousOn f s) (hs : IsCompact s) (h's : MeasurableSet s) :
-    AEStronglyMeasurable f (μ.restrict s) := by
-  letI := pseudoMetrizableSpacePseudoMetric β
-  borelize β
-  rw [aestronglyMeasurable_iff_aemeasurable_separable]
-  refine ⟨hf.aemeasurable h's, f '' s, ?_, ?_⟩
-  · exact (hs.image_of_continuousOn hf).isSeparable
-  · exact mem_of_superset (self_mem_ae_restrict h's) (subset_preimage_image _ _)
+    AEStronglyMeasurable f (μ.restrict s) :=
+  hf.aestronglyMeasurable_of_subset_isCompact hs h's Subset.rfl
+
+lemma Continuous.aestronglyMeasurable_of_compactSpace [TopologicalSpace α] [OpensMeasurableSpace α]
+    [CompactSpace α] [TopologicalSpace β] [PseudoMetrizableSpace β] {μ : Measure α} {f : α → β}
+    (hf : Continuous f) : AEStronglyMeasurable f μ := by
+  simpa using hf.continuousOn.aestronglyMeasurable_of_isCompact isCompact_univ .univ
 
 theorem ContinuousOn.integrableAt_nhdsWithin_of_isSeparable [TopologicalSpace α]
     [PseudoMetrizableSpace α] [OpensMeasurableSpace α] {μ : Measure α} [IsLocallyFiniteMeasure μ]

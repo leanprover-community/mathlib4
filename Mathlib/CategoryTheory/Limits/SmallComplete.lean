@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Any small complete category is a preorder
@@ -24,6 +26,8 @@ we instead show that the homsets are subsingleton.
 small complete, preorder, Freyd
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
@@ -35,6 +39,7 @@ universe u
 
 variable {C : Type u} [SmallCategory C] [HasProducts.{u} C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A small category with products is a thin category.
 
 in Lean, a preorder category is one where the morphisms are in Prop, which is weaker than the usual

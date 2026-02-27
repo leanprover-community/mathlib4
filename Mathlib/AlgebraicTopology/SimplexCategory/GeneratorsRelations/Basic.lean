@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.CategoryTheory.PathCategory.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.CategoryTheory.PathCategory.Basic
 /-! # Presentation of the simplex category by generators and relations.
 
 We introduce `SimplexCategoryGenRel` as the category presented by generating
@@ -15,6 +17,8 @@ objects and morphisms in this category.
 This category admits a canonical functor `toSimplexCategory` to the usual simplex category.
 The fact that this functor is an equivalence will be recorded in a separate file.
 -/
+
+@[expose] public section
 open CategoryTheory
 
 /-- The objects of the free simplex quiver are the natural numbers. -/
@@ -232,13 +236,13 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
 
 /-- A version of δ_comp_δ with indices in ℕ satisfying relevant inequalities. -/
 lemma δ_comp_δ_nat {n} (i j : ℕ) (hi : i < n + 2) (hj : j < n + 2) (H : i ≤ j) :
-    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by cutsat⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by cutsat⟩ :=
-  δ_comp_δ (n := n) (i := ⟨i, by cutsat⟩) (j := ⟨j, by cutsat⟩) (by simpa)
+    δ ⟨i, hi⟩ ≫ δ ⟨j + 1, by lia⟩ = δ ⟨j, hj⟩ ≫ δ ⟨i, by lia⟩ :=
+  δ_comp_δ (n := n) (i := ⟨i, by lia⟩) (j := ⟨j, by lia⟩) (by simpa)
 
 /-- A version of σ_comp_σ with indices in ℕ satisfying relevant inequalities. -/
 lemma σ_comp_σ_nat {n} (i j : ℕ) (hi : i < n + 1) (hj : j < n + 1) (H : i ≤ j) :
-    σ ⟨i, by cutsat⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by cutsat⟩ ≫ σ ⟨i, hi⟩ :=
-  σ_comp_σ (n := n) (i := ⟨i, by cutsat⟩) (j := ⟨j, by cutsat⟩) (by simpa)
+    σ ⟨i, by lia⟩ ≫ σ ⟨j, hj⟩ = σ ⟨j + 1, by lia⟩ ≫ σ ⟨i, hi⟩ :=
+  σ_comp_σ (n := n) (i := ⟨i, by lia⟩) (j := ⟨j, by lia⟩) (by simpa)
 
 end SimplicialIdentities
 

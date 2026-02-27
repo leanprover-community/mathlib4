@@ -334,7 +334,7 @@ elab tk:"#find_deleted_files" nc:(ppSpace num)? pct:(ppSpace num)? bang:&"%"? : 
               else
                 `(command|#create_deprecated_module $fnameStx)
     suggestions := suggestions.push {
-      suggestion := (⟨stx.raw.updateTrailing "hello".toSubstring⟩ : TSyntax `command)
+      suggestion := (⟨stx.raw.updateTrailing "hello".toRawSubstring⟩ : TSyntax `command)
     }
   let suggestionsText :=
     if suggestions.size == 1 then ("the suggestion", "")

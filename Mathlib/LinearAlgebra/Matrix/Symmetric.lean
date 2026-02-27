@@ -3,8 +3,10 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Block
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Block
 
 /-!
 # Symmetric matrices
@@ -19,6 +21,8 @@ This file contains the definition and basic results about symmetric matrices.
 
 symm, symmetric, matrix
 -/
+
+@[expose] public section
 
 
 variable {α β n m R : Type*}

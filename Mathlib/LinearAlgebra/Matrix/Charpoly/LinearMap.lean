@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 
@@ -19,6 +21,8 @@ ideal `I`, we may furthermore obtain a matrix representation whose entries fall 
 
 This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbitrary rings.
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} [Fintype ι]
@@ -95,6 +99,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
       PiToModule.fromMatrix_apply_single_one]
     apply h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A * A').Represents b (f * f') := by
   delta Matrix.Represents PiToModule.fromMatrix
@@ -104,6 +109,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
   rw [← h'.congr_fun, ← h.congr_fun]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
   delta Matrix.Represents PiToModule.fromMatrix
   rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_one]

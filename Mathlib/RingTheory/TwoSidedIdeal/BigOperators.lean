@@ -3,14 +3,17 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.Congruence.BigOperators
-import Mathlib.RingTheory.TwoSidedIdeal.Basic
+public import Mathlib.RingTheory.Congruence.BigOperators
+public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!
 # Interactions between `∑, ∏` and two-sided ideals
 
 -/
+
+public section
 
 namespace TwoSidedIdeal
 

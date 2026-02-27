@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Graph
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Graph
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-! ### Products of modules
 
@@ -33,6 +35,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.prodUnique`
   - `LinearEquiv.uniqueProd`
 -/
+
+@[expose] public section
 
 
 universe u v w x y z u' v' w' y'
@@ -294,10 +298,21 @@ theorem prodMap_comap_prod (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) (S :
     (Submodule.prod S S').comap (LinearMap.prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
 
+theorem prodMap_map_prod (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) (S : Submodule R M)
+    (S' : Submodule R M₃) :
+    (Submodule.prod S S').map (LinearMap.prodMap f g) = (S.map f).prod (S'.map g) :=
+  SetLike.coe_injective <| Set.prodMap_image_prod f g _ _
+
+@[simp]
 theorem ker_prodMap (f : M →ₗ[R] M₂) (g : M₃ →ₗ[R] M₄) :
     ker (LinearMap.prodMap f g) = Submodule.prod (ker f) (ker g) := by
   dsimp only [ker]
   rw [← prodMap_comap_prod, Submodule.prod_bot]
+
+@[simp]
+theorem range_prodMap (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄) :
+    (f.prodMap g).range = f.range.prod g.range := by
+  ext ⟨_, _⟩; simp
 
 @[simp]
 theorem prodMap_id : (id : M →ₗ[R] M).prodMap (id : M₂ →ₗ[R] M₂) = id :=
@@ -461,6 +476,21 @@ theorem ker_coprod_of_disjoint_range {M₂ : Type*} [AddCommGroup M₂] [Module 
   rw [hd.eq_bot, mem_bot] at this
   rw [this] at h
   simpa [this] using h
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
+equivalence between `C` and `range f`. -/
+@[simps!]
+noncomputable def kerComplementEquivRange {R M M₂ : Type*} [Ring R] [AddCommGroup M]
+    [AddCommGroup M₂] [Module R M] [Module R M₂] (f : M →ₗ[R] M₂) {C : Submodule R M}
+    (h : IsCompl C (LinearMap.ker f)) : C ≃ₗ[R] range f :=
+  .ofBijective (codRestrict (range f) f (mem_range_self f) ∘ₗ C.subtype)
+  ⟨by simpa [← ker_eq_bot, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint,
+   by
+    rintro ⟨-, x, rfl⟩
+    obtain ⟨y, z, hy, hz, rfl⟩ := codisjoint_iff_exists_add_eq.mp h.codisjoint x
+    use ⟨y, hy⟩
+    simpa [Subtype.ext_iff]⟩
 
 end LinearMap
 
@@ -634,6 +664,9 @@ theorem fst_comp_prodComm :
 theorem snd_comp_prodComm :
     (LinearMap.snd R M₂ M).comp (prodComm R M M₂).toLinearMap = (LinearMap.fst R M M₂) := by
   ext <;> simp
+
+@[simp]
+theorem symm_prodComm : (prodComm R M M₂).symm = prodComm R M₂ M := rfl
 
 end prodComm
 
@@ -831,29 +864,6 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
 end LinearMap
 
 namespace LinearMap
-
-/-!
-## Tunnels and tailings
-
-NOTE: The proof of strong rank condition for Noetherian rings is changed.
-`LinearMap.tunnel` and `LinearMap.tailing` are not used in mathlib anymore.
-These are marked as deprecated with no replacements.
-If you use them in external projects, please consider using other arguments instead.
-
-Some preliminary work for establishing the strong rank condition for Noetherian rings.
-
-Given a morphism `f : M × N →ₗ[R] M` which is `i : Injective f`,
-we can find an infinite decreasing `tunnel f i n` of copies of `M` inside `M`,
-and sitting beside these, an infinite sequence of copies of `N`.
-
-We picturesquely name these as `tailing f i n` for each individual copy of `N`,
-and `tailings f i n` for the supremum of the first `n + 1` copies:
-they are the pieces left behind, sitting inside the tunnel.
-
-By construction, each `tailing f i (n + 1)` is disjoint from `tailings f i n`;
-later, when we assume `M` is Noetherian, this implies that `N` must be trivial,
-and establishes the strong rank condition for any left-Noetherian ring.
--/
 
 section Graph
 

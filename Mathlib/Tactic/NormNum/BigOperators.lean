@@ -3,9 +3,10 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.List.FinRange
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` plugin for big operators
@@ -35,6 +36,8 @@ In particular, we can't use the plugin on sums containing variables.
   the sum/prod, without computing its numeric value (using the `ring` tactic to do some
   normalization?)
 -/
+
+public meta section
 
 namespace Mathlib.Meta
 

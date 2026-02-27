@@ -3,8 +3,9 @@ Copyright (c) 2025 Floris van Doorn and Hannah Scholz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Hannah Scholz
 -/
+module
 
-import Mathlib.Topology.CWComplex.Classical.Basic
+public import Mathlib.Topology.CWComplex.Classical.Basic
 
 /-!
 # Finiteness notions on CW complexes
@@ -28,6 +29,8 @@ finite CW complexes.
 * `RelCWComplex.finite_iff_finite_cells`: a CW complex is finite iff the total number of its cells
   is finite.
 -/
+
+@[expose] public section
 
 open Metric Set
 
@@ -249,6 +252,7 @@ lemma RelCWComplex.finite_mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Se
   { eventually_isEmpty_cell := eventually_isEmpty_cell
     finite_cell := finite_cell }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we want to construct a finite CW complex we can add the conditions `eventually_isEmpty_cell`
 and `finite_cell`, relax the condition `mapsTo` and remove the condition `closed'`. -/
 @[simps! -isSimp]
@@ -340,7 +344,7 @@ lemma RelCWComplex.finite_cells_of_finite [finite : Finite C] : _root_.Finite (�
     toFun := fun ⟨m, j⟩ ↦ ⟨m, j⟩
     invFun := fun ⟨m, j⟩ ↦ ⟨⟨m, this m j⟩, j⟩
     left_inv := by simp [Function.LeftInverse]
-    right_inv := by simp [Function.RightInverse, Function.LeftInverse]}
+    right_inv := by simp [Function.RightInverse, Function.LeftInverse] }
   rw [← Equiv.finite_iff f]
   exact Finite.instSigma
 

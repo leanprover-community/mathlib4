@@ -3,13 +3,17 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Casts of rational numbers into linear ordered fields.
 -/
+
+@[expose] public section
 
 variable {F ι α β : Type*}
 
@@ -28,6 +32,7 @@ theorem cast_pos_of_pos (hq : 0 < q) : (0 : K) < q := by
   rw [Rat.cast_def]
   exact div_pos (Int.cast_pos.2 <| num_pos.2 hq) (Nat.cast_pos.2 q.pos)
 
+set_option backward.isDefEq.respectTransparency false in
 @[gcongr, mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun p q => by
   simpa only [sub_pos, cast_sub] using cast_pos_of_pos (K := K) (q := q - p)
@@ -256,7 +261,7 @@ open Lean Meta Qq Function
 
 /-- Extension for Rat.cast. -/
 @[positivity Rat.cast _]
-def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Rat.cast _ (_) ($a : ℚ)) := e | throwError "not Rat.cast"
   match ← core q(inferInstance) q(inferInstance) a with
   | .positive pa =>
@@ -280,7 +285,7 @@ def evalRatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for NNRat.cast. -/
 @[positivity NNRat.cast _]
-def evalNNRatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@NNRat.cast _ (_) ($a : ℚ≥0)) := e | throwError "not NNRat.cast"
   match ← core q(inferInstance) q(inferInstance) a with
   | .positive pa =>

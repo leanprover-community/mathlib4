@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The quotient category is preadditive
@@ -15,11 +17,13 @@ preadditive.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 namespace Quotient
 
-variable {C : Type _} [Category C] [Preadditive C] (r : HomRel C) [Congruence r]
+variable {C : Type _} [Category* C] [Preadditive C] (r : HomRel C) [Congruence r]
 
 namespace Preadditive
 
@@ -29,11 +33,11 @@ def add (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂
     {X Y : Quotient r} (f g : X ⟶ Y) : X ⟶ Y :=
   Quot.liftOn₂ f g (fun a b => Quot.mk _ (a + b))
     (fun f g₁ g₂ h₁₂ => by
-      simp only [compClosure_iff_self] at h₁₂
+      simp only [HomRel.compClosure_iff_self] at h₁₂
       erw [functor_map_eq_iff]
       exact hr _ _ _ _ (Congruence.equivalence.refl f) h₁₂)
     (fun f₁ f₂ g h₁₂ => by
-      simp only [compClosure_iff_self] at h₁₂
+      simp only [HomRel.compClosure_iff_self] at h₁₂
       erw [functor_map_eq_iff]
       exact hr _ _ _ _ h₁₂ (Congruence.equivalence.refl g))
 
@@ -44,10 +48,10 @@ def neg (hr : ∀ ⦃X Y : C⦄ (f₁ f₂ g₁ g₂ : X ⟶ Y) (_ : r f₁ f₂
   Quot.liftOn f (fun a => Quot.mk _ (-a))
     (fun f g => by
       intro hfg
-      simp only [compClosure_iff_self] at hfg
+      simp only [HomRel.compClosure_iff_self] at hfg
       erw [functor_map_eq_iff]
       apply Congruence.equivalence.symm
-      convert hr f g _ _ hfg (Congruence.equivalence.refl (-f-g)) using 1 <;> abel)
+      convert hr f g _ _ hfg (Congruence.equivalence.refl (-f - g)) using 1 <;> abel)
 
 end Preadditive
 

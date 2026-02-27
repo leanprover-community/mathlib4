@@ -3,11 +3,13 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finset.Order
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Order.Atoms
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Order.Atoms
 
 /-!
 # Order structures on finite types
@@ -43,6 +45,8 @@ We provide a few instances for concrete types:
 * `Bool.completeLinearOrder`
 * `Bool.completeBooleanAlgebra`
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -190,29 +194,29 @@ theorem Directed.finite_le (D : Directed r f) (g : β → γ) : ∃ z, ∀ i, r 
 
 variable [Nonempty α] [Preorder α]
 
-theorem Finite.exists_le [IsDirected α (· ≤ ·)] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
+theorem Finite.exists_le [IsDirectedOrder α] (f : β → α) : ∃ M, ∀ i, f i ≤ M :=
   directed_id.finite_le _
 
-theorem Finite.exists_ge [IsDirected α (· ≥ ·)] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
+theorem Finite.exists_ge [IsCodirectedOrder α] (f : β → α) : ∃ M, ∀ i, M ≤ f i :=
   directed_id.finite_le (r := (· ≥ ·)) _
 
-theorem Set.Finite.exists_le [IsDirected α (· ≤ ·)] {s : Set α} (hs : s.Finite) :
+theorem Set.Finite.exists_le [IsDirectedOrder α] {s : Set α} (hs : s.Finite) :
     ∃ M, ∀ i ∈ s, i ≤ M :=
   directed_id.finite_set_le hs
 
-theorem Set.Finite.exists_ge [IsDirected α (· ≥ ·)] {s : Set α} (hs : s.Finite) :
+theorem Set.Finite.exists_ge [IsCodirectedOrder α] {s : Set α} (hs : s.Finite) :
     ∃ M, ∀ i ∈ s, M ≤ i :=
   directed_id.finite_set_le (r := (· ≥ ·)) hs
 
 @[simp]
-theorem Finite.bddAbove_range [IsDirected α (· ≤ ·)] (f : β → α) : BddAbove (Set.range f) := by
+theorem Finite.bddAbove_range [IsDirectedOrder α] (f : β → α) : BddAbove (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_le f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
 
 @[simp]
-theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddBelow (Set.range f) := by
+theorem Finite.bddBelow_range [IsCodirectedOrder α] (f : β → α) : BddBelow (Set.range f) := by
   obtain ⟨M, hM⟩ := Finite.exists_ge f
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha

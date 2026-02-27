@@ -3,12 +3,16 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.ZeroCons
+module
+
+public import Mathlib.Data.Multiset.ZeroCons
 
 /-!
 # Basic results on multisets
 
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid
@@ -94,7 +98,7 @@ def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
   H s fun {t} ht _h =>
     strongDownwardInduction H t ht
 termination_by n - card s
-decreasing_by simp_wf; have := (card_lt_card _h); cutsat
+decreasing_by have := (card_lt_card _h); lia
 
 theorem strongDownwardInduction_eq {p : Multiset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)

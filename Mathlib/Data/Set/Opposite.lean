@@ -3,14 +3,18 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Data.Opposite
-import Mathlib.Data.Set.Operations
+module
+
+public import Mathlib.Data.Opposite
+public import Mathlib.Data.Set.Operations
 
 /-!
 # The opposite of a set
 
 The opposite of a set `s` is simply the set obtained by taking the opposite of each member of `s`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

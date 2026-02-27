@@ -3,7 +3,9 @@ Copyright (c) 2022 Michael Blyth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Blyth
 -/
-import Mathlib.LinearAlgebra.Projectivization.Basic
+module
+
+public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 # Subspaces of Projective Space
@@ -26,6 +28,8 @@ also in the subset.
 - There is a one-to-one order-preserving correspondence between subspaces of a
   projective space and the submodules of the underlying vector space.
 -/
+
+@[expose] public section
 
 
 variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
@@ -55,6 +59,8 @@ instance : SetLike (Subspace K V) (ℙ K V) where
     cases A
     cases B
     simp
+
+instance : PartialOrder (Subspace K V) := .ofSetLike (Subspace K V) (ℙ K V)
 
 @[simp]
 theorem mem_carrier_iff (A : Subspace K V) (x : ℙ K V) : x ∈ A.carrier ↔ x ∈ A :=
@@ -126,10 +132,12 @@ instance : CompleteLattice (Subspace K V) :=
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The span of the empty set is the bottom of the lattice of subspaces. -/
 @[simp]
 theorem span_empty : span (∅ : Set (ℙ K V)) = ⊥ := gi.gc.l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The span of the entire projective space is the top of the lattice of subspaces. -/
 @[simp]
 theorem span_univ : span (Set.univ : Set (ℙ K V)) = ⊤ := by

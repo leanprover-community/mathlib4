@@ -3,16 +3,18 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.GroupTheory.Index
-import Mathlib.RepresentationTheory.Coinduced
-import Mathlib.RepresentationTheory.Induced
+module
+
+public import Mathlib.GroupTheory.Index
+public import Mathlib.RepresentationTheory.Coinduced
+public import Mathlib.RepresentationTheory.Induced
 
 /-!
 # (Co)induced representations of a finite index subgroup
 
 Given a commutative ring `k`, a finite index subgroup `S ≤ G`, and a `k`-linear `S`-representation
 `A`, this file defines an isomorphism $Ind_S^G(A) ≅ Coind_S^G(A)$. Given `g : G` and `a : A`, the
-forward map sends `⟦g ⊗ₜ[k] a⟧` to the function `G → A`supported at `sg` by `ρ(s)(a)` for `s : S`
+forward map sends `⟦g ⊗ₜ[k] a⟧` to the function `G → A` supported at `sg` by `ρ(s)(a)` for `s : S`
 and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ ⟦gᵢ ⊗ₜ[k] f(gᵢ)⟧` for
 `1 ≤ i ≤ n`, where `g₁, ..., gₙ` is a set of right coset representatives of `S`.
 
@@ -23,6 +25,8 @@ and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ 
 * `Rep.indCoindNatIso k S`: A natural isomorphism between the functors `Ind_S^G` and `Coind_S^G`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -88,12 +92,14 @@ lemma indToCoindAux_fst_mul_inv (g₁ g₂ g₃ : G) (a : A) :
     indToCoindAux A (g₁ * g₂⁻¹) a g₃ = indToCoindAux A g₁ a (g₃ * g₂) := by
   simpa using (indToCoindAux_snd_mul_inv g₁ g₃ g₂⁻¹ a).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma indToCoindAux_comm {A B : Rep k S} (f : A ⟶ B) (g₁ g₂ : G) (a : A) :
     indToCoindAux B g₁ (f.hom a) g₂ = f.hom (indToCoindAux A g₁ a g₂) := by
   rcases em ((QuotientGroup.rightRel S).r g₂ g₁) with ⟨s, rfl⟩ | h
   · simp [S.1.smul_def, hom_comm_apply]
   · simp [indToCoindAux_of_not_rel (h := h)]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- Let `S ≤ G` be a subgroup and `A` a `k`-linear `S`-representation. This is the `k`-linear map
 `Ind_S^G(A) →ₗ[k] Coind_S^G(A)` sending `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`. -/
@@ -138,6 +144,7 @@ lemma coindToInd_of_support_subset_orbit (g : G) (f : coind S.subtype A)
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `S ≤ G` be a finite index subgroup, `g₁, ..., gₙ` a set of right coset representatives of
 `S`, and `A` a `k`-linear `S`-representation. This is an isomorphism `Ind_S^G(A) ≅ Coind_S^G(A)`.
 The forward map sends `(⟦g ⊗ₜ[k] a⟧, sg) ↦ ρ(s)(a)`, and the inverse sends `f : G → A` to
@@ -172,6 +179,7 @@ noncomputable def indCoindIso : ind S.subtype A ≅ coind S.subtype A :=
 
 variable (k S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite index subgroup `S ≤ G`, this is a natural isomorphism between the `Ind_S^G` and
 `Coind_G^S` functors `Rep k S ⥤ Rep k G`. -/
 @[simps! hom_app inv_app]
@@ -184,8 +192,11 @@ noncomputable def indCoindNatIso : indFunctor k S.subtype ≅ coindFunctor k S.s
 noncomputable def resIndAdjunction : Action.res _ S.subtype ⊣ indFunctor k S.subtype :=
   (resCoindAdjunction k S.subtype).ofNatIsoRight (indCoindNatIso k S).symm
 
-noncomputable instance : (indFunctor k S.subtype).IsRightAdjoint :=
-  (resIndAdjunction k S).isRightAdjoint
+omit [DecidableRel (QuotientGroup.rightRel S)] in
+@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
+theorem instIsRightAdjointSubtypeMemSubgroupIndFunctorSubtype :
+    (indFunctor k S.subtype).IsRightAdjoint :=
+  open scoped Classical in (resIndAdjunction k S).isRightAdjoint
 
 variable {k S}
 
@@ -221,9 +232,13 @@ variable (k S) in
 noncomputable def coindResAdjunction : coindFunctor k S.subtype ⊣ Action.res _ S.subtype :=
   (indResAdjunction k S.subtype).ofNatIsoLeft (indCoindNatIso k S)
 
-noncomputable instance : (coindFunctor k S.subtype).IsLeftAdjoint :=
-  (coindResAdjunction k S).isLeftAdjoint
+omit [DecidableRel (QuotientGroup.rightRel S)] in
+@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
+theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
+    (coindFunctor k S.subtype).IsLeftAdjoint :=
+  open scoped Classical in (coindResAdjunction k S).isLeftAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_counit_app (B : Rep k G) :
     (coindResAdjunction k S).counit.app B = (indCoindIso <| (Action.res _ S.subtype).obj B).inv ≫
@@ -231,6 +246,7 @@ lemma coindResAdjunction_counit_app (B : Rep k G) :
   simp [coindResAdjunction, Adjunction.ofNatIsoLeft, Adjunction.equivHomsetLeftOfNatIso,
     indResAdjunction]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coindResAdjunction_unit_app :
     (coindResAdjunction k S).unit.app A = (indResAdjunction k S.subtype).unit.app A ≫

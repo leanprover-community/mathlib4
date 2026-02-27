@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
 /-!
 # The rank of a linear map
@@ -13,6 +15,8 @@ import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 ## Main Definition
 -  `LinearMap.rank`: The rank of a linear map.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -94,6 +98,7 @@ theorem rank_finset_sum_le {η} (s : Finset η) (f : η → V →ₗ[K] V') :
   @Finset.sum_hom_rel _ _ _ _ _ (fun a b => rank a ≤ b) f (fun d => rank (f d)) s
     (le_of_eq rank_zero) fun _ _ _ h => le_trans (rank_add_le _ _) (by gcongr)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_rank_iff_exists_linearIndependent {c : Cardinal} {f : V →ₗ[K] V'} :
     c ≤ rank f ↔ ∃ s : Set V,
     Cardinal.lift.{v'} #s = Cardinal.lift.{v} c ∧ LinearIndepOn K f s := by
