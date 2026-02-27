@@ -136,23 +136,10 @@ lemma projr_inr_apply {x : G} : projr ψ (inr ψ x) = x := by simp
 lemma projr_surjective : Function.Surjective (projr ψ) :=
   fun x ↦ ⟨inr ψ x, by simp⟩
 
-instance : LieAlgebra.IsExtension (in_left ψ) (pr_right ψ) where
+instance : LieAlgebra.IsExtension (inl ψ) (projr ψ) where
   ker_eq_bot := by simp [LieHom.ker_eq_bot]
   range_eq_top := by simp [LieHom.range_eq_top]
-  exact := by
-    ext x
-    simp only [in_left, LieHom.mem_range, LieHom.coe_mk, LieIdeal.toLieSubalgebra, pr_right,
-      LieHom.ker_toSubmodule, LieSubalgebra.mem_mk_iff', LinearMap.mem_ker, LinearMap.coe_mk,
-      AddHom.coe_mk, Prod.snd_eq_iff]
-    constructor
-    case mp =>
-      intro hyp
-      obtain ⟨y, hy⟩ := hyp
-      simp [← hy]
-    case mpr =>
-      intro hyp
-      use (toProd x).1
-      simp [← hyp]
+  exact := by ext ⟨x, y⟩; aesop
 
 end SemiDirectSum
 end LieAlgebra
