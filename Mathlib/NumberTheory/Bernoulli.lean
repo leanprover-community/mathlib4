@@ -242,7 +242,7 @@ theorem bernoulli_spec' (n : ℕ) :
   -- key equation: the corresponding fact for `bernoulli'`
   have H := bernoulli'_spec' n.succ
   -- massage it to match the structure of the goal, then convert piece by piece
-  rw [sum_eq_add_sum_diff_singleton h₁] at H ⊢
+  rw [sum_eq_add_sum_diff_singleton_of_mem h₁] at H ⊢
   apply add_eq_of_eq_sub'
   convert eq_sub_of_add_eq' H using 1
   · refine sum_congr rfl fun p h => ?_

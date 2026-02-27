@@ -476,7 +476,7 @@ instance : Algebra S (v.adicCompletion K) where
   commutes' r x := by
     induction x using Completion.induction_on with
     | hp =>
-      exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
+      exact isClosed_eq (continuous_const_mul _) (continuous_mul_const _)
     | ih x =>
       change (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
         = x * (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K)
@@ -485,7 +485,7 @@ instance : Algebra S (v.adicCompletion K) where
   smul_def' r x := by
     induction x using Completion.induction_on with
     | hp =>
-      exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
+      exact isClosed_eq (continuous_const_smul _) (continuous_const_mul _)
     | ih x =>
       change _ = (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
       norm_cast
