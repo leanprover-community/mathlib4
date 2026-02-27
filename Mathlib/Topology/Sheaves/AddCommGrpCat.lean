@@ -28,10 +28,6 @@ namespace TopCat
 
 variable {X : TopCat.{u}} {U V : Opens X}
 
-/-- `MOVE THIS` -/
-def Sheaf.sheafSections (C : Type*) [Category* C] : (Opens X)ᵒᵖ ⥤ Sheaf C X ⥤ C :=
-  CategoryTheory.sheafSections _ C
-
 theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
     ∃(t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
