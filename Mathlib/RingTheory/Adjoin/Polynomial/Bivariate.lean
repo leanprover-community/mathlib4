@@ -33,6 +33,7 @@ section Ring
 
 variable [Ring A] [Algebra R A]
 
+/-- The `AlgEquiv` between `R[X][Y]` and `R[a][Y]` for some transcendental `a`. -/
 def Bivariate.equivAdjoinOfTranscendental (x : A) (hx : Transcendental R x) :
     R[X][Y] ≃ₐ[R] (Algebra.adjoin R {x})[X] :=
   mapAlgEquiv (equivPolynomialAdjoin x hx)
