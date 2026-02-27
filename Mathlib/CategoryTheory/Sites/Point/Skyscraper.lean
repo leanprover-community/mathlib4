@@ -45,7 +45,9 @@ section
 
 variable {P Q : Cᵒᵖ ⥤ A} {M N : A} [HasColimitsOfSize.{w, w} A]
 
-/-- Auxiliary definition for `skyscraperPresheafAdjunction`. -/
+/-- If `Φ` is a point of a site `(C, J)`, `P : Cᵒᵖ ⥤ A` and `M : A`, this is
+the bijection `(Φ.presheafFiber.obj P ⟶ M) ≃ (P ⟶ Φ.skyscraperPresheaf M)`
+that is part of the adjunction `skyscraperPresheafAdjunction`. -/
 @[simps -isSimp apply_app symm_apply]
 noncomputable def skyscraperPresheafHomEquiv :
     (Φ.presheafFiber.obj P ⟶ M) ≃ (P ⟶ Φ.skyscraperPresheaf M) where
@@ -78,9 +80,7 @@ lemma skyscraperPresheafHomEquiv_naturality_left_symm
 @[reassoc (attr := simp)]
 lemma skyscraperPresheafHomEquiv_app_π
     (f : Φ.presheafFiber.obj P ⟶ M) (X : C) (x : Φ.fiber.obj X) :
-    letI a : P.obj (op X) ⟶ ∏ᶜ (fun (_ : Φ.fiber.obj X) ↦ M) :=
-      (Φ.skyscraperPresheafHomEquiv f).app (op X)
-    a ≫ Pi.π _ x =
+    (Φ.skyscraperPresheafHomEquiv f).app (op X) ≫ Pi.π (fun (_ : Φ.fiber.obj X) ↦ M) x =
       Φ.toPresheafFiber X x P ≫ f := by
   simp [skyscraperPresheafHomEquiv_apply_app]
 
@@ -99,14 +99,34 @@ lemma skyscraperPresheafHomEquiv_naturality_right
 
 end
 
+section
+
+variable [HasColimitsOfSize.{w, w} A]
+
 /-- Given a point of a site, the skyscraper presheaf functor is right adjoint
 to the fiber functor on presheaves. -/
 noncomputable def skyscraperPresheafAdjunction [HasColimitsOfSize.{w, w} A] :
-    Φ.presheafFiber (A := A) ⊣ Φ.skyscraperPresheafFunctor (A := A) :=
+    Φ.presheafFiber (A := A) ⊣ Φ.skyscraperPresheafFunctor :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := Φ.skyscraperPresheafHomEquiv
       homEquiv_naturality_left_symm _ _ := Φ.skyscraperPresheafHomEquiv_naturality_left_symm _ _
-      homEquiv_naturality_right _ _ := Φ.skyscraperPresheafHomEquiv_naturality_right _ _}
+      homEquiv_naturality_right _ _ := Φ.skyscraperPresheafHomEquiv_naturality_right _ _ }
+
+@[simp]
+lemma skyscraperPresheafAdjunction_homEquiv_apply {P : Cᵒᵖ ⥤ A} {M : A}
+    (f : Φ.presheafFiber.obj P ⟶ M) :
+    Φ.skyscraperPresheafAdjunction.homEquiv _ _ f =
+      Φ.skyscraperPresheafHomEquiv f := by
+  simp [skyscraperPresheafAdjunction]
+
+@[simp]
+lemma skyscraperPresheafAdjunction_homEquiv_symm_apply {P : Cᵒᵖ ⥤ A} {M : A}
+    (f : P ⟶ Φ.skyscraperPresheaf M) :
+    (Φ.skyscraperPresheafAdjunction.homEquiv _ _).symm f =
+      Φ.skyscraperPresheafHomEquiv.symm f := by
+  simp [skyscraperPresheafAdjunction]
+
+end
 
 variable {Φ} in
 private lemma isSheaf_skyscraperPresheaf_aux
@@ -174,10 +194,12 @@ noncomputable abbrev skyscraperSheaf (M : A) :
     Sheaf J A :=
   Φ.skyscraperSheafFunctor.obj M
 
+variable [HasColimitsOfSize.{w, w} A]
+
 /-- Given a point of a site, the skyscraper sheaf functor is right adjoint
 to the fiber functor on sheaves. -/
-noncomputable def skyscraperSheafAdjunction [HasColimitsOfSize.{w, w} A] :
-    Φ.sheafFiber (A := A) ⊣ Φ.skyscraperSheafFunctor (A := A) :=
+noncomputable def skyscraperSheafAdjunction :
+    Φ.sheafFiber (A := A) ⊣ Φ.skyscraperSheafFunctor :=
   Adjunction.mkOfHomEquiv
     { homEquiv F M :=
         Φ.skyscraperPresheafHomEquiv.trans
@@ -187,5 +209,20 @@ noncomputable def skyscraperSheafAdjunction [HasColimitsOfSize.{w, w} A] :
       homEquiv_naturality_right f g := by
         ext : 1
         exact Φ.skyscraperPresheafHomEquiv_naturality_right f g }
+
+@[simp]
+lemma skyscraperSheafAdjunction_homEquiv_apply_val {F : Sheaf J A} {M : A}
+    (f : Φ.presheafFiber.obj F.val ⟶ M) :
+    letI e : (Φ.presheafFiber.obj F.val ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
+    letI a : F.val ⟶ Φ.skyscraperPresheaf M := (e f).val
+    a = Φ.skyscraperPresheafHomEquiv f := by
+  simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
+
+@[simp]
+lemma skyscraperSheafAdjunction_homEquiv_symm_apply {F : Sheaf J A} {M : A}
+    (f : F ⟶ Φ.skyscraperSheaf M) :
+    letI e : (Φ.presheafFiber.obj F.val ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
+    e.symm f = Φ.skyscraperPresheafHomEquiv.symm f.val := by
+  simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
 
 end CategoryTheory.GrothendieckTopology.Point

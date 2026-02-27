@@ -435,7 +435,7 @@ def cancelBaseChange : M ⊗[A] (A ⊗[R] N) ≃ₗ[B] M ⊗[R] N :=
   (assoc R A B M A N).symm ≪≫ₗ g
 
 /-- Base change distributes over tensor product. -/
-def distribBaseChange : A ⊗[R] (M ⊗[R] N) ≃ₗ[A] (A ⊗[R] M) ⊗[A] (A ⊗[R] N) :=
+def distribBaseChange : A ⊗[R] (N ⊗[R] Q) ≃ₗ[A] (A ⊗[R] N) ⊗[A] (A ⊗[R] Q) :=
   (cancelBaseChange _ _ _ _ _ ≪≫ₗ assoc _ _ _ _ _ _).symm
 
 variable {M P N Q}
@@ -454,6 +454,19 @@ theorem lTensor_comp_cancelBaseChange (f : N →ₗ[R] Q) :
     lTensor _ _ f ∘ₗ cancelBaseChange R A B M N =
       (cancelBaseChange R A B M Q).toLinearMap ∘ₗ lTensor _ _ (lTensor _ _ f) := by
   ext; simp
+
+@[simp]
+theorem distribBaseChange_tmul (n : N) (q : Q) (a : A) :
+    distribBaseChange R A N Q (a ⊗ₜ (n ⊗ₜ q)) = (a ⊗ₜ n) ⊗ₜ (1 ⊗ₜ q) :=
+  rfl
+
+@[simp]
+theorem distribBaseChange_symm_tmul
+    (n : N) (q : Q) (a b : A) :
+    (distribBaseChange R A N Q).symm ((a ⊗ₜ n) ⊗ₜ (b ⊗ₜ q)) = (a * b) ⊗ₜ (n ⊗ₜ q) := by
+  apply ((distribBaseChange R A N Q).apply_eq_iff_symm_apply.mp ?_).symm
+  rw [tmul_eq_smul_one_tmul b, ← smul_tmul, smul_tmul', mul_comm]
+  simp
 
 end cancelBaseChange
 
