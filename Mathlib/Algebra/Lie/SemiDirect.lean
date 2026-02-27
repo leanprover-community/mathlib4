@@ -126,11 +126,15 @@ def projr : H ⋊⁅ψ⁆ G →ₗ⁅R⁆ G where
   map_smul' _ _ := by simp
   map_lie' := by simp
 
+@[simp] lemma inl_eq_mk (x : H) : inl ψ x = ⟨x, 0⟩ := rfl
+@[simp] lemma inr_eq_mk (x : G) : inr ψ x = ⟨0, x⟩ := rfl
+@[simp] lemma projr_mk (x : H ⋊⁅ψ⁆ G) : projr ψ x = x.right := rfl
+lemma projr_inl_apply {x : H} : projr ψ (inl ψ x) = 0 := by simp
+lemma projr_inr_apply {x : G} : projr ψ (inr ψ x) = x := by simp
+
 @[simp]
-lemma pr_right_surjective :  (Function.Surjective (pr_right ψ)) := by
-  intro g
-  use (toProd.symm (0,g))
-  simp [pr_right]
+lemma projr_surjective : Function.Surjective (projr ψ) :=
+  fun x ↦ ⟨inr ψ x, by simp⟩
 
 instance : LieAlgebra.IsExtension (in_left ψ) (pr_right ψ) where
   ker_eq_bot := by simp [LieHom.ker_eq_bot]
