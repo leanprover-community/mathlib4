@@ -864,7 +864,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       exact No.snd'.repr_lt
     · have := mul_le_mul_right (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
       rw [opow_mul]
-      simpa [-opow_succ]
+      simpa
   · cases m
     · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
