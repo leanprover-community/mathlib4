@@ -54,22 +54,87 @@ public meta section
 
 open Lean MessageData Meta Elab Tactic Command
 
+namespace Lean.MessageData
+
+/- TODO: this section should be moved to `Lean.MessageData.Trace` when finalized and made public. -/
+
+/-- A return value for functions called by traversals of `MessageData`. May either descend into
+children or ascend immediately (skipping children), optionally including a value accumulated by the
+traversal in both cases. -/
+inductive VisitStep (α) where
+/-- Descends through the `MessageData`, visiting all children. If the argument `butFirst` is given
+as `some a` (`none` by default), starts with `a`, and combines any values produced by children with
+this value. -/
+| descend (butFirst : Option α := none)
+/-- Skips visiting children, and ascends to the parent, returning the value given in `returning`
+(if any). -/
+| ascend (returning : Option α := none)
+
+variable {m : Type → Type} [Monad m] {α : Type}
+
+/-- Collect and combine values of type `α` produced by visiting all trace nodes in a `MessageData`
+tree.
+
+Automatically recurses through structural wrappers, invoking `onTrace` only for
+`.trace` nodes. The `onTrace` callback receives the arguments of `.trace`:
+- the `TraceData` (class name, timing, etc.)
+- the trace node's header message
+- the trace node's child messages
+
+Each call to `onTrace` is expected to produce either a `descend`, in which case the children of the
+trace nodes will be visited, or an `ascend`, in which case they will not. Both may take an argument
+`butFirst := some a`, which will cause `a` to be `combine`d into the accumulated value.
+
+We assume `x = combine empty x = combine x empty`. `empty` is attempted to be synthesized as the
+`EmptyCollection`, and `combine` is attempted to be synthesized first via the notation `(· ++ ·)`
+then via `(· ∪ ·)` as a fallback.
+
+Note that the children may be visited manually via a recursive call to `collectWith` or
+`collectWithAndAscend`.
+
+Note: `.ofLazy` nodes are skipped (return `empty`) because they contain unevaluated
+formatting thunks, not trace tree structure. This is consistent with `hasTag`
+in `Lean.Message` which also skips `.ofLazy`. -/
+partial def visitTraceNodesM (msg : MessageData)
+    (onTrace : TraceData → MessageData → Array MessageData → m (MessageData.VisitStep α))
+    (empty : α := by exact {}) (combine : α → α → α := by first | exact (· ++ ·) | exact (· ∪ ·)) :
+    m α :=
+  go msg
+where
+  /-- The continuation for `visitTraceNodesM`; this is mainly for readability (takes only one
+  argument in source). -/
+  go : MessageData → m α
+    | .trace td header children => do
+      match ← onTrace td header children with
+      | .descend a? => do
+        let mut result := a?.getD empty
+        for child in children do
+          result := combine result (← go child)
+        return result
+      | .ascend a? => return a?.getD empty
+    | .compose a b => return combine (← go a) (← go b)
+    | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m => go m
+    | .ofLazy _ _ | .ofWidget _ _ | .ofGoal _ | .ofFormatWithInfos _ => return empty
+
+/-- Convenience wrapper which accumulates the results of `visitM` across `arr`, attempting to
+produce `empty` and `combine` from `{}` and `(· ++ ·)` or `(· ∪ ·)`. -/
+@[inline] def visitWithM {β} (arr : Array β) (visitM : β → m α)
+    (empty : α := by exact {}) (combine : α → α → α := by first | exact (· ++ ·) | exact (· ∪ ·)) :
+    m α :=
+  arr.foldlM (init := empty) fun acc msg => return combine acc (← visitM msg)
+
+/-- Convenience wrapper which accumulates the results of `visitM` across `arr`, attempting to
+produce `empty` and `combine` from `{}` and `(· ++ ·)` or `(· ∪ ·)`, then `.ascend`s with the result
+(if any). This effectively replaces a return value of `.descend`. -/
+@[inline] def visitWithAndAscendM {β} (arr : Array β) (visitM : β → m α)
+    (empty : α := by exact {}) (combine : α → α → α := by first | exact (· ++ ·) | exact (· ∪ ·)) :
+    m (VisitStep α) := do
+  if arr.isEmpty then return .ascend else
+    return .ascend <|← visitWithM arr visitM empty combine
+
+end Lean.MessageData
+
 namespace Mathlib.Tactic.DefEqAbuse
-
-/-- Extract the instance name from a rendered `apply @Foo to Goal` trace header.
-Returns the string between `"apply "` and `" to "`.
-
-Note: this is fragile string matching against Lean's `Meta.synthInstance` trace format.
-If the trace format changes, this function will silently return the original string.
-Once https://github.com/leanprover/lean4/pull/12699 is available,
-these nodes will have trace class `Meta.synthInstance.apply` and can be identified
-structurally via `td.cls` instead of string-matching on the header. -/
-private def extractInstName (s : String) : String :=
-  match s.splitOn "apply " with
-  | [_, rest] => match rest.splitOn " to " with
-    | name :: _ => name.trimAscii.toString
-    | _ => s
-  | _ => s
 
 /-- Only applies `f` to `Meta.isDefEq` trace nodes. Skips `Meta.isDefEq.onFailure` nodes. -/
 @[inline] private def onlyOnDefEqNodes {m} [Monad m] {α}
