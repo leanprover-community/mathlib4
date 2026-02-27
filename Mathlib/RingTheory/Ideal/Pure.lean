@@ -9,7 +9,8 @@ public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Flat.Tensor
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Idempotents
-public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # Pure ideals
@@ -112,12 +113,16 @@ lemma Ideal.ker_piRingHom_atPrime_eq_of_pure (I : Ideal R) [I.Pure] :
     RingHom.ker
       (Pi.ringHom fun p : zeroLocus (I : Set R) ↦
         algebraMap R (Localization.AtPrime p.val.asIdeal)) = I := by
-  refine le_antisymm (Ideal.ker_piRingHom_atPrime_le _) fun x hx ↦ ?_
-  rw [RingHom.mem_ker]
-  ext p
-  rw [Pi.ringHom_apply, Pi.zero_apply]
-  exact Ideal.le_ker_atPrime_of_forall_exists_eq_mul
-    (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.2 hx
+  refine le_antisymm ?_ fun x hx ↦ ?_
+  · rw [Pi.ker_ringHom]
+    refine le_trans ?_ I.iInf_ker_le
+    simp only [le_iInf_iff]
+    exact fun i hi hle ↦ iInf_le_of_le ⟨⟨i, hi⟩, hle⟩ le_rfl
+  · rw [RingHom.mem_ker]
+    ext p
+    rw [Pi.ringHom_apply, Pi.zero_apply]
+    exact Ideal.le_ker_atPrime_of_forall_exists_eq_mul
+      (fun x hx ↦ Ideal.exists_eq_mul_of_pure hx) p.2 hx
 
 @[stacks 04PT]
 lemma Ideal.zeroLocus_inj_of_pure {I J : Ideal R} [I.Pure] [J.Pure] :
