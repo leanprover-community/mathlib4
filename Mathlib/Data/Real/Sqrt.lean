@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Instances.NNReal.Lemmas
 public import Mathlib.Topology.Order.MonotoneContinuity
-public import Mathlib.Tactic.Isolate
+import Mathlib.Tactic.Isolate
 
 /-!
 # Square root of a real number

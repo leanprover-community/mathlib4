@@ -3,11 +3,15 @@ Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+module
+
 import Mathlib.Tactic.Isolate.Core
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 
 /-! # @[isolate] lemmas for elementary functions -/
+
+@[expose] public section
 
 variable {X : Type*}
 

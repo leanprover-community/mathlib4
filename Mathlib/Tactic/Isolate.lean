@@ -1,2 +1,4 @@
-import Mathlib.Tactic.Isolate.Core
+module
+
+public import Mathlib.Tactic.Isolate.Core
 import Mathlib.Tactic.Isolate.Tagging
