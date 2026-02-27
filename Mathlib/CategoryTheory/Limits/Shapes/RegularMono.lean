@@ -6,7 +6,7 @@ Authors: Kim Morrison, Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.EffectiveEpi.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
@@ -589,6 +589,56 @@ lemma strongEpi_of_regularEpi (f : X ⟶ Y) (h : RegularEpi f) : StrongEpi f :=
 theorem isIso_of_regularEpi_of_mono (f : X ⟶ Y) (h : RegularEpi f) [Mono f] : IsIso f :=
   have := isRegularEpi_of_regularEpi h
   isIso_of_mono_of_strongEpi _
+
+section
+
+/-- A regular monomorphism in `C` induces a regular epimorphism in `Cᵒᵖ`. -/
+noncomputable def RegularMono.op {X Y : C} {f : X ⟶ Y} (hf : RegularMono f) :
+    RegularEpi f.op where
+  W := .op hf.Z
+  left := hf.left.op
+  right := hf.right.op
+  w := by simp [← op_comp, hf.w]
+  isColimit := Fork.isLimitOfιEquivIsColimitOp _ _ hf.w _ rfl hf.isLimit
+
+/-- A regular monomorphism in `Cᵒᵖ` induces a regular epimorphism in `C`. -/
+noncomputable def RegularMono.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularMono f) :
+    RegularEpi f.unop where
+  W := hf.Z.unop
+  left := hf.left.unop
+  right := hf.right.unop
+  w := by simp [← unop_comp, hf.w]
+  isColimit := Fork.isLimitOfιEquivIsColimitUnop _ _ hf.w _ rfl hf.isLimit
+
+/-- A regular epimorphism in `C` induces a regular monomorphism in `Cᵒᵖ`. -/
+noncomputable def RegularEpi.op {X Y : C} {f : X ⟶ Y} (hf : RegularEpi f) :
+    RegularMono f.op where
+  Z := .op hf.W
+  left := hf.left.op
+  right := hf.right.op
+  w := by simp [← op_comp, hf.w]
+  isLimit := Cofork.isColimitOfπEquivIsLimitOp _ _ hf.w _ rfl hf.isColimit
+
+/-- A regular epimorphism in `Cᵒᵖ` induces a regular monomorphism in `C`. -/
+noncomputable def RegularEpi.unop {X Y : Cᵒᵖ} {f : X ⟶ Y} (hf : RegularEpi f) :
+    RegularMono f.unop where
+  Z := hf.W.unop
+  left := hf.left.unop
+  right := hf.right.unop
+  w := by simp [← unop_comp, hf.w]
+  isLimit := Cofork.isColimitOfπEquivIsLimitUnop _ _ hf.w _ rfl hf.isColimit
+
+@[simp]
+lemma isRegularMono_op_iff_isRegularEpi {X Y : C} (f : X ⟶ Y) :
+    IsRegularMono f.op ↔ IsRegularEpi f :=
+  ⟨fun hf ↦ ⟨⟨hf.regularMono.some.unop⟩⟩, fun hf ↦ ⟨⟨hf.regularEpi.some.op⟩⟩⟩
+
+@[simp]
+lemma isRegularMono_unop_iff_isRegularEpi {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    IsRegularMono f.unop ↔ IsRegularEpi f :=
+  ⟨fun hf ↦ ⟨⟨hf.regularMono.some.op⟩⟩, fun hf ↦ ⟨⟨hf.regularEpi.some.unop⟩⟩⟩
+
+end
 
 section
 
