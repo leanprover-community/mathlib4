@@ -657,3 +657,5 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     rw [← hoh]
     apply congr_arg
     exact heq
+
+end
