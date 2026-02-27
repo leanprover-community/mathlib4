@@ -404,4 +404,3 @@ theorem ramificationIdx_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients 
 end IsInertiaField
 
 end splitting
-
