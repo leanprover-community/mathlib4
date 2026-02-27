@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 /-!
 # Theory of sieves
 
-- For an object `X` of a category `C`, a `Sieve X` is a set of morphisms to `X`
+- For an object `X` of a category `C`, a `Sieve X` is a predicate on morphisms to `X`
   which is closed under left-composition.
 - The complete lattice structure on sieves is given, as well as the Galois insertion
   given by downward-closing.
@@ -35,7 +35,7 @@ open Category Limits
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
 variable {X Y Z : C} (f : Y ⟶ X)
 
-/-- A set of arrows all with codomain `X`. -/
+/-- A predicate on arrows with codomain `X`. -/
 def Presieve (X : C) :=
   ∀ ⦃Y⦄, (Y ⟶ X) → Prop -- deriving CompleteLattice
 
@@ -72,8 +72,8 @@ abbrev diagram (S : Presieve X) : S.category ⥤ C :=
 abbrev cocone (S : Presieve X) : Cocone S.diagram :=
   (Over.forgetCocone X).whisker (ObjectProperty.ι _)
 
-/-- Given a set of arrows `S` all with codomain `X`, and a set of arrows with codomain `Y` for each
-`f : Y ⟶ X` in `S`, produce a set of arrows with codomain `X`:
+/-- Given a presieve `S` on `X`, and presieve `R` on `Y` for each
+`f : Y ⟶ X` in `S`, produce a presieve on `X`:
 `{ g ≫ f | (f : Y ⟶ X) ∈ S, (g : Z ⟶ Y) ∈ R f }`.
 -/
 def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y) : Presieve X := fun Z h =>
@@ -145,10 +145,10 @@ instance (g : Z ⟶ X) [HasPullback g f] : (singleton g).HasPullbacks f where
     intro ⟨⟩
     infer_instance
 
-/-- Pullback a set of arrows with given codomain along a fixed map, by taking the pullback in the
+/-- Pullback a presieve along a fixed map, by taking the pullback in the
 category.
-This is not the same as the arrow set of `Sieve.pullback`, but there is a relation between them
-in `pullbackArrows_comm`.
+This is not the same as the underlying presieve of `Sieve.pullback`, but there is a relation between
+them in `pullbackArrows_comm`.
 -/
 inductive pullbackArrows (R : Presieve X) [R.HasPullbacks f] : Presieve Y
   | mk (Z : C) (h : Z ⟶ X) (hRh : R h) :
@@ -454,8 +454,8 @@ end uncurry
 end Presieve
 
 /--
-For an object `X` of a category `C`, a `Sieve X` is a set of morphisms to `X` which is closed under
-left-composition.
+For an object `X` of a category `C`, a `Sieve X` is a predicate on morphisms to `X` which is closed
+under left-composition.
 -/
 structure Sieve {C : Type u₁} [Category.{v₁} C] (X : C) where
   /-- the underlying presieve -/
@@ -573,7 +573,7 @@ lemma arrows_top : (⊤ : Sieve X).arrows = ⊤ := rfl
 lemma arrows_eq_top_iff {S : Sieve X} : S.arrows = ⊤ ↔ S = ⊤ :=
   ⟨fun h ↦ arrows_ext (h ▸ arrows_top), fun h ↦ h ▸ arrows_top⟩
 
-/-- Generate the smallest sieve containing the given set of arrows. -/
+/-- Generate the smallest sieve containing the given presieve. -/
 @[simps]
 def generate (R : Presieve X) : Sieve X where
   arrows Z f := ∃ (Y : _) (h : Z ⟶ Y) (g : Y ⟶ X), R g ∧ h ≫ g = f
@@ -610,7 +610,7 @@ theorem generate_le_iff (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R 
     rintro ⟨Z, f, g, hg, rfl⟩
     exact S.downward_closed (ss Z _ hg) f⟩
 
-/-- Show that there is a Galois insertion (generate, set_over). -/
+/-- Show that there is a Galois insertion (generate, underlying presieve). -/
 def giGenerate : GaloisInsertion (generate : Presieve X → Sieve X) arrows where
   gc := generate_le_iff
   choice 𝒢 _ := generate 𝒢
@@ -631,7 +631,7 @@ lemma generate_mono : Monotone (generate : Presieve X → _) :=
 theorem id_mem_iff_eq_top : S (𝟙 X) ↔ S = ⊤ :=
   ⟨fun h => top_unique fun Y f _ => by simpa using downward_closed _ h f, fun h => h.symm ▸ trivial⟩
 
-/-- If an arrow set contains a split epi, it generates the maximal sieve. -/
+/-- If a presieve contains a split epi, it generates the maximal sieve. -/
 theorem generate_of_contains_isSplitEpi {R : Presieve X} (f : Y ⟶ X) [IsSplitEpi f] (hf : R f) :
     generate R = ⊤ := by
   rw [← id_mem_iff_eq_top]
