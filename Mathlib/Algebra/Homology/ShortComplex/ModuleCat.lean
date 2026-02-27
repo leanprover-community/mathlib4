@@ -229,6 +229,10 @@ abbrev ModuleCat.shortComplexOfCompEqZero (f : M →ₗ[R] N) (g : N →ₗ[R] L
   f := ModuleCat.ofHom f
   g := ModuleCat.ofHom g
 
+lemma ModuleCat.shortComplex_exact (S : ShortComplex (ModuleCat.{v} R))
+    (exac : Function.Exact S.f S.g) : S.Exact :=
+  (ShortComplex.ShortExact.moduleCat_exact_iff_function_exact _).mpr exac
+
 lemma ModuleCat.shortComplex_shortExact (S : ShortComplex (ModuleCat.{v} R))
     (exac : Function.Exact S.f S.g) (inj : Function.Injective S.f)
     (surj : Function.Surjective S.g) : S.ShortExact where
