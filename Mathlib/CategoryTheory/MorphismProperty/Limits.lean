@@ -185,23 +185,14 @@ variable (C)
 
 instance IsStableUnderBaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderBaseChange where
-  of_isPullback {_ _ _ _ f g _ _} h hg :=
-    have : IsIso g := hg
-    have := hasPullback_of_left_iso g f
-    h.isoPullback_hom_snd ▸ inferInstanceAs (IsIso _)
+  of_isPullback h hg :=
+    h.isIso_snd_of_isIso hg
 
 set_option backward.isDefEq.respectTransparency false in
 instance IsStableUnderBaseChange.monomorphisms :
     (monomorphisms C).IsStableUnderBaseChange where
-  of_isPullback {X Y Y' S f g f' g'} h hg := by
-    have : Mono g := hg
-    constructor
-    intro Z f₁ f₂ h₁₂
-    apply PullbackCone.IsLimit.hom_ext h.isLimit
-    · rw [← cancel_mono g]
-      dsimp
-      simp only [Category.assoc, h.w, reassoc_of% h₁₂]
-    · exact h₁₂
+  of_isPullback h hg :=
+    h.mono_snd_of_mono hg
 
 variable {C P}
 

@@ -121,23 +121,34 @@ variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
 lemma isIso_fst_of_mono (h : IsPullback fst snd f f) : IsIso fst :=
   h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
 
-lemma isIso_snd_iso_of_mono {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
-    (h : IsPullback fst snd f f) : IsIso snd :=
+lemma isIso_snd_iso_of_mono (h : IsPullback fst snd f f) : IsIso snd :=
   h.cone.isIso_snd_of_mono_of_isLimit h.isLimit
 
 end
 
 section
 
-lemma isIso_fst_of_isIso (h : IsPullback fst snd f g) [IsIso g] : IsIso fst := by
+lemma mono_fst_of_mono (h : IsPullback fst snd f g) (inst : Mono g := by infer_instance) :
+    Mono fst := by
+  constructor
+  intro W fst' snd' heq
+  apply h.hom_ext heq
+  rw [← cancel_mono g]
+  simp [← h.w, reassoc_of% heq]
+
+lemma mono_snd_of_mono (h : IsPullback fst snd f g) (inst : Mono f := by infer_instance) :
+    Mono snd :=
+  h.flip.mono_fst_of_mono
+
+lemma isIso_fst_of_isIso (h : IsPullback fst snd f g) (inst : IsIso g := by infer_instance) :
+    IsIso fst := by
   have := h.hasPullback
   rw [← h.isoPullback_hom_fst]
   infer_instance
 
-lemma isIso_snd_of_isIso (h : IsPullback fst snd f g) [IsIso f] : IsIso snd := by
-  have := h.hasPullback
-  rw [← h.isoPullback_hom_snd]
-  infer_instance
+lemma isIso_snd_of_isIso (h : IsPullback fst snd f g) (inst : IsIso f := by infer_instance) :
+    IsIso snd :=
+  h.flip.isIso_fst_of_isIso
 
 end
 
