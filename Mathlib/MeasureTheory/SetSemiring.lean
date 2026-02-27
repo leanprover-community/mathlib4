@@ -223,7 +223,6 @@ section disjointOfDiffUnion
 
 variable {I : Finset (Set α)}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`, there is a
 finite set of sets in `C` whose union is `s \ ⋃₀ I`.
 See `IsSetSemiring.disjointOfDiffUnion` for a definition that gives such a set. -/
