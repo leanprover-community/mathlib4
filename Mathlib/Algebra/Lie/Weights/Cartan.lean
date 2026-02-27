@@ -296,8 +296,8 @@ variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 variable [LieModule.IsTriangularizable K H L]
 
 lemma lieIdeal_eq_iSup_inf_genWeightSpace (I : LieIdeal K L) :
-    I.restr H = ⨆ χ : Weight K H L, I.restr H ⊓ genWeightSpace L χ := by
-  exact eq_iSup_inf_genWeightSpace (N := I.restr H)
+    I.restr H = ⨆ χ : Weight K H L, I.restr H ⊓ genWeightSpace L χ :=
+  eq_iSup_inf_genWeightSpace (N := I.restr H)
 
 lemma lieIdeal_eq_inf_cartan_sup_biSup_inf_rootSpace (I : LieIdeal K L) :
     I.restr H = (I.restr H ⊓ H.toLieSubmodule) ⊔ ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero),
