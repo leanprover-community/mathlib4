@@ -576,14 +576,16 @@ theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
     (ofNat(n) : M₁ →L[R₁] M₁) m = OfNat.ofNat n • m :=
   rfl
 
+/-- Construct a homeomorphism from an invertible continuous linear map. -/
+def homeomorph_of_unit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
+  toFun := T.1
+  invFun := T⁻¹.1
+  left_inv x := by rw [← mul_apply, Units.inv_mul, one_apply]
+  right_inv x := by rw [← mul_apply, Units.mul_inv, one_apply]
+
 theorem isHomeomorph_of_isUnit {T : M₁ →L[R₁] M₁} (hT : IsUnit T) : IsHomeomorph T := by
-  obtain ⟨u, rfl⟩ := hT
-  let f : M₁ ≃ₜ M₁ :=
-  { toFun := u.1
-    invFun := u⁻¹.1
-    left_inv x := by rw [← mul_apply, Units.inv_mul, one_apply]
-    right_inv x := by rw [← mul_apply, Units.mul_inv, one_apply] }
-  exact f.isHomeomorph
+  obtain ⟨T, rfl⟩ := hT
+  exact (homeomorph_of_unit T).isHomeomorph
 
 section ApplyAction
 
