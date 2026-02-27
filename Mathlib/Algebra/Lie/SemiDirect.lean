@@ -111,11 +111,11 @@ def inl : H →ₗ⁅R⁆ H ⋊⁅ψ⁆ G where
 lemma inl_injective : Function.Injective (inl ψ) := by intro; simp [inl]
 
 /-- The canonical projection of the semi-direct sum H ⋊⁅ψ⁆ G to G. -/
-def pr_right : (H ⋊⁅ψ⁆ G) →ₗ⁅R⁆ G where
-  toFun x := (toProd x).2
-  map_add' _ _ := Prod.snd_eq_iff.mpr rfl
-  map_smul' _ _ := Prod.snd_eq_iff.mpr rfl
-  map_lie' {_ _}:= Prod.snd_eq_iff.mpr rfl
+def projr : H ⋊⁅ψ⁆ G →ₗ⁅R⁆ G where
+  toFun x := x.toProd.snd
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+  map_lie' := by simp
 
 @[simp]
 lemma pr_right_surjective :  (Function.Surjective (pr_right ψ)) := by
