@@ -98,7 +98,6 @@ lemma gammaPDFReal_nonneg {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :
 
 open Measure
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the gamma distribution integrates to 1 -/
 @[simp]
 lemma lintegral_gammaPDF_eq_one {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
