@@ -69,7 +69,7 @@ lemma exists_comp_monoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
 
 lemma exists_comp_isoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (Y' : C) (s : Y ⟶ Y') (_ : P.isoModSerre s), f ≫ s = 0) ↔
-        P (Abelian.image f) := by
+      P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
   · rintro ⟨Y', s, hs, eq⟩
     rw [← exists_comp_monoModSerre_eq_zero_iff P]
