@@ -4952,9 +4952,9 @@ public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.Logic.Equiv.Array
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Logic.Equiv.BijectiveBase2
 public import Mathlib.Logic.Equiv.Bool
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Logic.Equiv.Dyadic
 public import Mathlib.Logic.Equiv.Embedding
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Equiv.Fin.Rotate

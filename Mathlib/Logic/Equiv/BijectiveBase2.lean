@@ -8,14 +8,14 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Equiv.Basic
 
 /-!
-# Dyadic Numeration (Bijective Base-2)
+# Bijective Base-2 Numeration
 
 This module formalizes a bijective base-2 numeration system.
-Unlike standard binary representation, dyadic numeration avoids the "leading zeros"
-problem, providing a strict bijection `ℕ ≃ List Bool`.
+Unlike standard binary representation, bijective base-2 numeration avoids the
+"leading zeros" problem, providing a strict bijection `ℕ ≃ List Bool`.
 -/
 
-namespace Equiv.Dyadic
+namespace Equiv.BijectiveBase2
 
 /-- Encodes a natural number into a list of booleans using bijective base-2. -/
 def toBits (n : ℕ) : List Bool :=
@@ -35,7 +35,8 @@ def ofBits : List Bool → ℕ
 
 @[simp] lemma ofBits_nil : ofBits [] = 0 := rfl
 
-/-- Proves that decoding the encoded dyadic bits of a natural number returns the original number. -/
+/-- Proves that decoding the encoded bijective base-2 bits of a natural number
+returns the original number. -/
 @[simp]
 theorem ofBits_toBits (n : ℕ) : ofBits (toBits n) = n := by
   rw [toBits]
@@ -51,7 +52,8 @@ theorem ofBits_toBits (n : ℕ) : ofBits (toBits n) = n := by
 termination_by n
 decreasing_by omega
 
-/-- Proves that encoding the decoded natural number of dyadic bits returns the original bits. -/
+/-- Proves that encoding the decoded natural number of bijective base-2 bits
+returns the original bits. -/
 @[simp]
 theorem toBits_ofBits (bs : List Bool) : toBits (ofBits bs) = bs := by
   induction bs with
@@ -75,12 +77,12 @@ theorem toBits_ofBits (bs : List Bool) : toBits (ofBits bs) = bs := by
         have h_mod : (1 + 2 * ofBits bs) % 2 = 1 := by omega
         simp [h_math, h_div, h_mod, ih]
 
-end Equiv.Dyadic
+end Equiv.BijectiveBase2
 
 /-- The formal mathematical bijection between Natural Numbers and Boolean Lists
-using bijective base-2 (dyadic) numeration. -/
-def equivDyadic : ℕ ≃ List Bool where
-  toFun := Equiv.Dyadic.toBits
-  invFun := Equiv.Dyadic.ofBits
-  left_inv := Equiv.Dyadic.ofBits_toBits
-  right_inv := Equiv.Dyadic.toBits_ofBits
+using bijective base-2 numeration. -/
+def equivBijectiveBase2 : ℕ ≃ List Bool where
+  toFun := Equiv.BijectiveBase2.toBits
+  invFun := Equiv.BijectiveBase2.ofBits
+  left_inv := Equiv.BijectiveBase2.ofBits_toBits
+  right_inv := Equiv.BijectiveBase2.toBits_ofBits
