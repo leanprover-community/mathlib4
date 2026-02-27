@@ -98,7 +98,6 @@ private partial def collectIsDefEqChecks (pred : TraceResult → Bool)
         return .descend (butFirst := some {stripTraceResultPrefix headerStr})
     return .descend
 
--- !! Is this expected to only be run on strict traces? If so, let's rename.
 /-- Find the deepest `Meta.isDefEq` transition points: nodes that fail in the strict trace
 but whose check string appears as a success in the permissive trace and does NOT also appear
 as a failure in the permissive trace (which would indicate the check is context-dependent
