@@ -411,6 +411,7 @@ elab_rules : command
     -- We set `Elab.async false` to force synchronous proof checking,
     -- otherwise `theorem` proofs are elaborated in a background task and errors
     -- won't appear in `messages` until after `elabCommand` returns.
+    -- TODO: wait on all of the tasks instead of disabling async entirely.
     let traceOpts (strict : Bool) (scope : Scope) : Scope :=
       { scope with opts := (scope.opts.setBool `Elab.async false)
           |>.setBool `backward.isDefEq.respectTransparency strict
@@ -443,8 +444,7 @@ elab_rules : command
         reportDefEqAbuse "command" uniqueFailures synthResults
         -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
-          { scope with opts := (scope.opts.setBool `Elab.async false)
-              |>.setBool `backward.isDefEq.respectTransparency false }) do
+          { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do
           elabCommand cmd
 
 end Mathlib.Tactic.DefEqAbuse
