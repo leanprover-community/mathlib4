@@ -153,7 +153,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma negMulLog_nonneg {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) : 0 ≤ negMulLog x := by
   simpa only [negMulLog_eq_neg, neg_nonneg] using mul_log_nonpos h1 h2
 
-lemma negMulLog_pos_of_pos_lt_one {x : ℝ} (hx0 : 0 < x) (hx1 : x < 1) :
+lemma negMulLog_pos {x : ℝ} (hx0 : 0 < x) (hx1 : x < 1) :
     0 < negMulLog x := by
   simpa only [negMulLog_eq_neg, neg_pos] using mul_neg_of_pos_of_neg hx0 (log_neg hx0 hx1)
 
