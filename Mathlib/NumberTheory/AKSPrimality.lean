@@ -45,7 +45,6 @@ The paper by the original authors is
   minor conditions hold, then `n` is a prime power. The coefficients `a` are polynomially bounded
   in the digit size of `n`.
 
-
 ## Tags
 
 prime number, polynomial prime number test, AKS, Agrawal-Kayal-Saxena
