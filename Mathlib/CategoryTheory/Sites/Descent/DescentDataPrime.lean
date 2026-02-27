@@ -212,25 +212,20 @@ structure Hom (D₁ D₂ : F.DescentData' sq sq₃) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-instance : Category (F.DescentData' sq sq₃) where
+instance : Quiver (F.DescentData' sq sq₃) where
   Hom := Hom
+
+@[simps id_hom comp_hom]
+instance : Category (F.DescentData' sq sq₃) where
   id _ := { hom _ := 𝟙 _ }
   comp f g := { hom i := f.hom i ≫ g.hom i }
+
+attribute [reassoc] comp_hom
 
 @[ext]
 lemma hom_ext {D₁ D₂ : F.DescentData' sq sq₃} {f g : D₁ ⟶ D₂}
     (h : ∀ i, f.hom i = g.hom i) : f = g :=
   Hom.ext (funext h)
-
-@[simp]
-lemma id_hom (D : F.DescentData' sq sq₃) (i : ι) :
-    Hom.hom (𝟙 D) i = 𝟙 _ :=
-  rfl
-
-@[reassoc, simp]
-lemma comp_hom {D₁ D₂ D₃ : F.DescentData' sq sq₃} (f : D₁ ⟶ D₂) (g : D₂ ⟶ D₃) (i : ι) :
-    (f ≫ g).hom i = f.hom i ≫ g.hom i :=
-  rfl
 
 @[reassoc]
 lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
