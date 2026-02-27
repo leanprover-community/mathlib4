@@ -28,104 +28,48 @@ namespace CommRingCat
 
 universe u
 
-variable {R S : CommRingCat.{u}} (f : R ⟶ S)
-
-/--
-The explicit cocone of form
-```
-R ---------f---------> S
-|                      |
-f                  includeLeft
-|                      |
-v                      v
-S ----includeRight-->S ⊗[R] S
-```
-for a map `f : R ⟶ S` in `CommRingCat`.
--/
-def pushoutCoconeSelf : PushoutCocone f f := by
-  algebraize [f.hom]
-  exact CommRingCat.pushoutCocone R S S
-
-/--
-The explicit fork
-```
-        S ---includeLeft---> S ⊗[R] S
-R --f-->
-        S ---includeRight--> S ⊗[R] S
-```
-for a map `f : R ⟶ S` in `CommRingCat`.
--/
-def forkPushoutCoconeSelf : Fork (pushoutCoconeSelf f).inl (pushoutCoconeSelf f).inr := by
-  algebraize [f.hom]
-  apply Fork.ofι f
-  apply CommRingCat.hom_ext
-  apply RingHom.coe_inj
-  ext
-  exact Algebra.TensorProduct.tmul_one_eq_one_tmul _
-
-/-- For a map `R ⟶ S` in `CommRingCat`, it asserts that the pair of maps `f : R → S` and
-`Algebra.TensorProduct.includeLeftSubRight : S → S ⊗[R] S` form an exact pair. -/
-def IsEffective : Prop := by
-  algebraize [f.hom]
-  exact Algebra.IsEffective R S
-
 namespace Equalizer
 
 section CodRestrictEqLocusPushoutCocone
 
-variable {R S : CommRingCat.{u}} (f : R ⟶ S)
+variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
 
-/-- The canonical ring map from `R` to the (explicit) equalizer of `includeLeft : S ⟶ S ⊗[R] S` and
-`includeRight : S ⟶ S ⊗[R] S`. -/
-noncomputable def codRestrictEqLocusPushoutCocone :
-    R →+* (equalizerFork (pushoutCoconeSelf f).inl (pushoutCoconeSelf f).inr).pt := by
-  algebraize [f.hom]
-  exact RingHom.codRestrict (algebraMap R S)
-    ((CommRingCat.pushoutCocone R S S).inl.hom.eqLocus (CommRingCat.pushoutCocone R S S).inr.hom)
-      (fun _ ↦ by simp [RingHom.eqLocus, Algebra.TensorProduct.tmul_one_eq_one_tmul])
+/-- The canonical ring map from `R` to the explicit equalizer of
+`includeLeft : S ⟶ S ⊗[R] S` and `includeRight : S ⟶ S ⊗[R] S`. -/
+def codRestrictEqLocusPushoutCocone :
+    R →+* (equalizerFork (pushoutCocone R S S).inl (pushoutCocone R S S).inr).pt :=
+  RingHom.codRestrict (algebraMap R S)
+    ((pushoutCocone R S S).inl.hom.eqLocus (pushoutCocone R S S).inr.hom) (by simp)
 
-/-- If `f : R ⟶ S` is an injective map in `CommRingCat`, then `codRestrictEqLocusPushoutCocone f` is
-injective. -/
-lemma codRestrictEqLocusPushoutCocone.inj_of_inj (hf : Function.Injective f.hom) :
-    Function.Injective (codRestrictEqLocusPushoutCocone f) :=
+/-- Injectivity of `algebraMap R S` implies `codRestrictEqLocusPushoutCocone f` is injective. -/
+lemma codRestrictEqLocusPushoutCocone.inj_of_inj (hf : Function.Injective (algebraMap R S)) :
+    Function.Injective (codRestrictEqLocusPushoutCocone R S) :=
   RingHom.injective_codRestrict.mpr hf
 
-/-- If `IsEffective f` is true for a map `f : R ⟶ S` in `CommRingCat`, then
-`codRestrictEqLocusPushoutCocone f` is surjective. -/
-lemma codRestrictEqLocusPushoutCocone.surj_of_isEffective (hf : IsEffective f) :
-    Function.Surjective (codRestrictEqLocusPushoutCocone f) := by
+/-- `Algebra.IsEffective R S` implies `codRestrictEqLocusPushoutCocone` is surjective. -/
+lemma codRestrictEqLocusPushoutCocone.surj_of_isEffective (hf : Algebra.IsEffective R S) :
+    Function.Surjective (codRestrictEqLocusPushoutCocone (R := R) (S := S)) := by
   intro s
-  algebraize [f.hom]
   have := Set.mem_range.mp <|
     Algebra.IsEffective.eqLocus_includeLeft_includeRight hf ▸ SetLike.mem_coe.mpr s.property
   use this.choose
   apply Subtype.ext
   erw [RingHom.codRestrict_apply, this.choose_spec]
 
-/-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then
-`codRestrictEqLocusPushoutCocone f` is bijective. -/
-lemma codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat (hf : f.hom.FaithfullyFlat) :
-    Function.Bijective (codRestrictEqLocusPushoutCocone f) := by
+/-- Faithfully flat `algebraMap R S` implies `codRestrictEqLocusPushoutCocone` is bijective. -/
+lemma codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat (hf : (algebraMap R S).FaithfullyFlat) :
+    Function.Bijective (codRestrictEqLocusPushoutCocone R S) := by
   constructor
-  · exact codRestrictEqLocusPushoutCocone.inj_of_inj _ (RingHom.FaithfullyFlat.injective hf)
-  · algebraize [f.hom]
-    exact codRestrictEqLocusPushoutCocone.surj_of_isEffective _
-      (Algebra.IsEffective.of_faithfullyFlat _ _)
+  · exact codRestrictEqLocusPushoutCocone.inj_of_inj _ _ (RingHom.FaithfullyFlat.injective hf)
+  · haveI : Module.FaithfullyFlat R S := (RingHom.faithfullyFlat_algebraMap_iff).mp hf
+    exact codRestrictEqLocusPushoutCocone.surj_of_isEffective _ _
+      (Algebra.IsEffective.of_faithfullyFlat R S)
 
 end CodRestrictEqLocusPushoutCocone
 
 section Fork
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S)
-
-/-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then `forkPushoutCoconeSelf` is
-an equalizer diagram.
-See `isLimitForkPushoutSelfOfFaithfullyFlat` for the pushout version. -/
-noncomputable def isLimitForkPushoutCoconeSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
-    IsLimit (forkPushoutCoconeSelf f) :=
-  (Fork.isLimitEquivOfIsos _ (equalizerFork _ _) (Iso.refl _) (Iso.refl _) (RingEquiv.ofBijective _
-    (codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat _ hf)).toCommRingCatIso
-      (by simp) (by simp) (by cat_disch)).symm (CommRingCat.equalizerForkIsLimit _ _)
 
 /-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then the fork
 ```
@@ -138,15 +82,26 @@ See `isLimitForkPushoutCoconeSelfOfFaithfullyFlat` for the pushoutCocone version
 noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
     IsLimit (Fork.ofι f pushout.condition) := by
   algebraize [f.hom]
-  let : IsPushout _ _ _ _ :=
+  let fork : Fork (pushoutCocone R S S).inl (pushoutCocone R S S).inr :=
+    Fork.ofι (ofHom (algebraMap R S)) (by rw [(PushoutCocone.condition _)])
+  let isPushout : IsPushout (ofHom (algebraMap R S)) (ofHom (algebraMap R S))
+      (pushoutCocone R S S).inl (pushoutCocone R S S).inr :=
     ⟨⟨PushoutCocone.condition (pushoutCocone R S S)⟩, ⟨pushoutCoconeIsColimit R S S⟩⟩
-  exact Fork.isLimitEquivOfIsos _ _ (Iso.refl _) (IsPushout.isoPushout this) (Iso.refl _)
-    (IsPushout.inl_isoPushout_hom this).symm (IsPushout.inr_isoPushout_hom this).symm rfl
-      (isLimitForkPushoutCoconeSelfOfFaithfullyFlat f hf)
+  let isLimit : IsLimit fork :=
+    (Fork.isLimitEquivOfIsos _
+      (equalizerFork (pushoutCocone R S S).inl (pushoutCocone R S S).inr) (Iso.refl _) (Iso.refl _)
+      (RingEquiv.toCommRingCatIso <|
+        RingEquiv.ofBijective _ (codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat R S hf))
+      (by cat_disch) (by cat_disch) (by cat_disch)).symm
+    (equalizerForkIsLimit (pushoutCocone R S S).inl (pushoutCocone R S S).inr)
+  exact Fork.isLimitEquivOfIsos fork (Fork.ofι f pushout.condition) (Iso.refl _)
+    (IsPushout.isoPushout isPushout) (Iso.refl _) (IsPushout.inl_isoPushout_hom isPushout).symm
+    (IsPushout.inr_isoPushout_hom isPushout).symm rfl isLimit
 
 /-- A regular monomorphism structure on a map `f : R ⟶ S` in `CommRingCat` with
 faithfully flat `f.hom : R ⟶ S`. -/
-noncomputable def regularMonoOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) : RegularMono f where
+noncomputable def regularMonoOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
+    RegularMono f where
   Z := pushout f f
   left := pushout.inl f f
   right := pushout.inr f f
