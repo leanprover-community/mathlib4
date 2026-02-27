@@ -30,9 +30,10 @@ The following are notations in the `OrderType` namespace:
 ## References
 
 * <https://en.wikipedia.org/wiki/Order_type>
-* Dauben, J. W. Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
-  NJ: Princeton University Press, 1990.
-* Enderton, Herbert B. Elements of Set Theory. United Kingdom: Academic Press, 1977.
+* [Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
+  NJ: Princeton University Press, 1990.][dauben_1990]
+* [Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
+  1977.][enderton_1977]
 
 ## Tags
 

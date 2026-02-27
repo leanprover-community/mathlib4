@@ -82,6 +82,7 @@ lemma toGrothendieck_mono {J K : Precoverage C} (h : J ≤ K) :
   | pullback X S _ Y f _ => grind
   | transitive X S R _ _ _ _ => grind
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An alternative characterization of the Grothendieck topology associated to a precoverage `J`:
 it is the infimum of all Grothendieck topologies containing `Sieve.generate S` for all presieves
@@ -110,7 +111,7 @@ theorem isSheaf_toGrothendieck_iff (P : Cᵒᵖ ⥤ Type*) :
       (∀ {X Y : C} {f : Y ⟶ X} (R : Presieve X), R ∈ J X →
         Presieve.IsSheafFor P ((Sieve.generate R).pullback f).arrows) := by
   constructor
-  · refine fun H _ _ _ _ hR => H.isSheafFor _ _ ?_
+  · refine fun H _ _ _ _ hR => H.isSheafFor _ ?_
     rw [Sieve.generate_sieve]
     exact J.toGrothendieck.pullback_stable _ (Saturate.of _ _ hR)
   · intro H X S hS
@@ -195,7 +196,7 @@ lemma mem_toGrothendieck_iff_of_isStableUnderComposition [IsStableUnderCompositi
       obtain ⟨E, rfl⟩ := hR
       replace hleT (i : E.I₀) : ∃ (F : J.ZeroHypercover (E.X i)),
           F.presieve₀ ≤ (Sieve.pullback (E.f i) T).arrows := by
-        obtain ⟨R', hR', hle'⟩ := hleT (hle _ ⟨i⟩)
+        obtain ⟨R', hR', hle'⟩ := hleT (hle _ _ ⟨i⟩)
         rw [mem_iff_exists_zeroHypercover] at hR'
         obtain ⟨F, rfl⟩ := hR'
         use F
@@ -203,7 +204,7 @@ lemma mem_toGrothendieck_iff_of_isStableUnderComposition [IsStableUnderCompositi
       refine ⟨(E.bind F).presieve₀, (E.bind F).mem₀, ?_⟩
       rw [Presieve.ofArrows_le_iff]
       intro i
-      exact hle' _ _ ⟨i.snd⟩
+      exact hle' _ _ _ ⟨i.snd⟩
   · rw [← Sieve.generate_le_iff] at hle
     apply GrothendieckTopology.superset_covering _ hle
     exact generate_mem_toGrothendieck hR
@@ -243,5 +244,31 @@ lemma Presieve.isSheafFor_singleton_iff_of_iso {F : Cᵒᵖ ⥤ Type*} {S X Y : 
   subst he
   rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ← Presieve.ofArrows_pUnit,
     Presieve.isSheafFor_ofArrows_comp_iff]
+
+open Limits
+
+variable {D : Type*} [Category* D]
+
+lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks (F : C ⥤ D) (P : Dᵒᵖ ⥤ Type*)
+    {X : C} (R : Presieve X) [R.HasPairwisePullbacks]
+    [F.PreservesPairwisePullbacks R] :
+    Presieve.IsSheafFor (F.op ⋙ P) R ↔ Presieve.IsSheafFor P (R.map F) := by
+  have : (R.map F).HasPairwisePullbacks := .map_of_preservesPairwisePullbacks _ _
+  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
+  rw [map_ofArrows] at this ⊢
+  simp_rw [Presieve.isSheafFor_arrows_iff_pullbacks]
+  dsimp [Arrows.PullbackCompatible]
+  congr! with x
+  rw [forall₂_congr]
+  intro i j
+  have : PreservesLimit (cospan (f i) (f j)) F :=
+    F.preservesLimit_cospan_of_mem_presieve (ofArrows _ f) ⟨i⟩ ⟨j⟩
+  have : HasPullback (F.map (f i)) (F.map (f j)) := hasPullback_of_preservesPullback _ _ _
+  rw [← pullbackComparison_comp_fst, op_comp, Functor.map_comp,
+    ← pullbackComparison_comp_snd, op_comp, Functor.map_comp]
+  have : Function.Bijective (P.map (pullbackComparison F (f i) (f j)).op) := by
+    rw [← isIso_iff_bijective]
+    infer_instance
+  exact this.1.eq_iff
 
 end CategoryTheory

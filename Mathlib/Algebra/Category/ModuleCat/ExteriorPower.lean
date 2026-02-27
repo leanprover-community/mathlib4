@@ -26,6 +26,7 @@ namespace ModuleCat
 
 variable {R : Type u} [CommRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The exterior power of an object in `ModuleCat R`. -/
 def exteriorPower (M : ModuleCat.{v} R) (n : ℕ) : ModuleCat.{max u v} R :=
   ModuleCat.of R (⋀[R]^n M)
@@ -75,6 +76,7 @@ lemma hom_ext {M : ModuleCat.{v} R} {N : ModuleCat.{max u v} R} {n : ℕ}
   ext : 1
   exact exteriorPower.linearMap_ext h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `M.exteriorPower n ⟶ N` induced by an alternating map. -/
 noncomputable def desc {M : ModuleCat.{v} R} {n : ℕ} {N : ModuleCat.{max u v} R}
     (φ : M.AlternatingMap N n) : M.exteriorPower n ⟶ N :=
@@ -86,6 +88,7 @@ lemma desc_mk {M : ModuleCat.{v} R} {n : ℕ} {N : ModuleCat.{max u v} R}
     desc φ (mk x) = φ x := by
   apply exteriorPower.alternatingMapLinearEquiv_apply_ιMulti
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `M.exteriorPower n ⟶ N.exteriorPower n` induced by a morphism `M ⟶ N`
 in `ModuleCat R`. -/
 noncomputable def map {M N : ModuleCat.{v} R} (f : M ⟶ N) (n : ℕ) :

@@ -71,6 +71,7 @@ lemma mapBifunctorLeftUnitorCofan_inj (j : J) :
       (F.map (singleObjApplyIso (0 : I) X).hom).app (Y j) ≫ e.hom.app (Y j) := by
   simp [mapBifunctorLeftUnitorCofan]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `mapBifunctorLeftUnitorCofan F X e p hp Y j` is a colimit. -/
 noncomputable def mapBifunctorLeftUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorLeftUnitorCofan F X e p hp Y j) :=
@@ -103,6 +104,7 @@ noncomputable def mapBifunctorLeftUnitor : mapBifunctorMapObj F p ((single₀ I)
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorLeftUnitorCofanIsColimit F X e p hp Y j)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorLeftUnitor_hom_apply (j : J) :
     ιMapBifunctorMapObj F p ((single₀ I).obj X) Y 0 j j (hp j) ≫
@@ -119,6 +121,7 @@ lemma mapBifunctorLeftUnitor_inv_apply (j : J) :
 
 variable {Y Y'}
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorLeftUnitor_inv_naturality :
     φ ≫ (mapBifunctorLeftUnitor F X e p hp Y').inv =
@@ -183,6 +186,7 @@ lemma mapBifunctorRightUnitorCofan_inj (j : J) :
       (F.obj (X j)).map (singleObjApplyIso (0 : I) Y).hom ≫ e.hom.app (X j) := by
   simp [mapBifunctorRightUnitorCofan]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofan `mapBifunctorRightUnitorCofan F Y e p hp X j` is a colimit. -/
 noncomputable def mapBifunctorRightUnitorCofanIsColimit (j : J) :
     IsColimit (mapBifunctorRightUnitorCofan F Y e p hp X j) :=
@@ -220,6 +224,7 @@ noncomputable def mapBifunctorRightUnitor : mapBifunctorMapObj F p X ((single₀
   isoMk _ _ (fun j => (CofanMapObjFun.iso
     (mapBifunctorRightUnitorCofanIsColimit F Y e p hp X j)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_mapBifunctorRightUnitor_hom_apply (j : J) :
     ιMapBifunctorMapObj F p X ((single₀ I).obj Y) j 0 j (hp j) ≫
@@ -236,6 +241,7 @@ lemma mapBifunctorRightUnitor_inv_apply (j : J) :
 
 variable {Y}
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapBifunctorRightUnitor_inv_naturality :
     φ ≫ (mapBifunctorRightUnitor F Y e p hp X').inv =
@@ -327,6 +333,7 @@ variable {C₁ C₂ C₃ D I₁ I₂ I₃ J : Type*} [Category* C₁] [Category*
   [HasGoodTrifunctor₂₃Obj G F₂ τ.ρ₂₃ X₁ ((single₀ I₂).obj X₂) X₃]
   [HasMap (((mapBifunctor G I₁ I₃).obj X₁).obj X₃) π]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mapBifunctor_triangle
     (triangle : ∀ (X₁ : C₁) (X₃ : C₃), ((associator.hom.app X₁).app X₂).app X₃ ≫
     (G.obj X₁).map (e₂.hom.app X₃) = (G.map (e₁.hom.app X₁)).app X₃) :
