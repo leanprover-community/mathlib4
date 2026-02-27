@@ -87,8 +87,8 @@ private theorem introspective_n_div_p {p a n : ℕ} [Fact p.Prime] [ExpChar K p]
   have h2 : p * (n / p) = n := Nat.mul_div_cancel' hd
   simp only [eval_sub, eval_X, eval_natCast] at h ⊢
   let π := IsPrimitiveRoot.primitiveRootsPowEquivOfCoprime (R := K) hc
-  replace h := h (π.symm ⟨ μ, hμ ⟩) (by grind)
-  have _ : π (π.symm ⟨ μ, hμ ⟩) = μ := by simp
+  replace h := h (π.symm ⟨μ, hμ⟩) (by grind)
+  have _ : π (π.symm ⟨μ, hμ⟩) = μ := by simp
   revert h
   refine (Eq.congr ?_ ?_).mp
   · nth_rw 1 [sub_left_inj, ← h2, pow_mul]
@@ -213,14 +213,14 @@ private theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   intro e he f hf
   simp only [Set.image_univ, Set.mem_range] at hf
-  obtain ⟨ s , hs ⟩ := hf
+  obtain ⟨s , hs⟩ := hf
   rw [← hs]
   simp only [se1, Set.image_univ, Set.mem_range, Prod.exists] at he
-  obtain ⟨ i, j, heq ⟩ := he
+  obtain ⟨i, j, heq⟩ := he
   rw [← heq]
   refine introspective_of_multiset (p := p) (K := K) (r := r) i j s ?_ n_coprime_r p_dvd_n
-  intro ⟨ m , hm ⟩
-  replace heq := icc_introspective ⟨ m , (by grind) ⟩
+  intro ⟨m, hm⟩
+  replace heq := icc_introspective ⟨m, (by grind)⟩
   simp only [map_natCast, ofMultiset_apply, Multiset.map_singleton,
     Multiset.prod_singleton] at heq ⊢
   exact heq
@@ -236,17 +236,17 @@ private theorem se2_subset_units (h : Conditions r p n a q μ) :
     unfold se2 se1 f at hx
     simp only [Set.image_univ, Set.mem_image, Set.mem_range, Prod.exists,
       exists_exists_exists_and_eq, cast_mul, cast_pow] at hx
-    obtain ⟨ a , b , hx ⟩ := hx
+    obtain ⟨a, b, hx⟩ := hx
     norm_cast at hx
     rw [← hx, ZMod.val_natCast, ZMod.coprime_mod_iff_coprime]
     refine Coprime.mul_left ?_ ?_
     · exact Coprime.pow_left _ (Coprime.of_dvd_left p_dvd_n n_coprime_r)
     · exact Coprime.pow_left _ (Coprime.of_dvd_left (div_dvd_of_dvd p_dvd_n) n_coprime_r)
-  exact ⟨ hu.unit, rfl ⟩
+  exact ⟨hu.unit, rfl⟩
 
 private theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := by
   unfold f
-  intro ⟨ d₁ , d₂ ⟩ ⟨ e₁ , e₂ ⟩ heq
+  intro ⟨d₁, d₂⟩ ⟨e₁, e₂⟩ heq
   by_contra! hcon
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -262,7 +262,7 @@ private theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := b
   have _ : (n / p).factorization q ≠ 0 := by
     simp only [ne_eq, factorization_eq_zero_iff, Nat.div_eq_zero_iff, not_or, Decidable.not_not,
       not_lt]
-    refine ⟨ q_prime , ⟨  ?_ , ⟨ Nat.Prime.ne_zero p_prime , le_of_dvd hn p_dvd_n ⟩ ⟩ ⟩
+    refine ⟨q_prime, ⟨?_ ,⟨Nat.Prime.ne_zero p_prime, le_of_dvd hn p_dvd_n⟩⟩⟩
     apply dvd_div_of_mul_dvd
     exact Prime.dvd_mul_of_dvd_ne p_ne_q p_prime q_prime p_dvd_n q_dvd_n
   have hf := congrArg factorization heq
@@ -285,9 +285,8 @@ private theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := b
     grind
 
 private theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective := by
-  obtain ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
-    icc_coprime , icc_introspective , is_primitive_root , p_prime ,
-    q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
+  obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
+    is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
   have _ := Nat.Prime.ne_zero p_prime
   intro x y heq
   have hi := ofMultiset_injective (R := K) heq
@@ -295,7 +294,7 @@ private theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective 
   suffices (fun x : Fin (a + 1) => (x.val : K)).Injective by grind [Multiset.map_injective]
   intro x2 y2 hxy
   have hm (z : Fin (a + 1)) : z.val ∈ Set.Iio p := by
-    obtain ⟨ z, hz ⟩ := z
+    obtain ⟨z, hz⟩ := z
     simp only [Set.mem_Iio]
     by_contra! hcon
     exact @not_coprime_of_dvd_of_dvd p n p (Prime.one_lt p_prime)
@@ -318,7 +317,7 @@ private theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 
   unfold se3 f at hx
   simp only [Set.Icc_prod_Icc, Set.mem_image, Set.mem_Icc,
     Prod.exists, Prod.mk_le_mk, _root_.zero_le, and_self, true_and] at hx
-  obtain ⟨ a , b , ⟨ ha, hb ⟩ , heq ⟩ := hx
+  obtain ⟨a, b, ⟨ha, hb⟩, heq⟩ := hx
   rw [← heq]
   obtain ⟨n_coprime_r, n_ge_3, a_def, nlogb_lt_od, icc_coprime, icc_introspective,
     is_primitive_root, p_prime, q_prime, p_dvd_n, q_dvd_n, p_ne_q⟩ := id h
@@ -350,8 +349,7 @@ private theorem aux_le (h : Conditions r p n a q μ) :
       revert b
       exact Set.image_mono (by grind)
     grind
-  obtain ⟨ x , hx, y , hy , ⟨ hne, heq ⟩ ⟩ :=
-    Set.exists_ne_map_eq_of_ncard_lt_of_maps_to (sp2_lt_sp3 h) hm
+  obtain ⟨x, hx, y, hy, ⟨hne, heq⟩⟩ := Set.exists_ne_map_eq_of_ncard_lt_of_maps_to (sp2_lt_sp3 h) hm
   have hn0 : (X : K[X]) ^ x - X ^ y ≠ 0 := by
     rw [← coeffs_nonempty_iff]
     have _ : ((X : K[X]) ^ x - X ^ y).coeff x ≠ 0 := by
@@ -371,7 +369,7 @@ private theorem aux_le (h : Conditions r p n a q μ) :
     suffices μ ^ x = μ ^ y by rw [this]
     replace heq : x ≡ y [MOD r] := by rw [← ZMod.natCast_eq_natCast_iff x y r, heq]
     exact pow_eq_pow_of_modEq heq is_primitive_root.pow_eq_one
-  refine ⟨ ?_ , Set.Finite.subset hf hss ⟩
+  refine ⟨?_, Set.Finite.subset hf hss⟩
   suffices (sp2 h).ncard ≤ n ^ ⌊√(se2 h).ncard⌋₊ by
     rify at this
     apply le_trans this
@@ -402,11 +400,11 @@ private theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
     intro f hf g hg heq
     by_contra! hcon
     simp only [Set.mem_image, Set.mem_setOf_eq] at hf hg heq
-    obtain ⟨ hf , hf1 , hf2 ⟩ := hf
-    obtain ⟨ hg , hg1 , hg2 ⟩ := hg
+    obtain ⟨hf, hf1, hf2⟩ := hf
+    obtain ⟨hg, hg1, hg2⟩ := hg
     have hk : max f.natDegree g.natDegree ≤ (se2 h).ncard - 1 := by
       grind [natDegree_eq h hf, natDegree_eq h hg]
-    refine and_not_self (a := (f - g).roots.card ≤ (se2 h).ncard - 1) ⟨ ?_ , ?_ ⟩
+    refine and_not_self (a := (f - g).roots.card ≤ (se2 h).ncard - 1) ⟨?_, ?_⟩
     · calc
         _ ≤ _ := card_roots' (f - g)
         _ ≤ _ := natDegree_sub_le f g
@@ -415,7 +413,7 @@ private theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
       have fs : (se2 h).Finite := by
         have ss : Set.univ.Finite (α := (ZMod r)) := by
           rw [Set.univ_finite_iff_nonempty_fintype]
-          exact ⟨ inferInstance ⟩
+          exact ⟨inferInstance⟩
         grind [Set.Finite.subset]
       let emb := Function.Embedding.mk (fun a : ZMod r => μ ^ a.val) (by
         intro b c hbc
@@ -427,9 +425,9 @@ private theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
         intro s hs
         simp only [emb, mem_map, Set.Finite.mem_toFinset, Function.Embedding.coeFn_mk, ss] at hs
         rw [eval_sub, sub_eq_iff_eq_add, zero_add]
-        obtain ⟨ m, hm, hs ⟩ := hs
+        obtain ⟨m, hm, hs⟩ := hs
         simp only [se2, Set.mem_image] at hm
-        obtain ⟨ e , ⟨ he1, he2 ⟩ ⟩ := hm
+        obtain ⟨e, ⟨he1, he2⟩⟩ := hm
         have ht : μ ^ (e : (ZMod r)).val = μ ^ e := by
           refine pow_eq_pow_of_modEq ?_ is_primitive_root.pow_eq_one
           simp [ModEq]
@@ -476,7 +474,7 @@ private theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
     simp only [mem_Icc, _root_.zero_le, true_and] at hz
     rw [← Sym.card_sym_fin_eq_multichoose, Fintype.card, ← Set.ncard_coe_finset]
     apply Set.ncard_congr'
-    exact Equiv.mk (fun x ↦ ⟨ Sym.mk x.1 x.2 , by simp ⟩) (fun x ↦ ⟨ x , by simp ⟩)
+    exact Equiv.mk (fun x ↦ ⟨Sym.mk x.1 x.2, by simp⟩) (fun x ↦ ⟨x , by simp⟩)
       (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 private theorem pow_2_le_choose {x : ℕ} (h : 2 ≤ x) : 2 ^ (x + 1) < (2 * x + 1).choose x := by
@@ -504,7 +502,7 @@ private theorem not_aux_le (h : Conditions r p n a q μ) :
     rw [← injon]
     unfold e
     refine Set.ncard_le_ncard ?_ (Set.toFinite (se2 h))
-    intro y ⟨ z, _ , hz ⟩
+    intro y ⟨z, _, hz⟩
     simp only at hz
     rw [← hz]
     unfold se2 se1 f
@@ -596,12 +594,12 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
       (((X : (ZMod n)[X]) - (C (y : (ZMod n)))) ^ n)) : IsPrimePow n := by
   by_contra hcon
-  obtain ⟨ p, hp, q, hq, hpq ⟩ :=
+  obtain ⟨p, hp, q, hq, hpq⟩ :=
     (not_isPrimePow_iff_nontrivial_of_two_le (show 2 ≤ n by lia)).mp hcon
   clear hcon
   simp only [SetLike.mem_coe] at hp hq
-  obtain ⟨ pp , hp, - ⟩ := mem_primeFactors.mp hp
-  obtain ⟨ pq , hq, - ⟩ := mem_primeFactors.mp hq
+  obtain ⟨pp , hp, -⟩ := mem_primeFactors.mp hp
+  obtain ⟨pq , hq, -⟩ := mem_primeFactors.mp hq
   haveI : Fact p.Prime := .mk pp
   set K := AlgebraicClosure (ZMod p)
   have _ : NeZero (r : K) := by
@@ -609,9 +607,9 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     exact (Nat.Prime.coprime_iff_not_dvd (n := r) pp).mp (Coprime.coprime_dvd_left hp hc)
   have _ : NeZero r := NeZero.of_neZero_natCast K
   have henough : HasEnoughRootsOfUnity K r := inferInstance
-  obtain ⟨ ν , hν ⟩ := henough.1
+  obtain ⟨ν , hν⟩ := henough.1
   refine AKS.aux (AKS.Conditions.mk hc hn ha hod hc2 ?_ hν pp pq hp hq hpq)
-  intro ⟨ y, hyy⟩
+  intro ⟨y, hyy⟩
   unfold AKS.introspective
   intro μ hμ
   by_cases hcas: y = 0
@@ -623,7 +621,7 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
         (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}) (eval₂RingHom (ZMod.castHom hp K) μ) ?_
       intro s hs
       rw [Ideal.mem_span_singleton, dvd_iff_exists_eq_mul_left] at hs
-      obtain ⟨ c , hc ⟩ := hs
+      obtain ⟨c , hc⟩ := hs
       rw [hc, map_mul]
       apply mul_eq_zero_of_right
       simp only [coe_eval₂RingHom, eval₂_sub, eval₂_X_pow, eval₂_one]
