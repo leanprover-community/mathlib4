@@ -154,7 +154,7 @@ where the (iso)morphisms are compatibilities are considered over the chosen pull
 structure DescentData' where
   /-- The objects over `X i` for all `i` -/
   obj (i : ι) : F.obj (.mk (op (X i)))
-  /-- The compatibility morphisms after pulling back to the chosen pullback. It follows
+  /-- The compatibility morphisms after pulling back to the chosen pullbacks. It follows
   from the conditions `pullHom'_hom_self` and `pullHom'_hom_comp` that these morphisms
   are isomorphisms. -/
   hom : ∀ (i j : ι), (F.map (sq i j).p₁.op.toLoc).toFunctor.obj (obj i) ⟶
