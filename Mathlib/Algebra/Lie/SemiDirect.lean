@@ -73,62 +73,60 @@ instance : Module R (H ⋊⁅ψ⁆ G) := toProd.module R
 @[simp] lemma toProd_smul (t : R) (x : H ⋊⁅ψ⁆ G) : (t • x).toProd = t • x.toProd := rfl
 
 instance : Bracket (H ⋊⁅ψ⁆ G) (H ⋊⁅ψ⁆ G) where
-  bracket x y := toProd.symm
-    (⁅x.toProd.1, y.toProd.1⁆ + ψ x.toProd.2 y.toProd.1 - ψ y.toProd.2 x.toProd.1,
-     ⁅x.toProd.2, y.toProd.2⁆)
-
-lemma lie_def (x y : H ⋊⁅ψ⁆ G) :
-    ⁅x, y⁆ = toProd.symm
-      (⁅x.toProd.1, y.toProd.1⁆ + ψ x.toProd.2 y.toProd.1 - ψ y.toProd.2 x.toProd.1,
-       ⁅x.toProd.2, y.toProd.2⁆) :=
-  rfl
+  bracket x y :=  ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩
 
 @[simp]
+lemma lie_def (x y : H ⋊⁅ψ⁆ G) :
+    ⁅x, y⁆ = ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩ :=
+  rfl
+
+@[simp] -- still needed?
 lemma toProd_lie (x y : H ⋊⁅ψ⁆ G) :
     toProd ⁅x, y⁆ =
-      (⁅x.toProd.1, y.toProd.1⁆ + ψ x.toProd.2 y.toProd.1 - ψ y.toProd.2 x.toProd.1,
-       ⁅x.toProd.2, y.toProd.2⁆) := by
-  simp [lie_def]
+      (⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left,
+       ⁅x.right, y.right⁆) := by simp [toProd, lie_def]
 
-lemma zero_eq_mk : (0 : H ⋊⁅ψ⁆ G) = ⟨0, 0⟩ := rfl
-lemma add_eq_mk (x y : H ⋊⁅ψ⁆ G) : x + y = ⟨x.left + y.left, x.right + y.right⟩ := rfl
-lemma sub_eq_mk (x y : H ⋊⁅ψ⁆ G) : x - y = ⟨x.left - y.left, x.right - y.right⟩ := rfl
-lemma neg_eq_mk (x : H ⋊⁅ψ⁆ G) : -x = ⟨-x.left, -x.right⟩ := rfl
-lemma smul_eq_mk (t : R) (x : H ⋊⁅ψ⁆ G) : t • x = ⟨t • x.left, t • x.right⟩ := rfl
-lemma lie_eq_mk (x y : H ⋊⁅ψ⁆ G) :
+@[simp] lemma zero_eq_mk : (0 : H ⋊⁅ψ⁆ G) = ⟨0, 0⟩ := rfl
+@[simp] lemma add_eq_mk (x y : H ⋊⁅ψ⁆ G) : x + y = ⟨x.left + y.left, x.right + y.right⟩ := rfl
+@[simp] lemma sub_eq_mk (x y : H ⋊⁅ψ⁆ G) : x - y = ⟨x.left - y.left, x.right - y.right⟩ := rfl
+@[simp] lemma neg_eq_mk (x : H ⋊⁅ψ⁆ G) : -x = ⟨-x.left, -x.right⟩ := rfl
+@[simp] lemma smul_eq_mk (t : R) (x : H ⋊⁅ψ⁆ G) : t • x = ⟨t • x.left, t • x.right⟩ := rfl
+@[simp] lemma lie_eq_mk (x y : H ⋊⁅ψ⁆ G) :
     ⁅x, y⁆ = ⟨⁅x.left, y.left⁆ + ψ x.right y.left - ψ y.right x.left, ⁅x.right, y.right⁆⟩ :=
   rfl
 
 instance : LieRing (H ⋊⁅ψ⁆ G) where
-  add_lie _ _ _ := toProd.injective <| by simp; abel
-  lie_add _ _ _:= toProd.injective <| by simp; abel
-  lie_self _ := toProd.injective <| by simp
-  leibniz_lie _ _ _ := toProd.injective <| by simp; grind [lie_skew]
+  add_lie _ _ _ := by simp; abel
+  lie_add _ _ _:= by simp; abel
+  lie_self _ := by simp
+  leibniz_lie _ _ _ := by simp; grind [lie_skew]
 
 instance : LieAlgebra R (H ⋊⁅ψ⁆ G) where
-  lie_smul _ _ _ := toProd.injective <| by
-    simp [toProd_smul, smul_sub, smul_add]
+  lie_smul _ _ _ := by simp [smul_sub, smul_add]
 
 /-- The canonical inclusion of H into the semi-direct sum H ⋊⁅ψ⁆ G. -/
 def inl : H →ₗ⁅R⁆ H ⋊⁅ψ⁆ G where
-  toFun x := toProd.symm (x, 0)
-  map_add' _ _ := toProd.injective <| by simp
-  map_smul' _ _ := toProd.injective <| by simp
-  map_lie' := toProd.injective <| by simp
+  toFun x := ⟨x, 0⟩
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+  map_lie' := by simp
 
 /-- The canonical inclusion of G into the semi-direct sum H ⋊⁅ψ⁆ G. -/
 def inr : G →ₗ⁅R⁆ H ⋊⁅ψ⁆ G where
-  toFun x := toProd.symm (0, x)
-  map_add' _ _ := toProd.injective <| by simp
-  map_smul' _ _ := toProd.injective <| by simp
-  map_lie' := toProd.injective <| by simp
+  toFun x := ⟨0, x⟩
+  map_add' _ _ := by simp
+  map_smul' _ _ := by simp
+  map_lie' := by simp
+
+@[simp] lemma inl_eq_mk (x : H) : inl ψ x = ⟨x, 0⟩ := rfl
+@[simp] lemma inr_eq_mk (x : G) : inr ψ x = ⟨0, x⟩ := rfl
 
 @[simp]
 lemma inl_injective : Function.Injective (inl ψ) := by intro; simp [inl]
 
 /-- The canonical projection of the semi-direct sum H ⋊⁅ψ⁆ G to G. -/
 def projr : H ⋊⁅ψ⁆ G →ₗ⁅R⁆ G where
-  toFun x := x.toProd.snd
+  toFun x := x.right
   map_add' _ _ := by simp
   map_smul' _ _ := by simp
   map_lie' := by simp
@@ -136,16 +134,13 @@ def projr : H ⋊⁅ψ⁆ G →ₗ⁅R⁆ G where
 /-- The canonical projection of the semi-direct sum H ⋊⁅ψ⁆ G to G.
 It is not, in general, a Lie algebra homomorphism, just a linear map. -/
 def projl : H ⋊⁅ψ⁆ G →ₗ[R] H where
-  toFun x := x.toProd.fst
+  toFun x := x.left
   map_add' _ _ := by simp
   map_smul' _ _ := by simp
 
-
-
-@[simp] lemma inl_eq_mk (x : H) : inl ψ x = ⟨x, 0⟩ := rfl
-@[simp] lemma inr_eq_mk (x : G) : inr ψ x = ⟨0, x⟩ := rfl
-
 @[simp] lemma projr_mk (x : H ⋊⁅ψ⁆ G) : projr ψ x = x.right := rfl
+@[simp] lemma projl_mk (x : H ⋊⁅ψ⁆ G) : projl ψ x = x.left := rfl
+
 lemma projr_inl_apply {x : H} : projr ψ (inl ψ x) = 0 := by simp
 lemma projr_inr_apply {x : G} : projr ψ (inr ψ x) = x := by simp
 
