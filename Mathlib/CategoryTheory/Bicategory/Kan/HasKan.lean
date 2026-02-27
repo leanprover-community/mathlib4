@@ -239,7 +239,7 @@ def lanLiftUnit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : g ⟶ f₊ g 
 theorem lanLiftLeftLift_unit (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] :
     (lanLiftLeftLift f g).unit = lanLiftUnit f g := rfl
 
-/-- Evidence that `lanLift f g` is a Kan lift. -/
+/-- Evidence that `lanLiftLeftLift f g` is a Kan lift. -/
 def lanLiftIsKan (f : b ⟶ a) (g : c ⟶ a) [HasLeftKanLift f g] : (lanLiftLeftLift f g).IsKan :=
   initialIsInitial
 
