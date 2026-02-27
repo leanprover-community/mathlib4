@@ -9,6 +9,7 @@ module
 public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
 public import Mathlib.Topology.Sheaves.LocallySurjective
+public import Mathlib.Topology.Sheaves.ZeroOutside
 
 /-!
 # Flasque Sheaves
@@ -176,5 +177,41 @@ theorem X₃_shortExact_isFlasque_X₁_isFlasque_X₂ {S : ShortComplex (Sheaf A
     rw [← S.g.val.naturality i.op]
     exact CategoryTheory.epi_comp' (hX₂ i) (epi_of_shortExact hS hX₁)
   exact CategoryTheory.epi_of_epi (S.g.1.app (op V)) (S.X₃.val.map i.op)
+
+/-- Injective sheaves are flasque. -/
+theorem of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I := by
+  intro _ _ i
+  exact epi_map_of_injective I (leOfHom i)
+
+theorem H_isZero {F : Sheaf AddCommGrpCat X} (hF : IsFlasque F) (n : ℕ) :
+    IsZero (AddCommGrpCat.of (H F (n+1))) := by
+  induction n generalizing F with
+  | zero =>
+    obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
+    let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
+    have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
+    let LS := Sheaf.H.longSequence hS 0 1
+    have hLS := Sheaf.H.longSequence.exact hS 0 1
+    refine ShortComplex.Exact.isZero_of_both_zeros (hLS.exact 2) ?_
+      (zero_of_target_iso_zero _ (IsZero.isoZero (AddCommGrpCat.isZero_of_subsingleton
+      (AddCommGrpCat.of (H I 1)))))
+    apply (ShortComplex.Exact.epi_f_iff (hLS.exact 1)).mp
+    rw [AddCommGrpCat.epi_iff_surjective, ← Equiv.surjective_comp (H.equiv₀ I).symm.toEquiv]
+    change Function.Surjective ((H.map S.g 0) ∘ (H.equiv₀ I).symm.toEquiv)
+    conv => arg 1 ; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ (((sheafSections Ab).obj (op ⊤)).map S.g)
+      => ext x ; exact H.equiv₀_symm_comp S.g x
+    rw [Equiv.comp_surjective, ← AddCommGrpCat.epi_iff_surjective]
+    exact epi_of_shortExact hS hF
+  | succ n hn =>
+    obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
+    let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
+    have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
+    have hX₃ : S.X₃.IsFlasque := X₃_shortExact_isFlasque_X₁_isFlasque_X₂ hS hF (of_injective I)
+    have hLS := Sheaf.H.longSequence.exact hS (n+1) (n+2)
+    exact ShortComplex.Exact.isZero_of_both_isZero (hLS.exact 2) (hn hX₃)
+      (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
+
+instance {F : Sheaf AddCommGrpCat X} (hF : IsFlasque F) (n : ℕ) : Subsingleton (H F (n + 1)) :=
+  AddCommGrpCat.subsingleton_of_isZero (H_isZero hF n)
 
 end TopCat.Sheaf.IsFlasque

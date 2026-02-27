@@ -92,9 +92,19 @@ section
 
 variable [HasSheafify J AddCommGrpCat.{w}] [HasExt.{w'} (Sheaf J AddCommGrpCat.{w})]
 
-theorem H.eq_zero_of_injective (F : Sheaf J AddCommGrpCat.{w}) (n : ℕ) (x : H F (n + 1))
-    [Injective F] : x = 0 :=
-  Ext.eq_zero_of_injective x
+instance (F : Sheaf J AddCommGrpCat.{w}) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
+  subsingleton_of_forall_eq 0 fun x ↦ (Ext.eq_zero_of_injective x)
+
+variable {S : ShortComplex (Sheaf J AddCommGrpCat.{w})} (hS : S.ShortExact) (n₀ n₁ : ℕ)
+    (h : n₀ + 1 = n₁)
+
+noncomputable abbrev H.longSequence (h : n₀ + 1 = n₁ := by lia) :
+    ComposableArrows AddCommGrpCat 5 :=
+  Ext.covariantSequence ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of.{w} (ULift ℤ)))
+    hS n₀ n₁ h
+
+theorem H.longSequence.exact (h : n₀ + 1 = n₁ := by lia) : (H.longSequence hS n₀ n₁ h).Exact :=
+  Ext.covariantSequence_exact _ hS n₀ n₁ h
 
 variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)
 
@@ -120,7 +130,7 @@ lemma H.addEquiv₀_comp (x : H F 0) : Ext.addEquiv₀ (H.map f 0 x) = Ext.addEq
   rfl
 
 /-- `H.Equiv₀` is natural -/
-theorem H.Equiv₀_comp (x : H F 0) :
+theorem H.equiv₀_comp (x : H F 0) :
     ((sheafSections J AddCommGrpCat).obj (op T)).map f (H.equiv₀ F hT x) =
     H.equiv₀ G hT (H.map f 0 x) := by
   delta equiv₀
@@ -128,6 +138,15 @@ theorem H.Equiv₀_comp (x : H F 0) :
     AddEquiv.trans_apply]
   conv => rhs; right; right; equals Ext.addEquiv₀ x ≫ f => exact addEquiv₀_comp f x
   rfl
+
+theorem H.equiv₀_symm_comp (x : ((sheafSections J AddCommGrpCat).obj (op T)).obj F) :
+    H.map f 0 ((H.equiv₀ F hT).symm x) =
+    (H.equiv₀ G hT).symm (((sheafSections J AddCommGrpCat).obj (op T)).map f x) := by
+  apply (H.equiv₀ G hT).injective
+  rw [← H.equiv₀_comp hT f ((equiv₀ F hT).symm x)]
+  conv => lhs; right; equals x => apply Equiv.apply_symm_apply
+  conv => rhs; equals ((sheafSections J AddCommGrpCat).obj (op T)).map f x =>
+    apply Equiv.apply_symm_apply
 
 end
 

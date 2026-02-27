@@ -7,6 +7,8 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Topology.Sheaves.Abelian
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
 /-!
 # Sheaves of abelian groups.
@@ -25,6 +27,10 @@ open scoped AlgebraicGeometry
 namespace TopCat
 
 variable {X : TopCat.{u}} {U V : Opens X}
+
+/-- `MOVE THIS` -/
+def Sheaf.sheafSections (C : Type*) [Category* C] : (Opens X)ᵒᵖ ⥤ Sheaf C X ⥤ C :=
+  CategoryTheory.sheafSections _ C
 
 theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
@@ -50,4 +56,38 @@ lemma shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)} (s : S.X₂
     (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
   exact Presheaf.addCommGrpCat_shortExact_app_zero h (this S ⟨hS.1, hS.2⟩).left
 
-end TopCat.Sheaf.AddCommGrpCat
+end AddCommGrpCat
+
+noncomputable section
+
+instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{u}) :=
+  hasExt_of_enoughInjectives _
+
+def H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) := CategoryTheory.Sheaf.H F n
+
+def H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n → H G n :=
+    CategoryTheory.Sheaf.H.map f n
+
+instance {F : (Sheaf AddCommGrpCat X)} {n : ℕ} : AddCommGroup (H F n) :=
+  inferInstanceAs <| AddCommGroup <| CategoryTheory.Sheaf.H _ _
+
+instance (F : Sheaf AddCommGrpCat X) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
+  inferInstanceAs <| Subsingleton (CategoryTheory.Sheaf.H F (n + 1))
+
+def H.equiv₀ (F : (Sheaf AddCommGrpCat X)) : H F 0 ≃+ ((sheafSections Ab).obj (op ⊤)).obj F :=
+    CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
+
+@[simp]
+theorem H.equiv₀_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : H F 0) :
+    ((sheafSections _).obj (op ⊤)).map f (H.equiv₀ F x) = H.equiv₀ G (H.map f 0 x) :=
+  CategoryTheory.Sheaf.H.equiv₀_comp Limits.isTerminalTop f x
+
+@[simp]
+theorem H.equiv₀_symm_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G)
+    (x : ((sheafSections Ab).obj (op ⊤)).obj F) :
+    H.map f 0 ((H.equiv₀ F).symm x) = (H.equiv₀ G).symm (((sheafSections _).obj (op ⊤)).map f x) :=
+  CategoryTheory.Sheaf.H.equiv₀_symm_comp Limits.isTerminalTop f x
+
+end
+
+end TopCat.Sheaf
