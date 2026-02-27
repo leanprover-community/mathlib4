@@ -78,6 +78,11 @@ def IsSheafUniqueGluing : Prop :=
   ∀ ⦃ι : Type x⦄ (U : ι → Opens X) (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
     IsCompatible F U sf → ∃! s : ToType (F.obj (op (iSup U))), IsGluing F U sf s
 
+/--
+A variant of the sheaf condition in terms of unique gluings which assumes that the
+cover `U` of the given open set is nontrivial, in the sense that the indexing type is nonempty
+and that for every `i` in the indexing type `ι`, `U i` is nonempty.
+-/
 def IsSheafUniqueGluingNontrivial : Prop :=
   ∀ ⦃ι : Type x⦄ [Nonempty ι] (U : ι → Opens X) (_ : ∀ i : ι, Nonempty (U i))
     (sf : ∀ i : ι, ToType (F.obj (op (U i)))),
@@ -155,20 +160,19 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
     have hU' (i : ι') : Nonempty ↥(U' i) := i.2
     obtain ⟨i, hi⟩ := h1
     have : Nonempty ι' := ⟨i, hi⟩
-    specialize h U' hU' sf' com'
-    have eq : iSup U' = iSup U := by aesop
-    have eq' : op (iSup U') = op (iSup U) := (op_inj_iff (iSup U') (iSup U)).mpr eq
-    obtain ⟨s, hs1, hs2⟩ := h
+    have : iSup U' = iSup U := by aesop
+    have eq : op (iSup U') = op (iSup U) := (op_inj_iff (iSup U') (iSup U)).mpr this
+    obtain ⟨s, hs1, hs2⟩ := h U' hU' sf' com'
     have (j : ι) (hj : Nonempty (U j)) :
-      eqToHom eq' ≫ (leSupr U j).op  = (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op := rfl
-    use F.map (eqToHom eq') s
+      eqToHom eq ≫ (leSupr U j).op  = (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op := rfl
+    use F.map (eqToHom eq) s
     refine ⟨fun j ↦ ?_, fun y hy ↦ ?_⟩
     · by_cases hj : Nonempty (U j)
       · have a := hs1 ⟨j, hj⟩
         simp only [U', sf'] at a
         rw [← a]
         simp only [Types.hom_eq_coe]
-        suffices F.map (eqToHom eq' ≫ (leSupr U j).op) =
+        suffices F.map (eqToHom eq ≫ (leSupr U j).op) =
             F.map (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op by
           simp only [Functor.map_comp] at this
           exact Eq.symm (DFunLike.congr_fun (id (Eq.symm this)) s)
@@ -176,18 +180,17 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
       · have : U j = ⊥ := by aesop
         have : Unique (ToType (F.obj (op (U j)))) := by rwa [this]
         apply Subsingleton.elim
-    · have : F.IsGluing U' sf' (F.map (eqToHom eq'.symm) y) := by
+    · have : F.IsGluing U' sf' (F.map (eqToHom eq.symm) y) := by
         intro b
         specialize hy b
         dsimp [sf']
         rw [← hy]
-        simp
-        suffices F.map (eqToHom eq'.symm ≫ (leSupr U' b).op) =
+        suffices F.map (eqToHom eq.symm ≫ (leSupr U' b).op) =
             F.map (leSupr U b).op by
           simp only [Functor.map_comp] at this
-          exact Eq.symm (DFunLike.congr_fun (id (Eq.symm this)) y)
+          exact DFunLike.congr_fun this y
         rfl
-      specialize hs2 (F.map (eqToHom eq'.symm) y) this
+      specialize hs2 (F.map (eqToHom eq.symm) y) this
       aesop
   · have : iSup U = ⊥ := by aesop
     have : Unique (ToType (F.obj (op (iSup U)))) := by rwa [this]
