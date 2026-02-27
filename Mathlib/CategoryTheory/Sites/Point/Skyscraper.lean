@@ -106,7 +106,7 @@ noncomputable def skyscraperPresheafAdjunction [HasColimitsOfSize.{w, w} A] :
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := Φ.skyscraperPresheafHomEquiv
       homEquiv_naturality_left_symm _ _ := Φ.skyscraperPresheafHomEquiv_naturality_left_symm _ _
-      homEquiv_naturality_right _ _ := Φ.skyscraperPresheafHomEquiv_naturality_right _ _}
+      homEquiv_naturality_right _ _ := Φ.skyscraperPresheafHomEquiv_naturality_right _ _ }
 
 variable {Φ} in
 private lemma isSheaf_skyscraperPresheaf_aux
