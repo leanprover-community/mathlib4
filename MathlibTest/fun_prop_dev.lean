@@ -559,7 +559,7 @@ example [Add α] (y : α):
 
 
 --- performance tests - mainly testing fast failure ---
-------------------------------------------------------
+-------------------------------------------------------
 
 
 section PerformanceTests
