@@ -638,6 +638,16 @@ lemma isRegularMono_unop_iff_isRegularEpi {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     IsRegularMono f.unop ↔ IsRegularEpi f :=
   ⟨fun hf ↦ ⟨⟨hf.regularMono.some.op⟩⟩, fun hf ↦ ⟨⟨hf.regularEpi.some.unop⟩⟩⟩
 
+@[simp]
+lemma isRegularEpi_op_iff_isRegularMono {X Y : C} (f : X ⟶ Y) :
+    IsRegularEpi f.op ↔ IsRegularMono f :=
+  ⟨fun hf ↦ ⟨⟨hf.regularEpi.some.unop⟩⟩, fun hf ↦ ⟨⟨hf.regularMono.some.op⟩⟩⟩
+
+@[simp]
+lemma isRegularEpi_unop_iff_isRegularMono {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    IsRegularEpi f.unop ↔ IsRegularMono f :=
+  ⟨fun hf ↦ ⟨⟨hf.regularEpi.some.op⟩⟩, fun hf ↦ ⟨⟨hf.regularMono.some.unop⟩⟩⟩
+
 end
 
 section
