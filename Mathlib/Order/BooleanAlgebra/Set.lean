@@ -502,7 +502,7 @@ theorem ite_empty_right (t s : Set α) : t.ite s ∅ = s ∩ t := by simp [Set.i
 
 theorem ite_mono (t : Set α) {s₁ s₁' s₂ s₂' : Set α} (h : s₁ ⊆ s₂) (h' : s₁' ⊆ s₂') :
     t.ite s₁ s₁' ⊆ t.ite s₂ s₂' :=
-  union_subset_union (inter_subset_inter_left _ h) (inter_subset_inter_left _ h')
+  union_subset_union (inter_subset_inter_left _ h) (diff_subset_diff_left h')
 
 theorem ite_subset_union (t s s' : Set α) : t.ite s s' ⊆ s ∪ s' :=
   union_subset_union inter_subset_left diff_subset
