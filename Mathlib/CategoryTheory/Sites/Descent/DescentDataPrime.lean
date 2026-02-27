@@ -255,16 +255,16 @@ def isoMk {D₁ D₂ : F.DescentData' sq sq₃} (e : ∀ (i : ι), D₁.obj i �
       ← cancel_epi ((F.map _).toFunctor.map (e i₁).hom),
       Iso.map_hom_inv_id_assoc, comm i₁ i₂]
 
-/-- The functor `F.DescentData' sq sq₃ ⥤ F.DescentData f`, on objects. -/
+/-- The functor `toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentData f`, on objects. -/
 @[simps]
 noncomputable def descentData (D : F.DescentData' sq sq₃) : F.DescentData f where
   obj := D.obj
-  hom _ _ _ _ _ _ hf₁ hf₂ := pullHom' D.hom _ _ _ hf₁ hf₂
-  pullHom_hom _ _ _ _ _ hq _ _ _ _ _ _ _ _ hgf₁ hgf₂ :=
-    pullHom_pullHom' _ _ _ _ hq _ _ _ _ _ _ hgf₁ hgf₂
+  hom _ _ _ _ _ _ _ _ := pullHom' D.hom _ _ _
+  pullHom_hom _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ :=
+    pullHom_pullHom' _ _ _ _ _ _ _ _
 
 variable (sq sq₃) in
-/-- The functor `F.DescentData f ⥤ F.DescentData' sq sq₃ ⥤ `. -/
+/-- The functor `fromDescentDataFunctor : F.DescentData f ⥤ F.DescentData' sq sq₃`, on objects. -/
 @[simps]
 def ofDescentData (D : F.DescentData f) : F.DescentData' sq sq₃ where
   obj := D.obj
@@ -272,12 +272,12 @@ def ofDescentData (D : F.DescentData f) : F.DescentData' sq sq₃ where
   pullHom'_hom_self i := by
     obtain ⟨p, h₁, h₂⟩ := (sq i i).isPullback.exists_lift (𝟙 _) (𝟙 _) (by simp)
     have : p ≫ (sq i i).p = f i := by rw [← (sq i i).hp₁, reassoc_of% h₁]
-    rw [pullHom'_eq_pullHom _ _ _ _ _ _ p, D.pullHom_hom _ _ (f i), D.hom_self (f i) (𝟙 _)]
+    rw [pullHom'_eq_pullHom _ _ _ _ p, D.pullHom_hom _ _ (f i), D.hom_self (f i) (𝟙 _)]
     all_goals cat_disch
   pullHom'_hom_comp i₁ i₂ i₃ := by
-    rw [pullHom'_eq_pullHom _ _ _ _ _ _ (sq₃ i₁ i₂ i₃).p₁₂,
-      pullHom'_eq_pullHom _ _ _ _ _ _ (sq₃ i₁ i₂ i₃).p₂₃,
-      pullHom'_eq_pullHom _ _ _ _ _ _ (sq₃ i₁ i₂ i₃).p₁₃,
+    rw [pullHom'_eq_pullHom _ _ _ _ (sq₃ i₁ i₂ i₃).p₁₂,
+      pullHom'_eq_pullHom _ _ _ _ (sq₃ i₁ i₂ i₃).p₂₃,
+      pullHom'_eq_pullHom _ _ _ _ (sq₃ i₁ i₂ i₃).p₁₃,
       D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p, D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p,
       D.pullHom_hom _ _ (sq₃ i₁ i₂ i₃).p, D.hom_comp]
     all_goals cat_disch
@@ -289,7 +289,7 @@ lemma pullHom'_ofDescentData_hom (D : F.DescentData f)
     (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
     pullHom' (ofDescentData sq sq₃ D).hom q f₁ f₂ hf₁ hf₂ = D.hom q f₁ f₂ hf₁ hf₂ := by
   obtain ⟨p, h₁, h₂⟩ := (sq i₁ i₂).isPullback.exists_lift f₁ f₂ (by cat_disch)
-  rw [pullHom'_eq_pullHom _ _ _ _ _ _ p (by cat_disch) (by cat_disch)]
+  rw [pullHom'_eq_pullHom _ _ _ _ p]
   dsimp
   rw [D.pullHom_hom _ _ _ (by rw [← (sq i₁ i₂).hp₁, reassoc_of% h₁, hf₁]) _ _
     (by simp) (by simp) _ _ h₁ h₂]
@@ -309,7 +309,7 @@ attribute [local simp] DescentData.Hom.comm in
 @[simps]
 noncomputable def fromDescentDataFunctor : F.DescentData f ⥤ F.DescentData' sq sq₃ where
   obj D := .ofDescentData _ _ D
-  map {D₁ D₂} φ := { hom := φ.hom }
+  map φ := { hom := φ.hom }
 
 /-- The equivalence `F.DescentData' sq sq₃ ≌ F.DescentData f`. -/
 @[simps]
