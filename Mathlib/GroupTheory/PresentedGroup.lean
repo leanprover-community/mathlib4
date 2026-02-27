@@ -23,8 +23,7 @@ given by generators `x : α` and relations `r ∈ rels`.
 * `of`: The canonical map from `α` to a presented group with generators `α`.
 * `toGroup f`: the canonical group homomorphism `PresentedGroup rels → G`, given a function
   `f : α → G` from a type `α` to a group `G` which satisfies the relations `rels`.
-* `freeGroupProdKerEquiv G`: the canonical isomorphism from the quotient of `FreeGroup G` by the
-  normal closure of `ker (FreeGroup.prod : FreeGroup G →* G)` to `G`; equivalently,
+* `freeGroupProdKerEquiv G`: the canonical isomorphism
   `PresentedGroup ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G)) ≃* G`.
 * `exists_presentation G`: every group `G` is isomorphic to some
   `PresentedGroup rels`.
@@ -173,7 +172,7 @@ end ToGroup
 /-- The canonical isomorphism from a presented group to the underlying group,
 with the group elements as generators and relations given by
 `(FreeGroup.prod : FreeGroup G →* G).ker`. -/
-def freeGroupProdKerEquiv (G : Type u) [Group G] :
+def freeGroupProdKerEquiv (G : Type*) [Group G] :
   PresentedGroup ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G)) ≃* G := by
   let F : FreeGroup G →* G := FreeGroup.prod
   let e₁ : FreeGroup G ⧸ MonoidHom.ker F ≃* G :=
