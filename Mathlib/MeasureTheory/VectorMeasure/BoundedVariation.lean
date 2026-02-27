@@ -5,9 +5,12 @@ Authors: Sébastien Gouëzel
 -/
 module
 
+public import Mathlib.Analysis.Normed.Group.Defs
 public import Mathlib.MeasureTheory.Measure.Stieltjes
-public import Mathlib.MeasureTheory.VectorMeasure.AddContent
+public import Mathlib.MeasureTheory.VectorMeasure.Basic
 public import Mathlib.Topology.EMetricSpace.BoundedVariation
+
+import Mathlib.MeasureTheory.VectorMeasure.AddContent
 
 /-!
 # Vector valued Stieltjes measure associated to a bounded variation function
