@@ -122,7 +122,7 @@ private theorem introspective_mul_of_coprime {d e : ℕ} {f : K[X]} (hf : intros
 private theorem introspective_of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar K p] (d e : ℕ)
     (s : Multiset (Fin b)) (hs : ∀ x : Fin b, introspective (ofMultiset {(x.val : K)}) n r)
     (hcprm : n.Coprime r) (hdiv : p ∣ n) :
-    (introspective (ofMultiset (s.map fun x => (x.val : K))) (p ^ d * (n / p) ^ e) r) := by
+    (introspective (ofMultiset (s.map fun x ↦ (x.val : K))) (p ^ d * (n / p) ^ e) r) := by
   simp only [ofMultiset_apply]
   have hcprm2 := Coprime.coprime_mul_right (Eq.symm (Nat.mul_div_cancel' hdiv) ▸ hcprm)
   induction s using Multiset.induction_on with
@@ -175,7 +175,7 @@ variable {p n a q : ℕ} {μ : K} [Fact p.Prime] [CharP K p] [ExpChar K p]
 variable {r : ℕ} [NeZero r]
 
 /-- Function used in the AKS proof. -/
-private def f (_ : Conditions r p n a q μ) : ℕ × ℕ → ℕ := fun x : ℕ × ℕ => p ^ x.1 * (n / p) ^ x.2
+private def f (_ : Conditions r p n a q μ) : ℕ × ℕ → ℕ := fun x : ℕ × ℕ ↦ p ^ x.1 * (n / p) ^ x.2
 
 /-- Set used in the AKS proof. -/
 private def se1 (h : Conditions r p n a q μ) := f h '' Set.univ
@@ -192,7 +192,7 @@ private theorem se3_subset_se1 (h : Conditions r p n a q μ) : se3 h ⊆ se1 h :
 
 /-- Function used in the AKS proof. -/
 noncomputable def sp1 (_ : Conditions r p n a q μ) :=
-  fun s : Multiset (Fin (a + 1)) ↦ ofMultiset (s.map (fun x => (x.val : K)))
+  fun s : Multiset (Fin (a + 1)) ↦ ofMultiset (s.map (fun x ↦ (x.val : K)))
 
 /-- Set used in the AKS proof. -/
 private def sp2 (h : Conditions r p n a q μ) := (sp1 h '' Set.univ).image (eval μ ·)
@@ -257,7 +257,7 @@ private theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := b
   have hne0_2 : (n / p) ^ d₂ ≠ 0 := by grind [pow_ne_zero]
   have hne0_3 : p ^ e₁ ≠ 0 := by grind [pow_ne_zero]
   have hne0_4 : (n / p) ^ e₂ ≠ 0 := by grind [pow_ne_zero]
-  have nd : ¬ q ∣ p := fun x => p_ne_q.symm <| (prime_dvd_prime_iff_eq q_prime p_prime).mp x
+  have nd : ¬ q ∣ p := fun x ↦ p_ne_q.symm <| (prime_dvd_prime_iff_eq q_prime p_prime).mp x
   have _ : p.factorization p ≠ 0 := by grind [Prime.factorization_self]
   have _ : (n / p).factorization q ≠ 0 := by
     simp only [ne_eq, factorization_eq_zero_iff, Nat.div_eq_zero_iff, not_or, Decidable.not_not,
@@ -291,7 +291,7 @@ private theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective 
   intro x y heq
   have hi := ofMultiset_injective (R := K) heq
   contrapose! hi
-  suffices (fun x : Fin (a + 1) => (x.val : K)).Injective by grind [Multiset.map_injective]
+  suffices (fun x : Fin (a + 1) ↦ (x.val : K)).Injective by grind [Multiset.map_injective]
   intro x2 y2 hxy
   have hm (z : Fin (a + 1)) : z.val ∈ Set.Iio p := by
     obtain ⟨z, hz⟩ := z
@@ -415,7 +415,7 @@ private theorem se2_choose_le_sp2 (h : Conditions r p n a q μ) :
           rw [Set.univ_finite_iff_nonempty_fintype]
           exact ⟨inferInstance⟩
         grind [Set.Finite.subset]
-      let emb := Function.Embedding.mk (fun a : ZMod r => μ ^ a.val) (by
+      let emb := Function.Embedding.mk (fun a : ZMod r ↦ μ ^ a.val) (by
         intro b c hbc
         simp only at hbc
         apply ZMod.val_injective
