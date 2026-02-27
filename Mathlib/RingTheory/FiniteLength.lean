@@ -124,7 +124,7 @@ lemma IsFiniteLength.of_surjective (H : IsFiniteLength R M) (hf : Function.Surje
     IsFiniteLength R N := by
   rw [isFiniteLength_iff_isNoetherian_isArtinian] at H ⊢
   cases H
-  exact ⟨isNoetherian_of_surjective _ f (LinearMap.range_eq_top.mpr hf),
+  exact ⟨isNoetherian_of_surjective f (LinearMap.range_eq_top.mpr hf),
     isArtinian_of_surjective _ f hf⟩
 
 /- The following instances are now automatic:
