@@ -31,7 +31,7 @@ then `U` has bounded measure.
 
 @[expose] public section
 
-open MeasureTheory MeasureTheory.Measure
+open MeasureTheory Measure
 
 open scoped Pointwise
 
@@ -202,12 +202,11 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     exact lt_of_le_of_lt (RealRMK.rieszMeasure_le_of_eq_one (f := ⟨f, hf2⟩) _
       (fun x ↦ (hf4 x).1) hK (fun x hx ↦ hf1 hx)) ENNReal.ofReal_lt_top
   map_mul_left_eq_self b := by
-    have : ((inducedMeasure H μA μC).map (fun x ↦ b * x)).Regular :=
-      Regular.map (Homeomorph.mulLeft b)
-    refine MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported fun f ↦ ?_
+    have : ((inducedMeasure H μA μC).map (b * ·)).Regular := Regular.map (Homeomorph.mulLeft b)
+    refine ext_of_integral_eq_on_compactlySupported fun f ↦ ?_
     rw [integral_map (by fun_prop) (by fun_prop)]
     have h (x : B) : f (b * x) = f.comp (Homeomorph.mulLeft b).toCocompactMap x := rfl
-    simp only [h, integral_inducedMeasure, integrate_apply]
+    simp_rw [h, integral_inducedMeasure, integrate_apply]
     rw [← integral_mul_left_eq_self _ (ψ b)⁻¹]
     congr
     ext c
@@ -217,22 +216,20 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
   open_pos U hU := by
     rintro ⟨b, hb⟩
     obtain ⟨K, hK, hb, hKU⟩ := exists_compact_subset hU hb
-    replace hb : b ∈ K := interior_subset hb
     obtain ⟨f, hf1, hf2, hf3, hf4⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK hU hKU
     have hf0 : 0 ≤ H.pushforward μA ⟨f, hf2⟩ := by
       rw [← map_zero (H.pushforward μA)]
       apply pushforward_mono
       exact fun x ↦ (hf4 x).1
-    refine (lt_of_lt_of_le ?_
-      (RealRMK.le_rieszMeasure_tsupport_subset (f := ⟨f, hf2⟩) _ hf4 hf3)).ne'
-    rw [ENNReal.ofReal_pos]
+    grw [← pos_iff_ne_zero, inducedMeasure,
+      ← RealRMK.le_rieszMeasure_tsupport_subset (f := ⟨f, hf2⟩) _ hf4 hf3, ENNReal.ofReal_pos]
     suffices (0 : ℝ) < pushforward H μA ⟨f, hf2⟩ (ψ b) from
       (pushforward H μA ⟨f, hf2⟩).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
         (pushforward H μA ⟨f, hf2⟩).hasCompactSupport hf0 this.ne'
     have : (Function.invFun ψ (ψ b))⁻¹ * b ∈ φ.range := by
       simp [← H.mulExact.monoidHom_ker_eq, Function.apply_invFun_apply]
     obtain ⟨a, ha⟩ := this
-    replace ha : f (Function.invFun ψ (ψ b) * φ a) ≠ 0 := by simp [ha, hf1 hb]
+    replace ha : f (Function.invFun ψ (ψ b) * φ a) ≠ 0 := by simp [ha, hf1 (interior_subset hb)]
     exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
@@ -261,7 +258,7 @@ theorem inducedMeasure_lt_of_injOn (U : Set B) (hU : IsOpen U) [DiscreteTopology
   contrapose! hc
   obtain ⟨b, rfl⟩ := H.isOpenQuotientMap.surjective c
   simp only [pushforward_apply, pullback_def, CompactlySupportedContinuousMap.coe_mk]
-  rw [← MeasureTheory.setIntegral_support]
+  rw [← setIntegral_support]
   have key : (Function.support fun a ↦ f (b * φ a)).Subsingleton := by
     intro a ha b hb
     simpa [H.isClosedEmbedding.injective.eq_iff] using hc (hf3 (subset_tsupport _ ha))
