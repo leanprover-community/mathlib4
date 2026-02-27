@@ -69,13 +69,6 @@ class IsFinitelyPresented (G : Type*) [Group G] : Prop where
   out: ∃ (α : Type) (_: Finite α) (rels : Set (FreeGroup α)) (_ : rels.Finite),
   Nonempty (G ≃* (PresentedGroup rels))
 
-/-- A group is one relator if it admits an isomorphism to a presented group such that the number
-of relations is one. -/
-class IsOneRelator (G : Type*) [Group G] : Prop where
-  out : ∃ (α : Type*) (rels : Set (FreeGroup α)) (hrels : rels.Finite),
-      Nonempty (G ≃* PresentedGroup rels) ∧
-      hrels.toFinset.card = 1
-
 /-- Every finitely presented group is finitely generated. -/
 instance isFP_isFG {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG G := by
   rw [Group.fg_iff_exists_freeGroup_hom_surjective_finite]
@@ -89,6 +82,40 @@ instance isFP_isFG {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG 
     iso.symm.surjective (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
 
 namespace IsFinitelyPresented
+
+/-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves surjectivity. -/
+theorem surjective_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : β ≃ α) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f) :
+    Function.Surjective (f.comp (FreeGroup.freeGroupCongr e).toMonoidHom) := by
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e
+  simpa [iso] using hfsurj.comp iso.surjective
+
+/-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves finite generation in
+normal closure of the kernel. -/
+theorem isNormalClosureFG_ker_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : β ≃ α) (f : FreeGroup α →* G) (hfker : IsNormalClosureFG f.ker) :
+    IsNormalClosureFG (MonoidHom.ker (f.comp (FreeGroup.freeGroupCongr e).toMonoidHom)) := by
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e
+  let f' : FreeGroup β →* G := f.comp iso
+  have hf'ker : IsNormalClosureFG f'.ker := by
+    unfold f'
+    simp only [MonoidHom.ker_comp_mulEquiv]
+    exact
+      IsNormalClosureFG.invariant_surj_hom
+        iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+  simpa [f', iso] using hf'ker
+
+/-- Reindexing free-group generators via an equivalence preserves surjectivity and
+normal-closure finite generation of the kernel. -/
+theorem exists_reindex_freeGroup_hom {G α β : Type*} [Group G]
+    (e : β ≃ α) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f)
+    (hfker : IsNormalClosureFG f.ker) :
+    ∃ f' : FreeGroup β →* G, Function.Surjective f' ∧ IsNormalClosureFG f'.ker := by
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e
+  let f' : FreeGroup β →* G := f.comp iso
+  refine ⟨f', ?_, ?_⟩
+  · simpa [f', iso] using surjective_comp_freeGroupCongr (G := G) e f hfsurj
+  · simpa [f', iso] using isNormalClosureFG_ker_comp_freeGroupCongr (G := G) e f hfker
 
 /-- A group is finitely presented if and only if there exists a surjective homomorphism from
 a free group on a `Finite` type such that the kernel is finitely generated as a normal subgroup. -/
@@ -141,22 +168,13 @@ IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
   constructor
   · intro ⟨α, hα, f, hfsurj, hfker⟩
     let n := Nat.card α
-    let iso : FreeGroup (Fin n) ≃* FreeGroup α :=
-    FreeGroup.freeGroupCongr (Finite.equivFin α).symm
-    let f' : FreeGroup (Fin n) →* G := f.comp iso
-    let hf'surj := hfsurj.comp iso.surjective
-    have hf'ker : IsNormalClosureFG f'.ker := by
-      unfold f'
-      simp only [MonoidHom.ker_comp_mulEquiv]
-      exact
-      IsNormalClosureFG.invariant_surj_hom iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+    obtain ⟨f', hf'surj, hf'ker⟩ :=
+      exists_reindex_freeGroup_hom (G := G) (e := (Finite.equivFin α).symm) f hfsurj hfker
     exact ⟨n, f', hf'surj, hf'ker⟩
   · intro ⟨n, f, hfsurj, hfker⟩
     let α := Fin n
     use α, inferInstance, f
 
--- TODO this following statement can actually be upgraded to an if and only if but it makes usage
--- difficult due to universe inference.
 /-- A group is finitely presented if there exists a surjective homomorphism from
 a free group on an arbitrary `Finite type` such that the kernel is finitely generated as
 a normal subgroup. -/
@@ -165,18 +183,76 @@ theorem if_hom_surj_finite {G : Type*} [Group G] :
   Function.Surjective f ∧ IsNormalClosureFG (MonoidHom.ker f)) → IsFinitelyPresented G := by
   rintro ⟨α, hα, f, hfsurj, hfker⟩
   rw [iff_hom_surj_fin_n]
-  -- TODO considering refactoring this since it seems used for the second time.
   let n := Nat.card α
-  let iso : FreeGroup (Fin n) ≃* FreeGroup α :=
-    FreeGroup.freeGroupCongr (Finite.equivFin α).symm
-  let f' : FreeGroup (Fin n) →* G := f.comp iso
-  let hf'surj := hfsurj.comp iso.surjective
-  have hf'ker : IsNormalClosureFG f'.ker := by
-    unfold f'
-    simp only [MonoidHom.ker_comp_mulEquiv]
-    exact
-    IsNormalClosureFG.invariant_surj_hom iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+  obtain ⟨f', hf'surj, hf'ker⟩ :=
+    exists_reindex_freeGroup_hom (G := G) (e := (Finite.equivFin α).symm) f hfsurj hfker
   exact ⟨n, f', hf'surj, hf'ker⟩
+
+/-- The canonical map from the free group on the range of free generators is surjective. -/
+theorem surjective_lift_range_freeGroupOf {G α : Type*} [Group G]
+    (h : FreeGroup α →* G) (hhsurj : Function.Surjective h) :
+    Function.Surjective (FreeGroup.lift
+      (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))) := by
+  set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
+  set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
+  let g : α → S := fun a ↦ ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
+  have hgsurj : Function.Surjective g := by
+    intro s
+    rcases s with ⟨y, ⟨a, rfl⟩⟩
+    exact ⟨a, rfl⟩
+  have hh_fcompg : f.comp (FreeGroup.map g) = h := by
+    ext a
+    simp [f, g]
+  have hfsurj : Function.Surjective f := by
+    intro y
+    obtain ⟨x, rfl⟩ := hhsurj y
+    refine ⟨FreeGroup.map g x, ?_⟩
+    simpa [MonoidHom.comp_apply] using congrArg (fun m ↦ m x) hh_fcompg
+  simpa [S, f]
+
+/-- The kernel of the canonical map from the free group on the range of free generators is
+finitely generated in normal closure, provided this holds for the original kernel. -/
+theorem isNormalClosureFG_ker_lift_range_freeGroupOf {G α : Type*} [Group G]
+    (h : FreeGroup α →* G) (hhker : IsNormalClosureFG h.ker) :
+    IsNormalClosureFG (FreeGroup.lift
+      (fun s : Set.range (fun a : α ↦ h (FreeGroup.of a)) ↦ (s : G))).ker := by
+  set S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
+  set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
+  let g : α → S := fun a ↦ ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
+  have hgsurj : Function.Surjective g := by
+    intro s
+    rcases s with ⟨y, ⟨a, rfl⟩⟩
+    exact ⟨a, rfl⟩
+  have hh_fcompg : f.comp (FreeGroup.map g) = h := by
+    ext a
+    simp [f, g]
+  let g' : FreeGroup α →* FreeGroup S := FreeGroup.map g
+  have hg'_surj : Function.Surjective g' := FreeGroup.map_surjective hgsurj
+  have hhker' : h.ker = (f.ker).comap g' := by
+    simpa [g'] using congrArg MonoidHom.ker hh_fcompg.symm
+  have hmap : Subgroup.map g' (h.ker) = f.ker := by
+    simpa [hhker'] using
+      (Subgroup.map_comap_eq_self_of_surjective (f := g') (H := f.ker) hg'_surj)
+  have hfker_map : IsNormalClosureFG (Subgroup.map g' (h.ker)) :=
+    IsNormalClosureFG.invariant_surj_hom g' hg'_surj h.ker hhker
+  simpa [S, f, hmap] using hfker_map
+
+/-- Given a surjective homomorphism from a free group with kernel finitely generated in the
+normal closure, one can choose a finite generating set of the target and recover the canonical
+surjective map from the free group on that set, with kernel still finitely generated in the
+normal closure. -/
+theorem exists_set_hom_surj_and_normalClosureFG_ker_of_freeGroup_hom {G α : Type*} [Group G]
+  [Finite α] (h : FreeGroup α →* G) (hhsurj : Function.Surjective h)
+  (hhker : IsNormalClosureFG h.ker) :
+    ∃ (S : Set G) (_ : S.Finite),
+      Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
+      IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
+  let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
+  have hS : S.Finite := by
+    simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
+  refine ⟨S, hS, ?_, ?_⟩
+  · simpa [S] using surjective_lift_range_freeGroupOf (G := G) (α := α) h hhsurj
+  · simpa [S] using isNormalClosureFG_ker_lift_range_freeGroupOf (G := G) (α := α) h hhker
 
 /-- A group is finitely presented if there exists a `Set G` such that the canonical inclusion map
 is surjective and the kernel is finitely generated as a normal subgroup. -/
@@ -186,58 +262,16 @@ theorem iff_hom_surj_set_G {G : Type*} [Group G] :
       Function.Surjective (FreeGroup.lift (fun s : S ↦ (s : G))) ∧
       IsNormalClosureFG (FreeGroup.lift (fun s : S ↦ (s : G))).ker := by
   constructor
-  · intro ⟨α, hα, rels, hrels, ⟨iso⟩⟩
-    simp [PresentedGroup] at iso
-    let _ : Fintype α := Fintype.ofFinite α
-    let h : FreeGroup α →* G :=
-      iso.symm.toMonoidHom.comp (QuotientGroup.mk' (Subgroup.normalClosure rels))
-    have hhsurj : Function.Surjective h := by
-      simpa [h] using
-      (Function.Surjective.comp iso.symm.surjective
-      (QuotientGroup.mk'_surjective (Subgroup.normalClosure rels)))
-    let S : Set G := Set.range (fun a : α ↦ h (FreeGroup.of a))
-    have hS : S.Finite := by
-      simpa [S] using (Set.finite_range (fun a : α ↦ h (FreeGroup.of a)))
-    use S, hS
-    set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
-    let g : α → S := fun a ↦ ⟨h (FreeGroup.of a), ⟨a, rfl⟩⟩
-    have hgsurj : Function.Surjective g := by
-      intro s
-      rcases s with ⟨y, ⟨a, rfl⟩⟩
-      exact ⟨a, rfl⟩
-    have hh_fcompg : f.comp (FreeGroup.map g) = h := by
-      ext a
-      simp [f, h, g]
-    have hfsurj : Function.Surjective f := by
-      intro y
-      obtain ⟨x, rfl⟩ := hhsurj y
-      refine ⟨FreeGroup.map g x, ?_⟩
-      simpa [MonoidHom.comp_apply] using congrArg (fun m ↦ m x) hh_fcompg
-    use hfsurj
-    let g' : FreeGroup α →* FreeGroup S := FreeGroup.map g
-    have hg'_surj : Function.Surjective g' := FreeGroup.map_surjective hgsurj
-    have hhker : h.ker = Subgroup.normalClosure rels := by
-      ext x
-      simp [h]
-    have hhker' : IsNormalClosureFG h.ker := by
-      rw [hhker]
-      use rels
-    have hfker : f.ker = Subgroup.map g' (Subgroup.normalClosure rels) := by
-      have hhker'' : h.ker = (f.ker).comap g' := by
-        simpa [g'] using congrArg MonoidHom.ker hh_fcompg.symm
-      have hmap : Subgroup.map g' (h.ker) = f.ker := by
-        simpa [hhker''] using
-          (Subgroup.map_comap_eq_self_of_surjective (f := g') (H := f.ker) hg'_surj)
-      simpa [hhker] using hmap.symm
-    convert IsNormalClosureFG.invariant_surj_hom g' hg'_surj h.ker hhker'
-    rw [hhker]
-    exact hfker
+  · intro hfp
+    obtain ⟨α, hα, h, hhsurj, hhker⟩ := (iff_hom_surj_finite (G := G)).1 hfp
+    let _ : Finite α := hα
+    exact exists_set_hom_surj_and_normalClosureFG_ker_of_freeGroup_hom
+      (G := G) (α := α) h hhsurj hhker
   · intro ⟨S, hS, hfsurj, hfker⟩
     set f : FreeGroup S →* G := FreeGroup.lift (fun s ↦ (s : G))
     let α := S
     let _ : Finite α := hS
-    apply if_hom_surj_finite -- this is a good justification for using Type* in general.
-    use α, inferInstance, f
+    exact if_hom_surj_finite (G := G) ⟨α, inferInstance, f, hfsurj, hfker⟩
 
 /-- A group is finitely presented if there exists a `Finset G` such that the canonical inclusion map
 is surjective and the kernel is finitely generated as a normal subgroup. -/
@@ -256,15 +290,13 @@ theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
       let iso : FreeGroup S' ≃* FreeGroup S
         := FreeGroup.freeGroupCongr e.symm
       let f' : FreeGroup S' →* G := f.comp iso
-      let hf'surj := hfsurj.comp iso.surjective
+      let hf'surj :=
+        surjective_comp_freeGroupCongr (G := G) (e := e.symm) f hfsurj
       have hf'ker : IsNormalClosureFG f'.ker := by
-        unfold f'
-        simp only [MonoidHom.ker_comp_mulEquiv]
-        exact
-          IsNormalClosureFG.invariant_surj_hom iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+        simpa [f', iso] using
+          isNormalClosureFG_ker_comp_freeGroupCongr (G := G) (e := e.symm) f hfker
       use S'
       have hf'canon : f' = FreeGroup.lift (fun s' : S' ↦ (s' : G)) := by
-        -- TODO prettify this.
         simp_all only [MonoidHom.ker_comp_mulEquiv, FreeGroup.freeGroupCongr_symm, Equiv.symm_symm,
          f, S', f', iso, e]
         ext a : 1
@@ -285,7 +317,7 @@ theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
     obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
     exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
 
-/-- If you FreeGroup α by an empty set, you get the original group. -/
+/-- Quotienting `FreeGroup α` by the normal closure of the empty set gives back `FreeGroup α`. -/
 def quotient_normalClosure_empty_mulEquiv (α : Type*) :
     FreeGroup α ⧸ Subgroup.normalClosure (∅ : Set (FreeGroup α)) ≃* FreeGroup α := by
   have hbot :
@@ -295,24 +327,10 @@ def quotient_normalClosure_empty_mulEquiv (α : Type*) :
     (QuotientGroup.quotientBot (G := FreeGroup α))
 -- TODO I think this needs to work for any presented group.
 
-/-- Trivial group is finitely presented -/
-instance : IsFinitelyPresented (Unit) := by
-  let α := Empty
-  let rels := (∅ : Set (FreeGroup Empty))
-  have hrels : rels.Finite := by
-    simp [rels]
-  use α, inferInstance, rels, hrels
-  let iso := FreeGroup.freeGroupEmptyMulEquivUnit
-  unfold PresentedGroup
-  refine ⟨?_⟩
-  have qiso : FreeGroup α ⧸ Subgroup.normalClosure rels ≃* FreeGroup α := by
-    simpa [rels] using quotient_normalClosure_empty_mulEquiv (α := α)
-  unfold α at qiso
-  exact iso.symm.trans qiso.symm
-
-/-- ℤ is finitely presented -/
-instance : IsFinitelyPresented (Multiplicative ℤ) := by
-  let α := Unit
+/-- A group is finitely presented if it is isomorphic to `FreeGroup α` with `α` finite,
+using the empty set of relations. -/
+theorem of_mulEquiv_freeGroup {G : Type*} {α : Type} [Group G] [Finite α]
+    (iso : FreeGroup α ≃* G) : IsFinitelyPresented G := by
   let rels := (∅ : Set (FreeGroup α))
   have hrels : rels.Finite := by
     simp [rels]
@@ -321,12 +339,26 @@ instance : IsFinitelyPresented (Multiplicative ℤ) := by
   refine ⟨?_⟩
   have qiso : FreeGroup α ⧸ Subgroup.normalClosure rels ≃* FreeGroup α := by
     simpa [rels] using quotient_normalClosure_empty_mulEquiv (α := α)
-  let iso := FreeGroup.freeGroupUnitMulEquivInt
-  unfold α at qiso
   exact iso.symm.trans qiso.symm
+
+/-- Trivial group is finitely presented -/
+instance : IsFinitelyPresented (Unit) := by
+  simpa using of_mulEquiv_freeGroup (G := Unit) (α := Empty)
+    FreeGroup.freeGroupEmptyMulEquivUnit
+
+/-- ℤ is finitely presented -/
+instance : IsFinitelyPresented (Multiplicative ℤ) := by
+  simpa using of_mulEquiv_freeGroup (G := Multiplicative ℤ) (α := Unit)
+    FreeGroup.freeGroupUnitMulEquivInt
 
 variable {G H : Type*} [Group G] [Group H]
 
 end IsFinitelyPresented
 
--- #min_imports
+-- TODO This needs to go into a different file classifying groups by their presentations.
+/-- A group is one relator if it admits an isomorphism to a presented group such that the number
+of relations is one. -/
+class IsOneRelator (G : Type*) [Group G] : Prop where
+  out : ∃ (α : Type*) (rels : Set (FreeGroup α)) (hrels : rels.Finite),
+      Nonempty (G ≃* PresentedGroup rels) ∧
+      hrels.toFinset.card = 1
