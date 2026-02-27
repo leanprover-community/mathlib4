@@ -423,6 +423,7 @@ theorem dihedralAct.inv (n : ℕ) (a : ZMod n) : Function.Involutive (dihedralAc
   dsimp only [dihedralAct]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : Quandle (Dihedral n) where
   act := dihedralAct n
   self_distrib := by

@@ -183,6 +183,7 @@ lemma sUnion_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   simp only [disjointOfDiff, coe_sdiff, coe_singleton]
   rw [sUnion_diff_singleton_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     t ∉ hC.disjointOfDiff hs ht := by
   intro hs_mem
@@ -222,6 +223,7 @@ section disjointOfDiffUnion
 
 variable {I : Finset (Set α)}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`, there is a
 finite set of sets in `C` whose union is `s \ ⋃₀ I`.
 See `IsSetSemiring.disjointOfDiffUnion` for a definition that gives such a set. -/
@@ -348,6 +350,7 @@ lemma disjoint_sUnion_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
     Disjoint (⋃₀ (I : Set (Set α))) (⋃₀ hC.disjointOfDiffUnion hs hI) := by
   rw [← hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion]; exact Set.disjoint_sdiff_right
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     Disjoint I (hC.disjointOfDiffUnion hs hI) := by
   by_contra h
@@ -391,6 +394,7 @@ variable {j : Set α} {J : Finset (Set α)}
 
 open MeasureTheory Order
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     ∃ K : Set α → Finset (Set α),
       PairwiseDisjoint J K
@@ -512,6 +516,37 @@ lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
 
 end disjointOfUnion
+
+private lemma _root_.Set.Ioc_mem_setOf_Ioc_le [LinearOrder α] (u v : α) :
+    Set.Ioc u v ∈ {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} :=
+  ⟨u, max u v, by grind, by grind⟩
+
+/-- The set of open-closed intervals is a semi-ring of sets. -/
+protected lemma Ioc [LinearOrder α] [Nonempty α] :
+    IsSetSemiring {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} where
+  empty_mem := by
+    inhabit α
+    exact ⟨default, default, le_rfl, by simp⟩
+  inter_mem := by
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rw [Set.Ioc_inter_Ioc]
+    apply Ioc_mem_setOf_Ioc_le
+  diff_eq_sUnion' := by
+    classical
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rcases le_or_gt u' u with hu | hu
+    · rcases Ioc_mem_setOf_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
+      exists {Set.Ioc u'' v''}
+      grind [coe_singleton, pairwiseDisjoint_singleton]
+    rcases le_or_gt v v' with hv | hv
+    · rcases Ioc_mem_setOf_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
+      exists {Set.Ioc u'' v''}
+      grind [coe_singleton, pairwiseDisjoint_singleton]
+    rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
+    refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
+    intro a ha b hb hab
+    simp [Function.onFun]
+    grind
 
 end IsSetSemiring
 

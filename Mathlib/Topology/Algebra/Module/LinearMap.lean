@@ -774,6 +774,10 @@ theorem comp_toSpanSingleton (f : M₁ →L[R₁] M₂) (x : M₁) :
     f ∘L toSpanSingleton R₁ x = toSpanSingleton R₁ (f x) :=
   coe_inj.mp <| LinearMap.comp_toSpanSingleton _ _
 
+omit [ContinuousSMul R₁ M₁] in
+theorem toSpanSingleton_comp (f : M₁ →L[R₁] R₁) (g : M₂) :
+    toSpanSingleton R₁ g ∘L f = f.smulRight g := rfl
+
 @[simp] theorem toSpanSingleton_inj {f f' : M₂} :
     toSpanSingleton R₁ f = toSpanSingleton R₁ f' ↔ f = f' := by
   simp [ContinuousLinearMap.ext_ring_iff]
@@ -837,9 +841,7 @@ instance sub : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
 instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
-  __ := ContinuousLinearMap.addCommMonoid
   sub_eq_add_neg _ _ := by ext; apply sub_eq_add_neg
-  nsmul := (· • ·)
   zsmul := (· • ·)
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
@@ -1085,20 +1087,17 @@ theorem coe_smulRightₗ (c : M →L[R] S) : ⇑(smulRightₗ c : M₂ →ₗ[T]
 
 end SMulRightₗ
 
-section CommRing
+section Semiring
+variable {R S M : Type*} [Semiring R] [TopologicalSpace M] [AddCommGroup M] [Module R M]
+  [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMul S R] [IsScalarTower S R M]
+  [ContinuousConstSMul S M] [IsTopologicalAddGroup M]
 
-variable {R : Type*} [CommRing R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] {M₂ : Type*}
-  [TopologicalSpace M₂] [AddCommGroup M₂] {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃]
-  [Module R M] [Module R M₂] [Module R M₃]
-
-variable [IsTopologicalAddGroup M₂] [ContinuousConstSMul R M₂]
-
-instance algebra : Algebra R (M₂ →L[R] M₂) :=
+instance algebra : Algebra S (M →L[R] M) :=
   Algebra.ofModule smul_comp fun _ _ _ => comp_smul _ _ _
 
-@[simp] theorem algebraMap_apply (r : R) (m : M₂) : algebraMap R (M₂ →L[R] M₂) r m = r • m := rfl
+@[simp] theorem algebraMap_apply (r : S) (m : M) : algebraMap S (M →L[R] M) r m = r • m := rfl
 
-end CommRing
+end Semiring
 
 section RestrictScalars
 
@@ -1296,16 +1295,12 @@ variable (𝕜 E) in
 def topDualPairing : (E →L[𝕜] 𝕜) →ₗ[𝕜] E →ₗ[𝕜] 𝕜 :=
   ContinuousLinearMap.coeLM 𝕜
 
-@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing := topDualPairing
-
 @[deprecated (since := "2025-09-03")] alias strongDualPairing := topDualPairing
 
 @[simp]
 theorem topDualPairing_apply (v : E →L[𝕜] 𝕜)
     (x : E) : topDualPairing 𝕜 E v x = v x :=
   rfl
-
-@[deprecated (since := "2025-08-12")] alias NormedSpace.dualPairing_apply := topDualPairing_apply
 
 @[deprecated (since := "2025-09-03")] alias StrongDual.dualPairing_apply := topDualPairing_apply
 

@@ -74,7 +74,8 @@ lemma ker_restrict_eq_bot_of_isCartanSubalgebra
 lemma traceForm_cartan_nondegenerate
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     (LieModule.traceForm R H L).Nondegenerate := by
-  simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
+  simp [LinearMap.separatingLeft_iff_ker_eq_bot,
+    (LieModule.traceForm_isSymm R H L).isRefl.nondegenerate_iff_separatingLeft]
 
 variable [Module.Free R L] [Module.Finite R L]
 
@@ -97,6 +98,7 @@ variable [FiniteDimensional K L] (H : LieSubalgebra K L) [H.IsCartanSubalgebra]
 section
 variable [IsTriangularizable K H L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `α` and `β`, the corresponding root spaces are orthogonal with respect to the Killing
 form, provided `α + β ≠ 0`. -/
 lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K} {x y : L}

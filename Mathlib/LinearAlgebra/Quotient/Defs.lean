@@ -44,6 +44,7 @@ version, where commutativity can't be assumed. -/
 def quotientRel : Setoid M :=
   QuotientAddGroup.leftRel p.toAddSubgroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
   Iff.trans
     (by
