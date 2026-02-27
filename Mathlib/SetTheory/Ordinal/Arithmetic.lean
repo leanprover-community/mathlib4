@@ -1075,7 +1075,7 @@ theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
   exact Fintype.card_congr Fin.equivSubtype.symm
 
 @[simp]
-theorem typein_lt_eq_natCast_val {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
+theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
   rw [← type_subrel, type_fintype, Nat.cast_inj]
   exact Fintype.card_fin_lt_of_le x.is_le'
 
