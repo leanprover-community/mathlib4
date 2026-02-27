@@ -295,8 +295,8 @@ lemma smul {Γ : Type*} [Group Γ] [MulDistribMulAction Γ G] (hS : H.IsSubnorma
     (g : Γ) : (g • H).IsSubnormal :=
   IsSubnormal.map (MulAction.surjective g) hS
 
-/-- If a group `G` is trivial, then all of its subgroups are subnormal. -/
-@[to_additive /-- If an additive group `G` is trivial, then all of its subgroups are subnormal. -/]
+/-- If the subgroup `H` of a group `G` is trivial, then it is subnormal. -/
+@[to_additive /-- If the additive subgroup `H` of a group `G` is trivial, then it is subnormal. -/]
 lemma of_subsingleton [Subsingleton H] : H.IsSubnormal := by
   simp [eq_bot_of_subsingleton H]
 
