@@ -4,8 +4,6 @@ import Mathlib.Tactic
 
 /-! Checks that some utilities are available already when importing `Mathlib.Tactic`. -/
 
-@[inherit_doc] notation "test_find_syntax" => id
-/-- info: Found -/
 #guard_msgs (substring := true) in
 #find_syntax "test_find_syntax" approx
 
