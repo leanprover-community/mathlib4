@@ -94,10 +94,10 @@ instance : LieRing (H ⋊⁅ψ⁆ G) where
   add_lie _ _ _ := toProd.injective <| by simp; abel
   lie_add _ _ _:= toProd.injective <| by simp; abel
   lie_self _ := toProd.injective <| by simp
-  leibniz_lie x y z:= toProd.injective <| by simp; grind [lie_skew]
+  leibniz_lie _ _ _ := toProd.injective <| by simp; grind [lie_skew]
 
 instance : LieAlgebra R (H ⋊⁅ψ⁆ G) where
-  lie_smul r x y:= toProd.injective <| by
+  lie_smul _ _ _ := toProd.injective <| by
     simp [toProd_smul, smul_sub, smul_add]
 
 /-- The canonical inclusion of H into the semi-direct sum H ⋊⁅ψ⁆ G. -/
