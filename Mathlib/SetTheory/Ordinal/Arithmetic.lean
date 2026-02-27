@@ -1067,14 +1067,14 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
     lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
-theorem typein_lt_eq_natCast (x : ℕ) : Ordinal.typein LT.lt x = x := by
-  have : Fintype <| Subtype (· < x) := Set.Nat.fintypeIio x
-  rw [← Ordinal.type_subrel, Ordinal.type_fintype, Nat.cast_inj]
+theorem typein_lt_eq_natCast (x : ℕ) : typein LT.lt x = x := by
+  have : Fintype <| Subtype (· < x) := Nat.fintypeIio x
+  rw [← type_subrel, type_fintype, Nat.cast_inj]
   nth_rw 2 [← Fintype.card_fin x]
   exact Fintype.card_congr Fin.equivSubtype.symm
 
-theorem typein_lt_eq_natCast_val {n : ℕ} (x : Fin n) : Ordinal.typein LT.lt x = x := by
-  rw [← Ordinal.type_subrel, Ordinal.type_fintype, Nat.cast_inj]
+theorem typein_lt_eq_natCast_val {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
+  rw [← type_subrel, type_fintype, Nat.cast_inj]
   exact Fintype.card_fin_lt_of_le x.is_le'
 
 /-! ### Properties of `ω` -/
