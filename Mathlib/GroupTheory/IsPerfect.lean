@@ -89,10 +89,12 @@ lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
 protected lemma map [IsPerfect H] : IsPerfect (H.map f) := by
   rw [isPerfect_iff, ← map_commutator, commutator_eq_self]
 
+instance [IsPerfect G] : IsPerfect (⊤ : Subgroup G) :=
+  top_iff.mpr inferInstance
+
 protected lemma range [IsPerfect G] : IsPerfect f.range := by
   rw [MonoidHom.range_eq_map]
-  have : IsPerfect (⊤ : Subgroup G) := top_iff.mpr inferInstance
-  apply IsPerfect.map
+  exact IsPerfect.map _
 
 variable {f} in
 lemma ofSurjective [IsPerfect G] (hf : Function.Surjective f) : IsPerfect G' := by
