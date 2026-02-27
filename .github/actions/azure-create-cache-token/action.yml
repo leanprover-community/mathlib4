@@ -1,0 +1,36 @@
+name: Azure Create Cache Token
+description: Mint an Azure storage access token via GitHub OIDC for cache uploads.
+
+inputs:
+  azure-client-id:
+    description: Azure user-assigned managed identity client ID.
+    required: true
+  azure-tenant-id:
+    description: Azure tenant ID.
+    required: true
+  azure-oidc-audience:
+    description: OIDC audience for Entra token exchange.
+    required: false
+    default: api://AzureADTokenExchange
+  azure-scope:
+    description: OAuth scope requested from Entra for cache upload operations.
+    required: false
+    default: https://storage.azure.com/.default
+
+outputs:
+  token:
+    description: Azure access token for the requested scope.
+    value: ${{ steps.mint.outputs.token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Mint storage token
+      id: mint
+      shell: bash
+      env:
+        INPUT_AZURE_CLIENT_ID: ${{ inputs.azure-client-id }}
+        INPUT_AZURE_TENANT_ID: ${{ inputs.azure-tenant-id }}
+        INPUT_AZURE_OIDC_AUDIENCE: ${{ inputs.azure-oidc-audience }}
+        INPUT_AZURE_SCOPE: ${{ inputs.azure-scope }}
+      run: python3 "${GITHUB_ACTION_PATH}/mint_token.py"

@@ -123,7 +123,7 @@ def main (args : List String) : IO Unit := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
     let repo := repo?.getD MATHLIBREPO
-    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getToken)
+    putFiles repo (← pack overwrite (verbose := true) unpackedOnly) overwrite (← getUploadAuth)
   let stage outDir (unpackedOnly := true) := do
     stageFiles outDir (← pack (verbose := true) (unpackedOnly := unpackedOnly))
   let unstage (overwrite := false) := do
@@ -134,7 +134,8 @@ def main (args : List String) : IO Unit := do
     if !(←stagingDir.isDir) then IO.println "--staging-dir must be a directory" return
     else
       let fileSet ← getFilesWithExtension stagingDir "ltar"
-      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config") (overwrite := false) (← getToken)
+      putFilesAbsolute repo fileSet (tempConfigFilePath := stagingDir / "curl.config")
+        (overwrite := false) (← getUploadAuth)
 
   match args with
   | "get"  :: args => get args
@@ -161,10 +162,10 @@ def main (args : List String) : IO Unit := do
     putStaged stagingDir?.get!
   | ["commit"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap false (← getToken)
+    commit hashMap false (← getUploadAuth)
   | ["commit!"] =>
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
-    commit hashMap true (← getToken)
+    commit hashMap true (← getUploadAuth)
   | ["collect"] => IO.println "TODO"
   | "lookup" :: _ => lookup hashMap roots.keys
   | _ => println help
