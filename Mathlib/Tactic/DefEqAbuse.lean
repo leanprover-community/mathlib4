@@ -11,6 +11,11 @@ public meta import Mathlib.Lean.MessageData.Trace
 /-!
 # The `#defeq_abuse` tactic and command combinators
 
+**WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking changes to
+transparency handling (associated with `backward.isDefEq.respectTransparency`). Its syntax may
+change at any time, and it may not behave as expected. Please report unexpected behavior
+[on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+
 `#defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
 `isDefEq` checks that fail with the stricter setting, helping to diagnose where Mathlib relies on
@@ -236,6 +241,10 @@ private def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMess
         The following isDefEq checks are the root causes of the failure:\n{failureList}"
 
 /--
+> **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
+changes to transparency handling. Its syntax may change at any time, and it may not behave as
+expected. Please report unexpected behavior [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+
 `#defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
 `isDefEq` checks that fail with the stricter setting.
@@ -299,6 +308,10 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
           evalTactic tac
 
 /--
+> **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
+changes to transparency handling. Its syntax may change at any time, and it may not behave as
+expected. Please report unexpected behavior [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+
 `#defeq_abuse in cmd` runs `cmd` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the command succeeds with `false` but fails with `true`, it identifies the specific
 synthesis applications and `isDefEq` checks that fail with the stricter setting.
