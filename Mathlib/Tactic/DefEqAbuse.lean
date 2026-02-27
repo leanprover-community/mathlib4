@@ -83,7 +83,8 @@ Note: status is currently determined by parsing emoji from the rendered header s
 Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
 private partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
-    unless ← header.isTraceFailure do return .ascend
+    unless traceResultOf (← header.toString) matches some .failure do
+      return .ascend
     let childFailures ← visitWithM children findLeafFailures
     -- Leaf failure: deepest `❌` node with no deeper `❌` children
     return .ascend <| if childFailures.isEmpty then #[header] else childFailures

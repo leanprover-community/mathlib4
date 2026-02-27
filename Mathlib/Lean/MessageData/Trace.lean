@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
+import Mathlib.Init
 public import Lean.Message
 public import Std.Data.HashSet.Basic
 
@@ -70,9 +71,6 @@ def traceResultOf (headerStr : String) : Option TraceResult :=
   else if headerStr.startsWith "❌" then some .failure
   else if headerStr.startsWith "💥" then some .error
   else none
-
-def isTraceFailure (header : MessageData) : BaseIO Bool :=
-  return traceResultOf (← header.toString) |>.isEqSome .failure
 
 /-- Strip the leading status emoji and space from a trace header string,
 leaving just the semantic content for comparison across trace runs.
