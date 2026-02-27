@@ -107,6 +107,7 @@ lemma Ideal.injective_algebraMap_quotient_residueField :
   change map (Quotient.mk I) (RingHom.ker (algebraMap R I.ResidueField)) = ⊥
   rw [Ideal.ker_algebraMap_residueField, map_quotient_self]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsFractionRing (R ⧸ I) I.ResidueField where
   map_units y := isUnit_iff_ne_zero.mpr
     (map_ne_zero_of_mem_nonZeroDivisors _ I.injective_algebraMap_quotient_residueField y.2)
@@ -149,6 +150,7 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p] :
     IsLocalHom (algebraMap (Localization.AtPrime p) (Localization.AtPrime q)) :=
   Localization.isLocalHom_localRingHom _ _ _ (Ideal.over_def _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
   .comp _ (Localization.AtPrime p) _
 
@@ -158,6 +160,7 @@ instance [Algebra.EssFiniteType R A]
   have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
   refine .of_comp R _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` sends `I` to `0` and `Iᶜ` to units, then `f` lifts to `κ(I)`. -/
 noncomputable def Ideal.ResidueField.lift
     (f : R →+* S) (hf₁ : I ≤ RingHom.ker f)
