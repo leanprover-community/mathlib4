@@ -35,7 +35,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 
 lemma exists_epiModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (X' : C) (s : X' ⟶ X) (_ : P.epiModSerre s), s ≫ f = 0) ↔
-        P (Abelian.image f) := by
+      P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
   · rintro ⟨X', s, hs, eq⟩
     have := P.epiModSerre.comp_mem s (Abelian.factorThruImage f) hs
