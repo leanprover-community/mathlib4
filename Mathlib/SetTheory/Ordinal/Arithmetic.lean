@@ -769,7 +769,7 @@ private theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsSucc
 
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b := by
   induction c using limitRecOn with
-  | zero => simp only [succ_zero, mul_one]
+  | zero => simp
   | succ c IH =>
     rw [mul_succ, IH, ← add_assoc, add_assoc _ b, ba, ← mul_succ]
   | limit c l IH =>
@@ -783,9 +783,8 @@ theorem add_mul_of_isSuccLimit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLim
 
 /-- The set in the definition of division is nonempty. -/
 private theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
-  ⟨a, (succ_le_iff (a := a) (b := b * succ a)).1 <| by
-    simpa only [succ_zero, one_mul] using
-      mul_le_mul_left (succ_le_of_lt (pos_iff_ne_zero.2 h)) (succ a)⟩
+  ⟨a, (add_one_le_iff (y := b * (a + 1))).1 <| by
+    simpa using mul_le_mul_left (add_one_le_of_lt h.pos) (a + 1)⟩
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
 instance div : Div Ordinal :=
@@ -853,12 +852,12 @@ theorem mul_add_div (a) {b : Ordinal} (b0 : b ≠ 0) (c) : (b * a + c) / b = a +
     apply mul_div_le
 
 theorem div_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a / b = 0 := by
-  rw [← nonpos_iff_eq_zero, div_le <| pos_iff_ne_zero.1 <| (zero_le _).trans_lt h]
-  simpa only [succ_zero, mul_one] using h
+  rw [← nonpos_iff_eq_zero, div_le h.ne_bot]
+  simpa
 
 @[simp]
 theorem mul_div_cancel (a) {b : Ordinal} (b0 : b ≠ 0) : b * a / b = a := by
-  simpa only [add_zero, zero_div] using mul_add_div a b0 0
+  simpa using mul_add_div a b0 0
 
 theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
     (a * b + c) / (a * d) = b / d := by
@@ -1054,7 +1053,7 @@ theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
     apply le_antisymm
     · rw [le_div hn', ← natCast_mul, Nat.cast_le, mul_comm]
       apply Nat.div_mul_le_self
-    · rw [div_le hn', ← add_one_eq_succ, ← Nat.cast_succ, ← natCast_mul, Nat.cast_lt, mul_comm,
+    · rw [div_le hn', succ_eq_add_one, ← Nat.cast_succ, ← natCast_mul, Nat.cast_lt, mul_comm,
         ← Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero hn)]
       apply Nat.lt_succ_self
 

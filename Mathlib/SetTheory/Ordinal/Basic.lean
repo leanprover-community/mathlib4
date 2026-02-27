@@ -900,11 +900,11 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
--- TODO: deprecate this in favor of `Order.succ_eq_add_one`
+@[deprecated succ_eq_add_one (since := "2026-02-26")]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 
--- TODO: deprecate
+@[deprecated zero_add (since := "2026-02-26")]
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
   zero_add 1
 
