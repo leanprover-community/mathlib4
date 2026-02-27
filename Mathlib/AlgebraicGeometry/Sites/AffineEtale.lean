@@ -43,7 +43,7 @@ section
 
 /-- Construct an object of affine `P`-schemes over `S` by giving a morphism `Spec R ⟶ S`. -/
 @[simps! hom left]
-def affineOverMk {P : MorphismProperty Scheme.{u}} {R : CommRingCat.{u}}
+noncomputable def affineOverMk {P : MorphismProperty Scheme.{u}} {R : CommRingCat.{u}}
     (f : Spec R ⟶ S) (hf : P f) :
     P.CostructuredArrow ⊤ Scheme.Spec S :=
   .mk ⊤ f hf
@@ -240,10 +240,10 @@ namespace AffineEtale
 
 /-- Construct an object of the small affine étale site. -/
 @[simps!]
-protected def mk {R : CommRingCat.{u}} (f : Spec R ⟶ S) [Etale f] : AffineEtale S :=
+protected noncomputable def mk {R : CommRingCat.{u}} (f : Spec R ⟶ S) [Etale f] : AffineEtale S :=
   MorphismProperty.CostructuredArrow.mk ⊤ f ‹_›
 
-instance : Category S.AffineEtale :=
+noncomputable instance : Category S.AffineEtale :=
   inferInstanceAs <| Category (MorphismProperty.CostructuredArrow _ _ _ _)
 
 /-- The `Spec` functor from the small affine étale site of `S` to the small étale site of `S`. -/
