@@ -116,13 +116,13 @@ lemma of_iso' (h : IsPullback fst snd f g)
 
 section
 
-variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
+variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y}
 
-lemma isIso_fst_of_mono (h : IsPullback fst snd f f) : IsIso fst :=
-  h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
+lemma isIso_fst_of_mono (h : IsPullback fst snd f f) (inst : Mono f := by infer_instance) :
+    IsIso fst := h.cone.isIso_fst_of_mono_of_isLimit h.isLimit
 
-lemma isIso_snd_iso_of_mono (h : IsPullback fst snd f f) : IsIso snd :=
-  h.cone.isIso_snd_of_mono_of_isLimit h.isLimit
+lemma isIso_snd_iso_of_mono (h : IsPullback fst snd f f) (inst : Mono f := by infer_instance) :
+    IsIso snd := h.cone.isIso_snd_of_mono_of_isLimit h.isLimit
 
 end
 
