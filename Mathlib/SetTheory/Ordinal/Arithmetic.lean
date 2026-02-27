@@ -1069,8 +1069,8 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp]
 theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
-  have : Fintype <| Subtype (· < x) := Nat.fintypeIio x
-  rw [← type_subrel, type_fintype, Nat.cast_inj]
+  have : Fintype <| Iio x := Nat.fintypeIio x
+  rw [typein_lt_eq_type_Iio_lt, type_fintype, Nat.cast_inj]
   nth_rw 2 [← Fintype.card_fin x]
   exact Fintype.card_congr Fin.equivSubtype.symm
 
