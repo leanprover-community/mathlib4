@@ -281,7 +281,7 @@ theorem fourierIntegral_fderiv [MeasurableSpace V] [BorelSpace V] [FiniteDimensi
     simp only [A, neg_mul, neg_smul, smul_smul]
   · exact (fourierIntegral_convergent_iff' _ _).2 (hf'.apply_continuousLinearMap _)
   · exact (fourierIntegral_convergent_iff' _ _).2 hf
-  · exact fun x _ ↦ (differentiable_fourierChar_neg_bilinear_left _ _).differentiableAt
+  · exact fun _ _ ↦ (differentiable_fourierChar_neg_bilinear_left _ _).differentiableAt
   · exact fun _ _ ↦ h'f.differentiableAt
 
 /-- The formal multilinear series whose `n`-th term is

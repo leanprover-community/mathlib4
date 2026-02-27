@@ -51,8 +51,8 @@ namespace ContinuousLinearMap
 
 variable {B : E →L[𝕜] F →L[𝕜] G} {u : 𝕜 → E} {v : 𝕜 → F} {u' : E} {v' : F}
 
-theorem hasDerivWithinAt_of_bilinear (hu : HasDerivWithinAt u u' s x)
-    (hv : HasDerivWithinAt v v' s x) :
+theorem hasDerivWithinAt_of_bilinear
+    (hu : HasDerivWithinAt u u' s x) (hv : HasDerivWithinAt v v' s x) :
     HasDerivWithinAt (fun x ↦ B (u x) (v x)) (B (u x) v' + B u' (v x)) s x := by
   simpa using (B.hasFDerivWithinAt_of_bilinear
     hu.hasFDerivWithinAt hv.hasFDerivWithinAt).hasDerivWithinAt
