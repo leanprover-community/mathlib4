@@ -643,7 +643,6 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     have hoh : eval (μ ^ n) ((X : K[X]) - C (y : K)) = μ ^ n - y := by
       rw [eval_sub, eval_X, eval_C]
     have hoh2 : eval μ ((X : K[X]) - C (y : K)) ^ n = (μ - y) ^ n := by
-      congr
       rw [eval_sub, eval_X, eval_C]
     have yy : (⟨y, hyy⟩ : Icc 0 a) = y := by grind
     rw [yy, hoh, hoh2]
