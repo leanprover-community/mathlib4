@@ -30,23 +30,23 @@ variable [Ring A] [Algebra R A]
 
 /--
 If `x` is a transcendental element over `R` then `R[X] ≃ (aeval (R := R) x).range`. -/
-abbrev equivPolynomialRangeAEval (x : A) (hx : Transcendental R x) :
+def equivPolynomialRangeAEval (x : A) (hx : Transcendental R x) :
     R[X] ≃ₐ[R] (aeval (R := R) x).range :=
   AlgEquiv.ofInjective _ <| transcendental_iff_injective.mp hx
 
 @[simp]
 theorem equivPolynomialRangeAEval_def (x : A) (hx : Transcendental R x) (p : R[X]) :
-    equivPolynomialRangeAEval x hx p = aeval x p := rfl
+    equivPolynomialRangeAEval x hx p = (⟨aeval x p, by simp⟩ : (aeval x).range) := rfl
 
 @[simp]
-theorem equivPolynomialRangeAEval_def' (x : A) (hx : Transcendental R x) (p : R[X]) :
-    equivPolynomialRangeAEval x hx p = (⟨aeval x p, by simp⟩ : (aeval x).range) := rfl
+theorem equivPolynomialRangeAEval_coe_eq (x : A) (hx : Transcendental R x) (p : R[X]) :
+    equivPolynomialRangeAEval x hx p = aeval x p := rfl
 
 /--
 If `x` is a transcendental element over `R` then `R[X] ≃ R[x]`. -/
 def equivPolynomialAdjoin (x : A) (hx : Transcendental R x) :
     R[X] ≃ₐ[R] Algebra.adjoin R {x} :=
-  (equivPolynomialRangeAEval x hx).trans (Algebra.equivRangeAevalAdjoinSingleton R x)
+  equivPolynomialRangeAEval x hx|>.trans <|Algebra.equivRangeAevalAdjoinSingleton R x
 
 @[simp]
 theorem equivPolynomialAdjoin_def (x : A) (hx : Transcendental R x) (p : R[X]) :
