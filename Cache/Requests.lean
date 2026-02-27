@@ -543,6 +543,13 @@ initialize UPLOAD_URL : String ← do
 
 def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
 
+def getAzureDateHeader : IO String := do
+  let out ← IO.Process.output
+    { cmd := "date", args := #["-u", "+%a, %d %b %Y %H:%M:%S GMT"] }
+  unless out.exitCode == 0 do
+    throw <| IO.userError s!"failed to produce x-ms-date header (exit code {out.exitCode})"
+  return s!"x-ms-date: {out.stdout.trimAscii.copy}"
+
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (repo : String) (files : Array FilePath) (auth : UploadAuth) : IO String := do
   let token := match auth with
@@ -562,6 +569,7 @@ def putFilesAbsolute
   if size > 0 then
     IO.FS.writeFile tempConfigFilePath (← mkPutConfigContent repo files auth)
     IO.println s!"Attempting to upload {size} file(s) to {repo} cache"
+    let azureDateHeader ← getAzureDateHeader
     let args := match auth with
       | .cloudflareS3 token =>
         -- TODO: reimplement using HEAD requests?
@@ -574,11 +582,12 @@ def putFilesAbsolute
           #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
       | .azureBearer token =>
         if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
+            azureDateHeader,
             "--oauth2-bearer", token]
         else
           #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-            azureBearerApiVersionHeader, "--oauth2-bearer", token]
+            azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
     let args := args ++ #[
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
@@ -656,6 +665,7 @@ def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (auth : UploadAuth) :
   let path := IO.CACHEDIR / hash
   IO.FS.createDirAll IO.CACHEDIR
   IO.FS.writeFile path <| ("\n".intercalate <| hashMap.hashes.toList.map toString) ++ "\n"
+  let azureDateHeader ← getAzureDateHeader
   match auth with
   | .cloudflareS3 token =>
     -- TODO: reimplement using HEAD requests?
@@ -670,9 +680,10 @@ def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (auth : UploadAuth) :
   | .azureBearer token =>
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
+        "-H", azureDateHeader,
         "--oauth2-bearer", token]
       else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-        azureBearerApiVersionHeader, "--oauth2-bearer", token]
+        azureBearerApiVersionHeader, "-H", azureDateHeader, "--oauth2-bearer", token]
     discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}"]
   IO.FS.removeFile path
 

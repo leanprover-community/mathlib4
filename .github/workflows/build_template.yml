@@ -769,6 +769,7 @@ jobs:
               --write-out "%{http_code}" \
               --oauth2-bearer "${MATHLIB_CACHE_AZURE_BEARER_TOKEN}" \
               -H "x-ms-version: 2026-02-06" \
+              -H "x-ms-date: $(LC_ALL=C date -u '+%a, %d %b %Y %H:%M:%S GMT')" \
               "$PROBE_URL"
           )"
 
