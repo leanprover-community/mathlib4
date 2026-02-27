@@ -4,15 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: metakunt
 -/
 module
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Data.Finite.Vector
-import Mathlib.Data.Set.Card.Arithmetic
-import Mathlib.Data.Sym.Card
-import Mathlib.Order.BourbakiWitt
-import Mathlib.Order.Interval.Set.Nat
-import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
-import Mathlib.RingTheory.SimpleRing.Principal
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Data.Finite.Vector
+public import Mathlib.Data.Set.Card.Arithmetic
+public import Mathlib.Data.Sym.Card
+public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Order.Interval.Set.Nat
+public import Mathlib.RingTheory.RootsOfUnity.AlgebraicallyClosed
+public import Mathlib.RingTheory.SimpleRing.Principal
 /-!
 # Existence of a polynomially bounded runtime primality testing algorithm
 
@@ -155,7 +155,8 @@ section rest
 variable {K : Type*} [CommRing K] [IsDomain K]
 
 /-- Helper structure to bundle hypotheses. -/
-structure Conditions (r p n a q : ℕ) (μ : K) [Fact p.Prime] [ExpChar K p] [CharP K p] [NeZero r] where
+structure Conditions (r p n a q : ℕ) (μ : K) [Fact p.Prime] [ExpChar K p]
+    [CharP K p] [NeZero r] where
   n_coprime_r : n.Coprime r
   n_ge_3 : 3 ≤ n
   a_def : a = floor ((√ (φ r)) * (Real.logb 2 n))
@@ -169,7 +170,7 @@ structure Conditions (r p n a q : ℕ) (μ : K) [Fact p.Prime] [ExpChar K p] [Ch
   q_dvd_n : q ∣ n
   p_ne_q : p ≠ q
 
-variable {p n a q: ℕ} {μ: K} [Fact p.Prime] [CharP K p] [ExpChar K p]
+variable {p n a q : ℕ} {μ : K} [Fact p.Prime] [CharP K p] [ExpChar K p]
 
 variable {r : ℕ} [NeZero r]
 
@@ -283,7 +284,9 @@ theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := by
     replace hf := DFunLike.congr_fun hf q
     have hpf : p.factorization q = 0 := by grind [factorization_eq_zero_iff]
     have _ : (n / p).factorization q = 0 := by
-      simp [hpf, hc2] at hf
+      simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul, Pi.add_apply,
+        Pi.mul_apply, Pi.natCast_apply, cast_id, hpf, mul_zero, zero_add, mul_eq_mul_right_iff, hc2,
+        false_or] at hf
       exact hf
     grind
 
@@ -291,8 +294,6 @@ theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective := by
   obtain ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
     icc_coprime , icc_introspective , is_primitive_root , p_prime ,
     q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
-
-
   have _ := Nat.Prime.ne_zero p_prime
   intro x y heq
   have hi := ofMultiset_injective (R := K) heq
@@ -407,7 +408,6 @@ theorem claim6 (h : Conditions r p n a q μ) :
   have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
     icc_coprime , icc_introspective , is_primitive_root , p_prime ,
     q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := id h
-
   have hsinj : Set.InjOn (eval μ ·) ((sp1 h) '' {x | x.card ≤ (se2 h).ncard - 1}) := by
     intro f hf g hg heq
     by_contra! hcon
@@ -454,8 +454,8 @@ theorem claim6 (h : Conditions r p n a q μ) :
       have hn := roots_eq_of_natDegree_le_card_of_ne_zero hd hs (by grind)
       simp [hn, ss, ← Set.ncard_eq_toFinset_card]
   rw [sp2]
-  refine le_trans (b := ((fun x ↦ eval μ x) '' ((sp1 h) '' {x | x.card ≤ (se2 h).ncard - 1})).ncard )
-    ?_ (Set.ncard_le_ncard (by grind) (aux_le h).2)
+  refine le_trans (b := ((fun x ↦ eval μ x) '' ((sp1 h) '' {x | x.card ≤ (se2 h).ncard - 1}
+  )).ncard) ?_ (Set.ncard_le_ncard (by grind) (aux_le h).2)
   rw [hsinj.ncard_image , Set.ncard_image_of_injective _ (injective_sp1 h)]
   apply le_of_eq
   have hsiccf := Set.finite_Icc 0 ((se2 h).ncard - 1)
@@ -467,7 +467,6 @@ theorem claim6 (h : Conditions r p n a q μ) :
       fun y ↦ {x : Multiset (Fin (a+1)) | x.card = y} := by
     intro x hx y hy hne
     grind
-
   have key := Set.Finite.ncard_biUnion
       (s:= (fun (y : ℕ) => {x: Multiset (Fin (a+1)) | x.card = y} )) hsiccf key1 key2
   symm
@@ -534,7 +533,6 @@ theorem not_aux_le (h : Conditions r p n a q μ) :
     rw [he]
   apply lt_trans h1
   norm_cast
-
   have logb_pos : 0 < Real.logb 2 n := Real.logb_pos (by grind) (by norm_num; grind)
   replace h1 : 2 ≤ ⌊Real.logb 2 n * √e⌋₊ := by
     apply le_floor
@@ -619,7 +617,8 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
       (((X : (ZMod n)[X]) - (C (y : (ZMod n)))) ^ n)) : IsPrimePow n := by
   by_contra hcon
-  obtain ⟨ p, hp, q, hq, hpq ⟩ := (not_isPrimePow_iff_nontrivial_of_two_le (show 2 ≤ n by lia)).mp hcon
+  obtain ⟨ p, hp, q, hq, hpq ⟩ :=
+    (not_isPrimePow_iff_nontrivial_of_two_le (show 2 ≤ n by lia)).mp hcon
   clear hcon
   simp only [SetLike.mem_coe] at hp hq
   obtain ⟨ pp , hp, - ⟩ := mem_primeFactors.mp hp
@@ -641,10 +640,10 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
   · have yy : y ∈ Icc 1 a := by
       simp only [mem_Icc]
       exact ⟨ (by lia), (by grind)⟩
-
     replace heq := heq y yy
     let f := by
-      refine Ideal.Quotient.lift (Ideal.span {(X:(ZMod n)[X] )^r-1}) (eval₂RingHom (ZMod.castHom hp K) μ) ?_
+      refine Ideal.Quotient.lift
+        (Ideal.span {(X : (ZMod n)[X])^r-1}) (eval₂RingHom (ZMod.castHom hp K) μ) ?_
       intro s hs
       rw [Ideal.mem_span_singleton, dvd_iff_exists_eq_mul_left] at hs
       obtain ⟨ c , hc ⟩ := hs
