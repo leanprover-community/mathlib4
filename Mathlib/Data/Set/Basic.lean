@@ -69,6 +69,10 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
+protected theorem mem_injective : Injective (Membership.mem : Set α → α → Prop) := injective_id
+protected theorem mem_surjective : Surjective (Membership.mem : Set α → α → Prop) := surjective_id
+protected theorem mem_bijective : Bijective (Membership.mem : Set α → α → Prop) := bijective_id
+
 instance instDistribLattice : DistribLattice (Set α) where
   __ : DistribLattice (α → Prop) := inferInstance
   le := (· ≤ ·)
@@ -120,7 +124,7 @@ alias ⟨_root_.LT.lt.ssubset, _root_.HasSSubset.SSubset.lt⟩ := lt_iff_ssubset
 
 instance PiSetCoe.canLift (ι : Type u) (α : ι → Type v) [∀ i, Nonempty (α i)] (s : Set ι) :
     CanLift (∀ i : s, α i) (∀ i, α i) (fun f i => f i) fun _ => True :=
-  PiSubtype.canLift ι α s
+  PiSubtype.canLift ι α (· ∈ s)
 
 instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι) :
     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
@@ -904,7 +908,7 @@ theorem sep_univ : { x ∈ (univ : Set α) | p x } = { x | p x } :=
 
 @[simp]
 theorem sep_union : { x | (x ∈ s ∨ x ∈ t) ∧ p x } = { x ∈ s | p x } ∪ { x ∈ t | p x } :=
-  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } p
+  union_inter_distrib_right { x | x ∈ s } { x | x ∈ t } {x | p x}
 
 @[simp]
 theorem sep_inter : { x | (x ∈ s ∧ x ∈ t) ∧ p x } = { x ∈ s | p x } ∩ { x ∈ t | p x } :=
@@ -916,7 +920,7 @@ theorem sep_and : { x ∈ s | p x ∧ q x } = { x ∈ s | p x } ∩ { x ∈ s | 
 
 @[simp]
 theorem sep_or : { x ∈ s | p x ∨ q x } = { x ∈ s | p x } ∪ { x ∈ s | q x } :=
-  inter_union_distrib_left s p q
+  inter_union_distrib_left s {x | p x} {x | q x}
 
 @[simp]
 theorem sep_setOf : { x ∈ { y | p y } | q x } = { x | p x ∧ q x } :=
@@ -1053,6 +1057,13 @@ instance decidableInsert [Decidable (a = b)] [Decidable (a ∈ s)] : Decidable (
 instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
 
+/-- `Set α` almost never has decidable equality.
+In fact, for an inhabited type `α`, `Set α` has decidable equality iff
+all propositions are decidable. We add a global instance that `Set α` has decidable equality,
+coming from the choice axiom, so that we don't have to provide `[DecidableEq (Set α)]` arguments
+in lemma statements. -/
+noncomputable instance decidableEq : DecidableEq (Set α) := Classical.typeDecidableEq (Set α)
+
 end Set
 
 variable {α : Type*} {s t u : Set α}
@@ -1063,7 +1074,7 @@ namespace Equiv
   `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
 protected def setSubtypeComm (p : α → Prop) :
     Set {a : α // p a} ≃ {s : Set α // ∀ a ∈ s, p a} where
-  toFun s := ⟨{a | ∃ h : p a, s ⟨a, h⟩}, fun _ h ↦ h.1⟩
+  toFun s := ⟨{a | ∃ h : p a, ⟨a, h⟩ ∈ s}, fun _ h ↦ h.1⟩
   invFun s := {a | a.val ∈ s.val}
   left_inv s := by ext a; exact ⟨fun h ↦ h.2, fun h ↦ ⟨a.property, h⟩⟩
   right_inv s := by ext; exact ⟨fun h ↦ h.2, fun h ↦ ⟨s.property _ h, h⟩⟩

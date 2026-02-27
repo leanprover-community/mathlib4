@@ -471,7 +471,6 @@ lemma infinitePi_singleton [Countable ι] [∀ i, MeasurableSingletonClass (X i)
 lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonClass (X i)]
     (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
   .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
 

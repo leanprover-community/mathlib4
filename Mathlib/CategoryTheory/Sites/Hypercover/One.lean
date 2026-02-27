@@ -588,42 +588,6 @@ def isoMk {E F : J.OneHypercover S} (f : E.toPreOneHypercover ≅ F.toPreOneHype
 
 end Category
 
-section
-
-open Opposite
-variable {C : Type*} [Category* C] {K : GrothendieckTopology C} {P : Cᵒᵖ ⥤ Type*}
-   {S : C} (E : K.OneHypercover S)
-
-lemma isSheafFor_presieve₀ (h : Presieve.IsSheaf K P) : E.presieve₀.IsSheafFor P := by
-  rw [Presieve.isSheafFor_iff_generate]
-  exact h _ E.mem₀
-
-lemma arrowsCompatible (h : Presieve.IsSeparated K P) (x : ∀ i, P.obj (op <| E.X i))
-    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j)) :
-    Presieve.Arrows.Compatible _ E.f x := by
-  rintro i₁ i₂ Z g₁ g₂ heq
-  refine (h _ (E.mem₁ _ _ _ _ heq)).ext fun W f ⟨T, u, h₁, h₂⟩ ↦ ?_
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₁]
-  conv_rhs => rw [← FunctorToTypes.map_comp_apply, ← op_comp, h₂]
-  simp [hc]
-
-/-- Glue sections of a `Type`-valued sheaf over a `1`-hypercover. -/
-noncomputable def amalgamate (h : Presieve.IsSheaf K P) (x : ∀ i, P.obj (op <| E.X i))
-    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j)) :
-    P.obj (op S) :=
-  (E.isSheafFor_presieve₀ h).amalgamate _
-    ((E.arrowsCompatible h.isSeparated x hc).familyOfElements_compatible)
-
-@[simp]
-lemma map_amalgamate (h : Presieve.IsSheaf K P) (x : ∀ i, P.obj (op <| E.X i))
-    (hc : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), P.map (E.p₁ k).op (x i) = P.map (E.p₂ k).op (x j))
-    (i : E.I₀) :
-    P.map (E.f i).op (E.amalgamate h x hc) = x i := by
-  rw [amalgamate, Presieve.IsSheafFor.valid_glue _ _ _ ⟨i⟩]
-  simp
-
-end
-
 end OneHypercover
 
 namespace Cover
@@ -715,5 +679,34 @@ noncomputable def Precoverage.ZeroHypercover.toOneHypercover {J : Precoverage C}
     {S : C} (E : J.ZeroHypercover S) [E.HasPullbacks] :
     (J.toGrothendieck).OneHypercover S :=
   .mk' E.toPreZeroHypercover.toPreOneHypercover (J.generate_mem_toGrothendieck E.mem₀) (by simp)
+
+section
+
+/-- Refine a pre-`0`-hypercover by `0`-hypercovers of the pairwise pullbacks. -/
+@[simps toPreZeroHypercover I₁ Y p₁ p₂]
+noncomputable
+def PreZeroHypercover.refineOneHypercover {X : C} (E : PreZeroHypercover.{w} X) [E.HasPullbacks]
+    (F : ∀ i j, PreZeroHypercover.{w} (pullback (E.f i) (E.f j))) :
+    PreOneHypercover.{w} X where
+  __ := E
+  I₁ i j := (F i j).I₀
+  Y i j k := (F i j).X k
+  p₁ i j k := (F i j).f k ≫ pullback.fst _ _
+  p₂ i j k := (F i j).f k ≫ pullback.snd _ _
+  w i j k := by simp [pullback.condition]
+
+variable {X : C} (E : PreZeroHypercover.{w} X) [E.HasPullbacks]
+  (F : ∀ i j, PreZeroHypercover.{w} (pullback (E.f i) (E.f j)))
+
+instance : (E.refineOneHypercover F).HasPullbacks := ‹_›
+
+@[simp]
+lemma PreZeroHypercover.sieve₁'_refineOneHypercover (i j : E.I₀) :
+    (E.refineOneHypercover F).sieve₁' i j = (F i j).sieve₀ := by
+  rw [PreOneHypercover.sieve₁']
+  congr
+  ext <;> simp [PreOneHypercover.toPullback]
+
+end
 
 end CategoryTheory

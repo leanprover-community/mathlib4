@@ -132,6 +132,17 @@ instance : MorphismProperty.HasOfPostcompProperty @Etale @Etale := by
   intro X Y f hf
   constructor <;> infer_instance
 
+lemma iff_flat_and_formallyUnramified {f : X ⟶ Y} :
+    Etale f ↔ Flat f ∧ FormallyUnramified f ∧ LocallyOfFinitePresentation f := by
+  rw [etale_iff, flat_iff, formallyUnramified_iff, locallyOfFinitePresentation_iff]
+  grind [RingHom.Etale.iff_flat_and_formallyUnramified]
+
+lemma of_formallyUnramified_of_flat [Flat f] [FormallyUnramified f]
+    [LocallyOfFinitePresentation f] :
+    Etale f := by
+  rw [Etale.iff_flat_and_formallyUnramified]
+  exact ⟨inferInstance, inferInstance, inferInstance⟩
+
 end Etale
 
 namespace Scheme

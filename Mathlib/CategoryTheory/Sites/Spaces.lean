@@ -85,7 +85,7 @@ theorem toPretopology_grothendieckTopology :
     exact ⟨V, g₂, hg₂, g₁.le hU⟩
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, hf, hU⟩
-    exact ⟨U, f, Sieve.le_generate R U hf, hU⟩
+    exact ⟨U, f, Sieve.le_generate R U _ hf, hU⟩
 
 @[deprecated (since := "2025-09-19")]
 alias pretopology_ofGrothendieck := toPretopology_grothendieckTopology
