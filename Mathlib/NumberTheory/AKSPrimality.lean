@@ -643,7 +643,7 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
       change μ = (eval₂RingHom (ZMod.castHom hp K)) μ X
       simp
     have hoh : eval (μ ^ n) ((X : K[X]) - C (y : K)) = μ ^ n - y := by
-      rw [eval_sub,eval_X,eval_C]
+      rw [eval_sub, eval_X, eval_C]
     have hoh2 : eval μ ((X : K[X]) - C (y : K)) ^ n = (μ - y) ^ n := by
       congr
       rw [eval_sub, eval_X, eval_C]
