@@ -162,10 +162,8 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
     have (j : ι) (hj : Nonempty (U j)) :
       eqToHom eq' ≫ (leSupr U j).op  = (leSupr (fun (i : ι') ↦ U i) (⟨j, hj⟩ : ι')).op := rfl
     use F.map (eqToHom eq') s
-    constructor
-    · -- Existence
-      intro j
-      by_cases hj : Nonempty (U j)
+    refine ⟨fun j ↦ ?_, fun y hy ↦ ?_⟩
+    · by_cases hj : Nonempty (U j)
       · have a := hs1 ⟨j, hj⟩
         simp only [U', sf'] at a
         rw [← a]
@@ -176,14 +174,9 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
           exact Eq.symm (DFunLike.congr_fun (id (Eq.symm this)) s)
         rw [this j hj]
       · have : U j = ⊥ := by aesop
-        have : Unique (ToType (F.obj (op (U j)))) := by
-          rw [this]
-          exact k
+        have : Unique (ToType (F.obj (op (U j)))) := by rwa [this]
         apply Subsingleton.elim
-    · -- Uniqueness
-      intro y hy
-      specialize hs2 (F.map (eqToHom eq'.symm) y)
-      have : F.IsGluing U' sf' (F.map (eqToHom eq'.symm) y) := by
+    · have : F.IsGluing U' sf' (F.map (eqToHom eq'.symm) y) := by
         intro b
         specialize hy b
         dsimp [sf']
@@ -194,24 +187,15 @@ lemma isSheafUniqueGluing_iff_isSheafUniqueGluingNontrivial_types
           simp only [Functor.map_comp] at this
           exact Eq.symm (DFunLike.congr_fun (id (Eq.symm this)) y)
         rfl
-      specialize hs2 this
-      rw [← hs2]
+      specialize hs2 (F.map (eqToHom eq'.symm) y) this
       aesop
-  · simp_all only [nonempty_subtype, IsCompatible, IsGluing]
-    have : iSup U = ⊥ := by aesop
-    have : Unique (ToType (F.obj (op (iSup U)))) := by
-      rw [this]
-      exact k
-    let s : (F.obj (op (iSup U))) := default
-    use s
-    constructor
-    · intro j
-      have : U j = ⊥ := by aesop
-      have : Unique (ToType (F.obj (op (U j)))) := by
-        rw [this]
-        exact k
-      apply Subsingleton.elim
-    · exact fun _ _ ↦ Subsingleton.elim ..
+  · have : iSup U = ⊥ := by aesop
+    have : Unique (ToType (F.obj (op (iSup U)))) := by rwa [this]
+    use default
+    refine ⟨fun j ↦ ?_, fun _ _ ↦ Subsingleton.elim ..⟩
+    have : U j = ⊥ := by aesop
+    have : Unique (ToType (F.obj (op (U j)))) := by rwa [this]
+    apply Subsingleton.elim
 
 
 /-- The usual sheaf condition can be obtained from the sheaf condition
