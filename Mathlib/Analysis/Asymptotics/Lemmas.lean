@@ -424,6 +424,30 @@ theorem isLittleO_const_id_atTop (c : E'') : (fun _x : ℝ => c) =o[atTop] id :=
 theorem isLittleO_const_id_atBot (c : E'') : (fun _x : ℝ => c) =o[atBot] id :=
   isLittleO_const_left.2 <| Or.inr tendsto_abs_atBot_atTop
 
+/-! ### Relation between `f = o(g)` and `g / f → ∞` -/
+
+section div_tendsto_infty
+
+variable {𝕜 : Type*} [NormedField 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜]
+  {l : Filter α} {f g : α → 𝕜}
+
+theorem IsLittleO.of_tendsto_div_atTop (h : Tendsto (fun x ↦ g x / f x) l atTop) : f =o[l] g := by
+  apply Asymptotics.isLittleO_of_tendsto'
+  · apply (Filter.Tendsto.eventually_ge_atTop h 1).mono
+    intro x h h0
+    simp only [h0, zero_div] at h
+    grind
+  · convert Tendsto.comp tendsto_inv_atTop_zero h
+    simp
+
+theorem IsLittleO.of_tendsto_div_atBot (h : Tendsto (fun x ↦ g x / f x) l atBot) : f =o[l] g := by
+  refine IsLittleO.of_neg_left (IsLittleO.of_tendsto_div_atTop ?_)
+  rw [← tendsto_neg_atBot_iff]
+  convert h using 2
+  simp [div_neg_eq_neg_div]
+
+end div_tendsto_infty
+
 /-! ### Equivalent definitions of the form `∃ φ, u =ᶠ[l] φ * v` in a `NormedField`. -/
 
 section ExistsMulEq
@@ -474,7 +498,7 @@ theorem isLittleO_iff_exists_eq_mul :
   · exact fun h => ⟨fun x => u x / v x, h.tendsto_div_nhds_zero, h.eventually_mul_div_cancel.symm⟩
   · simp only [IsLittleO_def]
     rintro ⟨φ, hφ, huvφ⟩ c hpos
-    rw [NormedAddCommGroup.tendsto_nhds_zero] at hφ
+    rw [NormedAddGroup.tendsto_nhds_zero] at hφ
     exact isBigOWith_of_eq_mul _ ((hφ c hpos).mono fun x => le_of_lt) huvφ
 
 alias ⟨IsLittleO.exists_eq_mul, _⟩ := isLittleO_iff_exists_eq_mul
@@ -512,6 +536,27 @@ theorem IsLittleO.tendsto_zero_of_tendsto {u : α → E'} {v : α → 𝕜} {l :
   suffices h : u =o[l] fun _x => (1 : 𝕜) by
     rwa [isLittleO_one_iff] at h
   exact huv.trans_isBigO (hv.isBigO_one 𝕜)
+
+theorem isBigOWith_of_div_tendsto_nhds {C : ℝ} {a : 𝕜} {f g : α → 𝕜} {l : Filter α}
+    (h : Tendsto (fun x ↦ g x / f x) l (𝓝 a)) (hC : 0 < C) (ha : C⁻¹ < ‖a‖) :
+    IsBigOWith C l f g := by
+  simp only [IsBigOWith]
+  apply (((continuous_norm.tendsto _).comp h).eventually_const_le ha).mono
+  intro x hx
+  simp only [Function.comp_apply, norm_div] at hx
+  by_cases hf : f x = 0
+  · simp [hf] at hx
+    linarith
+  rw [le_div_iff₀ (by positivity)] at hx
+  field_simp at hx
+  exact hx
+
+theorem isBigO_of_div_tendsto_nhds_of_ne_zero {l : Filter α} {f g : α → 𝕜}
+    {a : 𝕜} (h : Tendsto (fun x ↦ g x / f x) l (𝓝 a)) (ha : a ≠ 0) :
+    f =O[l] g := by
+  obtain ⟨C, hC, ha⟩ : ∃ C, 0 < C ∧ C⁻¹ < ‖a‖ := ⟨‖a‖⁻¹ + 1, by positivity, by field_simp; simpa⟩
+  simp only [IsBigO]
+  exact ⟨C, isBigOWith_of_div_tendsto_nhds h hC ha⟩
 
 theorem isLittleO_pow_pow {m n : ℕ} (h : m < n) : (fun x : 𝕜 => x ^ n) =o[𝓝 0] fun x => x ^ m := by
   rcases lt_iff_exists_add.1 h with ⟨p, hp0 : 0 < p, rfl⟩
@@ -674,6 +719,52 @@ lemma isLittleO_mul_iff_isLittleO_div {f g h : α → 𝕜} (hf : ∀ᶠ x in l,
     (fun x ↦ f x * g x) =o[l] h ↔ g =o[l] (fun x ↦ h x / f x) := by
   rw [isLittleO_iff_forall_isBigOWith, isLittleO_iff_forall_isBigOWith]
   simp [isBigOWith_mul_iff_isBigOWith_div hf]
+
+lemma isBigO_nat_atTop_induction {f : ℕ → E''} {g : ℕ → F''}
+    (h : ∀ᶠ n in atTop, g n = 0 → f n = 0)
+    (hrec : ∀ᶠ n₀ in atTop, ∃ C₀, ∀ᶠ n in atTop, ∀ C ≥ C₀,
+      (∀ m ∈ Finset.Ico n₀ n, ‖f m‖ ≤ C * ‖g m‖) → ‖f n‖ ≤ C * ‖g n‖) :
+    f =O[atTop] g := by
+  rw [← eventually_forall_ge_atTop] at h
+  obtain ⟨n₀, h, hrec⟩ := h.and hrec |>.exists
+  obtain ⟨C₀, hrec⟩ := hrec
+  rw [isBigO_iff]
+  rw [← eventually_forall_ge_atTop] at hrec
+  obtain ⟨n₁, H₁, H₂⟩ := (eventually_ge_atTop n₀).and hrec |>.exists
+  let ubounds := {C | ∀ m ∈ Finset.Icc n₀ n₁, ‖f m‖ ≤ C * ‖g m‖}
+  let C₁ := (Finset.Icc n₀ n₁).sup' (Finset.nonempty_Icc.mpr H₁) fun n => ‖f n‖ / ‖g n‖
+  have C₁_mem : C₁ ∈ ubounds := by
+    rw [Set.mem_setOf]
+    intro m hm
+    calc ‖f m‖ = (‖f m‖ / ‖g m‖) * ‖g m‖ := by by_cases hm' : g m = 0 <;> grind [norm_eq_zero]
+      _ ≤ C₁ * ‖g m‖ := by
+        gcongr
+        exact Finset.le_sup' (fun x => ‖f x‖ / ‖g x‖) (Finset.mem_def.mpr hm)
+  refine ⟨max C₀ C₁, ?_⟩
+  filter_upwards [eventually_ge_atTop n₁] with n hn
+  induction n using Nat.strongRecOn with
+  | ind n h_ind =>
+    refine H₂ _ (by grind) _ (by grind) fun m hm => ?_
+    by_cases hbase : m < n₁
+    · have hC₁ : C₁ ≤ max C₀ C₁ := by grind
+      grw [← hC₁]
+      grind
+    · grind
+
+lemma isBigO_nat_atTop_induction_of_eventually_pos {f g : ℕ → ℝ}
+    (hf : ∀ᶠ n in atTop, 0 ≤ f n) (hg : ∀ᶠ n in atTop, 0 < g n)
+    (hrec : ∀ᶠ n₀ in atTop, ∃ C₀, ∀ᶠ n in atTop, ∀ C ≥ C₀,
+      (∀ m ∈ Finset.Ico n₀ n, f m ≤ C * g m) → f n ≤ C * g n) :
+    f =O[atTop] g := by
+  refine isBigO_nat_atTop_induction ?hzero ?hrec
+  case hzero => filter_upwards [hf, hg]; grind
+  case hrec =>
+    filter_upwards [eventually_forall_ge_atTop.mpr hg, eventually_forall_ge_atTop.mpr hf, hrec]
+      with n₀ hn₀ hn₀' hnrec
+    obtain ⟨C₀, hnrec⟩ := hnrec
+    refine ⟨C₀, ?_⟩
+    filter_upwards [hnrec, eventually_ge_atTop n₀]
+    grind [Real.norm_eq_abs]
 
 end Asymptotics
 

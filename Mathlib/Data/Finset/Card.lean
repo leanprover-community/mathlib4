@@ -278,7 +278,7 @@ theorem eq_iff_card_ge_of_superset (hst : s ⊆ t) : #t ≤ #s ↔ t = s :=
   (eq_iff_card_le_of_subset hst).trans eq_comm
 
 theorem subset_iff_eq_of_card_le (h : #t ≤ #s) : s ⊆ t ↔ s = t :=
-  ⟨fun hst => eq_of_subset_of_card_le hst h, Eq.subset'⟩
+  ⟨fun hst => eq_of_subset_of_card_le hst h, Eq.subset⟩
 
 theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
   eq_of_subset_of_card_le hs (card_map _).ge
@@ -395,6 +395,7 @@ lemma card_nbij' (i : α → β) (j : β → α) (hi : Set.MapsTo i s t) (hj : S
     (left_inv : Set.LeftInvOn j i s) (right_inv : Set.RightInvOn j i t) : #s = #t :=
   card_bij' (fun a _ ↦ i a) (fun b _ ↦ j b) hi hj left_inv right_inv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Specialization of `Finset.card_nbij'` that automatically fills in most arguments.
 
 See `Fintype.card_equiv` for the version where `s` and `t` are `univ`. -/
@@ -480,6 +481,7 @@ lemma surjOn_of_injOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hinj :
   have : s.image f ⊆ t := by aesop (add simp Finset.subset_iff)
   exact eq_of_subset_of_card_le this (hst.trans_eq (card_image_of_injOn hinj).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given an injective map `f` defined on a finite set `s` to another finite set `t`, if `t` is no
 larger than `s`, then `f` is surjective to `t` when restricted to `s`.
@@ -509,6 +511,7 @@ lemma injOn_of_surjOn_of_card_le (f : α → β) (hf : Set.MapsTo f s t) (hsurj 
   rw [← card_image_iff]
   lia
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a surjective map `f` defined on a finite set `s` to another finite set `t`, if `s` is no
 larger than `t`, then `f` is injective when restricted to `s`.
@@ -675,9 +678,11 @@ theorem exists_eq_insert_iff [DecidableEq α] {s t : Finset α} :
   · grind
   · rintro ⟨hst, h⟩
     obtain ⟨a, ha⟩ : ∃ a, t \ s = {a} := card_eq_one.mp (by grind)
-    exact
-      ⟨a, fun hs => (by grind : a ∉ {a}) <| mem_singleton_self _, by
-        rw [insert_eq, ← ha, sdiff_union_of_subset hst]⟩
+    grind =>
+      have : a ∈ t \ s
+      have h : insert a s ⊆ t
+      have := eq_of_subset_of_card_le h
+      instantiate
 
 theorem card_le_one : #s ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   obtain rfl | ⟨x, hx⟩ := s.eq_empty_or_nonempty
@@ -720,8 +725,6 @@ theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
-
-@[deprecated (since := "2025-08-14")] alias exists_ne_of_one_lt_card := exists_mem_ne
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
   its projection to some factor is nontrivial, and the fibers of the projection

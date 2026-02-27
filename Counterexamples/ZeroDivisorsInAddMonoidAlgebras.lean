@@ -67,6 +67,7 @@ theorem single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : R[A]) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
 monoid with a non-zero element `a` of finite order `oa`, then `R[A]` contains
 non-zero zero-divisors.  The elements are easy to write down:

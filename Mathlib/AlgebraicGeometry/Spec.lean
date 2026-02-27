@@ -103,6 +103,7 @@ def Spec.sheafedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
         comap f.hom (unop U) ((TopologicalSpace.Opens.map (Spec.topMap f)).obj (unop U)) fun _ => id
       naturality := fun {_ _} _ => by ext; rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
     Spec.sheafedSpaceMap (𝟙 R) = 𝟙 (Spec.sheafedSpaceObj R) := by
@@ -114,6 +115,7 @@ theorem Spec.sheafedSpaceMap_id {R : CommRingCat.{u}} :
     simp
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Spec.sheafedSpaceMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.sheafedSpaceMap (f ≫ g) = Spec.sheafedSpaceMap g ≫ Spec.sheafedSpaceMap f := by
   ext : 1
@@ -158,12 +160,14 @@ theorem Spec.toPresheafedSpace_map_op (R S : CommRingCat.{u}) (f : R ⟶ S) :
     Spec.toPresheafedSpace.map f.op = (Spec.sheafedSpaceMap f).hom :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
     {α β : X ⟶ Spec.sheafedSpaceObj R} (w : α.hom.base = β.hom.base)
     (h : ∀ r : R,
       let U := PrimeSpectrum.basicOpen r
-      (toOpen R U ≫ α.hom.c.app (op U)) ≫ X.presheaf.map (eqToHom (by rw [w])) =
-        toOpen R U ≫ β.hom.c.app (op U)) :
+      ((CommRingCat.ofHom (algebraMap R _)) ≫ α.hom.c.app (op U)) ≫
+        X.presheaf.map (eqToHom (by rw [w])) =
+        CommRingCat.ofHom (algebraMap _ _) ≫ β.hom.c.app (op U)) :
     α = β := by
   ext : 1
   · exact w
@@ -177,11 +181,9 @@ theorem Spec.basicOpen_hom_ext {X : RingedSpace.{u}} {R : CommRingCat.{u}}
 -- if more is needed, add them here
 /-- The spectrum of a commutative ring, as a `LocallyRingedSpace`. -/
 @[simps! toSheafedSpace presheaf]
-def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace :=
-  { Spec.sheafedSpaceObj R with
-    isLocalRing := fun x =>
-      RingEquiv.isLocalRing (A := Localization.AtPrime x.asIdeal)
-        (Iso.commRingCatIsoToRingEquiv <| stalkIso R x).symm }
+def Spec.locallyRingedSpaceObj (R : CommRingCat.{u}) : LocallyRingedSpace where
+  __ := Spec.sheafedSpaceObj R
+  isLocalRing x := (stalkIso R x).toRingEquiv.isLocalRing
 
 lemma Spec.locallyRingedSpaceObj_sheaf (R : CommRingCat.{u}) :
     (Spec.locallyRingedSpaceObj R).sheaf = structureSheaf R := rfl
@@ -204,40 +206,32 @@ lemma Spec.locallyRingedSpaceObj_presheaf_map' (R : Type u) [CommRing R] {U V} (
 theorem stalkMap_toStalk {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
     toStalk R (PrimeSpectrum.comap f.hom p) ≫ (Spec.sheafedSpaceMap f).hom.stalkMap p =
       f ≫ toStalk S p := by
-  rw [← toOpen_germ S ⊤ p trivial, ← toOpen_germ R ⊤ (PrimeSpectrum.comap f.hom p) trivial,
+  rw [← algebraMap_germ ⊤ p trivial, ← algebraMap_germ ⊤ (PrimeSpectrum.comap f.hom p) trivial,
     Category.assoc]
   erw [PresheafedSpace.stalkMap_germ (Spec.sheafedSpaceMap f).hom ⊤ p trivial]
   rw [Spec.sheafedSpaceMap_hom_c_app]
   erw [toOpen_comp_comap_assoc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Under the isomorphisms `stalkIso`, the map `stalkMap (Spec.sheafedSpaceMap f) p` corresponds
 to the induced local ring homomorphism `Localization.localRingHom`.
 -/
 @[elementwise]
 theorem localRingHom_comp_stalkIso {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S) :
-    (stalkIso R (PrimeSpectrum.comap f.hom p)).hom ≫
+    CommRingCat.ofHom (stalkIso R (PrimeSpectrum.comap f.hom p)).symm.toRingHom ≫
       (CommRingCat.ofHom (Localization.localRingHom (PrimeSpectrum.comap f.hom p).asIdeal p.asIdeal
           f.hom rfl)) ≫
-        (stalkIso S p).inv =
+        CommRingCat.ofHom (stalkIso S p).toRingHom =
       (Spec.sheafedSpaceMap f).hom.stalkMap p :=
-  (stalkIso R (PrimeSpectrum.comap f.hom p)).eq_inv_comp.mp <|
-    (stalkIso S p).comp_inv_eq.mpr <| CommRingCat.hom_ext <|
+  (stalkIso R (PrimeSpectrum.comap f.hom p)).toCommRingCatIso.symm.eq_inv_comp.mp <|
+    (stalkIso S p).toCommRingCatIso.symm.comp_inv_eq.mpr <| CommRingCat.hom_ext <|
       Localization.localRingHom_unique _ _ _ (PrimeSpectrum.comap_asIdeal _ _) fun x => by
-        -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644 and https://github.com/leanprover-community/mathlib4/pull/8386
-        rw [stalkIso_hom, stalkIso_inv, CommRingCat.comp_apply, CommRingCat.comp_apply,
-            localizationToStalk_of, stalkMap_toStalk_apply f p x]
-        erw [stalkToFiberRingHom_toStalk]
-        rfl
+  dsimp
+  simp only [AlgEquiv.commutes, RingEquiv.symm_apply_eq, AlgEquiv.coe_ringEquiv]
+  exact stalkMap_toStalk_apply f p x
 
-/-- Version of `localRingHom_comp_stalkIso_apply` using `CommRingCat.Hom.hom` -/
-theorem localRingHom_comp_stalkIso_apply' {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum S)
-    (x) :
-    (stalkIso S p).inv ((Localization.localRingHom (PrimeSpectrum.comap f.hom p).asIdeal p.asIdeal
-          f.hom rfl) ((stalkIso R (PrimeSpectrum.comap f.hom p)).hom x)) =
-      (Spec.sheafedSpaceMap f).hom.stalkMap p x :=
-  localRingHom_comp_stalkIso_apply _ _ _
-
+set_option backward.isDefEq.respectTransparency false in
 /--
 The induced map of a ring homomorphism on the prime spectra, as a morphism of locally ringed spaces.
 -/
@@ -246,16 +240,11 @@ def Spec.locallyRingedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Spec.locallyRingedSpaceObj S ⟶ Spec.locallyRingedSpaceObj R :=
   LocallyRingedSpace.Hom.mk (Spec.sheafedSpaceMap f).hom fun p =>
     IsLocalHom.mk fun a ha => by
-      -- Here, we are showing that the map on prime spectra induced by `f` is really a morphism of
-      -- *locally* ringed spaces, i.e. that the induced map on the stalks is a local ring
-      -- homomorphism.
-      erw [← localRingHom_comp_stalkIso_apply' f p a] at ha
-      have : IsLocalHom (stalkIso (↑S) p).inv.hom := isLocalHom_of_isIso _
-      replace ha := (isUnit_map_iff (stalkIso S p).inv.hom _).mp ha
-      replace ha := IsLocalHom.map_nonunit
-        ((stalkIso R ((PrimeSpectrum.comap f.hom) p)).hom a) ha
-      convert RingHom.isUnit_map (stalkIso R (PrimeSpectrum.comap f.hom p)).inv.hom ha
-      rw [← CommRingCat.comp_apply, Iso.hom_inv_id, CommRingCat.id_apply]
+    rw [← localRingHom_comp_stalkIso] at ha
+    dsimp at ha
+    have : IsLocalHom (stalkIso S p) := isLocalHom_equiv _
+    have : IsLocalHom (stalkIso R (p.comap f.hom)).symm := isLocalHom_equiv _
+    exact ((ha.of_map (stalkIso S p)).of_map _).of_map (stalkIso R (p.comap f.hom)).symm
 
 @[simp]
 theorem Spec.locallyRingedSpaceMap_id (R : CommRingCat.{u}) :
@@ -284,10 +273,10 @@ open AlgebraicGeometry.LocallyRingedSpace
 
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`. -/
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
-  StructureSheaf.toOpen R ⊤
+  CommRingCat.ofHom (algebraMap _ _)
 
-instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
-  cases R; apply StructureSheaf.isIso_to_global
+instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) :=
+  (ConcreteCategory.isIso_iff_bijective _).mpr algebraMap_obj_top_bijective
 
 @[reassoc]
 theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
@@ -295,17 +284,18 @@ theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` failed to pick up one of the three lemmas
   ext : 2
   refine Subtype.ext <| funext fun x' => ?_; symm
+  erw [comap_apply]
   apply Localization.localRingHom_to_map
 
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
 def LocallyRingedSpace.SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=
-  Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1} (fun R =>
-    letI : IsIso (toSpecΓ R) := StructureSheaf.isIso_to_global _
-    asIso (toSpecΓ R)) fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
+  Iso.symm <| NatIso.ofComponents.{u, u, u + 1, u + 1} (fun R ↦ asIso (toSpecΓ R):)
+    fun {X Y} f => by convert Spec_Γ_naturality (R := X) (S := Y) f
 
 end SpecΓ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The stalk map of `Spec M⁻¹R ⟶ Spec R` is an iso for each `p : Spec M⁻¹R`. -/
 theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid R)
     (x : PrimeSpectrum (Localization M)) :
@@ -313,12 +303,14 @@ theorem isIso_SpecMap_stakMap_localization (R : CommRingCat.{u}) (M : Submonoid 
       ((Spec.toPresheafedSpace.map
         (CommRingCat.ofHom (algebraMap R (Localization M))).op).stalkMap x) := by
   dsimp only [Spec.toPresheafedSpace_map, Quiver.Hom.unop_op]
-  rw [← localRingHom_comp_stalkIso]
-  refine IsIso.comp_isIso' inferInstance (IsIso.comp_isIso' ?_ inferInstance)
-  /- I do not know why this is defeq to the goal, but I'm happy to accept that it is. -/
-  change
+  rw [← localRingHom_comp_stalkIso, ConcreteCategory.isIso_iff_bijective]
+  dsimp
+  simp only [EquivLike.bijective_comp]
+  refine (stalkIso (Localization M) x).bijective.comp ?_
+  suffices
     IsIso (IsLocalization.localizationLocalizationAtPrimeIsoLocalization M
-      x.asIdeal).toRingEquiv.toCommRingCatIso.hom
+        x.asIdeal).toRingEquiv.toCommRingCatIso.hom by
+    rwa [ConcreteCategory.isIso_iff_bijective] at this
   infer_instance
 
 @[deprecated (since := "2025-10-11")]
@@ -332,9 +324,10 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S) (p : PrimeSpectrum R)
 This is shown to be the localization at `p` in `isLocalizedModule_toPushforwardStalkAlgHom`.
 -/
 def toPushforwardStalk : S ⟶ (Spec.topMap f _* (structureSheaf S).1).stalk p :=
-  StructureSheaf.toOpen S ⊤ ≫
+  CommRingCat.ofHom (algebraMap _ _) ≫
     @TopCat.Presheaf.germ _ _ _ _ (Spec.topMap f _* (structureSheaf S).1) ⊤ p trivial
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem toPushforwardStalk_comp :
     f ≫ StructureSheaf.toPushforwardStalk f p =
@@ -364,6 +357,7 @@ def toPushforwardStalkAlgHom :
   { (StructureSheaf.toPushforwardStalk (CommRingCat.ofHom (algebraMap R S)) p).hom with
     commutes' := fun _ => rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
     ∃ x : S × p.asIdeal.primeCompl, x.2 • y = toPushforwardStalkAlgHom R S p x.1 := by
   obtain ⟨U, hp, s, e⟩ := TopCat.Presheaf.germ_exist _ _ y
@@ -415,9 +409,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         U.2
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
-    simp only [map_zero] at e
-    have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
-      refine Eq.trans ?_ e; rfl
+    have : algebraMap S ((structureSheaf S).presheaf.obj _) x = 0 := e
     have :=
       (@IsLocalization.mk'_one _ _ _ _ _ _
             (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) x).trans

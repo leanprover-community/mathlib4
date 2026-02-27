@@ -7,6 +7,7 @@ module
 
 public meta import Mathlib.Tactic.TacticAnalysis
 public meta import Lean.Elab.Command
+public meta import Mathlib.Lean.Elab.InfoTree
 public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Util.ParseCommand
@@ -568,3 +569,120 @@ def Mathlib.TacticAnalysis.introMerge : TacticAnalysis.Config := .ofComplex {
       return none
   tell _stx _old _oldHeartbeats new _newHeartbeats := pure <|
     if let some tac := new then m!"Try this: {tac}" else none}
+
+/-- Convert a TryThis suggestion to tactic syntax for verification. -/
+private def parseSuggestionToTactic (s : Lean.Meta.Tactic.TryThis.Suggestion) :
+    CommandElabM (TSyntax `tactic) := do
+  match s.suggestion with
+  | .tsyntax stx =>
+    -- Return the suggestion as-is
+    return ⟨stx.raw⟩
+  | .string str =>
+    match Mathlib.GuardExceptions.parseAsTacticSeq (← getEnv) str with
+    | .ok tacSeq =>
+      `(tactic| ($tacSeq:tacticSeq))
+    | .error err => throwError "Failed to parse suggestion: {str}\n{err}"
+
+/-- Verify that TryThis suggestions from a tactic actually work.
+
+Runs the given tactic at each proof step, captures any "Try this:" suggestions,
+then re-runs the suggested tactic to verify it succeeds.
+Only reports failures (where the suggestion doesn't close the goal). -/
+def Mathlib.TacticAnalysis.verifyTryThisSuggestions
+    (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic))
+    (label : String) : TacticAnalysis.Config where
+  run seq := do
+    let opts ← getOptions
+    let fraction := linter.tacticAnalysis.tryAtEachStep.fraction.get opts
+    for i in seq do
+      if let [goal] := i.tacI.goalsBefore then
+        let goalDecl := i.tacI.mctxBefore.decls.find! goal
+        let goalPP ← i.ctxI.runMetaM goalDecl.lctx do
+          withOptions (·.setBool `pp.mvars.anonymous false) do
+            return toString (← Meta.ppGoal goal)
+        if (hash goalPP) % fraction = 0 then
+          let tac ← tac i.tacI.stx goal
+          -- Save message state to suppress "Try this:" info messages from grind?
+          let savedMessages := (← get).messages
+          -- Run tactic and capture InfoTree
+          let (goalsAfter, trees) ← try
+            i.runTacticCodeCapturingInfoTree goal tac
+          catch _e =>
+            continue  -- Tactic failed, nothing to verify
+          finally
+            -- Restore messages (discard info messages from grind?)
+            modify fun s => { s with messages := savedMessages }
+
+          -- Only verify if tactic succeeded (closed goal)
+          if !goalsAfter.isEmpty then continue
+
+          -- Extract suggestions from InfoTree
+          let suggestions := Elab.collectTryThisSuggestions trees
+          for s in suggestions do
+            -- Parse suggestion to syntax
+            let suggestedTac ← try
+              parseSuggestionToTactic s
+            catch e =>
+              logWarningAt i.tacI.stx m!"`{label}` produced unparseable suggestion: {e.toMessageData}"
+              continue
+
+            -- Skip empty interactive mode suggestions (just `grind => {}` with no body).
+            -- These are intermediate suggestions that aren't meant to be used standalone.
+            -- Syntax structure: grind[0]="grind" [1]=optConfig [2]=only? [3]=params? [4]=(=> grindSeq)?
+            -- When [4].getNumArgs == 2: [4][0]="=>" [4][1]=grindSeq
+            -- grindSeq[0] is grindSeqBracketed: { content }, empty when content.getNumArgs == 0
+            if suggestedTac.raw.getKind == ``Lean.Parser.Tactic.grind then
+              if suggestedTac.raw[4]!.getNumArgs == 2 then
+                if suggestedTac.raw[4]![1]![0]![1]!.getNumArgs == 0 then
+                  continue
+
+            -- Get suggestion as string for analysis
+            let suggPP ← try
+              liftCoreM <| PrettyPrinter.ppTactic suggestedTac
+            catch _ => pure s!"{suggestedTac}"
+            let suggStr := suggPP.pretty
+
+            -- Skip suggestions containing hexcode anchors (e.g., #962a, #8ef1)
+            -- These are proof-context-specific references that aren't valid in a fresh goal
+            let containsHexcode := suggStr.splitOn "#" |>.drop 1 |>.any fun part =>
+              part.length >= 4 && (part.take 4).all fun c => c.isDigit || c ∈ ['a', 'b', 'c', 'd', 'e', 'f']
+            if containsHexcode then
+              continue
+
+            -- Skip suggestions containing `approx` - these are incomplete approximations
+            if suggStr.contains "approx" then
+              continue
+
+            -- Verify suggestion works (suppress any messages from verification)
+            let savedMessages2 := (← get).messages
+            let verifyGoals ← try
+              i.runTacticCode goal suggestedTac
+            catch _e =>
+              pure [goal]  -- Treat exception as failure
+            modify fun s => { s with messages := savedMessages2 }
+
+            if !verifyGoals.isEmpty then
+              logWarningAt i.tacI.stx
+                m!"`{label}` suggestion failed: `{suggPP}` did not close the goal"
+
+/-- Verify that `grind?` suggestions actually work. -/
+register_option linter.tacticAnalysis.verifyGrind : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.verifyGrind,
+   inherit_doc linter.tacticAnalysis.verifyGrind]
+def verifyGrind := verifyTryThisSuggestions
+  (fun _ _ => `(tactic| grind?))
+  "grind?"
+
+/-- Verify that `grind? +suggestions` suggestions actually work. -/
+register_option linter.tacticAnalysis.verifyGrindSuggestions : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.verifyGrindSuggestions,
+   inherit_doc linter.tacticAnalysis.verifyGrindSuggestions]
+def verifyGrindSuggestions := verifyTryThisSuggestions
+  (fun _ _ => `(tactic| grind? +suggestions))
+  "grind? +suggestions"
