@@ -318,6 +318,7 @@ lemma exists_directional_basis [IsZLattice ℝ L] (hsc : Convex ℝ s) (hs : IsC
 variable [MeasurableSpace E] [BorelSpace E] [Countable L] {μ : Measure E} [IsAddHaarMeasure μ]
   {F : Set E}
 
+omit [DiscreteTopology L] in
 /-- The **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E` whose volume
 is large enough compared to the covolume of a lattice `L` of `E`, then it contains a non-zero
 lattice point of `L`. -/
