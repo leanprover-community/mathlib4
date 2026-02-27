@@ -22,6 +22,7 @@ primality testing algorithm.
 
 The goal of this file is to show the existence of a simultaneously general, polynomial-time,
 deterministic and unconditionally correct primality test.
+
 - The primality test is general as it works for any number given, unlike specialized tests
   that work for only a subset of numbers (e.g Mersenne numbers or Fermat numbers).
 - The algorithm runtime complexity is polynomially bounded by the number of digits.
