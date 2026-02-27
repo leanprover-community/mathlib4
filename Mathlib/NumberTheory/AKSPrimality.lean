@@ -73,7 +73,7 @@ theorem introspective_one {f : K[X]} : introspective f 1 r := by
   grind [introspective]
 
 theorem introspective_p {p a : ℕ} [Fact p.Prime] [ExpChar K p] :
-    introspective (X - C (a:K)) p r := by
+    introspective (X - C (a : K)) p r := by
   intro μ hμ
   simp only [eval_sub, eval_X, eval_C]
   change (frobenius K p) μ - _ = (frobenius K p) (μ - a)
@@ -112,7 +112,7 @@ theorem introspective_mul_of_coprime {d e : ℕ} {f : K[X]} (hf : introspective 
     (hg : introspective f d r) (h : e.Coprime r) : introspective f (e * d) r := by
   intro μ hm
   have mu : μ ^ e ∈ primitiveRoots r K := by
-    have hl : 0 < r := Nat.pos_of_neZero r
+    have hl : 0 < r := pos_of_neZero r
     simp only [mem_primitiveRoots hl] at ⊢ hm
     exact IsPrimitiveRoot.pow_of_coprime hm e h
   rw [pow_mul, hg (μ ^ e) mu, hf μ hm]
@@ -120,9 +120,9 @@ theorem introspective_mul_of_coprime {d e : ℕ} {f : K[X]} (hf : introspective 
 
 /-- Necessary condition for the auxilliary proof. -/
 theorem introspective_of_multiset {p n b : ℕ} [Fact p.Prime] [ExpChar K p] (d e : ℕ)
-    (s : Multiset (Fin b)) (hs : ∀ x : (Fin b), introspective (ofMultiset {(x.val : K)}) n r)
-    (hcprm: n.Coprime r) (hdiv : p ∣ n) :
-    (introspective (ofMultiset (s.map (fun x => (x.val : K)))) (p ^ d * (n / p) ^ e) r) := by
+    (s : Multiset (Fin b)) (hs : ∀ x : Fin b, introspective (ofMultiset {(x.val : K)}) n r)
+    (hcprm : n.Coprime r) (hdiv : p ∣ n) :
+    (introspective (ofMultiset (s.map fun x => (x.val : K))) (p ^ d * (n / p) ^ e) r) := by
   simp only [ofMultiset_apply]
   have hcprm2 := Coprime.coprime_mul_right (Eq.symm (Nat.mul_div_cancel' hdiv) ▸ hcprm)
   induction s using Multiset.induction_on with
@@ -159,7 +159,7 @@ structure Conditions (r p n a q : ℕ) (μ : K) [Fact p.Prime] [ExpChar K p]
     [CharP K p] [NeZero r] where
   n_coprime_r : n.Coprime r
   n_ge_3 : 3 ≤ n
-  a_def : a = floor ((√ (φ r)) * (Real.logb 2 n))
+  a_def : a = ⌊(√(φ r) * (Real.logb 2 n))⌋₊
   nlogb_lt_od : (Real.logb 2 n) ^ 2 < orderOf (n : (ZMod r))
   icc_coprime: ∀ y ∈ Icc 1 a, n.Coprime y
   icc_introspective: ∀ y : Icc 0 a, introspective ((X : K[X]) - C (y : K)) n r
@@ -185,7 +185,7 @@ def se2 (h : Conditions r p n a q μ) := (Nat.cast (R := ZMod r)) '' se1 h
 
 /-- Set used in the AKS proof, subset of `se1` -/
 def se3 (h : Conditions r p n a q μ) :=
-  f h '' Set.Icc 0 (floor √ (se2 h).ncard) ×ˢ Set.Icc 0 (floor √ (se2 h).ncard)
+  f h '' Set.Icc 0 ⌊√(se2 h).ncard⌋₊ ×ˢ Set.Icc 0 ⌊√(se2 h).ncard⌋₊
 
 theorem se3_subset_se1 (h : Conditions r p n a q μ) : (se3 h) ⊆ (se1 h) := by
   grind [se3, se1]
@@ -193,10 +193,10 @@ theorem se3_subset_se1 (h : Conditions r p n a q μ) : (se3 h) ⊆ (se1 h) := by
 
 /-- Function used in the AKS proof. -/
 noncomputable def sp1 (_ : Conditions r p n a q μ) :=
-  fun (s: Multiset (Fin (a + 1))) => (ofMultiset (s.map (fun x => (x.val : K))))
+  fun s : Multiset (Fin (a + 1)) ↦ ofMultiset (s.map (fun x => (x.val : K)))
 
 /-- Set used in the AKS proof. -/
-def sp2 (h : Conditions r p n a q μ) := (sp1 h '' Set.univ).image (fun g => eval μ g)
+def sp2 (h : Conditions r p n a q μ) := (sp1 h '' Set.univ).image (eval μ ·)
 
 
 theorem se2_ncard_ne_zero (h : Conditions r p n a q μ) : (se2 h).ncard ≠ 0 := by
@@ -210,7 +210,7 @@ theorem se2_ncard_ne_zero (h : Conditions r p n a q μ) : (se2 h).ncard ≠ 0 :=
 
 /-- All relevant exponents and polynomials are introspective. -/
 theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a q μ) :
-    ∀ e ∈ (se1 h), ∀ f ∈ ((sp1 h) '' Set.univ), introspective f e r := by
+    ∀ e ∈ se1 h, ∀ f ∈ sp1 h '' Set.univ, introspective f e r := by
   have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
     icc_coprime , icc_introspective , is_primitive_root , p_prime ,
     q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := h
@@ -229,7 +229,7 @@ theorem forall_in_se1_in_image_sp1_introspective (h : Conditions r p n a q μ) :
   exact heq
 
 theorem se2_subset_units (h : Conditions r p n a q μ) :
-    (se2 h) ⊆ (fun (x : (ZMod r)ˣ) => x.val) '' Set.univ := by
+    (se2 h) ⊆ (fun x : (ZMod r)ˣ ↦ x.val) '' Set.univ := by
   have ⟨ n_coprime_r , n_ge_3 , a_def , nlogb_lt_od ,
     icc_coprime , icc_introspective , is_primitive_root , p_prime ,
     q_prime , p_dvd_n , q_dvd_n , p_ne_q ⟩ := h
@@ -243,7 +243,7 @@ theorem se2_subset_units (h : Conditions r p n a q μ) :
     obtain ⟨ a , b , hx ⟩ := hx
     norm_cast at hx
     rw [← hx, ZMod.val_natCast, ZMod.coprime_mod_iff_coprime]
-    refine Nat.Coprime.mul_left ?_ ?_
+    refine Coprime.mul_left ?_ ?_
     · exact Coprime.pow_left _ (Coprime.of_dvd_left p_dvd_n n_coprime_r)
     · exact Coprime.pow_left _ (Coprime.of_dvd_left (div_dvd_of_dvd p_dvd_n) n_coprime_r)
   exact ⟨ hu.unit, rfl ⟩
@@ -263,16 +263,16 @@ theorem injective_f (h : Conditions r p n a q μ) : (f h).Injective := by
   have hne0_2 : (n / p) ^ d₂ ≠ 0 := by grind [pow_ne_zero]
   have hne0_3 : p ^ e₁ ≠ 0 := by grind [pow_ne_zero]
   have hne0_4 : (n / p) ^ e₂ ≠ 0 := by grind [pow_ne_zero]
-  have nd : ¬ q ∣ p := fun x => p_ne_q.symm <| (Nat.prime_dvd_prime_iff_eq q_prime p_prime).mp x
-  have _ : p.factorization p ≠ 0 := by grind [Nat.Prime.factorization_self]
+  have nd : ¬ q ∣ p := fun x => p_ne_q.symm <| (prime_dvd_prime_iff_eq q_prime p_prime).mp x
+  have _ : p.factorization p ≠ 0 := by grind [Prime.factorization_self]
   have _ : (n / p).factorization q ≠ 0 := by
     simp only [ne_eq, factorization_eq_zero_iff, Nat.div_eq_zero_iff, not_or, Decidable.not_not,
       not_lt]
     refine ⟨ q_prime , ⟨  ?_ , ⟨ Nat.Prime.ne_zero p_prime , le_of_dvd hn p_dvd_n ⟩ ⟩ ⟩
-    apply Nat.dvd_div_of_mul_dvd
+    apply dvd_div_of_mul_dvd
     exact Prime.dvd_mul_of_dvd_ne p_ne_q p_prime q_prime p_dvd_n q_dvd_n
-  have hf := (congrArg factorization heq)
-  rw [Nat.factorization_mul hne0_1 hne0_2, Nat.factorization_mul hne0_3 hne0_4] at hf
+  have hf := congrArg factorization heq
+  rw [factorization_mul hne0_1 hne0_2, factorization_mul hne0_3 hne0_4] at hf
   by_cases hc : d₂ = e₂ ∧ d₁ ≠ e₁
   · rw [hc.1, add_left_inj] at hf
     replace hp := DFunLike.congr_fun hf p
@@ -298,22 +298,22 @@ theorem injective_sp1 (h : Conditions r p n a q μ) : (sp1 h).Injective := by
   intro x y heq
   have hi := ofMultiset_injective (R := K) heq
   contrapose! hi
-  suffices (fun (x : Fin (a + 1)) => (x.val : K)).Injective by grind [Multiset.map_injective]
+  suffices (fun x : Fin (a + 1) => (x.val : K)).Injective by grind [Multiset.map_injective]
   intro x2 y2 hxy
   have hm (z : Fin (a + 1)) : z.val ∈ Set.Iio p := by
     obtain ⟨ z, hz ⟩ := z
     simp only [Set.mem_Iio]
     by_contra! hcon
-    exact @Nat.not_coprime_of_dvd_of_dvd p n p (Prime.one_lt p_prime)
-      ((ModEq.dvd_iff rfl p_dvd_n).mp p_dvd_n) (Nat.dvd_refl p) (icc_coprime p (by grind))
+    exact @not_coprime_of_dvd_of_dvd p n p (Prime.one_lt p_prime)
+      ((ModEq.dvd_iff rfl p_dvd_n).mp p_dvd_n) (dvd_refl p) (icc_coprime p (by grind))
   grind [(CharP.natCast_injOn_Iio K p) (hm x2) (hm y2)]
 
 theorem sp2_lt_sp3 (h : Conditions r p n a q μ) : (se2 h).ncard < (se3 h).ncard := by
   unfold se3
-  rw [Set.ncard_image_of_injective _ (injective_f h), Set.ncard_prod,
-    ← sq, Set.ncard_Icc_nat, Nat.sub_zero]
+  rw [Set.ncard_image_of_injective _ (injective_f h), Set.ncard_prod, ← sq,
+    Set.ncard_Icc_nat, Nat.sub_zero]
   rify
-  have hs : (se2 h).ncard = (√ (se2 h).ncard) ^ 2 := by grind [Real.sq_sqrt, cast_nonneg']
+  have hs : (se2 h).ncard = √(se2 h).ncard ^ 2 := by grind [Real.sq_sqrt, cast_nonneg']
   rw [hs, sq_lt_sq]
   simp only [cast_nonneg', Real.sq_sqrt, Real.nat_floor_real_sqrt_eq_nat_sqrt]
   rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
@@ -333,7 +333,7 @@ theorem se3_le {h : Conditions r p n a q μ} {x : ℕ} (hx : x ∈ (se3 h)) :
   have hppos := (Nat.ne_zero_iff_zero_lt.mp (Nat.Prime.ne_zero p_prime))
   have hnppos : 0 < (n / p)  := by grind [Nat.div_ne_zero_iff, Nat.le_of_dvd hn p_dvd_n]
   calc
-    _ ≤ p ^ ⌊√↑(se2 h).ncard⌋₊ * (n/ p) ^ ⌊√↑(se2 h).ncard⌋₊ :=
+    _ ≤ p ^ ⌊√↑(se2 h).ncard⌋₊ * (n / p) ^ ⌊√↑(se2 h).ncard⌋₊ :=
       Nat.mul_le_mul (Nat.pow_le_pow_right hppos ha) (Nat.pow_le_pow_right hnppos hb)
     _ = _ := by rw [← mul_pow, Nat.mul_div_eq_iff_dvd.mpr p_dvd_n]
 
@@ -462,13 +462,13 @@ theorem claim6 (h : Conditions r p n a q μ) :
   have key1 : ∀ i ∈ Set.Icc 0 ((se2 h).ncard - 1),
       ((fun y ↦ {x : Multiset (Fin (a+1)) | x.card = y}) i).Finite := by
     intro z _
-    exact Finite.of_equiv (Sym (Fin (a+1)) z) (Equiv.cast rfl)
+    exact Finite.of_equiv (Sym (Fin (a + 1)) z) (Equiv.cast rfl)
   have key2 : (Set.Icc 0 ((se2 h).ncard - 1)).PairwiseDisjoint
       fun y ↦ {x : Multiset (Fin (a+1)) | x.card = y} := by
     intro x hx y hy hne
     grind
   have key := Set.Finite.ncard_biUnion
-      (s:= (fun (y : ℕ) => {x: Multiset (Fin (a+1)) | x.card = y} )) hsiccf key1 key2
+      (s:= (fun y : ℕ ↦ {x : Multiset (Fin (a+1)) | x.card = y})) hsiccf key1 key2
   symm
   revert key
   refine (Eq.congr ?_ ?_).mp
