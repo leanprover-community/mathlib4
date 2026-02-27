@@ -700,10 +700,89 @@ jobs:
           azure-client-id: ${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}
           azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
 
+      - name: Debug Azure cache token metadata (safe)
+        shell: bash
+        run: |
+          TOKEN="$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW"
+          TOKEN_LENGTH=${#TOKEN}
+          WHITESPACE_CHARS="$(printf '%s' "$TOKEN" | tr -d -c '[:space:]' | wc -c | tr -d ' ')"
+          JWT_SEGMENTS="$(printf '%s' "$TOKEN" | awk -F'.' '{print NF}')"
+          echo "token_length=$TOKEN_LENGTH"
+          echo "token_whitespace_chars=$WHITESPACE_CHARS"
+          echo "token_jwt_segments=$JWT_SEGMENTS"
+
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+
+          def decode_b64url(raw: str) -> bytes:
+              padded = raw + "=" * ((4 - len(raw) % 4) % 4)
+              return base64.urlsafe_b64decode(padded.encode("ascii"))
+
+          token = os.environ.get("MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW", "")
+          parts = token.split(".")
+          if len(parts) != 3:
+              print("jwt_parse=invalid_segment_count")
+              raise SystemExit(0)
+
+          try:
+              header = json.loads(decode_b64url(parts[0]).decode("utf-8"))
+              payload = json.loads(decode_b64url(parts[1]).decode("utf-8"))
+          except Exception as exc:
+              print(f"jwt_parse_error={type(exc).__name__}")
+              raise SystemExit(0)
+
+          aud = payload.get("aud", "")
+          if isinstance(aud, list):
+              aud = ",".join(str(x) for x in aud)
+
+          print(f"jwt_alg={header.get('alg', '')}")
+          print(f"jwt_typ={header.get('typ', '')}")
+          print(f"jwt_aud={aud}")
+          print(f"jwt_iss={payload.get('iss', '')}")
+          print(f"jwt_tid={payload.get('tid', '')}")
+          print(f"jwt_exp={payload.get('exp', '')}")
+          print(f"jwt_nbf={payload.get('nbf', '')}")
+          print(f"jwt_iat={payload.get('iat', '')}")
+          print(f"jwt_has_oid={int('oid' in payload)}")
+          print(f"jwt_has_sub={int('sub' in payload)}")
+          print(f"jwt_has_appid={int('appid' in payload)}")
+          print(f"jwt_has_xms_mirid={int('xms_mirid' in payload)}")
+          PY
+        env:
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
+
+      - name: Probe Azure Blob auth response headers (safe)
+        shell: bash
+        run: |
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN="$(printf '%s' "$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW" | tr -d '[:space:]')"
+          export MATHLIB_CACHE_AZURE_BEARER_TOKEN
+
+          PROBE_URL="https://lakecache.blob.core.windows.net/mathlib4?restype=container&comp=metadata"
+          HEADER_FILE="$RUNNER_TEMP/cache-auth-probe-headers.txt"
+
+          HTTP_CODE="$(
+            curl --silent --show-error \
+              --output /dev/null \
+              --dump-header "$HEADER_FILE" \
+              --write-out "%{http_code}" \
+              -H "Authorization: Bearer ${MATHLIB_CACHE_AZURE_BEARER_TOKEN}" \
+              -H "x-ms-version: 2026-02-06" \
+              "$PROBE_URL"
+          )"
+
+          echo "probe_http_code=$HTTP_CODE"
+          echo "probe_selected_headers_begin"
+          grep -i -E '^(www-authenticate|x-ms-error-code|x-ms-request-id|date):' "$HEADER_FILE" || true
+          echo "probe_selected_headers_end"
+        env:
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
+
       - name: Upload staged cache to Azure
         shell: bash
         run: |
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN="$(printf '%s' "$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW" | tr -d '\r\n')"
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN="$(printf '%s' "$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW" | tr -d '[:space:]')"
           export MATHLIB_CACHE_AZURE_BEARER_TOKEN
 
           echo "Uploading cache to Azure..."
