@@ -574,12 +574,11 @@ def putFilesAbsolute
           #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
       | .azureBearer token =>
         if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
-            s!"Authorization: Bearer {token}"]
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
+            "--oauth2-bearer", token]
         else
           #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-            azureBearerApiVersionHeader, "-H",
-            s!"Authorization: Bearer {token}"]
+            azureBearerApiVersionHeader, "--oauth2-bearer", token]
     let args := args ++ #[
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
@@ -671,9 +670,9 @@ def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (auth : UploadAuth) :
   | .azureBearer token =>
     let params := if overwrite
       then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
-        "-H", s!"Authorization: Bearer {token}"]
+        "--oauth2-bearer", token]
       else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-        azureBearerApiVersionHeader, "-H", s!"Authorization: Bearer {token}"]
+        azureBearerApiVersionHeader, "--oauth2-bearer", token]
     discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}"]
   IO.FS.removeFile path
 

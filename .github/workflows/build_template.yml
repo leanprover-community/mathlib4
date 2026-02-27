@@ -767,7 +767,7 @@ jobs:
               --output /dev/null \
               --dump-header "$HEADER_FILE" \
               --write-out "%{http_code}" \
-              -H "Authorization: Bearer ${MATHLIB_CACHE_AZURE_BEARER_TOKEN}" \
+              --oauth2-bearer "${MATHLIB_CACHE_AZURE_BEARER_TOKEN}" \
               -H "x-ms-version: 2026-02-06" \
               "$PROBE_URL"
           )"
