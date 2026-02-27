@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 open CategoryTheory Mathlib.Tactic BicategoryLike

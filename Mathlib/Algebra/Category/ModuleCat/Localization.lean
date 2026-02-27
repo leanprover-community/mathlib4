@@ -57,6 +57,7 @@ noncomputable def localizedModuleMkLinearMap [Small.{v} R] (M : ModuleCat.{v} R)
     (S : Submonoid R) : M →ₗ[R] (M.localizedModule S) :=
   (Shrink.linearEquiv.{v} R _).symm.toLinearMap.comp (LocalizedModule.mkLinearMap S M)
 
+set_option backward.isDefEq.respectTransparency false in
 instance localizedModule_isLocalizedModule [Small.{v} R] (M : ModuleCat.{v} R)
     (S : Submonoid R) : IsLocalizedModule S (M.localizedModuleMkLinearMap S) := by
   dsimp only [localizedModuleMkLinearMap]

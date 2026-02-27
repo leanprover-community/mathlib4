@@ -34,6 +34,7 @@ theorem TietzeExtension.of_tvs (𝕜 : Type v) [NontriviallyNormedField 𝕜] {E
     [TietzeExtension.{u, v} 𝕜] : TietzeExtension.{u, w} E :=
   Module.Basis.ofVectorSpace 𝕜 E |>.equivFun.toContinuousLinearEquiv.toHomeomorph |> .of_homeo
 
+set_option backward.isDefEq.respectTransparency false in
 instance Complex.instTietzeExtension : TietzeExtension ℂ :=
   TietzeExtension.of_tvs ℝ
 

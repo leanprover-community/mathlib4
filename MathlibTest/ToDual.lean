@@ -141,7 +141,7 @@ theorem le_refl': ∀ a : α, a ≤ a := by
 /--
 info: fun {α} [PartialOrder α] a b c h₁ h₂ => lt_le_trans._proof_1_1 a b c h₁ h₂
 ---
-info: fun {α} [PartialOrder α] => of_eq_true (Eq.trans (forall_congr fun a => le_refl._simp_1 a) (implies_true α))
+info: fun {α} [PartialOrder α] => of_eq_true (Eq.trans (forall_congr fun a => Std.le_refl._simp_1 a) (implies_true α))
 -/
 #guard_msgs in
 run_meta
