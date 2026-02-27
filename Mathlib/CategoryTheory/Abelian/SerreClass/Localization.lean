@@ -1,13 +1,13 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
 public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
@@ -40,7 +40,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 
 lemma exists_epiModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (X' : C) (s : X' ⟶ X) (_ : P.epiModSerre s), s ≫ f = 0) ↔
-        P (Abelian.image f) := by
+      P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
   · rintro ⟨X', s, hs, eq⟩
     have := P.epiModSerre.comp_mem s (Abelian.factorThruImage f) hs
@@ -51,7 +51,7 @@ lemma exists_epiModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
 
 lemma exists_isoModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (X' : C) (s : X' ⟶ X) (_ : P.isoModSerre s), s ≫ f = 0) ↔
-        P (Abelian.image f) := by
+      P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
   · rintro ⟨Y', s, hs, eq⟩
     rw [← exists_epiModSerre_comp_eq_zero_iff P]
@@ -62,7 +62,7 @@ lemma exists_isoModSerre_comp_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
 
 lemma exists_comp_monoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (Y' : C) (s : Y ⟶ Y') (_ : P.monoModSerre s), f ≫ s = 0) ↔
-        P (Abelian.image f) := by
+      P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
   · rintro ⟨Y', s, hs, eq⟩
     apply P.prop_of_iso (Abelian.coimageIsoImage f)
@@ -74,7 +74,7 @@ lemma exists_comp_monoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
 
 lemma exists_comp_isoModSerre_eq_zero_iff {X Y : C} (f : X ⟶ Y) :
     (∃ (Y' : C) (s : Y ⟶ Y') (_ : P.isoModSerre s), f ≫ s = 0) ↔
-        P (Abelian.image f) := by
+      P (Abelian.image f) := by
   refine ⟨?_, fun hf ↦ ?_⟩
   · rintro ⟨Y', s, hs, eq⟩
     rw [← exists_comp_monoModSerre_eq_zero_iff P]
@@ -124,6 +124,7 @@ instance : P.isoModSerre.HasRightCalculusOfFractions where
     · simpa only [Preadditive.comp_sub, sub_eq_zero] using kernel.condition (f₁ - f₂)
 
 noncomputable example : Preadditive P.isoModSerre.Localization := inferInstance
+noncomputable example : P.isoModSerre.Q.Additive := inferInstance
 
 variable [L.IsLocalization P.isoModSerre] [Preadditive D] [L.Additive]
 

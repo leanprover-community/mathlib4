@@ -14,7 +14,8 @@ permissions:
 jobs:
   update_ci_emoji:
     runs-on: ubuntu-latest
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4' ||
+        github.repository == 'leanprover-community/mathlib4-nightly-testing'
     steps:
     - name: Determine PR number
       id: pr
@@ -75,7 +76,7 @@ jobs:
       if: steps.pr.outputs.skip != 'true' && steps.action.outputs.ci_action != 'skip'
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        ref: master
+        ref: ${{ github.event.repository.default_branch }}
         sparse-checkout: |
           scripts/zulip_emoji_reactions.py
 

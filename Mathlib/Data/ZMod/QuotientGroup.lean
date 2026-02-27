@@ -197,4 +197,16 @@ lemma quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
   rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
     zpow_smul_mod_minimalPeriod]
 
+/-- The sum of minimal periods over all orbits equals the index `[G:H]`. -/
+lemma index_eq_sum_minimalPeriod (g : G) [Finite (G ⧸ H)]
+    [Fintype (Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)))] :
+    H.index = ∑ q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H)),
+      Function.minimalPeriod (g • ·) q.out := by
+  have : Fintype (G ⧸ H) := Fintype.ofFinite _
+  have (q : Quotient (MulAction.orbitRel (zpowers g) (G ⧸ H))) :
+      Fintype (MulAction.orbit (zpowers g) q.out) := Fintype.ofFinite _
+  simp only [MulAction.minimalPeriod_eq_card, index_eq_card, Nat.card_eq_fintype_card]
+  rw [← Fintype.card_sigma]
+  exact Fintype.card_congr (MulAction.selfEquivSigmaOrbits (zpowers g) (G ⧸ H))
+
 end Subgroup

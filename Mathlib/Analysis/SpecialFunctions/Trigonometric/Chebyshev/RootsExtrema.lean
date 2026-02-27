@@ -205,7 +205,6 @@ theorem rootMultiplicity_U_real {n k : ℕ} (hk : k < n) :
   rw [← count_roots, roots_U_real, Multiset.count_eq_one_of_mem (by simp)]
   grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k < n) (hk₂ : Even k) :
     IsLocalMax (T ℝ n).eval (cos (k * π / n)) := by
   have zero_lt : 0 < k * π / n := by positivity
@@ -222,7 +221,6 @@ theorem isLocalMax_T_real {n k : ℕ} (hn : n ≠ 0) (hk₀ : 0 < k) (hk₁ : k 
   · rw [← cos_zero]
     exact cos_lt_cos_of_nonneg_of_le_pi (le_refl 0) (le_of_lt lt_pi) zero_lt
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isLocalMin_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k < n) (hk₂ : Odd k) :
     IsLocalMin (T ℝ n).eval (cos (k * π / n)) := by
   have k_pos : 0 < k := hk₂.pos
@@ -256,7 +254,7 @@ theorem isLocalExtr_T_real_iff {n : ℕ} (hn : 2 ≤ n) (x : ℝ) :
     replace hx : x ∈ (U ℝ (n - 1)).roots :=
       (mem_roots (degree_ne_bot.mp (ne_of_eq_of_ne (by grind [degree_U_natCast])
         (WithBot.natCast_ne_bot (n - 1))))).mpr hx
-    rw [show (n - 1 : ℤ) = (n - 1 : ℕ) by grind, roots_U_real] at hx
+    rw [show (n - 1 : ℤ) = (n - 1 : ℕ) by grind, roots_U_real, Finset.mem_val] at hx
     obtain ⟨k, hk₁, hx⟩ := Finset.mem_image.mp hx
     refine ⟨k + 1, Finset.mem_Ioo.mpr ⟨k.zero_lt_succ, by grind⟩, ?_⟩
     rw [← hx]
@@ -307,7 +305,7 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
 
 theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoot x) (hnz : x ≠ 0) :
     Irrational x := by
-  rw [← mem_roots (T_ne_zero ℝ n), roots_T_real] at hroot
+  rw [← mem_roots (T_ne_zero ℝ n), roots_T_real, Finset.mem_val] at hroot
   obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hroot
   have hn : n ≠ 0 := by grind
   suffices Irrational (cos ((Rat.divInt (2 * k + 1) (2 * n)) * π)) by
