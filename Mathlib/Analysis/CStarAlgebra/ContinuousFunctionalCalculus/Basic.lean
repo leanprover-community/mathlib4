@@ -407,7 +407,6 @@ def CStarAlgebra.spectralOrder : PartialOrder A where
       quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ] at hxy hyz ⊢
     exact ⟨by simpa using hyz.1.add hxy.1, by simpa using hyz.2.nnreal_add hyz.1 hxy.1 hxy.2⟩
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The `CStarAlgebra.spectralOrder` on a C⋆-algebra is a `StarOrderedRing`. -/
