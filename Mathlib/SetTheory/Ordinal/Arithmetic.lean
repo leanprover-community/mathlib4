@@ -70,10 +70,12 @@ theorem lift_add (a b : Ordinal.{v}) : lift.{u} (a + b) = lift.{u} a + lift.{u} 
       ⟨(RelIso.preimage Equiv.ulift _).trans
           (RelIso.sumLexCongr (RelIso.preimage Equiv.ulift _) (RelIso.preimage Equiv.ulift _)).symm⟩
 
-@[simp]
-theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := by
-  rw [← add_one_eq_succ, lift_add, lift_one]
-  rfl
+theorem lift_add_one (a : Ordinal.{v}) : lift.{u} (a + 1) = lift.{u} a + 1 := by
+  simp
+
+-- TODO: deprecate
+theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) :=
+  lift_add_one a
 
 instance instAddLeftReflectLE :
     AddLeftReflectLE Ordinal.{u} where
@@ -263,8 +265,12 @@ def pred (o : Ordinal) : Ordinal :=
   isSuccPrelimitRecOn o (fun a _ ↦ a) (fun a _ ↦ a)
 
 @[simp]
-theorem pred_succ (o) : pred (succ o) = o :=
+theorem pred_add_one (o) : pred (o + 1) = o :=
   isSuccPrelimitRecOn_succ ..
+
+-- TODO: deprecate
+theorem pred_succ (o) : pred (succ o) = o :=
+  pred_add_one o
 
 theorem pred_eq_of_isSuccPrelimit {o} : IsSuccPrelimit o → pred o = o :=
   isSuccPrelimitRecOn_of_isSuccPrelimit _ _
@@ -289,7 +295,7 @@ theorem lt_pred_iff_succ_lt {a b} : a < pred b ↔ succ a < b :=
   le_iff_le_iff_lt_iff_lt.1 pred_le_iff_le_succ
 
 theorem pred_le_self (o) : pred o ≤ o := by
-  simpa using le_succ o
+  simp
 
 /-- `Ordinal.pred` and `Order.succ` form a Galois insertion. -/
 def pred_succ_gi : GaloisInsertion pred succ :=
@@ -303,7 +309,7 @@ theorem self_le_succ_pred (o) : o ≤ succ (pred o) :=
 
 theorem pred_eq_iff_isSuccPrelimit {o} : pred o = o ↔ IsSuccPrelimit o := by
   obtain ⟨a, rfl⟩ | ho := mem_range_succ_or_isSuccPrelimit o
-  · simpa using (lt_succ a).ne
+  · simp
   · simp_rw [ho.ordinalPred_eq, ho]
 
 theorem pred_lt_iff_not_isSuccPrelimit {o} : pred o < o ↔ ¬ IsSuccPrelimit o := by
@@ -517,7 +523,8 @@ theorem isNormal_add_right (a : Ordinal) : IsNormal (a + ·) := by
 theorem isSuccLimit_add (a : Ordinal) {b : Ordinal} : IsSuccLimit b → IsSuccLimit (a + b) :=
   (isNormal_add_right a).map_isSuccLimit
 
-theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccLimit a) (h : b < a) : IsSuccLimit (a - b) := by
+theorem isSuccLimit_sub {a b : Ordinal} (ha : IsSuccPrelimit a) (h : b < a) :
+    IsSuccLimit (a - b) := by
   rw [isSuccLimit_iff, Ordinal.sub_ne_zero_iff_lt, isSuccPrelimit_iff_succ_lt]
   refine ⟨h, fun c hc ↦ ?_⟩
   rw [lt_sub] at hc ⊢
@@ -683,7 +690,7 @@ theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
 
 theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
   refine .of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
-  · simpa [mul_succ] using (add_lt_add_iff_left (a * b)).2 h
+  · simpa [mul_add_one] using (add_lt_add_iff_left (a * b)).2 h
   · simpa [IsLUB, IsLeast, upperBounds, lowerBounds, mul_le_iff_of_isSuccLimit hb] using
       fun c hc ↦ mul_le_mul_right hc.le a
 
@@ -722,8 +729,18 @@ theorem le_of_mul_le_mul_left {a b c : Ordinal} (h : c * a ≤ c * b) (h0 : 0 < 
 theorem mul_right_inj {a b c : Ordinal} (a0 : 0 < a) : a * b = a * c ↔ b = c :=
   mul_left_cancel_iff_of_pos a0
 
-theorem isSuccLimit_mul {a b : Ordinal} (a0 : 0 < a) : IsSuccLimit b → IsSuccLimit (a * b) :=
-  (isNormal_mul_right a0).map_isSuccLimit
+theorem isSuccLimit_mul_right {a b : Ordinal} (a0 : 0 < a) (l : IsSuccLimit b) :
+    IsSuccLimit (a * b) :=
+  (isNormal_mul_right a0).map_isSuccLimit l
+
+@[deprecated (since := "2026-02-01")]
+alias isSuccLimit_mul := isSuccLimit_mul_right
+
+theorem isSuccPrelimit_mul_right {a b : Ordinal} (hb : IsSuccLimit b) : IsSuccPrelimit (a * b) := by
+  obtain rfl | ha := eq_zero_or_pos a
+  · rw [zero_mul]
+    exact isSuccPrelimit_zero
+  · exact (isSuccLimit_mul_right ha hb).isSuccPrelimit
 
 theorem isSuccLimit_mul_left {a b : Ordinal} (l : IsSuccLimit a) (b0 : 0 < b) :
     IsSuccLimit (a * b) := by
@@ -731,7 +748,13 @@ theorem isSuccLimit_mul_left {a b : Ordinal} (l : IsSuccLimit a) (b0 : 0 < b) :
   · exact b0.false.elim
   · rw [mul_succ]
     exact isSuccLimit_add _ l
-  · exact isSuccLimit_mul l.bot_lt lb
+  · exact isSuccLimit_mul_right l.bot_lt lb
+
+theorem isSuccPrelimit_mul_left {a b : Ordinal} (ha : IsSuccLimit a) : IsSuccPrelimit (a * b) := by
+  obtain rfl | hb := eq_zero_or_pos b
+  · rw [mul_zero]
+    exact isSuccPrelimit_zero
+  · exact (isSuccLimit_mul_left ha hb).isSuccPrelimit
 
 theorem smul_eq_mul : ∀ (n : ℕ) (a : Ordinal), n • a = a * n
   | 0, a => by rw [zero_nsmul, Nat.cast_zero, mul_zero]
@@ -878,7 +901,7 @@ theorem isSuccLimit_add_iff {a b : Ordinal} :
       exact ⟨h', h⟩
     left
     rw [← add_sub_cancel a b]
-    apply isSuccLimit_sub h
+    apply isSuccLimit_sub h.isSuccPrelimit
     suffices a + 0 < a + b by simpa only [add_zero] using this
     rwa [add_lt_add_iff_left, pos_iff_ne_zero]
   rcases h with (h | ⟨rfl, h⟩)
@@ -1114,9 +1137,8 @@ theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
 
 open Ordinal
 
--- TODO: prove `IsSuccPrelimit a ↔ ω ∣ a`.
-theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
-  refine ⟨fun l => ⟨l.ne_bot, ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩⟩, fun h => ?_⟩
+theorem isSuccPrelimit_iff_omega0_dvd {a : Ordinal} : IsSuccPrelimit a ↔ ω ∣ a := by
+  refine ⟨fun l => ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩, fun h => ?_⟩
   · refine l.le_iff_forall_le.2 fun x hx => le_of_lt ?_
     rw [← div_lt omega0_ne_zero, ← succ_le_iff, le_div omega0_ne_zero, mul_succ,
       add_le_iff_of_isSuccLimit isSuccLimit_omega0]
@@ -1125,9 +1147,11 @@ theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧
     grw [mul_div_le]
     exact (lt_sub.1 <| natCast_lt_of_isSuccLimit (isSuccLimit_sub l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
-    refine isSuccLimit_mul_left isSuccLimit_omega0 (pos_iff_ne_zero.2 <| mt ?_ a0)
-    intro e
-    simp only [e, mul_zero]
+    exact isSuccPrelimit_mul_left isSuccLimit_omega0
+
+@[deprecated isSuccPrelimit_iff_omega0_dvd (since := "2026-02-01")]
+theorem isSuccLimit_iff_omega0_dvd {a : Ordinal} : IsSuccLimit a ↔ a ≠ 0 ∧ ω ∣ a := by
+  rw [isSuccLimit_iff, isSuccPrelimit_iff_omega0_dvd]
 
 @[simp]
 theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=

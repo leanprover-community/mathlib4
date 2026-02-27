@@ -285,7 +285,6 @@ theorem prepartition_isSubordinate (B : Box ι) {r : ℝ} (hr : 0 < r) (hn : 1 /
     exact Box.coe_subset_Icc (tag_mem _ _)
   · exact le_trans (diam_boxIcc n ν) hn
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
     a < x ↔ a ≤ (⌈n * x⌉ - 1) / (n : ℝ) := by
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
@@ -294,7 +293,6 @@ private theorem mem_admissibleIndex_of_mem_box_aux₁ (x : ℝ) (a : ℤ) :
     Int.cast_le, Int.add_one_le_iff, Int.lt_ceil, Int.cast_mul, Int.cast_natCast,
     mul_lt_mul_iff_right₀ h]
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem mem_admissibleIndex_of_mem_box_aux₂ (x : ℝ) (a : ℤ) :
     x ≤ a ↔ (⌈n * x⌉ - 1 + 1) / (n : ℝ) ≤ a := by
   have h : 0 < (n : ℝ) := Nat.cast_pos.mpr <| n.pos_of_neZero
@@ -345,7 +343,6 @@ theorem mem_smul_span_iff {v : ι → ℝ} :
   simp_rw [Module.Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
     IsUnit.unit_spec, inv_inv, smul_eq_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tag_mem_smul_span (ν : ι → ℤ) :
     tag n ν ∈ (n : ℝ)⁻¹ • L := by
   refine mem_smul_span_iff.mpr fun i ↦ ⟨ν i + 1, ?_⟩
@@ -420,7 +417,6 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
 
 open Filter
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `s` be a bounded, measurable set of `ι → ℝ` whose frontier has zero volume and let `F`
 be a continuous function. Then the limit as `n → ∞` of `∑ F x / n ^ card ι`, where the sum is
 over the points in `s ∩ n⁻¹ • (ι → ℤ)`, tends to the integral of `F` over `s`. -/

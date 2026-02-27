@@ -236,7 +236,6 @@ lemma shiftFunctorAdd'_zero_add (a : A) :
     eqToHom_map, Category.id_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctorAdd'_add_zero (a : A) :
     shiftFunctorAdd' C a 0 a (add_zero a) = (rightUnitor _).symm ≪≫
     isoWhiskerLeft (shiftFunctor C a) (shiftFunctorZero C A).symm := by
