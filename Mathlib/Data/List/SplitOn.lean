@@ -112,7 +112,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [flatten]
     exact splitOnP_eq_single _ _ (by grind)
-  · simp only [intersperse_cons₂, singleton_append, flatten_cons]
+  · simp only [intersperse_cons_cons, singleton_append, flatten_cons]
     specialize ih _ _
     · grind
     · grind
