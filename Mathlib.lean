@@ -4952,7 +4952,6 @@ public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.Logic.Equiv.Array
 public import Mathlib.Logic.Equiv.Basic
-public import Mathlib.Logic.Equiv.BijectiveBase2
 public import Mathlib.Logic.Equiv.Bool
 public import Mathlib.Logic.Equiv.Defs
 public import Mathlib.Logic.Equiv.Embedding
@@ -4962,6 +4961,7 @@ public import Mathlib.Logic.Equiv.Finset
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Logic.Equiv.Functor
 public import Mathlib.Logic.Equiv.List
+public import Mathlib.Logic.Equiv.ListNatBijective
 public import Mathlib.Logic.Equiv.Multiset
 public import Mathlib.Logic.Equiv.Nat
 public import Mathlib.Logic.Equiv.Option

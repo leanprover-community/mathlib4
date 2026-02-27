@@ -3,9 +3,11 @@ Copyright (c) 2026 Alexey Milovanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexey Milovanov
 -/
-import Mathlib.Data.List.Basic
-import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Data.List.Basic
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Bijective Base-2 Numeration
@@ -15,7 +17,9 @@ Unlike standard binary representation, bijective base-2 numeration avoids the
 "leading zeros" problem, providing a strict bijection `ℕ ≃ List Bool`.
 -/
 
-namespace Equiv.BijectiveBase2
+@[expose] public section
+
+namespace BijectiveNumeration
 
 /-- Encodes a natural number into a list of booleans using bijective base-2. -/
 def toBits (n : ℕ) : List Bool :=
@@ -77,12 +81,14 @@ theorem toBits_ofBits (bs : List Bool) : toBits (ofBits bs) = bs := by
         have h_mod : (1 + 2 * ofBits bs) % 2 = 1 := by omega
         simp [h_math, h_div, h_mod, ih]
 
-end Equiv.BijectiveBase2
+end BijectiveNumeration
 
 /-- The formal mathematical bijection between Natural Numbers and Boolean Lists
 using bijective base-2 numeration. -/
-def equivBijectiveBase2 : ℕ ≃ List Bool where
-  toFun := Equiv.BijectiveBase2.toBits
-  invFun := Equiv.BijectiveBase2.ofBits
-  left_inv := Equiv.BijectiveBase2.ofBits_toBits
-  right_inv := Equiv.BijectiveBase2.toBits_ofBits
+def listNatBijectiveEquiv : ℕ ≃ List Bool where
+  toFun := BijectiveNumeration.toBits
+  invFun := BijectiveNumeration.ofBits
+  left_inv := BijectiveNumeration.ofBits_toBits
+  right_inv := BijectiveNumeration.toBits_ofBits
+
+end
