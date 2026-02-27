@@ -71,7 +71,7 @@ def Cocone.tensor : Cocone (F₁ ⊗ F₂) where
 attribute [local simp] tensorHom_def in
 /-- The tensor product of colimit cocones for functors `F₁ : J ⥤ C`
 and `F₂ : J ⥤ C` is a colimit cocone when `PreservesColimit₂ F₁ F₂ (curriedTensor C)`
-holds and `J` is sisfted. -/
+holds and `J` is sifted. -/
 noncomputable def IsColimit.tensor [PreservesColimit₂ F₁ F₂ (curriedTensor C)] [IsSifted J]
     (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂) :
     IsColimit (c₁.tensor c₂) := by
