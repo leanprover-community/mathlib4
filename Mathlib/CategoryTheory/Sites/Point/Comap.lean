@@ -5,6 +5,7 @@ Authors: Joël Riou, Christian Merten
 -/
 module
 
+public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Sites.Pullback
 
