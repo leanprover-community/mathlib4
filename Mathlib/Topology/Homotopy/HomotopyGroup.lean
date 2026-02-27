@@ -153,14 +153,16 @@ section
 
 variable {M} (x : X)
 
+@[simp] theorem coe_coe (f : Ω^ N X x) : ⇑(f : C(I^N, X)) = f := rfl
+
 /-- Homeomorphism `Ω^M X ≃ₜ Ω^N X` if `M ≃ N`. -/
 def congr (e : M ≃ N) : Ω^ M X x ≃ₜ Ω^ N X x where
   toFun p := ⟨p.1.comp ⟨fun t m ↦ t (e m), by fun_prop⟩, fun y ⟨n, hn⟩ =>
     by simpa using p.2 _ ⟨e.symm n, by simpa using hn⟩⟩
   invFun p := ⟨p.1.comp ⟨fun t n ↦ t (e.symm n), by fun_prop⟩, fun y ⟨m, hm⟩ => by
     simpa using p.2 _ ⟨e m, by simpa using hm⟩⟩
-  left_inv p := by ext t; simp; rfl
-  right_inv p := by ext t; simp; rfl
+  left_inv p := by ext t; simp
+  right_inv p := by ext t; simp
   continuous_toFun := by fun_prop
   continuous_invFun := by fun_prop
 
@@ -177,7 +179,7 @@ theorem _root_.Cube.boundary_sum_iff (y : I^(Sum M N)) :
 
 /-- Curries an `(M ⊕ N)`-cube into an `M`-cube of `N`-cubes. -/
 @[simps]
-def currySum (q : ↑(Ω^ (M ⊕ N) X x)) : C(M → ↑I, (↑(Ω^ N X x))) where
+def currySum (q : Ω^ (M ⊕ N) X x) : C(M → I, Ω^ N X x) where
   toFun a := ⟨(q.1.comp ⟨sumArrowHomeomorphProdArrow.invFun,
     sumArrowHomeomorphProdArrow.continuous_invFun⟩).curry.toFun a,
       fun _ hm => q.2 _ ((Cube.boundary_sum_iff _).mpr (Or.inr hm))⟩
@@ -191,26 +193,25 @@ lemma continuous_currySum : Continuous (currySum x (M := M) (N := N)) :=
 
 /-- Given an element `p` in the `M`-iterated loop space of the `N`-iterated loop space of `X`,
 this induces a continuous function from `(M → I) × (N → I)` to `X`. -/
-def uncurry (p : (Ω^ M ((Ω^ N X x)) const)) : C((M → I) × (N → I), X) :=
+def uncurry (p : Ω^ M (Ω^ N X x) const) : C((M → I) × (N → I), X) :=
   ContinuousMap.uncurry ⟨fun a => ⟨(p.1 a).1, ContinuousMap.continuous _⟩,
     Continuous.subtype_val (map_continuous p)⟩
 
 /-- `Ω^M (Ω^N X) ≃ₜ Ω^(M ⊕ N) X`. -/
 @[simps]
-def IteratedLoopSpace : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (Sum M N) X x where
+def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (Sum M N) X x where
   toFun p := by
     refine ⟨(uncurry x p).comp ⟨sumArrowHomeomorphProdArrow.toFun,
       sumArrowHomeomorphProdArrow.continuous_toFun⟩, fun y hy => ?_⟩
     rcases ((Cube.boundary_sum_iff _).mp hy) with hM | hN
-    · simp [GenLoop.const, uncurry, p.2 (y ∘ Sum.inl) hM]
-    · simp [uncurry, (p.1 (y ∘ Sum.inl)).2 (y ∘ Sum.inr) hN]
+    · simp [GenLoop.const, uncurry, -coe_coe, (p.2 (y ∘ Sum.inl) hM)]
+    · simp [uncurry, -coe_coe, (p.1 (y ∘ Sum.inl)).2 (y ∘ Sum.inr) hN]
   invFun q :=
     ⟨currySum x q, fun m hm => by ext n; exact q.2 _ ((Cube.boundary_sum_iff _).mpr (Or.inl hm))⟩
   left_inv p := by ext t : 1; simp; rfl
   right_inv p := by
     ext t
     simp [uncurry, Function.uncurry, sumArrowHomeomorphProdArrow]
-    rfl
   continuous_toFun := ((ContinuousMap.continuous_uncurry.comp' ((ContinuousMap.continuous_postcomp
     ⟨_, continuous_subtype_val⟩).comp continuous_subtype_val)).compCM
       continuous_const).subtype_mk _
@@ -379,8 +380,7 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     apply (homotopyFrom_apply _ _ _).trans
     simp only [Prod.map_apply, id_eq, funSplitAt_apply,
       Function.uncurry_apply_pair, ContinuousMap.HomotopyWith.apply_zero,
-      ContinuousMap.HomotopyWith.apply_one, ne_eq, Path.coe_toContinuousMap, toLoop_apply_coe,
-      ContinuousMap.curry_apply, ContinuousMap.comp_apply]
+      ContinuousMap.HomotopyWith.apply_one, ne_eq, Path.coe_toContinuousMap]
     first
     | apply congr_arg p
     | apply congr_arg q
