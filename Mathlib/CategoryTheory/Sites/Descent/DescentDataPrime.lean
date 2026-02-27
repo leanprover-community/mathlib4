@@ -73,34 +73,35 @@ lemma pullHom'_eq_pullHom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ :
 lemma pullHom'₁₂_eq_pullHom_of_chosenPullback₃ (i₁ i₂ i₃ : ι) :
     pullHom' hom (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂ =
       pullHom (hom i₁ i₂) (sq₃ i₁ i₂ i₃).p₁₂ _ _ :=
-  pullHom'_eq_pullHom _ _ _ _ _ _ _ (by simp) (by simp)
+  pullHom'_eq_pullHom _ _ _ ..
 
 @[reassoc]
 lemma pullHom'₁₃_eq_pullHom_of_chosenPullback₃ (i₁ i₂ i₃ : ι) :
     pullHom' hom (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ =
       pullHom (hom i₁ i₃) (sq₃ i₁ i₂ i₃).p₁₃ _ _ :=
-  pullHom'_eq_pullHom _ _ _ _ _ _ _ (by simp) (by simp)
+  pullHom'_eq_pullHom _ _ _ ..
 
 @[reassoc]
 lemma pullHom'₂₃_eq_pullHom_of_chosenPullback₃ (i₁ i₂ i₃ : ι) :
     pullHom' hom (sq₃ i₁ i₂ i₃).p (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃ =
       pullHom (hom i₂ i₃) (sq₃ i₁ i₂ i₃).p₂₃ _ _ :=
-  pullHom'_eq_pullHom _ _ _ _ _ _ _ (by simp) (by simp)
+  pullHom'_eq_pullHom _ _ _ ..
 
 @[reassoc]
-  lemma pullHom_pullHom' ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S) (hq : g ≫ q = q')
-    ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q)
-    (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂) (hgf₁ : g ≫ f₁ = gf₁) (hgf₂ : g ≫ f₂ = gf₂) :
+  lemma pullHom_pullHom' ⦃Y Y' : C⦄ (g : Y' ⟶ Y) (q : Y ⟶ S) (q' : Y' ⟶ S)
+    ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂) (gf₁ : Y' ⟶ X i₁) (gf₂ : Y' ⟶ X i₂)
+    (hq : g ≫ q = q' := by cat_disch)
+    (hf₁ : f₁ ≫ f i₁ = q := by cat_disch) (hf₂ : f₂ ≫ f i₂ = q := by cat_disch)
+    (hgf₁ : g ≫ f₁ = gf₁ := by cat_disch) (hgf₂ : g ≫ f₂ = gf₂ := by cat_disch) :
     pullHom (pullHom' hom q f₁ f₂ hf₁ hf₂) g gf₁ gf₂ =
       pullHom' hom q' gf₁ gf₂ := by
   let p := (sq i₁ i₂).isPullback.lift f₁ f₂ (by cat_disch)
-  rw [pullHom'_eq_pullHom _ _ _ _ _ _ p (by cat_disch) (by cat_disch),
-    pullHom'_eq_pullHom _ _ _ _ _ _ (g ≫ p) (by cat_disch) (by cat_disch)]
+  rw [pullHom'_eq_pullHom _ _ _ _ p, pullHom'_eq_pullHom _ _ _ _ (g ≫ p)]
   dsimp [pullHom]
   simp only [Functor.map_comp, Category.assoc]
   rw [F.mapComp'₀₂₃_hom_comp_mapComp'_hom_whiskerRight_app_assoc
-    _ _ _ _ _ _ (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_fst]) rfl
-    (by cat_disch),
+    _ _ _ _ _ _ (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_fst])
+    rfl (by cat_disch),
     F.mapComp'_inv_whiskerRight_mapComp'₀₂₃_inv_app _ _ _ _ _ _
       (by rw [← Quiver.Hom.comp_toLoc, ← op_comp, IsPullback.lift_snd]) rfl (by cat_disch)]
   simp
@@ -116,15 +117,12 @@ variable {obj : ∀ (i : ι), F.obj (.mk (op (X i)))}
 @[simp]
 lemma pullHom'_p₁_p₂ (i₁ i₂ : ι) :
     pullHom' hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (by simp) (by simp) = hom i₁ i₂ := by
-  rw [pullHom'_eq_pullHom hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (by simp) (by simp)
-    (𝟙 _) (by simp)  (by simp)]
-  simp [pullHom, mapComp'_comp_id_hom_app, mapComp'_comp_id_inv_app]
+  simp [pullHom'_eq_pullHom hom (sq i₁ i₂).p (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ (𝟙 _)]
 
 lemma pullHom'_self' (hom_self : ∀ i, pullHom' hom (f i) (𝟙 (X i)) (𝟙 (X i)) = 𝟙 _)
     ⦃Y : C⦄ (q : Y ⟶ S) ⦃i : ι⦄ (g : Y ⟶ X i) (hg : g ≫ f i = q) :
     pullHom' hom q g g hg hg = 𝟙 _ := by
-  simp [← pullHom_pullHom' hom g (f i) q hg (𝟙 (X i)) (𝟙 (X i)) (by simp) (by simp) g g
-    (by simp) (by simp), hom_self, pullHom]
+  simp [← pullHom_pullHom' hom g (f i) q (𝟙 (X i)) (𝟙 (X i)) g g hg, hom_self, pullHom]
 
 variable {sq₃} in
 @[reassoc]
@@ -137,14 +135,11 @@ lemma comp_pullHom'' (hom_comp : ∀ (i₁ i₂ i₃ : ι),
     (hf₂ : f₂ ≫ f i₂ = q) (hf₃ : f₃ ≫ f i₃ = q) :
     pullHom' hom q f₁ f₂ ≫ pullHom' hom q f₂ f₃ = pullHom' hom q f₁ f₃ := by
   obtain ⟨φ, _, _, _⟩ := (sq₃ i₁ i₂ i₃).exists_lift f₁ f₂ f₃ q hf₁ hf₂ hf₃
-  rw [← pullHom_pullHom'_assoc hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂,
-    pullHom, Category.assoc, Category.assoc,
-    ← pullHom_pullHom' hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃,
-    ← pullHom_pullHom' hom φ (sq₃ i₁ i₂ i₃).p _ _ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃,
-    pullHom, pullHom]
-  · dsimp
-    simp [← Functor.map_comp_assoc, hom_comp]
-  all_goals cat_disch
+  rw [← pullHom_pullHom'_assoc hom φ (sq₃ i₁ i₂ i₃).p _ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₂ _ _,
+    ← pullHom_pullHom' hom φ (sq₃ i₁ i₂ i₃).p _ (sq₃ i₁ i₂ i₃).p₂ (sq₃ i₁ i₂ i₃).p₃ _ _,
+    ← pullHom_pullHom' hom φ (sq₃ i₁ i₂ i₃).p _ (sq₃ i₁ i₂ i₃).p₁ (sq₃ i₁ i₂ i₃).p₃ _ _]
+  dsimp [pullHom]
+  simp [← Functor.map_comp_assoc, hom_comp]
 
 end
 
@@ -243,10 +238,9 @@ lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
     (F.map f₁.op.toLoc).toFunctor.map (φ.hom i₁) ≫ pullHom' D₂.hom q f₁ f₂ hf₁ hf₂ =
       pullHom' D₁.hom q f₁ f₂ hf₁ hf₂ ≫ (F.map f₂.op.toLoc).toFunctor.map (φ.hom i₂) := by
   obtain ⟨p, _, _⟩  := (sq i₁ i₂).isPullback.exists_lift f₁ f₂ (by cat_disch)
-  rw [← pullHom_pullHom' D₂.hom p (sq i₁ i₂).p q (by cat_disch) (sq i₁ i₂).p₁ (sq i₁ i₂).p₂
-    (by simp) (by simp) f₁ f₂ (by cat_disch) (by cat_disch),
-    ← pullHom_pullHom' D₁.hom p (sq i₁ i₂).p q (by cat_disch) (sq i₁ i₂).p₁ (sq i₁ i₂).p₂
-      (by simp) (by simp) f₁ f₂ (by cat_disch) (by cat_disch), pullHom'_p₁_p₂, pullHom'_p₁_p₂]
+  rw [← pullHom_pullHom' D₂.hom p (sq i₁ i₂).p q  (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ f₁ f₂,
+    ← pullHom_pullHom' D₁.hom p (sq i₁ i₂).p q  (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ f₁ f₂,
+    pullHom'_p₁_p₂, pullHom'_p₁_p₂]
   dsimp only [pullHom]
   rw [NatTrans.naturality_assoc]
   dsimp
