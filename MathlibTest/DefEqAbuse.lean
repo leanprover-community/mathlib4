@@ -284,7 +284,7 @@ this : A
 -/
 #guard_msgs in
 set_option allowUnsafeReducibility true in
-attribute [local reducible] Lean.levelZero Lean.Level.ofNat in
+attribute [local implicit_reducible] Lean.levelZero Lean.Level.ofNat in
 #defeq_abuse in
 #check show A (u := 0) from b
 
