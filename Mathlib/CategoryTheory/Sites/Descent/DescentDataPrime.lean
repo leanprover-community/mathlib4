@@ -59,8 +59,10 @@ noncomputable def pullHom' ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ 
 
 @[reassoc]
 lemma pullHom'_eq_pullHom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
-    (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) (p : Y ⟶ (sq i₁ i₂).pullback)
-    (hp₁ : p ≫ (sq i₁ i₂).p₁ = f₁) (hp₂ : p ≫ (sq i₁ i₂).p₂ = f₂) :
+    (p : Y ⟶ (sq i₁ i₂).pullback)
+    (hf₁ : f₁ ≫ f i₁ = q := by cat_disch) (hf₂ : f₂ ≫ f i₂ = q := by cat_disch)
+    (hp₁ : p ≫ (sq i₁ i₂).p₁ = f₁ := by cat_disch)
+    (hp₂ : p ≫ (sq i₁ i₂).p₂ = f₂ := by cat_disch) :
   pullHom' hom q f₁ f₂ hf₁ hf₂ =
     pullHom (hom i₁ i₂) p f₁ f₂ := by
   obtain rfl : p = (sq i₁ i₂).isPullback.lift f₁ f₂ (by rw [hf₁, hf₂]) := by
