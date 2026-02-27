@@ -449,6 +449,15 @@ def regularEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
   w := pullback.condition
   isColimit := hc
 
+lemma IsRegularEpi.of_epi_of_exists {X B : C} {f : X ⟶ B} [HasPullback f f] [Epi f]
+    (h : ∀ ⦃Z : C⦄ ⦃g : X ⟶ Z⦄, pullback.fst f f ≫ g = pullback.snd f f ≫ g →
+      ∃ (u : B ⟶ Z), f ≫ u = g) :
+    IsRegularEpi f := by
+  refine ⟨⟨regularEpiOfKernelPair _ <| Cofork.IsColimit.mk' _ fun s ↦ ?_⟩⟩
+  choose g hg using h s.condition
+  refine ⟨g, hg, fun hm ↦ ?_⟩
+  rwa [← cancel_epi f, hg]
+
 /-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
 def effectiveEpiStructOfRegularEpi {B X : C} {f : X ⟶ B} (hf : RegularEpi f) :
     EffectiveEpiStruct f where
