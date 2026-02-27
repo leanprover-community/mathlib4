@@ -6,7 +6,6 @@ Authors: Yong-Gyu Choi
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
-public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 public import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
 
 /-!
