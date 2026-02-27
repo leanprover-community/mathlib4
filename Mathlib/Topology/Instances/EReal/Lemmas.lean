@@ -486,7 +486,6 @@ private lemma continuousAt_mul_top_top :
   · simp
   · rw [Set.mem_Ioi, ← EReal.coe_one]; exact EReal.coe_lt_top 1
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
     ContinuousAt (fun p : EReal × EReal ↦ p.1 * p.2) (⊤, a) := by
   simp only [ContinuousAt, EReal.top_mul_coe_of_pos h, EReal.tendsto_nhds_top_iff_real]

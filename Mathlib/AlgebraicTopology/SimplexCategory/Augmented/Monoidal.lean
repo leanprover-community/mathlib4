@@ -191,7 +191,6 @@ lemma inr'_eval (x y : SimplexCategory) (i : Fin (y.len + 1)) :
   ext
   simp [OrderEmbedding.toOrderHom]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We can characterize morphisms out of a tensor product via their precomposition with `inl` and
 `inr`. -/
 @[ext]

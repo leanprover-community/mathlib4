@@ -9,6 +9,7 @@ public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
 public import Mathlib.CategoryTheory.Sites.Preserves
+public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
 
 /-!
 # The quasi-compact topology of a scheme

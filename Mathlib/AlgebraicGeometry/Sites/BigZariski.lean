@@ -91,10 +91,12 @@ lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}
   · intro i j
     exact CoproductDisjoint.isPullback_of_isInitial
       (coproductIsCoproduct' <| Discrete.functor <| unop ∘ X) initialIsInitial
-  · exact hF.isSheafFor _ _ (sigmaOpenCover _).mem_grothendieckTopology
+  · exact hF.isSheafFor _ (sigmaOpenCover _).mem_grothendieckTopology
 
-/-- If `F` is a locally directed diagram of open immersions (e.g., the diagram indexing
-a coproduct). Then the colimit inclusions are a Zariski covering. -/
+/-- Let `F` be a locally directed diagram of open immersions, i.e., a diagram of schemes
+for which whenever `xᵢ ∈ Fᵢ` and `xⱼ ∈ Fⱼ` map to the same `xₖ ∈ Fₖ`, there exists
+some `xₗ ∈ Fₗ` that maps to `xᵢ` and `xⱼ` (e.g, the diagram indexing a coproduct).
+Then the colimit inclusions are a Zariski covering. -/
 lemma ofArrows_ι_mem_zariskiTopology_of_isColimit {J : Type*} [Category J]
     (F : J ⥤ Scheme.{u}) [∀ {i j : J} (f : i ⟶ j), IsOpenImmersion (F.map f)]
     [(F.comp Scheme.forget).IsLocallyDirected] [Quiver.IsThin J] [Small.{u} J]

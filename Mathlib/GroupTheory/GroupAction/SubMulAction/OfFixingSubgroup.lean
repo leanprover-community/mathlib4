@@ -507,7 +507,6 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
       rw [mul_smul, mul_smul, smul_eq_iff_eq_inv_smul g]
       exact hk _ (Set.mem_smul_set_iff_inv_smul_mem.mp hy.2)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A primitivity criterion -/
 theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
     [Finite α]
