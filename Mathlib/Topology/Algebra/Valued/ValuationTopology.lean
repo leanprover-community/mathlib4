@@ -185,7 +185,7 @@ theorem toUniformSpace_eq : toUniformSpace =
     @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   refine UniformSpace.ext ((hasBasis_uniformity R Γ₀).eq_of_same_basis ?_)
   convert v.subgroups_basis.hasBasis_nhds_zero.comap _
-  simp_rw [restrict_lt_iff_lt_embedding]
+  simp_rw [restrict_lt_iff_lt_embedding, sub_eq_add_neg]
   simp
 
 variable {R Γ₀}
