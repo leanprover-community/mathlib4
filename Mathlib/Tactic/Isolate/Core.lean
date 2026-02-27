@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.GCongr.Core
 public import Mathlib.Tactic.Relation.Symm
+public meta import Aesop.Frontend.Basic
 
 /-! # Tactic for isolating a subexpression within a given relation
 
@@ -166,23 +167,18 @@ meta initialize registerBuiltinAttribute {
 Example: To see whether there are any lemmas tagged `@[isolate]` whose conclusion is an
 if-and-only-if from `a + x < y` (i.e. `HAdd.hAdd _ _ _ a x < y`), use the following command syntax:
 ```
-#query_isolate_lemmas LT.lt HAdd.hAdd 5 0
+#query_isolate_lemmas LT.lt HAdd.hAdd 5 false
 ```
 -/
 elab "#query_isolate_lemmas" e0:(ppSpace colGt ident)? e1:(ppSpace colGt ident)?
-    e2:(ppSpace colGt num)? e3:(ppSpace colGt num)? : command => do
+    e2:(ppSpace colGt num)? e3:(ppSpace colGt Aesop.bool_lit)? : command => do
   let (some e0, some e1, some e2, some e3) := (e0, e1, e2, e3) |
     logInfo "Please provide the relation, function and index for the isolation hypothesis type \
       you are interested in"
   let rel : Name := e0.getId
   let f : Name := e1.getId
   let i : Nat := TSyntax.getNat e2
-  let b : Bool := ← do
-    -- TODO figure out how to parse boolean as "false"/"true", not 0/1
-    match TSyntax.getNat e3 with
-    | 0  => pure false
-    | 1 => pure true
-    | _ => throwError "argument {e3} should be a boolean"
+  let b : Bool ← Aesop.Frontend.elabBoolLit e3
   let key : IsolateLemmaKey := ⟨rel, f, i, b⟩
   match (isolateExt.getState (← getEnv))[key]? with
   | some lems => logInfo m!"{lems}"

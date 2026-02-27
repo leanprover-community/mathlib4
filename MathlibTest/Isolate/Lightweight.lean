@@ -152,7 +152,11 @@ example (x : ℝ) (f : ℝ → ℝ) : f x = 12 := by
 
 /-- info: [Mathlib.Tactic.Isolate.add_right_le_iff] -/
 #guard_msgs in
-#query_isolate_lemmas LE.le HAdd.hAdd 4 0
+#query_isolate_lemmas LE.le HAdd.hAdd 4 false
+
+/-- info: [Mathlib.Tactic.Isolate.le_add_right_iff] -/
+#guard_msgs in
+#query_isolate_lemmas LE.le HAdd.hAdd 4 true
 
 /--
 error: @[isolate] attribute only applies to lemmas with a conclusion of the form f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G.
