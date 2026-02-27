@@ -475,7 +475,7 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
     (hM : Module.IsTorsionBySet R M (⨅ i ∈ S, p i : Ideal R)) :
     DirectSum.IsInternal fun i : S => torsionBySet R M <| p i :=
   DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-    (iSupIndep_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
+    (iSupIndep_comp_coe_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
     (by
       apply (iSup_subtype'' ↑S fun i => torsionBySet R M <| p i).trans
       -- Porting note: times out if we change apply below to <|

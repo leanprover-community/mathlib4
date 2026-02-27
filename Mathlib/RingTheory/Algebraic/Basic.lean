@@ -6,10 +6,10 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Polynomial.Expand
-public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.RingTheory.Adjoin.Polynomial
 public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.Polynomial.Tower
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -332,6 +332,10 @@ theorem isAlgebraic_iff_isAlgebraic_val {S : Subalgebra R A} {x : S} :
     IsAlgebraic R x ↔ IsAlgebraic R x.1 :=
   (isAlgebraic_algHom_iff S.val Subtype.val_injective).symm
 
+theorem transcendental_iff_transcendental_val {S : Subalgebra R A} {x : S} :
+    Transcendental R x ↔ Transcendental R x.1 :=
+  isAlgebraic_iff_isAlgebraic_val.not
+
 set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_of_isAlgebraic_bot {x : S} (halg : IsAlgebraic (⊥ : Subalgebra R S) x) :
     IsAlgebraic R x :=
@@ -578,6 +582,51 @@ theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlg
     (a : S) {b : S} (hb : b ≠ 0) :
     ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
   (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
+
+namespace Polynomial
+
+/-- Given a transcendental element `s : S` over `R`, the `R`-algebra equivalence
+between `R[X]` and `Algebra.adjoin R {s}` given by sending `X` to `s`. -/
+noncomputable def algEquivOfTranscendental (s : S) (h : Transcendental R s) :
+    R[X] ≃ₐ[R] (Algebra.adjoin R {s}) :=
+  AlgEquiv.ofBijective (aeval ⟨s, Algebra.self_mem_adjoin_singleton R s⟩) <| by
+    refine ⟨transcendental_iff_injective.mp ?_, ?_⟩
+    · rwa [Subalgebra.transcendental_iff_transcendental_val]
+    rw [← AlgHom.range_eq_top, eq_top_iff]
+    rintro ⟨t, ht⟩ _
+    obtain ⟨r, rfl⟩ := Algebra.adjoin_mem_exists_aeval _ _ ht
+    exact ⟨r, by ext; simp⟩
+
+@[simp]
+theorem algEquivOfTranscendental_coe (s : S) (h : Transcendental R s) :
+    (algEquivOfTranscendental R s h : R[X] →+* (Algebra.adjoin R {s})) =
+    aeval (R := R) (A := Algebra.adjoin R {s}) ⟨s, Algebra.self_mem_adjoin_singleton R s⟩ := rfl
+
+@[simp]
+theorem algEquivOfTranscendental_apply (s : S) (h : Transcendental R s) (f : R[X]) :
+    algEquivOfTranscendental R s h f = aeval (⟨s, Algebra.self_mem_adjoin_singleton R s⟩) f := rfl
+
+lemma algEquivOfTranscendental_apply_X (s : S) (h : Transcendental R s) :
+    algEquivOfTranscendental R s h X = ⟨s, Algebra.self_mem_adjoin_singleton R s⟩ := by simp
+
+@[simp]
+theorem algEquivOfTranscendental_symm_aeval (s : S) (h : Transcendental R s) (f : R[X]) :
+    (algEquivOfTranscendental R s h).symm
+      (aeval (⟨s, Algebra.self_mem_adjoin_singleton R s⟩) f) = f := by
+  apply (algEquivOfTranscendental R s h).toEquiv.injective
+  simp
+
+@[simp]
+theorem algEquivOfTranscendental_symm_gen (s : S) (h : Transcendental R s) :
+    (algEquivOfTranscendental R s h).symm ⟨s, Algebra.self_mem_adjoin_singleton R s⟩ = X := by
+  apply (algEquivOfTranscendental R s h).toEquiv.injective
+  simp
+
+end Polynomial
+
+theorem Transcendental.uniqueFactorizationMonoid_adjoin [UniqueFactorizationMonoid R] {s : S}
+      (h : Transcendental R s) : UniqueFactorizationMonoid (Algebra.adjoin R {s}) :=
+  (algEquivOfTranscendental R s h).toMulEquiv.uniqueFactorizationMonoid inferInstance
 
 end
 
