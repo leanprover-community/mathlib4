@@ -102,7 +102,7 @@ end
 /-- Given a point of a site, the skyscraper presheaf functor is right adjoint
 to the fiber functor on presheaves. -/
 noncomputable def skyscraperPresheafAdjunction [HasColimitsOfSize.{w, w} A] :
-    Φ.presheafFiber (A := A) ⊣ Φ.skyscraperPresheafFunctor (A := A) :=
+    Φ.presheafFiber (A := A) ⊣ Φ.skyscraperPresheafFunctor :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := Φ.skyscraperPresheafHomEquiv
       homEquiv_naturality_left_symm _ _ := Φ.skyscraperPresheafHomEquiv_naturality_left_symm _ _
@@ -177,7 +177,7 @@ noncomputable abbrev skyscraperSheaf (M : A) :
 /-- Given a point of a site, the skyscraper sheaf functor is right adjoint
 to the fiber functor on sheaves. -/
 noncomputable def skyscraperSheafAdjunction [HasColimitsOfSize.{w, w} A] :
-    Φ.sheafFiber (A := A) ⊣ Φ.skyscraperSheafFunctor (A := A) :=
+    Φ.sheafFiber (A := A) ⊣ Φ.skyscraperSheafFunctor :=
   Adjunction.mkOfHomEquiv
     { homEquiv F M :=
         Φ.skyscraperPresheafHomEquiv.trans
