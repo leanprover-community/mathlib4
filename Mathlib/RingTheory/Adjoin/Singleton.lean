@@ -36,10 +36,10 @@ def RingHom.adjoinAlgebraMap :
       | f p => aesop (add norm [adjoin_singleton_eq_range_aeval, aeval_algebraMap_apply]))
 
 @[simp]
-theorem RingHom.adjoin_algebraMap_apply (x : Algebra.adjoin A {b}) :
+theorem RingHom.adjoinAlgebraMap_apply (x : Algebra.adjoin A {b}) :
     (RingHom.adjoinAlgebraMap b x (C := C) : C) = algebraMap B C x := rfl
 
-theorem RingHom.adjoin_algebraMap_surjective :
+theorem RingHom.adjoinAlgebraMap_surjective :
     Function.Surjective (RingHom.adjoinAlgebraMap (A := A) b (C := C)) := by
   intro c
   obtain ⟨p, hp⟩ := adjoin_eq_exists_aeval A (algebraMap B C b) c
