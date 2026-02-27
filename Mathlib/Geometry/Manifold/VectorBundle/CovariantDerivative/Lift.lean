@@ -99,7 +99,7 @@ lemma IsCovariantDerivativeOn.projection_lift_vec (x : M) (f : F) :
 
 lemma IsCovariantDerivativeOn.lift_vec_eq_iff
   {x : M} {f : F} {u : TangentSpace I x} {w : TangentSpace I x × F} :
-    hcov.lift_vec x f u = w ↔  hcov.projection x f w = 0 ∧ w.1 = u := by
+    hcov.lift_vec x f u = w ↔ hcov.projection x f w = 0 ∧ w.1 = u := by
   constructor
   · intro rfl
     simp
@@ -126,25 +126,37 @@ noncomputable
 def CovariantDerivative.lift_vec (v : TotalSpace F V) :
     TangentSpace I v.proj →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, F)) v :=
   letI t := trivializationAt F V v.proj
-  haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
-    (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
-  letI tlift := d_covDerOn.lift_vec v.proj (t v).2
+  have hcov := cov.isCovariantDerivativeOn_pushCovDer t
+  letI tlift := hcov.lift_vec v.proj (t v).2
   t.derivInv I v ∘L tlift
 
 lemma CovariantDerivative.lift_vec_apply {v : TotalSpace F V} (u : TangentSpace I v.proj) :
     letI t := trivializationAt F V v.proj
-    haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
-      (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
-    letI tlift := d_covDerOn.lift_vec v.proj (t v).2
+    haveI hcov := cov.isCovariantDerivativeOn_pushCovDer t
+    letI tlift := hcov.lift_vec v.proj (t v).2
     cov.lift_vec v u = t.derivInv I v (tlift u) := rfl
+
+/-- We can compute `lift_vec v` using any trivialization whose
+base set contains `v.proj`. This is crucial to prove smoothness
+of `lift_vec`. -/
+lemma CovariantDerivative.lift_vec_eq {v : TotalSpace F V}
+    {e : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e]
+    (hv : v.proj ∈ e.baseSet)
+    (u : TangentSpace I v.proj) :
+    haveI hcov := cov.isCovariantDerivativeOn_pushCovDer e
+    cov.lift_vec v u = e.derivInv I v (hcov.lift_vec v.proj (e v).2 u) := by
+  rw [cov.lift_vec_apply]
+  set t := trivializationAt F V v.proj
+  have hcov := cov.isCovariantDerivativeOn_pushCovDer t
+  refold_let t
+  sorry
 
 @[simp]
 lemma CovariantDerivative.lift_vec_horiz {v : TotalSpace F V} (u : TangentSpace I v.proj) :
     cov.lift_vec v u ∈ cov.horiz v := by
   let t := trivializationAt F V v.proj
-  have d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
-    (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
-  let tlift := d_covDerOn.lift_vec v.proj (t v).2
+  have hcov := cov.isCovariantDerivativeOn_pushCovDer t
+  let tlift := hcov.lift_vec v.proj (t v).2
   rw [lift_vec_apply, CovariantDerivative.mem_horiz_iff_proj]
   -- TODO: cleanup
   simp only [proj, IsCovariantDerivativeOn.lift_vec_apply, ContinuousLinearMap.coe_comp',
@@ -176,8 +188,7 @@ lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace
     simp
   · rintro ⟨h, h'⟩
     let t := trivializationAt F V v.proj
-    have hcov := t.pushCovDer_isCovariantDerivativeOn
-      (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
+    have hcov := cov.isCovariantDerivativeOn_pushCovDer t
     have mem := FiberBundle.mem_baseSet_trivializationAt F V v.proj
     apply (t.bijective_deriv mem).1
     unfold CovariantDerivative.lift_vec
