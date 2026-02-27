@@ -505,7 +505,7 @@ variable {L} (A) {N : Type w'} [L.Structure N] (f : M ↪[L] N)
 /-- Type synonym for `N` used to equip it with an `L[[A]]`-structure where the new constants on `A`
 are interpreted via the embedding `f`. -/
 @[nolint unusedArguments]
-def Embedding.withConstants (f : M ↪[L] N) (A : Set M) : Type w' := N
+def Embedding.withConstants (_f : M ↪[L] N) (_A : Set M) : Type w' := N
 
 instance : L.Structure (f.withConstants A) := by
   dsimp [Embedding.withConstants]
