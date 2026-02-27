@@ -14,6 +14,9 @@ on:
       - '.github/workflows/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   validate-ci-scripts-paths:
     runs-on: ubuntu-latest
