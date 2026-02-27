@@ -48,10 +48,13 @@ variable {X : TopCat.{u}}
 namespace TopCat.Sheaf
 
 /-- A sheaf is flasque if all of the restriction morphisms are epimorphisms. -/
-def IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) : Prop :=
-    ∀{U V : Opens X}(i : U ⟶ V), Epi (F.val.map i.op)
+class IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) : Prop where
+  epi : ∀{U V : Opens X} (i : U ⟶ V), Epi (F.val.map i.op)
 
 namespace IsFlasque
+
+instance (priority := low) {C : Type v} [Category.{w} C] (F : Sheaf C X) [h : IsFlasque F]
+    {U V : Opens X} (i : U ⟶ V) : Epi (F.val.map i.op) := h.epi i
 
 variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.val.obj (op U))
 
@@ -109,7 +112,7 @@ lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
 `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`. -/
 theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.ShortExact)
-    (hX₁ : IsFlasque S.X₁) : Epi (S.g.1.app (op U)) := by
+    [IsFlasque S.X₁] : Epi (S.g.1.app (op U)) := by
   apply (AddCommGrpCat.epi_iff_surjective _).mpr
   intro s
   -- We apply Zorn's lemma to obtain a term `t` of `Under S.g s` that is maximal.
@@ -135,7 +138,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
     have i₁ : t.V ⊓ W ⟶ W := homOfLE inf_le_right
     -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`
     obtain ⟨t₄, (ht₄ : t₄ |_ (t.V ⊓ W) = t₃)⟩ :=
-      (AddCommGrpCat.epi_iff_surjective (S.X₁.val.map i₁.op)).mp (hX₁ i₁) t₃
+      (AddCommGrpCat.epi_iff_surjective (S.X₁.val.map i₁.op)).mp inferInstance t₃
     let f : Fin 2 → Opens X
     | 0 => t.V
     | 1 => W
@@ -177,49 +180,47 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
 then `𝓗` is flasque. -/
 theorem X₃_shortExact_isFlasque_X₁_isFlasque_X₂ {S : ShortComplex (Sheaf AddCommGrpCat X)}
-    (hS : S.ShortExact) (hX₁ : IsFlasque S.X₁) (hX₂ : IsFlasque S.X₂) : IsFlasque S.X₃ := by
-  intro U V i
-  have : Epi (S.g.1.app (op V) ≫ S.X₃.val.map i.op) := by
-    rw [← S.g.val.naturality i.op]
-    exact CategoryTheory.epi_comp' (hX₂ i) (epi_of_shortExact hS hX₁)
-  exact CategoryTheory.epi_of_epi (S.g.1.app (op V)) (S.X₃.val.map i.op)
+    (hS : S.ShortExact) [IsFlasque S.X₁] [IsFlasque S.X₂] : IsFlasque S.X₃ where
+  epi {U V} := fun i => by
+    have : Epi (S.g.1.app (op V) ≫ S.X₃.val.map i.op) := by
+      rw [← S.g.val.naturality i.op]
+      exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
+    exact CategoryTheory.epi_of_epi (S.g.1.app (op V)) (S.X₃.val.map i.op)
 
 /-- Injective sheaves are flasque. -/
-theorem of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I := by
-  intro _ _ i
-  exact epi_map_of_injective I (leOfHom i)
+instance of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
+  epi := fun i => epi_map_of_injective I (leOfHom i)
 
 /-- Flasque sheaves have no higher cohomology. For most applications, it is probably better to use
   `Subsingleton (H F (n + 1))` which can be proven by `infer_instance` -/
-theorem H_isZero {F : Sheaf AddCommGrpCat X} (hF : IsFlasque F) (n : ℕ) :
+theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
     IsZero (AddCommGrpCat.of (H F (n+1))) := by
   induction n generalizing F with
   | zero =>
     obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
     let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
     have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    let LS := Sheaf.H.longSequence hS 0 1
-    have hLS := Sheaf.H.longSequence.exact hS 0 1
+    have hLS := Sheaf.H.longSequence_exact hS 0 1
     refine ShortComplex.Exact.isZero_of_both_zeros (hLS.exact 2) ?_
       (zero_of_target_iso_zero _ (IsZero.isoZero (AddCommGrpCat.isZero_of_subsingleton
       (AddCommGrpCat.of (H I 1)))))
-    apply (ShortComplex.Exact.epi_f_iff (hLS.exact 1)).mp
-    rw [AddCommGrpCat.epi_iff_surjective, ← Equiv.surjective_comp (H.equiv₀ I).symm.toEquiv]
+    rw[← ShortComplex.Exact.epi_f_iff (hLS.exact 1), AddCommGrpCat.epi_iff_surjective,
+      ← Equiv.surjective_comp (H.equiv₀ I).symm.toEquiv]
     change Function.Surjective ((H.map S.g 0) ∘ (H.equiv₀ I).symm.toEquiv)
-    conv => arg 1 ; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ ((sheafSections Ab X).obj (op ⊤)).map S.g
-      => ext x ; exact H.equiv₀_symm_comp S.g x
+    conv => right; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ ((sheafSections Ab X).obj (op ⊤)).map S.g
+      => ext x; exact H.equiv₀_symm_comp S.g x
     rw [Equiv.comp_surjective, ← AddCommGrpCat.epi_iff_surjective]
-    exact epi_of_shortExact hS hF
+    exact epi_of_shortExact hS
   | succ n hn =>
     obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
     let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
     have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    have hX₃ : S.X₃.IsFlasque := X₃_shortExact_isFlasque_X₁_isFlasque_X₂ hS hF (of_injective I)
-    have hLS := Sheaf.H.longSequence.exact hS (n+1) (n+2)
-    exact ShortComplex.Exact.isZero_of_both_isZero (hLS.exact 2) (hn hX₃)
+    have hX₃ : S.X₃.IsFlasque := X₃_shortExact_isFlasque_X₁_isFlasque_X₂ hS
+    have hLS := Sheaf.H.longSequence_exact hS (n+1) (n+2)
+    exact ShortComplex.Exact.isZero_of_both_isZero (hLS.exact 2) (hn _)
       (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
 
-instance {F : Sheaf AddCommGrpCat X} (hF : IsFlasque F) (n : ℕ) : Subsingleton (H F (n + 1)) :=
-  AddCommGrpCat.subsingleton_of_isZero (H_isZero hF n)
+instance {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) : Subsingleton (H F (n + 1)) :=
+  AddCommGrpCat.subsingleton_of_isZero (H_isZero F n)
 
 end TopCat.Sheaf.IsFlasque

@@ -103,7 +103,7 @@ noncomputable abbrev H.longSequence (h : n₀ + 1 = n₁ := by lia) :
   Ext.covariantSequence ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of.{w} (ULift ℤ)))
     hS n₀ n₁ h
 
-theorem H.longSequence.exact (h : n₀ + 1 = n₁ := by lia) : (H.longSequence hS n₀ n₁ h).Exact :=
+theorem H.longSequence_exact (h : n₀ + 1 = n₁ := by lia) : (H.longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
 variable (F : Sheaf J AddCommGrpCat.{w}) {T : C} (hT : Limits.IsTerminal T)

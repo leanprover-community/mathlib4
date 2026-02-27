@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectiv
 
 Results for sheaves of abelian groups on topological spaces.
 
-## Main definition
+## Main definitions
 
 * `TopCat.Sheaf.H`: The cohomology of a sheaf of abelian groups in degree `n`
 
