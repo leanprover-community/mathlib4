@@ -59,7 +59,7 @@ section Introspective
 variable {K : Type*} [CommRing K] [IsDomain K]
 
 /-- The introspective relation, named by the original authors, only used for the construction of the
-final theorem. -/
+final theorem, and thus made private. -/
 private def introspective (f : K[X]) (n : ℕ) (r : ℕ) [NeZero r] : Prop :=
   ∀ μ ∈ (primitiveRoots r K), f.eval (μ ^ n) = f.eval μ ^ n
 
