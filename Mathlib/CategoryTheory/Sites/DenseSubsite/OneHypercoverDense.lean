@@ -642,6 +642,8 @@ namespace presheafObjObjIso
 
 variable (X₀ : C₀)
 
+set_option backward.whnf.reducibleClassField false in
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `OneHypercoverDenseData.essSurj.presheafObjObjIso`. -/
 noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.obj (op X₀) :=
   G₀.2.amalgamate ⟨_, cover_lift F J₀ _ (data (F.obj X₀)).mem₀⟩ (fun ⟨W₀, a, ha⟩ ↦
@@ -660,6 +662,7 @@ noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.
 
 variable {X₀}
 
+set_option backward.whnf.reducibleClassField false in
 @[reassoc]
 lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
@@ -701,6 +704,7 @@ lemma inv_π (i : (data (F.obj X₀)).I₀) :
       IsDenseSubsite.mapPreimage J F G₀ ((data (F.obj X₀)).f i) :=
   Multiequalizer.lift_ι _ _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
     inv data G₀ X₀ ≫ restriction data G₀ f =
@@ -721,6 +725,8 @@ lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
 
 end presheafObjObjIso
 
+set_option backward.whnf.reducibleClassField false in
+set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf `presheaf data G₀` extends `G₀`. -/
 noncomputable def presheafObjObjIso (X₀ : C₀) :
     (presheaf data G₀).obj (op (F.obj X₀)) ≅ G₀.val.obj (op X₀) where
@@ -737,6 +743,8 @@ noncomputable def presheafObjObjIso (X₀ : C₀) :
     dsimp at i b fac ⊢
     simp [presheafObjObjIso.hom_map data G₀ _ b fac, ← IsDenseSubsite.mapPreimage_comp, fac]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.whnf.reducibleClassField false in
 @[reassoc (attr := simp)]
 lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
     presheafMap data G₀ ((data X).f i) ≫ (presheafObjObjIso data G₀ ((data X).X i)).hom =
@@ -749,6 +757,7 @@ lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
   apply restriction_eq_of_fac
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma presheafObjObjIso_inv_naturality {X₀ Y₀ : C₀} (f : X₀ ⟶ Y₀) :
     G₀.val.map f.op ≫ (presheafObjObjIso data G₀ X₀).inv =

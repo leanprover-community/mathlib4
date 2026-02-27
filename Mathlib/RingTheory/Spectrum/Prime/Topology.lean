@@ -272,6 +272,7 @@ lemma vanishingIdeal_isClosed_isIrreducible :
   rintro _ ⟨s, hs, rfl⟩
   exact ⟨closure s, ⟨isClosed_closure, hs.closure⟩, vanishingIdeal_closure s⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma irreducibleSpace_iff_isPrime_nilradical :
     IrreducibleSpace (PrimeSpectrum R) ↔ (nilradical R).IsPrime := by
   simp [irreducibleSpace_def, isIrreducible_iff_vanishingIdeal_isPrime]
