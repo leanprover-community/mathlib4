@@ -703,10 +703,13 @@ jobs:
       - name: Upload staged cache to Azure
         shell: bash
         run: |
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN="$(printf '%s' "$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW" | tr -d '\r\n')"
+          export MATHLIB_CACHE_AZURE_BEARER_TOKEN
+
           echo "Uploading cache to Azure..."
           MATHLIB_CACHE_USE_CLOUDFLARE=0 lake env "$CACHE_BIN" put-staged --staging-dir="cache-staging" --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
         env:
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN: ${{ steps.cache-token.outputs.token }}
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
 
   post_steps:
     name: Post-Build Step
