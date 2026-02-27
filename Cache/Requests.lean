@@ -541,6 +541,8 @@ initialize UPLOAD_URL : String ← do
       "https://lakecache.blob.core.windows.net/mathlib4"
   return url?.getD defaultUrl
 
+def azureBearerApiVersionHeader : String := "x-ms-version: 2026-02-06"
+
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
 def mkPutConfigContent (repo : String) (files : Array FilePath) (auth : UploadAuth) : IO String := do
   let token := match auth with
@@ -572,9 +574,11 @@ def putFilesAbsolute
           #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *"]
       | .azureBearer token =>
         if overwrite then
-          #["-H", "x-ms-blob-type: BlockBlob", "-H", s!"Authorization: Bearer {token}"]
+          #["-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader, "-H",
+            s!"Authorization: Bearer {token}"]
         else
           #["-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
+            azureBearerApiVersionHeader, "-H",
             s!"Authorization: Bearer {token}"]
     let args := args ++ #[
       "-X", "PUT", "--parallel",
@@ -666,9 +670,10 @@ def commit (hashMap : IO.ModuleHashMap) (overwrite : Bool) (auth : UploadAuth) :
     discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}?{token}"]
   | .azureBearer token =>
     let params := if overwrite
-      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", s!"Authorization: Bearer {token}"]
+      then #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", azureBearerApiVersionHeader,
+        "-H", s!"Authorization: Bearer {token}"]
       else #["-X", "PUT", "-H", "x-ms-blob-type: BlockBlob", "-H", "If-None-Match: *", "-H",
-        s!"Authorization: Bearer {token}"]
+        azureBearerApiVersionHeader, "-H", s!"Authorization: Bearer {token}"]
     discard <| IO.runCurl <| params ++ #["-T", path.toString, s!"{URL}/c/{hash}"]
   IO.FS.removeFile path
 
