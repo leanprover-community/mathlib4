@@ -593,7 +593,7 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
       ((X : (ZMod n)[X]) ^ n - (C (y : (ZMod n)))) =
     (Ideal.Quotient.mk (Ideal.span {(X : (ZMod n)[X]) ^ r - 1}))
-      (((X : (ZMod n)[X]) - (C (y : (ZMod n)))) ^ n)) : IsPrimePow n := by
+      (((X : (ZMod n)[X]) - (C (y : ZMod n))) ^ n)) : IsPrimePow n := by
   by_contra hcon
   obtain ⟨p, hp, q, hq, hpq⟩ :=
     (not_isPrimePow_iff_nontrivial_of_two_le (show 2 ≤ n by lia)).mp hcon
