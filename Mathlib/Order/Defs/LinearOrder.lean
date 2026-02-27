@@ -92,7 +92,10 @@ instance : Std.IsLinearOrder α where
 @[to_dual self] lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
 @[to_dual gt_trichotomy]
-lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by grind
+lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by
+  cases le_total (a := a) (b := b) with
+  | _ h =>
+    cases Decidable.lt_or_eq_of_le h with | _ h => simp [h]
 
 @[to_dual self]
 lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
@@ -107,7 +110,7 @@ lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
 @[to_dual self] lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
 
 @[to_dual gt_or_lt_of_ne]
-lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by grind
+lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by simpa [h] using lt_trichotomy a b
 
 @[to_dual ne_iff_gt_or_lt]
 lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
@@ -132,19 +135,47 @@ lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def a b
 
 @[to_dual existing max_def]
-theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by grind
+theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
+  match lt_trichotomy a b with
+  | .inl h | .inr (.inl h) | .inr (.inr h) => simp [le_of_lt, not_le_of_gt, h, min_def]
 
 @[to_dual existing min_def]
-theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by grind
+theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
+  match lt_trichotomy a b with
+  | .inl h | .inr (.inl h) | .inr (.inr h) => simp [le_of_lt, not_le_of_gt, h, max_def]
+
+@[to_dual le_min_iff]
+theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c := by
+  rw [max_def]
+  split_ifs with h
+  · simpa using le_trans h
+  · simpa using le_trans (le_of_not_ge h)
+
+instance : Std.LawfulOrderMin α where
+  min_eq_or a b := by
+    rw [min_def]
+    split_ifs <;> simp
+  le_min_iff _ _ _ := le_min_iff
+
+instance : Std.LawfulOrderMax α where
+  max_eq_or a b := by
+    rw [max_def]
+    split_ifs <;> simp
+  max_le_iff _ _ _ := max_le_iff
+
+theorem le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c := Std.le_max
+
+@[to_dual existing le_max_iff]
+theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c := Std.min_le
 
 @[to_dual le_max_left]
-lemma min_le_left (a b : α) : min a b ≤ a := by grind
+lemma min_le_left (a b : α) : min a b ≤ a := min_le_iff.mpr (.inl le_rfl)
 
 @[to_dual le_max_right]
-lemma min_le_right (a b : α) : min a b ≤ b := by grind
+lemma min_le_right (a b : α) : min a b ≤ b := min_le_iff.mpr (.inr le_rfl)
 
 @[to_dual max_le]
-lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by grind
+lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := le_min_iff.mpr ⟨h₁, h₂⟩
 
 @[to_dual]
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=
@@ -155,15 +186,17 @@ lemma min_comm (a b : α) : min a b = min b a :=
   eq_min (min_le_right a b) (min_le_left a b) fun h₁ h₂ => le_min h₂ h₁
 
 @[to_dual]
-lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by grind
+lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
+  apply le_antisymm <;> simp [min_le_iff, le_min_iff]
 
 @[to_dual]
-lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by grind
+lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
+  rw [← min_assoc, min_comm a, min_assoc]
 
-@[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := by grind
+@[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := by simp [min_def]
 
 @[to_dual]
-lemma min_eq_left (h : a ≤ b) : min a b = a := by grind
+lemma min_eq_left (h : a ≤ b) : min a b = a := (eq_min le_rfl h (fun h _ ↦ h)).symm
 
 @[to_dual]
 lemma min_eq_right (h : b ≤ a) : min a b = b := min_comm b a ▸ min_eq_left h
@@ -179,15 +212,15 @@ section Ord
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  grind
+  simp [apply_ite (· = Ordering.lt)]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  grind
+  simpa [apply_ite (· = Ordering.gt), ne_iff_lt_or_gt, and_or_left, - not_lt] using not_lt_of_gt
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  grind
+  simp +contextual [apply_ite (· = Ordering.eq)]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   cases h : compare a b
