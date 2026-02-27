@@ -5,17 +5,10 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
-public import Mathlib.Algebra.Category.ModuleCat.Ext.DimensionShifting
 public import Mathlib.Algebra.Category.ModuleCat.Localization
 public import Mathlib.Algebra.Category.ModuleCat.Projective
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
-public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.RingTheory.LocalProperties.Projective
 
 /-!
@@ -64,10 +57,9 @@ lemma localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : S
       (T.X₂.localizedModuleMkLinearMap S) (T.X₃.localizedModuleMkLinearMap S)
       _ _ ((ShortComplex.ShortExact.moduleCat_exact_iff_function_exact T).mp T_exact.1)
     let TS := T.map (ModuleCat.localizedModuleFunctor S)
-    have TS_exact : TS.ShortExact :=
-      T_exact.map_of_exact (ModuleCat.localizedModuleFunctor S)
-    let _ : Projective TS.X₂ := (ModuleCat.localizedModuleFunctor.{v} S).projective_obj _
-    let _ :=(T_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mp projle
+    have TS_exact : TS.ShortExact := T_exact.map_of_exact (ModuleCat.localizedModuleFunctor S)
+    have : Projective TS.X₂ := (ModuleCat.localizedModuleFunctor.{v} S).projective_obj _
+    have := (T_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mp projle
     exact (TS_exact.hasProjectiveDimensionLT_X₃_iff n ‹_›).mpr (ih (kernel f))
 
 lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v, u} R]
