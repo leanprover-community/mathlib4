@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Edward van de Meent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Edward van de Meent.
+Authors: Edward van de Meent
 -/
 module
 
