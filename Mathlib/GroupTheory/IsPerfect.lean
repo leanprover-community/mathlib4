@@ -24,9 +24,9 @@ Among the basic results, we show that
 ## Main Theorems
 
 * `IsPerfect.map`: The image of a perfect group under a monoid homomorphism is perfect.
-* `IsPerfect.instQuotient`: The quotient of a perfect group by a normal subgroup is perfect.
-* `IsPerfect.map_surjective`: The image of a perfect group under a surjective monoid homomorphism
-  is perfect.
+* `IsPerfect.instQuotientSubgroup`: The quotient of a perfect group by a normal subgroup is perfect.
+* `IsPerfect.ofSurjective`: The image of a perfect group under a surjective monoid
+  homomorphism is perfect.
 -/
 
 @[expose] public section
@@ -34,7 +34,7 @@ Among the basic results, we show that
 namespace Group
 open Subgroup
 
-variable {G G' : Type*} [Group G] {H K : Subgroup G} (f : G → G')
+variable {G G' : Type*} [Group G] [Group G'] {H K : Subgroup G} (f : G →* G')
 
 variable (G) in
 /-- A group `G` is perfect if `G` equals its commutator subgroup `⁅G, G⁆`. -/
@@ -86,20 +86,20 @@ instance subsingleton_of_isMulCommutative
 lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
   isPerfect_iff.mp hH
 
-protected lemma map {G'} [Group G'] [IsPerfect H] (f : G →* G') : IsPerfect (H.map f) := by
+protected lemma map [IsPerfect H] : IsPerfect (H.map f) := by
   rw [isPerfect_iff, ← map_commutator, commutator_eq_self]
 
-protected lemma range {G'} [Group G'] [IsPerfect G] (f : G →* G') : IsPerfect f.range := by
+protected lemma range [IsPerfect G] : IsPerfect f.range := by
   rw [MonoidHom.range_eq_map]
   have : IsPerfect (⊤ : Subgroup G) := top_iff.mpr inferInstance
   apply IsPerfect.map
 
-lemma ofSurjective {G'} [Group G'] [IsPerfect G] {f : G →* G'} (hf : Function.Surjective f) :
-    IsPerfect G' := by
+variable {f} in
+lemma ofSurjective [IsPerfect G] (hf : Function.Surjective f) : IsPerfect G' := by
   rw [← top_iff, ← MonoidHom.range_eq_top_of_surjective f hf]
   exact IsPerfect.range f
 
-instance [H.Normal] [IsPerfect G] : IsPerfect (G ⧸ H) :=
+instance instQuotientSubgroup [H.Normal] [IsPerfect G] : IsPerfect (G ⧸ H) :=
   ofSurjective (QuotientGroup.mk'_surjective H)
 
 end Group.IsPerfect
