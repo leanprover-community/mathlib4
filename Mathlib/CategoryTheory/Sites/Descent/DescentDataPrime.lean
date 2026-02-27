@@ -285,8 +285,8 @@ def ofDescentData (D : F.DescentData f) : F.DescentData' sq sq₃ where
 variable (sq sq₃) in
 @[simp]
 lemma pullHom'_ofDescentData_hom (D : F.DescentData f)
-    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁)
-    (f₂ : Y ⟶ X i₂) (hf₁ : f₁ ≫ f i₁ = q) (hf₂ : f₂ ≫ f i₂ = q) :
+    ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
+    (hf₁ : f₁ ≫ f i₁ = q := by cat_disch) (hf₂ : f₂ ≫ f i₂ = q := by cat_disch) :
     pullHom' (ofDescentData sq sq₃ D).hom q f₁ f₂ hf₁ hf₂ = D.hom q f₁ f₂ hf₁ hf₂ := by
   obtain ⟨p, h₁, h₂⟩ := (sq i₁ i₂).isPullback.exists_lift f₁ f₂ (by cat_disch)
   rw [pullHom'_eq_pullHom _ _ _ _ p]
@@ -296,13 +296,12 @@ lemma pullHom'_ofDescentData_hom (D : F.DescentData f)
 
 variable (F sq sq₃)
 
+attribute [local simp] Hom.comm in
 /-- The functor `F.DescentData' sq sq₃ ⥤ F.DescentData f`. -/
 @[simps]
 noncomputable def toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentData f where
   obj D := D.descentData
-  map φ :=
-    { hom := φ.hom
-      comm := comm φ }
+  map φ := { hom := φ.hom }
 
 attribute [local simp] DescentData.Hom.comm in
 /-- The functor `F.DescentData f ⥤ F.DescentData' sq sq₃`. -/
