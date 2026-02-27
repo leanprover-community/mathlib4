@@ -34,7 +34,7 @@ open Category Limits Preadditive ZeroObject Pretriangulated ZeroObject
 
 namespace Triangulated
 
-variable {C A : Type*} [Category C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
+variable {C A : Type*} [Category* C] [HasZeroObject C] [Preadditive C] [HasShift C ℤ]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
   [Category A] {ι : A ⥤ C}
 
