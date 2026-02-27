@@ -349,7 +349,7 @@ lemma normalizer_inf_normalizer_le_normalizer_sup (H K : Subgroup G) :
 
 @[to_additive]
 lemma normalizer_le_normalizer_sup_of_normalizer_le_left
-    {G : Type*} [Group G] {H K : Subgroup G} (hHnK : H.normalizer ≤ K.normalizer) :
+    {H K : Subgroup G} (hHnK : H.normalizer ≤ K.normalizer) :
     H.normalizer ≤ (H ⊔ K).normalizer :=
   (inf_of_le_left hHnK).symm.trans_le (H.normalizer_inf_normalizer_le_normalizer_sup K)
 
