@@ -5,13 +5,7 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Algebra.Order.Field.Power
-public import Mathlib.Data.EReal.Inv
-public import Mathlib.Data.Real.Sqrt
-public import Mathlib.Logic.Equiv.PartialEquiv
-public import Mathlib.Tactic.ContinuousFunctionalCalculus
-public import Mathlib.Tactic.Positivity
+public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Continuous linear maps with a continuous left/right inverse
