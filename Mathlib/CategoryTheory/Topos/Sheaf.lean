@@ -43,7 +43,7 @@ Let `C` refer to a category with grothendieck topology `J`.
 
 @[expose] public section
 
-universe v u
+universe w v u
 
 
 namespace CategoryTheory
@@ -53,46 +53,28 @@ open Limits
 
 section
 
+/-- A construction of a terminal object in a sheaf category, given by the constant `PUnit` sheaf. -/
 @[simps]
-def Sheaf.terminal {J : GrothendieckTopology C} : Sheaf J (Type (max u v)) where
-  val := (CategoryTheory.Functor.const _).obj (PUnit)
-  cond := Presheaf.isSheaf_of_isTerminal J (Types.isTerminalPUnit)
+def Sheaf.terminal (J : GrothendieckTopology C) : Sheaf J (Type w) where
+  val := (CategoryTheory.Functor.const _).obj PUnit
+  cond := Presheaf.isSheaf_of_isTerminal J Types.isTerminalPUnit
 
-def Sheaf.terminal.isTerminal {J : GrothendieckTopology C} : IsTerminal (Sheaf.terminal (J := J)) :=
+/-- The constant `PUnit` sheaf is a terminal object in `Sheaf J (Type w)` -/
+def Sheaf.terminal.isTerminal {J : GrothendieckTopology C} : IsTerminal (Sheaf.terminal.{w} J) :=
   .ofUniqueHom (fun F => { val := { app X := (fun _ => .unit) } }) (by intros; ext; rfl)
 
-
-@[simps! val val_obj val_map]
+/-- The sheaf of closed sieves w/r/t `J` -/
+@[simps val]
 def Sheaf.Ω {J : GrothendieckTopology C} : Sheaf J (Type (max u v)) where
   val := .closedSieves J
   cond := by
     rw [CategoryTheory.isSheaf_iff_isSheaf_of_type]
     exact CategoryTheory.classifier_isSheaf J
 
+/-- The morphism `t : 1 ⟶ Ω` which picks out the maximal sieve -/
 @[simps]
-def Sheaf.truth {J : GrothendieckTopology C} : Sheaf.terminal (J := J) ⟶ Sheaf.Ω where
+def Sheaf.truth {J : GrothendieckTopology C} : Sheaf.terminal J ⟶ Sheaf.Ω where
   val.app X := fun _ => ⟨⊤,_⟩
-
-/-
-given a monomorphism of sheaves `η : F ⟶ G`, a point `X` of the site, map an element `x : G(X)`
-to the (closed) sieve on X where `f : Y → X` is in the sieve iff
-  ∃ a ∈ F(Y), G(f)(x) = η_Y(a).
-
-the map `¬ : Ω ⟶ Ω` is given by, for each point `X` of the site,
-mapping a (closed) sieve `s` on X to the sieve on X where `f : Y ⟶ X` is in the sieve
-iff `s.preimage f` is empty, i.e. none of the maps in `s` factor through f
-
-therefore the classifying map of `¬η` maps an element `x ∈ G(X)` to the (closed) sieve
-where `f : Y ⟶ X` is in the sieve iff for all maps `z : Z ⟶ Y`, and for all elements
- `a ∈ F(Z)`, not `G(z ≫ f)(x) = η_Z(a)`. (or informally, `G(z ≫ f)(x) ∉ F(Z) ⊆ G(Z)`)
-
-Then, the subsheaf `¬η` has, for every point `X` of the site, those elements `x ∈ G(X)`
-such that (the previous) sieve is ⊤, or equivalently, `𝟙 X` is in that sieve.
-Equivalently, if for all maps `f : Y ⟶ X`, `G(f)(x) ∉ F(Z)`
-
--/
-
-
 
 /--
 given a monomorphism of sheaves `η : F ⟶ G`, a point X of the site, map an element `x : G(X)`
@@ -217,10 +199,14 @@ lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v
   change (((Sheaf.Ω).val.map f.op) (χ'.val.app X a)).val = ⊤ ↔ _
   simp_rw [← FunctorToTypes.naturality, ← hfst,eq_comm]
 
+/--
+A construction of subobject classifier for sheaf categories. `Ω` is the sheaf of closed sieves,
+and `truth` maps for each object `X : C`, an element of `PUnit` to the maximal `Sieve X`.
+-/
 @[simps! Ω truth Ω₀ χ χ₀]
 def Sheaf.classifier (J : GrothendieckTopology C) : Classifier (Sheaf J (Type (max u v))) :=
   .mkOfTerminalΩ₀
-    (.terminal)
+    (.terminal J)
     (Sheaf.terminal.isTerminal)
     (Sheaf.Ω)
     (Sheaf.truth)
@@ -228,6 +214,7 @@ def Sheaf.classifier (J : GrothendieckTopology C) : Classifier (Sheaf J (Type (m
     (Sheaf.classifier_isPullback)
     (Sheaf.χ_unique)
 
+/-- Sheaf categories have a subobject classifier. -/
 instance (J : GrothendieckTopology C) : HasClassifier (Sheaf J (Type (max u v))) where
   exists_classifier := ⟨Sheaf.classifier J⟩
 
