@@ -28,7 +28,7 @@ open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type*} [Category* C] [ModelCategory C] {H : Type*} [Category H]
+variable {C : Type*} [Category* C] [ModelCategory C] {H : Type*} [Category* H]
   (L : C ⥤ H) [L.IsLocalization (weakEquivalences _)]
   {X Y : C}
 
