@@ -296,12 +296,13 @@ lemma pullHom'_ofDescentData_hom (D : F.DescentData f)
 
 variable (F sq sq₃)
 
-attribute [local simp] Hom.comm in
 /-- The functor `F.DescentData' sq sq₃ ⥤ F.DescentData f`. -/
 @[simps]
 noncomputable def toDescentDataFunctor : F.DescentData' sq sq₃ ⥤ F.DescentData f where
   obj D := D.descentData
-  map φ := { hom := φ.hom }
+  map φ :=
+    { hom := φ.hom
+      comm := comm φ }
 
 attribute [local simp] DescentData.Hom.comm in
 /-- The functor `F.DescentData f ⥤ F.DescentData' sq sq₃`. -/
