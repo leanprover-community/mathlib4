@@ -40,7 +40,7 @@ variable (G) in
 /-- A group `G` is perfect if `G` equals its commutator subgroup `⁅G, G⁆`. -/
 class IsPerfect where
   /-- The commutator of the group `G` with itself is the whole group `G`. -/
-  commutator_eq_top : ⁅(⊤ : Subgroup G), ⊤⁆ = (⊤ : Subgroup G)
+  commutator_eq_top : commutator G = (⊤ : Subgroup G)
 
 attribute [simp] IsPerfect.commutator_eq_top
 
@@ -53,7 +53,7 @@ lemma _root_.Subgroup.isPerfect_iff : IsPerfect H ↔ ⁅H, H⁆ = H := by
 
 namespace IsPerfect
 
-lemma mem_commutator [hP : IsPerfect G] {g : G} : g ∈ ⁅(⊤ : Subgroup G), (⊤ : Subgroup G)⁆ := by
+lemma mem_commutator [hP : IsPerfect G] {g : G} : g ∈ commutator G := by
   simp
 
 /-- The trivial subgroup `⊥` is always perfect. -/
@@ -68,7 +68,7 @@ variable (G) in
 lemma not_isSolvable [Nontrivial G] [IsPerfect G] : ¬ IsSolvable G := by
   intro h
   have comm_lt := IsSolvable.commutator_lt_of_ne_bot (bot_ne_top (α := Subgroup G)).symm
-  grind only [commutator_eq_top]
+  grind only [commutator_eq_top (G := G), _root_.commutator_def]
 
 variable (G) in
 lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
