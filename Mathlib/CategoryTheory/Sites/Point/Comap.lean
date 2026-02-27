@@ -39,8 +39,6 @@ any point on `D` induces a point on `C` by precomposing the fiber functor with `
 @[simps]
 def comap : Point.{w} J where
   fiber := F ⋙ Φ.fiber
-  isCofiltered := by
-    infer_instance
   jointly_surjective {X} {R} hR x := by
     obtain ⟨Y, f, ⟨W, g, h, hg, rfl⟩, y, rfl⟩ :=
       Φ.jointly_surjective (Sieve.functorPushforward F R) (hF.cover_preserve hR) x
