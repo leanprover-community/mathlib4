@@ -153,7 +153,7 @@ alias ramificationIdx_eq_of_isGalois := ramificationIdx_eq_of_isGaloisGroup
 
 include G in
 /-- All the `Ideal.inertiaDeg` over a fixed maximal ideal are the same. -/
-theorem inertiaDeg_eq_of_isGaloisGroup [p.IsMaximal] :
+theorem inertiaDeg_eq_of_isGaloisGroup :
     inertiaDeg p P = inertiaDeg p Q := by
   rcases exists_smul_eq_of_isGaloisGroup p P Q G with ⟨σ, rfl⟩
   exact (inertiaDeg_map_eq p P (MulSemiringAction.toAlgEquiv A B σ)).symm
@@ -180,7 +180,7 @@ theorem ramificationIdxIn_ne_zero [IsDedekindDomain B] {p : Ideal A} [p.IsPrime]
 
 include G in
 /-- The `inertiaDegIn` is equal to any ramification index over the same ideal. -/
-theorem inertiaDegIn_eq_inertiaDeg [p.IsMaximal] :
+theorem inertiaDegIn_eq_inertiaDeg :
     inertiaDegIn p B = inertiaDeg p P := by
   have h : ∃ P : Ideal B, P.IsPrime ∧ P.LiesOver p := ⟨P, hPp, hp⟩
   obtain ⟨_, _⟩ := h.choose_spec

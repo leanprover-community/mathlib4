@@ -55,7 +55,7 @@ Given `hf : relativelyRepresentable f`, with `f : X ⟶ Y` and `g : F.obj a ⟶ 
   pullback of `f` and `g`.
 * `hf.snd g` is the morphism `hf.pullback g ⟶ F.obj a`
 * `hf.fst g` is the morphism `F.obj (hf.pullback g) ⟶ X`
-*  If `F` is full, and `f` is of type `F.obj c ⟶ G`, we also have `hf.fst' g : hf.pullback g ⟶ X`
+* If `F` is full, and `f` is of type `F.obj c ⟶ G`, we also have `hf.fst' g : hf.pullback g ⟶ X`
   which is the preimage under `F` of `hf.fst g`.
 * `hom_ext`, `hom_ext'`, `lift`, `lift'` are variants of the universal property of
   `F.obj (hf.pullback g)`, where as much as possible has been formulated internally to `C`.

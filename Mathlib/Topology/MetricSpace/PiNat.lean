@@ -1129,7 +1129,6 @@ lemma continuous_distDenseSeq (n : ℕ) : Continuous (distDenseSeq X n) := by
   refine continuous_projIcc.comp <| Continuous.dist continuous_id' ?_
   convert continuous_const (y := denseSeq X n)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma separation {x : X} {C : Set X} (hxC : C ∈ 𝓝 x) :
     ∃ (n : ℕ), C ∈ (𝓝 (distDenseSeq X n x)).comap (distDenseSeq X n) := by
   let ε : ℝ := min (infDist x (closure Cᶜ)) 1

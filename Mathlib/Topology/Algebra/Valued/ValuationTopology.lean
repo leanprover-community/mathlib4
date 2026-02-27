@@ -144,9 +144,11 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toUniformSpace_eq :
-    toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ :=
-  UniformSpace.ext
-    ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
+    toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
+  ext : 1
+  apply (hasBasis_uniformity R Γ₀).eq_of_same_basis
+  simp only [sub_eq_add_neg]
+  exact v.subgroups_basis.hasBasis_nhds_zero.comap _
 
 variable {R Γ₀}
 
