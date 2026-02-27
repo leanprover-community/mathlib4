@@ -860,55 +860,6 @@ lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
 
-section FoldlEqFoldr
-
--- foldl and foldr coincide when f is commutative and associative
-variable {f : α → α → α}
-
-@[deprecated "Deprecated without replacement." (since := "2026-02-24")]
-theorem foldl1_eq_foldr1 [hassoc : Std.Associative f] :
-    ∀ a b l, foldl f a (l ++ [b]) = foldr f b (a :: l)
-  | _, _, nil => rfl
-  | a, b, c :: l => by
-    simp only [cons_append, foldl_cons, foldr_cons, foldl1_eq_foldr1 _ _ l]
-    rw [hassoc.assoc]
-
-@[deprecated "Deprecated without replacement." (since := "2026-02-24")]
-theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Associative f] :
-    ∀ a b l, foldl f a (b :: l) = f b (foldl f a l)
-  | a, b, nil => hcomm.comm a b
-  | a, b, c :: l => by
-    simp only [foldl_cons]
-    have : RightCommutative f := inferInstance
-    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm, foldl_cons]
-
-end FoldlEqFoldr
-
-section
-
-variable {op : α → α → α} [ha : Std.Associative op]
-
-/-- Notation for `op a b`. -/
-local notation a " ⋆ " b => op a b
-
--- Setting `priority := high` means that Lean will prefer this notation to the identical one
--- for `Seq.seq`
-/-- Notation for `foldl op a l`. -/
-local notation (priority := high) l " <*> " a => foldl op a l
-
-theorem foldl_op_eq_op_foldr_assoc :
-    ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
-  | [], _, _ => rfl
-  | a :: l, a₁, a₂ => by
-    simp only [foldl_cons, foldr_cons, foldl_assoc, ha.assoc]; rw [foldl_op_eq_op_foldr_assoc]
-
-variable [hc : Std.Commutative op]
-
-theorem foldl_assoc_comm_cons {l : List α} {a₁ a₂} : ((a₁ :: l) <*> a₂) = a₁ ⋆ l <*> a₂ := by
-  rw [foldl_cons, hc.comm, foldl_assoc]
-
-end
-
 /-! ### foldlM, foldrM, mapM -/
 
 section FoldlMFoldrM
