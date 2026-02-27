@@ -135,6 +135,8 @@ def projl : K ⋊⁅ψ⁆ L →ₗ[R] K where
 
 lemma projr_inl_apply {x : K} : projr ψ (inl ψ x) = 0 := by simp
 lemma projr_inr_apply {x : L} : projr ψ (inr ψ x) = x := by simp
+lemma projl_inr_apply {x : L} : projl ψ (inr ψ x) = 0 := by simp
+lemma projl_inl_apply {x : K} : projl ψ (inl ψ x) = x := by simp
 
 @[simp]
 lemma projr_surjective : Function.Surjective (projr ψ) :=
