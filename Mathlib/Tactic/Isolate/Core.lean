@@ -106,11 +106,11 @@ meta def parseIsolateLemma (decl : Name) : MetaM IsolateLemmaKey := do
     failTarget m!"Here the conclusion has the form _ ↔ {rhs}, but {m}"
   -- verify that `P` and `Q` are both relations
   let .app (.app lhsRel lhsA) lhsB := (← whnfR lhs) |
-    throwError (failLHS m!"{lhs} could not be parsed as a relation")
+    throwError (failLHS m!"{lhs} could not be parsed as a binary relation _ ~ _.")
   let some relName := lhsRel.getAppFn.constName? |
     throwError "{lhsRel} should be a concrete relation, for example it cannot be a variable"
   let .app (.app _ rhsA) rhsB := (← whnfR rhs) |
-    throwError (failLHS m!"{rhs} could not be parsed as a relation")
+    throwError (failLHS m!"{rhs} could not be parsed as a binary relation _ ~ _.")
   let lhsA := lhsA.eta
   let lhsB := lhsB.eta
   let rhsA := rhsA.eta
