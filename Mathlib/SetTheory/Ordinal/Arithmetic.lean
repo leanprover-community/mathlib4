@@ -941,10 +941,9 @@ theorem dvd_antisymm {a b : Ordinal} (h₁ : a ∣ b) (h₂ : b ∣ a) : a = b :
 instance antisymm : @Std.Antisymm Ordinal (· ∣ ·) :=
   ⟨@dvd_antisymm⟩
 
-/-- `a % b` is the unique ordinal `o'` satisfying
-  `a = b * o + o'` with `o' < b`. -/
-instance mod : Mod Ordinal :=
-  ⟨fun a b => a - b * (a / b)⟩
+/-- `a % b` is the unique ordinal `r` satisfying `a = b * q + r` with `r < b`. -/
+instance mod : Mod Ordinal where
+  mod a b := a - b * (a / b)
 
 theorem mod_def (a b : Ordinal) : a % b = a - b * (a / b) :=
   rfl
@@ -953,27 +952,29 @@ theorem mod_le (a b : Ordinal) : a % b ≤ a :=
   sub_le_self a _
 
 @[simp]
-theorem mod_zero (a : Ordinal) : a % 0 = a := by simp only [mod_def, div_zero, zero_mul, sub_zero]
+theorem mod_zero (a : Ordinal) : a % 0 = a := by simp [mod_def]
 
 theorem mod_eq_of_lt {a b : Ordinal} (h : a < b) : a % b = a := by
-  simp only [mod_def, div_eq_zero_of_lt h, mul_zero, sub_zero]
+  simp [mod_def, div_eq_zero_of_lt h]
 
 @[simp]
-theorem zero_mod (b : Ordinal) : 0 % b = 0 := by simp only [mod_def, zero_div, mul_zero, sub_self]
+theorem zero_mod (b : Ordinal) : 0 % b = 0 := by simp [mod_def]
 
 theorem div_add_mod (a b : Ordinal) : b * (a / b) + a % b = a :=
   Ordinal.add_sub_cancel_of_le <| mul_div_le _ _
 
-theorem mod_lt (a) {b : Ordinal} (h : b ≠ 0) : a % b < b :=
-  (add_lt_add_iff_left (b * (a / b))).1 <| by rw [div_add_mod]; exact lt_mul_div_add a h
+theorem mod_lt (a) {b : Ordinal} (h : b ≠ 0) : a % b < b := by
+  rw [← add_lt_add_iff_left, div_add_mod]
+  exact lt_mul_div_add a h
 
 @[simp]
-theorem mod_self (a : Ordinal) : a % a = 0 :=
-  if a0 : a = 0 then by simp only [a0, zero_mod]
-  else by simp only [mod_def, div_self a0, mul_one, sub_self]
+theorem mod_self (a : Ordinal) : a % a = 0 := by
+  obtain rfl | ha := eq_or_ne a 0
+  · simp
+  · simp [mod_def, ha]
 
 @[simp]
-theorem mod_one (a : Ordinal) : a % 1 = 0 := by simp only [mod_def, div_one, one_mul, sub_self]
+theorem mod_one (a : Ordinal) : a % 1 = 0 := by simp [mod_def]
 
 theorem dvd_of_mod_eq_zero {a b : Ordinal} (H : a % b = 0) : b ∣ a :=
   ⟨a / b, by simpa [H] using (div_add_mod a b).symm⟩
@@ -991,7 +992,7 @@ theorem dvd_iff_mod_eq_zero {a b : Ordinal} : b ∣ a ↔ a % b = 0 :=
 theorem mul_add_mod_self (x y z : Ordinal) : (x * y + z) % x = z % x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
-  · rwa [mod_def, mul_add_div, mul_add, ← sub_sub, add_sub_cancel, mod_def]
+  · rw [mod_def, mul_add_div _ hx, mul_add, ← sub_sub, add_sub_cancel, mod_def]
 
 @[simp]
 theorem mul_mod (x y : Ordinal) : x * y % x = 0 := by
