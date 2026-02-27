@@ -1321,9 +1321,9 @@ def div (p : ℕ) {d : α →₀ ℕ} (h : ∀ (i : α), p ∣ d i) : α →₀ 
   mem_support_toFun i := by
     constructor
     · intro hi
-      simp only [Finsupp.mem_support_iff, ne_eq] at hi
       obtain ⟨j, hj⟩ := h i
-      simp only [hj, mul_eq_zero, not_or, ne_eq, Nat.div_eq_zero_iff, not_lt] at hi ⊢
+      simp only [mem_support_iff, hj, ne_eq, mul_eq_zero, not_or, Nat.div_eq_zero_iff,
+        not_lt] at hi ⊢
       exact ⟨hi.1, Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero hi.2)⟩
     · intro hi
       simp only [ne_eq, Nat.div_eq_zero_iff, not_or, not_lt,
