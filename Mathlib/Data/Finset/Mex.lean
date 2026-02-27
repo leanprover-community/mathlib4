@@ -21,7 +21,7 @@ This file shows that the cardinality of a set is an upper-bound for its mex.
 minimum excluded value, smallest, infimum, complement
 -/
 
-@[expose] public section
+public section
 
 open Set
 
