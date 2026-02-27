@@ -257,16 +257,14 @@ def isoMk {D₁ D₂ : F.DescentData' sq sq₃} (e : ∀ (i : ι), D₁.obj i �
     (comm : ∀ (i₁ i₂ : ι), (F.map (sq i₁ i₂).p₁.op.toLoc).toFunctor.map (e i₁).hom ≫ D₂.hom i₁ i₂ =
       D₁.hom i₁ i₂ ≫ (F.map (sq i₁ i₂).p₂.op.toLoc).toFunctor.map (e i₂).hom := by cat_disch) :
     D₁ ≅ D₂ where
-  hom :=
-    { hom i := (e i).hom
-      comm := comm }
-  inv :=
-    { hom i := (e i).inv
-      comm i₁ i₂ := by
-        rw [← cancel_mono ((F.map _).toFunctor.map (e i₂).hom), Category.assoc,
-          Category.assoc, Iso.map_inv_hom_id, Category.comp_id,
-          ← cancel_epi ((F.map _).toFunctor.map (e i₁).hom),
-          Iso.map_hom_inv_id_assoc, comm i₁ i₂] }
+  hom.hom i := (e i).hom
+  hom.comm := comm
+  inv.hom i := (e i).inv
+  inv.comm i₁ i₂ := by
+    rw [← cancel_mono ((F.map _).toFunctor.map (e i₂).hom), Category.assoc,
+      Category.assoc, Iso.map_inv_hom_id, Category.comp_id,
+      ← cancel_epi ((F.map _).toFunctor.map (e i₁).hom),
+      Iso.map_hom_inv_id_assoc, comm i₁ i₂]
 
 end DescentData'
 
