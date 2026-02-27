@@ -621,11 +621,11 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
   obtain ⟨ pp , hp, - ⟩ := mem_primeFactors.mp hp
   obtain ⟨ pq , hq, - ⟩ := mem_primeFactors.mp hq
   haveI : Fact p.Prime := .mk pp
-  set K := (AlgebraicClosure (ZMod p))
-  have nz : NeZero (r:K) := by
+  set K := AlgebraicClosure (ZMod p)
+  have _ : NeZero (r : K) := by
     apply NeZero.of_not_dvd K
     exact (Nat.Prime.coprime_iff_not_dvd (n := r) pp).mp (Coprime.coprime_dvd_left hp hc)
-  have nz1 : NeZero r := NeZero.of_neZero_natCast K
+  have _ : NeZero r := NeZero.of_neZero_natCast K
   have henough : HasEnoughRootsOfUnity K r := inferInstance
   obtain ⟨ ν , hν ⟩ := henough.1
   refine AKS.aux (AKS.Conditions.mk hc hn ha hod hc2 ?_ hν pp pq hp hq hpq)
@@ -633,7 +633,7 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
   unfold AKS.introspective
   intro μ hμ
   by_cases hcas: y = 0
-  · simp[hcas]
+  · simp [hcas]
   · have yy : y ∈ Icc 1 a := by
       simp only [mem_Icc]
       exact ⟨ (by lia), (by grind)⟩
@@ -653,12 +653,12 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
     have g : μ = f ⟦X⟧ := by
       change μ = (eval₂RingHom (ZMod.castHom hp K)) μ X
       simp
-    have hoh : eval (μ ^ n) ((X:K[X]) - C (y:K)) = μ ^n - y := by
+    have hoh : eval (μ ^ n) ((X : K[X]) - C (y : K)) = μ ^ n - y := by
       rw [eval_sub,eval_X,eval_C]
-    have hoh2 : eval μ ( (X:K[X]) - C (y:K)) ^ n = (μ - y)^n := by
+    have hoh2 : eval μ ((X : K[X]) - C (y : K)) ^ n = (μ - y) ^ n := by
       congr
       rw [eval_sub, eval_X, eval_C]
-    have yy : (⟨ y,hyy⟩:Icc 0 a)=y := by grind
+    have yy : (⟨y, hyy⟩ : Icc 0 a) = y := by grind
     rw [yy, hoh, hoh2]
     replace hoh : f ⟦ X ^ n - y.cast ⟧ = μ ^ n - y.cast := by
       change (eval₂RingHom (ZMod.castHom hp K)) μ (X ^ n - y.cast ) = _
