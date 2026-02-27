@@ -5,9 +5,7 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Limits.Sifted
-public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 /-!
 # Tensor product of colimits
