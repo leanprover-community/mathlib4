@@ -623,9 +623,7 @@ theorem is_prime_pow_of_quotient_of_ideal_span_of_primitive_root_generator_polyn
   intro μ hμ
   by_cases hcas: y = 0
   · simp [hcas]
-  · have yy : y ∈ Icc 1 a := by
-      simp only [mem_Icc]
-      exact ⟨ (by lia), (by grind)⟩
+  · have yy : y ∈ Icc 1 a := by grind
     replace heq := heq y yy
     let f := by
       refine Ideal.Quotient.lift
