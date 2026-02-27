@@ -168,6 +168,7 @@ structure DescentData' where
 namespace DescentData'
 
 attribute [reassoc] pullHom'_hom_comp
+
 variable {F sq sq₃}
 
 @[simp]
