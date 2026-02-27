@@ -55,7 +55,7 @@ lemma mem_nonZeroDivisorsLeft_iff : x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, x 
 
 lemma notMem_nonZeroDivisorsLeft_iff :
     x ∉ nonZeroDivisorsLeft M₀ ↔ {y | x * y = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsLeft_iff] using Set.nonempty_def.symm
+  simp [mem_nonZeroDivisorsLeft_iff]
 
 /-- The collection of elements of a `MonoidWithZero` that are not right zero divisors form a
 `Submonoid`. -/
@@ -69,7 +69,7 @@ lemma mem_nonZeroDivisorsRight_iff : x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, 
 
 lemma notMem_nonZeroDivisorsRight_iff :
     x ∉ nonZeroDivisorsRight M₀ ↔ {y | y * x = 0 ∧ y ≠ 0}.Nonempty := by
-  simpa [mem_nonZeroDivisorsRight_iff] using Set.nonempty_def.symm
+  simp [mem_nonZeroDivisorsRight_iff]
 
 lemma nonZeroDivisorsLeft_eq_right (M₀ : Type*) [CommMonoidWithZero M₀] :
     nonZeroDivisorsLeft M₀ = nonZeroDivisorsRight M₀ := by

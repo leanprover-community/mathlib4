@@ -52,7 +52,7 @@ abbrev gradeBy (f : M → ι) (i : ι) : Submodule R R[M] where
   zero_mem' m h := by cases h
   add_mem' {a b} ha hb m h := by
     classical exact (Finset.mem_union.mp (Finsupp.support_add h)).elim (ha m) (hb m)
-  smul_mem' _ _ h := Set.Subset.trans Finsupp.support_smul h
+  smul_mem' c {x} hx m hm := hx m <| Finsupp.support_smul hm
 
 /-- The submodule corresponding to each grade. -/
 abbrev grade (m : M) : Submodule R R[M] :=

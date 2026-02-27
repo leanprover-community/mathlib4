@@ -300,9 +300,9 @@ theorem encard_singleton_inter (s : Set α) (x : α) : ({x} ∩ s).encard ≤ 1 
 
 theorem encard_diff_singleton_add_one (h : a ∈ s) :
     (s \ {a}).encard + 1 = s.encard := by
-  rw [← encard_insert_of_notMem (fun h ↦ h.2 rfl), insert_diff_singleton, insert_eq_of_mem h]
+  rw [← encard_insert_of_notMem, insert_diff_singleton, insert_eq_of_mem h]
+  simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem encard_diff_singleton_of_mem (h : a ∈ s) :
     (s \ {a}).encard = s.encard - 1 := by
   rw [← encard_diff_singleton_add_one h, ← WithTop.add_right_inj WithTop.one_ne_top,

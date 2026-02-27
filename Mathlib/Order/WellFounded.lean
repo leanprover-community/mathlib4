@@ -100,6 +100,10 @@ theorem min_mem {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s
   let ⟨h, _⟩ := Classical.choose_spec (H.has_min s h)
   h
 
+theorem prop_min {r : α → α → Prop} (H : WellFounded r) {p : α → Prop} (h : ∃ a, p a) :
+    p (H.min {a | p a} h) :=
+  H.min_mem {a | p a} h
+
 theorem not_lt_min {r : α → α → Prop} (H : WellFounded r) (s : Set α) (h : s.Nonempty) {x}
     (hx : x ∈ s) : ¬r x (H.min s h) :=
   let ⟨_, h'⟩ := Classical.choose_spec (H.has_min s h)
@@ -143,7 +147,7 @@ variable [LinearOrder β] [Preorder γ]
 -- TODO: the name `WellFounded.min` is incorrect when the assumption is that `>` is well-founded.
 @[to_dual none]
 theorem WellFounded.min_le (h : WellFounded ((· < ·) : β → β → Prop))
-    {x : β} {s : Set β} (hx : x ∈ s) (hne : s.Nonempty := ⟨x, hx⟩) : h.min s hne ≤ x :=
+    {x : β} {s : Set β} (hx : x ∈ s) : h.min s ⟨x, hx⟩ ≤ x :=
   not_lt.1 <| h.not_lt_min _ _ hx
 
 theorem Set.range_injOn_strictMono [WellFoundedLT β] :

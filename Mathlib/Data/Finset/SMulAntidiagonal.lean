@@ -75,8 +75,7 @@ noncomputable def SMulAntidiagonal [IsOrderedCancelSMul G P]
 @[to_additive (attr := simp)]
 theorem mem_smulAntidiagonal :
     x ∈ SMulAntidiagonal hs ht a ↔ x.1 ∈ s ∧ x.2 ∈ t ∧ x.1 • x.2 = a := by
-  simp only [SMulAntidiagonal, Set.Finite.mem_toFinset]
-  exact Set.mem_sep_iff
+  simp [SMulAntidiagonal]
 
 @[to_additive]
 theorem smulAntidiagonal_mono_left {a : P} {hs : s.IsPWO} {ht : t.IsPWO} (h : u ⊆ s) :

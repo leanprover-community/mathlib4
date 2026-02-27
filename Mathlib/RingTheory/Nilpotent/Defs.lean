@@ -78,7 +78,7 @@ lemma isNilpotent_of_pos_nilpotencyClass (hx : 0 < nilpotencyClass x) :
   simp [not_nonempty_iff_eq_empty.mp contra] at hx
 
 lemma pow_nilpotencyClass (hx : IsNilpotent x) : x ^ (nilpotencyClass x) = 0 :=
-  Nat.sInf_mem hx
+  Nat.sInf_mem <| nonempty_setOf.mpr hx
 
 end ZeroPow
 

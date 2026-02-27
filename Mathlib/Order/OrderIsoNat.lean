@@ -95,7 +95,7 @@ variable (s : Set ℕ) [Infinite s]
 def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
   (RelEmbedding.orderEmbeddingOfLTEmbedding
     (RelEmbedding.natLT (Nat.Subtype.ofNat s) fun _ => Nat.Subtype.lt_succ_self _)).trans
-    (OrderEmbedding.subtype s)
+    (OrderEmbedding.subtype (· ∈ s))
 
 /-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also
 `Nat.nth` for a version where the subset may be finite. -/
@@ -265,6 +265,7 @@ theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT (α) [Preorder α]
   have H : ∃ n, IsMax (a n) := by
     by_contra!
     exact (RelEmbedding.natGT a fun n ↦ (cov n (this n)).1).not_wellFounded wfg.wf
+  rw [← Set.nonempty_setOf] at H
   exact ⟨_, wellFounded_lt.min_mem _ H, fun i h ↦ cov _ fun h' ↦ wellFounded_lt.not_lt_min _ H h' h⟩
 
 theorem exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le {α : Type*} [PartialOrder α]

@@ -258,4 +258,7 @@ to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
 
+@[simp]
+theorem nonempty_setOf {p : α → Prop} : {a | p a}.Nonempty ↔ ∃ a, p a := .rfl
+
 end Set

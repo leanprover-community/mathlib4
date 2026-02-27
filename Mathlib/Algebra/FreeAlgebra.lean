@@ -550,7 +550,7 @@ theorem induction {motive : FreeAlgebra R X → Prop}
     (a : FreeAlgebra R X) : motive a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from X
   let s : Subalgebra R (FreeAlgebra R X) :=
-    { carrier := motive
+    { carrier := {x | motive x}
       mul_mem' := mul _ _
       add_mem' := add _ _
       algebraMap_mem' := grade0 }
