@@ -204,7 +204,7 @@ theorem refl_apply (a : A) : refl R A a = a := rfl
 theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
 
 @[simp]
-theorem coeCLE_refl : refl R A = ContinuousLinearEquiv.refl R A := rfl
+theorem coeCLE_refl : (refl R A).toContinuousLinearEquiv = ContinuousLinearEquiv.refl R A := rfl
 
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl

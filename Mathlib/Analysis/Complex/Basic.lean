@@ -252,15 +252,19 @@ def conjCAE : ℂ ≃A[ℝ] ℂ := { conjAe, conjLIE.toContinuousLinearEquiv wit
 /-- Continuous linear equiv version of the conj function, from `ℂ` to `ℂ`.
 
 This is an abbreviation for `conjCAE` coerced to a continuous linear map. -/
-abbrev conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE
+abbrev conjCLE : ℂ ≃L[ℝ] ℂ := conjCAE.toContinuousLinearEquiv
 
-@[simp] lemma conjLIE_toCLE : conjLIE = conjCLE := rfl
+@[simp] lemma conjLIE_toCLE : conjLIE.toContinuousLinearEquiv = conjCLE := rfl
 
 @[simp]
-theorem conjCAE_toAlgEquiv : (conjCAE : ℂ ≃ₐ[ℝ] ℂ) = conjAe :=
+theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
   rfl
 
-@[simp] theorem conjCLE_coe : (conjCLE : ℂ ≃ₗ[ℝ] ℂ) = conjAe :=
+@[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
+  rfl
+
+@[simp] lemma conjCLE_coe_toLinearMap :
+    (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap :=
   rfl
 
 @[simp]
@@ -271,7 +275,7 @@ theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
 theorem conjCLE_apply (z : ℂ) : conjCLE z = conj z :=
   rfl
 
-@[simp] lemma conjCAE_toLinearMap : (conjCAE : ℂ ≃ₗ[ℝ] ℂ) = conjAe := rfl
+@[simp] lemma conjCAE_toLinearMap : conjCAE.toLinearMap = conjAe.toLinearMap := rfl
 
 /-- Linear isometry version of the canonical embedding of `ℝ` in `ℂ`. -/
 def ofRealLI : ℝ →ₗᵢ[ℝ] ℂ :=
