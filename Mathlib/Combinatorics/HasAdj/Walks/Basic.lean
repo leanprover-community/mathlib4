@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 Iván Renison, Kyle Miller. All rights reserved.
+Copyright (c) 2026 Kyle Miller, Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Iván Renison, Kyle Miller, Peter Nelson
+Authors: Kyle Miller, Peter Nelson, Iván Renison
 -/
 module
 
@@ -54,7 +54,24 @@ can be useful in definitions since they make the vertices explicit. -/
 inductive Walk : V → V → Type u
   | nil {u : V} : Walk u u
   | cons {u v w : V} (h : Adj G u v) (p : Walk v w) : Walk u w
-  deriving DecidableEq
+
+/- Manual instances for `DecidableEq` because deriving gives an instance that requires
+  `DecidableEq Gr` -/
+@[reducible]
+instance Walk.instDecidable [DecidableEq V] {u v : V} (p q : Walk G u v) : Decidable (p = q) := by
+  rcases p with (nil | @⟨u, v₁, w, h₁, p₁⟩)
+  <;> rcases q with (nil | @⟨u, v₂, w, h₂, p₂⟩)
+  · exact isTrue rfl
+  · exact isFalse (by simp)
+  · exact isFalse (by simp)
+  · by_cases hv : v₁ = v₂
+    · subst hv
+      simp only [cons.injEq, heq_eq_eq, true_and]
+      exact Walk.instDecidable p₁ p₂
+    · apply isFalse (by simp [hv])
+
+instance Walk.instDecidableEq [DecidableEq V] {u v : V} : DecidableEq (Walk G u v) :=
+  Walk.instDecidable G
 
 attribute [refl] Walk.nil
 

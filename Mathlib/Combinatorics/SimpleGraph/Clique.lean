@@ -30,7 +30,7 @@ A clique is a set of vertices that are pairwise adjacent.
 
 @[expose] public section
 
-open Finset Fintype Function SimpleGraph.Walk
+open Finset Fintype Function HasAdj.Walk
 
 namespace SimpleGraph
 
@@ -298,7 +298,8 @@ theorem is3Clique_iff :
 end DecidableEq
 
 theorem is3Clique_iff_exists_cycle_length_three :
-    (∃ s : Finset α, G.IsNClique 3 s) ↔ ∃ (u : α) (w : G.Walk u u), w.IsCycle ∧ w.length = 3 := by
+    (∃ s : Finset α, G.IsNClique 3 s) ↔
+      ∃ (u : α) (w : HasAdj.Walk G u u), w.IsCycle ∧ w.length = 3 := by
   classical
   simp_rw [is3Clique_iff, isCycle_def]
   exact

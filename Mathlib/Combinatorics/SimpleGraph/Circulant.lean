@@ -25,6 +25,7 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` 
 @[expose] public section
 
 namespace SimpleGraph
+open HasAdj
 
 /-- Circulant graph over additive group `G` with jumps `s` -/
 @[simps!]
@@ -139,7 +140,7 @@ theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
 
 set_option backward.privateInPublic true in
 private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
-    ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
+    ∀ m : Fin (n + 3), HasAdj.Walk (cycleGraph (n + 3)) m 0
   | ⟨0, h⟩ => Walk.nil
   | ⟨m + 1, h⟩ =>
     have hadj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
@@ -149,7 +150,7 @@ private def cycleGraph_EulerianCircuit_cons (n : ℕ) :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Eulerian trail of `cycleGraph (n + 3)` -/
-def cycleGraph_EulerianCircuit (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
+def cycleGraph_EulerianCircuit (n : ℕ) : HasAdj.Walk (cycleGraph (n + 3)) 0 0 :=
   have hadj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
     simp [cycleGraph_adj]
   Walk.cons hadj (cycleGraph_EulerianCircuit_cons n (Fin.last (n + 2)))

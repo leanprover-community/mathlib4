@@ -129,12 +129,11 @@ lemma isEdgeConnected_two : G.IsEdgeConnected 2 ↔ ∀ e, (G.deleteEdges {e}).P
 In this section, we prove results about 2-connected components of a graph, but without naming them.
 -/
 
-namespace Walk
-variable {w : G.Walk u v}
+variable {w : HasAdj.Walk G u v}
 
 /-- A trail doesn't go through a vertex that is not 2-edge-reachable from its 2-edge-reachable
 endpoints. -/
-lemma IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
+lemma _root_.HasAdj.Walk.IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
     (huv : G.IsEdgeReachable 2 u v) (huy : ¬ G.IsEdgeReachable 2 u x) : x ∉ w.support := by
   classical
   obtain ⟨e, he⟩ := by simpa [isEdgeReachable_two] using huy
@@ -144,4 +143,4 @@ lemma IsTrail.not_mem_edges_of_not_isEdgeReachable_two (hw : w.IsTrail)
     ((w.takeUntil x _).mem_edges_of_not_reachable_deleteEdges he)
     (by simpa using (w.dropUntil x _).reverse.mem_edges_of_not_reachable_deleteEdges he')
 
-end SimpleGraph.Walk
+end SimpleGraph

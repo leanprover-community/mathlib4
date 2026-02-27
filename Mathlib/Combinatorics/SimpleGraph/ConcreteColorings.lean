@@ -28,6 +28,7 @@ This file defines colorings for some common graphs.
 assert_not_exists Field
 
 namespace SimpleGraph
+open HasAdj
 
 theorem chromaticNumber_le_two_iff_isBipartite {V : Type*} {G : SimpleGraph V} :
     G.chromaticNumber ≤ 2 ↔ G.IsBipartite :=
@@ -67,7 +68,7 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
     exact two_le_chromaticNumber_of_adj hadj
 
 theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
-    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    (c : G.Coloring Bool) {u v : α} (p : HasAdj.Walk G u v) :
     Even p.length ↔ (c u ↔ c v) := by
   induction p with
   | nil => simp
@@ -79,19 +80,20 @@ theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     tauto
 
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
-    (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
+    (c : G.Coloring Bool) {u v : α} (p : HasAdj.Walk G u v) :
     Odd p.length ↔ (¬c u ↔ c v) := by
   rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p]
   tauto
 
-theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
-    (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by
-  intro h
-  have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one <| not_le.mp h
-  let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
-  let c' : G.Coloring Bool := recolorOfEquiv G finTwoEquiv c
-  have : ¬c' u ↔ c' u := (c'.odd_length_iff_not_congr p).mp hOdd
-  simp_all
+theorem _root_.HasAdj.Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α}
+    (p : HasAdj.Walk G u u) (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber :=
+  Classical.by_contradiction <| by
+    intro h
+    have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one <| not_le.mp h
+    let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
+    let c' : G.Coloring Bool := recolorOfEquiv G finTwoEquiv c
+    have : ¬c' u ↔ c' u := (c'.odd_length_iff_not_congr p).mp hOdd
+    simp_all
 
 /-- Bicoloring of a cycle graph of even size -/
 def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=
@@ -157,7 +159,7 @@ theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n)
       intro h2
       rw [← h2] at hOdd
       exact (Nat.not_odd_iff.mpr rfl) hOdd
-    let w : (cycleGraph (n - 3 + 3)).Walk 0 0 := cycleGraph_EulerianCircuit (n - 3)
+    let w : HasAdj.Walk (cycleGraph (n - 3 + 3)) 0 0 := cycleGraph_EulerianCircuit (n - 3)
     have hOdd' : Odd w.length := by
       rw [cycleGraph_EulerianCircuit_length, hn3]
       exact hOdd
@@ -180,7 +182,7 @@ end CompleteEquipartiteGraph
 
 open Walk
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
-    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
+    G.Colorable 2 ↔ ∀ u, ∀ (w : HasAdj.Walk G u u), Even w.length := by
   simp_rw [← Nat.not_odd_iff_even]
   constructor <;> intro h
   · intro _ w ho

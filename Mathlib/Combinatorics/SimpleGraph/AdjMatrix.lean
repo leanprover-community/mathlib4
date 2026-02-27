@@ -246,7 +246,7 @@ theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} 
 
 set_option backward.isDefEq.respectTransparency false in
 theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ) (u v : V) :
-    (G.adjMatrix α ^ n) u v = Fintype.card { p : G.Walk u v | p.length = n } := by
+    (G.adjMatrix α ^ n) u v = Fintype.card { p : HasAdj.Walk G u v | p.length = n } := by
   rw [card_set_walk_length_eq]
   induction n generalizing u v with
   | zero => obtain rfl | h := eq_or_ne u v <;> simp [finsetWalkLength, *]
