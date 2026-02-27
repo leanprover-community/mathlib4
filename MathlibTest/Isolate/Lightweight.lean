@@ -166,6 +166,7 @@ axiom Prime : Nat → Prop
 /--
 error: @[isolate] attribute only applies to lemmas with a conclusion of the form f a₁ a₂ ... x ... aₖ ~ y ↔ x ~' G.
  Here the conclusion has the form Prime a ↔ _, but Prime a could not be parsed as a relation
+ of the form `f a₁ a₂ ... x ... aₖ ~ y`?
 -/
 #guard_msgs in
 @[isolate]
