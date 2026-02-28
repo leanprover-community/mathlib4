@@ -24,8 +24,8 @@ open Complex
 section
 
 set_option linter.unusedVariables false
-/-- A `TwistedModuleProd σ E F` or `E ×[σ|mr|ms] F` is a module structure on the product
-`E × F` with the `SMul` given by `s • ⟨x, y⟩ := ⟨s • x, σ s • y⟩`. -/
+/-- A `TwistedModuleProd σ E F` or `E ×[σ] F` is a module structure on the product `E × F` with
+the `SMul` given by `s • ⟨x, y⟩ := ⟨s • x, σ s • y⟩`. -/
 @[ext]
 structure TwistedModuleProd {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
     [AddCommGroup E] [Module R E] (F : Type*) [AddCommGroup F] [Module S F] where
