@@ -272,7 +272,6 @@ theorem finrank_add_finrank_orthogonal' (W : Submodule K V) :
       add_comm, ← add_assoc, add_comm (finrank K (LinearMap.ker (B.domRestrict W))),
       LinearMap.finrank_range_add_finrank_ker]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by

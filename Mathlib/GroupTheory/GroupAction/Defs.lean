@@ -288,7 +288,6 @@ variable {G α}
 theorem orbitRel_apply {a b : α} : orbitRel G α a b ↔ a ∈ orbit G b :=
   Iff.rfl
 
-set_option backward.whnf.reducibleClassField false in
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
 @[to_additive
