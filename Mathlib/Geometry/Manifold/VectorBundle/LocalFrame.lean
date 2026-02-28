@@ -614,9 +614,19 @@ constructions on covariant derivatives (and in this context, the value at `s` at
 -- Would this be useful? Should do this?
 noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
     (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    {x : M} (v : V x) : (x' : M) → V x' :=
-  fun x' ↦ if hx : x ∈ e.baseSet then ∑ i, (e.basisAt b hx).repr v i • e.localFrame b i x'
-  else 0
+    {x : M} : V x →ₗ[𝕜] ((x' : M) → V x') where
+  toFun v := open scoped Classical in
+    fun x' ↦ if hx : x ∈ e.baseSet then ∑ i, (e.basisAt b hx).repr v i • e.localFrame b i x' else 0
+  map_add' v v' := by
+    ext x'
+    by_cases hx: x ∈ e.baseSet; swap
+    · simp [hx]
+    · simp [hx, add_smul, Finset.sum_add_distrib]
+  map_smul' a v := by
+    ext x'
+    by_cases hx: x ∈ e.baseSet; swap
+    · simp [hx]
+    · simp +contextual [hx, Finset.smul_sum, mul_smul a (((e.basisAt b hx).repr v) _)]
 
 variable (b e) in
 @[simp]
@@ -624,40 +634,21 @@ lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
     (localExtensionOn b e v) x = v := by
   simp [localExtensionOn, hx]
 
+-- TODO: fix this proof!
 variable (b) in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
 lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
     (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) :
-    e.localFrame_coeff I b i x' (localExtensionOn b e v x') =
-      e.localFrame_coeff I b i x (localExtensionOn b e v x) := by
-  simp [localExtensionOn, hx, hx']
-  sorry -- TODO: proof was done now
-
--- By construction, localExtensionOn is a linear map.
-
-variable (b e) in
-lemma localExtensionOn_add (v v' : V x) :
-    localExtensionOn b e (v + v') = localExtensionOn b e v + localExtensionOn b e v' := by
-  ext x'
-  by_cases hx: x ∈ e.baseSet; swap
-  · simp [hx, localExtensionOn]
-  · simp [hx, localExtensionOn, add_smul, Finset.sum_add_distrib]
-
-variable (b e) in
-lemma localExtensionOn_zero : localExtensionOn b e (x := x) 0 = 0 := by
-  ext x'
-  by_cases hx: x ∈ e.baseSet <;> simp [hx, localExtensionOn]
-
-variable (b e) in
-lemma localExtensionOn_smul (a : 𝕜) (v : V x) :
-    localExtensionOn b e (a • v) = a • localExtensionOn b e v := by
-  ext x'
-  by_cases hx: x ∈ e.baseSet; swap
-  · simp [hx, localExtensionOn]
-  · simp only [localExtensionOn, hx, ↓reduceDIte, map_smul, Finsupp.coe_smul, Pi.smul_apply,
-      smul_eq_mul, Finset.smul_sum]
-    congr with i
-    rw [mul_smul a (((e.basisAt b hx).repr v) i)]
+    (Trivialization.localFrame_coeff I e b i x') ((localExtensionOn b e) v x') =
+    (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x) := by
+-- statement used to be
+--  e.localFrame_coeff I b i (LinearMap.piApply (localExtensionOn b e v)) x' =
+--   e.localFrame_coeff I b i (localExtensionOn b e v) x := by
+  simp only [localExtensionOn, hx, ↓reduceDIte]
+  dsimp
+  simp [hx, hx']
+  -- TODO: proof was done here (and in fact just `simp [localExtensionOn, hx, hx']`)
+  sorry
 
 variable (F) in
 lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
@@ -667,8 +658,10 @@ lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace �
   -- constant, hence smoothness follows.
   rw [contMDiffOn_baseSet_iff_localFrame_coeff b]
   intro i
-  apply (contMDiffOn_const (c := (e.localFrame_coeff I b i) x (localExtensionOn b e v x))).congr
+  simp only [LinearMap.piApply_apply]
+  apply (contMDiffOn_const
+    (c := (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x))).congr
   intro y hy
-  simp [localExtensionOn_localFrame_coeff b hx hy v i]
+  rw [localExtensionOn_localFrame_coeff b hx hy v i]
 
 end localExtensionOn
