@@ -233,6 +233,8 @@ lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
   rw [fderiv_comp _ (by fun_prop) hf, ContinuousLinearMap.fderiv] at h
   exact DFunLike.congr_fun h
 
+variable {n : WithTop ℕ∞} [IsManifold I n M] {e e' : OpenPartialHomeomorph M H} {x : M}
+
 /-- For any two charts `e`, `e'` around a point `x` in a C¹ manifold, if `e` maps `x` to the
 interior of the model space, `e'` does too - in other words, the notion of interior points does not
 depend on any choice of charts.
@@ -241,9 +243,8 @@ Note that in general, this is actually quite nontrivial; that is why are focusin
 manifolds here. For merely topological finite-dimensional manifolds the proof involves singular
 homology, and for infinite-dimensional topological manifolds I don't even know if this lemma holds.
 -/
-lemma mem_interior_range_of_mem_interior_range_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M]
-    (hn : n ≠ 0) {e e' : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
-    {x : M} (hex : x ∈ e.source) (hex' : x ∈ e'.source)
+lemma mem_interior_range_of_mem_interior_range_of_mem_atlas (hn : n ≠ 0)
+    (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) (hex : x ∈ e.source) (hex' : x ∈ e'.source)
     (hx : e.extend I x ∈ interior (e.extend I).target) :
     e'.extend I x ∈ interior (e'.extend I).target := by
   /- Since transition maps are diffeomorphisms, it suffices to show that if `e'` were to send `x`
@@ -279,8 +280,7 @@ lemma mem_interior_range_of_mem_interior_range_of_mem_atlas {n : WithTop ℕ∞}
 /-- For any two charts `e`, `e'` around a point `x` in a C¹ manifold, `e` maps `x` to the interior
 of the model space iff `e'` does. - in other words, the notion of interior points does not
 depend on any choice of charts. -/
-lemma mem_interior_range_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (hn : n ≠ 0)
-    {e e' : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) {x : M}
+lemma mem_interior_range_iff_of_mem_atlas (hn : n ≠ 0) (he : e ∈ atlas H M) (he' : e' ∈ atlas H M)
     (hex : x ∈ e.source) (hex' : x ∈ e'.source) :
     e.extend I x ∈ interior (e.extend I).target ↔
     e'.extend I x ∈ interior (e'.extend I).target := by
@@ -289,8 +289,7 @@ lemma mem_interior_range_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M
 /-- A point `x` in a C¹ manifold is an interior point if and only if it gets mapped to the interior
 of the model space by any given chart - in other words, the notion of interior points does not
 depend on any choice of charts. -/
-lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (hn : n ≠ 0)
-    {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
+lemma isInteriorPoint_iff_of_mem_atlas (hn : n ≠ 0) (he : e ∈ atlas H M) (hx : x ∈ e.source) :
     I.IsInteriorPoint x ↔ e.extend I x ∈ interior (e.extend I).target := by
   rw [isInteriorPoint_iff]
   exact mem_interior_range_iff_of_mem_atlas hn (chart_mem_atlas H x) he (mem_chart_source H x) hx
@@ -300,8 +299,7 @@ of the model space by any given chart - in other words, the notion of boundary p
 depend on any choice of charts.
 
 Also see `ModelWithCorners.isInteriorPoint_iff_of_mem_atlas`. -/
-lemma isBoundaryPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (hn : n ≠ 0)
-    {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
+lemma isBoundaryPoint_iff_of_mem_atlas (hn : n ≠ 0) (he : e ∈ atlas H M) (hx : x ∈ e.source) :
     I.IsBoundaryPoint x ↔ e.extend I x ∈ frontier (e.extend I).target := by
   rw [← not_iff_not, ← I.isInteriorPoint_iff_not_isBoundaryPoint,
     I.isInteriorPoint_iff_of_mem_atlas hn he hx, mem_interior_iff_notMem_frontier]
@@ -311,8 +309,7 @@ lemma isBoundaryPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (
 
 This is currently only proven for C¹ manifolds, but holds at least for finite-dimensional
 topological manifolds too; see `ModelWithCorners.isInteriorPoint_iff_of_mem_atlas`. -/
-protected lemma isOpen_interior {n : WithTop ℕ∞} [IsManifold I n M] (hn : n ≠ 0) :
-    IsOpen (I.interior M) := by
+protected lemma isOpen_interior (hn : n ≠ 0) : IsOpen (I.interior M) := by
   refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ⟨_, ?_, isOpen_extChartAt_preimage (I := I) x
     isOpen_interior, mem_chart_source H x, isInteriorPoint_iff.1 hx⟩
   exact fun y hy ↦ (I.isInteriorPoint_iff_of_mem_atlas hn (chart_mem_atlas H x) hy.1).2 hy.2
@@ -321,8 +318,7 @@ protected lemma isOpen_interior {n : WithTop ℕ∞} [IsManifold I n M] (hn : n 
 
 This is currently only proven for C¹ manifolds, but holds at least for finite-dimensional
 topological manifolds too; see `ModelWithCorners.isInteriorPoint_iff_of_mem_atlas`. -/
-protected lemma isClosed_boundary {n : WithTop ℕ∞} [IsManifold I n M] (hn : n ≠ 0) :
-    IsClosed (I.boundary M) := by
+protected lemma isClosed_boundary (hn : n ≠ 0) : IsClosed (I.boundary M) := by
   rw [← I.compl_interior, isClosed_compl_iff]
   exact I.isOpen_interior hn
 
