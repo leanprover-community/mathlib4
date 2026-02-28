@@ -12,7 +12,7 @@ notation "_" n "," => Nat.succ n
 #check `«term__,»
 
 /--
-warning: The declaration 'double__underscore' contains '__', which does not follow the mathlib naming conventions. Consider using single underscores instead.
+warning: The declaration `double__underscore` contains '__', which does not follow the mathlib naming conventions. Consider using single underscores instead.
 
 Note: This linter can be disabled with `set_option linter.style.nameCheck false`
 -/
