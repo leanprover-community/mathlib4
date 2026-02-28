@@ -72,7 +72,7 @@ def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
 
 open Associates in
 theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
-    [DecidableEq (Ideal R)] {I : Ideal R} (hI : I ≠ 0) :
+    {I : Ideal R} (hI : I ≠ 0) :
     maxPowDividing v I =
       v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
   classical
@@ -410,7 +410,6 @@ theorem count_pow (n : ℕ) (I : FractionalIdeal R⁰ K) :
         Nat.cast_one]
       ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `val_v(v) = 1`, when `v` is regarded as a fractional ideal. -/
 theorem count_self : count K v (v.asIdeal : FractionalIdeal R⁰ K) = 1 := by
   have hv : (v.asIdeal : FractionalIdeal R⁰ K) ≠ 0 := coeIdeal_ne_zero.mpr v.ne_bot
@@ -456,7 +455,6 @@ theorem count_zpow_self (n : ℤ) :
     count K v ((v.asIdeal : FractionalIdeal R⁰ K) ^ n) = n := by
   rw [count_zpow, count_self, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `v ≠ w` are two maximal ideals of `R`, then `val_v(w) = 0`. -/
 theorem count_maximal_coprime {w : HeightOneSpectrum R} (hw : w ≠ v) :
     count K v (w.asIdeal : FractionalIdeal R⁰ K) = 0 := by
@@ -526,7 +524,6 @@ theorem count_coe {J : Ideal R} (hJ : J ≠ 0) :
   · simpa only [ne_eq, coeIdeal_eq_zero]
   · simp only [map_one, inv_one, spanSingleton_one, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem count_coe_nonneg (J : Ideal R) : 0 ≤ count K v J := by
   by_cases hJ : J = 0
   · simp only [hJ, Submodule.zero_eq_bot, coeIdeal_bot, count_zero, le_refl]
@@ -609,7 +606,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   have : ∀ p ∈ s, J * ∏ q ∈ s, q.asIdeal < J * ∏ q ∈ s \ {p}, q.asIdeal := by
     intro p hps
     conv_rhs => rw [← mul_one (J * _)]
-    rw [Finset.prod_eq_mul_prod_diff_singleton hps, ← mul_assoc,
+    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem hps, ← mul_assoc,
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
@@ -643,7 +640,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   by_cases hqp : q = p'
   · subst hqp
     convert sub_mem H₁ H₂
-    rw [Finset.sum_eq_add_sum_diff_singleton hp's, add_sub_cancel_right]
+    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
 

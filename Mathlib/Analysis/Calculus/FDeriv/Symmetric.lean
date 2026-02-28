@@ -324,7 +324,6 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
   · simp (discharger := positivity) only [Real.norm_eq_abs, abs_of_nonneg]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- One can get `f'' v w` as the limit of `h ^ (-2)` times the alternate sum of the values of `f`
 along the vertices of a quadrilateral with sides `h v` and `h w` based at `x`.
 In a setting where `f` is not guaranteed to be continuous at `f`, we can still

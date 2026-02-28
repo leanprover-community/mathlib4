@@ -295,7 +295,6 @@ instance instSemiring (r : R → R → Prop) : Semiring (RingQuot r) where
 def intCast {R : Type uR} [Ring R] (r : R → R → Prop) (z : ℤ) : RingQuot r :=
   ⟨Quot.mk _ z⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot r) where
   neg_add_cancel := by
     rintro ⟨⟨⟩⟩
