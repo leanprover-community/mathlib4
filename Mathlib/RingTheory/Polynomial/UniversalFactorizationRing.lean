@@ -124,6 +124,7 @@ lemma mapEquivMonic_symm_map_algebraMap
       (IsScalarTower.toAlgHom R S T).comp ((mapEquivMonic R S n).symm p) := by
   rw [← mapEquivMonic_symm_map, IsScalarTower.coe_toAlgHom]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In light of the fact that `MonicDegreeEq · n` is representable by `R[X₁,...,Xₙ]`,
 this is the map `R[X₁,...,Xₘ₊ₖ] → R[X₁,...,Xₘ] ⊗ R[X₁,...,Xₖ]` corresponding to the multiplication
 `MonicDegreeEq · m × MonicDegreeEq · k → MonicDegreeEq · (m + k)`. -/
@@ -140,6 +141,7 @@ def universalFactorizationMap (hn : n = m + k) :
     rw [((monic_freeMonic R m).map _).natDegree_mul ((monic_freeMonic R k).map _)]
     simp_rw [(monic_freeMonic R _).natDegree_map, natDegree_freeMonic, hn]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma universalFactorizationMap_freeMonic :
     (freeMonic R n).map (toRingHom <| universalFactorizationMap R n m k hn) =
       (freeMonic R m).map (algebraMap _ _) *
@@ -279,9 +281,8 @@ lemma pderiv_inr_universalFactorizationMap_X (i j) :
       Pi.single_apply, Fin.ext_iff, ← ite_and]
   · obtain h | h := lt_or_ge j.1 i.1
     · rw [Finset.sum_eq_zero, if_pos h]
-      simp only [Finset.mem_antidiagonal, Prod.forall]
-      intro a b hab
-      simp [show b ≠ i by lia]
+      simp only [Finset.mem_antidiagonal]
+      lia
     rw [Finset.sum_eq_single ⟨j.1 - i.1, i.1⟩, if_neg h.not_gt]
     · simp
     · simp only [Finset.mem_antidiagonal, ne_eq, ite_eq_right_iff, Prod.forall, Prod.mk.injEq]

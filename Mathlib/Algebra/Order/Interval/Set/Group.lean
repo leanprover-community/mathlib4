@@ -233,11 +233,13 @@ theorem pairwise_disjoint_Ico_intCast :
     Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) := by
   simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
 
-theorem pairwise_disjoint_Ioo_intCast : Pairwise (Disjoint on fun n : ℤ => Ioo (n : α) (n + 1)) :=
-  by simpa only [zero_add] using pairwise_disjoint_Ioo_add_intCast (0 : α)
+theorem pairwise_disjoint_Ioo_intCast :
+    Pairwise (Disjoint on fun n : ℤ => Ioo (n : α) (n + 1)) := by
+  simpa only [zero_add] using pairwise_disjoint_Ioo_add_intCast (0 : α)
 
-theorem pairwise_disjoint_Ioc_intCast : Pairwise (Disjoint on fun n : ℤ => Ioc (n : α) (n + 1)) :=
-  by simpa only [zero_add] using pairwise_disjoint_Ioc_add_intCast (0 : α)
+theorem pairwise_disjoint_Ioc_intCast :
+    Pairwise (Disjoint on fun n : ℤ => Ioc (n : α) (n + 1)) := by
+  simpa only [zero_add] using pairwise_disjoint_Ioc_add_intCast (0 : α)
 
 end OrderedRing
 

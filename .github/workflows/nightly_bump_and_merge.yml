@@ -62,7 +62,7 @@ jobs:
       env:
         GH_TOKEN: ${{ steps.app-token.outputs.token }}
       run: |
-        RELEASE_TAG=$(gh api repos/leanprover/lean4-nightly/releases \
+        RELEASE_TAG=$(gh api -X GET repos/leanprover/lean4-nightly/releases \
           -f per_page=1 --jq '.[0].tag_name')
         if [ -z "$RELEASE_TAG" ] || [ "$RELEASE_TAG" = "null" ]; then
           echo "::error::Could not determine latest lean4-nightly release"

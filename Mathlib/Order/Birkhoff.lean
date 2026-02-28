@@ -236,7 +236,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
   have : Subsingleton (OrderBot α) := inferInstance

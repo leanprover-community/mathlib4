@@ -199,7 +199,6 @@ theorem exists_finite_submodule_right_of_setFinite' (s : Set (M₁ ⊗[R] N₁))
 @[deprecated (since := "2025-10-11")] alias exists_finite_submodule_right_of_finite' :=
   exists_finite_submodule_right_of_setFinite'
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Avoid using this and use the induction principle on `M ⊗[R] N` instead. -/
 lemma exists_sum_tmul_eq (x : M ⊗[R] N) :
     ∃ (k : ℕ) (m : Fin k → M) (n : Fin k → N), x = ∑ j, m j ⊗ₜ n j := by

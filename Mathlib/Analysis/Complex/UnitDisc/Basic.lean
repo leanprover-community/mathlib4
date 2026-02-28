@@ -40,7 +40,6 @@ namespace UnitDisc
 set_option backward.isDefEq.respectTransparency false in
 instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance instSemigroupWithZero : SemigroupWithZero UnitDisc := by unfold UnitDisc; infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
@@ -177,7 +176,6 @@ set_option backward.isDefEq.respectTransparency false in
 instance instMulActionClosedBall : MulAction (closedBall (0 : ℂ) 1) 𝔻 :=
   mulActionClosedBallBall
 
-set_option backward.isDefEq.respectTransparency false in
 instance instIsScalarTower_closedBall_closedBall :
     IsScalarTower (closedBall (0 : ℂ) 1) (closedBall (0 : ℂ) 1) 𝔻 :=
   isScalarTower_closedBall_closedBall_ball
