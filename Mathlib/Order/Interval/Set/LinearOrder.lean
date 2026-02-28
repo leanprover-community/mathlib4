@@ -496,11 +496,11 @@ theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁
 
 @[simp]
 theorem Ioi_inter_Ioi : Ioi a ∩ Ioi b = Ioi (a ⊔ b) :=
-  ext fun _ => sup_lt_iff.symm
+  ext fun _ => max_lt_iff.symm
 
 @[simp]
 theorem Iio_inter_Iio : Iio a ∩ Iio b = Iio (a ⊓ b) :=
-  ext fun _ => lt_inf_iff.symm
+  ext fun _ => lt_min_iff.symm
 
 theorem Ico_inter_Ico : Ico a₁ b₁ ∩ Ico a₂ b₂ = Ico (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
   grind

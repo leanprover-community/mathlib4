@@ -67,7 +67,7 @@ variable [LinearOrder α] [OrderBot α]
 
 @[to_dual (attr := simp)]
 theorem min_eq_bot {a b : α} : min a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := by
-  simp_rw [← le_bot_iff, inf_le_iff]
+  simp_rw [← le_bot_iff, min_le_iff]
 
 @[to_dual (attr := aesop (rule_sets := [finiteness]) safe apply)]
 lemma min_ne_bot {a b : α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : min a b ≠ ⊥ := by

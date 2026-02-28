@@ -83,7 +83,7 @@ lemma factorizationLCMLeft_dvd_left : factorizationLCMLeft a b ∣ a := by
     · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le le_rfl le
     · apply one_dvd
   · intro p hp; rw [mem_support_iff] at hp ⊢
-    rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inl <| Nat.pos_of_ne_zero hp).ne'
+    rw [factorization_lcm ha hb]; exact (lt_max_iff.mpr <| .inl <| Nat.pos_of_ne_zero hp).ne'
   · intros; rw [pow_zero]
 
 lemma factorizationLCMRight_dvd_right : factorizationLCMRight a b ∣ b := by
@@ -97,7 +97,7 @@ lemma factorizationLCMRight_dvd_right : factorizationLCMRight a b ∣ b := by
     · apply one_dvd
     · rw [factorization_lcm ha hb]; apply pow_dvd_pow; exact sup_le (not_le.1 le).le le_rfl
   · intro p hp; rw [mem_support_iff] at hp ⊢
-    rw [factorization_lcm ha hb]; exact (lt_sup_iff.mpr <| .inr <| Nat.pos_of_ne_zero hp).ne'
+    rw [factorization_lcm ha hb]; exact (lt_max_iff.mpr <| .inr <| Nat.pos_of_ne_zero hp).ne'
   · intros; rw [pow_zero]
 
 
