@@ -36,10 +36,10 @@ instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder
     else 0
   isLUB_csSup _ hn hb := by
     rw [dif_pos ⟨hn, hb⟩]
-    exact (isGreatest_coe_greatestOfBdd _ _ _).isLUB
+    exact (isGreatest_coe_greatestOfBdd ..).isLUB
   isGLB_csInf _ hn hb := by
     rw [dif_pos ⟨hn, hb⟩]
-    exact (isLeast_coe_leastOfBdd _ _ _).isGLB
+    exact (isLeast_coe_leastOfBdd ..).isGLB
   csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
   csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 
