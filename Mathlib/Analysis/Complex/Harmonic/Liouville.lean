@@ -30,14 +30,13 @@ theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant (f : ℂ
   -- By assumption, there exists a holomorphic function $f$ such that $\Re(f) = u$.
   obtain ⟨F, hF_diff, hF_re⟩ := harmonic_is_realOfHolomorphic_univ h_harm
   -- Since $g(z)$ is bounded, by Liouville's theorem, $g(z)$ is constant.
-  have hg_const : ∀ z w, Complex.exp (F z) = Complex.exp (F w) := by
-    apply Differentiable.apply_eq_apply_of_bounded
-    · apply (differentiable_exp.comp (fun x ↦ (hF_diff x (mem_univ x)).differentiableAt))
-    rw [isBounded_iff_forall_norm_le] at *
-    obtain ⟨M, hM⟩ := h_bound
-    use Real.exp M
-    simp_all only [mem_range, norm_eq_abs, forall_exists_index, forall_apply_eq_imp_iff,
-      norm_exp, exp_le_exp]
-    rw [← hF_re] at hM
-    grind
+  suffices ∀ z w, Complex.exp (F z) = Complex.exp (F w) by grind
+  apply Differentiable.apply_eq_apply_of_bounded
+  · apply (differentiable_exp.comp (fun x ↦ (hF_diff x (mem_univ x)).differentiableAt))
+  rw [isBounded_iff_forall_norm_le] at *
+  obtain ⟨M, hM⟩ := h_bound
+  use Real.exp M
+  simp_all only [mem_range, norm_eq_abs, forall_exists_index, forall_apply_eq_imp_iff,
+    norm_exp, exp_le_exp]
+  rw [← hF_re] at hM
   grind
