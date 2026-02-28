@@ -143,20 +143,35 @@ theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
 theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
   obtain h | h | h := lt_trichotomy a b <;> simp [le_of_lt, not_le_of_gt, h, max_def]
 
+@[to_dual (attr := elab_as_elim)]
+theorem min_ind {motive : α → Prop} (ha : a ≤ b → motive a) (hb : b ≤ a → motive b) :
+    motive (min a b) := by
+  obtain h | h | h := lt_trichotomy a b <;> simp [le_of_lt, not_le_of_gt, min_def, *]
+
+@[to_dual le_min_iff]
+theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c := by
+  refine max_ind ?_ ?_ <;> simpa using le_trans
+
+@[to_dual (attr := simp) le_max_iff]
+theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c := by
+  refine min_ind ?_ ?_ <;> simpa using le_trans
+
+@[to_dual (attr := simp) lt_min_iff]
+theorem max_lt_iff : max a b < c ↔ a < c ∧ b < c := by
+  refine max_ind ?_ ?_ <;> simpa using lt_of_le_of_lt
+
+@[to_dual (attr := simp) lt_max_iff]
+theorem min_lt_iff : min a b < c ↔ a < c ∨ b < c := by
+  refine min_ind ?_ ?_ <;> simpa using lt_of_le_of_lt
+
 @[to_dual le_max_left]
-lemma min_le_left (a b : α) : min a b ≤ a := by
-  rw [min_def]
-  split_ifs with h <;> simp [h, le_of_not_ge]
+lemma min_le_left (a b : α) : min a b ≤ a := min_le_iff.mpr (.inl le_rfl)
 
 @[to_dual le_max_right]
-lemma min_le_right (a b : α) : min a b ≤ b := by
-  rw [min_def]
-  split_ifs with h <;> simp [h]
+lemma min_le_right (a b : α) : min a b ≤ b := min_le_iff.mpr (.inr le_rfl)
 
 @[to_dual max_le]
-lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
-  rw [min_def]
-  split_ifs <;> assumption
+lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := le_min_iff.mpr ⟨h₁, h₂⟩
 
 @[to_dual]
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=
@@ -168,14 +183,7 @@ lemma min_comm (a b : α) : min a b = min b a :=
 
 @[to_dual]
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
-  apply eq_min
-  · apply le_trans (min_le_left ..) (min_le_left ..)
-  · apply le_min
-    · apply le_trans (min_le_left ..) (min_le_right ..)
-    · apply min_le_right
-  · intro d h₁ h₂; apply le_min
-    · apply le_min h₁; apply le_trans h₂; apply min_le_left
-    · apply le_trans h₂; apply min_le_right
+  apply le_antisymm <;> simp [min_le_iff, le_min_iff]
 
 @[to_dual]
 lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
@@ -193,8 +201,7 @@ lemma min_eq_right (h : b ≤ a) : min a b = b := min_comm b a ▸ min_eq_left h
 @[to_dual] lemma min_eq_right_of_lt (h : b < a) : min a b = b := min_eq_right (le_of_lt h)
 
 @[to_dual max_lt]
-lemma lt_min (h₁ : a < b) (h₂ : a < c) : a < min b c := by
-  cases le_total b c <;> simp [min_eq_left, min_eq_right, *]
+lemma lt_min (h₁ : a < b) (h₂ : a < c) : a < min b c := lt_min_iff.mpr ⟨h₁, h₂⟩
 
 section Ord
 

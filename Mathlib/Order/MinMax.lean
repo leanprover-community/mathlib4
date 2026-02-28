@@ -29,37 +29,13 @@ section
 
 variable [LinearOrder α] [LinearOrder β] {f : α → β} {s : Set α} {a b c d : α}
 
--- translate from lattices to linear orders (sup → max, inf → min)
-theorem le_min_iff : c ≤ min a b ↔ c ≤ a ∧ c ≤ b :=
-  le_inf_iff
-
-theorem le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c :=
-  le_sup_iff
-
-theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c :=
-  inf_le_iff
-
-theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c :=
-  sup_le_iff
-
 instance [LinearOrder α] : Std.LawfulOrderSup α where
   max_le_iff _ _ _ := max_le_iff
 
 instance [LinearOrder α] : Std.LawfulOrderInf α where
   le_min_iff _ _ _ := le_min_iff
 
-theorem lt_min_iff : a < min b c ↔ a < b ∧ a < c :=
-  lt_inf_iff
-
-theorem lt_max_iff : a < max b c ↔ a < b ∨ a < c :=
-  lt_sup_iff
-
-theorem min_lt_iff : min a b < c ↔ a < c ∨ b < c :=
-  inf_lt_iff
-
-theorem max_lt_iff : max a b < c ↔ a < c ∧ b < c :=
-  sup_lt_iff
-
+-- translate from lattices to linear orders (sup → max, inf → min)
 theorem max_le_max : a ≤ c → b ≤ d → max a b ≤ max c d :=
   sup_le_sup
 
