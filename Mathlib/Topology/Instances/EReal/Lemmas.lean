@@ -318,6 +318,21 @@ theorem limsup_const_mul_of_nonneg_of_ne_top [NeBot f] {c : EReal} (h₁ : 0 ≤
     simpa [← EReal.div_lt_iff (by aesop) (by aesop)]
       using fun _ ↦ frequently_lt_of_lt_limsup
 
+theorem limsup_const_mul_of_nonpos_of_ne_bot [NeBot f] {c : EReal} (h₁ : c ≤ 0) (h₂ : c ≠ ⊥) :
+    limsup (fun x => c * u x) f = c * liminf u f := by
+  simpa [limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (u := -u) (c := -c) (by aesop) (by aesop)
+
+theorem liminf_const_mul_of_nonneg_of_ne_top [NeBot f] {c : EReal} (h₁ : 0 ≤ c) (h₂ : c ≠ ⊤) :
+    liminf (fun x => c * u x) f = c * liminf u f := by
+  simpa [mul_neg, ← Pi.neg_def, limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (u := -u) (by aesop) (by aesop)
+
+theorem liminf_const_mul_of_nonpos_of_ne_bot [NeBot f] {c : EReal} (h₁ : c ≤ 0) (h₂ : c ≠ ⊥) :
+    liminf (fun x => c * u x) f = c * limsup u f := by
+  simpa [neg_mul, ← Pi.neg_def, limsup_neg] using
+    limsup_const_mul_of_nonneg_of_ne_top (c := -c) (by aesop) (by aesop)
+
 set_option backward.isDefEq.respectTransparency false in
 lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
     limsup u f * liminf v f ≤ limsup (u * v) f := by
