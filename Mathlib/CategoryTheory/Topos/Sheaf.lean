@@ -128,20 +128,6 @@ lemma Presheaf.comp_χ_eq {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono
   apply Sieve.ext
   simp [← FunctorToTypes.naturality F G m]
 
--- lemma Functor.evaluationJointlyReflectsPullbacks.{v₁, v₂, u₁, u₂}
---     {J : Type u₁} [Category.{v₁, u₁} J] {K : Type u₂} [Category.{v₂, u₂} K] {X₁ X₂ X₃ X₄ : J ⥤ K}
---     {f₁ : X₁ ⟶ X₂} {f₂ : X₁ ⟶ X₃} {f₃ : X₂ ⟶ X₄} {f₄ : X₃ ⟶ X₄}
---     (h : ∀ (X : J), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X)) :
---     IsPullback f₁ f₂ f₃ f₄ where
---   w := by
---     ext X
---     simpa using (h X).w
---   isLimit' := ⟨by
---     apply evaluationJointlyReflectsLimits
---     intro X
---     apply ⇑(PullbackCone.isLimitMapConeEquiv _ _).symm
---     simpa [PullbackCone.map] using (h X).isLimit⟩
-
 lemma Presheaf.classifier_isPullback {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
     IsPullback m ({app X := fun _ => PUnit.unit}) (χ m) (truth C) := by
   apply IsPullback.of_forall_isPullback_app
@@ -212,7 +198,7 @@ lemma Presheaf.isClosed_χ_app_apply_of (J : GrothendieckTopology C)
 
 variable (C) in
 /-- A construction of a subject classifier in a category of presheaves. -/
-@[simps!]
+@[simps! Ω truth Ω₀ χ χ₀]
 def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
   .mkOfTerminalΩ₀ ((Functor.const _).obj PUnit)
     (.ofUniqueHom (fun _ => {app _ := fun _ => .unit}) (by aesop)) (Functor.sieves C)
@@ -224,15 +210,6 @@ instance HasClassifier.instPresheaf : HasClassifier (Cᵒᵖ ⥤ Type (max u v))
 end presheaf
 
 section sheaf
-/-- A construction of a terminal object in a sheaf category, given by the constant `PUnit` sheaf. -/
-@[simps]
-def Sheaf.terminal (J : GrothendieckTopology C) : Sheaf J (Type w) where
-  val := (CategoryTheory.Functor.const _).obj PUnit
-  cond := Presheaf.isSheaf_of_isTerminal J Types.isTerminalPUnit
-
-/-- The constant `PUnit` sheaf is a terminal object in `Sheaf J (Type w)` -/
-def Sheaf.terminal.isTerminal {J : GrothendieckTopology C} : IsTerminal (Sheaf.terminal.{w} J) :=
-  .ofUniqueHom (fun F => { val := { app X := (fun _ => .unit) } }) (by intros; ext; rfl)
 
 /-- The sheaf of closed sieves w/r/t `J`. See also `Functor.closedSieves` -/
 @[simps val]
@@ -244,9 +221,9 @@ def Sheaf.Ω {J : GrothendieckTopology C} : Sheaf J (Type (max u v)) where
 
 /-- The morphism `t : 1 ⟶ Ω` which picks out the maximal sieve -/
 @[simps]
-def Sheaf.truth {J : GrothendieckTopology C} : Sheaf.terminal J ⟶ Sheaf.Ω where
-  val := closedSievesFactorization J (Presheaf.truth C) (fun {X} x => by
-    cat_disch)
+def Sheaf.truth {J : GrothendieckTopology C} :
+    Sheaf.terminal J (Types.isTerminalPUnit) ⟶ Sheaf.Ω where
+  val := closedSievesFactorization J (Presheaf.truth C) (fun {X} x => by cat_disch)
 
 /--
 Given a monomorphism of sheaves `η : F ⟶ G`, an object X of the site, map an element `x : G(X)`
@@ -260,8 +237,8 @@ def Sheaf.χ {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v))} (m : 
     (Presheaf.isClosed_χ_app_apply_of J m.val F.cond G.cond)
 
 lemma Sheaf.classifier_isPullback {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v))}
-    (m : F ⟶ G) [Mono m] :
-    IsPullback m ((Sheaf.terminal.isTerminal).from F) (Sheaf.χ m) (Sheaf.truth) := by
+    (m : F ⟶ G) [Mono m] : IsPullback m ((Sheaf.terminal_isTerminal J _).from F) (Sheaf.χ m)
+      (Sheaf.truth) := by
   apply IsPullback.of_map (sheafToPresheaf J _)
   · ext : 1
     simp only [Ω_val, comp_val, χ_val, terminal_val, ← cancel_mono (closedSievesInclusion J),
@@ -282,7 +259,7 @@ lemma Sheaf.classifier_isPullback {J : GrothendieckTopology C} {F G : Sheaf J (T
 
 lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v))} (m : F ⟶ G)
     [Mono m] (χ' : G ⟶ Sheaf.Ω)
-    (hχ' : IsPullback m ((Sheaf.terminal.isTerminal).from F) χ' (Sheaf.truth)) :
+    (hχ' : IsPullback m ((Sheaf.terminal_isTerminal J _).from F) χ' (Sheaf.truth)) :
     χ' = Sheaf.χ m := by
   ext : 1
   rw [← cancel_mono (closedSievesInclusion J)]
@@ -299,9 +276,10 @@ A construction of a subobject classifier for sheaf categories. `Ω` is the sheaf
 and `truth` maps for each object `X : C`, an element of `PUnit` to the maximal `Sieve X`.
 -/
 @[simps! Ω truth Ω₀ χ χ₀]
-def Sheaf.classifier (J : GrothendieckTopology C) : Classifier (Sheaf J (Type (max u v))) :=
-  .mkOfTerminalΩ₀ (.terminal J) Sheaf.terminal.isTerminal Sheaf.Ω Sheaf.truth Sheaf.χ
-    Sheaf.classifier_isPullback Sheaf.χ_unique
+noncomputable def Sheaf.classifier (J : GrothendieckTopology C) :
+    Classifier (Sheaf J (Type (max u v))) :=
+  .mkOfTerminalΩ₀ (.terminal J Types.isTerminalPUnit) (Sheaf.terminal_isTerminal _ _) Sheaf.Ω
+    Sheaf.truth Sheaf.χ Sheaf.classifier_isPullback Sheaf.χ_unique
 
 /-- Sheaf categories have a subobject classifier. -/
 instance (J : GrothendieckTopology C) : HasClassifier (Sheaf J (Type (max u v))) where

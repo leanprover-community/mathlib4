@@ -761,4 +761,25 @@ end Concrete
 
 end Presheaf
 
+namespace Sheaf
+section terminal
+variable {C : Type*} [Category* C] {A : Type*} [Category* A] (J : GrothendieckTopology C)
+
+/-- A terminal object in `A` gives rise to a terminal object in `Sheaf J` -/
+@[simps]
+def terminal {X : A} (hX : IsTerminal X) : Sheaf J A where
+  val := (CategoryTheory.Functor.const _).obj X
+  cond := Presheaf.isSheaf_of_isTerminal J hX
+
+@[simps]
+def toTerminal {X : A} (hX : IsTerminal X) (F : Sheaf J A) : F ⟶ Sheaf.terminal J hX where
+  val.app X := hX.from (F.val.obj X)
+
+@[simps!]
+def terminal_isTerminal {X : A} (hX : IsTerminal X) : IsTerminal (Sheaf.terminal J hX) :=
+  .ofUniqueHom (·.toTerminal J hX) (by intros;ext;simpa using hX.hom_ext _ _)
+
+end terminal
+end Sheaf
+
 end CategoryTheory
