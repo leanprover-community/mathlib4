@@ -89,6 +89,10 @@ ofUnits_units_gci.gc
 lemma ofUnits_le_iff_le_units (S : Submonoid M) (H : Subgroup Mˣ) :
     H.ofUnits ≤ S ↔ H ≤ S.units := ofUnits_units_gc _ _
 
+@[to_additive]
+theorem IsUnit.coe {S : Type*} [SetLike S M] [SubmonoidClass S M] {N : S} {a : N}
+    (ha : IsUnit a) : IsUnit (a : M) := ha.map (SubmonoidClass.subtype N)
+
 namespace Submonoid
 
 section Units
