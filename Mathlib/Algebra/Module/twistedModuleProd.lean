@@ -20,8 +20,8 @@ TODO cf Prod.lean for module
 section
 
 set_option linter.unusedVariables false
-/-- A `twistedModuleProd σ E mr F ms` or `E ×[σ|mr|ms] F` is a module structure on the product `E × F`
-with the `SMul` given by `s • ⟨x, y⟩ := ⟨s • x, σ s • y⟩`. -/
+/-- A `twistedModuleProd σ E mr F ms` or `E ×[σ|mr|ms] F` is a module structure on the product
+`E × F` with the `SMul` given by `s • ⟨x, y⟩ := ⟨s • x, σ s • y⟩`. -/
 @[ext]
 structure twistedModuleProd {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
     [AddCommGroup E] (mr : Module R E) (F : Type*) [AddCommGroup F] (ms : Module S F) where
