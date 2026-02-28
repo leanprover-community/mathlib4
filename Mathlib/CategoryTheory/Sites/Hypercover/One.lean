@@ -464,7 +464,7 @@ lemma congrIndexOneOfEq_congrFun
   simp [h₁]
 
 @[ext (iff := false)]
-def I₁'.ext {a b : E.I₁'} (left : a.1.1 = b.1.1) (right : a.1.2 = b.1.2)
+lemma I₁'.ext {a b : E.I₁'} (left : a.1.1 = b.1.1) (right : a.1.2 = b.1.2)
     (h : E.congrIndexOneOfEq left right a.2 = b.2) :
     a = b := by
   obtain ⟨⟨i, j⟩, k⟩ := a
