@@ -96,7 +96,7 @@ instance : Std.IsLinearOrder α where
 
 @[to_dual gt_trichotomy]
 lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by
-  cases le_total (a := a) (b := b) with
+  cases le_total a b with
   | _ h =>
     cases Decidable.lt_or_eq_of_le h with | _ h => simp [h]
 
