@@ -178,6 +178,7 @@ theorem iteratedDerivWithin_sub
   rw [sub_eq_add_neg, sub_eq_add_neg, Pi.neg_def, iteratedDerivWithin_add hx h hf hg.neg,
     iteratedDerivWithin_fun_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : 𝕜)
     (hs : Set.MapsTo (c * ·) s s) :
     iteratedDerivWithin n (fun x => f (c * x)) s x = c ^ n • iteratedDerivWithin n f s (c * x) := by
@@ -410,7 +411,6 @@ lemma iteratedDeriv_fun_mul {f g : 𝕜 → 𝔸} (hf : ContDiffAt 𝕜 n f x) (
       n.choose i * iteratedDeriv i f x * iteratedDeriv (n - i) g x :=
   iteratedDeriv_mul hf hg
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iteratedDeriv_fun_pow_zero {n m : ℕ} :
     iteratedDeriv n (· ^ m) (0 : 𝕜) = if n = m then m.factorial else 0 := by
   obtain h | h | h := lt_trichotomy n m <;>

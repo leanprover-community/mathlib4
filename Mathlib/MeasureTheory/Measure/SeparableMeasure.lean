@@ -130,7 +130,6 @@ lemma Measure.MeasureDense.fin_meas_approx (h𝒜 : μ.MeasureDense 𝒜) {s : S
   rcases h𝒜.approx s ms hμs ε ε_pos with ⟨t, t_mem, ht⟩
   exact ⟨t, t_mem, (measure_ne_top_iff_of_symmDiff <| ne_top_of_lt ht).1 hμs, ht⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (p) in
 /-- If `𝒜` is a measure-dense family of sets and `c : E`, then the set of constant indicators
 with constant `c` whose underlying set is in `𝒜` is dense in the set of constant indicators
@@ -424,7 +423,6 @@ section SecondCountableLp
 
 /-! ### A sufficient condition for $L^p$ spaces to be second-countable -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the measure `μ` is separable (in particular if `X` is countably generated and `μ` is
 `s`-finite), if `E` is a second-countable `NormedAddCommGroup`, and if `1 ≤ p < +∞`,
 then the associated `Lᵖ` space is second-countable. -/

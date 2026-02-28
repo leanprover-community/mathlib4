@@ -582,12 +582,10 @@ lemma le_card_edgeFinset_killCopies [Fintype V] :
     _ = #(G.killCopies H).edgeFinset := ?_
   · simp only [edgeFinset, Set.toFinset_card]
     rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
-  simp only [edgeFinset, killCopies_of_ne_bot, hH, Ne, not_false_iff,
-    Set.toFinset_card, edgeSet_deleteEdges]
-  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range,
-    Set.coe_toFinset, coe_filter, Set.iUnion_subtype, ← Fintype.card_coe,
-    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
-    Fintype.card_ofFinset, f]
+  congr 1
+  ext e
+  induction e using Sym2.inductionOn with | hf v w
+  simp [mem_edgeSet, killCopies_of_ne_bot hH, f, eq_comm]
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
 we've removed is at most the number of copies of `G` in `H`. -/

@@ -313,7 +313,6 @@ instance instSetoidLists : Setoid (Lists α) :=
 
 section Decidable
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sizeof_pos {b} (l : Lists' α b) : 0 < SizeOf.sizeOf l := by
   cases l <;> simp only [Lists'.atom.sizeOf_spec, Lists'.nil.sizeOf_spec, Lists'.cons'.sizeOf_spec,
     true_or, add_pos_iff, zero_lt_one]
