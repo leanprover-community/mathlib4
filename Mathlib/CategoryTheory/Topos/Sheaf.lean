@@ -116,7 +116,7 @@ to the (closed) sieve on X where `f : Y → X` is in the sieve iff
   "∃ a ∈ F(Y), G(f)(x) = η_Y(a)"
 -/
 @[simps]
-def Presheaf.χ {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
+def Presheaf.χ {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) :
     G ⟶ Functor.sieves C where
   app X := fun x => ⟨fun Y f => ∃ a, (G.map f.op) x = m.app (.op Y) a, by
     intro Y Z f ⟨a,ha⟩ g
@@ -125,7 +125,7 @@ def Presheaf.χ {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
     use F.map g.op a
     rw [FunctorToTypes.naturality]⟩
 
-lemma Presheaf.comp_χ_eq {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
+lemma Presheaf.comp_χ_eq {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) :
     m ≫ Presheaf.χ m = ({app X := fun _ => PUnit.unit} : F ⟶ _) ≫ Presheaf.truth C := by
   ext X x
   simp only [Functor.sieves_obj, FunctorToTypes.comp]
@@ -146,7 +146,7 @@ lemma Presheaf.classifier_isPullback {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F �
     simp_rw [eq_comm]
     simpa using congr($(hp).arrows (𝟙 _))
 
-lemma Presheaf.χ_uniqe {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m]
+lemma Presheaf.χ_unique {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G)
     {χ₀' : F ⟶ ((Functor.const _).obj PUnit)} (χ' : G ⟶ Functor.sieves C) :
     IsPullback m χ₀' χ' (truth C) → χ' = χ m := by
   intro h
@@ -206,7 +206,8 @@ variable (C) in
 def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
   .mkOfTerminalΩ₀ ((Functor.const _).obj PUnit)
     (.ofUniqueHom (fun _ => {app _ := fun _ => .unit}) (by aesop)) (Functor.sieves C)
-    (Presheaf.truth C) Presheaf.χ Presheaf.classifier_isPullback (Presheaf.χ_uniqe · (χ₀' := _))
+    (Presheaf.truth C) (Presheaf.χ ·) Presheaf.classifier_isPullback
+      (Presheaf.χ_unique ·)
 
 -- TODO: generalize this to `HasClassifier (Cᵒᵖ ⥤ Type w)` assuming `EssentiallySmall.{w} C`.
 /-- Sheaf categories have a subobject classifier. -/
@@ -249,19 +250,16 @@ lemma Sheaf.classifier_isPullback {J : GrothendieckTopology C} {F G : Sheaf J (T
   · ext : 1
     simp only [Ω_val, comp_val, χ_val, terminal_val, ← cancel_mono (closedSievesInclusion J),
       Category.assoc]
-    generalize_proofs _ h
-    rw [closedSievesFactorization_comp_closedSievesInclusion J (Presheaf.χ m.val) h]
+    rw [closedSievesFactorization_comp_closedSievesInclusion J (Presheaf.χ m.val)]
     exact Presheaf.comp_χ_eq m.val
   · rw [sheafToPresheaf_map J]
-    simp only [sheafToPresheaf_obj, terminal_val, Ω_val, sheafToPresheaf_map, χ_val]
+    simp only [sheafToPresheaf_obj, terminal_val, Ω_val, sheafToPresheaf_map, χ_val, truth_val]
     apply IsPullback.of_right _
       ((cancel_mono (closedSievesInclusion _)).mp (by simpa using Presheaf.comp_χ_eq _))
       (.of_horiz_isIso_mono ⟨_⟩ : IsPullback (𝟙 _) _ (Presheaf.χ m.val) (closedSievesInclusion J))
-    · simp only [Category.comp_id, truth_val, terminal_val,
-      closedSievesFactorization_comp_closedSievesInclusion]
+    · simp only [Category.comp_id, closedSievesFactorization_comp_closedSievesInclusion]
       exact Presheaf.classifier_isPullback m.val
-    · generalize_proofs h
-      simp_all [closedSievesFactorization_comp_closedSievesInclusion]
+    · simp_all [closedSievesFactorization_comp_closedSievesInclusion]
 
 lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v))} (m : F ⟶ G)
     [Mono m] (χ' : G ⟶ Sheaf.Ω)
@@ -270,7 +268,7 @@ lemma Sheaf.χ_unique {J : GrothendieckTopology C} {F G : Sheaf J (Type (max u v
   ext : 1
   rw [← cancel_mono (closedSievesInclusion J)]
   simp only [χ_val, closedSievesFactorization_comp_closedSievesInclusion]
-  apply Presheaf.χ_uniqe _
+  apply Presheaf.χ_unique _
   · have pb: IsPullback (𝟙 G.val) χ'.val (χ'.val ≫ closedSievesInclusion J)
       (closedSievesInclusion J) := .of_horiz_isIso_mono (by simp)
     have : IsPullback m.val ?_ χ'.val (truth.val) := by
@@ -289,7 +287,8 @@ noncomputable def Sheaf.classifier (J : GrothendieckTopology C) :
 
 -- TODO: generalize this to `HasClassifier (Sheaf J (Type w))` assuming `EssentiallySmall.{w} C`.
 /-- Sheaf categories have a subobject classifier. -/
-instance HasClassifier.instSheaf (J : GrothendieckTopology C) : HasClassifier (Sheaf J (Type (max u v))) where
+instance HasClassifier.instSheaf (J : GrothendieckTopology C) :
+    HasClassifier (Sheaf J (Type (max u v))) where
   exists_classifier := ⟨Sheaf.classifier J⟩
 
 end sheaf
