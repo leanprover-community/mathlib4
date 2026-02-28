@@ -1079,6 +1079,10 @@ theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
   rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
   exact Fintype.card_fin_lt_of_le x.is_le'
 
+@[simp]
+theorem enum_lt_fin {n : ℕ} (x : Fin n) : enum LT.lt ⟨x, by simp⟩ = x := by
+  simp [← typein_inj LT.lt]
+
 /-! ### Properties of `ω` -/
 
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
@@ -1087,6 +1091,10 @@ theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
 @[simp]
 theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
+
+@[simp]
+theorem enum_lt_nat (x : ℕ) : enum LT.lt ⟨x, by simp⟩ = x := by
+  simp [← typein_inj LT.lt]
 
 theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
   obtain ho | ho := lt_or_ge o ω
