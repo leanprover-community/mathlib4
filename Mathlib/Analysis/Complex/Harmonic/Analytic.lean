@@ -136,6 +136,7 @@ theorem InnerProductSpace.harmonic_is_realOfHolomorphic_univ {f : ℂ → ℝ}
     · simp only [map_smul, map_add]
       simp [(h₁F y).hasFDerivAt.restrictScalars ℝ |>.fderiv, g]
     · simp
+  all_goals simp [F]
 
 set_option backward.isDefEq.respectTransparency false in
 /-
