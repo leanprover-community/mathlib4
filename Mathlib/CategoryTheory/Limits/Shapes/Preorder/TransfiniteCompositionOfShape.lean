@@ -139,7 +139,7 @@ noncomputable def ici (j : J) :
   isoBot := Iso.refl _
   incl := Functor.whiskerLeft _ c.incl
   isColimit := (Functor.Final.isColimitWhiskerEquiv
-    ((Subtype.mono_coe (· ∈ Set.Ici j)).functor) _).2 c.isColimit
+    (Subtype.mono_coe (· ∈ Set.Ici j)).functor _).2 c.isColimit
 
 end TransfiniteCompositionOfShape
 
