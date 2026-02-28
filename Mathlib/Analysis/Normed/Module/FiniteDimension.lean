@@ -10,7 +10,6 @@ public import Mathlib.Analysis.Normed.Group.Lemmas
 public import Mathlib.Analysis.Normed.Affine.Isometry
 public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
-public import Mathlib.Analysis.Normed.Operator.Compact
 public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 public import Mathlib.Analysis.SpecificLimits.Normed
@@ -550,11 +549,9 @@ theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
   isCompactOperator_id_iff_locallyCompactSpace.trans
     ⟨fun _ ↦ .of_locallyCompactSpace 𝕜, fun _ ↦ .of_finiteDimensional_of_complete 𝕜 E⟩
 
-alias ⟨IsCompactOperator.finiteDimensional, _⟩ := isCompactOperator_id_iff_finiteDimensional
-
 /-- If the identity operator of a Banach space over a nontrivially normed field is compact,
 then the space is finite dimensional. -/
-lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E → E)) :
+lemma IsCompactOperator.finiteDimensional (h : IsCompactOperator (id : E → E)) :
     FiniteDimensional 𝕜 E := by
   have := h.locallyCompactSpace
   exact FiniteDimensional.of_locallyCompactSpace 𝕜
