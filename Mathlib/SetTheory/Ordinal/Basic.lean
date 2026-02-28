@@ -469,8 +469,8 @@ theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
     Set.SurjOn (typein r) Set.univ (Set.Iio (type r)) :=
   (typein r).surjOn
 
-theorem type_Iio_lt [Preorder α] [IsWellOrder α (· < ·)] (x : α)
-    [IsWellOrder (Iio x) (· < ·)] : type (α := Iio x) (· < ·) = typein (· < ·) x :=
+theorem type_Iio_lt [LinearOrder α] [WellFoundedLT α] (x : α) :
+    type (α := Iio x) LT.lt = typein LT.lt x :=
   rfl
 
 /-- A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.

@@ -1070,13 +1070,13 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
 @[simp]
 theorem typein_lt_nat (x : ℕ) : typein LT.lt x = x := by
   have : Fintype <| Iio x := Nat.fintypeIio x
-  rw [typein_lt_eq_type_Iio_lt, type_fintype, Nat.cast_inj]
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
   nth_rw 2 [← Fintype.card_fin x]
   exact Fintype.card_congr Fin.equivSubtype.symm
 
 @[simp]
 theorem typein_lt_fin {n : ℕ} (x : Fin n) : typein LT.lt x = x := by
-  rw [typein_lt_eq_type_Iio_lt, type_fintype, Nat.cast_inj]
+  rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
   exact Fintype.card_fin_lt_of_le x.is_le'
 
 /-! ### Properties of `ω` -/
