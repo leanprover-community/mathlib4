@@ -526,7 +526,6 @@ section
 variable (s₀ : E.I₀ ≃ F.I₀) (s₁ : ∀ ⦃i j : E.I₀⦄, E.I₁ i j ≃ F.I₁ (s₀ i) (s₀ j))
   {i j : E.I₀} (k : E.I₁ i j)
 
-@[simp]
 lemma congrIndexOneOfEq_equiv :
     (congrIndexOneOfEq (s₀.symm_apply_apply i).symm (s₀.symm_apply_apply j).symm) k =
       s₁.symm ((congrIndexOneOfEq (by simp) (by simp)) (s₁ k)) := by
