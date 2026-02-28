@@ -52,6 +52,7 @@ instance [FormallyUnramified R S] :
 
 variable [EssFiniteType R S]
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00UW "(2)"]
 instance [FormallyUnramified R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=
@@ -59,11 +60,13 @@ instance [FormallyUnramified R S] :
   have : EssFiniteType (ResidueField R) (ResidueField S) := .of_comp R _ _
   FormallyUnramified.finite_of_free _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 00UW "(2)"]
 instance [FormallyUnramified R S] :
     Algebra.IsSeparable (ResidueField R) (ResidueField S) :=
   FormallyUnramified.isSeparable _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R S] :
     IsField (S ⧸ (maximalIdeal R).map (algebraMap R S)) := by
   let mR := (maximalIdeal R).map (algebraMap R S)
@@ -90,6 +93,7 @@ lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
   rw [Ideal.Quotient.maximal_ideal_iff_isField_quotient]
   exact isField_quotient_map_maximalIdeal
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 02FM]
 lemma FormallyUnramified.of_map_maximalIdeal
     [Algebra.IsSeparable (ResidueField R) (ResidueField S)]
@@ -172,7 +176,6 @@ lemma localRingHom_injective_of_primesOver_eq_singleton
   obtain ⟨r, hrp, t, e'⟩ := Ideal.exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton hq _ haq
   refine (IsLocalization.mk'_eq_zero_iff _ _).mpr
     ⟨⟨r, hrp⟩, FaithfulSMul.algebraMap_injective R S ?_⟩
-  simp only [map_mul, e', map_zero]
   grind
 
 lemma finite_of_primesOver_eq_singleton [Module.Finite R S] [q.LiesOver p] :
@@ -243,6 +246,7 @@ lemma exists_awayMap_injective_of_localRingHom_injective
   dsimp only at hk ⊢
   rw [pow_add, mul_assoc, e, mul_pow, ← e, mul_assoc, mul_left_comm, hk, mul_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_awayMap_bijective_of_localRingHom_bijective
     [Module.Finite R S] [q.LiesOver p] (hRS : (RingHom.ker (algebraMap R S)).FG)
     (H : Function.Bijective (localRingHom p q (algebraMap R S) (q.over_def p))) :

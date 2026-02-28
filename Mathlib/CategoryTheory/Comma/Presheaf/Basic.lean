@@ -294,6 +294,7 @@ lemma mk_snd (s : yoneda.obj X ⟶ A) (x : F.obj (op (CostructuredArrow.mk s))) 
     (mk s x).snd = F.map (eqToHom <| by rw [YonedaCollection.mk_fst]) x :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext (iff := false)]
 lemma ext {p q : YonedaCollection F X} (h : p.fst = q.fst)
     (h' : F.map (eqToHom <| by rw [h]) q.snd = p.snd) : p = q := by
@@ -440,6 +441,7 @@ lemma app_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : Cᵒᵖ)
     η.app X (unitForward η X.unop p) = p.yonedaEquivFst := by
   simpa [unitForward] using p.snd.app_val
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Backward direction of the unit. -/
 def unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     F.obj (op X) → YonedaCollection (restrictedYonedaObj η) X :=
@@ -449,6 +451,7 @@ lemma unitForward_unitBackward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     unitForward η X ∘ unitBackward η X = id :=
   funext fun x => by simp [unitForward, unitBackward]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unitBackward_unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
     unitBackward η X ∘ unitForward η X = id := by
   refine funext fun p => YonedaCollection.ext ?_ (OverArrows.ext ?_)
@@ -501,6 +504,7 @@ lemma counitForward_val_fst (s : CostructuredArrow yoneda A) (x : F.obj (op s)) 
     (counitForward F s x).val.fst = s.hom := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma counitForward_val_snd (s : CostructuredArrow yoneda A) (x : F.obj (op s)) :
     (counitForward F s x).val.snd = F.map (eqToHom (by simp [← CostructuredArrow.eq_mk])) x :=
@@ -512,6 +516,7 @@ lemma counitForward_naturality₁ {G : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Ty
       OverArrows.map₁ (counitForward F s.unop x) (yonedaCollectionPresheafMap₁ η) (by cat_disch) :=
   OverArrows.ext <| YonedaCollection.ext (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f : t ⟶ s) (x : F.obj t) :
     counitForward F s.unop (F.map f x) =
@@ -523,6 +528,7 @@ lemma counitForward_naturality₂ (s t : (CostructuredArrow yoneda A)ᵒᵖ) (f 
     simp
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Backward direction of the counit. -/
 def counitBackward (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (s : CostructuredArrow yoneda A) :
     OverArrows (yonedaCollectionPresheafToA F) s.hom → F.obj (op s) :=

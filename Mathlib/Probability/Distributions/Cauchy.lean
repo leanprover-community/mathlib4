@@ -93,6 +93,7 @@ lemma cauchyPDF_pos (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) (x : ℝ) : 0 <
   rw [cauchyPDFReal_def]
   positivity
 
+set_option backward.isDefEq.respectTransparency false in
 lemma integral_cauchyPDFReal (x₀ : ℝ) {γ : ℝ≥0} (hγ : γ ≠ 0) :
     ∫ x, cauchyPDFReal x₀ γ x = 1 := by
   simp [cauchyPDFReal_def', NNReal.coe_inv, integral_const_mul,

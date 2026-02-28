@@ -431,6 +431,7 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
     relNorm R P = p ^ p.inertiaDeg P := by
   let T := Ring.NormalClosure R S

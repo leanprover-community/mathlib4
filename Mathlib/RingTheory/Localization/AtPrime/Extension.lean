@@ -78,6 +78,7 @@ theorem liesOver_map_of_liesOver [Algebra R Sₚ] [IsScalarTower R S Sₚ] [IsSc
 
 attribute [local instance] Ideal.Quotient.field
 
+set_option backward.isDefEq.respectTransparency false in
 include p in
 theorem exists_algebraMap_quot_eq_of_mem_quot [P.IsMaximal]
     (x : Sₚ ⧸ P.map (algebraMap S Sₚ)) :
@@ -117,6 +118,7 @@ theorem equivQuotientMapOfIsMaximal_apply_mk [P.IsMaximal] (x : S) :
     equivQuotientMapOfIsMaximal p Sₚ P (Ideal.Quotient.mk _ x) =
       (Ideal.Quotient.mk _ (algebraMap S Sₚ x)) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem equivQuotientMapOfIsMaximal_symm_apply_mk [P.IsMaximal] (x : S)
     (s : algebraMapSubmonoid S p.primeCompl) :
