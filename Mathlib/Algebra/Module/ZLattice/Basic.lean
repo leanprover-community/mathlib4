@@ -274,7 +274,8 @@ def quotientEquiv [Fintype ι] :
   · refine fun q => Quotient.liftOn q (fractRestrict b) (fun _ _ h => ?_)
     rw [Subtype.mk.injEq, fractRestrict_apply, fractRestrict_apply, fract_eq_fract]
     exact QuotientAddGroup.leftRel_apply.mp h
-  · refine Quotient.inductionOn₂ x y (fun _ _ hxy => ?_)
+  · induction x, y using Quotient.inductionOn₂
+    intro hxy
     rw [Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Quotient.liftOn_mk (s := quotientRel (span ℤ (Set.range b))), fractRestrict,
       Subtype.mk.injEq] at hxy
