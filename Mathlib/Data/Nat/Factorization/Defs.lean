@@ -179,7 +179,6 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
       have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx => hS x (hTS hx)
       simp [prod_insert hxT, sum_insert hxT, IH, factorization_mul (hS x hxS) hT]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `p`, the power of `p` in `n^k` is `k` times the power in `n` -/
 @[simp]
 theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factorization := by

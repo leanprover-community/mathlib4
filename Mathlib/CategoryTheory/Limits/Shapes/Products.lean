@@ -765,7 +765,6 @@ def sigmaConstAdj [Limits.HasCoproducts.{v} C] (X : C) :
 
 section Unique
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The limit cone for the product over an index type with exactly one term. -/
 @[simps]
 def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f) where
@@ -802,7 +801,6 @@ def Fan.isLimitMkOfUnique {X Y : C} (e : X ≅ Y) (J : Type*) [Unique J] :
     simp
   · simpa [← cancel_mono e.hom] using hm default
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cocone for the coproduct over an index type with exactly one term. -/
 @[simps]
 def colimitCoconeOfUnique [Unique β] (f : β → C) : ColimitCocone (Discrete.functor f) where
@@ -941,5 +939,25 @@ def Cofan.IsColimit.prod (c : ∀ i : ι, Cofan (fun j : ι' ↦ X i j)) (hc : �
     exact Cofan.IsColimit.hom_ext (hc i) _ _ fun j ↦ (by simpa using hm (i, j))
 
 end Fubini
+
+/-- The functor `C ⥤ (Type w)ᵒᵖ ⥤ C` which sends `X : C` and `α : Type w` to
+the product of copies of `X` indexed by `α`. -/
+@[simps]
+def piFunctor [HasProducts.{w} C] :
+    C ⥤ (Type w)ᵒᵖ ⥤ C where
+  obj X :=
+    { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
+      map f := Pi.map' f.unop (fun _ ↦ 𝟙 _) }
+  map f := { app T := Pi.map (fun _ ↦ f) }
+
+/-- The functor `C ⥤ Type w ⥤ C` which sends `X : C` and `α : Type w` to
+the coproduct of copies of `X` indexed by `α`. -/
+@[simps]
+def sigmaFunctor [HasCoproducts.{w} C] :
+    C ⥤ Type w ⥤ C where
+  obj X :=
+    { obj α := ∐ (fun (t : α) ↦ X)
+      map f := Sigma.map' f (fun _ ↦ 𝟙 _) }
+  map f := { app T := Sigma.map (fun _ ↦ f) }
 
 end CategoryTheory.Limits
