@@ -109,6 +109,7 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
   have w := t.π.naturality WalkingCospan.Hom.inl
   dsimp at w; simpa using w
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pullback cone on `f` and `g` is determined by morphisms `fst : W ⟶ X` and `snd : W ⟶ Y`
 such that `fst ≫ f = snd ≫ g`. -/
 @[simps]
@@ -142,6 +143,7 @@ theorem mk_snd {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫
 theorem condition (t : PullbackCone f g) : fst t ≫ f = snd t ≫ g :=
   (t.w inl).trans (t.w inr).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check whether two morphisms are equalized by the maps of a pullback cone, it suffices to
 check it for `fst t` and `snd t` -/
 theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : k ≫ fst t = l ≫ fst t)
@@ -162,6 +164,7 @@ reconstructed using `PullbackCone.mk`. -/
 def eta (t : PullbackCone f g) : t ≅ mk t.fst t.snd t.condition :=
   PullbackCone.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a slightly more convenient method to verify that a pullback cone is a limit cone. It
 only asks for a proof of facts that carry any mathematical content -/
 def isLimitAux (t : PullbackCone f g) (lift : ∀ s : PullbackCone f g, s.pt ⟶ t.pt)
@@ -252,6 +255,7 @@ def flipFlipIso : t.flip.flip ≅ t := PullbackCone.ext (Iso.refl _) (by simp) (
 
 variable {t}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flip of a pullback square is a pullback square. -/
 def flipIsLimit (ht : IsLimit t) : IsLimit t.flip :=
   IsLimit.mk _ (fun s => ht.lift s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
@@ -286,6 +290,7 @@ def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
   pt := t.pt
   π := t.π ≫ (diagramIsoCospan F).hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
 composing with `diagramIsoCospan`. -/
 @[simps!]
@@ -324,6 +329,7 @@ theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f �
   have w := t.ι.naturality WalkingSpan.Hom.fst
   dsimp at w; simpa using w.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
 that `f ≫ inl = g ↠ inr`. -/
 @[simps]
@@ -357,6 +363,7 @@ theorem mk_inr {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ i
 theorem condition (t : PushoutCocone f g) : f ≫ inl t = g ≫ inr t :=
   (t.w fst).trans (t.w snd).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check whether a morphism is coequalized by the maps of a pushout cocone, it suffices to check
   it for `inl t` and `inr t` -/
 theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
@@ -469,6 +476,7 @@ def flipFlipIso : t.flip.flip ≅ t := PushoutCocone.ext (Iso.refl _) (by simp) 
 
 variable {t}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flip of a pushout square is a pushout square. -/
 def flipIsColimit (ht : IsColimit t) : IsColimit t.flip :=
   IsColimit.mk _ (fun s => ht.desc s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
@@ -502,6 +510,7 @@ def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
   pt := t.pt
   ι := (diagramIsoSpan F).inv ≫ t.ι
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A diagram `WalkingSpan ⥤ C` is isomorphic to some `PushoutCocone.mk` after composing with
 `diagramIsoSpan`. -/
 @[simps!]
