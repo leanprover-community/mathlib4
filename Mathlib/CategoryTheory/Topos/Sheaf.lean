@@ -214,14 +214,9 @@ variable (C) in
 /-- A construction of a subject classifier in a category of presheaves. -/
 @[simps!]
 def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
-  .mkOfTerminalΩ₀
-    ((Functor.const _).obj PUnit)
-    (.ofUniqueHom (fun _ => {app _ := fun _ => .unit}) (by aesop))
-    (Functor.sieves C)
-    (Presheaf.truth C)
-    Presheaf.χ
-    Presheaf.classifier_isPullback
-    (Presheaf.χ_uniqe · (χ₀' := _))
+  .mkOfTerminalΩ₀ ((Functor.const _).obj PUnit)
+    (.ofUniqueHom (fun _ => {app _ := fun _ => .unit}) (by aesop)) (Functor.sieves C)
+    (Presheaf.truth C) Presheaf.χ Presheaf.classifier_isPullback (Presheaf.χ_uniqe · (χ₀' := _))
 
 instance HasClassifier.instPresheaf : HasClassifier (Cᵒᵖ ⥤ Type (max u v)) :=
   ⟨⟨Presheaf.classifier C⟩⟩
@@ -305,14 +300,8 @@ and `truth` maps for each object `X : C`, an element of `PUnit` to the maximal `
 -/
 @[simps! Ω truth Ω₀ χ χ₀]
 def Sheaf.classifier (J : GrothendieckTopology C) : Classifier (Sheaf J (Type (max u v))) :=
-  .mkOfTerminalΩ₀
-    (.terminal J)
-    Sheaf.terminal.isTerminal
-    Sheaf.Ω
-    Sheaf.truth
-    Sheaf.χ
-    Sheaf.classifier_isPullback
-    Sheaf.χ_unique
+  .mkOfTerminalΩ₀ (.terminal J) Sheaf.terminal.isTerminal Sheaf.Ω Sheaf.truth Sheaf.χ
+    Sheaf.classifier_isPullback Sheaf.χ_unique
 
 /-- Sheaf categories have a subobject classifier. -/
 instance (J : GrothendieckTopology C) : HasClassifier (Sheaf J (Type (max u v))) where
