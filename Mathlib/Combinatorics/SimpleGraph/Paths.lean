@@ -737,33 +737,42 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
 
 theorem cycle_from_two_paths {u v : V} {p q : G.Walk u v} (hp : p.IsPath) (hq : q.IsPath)
     (h : p ≠ q) :
-    ∃ w, w ∈ p.support ++ q.support ∧
-    ∃ c : G.Walk w w, c.IsCycle ∧ c.length ≤ p.length + q.length := by
+    ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
+    ∃ c : G.Walk w w, c.IsCycle ∧ c.support.Sublist (p.support ++ q.support.reverse.tail) := by
   induction hs : p.length + q.length using Nat.strong_induction_on generalizing u v with | h s ih =>
   by_cases! hw : ∃ w ∈ p.support, w ∈ q.support ∧ w ≠ u ∧ w ≠ v
   · classical
     obtain ⟨w, hwp, hwq, hwu, hwv⟩ := hw
     by_cases! htake : p.takeUntil w hwp ≠ q.takeUntil w hwq
-    · obtain ⟨x, hx, c, hc⟩ := ih ((p.takeUntil w hwp).length + (q.takeUntil w hwq).length)
+    · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih ((p.takeUntil w _).length + (q.takeUntil w _).length)
         (hs ▸ Nat.add_lt_add (length_takeUntil_lt hwp hwv) (length_takeUntil_lt hwq hwv))
         (hp.takeUntil hwp) (hq.takeUntil hwq) htake rfl
-      grind [support_takeUntil_subset, length_takeUntil_le]
-    · obtain ⟨x, hx, c, hc⟩ := ih ((p.dropUntil w hwp).length + (q.dropUntil w hwq).length)
+      refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| List.Sublist.append ?_ ?_⟩ <;>
+        grind [takeUntil_support_isPrefix, List.IsPrefix.sublist, support_reverse]
+    · obtain ⟨x, hx₁, hx₂, c, hc₁, hc₂⟩ := ih ((p.dropUntil w _).length + (q.dropUntil w _).length)
         (hs ▸ Nat.add_lt_add (length_dropUntil_lt hwp hwu) (length_dropUntil_lt hwq hwu))
         (hp.dropUntil hwp) (hq.dropUntil hwq) (by grind [take_spec]) rfl
-      grind [support_dropUntil_subset, length_dropUntil_le]
-  · use u, by simp, p.append q.reverse
-    refine ⟨isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq) ?_ ?_, by simpa using hs.le⟩
+      refine ⟨x, ?_, ?_, c, hc₁, hc₂.trans <| List.Sublist.append ?_ ?_⟩ <;>
+        grind [support_tail_of_not_nil, dropUntil_support_isSuffix, List.IsSuffix.sublist]
+  · use u, by simp, by simp, p.append q.reverse
+    refine ⟨isPath_append_isCycle hp ((isPath_reverse_iff q).mpr hq) ?_ ?_,
+      by simp [support_append]⟩
     · intro; grind [support_eq_concat, IsPath.support_nodup, support_reverse, support_eq_cons]
     rw [length_reverse, lt_sup_iff]
     by_contra! ⟨hpl, hql⟩
     rw [Nat.le_one_iff_eq_zero_or_eq_one] at hpl hql
     rcases hpl with hpl | hpl <;> rcases hql with hql | hql
-    · have := (nil_iff_length_eq.mpr hpl).eq
-      grind [length_eq_zero_iff]
+    · grind [length_eq_zero_iff, (nil_iff_length_eq.mpr hpl).eq]
     · exact (adj_of_length_eq_one hql).ne (nil_iff_length_eq.mpr hpl).eq
     · exact (adj_of_length_eq_one hpl).ne (nil_iff_length_eq.mpr hql).eq
     · grind [Nat.le_one_iff_eq_zero_or_eq_one, ext_getVert_le_length, getVert_length, getVert_zero]
+
+theorem cycle_from_two_paths_le_length_sum {u v : V} {p q : G.Walk u v}
+    (hp : p.IsPath) (hq : q.IsPath) (h : p ≠ q) :
+    ∃ w, w ∈ p.support ∧ w ∈ q.support ∧
+    ∃ c : G.Walk w w, c.IsCycle ∧ c.length ≤ p.length + q.length := by
+  obtain ⟨w, hw₁, hw₂, c, hc₁, hc₂⟩ := cycle_from_two_paths hp hq h
+  use w, hw₁, hw₂, c, hc₁, by grind [hc₂.length_le]
 
 variable [DecidableEq V] {u' v' : V}
 
