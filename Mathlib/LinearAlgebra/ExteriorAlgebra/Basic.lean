@@ -317,8 +317,8 @@ theorem ιMulti_succ_curryLeft {n : ℕ} (m : M) :
   ext; simp
 
 lemma ιMulti_eq_zero_of_not_inj {n : ℕ} {v : Fin n → M} (hv : ¬Function.Injective v) :
-  ιMulti R n v = 0 :=
-AlternatingMap.map_eq_zero_of_not_injective (ιMulti R n) v hv
+    ιMulti R n v = 0 :=
+  (ιMulti R n).map_eq_zero_of_not_injective v hv
 
 lemma ιMulti_mul_ιMulti {m n : ℕ} (a : Fin m → M) (b : Fin n → M) :
     ιMulti R m a * ιMulti R n b = ιMulti R (m+n) (Fin.append a b) := by
