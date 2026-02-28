@@ -206,13 +206,12 @@ lemma not_reachable_of_left_neighborSet_eq_empty {G : SimpleGraph V} {u v : V} (
   (Reachable.nonempty_neighborSet_left huv).mt (Set.not_nonempty_iff_eq_empty.mpr hu)
 
 lemma not_reachable_of_right_neighborSet_eq_empty {G : SimpleGraph V} {u v : V} (huv : u ≠ v)
-    (hv : G.neighborSet v = ∅) : ¬G.Reachable u v := by
-  rw [reachable_comm]
-  exact not_reachable_of_left_neighborSet_eq_empty huv.symm hv
+    (hv : G.neighborSet v = ∅) : ¬G.Reachable u v :=
+  fun r ↦ not_reachable_of_left_neighborSet_eq_empty huv.symm hv r.symm
 
 lemma not_reachable_of_left_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet u)]
-    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v := by
-  exact (Reachable.degree_pos_left huv).mt (by simp [hu])
+    (huv : u ≠ v) (hu : G.degree u = 0) : ¬G.Reachable u v :=
+  (Reachable.degree_pos_left huv).mt (by simp [hu])
 
 lemma not_reachable_of_right_degree_zero {G : SimpleGraph V} {u v : V} [Fintype (G.neighborSet v)]
     (huv : u ≠ v) (hu : G.degree v = 0) : ¬G.Reachable u v := by
