@@ -801,6 +801,7 @@ public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Algebra.Module.ZLattice.Covolume
 public import Mathlib.Algebra.Module.ZLattice.Summable
 public import Mathlib.Algebra.Module.ZMod
+public import Mathlib.Algebra.Module.twistedModuleProd
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Cardinal
 public import Mathlib.Algebra.MonoidAlgebra.Defs
