@@ -41,28 +41,28 @@ instance : Add (twistedModuleProd σ E mr F ms) where
   add x y := mk (x.fst + y.fst) (x.snd + y.snd)
 
 @[simp]
-lemma add_left (x y : twistedModuleProd σ E mr F ms) : (x + y).fst = x.fst + y.fst := rfl
+lemma add_fst (x y : twistedModuleProd σ E mr F ms) : (x + y).fst = x.fst + y.fst := rfl
 
 @[simp]
-lemma add_right (x y : twistedModuleProd σ E mr F ms) : (x + y).snd = x.snd + y.snd := rfl
+lemma add_snd (x y : twistedModuleProd σ E mr F ms) : (x + y).snd = x.snd + y.snd := rfl
 
 instance : Neg (twistedModuleProd σ E mr F ms) where
   neg x := mk (-x.fst) (-x.snd)
 
 @[simp]
-lemma neg_left (x : twistedModuleProd σ E mr F ms) : (-x).fst = -x.fst := rfl
+lemma neg_fst (x : twistedModuleProd σ E mr F ms) : (-x).fst = -x.fst := rfl
 
 @[simp]
-lemma neg_right (x : twistedModuleProd σ E mr F ms) : (-x).snd = -x.snd := rfl
+lemma neg_snd (x : twistedModuleProd σ E mr F ms) : (-x).snd = -x.snd := rfl
 
 instance : Zero (twistedModuleProd σ E mr F ms) where
   zero := mk 0 0
 
 @[simp]
-lemma zero_left : (0 : twistedModuleProd σ E mr F ms).fst = 0 := rfl
+lemma zero_fst : (0 : twistedModuleProd σ E mr F ms).fst = 0 := rfl
 
 @[simp]
-lemma zero_right : (0 : twistedModuleProd σ E mr F ms).snd = 0 := rfl
+lemma zero_snd : (0 : twistedModuleProd σ E mr F ms).snd = 0 := rfl
 
 instance : AddCommGroup (twistedModuleProd σ E mr F ms) where
   add_assoc x y z := by ext <;> simpa using add_assoc _ _ _
@@ -82,10 +82,10 @@ instance : SMul R (twistedModuleProd σ E mr F ms) where
   smul s x := mk (s • x.fst) (σ s • x.snd)
 
 @[simp]
-lemma smul_left (s : R) (x : twistedModuleProd σ E mr F ms) : (s • x).fst = s • x.fst := rfl
+lemma smul_fst (s : R) (x : twistedModuleProd σ E mr F ms) : (s • x).fst = s • x.fst := rfl
 
 @[simp]
-lemma smul_right (s : R) (x : twistedModuleProd σ E mr F ms) : (s • x).snd = σ s • x.snd := rfl
+lemma smul_snd (s : R) (x : twistedModuleProd σ E mr F ms) : (s • x).snd = σ s • x.snd := rfl
 
 instance : Module R (twistedModuleProd σ E mr F ms) where
   mul_smul s t x := by ext <;> simp [mul_smul]
