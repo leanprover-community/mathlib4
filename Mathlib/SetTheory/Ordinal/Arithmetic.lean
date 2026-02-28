@@ -781,47 +781,47 @@ theorem add_mul_of_isSuccLimit {a b c : Ordinal} (ba : b + a = a) (l : IsSuccLim
 
 /-! ### Division on ordinals -/
 
-/-- The set in the definition of division is nonempty. -/
-private theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
-  ⟨a, (add_one_le_iff (y := b * (a + 1))).1 <| by
-    simpa using mul_le_mul_left (add_one_le_of_lt h.pos) (a + 1)⟩
-
-/-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
-instance div : Div Ordinal :=
-  ⟨fun a b => if b = 0 then 0 else sInf { o | a < b * succ o }⟩
+/-- `a / b` is the unique ordinal `q` satisfying `a = b * q + r` with `r < b`. -/
+@[no_expose]
+instance div : Div Ordinal where
+  div a b := sSup ((b * ·) ⁻¹' Iic a)
 
 @[simp]
-theorem div_zero (a : Ordinal) : a / 0 = 0 :=
-  dif_pos rfl
+theorem div_zero (a : Ordinal) : a / 0 = 0 := by
+  change sSup _ = _
+  simp
 
-private theorem div_def (a) {b : Ordinal} (h : b ≠ 0) : a / b = sInf { o | a < b * succ o } :=
-  dif_neg h
+/-- Multiplication and division by a non-zero ordinal form a Galois connection. -/
+theorem mul_div_gc {a : Ordinal} (ha : a ≠ 0) : GaloisConnection (a * ·) (· / a) :=
+  fun b c ↦ (isNormal_mul_right ha.pos).le_iff_le_sSup' ⟨0, by simp⟩
+
+theorem mul_le_iff_le_div {a b c : Ordinal} (ha : a ≠ 0) : a * b ≤ c ↔ b ≤ c / a :=
+  (mul_div_gc ha).le_iff_le
+
+theorem lt_mul_iff_div_lt {a b c : Ordinal} (ha : a ≠ 0) : c < a * b ↔ c / a < b :=
+  (mul_div_gc ha).lt_iff_lt
 
 theorem lt_mul_succ_div (a) {b : Ordinal} (h : b ≠ 0) : a < b * succ (a / b) := by
-  rw [div_def a h]; exact csInf_mem (div_nonempty h)
+  rw [lt_mul_iff_div_lt h, lt_succ_iff]
 
 theorem lt_mul_div_add (a) {b : Ordinal} (h : b ≠ 0) : a < b * (a / b) + b := by
   simpa only [mul_succ] using lt_mul_succ_div a h
 
-theorem div_le {a b c : Ordinal} (b0 : b ≠ 0) : a / b ≤ c ↔ a < b * succ c :=
-  ⟨fun h => (lt_mul_succ_div a b0).trans_le (mul_le_mul_right (succ_le_succ_iff.2 h) _), fun h => by
-    rw [div_def a b0]; exact csInf_le' h⟩
+theorem div_le {a b c : Ordinal} (b0 : b ≠ 0) : a / b ≤ c ↔ a < b * succ c := by
+  rw [← lt_succ_iff, ← lt_mul_iff_div_lt b0]
 
 theorem lt_div {a b c : Ordinal} (h : c ≠ 0) : a < b / c ↔ c * succ a ≤ b := by
   rw [← not_le, div_le h, not_lt]
 
 theorem div_pos {b c : Ordinal} (h : c ≠ 0) : 0 < b / c ↔ c ≤ b := by simp [lt_div h]
 
-theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b := by
-  induction a using limitRecOn with
-  | zero => simp
-  | succ _ _ => rw [succ_le_iff, lt_div c0]
-  | limit _ h₁ h₂ =>
-    revert h₁ h₂
-    simp +contextual only [mul_le_iff_of_isSuccLimit, IsSuccLimit.le_iff_forall_le, forall_true_iff]
+@[deprecated mul_le_iff_le_div (since := "2026-02-27")]
+theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b :=
+  (mul_le_iff_le_div c0).symm
 
+@[deprecated lt_mul_iff_div_lt (since := "2026-02-27")]
 theorem div_lt {a b c : Ordinal} (b0 : b ≠ 0) : a / b < c ↔ a < b * c :=
-  lt_iff_lt_of_le_iff_le <| le_div b0
+  (lt_mul_iff_div_lt b0).symm
 
 theorem div_le_of_le_mul {a b c : Ordinal} (h : a ≤ b * c) : a / b ≤ c := by
   obtain rfl | b0 := eq_or_ne b 0
@@ -835,12 +835,12 @@ theorem mul_lt_of_lt_div {a b c : Ordinal} : a < b / c → c * a < b :=
 theorem zero_div (a : Ordinal) : 0 / a = 0 := nonpos_iff_eq_zero.1 <| div_le_of_le_mul <| zero_le _
 
 theorem mul_div_le (a b : Ordinal) : b * (a / b) ≤ a :=
-  if b0 : b = 0 then by simp [b0] else (le_div b0).1 le_rfl
+  if b0 : b = 0 then by simp [b0] else (mul_le_iff_le_div b0).2 le_rfl
 
 theorem div_le_left {a b : Ordinal} (h : a ≤ b) (c : Ordinal) : a / c ≤ b / c := by
   obtain rfl | hc := eq_or_ne c 0
   · rw [div_zero, div_zero]
-  · rw [le_div hc]
+  · rw [← mul_le_iff_le_div hc]
     exact (mul_div_le a c).trans h
 
 theorem mul_add_div (a) {b : Ordinal} (b0 : b ≠ 0) (c) : (b * a + c) / b = a + c / b := by
@@ -848,7 +848,7 @@ theorem mul_add_div (a) {b : Ordinal} (b0 : b ≠ 0) (c) : (b * a + c) / b = a +
   · apply (div_le b0).2
     rw [mul_succ, mul_add, add_assoc, add_lt_add_iff_left]
     apply lt_mul_div_add _ b0
-  · rw [le_div b0, mul_add, add_le_add_iff_left]
+  · rw [← mul_le_iff_le_div b0, mul_add, add_le_add_iff_left]
     apply mul_div_le
 
 theorem div_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a / b = 0 := by
@@ -866,13 +866,13 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
   · rw [mul_zero, div_zero, div_zero]
   · have H := mul_ne_zero ha hd
     apply le_antisymm
-    · rw [← lt_succ_iff, div_lt H, mul_assoc]
+    · rw [← lt_succ_iff, ← lt_mul_iff_div_lt H, mul_assoc]
       · apply (add_lt_add_right hc _).trans_le
         rw [← mul_succ]
         gcongr
         rw [succ_le_iff]
         exact lt_mul_succ_div b hd
-    · grw [le_div H, mul_assoc, mul_div_le b d, ← le_self_add]
+    · grw [← mul_le_iff_le_div H, mul_assoc, mul_div_le b d, ← le_self_add]
 
 theorem mul_div_mul_cancel {a : Ordinal} (ha : a ≠ 0) (b c) : a * b / (a * c) = b / c := by
   convert mul_add_div_mul (pos_iff_ne_zero.2 ha) b c using 1
@@ -886,10 +886,11 @@ theorem div_one (a : Ordinal) : a / 1 = a := by
 theorem div_self {a : Ordinal} (h : a ≠ 0) : a / a = 1 := by
   simpa only [mul_one] using mul_div_cancel 1 h
 
-theorem mul_sub (a b c : Ordinal) : a * (b - c) = a * b - a * c :=
-  if a0 : a = 0 then by simp only [a0, zero_mul, sub_self]
-  else
-    eq_of_forall_ge_iff fun d => by rw [sub_le, ← le_div a0, sub_le, ← le_div a0, mul_add_div _ a0]
+theorem mul_sub (a b c : Ordinal) : a * (b - c) = a * b - a * c := by
+  obtain rfl | ha := eq_or_ne a 0
+  · simp
+  · refine eq_of_forall_ge_iff fun d ↦ ?_
+    rw [sub_le, mul_le_iff_le_div ha, sub_le, mul_le_iff_le_div ha, mul_add_div _ ha]
 
 theorem isSuccLimit_add_iff {a b : Ordinal} :
     IsSuccLimit (a + b) ↔ IsSuccLimit b ∨ b = 0 ∧ IsSuccLimit a := by
@@ -1051,7 +1052,7 @@ theorem natCast_div (m n : ℕ) : ((m / n : ℕ) : Ordinal) = m / n := by
   · simp
   · have hn' : (n : Ordinal) ≠ 0 := Nat.cast_ne_zero.2 hn
     apply le_antisymm
-    · rw [le_div hn', ← natCast_mul, Nat.cast_le, mul_comm]
+    · rw [← mul_le_iff_le_div hn', ← natCast_mul, Nat.cast_le, mul_comm]
       apply Nat.div_mul_le_self
     · rw [div_le hn', succ_eq_add_one, ← Nat.cast_succ, ← natCast_mul, Nat.cast_lt, mul_comm,
         ← Nat.div_lt_iff_lt_mul (Nat.pos_of_ne_zero hn)]
@@ -1139,8 +1140,8 @@ open Ordinal
 theorem isSuccPrelimit_iff_omega0_dvd {a : Ordinal} : IsSuccPrelimit a ↔ ω ∣ a := by
   refine ⟨fun l => ⟨a / ω, le_antisymm ?_ (mul_div_le _ _)⟩, fun h => ?_⟩
   · refine l.le_iff_forall_le.2 fun x hx => le_of_lt ?_
-    rw [← div_lt omega0_ne_zero, ← succ_le_iff, le_div omega0_ne_zero, mul_succ,
-      add_le_iff_of_isSuccLimit isSuccLimit_omega0]
+    rw [lt_mul_iff_div_lt omega0_ne_zero, ← succ_le_iff, ← mul_le_iff_le_div omega0_ne_zero,
+      mul_succ, add_le_iff_of_isSuccLimit isSuccLimit_omega0]
     intro b hb
     rcases lt_omega0.1 hb with ⟨n, rfl⟩
     grw [mul_div_le]

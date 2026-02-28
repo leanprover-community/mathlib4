@@ -434,6 +434,19 @@ theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
       pullback.lift (G.map h) (G.map k) (by simp only [← G.map_comp, w]) := by
   ext <;> simp [← G.map_comp]
 
+@[reassoc]
+lemma pullbackComparison_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X Y S : C}
+    (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] [HasPullback (F.map f) (F.map g)]
+    [HasPullback (G.map (F.map f)) (G.map (F.map g))]
+    [HasPullback ((F ⋙ G).map f) ((F ⋙ G).map g)] :
+    pullbackComparison (F ⋙ G) f g = G.map (pullbackComparison F f g) ≫
+      pullbackComparison G (F.map f) (F.map g) := by
+  ext
+  · rw [pullbackComparison_comp_fst]
+    simp [← Functor.map_comp]
+  · rw [pullbackComparison_comp_snd]
+    simp [← Functor.map_comp]
+
 /-- The comparison morphism for the pushout of `f,g`.
 This is an isomorphism iff `G` preserves the pushout of `f,g`; see
 `Mathlib/CategoryTheory/Limits/Preserves/Shapes/Pullbacks.lean`
