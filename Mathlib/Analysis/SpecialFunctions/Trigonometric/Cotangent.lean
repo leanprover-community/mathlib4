@@ -35,6 +35,7 @@ local notation "ℂ_ℤ" => integerComplement
 
 local notation "ℍₒ" => UpperHalfPlane.upperHalfPlaneSet
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by
   rw [Complex.cot, Complex.sin, Complex.cos]

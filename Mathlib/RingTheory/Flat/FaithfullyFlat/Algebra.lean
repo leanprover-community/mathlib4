@@ -96,6 +96,7 @@ instance Module.FaithfullyFlat.faithfulSMul : FaithfulSMul A B := by
   rw [← mul_one a₁, ← mul_one a₂]
   simp only [← smul_eq_mul, ← TensorProduct.smul_tmul, ha (1 : B)]
 
+set_option backward.isDefEq.respectTransparency false in
 open Algebra.TensorProduct in
 /-- If `B` is a faithfully flat `A`-algebra, the preimage of the pushforward of any
 ideal `I` is again `I`. -/

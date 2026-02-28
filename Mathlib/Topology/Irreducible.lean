@@ -290,6 +290,7 @@ theorem isPreirreducible_iff_isClosed_union_isClosed :
   refine forall₂_congr fun _ _ => ?_
   rw [← and_imp, ← not_or, not_imp_not]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
 contained in one of the members of the collection. -/
 theorem isIrreducible_iff_sUnion_isClosed :

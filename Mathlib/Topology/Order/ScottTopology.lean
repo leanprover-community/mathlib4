@@ -98,6 +98,7 @@ upper bound `a` and is a subset of `s` then `a` also lies in `s`.
 def DirSupClosed (s : Set α) : Prop :=
   ∀ ⦃d⦄, d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → d ⊆ s → a ∈ s
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma dirSupInacc_compl : DirSupInacc sᶜ ↔ DirSupClosed s := by
   simp [DirSupInacc, DirSupClosed, ← not_disjoint_iff_nonempty_inter, not_imp_not,
     disjoint_compl_right_iff]
@@ -182,7 +183,7 @@ variable {α D}
 lemma isOpen_iff [IsScottHausdorff α D] :
     IsOpen s ↔ ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a : α⦄, IsLUB d a →
       a ∈ s → ∃ b ∈ d, Ici b ∩ d ⊆ s := by
-  simp [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
+  simp +instances [topology_eq_scottHausdorff (α := α) (D := D), IsOpen, scottHausdorff]
 
 lemma dirSupInaccOn_of_isOpen [IsScottHausdorff α D] (h : IsOpen s) : DirSupInaccOn D s :=
   fun d hd₀ hd₁ hd₂ a hda hd₃ ↦ by
