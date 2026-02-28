@@ -67,6 +67,7 @@ noncomputable def colimitPointwiseProductToProductColimit :
     colimit (pointwiseProduct F) ⟶ ∏ᶜ fun (s : α) => colimit (F s) :=
   colimit.desc (pointwiseProduct F) (coconePointwiseProduct F)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitPointwiseProductToProductColimit_π (k : ∀ i, I i) (s : α) :
     colimit.ι (pointwiseProduct F) k ≫ colimitPointwiseProductToProductColimit F ≫ Pi.π _ s =
@@ -93,6 +94,7 @@ noncomputable def pointwiseProductCompEvaluation (d : D) :
 
 variable [∀ i, HasColimitsOfShape (I i) C] [HasColimitsOfShape (∀ i, I i) C]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem colimitPointwiseProductToProductColimit_app (d : D) :
     (colimitPointwiseProductToProductColimit F).app d =
       (colimitObjIsoColimitCompEvaluation _ _).hom ≫

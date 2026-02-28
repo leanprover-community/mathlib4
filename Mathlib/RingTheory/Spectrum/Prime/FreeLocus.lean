@@ -60,13 +60,14 @@ lemma mem_freeLocus_of_isLocalization (p : PrimeSpectrum R)
     [AddCommGroup Mₚ] [Module R Mₚ] (f : M →ₗ[R] Mₚ) [IsLocalizedModule p.asIdeal.primeCompl f]
     [Module Rₚ Mₚ] [IsScalarTower R Rₚ Mₚ] :
     p ∈ freeLocus R M ↔ Module.Free Rₚ Mₚ := by
-  apply Module.Free.iff_of_ringEquiv (IsLocalization.algEquiv p.asIdeal.primeCompl
+  set e := (IsLocalization.algEquiv p.asIdeal.primeCompl
       (Localization.AtPrime p.asIdeal) Rₚ).toRingEquiv
+  apply Module.Free.iff_of_equiv (σ := e)
   refine { __ := IsLocalizedModule.iso p.asIdeal.primeCompl f, map_smul' := ?_ }
   intro r x
   obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq p.asIdeal.primeCompl r
   apply ((Module.End.isUnit_iff _).mp (IsLocalizedModule.map_units f s)).1
-  simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
+  simp only [e, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,
     algebraMap_end_apply, AlgEquiv.toRingEquiv_eq_coe,
     AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_coe, IsLocalization.algEquiv_apply,
     IsLocalization.map_id_mk']
@@ -84,6 +85,7 @@ lemma freeLocus_congr {M'} [AddCommGroup M'] [Module R M'] (e : M ≃ₗ[R] M') 
   exact mem_freeLocus_of_isLocalization _ _ _
     (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M' ∘ₗ e.toLinearMap)
 
+set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 lemma comap_freeLocus_le {A} [CommRing A] [Algebra R A] :
     comap (algebraMap R A) ⁻¹' freeLocus R M ≤ freeLocus A (A ⊗[R] M) := by
@@ -353,6 +355,7 @@ lemma rankAtStalk_tensorProduct_of_isScalarTower {S : Type*} [CommRing S] [Algeb
   simp [rankAtStalk_eq_of_equiv (AlgebraTensorModule.cancelBaseChange R S S N M).symm,
     rankAtStalk_tensorProduct, rankAtStalk_baseChange]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The rank of a module `M` at a prime `p` is equal to the dimension
 of `κ(p) ⊗[R] M` as a `κ(p)`-module. -/
 lemma rankAtStalk_eq (p : PrimeSpectrum R) :
