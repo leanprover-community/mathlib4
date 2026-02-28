@@ -95,10 +95,65 @@ lemma id_X (p q : ℤ) (hpq : p + -1 = q) :
 section
 
 variable {M : CochainComplex C ℤ} {n m : ℤ}
+  (α : Cochain K M m) (β : Cochain L M n) (h : m + 1 = n)
+
+noncomputable def descCochain : Cochain (mappingCocone φ) M m :=
+  (-m + 1).negOnePow • (mappingCone.descCochain φ α β h).leftShift (-1) m (by lia)
+
+@[reassoc (attr := simp)]
+lemma inl_v_descCochain_v (p q : ℤ) (hpq : p + m = q) :
+    (inl φ).v p p (add_zero _) ≫ (descCochain φ α β h).v p q hpq = α.v p q hpq := by
+  simp [inl, descCochain, mappingCocone,
+    Cochain.rightShift_v (n := -1) _ _ _ _ p _ _ (p + -1) (by lia), smul_smul,
+    Cochain.leftShift_v (n := n) _ (-1) m (by lia) _ _ hpq (p + -1) (by lia)]
+
+@[reassoc (attr := simp)]
+lemma inr_v_descCochain_v (p q : ℤ) (hpq : p + 1 = q) (r : ℤ) (hr : q + m = r) :
+    (inr φ).1.v p q hpq ≫ (descCochain φ α β h).v q r hr = β.v p r (by lia) := by
+  obtain rfl : p = q + -1 := by lia
+  simp [inr, descCochain, mappingCocone,
+    Cochain.rightShift_v _ _ _ _ _ _ hpq _ (add_zero (q + -1)),
+    Cochain.leftShift_v (n := n) _ _ _ _ _ r _ (q + -1) (by lia),
+    smul_smul]
+
+@[simp]
+lemma inl_comp_descCochain :
+    (inl φ).comp (descCochain φ α β h) (zero_add m) = α := by
+  cat_disch
+
+@[simp]
+lemma inr_comp_descCochain :
+    (inr φ).1.comp (descCochain φ α β h) (by lia) = β := by
+  ext p q hpq
+  simp [Cochain.comp_v (n₂ := m) _ _ _ _ (p + 1) q rfl (by lia)]
+
+lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
+    δ m n (descCochain φ α β h) =
+      (Cochain.ofHom (fst φ)).comp
+        (δ m n α + m.negOnePow • (Cochain.ofHom φ).comp β (zero_add n)) (zero_add n) +
+      (snd φ).comp (δ n n' β) (by lia) := by
+  dsimp [descCochain, fst, snd, mappingCocone]
+  ext p q hpq
+  subst h
+  obtain rfl : n' = m + 2 := by lia
+  simp [Cochain.δ_leftShift _ (-1) _ (m + 1) _ (m + 2) (by lia),
+    mappingCone.δ_descCochain (m := m) (n := m + 1) _ _ _ _ (m + 2) (by lia),
+    Cochain.leftShift_v (n := 1) _ _ _ _ p p _ (p + -1) (by lia),
+    Cochain.leftShift_v (n := m + 2) _ (-1) _ _ _ q _ (p + -1) (by lia),
+    Cochain.leftShift_v _ _ _ _ _ _ _ _ (add_zero (p + -1)),
+    Cochain.comp_v (n₁ := 1) _ _ _ (p + -1) p _ (by lia) hpq,
+    Cochain.comp_v (n₂ := m + 2) _ _ _ p (p + -1) q rfl (by lia),
+    smul_smul, Int.negOnePow_add, Int.negOnePow_even 2 ⟨1, rfl⟩]
+  abel
+
+end
+
+section
+
+variable {M : CochainComplex C ℤ} {n m : ℤ}
   (α : Cochain M K n) (β : Cochain M L m) (h : m + 1 = n)
 
-noncomputable def liftCochain :
-    Cochain M (mappingCocone φ) n :=
+noncomputable def liftCochain : Cochain M (mappingCocone φ) n :=
   (mappingCone.liftCochain φ α β h).rightShift (-1) n (by lia)
 
 @[reassoc (attr := simp)]
