@@ -44,7 +44,7 @@ variable (T : C₁ ⥤ C₂) (L : C₁ ⥤ C₃) (R : C₂ ⥤ C₄) (B : C₃ �
 namespace CatCommSq
 
 /-- The vertical identity `CatCommSq` -/
-@[simps!]
+@[instance_reducible, simps!]
 def vId : CatCommSq T (𝟭 C₁) (𝟭 C₂) T where
   iso := (Functor.leftUnitor _) ≪≫ (Functor.rightUnitor _).symm
 
@@ -110,6 +110,7 @@ def hInv (_ : CatCommSq T.functor L R B.functor) : CatCommSq T.inverse R L B.inv
       associator _ _ _) ≪≫ (associator _ _ _).symm ≪≫
       isoWhiskerRight T.counitIso _ ≪≫ leftUnitor _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hInv_hInv (h : CatCommSq T.functor L R B.functor) :
     hInv T.symm R L B.symm (hInv T L R B h) = h := by
   ext X
@@ -150,6 +151,7 @@ def vInv (_ : CatCommSq T L.functor R.functor B) : CatCommSq B L.inverse R.inver
       (associator _ _ _).symm ≪≫ isoWhiskerLeft _ R.unitIso.symm ≪≫
       rightUnitor _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
     vInv B L.symm R.symm T (vInv T L R B h) = h := by
   ext X

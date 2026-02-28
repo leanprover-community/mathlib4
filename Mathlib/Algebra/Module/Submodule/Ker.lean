@@ -195,6 +195,7 @@ theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective 
 @[deprecated (since := "2025-12-23")]
 alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma injective_domRestrict_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     Injective (f.domRestrict S) ↔ S ⊓ LinearMap.ker f = ⊥ := by
   rw [← LinearMap.ker_eq_bot]
@@ -208,6 +209,7 @@ alias _root_.LinearMapClass.ker_eq_bot := ker_eq_bot
     rw [h] at this
     simpa [mk_eq_zero] using this
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {f : M →ₗ[R] M}
     (hf : ∀ x ∈ p, f x ∈ p) :
     Injective (f.restrict hf) ↔ Disjoint p (ker f) := by

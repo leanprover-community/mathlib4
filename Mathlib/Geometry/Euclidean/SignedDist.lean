@@ -179,6 +179,7 @@ lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
   rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 0 2 :)]
   simp [h, eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 open NNReal in
 lemma signedDist_eq_dist_iff_vsub_mem_span : signedDist v p q = dist p q ↔ q -ᵥ p ∈ ℝ≥0 ∙ v := by
   rw [Submodule.mem_span_singleton]
@@ -270,6 +271,7 @@ variable {s p} in
   ext x
   simp [signedInfDist_def, orthogonalProjection_eq_self_iff.2 h]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {s p} in
 lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_insert {x : P}
     (h : x ∈ affineSpan ℝ (insert p s)) :
