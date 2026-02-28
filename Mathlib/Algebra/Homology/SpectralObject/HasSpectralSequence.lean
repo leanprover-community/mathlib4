@@ -225,7 +225,7 @@ def mkDataE₂CohomologicalFin (l : ℕ) :
     rintro r r' ⟨a, ⟨a', _⟩⟩ hr hrr'
     dsimp
     rw [Fin.mk_le_mk]
-    exact Fin.clamp_mono (by lia)
+    exact Fin.clamp_monotone (by lia)
   i₀_prev := by
     rintro r r' ⟨a, ⟨a', _⟩⟩ ⟨b, ⟨b', _⟩⟩ ⟨h₁, h₂⟩ hrr' hr
     ext

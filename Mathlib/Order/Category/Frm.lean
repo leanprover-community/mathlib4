@@ -153,6 +153,7 @@ instance hasForgetToLat : HasForget₂ Frm Lat where
   forget₂.obj X := .of X
   forget₂.map f := Lat.ofHom f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of frames from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : Frm.{u}} (e : α ≃o β) : α ≅ β where

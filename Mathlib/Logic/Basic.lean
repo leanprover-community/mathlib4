@@ -181,6 +181,9 @@ as arguments, but rather to use the `classical` tactic as needed.
 In the other direction, when `Decidable` instances do appear in the type signature,
 it is better to use explicitly introduced ones rather than allowing Lean to automatically infer
 classical ones, as these may cause instance mismatch errors later.
+
+Various types that (almost) never have provable decidability, such as `ℝ`, `Set α` or `Ideal R`,
+are given global `DecidableEq` instances, so that no decidable arguments have to be provided.
 -/
 
 export Classical (not_not)
@@ -690,6 +693,7 @@ namespace Classical
 
 -- use shortened names to avoid conflict when classical namespace is open.
 /-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
+@[instance_reducible]
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 
 variable {α : Sort*}

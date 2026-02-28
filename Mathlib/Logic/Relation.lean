@@ -82,8 +82,11 @@ theorem reflexive_ne_imp_iff [Std.Refl r] {x y : α} : x ≠ y → r x y ↔ r x
 theorem reflexive_iff_subrelation_eq : Reflexive r ↔ Subrelation Eq r := by
   grind [Reflexive, Subrelation]
 
-theorem irreflexive_iff_subrelation_ne : Irreflexive r ↔ Subrelation r Ne := by
-  grind [Irreflexive, Subrelation]
+theorem irrefl_iff_subrelation_ne : Std.Irrefl r ↔ Subrelation r Ne := by
+  grind [Std.Irrefl, Subrelation]
+
+@[deprecated (since := "2026-02-12")]
+alias irreflexive_iff_subrelation_ne := irrefl_iff_subrelation_ne
 
 protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
   ⟨fun h ↦ H h, fun h ↦ H h⟩
