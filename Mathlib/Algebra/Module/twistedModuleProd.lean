@@ -20,45 +20,49 @@ TODO cf Prod.lean for module
 section
 
 set_option linter.unusedVariables false
+/-- A `twistedModuleProd σ E mr F ms` or `E ×[σ|mr|ms] F` is a module structure on the product `E × F`
+with the `SMul` given by `s • ⟨x, y⟩ := ⟨s • x, σ s • y⟩`. -/
 @[ext]
-structure twistedModuleProd {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) {E : Type*}
-    [AddCommGroup E] (mr : Module R E) {F : Type*} [AddCommGroup F] (ms : Module S F) where
+structure twistedModuleProd {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
+    [AddCommGroup E] (mr : Module R E) (F : Type*) [AddCommGroup F] (ms : Module S F) where
   left : E
   right : F
+
+@[inherit_doc] notation:25 E "×[" σ:25 "|" mr:25 "|" ms:25 "] " F:0 => twistedModuleProd σ E mr F ms
 
 namespace twistedModuleProd
 
 variable {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) {E : Type*} [AddCommGroup E]
   [mr : Module R E] {F : Type*} [AddCommGroup F] [ms : Module S F]
 
-instance : Add (twistedModuleProd σ mr ms) where
+instance : Add (twistedModuleProd σ E mr F ms) where
   add x y := mk (x.left + y.left) (x.right + y.right)
 
 @[simp]
-lemma add_left (x y : twistedModuleProd σ mr ms) : (x + y).left = x.left + y.left := rfl
+lemma add_left (x y : twistedModuleProd σ E mr F ms) : (x + y).left = x.left + y.left := rfl
 
 @[simp]
-lemma add_right (x y : twistedModuleProd σ mr ms) : (x + y).right = x.right + y.right := rfl
+lemma add_right (x y : twistedModuleProd σ E mr F ms) : (x + y).right = x.right + y.right := rfl
 
-instance : Neg (twistedModuleProd σ mr ms) where
+instance : Neg (twistedModuleProd σ E mr F ms) where
   neg x := mk (-x.left) (-x.right)
 
 @[simp]
-lemma neg_left (x : twistedModuleProd σ mr ms) : (-x).left = -x.left := rfl
+lemma neg_left (x : twistedModuleProd σ E mr F ms) : (-x).left = -x.left := rfl
 
 @[simp]
-lemma neg_right (x : twistedModuleProd σ mr ms) : (-x).right = -x.right := rfl
+lemma neg_right (x : twistedModuleProd σ E mr F ms) : (-x).right = -x.right := rfl
 
-instance : Zero (twistedModuleProd σ mr ms) where
+instance : Zero (twistedModuleProd σ E mr F ms) where
   zero := mk 0 0
 
 @[simp]
-lemma zero_left : (0 : twistedModuleProd σ mr ms).left = 0 := rfl
+lemma zero_left : (0 : twistedModuleProd σ E mr F ms).left = 0 := rfl
 
 @[simp]
-lemma zero_right : (0 : twistedModuleProd σ mr ms).right = 0 := rfl
+lemma zero_right : (0 : twistedModuleProd σ E mr F ms).right = 0 := rfl
 
-instance : AddCommGroup (twistedModuleProd σ mr ms) where
+instance : AddCommGroup (twistedModuleProd σ E mr F ms) where
   add_assoc x y z := by ext <;> simpa using add_assoc _ _ _
   zero_add x := by ext <;> simp
   add_zero x := by ext <;> simp
@@ -72,16 +76,16 @@ instance : AddCommGroup (twistedModuleProd σ mr ms) where
   nsmul_succ n x := by ext <;> simp [add_smul]
   zsmul_neg' n x := by ext <;> simp [add_smul]
 
-instance : SMul R (twistedModuleProd σ mr ms) where
+instance : SMul R (twistedModuleProd σ E mr F ms) where
   smul s x := mk (s • x.left) (σ s • x.right)
 
 @[simp]
-lemma smul_left (s : R) (x : twistedModuleProd σ mr ms) : (s • x).left = s • x.left := rfl
+lemma smul_left (s : R) (x : twistedModuleProd σ E mr F ms) : (s • x).left = s • x.left := rfl
 
 @[simp]
-lemma smul_right (s : R) (x : twistedModuleProd σ mr ms) : (s • x).right = σ s • x.right := rfl
+lemma smul_right (s : R) (x : twistedModuleProd σ E mr F ms) : (s • x).right = σ s • x.right := rfl
 
-instance : Module R (twistedModuleProd σ mr ms) where
+instance : Module R (twistedModuleProd σ E mr F ms) where
   mul_smul s t x := by ext <;> simp [mul_smul]
   one_smul x := by ext <;> simp
   smul_zero s := by ext <;> simp
