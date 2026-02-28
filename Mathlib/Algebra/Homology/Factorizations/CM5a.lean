@@ -204,13 +204,12 @@ lemma comp_α : f ≫ α f n = 0 := by simp [α]
 @[reassoc (attr := simp)]
 lemma comp_α_f (i : ℤ) : f.f i ≫ (α f n).f i = 0 := by simp [← comp_f]
 
-noncomputable abbrev mid := (mappingCone (α f n))⟦(-1 : ℤ)⟧
+noncomputable abbrev mid := mappingCocone (α f n)
+
+noncomputable def ι : K ⟶ mid f n := mappingCocone.lift (α f n) f 0 (by simp)
 
 noncomputable def ι' : Cocycle K (mappingCone (α f n)) (-1) :=
   mappingCone.liftCocycle (α f n) (Cocycle.ofHom f) 0 (neg_add_cancel 1) (by cat_disch)
-
-noncomputable def ι : K ⟶ mid f n :=
-  ((ι' f n).rightShift (-1) 0 (zero_add _)).homOf
 
 noncomputable def π : mid f n ⟶ L :=
   -((mappingCone.fst (α f n)).leftShift (-1) 0 (add_neg_cancel 1)).homOf

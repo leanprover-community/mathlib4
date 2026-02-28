@@ -129,6 +129,59 @@ lemma liftCochain_comp_snd :
   simp [Cochain.comp_v (n₁ := n) (n₂ := -1) (n₁₂ := m) _ _ _ p _ _ (by lia)
     (Int.add_neg_cancel_right q 1)]
 
+lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
+    δ n n' (liftCochain φ α β h) =
+        (δ n n' α).comp (inl φ) (add_zero _) -
+      (δ m n β + α.comp (Cochain.ofHom φ) (add_zero n)).comp (inr φ).1 hn' := by
+  dsimp [liftCochain, inl, inr]
+  ext p q hpq
+  simp [mappingCone.δ_liftCochain _ _ _ _ n' hn',
+    Cochain.δ_rightShift _ (-1) _ n' _ n  (by lia),
+    Cochain.rightShift_v (n := n) _ _ _ _ p _ _ (q + -1) (by lia),
+    Cochain.rightShift_v _ _ _ _ _ _ _ (q + -1) rfl,
+    Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero (q + -1)),
+    Cochain.comp_v _ _ _ p q _ hpq rfl,
+    Cochain.comp_v (n₁ := n) (n₂ := 1) _ _ _ p (q + -1) q (by lia) (by lia)]
+  abel
+
+end
+
+@[simps]
+noncomputable def liftCocycle {M : CochainComplex C ℤ} {n m : ℤ}
+  (α : Cocycle M K n) (β : Cochain M L m) (h : m + 1 = n)
+  (hαβ : δ m n β + α.1.comp (Cochain.ofHom φ) (add_zero n) = 0) :
+    Cocycle M (mappingCocone φ) n :=
+  ⟨liftCochain φ α β h,
+    by simp [Cocycle.mem_iff _ _ rfl, δ_liftCochain _ _ _ _ _ rfl, hαβ]⟩
+
+section
+
+variable {M : CochainComplex C ℤ} (α : M ⟶ K) (β : Cochain M L (-1))
+  (hαβ : δ (-1) 0 β + Cochain.ofHom (α ≫ φ) = 0)
+
+noncomputable def lift : M ⟶ mappingCocone φ :=
+  Cocycle.homOf (liftCocycle φ (Cocycle.ofHom α) β (by simp) (by simpa [← Cochain.ofHom_comp]))
+
+@[simp]
+lemma ofHom_lift :
+    Cochain.ofHom (lift φ α β hαβ) = liftCochain φ (Cochain.ofHom α) β (by simp) := by
+  simp [lift]
+
+@[reassoc (attr := simp)]
+lemma lift_f_fst_f (p : ℤ) :
+    (lift φ α β hαβ).f p ≫ (fst φ).f p = α.f p := by
+  simp [lift]
+
+@[reassoc (attr := simp)]
+lemma lift_fst :
+    lift φ α β hαβ ≫ fst φ = α := by
+  cat_disch
+
+@[reassoc (attr := simp)]
+lemma lift_f_snd_v (p q : ℤ) (hpq : p + (-1) = q) :
+    (lift φ α β hαβ).f p ≫ (snd φ).v p q hpq = β.v p q hpq := by
+  simp [lift]
+
 end
 
 end
