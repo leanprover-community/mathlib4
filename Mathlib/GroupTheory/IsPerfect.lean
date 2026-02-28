@@ -51,18 +51,24 @@ lemma _root_.Subgroup.isPerfect_iff : IsPerfect H ↔ ⁅H, H⁆ = H := by
   rw [Group.isPerfect_def, ← (map_injective H.subtype_injective).eq_iff,
     map_subtype_commutator, ← MonoidHom.range_eq_map, range_subtype]
 
+lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
+  isPerfect_iff.mp hH
+
 namespace IsPerfect
 
 lemma mem_commutator [hP : IsPerfect G] {g : G} : g ∈ commutator G := by
   simp
 
-/-- The trivial subgroup `⊥` is always perfect. -/
+/-- The trivial group is perfect. -/
 instance [Subsingleton G] : IsPerfect G where
   commutator_eq_top := Subsingleton.elim _ _
 
 theorem top_iff : IsPerfect (⊤ : Subgroup G) ↔ IsPerfect G := by
   rw [isPerfect_def, isPerfect_def, ← (map_injective (⊤ : Subgroup G).subtype_injective).eq_iff,
     map_subtype_commutator, ← MonoidHom.range_eq_map, subtype_range, commutator_def]
+
+instance [IsPerfect G] : IsPerfect (⊤ : Subgroup G) :=
+  top_iff.mpr inferInstance
 
 variable (G) in
 lemma not_isSolvable [Nontrivial G] [IsPerfect G] : ¬ IsSolvable G := by
@@ -83,14 +89,8 @@ instance subsingleton_of_isMulCommutative
   by_contra! h_not_subsingleton
   exact not_isMulCommutative G h_comm
 
-lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
-  isPerfect_iff.mp hH
-
 protected lemma map [IsPerfect H] : IsPerfect (H.map f) := by
   rw [isPerfect_iff, ← map_commutator, commutator_eq_self]
-
-instance [IsPerfect G] : IsPerfect (⊤ : Subgroup G) :=
-  top_iff.mpr inferInstance
 
 protected lemma range [IsPerfect G] : IsPerfect f.range := by
   rw [MonoidHom.range_eq_map]
