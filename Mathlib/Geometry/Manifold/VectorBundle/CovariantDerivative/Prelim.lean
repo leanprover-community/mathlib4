@@ -85,10 +85,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 lemma injective_mfderiv_of_eventually_leftInverse
     {f : M → M'} (x : M) {g : M' → M}
     (hg : MDifferentiableAt I' I g (f x)) (hf : MDifferentiableAt I I' f x)
-    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Injective (mfderiv I I' f x) := by
+    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Injective (mfderiv% f x) := by
   have := mfderiv_comp x hg hf
   rw [hfg.mfderiv_eq] at this
-  have : LeftInverse (mfderiv I' I g (f x)) (mfderiv I I' f x) := by
+  have : LeftInverse (mfderiv% g (f x)) (mfderiv% f x) := by
     intro u
     simpa using congr($this u).symm
   exact LeftInverse.injective this
@@ -97,11 +97,11 @@ lemma injective_mfderiv_of_eventually_leftInverse
 lemma surjective_mfderiv_of_eventually_rightInverse
     {f : M → M'} {x : M} {y : M'} (hxy : y = f x) {g : M' → M}
     (hg : MDifferentiableAt I' I g y) (hf : MDifferentiableAt I I' f x)
-    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Surjective (mfderiv I' I g y) := by
+    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Surjective (mfderiv% g y) := by
   rw [hxy] at hg
   have := mfderiv_comp x hg hf
   rw [hfg.mfderiv_eq] at this
-  have : RightInverse (mfderiv I I' f x) (mfderiv I' I g (f x)) := by
+  have : RightInverse (mfderiv% f x) (mfderiv% g (f x)) := by
     intro u
     simpa using congr($this u).symm
   rw [← hxy] at this
@@ -110,7 +110,7 @@ lemma surjective_mfderiv_of_eventually_rightInverse
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x) :
-    mfderiv I 𝓘(𝕜, F) (a • s) x v = a • mfderiv I 𝓘(𝕜, F) s x v := by
+    mfderiv% (a • s) x v = a • mfderiv% s x v := by
   by_cases hs : MDiffAt s x
   · have hs' := hs.const_smul a
     suffices
@@ -134,9 +134,9 @@ lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x)
 set_option linter.flexible false in -- FIXME
 lemma mfderiv_smul [IsManifold I 1 M] {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
     (hs : MDiffAt s x) (v : TangentSpace I x) :
-    letI dsxv : 𝕜 := mfderiv I 𝓘(𝕜, 𝕜) s x v
-    letI dfxv : F := mfderiv I 𝓘(𝕜, F) f x v
-    mfderiv I 𝓘(𝕜, F) (s • f) x v = (s x) • dfxv + dsxv • f x := by
+    letI dsxv : 𝕜 := mfderiv% s x v
+    letI dfxv : F := mfderiv% f x v
+    mfderiv% (s • f) x v = (s x) • dfxv + dsxv • f x := by
   set φ := chartAt H x
   -- TODO: the next two have should be special cases of the same lemma
   have hs' : DifferentiableWithinAt 𝕜 (s ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) := by
@@ -229,7 +229,7 @@ def map_of_one_jet {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I
   letI ψ := extChartAt I' x'
   letI φ := extChartAt I x
   ψ.symm ∘
-  (map_of_loc_one_jet 𝕜 (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')) ∘
+  (map_of_loc_one_jet 𝕜 (φ x) (mfderiv% φ x u) (ψ x') (mfderiv% ψ x' u')) ∘
   φ
 
 -- TODO: version assuming `x` and `x'` are in the interior, or maybe `x` is enough.
@@ -246,22 +246,20 @@ lemma map_of_one_jet_spec [IsManifold I 1 M] [IsManifold I' 1 M']
       (u' : TangentSpace I' x') (hu : u = 0 → u' = 0) :
     map_of_one_jet u u' x = x' ∧
     MDiffAt (map_of_one_jet u u') x ∧
-    mfderiv I I' (map_of_one_jet u u') x u = u' := by
+    mfderiv% (map_of_one_jet u u') x u = u' := by
   let ψ := extChartAt I' x'
   let φ := extChartAt I x
-  let g := map_of_loc_one_jet 𝕜 (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')
-  let Ψ : M' → E' := ψ -- FIXME: this is working around a limitation of MDiffAt elaborator
-  have hψ : MDiffAt Ψ x' := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x')
-  let Φ : M → E := φ -- FIXME: this is working around a limitation of MDiffAt elaborator
-  have hφ : MDiffAt Φ x := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x)
-  replace hu : mfderiv I 𝓘(𝕜, E) φ x u = 0 → mfderiv I' 𝓘(𝕜, E') ψ x' u' = 0 := by
-    have : Function.Injective (mfderiv I 𝓘(𝕜, E) φ x) :=
+  let g := map_of_loc_one_jet 𝕜 (φ x) (mfderiv% φ x u) (ψ x') (mfderiv% ψ x' u')
+  have hψ : MDiffAt ψ x' := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x')
+  have hφ : MDiffAt φ x := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x)
+  replace hu : mfderiv% φ x u = 0 → mfderiv% ψ x' u' = 0 := by
+    have : Function.Injective (mfderiv% φ x) :=
       (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x)).injective
     rw [injective_iff_map_eq_zero] at this
-    have := map_zero (mfderiv I' 𝓘(𝕜, E') ψ x')
+    have := map_zero (mfderiv% ψ x')
     grind
   rcases  map_of_loc_one_jet_spec (𝕜 := 𝕜)
-    (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u') hu with
+    (φ x) (mfderiv% φ x u) (ψ x') (mfderiv% ψ x' u') hu with
     ⟨h : g (φ x) = ψ x', h', h''⟩
   have hg : MDiffAt g (φ x) := mdifferentiableAt_iff_differentiableAt.mpr h'
   have hgφ : MDiffAt (g ∘ φ) x := h'.comp_mdifferentiableAt hφ
@@ -275,7 +273,7 @@ lemma map_of_one_jet_spec [IsManifold I 1 M] [IsManifold I' 1 M']
   refold_let g φ ψ at *
   refine ⟨by simp [h, ψ], hψi.comp x hgφ, ?_⟩
   rw [mfderiv_comp x hψi hgφ, mfderiv_comp x hg hφ, mfderiv_eq_fderiv]
-  change (mfderiv 𝓘(𝕜, E') I' Ψi (g (φ x))) (fderiv 𝕜 g (φ x) <| mfderiv I 𝓘(𝕜, E) φ x u) = u'
+  change (mfderiv% Ψi (g (φ x))) (fderiv 𝕜 g (φ x) <| mfderiv% φ x u) = u'
   rw [h] at hψi
   rw [h'', h, ← mfderiv_comp_apply x' hψi hψ]
   have : Ψi ∘ ψ =ᶠ[𝓝 x'] id := by
@@ -715,19 +713,17 @@ lemma mfderiv_comp_section
     {σ : Π x : M, V x} {x : M} (hσ : MDiffAt T%σ x)
     (u : TangentSpace I x) (hx : x ∈ e.baseSet) :
     letI s := fun x ↦ (e (σ x)).2
-    (e.deriv I (σ x)).toLinearMap ((mfderiv% T%σ x) u) = (u, mfderiv I 𝓘(ℝ, F) s x u) := by
+    (e.deriv I (σ x)).toLinearMap ((mfderiv% T%σ x) u) = (u, mfderiv% s x u) := by
   have mdiffe : MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e (σ x) :=
     e.mdifferentiableAt hx _
-  have : mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x =
-    (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
+  have : mfderiv% (e ∘ T%σ) x = (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
     mfderiv_comp x mdiffe hσ
-  have : mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u =
-    e.deriv I (σ x) ((mfderiv% T%σ x) u) := by
+  have : mfderiv% (e ∘ T%σ) x u = e.deriv I (σ x) ((mfderiv% T%σ x) u) := by
     rw [this]
     rfl
   erw [← this]
   let s := fun x ↦ (e (σ x)).2
-  change mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u = (u, mfderiv% s x u)
+  change mfderiv% (e ∘ T%σ) x u = (u, mfderiv% s x u)
   rw [(e.apply_section_eventuallyEq hx _).mfderiv_eq]
   erw [mfderiv_prodMk, mfderiv_id]
   · change (ContinuousLinearMap.id _ _).prod (mfderiv% s x) u = _
