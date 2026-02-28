@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison, Jakob von Raumer, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Abelian categories with enough projectives have projective resolutions
@@ -16,7 +18,7 @@ When the underlying category is abelian:
   `Q : ProjectiveResolution Y`, any morphism `X ⟶ Y` admits a lifting to a chain map
   `P.complex ⟶ Q.complex`. It is a lifting in the sense that `P.ι` intertwines the lift and
   the original morphism, see `CategoryTheory.ProjectiveResolution.lift_commutes`.
-* `CategoryTheory.ProjectiveResolution.liftHomotopy`: Any two such descents are homotopic.
+* `CategoryTheory.ProjectiveResolution.liftHomotopy`: Any two such lifts are homotopic.
 * `CategoryTheory.ProjectiveResolution.homotopyEquiv`: Any two projective resolutions of the same
   object are homotopy equivalent.
 * `CategoryTheory.projectiveResolutions`: If every object admits a projective resolution, we can
@@ -26,6 +28,8 @@ When the underlying category is abelian:
 * `CategoryTheory.ProjectiveResolution.of`: Hence, starting from an epimorphism `P ⟶ X`, where `P`
   is projective, we can apply `Projective.d` repeatedly to obtain a projective resolution of `X`.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -46,6 +50,7 @@ section
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `lift`. -/
 def liftFZero {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex.X 0 ⟶ Q.complex.X 0 :=
@@ -61,6 +66,7 @@ lemma exact₀ {Z : C} (P : ProjectiveResolution Z) :
     (ShortComplex.mk _ _ P.complex_d_comp_π_f_zero).Exact :=
   ShortComplex.exact_of_g_is_cokernel _ P.isColimitCokernelCofork
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary construction for `lift`. -/
 def liftFOne {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex.X 1 ⟶ Q.complex.X 1 :=
@@ -82,7 +88,7 @@ def liftFSucc {Y Z : C} (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z
     (P.complex.d (n + 2) (n + 1) ≫ g') (by simp [w]),
       (Q.exact_succ n).liftFromProjective_comp _ _⟩
 
-/-- A morphism in `C` lift to a chain map between projective resolutions. -/
+/-- A morphism in `C` lifts to a chain map between projective resolutions. -/
 def lift {Y Z : C} (f : Y ⟶ Z) (P : ProjectiveResolution Y) (Q : ProjectiveResolution Z) :
     P.complex ⟶ Q.complex :=
   ChainComplex.mkHom _ _ (liftFZero f _ _) (liftFOne f _ _) (liftFOne_zero_comm f P Q)
@@ -110,7 +116,7 @@ def liftHomotopyZeroZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveR
 lemma liftHomotopyZeroZero_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) :
     liftHomotopyZeroZero f comm ≫ Q.complex.d 1 0 = f.f 0 :=
-  Q.exact₀.liftFromProjective_comp  _ _
+  Q.exact₀.liftFromProjective_comp _ _
 
 /-- An auxiliary definition for `liftHomotopyZero`. -/
 def liftHomotopyZeroOne {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
@@ -142,12 +148,12 @@ lemma liftHomotopyZeroSucc_comp {Y Z : C} {P : ProjectiveResolution Y} {Q : Proj
     (w : f.f (n + 1) = P.complex.d (n + 1) n ≫ g + g' ≫ Q.complex.d (n + 2) (n + 1)) :
     liftHomotopyZeroSucc f n g g' w ≫ Q.complex.d (n + 3) (n + 2) =
       f.f (n + 2) - P.complex.d _ _ ≫ g' :=
-  (Q.exact_succ (n + 1)).liftFromProjective_comp  _ _
+  (Q.exact_succ (n + 1)).liftFromProjective_comp _ _
 
 /-- Any lift of the zero morphism is homotopic to zero. -/
 def liftHomotopyZero {Y Z : C} {P : ProjectiveResolution Y} {Q : ProjectiveResolution Z}
     (f : P.complex ⟶ Q.complex) (comm : f ≫ Q.π = 0) : Homotopy f 0 :=
-  Homotopy.mkInductive _ (liftHomotopyZeroZero f comm) (by simp )
+  Homotopy.mkInductive _ (liftHomotopyZeroZero f comm) (by simp)
     (liftHomotopyZeroOne f comm) (by simp) fun n ⟨g, g', w⟩ =>
     ⟨liftHomotopyZeroSucc f n g g' w, by simp⟩
 
@@ -228,6 +234,7 @@ def ProjectiveResolution.iso {X : C} (P : ProjectiveResolution X) :
       (HomotopyCategory.quotient _ _).obj P.complex :=
   HomotopyCategory.isoOfHomotopyEquiv (homotopyEquiv _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ProjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)
     (P : ProjectiveResolution X) (Q : ProjectiveResolution Y)
@@ -237,7 +244,7 @@ lemma ProjectiveResolution.iso_inv_naturality {X Y : C} (f : X ⟶ Y)
   apply HomotopyCategory.eq_of_homotopy
   apply liftHomotopy f
   all_goals
-    aesop_cat
+    cat_disch
 
 @[reassoc]
 lemma ProjectiveResolution.iso_hom_naturality {X Y : C} (f : X ⟶ Y)
@@ -252,6 +259,7 @@ end
 
 variable [EnoughProjectives C]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
     (ShortComplex.mk (d f) f (by simp)).Exact := by
@@ -259,9 +267,6 @@ theorem exact_d_f {X Y : C} (f : X ⟶ Y) :
     { τ₁ := Projective.π _
       τ₂ := 𝟙 _
       τ₃ := 𝟙 _ }
-  have : Epi α.τ₁ := by dsimp; infer_instance
-  have : IsIso α.τ₂ := by dsimp; infer_instance
-  have : Mono α.τ₃ := by dsimp; infer_instance
   rw [ShortComplex.exact_iff_of_epi_of_isIso_of_mono α]
   apply ShortComplex.exact_of_f_is_kernel
   apply kernelIsKernel
@@ -306,8 +311,9 @@ lemma ofComplex_exactAt_succ (n : ℕ) :
 instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
   obtain (_ | _ | _ | n) := n <;> apply Projective.projective_over
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough projectives,
-`ProjectiveResolution.of Z` constructs an projective resolution of the object `Z`.
+`ProjectiveResolution.of Z` constructs a projective resolution of the object `Z`.
 -/
 irreducible_def of : ProjectiveResolution Z where
   complex := ofComplex Z

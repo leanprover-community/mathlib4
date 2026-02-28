@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
-import Mathlib.CategoryTheory.Monad.Algebra
-import Mathlib.Topology.Category.TopCat.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.GiryMonad
+public import Mathlib.CategoryTheory.Monad.Algebra
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # The category of measurable spaces
@@ -25,6 +27,8 @@ Measurable spaces and measurable functions form a (concrete) category `MeasCat`.
 measurable space, giry monad, borel
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -37,6 +41,8 @@ universe u v
 
 /-- The category of measurable spaces and measurable functions. -/
 structure MeasCat : Type (u + 1) where
+  /-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
+  of ::
   /-- The underlying measurable space. -/
   carrier : Type u
   [str : MeasurableSpace carrier]
@@ -47,10 +53,6 @@ namespace MeasCat
 
 instance : CoeSort MeasCat Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
-abbrev of (α : Type u) [ms : MeasurableSpace α] : MeasCat where
-  carrier := α
 
 theorem coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
   rfl
@@ -78,34 +80,35 @@ the pure values are the Dirac measure, and the bind operation maps to the integr
 `(μ >>= ν) s = ∫ x. (ν x) s dμ`.
 
 In probability theory, the `MeasCat`-morphisms `X → Prob X` are (sub-)Markov kernels (here `Prob` is
-the restriction of `Measure` to (sub-)probability space.)
+the restriction of `Measure` to (sub-)probability spaces.)
 -/
 def Measure : MeasCat ⥤ MeasCat where
   obj X := of (@MeasureTheory.Measure X.1 X.2)
   map f := ⟨Measure.map (⇑f), Measure.measurable_map f.1 f.2⟩
-  map_id X := Subtype.eq <| funext fun μ => @Measure.map_id X.carrier X.str μ
-  map_comp := fun ⟨_, hf⟩ ⟨_, hg⟩ => Subtype.eq <| funext fun _ => (Measure.map_map hg hf).symm
+  map_id X := Subtype.ext <| funext fun μ => @Measure.map_id X.carrier X.str μ
+  map_comp := fun ⟨_, hf⟩ ⟨_, hg⟩ => Subtype.ext <| funext fun _ => (Measure.map_map hg hf).symm
 
 /-- The Giry monad, i.e. the monadic structure associated with `Measure`. -/
 def Giry : CategoryTheory.Monad MeasCat where
   toFunctor := Measure
   η :=
     { app := fun X => ⟨@Measure.dirac X.1 X.2, Measure.measurable_dirac⟩
-      naturality := fun _ _ ⟨_, hf⟩ => Subtype.eq <| funext fun a => (Measure.map_dirac hf a).symm }
+      naturality :=
+        fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun a => (Measure.map_dirac hf a).symm }
   μ :=
     { app := fun X => ⟨@Measure.join X.1 X.2, Measure.measurable_join⟩
-      naturality := fun _ _ ⟨_, hf⟩ => Subtype.eq <| funext fun μ => Measure.join_map_map hf μ }
-  assoc _ := Subtype.eq <| funext fun _ => Measure.join_map_join _
-  left_unit _ := Subtype.eq <| funext fun _ => Measure.join_dirac _
-  right_unit _ := Subtype.eq <| funext fun _ => Measure.join_map_dirac _
+      naturality := fun _ _ ⟨_, hf⟩ => Subtype.ext <| funext fun μ => Measure.join_map_map hf μ }
+  assoc _ := Subtype.ext <| funext fun _ => Measure.join_map_join _
+  left_unit _ := Subtype.ext <| funext fun _ => Measure.join_dirac _
+  right_unit _ := Subtype.ext <| funext fun _ => Measure.join_map_dirac _
 
-/-- An example for an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
+/-- An example of an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
 nicely under the monad operations. -/
 def Integral : Giry.Algebra where
   A := MeasCat.of ℝ≥0∞
   a := ⟨fun m : MeasureTheory.Measure ℝ≥0∞ ↦ ∫⁻ x, x ∂m, Measure.measurable_lintegral measurable_id⟩
-  unit := Subtype.eq <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id
-  assoc := Subtype.eq <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) ↦
+  unit := Subtype.ext <| funext fun _ : ℝ≥0∞ => lintegral_dirac' _ measurable_id
+  assoc := Subtype.ext <| funext fun μ : MeasureTheory.Measure (MeasureTheory.Measure ℝ≥0∞) ↦
     show ∫⁻ x, x ∂μ.join = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
       rw [Measure.lintegral_join, lintegral_map] <;>
         apply_rules [Measurable.aemeasurable, measurable_id, Measure.measurable_lintegral]

@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Field.Pi
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Topology.Algebra.Order.UpperLower
-import Mathlib.Topology.MetricSpace.Sequences
+module
+
+public import Mathlib.Algebra.Order.Field.Pi
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Pointwise
+public import Mathlib.Topology.Algebra.Order.UpperLower
+public import Mathlib.Topology.MetricSpace.Sequences
 
 /-!
 # Upper/lower/order-connected sets in normed groups
@@ -28,13 +30,15 @@ from the other possible lemmas, but we will want there to be a single set of lem
 situations.
 -/
 
+public section
+
 open Bornology Function Metric Set
 open scoped Pointwise
 
 variable {α ι : Type*}
 
 section NormedOrderedGroup
-variable [NormedCommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s : Set α}
+variable [NormedCommGroup α] [Preorder α] [IsOrderedMonoid α] {s : Set α}
 
 @[to_additive IsUpperSet.thickening]
 protected theorem IsUpperSet.thickening' (hs : IsUpperSet s) (ε : ℝ) :
@@ -116,20 +120,22 @@ end Finite
 section Fintype
 variable [Fintype ι] {s : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι → ℝ} {δ : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
 lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
   refine congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ ?_)
   simp only [Real.nndist_eq', max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
   rw [Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₁ i)),
     Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₂ i))]
-  exact Real.toNNReal_mono (sub_le_sub_right (hy _) _)
+  grw [hy i] -- TODO(gcongr): we would like `grw [hy]` to work here
 
 lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
-  simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
+  simpa only [dist_comm] using dist_mono_left_pi (y := x)
 
 lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
   refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
@@ -148,10 +154,9 @@ lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b�
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine ⟨x + const _ (3 / 4 * δ), closedBall_subset_closedBall' ?_, ?_⟩
-  · rw [dist_self_add_left]
-    refine (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq ?_
-    simp only [norm_mul, norm_div, Real.norm_eq_abs]
-    simp only [zero_lt_three, abs_of_pos, zero_lt_four, abs_of_pos hδ]
+  · grw [dist_self_add_left, ← const_def, pi_norm_const_le]
+    apply le_of_eq
+    simp [abs_of_nonneg, hδ.le]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_
@@ -166,10 +171,9 @@ theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s)
 theorem IsLowerSet.exists_subset_ball (hs : IsLowerSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
   refine ⟨x - const _ (3 / 4 * δ), closedBall_subset_closedBall' ?_, ?_⟩
-  · rw [dist_self_sub_left]
-    refine (add_le_add_left (pi_norm_const_le <| 3 / 4 * δ) _).trans_eq ?_
-    simp only [norm_mul, norm_div, Real.norm_eq_abs, zero_lt_three, abs_of_pos,
-      zero_lt_four, abs_of_pos hδ]
+  · grw [dist_self_sub_left, ← const_def, pi_norm_const_le]
+    apply le_of_eq
+    simp [abs_of_nonneg, hδ.le]
     ring
   obtain ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ (div_pos hδ zero_lt_four)
   refine fun z hz => hs.mem_interior_of_forall_lt (subset_closure hy) fun i => ?_

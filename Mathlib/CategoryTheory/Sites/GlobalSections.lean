@@ -3,7 +3,9 @@ Copyright (c) 2025 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
 # Global sections of sheaves
@@ -41,6 +43,8 @@ on a terminal object and `Functor.sectionsFunctor`.
   `instHasSheafifyOfHasFiniteLimits`.
 
 -/
+
+@[expose] public section
 
 universe u v w u₂ v₂
 
@@ -129,7 +133,7 @@ lemma Sheaf.ΓHomEquiv_naturality_right_symm [HasGlobalSectionsFunctor J A] {X :
   (congrArg _ ((constantSheafΓAdj J A).homEquiv_naturality_right_symm _ _)).trans
     ((sheafificationAdjunction J A).homEquiv_naturality_right _ _)
 
-/-- The cone over a given sheaf whose cone point are the global sections and whose components are
+/-- The cone over a given sheaf whose cone point is the global sections and whose components are
 the restriction maps. -/
 @[simps pt]
 noncomputable def Sheaf.coneΓ [HasGlobalSectionsFunctor J A] (F : Sheaf J A) : Cone F.val where

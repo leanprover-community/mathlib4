@@ -3,16 +3,20 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
 /-!
 # Oriented angles in right-angled triangles.
 
-This file proves basic geometrical results about distances and oriented angles in (possibly
+This file proves basic geometric results about distances and oriented angles in (possibly
 degenerate) right-angled triangles in real inner product spaces and Euclidean affine spaces.
 
 -/
+
+public section
 
 
 noncomputable section
@@ -451,9 +455,7 @@ theorem oangle_add_right_smul_rotation_pi_div_two {x : V} (h : x ≠ 0) (r : ℝ
         sub_eq_zero, add_comm, sub_neg_eq_add, ← Real.Angle.coe_add, ← Real.Angle.coe_add,
         add_assoc, add_halves, ← two_mul, Real.Angle.coe_two_pi]
       simpa using h
-    -- Porting note: if the type is not given in `neg_neg` then Lean "forgets" about the instance
-    -- `Neg (Orientation ℝ V (Fin 2))`
-    rw [← neg_inj, ← oangle_neg_orientation_eq_neg, @neg_neg Real.Angle] at ha
+    rw [← neg_inj, ← oangle_neg_orientation_eq_neg, neg_neg] at ha
     rw [← neg_inj, oangle_rev, ← oangle_neg_orientation_eq_neg, neg_inj, oangle_rev,
       (-o).oangle_add_right_eq_arctan_of_oangle_eq_pi_div_two ha, norm_smul,
       LinearIsometryEquiv.norm_map, mul_div_assoc, div_self (norm_ne_zero_iff.2 h), mul_one,
@@ -571,6 +573,36 @@ theorem oangle_left_eq_arctan_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : 
   rw [oangle_eq_angle_of_sign_eq_one hs, angle_comm,
     angle_eq_arctan_of_angle_eq_pi_div_two (angle_rev_eq_pi_div_two_of_oangle_eq_pi_div_two h)
       (left_ne_of_oangle_eq_pi_div_two h)]
+
+/-- An oriented angle in a right-angled triangle (even a degenerate one) has absolute value less
+than `π / 2`. The right-angled property is expressed using unoriented angles to cover either
+orientation of right-angled triangles and include degenerate cases. -/
+lemma abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two {p₁ p₂ p₃ : P}
+    (h : ∠ p₁ p₂ p₃ = π / 2) : |(∡ p₂ p₃ p₁).toReal| < π / 2 := by
+  by_cases hp₂ : p₂ = p₃
+  · simp [hp₂, Real.pi_pos]
+  by_cases hp₁ : p₁ = p₃
+  · simp [hp₁, Real.pi_pos]
+  rw [← angle_eq_abs_oangle_toReal hp₂ hp₁]
+  exact angle_lt_pi_div_two_of_angle_eq_pi_div_two h (Ne.symm hp₂)
+
+/-- Two oriented angles in right-angled triangles are equal if twice those angles are equal. -/
+lemma oangle_eq_oangle_of_two_zsmul_eq_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : (2 : ℤ) • ∡ p₂ p₃ p₁ = (2 : ℤ) • ∡ p₅ p₆ p₄) (h₁₂₃ : ∠ p₁ p₂ p₃ = π / 2)
+    (h₄₅₆ : ∠ p₄ p₅ p₆ = π / 2) : ∡ p₂ p₃ p₁ = ∡ p₅ p₆ p₄ := by
+  rwa [Real.Angle.two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two
+    (abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₁₂₃)
+    (abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₄₅₆)] at h
+
+/-- Two oriented angles in oppositely-oriented right-angled triangles are equal if twice those
+angles are equal. -/
+lemma oangle_eq_oangle_rev_of_two_zsmul_eq_of_angle_eq_pi_div_two {p₁ p₂ p₃ p₄ p₅ p₆ : P}
+    (h : (2 : ℤ) • ∡ p₂ p₃ p₁ = (2 : ℤ) • ∡ p₄ p₆ p₅) (h₁₂₃ : ∠ p₁ p₂ p₃ = π / 2)
+    (h₄₅₆ : ∠ p₄ p₅ p₆ = π / 2) : ∡ p₂ p₃ p₁ = ∡ p₄ p₆ p₅ := by
+  refine (Real.Angle.two_zsmul_eq_iff_eq_of_abs_toReal_lt_pi_div_two
+    (abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₁₂₃) ?_).1 h
+  rw [oangle_rev, Real.Angle.abs_toReal_neg]
+  exact abs_oangle_toReal_lt_pi_div_two_of_angle_eq_pi_div_two h₄₅₆
 
 /-- The cosine of an angle in a right-angled triangle as a ratio of sides. -/
 theorem cos_oangle_right_of_oangle_eq_pi_div_two {p₁ p₂ p₃ : P} (h : ∡ p₁ p₂ p₃ = ↑(π / 2)) :

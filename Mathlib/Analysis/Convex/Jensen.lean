@@ -3,9 +3,11 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.Function
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.Function
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Jensen's inequality and maximum principle for convex functions
@@ -30,6 +32,8 @@ As corollaries, we get:
 * `ConcaveOn.exists_le_of_mem_convexHull`: Minimum principle for concave functions.
 -/
 
+public section
+
 
 open Finset LinearMap Set Convex Pointwise
 
@@ -40,9 +44,9 @@ variable {𝕜 E F β ι : Type*}
 
 section Jensen
 
-variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
-  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E] [Module 𝕜 β]
-  [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E} {v : 𝕜} {q : E}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [AddCommGroup β]
+  [PartialOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E] [Module 𝕜 β] [IsStrictOrderedModule 𝕜 β]
+  {s : Set E} {f : E → β} {t : Finset ι} {w : ι → 𝕜} {p : ι → E} {v : 𝕜} {q : E}
 
 /-- Convex **Jensen's inequality**, `Finset.centerMass` version. -/
 theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
@@ -53,6 +57,7 @@ theorem ConvexOn.map_centerMass_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t,
   convert (hf.convex_epigraph.centerMass_mem h₀ h₁ hmem').2 <;>
     simp only [centerMass, Function.comp, Prod.smul_fst, Prod.fst_sum, Prod.smul_snd, Prod.snd_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Concave **Jensen's inequality**, `Finset.centerMass` version. -/
 theorem ConcaveOn.le_map_centerMass (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : 0 < ∑ i ∈ t, w i) (hmem : ∀ i ∈ t, p i ∈ s) :
@@ -65,6 +70,7 @@ theorem ConvexOn.map_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ 
   simpa only [centerMass, h₁, inv_one, one_smul] using
     hf.map_centerMass_le h₀ (h₁.symm ▸ zero_lt_one) hmem
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Concave **Jensen's inequality**, `Finset.sum` version. -/
 theorem ConcaveOn.le_map_sum (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
@@ -82,6 +88,7 @@ lemma ConvexOn.map_add_sum_le (hf : ConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 �
       (forall_mem_insertNone.2 ⟨hq, hmem⟩)
   simpa using this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Concave **Jensen's inequality** where an element plays a distinguished role. -/
 lemma ConcaveOn.map_add_sum_le (hf : ConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : v + ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) (hv : 0 ≤ v) (hq : q ∈ s) :
@@ -115,13 +122,13 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
   have := h₀ j <| by simp
   have := h₀ k <| by simp
   let c := w j + w k
-  have hc : w j / c + w k / c = 1 := by field_simp [c]
+  have hc : w j / c + w k / c = 1 := by simp [field, c]
   calc f (w j • p j + (w k • p k + ∑ x ∈ u, w x • p x))
     _ = f (c • ((w j / c) • p j + (w k / c) • p k) + ∑ x ∈ u, w x • p x) := by
       congrm f ?_
-      match_scalars <;> field_simp
+      match_scalars <;> simp [field, c]
     _ ≤ c • f ((w j / c) • p j + (w k / c) • p k) + ∑ x ∈ u, w x • f (p x) :=
-      -- apply the usual Jensen's inequality wrt the weighted average of the two distinguished
+      -- apply the usual Jensen's inequality w.r.t. the weighted average of the two distinguished
       -- points and all the other points
         hf.convexOn.map_add_sum_le (fun i hi ↦ (h₀ _ <| by simp [hi]).le)
           (by simpa [-cons_eq_insert, ← add_assoc] using h₁)
@@ -131,9 +138,10 @@ lemma StrictConvexOn.map_sum_lt (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈
       -- then apply the definition of strict convexity for the two distinguished points
       gcongr; refine hf.2 (hmem _ <| by simp) (hmem _ <| by simp) hjk ?_ ?_ hc <;> positivity
     _ = (w j • f (p j) + w k • f (p k)) + ∑ x ∈ u, w x • f (p x) := by
-      match_scalars <;> field_simp
+      match_scalars <;> simp [field, c]
     _ = w j • f (p j) + (w k • f (p k) + ∑ x ∈ u, w x • f (p x)) := by abel_nf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Concave **strict Jensen inequality**.
 
 If the function is strictly concave, the weights are strictly positive and the indexed family of
@@ -174,7 +182,7 @@ lemma StrictConcaveOn.eq_of_map_sum_eq (hf : StrictConcaveOn 𝕜 s f) (h₀ : �
 
 For a strictly convex function `f` and positive weights `w`, we have
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)` if and only if the points `p` are all equal
-(and in fact all equal to their center of mass wrt `w`). -/
+(and in fact all equal to their center of mass w.r.t. `w`). -/
 lemma StrictConvexOn.map_sum_eq_iff {w : ι → 𝕜} {p : ι → E} (hf : StrictConvexOn 𝕜 s f)
     (h₀ : ∀ i ∈ t, 0 < w i) (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔ ∀ j ∈ t, p j = ∑ i ∈ t, w i • p i := by
@@ -200,7 +208,7 @@ lemma StrictConvexOn.map_sum_eq_iff {w : ι → 𝕜} {p : ι → E} (hf : Stric
 
 For a strictly concave function `f` and positive weights `w`, we have
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)` if and only if the points `p` are all equal
-(and in fact all equal to their center of mass wrt `w`). -/
+(and in fact all equal to their center of mass w.r.t. `w`). -/
 lemma StrictConcaveOn.map_sum_eq_iff (hf : StrictConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 < w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔ ∀ j ∈ t, p j = ∑ i ∈ t, w i • p i := by
@@ -210,24 +218,25 @@ lemma StrictConcaveOn.map_sum_eq_iff (hf : StrictConcaveOn 𝕜 s f) (h₀ : ∀
 
 For a strictly convex function `f` and nonnegative weights `w`, we have
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)` if and only if the points `p` with nonzero
-weight are all equal (and in fact all equal to their center of mass wrt `w`). -/
+weight are all equal (and in fact all equal to their center of mass w.r.t. `w`). -/
 lemma StrictConvexOn.map_sum_eq_iff' (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔
       ∀ j ∈ t, w j ≠ 0 → p j = ∑ i ∈ t, w i • p i := by
-  have hw (i) (_ : i ∈ t) : w i • p i ≠ 0 → w i ≠ 0 := by aesop
-  have hw' (i) (_ : i ∈ t) : w i • f (p i) ≠ 0 → w i ≠ 0 := by aesop
+  have hw (i) (_ : i ∈ t) : w i • p i ≠ 0 → w i ≠ 0 := by simp_all
+  have hw' (i) (_ : i ∈ t) : w i • f (p i) ≠ 0 → w i ≠ 0 := by simp_all
   rw [← sum_filter_of_ne hw, ← sum_filter_of_ne hw', hf.map_sum_eq_iff]
   · simp
   · simp +contextual [(h₀ _ _).lt_iff_ne']
   · rwa [sum_filter_ne_zero]
   · simp +contextual [hmem _ _]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Canonical form of the **equality case of Jensen's equality**.
 
 For a strictly concave function `f` and nonnegative weights `w`, we have
 `f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i)` if and only if the points `p` with nonzero
-weight are all equal (and in fact all equal to their center of mass wrt `w`). -/
+weight are all equal (and in fact all equal to their center of mass w.r.t. `w`). -/
 lemma StrictConcaveOn.map_sum_eq_iff' (hf : StrictConcaveOn 𝕜 s f) (h₀ : ∀ i ∈ t, 0 ≤ w i)
     (h₁ : ∑ i ∈ t, w i = 1) (hmem : ∀ i ∈ t, p i ∈ s) :
     f (∑ i ∈ t, w i • p i) = ∑ i ∈ t, w i • f (p i) ↔
@@ -242,7 +251,7 @@ section MaximumPrinciple
 
 variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E]
   [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module 𝕜 E]
-  [Module 𝕜 β] [OrderedSMul 𝕜 β] {s : Set E} {f : E → β} {w : ι → 𝕜} {p : ι → E}
+  [Module 𝕜 β] [IsStrictOrderedModule 𝕜 β] {s : Set E} {f : E → β} {w : ι → 𝕜} {p : ι → E}
   {x y z : E}
 
 theorem ConvexOn.le_sup_of_mem_convexHull {t : Finset E} (hf : ConvexOn 𝕜 s f) (hts : ↑t ⊆ s)
@@ -252,6 +261,7 @@ theorem ConvexOn.le_sup_of_mem_convexHull {t : Finset E} (hf : ConvexOn 𝕜 s f
   exact (hf.map_centerMass_le hw₀ (by positivity) hts).trans
     (centerMass_le_sup hw₀ <| by positivity)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ConvexOn.inf_le_of_mem_convexHull {t : Finset E} (hf : ConcaveOn 𝕜 s f) (hts : ↑t ⊆ s)
     (hx : x ∈ convexHull 𝕜 (t : Set E)) :
     t.inf' (coe_nonempty.1 <| convexHull_nonempty_iff.1 ⟨x, hx⟩) f ≤ f x :=
@@ -273,6 +283,7 @@ lemma ConvexOn.exists_ge_of_centerMass {t : Finset ι} (h : ConvexOn 𝕜 s f)
   rw [mem_filter] at hi
   exact ⟨i, hi.1, (smul_le_smul_iff_of_pos_left <| (hw₀ i hi.1).lt_of_ne hi.2.symm).1 hfi⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function `f` is concave on `s`, then the value it takes at some center of mass of points of
 `s` is greater than the value it takes on one of those points. -/
 lemma ConcaveOn.exists_le_of_centerMass {t : Finset ι} (h : ConcaveOn 𝕜 s f)
@@ -289,6 +300,7 @@ lemma ConvexOn.exists_ge_of_mem_convexHull {t : Set E} (hf : ConvexOn 𝕜 s f) 
     fun i hi ↦ hts (hp i hi)
   exact ⟨p i, hp i hit, Hi⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Minimum principle** for concave functions. If a function `f` is concave on the convex hull of
 `s`, then the eventual minimum of `f` on `convexHull 𝕜 s` lies in `s`. -/
 lemma ConcaveOn.exists_le_of_mem_convexHull {t : Set E} (hf : ConcaveOn 𝕜 s f) (hts : t ⊆ s)
@@ -300,6 +312,7 @@ lemma ConvexOn.le_max_of_mem_segment (hf : ConvexOn 𝕜 s f) (hx : x ∈ s) (hy
     (hz : z ∈ [x -[𝕜] y]) : f z ≤ max (f x) (f y) := by
   rw [← convexHull_pair] at hz; simpa using hf.exists_ge_of_mem_convexHull (pair_subset hx hy) hz
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Minimum principle** for concave functions on a segment. If a function `f` is concave on the
 segment `[x, y]`, then the eventual minimum of `f` on `[x, y]` is at `x` or `y`. -/
 lemma ConcaveOn.min_le_of_mem_segment (hf : ConcaveOn 𝕜 s f) (hx : x ∈ s) (hy : y ∈ s)
@@ -311,6 +324,7 @@ lemma ConvexOn.le_max_of_mem_Icc {s : Set 𝕜} {f : 𝕜 → β} {x y z : 𝕜}
     (hx : x ∈ s) (hy : y ∈ s) (hz : z ∈ Icc x y) : f z ≤ max (f x) (f y) := by
   rw [← segment_eq_Icc (hz.1.trans hz.2)] at hz; exact hf.le_max_of_mem_segment hx hy hz
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Minimum principle** for concave functions on an interval. If a function `f` is concave on the
 interval `[x, y]`, then the eventual minimum of `f` on `[x, y]` is at `x` or `y`. -/
 lemma ConcaveOn.min_le_of_mem_Icc {s : Set 𝕜} {f : 𝕜 → β} {x y z : 𝕜} (hf : ConcaveOn 𝕜 s f)
@@ -325,6 +339,7 @@ lemma ConvexOn.bddAbove_convexHull {s t : Set E} (hst : s ⊆ t) (hf : ConvexOn 
   obtain ⟨y, hy, hxy⟩ := hf.exists_ge_of_mem_convexHull hst hx
   exact hxy.trans <| hb <| mem_image_of_mem _ hy
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ConcaveOn.bddBelow_convexHull {s t : Set E} (hst : s ⊆ t) (hf : ConcaveOn 𝕜 t f) :
     BddBelow (f '' s) → BddBelow (f '' convexHull 𝕜 s) := hf.dual.bddAbove_convexHull hst
 

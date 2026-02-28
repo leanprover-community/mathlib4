@@ -3,15 +3,19 @@ Copyright (c) 2024 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.PathCategory.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.PathCategory.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Properties of morphisms in a path category.
 
 We provide a formulation of induction principles for morphisms in a path category in terms of
-`MorphismProperty`. This file is separate from `CategoryTheory.PathCategory.Basic` in order to
-reduce transitive imports. -/
+`MorphismProperty`. This file is separate from `Mathlib/CategoryTheory/PathCategory/Basic.lean` in
+order to reduce transitive imports. -/
+
+@[expose] public section
 
 
 universe v₁ u₁
@@ -19,7 +23,7 @@ universe v₁ u₁
 namespace CategoryTheory.Paths
 
 section
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁} V]
 
 /-- A reformulation of `CategoryTheory.Paths.induction` in terms of `MorphismProperty`. -/
 lemma morphismProperty_eq_top
@@ -50,7 +54,7 @@ lemma morphismProperty_eq_top_of_isMultiplicative (P : MorphismProperty (Paths V
 end
 section
 
-variable {C : Type*} [Category C] {V : Type u₁} [Quiver.{v₁ + 1} V]
+variable {C : Type*} [Category* C] {V : Type u₁} [Quiver.{v₁} V]
 
 /-- A natural transformation between `F G : Paths V ⥤ C` is defined by its components and
 its unary naturality squares. -/
@@ -67,7 +71,7 @@ def liftNatTrans {F G : Paths V ⥤ C} (α_app : (v : V) → (F.obj v ⟶ G.obj 
 /-- A natural isomorphism between `F G : Paths V ⥤ C` is defined by its components and
 its unary naturality squares. -/
 @[simps!]
-def liftNatIso {C} [Category C] {F G : Paths V ⥤ C} (α_app : (v : V) → (F.obj v ≅ G.obj v))
+def liftNatIso {C} [Category* C] {F G : Paths V ⥤ C} (α_app : (v : V) → (F.obj v ≅ G.obj v))
     (α_nat : {X Y : V} → (f : X ⟶ Y) →
       F.map (Quiver.Hom.toPath f) ≫ (α_app Y).hom = (α_app X).hom ≫ G.map (Quiver.Hom.toPath f)) :
     F ≅ G :=

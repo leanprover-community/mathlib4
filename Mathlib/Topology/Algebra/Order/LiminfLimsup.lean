@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.DenselyOrdered
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Topology.Algebra.Group.Basic
-import Mathlib.Topology.Order.LiminfLimsup
+module
+
+public import Mathlib.Algebra.Order.Group.DenselyOrdered
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Topology.Algebra.Group.Basic
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Lemmas about liminf and limsup in an order topology.
@@ -22,6 +24,8 @@ The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace �
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
 
+public section
+
 open Filter TopologicalSpace
 open scoped Topology
 
@@ -32,7 +36,7 @@ variable {ι α β R S : Type*} {X : ι → Type*}
 section LiminfLimsupAdd
 
 variable [AddCommGroup α] [ConditionallyCompleteLinearOrder α] [DenselyOrdered α]
-  [CovariantClass α α (fun a b ↦ a + b) fun x1 x2 ↦ x1 ≤ x2]
+  [AddLeftMono α]
   {f : Filter ι} [f.NeBot] {u v : ι → α}
 
 lemma le_limsup_add (h₁ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u := by isBoundedDefault)
@@ -161,7 +165,7 @@ lemma limsup_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (cobdd : F.IsCoboundedUnder (· ≤ ·) f) :
     Filter.limsup (fun i ↦ c + f i) F = c + Filter.limsup f F :=
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x)
-    (fun _ _ h ↦ add_le_add_left h c) (continuous_add_left c).continuousAt bdd_above cobdd).symm
+    (fun _ _ h ↦ by dsimp; gcongr) (continuous_const_add c).continuousAt bdd_above cobdd).symm
 
 /-- `limsup (xᵢ + c) = (limsup xᵢ) + c`. -/
 lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
@@ -169,7 +173,7 @@ lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (cobdd : F.IsCoboundedUnder (· ≤ ·) f) :
     Filter.limsup (fun i ↦ f i + c) F = Filter.limsup f F + c :=
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c)
-    (fun _ _ h ↦ add_le_add_right h c) (continuous_add_right c).continuousAt bdd_above cobdd).symm
+    (fun _ _ h ↦ by dsimp; gcongr) (continuous_add_const c).continuousAt bdd_above cobdd).symm
 
 /-- `liminf (c + xᵢ) = c + liminf xᵢ`. -/
 lemma liminf_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
@@ -177,7 +181,7 @@ lemma liminf_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     (cobdd : F.IsCoboundedUnder (· ≥ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ c + f i) F = c + Filter.liminf f F :=
   (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c + x)
-    (fun _ _ h ↦ add_le_add_left h c) (continuous_add_left c).continuousAt cobdd bdd_below).symm
+    (fun _ _ h ↦ by dsimp; gcongr) (continuous_const_add c).continuousAt cobdd bdd_below).symm
 
 /-- `liminf (xᵢ + c) = (liminf xᵢ) + c`. -/
 lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
@@ -185,7 +189,7 @@ lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     (cobdd : F.IsCoboundedUnder (· ≥ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
     Filter.liminf (fun i ↦ f i + c) F = Filter.liminf f F + c :=
   (Monotone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c)
-    (fun _ _ h ↦ add_le_add_right h c) (continuous_add_right c).continuousAt cobdd bdd_below).symm
+    (fun _ _ h ↦ by dsimp; gcongr) (continuous_add_const c).continuousAt cobdd bdd_below).symm
 
 /-- `limsup (c - xᵢ) = c - liminf xᵢ`. -/
 lemma limsup_const_sub (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousSub R] [OrderedSub R]

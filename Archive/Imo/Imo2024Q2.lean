@@ -27,6 +27,7 @@ open scoped Nat
 def Condition (a b : ℕ) : Prop :=
   0 < a ∧ 0 < b ∧ ∃ g N : ℕ, 0 < g ∧ 0 < N ∧ ∀ n : ℕ, N ≤ n → Nat.gcd (a ^ n + b) (b ^ n + a) = g
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dvd_pow_iff_of_dvd_sub {a b d n : ℕ} {z : ℤ} (ha : a.Coprime d)
     (hd : (φ d : ℤ) ∣ (n : ℤ) - z) :
     d ∣ a ^ n + b ↔ (((ZMod.unitOfCoprime _ ha) ^ z : (ZMod d)ˣ) : ZMod d) + b = 0 := by
@@ -168,11 +169,11 @@ lemma ab_add_one_dvd_b_add_one : a * b + 1 ∣ b + 1 := by
   exact h.ab_add_one_dvd_a_pow_large_n_0_add_b
 
 lemma a_eq_one : a = 1 := by
-  have hle : a * b + 1 ≤ b + 1 := Nat.le_of_dvd (by omega) h.ab_add_one_dvd_b_add_one
+  have hle : a * b + 1 ≤ b + 1 := Nat.le_of_dvd (by lia) h.ab_add_one_dvd_b_add_one
   rw [add_le_add_iff_right] at hle
   suffices a ≤ 1 by
     have hp := h.a_pos
-    omega
+    lia
   have hle' : a * b ≤ 1 * b := by
     simpa using hle
   exact Nat.le_of_mul_le_mul_right hle' h.b_pos

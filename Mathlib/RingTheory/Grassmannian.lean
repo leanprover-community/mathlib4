@@ -3,8 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
 # Grassmannians
@@ -20,7 +21,7 @@ import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 In the literature, two conventions exist:
 
-1. The `k`ᵗʰ Grassmannian parametrises `k`-dimensional **subspaces** of a given finite dimensional
+1. The `k`ᵗʰ Grassmannian parametrises `k`-dimensional **subspaces** of a given finite-dimensional
    vector space over a field.
 2. The `k`ᵗʰ Grassmannian parametrises **quotients** that are locally free of rank `k`, of a given
    module over a ring.
@@ -30,7 +31,7 @@ a scheme to represent the functor, which is why the second definition is the one
 [Grothendieck, EGA I.9.7.3][grothendieck-1971] (Springer edition only), and in EGA V.11
 (unpublished).
 
-The first definition in the stated generality (i.e. over a field `F`, and finite dimensional vector
+The first definition in the stated generality (i.e. over a field `F`, and finite-dimensional vector
 space `V`) can be recovered from the second definition by noting that `k`-dimensional subspaces of
 `V` are canonically equivalent to `(n-k)`-dimensional quotients of `V`, and also to `k`-dimensional
 quotients of `V*`, the dual of `V`. In symbols, this means that the first definition is equivalent
@@ -47,6 +48,8 @@ to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimen
 - Grassmannians for schemes and quasi-coherent sheaf of modules.
 - Representability of `Module.Grassmannian.functor R M k`.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -67,7 +70,7 @@ attribute [instance] Grassmannian.finite_quotient Grassmannian.projective_quotie
 
 namespace Grassmannian
 
-@[inherit_doc] scoped notation "G("k", "M"; "R")" => Grassmannian R M k
+@[inherit_doc] scoped notation "G(" k ", " M "; " R ")" => Grassmannian R M k
 
 variable {R M k}
 

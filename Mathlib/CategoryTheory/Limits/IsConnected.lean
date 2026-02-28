@@ -3,10 +3,12 @@ Copyright (c) 2024 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Colimits of connected index categories
@@ -37,6 +39,8 @@ its codomain is connected.
 unit-valued, singleton, colimit
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace CategoryTheory
@@ -55,13 +59,13 @@ def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   ι := { app := fun _ => id }
 
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
-    cocone. -/
+cocone. -/
 noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.{w} C) where
   desc s := s.ι.app Classical.ofNonempty
   fac s j := by
     ext ⟨⟩
     apply constant_of_preserves_morphisms (s.ι.app · PUnit.unit)
-    intros X Y f
+    intro X Y f
     exact congrFun (s.ι.naturality f).symm PUnit.unit
   uniq s m h := by
     ext ⟨⟩
@@ -93,9 +97,6 @@ theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
   | refl _ => exact Zigzag.refl _
   | symm _ _ _ ih => exact zigzag_symmetric ih
   | trans _ _ _ _ _ ih₁ ih₂ => exact ih₁.trans ih₂
-
-@[deprecated (since := "2025-06-22")] alias zigzag_of_eqvGen_quot_rel :=
-  zigzag_of_eqvGen_colimitTypeRel
 
 /-- An index category is connected iff the colimit of the constant singleton-valued functor is a
 singleton. -/
@@ -142,7 +143,7 @@ end Functor
 
 section
 
-variable (C : Type*) [Category C]
+variable (C : Type*) [Category* C]
 
 /-- Prove that a category is connected by supplying an explicit initial object. -/
 lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by
@@ -150,8 +151,8 @@ lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C 
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]
-  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
-    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
+  simp only [List.isChain_cons_cons, List.isChain_singleton, and_true, ne_eq,
+    reduceCtorEq, not_false_eq_true, List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
   exact ⟨Zag.symm <| Zag.of_hom <| h.to _, Zag.of_hom <| h.to _⟩
 
 /-- Prove that a category is connected by supplying an explicit terminal object. -/
@@ -160,8 +161,8 @@ lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected 
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]
-  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
-    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
+  simp only [List.isChain_cons_cons, List.isChain_singleton, and_true, ne_eq,
+    reduceCtorEq, not_false_eq_true, List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
   exact ⟨Zag.of_hom <| h.from _, Zag.symm <| Zag.of_hom <| h.from _⟩
 
 -- note : it seems making the following two as instances breaks things, so these are lemmas.

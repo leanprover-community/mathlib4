@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
 # `C^n` monoid
@@ -16,9 +18,11 @@ additive counterpart `ContMDiffAdd`. These structures are general enough to also
 semigroups.
 -/
 
+@[expose] public section
+
 open scoped Manifold ContDiff
 
-library_note "Design choices about smooth algebraic structures"/--
+library_note «Design choices about smooth algebraic structures» /--
 1. All `C^n` algebraic structures on `G` are `Prop`-valued classes that extend
 `IsManifold I n G`. This way we save users from adding both
 `[IsManifold I n G]` and `[ContMDiffMul I n G]` to the assumptions. While many API
@@ -47,8 +51,6 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     extends IsManifold I n G where
   contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
 
-@[deprecated (since := "2025-01-09")] alias SmoothAdd := ContMDiffAdd
-
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
 A `C^n` monoid over `G`, for example, is obtained by requiring both the instances `Monoid G`
@@ -60,8 +62,6 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2
-
-@[deprecated (since := "2025-01-09")] alias SmoothMul := ContMDiffMul
 
 section ContMDiffMul
 
@@ -81,6 +81,7 @@ protected theorem ContMDiffMul.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
 instance {a : WithTop ℕ∞} [ContMDiffMul I ∞ G] [h : ENat.LEInfty a] : ContMDiffMul I a G :=
   ContMDiffMul.of_le h.out
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance {a : WithTop ℕ∞} [ContMDiffMul I ω G] : ContMDiffMul I a G :=
   ContMDiffMul.of_le le_top
@@ -106,12 +107,10 @@ theorem contMDiff_mul [ContMDiffMul I n G] : ContMDiff (I.prod I) I n fun p : G 
 include I n in
 /-- If the multiplication is `C^n`, then it is continuous. This is not an instance for technical
 reasons, see note [Design choices about smooth algebraic structures]. -/
-@[to_additive "If the addition is `C^n`, then it is continuous. This is not an instance for
-technical reasons, see note [Design choices about smooth algebraic structures]."]
+@[to_additive /-- If the addition is `C^n`, then it is continuous. This is not an instance for
+technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem continuousMul_of_contMDiffMul [ContMDiffMul I n G] : ContinuousMul G :=
   ⟨(contMDiff_mul I n).continuous⟩
-
-@[deprecated (since := "2025-01-09")] alias continuousMul_of_smooth := continuousMul_of_contMDiffMul
 
 end
 
@@ -161,21 +160,21 @@ variable [ContMDiffMul I 1 G]
 
 @[to_additive]
 theorem mdifferentiable_mul_left {a : G} : MDifferentiable I I (a * ·) :=
-  contMDiff_mul_left.mdifferentiable le_rfl
+  contMDiff_mul_left.mdifferentiable one_ne_zero
 
 @[to_additive]
 theorem mdifferentiableAt_mul_left {a b : G} :
     MDifferentiableAt I I (a * ·) b :=
-  contMDiffAt_mul_left.mdifferentiableAt le_rfl
+  contMDiffAt_mul_left.mdifferentiableAt one_ne_zero
 
 @[to_additive]
 theorem mdifferentiable_mul_right {a : G} : MDifferentiable I I (· * a) :=
-  contMDiff_mul_right.mdifferentiable le_rfl
+  contMDiff_mul_right.mdifferentiable one_ne_zero
 
 @[to_additive]
 theorem mdifferentiableAt_mul_right {a b : G} :
     MDifferentiableAt I I (· * a) b :=
-  contMDiffAt_mul_right.mdifferentiableAt le_rfl
+  contMDiffAt_mul_right.mdifferentiableAt one_ne_zero
 
 end
 
@@ -263,7 +262,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
 
 @[to_additive]
 theorem contMDiff_pow : ∀ i : ℕ, ContMDiff I I n fun a : G => a ^ i
-  | 0 => by simp only [pow_zero]; exact contMDiff_const
+  | 0 => by simp only [pow_zero, contMDiff_const]
   | k + 1 => by simpa [pow_succ] using (contMDiff_pow _).mul contMDiff_id
 
 /-- Morphism of additive `C^n` monoids. -/
@@ -280,8 +279,6 @@ structure ContMDiffMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWit
     [TopologicalSpace G'] [ChartedSpace H' G'] [Monoid G'] extends
     G →* G' where
   contMDiff_toFun : ContMDiff I I' n toFun
-
-@[deprecated (since := "2025-01-09")] alias SmoothAddMonoidMorphism := ContMDiffAddMonoidMorphism
 
 @[to_additive]
 instance : One (ContMDiffMonoidMorphism I I' n G G') :=
@@ -308,9 +305,9 @@ instance : ContinuousMapClass (ContMDiffMonoidMorphism I I' n G G') G G' where
 
 end Monoid
 
-/-! ### Differentiability of finite point-wise sums and products
+/-! ### Differentiability of finite point-wise sums and products, and powers
 
-  Finite point-wise products (resp. sums) of `C^n` functions `M → G` (at `x`/on `s`)
+  Finite point-wise products (resp. sums), and powers, of `C^n` functions `M → G` (at `x`/on `s`)
   into a commutative monoid `G` are `C^n` at `x`/on `s`. -/
 section CommMonoid
 
@@ -417,6 +414,28 @@ theorem contMDiff_finprod_cond (hc : ∀ i, p i → ContMDiff I' I n (f i))
     ContMDiff I' I n fun x => ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
   exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+
+variable {g : M → G}
+
+@[to_additive]
+theorem ContMDiffWithinAt.pow (hg : ContMDiffWithinAt I' I n g s x) (m : ℕ) :
+    ContMDiffWithinAt I' I n (fun x ↦ g x ^ m) s x :=
+  (contMDiff_pow m).contMDiffAt.comp_contMDiffWithinAt x hg
+
+@[to_additive]
+nonrec theorem ContMDiffAt.pow (hg : ContMDiffAt I' I n g x) (m : ℕ) :
+    ContMDiffAt I' I n (fun x ↦ g x ^ m) x :=
+  hg.pow m
+
+@[to_additive]
+theorem ContMDiffOn.pow (hg : ContMDiffOn I' I n g s) (m : ℕ) :
+    ContMDiffOn I' I n (fun x ↦ g x ^ m) s :=
+  fun x hx ↦ (hg x hx).pow m
+
+@[to_additive]
+theorem ContMDiff.pow (hg : ContMDiff I' I n g) (m : ℕ) :
+    ContMDiff I' I n (fun x ↦ g x ^ m) :=
+  fun x ↦ (hg x).pow m
 
 end CommMonoid
 

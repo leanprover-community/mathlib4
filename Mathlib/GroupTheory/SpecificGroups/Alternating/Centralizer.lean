@@ -3,9 +3,10 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.Perm.Centralizer
-import Mathlib.GroupTheory.SpecificGroups.Alternating
+module
+
+public import Mathlib.GroupTheory.Perm.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Centralizer of an element in the alternating group
 
@@ -33,6 +34,8 @@ TODO :
 Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
+
+public section
 
 open Equiv Finset Function MulAction
 
@@ -135,7 +138,7 @@ open Basis OnCycleFactors
 theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     Fintype.card α ≤ g.cycleType.sum + 1 := by
   by_contra! hm
-  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by omega
+  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by lia
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
     suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 from
@@ -145,14 +148,14 @@ theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ 
   rw [sum_cycleType]
   exact Finset.card_le_univ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem count_le_one_of_centralizer_le_alternating
     (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     ∀ i, g.cycleType.count i ≤ 1 := by
   rw [← Multiset.nodup_iff_count_le_one, Equiv.Perm.cycleType_def]
   rw [Multiset.nodup_map_iff_inj_on g.cycleFactorsFinset.nodup]
   simp only [Function.comp_apply, ← Finset.mem_def]
-  by_contra! hm
-  obtain ⟨c, hc, d, hd, hm, hm'⟩ := hm
+  by_contra! ⟨c, hc, d, hd, hm, hm'⟩
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
   have hτ : τ ∈ range_toPermHom' g := fun x ↦ by
@@ -187,7 +190,7 @@ theorem count_le_one_of_centralizer_le_alternating
     rw [← sum_cycleType, hk_cT]
     simp
   have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card := by
-    rw [← Nat.mul_left_inj (a := 2) (by norm_num), this]
+    rw [← Nat.mul_left_inj (a := 2) (by simp), this]
     simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
     have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
     simp only [τ, support_swap H]
@@ -197,6 +200,7 @@ theorem count_le_one_of_centralizer_le_alternating
   simp only [cycleType_def, Multiset.mem_map]
   exact ⟨c, hc, by simp only [Function.comp_apply]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
     (h_count : ∀ i, g.cycleType.count i ≤ 1) :
     (kerParam g).range = Subgroup.centralizer {g} := by
@@ -210,6 +214,7 @@ theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
     Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
   exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The centralizer of a permutation is contained in the alternating group if and only if
 its cycles have odd length, with at most one of each, and there is at most one fixed point. -/
 theorem centralizer_le_alternating_iff :
@@ -240,7 +245,7 @@ theorem centralizer_le_alternating_iff :
         exact hc.left
     · suffices y = 1 by simp [this]
       have := card_fixedPoints g
-      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by omega)
+      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by lia)
 
 namespace IsThreeCycle
 
@@ -273,6 +278,7 @@ theorem alternatingGroup.commutator_perm_le :
   rintro _ p q rfl
   simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/
 theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
     commutator (alternatingGroup α) = ⊤ := by
@@ -289,6 +295,7 @@ theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Fintype.card α) :
   rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
     ← MonoidHom.range_eq_map, Subgroup.range_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The commutator subgroup of the permutation group is the alternating group -/
 theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Fintype.card α) :
     commutator (Perm α) = alternatingGroup α := by

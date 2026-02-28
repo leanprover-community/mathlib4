@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MvPolynomial.Eval
+module
+
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Renaming variables of polynomials
@@ -34,6 +36,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ α`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -97,6 +101,7 @@ theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
   · exact fun n => pow_zero _
   · exact fun n i₁ i₂ => pow_add _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rename_eq (f : σ → τ) (p : MvPolynomial σ R) :
     rename f p = Finsupp.mapDomain (Finsupp.mapDomain f) p := by
   simp_rw [rename, aeval_def, eval₂, Finsupp.mapDomain, algebraMap_eq, comp_apply,
@@ -139,11 +144,20 @@ theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
   algHom_ext fun i => by
     dsimp
-    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos, Equiv.ofInjective_symm_apply]
+    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos ⟨i, rfl⟩,
+      Equiv.ofInjective_symm_apply]
 
 @[simp]
 theorem killCompl_rename_app (p : MvPolynomial σ R) : killCompl hf (rename f p) = p :=
   AlgHom.congr_fun (killCompl_comp_rename hf) p
+
+lemma killCompl_map (φ : R →+* S) (p : MvPolynomial τ R) :
+    (p.map φ).killCompl hf = (p.killCompl hf).map φ := by
+  simp only [← AlgHom.coe_toRingHom, ← RingHom.comp_apply]
+  congr
+  ext i n
+  · simp
+  · by_cases h : i ∈ Set.range f <;> simp [killCompl, h]
 
 end
 
@@ -252,8 +266,8 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
   obtain ⟨s₂, q₂, rfl⟩ := exists_finset_rename p₂
   classical
     use s₁ ∪ s₂
-    use rename (Set.inclusion s₁.subset_union_left) q₁
-    use rename (Set.inclusion s₁.subset_union_right) q₂
+    use rename (fun x ↦ ⟨x, Finset.subset_union_left x.2⟩) q₁
+    use rename (fun x ↦ ⟨x, Finset.subset_union_right x.2⟩) q₂
     constructor <;> simp [Function.comp_def]
 
 /-- Every polynomial is a polynomial in finitely many variables. -/
@@ -269,10 +283,7 @@ theorem exists_fin_rename (p : MvPolynomial σ R) :
 end Rename
 
 theorem eval₂_cast_comp (f : σ → τ) (c : ℤ →+* R) (g : τ → R) (p : MvPolynomial σ ℤ) :
-    eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := by
-  apply MvPolynomial.induction_on p (fun n => by simp only [eval₂_C, rename_C])
-    (fun p q hp hq => by simp only [hp, hq, rename, eval₂_add, map_add])
-    fun p n hp => by simp only [eval₂_mul, hp, eval₂_X, comp_apply, map_mul, rename_X, eval₂_mul]
+    eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := (eval₂_rename c f g p).symm
 
 section Coeff
 
@@ -280,12 +291,11 @@ section Coeff
 theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
     (rename f φ).coeff (d.mapDomain f) = φ.coeff d := by
   classical
-  apply φ.induction_on' (P := fun ψ => coeff (Finsupp.mapDomain f d) ((rename f) ψ) = coeff d ψ)
-  -- Lean could no longer infer the motive
-  · intro u r
+  induction φ using MvPolynomial.induction_on' with
+  | monomial u r =>
     rw [rename_monomial, coeff_monomial, coeff_monomial]
     simp only [(Finsupp.mapDomain_injective hf).eq_iff]
-  · intros
+  | add =>
     simp only [*, map_add, coeff_add]
 
 @[simp]
@@ -302,7 +312,7 @@ theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ �
   rw [Finset.mem_image] at H
   obtain ⟨u, hu, rfl⟩ := H
   specialize h u rfl
-  simp? at h hu says simp only [Finsupp.mem_support_iff, ne_eq] at h hu
+  rw [Finsupp.mem_support_iff] at hu
   contradiction
 
 theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPolynomial σ R) (d : τ →₀ ℕ)

@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SetFamily.Compression.Down
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Combinatorics.SetFamily.Compression.Down
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Shattering families
@@ -24,6 +26,8 @@ This file defines the shattering property and VC-dimension of set families.
 * Order-shattering
 * Strong shattering
 -/
+
+@[expose] public section
 
 open scoped FinsetFamily
 
@@ -86,6 +90,7 @@ def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 lemma subset_shatterer (h : IsLowerSet (𝒜 : Set (Finset α))) : 𝒜 ⊆ 𝒜.shatterer :=
   fun _s hs ↦ mem_shatterer.2 fun t ht ↦ ⟨t, h ht hs, inter_eq_right.2 ht⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma isLowerSet_shatterer (𝒜 : Finset (Finset α)) :
     IsLowerSet (𝒜.shatterer : Set (Finset α)) := fun s t ↦ by simpa using Shatters.mono_right
 
@@ -111,7 +116,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
   refine memberFamily_induction_on 𝒜 ?_ ?_ ?_
   · simp
   · rfl
-  intros a 𝒜 ih₀ ih₁
+  intro a 𝒜 ih₀ ih₁
   set ℬ : Finset (Finset α) :=
     ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).image (insert a)
   have hℬ : #ℬ = #((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer) := by
@@ -151,7 +156,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
       rwa [insert_inter_of_notMem hu.2, hsu, erase_eq_self]
 
 lemma Shatters.of_compression (hs : (𝓓 a 𝒜).Shatters s) : 𝒜.Shatters s := by
-  intros t ht
+  intro t ht
   obtain ⟨u, hu, rfl⟩ := hs ht
   rw [Down.mem_compression] at hu
   obtain hu | hu := hu

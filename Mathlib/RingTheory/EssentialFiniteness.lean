@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Essentially of finite type algebras
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 -/
 
+@[expose] public section
+
 open scoped TensorProduct
 
 namespace Algebra
@@ -29,6 +33,9 @@ variable [Algebra R S] [Algebra R T]
 An `R`-algebra is essentially of finite type if
 it is the localization of an algebra of finite type.
 See `essFiniteType_iff_exists_subalgebra`.
+
+For field extensions, this is equivalent to being finitely generated as a field.
+See `IntermediateField.fg_top_iff`.
 -/
 class EssFiniteType : Prop where
   cond : ∃ s : Finset S,
@@ -68,14 +75,14 @@ lemma essFiniteType_cond_iff (σ : Finset S) :
       IsUnit t ∧ s * t ∈ Algebra.adjoin R (σ : Set S)) := by
   constructor <;> intro hσ
   · intro s
-    obtain ⟨⟨⟨x, hx⟩, ⟨t, ht⟩, ht'⟩, h⟩ := hσ.2 s
+    obtain ⟨⟨⟨x, hx⟩, ⟨t, ht⟩, ht'⟩, h⟩ := hσ.1.2 s
     exact ⟨t, ht, ht', h ▸ hx⟩
-  · constructor
+  · constructor; constructor
     · exact fun y ↦ y.prop
     · intro s
       obtain ⟨t, ht, ht', h⟩ := hσ s
       exact ⟨⟨⟨_, h⟩, ⟨t, ht⟩, ht'⟩, rfl⟩
-    · intros x y e
+    · intro x y e
       exact ⟨1, by simpa using Subtype.ext e⟩
 
 lemma essFiniteType_iff :
@@ -150,6 +157,7 @@ lemma EssFiniteType.comp [h₁ : EssFiniteType R S] [h₂ : EssFiniteType S T] :
   · rw [← mul_smul, mul_comm, smul_mul_assoc, mul_comm, mul_comm y, mul_smul, Algebra.smul_def]
     exact mul_mem (Algebra.mem_sup_left ⟨_, h₁, rfl⟩) h₆
 
+set_option backward.isDefEq.respectTransparency false in
 open EssFiniteType in
 lemma essFiniteType_iff_exists_subalgebra : EssFiniteType R S ↔
     ∃ (S₀ : Subalgebra R S) (M : Submonoid S₀), FiniteType R S₀ ∧ IsLocalization M S := by
@@ -165,7 +173,7 @@ instance EssFiniteType.baseChange [h : EssFiniteType R S] : EssFiniteType T (T �
   use σ.image Algebra.TensorProduct.includeRight
   intro s
   induction s using TensorProduct.induction_on with
-  | zero => exact ⟨1, one_mem _, isUnit_one, by simpa using zero_mem _⟩
+  | zero => exact ⟨1, one_mem _, isUnit_one, by simp⟩
   | tmul x y =>
     obtain ⟨t, h₁, h₂, h₃⟩ := hσ y
     have H (x : S) (hx : x ∈ Algebra.adjoin R (σ : Set S)) :
@@ -213,6 +221,20 @@ instance [EssFiniteType R S] (M : Submonoid S) : EssFiniteType R (Localization M
 
 end
 
+variable {R S T} in
+lemma EssFiniteType.of_surjective (f : S →ₐ[R] T) (hf : Function.Surjective f)
+    [EssFiniteType R S] : EssFiniteType R T := by
+  let := f.toAlgebra
+  have : IsScalarTower R S T := .of_algebraMap_eq' f.comp_algebraMap.symm
+  have : Module.Finite S T := .of_surjective (Algebra.linearMap S T) hf
+  exact .comp R S T
+
+variable {R S T} in
+lemma EssFiniteType.iff_of_algEquiv (f : S ≃ₐ[R] T) :
+    EssFiniteType R S ↔ EssFiniteType R T where
+  mp _ := .of_surjective f.toAlgHom f.surjective
+  mpr _ := .of_surjective f.symm.toAlgHom f.symm.surjective
+
 variable {R S} in
 lemma EssFiniteType.algHom_ext [EssFiniteType R S]
     (f g : S →ₐ[R] T) (H : ∀ s ∈ finset R S, f s = g s) : f = g := by
@@ -236,6 +258,10 @@ and a ring hom of finite type. See `Algebra.EssFiniteType`. -/
 def EssFiniteType (f : R →+* S) : Prop :=
   letI := f.toAlgebra
   Algebra.EssFiniteType R S
+
+lemma essFiniteType_algebraMap {R S : Type*} [CommRing R] [CommRing S]
+    [Algebra R S] : (algebraMap R S).EssFiniteType ↔ Algebra.EssFiniteType R S := by
+  rw [RingHom.EssFiniteType, toAlgebra_algebraMap]
 
 /-- A choice of "essential generators" for a ring hom essentially of finite type.
 See `Algebra.EssFiniteType.ext`. -/

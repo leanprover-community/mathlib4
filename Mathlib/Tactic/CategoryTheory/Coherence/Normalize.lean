@@ -3,15 +3,18 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Lean.Meta.AppBuilder
-import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+module
+
+public meta import Lean.Meta.AppBuilder
+public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 
 /-!
 # Normalization of 2-morphisms in bicategories
 
 This file provides a function that normalizes 2-morphisms in bicategories. The function also
 used to normalize morphisms in monoidal categories. This is used in the string diagram widget given
-in `Mathlib/Tactic/StringDiagram.lean`, as well as `monoidal` and `bicategory` tactics.
+in `Mathlib/Tactic/Widget/StringDiagram.lean`, as well as `monoidal` and `bicategory` tactics.
 
 We say that the 2-morphism `η` in a bicategory is in normal form if
 1. `η` is of the form `α₀ ≫ η₀ ≫ α₁ ≫ η₁ ≫ ... αₘ ≫ ηₘ ≫ αₘ₊₁` where each `αᵢ` is a
@@ -53,10 +56,12 @@ I would be happy to discuss.
 
 ## Main definitions
 - `Tactic.BicategoryLike.eval`: Given a Lean expression `e` that represents a morphism in a monoidal
-category, this function returns a pair of `⟨e', pf⟩` where `e'` is the normalized expression of `e`
-and `pf` is a proof that `e = e'`.
+  category, this function returns a pair of `⟨e', pf⟩` where `e'` is the normalized expression of
+  `e` and `pf` is a proof that `e = e'`.
 
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -269,9 +274,9 @@ class MkEvalComp (m : Type → Type) where
   /-- Evaluate `(α ≫ η ≫ ηs) ≫ θ` -/
   mkEvalCompCons (α : Structural) (η : WhiskerLeft) (ηs θ ι : NormalExpr) (e_η : Expr) : m Expr
 
-/-- Evaluatte the expression `f ◁ η`. -/
+/-- Evaluate the expression `f ◁ η`. -/
 class MkEvalWhiskerLeft (m : Type → Type) where
-  /-- Evaluatte `f ◁ α` -/
+  /-- Evaluate `f ◁ α` -/
   mkEvalWhiskerLeftNil (f : Mor₁) (α : Structural) : m Expr
   /-- Evaluate `f ◁ (α ≫ η ≫ ηs)`. -/
   mkEvalWhiskerLeftOfCons (f : Atom₁) (α : Structural) (η : WhiskerLeft) (ηs θ : NormalExpr)
@@ -365,7 +370,7 @@ def evalComp : NormalExpr → NormalExpr → CoherenceM ρ Eval.Result
 
 open MkEvalWhiskerLeft
 
-variable [MonadMor₁ (CoherenceM ρ)] [MonadMor₂Iso (CoherenceM ρ)]
+variable [MonadMor₁ (CoherenceM ρ)]
 
 /-- Evaluate the expression `f ◁ η` into a normalized form. -/
 def evalWhiskerLeft : Mor₁ → NormalExpr → CoherenceM ρ Eval.Result

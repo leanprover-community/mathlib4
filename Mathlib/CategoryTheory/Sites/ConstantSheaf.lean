@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheafification
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 /-!
 
 # The constant sheaf
@@ -29,13 +31,16 @@ essential image of the constant sheaf functor.
   constant if and only if the sheaf given by postcomposition with `U` is constant.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits Opposite Category Functor Sheaf Adjunction
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-variable (D : Type*) [Category D]
+variable {C : Type*} [Category* C] (J : GrothendieckTopology C)
+variable (D : Type*) [Category* D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
@@ -91,6 +96,7 @@ lemma isConstant_iff_mem_essImage {L : D ⥤ Sheaf J D} {T : C} (hT : IsTerminal
   rw [essImage_eq_of_natIso (adj.leftAdjointUniq (constantSheafAdj J D hT))]
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isConstant_of_isIso_counit_app (F : Sheaf J D) [HasTerminal C]
     [IsIso <| (constantSheafAdj J D terminalIsTerminal).counit.app F] : IsConstant J F where
   mem_essImage := ⟨_, ⟨asIso <| (constantSheafAdj J D terminalIsTerminal).counit.app F⟩⟩
@@ -101,6 +107,7 @@ instance [(constantSheaf J D).Faithful] [(constantSheaf J D).Full] (F : Sheaf J 
   rw [isIso_counit_app_iff_mem_essImage]
   exact F.mem_essImage_of_isConstant
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If the constant sheaf functor is fully faithful, then a sheaf is constant if and only if the
 counit of the constant sheaf adjunction applied to it is an isomorphism.
@@ -122,7 +129,7 @@ lemma isConstant_iff_isIso_counit_app' {L : D ⥤ Sheaf J D} {T : C} (hT : IsTer
 end Sheaf
 
 section Equivalence
-variable {C' : Type*} [Category C'] (K : GrothendieckTopology C') [HasWeakSheafify K D]
+variable {C' : Type*} [Category* C'] (K : GrothendieckTopology C') [HasWeakSheafify K D]
 variable (G : C ⥤ C') [∀ (X : (C')ᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) D]
   [G.IsDenseSubsite J K] {T : C} (hT : IsTerminal T) (hT' : IsTerminal (G.obj T))
 
@@ -134,8 +141,8 @@ The constant sheaf functor commutes up to isomorphism the equivalence of sheaf c
 by a dense subsite.
 -/
 noncomputable def equivCommuteConstant :
-    constantSheaf J D ⋙ (sheafEquiv G J K D).functor ≅ constantSheaf K D :=
-  ((constantSheafAdj J D hT).comp (sheafEquiv G J K D).toAdjunction).leftAdjointUniq
+    constantSheaf J D ⋙ (sheafEquiv J K G D).functor ≅ constantSheaf K D :=
+  ((constantSheafAdj J D hT).comp (sheafEquiv J K G D).toAdjunction).leftAdjointUniq
     (constantSheafAdj K D hT')
 
 variable (D) in
@@ -144,9 +151,9 @@ The constant sheaf functor commutes up to isomorphism the inverse equivalence of
 induced by a dense subsite.
 -/
 noncomputable def equivCommuteConstant' :
-    constantSheaf J D ≅ constantSheaf K D ⋙ (sheafEquiv G J K D).inverse :=
-  isoWhiskerLeft (constantSheaf J D) (sheafEquiv G J K D).unitIso ≪≫
-    isoWhiskerRight (equivCommuteConstant J D K G hT hT') (sheafEquiv G J K D).inverse
+    constantSheaf J D ≅ constantSheaf K D ⋙ (sheafEquiv J K G D).inverse :=
+  isoWhiskerLeft (constantSheaf J D) (sheafEquiv J K G D).unitIso ≪≫
+    isoWhiskerRight (equivCommuteConstant J D K G hT hT') (sheafEquiv J K G D).inverse
 
 /- TODO: find suitable assumptions for proving generalizations of `equivCommuteConstant` and
 `equivCommuteConstant'` above, to commute `constantSheaf` with pullback/pushforward of sheaves. -/
@@ -157,18 +164,18 @@ The property of a sheaf of being constant is invariant under equivalence of shea
 categories.
 -/
 lemma Sheaf.isConstant_iff_of_equivalence (F : Sheaf K D) :
-    ((sheafEquiv G J K D).inverse.obj F).IsConstant J ↔ IsConstant K F := by
+    ((sheafEquiv J K G D).inverse.obj F).IsConstant J ↔ IsConstant K F := by
   constructor
   · exact fun ⟨Y, ⟨i⟩⟩ ↦ ⟨_, ⟨(equivCommuteConstant J D K G hT hT').symm.app _ ≪≫
-      (sheafEquiv G J K D).functor.mapIso i ≪≫ (sheafEquiv G J K D).counitIso.app _⟩⟩
+      (sheafEquiv J K G D).functor.mapIso i ≪≫ (sheafEquiv J K G D).counitIso.app _⟩⟩
   · exact fun ⟨Y, ⟨i⟩⟩ ↦ ⟨_, ⟨(equivCommuteConstant' J D K G hT hT').app _ ≪≫
-      (sheafEquiv G J K D).inverse.mapIso i⟩⟩
+      (sheafEquiv J K G D).inverse.mapIso i⟩⟩
 
 end Equivalence
 
 section Forget
 
-variable {B : Type*} [Category B] (U : D ⥤ B) [HasWeakSheafify J B]
+variable {B : Type*} [Category* B] (U : D ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J D)
 
 /--
@@ -184,6 +191,7 @@ noncomputable def constantCommuteCompose :
 lemma constantCommuteCompose_hom_app_val (X : D) : ((constantCommuteCompose J U).hom.app X).val =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
     ((constantCommuteCompose J U).hom.app (F.val.obj ⟨T⟩)) ≫
@@ -192,16 +200,11 @@ lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
   apply Sheaf.hom_ext
   rw [comp_val, constantCommuteCompose_hom_app_val, assoc, Iso.inv_comp_eq]
   apply sheafify_hom_ext _ _ _ ((sheafCompose J U).obj F).cond
-  ext
-  simp? says simp only [comp_obj, const_obj_obj, sheafCompose_obj_val, id_obj,
-      constantSheafAdj_counit_app, comp_val,
-      sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, comp_id,
-      toSheafify_sheafifyLift, NatTrans.comp_app, constComp_hom_app,
-      constantPresheafAdj_counit_app_app, Functor.comp_map, id_comp, flip_obj_obj,
-      sheafToPresheaf_obj, map_comp, sheafCompose_map_val, sheafComposeIso_hom_fac_assoc,
-      whiskerRight_app]
-  simp [← map_comp, ← NatTrans.comp_app]
+  ext x
+  simp [NatTrans.comp_app] -- simp [NatTrans.comp_app] to unfold some definitions
+  simp [← map_comp, ← NatTrans.comp_app] -- simp [← NatTrans.comp_app] to simplify some compositions
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isConstant_of_forget [constantSheaf J D |>.Faithful] [constantSheaf J D |>.Full]
     [constantSheaf J B |>.Faithful] [constantSheaf J B |>.Full]
     [(sheafCompose J U).ReflectsIsomorphisms] [((sheafCompose J U).obj F).IsConstant J]

@@ -3,10 +3,12 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Types.Colimits
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 /-!
 # Binary (co)products of type-valued functors
@@ -15,6 +17,8 @@ Defines an explicit construction of binary products and coproducts of type-value
 
 Also defines isomorphisms to the categorical product and coproduct, respectively.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory.Limits
@@ -96,6 +100,7 @@ lemma binaryProductIso_hom_comp_fst :
 lemma binaryProductIso_hom_comp_snd :
     (binaryProductIso F G).hom ≫ prod.snd = Limits.prod.snd := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma binaryProductIso_inv_comp_fst :
     (binaryProductIso F G).inv ≫ Limits.prod.fst = prod.fst := by
@@ -106,6 +111,7 @@ lemma binaryProductIso_inv_comp_fst_apply (a : C) (z : (prod F G).obj a) :
     (Limits.prod.fst (X := F)).app a ((binaryProductIso F G).inv.app a z) = z.1 :=
   congr_fun (congr_app (binaryProductIso_inv_comp_fst F G) a) z
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma binaryProductIso_inv_comp_snd :
     (binaryProductIso F G).inv ≫ Limits.prod.snd = prod.snd := by
@@ -226,6 +232,7 @@ def binaryCoproductColimitCocone : Limits.ColimitCocone (pair F G) :=
 noncomputable def binaryCoproductIso : F ⨿ G ≅ coprod F G :=
   colimit.isoColimitCocone (binaryCoproductColimitCocone F G)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma inl_comp_binaryCoproductIso_hom :
     Limits.coprod.inl ≫ (binaryCoproductIso F G).hom = coprod.inl := by
@@ -237,6 +244,7 @@ lemma inl_comp_binaryCoproductIso_hom_apply (a : C) (x : F.obj a) :
     (binaryCoproductIso F G).hom.app a ((Limits.coprod.inl (X := F)).app a x) = .inl x :=
   congr_fun (congr_app (inl_comp_binaryCoproductIso_hom F G) a) x
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma inr_comp_binaryCoproductIso_hom :
     Limits.coprod.inr ≫ (binaryCoproductIso F G).hom = coprod.inr := by

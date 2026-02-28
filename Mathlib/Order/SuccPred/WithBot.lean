@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Successor function on `WithBot`
 
 This file defines the successor of `a : WithBot α` as an element of `α`, and dually for `WithTop`.
 -/
+
+@[expose] public section
 
 namespace WithBot
 variable {α : Type*} [Preorder α] [OrderBot α] [SuccOrder α] {x y : WithBot α}
@@ -75,11 +79,13 @@ lemma pred_eq_pred : ∀ a : WithTop α, pred a = Order.pred a
   | ⊤ => rfl
   | (a : α) => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pred_mono : Monotone (pred : WithTop α → α)
   | _, ⊤, _ => by simp
   | ⊤, (a : α), hab => by simp at hab
   | (a : α), (b : α), hab => Order.pred_le_pred (by simpa using hab)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pred_strictMono [NoMinOrder α] : StrictMono (pred : WithTop α → α)
   | (b : α), ⊤, hab => by simp
   | (a : α), (b : α), hab => Order.pred_lt_pred (by simpa using hab)

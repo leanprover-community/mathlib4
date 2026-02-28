@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
-import Mathlib.RepresentationTheory.Rep
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+public import Mathlib.RepresentationTheory.Rep
 
 /-!
 # Coinduced representations
@@ -34,10 +36,12 @@ coinduction functor and hence that the coinduction functor preserves limits.
   `G`-representation morphisms `k[H] ⟶ A`, with `H`-action given by
   `(h • f) (r • h₁) := r • f(h₁ * h)` for `f : k[H] ⟶ A`, `h, h₁ : H`, `r : k`.
 * `Rep.resCoindAdjunction k φ`: given a monoid homomorphism `φ : G →* H`, this is the adjunction
-  between the restriction functor `Rep k H ⥤ Rep k G` along `φ` and  the coinduction functor
+  between the restriction functor `Rep k H ⥤ Rep k G` along `φ` and the coinduction functor
   along `φ`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -83,12 +87,14 @@ variable {k G H : Type u} [CommRing k] [Monoid G] [Monoid H] (φ : G →* H) (A 
 
 section Coind
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `φ : G →* H` and  `A : Rep k G` then `coind φ A` is the coinduction of `A` along `φ`,
 defined by letting `H` act on the `G`-equivariant functions `H → A` by `(h • f) h₁ := f (h₁ * h)`.
 -/
 noncomputable abbrev coind : Rep k H := Rep.of (Representation.coind φ A.ρ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind φ A ⟶ coind φ B`, given by postcomposition by
 `f`. -/
@@ -106,6 +112,7 @@ noncomputable def coindFunctor : Rep k G ⥤ Rep k H where
   obj A := coind φ A
   map f := coindMap φ f
 
+set_option backward.isDefEq.respectTransparency false in
 instance {G : Type u} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
   preserves {X Y} f := (Rep.epi_iff_surjective _).2 fun y => by
@@ -125,6 +132,7 @@ instance {G : Type u} [Group G] (S : Subgroup G) :
 end Coind
 section Coind'
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `φ : G →* H` and `A : Rep k G` then `coind' φ A`, the coinduction of `A` along `φ`,
 is defined as an `H`-action on `Hom_{k[G]}(k[H], A)`. If `f : k[H] → A` is `G`-equivariant
@@ -178,6 +186,7 @@ noncomputable def coindFunctor' : Rep k G ⥤ Rep k H where
 end Coind'
 section CoindIso
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `φ : G →* H` and `A : Rep k G` then the `k`-submodule of functions `f : H → A`
 such that for all `g : G`, `h : H`, `f (φ g * h) = A.ρ g (f h)`, is `k`-linearly equivalent
@@ -198,6 +207,7 @@ noncomputable def coindVEquiv :
   left_inv x := by simp
   right_inv x := coind'_ext φ fun _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `coind φ A` and `coind' φ A` are isomorphic representations, with the underlying
 `k`-linear equivalence given by `coindVEquiv`. -/
 @[simps! hom_hom_hom inv_hom_hom]
@@ -206,6 +216,7 @@ noncomputable def coindIso : coind φ A ≅ coind' φ A :=
     ext
     simp [ModuleCat.endRingEquiv, leftRegularHomEquiv_symm_apply (leftRegular k H)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functors `Rep k G ⥤ Rep k H` given by
 `coindFunctor k φ` and `coindFunctor' k φ` are naturally isomorphic, with isomorphism on objects
 given by `coindIso φ`. -/
@@ -219,6 +230,7 @@ noncomputable def coindFunctorIso : coindFunctor k φ ≅ coindFunctor' k φ :=
 end CoindIso
 section Adjunction
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a monoid homomorphism `φ : G →* H`, an `H`-representation `B`, and a `G`-representation
 `A`, there is a `k`-linear equivalence between the `G`-representation morphisms `B ⟶ A` and the
 `H`-representation morphisms `B ⟶ coind φ A`. -/
@@ -241,10 +253,12 @@ noncomputable def resCoindHomEquiv (B : Rep k H) (A : Rep k G) :
   left_inv := by intro; ext; simp
   right_inv z := by ext; have := hom_comm_apply z; simp_all
 
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about `@[simps! counit_app_hom_hom unit_app_hom_hom]`,
+but removing it seems to be harmless. -/
 variable (k) in
 /-- Given a monoid homomorphism `φ : G →* H`, the coinduction functor `Rep k G ⥤ Rep k H` is right
 adjoint to the restriction functor along `φ`. -/
-@[simps! counit_app_hom_hom unit_app_hom_hom]
 noncomputable abbrev resCoindAdjunction : Action.res _ φ ⊣ coindFunctor k φ :=
   Adjunction.mkOfHomEquiv {
     homEquiv X Y := (resCoindHomEquiv φ X Y).toEquiv

@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.MetricSpace.Completion
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # Completion of a normed group
@@ -16,6 +18,8 @@ In this file we prove that the completion of a (semi)normed group is a normed gr
 
 normed group, completion
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -37,8 +41,9 @@ instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
   dist_eq x y := by
     induction x, y using Completion.induction_on₂
     · refine isClosed_eq (Completion.uniformContinuous_extension₂ _).continuous ?_
-      exact Continuous.comp Completion.continuous_extension continuous_sub
-    · rw [← Completion.coe_sub, norm_coe, Completion.dist_eq, dist_eq_norm]
+      exact Continuous.comp Completion.continuous_extension (continuous_neg.fst.add continuous_snd)
+    · rw [← Completion.coe_neg, ← Completion.coe_add, norm_coe, Completion.dist_eq,
+        dist_eq_norm_neg_add]
 
 @[simp]
 theorem nnnorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by

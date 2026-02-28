@@ -3,19 +3,23 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Lattice operations on finsets
 
 This file is concerned with how big lattice or set operations behave when indexed by a finset.
 
-See also `Mathlib/Data/Finset/Lattice.lean`, which is concerned with folding binary lattice
+See also `Mathlib/Data/Finset/Lattice/Fold.lean`, which is concerned with folding binary lattice
 operations over a finset.
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+public section
+
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -68,7 +72,7 @@ theorem iUnion_eq_iUnion_finset (s : ι → Set α) : ⋃ i, s i = ⋃ t : Finse
 
 /-- Union of an indexed family of sets `s : ι → Set α` is equal to the union of the unions
 of finite subfamilies. This version works for `ι : Sort*`. See also `iUnion_eq_iUnion_finset` for
-a version that assumes `ι : Type*` but avoids `PLift`s in the right hand side. -/
+a version that assumes `ι : Type*` but avoids `PLift`s in the right-hand side. -/
 theorem iUnion_eq_iUnion_finset' (s : ι' → Set α) :
     ⋃ i, s i = ⋃ t : Finset (PLift ι'), ⋃ i ∈ t, s (PLift.down i) :=
   iSup_eq_iSup_finset' s
@@ -81,11 +85,19 @@ theorem iInter_eq_iInter_finset (s : ι → Set α) : ⋂ i, s i = ⋂ t : Finse
 
 /-- Intersection of an indexed family of sets `s : ι → Set α` is equal to the intersection of the
 intersections of finite subfamilies. This version works for `ι : Sort*`. See also
-`iInter_eq_iInter_finset` for a version that assumes `ι : Type*` but avoids `PLift`s in the right
-hand side. -/
+`iInter_eq_iInter_finset` for a version that assumes `ι : Type*` but avoids `PLift`s in the
+right-hand side. -/
 theorem iInter_eq_iInter_finset' (s : ι' → Set α) :
     ⋂ i, s i = ⋂ t : Finset (PLift ι'), ⋂ i ∈ t, s (PLift.down i) :=
   iInf_eq_iInf_finset' s
+
+set_option backward.isDefEq.respectTransparency false in
+theorem iUnion_finset_eq_set (s : Set ι) :
+    ⋃ s' : Finset s, Subtype.val '' (s' : Set s) = s := by
+  ext x
+  simp only [Set.mem_iUnion, Set.mem_image, SetLike.mem_coe, Subtype.exists,
+    exists_and_right, exists_eq_right]
+  exact ⟨fun ⟨_, hx, _⟩ ↦ hx, fun hx ↦ ⟨{⟨x, hx⟩}, hx, by simp⟩⟩
 
 end Set
 
@@ -101,6 +113,7 @@ theorem maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) 
   exact fun _ ↦ ⟨fun h x hxs hx ↦ hxs <| h hx (subset_insert _ _) (mem_insert_self x s),
     fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) where
   mp h := ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx (erase_subset _ _) hxs⟩

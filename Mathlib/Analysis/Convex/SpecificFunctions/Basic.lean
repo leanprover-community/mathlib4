@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Slope
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Analysis.Convex.Slope
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Collection of convex functions
@@ -30,6 +32,8 @@ theory.
 
 `Mathlib/Analysis/Convex/Mul.lean` for convexity of `x ↦ x ^ n`
 -/
+
+public section
 
 open Real Set NNReal
 
@@ -75,7 +79,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
     calc
       log z - log y = log (z / y) := by rw [← log_div hz.ne' hy.ne']
       _ < z / y - 1 := log_lt_sub_one_of_pos hyz' hyz''
-      _ = y⁻¹ * (z - y) := by field_simp
+      _ = y⁻¹ * (z - y) := by field
   · have h : 0 < y - x := by linarith
     rw [lt_div_iff₀ h]
     have hxy' : 0 < x / y := by positivity
@@ -84,7 +88,7 @@ theorem strictConcaveOn_log_Ioi : StrictConcaveOn ℝ (Ioi 0) log := by
       rw [div_eq_one_iff_eq hy.ne'] at h
       simp [h]
     calc
-      y⁻¹ * (y - x) = 1 - x / y := by field_simp
+      y⁻¹ * (y - x) = 1 - x / y := by field
       _ < -log (x / y) := by linarith [log_lt_sub_one_of_pos hxy' hxy'']
       _ = -(log x - log y) := by rw [log_div hx.ne' hy.ne']
       _ = log y - log x := by ring
@@ -109,12 +113,14 @@ theorem one_add_mul_self_lt_rpow_one_add {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
-    · apply add_lt_add_left (mul_lt_of_one_lt_left hs' hp)
+    · gcongr
+      exact mul_lt_of_one_lt_left hs' hp
   · rw [← div_lt_iff₀ hp', ← div_lt_div_iff_of_pos_right hs']
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
-    · apply add_lt_add_left (lt_mul_of_one_lt_left hs' hp)
+    · gcongr
+      exact lt_mul_of_one_lt_left hs' hp
 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `1 ≤ p` and `-1 ≤ s`
 we have `1 + p * s ≤ (1 + s) ^ p`. -/
@@ -126,6 +132,7 @@ theorem one_add_mul_self_le_rpow_one_add {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   · simp [hs']
   exact (one_add_mul_self_lt_rpow_one_add hs hs' hp).le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Bernoulli's inequality** for real exponents, strict version: for `0 < p < 1` and `-1 ≤ s`,
 with `s ≠ 0`, we have `(1 + s) ^ p < 1 + p * s`. -/
 theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 0) {p : ℝ} (hp1 : 0 < p)
@@ -148,12 +155,14 @@ theorem rpow_one_add_lt_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) (hs' : s ≠ 
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs1 hs2 hs3 hs4 _ using 1
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
     · rw [add_sub_cancel_left, log_one, sub_zero]
-    · apply add_lt_add_left (lt_mul_of_lt_one_left hs' hp2)
+    · gcongr
+      exact lt_mul_of_lt_one_left hs' hp2
   · rw [← lt_div_iff₀ hp1, ← div_lt_div_iff_of_pos_right hs']
     convert strictConcaveOn_log_Ioi.secant_strict_mono (zero_lt_one' ℝ) hs2 hs1 hs4 hs3 _ using 1
     · rw [add_sub_cancel_left, log_one, sub_zero]
     · rw [add_sub_cancel_left, div_div, log_one, sub_zero]
-    · apply add_lt_add_left (mul_lt_of_lt_one_left hs' hp2)
+    · gcongr
+      exact mul_lt_of_lt_one_left hs' hp2
 
 /-- **Bernoulli's inequality** for real exponents, non-strict version: for `0 ≤ p ≤ 1` and `-1 ≤ s`
 we have `(1 + s) ^ p ≤ 1 + p * s`. -/
@@ -167,6 +176,7 @@ theorem rpow_one_add_le_one_add_mul_self {s : ℝ} (hs : -1 ≤ s) {p : ℝ} (hp
   · simp [hs']
   exact (rpow_one_add_lt_one_add_mul_self hs hs' hp1 hp2).le
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `p : ℝ` with `1 < p`, `fun x ↦ x ^ p` is strictly convex on $[0, +∞)$. -/
 theorem strictConvexOn_rpow {p : ℝ} (hp : 1 < p) : StrictConvexOn ℝ (Ici 0) fun x : ℝ ↦ x ^ p := by
   apply strictConvexOn_of_slope_strict_mono_adjacent (convex_Ici (0 : ℝ))
@@ -201,6 +211,11 @@ theorem convexOn_rpow {p : ℝ} (hp : 1 ≤ p) : ConvexOn ℝ (Ici 0) fun x : �
   · simpa using convexOn_id (convex_Ici _)
   exact (strictConvexOn_rpow hp).convexOn
 
+theorem convexOn_rpow_left {b : ℝ} (hb : 0 < b) : ConvexOn ℝ Set.univ (fun (x : ℝ) => b ^ x) := by
+  convert convexOn_exp.comp_linearMap (LinearMap.mul ℝ ℝ (Real.log b)) using 1
+  ext x
+  simp [Real.rpow_def_of_pos hb]
+
 theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   refine ⟨convex_Iio _, ?_⟩
   intro x (hx : x < 0) y (hy : y < 0) hxy a b ha hb hab
@@ -210,11 +225,12 @@ theorem strictConcaveOn_log_Iio : StrictConcaveOn ℝ (Iio 0) log := by
   calc
     a • log x + b • log y = a • log (-x) + b • log (-y) := by simp_rw [log_neg_eq_log]
     _ < log (a • -x + b • -y) := strictConcaveOn_log_Ioi.2 hx' hy' hxy' ha hb hab
-    _ = log (-(a • x + b • y)) := by congr 1; simp only [Algebra.id.smul_eq_mul]; ring
+    _ = log (-(a • x + b • y)) := by congr 1; simp only [smul_eq_mul]; ring
     _ = _ := by rw [log_neg_eq_log]
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exp_mul_le_cosh_add_mul_sinh {t : ℝ} (ht : |t| ≤ 1) (x : ℝ) :
     exp (t * x) ≤ cosh x + t * sinh x := by
   rw [abs_le] at ht

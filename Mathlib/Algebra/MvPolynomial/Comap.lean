@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # `comap` operation on `MvPolynomial`
@@ -22,6 +24,8 @@ As in other polynomial files, we typically use the notation:
 + `R : Type*` `[CommSemiring R]` (the coefficients)
 
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial

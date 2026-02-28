@@ -3,10 +3,12 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.ExtendFrom
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.Order.LocalExtr
-import Mathlib.Topology.Order.T5
+module
+
+public import Mathlib.Topology.Order.ExtendFrom
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.T5
 
 /-!
 # Rolle's Theorem (topological part)
@@ -22,6 +24,8 @@ to prove several versions of Rolle's Theorem from calculus.
 ## Keywords
 local minimum, local maximum, extremum, Rolle's Theorem
 -/
+
+public section
 
 open Filter Set Topology
 
@@ -77,4 +81,38 @@ lemma exists_isLocalExtr_Ioo_of_tendsto (hab : a < b) (hfc : ContinuousOn f (Ioo
     (ha : Tendsto f (𝓝[>] a) (𝓝 l)) (hb : Tendsto f (𝓝[<] b) (𝓝 l)) :
     ∃ c ∈ Ioo a b, IsLocalExtr f c :=
   let ⟨c, cmem, hc⟩ := exists_isExtrOn_Ioo_of_tendsto hab hfc ha hb
+  ⟨c, cmem, hc.isLocalExtr <| Ioo_mem_nhds cmem.1 cmem.2⟩
+
+/-- A continuous function on an unordered closed interval with `f a = f b`
+takes either its maximum or its minimum value at a point in the interior of the interval. -/
+theorem exists_uIoo_isExtrOn_uIcc (hab : a ≠ b) (hfc : ContinuousOn f (uIcc a b))
+    (hfI : f a = f b) :
+    ∃ c ∈ uIoo a b, IsExtrOn f (uIcc a b) c :=
+  exists_Ioo_extr_on_Icc (by simp [hab.symm]) hfc (by grind)
+
+/-- A continuous function on a unordered closed interval with `f a = f b`
+has a local extremum at some point of the corresponding unordered open interval. -/
+theorem exists_isLocalExtr_uIoo (hab : a ≠ b) (hfc : ContinuousOn f (uIcc a b)) (hfI : f a = f b) :
+    ∃ c ∈ uIoo a b, IsLocalExtr f c :=
+  exists_isLocalExtr_Ioo (by simp [hab.symm]) hfc (by grind)
+
+/-- If a function `f` is continuous on an unordered open interval
+and tends to the same value at its endpoints,
+then it has an extremum on this unordered open interval. -/
+lemma exists_isExtrOn_uIoo_of_tendsto (hab : a ≠ b) (hfc : ContinuousOn f (uIoo a b))
+    (ha : Tendsto f (𝓝[uIoo a b] a) (𝓝 l)) (hb : Tendsto f (𝓝[uIoo a b] b) (𝓝 l)) :
+    ∃ c ∈ uIoo a b, IsExtrOn f (uIoo a b) c := by
+  have h : EqOn (extendFrom (uIoo a b) f) f (uIoo a b) := extendFrom_extends hfc
+  obtain ⟨c, hc, hfc⟩ : ∃ c ∈ uIoo a b, IsExtrOn (extendFrom (uIoo a b) f) (uIcc a b) c :=
+    exists_uIoo_isExtrOn_uIcc hab (continuousOn_uIcc_extendFrom_uIoo hab hfc ha hb)
+      ((eq_lim_at_left_extendFrom_uIoo hab ha).trans (eq_lim_at_right_extendFrom_uIoo hab hb).symm)
+  exact ⟨c, hc, (hfc.on_subset uIoo_subset_uIcc_self).congr h (h hc)⟩
+
+/-- If a function `f` is continuous on an unordered open interval
+and tends to the same value at its endpoints,
+then it has a local extremum on this unordered open interval. -/
+lemma exists_isLocalExtr_uIoo_of_tendsto (hab : a ≠ b) (hfc : ContinuousOn f (uIoo a b))
+    (ha : Tendsto f (𝓝[uIoo a b] a) (𝓝 l)) (hb : Tendsto f (𝓝[uIoo a b] b) (𝓝 l)) :
+    ∃ c ∈ uIoo a b, IsLocalExtr f c :=
+  let ⟨c, cmem, hc⟩ := exists_isExtrOn_uIoo_of_tendsto hab hfc ha hb
   ⟨c, cmem, hc.isLocalExtr <| Ioo_mem_nhds cmem.1 cmem.2⟩

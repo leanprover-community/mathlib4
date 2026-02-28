@@ -3,8 +3,10 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Joel Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 
 /-!
 # The free presheaf of modules on a presheaf of sets
@@ -22,6 +24,8 @@ This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
 
 -/
+
+@[expose] public section
 
 universe u v₁ u₁
 
@@ -57,7 +61,6 @@ variable {R}
 
 variable {F : Cᵒᵖ ⥤ Type u} {G : PresheafOfModules.{u} R}
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The morphism of presheaves of modules `freeObj F ⟶ G` corresponding to
 a morphism `F ⟶ G.presheaf ⋙ forget _` of presheaves of types. -/
 @[simps]
@@ -68,6 +71,7 @@ noncomputable def freeObjDesc (φ : F ⟶ G.presheaf ⋙ forget _) : freeObj F �
     ext x
     simpa using NatTrans.naturality_apply φ f x
 
+set_option backward.isDefEq.respectTransparency false in
 variable (F R) in
 /-- The unit of `PresheafOfModules.freeAdjunction`. -/
 @[simps]
@@ -75,6 +79,7 @@ noncomputable def freeAdjunctionUnit : F ⟶ (freeObj (R := R) F).presheaf ⋙ f
   app X x := ModuleCat.freeMk x
   naturality X Y f := by ext; simp [presheaf]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ forget _)` when
 `F` is a presheaf of types and `G` a presheaf of modules. -/
 noncomputable def freeHomEquiv : (freeObj F ⟶ G) ≃ (F ⟶ G.presheaf ⋙ forget _) where
@@ -88,6 +93,7 @@ lemma free_hom_ext {ψ ψ' : freeObj F ⟶ G}
       freeAdjunctionUnit R F ≫ Functor.whiskerRight ((toPresheaf _).map ψ') _) : ψ = ψ' :=
   freeHomEquiv.injective h
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- The free presheaf of modules functor is left adjoint to the forget functor
 `PresheafOfModules.{u} R ⥤ Cᵒᵖ ⥤ Type u`. -/

@@ -3,15 +3,17 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.LocallySurjective
-import Mathlib.CategoryTheory.Sites.Localization
+module
+
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.Localization
 
 /-!
 # Locally bijective morphisms of presheaves
 
-Let `C` a be category equipped with a Grothendieck topology `J`.
+Let `C` be a category equipped with a Grothendieck topology `J`.
 Let `A` be a concrete category.
-In this file, we introduce a type-class `J.WEqualsLocallyBijective A` which says
+In this file, we introduce a type class `J.WEqualsLocallyBijective A` which says
 that the class `J.W` (of morphisms of presheaves which become isomorphisms
 after sheafification) is the class of morphisms that are both locally injective
 and locally surjective (i.e. locally bijective). We prove that this holds iff
@@ -19,6 +21,8 @@ for any presheaf `P : Cᵒᵖ ⥤ A`, the sheafification map `toSheafify J P` is
 We show that this holds under certain universe assumptions.
 
 -/
+
+@[expose] public section
 
 universe w' w v' v u' u
 namespace CategoryTheory
@@ -34,7 +38,6 @@ section
 
 variable {F G : Sheaf J (Type w)} (f : F ⟶ G)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- A morphism of sheaves of types is locally bijective iff it is an isomorphism.
 (This is generalized below as `isLocallyBijective_iff_isIso`.) -/
 private lemma isLocallyBijective_iff_isIso' :
@@ -62,8 +65,7 @@ private lemma isLocallyBijective_iff_isIso' :
       erw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
       simp only [← op_comp, w]
     refine ⟨H.amalgamate t ht, ?_⟩
-    · apply (Presieve.isSeparated_of_isSheaf _ _
-        ((isSheaf_iff_isSheaf_of_type J G.val).1 G.cond) _
+    · apply (((isSheaf_iff_isSheaf_of_type J G.val).1 G.cond).isSeparated _
         (Presheaf.imageSieve_mem J f.val s)).ext
       intro Y g hg
       rw [← FunctorToTypes.naturality, H.valid_glue ht]
@@ -154,7 +156,6 @@ instance {D : Type w} [Category.{w'} D] {FD : D → D → Type*} {CD : D → Typ
     J.WEqualsLocallyBijective D := by
   apply WEqualsLocallyBijective.mk'
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : J.WEqualsLocallyBijective (Type (max u v)) :=
   inferInstance
 
@@ -165,6 +166,7 @@ namespace Presheaf
 variable {A}
 variable [HasWeakSheafify J A] [J.WEqualsLocallyBijective A] {P Q : Cᵒᵖ ⥤ A} (φ : P ⟶ Q)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocallyInjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallyInjective ((presheafToSheaf J A).map φ) ↔ IsLocallyInjective J φ := by
   rw [← Sheaf.isLocallyInjective_sheafToPresheaf_map_iff,
@@ -172,6 +174,7 @@ lemma isLocallyInjective_presheafToSheaf_map_iff :
     ← comp_isLocallyInjective_iff J (toSheafify J P),
     toSheafify_naturality, sheafToPresheaf_map]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isLocallySurjective_presheafToSheaf_map_iff :
     Sheaf.IsLocallySurjective ((presheafToSheaf J A).map φ) ↔ IsLocallySurjective J φ := by
   rw [← Sheaf.isLocallySurjective_sheafToPresheaf_map_iff,

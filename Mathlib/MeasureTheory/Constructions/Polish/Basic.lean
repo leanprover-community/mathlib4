@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.Topology.MetricSpace.Perfect
-import Mathlib.Topology.Separation.CountableSeparatingOn
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.Topology.MetricSpace.Perfect
+public import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -59,6 +61,8 @@ We use this to prove several versions of the Borel isomorphism theorem.
   are Borel isomorphic.
 -/
 
+@[expose] public section
+
 
 open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory
 
@@ -95,7 +99,7 @@ def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
   constructor
 
 /-- The `MeasurableSpace α` instance on a `StandardBorelSpace` `α` is equal to
-the borel sets of `upgradeStandardBorel α`. -/
+the Borel sets of `upgradeStandardBorel α`. -/
 theorem eq_borel_upgradeStandardBorel [MeasurableSpace α] [StandardBorelSpace α] :
     ‹MeasurableSpace α› = @borel _ (upgradeStandardBorel α).toTopologicalSpace :=
   @BorelSpace.measurable_eq _ (upgradeStandardBorel α).toTopologicalSpace _
@@ -118,12 +122,14 @@ instance (priority := 100) standardBorelSpace_of_discreteMeasurableSpace [Discre
   have : DiscreteTopology α := ⟨rfl⟩
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [lower instance priority]
 instance (priority := 100) countablyGenerated_of_standardBorel [StandardBorelSpace α] :
     MeasurableSpace.CountablyGenerated α :=
   letI := upgradeStandardBorel α
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 -- See note [lower instance priority]
 instance (priority := 100) measurableSingleton_of_standardBorel [StandardBorelSpace α] :
     MeasurableSingletonClass α :=
@@ -136,12 +142,14 @@ variable {β : Type*} [MeasurableSpace β]
 
 section instances
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A product of two standard Borel spaces is standard Borel. -/
 instance prod [StandardBorelSpace α] [StandardBorelSpace β] : StandardBorelSpace (α × β) :=
   letI := upgradeStandardBorel α
   letI := upgradeStandardBorel β
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A product of countably many standard Borel spaces is standard Borel. -/
 instance pi_countable {ι : Type*} [Countable ι] {α : ι → Type*} [∀ n, MeasurableSpace (α n)]
     [∀ n, StandardBorelSpace (α n)] : StandardBorelSpace (∀ n, α n) :=
@@ -336,6 +344,7 @@ theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpac
     hb.continuous_iff.2 fun s hs => t'T ⟨s, hs⟩ _ (Topen ⟨s, hs⟩)
   exact continuous_subtype_val.comp this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a measurable set in a standard Borel space under a measurable map
 is an analytic set. -/
 theorem _root_.MeasurableSet.analyticSet_image {X Y : Type*} [MeasurableSpace X]
@@ -495,6 +504,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- this is a contradiction.
   exact M n B
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Lusin separation theorem**: if two analytic sets are disjoint, then they are contained in
 disjoint Borel sets. -/
 theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]
@@ -567,7 +577,8 @@ theorem measurableSet_preimage_iff_preimage_val {f : X → Z} [CountablySeparate
     (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
-  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
+  hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s)
+    rangeFactorization_surjective
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
 countably separated measurable space and the range of `f` is measurable,
@@ -777,8 +788,7 @@ theorem MeasureTheory.measurableSet_range_of_continuous_injective {β : Type*} [
       intro a ha
       calc
         dist a z ≤ dist a (y n) + dist (y n) z := dist_triangle _ _ _
-        _ ≤ u n + dist (y n) z :=
-          (add_le_add_right ((dist_le_diam_of_mem (hs n).1 ha (hy n)).trans (hs n).2) _)
+        _ ≤ u n + dist (y n) z := by grw [dist_le_diam_of_mem (hs n).1 ha (hy n), (hs n).2]
         _ < δ := hn
     -- as `x` belongs to the closure of `f '' (s n)`, it belongs to the closure of `v`.
     have : x ∈ closure v := closure_mono fsnv (hxs n).1
@@ -813,6 +823,7 @@ theorem MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace β]
     @IsClosed.measurableSet_image_of_continuousOn_injOn γ t' t'_polish β _ _ _ _ s s_closed f
       (f_cont.mono_dom t't) f_inj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a standard Borel space,
 then its image under a measurable injective map taking values in a
 countably separate measurable space is also Borel-measurable. -/
@@ -835,7 +846,7 @@ theorem MeasurableSet.image_of_measurable_injOn {f : γ → α}
       tγ _ _ _ (continuous_id_of_le t't) s hs
   exact
     @MeasurableSet.image_of_continuousOn_injOn γ
-      _ _ _ _  s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
+      _ _ _ _ s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
       M (@Continuous.continuousOn γ _ t' _ f s f_cont) f_inj
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
@@ -920,7 +931,7 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   have hu : Set.Countable u := MonotoneOn.countable_setOf_two_preimages hg
   let t' := t ∩ g ⁻¹' u
   have ht' : MeasurableSet t' := by
-    have : t' = ⋃ c ∈ u, t ∩ g⁻¹' {c} := by ext; simp [t']
+    have : t' = ⋃ c ∈ u, t ∩ g ⁻¹' {c} := by ext; simp [t']
     rw [this]
     apply MeasurableSet.biUnion hu (fun c hc ↦ ?_)
     obtain ⟨v, hv, tv⟩ : ∃ v, OrdConnected v ∧ t ∩ g ⁻¹' {c} = t ∩ v :=
@@ -932,8 +943,8 @@ theorem MeasurableSet.image_of_monotoneOn_of_continuousOn
   · apply (ht.diff ht').image_of_continuousOn_injOn (h'g.mono diff_subset)
     intro x hx y hy hxy
     contrapose! hxy
-    wlog H : x < y generalizing x y with h
-    · have : y < x := lt_of_le_of_ne (not_lt.1 H) hxy.symm
+    wlog! H : x < y generalizing x y with h
+    · have : y < x := lt_of_le_of_ne H hxy.symm
       exact (h hy hx hxy.symm this).symm
     intro h
     exact hx.2 ⟨hx.1, x, y, hx.1, hy.1, H, rfl, h.symm⟩
@@ -980,6 +991,7 @@ lemma MeasureTheory.measurableSet_tendsto_fun [MeasurableSpace γ] [Countable ι
   simp_rw [tendsto_iff_dist_tendsto_zero (f := fun n ↦ f n _)]
   exact measurableSet_tendsto (𝓝 0) (fun n ↦ (hf n).dist hg)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of points for which a measurable sequence of functions converges is measurable. -/
 @[measurability]
 theorem MeasureTheory.measurableSet_exists_tendsto
@@ -1011,6 +1023,7 @@ section StandardBorelSpace
 
 variable [MeasurableSpace α] [StandardBorelSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s` is a measurable set in a standard Borel space, there is a compatible Polish topology
 making `s` clopen. -/
 theorem MeasurableSet.isClopenable' {s : Set α} (hs : MeasurableSet s) :
@@ -1046,6 +1059,7 @@ noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas
   letI := upgradeStandardBorel β
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
 noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some
