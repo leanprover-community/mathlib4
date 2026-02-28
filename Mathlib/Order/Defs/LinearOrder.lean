@@ -92,7 +92,9 @@ instance : Std.IsLinearOrder α where
 @[to_dual self] lemma lt_of_not_ge (h : ¬b ≤ a) : a < b := lt_of_le_not_ge (le_of_not_ge h) h
 
 @[to_dual gt_trichotomy]
-lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by grind
+lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by
+  rcases le_total a b with h | h <;>
+  cases Decidable.lt_or_eq_of_le h with | _ h => simp [h]
 
 @[to_dual self]
 lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
