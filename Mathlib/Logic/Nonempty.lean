@@ -77,6 +77,7 @@ theorem nonempty_plift {α} : Nonempty (PLift α) ↔ Nonempty α :=
 /-- Using `Classical.choice`, lifts a (`Prop`-valued) `Nonempty` instance to a (`Type`-valued)
 `Inhabited` instance. `Classical.inhabited_of_nonempty` already exists, in `Init/Classical.lean`,
 but the assumption is not a type class argument, which makes it unsuitable for some applications. -/
+@[instance_reducible]
 noncomputable def Classical.inhabited_of_nonempty' {α} [h : Nonempty α] : Inhabited α :=
   ⟨Classical.choice h⟩
 

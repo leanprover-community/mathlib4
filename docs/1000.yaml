@@ -1795,7 +1795,7 @@ Q1683356:
 
 Q1687147:
   title: Sprague–Grundy theorem
-  decl: SetTheory.PGame.equiv_nim_grundyValue
+  url: https://github.com/vihdzp/combinatorial-games/blob/master/CombinatorialGames/Game/Impartial/Grundy.lean
   authors: Fox Thomson
   date: 2020
 
@@ -3155,6 +3155,9 @@ Q5456213:
 
 Q5463860:
   title: Focal subgroup theorem
+  decl: Subgroup.commutator_inf_eq_focalSubgroup
+  authors: Boyang Hu
+  date: 2026
 
 Q5473576:
   title: Foster's theorem

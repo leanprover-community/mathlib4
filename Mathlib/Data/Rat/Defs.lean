@@ -205,14 +205,6 @@ instance commSemigroup : CommSemigroup ℚ := by infer_instance
 
 instance semigroup : Semigroup ℚ := by infer_instance
 
-theorem eq_iff_mul_eq_mul {p q : ℚ} : p = q ↔ p.num * q.den = q.num * p.den := by
-  conv =>
-    lhs
-    rw [← num_divInt_den p, ← num_divInt_den q]
-  apply Rat.divInt_eq_divInt_iff <;>
-    · rw [← Int.natCast_zero, Ne, Int.ofNat_inj]
-      apply den_nz
-
 @[simp]
 theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
   rfl

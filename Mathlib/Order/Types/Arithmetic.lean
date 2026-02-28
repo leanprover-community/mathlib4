@@ -49,15 +49,13 @@ universe u v
 instance : ZeroLEOneClass OrderType :=
   ⟨OrderType.zero_le _⟩
 
-instance : Add OrderType.{u} where
-  add o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (r ⊕ₗ s))
-    fun _ _ _ _ _ _ _ _ ha hb ↦ OrderIso.sumLexCongr (Classical.choice <| type_eq_type.mp ha)
-      (Classical.choice <| type_eq_type.mp hb) |> type_congr
-
-instance : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
+instance (priority := low) : HAdd OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hAdd o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (r ⊕ₗ s))
     fun _ _ _ _ _ _ _ _ ha hb ↦ OrderIso.sumLexCongr (Classical.choice <| type_eq_type.mp ha)
       (Classical.choice <| type_eq_type.mp hb) |> type_congr
+
+instance : Add OrderType.{u} where
+  add o₁ o₂ := o₁ + o₂
 
 @[simp]
 lemma type_lex_sum (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :
@@ -77,15 +75,13 @@ instance : AddMonoid OrderType.{u} where
       exact (OrderIso.sumLexEmpty (β := PEmpty) (α := α)).type_congr)
   nsmul := nsmulRec
 
-instance : Mul OrderType.{u} where
-  mul o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
-    fun _ _ _ _ _ _ _ _ ha hb ↦ Prod.Lex.prodLexCongr (Classical.choice <| type_eq_type.mp hb)
-      (Classical.choice <| type_eq_type.mp ha) |> type_congr
-
-instance : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
+instance (priority := low) : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
   hMul o₁ o₂ :=  OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
     fun _ _ _ _ _ _ _ _ ha hb ↦ Prod.Lex.prodLexCongr (Classical.choice <| type_eq_type.mp hb)
       (Classical.choice <| type_eq_type.mp ha) |> type_congr
+
+instance : Mul OrderType.{u} where
+  mul o₁ o₂ := o₁ * o₂
 
 @[simp]
 lemma type_lex_prod (α : Type u) (β : Type v) [LinearOrder α] [LinearOrder β] :

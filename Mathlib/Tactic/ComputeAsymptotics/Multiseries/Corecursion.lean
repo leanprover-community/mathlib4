@@ -91,6 +91,7 @@ local instance : CompleteSpace (Seq α) := by
   rw [← PiNat.apply_eq_of_dist_lt hts (by rfl)]
   exact ht hn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Stream'.dist_le_one (s t : Stream' α) : dist s t ≤ 1 := by
   by_cases h : s = t
   · simp [h]
@@ -106,10 +107,12 @@ local instance : BoundedSpace (Stream' α) :=
 local instance : BoundedSpace (Seq α) :=
   instBoundedSpaceSubtype
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dist_eq_two_inv_pow {s t : Seq α} (h : s ≠ t) : ∃ n, dist s t = 2⁻¹ ^ n := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne (Subtype.coe_ne_coe.mpr h)]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dist_cons_cons (x : α) (s t : Seq α) : dist (cons x s) (cons x t) = 2⁻¹ * dist s t := by
   by_cases! h : s = t
@@ -133,6 +136,7 @@ theorem dist_eq_half_of_head {s t : Seq α} (h : s.head = t.head) :
     dist s t = 2⁻¹ * dist s.tail t.tail := by
   cases s <;> cases t <;> simp at h <;> simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dist_eq_one_of_head {s t : Seq α} (h : s.head ≠ t.head) : dist s t = 1 := by
   rw [Subtype.dist_eq, PiNat.dist_eq_of_ne]
   · convert pow_zero _

@@ -178,6 +178,7 @@ theorem iteratedDerivWithin_sub
   rw [sub_eq_add_neg, sub_eq_add_neg, Pi.neg_def, iteratedDerivWithin_add hx h hf hg.neg,
     iteratedDerivWithin_fun_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : 𝕜)
     (hs : Set.MapsTo (c * ·) s s) :
     iteratedDerivWithin n (fun x => f (c * x)) s x = c ^ n • iteratedDerivWithin n f s (c * x) := by
@@ -216,6 +217,7 @@ lemma iteratedDerivWithin_fun_id :
     iteratedDerivWithin n (·) s x = if n = 0 then x else if n = 1 then 1 else 0 :=
   iteratedDerivWithin_id hx h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iteratedDerivWithin_smul {f : 𝕜 → 𝔸} {g : 𝕜 → F}
     (hf : ContDiffWithinAt 𝕜 (↑n) f s x) (hg : ContDiffWithinAt 𝕜 (↑n) g s x) :
     iteratedDerivWithin n (f • g) s x = ∑ i ∈ .range (n + 1),
@@ -484,15 +486,15 @@ lemma iteratedDerivWithin_sum {s : Set 𝕜} (hx : x ∈ s) (hs : UniqueDiffOn �
 
 lemma iteratedDerivWithin_fun_sum {s : Set 𝕜} (hx : x ∈ s) (hs : UniqueDiffOn 𝕜 s)
     (hf : ∀ i ∈ I, ContDiffWithinAt 𝕜 n (f i) s x) :
-    iteratedDerivWithin n (∑ i ∈ I, f i ·) s x = ∑ i ∈ I, iteratedDerivWithin n (f i) s x :=
-  by simpa [sum_fn] using iteratedDerivWithin_sum hx hs hf
+    iteratedDerivWithin n (∑ i ∈ I, f i ·) s x = ∑ i ∈ I, iteratedDerivWithin n (f i) s x := by
+  simpa [sum_fn] using iteratedDerivWithin_sum hx hs hf
 
 lemma iteratedDeriv_sum (hf : ∀ i ∈ I, ContDiffAt 𝕜 n (f i) x) :
     iteratedDeriv n (∑ i ∈ I, f i) x = ∑ i ∈ I, iteratedDeriv n (f i) x := by
   simpa using iteratedDerivWithin_sum (Set.mem_univ x) uniqueDiffOn_univ hf
 
 lemma iteratedDeriv_fun_sum (hf : ∀ i ∈ I, ContDiffAt 𝕜 n (f i) x) :
-    iteratedDeriv n (fun z ↦ ∑ i ∈ I, f i z) x = ∑ i ∈ I, iteratedDeriv n (f i) x :=
-  by simpa [sum_fn] using iteratedDeriv_sum hf
+    iteratedDeriv n (fun z ↦ ∑ i ∈ I, f i z) x = ∑ i ∈ I, iteratedDeriv n (f i) x := by
+  simpa [sum_fn] using iteratedDeriv_sum hf
 
 end sums

@@ -292,6 +292,7 @@ include hs in
 theorem sSupIndep.pairwiseDisjoint : s.PairwiseDisjoint id := fun _ hx y hy h =>
   disjoint_sSup_right (hs hx) ((mem_diff y).mpr ⟨hy, h.symm⟩)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sSupIndep_singleton (a : α) : sSupIndep ({a} : Set α) := fun i hi ↦ by
   simp_all
 
@@ -417,8 +418,8 @@ lemma iSupIndep.injOn_iInf {β : ι → Type*} (t : (i : ι) → β i → α) (h
     InjOn (fun b : (i : ι) → β i ↦ ⨅ i, t i (b i)) {b | ⨅ i, t i (b i) ≠ ⊥} := by
   intro b₁ hb₁ b₂ hb₂ h_eq
   beta_reduce at h_eq
-  by_contra h_neq
-  obtain ⟨i, hi⟩ : ∃ i, b₁ i ≠ b₂ i := Function.ne_iff.mp h_neq
+  by_contra h_ne
+  obtain ⟨i, hi⟩ : ∃ i, b₁ i ≠ b₂ i := Function.ne_iff.mp h_ne
   have := calc
     ⨅ i, t i (b₁ i) ≤ t i (b₁ i) ⊓ t i (b₂ i) := le_inf (iInf_le ..) (h_eq ▸ iInf_le ..)
     _ = ⊥ := (ht i (b₁ i) |>.mono_right <| le_iSup₂_of_le (b₂ i) hi.symm le_rfl).eq_bot
@@ -466,7 +467,8 @@ lemma iSupIndep.of_coe_Iic_comp {ι : Sort*} {a : α} {t : ι → Set.Iic a}
   simp_rw [Function.comp_apply, ← Set.Iic.coe_iSup] at ht
   exact @ht x
 
-theorem iSupIndep_iff_supIndep {s : Finset ι} {f : ι → α} :
+set_option backward.isDefEq.respectTransparency false in
+theorem iSupIndep_comp_coe_iff_supIndep {s : Finset ι} {f : ι → α} :
     iSupIndep (f ∘ ((↑) : s → ι)) ↔ s.SupIndep f := by
   classical
     rw [Finset.supIndep_iff_disjoint_erase]
@@ -477,12 +479,12 @@ theorem iSupIndep_iff_supIndep {s : Finset ι} {f : ι → α} :
     congr! 1
     simp [iSup_and, @iSup_comm _ (_ ∈ s)]
 
-alias ⟨iSupIndep.supIndep, Finset.SupIndep.independent⟩ := iSupIndep_iff_supIndep
+alias ⟨iSupIndep.supIndep, Finset.SupIndep.independent⟩ := iSupIndep_comp_coe_iff_supIndep
 
 theorem iSupIndep.supIndep' {f : ι → α} (s : Finset ι) (h : iSupIndep f) : s.SupIndep f :=
   iSupIndep.supIndep (h.comp Subtype.coe_injective)
 
-/-- A variant of `CompleteLattice.iSupIndep_iff_supIndep` for `Fintype`s. -/
+/-- A variant of `iSupIndep_comp_coe_iff_supIndep` for `Fintype`s. -/
 theorem iSupIndep_iff_supIndep_univ [Fintype ι] {f : ι → α} :
     iSupIndep f ↔ Finset.univ.SupIndep f := by
   classical

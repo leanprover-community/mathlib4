@@ -622,6 +622,7 @@ end Completion
 
 end Padic
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The rational-valued `p`-adic norm on `ℚ_[p]` is lifted from the norm on Cauchy sequences. The
 canonical form of this function is the normed space instance, with notation `‖ ‖`. -/
 def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
@@ -825,7 +826,11 @@ instance : Norm ℚ_[p] :=
 instance normedField : NormedField ℚ_[p] :=
   { Padic.field,
     Padic.metricSpace p with
-    dist_eq := fun _ _ ↦ rfl
+    dist_eq x y := by
+      rw [add_comm, ← sub_eq_add_neg]
+      change ‖x - y‖ = ‖y - x‖
+      have : y - x = (-1) * (x - y) := by ring
+      simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
     norm_mul := by simp [Norm.norm, map_mul]
     norm := norm }
 
@@ -835,6 +840,7 @@ instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_add' := norm_add_le
   abv_mul' := by simp [Norm.norm, map_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rat_dense (q : ℚ_[p]) {ε : ℝ} (hε : 0 < ε) : ∃ r : ℚ, ‖q - r‖ < ε :=
   let ⟨ε', hε'l, hε'r⟩ := exists_rat_btwn hε
   let ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)
@@ -962,8 +968,6 @@ theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
       _ < 1 := by
         rw [mul_one, norm_p]
         exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
-
-@[deprecated (since := "2025-08-15")] alias norm_int_lt_one_iff_dvd := norm_intCast_lt_one_iff
 
 @[simp]
 lemma norm_natCast_lt_one_iff {n : ℕ} :
@@ -1186,6 +1190,7 @@ theorem AddValuation.map_mul (x y : ℚ_[p]) :
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
         valuation_mul hx hy]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem AddValuation.map_add (x y : ℚ_[p]) :
     min (addValuationDef x) (addValuationDef y) ≤ addValuationDef (x + y : ℚ_[p]) := by
   simp only [addValuationDef]

@@ -53,6 +53,7 @@ variable (z : ℍ)
 
 local notation "𝕢" z:100 => cexp (2 * π * I * z)
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma G2_partial_sum_eq (N : ℕ) : ∑ m ∈ Icc (-N : ℤ) N, e2Summand m z =
     2 * riemannZeta 2 + ∑ m ∈ range N, -8 * π ^ 2 *
       ∑' n : ℕ+, n * 𝕢 z ^ ((m + 1) * n) := by
