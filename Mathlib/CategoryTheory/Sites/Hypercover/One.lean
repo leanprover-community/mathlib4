@@ -393,11 +393,31 @@ def Hom.mapMultiforkOfIsLimit (f : E.Hom F) (P : Cᵒᵖ ⥤ A) {c : Multifork (
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
-lemma Hom.mapMultiforkOfIsLimit_ι {E F : PreOneHypercover.{w} S}
+lemma Hom.mapMultiforkOfIsLimit_ι
     (f : E.Hom F) (P : Cᵒᵖ ⥤ A) {c : Multifork (E.multicospanIndex P)} (hc : IsLimit c)
     (d : Multifork (F.multicospanIndex P)) (a : E.I₀) :
     f.mapMultiforkOfIsLimit P hc d ≫ c.ι a = d.ι (f.s₀ a) ≫ P.map (f.h₀ a).op := by
   simp [mapMultiforkOfIsLimit]
+
+section
+
+variable (f : E.Hom F) (P : Cᵒᵖ ⥤ A)
+  {c : Multifork (E.multicospanIndex P)} (hc : IsLimit c) {d : Multifork (F.multicospanIndex P)}
+
+@[simp]
+lemma Hom.mapMultiforkOfIsLimit_id (d : Multifork (E.multicospanIndex P)) :
+    (Hom.id E).mapMultiforkOfIsLimit P hc d = Multifork.IsLimit.lift hc d.ι d.condition := by
+  apply Multifork.IsLimit.hom_ext hc
+  simp
+
+lemma Hom.mapMultiforkOfIsLimit_comp (g : F.Hom G) (t : Multifork (G.multicospanIndex P))
+    (hd : IsLimit d) :
+    (f.comp g).mapMultiforkOfIsLimit P hc t =
+      g.mapMultiforkOfIsLimit P hd t ≫ f.mapMultiforkOfIsLimit P hc d := by
+  apply Multifork.IsLimit.hom_ext hc
+  simp
+
+end
 
 section
 
