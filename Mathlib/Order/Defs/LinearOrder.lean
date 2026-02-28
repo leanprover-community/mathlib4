@@ -19,6 +19,9 @@ public import Mathlib.Order.Defs.PartialOrder
 # Orders
 
 Defines classes for linear orders and proves some basic lemmas about them.
+
+We intentionally avoid using `grind` in this fundamental file to keep the proofs understandable,
+rather than hiding the reasoning behind automation.
 -/
 
 @[expose] public section
@@ -144,38 +147,20 @@ theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
   match lt_trichotomy a b with
   | .inl h | .inr (.inl h) | .inr (.inr h) => simp [le_of_lt, not_le_of_gt, h, max_def]
 
-@[to_dual le_min_iff]
-theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c := by
-  rw [max_def]
-  split_ifs with h
-  · simpa using le_trans h
-  · simpa using le_trans (le_of_not_ge h)
-
-instance : Std.LawfulOrderMin α where
-  min_eq_or a b := by
-    rw [min_def]
-    split_ifs <;> simp
-  le_min_iff _ _ _ := le_min_iff
-
-instance : Std.LawfulOrderMax α where
-  max_eq_or a b := by
-    rw [max_def]
-    split_ifs <;> simp
-  max_le_iff _ _ _ := max_le_iff
-
-theorem le_max_iff : a ≤ max b c ↔ a ≤ b ∨ a ≤ c := Std.le_max
-
-@[to_dual existing le_max_iff]
-theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c := Std.min_le
-
 @[to_dual le_max_left]
-lemma min_le_left (a b : α) : min a b ≤ a := min_le_iff.mpr (.inl le_rfl)
+lemma min_le_left (a b : α) : min a b ≤ a := by
+  rw [min_def]
+  split_ifs with h <;> simp [h, le_of_not_ge]
 
 @[to_dual le_max_right]
-lemma min_le_right (a b : α) : min a b ≤ b := min_le_iff.mpr (.inr le_rfl)
+lemma min_le_right (a b : α) : min a b ≤ b := by
+  rw [min_def]
+  split_ifs with h <;> simp [h]
 
 @[to_dual max_le]
-lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := le_min_iff.mpr ⟨h₁, h₂⟩
+lemma le_min (h₁ : c ≤ a) (h₂ : c ≤ b) : c ≤ min a b := by
+  rw [min_def]
+  split_ifs <;> assumption
 
 @[to_dual]
 lemma eq_min (h₁ : c ≤ a) (h₂ : c ≤ b) (h₃ : ∀ {d}, d ≤ a → d ≤ b → d ≤ c) : c = min a b :=
@@ -187,7 +172,14 @@ lemma min_comm (a b : α) : min a b = min b a :=
 
 @[to_dual]
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
-  apply le_antisymm <;> simp [min_le_iff, le_min_iff]
+  apply eq_min
+  · apply le_trans (min_le_left ..) (min_le_left ..)
+  · apply le_min
+    · apply le_trans (min_le_left ..) (min_le_right ..)
+    · apply min_le_right
+  · intro d h₁ h₂; apply le_min
+    · apply le_min h₁; apply le_trans h₂; apply min_le_left
+    · apply le_trans h₂; apply min_le_right
 
 @[to_dual]
 lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
