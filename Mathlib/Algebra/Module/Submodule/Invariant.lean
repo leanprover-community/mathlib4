@@ -89,11 +89,13 @@ instance : BoundedOrder (f.invtSubmodule) where
   le_top := fun ⟨p, hp⟩ ↦ by simp
   bot_le := fun ⟨p, hp⟩ ↦ by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma zero :
     (0 : End R M).invtSubmodule = ⊤ :=
   eq_top_iff.mpr fun x ↦ by simp [invtSubmodule]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma id :
     invtSubmodule (LinearMap.id : End R M) = ⊤ :=

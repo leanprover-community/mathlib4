@@ -255,13 +255,13 @@ lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (
   /- Since transition maps are diffeomorphisms, it suffices to show that if `e'` were to send `x`
   to the boundary of `range I`, the differential of the transition map `φ` from `e` to `e'` at `x`
   could not be surjective. -/
-  let φ := I.extCoordChange e e'
-  have hφ : ContDiffOn 𝕜 n φ φ.source := contDiffOn_extCoordChange
+  let φ := I.extendCoordChange e e'
+  have hφ : ContDiffOn 𝕜 n φ φ.source := contDiffOn_extendCoordChange
     (IsManifold.subset_maximalAtlas he) (IsManifold.subset_maximalAtlas he')
   suffices h : Function.Surjective (fderivWithin 𝕜 φ φ.source (e.extend I x)) →
       e'.extend I x ∈ interior (range I) by
     refine e'.mem_interior_extend_target (by simp [hex']) <| h ?_
-    exact (isInvertible_fderivWithin_extCoordChange hn (IsManifold.subset_maximalAtlas he)
+    exact (isInvertible_fderivWithin_extendCoordChange hn (IsManifold.subset_maximalAtlas he)
       (IsManifold.subset_maximalAtlas he') <| by simp [hex, hex']).surjective
   intro hφx'
   /- Reduce the situation to the real case, then apply
@@ -271,7 +271,7 @@ lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (
   let _ := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   have hφx : φ.source ∈ 𝓝 (e.extend I x) := by
-    simp_rw [φ, extCoordChange, PartialEquiv.trans_source, PartialEquiv.symm_source,
+    simp_rw [φ, extendCoordChange, PartialEquiv.trans_source, PartialEquiv.symm_source,
       Filter.inter_mem_iff, mem_interior_iff_mem_nhds.1 hx, true_and, e'.extend_source]
     exact e.extend_preimage_mem_nhds hex <| e'.open_source.mem_nhds hex'
   rw [← ContinuousLinearMap.coe_restrictScalars' (R := ℝ),
@@ -357,6 +357,7 @@ variable
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
   {J : ModelWithCorners 𝕜 E' H'} {x : M} {y : N}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma interior_prod :
     (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by

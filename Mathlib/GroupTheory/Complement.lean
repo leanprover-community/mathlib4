@@ -276,8 +276,7 @@ lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S 
     QuotientGroup.mk g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · refine Function.update_of_ne ?_ g Quotient.out ▸ q.out_eq'
-    exact hq
+  · simp [Function.update, dif_neg hq, q.out_eq']
 
 @[to_additive]
 lemma exists_isComplement_right (H : Subgroup G) (g : G) :
@@ -287,9 +286,9 @@ lemma exists_isComplement_right (H : Subgroup G) (g : G) :
     Quotient.mk'' g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
   by_cases hq : q = Quotient.mk'' g
   · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
-  · refine Function.update_of_ne ?_ g Quotient.out ▸ q.out_eq'
-    exact hq
+  · simp [Function.update, dif_neg hq, q.out_eq']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
 lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
@@ -306,6 +305,7 @@ lemma exists_left_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
     refine congr_arg₂ (· * ·) ?_ ?_ <;>
       exact Nat.card_congr (Equiv.Set.image _ _ <| subtype_injective H).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two subgroups `H' ⊆ H`, there exists a right transversal to `H'` inside `H`. -/
 @[to_additive /-- Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H` -/]
 lemma exists_right_transversal_of_le {H' H : Subgroup G} (h : H' ≤ H) :
@@ -616,6 +616,7 @@ instance : Inhabited H.LeftTransversal :=
 instance : Inhabited H.RightTransversal :=
   ⟨⟨Set.range Quotient.out, isComplement_range_right Quotient.out_eq'⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
   refine
     ⟨disjoint_iff_inf_le.mpr fun g ⟨p, q⟩ =>
@@ -630,6 +631,7 @@ theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
 theorem IsComplement'.sup_eq_top (h : IsComplement' H K) : H ⊔ K = ⊤ :=
   h.isCompl.sup_eq_top
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsComplement'.disjoint (h : IsComplement' H K) : Disjoint H K :=
   h.isCompl.disjoint
 
@@ -652,18 +654,21 @@ theorem IsComplement'.card_mul (h : IsComplement' H K) :
     Nat.card H * Nat.card K = Nat.card G :=
   IsComplement.card_mul h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isComplement'_of_disjoint_and_mul_eq_univ (h1 : Disjoint H K)
     (h2 : ↑H * ↑K = (Set.univ : Set G)) : IsComplement' H K := by
   refine ⟨mul_injective_of_disjoint h1, fun g => ?_⟩
   obtain ⟨h, hh, k, hk, hg⟩ := Set.eq_univ_iff_forall.mp h2 g
   exact ⟨(⟨h, hh⟩, ⟨k, hk⟩), hg⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isComplement'_of_card_mul_and_disjoint [Finite G]
     (h1 : Nat.card H * Nat.card K = Nat.card G) (h2 : Disjoint H K) :
     IsComplement' H K :=
   (Nat.bijective_iff_injective_and_card _).mpr
     ⟨mul_injective_of_disjoint h2, (Nat.card_prod H K).trans h1⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isComplement'_iff_card_mul_and_disjoint [Finite G] :
     IsComplement' H K ↔ Nat.card H * Nat.card K = Nat.card G ∧ Disjoint H K :=
   ⟨fun h => ⟨h.card_mul, h.disjoint⟩, fun h => isComplement'_of_card_mul_and_disjoint h.1 h.2⟩
