@@ -9,7 +9,7 @@ public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 public import Mathlib.CategoryTheory.Sites.Pullback
 
 /-!
-# functors between categories of sheaves
+# Functors between categories of sheaves
 
 Show that the pushforward of a sheaf is a sheaf, and define
 the pushforward functor from the category of C-valued sheaves

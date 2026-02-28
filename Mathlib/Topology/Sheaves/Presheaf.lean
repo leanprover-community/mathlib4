@@ -26,7 +26,7 @@ and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 * `TopCat.Presheaf.Pushforward.comp : (f ≫ g) _* ℱ ≅ g _* (f _* ℱ)`
   along with their `@[simp]` lemmas.
 
-We also define the functors `pullback C f : Y.Presheaf C ⥤ X.Presheaf c`,
+We also define the functors `pullback C f : Y.Presheaf C ⥤ X.Presheaf C`,
 and provide their adjunction at
 `TopCat.Presheaf.pullbackPushforwardAdjunction`.
 -/
@@ -120,7 +120,7 @@ open AlgebraicGeometry
 
 /-- The restriction of a section along an inclusion of open sets.
 For `x : F.obj (op V)`, we provide the notation `x |_ U`, where the proof `U ≤ V` is inferred by
-the tactic `Top.presheaf.restrict_tac'` -/
+the tactic `restrict_tac`. -/
 abbrev restrictOpen {F : X.Presheaf C}
     {V : Opens X} (x : ToType (F.obj (op V))) (U : Opens X)
     (e : U ≤ V := by restrict_tac) :
@@ -354,7 +354,7 @@ open TopCat.Presheaf
 
 /--
 If `f : X ⟶ Y` is an open map and `ℱ` is a presheaf on `Y`, then the pullback of `ℱ` by `f` is
-isomorphic to the composition of `ℱ` and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
+isomorphic to the composition of `ℱ` and of the functor `(Opens X)ᵒᵖ ⥤ (Opens Y)ᵒᵖ` induced by `f`.
 -/
 @[simps!]
 def pullbackObjIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.Presheaf C) :
@@ -369,7 +369,7 @@ set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : X ⟶ Y` is an open map, this expresses the naturality of the isomorphism
 `IsOpenMap.pullbackObjIso` between the pullback by `f` of a presheaf and the composition
-of that presheaf and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
+of that presheaf and of the functor `(Opens X)ᵒᵖ ⥤ (Opens Y)ᵒᵖ` induced by `f`.
 -/
 lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f)
    {ℱ 𝒢 : Y.Presheaf C} (u : ℱ ⟶ 𝒢) :
@@ -397,8 +397,8 @@ lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpe
   rfl
 
 /--
-If `f : X ⟶ Y`, this is the isomorphism between the pullback functor by `f` and the
-"naive" pullback given by composing presheaves with the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ`
+If `f : X ⟶ Y` is an open map, this is the isomorphism between the pullback functor by `f` and the
+"naive" pullback given by composing presheaves with the functor `(Opens X)ᵒᵖ ⥤ (Opens Y)ᵒᵖ`
 induced by `f`.
 -/
 @[simps!]

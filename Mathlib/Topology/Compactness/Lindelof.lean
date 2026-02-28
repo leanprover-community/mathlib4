@@ -117,8 +117,9 @@ theorem IsLindelof.image_of_continuousOn {f : X → Y} (hs : IsLindelof s) (hf :
 theorem IsLindelof.image {f : X → Y} (hs : IsLindelof s) (hf : Continuous f) :
     IsLindelof (f '' s) := hs.image_of_continuousOn hf.continuousOn
 
-/-- A filter with the countable intersection property that is finer than the principal filter on
-a Lindelöf set `s` contains any open set that contains all cluster points of `s`. -/
+/-- A filter `f` with the countable intersection property that is finer than the principal filter
+on a Lindelöf set `s` contains any open set that contains every cluster point of `f` lying in
+`s`. -/
 theorem IsLindelof.adherence_nhdset {f : Filter X} [CountableInterFilter f] (hs : IsLindelof s)
     (hf₂ : f ≤ 𝓟 s) (ht₁ : IsOpen t) (ht₂ : ∀ x ∈ s, ClusterPt x f → x ∈ t) : t ∈ f :=
   (eq_or_neBot _).casesOn mem_of_eq_bot fun _ ↦
