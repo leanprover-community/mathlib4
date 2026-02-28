@@ -249,7 +249,7 @@ lemma partSize_eq_one_of_range_emb_eq_singleton
 
 /-- If the left-most part is not `{0}`, then the part containing `0` has at least two elements:
 either because it's the left-most part, and then it's not just `0` by assumption, or because it's
-not the left-most part and then, by increasingness of maximal elements in parts, it contains
+not the left-most part and then, by strict monotonicity of maximal elements in parts, it contains
 a positive element. -/
 lemma one_lt_partSize_index_zero (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
     1 < c.partSize (c.index 0) := by

@@ -21,7 +21,7 @@ This file allows to transfer `Traversable` instances along isomorphisms.
 * `Equiv.map`: Turns functorially a function `α → β` into a function `t' α → t' β` using the functor
   `t` and the equivalence `Π α, t α ≃ t' α`.
 * `Equiv.functor`: `Equiv.map` as a functor.
-* `Equiv.traverse`: Turns traversably a function `α → m β` into a function `t' α → m (t' β)` using
+* `Equiv.traverse`: Turns a function `α → m β` into a function `t' α → m (t' β)` using
   the traversable functor `t` and the equivalence `Π α, t α ≃ t' α`.
 * `Equiv.traversable`: `Equiv.traverse` as a traversable functor.
 * `Equiv.isLawfulTraversable`: `Equiv.traverse` as a lawful traversable functor.

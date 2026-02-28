@@ -1137,7 +1137,7 @@ theorem Finset.analyticOnNhd_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 
     AnalyticOnNhd 𝕜 (∏ n ∈ N, f n) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)
 
-/-- Finproducts of analytic functions are analytic -/
+/-- `finprod`s of analytic functions are analytic. -/
 @[fun_prop]
 theorem analyticAt_finprod {α : Type*} {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (h : ∀ a, AnalyticAt 𝕜 (f a) c) :

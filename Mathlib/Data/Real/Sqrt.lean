@@ -319,7 +319,7 @@ meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
     assertInstancesCommute
     match ra with
     | .positive pa => pure (.positive q(NNReal.sqrt_pos_of_pos $pa))
-    | _ => failure -- this case is dealt with by generic nonnegativity of nnreals
+    | _ => failure -- this case is dealt with by generic nonnegativity of `NNReal`s
   | _, _, _ => throwError "not NNReal.sqrt"
 
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if

@@ -1180,7 +1180,7 @@ theorem finprod_prod_filter [DecidableEq α] (f : β → α) (s : Finset β) (g 
     exact ⟨a, h⟩
 
 /--
-For functions with finite support, multiplication commutes with finsums. See `mul_finsum` for a
+For functions with finite support, multiplication commutes with `finsum`s. See `mul_finsum` for a
 statement assuming that `R` has no zero divisors.
 -/
 theorem mul_finsum' {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R)
@@ -1196,7 +1196,7 @@ theorem mul_finsum_mem' {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (
   (AddMonoidHom.mulLeft r).map_finsum_mem f hs
 
 /--
-For functions with finite support, multiplication commutes with finsums. See `finsum_mul` for a
+For functions with finite support, multiplication commutes with `finsum`s. See `finsum_mul` for a
 statement assuming that `R` has no zero divisors.
 -/
 theorem finsum_mul' {R : Type*} [NonUnitalNonAssocSemiring R] (f : α → R) (r : R)
@@ -1213,7 +1213,7 @@ theorem finsum_mem_mul' {R : Type*} [NonUnitalNonAssocSemiring R] {s : Set α} (
 
 open Classical in
 /--
-If `R` has no zero divisors, then multiplication commutes with finsums. See `mul_finsum'` for a
+If `R` has no zero divisors, then multiplication commutes with `finsum`s. See `mul_finsum'` for a
 statement assuming finiteness of support.
 -/
 theorem mul_finsum {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] (f : α → R)
@@ -1239,7 +1239,7 @@ theorem mul_finsum_mem {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors
 
 open Classical in
 /--
-If `R` has no zero divisors, then multiplication commutes with finsums. See `finsum_mul'` for a
+If `R` has no zero divisors, then multiplication commutes with `finsum`s. See `finsum_mul'` for a
 statement assuming finiteness of support.
 -/
 theorem finsum_mul {R : Type*} [NonUnitalNonAssocSemiring R] [NoZeroDivisors R] (f : α → R)

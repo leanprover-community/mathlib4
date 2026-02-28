@@ -466,7 +466,7 @@ theorem eq_of_one_div_eq_one_div (h : 1 / a = 1 / b) : a = b := by
   rw [← one_div_one_div a, h, one_div_one_div]
 
 -- Note that `mul_zsmul` and `zpow_mul` have the primes swapped
--- when additivised since their argument order,
+-- when additivised, since their argument order,
 -- and therefore the more "natural" choice of lemma, is reversed.
 @[to_additive mul_zsmul'] lemma zpow_mul (a : α) : ∀ m n : ℤ, a ^ (m * n) = (a ^ m) ^ n
   | (m : ℕ), (n : ℕ) => by

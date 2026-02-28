@@ -11,7 +11,7 @@ public import Mathlib.Data.Vector3
 public import Mathlib.NumberTheory.PellMatiyasevic
 
 /-!
-# Diophantine functions and Matiyasevic's theorem
+# Diophantine functions and Matiyasevich's theorem
 
 Hilbert's tenth problem asked whether there exists an algorithm which for a given integer polynomial
 determines whether this polynomial has integer solutions. It was answered in the negative in 1970,
@@ -661,7 +661,7 @@ theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h
   (diophPFun_vec _).2 <|
     Dioph.ext this fun _ => ⟨fun ⟨_, h, xe, _⟩ => ⟨h, xe⟩, fun ⟨h, xe⟩ => ⟨_, h, xe, rfl⟩⟩
 
-/-- A version of **Matiyasevic's theorem** -/
+/-- A version of **Matiyasevich's theorem** -/
 theorem pow_dioph {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g) :
     DiophFn fun v => f v ^ g v := by
   have : Dioph {v : Vector3 ℕ 3 |
