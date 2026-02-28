@@ -807,6 +807,54 @@ theorem IsPushout.map_iff {D : Type*} [Category* D] (F : C ⥤ D) [PreservesColi
     IsPushout (F.map f) (F.map g) (F.map h) (F.map i) ↔ IsPushout f g h i :=
   ⟨fun h => h.of_map F e, fun h => h.map F⟩
 
+lemma IsPullback.app {D : Type*} [Category* D] [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPullback f₁ f₂ f₃ f₄) :
+    ∀ (X : C), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
+  intro X
+  convert h.map ((evaluation _ _).obj X)
+
+lemma IsPullback.of_forall_isPullback_app {D : Type*} [Category* D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
+    (h : ∀ (X : C), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X)) :
+    IsPullback f₁ f₂ f₃ f₄ where
+  w := by
+    ext X
+    simpa using (h X).w
+  isLimit' := ⟨by
+    apply evaluationJointlyReflectsLimits
+    intro X
+    apply ⇑(PullbackCone.isLimitMapConeEquiv _ _).symm
+    simpa [PullbackCone.map] using (h X).isLimit⟩
+
+lemma IsPushout.app {D : Type*} [Category* D] [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} (h : IsPushout f₁ f₂ f₃ f₄) :
+    ∀ (X : C), IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) := by
+  intro X
+  convert h.map ((evaluation _ _).obj X)
+
+lemma IsPullback.app_iff {D : Type*} [Category* D] [HasPullbacks D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} :
+    IsPullback f₁ f₂ f₃ f₄ ↔ ∀ (X : C), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  ⟨.app, .of_forall_isPullback_app⟩
+
+lemma IsPushout.of_forall_isPushout_app {D : Type*} [Category* D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄}
+    (h : ∀ (X : C), IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X)) :
+    IsPushout f₁ f₂ f₃ f₄ where
+  w := by
+    ext X
+    simpa using (h X).w
+  isColimit' := ⟨by
+    apply evaluationJointlyReflectsColimits
+    intro X
+    apply ⇑(PushoutCocone.isColimitMapCoconeEquiv _ _).symm
+    simpa [PullbackCone.map] using (h X).isColimit⟩
+
+lemma IsPushout.app_iff {D : Type*} [Category* D] [HasPushouts D] {F₁ F₂ F₃ F₄ : C ⥤ D}
+    {f₁ : F₁ ⟶ F₂} {f₂ : F₁ ⟶ F₃} {f₃ : F₂ ⟶ F₄} {f₄ : F₃ ⟶ F₄} :
+    IsPushout f₁ f₂ f₃ f₄ ↔ ∀ (X : C), IsPushout (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X) :=
+  ⟨.app, .of_forall_isPushout_app⟩
+
 end Functor
 
 end CategoryTheory

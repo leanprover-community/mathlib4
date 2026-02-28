@@ -128,23 +128,23 @@ lemma Presheaf.comp_χ_eq {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono
   apply Sieve.ext
   simp [← FunctorToTypes.naturality F G m]
 
-lemma Presheaf.evaluationJointlyReflectsPullbacks.{v₁, v₂, u₁, u₂}
-    {J : Type u₁} [Category.{v₁, u₁} J] {K : Type u₂} [Category.{v₂, u₂} K] {X₁ X₂ X₃ X₄ : J ⥤ K}
-    {f₁ : X₁ ⟶ X₂} {f₂ : X₁ ⟶ X₃} {f₃ : X₂ ⟶ X₄} {f₄ : X₃ ⟶ X₄}
-    (h : ∀ (X : J), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X)) :
-    IsPullback f₁ f₂ f₃ f₄ where
-  w := by
-    ext X
-    simpa using (h X).w
-  isLimit' := ⟨by
-    apply evaluationJointlyReflectsLimits
-    intro X
-    apply ⇑(PullbackCone.isLimitMapConeEquiv _ _).symm
-    simpa [PullbackCone.map] using (h X).isLimit⟩
+-- lemma Functor.evaluationJointlyReflectsPullbacks.{v₁, v₂, u₁, u₂}
+--     {J : Type u₁} [Category.{v₁, u₁} J] {K : Type u₂} [Category.{v₂, u₂} K] {X₁ X₂ X₃ X₄ : J ⥤ K}
+--     {f₁ : X₁ ⟶ X₂} {f₂ : X₁ ⟶ X₃} {f₃ : X₂ ⟶ X₄} {f₄ : X₃ ⟶ X₄}
+--     (h : ∀ (X : J), IsPullback (f₁.app X) (f₂.app X) (f₃.app X) (f₄.app X)) :
+--     IsPullback f₁ f₂ f₃ f₄ where
+--   w := by
+--     ext X
+--     simpa using (h X).w
+--   isLimit' := ⟨by
+--     apply evaluationJointlyReflectsLimits
+--     intro X
+--     apply ⇑(PullbackCone.isLimitMapConeEquiv _ _).symm
+--     simpa [PullbackCone.map] using (h X).isLimit⟩
 
 lemma Presheaf.classifier_isPullback {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
     IsPullback m ({app X := fun _ => PUnit.unit}) (χ m) (truth C) := by
-  apply evaluationJointlyReflectsPullbacks
+  apply IsPullback.of_forall_isPullback_app
   intro X
   rw [Types.isPullback_iff]
   constructorm* _ ∧ _
@@ -162,7 +162,7 @@ lemma Presheaf.χ_uniqe {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m
   intro h
   ext X x
   have h' (Y : Cᵒᵖ) : IsPullback (m.app Y) (fun _ => PUnit.unit) (χ'.app Y) ((truth C).app Y) := by
-    simpa using h.map ((evaluation Cᵒᵖ _).obj Y)
+    simpa using h.app Y
   simp_rw [Types.isPullback_iff] at h'
   simp only [Functor.sieves_obj, and_true, truth_app, forall_const, forall_and] at h'
   obtain ⟨h₁,h₂,h₃⟩ := h'
@@ -308,6 +308,7 @@ instance (J : GrothendieckTopology C) : HasClassifier (Sheaf J (Type (max u v)))
   exists_classifier := ⟨Sheaf.classifier J⟩
 
 end sheaf
+
 end CategoryTheory
 
 end
