@@ -771,10 +771,12 @@ def terminal {X : A} (hX : IsTerminal X) : Sheaf J A where
   val := (CategoryTheory.Functor.const _).obj X
   cond := Presheaf.isSheaf_of_isTerminal J hX
 
+/-- The unique morphism into the terminal sheaf -/
 @[simps]
 def toTerminal {X : A} (hX : IsTerminal X) (F : Sheaf J A) : F ⟶ Sheaf.terminal J hX where
   val.app X := hX.from (F.val.obj X)
 
+/-- The constant sheaf of a terminal object is indeed terminal -/
 @[simps!]
 def terminal_isTerminal {X : A} (hX : IsTerminal X) : IsTerminal (Sheaf.terminal J hX) :=
   .ofUniqueHom (·.toTerminal J hX) (by intros;ext;simpa using hX.hom_ext _ _)
