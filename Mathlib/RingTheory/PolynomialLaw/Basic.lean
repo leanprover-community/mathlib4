@@ -306,6 +306,7 @@ variable {S}
 def φ (s : Finset S) : MvPolynomial (Fin s.card) R →ₐ[R] S :=
   aeval (R := R) (fun n ↦ (s.equivFin.symm n : S))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_φ (s : Finset S) : (φ R s).range = Algebra.adjoin R s := by
   simp only [φ]
   rw [← Algebra.adjoin_range_eq_range_aeval]
@@ -531,6 +532,7 @@ variable
   (r a b : R) (f g : M →ₚₗ[R] N)
   {S : Type*} [CommSemiring S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Extension of `PolynomialLaw.zero_def` -/
 @[simp]
 theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by

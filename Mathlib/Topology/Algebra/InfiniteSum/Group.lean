@@ -231,6 +231,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
     simp only [this]
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem cauchySeq_finset_iff_tprod_vanishing :
     (CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b) ↔

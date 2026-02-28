@@ -21,6 +21,7 @@ section Ring
 
 variable {R : Type*} [Ring R] [Fintype R] [DecidableEq R]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Finset.univ_of_card_le_two (h : Fintype.card R ≤ 2) :
     (univ : Finset R) = {0, 1} := by
   rcases subsingleton_or_nontrivial R

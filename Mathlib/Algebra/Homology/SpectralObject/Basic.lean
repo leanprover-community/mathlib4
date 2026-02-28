@@ -32,7 +32,7 @@ variable (C ι : Type*) [Category C] [Category ι] [Abelian C]
 
 open ComposableArrows
 
-/-- A spectral object in an abelian category category `C` indexed by a category ``
+/-- A spectral object in an abelian category category `C` indexed by a category `ι`
 consists of a functor `H : ComposableArrows ι 1 ⥤ C`, and a
 functorial long exact sequence
 `⋯ ⟶ (H n₀).obj (mk₁ f) ⟶ (H n₀).obj (mk₁ (f ≫ g)) ⟶ (H n₀).obj (mk₁ g) ⟶ (H n₁).obj (mk₁ f) ⟶ ⋯`
@@ -180,7 +180,7 @@ lemma isZero_H_map_mk₁_of_isIso (n : ℤ) {i₀ i₁ : ι} (f : i₀ ⟶ i₁)
   let φ := twoδ₂Toδ₁ f (inv f) (𝟙 i₀) (by simp) ≫ twoδ₁Toδ₀ f (inv f) (𝟙 i₀)
   have : IsIso φ := by
     rw [isIso_iff₁]
-    constructor <;> dsimp <;> infer_instance
+    constructor <;> dsimp [φ] <;> infer_instance
   rw [IsZero.iff_id_eq_zero]
   rw [← cancel_mono ((X.H n).map φ), Category.id_comp, zero_comp,
     ← X.zero₂ n f (inv f) (𝟙 _) (by simp), ← Functor.map_comp]

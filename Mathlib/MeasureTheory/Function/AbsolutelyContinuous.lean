@@ -30,7 +30,7 @@ We use the filter version to prove that absolutely continuous functions are clos
 * negation - `AbsolutelyContinuousOnInterval.neg`;
 * subtraction - `AbsolutelyContinuousOnInterval.sub`;
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
-`AbsolutelyContinuousOnInterval.const_mul`;
+  `AbsolutelyContinuousOnInterval.const_mul`;
 * multiplication - `AbsolutelyContinuousOnInterval.smul`,
 `AbsolutelyContinuousOnInterval.mul`;
 and that absolutely continuous implies uniformly continuous in
@@ -38,16 +38,17 @@ and that absolutely continuous implies uniformly continuous in
 
 We use the `ε`-`δ` definition to prove that
 * Lipschitz continuous functions are absolutely continuous -
-`LipschitzOnWith.absolutelyContinuousOnInterval`;
+  `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
-`AbsolutelyContinuousOnInterval.boundedVariationOn`.
+  `AbsolutelyContinuousOnInterval.boundedVariationOn`.
 
 We conclude that
 * absolutely continuous functions are a.e. differentiable -
-`AbsolutelyContinuousOnInterval.ae_differentiableAt`;
+  `AbsolutelyContinuousOnInterval.ae_differentiableAt`;
 * if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
-is absolutely continuous on `uIcc a b` -
-`IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
+  is absolutely continuous on `uIcc a b` -
+  `IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
+
 ## Tags
 absolutely continuous
 -/
@@ -155,6 +156,7 @@ def _root_.AbsolutelyContinuousOnInterval (f : ℝ → X) (a b : ℝ) :=
   Tendsto (fun E ↦ ∑ i ∈ Finset.range E.1, dist (f (E.2 i).1) (f (E.2 i).2))
     (totalLengthFilter ⊓ 𝓟 (disjWithin a b)) (𝓝 0)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The traditional `ε`-`δ` definition of absolutely continuous: A function `f` is
 *absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such that for
 any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`, `b i` are

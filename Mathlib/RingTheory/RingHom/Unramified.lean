@@ -91,6 +91,7 @@ lemma ofLocalizationPrime :
   have : Algebra.FormallyUnramified Rₓ Sₓ := H _ _
   exact Algebra.FormallyUnramified.comp R Rₓ Sₓ
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ofLocalizationSpanTarget :
     OfLocalizationSpanTarget FormallyUnramified := by
   intro R S _ _ f s hs H

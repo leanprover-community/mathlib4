@@ -120,7 +120,7 @@ theorem reflection_map_apply {E E' : Type*} [NormedAddCommGroup E] [NormedAddCom
     [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 E'] (f : E ≃ₗᵢ[𝕜] E') (K : Submodule 𝕜 E)
     [K.HasOrthogonalProjection] (x : E') :
     reflection (K.map (f.toLinearEquiv : E →ₗ[𝕜] E')) x = f (K.reflection (f.symm x)) := by
-  simp [two_smul, reflection_apply, starProjection_map_apply f K x]
+  simp [reflection_apply, starProjection_map_apply f K x]
 
 /-- Reflection in the `Submodule.map` of a subspace. -/
 theorem reflection_map {E E' : Type*} [NormedAddCommGroup E] [NormedAddCommGroup E']
