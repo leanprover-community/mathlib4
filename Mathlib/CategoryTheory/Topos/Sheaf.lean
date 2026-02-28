@@ -289,7 +289,7 @@ noncomputable def Sheaf.classifier (J : GrothendieckTopology C) :
 
 -- TODO: generalize this to `HasClassifier (Sheaf J (Type w))` assuming `EssentiallySmall.{w} C`.
 /-- Sheaf categories have a subobject classifier. -/
-instance HasClassifier.instSheaf : HasClassifier (Sheaf J (Type (max u v))) where
+instance HasClassifier.instSheaf (J : GrothendieckTopology C) : HasClassifier (Sheaf J (Type (max u v))) where
   exists_classifier := ⟨Sheaf.classifier J⟩
 
 end sheaf
