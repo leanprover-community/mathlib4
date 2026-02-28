@@ -554,6 +554,7 @@ end
 
 /-- Construct an isomorphism of `1`-hypercovers by giving the compatibility conditions only
 in the forward direction. -/
+@[simps!]
 def isoMk {S : C} {E F : PreOneHypercover S}
     (s₀ : E.I₀ ≃ F.I₀) (h₀ : (i : E.I₀) → E.X i ≅ F.X (s₀ i))
     (s₁ : ∀ ⦃i j : E.I₀⦄, E.I₁ i j ≃ F.I₁ (s₀ i) (s₀ j))
