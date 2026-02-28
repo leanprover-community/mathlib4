@@ -33,10 +33,15 @@ practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
 @[pp_with_univ]
 def Class :=
-  Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, Compl, SDiff
+  ZFSet → Prop deriving Nonempty, BooleanAlgebra, CompleteLattice
+
+instance : Union Class := ⟨(· ⊔ ·)⟩
+instance : Inter Class := ⟨(· ⊓ ·)⟩
+instance : EmptyCollection Class := ⟨⊥⟩
+instance : HasSubset Class := ⟨(· ≤ ·)⟩
 
 instance : Insert ZFSet Class :=
-  ⟨Set.insert⟩
+  ⟨fun x A y => y = x ∨ A y⟩
 
 namespace Class
 
@@ -44,23 +49,23 @@ namespace Class
 -- it should probably be turned into notation.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
-  {y | A y ∧ p y}
+  fun y ↦ A y ∧ p y
 
 @[ext]
-theorem ext {x y : Class.{u}} : (∀ z : ZFSet.{u}, x z ↔ y z) → x = y :=
-  Set.ext
+theorem ext {x y : Class.{u}} (h : ∀ z : ZFSet.{u}, x z ↔ y z) : x = y :=
+  funext fun z ↦ propext (h z)
 
 /-- Coerce a ZFC set into a class -/
 @[coe]
 def ofSet (x : ZFSet.{u}) : Class.{u} :=
-  { y | y ∈ x }
+  (· ∈ x)
 
 instance : Coe ZFSet Class :=
   ⟨ofSet⟩
 
 /-- The universal class -/
 def univ : Class :=
-  Set.univ
+  ⊤
 
 /-- Assert that `A` is a ZFC set satisfying `B` -/
 def ToSet (B : Class.{u}) (A : Class.{u}) : Prop :=
@@ -91,11 +96,11 @@ theorem mem_univ {A : Class.{u}} : A ∈ univ.{u} ↔ ∃ x : ZFSet.{u}, ↑x = 
 theorem mem_univ_hom (x : ZFSet.{u}) : univ.{u} x :=
   trivial
 
-theorem eq_univ_iff_forall {A : Class.{u}} : A = univ ↔ ∀ x : ZFSet, A x :=
-  Set.eq_univ_iff_forall
+theorem eq_univ_iff_forall {A : Class.{u}} : A = univ ↔ ∀ x : ZFSet, A x := by
+  simp [Class.ext_iff]
 
 theorem eq_univ_of_forall {A : Class.{u}} : (∀ x : ZFSet, A x) → A = univ :=
-  Set.eq_univ_of_forall
+  eq_univ_iff_forall.mpr
 
 theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
   ⟨by
@@ -127,7 +132,7 @@ theorem univ_notMem_univ : univ ∉ univ :=
 
 /-- Convert a conglomerate (a collection of classes) into a class -/
 def congToClass (x : Set Class.{u}) : Class.{u} :=
-  { y | ↑y ∈ x }
+  (↑· ∈ x)
 
 @[simp]
 theorem congToClass_empty : congToClass ∅ = ∅ := by
@@ -143,12 +148,12 @@ theorem classToCong_empty : classToCong ∅ = ∅ := by
 
 /-- The power class of a class is the class of all subclasses that are ZFC sets -/
 def powerset (x : Class) : Class :=
-  congToClass (Set.powerset x)
+  congToClass (Set.Iic x)
 
 /-- The union of a class is the class of all members of ZFC sets in the class. Uses `⋃₀` notation,
 scoped under the `Class` namespace. -/
 def sUnion (x : Class) : Class :=
-  ⋃₀ classToCong x
+  sSup (classToCong x)
 
 @[inherit_doc]
 scoped prefix:110 "⋃₀ " => Class.sUnion
@@ -156,7 +161,7 @@ scoped prefix:110 "⋃₀ " => Class.sUnion
 /-- The intersection of a class is the class of all members of ZFC sets in the class .
 Uses `⋂₀` notation, scoped under the `Class` namespace. -/
 def sInter (x : Class) : Class :=
-  ⋂₀ classToCong x
+  sInf (classToCong x)
 
 @[inherit_doc]
 scoped prefix:110 "⋂₀ " => Class.sInter
@@ -184,7 +189,7 @@ theorem coe_subset (x y : ZFSet.{u}) : (x : Class.{u}) ⊆ y ↔ x ⊆ y :=
 
 @[simp, norm_cast]
 theorem coe_sep (p : Class.{u}) (x : ZFSet.{u}) :
-    (ZFSet.sep p x : Class) = { y ∈ x | p y } :=
+    (ZFSet.sep p x : Class) = (fun y ↦ y ∈ x ∧ p y) :=
   ext fun _ => ZFSet.mem_sep
 
 @[simp, norm_cast]
@@ -218,7 +223,8 @@ theorem powerset_apply {A : Class.{u}} {x : ZFSet.{u}} : powerset A x ↔ ↑x �
 @[simp]
 theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet, x z ∧ y ∈ z := by
   constructor
-  · rintro ⟨-, ⟨z, rfl, hxz⟩, hyz⟩
+  · rintro ⟨-, ⟨⟨z, hz⟩, rfl, hxz⟩, hyz⟩
+    dsimp only at z
     exact ⟨z, hxz, hyz⟩
   · exact fun ⟨z, hxz, hyz⟩ => ⟨_, coe_mem.2 hxz, hyz⟩
 

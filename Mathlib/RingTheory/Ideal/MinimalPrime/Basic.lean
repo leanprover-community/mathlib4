@@ -46,8 +46,9 @@ This is defined as `Ideal.minimalPrimes ⊥`. -/
 def minimalPrimes : Set (Ideal R) :=
   Ideal.minimalPrimes ⊥
 
-lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} :=
-  congr_arg Minimal (by simp)
+lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} := by
+  ext
+  simp [minimalPrimes, Ideal.minimalPrimes]
 
 variable {I J}
 

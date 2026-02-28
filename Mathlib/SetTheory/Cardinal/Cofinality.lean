@@ -527,10 +527,10 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     by_cases! h : ∀ j, r j i → f j < f i
     · refine ⟨typein r' ⟨i, h⟩, typein_lt_type _ _, ?_⟩
       rw [bfamilyOfFamily'_typein]
-    · obtain ⟨hji, hij⟩ := wo.wf.min_mem _ h
+    · obtain ⟨hji, hij⟩ := wo.wf.min_mem _ (nonempty_setOf.mpr h)
       refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ _, ?_⟩
       · by_contra! H
-        exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
+        exact (wo.wf.not_lt_min _ (nonempty_setOf.mpr h) ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
       · rwa [bfamilyOfFamily'_typein]
 
 @[simp]
@@ -707,7 +707,7 @@ theorem mk_subset_mk_lt_cof {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) :
   rcases ord_eq α with ⟨r, wo, hr⟩
   apply le_antisymm
   · conv_rhs => rw [← mk_bounded_subset h hr]
-    apply mk_le_mk_of_subset
+    apply mk_subtype_le_of_subset
     intro s hs
     rw [hr] at hs
     exact lt_cof_type hs

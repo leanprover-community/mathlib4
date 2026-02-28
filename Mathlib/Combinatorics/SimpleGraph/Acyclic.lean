@@ -387,7 +387,7 @@ lemma reachable_eq_of_maximal_isAcyclic (F : SimpleGraph V)
   refine ⟨fun h ↦ h.mono hF, ?_⟩
   contrapose! h
   obtain ⟨⟨p : G.Walk u v⟩, h : ¬ F.Reachable u v⟩ := h
-  let s : Set V := F.connectedComponentMk u
+  let s : Set V := (F.connectedComponentMk u).supp
   have hus : u ∈ s := ConnectedComponent.connectedComponentMk_mem
   have hvs : v ∉ s := h ∘ (F.connectedComponentMk u).reachable_of_mem_supp hus
   obtain ⟨⟨⟨u', v'⟩, huv : G.Adj u' v'⟩, -, hu : u' ∈ s, hv : v' ∉ s⟩ :=

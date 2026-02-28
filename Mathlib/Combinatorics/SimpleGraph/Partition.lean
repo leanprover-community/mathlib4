@@ -83,7 +83,7 @@ variable {G}
 variable (P : G.Partition)
 
 /-- The part in the partition that `v` belongs to -/
-def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
+noncomputable def partOfVertex (v : V) : Set V := Classical.choose (P.isPartition.2 v)
 
 theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
   obtain ⟨h, -⟩ := (P.isPartition.2 v).choose_spec.1
@@ -101,13 +101,13 @@ theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ 
 
 /-- Create a coloring using the parts themselves as the colors.
 Each vertex is colored by the part it's contained in. -/
-def toColoring : G.Coloring P.parts :=
+noncomputable def toColoring : G.Coloring P.parts :=
   Coloring.mk (fun v ↦ ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦ by
     rw [Ne, Subtype.mk_eq_mk]
     exact P.partOfVertex_ne_of_adj hvw
 
 /-- Like `SimpleGraph.Partition.toColoring` but uses `Set V` as the coloring type. -/
-def toColoring' : G.Coloring (Set V) :=
+noncomputable def toColoring' : G.Coloring (Set V) :=
   Coloring.mk P.partOfVertex fun hvw ↦ P.partOfVertex_ne_of_adj hvw
 
 theorem colorable [Fintype P.parts] : G.Colorable (Fintype.card P.parts) :=
@@ -132,7 +132,6 @@ namespace Partition
 instance : Inhabited (Partition G) := ⟨G.selfColoring.toPartition⟩
 end Partition
 
-set_option backward.isDefEq.respectTransparency false in
 theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorable n := by
   constructor
   · rintro ⟨P, hf, hc⟩
