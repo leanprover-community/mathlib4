@@ -51,7 +51,7 @@ variable (R)
 def Ideal.connectedComponentOfZero : Ideal R where
   __ := AddSubgroup.connectedComponentOfZero R
   smul_mem' c x h := IsConnected.subset_connectedComponent
-    (isConnected_connectedComponent.image _ (continuous_mul_left c).continuousOn)
+    (isConnected_connectedComponent.image _ (continuous_const_mul c).continuousOn)
     ⟨0, mem_connectedComponent, mul_zero c⟩ ⟨x, h, rfl⟩
 
 @[simp]
