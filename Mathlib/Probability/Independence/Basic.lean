@@ -698,7 +698,6 @@ theorem indepFun_iff_map_prod_eq_prod_map_map' {mβ : MeasurableSpace β} {mβ' 
   · intro h s t hs ht
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
-set_option linter.flexible false in
 /-- If `Y` is independent of itself under a probability measure, then `X` and `Y`
 are independent. Self-independence implies `Y` is a.e. constant. -/
 theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
@@ -710,22 +709,35 @@ theorem IndepFun.of_self {Ω A B : Type*} [MeasurableSpace Ω]
       μ (Y ⁻¹' s) = 0 ∨ μ (Y ⁻¹' s) = 1 := by
     intro s hs
     have h_eq : μ (Y ⁻¹' s) = μ (Y ⁻¹' s) * μ (Y ⁻¹' s) := by
-      simpa using hY s s hs hs
-    by_cases h : μ (Y ⁻¹' s) = 0 <;> simp +decide [h] at h_eq ⊢
-    rw [← ENNReal.toReal_eq_toReal_iff'] at * <;> norm_num at *
-    · exact mul_left_cancel₀ h <| by linarith
-    · exact ENNReal.mul_ne_top (measure_ne_top _ _) (measure_ne_top _ _)
+      specialize hY s s hs hs
+      rwa [Set.inter_self] at hY
+    by_cases h0 : μ (Y ⁻¹' s) = 0
+    · left; exact h0
+    · right
+      have h_ne_top : μ (Y ⁻¹' s) ≠ ⊤ := measure_ne_top _ _
+      rw [eq_comm] at h_eq
+      rw [ENNReal.mul_eq_right h0 h_ne_top] at h_eq
+      exact h_eq
   intro s t hs ht
-  cases hY_const t ht <;>
-    simp_all +decide
-  · exact measure_mono_null (fun x => by aesop) ‹μ (Y ⁻¹' t) = 0›
-  · have hY_compl : μ (Y ⁻¹' tᶜ) = 0 := by
-      have := hY t tᶜ ht ht.compl
-      simp_all +decide [Set.preimage]
-      simp_all +decide [Set.inter_def]
-    exact measure_congr (ae_eq_set.mpr ⟨
-      by rw [show (X ⁻¹' s ∩ Y ⁻¹' t) \ X ⁻¹' s = ∅ by ext; aesop]; simp,
-      measure_mono_null (fun x => by aesop) hY_compl⟩)
+  cases hY_const t ht with
+  | inl h_zero =>
+    rw [h_zero, mul_zero]
+    exact measure_mono_null Set.inter_subset_right h_zero
+  | inr h_one =>
+    rw [h_one, mul_one]
+    have hY_compl : μ (Y ⁻¹' tᶜ) = 0 := by
+      have key := hY t tᶜ ht ht.compl
+      rw [show Y ⁻¹' t ∩ Y ⁻¹' tᶜ = ∅ from by
+        rw [← Set.preimage_inter, Set.inter_compl_self, Set.preimage_empty]] at key
+      rw [measure_empty, h_one, one_mul] at key
+      exact key.symm
+    refine measure_congr (ae_eq_set.mpr ⟨?_, ?_⟩)
+    · rw [Set.diff_eq_empty.mpr Set.inter_subset_left]
+      exact measure_empty
+    · refine measure_mono_null ?_ hY_compl
+      intro x ⟨hxs, hxnint⟩
+      rw [Set.mem_preimage, Set.mem_compl_iff]
+      exact fun hxt => hxnint ⟨hxs, Set.mem_preimage.mpr hxt⟩
 
 theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsFiniteMeasure μ] (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
