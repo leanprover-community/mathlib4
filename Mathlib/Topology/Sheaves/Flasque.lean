@@ -9,7 +9,6 @@ module
 public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.AddCommGrpCat
 public import Mathlib.Topology.Sheaves.LocallySurjective
-public import Mathlib.Topology.Sheaves.ZeroOutside
 
 /-!
 # Flasque Sheaves
@@ -27,12 +26,6 @@ We define and prove basic properties about flasque sheaves on topological spaces
 
 * `TopCat.Sheaf.IsFlasque.X₃_shortExact_isFlasque_X₁_isFlasque_X₂`: Given a short exact sequence of
   sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque, then `𝓗` is flasque.
-
-* `TopCat.Sheaf.IsFlasque.of_injective`: Injective sheaves are flasque.
-
-* `TopCat.Sheaf.IsFlasque.H_isZero`: Flasque sheaves have no higher cohomology. For most
-  applications, it is probably better to use `Subsingleton (H F (n + 1))` which can be proven by
-  `infer_instance`
 
 -/
 
@@ -186,41 +179,5 @@ theorem X₃_shortExact_isFlasque_X₁_isFlasque_X₂ {S : ShortComplex (Sheaf A
       rw [← S.g.val.naturality i.op]
       exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
     exact CategoryTheory.epi_of_epi (S.g.1.app (op V)) (S.X₃.val.map i.op)
-
-/-- Injective sheaves are flasque. -/
-instance of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
-  epi := fun i => epi_map_of_injective I (leOfHom i)
-
-/-- Flasque sheaves have no higher cohomology. For most applications, it is probably better to use
-  `Subsingleton (H F (n + 1))` which can be proven by `infer_instance` -/
-theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
-    IsZero (AddCommGrpCat.of (H F (n+1))) := by
-  induction n generalizing F with
-  | zero =>
-    obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
-    let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
-    have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    have hLS := Sheaf.H.longSequence_exact hS 0 1
-    refine ShortComplex.Exact.isZero_of_both_zeros (hLS.exact 2) ?_
-      (zero_of_target_iso_zero _ (IsZero.isoZero (AddCommGrpCat.isZero_of_subsingleton
-      (AddCommGrpCat.of (H I 1)))))
-    rw[← ShortComplex.Exact.epi_f_iff (hLS.exact 1), AddCommGrpCat.epi_iff_surjective,
-      ← Equiv.surjective_comp (H.equiv₀ I).symm.toEquiv]
-    change Function.Surjective ((H.map S.g 0) ∘ (H.equiv₀ I).symm.toEquiv)
-    conv => right; equals (H.equiv₀ S.X₃).symm.toEquiv ∘ S.g.val.app (op ⊤)
-      => ext x; exact H.equiv₀_symm_comp S.g x
-    rw [Equiv.comp_surjective, ← AddCommGrpCat.epi_iff_surjective]
-    exact epi_of_shortExact hS
-  | succ n hn =>
-    obtain ⟨I, _, f, hf⟩ := CategoryTheory.EnoughInjectives.presentation F
-    let S := ShortComplex.mk f (cokernel.π f) (by cat_disch)
-    have hS : S.ShortExact := ShortComplex.ShortExact.mk (ShortComplex.exact_cokernel f)
-    have hX₃ : S.X₃.IsFlasque := X₃_shortExact_isFlasque_X₁_isFlasque_X₂ hS
-    have hLS := Sheaf.H.longSequence_exact hS (n+1) (n+2)
-    exact ShortComplex.Exact.isZero_of_both_isZero (hLS.exact 2) (hn _)
-      (AddCommGrpCat.isZero_of_subsingleton (AddCommGrpCat.of (H I (n + 2))))
-
-instance {F : Sheaf AddCommGrpCat X} [IsFlasque F] (n : ℕ) : Subsingleton (H F (n + 1)) :=
-  AddCommGrpCat.subsingleton_of_isZero (H_isZero F n)
 
 end TopCat.Sheaf.IsFlasque
