@@ -203,7 +203,6 @@ lemma homologyMap_exact₁_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
     ((DerivedCategory.homologyFunctorFactors _ _).app _)
     ((DerivedCategory.homologyFunctorFactors _ _).app _)
 
-
 lemma homologyMap_exact₂_of_distTriang (n : ℤ) :
     (ShortComplex.mk _ _ (homologyMap_comp_eq_zero_of_distTriang T hT n)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (DerivedCategory.HomologySequence.exact₂ _ hT n)
