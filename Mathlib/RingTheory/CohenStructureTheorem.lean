@@ -513,7 +513,7 @@ end fromPR
 
 variable {R} in
 set_option backward.isDefEq.respectTransparency false in
-open MvPowerSeries WithPiTopology in
+open MvPowerSeries in
 lemma exists_mvPowerSeries_surjective_of_residueField_map_bijective [IsLocalRing R]
     [IsAdicComplete (maximalIdeal R) R] (fg : (maximalIdeal R).FG)
     (S : Type u) [CommRing S] [IsLocalRing S]
@@ -584,7 +584,7 @@ lemma spanFinrank_eq_of_surjective_of_ker_le {R : Type*} [CommRing R] [IsNoether
     (f : R →+* R') (surj : Function.Surjective f) (le : RingHom.ker f ≤ (maximalIdeal R) ^ 2) :
     (maximalIdeal R').spanFinrank = (maximalIdeal R).spanFinrank := by
   classical
-  apply le_antisymm (spanFinrank_le_of_surjective f surj)
+  apply le_antisymm (spanFinrank_le_of_surjective (maximalIdeal R).fg_of_isNoetherianRing f surj)
   let fin := Submodule.FG.finite_generators (maximalIdeal R').fg_of_isNoetherianRing
   let _ := fin.fintype
   rcases surj.list_map (maximalIdeal R').generators.toFinset.toList with ⟨l, hl⟩
@@ -612,7 +612,7 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     (f : S →+* R), Function.Surjective f ∧ RingHom.ker f ≤ (maximalIdeal S) ^ 2 := by
   rcases exist_isRegularLocalRing_surjective_of_isAdicComplete R with ⟨S, _, regS, f, surj⟩
   obtain ⟨n, hn⟩ : ∃ n, (maximalIdeal R).spanFinrank + n = (maximalIdeal S).spanFinrank :=
-    Nat.le.dest (spanFinrank_le_of_surjective f surj)
+    Nat.le.dest (spanFinrank_le_of_surjective (maximalIdeal S).fg_of_isNoetherianRing f surj)
   induction n generalizing S f with
   | zero =>
     use S, inferInstance, inferInstance, f, surj
@@ -627,7 +627,7 @@ lemma exist_isRegularLocalRing_surjective_ker_le_of_isAdicComplete
     have surj' := Ideal.Quotient.lift_surjective_of_surjective _ this surj
     rw [← (isRegularLocalRing_def _).mp reg, ← (isRegularLocalRing_def _).mp regS,
       ← Nat.cast_one, ← Nat.cast_add, Nat.cast_inj] at dim
-    absurd spanFinrank_le_of_surjective _ surj'
+    absurd spanFinrank_le_of_surjective (Ideal.fg_of_isNoetherianRing _) _ surj'
     omega
   | succ n ih =>
     obtain ⟨x, hx, nmem⟩ : ∃ x ∈ RingHom.ker f, x ∉ (maximalIdeal S) ^ 2 := by
