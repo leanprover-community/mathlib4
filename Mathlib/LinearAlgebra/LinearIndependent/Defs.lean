@@ -357,10 +357,16 @@ theorem linearIndepOn_equiv (e : ι ≃ ι') {f : ι' → M} {s : Set ι} :
   linearIndependent_equiv' (e.image s) <| by simp [funext_iff]
 
 @[simp]
-theorem linearIndepOn_univ : LinearIndepOn R v univ ↔ LinearIndependent R v :=
+theorem linearIndepOn_univ_iff : LinearIndepOn R v univ ↔ LinearIndependent R v :=
   linearIndependent_equiv' (Equiv.Set.univ ι) rfl
 
-alias ⟨_, LinearIndependent.linearIndepOn⟩ := linearIndepOn_univ
+@[deprecated (since := "2026-02-24")] alias linearIndepOn_univ := linearIndepOn_univ_iff
+
+alias ⟨_, LinearIndependent.linearIndepOn_univ⟩ := linearIndepOn_univ_iff
+
+lemma LinearIndependent.linearIndepOn (h : LinearIndependent R v) (s : Set ι) :
+    LinearIndepOn R v s :=
+  h.linearIndepOn_univ.mono s.subset_univ
 
 theorem linearIndepOn_iff_image {ι} {s : Set ι} {f : ι → M} (hf : Set.InjOn f s) :
     LinearIndepOn R f s ↔ LinearIndepOn R id (f '' s) :=

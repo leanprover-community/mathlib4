@@ -722,15 +722,29 @@ theorem sub_mem_closedBall (p : Seminorm 𝕜 E) (x₁ x₂ y : E) (r : ℝ) :
     x₁ - x₂ ∈ p.closedBall y r ↔ x₁ ∈ p.closedBall (x₂ + y) r := by
   simp_rw [mem_closedBall, sub_sub]
 
+lemma ball_eq_metric :
+    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    p.ball x r = Metric.ball x r := by
+  ext
+  simp only [mem_ball_iff_norm]
+  rfl
+
+lemma closedBall_eq_metric :
+    letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
+    p.closedBall x r = Metric.closedBall x r := by
+  ext
+  simp only [mem_closedBall_iff_norm]
+  rfl
+
 /-- The image of a ball under addition with a singleton is another ball. -/
-theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r :=
+theorem vadd_ball (p : Seminorm 𝕜 E) : x +ᵥ p.ball y r = p.ball (x +ᵥ y) r := by
   letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
-  Metric.vadd_ball x y r
+  simp [ball_eq_metric]
 
 /-- The image of a closed ball under addition with a singleton is another closed ball. -/
-theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r :=
+theorem vadd_closedBall (p : Seminorm 𝕜 E) : x +ᵥ p.closedBall y r = p.closedBall (x +ᵥ y) r := by
   letI := AddGroupSeminorm.toSeminormedAddCommGroup p.toAddGroupSeminorm
-  Metric.vadd_closedBall x y r
+  simp [closedBall_eq_metric]
 
 end SMul
 
@@ -1183,7 +1197,7 @@ lemma uniformSpace_eq_of_hasBasis
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)
     rcases h₁ with ⟨r, hr⟩
     exact p.continuous' hr
-  · rw [(@NormedAddCommGroup.nhds_zero_basis_norm_lt E
+  · rw [(@NormedAddGroup.nhds_zero_basis_norm_lt E
       p.toAddGroupSeminorm.toSeminormedAddGroup).le_basis_iff hb]
     simpa only [subset_def, mem_ball_zero] using h₂
 
@@ -1192,7 +1206,9 @@ lemma uniformity_eq_of_hasBasis
     {p' : ι → Prop} {s : ι → Set E} (p : Seminorm 𝕜 E) (hb : (𝓝 0 : Filter E).HasBasis p' s)
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     𝓤 E = ⨅ r > 0, 𝓟 {x | p (x.1 - x.2) < r} := by
-  rw [uniformSpace_eq_of_hasBasis p hb h₁ h₂]; rfl
+  rw [uniformSpace_eq_of_hasBasis p hb h₁ h₂]
+  simp only [sub_eq_add_neg, ← map_neg_add p]
+  rfl
 
 end Continuity
 
