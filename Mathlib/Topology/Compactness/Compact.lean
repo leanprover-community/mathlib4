@@ -277,6 +277,17 @@ theorem IsCompact.inter_iInter_nonempty {ι : Type v} (hs : IsCompact s) (t : ι
   contrapose! hst
   exact hs.elim_finite_subfamily_closed t htc hst
 
+lemma IsCompact.nonempty_inter_sInter (hs : IsCompact s) {t : Set (Set X)}
+    (ht : ∀ a ∈ t, IsClosed a) (h : ∀ a ⊆ t, a.Finite → (s ∩ ⋂₀ a).Nonempty) :
+    (s ∩ ⋂₀ t).Nonempty := by
+  rw [Set.sInter_eq_iInter]
+  refine hs.inter_iInter_nonempty _ (fun i ↦ ht _ i.2) fun a ↦ ?_
+  simpa using h (Subtype.val '' (a : Set t)) (by simp) (a.finite_toSet.image _)
+
+lemma CompactSpace.nonempty_sInter [CompactSpace X] {s : Set (Set X)} (hsc : ∀ t ∈ s, IsClosed t)
+    (hs : ∀ t ⊆ s, t.Finite → (⋂₀ t).Nonempty) : (⋂₀ s).Nonempty := by
+  simpa using isCompact_univ.nonempty_inter_sInter hsc (by simpa using hs)
+
 /-- Cantor's intersection theorem for `iInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
 theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
@@ -652,6 +663,16 @@ theorem inCompact.isBounded_iff : @IsBounded _ (inCompact X) s ↔ ∃ t, IsComp
   rw [Filter.mem_cocompact]
   simp
 
+/-- A locally bounded function maps a compact set to a bounded set. -/
+lemma isBounded_image_of_isLocallyBounded_of_isCompact {Y : Type*}
+    [Bornology Y] {s : Set X} (hs : IsCompact s) {f : X → Y}
+    (hf : ∀ x, ∃ t ∈ 𝓝 x, IsBounded (f '' t)) :
+    IsBounded (f '' s) := by
+  choose U hU using hf
+  obtain ⟨I, hI⟩ := hs.elim_nhds_subcover U (fun x _ => (hU x).1)
+  have : f '' ⋃ x ∈ I, U x = ⋃ x ∈ I, f '' U x := by simp [Set.image_iUnion₂]
+  exact ((isBounded_biUnion_finset I).2 fun i _ => (hU i).2).subset (this ▸ Set.image_mono hI.2)
+
 end Bornology
 
 /-- If `s` and `t` are compact sets, then the set neighborhoods filter of `s ×ˢ t`
@@ -795,6 +816,21 @@ theorem compactSpace_generateFrom' [T : TopologicalSpace X] {S : Set (Set X)}
       ⋃ i, U i = (univ (α := X)) → ∃ J : Set ι, J.Finite ∧ ⋃ i ∈ J, U i = (univ (α := X))) :
     CompactSpace X :=
   isCompact_univ_iff.mp <| isCompact_generateFrom' hTS <| by simpa
+
+omit [TopologicalSpace X] in
+lemma compactSpace_generateFrom_of_compl_mem [T : TopologicalSpace X]
+    (𝔅 : Set (Set X)) (hT : T = TopologicalSpace.generateFrom 𝔅) (h𝔅 : ∀ s ∈ 𝔅, sᶜ ∈ 𝔅)
+    (h : ∀ P ⊆ 𝔅, (∀ Q ⊆ P, Q.Finite → (⋂₀ Q).Nonempty) → (⋂₀ P).Nonempty) :
+    CompactSpace X := by
+  refine compactSpace_generateFrom hT fun P hP𝔅 hP ↦ ?_
+  contrapose! hP
+  simp_rw [← Set.nonempty_compl, Set.compl_sUnion] at hP ⊢
+  refine h _ ?_ fun Q hQP hQ ↦ ?_
+  · rintro _ ⟨S, hS, rfl⟩
+    exact h𝔅 _ (hP𝔅 hS)
+  · replace hP : Q ⊆ compl '' P → (compl '' Q).Finite → (⋂₀ Q).Nonempty := by
+      simpa [← compl_involutive.image_eq_preimage_symm] using hP (compl '' Q)
+    exact hP hQP (hQ.image _)
 
 theorem IsClosed.isCompact [CompactSpace X] (h : IsClosed s) : IsCompact s :=
   isCompact_univ.of_isClosed_subset h (subset_univ _)

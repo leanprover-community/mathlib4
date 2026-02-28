@@ -76,6 +76,7 @@ theorem exists_leftTransversal_of_FiniteIndex
 
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem leftCoset_cover_const_iff_surjOn :
     ⋃ i ∈ s, g i • (H : Set G) = Set.univ ↔ Set.SurjOn (g · : ι → G ⧸ H) s Set.univ := by
@@ -209,6 +210,7 @@ theorem exists_finiteIndex_of_leftCoset_cover : ∃ k ∈ s, (H k).FiniteIndex :
       exists_finiteIndex_of_leftCoset_cover_aux hcovers j hj hcovers'
     exact ⟨i, hi, hfi⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- Auxiliary to `leftCoset_cover_filter_FiniteIndex` and `one_le_sum_inv_index_of_leftCoset_cover`.
 @[to_additive]
 theorem leftCoset_cover_filter_FiniteIndex_aux
