@@ -37,7 +37,6 @@ generators, relations, group presentations
 
 universe u
 
-
 variable {α : Type*}
 
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedGroup` constructs the group with
@@ -148,8 +147,6 @@ theorem ext {φ ψ : PresentedGroup rels →* G} (hx : ∀ (x : α), φ (.of x) 
   apply hx
 
 variable {β : Type*}
-
-
 
 /-- Presented groups of isomorphic types are isomorphic. -/
 def equivPresentedGroup (rels : Set (FreeGroup α)) (e : α ≃ β) :
