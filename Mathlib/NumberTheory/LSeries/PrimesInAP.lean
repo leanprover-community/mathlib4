@@ -447,7 +447,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
     exact (this.trans_le h₀).false
   · obtain ⟨ξ, hξ₁, hξ₂⟩ : ∃ ξ ∈ Set.Ioc 1 2, (C + C') * (ξ - 1) < (q.totient : ℝ)⁻¹ := by
       refine ⟨min (1 + (q.totient : ℝ)⁻¹ / (C + C') / 2) 2, ⟨?_, min_le_right ..⟩, ?_⟩
-      · simpa only [lt_inf_iff, lt_add_iff_pos_right, Nat.ofNat_pos, div_pos_iff_of_pos_right,
+      · simpa only [lt_min_iff, lt_add_iff_pos_right, Nat.ofNat_pos, div_pos_iff_of_pos_right,
           Nat.one_lt_ofNat, and_true] using div_pos hq h₀
       · rw [← min_sub_sub_right, add_sub_cancel_left, ← lt_div_iff₀' h₀]
         exact (min_le_left ..).trans_lt <| div_lt_self (div_pos hq h₀) one_lt_two

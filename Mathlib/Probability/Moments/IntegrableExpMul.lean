@@ -207,7 +207,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 0 < t) :
     |x| ^ p ≤ (p / t) ^ p * max (exp (t * x)) (exp (-t * x)) := by
   by_cases hp_zero : p = 0
-  · simp only [hp_zero, rpow_zero, zero_div, neg_mul, one_mul, le_sup_iff, one_le_exp_iff,
+  · simp only [hp_zero, rpow_zero, zero_div, neg_mul, one_mul, le_max_iff, one_le_exp_iff,
       Left.nonneg_neg_iff]
     exact le_total 0 (t * x)
   have h_x_le c (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := le_inv_mul_exp x hc
