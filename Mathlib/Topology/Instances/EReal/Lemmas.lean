@@ -312,14 +312,11 @@ theorem limsup_const_mul_of_nonneg_of_ne_top [NeBot f] {c : EReal} (h₁ : 0 ≤
   simp_rw [EReal.mul_comm (x := c)]
   apply eq_of_le_of_ge
   · rw [limsup_le_iff]
-    intro r hr
-    rw [gt_iff_lt] at hr
-    simp_rw [← EReal.lt_div_iff (by aesop) (by aesop)] at *
-    apply eventually_lt_of_limsup_lt (hu := by isBoundedDefault) hr
+    simpa [← EReal.lt_div_iff (by aesop) (by aesop)]
+      using fun _ ↦ eventually_lt_of_limsup_lt
   · rw [le_limsup_iff]
-    intro r hr
-    simp_rw [← EReal.div_lt_iff (by aesop) (by aesop)] at *
-    apply frequently_lt_of_lt_limsup (hu := by isBoundedDefault) hr
+    simpa [← EReal.div_lt_iff (by aesop) (by aesop)]
+      using fun _ ↦ frequently_lt_of_lt_limsup
 
 set_option backward.isDefEq.respectTransparency false in
 lemma le_limsup_mul (hu : ∃ᶠ x in f, 0 ≤ u x) (hv : 0 ≤ᶠ[f] v) :
