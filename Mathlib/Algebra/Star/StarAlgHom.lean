@@ -145,7 +145,8 @@ theorem coe_copy (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : ⇑(f.c
 theorem copy_eq (f : A →⋆ₙₐ[R] B) (f' : A → B) (h : f' = f) : f.copy f' h = f :=
   DFunLike.ext' h
 
-@[simp]
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12179
+the simpNF linter complains about this being `@[simp]`. -/
 theorem coe_mk (f : A → B) (h₁ h₂ h₃ h₄ h₅) :
     ((⟨⟨⟨⟨f, h₁⟩, h₂, h₃⟩, h₄⟩, h₅⟩ : A →⋆ₙₐ[R] B) : A → B) = f :=
   rfl

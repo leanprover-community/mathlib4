@@ -181,7 +181,7 @@ theorem approx_nonneg (c : CU P) (n : ℕ) (x : X) : 0 ≤ c.approx n x := by
   induction n generalizing c with
   | zero => exact indicator_nonneg (fun _ _ => zero_le_one) _
   | succ n ihn =>
-    simp only [approx, midpoint_eq_smul_add, invOf_eq_inv]
+    simp only [approx, midpoint_eq_smul_add]
     refine mul_nonneg (inv_nonneg.2 zero_le_two) (add_nonneg ?_ ?_) <;> apply ihn
 
 theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
@@ -368,6 +368,7 @@ theorem exists_continuous_zero_one_of_isCompact [RegularSpace X] [LocallyCompact
   exact ⟨⟨c.lim, c.continuous_lim⟩, fun x hx ↦ c.lim_of_mem_C _ (sk.trans interior_subset hx),
     fun x hx => c.lim_of_notMem_U _ fun h => h hx, c.lim_mem_Icc⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous
 function `f : X → ℝ` such that
@@ -392,6 +393,7 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   · intro x
     simpa [and_comm] using hicc x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that

@@ -30,6 +30,7 @@ def AEDisjoint (s t : Set α) :=
 
 variable {μ} {s t u v : Set α}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `s : ι → Set α` is a countable family of pairwise a.e. disjoint sets, then there exists a
 family of measurable null sets `t i` such that `s i \ t i` are pairwise disjoint. -/
 theorem exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}

@@ -425,6 +425,7 @@ theorem mem_circumsphere_of_two_zsmul_oangle_eq {t : Triangle ℝ P} {p : P} {i�
 
 end Oriented
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The circumradius of a triangle may be expressed explicitly as half the length of a side
 divided by the sine of the angle at the third point (a version of the law of sines or sine rule). -/
 theorem dist_div_sin_angle_div_two_eq_circumradius (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3}

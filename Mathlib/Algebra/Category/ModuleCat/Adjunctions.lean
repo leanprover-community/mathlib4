@@ -84,6 +84,7 @@ def freeHomEquiv {X : Type u} {M : ModuleCat.{u} R} :
 
 variable (R)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for R-modules.
 -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
@@ -141,6 +142,7 @@ def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
   (finsuppTensorFinsupp' R _ _).toModuleIso
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
     (μIso R X Y).hom (freeMk x ⊗ₜ freeMk y) = freeMk ⟨x, y⟩ := by
@@ -148,6 +150,7 @@ lemma μIso_hom_freeMk_tmul_freeMk {X Y : Type u} (x : X) (y : Y) :
   erw [finsuppTensorFinsupp'_single_tmul_single]
   rw [mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
     (μIso R X Y).inv (freeMk z) = freeMk z.1 ⊗ₜ freeMk z.2 := by
@@ -156,6 +159,7 @@ lemma μIso_inv_freeMk {X Y : Type u} (z : X ⊗ Y) :
 
 end FreeMonoidal
 
+set_option backward.isDefEq.respectTransparency false in
 open FreeMonoidal in
 /-- The free functor `Type u ⥤ ModuleCat R` is a monoidal functor. -/
 instance : (free R).Monoidal :=
@@ -251,10 +255,10 @@ section
 instance : Preadditive (Free R C) where
   homGroup _ _ := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
-    dsimp [CategoryTheory.categoryFree]
+    dsimp +instances [CategoryTheory.categoryFree]
     rw [Finsupp.sum_add_index'] <;> · simp [add_mul]
   comp_add X Y Z f g g' := by
-    dsimp [CategoryTheory.categoryFree]
+    dsimp +instances [CategoryTheory.categoryFree]
     rw [← Finsupp.sum_add]
     congr; ext r h
     rw [Finsupp.sum_add_index'] <;> · simp [mul_add]
@@ -262,22 +266,25 @@ instance : Preadditive (Free R C) where
 instance : Linear R (Free R C) where
   homModule _ _ := Finsupp.module _ R
   smul_comp X Y Z r f g := by
-    dsimp [CategoryTheory.categoryFree]
+    dsimp +instances [CategoryTheory.categoryFree]
     rw [Finsupp.sum_smul_index] <;> simp [Finsupp.smul_sum, mul_assoc]
   comp_smul X Y Z f r g := by
-    dsimp [CategoryTheory.categoryFree]
+    dsimp +instances [CategoryTheory.categoryFree]
     simp_rw [Finsupp.smul_sum]
     congr; ext h s
     rw [Finsupp.sum_smul_index] <;> simp [mul_left_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem single_comp_single {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (r s : R) :
     (single f r ≫ single g s : Free.of R X ⟶ Free.of R Z) = single (f ≫ g) (r * s) := by
-  dsimp [CategoryTheory.categoryFree]; simp
+  dsimp +instances [CategoryTheory.categoryFree]
+  simp
 
 end
 
 attribute [local simp] single_comp_single
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category embeds into its `R`-linear completion.
 -/
 @[simps]
@@ -293,13 +300,16 @@ variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]
 
 open Preadditive Linear
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor to an `R`-linear category lifts to a functor from its `R`-linear completion.
 -/
 @[simps]
 def lift (F : C ⥤ D) : Free R C ⥤ D where
   obj X := F.obj X
   map {_ _} f := f.sum fun f' r => r • F.map f'
-  map_id := by dsimp [CategoryTheory.categoryFree]; simp
+  map_id := by
+    dsimp +instances [CategoryTheory.categoryFree]
+    simp
   map_comp {X Y Z} f g := by
     induction f using Finsupp.induction_linear with
     | zero => simp
@@ -329,11 +339,13 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
 theorem lift_map_single (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) (r : R) :
     (lift R F).map (single f r) = r • F.map f := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) : (lift R F).Additive where
   map_add {X Y} f g := by
     dsimp
     rw [Finsupp.sum_add_index'] <;> simp [add_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 instance lift_linear (F : C ⥤ D) : (lift R F).Linear R where
   map_smul {X Y} f r := by
     dsimp
@@ -345,6 +357,7 @@ is isomorphic to the original functor.
 def embeddingLiftIso (F : C ⥤ D) : embedding R C ⋙ lift R F ≅ F :=
   NatIso.ofComponents fun _ => Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two `R`-linear functors out of the `R`-linear completion are isomorphic iff their
 compositions with the embedding functor are isomorphic.
 -/

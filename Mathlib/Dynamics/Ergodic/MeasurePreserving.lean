@@ -189,6 +189,7 @@ protected theorem iterate (hf : MeasurePreserving f μ μ) :
   | 0 => .id μ
   | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
     (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :

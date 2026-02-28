@@ -102,6 +102,7 @@ theorem IsCoprime.of_prod_right (H1 : IsCoprime x (∏ i ∈ t, s i)) (i : I) (h
     IsCoprime x (s i) :=
   IsCoprime.prod_right_iff.1 H1 i hit
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Finset.prod_dvd_of_coprime
     (Hs : (t : Set I).Pairwise (IsCoprime on s)) (Hs1 : (∀ i ∈ t, s i ∣ z)) :
     (∏ x ∈ t, s x) ∣ z := by
@@ -125,6 +126,7 @@ end
 
 open Finset
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) :
     (∃ μ : I → R, (∑ i ∈ t, μ i * ∏ j ∈ t \ {i}, s j) = 1) ↔
       Pairwise (IsCoprime on fun i : t ↦ s i) := by
@@ -140,7 +142,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
     · rintro ⟨μ, hμ⟩
       rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat] at hμ
       refine ⟨ih.mp ⟨Pi.single h.choose (μ a * s h.choose) + μ * fun _ ↦ s a, ?_⟩, fun b hb ↦ ?_⟩
-      · rw [prod_eq_mul_prod_diff_singleton h.choose_spec, ← mul_assoc, ←
+      · rw [prod_eq_mul_prod_diff_singleton_of_mem h.choose_spec, ← mul_assoc, ←
           @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
         rw [← hμ, sum_congr rfl]
         intro x hx
