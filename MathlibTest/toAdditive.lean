@@ -22,6 +22,23 @@ theorem bar0_works : bar0 3 4 = 7 := by decide
 
 run_meta guard <| (← getConstInfo `Test.bar0).all == [`Test.bar0]
 
+mutual
+
+@[to_additive bar0a]
+partial def foo0a {α} [Monoid α] (x : α) : ℕ → α
+  | 0 => 1
+  | n + 1 => foo0b x n
+
+@[to_additive bar0b]
+partial def foo0b {α} [Monoid α] (x : α) : ℕ → α
+  | 0 => 1
+  | n + 1 => foo0a x n
+
+end
+
+run_meta guard <| (← getConstInfo `Test.foo0b).all == [`Test.foo0a, `Test.foo0b]
+run_meta guard <| (← getConstInfo `Test.bar0b).all == [`Test.bar0a, `Test.bar0b]
+
 class my_has_pow (α : Type u) (β : Type v) where
   pow : α → β → α
 
