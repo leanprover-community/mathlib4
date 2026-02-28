@@ -101,11 +101,9 @@ lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a := by
     cases Decidable.lt_or_eq_of_le h with | _ h => simp [h]
 
 @[to_dual self]
-lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
-  match lt_trichotomy a b with
-  | Or.inl hlt => le_of_lt hlt
-  | Or.inr (Or.inl HEq) => HEq ▸ le_refl a
-  | Or.inr (Or.inr hgt) => absurd hgt h
+lemma le_of_not_gt (h : ¬b < a) : a ≤ b := by
+  obtain hlt | heq | hgt := lt_trichotomy a b
+  exacts [le_of_lt hlt, heq ▸ le_refl a, absurd hgt h]
 
 @[to_dual self] lemma lt_or_ge (a b : α) : a < b ∨ b ≤ a :=
   if hba : b ≤ a then Or.inr hba else Or.inl <| lt_of_not_ge hba
@@ -139,13 +137,11 @@ lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max
 
 @[to_dual existing max_def]
 theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
-  match lt_trichotomy a b with
-  | .inl h | .inr (.inl h) | .inr (.inr h) => simp [le_of_lt, not_le_of_gt, h, min_def]
+  obtain h | h | h := lt_trichotomy a b <;> simp [le_of_lt, not_le_of_gt, h, min_def]
 
 @[to_dual existing min_def]
 theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
-  match lt_trichotomy a b with
-  | .inl h | .inr (.inl h) | .inr (.inr h) => simp [le_of_lt, not_le_of_gt, h, max_def]
+  obtain h | h | h := lt_trichotomy a b <;> simp [le_of_lt, not_le_of_gt, h, max_def]
 
 @[to_dual le_max_left]
 lemma min_le_left (a b : α) : min a b ≤ a := by
