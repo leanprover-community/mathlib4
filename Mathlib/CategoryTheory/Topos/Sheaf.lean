@@ -27,6 +27,8 @@ https://github.com/edegeltje/CwFTT/blob/591d4505390172ae70e1bc97544d293a35cc0b3f
 
 Let `C` refer to a category with grothendieck topology `J`.
 
+* `Presheaf.classifier C` is the data of a subobject classifier in `Cᵒᵖ ⥤ (Type (max u v))`.
+
 * `Sheaf.classifier J` is the data of a subobject classifier in `Sheaf J (Type (max u v))`.
 
 * `Sheaf.instHasClassifier J` says that there is at least one subobject classifier
@@ -198,6 +200,7 @@ lemma Presheaf.isClosed_χ_app_apply_of (J : GrothendieckTopology C)
 
 variable (C) in
 /-- A construction of a subject classifier in a category of presheaves. -/
+@[simps!]
 def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
   .mkOfTerminalΩ₀
     ((Functor.const _).obj PUnit)
@@ -207,6 +210,9 @@ def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
     (Presheaf.χ)
     (Presheaf.classifier_isPullback)
     (Presheaf.χ_uniqe · (χ₀' := _))
+
+instance HasClassifier.instPresheaf : HasClassifier (Cᵒᵖ ⥤ Type (max u v)) :=
+  ⟨⟨Presheaf.classifier C⟩⟩
 
 end presheaf
 
