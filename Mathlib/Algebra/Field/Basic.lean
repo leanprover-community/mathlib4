@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Commute
 public import Mathlib.Algebra.Ring.Invertible
+public import Mathlib.Algebra.Order.Ring.Synonym
 public import Mathlib.Order.Synonym
 
 import Mathlib.Tactic.Tauto
@@ -296,11 +297,27 @@ end Function.Injective
 
 namespace OrderDual
 
-instance instRatCast [RatCast K] : RatCast Kᵒᵈ := ‹_›
-instance instDivisionSemiring [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := ‹_›
-instance instDivisionRing [DivisionRing K] : DivisionRing Kᵒᵈ := ‹_›
-instance instSemifield [Semifield K] : Semifield Kᵒᵈ := ‹_›
-instance instField [Field K] : Field Kᵒᵈ := ‹_›
+instance instRatCast [RatCast K] : RatCast Kᵒᵈ where
+  ratCast x := toDual x
+instance instDivisionSemiring [h : DivisionSemiring K] : DivisionSemiring Kᵒᵈ where
+  inv_zero := h.inv_zero
+  mul_inv_cancel := h.mul_inv_cancel
+  nnqsmul x y := toDual <| x • y.ofDual
+  nnqsmul_def := h.nnqsmul_def
+  nnratCast_def := h.nnratCast_def
+instance instDivisionRing [h : DivisionRing K] : DivisionRing Kᵒᵈ where
+  inv_zero := h.inv_zero
+  mul_inv_cancel := h.mul_inv_cancel
+  nnqsmul x y := toDual <| x • y.ofDual
+  nnqsmul_def := h.nnqsmul_def
+  nnratCast_def := h.nnratCast_def
+  qsmul x y := toDual <| x • y.ofDual
+  ratCast_def := h.ratCast_def
+  qsmul_def := h.qsmul_def
+
+instance instSemifield [h : Semifield K] : Semifield Kᵒᵈ where
+  mul_comm := h.mul_comm
+instance instField [Field K] : Field Kᵒᵈ where
 
 end OrderDual
 

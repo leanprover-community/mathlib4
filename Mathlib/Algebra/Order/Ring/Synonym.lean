@@ -5,8 +5,9 @@ Authors: Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Nat.Cast.Synonym
 
 /-!
 # Ring structure on the order type synonyms
@@ -22,39 +23,50 @@ variable {R : Type*}
 /-! ### Order dual -/
 
 
-instance [h : Distrib R] : Distrib Rᵒᵈ := h
+instance [h : Distrib R] : Distrib Rᵒᵈ where
+  left_distrib := h.left_distrib
+  right_distrib := h.right_distrib
 
 instance [Mul R] [Add R] [h : LeftDistribClass R] : LeftDistribClass Rᵒᵈ := h
 
 instance [Mul R] [Add R] [h : RightDistribClass R] : RightDistribClass Rᵒᵈ := h
 
-instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ := h
+instance [h : NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring Rᵒᵈ where
+  zero_mul := h.zero_mul
+  mul_zero := h.mul_zero
 
-instance [h : NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ := h
+instance [h : NonUnitalSemiring R] : NonUnitalSemiring Rᵒᵈ where
 
-instance [h : NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ := h
+instance [h : NonAssocSemiring R] : NonAssocSemiring Rᵒᵈ where
 
-instance [h : Semiring R] : Semiring Rᵒᵈ := h
+instance [h : Semiring R] : Semiring Rᵒᵈ where
 
-instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ := h
+instance [h : NonUnitalCommSemiring R] : NonUnitalCommSemiring Rᵒᵈ where
 
-instance [h : CommSemiring R] : CommSemiring Rᵒᵈ := h
+instance [h : CommSemiring R] : CommSemiring Rᵒᵈ where
 
-instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg Rᵒᵈ := h
+instance [Mul R] [h : HasDistribNeg R] : HasDistribNeg Rᵒᵈ where
+  neg_mul := h.neg_mul
+  mul_neg := h.mul_neg
 
-instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ := h
+instance [h : NonUnitalNonAssocRing R] : NonUnitalNonAssocRing Rᵒᵈ where
 
-instance [h : NonUnitalRing R] : NonUnitalRing Rᵒᵈ := h
+instance [h : NonUnitalRing R] : NonUnitalRing Rᵒᵈ where
 
-instance [h : NonAssocRing R] : NonAssocRing Rᵒᵈ := h
+instance [h : NonAssocRing R] : NonAssocRing Rᵒᵈ where
+  intCast n := .toDual n
+  intCast_ofNat := h.intCast_ofNat
+  intCast_negSucc := h.intCast_negSucc
 
-instance [h : Ring R] : Ring Rᵒᵈ := h
+instance [h : Ring R] : Ring Rᵒᵈ where
 
-instance [h : NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ := h
+instance [h : NonUnitalCommRing R] : NonUnitalCommRing Rᵒᵈ where
 
-instance [h : CommRing R] : CommRing Rᵒᵈ := h
+instance [h : CommRing R] : CommRing Rᵒᵈ where
 
-instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ := h
+instance [Ring R] [h : IsDomain R] : IsDomain Rᵒᵈ where
+  mul_left_cancel_of_ne_zero := h.mul_left_cancel_of_ne_zero
+  mul_right_cancel_of_ne_zero := h.mul_right_cancel_of_ne_zero
 
 /-! ### Lexicographical order -/
 

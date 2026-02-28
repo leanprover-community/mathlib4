@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Order.Group.Abs
 public import Mathlib.Algebra.Order.Ring.Int
 public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.Cast.Synonym
 
 /-!
 # Order properties of cast of integers
@@ -115,9 +116,12 @@ open OrderDual
 
 namespace OrderDual
 
-instance instIntCast [IntCast R] : IntCast Rᵒᵈ := ‹_›
-instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := ‹_›
-instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ := ‹_›
+instance instIntCast [IntCast R] : IntCast Rᵒᵈ where
+  intCast n := toDual n
+instance instAddGroupWithOne [h : AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ where
+  intCast_ofNat := h.intCast_ofNat
+  intCast_negSucc := h.intCast_negSucc
+instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ where
 
 end OrderDual
 

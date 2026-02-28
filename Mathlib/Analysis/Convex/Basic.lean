@@ -125,6 +125,8 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
 theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
   by_cases hP : P <;> simp [hP, hs, convex_univ]
 
+theorem Convex.dual (hc : Convex 𝕜 s) : Convex 𝕜 (OrderDual.ofDual ⁻¹' s) := hc
+
 end SMul
 
 section Module
@@ -347,11 +349,11 @@ theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β)
 
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
-  MonotoneOn.convex_le (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual hs r
+  MonotoneOn.convex_le hf.dual hs.dual r
 
 theorem MonotoneOn.convex_gt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  MonotoneOn.convex_lt (E := Eᵒᵈ) (β := βᵒᵈ) hf.dual hs r
+  MonotoneOn.convex_lt hf.dual hs.dual r
 
 theorem AntitoneOn.convex_le (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x ≤ r }) :=

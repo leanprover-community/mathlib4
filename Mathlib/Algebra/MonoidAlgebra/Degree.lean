@@ -111,8 +111,9 @@ theorem sup_support_mul_le {degb : A → B} (degbm : ∀ a b, degb (a + b) ≤ d
 
 theorem le_inf_support_mul {degt : A → T} (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
-    f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
-  sup_support_mul_le (B := Tᵒᵈ) degtm f g
+    f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt := by
+  refine sup_support_mul_le (B := Tᵒᵈ) ?_ f g
+  exact degtm
 
 end AddOnly
 
@@ -151,8 +152,8 @@ theorem sup_support_pow_le (degb0 : degb 0 ≤ 0) (degbm : ∀ a b, degb (a + b)
 
 theorem le_inf_support_pow (degt0 : 0 ≤ degt 0) (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (n : ℕ) (f : R[A]) : n • f.support.inf degt ≤ (f ^ n).support.inf degt := by
-  refine OrderDual.ofDual_le_ofDual.mpr <| sup_support_pow_le (OrderDual.ofDual_le_ofDual.mp ?_)
-      (fun a b => OrderDual.ofDual_le_ofDual.mp ?_) n f
+  refine OrderDual.ofDual_le_ofDual.mpr <| sup_support_pow_le (B := Tᵒᵈ)
+    (OrderDual.ofDual_le_ofDual.mp ?_) (fun a b => OrderDual.ofDual_le_ofDual.mp ?_) n f
   · exact degt0
   · exact degtm _ _
 

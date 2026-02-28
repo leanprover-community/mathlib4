@@ -334,14 +334,14 @@ theorem SemilatticeInf.ext {α} {A B : SemilatticeInf α}
 
 -- `to_dual` cannot yet reorder arguments of arguments
 instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
-  sup := @SemilatticeInf.inf α _
+  sup a b := @SemilatticeInf.inf α _ a b
   le_sup_left := @SemilatticeInf.inf_le_left α _
   le_sup_right := @SemilatticeInf.inf_le_right α _
   sup_le := fun _ _ _ hca hcb => @SemilatticeInf.le_inf α _ _ _ _ hca hcb
 
 @[to_dual existing]
 instance OrderDual.instSemilatticeInf (α) [SemilatticeSup α] : SemilatticeInf αᵒᵈ where
-  inf := @SemilatticeSup.sup α _
+  inf a b := @SemilatticeSup.sup α _ a b
   inf_le_left := @le_sup_left α _
   inf_le_right := @le_sup_right α _
   le_inf := fun _ _ _ hca hcb => @sup_le α _ _ _ _ hca hcb

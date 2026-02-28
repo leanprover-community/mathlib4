@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Order.Synonym
+public import Mathlib.Algebra.Order.Group.Synonym
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -24,14 +25,15 @@ variable {α : Type*}
 
 open OrderDual
 
-instance [h : NatCast α] : NatCast αᵒᵈ :=
-  h
+instance [h : NatCast α] : NatCast αᵒᵈ where
+  natCast n := toDual n
 
-instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ :=
-  h
+instance [h : AddMonoidWithOne α] : AddMonoidWithOne αᵒᵈ where
+  natCast_zero := h.natCast_zero
+  natCast_succ := h.natCast_succ
 
-instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
-  h
+instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ where
+  add_comm := h.add_comm
 
 @[simp]
 theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=

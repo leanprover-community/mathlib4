@@ -27,25 +27,29 @@ variable {α : Type*}
 
 open OrderDual
 
-instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ := h
+instance [h : MulZeroClass α] : MulZeroClass αᵒᵈ where
+  zero_mul := h.zero_mul
+  mul_zero := h.mul_zero
 
-instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ := h
+instance [h : MulZeroOneClass α] : MulZeroOneClass αᵒᵈ where
 
 instance [Mul α] [Zero α] [h : NoZeroDivisors α] : NoZeroDivisors αᵒᵈ := h
 
-instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ := h
+instance [h : SemigroupWithZero α] : SemigroupWithZero αᵒᵈ where
 
-instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ := h
+instance [h : MonoidWithZero α] : MonoidWithZero αᵒᵈ where
 
 instance [Mul α] [Zero α] [h : IsLeftCancelMulZero α] : IsLeftCancelMulZero αᵒᵈ := h
 instance [Mul α] [Zero α] [h : IsRightCancelMulZero α] : IsRightCancelMulZero αᵒᵈ := h
 instance [Mul α] [Zero α] [h : IsCancelMulZero α] : IsCancelMulZero αᵒᵈ := h
 
-instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ := h
+instance [h : CommMonoidWithZero α] : CommMonoidWithZero αᵒᵈ where
 
-instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ := h
+instance [h : GroupWithZero α] : GroupWithZero αᵒᵈ where
+  inv_zero := h.inv_zero
+  mul_inv_cancel := h.mul_inv_cancel
 
-instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := h
+instance [h : CommGroupWithZero α] : CommGroupWithZero αᵒᵈ where
 
 /-! ### Lexicographic order -/
 

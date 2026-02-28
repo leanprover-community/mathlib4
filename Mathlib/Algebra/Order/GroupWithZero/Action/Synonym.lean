@@ -27,29 +27,49 @@ variable {G₀ M₀ : Type*}
 
 namespace OrderDual
 
-instance instSMulWithZero [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ᵒᵈ M₀ :=
-  ‹SMulWithZero G₀ M₀›
+instance instSMulWithZero [Zero G₀] [Zero M₀] [h : SMulWithZero G₀ M₀] : SMulWithZero G₀ᵒᵈ M₀ where
+  smul_zero := h.smul_zero
+  zero_smul := h.zero_smul
 
-instance instSMulWithZero' [Zero G₀] [Zero M₀] [SMulWithZero G₀ M₀] : SMulWithZero G₀ M₀ᵒᵈ :=
-  ‹SMulWithZero G₀ M₀›
+instance instSMulWithZero' [Zero G₀] [Zero M₀] [h : SMulWithZero G₀ M₀] : SMulWithZero G₀ M₀ᵒᵈ where
+  smul_zero := h.smul_zero
+  zero_smul := h.zero_smul
 
-instance instDistribSMul [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ᵒᵈ M₀ :=
-  ‹DistribSMul G₀ M₀›
+instance instDistribSMul [AddZeroClass M₀] [h : DistribSMul G₀ M₀] : DistribSMul G₀ᵒᵈ M₀ where
+  smul_zero := h.smul_zero
+  smul_add := h.smul_add
 
-instance instDistribSMul' [AddZeroClass M₀] [DistribSMul G₀ M₀] : DistribSMul G₀ M₀ᵒᵈ :=
-  ‹DistribSMul G₀ M₀›
+instance instDistribSMul' [AddZeroClass M₀] [h : DistribSMul G₀ M₀] : DistribSMul G₀ M₀ᵒᵈ where
+  smul_zero := h.smul_zero
+  smul_add := h.smul_add
 
-instance instDistribMulAction [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] :
-    DistribMulAction G₀ᵒᵈ M₀ := ‹DistribMulAction G₀ M₀›
+instance instDistribMulAction [Monoid G₀] [AddMonoid M₀] [h : DistribMulAction G₀ M₀] :
+    DistribMulAction G₀ᵒᵈ M₀ where
+  smul_zero := h.smul_zero
+  smul_add := h.smul_add
+  one_smul := h.one_smul
+  mul_smul := h.mul_smul
 
-instance instDistribMulAction' [Monoid G₀] [AddMonoid M₀] [DistribMulAction G₀ M₀] :
-    DistribMulAction G₀ M₀ᵒᵈ := ‹DistribMulAction G₀ M₀›
+instance instDistribMulAction' [Monoid G₀] [AddMonoid M₀] [h : DistribMulAction G₀ M₀] :
+    DistribMulAction G₀ M₀ᵒᵈ where
+  smul_zero := h.smul_zero
+  smul_add := h.smul_add
+  one_smul := h.one_smul
+  mul_smul := h.mul_smul
 
-instance instMulActionWithZero [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ᵒᵈ M₀ := ‹MulActionWithZero G₀ M₀›
+instance instMulActionWithZero [MonoidWithZero G₀] [AddMonoid M₀] [h : MulActionWithZero G₀ M₀] :
+    MulActionWithZero G₀ᵒᵈ M₀ where
+  smul_zero := h.smul_zero
+  zero_smul := h.zero_smul
+  one_smul := h.one_smul
+  mul_smul := h.mul_smul
 
-instance instMulActionWithZero' [MonoidWithZero G₀] [AddMonoid M₀] [MulActionWithZero G₀ M₀] :
-    MulActionWithZero G₀ M₀ᵒᵈ := ‹MulActionWithZero G₀ M₀›
+instance instMulActionWithZero' [MonoidWithZero G₀] [AddMonoid M₀] [h : MulActionWithZero G₀ M₀] :
+    MulActionWithZero G₀ M₀ᵒᵈ where
+  smul_zero := h.smul_zero
+  zero_smul := h.zero_smul
+  one_smul := h.one_smul
+  mul_smul := h.mul_smul
 
 end OrderDual
 

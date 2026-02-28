@@ -848,13 +848,17 @@ section Left
 variable [Preorder α] [Preorder β] [SMul α β] [Zero α]
 
 instance instPosSMulMono [PosSMulMono α β] : PosSMulMono α βᵒᵈ where
-  smul_le_smul_of_nonneg_left _a ha _b₁ _b₂ hb := smul_le_smul_of_nonneg_left (β := β) hb ha
+  smul_le_smul_of_nonneg_left _a ha _b₁ _b₂ hb :=
+    smul_le_smul_of_nonneg_left (α := α) (β := β) hb ha
 instance instPosSMulStrictMono [PosSMulStrictMono α β] : PosSMulStrictMono α βᵒᵈ where
-  smul_lt_smul_of_pos_left _a ha _b₁ _b₂ hb := smul_lt_smul_of_pos_left (β := β) hb ha
+  smul_lt_smul_of_pos_left _a ha _b₁ _b₂ hb :=
+    smul_lt_smul_of_pos_left (α := α) (β := β) hb ha
 instance instPosSMulReflectLT [PosSMulReflectLT α β] : PosSMulReflectLT α βᵒᵈ where
-  lt_of_smul_lt_smul_left _a ha _b₁ _b₂ h := lt_of_smul_lt_smul_of_nonneg_left (β := β) h ha
+  lt_of_smul_lt_smul_left _a ha _b₁ _b₂ h :=
+    lt_of_smul_lt_smul_of_nonneg_left (α := α) (β := β) h ha
 instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α βᵒᵈ where
-  le_of_smul_le_smul_left _a ha _b₁ _b₂ h := le_of_smul_le_smul_of_pos_left (β := β) h ha
+  le_of_smul_le_smul_left _a ha _b₁ _b₂ h :=
+    le_of_smul_le_smul_of_pos_left (α := α) (β := β) h ha
 
 end Left
 
@@ -865,22 +869,22 @@ variable [Preorder α] [Monoid α] [AddCommGroup β] [PartialOrder β] [IsOrdere
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
   smul_le_smul_of_nonneg_right _b hb a₁ a₂ ha := by
     rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg]
-    exact smul_le_smul_of_nonneg_right (β := β) ha <| neg_nonneg.2 hb
+    exact smul_le_smul_of_nonneg_right (α := α) (β := β) ha <| neg_nonneg.2 hb
 
 instance instSMulPosStrictMono [SMulPosStrictMono α β] : SMulPosStrictMono α βᵒᵈ where
   smul_lt_smul_of_pos_right _b hb a₁ a₂ ha := by
     rw [← neg_lt_neg_iff, ← smul_neg, ← smul_neg]
-    exact smul_lt_smul_of_pos_right (β := β) ha <| neg_pos.2 hb
+    exact smul_lt_smul_of_pos_right (α := α) (β := β) ha <| neg_pos.2 hb
 
 instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α βᵒᵈ where
   lt_of_smul_lt_smul_right _b hb a₁ a₂ h := by
     rw [← neg_lt_neg_iff, ← smul_neg, ← smul_neg] at h
-    exact lt_of_smul_lt_smul_right (β := β) h <| neg_nonneg.2 hb
+    exact lt_of_smul_lt_smul_right (α := α) (β := β) h <| neg_nonneg.2 hb
 
 instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α βᵒᵈ where
   le_of_smul_le_smul_right _b hb a₁ a₂ h := by
     rw [← neg_le_neg_iff, ← smul_neg, ← smul_neg] at h
-    exact le_of_smul_le_smul_right (β := β) h <| neg_pos.2 hb
+    exact le_of_smul_le_smul_right (α := α) (β := β) h <| neg_pos.2 hb
 
 end Right
 
