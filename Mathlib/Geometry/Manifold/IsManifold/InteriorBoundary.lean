@@ -233,24 +233,24 @@ lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
   rw [fderiv_comp _ (by fun_prop) hf, ContinuousLinearMap.fderiv] at h
   exact DFunLike.congr_fun h
 
-/-- A point `x` in a C¹ manifold is an interior point if and only if it gets mapped to the interior
-of the model space by any given chart - in other words, the notion of interior points does not
+/-- For any two charts `e`, `e'` around a point `x` in a C¹ manifold, `e` maps `x` to the interior
+of the model space iff `e'` does. - in other words, the notion of interior points does not
 depend on any choice of charts.
 
 Note that in general, this is actually quite nontrivial; that is why are focusing only on C¹
 manifolds here. For merely topological finite-dimensional manifolds the proof involves singular
 homology, and for infinite-dimensional topological manifolds I don't even know if this lemma holds.
 -/
-lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (hn : n ≠ 0)
-    {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
-    I.IsInteriorPoint x ↔ e.extend I x ∈ interior (e.extend I).target := by
-  -- it suffices to show that if `x` is interior in one chart `e` it also is in any other chart `e'`
-  revert e
+lemma mem_interior_range_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (hn : n ≠ 0)
+    {e e' : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) (he' : e' ∈ atlas H M) {x : M}
+    (hex : x ∈ e.source) (hex' : x ∈ e'.source) :
+    e.extend I x ∈ interior (e.extend I).target ↔
+    e'.extend I x ∈ interior (e'.extend I).target := by
+  -- it suffices to show one direction of the implication.
+  revert e e'
   suffices h : ∀ e ∈ atlas H M, x ∈ e.source → ∀ e' ∈ atlas H M, x ∈ e'.source →
       e.extend I x ∈ interior (e.extend I).target → e'.extend I x ∈ interior (e'.extend I).target by
-    rw [isInteriorPoint_iff]
-    exact fun e he hx ↦ ⟨h _ (chart_mem_atlas H x) (mem_chart_source H x) _ he hx,
-      h _ he hx _ (chart_mem_atlas H x) (mem_chart_source H x)⟩
+    exact fun e e' he he' hex hex' ↦ ⟨h e he hex e' he' hex', h e' he' hex' e he hex⟩
   intro e he hex e' he' hex' hx
   /- Since transition maps are diffeomorphisms, it suffices to show that if `e'` were to send `x`
   to the boundary of `range I`, the differential of the transition map `φ` from `e` to `e'` at `x`
@@ -281,6 +281,15 @@ lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (
   replace hφ := ((hφ.restrict_scalars ℝ).differentiableOn hn).differentiableAt hφx
   exact hφ.mem_interior_convex_of_surjective_fderiv hφx I.convex_range I.isClosed_range
     I.nonempty_interior (φ.mapsTo.mono_right <| by simp [φ, inter_assoc]) hφx'
+
+/-- A point `x` in a C¹ manifold is an interior point if and only if it gets mapped to the interior
+of the model space by any given chart - in other words, the notion of interior points does not
+depend on any choice of charts. -/
+lemma isInteriorPoint_iff_of_mem_atlas {n : WithTop ℕ∞} [IsManifold I n M] (hn : n ≠ 0)
+    {e : OpenPartialHomeomorph M H} (he : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
+    I.IsInteriorPoint x ↔ e.extend I x ∈ interior (e.extend I).target := by
+  rw [isInteriorPoint_iff]
+  exact mem_interior_range_iff_of_mem_atlas hn (chart_mem_atlas H x) he (mem_chart_source H x) hx
 
 /-- A point `x` in a C¹ manifold is a boundary point if and only if it gets mapped to the boundary
 of the model space by any given chart - in other words, the notion of boundary points does not
