@@ -289,9 +289,9 @@ lemma spanRank_map_eq_of_injective [RingHomSurjective σ] (f : M →ₛₗ[σ] N
   obtain rfl : span R s = p := by simpa [(map_injective_of_injective hf).eq_iff] using e
   grw [← hs, spanRank_span_le_card, Cardinal.mk_image_eq hf]
 
-lemma spanFinrank_map_eq_of_injective {L : Type*} [AddCommMonoid L] [Module S L] [RingHomSurjective σ]
-    (f : M →ₛₗ[σ] L) (hf : Function.Injective f) {p : Submodule R M} (hp : p.FG) :
-    (p.map f).spanFinrank = p.spanFinrank := by
+lemma spanFinrank_map_eq_of_injective {L : Type*} [AddCommMonoid L] [Module S L]
+    [RingHomSurjective σ] (f : M →ₛₗ[σ] L) (hf : Function.Injective f) {p : Submodule R M}
+    (hp : p.FG) : (p.map f).spanFinrank = p.spanFinrank := by
   refine (spanFinrank_map_le_of_fg f hp).antisymm ?_
   obtain ⟨s, hs⟩ : ∃ y, f '' y = (p.map f).generators := Set.subset_range_iff_exists_image_eq.mp
     ((subset_span.trans (p.map f).span_generators.le).trans LinearMap.map_le_range)
