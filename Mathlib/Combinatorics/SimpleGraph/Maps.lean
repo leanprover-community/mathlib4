@@ -83,6 +83,12 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
     rw [Embedding.sym2Map_apply, Sym2.map_mk, Sym2.eq_iff] at he
     exact he.elim (fun ⟨h, h'⟩ ↦ ⟨_, _, hadj, h, h'⟩) (fun ⟨h', h⟩ ↦ ⟨_, _, hadj.symm, h, h'⟩)
 
+variable (v) in
+theorem neighborSet_map (f : V ↪ W) : (G.map f).neighborSet (f v) = f '' G.neighborSet v := by
+  ext u
+  refine ⟨fun ⟨v', u', hadj, hv, hu⟩ ↦ ⟨u', f.injective hv ▸ hadj, hu⟩, fun ⟨u', hadj, hu⟩ ↦ ?_⟩
+  simpa [hu]
+
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
 
@@ -390,7 +396,7 @@ theorem image_edgeSet : Sym2.map f '' G.edgeSet = G'.edgeSet ∩ Set.range (Sym2
   apply le_antisymm
   · exact Set.subset_inter (f.toHom.image_edgeSet_subset) (Set.image_subset_range ..)
   · rintro _ ⟨huv, ⟨u, v⟩, rfl⟩
-  exact ⟨s(u, v), map_adj_iff f |>.mp huv, rfl⟩
+    exact ⟨s(u, v), map_adj_iff f |>.mp huv, rfl⟩
 
 theorem apply_mem_neighborSet_iff {v w : V} : f w ∈ G'.neighborSet (f v) ↔ w ∈ G.neighborSet v :=
   map_adj_iff f
@@ -404,7 +410,7 @@ theorem image_neighborSet : f '' G.neighborSet v = G'.neighborSet (f v) ∩ Set.
   apply le_antisymm
   · exact Set.subset_inter (f.toHom.image_neighborSet_subset v) (Set.image_subset_range f _)
   · rintro _ ⟨huv, u, rfl⟩
-  exact ⟨u, f.map_adj_iff.mp huv, rfl⟩
+    exact ⟨u, f.map_adj_iff.mp huv, rfl⟩
 
 /-- A graph embedding induces an embedding of edge sets. -/
 @[simps]
