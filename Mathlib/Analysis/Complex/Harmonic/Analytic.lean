@@ -78,23 +78,19 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
   let g := ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)
   have hg : DifferentiableOn ℂ g (ball z R) :=
     fun x hx ↦ (HarmonicAt.differentiableAt_complex_partial (hf x hx)).differentiableWithinAt
-  obtain ⟨F₀, hF₀⟩ := hg.isExactOn_ball
-  let F := fun x ↦ F₀ x - F₀ z + f z
-  have h₁F : ∀ z₁ ∈ ball z R, HasDerivAt F (g z₁) z₁ := by
-    simp_all [F]
-  have h₂F : DifferentiableOn ℂ F (ball z R) :=
-    fun x hx ↦ (h₁F x hx).differentiableAt.differentiableWithinAt
-  have h₃F : DifferentiableOn ℝ F (ball z R) :=
-    h₂F.restrictScalars (𝕜 := ℝ) (𝕜' := ℂ)
-  use F, h₂F.analyticOnNhd isOpen_ball
+  obtain ⟨F, hF⟩ := hg.isExactOn_ball.with_val_at z (f z)
+  have h₁F : DifferentiableOn ℂ F (ball z R) :=
+    fun x hx ↦ (hF.2 x hx).differentiableAt.differentiableWithinAt
+  have h₂F : DifferentiableOn ℝ F (ball z R) := h₁F.restrictScalars (𝕜 := ℝ) (𝕜' := ℂ)
+  use F, h₁F.analyticOnNhd isOpen_ball
   rw [(by aesop : (fun z ↦ (F z).re) = Complex.reCLM ∘ F)]
   intro x hx
   apply (convex_ball z R).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := z)
-  · exact reCLM.differentiable.comp_differentiableOn h₃F
+  · exact reCLM.differentiable.comp_differentiableOn h₂F
   · exact fun y hy ↦ (ContDiffAt.differentiableAt (hf y hy).1 two_ne_zero).differentiableWithinAt
   · exact isOpen_ball.uniqueDiffOn
   · intro y hy
-    have h₄F := (h₁F y hy).differentiableAt
+    have h₄F := (hF.2 y hy).differentiableAt
     have h₅F := h₄F.restrictScalars (𝕜 := ℝ) (𝕜' := ℂ)
     rw [fderivWithin_eq_fderiv (isOpen_ball.uniqueDiffWithinAt hy)
       (reCLM.differentiableAt.comp y h₅F), fderivWithin_eq_fderiv
@@ -103,10 +99,8 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
     ext a
     nth_rw 2 [(by simp : a = a.re • (1 : ℂ) + a.im • (I : ℂ))]
     rw [map_add, map_smul, map_smul]
-    simp [HasDerivAt.deriv (h₁F y hy), g]
-  · simp_all
-  · simp [F]
-  · assumption
+    simp [HasDerivAt.deriv (hF.2 y hy), g]
+  all_goals simp_all
 
 /--
 If a function `f : ℂ → ℝ` is harmonic, then `f` is the real part of a holomorphic function.
@@ -117,11 +111,10 @@ theorem InnerProductSpace.harmonic_is_realOfHolomorphic_univ {f : ℂ → ℝ}
   let g := ofRealCLM ∘ (fderiv ℝ f · 1) - I • ofRealCLM ∘ (fderiv ℝ f · I)
   have hg : Differentiable ℂ g :=
     fun x ↦ (HarmonicAt.differentiableAt_complex_partial (hf x (mem_univ x)))
-  obtain ⟨F₀, hF₀⟩ := hg.isExactOn_univ
-  let F := (F₀ · - F₀ 0 + f 0)
-  have h₁F : ∀ z₁, HasDerivAt F (g z₁) z₁ := by simp_all [F]
+  obtain ⟨F, hF⟩ := hg.isExactOn_univ.with_val_at 0 (f 0)
+  have h₁F : ∀ z₁, HasDerivAt F (g z₁) z₁ := by simp_all
   have h₂F : Differentiable ℂ F := fun x ↦ (h₁F x).differentiableAt
-  have h₃F  : Differentiable ℝ F := h₂F.restrictScalars (𝕜 := ℝ)
+  have h₃F : Differentiable ℝ F := h₂F.restrictScalars (𝕜 := ℝ)
   use F, (h₂F.differentiableOn).analyticOnNhd isOpen_univ
   ext x
   rw [← Complex.reCLM_apply, ← Function.comp_apply (f := reCLM)]
@@ -136,7 +129,7 @@ theorem InnerProductSpace.harmonic_is_realOfHolomorphic_univ {f : ℂ → ℝ}
     · simp only [map_smul, map_add]
       simp [(h₁F y).hasFDerivAt.restrictScalars ℝ |>.fderiv, g]
     · simp
-  all_goals simp [F]
+  all_goals simp_all
 
 set_option backward.isDefEq.respectTransparency false in
 /-

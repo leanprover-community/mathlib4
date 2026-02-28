@@ -115,6 +115,11 @@ In complex variable theory, this is also referred to as "having a primitive". -/
 def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
   ∃ g, ∀ z ∈ U, HasDerivAt g (f z) z
 
+lemma IsExactOn.with_val_at {f : ℂ → E} {s : Set ℂ} (h : IsExactOn f s) (x₀ : ℂ) (y : E) :
+    ∃ g, g x₀ = y ∧ ∀ x ∈ s, HasDerivAt g (f x) x := by
+  obtain ⟨η, hη⟩ := h
+  use fun z ↦ η z - η x₀ + y, by simp, by simpa using hη
+
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
 lemma IsConservativeOn.mono {U V : Set ℂ} (h : U ⊆ V) (hf : IsConservativeOn f V) :
