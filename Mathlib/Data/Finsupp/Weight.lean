@@ -117,7 +117,6 @@ theorem NonTorsionWeight.ne_zero [Nontrivial R] [NonTorsionWeight R w] (s : σ) 
   apply zero_ne_one.symm (α := R)
   exact NonTorsionWeight.eq_zero_of_smul_eq_zero h
 
-set_option backward.isDefEq.respectTransparency false in
 variable {w} in
 lemma weight_sub_single_add {f : σ →₀ ℕ} {i : σ} (hi : f i ≠ 0) :
     (f - single i 1).weight w + w i = f.weight w := by
@@ -134,7 +133,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
   classical
   simp only [weight_apply, Finsupp.sum]
   by_cases h : s ∈ f.support
-  · rw [Finset.sum_eq_add_sum_diff_singleton h]
+  · rw [Finset.sum_eq_add_sum_diff_singleton_of_mem h]
     refine le_trans ?_ (Nat.le_add_right _ _)
     apply Nat.le_mul_of_pos_right
     exact Nat.zero_lt_of_ne_zero hs
@@ -155,7 +154,7 @@ theorem le_weight_of_ne_zero (hw : ∀ s, 0 ≤ w s) {s : σ} {f : σ →₀ ℕ
   · apply le_smul_of_one_le_left (hw s)
     exact Nat.one_le_iff_ne_zero.mpr hs
   · rw [← Finsupp.mem_support_iff] at hs
-    rw [Finset.sum_eq_add_sum_diff_singleton hs]
+    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hs]
     exact le_add_of_nonneg_right <| Finset.sum_nonneg <|
       fun i _ ↦ nsmul_nonneg (hw i) (f i)
 

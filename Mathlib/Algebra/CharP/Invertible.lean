@@ -62,7 +62,6 @@ def invertibleOfCoprime {n : ℕ} (h : n.Coprime p) :
   invOf_mul_self := by rw [CharP.natCast_gcdA_mul_intCast_eq_gcd, h, Nat.cast_one]
   mul_invOf_self := by rw [CharP.intCast_mul_natCast_gcdA_eq_gcd, h, Nat.cast_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_eq_of_coprime {n : ℕ} [Invertible (n : R)] (h : n.Coprime p) :
     ⅟(n : R) = n.gcdA p := by
   letI : Invertible (n : R) := invertibleOfCoprime h
