@@ -180,7 +180,8 @@ private def encodingStep (e : Expr) (root : Bool) : LazyM Key := do
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 def initializeLazyEntryWithEta (e : Expr) (labelledStars : Bool := true) :
     MetaM (List (Key × LazyEntry)) := do
-  withReducible do initializeLazyEntryWithEtaAux e labelledStars
+  withConfig ({ · with transparency := .reducible, proj := .no }) do
+    initializeLazyEntryWithEtaAux e labelledStars
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 private def initializeLazyEntry (e : Expr) (labelledStars : Bool) : MetaM (Key × LazyEntry) := do
