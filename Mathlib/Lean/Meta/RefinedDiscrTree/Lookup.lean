@@ -275,7 +275,7 @@ and instead it returns an `Except Exception (MatchResult α)`.
 -/
 def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
     MetaM (Except Exception (MatchResult α) × RefinedDiscrTree α) := do
-  withConfig ({ · with transparency := .reducible, proj := .no }) do runTreeM d do
+  withReducible do runTreeM d do
     let (key, keys) ← encodeExpr e (labelledStars := false)
     let pMatch : PartialMatch := { keys, score := 0, trie := default }
     if key == .star then
