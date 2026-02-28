@@ -219,8 +219,8 @@ def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
     (.ofUniqueHom (fun _ => {app _ := fun _ => .unit}) (by aesop))
     (Functor.sieves C)
     (Presheaf.truth C)
-    (Presheaf.χ)
-    (Presheaf.classifier_isPullback)
+    Presheaf.χ
+    Presheaf.classifier_isPullback
     (Presheaf.χ_uniqe · (χ₀' := _))
 
 instance HasClassifier.instPresheaf : HasClassifier (Cᵒᵖ ⥤ Type (max u v)) :=
