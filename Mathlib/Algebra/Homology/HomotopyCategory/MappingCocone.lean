@@ -92,6 +92,45 @@ lemma id_X (p q : ℤ) (hpq : p + -1 = q) :
     Int.negOnePow_even 2 ⟨1, rfl⟩,
     mappingCone.id_X φ (p + -1) p (by lia)]
 
+section
+
+variable {M : CochainComplex C ℤ} {n m : ℤ}
+  (α : Cochain M K n) (β : Cochain M L m) (h : m + 1 = n)
+
+noncomputable def liftCochain :
+    Cochain M (mappingCocone φ) n :=
+  (mappingCone.liftCochain φ α β h).rightShift (-1) n (by lia)
+
+@[reassoc (attr := simp)]
+lemma liftCochain_v_fst_f (p₁ p₂ : ℤ) (h₁₂ : p₁ + n = p₂) :
+    (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (fst φ).f p₂ = α.v p₁ p₂ h₁₂ := by
+  simp [liftCochain, mappingCocone, fst,
+    Cochain.rightShift_v (n := m) _ _ _ _ p₁ _ _ (p₂ + -1) (by lia),
+    Cochain.leftShift_v (n := 1) _ _ _ _ _ p₂ _ (p₂ + -1) (by lia)]
+
+@[reassoc (attr := simp)]
+lemma liftCochain_v_snd_v (p₁ p₂ p₃ : ℤ) (h₁₂ : p₁ + n = p₂) (h₂₃ : p₂ + -1 = p₃) :
+    (liftCochain φ α β h).v p₁ p₂ h₁₂ ≫ (snd φ).v p₂ p₃ h₂₃ = β.v p₁ p₃ (by lia) := by
+  subst h₂₃
+  simp [liftCochain, mappingCocone, snd,
+    Cochain.rightShift_v (n := m) _ _ _ _ p₁ _ _ (p₂ + -1) (by lia),
+    Cochain.leftShift_v (n := 0) _ _ _ _ _ _ _ _ (add_zero _),
+    Int.negOnePow_even 2 ⟨1, rfl⟩]
+
+@[simp]
+lemma liftCochain_comp_fst :
+    (liftCochain φ α β h).comp (Cochain.ofHom (fst φ)) (add_zero _) = α := by
+  cat_disch
+
+@[simp]
+lemma liftCochain_comp_snd :
+    (liftCochain φ α β h).comp (snd φ) (by lia) = β := by
+  ext p q hpq
+  simp [Cochain.comp_v (n₁ := n) (n₂ := -1) (n₁₂ := m) _ _ _ p _ _ (by lia)
+    (Int.add_neg_cancel_right q 1)]
+
+end
+
 end
 
 section
