@@ -722,8 +722,7 @@ lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPa
     (p.append q).IsCycle := by
   rw [Walk.isCycle_def]
   refine ⟨(append_isTrail_iff_edges_disjoint hp.isTrail hq.isTrail).mpr (fun x h₁ h₂ ↦ ?_), ?_, ?_⟩
-  · have ⟨_, _, hx⟩ : ∃ a b, x = s(a, b) := by use x.out.1, x.out.2, by simp [Quot.out_eq x]
-    subst hx
+  · cases x
     cases lt_sup_iff.mp hn
     · obtain ⟨z, hz₁, hz₂⟩ := hp.exists_of_edges h₁ h₂ ‹_›
       exact h hz₁ hz₂
