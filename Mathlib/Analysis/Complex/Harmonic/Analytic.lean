@@ -121,27 +121,21 @@ theorem InnerProductSpace.harmonic_is_realOfHolomorphic_univ {f : ℂ → ℝ}
   let F := (F₀ · - F₀ 0 + f 0)
   have h₁F : ∀ z₁, HasDerivAt F (g z₁) z₁ := by simp_all [F]
   have h₂F : Differentiable ℂ F := fun x ↦ (h₁F x).differentiableAt
+  have h₃F  : Differentiable ℝ F := h₂F.restrictScalars (𝕜 := ℝ)
   use F, (h₂F.differentiableOn).analyticOnNhd isOpen_univ
-  rw [(by aesop : (fun z ↦ (F z).re) = Complex.reCLM ∘ F)]
   ext x
-  apply (convex_univ).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := 0)
-  · have := h₂F.restrictScalars (𝕜 := ℝ)
-    fun_prop
-  · exact fun y hy ↦ ((hf y hy).1.differentiableAt two_ne_zero).differentiableWithinAt
-  · exact isOpen_univ.uniqueDiffOn
-  · intro y hy
-    have h₃F := (h₁F y).differentiableAt
-    have h₄F := h₃F.restrictScalars (𝕜 := ℝ)
-    rw [fderivWithin_eq_fderiv (isOpen_univ.uniqueDiffWithinAt hy)
-      (reCLM.differentiableAt.comp y h₄F), fderiv_comp y (by fun_prop) h₄F,
-      ContinuousLinearMap.fderiv, h₃F.fderiv_restrictScalars (𝕜 := ℝ)]
-    ext a
-    nth_rw 2 [(by simp : a = a.re • (1 : ℂ) + a.im • (I : ℂ))]
-    rw [map_add, map_smul, map_smul]
-    simp [(h₁F y).deriv, g]
-  · simp_all
-  · simp [F]
-  · tauto
+  rw [← Complex.reCLM_apply, ← Function.comp_apply (f := reCLM)]
+  refine (convex_univ).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := 0) (by fun_prop) ?hd ?_ ?heq ?_ ?_ ?_
+  case hd => exact hf.contDiffOn.differentiableOn two_ne_zero
+  case heq =>
+    intro y hy
+    simp only [fderivWithin_univ]
+    rw [fderiv_comp y (by fun_prop) (by fun_prop)]
+    ext x
+    trans fderiv ℝ f y (x.re • (1 : ℂ) + x.im • (I : ℂ))
+    · simp only [map_smul, map_add]
+      simp [(h₁F y).hasFDerivAt.restrictScalars ℝ |>.fderiv, g]
+    · simp
 
 set_option backward.isDefEq.respectTransparency false in
 /-
