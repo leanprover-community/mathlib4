@@ -109,7 +109,8 @@ lemma le_of_not_gt (h : ¬b < a) : a ≤ b :=
 @[to_dual self] lemma le_or_gt (a b : α) : a ≤ b ∨ b < a := (lt_or_ge b a).symm
 
 @[to_dual gt_or_lt_of_ne]
-lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by grind
+lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ b < a := by
+  simpa [h] using lt_trichotomy a b
 
 @[to_dual ne_iff_gt_or_lt]
 lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ b < a := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
@@ -134,10 +135,16 @@ lemma min_def (a b : α) : min a b = if a ≤ b then a else b := LinearOrder.min
 lemma max_def (a b : α) : max a b = if a ≤ b then b else a := LinearOrder.max_def a b
 
 @[to_dual existing max_def]
-theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by grind
+theorem min_def' (a b : α) : min a b = if b ≤ a then b else a := by
+match lt_trichotomy a b with
+| .inl h | .inr (.inl h) | .inr (.inr h) =>
+  simp [le_of_lt, not_le_of_gt, h, min_def]
 
 @[to_dual existing min_def]
-theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by grind
+theorem max_def' (a b : α) : max a b = if b ≤ a then a else b := by
+match lt_trichotomy a b with
+| .inl h | .inr (.inl h) | .inr (.inr h) =>
+  simp [le_of_lt, not_le_of_gt, h, max_def]
 
 @[to_dual le_max_left]
 lemma min_le_left (a b : α) : min a b ≤ a := by grind
@@ -181,15 +188,15 @@ section Ord
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  grind
+  simp [apply_ite (· = Ordering.lt)]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ b < a := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  grind
+  simpa [apply_ite (· = Ordering.gt), ne_iff_lt_or_gt, and_or_left, - not_lt] using not_lt_of_gt
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  grind
+  simp +contextual [apply_ite (· = Ordering.eq)]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   cases h : compare a b
