@@ -3,8 +3,10 @@ Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.Geometry.Diffeology.Basic
-import Mathlib.Topology.Compactness.DeltaGeneratedSpace
+module
+
+public import Mathlib.Geometry.Diffeology.Basic
+public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 
 /-!
 # Continuous diffeology
@@ -19,6 +21,8 @@ See https://ncatlab.org/nlab/show/adjunction+between+topological+spaces+and+diff
 -/
 
 universe u
+
+@[expose] public section
 
 open scoped Topology
 
