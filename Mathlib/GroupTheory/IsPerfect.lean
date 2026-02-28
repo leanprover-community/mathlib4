@@ -14,7 +14,7 @@ A group `G` is perfect if it equals its commutator subgroup, that is `⁅G, G⁆
 
 Among the basic results, we show that
 * a nontrivial perfect group is not solvable (`IsPerfect.not_isSolvable`);
-* an abelian solvable group is trivial (`IsPerfect.subsingleton_of_isMulCommutative`).
+* an abelian perfect group is trivial (`IsPerfect.subsingleton_of_isMulCommutative`).
 
 ## Main Definition
 
@@ -73,8 +73,7 @@ instance [IsPerfect G] : IsPerfect (⊤ : Subgroup G) :=
 variable (G) in
 lemma not_isSolvable [Nontrivial G] [IsPerfect G] : ¬ IsSolvable G := by
   intro h
-  have comm_lt := IsSolvable.commutator_lt_of_ne_bot (bot_ne_top (α := Subgroup G)).symm
-  grind only [commutator_eq_top (G := G), _root_.commutator_def]
+  exact (h.commutator_lt_top_of_nontrivial G).ne commutator_eq_top
 
 variable (G) in
 lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
