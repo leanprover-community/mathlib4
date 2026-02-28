@@ -38,15 +38,14 @@ variable [IsLocalization M S]
 
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
 theorem exists_integer_polynomial_multiple (p : S[X]) : ∃ b ∈ M, IsInteger R[X] (b • p) := by
-  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := (exists_integer_multiple (Submonoid.map C M) p)
+  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C M) p
   use b, hb
-  rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
-  exact h
+  rwa [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
 
 theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
     ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
   obtain ⟨b, hb, hq⟩ := exists_integer_polynomial_multiple M p
-  obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts (f := (algebraMap R S)) hq
+  obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts hq
   exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩
 
 /-- `integerNormalization p` normalizes `p` to have integer coefficients
@@ -121,7 +120,7 @@ variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  let ⟨b, hb₁, hb₂⟩ := integerNormalization_spec (nonZeroDivisors A) p
+  obtain ⟨b, hb₁, hb₂⟩ := integerNormalization_spec (nonZeroDivisors A) p
   rw [← _root_.map_eq_zero_iff (mapRingHom _)
     (map_injective _ (FaithfulSMul.algebraMap_injective A K)), coe_mapRingHom, hb₂]
   exact smul_eq_zero_iff_right (nonZeroDivisors.ne_zero hb₁)
