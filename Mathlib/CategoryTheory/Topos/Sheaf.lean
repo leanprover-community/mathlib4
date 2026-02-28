@@ -56,11 +56,15 @@ open Limits
 section presheaf
 
 variable (C) in
+/--
+The presheaf sending each object to the set of sieves on it.
+This presheaf will turn out to be a subobject classifier for the category of presheaves -/
 @[simps]
 def Functor.sieves : Cᵒᵖ ⥤ Type (max u v) where
   obj X := Sieve X.unop
   map f := fun s => s.pullback f.unop
 
+/-- The natural inclusion of the `closedSieves` presheaf in the `sieves` presheaf -/
 @[simps]
 def closedSievesInclusion (J : GrothendieckTopology C) :
     Functor.closedSieves J ⟶ Functor.sieves C where
@@ -72,6 +76,8 @@ instance {J : GrothendieckTopology C} : Mono (closedSievesInclusion J) := by
   rw [mono_iff_injective]
   exact Subtype.val_injective
 
+/-- given a natural transformation into `sieves`, it factors through `closedSieves` when at each
+component `X : Cᵒᵖ`, the range lands within {s : Sieve X.unop | J.IsClosed s} -/
 @[simps]
 def closedSievesFactorization (J : GrothendieckTopology C) {F : Cᵒᵖ ⥤ Type (max u v)}
     (f : F ⟶ Functor.sieves C)
@@ -93,10 +99,18 @@ lemma closedSievesFactorization_comp_closedSievesInclusion (J : GrothendieckTopo
   simp
 
 variable (C) in
+/-- The truth morphism in the category of presheaves. At each component `X : C`, it is the constant
+map returning `⊤ : Sieve X.unop`. -/
 @[simps]
 def Presheaf.truth : ((CategoryTheory.Functor.const _).obj PUnit) ⟶ Functor.sieves C where
   app X := fun _ => (⊤ : Sieve X.unop)
 
+/--
+The characteristic map of an inclusion of presheaves.
+Given a monomorphism of sheaves `η : F ⟶ G`, an object X of the site, map an element `x : G(X)`
+to the (closed) sieve on X where `f : Y → X` is in the sieve iff
+  "∃ a ∈ F(Y), G(f)(x) = η_Y(a)"
+-/
 @[simps]
 def Presheaf.χ {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m] :
     G ⟶ Functor.sieves C where
@@ -141,8 +155,6 @@ lemma Presheaf.classifier_isPullback {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F �
     intro p hp
     simp_rw [eq_comm]
     simpa using congr($(hp).arrows (𝟙 _))
-
--- #check Classifier.uniq
 
 lemma Presheaf.χ_uniqe {F G : Cᵒᵖ ⥤ Type (max u v)} (m : F ⟶ G) [Mono m]
     {χ₀' : F ⟶ ((Functor.const _).obj PUnit)} (χ' : G ⟶ Functor.sieves C) :
@@ -227,7 +239,7 @@ def Sheaf.terminal (J : GrothendieckTopology C) : Sheaf J (Type w) where
 def Sheaf.terminal.isTerminal {J : GrothendieckTopology C} : IsTerminal (Sheaf.terminal.{w} J) :=
   .ofUniqueHom (fun F => { val := { app X := (fun _ => .unit) } }) (by intros; ext; rfl)
 
-/-- The sheaf of closed sieves w/r/t `J` -/
+/-- The sheaf of closed sieves w/r/t `J`. See also `Functor.closedSieves` -/
 @[simps val]
 def Sheaf.Ω {J : GrothendieckTopology C} : Sheaf J (Type (max u v)) where
   val := .closedSieves J
