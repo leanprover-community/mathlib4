@@ -125,7 +125,7 @@ theorem einfsep_insert_le : (insert x s).einfsep ≤ ⨅ (y ∈ s) (_ : x ≠ y)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem le_einfsep_pair : edist x y ⊓ edist y x ≤ ({x, y} : Set α).einfsep := by
-  simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff, mem_singleton_iff]
+  simp_rw [le_einfsep_iff, min_le_iff, mem_insert_iff, mem_singleton_iff]
   rintro a (rfl | rfl) b (rfl | rfl) hab <;> (try simp only [le_refl, true_or, or_true]) <;>
     contradiction
 
@@ -186,7 +186,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem einfsep_insert : einfsep (insert x s) =
     (⨅ (y ∈ s) (_ : x ≠ y), edist x y) ⊓ s.einfsep := by
   refine le_antisymm (le_min einfsep_insert_le (einfsep_anti (subset_insert _ _))) ?_
-  simp_rw [le_einfsep_iff, inf_le_iff, mem_insert_iff]
+  simp_rw [le_einfsep_iff, min_le_iff, mem_insert_iff]
   rintro y (rfl | hy) z (rfl | hz) hyz
   · exact False.elim (hyz rfl)
   · exact Or.inl (iInf_le_of_le _ (iInf₂_le hz hyz))

@@ -113,7 +113,7 @@ lemma exists_Finpartition_sum_ge {s : Set X} (hs : MeasurableSet s) {ε : ℝ≥
   have : ε' ≤ ε := by simp_all [ε']
   obtain hw | hw : preVariationFun f s ≠ 0 ∨ preVariationFun f s = 0 := ne_or_eq _ _
   · have : 0 < ε' := by
-      simp only [lt_inf_iff, ε']
+      simp only [lt_min_iff, ε']
       exact ⟨hε, toNNReal_pos hw h⟩
     let a := preVariationFun f s - ε'
     have ha : a < preVariationFun f s := ENNReal.sub_lt_self h hw (by positivity)

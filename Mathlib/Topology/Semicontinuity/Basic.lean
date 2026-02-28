@@ -552,7 +552,7 @@ theorem LowerSemicontinuousWithinAt.sup
     (hf : LowerSemicontinuousWithinAt f s a) (hg : LowerSemicontinuousWithinAt g s a) :
     LowerSemicontinuousWithinAt (fun x ↦ f x ⊔ g x) s a := by
   intro b hb
-  simp only [lt_sup_iff] at hb ⊢
+  simp only [lt_max_iff] at hb ⊢
   rcases hb with hb | hb
   · filter_upwards [hf b hb] with x using Or.intro_left _
   · filter_upwards [hg b hb] with x using Or.intro_right _
@@ -577,7 +577,7 @@ theorem LowerSemicontinuousWithinAt.inf
     (hf : LowerSemicontinuousWithinAt f s a) (hg : LowerSemicontinuousWithinAt g s a) :
     LowerSemicontinuousWithinAt (fun x ↦ f x ⊓ g x) s a := by
   intro b hb
-  simp only [lt_inf_iff] at hb ⊢
+  simp only [lt_min_iff] at hb ⊢
   exact Eventually.and (hf b hb.1) (hg b hb.2)
 
 theorem LowerSemicontinuousAt.inf

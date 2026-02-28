@@ -176,7 +176,7 @@ theorem TendstoLocallyUniformlyOn.smul₀_of_isBoundedUnder {X ι : Type*} [Topo
     (tendsto_inf.mpr ⟨H x hx, tendsto_principal.mpr ?_⟩)
   filter_upwards [hF x hx (Metric.dist_mem_uniformity one_pos),
     hG x hx (Metric.dist_mem_uniformity one_pos), tendsto_snd hC] with ⟨n, y⟩ hFn hGn hfg
-  simp only [mem_prod, Metric.mem_ball, Prod.dist_eq, Prod.fst_zero, Prod.snd_zero, sup_lt_iff,
+  simp only [mem_prod, Metric.mem_ball, Prod.dist_eq, Prod.fst_zero, Prod.snd_zero, max_lt_iff,
     mem_preimage, mem_setOf] at hFn hGn hfg ⊢
   grw [dist_triangle_left (F n y) 0 (f y), dist_triangle_left (G n y) 0 (g y)]
   constructor <;> constructor <;> linarith
