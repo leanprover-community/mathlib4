@@ -5,7 +5,7 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
 module
 
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Tower
 /-!
 # Adjoin one single element
