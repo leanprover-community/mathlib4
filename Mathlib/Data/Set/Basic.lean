@@ -290,6 +290,9 @@ theorem eq_of_subset_of_subset {a b : Set α} : a ⊆ b → b ⊆ a → a = b :=
 theorem notMem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
 
+theorem subset_iff_notMem : s ⊆ t ↔ ∀ ⦃a⦄, a ∉ t → a ∉ s := by
+  simp only [subset_def, not_imp_not]
+
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
 
@@ -1056,6 +1059,13 @@ instance decidableInsert [Decidable (a = b)] [Decidable (a ∈ s)] : Decidable (
 
 instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
+
+/-- `Set α` almost never has decidable equality.
+In fact, for an inhabited type `α`, `Set α` has decidable equality iff
+all propositions are decidable. We add a global instance that `Set α` has decidable equality,
+coming from the choice axiom, so that we don't have to provide `[DecidableEq (Set α)]` arguments
+in lemma statements. -/
+noncomputable instance decidableEq : DecidableEq (Set α) := Classical.typeDecidableEq (Set α)
 
 end Set
 
