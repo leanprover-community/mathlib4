@@ -6,6 +6,7 @@ Authors: Yoh Tanimoto
 module
 
 public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Twisted product module by a ring homomorphism
@@ -96,5 +97,58 @@ instance : Module R (twistedModuleProd σ E mr F ms) where
   zero_smul x := by ext <;> simp
 
 end twistedModuleProd
+
+end
+
+section
+
+variable {R S : Type*} [Ring R] [Ring S] (σ : R →+* S)
+  (E : Type*) [AddCommGroup E] [mr : Module R E]
+  (F : Type*) [AddCommGroup F] [ms : Module S F]
+
+-- def twistedModuleProd' :=
+  -- letI : SMul R S := { smul s t := (σ s) • t }
+  -- have smulRS (s : R) (t : S) : s • t = σ s • t := rfl
+  -- letI : SMul R F := { smul s x := (σ s) • x }
+  -- have smulRF (s : R) (x : F) : s • x = σ s • x := rfl
+  -- letI : IsScalarTower R S F :=
+  --   { smul_assoc s t x := by simpa [smulRS, smulRF] using mul_smul (σ s) t x }
+--  Module R (RestrictScalars R S F)
+-- need `Algebra R S`
+
+@[inherit_doc] notation:25 E "×[" σ:25 "] " F:0 => twistedModuleProd σ (E × F)
+
+end
+
+section
+
+variable {R S : Type*} [Ring R] [Ring S] (σ : R →+* S)
+  (E : Type*) [AddCommGroup E] [Module R E]
+  (F : Type*) [AddCommGroup F] [Module S F]
+
+def withTwist {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) := R
+
+instance : Ring (withTwist σ) := inferInstanceAs (Ring R)
+
+instance : SMul (withTwist σ) E where
+  smul s x := (id s : R) • x
+
+instance : SMul (withTwist σ) F where
+  smul s x := σ s • x
+
+namespace WithTwist
+
+@[simp]
+lemma smul_eq (s : withTwist σ) (x : F) : s • x = σ s • x := rfl
+
+instance : Module (withTwist σ) F where
+  mul_smul s t x := by simp [mul_smul]
+  one_smul x := by simp
+  smul_zero s := by simp
+  smul_add s x y := by simp [smul_add]
+  add_smul s t x := by simp [add_smul]
+  zero_smul x := by simp
+
+end WithTwist
 
 end
