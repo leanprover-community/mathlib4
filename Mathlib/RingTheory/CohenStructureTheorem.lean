@@ -20,7 +20,6 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.PowerSeries.Ideal
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.RegularLocalRing.Basic
-public import Mathlib.RingTheory.RegularLocalRing.PowerSeries
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.Algebra.Algebra.Hom.Rat
 public import Mathlib.RingTheory.Smooth.Quotient
