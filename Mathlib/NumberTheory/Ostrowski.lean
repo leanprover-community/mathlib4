@@ -201,7 +201,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
       simp only [one_div, ← log_div_log, log_inv, neg_div, ← div_neg, hM]
       gcongr
       simp only [Left.neg_pos_iff]
-      exact log_neg (lt_sup_iff.mpr <| .inl hp0) (sup_lt_iff.mpr ⟨hp1, hm⟩)
+      exact log_neg (lt_max_iff.mpr <| .inl hp0) (max_lt_iff.mpr ⟨hp1, hm⟩)
     _ = 1 / 2 := rpow_logb hx0 hx1.ne one_half_pos
   apply lt_irrefl (1 : ℝ)
   calc

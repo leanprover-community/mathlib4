@@ -39,14 +39,14 @@ lemma norm_symm (x y : ℤ) : ‖![x, y]‖ = ‖![y, x]‖ := by
 
 theorem abs_le_left_of_norm (m n : ℤ) : |n| ≤ ‖![n, m]‖ := by
   simp only [EisensteinSeries.norm_eq_max_natAbs, Fin.isValue, Matrix.cons_val_zero,
-    Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
+    Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_max_iff]
   left
   rw [Int.abs_eq_natAbs]
   exact le_refl _
 
 theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
   simp only [EisensteinSeries.norm_eq_max_natAbs, Fin.isValue, Matrix.cons_val_zero,
-    Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_sup_iff]
+    Matrix.cons_val_one, Matrix.cons_val_fin_one, Nat.cast_max, le_max_iff]
   right
   rw [Int.abs_eq_natAbs]
   exact le_refl _

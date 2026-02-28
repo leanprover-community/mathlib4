@@ -148,7 +148,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem add {f' q' r'} (H : f.IsWeierstrassDivisionAt g q r I)
     (H' : f'.IsWeierstrassDivisionAt g q' r' I) :
     (f + f').IsWeierstrassDivisionAt g (q + q') (r + r') I :=
-  ⟨(Polynomial.degree_add_le _ _).trans_lt (sup_lt_iff.2 ⟨H.degree_lt, H'.degree_lt⟩), by
+  ⟨(Polynomial.degree_add_le _ _).trans_lt (max_lt_iff.2 ⟨H.degree_lt, H'.degree_lt⟩), by
     rw [H.eq_mul_add, H'.eq_mul_add, Polynomial.coe_add]; ring⟩
 
 set_option backward.isDefEq.respectTransparency false in

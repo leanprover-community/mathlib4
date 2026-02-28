@@ -203,7 +203,7 @@ theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     apply eq_of_infinite_eval_eq h (hilbertPoly p d)
     apply ((Set.Ioi_infinite (max N p.natDegree)).image cast_injective.injOn).mono
     rintro x ⟨n, hn, rfl⟩
-    simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
+    simp only [Set.mem_Ioi, max_lt_iff, Set.mem_setOf_eq] at hn ⊢
     rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
 
 /--

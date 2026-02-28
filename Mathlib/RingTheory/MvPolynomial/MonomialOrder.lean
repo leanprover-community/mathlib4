@@ -322,7 +322,7 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
     m.toSyn (m.degree (f + g)) ≤ m.toSyn (m.degree f) ⊔ m.toSyn (m.degree g) := by
   conv_rhs => rw [← m.toSyn.apply_symm_apply (_ ⊔ _)]
   rw [degree_le_iff]
-  simp only [AddEquiv.apply_symm_apply, le_sup_iff]
+  simp only [AddEquiv.apply_symm_apply, le_max_iff]
   intro b hb
   by_cases hf : b ∈ f.support
   · left
