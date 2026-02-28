@@ -183,7 +183,7 @@ theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.na
 
 lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :
     (p.reflect N).natDegree ≤ max N p.natDegree := by
-  simp +contextual [-le_sup_iff, natDegree_le_iff_coeff_eq_zero,
+  simp +contextual [-le_max_iff, natDegree_le_iff_coeff_eq_zero,
     revAt, not_le_of_gt, coeff_eq_zero_of_natDegree_lt]
 
 section Eval₂

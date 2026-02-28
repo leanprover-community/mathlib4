@@ -577,19 +577,19 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
 attribute [deprecated max_ind (since := "2026-02-28")] sup_ind
 attribute [deprecated min_ind (since := "2026-02-28")] inf_ind
 
-@[to_dual (attr := simp) inf_le_iff]
+@[to_dual inf_le_iff]
 theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := le_max_iff
 
 attribute [deprecated le_max_iff (since := "2026-02-28")] le_sup_iff
 attribute [deprecated min_le_iff (since := "2026-02-28")] inf_le_iff
 
-@[to_dual (attr := simp) inf_lt_iff]
+@[to_dual inf_lt_iff]
 theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := lt_max_iff
 
 attribute [deprecated lt_max_iff (since := "2026-02-28")] lt_sup_iff
 attribute [deprecated min_lt_iff (since := "2026-02-28")] inf_lt_iff
 
-@[to_dual (attr := simp) lt_inf_iff]
+@[to_dual lt_inf_iff]
 theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a := max_lt_iff
 
 attribute [deprecated max_lt_iff (since := "2026-02-28")] sup_lt_iff
