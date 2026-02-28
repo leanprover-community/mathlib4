@@ -405,3 +405,24 @@ end IsInertiaField
 
 end splitting
 
+section IntermediateField
+
+variable [MulSemiringAction Gal(L/K) B] [FiniteDimensional K L] [IsGalois K L]
+  {F : IntermediateField K L}
+
+theorem isDecompositionField_iff_fixingSubgroup :
+    IsDecompositionField K L P F ↔ F.fixingSubgroup = stabilizer Gal(L/K) P := by
+  rw [isDecompositionField_iff, IsGaloisGroup.subgroup_iff, ← IntermediateField.fixedField,
+    IsGalois.fixedField_eq_iff_fixingSubgroup_eq]
+
+theorem isInertiaField_iff_fixingSubgroup :
+    IsInertiaField K L P F ↔ F.fixingSubgroup = inertia Gal(L/K) P := by
+  rw [isInertiaField_iff, IsGaloisGroup.subgroup_iff, ← IntermediateField.fixedField,
+    IsGalois.fixedField_eq_iff_fixingSubgroup_eq]
+
+variable (D E : IntermediateField K L) (𝓞D 𝓞E : Type*) [hD : IsDecompositionField K L P D]
+  [IsInertiaField K L P E] [Algebra B L] [FaithfulSMul B L] [hSD : SMulDistribClass Gal(L/K) B L]
+
+variable (F)
+
+end IntermediateField
