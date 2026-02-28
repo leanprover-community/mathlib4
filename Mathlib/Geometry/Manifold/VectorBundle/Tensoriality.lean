@@ -94,21 +94,21 @@ lemma tensoriality_criterion [FiberBundle F V] [VectorBundle ℝ F V]
   have hs (i) : MDiffAt (T% (s i)) x:=
     (contMDiffAt_localFrame_of_mem 1 _ b i x_mem).mdifferentiableAt (by simp)
   have hc {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) (i) :
-      MDiffAt ((c i) σ) x :=
-    mdifferentiableAt_localFrame_coeff x_mem b hσ i
-  have hφ {σ : (x : M) → V x}
-          (hσ : MDiffAt (T% σ) x) :
-      φ σ x = φ (fun x' ↦ ∑ i, (c i) σ x' • s i x') x := by
+      MDiffAt ((LinearMap.piApply (c i)) σ) x :=
+    mdifferentiableAt_localFrame_coeff b x_mem hσ i
+  have hφ {σ : (x : M) → V x} (hσ : MDiffAt (T% σ) x) :
+      φ σ x = φ (fun x' ↦ ∑ i, c i x' (σ x') • s i x') x := by
     exact
       locality hσ
         (.sum_section fun i ↦ (hc hσ i).smul_section (hs i))
-        (Basis.localFrame_eventually_eq_sum_coeff_smul b x_mem σ)
+        (t.eventually_eq_localFrame_sum_coeff_smul b x_mem)
   rw [hφ hσ, hφ hσ', sum_phi, sum_phi]
-  · change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
+  · change ∑ i, φ (((LinearMap.piApply (c i)) σ) • (s i)) x =
+      ∑ i, φ (((LinearMap.piApply (c i)) σ') • (s i)) x
     congr
     ext i
-    rw [φ_smul _ _ (hc hσ i) (hs i), φ_smul _ _ (hc hσ' i) (hs i),
-        Basis.localFrame_coeff_congr b hσσ']
+    rw [φ_smul _ _ (hc hσ i) (hs i), φ_smul _ _ (hc hσ' i) (hs i)]
+    simp [hσσ']
   · exact fun i ↦ (hc hσ' i).smul_section (hs i)
   · exact fun i ↦ (hc hσ i).smul_section (hs i)
 
@@ -151,15 +151,16 @@ lemma tensoriality_criterion' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteDi
   let t := trivializationAt F V x
   let s := t.localFrame b
   let c := t.localFrame_coeff (I := I) b
-  rw [locality (b.localFrame_eventually_eq_sum_coeff_smul (I := I) x_mem σ),
-    locality (b.localFrame_eventually_eq_sum_coeff_smul (I := I) x_mem σ'), sum_phi, sum_phi]
-  change ∑ i, φ ((c i σ) • (s i)) x = ∑ i, φ ((c i σ') • (s i)) x
+  rw [locality (t.eventually_eq_localFrame_sum_coeff_smul (I := I) b x_mem)]
+  nth_rw 2 [locality (t.eventually_eq_localFrame_sum_coeff_smul (I := I) b x_mem)]
+  rw [sum_phi, sum_phi]
+  -- FIXME: the `erw` below can be made an `rw` by uncommenting this `change`
+  --change ∑ i, φ (((LinearMap.piApply (c i)) σ) • (s i)) x =
+  --  ∑ i, φ (((LinearMap.piApply (c i)) σ') • (s i)) x
+  congr with i
+  -- `erw?` says this is because of smul with a constant vs. a function `M → ℝ`
+  erw [φ_smul, φ_smul]
   congr
-  ext i
-  rw [φ_smul, φ_smul]
-  congr
-  apply b.localFrame_coeff_congr
-  assumption
 
 include I in
 omit [IsManifold I 1 M] [FiberBundle F V] [VectorBundle ℝ F V] in

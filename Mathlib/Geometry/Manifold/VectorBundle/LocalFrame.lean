@@ -637,7 +637,7 @@ lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
 -- TODO: fix this proof!
 variable (b) in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
-lemma localExtensionOnL_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
+lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
     (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) (y : M) :
     (Trivialization.localFrame_coeff I e b i y) ((localExtensionOn b e) v y) =
     (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x) := by
@@ -660,6 +660,6 @@ lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace �
   apply (contMDiffOn_const
     (c := (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x))).congr
   intro y hy
-  rw [localExtensionOnL_localFrame_coeff b hx hy v i]
+  rw [localExtensionOn_localFrame_coeff b hx hy v i]
 
 end localExtensionOn

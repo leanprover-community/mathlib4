@@ -332,15 +332,15 @@ variable {I F}
 @[simp]
 lemma extend_add [FiniteDimensional ℝ F] [T2Space M] {x : M} (v v' : V x) :
     extend I F (v + v') = extend I F v + extend I F v' := by
-  simp [extend, localExtensionOn_add]
+  simp [extend]
 
 @[simp]
 lemma extend_smul [FiniteDimensional ℝ F] [T2Space M] {a : ℝ} {x : M} (v : V x) :
-  extend I F (a • v) = a • extend I F v := by simp [extend, localExtensionOn_smul]; module
+  extend I F (a • v) = a • extend I F v := by simp [extend]; module
 
 @[simp]
 lemma extend_zero [FiniteDimensional ℝ F] [T2Space M] (x : M) :
-  extend I F (0 : V x) = 0 := by simp [extend, localExtensionOn_zero]
+  extend I F (0 : V x) = 0 := by simp [extend]
 
 @[simp] lemma extend_apply_self [FiniteDimensional ℝ F] [T2Space M] {x : M} (v : V x) :
     extend I F v x = v := by
@@ -1237,50 +1237,50 @@ section to_trivialization
 
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e] [IsManifold I 1 M]
 
+namespace Bundle.Trivialization
+
 omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
   [(x : M) → AddCommGroup (V x)]
   [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] in
-lemma Trivialization.baseSet_mem_nhds {x : M} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
+lemma baseSet_mem_nhds {x : M} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
   e.open_baseSet.mem_nhds_iff.mpr hx
 
 omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
   [(x : M) → AddCommGroup (V x)] in
-lemma Trivialization.preimage_baseSet_mem_nhds {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+lemma preimage_baseSet_mem_nhds {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     TotalSpace.proj ⁻¹' e.baseSet ∈ 𝓝 v :=
   FiberBundle.continuous_proj F V |>.continuousAt <| e.baseSet_mem_nhds  hv
 
 omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
   [(x : M) → AddCommGroup (V x)] [(x : M) → TopologicalSpace (V x)] in
-lemma Trivialization.baseSet_prod_univ_mem_nhds {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
+lemma baseSet_prod_univ_mem_nhds {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     e.baseSet ×ˢ univ ∈ 𝓝 (e v) := by
   rw [← mk_proj_snd' e hv]
   exact prod_mem_nhds (e.baseSet_mem_nhds hv) univ_mem
 
 omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [(x : M) → TopologicalSpace (V x)]
     [FiberBundle F V] [MemTrivializationAtlas e] [(x : M) → AddCommGroup (V x)] in
-lemma Trivialization.comp_invFun_eventuallyEq
+lemma comp_invFun_eventuallyEq
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) : e ∘ e.invFun =ᶠ[𝓝 (e v)] id := by
   filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp using
     apply_symm_apply e <| (mem_target e).2 hp.1
 
 omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)] [MemTrivializationAtlas e]
   [(x : M) → AddCommGroup (V x)] in
-lemma Trivialization.invFun_comp_eventuallyEq
+lemma invFun_comp_eventuallyEq
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) : e.invFun ∘ e =ᶠ[𝓝 v] id := by
   filter_upwards [e.preimage_baseSet_mem_nhds hv] with w hw using
     symm_apply_apply e <| (mem_source e).mpr hw
 
 variable (I) in
 omit [MemTrivializationAtlas e] [IsManifold I 1 M] in
-lemma Trivialization.fst_comp_eventuallyEq
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+lemma fst_comp_eventuallyEq [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := by
   filter_upwards [preimage_baseSet_mem_nhds e hv] with y hy using coe_fst' e hy
 
 omit [IsManifold I 1 M] in
-lemma Trivialization.mdifferentiableAt
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+lemma mdifferentiableAt [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) (v : V x) :
 MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v := by
   have : ⟨x, v⟩ ∈ e.source := (coe_mem_source e).mpr hx
@@ -1289,8 +1289,7 @@ MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v := by
   exact this.mdifferentiableAt zero_ne_one.symm
 
 omit [IsManifold I 1 M] in
-lemma Trivialization.mdifferentiableAt_invFun
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+lemma mdifferentiableAt_invFun [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) (f : F) :
     MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (x, f) := by
   have : ⟨x, f⟩ ∈ e.target := (mk_mem_target e).mpr hx
@@ -1304,13 +1303,12 @@ lemma Trivialization.mdifferentiableAt_invFun
 -- which is $T_{π(v)} M × F$.
 variable (I) in
 noncomputable
-def Trivialization.deriv (v : TotalSpace F V) :
+def deriv (v : TotalSpace F V) :
     TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] TangentSpace I v.proj × F :=
   mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v
 
 omit [IsManifold I 1 M] in
-lemma Trivialization.bijective_deriv
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
+lemma bijective_deriv [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     Function.Bijective (e.deriv I v) := by
   have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
@@ -1327,7 +1325,7 @@ lemma Trivialization.bijective_deriv
 omit [NormedSpace ℝ F]
      [(x : M) → Module ℝ (V x)] [(x : M) → TopologicalSpace (V x)]
      [FiberBundle F V] [MemTrivializationAtlas e] in
-lemma Trivialization.symm_apply_apply_mk_eventuallyEq
+lemma symm_apply_apply_mk_eventuallyEq
     {x : M} (hx : x ∈ e.baseSet) (σ : Π x, V x) :
     (T% fun x' ↦ e.symm x' (e (T% σ x')).2) =ᶠ[𝓝 x] T% σ := by
   filter_upwards [e.baseSet_mem_nhds hx] with y hy
@@ -1336,7 +1334,7 @@ lemma Trivialization.symm_apply_apply_mk_eventuallyEq
 omit [NormedSpace ℝ F] [(x : M) → AddCommGroup (V x)]
      [(x : M) → Module ℝ (V x)] [(x : M) → TopologicalSpace (V x)]
      [FiberBundle F V] [MemTrivializationAtlas e] in
-lemma Trivialization.apply_section_eventuallyEq
+lemma apply_section_eventuallyEq
     {x : M} (hx : x ∈ e.baseSet) (σ : Π x, V x) :
     e ∘ T%σ =ᶠ[𝓝 x] fun x ↦ ⟨x, (e (σ x)).2⟩ := by
   filter_upwards [e.baseSet_mem_nhds hx] with y hy
@@ -1350,7 +1348,7 @@ noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
   (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
 
 omit [IsManifold I 1 M] in
-lemma Trivialization.comap_vert
+lemma comap_vert
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     Bundle.vert v = Submodule.comap (e.deriv I v).toLinearMap
@@ -1368,7 +1366,7 @@ lemma Trivialization.comap_vert
 -- FIXME: is this really missing??
 omit [NormedSpace ℝ F] [(x : M) → Module ℝ (V x)]
   [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] [MemTrivializationAtlas e] in
-lemma Trivialization.eq_of {x : M} {v v' : V x}
+lemma eq_of {x : M} {v v' : V x}
    (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
     v = v' := by
   have := e.symm_proj_apply v hx
@@ -1376,7 +1374,7 @@ lemma Trivialization.eq_of {x : M} {v v' : V x}
   grind [e.symm_proj_apply v' hx]
 
 omit [IsManifold I 1 M] in
-lemma Trivialization.mfderiv_comp_section
+lemma mfderiv_comp_section
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {σ : Π x : M, V x} {x : M} (hσ : MDiffAt T%σ x)
     (u : TangentSpace I x) (hx : x ∈ e.baseSet) :
@@ -1402,13 +1400,13 @@ lemma Trivialization.mfderiv_comp_section
   · exact (mdifferentiableAt_section_iff I e σ hx).mp hσ
 
 noncomputable
-def Trivialization.pushCovDer
+def pushCovDer
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)) :
     (Π x : M, TangentSpace I x) → (M → F) → (M → F) :=
   fun X σ x ↦ e (cov X (fun x' ↦ e.symm x' <| σ x') x) |>.2
 
 omit [MemTrivializationAtlas e] in
-lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+lemma pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
     [T2Space M] [IsManifold I ∞ M]
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
@@ -1428,7 +1426,7 @@ lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensio
 variable {cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     -- {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
 
-lemma Trivialization.pushCovDer_isCovariantDerivativeOn
+lemma pushCovDer_isCovariantDerivativeOn
     (hcov : IsCovariantDerivativeOn F cov e.baseSet) :
     IsCovariantDerivativeOn F (e.pushCovDer cov) e.baseSet where
       addX := sorry
@@ -1436,6 +1434,8 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
       addσ := sorry
       leibniz := sorry
       smul_const_σ := sorry
+
+end Bundle.Trivialization
 
 end to_trivialization
 
