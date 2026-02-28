@@ -575,7 +575,7 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
   max_ind (fun _ ↦ ha) (fun _ ↦ hb)
 
 attribute [deprecated max_ind (since := "2026-02-28")] sup_ind
-attribute [deprecated inf_ind (since := "2026-02-28")] inf_ind
+attribute [deprecated min_ind (since := "2026-02-28")] inf_ind
 
 @[to_dual (attr := simp) inf_le_iff]
 theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := le_max_iff

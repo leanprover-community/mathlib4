@@ -56,7 +56,7 @@ lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l�
    fun h ↦ h.trans <| l₂.prefix_append l₃⟩
 
 @[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
-  simp [prefix_take_iff, take_prefix]; omega
+  simp [prefix_take_iff, take_prefix]
 
 @[gcongr]
 protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l₂) :
