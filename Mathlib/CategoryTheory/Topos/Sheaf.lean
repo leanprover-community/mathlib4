@@ -20,26 +20,30 @@ public import Mathlib.CategoryTheory.Topos.Classifier
 
 We define a subobject classifier for categories of sheaves of (large enough) types.
 
-adapted from:
-https://github.com/edegeltje/CwFTT/blob/591d4505390172ae70e1bc97544d293a35cc0b3f/CwFTT/Classifier/Sheaf.lean
-
 ## Main definitions
 
-Let `C` refer to a category with grothendieck topology `J`.
+Let `C` refer to a category with (when relevant) grothendieck topology `J`.
 
-* `Presheaf.classifier C` is the data of a subobject classifier in `Cᵒᵖ ⥤ (Type (max u v))`.
+* `Presheaf.classifier C` is a construction of a subobject classifier in `Cᵒᵖ ⥤ (Type (max u v))`.
 
-* `Sheaf.classifier J` is the data of a subobject classifier in `Sheaf J (Type (max u v))`.
+* `Sheaf.classifier J` is a construction of a subobject classifier in `Sheaf J (Type (max u v))`.
 
-* `Sheaf.instHasClassifier J` says that there is at least one subobject classifier
-  in `Sheaf J (Type (max u v))`
+* `HasClassifier.instPresheaf C` says that `Cᵒᵖ ⥤ (Type (max u v))` has a subobject classifier.
+
+* `Sheaf.instHasClassifier J` says that `Sheaf J (Type (max u v))` has a subobject classifier.
 
 ## Main results
 
 * Any category of sheaves of (large enough) types has a subobject classifier.
 
-* As a consequence, (because categories of sheaves are cartesian monoidal and have finite limits
-  as well), such categories are Elementary Topoi.
+* As a consequence, (because categories of sheaves are cartesian monoidal and have finite limits,)
+  such categories are Elementary Topoi.
+
+## TODOS:
+
+* generalize the `HasClassifier` instances to assuming `EssentiallySmall.{w} C` rather than just
+  being about `Type (max u v)`.
+* generalize `Presheaf.isClosed_χ_app_apply_of` to only assuming `G` is separated
 
 -/
 
@@ -204,6 +208,8 @@ def Presheaf.classifier : Classifier (Cᵒᵖ ⥤ Type (max u v)) :=
     (.ofUniqueHom (fun _ => {app _ := fun _ => .unit}) (by aesop)) (Functor.sieves C)
     (Presheaf.truth C) Presheaf.χ Presheaf.classifier_isPullback (Presheaf.χ_uniqe · (χ₀' := _))
 
+-- TODO: generalize this to `HasClassifier (Cᵒᵖ ⥤ Type w)` assuming `EssentiallySmall.{w} C`.
+/-- Sheaf categories have a subobject classifier. -/
 instance HasClassifier.instPresheaf : HasClassifier (Cᵒᵖ ⥤ Type (max u v)) :=
   ⟨⟨Presheaf.classifier C⟩⟩
 
@@ -281,8 +287,9 @@ noncomputable def Sheaf.classifier (J : GrothendieckTopology C) :
   .mkOfTerminalΩ₀ (.terminal J Types.isTerminalPUnit) (Sheaf.terminal_isTerminal _ _) Sheaf.Ω
     Sheaf.truth Sheaf.χ Sheaf.classifier_isPullback Sheaf.χ_unique
 
+-- TODO: generalize this to `HasClassifier (Sheaf J (Type w))` assuming `EssentiallySmall.{w} C`.
 /-- Sheaf categories have a subobject classifier. -/
-instance (J : GrothendieckTopology C) : HasClassifier (Sheaf J (Type (max u v))) where
+instance HasClassifier.instSheaf : HasClassifier (Sheaf J (Type (max u v))) where
   exists_classifier := ⟨Sheaf.classifier J⟩
 
 end sheaf
