@@ -239,15 +239,6 @@ structure Octahedron'
   comm₄ : m₃ ≫ v₂₃ = v₁₃ ≫ u₁₂
   mem : Triangle.mk m₁ m₃ (v₂₃ ≫ w₁₂) ∈ distTriang C
 
-set_option backward.isDefEq.respectTransparency false in
-instance (X : C) :
-    Nonempty (Octahedron' (comp_id (𝟙 X)) (inv_rot_of_distTriang _ (contractible_distinguished X))
-      (inv_rot_of_distTriang _ (contractible_distinguished X))
-      (inv_rot_of_distTriang _ (contractible_distinguished X))) :=
- ⟨⟨0, 0, by simp, by simp, by simp, by simp, isomorphic_distinguished _
-   (contractible_distinguished (0 : C)) _ <| Triangle.isoMk _ (contractibleTriangle (0 : C))
-     (Functor.mapZeroObject _) (Functor.mapZeroObject _) (Functor.mapZeroObject _)⟩⟩
-
 namespace Octahedron'
 
 attribute [reassoc] comm₁ comm₂ comm₃ comm₄
