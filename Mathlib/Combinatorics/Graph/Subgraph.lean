@@ -17,7 +17,7 @@ and components.
 
 ## Main definitions
 
-- `H ≤ G`: the subgraph relation as a partial order on graphs.
+- `H ≤ G` (`Graph.IsSubgraph`): the subgraph relation as a partial order on graphs.
 - `H ≤s G` (`Graph.IsSpanningSubgraph`): `H` has the same vertex set as `G`.
 - `H ≤i G` (`Graph.IsInducedSubgraph`): `H` contains every ambient link between its vertices.
 - `H ≤c G` (`Graph.IsClosedSubgraph`): `H` is a union of components of `G`.
@@ -44,6 +44,7 @@ open scoped Sym2
 
 namespace Graph
 
+/-- `H ≤ G` (`Graph.IsSubgraph`) means `V(H) ⊆ V(G)` and every link of `H` is a link of `G`. -/
 @[mk_iff]
 structure IsSubgraph (H G : Graph α β) : Prop where
   vertexSet_mono : V(H) ⊆ V(G)
