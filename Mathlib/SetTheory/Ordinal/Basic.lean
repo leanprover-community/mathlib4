@@ -623,6 +623,10 @@ theorem card_zero : card 0 = 0 := mk_eq_zero _
 @[simp]
 theorem card_one : card 1 = 1 := mk_eq_one _
 
+theorem card_typein_min_le_mk {r : α → α → Prop} [IsWellOrder α r] {s : Set α} (hs : sᶜ.Nonempty) :
+    (Ordinal.typein r <| IsWellFounded.wf.min (r := r) sᶜ hs).card ≤ #s :=
+  IsWellFounded.wf.mk_subtype_lt_min_compl_le_mk hs
+
 /-! ### Lifting ordinals to a higher universe -/
 
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
