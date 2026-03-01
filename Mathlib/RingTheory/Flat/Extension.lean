@@ -61,15 +61,21 @@ abbrev extensionByAlgebraic (x : K) (int : IsIntegral (ResidueField S) x) :
 
   sorry
 
+--instance (x : K) (int : IsIntegral (ResidueField S) x) :
+--    Algebra (ResidueField (extensionByAlgebraic K S x int)) K := sorry
+
+
 abbrev extensionByTranscendental : Type w :=
   Localization.AtPrime ((maximalIdeal S).map Polynomial.C)
 
 instance : IsLocalHom (algebraMap S (extensionByTranscendental S)) := sorry
 
-instance : IsLocalHom (algebraMap R (extensionByTranscendental S)) := sorry
+def extensionByTranscendentalAlgebraK (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
+    Algebra (ResidueField (extensionByTranscendental S)) K := sorry
 
-abbrev extensionByTranscendentalEmbd (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
-    ResidueField (extensionByTranscendental S) →ₐ[ResidueField R] K := sorry
+def extensionByTranscendentalIsScalarTower (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
+    letI := extensionByTranscendentalAlgebraK K S x nint
+    IsScalarTower (ResidueField S) (ResidueField (extensionByTranscendental S)) K := sorry
 
 end monogenic
 
