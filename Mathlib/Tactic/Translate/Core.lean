@@ -613,12 +613,10 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : Reorder) (dont : List Nat)
     (unfoldBoundaries? : Option UnfoldBoundary.UnfoldBoundaries) :
     MetaM (ConstantInfo × Option RelevantArg) := do
+  unless srcDecl.all == [srcDecl.name] do
+    throwError "`{t.attrName}` does not support mutually recursive declarations."
   let mut decl := srcDecl.updateName tgt
-  let env ← getEnv
-  let newAll := srcDecl.all.map fun n =>
-    if n == srcDecl.name then tgt
-    else (findTranslationName? env t n).getD n
-  decl := decl.updateAll newAll
+  decl := decl.updateAll [tgt]
   if reorder.any (·.contains 0) then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
   let mut value := decl.value! (allowOpaque := true)
