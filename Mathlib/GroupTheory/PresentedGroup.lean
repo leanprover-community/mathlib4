@@ -182,7 +182,7 @@ def freeGroupProdKerEquiv (G : Type*) [Group G] :
       (Subgroup.normalClosure_eq_self (MonoidHom.ker f)).symm
   e₂.symm.trans e₁
 
-/-- Every group is isomorphic to some presented group. -/
+/-- There exists an isomorphism for every group to a presented group. -/
 theorem exists_presentation (G : Type u) [Group G] :
     ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels) := by
   let rels : Set (FreeGroup G) := ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G))
