@@ -61,15 +61,21 @@ abbrev extensionByAlgebraic (x : K) (int : IsIntegral (ResidueField S) x) :
 
   sorry
 
+--instance (x : K) (int : IsIntegral (ResidueField S) x) :
+--    Algebra (ResidueField (extensionByAlgebraic K S x int)) K := sorry
+
+
 abbrev extensionByTranscendental : Type w :=
   Localization.AtPrime ((maximalIdeal S).map Polynomial.C)
 
 instance : IsLocalHom (algebraMap S (extensionByTranscendental S)) := sorry
 
-instance : IsLocalHom (algebraMap R (extensionByTranscendental S)) := sorry
+def extensionByTranscendentalAlgebraK (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
+    Algebra (ResidueField (extensionByTranscendental S)) K := sorry
 
-abbrev extensionByTranscendentalEmbd (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
-    ResidueField (extensionByTranscendental S) →ₐ[ResidueField R] K := sorry
+def extensionByTranscendentalIsScalarTower (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
+    letI := extensionByTranscendentalAlgebraK K S x nint
+    IsScalarTower (ResidueField S) (ResidueField (extensionByTranscendental S)) K := sorry
 
 end monogenic
 
@@ -88,18 +94,15 @@ namespace FlatExtension
 
 attribute [instance] commRing algebra isLocalRing isLocalHom algebraK isScalarTower
 
-noncomputable def trivial [Small.{w} R] : FlatExtension R K :=
-  /-
+noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
   let e : R ≃+* Shrink.{w} R := (Shrink.ringEquiv R).symm
   let : IsLocalHom (algebraMap R (Shrink.{w} R)) :=
     IsLocalHom.of_surjective e.toRingHom e.surjective
-  refine ⟨Shrink.{w} R, Module.Flat.of_linearEquiv (Shrink.linearEquiv R R), ?_, ?_⟩
-  · apply (IsLocalRing.eq_maximalIdeal _).symm
-    exact (Ideal.isMaximal_map_iff_of_bijective _ e.bijective).2 inferInstance
-  · exact (Algebra.ofId (ResidueField R) K).comp
-      (AlgEquiv.ofRingEquiv (f := ResidueField.mapEquiv e) (fun x ↦ rfl)).symm.toAlgHom
-  -/
-  sorry
+  let : Algebra (ResidueField (Shrink.{w, u} R)) K := sorry
+  let : IsScalarTower (ResidueField R) (ResidueField (Shrink.{w, u} R)) K := sorry
+  refine ⟨Shrink.{w} R, Module.Flat.of_linearEquiv (Shrink.linearEquiv R R), ?_⟩
+  apply (IsLocalRing.eq_maximalIdeal _).symm
+  exact (Ideal.isMaximal_map_iff_of_bijective _ e.bijective).2 inferInstance
 
 variable {R K} in
 structure Hom (S₁ S₂ : FlatExtension.{w} R K) where
@@ -116,10 +119,16 @@ instance : Category.{w} (FlatExtension.{w} R K) where
   comp f g := ⟨g.hom.comp f.hom, by
     simp [← f.comm, ← g.comm, AlgHom.comp_toRingHom', ResidueField.map_comp, ← RingHom.comp_assoc]⟩
 
-private noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
+noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
   X₀ := trivial R K
   succ S := sorry
   toSucc S := sorry
+
+lemma algebraMap_range_lt_of_not_surjective [Small.{w} R] (S : FlatExtension R K)
+    (nsurj : ¬ Function.Surjective (algebraMap (ResidueField S.Ring) K)) :
+    (algebraMap (ResidueField S.Ring) K).range <
+    (algebraMap (ResidueField ((FlatExtension.SuccStruct R K).succ S).Ring) K).range := by
+  sorry
 
 variable (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [Small.{w} R]
 
