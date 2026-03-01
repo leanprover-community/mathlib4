@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.FreeGroup.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Defining a group given by generators and relations
