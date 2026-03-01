@@ -40,6 +40,11 @@ For `G : Graph α β`, ...
 * `G.loopSet x` is the set of loops with both ends equal to `x`.
 * `G.copy` creates a definitional copy of a graph with propositionally equal data.
 * `G.Compatible H` means that `G` and `H` agree on the incidence relation for their shared edges.
+* `Graph.noEdge V` is the graph with vertex set `V` and no edges.
+* `Graph.bouquet v E` is the graph with vertex set `{v}` and edge set `E`,
+  where every edge is a loop at `v`.
+* `Graph.banana u v E` is the graph with vertex set `{u, v}` and edge set `E`,
+  where every edge connects `u` and `v`.
 
 ## Implementation notes
 
@@ -458,5 +463,142 @@ lemma IsNonloopAt.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G
     H.IsNonloopAt e x := by
   obtain ⟨y, hne, hy⟩ := h
   exact ⟨y, hne, hy.of_compatible hGH heH⟩
+
+/-! ### Graphs with no edges -/
+
+/-- The graph with vertex set `vertexSet` and no edges -/
+@[simps (attr := grind =)]
+protected def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
+  vertexSet := vertexSet
+  edgeSet := ∅
+  IsLink _ _ _ := False
+  isLink_symm := by simp
+  eq_or_eq_of_isLink_of_isLink := by simp
+  edge_mem_iff_exists_isLink := by simp
+  left_mem_of_isLink := by simp
+
+variable {vertexSet : Set α} {edgeSet : Set β}
+
+@[simp]
+lemma noEdge_not_inc : ¬ (Graph.noEdge vertexSet β).Inc e x := by
+  simp [Inc]
+
+@[simp]
+lemma noEdge_not_isLoopAt : ¬ (Graph.noEdge vertexSet β).IsLoopAt e x := by
+  simp [← isLink_self_iff]
+
+@[simp]
+lemma noEdge_not_isNonloopAt : ¬ (Graph.noEdge vertexSet β).IsNonloopAt e x := by
+  simp [IsNonloopAt]
+
+@[simp]
+lemma noEdge_not_adj : ¬ (Graph.noEdge vertexSet β).Adj x y := by
+  simp [Adj]
+
+lemma edgeSet_eq_empty_iff : E(G) = ∅ ↔ G = Graph.noEdge V(G) β := by
+  refine ⟨fun h ↦ Graph.ext rfl ?_, fun h ↦ by rw [h, noEdge_edgeSet]⟩
+  simp only [noEdge_isLink, iff_false]
+  refine fun e x y he ↦ ?_
+  have := h ▸ he.edge_mem
+  simp at this
+
+/-! ### Graphs with one vertex  -/
+
+/-- A graph with one vertex and loops at that vertex -/
+@[simps (attr := grind =)]
+def bouquet (v : α) (edgeSet : Set β) : Graph α β where
+  vertexSet := {v}
+  edgeSet := edgeSet
+  IsLink e x y := e ∈ edgeSet ∧ x = v ∧ y = v
+  isLink_symm e := by simp +contextual [Symmetric]
+  eq_or_eq_of_isLink_of_isLink := by aesop
+  edge_mem_iff_exists_isLink := by aesop
+  left_mem_of_isLink := by aesop
+
+@[simp]
+lemma bouquet_inc : (bouquet v edgeSet).Inc e x ↔ e ∈ edgeSet ∧ x = v := by
+  simp [Inc]
+
+@[simp]
+lemma bouquet_isLoopAt : (bouquet v edgeSet).IsLoopAt e x ↔ e ∈ edgeSet ∧ x = v := by
+  simp [← isLink_self_iff]
+
+@[simp]
+lemma bouquet_not_isNonloopAt : ¬ (bouquet v edgeSet).IsNonloopAt e x := by
+  simp +contextual [IsNonloopAt, eq_comm]
+
+@[simp]
+lemma bouquet_adj : (bouquet v edgeSet).Adj x y ↔ edgeSet.Nonempty ∧ x = v ∧ y = v := by
+  simp only [Adj, bouquet_isLink, exists_and_right, and_congr_left_iff, and_imp]
+  exact fun _ _ ↦ Iff.rfl
+
+/-- Every graph on just one vertex is a bouquet on that vertex. -/
+lemma eq_bouquet_of_mem (hv : v ∈ V(G)) (hss : V(G).Subsingleton) : G = bouquet v E(G) := by
+  have hrw := hss.eq_singleton_of_mem hv
+  refine Graph.ext_inc (by simpa) fun e x ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp [bouquet_inc, ← mem_singleton_iff, ← hrw, h.edge_mem, h.vertex_mem]
+  simp only [bouquet_inc] at h
+  obtain ⟨z,w, hzw⟩ := exists_isLink_of_mem_edgeSet h.1
+  rw [h.2, ← show z = v from (show z ∈ {v} from hrw ▸ hzw.left_mem)]
+  exact hzw.inc_left
+
+lemma eq_bouquet (hV : V(G) = {v}) : G = bouquet v E(G) :=
+  eq_bouquet_of_mem (by simp [hV]) (by simp [hV])
+
+/-- Every graph on just one vertex is a bouquet on that vertex. -/
+lemma exists_eq_bouquet_edge (hv : v ∈ V(G)) (hss : V(G).Subsingleton) : ∃ F, G = bouquet v F :=
+  ⟨E(G), eq_bouquet_of_mem hv hss⟩
+
+lemma exists_eq_bouquet (hne : V(G).Nonempty) (hss : V(G).Subsingleton) : ∃ x F, G = bouquet x F :=
+  ⟨_, _, eq_bouquet_of_mem hne.some_mem hss⟩
+
+lemma bouquet_empty (v : α) : bouquet v ∅ = Graph.noEdge {v} β := by
+  ext <;> simp
+
+/-! ### Graphs with two vertices -/
+
+/-- A graph with exactly two vertices and no loops. -/
+@[simps (attr := grind =)]
+def banana (u v : α) (edgeSet : Set β) : Graph α β where
+  vertexSet := {u,v}
+  edgeSet := edgeSet
+  IsLink e x y := e ∈ edgeSet ∧ ((x = u ∧ y = v) ∨ (x = v ∧ y = u))
+  isLink_symm _ _ _ := by aesop
+  eq_or_eq_of_isLink_of_isLink := by aesop
+  edge_mem_iff_exists_isLink := by aesop
+  left_mem_of_isLink := by aesop
+
+@[simp]
+lemma banana_inc : (banana u v edgeSet).Inc e x ↔ e ∈ edgeSet ∧ (x = u ∨ x = v) := by
+  simp only [Inc, banana_isLink, exists_and_left, and_congr_right_iff]
+  aesop
+
+lemma banana_comm (u v : α) (edgeSet : Set β) : banana u v edgeSet = banana v u edgeSet :=
+  Graph.ext_inc (pair_comm ..) <| by simp [or_comm]
+
+@[simp]
+lemma banana_isNonloopAt :
+    (banana u v edgeSet).IsNonloopAt e x ↔ e ∈ edgeSet ∧ (x = u ∨ x = v) ∧ u ≠ v := by
+  simp_rw [isNonloopAt_iff_inc_not_isLoopAt, ← isLink_self_iff, banana_isLink, banana_inc]
+  aesop
+
+@[simp]
+lemma banana_isLoopAt : (banana u v edgeSet).IsLoopAt e x ↔ e ∈ edgeSet ∧ x = u ∧ u = v := by
+  simp only [← isLink_self_iff, banana_isLink, and_congr_right_iff]
+  aesop
+
+@[simp]
+lemma banana_adj : (banana u v edgeSet).Adj x y ↔ edgeSet.Nonempty ∧ s(x, y) = s(u, v) := by
+  simp only [Adj, banana_isLink, exists_and_right, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+    Prod.swap_prod_mk, and_congr_left_iff]
+  exact fun _ ↦ Iff.rfl
+
+@[simp]
+lemma banana_eq_bouquet : banana u u edgeSet = bouquet u edgeSet := by
+  ext a b c <;> simp
+
+@[simp]
+lemma banana_eq_noEdge : banana u v ∅ = Graph.noEdge {u, v} β := by
+  ext <;> simp
 
 end Graph
