@@ -27,8 +27,7 @@ graphs, edge deletion, vertex deletion
 
 @[expose] public section
 
-variable {α β : Type*} {x y z u v w : α} {e f : β} {G G₁ G₂ H H₁ H₂ : Graph α β}
-  {F F₁ F₂ : Set β} {X Y : Set α}
+variable {α β : Type*} {x y : α} {e : β} {G H : Graph α β} {F : Set β} {X : Set α}
 
 open Set Function
 
@@ -78,16 +77,16 @@ lemma edgeRestrict_mono_left (h : H ≤ G) (F : Set β) : H ↾ F ≤ G ↾ F :=
   simp [inter_subset_left.trans h.edgeSet_mono]
 
 @[gcongr]
-lemma edgeRestrict_mono_right (G : Graph α β) {F₀ F : Set β} (hss : F₀ ⊆ F) : G ↾ F₀ ≤ G ↾ F where
+lemma edgeRestrict_mono_right (G : Graph α β) {F₀ : Set β} (hss : F₀ ⊆ F) : G ↾ F₀ ≤ G ↾ F where
   vertexSet_mono := subset_rfl
   isLink_mono _ _ _ := fun h ↦ ⟨hss h.1, h.2⟩
 
 @[simp, grind =]
-lemma edgeRestrict_inc_iff : (G ↾ F).Inc e x ↔ G.Inc e x ∧ e ∈ F := by
+lemma edgeRestrict_inc : (G ↾ F).Inc e x ↔ G.Inc e x ∧ e ∈ F := by
   simp [Inc, and_comm]
 
 @[simp, grind =]
-lemma edgeRestrict_isLoopAt_iff : (G ↾ F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∈ F := by
+lemma edgeRestrict_isLoopAt : (G ↾ F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∈ F := by
   simp [← isLink_self_iff, and_comm]
 
 @[simp, grind =]
@@ -110,8 +109,7 @@ def edgeDelete (G : Graph α β) (F : Set β) : Graph α β :=
 @[inherit_doc edgeDelete]
 scoped infixl:75 " ＼ "  => Graph.edgeDelete
 
-lemma edgeDelete_eq_edgeRestrict (G : Graph α β) (F : Set β) :
-    G ＼ F = G ↾ (E(G) \ F) := copy_eq ..
+lemma edgeDelete_eq_edgeRestrict (G : Graph α β) (F : Set β) : G ＼ F = G ↾ (E(G) \ F) := copy_eq ..
 
 @[simp, grind .]
 lemma edgeDelete_le : G ＼ F ≤ G := by
@@ -131,12 +129,12 @@ lemma edgeDelete_mono_left (h : H ≤ G) (F : Set β) : H ＼ F ≤ G ＼ F := b
   exact diff_subset_diff_left h.edgeSet_mono
 
 @[simp, grind =]
-lemma edgeDelete_inc_iff : (G ＼ F).Inc e x ↔ G.Inc e x ∧ e ∉ F := by
+lemma edgeDelete_inc : (G ＼ F).Inc e x ↔ G.Inc e x ∧ e ∉ F := by
   simp [Inc, and_comm]
 
 @[simp, grind =]
-lemma edgeDelete_isLoopAt_iff : (G ＼ F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∉ F := by
-  simp only [edgeDelete_eq_edgeRestrict, edgeRestrict_isLoopAt_iff, mem_diff, and_congr_right_iff,
+lemma edgeDelete_isLoopAt : (G ＼ F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∉ F := by
+  simp only [edgeDelete_eq_edgeRestrict, edgeRestrict_isLoopAt, mem_diff, and_congr_right_iff,
     and_iff_right_iff_imp]
   exact fun h _ ↦ h.edge_mem
 
@@ -162,14 +160,11 @@ protected def induce (G : Graph α β) (X : Set α) : Graph α β where
 @[inherit_doc Graph.induce]
 scoped notation G "[" X "]" => Graph.induce G X
 
-lemma induce_le (hX : X ⊆ V(G)) : G[X] ≤ G :=
-  ⟨hX, fun _ _ _ h ↦ h.1⟩
+lemma induce_le (hX : X ⊆ V(G)) : G[X] ≤ G := ⟨hX, fun _ _ _ h ↦ h.1⟩
 
 @[simp, grind =]
-lemma induce_le_iff : G[X] ≤ G ↔ X ⊆ V(G) :=
-  ⟨(·.vertexSet_mono), induce_le⟩
+lemma induce_le_iff : G[X] ≤ G ↔ X ⊆ V(G) := ⟨(·.vertexSet_mono), induce_le⟩
 
-@[grind =]
 lemma induce_edgeSet (G : Graph α β) (X : Set α) :
     E(G[X]) = {e | ∃ x y, G.IsLink e x y ∧ x ∈ X ∧ y ∈ X} := rfl
 
@@ -193,12 +188,12 @@ lemma vertexDelete_def (G : Graph α β) (X : Set α) : G - X = G [V(G) \ X] := 
 lemma vertexDelete_vertexSet (G : Graph α β) (X : Set α) : V(G - X) = V(G) \ X := rfl
 
 @[simp, grind =]
-lemma vertexDelete_isLink_iff (G : Graph α β) (X : Set α) :
+lemma vertexDelete_isLink (G : Graph α β) (X : Set α) :
     (G - X).IsLink e x y ↔ (G.IsLink e x y ∧ x ∉ X ∧ y ∉ X) := by
   simp only [vertexDelete_def, induce_isLink, mem_diff, and_congr_right_iff]
   exact fun h ↦ by simp [h.left_mem, h.right_mem]
 
-@[simp, grind =]
+@[simp]
 lemma vertexDelete_edgeSet (G : Graph α β) (X : Set α) :
     E(G - X) = {e | ∃ x y, G.IsLink e x y ∧ x ∉ X ∧ y ∉ X} := by
   simp [edgeSet_eq_setOf_exists_isLink]
