@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 -/
 
-@[expose] public section
+public section
 
 namespace TwoSidedIdeal
 

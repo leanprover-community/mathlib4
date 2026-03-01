@@ -12,7 +12,7 @@ public import Mathlib.Data.Nat.Nth
 # The Nth primes
 -/
 
-@[expose] public section
+public section
 
 namespace Nat
 

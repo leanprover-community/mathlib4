@@ -5,10 +5,9 @@ Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
 module
 
-public meta import Mathlib.Tactic.LinearCombination.Lemmas
-public meta import Mathlib.Tactic.Positivity.Core
-public meta import Mathlib.Tactic.Ring
-public meta import Mathlib.Tactic.Ring.Compare
+public import Mathlib.Tactic.LinearCombination.Lemmas
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Tactic.Ring.Compare
 
 /-!
 # linear_combination Tactic

@@ -19,13 +19,13 @@ is exact (resp. short exact) iff degreewise it is so.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} {c : ComplexShape ι} [Category C] [Abelian C]
+variable {C ι : Type*} {c : ComplexShape ι} [Category* C] [Abelian C]
 
 noncomputable instance : IsNormalEpiCategory (HomologicalComplex C c) := ⟨fun p _ =>
   ⟨NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
@@ -41,6 +41,7 @@ noncomputable instance : Abelian (HomologicalComplex C c) where
 
 variable (S : ShortComplex (HomologicalComplex C c))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exact_of_degreewise_exact (hS : ∀ (i : ι), (S.map (eval C c i)).Exact) :
     S.Exact := by
   simp only [ShortComplex.exact_iff_isZero_homology] at hS ⊢

@@ -37,7 +37,7 @@ open Submodule
 variable (R R₂ M M₂ : Type*) [Ring R] [Ring R₂]
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₂] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} [RingHomSurjective τ₁₂]
-variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂] (f : F)
+variable (f : M →ₛₗ[τ₁₂] M₂)
 
 /-- The Jacobson radical of an `R`-module `M` is the infimum of all maximal submodules in `M`. -/
 def jacobson : Submodule R M :=
@@ -55,11 +55,10 @@ theorem le_comap_jacobson : jacobson R M ≤ comap f (jacobson R₂ M₂) := by
 theorem map_jacobson_le : map f (jacobson R M) ≤ jacobson R₂ M₂ :=
   map_le_iff_le_comap.mpr (le_comap_jacobson f)
 
-include τ₁₂ in
 theorem jacobson_eq_bot_of_injective (inj : Function.Injective f) (h : jacobson R₂ M₂ = ⊥) :
     jacobson R M = ⊥ :=
   le_bot_iff.mp <| (le_comap_jacobson f).trans <| by
-    simp_rw [h, comap_bot, ((LinearMapClass.ker_eq_bot _).mpr inj).le]
+    simp_rw [h, comap_bot, (LinearMap.ker_eq_bot.mpr inj).le]
 
 variable {f}
 
@@ -78,11 +77,11 @@ theorem comap_jacobson_of_ker_le (surj : Function.Surjective f)
 
 theorem map_jacobson_of_bijective (hf : Function.Bijective f) :
     map f (jacobson R M) = jacobson R₂ M₂ :=
-  map_jacobson_of_ker_le hf.2 <| by simp_rw [(LinearMapClass.ker_eq_bot _).mpr hf.1, bot_le]
+  map_jacobson_of_ker_le hf.2 <| by simp_rw [LinearMap.ker_eq_bot.mpr hf.1, bot_le]
 
 theorem comap_jacobson_of_bijective (hf : Function.Bijective f) :
     comap f (jacobson R₂ M₂) = jacobson R M :=
-  comap_jacobson_of_ker_le hf.2 <| by simp_rw [(LinearMapClass.ker_eq_bot _).mpr hf.1, bot_le]
+  comap_jacobson_of_ker_le hf.2 <| by simp_rw [LinearMap.ker_eq_bot.mpr hf.1, bot_le]
 
 theorem jacobson_quotient_of_le {N : Submodule R M} (le : N ≤ jacobson R M) :
     jacobson R (M ⧸ N) = map N.mkQ (jacobson R M) :=
@@ -137,6 +136,10 @@ instance : (jacobson R).IsTwoSided :=
 
 variable {R R₂}
 
+lemma jacobson_le_of_isMaximal (m : Ideal R) [m.IsMaximal] : jacobson R ≤ m := by
+  rw [Ring.jacobson_eq_sInf_isMaximal]
+  exact sInf_le ‹_›
+
 theorem le_comap_jacobson : jacobson R ≤ Ideal.comap f (jacobson R₂) :=
   Module.le_comap_jacobson f.toSemilinearMap
 
@@ -148,6 +151,7 @@ theorem map_jacobson_of_ker_le (le : RingHom.ker f ≤ jacobson R) :
     Submodule.map f.toSemilinearMap (jacobson R) = jacobson R₂ :=
   Module.map_jacobson_of_ker_le f.surjective le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_jacobson_quotient (I : Ideal R) [I.IsTwoSided] :
     (jacobson (R ⧸ I) : Set (R ⧸ I)) = Module.jacobson R (R ⧸ I) := by
   let f : R ⧸ I →ₛₗ[Ideal.Quotient.mk I] R ⧸ I := ⟨AddHom.id _, fun _ _ ↦ rfl⟩
@@ -189,6 +193,7 @@ theorem jacobson_smul_lt_top [Nontrivial M] [IsCoatomic (Submodule R M)] (N : Su
   ((smul_mono_right _ le_top).trans <| Ring.jacobson_smul_top_le R M).trans_lt
     (Module.jacobson_lt_top R M)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem FG.jacobson_smul_lt {N : Submodule R M} (ne_bot : N ≠ ⊥) (fg : N.FG) :
     Ring.jacobson R • N < N := by
   rw [← Module.Finite.iff_fg] at fg

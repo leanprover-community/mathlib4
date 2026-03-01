@@ -295,6 +295,7 @@ theorem SameCycle.exists_pow_eq_of_mem_support {f} [DecidableEq α] [Fintype α]
     (hx : x ∈ f.support) : ∃ i < #(f.cycleOf x).support, (f ^ i) x = y :=
   h.exists_pow_eq_of_mem_support_aux hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem support_cycleOf_le [DecidableEq α] [Fintype α] (f : Perm α) (x : α) :
     support (f.cycleOf x) ≤ support f := by
   intro y hy
@@ -405,8 +406,7 @@ where
         refine ⟨?_, fun g' hg' ↦ ?_, fun g' hg' y ↦ ?_, hm₃⟩
         · simp [List.prod_cons, hm₁]
         · exact ((List.mem_cons).1 hg').elim (fun hg' => hg'.symm ▸ isCycle_cycleOf _ hx) (hm₂ g')
-        by_contra!
-        obtain ⟨hgy, hg'y⟩ := this
+        by_contra! ⟨hgy, hg'y⟩
         have hxy : SameCycle g x y := not_imp_comm.1 cycleOf_apply_of_not_sameCycle hgy
         have hg'm : g' :: m.erase g' ~ m := List.cons_perm_iff_perm_erase.2 ⟨hg', .refl _⟩
         have : ∀ h ∈ m.erase g', Disjoint g' h :=
@@ -570,6 +570,7 @@ lemma cycleOf_ne_one_iff_mem_cycleFactorsFinset {g : Equiv.Perm α} {x : α} :
     g.cycleOf x ≠ 1 ↔ g.cycleOf x ∈ g.cycleFactorsFinset := by
   rw [cycleOf_mem_cycleFactorsFinset_iff, mem_support, ne_eq, cycleOf_eq_one_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_cycleFactorsFinset_support_le {p f : Perm α} (h : p ∈ cycleFactorsFinset f) :
     p.support ≤ f.support := by
   rw [mem_cycleFactorsFinset_iff] at h
@@ -871,6 +872,7 @@ theorem subtypePerm_on_cycleFactorsFinset [DecidableEq α] [Fintype α]
   simp only [subtypePerm_apply, Subtype.coe_mk, subtypePermOfSupport]
   exact ((mem_cycleFactorsFinset_iff.mp hc).2 x hx).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem commute_iff_of_mem_cycleFactorsFinset [DecidableEq α] [Fintype α] {g k c : Equiv.Perm α}
     (hc : c ∈ g.cycleFactorsFinset) :
     Commute k c ↔

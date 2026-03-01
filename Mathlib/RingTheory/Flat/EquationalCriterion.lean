@@ -160,7 +160,7 @@ theorem tfae_equational_criterion : List.TFAE [
         LinearMap.congr_fun ha'y' (Finsupp.single i 1)
     · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finset_sum_apply, ← map_sum,
         smul_single, smul_eq_mul, mul_one,
-        ← (fun _ ↦ equivFunOnFinite_symm_apply_toFun _ _ : ∀ x, f' x = f x), univ_sum_single]
+        ← (fun _ ↦ equivFunOnFinite_symm_apply_apply _ _ : ∀ x, f' x = f x), univ_sum_single]
       simpa using DFunLike.congr_fun ha' j
   tfae_finish
 
@@ -266,6 +266,7 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [A
   ⟨k, a ∘ₗ e.symm, y, by rwa [← comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm], by
     rwa [comp_assoc]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every homomorphism from a finitely presented module to a flat module factors through a finite
 free module. -/
 @[stacks 058E "only if"]
@@ -273,7 +274,7 @@ theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type*} [AddC
     [Module R P] [FinitePresentation R P] (h₁ : P →ₗ[R] M) :
       ∃ (k : ℕ) (h₂ : P →ₗ[R] (Fin k →₀ R)) (h₃ : (Fin k →₀ R) →ₗ[R] M), h₁ = h₃ ∘ₗ h₂ := by
   have ⟨_, K, ϕ, hK⟩ := FinitePresentation.exists_fin R P
-  haveI : Module.Finite R K := Module.Finite.iff_fg.mpr hK
+  haveI : Module.Finite R K := .of_fg hK
   have : (h₁ ∘ₗ ϕ.symm ∘ₗ K.mkQ) ∘ₗ K.subtype = 0 := by
     simp_rw [comp_assoc, (LinearMap.exact_subtype_mkQ K).linearMap_comp_eq_zero, comp_zero]
   obtain ⟨k, a, y, hay, ha⟩ := exists_factorization_of_comp_eq_zero_of_free this

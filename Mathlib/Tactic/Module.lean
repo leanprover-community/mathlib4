@@ -24,7 +24,7 @@ The scalar type `R` is not pre-determined: instead it starts as `ℕ` (when each
 given a scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are
 encountered.  However, to permit this, it is assumed that there is a "linear order" on all the
 semirings which appear in the expression: for any two semirings `R` and `S` which occur, we have
-either `Algebra R S` or `Algebra S R`).
+either `Algebra R S` or `Algebra S R`.
 -/
 
 public meta section
@@ -139,7 +139,7 @@ instance [Neg R] : Neg (NF R M) where
   neg l := l.map fun (a, x) ↦ (-a, x)
 
 theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
-  simp only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
+  simp +instances only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
   congr
   ext p
   simp
@@ -401,7 +401,7 @@ expression is not pre-determined: instead it starts as `ℕ` (when each atom is 
 scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are encountered.
 
 It is assumed that there is a "linear order" on all the semirings which appear in the expression:
-for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`).
+for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`.
 
 TODO: implement a variant in which a semiring `R` is provided by the user, and the assumption is
 instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR https://github.com/leanprover-community/mathlib4/pull/16984 provides a

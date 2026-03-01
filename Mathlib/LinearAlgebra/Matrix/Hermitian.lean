@@ -67,6 +67,10 @@ theorem IsHermitian.map {A : Matrix n n α} (h : A.IsHermitian) (f : α → β)
     (hf : Function.Semiconj f star star) : (A.map f).IsHermitian :=
   (conjTranspose_map f hf).symm.trans <| h.eq.symm ▸ rfl
 
+@[simp, nontriviality]
+theorem IsHermitian.of_subsingleton {A : Matrix n n α} [Subsingleton α] : A.IsHermitian :=
+  .ext fun _ _ ↦ Subsingleton.elim ..
+
 theorem IsHermitian.transpose {A : Matrix n n α} (h : A.IsHermitian) : Aᵀ.IsHermitian := by
   rw [IsHermitian, conjTranspose, transpose_map]
   exact congr_arg Matrix.transpose h
@@ -206,8 +210,6 @@ theorem isHermitian_mul_mul_conjTranspose [Fintype m] {A : Matrix m m α} (B : M
 lemma IsHermitian.commute_iff [Fintype n] {A B : Matrix n n α}
     (hA : A.IsHermitian) (hB : B.IsHermitian) : Commute A B ↔ (A * B).IsHermitian :=
   hA.isSelfAdjoint.commute_iff hB.isSelfAdjoint
-
-@[deprecated (since := "13-08-2025")] alias commute_iff := IsHermitian.commute_iff
 
 end NonUnitalSemiring
 

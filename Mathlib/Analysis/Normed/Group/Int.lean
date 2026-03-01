@@ -5,7 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Topology.Instances.Int
 
 /-! # ℤ as a normed group -/
@@ -19,7 +19,9 @@ namespace Int
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℤ where
   norm n := ‖(n : ℝ)‖
-  dist_eq m n := by simp only [Int.dist_eq, norm, Int.cast_sub]
+  dist_eq m n := by
+    simp only [dist_eq, norm, cast_add, cast_neg]
+    rw [abs_sub_comm, neg_add_eq_sub]
 
 @[norm_cast]
 theorem norm_cast_real (m : ℤ) : ‖(m : ℝ)‖ = ‖m‖ :=

@@ -29,6 +29,7 @@ def onePointHyperplaneHomeoUnitSphere
   OnePoint.equivOfIsEmbeddingOfRangeEq _ _
     (isOpenEmbedding_stereographic_symm hv).toIsEmbedding (range_stereographic_symm hv)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A homeomorphism from the one-point compactification of a finite-dimensional real vector space to
 the sphere. -/
 def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]
@@ -37,7 +38,7 @@ def onePointEquivSphereOfFinrankEq {ι V : Type*} [Fintype ι]
     (h : finrank ℝ V + 1 = Fintype.card ι) :
     OnePoint V ≃ₜ sphere (0 : EuclideanSpace ℝ ι) 1 := by
   classical
-  have : Nonempty ι := Fintype.card_pos_iff.mp <| by cutsat
+  have : Nonempty ι := Fintype.card_pos_iff.mp <| by lia
   let v : EuclideanSpace ℝ ι := .single (Classical.arbitrary ι) 1
   have hv : ‖v‖ = 1 := by simp [v]
   have hv₀ : v ≠ 0 := fun contra ↦ by simp [contra] at hv

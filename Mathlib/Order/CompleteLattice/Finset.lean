@@ -13,11 +13,11 @@ public import Mathlib.Data.Set.Lattice.Image
 
 This file is concerned with how big lattice or set operations behave when indexed by a finset.
 
-See also `Mathlib/Data/Finset/Lattice.lean`, which is concerned with folding binary lattice
+See also `Mathlib/Data/Finset/Lattice/Fold.lean`, which is concerned with folding binary lattice
 operations over a finset.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 
@@ -91,6 +91,14 @@ theorem iInter_eq_iInter_finset' (s : ι' → Set α) :
     ⋂ i, s i = ⋂ t : Finset (PLift ι'), ⋂ i ∈ t, s (PLift.down i) :=
   iInf_eq_iInf_finset' s
 
+set_option backward.isDefEq.respectTransparency false in
+theorem iUnion_finset_eq_set (s : Set ι) :
+    ⋃ s' : Finset s, Subtype.val '' (s' : Set s) = s := by
+  ext x
+  simp only [Set.mem_iUnion, Set.mem_image, SetLike.mem_coe, Subtype.exists,
+    exists_and_right, exists_eq_right]
+  exact ⟨fun ⟨_, hx, _⟩ ↦ hx, fun hx ↦ ⟨{⟨x, hx⟩}, hx, by simp⟩⟩
+
 end Set
 
 namespace Finset
@@ -105,6 +113,7 @@ theorem maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) 
   exact fun _ ↦ ⟨fun h x hxs hx ↦ hxs <| h hx (subset_insert _ _) (mem_insert_self x s),
     fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
     Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) where
   mp h := ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx (erase_subset _ _) hxs⟩

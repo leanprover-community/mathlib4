@@ -15,7 +15,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 This file characterises the stabilizer of a set/finset under the pointwise action of a group.
 -/
 
-@[expose] public section
+public section
 
 open Function MulOpposite Set
 open scoped Pointwise
@@ -84,6 +84,7 @@ lemma stabilizer_inf_stabilizer_le_stabilizer_sdiff :
     stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s \ t) :=
   stabilizer_inf_stabilizer_le_stabilizer_apply₂ fun _ ↦ smul_set_sdiff
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s ≤ stabilizer G t)
     (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G t) :
@@ -226,6 +227,7 @@ lemma mem_stabilizer_set_iff_smul_set_subset {s : Set α} (hs : s.Finite) :
   rw [stabilizer_coe_finset, mem_stabilizer_finset_iff_smul_finset_subset, ← Finset.coe_smul_finset,
     Finset.coe_subset]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :
     a ∈ stabilizer G s ↔ ∀ ⦃b⦄, b ∈ s → a • b ∈ s := by
@@ -242,8 +244,8 @@ variable {G : Type*} [CommGroup G] (s : Set G)
 @[to_additive (attr := simp)]
 lemma mul_stabilizer_self : s * stabilizer G s = s := by rw [mul_comm, stabilizer_mul_self]
 
-local notation " Q " => G ⧸ stabilizer G s
-local notation " q " => ((↑) : G → Q)
+local notation "Q" => G ⧸ stabilizer G s
+local notation "q" => ((↑) : G → Q)
 
 @[to_additive]
 lemma stabilizer_image_coe_quotient : stabilizer Q (q '' s) = ⊥ := by

@@ -17,7 +17,7 @@ is a `Valued R ℤₘ₀` instance but no canonical base with which to embed thi
 `NNReal`.
 -/
 
-@[expose] public section
+public section
 
 open Filter WithZero Set
 open scoped Topology

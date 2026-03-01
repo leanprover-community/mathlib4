@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: ${{ github.event.pull_request.head.sha }}
         fetch-depth: 0
@@ -25,7 +25,7 @@ jobs:
 
     # Checkout the master branch into a subdirectory
     - name: Checkout master branch
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         # When testing the scripts, comment out the "ref: master"
         ref: master
@@ -60,7 +60,7 @@ jobs:
         fi
 
     - name: Set up Python
-      uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
+      uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
       with:
         python-version: 3.12
 
@@ -216,8 +216,23 @@ jobs:
         echo "Compute technical debt changes"
         techDebtVar="$(../master-branch/scripts/technical-debt-metrics.sh pr_summary)"
 
+        echo "Compute documentation reminder"
+        workflowFilesChanged="$(grep '^\.github/workflows/' changed_files.txt || true)"
+        if [ -n "${workflowFilesChanged}" ]
+        then
+          # Format each changed workflow path as a Markdown bullet: "- `path`"
+          workflowFilesChangedMarkdown="$(sed "s|^|- \`|; s|\$|\`|" <<< "${workflowFilesChanged}")"
+          workflowDocsReminder="$(printf "### Workflow documentation reminder\nThis PR modifies files under \`.github/workflows/\`.\nPlease update \`docs/workflows.md\` if the workflow inventory, triggers, or behavior changed.\n\nModified workflow files:\n%s\n" "${workflowFilesChangedMarkdown}")"
+        else
+          workflowDocsReminder=""
+        fi
+
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
+        if [ -n "${workflowDocsReminder}" ]
+        then
+          printf '\n\n---\n\n%s\n' "${workflowDocsReminder}" >> please_merge_master.md
+        fi
 
         echo "Include any errors about removed or renamed files without deprecation,"
         echo "as well as errors about extraneous deprecated_module additions."

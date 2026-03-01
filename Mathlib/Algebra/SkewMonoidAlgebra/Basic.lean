@@ -54,19 +54,25 @@ variable [AddMonoid k]
 @[simp]
 theorem eta (f : SkewMonoidAlgebra k G) : ofFinsupp f.toFinsupp = f := rfl
 
+set_option backward.privateInPublic true in
 @[irreducible]
 private def add :
     SkewMonoidAlgebra k G → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
+set_option backward.privateInPublic true in
 private def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
 
 instance : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
@@ -161,8 +167,7 @@ theorem support_eq_empty {p} : p.support = ∅ ↔ (p : SkewMonoidAlgebra k G) =
 
 lemma support_add [DecidableEq G] {p q : SkewMonoidAlgebra k G} :
     (p + q).support ⊆ p.support ∪ q.support := by
-  simp [support]
-  exact Finsupp.support_add
+  simpa [support] using Finsupp.support_add
 
 end Support
 
@@ -197,8 +202,6 @@ theorem mem_support_iff {f : SkewMonoidAlgebra k G} {a : G} : a ∈ f.support �
 theorem notMem_support_iff {f : SkewMonoidAlgebra k G} {a : G} :
     a ∉ f.support ↔ f.coeff a = 0 := by
   simp only [mem_support_iff, ne_eq, not_not]
-
-@[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
 theorem ext_iff {p q : SkewMonoidAlgebra k G} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : G →₀ k⟩
@@ -256,12 +259,13 @@ theorem single_zero (a : G) : (single a 0 : SkewMonoidAlgebra k G) = 0 := by
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := by
   simp [← toFinsupp_inj]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Group isomorphism between `SkewMonoidAlgebra k G` and `G →₀ k`. -/
 @[simps apply symm_apply]
 def toFinsuppAddEquiv : SkewMonoidAlgebra k G ≃+ (G →₀ k) where
-  toFun        := toFinsupp
-  invFun       := ofFinsupp
-  map_add'     := toFinsupp_add
+  toFun    := toFinsupp
+  invFun   := ofFinsupp
+  map_add' := toFinsupp_add
 
 theorem smul_single {S} [SMulZeroClass S k] (s : S) (a : G) (b : k) :
     s • single a b = single a (s • b) :=
@@ -436,6 +440,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
     {f : G → k → S} : b * s.sum f = s.sum fun a c ↦ b * f a c := by
   simp only [sum, Finsupp.sum, Finset.mul_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Analogue of `Finsupp.sum_ite_eq'` for `SkewMonoidAlgebra`. -/
 @[simp]
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
@@ -478,6 +483,7 @@ section mapDomain
 
 variable {G' G'' : Type*} (f : G → G') {g : G' → G''} (v : SkewMonoidAlgebra k G)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given `f : G → G'` and `v : SkewMonoidAlgebra k G`, `mapDomain f v : SkewMonoidAlgebra k G'`
 is the finitely supported additive homomorphism whose value at `a : G'` is the sum of `v x` over
 all `x` such that `f x = a`.
@@ -547,15 +553,12 @@ section AddGroup
 
 variable [AddGroup k]
 
-private irreducible_def neg : SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
-  | ⟨a⟩ => ⟨-a⟩
-
-instance : Neg (SkewMonoidAlgebra k G) :=
-  ⟨neg⟩
+@[no_expose] instance : Neg (SkewMonoidAlgebra k G) :=
+  ⟨fun ⟨a⟩ ↦ ⟨-a⟩⟩
 
 @[simp]
 theorem ofFinsupp_neg {a} : (⟨-a⟩ : SkewMonoidAlgebra k G) = -⟨a⟩ :=
-  show _ = neg _ by rw [neg_def]
+  (rfl)
 
 instance : AddGroup (SkewMonoidAlgebra k G) where
   zsmul := zsmulRec
@@ -716,7 +719,7 @@ def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ {x y}, (f (y • 
     SkewMonoidAlgebra k G →+* R where
   __ := liftNC (f : k →+ R) g
   map_one' := liftNC_one _ _
-  map_mul' _ _ :=  liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
+  map_mul' _ _ := liftNC_mul _ _ _ _ fun {_ _} _ ↦ h_comm
 
 end Semiring
 
@@ -810,8 +813,9 @@ variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 /-- Scalar multiplication acting on the domain.
 
 This is not an instance as it would conflict with the action on the range.
-See the file `test/instance_diamonds.lean` for examples of such conflicts. -/
-def comapSMul [AddCommMonoid M] : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
+See the file `MathlibTest/instance_diamonds.lean` for examples of such conflicts. -/
+@[instance_reducible]
+def comapSMul : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
 
@@ -822,6 +826,7 @@ theorem comapSMul_single (g : G) (a : α) (b : M) : g • single a b = single (g
   mapDomain_single
 
 /-- `comapSMul` is multiplicative -/
+@[instance_reducible]
 def comapMulAction : MulAction G (SkewMonoidAlgebra M α) where
   one_smul f := by rw [comapSMul_def, one_smul_eq_id, mapDomain_id]
   mul_smul g g' f := by
@@ -875,6 +880,7 @@ theorem coeff_mul_antidiagonal_of_finset (f g : SkewMonoidAlgebra k G) (x : G)
         simp only [Finset.mem_filter, mem_support_iff, not_and, Classical.not_not] at hp ⊢
         by_cases h1 : f.coeff p.1 = 0 <;> simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_mul_antidiagonal_finsum (f g : SkewMonoidAlgebra k G) (x : G) :
     (f * g).coeff x = ∑ᶠ p ∈ {p : G × G | p.1 * p.2 = x}, f.coeff p.1 * p.1 • g.coeff p.2 := by
   have : ({p : G × G | p.1 * p.2 = x}
@@ -931,7 +937,7 @@ theorem coeff_single_mul_aux (f : SkewMonoidAlgebra k G) {r : k} {x y z : G}
   classical
   have : (f.sum fun a b ↦ ite (x * a = y) (0 * x • b) 0) = 0 := by simp
   calc
-    ((single x r) *  f).coeff y =
+    (single x r * f).coeff y =
         sum f fun a b ↦ ite (x * a = y) (r * x • b) 0 :=
       (coeff_mul _ _ _).trans <| sum_single_index this
     _ = f.sum fun a b ↦ ite (a = z) (r * x • b) 0 := by simp [H]
@@ -1087,6 +1093,7 @@ variable (k G)
 
 variable [Monoid G] [MulSemiringAction G k]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The embedding of a monoid into its skew monoid algebra. -/
 def of : G →* SkewMonoidAlgebra k G where
   toFun a      := single a 1
@@ -1191,7 +1198,7 @@ theorem lhom_ext' {α : Type*} [Module R M] [Module R N] ⦃φ ψ : SkewMonoidAl
 variable {A : Type*} [NonUnitalNonAssocSemiring A] [Monoid G] [Semiring k] [MulSemiringAction G k]
 open NonUnitalAlgHom
 
-/-- A non_unital `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
+/-- A non-unital `k`-algebra homomorphism from `SkewMonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : SkewMonoidAlgebra k G →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ := by

@@ -58,7 +58,7 @@ instance : MonoidalCategory (CommAlgCat.{u} R) where
   whiskerRight f T := ofHom (map f.hom (.id _ _))
   tensorHom f g := ofHom (map f.hom g.hom)
   tensorUnit := .of R R
-  associator _ _ _ := isoMk (assoc R R _ _ _)
+  associator _ _ _ := isoMk (assoc R R R _ _ _)
   leftUnitor _ := isoMk (lid R _)
   rightUnitor _ := isoMk (rid R R _)
 
@@ -77,10 +77,10 @@ variable (C) in
 @[simp] lemma whiskerLeft_hom (f : A ⟶ B) : (C ◁ f).hom = map (.id _ _) f.hom := rfl
 
 variable (A B C) in
-@[simp] lemma associator_hom_hom : (α_ A B C).hom.hom = (assoc R R A B C).toAlgHom := rfl
+@[simp] lemma associator_hom_hom : (α_ A B C).hom.hom = (assoc R R R A B C).toAlgHom := rfl
 
 variable (A B C) in
-@[simp] lemma associator_inv_hom : (α_ A B C).inv.hom = (assoc R R A B C).symm.toAlgHom := rfl
+@[simp] lemma associator_inv_hom : (α_ A B C).inv.hom = (assoc R R R A B C).symm.toAlgHom := rfl
 
 instance : BraidedCategory (CommAlgCat.{u} R) where
   braiding S T := isoMk (comm R _ _)

@@ -45,11 +45,12 @@ variable {s t : Finset α} {a b : α}
 theorem mk_mem_sym2_iff : s(a, b) ∈ s.sym2 ↔ a ∈ s ∧ b ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mk_mem_sym2_iff, mem_mk, mem_mk]
 
-@[simp]
+@[simp, grind =]
 theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
   simp only [mem_val]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
   Set.ext fun z ↦ z.ind fun a b => by simp
 
@@ -87,9 +88,7 @@ theorem sym2_univ [Fintype α] (inst : Fintype (Sym2 α) := Sym2.instFintype) :
 
 @[simp, mono]
 theorem sym2_mono (h : s ⊆ t) : s.sym2 ⊆ t.sym2 := by
-  rw [← val_le_iff, sym2_val, sym2_val]
-  apply Multiset.sym2_mono
-  rwa [val_le_iff]
+  grind
 
 theorem monotone_sym2 : Monotone (Finset.sym2 : Finset α → _) := fun _ _ => sym2_mono
 
@@ -116,8 +115,7 @@ theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
 
 @[simp]
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
-  rw [← not_iff_not]
-  simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty]
+  contrapose!; exact sym2_eq_empty
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
@@ -133,31 +131,14 @@ end
 
 variable {s t : Finset α} {a b : α}
 
-section
-variable [DecidableEq α]
+theorem sym2_eq_image [DecidableEq α] : s.sym2 = (s ×ˢ s).image Sym2.mk.uncurry := by
+  ext ⟨a, b⟩; simp; grind
 
-theorem sym2_eq_image : s.sym2 = (s ×ˢ s).image Sym2.mk := by
-  ext z
-  refine z.ind fun x y ↦ ?_
-  rw [mk_mem_sym2_iff, mem_image]
-  constructor
-  · intro h
-    use (x, y)
-    simp only [mem_product, h, and_self]
-  · rintro ⟨⟨a, b⟩, h⟩
-    simp only [mem_product, Sym2.eq_iff] at h
-    obtain ⟨h, (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)⟩ := h
-      <;> simp [h]
+theorem isDiag_mk_of_mem_diag {a b : α} (h : (a, b) ∈ s.diag) : s(a, b).IsDiag := by
+  simp at *; grind
 
-theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : (Sym2.mk a).IsDiag :=
-  (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
-
-theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) :
-    ¬ (Sym2.mk a).IsDiag := by
-  rw [Sym2.isDiag_iff_proj_eq]
-  exact (mem_offDiag.1 h).2.2
-
-end
+theorem not_isDiag_mk_of_mem_offDiag {a b : α} (h : (a, b) ∈ s.offDiag) : ¬ s(a, b).IsDiag := by
+  simp at *; grind
 
 section Sym2
 
@@ -171,7 +152,7 @@ theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈
 theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
 
 theorem image_diag_union_image_offDiag [DecidableEq α] :
-    s.diag.image Sym2.mk ∪ s.offDiag.image Sym2.mk = s.sym2 := by
+    s.diag.image Sym2.mk.uncurry ∪ s.offDiag.image Sym2.mk.uncurry = s.sym2 := by
   rw [← image_union, diag_union_offDiag, sym2_eq_image]
 
 end Sym2
@@ -230,8 +211,7 @@ theorem sym_singleton (a : α) (n : ℕ) : ({a} : Finset α).sym n = {Sym.replic
       Sym.eq_replicate_iff.2 fun _b hb ↦ eq_of_mem_singleton <| mem_sym_iff.1 hs _ hb⟩
 
 theorem eq_empty_of_sym_eq_empty (h : s.sym n = ∅) : s = ∅ := by
-  rw [← not_nonempty_iff_eq_empty] at h ⊢
-  exact fun hs ↦ h (hs.sym _)
+  contrapose! h; exact h.sym _
 
 @[simp]
 theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
@@ -243,7 +223,7 @@ theorem sym_eq_empty : s.sym n = ∅ ↔ n ≠ 0 ∧ s = ∅ := by
 
 @[simp]
 theorem sym_nonempty : (s.sym n).Nonempty ↔ n = 0 ∨ s.Nonempty := by
-  simp only [nonempty_iff_ne_empty, ne_eq, sym_eq_empty, not_and_or, not_ne_iff]
+  contrapose!; exact sym_eq_empty
 
 @[simp]
 theorem sym_univ [Fintype α] (n : ℕ) : (univ : Finset α).sym n = univ :=

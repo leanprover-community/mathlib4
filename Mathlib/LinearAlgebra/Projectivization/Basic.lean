@@ -144,6 +144,7 @@ theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by
   rw [submodule_eq]
   exact finrank_span_singleton v.rep_nonzero
 
+set_option backward.isDefEq.respectTransparency false in
 instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
   rw [← v.mk_rep]
   change FiniteDimensional K (K ∙ v.rep)
@@ -158,6 +159,7 @@ theorem submodule_injective :
 
 variable (K V)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the projectivization and the
 collection of subspaces of dimension 1. -/
 noncomputable def equivSubmodule : ℙ K V ≃ { H : Submodule K V // finrank K H = 1 } :=
@@ -195,7 +197,7 @@ def map {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) : �
       rintro ⟨u, hu⟩ ⟨v, hv⟩ ⟨a, ha⟩
       use Units.map σ.toMonoidHom a
       dsimp at ha ⊢
-      erw [← f.map_smulₛₗ, ha])
+      simp [f.map_smulₛₗ, ← ha, Units.smul_def])
 
 theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective f) (v : V) (hv : v ≠ 0) :
     map f hf (mk K v hv) = mk L (f v) (map_zero f ▸ hf.ne hv) :=

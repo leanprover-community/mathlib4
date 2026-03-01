@@ -65,43 +65,61 @@ theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
 def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
 
+set_option backward.privateInPublic true in
 -- irreducible doesn't work for instances: https://github.com/leanprover-community/lean/issues/511
 private irreducible_def zero : ℝ :=
   ⟨0⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def one : ℝ :=
   ⟨1⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def add : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def neg : ℝ → ℝ
   | ⟨a⟩ => ⟨-a⟩
 
+set_option backward.privateInPublic true in
 private irreducible_def mul : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
+set_option backward.privateInPublic true in
 private noncomputable irreducible_def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Zero ℝ :=
   ⟨zero⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : One ℝ :=
   ⟨one⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Add ℝ :=
   ⟨add⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Neg ℝ :=
   ⟨neg⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Mul ℝ :=
   ⟨mul⟩
 
 instance : Sub ℝ :=
   ⟨fun a b => a + -b⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance : Inv ℝ :=
   ⟨inv'⟩
 
@@ -247,6 +265,7 @@ def mk (x : CauSeq ℚ abs) : ℝ :=
 theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
   ext_cauchy_iff.trans CauSeq.Completion.mk_eq
 
+set_option backward.privateInPublic true in
 private irreducible_def lt : ℝ → ℝ → Prop
   | ⟨x⟩, ⟨y⟩ =>
     (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
@@ -254,6 +273,8 @@ private irreducible_def lt : ℝ → ℝ → Prop
         ⟨fun h => lt_of_eq_of_lt (Setoid.symm hf) (lt_of_lt_of_eq h hg), fun h =>
           lt_of_eq_of_lt hf (lt_of_lt_of_eq h (Setoid.symm hg))⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : LT ℝ :=
   ⟨lt⟩
 
@@ -281,9 +302,12 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
 
 lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
 
+set_option backward.privateInPublic true in
 private irreducible_def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : LE ℝ :=
   ⟨le⟩
 
@@ -327,10 +351,6 @@ theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
   convert ratCast_lt.2 zero_lt_one <;> simp [← ofCauchy_ratCast, ofCauchy_one, ofCauchy_zero]
 
-@[deprecated ZeroLEOneClass.factZeroLtOne (since := "2025-05-12")]
-protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
-  ⟨Real.zero_lt_one⟩
-
 instance instNontrivial : Nontrivial ℝ where
   exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
 
@@ -365,9 +385,12 @@ instance instIsOrderedRing : IsOrderedRing ℝ :=
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
   inferInstance
 
+set_option backward.privateInPublic true in
 private irreducible_def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Max ℝ :=
   ⟨sup⟩
 
@@ -380,9 +403,12 @@ theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨
 theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
   ofCauchy_sup _ _
 
+set_option backward.privateInPublic true in
 private irreducible_def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Min ℝ :=
   ⟨inf⟩
 
@@ -455,7 +481,7 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
+instance leTotal_R : @Std.Total ℝ (· ≤ ·) :=
   ⟨by
     intro a b
     induction a using Real.ind_mk
@@ -560,7 +586,7 @@ def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
 
 lemma IsPowMul.map_one_le_one {R : Type*} [Monoid R] {f : R → ℝ} (hf : IsPowMul f) :
     f 1 ≤ 1 := by
-  have hf1 : (f 1)^2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
+  have hf1 : (f 1) ^ 2 = f 1 := by conv_rhs => rw [← one_pow 2, hf _ one_le_two]
   rcases eq_zero_or_one_of_sq_eq_self hf1 with h | h <;> rw [h]
   exact zero_le_one
 

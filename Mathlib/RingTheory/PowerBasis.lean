@@ -79,8 +79,8 @@ theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
 /--
 Construct a power basis from a basis consisting of powers of an element.
 -/
-protected def _root_.Module.Basis.PowerBasis {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
-    (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
+protected noncomputable def _root_.Module.Basis.PowerBasis {ι : Type*} [Fintype ι] (B : Basis ι R S)
+    {x : S} (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
     PowerBasis R S := ⟨x, Fintype.card ι, B.reindex e, fun i ↦ by simp [hx]⟩
 
 @[simp]
@@ -159,6 +159,7 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
     refine Ideal.mul_mem_left _ _ <| Ideal.pow_mem_of_mem _ (Ideal.subset_span (by simp)) _ <|
       Nat.pos_of_ne_zero <| fun h ↦ notMem_erase i univ <| Fin.eq_mk_iff_val_eq.2 h ▸ hi
 
+set_option backward.isDefEq.respectTransparency false in
 open Submodule.Quotient in
 theorem exists_gen_dvd_sub (pb : PowerBasis A B) (b : B) : ∃ a, pb.gen ∣ b - algebraMap A B a := by
   simpa [← Ideal.mem_span_singleton, ← mk_eq_zero, mk_sub, sub_eq_zero] using pb.exists_smodEq b
@@ -265,7 +266,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
   rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
   refine Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => ?_
   rw [Finset.mem_range] at hi
-  rw [LinearMap.map_smul]
+  rw [map_smul]
   congr
   rw [← Fin.val_mk hi, ← pb.basis_eq_pow ⟨i, hi⟩, Basis.constr_basis]
 
@@ -292,8 +293,8 @@ See `PowerBasis.liftEquiv` for a bundled equiv sending `⟨y, hy⟩` to the alge
 noncomputable def lift (pb : PowerBasis A S) (y : S') (hy : aeval y (minpoly A pb.gen) = 0) :
     S →ₐ[A] S' :=
   { pb.basis.constr A fun i => y ^ (i : ℕ) with
-    map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [RingHom.map_one]
-    map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [RingHom.map_zero]
+    map_one' := by convert pb.constr_pow_algebraMap hy 1 using 2 <;> rw [map_one]
+    map_zero' := by convert pb.constr_pow_algebraMap hy 0 using 2 <;> rw [map_zero]
     map_mul' := pb.constr_pow_mul hy
     commutes' := pb.constr_pow_algebraMap hy }
 

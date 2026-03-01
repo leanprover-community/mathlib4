@@ -22,13 +22,14 @@ all natural numbers `p` and `k` if `p` divides `a-b` in `R`, then `p ^ (k + 1)` 
 `a ^ (p ^ k) - b ^ (p ^ k)`.
 -/
 
-@[expose] public section
+public section
 
 
 section
 
 open Ideal Ideal.Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
     (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction k with

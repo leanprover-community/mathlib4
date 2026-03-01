@@ -32,8 +32,9 @@ universe u v
 
 namespace Polynomial
 
-variable {R : Type*} [CommRing R] [IsDomain R] [WfDvdMonoid R] {f : R[X]}
+variable {R : Type*} [CommSemiring R] [NoZeroDivisors R] [WfDvdMonoid R] {f : R[X]}
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
   wf := by
     classical
@@ -65,6 +66,8 @@ instance (priority := 100) wfDvdMonoid : WfDvdMonoid R[X] where
         rw [WithTop.coe_lt_coe, Polynomial.degree_eq_natDegree ane0, ← Nat.cast_add, Nat.cast_lt]
         exact lt_add_of_pos_right _ (Nat.pos_of_ne_zero hdeg)
 
+variable [Nontrivial R]
+
 theorem exists_irreducible_of_degree_pos (hf : 0 < f.degree) : ∃ g, Irreducible g ∧ g ∣ f :=
   WfDvdMonoid.exists_irreducible_factor (fun huf => ne_of_gt hf <| degree_eq_zero_of_isUnit huf)
     fun hf0 => not_lt_of_gt hf <| hf0.symm ▸ (@degree_zero R _).symm ▸ WithBot.bot_lt_coe _
@@ -82,7 +85,7 @@ end Polynomial
 
 section UniqueFactorizationDomain
 
-variable (σ : Type v) {D : Type u} [CommRing D] [IsDomain D] [UniqueFactorizationMonoid D]
+variable (σ : Type v) {D : Type u} [CommRing D] [UniqueFactorizationMonoid D]
 
 open UniqueFactorizationMonoid
 
@@ -113,8 +116,9 @@ end Polynomial
 namespace MvPolynomial
 variable (d : ℕ)
 
-private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
+private theorem uniqueFactorizationMonoid_of_fintype [Finite σ] :
     UniqueFactorizationMonoid (MvPolynomial σ D) :=
+  have := Fintype.ofFinite σ
   (renameEquiv D (Fintype.equivFin σ)).toMulEquiv.symm.uniqueFactorizationMonoid <| by
     induction Fintype.card σ with
     | zero =>
@@ -124,6 +128,7 @@ private theorem uniqueFactorizationMonoid_of_fintype [Fintype σ] :
       apply (finSuccEquiv D d).toMulEquiv.symm.uniqueFactorizationMonoid
       exact Polynomial.uniqueFactorizationMonoid
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) uniqueFactorizationMonoid :
     UniqueFactorizationMonoid (MvPolynomial σ D) := by
   rw [iff_exists_prime_factors]

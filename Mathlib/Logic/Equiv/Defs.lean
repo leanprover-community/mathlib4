@@ -9,9 +9,10 @@ public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.Quot
 public import Mathlib.Data.Subtype
 public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Simps.Basic
 public import Mathlib.Tactic.Substs
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Equivalence between types
@@ -22,7 +23,7 @@ In this file we define two types:
   not equality!) to express that various `Type`s or `Sort`s are equivalent.
 
 * `Equiv.Perm α`: the group of permutations `α ≃ α`. More lemmas about `Equiv.Perm` can be found in
-  `Mathlib/GroupTheory/Perm.lean`.
+  `Mathlib/GroupTheory/Perm/`.
 
 Then we define
 
@@ -45,8 +46,9 @@ Then we define
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-  `Group`, `Module`, etc.
+  E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+  `Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+  other algebraic type classes.
 
 Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/Basic.lean`.
 
@@ -104,13 +106,6 @@ instance : EquivLike (α ≃ β) α β where
   left_inv := Equiv.left_inv
   right_inv := Equiv.right_inv
   coe_injective' e₁ e₂ h₁ h₂ := by cases e₁; cases e₂; congr
-
-/-- Deprecated helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`. -/
-@[deprecated EquivLike.toFunLike (since := "2025-06-20")]
-def instFunLike : FunLike (α ≃ β) α β where
-  coe := Equiv.toFun
-  coe_injective' := DFunLike.coe_injective
 
 @[simp, norm_cast]
 lemma _root_.EquivLike.coe_coe {F} [EquivLike F α β] (e : F) :

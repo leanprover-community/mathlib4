@@ -62,7 +62,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
   · rintro h x hx hx'
     specialize h x
     rw [formPerm_apply_mem_eq_self_iff _ hl _ hx, formPerm_apply_mem_eq_self_iff _ hl' _ hx'] at h
-    cutsat
+    lia
   · intro h x
     by_cases hx : x ∈ l
     on_goal 1 => by_cases hx' : x ∈ l'
@@ -163,9 +163,6 @@ theorem formPerm_eq_self_of_notMem (s : Cycle α) (h : Nodup s) (x : α) (hx : x
     formPerm s h x = x := by
   induction s using Quot.inductionOn
   simpa using List.formPerm_apply_of_notMem hx
-
-@[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
 
 theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x ∈ s) :
     formPerm s h x = next s h x hx := by
@@ -373,7 +370,7 @@ theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ 
   simp [hx]
 
 theorem exists_toCycle_toList (f : Perm α) (hf : IsCycle f) : ∃ x, toCycle f hf = toList f x :=
-  Exists.casesOn hf (fun x h => ⟨ x, Perm.toCycle_eq_toList f hf x h.1⟩)
+  Exists.casesOn hf (fun x h => ⟨x, Perm.toCycle_eq_toList f hf x h.1⟩)
 
 theorem nodup_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nodup := by
   obtain ⟨x, hx, -⟩ := id hf
@@ -386,20 +383,20 @@ theorem nontrivial_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nontr
 @[simp]
 theorem mem_toCycle_iff_support (f : Perm α) (hf : f.IsCycle) : x ∈ f.toCycle hf ↔ f x ≠ x := by
   constructor
-  · have ⟨ l, hl ⟩ := exists_toCycle_toList f hf
+  · have ⟨l, hl⟩ := exists_toCycle_toList f hf
     simp only [hl, Cycle.mem_coe_iff, ne_eq]
     intro h
-    have ⟨ h1, h2 ⟩ := mem_toList_iff.mp h
+    have ⟨h1, h2⟩ := mem_toList_iff.mp h
     exact ((isCycle_iff_sameCycle (mem_support.mp h2)).mp (y := x) hf).mp h1
   · intro h
     simp only [toCycle_eq_toList f hf x h, Cycle.mem_coe_iff, toList, mem_iterate, iterate_eq_pow]
     use 0
-    exact ⟨ by simpa, by simp ⟩
+    exact ⟨by simpa, by simp⟩
 
 @[simp]
 theorem toCycle_next (f : Perm α) (hf : f.IsCycle) (hx : x ∈ toCycle f hf) :
     (toCycle f hf).next (nodup_toCycle f hf) x hx = f x := by
-  have ⟨ l, hl ⟩ := exists_toCycle_toList f hf
+  have ⟨l, hl⟩ := exists_toCycle_toList f hf
   simp only [hl, Cycle.mem_coe_iff] at ⊢ hx
   exact Equiv.Perm.next_toList_eq_apply f l x hx
 
@@ -437,6 +434,7 @@ section Finite
 
 variable [Finite α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
     ∃! s : Cycle α, ∃ h : s.Nodup, s.formPerm h = f := by
   cases nonempty_fintype α
@@ -500,6 +498,7 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c[" (l", "* => foldr (h t => List.cons h t) List.nil) "]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Represents a permutation as product of disjoint cycles:
 ```
 #eval (c[0, 1, 2, 3] : Perm (Fin 4))

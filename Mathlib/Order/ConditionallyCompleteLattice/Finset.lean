@@ -14,7 +14,7 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 -/
 
-@[expose] public section
+public section
 
 
 open Set
@@ -207,6 +207,7 @@ namespace Finset
 section ConditionallyCompleteLattice
 variable [ConditionallyCompleteLattice α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sup'_eq_csSup_image (s : Finset ι) (H : s.Nonempty) (f : ι → α) :
     s.sup' H f = sSup (f '' s) :=
   eq_of_forall_ge_iff fun a => by

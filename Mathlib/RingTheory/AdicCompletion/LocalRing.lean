@@ -16,12 +16,13 @@ ia a local ring (complete local ring).
 
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*} [CommRing R] (m : Ideal R) [hmax : m.IsMaximal]
 
 open Ideal Quotient
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     IsUnit r ↔ r ∉ m := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -73,9 +74,6 @@ lemma isUnit_iff_notMem_of_isAdicComplete_maximal [IsAdicComplete m R] (r : R) :
     apply isUnit_iff_exists_inv'.mpr
     use inv
     exact sub_eq_zero.mp <| IsHausdorff.haus IsAdicComplete.toIsHausdorff (inv * r - 1) eq
-
-@[deprecated (since := "2025-05-24")]
-alias isUnit_iff_nmem_of_isAdicComplete_maximal := isUnit_iff_notMem_of_isAdicComplete_maximal
 
 theorem isLocalRing_of_isAdicComplete_maximal [IsAdicComplete m R] : IsLocalRing R where
   exists_pair_ne := ⟨0, 1, ne_of_mem_of_not_mem m.zero_mem

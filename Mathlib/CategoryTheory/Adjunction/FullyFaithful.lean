@@ -52,11 +52,13 @@ variable {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R)
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-/-- If the left adjoint is faithful, then each component of the unit is an monomorphism. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- If the left adjoint is faithful, then each component of the unit is a monomorphism. -/
 instance unit_mono_of_L_faithful [L.Faithful] (X : C) : Mono (h.unit.app X) where
   right_cancellation {Y} f g hfg :=
     L.map_injective <| (h.homEquiv Y (L.obj X)).injective <| by simpa using hfg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the left adjoint is full, then each component of the unit is a split epimorphism. -/
 noncomputable def unitSplitEpiOfLFull [L.Full] (X : C) : SplitEpi (h.unit.app X) where
   section_ := L.preimage (h.counit.app (L.obj X))
@@ -73,11 +75,13 @@ instance [L.Full] [L.Faithful] (X : C) : IsIso (h.unit.app X) :=
 instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) :=
   NatIso.isIso_of_isIso_app _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the right adjoint is faithful, then each component of the counit is an epimorphism. -/
 instance counit_epi_of_R_faithful [R.Faithful] (X : D) : Epi (h.counit.app X) where
   left_cancellation {Y} f g hfg :=
     R.map_injective <| (h.homEquiv (R.obj X) Y).symm.injective <| by simpa using hfg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the right adjoint is full, then each component of the counit is a split monomorphism. -/
 noncomputable def counitSplitMonoOfRFull [R.Full] (X : D) : SplitMono (h.counit.app X) where
   retraction := R.preimage (h.unit.app (R.obj X))
@@ -101,7 +105,7 @@ theorem inv_map_unit {X : C} [IsIso (h.unit.app X)] :
     inv (L.map (h.unit.app X)) = h.counit.app (L.obj X) :=
   IsIso.inv_eq_of_hom_inv_id (h.left_triangle_components X)
 
-/-- If the unit is an isomorphism, bundle one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
+/-- If the unit of an adjunction is an isomorphism, then one has an isomorphism `L ⋙ R ⋙ L ≅ L`. -/
 @[simps!]
 noncomputable def whiskerLeftLCounitIsoOfIsIsoUnit [IsIso h.unit] : L ⋙ R ⋙ L ≅ L :=
   (L.associator R L).symm ≪≫ isoWhiskerRight (asIso h.unit).symm L ≪≫ Functor.leftUnitor _
@@ -113,11 +117,13 @@ theorem inv_counit_map {X : D} [IsIso (h.counit.app X)] :
     inv (R.map (h.counit.app X)) = h.unit.app (R.obj X) :=
   IsIso.inv_eq_of_inv_hom_id (h.right_triangle_components X)
 
-/-- If the counit of an is an isomorphism, one has an isomorphism `(R ⋙ L ⋙ R) ≅ R`. -/
+/-- If the counit of an adjunction is an isomorphism, then one has an isomorphism
+`(R ⋙ L ⋙ R) ≅ R`. -/
 @[simps!]
 noncomputable def whiskerLeftRUnitIsoOfIsIsoCounit [IsIso h.counit] : R ⋙ L ⋙ R ≅ R :=
   (R.associator L R).symm ≪≫ isoWhiskerRight (asIso h.counit) R ≪≫ Functor.leftUnitor _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If each component of the unit is a monomorphism, then the left adjoint is faithful. -/
 lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful where
   map_injective {X Y f g} hfg := by
@@ -125,6 +131,7 @@ lemma faithful_L_of_mono_unit_app [∀ X, Mono (h.unit.app X)] : L.Faithful wher
     apply (h.homEquiv X (L.obj Y)).symm.injective
     simpa using hfg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If each component of the unit is a split epimorphism, then the left adjoint is full. -/
 lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full where
   map_surjective {X Y} f := by
@@ -134,6 +141,7 @@ lemma full_L_of_isSplitEpi_unit_app [∀ X, IsSplitEpi (h.unit.app X)] : L.Full 
     simp only [Functor.comp_obj, Functor.id_obj, ← h.left_triangle_components Y,
       ← assoc, ← Functor.map_comp, IsSplitEpi.id, Functor.map_id, id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the unit is an isomorphism, then the left adjoint is fully faithful. -/
 noncomputable def fullyFaithfulLOfIsIsoUnit [IsIso h.unit] : L.FullyFaithful where
   preimage {_ Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
@@ -145,6 +153,7 @@ lemma faithful_R_of_epi_counit_app [∀ X, Epi (h.counit.app X)] : R.Faithful wh
     apply (h.homEquiv (R.obj X) Y).injective
     simpa using hfg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If each component of the counit is a split monomorphism, then the right adjoint is full. -/
 lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R.Full where
   map_surjective {X Y} f := by
@@ -154,10 +163,12 @@ lemma full_R_of_isSplitMono_counit_app [∀ X, IsSplitMono (h.counit.app X)] : R
     simp only [Functor.id_obj, Functor.comp_obj, ← h.right_triangle_components X,
       assoc, ← Functor.map_comp, IsSplitMono.id, Functor.map_id, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the counit is an isomorphism, then the right adjoint is fully faithful. -/
 noncomputable def fullyFaithfulROfIsIsoCounit [IsIso h.counit] : R.FullyFaithful where
   preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
 
+set_option backward.isDefEq.respectTransparency false in
 instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerLeft L h.counit) := by
   have := h.left_triangle
@@ -165,6 +176,7 @@ instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
   rw [this]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
     IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle
@@ -172,6 +184,7 @@ instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
   rw [this]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerLeft R h.unit) := by
   have := h.right_triangle
@@ -179,6 +192,7 @@ instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
   rw [this]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance whiskerRight_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
     IsIso (whiskerRight h.unit L) := by
   have := h.left_triangle
@@ -186,12 +200,15 @@ instance whiskerRight_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
   rw [this]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance [L.Faithful] [L.Full] {Y : C} : IsIso (h.counit.app (L.obj Y)) :=
   isIso_of_hom_comp_eq_id _ (h.left_triangle_components Y)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [L.Faithful] [L.Full] {Y : D} : IsIso (R.map (h.counit.app Y)) :=
   isIso_of_hom_comp_eq_id _ (h.right_triangle_components Y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     IsIso (h.counit.app X) ↔ L.essImage X := by
   constructor
@@ -201,6 +218,7 @@ lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_essImage_of_counit_isIso (A : D)
     [IsIso (h.counit.app A)] : L.essImage A :=
   ⟨R.obj A, ⟨asIso (h.counit.app A)⟩⟩
@@ -209,9 +227,11 @@ lemma isIso_counit_app_of_iso [L.Faithful] [L.Full] {X : D} {Y : C} (e : X ≅ L
     IsIso (h.counit.app X) :=
   (isIso_counit_app_iff_mem_essImage h).mpr ⟨Y, ⟨e.symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance [R.Faithful] [R.Full] {Y : D} : IsIso (h.unit.app (R.obj Y)) :=
   isIso_of_comp_hom_eq_id _ (h.right_triangle_components Y)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [R.Faithful] [R.Full] {X : C} : IsIso (L.map (h.unit.app X)) :=
   isIso_of_comp_hom_eq_id _ (h.left_triangle_components X)
 

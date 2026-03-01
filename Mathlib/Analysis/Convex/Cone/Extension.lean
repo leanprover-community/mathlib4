@@ -27,7 +27,7 @@ We prove two extension theorems:
 
 -/
 
-@[expose] public section
+public section
 
 open Set LinearMap
 
@@ -58,6 +58,7 @@ open Submodule
 
 variable (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Induction step in M. Riesz extension theorem. Given a convex cone `s` in a vector space `E`,
 a partially defined linear map `f : f.domain → ℝ`, assume that `f` is nonnegative on `f.domain ∩ p`
 and `p + s = E`. If `f` is not defined on the whole `E`, then we can extend it to a larger

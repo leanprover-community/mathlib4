@@ -220,7 +220,7 @@ private theorem Nat.isSemilinearSet_preimage [Finite ι] {F : Type*}
   simp_rw [sUnion_eq_biUnion, preimage_iUnion]
   exact .biUnion hS fun s hs => isSemilinearSet_preimage_of_isLinearSet (hS' s hs) f
 
-/-- The preimage of a semilinear set under an homomorphism in a finitely generated monoid is
+/-- The preimage of a semilinear set under a homomorphism in a finitely generated monoid is
 semilinear. -/
 public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] {s : Set N} (hs : IsSemilinearSet s) (f : F) :
@@ -366,7 +366,7 @@ private theorem linearIndepOn_toRatVec {s : Set (ι → ℕ)} (hs : LinearIndepO
   rw [linearIndepOn_iff_linearIndepOn_finset] at hs
   specialize hs t ht
   rw [linearIndepOn_finset_iffₛ] at hs
-  specialize hs (Int.toNat ∘ f) (Int.toNat ∘ (- ·) ∘ f) ?_ i hi
+  specialize hs (Int.toNat ∘ f) (Int.toNat ∘ (-·) ∘ f) ?_ i hi
   · simp_rw [← toRatVec_inj, map_sum]
     rw [← sub_eq_zero, ← Finset.sum_sub_distrib, ← heq]
     refine Finset.sum_congr rfl fun j hj => ?_
@@ -454,7 +454,7 @@ private noncomputable def floor (x i) :=
   ⌊hs.basis.repr (toRatVec x - toRatVec hs.base) i⌋
 
 private noncomputable def fract (x) :=
-  x + ∑ i, (- hs.floor x i).toNat • i.1 - ∑ i, (hs.floor x i).toNat • i.1
+  x + ∑ i, (-hs.floor x i).toNat • i.1 - ∑ i, (hs.floor x i).toNat • i.1
 
 private theorem floor_base (i) : hs.floor hs.base i = 0 := by simp [floor]
 
@@ -466,6 +466,7 @@ private theorem floor_add_nsmul_self {x i} {n : ℕ} :
   rw [map_add, ← sub_add_eq_add_sub]
   simp [-nsmul_eq_mul, ← hs.basis_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem floor_add_sum {f : (ι → ℕ) → ℕ} {x i} :
     hs.floor (x + ∑ j : hs.basisSet, f j • j.1) i = hs.floor x i + f i.1 := by
   classical
@@ -498,7 +499,7 @@ private theorem floor_add_of_mem_closure {x y i t} (ht : t ⊆ hs.basisSet) (hi 
   | add _ _ _ _ ih₁ ih₂ => simp [ih₁, ih₂]
 
 private theorem floor_toNat_sum_le (x) :
-    ∑ i, (hs.floor x i).toNat • i.1 ≤ x + ∑ i, (- hs.floor x i).toNat • i.1 := by
+    ∑ i, (hs.floor x i).toNat • i.1 ≤ x + ∑ i, (-hs.floor x i).toNat • i.1 := by
   rw [← toRatVec_mono]
   simp only [floor, map_add, map_sum, map_nsmul]
   rw [← sub_le_iff_le_add, ← Finset.sum_sub_distrib]
@@ -514,7 +515,7 @@ private theorem floor_toNat_sum_le (x) :
   · simp [toRatVec_nonneg]
 
 private theorem add_floor_neg_toNat_sum_eq (x) :
-    x + ∑ i, (- hs.floor x i).toNat • i.1 = hs.fract x + ∑ i, (hs.floor x i).toNat • i.1 := by
+    x + ∑ i, (-hs.floor x i).toNat • i.1 = hs.fract x + ∑ i, (hs.floor x i).toNat • i.1 := by
   simp only [fract]
   rw [tsub_add_cancel_of_le (hs.floor_toNat_sum_le x)]
 
@@ -546,6 +547,7 @@ private theorem fract_add_of_mem_closure {x y} (hy : y ∈ closure hs.basisSet) 
   rw [map_add, ← sub_add_eq_add_sub]
   simp [-nsmul_eq_mul, ← hs.basis_apply, Finsupp.single_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem fract_mem_fundamentalDomain (x) : hs.fract x ∈ hs.fundamentalDomain := by
   classical
   intro i
@@ -647,7 +649,7 @@ private theorem isSemilinearSet_setOfFloorNeg : IsSemilinearSet hs.setOfFloorNeg
           tsub_add_cancel_of_le
             ((Int.le_toNat (neg_pos.2 hi).le).2 (le_neg.1 (Int.cast_le_neg_one_of_neg hi))),
           add_assoc x,
-          Finset.add_sum_erase _ (fun j => (- hs.floor x j).toNat • j.1) (Finset.mem_univ i),
+          Finset.add_sum_erase _ (fun j => (-hs.floor x j).toNat • j.1) (Finset.mem_univ i),
           ← add_zero (Finset.sum (Finset.univ.erase i) _),
           ← zero_nsmul i.1, ← Int.toNat_eq_zero.2 hi.le,
           Finset.sum_erase_add _ _ (Finset.mem_univ i), ← hx]

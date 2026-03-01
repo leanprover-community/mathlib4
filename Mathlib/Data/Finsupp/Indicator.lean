@@ -30,6 +30,7 @@ namespace Finsupp
 
 variable [Zero α] {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Create an element of `ι →₀ α` from a finset `s` and a function `f` defined on this finset. -/
 def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
   toFun i :=
@@ -46,8 +47,6 @@ theorem indicator_of_mem (hi : i ∈ s) (f : ∀ i ∈ s, α) : indicator s f i 
 
 theorem indicator_of_notMem (hi : i ∉ s) (f : ∀ i ∈ s, α) : indicator s f i = 0 :=
   @dif_neg _ (id _) hi _ _ _
-
-@[deprecated (since := "2025-05-23")] alias indicator_of_not_mem := indicator_of_notMem
 
 variable (s i)
 

@@ -88,7 +88,7 @@ theorem ne_top_iff_exists_maximal {I : Ideal α} : I ≠ ⊤ ↔ ∃ M : Ideal �
   exact IsMaximal.ne_top hMmax
 
 instance [Nontrivial α] : Nontrivial (Ideal α) := by
-  rcases@exists_maximal α _ _ with ⟨M, hM, _⟩
+  rcases @exists_maximal α _ _ with ⟨M, hM, _⟩
   exact nontrivial_of_ne M ⊤ hM
 
 /-- If P is not properly contained in any maximal ideal then it is not properly contained
@@ -173,6 +173,7 @@ theorem span_singleton_lt_span_singleton [IsDomain α] {x y : α} :
   rw [lt_iff_le_not_ge, span_singleton_le_span_singleton, span_singleton_le_span_singleton,
     dvd_and_not_dvd_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPrime_of_maximally_disjoint (I : Ideal α)
     (S : Submonoid α)
     (disjoint : Disjoint (I : Set α) S)
@@ -217,9 +218,6 @@ theorem exists_le_prime_notMem_of_isIdempotentElem (a : α) (ha : IsIdempotentEl
   have ⟨p, h1, h2, h3⟩ := exists_le_prime_disjoint _ _ this
   ⟨p, h1, h2, Set.disjoint_right.mp h3 (Submonoid.mem_powers a)⟩
 
-@[deprecated (since := "2025-05-24")]
-alias exists_le_prime_nmem_of_isIdempotentElem := exists_le_prime_notMem_of_isIdempotentElem
-
 section IsPrincipalIdealRing
 
 variable [IsPrincipalIdealRing α]
@@ -237,7 +235,7 @@ theorem isPrime_iff_of_isPrincipalIdealRing_of_noZeroDivisors [NoZeroDivisors α
     {P : Ideal α} : P.IsPrime ↔ P = ⊥ ∨ ∃ p, Prime p ∧ P = span {p} := by
   rw [or_iff_not_imp_left, ← forall_congr' isPrime_iff_of_isPrincipalIdealRing,
     ← or_iff_not_imp_left, or_iff_right_of_imp]
-  rintro rfl; exact bot_prime
+  rintro rfl; exact isPrime_bot
 
 end IsPrincipalIdealRing
 

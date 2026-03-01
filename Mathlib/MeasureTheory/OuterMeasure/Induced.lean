@@ -16,7 +16,7 @@ We can extend a function defined on a subset of `Set α` to an outer measure.
 The underlying function is called `extend`, and the measure it induces is called
 `inducedOuterMeasure`.
 
-Some lemmas below are proven twice, once in the general case, and one where the function `m`
+Some lemmas below are proven twice, once in the general case, and once where the function `m`
 is only defined on measurable sets (i.e. when `P = MeasurableSet`). In the latter cases, we can
 remove some hypotheses in the statement. The general version has the same name, but with a prime
 at the end.
@@ -41,7 +41,7 @@ open OuterMeasure
 
 section Extend
 
-variable {α : Type*} {P : α → Prop}
+variable {R α : Type*} {P : α → Prop}
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
 /-- We can trivially extend a function defined on a subclass of objects (with codomain `ℝ≥0∞`)
@@ -53,15 +53,14 @@ theorem extend_eq {s : α} (h : P s) : extend m s = m s h := by simp [extend, h]
 
 theorem extend_eq_top {s : α} (h : ¬P s) : extend m s = ∞ := by simp [extend, h]
 
-theorem smul_extend {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    [NoZeroSMulDivisors R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
+theorem smul_extend [Semiring R] [IsDomain R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    [Module.IsTorsionFree R ℝ≥0∞] {c : R} (hc : c ≠ 0) :
     c • extend m = extend fun s h => c • m s h := by
   classical
-  ext1 s
-  dsimp [extend]
-  by_cases h : P s
-  · simp [h]
-  · simp [h, ENNReal.smul_top, hc]
+  ext s; by_cases h : P s <;> simp [extend, ENNReal.smul_top, *]
+
+lemma ennreal_smul_extend {c : ℝ≥0∞} (hc : c ≠ 0) : c • extend m = extend fun s h => c • m s h := by
+  ext s; by_cases h : P s <;> simp [extend, *]
 
 theorem le_extend {s : α} (h : P s) : m s h ≤ extend m s := by
   simp only [extend, le_iInf_iff]
@@ -354,6 +353,7 @@ theorem trim_eq_iInf' (s : Set α) : m.trim s = ⨅ t : { t // s ⊆ t ∧ Measu
 theorem trim_trim (m : OuterMeasure α) : m.trim.trim = m.trim :=
   trim_eq_trim_iff.2 fun _s => m.trim_eq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem trim_top : (⊤ : OuterMeasure α).trim = ⊤ :=
   top_unique <| le_trim _

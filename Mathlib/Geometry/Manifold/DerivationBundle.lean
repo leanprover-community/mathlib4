@@ -30,7 +30,7 @@ variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 open scoped Manifold ContDiff
 
--- the following two instances prevent poorly understood type class inference timeout problems
+-- the following two instances prevent poorly understood typeclass inference timeout problems
 instance smoothFunctionsAlgebra : Algebra 𝕜 C^∞⟮I, M; 𝕜⟯ := by infer_instance
 
 instance smooth_functions_tower : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯ := by infer_instance
@@ -82,6 +82,7 @@ def eval (x : M) : C^∞⟮I, M; 𝕜⟯ →ₐ[C^∞⟮I, M; 𝕜⟯⟨x⟩] �
 theorem smul_def (x : M) (f : C^∞⟮I, M; 𝕜⟯⟨x⟩) (k : 𝕜) : f • k = f x * k :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance (x : M) : IsScalarTower 𝕜 C^∞⟮I, M; 𝕜⟯⟨x⟩ 𝕜 where
   smul_assoc k f h := by
     rw [smul_def, smul_def, ContMDiffMap.coe_smul, Pi.smul_apply, smul_eq_mul, smul_eq_mul,
@@ -125,6 +126,7 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The heterogeneous differential as a linear map, denoted as `𝒅ₕ` within the `Manifold` namespace.
 Instead of taking a function as an argument, this
 differential takes `h : f x = y`. It is particularly handy for situations where the points

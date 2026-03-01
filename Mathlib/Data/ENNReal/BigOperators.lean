@@ -16,7 +16,7 @@ In this file we prove elementary properties of sums and products on `ℝ≥0∞`
 interact with the order structure on `ℝ≥0∞`.
 -/
 
-@[expose] public section
+public section
 
 open Set NNReal ENNReal
 
@@ -129,6 +129,7 @@ section Inv
 
 variable {ι : Type*} {f g : ι → ℝ≥0∞} {s : Finset ι}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma prod_inv_distrib (hf : (s : Set ι).Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) :
     (∏ i ∈ s, f i)⁻¹ = ∏ i ∈ s, (f i)⁻¹ := by
   induction s using Finset.cons_induction with
@@ -163,7 +164,7 @@ lemma finsetSum_iSup {α : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
     gcongr
     exacts [(hk a).1, (hk _).2]
 
-lemma finsetSum_iSup_of_monotone {α : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {s : Finset α}
+lemma finsetSum_iSup_of_monotone {α : Type*} [Preorder ι] [IsDirectedOrder ι] {s : Finset α}
     {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
   finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 

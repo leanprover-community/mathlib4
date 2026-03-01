@@ -22,12 +22,12 @@ mathlib's conventions for integrals over finite intervals (see `intervalIntegral
 
 ## See also
 
-- `Mathlib/Analysis/SpecialFunctions/Integrals.lean` -- integrals over finite intervals
-- `Mathlib/Analysis/SpecialFunctions/Gaussian.lean` -- integral of `exp (-x ^ 2)`
-- `Mathlib/Analysis/SpecialFunctions/JapaneseBracket.lean`-- integrability of `(1+‖x‖)^(-r)`.
+- `Mathlib/Analysis/SpecialFunctions/Integrals/Basic.lean`: specific integrals over finite intervals
+- `Mathlib/Analysis/SpecialFunctions/Gaussian/GaussianIntegral.lean`: integral of `exp (-x ^ 2)`
+- `Mathlib/Analysis/SpecialFunctions/JapaneseBracket.lean`: integrability of `(1+‖x‖)^(-r)`.
 -/
 
-@[expose] public section
+public section
 
 
 open Real Set Filter MeasureTheory intervalIntegral
@@ -61,6 +61,7 @@ theorem integral_exp_neg_Ioi (c : ℝ) : (∫ x : ℝ in Ioi c, exp (-x)) = exp 
 theorem integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
   simpa only [neg_zero, exp_zero] using integral_exp_neg_Ioi 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
     IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Ioi c) := by
   refine (integrable_norm_iff ?_).mp ?_
@@ -100,12 +101,13 @@ theorem integral_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
     integral_comp_neg_Ioi (f := fun x : ℝ ↦ Complex.exp (a * x))]
     using integral_exp_mul_complex_Ioi (a := -a) (by simpa) (-c)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_exp_mul_Ioi {a : ℝ} (ha : a < 0) (c : ℝ) :
     ∫ x : ℝ in Set.Ioi c, Real.exp (a * x) = - Real.exp (a * c) / a := by
   simp_rw [Real.exp, ← RCLike.re_to_complex, Complex.ofReal_mul]
   rw [integral_re, integral_exp_mul_complex_Ioi (by simpa using ha), RCLike.re_to_complex,
     RCLike.re_to_complex, Complex.div_ofReal_re, Complex.neg_re]
-  exact integrableOn_exp_mul_complex_Ioi  (by simpa using ha) _
+  exact integrableOn_exp_mul_complex_Ioi (by simpa using ha) _
 
 theorem integral_exp_mul_Iic {a : ℝ} (ha : 0 < a) (c : ℝ) :
     ∫ x : ℝ in Set.Iic c, Real.exp (a * x) = Real.exp (a * c) / a := by
@@ -146,7 +148,7 @@ theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     simp only [norm_inv, Real.norm_eq_abs, abs_of_nonneg (zero_le_one.trans x_one)]
     rw [← Real.rpow_neg_one x]
     exact Real.rpow_le_rpow_of_exponent_le x_one h
-  exact not_IntegrableOn_Ioi_inv this
+  exact not_integrableOn_Ioi_inv this
 
 theorem integrableAtFilter_rpow_atTop_iff {s : ℝ} :
     IntegrableAtFilter (fun x : ℝ ↦ x ^ s) atTop ↔ s < -1 := by
@@ -159,7 +161,7 @@ theorem integrableAtFilter_rpow_atTop_iff {s : ℝ} :
 /-- The real power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi (0 : ℝ)) := by
   intro h
-  rcases le_or_gt s (-1) with hs|hs
+  rcases le_or_gt s (-1) with hs | hs
   · have : IntegrableOn (fun x ↦ x ^ s) (Ioo (0 : ℝ) 1) := h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_rpow_iff zero_lt_one] at this
     exact hs.not_gt this
@@ -203,6 +205,7 @@ theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
     IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi t) ↔ s.re < -1 :=
   ⟨fun h ↦ (integrableOn_Ioi_norm_cpow_iff ht).mp h.norm, fun h ↦ integrableOn_Ioi_cpow_of_lt h ht⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integrableOn_Ioi_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re < 0) :
     IntegrableOn (deriv fun x : ℝ ↦ (x : ℂ) ^ s) (Set.Ioi t) := by
   have h : IntegrableOn (fun x : ℝ ↦ s * x ^ (s - 1)) (Set.Ioi t) := by
@@ -218,14 +221,14 @@ theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t)
   obtain hs | hs := eq_or_lt_of_le hs
   · simp_rw [hs, zero_mul]
     exact integrableOn_zero
-  · replace hs : s.re - 1 < - 1 := by rwa [sub_lt_iff_lt_add, neg_add_cancel]
+  · replace hs : s.re - 1 < -1 := by rwa [sub_lt_iff_lt_add, neg_add_cancel]
     exact (integrableOn_Ioi_rpow_of_lt hs ht).const_mul s.re
 
 /-- The complex power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_cpow (s : ℂ) :
     ¬ IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi (0 : ℝ)) := by
   intro h
-  rcases le_or_gt s.re (-1) with hs|hs
+  rcases le_or_gt s.re (-1) with hs | hs
   · have : IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioo (0 : ℝ) 1) :=
       h.mono Ioo_subset_Ioi_self le_rfl
     rw [integrableOn_Ioo_cpow_iff zero_lt_one] at this

@@ -33,7 +33,7 @@ class FinEnum (α : Sort*) where
   equiv : α ≃ Fin card
   [decEq : DecidableEq α]
 
-attribute [instance 100] FinEnum.decEq
+attribute [instance_reducible, instance 100] FinEnum.decEq
 
 namespace FinEnum
 
@@ -51,7 +51,7 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
   card := xs.length
   equiv :=
     ⟨fun x => ⟨xs.idxOf x, by rw [List.idxOf_lt_length_iff]; apply h⟩, xs.get, fun x => by simp,
-      fun i => by ext; simp [List.idxOf_getElem h']⟩
+      fun i => by ext; simp [h'.idxOf_getElem]⟩
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
 def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum α :=

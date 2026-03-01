@@ -21,12 +21,16 @@ open ComplexConjugate
 namespace Mathlib.Meta
 namespace NormNumI
 
+/-- The result of `norm_num` running on an expression `a : ℂ`. -/
 structure ResultI (a : Q(ℂ)) where
+  /-- The result of `norm_num` running on the real part of `a`. -/
   re : NormNum.Result q(RCLike.re $a)
+  /-- The result of `norm_num` running on the imaginary part of `a`. -/
   im : NormNum.Result q(RCLike.im $a)
 
 -- TODO : get rid of cast in `$a = $x + Complex.I * $y`.
 -- also try replace `getD` with `get!`
+/-- when obtained a result `a` in `ResultI`, one could get `x y : ℝ` such that `a = x + yi`. -/
 def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) :
     MetaM (Σ x y : Q(ℝ), Q($a = $x + Complex.I * $y)) := do
   let ⟨(x : Q(ℝ)), pf1, _⟩ ← r.re.toSimpResult
@@ -35,37 +39,36 @@ def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) :
   let pf2' : Q(Complex.im $a = $y) := pf2.getD q(rfl : $y = _)
   return ⟨x, y, q(Complex.ext (by simpa using $pf1') (by simpa using $pf2'))⟩
 
-
--- def ResultI.cast {a b : Q(ℂ)} (r : ResultI a) (h : Q($a = $b)): ResultI b :=
---   { re := { r.re with expr := q(Complex.re $b) }
---     im := r.im.cast q(Complex.im $b) }
-  -- have : a = b := (q(rfl (a := $a)) :)
-  -- $h ▸ r
-
+/-- ResultI made from two Results on real and imaginary parts. -/
 def ResultI.mk' {z : Q(ℂ)} {p1 p2 : Q(ℝ)} (h1 : NormNum.Result q($p1))
     (h2 : NormNum.Result q($p2)) (pf₁ : Q(RCLike.re $z = $p1)) (pf₂ : Q(RCLike.im $z = $p2)) :
     ResultI z where
   re := h1.eqTrans pf₁
   im := h2.eqTrans pf₂
 
+/-- ResultI induced by equality -/
 def ResultI.eqTrans {a b : Q(ℂ)} (eq : Q($a = $b)) (r : ResultI b) : ResultI a :=
   .mk' r.re r.im q(congr_arg RCLike.re $eq) q(congr_arg RCLike.im $eq)
 
+/-- ResultI induced by addition -/
 def ResultI.add {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
     MetaM (ResultI q($a + $b)) := do
   return .mk' (← ha.re.add hb.re q(inferInstance)) (← ha.im.add hb.im q(inferInstance))
     q(map_add RCLike.re $a $b) q(map_add RCLike.im $a $b)
 
+/-- ResultI induced by negation -/
 def ResultI.neg {z : Q(ℂ)} (ha : ResultI q($z)) :
     MetaM (ResultI q(-$z)) := do
   return .mk' (← ha.re.neg q(inferInstance)) (← ha.im.neg q(inferInstance))
     q(map_neg RCLike.re $z) q(map_neg RCLike.im $z)
 
+/-- ResultI induced by subtraction -/
 def ResultI.sub {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
     MetaM (ResultI q($a - $b)) := do
   return .mk' (← ha.re.sub hb.re q(inferInstance)) (← ha.im.sub hb.im q(inferInstance))
     q(map_sub RCLike.re $a $b) q(map_sub RCLike.im $a $b)
 
+/-- ResultI induced by multiplication -/
 def ResultI.mul {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
     MetaM (ResultI q($a * $b)) := do
   return .mk'
@@ -75,11 +78,13 @@ def ResultI.mul {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
       q(inferInstance))
     q(RCLike.mul_re $a $b) q(RCLike.mul_im $a $b)
 
+/-- ResultI induced by conjugation -/
 def ResultI.conj {z : Q(ℂ)} (hz : ResultI q($z)) :
     MetaM (ResultI q(conj $z)) := do
   return .mk' hz.re (← hz.im.neg q(inferInstance))
     q(RCLike.conj_re $z) q(RCLike.conj_im $z)
 
+/-- ResultI induced by taking inverse -/
 def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
     MetaM (ResultI q($z⁻¹)) := do
   return .mk'
@@ -91,11 +96,6 @@ def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
       q(inferInstance))).neg q(inferInstance))
     q(by rw [RCLike.inv_re, div_eq_mul_inv, mul_comm, RCLike.normSq_apply])
     q(by rw [RCLike.inv_im, div_eq_mul_inv, mul_comm, RCLike.normSq_apply, mul_neg])
-
--- theorem IsComplex.scientific (m exp : ℕ) (x : Bool) :
---     ResultI (OfScientific.ofScientific m x exp : ℂ)
---     (OfScientific.ofScientific m x exp : ℝ) 0 :=
---   ⟨RCLike.nnratCast_re _, RCLike.nnratCast_im _⟩
 
 theorem eq_of_eq_of_eq_of_eq {z w : ℂ}
     (ha : (RCLike.re z = RCLike.re w) = True)
@@ -148,13 +148,33 @@ theorem ne_of_im_ne {z w : ℂ} (h : (RCLike.im z = RCLike.im w) = False) :
 --         have : $n =Q Nat.bit false $m := ⟨⟩
 --         let ⟨_, _, hzm⟩ ← rec q($z) q($m) q(⟨rfl⟩) hz
 --         return ⟨_, _, q(have hzm' := $hzm; pow_bit_false $z $m ▸ IsComplex.mul hzm' hzm')⟩)
+
+/-- Result of `norm_num` running on lift of natural numbers in real -/
 def NormNum.Resultn (n0 : ℕ) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℝ) $n0)) := do
   have n : Q(ℕ) := .lit (.natVal n0)
-  let e : Q(ℝ) := q(OfNat.ofNat (α := ℝ) $n)
-  let ⟨_, (pa : Q($n = $e))⟩ ← NormNum.mkOfNat q(ℝ) q(inferInstance) n
+  let ⟨_, (pa)⟩ ← NormNum.mkOfNat q(ℝ) q(inferInstance) n
   return NormNum.Result.isNat (α := q(ℝ)) q(inferInstance) n q(NormNum.isNat_ofNat ℝ $pa)
 
--- def NormNum.OfScientific
+/-- Result of `norm_num` on scientific expressions in real -/
+def NormNum.ResultOfScientific (mantissa : ℕ) (exponentSign : Bool) (decimalExponent : ℕ) :
+    MetaM (NormNum.Result q(OfScientific.ofScientific (α := ℝ) $mantissa
+    $exponentSign $decimalExponent )) := do
+  let x : Q(ℝ) := q(OfScientific.ofScientific (α := ℝ) $mantissa
+    $exponentSign $decimalExponent )
+  match exponentSign with
+  | true =>
+    let rme ← NormNum.derive (q(mkRat $mantissa (10 ^ $decimalExponent)) : Q(ℝ))
+    let some ⟨q, n, d, p⟩ := rme.toNNRat' q(inferInstance) | failure
+    assumeInstancesCommute
+    return .isNNRat (x := x) q(inferInstance) q n d (q(NormNum.isNNRat_ofScientific_of_true $p):)
+  | false =>
+  let n' := Nat.mul mantissa (Nat.pow (10 : ℕ) decimalExponent)
+  have n : Q(ℕ) := mkRawNatLit n'
+  have pm : Q(NormNum.IsNat $mantissa $mantissa) := q(.mk rfl)
+  have pe : Q(NormNum.IsNat $decimalExponent $decimalExponent) := q(.mk rfl)
+  haveI : $n =Q Nat.mul $mantissa (Nat.pow (10 : ℕ) $decimalExponent) := ⟨⟩
+  return .isNat (x := x) q(inferInstance) n
+    (q(NormNum.isNat_ofScientific_of_false (α := ℝ) $pm $pe (.refl $n)):)
 
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
@@ -200,7 +220,6 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   --     let _i : $k' =Q Int.negSucc $n := ⟨⟩
   --     return ⟨a, b, q(.of_pow_negSucc $hm $pf)⟩
   | ~q(Complex.I) =>
-      -- a bit tricky because `I.im` could be either `1` or `0`
   return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 1)
   | ~q(0) =>
   return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 0)
@@ -208,10 +227,12 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   return ResultI.mk (← NormNum.Resultn 1) (← NormNum.Resultn 0)
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
   let some n := en.rawNatLit? | failure
-  return ResultI.mk (← NormNum.Resultn n) (← NormNum.Resultn 0) --q(sorry) q(rfl)
-  | ~q(OfScientific.ofScientific $m $x $exp) =>
-  return sorry
-  --   return ⟨_, _, q(.scientific _ _ _)⟩
+  return ResultI.mk (← NormNum.Resultn n) (← NormNum.Resultn 0)
+  | ~q(OfScientific.ofScientific $em $ex $eexp) =>
+  let some m := em.rawNatLit? | failure
+  let x : Bool := ex.isConstOf ``true
+  let some exp := eexp.rawNatLit? | failure
+  return ResultI.mk (← NormNum.ResultOfScientific m x exp) (← NormNum.Resultn 0)
   | _ => throwError "found the atom {z} which is not a numeral"
 
 /-- Create the `NormNumI` tactic in `conv` mode. -/

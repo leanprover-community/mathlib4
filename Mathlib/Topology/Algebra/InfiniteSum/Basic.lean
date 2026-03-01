@@ -21,7 +21,7 @@ Results requiring a group (rather than monoid) structure on the target should go
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -35,10 +35,10 @@ variable [CommMonoid α] [TopologicalSpace α]
 variable {f g : β → α} {a b : α} {L : SummationFilter β}
 
 /-- Constant one function has product `1` -/
-@[to_additive /-- Constant zero function has sum `0` -/]
+@[to_additive (attr := simp) /-- Constant zero function has sum `0` -/]
 theorem hasProd_one : HasProd (fun _ ↦ 1 : β → α) 1 L := by simp [HasProd, tendsto_const_nhds]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
   convert hasProd_one
 
@@ -46,11 +46,11 @@ theorem hasProd_empty [IsEmpty β] : HasProd f 1 L := by
 theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
   convert hasProd_one
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
   hasProd_one.multipliable
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem multipliable_empty [IsEmpty β] : Multipliable f L :=
   hasProd_empty.multipliable
 
@@ -450,7 +450,7 @@ theorem tprod_congr₂ {f g : β → γ → α} {M : SummationFilter γ}
     (hfg : ∀ b c, f b c = g b c) : ∏'[L] b, ∏'[M] c, f b c = ∏'[L] b, ∏'[M] c, g b c :=
   tprod_congr fun b ↦ tprod_congr fun c ↦ hfg b c
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem tprod_fintype [L.LeAtTop] [Fintype β] (f : β → α) : ∏'[L] b, f b = ∏ b, f b := by
   apply tprod_eq_prod; simp
 
@@ -486,19 +486,21 @@ theorem tprod_ite_eq (b : β) [DecidablePred (· = b)] (a : β → α)
   · simp
   · intro b' hb'; simp [hb']
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem Finset.tprod_subtype (s : Finset β) (f : β → α) :
     ∏' x : { x // x ∈ s }, f x = ∏ x ∈ s, f x := by
   rw [← prod_attach]; exact tprod_fintype _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Finset.tprod_subtype' (s : Finset β) (f : β → α) :
-    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by simp
+    ∏' x : (s : Set β), f x = ∏ x ∈ s, f x := by
+  simp [prod_attach]
 
-@[to_additive (attr := simp)]
-theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by
-  rw [← coe_singleton, Finset.tprod_subtype', prod_singleton]
+@[to_additive]
+theorem tprod_singleton (b : β) (f : β → α) : ∏' x : ({b} : Set β), f x = f b := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β → α}
     (hf : mulSupport f ⊆ Set.range g) : ∏' c, f (g c) = ∏' b, f b := by

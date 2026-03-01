@@ -31,7 +31,7 @@ for the Bochner integral.
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Metric
 
@@ -241,6 +241,7 @@ nonrec theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F :
           h_lim).const_smul
       _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Interval integrals commute with countable sums, when the supremum norms are summable (a
 special case of the dominated convergence theorem). -/
 theorem hasSum_intervalIntegral_of_summable_norm [Countable ι] {f : ι → C(ℝ, E)}

@@ -23,7 +23,7 @@ chain rule, manifolds, higher derivative
 
 -/
 
-@[expose] public section
+public section
 
 open Filter Function Set Topology
 open scoped Manifold ContDiff
@@ -72,7 +72,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, e, e',mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
+    simp only [*, e, e', mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
       true_and]
     exact mem_range_self _
   · filter_upwards [A]
@@ -147,6 +147,7 @@ end Composition
 
 section id
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
     ((contDiffWithinAt_localInvariantProp ⊤).liftProp_id contDiffWithinAtProp_id) le_top
@@ -188,7 +189,7 @@ variable {c : M'}
 
 theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
   intro x
-  refine ⟨continuousWithinAt_const, ?_⟩
+  refine ⟨by fun_prop, ?_⟩
   simp only [ContDiffWithinAtProp, Function.comp_def]
   exact contDiffWithinAt_const
 
@@ -264,23 +265,11 @@ theorem contMDiffWithinAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (eventually_nhdsWithin_of_eventually_nhds <| notMem_mulTSupport_iff_eventuallyEq.mp hx)
     (image_eq_one_of_notMem_mulTSupport hx)
 
-@[deprecated (since := "2025-05-23")]
-alias contMDiffWithinAt_of_not_mem := contMDiffWithinAt_of_notMem
-
-@[to_additive existing contMDiffWithinAt_of_not_mem, deprecated (since := "2025-05-23")]
-alias contMDiffWithinAt_of_not_mem_mulTSupport := contMDiffWithinAt_of_notMem_mulTSupport
-
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
 @[to_additive contMDiffAt_of_notMem]
 theorem contMDiffAt_of_notMem_mulTSupport {f : M → M'} [One M'] {x : M}
     (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_notMem_mulTSupport hx n univ
-
-@[deprecated (since := "2025-05-23")]
-alias contMDiffAt_of_not_mem := contMDiffAt_of_notMem
-
-@[to_additive existing contMDiffAt_of_not_mem, deprecated (since := "2025-05-23")]
-alias contMDiffAt_of_not_mem_mulTSupport := contMDiffAt_of_notMem_mulTSupport
 
 /-- Given two `C^n` functions `f` and `g` which coincide locally around the frontier of a set `s`,
 then the piecewise function defined using `f` on `s` and `g` elsewhere is `C^n`. -/
@@ -410,6 +399,7 @@ section
 
 variable {e : M → H} (h : IsOpenEmbedding e) {n : WithTop ℕ∞}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
@@ -435,6 +425,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
       h.toOpenPartialHomeomorph_target] at this
     exact this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
 then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :

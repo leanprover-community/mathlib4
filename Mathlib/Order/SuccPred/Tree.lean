@@ -66,7 +66,7 @@ lemma findAtom_eq_bot {r : α} :
   mp h := by
     unfold findAtom at h
     have := Nat.find_min' (bot_le (a := r)).exists_pred_iterate h
-    replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by omega
+    replace : Nat.find (bot_le (a := r)).exists_pred_iterate = 0 := by lia
     simpa [this] using h
   mpr h := by simp [h]
 
@@ -205,6 +205,7 @@ lemma RootedTree.mem_subtrees_disjoint_iff {t₁ t₂ : SubRootedTree t}
     simpa only [ht₂.le_iff_eq ht₁.1, ht₁.le_iff_eq ht₂.1, eq_comm, or_self] using
       le_total_of_directed oh.2 h₂
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RootedTree.subtrees_disjoint : t.subtrees.PairwiseDisjoint ((↑) : _ → Set t) := by
   intro t₁ ht₁ t₂ ht₂ h
   rw [Function.onFun_apply, Set.disjoint_left]

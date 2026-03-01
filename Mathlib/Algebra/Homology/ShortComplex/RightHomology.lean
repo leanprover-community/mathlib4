@@ -36,7 +36,7 @@ open Category Limits
 
 namespace ShortComplex
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
   (S : ShortComplex C) {S₁ S₂ S₃ : ShortComplex C}
 
 /-- A right homology data for a short complex `S` consists of morphisms `p : S.X₂ ⟶ Q` and
@@ -64,6 +64,7 @@ initialize_simps_projections RightHomologyData (-hp, -hι)
 
 namespace RightHomologyData
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The chosen cokernels and kernels of the limits API give a `RightHomologyData` -/
 @[simps]
 noncomputable def ofHasCokernelOfHasKernel
@@ -141,6 +142,7 @@ lemma isIso_ι (hg : S.g = 0) : IsIso h.ι := by
 
 variable (S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the first map `S.f` is zero, this is the right homology data on `S` given
 by any limit kernel fork of `S.g` -/
 @[simps]
@@ -155,6 +157,7 @@ def ofIsLimitKernelFork (hf : S.f = 0) (c : KernelFork S.g) (hc : IsLimit c) :
   wι := KernelFork.condition _
   hι := IsLimit.ofIsoLimit hc (Fork.ext (Iso.refl _) (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ofIsLimitKernelFork_g' (hf : S.f = 0) (c : KernelFork S.g)
     (hc : IsLimit c) : (ofIsLimitKernelFork S hf c hc).g' = S.g := by
   rw [← cancel_epi (ofIsLimitKernelFork S hf c hc).p, p_g',
@@ -166,6 +169,7 @@ the chosen `kernel S.g` -/
 noncomputable def ofHasKernel [HasKernel S.g] (hf : S.f = 0) : S.RightHomologyData :=
 ofIsLimitKernelFork S hf _ (kernelIsKernel _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When the second map `S.g` is zero, this is the right homology data on `S` given
 by any colimit cokernel cofork of `S.g` -/
 @[simps]
@@ -210,6 +214,7 @@ lemma ofZeros_g' (hf : S.f = 0) (hg : S.g = 0) :
     (ofZeros S hf hg).g' = 0 := by
   rw [← cancel_epi ((ofZeros S hf hg).p), comp_zero, p_g', hg]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {S} in
 /-- Given a right homology data `h` of a short complex `S`, we can construct another right homology
 data by choosing another cokernel and kernel that are isomorphic to the ones in `h`. -/
@@ -421,6 +426,7 @@ variable {φ h₁ h₂}
 lemma congr_φH {γ₁ γ₂ : RightHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φH = γ₂.φH := by rw [eq]
 lemma congr_φQ {γ₁ γ₂ : RightHomologyMapData φ h₁ h₂} (eq : γ₁ = γ₂) : γ₁.φQ = γ₂.φQ := by rw [eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `S₁.f`, `S₁.g`, `S₂.f` and `S₂.g` are all zero, the action on right homology of a
 morphism `φ : S₁ ⟶ S₂` is given by the action `φ.τ₂` on the middle objects. -/
 @[simps]
@@ -430,6 +436,7 @@ def ofZeros (φ : S₁ ⟶ S₂) (hf₁ : S₁.f = 0) (hg₁ : S₁.g = 0) (hf�
   φQ := φ.τ₂
   φH := φ.τ₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `S₁.f` and `S₂.f` are zero and we have chosen limit kernel forks `c₁` and `c₂`
 for `S₁.g` and `S₂.g` respectively, the action on right homology of a morphism `φ : S₁ ⟶ S₂` of
 short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such that
@@ -446,6 +453,7 @@ def ofIsLimitKernelFork (φ : S₁ ⟶ S₂)
   commg' := by simp only [RightHomologyData.ofIsLimitKernelFork_g', φ.comm₂₃]
   commι := comm.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `S₁.g` and `S₂.g` are zero and we have chosen colimit cokernel coforks `c₁` and `c₂`
 for `S₁.f` and `S₂.f` respectively, the action on right homology of a morphism `φ : S₁ ⟶ S₂` of
 short complexes is given by the unique morphism `f : c₁.pt ⟶ c₂.pt` such that
@@ -475,6 +483,7 @@ def compatibilityOfZerosOfIsLimitKernelFork (hf : S.f = 0) (hg : S.g = 0)
   φQ := 𝟙 _
   φH := c.ι
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When both maps `S.f` and `S.g` of a short complex `S` are zero, this is the right homology map
 data (for the identity of `S`) which relates the right homology data `ofZeros` and
 `ofIsColimitCokernelCofork`. -/
@@ -523,10 +532,12 @@ lemma f_pOpcycles : S.f ≫ S.pOpcycles = 0 := S.rightHomologyData.wp
 @[reassoc (attr := simp)]
 lemma p_fromOpcycles : S.pOpcycles ≫ S.fromOpcycles = S.g := S.rightHomologyData.p_g'
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi S.pOpcycles := by
   dsimp only [pOpcycles]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.rightHomologyι := by
   dsimp only [rightHomologyι]
   infer_instance
@@ -584,7 +595,7 @@ lemma opcyclesIsoRightHomology_inv_hom_id (hg : S.g = 0) :
 
 @[reassoc (attr := simp)]
 lemma opcyclesIsoRightHomology_hom_inv_id (hg : S.g = 0) :
-    (S.opcyclesIsoRightHomology hg).hom ≫ S.rightHomologyι  = 𝟙 _ :=
+    (S.opcyclesIsoRightHomology hg).hom ≫ S.rightHomologyι = 𝟙 _ :=
   (S.opcyclesIsoRightHomology hg).hom_inv_id
 
 end
@@ -816,6 +827,7 @@ short complex `S`. -/
 noncomputable def opcyclesIso : S.opcycles ≅ h.Q :=
   opcyclesMapIso' (Iso.refl _) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma p_comp_opcyclesIso_inv : h.p ≫ h.opcyclesIso.inv = S.pOpcycles := by
   dsimp [pOpcycles, RightHomologyData.opcyclesIso]
@@ -825,6 +837,7 @@ lemma p_comp_opcyclesIso_inv : h.p ≫ h.opcyclesIso.inv = S.pOpcycles := by
 lemma pOpcycles_comp_opcyclesIso_hom : S.pOpcycles ≫ h.opcyclesIso.hom = h.p := by
   simp only [← h.p_comp_opcyclesIso_inv, assoc, Iso.inv_hom_id, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightHomologyIso_inv_comp_rightHomologyι :
     h.rightHomologyIso.inv ≫ S.rightHomologyι = h.ι ≫ h.opcyclesIso.inv := by
@@ -845,6 +858,7 @@ namespace RightHomologyMapData
 variable {φ : S₁ ⟶ S₂} {h₁ : S₁.RightHomologyData} {h₂ : S₂.RightHomologyData}
   (γ : RightHomologyMapData φ h₁ h₂)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rightHomologyMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
     rightHomologyMap φ = h₁.rightHomologyIso.hom ≫ γ.φH ≫ h₂.rightHomologyIso.inv := by
   dsimp [RightHomologyData.rightHomologyIso, rightHomologyMapIso']
@@ -852,6 +866,7 @@ lemma rightHomologyMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
     ← rightHomologyMap'_comp, id_comp, comp_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma opcyclesMap_eq [S₁.HasRightHomology] [S₂.HasRightHomology] :
     opcyclesMap φ = h₁.opcyclesIso.hom ≫ γ.φQ ≫ h₂.opcyclesIso.inv := by
   dsimp [RightHomologyData.opcyclesIso, cyclesMapIso']
@@ -907,7 +922,7 @@ noncomputable def pOpcyclesNatTrans :
 noncomputable def fromOpcyclesNatTrans :
     opcyclesFunctor C ⟶ π₃ where
   app S := S.fromOpcycles
-  naturality := fun _ _  φ => fromOpcycles_naturality φ
+  naturality := fun _ _ φ => fromOpcycles_naturality φ
 
 end
 
@@ -985,6 +1000,7 @@ noncomputable def cyclesOpIso [S.HasRightHomology] :
     S.op.cycles ≅ Opposite.op S.opcycles :=
   S.rightHomologyData.op.cyclesIso
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma opcyclesOpIso_hom_toCycles_op [S.HasLeftHomology] :
     S.opcyclesOpIso.hom ≫ S.toCycles.op = S.op.fromOpcycles := by
@@ -993,6 +1009,7 @@ lemma opcyclesOpIso_hom_toCycles_op [S.HasLeftHomology] :
     RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc,
     LeftHomologyData.op_p, ← op_comp, LeftHomologyData.f'_i, op_g]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma fromOpcycles_op_cyclesOpIso_inv [S.HasRightHomology] :
     S.fromOpcycles.op ≫ S.cyclesOpIso.inv = S.op.toCycles := by
@@ -1001,6 +1018,7 @@ lemma fromOpcycles_op_cyclesOpIso_inv [S.HasRightHomology] :
     LeftHomologyData.cyclesIso_inv_comp_iCycles, RightHomologyData.op_i,
     ← op_comp, RightHomologyData.p_g', op_f]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma op_pOpcycles_opcyclesOpIso_hom [S.HasLeftHomology] :
     S.op.pOpcycles ≫ S.opcyclesOpIso.hom = S.iCycles.op := by
@@ -1009,6 +1027,7 @@ lemma op_pOpcycles_opcyclesOpIso_hom [S.HasLeftHomology] :
     Iso.inv_hom_id, comp_id]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesOpIso_inv_op_iCycles [S.HasRightHomology] :
     S.cyclesOpIso.inv ≫ S.op.iCycles = S.pOpcycles.op := by
@@ -1016,6 +1035,7 @@ lemma cyclesOpIso_inv_op_iCycles [S.HasRightHomology] :
   rw [← S.rightHomologyData.op.cyclesIso_hom_comp_i, Iso.inv_hom_id_assoc]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma opcyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
     [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
@@ -1033,6 +1053,7 @@ lemma opcyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
   rw [← cancel_epi (S₂.opcyclesOpIso.hom), Iso.hom_inv_id_assoc,
     ← opcyclesOpIso_hom_naturality_assoc, Iso.hom_inv_id, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
     [S₁.HasRightHomology] [S₂.HasRightHomology] :
@@ -1057,6 +1078,7 @@ lemma leftHomologyMap'_op
   simp only [γ.leftHomologyMap'_eq, γ.op.rightHomologyMap'_eq,
     LeftHomologyMapData.op_φH]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma leftHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
     (leftHomologyMap φ).op = S₂.rightHomologyOpIso.inv ≫ rightHomologyMap (opMap φ) ≫
       S₁.rightHomologyOpIso.hom := by
@@ -1072,6 +1094,7 @@ lemma rightHomologyMap'_op
   simp only [γ.rightHomologyMap'_eq, γ.op.leftHomologyMap'_eq,
     RightHomologyMapData.op_φH]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rightHomologyMap_op (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology] :
     (rightHomologyMap φ).op = S₂.leftHomologyOpIso.inv ≫ leftHomologyMap (opMap φ) ≫
       S₁.leftHomologyOpIso.hom := by
@@ -1104,6 +1127,7 @@ noncomputable def ofEpiOfIsIsoOfMono : RightHomologyData S₂ := by
 
 @[simp] lemma ofEpiOfIsIsoOfMono_ι : (ofEpiOfIsIsoOfMono φ h).ι = h.ι := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ofEpiOfIsIsoOfMono_g' : (ofEpiOfIsIsoOfMono φ h).g' = h.g' ≫ φ.τ₃ := by
   simp [ofEpiOfIsIsoOfMono, opMap]
 
@@ -1132,6 +1156,7 @@ noncomputable def ofEpiOfIsIsoOfMono' : RightHomologyData S₁ := by
 
 @[simp] lemma ofEpiOfIsIsoOfMono'_ι : (ofEpiOfIsIsoOfMono' φ h).ι = h.ι := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ofEpiOfIsIsoOfMono'_g'_τ₃ : (ofEpiOfIsIsoOfMono' φ h).g' ≫ φ.τ₃ = h.g' := by
   rw [← cancel_epi (ofEpiOfIsIsoOfMono' φ h).p, p_g'_assoc, ofEpiOfIsIsoOfMono'_p,
     assoc, p_g', φ.comm₂₃]
@@ -1168,6 +1193,7 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : RightHomologyData
   φQ := 𝟙 _
   φH := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This right homology map data expresses compatibilities of the right homology data
 constructed by `RightHomologyData.ofEpiOfIsIsoOfMono'` -/
 @[simps]
@@ -1179,6 +1205,7 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : RightHomologyDat
 
 end RightHomologyMapData
 
+set_option backward.isDefEq.respectTransparency false in
 instance (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.RightHomologyData)
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] :
     IsIso (rightHomologyMap' φ h₁ h₂) := by
@@ -1192,6 +1219,7 @@ instance (φ : S₁ ⟶ S₂) (h₁ : S₁.RightHomologyData) (h₂ : S₂.Right
   rw [eq]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism of short complexes `φ : S₁ ⟶ S₂` is such that `φ.τ₁` is epi, `φ.τ₂` is an iso,
 and `φ.τ₃` is mono, then the induced morphism on right homology is an isomorphism. -/
 instance (φ : S₁ ⟶ S₂) [S₁.HasRightHomology] [S₂.HasRightHomology]
@@ -1253,6 +1281,26 @@ noncomputable def opcyclesIsoCokernel [HasCokernel S.f] : S.opcycles ≅ cokerne
   hom := S.descOpcycles (cokernel.π S.f) (by simp)
   inv := cokernel.desc S.f S.pOpcycles (by simp)
 
+section
+
+variable {cc : CokernelCofork S.f} (hcc : IsColimit cc)
+
+/-- The isomorphism from the point of a colimit cokernel cofork of `S.f` to `S.opcycles`. -/
+noncomputable def isoOpcyclesOfIsColimit :
+    cc.pt ≅ S.opcycles :=
+  IsColimit.coconePointUniqueUpToIso hcc S.opcyclesIsCokernel
+
+@[reassoc (attr := simp)]
+lemma π_isoOpcyclesOfIsColimit_hom : cc.π ≫ (S.isoOpcyclesOfIsColimit hcc).hom = S.pOpcycles :=
+  IsColimit.comp_coconePointUniqueUpToIso_hom _ _ WalkingParallelPair.one
+
+@[reassoc (attr := simp)]
+lemma pOpcycles_π_isoOpcyclesOfIsColimit_inv :
+    S.pOpcycles ≫ (S.isoOpcyclesOfIsColimit hcc).inv = cc.π :=
+  IsColimit.comp_coconePointUniqueUpToIso_inv _ S.opcyclesIsCokernel WalkingParallelPair.one
+
+end
+
 /-- The morphism `S.rightHomology ⟶ A` obtained from a morphism `k : S.X₂ ⟶ A`
 such that `S.f ≫ k = 0.` -/
 @[simp]
@@ -1302,6 +1350,7 @@ namespace HasRightHomology
 lemma hasCokernel [S.HasRightHomology] : HasCokernel S.f :=
   ⟨⟨⟨_, S.rightHomologyData.hp⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
     HasKernel (cokernel.desc S.f S.g S.zero) := by
   let h := S.rightHomologyData

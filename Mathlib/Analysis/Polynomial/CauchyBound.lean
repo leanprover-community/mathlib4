@@ -52,22 +52,25 @@ lemma cauchyBound_one : cauchyBound (1 : K[X]) = 1 := cauchyBound_C 1
 lemma cauchyBound_X : cauchyBound (X : K[X]) = 1 := by
   simp [cauchyBound]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cauchyBound_X_add_C (x : K) : cauchyBound (X + C x) = ‖x‖₊ + 1 := by
   simp [cauchyBound]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma cauchyBound_X_sub_C (x : K) : cauchyBound (X - C x) = ‖x‖₊ + 1 := by
   simp [cauchyBound]
 
 @[simp]
 lemma cauchyBound_smul {x : K} (hx : x ≠ 0) (p : K[X]) : cauchyBound (x • p) = cauchyBound p := by
-  simp only [cauchyBound, (isRegular_of_ne_zero hx).left.isSMulRegular,
+  simp only [cauchyBound, (IsRegular.of_ne_zero hx).left.isSMulRegular,
     natDegree_smul_of_smul_regular, coeff_smul, smul_eq_mul, nnnorm_mul, ← mul_finset_sup,
     leadingCoeff_smul_of_smul_regular, add_left_inj]
   apply mul_div_mul_left
   simpa
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 `cauchyBound` is a bound on the norm of polynomial roots.
 -/

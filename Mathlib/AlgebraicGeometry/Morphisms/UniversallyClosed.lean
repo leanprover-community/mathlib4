@@ -41,10 +41,13 @@ along any morphism `Y' ⟶ Y` is (topologically) a closed map.
 -/
 @[mk_iff]
 class UniversallyClosed (f : X ⟶ Y) : Prop where
-  out : universally (topologically @IsClosedMap) f
+  universally_isClosedMap : universally (topologically @IsClosedMap) f
+
+@[deprecated (since := "2026-01-20")]
+alias UniversallyClosed.out := UniversallyClosed.universally_isClosedMap
 
 lemma Scheme.Hom.isClosedMap {X Y : Scheme} (f : X ⟶ Y) [UniversallyClosed f] :
-    IsClosedMap f := UniversallyClosed.out _ _ _ IsPullback.of_id_snd
+    IsClosedMap f := UniversallyClosed.universally_isClosedMap _ _ _ IsPullback.of_id_snd
 
 theorem universallyClosed_eq : @UniversallyClosed = universally (topologically @IsClosedMap) := by
   ext X Y f; rw [universallyClosed_iff]
@@ -54,7 +57,7 @@ instance (priority := 900) [IsClosedImmersion f] : UniversallyClosed f := by
   intro X' Y' i₁ i₂ f' hf
   have hf' : IsClosedImmersion f' :=
     MorphismProperty.of_isPullback hf.flip inferInstance
-  exact hf'.base_closed.isClosedMap
+  exact f'.isClosedEmbedding.isClosedMap
 
 theorem universallyClosed_respectsIso : RespectsIso @UniversallyClosed :=
   universallyClosed_eq.symm ▸ universally_respectsIso (topologically @IsClosedMap)
@@ -75,7 +78,8 @@ lemma UniversallyClosed.of_comp_surjective {X Y Z : Scheme} (f : X ⟶ Y) (g : Y
     [UniversallyClosed (f ≫ g)] [Surjective f] : UniversallyClosed g := by
   constructor
   intro X' Y' i₁ i₂ f' H
-  have := UniversallyClosed.out _ _ _ ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
+  have := UniversallyClosed.universally_isClosedMap _ _ _
+    ((IsPullback.of_hasPullback i₁ f).paste_horiz H)
   exact IsClosedMap.of_comp_surjective (MorphismProperty.pullback_fst (P := @Surjective) _ _ ‹_›).1
     (Scheme.Hom.continuous _) this
 
@@ -104,6 +108,7 @@ instance universallyClosed_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Univ
 instance (f : X ⟶ Y) (V : Y.Opens) [UniversallyClosed f] : UniversallyClosed (f ∣_ V) :=
   IsZariskiLocalAtTarget.restrict ‹_› V
 
+set_option backward.isDefEq.respectTransparency false in
 open Scheme.Pullback _root_.PrimeSpectrum MvPolynomial in
 /-- If `X` is universally closed over a field, then `X` is quasi-compact. -/
 lemma compactSpace_of_universallyClosed
@@ -142,20 +147,20 @@ lemma compactSpace_of_universallyClosed
   contrapose! h
   obtain ⟨x, hx⟩ := h
   obtain ⟨z, rfl, hzr⟩ := exists_preimage_pullback x t' (Subsingleton.elim (f x) (q t'))
-  suffices ∀ i, t ∈ (Ti i).comap (comap φ) → p z ∉ U i from ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
+  suffices ∀ i, t ∈ (Ti i).comap ⟨_, continuous_comap φ⟩ → p z ∉ U i from
+    ⟨z, by simpa [Z, p, fT, hzr], hzr⟩
   intro i hi₁ hi₂
   rw [comap_basicOpen, show φ (.X i) = 0 by simpa [φ] using (hx i · hi₂), basicOpen_zero] at hi₁
   cases hi₁
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 04XU]
 lemma Scheme.Hom.isProperMap (f : X ⟶ Y) [UniversallyClosed f] : IsProperMap f := by
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
-  refine ⟨Scheme.Hom.continuous f, ?_, ?_⟩
-  · exact MorphismProperty.universally_le (P := topologically @IsClosedMap) _ UniversallyClosed.out
-  · intro y
-    have := compactSpace_of_universallyClosed (pullback.snd f (Y.fromSpecResidueField y))
-    rw [← Scheme.range_fromSpecResidueField, ← Scheme.Pullback.range_fst]
-    exact isCompact_range (Scheme.Hom.continuous _)
+  refine ⟨f.continuous, f.isClosedMap, fun y ↦ ?_⟩
+  have := compactSpace_of_universallyClosed (pullback.snd f (Y.fromSpecResidueField y))
+  rw [← Scheme.range_fromSpecResidueField, ← Scheme.Pullback.range_fst]
+  exact isCompact_range (Scheme.Hom.continuous _)
 
 instance (priority := 900) [UniversallyClosed f] : QuasiCompact f where
   isCompact_preimage _ _ := f.isProperMap.isCompact_preimage

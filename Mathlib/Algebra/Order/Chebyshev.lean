@@ -38,7 +38,7 @@ The case for `Monotone`/`Antitone` pairs of functions over a `LinearOrder` is no
 file because it is easily deducible from the `Monovary` API.
 -/
 
-@[expose] public section
+public section
 
 
 open Equiv Equiv.Perm Finset Function OrderDual

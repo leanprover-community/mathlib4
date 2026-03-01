@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.GroupWithZero.Regular
 public import Mathlib.Algebra.Polynomial.Coeff
-public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Degree.Defs
 
 /-!
 # Lemmas for calculating the degree of univariate polynomials
@@ -334,9 +334,10 @@ theorem natDegree_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
 
 theorem leadingCoeff_mul' (h : leadingCoeff p * leadingCoeff q ≠ 0) :
     leadingCoeff (p * q) = leadingCoeff p * leadingCoeff q := by
-  unfold leadingCoeff
-  rw [natDegree_mul' h, coeff_mul_degree_add_degree]
-  rfl
+  simp [← coeff_natDegree, natDegree_mul' h, coeff_mul_degree_add_degree]
+
+lemma Monic.leadingCoeff_C_mul (hp : p.Monic) (r : R) : (C r * p).leadingCoeff = r := by
+  by_cases hr : r = 0 <;> simp_all [leadingCoeff_mul']
 
 theorem leadingCoeff_pow' : leadingCoeff p ^ n ≠ 0 → leadingCoeff (p ^ n) = leadingCoeff p ^ n :=
   Nat.recOn n (by simp) fun n ih h => by
@@ -633,9 +634,6 @@ theorem zero_notMem_multiset_map_X_add_C {α : Type*} (m : Multiset α) (f : α 
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_add_C_ne_zero _ ha
 
-@[deprecated (since := "2025-05-24")]
-alias zero_nmem_multiset_map_X_add_C := zero_notMem_multiset_map_X_add_C
-
 theorem natDegree_X_pow_add_C {n : ℕ} {r : R} : (X ^ n + C r).natDegree = n := by
   simp
 
@@ -783,9 +781,6 @@ theorem zero_notMem_multiset_map_X_sub_C {α : Type*} (m : Multiset α) (f : α 
     (0 : R[X]) ∉ m.map fun a => X - C (f a) := fun mem =>
   let ⟨_a, _, ha⟩ := Multiset.mem_map.mp mem
   X_sub_C_ne_zero _ ha
-
-@[deprecated (since := "2025-05-24")]
-alias zero_nmem_multiset_map_X_sub_C := zero_notMem_multiset_map_X_sub_C
 
 theorem natDegree_X_pow_sub_C {n : ℕ} {r : R} : (X ^ n - C r).natDegree = n := by
   rw [sub_eq_add_neg, ← map_neg C r, natDegree_X_pow_add_C]

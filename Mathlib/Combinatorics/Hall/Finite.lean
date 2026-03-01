@@ -35,7 +35,7 @@ A description of this formalization is in [Gusakov2021].
 Hall's Marriage Theorem, indexed families
 -/
 
-@[expose] public section
+public section
 
 
 open Finset
@@ -50,13 +50,14 @@ section Fintype
 
 variable [Fintype ι]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hall_cond_of_erase {x : ι} (a : α)
     (ha : ∀ s : Finset ι, s.Nonempty → s ≠ univ → #s < #(s.biUnion t))
     (s' : Finset { x' : ι | x' ≠ x }) : #s' ≤ #(s'.biUnion fun x' => (t x').erase a) := by
   haveI := Classical.decEq ι
   specialize ha (s'.image fun z => z.1)
   rw [image_nonempty, Finset.card_image_of_injective s' Subtype.coe_injective] at ha
-  by_cases he : s'.Nonempty
+  by_cases! he : s'.Nonempty
   · have ha' : #s' < #(s'.biUnion fun x => t x) := by
       convert ha he fun h => by simpa [← h] using mem_univ x using 2
       ext x
@@ -68,8 +69,7 @@ theorem hall_cond_of_erase {x : ι} (a : α)
       exact Nat.le_sub_one_of_lt ha'
     · rw [erase_eq_of_notMem hb]
       exact Nat.le_of_lt ha'
-  · rw [nonempty_iff_ne_empty, not_not] at he
-    subst s'
+  · subst s'
     simp
 
 /-- First case of the inductive step: assuming that
@@ -155,6 +155,7 @@ theorem hall_cond_of_compl {ι : Type u} {t : ι → Finset α} {s : Finset ι}
   · apply biUnion_subset_biUnion_of_subset_left
     apply subset_union_left
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Second case of the inductive step: assuming that
 `∃ (s : Finset ι), s ≠ univ → #s = #(s.biUnion t)`
 and that the statement of **Hall's Marriage Theorem** is true for all

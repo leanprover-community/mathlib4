@@ -17,7 +17,7 @@ variant `Differentiable.nonneg_of_iteratedDeriv_nonneg` for entire functions and
 showing `f z ≥ f c` when all iterated derivatives except `f` itseld are nonnegative.
 -/
 
-@[expose] public section
+public section
 
 open Complex
 
