@@ -708,7 +708,6 @@ theorem of_graph {f : α → ℕ} (h₁ : PrimrecBounded f)
   refine (nat_findGreatest pg h₂).of_eq fun n => ?_
   exact (Nat.findGreatest_spec (P := fun b => f n = b) (hg n) rfl).symm
 
-set_option backward.isDefEq.respectTransparency false in
 -- We show that division is primitive recursive by showing that the graph is
 theorem nat_div : Primrec₂ ((· / ·) : ℕ → ℕ → ℕ) := by
   refine of_graph ⟨_, fst, fun p => Nat.div_le_self _ _⟩ ?_

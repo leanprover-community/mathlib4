@@ -491,8 +491,7 @@ theorem repr_sub : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ - o₂) = rep
                 le_of_lt <|
                   oadd_lt_oadd_2 h₁ <|
                     lt_of_le_of_ne (tsub_eq_zero_iff_le.1 mn) (mt PNat.eq en)).symm
-      · simp only [Nat.succPNat, Nat.succ_eq_add_one, repr, PNat.mk_coe, Nat.cast_add,
-          Nat.cast_one, add_one_eq_succ]
+      · simp only [Nat.succPNat, Nat.succ_eq_add_one, repr, PNat.mk_coe, ← succ_eq_add_one]
         rw [(tsub_eq_iff_eq_add_of_le <| le_of_lt <| Nat.lt_of_sub_eq_succ mn).1 mn, add_comm,
           Nat.cast_add, mul_add, add_assoc, add_sub_add_cancel]
         refine
@@ -779,7 +778,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
   apply (opow_le_opow_left b <| this.le).trans
   rw [← opow_mul, ← opow_mul]
   rcases le_or_gt ω (repr e) with h | h
-  · grw [le_succ b, ← add_one_eq_succ, add_mul_succ _ (one_add_of_omega0_le h), add_one_eq_succ]
+  · grw [le_succ b, succ_eq_add_one, add_mul_succ _ (one_add_of_omega0_le h)]
     · gcongr
       · exact omega0_pos
       · exact succ_le_iff.2 <| by gcongr; exact isSuccLimit_omega0.succ_lt l
@@ -819,10 +818,10 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   have ω00 : 0 < ω0 ^ (k : Ordinal) := opow_pos _ (opow_pos _ omega0_pos)
   have Rl : R < ω ^ (repr a0 * succ ↑k) := by
     by_cases k0 : k = 0
-    · simp only [k0, Nat.cast_zero, succ_zero, mul_one, R]
+    · simp only [k0, Nat.cast_zero, succ_eq_add_one, _root_.zero_add, mul_one, R]
       refine lt_of_lt_of_le ?_ (opow_le_opow_right omega0_pos (one_le_iff_ne_zero.2 e0))
       rcases m with - | m <;> simp [opowAux, omega0_pos]
-      rw [← add_one_eq_succ, ← Nat.cast_succ]
+      rw [← Nat.cast_add_one]
       apply nat_lt_omega0
     · rw [opow_mul]
       exact IH.1 k0
@@ -831,8 +830,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     have e0 := pos_iff_ne_zero.2 e0
     have rr0 : 0 < repr a0 + repr a0 := lt_of_lt_of_le e0 le_add_self
     apply principal_add_omega0_opow
-    · simp only [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, add_one_eq_succ,
-        opow_mul, opow_succ, mul_assoc]
+    · simp only [Nat.cast_add_one, opow_add_one, opow_mul, opow_succ, mul_assoc]
       gcongr ?_ * ?_
       rw [← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
@@ -864,7 +862,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       exact No.snd'.repr_lt
     · have := mul_le_mul_right (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
       rw [opow_mul]
-      simpa [-opow_succ]
+      simpa
   · cases m
     · have : R = 0 := by cases k <;> simp [R, opowAux]
       simp [this]
@@ -892,7 +890,7 @@ theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o�
       simp only [opow_def, opowAux2, e₁, r₁, e₂, r₂, repr,
           Nat.cast_succ, _root_.zero_add,
           add_zero]
-      rw [opow_add, opow_mul, opow_omega0, add_one_eq_succ]
+      rw [opow_add, opow_mul, opow_omega0]
       · simp
       · simpa [Nat.one_le_iff_ne_zero]
       · rw [← Nat.cast_succ, lt_omega0]
@@ -1003,9 +1001,11 @@ theorem fundamentalSequence_has_prop (o) : FundamentalSequenceProp o (fundamenta
               rw [← e', ← PNat.coe_inj, Nat.succPNat_coe, ← Nat.add_one, PNat.natPred_add_one]]) <;>
       simp only [repr, iha, ihb, opow_lt_opow_iff_right one_lt_omega0, add_lt_add_iff_left,
         add_zero, lt_add_iff_pos_right, lt_def, mul_one, Nat.cast_zero,
-        Nat.cast_succ, Nat.succPNat_coe, opow_succ, opow_zero, mul_add_one, PNat.one_coe, succ_zero,
+        Nat.cast_succ, Nat.succPNat_coe, opow_succ, opow_zero, mul_add_one, PNat.one_coe,
         _root_.zero_add, zero_def]
-    · decide
+    · constructor
+      · simp
+      · decide
     · exact ⟨rfl, inferInstance⟩
     · have := opow_pos (repr a') omega0_pos
       refine
@@ -1099,7 +1099,6 @@ theorem fastGrowing_limit (o) {f} (h : fundamentalSequence o = Sum.inr f) :
 theorem fastGrowing_zero : fastGrowing 0 = Nat.succ :=
   fastGrowing_zero' _ rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fastGrowing_one : fastGrowing 1 = fun n => 2 * n := by
   rw [@fastGrowing_succ 1 0 rfl]; funext i; rw [two_mul, fastGrowing_zero]

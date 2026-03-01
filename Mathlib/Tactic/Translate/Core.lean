@@ -839,9 +839,9 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
-    -- Copy instance_reducible status before adding instance attribute
-    if (← getReducibilityStatus src) matches .instanceReducible then
-      setReducibilityStatus tgt .instanceReducible
+    -- Copy implicit_reducible status before adding instance attribute
+    if (← getReducibilityStatus src) matches .implicitReducible then
+      setReducibilityStatus tgt .implicitReducible
     trace[translate_detail] "Making {tgt} an instance with priority {prio}."
     addInstance tgt attr_kind prio |>.run'
 
@@ -1229,30 +1229,13 @@ partial def applyAttributes (t : TranslateData) (cfg : Config) (src tgt : Name) 
   if attrs.size > 0 then
     trace[translate_detail] "Applying attributes {attrs.map (·.stx)} to {allDecls}"
   for attr in attrs do
-    withRef attr.stx do withLogging do
     if attr.name == `simps then
-      translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
-        (simpsTacFromSyntax · attr.stx)
-      return
-    let env ← getEnv
-    match getAttributeImpl env attr.name with
-    | Except.error errMsg => throwError errMsg
-    | Except.ok attrImpl =>
-      let runAttr := do
-        for decl in allDecls do
-          attrImpl.add decl attr.stx attr.kind
-      -- not truly an elaborator, but a sensible target for go-to-definition
-      let elaborator := attrImpl.ref
-      if (← getInfoState).enabled && (← getEnv).contains elaborator then
-        withInfoContext (mkInfo := return .ofCommandInfo { elaborator, stx := attr.stx }) do
-          try runAttr
-          finally if attr.stx[0].isIdent || attr.stx[0].isAtom then
-            -- Add an additional node over the leading identifier if there is one
-            -- to make it look more function-like.
-            -- Do this last because we want user-created infos to take precedence
-            pushInfoLeaf <| .ofCommandInfo { elaborator, stx := attr.stx[0] }
-      else
-        runAttr
+      withRef attr.stx do withLogging do
+        translateLemmas t allDecls reorder relevantArg "simps lemmas" cfg.ref
+          (simpsTacFromSyntax · attr.stx)
+    else
+      for decl in allDecls do
+        Term.applyAttributes decl #[attr]
   return nestedDecls
 
 /--

@@ -547,7 +547,6 @@ section Stabilizer
   - subgroups of G containing `stabilizer G a`.
   (Wielandt, th. 7.5) -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/
 @[to_additive /-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/]
 theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
@@ -581,7 +580,6 @@ theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a 
     obtain ⟨k, rfl⟩ := exists_smul_eq G a x
     exact ⟨⟨k, hB.smul_eq_of_mem ha hx⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subgroup containing the stabilizer of `a`
   is the stabilizer of the orbit of `a` under that subgroup -/
 @[to_additive

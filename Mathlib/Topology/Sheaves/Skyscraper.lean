@@ -31,6 +31,10 @@ of `p₀`, i.e. if `p₀ ⤳ x` then `𝓕ₓ ≅ A` and if `¬ p₀ ⤳ x` then
   `skyscraperPresheaf p₀ A` at `y` is `*` the terminal object.
 
 TODO: generalize universe level when calculating stalks, after generalizing universe level of stalk.
+TODO(@joelriou): refactor the definitions in this file so as to make them
+particular cases of general constructions for points of sites from
+`Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.
+
 -/
 
 @[expose] public section
@@ -397,6 +401,12 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
 
 instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
+
+/-- Taking stalks is the left adjoint of `skyscraperSheafFunctor ⋙ Sheaf.forget`. Useful
+only when the fact that `skyscraperPresheafFunctor` factors through `Sheaf C X` is relevant. -/
+noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
+    Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
+  skyscraperPresheafStalkAdjunction p₀
 
 end
 
