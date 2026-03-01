@@ -1,18 +1,27 @@
-import Mathlib
-
-open MeasureTheory
-
-/--
-`supportDrift μ` is the support of a probability measure viewed as a set.
-
-This is a minimal, mathlib-facing definition intended for future
-stability/continuity extensions.
+/-
+Copyright (c) 2026 Inacio Vasquez.
+All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Inacio Vasquez
 -/
-def supportDrift {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
-  (μ : MeasureTheory.ProbabilityMeasure α) : Set α :=
-μ.toMeasure.support
 
-@[simp]
-lemma supportDrift_def {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
-  (μ : MeasureTheory.ProbabilityMeasure α) :
-  supportDrift μ = μ.toMeasure.support := rfl
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+import Mathlib.MeasureTheory.Measure.Support
+
+/-!
+# Support Drift for Probability Measures
+-/
+
+namespace MeasureTheory
+
+open Set
+
+variable {α : Type*}
+variable [TopologicalSpace α]
+variable [MeasurableSpace α]
+
+noncomputable def supportDrift (μ ν : ProbabilityMeasure α) : Set α :=
+  (Measure.support μ.toMeasure \ Measure.support ν.toMeasure) ∪
+  (Measure.support ν.toMeasure \ Measure.support μ.toMeasure)
+
+end MeasureTheory
