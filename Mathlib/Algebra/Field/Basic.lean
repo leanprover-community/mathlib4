@@ -168,13 +168,9 @@ section Field
 
 variable [Field K]
 
-#adaptation_note /-- Upon bumping to v4.29.0-rc3, I am commenting out the `inv`
-field below, which causes problems later in `grind`'s internal defeq checks.
-See discussion at https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576520256
--/
 instance (priority := 100) Field.toGrindField : Lean.Grind.Field K :=
   { CommRing.toGrindCommRing K, ‹Field K› with
-    -- inv a := a⁻¹
+    inv a := a⁻¹
     zpow := ⟨fun a n => a^n⟩
     zpow_zero a := by simp
     zpow_succ a n := by
