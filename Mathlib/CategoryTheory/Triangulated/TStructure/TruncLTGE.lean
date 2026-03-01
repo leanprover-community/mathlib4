@@ -177,7 +177,7 @@ noncomputable def triangleMapOfLE (a b : ℤ) (h : a ≤ b) : triangle t a A ⟶
 noncomputable def triangleFunctorNatTransOfLE (a b : ℤ) (h : a ≤ b) :
     triangleFunctor t a ⟶ triangleFunctor t b where
   app X := triangleMapOfLE t X a b h
-  naturality φ :=
+  naturality _ _ _ :=
     triangle_map_ext t (triangleFunctor_obj_distinguished _ _ _)
       (triangleFunctor_obj_distinguished _ _ _) (a - 1) b inferInstance inferInstance
         (by simp [triangleMapOfLE])
