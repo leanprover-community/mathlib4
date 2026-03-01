@@ -658,6 +658,7 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 public import Mathlib.Algebra.Homology.Single
 public import Mathlib.Algebra.Homology.SingleHomology
+public import Mathlib.Algebra.Homology.SpectralObject.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.Basic
 public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 public import Mathlib.Algebra.Homology.Square
@@ -1309,6 +1310,7 @@ public import Mathlib.AlgebraicGeometry.Group.Abelian
 public import Mathlib.AlgebraicGeometry.Group.Smooth
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Basic
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
+public import Mathlib.AlgebraicGeometry.IdealSheaf.IrreducibleComponent
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
 public import Mathlib.AlgebraicGeometry.Limits
 public import Mathlib.AlgebraicGeometry.LimitsOver
