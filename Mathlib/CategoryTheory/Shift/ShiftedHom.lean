@@ -185,6 +185,19 @@ lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by
   simp [map, Functor.commShiftIso_comp_hom_app]
 
+lemma map_naturality {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (τ : F ⟶ G)
+    [F.CommShift M] [G.CommShift M] [NatTrans.CommShift τ M] :
+    (f.map F).comp (mk₀ 0 rfl (τ.app Y)) (zero_add _) =
+      (mk₀ 0 rfl (τ.app X)).comp (f.map G) (add_zero _) := by
+  sorry
+
+lemma map_naturality_1
+    {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (e : F ≅ G)
+    [F.CommShift M] [G.CommShift M] [NatTrans.CommShift e.hom M] :
+    (mk₀ 0 rfl (e.inv.app X)).comp ((f.map F).comp
+      (mk₀ 0 rfl (e.hom.app Y)) (zero_add _)) (add_zero _) = f.map G := by
+  simp [map_naturality]
+
 set_option backward.isDefEq.respectTransparency false in
 lemma map_comp {a b c : M} (f : ShiftedHom X Y a) (g : ShiftedHom Y Z b)
     (h : b + a = c) (F : C ⥤ D) [F.CommShift M] :

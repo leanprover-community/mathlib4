@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
 /-!
 # The homology sequence
@@ -78,14 +79,24 @@ noncomputable instance : (homologyFunctor C 0).ShiftSequence ℤ :=
 variable {C}
 
 @[reassoc]
-lemma shiftMap_homologyFunctor_Qh_map
+lemma shiftMap_homologyFunctor_map_Qh
     {K L : HomotopyCategory C (.up ℤ)} {n : ℤ} (f : K ⟶ L⟦n⟧)
     (a a' : ℤ) (h : n + a = a') :
-    (homologyFunctor C 0).shiftMap (Qh.map f ≫ (Qh.commShiftIso n).hom.app L) a a' h =
+    (homologyFunctor C 0).shiftMap (ShiftedHom.map f Qh) a a' h =
       (homologyFunctorFactorsh C a).hom.app _ ≫
         (HomotopyCategory.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
-        (homologyFunctorFactorsh C a').inv.app _ :=
+          (homologyFunctorFactorsh C a').inv.app _ :=
   Functor.ShiftSequence.induced_shiftMap ..
+
+@[reassoc]
+lemma shiftMap_homologyFunctor_map_Q
+    {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧)
+    (a a' : ℤ) (h : n + a = a') :
+    (homologyFunctor C 0).shiftMap (ShiftedHom.map f Q) a a' h =
+      (homologyFunctorFactors C a).hom.app _ ≫
+        (HomologicalComplex.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
+          (homologyFunctorFactors C a').inv.app _ := by
+  sorry
 
 namespace HomologySequence
 
@@ -157,7 +168,12 @@ lemma homologyFunctorFactors_hom_app_homologyδOfTriangle (n₀ n₁ : ℤ) (h :
     DerivedCategory.HomologySequence.δ
       (DerivedCategory.Q.mapTriangle.obj T) n₀ n₁ h ≫
         (DerivedCategory.homologyFunctorFactors C n₁).hom.app T.obj₁ := by
-  sorry
+  have := DerivedCategory.shiftMap_homologyFunctor_map_Q T.mor₃ n₀ n₁ (by lia)
+  dsimp [ShiftedHom.map] at this
+  dsimp [DerivedCategory.HomologySequence.δ]
+  simp only [this, Category.assoc, Iso.inv_hom_id_app, homologyFunctor_obj,
+    NatIso.cancel_natIso_hom_left]
+  exact (Category.comp_id _).symm
 
 variable (hT : DerivedCategory.Q.mapTriangle.obj T ∈ distTriang _)
 
