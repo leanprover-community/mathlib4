@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 

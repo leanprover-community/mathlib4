@@ -127,6 +127,7 @@ instance (priority := 100) (f : X ⟶ Y) [IsIntegralHom f] :
   rw [SpecMap_iff]
   exact PrimeSpectrum.isClosedMap_comap_of_isIntegral _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
     IsIntegralHom f ↔ UniversallyClosed f ∧ IsAffineHom f := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩

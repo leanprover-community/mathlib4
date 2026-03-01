@@ -81,7 +81,7 @@ instance : Bot (Precoverage C) where
 
 instance : CompleteLattice (Precoverage C) :=
   Function.Injective.completeLattice Precoverage.coverings (fun _ _ hab ↦ Precoverage.ext hab)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
+    .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) rfl rfl
 
 /-- A precoverage has isomorphisms if singleton presieves by isomorphisms are covering. -/
 class HasIsos (J : Precoverage C) : Prop where
@@ -207,6 +207,11 @@ instance (J K : Precoverage C) [IsStableUnderSup J] [IsStableUnderSup K] :
     IsStableUnderSup (J ⊓ K) where
   sup_mem_coverings hR hS := ⟨J.sup_mem_coverings hR.1 hS.1, K.sup_mem_coverings hR.2 hS.2⟩
 
+lemma hasPairwisePullbacks_of_mem (J : Precoverage C) [J.HasPullbacks] {X : C} {R : Presieve X}
+    (hR : R ∈ J X) :
+    R.HasPairwisePullbacks where
+  has_pullbacks h f _ := (J.hasPullbacks_of_mem f hR).hasPullback h
+
 section Functoriality
 
 variable {D : Type*} [Category* D] {F : C ⥤ D}
@@ -226,11 +231,13 @@ lemma mem_comap_iff {X : C} {R : Presieve X} :
 
 lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comap_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : Precoverage E) :
     J.comap (F ⋙ G) = (J.comap G).comap F := by
   ext X R
@@ -263,5 +270,49 @@ instance [CreatesLimitsOfShape WalkingCospan F] [HasPullbacks J] : HasPullbacks 
 end Functoriality
 
 end Precoverage
+
+section PreservesPullbacks
+
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
+
+open Limits
+
+/-- A functor `F` preserves pairwise pullbacks of a presieve `R` if for every pair
+of morphisms `f` and `g` in `R`, the pullback of `f` and `g` is preserved by `F`. -/
+class Functor.PreservesPairwisePullbacks (F : C ⥤ D) {X : C} (R : Presieve X) : Prop where
+  preservesLimit (R) ⦃Y Z : C⦄ ⦃f : Y ⟶ X⦄ ⦃g : Z ⟶ X⦄ : R f → R g →
+    PreservesLimit (cospan f g) F := by infer_instance
+
+alias Functor.preservesLimit_cospan_of_mem_presieve :=
+  Functor.PreservesPairwisePullbacks.preservesLimit
+
+instance [PreservesLimitsOfShape WalkingCospan F] {X : C} (R : Presieve X) :
+    F.PreservesPairwisePullbacks R where
+
+lemma Presieve.HasPairwisePullbacks.map_of_preservesPairwisePullbacks {X : C} (R : Presieve X)
+    [F.PreservesPairwisePullbacks R] [R.HasPairwisePullbacks] :
+    (R.map F).HasPairwisePullbacks where
+  has_pullbacks {Y Z} := fun {f} ⟨hf⟩ g ⟨hg⟩ ↦ by
+    have := Presieve.HasPairwisePullbacks.has_pullbacks hf hg
+    have := F.preservesLimit_cospan_of_mem_presieve _ hf hg
+    exact hasPullback_of_preservesPullback F _ _
+
+namespace Precoverage
+
+/-- Pullbacks are preserved by a functor `F : C ⥤ D` for the precoverage `J` on `C` if
+`F` preserves all pairwise pullbacks of presieves in `J`. -/
+class PullbacksPreservedBy (J : Precoverage C) (F : C ⥤ D) : Prop where
+  preservesPairwisePullbacks_of_mem ⦃X : C⦄ ⦃R : Presieve X⦄ :
+    R ∈ J X → F.PreservesPairwisePullbacks R := by infer_instance
+
+alias preservesPairwisePullbacks_of_mem :=
+  Precoverage.PullbacksPreservedBy.preservesPairwisePullbacks_of_mem
+
+instance (J : Precoverage C) (F : C ⥤ D) [PreservesLimitsOfShape WalkingCospan F] :
+    J.PullbacksPreservedBy F where
+
+end Precoverage
+
+end PreservesPullbacks
 
 end CategoryTheory
