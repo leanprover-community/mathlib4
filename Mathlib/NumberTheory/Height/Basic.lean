@@ -294,12 +294,12 @@ private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0)
     convert this with v
     obtain ⟨i, hi⟩ : ∃ j, x j ≠ 0 := Function.ne_iff.mp hx
     have : Nonempty ι := .intro i
-    refine le_antisymm ?_ (ciSup_le fun ⟨j, hj⟩ ↦ le_ciSup_of_le (Finite.bddAbove_range _) j le_rfl)
-    refine ciSup_le fun j ↦ ?_
+    refine le_antisymm (ciSup_le fun j ↦ ?_) <|
+      ciSup_le fun ⟨j, hj⟩ ↦ Finite.le_ciSup_of_le j le_rfl
     rcases eq_or_ne (x j) 0 with h | h
     · rw [h, v.val.map_zero]
       exact Real.iSup_nonneg' ⟨⟨i, hi⟩, v.val.nonneg ..⟩
-    · exact le_ciSup_of_le (Finite.bddAbove_range _) ⟨j, h⟩ le_rfl
+    · exact Finite.le_ciSup_of_le ⟨j, h⟩ le_rfl
   exact (Set.finite_iUnion fun i : {j | x j ≠ 0} ↦ mulSupport_finite i.prop).subset <|
     Function.mulSupport_iSup _
 
@@ -328,9 +328,9 @@ lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
   have hx' : (x i)⁻¹ • x ≠ 0 := by simp [hi, hx]
   rw [← mulHeight_smul_eq_mulHeight _ <| inv_ne_zero hi, mulHeight_eq hx']
   refine one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod_map fun v _ ↦ ?_) ?_
-  · refine le_ciSup_of_le (Finite.bddAbove_range _) i <| le_of_eq ?_
+  · refine Finite.le_ciSup_of_le i <| le_of_eq ?_
     simpa using (inv_mul_cancel₀ <| v.ne_zero_iff.mpr hi).symm
-  · refine one_le_finprod fun v ↦ le_ciSup_of_le (Finite.bddAbove_range _) i ?_
+  · refine one_le_finprod fun v ↦ Finite.le_ciSup_of_le i ?_
     simp [inv_mul_cancel₀ <| v.val.ne_zero_iff.mpr hi]
 
 lemma mulHeight_pos (x : ι → K) : 0 < mulHeight x :=
