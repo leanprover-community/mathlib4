@@ -27,6 +27,8 @@ universe w u v
 
 open IsLocalRing CategoryTheory SmallObject
 
+open scoped Polynomial
+
 variable (R : Type u) [CommRing R] [IsLocalRing R] (K : Type v) [Field K]
   [Algebra (ResidueField R) K]
 
@@ -53,17 +55,38 @@ end instances
 
 section monogenic
 
-variable (S : Type w) [CommRing S] [IsLocalRing S] [Algebra R S] [IsLocalHom (algebraMap R S)]
-  [Algebra (ResidueField S) K] [IsScalarTower (ResidueField R) (ResidueField S) K]
+variable (S : Type w) [CommRing S] [IsLocalRing S] [Algebra (ResidueField S) K]
 
-abbrev extensionByAlgebraic (x : K) (int : IsIntegral (ResidueField S) x) :
-    Type w := by
+noncomputable abbrev minpolyLift (x : K) (int : IsIntegral (ResidueField S) x) : S[X] :=
+  Classical.choose (Polynomial.lifts_and_natDegree_eq_and_monic
+    (Polynomial.map_surjective (IsLocalRing.residue S) IsLocalRing.residue_surjective
+    (minpoly (ResidueField S) x)) (minpoly.monic int))
 
+lemma minpolyLift_spec (x : K) (int : IsIntegral (ResidueField S) x) :
+    Polynomial.map (IsLocalRing.residue S) (minpolyLift K S x int) = minpoly (ResidueField S) x ∧
+    (minpolyLift K S x int).natDegree = (minpoly (ResidueField S) x).natDegree
+    ∧ (minpolyLift K S x int).Monic :=
+    Classical.choose_spec (Polynomial.lifts_and_natDegree_eq_and_monic
+    (Polynomial.map_surjective (IsLocalRing.residue S) IsLocalRing.residue_surjective
+    (minpoly (ResidueField S) x)) (minpoly.monic int))
+
+abbrev extensionByAlgebraic (x : K) (int : IsIntegral (ResidueField S) x) : Type w :=
+  Polynomial S ⧸ Ideal.span {minpolyLift K S x int}
+
+instance (x : K) (int : IsIntegral (ResidueField S) x) :
+    IsLocalRing (extensionByAlgebraic K S x int) := by
   sorry
 
---instance (x : K) (int : IsIntegral (ResidueField S) x) :
---    Algebra (ResidueField (extensionByAlgebraic K S x int)) K := sorry
+lemma extensionByAlgebraic_algebraMap_isLocalHom (x : K) (int : IsIntegral (ResidueField S) x) :
+    IsLocalHom (algebraMap S (extensionByAlgebraic K S x int)) := sorry
 
+def extensionByAlgebraicAlgebraK (x : K) (int : IsIntegral (ResidueField S) x) :
+    Algebra (ResidueField (extensionByAlgebraic K S x int)) K := sorry
+
+def extensionByAlgebraicIsScalarTower (x : K) (int : IsIntegral (ResidueField S) x) :
+    letI := extensionByAlgebraic_algebraMap_isLocalHom K S x int
+    letI := extensionByAlgebraicAlgebraK K S x int
+    IsScalarTower (ResidueField S) (ResidueField (extensionByAlgebraic K S x int)) K := sorry
 
 abbrev extensionByTranscendental : Type w :=
   Localization.AtPrime ((maximalIdeal S).map Polynomial.C)
