@@ -469,7 +469,7 @@ theorem div_opow_log_pos (b : Ordinal) {o : Ordinal} (ho : o ≠ 0) : 0 < o / (b
     exact opow_log_le_self b ho
 
 theorem div_opow_log_lt {b : Ordinal} (o : Ordinal) (hb : 1 < b) : o / (b ^ log b o) < b := by
-  rw [div_lt (opow_pos _ (zero_lt_one.trans hb)).ne', ← opow_succ]
+  rw [← lt_mul_iff_div_lt (opow_pos _ (zero_lt_one.trans hb)).ne', ← opow_succ]
   exact lt_opow_succ_log_self hb o
 
 theorem add_log_le_log_mul {x y : Ordinal} (b : Ordinal) (hx : x ≠ 0) (hy : y ≠ 0) :

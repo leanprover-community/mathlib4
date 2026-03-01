@@ -395,7 +395,7 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : Principal (· * ·) b) (hb₂ 
     rw [mul_assoc, opow_succ]
     gcongr
     refine (hb (hbl.succ_lt ?_) hcb).le
-    rw [div_lt hbo₀, ← opow_succ]
+    rw [← lt_mul_iff_div_lt hbo₀, ← opow_succ]
     exact lt_opow_succ_log_self hb₁ _
   · grw [opow_succ, opow_log_le_self b ha]
 
