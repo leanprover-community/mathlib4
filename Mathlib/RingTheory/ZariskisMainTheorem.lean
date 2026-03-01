@@ -474,7 +474,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
       top_le_iff.mp fun x _ ↦ (Subalgebra.mem_restrictScalars _).mp (this trivial)
     refine hx.ge.trans ?_
     rw [Algebra.restrictScalars_adjoin]
-    exact Algebra.adjoin_mono (by aesop)
+    exact Algebra.adjoin_mono (by simp)
   have H₀ : Function.Surjective (aeval (R := R) x) := by
     rwa [← AlgHom.range_eq_top, ← Algebra.adjoin_singleton_eq_range_aeval]
   have ⟨f, (hf : aeval x f = 0), hfp⟩ := SetLike.not_le_iff_exists.mp

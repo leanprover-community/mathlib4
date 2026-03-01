@@ -232,7 +232,7 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
   have : g₁.right = g₂.right := calc
     g₁.right = hc.lift (c.extend g₁.right) := by
       apply hc.uniq (c.extend _)
-      aesop
+      simp
     _ = hc.lift (c.extend g₂.right) := by
       congr
     _ = g₂.right := by
