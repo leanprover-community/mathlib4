@@ -74,10 +74,10 @@ theorem Module.injective_of_localization_maximal [Small.{v} R] [IsNoetherianRing
   let f := LocalizedModule.mkLinearMap m.primeCompl M
   let h : R →ₗ[R] Rₘ := Algebra.linearMap R Rₘ
   let Iₘ : Ideal Rₘ := Submodule.localized' Rₘ m.primeCompl h I
-  let g : I →ₗ[R] Iₘ := (I.toLocalized' Rₘ m.primeCompl h)
+  let g : I →ₗ[R] Iₘ := I.toLocalized' Rₘ m.primeCompl h
   let gM := IsLocalizedModule.mapExtendScalars m.primeCompl g f Rₘ
   let hM := IsLocalizedModule.mapExtendScalars m.primeCompl h f Rₘ
-  have eq'' : Iₘ.subtype.restrictScalars R = ((IsLocalizedModule.map m.primeCompl g h) I.subtype) :=
+  have eq'' : Iₘ.subtype.restrictScalars R = IsLocalizedModule.map m.primeCompl g h I.subtype :=
     IsLocalizedModule.ext m.primeCompl g (IsLocalizedModule.map_units h) (by ext; simp [g, h, Iₘ])
   have eq' : (Iₘ.subtype.lcomp Rₘ Mₘ).restrictScalars R =
     IsLocalizedModule.map m.primeCompl hM gM (I.subtype.lcomp R M) :=
