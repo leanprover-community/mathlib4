@@ -182,6 +182,8 @@ open HomologicalComplex
 
 variable {C} (T : Triangle (CochainComplex C ℤ))
 
+/-- If `T` is a triangle in `CochainComplex C ℤ`, this is the connecting homomorphism
+`T.obj₃.homology n₀ ⟶ T.obj₁.homology n₁` in homology when `n₀ + 1 = n₁`. -/
 noncomputable def homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     T.obj₃.homology n₀ ⟶ T.obj₁.homology n₁ :=
   homologyMap T.mor₃ n₀ ≫
