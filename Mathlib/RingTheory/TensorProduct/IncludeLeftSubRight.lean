@@ -162,29 +162,25 @@ def codRestrictEqLocusPushoutCocone :
     ((CommRingCat.pushoutCocone R S S).inl.hom.eqLocus (CommRingCat.pushoutCocone R S S).inr.hom)
     (by simp)
 
-/-- Injectivity of `algebraMap R S` implies injectivity of `codRestrictEqLocusPushoutCocone f`. -/
-lemma codRestrictEqLocusPushoutCocone.inj_of_inj (hf : Function.Injective (algebraMap R S)) :
+/-- Injectivity of `algebraMap R S` implies injectivity of `codRestrictEqLocusPushoutCocone`. -/
+lemma codRestrictEqLocusPushoutCocone.injective_of_faithfulSMul [FaithfulSMul R S] :
     Function.Injective (codRestrictEqLocusPushoutCocone R S) :=
-  RingHom.injective_codRestrict.mpr hf
+  RingHom.injective_codRestrict.mpr (FaithfulSMul.algebraMap_injective _ _)
 
-/-- `Algebra.IsEffective R S` implies surjectivity op `codRestrictEqLocusPushoutCocone`. -/
-lemma codRestrictEqLocusPushoutCocone.surj_of_isEffective (hf : Algebra.IsEffective R S) :
+/-- `Algebra.IsEffective R S` implies surjectivity of `codRestrictEqLocusPushoutCocone`. -/
+lemma codRestrictEqLocusPushoutCocone.surjective_of_isEffective (hf : Algebra.IsEffective R S) :
     Function.Surjective (codRestrictEqLocusPushoutCocone R S) := by
-  intro s
-  have := Set.mem_range.mp <|
-    Algebra.IsEffective.eqLocus_includeLeft_includeRight hf ▸ SetLike.mem_coe.mpr s.property
-  use this.choose
-  apply Subtype.ext
-  erw [RingHom.codRestrict_apply, this.choose_spec]
+  intro ⟨s, hs⟩
+  obtain ⟨t, rfl⟩ := Set.mem_range.mp <|
+    Algebra.IsEffective.eqLocus_includeLeft_includeRight hf ▸ SetLike.mem_coe.mpr hs
+  exact ⟨t, rfl⟩
 
-/-- Faithfully flat `algebraMap R S` implies bijectivity of `codRestrictEqLocusPushoutCocone`. -/
-lemma codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat (hf : (algebraMap R S).FaithfullyFlat) :
+/-- If `S` is a faithfully flat `R`-algebra, `codRestrictEqLocusPushoutCocone` is bijective. -/
+lemma codRestrictEqLocusPushoutCocone.bijective_of_faithfullyFlat [Module.FaithfullyFlat R S] :
     Function.Bijective (codRestrictEqLocusPushoutCocone R S) := by
   constructor
-  · exact codRestrictEqLocusPushoutCocone.inj_of_inj _ _ (RingHom.FaithfullyFlat.injective hf)
-  · haveI : Module.FaithfullyFlat R S := (RingHom.faithfullyFlat_algebraMap_iff).mp hf
-    exact codRestrictEqLocusPushoutCocone.surj_of_isEffective _ _
-      (Algebra.IsEffective.of_faithfullyFlat R S)
+  · exact codRestrictEqLocusPushoutCocone.injective_of_faithfulSMul _ _
+  · exact codRestrictEqLocusPushoutCocone.surjective_of_isEffective _ _ (.of_faithfullyFlat R S)
 
 end CodRestrictEqLocusPushoutCocone
 

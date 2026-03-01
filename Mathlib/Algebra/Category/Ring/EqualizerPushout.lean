@@ -9,7 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 public import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
 
 /-!
-# Equalizer of inclusions to pushout in `CommRingCat`
+# Equalizer of inclusions to pushouts in `CommRingCat`
 
 Given a map `f : R ⟶ S` in `CommRingCat`, we prove that the equalizer of the two maps
 `pushout.inl : S ⟶ pushout f f` and `pushout.inr : S ⟶ pushout f f` is canonically isomorphic
@@ -26,8 +26,6 @@ open CategoryTheory Limits
 namespace CommRingCat
 
 universe u
-
-namespace Equalizer
 
 section Fork
 
@@ -69,9 +67,13 @@ noncomputable def regularMonoOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
   w := pushout.condition
   isLimit := isLimitForkPushoutSelfOfFaithfullyFlat f hf
 
-end Fork
+/-- Any map `f : R ⟶ S` in `CommRingCat` with faithfully flat `f.hom : R ⟶ S` is a regular
+monomorphism. -/
+lemma isRegularMono_of_faithfullyFlat (hf : f.hom.FaithfullyFlat) :
+    IsRegularMono f :=
+  isRegularMono_of_regularMono (regularMonoOfFaithfullyFlat f hf)
 
-end Equalizer
+end Fork
 
 namespace Opposite
 
@@ -88,7 +90,7 @@ is a coequalizer diagram. -/
 noncomputable def isColimitOfπPullbackOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) :
     IsColimit (Cofork.ofπ f pullback.condition) :=
   Cofork.isColimitCoforkPushoutEquivIsColimitForkUnopPullback.symm
-    (Equalizer.isLimitForkPushoutSelfOfFaithfullyFlat _ hf)
+    (isLimitForkPushoutSelfOfFaithfullyFlat _ hf)
 
 /-- A regular epimorphism structure on a map `f : S ⟶ R` in `CommRingCatᵒᵖ` with
 faithfully flat `f.unop.hom : R.unop ⟶ S.unop`. -/
