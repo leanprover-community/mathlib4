@@ -7,6 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Equalizers
 public import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
+public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # Equalizer of inclusions to pushouts in `CommRingCat`
@@ -50,7 +52,7 @@ noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyF
     (Fork.isLimitEquivOfIsos _
       (equalizerFork (pushoutCocone R S S).inl (pushoutCocone R S S).inr) (Iso.refl _) (Iso.refl _)
       (RingEquiv.toCommRingCatIso <| RingEquiv.ofBijective _
-        (Algebra.codRestrictEqLocusPushoutCocone.bij_of_faithfullyFlat R S hf))
+        (Algebra.codRestrictEqLocusPushoutCocone.bijective_of_faithfullyFlat R S))
       (by cat_disch) (by cat_disch) (by cat_disch)).symm
     (equalizerForkIsLimit (pushoutCocone R S S).inl (pushoutCocone R S S).inr)
   exact Fork.isLimitEquivOfIsos fork (Fork.ofι f pushout.condition) (Iso.refl _)
@@ -79,32 +81,16 @@ namespace Opposite
 
 variable {R S : CommRingCat.{u}ᵒᵖ} (f : S ⟶ R)
 
-/-- For a map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop : R.unop ⟶ S.unop`,
-the cofork
-```
-pullback f f ---fst---> S
-                          --f--> R
-pullback f f ---snd---> S
-```
-is a coequalizer diagram. -/
-noncomputable def isColimitOfπPullbackOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) :
-    IsColimit (Cofork.ofπ f pullback.condition) :=
-  Cofork.isColimitCoforkPushoutEquivIsColimitForkUnopPullback.symm
-    (isLimitForkPushoutSelfOfFaithfullyFlat _ hf)
-
 /-- A regular epimorphism structure on a map `f : S ⟶ R` in `CommRingCatᵒᵖ` with
 faithfully flat `f.unop.hom : R.unop ⟶ S.unop`. -/
-noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : RegularEpi f where
-  W := pullback f f
-  left := pullback.fst f f
-  right := pullback.snd f f
-  w := pullback.condition
-  isColimit := isColimitOfπPullbackOfFaithfullyFlat f hf
+noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) :
+    IsRegularEpi f :=
+  (isRegularEpi_op_iff_isRegularMono _).mpr (isRegularMono_of_faithfullyFlat _ hf)
 
 /-- Any map `f : S ⟶ R` in `CommRingCatᵒᵖ` with faithfully flat `f.unop.hom : R.unop ⟶ S.unop` is
 an effective epimorphism. -/
 lemma effectiveEpi_of_faithfullyFlat (hf : f.unop.hom.FaithfullyFlat) : EffectiveEpi f :=
-  RegularEpi.effectiveEpi (regularEpiOfFaithfullyFlat f hf)
+  (isRegularEpi_iff_effectiveEpi _).mp (regularEpiOfFaithfullyFlat _ hf)
 
 end Opposite
 
