@@ -413,7 +413,7 @@ def generateCorrespondence {m} [Monad m] [MonadLog m] [AddMessageContext m] [Mon
 
 partial
 def _root_.String.Slice.mkGroups (s : String.Slice) (n : Nat) : List String :=
-  if n == 0 || s.positions.count ≤ n then [s.toString] else
+  if n == 0 || s.positions.length ≤ n then [s.toString] else
   (s.take n).toString :: (s.drop n).mkGroups n
 
 -- TODO: fix this and re-enable it!
