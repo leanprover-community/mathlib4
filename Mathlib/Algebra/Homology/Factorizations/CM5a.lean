@@ -256,6 +256,7 @@ lemma quasiIsoAt_π (q : ℤ) (hq : q < n) : QuasiIsoAt (π f n) q := by
 variable (hf : ∀ i < n, QuasiIsoAt f i)
 
 include hf
+
 omit [EnoughInjectives C] in
 lemma isGE_cokernel [Mono f] [Mono (homologyMap f n)] : (cokernel f).IsGE n := by
   rw [isGE_iff]
@@ -266,7 +267,6 @@ lemma isGE_cokernel [Mono f] [Mono (homologyMap f n)] : (cokernel f).IsGE n := b
     rw [← ((shortExact f).homology_exact₂ i).epi_f_iff]
     infer_instance
   · rw [← ((shortExact f).homology_exact₁ i (i + 1) (by simp)).mono_g_iff]
-    dsimp
     by_cases hi' : i + 1 < n
     · have := hf (i + 1) (by lia)
       infer_instance
@@ -279,7 +279,6 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
-include hf in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (ι f n) q := by
   obtain hq | rfl := hq.lt_or_eq'
