@@ -389,7 +389,6 @@ universe w v u
 
 variable (R : Type u) [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGroup M] [Module R M]
     [Module.Finite R M] : ∃ (P : Type v) (_ : AddCommGroup P) (_ : Module R P) (_ : Module.Free R P)
       (_ : Module.Finite R P) (f : P →ₗ[R] M), Function.Surjective f := by

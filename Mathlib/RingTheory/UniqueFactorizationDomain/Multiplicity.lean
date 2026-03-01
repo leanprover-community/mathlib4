@@ -79,6 +79,7 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     rw [← (prod_normalizedFactors hb).dvd_iff_dvd_right, hu, prod_add, prod_replicate]
     exact (Associated.pow_pow <| associated_normalize a).dvd.trans (Dvd.intro u.prod rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
 the normalized factor occurs in the `normalizedFactors`.
 

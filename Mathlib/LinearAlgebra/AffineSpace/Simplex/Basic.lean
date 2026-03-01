@@ -538,7 +538,6 @@ lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
   · rintro rfl
     exact ⟨1, by simp [affineCombination_apply]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 omit [PartialOrder k] in
 lemma affineCombination_mem_setInterior_face_iff_mem (I : Set k) {n : ℕ} (s : Simplex k P n)
     {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {w : Fin (n + 1) → k}

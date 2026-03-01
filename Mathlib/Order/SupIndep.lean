@@ -467,7 +467,6 @@ lemma iSupIndep.of_coe_Iic_comp {ι : Sort*} {a : α} {t : ι → Set.Iic a}
   simp_rw [Function.comp_apply, ← Set.Iic.coe_iSup] at ht
   exact @ht x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSupIndep_comp_coe_iff_supIndep {s : Finset ι} {f : ι → α} :
     iSupIndep (f ∘ ((↑) : s → ι)) ↔ s.SupIndep f := by
   classical
