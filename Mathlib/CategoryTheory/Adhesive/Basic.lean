@@ -326,17 +326,51 @@ See Theorem 5.1 in Lack and Sobociński. -/
 instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
     {a : A ⟶ Z} {b : B ⟶ Z} [Mono a] [Mono b] :
     Mono (pushout.desc a b pullback.condition) where
-  right_cancellation f g w := by
+  right_cancellation {K} f g w := by
+    /- First, take the pullback of `a` and `b` and then form the pushout of the projection maps:
+     `pullback a b` -> `B`
+          |             |
+          |            `v`
+          |             |
+          v             v
+         `A` ---`u`---> C -/
     let u := pushout.inl (pullback.fst a b) (pullback.snd a b)
     let v := pushout.inr (pullback.fst a b) (pullback.snd a b)
     let : Mono u :=
       mono_of_isPushout_of_mono_right (of_hasPushout (pullback.fst a b) (pullback.snd a b))
     let : Mono v :=
       mono_of_isPushout_of_mono_left (of_hasPushout (pullback.fst a b) (pullback.snd a b))
+    /- Then form the following pullbacks:
+     L₁ --`l₁`-> K <--`l₂`-- L₂
+     |           |           |
+    `f₁`        `f`         `f₂`
+     |           |           |
+     v           v           v
+    `A` --`u`--> C <--`v`-- `B`
+
+     M₁ --`m₁`-> K <--`m₂`-- M₂
+     |           |           |
+    `g₁`        `g`         `g₂`
+     |           |           |
+     v           v           v
+    `A` --`u`--> C <--`v`-- `B` -/
     let sq_f_u := of_hasPullback f u
     let sq_f_v := of_hasPullback f v
     let sq_g_u := of_hasPullback g u
     let sq_g_v := of_hasPullback g v
+    /- Finally, form the following pullbacks:
+     N₁₁ --m₁₁-> M₁ <--m₁₂-- N₁₂
+     |           |           |
+    l₁₁        `m₁`         l₁₂
+     |           |           |
+     v           v           v
+    L₁ --`l₁`--> K <--`l₂`-- L₂
+     ^           ^           ^
+     |           |           |
+    l₂₁        `m₂`         l₂₂
+     |           |           |
+    N₂₁ --m₂₁--> M₂ <--m₂₂-- N₂₂
+    -/
     let l₁ := pullback.fst f u
     let f₁ := pullback.snd f u
     let l₂ := pullback.fst f v
@@ -350,9 +384,13 @@ instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
     let : Mono f' := by
       rw [← p₁.isoPullback_hom_fst]
       infer_instance
+    /- apply `isPushout_isPullback_isPullback_hom_ext` to reduce `f = g` to `m₁ ≫ f = m₁ ≫ g`
+      and `m₂ ≫ f = m₂ ≫ g`. -/
     apply isPushout_isPullback_isPullback_hom_ext (of_hasPushout _ _) sq_g_u sq_g_v
     · let sq₁₁ := of_hasPullback m₁ l₁
       let sq₁₂ := of_hasPullback m₁ l₂
+      /- apply `isPushout_isPullback_isPullback_hom_ext` to reduce `m₁ ≫ f = m₁ ≫ g` to
+        `m₁₁ ≫ m₁ ≫ f = m₁₁ ≫ m₁ ≫ g` and `m₁₂ ≫ m₁ ≫ f = m₁₂ ≫ m₁ ≫ g`. -/
       apply isPushout_isPullback_isPullback_hom_ext h₁ sq₁₁ sq₁₂
       · rw [pullback.condition_assoc, sq_f_u.w, sq_g_u.w, ← Category.assoc, ← Category.assoc]
         refine ?_ =≫ u
@@ -366,6 +404,8 @@ instance Adhesive.desc_mono_of_mono [Adhesive C] {Z A B : C}
           ← pushout.condition, pullback.lift_fst_assoc _ _ this, Category.assoc, sq_g_u.w]
     · let sq₂₁ := of_hasPullback m₂ l₁
       let sq₂₂ := of_hasPullback m₂ l₂
+      /- apply `isPushout_isPullback_isPullback_hom_ext` to reduce `m₂ ≫ f = m₂ ≫ g` to
+        `m₂₁ ≫ m₂ ≫ f = m₂₁ ≫ m₂ ≫ g` and `m₂₂ ≫ m₂ ≫ f = m₂₂ ≫ m₂ ≫ g`. -/
       apply isPushout_isPullback_isPullback_hom_ext h₁ sq₂₁ sq₂₂
       · have : (pullback.snd m₂ l₁ ≫ f₁) ≫ a = (pullback.fst m₂ l₁ ≫ g₂) ≫ b := by
           rw [← _ ≫= pushout.inl_desc a b pullback.condition, Category.assoc, ← sq_f_u.w_assoc,
