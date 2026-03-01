@@ -141,25 +141,49 @@ lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : 
     (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
-  obtain ⟨setK, hcard⟩ : ∃ S : Type max u v, Nonempty (S ≃ Set K) := ⟨ULift (Set K), ⟨Equiv.ulift⟩⟩
+  obtain ⟨setK, ⟨e⟩⟩ : ∃ S : Type max u v, Nonempty (S ≃ Set K) := ⟨ULift (Set K), ⟨Equiv.ulift⟩⟩
   let ⟨lin, wf⟩ := exists_wellOrder setK
   let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
   let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
   let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot
   obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct.{max u v} R K).Iteration (⊤ : WithTop setK)) :=
     inferInstance
-  let φtop := φ.F.obj ⟨⊤, Set.self_mem_Iic⟩
-  suffices h : Set.range (algebraMap (ResidueField (φtop.Ring)) K) = ⊤ by
-    let f := algebraMap (ResidueField (φtop.Ring)) K
-    have : Function.Bijective f := ⟨RingHom.injective f, Set.range_eq_univ.mp h⟩
+  let fi : WithTop setK ≃o Set.Iic (⊤ : WithTop setK) := OrderIso.IicTop.symm
+  let φobj := fun i ↦ (algebraMap (ResidueField ((φ.F.obj (fi i)).Ring)) K).range
+  let φtop := φ.F.obj (fi ⊤)
+  suffices h : (algebraMap (ResidueField φtop.Ring) K).range = ⊤ by
+    let f := algebraMap (ResidueField φtop.Ring) K
+    have : Function.Bijective f := ⟨RingHom.injective f, RingHom.range_eq_top.mp h⟩
     let f := RingEquiv.ofBijective f this
     refine ⟨φtop.Ring, φtop.commRing, φtop.isLocalRing, φtop.algebra, φtop.isLocalHom, φtop.flat,
       φtop.eqmap, ⟨AlgEquiv.ofRingEquiv (f := f.symm) fun x ↦ f.injective ?_⟩⟩
     · simp only [RingEquiv.apply_symm_apply]
       exact IsScalarTower.algebraMap_apply (ResidueField R) (ResidueField φtop.Ring) K x
-  let φobj := fun i ↦ Set.range (algebraMap (ResidueField ((φ.F.obj i).Ring)) K)
   have mono : Monotone φobj := fun a b hab ↦ by
-    let mapab := φ.F.map (homOfLE hab)
+    let mapab := φ.F.map (homOfLE (fi.monotone hab))
     rintro _ ⟨x, rfl⟩
     exact ⟨ResidueField.map mapab.hom x, congr($mapab.comm x)⟩
-  sorry
+  by_contra hne
+  have hlt : ∀ i, i < ⊤ → ∃ u, u ∈ φobj (Order.succ i) ∧ ¬ u ∈ φobj i := by
+    rintro i h
+    have := FlatExtension.algebraMap_range_lt_of_not_surjective R K (φ.F.obj (fi i)) <|
+      fun h' ↦ hne <| eq_top_iff.mpr <| le_trans (le_of_eq (RingHom.range_eq_top.mpr h').symm)
+        <| mono le_top
+    obtain ⟨x, hx⟩ := Set.exists_of_ssubset this
+    have : φ.F.obj (fi (Order.succ i)) = (FlatExtension.SuccStruct R K).succ (φ.F.obj (fi i)) := by
+      rw [← φ.obj_succ]
+      · rfl
+      · exact h
+    unfold φobj
+    exact ⟨x, this ▸ hx⟩
+  let uh := fun i : setK ↦ hlt (fi i) (WithTop.coe_lt_top _)
+  let u : setK → K := fun i ↦ Classical.choose (uh i)
+  have hu : Function.Injective u := by
+    refine Function.Injective.of_lt_imp_ne fun x y hxy heq ↦ ?_
+    absurd (Classical.choose_spec (uh x)).1
+    change u x ∉ _
+    rw [heq]
+    refine fun h ↦ (Classical.choose_spec (uh y)).2 ((mono ?_) h)
+    exact Order.succ_le_of_lt <| Subtype.mk_lt_mk.mpr (WithTop.coe_lt_coe.mpr hxy)
+  absurd (Cardinal.lift_mk_le_lift_mk_of_injective (hu.comp e.symm.injective))
+  simpa using Cardinal.cantor (Cardinal.mk K)
