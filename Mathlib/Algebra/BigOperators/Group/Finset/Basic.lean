@@ -798,7 +798,7 @@ theorem prod_biUnion_of_pairwise_eq_one [DecidableEq ι] {s : Finset κ} {t : κ
     ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   classical
   let t' k := (t k).filter (fun i ↦ f i ≠ 1)
-  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by ext; grind
+  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by grind
   rw [← prod_filter_ne_one, ← this, prod_biUnion]
   swap
   · intro i hi j hj hij a hai haj k hk
@@ -1123,6 +1123,9 @@ lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
 lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by simp
 
-theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
+theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with grind
+
+@[deprecated (since := "2026-02-14")]
+alias nat_abs_sum_le := Int.natAbs_sum_le

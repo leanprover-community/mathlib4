@@ -229,3 +229,22 @@ theorem uniformContinuous_vsub : UniformContinuous fun x : P × P => x.1 -ᵥ x.
 instance : IsTopologicalAddTorsor P where
   continuous_vadd := uniformContinuous_vadd.continuous
   continuous_vsub := uniformContinuous_vsub.continuous
+
+/-- Pullback of a normed add torsor along an injective map. -/
+abbrev Function.Injective.normedAddTorsor {Q : Type*} [VAdd V Q] [VSub V Q]
+    [Nonempty Q] [PseudoMetricSpace Q] (f : Q → P) (hf : Function.Injective f)
+    (vadd : ∀ (c : V) (x : Q), f (c +ᵥ x) = c +ᵥ f x)
+    (vsub : ∀ (x y : Q), x -ᵥ y = f x -ᵥ f y)
+    (norm : ∀ (x y : Q), dist x y = dist (f x) (f y)) : NormedAddTorsor V Q where
+  __ := hf.addTorsor f vadd vsub
+  dist_eq_norm' x y := by simp [norm, NormedAddTorsor.dist_eq_norm', vsub]
+
+/-- Pushforward of a normed add torsor along a surjective map. -/
+abbrev Function.Surjective.normedAddTorsor
+    {Q : Type*} [VAdd V Q] [VSub V Q] [PseudoMetricSpace Q]
+    (f : P → Q) (hf : Surjective f)
+    (vadd : ∀ (c : V) (x : P), f (c +ᵥ x) = c +ᵥ f x)
+    (vsub : ∀ (x y : P), x -ᵥ y = f x -ᵥ f y)
+    (norm : ∀ (x y : P), dist x y = dist (f x) (f y)) : NormedAddTorsor V Q where
+  __ := hf.addTorsor f vadd vsub
+  dist_eq_norm' := by simp [hf.forall, ← norm, NormedAddTorsor.dist_eq_norm', ← vsub]

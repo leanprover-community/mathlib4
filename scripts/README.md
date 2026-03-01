@@ -73,6 +73,58 @@ to learn about it as well!
 
   Other subcommands to automate git-related actions may be added in the future.
 
+**Analyzing Mathlib's import structure**
+- `topological_sort.py`
+  Prints Mathlib modules in topological (import-DAG) order. By default leaves come last
+  (roots first); use `--reverse` for leaves first. If filenames or module names are
+  provided on stdin, outputs only those modules in topological order.
+  Usage: `python3 scripts/topological_sort.py [--reverse]`
+
+**Backward-compatibility `set_option` migration tools**
+
+These scripts help with testing Lean PRs that change backward-compatibility option
+behaviour. They share a common DAG traversal library that parallelises work in import-graph order.
+
+- `dag_traversal.py`
+  Reusable parallel DAG traversal for Lean import graphs. Parses the import DAG from `.lean`
+  source files and parallelises an action over a forward or backward traversal. Each module is
+  submitted to the thread pool the moment its last in-DAG dependency finishes.
+
+  **Library usage:**
+  ```python
+  from dag_traversal import DAG, traverse_dag
+
+  dag = DAG.from_directories(Path("."))
+  results = traverse_dag(dag, my_action, direction="forward", stop_on_failure=True)
+  ```
+
+  **CLI usage:**
+  ```bash
+  scripts/dag_traversal.py --forward 'lake build {}'       # {} = file path
+  scripts/dag_traversal.py --backward --module 'echo {}'   # {} = module name
+  scripts/dag_traversal.py --forward -j4 'my_script {}'
+  ```
+
+- `set_option_utils.py`
+  Shared configuration for `add_set_option.py` and `rm_set_option.py`. Contains the list of
+  managed options (`backward.isDefEq.respectTransparency`, `backward.whnf.reducibleClassField`)
+  and helpers for generating `set_option` lines and regex patterns.
+
+- `add_set_option.py`
+  Adds `set_option ... false in` before declarations that fail to build. Traverses the DAG
+  **forward** (roots first) so each module is only built after all its imports are clean. For
+  each error, finds the enclosing declaration and tries candidate option combinations
+  (most-recently-successful first, then each single option, then all together).
+  Usage: `python3 scripts/add_set_option.py [--option NAME] [--max-workers N] [--timeout N] [--files FILE ...]`
+
+- `rm_set_option.py`
+  Removes unnecessary `set_option ... false in` lines. Only targets lines without a trailing
+  comment; lines like `set_option ... false in -- reason` are left untouched. Traverses the DAG
+  **backward** (leaves first) so removing an option from an upstream file doesn't invalidate
+  cached builds of downstream files. Tries removing all occurrences at once; if that fails,
+  falls back to one-at-a-time removal.
+  Usage: `python3 scripts/rm_set_option.py [--option NAME] [--dry-run] [--max-workers N] [--files FILE ...]`
+
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
