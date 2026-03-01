@@ -14,14 +14,15 @@ This file defines the deletion of edges and vertices from a graph.
 
 ## Main definitions
 
-- `G ↾ F`: the subgraph of `G` restricted to the edges in `F` without removing vertices
-- `G ＼ F`: the subgraph of `G` with the edges in `F` deleted
-- `G[X]`: the subgraph of `G` induced by the set `X` of vertices
-- `G - X`: the graph obtained from `G` by deleting the set `X` of vertices
+- `G ↾ F` (`Graph.edgeRestrict`) : the subgraph of `G` restricted to the edges in `F` without
+removing vertices
+- `G ＼ F` (`Graph.edgeDelete`) : the subgraph of `G` with the edges in `F` deleted
+- `G[X]` (`Graph.induce`) : the subgraph of `G` induced by the set `X` of vertices
+- `G - X` (`Graph.vertexDelete`) : the graph obtained from `G` by deleting the set `X` of vertices
 
 ## Tags
 
-graphs, edge deletion, vertex deletion, strongly disjoint
+graphs, edge deletion, vertex deletion
 -/
 
 @[expose] public section
@@ -45,7 +46,7 @@ def edgeRestrict (G : Graph α β) (E₀ : Set β) : Graph α β where
     fun ⟨x, y, h⟩ ↦ ⟨h.2.edge_mem, h.1⟩⟩
   left_mem_of_isLink _ _ _ h := h.2.left_mem
 
--- /-- `G ↾ F` is the subgraph of `G` restricted to the edges in `F`. Vertices are not changed. -/
+@[inherit_doc edgeRestrict]
 scoped infixl:65 " ↾ "  => Graph.edgeRestrict
 
 @[simp, grind .]
@@ -106,7 +107,7 @@ def edgeDelete (G : Graph α β) (F : Set β) : Graph α β :=
     simp only [edgeRestrict_isLink, mem_diff, and_comm, and_congr_left_iff, and_iff_left_iff_imp]
     exact fun h _ ↦ h.edge_mem)
 
-/-- `G ＼ F` is the subgraph of `G` with the edges in `F` deleted. Vertices are not changed. -/
+@[inherit_doc edgeDelete]
 scoped infixl:75 " ＼ "  => Graph.edgeDelete
 
 lemma edgeDelete_eq_edgeRestrict (G : Graph α β) (F : Set β) :
@@ -146,7 +147,6 @@ lemma edgeDelete_edgeDelete (G : Graph α β) (F₁ F₂ : Set β) : G ＼ F₁ 
   rw [← inter_comm, inter_comm F₁ᶜ, inter_assoc, inter_assoc, inter_self, inter_comm,
     inter_assoc, inter_comm, edgeRestrict_inter_edgeSet, inter_comm]
 
-
 /-- The subgraph of `G` induced by a set `X` of vertices.
 The edges are the edges of `G` with both ends in `X`.
 (`X` is not required to be a subset of `V(G)` for this definition to work,
@@ -159,8 +159,8 @@ protected def induce (G : Graph α β) (X : Set α) : Graph α β where
   eq_or_eq_of_isLink_of_isLink _ _ _ _ _ h h' := h.1.left_eq_or_eq h'.1
   left_mem_of_isLink := by simp +contextual
 
-/-- `G[X]` is the subgraph of `G` induced by the set `X` of vertices. -/
-notation:max G:1000 "[" S "]" => Graph.induce G S
+@[inherit_doc Graph.induce]
+scoped notation G "[" X "]" => Graph.induce G X
 
 lemma induce_le (hX : X ⊆ V(G)) : G[X] ≤ G :=
   ⟨hX, fun _ _ _ h ↦ h.1⟩
@@ -181,9 +181,9 @@ lemma induce_vertexSet_self (G : Graph α β) : G[V(G)] = G := by
   exact ⟨x, y, h, h.left_mem, h.right_mem⟩
 
 /-- The graph obtained from `G` by deleting a set of vertices. -/
-protected def vertexDelete (G : Graph α β) (X : Set α) : Graph α β := G[V(G) \ X]
+def vertexDelete (G : Graph α β) (X : Set α) : Graph α β := G[V(G) \ X]
 
-/-- `G - X` is the graph obtained from `G` by deleting the set `X` of vertices. -/
+@[inherit_doc vertexDelete]
 instance : HSub (Graph α β) (Set α) (Graph α β) where
   hSub G X := G[V(G) \ X]
 
