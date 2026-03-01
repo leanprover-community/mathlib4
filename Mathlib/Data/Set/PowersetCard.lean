@@ -70,6 +70,7 @@ theorem coe_nontrivial_iff {s : Set.powersetCard α n} :
 theorem eq_iff_subset {s t : Set.powersetCard α n} : s = t ↔ (s : Finset α) ⊆ (t : Finset α) := by
   rw [Finset.subset_iff_eq_of_card_le (t.prop.trans_le s.prop.ge), Subtype.ext_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (hab : a ≠ b) :
     ∃ s : powersetCard α n, a ∈ s ∧ b ∉ s := by
   have ha' : n ≤ Set.encard {b}ᶜ := by
