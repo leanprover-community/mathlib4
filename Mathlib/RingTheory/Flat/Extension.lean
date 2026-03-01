@@ -10,7 +10,9 @@ public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Polynomial.Basic
@@ -71,7 +73,30 @@ lemma minpolyLift_spec (x : K) (int : IsIntegral (ResidueField S) x) :
     (minpoly (ResidueField S) x)) (minpoly.monic int))
 
 abbrev extensionByAlgebraic (x : K) (int : IsIntegral (ResidueField S) x) : Type w :=
-  Polynomial S ⧸ Ideal.span {minpolyLift K S x int}
+  S[X] ⧸ Ideal.span {minpolyLift K S x int}
+
+instance (x : K) (int : IsIntegral (ResidueField S) x) :
+    Module.Finite S (extensionByAlgebraic K S x int) :=
+  (minpolyLift_spec K S x int).2.2.finite_quotient
+
+set_option backward.isDefEq.respectTransparency false in
+lemma extensionByAlgebraic_maximalIdeal_map (x : K) (int : IsIntegral (ResidueField S) x) :
+    ((maximalIdeal S).map (algebraMap S (extensionByAlgebraic K S x int))).IsMaximal := by
+  let f' := (Ideal.Quotient.mk (Ideal.span {(minpoly (ResidueField S) x)})).comp
+    (Polynomial.mapRingHom (IsLocalRing.residue S))
+  have : Ideal.span {minpolyLift K S x int} ≤ RingHom.ker f' := by
+    simp [Ideal.span_singleton_le_iff_mem, f', (minpolyLift_spec K S x int).1]
+  let f : (extensionByAlgebraic K S x int) →+* _ :=
+    Ideal.Quotient.lift _ f' (fun x hx ↦ this hx)
+  have surjf : Function.Surjective f := by
+    apply Ideal.Quotient.lift_surjective_of_surjective
+    exact (Ideal.Quotient.mk_surjective.comp
+      (Polynomial.map_surjective _ IsLocalRing.residue_surjective))
+  let : Fact _ := ⟨minpoly.irreducible int⟩
+  let := Ideal.Quotient.field (Ideal.span {(minpoly (ResidueField S) x)})
+  convert RingHom.ker_isMaximal_of_surjective f surjf
+  --apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+  sorry
 
 instance (x : K) (int : IsIntegral (ResidueField S) x) :
     IsLocalRing (extensionByAlgebraic K S x int) := by
