@@ -54,6 +54,22 @@ noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n
     HomotopyCategory.homologyFunctor _ _ n :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh C (ComplexShape.up ℤ) n
 
+@[reassoc]
+lemma homologyFunctorFactorsh_hom_app_quotient_obj (K : CochainComplex C ℤ) (n : ℤ) :
+    (homologyFunctorFactorsh C n).hom.app ((HomotopyCategory.quotient _ _).obj K) =
+      (homologyFunctor C n).map ((quotientCompQhIso C).hom.app K) ≫
+        (homologyFunctorFactors C n).hom.app K ≫
+        (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).inv.app _ :=
+  HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh_hom_app_quotient_obj ..
+
+@[reassoc]
+lemma homologyFunctorFactorsh_inv_app_quotient_obj (K : CochainComplex C ℤ) (n : ℤ) :
+    (homologyFunctorFactorsh C n).inv.app ((HomotopyCategory.quotient _ _).obj K) =
+      (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).hom.app _ ≫
+        (homologyFunctorFactors C n).inv.app K ≫
+      (homologyFunctor C n).map ((quotientCompQhIso C).inv.app K) :=
+  HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh_inv_app_quotient_obj ..
+
 variable {C} in
 lemma isIso_Qh_map_iff {X Y : HomotopyCategory C (ComplexShape.up ℤ)} (f : X ⟶ Y) :
     IsIso (Qh.map f) ↔ HomotopyCategory.quasiIso C _ f := by
@@ -76,6 +92,9 @@ noncomputable instance : (homologyFunctor C 0).ShiftSequence ℤ :=
   Functor.ShiftSequence.induced (homologyFunctorFactorsh C 0) ℤ
     (homologyFunctor C) (homologyFunctorFactorsh C)
 
+lemma shift_homologyFunctor (n : ℤ) :
+    (homologyFunctor C 0).shift n = homologyFunctor C n := rfl
+
 variable {C}
 
 @[reassoc]
@@ -96,7 +115,14 @@ lemma shiftMap_homologyFunctor_map_Q
       (homologyFunctorFactors C a).hom.app _ ≫
         (HomologicalComplex.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
           (homologyFunctorFactors C a').inv.app _ := by
-  sorry
+  rw [← ShiftedHom.map_naturality_1 f (quotientCompQhIso C),
+    ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
+    Functor.shiftMap_comp', Functor.shiftMap_comp,
+    ShiftedHom.comp_map, shiftMap_homologyFunctor_map_Qh,
+    homologyFunctorFactorsh_hom_app_quotient_obj,
+    homologyFunctorFactorsh_inv_app_quotient_obj,
+    HomotopyCategory.homologyFunctor_shiftMap]
+  simp [shift_homologyFunctor, ← Functor.map_comp, ← Functor.map_comp_assoc]
 
 namespace HomologySequence
 
