@@ -315,7 +315,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
     rw [div_le_one (kpos.trans_lt hx)]
     exact hx.le.trans' (hk (by simp))
   obtain ⟨a, -, ha'⟩ := cauchySeq_tendsto_of_isComplete h hb hu'
-  refine ⟨a * x, (((continuous_mul_right x).tendsto a).comp ha').congr ?_⟩
+  refine ⟨a * x, (((continuous_mul_const x).tendsto a).comp ha').congr ?_⟩
   have hx' : x ≠ 0 := by
     contrapose! hx
     simp [hx, kpos]
