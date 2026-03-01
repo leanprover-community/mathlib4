@@ -76,7 +76,7 @@ instance : AddMonoid OrderType.{u} where
   nsmul := nsmulRec
 
 instance (priority := low) : HMul OrderType.{u} OrderType.{v} OrderType.{max u v} where
-  hMul o₁ o₂ :=  OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
+  hMul o₁ o₂ := OrderType.liftOn₂ o₁ o₂ (fun r _ s _ ↦ type (s ×ₗ r))
     fun _ _ _ _ _ _ _ _ ha hb ↦ Prod.Lex.prodLexCongr (Classical.choice <| type_eq_type.mp hb)
       (Classical.choice <| type_eq_type.mp ha) |> type_congr
 

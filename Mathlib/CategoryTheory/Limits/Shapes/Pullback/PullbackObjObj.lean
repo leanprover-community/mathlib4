@@ -459,7 +459,7 @@ def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushou
       ext
       · apply pushout.hom_ext <;> simp [← homEquiv_symm_naturality_two,
           ← homEquiv_symm_naturality_three]
-      · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three]}
+      · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three] }
   left_triangle_components _ := by
     ext
     · apply pushout.hom_ext <;> simp [← homEquiv_symm_naturality_two, ofHasPushout_pt]
