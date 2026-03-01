@@ -488,6 +488,7 @@ end InvEqInv
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
   rcases subsingleton_or_nontrivial α with ht | ht
@@ -505,9 +506,11 @@ noncomputable instance : InvOneClass (Matrix n n α) :=
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
   refine inv_eq_left_inv ?_
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]

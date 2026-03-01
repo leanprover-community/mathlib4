@@ -21,6 +21,7 @@ namespace CategoryTheory.CatCenter
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma app_neg_one_zpow (n : ℤ) (X : C) :
     ((-1) ^ n : (CatCenter C)ˣ).val.app X = n.negOnePow • 𝟙 X := by

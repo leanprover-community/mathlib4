@@ -151,6 +151,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   ext ⟨i, j⟩
   simpa using aux₂ i j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. -/
 @[simps]
 def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where

@@ -144,7 +144,7 @@ theorem tendstoUniformly_iff {ι : Type*} {F : ι → β → α} {f : β → α}
 
 end EMetric
 
-open EMetric
+open Metric
 
 namespace EMetric
 
@@ -187,14 +187,14 @@ theorem cauchySeq_iff_NNReal [Nonempty β] [SemilatticeSup β] {u : β → α} :
   uniformity_basis_edist_nnreal.cauchySeq_iff'
 
 theorem totallyBounded_iff {s : Set α} :
-    TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
+    TotallyBounded s ↔ ∀ ε > 0, ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, eball y ε :=
   ⟨fun H _ε ε0 => H _ (edist_mem_uniformity ε0), fun H _r ru =>
     let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
     let ⟨t, ft, h⟩ := H ε ε0
     ⟨t, ft, h.trans <| iUnion₂_mono fun _ _ _ => hε⟩⟩
 
 theorem totallyBounded_iff' {s : Set α} :
-    TotallyBounded s ↔ ∀ ε > 0, ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y ε :=
+    TotallyBounded s ↔ ∀ ε > 0, ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ y ∈ t, eball y ε :=
   ⟨fun H _ε ε0 => (totallyBounded_iff_subset.1 H) _ (edist_mem_uniformity ε0), fun H _r ru =>
     let ⟨ε, ε0, hε⟩ := mem_uniformity_edist.1 ru
     let ⟨t, _, ft, h⟩ := H ε ε0
@@ -205,14 +205,14 @@ section Compact
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
-    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε) :
+    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, Metric.closedEBall x ε) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   apply UniformSpace.subset_countable_closure_of_almost_dense_set
   intro U hU
   obtain ⟨ε, hε, hεU⟩ := uniformity_basis_edist_le.mem_iff.1 hU
   obtain ⟨t, tC, ht⟩ := hs ε hε
   refine ⟨t, tC, ht.trans (iUnion₂_mono fun x hx y hy => UniformSpace.ball_mono hεU x ?_)⟩
-  rwa [mem_closedBall, edist_comm] at hy
+  rwa [mem_closedEBall, edist_comm] at hy
 
 -- TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
@@ -221,7 +221,7 @@ theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
     ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
   refine subset_countable_closure_of_almost_dense_set s fun ε hε => ?_
   rcases totallyBounded_iff'.1 hs.totallyBounded ε hε with ⟨t, -, htf, hst⟩
-  exact ⟨t, htf.countable, hst.trans <| iUnion₂_mono fun _ _ => ball_subset_closedBall⟩
+  exact ⟨t, htf.countable, hst.trans <| iUnion₂_mono fun _ _ => eball_subset_closedEBall⟩
 
 end Compact
 
@@ -241,10 +241,10 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
 
 theorem secondCountable_of_almost_dense_set
-    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :
+    (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedEBall x ε = univ) :
     SecondCountableTopology α := by
   suffices SeparableSpace α from UniformSpace.secondCountable_of_separable α
-  have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedBall x ε := by
+  have : ∀ ε > 0, ∃ t : Set α, Set.Countable t ∧ univ ⊆ ⋃ x ∈ t, closedEBall x ε := by
     simpa only [univ_subset_iff] using hs
   rcases subset_countable_closure_of_almost_dense_set (univ : Set α) this with ⟨t, -, htc, ht⟩
   exact ⟨⟨t, htc, fun x => ht (mem_univ x)⟩⟩
@@ -258,7 +258,7 @@ variable {γ : Type w} [EMetricSpace γ]
 -- see Note [lower instance priority]
 /-- An emetric space is separated -/
 instance (priority := 100) EMetricSpace.instT0Space : T0Space γ where
-  t0 _ _ h := eq_of_edist_eq_zero <| inseparable_iff.1 h
+  t0 _ _ h := eq_of_edist_eq_zero <| EMetric.inseparable_iff.1 h
 
 /-- A map between emetric spaces is a uniform embedding if and only if the edistance between `f x`
 and `f y` is controlled in terms of the distance between `x` and `y` and conversely. -/
@@ -318,33 +318,33 @@ section LebesgueNumberLemma
 variable {s : Set α}
 
 theorem lebesgue_number_lemma_of_emetric {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
-    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, eball x δ ⊆ c i := by
+  simpa only [eball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma hs hc₁ hc₂
 
 theorem lebesgue_number_lemma_of_emetric_nhds' {c : (x : α) → x ∈ s → Set α} (hs : IsCompact s)
-    (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, ball x δ ⊆ c y y.2 := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    (hc : ∀ x hx, c x hx ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ⊆ c y y.2 := by
+  simpa only [eball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhds {c : α → Set α} (hs : IsCompact s)
-    (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ⊆ c y := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    (hc : ∀ x ∈ s, c x ∈ 𝓝 x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ⊆ c y := by
+  simpa only [eball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhds hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin' {c : (x : α) → x ∈ s → Set α}
     (hs : IsCompact s) (hc : ∀ x hx, c x hx ∈ 𝓝[s] x) :
-    ∃ δ > 0, ∀ x ∈ s, ∃ y : s, ball x δ ∩ s ⊆ c y y.2 := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    ∃ δ > 0, ∀ x ∈ s, ∃ y : s, eball x δ ∩ s ⊆ c y y.2 := by
+  simpa only [eball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin' hs hc
 
 theorem lebesgue_number_lemma_of_emetric_nhdsWithin {c : α → Set α} (hs : IsCompact s)
-    (hc : ∀ x ∈ s, c x ∈ 𝓝[s] x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, ball x δ ∩ s ⊆ c y := by
-  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
+    (hc : ∀ x ∈ s, c x ∈ 𝓝[s] x) : ∃ δ > 0, ∀ x ∈ s, ∃ y, eball x δ ∩ s ⊆ c y := by
+  simpa only [eball, UniformSpace.ball, preimage_setOf_eq, edist_comm]
     using uniformity_basis_edist.lebesgue_number_lemma_nhdsWithin hs hc
 
 theorem lebesgue_number_lemma_of_emetric_sUnion {c : Set (Set α)} (hs : IsCompact s)
-    (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, ball x δ ⊆ t := by
+    (hc₁ : ∀ t ∈ c, IsOpen t) (hc₂ : s ⊆ ⋃₀ c) : ∃ δ > 0, ∀ x ∈ s, ∃ t ∈ c, eball x δ ⊆ t := by
   rw [sUnion_eq_iUnion] at hc₂; simpa using lebesgue_number_lemma_of_emetric hs (by simpa) hc₂
 
 end LebesgueNumberLemma
