@@ -48,17 +48,17 @@ def edgeRestrict (G : Graph α β) (E₀ : Set β) : Graph α β where
 @[inherit_doc edgeRestrict]
 scoped infixl:65 " ↾ "  => Graph.edgeRestrict
 
-@[simp, grind .]
+@[simp]
 lemma edgeRestrict_le {E₀ : Set β} : G ↾ E₀ ≤ G where
   vertexSet_mono := rfl.le
   isLink_mono := by simp
 
-@[simp, grind .]
+@[simp]
 lemma edgeRestrict_eq_iff (G : Graph α β) (E₀ : Set β) : G ↾ E₀ = G ↔ E(G) ⊆ E₀ :=
   ⟨fun h ↦ by simpa using h.ge.edgeSet_mono,
     fun h ↦ (Compatible.of_le edgeRestrict_le).ext (by simp) (by simpa)⟩
 
-@[simp, grind =]
+@[simp]
 lemma edgeRestrict_self (G : Graph α β) : G ↾ E(G) = G :=
   (Compatible.of_le_le (G := G) (by simp) (by simp)).ext rfl (by simp)
 
@@ -89,7 +89,7 @@ lemma edgeRestrict_inc : (G ↾ F).Inc e x ↔ G.Inc e x ∧ e ∈ F := by
 lemma edgeRestrict_isLoopAt : (G ↾ F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∈ F := by
   simp [← isLink_self_iff, and_comm]
 
-@[simp, grind =]
+@[simp]
 lemma edgeRestrict_edgeRestrict (G : Graph α β) (F₁ F₂ : Set β) : (G ↾ F₁) ↾ F₂ = G ↾ F₁ ∩ F₂ := by
   refine (Compatible.of_le_le (G := G) (edgeRestrict_le.trans (by simp)) (by simp)).ext (by simp) ?_
   simp only [edgeRestrict_edgeSet]
@@ -111,7 +111,7 @@ scoped infixl:75 " ＼ "  => Graph.edgeDelete
 
 lemma edgeDelete_eq_edgeRestrict (G : Graph α β) (F : Set β) : G ＼ F = G ↾ (E(G) \ F) := copy_eq ..
 
-@[simp, grind .]
+@[simp]
 lemma edgeDelete_le : G ＼ F ≤ G := by
   simp [edgeDelete_eq_edgeRestrict]
 
@@ -138,7 +138,7 @@ lemma edgeDelete_isLoopAt : (G ＼ F).IsLoopAt e x ↔ G.IsLoopAt e x ∧ e ∉ 
     and_iff_right_iff_imp]
   exact fun h _ ↦ h.edge_mem
 
-@[simp, grind =]
+@[simp]
 lemma edgeDelete_edgeDelete (G : Graph α β) (F₁ F₂ : Set β) : G ＼ F₁ ＼ F₂ = G ＼ (F₁ ∪ F₂) := by
   simp only [edgeDelete_eq_edgeRestrict, diff_eq_compl_inter, edgeRestrict_inter_edgeSet,
     edgeRestrict_edgeSet, edgeRestrict_edgeRestrict, compl_union]
@@ -202,7 +202,7 @@ lemma vertexDelete_edgeSet (G : Graph α β) (X : Set α) :
 lemma vertexDelete_empty (G : Graph α β) : G - (∅ : Set α) = G := by
   simp [vertexDelete_def]
 
-@[simp, grind .]
+@[simp]
 lemma vertexDelete_le : G - X ≤ G := G.induce_le diff_subset
 
 end Graph
