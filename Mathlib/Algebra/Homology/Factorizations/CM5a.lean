@@ -106,9 +106,10 @@ a factorization `ι f n₁ ≫ π K L n₁ = f` where the intermediate object
 `mid K L n₁` is `S K n₁ ⊞ L`, with `S K n₁` the single complex in degree `n₁`
 given by an injective object containing `K.opcycles n₁` (which is a cokernel of
 the differential `K.X n₀ ⟶ K.X n₁`).
-We obtain that `ι f n₁` is a quasi-isomorphism in degrees `≤ n₀`,
-that `π K L n₁` is an isomorphism in degrees `≤ n₀` and then
-that `ι f n₁` induces a monomorphism in homology in degree `n₀`. -/
+We obtain that `ι f n₁` is a quasi-isomorphism in degrees `≤ n₀` and
+induces a monomorphism in homology in degree `n₀`,
+and that `π K L n₁` is an isomorphism in degrees `≤ n₀` that is
+also a degreewise epimorphism with an injective kernel. -/
 
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
 
