@@ -344,18 +344,26 @@ interior point with respect to `I`, `f x` must be an interior point with respect
 lemma _root_.MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x : M}
     (hf : MDifferentiableAt I I' f x) (hf' : Surjective (mfderiv I I' f x))
     (hx : I.IsInteriorPoint x) : I'.IsInteriorPoint (f x) := by
+  -- Since p-adic manifolds don't have boundary, WLOG `𝕜` is `ℝ` or `ℂ` and `E` is normed over `ℝ`.
   wlog _ : IsRCLikeNormedField 𝕜
   · simp [IsInteriorPoint, I'.range_eq_univ_of_not_isRCLikeNormedField ‹_›]
   let _ := IsRCLikeNormedField.rclike 𝕜
   let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
   let _ : NormedSpace ℝ E' := NormedSpace.restrictScalars ℝ 𝕜 E'
+  -- Write everything in terms of extended charts around `x` and `f x`.
   simp only [mfderiv, hf, ite_true] at hf'
   have hf'' := hf.differentiableWithinAt_writtenInExtChartAt.differentiableAt <| by
     simpa [← mem_interior_iff_mem_nhds] using hx
   rw [fderivWithin_eq_fderiv (I.uniqueDiffOn _ <| by simp) hf''] at hf'
+  /- Since `writtenInExtChartAt I I' x f` is differentiable with surjective differential at `x`
+  over `𝕜`, it also is so over `ℝ`. -/
   replace hf' : Surjective (fderiv ℝ (writtenInExtChartAt I I' x f) (extChartAt I x x)) := by
     rwa [hf''.fderiv_restrictScalars (𝕜 := ℝ), ContinuousLinearMap.coe_restrictScalars']
   replace hf'' := hf''.restrictScalars ℝ
+  /- The lemma is now essentially just `mem_interior_convex_of_surjective_fderiv`: because
+  `writtenInExtChartAt I I' x f` is differentiable with surjective differential at `x` over `ℝ` and
+  sends a neighbourhood of `x` (the region in which it could be written in the extended charts) to
+  a closed convex set with nonempty interior (`I'.range`), it must send `x` to that interior. -/
   have := hf''.mem_interior_convex_of_surjective_fderiv (Filter.inter_mem ?_ ?_) I'.convex_range
     I'.isClosed_range I'.nonempty_interior (writtenInExtChartAt_mapsTo.mono_right ?_) hf'
   · simpa using this
