@@ -123,7 +123,6 @@ section RpowDecay
 
 variable {E : Type*} [NormedAddCommGroup E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is `O(x ^ (-b))` at infinity, then so is the function
 `fun x ↦ ‖f.restrict (Icc (x + R) (x + S))‖` for any fixed `R` and `S`. -/
 theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)

@@ -79,7 +79,7 @@ lemma isOpenEmbedding_f_zeroHypercover {X : TopCat} (E : precoverage.ZeroHyperco
   simpa using E.mem₀.right
 
 instance : Precoverage.Small.{u} precoverage.{u} :=
-  .inf fun _ _ _ hRS hS _ _ hf ↦ hS (hRS _ hf)
+  .inf fun _ _ _ hRS hS _ _ hf ↦ hS (hRS _ _ hf)
 
 /-- The Grothendieck topology on `TopCat` is subcanonical. -/
 instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical := by

@@ -162,6 +162,7 @@ private theorem primesOverSpanEquivMonicFactorsModAux_symm_apply (A : ℤ[X]) {Q
 
 variable [NumberField K]
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /--
@@ -177,6 +178,7 @@ def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
       (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans <|
         (primesOverSpanEquivMonicFactorsModAux _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
     ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =

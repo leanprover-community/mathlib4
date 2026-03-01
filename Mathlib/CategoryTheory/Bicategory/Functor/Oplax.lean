@@ -12,7 +12,7 @@ public import Mathlib.Tactic.CategoryTheory.ToApp
 # Oplax functors
 
 An oplax functor `F` between bicategories `B` and `C` consists of
-* a function between objects `F.obj : B ⟶ C`,
+* a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
 * a family of 2-morphisms `F.mapId a : F.map (𝟙 a) ⟶ 𝟙 (F.obj a)`,
@@ -45,11 +45,11 @@ variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 /-- An oplax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
-Unlike functors between categories, `F.map` do not need to strictly commute with the composition,
-and do not need to strictly preserve the identity. Instead, there are specified 2-morphisms
+Unlike functors between categories, `F.map` does not need to strictly commute with composition,
+and does not need to strictly preserve the identity. Instead, there are specified 2-morphisms
 `F.map (𝟙 a) ⟶ 𝟙 (F.obj a)` and `F.map (f ≫ g) ⟶ F.map f ≫ F.map g`.
 
-`F.map₂` strictly commute with compositions and preserve the identity. They also preserve the
+`F.map₂` strictly commutes with compositions and preserves the identity. It also preserves the
 associator, the left unitor, and the right unitor modulo some adjustments of domains and codomains
 of 2-morphisms.
 -/
@@ -64,7 +64,7 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
       map₂ (η ▷ g) ≫ mapComp f' g = mapComp f g ≫ map₂ η ▷ map g := by
     cat_disch
-  /-- Naturality of the lax functoriality constraint, on the right. -/
+  /-- Naturality of the oplax functoriality constraint, on the right. -/
   mapComp_naturality_right :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
       map₂ (f ◁ η) ≫ mapComp f g' = mapComp f g ≫ map f ◁ map₂ η := by
@@ -86,7 +86,7 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
       map₂ (ρ_ f).hom = mapComp f (𝟙 b) ≫ map f ◁ mapId b ≫ (ρ_ (map f)).hom := by
     cat_disch
 
-/-- Notation for a pseudofunctor between bicategories. -/
+/-- Notation for an oplax functor between bicategories. -/
 -- Given similar precedence as ⥤ (26).
 scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᵒᵖᴸ " => OplaxFunctor -- type as \func\op\^L
 
