@@ -170,7 +170,6 @@ example : CompactSpace I := by infer_instance
 theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
   x.2.1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
 
 theorem le_one (x : I) : (x : ℝ) ≤ 1 :=

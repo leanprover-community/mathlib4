@@ -143,6 +143,7 @@ namespace Submodule
 
 variable {p : Submodule K V} {f : Module.End K V}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) (k : ℕ∞) :
     p ⊓ ⨆ μ, f.genEigenspace μ k = ⨆ μ, p ⊓ f.genEigenspace μ k := by
   refine le_antisymm (fun m hm ↦ ?_)
