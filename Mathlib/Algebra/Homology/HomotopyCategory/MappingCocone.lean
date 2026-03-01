@@ -113,10 +113,9 @@ lemma inl_v_descCochain_v (p q : ℤ) (hpq : p + m = q) :
 lemma inr_v_descCochain_v (p q : ℤ) (hpq : p + 1 = q) (r : ℤ) (hr : q + m = r) :
     (inr φ).1.v p q hpq ≫ (descCochain φ α β h).v q r hr = β.v p r (by lia) := by
   obtain rfl : p = q + -1 := by lia
-  simp [inr, descCochain, mappingCocone,
+  simp [inr, descCochain, mappingCocone, smul_smul,
     Cochain.rightShift_v _ _ _ _ _ _ hpq _ (add_zero (q + -1)),
-    Cochain.leftShift_v (n := n) _ _ _ _ _ r _ (q + -1) (by lia),
-    smul_smul]
+    Cochain.leftShift_v (n := n) _ _ _ _ _ r _ (q + -1) (by lia)]
 
 @[simp]
 lemma inl_comp_descCochain :

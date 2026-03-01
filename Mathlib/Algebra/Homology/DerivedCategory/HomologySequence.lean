@@ -59,7 +59,7 @@ lemma homologyFunctorFactorsh_hom_app_quotient_obj (K : CochainComplex C ℤ) (n
     (homologyFunctorFactorsh C n).hom.app ((HomotopyCategory.quotient _ _).obj K) =
       (homologyFunctor C n).map ((quotientCompQhIso C).hom.app K) ≫
         (homologyFunctorFactors C n).hom.app K ≫
-        (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).inv.app _ :=
+          (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).inv.app _ :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh_hom_app_quotient_obj ..
 
 @[reassoc]
@@ -67,7 +67,7 @@ lemma homologyFunctorFactorsh_inv_app_quotient_obj (K : CochainComplex C ℤ) (n
     (homologyFunctorFactorsh C n).inv.app ((HomotopyCategory.quotient _ _).obj K) =
       (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).hom.app _ ≫
         (homologyFunctorFactors C n).inv.app K ≫
-      (homologyFunctor C n).map ((quotientCompQhIso C).inv.app K) :=
+          (homologyFunctor C n).map ((quotientCompQhIso C).inv.app K) :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh_inv_app_quotient_obj ..
 
 variable {C} in
@@ -234,10 +234,8 @@ lemma homologyMap_homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     homologyMap T.mor₂ n₀ ≫ homologyδOfTriangle T n₀ n₁ h = 0 := by
   have := DerivedCategory.HomologySequence.comp_δ _ hT n₀ n₁ h
   dsimp at this
-  rw [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
-    ← DerivedCategory.homologyFunctorFactors_hom_naturality_assoc,
-    homologyFunctorFactors_hom_app_homologyδOfTriangle]
-  simp [reassoc_of% this]
+  simp [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
+    ← DerivedCategory.homologyFunctorFactors_hom_naturality_assoc, reassoc_of% this]
 
 lemma homologyMap_exact₁_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (ShortComplex.mk _ _ (homologyδOfTriangle_homologyMap T hT n₀ n₁ h)).Exact := by

@@ -124,7 +124,6 @@ end
 
 variable {M : HomologicalComplex C c}
 
-
 @[reassoc (attr := simp)]
 lemma biprod_inl_desc_f (α : K ⟶ M) (β : L ⟶ M) (i : ι) :
     (biprod.inl : K ⟶ K ⊞ L).f i ≫ (biprod.desc α β).f i = α.f i := by
