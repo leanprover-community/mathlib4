@@ -391,7 +391,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
       ker_comp_eq_of_commute_of_disjoint_ker]
     · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
     · exact s.noncommProd_commute _ _ _ fun j hj ↦
-        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by lia)
     · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
       simpa [ih, hi, Finset.sup_eq_iSup] using h
 

@@ -270,7 +270,7 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
     | zero =>
       obtain hi' | hi' := lt_or_ge p.natDegree i
       · simp [coeff_eq_zero_of_natDegree_lt hi']
-      · simpa [← coeff_natDegree, hpn, show i = 0 by aesop] using this _ hp
+      · simpa [← coeff_natDegree, hpn, show i = 0 by lia] using this _ hp
     | succ n =>
       obtain hi' | hi' := eq_or_ne i p.natDegree
       · simpa [hi'] using this _ hp
@@ -279,7 +279,7 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
           map_pow, sub_mul, mul_right_comm _ _ t, ← Algebra.smul_def _ t]
         exact sub_mem hp (Ideal.mul_mem_right _ _ (this _ hp))
       simpa [eraseLead_coeff, hi'] using
-        IH _ ((eraseLead_natDegree_le _).trans_lt (by aesop)) _ this rfl
+        IH _ ((eraseLead_natDegree_le _).trans_lt (by lia)) _ this rfl
   obtain ⟨n, hn⟩ := hp
   obtain ⟨k, hk⟩ := exists_leadingCoeff_pow_smul_mem_conductor φ (t ^ n) (p ^ n) hRS hφ
     (by simpa [mul_pow] using hn)
