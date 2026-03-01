@@ -199,7 +199,7 @@ see `CategoryTheory.GrpObj.lift_commutator_eq_mul_mul_inv_inv`.
 This morphism is constant with value `1` if and only if `G` is commutative
 (see `CategoryTheory.isCommMonObj_iff_commutator_eq_toUnit_η`). -/
 def GrpObj.commutator (G : C) [GrpObj G] : G ⊗ G ⟶ G :=
-  fst _ _ * snd _ _ * (fst _ _) ⁻¹ * (snd _ _) ⁻¹
+  fst _ _ * snd _ _ * (fst _ _)⁻¹ * (snd _ _)⁻¹
 
 @[reassoc (attr := simp)]
 lemma GrpObj.lift_commutator_eq_mul_mul_inv_inv {X G : C} [GrpObj G] (f₁ f₂ : X ⟶ G) :

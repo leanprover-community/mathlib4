@@ -5,7 +5,8 @@ Authors: Yong-Gyu Choi
 -/
 module
 
-public import Mathlib.RingTheory.RingHom.FaithfullyFlat
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 
 /-!
 # Exactness properties of the difference map on tensor products

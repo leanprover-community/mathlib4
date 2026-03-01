@@ -33,6 +33,8 @@ forms.
   subalgebra `H`, we have a natural decomposition of `H` as the kernel of `α` and the span of the
   coroot corresponding to `α`.
 * `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
+* `LieAlgebra.IsKilling.lieIdeal_eq_inf_cartan_sup_biSup_rootSpace`: a Lie ideal decomposes as its
+  intersection with the Cartan subalgebra plus a sum of root spaces.
 
 -/
 
@@ -541,7 +543,6 @@ lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y :
         root_apply_coroot hβ]
     · simp [root_apply_coroot hα]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNonZero) :
     ∃ h e f : L, IsSl2Triple h e f ∧ e ∈ rootSpace H α ∧ f ∈ rootSpace H (-α) := by
   obtain ⟨e, heα : e ∈ rootSpace H α, he₀ : e ≠ 0⟩ := α.exists_ne_zero
@@ -723,6 +724,21 @@ lemma restrict_killingForm_eq_sum :
   refine Finset.sum_congr rfl fun χ hχ ↦ ?_
   replace hχ : χ.IsNonZero := by simpa [LieSubalgebra.root] using hχ
   simp [finrank_rootSpace_eq_one _ hχ]
+
+/-- In a Lie algebra with non-degenerate Killing form, a Lie ideal decomposes as its intersection
+with the Cartan subalgebra plus a sum of root spaces corresponding to some subset of roots. -/
+lemma lieIdeal_eq_inf_cartan_sup_biSup_rootSpace (I : LieIdeal K L) :
+    I.restr H = (I.restr H ⊓ H.toLieSubmodule) ⊔
+      ⨆ (α : H.root) (_ : rootSpace H α.val ≤ I.restr H), rootSpace H α.val := by
+  refine le_antisymm ?_ (sup_le inf_le_left (iSup₂_le fun _ hα ↦ hα))
+  conv_lhs => rw [lieIdeal_eq_inf_cartan_sup_biSup_inf_rootSpace]
+  refine sup_le_sup_left (iSup₂_le fun α hα ↦ ?_) _
+  by_cases h : rootSpace H α ≤ I.restr H
+  · exact le_iSup₂_of_le ⟨α, Finset.mem_filter.mpr ⟨Finset.mem_univ _, hα⟩⟩ h inf_le_right
+  · have ha := Submodule.isAtom_iff_finrank_eq_one.mpr (finrank_rootSpace_eq_one α hα)
+    have : I.restr H ⊓ rootSpace H (α : H → K) = ⊥ :=
+      LieSubmodule.toSubmodule_injective ((ha.not_le_iff_disjoint.mp h).symm.eq_bot)
+    simp only [this, bot_le]
 
 end CharZero
 
