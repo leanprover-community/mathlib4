@@ -88,18 +88,15 @@ namespace FlatExtension
 
 attribute [instance] commRing algebra isLocalRing isLocalHom algebraK isScalarTower
 
-noncomputable def trivial [Small.{w} R] : FlatExtension R K :=
-  /-
+noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
   let e : R ≃+* Shrink.{w} R := (Shrink.ringEquiv R).symm
   let : IsLocalHom (algebraMap R (Shrink.{w} R)) :=
     IsLocalHom.of_surjective e.toRingHom e.surjective
-  refine ⟨Shrink.{w} R, Module.Flat.of_linearEquiv (Shrink.linearEquiv R R), ?_, ?_⟩
-  · apply (IsLocalRing.eq_maximalIdeal _).symm
-    exact (Ideal.isMaximal_map_iff_of_bijective _ e.bijective).2 inferInstance
-  · exact (Algebra.ofId (ResidueField R) K).comp
-      (AlgEquiv.ofRingEquiv (f := ResidueField.mapEquiv e) (fun x ↦ rfl)).symm.toAlgHom
-  -/
-  sorry
+  let : Algebra (ResidueField (Shrink.{w, u} R)) K := sorry
+  let : IsScalarTower (ResidueField R) (ResidueField (Shrink.{w, u} R)) K := sorry
+  refine ⟨Shrink.{w} R, Module.Flat.of_linearEquiv (Shrink.linearEquiv R R), ?_⟩
+  apply (IsLocalRing.eq_maximalIdeal _).symm
+  exact (Ideal.isMaximal_map_iff_of_bijective _ e.bijective).2 inferInstance
 
 variable {R K} in
 structure Hom (S₁ S₂ : FlatExtension.{w} R K) where
