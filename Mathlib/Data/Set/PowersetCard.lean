@@ -247,6 +247,7 @@ protected theorem card :
 
 variable {α n}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `0 < n < ENat.card α`, then `powersetCard α n` is nontrivial. -/
 theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
     Nontrivial (powersetCard α n) := by
@@ -265,6 +266,7 @@ theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
   · have : NeZero n := NeZero.of_pos h1
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `Set.powersetCard.nontrivial` that uses `Nat.card`. -/
 theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
     Nontrivial (powersetCard α n) := by

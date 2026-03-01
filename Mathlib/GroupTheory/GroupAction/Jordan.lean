@@ -103,6 +103,7 @@ open MulAction.IsPreprimitive
 
 open scoped Pointwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Simultaneously prove `MulAction.IsPreprimitive.is_two_pretransitive`
 and `MulAction.IsPreprimitive.is_two_preprimitive`. -/
 theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive

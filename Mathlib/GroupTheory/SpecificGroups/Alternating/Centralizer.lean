@@ -148,7 +148,6 @@ theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ 
   rw [sum_cycleType]
   exact Finset.card_le_univ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem count_le_one_of_centralizer_le_alternating
     (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     ∀ i, g.cycleType.count i ≤ 1 := by

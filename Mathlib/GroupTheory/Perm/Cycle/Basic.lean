@@ -82,7 +82,6 @@ def SameCycle.setoid (f : Perm α) : Setoid α where
   r := f.SameCycle
   iseqv := SameCycle.equivalence f
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sameCycle_one : SameCycle 1 x y ↔ x = y := by simp [SameCycle]
 

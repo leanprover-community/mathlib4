@@ -207,7 +207,6 @@ theorem sort_perm (σ : Equiv.Perm (Fin n)) :
 
 end Tuple
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Equiv.Perm.monotone_iff {n : ℕ} (σ : Perm (Fin n)) :
     Monotone σ ↔ σ = 1 := by
   rw [← Tuple.sort_eq_refl_iff_monotone, Tuple.sort_perm, ← inv_eq_one, one_def]
