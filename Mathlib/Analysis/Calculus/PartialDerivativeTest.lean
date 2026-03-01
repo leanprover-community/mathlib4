@@ -45,41 +45,12 @@ open Nat ContinuousMultilinearMap Finset Function
 
 /-- The Hessian companion as a bilinear map. -/
 noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
-    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V →ₗ[ℝ] V →ₗ[ℝ] ℝ := by
-  apply @LinearMap.mk₂ (
-    f := fun a b => iteratedFDeriv ℝ 2 f x₀ ![a,b]
-                  + iteratedFDeriv ℝ 2 f x₀ ![b,a])
-  · intro b c a
-    have h₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![b, a] 0 b c
-    have h₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![a, b] 1 b c
-    repeat (
-    simp only [Fin.isValue, update₁, Nat.succ_eq_add_one, Nat.reduceAdd,
-    MultilinearMap.toFun_eq_coe, coe_coe] at h₁;
-    simp only [Fin.isValue, update₀, Nat.succ_eq_add_one, Nat.reduceAdd,
-        MultilinearMap.toFun_eq_coe, coe_coe] at h₀)
-    linarith
-  · intro m x a
-    have h₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x,a] 0 m x
-    have h₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![a,x] 1 m x
-    repeat rw [update₀] at h₀; rw [update₁] at h₁
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
-    coe_coe, smul_eq_mul] at h₀ h₁ ⊢
-    linarith
-  · intro i x y
-    have had₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![x,i] 0 x y
-    have had₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![i,i] 1 x y
-    repeat rw [update₀] at had₀
-    repeat rw [update₁] at had₁
-    simp only [succ_eq_add_one, reduceAdd, MultilinearMap.toFun_eq_coe, coe_coe] at had₀ had₁ ⊢
-    have := @(Mathlib.Tactic.Ring.add_pf_add_overlap had₀.symm had₁.symm).symm
-    linarith
-  · intro m a x
-    have h₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![x,a] 0 m x
-    have h₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![a,x] 1 m x
-    repeat rw [update₀] at h₀; rw [update₁] at h₁
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, MultilinearMap.toFun_eq_coe,
-    coe_coe, smul_eq_mul] at h₀ h₁ ⊢
-    linarith
+    [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : V →ₗ[ℝ] V →ₗ[ℝ] ℝ :=
+  LinearMap.mk₂ ℝ (fun a b => iteratedFDeriv ℝ 2 f x₀ ![a,b] + iteratedFDeriv ℝ 2 f x₀ ![b,a])
+    (fun _ _ _ ↦ by simp [Matrix.vecCons, ← curryLeft_apply]; abel)
+    (by simp [Matrix.vecCons, ← curryLeft_apply, mul_add])
+    (fun _ _ _ ↦ by simp [Matrix.vecCons, ← curryLeft_apply]; abel)
+    (by simp [Matrix.vecCons, ← curryLeft_apply, mul_add])
 
 
 /-- The second iterated Frechét derivative as a quadratic map. -/
