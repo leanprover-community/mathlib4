@@ -829,12 +829,12 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
   obtain ⟨P, hP⟩ := hG.exists_isPath w x
   obtain heP | heP := em' <| s(x, y) ∈ P.edges
-  · exact ⟨(P.toDeleteEdges {s(x, y)} (by aesop)).reverse⟩
+  · exact ⟨(P.toDeleteEdges {s(x, y)} (by grind)).reverse⟩
   have hyP := P.snd_mem_support_of_mem_edges heP
   let P₁ := P.takeUntil y hyP
   have hxP₁ := Walk.endpoint_notMem_support_takeUntil hP hyP hxy.ne
   have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
-  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
+  exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by grind)⟩)
 
 /-- If `e` is an edge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
 theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')

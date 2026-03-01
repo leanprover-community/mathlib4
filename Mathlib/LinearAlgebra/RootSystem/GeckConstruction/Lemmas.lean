@@ -236,7 +236,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
   have key₁ : P.pairingIn ℤ i k = 0 := by rwa [pairingIn_eq_zero_iff]
   have key₂ : P.pairingIn ℤ i m = 0 := P.pairingIn_eq_zero_iff.mp <| by simpa [aux₁] using aux₀
   have key₃ : P.pairingIn ℤ j k = 2 := by
-    suffices 2 ≤ P.pairingIn ℤ j k by have := IsNotG2.pairingIn_mem_zero_one_two (P := P) j k; aesop
+    suffices 2 ≤ P.pairingIn ℤ j k by have := IsNotG2.pairingIn_mem_zero_one_two (P := P) j k; grind
     have hn₁ : P.pairingIn ℤ n k = 2 + P.pairingIn ℤ i k - P.pairingIn ℤ j k := by
       apply algebraMap_injective ℤ R
       simp only [map_add, map_sub, algebraMap_pairingIn, ← root_coroot_eq_pairing, hn]
@@ -249,7 +249,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_1
       rw [pairing_eq_zero_iff, ← P.algebraMap_pairingIn ℤ, aux₁, map_zero]
     have hkj : P.pairing k j = 1 := by
       rw [← P.algebraMap_pairingIn ℤ]
-      have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' j k (by aesop) (by aesop)
+      have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' j k (by grind) (by grind)
       aesop
     apply algebraMap_injective ℤ R
     rw [algebraMap_pairingIn, ← root_coroot_eq_pairing, ← h₁]
@@ -305,14 +305,14 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
         algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_add]
       simp [← P.root_coroot_eq_pairing l, ← h₁, add_comm]
     · have := IsNotG2.pairingIn_mem_zero_one_two (P := P) k j
-      aesop
+      grind
   /- Choose a positive invariant form. -/
   obtain B : RootPositiveForm ℤ P := have : Fintype ι := Fintype.ofFinite ι; P.posRootForm ℤ
   /- Calculate root length relationships implied by the pairings calculated above. -/
   have ⟨aux₃, aux₄⟩ : B.rootLength i = B.rootLength j ∧ B.rootLength j < B.rootLength k := by
     have hij_le : B.rootLength i ≤ B.rootLength j := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₁
     have hjk_lt : B.rootLength j < B.rootLength k :=
-      B.rootLength_lt_of_pairingIn_notMem (by aesop) hkj_ne.2 <| by aesop
+      B.rootLength_lt_of_pairingIn_notMem (by grind) hkj_ne.2 <| by grind
     refine ⟨?_, hjk_lt⟩
     simpa [posForm, rootLength] using (B.toInvariantForm.apply_eq_or_of_apply_ne (i := j) (j := k)
       (by simpa [posForm, rootLength] using hjk_lt.ne) i).resolve_right
@@ -323,7 +323,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_2
     have aux : B.toInvariantForm.form (P.root i) (P.root i) =
         B.toInvariantForm.form (P.root j) (P.root j) := by simpa [posForm, rootLength] using aux₃
     have := P.pairingIn_pairingIn_mem_set_of_length_eq_of_ne aux hij (b.root_ne_neg_of_ne hi hj hij)
-    aesop
+    grind
   /- Use the newly calculated pairing result to obtain further information about root lengths. -/
   have aux₆ : B.rootLength k ≤ B.rootLength i := B.rootLength_le_of_pairingIn_eq <| Or.inl aux₅
   /- We now have contradictory information about root lengths. -/

@@ -558,7 +558,7 @@ lemma mem_allRoots (i : ι) :
     simp only [LinearMap.zero_apply]
     induction hx using Submodule.span_induction with
     | zero => simp
-    | mem => aesop
+    | mem => grind
     | add => simp_all
     | smul => simp_all
   simpa using LinearMap.congr_fun key (P.root i)
