@@ -127,7 +127,6 @@ private instance : Limits.HasIterationOfShape J (FlatExtension R K) := sorry
 
 end FlatExtension
 
-
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
     (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
@@ -141,5 +140,17 @@ lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : 
   obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct.{max u v} R K).Iteration (⊤ : WithTop setK)) :=
     inferInstance
   let φtop := φ.F.obj ⟨⊤, Set.self_mem_Iic⟩
-
+  suffices h : Set.range (algebraMap (ResidueField (φtop.Ring)) K) = ⊤ by
+    let f := algebraMap (ResidueField (φtop.Ring)) K
+    have : Function.Bijective f := ⟨RingHom.injective f, Set.range_eq_univ.mp h⟩
+    let f := RingEquiv.ofBijective f this
+    refine ⟨φtop.Ring, φtop.commRing, φtop.isLocalRing, φtop.algebra, φtop.isLocalHom, φtop.flat,
+      φtop.eqmap, ⟨AlgEquiv.ofRingEquiv (f := f.symm) fun x ↦ f.injective ?_⟩⟩
+    · simp only [RingEquiv.apply_symm_apply]
+      exact IsScalarTower.algebraMap_apply (ResidueField R) (ResidueField φtop.Ring) K x
+  let φobj := fun i ↦ Set.range (algebraMap (ResidueField ((φ.F.obj i).Ring)) K)
+  have mono : Monotone φobj := fun a b hab ↦ by
+    let mapab := φ.F.map (homOfLE hab)
+    rintro _ ⟨x, rfl⟩
+    exact ⟨ResidueField.map mapab.hom x, congr($mapab.comm x)⟩
   sorry
