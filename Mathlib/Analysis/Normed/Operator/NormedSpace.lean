@@ -279,12 +279,7 @@ def IsCoercive [NormedAddCommGroup E] [NormedSpace ℝ E] (B : E →L[ℝ] E →
 lemma isCoercive.of_subsingleton {V : Type*} [Subsingleton V]
     [NormedAddCommGroup V] [NormedSpace ℝ V]
     (F : V →L[ℝ] V →L[ℝ] ℝ) : IsCoercive F := by
-  use 1
-  constructor
-  · simp
-  · intro u
-    rw [Subsingleton.eq_zero u]
-    simp
+  use 1; constructor <;> simp [Subsingleton.eq_zero (α := V)]
 
 section Equicontinuous
 
