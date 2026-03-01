@@ -94,7 +94,7 @@ variable {R : Type*} [CommSemiring R] (I J : Ideal R) (M : Type*) [AddCommMonoid
 /-- `IsAssociatedPrime I M` if the prime ideal `I` is the radical of the annihilator
 of some `x : M`. -/
 def IsAssociatedPrime : Prop :=
-  (⊥: Submodule R M).IsAssociatedPrime I
+  (⊥ : Submodule R M).IsAssociatedPrime I
 
 variable (R) in
 /-- The set of associated primes of a module. -/
