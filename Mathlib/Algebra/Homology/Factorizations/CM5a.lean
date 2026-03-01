@@ -21,7 +21,31 @@ cochain complexes in an abelian category with enough injectives,
 there exists a factorization `ι ≫ π = f` with `ι : K ⟶ K'` a monomorphism that is also
 a quasimorphism and `π : K' ⟶ L` a morphism which degreewise is an epimorphism with
 an injective kernel, while `K'` is also bounded below (with precise bounds depending
-on the available bounds for `K` and `L`).
+on the available bounds for `K` and `L`): this is
+`CochainComplex.Plus.modelCategoryQuillen.cm5a`. Using the factorization
+obtained in the file `Mathlib/Algebra/Homology/Factorizations/CM5b.lean`,
+we may assume `f : K ⇨ L` is a monomorphism (a case which appears as
+the lemma `CochainComplex.Plus.modelCategoryQuillen.cm5a`).
+
+In the proof, the key (private) lemma is the
+`CochainComplex.Plus.modelCategoryQuillen.cm5a_cof.step` which shows that
+if `f` is a monomorphism which is a quasi-isomorphism in degrees `≤ n₀` and
+`n₀ + 1 = n₁`, then `f` has a factorisation `ι ≫ π = f`
+where `ι` is a monomorphism that is a quasi-isomorphism in degrees `≤ n₁`,
+and `π` is an isomorphism in degrees `≤ n₀` that is also a degreewise
+epimorphism with an injective kernel. The proof of `step` decomposes
+a two separate lemmas `step₁` and `step₂`: we first ensure that `ι`
+induces a monomorphism in homology in degree `n₁`, and we proceed further
+in `step₂`.
+
+As we assume that both `K` and `L` are bounded below, we may find `n₀ : ℤ`
+such that `K` and `L` are striclty `≥ n₀ + 1`: in particular, `f` induces
+an isomorphism in degrees `≤ n₀`. Iterating the lemma `step`, we construct
+a projective system `ℕᵒᵖ ⥤ CochainComplex C ℤ`
+(see `CochainComplex.Plus.modelCategoryQuillen.cm5a_cof.cochainComplexFunctor`).
+Degreewise, this projective system is essentially constant, which allows
+to take its limit, which shall be the intermediate object in the
+lemma `cm5a_cof`.
 
 -/
 
@@ -199,13 +223,29 @@ lemma step₁ [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
 
 namespace step₂
 
+/-!
+This section provides the material in order to prove the lemma `step₂` below.
+Given a monomorphism `f : K ⟶ L` that is a quasi-isomorphism in degrees `< n`
+and which induces a monomorphism in homology in degree `n`, we construct
+a factorisation of `f` as `ι f n ≫ π f n = f` where
+`ι f n : K ⟶ mid f n` is a monomorphism which is a quasi-isomorphism
+in degrees `≤ n`, `π f n` is a degreewise epimorphism with an injective kernel
+which also induces isomorphisms in degrees `≤ n`.
+ -/
+
+
 open HomComplex
 
 variable (n : ℤ)
 
+/-- Given a morphism `f : K ⟶ L`, this is the single cochain complex in degree `n`
+which is given an injective object which contains `((cokernel f).truncGE n).X n`,
+i.e. the object in degree `n` of the canonical truncation `≥ n` of `cokernel f`. -/
 noncomputable abbrev S :=
   (single C (.up ℤ) n).obj (Injective.under (((cokernel f).truncGE n).X n))
 
+/-- The morphism `(cokernel f).truncGE n ⟶ S f n` which in degree `n` is
+given by `Injective.ι _`. -/
 noncomputable def p : (cokernel f).truncGE n ⟶ S f n :=
   mkHomToSingle (Injective.ι _) (fun i hi ↦ by
     simp only [ComplexShape.up_Rel] at hi
@@ -215,6 +255,7 @@ instance : Mono ((p f n).f n) := by
   simp only [p, mkHomToSingle_f, mono_comp_iff_of_mono]
   infer_instance
 
+/-- The obvious morphism `L ⟶ S f n`. -/
 noncomputable def α : L ⟶ S f n := cokernel.π f ≫ (cokernel f).πTruncGE n ≫ p f n
 
 @[reassoc (attr := simp)]
@@ -223,10 +264,13 @@ lemma comp_α : f ≫ α f n = 0 := by simp [α]
 @[reassoc (attr := simp)]
 lemma comp_α_f (i : ℤ) : f.f i ≫ (α f n).f i = 0 := by simp [← comp_f]
 
+/-- The intermediate object in the factorisation. -/
 noncomputable abbrev mid := mappingCocone (α f n)
 
+/-- The first morphism of the factorisation. -/
 noncomputable abbrev ι : K ⟶ mid f n := mappingCocone.lift (α f n) f 0 (by simp)
 
+/-- The second morphism of the factorisation. -/
 noncomputable abbrev π : mid f n ⟶ L := mappingCocone.fst (α f n)
 
 @[reassoc]
@@ -271,6 +315,7 @@ lemma quasiIsoAt_π (q : ℤ) (hq : q < n) : QuasiIsoAt (π f n) q := by
   rw [quasiIsoAt_iff_isIso_homologyMap]
   apply Balanced.isIso_of_mono_of_epi
 
+/-- The (exact) short complex `K.homology n ⟶ L.homology n ⟶ (S f n).homology n`. -/
 @[simps]
 noncomputable def homologyShortComplex : ShortComplex C :=
   ShortComplex.mk (homologyMap f n) (homologyMap (α f n) n) (by
@@ -382,7 +427,6 @@ lemma step [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   have := h₄ i (by lia)
   dsimp
   infer_instance
-
 
 /-- The category of factorisations of `f` as a monomorphism that is a quasi-isomorphism
 in degrees `≤ n` followed by a degreewise epimorphism with an injective kernel. -/
