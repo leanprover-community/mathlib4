@@ -391,6 +391,23 @@ lemma logHeight_sumElim_zero_eq {ι : Type*} (ι' : Type*) [Finite ι] [Finite �
     logHeight (Sum.elim x (0 : ι' → K)) = logHeight x := by
   simp only [logHeight_eq_log_mulHeight, mulHeight_sumElim_zero_eq]
 
+@[simp]
+lemma mulHeight_eq_one_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι → K) :
+    mulHeight x = 1 := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
+  have : Nonempty ι := .intro i
+  rw [← mulHeight_smul_eq_mulHeight x (inv_ne_zero hi)]
+  convert mulHeight_one
+  ext1 j
+  simpa [Subsingleton.elim j i] using inv_mul_cancel₀ hi
+
+@[simp]
+lemma logHeight_eq_zero_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι → K) :
+    logHeight x = 0 := by
+  simp [logHeight_eq_log_mulHeight]
+
 end Height
 
 /-!
