@@ -686,36 +686,22 @@ variable {G} {u v : V}
 lemma IsPath.exists_of_edges {u v a b : V} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath)
     (hep : s(a, b) ∈ p.edges) (heq : s(a, b) ∈ q.edges) (hl : 1 < p.length) :
     ∃ z, z ∈ p.support.tail ∧ z ∈ q.support.tail := by
-  obtain ⟨k₁, hl₁, h₁⟩ := p.getVert_of_edge hep
-  obtain ⟨k₂, hl₂, h₂⟩ := q.getVert_of_edge heq
-  cases h₁ with
-  | inl h₁ => cases h₂ with
-    | inl h₂ => grind [List.mem_tail, getVert_eq_support_getElem]
-    | inr h₂ =>
-      cases k₁
-      · use b
-        refine ⟨h₁.2 ▸ p.getVert_eq_support_getElem hl₁ ▸ List.mem_tail _ Nat.one_pos _, ?_⟩
-        cases k₂
-        · have h : v = p.getVert p.length := (getVert_length p).symm
-          rw [getVert_zero] at h₂
-          nth_rw 1 [← h₂.1, h₁.2] at h
-          rw [← hp.getVert_injOn hl.le (by simp) h] at hl
-          contradiction
-        · simp [List.mem_tail, h₂.1, q.getVert_eq_support_getElem hl₂.le]
-      · grind [List.mem_tail, getVert_eq_support_getElem]
-  | inr h₁ => cases h₂ with
-    | inl h₂ =>
-      cases k₁
-      · use a
-        refine ⟨h₁.2 ▸ p.getVert_eq_support_getElem hl₁ ▸ List.mem_tail _ Nat.one_pos _, ?_⟩
-        cases k₂
-        · obtain ⟨_, h₁⟩ := h₁
-          nth_rw 1 [h₂.1, getVert_zero, ← p.getVert_length] at h₁
-          rw [hp.getVert_injOn (by simp only [Set.mem_setOf_eq, Std.le_refl]) hl.le h₁] at hl
-          contradiction
-        · grind [List.mem_tail, getVert_eq_support_getElem]
-      · grind [List.mem_tail, getVert_eq_support_getElem]
-    | inr h₂ => grind [List.mem_tail, getVert_eq_support_getElem]
+  rcases show (a = v ∨ b = v) ∨ (a ≠ v ∧ b ≠ v) by grind with h' | h'
+  · wlog hh : a = v
+    · exact this (a := b) (b := a) hp (by grind) (by grind) hl h'.symm (by simpa [hh] using h')
+    have := (eq_penultimate_of_mem_edges hp (hh ▸ hep)).symm
+    refine ⟨b, ?_, ?_⟩
+    · grind [getVert_mem_tail_support, not_nil_iff_lt_length]
+    · grind [q.mem_support_iff.mp, mem_support_of_mem_edges, getVert_eq_end_iff]
+  · by_cases h'' : a = u
+    · refine ⟨b, ?_, ?_⟩
+      · cases p.mem_support_iff (w := b) |>.mp (by grind [snd_mem_support_of_mem_edges])
+        · grind [adj_of_mem_edges _ hep, SimpleGraph.irrefl]
+        · assumption
+      · grind [q.mem_support_iff (w := b), snd_mem_support_of_mem_edges]
+    · refine ⟨a, ?_, ?_⟩
+      · grind [p.mem_support_iff.mp, fst_mem_support_of_mem_edges]
+      · grind [q.mem_support_iff.mp, fst_mem_support_of_mem_edges]
 
 lemma isPath_append_isCycle {u v} {p : G.Walk u v} {q : G.Walk v u} (hp : p.IsPath) (hq : q.IsPath)
     (h : p.support.tail.Disjoint q.support.tail) (hn : 1 < p.length ⊔ q.length) :
