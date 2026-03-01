@@ -171,23 +171,23 @@ with the group elements as free group generators and relations given by
 `(FreeGroup.prod : FreeGroup G →* G).ker`. -/
 def freeGroupProdKerEquiv (G : Type*) [Group G] :
   PresentedGroup ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G)) ≃* G :=
-  let F : FreeGroup G →* G := FreeGroup.prod
-  let e₁ : FreeGroup G ⧸ MonoidHom.ker F ≃* G :=
-    QuotientGroup.quotientKerEquivOfRightInverse (φ := F) FreeGroup.of
+  let f : FreeGroup G →* G := FreeGroup.prod
+  let e₁ : FreeGroup G ⧸ MonoidHom.ker f ≃* G :=
+    QuotientGroup.quotientKerEquivOfRightInverse (φ := f) FreeGroup.of
       (fun g => FreeGroup.prod.of (x := g))
-  let e₂ : FreeGroup G ⧸ MonoidHom.ker F ≃*
-      PresentedGroup (MonoidHom.ker F : Set (FreeGroup G)) :=
+  let e₂ : FreeGroup G ⧸ MonoidHom.ker f ≃*
+      PresentedGroup (MonoidHom.ker f : Set (FreeGroup G)) :=
     QuotientGroup.quotientMulEquivOfEq (G := FreeGroup G)
-      (M := MonoidHom.ker F)
-      (N := Subgroup.normalClosure (MonoidHom.ker F : Set (FreeGroup G)))
-      (Subgroup.normalClosure_eq_self (MonoidHom.ker F)).symm
+      (M := MonoidHom.ker f)
+      (N := Subgroup.normalClosure (MonoidHom.ker f : Set (FreeGroup G)))
+      (Subgroup.normalClosure_eq_self (MonoidHom.ker f)).symm
   e₂.symm.trans e₁
 
 /-- Every group is isomorphic to some presented group. -/
 theorem exists_presentation (G : Type u) [Group G] :
     ∃ (α : Type u) (rels : Set (FreeGroup α)), Nonempty (G ≃* PresentedGroup rels) := by
-  exact ⟨G, ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G)),
-    ⟨(freeGroupProdKerEquiv G).symm⟩⟩
+  let rels : Set (FreeGroup G) := ((FreeGroup.prod : FreeGroup G →* G).ker : Set (FreeGroup G))
+  exact ⟨G, rels, ⟨(freeGroupProdKerEquiv G).symm⟩⟩
 
 instance (rels : Set (FreeGroup α)) : Inhabited (PresentedGroup rels) :=
   ⟨1⟩
