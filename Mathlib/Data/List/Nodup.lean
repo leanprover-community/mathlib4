@@ -240,6 +240,9 @@ theorem nodup_concat (l : List α) (u : α) : (l.concat u).Nodup ↔ u ∉ l ∧
   rw [← nodup_reverse]
   simp
 
+lemma Nodup.nodup_tail {l : List α} (h : Nodup l) : Nodup l.tail :=
+    (tail_sublist l).nodup h
+
 lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
     Nodup l.reverse.tail ↔ Nodup l.tail := by
   induction l with
