@@ -61,8 +61,7 @@ def ofTensorProductBil : AdicCompletion I R →ₗ[AdicCompletion I R] M →ₗ[
     simp
   map_smul' r x := by
     apply LinearMap.ext
-    #adaptation_note /-- On v4.29.0-rc2, we need to add `mul_smul` here. -/
-    simp [mul_smul]
+    simp
 
 @[simp]
 private lemma ofTensorProductBil_apply_apply (r : AdicCompletion I R) (x : M) :
