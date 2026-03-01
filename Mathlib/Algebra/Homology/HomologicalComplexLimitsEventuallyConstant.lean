@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
-# Limits of eventually constant systems
+# Limits of degreewise eventually constant systems
 
 Let `F : J ⥤ HomologicalComplex C c` be a functor from a cofiltered category
 such that for any degree `q`, the functor `F ⋙ eval C c q : J ⥤ C` is
