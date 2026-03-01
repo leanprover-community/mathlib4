@@ -6,6 +6,7 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 public import Mathlib.RingTheory.Flat.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
@@ -19,7 +20,7 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 universe w u v
 
-open IsLocalRing CategoryTheory
+open IsLocalRing CategoryTheory SmallObject
 
 variable (R : Type u) [CommRing R] [IsLocalRing R] (K : Type v) [Field K]
   [Algebra (ResidueField R) K]
@@ -64,6 +65,11 @@ instance : Category (FlatExtension R K) where
   comp f g := ⟨g.hom.comp f.hom, by
     rw [← f.comm, ← g.comm]
     simp [AlgHom.comp_toRingHom', ResidueField.map_comp, ← RingHom.comp_assoc]⟩
+
+def FlatExtension.SuccStruct : SuccStruct (FlatExtension.{w} R K) where
+  X₀ := sorry
+  succ := sorry
+  toSucc := sorry
 
 lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
     (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
