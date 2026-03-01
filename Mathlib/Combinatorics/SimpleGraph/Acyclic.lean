@@ -9,7 +9,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Metric
-public import Mathlib.Data.List.NodupCard
+public import Mathlib.Data.Finite.Card
 
 /-!
 
