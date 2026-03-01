@@ -98,6 +98,7 @@ section
 variable {M : CochainComplex C ℤ} {n m : ℤ}
   (α : Cochain K M m) (β : Cochain L M n) (h : m + 1 = n)
 
+/-- Constructor for cochains from `mappingCocone`. -/
 noncomputable def descCochain : Cochain (mappingCocone φ) M m :=
   (-m + 1).negOnePow • (mappingCone.descCochain φ α β h).leftShift (-1) m (by lia)
 
@@ -149,6 +150,7 @@ lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
 
 end
 
+/-- Constructor for cocycles from `mappingCocone`. -/
 @[simps]
 noncomputable def descCocycle {M : CochainComplex C ℤ} {n m : ℤ}
     (α : Cochain K M m) (β : Cocycle L M n) (h : m + 1 = n)
@@ -162,6 +164,7 @@ section
 variable {M : CochainComplex C ℤ} (α : Cochain K M 0) (β : Cocycle L M 1)
   (hαβ : δ 0 1 α + (Cochain.ofHom φ).comp β.1 (zero_add 1) = 0)
 
+/-- Constructor for morphisms from `mappingCocone`. -/
 noncomputable def desc : mappingCocone φ ⟶ M :=
   (descCocycle φ α β (zero_add 1) (by simpa)).homOf
 
@@ -187,6 +190,7 @@ section
 variable {M : CochainComplex C ℤ} {n m : ℤ}
   (α : Cochain M K n) (β : Cochain M L m) (h : m + 1 = n)
 
+/-- Constructor for cochains to `mappingCocone`. -/
 noncomputable def liftCochain : Cochain M (mappingCocone φ) n :=
   (mappingCone.liftCochain φ α β h).rightShift (-1) n (by lia)
 
@@ -235,6 +239,7 @@ lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
 
 end
 
+/-- Constructor for cocycles to `mappingCocone`. -/
 @[simps]
 noncomputable def liftCocycle {M : CochainComplex C ℤ} {n m : ℤ}
     (α : Cocycle M K n) (β : Cochain M L m) (h : m + 1 = n)
@@ -248,6 +253,7 @@ section
 variable {M : CochainComplex C ℤ} (α : M ⟶ K) (β : Cochain M L (-1))
   (hαβ : δ (-1) 0 β + Cochain.ofHom (α ≫ φ) = 0)
 
+/-- Constructor for morphisms to `mappingCocone`. -/
 noncomputable def lift : M ⟶ mappingCocone φ :=
   Cocycle.homOf (liftCocycle φ (Cocycle.ofHom α) β (by simp) (by simpa [← Cochain.ofHom_comp]))
 

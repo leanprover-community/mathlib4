@@ -51,6 +51,9 @@ variable {K L : CochainComplex C ℤ} (f : K ⟶ L)
 
 namespace cm5a_cof
 
+/-- Given a morphism `f : K ⟶ L`, this is the property of factorisations
+of `f` consisting of a monomorphism followed by a degreewise epimorphism
+with injective kernel. -/
 def cofFib : ObjectProperty (Factorisation f) :=
   fun F ↦ Mono F.ι ∧ degreewiseEpiWithInjectiveKernel F.π
 
@@ -58,40 +61,61 @@ instance (F : (cofFib f).FullSubcategory) : Mono F.obj.ι :=
   F.property.1
 
 variable {f} in
+/-- The property that the first morphism of the factorisation is
+a quasi-isomorphisms in degrees `≤ n`. -/
 def quasiIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, QuasiIsoAt F.obj.ι i
 
 variable {f} in
+/-- The property that the second morphism of the factorisation is
+an isomorphism in degrees `≤ n`. -/
 def isIsoLE (n : ℤ) : ObjectProperty (cofFib f).FullSubcategory :=
   fun F ↦ ∀ i ≤ n, IsIso (F.obj.π.f i)
 
 namespace step₁
 
+/-!
+This section provides the material in order to prove the lemma `step₁` below.
+Given a monomorphism `f : K ⟶ L` in `CochainComplex C ℤ` which is
+a quasi-isomorphism in degrees `≤ n₀` (with `n₀ + 1 = n₁`), we construct
+a factorization `ι f n₁ ≫ π K L n₁ = f` where the intermediate object
+`mid K L n₁` is `S K n₁ ⊞ L`, with `S K n₁` the single complex in degree `n₁`
+given by an injective object containing `K.opcycles n₁` (which is a cokernel of
+the differential `K.X n₀ ⟶ K.X n₁`).
+We obtain that `ι f n₁` is a quasi-isomorphism in degrees `≤ n₀`,
+that `π K L n₁` is an isomorphism in degrees `≤ n₀` and then
+that `ι f n₁` induces a monomorphism in homology in degree `n₀`. -/
+
 variable (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
 
 variable (K) in
+/-- The single complex in degree `n₁` that is given by an injective
+object containing `K.opcycles n₁`. -/
 noncomputable abbrev S : CochainComplex C ℤ :=
     ((single C _ n₁).obj (Injective.under (K.opcycles n₁)))
 
 variable (K L) in
-noncomputable abbrev mid := biprod (S K n₁) L
+/-- The intermediate object in the factorization. -/
+noncomputable abbrev mid := S K n₁ ⊞ L
 
 variable (K) in
+/-- The morphim `K ⟶ S K n₁` which in degree `n₁` corresponds to
+the composition `K.X n₁ ⟶ K.opcycles n₁ ⟶ Injective.under (K.opcycles n₁)`. -/
 noncomputable def i : K ⟶ S K n₁ := mkHomToSingle (K.pOpcycles n₁ ≫ Injective.ι _) (by simp)
 
+/-- The first morphism in the factorization. -/
 noncomputable abbrev ι : K ⟶ mid K L n₁ := biprod.lift (i K n₁) f
 
 variable (K L) in
+/-- The second morphism in the factorization. -/
 noncomputable abbrev π : mid K L n₁ ⟶ L := biprod.snd
 
 variable (K L) in
+/-- A section of `π K L n₁` -/
 noncomputable abbrev σ : L ⟶ mid K L n₁ := biprod.inr
 
 @[reassoc]
 lemma ι_π : ι f n₁ ≫ π K L n₁ = f := by simp
-
-@[reassoc]
-lemma σ_π : σ K L n₁ ≫ π K L n₁ = 𝟙 L := by simp
 
 instance [Mono f] : Mono (ι f n₁) := mono_of_mono_fac (ι_π f n₁)
 
@@ -359,10 +383,16 @@ lemma step [Mono f] (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁)
   dsimp
   infer_instance
 
+
+/-- The category of factorisations of `f` as a monomorphism that is a quasi-isomorphism
+in degrees `≤ n` followed by a degreewise epimorphism with an injective kernel. -/
 abbrev CofFibFactorizationQuasiIsoLE (n : ℤ) := (quasiIsoLE (f := f) n).FullSubcategory
 
 namespace CofFibFactorizationQuasiIsoLE
 
+/-- When `K` and `L` are both strictly `≥ n + 1`, which is the factorization `f ≫ 𝟙 L = f`
+of a monomorphism `f : K ⟶ L` as a monomorphism that is a quasi-isomorphism in degrees `≤ n`
+followed by a degreewise epimorphism with an injective kernel. -/
 def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
     CofFibFactorizationQuasiIsoLE f (n + (0 : ℕ)) :=
   .mk (.mk { mid := L, ι := f, π := 𝟙 L }
@@ -387,12 +417,17 @@ lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
       ObjectProperty.homMk { h := F₁₂.obj.π }, h₂⟩
 
 variable {f} in
+/-- Given `F : CofFibFactorizationQuasiIsoLE f n₀`, this is term in
+`CofFibFactorizationQuasiIsoLE f n₁` with `n₀ + 1 = n₁` that is given
+by the lemma `exists_next`. -/
 noncomputable def next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     CofFibFactorizationQuasiIsoLE f n₁ :=
   (F.exists_next n₁ hn₁).choose
 
 variable {f} in
+/-- Given `F : CofFibFactorizationQuasiIsoLE f n₀`, this is the morphism which relates
+the intermediate objects in the factorisations `F.next n₁ _` and `F`. -/
 noncomputable def fromNext {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
     (F.next n₁ hn₁).obj ⟶ F.obj :=
@@ -404,6 +439,9 @@ lemma isIso_fromNext_hom_h_f {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n
     IsIso ((F.fromNext n₁ hn₁).hom.h.f i) :=
   (F.exists_next n₁ hn₁).choose_spec.choose_spec i hi
 
+/-- Assuming `f : K ⟶ L` is a monomorphism between complexes that are strictly `≥ n₀ + 1`,
+this is a dependent sequence of terms in `CofFibFactorizationQuasiIsoLE f (n₀ + q)`
+for all `q : ℕ`. -/
 noncomputable def sequence
     [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)] :
     ∀ (q : ℕ), CofFibFactorizationQuasiIsoLE f (n₀ + q)
@@ -412,6 +450,7 @@ noncomputable def sequence
 
 variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
 
+/-- The morphism `(sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj` given by `fromNext`. -/
 noncomputable def toSequenceNext (q : ℕ) :
     (sequence f n₀ (q + 1)).obj ⟶ (sequence f n₀ q).obj :=
   (sequence f n₀ q).fromNext _ (by lia)
@@ -420,6 +459,9 @@ end CofFibFactorizationQuasiIsoLE
 
 variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀ + 1)]
 
+/-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
+this is a projective system in `(cofFib f).FullSubcategory` given by the
+sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
 noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
   (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
 
@@ -443,6 +485,9 @@ lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ)
   rw [Functor.ofSequence_map_homOfLE_succ]
   exact CofFibFactorizationQuasiIsoLE.isIso_fromNext_hom_h_f _ _ _ _ hi
 
+/-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
+this is a projective system in `CochainComplex C ℤ`, whose limit shall give
+the intermediate object in the factorization lemma `cm5a_cof`. -/
 noncomputable abbrev cochainComplexFunctor : ℕᵒᵖ ⥤ CochainComplex C ℤ :=
   functor f n₀ ⋙ ObjectProperty.ι _ ⋙ Factorisation.forget
 
@@ -453,8 +498,13 @@ lemma isEventuallyConstantTo (i : ℤ) (q : ℕ) (h : i ≤ n₀ + q) :
 instance (i : ℤ) : HasLimit (cochainComplexFunctor f n₀ ⋙ eval _ _ i) :=
   (isEventuallyConstantTo f n₀ i (n₀ - i).natAbs (by lia)).hasLimit
 
+/-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
+this is the limit of the projective system
+`cochainComplexFunctor f n₀ : Nᵒᵖ ⥤ CochainComplex C ℤ`: this is the
+intermediate object in the factorization lemma `cm5a_cof`. -/
 noncomputable abbrev mid : CochainComplex C ℤ := limit (cochainComplexFunctor f n₀)
 
+/-- The projections from `mid f n₀`. -/
 noncomputable def midπ (q : ℕ) : mid f n₀ ⟶ ((functor f n₀).obj (op q)).obj.mid :=
   limit.π _ (op q)
 
@@ -483,12 +533,9 @@ lemma quasiIsoAt_midπ (q : ℕ) (i : ℤ) (h : i + 1 ≤ n₀ + q) :
     (isEventuallyConstantTo f n₀ _ _ (by lia))
     (isEventuallyConstantTo f n₀ _ _ (by lia))
 
-@[simps]
-noncomputable def cone : Cone (cochainComplexFunctor f n₀) where
-  pt := K
-  π.app q := ((functor f n₀).obj q).obj.ι
-
-noncomputable def ι : K ⟶ mid f n₀ := limit.lift _ (cone f n₀)
+/-- The first morphism `ι f n₀ : K ⟶ mid f n₀` of the factorization lemma `cm5a_cof`. -/
+noncomputable def ι : K ⟶ mid f n₀ :=
+  limit.lift _ (Cone.mk _ { app q := ((functor f n₀).obj q).obj.ι })
 
 @[reassoc (attr := simp)]
 lemma ι_midπ (q : ℕ) : ι f n₀ ≫ midπ f n₀ q = ((functor f n₀).obj (op q)).obj.ι := by
@@ -500,6 +547,7 @@ lemma ι_midπ_f (q : ℕ) (i : ℤ) : (ι f n₀).f i ≫ (midπ f n₀ q).f i 
   rw [← ι_midπ]
   dsimp
 
+/-- The second morphism `π f n₀ : mid f n₀ ⟶ L` of the factorization lemma `cm5a_cof`. -/
 noncomputable def π : mid f n₀ ⟶ L := midπ f n₀ 0 ≫ ((functor f n₀).obj (op 0)).obj.π
 
 @[reassoc (attr := simp)]
@@ -554,7 +602,7 @@ public lemma cm5a_cof (n : ℤ) [K.IsStrictlyGE n] [L.IsStrictlyGE n] [Mono f] :
   exact ⟨mid f n, inferInstance, ι f n, π f n, inferInstance,
     inferInstance, degreewiseEpiWithInjectiveKernel_π f n, ι_π f n⟩
 
-lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
+public lemma cm5a (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE n] :
     ∃ (K' : CochainComplex C ℤ) (_hK' : K'.IsStrictlyGE n) (ι : K ⟶ K') (π : K' ⟶ L),
       Mono ι ∧ QuasiIso ι ∧ degreewiseEpiWithInjectiveKernel π ∧ ι ≫ π = f := by
   have : K.IsStrictlyGE n := K.isStrictlyGE_of_ge n (n + 1) (by lia)
