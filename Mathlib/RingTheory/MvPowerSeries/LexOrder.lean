@@ -91,16 +91,14 @@ theorem coeff_eq_zero_of_lt_lexOrder {φ : MvPowerSeries σ R} {d : σ →₀ �
   · rcases lexOrder_def_of_ne_zero hφ with ⟨ne, hφ'⟩
     rw [hφ', WithTop.coe_lt_coe] at h
     by_contra h'
-    exact WellFounded.not_lt_min _ (toLex '' φ.support) ne (Set.mem_image_equiv.mpr h') h
+    exact WellFounded.not_lt_min _ (toLex '' φ.support) (Set.mem_image_equiv.mpr h') h
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lexOrder_le_of_coeff_ne_zero {φ : MvPowerSeries σ R} {d : σ →₀ ℕ}
     (h : coeff d φ ≠ 0) : lexOrder φ ≤ toLex d := by
   rw [← not_lt]
   intro h'
   exact h (coeff_eq_zero_of_lt_lexOrder h')
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_lexOrder_iff {φ : MvPowerSeries σ R} {w : WithTop (Lex (σ →₀ ℕ))} :
     w ≤ lexOrder φ ↔ (∀ (d : σ →₀ ℕ) (_ : toLex d < w), coeff d φ = 0) := by
   constructor
