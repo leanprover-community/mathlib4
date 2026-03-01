@@ -52,6 +52,7 @@ theorem ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
 theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
   range_eq_top.2 fun x => ⟨x, hf x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl p (ker f) := by
   constructor
   · rw [disjoint_iff_inf_le]
@@ -70,6 +71,7 @@ namespace Submodule
 
 open LinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `q` is a complement of `p`, then `M/p ≃ q`. -/
 def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
   LinearEquiv.symm <|
@@ -92,6 +94,7 @@ theorem mk_quotientEquivOfIsCompl_apply (h : IsCompl p q) (x : E ⧸ p) :
     (Quotient.mk (quotientEquivOfIsCompl p q h x) : E ⧸ p) = x :=
   (quotientEquivOfIsCompl p q h).symm_apply_apply x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. -/
 def prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃ₗ[R] E := by
   apply LinearEquiv.ofBijective (p.subtype.coprod q.subtype)

@@ -37,7 +37,7 @@ instance LT' : LT String :=
 
 /-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
 instance decidableLT' : DecidableLT String := by
-  simp only [DecidableLT, LT']
+  simp +instances only [DecidableLT, LT']
   infer_instance -- short-circuit type class inference
 
 /-- Induction on `String.ltb`. -/
@@ -125,7 +125,7 @@ instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
 instance decidableLE : DecidableLE String := by
-  simp only [DecidableLE, LE]
+  simp +instances only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
 
 @[simp]
@@ -169,7 +169,7 @@ instance : LinearOrder String where
   toDecidableEq := inferInstance
   toDecidableLT := String.decidableLT'
   compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt]
+    simp +instances only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt]
     split_ifs <;>
     simp only [List.lt_iff_lex_lt] at *
 

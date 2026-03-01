@@ -533,6 +533,7 @@ theorem iSupIndep_of_dfinsuppSumAddHom_injective' (p : ι → AddSubgroup N)
   rw [← iSupIndep_map_orderIso_iff (AddSubgroup.toIntSubmodule : AddSubgroup N ≃o _)]
   exact iSupIndep_of_dfinsupp_lsum_injective _ h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map out of a direct sum of a family of submodules is injective when the submodules
 are `iSupIndep`.
 

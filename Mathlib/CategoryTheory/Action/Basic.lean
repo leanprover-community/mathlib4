@@ -200,6 +200,7 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
 def unitIso : 𝟭 (Action V G) ≅ functor ⋙ inverse :=
   NatIso.ofComponents fun M => mkIso (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps!]
 def counitIso : inverse ⋙ functor ≅ 𝟭 (SingleObj G ⥤ V) :=
@@ -291,10 +292,12 @@ noncomputable instance preservesColimits_forget [HasColimits V] :
 -- TODO construct categorical images?
 end Forget
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
     N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
       rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Actions/representations of the trivial monoid are just objects in the ambient category. -/
 def actionPUnitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
@@ -369,6 +372,7 @@ instance : (res V f).Faithful where
     ext
     rw [← res_map_hom _ f g₁, ← res_map_hom _ f g₂, h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor from `Action V H` to `Action V G` induced by a monoid homomorphism
 `f : G →* H` is full if `f` is surjective. -/
 lemma full_res (f_surj : Function.Surjective f) : (res V f).Full where
@@ -432,6 +436,7 @@ def mapActionComp {T : Type*} [Category* T] (F : V ⥤ W) (F' : W ⥤ T) :
     (F ⋙ F').mapAction G ≅ F.mapAction G ⋙ F'.mapAction G :=
   NatIso.ofComponents (fun X ↦ Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Functor.mapAction` preserves isomorphisms of functors. -/
 @[simps! hom inv]
 def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :
@@ -440,6 +445,7 @@ def mapActionCongr {F F' : V ⥤ W} (e : F ≅ F') :
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories induces an equivalence of
 the categories of `G`-actions within those categories. -/
 @[simps functor inverse]

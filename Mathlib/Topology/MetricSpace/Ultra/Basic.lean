@@ -145,6 +145,7 @@ lemma closedBall_eq_or_disjoint :
   have h₂ := closedBall_eq_of_mem <| Set.inter_subset_right h.some_mem
   exact h₁.trans h₂.symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isOpen_closedBall {r : ℝ} (hr : r ≠ 0) : IsOpen (closedBall x r) := by
   cases lt_or_gt_of_ne hr with
   | inl h =>

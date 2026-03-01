@@ -70,6 +70,7 @@ open Bornology
 def BoxIntegral.hasIntegralVertices (B : Box ι) : Prop :=
   ∃ l u : ι → ℤ, (∀ i, B.lower i = l i) ∧ (∀ i, B.upper i = u i)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any bounded set is contained in a `BoxIntegral.Box` with integral vertices. -/
 theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι → ℝ)}
     (h : IsBounded s) :
@@ -164,6 +165,7 @@ theorem mem_box_iff_index {x : ι → ℝ} {ν : ι → ℤ} :
 theorem index_tag (ν : ι → ℤ) :
     index n (tag n ν) = ν := mem_box_iff_index.mp (tag_mem n ν)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {n} in
 theorem disjoint {ν ν' : ι → ℤ} :
     ν ≠ ν' ↔ Disjoint (box n ν).toSet (box n ν').toSet := by
