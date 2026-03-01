@@ -123,7 +123,7 @@ instance isIso_indexCone_lift :
             π_app C (· ∈ Q₁) ⁻¹' {a.val (op Q₁)} ⊇
             π_app C (· ∈ Q₂) ⁻¹' {a.val (op Q₂)} := by
           intro J K h x hx
-          simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx ⊢
+          simp only [Set.mem_preimage] at hx ⊢
           rw [← map_comp_π_app C h, Function.comp_apply,
             hx, ← a.prop (homOfLE h).op]
           rfl

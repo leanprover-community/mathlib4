@@ -402,6 +402,7 @@ lemma isClosed_range_iff_antilipschitz_of_injective (f : E →L[𝕜] F)
   choose K hf' using h
   exact hf'.isClosed_range f.uniformContinuous
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A choice of continuous left inverse of an injective continuous linear map with closed range:
 this is `LinearMap.leftInverse` as a continuous linear map;
 by injectivity, the junk value of `leftInverse` never matters, and continuity of the inverse
