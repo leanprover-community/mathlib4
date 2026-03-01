@@ -408,3 +408,12 @@ lemma exists_nat_pos_inv_lt {b : ℝ} (hb : 0 < b) :
   rwa [inv_lt_comm₀ this hb]
 
 end Real
+
+namespace AbsoluteValue
+
+variable {R : Type*} [Semiring R]
+
+lemma iSup_abv_nonneg {ι : Type*} (v : AbsoluteValue R ℝ) {x : ι → R} : 0 ≤ ⨆ i, v (x i) :=
+  Real.iSup_nonneg fun j ↦ by positivity
+
+end AbsoluteValue
