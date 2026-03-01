@@ -85,7 +85,7 @@ namespace Hindman
 
 /-- `FS a` is the set of finite sums in `a`, i.e. `m ∈ FS a` if `m` is the sum of a nonempty
 subsequence of `a`. We give a direct inductive definition instead of talking about subsequences. -/
-inductive FS {M} [AddSemigroup M] : Stream' M → Set M
+inductive FS {M} [AddSemigroup M] : Stream' M → M → Prop
   | head' (a : Stream' M) : FS a a.head
   | tail' (a : Stream' M) (m : M) (h : FS a.tail m) : FS a m
   | cons' (a : Stream' M) (m : M) (h : FS a.tail m) : FS a (a.head + m)
@@ -93,7 +93,7 @@ inductive FS {M} [AddSemigroup M] : Stream' M → Set M
 /-- `FP a` is the set of finite products in `a`, i.e. `m ∈ FP a` if `m` is the product of a nonempty
 subsequence of `a`. We give a direct inductive definition instead of talking about subsequences. -/
 @[to_additive FS]
-inductive FP {M} [Semigroup M] : Stream' M → Set M
+inductive FP {M} [Semigroup M] : Stream' M → M → Prop
   | head' (a : Stream' M) : FP a a.head
   | tail' (a : Stream' M) (m : M) (h : FP a.tail m) : FP a m
   | cons' (a : Stream' M) (m : M) (h : FP a.tail m) : FP a (a.head * m)

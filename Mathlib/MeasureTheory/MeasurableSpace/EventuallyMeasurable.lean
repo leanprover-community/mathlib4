@@ -41,12 +41,12 @@ variable {α : Type*} (m : MeasurableSpace α) {s t : Set α}
 /-- The `MeasurableSpace` of sets which are measurable with respect to a given σ-algebra `m`
 on `α`, modulo a given σ-filter `l` on `α`. -/
 def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
-  MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
+  MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠˢ[l] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
   measurableSet_compl := fun _ ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
   measurableSet_iUnion s hs := by
     choose t ht hts using hs
-    exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, EventuallyEq.countable_iUnion hts⟩
+    exact ⟨⋃ i, t i, MeasurableSet.iUnion ht, .countable_iUnion hts⟩
 
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
@@ -65,12 +65,12 @@ theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet
 
 theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasurableSet m l s :=
-  ⟨univ, MeasurableSet.univ, eventuallyEq_univ.mpr hs⟩
+  ⟨univ, MeasurableSet.univ, eventuallyEqSet_univ.mpr hs⟩
 
 /-- A set which is `EventuallyEq` to an `EventuallyMeasurableSet`
 is an `EventuallyMeasurableSet`. -/
 theorem EventuallyMeasurableSet.congr
-    (ht : EventuallyMeasurableSet m l t) (hst : s =ᶠ[l] t) : EventuallyMeasurableSet m l s := by
+    (ht : EventuallyMeasurableSet m l t) (hst : s =ᶠˢ[l] t) : EventuallyMeasurableSet m l s := by
   rcases ht with ⟨t', ht', htt'⟩
   exact ⟨t', ht', hst.trans htt'⟩
 

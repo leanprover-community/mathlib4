@@ -51,22 +51,26 @@ variable (D : DescentAux A B)
 variable (R)
 
 /-- (Implementation detail): The finite type `R`-algebra. -/
-def subalgebra (D : DescentAux A B) : Subalgebra R A :=
+noncomputable def subalgebra (D : DescentAux A B) : Subalgebra R A :=
   Algebra.adjoin R
     (D.P.coeffs ∪
       ((⋃ i, (D.h i).coeffs) ∪
        (⋃ i, ⋃ x ∈ (D.q i).coeffs, x.coeffs) ∪
        (⋃ i, ⋃ x ∈ (D.p i).coeffs, x.coeffs)) : Set A)
 
-instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+noncomputable instance : CommRing (D.subalgebra R) :=
+  inferInstanceAs <| CommRing (Algebra.adjoin _ _)
 
-instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
+noncomputable instance algebra₀ : Algebra R (D.subalgebra R) :=
+  inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
 
 set_option backward.isDefEq.respectTransparency false in
-instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
+noncomputable instance algebra₁ : Algebra (D.subalgebra R) A :=
+  inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
 
 set_option backward.isDefEq.respectTransparency false in
-instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
+noncomputable instance algebra₂ : Algebra (D.subalgebra R) B :=
+  inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower (D.subalgebra R) A B :=

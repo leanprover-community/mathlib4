@@ -1096,7 +1096,7 @@ theorem EventuallyEqSet.diff {s t s' t' : Set α} {l : Filter α} (h : s =ᶠˢ[
   h.inter h'.compl
 
 @[gcongr]
-protected theorem EventuallyEq.symmDiff {s t s' t' : Set α} {l : Filter α}
+protected theorem EventuallyEqSet.symmDiff {s t s' t' : Set α} {l : Filter α}
     (h : s =ᶠˢ[l] t) (h' : s' =ᶠˢ[l] t') : s ∆ s' =ᶠˢ[l] t ∆ t' :=
   (h.diff h').union (h'.diff h)
 

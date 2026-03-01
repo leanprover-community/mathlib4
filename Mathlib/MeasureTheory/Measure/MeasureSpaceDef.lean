@@ -324,7 +324,7 @@ If `s` is a null measurable set, then
 we also have `t =ᵐ[μ] s`, see `NullMeasurableSet.toMeasurable_ae_eq`.
 This notion is sometimes called a "measurable hull" in the literature. -/
 irreducible_def toMeasurable (μ : Measure α) (s : Set α) : Set α :=
-  if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐ[μ] s then h.choose else
+  if h : ∃ t, t ⊇ s ∧ MeasurableSet t ∧ t =ᵐˢ[μ] s then h.choose else
     if h' : ∃ t, t ⊇ s ∧ MeasurableSet t ∧
       ∀ u, MeasurableSet u → μ (t ∩ u) = μ (s ∩ u) then h'.choose
     else (exists_measurable_superset μ s).choose
@@ -333,8 +333,8 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
   rw [toMeasurable_def]; split_ifs with hs h's
   exacts [hs.choose_spec.1, h's.choose_spec.1, (exists_measurable_superset μ s).choose_spec.1]
 
-theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
-  HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _)
+theorem ae_le_toMeasurable : s ⊆ᵐ[μ] toMeasurable μ s :=
+  (subset_toMeasurable _ _).eventually
 
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
