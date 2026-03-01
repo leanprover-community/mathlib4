@@ -12,9 +12,9 @@ public import Mathlib.LinearAlgebra.Complex.Module
 /-!
 # Twisted product module by a ring homomorphism
 
-`σ : R →+* S`
-
-TODO cf Prod.lean for module
+For `Module R E` and `Module S F` and `σ : R →+* S`, we define the `R`-module structure
+on `E × F` given by `s • ⟨x, y⟩ := ⟨s • x, σ s • y⟩`. As an example, this gives a natural `ℂ`-linear
+space structure on the graph of antilinear operator.
 -/
 
 @[expose] public section
@@ -23,52 +23,52 @@ open Complex
 
 section
 
-set_option linter.unusedVariables false
-/-- A `TwistedModuleProd σ E F` or `E ×[σ] F` is a module structure on the product `E × F` with
+set_option linter.unusedVariables false in
+/-- A `E ×[σ] F` or `E ×[σ] F` is a module structure on the product `E × F` with
 the `SMul` given by `s • ⟨x, y⟩ := ⟨s • x, σ s • y⟩`. -/
 @[ext]
-structure TwistedModuleProd {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
+structure TwistedProdModule {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
     [AddCommGroup E] [Module R E] (F : Type*) [AddCommGroup F] [Module S F] where
   /-- The first element of a pair. -/
   fst : E
   /-- The second element of a pair. -/
   snd : F
 
-@[inherit_doc] notation:25 E " ×[" σ:25 "] " F:0 => TwistedModuleProd σ E F
+@[inherit_doc] notation:25 E " ×[" σ:25 "] " F:0 => TwistedProdModule σ E F
 
-namespace TwistedModuleProd
+namespace TwistedProdModule
 
 variable {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) {E : Type*} [AddCommGroup E]
   [Module R E] {F : Type*} [AddCommGroup F] [Module S F]
 
-instance : Add (TwistedModuleProd σ E F) where
+instance : Add (E ×[σ] F) where
   add x y := mk (x.fst + y.fst) (x.snd + y.snd)
 
 @[simp]
-lemma add_fst (x y : TwistedModuleProd σ E F) : (x + y).fst = x.fst + y.fst := rfl
+lemma add_fst (x y : E ×[σ] F) : (x + y).fst = x.fst + y.fst := rfl
 
 @[simp]
-lemma add_snd (x y : TwistedModuleProd σ E F) : (x + y).snd = x.snd + y.snd := rfl
+lemma add_snd (x y : E ×[σ] F) : (x + y).snd = x.snd + y.snd := rfl
 
-instance : Neg (TwistedModuleProd σ E F) where
+instance : Neg (E ×[σ] F) where
   neg x := mk (-x.fst) (-x.snd)
 
 @[simp]
-lemma neg_fst (x : TwistedModuleProd σ E F) : (-x).fst = -x.fst := rfl
+lemma neg_fst (x : E ×[σ] F) : (-x).fst = -x.fst := rfl
 
 @[simp]
-lemma neg_snd (x : TwistedModuleProd σ E F) : (-x).snd = -x.snd := rfl
+lemma neg_snd (x : E ×[σ] F) : (-x).snd = -x.snd := rfl
 
-instance : Zero (TwistedModuleProd σ E F) where
+instance : Zero (E ×[σ] F) where
   zero := mk 0 0
 
 @[simp]
-lemma zero_fst : (0 : TwistedModuleProd σ E F).fst = 0 := rfl
+lemma zero_fst : (0 : E ×[σ] F).fst = 0 := rfl
 
 @[simp]
-lemma zero_snd : (0 : TwistedModuleProd σ E F).snd = 0 := rfl
+lemma zero_snd : (0 : E ×[σ] F).snd = 0 := rfl
 
-instance : AddCommGroup (TwistedModuleProd σ E F) where
+instance : AddCommGroup (E ×[σ] F) where
   add_assoc x y z := by ext <;> simpa using add_assoc _ _ _
   zero_add x := by ext <;> simp
   add_zero x := by ext <;> simp
@@ -82,16 +82,16 @@ instance : AddCommGroup (TwistedModuleProd σ E F) where
   nsmul_succ n x := by ext <;> simp [add_smul]
   zsmul_neg' n x := by ext <;> simp [add_smul]
 
-instance : SMul R (TwistedModuleProd σ E F) where
+instance : SMul R (E ×[σ] F) where
   smul s x := mk (s • x.fst) (σ s • x.snd)
 
 @[simp]
-lemma smul_fst (s : R) (x : TwistedModuleProd σ E F) : (s • x).fst = s • x.fst := rfl
+lemma smul_fst (s : R) (x : E ×[σ] F) : (s • x).fst = s • x.fst := rfl
 
 @[simp]
-lemma smul_snd (s : R) (x : TwistedModuleProd σ E F) : (s • x).snd = σ s • x.snd := rfl
+lemma smul_snd (s : R) (x : E ×[σ] F) : (s • x).snd = σ s • x.snd := rfl
 
-instance : Module R (TwistedModuleProd σ E F) where
+instance : Module R (E ×[σ] F) where
   mul_smul s t x := by ext <;> simp [mul_smul]
   one_smul x := by ext <;> simp
   smul_zero s := by ext <;> simp
@@ -99,29 +99,21 @@ instance : Module R (TwistedModuleProd σ E F) where
   add_smul s t x := by ext <;> simp [add_smul]
   zero_smul x := by ext <;> simp
 
-end TwistedModuleProd
+end TwistedProdModule
 
 end
 
 section
 
-open TwistedModuleProd
+open Complex TwistedProdModule
 
 -- the desired result. the second component is twisted.
 example :
-    Complex.I • (mk 0 1 : ℂ ×[starRingEnd ℂ] ℂ) = (mk 0 (-Complex.I) : ℂ ×[starRingEnd ℂ] ℂ) := by
-  ext
-  · simp
-  · simp
+    I • (mk 0 1 : ℂ ×[starRingEnd ℂ] ℂ) = (mk 0 (-I) : ℂ ×[starRingEnd ℂ] ℂ) := by
+  ext <;> simp
 
 -- cf. the usual `Prod` structure.
-example :
-  Complex.I • (⟨0, 1⟩ : ℂ × ℂ)
-  = (⟨0, Complex.I⟩ : ℂ × ℂ)
-  := by
-  ext
-  · simp
-  · simp
+example : I • (⟨0, 1⟩ : ℂ × ℂ) = (⟨0, I⟩ : ℂ × ℂ) := by ext <;> simp
 
 end
 
