@@ -394,7 +394,7 @@ product chart with a local straightening homeomorphism `(h, h') ↦ (h, I'.symm(
 I'(ψ(f(φ.symm h)))))`. In this straightened chart, the graph map looks like `u ↦ (u, 0)`,
 which is the defining property of an immersion with complement `E'`.
 
-To derive that the inclusion `Subtype.val : s.graphOn f → M × M'` is an immersion (for `s`
+TODO: To derive that the inclusion `Subtype.val : s.graphOn f → M × M'` is an immersion (for `s`
 with a compatible charted space), compose with the graph-domain homeomorphism once
 `IsImmersion.comp` is available. -/
 theorem isImmersion_graphMap {f : M → M'}
