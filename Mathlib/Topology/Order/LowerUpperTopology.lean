@@ -274,7 +274,7 @@ The closure of a singleton `{a}` in the lower topology is the left-closed right-
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Ici a :=
-  Subset.antisymm ((closure_minimal fun _ h => h.ge) <| isClosed_Ici) <|
+  Subset.antisymm ((closure_minimal fun _ h => h.out.ge) <| isClosed_Ici) <|
     (isUpperSet_of_isClosed isClosed_closure).Ici_subset <| subset_closure rfl
 
 protected theorem isTopologicalBasis : IsTopologicalBasis (lowerBasis α) := by

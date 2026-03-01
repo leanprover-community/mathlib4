@@ -162,7 +162,6 @@ private theorem primesOverSpanEquivMonicFactorsModAux_symm_apply (A : ℤ[X]) {Q
 
 variable [NumberField K]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /--
@@ -178,7 +177,6 @@ def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
       (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans <|
         (primesOverSpanEquivMonicFactorsModAux _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
     ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
@@ -186,9 +184,8 @@ theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ
         inferInstance (by simp [NeZero.ne p]) (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm
         ⟨Q.map (Int.quotientSpanNatEquivZMod p).symm, by
           rw [← primesOverSpanEquivMonicFactorsModAux_symm_apply]
-          exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).coe_prop⟩ := rfl
+          exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).prop⟩ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
 `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is spanned by `p` and `Q(θ)`.
@@ -232,7 +229,6 @@ theorem inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply' (hp : ¬ p ∣
   obtain ⟨S, rfl⟩ := (map_surjective _ (ZMod.ringHom_surjective (Int.castRingHom (ZMod p)))) Q
   rw [inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
 `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the multiplicity of `Q mod p` in

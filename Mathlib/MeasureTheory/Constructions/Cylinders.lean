@@ -126,7 +126,9 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
       convert ht
       simp only [cast_heq]
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
-  · grind
+  · #adaptation_note /-- this branch was `by grind` -/
+    ext x
+    simp [← h]
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :

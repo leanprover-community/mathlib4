@@ -212,8 +212,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
   have Vct : (V ∩ C).Countable := by
     simp only [V, iUnion_inter]
     apply Countable.biUnion
-    · exact Countable.mono inter_subset_left bct
-    · exact inter_subset_right
+    · exact bct.mono (sep_subset _ _)
+    · exact sep_subset_setOf _ _
   refine ⟨V ∩ C, D, Vct, ⟨?_, ?_⟩, ?_⟩
   · refine hclosed.sdiff (isOpen_biUnion fun _ ↦ ?_)
     exact fun ⟨Ub, _⟩ ↦ IsTopologicalBasis.isOpen bbasis Ub
@@ -234,7 +234,8 @@ theorem exists_countable_union_perfect_of_isClosed [SecondCountableTopology α]
       apply xD.2
       exact mem_biUnion this xU
     by_contra! h
-    exact absurd (Countable.mono h (Set.countable_singleton _)) this
+    rw [← subset_singleton_iff] at h
+    exact this (Countable.mono h (Set.countable_singleton x))
   · rw [inter_comm, inter_union_diff]
 
 /-- Any uncountable closed set in a second countable space contains a nonempty perfect subset. -/

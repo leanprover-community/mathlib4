@@ -40,6 +40,7 @@ variable {α : Type u}
 
 /-- A set is a collection of elements of some type `α`. -/
 structure Set (α : Type u) where
+  protected mk ::
   /-- Membership in a set -/
   Mem : α → Prop
 
@@ -49,7 +50,7 @@ def setOf (p : α → Prop) : Set α := ⟨p⟩
 namespace Set
 
 @[simp]
-theorem mk_eq_setOf (p : α → Prop) : mk p = setOf p := rfl
+theorem mk_eq_setOf (p : α → Prop) : .mk p = setOf p := rfl
 
 instance : Membership α (Set α) :=
   ⟨Set.Mem⟩

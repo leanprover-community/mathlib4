@@ -32,7 +32,7 @@ theorem mem_nhdsKer_singleton : x ∈ nhdsKer {y} ↔ x ⤳ y := by
   rw [nhdsKer_singleton_eq_ker_nhds, ker_nhds_eq_specializes, mem_setOf]
 
 lemma nhdsKer_def (s : Set X) : nhdsKer s = ⋂₀ {t : Set X | IsOpen t ∧ s ⊆ t} :=
-  (hasBasis_nhdsSet _).ker.trans sInter_eq_biInter.symm
+  (hasBasis_nhdsSet _).ker.trans <| .symm sInter_eq_biInter
 
 lemma mem_nhdsKer : x ∈ nhdsKer s ↔ ∀ U, IsOpen U → s ⊆ U → x ∈ U := by simp [nhdsKer_def]
 

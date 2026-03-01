@@ -353,8 +353,8 @@ theorem tendsto_tprod_compl_atTop_one (f : α → G) :
   by_cases H : Multipliable f
   · intro e he
     obtain ⟨s, hs⟩ := H.tprod_vanishing he
-    rw [Filter.mem_map, mem_atTop_sets]
-    exact ⟨s, fun t hts ↦ hs _ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
+    simp only [Filter.mem_map, mem_atTop_sets, Set.mem_preimage]
+    exact ⟨s, fun t hts ↦ hs tᶜ <| Set.disjoint_left.mpr fun a ha has ↦ ha (hts has)⟩
   · refine tendsto_const_nhds.congr fun _ ↦ (tprod_eq_one_of_not_multipliable ?_).symm
     rwa [Finset.multipliable_compl_iff]
 

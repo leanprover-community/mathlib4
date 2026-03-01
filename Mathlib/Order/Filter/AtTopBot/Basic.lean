@@ -166,7 +166,8 @@ variable [Preorder α] [IsDirectedOrder α] {F : Filter β} {u : α → β}
 
 theorem inf_map_atTop_neBot_iff [Nonempty α] :
     NeBot (F ⊓ map u atTop) ↔ ∀ U ∈ F, ∀ N, ∃ n ≥ N, u n ∈ U := by
-  simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop]; rfl
+  simp_rw [inf_neBot_iff_frequently_left, frequently_map, frequently_atTop,
+    Set.mem_surjective.forall, eventually_mem_set]
 
 variable [Preorder β]
 

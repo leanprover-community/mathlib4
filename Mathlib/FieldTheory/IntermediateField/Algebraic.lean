@@ -108,7 +108,6 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
-set_option backward.isDefEq.respectTransparency false in
 lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
     Module.finrank E L < Module.finrank F L := by
   letI := (IntermediateField.inclusion H.le).toAlgebra
@@ -117,13 +116,11 @@ lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
   · exact Module.finrank_top_le_finrank_of_isScalarTower _ _ _
   · exact .symm (mt (eq_of_le_of_finrank_eq' H.le) H.ne)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
   let _ := (inclusion h).toRingHom.toAlgebra
   have : IsScalarTower F E L := IsScalarTower.of_algebraMap_eq fun x ↦ rfl
   exact Dvd.intro_left (finrank F E) (finrank_mul_finrank F E L)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finrank_dvd_of_le_right (h : F ≤ E) : finrank K F ∣ finrank K E := by
   let _ := (inclusion h).toRingHom.toAlgebra
   exact Dvd.intro (finrank F E) (finrank_mul_finrank K F E)
@@ -134,7 +131,6 @@ theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E 
 theorem finrank_le_of_le_right [FiniteDimensional K E] (h : F ≤ E) : finrank K F ≤ finrank K E :=
   Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_right h)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Mapping a finite-dimensional intermediate field along an algebra equivalence gives
 a finite-dimensional intermediate field. -/
 instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :

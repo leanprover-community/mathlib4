@@ -162,9 +162,9 @@ protected def mkOfClosure (s : Set (Set α)) (hs : { u | GenerateOpen s u } = s)
   isOpen_inter := hs ▸ TopologicalSpace.GenerateOpen.inter
   isOpen_sUnion := hs ▸ TopologicalSpace.GenerateOpen.sUnion
 
-theorem mkOfClosure_sets {s : Set (Set α)} {hs : { u | GenerateOpen s u } = s} :
+theorem mkOfClosure_sets {s : Set (Set α)} {hs : {u | GenerateOpen s u} = s} :
     TopologicalSpace.mkOfClosure s hs = generateFrom s :=
-  TopologicalSpace.ext hs.symm
+  TopologicalSpace.ext (by ext U; exact Set.ext_iff.mp hs.symm U)
 
 theorem gc_generateFrom (α) :
     GaloisConnection (fun t : TopologicalSpace α => OrderDual.toDual { s | IsOpen[t] s })

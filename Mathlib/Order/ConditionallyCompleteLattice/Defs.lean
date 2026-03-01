@@ -106,7 +106,7 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
     sInf := fun s => if hs : s.Nonempty then h.wf.min s hs else ⊥
     csInf_le := fun s a _ has => by
       have s_ne : s.Nonempty := ⟨a, has⟩
-      simpa [s_ne] using not_lt.1 (h.wf.not_lt_min s s_ne has)
+      simpa [s_ne] using not_lt.1 (h.wf.not_lt_min s has)
     le_csInf := fun s a hs has => by
       simp only [hs, dif_pos]
       exact has (h.wf.min_mem s hs)
@@ -118,8 +118,8 @@ noncomputable abbrev WellFoundedLT.conditionallyCompleteLinearOrderBot (α : Typ
     csSup_le := fun s a _ has => by
       have h's : (upperBounds s).Nonempty := ⟨a, has⟩
       simp only [h's, dif_pos]
-      simpa using h.wf.not_lt_min _ h's has
-    csSup_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ _ <| mem_univ ⊥)
+      simpa using h.wf.not_lt_min _ has
+    csSup_empty := by simpa using eq_bot_iff.2 (not_lt.1 <| h.wf.not_lt_min _ <| mem_univ ⊥)
     csSup_of_not_bddAbove := by
       intro s H
       have B : ¬((upperBounds s).Nonempty) := H

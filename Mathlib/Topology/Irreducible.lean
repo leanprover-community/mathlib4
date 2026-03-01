@@ -132,7 +132,7 @@ lemma exists_mem_irreducibleComponents_subset_of_isIrreducible (s : Set X) (hs :
 
 /-- A maximal irreducible set that contains a given point. -/
 @[stacks 004W "(4)"]
-def irreducibleComponent (x : X) : Set X :=
+noncomputable def irreducibleComponent (x : X) : Set X :=
   Classical.choose (exists_preirreducible {x} isPreirreducible_singleton)
 
 theorem irreducibleComponent_property (x : X) :
@@ -256,7 +256,7 @@ instance (priority := 100) {X} [Infinite X] : IrreducibleSpace (CofiniteTopology
 
 theorem irreducibleComponents_eq_singleton [IrreducibleSpace X] :
     irreducibleComponents X = {univ} :=
-  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := IsIrreducible (X := X))
+  Set.ext fun _ ↦ IsGreatest.maximal_iff (s := {s : Set X | IsIrreducible s})
     ⟨IrreducibleSpace.isIrreducible_univ X, fun _ _ ↦ Set.subset_univ _⟩
 
 /-- A set `s` is irreducible if and only if
@@ -290,7 +290,6 @@ theorem isPreirreducible_iff_isClosed_union_isClosed :
   refine forall₂_congr fun _ _ => ?_
   rw [← and_imp, ← not_or, not_imp_not]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A set is irreducible if and only if for every cover by a finite collection of closed sets, it is
 contained in one of the members of the collection. -/
 theorem isIrreducible_iff_sUnion_isClosed :

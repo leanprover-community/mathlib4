@@ -326,7 +326,7 @@ theorem Dense.inter_of_isOpen_right (hs : Dense s) (ht : Dense t) (hto : IsOpen 
 theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
     (s ∩ t).Nonempty :=
   let ⟨U, hsub, ho, hx⟩ := mem_nhds_iff.1 ht
-  (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun _y hy => ⟨hy.2, hsub hy.1⟩
+  (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun y (hy : y ∈ U ∩ s) => ⟨hy.2, hsub hy.1⟩
 
 theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
   calc

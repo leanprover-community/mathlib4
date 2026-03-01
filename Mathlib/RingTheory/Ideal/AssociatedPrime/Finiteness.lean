@@ -46,13 +46,11 @@ universe u v
 
 variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `Prop` asserting that two submodules `N₁, N₂` satisfy `N₁ ≤ N₂` and
 `N₂ / N₁` is isomorphic to `A / p` for some prime ideal `p` of `A`. -/
 def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
   N₁ ≤ N₂ ∧ ∃ (p : PrimeSpectrum A), Nonempty ((↥N₂ ⧸ N₁.submoduleOf N₂) ≃ₗ[A] A ⧸ p.1)
 
-set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
     N₁.IsQuotientEquivQuotientPrime N₂ ↔
@@ -181,8 +179,9 @@ theorem Ideal.IsMaximal.mem_associatedPrimes_of_isFractionRing [IsFractionRing A
 
 /-- A commutative Noetherian total ring of fractions is semilocal. -/
 instance [IsFractionRing A A] : Finite (MaximalSpectrum A) :=
-  (MaximalSpectrum.equivSubtype A).finite_iff.mpr <| Set.finite_coe_iff.mpr <|
-    (associatedPrimes.finite A A).subset fun _ ↦ (·.mem_associatedPrimes_of_isFractionRing)
+  (MaximalSpectrum.equivSubtype A).finite_iff.mpr <|
+    {I : Ideal A | I.IsMaximal}.finite_coe_iff.mpr <|
+      (associatedPrimes.finite A A).subset fun _ ↦ (·.mem_associatedPrimes_of_isFractionRing)
 
 variable {A}
 

@@ -77,7 +77,7 @@ variable {f p P}
 theorem ramificationIdx_eq_find [DecidablePred fun n ↦ ∀ (k : ℕ), map f p ≤ P ^ k → k ≤ n]
     (h : ∃ n, ∀ k, map f p ≤ P ^ k → k ≤ n) :
     ramificationIdx f p P = Nat.find h := by
-  convert Nat.sSup_def h
+  convert Nat.sSup_def (s := {k | map f p ≤ P ^ k}) h
 
 theorem ramificationIdx_eq_zero (h : ∀ n : ℕ, ∃ k, map f p ≤ P ^ k ∧ n < k) :
     ramificationIdx f p P = 0 :=

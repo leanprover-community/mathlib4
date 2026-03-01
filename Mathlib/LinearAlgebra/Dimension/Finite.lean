@@ -32,7 +32,6 @@ attribute [local instance] nontrivial_of_invariantBasisNumber
 
 open Basis Cardinal Function Module Set Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If every finite set of linearly independent vectors has cardinality at most `n`,
 then the same is true for arbitrary sets of linearly independent vectors.
 -/
@@ -42,7 +41,7 @@ theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
   intro s li
   apply Cardinal.card_le_of
   intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
+  rw [← Finset.card_map (Embedding.subtype (· ∈ s))]
   apply H
   apply linearIndependent_finset_map_embedding_subtype _ li
 

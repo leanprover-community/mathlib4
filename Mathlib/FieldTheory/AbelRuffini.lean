@@ -208,14 +208,10 @@ variable (E)
 
 /-- The intermediate field of solvable-by-radicals elements -/
 def solvableByRad : IntermediateField F E where
-  carrier := IsSolvableByRad F
-  zero_mem' := by
-    change IsSolvableByRad F 0
-    convert IsSolvableByRad.base (E := E) (0 : F); rw [map_zero]
+  carrier := {α | IsSolvableByRad F α}
+  zero_mem' := by simpa using IsSolvableByRad.base (E := E) (0 : F)
   add_mem' := by apply IsSolvableByRad.add
-  one_mem' := by
-    change IsSolvableByRad F 1
-    convert IsSolvableByRad.base (E := E) (1 : F); rw [map_one]
+  one_mem' := by simpa using IsSolvableByRad.base (E := E) (1 : F)
   mul_mem' := by apply IsSolvableByRad.mul
   inv_mem' := IsSolvableByRad.inv
   algebraMap_mem' := IsSolvableByRad.base

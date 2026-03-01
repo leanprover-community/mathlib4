@@ -55,7 +55,7 @@ theorem countable_iInter_mem [Countable ι] {s : ι → Set α} : (⋂ i, s i) �
 theorem countable_bInter_mem {ι : Type*} {S : Set ι} (hS : S.Countable) {s : ∀ i ∈ S, Set α} :
     (⋂ i, ⋂ hi : i ∈ S, s i ‹_›) ∈ l ↔ ∀ i, ∀ hi : i ∈ S, s i ‹_› ∈ l := by
   rw [biInter_eq_iInter]
-  haveI := hS.toEncodable
+  haveI := hS.to_subtype
   exact countable_iInter_mem.trans Subtype.forall
 
 theorem eventually_countable_forall [Countable ι] {p : α → ι → Prop} :
@@ -69,50 +69,54 @@ theorem eventually_countable_ball {ι : Type*} {S : Set ι} (hS : S.Countable)
   simpa only [Filter.Eventually, setOf_forall] using
     @countable_bInter_mem _ l _ _ _ hS fun i hi => { x | p x i hi }
 
-theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
-    ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
+theorem Filter.EventuallySubset.countable_iUnion [Countable ι] {s t : ι → Set α}
+    (h : ∀ i, s i ⊆ᶠ[l] t i) :
+    ⋃ i, s i ⊆ᶠ[l] ⋃ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
 
-theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
-    ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
-  (EventuallyLE.countable_iUnion fun i => (h i).le).antisymm
-    (EventuallyLE.countable_iUnion fun i => (h i).symm.le)
+theorem Filter.EventuallyEqSet.countable_iUnion [Countable ι] {s t : ι → Set α}
+    (h : ∀ i, s i =ᶠˢ[l] t i) :
+    ⋃ i, s i =ᶠˢ[l] ⋃ i, t i :=
+  (EventuallySubset.countable_iUnion fun i => (h i).subset).antisymm
+    (.countable_iUnion fun i => (h i).symm.le)
 
-theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
-    ⋃ i ∈ S, s i ‹_› ≤ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
+theorem Filter.EventuallySubset.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ⊆ᶠ[l] t i hi) :
+    ⋃ i ∈ S, s i ‹_› ⊆ᶠ[l] ⋃ i ∈ S, t i ‹_› := by
   simp only [biUnion_eq_iUnion]
-  haveI := hS.toEncodable
-  exact EventuallyLE.countable_iUnion fun i => h i i.2
+  haveI := hS.to_subtype
+  exact EventuallySubset.countable_iUnion fun i => h i i.2
 
-theorem EventuallyEq.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
-    ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
-  (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).symm.le)
+theorem Filter.EventuallyEqSet.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠˢ[l] t i hi) :
+    ⋃ i ∈ S, s i ‹_› =ᶠˢ[l] ⋃ i ∈ S, t i ‹_› :=
+  (EventuallySubset.countable_bUnion hS fun i hi => (h i hi).subset).antisymm
+    (.countable_bUnion hS fun i hi => (h i hi).superset)
 
-theorem EventuallyLE.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
-    ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
+theorem Filter.EventuallySubset.countable_iInter [Countable ι] {s t : ι → Set α}
+    (h : ∀ i, s i ⊆ᶠ[l] t i) :
+    ⋂ i, s i ⊆ᶠ[l] ⋂ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs =>
     mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
 
-theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
-    ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
-  (EventuallyLE.countable_iInter fun i => (h i).le).antisymm
-    (EventuallyLE.countable_iInter fun i => (h i).symm.le)
+theorem Filter.EventuallyEqSet.countable_iInter [Countable ι] {s t : ι → Set α}
+    (h : ∀ i, s i =ᶠˢ[l] t i) :
+    ⋂ i, s i =ᶠˢ[l] ⋂ i, t i :=
+  (EventuallySubset.countable_iInter fun i => (h i).subset).antisymm
+    (.countable_iInter fun i => (h i).superset)
 
-theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
-    ⋂ i ∈ S, s i ‹_› ≤ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
+theorem Filter.EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ⊆ᶠ[l] t i hi) :
+    ⋂ i ∈ S, s i ‹_› ⊆ᶠ[l] ⋂ i ∈ S, t i ‹_› := by
   simp only [biInter_eq_iInter]
-  haveI := hS.toEncodable
-  exact EventuallyLE.countable_iInter fun i => h i i.2
+  haveI := hS.to_subtype
+  exact .countable_iInter fun i => h i i.2
 
-theorem EventuallyEq.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
-    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
-    ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
-  (EventuallyLE.countable_bInter hS fun i hi => (h i hi).le).antisymm
-    (EventuallyLE.countable_bInter hS fun i hi => (h i hi).symm.le)
+theorem Filter.EventuallyEqSet.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
+    {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠˢ[l] t i hi) :
+    ⋂ i ∈ S, s i ‹_› =ᶠˢ[l] ⋂ i ∈ S, t i ‹_› :=
+  (EventuallyLE.countable_bInter hS fun i hi => (h i hi).subset).antisymm
+    (.countable_bInter hS fun i hi => (h i hi).superset)
 
 /-- Construct a filter with countable intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the countable intersection property. -/
@@ -162,7 +166,7 @@ instance Filter.countableInter_ofCountableUnion (l : Set (Set α)) (h₁ h₂) :
 
 @[simp]
 theorem Filter.mem_ofCountableUnion {l : Set (Set α)} {hunion hmono s} :
-    s ∈ ofCountableUnion l hunion hmono ↔ l sᶜ :=
+    s ∈ ofCountableUnion l hunion hmono ↔ sᶜ ∈ l :=
   Iff.rfl
 
 instance countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) :=
@@ -229,9 +233,9 @@ inductive CountableGenerateSets : Set α → Prop
 
 /-- `Filter.countableGenerate g` is the greatest `countableInterFilter` containing `g`. -/
 def countableGenerate : Filter α :=
-  ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
-    CountableGenerateSets.superset
-deriving CountableInterFilter
+  ofCountableInter {s | CountableGenerateSets g s} (fun _ => CountableGenerateSets.sInter)
+    fun _ _ => CountableGenerateSets.superset
+  deriving CountableInterFilter
 
 variable {g}
 

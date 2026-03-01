@@ -84,7 +84,7 @@ lemma Topology.IsOpenEmbedding.prespectralSpace [PrespectralSpace Y]
     {f : X → Y} (hf : IsOpenEmbedding f) :
     PrespectralSpace X where
   isTopologicalBasis := by
-    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.1) <| fun x U hx hU ↦ ?_
+    apply isTopologicalBasis_of_isOpen_of_nhds (fun U hU ↦ hU.out.1) <| fun x U hx hU ↦ ?_
     obtain ⟨V, ⟨hoV, hcV⟩, hfx, hVf⟩ : ∃ V ∈ {V | IsOpen V ∧ IsCompact V}, f x ∈ V ∧ V ⊆ f '' U :=
       (PrespectralSpace.isTopologicalBasis (X := Y)).isOpen_iff.mp
         (hf.isOpen_iff_image_isOpen.mp hU) (f x) ⟨x, hx, rfl⟩

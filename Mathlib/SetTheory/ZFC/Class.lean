@@ -222,11 +222,7 @@ theorem powerset_apply {A : Class.{u}} {x : ZFSet.{u}} : powerset A x ↔ ↑x �
 
 @[simp]
 theorem sUnion_apply {x : Class} {y : ZFSet} : (⋃₀ x) y ↔ ∃ z : ZFSet, x z ∧ y ∈ z := by
-  constructor
-  · rintro ⟨-, ⟨⟨z, hz⟩, rfl, hxz⟩, hyz⟩
-    dsimp only at z
-    exact ⟨z, hxz, hyz⟩
-  · exact fun ⟨z, hxz, hyz⟩ => ⟨_, coe_mem.2 hxz, hyz⟩
+  simp [sUnion, classToCong, Class, Membership.mem, Class.Mem, Class.ToSet]
 
 open scoped ZFSet in
 @[simp, norm_cast]
