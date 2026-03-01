@@ -79,7 +79,7 @@ structure Hom (S₁ S₂ : FlatExtension.{w} R K) where
 
 attribute [instance] Hom.isLocalHom
 
-instance : Category (FlatExtension R K) where
+instance : Category.{w} (FlatExtension.{w} R K) where
   Hom S₁ S₂ := FlatExtension.Hom S₁ S₂
   id S := ⟨AlgHom.id R S.Ring, by simp⟩
   comp f g := ⟨g.hom.comp f.hom, by
