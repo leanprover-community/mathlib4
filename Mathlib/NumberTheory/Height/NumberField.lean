@@ -97,7 +97,6 @@ lemma mulHeight₁_eq (x : K) :
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ max (v x) 1]
 
 open Real in
--- For the next PR
 /-- This is the familiar definition of the logarithmic height on a number field. -/
 lemma logHeight₁_eq (x : K) :
     logHeight₁ x =
