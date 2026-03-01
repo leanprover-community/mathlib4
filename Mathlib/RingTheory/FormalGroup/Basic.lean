@@ -178,3 +178,5 @@ def map (f : R →+* S) : FormalGroup S where
 omit [Algebra R S] in
 @[simp]
 lemma map_apply (f : R →+* S) : (F.map f).toFun = F.toFun.map f := rfl
+
+end FormalGroup
