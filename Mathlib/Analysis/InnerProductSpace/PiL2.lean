@@ -1107,7 +1107,6 @@ private def DirectSum.IsInternal.subordinateOrthonormalBasisIndexFiberEquiv
   left_inv := by grind [subordinateOrthonormalBasisIndex_def, Fin.cast_eq_self]
   right_inv := by grind
 
-set_option backward.isDefEq.respectTransparency false in
 theorem DirectSum.IsInternal.card_filter_subordinateOrthonormalBasisIndex_eq
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) (i : ι) :
     Finset.card {a | hV.subordinateOrthonormalBasisIndex hn a hV' = i} = finrank 𝕜 (V i) := by

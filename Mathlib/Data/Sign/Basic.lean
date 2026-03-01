@@ -159,7 +159,6 @@ because Lean creates a fresh universe variable for the type whose existence is a
 But we want the type to live in the same universe as the input type.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem exists_signed_sum_aux [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u) (t : Finset β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧

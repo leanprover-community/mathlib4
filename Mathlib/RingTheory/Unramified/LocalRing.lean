@@ -149,7 +149,6 @@ lemma isUnramifiedAt_iff_map_eq :
 instance [Algebra.IsUnramifiedAt R q] : Algebra.IsSeparable p.ResidueField q.ResidueField :=
   ((Algebra.isUnramifiedAt_iff_map_eq _ _ _).mp inferInstance).1
 
-set_option backward.isDefEq.respectTransparency false in
 instance [Algebra.IsUnramifiedAt R q] : Module.Finite p.ResidueField q.ResidueField :=
   Algebra.FormallyUnramified.finite_of_free _ _
 

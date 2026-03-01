@@ -383,7 +383,6 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
 
 variable (H)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The root system of a finite-dimensional Lie algebra with non-degenerate Killing form over a
 field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
@@ -417,7 +416,6 @@ lemma corootForm_rootSystem_eq_killing :
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open LieSubmodule in
 @[simp]
 lemma biSup_corootSpace_eq_top :
@@ -441,7 +439,6 @@ instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=
     ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (rootSystem H).IsReduced where
   eq_or_eq_neg := by
     intro ⟨α, hα⟩ ⟨β, hβ⟩ e

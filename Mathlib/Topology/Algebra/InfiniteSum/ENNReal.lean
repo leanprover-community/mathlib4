@@ -635,7 +635,6 @@ namespace ENNReal
 
 variable {α : Type*} (s : Set α)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tsum_set_one : ∑' _ : s, (1 : ℝ≥0∞) = s.encard := by
   obtain (hfin | hinf) := Set.finite_or_infinite s
   · lift s to Finset α using hfin

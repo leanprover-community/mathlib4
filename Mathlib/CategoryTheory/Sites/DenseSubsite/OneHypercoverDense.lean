@@ -642,7 +642,6 @@ namespace presheafObjObjIso
 
 variable (X₀ : C₀)
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `OneHypercoverDenseData.essSurj.presheafObjObjIso`. -/
 noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.obj (op X₀) :=
@@ -662,7 +661,6 @@ noncomputable def hom : (presheaf data G₀).obj (op (F.obj X₀)) ⟶ G₀.val.
 
 variable {X₀}
 
-set_option backward.whnf.reducibleClassField false in
 @[reassoc]
 lemma hom_map {W₀ : C₀} (a : W₀ ⟶ X₀) {i : (data (F.obj X₀)).I₀}
     (p : F.obj W₀ ⟶ F.obj ((data (F.obj X₀)).X i))
@@ -725,7 +723,6 @@ lemma inv_restriction {Y₀ : C₀} (f : F.obj Y₀ ⟶ F.obj X₀) :
 
 end presheafObjObjIso
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The presheaf `presheaf data G₀` extends `G₀`. -/
 noncomputable def presheafObjObjIso (X₀ : C₀) :
@@ -744,7 +741,6 @@ noncomputable def presheafObjObjIso (X₀ : C₀) :
     simp [presheafObjObjIso.hom_map data G₀ _ b fac, ← IsDenseSubsite.mapPreimage_comp, fac]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.whnf.reducibleClassField false in
 @[reassoc (attr := simp)]
 lemma presheafMap_presheafObjObjIso_hom (X : C) (i : (data X).I₀) :
     presheafMap data G₀ ((data X).f i) ≫ (presheafObjObjIso data G₀ ((data X).X i)).hom =

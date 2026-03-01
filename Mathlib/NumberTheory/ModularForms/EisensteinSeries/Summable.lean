@@ -205,7 +205,6 @@ lemma tendsto_zero_inv_linear_sub (z : ℂ) (b : ℤ) :
 
 end bounding_functions
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The function `ℤ ^ 2 → ℝ` given by `x ↦ ‖x‖ ^ (-k)` is summable if `2 < k`. We prove this by
 splitting into boxes using `Finset.box`. -/
 lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :

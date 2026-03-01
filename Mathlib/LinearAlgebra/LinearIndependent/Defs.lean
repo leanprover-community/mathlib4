@@ -272,7 +272,6 @@ theorem Fintype.not_linearIndependent_iffₛ [Fintype ι] :
     ¬LinearIndependent R v ↔ ∃ f g : ι → R, ∑ i, f i • v i = ∑ i, g i • v i ∧ ∃ i, f i ≠ g i := by
   simpa using not_iff_not.2 Fintype.linearIndependent_iffₛ
 
-set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_finset_iffₛ {s : Finset ι} :
     LinearIndepOn R v s ↔ ∀ f g : ι → R,
       ∑ i ∈ s, f i • v i = ∑ i ∈ s, g i • v i → ∀ i ∈ s, f i = g i := by
@@ -508,7 +507,6 @@ theorem LinearIndependent.span_repr_eq [Nontrivial R] (x) :
   ext ⟨_, ⟨i, rfl⟩⟩
   simp [← p]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearIndependent.eq_zero_of_smul_mem_span (hv : LinearIndependent R v) (i : ι) (a : R)
     (ha : a • v i ∈ span R (v '' (univ \ {i}))) : a = 0 := by
   rw [Finsupp.span_image_eq_map_linearCombination, mem_map] at ha
@@ -661,7 +659,6 @@ theorem Fintype.not_linearIndependent_iffₒₛ [DecidableEq ι] [Fintype ι] :
   · refine ⟨tᶜ, f, ?_, i, Finset.mem_compl.2 hi', hfi⟩
     simp [heq]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_finset_iffₒₛ [DecidableEq ι] {s : Finset ι} :
     LinearIndepOn R v s ↔ ∀ t ⊆ s, ∀ (f : ι → R),
       ∑ i ∈ t, f i • v i = ∑ i ∈ s \ t, f i • v i → ∀ i ∈ s, f i = 0 := by
@@ -760,7 +757,6 @@ theorem Fintype.not_linearIndependent_iff [Fintype ι] :
     ¬LinearIndependent R v ↔ ∃ g : ι → R, ∑ i, g i • v i = 0 ∧ ∃ i, g i ≠ 0 := by
   simpa using not_iff_not.2 Fintype.linearIndependent_iff
 
-set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_finset_iff {s : Finset ι} :
     LinearIndepOn R v s ↔ ∀ f : ι → R, ∑ i ∈ s, f i • v i = 0 → ∀ i ∈ s, f i = 0 := by
   classical

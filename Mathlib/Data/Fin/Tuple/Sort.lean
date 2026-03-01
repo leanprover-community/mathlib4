@@ -56,7 +56,6 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
     rw [Prod.ext_iff]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `graphEquiv₁ f` is the natural equivalence between `Fin n` and `graph f`,
 mapping `i` to `(f i, i)`. -/
 def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where

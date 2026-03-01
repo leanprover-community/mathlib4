@@ -97,7 +97,6 @@ lemma support_nonempty [Nonempty ι] [NeZero (2 : R)] : b.support.Nonempty := by
   root_mem_or_neg_mem := b.coroot_mem_or_neg_mem
   coroot_mem_or_neg_mem := b.root_mem_or_neg_mem
 
-set_option backward.isDefEq.respectTransparency false in
 include b in
 lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
     (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j) :
@@ -150,7 +149,6 @@ lemma span_coroot_support :
     span R (P.coroot '' b.support) = P.corootSpan R :=
   b.flip.span_root_support
 
-set_option backward.isDefEq.respectTransparency false in
 open Finsupp in
 lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     [IsAddTorsionFree M] [IsAddTorsionFree N]
@@ -334,7 +332,6 @@ variable {P : RootPairing ι R M N} (b : P.Base)
 
 include b
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma exists_root_eq_sum_nat_or_neg (i : ι) :
     ∃ f : ι → ℕ, f.support ⊆ b.support ∧

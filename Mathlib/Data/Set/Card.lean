@@ -1242,7 +1242,6 @@ theorem exists_ne_of_one_lt_ncard (hs : 1 < s.ncard) (a : α) : ∃ b, b ∈ s �
   rw [ncard_eq_toFinset_card _ hsf] at hs
   simpa only [Finite.mem_toFinset] using Finset.exists_mem_ne hs a
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_insert_of_ncard_eq_succ {n : ℕ} (h : s.ncard = n + 1) :
     ∃ a t, a ∉ t ∧ insert a t = s ∧ t.ncard = n := by
   classical
