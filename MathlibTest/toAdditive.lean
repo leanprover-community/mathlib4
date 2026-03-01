@@ -22,6 +22,25 @@ theorem bar0_works : bar0 3 4 = 7 := by decide
 
 run_meta guard <| (← getConstInfo `Test.bar0).all == [`Test.bar0]
 
+/--
+error: `to_additive` does not support mutually recursive declarations.
+-/
+#guard_msgs (error) in
+mutual
+
+@[to_additive bar0a]
+theorem foo0a {α} [Monoid α] (n : ℕ) : True := by
+  cases n with
+  | zero => trivial
+  | succ n => exact foo0b (α := α) n
+
+theorem foo0b {α} [Monoid α] (n : ℕ) : True := by
+  cases n with
+  | zero => trivial
+  | succ n => exact foo0a (α := α) n
+
+end
+
 class my_has_pow (α : Type u) (β : Type v) where
   pow : α → β → α
 
