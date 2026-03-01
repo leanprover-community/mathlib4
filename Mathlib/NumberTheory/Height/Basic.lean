@@ -739,7 +739,7 @@ lemma logHeight₁_prod_le {α : Type*} (s : Finset α) (x : α → K) :
 /-- The multiplicative height of the pointwise negative of a tuple
 equals its multiplicative height. -/
 @[simp]
-lemma mulHeight_neg {ι : Type*} [Finite ι] (x : ι → K) : mulHeight (-x) = mulHeight x := by
+lemma mulHeight_neg {ι : Type*} (x : ι → K) : mulHeight (-x) = mulHeight x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   simp [mulHeight_eq hx, mulHeight_eq <| neg_ne_zero.mpr hx]
@@ -747,7 +747,7 @@ lemma mulHeight_neg {ι : Type*} [Finite ι] (x : ι → K) : mulHeight (-x) = m
 /-- The logarithmic height of the pointwise negative of a tuple
 equals its logarithmic height. -/
 @[simp]
-lemma logHeight_neg {ι : Type*} [Finite ι] (x : ι → K) : logHeight (-x) = logHeight x := by
+lemma logHeight_neg {ι : Type*} (x : ι → K) : logHeight (-x) = logHeight x := by
   simp [logHeight_eq_log_mulHeight]
 
 end Height
