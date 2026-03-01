@@ -7,9 +7,13 @@ module
 
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.Algebra.Algebra.Shrink
+public import Mathlib.Algebra.Polynomial.Lifts
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
+public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 
@@ -47,21 +51,45 @@ instance [Small.{w} R] : IsLocalRing (Shrink R) :=
 
 end instances
 
+section monogenic
+
+variable (S : Type w) [CommRing S] [IsLocalRing S] [Algebra R S] [IsLocalHom (algebraMap R S)]
+  [Algebra (ResidueField S) K] [IsScalarTower (ResidueField R) (ResidueField S) K]
+
+abbrev extensionByAlgebraic (x : K) (int : IsIntegral (ResidueField S) x) :
+    Type w := by
+
+  sorry
+
+abbrev extensionByTranscendental : Type w :=
+  Localization.AtPrime ((maximalIdeal S).map Polynomial.C)
+
+instance : IsLocalHom (algebraMap S (extensionByTranscendental S)) := sorry
+
+instance : IsLocalHom (algebraMap R (extensionByTranscendental S)) := sorry
+
+abbrev extensionByTranscendentalEmbd (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
+    ResidueField (extensionByTranscendental S) →ₐ[ResidueField R] K := sorry
+
+end monogenic
+
 structure FlatExtension where
   Ring : Type w
   [commRing : CommRing Ring]
   [isLocalRing : IsLocalRing Ring]
   [algebra : Algebra R Ring]
   [isLocalHom : IsLocalHom (algebraMap R Ring)]
+  [algebraK : Algebra (ResidueField Ring) K]
+  [isScalarTower : IsScalarTower (ResidueField R) (ResidueField Ring) K]
   flat : Module.Flat R Ring
   eqmap : maximalIdeal Ring = (maximalIdeal R).map (algebraMap R Ring)
-  resembd : ResidueField Ring →ₐ[ResidueField R] K
 
 namespace FlatExtension
 
-attribute [instance] commRing algebra isLocalRing isLocalHom
+attribute [instance] commRing algebra isLocalRing isLocalHom algebraK isScalarTower
 
-noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
+noncomputable def trivial [Small.{w} R] : FlatExtension R K :=
+  /-
   let e : R ≃+* Shrink.{w} R := (Shrink.ringEquiv R).symm
   let : IsLocalHom (algebraMap R (Shrink.{w} R)) :=
     IsLocalHom.of_surjective e.toRingHom e.surjective
@@ -70,12 +98,15 @@ noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
     exact (Ideal.isMaximal_map_iff_of_bijective _ e.bijective).2 inferInstance
   · exact (Algebra.ofId (ResidueField R) K).comp
       (AlgEquiv.ofRingEquiv (f := ResidueField.mapEquiv e) (fun x ↦ rfl)).symm.toAlgHom
+  -/
+  sorry
 
 variable {R K} in
 structure Hom (S₁ S₂ : FlatExtension.{w} R K) where
   hom : S₁.Ring →ₐ[R] S₂.Ring
   [isLocalHom : IsLocalHom hom]
-  comm : S₂.resembd.toRingHom.comp (ResidueField.map hom) = S₁.resembd.toRingHom
+  comm : (algebraMap (ResidueField S₂.Ring) K).comp (ResidueField.map hom) =
+    (algebraMap (ResidueField S₁.Ring) K)
 
 attribute [instance] Hom.isLocalHom
 
@@ -83,13 +114,12 @@ instance : Category.{w} (FlatExtension.{w} R K) where
   Hom S₁ S₂ := FlatExtension.Hom S₁ S₂
   id S := ⟨AlgHom.id R S.Ring, by simp⟩
   comp f g := ⟨g.hom.comp f.hom, by
-    rw [← f.comm, ← g.comm]
-    simp [AlgHom.comp_toRingHom', ResidueField.map_comp, ← RingHom.comp_assoc]⟩
+    simp [← f.comm, ← g.comm, AlgHom.comp_toRingHom', ResidueField.map_comp, ← RingHom.comp_assoc]⟩
 
 private noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
   X₀ := trivial R K
-  succ := sorry
-  toSucc X := sorry
+  succ S := sorry
+  toSucc S := sorry
 
 variable (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [Small.{w} R]
 
