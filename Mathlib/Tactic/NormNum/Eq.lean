@@ -50,6 +50,7 @@ theorem isRat_eq_false [Ring α] [CharZero α] : {a b : α} → {na nb : ℤ} �
     rw [Rat.invOf_denom_swap]; exact mod_cast of_decide_eq_false h
 
 attribute [local instance] monadLiftOptionMetaM in
+/-- Result of running `norm_num` on an equation from results of running `norm_num` on both sides. -/
 def Result.eq {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b)) :
     MetaM (Result q($a = $b)) := do
   let rec intArm (rα : Q(Ring $α)) := do
