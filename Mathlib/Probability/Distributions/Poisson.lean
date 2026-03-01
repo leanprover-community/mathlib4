@@ -40,12 +40,11 @@ lemma poissonPMFRealSum (r : ℝ≥0) : HasSum (fun n ↦ poissonPMFReal r n) 1 
   let r := r.toReal
   unfold poissonPMFReal
   apply (hasSum_mul_left_iff (exp_ne_zero r)).mp
-  simp only [mul_one]
   have : (fun i ↦ rexp r * (rexp (-r) * r ^ i / ↑(Nat.factorial i))) =
       fun i ↦ r ^ i / ↑(Nat.factorial i) := by
     ext n
     rw [mul_div_assoc, exp_neg, ← mul_assoc, ← div_eq_mul_inv, div_self (exp_ne_zero r), one_mul]
-  rw [this, exp_eq_exp_ℝ]
+  rw [mul_one, this, exp_eq_exp_ℝ]
   exact NormedSpace.expSeries_div_hasSum_exp r
 
 /-- The Poisson pmf is positive for all natural numbers -/
