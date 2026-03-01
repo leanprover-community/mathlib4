@@ -634,21 +634,16 @@ lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
     (localExtensionOn b e v) x = v := by
   simp [localExtensionOn, hx]
 
--- TODO: fix this proof!
 variable (b) in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
 lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
     (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) :
     (Trivialization.localFrame_coeff I e b i x') ((localExtensionOn b e) v x') =
     (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x) := by
--- statement used to be
---  e.localFrame_coeff I b i (LinearMap.piApply (localExtensionOn b e v)) x' =
---   e.localFrame_coeff I b i (localExtensionOn b e v) x := by
-  simp only [localExtensionOn, hx, ↓reduceDIte]
-  dsimp
-  simp [hx, hx']
-  -- TODO: proof was done here (and in fact just `simp [localExtensionOn, hx, hx']`)
-  sorry
+  -- Combining these into one `simp` call makes these lemmas never fire.
+  rw [e.localFrame_coeff_apply_of_mem_baseSet b hx ((localExtensionOn b e) v) i,
+    e.localFrame_coeff_apply_of_mem_baseSet b hx' ((localExtensionOn b e) v) i]
+  simp [localExtensionOn, hx, hx']
 
 variable (F) in
 lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
