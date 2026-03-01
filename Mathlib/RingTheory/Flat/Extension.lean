@@ -119,10 +119,16 @@ instance : Category.{w} (FlatExtension.{w} R K) where
   comp f g := ⟨g.hom.comp f.hom, by
     simp [← f.comm, ← g.comm, AlgHom.comp_toRingHom', ResidueField.map_comp, ← RingHom.comp_assoc]⟩
 
-private noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
+noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
   X₀ := trivial R K
   succ S := sorry
   toSucc S := sorry
+
+lemma algebraMap_range_lt_of_not_surjective [Small.{w} R] (S : FlatExtension R K)
+    (nsurj : ¬ Function.Surjective (algebraMap (ResidueField S.Ring) K)) :
+    (algebraMap (ResidueField S.Ring) K).range <
+    (algebraMap (ResidueField ((FlatExtension.SuccStruct R K).succ S).Ring) K).range := by
+  sorry
 
 variable (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [Small.{w} R]
 
