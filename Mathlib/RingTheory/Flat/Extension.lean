@@ -91,10 +91,21 @@ private noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{
   succ := sorry
   toSucc X := sorry
 
+variable (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J] [Small.{w} R]
+
+private instance : Limits.HasIterationOfShape J (FlatExtension R K) := sorry
+
 end FlatExtension
 
 lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
     (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
+  let setK : Type (max u v) := ULift (Set K)
+  obtain ⟨lin, wf⟩ := exists_wellOrder setK
+  -- let linOrd : LinearOrder (WithTop setK) := @WithTop.linearOrder _ lin
+  -- let wfOrd : WellFoundedLT (WithTop setK) := @WithTop.instWellFoundedLT _ lin.toLT wf
+  -- let succOrd : SuccOrder (WithTop setK) := by
+  --   @SuccOrder.ofLinearWellFoundedLT _ WithTop.linearOrder WithTop.instWellFoundedLT
+  -- obtain ⟨Φ⟩ : Nonempty ((FlatExtension.SuccStruct R K).Iteration (⊤ : WithTop setK)) := inferInstance
   sorry
