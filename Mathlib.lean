@@ -693,7 +693,6 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-public import Mathlib.Algebra.Homology.ShortComplex.Refinements
 public import Mathlib.Algebra.Homology.ShortComplex.Retract
 public import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 public import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFive

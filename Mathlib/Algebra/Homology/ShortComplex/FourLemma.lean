@@ -6,8 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortComplexFour
-public import Mathlib.Algebra.Homology.ShortComplex.Refinements
-public import Mathlib.CategoryTheory.Abelian.Opposite
+public import Mathlib.CategoryTheory.Abelian.Refinements
 
 /-!
 # Four lemma
