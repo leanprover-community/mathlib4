@@ -271,4 +271,55 @@ lemma Presieve.IsSheafFor.comp_iff_of_preservesPairwisePullbacks (F : C ⥤ D) (
     infer_instance
   exact this.1.eq_iff
 
+namespace GrothendieckTopology
+
+/-- The induced coverage by a Grothendieck topology as a precoverage. -/
+def toPrecoverage (J : GrothendieckTopology C) : Precoverage C where
+  coverings S := { R | Sieve.generate R ∈ J S }
+
+lemma mem_toPrecoverage_iff (J : GrothendieckTopology C) {S : C} (R : Presieve S) :
+    R ∈ toPrecoverage J S ↔ Sieve.generate R ∈ J S := .rfl
+
+instance (J : GrothendieckTopology C) : (toPrecoverage J).HasIsos where
+  mem_coverings_of_isIso f hf := by simp [mem_toPrecoverage_iff]
+
+instance (J : GrothendieckTopology C) : (toPrecoverage J).IsStableUnderComposition where
+  comp_mem_coverings {ι} S X f hf σ Y g hg := by
+    rw [mem_toPrecoverage_iff, ← Presieve.bindOfArrows_ofArrows]
+    exact J.bindOfArrows hf hg
+
+instance (J : GrothendieckTopology C) : (toPrecoverage J).IsStableUnderBaseChange where
+  mem_coverings_of_isPullback {ι} S X f hf Y g P p₁ p₂ h := by
+    rw [mem_toPrecoverage_iff, ← Sieve.ofArrows, Sieve.ofArrows_eq_pullback_of_isPullback _ h]
+    exact J.pullback_stable _ hf
+
+end GrothendieckTopology
+
+namespace Precoverage
+
+variable {K : Precoverage C} {J : GrothendieckTopology C}
+
+/-- `toGrothendieck` and `toPrecoverage` form a Galois connection. -/
+lemma toGrothendieck_le_iff_le_toPrecoverage : K.toGrothendieck ≤ J ↔ K ≤ J.toPrecoverage := by
+  refine ⟨fun h X R hR ↦ ?_, fun h ↦ ?_⟩
+  · rw [GrothendieckTopology.mem_toPrecoverage_iff]
+    exact h _ (generate_mem_toGrothendieck hR)
+  · intro X R hR
+    induction hR with
+    | of X S hS => exact h _ hS
+    | top X => grind
+    | pullback X S _ Y f _ => grind
+    | transitive X S R _ _ _ _ => grind
+
+variable (C) in
+lemma galoisConnection_toGrothendieck_toPrecoverage :
+    GaloisConnection (toGrothendieck (C := C)) GrothendieckTopology.toPrecoverage :=
+  fun _ _ ↦ toGrothendieck_le_iff_le_toPrecoverage
+
+@[simp, grind =]
+lemma toGrothendieck_bot : toGrothendieck (⊥ : Precoverage C) = ⊥ :=
+  (galoisConnection_toGrothendieck_toPrecoverage C).l_bot
+
+end Precoverage
+
 end CategoryTheory
