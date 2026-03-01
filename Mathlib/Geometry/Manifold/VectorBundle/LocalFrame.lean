@@ -591,11 +591,73 @@ end
 -- local extension of a vector field in a trivialisation's base set
 section localExtensionOn
 
-variable {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
-  {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F} {x x' : M}
-  [VectorBundle 𝕜 F V]
+section
+
+variable {ι : Type*} [Fintype ι] {s : ι → (x : M) → V x} {u : Set M} {x x' : M} {n : WithTop ℕ∞}
+
 
 open scoped Classical in
+/-- Given a local frame `{sᵢ}` on `u ∋ x`, extend a vector `v ∈ V x` to a section `t` of the
+bundle `V` which is smooth near `x`, such that `t x = v` and this construction is linear in `v`.
+
+The details of this extension are unspecified (and could be subject to change).
+Our current construction has constant coefficients on `u` w.r.t. the local frame `{sᵢ}`, and is zero
+otherwise. In particular, it is smooth on `u`, and (globally) linear in `v`.
+
+We choose an extension with these particularly nice properties because this simplifies later
+constructions on covariant derivatives (and in this context, the value at `t` at points other than
+`x` does not matter, but constant frame coefficients are useful).
+-/
+noncomputable def IsLocalFrameOn.localExtension (hs : IsLocalFrameOn I F n s u) :
+    V x →ₗ[𝕜] ((x' : M) → V x') where
+  toFun v := open scoped Classical in
+    fun x' ↦ if hx : x ∈ u then ∑ i, (hs.toBasisAt hx).repr v i • s i x' else 0
+  map_add' v v' := by
+    ext x'
+    by_cases hx: x ∈ u; swap
+    · simp [hx]
+    · simp [hx, add_smul, Finset.sum_add_distrib]
+  map_smul' a v := by
+    ext x'
+    by_cases hx: x ∈ u; swap
+    · simp [hx]
+    · simp +contextual [hx, Finset.smul_sum, mul_smul a]
+
+@[simp]
+lemma IsLocalFrameOn.localExtension_apply_self (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (v : V x) :
+    hs.localExtension v x = v := by
+  simp [IsLocalFrameOn.localExtension, hx]
+  sorry--apply?
+
+/-- A local extension has constant frame coefficients within its defining trivialisation. -/
+lemma IsLocalFrameOn.localExtension_localFrame_coeff
+    (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (hx' : x' ∈ u) (v : V x) (i : ι) :
+    (hs.coeff i x') (hs.localExtension v x') = (hs.coeff i x) (hs.localExtension v x) := by
+  -- Combining these into one `simp` call makes these lemmas never fire.
+  rw [hs.coeff_apply_of_mem hx, hs.coeff_apply_of_mem hx']
+  simp [IsLocalFrameOn.localExtension, hx] --, hx']
+  sorry -- TODO!
+
+lemma IsLocalFrameOn.contMDiffOn_localExtension [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
+    (hs : IsLocalFrameOn I F n s u) [VectorBundle 𝕜 F V]
+    {x : M} (hx : x ∈ u) (v : V x) :
+    CMDiff[u] n (T% (hs.localExtension v)) := by
+  -- The local frame coefficients of `localExtension` w.r.t. the frame induced by `e` are
+  -- constant, hence smoothness follows.
+  apply hs.contMDiffOn_of_coeff
+  intro i
+  simp only [LinearMap.piApply_apply]
+  apply (contMDiffOn_const
+    (c := (hs.coeff i x) (hs.localExtension v x))).congr
+  intro y hy
+  rw [hs.localExtension_localFrame_coeff hx hy v i]
+
+end
+
+variable {n}
+
+open scoped Classical in
+variable (I) in -- necessary to infer `I` in `ContMDiffVectorBundle`...
 /-- Extend a vector `v ∈ V x` to a section `s` of the bundle `V` which is smooth near `x`,
 such that `s x = v` and this construction is linear in `v`.
 
@@ -610,52 +672,62 @@ We choose an extension with these particularly nice properties because this simp
 constructions on covariant derivatives (and in this context, the value at `s` at points other than
 `x` does not matter, but constant frame coefficients are useful).
 -/
--- XXX: we could generalise this definition to any local frame on `U ∋ x`, with smoothness on `U`.
--- Would this be useful? Should do this?
-noncomputable def localExtensionOn (b : Basis ι 𝕜 F)
+noncomputable def localExtensionOn [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
+    {ι : Type*} [Fintype ι] (b : Basis ι 𝕜 F)
     (e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)) [MemTrivializationAtlas e]
-    {x : M} : V x →ₗ[𝕜] ((x' : M) → V x') where
-  toFun v := open scoped Classical in
-    fun x' ↦ if hx : x ∈ e.baseSet then ∑ i, (e.basisAt b hx).repr v i • e.localFrame b i x' else 0
-  map_add' v v' := by
-    ext x'
-    by_cases hx: x ∈ e.baseSet; swap
-    · simp [hx]
-    · simp [hx, add_smul, Finset.sum_add_distrib]
-  map_smul' a v := by
-    ext x'
-    by_cases hx: x ∈ e.baseSet; swap
-    · simp [hx]
-    · simp +contextual [hx, Finset.smul_sum, mul_smul a (((e.basisAt b hx).repr v) _)]
+    {x : M} : V x →ₗ[𝕜] ((x' : M) → V x') :=
+  (e.isLocalFrameOn_localFrame_baseSet I 1 b).localExtension
+  -- where
+  -- toFun v := open scoped Classical in
+  --   fun x' ↦ if hx : x ∈ e.baseSet then ∑ i, (e.basisAt b hx).repr v i • e.localFrame b i x' else 0
+  -- map_add' v v' := by
+  --   ext x'
+  --   by_cases hx: x ∈ e.baseSet; swap
+  --   · simp [hx]
+  --   · simp [hx, add_smul, Finset.sum_add_distrib]
+  -- map_smul' a v := by
+  --   ext x'
+  --   by_cases hx: x ∈ e.baseSet; swap
+  --   · simp [hx]
+  --   · simp +contextual [hx, Finset.smul_sum, mul_smul a (((e.basisAt b hx).repr v) _)]
 
+variable {e : Trivialization F (TotalSpace.proj : TotalSpace F V → M)} [MemTrivializationAtlas e]
+  {ι : Type*} [Fintype ι] {b : Basis ι 𝕜 F} {x x' : M}
+variable [VectorBundle 𝕜 F V] [ContMDiffVectorBundle 1 F V I]
 variable (b e) in
 @[simp]
 lemma localExtensionOn_apply_self (hx : x ∈ e.baseSet) (v : V x) :
-    (localExtensionOn b e v) x = v := by
+    (localExtensionOn I b e v) x = v := by
   simp [localExtensionOn, hx]
 
 variable (b) in
 /-- A local extension has constant frame coefficients within its defining trivialisation. -/
 lemma localExtensionOn_localFrame_coeff [ContMDiffVectorBundle 1 F V I]
     (hx : x ∈ e.baseSet) (hx' : x' ∈ e.baseSet) (v : V x) (i : ι) :
-    (Trivialization.localFrame_coeff I e b i x') ((localExtensionOn b e) v x') =
-    (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x) := by
+    (Trivialization.localFrame_coeff I e b i x') ((localExtensionOn I b e) v x') =
+    (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn I b e) v x) := by
   -- Combining these into one `simp` call makes these lemmas never fire.
-  rw [e.localFrame_coeff_apply_of_mem_baseSet b hx ((localExtensionOn b e) v) i,
-    e.localFrame_coeff_apply_of_mem_baseSet b hx' ((localExtensionOn b e) v) i]
+  rw [e.localFrame_coeff_apply_of_mem_baseSet b hx ((localExtensionOn I b e) v) i,
+    e.localFrame_coeff_apply_of_mem_baseSet b hx' ((localExtensionOn I b e) v) i]
   simp [localExtensionOn, hx, hx']
+  sorry -- TODO fix!
 
 variable (F) in
 lemma contMDiffOn_localExtensionOn [FiniteDimensional 𝕜 F] [CompleteSpace 𝕜]
     {x : M} (hx : x ∈ e.baseSet) (v : V x) [ContMDiffVectorBundle ∞ F V I] :
-    CMDiff[e.baseSet] ∞ (T% (localExtensionOn b e v)) := by
+    CMDiff[e.baseSet] ∞ (T% (localExtensionOn I b e v)) := by
+  have hs := (e.isLocalFrameOn_localFrame_baseSet I 1 b)
+  simp only [localExtensionOn]
+  -- TODO: re-using the machinery above only yields C^n local extensions from a C^n frame;
+  -- the manual construction yields smooth extensions from even a C¹ frame...
+  apply hs.contMDiffOn_localExtension
   -- The local frame coefficients of `localExtensionOn` w.r.t. the frame induced by `e` are
   -- constant, hence smoothness follows.
   rw [contMDiffOn_baseSet_iff_localFrame_coeff b]
   intro i
   simp only [LinearMap.piApply_apply]
   apply (contMDiffOn_const
-    (c := (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn b e) v x))).congr
+    (c := (Trivialization.localFrame_coeff I e b i x) ((localExtensionOn I b e) v x))).congr
   intro y hy
   rw [localExtensionOn_localFrame_coeff b hx hy v i]
 
