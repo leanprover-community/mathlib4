@@ -67,6 +67,8 @@ structure FormalGroup where
     = subst ![Y₀, subst ![Y₁, Y₂] toFun] toFun (S := R)
 
 variable (R) in
+/-- A commutative formal group law is a formal group law satisfies additional commutativity
+condition. -/
 @[ext]
 structure CommFormalGroup extends FormalGroup R where
   /- Commutativity condition : `F (X, Y) = F (Y, X)`. -/
