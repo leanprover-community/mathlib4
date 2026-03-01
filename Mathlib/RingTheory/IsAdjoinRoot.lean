@@ -622,6 +622,53 @@ theorem mkOfAdjoinEqTop_root : (IsAdjoinRoot.mkOfAdjoinEqTop hα hα₂).root = 
 
 end mkOfAdjoinEqTop
 
+section mkOfAdjoinEqTop'
+
+variable [Module.Finite R S] [Module.Free R S] [Nontrivial R]
+
+/-- For finite free modules over a nontrivial ring,
+the degree of the minimal polynomials is bounded by the rank of the module -/
+theorem _root_.minpoly.natDegree_le' (α : S) :
+    (minpoly R α).natDegree ≤ Module.finrank R S := by
+  classical
+  let b := Module.Free.chooseBasis R S
+  let M := LinearMap.toMatrixAlgEquiv b (Algebra.lmul R S α)
+  have haeval : aeval α M.charpoly = 0 := by
+    have h := Matrix.aeval_self_charpoly M
+    rwa [aeval_algHom_apply, _root_.map_eq_zero_iff _ (LinearMap.toMatrixAlgEquiv b).injective,
+      aeval_algHom_apply, _root_.map_eq_zero_iff _ Algebra.lmul_injective] at h
+  exact (natDegree_le_natDegree (minpoly.min R α M.charpoly_monic haeval)).trans
+    (M.charpoly_natDegree_eq_dim.trans (Module.finrank_eq_card_chooseBasisIndex R S).symm).le
+
+/-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
+noncomputable def _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop'
+    {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
+    IsAdjoinRootMonic S (minpoly R α) := by
+  set f := minpoly R α
+  have hf : f.Monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
+  haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
+  let φ : AdjoinRoot f →ₐ[R] S :=
+    AdjoinRoot.liftAlgHom f (Algebra.ofId R S) α (minpoly.aeval R α)
+  have hφ_surj : Function.Surjective φ := by
+    rw [Algebra.adjoin_singleton_eq_range_aeval, AlgHom.range_eq_top] at hα
+    exact fun s =>
+      let ⟨p, hp⟩ := hα s; ⟨AdjoinRoot.mk f p, by simp [φ, ← aeval_def, hp]⟩
+  have hrank : f.natDegree = Module.finrank R S := le_antisymm (minpoly.natDegree_le' α) (by
+    have e := φ.toLinearMap.quotKerEquivRange.trans
+      (LinearEquiv.ofTop _ (LinearMap.range_eq_top.mpr hφ_surj))
+    rw [← e.finrank_eq]
+    exact (Submodule.finrank_quotient_le _).trans (finrank_quotient_span_eq_natDegree' hf).le)
+  have e := LinearEquiv.ofFinrankEq (R := R) (AdjoinRoot f) S
+    ((finrank_quotient_span_eq_natDegree' hf).trans hrank)
+  have hφ_inj : Function.Injective φ :=
+    fun x y h => OrzechProperty.injective_of_surjective_endomorphism
+    (e.symm.toLinearMap.comp φ.toLinearMap) (e.symm.surjective.comp hφ_surj) (congr_arg e.symm h)
+  exact
+    { IsAdjoinRoot.ofAdjoinRootEquiv
+        (AlgEquiv.ofBijective φ ⟨hφ_inj, hφ_surj⟩) with monic := hf }
+
+end mkOfAdjoinEqTop'
+
 section Equiv
 
 variable {T : Type*} [CommRing T] [Algebra R T] (h' : IsAdjoinRoot T f) {U : Type*} [CommRing U]
