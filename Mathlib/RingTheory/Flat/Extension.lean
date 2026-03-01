@@ -79,6 +79,10 @@ instance (x : K) (int : IsIntegral (ResidueField S) x) :
     Module.Finite S (extensionByAlgebraic K S x int) :=
   (minpolyLift_spec K S x int).2.2.finite_quotient
 
+instance (x : K) (int : IsIntegral (ResidueField S) x) :
+    Module.Free S (extensionByAlgebraic K S x int) :=
+  (minpolyLift_spec K S x int).2.2.free_quotient
+
 set_option backward.isDefEq.respectTransparency false in
 lemma extensionByAlgebraic_maximalIdeal_map (x : K) (int : IsIntegral (ResidueField S) x) :
     ((maximalIdeal S).map (algebraMap S (extensionByAlgebraic K S x int))).IsMaximal := by
