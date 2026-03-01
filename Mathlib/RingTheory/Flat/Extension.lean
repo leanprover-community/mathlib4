@@ -97,15 +97,19 @@ private instance : Limits.HasIterationOfShape J (FlatExtension R K) := sorry
 
 end FlatExtension
 
+
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R')
     (_ : Algebra R R') (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
     maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
     Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
-  let setK : Type (max u v) := ULift (Set K)
-  obtain ⟨lin, wf⟩ := exists_wellOrder setK
-  -- let linOrd : LinearOrder (WithTop setK) := @WithTop.linearOrder _ lin
-  -- let wfOrd : WellFoundedLT (WithTop setK) := @WithTop.instWellFoundedLT _ lin.toLT wf
-  -- let succOrd : SuccOrder (WithTop setK) := by
-  --   @SuccOrder.ofLinearWellFoundedLT _ WithTop.linearOrder WithTop.instWellFoundedLT
-  -- obtain ⟨Φ⟩ : Nonempty ((FlatExtension.SuccStruct R K).Iteration (⊤ : WithTop setK)) := inferInstance
+  obtain ⟨setK, hcard⟩ : ∃ S : Type max u v, Nonempty (S ≃ Set K) := ⟨ULift (Set K), ⟨Equiv.ulift⟩⟩
+  let ⟨lin, wf⟩ := exists_wellOrder setK
+  let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
+  let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
+  let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot
+  obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct.{max u v} R K).Iteration (⊤ : WithTop setK)) :=
+    inferInstance
+  let φtop := φ.F.obj ⟨⊤, Set.self_mem_Iic⟩
+
   sorry
