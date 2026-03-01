@@ -181,10 +181,6 @@ open HomComplex
 
 variable (n : ℤ)
 
-omit [EnoughInjectives C] in
-lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
-  exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
-
 noncomputable abbrev S :=
   (single C (.up ℤ) n).obj (Injective.under (((cokernel f).truncGE n).X n))
 
@@ -253,6 +249,41 @@ lemma quasiIsoAt_π (q : ℤ) (hq : q < n) : QuasiIsoAt (π f n) q := by
   rw [quasiIsoAt_iff_isIso_homologyMap]
   apply Balanced.isIso_of_mono_of_epi
 
+@[simps]
+noncomputable def homologyShortComplex : ShortComplex C :=
+  ShortComplex.mk (homologyMap f n) (homologyMap (α f n) n) (by
+    rw [← homologyMap_comp, comp_α, homologyMap_zero])
+
+instance [Mono (homologyMap f n)] :
+    Mono (homologyShortComplex f n).f := by
+  assumption
+
+instance : Mono (homologyMap (p f n) n) := by
+  sorry
+
+omit [EnoughInjectives C] in
+lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
+  exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
+
+lemma exact_homologyShortComplex [Mono f] :
+    (homologyShortComplex f n).Exact := by
+  let T := ShortComplex.mk (homologyMap f n) (homologyMap (cokernel.π f) n)
+    (by rw [← homologyMap_comp, cokernel.condition, homologyMap_zero])
+  let φ : T ⟶ homologyShortComplex f n :=
+    { τ₁ := 𝟙 _
+      τ₂ := 𝟙 _
+      τ₃ := homologyMap ((cokernel f).πTruncGE n ≫ p f n) n
+      comm₂₃ := by
+        dsimp
+        rw [Category.id_comp, ← homologyMap_comp, α] }
+  have : Mono φ.τ₃ := by
+    dsimp [φ]
+    rw [homologyMap_comp]
+    have : Mono (homologyMap ((cokernel f).πTruncGE n) n) := sorry
+    infer_instance
+  rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
+  exact (shortExact f).homology_exact₂ n
+
 variable (hf : ∀ i < n, QuasiIsoAt f i)
 
 include hf
@@ -279,13 +310,26 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
+attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (ι f n) q := by
   obtain hq | rfl := hq.lt_or_eq'
   · have := quasiIsoAt_π f n q hq
     rw [← quasiIsoAt_iff_comp_right _ (π f n), mappingCocone.lift_fst]
     exact hf q hq
-  · sorry
+  · have := mono_homologyMap_π f n n (by lia)
+    have : Mono (homologyMap (mappingCocone.triangle (α f n)).mor₁ n) :=
+      by dsimp; infer_instance
+    have h₁ := (exact_homologyShortComplex f n).fIsKernel
+    have h₂ := (CochainComplex.homologyMap_exact₂_of_distTriang _
+      (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) n).fIsKernel
+    have : homologyMap (ι f n) n = (IsLimit.conePointUniqueUpToIso h₁ h₂).hom := by
+      have := IsLimit.conePointUniqueUpToIso_hom_comp h₁ h₂ .zero
+      dsimp at this
+      rw [← cancel_mono (homologyMap (π f n) n), this, ← homologyMap_comp,
+        mappingCocone.lift_fst]
+    rw [quasiIsoAt_iff_isIso_homologyMap, this]
+    infer_instance
 
 end step₂
 
