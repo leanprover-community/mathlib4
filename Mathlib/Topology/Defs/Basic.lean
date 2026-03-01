@@ -10,6 +10,7 @@ public import Mathlib.Tactic.Continuity
 public import Mathlib.Tactic.FunProp
 public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Data.Nat.Notation
+public import Lean.PrettyPrinter.Delaborator
 
 /-!
 # Basic definitions about topological spaces
@@ -197,6 +198,68 @@ scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 /-- Notation for `Continuous` with respect to a non-standard topologies. -/
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
+
+namespace Topology
+
+open Lean Meta PrettyPrinter.Delaborator SubExpr
+open scoped Topology
+
+/-- Return `true` if `inst` is definitionally equal to the instance synthesized for its type. -/
+private meta def isCanonicalTopologyInst (inst : Expr) : DelabM Bool := do
+  try
+    withNewMCtxDepth do
+      -- Delaboration currently does not reliably preserve local instances, so restore them here
+      -- before checking whether the instance can be re-synthesized canonically.
+      withLocalInstances (← getLCtx).decls.toList.reduceOption do
+        let some inst' ← synthInstance? (← inferType inst) | return false
+        isDefEq inst inst'
+  catch _ =>
+    return false
+
+/-- Delaborate `@IsOpen _ t` as `IsOpen[t]` when `t` is not the canonical topology instance. -/
+@[app_delab IsOpen] meta def delabIsOpenOf : Delab :=
+  whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
+  withOverApp 2 do
+    let #[_, t] := (← getExpr).getAppArgs | failure
+    if ← isCanonicalTopologyInst t then
+      failure
+    `(IsOpen[$(← withNaryArg 1 delab)])
+
+/-- Delaborate `@IsClosed _ t` as `IsClosed[t]` when `t` is not the canonical topology instance. -/
+@[app_delab IsClosed] meta def delabIsClosedOf : Delab :=
+  whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
+  withOverApp 2 do
+    let #[_, t] := (← getExpr).getAppArgs | failure
+    if ← isCanonicalTopologyInst t then
+      failure
+    `(IsClosed[$(← withNaryArg 1 delab)])
+
+/-- Delaborate `@closure _ t` as `closure[t]` when `t` is not the canonical topology instance. -/
+@[app_delab closure] meta def delabClosureOf : Delab :=
+  whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
+  withOverApp 2 do
+    let #[_, t] := (← getExpr).getAppArgs | failure
+    if ← isCanonicalTopologyInst t then
+      failure
+    `(closure[$(← withNaryArg 1 delab)])
+
+/--
+Delaborate `@Continuous _ _ t₁ t₂` as `Continuous[t₁, t₂]`
+when either topology is noncanonical.
+-/
+@[app_delab Continuous] meta def delabContinuousOf : Delab :=
+  whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
+  withOverApp 4 do
+    let #[_, _, t₁, t₂] := (← getExpr).getAppArgs | failure
+    if (← isCanonicalTopologyInst t₁) && (← isCanonicalTopologyInst t₂) then
+      failure
+    `(Continuous[$(← withNaryArg 2 delab), $(← withNaryArg 3 delab)])
+
+end Topology
 
 /-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
