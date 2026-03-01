@@ -404,7 +404,7 @@ theorem linearIndepOn_iffₛ : LinearIndepOn R v s ↔
   refine ⟨fun h l₁ h₁ l₂ h₂ eq ↦ (Finsupp.subtypeDomain_eq_iff h₁ h₂).1 <| h _ _ <|
     (Finsupp.sum_subtypeDomain_index h₁).trans eq ▸ (Finsupp.sum_subtypeDomain_index h₂).symm,
     fun h l₁ l₂ eq ↦ ?_⟩
-  refine Finsupp.embDomain_injective (Embedding.subtype s) <| h _ ?_ _ ?_ ?_
+  refine Finsupp.embDomain_injective (Embedding.subtype (· ∈ s)) <| h _ ?_ _ ?_ ?_
   iterate 2 simpa using fun _ h _ ↦ h
   simp_rw [Finsupp.embDomain_eq_mapDomain]
   rwa [Finsupp.sum_mapDomain_index, Finsupp.sum_mapDomain_index] <;>
