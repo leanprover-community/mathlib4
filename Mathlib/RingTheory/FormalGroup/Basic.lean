@@ -44,25 +44,34 @@ noncomputable section
 
 open MvPowerSeries Finsupp
 
+/-- The first indeterminate for a power series in two variables. -/
 abbrev X₀ : MvPowerSeries (Fin 2) R := X (0 : Fin 2)
 
+/-- The second indeterminate for a power series in two variables. -/
 abbrev X₁ : MvPowerSeries (Fin 2) R := X (1 : Fin 2)
 
+/-- The first indeterminate for a power series in three variables. -/
 abbrev Y₀ : MvPowerSeries (Fin 3) R := X (0 : Fin 3)
 
+/-- The second indeterminate for a power series in three variables. -/
 abbrev Y₁ : MvPowerSeries (Fin 3) R := X (1 : Fin 3)
 
+/-- The third indeterminate for a power series in three variables. -/
 abbrev Y₂ : MvPowerSeries (Fin 3) R := X (2 : Fin 3)
 
 variable (R) in
 /-- A structure for a 1-dimensional formal group law over `R`. -/
 @[ext]
 structure FormalGroup where
+  /-- The underlying power series $F(X, Y)$ in two variables. -/
   toFun : MvPowerSeries (Fin 2) R
+  /-- The constant coefficient of the formal group law is zero. -/
   zero_constantCoeff : constantCoeff toFun = 0
-  lin_coeff_X : coeff (Finsupp.single 0 1) toFun = 1
-  lin_coeff_Y : coeff (Finsupp.single 1 1) toFun = 1
-  /- Associativity condition : `F (F (X, Y), Z) = F (X, F (Y, Z))`. -/
+  /-- The coefficient of $X$ in $F(X, Y)$ is 1. -/
+  lin_coeff_X : coeff (single 0 1) toFun = 1
+  /-- The coefficient of $Y$ in $F(X, Y)$ is 1. -/
+  lin_coeff_Y : coeff (single 1 1) toFun = 1
+  /-- Associativity condition: $F(F(X, Y), Z) = F(X, F(Y, Z))$. -/
   assoc : subst ![subst ![Y₀, Y₁] toFun, Y₂] toFun
     = subst ![Y₀, subst ![Y₁, Y₂] toFun] toFun (S := R)
 
@@ -71,7 +80,7 @@ variable (R) in
 condition. -/
 @[ext]
 structure CommFormalGroup extends FormalGroup R where
-  /- Commutativity condition : `F (X, Y) = F (Y, X)`. -/
+  /- Commutativity condition: `F (X, Y) = F (Y, X)`. -/
   comm : toFun = toFun.subst ![X₁, X₀]
 
 /-- Given a formal group `F`, `F.comm` is a proposition that `F(X,Y) = F(Y,X)`. -/
