@@ -69,6 +69,9 @@ theorem adjoin_eq_exists_aeval (a : Algebra.adjoin R {x}) :
   rw [Algebra.adjoin_singleton_eq_range_aeval] at this
   simp_all
 
+/--
+Proving a fact about `a : adjoin R {x}` is the same as proving it for
+`aeval x p` where `p`is an arbitrary polynomial. -/
 @[elab_as_elim]
 theorem adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
     (a : adjoin R {x}) (f : ∀ (p : Polynomial R),
