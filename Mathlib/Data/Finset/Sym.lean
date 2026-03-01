@@ -50,6 +50,7 @@ theorem mem_sym2_iff {m : Sym2 α} : m ∈ s.sym2 ↔ ∀ a ∈ m, a ∈ s := by
   rw [mem_mk, sym2_val, Multiset.mem_sym2_iff]
   simp only [mem_val]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coe_sym2 {m : Finset α} : (m.sym2 : Set (Sym2 α)) = (m : Set α).sym2 :=
   Set.ext fun z ↦ z.ind fun a b => by simp
 
@@ -130,18 +131,14 @@ end
 
 variable {s t : Finset α} {a b : α}
 
-theorem sym2_eq_image [DecidableEq α] : s.sym2 = (s ×ˢ s).image Sym2.mk := by
-  ext z
-  refine z.ind fun x y ↦ ?_
-  grind
+theorem sym2_eq_image [DecidableEq α] : s.sym2 = (s ×ˢ s).image Sym2.mk.uncurry := by
+  ext ⟨a, b⟩; simp; grind
 
-theorem isDiag_mk_of_mem_diag {a : α × α} (h : a ∈ s.diag) : (Sym2.mk a).IsDiag :=
-  (Sym2.isDiag_iff_proj_eq _).2 (mem_diag.1 h).2
+theorem isDiag_mk_of_mem_diag {a b : α} (h : (a, b) ∈ s.diag) : s(a, b).IsDiag := by
+  simp at *; grind
 
-theorem not_isDiag_mk_of_mem_offDiag {a : α × α} (h : a ∈ s.offDiag) :
-    ¬ (Sym2.mk a).IsDiag := by
-  rw [Sym2.isDiag_iff_proj_eq]
-  exact (mem_offDiag.1 h).2.2
+theorem not_isDiag_mk_of_mem_offDiag {a b : α} (h : (a, b) ∈ s.offDiag) : ¬ s(a, b).IsDiag := by
+  simp at *; grind
 
 section Sym2
 
@@ -155,7 +152,7 @@ theorem diag_mem_sym2_mem_iff : (∀ b, b ∈ Sym2.diag a → b ∈ s) ↔ a ∈
 theorem diag_mem_sym2_iff : Sym2.diag a ∈ s.sym2 ↔ a ∈ s := by simp [diag_mem_sym2_mem_iff]
 
 theorem image_diag_union_image_offDiag [DecidableEq α] :
-    s.diag.image Sym2.mk ∪ s.offDiag.image Sym2.mk = s.sym2 := by
+    s.diag.image Sym2.mk.uncurry ∪ s.offDiag.image Sym2.mk.uncurry = s.sym2 := by
   rw [← image_union, diag_union_offDiag, sym2_eq_image]
 
 end Sym2

@@ -99,6 +99,7 @@ noncomputable instance : SMul ℚ≥0 ℝ≥0 where
 noncomputable instance zpow : Pow ℝ≥0 ℤ where
   pow x n := ⟨(x : ℝ) ^ n, zpow_nonneg x.2 _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Redo the `Nonneg.semifield` instance, because this will get unfolded a lot,
 and ends up inserting the non-reducible defeq `ℝ≥0 = { x // x ≥ 0 }` in places where
 it needs to be reducible(-with-instances).
@@ -833,6 +834,7 @@ theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_o
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [_root_.iInf_of_isEmpty, sInf_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma iSup_eq_zero (hf : BddAbove (range f)) : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := by
   cases isEmpty_or_nonempty ι
   · simp
@@ -879,6 +881,7 @@ end Set
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
@@ -901,15 +904,18 @@ theorem nnabs_coe (x : ℝ≥0) : nnabs x = x := by simp
 theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
   max_le (le_abs_self _) (abs_nonneg _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNNReal_abs (x : ℝ) : |x|.toNNReal = nnabs x := NNReal.coe_injective <| by simp
 
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
   rw [NNReal.coe_natCast, Nat.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnabs_pos {x : ℝ} : 0 < x.nnabs ↔ x ≠ 0 := by simp [← NNReal.coe_pos]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
 lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
   obtain (hr | hr) : 0 ≤ r ∨ 0 ≤ -r := by simpa using le_total ..
@@ -997,7 +1003,7 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
 
-/-- Extension for the `positivity` tactic: `Real.toNNReal. -/
+/-- Extension for the `positivity` tactic: `Real.toNNReal` -/
 @[positivity Real.toNNReal _]
 meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
@@ -1010,7 +1016,7 @@ meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
 
 alias ⟨_, nnabs_pos_of_pos⟩ := Real.nnabs_pos
 
-/-- Extension for the `positivity` tactic: `Real.nnabs. -/
+/-- Extension for the `positivity` tactic: `Real.nnabs` -/
 @[positivity Real.nnabs _]
 meta def evalRealNNAbs : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with

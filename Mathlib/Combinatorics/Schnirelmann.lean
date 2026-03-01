@@ -189,6 +189,7 @@ end
 @[simp] lemma schnirelmannDensity_empty : schnirelmannDensity ∅ = 0 :=
   schnirelmannDensity_eq_zero_of_one_notMem (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Schnirelmann density of any finset is `0`. -/
 lemma schnirelmannDensity_finset (A : Finset ℕ) : schnirelmannDensity A = 0 := by
   refine le_antisymm ?_ schnirelmannDensity_nonneg

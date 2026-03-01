@@ -67,9 +67,6 @@ theorem IsPrimary.inf {I J : Ideal R} (hi : I.IsPrimary) (hj : J.IsPrimary)
     (hij : radical I = radical J) : (I ⊓ J).IsPrimary :=
   Submodule.IsPrimary.inf hi hj (by simpa)
 
-@[deprecated (since := "2025-01-19")]
-alias isPrimary_inf := IsPrimary.inf
-
 lemma isPrimary_finsetInf {ι} {s : Finset ι} {f : ι → Ideal R} {i : ι} (hi : i ∈ s)
     (hs : ∀ ⦃y⦄, y ∈ s → (f y).IsPrimary)
     (hs' : ∀ ⦃y⦄, y ∈ s → (f y).radical = (f i).radical) :

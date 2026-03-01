@@ -34,6 +34,7 @@ instance : BraidedCategory (AlgCat.{u} R) :=
 
 instance : (forget₂ (AlgCat R) (ModuleCat R)).Braided where
 
+set_option backward.isDefEq.respectTransparency false in
 instance instSymmetricCategory : SymmetricCategory (AlgCat.{u} R) :=
   .ofFaithful (forget₂ (AlgCat R) (ModuleCat R))
 
