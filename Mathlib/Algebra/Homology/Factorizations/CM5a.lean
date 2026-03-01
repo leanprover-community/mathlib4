@@ -259,7 +259,14 @@ instance [Mono (homologyMap f n)] :
   assumption
 
 instance : Mono (homologyMap (p f n) n) := by
-  sorry
+  have := (S f n).isIso_homologyπ (n - 1) n (by simp) (by simp)
+  have : Mono ((truncGE (cokernel f) n).homologyπ n ≫ homologyMap (p f n) n) := by
+    rw [homologyπ_naturality (p f n) n]
+    infer_instance
+  have := (truncGE (cokernel f) n).isIso_homologyπ (n - 1) n (by simp)
+    ((isZero_of_isStrictlyGE _ n _ (by lia)).eq_of_src _ _)
+  rw [← IsIso.inv_hom_id_assoc ((truncGE (cokernel f) n).homologyπ n) (homologyMap (p f n) n)]
+  infer_instance
 
 omit [EnoughInjectives C] in
 lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
@@ -279,7 +286,6 @@ lemma exact_homologyShortComplex [Mono f] :
   have : Mono φ.τ₃ := by
     dsimp [φ]
     rw [homologyMap_comp]
-    have : Mono (homologyMap ((cokernel f).πTruncGE n) n) := sorry
     infer_instance
   rw [← ShortComplex.exact_iff_of_epi_of_isIso_of_mono φ]
   exact (shortExact f).homology_exact₂ n
