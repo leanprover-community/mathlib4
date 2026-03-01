@@ -335,8 +335,12 @@ protected lemma isClosed_boundary (hn : n ≠ 0) : IsClosed (I.boundary M) := by
 
 end ChartIndependence
 
+end ModelWithCorners
+
 /-! Interior and boundary are preserved under (local) diffeomorphisms. -/
 section Diffeomorph
+
+open ModelWithCorners
 
 variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -346,7 +350,7 @@ variable
 
 /-- If a function `f` is differentiable at `x` with surjective `mfderiv I I' f x` and `x` is an
 interior point with respect to `I`, `f x` must be an interior point with respect to `I'`. -/
-lemma _root_.MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x : M}
+lemma MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → N} {x : M}
     (hf : MDifferentiableAt I I' f x) (hf' : Surjective (mfderiv I I' f x))
     (hx : I.IsInteriorPoint x) : I'.IsInteriorPoint (f x) := by
   -- Since p-adic manifolds don't have boundary, WLOG `𝕜` is `ℝ` or `ℂ` and `E` is normed over `ℝ`.
@@ -378,7 +382,7 @@ lemma _root_.MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv {f : M → 
       extChartAt_source_mem_nhds _
   · exact extChartAt_target_subset_range _
 
-lemma _root_.IsLocalDiffeomorphAt.isInteriorPoint_iff (hn : n ≠ 0) {f : M → N} {x : M}
+lemma IsLocalDiffeomorphAt.isInteriorPoint_iff (hn : n ≠ 0) {f : M → N} {x : M}
     (hf : IsLocalDiffeomorphAt I I' n f x) : I.IsInteriorPoint x ↔ I'.IsInteriorPoint (f x) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · refine (hf.mdifferentiableAt hn).isInteriorPoint_of_surjective_mfderiv ?_ h
@@ -387,59 +391,61 @@ lemma _root_.IsLocalDiffeomorphAt.isInteriorPoint_iff (hn : n ≠ 0) {f : M → 
     refine (hf.localInverse_mdifferentiableAt hn).isInteriorPoint_of_surjective_mfderiv ?_ h
     exact (hf.mfderivToContinuousLinearEquiv hn).symm.surjective
 
-lemma _root_.IsLocalDiffeomorphAt.isBoundaryPoint_iff (hn : n ≠ 0) {f : M → N} {x : M}
+lemma IsLocalDiffeomorphAt.isBoundaryPoint_iff (hn : n ≠ 0) {f : M → N} {x : M}
     (hf : IsLocalDiffeomorphAt I I' n f x) : I.IsBoundaryPoint x ↔ I'.IsBoundaryPoint (f x) := by
   simp [isBoundaryPoint_iff_not_isInteriorPoint, hf.isInteriorPoint_iff hn]
 
 
-lemma _root_.IsLocalDiffeomorphOn.preimage_interior_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
+lemma IsLocalDiffeomorphOn.preimage_interior_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
     (hf : IsLocalDiffeomorphOn I I' n f s) : f ⁻¹' I'.interior N ∩ s = I.interior M ∩ s := by
   ext x
   simpa using fun hx ↦ ((hf ⟨x, hx⟩).isInteriorPoint_iff hn).symm
 
-lemma _root_.IsLocalDiffeomorphOn.preimage_boundary_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
+lemma IsLocalDiffeomorphOn.preimage_boundary_inter (hn : n ≠ 0) {f : M → N} {s : Set M}
     (hf : IsLocalDiffeomorphOn I I' n f s) : f ⁻¹' I'.boundary N ∩ s = I.boundary M ∩ s := by
   ext x
   simpa using fun hx ↦ ((hf ⟨x, hx⟩).isBoundaryPoint_iff hn).symm
 
-lemma _root_.IsLocalDiffeomorph.preimage_interior (hn : n ≠ 0) {f : M → N}
+lemma IsLocalDiffeomorph.preimage_interior (hn : n ≠ 0) {f : M → N}
     (hf : IsLocalDiffeomorph I I' n f) : f ⁻¹' I'.interior N = I.interior M := by
   simpa using (hf.isLocalDiffeomorphOn univ).preimage_interior_inter hn
 
-lemma _root_.IsLocalDiffeomorph.preimage_boundary (hn : n ≠ 0) {f : M → N}
+lemma IsLocalDiffeomorph.preimage_boundary (hn : n ≠ 0) {f : M → N}
     (hf : IsLocalDiffeomorph I I' n f) : f ⁻¹' I'.boundary N = I.boundary M := by
   simpa using (hf.isLocalDiffeomorphOn univ).preimage_boundary_inter hn
 
-lemma _root_.IsLocalDiffeomorph.boundarylessManifold (hn : n ≠ 0) {f : M → N}
+lemma IsLocalDiffeomorph.boundarylessManifold (hn : n ≠ 0) {f : M → N}
     (hf : IsLocalDiffeomorph I I' n f) [BoundarylessManifold I' N] : BoundarylessManifold I M := by
   simp [← Boundaryless.iff_boundary_eq_empty, ← hf.preimage_boundary hn,
     Boundaryless.boundary_eq_empty]
 
-lemma _root_.Diffeomorph.preimage_interior (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
+lemma Diffeomorph.preimage_interior (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
     Φ ⁻¹' I'.interior N = I.interior M :=
   Φ.isLocalDiffeomorph.preimage_interior hn
 
-lemma _root_.Diffeomorph.preimage_boundary (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
+lemma Diffeomorph.preimage_boundary (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
     Φ ⁻¹' I'.boundary N = I.boundary M :=
   Φ.isLocalDiffeomorph.preimage_boundary hn
 
-lemma _root_.Diffeomorph.image_interior (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
+lemma Diffeomorph.image_interior (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
     Φ '' I.interior M = I'.interior N :=
   (Φ.eq_preimage_iff_image_eq _ _).1 (Φ.preimage_interior hn).symm
 
-lemma _root_.Diffeomorph.image_boundary (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
+lemma Diffeomorph.image_boundary (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
     Φ '' I.boundary M = I'.boundary N :=
   (Φ.eq_preimage_iff_image_eq _ _).1 (Φ.preimage_boundary hn).symm
 
-lemma _root_.Diffeomorph.boundarylessManifold (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N)
+lemma Diffeomorph.boundarylessManifold (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N)
     [BoundarylessManifold I M] : BoundarylessManifold I' N :=
     Φ.symm.isLocalDiffeomorph.boundarylessManifold hn
 
-lemma _root_.Diffeomorph.boundarylessManifold_iff (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
+lemma Diffeomorph.boundarylessManifold_iff (hn : n ≠ 0) (Φ : M ≃ₘ^n⟮I, I'⟯ N) :
     BoundarylessManifold I M ↔ BoundarylessManifold I' N :=
   ⟨fun _ ↦ Φ.boundarylessManifold hn, fun _ ↦ Φ.symm.boundarylessManifold hn⟩
 
 end Diffeomorph
+
+namespace ModelWithCorners
 
 /-! Interior and boundary of open subsets of a manifold. -/
 section opens
