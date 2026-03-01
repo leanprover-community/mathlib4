@@ -158,8 +158,8 @@ def Gₘ : CommFormalGroup R where
 lemma Gₘ_apply : Gₘ.toFun = X₀ + X₁ + X₀ * X₁ (R := R) := rfl
 
 omit [Algebra R S] in
-/-- Given a algebra map `f : R →+* R'` and a formal group law `F` over `R`, then `f_* F` is a
-formal group law formal group law over `R'`. This is constructed by applying `f` to all coefficients
+/-- Given a algebra map `f : R →+* S` and a formal group law `F` over `R`, then `f_* F` is a
+formal group law formal group law over `S`. This is constructed by applying `f` to all coefficients
 of the underlying power series. -/
 def map (f : R →+* S) : FormalGroup S where
   toFun := F.toFun.map f
