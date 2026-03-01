@@ -74,6 +74,7 @@ lemma inr_v_fst_f (p q : ℤ) (hpq : p + 1 = q) :
   simp [inr, fst, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
     Cochain.leftShift_v _ _ _ _ _ _ _ _ hpq]
 
+@[reassoc (attr := simp)]
 lemma inr_v_snd_v (p q : ℤ) (hpq : p + 1 = q) :
     (inr φ).1.v p q hpq ≫ (snd φ).v q p (by lia) = 𝟙 _ := by
   simp [inr, snd, Cochain.rightShift_v _ _ _ _ _ _ _ _ (add_zero p),
@@ -148,6 +149,39 @@ lemma δ_descCochain (n' : ℤ) (hn' : n + 1 = n') :
 
 end
 
+@[simps]
+noncomputable def descCocycle {M : CochainComplex C ℤ} {n m : ℤ}
+    (α : Cochain K M m) (β : Cocycle L M n) (h : m + 1 = n)
+    (hαβ : δ m n α + m.negOnePow • (Cochain.ofHom φ).comp β.1 (zero_add n) = 0) :
+    Cocycle (mappingCocone φ) M m :=
+  ⟨descCochain φ α β h, by
+    simp [Cocycle.mem_iff _ n h, δ_descCochain _ _ _ h (n + 1) (by lia), hαβ]⟩
+
+section
+
+variable {M : CochainComplex C ℤ} (α : Cochain K M 0) (β : Cocycle L M 1)
+  (hαβ : δ 0 1 α + (Cochain.ofHom φ).comp β.1 (zero_add 1) = 0)
+
+noncomputable def desc : mappingCocone φ ⟶ M :=
+  (descCocycle φ α β (zero_add 1) (by simpa)).homOf
+
+@[simp]
+lemma ofHom_desc :
+    Cochain.ofHom (desc φ α β hαβ) = descCochain φ α β.1 (by lia) := by
+  simp [desc]
+
+@[reassoc (attr := simp)]
+lemma inl_v_desc_f (p : ℤ) :
+    (inl φ).v p p (add_zero p) ≫ (desc φ α β hαβ).f p = α.v p p (add_zero p) := by
+  simp [desc]
+
+@[reassoc (attr := simp)]
+lemma inr_v_desc_f (p q : ℤ) (hpq : p + 1 = q) :
+    (inr φ).1.v p q hpq ≫ (desc φ α β hαβ).f q = β.1.v p q hpq := by
+  simp [desc]
+
+end
+
 section
 
 variable {M : CochainComplex C ℤ} {n m : ℤ}
@@ -203,8 +237,8 @@ end
 
 @[simps]
 noncomputable def liftCocycle {M : CochainComplex C ℤ} {n m : ℤ}
-  (α : Cocycle M K n) (β : Cochain M L m) (h : m + 1 = n)
-  (hαβ : δ m n β + α.1.comp (Cochain.ofHom φ) (add_zero n) = 0) :
+    (α : Cocycle M K n) (β : Cochain M L m) (h : m + 1 = n)
+    (hαβ : δ m n β + α.1.comp (Cochain.ofHom φ) (add_zero n) = 0) :
     Cocycle M (mappingCocone φ) n :=
   ⟨liftCochain φ α β h,
     by simp [Cocycle.mem_iff _ _ rfl, δ_liftCochain _ _ _ _ _ rfl, hαβ]⟩

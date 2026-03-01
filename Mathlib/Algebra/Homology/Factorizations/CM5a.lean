@@ -5,12 +5,13 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 public import Mathlib.Algebra.Homology.HomologicalComplexLimitsEventuallyConstant
 public import Mathlib.Algebra.Homology.Refinements
 public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
+public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Category.Factorisation
 public import Mathlib.CategoryTheory.Functor.OfSequence
 
@@ -206,59 +207,12 @@ lemma comp_α_f (i : ℤ) : f.f i ≫ (α f n).f i = 0 := by simp [← comp_f]
 
 noncomputable abbrev mid := mappingCocone (α f n)
 
-noncomputable def ι : K ⟶ mid f n := mappingCocone.lift (α f n) f 0 (by simp)
+noncomputable abbrev ι : K ⟶ mid f n := mappingCocone.lift (α f n) f 0 (by simp)
 
-noncomputable def ι' : Cocycle K (mappingCone (α f n)) (-1) :=
-  mappingCone.liftCocycle (α f n) (Cocycle.ofHom f) 0 (neg_add_cancel 1) (by cat_disch)
+noncomputable abbrev π : mid f n ⟶ L := mappingCocone.fst (α f n)
 
-noncomputable def π : mid f n ⟶ L :=
-  -((mappingCone.fst (α f n)).leftShift (-1) 0 (add_neg_cancel 1)).homOf
-
-noncomputable def inl (q : ℤ) : L.X q ⟶ (mid f n).X q :=
-  (mappingCone.inl (α f n)).v _ _ rfl
-
-noncomputable def inr (p q : ℤ) (hpq : p + 1 = q) : (S f n).X p ⟶ (mid f n).X q :=
-  ((Cochain.ofHom (mappingCone.inr (α f n))).rightShift (-1) 1 (by lia)).v p q hpq
-
-noncomputable def snd (p q : ℤ) (hpq : q + 1 = p) : (mid f n).X p ⟶ (S f n).X q :=
-  (mappingCone.snd (α f n)).v _ _ (by lia)
-
-@[reassoc (attr := simp)]
-lemma inl_π_f (p : ℤ) :
-    inl f n p ≫ (π f n).f p = 𝟙 _ := by
-  simp [inl, π, Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia)]
-
-@[reassoc (attr := simp)]
-lemma inl_snd (p q : ℤ) (hpq : q + 1 = p) :
-    inl f n p ≫ snd f n p q hpq = 0 := by
-  obtain rfl : q = p + -1 := by lia
-  simp [inl, snd]
-
-@[reassoc (attr := simp)]
-lemma inr_π_f (p q : ℤ) (hpq : p + 1 = q) :
-    inr f n p q hpq ≫ (π f n).f q = 0 := by
-  simp [inr, π, Cochain.rightShift_v (n := 0) _ _ _ _ p _ _ p (by lia),
-    Cochain.leftShift_v (n := 1) _ _ _ _ _ _ _ _ hpq]
-
-@[reassoc (attr := simp)]
-lemma inr_snd (p q : ℤ) (hpq : p + 1 = q) :
-    inr f n p q hpq ≫ snd f n q p hpq = 𝟙 _ := by
-  obtain rfl : p = q + -1 := by lia
-  simp [inr, snd, Cochain.rightShift_v (n := 0) _ _ _ _ _ _ _ _ (add_zero _)]
-
-@[reassoc (attr := simp)]
-lemma ι_π : ι f n ≫ π f n = f := by
-  ext i
-  simp [ι, ι', π, Cochain.rightShift_v (n := -1) _ (-1) 0 _ i i _ (i + -1) (by lia),
-    Cochain.leftShift_v (n := 1) _ _ _ _ _ i _ (i + -1) (by lia)]
-
-@[simp]
-lemma id (p q : ℤ) (hpq : q + 1 = p) :
-    (π f n).f p ≫ inl f n p + snd f n p q hpq ≫ inr f n q p hpq = 𝟙 _ := by
-  obtain rfl : q = p + -1 := by lia
-  simpa [π, inr, Cochain.leftShift_v (n := 1) _ _ _ _ _ p _ (p + -1) (by lia),
-    Cochain.rightShift_v (n := 0) _ _ _ _ (p + -1) _ _ (p + -1) (by lia)] using
-    mappingCone.id_X (α f n) (p + -1) p (by lia)
+@[reassoc]
+lemma ι_π : ι f n ≫ π f n = f := by simp
 
 instance [Mono f] : Mono (ι f n) := mono_of_mono_fac (ι_π f n)
 
@@ -266,44 +220,38 @@ lemma degreewiseEpiWithInjectiveKernel_π :
     degreewiseEpiWithInjectiveKernel (π f n) := by
   intro i
   rw [epiWithInjectiveKernel_iff]
-  refine ⟨_, inferInstance, inr f n (i - 1) i (by lia), by simp,
-    ⟨{r := snd f n i (i - 1) (by lia)
-      s := inl f n i
-      f_r := by simp
-      s_g := by simp
-      id := (add_comm _ _).trans (id f n i (i - 1) (by lia)) }⟩⟩
+  refine ⟨_, inferInstance, (mappingCocone.inr (α f n)).1.v (i - 1) i (by lia), by simp,
+    ⟨{r := (mappingCocone.snd (α f n)).v _ _ (by lia)
+      s := (mappingCocone.inl (α f n)).v _ _ (by lia)
+      id := (add_comm _ _).trans (by simp [mappingCocone.id_X]) }⟩⟩
 
 lemma isIso_π_f (i : ℤ) (hi : i ≤ n) : IsIso ((π f n).f i) := by
-  refine ⟨inl f n i, ?_, by simp⟩
-  simp only [← id f n i (i - 1) (by lia), left_eq_add, comp_zero,
-    (isZero_single_obj_X _ _ _ _ (by lia)).eq_of_src (inr f n (i - 1) i (by lia)) 0]
+  refine ⟨(mappingCocone.inl (α f n)).v i i (add_zero i), ?_, by simp⟩
+  simp [← mappingCocone.id_X (α f n) i (i - 1) (by lia),
+    (isZero_single_obj_X _ _ _ _ (by lia)).eq_of_src
+      ((mappingCocone.inr (α f n)).1.v (i - 1) i (by lia)) 0]
 
-noncomputable def δ : S f n ⟶ (mid f n)⟦(1 : ℤ)⟧ :=
-  -- sign?_
-  (mappingCone.triangle (α f n)).mor₂ ≫
-    (shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).inv.app _
+section
 
-@[simps! obj₁ obj₂ obj₃ mor₁ mor₂ mor₃]
-noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
-  Triangle.mk (π f n) (α f n) (δ f n)
+attribute [local instance] HasDerivedCategory.standard
 
-noncomputable def rotateTriangleIso :
-    (triangle f n).rotate ≅ mappingCone.triangle (α f n) := by
-  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-    ((shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).app _) ?_ ?_ ?_
-  · dsimp
-    simp
-  · dsimp
-    simp [δ]
-  · dsimp
-    ext p
-    simp [π, mappingCone.triangle, Cochain.leftShift_v _ _ _ _ _ _ _ _ rfl,
-      Cochain.rightShift_v _ _ _ _ _ _ _ _ rfl,
-      shiftFunctorCompIsoId, shiftFunctorAdd'_inv_app_f', shiftFunctorZero_hom_app_f]
+lemma mono_homologyMap_π (q : ℤ) (hq : q ≤ n) : Mono (homologyMap (π f n) q) :=
+  (CochainComplex.homologyMap_exact₁_of_distTriang _
+    (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) (q - 1) q (by lia)).mono_g
+      ((ExactAt.isZero_homology (exactAt_single_obj _ _ _ _ (by lia))).eq_of_src _ _)
 
-lemma triangle_distinguished [HasDerivedCategory C] :
-    DerivedCategory.Q.mapTriangle.obj (triangle f n) ∈ distTriang _ := by
-  sorry
+lemma epi_homologyMap_π (q : ℤ) (hq : q < n) : Epi (homologyMap (π f n) q) :=
+  (CochainComplex.homologyMap_exact₂_of_distTriang _
+    (DerivedCategory.mappingCocone_triangle_distinguished (α f n)) q).epi_f
+      ((ExactAt.isZero_homology (exactAt_single_obj _ _ _ _ (by lia))).eq_of_tgt _ _)
+
+end
+
+lemma quasiIsoAt_π (q : ℤ) (hq : q < n) : QuasiIsoAt (π f n) q := by
+  have := mono_homologyMap_π f n q (by lia)
+  have := epi_homologyMap_π f n q hq
+  rw [quasiIsoAt_iff_isIso_homologyMap]
+  apply Balanced.isIso_of_mono_of_epi
 
 variable (hf : ∀ i < n, QuasiIsoAt f i)
 
@@ -332,14 +280,13 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   exact isGE_cokernel f n hf
 
 include hf in
-lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (i : ℤ) (hi : i ≤ n) :
-    QuasiIsoAt (ι f n) i := by
-  obtain hi | rfl := hi.lt_or_eq'
+lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
+    QuasiIsoAt (ι f n) q := by
+  obtain hq | rfl := hq.lt_or_eq'
+  · have := quasiIsoAt_π f n q hq
+    rw [← quasiIsoAt_iff_comp_right _ (π f n), mappingCocone.lift_fst]
+    exact hf q hq
   · sorry
-  · let S₁ := ShortComplex.mk (homologyMap (π f n) n) (homologyMap (α f n) n) (by
-      simp only [← homologyMap_comp]
-      sorry)
-    sorry
 
 end step₂
 
