@@ -479,22 +479,6 @@ protected def noEdge (vertexSet : Set α) (β : Type*) : Graph α β where
 
 variable {vertexSet : Set α} {edgeSet : Set β}
 
-@[simp]
-lemma noEdge_not_inc : ¬ (Graph.noEdge vertexSet β).Inc e x := by
-  simp [Inc]
-
-@[simp]
-lemma noEdge_not_isLoopAt : ¬ (Graph.noEdge vertexSet β).IsLoopAt e x := by
-  simp [← isLink_self_iff]
-
-@[simp]
-lemma noEdge_not_isNonloopAt : ¬ (Graph.noEdge vertexSet β).IsNonloopAt e x := by
-  simp [IsNonloopAt]
-
-@[simp]
-lemma noEdge_not_adj : ¬ (Graph.noEdge vertexSet β).Adj x y := by
-  simp [Adj]
-
 lemma edgeSet_eq_empty_iff : E(G) = ∅ ↔ G = Graph.noEdge V(G) β := by
   refine ⟨fun h ↦ Graph.ext rfl ?_, fun h ↦ by rw [h, noEdge_edgeSet]⟩
   simp only [noEdge_isLink, iff_false]
