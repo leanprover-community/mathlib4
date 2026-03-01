@@ -239,17 +239,14 @@ variable [Finite ι']
 open Function in
 private lemma finite_mulSupport_iSup_max_iSup_one (h : Nonempty ι') (p : ι' → MvPolynomial ι K) :
     (fun v : nonarchAbsVal ↦
-      ⨆ j, max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1).mulSupport.Finite := by
-  -- fun_prop (disch := assumption)
-  refine finite_mulSupport_iSup fun j ↦ ?_
+      ⨆ j, max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1).HasFiniteMulSupport := by
+  refine hasFiniteMulSupport_iSup _ fun j ↦ ?_
   rcases isEmpty_or_nonempty (p j).support with hs₀ | hs₀
-  · simp
-  refine finite_mulSupport_max ?_ finite_mulSupport_one
-  exact finite_mulSupport_iSup fun ⟨s, hs⟩ ↦ mulSupport_finite <| mem_support_iff.mp hs
+  · simp [hasFiniteMulSupport_one]
+  have H (s : (p j).support) : coeff s.val (p j) ≠ 0 := mem_support_iff.mp s.prop
+  fun_prop (disch := simp [H])
 
 open Real Multiset Finsupp in
--- set_option Elab.async false in
--- #count_heartbeats in -- 6794
 private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomial ι K}
     (h : (fun j ↦ constantCoeff (p j)) ≠ 0) :
     mulHeight (fun j ↦ constantCoeff (p j)) ≤ mulHeightBound p := by
@@ -273,8 +270,6 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
 variable [Finite ι]
 
 open Real Finsupp Multiset in
--- set_option Elab.async false in
--- #count_heartbeats in -- 20170
 /-- Let `K` be a field with an admissible family of absolute values (giving rise
 to a multiplicative height).
 Let `p` be a family (indexed by `ι'`) of homogeneous polynomials in variables indexed by
@@ -293,7 +288,6 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     simpa [h₀, mulHeight_zero] using one_le_pow₀ <| one_le_mulHeight x
   have F₁ := finite_mulSupport_iSup_max_iSup_one (Function.ne_iff.mp h₀).nonempty p
   have F₂ := mulSupport_iSup_nonarchAbsVal_finite hx
-  have F₃ := Function.finite_mulSupport_pow F₂ N
   have H₀ (v : AbsoluteValue K ℝ) : 0 ≤ ⨆ j, Finsupp.sum (p j) fun _ c ↦ v c :=
     iSup_nonneg (fun j ↦ sum_nonneg' <| fun s ↦ by positivity)
   -- The following four statements are used in the `gcongr`s below.
@@ -321,10 +315,9 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     · exact HH₁ v
     · exact HH₂ (fun j ↦ Finsupp.sum (p j) fun _ c ↦ v c) j
   · -- nonarchimedean part: reduce to "local" statement `mvPolynomial_bound_nonarch`
-    rw [finprod_pow F₂, ← finprod_mul_distrib F₁ F₃]
-    refine finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h₀)
-      (fun v ↦ v.val.iSup_abv_nonneg) (Function.finite_mulSupport_mul F₁ F₃)
-      fun v ↦ Real.iSup_le (fun j ↦ ?_) ?_
+    rw [finprod_pow (by fun_prop), ← finprod_mul_distrib F₁ (by fun_prop)]
+    refine finprod_le_finprod (by fun_prop (disch := assumption))
+      (fun v ↦ v.val.iSup_abv_nonneg) (by fun_prop) fun v ↦ Real.iSup_le (fun j ↦ ?_) ?_
     · grw [mvPolynomial_bound_of_IsNonarchimedean (isNonarchimedean _ v.prop) (hp j) x]
       gcongr
       · exact HH₁ v.val
