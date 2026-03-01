@@ -506,7 +506,7 @@ section DenseExtension
 variable {α β : Type*} [UniformSpace α] [UniformSpace β]
 
 theorem isUniformInducing_val (s : Set α) :
-    IsUniformInducing (@Subtype.val α s) := ⟨uniformity_setCoe⟩
+    IsUniformInducing ((↑) : s → α) := ⟨uniformity_setCoe⟩
 
 @[simp]
 theorem uniformContinuous_rangeFactorization_iff {f : α → β} :
