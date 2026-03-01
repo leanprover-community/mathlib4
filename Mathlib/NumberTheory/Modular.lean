@@ -108,6 +108,7 @@ open Filter ContinuousLinearMap
 
 attribute [local simp] ContinuousLinearMap.coe_smul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `(c,d) → |cz+d|^2` is proper, that is, preimages of bounded-above sets are finite.
 -/
 theorem tendsto_normSq_coprime_pair :
@@ -183,6 +184,7 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
@@ -244,6 +246,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   simp [field]
   linear_combination -((z : ℂ) * (g 1 1 : ℂ) - g 1 0) * H
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     Tendsto
       (fun g : { g : SL(2, ℤ) // g 1 = p } => |((g : SL(2, ℤ)) • z).re|) cofinite atTop := by
@@ -530,6 +533,7 @@ lemma coe_truncatedFundamentalDomain (y : ℝ) :
         ← h3, ← sq] using h2.trans_lt (by norm_num)
     exact ⟨⟨z, hz'⟩, ⟨⟨by simpa [Complex.normSq_eq_norm_sq], h2⟩, h1⟩, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
 lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     IsCompact (truncatedFundamentalDomain y) := by

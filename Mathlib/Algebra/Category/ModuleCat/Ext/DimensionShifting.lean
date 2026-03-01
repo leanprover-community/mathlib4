@@ -28,6 +28,7 @@ variable {M : Type v} [AddCommGroup M] [Module R M] {N : Type v} [AddCommGroup N
 
 open CategoryTheory Abelian
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The standard short complex `0 → N → P → M → 0` with `P= R^{⊕M}` free. -/
 noncomputable abbrev ModuleCat.projectiveShortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
     ShortComplex (ModuleCat.{v} R) :=
@@ -35,6 +36,7 @@ noncomputable abbrev ModuleCat.projectiveShortComplex [Small.{v} R] (M : ModuleC
     ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
   (e.constr ℕ id).shortComplexKer
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ModuleCat.shortExact_projectiveShortComplex [Small.{v} R] (M : ModuleCat.{v} R) :
     M.projectiveShortComplex.ShortExact := by
   apply LinearMap.shortExact_shortComplexKer

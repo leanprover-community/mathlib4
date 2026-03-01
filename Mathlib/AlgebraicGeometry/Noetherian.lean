@@ -233,6 +233,7 @@ instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoe
   · rw [IsAffineOpen.range_fromSpec]
     exact Set.inter_subset_left
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LocallyOfFiniteType.isLocallyNoetherian
     {X Y : Scheme} (f : X ⟶ Y) [LocallyOfFiniteType f]
     [IsLocallyNoetherian Y] : IsLocallyNoetherian X := by

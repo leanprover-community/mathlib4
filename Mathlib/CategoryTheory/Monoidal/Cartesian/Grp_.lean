@@ -28,6 +28,7 @@ universe w v u
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   {M G H X Y : C} [MonObj M] [GrpObj G] [GrpObj H]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 def GrpObj.ofRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
@@ -102,6 +103,7 @@ def yonedaGrpObjIsoOfRepresentableBy (F : Cᵒᵖ ⥤ GrpCat.{v}) (α : (F ⋙ f
   ((yonedaMonObjIsoOfRepresentableBy X (F ⋙ forget₂ GrpCat MonCat) α).hom.app Y).hom.map_mul })
       fun φ ↦ GrpCat.hom_ext <| MonoidHom.ext <| α.homEquiv_comp φ.unop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding of `Grp_C` into presheaves of groups. -/
 @[simps]
 def yonedaGrp : Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v} where
@@ -197,7 +199,7 @@ see `CategoryTheory.GrpObj.lift_commutator_eq_mul_mul_inv_inv`.
 This morphism is constant with value `1` if and only if `G` is commutative
 (see `CategoryTheory.isCommMonObj_iff_commutator_eq_toUnit_η`). -/
 def GrpObj.commutator (G : C) [GrpObj G] : G ⊗ G ⟶ G :=
-  fst _ _ * snd _ _ * (fst _ _) ⁻¹ * (snd _ _) ⁻¹
+  fst _ _ * snd _ _ * (fst _ _)⁻¹ * (snd _ _)⁻¹
 
 @[reassoc (attr := simp)]
 lemma GrpObj.lift_commutator_eq_mul_mul_inv_inv {X G : C} [GrpObj G] (f₁ f₂ : X ⟶ G) :
@@ -263,8 +265,6 @@ attribute [local simp] mul_eq_mul comp_mul mul_comm mul_div_mul_comm in
 instance : IsCommMonObj H where
 
 instance [IsCommMonObj G.X] (f : G ⟶ H) : IsMonHom f where
-  one_hom := by ext; simp [Grp.instMonObj]
-  mul_hom := by ext; simp [Grp.instMonObj]
 
 end Grp
 

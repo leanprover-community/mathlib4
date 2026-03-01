@@ -102,6 +102,7 @@ instance lattice : Lattice (ι →₀ M) where
 
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma support_inf_union_support_sup : (f ⊓ g).support ∪ (f ⊔ g).support = f.support ∪ g.support :=
   coe_injective <| compl_injective <| by ext; simp [inf_eq_and_sup_eq_iff]
 

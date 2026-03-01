@@ -72,6 +72,7 @@ namespace CategoryTheory.Limits.Types
 
 variable {X : Type u} {ι : Type w} {A : Set X} {U : ι → Set X} {V : ι → ι → Set X}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `X : Type u`, `A : Set X`, `U : ι → Set X` and `V : ι → ι → Set X` such
 that `MulticoequalizerDiagram A U V` holds, then in the category of types,
 `A` is the multicoequalizer of the `U i`s along the `V i j`s. -/
