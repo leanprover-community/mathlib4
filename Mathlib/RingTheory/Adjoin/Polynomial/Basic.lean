@@ -12,8 +12,11 @@ public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 ## Main results
 
-* `Polynomial.instCommSemiringAdjoinSingleton, instCommRingAdjoinSingleton`:
+* `Algebra.instCommSemiringAdjoinSingleton, Algebra.instCommRingAdjoinSingleton`:
   adjoining an element to a commutative (semi)ring gives a commutative (semi)ring
+* `Algebra.adjoin_singleton_induction`:
+  proving a fact about `a : adjoin R {x}` is the same as proving it for `aeval x p` where `p`
+  is an arbitrary polynomial
 -/
 
 @[expose] public section
@@ -24,7 +27,7 @@ open Finset
 
 open Polynomial
 
-namespace Polynomial
+namespace Algebra
 
 universe u v w z
 
@@ -39,35 +42,38 @@ variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
 @[simp]
-theorem adjoin_X : adjoin R ({X} : Set R[X]) = ⊤ := by
+theorem _root_.Polynomial.adjoin_X : adjoin R ({X} : Set R[X]) = ⊤ := by
   refine top_unique fun p _hp => ?_
   set S := adjoin R ({X} : Set R[X])
   rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial]
   exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (subset_adjoin rfl) _) _
 
 variable (R)
-theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
+theorem adjoin_singleton_eq_range_aeval (x : A) :
     adjoin R {x} = (aeval x).range := by
   rw [← Algebra.map_top, ← adjoin_X, AlgHom.map_adjoin, Set.image_singleton, aeval_X]
 
 @[simp]
-theorem aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x} := by
+theorem _root_.Polynomial.aeval_mem_adjoin_singleton : aeval x p ∈ adjoin R {x} := by
   simp [adjoin_singleton_eq_range_aeval]
 
-theorem _root_.Algebra.adjoin_mem_exists_aeval {a : A} (h : a ∈ Algebra.adjoin R {x}) :
+theorem adjoin_mem_exists_aeval {a : A} (h : a ∈ Algebra.adjoin R {x}) :
     ∃ p : R[X], aeval x p = a := by
   rw [Algebra.adjoin_singleton_eq_range_aeval] at h
   simp_all
 
-theorem _root_.Algebra.adjoin_eq_exists_aeval (a : Algebra.adjoin R {x}) :
+theorem adjoin_eq_exists_aeval (a : Algebra.adjoin R {x}) :
     ∃ p : R[X], aeval x p = a := by
   have : (a : A) ∈ Algebra.adjoin R {x} := by simp
   set y := (a : A) with h
   rw [Algebra.adjoin_singleton_eq_range_aeval] at this
   simp_all
 
+/--
+Proving a fact about `a : adjoin R {x}` is the same as proving it for
+`aeval x p` where `p`is an arbitrary polynomial. -/
 @[elab_as_elim]
-theorem _root_.Algebra.adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
+theorem adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
     (a : adjoin R {x}) (f : ∀ (p : Polynomial R),
     M (⟨aeval x p, aeval_mem_adjoin_singleton R x⟩ : adjoin R {x})) :
     M a := by
@@ -75,17 +81,16 @@ theorem _root_.Algebra.adjoin_singleton_induction {M : (adjoin R {x}) → Prop}
   grind
 
 instance instCommSemiringAdjoinSingleton :
-    CommSemiring <| adjoin R {x} :=
-  { mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
+    CommSemiring <| adjoin R {x} where
+  mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
       obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
       obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
       simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, MulMemClass.mk_mul_mk, ← map_mul,
-        mul_comm p' q'] }
+        mul_comm p' q']
 
 instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
-    CommRing <| Algebra.adjoin R {x} :=
-  { mul_comm := mul_comm }
+    CommRing <| Algebra.adjoin R {x} where
 
 end aeval
 
-end Polynomial
+end Algebra
