@@ -34,6 +34,11 @@ Define the interior and boundary of a manifold.
 - `ModelWithCorners.isOpen_interior`, `ModelWithCorners.isClosed_boundary`: the interior is open and
   and the boundary is closed. This is currently only proven for C¹ manifolds.
 
+- `MDifferentiableAt.isInteriorPoint_of_surjective_mfderiv`: differentiable maps with surjective
+  differential send interior points to interior points
+- `IsLocalDiffeomorphAt.isInteriorPoint_iff` etc.: local diffeomorphisms preserve both the boundary
+  and interior
+
 - `ModelWithCorners.interior_open`: the interior of `u : Opens M` is the preimage of the interior
   of `M` under the inclusion
 - `ModelWithCorners.boundary_open`: the boundary of `u : Opens M` is the preimage of the boundary
