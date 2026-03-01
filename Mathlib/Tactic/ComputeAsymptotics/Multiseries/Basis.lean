@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 module
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 public import Mathlib.Analysis.Complex.Exponential
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Well-formed bases
@@ -13,8 +13,8 @@ public import Mathlib.Analysis.Complex.Exponential
 ## Main definitions
 
 * `WellFormedBasis basis`: a predicate meaning that all functions from `basis` tend to `atTop`,
-and `basis` is sorted such that if
-`g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
+  and `basis` is sorted such that if
+  `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
 -/
 

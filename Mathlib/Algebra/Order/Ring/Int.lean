@@ -43,6 +43,7 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.m
 
 /-! ### Miscellaneous lemmas -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
   simp [← not_even_iff_odd, ← Set.compl_setOf, isCompl_compl]
 

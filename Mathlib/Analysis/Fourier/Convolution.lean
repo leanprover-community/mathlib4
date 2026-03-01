@@ -41,6 +41,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedSpace 𝕜 F₁] [NormedSpace 𝕜 F₂] [NormedSpace 𝕜 F₃]
 
+set_option backward.isDefEq.respectTransparency false in
 /- The norm of the integrant of the convolution is integrable if the functions are integrable
 and continuous. -/
 theorem integrable_prod_sub (B : F₁ →L[𝕜] F₂ →L[𝕜] F₃) {f₁ : E → F₁} {f₂ : E → F₂}
@@ -98,6 +99,7 @@ variable [CompleteSpace F₁] [CompleteSpace F₂] [CompleteSpace F₃]
 
 open ContinuousLinearMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform of the convolution is given by the bilinear map applied to the Fourier
 transform of the individual functions. -/
 theorem fourier_bilin_convolution_eq (B : F₁ →L[ℂ] F₂ →L[ℂ] F₃) {f₁ : E → F₁} {f₂ : E → F₂}

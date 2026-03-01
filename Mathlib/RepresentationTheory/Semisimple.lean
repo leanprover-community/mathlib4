@@ -5,7 +5,12 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.RepresentationTheory.Irreducible
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.RepresentationTheory.Subrepresentation
+public import Mathlib.RingTheory.SimpleModule.Basic
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Semisimple representations
@@ -29,11 +34,13 @@ variable [Monoid G] [Field k] [AddCommGroup V] [Module k V]
 abbrev IsSemisimpleRepresentation :=
   ComplementedLattice (Subrepresentation ρ)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleRepresentation_iff_isSemisimpleModule_asModule :
     IsSemisimpleRepresentation ρ ↔ IsSemisimpleModule k[G] ρ.asModule := by
   rw [isSemisimpleModule_iff]
   exact OrderIso.complementedLattice_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimpleModule_iff_isSemisimpleRepresentation_ofModule (M : Type*) [AddCommGroup M]
     [Module k[G] M] :
     IsSemisimpleModule k[G] M ↔ IsSemisimpleRepresentation (ofModule (k := k) (G := G) M) := by
