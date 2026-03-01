@@ -99,6 +99,7 @@ instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
     (F.denseAt _).hom_ext' (fun X p ↦ by
       simpa using ULift.up_injective (congr_fun (NatTrans.congr_app h (op X)) (ULift.up p)))
 
+set_option backward.isDefEq.respectTransparency false in
 instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
   map_surjective {Y Z} f := by
     let c : Cocone (CostructuredArrow.proj F Y ⋙ F) :=
@@ -128,7 +129,7 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
           ext ⟨x⟩
           let α : CostructuredArrow.mk (F.map f ≫ x) ⟶ CostructuredArrow.mk x :=
             CostructuredArrow.homMk f
-          simp [uliftYoneda, ← s.w α, α] }
+          simp [← s.w α, α] }
     have hφ (s) (j) : (restrictedULiftYoneda F).map j.hom ≫ φ s =
         (restrictedULiftYoneda F).map (s.ι.app j) := by
       ext ⟨X⟩ ⟨x⟩
@@ -141,7 +142,7 @@ lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
         fac s j := h.map_injective (by simp [hφ])
         uniq s m hm := h.map_injective (by
           ext ⟨X⟩ ⟨x⟩
-          simp [uliftYoneda, φ, ← hm])}⟩
+          simp [φ, ← hm])}⟩
 
 lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
     F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=

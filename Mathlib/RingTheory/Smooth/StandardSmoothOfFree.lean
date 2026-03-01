@@ -44,6 +44,7 @@ open KaehlerDifferential
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `H¹(S/R) = 0` and `Ω[S⁄R]` is free on `{d sᵢ}ᵢ` for some `sᵢ : S`, then `S`
 is `R`-standard smooth. -/
 theorem IsStandardSmooth.of_basis_kaehlerDifferential [FinitePresentation R S]
@@ -96,6 +97,7 @@ theorem Etale.iff_isStandardSmoothOfRelativeDimension_zero :
   refine ⟨inferInstance, ⟨Empty, Module.Basis.empty Ω[S⁄R], ?_⟩⟩
   simp [Set.range_subset_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R) in
 /-- If `S` is `R`-smooth at a prime `p`, then `S` is `R`-standard-smooth in a neighbourhood of `p`:
 there exists a basic open `p ∈ D(f)` of `Spec S` such that `S[1/f]` is standard smooth. -/
