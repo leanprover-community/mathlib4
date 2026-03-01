@@ -63,26 +63,13 @@ attribute [instance] commRing algebra isLocalRing isLocalHom
 
 noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
   let e : R ≃+* Shrink.{w} R := (Shrink.ringEquiv R).symm
-  letI : IsLocalHom (algebraMap R (Shrink.{w} R)) :=
+  let : IsLocalHom (algebraMap R (Shrink.{w} R)) :=
     IsLocalHom.of_surjective e.toRingHom e.surjective
-  refine
-    { Ring := Shrink.{w} R
-      flat := Module.Flat.of_linearEquiv (Shrink.linearEquiv R R)
-      eqmap := ?_
-      resembd := ?_}
+  refine ⟨Shrink.{w} R, Module.Flat.of_linearEquiv (Shrink.linearEquiv R R), ?_, ?_⟩
   · apply (IsLocalRing.eq_maximalIdeal _).symm
     exact (Ideal.isMaximal_map_iff_of_bijective _ e.bijective).2 inferInstance
-  · let e : R ≃+* Shrink.{w} R := (Shrink.algEquiv R R).symm.toRingEquiv
-    let f : ResidueField (Shrink.{w} R) →+* K :=
-      (algebraMap (ResidueField R) K).comp (ResidueField.map (e.symm : Shrink.{w} R →+* R))
-    refine
-      { toRingHom := f
-        commutes' := ?_ }
-    intro x
-    obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective (R := R) x
-    simpa [f, e] using congrArg (algebraMap (ResidueField R) K)
-      (IsLocalRing.ResidueField.map_residue (f := (e.symm : Shrink.{w} R →+* R))
-        (r := algebraMap R (Shrink.{w} R) x))
+  · exact (Algebra.ofId (ResidueField R) K).comp
+      (AlgEquiv.ofRingEquiv (f := ResidueField.mapEquiv e) (fun x ↦ rfl)).symm.toAlgHom
 
 variable {R K} in
 structure Hom (S₁ S₂ : FlatExtension.{w} R K) where
