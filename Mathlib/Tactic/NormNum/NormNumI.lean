@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yunzhou Xie, Sidharth Hariharan
 -/
 -- import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 ## `norm_num` extension for complex numbers
