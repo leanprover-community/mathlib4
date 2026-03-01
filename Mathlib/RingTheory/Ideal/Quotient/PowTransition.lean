@@ -210,7 +210,7 @@ theorem factorPow_powSmulQuotInclusion_comm {a b c d e : ℕ} (h : c = b + a) (h
 
 set_option backward.isDefEq.respectTransparency false in
 theorem powSmulQuotInclusion_range {a b c : ℕ} (h : c = b + a) (N : Submodule R M) :
-    (powSmulQuotInclusion I M h N).range = (I ^ a • N).map (Submodule.mkQ (I ^ c • N)) := by
+    (powSmulQuotInclusion I M h N).range = (I ^ a • N).map (mkQ (I ^ c • N)) := by
   simp [powSmulQuotInclusion, mapQ, range_liftQ, LinearMap.range_comp]
 
 end Submodule
