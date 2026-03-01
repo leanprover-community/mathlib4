@@ -84,10 +84,15 @@ lemma extensionByAlgebraic_maximalIdeal_map (x : K) (int : IsIntegral (ResidueFi
     ((maximalIdeal S).map (algebraMap S (extensionByAlgebraic K S x int))).IsMaximal := by
   let f' := (Ideal.Quotient.mk (Ideal.span {(minpoly (ResidueField S) x)})).comp
     (Polynomial.mapRingHom (IsLocalRing.residue S))
-  have : Ideal.span {minpolyLift K S x int} ≤ RingHom.ker f' := by
-    simp [Ideal.span_singleton_le_iff_mem, f', (minpolyLift_spec K S x int).1]
+  have eqmap : Ideal.span {(minpoly (ResidueField S) x)} =
+    (Ideal.span {minpolyLift K S x int}).map (Polynomial.mapRingHom (IsLocalRing.residue S)) := by
+    simp [Ideal.map_span, (minpolyLift_spec K S x int).1]
+  have kereq : RingHom.ker f' = Ideal.span {minpolyLift K S x int} ⊔
+    (maximalIdeal S).map Polynomial.C := by
+    rw [← RingHom.comap_ker, Ideal.mk_ker, eqmap, Ideal.comap_map_of_surjective' _
+      (Polynomial.map_surjective _ residue_surjective), Polynomial.ker_mapRingHom, ker_residue]
   let f : (extensionByAlgebraic K S x int) →+* _ :=
-    Ideal.Quotient.lift _ f' (fun x hx ↦ this hx)
+    Ideal.Quotient.lift _ f' (fun x hx ↦ (le_of_le_of_eq le_sup_left kereq.symm) hx)
   have surjf : Function.Surjective f := by
     apply Ideal.Quotient.lift_surjective_of_surjective
     exact (Ideal.Quotient.mk_surjective.comp
@@ -95,12 +100,23 @@ lemma extensionByAlgebraic_maximalIdeal_map (x : K) (int : IsIntegral (ResidueFi
   let : Fact _ := ⟨minpoly.irreducible int⟩
   let := Ideal.Quotient.field (Ideal.span {(minpoly (ResidueField S) x)})
   convert RingHom.ker_isMaximal_of_surjective f surjf
-  --apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
-  sorry
+  apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+  rw [RingHom.comap_ker, Ideal.Quotient.lift_comp_mk, kereq, IsScalarTower.algebraMap_eq S S[X]]
+  simp [← Ideal.map_map]
 
 instance (x : K) (int : IsIntegral (ResidueField S) x) :
     IsLocalRing (extensionByAlgebraic K S x int) := by
-  sorry
+  have := extensionByAlgebraic_maximalIdeal_map K S x int
+  apply IsLocalRing.of_unique_max_ideal
+  use (maximalIdeal S).map (algebraMap S (extensionByAlgebraic K S x int)), this
+  intro m hm
+  exact (this.eq_of_le hm.ne_top (Ideal.map_le_iff_le_comap.mpr (le_of_eq (eq_maximalIdeal
+    m.isMaximal_comap_of_isIntegral_of_isMaximal).symm))).symm
+
+lemma extensionByAlgebraic_maximalIdeal_eq_map (x : K) (int : IsIntegral (ResidueField S) x) :
+    maximalIdeal (extensionByAlgebraic K S x int) =
+    (maximalIdeal S).map (algebraMap S (extensionByAlgebraic K S x int)) :=
+  (eq_maximalIdeal (extensionByAlgebraic_maximalIdeal_map K S x int)).symm
 
 lemma extensionByAlgebraic_algebraMap_isLocalHom (x : K) (int : IsIntegral (ResidueField S) x) :
     IsLocalHom (algebraMap S (extensionByAlgebraic K S x int)) := sorry
