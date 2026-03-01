@@ -316,8 +316,8 @@ def hashFromFileName (path : FilePath) : Option UInt64 := do
 
 /-- Decompress a batch of files using a single leantar invocation -/
 def decompressBatch (files : Array (FilePath × Lean.Name))
-    (force : Bool) (isMathlibRoot : Bool) (mathlibDepPath : FilePath)
-    : IO Unit := do
+    (force : Bool) (isMathlibRoot : Bool) (mathlibDepPath : FilePath) :
+    IO Unit := do
   if files.isEmpty then return
 
   -- Build JSON config for all files in batch (similar to unpackCache logic)
@@ -328,20 +328,7 @@ def decompressBatch (files : Array (FilePath × Lean.Name))
       .mkObj [("file", path.toString), ("base", mathlibDepPath.toString)]
 
   -- Spawn leantar for this batch
-  let args := (if force then #["-f"] else #[]) ++
-              #["-x", "--delete-corrupted", "-j", "-"]
-  let child ← IO.Process.spawn {
-    cmd := ← IO.getLeanTar,
-    args,
-    stdin := .piped
-  }
-  -- Write JSON to stdin, then drop handle
-  let child ← do
-    let (stdin, child) ← child.takeStdin
-    stdin.putStr <| Lean.Json.compress <| .arr config
-    pure child
-  -- stdin handle is now dropped, leantar will receive EOF and process the files
-  let exitCode ← child.wait
+  let exitCode ← IO.spawnLeanTarDecompress config force
   if exitCode != 0 then
     let fileList := files.map (fun (p, m) => s!"{m} ({p})") |>.toList |> String.intercalate ", "
     let firstFew := if files.size ≤ 3 then fileList else
@@ -422,29 +409,27 @@ def monitorCurl (args : Array String) (size : Nat)
               IO.FS.rename fn finalPath
               -- Add to decompression queue if enabled
               if let some config := decompConfig then
-                match hashFromFileName ⟨fn⟩ with
-                | some hash =>
-                  match config.hashToMod[hash]? with
-                  | some mod =>
-                    pending := pending.push (finalPath, mod)
-                    -- Check if we should dispatch a batch
-                    match currentTask with
-                    | some task =>
-                      if (← IO.hasFinished task) then
-                        -- Harvest completed task
-                        (decompressed, decompFailed) := harvestDecompTask task lastBatchSize decompressed decompFailed
-                        -- Dispatch new batch with all pending files
-                        lastBatchSize := pending.size
-                        currentTask ← dispatchDecompBatch pending config
-                        pending := #[]
-                      -- else: task still running, just accumulate
-                    | none =>
-                      -- No task running, dispatch immediately
-                      lastBatchSize := pending.size
-                      currentTask ← dispatchDecompBatch pending config
-                      pending := #[]
-                  | none => IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {fn})"
-                | none => IO.eprintln s!"Warning: Failed to extract hash from filename: {fn}"
+                let some hash := hashFromFileName ⟨fn⟩
+                  | IO.eprintln s!"Warning: Failed to extract hash from filename: {fn}"
+                let some mod := config.hashToMod[hash]?
+                  | IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {fn})"
+                pending := pending.push (finalPath, mod)
+                -- Check if we should dispatch a batch
+                match currentTask with
+                | some task =>
+                  if (← IO.hasFinished task) then
+                    -- Harvest completed task
+                    (decompressed, decompFailed) := harvestDecompTask task lastBatchSize decompressed decompFailed
+                    -- Dispatch new batch with all pending files
+                    lastBatchSize := pending.size
+                    currentTask ← dispatchDecompBatch pending config
+                    pending := #[]
+                  -- else: task still running, just accumulate
+                | none =>
+                  -- No task running, dispatch immediately
+                  lastBatchSize := pending.size
+                  currentTask ← dispatchDecompBatch pending config
+                  pending := #[]
           success := success + 1
         | .ok 404 => pure ()
         | code? =>
