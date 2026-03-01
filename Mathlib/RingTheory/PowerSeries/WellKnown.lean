@@ -52,6 +52,7 @@ theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C (u :
   · simp
   · simp [pow_succ']
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem invUnitsSub_mul_sub (u : Rˣ) : invUnitsSub u * (C (u : R) - X) = 1 := by
   simp [mul_sub, sub_sub_cancel]
@@ -68,6 +69,7 @@ section invOneSubPow
 
 variable (S : Type*) [CommRing S] (d : ℕ)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 (1 + X + X^2 + ...) * (1 - X) = 1.
 
@@ -81,6 +83,7 @@ theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
   | zero => simp
   | succ n => simp [sub_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Note that `mk 1` is the constant function `1` so the power series `1 + X + X^2 + ...`. This theorem
 states that for any `d : ℕ`, `(1 + X + X^2 + ... : S⟦X⟧) ^ (d + 1)` is equal to the power series
@@ -97,6 +100,7 @@ theorem mk_one_pow_eq_mk_choose_add :
       norm_cast
       rw [Finset.sum_antidiagonal_choose_add, add_right_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a natural number `d : ℕ` and a commutative ring `S`, `PowerSeries.invOneSubPow S d` is the
 multiplicative inverse of `(1 - X) ^ d` in `S⟦X⟧ˣ`. When `d` is `0`, `PowerSeries.invOneSubPow S d`
@@ -129,6 +133,7 @@ theorem invOneSubPow_val_one_eq_invUnitSub_one :
     (invOneSubPow S 1).val = invUnitsSub (1 : Sˣ) := by
   simp [invOneSubPow, invUnitsSub]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The theorem `PowerSeries.mk_one_mul_one_sub_eq_one` implies that `1 - X` is a unit in `S⟦X⟧`
 whose inverse is the power series `1 + X + X^2 + ...`. This theorem states that for any `d : ℕ`,
@@ -152,6 +157,7 @@ theorem invOneSubPow_inv_eq_one_sub_pow :
   | zero => exact Eq.symm <| pow_zero _
   | succ d => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem invOneSubPow_inv_zero_eq_one : (invOneSubPow S 0).inv = 1 := by
   delta invOneSubPow
   simp only [Units.inv_eq_val_inv, inv_one, Units.val_one]
@@ -164,10 +170,12 @@ theorem invOneSubPow_add (e : ℕ) :
     invOneSubPow S (d + e) = invOneSubPow S d * invOneSubPow S e := by
   simp_rw [invOneSubPow_eq_inv_one_sub_pow, pow_add]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_sub_pow_mul_invOneSubPow_val_add_eq_invOneSubPow_val (e : ℕ) :
     (1 - X) ^ e * (invOneSubPow S (d + e)).val = (invOneSubPow S d).val := by
   simp [invOneSubPow_add, Units.val_mul, mul_comm, mul_assoc, ← invOneSubPow_inv_eq_one_sub_pow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_sub_pow_add_mul_invOneSubPow_val_eq_one_sub_pow (e : ℕ) :
     (1 - X) ^ (d + e) * (invOneSubPow S e).val = (1 - X) ^ d := by
   simp [pow_add, mul_assoc, ← invOneSubPow_inv_eq_one_sub_pow S e]

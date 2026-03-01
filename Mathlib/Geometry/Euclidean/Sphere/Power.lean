@@ -145,6 +145,7 @@ theorem power_eq_zero_iff_mem_sphere {s : Sphere P} {p : P} (hr : 0 ≤ s.radius
     s.power p = 0 ↔ p ∈ s := by
   rw [power, mem_sphere, sub_eq_zero, pow_left_inj₀ dist_nonneg hr two_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power of a point is positive if and only if the point lies outside the sphere. -/
 theorem power_pos_iff_radius_lt_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 < s.power p ↔ s.radius < dist p s.center := by
@@ -155,6 +156,7 @@ theorem power_neg_iff_dist_center_lt_radius {s : Sphere P} {p : P} (hr : 0 ≤ s
   s.power p < 0 ↔ dist p s.center < s.radius := by
   rw [power, sub_neg, pow_lt_pow_iff_left₀ dist_nonneg hr two_ne_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The power of a point is nonnegative if and only if the point lies outside or on the sphere. -/
 theorem power_nonneg_iff_radius_le_dist_center {s : Sphere P} {p : P} (hr : 0 ≤ s.radius) :
     0 ≤ s.power p ↔ s.radius ≤ dist p s.center := by
@@ -240,7 +242,7 @@ theorem isTangentAt_iff_dist_sq_eq_power {t p : P} {s : Sphere P} (ht : t ∈ s)
                  ← vsub_add_vsub_cancel p t s.center] at h_dist_eq
       exact (norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero _ _).mp (by linarith)
     refine ⟨ht, right_mem_affineSpan_pair ℝ p t, fun x hx ↦ ?_⟩
-    rw [SetLike.mem_coe, mem_orthRadius_iff_inner_left]
+    rw [mem_orthRadius_iff_inner_left]
     obtain ⟨r, hr⟩ := (vadd_right_mem_affineSpan_pair (k := ℝ)).mp (vsub_vadd x t ▸ hx)
     rw [← hr, inner_smul_left, h_orth, mul_zero]⟩
 
