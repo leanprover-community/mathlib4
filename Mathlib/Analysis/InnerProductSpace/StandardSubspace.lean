@@ -20,14 +20,14 @@ obtain unitary representations of various Lie groups.
 ## Main definitions and results
 
 * `instance : InnerProductSpace ℝ H` for `InnerProductSpace ℂ H`, by restricting the scalar product
-to its real part
+  to its real part
 
 * `StandardSubspace` as a structure with a `ClosedSubmodule` for `InnerProductSpace ℝ H` satisfying
-`IsCyclic` and `IsSeparating`. Actually the interesting cases need `CompleteSpace H`, but the
-definition is given for a general case.
+  `IsCyclic` and `IsSeparating`. Actually the interesting cases need `CompleteSpace H`, but the
+  definition is given for a general case.
 
 * `symplComp` as a `StandardSubspace` of the symplectic complement of a standard subspace with
-respect to `⟪⬝, ⬝⟫.im`
+  respect to `⟪⬝, ⬝⟫.im`
 
 * `symplComp_symplComp_eq` the double symplectic complement is equal to itself
 
@@ -100,7 +100,7 @@ noncomputable abbrev mulI (S : ClosedSubmodule ℝ H) := S.mapEquiv (scalarSMulC
 
 /-- The symplectic complement of a closed submodule with respect to `⟪⬝, ⬝⟫.im`, defined as the
 image of `mulI` and `orthogonal`. The proof that this is the symplectic complement is given by
-`mem_symplComp`. -/
+`mem_symplComp_iff`. -/
 noncomputable abbrev symplComp (S : ClosedSubmodule ℝ H) := (S.mulI)ᗮ
 
 lemma mem_iff (S : ClosedSubmodule ℝ H) {x : H} : x ∈ S ↔ x ∈ S.toSubmodule.carrier := by
@@ -125,7 +125,7 @@ lemma orthogonal_mulI_eq_symplComp (S : ClosedSubmodule ℝ H) : Sᗮ.mulI = S.s
     Complex.inv_I, neg_smul, mem_orthogonal]
   simp [inner_real_eq_re_inner]
 
-lemma mulI_symplComp_eq_symplComp_mulI {S : ClosedSubmodule ℝ H} :
+lemma symplComp_mulI {S : ClosedSubmodule ℝ H} :
     S.mulI.symplComp = S.symplComp.mulI := by
   rw [symplComp, symplComp, orthogonal_mulI_eq_symplComp]
 
@@ -147,20 +147,20 @@ lemma symplComp_symplComp_eq [CompleteSpace H] {S : ClosedSubmodule ℝ H} :
   rw [symplComp, ← mulI_symplComp_eq_symplComp_mulI, symplComp]
   simp
 
-lemma sup_mulI_eq_mulI_sup (S T : ClosedSubmodule ℝ H) :
+lemma mulI_sup (S T : ClosedSubmodule ℝ H) :
     (S ⊔ T).mulI = S.mulI ⊔ T.mulI := by
   rw [mulI, ← mapEquiv_sup_eq]
 
-lemma inf_mulI_eq_mulI_inf (S T : ClosedSubmodule ℝ H) :
+lemma mulI_inf (S T : ClosedSubmodule ℝ H) :
     (S ⊓ T).mulI = S.mulI ⊓ T.mulI := by
   rw [mulI, ← mapEquiv_inf_eq]
 
-lemma inf_symplComp_eq_symplcomp_sup (S T : ClosedSubmodule ℝ H) :
+lemma symplComp_sup (S T : ClosedSubmodule ℝ H) :
     (S ⊔ T).symplComp = S.symplComp ⊓ T.symplComp := by
   rw [symplComp, symplComp, symplComp, sup_mulI_eq_mulI_sup]
   exact Eq.symm (inf_orthogonal S.mulI T.mulI)
 
-lemma sup_symplComp_eq_symplcomp_inf [CompleteSpace H] (S T : ClosedSubmodule ℝ H) :
+lemma symplComp_inf [CompleteSpace H] (S T : ClosedSubmodule ℝ H) :
     (S ⊓ T).symplComp = S.symplComp ⊔ T.symplComp := by
   rw [symplComp, symplComp, symplComp, inf_mulI_eq_mulI_inf]
   exact Eq.symm (sup_orthogonal S.mulI T.mulI)
@@ -190,12 +190,13 @@ open ClosedSubmodule
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
 
-lemma standardSubspace_eq_iff {S T : StandardSubspace H} :
-    S.toClosedSubmodule = T.toClosedSubmodule ↔ S = T := by
-  refine ⟨?_, by intro _; congr⟩
-  intro h
-  ext x
-  simpa using Eq.to_iff (congrFun (congrArg Membership.mem h) x)
+@[simp]
+lemma toClosedSubmodule_inj {S T : StandardSubspace H} :
+    S.toClosedSubmodule = T.toClosedSubmodule ↔ S = T :=
+  StandardSubspace.ext_iff.symm
+
+lemma toClosedSubmodule_injective : Function.Injective (toClosedSubmodule (H := H)) :=
+  fun _ _ ↦ toClosedSubmodule_inj.mp
 
 /-- The image of a standard subspace by the multiplication by `Complex.I`, bundled as a
 `StandardSubspace`. -/
