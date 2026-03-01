@@ -166,7 +166,7 @@ instance isGE_triangleFunctor_obj_obj₃ :
 
 noncomputable def triangleMapOfLE (a b : ℤ) (h : a ≤ b) : triangle t a A ⟶ triangle t b A :=
   have H := triangle_map_exists t (triangle_distinguished t a A)
-    (triangle_distinguished t b A) (𝟙 _) (a-1) b inferInstance inferInstance
+    (triangle_distinguished t b A) (𝟙 _) (a - 1) b inferInstance inferInstance
   { hom₁ := H.choose.hom₁
     hom₂ := 𝟙 _
     hom₃ := H.choose.hom₃
