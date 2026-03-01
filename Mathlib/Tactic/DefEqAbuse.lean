@@ -11,6 +11,11 @@ public meta import Mathlib.Lean.MessageData.Trace
 /-!
 # The `#defeq_abuse` tactic and command combinators
 
+**WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking changes to
+transparency handling (associated with `backward.isDefEq.respectTransparency`). Its syntax may
+change at any time, and it may not behave as expected. Please report unexpected behavior
+[on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+
 `#defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
 `isDefEq` checks that fail with the stricter setting, helping to diagnose where Mathlib relies on
@@ -45,29 +50,94 @@ instance {V : Type} [AddCommGroup V] [Module ℝ V] {l : Submodule ℝ V} :
 will report the synthesis failures grouped by instance application.
 -/
 
-public meta section
+meta section
 
 open Lean MessageData Meta Elab Tactic Command
 
+namespace Lean.MessageData
+
+/- TODO: this section should be moved to `Lean.MessageData.Trace` when finalized and made public. -/
+
+/-- A return value for functions called by traversals of `MessageData`. May either descend into
+children or ascend immediately (skipping children), optionally including a value accumulated by the
+traversal in both cases. -/
+inductive VisitStep (α) where
+/-- Descends through the `MessageData`, visiting all children. If the argument `butFirst` is given
+as `some a` (`none` by default), starts with `a`, and combines any values produced by children with
+this value. -/
+| descend (butFirst : Option α := none)
+/-- Skips visiting children, and ascends to the parent, returning the value given in `returning`
+(if any). -/
+| ascend (returning : Option α := none)
+
+variable {m : Type → Type} [Monad m] {α : Type}
+
+/-- Collect and combine values of type `α` produced by visiting all trace nodes in a `MessageData`
+tree.
+
+Automatically recurses through structural wrappers, invoking `onTrace` only for
+`.trace` nodes. The `onTrace` callback receives the arguments of `.trace`:
+- the `TraceData` (class name, timing, etc.)
+- the trace node's header message
+- the trace node's child messages
+
+Each call to `onTrace` is expected to produce either a `descend`, in which case the children of the
+trace nodes will be visited, or an `ascend`, in which case they will not. Both may take an argument
+`butFirst := some a`, which will cause `a` to be `combine`d into the accumulated value.
+
+We assume `x = combine empty x = combine x empty`. `empty` is attempted to be synthesized as the
+`EmptyCollection`, and `combine` is attempted to be synthesized first via the notation `(· ++ ·)`
+then via `(· ∪ ·)` as a fallback.
+
+Note that the children may be visited manually via a recursive call to `collectWith` or
+`collectWithAndAscend`.
+
+Note: `.ofLazy` nodes are skipped (return `empty`) because they contain unevaluated
+formatting thunks, not trace tree structure. This is consistent with `hasTag`
+in `Lean.Message` which also skips `.ofLazy`. -/
+partial def visitTraceNodesM (msg : MessageData)
+    (onTrace : TraceData → MessageData → Array MessageData → m (MessageData.VisitStep α))
+    (empty : α := by exact {}) (combine : α → α → α := by first | exact (· ++ ·) | exact (· ∪ ·)) :
+    m α :=
+  go msg
+where
+  /-- The continuation for `visitTraceNodesM`; this is mainly for readability (takes only one
+  argument in source). -/
+  go : MessageData → m α
+    | .trace td header children => do
+      match ← onTrace td header children with
+      | .descend a? => do
+        let mut result := a?.getD empty
+        for child in children do
+          result := combine result (← go child)
+        return result
+      | .ascend a? => return a?.getD empty
+    | .compose a b => return combine (← go a) (← go b)
+    | .nest _ m | .group m | .tagged _ m | .withContext _ m | .withNamingContext _ m => go m
+    | .ofLazy _ _ | .ofWidget _ _ | .ofGoal _ | .ofFormatWithInfos _ => return empty
+
+/-- Convenience wrapper which accumulates the results of `visitM` across `arr`, attempting to
+produce `empty` and `combine` from `{}` and `(· ++ ·)` or `(· ∪ ·)`. -/
+@[inline] def visitWithM {β} (arr : Array β) (visitM : β → m α)
+    (empty : α := by exact {}) (combine : α → α → α := by first | exact (· ++ ·) | exact (· ∪ ·)) :
+    m α :=
+  arr.foldlM (init := empty) fun acc msg => return combine acc (← visitM msg)
+
+/-- Convenience wrapper which accumulates the results of `visitM` across `arr`, attempting to
+produce `empty` and `combine` from `{}` and `(· ++ ·)` or `(· ∪ ·)`, then `.ascend`s with the result
+(if any). This effectively replaces a return value of `.descend`. -/
+@[inline] def visitWithAndAscendM {β} (arr : Array β) (visitM : β → m α)
+    (empty : α := by exact {}) (combine : α → α → α := by first | exact (· ++ ·) | exact (· ∪ ·)) :
+    m (VisitStep α) := do
+  if arr.isEmpty then return .ascend else
+    return .ascend <|← visitWithM arr visitM empty combine
+
+end Lean.MessageData
+
 namespace Mathlib.Tactic.DefEqAbuse
 
-/-- Extract the instance name from a rendered `apply @Foo to Goal` trace header.
-Returns the string between `"apply "` and `" to "`.
-
-Note: this is fragile string matching against Lean's `Meta.synthInstance` trace format.
-If the trace format changes, this function will silently return the original string.
-Once https://github.com/leanprover/lean4/pull/12699 is available,
-these nodes will have trace class `Meta.synthInstance.apply` and can be identified
-structurally via `td.cls` instead of string-matching on the header. -/
-private def extractInstName (s : String) : String :=
-  match s.splitOn "apply " with
-  | [_, rest] => match rest.splitOn " to " with
-    | name :: _ => name.trimAscii.toString
-    | _ => s
-  | _ => s
-
 /-- Only applies `f` to `Meta.isDefEq` trace nodes. Skips `Meta.isDefEq.onFailure` nodes. -/
-@[inline] private def onlyOnDefEqNodes {m} [Monad m] {α}
+@[inline] def onlyOnDefEqNodes {m} [Monad m] {α}
     (f : TraceData → MessageData → Array MessageData → m (VisitStep α)) :
     TraceData → MessageData → Array MessageData → m (VisitStep α) :=
   fun td header children => do
@@ -79,7 +149,7 @@ private def extractInstName (s : String) : String :=
 Skips `onFailure` retry nodes and ignores ✅ branches (recovered failures aren't root causes).
 Note: status is currently determined by parsing emoji from the rendered header string.
 Once https://github.com/leanprover/lean4/pull/12698 is available, use `td.result?` instead. -/
-private partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
+partial def findLeafFailures (msg : MessageData) : BaseIO (Array MessageData) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
     unless traceResultOf (← header.toString) matches some .failure do
       return .ascend
@@ -89,7 +159,7 @@ private partial def findLeafFailures (msg : MessageData) : BaseIO (Array Message
 
 /-- Collect rendered check strings from `Meta.isDefEq` trace nodes matching a status predicate.
 Returns a `HashSet` of emoji-stripped header strings. -/
-private partial def collectIsDefEqChecks (pred : TraceResult → Bool)
+partial def collectIsDefEqChecks (pred : TraceResult → Bool)
     (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM <| onlyOnDefEqNodes fun td header children => do
     let headerStr ← header.toString
@@ -104,7 +174,7 @@ as a failure in the permissive trace (which would indicate the check is context-
 rather than transparency-dependent).
 A "deepest transition point" has no descendant transition points.
 Falls back to `findLeafFailures` behavior when `permSuccesses` is empty. -/
-private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
+partial def findTransitionFailures (permSuccesses : Std.HashSet String)
     (permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array MessageData) :=
   if permSuccesses.isEmpty then findLeafFailures msg
@@ -129,7 +199,7 @@ private partial def findTransitionFailures (permSuccesses : Std.HashSet String)
 and their `isDefEq` transition failures.
 Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
 check can be replaced with ``td.cls == `Meta.synthInstance.apply``. -/
-private partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet String)
+partial def findSynthAppFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
@@ -144,7 +214,7 @@ private partial def findSynthAppFailures (permSuccesses permFailures : Std.HashS
 
 /-- Find top-level synthesis failures and their `isDefEq` root causes.
 Only enters failing synthesis nodes to avoid reporting recovered sub-attempts. -/
-private partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
+partial def findSynthFailures (permSuccesses permFailures : Std.HashSet String)
     (msg : MessageData) : BaseIO (Array (MessageData × Array MessageData)) :=
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.isDefEq.onFailure then return .ascend
@@ -160,8 +230,8 @@ private partial def findSynthFailures (permSuccesses permFailures : Std.HashSet 
 
 /-- Collect instance names from successful `apply @Instance to Goal` trace nodes.
 Once https://github.com/leanprover/lean4/pull/12699 is available, the `headerStr.contains "apply"`
-check can be replaced with `td.cls == `Meta.synthInstance.apply``. -/
-private partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
+check can be replaced with ``td.cls == `Meta.synthInstance.apply``. -/
+partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashSet String) :=
   msg.visitTraceNodesM fun td header children => do
     if td.cls == `Meta.synthInstance then
       let headerStr ← header.toString
@@ -172,8 +242,7 @@ private partial def findSynthSuccessApps (msg : MessageData) : BaseIO (Std.HashS
 /-- Analyze strict and permissive trace messages to find isDefEq transition failures
 and (optionally) synthesis-grouped failures.
 Returns `(flatFailures, synthGroupedFailures)`. -/
-private def analyzeTraces (strictMsgs permMsgs : Array MessageData)
-    (includeSynth : Bool := false) :
+def analyzeTraces (strictMsgs permMsgs : Array MessageData) (includeSynth : Bool := false) :
     BaseIO (Array MessageData × Array (MessageData × Array MessageData)) := do
   -- Build sets of permissive successes and failures for transition-point detection.
   let mut permSuccesses : Std.HashSet String := {}
@@ -207,7 +276,7 @@ private def analyzeTraces (strictMsgs permMsgs : Array MessageData)
 
 /-- Format and log the `#defeq_abuse` diagnostic report.
 `kind` is `"tactic"` or `"command"`. -/
-private def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
+def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMessageContext m]
     [MonadOptions m] (kind : String) (uniqueFailures : Array MessageData)
     (synthResults : Array (MessageData × Array MessageData)) : m Unit := do
   if !synthResults.isEmpty then
@@ -236,6 +305,10 @@ private def reportDefEqAbuse {m : Type → Type} [Monad m] [MonadLog m] [AddMess
         The following isDefEq checks are the root causes of the failure:\n{failureList}"
 
 /--
+> **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
+changes to transparency handling. Its syntax may change at any time, and it may not behave as
+expected. Please report unexpected behavior [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+
 `#defeq_abuse in tac` runs `tac` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the tactic succeeds with `false` but fails with `true`, it identifies the specific
 `isDefEq` checks that fail with the stricter setting.
@@ -299,6 +372,10 @@ elab (name := defeqAbuse) "#defeq_abuse " "in " tac:tactic : tactic => withMainC
           evalTactic tac
 
 /--
+> **WARNING:** `#defeq_abuse` is an experimental tool intended to assist with breaking
+changes to transparency handling. Its syntax may change at any time, and it may not behave as
+expected. Please report unexpected behavior [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/with/575685551).
+
 `#defeq_abuse in cmd` runs `cmd` with `backward.isDefEq.respectTransparency` both `true` and
 `false`. If the command succeeds with `false` but fails with `true`, it identifies the specific
 synthesis applications and `isDefEq` checks that fail with the stricter setting.
@@ -334,6 +411,7 @@ elab_rules : command
     -- We set `Elab.async false` to force synchronous proof checking,
     -- otherwise `theorem` proofs are elaborated in a background task and errors
     -- won't appear in `messages` until after `elabCommand` returns.
+    -- TODO: wait on all of the tasks instead of disabling async entirely.
     let traceOpts (strict : Bool) (scope : Scope) : Scope :=
       { scope with opts := (scope.opts.setBool `Elab.async false)
           |>.setBool `backward.isDefEq.respectTransparency strict
@@ -366,8 +444,7 @@ elab_rules : command
         reportDefEqAbuse "command" uniqueFailures synthResults
         -- Pass 3: run the command with permissive setting so it actually takes effect
         withScope (fun scope =>
-          { scope with opts := (scope.opts.setBool `Elab.async false)
-              |>.setBool `backward.isDefEq.respectTransparency false }) do
+          { scope with opts := scope.opts.setBool `backward.isDefEq.respectTransparency false }) do
           elabCommand cmd
 
 end Mathlib.Tactic.DefEqAbuse
