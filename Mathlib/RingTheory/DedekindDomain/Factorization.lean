@@ -203,17 +203,18 @@ theorem finprod_heightOneSpectrum_factorization {I : Ideal R} (hI : I ≠ 0) :
   apply Ideal.finprod_count
     ⟨J, Ideal.isPrime_of_prime (irreducible_iff_prime.mp hv), Irreducible.ne_zero hv⟩ I hI
 
-theorem iInf_heightOneSpectrum_factorization {I : Ideal R} (h0 : I ≠ 0) :
-    I = ⨅ i : HeightOneSpectrum R, i.maxPowDividing I := by
-  nth_rw 1 [← Ideal.finprod_heightOneSpectrum_factorization h0]
+/-- The ideal `I` equals the inf `⨅_v v^(val_v(I))`. -/
+theorem iInf_maxPowDividing_eq {I : Ideal R} (h0 : I ≠ 0) :
+    ⨅ i : HeightOneSpectrum R, i.maxPowDividing I = I := by
+  nth_rw 2 [← Ideal.finprod_heightOneSpectrum_factorization h0]
   classical
   rw [finprod_def, dif_pos (Ideal.finite_mulSupport h0), Ideal.prod_eq_iInf_of_coprime]
   · ext x
     constructor
+    · aesop
     · simp only [Finite.mem_toFinset, mem_mulSupport, one_eq_top, ne_eq, Submodule.mem_iInf]
       intro h i
       by_cases i.maxPowDividing I = ⊤ <;> simp_all
-    · aesop
   · intro x hx y hy hxy
     apply IsDedekindDomain.HeightOneSpectrum.pow_sup_pow_eq_top _ _ hxy
 

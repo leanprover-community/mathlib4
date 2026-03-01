@@ -763,7 +763,7 @@ theorem Ideal.le_mul_of_no_prime_factors {I J K : Ideal R}
 
 /-- The intersection of distinct prime powers in a Dedekind domain is the product of these
 prime powers. -/
-theorem IsDedekindDomain.HeightOneSpectrum.inf_prime_pow_eq_prod (s : Finset ι) (e : ι → ℕ)
+theorem IsDedekindDomain.HeightOneSpectrum.inf_pow_eq_prod (s : Finset ι) (e : ι → ℕ)
     (f : ι → HeightOneSpectrum R) (coprime : ∀ᵉ (i ∈ s) (j ∈ s), i ≠ j → f i ≠ f j) :
     (s.inf fun i => (f i).asIdeal ^ e i) = ∏ i ∈ s, (f i).asIdeal ^ e i := by
   rw [prod_eq_iInf_of_coprime]
@@ -790,7 +790,7 @@ def IsDedekindDomain.HeightOneSpectrum.quotientEquivPiOfProdEq [Fintype ι] (I :
     (prod_eq : ∏ i, (P i).asIdeal ^ e i = I) : R ⧸ I ≃+* ∀ i, R ⧸ (P i).asIdeal ^ e i :=
   (Ideal.quotEquivOfEq
     (by simp [← prod_eq, Finset.inf_eq_iInf, Finset.mem_univ,
-      ← HeightOneSpectrum.inf_prime_pow_eq_prod _ _ _ (coprime.set_pairwise _)])).trans <|
+      ← HeightOneSpectrum.inf_pow_eq_prod _ _ _ (coprime.set_pairwise _)])).trans <|
     Ideal.quotientInfRingEquivPiQuotient _ fun i j hij => by
       rw [Function.onFun, Ideal.isCoprime_iff_sup_eq]
       exact HeightOneSpectrum.pow_sup_pow_eq_top _ _ (coprime hij) _ _
