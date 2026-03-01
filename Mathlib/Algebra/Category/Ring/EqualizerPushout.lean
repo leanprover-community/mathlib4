@@ -83,7 +83,7 @@ variable {R S : CommRingCat.{u}ᵒᵖ} (f : S ⟶ R)
 
 /-- A regular epimorphism structure on a map `f : S ⟶ R` in `CommRingCatᵒᵖ` with
 faithfully flat `f.unop.hom : R.unop ⟶ S.unop`. -/
-noncomputable def regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) :
+lemma regularEpiOfFaithfullyFlat (hf : f.unop.hom.FaithfullyFlat) :
     IsRegularEpi f :=
   (isRegularEpi_op_iff_isRegularMono _).mpr (isRegularMono_of_faithfullyFlat _ hf)
 
