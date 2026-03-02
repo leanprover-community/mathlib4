@@ -164,7 +164,7 @@ theorem mk_teichmuller (x : Perfection (R ⧸ I) p) :
     Ideal.Quotient.mk I (teichmuller p I x) = coeff _ p 0 x := by
   have := teichmuller_sModEq <| Ideal.Quotient.mk_out <| coeff _ p 0 x
   simp_rw [zero_add, pow_one] at this
-  simpa [SModEq.ideal] using this
+  simpa [SModEq.idealQuotientMk] using this
 
 variable (p I) in
 theorem mk_comp_teichmuller :
