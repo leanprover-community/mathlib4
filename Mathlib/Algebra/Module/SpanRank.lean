@@ -167,7 +167,6 @@ theorem exists_span_set_card_eq_spanRank (p : Submodule R M) :
     Set.range (fun (s : {s : Set M // span R s = p}) ↦ #s) := csInf_mem ⟨#p, ⟨⟨p, by simp⟩, rfl⟩⟩
   exact ⟨s.1, ⟨hs, s.2⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Constructs a generating set with cardinality equal to the `spanFinrank` of the submodule when
   the submodule is finitely generated. -/
 theorem FG.exists_span_set_encard_eq_spanFinrank {p : Submodule R M} (h : p.FG) :

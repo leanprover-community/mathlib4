@@ -70,7 +70,6 @@ theorem edist_le (p : G.Walk u v) :
   sInf_le ⟨p, rfl⟩
 protected alias Walk.edist_le := edist_le
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem edist_eq_zero_iff :
     G.edist u v = 0 ↔ u = v := by
@@ -96,7 +95,6 @@ lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem edist_triangle : G.edist u w ≤ G.edist u v + G.edist v w := by
   cases eq_or_ne (G.edist u v) ⊤ with
   | inl huv => simp [huv]
@@ -245,7 +243,6 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
   rw [← hp, ← hq, ← Walk.length_append]
   apply dist_le
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w
@@ -253,7 +250,6 @@ lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
   rw [← ENat.coe_le_coe, ENat.coe_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w

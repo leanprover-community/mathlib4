@@ -420,7 +420,6 @@ theorem addVal_mul {a b : R} :
 theorem addVal_pow (a : R) (n : ℕ) : addVal R (a ^ n) = n • addVal R a :=
   (addVal R).map_pow _ _
 
-set_option backward.isDefEq.respectTransparency false in
 nonrec theorem _root_.Irreducible.addVal_pow {ϖ : R} (h : Irreducible ϖ) (n : ℕ) :
     addVal R (ϖ ^ n) = n := by
   rw [addVal_pow, addVal_uniformizer h, nsmul_one]
@@ -455,7 +454,6 @@ theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := b
 theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b) :=
   (addVal R).map_add _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma addVal_eq_zero_of_unit (u : Rˣ) :
     addVal R u = 0 := by

@@ -136,7 +136,6 @@ def complex : CochainComplex (Action (TopModuleCat R) G ⥤ Action (TopModuleCat
 
 end MultiInd
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking an `R`-linear `G`-representation to its `G`-invariant submodule. -/
 def invariants : Action (TopModuleCat R) G ⥤ TopModuleCat R where
   obj M := .of R

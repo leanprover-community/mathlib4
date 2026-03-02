@@ -93,7 +93,6 @@ lemma MatrixModCat.isScalarTower_toModuleCat (M : ModuleCat (Matrix ι ι R)) :
   { smul_assoc r m x := show _ = Matrix.scalar ι r • (m • x) by
       rw [← SemigroupAction.mul_smul, Matrix.scalar_apply, Matrix.smul_eq_diagonal_mul] }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor from the category of modules over `Mₙ(R)` to the category of modules over `R`
   induced by sending `M` to the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix. -/
 @[simps]
@@ -141,7 +140,6 @@ def MatrixModCat.unitIso (i : ι) :
     ext
     simp [fromModuleCatToModuleCatLinearEquivtoModuleCatObj]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear equiv induced by the equality `toMatrixModCat (toModuleCat M) = Mⁿ` -/
 def toModuleCatFromModuleCatLinearEquiv (M : ModuleCat (Matrix ι ι R)) (j : ι) :
     letI := Module.compHom M (Matrix.scalar (α := R) ι)

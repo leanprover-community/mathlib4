@@ -163,7 +163,6 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
       ← comap_map_of_surjective f hf p]
     exact comap_mono hrp
 
-set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
 /-- **Krull's height theorem** (also known as **Krullscher Höhensatz**) :
   In a commutative Noetherian ring `R`, any prime ideal that is minimal over an ideal generated
@@ -242,7 +241,6 @@ lemma Ideal.height_le_spanRank_toENat (I : Ideal R) (hI : I ≠ ⊤) :
   convert (I.height_le_spanRank_toENat_of_mem_minimal_primes J hJ)
   exact Eq.symm (@height_eq_primeHeight _ _ J hJ.1.1)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.height_le_spanFinrank (I : Ideal R) (hI : I ≠ ⊤) :
     I.height ≤ I.spanFinrank := by
   have : I.spanFinrank = I.spanRank.toENat := by
@@ -312,7 +310,6 @@ lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.Is
       simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using (IsNoetherian.noetherian I)
     · exact I.height_le_spanRank_toENat_of_mem_minimal_primes _ hI
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `I ≤ p` and `p` is prime, the height of `p` is bounded by the height of `p ⧸ I R` plus
 the span rank of `I`. -/
 lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (hrp : I ≤ p) :
@@ -343,7 +340,6 @@ lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (
   convert hps
   simp [Ideal.map_span, ← himgo]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma height_le_ringKrullDim_quotient_add_spanFinrank {p I : Ideal R} [p.IsPrime] (h : I ≤ p) :
     p.height ≤ ringKrullDim (R ⧸ I) + I.spanFinrank := by
   trans (p.map (Ideal.Quotient.mk I)).height + I.spanFinrank
@@ -371,7 +367,6 @@ lemma Ideal.height_le_height_add_encard_of_subset (s : Set R) {p : Ideal R} [p.I
   · gcongr
     exact Submodule.spanFinrank_span_le_encard _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.height_le_ringKrullDim_quotient_add_encard {p : Ideal R} [p.IsPrime]
     (s : Set R) (hs : s ⊆ p) : p.height ≤ ringKrullDim (R ⧸ span s) + s.encard := by
   refine le_trans (height_le_ringKrullDim_quotient_add_spanFinrank (I := .span s) ?_) ?_
@@ -388,7 +383,6 @@ lemma Ideal.height_le_ringKrullDim_quotient_add_one {r : R} {p : Ideal R} [p.IsP
   convert Ideal.height_le_ringKrullDim_quotient_add_encard {r} (by simpa)
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ringKrullDim_le_ringKrullDim_quotient_add_encard (s : Set R) (hs : s ⊆ Ring.jacobson R) :
     ringKrullDim R ≤ ringKrullDim (R ⧸ Ideal.span s) + s.encard := by
   refine le_trans (ringKrullDim_le_ringKrullDim_quotient_add_spanFinrank (Ideal.span s) ?_) ?_
@@ -405,7 +399,6 @@ section Algebra
 
 variable {S : Type*} [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus
 the height of the image of `P` in `S ⧸ p S`.
@@ -444,7 +437,6 @@ lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) 
   convert hP'
   simp [Ideal.map_span, ← himgo]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `S` satisfies going-down as an `R`-algebra and `P` lies over `p`, the height of `P` is equal
 to the height of `p` plus the height of the image of `P` in `S ⧸ p S`

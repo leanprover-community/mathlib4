@@ -232,14 +232,12 @@ variable (hf : Function.Surjective f)
 
 include hf
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma tens_exact : Function.Exact (lTensorKerIncl I M f) (lTensorf I M f) :=
   lTensor_exact (AdicCompletion I R) (f.exact_subtype_ker_map) hf
 
 private lemma tens_surj : Function.Surjective (lTensorf I M f) :=
   LinearMap.lTensor_surjective (AdicCompletion I R) hf
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma adic_exact [IsNoetherianRing R] [Finite ι] :
     Function.Exact (map I (LinearMap.ker f).subtype) (map I f) :=
   map_exact (Submodule.injective_subtype _) (f.exact_subtype_ker_map) hf
@@ -247,7 +245,6 @@ private lemma adic_exact [IsNoetherianRing R] [Finite ι] :
 private lemma adic_surj : Function.Surjective (map I f) :=
   map_surjective I hf
 
-set_option backward.isDefEq.respectTransparency false in
 private
 lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R] :
     Function.Bijective (ofTensorProduct I M) :=
@@ -345,7 +342,6 @@ lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
 instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
   Module.Flat.iff_lTensor_injective'.mpr fun J ↦

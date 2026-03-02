@@ -69,7 +69,6 @@ noncomputable instance [IsAlgClosed K] [FiniteDimensional K V] [Nontrivial V] (f
     Inhabited f.Eigenvalues :=
   ⟨⟨f.exists_eigenvalue.choose, f.exists_eigenvalue.choose_spec⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- Lemma 8.22(c) of [axler2024]
 /-- In finite dimensions, over an algebraically closed field, the generalized eigenspaces of any
 linear endomorphism span the whole space. -/
@@ -143,7 +142,6 @@ namespace Submodule
 
 variable {p : Submodule K V} {f : Module.End K V}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈ p) (k : ℕ∞) :
     p ⊓ ⨆ μ, f.genEigenspace μ k = ⨆ μ, p ⊓ f.genEigenspace μ k := by
   refine le_antisymm (fun m hm ↦ ?_)
@@ -232,7 +230,6 @@ theorem eq_iSup_inf_genEigenspace [FiniteDimensional K V] (k : ℕ∞)
 
 end Submodule
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In finite dimensions, if the generalized eigenspaces of a linear endomorphism span the whole
 space then the same is true of its restriction to any invariant submodule. -/
 theorem Module.End.genEigenspace_restrict_eq_top

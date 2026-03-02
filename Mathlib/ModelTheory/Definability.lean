@@ -429,7 +429,6 @@ theorem TermDefinable.map_expansion (h : A.TermDefinable L f) (φ : L →ᴸ L')
   use (φ.addConstants A).onTerm ψ
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem termDefinable_empty_iff :
     (∅ : Set M).TermDefinable L f ↔ ∃ φ : L.Term α, f = φ.realize := by
   rw [TermDefinable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onTerm]
