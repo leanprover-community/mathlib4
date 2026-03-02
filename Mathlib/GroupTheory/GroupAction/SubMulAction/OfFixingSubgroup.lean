@@ -477,7 +477,6 @@ section TwoCriteria
 
 open MulAction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitivity criterion. -/
 theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     (hs : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s))

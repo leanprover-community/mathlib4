@@ -108,7 +108,6 @@ local notation "L'" => toMonoidalCategory L W ε
 
 instance : (L').IsLocalization W := inferInstanceAs (L.IsLocalization W)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isInvertedBy₂ :
     MorphismProperty.IsInvertedBy₂ W W
       (curriedTensor C ⋙ (Functor.whiskeringRight C C D).obj L') := by
