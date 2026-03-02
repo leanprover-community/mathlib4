@@ -267,6 +267,7 @@ section algebra
 variable {R T : Type*} [CommSemiring R] [Semiring T] [Algebra R T]
 
 variable (T) in
+/-- Not an instance because it causes non-reducible diamonds when `T = WithAbs v`. -/
 @[implicit_reducible]
 def instAlgebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
   .compHom T (equiv v).toRingHom

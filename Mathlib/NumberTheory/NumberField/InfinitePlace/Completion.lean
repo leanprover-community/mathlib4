@@ -164,7 +164,7 @@ theorem subfield_ne_real_of_isComplex {v : InfinitePlace K} (hv : IsComplex v) :
   simp only [not_isComplex_iff_isReal, isReal_iff]
   ext x
   obtain ⟨r, hr⟩ := hv ▸ RingHom.mem_fieldRange_self (extensionEmbedding v) (x : v.Completion)
-  rw [extensionEmbedding_coe, RingEquiv.apply_symm_apply] at hr
+  rw [extensionEmbedding_coe, ← WithAbs.equiv_symm_apply, RingEquiv.apply_symm_apply] at hr
   simp [ComplexEmbedding.conjugate_coe_eq, ← hr, Complex.conj_ofReal]
 
 /-- If `v` is a complex infinite place, then the embedding `v.Completion →+* ℂ` is surjective. -/
