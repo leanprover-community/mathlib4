@@ -712,6 +712,17 @@ jobs:
             --client-id "${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}" \
             --tenant-id "${{ secrets.MATHLIB_CI_TENANT_ID }}"
 
+      - name: Verify minted cache bearer token output
+        shell: bash
+        run: |
+          TOKEN='${{ steps.mint_cache_token.outputs.cache_bearer_token }}'
+          if [ -z "$TOKEN" ]; then
+            echo "mint_cache_token output cache_bearer_token is empty"
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          echo "cache_bearer_token_length=${#TOKEN}"
+
       - name: Upload staged cache to Azure
         shell: bash
         env:
