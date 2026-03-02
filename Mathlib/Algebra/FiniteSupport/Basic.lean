@@ -31,10 +31,6 @@ variable {α M : Type*} [One M]
 lemma hasFiniteMulSupport_one' : HasFiniteMulSupport (1 : α → M) := by
   simp [HasFiniteMulSupport]
 
-example : HasFiniteMulSupport (1 : ℕ → ℕ) := by fun_prop
-
-example : HasFiniteMulSupport fun _ : ℕ ↦ (1 : ℤ) := by fun_prop
-
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_fst {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport fun a ↦ (f a).fst := by
