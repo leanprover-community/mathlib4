@@ -299,6 +299,7 @@ section L1
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 
+@[simp]
 theorem norm_fourier_apply_le_toLp_one (f : 𝓢(V, F)) (x : V) :
     ‖𝓕 f x‖ ≤ ‖f.toLp 1‖ := by
   calc
