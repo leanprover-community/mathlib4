@@ -81,34 +81,57 @@ instance isFP_isFG {G : Type*} [Group G] [h : IsFinitelyPresented G] : Group.FG 
 namespace IsFinitelyPresented
 
 /-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves surjectivity. -/
-theorem surjective_comp_freeGroupCongr {G α β : Type*} [Group G]
-    (e : β ≃ α) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f) :
-    Function.Surjective (f.comp (FreeGroup.freeGroupCongr e).toMonoidHom) := by
-  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e
+lemma surjective_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f) :
+  Function.Surjective (f ∘ FreeGroup.freeGroupCongr e.symm) := by
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
   simpa [iso] using hfsurj.comp iso.surjective
+
+/-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves injectivity. -/
+lemma injective_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfinj : Function.Injective f) :
+  Function.Injective (f ∘ FreeGroup.freeGroupCongr e.symm) := by
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
+  simpa [iso] using hfinj.comp iso.injective
+
+/-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves bijectivity. -/
+lemma bijective_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfbij : Function.Bijective f) :
+  Function.Bijective (f ∘ FreeGroup.freeGroupCongr e.symm) := by
+  exact ⟨
+    injective_comp_freeGroupCongr (G := G) e f hfbij.injective,
+    surjective_comp_freeGroupCongr (G := G) e f hfbij.surjective
+  ⟩
+
+/-- Reindexing free-group generators via an equivalence preserves isomorphisms. -/
+def mulEquiv_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α ≃* G) :
+    FreeGroup β ≃* G :=
+  (FreeGroup.freeGroupCongr e.symm).trans f
 
 /-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves finite generation in
 normal closure of the kernel. -/
 theorem isNormalClosureFG_ker_comp_freeGroupCongr {G α β : Type*} [Group G]
-    (e : β ≃ α) (f : FreeGroup α →* G) (hfker : IsNormalClosureFG f.ker) :
-    IsNormalClosureFG (MonoidHom.ker (f.comp (FreeGroup.freeGroupCongr e).toMonoidHom)) := by
-  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfker : IsNormalClosureFG f.ker) :
+    IsNormalClosureFG (MonoidHom.ker
+      (show FreeGroup β →* G from f.comp (FreeGroup.freeGroupCongr e.symm))) := by
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
   let f' : FreeGroup β →* G := f.comp iso
   have hf'ker : IsNormalClosureFG f'.ker := by
     unfold f'
     simp only [MonoidHom.ker_comp_mulEquiv]
     exact
       IsNormalClosureFG.invariant_surj_hom
-        iso.symm.toMonoidHom iso.symm.surjective f.ker hfker
+        (iso.symm : FreeGroup α →* FreeGroup β) iso.symm.surjective f.ker hfker
   simpa [f', iso] using hf'ker
 
 /-- Reindexing free-group generators via an equivalence preserves surjectivity and
 normal-closure finite generation of the kernel. -/
 theorem exists_reindex_freeGroup_hom {G α β : Type*} [Group G]
-    (e : β ≃ α) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f)
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f)
     (hfker : IsNormalClosureFG f.ker) :
     ∃ f' : FreeGroup β →* G, Function.Surjective f' ∧ IsNormalClosureFG f'.ker := by
-  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
   let f' : FreeGroup β →* G := f.comp iso
   refine ⟨f', ?_, ?_⟩
   · simpa [f', iso] using surjective_comp_freeGroupCongr (G := G) e f hfsurj
@@ -166,7 +189,7 @@ IsFinitelyPresented G ↔ ∃ (n : ℕ) (f : (FreeGroup (Fin n)) →* G),
   · intro ⟨α, hα, f, hfsurj, hfker⟩
     let n := Nat.card α
     obtain ⟨f', hf'surj, hf'ker⟩ :=
-      exists_reindex_freeGroup_hom (G := G) (e := (Finite.equivFin α).symm) f hfsurj hfker
+      exists_reindex_freeGroup_hom (G := G) (e := Finite.equivFin α) f hfsurj hfker
     exact ⟨n, f', hf'surj, hf'ker⟩
   · intro ⟨n, f, hfsurj, hfker⟩
     let α := Fin n
@@ -182,7 +205,7 @@ theorem if_hom_surj_finite {G : Type*} [Group G] :
   rw [iff_hom_surj_fin_n]
   let n := Nat.card α
   obtain ⟨f', hf'surj, hf'ker⟩ :=
-    exists_reindex_freeGroup_hom (G := G) (e := (Finite.equivFin α).symm) f hfsurj hfker
+    exists_reindex_freeGroup_hom (G := G) (e := Finite.equivFin α) f hfsurj hfker
   exact ⟨n, f', hf'surj, hf'ker⟩
 
 /-- The canonical map from the free group on the range of free generators is surjective. -/
@@ -288,10 +311,10 @@ theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
         := FreeGroup.freeGroupCongr e.symm
       let f' : FreeGroup S' →* G := f.comp iso
       let hf'surj :=
-        surjective_comp_freeGroupCongr (G := G) (e := e.symm) f hfsurj
+        surjective_comp_freeGroupCongr (G := G) (e := e) f hfsurj
       have hf'ker : IsNormalClosureFG f'.ker := by
         simpa [f', iso] using
-          isNormalClosureFG_ker_comp_freeGroupCongr (G := G) (e := e.symm) f hfker
+          isNormalClosureFG_ker_comp_freeGroupCongr (G := G) (e := e) f hfker
       use S'
       have hf'canon : f' = FreeGroup.lift (fun s' : S' ↦ (s' : G)) := by
         simp_all only [MonoidHom.ker_comp_mulEquiv, FreeGroup.freeGroupCongr_symm, Equiv.symm_symm,
