@@ -162,7 +162,7 @@ instance (priority := 200) PseudoMetricSpace.toEDist : EDist α :=
   ⟨PseudoMetricSpace.edist⟩
 
 /-- Construct a pseudo-metric space structure whose underlying topological space structure
-(definitionally) agrees which a pre-existing topology which is compatible with a given distance
+(definitionally) agrees with a pre-existing topology which is compatible with a given distance
 function. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
     (dist_self : ∀ x : α, dist x x = 0) (dist_comm : ∀ x y : α, dist x y = dist y x)

@@ -64,7 +64,7 @@ theorem MetricSpace.ext {α : Type*} {m m' : MetricSpace α} (h : m.toDist = m'.
   cases m; cases m'; congr; ext1; assumption
 
 /-- Construct a metric space structure whose underlying topological space structure
-(definitionally) agrees which a pre-existing topology which is compatible with a given distance
+(definitionally) agrees with a pre-existing topology which is compatible with a given distance
 function.
 See note [reducible non-instances]. -/
 abbrev MetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist : α → α → ℝ)
