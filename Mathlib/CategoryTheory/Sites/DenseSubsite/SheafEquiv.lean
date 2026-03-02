@@ -10,9 +10,11 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 /-!
 # The equivalence of categories of sheaves of a dense subsite
 
-- `CategoryTheory.Functor.IsDenseSubsite.sheafEquiv`:
-  If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`,
-  it induces an equivalence of category of sheaves valued in a category with suitable limits.
+If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`, and `A` is
+a category with suitable limits, then the functor
+`G.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A` is an equivalence
+of categories. The equivalence of categories can be obtained as `sheafEquiv J K G A`
+which is defined in the file `Mathlib/CategoryTheory/Sites/DenseSubsite/Basic.lean`.
 
 ## References
 
@@ -110,28 +112,8 @@ instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.a
     id_obj, sheafToPresheaf_map, sheafAdjunctionCocontinuous_counit_app_val, ranAdjunction_counit]
   exact isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
 
-variable (A)
-
-/--
-If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`,
-it induces an equivalence of category of sheaves valued in a category with suitable limits.
--/
-@[simps! functor inverse]
-noncomputable def sheafEquiv : Sheaf J A ≌ Sheaf K A :=
-  (G.sheafAdjunctionCocontinuous A J K).toEquivalence.symm
-
 instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
-  inferInstanceAs (IsDenseSubsite.sheafEquiv G _ _ _).inverse.IsEquivalence
-
-variable [HasWeakSheafify J A] [HasWeakSheafify K A]
-
-/-- The natural isomorphism exhibiting the compatibility of
-`IsDenseSubsite.sheafEquiv` with sheafification. -/
-noncomputable
-abbrev sheafEquivSheafificationCompatibility :
-    (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf _ _ ≅
-      presheafToSheaf _ _ ⋙ (sheafEquiv G J K A).inverse := by
-  apply Functor.pushforwardContinuousSheafificationCompatibility
+  (G.sheafAdjunctionCocontinuous A J K).toEquivalence.isEquivalence_functor
 
 end IsDenseSubsite
 

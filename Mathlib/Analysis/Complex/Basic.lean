@@ -436,9 +436,7 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
 lemma orderClosedTopology : OrderClosedTopology ℂ where
-  isClosed_le' := by
-    simp_rw [le_def, Set.setOf_and]
-    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+  isClosed_le' := OrderClosedTopology.isClosed_le'
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
 
@@ -661,8 +659,10 @@ lemma slitPlane_ne_zero {z : ℂ} (hz : z ∈ slitPlane) : z ≠ 0 :=
   ne_of_mem_of_not_mem hz zero_notMem_slitPlane
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/
-lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := fun z hz ↦ .inl <| by
-  have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_norm _).trans_lt hz
+lemma ball_one_subset_slitPlane : Metric.ball 1 1 ⊆ slitPlane := by
+  intro z hz
+  apply Or.inl
+  have : -1 < z.re - 1 := neg_lt_of_abs_lt <| (abs_re_le_norm _).trans_lt (mem_ball_iff_norm.1 hz)
   linarith
 
 /-- The slit plane includes the open unit ball of radius `1` around `1`. -/

@@ -246,7 +246,6 @@ lemma rnDeriv_gaussianReal (μ : ℝ) (v : ℝ≥0) :
   · rw [gaussianReal_of_var_ne_zero _ hv]
     exact Measure.rnDeriv_withDensity _ (measurable_gaussianPDF μ v)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma integral_gaussianReal_eq_integral_smul {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {μ : ℝ} {v : ℝ≥0} {f : ℝ → E} (hv : v ≠ 0) :
     ∫ x, f x ∂(gaussianReal μ v) = ∫ x, gaussianPDFReal μ v x • f x := by
@@ -279,8 +278,7 @@ lemma _root_.MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ
 lemma gaussianReal_map_add_const (y : ℝ) :
     (gaussianReal μ v).map (· + y) = gaussianReal (μ + y) v := by
   by_cases hv : v = 0
-  · simp only [hv, gaussianReal_zero_var]
-    exact Measure.map_dirac (measurable_id'.add_const _) _
+  · simp [hv, gaussianReal_zero_var]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.addRight y).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ 1) x) x := fun _ ↦ (hasDerivAt_id _).sub_const y
   change (gaussianReal μ v).map e.symm = gaussianReal (μ + y) v
@@ -301,8 +299,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v) := by
   by_cases hv : v = 0
-  · simp only [hv, mul_zero, gaussianReal_zero_var]
-    exact Measure.map_dirac (measurable_id'.const_mul c) μ
+  · simp [hv, mul_zero, gaussianReal_zero_var]
   by_cases hc : c = 0
   · simp only [hc, zero_mul]
     rw [Measure.map_const]

@@ -137,6 +137,7 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
   X_Y_Z_notMem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
 
 Our source uses $αx - βy - γz$, though since this is characteristic two we just use $αx + βy + γz$.
@@ -146,6 +147,7 @@ def lFunc : (Fin 3 → K) →ₗ[K] K :=
   letI proj : Fin 3 → (Fin 3 → K) →ₗ[K] K := LinearMap.proj
   α • proj 0 + β • proj 1 + γ • proj 2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The quotient of `K^3` by the specified relation. -/
 abbrev L : Type _ := _ ⧸ LinearMap.ker lFunc
 
@@ -185,6 +187,7 @@ theorem Q'_apply_single (i : Fin 3) (x : K) : Q' (Pi.single i x) = x * x :=
       simp [Q', sq]
     _ = _ := by simp_rw [← Pi.single_mul, Finset.sum_pi_single', Finset.mem_univ, if_pos]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) : Q' v = 0 := by
   rw [LinearMap.mem_ker, lFunc_apply] at hv
   have h0 : α * β * γ * v 0 = 0 := by
@@ -205,6 +208,7 @@ theorem Q'_zero_under_ideal (v : Fin 3 → K) (hv : v ∈ LinearMap.ker lFunc) :
   rw [Q'_apply, sq_zero_of_αβγ_mul h0, sq_zero_of_αβγ_mul h1, sq_zero_of_αβγ_mul h2, add_zero,
     add_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Q'`, lifted to operate on the quotient space `L`. -/
 @[simps!]
 def Q : QuadraticForm K L :=

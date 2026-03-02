@@ -307,7 +307,7 @@ lemma comp_mk₀_id {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     [W.IsCompatibleWithShift M] {m : M}
     (α : SmallShiftedHom.{w} W X Y m) (m₀ : M) (hm₀ : m₀ = 0) :
-    α.comp (mk₀ W m₀ hm₀ (𝟙 Y)) (by aesop) = α :=
+    α.comp (mk₀ W m₀ hm₀ (𝟙 Y)) (by simp_all) = α :=
   (equiv W W.Q).injective (by simp [equiv_comp])
 
 variable {W} in
@@ -317,7 +317,7 @@ lemma mk₀_id_comp {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     [W.IsCompatibleWithShift M] {m : M}
     (α : SmallShiftedHom.{w} W X Y m) (m₀ : M) (hm₀ : m₀ = 0) :
-    (mk₀ W m₀ hm₀ (𝟙 X)).comp α (by aesop) = α :=
+    (mk₀ W m₀ hm₀ (𝟙 X)).comp α (by simp_all) = α :=
   (equiv W W.Q).injective (by simp [equiv_comp])
 
 variable {W} in
