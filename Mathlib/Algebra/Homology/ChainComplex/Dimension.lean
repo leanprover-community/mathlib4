@@ -6,8 +6,8 @@ Authors: Jesse Alama
 module
 
 public import Mathlib.Algebra.Homology.HomologicalComplex
-public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.LinearAlgebra.Dimension.RankNullity
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Dimension lemmas for homological complex differentials
@@ -21,8 +21,6 @@ complex shape.
 
 ## Main results
 
-* `HomologicalComplex.dFrom_eq_zero_of_isZero_xNext`: `dFrom` is zero when `xNext` is zero.
-* `HomologicalComplex.dTo_eq_zero_of_isZero_xPrev`: `dTo` is zero when `xPrev` is zero.
 * `HomologicalComplex.dFrom_zero_range`: `dFrom` has zero range when `xNext` is zero.
 * `HomologicalComplex.dTo_zero_range`: `dTo` has zero range when `xPrev` is zero.
 * `HomologicalComplex.dFrom_range_finrank_eq_d`: The range of `dFrom` has the same dimension as
@@ -43,16 +41,6 @@ variable {k : Type*} [DivisionRing k]
 variable {ι : Type*} {c : ComplexShape ι}
 
 namespace HomologicalComplex
-
-/-- If `xNext i` is zero, then `dFrom i` is the zero map. -/
-lemma dFrom_eq_zero_of_isZero_xNext (C : HomologicalComplex (ModuleCat k) c) (i : ι)
-    (h : IsZero (C.xNext i)) : C.dFrom i = 0 :=
-  IsZero.eq_zero_of_tgt h _
-
-/-- If `xPrev j` is zero, then `dTo j` is the zero map. -/
-lemma dTo_eq_zero_of_isZero_xPrev (C : HomologicalComplex (ModuleCat k) c) (j : ι)
-    (h : IsZero (C.xPrev j)) : C.dTo j = 0 :=
-  IsZero.eq_zero_of_src h _
 
 /-- If `xNext i` is zero, then `dFrom i` has zero range. -/
 lemma dFrom_zero_range (C : HomologicalComplex (ModuleCat k) c) (i : ι)
