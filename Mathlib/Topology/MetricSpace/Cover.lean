@@ -79,12 +79,10 @@ lemma IsCover.image_lipschitz_of_surjective {f : X → Y} {s : Set Y} {N : Set X
 
 lemma _root_.Isometry.isCover_image_iff {f : X → Y} (hf : Isometry f) (C : Set X) :
     IsCover ε (f '' s) (f '' C) ↔ IsCover ε s C := by
-  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨c, hc_mem, hc⟩ := h (Set.mem_image_of_mem _ hx)
-    obtain ⟨c', hc', rfl⟩ := hc_mem
-    refine ⟨c', hc', le_of_eq_of_le (hf.edist_eq _ _).symm hc⟩
-  · convert h.image_lipschitz hf.lipschitz
-    simp
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ by simpa using h.image_lipschitz hf.lipschitz⟩
+  obtain ⟨c, hc_mem, hc⟩ := h (Set.mem_image_of_mem _ hx)
+  obtain ⟨c', hc', rfl⟩ := hc_mem
+  exact ⟨c', hc', le_of_eq_of_le (hf.edist_eq _ _).symm hc⟩
 
 lemma IsCover.singleton_of_ediam_le (hA : ediam s ≤ ε) (hx : x ∈ s) :
     IsCover ε s ({x} : Set X) :=
