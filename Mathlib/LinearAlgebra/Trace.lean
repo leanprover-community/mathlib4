@@ -327,7 +327,6 @@ proof_wanted _root_.Matrix.trace_map' {K m F : Type*} [Field K] [Fintype m] [Dec
     [FunLike F (Matrix m m K) (Matrix m m K)] [AlgHomClass F K _ _] (f : F) (x : Matrix m m K) :
     (f x).trace = x.trace
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
     [Module.Finite R p] [Module.Free R (ker f)] [Module.Finite R (ker f)] :
     trace R M f = (finrank R p : R) := by

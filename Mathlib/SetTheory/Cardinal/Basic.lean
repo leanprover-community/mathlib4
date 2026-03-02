@@ -531,6 +531,9 @@ lemma mk_lt_aleph0_iff : #α < ℵ₀ ↔ Finite α := by simp [← not_le, alep
 theorem aleph0_le_mk (α : Type u) [Infinite α] : ℵ₀ ≤ #α :=
   infinite_iff.1 ‹_›
 
+theorem _root_.Infinite.of_cardinalMk_le {α β : Type u} [Infinite α] (h : #α ≤ #β) :
+    Infinite β := infinite_iff.2 <| (aleph0_le_mk α).trans h
+
 @[simp]
 theorem mk_eq_aleph0 (α : Type*) [Countable α] [Infinite α] : #α = ℵ₀ :=
   mk_le_aleph0.antisymm <| aleph0_le_mk _

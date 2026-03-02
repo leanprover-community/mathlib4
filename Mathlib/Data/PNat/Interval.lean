@@ -65,7 +65,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem card_Ico : #(Ico a b) = b - a := by
   rw [← Nat.card_Ico, ← map_subtype_embedding_Ico, card_map]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_Ioc : #(Ioc a b) = b - a := by
   rw [← Nat.card_Ioc, ← map_subtype_embedding_Ioc, card_map]

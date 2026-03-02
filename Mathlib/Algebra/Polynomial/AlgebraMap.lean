@@ -664,7 +664,6 @@ lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
   convert map_dvd_iff <| algEquivCMulXAddC a b using 2
   simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   let _ := invertibleOne (α := R)
@@ -674,7 +673,6 @@ lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
   simpa using dvd_comp_X_sub_C_iff p q (-a)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
   let _ := invertibleNeg (R := R) 1

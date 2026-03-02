@@ -465,8 +465,8 @@ namespace Pretriangulated
 the triangle `CochainComplex.mappingCone.triangleh φ` for some morphism of cochain
 complexes `φ`. -/
 def distinguishedTriangles : Set (Triangle (HomotopyCategory C (ComplexShape.up ℤ))) :=
-  fun T => ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
-    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)
+  {T | ∃ (X Y : CochainComplex C ℤ) (φ : X ⟶ Y),
+    Nonempty (T ≅ CochainComplex.mappingCone.triangleh φ)}
 
 variable {C}
 
@@ -517,7 +517,6 @@ lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexSh
     exact isomorphic_distinguished _ (invRotate_distinguished_triangle' T.rotate hT) _
       ((triangleRotation _).unitIso.app T)
 
-set_option backward.isDefEq.respectTransparency false in
 open CochainComplex.mappingCone in
 lemma complete_distinguished_triangle_morphism
     (T₁ T₂ : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))

@@ -558,7 +558,7 @@ theorem has_good_supp_iff {α : Type u} (x : F α) :
       ∃ a f, abs ⟨a, f⟩ = x ∧ ∀ a' f', abs ⟨a', f'⟩ = x → f '' univ ⊆ f' '' univ := by
   constructor
   · intro h
-    have : Liftp (supp x) x := by rw [h]; intro u; exact id
+    have : Liftp (· ∈ supp x) x := by rw [h]; intro u; exact id
     rw [liftp_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
     refine ⟨a, f, xeq.symm, ?_⟩

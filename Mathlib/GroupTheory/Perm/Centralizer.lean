@@ -379,7 +379,7 @@ theorem ofPermHom_support :
       rw [← notMem_support]
       have := g.cycleFactorsFinset_pairwise_disjoint c.prop d.prop
       rw [disjoint_iff_disjoint_support, Finset.disjoint_left] at this
-      exact this (by aesop) hc
+      exact this (by lia) hc
     · simpa only [H, iff_false, not_not] using ⟨c, H, mem_support.mp hc⟩
 
 theorem card_ofPermHom_support :
@@ -457,7 +457,6 @@ theorem range_toPermHom_eq_range_toPermHom' :
   ext τ
   rw [mem_range_toPermHom_iff, mem_range_toPermHom'_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nat_card_range_toPermHom :
     Nat.card (toPermHom g).range =
       ∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)! := by
@@ -578,7 +577,6 @@ theorem kerParam_range_le_centralizer :
   rw [kerParam_range_eq]
   exact map_subtype_le (toPermHom g).ker
 
-set_option backward.isDefEq.respectTransparency false in
 theorem kerParam_range_card (g : Equiv.Perm α) :
     Fintype.card (kerParam g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
   rw [Fintype.card_coeSort_range (kerParam_injective g)]
@@ -606,7 +604,6 @@ theorem sign_kerParam_apply_apply :
     Finset.univ_eq_attach, Finset.noncommProd_eq_prod]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cycleType_kerParam_apply_apply :
     cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, (v c).val.cycleType := by
   let U := SetLike.coe (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset })
@@ -676,7 +673,6 @@ theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
     ← exists_with_cycleType_iff, not_exists]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
     #({g | g.cycleType = m} : Finset (Perm α)) *
       ((Fintype.card α - m.sum)! * m.prod * (∏ n ∈ m.toFinset, (m.count n)!)) =
