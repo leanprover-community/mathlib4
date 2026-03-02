@@ -91,7 +91,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 
--- TODO: move `ext` here?
+-- TODO: tag this lemma with the `ext` attribute instead?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
