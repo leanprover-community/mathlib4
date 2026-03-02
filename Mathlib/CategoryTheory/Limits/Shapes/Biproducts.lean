@@ -910,7 +910,6 @@ def kernelForkBiproductToSubtype (p : K → Prop) :
 instance (p : K → Prop) : HasKernel (biproduct.toSubtype f p) :=
   HasLimit.mk (kernelForkBiproductToSubtype f p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of `biproduct.toSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
 @[simps!]
 def kernelBiproductToSubtypeIso (p : K → Prop) :

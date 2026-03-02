@@ -372,7 +372,6 @@ section
 
 variable [P.IsTriangulated]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : Pretriangulated P.FullSubcategory where
   distinguishedTriangles := P.ι.mapTriangle.obj ⁻¹' (distTriang C)
@@ -400,12 +399,9 @@ noncomputable instance : Pretriangulated P.FullSubcategory where
     rw [← cancel_mono ((Functor.commShiftIso P.ι (1 : ℤ)).hom.app T₂.obj₁)]
     cat_disch
 
-set_option backward.whnf.reducibleClassField false in
 instance : P.ι.IsTriangulated where
   map_distinguished _ hT := hT
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.whnf.reducibleClassField false in
 instance [IsTriangulated C] : IsTriangulated P.FullSubcategory :=
   IsTriangulated.of_fully_faithful_triangulated_functor P.ι
 

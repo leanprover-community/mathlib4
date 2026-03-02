@@ -380,7 +380,6 @@ theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measureReal_fundamentalDomain
     [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
@@ -395,7 +394,6 @@ theorem volume_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ
     mul_one, ← Matrix.det_transpose]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem volume_real_fundamentalDomain [Fintype ι] [DecidableEq ι] (b : Basis ι ℝ (ι → ℝ)) :
     volume.real (fundamentalDomain b) = |(Matrix.of b).det| := by

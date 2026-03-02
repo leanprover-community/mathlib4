@@ -217,7 +217,6 @@ lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
     rw [(LinearEquiv.piOptionEquivProd _).length_eq, Module.length_prod, IH, add_comm,
       Fintype.sum_option, add_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Module.length_finsupp {ι : Type*} :
     Module.length R (ι →₀ M) = ENat.card ι * Module.length R M := by
@@ -235,7 +234,6 @@ lemma Module.length_finsupp {ι : Type*} :
   rw [this]
   exact ENat.self_le_mul_right _ length_pos.ne'
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Module.length_pi {ι : Type*} :
     Module.length R (ι → M) = ENat.card ι * Module.length R M := by

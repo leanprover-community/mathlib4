@@ -276,7 +276,6 @@ end SMul
 
 section Zero
 
-set_option backward.isDefEq.respectTransparency false in
 instance instZero : Zero 𝓢(E, F) :=
   ⟨{  toFun := fun _ => 0
       smooth' := contDiff_const
@@ -296,7 +295,6 @@ theorem coeFn_zero : ⇑(0 : 𝓢(E, F)) = (0 : E → F) :=
 theorem zero_apply {x : E} : (0 : 𝓢(E, F)) x = 0 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem seminormAux_zero (k n : ℕ) : (0 : 𝓢(E, F)).seminormAux k n = 0 :=
   le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by simp [Pi.zero_def])
     (seminormAux_nonneg _ _ _)
@@ -683,7 +681,6 @@ section bilin
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid a PANIC. -/
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
@@ -1075,7 +1072,6 @@ lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (Eventually.of_forall (fun _ ↦ by simp))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
 def integralCLM : 𝓢(D, V) →L[𝕜] V := by

@@ -173,7 +173,6 @@ noncomputable def _root_.NumberField.Units.unitLattice :
     Submodule ℤ (logSpace K) :=
   Submodule.map (logEmbedding K).toIntLinearMap ⊤
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set (logSpace K)) ∩ Metric.closedBall 0 r).Finite := by
