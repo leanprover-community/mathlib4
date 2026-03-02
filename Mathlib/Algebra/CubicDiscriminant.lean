@@ -241,11 +241,11 @@ section Degree
 def equiv : Cubic R ≃ { p : R[X] // p.degree ≤ 3 } where
   toFun P := ⟨P.toPoly, degree_cubic_le⟩
   invFun f := ⟨coeff f 3, coeff f 2, coeff f 1, coeff f 0⟩
-  left_inv P := by ext <;> simp only [coeffs]
+  left_inv P := by simp
   right_inv f := by
     ext n
     obtain hn | hn := le_or_gt n 3
-    · interval_cases n <;> simp only <;> ring_nf <;> try simp only [coeffs]
+    · interval_cases n <;> simp
     · rw [coeff_eq_zero hn, (degree_le_iff_coeff_zero (f : R[X]) 3).mp f.2]
       simpa using hn
 
@@ -257,7 +257,8 @@ theorem degree_of_a_ne_zero' (ha : a ≠ 0) : (toPoly ⟨a, b, c, d⟩).degree =
   simp [ha]
 
 theorem degree_of_a_eq_zero (ha : P.a = 0) : P.toPoly.degree ≤ 2 := by
-  simpa only [of_a_eq_zero ha] using degree_quadratic_le
+  rw [of_a_eq_zero ha]
+  exact degree_quadratic_le
 
 theorem degree_of_a_eq_zero' : (toPoly ⟨0, b, c, d⟩).degree ≤ 2 :=
   degree_of_a_eq_zero rfl
@@ -270,7 +271,8 @@ theorem degree_of_b_ne_zero' (hb : b ≠ 0) : (toPoly ⟨0, b, c, d⟩).degree =
   simp [hb]
 
 theorem degree_of_b_eq_zero (ha : P.a = 0) (hb : P.b = 0) : P.toPoly.degree ≤ 1 := by
-  simpa only [of_b_eq_zero ha hb] using degree_linear_le
+  rw [of_b_eq_zero ha hb]
+  exact degree_linear_le
 
 theorem degree_of_b_eq_zero' : (toPoly ⟨0, 0, c, d⟩).degree ≤ 1 :=
   degree_of_b_eq_zero rfl rfl
@@ -283,7 +285,8 @@ theorem degree_of_c_ne_zero' (hc : c ≠ 0) : (toPoly ⟨0, 0, c, d⟩).degree =
   simp [hc]
 
 theorem degree_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) : P.toPoly.degree ≤ 0 := by
-  simpa only [of_c_eq_zero ha hb hc] using degree_C_le
+  rw [of_c_eq_zero ha hb hc]
+  exact degree_C_le
 
 theorem degree_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).degree ≤ 0 :=
   degree_of_c_eq_zero rfl rfl rfl
@@ -316,7 +319,8 @@ theorem natDegree_of_a_ne_zero' (ha : a ≠ 0) : (toPoly ⟨a, b, c, d⟩).natDe
   simp [ha]
 
 theorem natDegree_of_a_eq_zero (ha : P.a = 0) : P.toPoly.natDegree ≤ 2 := by
-  simpa only [of_a_eq_zero ha] using natDegree_quadratic_le
+  rw [of_a_eq_zero ha]
+  exact natDegree_quadratic_le
 
 theorem natDegree_of_a_eq_zero' : (toPoly ⟨0, b, c, d⟩).natDegree ≤ 2 :=
   natDegree_of_a_eq_zero rfl
@@ -329,7 +333,8 @@ theorem natDegree_of_b_ne_zero' (hb : b ≠ 0) : (toPoly ⟨0, b, c, d⟩).natDe
   simp [hb]
 
 theorem natDegree_of_b_eq_zero (ha : P.a = 0) (hb : P.b = 0) : P.toPoly.natDegree ≤ 1 := by
-  simpa only [of_b_eq_zero ha hb] using natDegree_linear_le
+  rw [of_b_eq_zero ha hb]
+  exact natDegree_linear_le
 
 theorem natDegree_of_b_eq_zero' : (toPoly ⟨0, 0, c, d⟩).natDegree ≤ 1 :=
   natDegree_of_b_eq_zero rfl rfl
@@ -368,7 +373,7 @@ def map (φ : R →+* S) (P : Cubic R) : Cubic S :=
   ⟨φ P.a, φ P.b, φ P.c, φ P.d⟩
 
 theorem map_toPoly : (map φ P).toPoly = Polynomial.map φ P.toPoly := by
-  simp only [map, toPoly, map_C, map_X, Polynomial.map_add, Polynomial.map_mul, Polynomial.map_pow]
+  simp [map, toPoly]
 
 end Map
 
@@ -394,8 +399,7 @@ theorem map_roots [IsDomain S] : (map φ P).roots = (Polynomial.map φ P.toPoly)
 
 theorem mem_roots_iff [IsDomain R] (h0 : P.toPoly ≠ 0) (x : R) :
     x ∈ P.roots ↔ P.a * x ^ 3 + P.b * x ^ 2 + P.c * x + P.d = 0 := by
-  rw [roots, mem_roots h0, IsRoot, toPoly]
-  simp only [eval_C, eval_X, eval_add, eval_mul, eval_pow]
+  simpa [roots, toPoly] using by tauto
 
 theorem card_roots_le [IsDomain R] [DecidableEq R] : P.roots.toFinset.card ≤ 3 := by
   apply (toFinset_card_le P.toPoly.roots).trans
@@ -477,11 +481,7 @@ theorem discr_ne_zero_iff_roots_ne (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x,
 theorem discr_ne_zero_iff_roots_nodup (ha : P.a ≠ 0) (hP : (P.toPoly.map φ).Splits) :
     P.discr ≠ 0 ↔ (map φ P).roots.Nodup := by
   have ⟨x, y, z, h3⟩ := (splits_iff_roots_eq_three ha).mp hP
-  rw [discr_ne_zero_iff_roots_ne ha h3, h3]
-  change _ ↔ (x ::ₘ y ::ₘ {z}).Nodup
-  rw [nodup_cons, nodup_cons, mem_cons, mem_singleton, mem_singleton]
-  simp only [nodup_singleton]
-  tauto
+  simpa [discr_ne_zero_iff_roots_ne ha h3, h3] using by tauto
 
 theorem card_roots_of_discr_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (P.toPoly.map φ).Splits)
     (hd : P.discr ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
