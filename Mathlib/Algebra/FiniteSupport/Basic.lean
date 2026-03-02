@@ -38,21 +38,13 @@ lemma hasFiniteMulSupport_comp {N : Type*} [One N] (g : M → N) (f : α → M)
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_fst {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
-    HasFiniteMulSupport fun a ↦ (f a).fst := by
-  simp only [HasFiniteMulSupport] at hf ⊢
-  refine hf.subset fun a ha ↦ ?_
-  simp only [mem_mulSupport] at ha ⊢
-  contrapose! ha
-  exact ha ▸ Prod.fst_one
+    HasFiniteMulSupport fun a ↦ (f a).fst :=
+  hasFiniteMulSupport_comp _ _ hf rfl
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_snd {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
-    HasFiniteMulSupport fun a ↦ (f a).snd := by
-  simp only [HasFiniteMulSupport] at hf ⊢
-  refine hf.subset fun a ha ↦ ?_
-  simp only [mem_mulSupport] at ha ⊢
-  contrapose! ha
-  exact ha ▸ Prod.snd_one
+    HasFiniteMulSupport fun a ↦ (f a).snd :=
+  hasFiniteMulSupport_comp _ _ hf rfl
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_prod_mk {M' : Type*} [One M'] (f : α → M) (g : α → M')
@@ -71,9 +63,8 @@ lemma hasFiniteMulSupport_mul {M : Type*} [MulOneClass M] (f g : α → M)
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_inv {M : Type*} [DivisionMonoid M] (f : α → M)
     (hf : HasFiniteMulSupport f) :
-    HasFiniteMulSupport fun a ↦ (f a)⁻¹ := by
-  simp only [HasFiniteMulSupport] at hf ⊢
-  exact f.mulSupport_fun_inv ▸ hf
+    HasFiniteMulSupport fun a ↦ (f a)⁻¹ :=
+  hasFiniteMulSupport_comp _ _ hf inv_one
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_prod {M : Type*} [CommMonoid M] {ι : Type*} (f : ι → α → M)
@@ -91,21 +82,14 @@ lemma hasFiniteMulSupport_div {M : Type*} [DivisionMonoid M] (f g : α → M)
 lemma hasFiniteMulSupport_pow {M : Type*} [Monoid M] (f : α → M) (hf : HasFiniteMulSupport f)
     (n : ℕ) :
     HasFiniteMulSupport fun a ↦ f a ^ n :=
-  hf.subset <| f.mulSupport_pow n
+  hasFiniteMulSupport_comp _ _ hf (one_pow n)
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_zpow {M : Type*} [DivisionMonoid M] (f : α → M)
     (hf : HasFiniteMulSupport f)
     (n : ℤ) :
-    HasFiniteMulSupport fun a ↦ f a ^ n := by
-  rcases le_or_gt 0 n with hn | hn
-  · lift n to ℕ using hn
-    simp only [zpow_natCast]
-    exact hasFiniteMulSupport_pow f hf n
-  · conv => enter [1, a]; rw [← neg_neg n]
-    lift (-n) to ℕ using by lia with m hm
-    simp only [zpow_neg_coe_of_pos _ (show 0 < m by lia)]
-    exact hasFiniteMulSupport_inv _ <| hasFiniteMulSupport_pow f hf m
+    HasFiniteMulSupport fun a ↦ f a ^ n :=
+  hasFiniteMulSupport_comp _ _ hf (one_zpow n)
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_max [LinearOrder M] (f g : α → M) (hf : HasFiniteMulSupport f)
