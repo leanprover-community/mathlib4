@@ -41,7 +41,7 @@ theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
   symm
   rw [teichmullerAux, pow_succ' p, pow_mul]
   exact .pow_pow_add_one (I.natCast_mem_of_charP_quotient p) (m := m) <| by
-    simp [SModEq.ideal, coeff_pow_p']
+    simp [SModEq.idealQuotientMk, coeff_pow_p']
 
 /-- `teichmullerAux` as an adic Cauchy sequence. -/
 noncomputable def teichmullerCauchy (x : Perfection (R ⧸ I) p) :
@@ -69,7 +69,7 @@ theorem teichmullerFun_sModEq {x : Perfection (R ⧸ I) p} {y : R} {n : ℕ}
   have := (exists_teichmullerFun x).choose_spec (n + 1)
   rw [smul_eq_mul, Ideal.mul_top] at this
   exact this.symm.trans <| .pow_pow_add_one (I.natCast_mem_of_charP_quotient p) (m := n) <| by
-    simp [SModEq.ideal, h]
+    simp [SModEq.idealQuotientMk, h]
 
 end IsPrecomplete
 
