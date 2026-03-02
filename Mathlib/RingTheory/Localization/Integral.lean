@@ -37,15 +37,11 @@ open Polynomial
 variable [IsLocalization M S]
 
 attribute [local instance] Polynomial.algebra Polynomial.isLocalization in
-private theorem exists_integer_polynomial_multiple (p : S[X]) : ∃ b ∈ M, IsInteger R[X] (b • p) := by
-  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C M) p
-  use b, hb
-  rwa [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
-
 private theorem exists_integer_polynomial_multiple_and_support_subset (p : S[X]) :
     ∃ b ∈ M, ∃ (q : R[X]), q.map (algebraMap R S) = b • p ∧ q.support ⊆ p.support := by
-  obtain ⟨b, hb, hq⟩ := exists_integer_polynomial_multiple M p
-  obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts hq
+  obtain ⟨⟨_, b, hb, rfl⟩, h⟩ := exists_integer_multiple (Submonoid.map C M) p
+  rw [Subtype.coe_mk, C_eq_algebraMap, algebraMap_smul] at h
+  obtain ⟨q', h₁, h₂⟩ := exists_support_eq_of_mem_lifts h
   exact ⟨b, hb, q', h₁, h₂ ▸ support_smul b p⟩
 
 /-- `integerNormalization p` normalizes `p` to have integer coefficients
