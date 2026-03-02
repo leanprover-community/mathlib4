@@ -351,7 +351,8 @@ section Ring
 
 variable [Ring R] (f : ℕ → R) (hf : Invertible (f 1))
 
-/-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. -/
+/-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. We use `Invertible` to make
+this definition computable when `f` is computable. -/
 def dirichletInverseFun (n : ℕ) : R :=
   if n = 0 then 0
   else if n = 1 then ⅟(f 1)
