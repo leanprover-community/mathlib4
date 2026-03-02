@@ -163,7 +163,7 @@ instance isNoetherian_prod [IsNoetherian R M] [IsNoetherian R N] : IsNoetherian 
         fun x ⟨_, hx2⟩ => ⟨x.1, Prod.ext rfl <| Eq.symm <| LinearMap.mem_ker.1 hx2⟩
       Submodule.map_comap_eq_self this ▸ (noetherian _).map _⟩
 
-instance isNoetherian_sup (M₁ M₂ : Submodule R P) [IsNoetherian R M₁] [IsNoetherian R M₂] :
+instance isNoetherian_sup (M₁ M₂ : Submodule R N) [IsNoetherian R M₁] [IsNoetherian R M₂] :
     IsNoetherian R ↥(M₁ ⊔ M₂) := by
   have := isNoetherian_range (M₁.subtype.coprod M₂.subtype)
   rwa [LinearMap.range_coprod, Submodule.range_subtype, Submodule.range_subtype] at this
@@ -207,8 +207,8 @@ theorem isNoetherian_of_range_eq_ker {P : Type*} [AddCommGroup P] [Module R P] [
       (by simp [Submodule.map_comap_eq, inf_comm, Submodule.range_liftQ])
       (by simp [Submodule.comap_map_eq, h])
 
-theorem isNoetherian_iff_submodule_quotient (S : Submodule R P) :
-    IsNoetherian R P ↔ IsNoetherian R S ∧ IsNoetherian R (P ⧸ S) := by
+theorem isNoetherian_iff_submodule_quotient (S : Submodule R N) :
+    IsNoetherian R N ↔ IsNoetherian R S ∧ IsNoetherian R (N ⧸ S) := by
   refine ⟨fun _ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ?_⟩
   apply isNoetherian_of_range_eq_ker S.subtype S.mkQ
   rw [Submodule.ker_mkQ, Submodule.range_subtype]

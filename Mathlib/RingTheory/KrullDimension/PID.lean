@@ -43,7 +43,6 @@ theorem IsPrincipalIdealRing.ringKrullDim_eq_one (R : Type*) [CommRing R] [IsDom
     rw [← Nat.cast_zero, ← Ring.krullDimLE_iff] at h''
     exact Ring.KrullDimLE.isField_of_isDomain
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a PID that is not a field, every maximal ideal has height one. -/
 lemma IsPrincipalIdealRing.height_eq_one_of_isMaximal {R : Type*} [CommRing R] [IsDomain R]
     [IsPrincipalIdealRing R] (m : Ideal R) [m.IsMaximal] (h : ¬ IsField R) :

@@ -110,7 +110,6 @@ lemma epow_eq_one_iff : x ^ y = 1 ↔ x = 1 ∨ y = 0 := by
     simp only [epow_one, h] at this
     exact (not_lt_of_ge this x_2).rec
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epow_add : x ^ (y + z) = x ^ y * x ^ z := by
   rcases lt_trichotomy x 1 with x_0 | rfl | x_2
   · rw [lt_one_iff_eq_zero.1 x_0]
@@ -140,7 +139,6 @@ lemma mul_epow : (x * y) ^ z = x ^ z * y ^ z := by
         exact epow_top (one_lt_mul x_2.le y_2)
   · simp only [epow_natCast, mul_pow x y]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma epow_mul : x ^ (y * z) = (x ^ y) ^ z := by
   rcases eq_or_ne y 0 with y_0 | y_0
   · simp [y_0]

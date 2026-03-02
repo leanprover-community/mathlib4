@@ -279,7 +279,6 @@ namespace ENat
 def card (α : Type*) : ℕ∞ :=
   toENat (mk α)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
   simp [card]
@@ -371,7 +370,6 @@ lemma card_eq_one_iff_unique {α : Type*} : card α = 1 ↔ Nonempty (Unique α)
   rw [unique_iff_subsingleton_and_nonempty α, le_antisymm_iff]
   exact and_congr (card_le_one_iff_subsingleton α) (one_le_card_iff_nonempty α)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]
@@ -387,7 +385,6 @@ lemma exists_ne_ne_of_three_le (h : 3 ≤ ENat.card α) (x y : α) : ∃ z, z �
 theorem card_prod (α β : Type*) : card (α × β) = card α * card β := by
   simp [ENat.card]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma card_fun {α β : Type*} : card (α → β) = (card β) ^ card α := by
   classical

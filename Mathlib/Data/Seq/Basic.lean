@@ -41,7 +41,6 @@ set_option linter.flexible false in -- simp followed by exact rfl
 @[simp]
 theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by
   simp -implicitDefEqProofs [length']
@@ -51,7 +50,6 @@ theorem length_cons {x : α} {s : Seq α} (h : s.Terminates) :
   apply Nat.find_comp_succ
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length'_cons (x : α) (s : Seq α) :
     (cons x s).length' = s.length' + 1 := by
@@ -90,7 +88,6 @@ theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     s.length h ≤ n ↔ s.TerminatedAt n := by
   rw [← length_le_iff']; simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem length'_le_iff {s : Seq α} {n : ℕ} :
     s.length' ≤ n ↔ s.TerminatedAt n := by
   by_cases h : s.Terminates
@@ -115,7 +112,6 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     n < s.length h ↔ ∃ a, a ∈ s.get? n := by
   rw [← lt_length_iff']; simp [h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem lt_length'_iff {s : Seq α} {n : ℕ} :
     n < s.length' ↔ ∃ a, a ∈ s.get? n := by
   by_cases h : s.Terminates
@@ -530,7 +526,6 @@ theorem drop_nil {n : ℕ} : (@nil α).drop n = nil := by
   | zero => simp [drop]
   | succ m ih => simp [← dropn_tail, ih]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem drop_length' {n : ℕ} {s : Seq α} :
     (s.drop n).length' = s.length' - n := by

@@ -114,14 +114,12 @@ instance (n : ℕ) [IsMultiplyPreprimitive M α n] :
     IsMultiplyPretransitive M α n :=
   IsMultiplyPreprimitive.isMultiplyPretransitive M α n
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any action is `0`-preprimitive. -/
 @[to_additive /-- Any action is `0`-preprimitive. -/]
 theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
   isMultiplyPretransitive := MulAction.is_zero_pretransitive
   isPreprimitive_ofFixingSubgroup hs := by simp at hs
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An action is preprimitive iff it is `1`-preprimitive. -/
 @[to_additive
 /-- An action is preprimitive iff it is `1`-preprimitive. -/]
@@ -137,7 +135,6 @@ theorem is_one_preprimitive_iff :
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
     · simpa using isPreprimitive_of_fixingSubgroup_empty_iff.mpr h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
 theorem isMultiplyPreprimitive_ofStabilizer
@@ -159,7 +156,6 @@ theorem isMultiplyPreprimitive_ofStabilizer
       aesop
     exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitive action is `n.succ-`preprimitive
 iff the action of stabilizers is `n`-preprimitive. -/
 @[to_additive /-- A pretransitive action is `n.succ-`preprimitive
@@ -209,7 +205,6 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
       rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
       exact notMem_val_image M t
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fixator of a subset of cardinal `d` in an `n`-primitive action
 acts `n-d`-primitively on the remaining (`d ≤ n`). -/
 @[to_additive
