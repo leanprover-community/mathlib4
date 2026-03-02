@@ -1140,10 +1140,15 @@ lemma ValueGroupWithZero.embed_mk [v.Compatible] (x : R) (s : posSubmonoid R) :
   rfl
 
 @[simp]
-lemma ValueGroupWithZero.embed_valuation (γ : ValueGroupWithZero R) :
+lemma ValueGroupWithZero.embed_valuation [v.Compatible] (x : R) :
+    embed v (valuation R x) = ValueGroup₀.restrict₀ v x := by
+  convert ValueGroupWithZero.embed_mk v x 1
+  simp
+
+@[simp]
+lemma ValueGroupWithZero.embedding_embed_valuation (γ : ValueGroupWithZero R) :
     ValueGroup₀.embedding (embed (valuation R) γ) = γ := by
   induction γ using ValueGroupWithZero.ind
-  simp [ -ValueGroup₀.restrict₀_apply, embed_mk,  ValueGroup₀.embedding_restrict₀, map_div₀]
   simp [mk_eq_div]
 
 lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
@@ -1161,8 +1166,8 @@ lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) 
       ValueGroup₀.embedding_restrict₀ 1, ValueGroup₀.embedding_restrict₀ r.1,
       ValueGroup₀.embedding_restrict₀ s.1]
     simpa using h
-  · simp [embed]
-  · simp [embed]
+  · simp [ValueGroup₀.restrict₀_apply, embed]
+  · simp [ValueGroup₀.restrict₀_apply, embed]
 
 lemma leftInverse_embedding_embed : Function.LeftInverse (ValueGroup₀.embedding)
     ((ValueGroupWithZero.embed (valuation R))).toFun := by
