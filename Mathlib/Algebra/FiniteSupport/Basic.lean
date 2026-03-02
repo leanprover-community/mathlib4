@@ -47,7 +47,7 @@ lemma hasFiniteMulSupport_snd {M' : Type*} [One M'] (f : α → M × M') (hf : H
   hasFiniteMulSupport_comp _ _ hf rfl
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_prod_mk {M' : Type*} [One M'] (f : α → M) (g : α → M')
+lemma hasFiniteMulSupport_prodMk {M' : Type*} [One M'] (f : α → M) (g : α → M')
     (hf : HasFiniteMulSupport f) (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ (f a, g a) := by
   simp only [HasFiniteMulSupport] at hf hg ⊢
