@@ -5,13 +5,26 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Factorizations.CM5a
 public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
-public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 /-!
-# Factorization lemma
+# Lifting properties in cochain complexes
+
+Let `C` be an abelian category. Consider a commutative diagram
+in the category `CochainComplex C ℤ`.
+```
+   t
+ A ⟶ X
+i|   |p
+ v   v
+ B ⟶ Y
+   b
+```
+Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ`,
+that `Q` is a cokernel of `i`, and `K` is a kernel of `p`. In this situation,
+we construct a cocycle in `Cocycle Q K 1` and show that there exists
+a lifting `B ⟶ X` if this cocycle is a coboundary.
 
 -/
 
@@ -19,7 +32,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 namespace CochainComplex
 
-open CategoryTheory HomotopicalAlgebra Limits HomComplex
+open CategoryTheory Limits HomComplex
 
 variable {C : Type*} [Category C] [Abelian C]
 
@@ -34,8 +47,13 @@ variable {A B X Y : CochainComplex C ℤ}
   {K : CochainComplex C ℤ} {ι : K ⟶ X} {hι : ι ≫ p = 0}
   (hK : IsLimit (KernelFork.ofι _ hι))
 
+/-- The `0`-cochain from `B` to `X` given by the degreewise liftings. -/
 abbrev cochain₀ : Cochain B X 0 := Cochain.ofHoms (fun n ↦ (hsq n).l)
 
+/-- A `1`-cocycle from `B` to `X` obtained as the boundary of
+the `0`-cochain `cochain`0 sq hsq` consisting of the degreewise liftings.
+This is refined below as a `1`-cocycle from `Q` to `K` where `Q` is a
+cokernel of `i : A ⟶ B` and `K` a kernel of `p : X ⟶ Y` (see `cocycle₁`). -/
 def cocycle₁' : Cocycle B X 1 :=
   Cocycle.mk (δ 0 1 (cochain₀ sq hsq)) 2 (by simp) (by simp [δ_δ])
 
@@ -68,6 +86,7 @@ lemma exists_hom (n m : ℤ) (hnm : n + 1 = m) :
       simp [← cancel_epi (π.f n), reassoc_of% hl])
   exact ⟨l', by cat_disch⟩
 
+/-- The `1`-cochain from `Q` to `K` which refines `cocycle₁'`. -/
 noncomputable def cochain₁ : Cochain Q K 1 :=
   Cochain.mk (fun n m hnm ↦ (exists_hom sq hsq hQ hK n m hnm).choose)
 
@@ -76,6 +95,9 @@ lemma π_f_cochain₁_v_ι_f (n m : ℤ) (hnm : n + 1 = m) :
     π.f n ≫ (cochain₁ sq hsq hQ hK).v n m hnm ≫ ι.f m = (cocycle₁' sq hsq).1.v n m hnm :=
   (exists_hom sq hsq hQ hK n m hnm).choose_spec
 
+/-- A `1`-cocycle from a cokernel `Q` of `i : A ⟶ B` to a kernel `K` of
+`p : X ⟶ Y`. If this is a coboundary, then the square in `CochainCompplex C ℤ`
+has a lifting, see the lemma `hasLift` below. -/
 noncomputable def cocycle₁ : Cocycle Q K 1 :=
   Cocycle.mk (cochain₁ sq hsq hQ hK) 2 (by simp) (by
     have : Epi π := Cofork.IsColimit.epi hQ
@@ -97,11 +119,24 @@ lemma comp_coe_cocycle₁_comp :
   ext n m hnm
   simp [cocycle₁]
 
-variable (α : Cochain Q K 0)
-  (hα : δ 0 1 α = (cocycle₁ sq hsq hQ hK).1)
 
-include hα in
-lemma hasLift : sq.HasLift where
+/--
+Consider a commutative square in the category `CochainComplex C ℤ`
+where `C` is an abelian category.
+```
+   t
+ A ⟶ X
+i|   |p
+ v   v
+ B ⟶ Y
+   b
+```
+Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ`,
+that `Q` is a cokernel of `i`, and `K` is a kernel of `p`.
+If the cocycle `cocycle₁ sq hsq hQ hK : Cocycle Q K 1` is a coboundary,
+we show that the square admits a lifting `B ⟶ X`. -/
+lemma hasLift (α : Cochain Q K 0) (hα : δ 0 1 α = (cocycle₁ sq hsq hQ hK).1) :
+    sq.HasLift where
   exists_lift := by
     replace hα : (Cochain.ofHom π).comp ((δ 0 1 α).comp (.ofHom ι) (add_zero 1)) (zero_add 1) =
         (cocycle₁' sq hsq).1 := by
