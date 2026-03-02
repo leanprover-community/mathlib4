@@ -243,24 +243,29 @@ theorem algebraMap_coe (x : WithAbs v.1) :
 such that that `K`, `v.Completion` and `w.Completion` forms a scalar tower.
 If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the corresponding embeddings
 to completions are also extensions. -/
-theorem isExtension_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
-    (h : IsExtension v.embedding w.embedding) :
-    IsExtension (extensionEmbedding v) (extensionEmbedding w) := by
-  ext x
-  induction x using induction_on
-  · exact isClosed_eq (continuous_extension.comp <| continuous_algebraMap v.Completion w.Completion)
-      continuous_extension
-  · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply, ← h]
+theorem liesOver_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
+    [LiesOver v.embedding w.embedding] :
+    LiesOver (extensionEmbedding v) (extensionEmbedding w) where
+  over := by
+    ext x
+    induction x using induction_on
+    · exact isClosed_eq
+        (continuous_extension.comp (continuous_algebraMap v.Completion w.Completion))
+        continuous_extension
+    · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply,
+        ← LiesOver.over v.embedding w.embedding]
 
-theorem isExtension_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
-    (h : IsExtension v.embedding (conjugate w.embedding)) :
-    IsExtension (extensionEmbedding v) (conjugate (extensionEmbedding w)) := by
-  ext x
-  induction x using induction_on
-  · simpa using isClosed_eq (.comp (by fun_prop)
-      (continuous_extension.comp <| continuous_algebraMap v.Completion w.Completion))
-      continuous_extension
-  · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply, ← h]
+theorem liesOver_conjugate_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
+    [LiesOver v.embedding (conjugate w.embedding)] :
+    LiesOver (extensionEmbedding v) (conjugate (extensionEmbedding w)) where
+  over := by
+    ext x
+    induction x using induction_on
+    · simpa using isClosed_eq (.comp (by fun_prop)
+        (continuous_extension.comp <| continuous_algebraMap v.Completion w.Completion))
+        continuous_extension
+    · simp [WithAbs.algebraMap_left_apply, WithAbs.algebraMap_right_apply,
+        ← LiesOver.over v.embedding (conjugate w.embedding)]
 
 end Completion
 
@@ -270,7 +275,6 @@ open Completion
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver v.1] {v}
 
-
 attribute [local instance] WithAbs.algebraLeft
 
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
@@ -278,12 +282,14 @@ theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) 
     simpa [WithAbs.norm_eq_apply_ofAbs] using
       WithAbs.ofAbs_algebraMap v.1 w.1 x ▸ comp_of_comap_eq (comap_eq w v) x.ofAbs
 
+theorem embedding_liesOver_of_isReal (h : v.IsReal) : LiesOver v.embedding w.embedding where
+  over := (comap_eq w v ▸ comap_embedding_of_isReal _ (comap_eq w v ▸ h)).symm
+
 variable [Algebra v.Completion w.Completion] [IsScalarTower (WithAbs v.1) v.Completion w.Completion]
 
-theorem isExtension_extensionEmbedding_of_isReal
+theorem extensionEmbedding_liesOver_of_isReal
     [ContinuousSMul v.Completion w.Completion] (h : v.IsReal) :
-    IsExtension (extensionEmbedding v) (extensionEmbedding w) :=
-  isExtension_extensionEmbedding w
-    (comap_eq w v ▸ comap_embedding_of_isReal _ (comap_eq w v ▸ h)).symm
+    LiesOver (extensionEmbedding v) (extensionEmbedding w) :=
+  letI := embedding_liesOver_of_isReal w h; liesOver_extensionEmbedding w
 
 end NumberField.InfinitePlace.LiesOver
