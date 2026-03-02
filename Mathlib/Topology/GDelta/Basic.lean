@@ -31,9 +31,9 @@ In this file we define `Gδ` sets and prove their basic properties.
 We prove that finite or countable intersections of Gδ sets are Gδ sets.
 
 - `isClosed_isNowhereDense_iff_compl`: a closed set is nowhere dense iff
-its complement is open and dense
+  its complement is open and dense
 - `isMeagre_iff_countable_union_isNowhereDense`: a set is meagre iff it is contained in a countable
-union of nowhere dense sets
+  union of nowhere dense sets
 - subsets of meagre sets are meagre; countable unions of meagre sets are meagre
 
 See `Mathlib/Topology/GDelta/MetrizableSpace.lean` for the proof that
