@@ -16,11 +16,12 @@ additions, multiplications, inversions, conjugates, and powers of complex number
 
 -/
 
+public meta section
+
 open Lean Meta Elab Qq Tactic Complex Mathlib.Tactic
 open ComplexConjugate
 
-namespace Mathlib.Meta
-namespace NormNumI
+namespace Mathlib.Meta.NormNumI
 
 /-- The result of `norm_num` running on an expression `a : ℂ`. -/
 structure ResultI (a : Q(ℂ)) where
