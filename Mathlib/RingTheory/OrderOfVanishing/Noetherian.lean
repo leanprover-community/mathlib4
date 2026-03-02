@@ -310,8 +310,6 @@ lemma ordFrac_irreducible [IsDiscreteValuationRing R]
   simp only [ordFrac_eq_ord R ϖ this, mem_nonZeroDivisors_of_ne_zero this,
       ordMonoidWithZeroHom_eq_ord, ord_of_irreducible ϖ hϖ]
   rfl
-
-
 /--
 For a discrete valuation ring `R` with fraction ring `K`,
 multiplicative kernel of `ordFrac R` is precisely the elements of `K`
