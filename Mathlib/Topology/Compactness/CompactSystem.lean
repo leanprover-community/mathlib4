@@ -72,19 +72,15 @@ note that we use `⋂ k < n, C k` rather than `⋂ k ≤ n, C k`. -/
 lemma iff_nonempty_iInter_of_lt (p : Set α → Prop) : IsCompactSystem p ↔
     ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ n, (⋂ k < n, C k).Nonempty) → (⋂ i, C i).Nonempty := by
   simp_rw [iff_nonempty_iInter]
-  refine ⟨fun h C hi h'↦ ?_, fun h C hi h' ↦ ?_⟩
-  · apply h C hi
-    exact fun n ↦ dissipate_eq ▸ (h' (n + 1))
-  · apply h C hi
-    intro n
-    simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
-    intro g
-    apply h' n
-    simp_rw [← subset_empty_iff, dissipate] at g ⊢
-    apply le_trans _ g
-    intro x
-    rw [mem_iInter₂, mem_iInter₂]
-    exact fun h i hi ↦ h i hi.le
+  refine ⟨fun h C hi h'↦ h C hi (fun n ↦ dissipate_eq ▸ (h' (n + 1))), fun h C hi h' ↦ h C hi ?_⟩
+  simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
+  intro n g
+  apply h' n
+  simp_rw [← subset_empty_iff, dissipate] at g ⊢
+  apply le_trans _ g
+  intro x
+  rw [mem_iInter₂, mem_iInter₂]
+  exact fun h i hi ↦ h i hi.le
 
 /-- Any subset of a compact system is a compact system. -/
 theorem mono {C D : (Set α) → Prop} (hD : IsCompactSystem D) (hCD : ∀ s, C s → D s) :
