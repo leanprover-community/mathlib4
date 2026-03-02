@@ -146,6 +146,12 @@ theorem invOf_eq_right_inv [Monoid α] {a b : α} [Invertible a] (hac : a * b = 
 theorem invOf_eq_left_inv [Monoid α] {a b : α} [Invertible a] (hac : b * a = 1) : ⅟a = b :=
   (left_inv_eq_right_inv hac (mul_invOf_self _)).symm
 
+theorem invOf_eq_iff_right [Monoid α] {a b : α} [Invertible a] : ⅟a = b ↔ a * b = 1 :=
+  ⟨fun h ↦ by rw [← h, mul_invOf_self], invOf_eq_right_inv⟩
+
+theorem invOf_eq_iff_left [Monoid α] {a b : α} [Invertible a] : ⅟a = b ↔ b * a = 1 :=
+  ⟨fun h ↦ by rw [← h, invOf_mul_self], invOf_eq_left_inv⟩
+
 theorem invertible_unique {α : Type u} [Monoid α] (a b : α) [Invertible a] [Invertible b]
     (h : a = b) : ⅟a = ⅟b := by
   apply invOf_eq_right_inv
