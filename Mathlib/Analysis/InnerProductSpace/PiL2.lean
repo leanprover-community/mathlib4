@@ -1187,7 +1187,6 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     { toLinearMap := M
       norm_map' := M_norm_map }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearIsometry.extend_apply (L : S →ₗᵢ[𝕜] V) (s : S) : L.extend s = L s := by
   simp only [LinearIsometry.extend, ← LinearIsometry.coe_toLinearMap]
   simp only [add_eq_left, LinearIsometry.coe_toLinearMap,
