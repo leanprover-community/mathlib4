@@ -23,7 +23,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] (F : C ⥤ Type w)
+variable {C : Type u} [Category.{v} C] (F : C ⥤ TypeCat.{w})
 
 namespace Subfunctor
 

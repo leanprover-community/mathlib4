@@ -333,11 +333,11 @@ variable (C)
 
 /-- Sending `X : C` to `Subobject X` is a contravariant functor `Cᵒᵖ ⥤ Type`. -/
 @[simps]
-def functor [HasPullbacks C] : Cᵒᵖ ⥤ Type max u₁ v₁ where
-  obj X := Subobject X.unop
-  map f := (pullback f.unop).obj
-  map_id _ := funext pullback_id
-  map_comp _ _ := funext (pullback_comp _ _)
+def functor [HasPullbacks C] : Cᵒᵖ ⥤ TypeCat.{max u₁ v₁} where
+  obj X := TypeCat.of (Subobject X.unop)
+  map f := TypeCat.ofHom ⟨(pullback f.unop).obj⟩
+  map_id _ := by ext : 3; simp [pullback_id]
+  map_comp _ _ := by ext : 3; simp [pullback_comp]
 
 end Functor
 

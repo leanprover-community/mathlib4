@@ -49,6 +49,10 @@ abbrev forget : C ⥤ TypeCat.{w} where
   obj X := .of (ToType X)
   map f := ConcreteCategory.ofHom ⟨f⟩
 
+unif_hint comp_forget_obj {D : Type*} [Category* D] {F : D ⥤ C} (X X' : D) where
+  X ≟ X' ⊢
+  ((F ⋙ forget C).obj X) ≟ TypeCat.of (ToType (F.obj X'))
+
 instance : (forget C).Faithful where
   map_injective h := ConcreteCategory.hom_ext _ _ fun x ↦ ConcreteCategory.congr_hom h x
 

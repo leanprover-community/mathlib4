@@ -192,6 +192,15 @@ theorem types_comp {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ConcreteCategory.hom (f ≫ g) = g ∘ f :=
   rfl
 
+@[simp]
+lemma types_id_apply (X : TypeCat.{u}) (x : X) : 𝟙 X x = x :=
+  rfl
+
+@[simp]
+lemma types_comp_apply {X Y Z : TypeCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g) x = g (f x) :=
+  rfl
+
 @[deprecated (since := "2026-02-09")] alias hom_inv_id_apply := Iso.hom_inv_id_apply
 @[deprecated (since := "2026-02-09")] alias inv_hom_id_apply := Iso.inv_hom_id_apply
 @[deprecated (since := "2026-02-09")] alias asHom := TypeCat.ofHom

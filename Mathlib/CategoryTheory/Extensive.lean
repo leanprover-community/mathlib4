@@ -209,9 +209,9 @@ theorem finitaryExtensive_iff_of_isTerminal (C : Type u) [Category.{v} C] [HasFi
   obtain ⟨hl, hr⟩ := (H c (HT.from _) (HT.from _) d hd.symm hd'.symm).mp ⟨hc⟩
   rw [hl.paste_vert_iff hX.symm, hr.paste_vert_iff hY.symm]
 
-instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
+instance types.finitaryExtensive : FinitaryExtensive (TypeCat.{u}) := by
   classical
-  rw [finitaryExtensive_iff_of_isTerminal (Type u) PUnit Types.isTerminalPUnit _
+  rw [finitaryExtensive_iff_of_isTerminal (TypeCat.{u}) (TypeCat.of PUnit) Types.isTerminalPUnit _
       (Types.binaryCoproductColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => Types.binaryCoproductColimit X Y) _
       fun f g => (Limits.Types.pullbackLimitCone f g).2
@@ -222,30 +222,35 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
         rcases h : s.fst x with val | val
-        · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inl.injEq,
-            existsUnique_eq']
+        · simp
         · apply_fun f at h
-          cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαY val :).symm
+          cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
+            (ConcreteCategory.congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      exact ⟨l, (funext hl).symm, Types.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+      refine ⟨TypeCat.ofHom ⟨l⟩, ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
+      · ext x
+        exact (hl x).symm
+      · ext x
+        exact hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
         rcases h : s.fst x with val | val
         · apply_fun f at h
-          cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαX val :).symm
-        · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inr.injEq,
-            existsUnique_eq']
+          cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
+            (ConcreteCategory.congr_hom hαX val :).symm
+        · simp
       delta ExistsUnique at this
       choose l hl hl' using this
-      exact ⟨l, (funext hl).symm, Types.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ => funext fun x => hl' x (l' x) (congr_fun h₁ x).symm⟩
+      refine ⟨TypeCat.ofHom ⟨l⟩, ?_, Types.isTerminalPUnit.hom_ext _ _, fun {l'} h₁ _ => ?_⟩
+      · ext x
+        exact (hl x).symm
+      · ext x
+        exact hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm
   · intro Z f
     dsimp [Limits.Types.binaryCoproductCocone]
-    delta Types.PullbackObj
     have : ∀ x, f x = Sum.inl PUnit.unit ∨ f x = Sum.inr PUnit.unit := by
       intro x
       rcases f x with (⟨⟨⟩⟩ | ⟨⟨⟩⟩)
@@ -257,20 +262,21 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       ⟨fun p => ⟨p.1.1, p.2.trans (congr_arg Sum.inr <| Subsingleton.elim _ _)⟩,
         fun x => ⟨⟨_, _⟩, x.2⟩, fun _ => by ext; rfl, fun _ => by ext; rfl⟩
     fapply BinaryCofan.isColimitMk
-    · exact fun s x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
-        fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩
+    · exact fun s => TypeCat.ofHom ⟨fun x => dite _ (fun h => s.inl <| eX.symm ⟨x, h⟩)
+        fun h => s.inr <| eY.symm ⟨x, (this x).resolve_left h⟩⟩
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, _⟩
-      dsimp
+      simp
       split_ifs <;> rfl
     · intro s
       ext ⟨⟨x, ⟨⟩⟩, hx⟩
-      dsimp
+      simp
       split_ifs with h
       · cases h.symm.trans hx
       · rfl
     · intro s m e₁ e₂
       ext x
+      dsimp
       split_ifs
       · rw [← e₁]
         rfl

@@ -391,11 +391,11 @@ open CategoryTheory
 
 /-- Monodromy of a covering map as a functor. Definition 2.1 in
 https://ncatlab.org/nlab/show/monodromy. -/
-@[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ Type _ where
-  obj x := p ⁻¹' {x.as}
-  map := cov.monodromy
-  map_id _ := cov.monodromy_refl
-  map_comp _ _ := funext (cov.monodromy_trans_apply _ _)
+@[simps] noncomputable def monodromyFunctor : FundamentalGroupoid X ⥤ TypeCat where
+  obj x := TypeCat.of (p ⁻¹' {x.as})
+  map f := TypeCat.ofHom ⟨cov.monodromy f⟩
+  map_id _ := by ext x : 3; simpa using congr_fun cov.monodromy_refl x
+  map_comp _ _ := by ext : 3; simpa using cov.monodromy_trans_apply _ _ _
 
 theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
     (cov.monodromy γ).Bijective :=
