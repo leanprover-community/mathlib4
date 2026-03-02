@@ -171,18 +171,20 @@ lemma killCompl_monomial_mapDomain {s : σ →₀ ℕ} {c : R} :
     (monomial (s.mapDomain f) c).killCompl hf = monomial s c := by
   simp [← rename_monomial]
 
-lemma killCompl_monomial_eq_zero {s : τ →₀ ℕ} {c : R} (hs : ∃ a ∈ s.support, a ∉ Set.range f) :
+lemma killCompl_monomial_eq_zero_of_notMem_range {s : τ →₀ ℕ} (c : R)
+    {a : τ} (ha : a ∈ s.support) (hs : a ∉ Set.range f) :
     (monomial s c).killCompl hf = 0 := by
   rw [killCompl, aeval_monomial, Finsupp.prod]
   apply mul_eq_zero_of_right
-  obtain ⟨a, ha⟩ := hs
-  apply Finset.prod_eq_zero ha.1
-  simp [ha.2, zero_pow (Finsupp.mem_support_iff.mp ha.1)]
+  apply Finset.prod_eq_zero ha
+  simp [hs, zero_pow (Finsupp.mem_support_iff.mp ha)]
 
-lemma killCompl_monomial_eq_zero' {s : τ →₀ ℕ} {c : R} (hs : ¬ ↑s.support ⊆ Set.range f) :
-    (monomial s c).killCompl hf = 0 := killCompl_monomial_eq_zero hf (Set.not_subset.mp hs)
+lemma killCompl_monomial_eq_zero_of_not_subset {s : τ →₀ ℕ} (c : R)
+    (hs : ¬ ↑s.support ⊆ Set.range f) : (monomial s c).killCompl hf = 0 :=
+  have ⟨_, ha, hs⟩ := Set.not_subset.mp hs
+  killCompl_monomial_eq_zero_of_notMem_range hf c ha hs
 
-lemma killCompl_monomial_eq_monomial_comapDomain {s : τ →₀ ℕ} {c : R}
+lemma killCompl_monomial_eq_monomial_comapDomain_of_subset {s : τ →₀ ℕ} (c : R)
     (hs : ↑s.support ⊆ Set.range f) :
     (monomial s c).killCompl hf = monomial (s.comapDomain f hf.injOn) c := by
   nth_rw 1 [← s.mapDomain_comapDomain f hf hs, killCompl_monomial_mapDomain]
@@ -191,8 +193,8 @@ lemma killCompl_monomial {s} {c : R} [Decidable (↑s.support ⊆ Set.range f)] 
     (monomial s c).killCompl hf =
       if ↑s.support ⊆ Set.range f then monomial (s.comapDomain f hf.injOn) c else 0 := by
   split_ifs with h
-  · exact killCompl_monomial_eq_monomial_comapDomain hf h
-  · exact killCompl_monomial_eq_zero' hf h
+  · exact killCompl_monomial_eq_monomial_comapDomain_of_subset hf c h
+  · exact killCompl_monomial_eq_zero_of_not_subset hf c h
 
 lemma coeff_killCompl {s} :
     (p.killCompl hf).coeff s = p.coeff (s.mapDomain f) := by
