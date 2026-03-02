@@ -621,9 +621,10 @@ theorem adicCompletionIntegers.isUnit_iff_valued_eq_one {a : v.adicCompletionInt
   simp [Valuation.Integers.isUnit_iff_valuation_eq_one (integers K v)]
 
 theorem adicCompletionIntegers.mem_units_iff_valued_eq_one {a : (v.adicCompletion K)ˣ} :
-    a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.1 = 1 :=
-  ⟨fun h ↦ isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).2,
-    fun h ↦ ⟨h.le, by simp [mem_adicCompletionIntegers, inv_le_one_iff₀, h.symm.le]⟩⟩
+    a ∈ (v.adicCompletionIntegers K).units ↔ Valued.v a.1 = 1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦
+     ⟨h.le, by simp [mem_adicCompletionIntegers, inv_le_one_iff₀, h.symm.le]⟩⟩
+  convert isUnit_iff_valued_eq_one.1 (Submonoid.unitsEquivIsUnitSubmonoid _ ⟨_, h⟩).2
 
 section AbsoluteValue
 

@@ -163,7 +163,7 @@ def toNormedField : NormedField L :=
     eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
     dist_eq := fun x y => by
       simp only [norm]
-      rw [← v.map_neg, neg_sub, sub_eq_add_neg, add_comm]
+      rw [← v.restrict.map_neg, neg_sub, sub_eq_add_neg, add_comm]
     norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by

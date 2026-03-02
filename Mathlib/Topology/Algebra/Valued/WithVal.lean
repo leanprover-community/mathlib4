@@ -425,7 +425,7 @@ lemma _root_.WithVal.strictMono_valueGroup₀_equiv :
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
 -- TODO: golf
 -- **FAE** instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
-theorem IsEquiv.uniformContinuous_equivWithVal
+theorem IsEquiv.uniformContinuous_congr
     (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
       w.restrict r / w.restrict s = γ.1) (h : v.IsEquiv w) :
     UniformContinuous (WithVal.congr v w (.refl R)) := by
@@ -459,10 +459,13 @@ theorem IsEquiv.uniformContinuous_equivWithVal
     simp only [equiv_apply, restrict_def, div_eq_mul_inv, ← mul_assoc] at hlt
     rw [mul_comm _ ( (restrict₀ w) r), mul_assoc] at hlt
     rw [mul_inv_cancel₀, mul_one] at hlt
-    rw [← strictMono_valueGroup₀_equiv.lt_iff_lt]
-    rw [div_eq_mul_inv, map_mul]
+    rw [← strictMono_valueGroup₀_equiv.lt_iff_lt, MulEquiv.apply_symm_apply]
+    · rw [div_eq_mul_inv]
 
-    simp only [congr_apply, RingEquiv.refl_apply, restrict_def, map_div₀, MulEquiv.apply_symm_apply]
+
+      sorry
+    /- simp only [congr_apply, RingEquiv.refl_apply, restrict_def, map_div₀,
+      MulEquiv.apply_symm_apply]
     simp only [valueGroup₀_equiv, MulEquiv.coe_mk, Equiv.coe_fn_mk]
     split_ifs
     · sorry
@@ -473,9 +476,9 @@ theorem IsEquiv.uniformContinuous_equivWithVal
       ValueGroup₀.instLinearOrderedCommGroupWithZero
 
 
-    rw [div_eq_mul_inv]
-    apply mul_lt_mul_of_pos_left _ hs0
-    sorry
+    rw [div_eq_mul_inv] -/
+    --apply mul_lt_mul_of_pos_left _ hs0
+    · sorry
   sorry
   /- suffices w ((equiv v) x) * w s < w r by
     rwa [← map_mul, ← restrict_lt_iff, map_mul, ← lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
@@ -502,9 +505,8 @@ theorem IsEquiv.uniformContinuous_equivWithVal
     rw [ne_eq, h.eq_zero]
     exact ne_zero_of_lt hs₀ -/
 
-#exit
-
-theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w)
+-- TODO: reinstate (From #34049)
+/- theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w)
     (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ) (h : v.IsEquiv w) :
     UniformContinuous (WithVal.equiv v) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
@@ -515,22 +517,7 @@ theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w)
   use .mk0 (v r / v s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ hs₀, hv, ← map_mul, ← lt_def, ← ofVal_mul,
     ← h.orderRingIso_apply, ← h.orderRingIso.lt_symm_apply]
-  simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
-
-theorem IsEquiv.uniformContinuous_equiv_symm [Valued R Γ₀'] (hv : Valued.v = w)
-    (hw : ∀ γ : Γ₀ˣ, ∃ r s, 0 < v r ∧ 0 < v s ∧ v r / v s = γ) (h : w.IsEquiv v) :
-    UniformContinuous (WithVal.equiv v).symm := by
-  refine uniformContinuous_of_continuousAt_zero _ ?_
-  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
-    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
-  intro γ
-  obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
-  use .mk0 (w r / w s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
-  simp only [equiv_symm_apply, Set.mem_setOf_eq, apply_symm_equiv]
-  simp [hv] at hx
-  rw [← hr, lt_div_iff₀ hs₀, ← map_mul, ← lt_def,
-    ← h.orderRingIso_apply, ← h.orderRingIso.lt_symm_apply]
-  simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
+  simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx -/
 
 @[deprecated (since := "2026-01-27")]
   alias IsEquiv.uniformContinuous_equivWithVal := IsEquiv.uniformContinuous_congr
@@ -546,7 +533,8 @@ def IsEquiv.uniformEquiv (hv : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ,
   uniformContinuous_toFun := h.uniformContinuous_congr hw
   uniformContinuous_invFun := h.symm.uniformContinuous_congr hv
 
-/-- Let `v : Valuation R Γ₀`. If `R` has `Valued R Γ₀'` defined via construction through
+-- TODO: reinstate (From #34049)
+/- /-- Let `v : Valuation R Γ₀`. If `R` has `Valued R Γ₀'` defined via construction through
 `w : Valuation R Γ₀'`, with `v` equivalent to `w`, then `WithVal.equiv` defines a uniform
 space isomorphism `WithVal v ≃ᵤ R`. -/
 def _root_.WithVal.uniformEquiv [Valued R Γ₀'] (hV : Valued.v = w)
@@ -555,7 +543,7 @@ def _root_.WithVal.uniformEquiv [Valued R Γ₀'] (hV : Valued.v = w)
     WithVal v ≃ᵤ R where
   __ := WithVal.equiv v
   uniformContinuous_toFun := h.uniformContinuous_equiv hV hw
-  uniformContinuous_invFun := h.symm.uniformContinuous_equiv_symm hV hv
+  uniformContinuous_invFun := h.symm.uniformContinuous_equiv_symm hV hv -/
 
 theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (hv : Function.Surjective v)

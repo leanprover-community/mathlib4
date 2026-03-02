@@ -52,8 +52,8 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     have hn :  Valued.v (R := (WithVal (Rat.padicValuation p))) ((p : ℚ) ^ (n : ℤ)) =
       exp (-n : ℤ) := by
       change Rat.padicValuation p _ = exp _
-      simp only [zpow_natCast, map_pow, Rat.padicValuation_self, Int.reduceNeg,
-        exp_neg, inv_pow, ← exp_nsmul, Int.nsmul_eq_mul, mul_one,]
+      simp only [Rat.cast_natCast, zpow_natCast, map_pow, map_natCast, Rat.padicValuation_self,
+        Int.reduceNeg, exp_neg, inv_pow, ← exp_nsmul, nsmul_eq_mul, mul_one]
     use Units.mk0 (Valued.v.restrict ((p : ℚ)^(n : ℤ))) (by
       rw [ne_eq, Valuation.restrict_def, restrict₀_eq_zero_iff, hn]; simp)
     intro x y h
