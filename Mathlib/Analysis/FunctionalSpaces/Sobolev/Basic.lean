@@ -403,9 +403,7 @@ lemma HasFDerivAt.hasWeakDeriv [μ.IsAddHaarMeasure] (hf : ∀ x ∈ Ω, HasFDer
       · exact φ.integrable_smul h0f
       · exact φ.differentiable
       · sorry
-        -- false: need a version of integration by parts where we only have to check
-        -- differentiability on the (t)support of the other function.
-        -- This starts with the lemma `ContinuousLinearMap.hasDerivAt_of_bilinear.`.
+        -- This sorry is provable after merging with master by #35870.
     }
 
 variable (Ω) in
@@ -463,6 +461,13 @@ lemma locallyIntegrableOn [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (
 lemma mono {k' : ℕ∞} (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hk : k' ≤ k) :
     HasWTaylorSeriesUpTo Ω f g k' p μ where
   zero_aeEq := hf.zero_aeEq
+  hasWeakDeriv m hm := hf.hasWeakDeriv m (lt_of_lt_of_le hm hk)
+  memLp m hm := hf.memLp m (le_trans hm hk)
+
+lemma _root_.HasFTaylorSeriesUpToOn {k' : ℕ∞} (hf : HasFTaylorSeriesUpToOn f g k Ω) :
+    HasWTaylorSeriesUpTo Ω f g k p μ where
+  zero_aeEq := by
+    have := hf.zero_eq
   hasWeakDeriv m hm := hf.hasWeakDeriv m (lt_of_lt_of_le hm hk)
   memLp m hm := hf.memLp m (le_trans hm hk)
 
