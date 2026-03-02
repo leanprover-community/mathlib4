@@ -405,7 +405,6 @@ theorem disjoint_evalFrom_reverse_iff {x : List α} {S S' : Set σ} :
     Disjoint S (M.reverse.evalFrom S' x) ↔ Disjoint S' (M.evalFrom S x.reverse) :=
   ⟨disjoint_evalFrom_reverse, fun h ↦ List.reverse_reverse x ▸ disjoint_evalFrom_reverse h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.reverse ∈ M.accepts := by
   simp [mem_accepts, ← Set.not_disjoint_iff, disjoint_evalFrom_reverse_iff]

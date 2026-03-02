@@ -156,7 +156,6 @@ def latticeBasis : Basis (Fin 2) ℤ L.lattice :=
 def latticeEquivProd : L.lattice ≃ₗ[ℤ] ℤ × ℤ :=
   L.latticeBasis.repr ≪≫ₗ Finsupp.linearEquivFunOnFinite _ _ _ ≪≫ₗ .finTwoArrow ℤ ℤ
 
-set_option backward.isDefEq.respectTransparency false in
 lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
   simp [latticeEquivProd, Finsupp.linearCombination]
@@ -248,7 +247,6 @@ lemma differentiableOn_weierstrassPExcept (l₀ : ℂ) :
   · simp
   · exact .sub (.div (by fun_prop) (by fun_prop) (by aesop (add simp sub_eq_zero))) (by fun_prop)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma weierstrassPExcept_neg (l₀ : ℂ) (z : ℂ) :
     ℘[L - l₀] (-z) = ℘[L - -l₀] z := by
   simp only [weierstrassPExcept]
@@ -307,7 +305,6 @@ lemma differentiableOn_weierstrassP :
   convert L.differentiableOn_weierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma weierstrassP_neg (z : ℂ) : ℘[L] (-z) = ℘[L] z := by
   simp only [weierstrassP]
@@ -434,7 +431,6 @@ end derivWeierstrassPExcept
 
 section Periodicity
 
-set_option backward.isDefEq.respectTransparency false in
 lemma derivWeierstrassPExcept_add_coe (l₀ : ℂ) (z : ℂ) (l : L.lattice) :
     ℘'[L - l₀] (z + l) = ℘'[L - (l₀ - l)] z := by
   simp only [derivWeierstrassPExcept]
@@ -563,7 +559,6 @@ lemma differentiableOn_derivWeierstrassP :
   convert L.differentiableOn_derivWeierstrassPExcept _
   simp [L.ω₁_div_two_notMem_lattice]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_neg (z : ℂ) : ℘'[L] (-z) = - ℘'[L] z := by
   simp only [derivWeierstrassP]
@@ -573,7 +568,6 @@ lemma derivWeierstrassP_neg (z : ℂ) : ℘'[L] (-z) = - ℘'[L] z := by
   congr! with l
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivWeierstrassP_add_coe (z : ℂ) (l : L.lattice) :
     ℘'[L] (z + l) = ℘'[L] z := by
@@ -955,7 +949,6 @@ def G (n : ℕ) : ℂ := ∑' l : L.lattice, (l ^ n)⁻¹
 lemma sumInvPow_zero : L.sumInvPow 0 = L.G := by
   ext; simp [sumInvPow, G]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma G_eq_zero_of_odd (n : ℕ) (hn : Odd n) : L.G n = 0 := by
   rw [← CharZero.eq_neg_self_iff, G, ← tsum_neg, ← (Equiv.neg _).tsum_eq]
   congr with l
