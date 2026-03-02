@@ -184,9 +184,10 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
-theorem FinitePlace.norm_def (x : WithVal (v.valuation K)) : ‖embedding v x‖ = adicAbv v x := by
+theorem FinitePlace.norm_def (x : K) :
+    ‖embedding v x‖ = adicAbv v x := by
   simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
-    Valued.norm, Valuation.RankOne.hom, embedding_apply, ← toNNReal_valued_eq_adicAbv]
+    Valued.norm, Valuation.RankOne.hom, embedding_apply, adicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
