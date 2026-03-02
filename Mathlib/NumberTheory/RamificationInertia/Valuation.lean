@@ -63,10 +63,10 @@ theorem uniformContinuous_algebraMap_liesOver [IsFractionRing B L] [NoZeroSMulDi
     (Valued.hasBasis_nhds_zero _ _)]
   intro γ _
   use expEquiv ((WithZero.log γ) / v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal)
-  simp only [adicValued_apply', coe_expEquiv_apply, Set.mem_setOf_eq, true_and]
+  simp only [coe_expEquiv_apply, Set.mem_setOf_eq, true_and]
   intro x hx
-  rw [WithVal.algebraMap_apply, WithVal.algebraMap_apply', RingEquiv.apply_symm_apply,
-    ← valuation_liesOver L v w (WithVal.equiv _ x)]
+  rw [WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply, WithVal.apply_symm_equiv,
+    ← valuation_liesOver L v w]
   rcases eq_or_ne x 0 with rfl | hx₀
   · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
   · rw [← log_lt_iff_lt_exp (by simpa)] at hx
