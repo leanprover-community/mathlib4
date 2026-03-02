@@ -16,7 +16,7 @@ public import Mathlib.Lean.Thunk
 
 Note: this entire file is deprecated.
 
-This file includes a no-op comment-only change to exercise cache upload in CI.
+This file includes a second no-op comment-only change to exercise cache upload in CI.
 
 The typeclass `Estimator a ε`, where `a : Thunk α` and `ε : Type`,
 states that `e : ε` carries the data of a lower bound for `a.get`,

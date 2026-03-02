@@ -700,25 +700,14 @@ jobs:
           tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
           allow-no-subscriptions: true
 
-      - name: Mint short-lived SAS token for cache upload
+      - name: Mint Azure storage bearer token via az CLI
         shell: bash
         run: |
-          EXPIRY="$(LC_ALL=C date -u -d '+10 minutes' '+%Y-%m-%dT%H:%MZ')"
-          MATHLIB_CACHE_SAS_RAW="$(
-            az storage container generate-sas \
-              --as-user \
-              --auth-mode login \
-              --account-name lakecache \
-              --name mathlib4 \
-              --permissions acdlrw \
-              --expiry "$EXPIRY" \
-              --https-only \
-              --output tsv
-          )"
-          MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
-          echo "::add-mask::$MATHLIB_CACHE_SAS"
-          echo "cache_sas_length=${#MATHLIB_CACHE_SAS}"
-          echo "MATHLIB_CACHE_SAS=$MATHLIB_CACHE_SAS" >> "$GITHUB_ENV"
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW="$(az account get-access-token --resource https://storage.azure.com/ --query accessToken -o tsv)"
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN="${MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW%"${MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW##*[![:space:]]}"}"
+          echo "::add-mask::$MATHLIB_CACHE_AZURE_BEARER_TOKEN"
+          echo "cache_bearer_length=${#MATHLIB_CACHE_AZURE_BEARER_TOKEN}"
+          echo "MATHLIB_CACHE_AZURE_BEARER_TOKEN=$MATHLIB_CACHE_AZURE_BEARER_TOKEN" >> "$GITHUB_ENV"
 
       - name: Upload staged cache to Azure
         shell: bash
