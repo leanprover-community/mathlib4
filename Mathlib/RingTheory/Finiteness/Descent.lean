@@ -46,7 +46,6 @@ lemma Module.Finite.of_finite_tensorProduct_of_faithfullyFlat {M : Type*} [AddCo
     simp [f₀, -Pi.basisFun_equivFun, -Pi.basisFun_apply, h i]
   rwa [← Module.FaithfullyFlat.lTensor_surjective_iff_surjective _ T]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.FG.of_FG_map_of_faithfullyFlat [Module.FaithfullyFlat R S] {I : Ideal R}
     (hI : (I.map (algebraMap R S)).FG) : I.FG := by
   change Submodule.FG I

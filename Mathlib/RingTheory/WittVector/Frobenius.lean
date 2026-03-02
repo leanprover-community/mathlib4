@@ -62,7 +62,6 @@ open MvPolynomial Finset
 
 variable (p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The rational polynomials that give the coefficients of `frobenius x`,
 in terms of the coefficients of `x`.
 These polynomials actually have integral coefficients,

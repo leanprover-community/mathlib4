@@ -33,7 +33,6 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 variable (K : Submodule 𝕜 E)
 variable [K.HasOrthogonalProjection]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `reflection`: the reflection as a linear equivalence. -/
 def reflectionLinearEquiv : E ≃ₗ[𝕜] E :=
   LinearEquiv.ofInvolutive

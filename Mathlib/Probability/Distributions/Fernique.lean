@@ -243,7 +243,6 @@ lemma measure_gt_normThreshold_le_rpow [IsProbabilityMeasure μ]
       rw [mul_pow, ← pow_mul, ← mul_assoc, pow_two, ← mul_assoc,
         ENNReal.inv_mul_cancel hc_pos.ne' hc_lt_top.ne, one_mul, pow_add, pow_one]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma measure_gt_normThreshold_le_exp [IsProbabilityMeasure μ]
     (h_rot : (μ.prod μ).map (ContinuousLinearMap.rotation (-(π / 4))) = μ.prod μ)
     (ha_gt : 2⁻¹ < μ {x | ‖x‖ ≤ a}) (ha_lt : μ {x | ‖x‖ ≤ a} < 1) (n : ℕ) :
@@ -271,7 +270,6 @@ lemma measure_gt_normThreshold_le_exp [IsProbabilityMeasure μ]
 noncomputable def logRatio (c : ℝ≥0∞) : ℝ :=
   Real.log (c.toReal / (1 - c).toReal) / (8 * (1 + √2) ^ 2)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma logRatio_pos {c : ℝ≥0∞} (hc_gt : (2 : ℝ≥0∞)⁻¹ < c) (hc_lt : c < 1) : 0 < logRatio c := by
   refine div_pos (Real.log_pos ?_) (by positivity)
   rw [one_lt_div_iff]
@@ -304,7 +302,6 @@ lemma logRatio_mono {c d : ℝ≥0∞} (hc : (2 : ℝ≥0∞)⁻¹ < c) (hd : d 
   · finiteness
   · finiteness
 
-set_option backward.isDefEq.respectTransparency false in
 lemma logRatio_mul_normThreshold_add_one_le {c : ℝ≥0∞}
     (hc_gt : (2 : ℝ≥0∞)⁻¹ < c) (hc_lt : c < 1) (n : ℕ) :
     logRatio c * normThreshold a (n + 1) ^ 2 * a⁻¹ ^ 2
@@ -425,9 +422,7 @@ lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]
       change μ {x | ¬ x ∈ closedBall 0 a} = 0
       rw [← ae_iff]
       filter_upwards [ha] with x hx using by simp [hx]
-    · refine measurable_to_prop ?_
-      rw [show (fun x : E ↦ ‖x‖ ≤ a) ⁻¹' {True} = {x : E | ‖x‖ ≤ a} by ext; simp]
-      exact measurableSet_le (by fun_prop) (by fun_prop)
+    · fun_prop
   -- So we can assume `μ {x | ‖x‖ ≤ a} < 1`, which implies `c' < 1`
   have ha_lt : μ {x | ‖x‖ ≤ a} < 1 := lt_of_le_of_ne prob_le_one ha
   have hc'_lt : c' < 1 := lt_of_le_of_lt hc' ha_lt
@@ -517,7 +512,6 @@ theorem lintegral_exp_mul_sq_norm_le_of_map_rotation_eq_self [IsProbabilityMeasu
   gcongr
   exact prob_le_one
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `exists_integrable_exp_sq_of_map_rotation_eq_self`.
 The assumptions on `a` and `μ {x | ‖x‖ ≤ a}` are not needed and will be removed in that more
 general theorem. -/

@@ -188,7 +188,8 @@ instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     Algebra R ((structureSheafInType R A).val.obj U) :=
   (sectionsSubalgebra A U.unop).algebra
 
-local notation "Γ("M", "U")" => (Functor.obj (Sheaf.val (structureSheafInType _ M))) (Opposite.op U)
+local notation "Γ(" M ", " U ")" =>
+  (Functor.obj (Sheaf.val (structureSheafInType _ M))) (Opposite.op U)
 
 @[simp]
 lemma structureSheafInType.add_apply {U : Opens (PrimeSpectrum.Top R)} (s t : Γ(M, U)) (x : U) :
@@ -378,7 +379,8 @@ end StructureSheaf
 
 end Public
 
-local notation "Γ("M", "U")" => (Functor.obj (Sheaf.val (structureSheafInType _ M))) (Opposite.op U)
+local notation "Γ(" M ", " U ")" =>
+  (Functor.obj (Sheaf.val (structureSheafInType _ M))) (Opposite.op U)
 
 namespace StructureSheaf
 
@@ -389,7 +391,6 @@ lemma isUnit_basicOpen (f : R) :
     IsUnit ((algebraMap R Γ(R, basicOpen f)) f) :=
   isUnit_iff_exists_inv.mpr ⟨const 1 f _ le_rfl, const_mul_rev _ _ _ (by simp) _⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isUnit_basicOpen_end (f : R) :
     IsUnit ((algebraMap R (Module.End R Γ(M, basicOpen f))) f) := by
   have := (isUnit_basicOpen f).map
@@ -667,7 +668,7 @@ def localizationtoStalkₗ (x : PrimeSpectrum.Top R) :
       (structurePresheafInModuleCat R M).stalk x :=
   ModuleCat.ofHom (IsLocalizedModule.lift x.asIdeal.primeCompl
     (LocalizedModule.mkLinearMap x.asIdeal.primeCompl M)
-    (toStalkₗ' R M x).hom fun f ↦ isUnit_toStalkₗ' x f.1 f.2:)
+    (toStalkₗ' R M x).hom fun f ↦ isUnit_toStalkₗ' x f.1 f.2 :)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -845,7 +846,6 @@ def commRingCatStalkEquivModuleStalk (x : PrimeSpectrum.Top R) :
       rfl
     · exact congr($this _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 public instance (x : PrimeSpectrum.Top R) :
     IsLocalization.AtPrime ((structurePresheafInCommRingCat R).stalk x) x.asIdeal := by
   refine (isLocalizedModule_iff_isLocalization' _ _).mp ?_

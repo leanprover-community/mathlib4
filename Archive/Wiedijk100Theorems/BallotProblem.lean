@@ -321,7 +321,7 @@ theorem ballot_problem' :
       (countedSequence_finite p (q + 1)) (countedSequence_nonempty _ _)
     haveI := isProbabilityMeasure_uniformOn
       (countedSequence_finite (p + 1) q) (countedSequence_nonempty _ _)
-    have h₃ : p + 1 + (q + 1) > 0 := Nat.add_pos_left (Nat.succ_pos _) _
+    have h₃ : 0 < p + 1 + (q + 1) := Nat.add_pos_left (Nat.succ_pos _) _
     rw [← uniformOn_add_compl_eq {l : List ℤ | l.headI = 1} _ (countedSequence_finite _ _),
       first_vote_pos _ _ h₃, first_vote_neg _ _ h₃, ballot_pos, ballot_neg _ _ qp]
     rw [ENNReal.toReal_add, ENNReal.toReal_mul, ENNReal.toReal_mul, ← Nat.cast_add,

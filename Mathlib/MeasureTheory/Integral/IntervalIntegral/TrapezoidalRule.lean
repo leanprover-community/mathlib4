@@ -261,11 +261,11 @@ theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContD
     (N_nonzero : 0 < N) : |trapezoidal_error f N a b| ≤ |b - a| ^ 3 * ζ / (12 * N ^ 2) := by
   -- This use of rcases slightly duplicates effort from the proof of trapezoidal_error_le, but doing
   -- it any other way that I can think of would be worse.
-  rcases eq_or_ne a b with h_eq | h_neq
+  rcases eq_or_ne a b with h_eq | h_ne
   · simp [h_eq]
   -- Once we have a ≠ b, all the necessary assumptions on f follow pretty quickly from its being
   -- C^2.
-  have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_neq)
+  have ud : UniqueDiffOn ℝ [[a, b]] := uniqueDiffOn_Icc (inf_lt_sup.mpr h_ne)
   have h_df : DifferentiableOn ℝ f [[a, b]] := ContDiffOn.differentiableOn h_f_c2 two_ne_zero
   have h_ddf : DifferentiableOn ℝ (derivWithin f [[a, b]]) [[a, b]] := by
     rw [← iteratedDerivWithin_one]
