@@ -732,7 +732,6 @@ instance [F.Monoidal] [G.Monoidal] : (prod F G).Monoidal where
 
 end Prod
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (diag C).Monoidal :=
   CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
