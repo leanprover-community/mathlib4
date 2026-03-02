@@ -11,7 +11,12 @@ public import Mathlib.CategoryTheory.Monoidal.Category
 /-!
 # Pullbacks and pushouts in a monoidal category
 
+For numerous simp lemmas of the form `f ≫ g = h`, we add accompanying simp lemmas of the form
+`Q ◁ f ≫ Q ◁ g = Q ◁ h` and `f ▷ Q ≫ g ▷ Q = h ▷ Q`. These are needed to define a monoidal
+category structure in `Mathlib.CategoryTheory.Monoidal.Arrow`.
 
+## TODO
+An attribute should be developed to automatically generate lemmas of this form.
 -/
 
 @[expose] public section

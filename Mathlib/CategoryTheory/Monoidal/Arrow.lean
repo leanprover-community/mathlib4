@@ -189,16 +189,22 @@ local instance [MonoidalCategory C] [MonoidalClosed C] [BraidedCategory C] :
 
 @[simps]
 instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
-    [BraidedCategory C] : MonoidalCategory (Arrow C) where
-  tensorObj X Y := (pushoutProduct.obj X).obj Y
-  tensorHom_comp_tensorHom f₁ f₂ g₁ g₂ := by
-    ext
-    · apply pushout.hom_ext <;> simp [whisker_exchange_assoc]
-    · simp [whisker_exchange_assoc]
+    [BraidedCategory C] : MonoidalCategoryStruct (Arrow C) where
+  tensorObj X Y := X □ Y
   whiskerLeft X _ _ f := (pushoutProduct.obj X).map f
   whiskerRight f X := (pushoutProduct.map f).app X
   tensorUnit := initial.to (𝟙_ C)
   associator _ _ _ := PushoutProduct.associator ..
+  leftUnitor := PushoutProduct.leftUnitor
+  rightUnitor := PushoutProduct.rightUnitor
+
+@[simp]
+instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalClosed C]
+    [BraidedCategory C] : MonoidalCategory (Arrow C) where
+  tensorHom_comp_tensorHom f₁ f₂ g₁ g₂ := by
+    ext
+    · apply pushout.hom_ext <;> simp [whisker_exchange_assoc]
+    · simp [whisker_exchange_assoc]
   associator_naturality {_ _ _ _ Y₂ Y₃} f₁ f₂ f₃ := by
     ext
     · apply pushout.hom_ext
@@ -227,14 +233,12 @@ instance [HasPushouts C] [HasInitial C] [CartesianMonoidalCategory C] [MonoidalC
         · apply ((tensorRight _ ⋙ tensorRight _).map_isPushout
             (IsPushout.of_hasPushout _ _)).hom_ext <;> simp [associator_naturality_left_assoc]
     · exact MonoidalCategory.pentagon ..
-  leftUnitor := PushoutProduct.leftUnitor
   leftUnitor_naturality f := by
     ext
     · apply pushout.hom_ext
       · simp
       · apply (initialIsInitial.ofIso (mulZero initialIsInitial).symm).hom_ext
     · simp
-  rightUnitor := PushoutProduct.rightUnitor
   rightUnitor_naturality f := by
     ext
     · apply pushout.hom_ext
