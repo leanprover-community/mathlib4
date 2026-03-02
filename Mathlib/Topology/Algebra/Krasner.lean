@@ -3,11 +3,12 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
+module
 
-import Mathlib.Analysis.Normed.Algebra.Ultra
-import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
-import Mathlib.FieldTheory.Minpoly.IsConjRoot
-import Mathlib.FieldTheory.SeparableDegree
+public import Mathlib.Analysis.Normed.Algebra.Ultra
+public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
+public import Mathlib.FieldTheory.Minpoly.IsConjRoot
+public import Mathlib.FieldTheory.SeparableDegree
 
 /-!
 # Krasner's Lemma
@@ -36,6 +37,8 @@ algebraic extension `L` over `K`.
 ## Tags
 Krasner's lemma, normed field
 -/
+
+@[expose] public section
 
 open IntermediateField
 
