@@ -216,6 +216,7 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
 
 end Pi
 
+@[to_additive]
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
   pow_left_injective n hn a b := by
     have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
@@ -264,6 +265,16 @@ end AddSubgroup
 
 namespace Subgroup
 
+/-- The whole group `G` is normal. -/
+@[to_additive (attr := simp) /-- The whole group `G` is normal. -/]
+instance normal_top : (⊤ : Subgroup G).Normal where
+  conj_mem _ a _ := a
+
+/-- The trivial subgroup `{1}` is normal. -/
+@[to_additive (attr := simp) /-- The trivial subgroup `{0}` is normal. -/]
+instance normal_bot : (⊥ : Subgroup G).Normal where
+  conj_mem := by simp
+
 variable {H K : Subgroup G}
 
 @[to_additive]
@@ -297,10 +308,12 @@ theorem characteristic_iff_le_map : H.Characteristic ↔ ∀ ϕ : G ≃* G, H �
   simp_rw [map_equiv_eq_comap_symm']
   exact characteristic_iff_le_comap.trans ⟨fun h ϕ => h ϕ.symm, fun h ϕ => h ϕ.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance botCharacteristic : Characteristic (⊥ : Subgroup G) :=
   characteristic_iff_le_map.mpr fun _ϕ => bot_le
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
   characteristic_iff_map_le.mpr fun _ϕ => le_top
@@ -312,6 +325,7 @@ section Normalizer
 
 variable {H}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem normalizer_eq_top_iff : H.normalizer = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
@@ -400,10 +414,8 @@ This may be easier to work with, as it avoids inequalities and negations. -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
   apply forall_congr'; intro H
-  simp only [lt_iff_le_and_ne, le_normalizer, le_top, Ne]
+  simp only [lt_iff_le_and_ne, le_normalizer, Ne]
   tauto
-
-variable (H)
 
 end Normalizer
 
@@ -515,6 +527,11 @@ theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
 
+/-- The normal closure of an empty set is the trivial subgroup. -/
+@[simp]
+lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
+  rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
+
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
 def normalCore (H : Subgroup G) : Subgroup G where
@@ -589,6 +606,7 @@ namespace Subgroup
 
 variable {N : Type*} [Group N] (H : Subgroup G)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem Normal.map {H : Subgroup G} (h : H.Normal) (f : G →* N) (hf : Function.Surjective f) :
     (H.map f).Normal := by
@@ -641,13 +659,27 @@ namespace MonoidHom
 variable {G₁ G₂ G₃ : Type*} [Group G₁] [Group G₂] [Group G₃]
 variable (f : G₁ →* G₂) (f_inv : G₂ → G₁)
 
-@[to_additive]
-theorem ker_le_ker_iff (hf : RightInverse f_inv f) {g : G₁ →* G₃} :
-    f.ker ≤ g.ker ↔ ∀ x, g (f_inv (f x)) = g x := by
-  refine ⟨fun h x => ?_, fun h x hx => ?_⟩
-  · simpa [mul_inv_eq_one, hf (f x)] using (@h (f_inv (f x) * x⁻¹))
-  · refine (h x).symm.trans ?_
-    simpa [mem_ker.mp hx] using h 1
+/-- Auxiliary definition used to define `liftOfRightInverse` -/
+@[to_additive /-- Auxiliary definition used to define `liftOfRightInverse` -/]
+def liftOfRightInverseAux (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃) (hg : f.ker ≤ g.ker) :
+    G₂ →* G₃ where
+  toFun b := g (f_inv b)
+  map_one' := hg (hf 1)
+  map_mul' := by
+    intro x y
+    rw [← g.map_mul, ← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
+    apply hg
+    rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one, f.map_mul]
+    simp only [hf _]
+
+@[to_additive (attr := simp)]
+theorem liftOfRightInverseAux_comp_apply (hf : Function.RightInverse f_inv f) (g : G₁ →* G₃)
+    (hg : f.ker ≤ g.ker) (x : G₁) : (f.liftOfRightInverseAux f_inv hf g hg) (f x) = g x := by
+  dsimp [liftOfRightInverseAux]
+  rw [← mul_inv_eq_one, ← g.map_inv, ← g.map_mul, ← g.mem_ker]
+  apply hg
+  rw [f.mem_ker, f.map_mul, f.map_inv, mul_inv_eq_one]
+  simp only [hf _]
 
 /-- `liftOfRightInverse f hf g hg` is the unique group homomorphism `φ`
 
@@ -681,18 +713,17 @@ See `MonoidHom.eq_liftOfRightInverse` for the uniqueness lemma.
          v     \⌟
          G₂----> G₃
             ∃!φ
-      ```-/]
-def liftOfRightInverseEquivKerLeKer (hf : Function.RightInverse f_inv f) :
+      ``` -/]
+def liftOfRightInverse (hf : Function.RightInverse f_inv f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) where
-  toFun g := g.1.liftOfRightInverse f_inv hf ((ker_le_ker_iff f f_inv hf).mp g.2)
+  toFun g := f.liftOfRightInverseAux f_inv hf g.1 g.2
   invFun φ := ⟨φ.comp f, fun x hx ↦ mem_ker.mpr <| by simp [mem_ker.mp hx]⟩
   left_inv g := by
-    unfold liftOfRightInverse
-    exact Subtype.ext liftLeft_comp
+    ext
+    simp only [comp_apply, liftOfRightInverseAux_comp_apply]
   right_inv φ := by
-    simp
     ext b
-    simp only [liftOfRightInverse_apply, coe_comp, Function.comp_apply, hf b]
+    simp [liftOfRightInverseAux, hf b]
 
 /-- A non-computable version of `MonoidHom.liftOfRightInverse` for when no computable right
 inverse is available, that uses `Function.surjInv`. -/
@@ -701,13 +732,13 @@ inverse is available, that uses `Function.surjInv`. -/
       computable right inverse is available. -/]
 noncomputable abbrev liftOfSurjective (hf : Function.Surjective f) :
     { g : G₁ →* G₃ // f.ker ≤ g.ker } ≃ (G₂ →* G₃) :=
-  f.liftOfRightInverseEquivKerLeKer (Function.surjInv hf) (Function.rightInverse_surjInv hf)
+  f.liftOfRightInverse (Function.surjInv hf) (Function.rightInverse_surjInv hf)
 
 @[to_additive (attr := simp)]
 theorem liftOfRightInverse_comp_apply (hf : Function.RightInverse f_inv f)
     (g : { g : G₁ →* G₃ // f.ker ≤ g.ker }) (x : G₁) :
     (f.liftOfRightInverse f_inv hf g) (f x) = g.1 x :=
-  liftLeft_comp_apply x (hg := ((ker_le_ker_iff f f_inv hf).mp g.2)) (hp := hf.surjective)
+  f.liftOfRightInverseAux_comp_apply f_inv hf g.1 g.2 x
 
 @[to_additive (attr := simp)]
 theorem liftOfRightInverse_comp (hf : Function.RightInverse f_inv f)
@@ -831,6 +862,7 @@ theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgr
   have := (normal_subgroupOf_iff hK).mp hN (a * b) b h hb
   rwa [mul_assoc, mul_assoc, mul_inv_cancel, mul_one] at this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Elements of disjoint, normal subgroups commute. -/
 @[to_additive /-- Elements of disjoint, normal subgroups commute. -/]
 theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Normal) (hH₂ : H₂.Normal)
@@ -867,6 +899,7 @@ namespace IsConj
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg : g ∈ N}
     {hg' : g' ∈ N} (hc : IsConj g g') (ht : normalClosure ({⟨g, hg⟩} : Set N) = ⊤) :
     normalClosure ({⟨g', hg'⟩} : Set N) = ⊤ := by
