@@ -514,6 +514,11 @@ variable [IsDedekindDomain A] [IsDedekindDomain B] [IsDedekindDomain 𝓞F] [Mod
   [FaithfulSMul 𝓞F B] [Ring.HasFiniteQuotients 𝓞F]
 
 include A in
+/--
+Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L/K`.
+Then, `E` is a subfield of `F` iff `𝓟F` is totally ramified in `L` where `𝓟F` is the
+prime of `F` below `P`.
+-/
 theorem isInertiaField_le_iff [P.IsMaximal] (hp : p ≠ ⊥) :
     E ≤ F ↔ ramificationIdx (algebraMap 𝓞F B) 𝓟F P = Module.finrank F L := by
   let := IsIntegralClosure.MulSemiringAction 𝓞F F L B
@@ -556,6 +561,10 @@ theorem le_isDecompositionField_iff [p.IsMaximal] [P.IsMaximal] [𝓟F.IsMaximal
     mul_assoc, mul_eq_left₀ (inertiaDeg_ne_zero 𝓟F P), mul_eq_one]
 
 include P in
+/--
+Let `E` be the inertia field of `P` in `L/K` and let `F` be a subextension of `L/K`.
+Then, `F` is a subfield of `E` iff `p` is unramified in `F`.
+-/
 theorem le_isInertiaField_iff [P.IsMaximal] (hp : p ≠ ⊥) :
     F ≤ E ↔ ramificationIdx (algebraMap A 𝓞F) p 𝓟F = 1 := by
   have : IsGaloisGroup Gal(L/K) A B := .of_isFractionRing _ _ _ K L
@@ -572,4 +581,3 @@ theorem le_isInertiaField_iff [P.IsMaximal] (hp : p ≠ ⊥) :
     mul_eq_right₀ (IsDedekindDomain.ramificationIdx_ne_zero_of_liesOver P hPF)]
 
 end IntermediateField
-
