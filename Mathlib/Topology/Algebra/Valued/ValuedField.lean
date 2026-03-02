@@ -9,7 +9,6 @@ public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-public import Mathlib.Algebra.GroupWithZero.Range
 
 /-!
 # Valued fields and their completions
@@ -303,7 +302,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → ValueGro
     filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
     have : (v.restrict (a * z₀⁻¹) ) = 1 := by
-      rw [v.restrict_def, ValuedGroup₀.restrict₀_eq_one_iff]
+      rw [v.restrict_def, ValueGroup₀.restrict₀_eq_one_iff]
       apply hV
       have : (z₀⁻¹ : K) = (z₀ : hat K)⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
       rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y,

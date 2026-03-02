@@ -138,7 +138,7 @@ instance restrict_Nontrivial [v.IsNontrivial] : (v.restrict).IsNontrivial where
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
     use x
     constructor
-    · simp [hx0]
+    · simp [restrict₀_apply, hx0]
     · rw [restrict_def]
       intro H
       rw [restrict₀_eq_one_iff] at H
