@@ -185,7 +185,8 @@ lemma sub_left_injective_of_ne_top (h : b ≠ ⊤) : Function.Injective fun x �
   simpa [sub_eq_add_neg] using add_left_injective_of_ne_top (-b) (by simpa)
 
 lemma sub_right_injective_of_ne_top (h : b ≠ ⊤) : Function.Injective fun x ↦ b - x := by
-  simpa [sub_eq_add_neg] using (add_right_injective_of_ne_top b h).comp neg_injective
+  simpa [sub_eq_add_neg, -neg_bijective] using
+    (add_right_injective_of_ne_top b h).comp neg_injective
 
 @[simp]
 lemma sub_left_inj_of_ne_top (h : a ≠ ⊤) : b - a = c - a ↔ b = c :=
