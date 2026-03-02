@@ -64,7 +64,7 @@ variable [(F.sheafPushforwardContinuous A J K).IsRightAdjoint]
 and a point `Φ` of `(D, K)`, the fiber functor on sheaves of the
 point `Φ.comap F hF` on `(C, J)` identifies to the composition
 `F.sheafPullback A J K ⋙ Φ.sheafFiber`. -/
-noncomputable def sheafFiberComapIso :
+@[simps! -isSimp]
     (Φ.comap F hF).sheafFiber ≅ F.sheafPullback A J K ⋙ Φ.sheafFiber :=
   (conjugateIsoEquiv ((F.sheafAdjunctionContinuous A J K).comp Φ.skyscraperSheafAdjunction)
     (Φ.comap F hF).skyscraperSheafAdjunction).symm
