@@ -133,7 +133,7 @@ lemma of_isEffective_tensorProduct_of_faithfullyFlat
       (TensorProduct.rid R R T).toAddMonoidHom (AddMonoidHom.id (T ⊗[R] S))
       (TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).toAddMonoidHom ?_ ?_
       (TensorProduct.rid R R T).surjective Function.bijective_id
-      ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).injective)|>.mpr ‹_›
+      ((TensorProduct.AlgebraTensorModule.distribBaseChange R T S S).injective) |>.mpr ‹_›
   · ext
     simp [← Algebra.TensorProduct.linearMap_comp_rid]
   · ext
