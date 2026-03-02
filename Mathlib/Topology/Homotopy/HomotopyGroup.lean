@@ -3,10 +3,12 @@ Copyright (c) 2021 Roberto Alvarez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Roberto Alvarez
 -/
-import Mathlib.Algebra.Group.Ext
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
-import Mathlib.GroupTheory.EckmannHilton
+module
+
+public import Mathlib.Algebra.Group.Ext
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
+public import Mathlib.GroupTheory.EckmannHilton
 
 /-!
 # `n`th homotopy group
@@ -38,6 +40,8 @@ TODO:
 * Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
 
 -/
+
+@[expose] public section
 
 
 open scoped unitInterval Topology
@@ -407,11 +411,11 @@ def HomotopyGroup.pi0EquivZerothHomotopy : π_ 0 X x ≃ ZerothHomotopy X :=
 /-- The 1-dimensional generalized loops based at `x` are in bijection with loops at `x`. -/
 def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
   toFun p :=
-    Path.mk ⟨fun t ↦ p fun _ ↦ t, by continuity⟩
+    Path.mk ⟨fun t ↦ p fun _ ↦ t, by fun_prop⟩
       (GenLoop.boundary _ (fun _ ↦ 0) ⟨default, Or.inl rfl⟩)
       (GenLoop.boundary _ (fun _ ↦ 1) ⟨default, Or.inr rfl⟩)
   invFun p :=
-    ⟨⟨fun c ↦ p (c default), by continuity⟩,
+    ⟨⟨fun c ↦ p (c default), by fun_prop⟩,
       by
       rintro y ⟨i, iH | iH⟩ <;> cases Unique.eq_default i <;> apply (congr_arg p iH).trans
       exacts [p.source, p.target]⟩

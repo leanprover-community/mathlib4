@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.LiftingProperties.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
@@ -18,12 +20,14 @@ has the left lifting property in `C` with respect to `F.map p`.
 
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 open Category
 
-variable {C D : Type*} [Category C] [Category D] {G : C ⥤ D} {F : D ⥤ C}
+variable {C D : Type*} [Category* C] [Category* D] {G : C ⥤ D} {F : D ⥤ C}
 
 namespace CommSq
 
@@ -31,6 +35,7 @@ section
 
 variable {A B : C} {X Y : D} {i : A ⟶ B} {p : X ⟶ Y} {u : G.obj A ⟶ X} {v : G.obj B ⟶ Y}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When we have an adjunction `G ⊣ F`, any commutative square where the left
 map is of the form `G.map i` and the right map is `p` has an "adjoint" commutative
 square whose left map is `i` and whose right map is `F.map p`. -/
@@ -75,6 +80,7 @@ section
 
 variable {A B : C} {X Y : D} {i : A ⟶ B} {p : X ⟶ Y} {u : A ⟶ F.obj X} {v : B ⟶ F.obj Y}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When we have an adjunction `G ⊣ F`, any commutative square where the left
 map is of the form `i` and the right map is `F.map p` has an "adjoint" commutative
 square whose left map is `G.map i` and whose right map is `p`. -/

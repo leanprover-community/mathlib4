@@ -3,14 +3,18 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Group.Shrink
-import Mathlib.Algebra.Module.Projective
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Group.Shrink
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
 # The category of `R`-modules has enough projectives.
 -/
+
+@[expose] public section
 
 universe v u w
 
@@ -49,6 +53,7 @@ theorem projective_of_free {ι : Type w} (b : Basis ι R M) : Projective M :=
   have : Module.Projective R M := Module.Projective.of_basis b
   M.projective_of_categoryTheory_projective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The category of modules has enough projectives, since every module is a quotient of a free
   module. -/
 instance enoughProjectives [Small.{v} R] : EnoughProjectives (ModuleCat.{v} R) where

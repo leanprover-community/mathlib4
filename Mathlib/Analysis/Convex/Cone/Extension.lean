@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Data.Real.Archimedean
-import Mathlib.Geometry.Convex.Cone.Basic
-import Mathlib.LinearAlgebra.LinearPMap
+module
+
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Geometry.Convex.Cone.Basic
+public import Mathlib.LinearAlgebra.LinearPMap
 
 /-!
 # Extension theorems
@@ -24,6 +26,8 @@ We prove two extension theorems:
   for all `x`
 
 -/
+
+public section
 
 open Set LinearMap
 
@@ -54,6 +58,7 @@ open Submodule
 
 variable (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Induction step in M. Riesz extension theorem. Given a convex cone `s` in a vector space `E`,
 a partially defined linear map `f : f.domain → ℝ`, assume that `f` is nonnegative on `f.domain ∩ p`
 and `p + s = E`. If `f` is not defined on the whole `E`, then we can extend it to a larger

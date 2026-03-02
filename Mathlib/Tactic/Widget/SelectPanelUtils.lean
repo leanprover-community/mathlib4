@@ -3,10 +3,13 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Lean.Meta.ExprLens
-import ProofWidgets.Component.MakeEditLink
-import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
-import Mathlib.Tactic.Widget.SelectInsertParamsClass
+module
+
+public meta import Lean.Meta.ExprLens
+public meta import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import Mathlib.Tactic.Widget.SelectInsertParamsClass
+public import ProofWidgets.Component.MakeEditLink
+public import ProofWidgets.Data.Html
 
 /-! # Selection panel utilities
 
@@ -15,6 +18,8 @@ generating tactic calls based on selected sub-expressions in the main goal.
 
 There are also some minor helper functions.
 -/
+
+public meta section
 
 open Lean Meta Server
 
@@ -37,7 +42,8 @@ def String.renameMetaVar (s : String) : String :=
   match s.splitOn "?m." with
   | [] => ""
   | [s] => s
-  | head::tail => head ++ "?_" ++ "?_".intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
+  | head::tail => head ++ "?_" ++
+      "?_".toSlice.intercalate (tail.map fun s ↦ s.dropWhile Char.isDigit)
 
 open ProofWidgets
 

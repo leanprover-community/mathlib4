@@ -3,9 +3,11 @@ Copyright (c) 2022 Anand Rao, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anand Rao, Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Finite.Set
+module
+
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Finite.Set
 
 /-!
 # Ends
@@ -13,6 +15,8 @@ import Mathlib.Data.Finite.Set
 This file contains a definition of the ends of a simple graph, as sections of the inverse system
 assigning, to each finite set of vertices, the connected components of its complement.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -49,6 +53,8 @@ theorem ComponentCompl.supp_inj {C D : G.ComponentCompl K} : C.supp = D.supp ↔
 instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
   coe_injective' _ _ := ComponentCompl.supp_inj.mp
+
+instance : PartialOrder (G.ComponentCompl K) := .ofSetLike (G.ComponentCompl K) V
 
 @[simp]
 theorem ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :
@@ -103,6 +109,7 @@ protected theorem exists_eq_mk (C : G.ComponentCompl K) :
     ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
   C.nonempty
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
   rw [Set.disjoint_iff]
   exact fun v ⟨vK, vC⟩ => vC.choose vK
@@ -110,8 +117,7 @@ protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
 theorem notMem_of_mem {C : G.ComponentCompl K} {c : V} (cC : c ∈ C) : c ∉ K := fun cK =>
   Set.disjoint_iff.mp C.disjoint_right ⟨cK, cC⟩
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_mem := notMem_of_mem
-
+set_option backward.isDefEq.respectTransparency false in
 protected theorem pairwise_disjoint :
     Pairwise fun C D : G.ComponentCompl K => Disjoint (C : Set V) (D : Set V) := by
   rintro C D ne
@@ -165,6 +171,7 @@ theorem hom_eq_iff_le (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCom
     C.hom h = D ↔ (C : Set V) ⊆ (D : Set V) :=
   ⟨fun h' => h' ▸ C.subset_hom h, C.ind fun _ vnL vD => (vD ⟨vnL, rfl⟩).choose_spec⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.ComponentCompl K) :
     C.hom h = D ↔ ¬Disjoint (C : Set V) (D : Set V) := by
   rw [Set.not_disjoint_iff]
@@ -195,6 +202,7 @@ theorem hom_infinite (C : G.ComponentCompl L) (h : K ⊆ L) (Cinf : (C : Set V).
     (C.hom h : Set V).Infinite :=
   Set.Infinite.mono (C.subset_hom h) Cinf
 
+set_option backward.isDefEq.respectTransparency false in
 theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
     C.supp.Infinite ↔ ∀ (L) (h : K ⊆ L), ∃ D : G.ComponentCompl L, D.hom h = C := by
   classical

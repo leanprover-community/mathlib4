@@ -3,26 +3,30 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Balanced
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Balanced
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Balanced categories and functors reflecting isomorphisms
 
 If a category is `C`, and a functor out of `C` reflects epimorphisms and monomorphisms,
 then the functor reflects isomorphisms.
-Furthermore, categories that admits a functor that `ReflectsIsomorphisms`, `PreservesEpimorphisms`
+Furthermore, categories that admit a functor that `ReflectsIsomorphisms`, `PreservesEpimorphisms`
 and `PreservesMonomorphisms` are balanced.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory CategoryTheory.Functor
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C]
-  {D : Type*} [Category D]
+variable {C : Type*} [Category* C]
+  {D : Type*} [Category* D]
 
 instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :

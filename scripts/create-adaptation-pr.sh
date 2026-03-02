@@ -17,6 +17,16 @@ IFS=$'\n\t'
 # So please do not delete the following line, or the final two lines of this script.
 {
 
+# Note: with `set -o pipefail`, avoid `cmd | grep -q .` to test if a command
+# produces output. When the command produces many lines, `grep -q` exits after
+# the first match, causing SIGPIPE on the left side, which pipefail reports as
+# a failure. Use helper functions below instead.
+
+# Check if there are unmerged (conflicting) files in the working tree.
+has_unmerged_files() {
+  [ -n "$(git diff --name-only --diff-filter=U)" ]
+}
+
 # Default values
 AUTO="no"
 
@@ -126,23 +136,23 @@ usr_branch=$(git branch --show-current)
 echo
 echo "### [auto] checkout master and pull the latest changes"
 
-git fetch $MAIN_REMOTE master
+git fetch "$MAIN_REMOTE" master
 
 # Ensure local master branch exists and tracks $MAIN_REMOTE/master
 if git show-ref --verify --quiet refs/heads/master; then
   git checkout master
-  git pull $MAIN_REMOTE master
+  git pull "$MAIN_REMOTE" master
 else
-  git checkout -b master $MAIN_REMOTE/master
+  git checkout -b master "$MAIN_REMOTE"/master
 fi
 
 echo
 echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from '$MAIN_REMOTE/master'"
 
 # Check if the local branch exists
-if git show-ref --verify --quiet refs/heads/bump/$BUMPVERSION; then
+if git show-ref --verify --quiet "refs/heads/bump/$BUMPVERSION"; then
   # Local branch exists, check what it's tracking
-  tracking_branch=$(git rev-parse --abbrev-ref --symbolic-full-name bump/$BUMPVERSION@{u} 2>/dev/null || echo "")
+  tracking_branch=$(git rev-parse --abbrev-ref --symbolic-full-name "bump/$BUMPVERSION@{u}" 2>/dev/null || echo "")
   if [ -z "$tracking_branch" ] || [ "$tracking_branch" != "$NIGHTLY_REMOTE/bump/$BUMPVERSION" ]; then
     echo "Error: Local branch 'bump/$BUMPVERSION' exists but is not properly tracking '$NIGHTLY_REMOTE/bump/$BUMPVERSION'"
     if [ -z "$tracking_branch" ]; then
@@ -160,26 +170,26 @@ else
   # Use --track to explicitly specify which remote branch to track
   git checkout --track "$NIGHTLY_REMOTE/bump/$BUMPVERSION"
 fi
-git pull --no-rebase $NIGHTLY_REMOTE "bump/$BUMPVERSION"
-git merge --no-edit $MAIN_REMOTE/master || true # ignore error if there are conflicts
+git pull --no-rebase "$NIGHTLY_REMOTE" "bump/$BUMPVERSION"
+git merge --no-edit "$MAIN_REMOTE"/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from the newer branch"
   echo "### In this case, the newer branch is 'bump/$BUMPVERSION'"
-  git checkout bump/$BUMPVERSION -- lean-toolchain lake-manifest.json
+  git checkout "bump/$BUMPVERSION" -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
 
   # Check if there are more merge conflicts after auto-resolution
-  if ! git diff --name-only --diff-filter=U | grep -q .; then
+  if ! has_unmerged_files; then
     # Auto-commit the resolved conflicts if no other conflicts remain
     git commit -m "Auto-resolved conflicts in lean-toolchain and lake-manifest.json"
   fi
 fi
 
-if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; then
+if has_unmerged_files || ! git diff-index --quiet HEAD --; then
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     exit 1
@@ -187,15 +197,15 @@ if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet 
 fi
 
 # Loop until all conflicts are resolved and committed
-while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
+while has_unmerged_files || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from '$MAIN_REMOTE/master' into 'bump/$BUMPVERSION'"
   echo "There seem to be conflicts or uncommitted files"
   echo ""
-  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  1) Open $(pwd) in a new terminal and run 'git status'"
   echo "  2) Make sure to commit the resolved conflicts, but do not push them"
-  read -p "  3) Press enter to continue, when you are done"
+  read -r -p "  3) Press enter to continue, when you are done"
 done
 
 echo "All conflicts resolved and committed."
@@ -206,14 +216,14 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from nightly-testing"
 
 # Check if the branch already exists on the nightly-testing remote
-bump_nightly_exists=$(git ls-remote --heads $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE" | grep -q . && echo "yes" || echo "no")
+bump_nightly_exists=$([ -n "$(git ls-remote --heads "$NIGHTLY_REMOTE" "bump/nightly-$NIGHTLYDATE")" ] && echo "yes" || echo "no")
 
 if [ "$bump_nightly_exists" = "yes" ]; then
   echo "Branch 'bump/nightly-$NIGHTLYDATE' already exists on $NIGHTLY_REMOTE. Reusing existing branch."
   # Check if local branch exists
-  if git show-ref --verify --quiet refs/heads/bump/nightly-$NIGHTLYDATE; then
+  if git show-ref --verify --quiet "refs/heads/bump/nightly-$NIGHTLYDATE"; then
     git checkout "bump/nightly-$NIGHTLYDATE"
-    git pull $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
+    git pull "$NIGHTLY_REMOTE" "bump/nightly-$NIGHTLYDATE"
   else
     # Create local branch tracking the remote
     git checkout --track "$NIGHTLY_REMOTE/bump/nightly-$NIGHTLYDATE"
@@ -224,18 +234,18 @@ else
 fi
 
 # Always merge the latest nightly changes
-git merge --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
+git merge --no-edit "$NIGHTLYSHA" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing 'lean-toolchain' and 'lake-manifest.json' from 'nightly-testing'"
-  git checkout $NIGHTLYSHA -- lean-toolchain lake-manifest.json
+  git checkout "$NIGHTLYSHA" -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
 fi
 
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     exit 1
@@ -243,7 +253,7 @@ if git diff --name-only --diff-filter=U | grep -q .; then
 fi
 
 # Check if there are more merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   echo
   echo "### [user] Conflict resolution"
   echo "We are merging the latest changes from nightly-testing into 'bump/nightly-$NIGHTLYDATE'"
@@ -251,9 +261,9 @@ if git diff --name-only --diff-filter=U | grep -q .; then
   echo "$NIGHTLYSHA"
   echo "There seem to be conflicts: please resolve them"
   echo ""
-  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  1) Open $(pwd) in a new terminal and run 'git status'"
   echo "  2) Run 'git add' on the resolved files, but do not commit"
-  read -p "  3) Press enter to continue, when you are done"
+  read -r -p "  3) Press enter to continue, when you are done"
 fi
 
 echo
@@ -269,14 +279,14 @@ git commit --allow-empty -m "$pr_title"
 # Check if branch already exists on remote
 if [ "$bump_nightly_exists" = "yes" ]; then
   echo "Branch already exists on remote, pushing updates..."
-  git push $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
+  git push "$NIGHTLY_REMOTE" "bump/nightly-$NIGHTLYDATE"
 else
   echo "Creating new branch on remote..."
-  git push --set-upstream $NIGHTLY_REMOTE "bump/nightly-$NIGHTLYDATE"
+  git push --set-upstream "$NIGHTLY_REMOTE" "bump/nightly-$NIGHTLYDATE"
 fi
 
 # Check if there is a diff between bump/nightly-$NIGHTLYDATE and bump/$BUMPVERSION
-if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .; then
+if ! git diff --quiet "bump/$BUMPVERSION" "bump/nightly-$NIGHTLYDATE"; then
 
   echo
   echo "### [auto] create a PR for the new branch"
@@ -293,9 +303,9 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
     echo "Running the following 'gh' command to do this:"
     gh_command="gh pr create -t \"$pr_title\" -b '' -B bump/$BUMPVERSION --repo leanprover-community/mathlib4-nightly-testing"
     echo "> $gh_command"
-    gh_output=$(eval $gh_command)
+    gh_output=$(eval "$gh_command")
     # Extract the PR number from the output
-    pr_number=$(echo $gh_output | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
+    pr_number=$(echo "$gh_output" | sed 's/.*\/pull\/\([0-9]*\).*/\1/')
   fi
 
   echo
@@ -315,14 +325,14 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
       zulip_command="zulip-send --stream nightly-testing --subject \"$zulip_title\" --message \"$zulip_body\""
       echo "Running the following 'zulip-send' command to do this:"
       echo "> $zulip_command"
-      eval $zulip_command
+      eval "$zulip_command"
     else
       echo "Zulip CLI is not installed. Install it to send messages automatically."
       if [ "$AUTO" = "yes" ]; then
         exit 1
       else
         echo "Please send the message manually."
-        read -p "Press enter to continue"
+        read -r -p "Press enter to continue"
       fi
     fi
   else
@@ -342,26 +352,26 @@ echo
 echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch into it"
 
 git checkout nightly-testing
-git pull --no-rebase $NIGHTLY_REMOTE nightly-testing
+git pull --no-rebase "$NIGHTLY_REMOTE" nightly-testing
 git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
-if git diff --name-only --diff-filter=U | grep -q .; then
+if has_unmerged_files; then
   echo
   echo "### [auto] Conflict resolution"
   echo "### Automatically choosing lean-toolchain and lake-manifest.json from the newer branch"
   echo "### In this case, the newer branch is 'bump/nightly-$NIGHTLYDATE'"
-  git checkout bump/nightly-$NIGHTLYDATE -- lean-toolchain lake-manifest.json
+  git checkout "bump/nightly-$NIGHTLYDATE" -- lean-toolchain lake-manifest.json
   git add lean-toolchain lake-manifest.json
 
   # Check if there are more merge conflicts after auto-resolution
-  if ! git diff --name-only --diff-filter=U | grep -q .; then
+  if ! has_unmerged_files; then
     # Auto-commit the resolved conflicts if no other conflicts remain
     git commit -m "Auto-resolved conflicts in lean-toolchain and lake-manifest.json"
   fi
 fi
 
-if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; then
+if has_unmerged_files || ! git diff-index --quiet HEAD --; then
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     echo "PR has been created, and message posted to Zulip."
@@ -371,25 +381,25 @@ if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet 
 fi
 
 # Loop until all conflicts are resolved and committed
-while git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet HEAD --; do
+while has_unmerged_files || ! git diff-index --quiet HEAD --; do
   echo
   echo "### [user] Conflict resolution"
-  echo "We are merging the new PR "bump/nightly-$NIGHTLYDATE" into 'nightly-testing'"
+  echo "We are merging the new PR \"bump/nightly-$NIGHTLYDATE\" into 'nightly-testing'"
   echo "There seem to be conflicts or uncommitted files"
   echo ""
-  echo "  1) Open `pwd` in a new terminal and run 'git status'"
+  echo "  1) Open $(pwd) in a new terminal and run 'git status'"
   echo "  2) Make sure to commit the resolved conflicts, but do not push them"
-  read -p "  3) Press enter to continue, when you are done"
+  read -r -p "  3) Press enter to continue, when you are done"
 done
 
 echo "All conflicts resolved and committed."
 echo "Proceeding with git push..."
-git push $NIGHTLY_REMOTE nightly-testing
+git push "$NIGHTLY_REMOTE" nightly-testing:nightly-testing
 
 echo
 echo "### [auto] finished: checkout the original branch"
 
-git checkout $usr_branch
+git checkout "$usr_branch"
 
 # These last two lines are needed to make the script robust against changes on disk
 # that might have happened during the script execution, e.g. from switching branches

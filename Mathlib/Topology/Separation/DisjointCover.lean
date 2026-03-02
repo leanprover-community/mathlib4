@@ -3,12 +3,14 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Order.Disjointed
-import Mathlib.Topology.Separation.Profinite
-import Mathlib.Topology.Sets.Closeds
-import Mathlib.Topology.Sets.OpenCover
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Order.Disjointed
+public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Topology.Sets.OpenCover
 
 /-!
 # Disjoint covers of profinite spaces
@@ -22,6 +24,8 @@ We prove various results about covering profinite spaces by disjoint clopens, in
   with `X` profinite, and `S` is a neighbourhood of the diagonal in `V × V`, then `f` can be
   `S`-approximated by a function factoring through `Fin n` for some `n`.
 -/
+
+public section
 
 open Set TopologicalSpace
 
@@ -129,6 +133,7 @@ lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal (hS : S ∈ nhd
     exact (map_continuous _).continuousAt.preimage_mem_nhds (hS _ rfl)
   exact exists_finite_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_profinite this
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For any continuous function `f : X → V`, with `X` profinite, and `S` a neighbourhood of the
 diagonal in `V × V`, the function `f` can be `S`-approximated by a function factoring through

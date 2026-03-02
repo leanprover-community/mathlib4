@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Category.KleisliCat
-import Mathlib.CategoryTheory.Monad.Basic
-import Mathlib.CategoryTheory.Monad.Kleisli
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Control.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.KleisliCat
+public import Mathlib.CategoryTheory.Monad.Basic
+public import Mathlib.CategoryTheory.Monad.Kleisli
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Control.Basic
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.Control.Basic
 This allows us to use these monads in category theory.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -43,18 +47,17 @@ category-theoretic version, provided the monad is lawful.
 @[simps]
 def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
   functor :=
-    { obj := fun X => X
-      map := fun f => f
+    { obj := fun X => .mk _ X
+      map := fun f => .mk f
       map_id := fun _ => rfl
       map_comp := fun f g => by
-        unfold_projs
-        funext t
-        simp only [ofTypeMonad_obj, Function.comp_apply, ofTypeMonad_map, ofTypeMonad_μ_app, joinM,
-          bind_map_left, id_eq]
+        ext t
+        dsimp
+        simp only [joinM, bind_map_left, id_eq]
         rfl }
   inverse :=
-    { obj := fun X => X
-      map := fun f => f
+    { obj := fun X => X.of
+      map := fun f => f.of
       map_id := fun _ => rfl
       map_comp := fun f g => by
         unfold_projs

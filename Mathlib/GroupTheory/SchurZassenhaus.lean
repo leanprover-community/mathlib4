@@ -3,7 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Transfer
+module
+
+public import Mathlib.GroupTheory.Transfer
 
 /-!
 # The Schur-Zassenhaus Theorem
@@ -19,6 +21,8 @@ In this file we prove the Schur-Zassenhaus theorem.
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
+
+@[expose] public section
 
 
 namespace Subgroup
@@ -241,6 +245,7 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
     normalizer_eq_top_iff.mp (step1 h1 h2 h3 (P.map N.subtype).normalizer P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
+set_option backward.isDefEq.respectTransparency false in
 include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 theorem step7 : IsMulCommutative N := by
@@ -275,15 +280,14 @@ theorem exists_right_complement'_of_coprime {N : Subgroup G} [N.Normal]
     rw [hN]
     exact ⟨⊥, isComplement'_top_bot⟩
   by_cases hN2 : N.index = 0
-  · rw [hN2, Nat.coprime_zero_right] at hN
-    haveI := (Cardinal.toNat_eq_one_iff_unique.mp hN).1
+  · rw [hN2, Nat.coprime_zero_right, Nat.card_eq_one_iff_unique] at hN
+    have := hN.1
     rw [N.eq_bot_of_subsingleton]
     exact ⟨⊤, isComplement'_bot_top⟩
-  have hN3 : Nat.card G ≠ 0 := by
+  have hN3 : Finite G := by
+    apply Nat.finite_of_card_ne_zero
     rw [← N.card_mul_index]
     exact mul_ne_zero hN1 hN2
-  haveI := (Cardinal.lt_aleph0_iff_fintype.mp
-    (lt_of_not_ge (mt Cardinal.toNat_apply_of_aleph0_le hN3))).some
   exact exists_right_complement'_of_coprime_aux' rfl hN
 
 /-- **Schur-Zassenhaus** for normal subgroups:

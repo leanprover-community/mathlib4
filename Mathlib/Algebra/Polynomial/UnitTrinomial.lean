@@ -3,10 +3,11 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Polynomial.Mirror
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.Data.Int.Order.Units
-import Mathlib.RingTheory.Coprime.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Mirror
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Unit Trinomials
@@ -23,6 +24,8 @@ This file defines irreducible trinomials and proves an irreducibility criterion.
   trinomials.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TopologicalSpace
 
@@ -198,6 +201,7 @@ theorem isUnitTrinomial_iff'' (h : p * p.mirror = q * q.mirror) :
 
 namespace IsUnitTrinomial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Units ℤ)
     (hp : p = trinomial k m n (u : ℤ) v w) :
     C (v : ℤ) * (C (u : ℤ) * X ^ (m + n) + C (w : ℤ) * X ^ (n - m + k + n)) =

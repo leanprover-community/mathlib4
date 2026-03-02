@@ -3,7 +3,9 @@ Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Hamming spaces
@@ -24,6 +26,8 @@ code.
   `Π i, β i`.
 * the Hamming norm forms a normed group on `Hamming β`.
 -/
+
+@[expose] public section
 
 
 section HammingDistNorm
@@ -191,13 +195,12 @@ end Zero
 
 /-- Corresponds to `dist_eq_norm`. -/
 theorem hammingDist_eq_hammingNorm [∀ i, AddGroup (β i)] (x y : ∀ i, β i) :
-    hammingDist x y = hammingNorm (x - y) := by
-  simp_rw [hammingNorm, hammingDist, Pi.sub_apply, sub_ne_zero]
+    hammingDist x y = hammingNorm (-x + y) := by
+  simp_rw [hammingNorm, hammingDist, Pi.add_apply, Pi.neg_apply, ne_eq, neg_add_eq_zero]
 
 end HammingDistNorm
 
 /-! ### The `Hamming` type synonym -/
-
 
 /-- Type synonym for a Pi type which inherits the usual algebraic instances, but is equipped with
 the Hamming metric and norm, instead of `Pi.normedAddCommGroup` which uses the sup norm. -/
@@ -364,13 +367,8 @@ instance : PseudoMetricSpace (Hamming β) where
   uniformity_dist := uniformity_dist_of_mem_uniformity _ _ fun s => by
     push_cast
     constructor
-    · refine fun hs => ⟨1, zero_lt_one, fun hab => ?_⟩
-      rw_mod_cast [hammingDist_lt_one] at hab
-      rw [ofHamming_inj, ← mem_idRel] at hab
-      exact hs hab
-    · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
-      rw [mem_idRel] at hab
-      rw [hab]
+    · refine fun hs ↦ ⟨1, zero_lt_one, fun hab ↦ hs <| by simpa using hab⟩
+    · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ rfl
       refine hs (lt_of_eq_of_lt ?_ hε)
       exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩

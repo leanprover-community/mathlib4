@@ -3,11 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Sites.LocallyBijective
-import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Sheaves of modules over a sheaf of rings
@@ -16,6 +17,8 @@ In this file, we define the category `SheafOfModules R` when `R : Sheaf J RingCa
 is a sheaf of rings on a category `C` equipped with a Grothendieck topology `J`.
 
 -/
+
+@[expose] public section
 
 universe v v₁ u₁ u w
 
@@ -198,6 +201,7 @@ variable {N : PresheafOfModules.{v} R} (hN : Presheaf.IsSheaf J N.presheaf)
 
 variable {J}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `(M₂ ⟶ N) ≃ (M₁ ⟶ N)` induced by a locally bijective morphism
 `f : M₁ ⟶ M₂` of presheaves of modules, when `N` is a sheaf. -/
 @[simps]

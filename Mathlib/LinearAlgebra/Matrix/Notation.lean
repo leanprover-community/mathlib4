@@ -3,11 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Fin.Tuple
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.LinearAlgebra.Matrix.RowCol
-import Mathlib.Tactic.FinCases
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Algebra.Group.Fin.Tuple
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.LinearAlgebra.Matrix.RowCol
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Algebra.BigOperators.Fin
+public meta import Mathlib.LinearAlgebra.Matrix.Defs
 
 /-!
 # Matrix and vector notation
@@ -37,6 +40,8 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
+@[expose] public section
+
 namespace Matrix
 
 universe u uₘ uₙ uₒ
@@ -51,14 +56,14 @@ open Lean Qq
 
 open Qq in
 /-- `Matrix.mkLiteralQ !![a, b; c, d]` produces the term `q(!![$a, $b; $c, $d])`. -/
-def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Matrix (Fin m) (Fin n) Q($α)) :
+meta def mkLiteralQ {u : Level} {α : Q(Type u)} {m n : Nat} (elems : Matrix (Fin m) (Fin n) Q($α)) :
     Q(Matrix (Fin $m) (Fin $n) $α) :=
   let elems := PiFin.mkLiteralQ (α := q(Fin $n → $α)) fun i => PiFin.mkLiteralQ fun j => elems i j
   q(Matrix.of $elems)
 
 /-- Matrices can be reflected whenever their entries can. We insert a `Matrix.of` to
 prevent immediate decay to a function. -/
-protected instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
+protected meta instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
     [Lean.ToExpr α] [Lean.ToExpr m'] [Lean.ToExpr n'] [Lean.ToExpr (m' → n' → α)] :
     Lean.ToExpr (Matrix m' n' α) :=
   have eα : Q(Type $(toLevel.{u})) := toTypeExpr α
@@ -119,7 +124,8 @@ macro_rules
 
 /-- Delaborator for the `!![]` notation. -/
 @[app_delab DFunLike.coe]
-def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <|
+meta def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <|
+  whenPPOption getPPNotation <|
   withOverApp 6 do
     let mkApp3 (.const ``Matrix.of _) (.app (.const ``Fin _) em) (.app (.const ``Fin _) en) _ :=
       (← getExpr).appFn!.appArg! | failure
@@ -196,6 +202,31 @@ theorem cons_dotProduct_cons (x : α) (v : Fin n → α) (y : α) (w : Fin n →
 
 end DotProduct
 
+section Diagonal
+variable [Zero α]
+
+theorem diagonal_fin_one (d : Fin 1 → α) : diagonal d = !![d 0] := by
+  simp [← Matrix.ext_iff]
+
+theorem diagonal_vec1 (a : α) : diagonal ![a] = !![a] :=
+  diagonal_fin_one ![a]
+
+theorem diagonal_fin_two (d : Fin 2 → α) : diagonal d = !![d 0, 0; 0, d 1] := by
+  simp [← Matrix.ext_iff]
+
+theorem diagonal_vec2 (a b : α) : diagonal ![a, b] = !![a, 0; 0, b] :=
+  diagonal_fin_two ![a, b]
+
+theorem diagonal_fin_three (d : Fin 3 → α) :
+    diagonal d = !![d 0, 0, 0; 0, d 1, 0; 0, 0, d 2] := by
+  simp [← Matrix.ext_iff, Fin.forall_fin_succ]
+
+theorem diagonal_vec3 (a b c : α) :
+    diagonal ![a, b, c] = !![a, 0, 0; 0, b, 0; 0, 0, c] :=
+  diagonal_fin_three ![a, b, c]
+
+end Diagonal
+
 section ColRow
 
 variable {ι : Type*}
@@ -204,27 +235,19 @@ variable {ι : Type*}
 theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
   empty_eq _
 
-@[deprecated (since := "2025-03-20")] alias col_empty := replicateCol_empty
-
 @[simp]
 theorem replicateCol_cons (x : α) (u : Fin m → α) :
     replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp
 
-@[deprecated (since := "2025-03-20")] alias col_cons := replicateCol_cons
-
 @[simp]
 theorem replicateRow_empty : replicateRow ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
-
-@[deprecated (since := "2025-03-20")] alias row_empty := replicateRow_empty
 
 @[simp]
 theorem replicateRow_cons (x : α) (u : Fin m → α) :
     replicateRow ι (vecCons x u) = of fun _ => vecCons x u :=
   rfl
-
-@[deprecated (since := "2025-03-20")] alias row_cons := replicateRow_cons
 
 end ColRow
 
@@ -373,10 +396,7 @@ variable [NonUnitalNonAssocSemiring α]
 theorem smul_mat_empty {m' : Type*} (x : α) (A : Fin 0 → m' → α) : x • A = ![] :=
   empty_eq _
 
-theorem smul_mat_cons (x : α) (v : n' → α) (A : Fin m → n' → α) :
-    x • vecCons v A = vecCons (x • v) (x • A) := by
-  ext i
-  refine Fin.cases ?_ ?_ i <;> simp
+@[deprecated (since := "2025-11-07")] alias smul_mat_cons := smul_cons
 
 end SMul
 
@@ -466,6 +486,7 @@ theorem mul_fin_two [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂
   ext i j
   fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_succ]
 
+set_option linter.style.whitespace false in -- Preserve the formatting of the matrices.
 theorem mul_fin_three [AddCommMonoid α] [Mul α]
     (a₁₁ a₁₂ a₁₃ a₂₁ a₂₂ a₂₃ a₃₁ a₃₂ a₃₃ b₁₁ b₁₂ b₁₃ b₂₁ b₂₂ b₂₃ b₃₁ b₃₂ b₃₃ : α) :
     !![a₁₁, a₁₂, a₁₃;

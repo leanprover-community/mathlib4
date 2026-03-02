@@ -3,14 +3,18 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Tactic.ContinuousFunctionalCalculus
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # Some lemmas on the spectrum and quasispectrum of elements and positivity
 
 -/
+
+public section
 
 namespace SpectrumRestricts
 
@@ -58,6 +62,7 @@ local notation "σₙ" => quasispectrum
 
 variable {A : Type*} [NonUnitalRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A} :
     QuasispectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ σₙ ℝ a, 0 ≤ x := by
   rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
@@ -68,11 +73,13 @@ lemma nnreal_of_nonneg [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ
     QuasispectrumRestricts a ContinuousMap.realToNNReal :=
   nnreal_iff.mpr <| quasispectrum_nonneg_of_nonneg _ ha
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
     (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ quasispectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ quasispectrum ℝ a, x ≤ r := by
   simp [← ha.algebraMap_image]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
     (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
     (∀ x ∈ quasispectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ quasispectrum ℝ a, x < r := by

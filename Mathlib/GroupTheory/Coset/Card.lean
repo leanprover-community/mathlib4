@@ -3,8 +3,10 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Lagrange's theorem: the order of a subgroup divides the order of the group.
@@ -13,6 +15,8 @@ import Mathlib.SetTheory.Cardinal.Finite
   there is an analogous version for additive groups
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

@@ -3,12 +3,14 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Results on the eigenvalue 0
@@ -29,6 +31,8 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
   is the trailing degree of its characteristic polynomial
 
 -/
+
+public section
 
 variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
 variable [Module R M] [Module.Finite R M] [Module.Free R M]

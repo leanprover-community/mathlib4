@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
-import Mathlib.Analysis.BoxIntegral.Partition.Split
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
+public import Mathlib.Analysis.BoxIntegral.Partition.Split
 
 /-!
 # Filters used in box-based integrals
@@ -162,6 +164,8 @@ prepartition (and consider the special case `π = ⊥` separately if needed).
 
 integral, rectangular box, partition, filter
 -/
+
+@[expose] public section
 
 open Set Function Filter Metric Finset Bool
 open scoped Topology Filter NNReal
@@ -350,6 +354,7 @@ theorem MemBaseSet.exists_common_compl
   · exact ⟨π₁.toPrepartition.compl, π₁.toPrepartition.iUnion_compl,
       fun h => (hD h).elim, fun h => (hD h).elim⟩
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c r₁ π₁)
     (hle : ∀ x ∈ Box.Icc I, r₂ x ≤ r₁ x) {π₂ : Prepartition I} (hU : π₂.iUnion = ↑I \ π₁.iUnion)
     (hc : l.bDistortion → π₂.distortion ≤ c) :
@@ -361,6 +366,7 @@ protected theorem MemBaseSet.unionComplToSubordinate (hπ₁ : l.MemBaseSet I c 
 
 variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
   classical
@@ -385,6 +391,7 @@ protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι �
   · have : (π.filter fun J => ¬p J).distortion ≤ c := (distortion_filter_le _ _).trans (hπ.3 hD)
     simpa [hc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem biUnionTagged_memBaseSet {π : Prepartition I} {πi : ∀ J, TaggedPrepartition J}
     (h : ∀ J ∈ π, l.MemBaseSet J c r (πi J)) (hp : ∀ J ∈ π, (πi J).IsPartition)
     (hc : l.bDistortion → π.compl.distortion ≤ c) : l.MemBaseSet I c r (π.biUnionTagged πi) := by
@@ -497,6 +504,7 @@ instance toFilterDistortioniUnion_neBot' (l : IntegrationParams) (I : Box ι) (�
     (l.toFilterDistortioniUnion I (max π₀.distortion π₀.compl.distortion) π₀).NeBot :=
   l.toFilterDistortioniUnion_neBot I π₀ (le_max_left _ _) (le_max_right _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance toFilterDistortion_neBot (l : IntegrationParams) (I : Box ι) :
     (l.toFilterDistortion I I.distortion).NeBot := by
   simpa using (l.toFilterDistortioniUnion_neBot' I ⊤).mono inf_le_left

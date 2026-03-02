@@ -3,9 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
-import Mathlib.Topology.Algebra.WithZeroTopology
-import Mathlib.Topology.Algebra.UniformField
+module
+
+public import Mathlib.Topology.Algebra.Valued.ValuationTopology
+public import Mathlib.Topology.Algebra.WithZeroTopology
+public import Mathlib.Topology.Algebra.UniformField
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Valued fields and their completions
@@ -26,6 +29,8 @@ separated, so the map from `K` to `hat K` is injective.
 
 Then we extend the valuation given on `K` to a valuation on `hat K`.
 -/
+
+@[expose] public section
 
 
 open Filter Set
@@ -249,7 +254,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       have r : Function.RightInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
         simp only [mul_assoc, inv_mul_cancel₀ h, mul_one]
-      have c : Continuous fun x : hat K => x * x₀⁻¹ := continuous_id.mul continuous_const
+      have c : Continuous fun x : hat K => x * x₀⁻¹ := by fun_prop
       rw [image_eq_preimage_of_inverse l r]
       rw [← mul_inv_cancel₀ h] at V'_in
       exact c.continuousAt V'_in

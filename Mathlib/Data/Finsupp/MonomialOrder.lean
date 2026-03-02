@@ -3,9 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
 
 /-! # Monomial orders
 
@@ -32,7 +34,7 @@ It is activated using `open scoped MonomialOrder`.
 
 Commutative algebra defines many monomial orders, with different usefulness ranges.
 In this file, we provide the basic example of lexicographic ordering.
-For the graded lexicographic ordering, see `Mathlib/Data/Finsupp/DegLex.lean`
+For the graded lexicographic ordering, see `Mathlib/Data/Finsupp/MonomialOrder/DegLex.lean`
 
 * `MonomialOrder.lex` : the lexicographic ordering on `σ →₀ ℕ`.
 For this, `σ` needs to be embedded with an ordering relation which satisfies `WellFoundedGT σ`.
@@ -53,11 +55,13 @@ it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvP
 
 -/
 
+@[expose] public section
+
 /-- Monomial orders : equivalence of `σ →₀ ℕ` with a well-ordered type -/
 structure MonomialOrder (σ : Type*) where
   /-- The synonym type -/
   syn : Type*
-  /-- `syn` is a additive commutative monoid -/
+  /-- `syn` is an additive commutative monoid -/
   acm : AddCommMonoid syn := by infer_instance
   /-- `syn` is linearly ordered -/
   lo : LinearOrder syn := by infer_instance
@@ -158,10 +162,10 @@ theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
 
 theorem MonomialOrder.lex_lt_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
     c ≺[lex] d ↔ c default < d default := by
-  simp only [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff_of_unique, ofLex_toLex]
+  simp only [MonomialOrder.lex_lt_iff, Finsupp.Lex.lt_iff_of_unique, ofLex_toLex]
 
 theorem MonomialOrder.lex_le_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
     c ≼[lex] d ↔ c default ≤ d default := by
-  simp only [MonomialOrder.lex_le_iff, Finsupp.lex_le_iff_of_unique, ofLex_toLex]
+  simp only [MonomialOrder.lex_le_iff, Finsupp.Lex.le_iff_of_unique, ofLex_toLex]
 
 end Lex

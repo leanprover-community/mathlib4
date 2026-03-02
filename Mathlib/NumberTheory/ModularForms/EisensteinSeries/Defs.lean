@@ -3,10 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 /-!
 # Eisenstein Series
@@ -24,6 +26,8 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -67,7 +71,7 @@ def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 r a ≃ gammaSet 1
 abbrev finGcdMap (v : Fin 2 → ℤ) : ℕ := (v 0).gcd (v 1)
 
 lemma finGcdMap_div {r : ℕ} [NeZero r] (v : Fin 2 → ℤ) (hv : finGcdMap v = r) :
-    IsCoprime ((v / r) 0 ) ((v / r) 1) := by
+    IsCoprime ((v / r) 0) ((v / r) 1) := by
   rw [← hv]
   apply isCoprime_div_gcd_div_gcd_of_gcd_ne_zero
   have := NeZero.ne r
@@ -77,7 +81,7 @@ lemma finGcdMap_smul {r : ℕ} (a : ℤ) {v : Fin 2 → ℤ} (hv : finGcdMap v =
     finGcdMap (a • v) = a.natAbs * r := by
   simp [finGcdMap, Int.gcd_mul_left, hv]
 
-/-- An abbreviation of the map which divides a integer vector by an integer. -/
+/-- An abbreviation of the map which divides an integer vector by an integer. -/
 abbrev divIntMap (r : ℤ) {m : ℕ} (v : Fin m → ℤ) : Fin m → ℤ := v / r
 
 lemma mem_gammaSet_one (v : Fin 2 → ℤ) : v ∈ gammaSet 1 1 0 ↔ IsCoprime (v 0) (v 1) := by
@@ -210,15 +214,20 @@ lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
   congr 1
   exact (gammaSetEquiv a γ).tsum_eq (eisSummand k · z)
 
-/-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
-  and congruence condition given by `a : Fin 2 → ZMod N`. -/
-def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
+/-- The `SlashInvariantForm` defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
+and congruence condition given by `a : Fin 2 → ZMod N`. -/
+def eisensteinSeriesSIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
   slash_action_eq' A hA := by
     obtain ⟨A, (hA : A ∈ Γ(N)), rfl⟩ := hA
     simp [SpecialLinearGroup.mapGL, ← SL_slash, eisensteinSeries_slash_apply, Gamma_mem'.mp hA]
 
-lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
-    eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl
+@[deprecated (since := "2026-02-10")]
+noncomputable alias eisensteinSeries_SIF := eisensteinSeriesSIF
+
+lemma eisensteinSeriesSIF_apply (k : ℤ) (z : ℍ) :
+    eisensteinSeriesSIF a k z = eisensteinSeries a k z := rfl
+
+@[deprecated (since := "2026-02-10")] alias eisensteinSeries_SIF_apply := eisensteinSeriesSIF_apply
 
 end EisensteinSeries
