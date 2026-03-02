@@ -26,7 +26,7 @@ independence, stochastic processes
 
 public section
 
-open MeasureTheory MeasurableSpace
+open MeasureTheory MeasurableSpace Set
 
 namespace ProbabilityTheory
 
@@ -35,6 +35,31 @@ variable {S Ω : Type*} {mΩ : MeasurableSpace Ω}
 namespace Kernel
 
 variable {α : Type*} {mα : MeasurableSpace α} {κ : Kernel α Ω} {P : Measure α}
+
+/-- If `X` is a process independent from `Y` and for all `i`, `X' i` is almost everywhere equal
+to `X i`, then `X'` is also independent from `Y`. This implies that independence results about
+measurable processes should generally also hold
+for processes whose marginals are only aemeasurable. -/
+lemma IndepFun.process_congr {𝓧 : S → Type*} {𝓨 : Type*}
+    [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X X' : (i : S) → Ω → 𝓧 i}
+    {Y : Ω → 𝓨} (h1 : IndepFun (fun ω i ↦ X i ω) Y κ P) (h2 : ∀ i, ∀ᵐ a ∂P, X i =ᵐ[κ a] X' i) :
+    IndepFun (fun ω i ↦ X' i ω) Y κ P := by
+  rintro - - ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+  have := h1 ((fun ω i ↦ X i ω) ⁻¹' s) (Y ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+  obtain ⟨I, u, hI, rfl⟩ := hs.eq_preimage_restrict_countable
+  have aux (f : (i : S) → Ω → 𝓧 i) : (fun ω i ↦ f i ω) ⁻¹' (I.restrict ⁻¹' u) =
+      (fun ω (i : I) ↦ f i ω) ⁻¹' u := rfl
+  simp_rw [aux] at *
+  have _ : Countable I := hI.to_subtype
+  have h : ∀ᵐ a ∂P, (fun ω (i : I) ↦ X i ω) =ᵐ[κ a] (fun ω (i : I) ↦ X' i ω) := by
+    filter_upwards [ae_all_iff.2 fun (i : I) ↦ h2 i] with
+      a (ha : ∀ (i : I), ∀ᵐ ω ∂κ a, X i ω = X' i ω)
+    filter_upwards [ae_all_iff.2 ha] with ω hω using by simp [hω]
+  filter_upwards [this, h] with a ha1 ha2
+  refine .trans (measure_congr (ae_eq_set_inter (ha2.symm.preimage _) .rfl)) (ha1.trans ?_)
+  congr 1
+  exact measure_congr (ha2.preimage _)
+
 
 /-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
 for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
@@ -66,6 +91,20 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
     .pi (Finset.countable_toSet _) (fun _ _ ↦ hs _)
   filter_upwards [(h I).measure_inter_preimage_eq_mul _ _ h1 ht] with ω hω
   rw [this, hω]
+
+/-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
+for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
+lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
+    [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
+    {Y : Ω → 𝓨} (hX : ∀ i, AEMeasurable (X i) (κ ∘ₘ P)) (hY : ∀ᵐ a ∂P, AEMeasurable Y (κ a))
+    (h : ∀ (I : Finset S), IndepFun (fun ω (i : I) ↦ X i ω) Y κ P) [IsZeroOrMarkovKernel κ] :
+    IndepFun (fun ω i ↦ X i ω) Y κ P := by
+  refine .congr' ?_ .rfl (by filter_upwards [hY] with a ha; exact ha.ae_eq_mk.symm)
+  apply process_congr (X := fun i ↦ (hX i).mk (X i))
+  · refine IndepFun.process_indepFun (fun i ↦ (hX i).measurable_mk) hY
+      fun I ↦ process_congr (X := fun (i : I) ↦ X i) (h I) (fun i ↦ ?_)
+    exact Measure.ae_ae_of_ae_comp (hX i).ae_eq_mk
+  exact fun i ↦ Measure.ae_ae_of_ae_comp (hX i).ae_eq_mk.symm
 
 /-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
@@ -136,6 +175,14 @@ end Kernel
 
 variable {P : Measure Ω}
 
+
+lemma lol' {𝓧 : S → Type*} {𝓨 : Type*}
+    [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X X' : (i : S) → Ω → 𝓧 i}
+    {Y : Ω → 𝓨} (h1 : (fun ω i ↦ X i ω) ⟂ᵢ[P] Y) (h2 : ∀ i, X i =ᵐ[P] X' i) :
+    (fun ω i ↦ X' i ω) ⟂ᵢ[P] Y := by
+  apply Kernel.lol h1
+  simpa
+
 /-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
 for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
 lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
@@ -147,6 +194,24 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
   suffices (fun ω i ↦ X i ω) ⟂ᵢ[P] (hY.mk Y) from
     this.congr .rfl hY.ae_eq_mk.symm
   exact Kernel.IndepFun.process_indepFun hX hY.measurable_mk (fun I ↦ (h I).congr .rfl hY.ae_eq_mk)
+
+/-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
+for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
+lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
+    [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
+    {Y : Ω → 𝓨} (hX : ∀ i, AEMeasurable (X i) P) (hY : AEMeasurable Y P)
+    (h : ∀ (I : Finset S),
+      IndepFun (fun ω (i : I) ↦ X i ω) Y P) [IsZeroOrProbabilityMeasure P] :
+    IndepFun (fun ω i ↦ X i ω) Y P := by
+  suffices (fun ω i ↦ (hX i).mk (X i) ω) ⟂ᵢ[P] (hY.mk Y) by
+    apply lol' (X := fun i ↦ (hX i).mk (X i))
+    · exact this.congr .rfl hY.ae_eq_mk.symm
+    · exact fun i ↦ (hX i).ae_eq_mk.symm
+  have (I : Finset S) : (fun ω (i : I) ↦ (hX i).mk (X i) ω) ⟂ᵢ[P] (hY.mk Y) := by
+    apply lol' (X := fun (i : I) ↦ X i)
+    · exact (h I).congr .rfl hY.ae_eq_mk
+    · exact fun i ↦ (hX i).ae_eq_mk
+  exact Kernel.IndepFun.process_indepFun (fun i ↦ (hX i).measurable_mk) hY.measurable_mk this
 
 /-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
