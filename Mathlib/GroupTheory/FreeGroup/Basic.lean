@@ -811,6 +811,35 @@ theorem freeGroupCongr_trans {α β γ} (e : α ≃ β) (f : β ≃ γ) :
     (freeGroupCongr e).trans (freeGroupCongr f) = freeGroupCongr (e.trans f) :=
   MulEquiv.ext <| map.comp _ _
 
+/-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves surjectivity. -/
+lemma surjective_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f) :
+  Function.Surjective (f ∘ FreeGroup.freeGroupCongr e.symm) := by
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
+  simpa [iso] using hfsurj.comp iso.surjective
+
+/-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves injectivity. -/
+lemma injective_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfinj : Function.Injective f) :
+  Function.Injective (f ∘ FreeGroup.freeGroupCongr e.symm) := by
+  let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
+  simpa [iso] using hfinj.comp iso.injective
+
+/-- Composing with a reindexing `FreeGroup.freeGroupCongr` preserves bijectivity. -/
+lemma bijective_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfbij : Function.Bijective f) :
+  Function.Bijective (f ∘ FreeGroup.freeGroupCongr e.symm) := by
+  exact ⟨
+    injective_comp_freeGroupCongr (G := G) e f hfbij.injective,
+    surjective_comp_freeGroupCongr (G := G) e f hfbij.surjective
+  ⟩
+
+/-- Reindexing free-group generators via an equivalence preserves isomorphisms. -/
+def mulEquiv_comp_freeGroupCongr {G α β : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α ≃* G) :
+    FreeGroup β ≃* G :=
+  (FreeGroup.freeGroupCongr e.symm).trans f
+
 end Map
 
 section Prod
