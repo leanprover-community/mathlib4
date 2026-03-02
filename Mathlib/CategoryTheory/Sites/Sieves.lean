@@ -411,10 +411,18 @@ lemma galoisConnection_map_functorPullback (X : C) :
 lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback F).map F ≤ R :=
   (galoisConnection_map_functorPullback _ _).l_u_le _
 
+lemma le_functorPullback_map {X : C} (R : Presieve X) : R ≤ (R.map F).functorPullback F :=
+  (galoisConnection_map_functorPullback _ _).le_u_l _
+
 @[simp]
 lemma map_functorPullback_map {X : C} (R : Presieve X) :
     Presieve.map F (Presieve.functorPullback F (R.map F)) = R.map F :=
   (galoisConnection_map_functorPullback _ _).l_u_l_eq_l _
+
+@[simp]
+lemma functorPullback_map_functorPullback {X : C} (R : Presieve (F.obj X)) :
+    Presieve.functorPullback F (Presieve.map F (R.functorPullback F)) = R.functorPullback F :=
+  (galoisConnection_map_functorPullback _ _).u_l_u_eq_u _
 
 @[simp]
 lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
