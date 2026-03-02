@@ -55,7 +55,7 @@ local notation "𝕢" => Periodic.qParam
 section auxiliary
 
 lemma csqrt_pow_24_eq {z : ℂ} (hz : z ≠ 0) : sqrt z ^ 24 = z ^ 12 := by
-  rw [sqrt_eq_exp (by simp [hz]), ← exp_nat_mul]
+  rw [sqrt_eq_exp hz, ← exp_nat_mul]
   ring_nf
   rw [show (log z * 12) = (12 : ℕ) * log z by ring, exp_nat_mul, exp_log hz]
 
@@ -63,20 +63,17 @@ lemma csqrt_I_pow_24 : sqrt I ^ 24 = 1 := by
   rw [csqrt_pow_24_eq I_ne_zero, show 12 = 4 * 3 by lia, pow_mul, I_pow_four, one_pow]
 
 lemma logDeriv_eta_comp_div_eq (z : ℍ) :
-    let Z := (UpperHalfPlane.mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos)
-    (logDeriv (η ∘ (fun z : ℂ ↦ -1 / z))) z =
-      ((z : ℂ) ^ (2 : ℤ))⁻¹ * (logDeriv η) Z := by
+    (logDeriv (η ∘ (-1 / ·))) z = ((z : ℂ) ^ (2 : ℤ))⁻¹ * (logDeriv η) (-z : ℂ)⁻¹ := by
   simp only [neg_div, one_div, inv_neg]
   rw [logDeriv_comp, mul_comm]
-  · norm_cast
-    simp
+  · simp [zpow_ofNat]
   · exact differentiableAt_eta_of_mem_upperHalfPlaneSet (by grind [im_pnat_div_pos 1 z])
-  · exact ((differentiableAt_fun_id).inv (ne_zero z)).neg
+  · fun_prop (disch := exact z.ne_zero)
 
 lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
-    logDeriv (η ∘ (fun z : ℂ ↦ -1 / z)) z = logDeriv (sqrt * η) z := by
-  rw [logDeriv_eta_comp_div_eq z, show ((sqrt) * η) = (fun x ↦ (sqrt) x * η x) by rfl,
-      logDeriv_mul _ (by simp [sqrt, ne_zero z]) (ModularForm.eta_ne_zero z.2)
+    logDeriv (η ∘ (-1 / ·)) z = logDeriv (sqrt * η) z := by
+  rw [logDeriv_eta_comp_div_eq z, Pi.mul_def,
+      logDeriv_mul _ (by simp [sqrt, ne_zero z]) (eta_ne_zero z.2)
       (differentiableAt_sqrt (mem_slitPlane z))
       (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2)]
   nth_rw 2 [logDeriv_apply]
@@ -85,8 +82,8 @@ lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
     Int.reduceNeg, zpow_neg, riemannZeta_two, mul_inv_rev, inv_div, Pi.sub_apply, Pi.smul_apply,
     EisensteinSeries.D2, Fin.isValue, ModularGroup.denom_S, smul_eq_mul] at hE2
   rw [deriv_sqrt (mem_slitPlane z), div_eq_mul_inv, logDeriv_eta_eq_E2 z,
-    logDeriv_eta_eq_E2 (UpperHalfPlane.mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos),
-    ← mul_assoc, mul_comm, ← mul_assoc, hE2, ModularGroup.S, sqrt]
+    logDeriv_eta_eq_E2 (.mk _ z.im_inv_neg_coe_pos),  ← mul_assoc, mul_comm, ← mul_assoc, hE2,
+    ModularGroup.S, sqrt]
   have hpow : (z : ℂ) * z ^ (- 1 / (2 : ℂ)) = z ^ (1 - (1 / 2 : ℂ)) := by
     simp [cpow_sub _ _ (ne_zero z), div_eq_mul_inv, neg_mul, one_mul, cpow_one, ← cpow_neg]
   have hh :  -((z : ℂ)⁻¹ * (-1 / 2)) = z ^ (-(1 : ℂ) / 2) * ((z : ℂ) ^ (2 : ℂ)⁻¹)⁻¹ * 2⁻¹ := by
