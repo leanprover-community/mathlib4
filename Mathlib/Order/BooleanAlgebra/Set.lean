@@ -33,6 +33,9 @@ open Function
 namespace Set
 variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
+/- In #35959, to make sure that the defeq abuse between `α → Prop` and `Set α` does not leak from
+`inferInstanceAs (BooleanAlgebra (α → Prop))`, we define explicitly the data fields. This could be
+avoided by using a better elaborator `inferInstanceAs%` fixing the defeqs. -/
 instance instBooleanAlgebra : BooleanAlgebra (Set α) where
   __ : DistribLattice (Set α) := inferInstance
   __ : BooleanAlgebra (Set α) := inferInstanceAs (BooleanAlgebra (α → Prop))
@@ -40,6 +43,8 @@ instance instBooleanAlgebra : BooleanAlgebra (Set α) where
   sdiff := (· \ ·)
   top := univ
   bot := ∅
+  himp s t := t ∪ sᶜ
+  himp_eq _ _ := rfl
 
 /-- See also `Set.sdiff_inter_right_comm`. -/
 lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..
