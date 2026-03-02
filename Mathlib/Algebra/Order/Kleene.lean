@@ -66,9 +66,6 @@ class IdemSemiring (α : Type u) extends Semiring α, SemilatticeSup α where
   protected add_eq_sup : ∀ a b : α, a + b = a ⊔ b := by
     intros
     rfl
-  /-- The bottom element of an idempotent semiring: `0` by default -/
-  protected bot : α := 0
-  protected bot_le : ∀ a, bot ≤ a
 
 /-- An idempotent commutative semiring is a commutative semiring with the additional property that
 addition is idempotent. -/
@@ -96,10 +93,6 @@ class KleeneAlgebra (α : Type*) extends IdemSemiring α, KStar α where
   protected mul_kstar_le_self (a b : α) : b * a ≤ b → b * a∗ ≤ b
   protected kstar_mul_le_self (a b : α) : a * b ≤ b → a∗ * b ≤ b
 
--- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toOrderBot [IdemSemiring α] : OrderBot α where
-  __ := ‹IdemSemiring α›
-
 -- See note [reducible non-instances]
 /-- Construct an idempotent semiring from an idempotent addition. -/
 abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemSemiring α where
@@ -111,8 +104,6 @@ abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemS
   le_sup_left a b := by rw [← add_assoc, h]
   le_sup_right a b := by rw [add_comm, add_assoc, h]
   sup_le a b c hab hbc := by rwa [add_assoc, hbc]
-  bot := 0
-  bot_le := zero_add
 
 section IdemSemiring
 
@@ -285,7 +276,6 @@ abbrev KleeneAlgebra.ofInequalities
 namespace Prod
 
 instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) where
-  __ := Prod.instOrderBot _ _
   add_eq_sup _ _ := Prod.ext (add_eq_sup _ _) (add_eq_sup _ _)
 
 instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × β) where
@@ -317,7 +307,6 @@ end Prod
 namespace Pi
 
 instance instIdemSemiring [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) where
-  __ := Pi.instOrderBot
   add_eq_sup _ _ := funext fun _ ↦ add_eq_sup _ _
 
 instance [∀ i, IdemCommSemiring (π i)] : IdemCommSemiring (∀ i, π i) where
@@ -353,12 +342,11 @@ protected abbrev idemSemiring [IdemSemiring α] [LE β] [LT β] [Zero β] [One �
     (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
+    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
     IdemSemiring β where
   __ := hf.semiring f zero one add mul nsmul npow natCast
   __ := hf.semilatticeSup f le lt sup
   add_eq_sup a b := hf <| by rw [sup, add, add_eq_sup]
-  bot_le a := le.1 <| bot.trans_le bot_le
 
 -- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
@@ -368,10 +356,10 @@ protected abbrev idemCommSemiring [IdemCommSemiring α] [LE β] [LT β] [Zero β
     (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
+    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
     IdemCommSemiring β where
   __ := hf.commSemiring f zero one add mul nsmul npow natCast
-  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup bot
+  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup
 
 -- See note [reducible non-instances]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
@@ -381,9 +369,9 @@ protected abbrev kleeneAlgebra [KleeneAlgebra α] [LE β] [LT β] [Zero β] [One
     (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
+    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (kstar : ∀ a, f a∗ = (f a)∗) : KleeneAlgebra β where
-  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup bot
+  __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup
   one_add_mul_kstar a := by
     rw [← hf.eq_iff, add, one, mul, kstar]
     exact one_add_mul_kstar
