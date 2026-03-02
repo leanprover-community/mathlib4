@@ -29,8 +29,8 @@ open WithZero Ideal.IsDedekindDomain
 
 section AKLB
 
-variable {A B K : Type*} (L : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Field L]
-  [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A] [Algebra A L]
+variable {A K : Type*} (L : Type*) {B : Type*} [CommRing A] [CommRing B] [Field K] [Algebra A B]
+  [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A] [Algebra A L]
   [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L] [IsScalarTower A K L]
   (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
 
@@ -65,7 +65,7 @@ theorem uniformContinuous_algebraMap_liesOver [IsFractionRing B L] [NoZeroSMulDi
   use expEquiv ((WithZero.log γ) / v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal)
   simp only [coe_expEquiv_apply, Set.mem_setOf_eq, true_and]
   intro x hx
-  rw [WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply, WithVal.apply_symm_equiv,
+  rw [WithVal.algebraMap_left_apply, WithVal.algebraMap_right_apply, WithVal.valued_toVal,
     ← valuation_liesOver L v w]
   rcases eq_or_ne x 0 with rfl | hx₀
   · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
