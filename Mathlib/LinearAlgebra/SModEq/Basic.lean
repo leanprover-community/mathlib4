@@ -5,8 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
+public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
@@ -164,5 +166,29 @@ theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD
 
 theorem ideal {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
     x ≡ y [SMOD I] ↔ Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := Iff.rfl
+
+theorem pow_nat
+    {R : Type*} [CommRing R] {I : Ideal R} {p : ℕ} (hpI : (p : R) ∈ I)
+    {x y : R} {m : ℕ} (hm : m ≠ 0) (h : x ≡ y [SMOD I ^ m]) :
+    x ^ p ≡ y ^ p [SMOD I ^ (m + 1)] := by
+  have h₁ := ideal.mp <| h.mono <| I.pow_le_self hm
+  rw [SModEq.sub_mem] at h ⊢
+  rw [← Commute.mul_neg_geom_sum₂ (.all _ _)]
+  refine Ideal.mul_mem_mul h ?_
+  have h₂ : (p : R ⧸ I) = 0 := by simpa using Ideal.Quotient.eq_zero_iff_mem.mpr hpI
+  simp only [← Ideal.Quotient.eq_zero_iff_mem, map_sum, map_mul, map_pow, h₁, ← pow_add]
+  trans ∑ x ∈ Finset.range p, Ideal.Quotient.mk I y ^ (p - 1)
+  · exact Finset.sum_congr rfl fun _ _ ↦ by grind
+  simp [h₂]
+
+theorem pow_pow
+    {R : Type*} [CommRing R] {I : Ideal R} {p : ℕ} (hpI : (p : R) ∈ I)
+    {x y : R} (h : x ≡ y [SMOD I]) (m : ℕ) :
+    x ^ p ^ m ≡ y ^ p ^ m [SMOD I ^ (m + 1)] := by
+  induction m with
+  | zero => simpa
+  | succ m ih =>
+    simp_rw [pow_succ _ m, pow_mul]
+    exact ih.pow_nat hpI m.succ_ne_zero
 
 end SModEq

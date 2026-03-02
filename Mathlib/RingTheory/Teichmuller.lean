@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.LinearAlgebra.SModEq.Prime
+public import Mathlib.LinearAlgebra.SModEq.Basic
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Perfection
 
@@ -39,7 +39,7 @@ theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
   · simp
   symm
   rw [teichmullerAux, pow_succ' p, pow_mul]
-  exact .pow_prime_pow Fact.out (I.natCast_mem_of_charP_quotient p) <| by
+  exact .pow_pow (I.natCast_mem_of_charP_quotient p) (m := m) <| by
     simp [SModEq.ideal, coeff_pow_p']
 
 /-- `teichmullerAux` as an adic Cauchy sequence. -/
@@ -67,7 +67,7 @@ theorem teichmullerFun_sModEq {x : Perfection (R ⧸ I) p} {y : R} {n : ℕ}
     teichmullerFun x ≡ y ^ p ^ n [SMOD I ^ (n + 1)] := by
   have := (exists_teichmullerFun x).choose_spec (n + 1)
   rw [smul_eq_mul, Ideal.mul_top] at this
-  exact this.symm.trans <| SModEq.pow_prime_pow Fact.out (I.natCast_mem_of_charP_quotient p) <| by
+  exact this.symm.trans <| SModEq.pow_pow (I.natCast_mem_of_charP_quotient p) (m := n) <| by
     simp [SModEq.ideal, h]
 
 end IsPrecomplete
