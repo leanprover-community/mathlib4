@@ -132,7 +132,7 @@ variable {α : Type u} {β : Type v} [Mul β] (f : α → β)
 def lift : (α → β) ≃ (FreeMagma α →ₙ* β) where
   toFun f :=
   { toFun := liftAux f
-    map_mul' := fun _ _ ↦ rfl }
+    map_mul' _ _ := rfl }
   invFun F := F ∘ of
 
 @[to_additive (attr := simp)]
@@ -383,9 +383,8 @@ given a semigroup `β`. -/
 additive semigroup homomorphism `AddMagma.AssocQuotient α → β` given an additive semigroup `β`. -/]
 def lift : (α →ₙ* β) ≃ (AssocQuotient α →ₙ* β) where
   toFun f :=
-  { toFun := fun x ↦
-      Quot.liftOn x f <| by rintro a b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp only [map_mul, mul_assoc]
-    map_mul' := fun x y ↦ Quot.induction_on₂ x y (map_mul f) }
+  { toFun x := Quot.liftOn x f <| by rintro a b (⟨c, d, e⟩ | ⟨c, d, e, f⟩) <;> simp [mul_assoc]
+    map_mul' x y := Quot.induction_on₂ x y (map_mul f) }
   invFun f := f.comp of
 
 @[to_additive (attr := simp)]
@@ -521,10 +520,8 @@ a semigroup `β`. -/
 homomorphism `FreeAddSemigroup α → β` given an additive semigroup `β`. -/]
 def lift : (α → β) ≃ (FreeSemigroup α →ₙ* β) where
   toFun f :=
-    { toFun := fun x ↦ x.2.foldl (fun a b ↦ a * f b) (f x.1)
-      map_mul' := fun x y ↦ by
-        simp [head_mul, tail_mul, ← List.foldl_map, List.foldl_append, List.foldl_cons,
-          List.foldl_assoc] }
+    { toFun x := x.tail.foldl (fun a b ↦ a * f b) (f x.head)
+      map_mul' x y := by simp [← List.foldl_map, List.foldl_assoc] }
   invFun f := f ∘ of
 
 @[to_additive (attr := simp)]
@@ -632,7 +629,7 @@ theorem traverse_mul (x y : FreeSemigroup α) :
     (fun hd tl ih x ↦ show
         (· * ·) <$> pure <$> F x <*> traverse F (mk hd tl * mk y L2) =
           (· * ·) <$> ((· * ·) <$> pure <$> F x <*> traverse F (mk hd tl)) <*> traverse F (mk y L2)
-        by rw [ih]; simp only [Function.comp_def, (mul_assoc _ _ _).symm, functor_norm])
+        by rw [ih]; simp [Function.comp_def, mul_assoc, functor_norm])
     x
 
 @[to_additive (attr := simp)]
@@ -649,18 +646,16 @@ theorem traverse_eq (x) : FreeSemigroup.traverse F x = traverse F x := rfl
 @[to_additive]
 instance : LawfulTraversable FreeSemigroup.{u} :=
   { instLawfulMonad with
-    id_traverse := fun x ↦
+    id_traverse x :=
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, seq_pure, map_pure, map_pure]
-    comp_traverse := fun f g x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp_def])
-        fun x y ih1 ih2 ↦ by
-          rw [traverse_mul, ih1, ih2, traverse_mul, Functor.Comp.map_mk]
-          simp only [Function.comp_def, functor_norm, traverse_mul]
-    naturality := fun η α β f x ↦
-      recOnPure x (fun x ↦ by simp only [traverse_pure, functor_norm, Function.comp])
-          (fun x y ih1 ih2 ↦ by simp only [traverse_mul, functor_norm, ih1, ih2])
-    traverse_eq_map_id := fun f x ↦
+    comp_traverse f g x :=
+      recOnPure x (by simp [functor_norm]) fun x y ih1 ih2 ↦ by
+        rw [traverse_mul, ih1, ih2]
+        simp [Function.comp_def, functor_norm]
+    naturality η α β f x :=
+      recOnPure x (by simp [functor_norm]) fun x y ih1 ih2 ↦ by simp [functor_norm, ih2]
+    traverse_eq_map_id f x :=
       FreeSemigroup.recOnMul x (fun _ ↦ rfl) fun x y ih1 ih2 ↦ by
         rw [traverse_mul, ih1, ih2, map_mul', map_pure, seq_pure, map_pure] }
 
