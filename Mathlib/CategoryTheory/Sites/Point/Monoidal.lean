@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
 public import Mathlib.CategoryTheory.Localization.Monoidal.Functor
-public import Mathlib.CategoryTheory.Sites.Point.Basic
+public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 public import Mathlib.CategoryTheory.Sites.Monoidal
+public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 
 /-!
 # Fiber functors are monoidal
@@ -88,38 +88,22 @@ instance (M : A) :
 
 attribute [local instance] IsFiltered.isConnected in
 instance : IsIso (OplaxMonoidal.η (Φ.presheafFiber (A := A))) :=
-  (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+  (IsColimit.coconePointUniqueUpToIso (Φ.isColimitPresheafFiberCocone (𝟙_ _))
     (isColimitConstCocone _ (𝟙_ A))).isIso_hom
 
-attribute [local simp] tensorHom_def toPresheafFiber OplaxMonoidal.δ presheafFiberDesc in
 instance (P₁ P₂ : Cᵒᵖ ⥤ A) :
-    IsIso (OplaxMonoidal.δ Φ.presheafFiber P₁ P₂) := by
-  let e := IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
-    ((Final.isColimitWhiskerEquiv (diag _) _ ).2
-      (isColimitOfPreserves₂ (curriedTensor A)
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P₁))
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P₂))))
-  rw [show OplaxMonoidal.δ Φ.presheafFiber P₁ P₂ =
-      colimMap { app _ := by exact 𝟙 _ } ≫ e.hom by cat_disch,
-    isIso_comp_right_iff]
-  apply +allowSynthFailures isIso_colimMap
-  rw [NatTrans.isIso_iff_isIso_app]
-  intro
-  dsimp
-  infer_instance
+    IsIso (OplaxMonoidal.δ Φ.presheafFiber P₁ P₂) :=
+  (IsColimit.coconePointUniqueUpToIso (Φ.isColimitPresheafFiberCocone (P₁ ⊗ P₂))
+    ((Φ.isColimitPresheafFiberCocone P₁).tensor (Φ.isColimitPresheafFiberCocone P₂))).isIso_hom
 
 noncomputable instance : (Φ.presheafFiber (A := A)).Monoidal :=
   .ofOplaxMonoidal _
 
+section
+
 attribute [local instance] Sheaf.monoidalCategory
 
-variable {FC : A → A → Type*} {CC : A → Type w'}
-  [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
-  [ConcreteCategory.{w'} A FC]
-  [PreservesFilteredColimitsOfSize.{w, w} (forget A)]
-  [(forget A).ReflectsIsomorphisms]
-  [HasWeakSheafify J A] [J.WEqualsLocallyBijective A]
-  [(J.W (A := A)).IsMonoidal]
+variable [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] [HasProducts.{w} A]
 
 noncomputable instance : (Φ.sheafFiber (A := A)).Monoidal :=
   Localization.Monoidal.functorMonoidalOfComp (presheafToSheaf J A) J.W
@@ -128,5 +112,7 @@ noncomputable instance : (Φ.sheafFiber (A := A)).Monoidal :=
 instance : NatTrans.IsMonoidal (Φ.presheafToSheafCompSheafFiber A).hom :=
   Localization.Monoidal.lifting_isMonoidal (presheafToSheaf J A) J.W
     Φ.sheafFiber Φ.presheafFiber
+
+end
 
 end CategoryTheory.GrothendieckTopology.Point

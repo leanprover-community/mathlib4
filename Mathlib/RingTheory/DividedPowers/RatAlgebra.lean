@@ -283,7 +283,6 @@ noncomputable def dividedPowers : DividedPowers I where
 lemma dpow_apply {n : ℕ} {x : R} :
     (dividedPowers I).dpow n x = if x ∈ I then inverse (n.factorial : R) * x ^ n else 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 omit [DecidablePred fun x ↦ x ∈ I] in
 /-- If `I` is an ideal in a `ℚ`-algebra `A`, then the divided power structure on `I` given by
   `dpow n x = x ^ n / n!` is the only possible one. -/

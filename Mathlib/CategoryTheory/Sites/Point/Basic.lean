@@ -42,7 +42,8 @@ its associated sheaf.
 
 Under suitable assumptions on the target category `A`, we show that
 both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
-and with arbitrary colimits.
+and with arbitrary colimits. (The commutation of `Φ.sheafFiber` with colimits
+is obtained in the file `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.)
 
 -/
 
@@ -84,6 +85,8 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
 
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
   hasColimitsOfShape_of_finallySmall _ _
+
+instance : IsSifted Φ.fiber.Elementsᵒᵖ := IsFiltered.isSifted
 
 instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
@@ -129,6 +132,17 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiber.map g =
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
+
+/-- The (colimit) cocone which defines the fiber of a presheaf. -/
+noncomputable def presheafFiberCocone (P : Cᵒᵖ ⥤ A) :
+    Cocone ((CategoryOfElements.π Φ.fiber).op ⋙ P) where
+  pt := Φ.presheafFiber.obj P
+  ι.app x := Φ.toPresheafFiber x.unop.1 x.unop.2 P
+
+/-- The cocone `Φ.presheafFiberCocone P` is a colimit. -/
+noncomputable def isColimitPresheafFiberCocone (P : Cᵒᵖ ⥤ A) :
+    IsColimit (Φ.presheafFiberCocone P) :=
+  colimit.isColimit _
 
 section
 
@@ -221,7 +235,9 @@ lemma toPresheafFiber_map_bijective
     Function.Bijective (Φ.presheafFiber.map f) :=
   ⟨Φ.toPresheafFiber_map_injective f, Φ.toPresheafFiber_map_surjective f⟩
 
-lemma W_isInvertedBy_presheafFiber
+/-- This is generalized as `W_isInvertedBy_presheafFiber` in the file
+`Mathlib/CategoryTheory/Sites/Point/Basic.lean` -/
+lemma W_isInvertedBy_presheafFiber'
     [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
     J.W.IsInvertedBy (Φ.presheafFiber (A := A)) := by
   intro P Q f hf
@@ -235,31 +251,6 @@ end
 noncomputable abbrev sheafFiber : Sheaf J A ⥤ A :=
   sheafToPresheaf J A ⋙ Φ.presheafFiber
 
-instance (P : Cᵒᵖ ⥤ A) [HasWeakSheafify J A]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
-    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
-    IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J P)) :=
-  W_isInvertedBy_presheafFiber _ _ (W_toSheafify J P)
-
-set_option backward.isDefEq.respectTransparency false in
-variable (A) in
-/-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
-by localization with respect to the class of morphisms `J.W`. -/
-noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
-    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
-    presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
-  (NatIso.ofComponents
-    (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
-      (by simp [← Functor.map_comp])).symm
-
-noncomputable instance [HasWeakSheafify J A]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
-    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
-    Localization.Lifting (presheafToSheaf J A) J.W
-        Φ.presheafFiber Φ.sheafFiber where
-  iso := Φ.presheafToSheafCompSheafFiber A
-
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=
   comp_preservesFiniteLimits _ _
@@ -272,30 +263,6 @@ instance : PreservesColimitsOfSize.{w, w} (Φ.presheafFiber (A := A)) where
   preservesColimitsOfShape := by
     dsimp [presheafFiber]
     infer_instance
-
-set_option backward.isDefEq.respectTransparency false in
-instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
-    PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
-  preservesColimitsOfShape {K _} := ⟨fun {F} ↦
-    preservesColimit_of_preserves_colimit_cocone
-      (Sheaf.isColimitSheafifyCocone _ (colimit.isColimit _))
-        (IsColimit.ofIsoColimit (isColimitOfPreserves Φ.presheafFiber
-          (colimit.isColimit (F ⋙ sheafToPresheaf J A))) (by
-            let G := colimit (F ⋙ sheafToPresheaf J A)
-            let φ := CategoryTheory.toSheafify J G
-            have : IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)) :=
-              W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
-            refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
-              (fun k ↦ ?_)
-            dsimp
-            rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
-            dsimp))⟩
-
-instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
-    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
-    PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
-  PreservesColimitsOfSize.preservesFiniteColimits _
 
 variable (F : A ⥤ B) [LocallySmall.{w} C] [PreservesFilteredColimitsOfSize.{w, w} F]
 

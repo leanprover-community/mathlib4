@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Sites.Point.Category
+public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 
@@ -85,7 +86,7 @@ lemma jointlyReflectMonomorphisms [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
 
 @[stacks 00YL "(2)"]
 lemma jointlyReflectEpimorphisms
-    [J.WEqualsLocallyBijective A] [HasSheafify J A] :
+    [HasWeakSheafify J A] [HasProducts.{w} A] :
     JointlyReflectEpimorphisms
       (fun (Φ : P.FullSubcategory) ↦ Φ.obj.sheafFiber (A := A)) :=
   (hP.jointlyReflectIsomorphisms A).jointlyReflectEpimorphisms
