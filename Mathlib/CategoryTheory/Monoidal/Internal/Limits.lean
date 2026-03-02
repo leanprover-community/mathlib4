@@ -43,6 +43,34 @@ and hence sends monoid objects to monoid objects.
 def limit (F : J ⥤ Mon C) : Mon C :=
   lim.mapMon.obj ((monFunctorCategoryEquivalence J C).inverse.obj F)
 
+open MonObj
+
+def limit.lift (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c) :
+    Mon C where
+  X := c.pt
+  mon.one := hc.lift
+    { pt := _
+      π.app X := η[(F.obj X).X] }
+  mon.mul := hc.lift
+    { pt := _
+      π.app X := (c.π.app X ⊗ₘ c.π.app X) ≫ μ[(F.obj X).X]
+      π.naturality i j f := by have := c.π.naturality f; simp_all }
+  mon.one_mul := by
+    apply hc.hom_ext
+    intro j
+    -- aesop_cat
+    simp
+  mon.mul_one := _
+  mon.mul_assoc := _
+
+
+  -- lim.mapMon.hom ((monFunctorCategoryEquivalence J C).inverse.mapCone
+  --   { pt := c.pt
+  --     π := { app := fun j => .mk' (c.π.app j)
+  --           naturality := fun j j' f => by ext; exact c.π.naturality f } })
+
+#exit
+
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.hasLimits`: a limiting cone over a functor `F : J ⥤ Mon C`.
 -/
