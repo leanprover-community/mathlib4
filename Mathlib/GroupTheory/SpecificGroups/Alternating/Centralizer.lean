@@ -275,6 +275,7 @@ theorem alternatingGroup.commutator_perm_le :
   rintro _ p q rfl
   simp [map_commutatorElement, commutatorElement_eq_one_iff_commute, Commute.all]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `n ≥ 5`, then the alternating group on `n` letters is perfect -/
 theorem commutator_alternatingGroup_eq_top (h5 : 5 ≤ Fintype.card α) :
     commutator (alternatingGroup α) = ⊤ := by
@@ -291,6 +292,7 @@ theorem commutator_alternatingGroup_eq_self (h5 : 5 ≤ Fintype.card α) :
   rw [← Subgroup.map_subtype_commutator, commutator_alternatingGroup_eq_top h5,
     ← MonoidHom.range_eq_map, Subgroup.range_subtype]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The commutator subgroup of the permutation group is the alternating group -/
 theorem alternatingGroup.commutator_perm_eq (h5 : 5 ≤ Fintype.card α) :
     commutator (Perm α) = alternatingGroup α := by

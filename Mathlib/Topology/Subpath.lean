@@ -161,6 +161,7 @@ lemma concat_succ (p : Fin (n + 2) → X) (F) :
   rw [concat, dfoldl_succ_last]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Concatenating the constant path at `x` with itself just yields the constant path at `x`. -/
 @[simp]
 theorem concat_refl (n : ℕ) (x : X) :

@@ -40,7 +40,7 @@ public register_option linter.style.whitespace : Bool := {
   descr := "enable the whitespace linter"
 }
 
-/-- Deprecated in favour of `linter.style.whitespace -/
+/-- Deprecated in favour of `linter.style.whitespace` -/
 @[deprecated linter.style.whitespace (since := "2026-01-07")]
 public register_option linter.style.commandStart : Bool := {
   defValue := false

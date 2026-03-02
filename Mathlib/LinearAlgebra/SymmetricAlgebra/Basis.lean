@@ -96,6 +96,7 @@ instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (SymmetricAlgebr
 
 attribute [pp_with_univ] Cardinal.lift
 
+set_option backward.isDefEq.respectTransparency false in
 open Cardinal in
 lemma rank_eq [Nontrivial M] [Module.Free R M] :
     Module.rank R (SymmetricAlgebra R M) = Cardinal.lift.{uR} (max (Module.rank R M) ℵ₀) := by
