@@ -440,11 +440,11 @@ def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushou
       w := by
         apply pullback.hom_ext
         · simp [← homEquiv_naturality_one, ← homEquiv_naturality_two, pushout.condition]
-        · simp [← homEquiv_naturality_two, ← homEquiv_naturality_three]}
+        · simp [← homEquiv_naturality_two, ← homEquiv_naturality_three] }
     naturality _ _ _ := by
       ext
       · simp [← homEquiv_naturality_two, ← homEquiv_naturality_three]
-      · apply pullback.hom_ext <;> simp [← homEquiv_naturality_two, ← homEquiv_naturality_three]}
+      · apply pullback.hom_ext <;> simp [← homEquiv_naturality_two, ← homEquiv_naturality_three] }
   counit := {
     app X₃ := {
       left := pushout.desc (adj₂.homEquiv.symm (𝟙 _)) (adj₂.homEquiv.symm (pullback.fst ..))
@@ -454,12 +454,12 @@ def adj (adj₂ : F ⊣₂ G) (X₁ : Arrow C₁) [HasPullbacks C₂] [HasPushou
         apply pushout.hom_ext
         · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three]
         · simp [← homEquiv_symm_naturality_one, ← homEquiv_symm_naturality_three,
-            pullback.condition]}
+            pullback.condition] }
     naturality _ _ _ := by
       ext
       · apply pushout.hom_ext <;> simp [← homEquiv_symm_naturality_two,
           ← homEquiv_symm_naturality_three]
-      · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three]}
+      · simp [← homEquiv_symm_naturality_two, ← homEquiv_symm_naturality_three] }
   left_triangle_components _ := by
     ext
     · apply pushout.hom_ext <;> simp [← homEquiv_symm_naturality_two, ofHasPushout_pt]

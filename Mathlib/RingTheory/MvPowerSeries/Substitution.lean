@@ -210,7 +210,6 @@ theorem coe_substAlgHom (ha : HasSubst a) :
   letI : UniformSpace S := ⊥
   rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval, subst_eq_eval₂]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem subst_self : subst (MvPowerSeries.X : σ → MvPowerSeries σ R) = id := by
   rw [← coe_substAlgHom HasSubst.X]
   letI : UniformSpace R := ⊥

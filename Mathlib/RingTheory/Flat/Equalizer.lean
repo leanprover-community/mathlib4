@@ -32,7 +32,6 @@ variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R
 variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
   (f g : N →ₗ[R] P)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.Flat.ker_lTensor_eq [Module.Flat R M] :
     LinearMap.ker (AlgebraTensorModule.lTensor S M f) =
       LinearMap.range (AlgebraTensorModule.lTensor S M (LinearMap.ker f).subtype) := by
@@ -188,7 +187,6 @@ lemma LinearMap.lTensor_eqLocus_subtype_tensoreqLocusEquiv_symm [Module.Flat R M
 
 variable {M}
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Given a short exact sequence `0 → M → N → P → 0` with `P` flat,
 then any `A ⊗ M → A ⊗ N` is injective.
@@ -228,7 +226,6 @@ to get `0 → A ⊗ K → A ⊗ M` exact.
   rw [Subsingleton.elim (SnakeLemma.δ' ..) 0] at this
   simpa using this
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given surjection `f : N → P` with `P` flat, then `A ⊗ ker f ≃ ker (A ⊗ f)`.
 Also see `LinearMap.tensorKerEquiv` for the version with `A` flat instead. -/
 def LinearMap.kerLTensorEquivOfSurjective [Module.Flat R P]
@@ -299,6 +296,7 @@ lemma AlgHom.coe_tensorEqualizer (x : T ⊗[R] AlgHom.equalizer f g) :
       Algebra.TensorProduct.map (AlgHom.id S T) (AlgHom.equalizer f g).val x :=
   AlgHom.coe_tensorEqualizerAux S T f g x
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -318,7 +316,8 @@ lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]
     AlgHom.tensorEqualizerEquiv S T f g x = AlgHom.tensorEqualizer S T f g x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
+#adaptation_note /-- After nightly-2026-02-23 this requires more heartbeats. -/
+set_option maxHeartbeats 400000 in -- see note
 variable (R A) in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 /--

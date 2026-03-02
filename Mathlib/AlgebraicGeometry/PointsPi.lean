@@ -116,7 +116,6 @@ lemma pointsPi_surjective_of_isAffine [IsAffine X] : Function.Surjective (points
   simp only [pointsPi, ← Spec.map_comp_assoc, Iso.comp_inv_eq]
   exact Spec.map_preimage _
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     Function.Surjective (pointsPi R X) := by
   intro f
