@@ -178,6 +178,7 @@ lemma key_x_equation :
 
 /-! ### Solving the trigonometric equation -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma x_eq : s.x = 2 * π / 9 := by
   have work := s.key_x_equation
   rw [Real.sin_add_sin, show 2 * π / 3 - s.x = π - 2 * ((s.x + π / 3) / 2) by ring, Real.sin_pi_sub,

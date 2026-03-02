@@ -100,6 +100,7 @@ lemma integrable_gaussianPDFReal (μ : ℝ) (v : ℝ≥0) :
     field
   exact Integrable.comp_sub_right hg μ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Gaussian distribution pdf integrates to 1 when the variance is not zero. -/
 lemma lintegral_gaussianPDFReal_eq_one (μ : ℝ) {v : ℝ≥0} (h : v ≠ 0) :
     ∫⁻ x, ENNReal.ofReal (gaussianPDFReal μ v x) = 1 := by
@@ -277,8 +278,7 @@ lemma _root_.MeasurableEquiv.gaussianReal_map_symm_apply (hv : v ≠ 0) (f : ℝ
 lemma gaussianReal_map_add_const (y : ℝ) :
     (gaussianReal μ v).map (· + y) = gaussianReal (μ + y) v := by
   by_cases hv : v = 0
-  · simp only [hv, gaussianReal_zero_var]
-    exact Measure.map_dirac (measurable_id'.add_const _) _
+  · simp [hv, gaussianReal_zero_var]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.addRight y).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ 1) x) x := fun _ ↦ (hasDerivAt_id _).sub_const y
   change (gaussianReal μ v).map e.symm = gaussianReal (μ + y) v
@@ -294,12 +294,12 @@ lemma gaussianReal_map_const_add (y : ℝ) :
   simp_rw [add_comm y]
   exact gaussianReal_map_add_const y
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map of a Gaussian distribution by multiplication by a constant is a Gaussian. -/
 lemma gaussianReal_map_const_mul (c : ℝ) :
     (gaussianReal μ v).map (c * ·) = gaussianReal (c * μ) (⟨c ^ 2, sq_nonneg _⟩ * v) := by
   by_cases hv : v = 0
-  · simp only [hv, mul_zero, gaussianReal_zero_var]
-    exact Measure.map_dirac (measurable_id'.const_mul c) μ
+  · simp [hv, mul_zero, gaussianReal_zero_var]
   by_cases hc : c = 0
   · simp only [hc, zero_mul]
     rw [Measure.map_const]
@@ -333,6 +333,7 @@ lemma gaussianReal_map_mul_const (c : ℝ) :
   simp_rw [mul_comm _ c]
   exact gaussianReal_map_const_mul c
 
+set_option backward.isDefEq.respectTransparency false in
 lemma gaussianReal_map_neg : (gaussianReal μ v).map (fun x ↦ -x) = gaussianReal (-μ) v := by
   simpa using gaussianReal_map_const_mul (μ := μ) (v := v) (-1)
 
@@ -347,7 +348,7 @@ lemma gaussianReal_map_const_sub (y : ℝ) :
   rw [this, ← Measure.map_map (by fun_prop) (by fun_prop), gaussianReal_map_neg,
     gaussianReal_map_const_add, add_comm]
 
-variable {Ω : Type} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → ℝ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → ℝ}
 
 /-- If `X` is a real random variable with Gaussian law with mean `μ` and variance `v`, then `X + y`
 has Gaussian law with mean `μ + y` and variance `v`. -/
@@ -398,6 +399,7 @@ open Real Complex
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 -- see https://github.com/leanprover-community/mathlib4/issues/29041
 set_option linter.unusedSimpArgs false in
 /-- The complex moment-generating function of a Gaussian distribution with mean `μ` and variance `v`

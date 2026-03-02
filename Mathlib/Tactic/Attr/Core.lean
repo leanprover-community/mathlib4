@@ -17,7 +17,6 @@ from the core library and the `Batteries` library with these attributes in this 
 
 public meta section
 
-attribute [simp] id_map'
 attribute [functor_norm, monad_norm] seq_assoc pure_seq pure_bind bind_assoc bind_pure map_pure
 attribute [monad_norm] seq_eq_bind_map
 

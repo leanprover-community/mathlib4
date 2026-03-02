@@ -96,6 +96,7 @@ lemma mulIndicator_apply_eq_one : mulIndicator s f a = 1 ↔ a ∈ s → f a = 1
   letI := Classical.dec (a ∈ s)
   ite_eq_right_iff
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mulIndicator_eq_one : (mulIndicator s f = fun _ => 1) ↔ Disjoint (mulSupport f) s := by
   simp only [funext_iff, mulIndicator_apply_eq_one, Set.disjoint_left, mem_mulSupport,
@@ -178,6 +179,7 @@ lemma mulIndicator_empty' (f : α → M) : mulIndicator (∅ : Set α) f = 1 :=
 
 variable (M)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma mulIndicator_one (s : Set α) : (mulIndicator s fun _ => (1 : M)) = fun _ => (1 : M) :=
   mulIndicator_eq_one.2 <| by simp only [mulSupport_fun_one, empty_disjoint]

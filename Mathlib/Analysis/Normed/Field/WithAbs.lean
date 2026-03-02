@@ -44,12 +44,14 @@ instance [Module R R'] [FiniteDimensional R R'] (v : AbsoluteValue R S) :
     FiniteDimensional (WithAbs v) R' :=
   ‹FiniteDimensional R R'›
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Algebra R R'] [Algebra.IsSeparable R R'] (v : AbsoluteValue R S) :
     Algebra.IsSeparable (WithAbs v) R' :=
   ‹Algebra.IsSeparable R R'›
 
 end more_instances
 
+set_option backward.isDefEq.respectTransparency false in
 /- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
 result if `WithAbs v` had a topology for general value rings `S`. Currently `WithAbs v` only has
 a topology when `S = ℝ`. -/
@@ -116,6 +118,7 @@ instance : Coe K v.Completion :=
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
 @[deprecated "Use `Isometry.extensionHom` in combination with `AddMonoidHomClass.isometry_of_norm`"
@@ -123,12 +126,14 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) : v.Completion →+* L :=
   (AddMonoidHomClass.isometry_of_norm _ h).extensionHom
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated "Use `Isometry.extensionHom_coe` in combination with
   `AddMonoidHomClass.isometry_of_norm`" (since := "2025-11-28")]
 theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v x) (x : K) :
     (AddMonoidHomClass.isometry_of_norm _ h).extensionHom x = f x :=
   AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom_coe _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` preserves distances. -/
 @[deprecated "Use `Isometry.dist_eq` in combination with `AddMonoidHomClass.isometry_of_norm`"
@@ -138,6 +143,7 @@ theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v x) (x y : v
     dist (f x) (f y) = dist x y :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension.dist_eq _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is an isometry. -/
 @[deprecated "Use `Isometry.completion_extension` in combination with
@@ -146,6 +152,7 @@ theorem isometry_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v x) :
     Isometry (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is a closed embedding. -/
 @[deprecated "Use `Isometry.isClosedEmbedding` in combination with `Isometry.completion_extension`

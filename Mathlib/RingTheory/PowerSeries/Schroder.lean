@@ -58,6 +58,7 @@ lemma coeff_X_mul_largeSchroderSeries (n : ℕ) (hn : 0 < n) :
   rintro rfl
   simp_all only [lt_self_iff_false]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) (hn : 0 < n) :
     coeff n (X * largeSchroderSeries ^ 2) =
       ∑ i ∈ range n, largeSchroder i * largeSchroder (n - 1 - i) := by
