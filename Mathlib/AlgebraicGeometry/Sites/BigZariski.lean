@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Preserves
+public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
 
 /-!
 # The big Zariski site of schemes
@@ -70,6 +71,19 @@ instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
     intro j
     rw [𝓤.ι_glueMorphisms]
     exact h (𝓤.f j) (.mk j)
+
+instance : Scheme.forgetToTop.{u}.IsContinuous zariskiTopology TopCat.grothendieckTopology := by
+  rw [zariskiTopology, grothendieckTopology]
+  have : (precoverage IsOpenImmersion).PullbacksPreservedBy forgetToTop := by
+    refine ⟨fun _ _ hR ↦ ⟨fun _ _ f _ hf _ ↦ ?_⟩⟩
+    have : IsOpenImmersion f := hR.2 hf
+    infer_instance
+  apply Functor.isContinuous_toGrothendieck_of_pullbacksPreservedBy
+  rw [TopCat.precoverage, Precoverage.comap_inf, precoverage]
+  gcongr
+  · rw [← Precoverage.comap_comp, forgetToTop_comp_forget]
+  · rw [MorphismProperty.comap_precoverage]
+    exact MorphismProperty.precoverage_monotone fun X Y f hf ↦ f.isOpenEmbedding
 
 end Scheme
 
