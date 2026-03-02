@@ -136,7 +136,6 @@ lemma sum_le' {s : Set X} (hs : MeasurableSet s)
 lemma sum_le_preVariationFun_of_subset {s₁ s₂ : Set X} (hs₁ : MeasurableSet s₁)
     (hs₂ : MeasurableSet s₂) (h : s₁ ⊆ s₂) (P : Finpartition (⟨s₁, hs₁⟩ : Subtype MeasurableSet)) :
     ∑ p ∈ P.parts, f p ≤ preVariationFun f s₂ := by
-  classical
   by_cases heq : s₁ = s₂
   · rw [← heq]; exact sum_le f hs₁ P
   · let b : Subtype MeasurableSet := ⟨s₂ \ s₁, hs₂.diff hs₁⟩
