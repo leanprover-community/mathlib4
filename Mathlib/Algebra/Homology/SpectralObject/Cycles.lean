@@ -240,7 +240,7 @@ lemma p_opcyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (β : mk₁ f ⟶ mk₁ f')
   simp [opcyclesMap]
 
 @[simp]
-lemma opcyclesMap_id (n : ℤ):
+lemma opcyclesMap_id (n : ℤ) :
     X.opcyclesMap f g f g (𝟙 _) n = 𝟙 _ := by
   rw [← cancel_epi (X.pOpcycles f g n),
     X.p_opcyclesMap f g f g (𝟙 _) (𝟙 _),
