@@ -34,29 +34,25 @@ section field
 
 variable [Field R] {T : Type*} [Field T] (v : AbsoluteValue R S)
 
-instance instField : Field (WithAbs v) := (equiv v).field
+instance : Field (WithAbs v) := (equiv v).field
 
 noncomputable instance normedField (v : AbsoluteValue R ℝ) : NormedField (WithAbs v) :=
   letI := v.toNormedField
   (equiv v).normedField
 
-instance instFiniteDimensionalLeft [Module R T] [FiniteDimensional R T] :
+instance [Module R T] [FiniteDimensional R T] :
     FiniteDimensional (WithAbs v) T :=
   Module.Finite.of_restrictScalars_finite R (WithAbs v) T
 
-@[deprecated  (since := "2026-01-29")] alias instFiniteDimensional := instFiniteDimensionalLeft
-
-instance instFiniteDimensionalRight [Module T R] [FiniteDimensional T R] :
+instance [Module T R] [FiniteDimensional T R] :
     FiniteDimensional T (WithAbs v) :=
   Module.Finite.equiv (linearEquiv T v).symm
 
-instance instIsSeparableLeft [Algebra R T] [Algebra.IsSeparable R T] :
+instance [Algebra R T] [Algebra.IsSeparable R T] :
     Algebra.IsSeparable (WithAbs v) T :=
   .of_equiv_equiv (equiv v).symm (.refl T) (by ext; simp [algebraMap_left_apply])
 
-@[deprecated (since := "2026-01-29")] alias instIsSeparable := instIsSeparableLeft
-
-instance instIsSeparableRight [Algebra T R] [Algebra.IsSeparable T R] :
+instance [Algebra T R] [Algebra.IsSeparable T R] :
     Algebra.IsSeparable T (WithAbs v) :=
   .of_equiv_equiv (.refl T) (equiv v).symm (by ext; simp [algebraMap_right_apply])
 

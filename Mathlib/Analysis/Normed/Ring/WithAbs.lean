@@ -105,9 +105,9 @@ def equiv : WithAbs v ≃+* R where
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
 
-instance instNontrivial [Nontrivial R] : Nontrivial (WithAbs v) := (equiv v).nontrivial
-instance instUnique [Unique R] : Unique (WithAbs v) := (equiv v).unique
-instance instInhabited : Inhabited (WithAbs v) := ⟨0⟩
+instance [Nontrivial R] : Nontrivial (WithAbs v) := (equiv v).nontrivial
+instance [Unique R] : Unique (WithAbs v) := (equiv v).unique
+instance : Inhabited (WithAbs v) := ⟨0⟩
 
 variable {T U : Type*} [Semiring T] [Semiring U] (w : AbsoluteValue T S) (u : AbsoluteValue U S)
   (f : R →+* T) (g : T →+* U)
@@ -165,7 +165,7 @@ section comm_semiring
 
 variable [CommSemiring R] (v : AbsoluteValue R S)
 
-instance instCommSemiring : CommSemiring (WithAbs v) := fast_instance% (equiv v).commSemiring
+instance : CommSemiring (WithAbs v) := fast_instance% (equiv v).commSemiring
 
 end comm_semiring
 
@@ -173,7 +173,7 @@ section ring
 
 variable [Ring R]
 
-instance instRing (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).ring
+instance (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).ring
 
 noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
   letI := v.toNormedRing
@@ -196,7 +196,7 @@ section comm_ring
 
 variable [CommRing R] (v : AbsoluteValue R S)
 
-instance instCommRing : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
+instance : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
 
 end comm_ring
 
@@ -204,45 +204,45 @@ section Module
 
 variable {R T : Type*} [Semiring R] (v : AbsoluteValue R S)
 
-instance instSMulLeft [SMul R T] : SMul (WithAbs v) T where
+instance [SMul R T] : SMul (WithAbs v) T where
   smul x t := ofAbs x • t
 
 theorem smul_left_def [SMul R T] (x : WithAbs v) (t : T) :
     x • t = ofAbs x • t := rfl
 
-instance instFaithfulSMulLeft [SMul R T] [FaithfulSMul R T] : FaithfulSMul (WithAbs v) T where
+instance [SMul R T] [FaithfulSMul R T] : FaithfulSMul (WithAbs v) T where
   eq_of_smul_eq_smul h := ofAbs_injective v <| FaithfulSMul.eq_of_smul_eq_smul h
 
-instance instSMulRight [SMul T R] : SMul T (WithAbs v) := (equiv v).smul T
+instance [SMul T R] : SMul T (WithAbs v) := (equiv v).smul T
 
 theorem smul_right_def [SMul T R] (t : T) (x : WithAbs v) :
     t • x = toAbs v (t • x.ofAbs) := rfl
 
-instance instFaithfulSMulRight [SMul T R] [FaithfulSMul T R] : FaithfulSMul T (WithAbs v) where
+instance [SMul T R] [FaithfulSMul T R] : FaithfulSMul T (WithAbs v) where
   eq_of_smul_eq_smul h := by
     simp only [smul_right_def, toAbs.injEq] at h
     exact FaithfulSMul.eq_of_smul_eq_smul fun _ ↦ h (toAbs v _)
 
-instance instIsScalarTowerLeft {P : Type*} [SMul T P] [SMul R T] [SMul R P] [IsScalarTower R T P] :
+instance {P : Type*} [SMul T P] [SMul R T] [SMul R P] [IsScalarTower R T P] :
     IsScalarTower (WithAbs v) T P where
   smul_assoc := by simp [smul_left_def]
 
-instance instIsScalarTowerRight {P : Type*} [SMul P R] [SMul T R] [SMul P T]
+instance {P : Type*} [SMul P R] [SMul T R] [SMul P T]
     [IsScalarTower P T R] : IsScalarTower P T (WithAbs v) := (equiv v).isScalarTower P T
 
-instance instIsScalarTower {P : Type*} [SMul P R] [SMul P T] [SMul R T]
+instance {P : Type*} [SMul P R] [SMul P T] [SMul R T]
     [IsScalarTower P R T] : IsScalarTower P (WithAbs v) T where
   smul_assoc := by simp [smul_right_def, smul_left_def]
 
-instance instModuleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
+instance [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
   .compHom T (equiv v).toRingHom
 
-@[deprecated (since := "2026-01-29")] alias instModule_left := instModuleLeft
+@[deprecated (since := "2026-01-29")] alias instModule_left := instModule
 
-instance instModuleRight [Semiring T] [Module T R] : Module T (WithAbs v) :=
+instance [Semiring T] [Module T R] : Module T (WithAbs v) :=
   fast_instance% (equiv v).module T
 
-@[deprecated (since := "2026-01-29")] alias instModule_right := instModuleRight
+@[deprecated (since := "2026-01-29")] alias instModule_right := instModule_1
 
 variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 
