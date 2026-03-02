@@ -6,6 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.BigOperators.Expect
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Field.Canonical
 public import Mathlib.Algebra.Order.Nonneg.Floor
