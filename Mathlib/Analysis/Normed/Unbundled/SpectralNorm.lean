@@ -801,6 +801,17 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K]
   have hgx : f x = g x := rfl
   rw [hgx, spectralNorm_unique hg_pow, spectralAlgNorm_def]
 
+/-- If `K` is a field complete with respect to a nontrivial nonarchimedean multiplicative norm and
+  `L/K` is an algebraic normed field extension, then the norm on `L` coincides with the spectral
+  norm. -/
+theorem NormedAlgebra.norm_eq_spectralNorm (K : Type*) {L : Type*} [NontriviallyNormedField K]
+    [IsUltrametricDist K] [NormedField L] [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
+    [CompleteSpace K] (x : L) : ‖x‖ = spectralNorm K L x := by
+  rw [← toMulAlgebraNorm_apply K x, ← spectralAlgNorm_def, ← MulAlgebraNorm.coe_AlgebraNorm]
+  congr
+  apply spectralNorm_unique
+  exact MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm
+
 /-- Given a nonzero `x : L`, and assuming that `(spectralAlgNorm h_alg hna) 1 ≤ 1`, this is
   the real-valued function sending `y ∈ L` to the limit of  `(f (y * x^n))/((f x)^n)`,
   regarded as an algebra norm. -/
@@ -899,6 +910,12 @@ def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
     norm_smul_le r x := by
       change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
       exact le_of_eq (map_smul_eq_mul _ _ _) }
+
+/-- `L` with the spectral norm is a normed algebra over `K`. -/
+def normedAlgebra :
+    @NormedAlgebra K L _ (normedField K L).toNormedCommRing.toSeminormedRing :=
+  letI _ := normedField K L
+  { normedSpace K L, (inferInstance : Algebra K L) with }
 
 /-- The metric space structure on `L` induced by the spectral norm. -/
 def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
