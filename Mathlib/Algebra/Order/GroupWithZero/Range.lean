@@ -26,7 +26,6 @@ variable {A B : Type*} [MonoidWithZero A] [LinearOrderedCommGroupWithZero B] {f 
 
 namespace ValueGroup₀
 
-
 open WithZero
 
 variable (f) in
