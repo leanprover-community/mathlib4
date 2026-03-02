@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Junyan Xu
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-! # Vanishing of elements in a tensor product of two modules
 
@@ -53,6 +55,8 @@ is injective for every submodule $M' \subseteq M$.
 * Prove the same theorems with $M$ and $N$ swapped.
 
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M]
@@ -107,6 +111,7 @@ theorem sum_tmul_eq_zero_of_vanishesTrivially (hmn : VanishesTrivially R m n) :
   rw [Finset.sum_comm]
   simp_rw [← tmul_smul, ← smul_tmul, ← sum_tmul, h₂, zero_tmul, Finset.sum_const_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2021term],
 forward direction.
@@ -216,6 +221,7 @@ theorem vanishesTrivially_iff_sum_tmul_eq_zero_of_rTensor_injective
   ⟨sum_tmul_eq_zero_of_vanishesTrivially R,
     vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective R hm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Converse of `TensorProduct.vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective`.
 
 Assume that every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially.

@@ -4,12 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Multiplicative homomorphisms respect semiconjugation and commutation.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

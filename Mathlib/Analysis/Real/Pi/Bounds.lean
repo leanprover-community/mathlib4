@@ -3,7 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 /-!
 # Pi
@@ -16,6 +18,8 @@ numerical bounds on `π` such as `pi_gt_d2` and `pi_lt_d2` (more precise version
 See also `Mathlib/Analysis/Real/Pi/Leibniz.lean` and `Mathlib/Analysis/Real/Pi/Wallis.lean` for
 infinite formulas for `π`.
 -/
+
+public section
 
 open scoped Real
 
@@ -31,6 +35,7 @@ theorem pi_gt_sqrtTwoAddSeries (n : ℕ) : 2 ^ (n + 1) * √(2 - sqrtTwoAddSerie
   refine lt_of_le_of_lt (le_of_eq ?_) this
   rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     π < 2 ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) + 1 / 4 ^ n := by
   have : π < (√(2 - sqrtTwoAddSeries 0 n) / 2 + 1 / (2 ^ n) ^ 3 / 4) * (2 : ℝ) ^ (n + 2) := by
@@ -218,5 +223,16 @@ theorem pi_lt_d20 : π < 3.14159265358979323847 := by
     2-784/22895812812720260289, 2-1717/200571992854289218531, 2-368/171952226838388893139,
     2-149/278487845640434185590, 2-207/1547570041545500037992, 2-20/598094702046570062987,
     2-7/837332582865198088180]
+
+theorem floor_pi_eq_three : ⌊π⌋ = 3 :=
+  Int.floor_eq_iff.mpr ⟨pi_gt_three.le, by exact_mod_cast pi_lt_four⟩
+
+theorem ceil_pi_eq_four : ⌈π⌉ = 4 :=
+  Int.ceil_eq_iff.mpr ⟨by exact_mod_cast pi_gt_three, pi_lt_four.le⟩
+
+theorem round_pi_eq_three : round π = 3 := by
+  refine round_eq _ |>.trans <| Int.floor_eq_iff.mpr ⟨by grind [pi_gt_three], ?_⟩
+  grw [pi_lt_d2]
+  norm_num
 
 end Real

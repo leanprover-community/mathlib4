@@ -3,13 +3,13 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Control.Basic
-import Mathlib.Data.Nat.Cast.Basic
-import Qq
+module
+
+public meta import Mathlib.Control.Basic
+public import Mathlib.Algebra.Order.Invertible
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Tactic.HaveI
+public import Mathlib.Tactic.NormNum.Core
 
 /-!
 ## `positivity` core functionality
@@ -19,6 +19,8 @@ which allow for plugging in new positivity functionality around a positivity-bas
 The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivity.Basic`
 and elsewhere.
 -/
+
+public meta section
 
 open Lean
 open Lean.Meta Qq Lean.Elab Term
@@ -85,7 +87,7 @@ initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
     (List Entry × DiscrTree PositivityExt) ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq PositivityExt := ⟨fun _ _ => false⟩
-  let insert kss v dt := kss.foldl (fun dt ks => dt.insertCore ks v) dt
+  let insert kss v dt := kss.foldl (fun dt ks => dt.insertKeyValue ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
     addImportedFn := fun s => do
@@ -102,6 +104,7 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
     | `(attr| positivity $es,*) => do
+      ensureAttrDeclIsMeta `positivity declName kind
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'positivity', must be global"
       let env ← getEnv
@@ -117,6 +120,8 @@ initialize registerBuiltinAttribute {
             return e
         DiscrTree.mkPath e
       setEnv <| positivityExt.addEntry env ((keys, declName), ext)
+      -- TODO: track what `[positivity]` decls are actually used at use sites
+      recordExtraRevUseOfCurrentModule
     | _ => throwUnsupportedSyntax
 }
 
@@ -197,10 +202,9 @@ def catchNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictnes
 variable {zα pα} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
-def throwNone {m : Type → Type*} {e : Q($α)} [Monad m] [Alternative m]
-    (t : m (Strictness zα pα e)) : m (Strictness zα pα e) := do
+def throwNone {e : Q($α)} (t : MetaM (Strictness zα pα e)) : MetaM (Strictness zα pα e) := do
   match ← t with
-  | .none => failure
+  | .none => throwError "Strictness result was `{.ofConstName ``Strictness.none}`."
   | r => pure r
 
 /-- Attempts to prove a `Strictness` result when `e` evaluates to a literal number. -/
@@ -491,6 +495,10 @@ according to the syntax of the expression `x`, if the atoms composing the expres
 numeric lower bounds which can be proved positive/nonnegative/nonzero by `norm_num`.  This tactic
 either closes the goal or fails.
 
+`positivity [t₁, …, tₙ]` first executes `have := t₁; …; have := tₙ` in the current goal,
+then runs `positivity`. This is useful when `positivity` needs derived premises such as `0 < y`
+for division/reciprocal, or `0 ≤ x` for real powers.
+
 Examples:
 ```
 example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
@@ -498,10 +506,19 @@ example {a : ℤ} (ha : 3 < a) : 0 ≤ a ^ 3 + a := by positivity
 example {a : ℤ} (ha : 1 < a) : 0 < |(3:ℤ) + a| := by positivity
 
 example {b : ℤ} : 0 ≤ max (-3) (b ^ 2) := by positivity
+
+example {a b c d : ℝ} (hab : 0 < a * b) (hb : 0 ≤ b) (hcd : c < d) :
+    0 < a ^ c + 1 / (d - c) := by
+  positivity [sub_pos_of_lt hcd, pos_of_mul_pos_left hab hb]
 ```
 -/
-elab (name := positivity) "positivity" : tactic => do
-  liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+syntax (name := positivity) "positivity" (" [" term,* "]")? : tactic
+
+elab_rules : tactic
+| `(tactic| positivity) => liftMetaTactic fun g => do Meta.Positivity.positivity g; pure []
+
+macro_rules
+| `(tactic| positivity [$h,*]) => `(tactic| · ($[have := $h];*); positivity)
 
 end Positivity
 
@@ -517,4 +534,5 @@ macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
 We register `positivity` with the `hint` tactic.
 -/
 
-register_hint positivity
+register_hint 1000 positivity
+register_try?_tactic (priority := 1000) positivity

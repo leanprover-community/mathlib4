@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # The associated sheaf of a presheaf of modules
@@ -21,6 +23,8 @@ general construction allows the sheafification of both the presheaf of rings
 and the presheaf of modules.
 
 -/
+
+@[expose] public section
 
 universe w v v₁ u₁ u
 
@@ -47,7 +51,7 @@ end smul
 section
 
 variable {R₀ R : Cᵒᵖ ⥤ RingCat.{u}} (α : R₀ ⟶ R) [Presheaf.IsLocallyInjective J α]
-  {M₀ : PresheafOfModules.{v} R₀} {A : Cᵒᵖ ⥤ AddCommGrp.{v}} (φ : M₀.presheaf ⟶ A)
+  {M₀ : PresheafOfModules.{v} R₀} {A : Cᵒᵖ ⥤ AddCommGrpCat.{v}} (φ : M₀.presheaf ⟶ A)
   [Presheaf.IsLocallyInjective J φ] (hA : Presheaf.IsSeparated J A)
   {X : C} (r : R.obj (Opposite.op X)) (m : A.obj (Opposite.op X)) {P : Presieve X}
   (r₀ : FamilyOfElements (R₀ ⋙ forget _) P) (m₀ : FamilyOfElements (M₀.presheaf ⋙ forget _) P)
@@ -69,6 +73,7 @@ lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     erw [M₀.map_smul, M₀.map_smul, hg.1, hg.2]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
     (r₀ : R₀.obj (Opposite.op Y)) (r₀' : R₀.obj (Opposite.op Z))
     (m₀ : M₀.obj (Opposite.op Y)) (m₀' : M₀.obj (Opposite.op Z))
@@ -79,7 +84,7 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
     (M₀.map g.op m₀) m₀', M₀.map_smul]
   · rw [hr₀', R.map_comp, RingCat.comp_apply, ← hr₀, ← RingCat.comp_apply, NatTrans.naturality,
       RingCat.comp_apply]
-  · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
+  · rw [hm₀', A.map_comp, AddCommGrpCat.coe_comp, Function.comp_apply, ← hm₀]
     erw [NatTrans.naturality_apply φ]
 
 variable (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
@@ -124,7 +129,7 @@ variable {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ �
 
 namespace PresheafOfModules
 
-variable {M₀ : PresheafOfModules.{v} R₀} {A : Sheaf J AddCommGrp.{v}}
+variable {M₀ : PresheafOfModules.{v} R₀} {A : Sheaf J AddCommGrpCat.{v}}
   (φ : M₀.presheaf ⟶ A.val)
   [Presheaf.IsLocallyInjective J φ] [Presheaf.IsLocallySurjective J φ]
 
@@ -222,18 +227,21 @@ protected lemma one_smul : smul α φ 1 m = m := by
   rintro Y f ⟨m₀, hm₀⟩
   rw [← hm₀, map_smul_eq α φ 1 m f.op 1 (by simp) m₀ hm₀, one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma zero_smul : smul α φ 0 m = 0 := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
   rintro Y f ⟨m₀, hm₀⟩
   rw [map_smul_eq α φ 0 m f.op 0 (by simp) m₀ hm₀, zero_smul, map_zero,
     (A.val.map f.op).hom.map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma smul_zero : smul α φ r 0 = 0 := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J α r)
   rintro Y f ⟨r₀, hr₀⟩
   rw [(A.val.map f.op).hom.map_zero, map_smul_eq α φ r 0 f.op r₀ hr₀ 0 (by simp),
     smul_zero, map_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r m' := by
   let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve φ m ⊓ Presheaf.imageSieve φ m'
   have hS : S ∈ J X.unop := by
@@ -248,6 +256,7 @@ protected lemma smul_add : smul α φ r (m + m') = smul α φ r m + smul α φ r
       (by rw [_root_.map_add, _root_.map_add, hm₀, hm₀']),
     smul_add, _root_.map_add]
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma add_smul : smul α φ (r + r') m = smul α φ r m + smul α φ r' m := by
   let S := Presheaf.imageSieve α r ⊓ Presheaf.imageSieve α r' ⊓ Presheaf.imageSieve φ m
   have hS : S ∈ J X.unop := by
@@ -332,13 +341,15 @@ lemma toSheafify_app_apply' (X : Cᵒᵖ) (x : M₀.obj X) :
 @[simp]
 lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsLocallyInjective J (toSheafify α φ) := by
   dsimp [IsLocallyInjective]; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsLocallySurjective J (toSheafify α φ) := by
   dsimp [IsLocallySurjective]; infer_instance
 
-variable [J.WEqualsLocallyBijective AddCommGrp.{v}]
+variable [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 /-- The bijection `((sheafify α φ).val ⟶ F) ≃ (M₀ ⟶ (restrictScalars α).obj F)` which
 is part of the universal property of the sheafification of the presheaf of modules `M₀`,
@@ -367,11 +378,12 @@ noncomputable def sheafifyHomEquiv {F : SheafOfModules.{v} R} :
 
 section
 
-variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrp.{v}}
+variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrpCat.{v}}
   (φ' : M₀'.presheaf ⟶ A'.val)
   [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
   (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism of sheaves of modules `sheafify α φ ⟶ sheafify α φ'`
 induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
 which satisfy `τ₀.hom ≫ φ' = φ ≫ τ.val`. -/

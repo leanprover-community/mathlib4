@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Tensor products of products
@@ -21,6 +23,8 @@ This file shows that taking `TensorProduct`s commutes with taking `Prod`s in bot
 See `Mathlib/LinearAlgebra/TensorProduct/Pi.lean` for arbitrary products.
 
 -/
+
+@[expose] public section
 
 variable (R S M₁ M₂ M₃ : Type*)
 

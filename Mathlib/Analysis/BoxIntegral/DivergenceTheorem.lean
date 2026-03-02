@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Basic
-import Mathlib.Analysis.BoxIntegral.Partition.Additive
-import Mathlib.Analysis.Calculus.FDeriv.Prod
+module
+
+public import Mathlib.Analysis.BoxIntegral.Basic
+public import Mathlib.Analysis.BoxIntegral.Partition.Additive
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
 /-!
 # Divergence integral for Henstock-Kurzweil integral
@@ -37,6 +39,8 @@ Henstock-Kurzweil integral.
 
 Henstock-Kurzweil integral, integral, Stokes theorem, divergence theorem
 -/
+
+public section
 
 open scoped NNReal ENNReal Topology BoxIntegral
 
@@ -133,6 +137,7 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
         ← I.volume_face_mul i]
       ac_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
 equal to the difference of integrals of `f` over the faces `x i = I.upper i` and `x i = I.lower i`.
@@ -166,7 +171,7 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
   -- Thus our statement follows from some local estimates.
   change HasIntegral I GP (fun x => f' x (Pi.single i 1)) _ (F I)
   refine HasIntegral.of_le_Henstock_of_forall_isLittleO gp_le ?_ ?_ _ s hs ?_ ?_
-  ·-- We use the volume as an upper estimate.
+  · -- We use the volume as an upper estimate.
     exact (volume : Measure (Fin (n + 1) → ℝ)).toBoxAdditive.restrict _ le_top
   · exact fun J => ENNReal.toReal_nonneg
   · intro c x hx ε ε0

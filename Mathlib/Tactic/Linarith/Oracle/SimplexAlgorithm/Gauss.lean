@@ -3,7 +3,10 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+module
+
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
+public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 
 /-!
 # Gaussian Elimination algorithm
@@ -11,6 +14,8 @@ import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 The first step of `Linarith.SimplexAlgorithm.findPositiveVector` is finding initial feasible
 solution which is done by standard Gaussian Elimination algorithm implemented in this file.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
 

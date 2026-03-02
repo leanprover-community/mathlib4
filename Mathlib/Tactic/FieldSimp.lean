@@ -3,19 +3,23 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-import Mathlib.Data.Ineq
-import Mathlib.Tactic.FieldSimp.Attr
-import Mathlib.Tactic.FieldSimp.Discharger
-import Mathlib.Tactic.FieldSimp.Lemmas
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.SynthesizeUsing
+module
+
+public meta import Mathlib.Data.Ineq
+public import Mathlib.Tactic.FieldSimp.Attr
+public import Mathlib.Tactic.FieldSimp.Discharger
+public import Mathlib.Tactic.FieldSimp.Lemmas
+public import Mathlib.Util.AtomM.Recurse
+public import Mathlib.Util.SynthesizeUsing
+public import Mathlib.Data.Ineq
 
 /-!
 # `field_simp` tactic
 
 Tactic to clear denominators in algebraic expressions.
 -/
+
+public meta section
 
 open Lean Meta Qq
 
@@ -48,10 +52,7 @@ namespace qNF
 number), build an `Expr` representing an object of type `NF M` (i.e. `List (ℤ × M)`) in the
 in the obvious way: by forgetting the natural numbers and gluing together the integers and `Expr`s.
 -/
-def toNF (l : qNF q($M)) : Q(NF $M) :=
-  let l' : List Q(ℤ × $M) := (l.map Prod.fst).map (fun (a, x) ↦ q(($a, $x)))
-  let qt : List Q(ℤ × $M) → Q(List (ℤ × $M)) := List.rec q([]) (fun e _ l ↦ q($e ::ᵣ $l))
-  qt l'
+def toNF (l : qNF q($M)) : Q(NF $M) := l.foldr (fun ((a, x), _) l ↦ q(($a, $x) ::ᵣ $l)) q([])
 
 /-- Given `l` of type `qNF M`, i.e. a list of `(ℤ × Q($M)) × ℕ`s (two `Expr`s and a natural
 number), apply an expression representing a function with domain `ℤ` to each of the `ℤ`
@@ -255,7 +256,7 @@ namespace DenomCondition
 
 /-- Given a field-simp-normal-form expression `L` (a product of powers of atoms), a proof (according
 to the value of `DenomCondition`) of that expression's nonzeroness, strict positivity, etc. -/
-def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
+@[expose] def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
   | .none => Unit
   | .nonzero => Q(NF.eval $(qNF.toNF L) ≠ 0)
   | .positive _ _ _ _ => Q(0 < NF.eval $(qNF.toNF L))
@@ -444,7 +445,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
     let ⟨G, pf_y⟩ := ← Sign.div iM y₁ y₂ g₁ g₂
     pure ⟨q($y₁ / $y₂), ⟨G, q(Eq.trans (congr_arg₂ HDiv.hDiv $pf₁_sgn $pf₂_sgn) $pf_y)⟩,
       qNF.div l₁ l₂, q(NF.div_eq_eval $pf₁ $pf₂ $pf)⟩
-  /- normalize a inversion: `y⁻¹` -/
+  /- normalize an inversion: `y⁻¹` -/
   | ~q($y⁻¹) =>
     let ⟨y', ⟨g, pf_sgn⟩, l, pf⟩ ← normalize disch iM y
     let pf_y ← Sign.inv iM y' g
@@ -472,7 +473,7 @@ partial def normalize (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type
       let pf_s ← mkDecideProofQ q($s ≠ 0)
       let ⟨G, pf_y⟩ ← Sign.pow iM y' g s
       let pf_y' := q(Eq.trans (congr_arg (· ^ $s) $pf_sgn) $pf_y)
-      pure ⟨q($y' ^ $s), ⟨G, pf_y'⟩, l.onExponent (HSMul.hSMul s), (q(NF.pow_eq_eval $pf_s $pf):)⟩
+      pure ⟨q($y' ^ $s), ⟨G, pf_y'⟩, l.onExponent (↑s * ·), (q(NF.pow_eq_eval $pf_s $pf):)⟩
   /- normalize a `(1:M)` -/
   | ~q(1) => pure ⟨q(1), ⟨Sign.plus,  q(rfl)⟩, [], q(NF.one_eq_eval $M)⟩
   /- normalize an addition: `a + b` -/
@@ -684,6 +685,10 @@ example {K : Type*} [Field K] {x : K} (hx0 : x ≠ 0) :
   -- new goal: `⊢ (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2`
 ```
 
+A very common pattern is `field_simp; ring` (clear denominators, then the resulting goal is
+solvable by the axioms of a commutative ring). The finishing tactic `field` is a shorthand for this
+pattern.
+
 Cancelling and combining denominators will generally require checking "nonzeroness"/"positivity"
 side conditions. The `field_simp` tactic attempts to discharge these, and will omit such steps if it
 cannot discharge the corresponding side conditions. The discharger will try, among other things,
@@ -697,7 +702,8 @@ elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(loca
   let disch ← parseDischarger d args
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
-  let m := AtomM.recurse s {} (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
+  let m := AtomM.recurse s { contextual := true } (wellBehavedDischarge := false)
+    (fun e ↦ reduceProp disch e <|> reduceExpr disch e) cleanup
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
 
@@ -783,4 +789,5 @@ attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
 /-!
  We register `field_simp` with the `hint` tactic.
  -/
-register_hint field_simp
+register_hint 1000 field_simp
+register_try?_tactic (priority := 1000) field_simp

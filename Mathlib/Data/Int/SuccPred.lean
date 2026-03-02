@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Successors and predecessors of integers
@@ -12,19 +14,24 @@ import Mathlib.Data.Nat.SuccPred
 In this file, we show that `ℤ` is both an archimedean `SuccOrder` and an archimedean `PredOrder`.
 -/
 
+@[expose] public section
+
 
 open Function Order
 
 namespace Int
 
 -- so that Lean reads `Int.succ` through `SuccOrder.succ`
-@[instance] abbrev instSuccOrder : SuccOrder ℤ :=
+instance instSuccOrder : SuccOrder ℤ :=
   { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
 instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ => rfl⟩
 
--- so that Lean reads `Int.pred` through `PredOrder.pred`
-@[instance] abbrev instPredOrder : PredOrder ℤ where
+#adaptation_note /-- Before https://github.com/leanprover/lean4/pull/12263
+this was `abbrev`, which is no longer allowed.
+The comment said "so that Lean reads `Int.pred` through `PredOrder.pred`"
+-/
+instance instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le
   min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_ge ha).elim

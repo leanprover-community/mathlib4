@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.Topology.Algebra.Group.Compact
+module
+
+public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
 # Haar measure
@@ -59,6 +61,8 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
     invalid.
 * https://en.wikipedia.org/wiki/Haar_measure
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -248,7 +252,7 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
 theorem is_left_invariant_index {K : Set G} (hK : IsCompact K) (g : G) {V : Set G}
     (hV : (interior V).Nonempty) : index ((fun h => g * h) '' K) V = index K V := by
   refine le_antisymm (mul_left_index_le hK hV g) ?_
-  convert mul_left_index_le (hK.image <| continuous_mul_left g) hV g⁻¹
+  convert mul_left_index_le (hK.image <| continuous_const_mul g) hV g⁻¹
   rw [image_image]; symm; convert image_id' _ with h; apply inv_mul_cancel_left
 
 /-!
@@ -303,7 +307,7 @@ theorem prehaar_sup_eq {K₀ : PositiveCompacts G} {U : Set G} {K₁ K₂ : Comp
 @[to_additive]
 theorem is_left_invariant_prehaar {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
     (g : G) (K : Compacts G) :
-    prehaar (K₀ : Set G) U (K.map _ <| continuous_mul_left g) = prehaar (K₀ : Set G) U K := by
+    prehaar (K₀ : Set G) U (K.map _ <| continuous_const_mul g) = prehaar (K₀ : Set G) U K := by
   simp only [prehaar, Compacts.coe_map, is_left_invariant_index K.isCompact _ hU]
 
 /-!
@@ -380,6 +384,7 @@ theorem chaar_self (K₀ : PositiveCompacts G) : chaar K₀ K₀.toCompacts = 1 
     rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_singleton
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive addCHaar_mono]
 theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂) :
     chaar K₀ K₁ ≤ chaar K₀ K₂ := by
@@ -392,6 +397,7 @@ theorem chaar_mono {K₀ : PositiveCompacts G} {K₁ K₂ : Compacts G} (h : (K�
     apply prehaar_mono _ h; rw [h2U.interior_eq]; exact ⟨1, h3U⟩
   · apply continuous_iff_isClosed.mp this; exact isClosed_Ici
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive addCHaar_sup_le]
 theorem chaar_sup_le {K₀ : PositiveCompacts G} (K₁ K₂ : Compacts G) :
     chaar K₀ (K₁ ⊔ K₂) ≤ chaar K₀ K₁ + chaar K₀ K₂ := by
@@ -441,8 +447,8 @@ theorem chaar_sup_eq {K₀ : PositiveCompacts G}
 
 @[to_additive is_left_invariant_addCHaar]
 theorem is_left_invariant_chaar {K₀ : PositiveCompacts G} (g : G) (K : Compacts G) :
-    chaar K₀ (K.map _ <| continuous_mul_left g) = chaar K₀ K := by
-  let eval : (Compacts G → ℝ) → ℝ := fun f => f (K.map _ <| continuous_mul_left g) - f K
+    chaar K₀ (K.map _ <| continuous_const_mul g) = chaar K₀ K := by
+  let eval : (Compacts G → ℝ) → ℝ := fun f => f (K.map _ <| continuous_const_mul g) - f K
   have : Continuous eval := (continuous_apply (K.map _ _)).sub (continuous_apply K)
   rw [← sub_eq_zero]; change chaar K₀ ∈ eval ⁻¹' {(0 : ℝ)}
   apply mem_of_subset_of_mem _ (chaar_mem_clPrehaar K₀ ⊤)
@@ -478,7 +484,7 @@ theorem haarContent_self {K₀ : PositiveCompacts G} : haarContent K₀ K₀.toC
 /-- The variant of `is_left_invariant_chaar` for `haarContent` -/
 @[to_additive /-- The variant of `is_left_invariant_addCHaar` for `addHaarContent` -/]
 theorem is_left_invariant_haarContent {K₀ : PositiveCompacts G} (g : G) (K : Compacts G) :
-    haarContent K₀ (K.map _ <| continuous_mul_left g) = haarContent K₀ K := by
+    haarContent K₀ (K.map _ <| continuous_const_mul g) = haarContent K₀ K := by
   simpa only [ENNReal.coe_inj, ← NNReal.coe_inj, haarContent_apply] using
     is_left_invariant_chaar g K
 
@@ -604,13 +610,13 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
 
 /-- **Steinhaus Theorem** for finite mass sets.
 
-In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+In any locally compact group `G` with a Haar measure `μ` that's inner regular on finite measure
 sets, for any measurable set `E` of finite positive measure, the set `E / E` is a neighbourhood of
 `1`. -/
 @[to_additive
 /-- **Steinhaus Theorem** for finite mass sets.
 
-In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+In any locally compact group `G` with a Haar measure `μ` that's inner regular on finite measure
 sets, for any measurable set `E` of finite positive measure, the set `E - E` is a neighbourhood of
 `0`. -/]
 theorem div_mem_nhds_one_of_haar_pos_ne_top (μ : Measure G) [IsHaarMeasure μ]
@@ -653,7 +659,7 @@ variable [SecondCountableTopology G]
 @[to_additive
 /-- **Uniqueness of left-invariant measures**: In a second-countable locally compact additive group,
   any σ-finite left-invariant measure is a scalar multiple of the additive Haar measure.
-  This is slightly weaker than assuming that `μ` is a additive Haar measure (in particular we don't
+  This is slightly weaker than assuming that `μ` is an additive Haar measure (in particular we don't
   require `μ ≠ 0`).
   See also `isAddLeftInvariant_eq_smul_of_regular`
   for a statement not assuming second-countability. -/]

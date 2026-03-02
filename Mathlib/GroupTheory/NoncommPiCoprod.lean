@@ -3,9 +3,11 @@ Copyright (c) 2022 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
 -/
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Order.SupIndep
+module
+
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Order.SupIndep
 
 /-!
 # Canonical homomorphism from a finite family of monoids
@@ -38,6 +40,8 @@ images of different morphisms commute, we obtain a canonical morphism
   they are independent.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -223,6 +227,7 @@ theorem noncommPiCoprod_range [Fintype ι]
     rintro i x ⟨y, rfl⟩
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem injective_noncommPiCoprod_of_iSupIndep [Fintype ι]
     {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
@@ -319,7 +324,7 @@ def noncommPiCoprod (hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i →
 
 @[to_additive (attr := simp)]
 theorem noncommPiCoprod_mulSingle [DecidableEq ι]
-    {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y}(i : ι) (y : H i) :
+    {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y} (i : ι) (y : H i) :
     noncommPiCoprod hcomm (Pi.mulSingle i y) = y := by apply MonoidHom.noncommPiCoprod_mulSingle
 
 @[to_additive]

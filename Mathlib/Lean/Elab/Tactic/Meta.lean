@@ -3,14 +3,18 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Lean.Elab.SyntheticMVars
+module
+
+public import Lean.Elab.SyntheticMVars
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
 /-!
 # Additions to `Lean.Elab.Tactic.Meta`
 -/
+
+@[expose] public section
 
 namespace Lean.Elab
 open Term

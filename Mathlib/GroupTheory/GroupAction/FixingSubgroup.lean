@@ -3,8 +3,10 @@ Copyright (c) 2022 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.GroupTheory.GroupAction.FixedPoints
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.GroupTheory.GroupAction.FixedPoints
 
 /-!
 
@@ -35,6 +37,8 @@ TODO :
 * Treat semigroups ?
 
 -/
+
+@[expose] public section
 
 
 section Monoid
@@ -132,6 +136,7 @@ theorem fixingSubgroup_fixedPoints_gc :
       ((fun P : Subgroup M => fixedPoints P α) ∘ OrderDual.ofDual) :=
   fun _s _P => ⟨fun h s hs p => h p.2 ⟨s, hs⟩, fun h p hp s => h s.2 ⟨p, hp⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma fixingSubgroup_empty : fixingSubgroup M (∅ : Set α) = ⊤ :=
   GaloisConnection.l_bot (fixingSubgroup_fixedPoints_gc M α)

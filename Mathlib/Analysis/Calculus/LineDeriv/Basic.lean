@@ -3,10 +3,12 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Comp
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Mul
-import Mathlib.Analysis.Calculus.Deriv.Slope
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Comp
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Slope
 
 /-!
 # Line derivatives
@@ -44,6 +46,8 @@ on the direction would make them barely usable:
 * We do not define an analogue of the predicate `UniqueDiffOn`;
 * We do not define `LineDifferentiableOn` nor `LineDifferentiable`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -262,10 +266,19 @@ lemma HasFDerivWithinAt.hasLineDerivWithinAt (hf : HasFDerivWithinAt f L s x) (v
   simp only [one_smul, zero_add] at A
   exact hf.comp_hasDerivWithinAt (x := (0 : 𝕜)) A (mapsTo_preimage F s)
 
+theorem DifferentiableWithinAt.lineDifferentiableWithinAt
+    (hf : DifferentiableWithinAt 𝕜 f s x) :
+    LineDifferentiableWithinAt 𝕜 f s x v :=
+  hf.hasFDerivWithinAt.hasLineDerivWithinAt _ |>.lineDifferentiableWithinAt
+
 lemma HasFDerivAt.hasLineDerivAt (hf : HasFDerivAt f L x) (v : E) :
     HasLineDerivAt 𝕜 f (L v) x v := by
   rw [← hasLineDerivWithinAt_univ]
   exact hf.hasFDerivWithinAt.hasLineDerivWithinAt v
+
+theorem DifferentiableAt.lineDifferentiableAt (hf : DifferentiableAt 𝕜 f x) :
+    LineDifferentiableAt 𝕜 f x v :=
+  hf.hasFDerivAt.hasLineDerivAt _ |>.lineDifferentiableAt
 
 lemma DifferentiableAt.lineDeriv_eq_fderiv (hf : DifferentiableAt 𝕜 f x) :
     lineDeriv 𝕜 f x v = fderiv 𝕜 f x v :=
@@ -437,8 +450,6 @@ Version using `lineDeriv`. -/
 theorem norm_lineDeriv_le_of_lipschitz {f : E → F} {x₀ : E}
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ :=
   norm_lineDeriv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOnWith_univ.2 hlip)
-
-variable {𝕜}
 
 end NormedSpace
 

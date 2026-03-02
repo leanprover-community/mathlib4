@@ -3,10 +3,12 @@ Copyright (c) 2023 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Boris Bolvig Kjær, Jon Eugster, Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
-import Mathlib.Topology.Category.CompHaus.EffectiveEpi
-import Mathlib.Topology.Category.Profinite.Limits
-import Mathlib.Topology.Category.Stonean.Basic
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
+public import Mathlib.Topology.Category.Profinite.Limits
+public import Mathlib.Topology.Category.Stonean.Basic
 /-!
 
 # Effective epimorphisms in `Profinite`
@@ -20,6 +22,8 @@ We also prove that for a finite family of morphisms in `Profinite` with fixed
 target, the conditions jointly surjective, jointly epimorphic and effective epimorphic are all
 equivalent.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -48,6 +52,7 @@ instance : profiniteToCompHaus.ReflectsEffectiveEpis where
   reflects f h :=
     ((Profinite.effectiveEpi_tfae f).out 0 2).mpr (((CompHaus.effectiveEpi_tfae _).out 0 2).mp h)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An effective presentation of an `X : Profinite` with respect to the inclusion functor from `Stonean`
 -/
@@ -80,7 +85,7 @@ theorem effectiveEpiFamily_tfae
   tfae_have 1 → 2 := fun _ ↦ inferInstance
   tfae_have 3 ↔ 1 := by
     erw [((CompHaus.effectiveEpiFamily_tfae
-      (fun a ↦ profiniteToCompHaus.obj (X a)) (fun a ↦ profiniteToCompHaus.map (π a))).out 2 0 : )]
+      (fun a ↦ profiniteToCompHaus.obj (X a)) (fun a ↦ profiniteToCompHaus.map (π a))).out 2 0 :)]
     exact ⟨fun h ↦ profiniteToCompHaus.finite_effectiveEpiFamily_of_map _ _ h,
       fun _ ↦ inferInstance⟩
   tfae_finish

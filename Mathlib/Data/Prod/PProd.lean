@@ -3,12 +3,16 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Batteries.Logic
-import Mathlib.Tactic.TypeStar
+module
+
+public import Batteries.Logic
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Extra facts about `PProd`
 -/
+
+@[expose] public section
 
 
 open Function
@@ -18,8 +22,10 @@ variable {α β γ δ : Sort*}
 namespace PProd
 
 def mk.injArrow {α : Type*} {β : Type*} {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
-    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
-  fun h₁ _ h₂ ↦ Prod.noConfusion h₁ h₂
+    (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P := by
+  intros h P w
+  cases h
+  exact w rfl rfl
 
 @[simp]
 theorem mk.eta {p : PProd α β} : PProd.mk p.1 p.2 = p :=

@@ -3,12 +3,13 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.Ring.Regular
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Group.Units.Equiv
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -28,7 +29,7 @@ We also include some constructions specific to the case when `A = R` is a ring; 
 For more refined results of a number-theoretic nature (primitive characters, Gauss sums, etc)
 see `Mathlib/NumberTheory/LegendreSymbol/AddCharacter.lean`.
 
-# Implementation notes
+## Implementation notes
 
 Due to their role as the dual of an additive group, additive characters must themselves be an
 additive group. This contrasts to their pointwise operations which make them a multiplicative group.
@@ -41,6 +42,8 @@ https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Additive.20ch
 
 additive character
 -/
+
+@[expose] public section
 
 /-!
 ### Definitions related to and results on additive characters
@@ -92,6 +95,8 @@ variable {A B M N : Type*} [AddMonoid A] [AddMonoid B] [Monoid M] [Monoid N] {ψ
 instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
   coe_injective' φ ψ h := by cases φ; cases ψ; congr
+
+initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
 
 @[ext] lemma ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
   DFunLike.ext f g h
@@ -175,7 +180,7 @@ lemma coe_toAddMonoidHomEquiv (ψ : AddChar A M) :
     toAddMonoidHomEquiv ψ a = Additive.ofMul (ψ a) := rfl
 
 @[simp] lemma toAddMonoidHomEquiv_symm_apply (ψ : A →+ Additive M) (a : A) :
-    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul  := rfl
+    toAddMonoidHomEquiv.symm ψ a = (ψ a).toMul := rfl
 
 /-- The trivial additive character (sending everything to `1`). -/
 instance instOne : One (AddChar A M) := toMonoidHomEquiv.one
@@ -269,6 +274,7 @@ instance instAddCommMonoid : AddCommMonoid (AddChar A M) := Additive.addCommMono
 lemma coe_prod (s : Finset ι) (ψ : ι → AddChar A M) : ∏ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_sum (s : Finset ι) (ψ : ι → AddChar A M) : ∑ i ∈ s, ψ i = ∏ i ∈ s, ⇑(ψ i) := by
   induction s using Finset.cons_induction <;> simp [*]
@@ -302,6 +308,7 @@ def toMonoidHomMulEquiv : AddChar A M ≃* (Multiplicative A →* M) :=
 def toAddMonoidAddEquiv : Additive (AddChar A M) ≃+ (A →+ Additive M) :=
   { toAddMonoidHomEquiv with map_add' := fun φ ψ ↦ by rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The double dual embedding. -/
 def doubleDualEmb : A →+ AddChar (AddChar A M) M where
   toFun a := { toFun := fun ψ ↦ ψ a
@@ -351,7 +358,7 @@ inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below).
 instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
-    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
+    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul] }
 
 /-- The additive characters on a commutative additive group form a commutative group. -/
 instance : AddCommGroup (AddChar A M) := Additive.addCommGroup
@@ -406,6 +413,7 @@ lemma sub_apply' (ψ χ : AddChar A M) (a : A) : (ψ - χ) a = ψ a / χ a := by
 lemma map_sub_eq_div (ψ : AddChar A M) (a b : A) : ψ (a - b) = ψ a / ψ b :=
   ψ.toMonoidHom.map_div _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injective_iff {ψ : AddChar A M} : Injective ψ ↔ ∀ ⦃x⦄, ψ x = 1 → x = 0 :=
   ψ.toMonoidHom.ker_eq_bot_iff.symm.trans eq_bot_iff
 

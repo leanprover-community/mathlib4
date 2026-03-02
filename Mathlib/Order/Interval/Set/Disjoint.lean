@@ -3,18 +3,23 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Order.Interval.Set.LinearOrder
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.Interval.Set.LinearOrder
+public import Mathlib.Order.MinMax
 
 /-!
 # Extra lemmas about intervals
 
-This file contains lemmas about intervals that cannot be included into `Order.Interval.Set.Basic`
-because this would create an `import` cycle. Namely, lemmas in this file can use definitions
-from `Data.Set.Lattice`, including `Disjoint`.
+This file contains lemmas about intervals that cannot be included into
+`Mathlib/Order/Interval/Set/Basic.lean` because this would create an `import` cycle. Namely, lemmas
+in this file can use definitions from `Data.Set.Lattice`, including `Disjoint`.
 
 We consider various intersections and unions of half infinite intervals.
 -/
+
+public section
 
 
 universe u v w
@@ -47,14 +52,11 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
 theorem Ioc_disjoint_Ioc_of_le {d : α} (h : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
   (Iic_disjoint_Ioc h).mono Ioc_subset_Iic_self le_rfl
 
-@[deprecated Ioc_disjoint_Ioc_of_le (since := "2025-03-04")]
-theorem Ioc_disjoint_Ioc_same : Disjoint (Ioc a b) (Ioc b c) :=
-  (Iic_disjoint_Ioc le_rfl).mono Ioc_subset_Iic_self le_rfl
-
 @[simp]
 theorem Ico_disjoint_Ico_same : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.mpr fun _ hab hbc => hab.2.not_ge hbc.1
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Ici_disjoint_Iic : Disjoint (Ici a) (Iic b) ↔ ¬a ≤ b := by
   rw [Set.disjoint_iff_inter_eq_empty, Ici_inter_Iic, Icc_eq_empty_iff]
@@ -102,11 +104,11 @@ theorem Iio_disjoint_Ioi_iff [DenselyOrdered α] : Disjoint (Iio a) (Ioi b) ↔ 
 
 @[simp]
 theorem iUnion_Iic : ⋃ a : α, Iic a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, right_mem_Iic⟩
+  iUnion_eq_univ_iff.2 fun x => ⟨x, self_mem_Iic⟩
 
 @[simp]
 theorem iUnion_Ici : ⋃ a : α, Ici a = univ :=
-  iUnion_eq_univ_iff.2 fun x => ⟨x, left_mem_Ici⟩
+  iUnion_eq_univ_iff.2 fun x => ⟨x, self_mem_Ici⟩
 
 @[simp]
 theorem iUnion_Icc_right (a : α) : ⋃ b, Icc a b = Ici a := by
@@ -154,6 +156,7 @@ section LinearOrder
 
 variable [LinearOrder α] {a₁ a₂ b₁ b₂ : α}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Ico_disjoint_Ico : Disjoint (Ico a₁ a₂) (Ico b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
   simp_rw [Set.disjoint_iff_inter_eq_empty, Ico_inter_Ico, Ico_eq_empty_iff, not_lt]
@@ -163,6 +166,7 @@ theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂
   have h : _ ↔ min (toDual a₁) (toDual b₁) ≤ max (toDual a₂) (toDual b₂) := Ico_disjoint_Ico
   simpa only [Ico_toDual] using h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Ioo_disjoint_Ioo [DenselyOrdered α] :
     Disjoint (Set.Ioo a₁ a₂) (Set.Ioo b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
@@ -262,7 +266,7 @@ theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range
   simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
 
 theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
-  refine  Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
+  refine Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
   gcongr
   exact Iio_subset_Iic_self
 

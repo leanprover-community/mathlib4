@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 * `IsLocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
 * `IsLocalRing.residue`: The quotient map from a local ring to its residue field.
 -/
+
+@[expose] public section
 
 namespace IsLocalRing
 

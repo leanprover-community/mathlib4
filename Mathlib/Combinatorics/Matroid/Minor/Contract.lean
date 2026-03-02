@@ -3,13 +3,15 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Minor.Delete
-import Mathlib.Tactic.TautoSet
+module
+
+public import Mathlib.Combinatorics.Matroid.Minor.Delete
+public import Mathlib.Tactic.TautoSet
 
 /-!
 # Matroid Contraction
 
-Instead of deleting the the elements of `X : Set α` from `M : Matroid α`, we can contract them.
+Instead of deleting the elements of `X : Set α` from `M : Matroid α`, we can contract them.
 The *contraction* of `X` from `M`, denoted `M ／ X`, is the matroid on ground set `M.E \ X`
 in which a set `I` is independent if and only if `I ∪ J` is independent in `M`,
 where `J` is an arbitrarily chosen basis for `X`. Contraction corresponds to contracting
@@ -23,7 +25,7 @@ While this is perhaps less intuitive, we use this very concise expression as the
 and prove with the lemma `Matroid.IsBasis.contract_indep_iff` that this is equivalent to
 the more verbose definition above.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.contract M C`, written `M ／ C`, is the matroid on ground set `M.E \ C` in which a set
   `I ⊆ M.E \ C` is independent if and only if `I ∪ J` is independent in `M`,
@@ -34,11 +36,13 @@ the more verbose definition above.
   sets of `M ／ C` are exactly the `J ⊆ M.E \ C` for which `I ∪ J` is independent in `M`.
 * `Matroid.contract_delete_comm` : `M ／ C ＼ D = M ＼ D ／ C` for disjoint `C` and `D`.
 
-# Naming conventions
+## Naming conventions
 
 Mirroring the convention for deletion, we use the abbreviation `contractElem` in lemma names
 to refer to the contraction `M ／ {e}` of a single element `e : α` from `M : Matroid α`.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -141,6 +145,7 @@ lemma Indep.contract_indep_iff (hI : M.Indep I) :
     fun ⟨hdj, B, hB, hJB, hIB⟩ ↦ ⟨B \ I,⟨by simpa [union_eq_self_of_subset_right hIB],
       disjoint_sdiff_left⟩, subset_diff.2 ⟨hJB, hdj⟩ ⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsNonloop.contractElem_indep_iff (he : M.IsNonloop e) :
     (M ／ {e}).Indep I ↔ e ∉ I ∧ M.Indep (insert e I) := by
   simp [he.indep.contract_indep_iff]
@@ -161,6 +166,7 @@ lemma Indep.contract_dep_iff (hI : M.Indep I) :
 
 /-! ### Bases -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Contracting a set is the same as contracting a basis for the set, and deleting the rest. -/
 lemma IsBasis.contract_eq_contract_delete (hI : M.IsBasis I X) : M ／ X = M ／ I ＼ (X \ I) := by
   nth_rw 1 [← diff_union_of_subset hI.subset, ← dual_inj, dual_contract_delete, dual_contract,
@@ -230,6 +236,7 @@ lemma IsBasis'.contract_eq_contract_delete (hI : M.IsBasis' I X) : M ／ X = M �
     ← delete_inter_ground_eq, contract_ground, diff_eq, diff_eq, ← inter_inter_distrib_right,
     ← diff_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsBasis'.contract_indep_iff (hI : M.IsBasis' I X) :
     (M ／ X).Indep J ↔ M.Indep (J ∪ I) ∧ Disjoint X J := by
   rw [hI.contract_eq_contract_delete, delete_indep_iff, hI.indep.contract_indep_iff,
@@ -240,6 +247,7 @@ lemma IsBasis.contract_indep_iff (hI : M.IsBasis I X) :
     (M ／ X).Indep J ↔ M.Indep (J ∪ I) ∧ Disjoint X J :=
   hI.isBasis'.contract_indep_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsBasis'.contract_dep_iff (hI : M.IsBasis' I X) {D : Set α} :
     (M ／ X).Dep D ↔ M.Dep (D ∪ I) ∧ Disjoint X D := by
   rw [hI.contract_eq_contract_delete, delete_dep_iff, hI.indep.contract_dep_iff, and_comm,
@@ -261,6 +269,7 @@ lemma IsBasis'.contract_indep_diff_iff (hI : M.IsBasis' I X) :
     (M ／ X).Indep (J \ X) ↔ M.Indep ((J \ X) ∪ I) := by
   rw [hI.contract_indep_iff, and_iff_left disjoint_sdiff_right]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsBasis.contract_isBasis_of_isBasis' (h : M.IsBasis I X) (hJC : M.IsBasis' J C)
     (h_ind : M.Indep (I \ C ∪ J)) : (M ／ C).IsBasis (I \ C) (X \ C) := by
   have hIX := h.subset
@@ -340,6 +349,7 @@ lemma contract_eq_delete_of_subset_loops (hX : X ⊆ M.loops) : M ／ X = M ＼ 
 lemma contract_eq_delete_of_subset_coloops (hX : X ⊆ M.coloops) : M ／ X = M ＼ X := by
   rw [← dual_inj, dual_delete, contract_eq_delete_of_subset_loops hX, dual_contract]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma contract_isLoop_iff_mem_closure : (M ／ C).IsLoop e ↔ e ∈ M.closure C ∧ e ∉ C := by
   obtain ⟨I, hI⟩ := M.exists_isBasis' C
@@ -411,6 +421,7 @@ lemma contract_spanning_iff (hC : C ⊆ M.E := by aesop_mat) :
   rwa [← union_diff_cancel (M.subset_closure_of_subset' subset_union_right hC), h,
     union_diff_cancel]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `Matroid.contract_spanning_iff` without the supportedness hypothesis. -/
 lemma contract_spanning_iff' : (M ／ C).Spanning X ↔ M.Spanning (X ∪ (C ∩ M.E)) ∧ Disjoint X C := by
   rw [← contract_inter_ground_eq, contract_spanning_iff, and_congr_right_iff]
