@@ -264,7 +264,7 @@ theorem opow_mul_add_lt_opow_succ {b u v w : Ordinal} (hvb : v < b) (hw : w < b 
 
 We special case `log 0 x = log 1 x = 0`, as well as `log b 0 = 0`. -/
 @[pp_nodot, no_expose]
-def log (b : Ordinal) (x : Ordinal) : Ordinal :=
+def log (b x : Ordinal) : Ordinal :=
   sSup ((b ^ ·) ⁻¹' Iic x)
 
 @[simp]
