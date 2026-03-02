@@ -43,10 +43,8 @@ namespace Path
 def subpathAux (t₀ t₁ s : I) : I := ⟨(1 - s) * t₀ + s * t₁,
   (convex_Icc 0 1) t₀.prop t₁.prop (one_minus_nonneg s) s.prop.left (sub_add_cancel 1 _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma subpathAux_zero (t₀ t₁ : I) : subpathAux t₀ t₁ 0 = t₀ := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma subpathAux_one (t₀ t₁ : I) : subpathAux t₀ t₁ 1 = t₁ := by simp
 
 /-- `subpathAux` is continuous as an uncurried function `I × I × I → I`. -/
@@ -101,7 +99,6 @@ theorem subpath_self (γ : Path a b) (t : I) : γ.subpath t t = Path.refl (γ t)
   ext s
   simp [subpath, ← add_mul, sub_add_cancel, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The subpath of `γ` from `0` to `1` is just `γ`, with a slightly different type. -/
 @[simp]
 theorem subpath_zero_one (γ : Path a b) : γ.subpath 0 1 = γ.cast γ.source γ.target := by

@@ -211,7 +211,6 @@ lemma f_mem_lieAlgebra [Fintype ι] [DecidableEq ι] (i : b.support) :
 def h' [Fintype ι] [DecidableEq ι] (i : b.support) : cartanSubalgebra' b :=
   ⟨⟨h i, h_mem_lieAlgebra i⟩, h_mem_cartanSubalgebra' i (h_mem_lieAlgebra i)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 variable (b) in
 @[simp]
 lemma span_range_h'_eq_top [Fintype ι] [DecidableEq ι] :

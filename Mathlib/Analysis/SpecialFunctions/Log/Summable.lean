@@ -144,7 +144,6 @@ lemma prod_vanishing_of_summable_norm (hf : Summable fun i ↦ ‖f i‖) {ε : 
   have : Set.Iio ε ∈ nhds (f 0) := by simpa [f] using Iio_mem_nhds hε
   exact ContinuousAt.preimage_mem_nhds (by fun_prop) this
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- In a complete normed ring, `∏' i, (1 + f i)` is convergent if the sum of real numbers
 `∑' i, ‖f i‖` is convergent. -/
