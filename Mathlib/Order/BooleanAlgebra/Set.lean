@@ -43,8 +43,8 @@ instance instBooleanAlgebra : BooleanAlgebra (Set α) where
   sdiff := (· \ ·)
   top := univ
   bot := ∅
-  himp s t := t ∪ sᶜ
-  himp_eq _ _ := rfl
+  himp s t := {x | x ∈ s → x ∈ t}
+  himp_eq s t := by ext; simp [imp_iff_or_not]
 
 /-- See also `Set.sdiff_inter_right_comm`. -/
 lemma inter_diff_assoc (a b c : Set α) : (a ∩ b) \ c = a ∩ (b \ c) := inf_sdiff_assoc ..
