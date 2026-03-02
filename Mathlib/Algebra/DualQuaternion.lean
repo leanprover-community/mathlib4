@@ -96,7 +96,6 @@ theorem imK_snd_dualNumberEquiv (q : Quaternion (DualNumber R)) :
     (dualNumberEquiv q).snd.imK = q.imK.snd :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_re_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).re.fst = d.fst.re :=

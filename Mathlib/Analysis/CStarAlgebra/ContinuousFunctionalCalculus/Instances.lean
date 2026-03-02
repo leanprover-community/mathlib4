@@ -127,6 +127,8 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
 
 variable [CStarRing A]
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
+set_option backward.whnf.reducibleClassField false in
 include hp₁ in
 open Unitization NonUnitalStarAlgHom in
 theorem RCLike.nonUnitalContinuousFunctionalCalculus :
