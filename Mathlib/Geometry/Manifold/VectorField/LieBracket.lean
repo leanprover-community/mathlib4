@@ -354,8 +354,8 @@ variable [CompleteSpace E]
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`. Version within a set.
 -/
-lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x)
-    (hW : MDifferentiableWithinAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) s x)
+lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
+    (hW : MDiffAt[s] (fun x ↦ (W x : TangentBundle I M)) x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I V (f • W) s x =
       (mfderivWithin I 𝓘(𝕜) f s x) (V x) • (W x) + (f x) • mlieBracketWithin I V W s x := by
@@ -384,10 +384,10 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
 -/
-lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
-    (hW : MDifferentiableAt I I.tangent (fun x ↦ (W x : TangentBundle I M)) x) :
+lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDiffAt f x)
+    (hW : MDiffAt (fun x ↦ (W x : TangentBundle I M)) x) :
     mlieBracket I V (f • W) x =
-      (mfderiv I 𝓘(𝕜) f x) (V x) • (W x) + (f x) • mlieBracket I V W x := by
+      (mfderiv% f x) (V x) • (W x) + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hW
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_right hf hW (uniqueMDiffWithinAt_univ I)
@@ -396,8 +396,8 @@ lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDifferentiableAt I 𝓘(�
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`. Version within a set.
 -/
-lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x)
-    (hV : MDifferentiableWithinAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) s x)
+lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDiffAt[s] f x)
+    (hV : MDiffAt[s] (fun x ↦ (V x : TangentBundle I M)) x)
     (hs : UniqueMDiffWithinAt I s x) :
     mlieBracketWithin I (f • V) W s x =
       -(mfderivWithin I 𝓘(𝕜) f s x) (W x) • (V x) + (f x) • mlieBracketWithin I V W s x := by
@@ -409,24 +409,10 @@ lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDifferentiableWithinAt
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`.
 -/
-lemma mlieBracket_smul_left {f : M → 𝕜} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
-    (hV : MDifferentiableAt I I.tangent (fun x ↦ (V x : TangentBundle I M)) x) :
+lemma mlieBracket_smul_left {f : M → 𝕜} (hf : MDiffAt f x)
+    (hV : MDiffAt (fun x ↦ (V x : TangentBundle I M)) x) :
     mlieBracket I (f • V) W x =
-      -(mfderiv I 𝓘(𝕜) f x) (W x) • (V x) + (f x) • mlieBracket I V W x := by
-  rw [← mdifferentiableWithinAt_univ] at hf hV
-  rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
-  exact mlieBracketWithin_smul_left hf hV (uniqueMDiffWithinAt_univ I)
-
-set_option backward.isDefEq.respectTransparency false in
-lemma mlieBracketWithin_const_smul_left
-    (hV : MDiffAt[s] (T% V) x) (hs : UniqueMDiffWithinAt I s x) :
-    mlieBracketWithin I (c • V) W s x = c • mlieBracketWithin I V W s x := by
-  simpa [mfderivWithin_const] using
-    mlieBracketWithin_smul_left (mdifferentiableWithinAt_const (c := c)) (W := W) hV hs
-
-lemma mlieBracket_const_smul_left (hV : MDiffAt (T% V) x) :
-    mlieBracket I (f • V) W x =
-      -(mfderiv I 𝓘(𝕜) f x) (W x) • (V x) + (f x) • mlieBracket I V W x := by
+      -(mfderiv% f x) (W x) • (V x) + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hV
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_left hf hV (uniqueMDiffWithinAt_univ I)
@@ -480,23 +466,19 @@ lemma mlieBracketWithin_add_right
   abel
 
 lemma mlieBracket_add_right (hW : MDiffAt (T% W) x) (hW₁ : MDiffAt (T% W₁) x) :
-    mlieBracket I V (W + W₁) x =
-      mlieBracket I V W x + mlieBracket I V W₁ x := by
+    mlieBracket I V (W + W₁) x = mlieBracket I V W x + mlieBracket I V W₁ x := by
   simp only [← mlieBracketWithin_univ] at hW hW₁ ⊢
   exact mlieBracketWithin_add_right hW hW₁ (uniqueMDiffWithinAt_univ _)
 
-theorem mlieBracketWithin_of_mem_nhdsWithin
-    (st : t ∈ 𝓝[s] x) (hs : UniqueMDiffWithinAt I s x)
-    (hV : MDiffAt[t] (T% V) x)
-    (hW : MDiffAt[t] (T% W) x) :
+theorem mlieBracketWithin_of_mem_nhdsWithin (st : t ∈ 𝓝[s] x) (hs : UniqueMDiffWithinAt I s x)
+    (hV : MDiffAt[t] (T% V) x) (hW : MDiffAt[t] (T% W) x) :
     mlieBracketWithin I V W s x = mlieBracketWithin I V W t x := by
   simp only [mlieBracketWithin_apply]
   congr 1
   rw [lieBracketWithin_of_mem_nhdsWithin]
   · apply Filter.inter_mem
-    · apply nhdsWithin_mono _ inter_subset_left
-      exact (continuousAt_extChartAt_symm x).continuousWithinAt.preimage_mem_nhdsWithin''
-        st (by simp)
+    · apply nhdsWithin_mono _ inter_subset_left <|
+        (continuousAt_extChartAt_symm x).continuousWithinAt.preimage_mem_nhdsWithin'' st (by simp)
     · exact nhdsWithin_mono _ inter_subset_right self_mem_nhdsWithin
   · exact uniqueMDiffWithinAt_iff_inter_range.1 hs
   · exact hV.differentiableWithinAt_mpullbackWithin_vectorField
