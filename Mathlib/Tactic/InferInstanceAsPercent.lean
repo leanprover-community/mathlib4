@@ -44,11 +44,47 @@ public meta section
 open Lean Meta Elab Term
 
 /-- Compute the chain of delta-unfoldings starting from `e` at default transparency.
-    Returns all intermediate forms including `e` itself. -/
-private partial def unfoldChain (e : Expr) (fuel : Nat := 100) : MetaM (Array Expr) := do
-  if fuel == 0 then return #[e]
-  let some e' ← withDefault <| unfoldDefinition? e | return #[e]
-  return #[e] ++ (← unfoldChain e' (fuel - 1))
+    Returns all intermediate forms including `e` itself (unless `skipHead` is true). -/
+private def unfoldChain (e : Expr) (fuel : Nat := 100) (skipHead : Bool := false) :
+    MetaM (Array Expr) := do
+  let mut out : Array Expr := #[]
+  let mut cur := e
+  if !skipHead then out := out.push cur
+  for _ in [:fuel] do
+    let some nxt ← withDefault <| unfoldDefinition? cur | break
+    if out.any (· == nxt) then break
+    out := out.push nxt
+    cur := nxt
+  return out
+
+/-- Add all unfoldings of `e` to `acc` as replacement sources mapping to `target`.
+    If `skipHead` is true, the first element (i.e. `e` itself) is not added. -/
+private def addUnfoldings (acc : Array (Expr × Expr)) (e target : Expr)
+    (skipHead : Bool := false) : MetaM (Array (Expr × Expr)) := do
+  let chain ← unfoldChain e (skipHead := skipHead)
+  let mut acc := acc
+  for form in chain do
+    if !acc.any (·.1 == form) then
+      acc := acc.push (form, target)
+  return acc
+
+/-- Build the replacement table for differing arguments between `sourceType` and
+    `expectedType`. For each differing argument position, all unfoldings of both the
+    source and expected arguments are mapped to the expected argument. -/
+private def buildReplacements (sourceType expectedType : Expr) :
+    MetaM (Array (Expr × Expr)) := do
+  let sourceArgs := sourceType.getAppArgs
+  let expectedArgs := expectedType.getAppArgs
+  let mut replacements : Array (Expr × Expr) := #[]
+  for i in [:sourceArgs.size.min expectedArgs.size] do
+    let sArg := sourceArgs[i]!
+    let eArg := expectedArgs[i]!
+    if sArg != eArg then
+      -- Unfoldings of the expected (target) carrier, skipping the target itself
+      replacements ← addUnfoldings replacements eArg eArg (skipHead := true)
+      -- Unfoldings of the source carrier (including itself)
+      replacements ← addUnfoldings replacements sArg eArg
+  return replacements
 
 /-- Check whether `e` is defeq (at `default` transparency) to any source expression
     in `replacements`. Returns the target if found. -/
@@ -72,6 +108,48 @@ private partial def replaceLamDomains (e : Expr) (replacements : Array (Expr × 
     return .lam name ty' (← replaceLamDomains body replacements) bi
   | _ => return e
 
+/-- WHNF `e` at default transparency and return the constructor info, universe levels,
+    and arguments, or `none` if `e` doesn't reduce to a constructor application. -/
+private def getCtorApp? (e : Expr) :
+    MetaM (Option (ConstructorVal × List Level × Array Expr)) := do
+  let e' ← withDefault <| whnf e
+  let .const c us := e'.getAppFn | return none
+  let some (.ctorInfo ci) := (← getEnv).find? c | return none
+  return some (ci, us, e'.getAppArgs)
+
+/-- For each constructor parameter, determine whether it is instance-implicit and
+    whether it is a proof. -/
+private def getFieldInfo (ci : ConstructorVal) : MetaM (Array (Bool × Bool)) :=
+  withDefault <| forallTelescopeReducing ci.type fun ctorArgs _ =>
+    ctorArgs.mapM fun arg => do
+      let isInst := (← arg.fvarId!.getBinderInfo).isInstImplicit
+      let isProof ← Meta.isProof arg
+      return (isInst, isProof)
+
+mutual
+
+/-- Process each constructor argument: replace carrier type parameters, recursively
+    normalize instance-implicit fields, and patch lambda binder domains in other fields. -/
+private partial def normalizeCtorArgs (ci : ConstructorVal) (args : Array Expr)
+    (fieldInfo : Array (Bool × Bool)) (replacements : Array (Expr × Expr))
+    (fuel : Nat) : MetaM (Array Expr) := do
+  let mut args := args
+  -- Replace carrier type in constructor parameters
+  for i in [:ci.numParams] do
+    if let some r ← matchesAnyDefeq args[i]! replacements then
+      args := args.set! i r
+  -- Process each field
+  for i in [ci.numParams:args.size] do
+    if h : i < fieldInfo.size then
+      let (isInst, isProof) := fieldInfo[i]
+      if isProof then
+        pure ()
+      else if isInst then
+        args := args.set! i (← normalizeInstance args[i]! replacements (fuel - 1))
+      else
+        args := args.set! i (← replaceLamDomains args[i]! replacements)
+  return args
+
 /-- Recursively normalize a class instance expression:
     1. WHNF at `default` transparency to expose the constructor.
     2. Replace the carrier type parameter(s) in the constructor.
@@ -81,39 +159,14 @@ private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × 
     (fuel : Nat := 50) : MetaM Expr := do
   if fuel == 0 then return e
   let ty ← inferType e
-  -- Only process class instances
   let some _className ← isClass? ty | return e
-  -- Skip proofs
   if ← withDefault <| Meta.isProp ty then return e
-  -- WHNF to expose constructor
-  let e' ← withDefault <| whnf e
-  let .const c .. := e'.getAppFn | return e
-  let some (.ctorInfo ci) := (← getEnv).find? c | return e
-  -- Identify which constructor fields are instance-implicit and non-proof
-  let params ← withDefault <| forallTelescopeReducing ci.type fun ctorArgs _ =>
-    ctorArgs.mapM fun arg => do
-      let isInst := (← arg.fvarId!.getBinderInfo).isInstImplicit
-      let isProof ← Meta.isProof arg
-      return (isInst, isProof)
-  let mut args := e'.getAppArgs
-  -- Replace carrier type in constructor parameters (using defeq matching)
-  for i in [:ci.numParams] do
-    if let some r ← matchesAnyDefeq args[i]! replacements then
-      args := args.set! i r
-  -- Process each field
-  for i in [ci.numParams:args.size] do
-    if h : i < params.size then
-      let (isInst, isProof) := params[i]
-      if isProof then
-        -- Skip proofs (proof irrelevance)
-        pure ()
-      else if isInst then
-        -- Instance-implicit field: recursively normalize
-        args := args.set! i (← normalizeInstance args[i]! replacements (fuel - 1))
-      else
-        -- Non-instance field (e.g., function): replace lambda binder domains only
-        args := args.set! i (← replaceLamDomains args[i]! replacements)
-  return mkAppN e'.getAppFn args
+  let some (ci, us, args) ← getCtorApp? e | return e
+  let fieldInfo ← getFieldInfo ci
+  let args ← normalizeCtorArgs ci args fieldInfo replacements fuel
+  return mkAppN (.const ci.name us) args
+
+end
 
 /-- `inferInstanceAs%` — like `inferInstanceAs`, but rewrites internal sub-expressions
     (e.g. lambda binder domains) to use the expected carrier type instead of
@@ -140,23 +193,7 @@ elab "inferInstanceAs% " source:term : term <= expectedType => do
   let inst ← synthInstance sourceType
   let inst ← instantiateMVars inst
   let expectedType ← instantiateMVars expectedType
-  -- Compare arguments to find differing carrier types
-  let sourceArgs := sourceType.getAppArgs
-  let expectedArgs := expectedType.getAppArgs
-  let mut replacements : Array (Expr × Expr) := #[]
-  for i in [:sourceArgs.size.min expectedArgs.size] do
-    let sArg := sourceArgs[i]!
-    let eArg := expectedArgs[i]!
-    if sArg != eArg then
-      -- Compute unfolding chain from the expected (target) carrier
-      let chain ← unfoldChain eArg
-      -- All forms except the first (target) are candidates for replacement
-      for j in [1:chain.size] do
-        replacements := replacements.push (chain[j]!, eArg)
-      -- Also compute unfolding chain from the source carrier
-      let sourceChain ← unfoldChain sArg
-      for j in [:sourceChain.size] do
-        if !replacements.any (·.1 == sourceChain[j]!) then
-          replacements := replacements.push (sourceChain[j]!, eArg)
+  -- Build replacement table from differing carrier type arguments
+  let replacements ← buildReplacements sourceType expectedType
   if replacements.isEmpty then return inst
   normalizeInstance inst replacements
