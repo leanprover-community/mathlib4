@@ -67,10 +67,6 @@ lemma tensorCotangentHom_surjective :
   obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ x
   obtain ⟨y, rfl⟩ := I.map_includeRight_eq.le hx
   obtain rfl : hx = I.map_includeRight_eq.ge ⟨y, rfl⟩ := rfl
-  have heq (t : T) (x : I) :
-      (map a I).toCotangent ⟨t ⊗ₜ[R] x, (this _).mpr ⟨t ⊗ₜ[R] ↑x, rfl⟩⟩ =
-        t • (I.map a).toCotangent ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ := by
-    rw [← LinearMap.map_smul_of_tower]; congr; simp
   induction y with
   | zero => exact ⟨0, by simp only [map_zero]; exact (map_zero _).symm⟩
   | add x y hx hy =>
