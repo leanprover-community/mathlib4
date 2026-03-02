@@ -418,7 +418,7 @@ section Ratio
 
 lemma rnDeriv_add_self (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν] :
     μ.rnDeriv (ν + μ) =ᵐ[μ] fun x ↦ (ν.rnDeriv μ x + 1)⁻¹ := by
-  have hν_ac : μ ≪ ν + μ := by rw [add_comm]; exact rfl.absolutelyContinuous.add_right _
+  have hν_ac : μ ≪ ν + μ := rfl.absolutelyContinuous.add_right' _
   filter_upwards [ν.rnDeriv_add' μ μ, μ.rnDeriv_self, Measure.inv_rnDeriv hν_ac] with a h1 h2 h3
   rw [Pi.inv_apply, h1, Pi.add_apply, h2, inv_eq_iff_eq_inv] at h3
   rw [h3]
@@ -457,8 +457,7 @@ lemma rnDeriv_div_rnDeriv_eq_div_rnDeriv_add {ξ : Measure α}
   have h1 : μ.rnDeriv (μ + ν) * (μ + ν).rnDeriv ξ =ᵐ[ξ] μ.rnDeriv ξ :=
     Measure.rnDeriv_mul_rnDeriv (rfl.absolutelyContinuous.add_right _)
   have h2 : ν.rnDeriv (μ + ν) * (μ + ν).rnDeriv ξ =ᵐ[ξ] ν.rnDeriv ξ :=
-    Measure.rnDeriv_mul_rnDeriv ?_
-  swap; · rw [add_comm]; exact rfl.absolutelyContinuous.add_right _
+    Measure.rnDeriv_mul_rnDeriv (rfl.absolutelyContinuous.add_right' _)
   have h_ac : μ + ν ≪ ξ := hμ.add_left hν
   filter_upwards [h_ac h1, h_ac h2, h_ac <| (μ + ν).rnDeriv_lt_top ξ, ν.rnDeriv_lt_top (μ + ν),
     Measure.rnDeriv_pos h_ac] with a h1 h2 h_lt_top1 h_lt_top2 h_pos
@@ -473,7 +472,7 @@ respect to `ξ`. -/
 lemma rnDeriv_eq_div {ξ : Measure α} [SigmaFinite μ] [SigmaFinite ν] [SigmaFinite ξ]
     (hμ : μ ≪ ξ) (hν : ν ≪ ξ) :
     μ.rnDeriv ν =ᵐ[ν] fun x ↦ μ.rnDeriv ξ x / ν.rnDeriv ξ x := by
-  have hν_ac : ν ≪ μ + ν := by rw [add_comm]; exact rfl.absolutelyContinuous.add_right _
+  have hν_ac : ν ≪ μ + ν := rfl.absolutelyContinuous.add_right' _
   filter_upwards [μ.rnDeriv_eq_div_rnDeriv_add ν,
     hν_ac (rnDeriv_div_rnDeriv_eq_div_rnDeriv_add hμ hν)] with a h1 h2 using h1.trans h2.symm
 
