@@ -78,7 +78,10 @@ lemma tensorCotangentHom_surjective :
     obtain ⟨b, hb⟩ := hy
     exact ⟨a + b, by simp only [map_add, ha, hb]; rfl⟩
   | tmul t x =>
-    exact ⟨t ⊗ₜ I.toCotangent x, by simpa using (heq ..).symm⟩
+    use t ⊗ₜ I.toCotangent x
+    apply Ideal.cotangentToQuotientSquare_injective
+    simp [-AlgHom.toRingHom_eq_coe, tensorCotangentHom_tmul, Algebra.smul_def,
+      ← Ideal.Quotient.mk_algebraMap, ← map_mul]
 
 /-- If `T` is a flat `R`-module, the canonical map `tensorCotangentHom R T I` is injective. -/
 lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :
