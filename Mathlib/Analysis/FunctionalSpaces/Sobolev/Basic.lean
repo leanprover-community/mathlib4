@@ -88,57 +88,75 @@ lemma TestFunction.contDiff_one {E F : Type*} [NormedAddCommGroup E] [NormedSpac
     [NormedAddCommGroup F] [NormedSpace ℝ F] (φ : 𝓓(Ω, F)) : ContDiff ℝ 1 φ :=
   φ.contDiff.of_le (mod_cast le_top)
 
--- variable {g : E → FormalMultilinearSeries ℝ E F} in
--- lemma HasFTaylorSeriesUpToOn.tsupport_subset {n : ℕ} -- [μ.IsAddHaarMeasure]
---     (hf : HasFTaylorSeriesUpToOn k f g Ω) (h : tsupport f ⊆ Ω) :
---     tsupport (g · n) ⊆ tsupport f := by
---   induction n with
---   | zero =>
+-- todo: protect HasFTaylorSeriesUpTo.fderiv
 
---   | succ n _ => sorry
+variable {p : E → FormalMultilinearSeries ℝ E F} in
+omit [MeasurableSpace E] [BorelSpace E] in
+lemma HasFTaylorSeriesUpTo.fderiv_eq {n : WithTop ℕ∞} (hf : HasFTaylorSeriesUpTo n f p)
+    {m : ℕ} (h : m < n) (x : E) :
+    _root_.fderiv ℝ (p · m) x = (p x m.succ).curryLeft :=
+  hf.fderiv m h x |>.fderiv
 
--- variable {g : E → FormalMultilinearSeries ℝ E F} in
--- lemma HasFTaylorSeriesUpToOn.tsupport_mono {m n : ℕ} (h : m ≤ n) -- [μ.IsAddHaarMeasure]
---     (hf : HasFTaylorSeriesUpToOn k f g Ω) (hf : tsupport f ⊆ Ω) :
---     tsupport (g · n) ⊆ tsupport (g · m) := by
---   induction h with
---   | refl => rfl
---   | step k ih =>
---     refine subset_trans ?_ ih
--- #check HasCompactSupport.memLp_of_bound
--- #check Continuous.memLp_of_hasCompactSupport
+variable {g : E → FormalMultilinearSeries ℝ E F} in
+omit [MeasurableSpace E] [BorelSpace E] in
+lemma HasFTaylorSeriesUpTo.tsupport_mono {m n : ℕ} (h : m ≤ n) (h2 : n ≤ k)
+    (hf : HasFTaylorSeriesUpTo k f g) :
+    tsupport (g · n) ⊆ tsupport (g · m) := by
+  induction h with
+  | refl => rfl
+  | @step l h ih =>
+    have hl : l < k := lt_of_lt_of_le (mod_cast lt_add_one l) h2
+    refine subset_trans ?_ (ih hl.le)
+    refine Eq.trans_subset ?_ (tsupport_fderiv_subset ℝ)
+    rw [funext <| hf.fderiv_eq (mod_cast hl)]
+    refine tsupport_comp_eq (g := ContinuousMultilinearMap.curryLeft) (fun {x} ↦ ?_) _ |>.symm
+    exact (continuousMultilinearCurryLeftEquiv _ _ _).map_eq_zero_iff (x := x)
 
-@[to_additive]
-lemma ContinuousOn.exists_bound_of_mulTSupport_inter_subset
-    {α E : Type*} [SeminormedGroup E] [TopologicalSpace α] {s : Set α}
-    {f : α → E} (hf : ContinuousOn f s) (h2f : IsCompact (closure (mulTSupport f ∩ s)))
-    (h3f : closure (mulTSupport f ∩ s) ⊆ s) :
-    ∃ C, ∀ x ∈ s, ‖f x‖ ≤ C := by
-  obtain ⟨C, hC⟩ := h2f.exists_bound_of_continuousOn' (hf.mono h3f)
-  refine ⟨max C 0, fun x hx ↦ ?_⟩
-  by_cases h2x : x ∈ mulTSupport f
-  · exact (hC x (subset_closure ⟨h2x, hx⟩)).trans <| le_max_left _ _
-  · simp [image_eq_one_of_notMem_mulTSupport h2x]
 
-/- is `hs` needed? (I think so). is `SecondCountableTopologyEither` needed? (I think not) -/
-lemma ContinuousOn.MemLp_restrict_of_tsupport_subset {E X : Type*} {p : ℝ≥0∞} [NormedAddCommGroup E]
-    [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
-    {μ : Measure X} [IsFiniteMeasureOnCompacts μ]
-    {f : X → E} {s : Set X} (hs : MeasurableSet s)
-    (hf : ContinuousOn f s) (h2f : IsCompact (closure (tsupport f ∩ s)))
-    (h3f : closure (tsupport f ∩ s) ⊆ s) :
-    MemLp f p (μ.restrict s) := by
-  obtain ⟨C, hC⟩ := ContinuousOn.exists_bound_of_tsupport_inter_subset hf h2f h3f
-  have : MemLp f ∞ (μ.restrict s) := by
-    refine memLp_top_of_bound ?_ C (ae_restrict_of_forall_mem hs hC)
-    borelize E
-    rw [aestronglyMeasurable_iff_aemeasurable_separable]
-    refine ⟨hf.aemeasurable hs, f '' s, ?_, ?_⟩
-    · exact (hs.image_of_continuousOn hf).isSeparable
-    · exact mem_of_superset (self_mem_ae_restrict h's) (subset_preimage_image _ _)
-    exact hf.aestronglyMeasurable_of_isCompact sorry sorry
-  exact this.mono_exponent_of_measure_support_ne_top
-    (fun x ↦ image_eq_zero_of_notMem_tsupport) h2f.measure_ne_top le_top
+variable {g : E → FormalMultilinearSeries ℝ E F} in
+omit [MeasurableSpace E] [BorelSpace E] in
+lemma HasFTaylorSeriesUpTo.tsupport_subset {n : ℕ} (h : n ≤ k)
+    (hf : HasFTaylorSeriesUpTo k f g) :
+    tsupport (g · n) ⊆ tsupport f := by
+  refine (hf.tsupport_mono (zero_le _) h).trans_eq ?_
+  rw [← funext hf.zero_eq]
+  refine tsupport_comp_eq (g := ContinuousMultilinearMap.curry0) (fun {x} ↦ ?_) _ |>.symm
+  exact (continuousMultilinearCurryFin0 _ _ _).map_eq_zero_iff (x := x)
+
+
+-- @[to_additive]
+-- lemma ContinuousOn.exists_bound_of_mulTSupport_inter_subset
+--     {α E : Type*} [SeminormedGroup E] [TopologicalSpace α] {s : Set α}
+--     {f : α → E} (hf : ContinuousOn f s) (h2f : IsCompact (closure (mulTSupport f ∩ s)))
+--     (h3f : closure (mulTSupport f ∩ s) ⊆ s) :
+--     ∃ C, ∀ x ∈ s, ‖f x‖ ≤ C := by
+--   obtain ⟨C, hC⟩ := h2f.exists_bound_of_continuousOn' (hf.mono h3f)
+--   refine ⟨max C 0, fun x hx ↦ ?_⟩
+--   by_cases h2x : x ∈ mulTSupport f
+--   · exact (hC x (subset_closure ⟨h2x, hx⟩)).trans <| le_max_left _ _
+--   · simp [image_eq_one_of_notMem_mulTSupport h2x]
+
+-- broken
+-- /- is `hs` needed? (I think so). is `SecondCountableTopologyEither` needed? (I think not) -/
+-- lemma ContinuousOn.MemLp_restrict_of_tsupport_subset {E X : Type*} {p : ℝ≥0∞}
+--     [NormedAddCommGroup E]
+--     [TopologicalSpace X] [MeasurableSpace X] [OpensMeasurableSpace X]
+--     {μ : Measure X} [IsFiniteMeasureOnCompacts μ]
+--     {f : X → E} {s : Set X} (hs : MeasurableSet s)
+--     (hf : ContinuousOn f s) (h2f : IsCompact (closure (tsupport f ∩ s)))
+--     (h3f : closure (tsupport f ∩ s) ⊆ s) :
+--     MemLp f p (μ.restrict s) := by
+--   obtain ⟨C, hC⟩ := ContinuousOn.exists_bound_of_tsupport_inter_subset hf h2f h3f
+--   have : MemLp f ∞ (μ.restrict s) := by
+--     refine memLp_top_of_bound ?_ C (ae_restrict_of_forall_mem hs hC)
+--     borelize E
+--     rw [aestronglyMeasurable_iff_aemeasurable_separable]
+--     refine ⟨hf.aemeasurable hs, f '' s, ?_, ?_⟩
+--     · exact (hs.image_of_continuousOn hf).isSeparable
+--     · exact mem_of_superset (self_mem_ae_restrict h's) (subset_preimage_image _ _)
+--     exact hf.aestronglyMeasurable_of_isCompact sorry sorry
+--   exact this.mono_exponent_of_measure_support_ne_top
+--     (fun x ↦ image_eq_zero_of_notMem_tsupport) h2f.measure_ne_top le_top
 
 lemma MeasureTheory.LocallyIntegrableOn.congr {X ε : Type*} [MeasurableSpace X] [TopologicalSpace X]
     [TopologicalSpace ε] [ContinuousENorm ε] {f f' : X → ε} {s : Set X} {μ : Measure X}
@@ -521,21 +539,6 @@ lemma mono {k' : ℕ∞} (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hk : k' ≤ 
   hasWeakDeriv m hm := hf.hasWeakDeriv m (lt_of_lt_of_le hm hk)
   memLp m hm := hf.memLp m (le_trans hm hk)
 
--- lemma _root_.HasFTaylorSeriesUpToOn.hasWTaylorSeriesUpTo [μ.IsAddHaarMeasure] (f : 𝓓^{k}(Ω, F))
---     (hf : HasFTaylorSeriesUpToOn k f g Ω) :
---     HasWTaylorSeriesUpTo Ω f g k p μ where
---   zero_aeEq := EqOn.aeEq_restrict hf.zero_eq Ω.isOpen.measurableSet
---   hasWeakDeriv m hm := by
---     refine HasFDerivAt.hasWeakDeriv (hf.fderivWithin m (mod_cast hm) · · |>.hasFDerivAt ?_) ?_
---     · exact Ω.isOpen.mem_nhds_iff.mpr ‹_›
---     · have := hf.cont (m + 1) (mod_cast (ENat.add_one_le_iff <| ENat.coe_ne_top m).mpr hm)
---       exact (continuousMultilinearCurryLeftEquiv _ _ _).continuous.comp_continuousOn this
---   memLp m hm := by
---     have : Continuous (g · m) :=
---       (hf.cont m (mod_cast hm)).continuous_of_tsupport_subset Ω.isOpen ?_
---     apply this.memLp_of_hasCompactSupport sorry
---     have := f.hasCompactSupport.exists_bound_of_continuousOn ((hf.cont m (mod_cast hm)).mono _)
-
 /- We could also prove this for `HasFTaylorSeriesUpTo`, but then we don't know anything about
 `g` outside `Ω`. If we want to do this, we should define a new predicate
 `HasCompactSupportIn f Ω` that states that `closure (tsupport f ∩ Ω)` is compact and a subset
@@ -546,16 +549,12 @@ lemma _root_.HasFTaylorSeriesUpTo.hasWTaylorSeriesUpTo [μ.IsAddHaarMeasure] (f 
   zero_aeEq := Eventually.of_forall hf.zero_eq
   hasWeakDeriv m hm := by
     refine HasFDerivAt.hasWeakDeriv (fun x _ ↦ hf.fderiv m (mod_cast hm) x) ?_
-    -- · exact Ω.isOpen.mem_nhds_iff.mpr ‹_›
-    · have := hf.cont (m + 1) (mod_cast (ENat.add_one_le_iff <| ENat.coe_ne_top m).mpr hm)
-      exact ((continuousMultilinearCurryLeftEquiv _ _ _).continuous.comp this).continuousOn
+    have := hf.cont (m + 1) (mod_cast (ENat.add_one_le_iff <| ENat.coe_ne_top m).mpr hm)
+    exact ((continuousMultilinearCurryLeftEquiv _ _ _).continuous.comp this).continuousOn
   memLp m hm := by
-    have : Continuous (g · m) :=
-      hf.cont m (mod_cast hm)
     apply (hf.cont m (mod_cast hm)).memLp_of_hasCompactSupport
-    sorry
-    -- with_reducible apply?
-    -- have := f.hasCompactSupport.exists_bound_of_continuousOn ((hf.cont m (mod_cast hm)).mono _)
+    apply f.hasCompactSupport.mono'
+    exact (subset_tsupport _).trans (hf.tsupport_subset hm)
 
 -- TODO: add doc-string!
 def shrink_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {ν : Measure E}
@@ -699,6 +698,12 @@ lemma sub [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
 lemma smul (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (c • f) k p μ := by
   obtain ⟨g, hg⟩ := hf
   exact ⟨c • g, hg.smul⟩
+
+lemma _root_.TestFunction.memSobolev [μ.IsAddHaarMeasure] (f : 𝓓^{k}(Ω, F)) :
+    MemSobolev Ω f k p μ := by
+  obtain ⟨g, hg⟩ := f.contDiff
+  exact ⟨g, hg.hasWTaylorSeriesUpTo⟩
+
 
 @[simp]
 lemma zero : MemSobolev Ω (0 : E → F) k p μ := ⟨0, by simp⟩
