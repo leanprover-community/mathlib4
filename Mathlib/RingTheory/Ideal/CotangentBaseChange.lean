@@ -56,7 +56,7 @@ def tensorCotangentHom :
 -- TODO: make this @[simp] when `Ideal.map` is refactored to only take `RingHom`s
 lemma tensorCotangentHom_tmul (t : T) (x : I) :
     tensorCotangentHom R T I (t ⊗ₜ[R] I.toCotangent x) =
-      t • (I.map Algebra.TensorProduct.includeRight).toCotangent
+      t • (I.map Algebra.TensorProduct.includeRight.toRingHom).toCotangent
         ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ := by
   rfl
 
