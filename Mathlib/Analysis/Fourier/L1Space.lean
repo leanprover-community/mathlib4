@@ -57,8 +57,8 @@ def _root_.LinearMap.mkContinuous' [NormedSpace ℂ V] (f : V → E)
   LinearMap.mkContinuous {toFun := f, map_add' := hadd, map_smul' := hsmul} C hbound
 
 def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
-  LinearMap.mkContinuous' Lp.fourierTransform
-  (by
+  LinearMap.mkContinuous ⟨⟨Lp.fourierTransform,
+  by
     intro f g
     ext x
     simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_add, Pi.add_apply,
@@ -71,8 +71,8 @@ def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
     · rw [Real.fourierIntegral_convergent_iff]
       exact L1.integrable_coeFn f
     · rw [Real.fourierIntegral_convergent_iff]
-      exact L1.integrable_coeFn g)
-  (by
+      exact L1.integrable_coeFn g⟩,
+  by
     intro c f
     ext x
     simp only [Lp.fourierTransform_apply, BoundedContinuousFunction.coe_smul, Real.fourier_eq]
@@ -80,12 +80,12 @@ def Lp.fourierTransformCLM : Lp (α := V) E 1 →L[ℂ] V →ᵇ E :=
     apply integral_congr_ae
     filter_upwards [Lp.coeFn_smul c f] with x h
     rw [h, smul_comm]
-    simp )
+    simp ⟩
   1 (by
     intro f
     rw [one_mul, BoundedContinuousFunction.norm_le (by positivity)]
     intro x
-    rw [Lp.fourierTransform_apply, Real.fourier_eq]
+    rw [LinearMap.coe_mk, AddHom.coe_mk, Lp.fourierTransform_apply, Real.fourier_eq]
     apply (norm_integral_le_integral_norm _).trans
     simp_rw [Circle.norm_smul]
     exact (L1.norm_eq_integral_norm f).symm.le)

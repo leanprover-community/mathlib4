@@ -441,9 +441,6 @@ instance : ContinuousEval C₀(α, β) α β where
   continuous_eval := continuous_prod_of_continuous_lipschitzWith _ 1
     (fun f ↦ f.continuous) lipschitz_eval_const
 
-/-- When `x` is fixed, `(f : C₀(α, β)) ↦ f x` is continuous. -/
-instance : ContinuousEvalConst C₀(α, β) α β := inferInstance
-
 end Metric
 
 section Norm
