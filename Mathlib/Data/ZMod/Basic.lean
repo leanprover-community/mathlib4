@@ -837,12 +837,7 @@ lemma isUnit_prime_of_not_dvd {n p : ℕ} (hp : p.Prime) (h : ¬ p ∣ n) : IsUn
 theorem inv_coe_unit {n : ℕ} (u : (ZMod n)ˣ) : (u : ZMod n)⁻¹ = (u⁻¹ : (ZMod n)ˣ) := by
   have := congr_arg ((↑) : ℕ → ZMod n) (val_coe_unit_coprime u)
   rw [← mul_inv_eq_gcd, Nat.cast_one] at this
-  let u' : (ZMod n)ˣ := ⟨u, (u : ZMod n)⁻¹, this, by rwa [mul_comm]⟩
-  have h : u = u' := by
-    apply Units.ext
-    rfl
-  rw [h]
-  rfl
+  exact (Units.inv_eq_of_mul_eq_one_right this).symm
 
 theorem mul_inv_of_unit {n : ℕ} (a : ZMod n) (h : IsUnit a) : a * a⁻¹ = 1 := by
   rcases h with ⟨u, rfl⟩
