@@ -171,7 +171,6 @@ def comp (F : StrictlyUnitaryLaxFunctor B C)
 section
 attribute [local ext] StrictlyUnitaryLaxFunctor
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition of `StrictlyUnitaryLaxFunctor` is strictly right unitary -/
 lemma comp_id (F : StrictlyUnitaryLaxFunctor B C) :
     F.comp (.id C) = F := by

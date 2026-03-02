@@ -106,7 +106,6 @@ theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isLUB_sup : IsLUB (f '' s) (s.sup f) := by
   simp +contextual [IsLUB, IsLeast, upperBounds, lowerBounds, le_sup]
 
@@ -256,7 +255,6 @@ theorem sup_eq_iSup [CompleteLattice β] (s : Finset α) (f : α → β) : s.sup
     (Finset.sup_le (fun a ha => le_iSup_of_le a <| le_iSup (fun _ => f a) ha))
     (iSup_le fun _ => iSup_le fun ha => le_sup ha)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sup_id_eq_sSup [CompleteLattice α] (s : Finset α) : s.sup id = sSup s := by
   simp [sSup_eq_iSup, sup_eq_iSup]
 
@@ -354,7 +352,6 @@ theorem le_inf_const_le : a ≤ s.inf fun _ => a :=
 theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
   Finset.le_inf_iff.1 le_rfl _ hb
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isGLB_inf : IsGLB (f '' s) (s.inf f) := by
   simp +contextual [IsGLB, IsGreatest, upperBounds, lowerBounds, inf_le]
 
