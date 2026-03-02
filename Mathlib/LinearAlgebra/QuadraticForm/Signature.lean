@@ -22,7 +22,7 @@ computed from any sum-of-squares representation.
   `QuadraticForm.sigNeg_of_equiv_weightedSumOfSquares`: for any isomorphism from `Q` to a
   weighted sum of squares, `Q.sigPos` and `Q.sigNeg` are the number of positive and negative
   weights. (This is the uniqueness part of **Sylvester's law of inertia**; the existence is proved
-  elsewhere.)
+  in `Mathlib.LinearAlgebra.QuadraticForm.Real`.)
 
 ## Acknowledgements
 
