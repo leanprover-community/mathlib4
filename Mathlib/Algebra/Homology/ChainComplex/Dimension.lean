@@ -69,15 +69,9 @@ lemma dFrom_range_finrank_eq_d (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
     Module.finrank k (LinearMap.range (C.d (i + 1) i).hom) := by
   have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
     simp [ComplexShape.down, ComplexShape.down']
-  have dFrom_eq : C.dFrom (i + 1) = C.d (i + 1) i ≫ (C.xNextIso rel).inv :=
-    C.dFrom_eq rel
-  rw [dFrom_eq]
-  have : ((C.d (i + 1) i) ≫ (C.xNextIso rel).inv).hom =
-         (C.xNextIso rel).toLinearEquiv.symm.toLinearMap ∘ₗ
-         (C.d (i + 1) i).hom := rfl
-  rw [this, LinearMap.range_comp]
-  rw [← LinearEquiv.finrank_map_eq
-    (C.xNextIso rel).toLinearEquiv.symm]
+  rw [C.dFrom_eq rel, show ((C.d (i + 1) i) ≫ (C.xNextIso rel).inv).hom =
+    (C.xNextIso rel).toLinearEquiv.symm.toLinearMap ∘ₗ (C.d (i + 1) i).hom from rfl,
+    LinearMap.range_comp, ← LinearEquiv.finrank_map_eq (C.xNextIso rel).toLinearEquiv.symm]
 
 /-- The range of dTo has the same dimension as the underlying differential. -/
 lemma dTo_range_finrank_eq_d (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
@@ -85,17 +79,9 @@ lemma dTo_range_finrank_eq_d (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
     Module.finrank k (LinearMap.range (C.d (i + 1) i).hom) := by
   have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
     simp [ComplexShape.down, ComplexShape.down']
-  have dTo_eq : C.dTo i = (C.xPrevIso rel).hom ≫ C.d (i + 1) i :=
-    C.dTo_eq rel
-  rw [dTo_eq]
-  have : ((C.xPrevIso rel).hom ≫ C.d (i + 1) i).hom =
-         (C.d (i + 1) i).hom ∘ₗ
-         (C.xPrevIso rel).toLinearEquiv.toLinearMap := rfl
-  rw [this, LinearMap.range_comp]
-  have hsurj : Function.Surjective
-      (C.xPrevIso rel).toLinearEquiv.toLinearMap :=
-    (C.xPrevIso rel).toLinearEquiv.surjective
-  rw [LinearMap.range_eq_top.mpr hsurj, Submodule.map_top]
+  rw [C.dTo_eq rel, show ((C.xPrevIso rel).hom ≫ C.d (i + 1) i).hom =
+    (C.d (i + 1) i).hom ∘ₗ (C.xPrevIso rel).toLinearEquiv.toLinearMap from rfl,
+    LinearMap.range_comp_of_range_eq_top _ (LinearEquiv.range _)]
 
 /-- The range of `dFrom (i + 1)` has the same dimension as the range of `dTo i`. -/
 lemma dFrom_succ_range_finrank_eq_dTo
