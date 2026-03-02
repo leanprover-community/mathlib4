@@ -102,8 +102,7 @@ lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :
     rw [tensorCotangentHom_tmul, one_smul, Ideal.toCotangent_to_quotient_square]
     simp
   rw [this, LinearMap.coe_comp]
-  apply Function.Injective.comp
-  · exact hₐ.injective
+  apply hₐ.injective.comp
   · apply Module.Flat.lTensor_preserves_injective_linearMap (M := T)
       (I.cotangentToQuotientSquare.restrictScalars R)
     apply cotangentToQuotientSquare_injective
