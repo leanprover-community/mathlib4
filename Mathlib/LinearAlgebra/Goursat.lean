@@ -51,12 +51,12 @@ def goursatSnd : Submodule R N :=
 lemma goursatFst_toAddSubgroup :
     (goursatFst L).toAddSubgroup = L.toAddSubgroup.goursatFst := by
   ext x
-  simp [mem_toAddSubgroup, goursatFst, AddSubgroup.mem_goursatFst]
+  simp [goursatFst, AddSubgroup.mem_goursatFst]
 
 lemma goursatSnd_toAddSubgroup :
     (goursatSnd L).toAddSubgroup = L.toAddSubgroup.goursatSnd := by
   ext x
-  simp [mem_toAddSubgroup, goursatSnd, AddSubgroup.mem_goursatSnd]
+  simp [goursatSnd, AddSubgroup.mem_goursatSnd]
 
 variable (L) in
 lemma goursatFst_prod_goursatSnd_le : L.goursatFst.prod L.goursatSnd ≤ L := by
