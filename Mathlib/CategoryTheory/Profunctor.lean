@@ -25,11 +25,17 @@ namespace CategoryTheory
 
 universe w
 
+/-- A profunctor between two categories `C` and `D` is a functor from `Cᵒᵖ × D` to the category of
+types. We encode this data as a structure. -/
 structure Profunctor (C : Type*) [Category* C] (D : Type*) [Category* D] where
+  /-- Apply a profunctor to a pair of objects. -/
   obj : D → C → Type w
+  /-- Apply a profunctor to a pair of maps. -/
   map {X X' : D} {Y Y' : C} (f : X' ⟶ X) (g : Y ⟶ Y') :
     obj X Y → obj X' Y'
+  /-- Identity law for profunctors. -/
   map_id (X : D) (Y : C) (e : obj X Y) : map (𝟙 _) (𝟙 _) e = e
+  /-- Composition law for profunctors. -/
   map_comp {X X' X'' : D} {Y Y' Y'' : C}
     (f' : X'' ⟶ X') (f : X' ⟶ X)
     (g : Y ⟶ Y') (g' : Y' ⟶ Y'')
@@ -85,11 +91,13 @@ theorem map_eq_mapR_mapL (H : Profunctor.{w} C D) {X X' : D} {Y Y' : C}
     H.map f g e = H.mapL f (H.mapR g e) := by
   simp only [mapL, mapR, ← H.map_comp, Category.comp_id]
 
-def mpRight (H : Profunctor.{w} C D) {a b c} (p : b = c) (f : H.obj a b) : H.obj a c :=
-  H.mapR (eqToHom p) f
-
+/-- Transport a profunctor along an equality on the left. -/
 def mpLeft (H : Profunctor.{w} C D) {a b c} (p : a = b) (f : H.obj b c) : H.obj a c :=
   H.mapL (eqToHom p) f
+
+/-- Transport a profunctor along an equality on the right. -/
+def mpRight (H : Profunctor.{w} C D) {a b c} (p : b = c) (f : H.obj a b) : H.obj a c :=
+  H.mapR (eqToHom p) f
 
 /-- A natural transformation between profunctors `H` and `K`. -/
 structure NatTrans (H K : Profunctor.{w} C D) where
