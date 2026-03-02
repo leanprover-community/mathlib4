@@ -375,6 +375,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 variable (w) in
  --set_option backward.isDefEq.respectTransparency true in
+@[simps!]
 def _root_.WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃* ValueGroup₀ w where
   toFun γ := if hγ : γ = 0 then 0 else by
       let ⟨u, hu⟩ := WithZero.unzero hγ
@@ -413,7 +414,13 @@ def _root_.WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃* Val
     · simp [← WithZero.coe_mul, WithZero.unzero_mul]
 
 lemma _root_.WithVal.strictMono_valueGroup₀_equiv :
-  StrictMono (_root_.WithVal.valueGroup₀_equiv w) := sorry
+    StrictMono (_root_.WithVal.valueGroup₀_equiv w) := by
+  intro x y h
+  match x, y with
+  | 0, WithZero.coe b => simp
+  | WithZero.coe a, 0 => simp at h
+  | WithZero.coe a, WithZero.coe b => simp_all
+
 
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
 -- TODO: golf
