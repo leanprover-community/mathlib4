@@ -17,7 +17,7 @@ We collect results about effective epimorphisms in the category of schemes.
 
 ## Main results
 
-* `AffineScheme.effectiveEpiOfFlatOfSurjective`: A flat surjective morphism between affine schemes
+* `AffineScheme.effectiveEpi_of_flat_of_surjective`: A flat surjective morphism between affine schemes
   is an effective epimorphism in the category of affine schemes.
 
 For a surjective and flat morphism `π : X ⟶ Y` between affine schemes, we prove the following.
@@ -45,7 +45,7 @@ open Scheme
 section AffineScheme
 
 /-- A flat surjective morphism is an effective epimorphism in the category of affine schemes. -/
-lemma AffineScheme.effectiveEpiOfFlatOfSurjective {X Y : AffineScheme.{u}} (f : X ⟶ Y)
+lemma AffineScheme.effectiveEpi_of_flat_of_surjective {X Y : AffineScheme.{u}} (f : X ⟶ Y)
     [Flat f.hom] [Surjective f.hom] :
     EffectiveEpi f := by
   apply AffineScheme.equivCommRingCat.functor.effectiveEpi_of_map
@@ -99,7 +99,7 @@ lemma of_isAffine_target {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X 
     [IsAffine S] :
     ∃ u : Y ⟶ S, π ≫ u = f := by
   have : EffectiveEpi (AffineScheme.ofHom π) :=
-    @AffineScheme.effectiveEpiOfFlatOfSurjective _ _ _ (by simpa) (by simpa)
+    @AffineScheme.effectiveEpi_of_flat_of_surjective _ _ _ (by simpa) (by simpa)
   let u : AffineScheme.of Y ⟶ AffineScheme.of S := by
     apply EffectiveEpi.desc (AffineScheme.ofHom π) (AffineScheme.ofHom f)
     intro _ g₁ g₂ hg₁₂
