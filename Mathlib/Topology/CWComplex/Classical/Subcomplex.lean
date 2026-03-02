@@ -70,7 +70,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma RelCWComplex.Subcomplex.disjoint_openCell_subcomplex_of_not_mem [RelCWComplex C D]
     (E : Subcomplex C) {n : ℕ} {i : cell C n} (h : i ∉ E.I n) : Disjoint (openCell n i) E := by
   simp_rw [← union, disjoint_union_right, disjoint_iUnion_right]
-  exact ⟨disjointBase n i , fun _ _ ↦ disjoint_openCell_of_ne (by aesop)⟩
+  exact ⟨disjointBase n i , fun _ _ ↦ disjoint_openCell_of_ne (by lia)⟩
 
 open Classical in
 /-- A subcomplex is again a CW complex. -/
