@@ -804,12 +804,10 @@ lemma triangleLTLTGELT_distinguished (a b : ℤ) (h : a ≤ b) (X : C) :
   have := t.isIso_truncLT_map_truncLTι_app a b h X
   refine isomorphic_distinguished _ (t.triangleLTGE_distinguished a ((t.truncLT b).obj X)) _ ?_
   refine Triangle.isoMk _ _ ((asIso ((t.truncLT a).map ((t.truncLTι b).app X))).symm)
-    (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
-  · dsimp
-    simp only [Category.comp_id, IsIso.eq_inv_comp]
-    exact t.to_truncLT_obj_ext (by simp)
-  · simp
-  · simp
+    (Iso.refl _) (Iso.refl _) ?_ (by simp) (by simp)
+  dsimp
+  simp only [Category.comp_id, IsIso.eq_inv_comp]
+  exact t.to_truncLT_obj_ext (by simp)
 
 instance (a b : ℤ) : IsIso (t.truncGELTToLTGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
