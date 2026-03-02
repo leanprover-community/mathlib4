@@ -13,6 +13,8 @@ We define `GradedFunLike F 𝒜 ℬ` where `𝒜` and `ℬ` represent some sort 
 assumes `FunLike A B` where `A` and `B` are the underlying types.
 -/
 
+@[expose] public section
+
 /-- The class `GradedFunLike F 𝒜 ℬ` expresses that terms of type `F` have an injective coercion to
 grading-preserving functions from `A` to `B`, where `𝒜` is a grading on `A` and `ℬ` is a grading on
 `B`. This typeclass has `[FunLike F A B]` as one of the assumptions. This typeclass is used in the
