@@ -24,7 +24,7 @@ subgroup of `G` into itself (e.g., `f = fun g ↦ g ^ n` when `G` is commutative
 If there is a finite subset `s : Set G` and there exists a "height" function `h : G → ℝ`
 and constants `a, b, c : R` such that
 * `s` surjects onto the quotient `G ⧸ f(G)`,
-* for all `g ∈ s` and `x : G`, `h (x / g) ≤ a * h x + c`,
+* for all `g ∈ s` and `x : G`, `h (x) ≤ a * h (g * x) + c`,
 * for all `x : G`, `h (f x) ≥ b * h x - c`,
 * for all `B : R`, there are only finitely many `x : G` such that `h x ≤ B`, and
 * `0 ≤ a < b`,
@@ -62,16 +62,14 @@ subgroups into themselves, and if there is a "height function" `h : G → ℝ` w
 to `f` and a finite subset `s` of `G`, then `G` is finitely generated. -/]
 theorem Group.fg_of_descent {G : Type*} [Group G] {f : G →* G} (hf : ∀ U : Subgroup G, U.map f ≤ U)
     {s : Set G} {h : G → ℝ} {a b c : ℝ} (ha : 0 ≤ a) (H₀ : a < b) (hs : s.Finite)
-    (H₁ : s * f.range = .univ) (H₂ : ∀ g ∈ s, ∀ x, h (g⁻¹ * x) ≤ a * h x + c)
+    (H₁ : s * f.range = .univ) (H₂ : ∀ g ∈ s, ∀ x, h x ≤ a * h (g * x) + c)
     (H₃ : ∀ x, b * h x - c ≤ h (f x)) (H₄ : ∀ B, {x : G | h x ≤ B}.Finite) :
     FG G := by
   set q := QuotientGroup.mk (s := map f ⊤)
   -- Main proof idea: `s` together with elements of sufficiently small "height" `h` generates `G`.
   let S : Set G := s ∪ {x : G | h x ≤ 2 * c / (b - a)}
-  have hS : Finite S := (hs.union <| H₄ _).to_subtype
   let U := closure S
-  suffices U = ⊤ from fg_def.mpr <| (fg_iff_subgroup_fg ⊤).mp <| this ▸ closure_finite_fg S
-  -- Assume this is false.
+  suffices U = ⊤ from Group.fg_iff.mpr ⟨S, this, hs.union <| H₄ _⟩  -- Assume this is false.
   by_contra! H
   -- Then we can find an element `x : G` not in `U` and of minimal height.
   obtain ⟨x₀, hx₀⟩ : ∃ x₀, x₀ ∉ U := SetLike.exists_not_mem_of_ne_top U H rfl
@@ -79,20 +77,18 @@ theorem Group.fg_of_descent {G : Type*} [Group G] {f : G →* G} (hf : ∀ U : S
   have hx₀T : x₀ ∈ T := by simp [T, hx₀]
   obtain ⟨x, hx₁, hx₂⟩ := Set.exists_min_image _ h (H₄ (h x₀) |>.inter_of_left _) ⟨_, hx₀T⟩
   -- Now we construct an element `y` of smaller height and not in `U`.
-  obtain ⟨g, hg, z, hz, hy⟩ := Set.mem_mul.mp <| H₁ ▸ Set.mem_univ x
-  obtain ⟨y, rfl⟩ := Set.mem_range.mp hz
-  rw [← eq_inv_mul_iff_mul_eq] at hy
-  have H' : h y < h x := by
-    suffices a * h x + 2 * c < b * h x by nlinarith [hy ▸ H₂ g hg x, H₃ y]
-    suffices 2 * c / (b - a) < h x by field_simp [sub_pos.mpr H₀] at this; grind
-    suffices x ∉ S by grind
+  obtain ⟨g, hg, z, ⟨y, rfl⟩, rfl⟩ := Set.mem_mul.mp <| H₁ ▸ Set.mem_univ x
+  have H' : h y < h (g * f y) := by
+    suffices a * h (g * f y) + 2 * c < b * h (g * f y) by nlinarith [H₂ g hg (f y), H₃ y]
+    suffices 2 * c / (b - a) < h (g * f y) by field_simp [sub_pos.mpr H₀] at this; grind
+    suffices g * f y ∉ S by grind
     exact notMem_of_notMem_closure <| by grind
   -- To obtain a contradiction, it is sufficient to show `y ∈ T`.
   suffices y ∈ T from (H'.trans_le <| hx₂ y this).false
   simp only [Set.mem_inter_iff, Set.mem_setOf_eq, T] at hx₁ ⊢
   refine ⟨H'.le.trans <| hx₂ _ hx₀T, fun H ↦ ?_⟩
-  have Hfy := U.mul_mem (mem_closure_of_mem <| by grind : g ∈ U) (hf U <| hy ▸ mem_map_of_mem f H)
-  exact hx₁.2 (mul_inv_cancel_left g x ▸ Hfy)
+  have Hfy := U.mul_mem (mem_closure_of_mem <| by grind : g ∈ U) (hf U <| mem_map_of_mem f H)
+  exact hx₁.2 Hfy
 
 open Subgroup QuotientGroup in
 /--
@@ -129,7 +125,9 @@ theorem CommGroup.fg_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → �
   refine Group.fg_of_descent (fun U u hu ↦ ?_) ha H₀ s.toFinite H₁' (fun g' hg' x ↦ ?_) H₃' H₄
   · obtain ⟨u', hu₁, rfl⟩ := mem_map.mp hu
     exact U.pow_mem hu₁ n
-  · grind [mul_comm, inv_mul_eq_div]
+  · specialize H₂ g'⁻¹ (g' * x)
+    rw [mul_inv_cancel_comm g' x] at H₂
+    grind only [= Set.mem_range, = max_def]
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
