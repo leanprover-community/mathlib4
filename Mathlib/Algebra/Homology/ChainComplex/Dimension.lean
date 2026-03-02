@@ -10,25 +10,29 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 /-!
-# Dimension lemmas for chain complex differentials
+# Dimension lemmas for homological complex differentials
 
 This file proves basic dimension-related properties of the differentials `dFrom` and `dTo`
-in ℤ-indexed chain complexes of modules over a division ring.
+in homological complexes of modules over a division ring.
+
+The core lemmas are stated for an arbitrary `HomologicalComplex (ModuleCat k) c` with
+`c : ComplexShape ι`, making them applicable to ℕ-indexed, ℤ-indexed, or any other
+complex shape.
 
 ## Main results
 
-* `ChainComplex.dFrom_eq_zero_of_isZero`: `dFrom` is zero when its target object is zero.
-* `ChainComplex.dTo_eq_zero_of_isZero`: `dTo` is zero when its source object is zero.
-* `ChainComplex.dFrom_zero_range`: `dFrom` has zero range when its target object is zero.
-* `ChainComplex.dTo_zero_range`: `dTo` has zero range when its source object is zero.
-* `ChainComplex.dFrom_range_finrank_eq_d`: The range of `dFrom` has the same dimension as the
+* `HomologicalComplex.dFrom_eq_zero_of_isZero_xNext`: `dFrom` is zero when `xNext` is zero.
+* `HomologicalComplex.dTo_eq_zero_of_isZero_xPrev`: `dTo` is zero when `xPrev` is zero.
+* `HomologicalComplex.dFrom_zero_range`: `dFrom` has zero range when `xNext` is zero.
+* `HomologicalComplex.dTo_zero_range`: `dTo` has zero range when `xPrev` is zero.
+* `HomologicalComplex.dFrom_range_finrank_eq_d`: The range of `dFrom` has the same dimension as
+  the range of the underlying differential `d`.
+* `HomologicalComplex.dTo_range_finrank_eq_d`: The range of `dTo` has the same dimension as the
   range of the underlying differential `d`.
-* `ChainComplex.dTo_range_finrank_eq_d`: The range of `dTo` has the same dimension as the
-  range of the underlying differential `d`.
-* `ChainComplex.dFrom_succ_range_finrank_eq_dTo`: The range of `dFrom (i+1)` has the same
-  dimension as the range of `dTo i`.
-* `ChainComplex.range_dTo_le_ker_dFrom`: The range of `dTo i` is contained in the kernel
+* `HomologicalComplex.range_dTo_le_ker_dFrom`: The range of `dTo i` is contained in the kernel
   of `dFrom i`.
+* `ChainComplex.dFrom_succ_range_finrank_eq_dTo`: The range of `dFrom (i+1)` has the same
+  dimension as the range of `dTo i` (ℤ-indexed chain complexes).
 -/
 
 @[expose] public section
@@ -36,66 +40,75 @@ in ℤ-indexed chain complexes of modules over a division ring.
 open CategoryTheory Limits HomologicalComplex
 
 variable {k : Type*} [DivisionRing k]
+variable {ι : Type*} {c : ComplexShape ι}
 
-namespace ChainComplex
+namespace HomologicalComplex
 
-/-- If the target object is zero, then dFrom is the zero map. -/
-lemma dFrom_eq_zero_of_isZero (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    (h : IsZero (C.X (i - 1))) : C.dFrom i = 0 :=
-  IsZero.eq_zero_of_tgt
-    (by rwa [xNext, show (ComplexShape.down ℤ).next i = i - 1 from by simp]) _
+/-- If `xNext i` is zero, then `dFrom i` is the zero map. -/
+lemma dFrom_eq_zero_of_isZero_xNext (C : HomologicalComplex (ModuleCat k) c) (i : ι)
+    (h : IsZero (C.xNext i)) : C.dFrom i = 0 :=
+  IsZero.eq_zero_of_tgt h _
 
-/-- If the source object is zero, then dTo is the zero map. -/
-lemma dTo_eq_zero_of_isZero (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    (h : IsZero (C.X (i + 1))) : C.dTo i = 0 :=
-  IsZero.eq_zero_of_src
-    (by rwa [xPrev, show (ComplexShape.down ℤ).prev i = i + 1 from by simp]) _
+/-- If `xPrev j` is zero, then `dTo j` is the zero map. -/
+lemma dTo_eq_zero_of_isZero_xPrev (C : HomologicalComplex (ModuleCat k) c) (j : ι)
+    (h : IsZero (C.xPrev j)) : C.dTo j = 0 :=
+  IsZero.eq_zero_of_src h _
 
-/-- If the target object is zero, then dFrom has zero range. -/
-lemma dFrom_zero_range (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    (h : IsZero (C.X (i - 1))) :
+/-- If `xNext i` is zero, then `dFrom i` has zero range. -/
+lemma dFrom_zero_range (C : HomologicalComplex (ModuleCat k) c) (i : ι)
+    (h : IsZero (C.xNext i)) :
     LinearMap.range (C.dFrom i).hom = ⊥ := by
-  rw [dFrom_eq_zero_of_isZero C i h, ModuleCat.hom_zero, LinearMap.range_zero]
+  rw [dFrom_eq_zero_of_isZero_xNext C i h, ModuleCat.hom_zero, LinearMap.range_zero]
 
-/-- If the source object is zero, then dTo has zero range. -/
-lemma dTo_zero_range (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ)
-    (h : IsZero (C.X (i + 1))) :
-    LinearMap.range (C.dTo i).hom = ⊥ := by
-  rw [dTo_eq_zero_of_isZero C i h, ModuleCat.hom_zero, LinearMap.range_zero]
+/-- If `xPrev j` is zero, then `dTo j` has zero range. -/
+lemma dTo_zero_range (C : HomologicalComplex (ModuleCat k) c) (j : ι)
+    (h : IsZero (C.xPrev j)) :
+    LinearMap.range (C.dTo j).hom = ⊥ := by
+  rw [dTo_eq_zero_of_isZero_xPrev C j h, ModuleCat.hom_zero, LinearMap.range_zero]
 
-/-- The range of dFrom has the same dimension as the underlying differential. -/
-lemma dFrom_range_finrank_eq_d (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
-    Module.finrank k (LinearMap.range (C.dFrom (i + 1)).hom) =
-    Module.finrank k (LinearMap.range (C.d (i + 1) i).hom) := by
-  have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
-    simp [ComplexShape.down, ComplexShape.down']
-  rw [C.dFrom_eq rel, show ((C.d (i + 1) i) ≫ (C.xNextIso rel).inv).hom =
-    (C.xNextIso rel).toLinearEquiv.symm.toLinearMap ∘ₗ (C.d (i + 1) i).hom from rfl,
-    LinearMap.range_comp, ← LinearEquiv.finrank_map_eq (C.xNextIso rel).toLinearEquiv.symm]
+/-- The range of `dFrom i` has the same dimension as the range of the underlying
+differential `C.d i j`. -/
+lemma dFrom_range_finrank_eq_d (C : HomologicalComplex (ModuleCat k) c) {i j : ι}
+    (r : c.Rel i j) :
+    Module.finrank k (LinearMap.range (C.dFrom i).hom) =
+    Module.finrank k (LinearMap.range (C.d i j).hom) := by
+  rw [C.dFrom_eq r, show ((C.d i j) ≫ (C.xNextIso r).inv).hom =
+    (C.xNextIso r).toLinearEquiv.symm.toLinearMap ∘ₗ (C.d i j).hom from rfl,
+    LinearMap.range_comp, ← LinearEquiv.finrank_map_eq (C.xNextIso r).toLinearEquiv.symm]
 
-/-- The range of dTo has the same dimension as the underlying differential. -/
-lemma dTo_range_finrank_eq_d (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
-    Module.finrank k (LinearMap.range (C.dTo i).hom) =
-    Module.finrank k (LinearMap.range (C.d (i + 1) i).hom) := by
-  have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
-    simp [ComplexShape.down, ComplexShape.down']
-  rw [C.dTo_eq rel, show ((C.xPrevIso rel).hom ≫ C.d (i + 1) i).hom =
-    (C.d (i + 1) i).hom ∘ₗ (C.xPrevIso rel).toLinearEquiv.toLinearMap from rfl,
+/-- The range of `dTo j` has the same dimension as the range of the underlying
+differential `C.d i j`. -/
+lemma dTo_range_finrank_eq_d (C : HomologicalComplex (ModuleCat k) c) {i j : ι}
+    (r : c.Rel i j) :
+    Module.finrank k (LinearMap.range (C.dTo j).hom) =
+    Module.finrank k (LinearMap.range (C.d i j).hom) := by
+  rw [C.dTo_eq r, show ((C.xPrevIso r).hom ≫ C.d i j).hom =
+    (C.d i j).hom ∘ₗ (C.xPrevIso r).toLinearEquiv.toLinearMap from rfl,
     LinearMap.range_comp_of_range_eq_top _ (LinearEquiv.range _)]
 
-/-- The range of `dFrom (i + 1)` has the same dimension as the range of `dTo i`. -/
-lemma dFrom_succ_range_finrank_eq_dTo
-    (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
-    Module.finrank k (LinearMap.range (C.dFrom (i + 1)).hom) =
-    Module.finrank k (LinearMap.range (C.dTo i).hom) := by
-  rw [dFrom_range_finrank_eq_d, dTo_range_finrank_eq_d]
-
-/-- The range of dTo i is contained in the kernel of dFrom i. -/
+/-- The range of `dTo i` is contained in the kernel of `dFrom i`. -/
 lemma range_dTo_le_ker_dFrom
-    (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
+    (C : HomologicalComplex (ModuleCat k) c) (i : ι) :
     LinearMap.range (C.dTo i).hom ≤
     LinearMap.ker (C.dFrom i).hom := by
   rw [LinearMap.range_le_ker_iff]
   exact congr_arg ModuleCat.Hom.hom (C.dTo_comp_dFrom i)
+
+end HomologicalComplex
+
+namespace ChainComplex
+
+/-- The range of `dFrom (i + 1)` has the same dimension as the range of `dTo i`.
+This is specific to ℤ-indexed chain complexes; the general versions
+`HomologicalComplex.dFrom_range_finrank_eq_d` and `HomologicalComplex.dTo_range_finrank_eq_d`
+apply to any complex shape. -/
+lemma dFrom_succ_range_finrank_eq_dTo
+    (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
+    Module.finrank k (LinearMap.range (C.dFrom (i + 1)).hom) =
+    Module.finrank k (LinearMap.range (C.dTo i).hom) := by
+  have rel : (ComplexShape.down ℤ).Rel (i + 1) i := by
+    simp [ComplexShape.down, ComplexShape.down']
+  rw [HomologicalComplex.dFrom_range_finrank_eq_d C rel,
+    HomologicalComplex.dTo_range_finrank_eq_d C rel]
 
 end ChainComplex
