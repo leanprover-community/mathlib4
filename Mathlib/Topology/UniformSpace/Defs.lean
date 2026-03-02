@@ -798,11 +798,12 @@ theorem Filter.HasBasis.biInter_biUnion_ball {p : ι → Prop} {U : ι → SetRe
 
 /-! ### Uniform continuity -/
 
+variable [UniformSpace β]
 
 /-- A function `f : α → β` is *uniformly continuous* if `(f x, f y)` tends to the diagonal
 as `(x, y)` tends to the diagonal. In other words, if `x` is sufficiently close to `y`, then
 `f x` is close to `f y` no matter where `x` and `y` are located in `α`. -/
-def UniformContinuous [UniformSpace β] (f : α → β) :=
+def UniformContinuous (f : α → β) :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α) (𝓤 β)
 
 /-- Notation for uniform continuity with respect to non-standard `UniformSpace` instances. -/
@@ -812,22 +813,22 @@ scoped[Uniformity] notation "UniformContinuous[" u₁ ", " u₂ "]" => @UniformC
 the diagonal as `(x, y)` tends to the diagonal while remaining in `s ×ˢ s`.
 In other words, if `x` is sufficiently close to `y`, then `f x` is close to
 `f y` no matter where `x` and `y` are located in `s`. -/
-def UniformContinuousOn [UniformSpace β] (f : α → β) (s : Set α) : Prop :=
+def UniformContinuousOn (f : α → β) (s : Set α) : Prop :=
   Tendsto (fun x : α × α => (f x.1, f x.2)) (𝓤 α ⊓ 𝓟 (s ×ˢ s)) (𝓤 β)
 
-theorem uniformContinuous_def [UniformSpace β] {f : α → β} :
+theorem uniformContinuous_def {f : α → β} :
     UniformContinuous f ↔ ∀ r ∈ 𝓤 β, { x : α × α | (f x.1, f x.2) ∈ r } ∈ 𝓤 α :=
   Iff.rfl
 
-theorem uniformContinuous_iff_eventually [UniformSpace β] {f : α → β} :
+theorem uniformContinuous_iff_eventually {f : α → β} :
     UniformContinuous f ↔ ∀ r ∈ 𝓤 β, ∀ᶠ x : α × α in 𝓤 α, (f x.1, f x.2) ∈ r :=
   Iff.rfl
 
-theorem uniformContinuousOn_univ [UniformSpace β] {f : α → β} :
+theorem uniformContinuousOn_univ {f : α → β} :
     UniformContinuousOn f univ ↔ UniformContinuous f := by
   rw [UniformContinuousOn, UniformContinuous, univ_prod_univ, principal_univ, inf_top_eq]
 
-theorem uniformContinuous_of_const [UniformSpace β] {c : α → β} (h : ∀ a b, c a = c b) :
+theorem uniformContinuous_of_const {c : α → β} (h : ∀ a b, c a = c b) :
     UniformContinuous c :=
   have : (fun x : α × α => (c x.fst, c x.snd)) ⁻¹' SetRel.id = univ :=
     eq_univ_iff_forall.2 fun ⟨a, b⟩ => h a b
@@ -835,33 +836,53 @@ theorem uniformContinuous_of_const [UniformSpace β] {c : α → β} (h : ∀ a 
 
 theorem uniformContinuous_id : UniformContinuous (@id α) := tendsto_id
 
-theorem uniformContinuous_const [UniformSpace β] {b : β} : UniformContinuous fun _ : α => b :=
+theorem uniformContinuous_const {b : β} : UniformContinuous fun _ : α => b :=
   uniformContinuous_of_const fun _ _ => rfl
 
-nonrec theorem UniformContinuous.comp [UniformSpace β] [UniformSpace γ] {g : β → γ} {f : α → β}
+nonrec theorem UniformContinuous.comp [UniformSpace γ] {g : β → γ} {f : α → β}
     (hg : UniformContinuous g) (hf : UniformContinuous f) : UniformContinuous (g ∘ f) :=
   hg.comp hf
 
 /-- If a function `T` is uniformly continuous in a uniform space `β`,
 then its `n`-th iterate `T^[n]` is also uniformly continuous. -/
-theorem UniformContinuous.iterate [UniformSpace β] (T : β → β) (n : ℕ) (h : UniformContinuous T) :
+theorem UniformContinuous.iterate (T : β → β) (n : ℕ) (h : UniformContinuous T) :
     UniformContinuous T^[n] := by
   induction n with
   | zero => exact uniformContinuous_id
   | succ n hn => exact Function.iterate_succ _ _ ▸ UniformContinuous.comp hn h
 
-theorem Filter.HasBasis.uniformContinuous_iff {ι'} [UniformSpace β] {p : ι → Prop}
+theorem Filter.HasBasis.uniformContinuous_iff {ι'} {p : ι → Prop}
     {s : ι → SetRel α α} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} :
     UniformContinuous f ↔ ∀ i, q i → ∃ j, p j ∧ ∀ x y, (x, y) ∈ s j → (f x, f y) ∈ t i :=
   (ha.tendsto_iff hb).trans <| by simp only [Prod.forall]
 
-theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} [UniformSpace β] {p : ι → Prop}
+theorem Filter.HasBasis.uniformContinuousOn_iff {ι'} {p : ι → Prop}
     {s : ι → SetRel α α} (ha : (𝓤 α).HasBasis p s) {q : ι' → Prop} {t : ι' → Set (β × β)}
     (hb : (𝓤 β).HasBasis q t) {f : α → β} {S : Set α} :
     UniformContinuousOn f S ↔
       ∀ i, q i → ∃ j, p j ∧ ∀ x, x ∈ S → ∀ y, y ∈ S → (x, y) ∈ s j → (f x, f y) ∈ t i :=
   ((ha.inf_principal (S ×ˢ S)).tendsto_iff hb).trans <| by
     simp_rw [Prod.forall, Set.inter_comm (s _), forall_mem_comm, mem_inter_iff, mem_prod, and_imp]
+
+/-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
+on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
+space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`. -/
+@[mk_iff]
+structure IsUniformInducing (f : α → β) : Prop where
+  /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
+  under `Prod.map f f`. -/
+  comap_uniformity : comap (fun x : α × α ↦ (f x.1, f x.2)) (𝓤 β) = 𝓤 α
+
+/-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
+injective. If `α` is a separated space, then the latter assumption follows from the former. -/
+@[mk_iff]
+structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
+  /-- A uniform embedding is injective. -/
+  injective : Function.Injective f
+
+lemma IsUniformEmbedding.isUniformInducing {f : α → β} (hf : IsUniformEmbedding f) :
+    IsUniformInducing f :=
+  hf.toIsUniformInducing
 
 end UniformSpace

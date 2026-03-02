@@ -54,7 +54,7 @@ class Linear (R : Type w) [Semiring R] (C : Type u) [Category.{v} C] [Preadditiv
   comp_smul : ∀ (X Y Z : C) (f : X ⟶ Y) (r : R) (g : Y ⟶ Z), f ≫ (r • g) = r • f ≫ g := by
     cat_disch
 
-attribute [instance] Linear.homModule
+attribute [instance_reducible, instance] Linear.homModule
 
 attribute [simp] Linear.smul_comp Linear.comp_smul
 
@@ -79,6 +79,7 @@ section End
 
 variable {R : Type w}
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
   dsimp [End]
   infer_instance

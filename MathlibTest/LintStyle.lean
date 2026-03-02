@@ -193,6 +193,11 @@ end setOption
 section cdotLinter
 set_option linter.style.cdot true
 
+-- After https://github.com/leanprover/lean4/pull/12263,
+-- we need to add `instance_reducible` before we can add `instance` to `Int.add` in the tests below.
+set_option allowUnsafeReducibility true in
+attribute [instance_reducible] Int.add
+
 set_option linter.globalAttributeIn false in
 /--
 warning: Please, use '·' (typed as `\.`) instead of '.' as 'cdot'.
@@ -322,7 +327,7 @@ Note: This linter can be disabled with `set_option linter.style.lambdaSyntax fal
 example : ℕ → ℕ := by exact λ n ↦ 3 * n + 1
 
 /--
-warning: declaration uses 'sorry'
+warning: declaration uses `sorry`
 ---
 warning: Please use 'fun' and not 'λ' to define anonymous functions.
 The 'λ' syntax is deprecated in mathlib4.
