@@ -5,7 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.RepresentationTheory.Intertwining
 
@@ -24,7 +25,6 @@ We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category wit
 -/
 
 @[expose] public section
-suppress_compilation
 
 open CategoryTheory Limits Representation.IntertwiningMap
 open scoped MonoidAlgebra
@@ -45,8 +45,6 @@ instance (k : Type u) (G : Type v) [Ring k] [Monoid G] : Category (Rep k G) wher
 def V {k : Type u} {G : Type v} [Ring k] [Monoid G] (A : Rep k G) : ModuleCat k := Action.V A
 
 variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
-
-
 
 instance : CoeSort (Rep.{w} k G) (Type _) := ⟨fun V => V.V⟩
 
@@ -170,12 +168,117 @@ instance : HasForget₂ (Rep k G) (ModuleCat.{w, u} k) where
     map f := f.toModuleCatHom
   }
 
+@[simp]
 lemma forget₂_map {M N : Rep k G} (f : M ⟶ N) :
     (forget₂ (Rep k G) (ModuleCat.{w, u} k)).map f = ModuleCat.ofHom f.hom.toLinearMap :=
   rfl
 
 @[simp]
 lemma forget₂_obj {M : Rep k G} : (forget₂ (Rep k G) (ModuleCat.{w, u} k)).obj M = M.V := rfl
+
+instance : (forget₂ (Rep k G) (ModuleCat.{w, u} k)).Faithful where
+  map_injective {X Y} _ _ h := hom_ext <| by ext1; simpa [ModuleCat.hom_ext_iff] using h
+
+instance preservesLimits_forget :
+    PreservesLimits (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+  Action.preservesLimits_forget (ModuleCat.{w} k) G
+
+instance preservesColimits_forget :
+    PreservesColimits (forget₂ (Rep.{w} k G) (ModuleCat k)) :=
+  Action.preservesColimits_forget (ModuleCat.{w} k) G
+
+instance {M N : Rep k G} : Add (M ⟶ N) where
+  add f g := ofHom (f.hom + g.hom)
+
+lemma ofHom_add {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+    {σ : Representation k G M} {ρ : Representation k G N} (f g : σ.IntertwiningMap ρ) :
+    ofHom (f + g) = ofHom f + ofHom g := rfl
+
+lemma add_hom {M N : Rep k G} (f g : M ⟶ N) : (f + g).hom = f.hom + g.hom := rfl
+
+lemma add_comp {M N O : Rep k G} (f₁ f₂ : M ⟶ N) (g : N ⟶ O) :
+    (f₁ + f₂) ≫ g = f₁ ≫ g + f₂ ≫ g := by
+  ext1
+  simp [add_hom, Representation.IntertwiningMap.comp_add]
+
+lemma comp_add {M N O : Rep k G} (f : M ⟶ N) (g₁ g₂ : N ⟶ O) :
+    f ≫ (g₁ + g₂) = f ≫ g₁ + f ≫ g₂ := by
+  ext1
+  simp [add_hom, Representation.IntertwiningMap.add_comp]
+
+instance {M N : Rep k G} : Zero (M ⟶ N) where
+  zero := ofHom (0 : M.ρ.IntertwiningMap N.ρ)
+
+lemma ofHom_zero {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+    {σ : Representation k G M} {ρ : Representation k G N} :
+    ofHom (0 : σ.IntertwiningMap ρ) = 0 := rfl
+
+lemma zero_hom {M N : Rep k G} : (0 : M ⟶ N).hom = 0 := rfl
+
+instance {M N : Rep k G} : SMul ℕ (M ⟶ N) where
+  smul n f := ofHom (n • f.hom)
+
+lemma ofHom_nsmul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (n : ℕ) :
+    ofHom (n • f) = n • ofHom f := rfl
+
+lemma nsmul_hom {M N : Rep k G} (f : M ⟶ N) (n : ℕ) : (n • f).hom = n • f.hom := rfl
+
+instance {M N : Rep k G} : Neg (M ⟶ N) where
+  neg f := ofHom (-f.hom)
+
+lemma ofHom_neg {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) :
+    ofHom (-f) = -ofHom f := rfl
+
+lemma neg_hom {M N : Rep k G} (f : M ⟶ N) : (-f).hom = -f.hom := rfl
+
+instance {M N : Rep k G} : Sub (M ⟶ N) where
+  sub f g := ofHom (f.hom - g.hom)
+
+lemma ofHom_sub {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+    {σ : Representation k G M} {ρ : Representation k G N} (f g : σ.IntertwiningMap ρ) :
+    ofHom (f - g) = ofHom f - ofHom g := rfl
+
+lemma sub_hom {M N : Rep k G} (f g : M ⟶ N) : (f - g).hom = f.hom - g.hom := rfl
+
+instance {M N : Rep k G} : SMul ℤ (M ⟶ N) where
+  smul n f := ofHom (n • f.hom)
+
+lemma ofHom_zsmul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (n : ℤ) :
+    ofHom (n • f) = n • ofHom f := rfl
+
+lemma zsmul_hom {M N : Rep k G} (f : M ⟶ N) (n : ℤ) : (n • f).hom = n • f.hom := rfl
+
+instance : Preadditive (Rep k G) where
+  homGroup _ _ := hom_injective.addCommGroup _ zero_hom add_hom neg_hom sub_hom nsmul_hom zsmul_hom
+  add_comp _ _ _ := add_comp
+  comp_add _ _ _ := comp_add
+
+instance {M N : Rep k G} : SMul k (M ⟶ N) where
+  smul r f := ofHom (r • f.hom)
+
+lemma ofHom_smul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (r : k) :
+    ofHom (r • f) = r • ofHom f := rfl
+
+lemma smul_hom {M N : Rep k G} (f : M ⟶ N) (r : k) : (r • f).hom = r • f.hom := rfl
+
+lemma smul_comp {M N O : Rep k G} (r : k) (f : M ⟶ N) (g : N ⟶ O) :
+    (r • f) ≫ g = r • (f ≫ g) := by
+  ext1
+  simp [smul_hom, Representation.IntertwiningMap.smul_comp]
+
+lemma comp_smul {M N O : Rep k G} (f : M ⟶ N) (r : k) (g : N ⟶ O) :
+    f ≫ (r • g) = r • (f ≫ g) := by
+  ext1
+  simp [smul_hom, Representation.IntertwiningMap.comp_smul]
+
+instance : Linear k (Rep k G) where
+  homModule X Y := hom_injective.module _ ⟨⟨_, zero_hom⟩, add_hom⟩ <| by simp [smul_hom]
+  smul_comp _ _ _ := smul_comp
+  comp_smul _ _ _ := comp_smul
 
 variable (k G) in
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/

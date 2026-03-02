@@ -1,12 +1,13 @@
 module
 
 public import Mathlib.RepresentationTheory.Rep.Basic
+public import Mathlib.CategoryTheory.Action.Monoidal
 
 @[expose] public section
 
 universe w u v1 v2
 
-variable {R : Type u} [Ring R] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
+variable {R : Type u} [CommRing R] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
 
 open CategoryTheory
 
@@ -19,45 +20,37 @@ def resFunctor (f : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) 
 
 abbrev res (f : H →* G) (M : Rep R G) := (resFunctor f).obj M
 
--- /--
--- If `M` is an object of `Rep R G` and `φ : H →* G` then `M ↓ φ` is the restriction of the
--- representation `M` to `H`, as an object of `Rep R H`.
-
--- This is notation for `(Rep.res H).obj M`, which is an abbreviation of
--- `(Action.res (ModuleCat R) H.subtype).obj M`
--- -/
--- notation3:60 M:60 " ↓ " f:61 => (res f).obj M
-
 variable (f : H →* G) (M : Rep R G)
 
-#exit
+@[simp]
 lemma res_obj_ρ :
-  have := res f M
-  -- have := this.ρ (k := R)
-  sorry = (M.ρ.comp f) := rfl
+  (res f M).ρ = (M.ρ.comp f) := rfl
 
-lemma coe_res_obj_ρ' (h : H) : (M ↓ f).ρ h = M.ρ (f h) := rfl
+lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
 
-lemma res_obj_V : (M ↓ f).V = M.V := rfl
+@[simp]
+lemma res_obj_V : (res f M).V = M.V := rfl
 
-@[simp] lemma res_map_hom {M N : Rep R G} (p : M ⟶ N): ((res f).map p).hom = p.hom := rfl
+@[simp] lemma res_map_hom_toLinearMap {M N : Rep R G} (p : M ⟶ N) :
+    ((resFunctor f).map p).hom.toLinearMap = p.hom.toLinearMap := rfl
 
 section
 
-local notation3:max "res% " R':max f:max => res (R := R') f
+-- local notation3:max "res% " R':max f:max => res (R := R') f
 
-instance : (res% R f).Faithful :=
+instance : (resFunctor (R := R) f).Faithful :=
   inferInstanceAs (Action.res _ _).Faithful
 
-theorem full_res (hf : (⇑f).Surjective) : (res% R f).Full :=
+theorem full_res (hf : (⇑f).Surjective) : (resFunctor (R := R) f).Full :=
   Action.full_res _ _ hf
 
-instance : (res% R f).Additive :=
+instance : (resFunctor (R := R) f).Additive :=
   inferInstanceAs <| (Action.res _ _).Additive
 
-instance : (res% R f).Linear R :=
+instance : (resFunctor (R := R) f).Linear R :=
   inferInstanceAs <| (Action.res _ _).Linear R
 
+#exit
 variable (R) in
 @[simps! unit_app_hom_hom counit_app_hom_hom]
 noncomputable def indResAdjunction' : indFunctor R f ⊣ res% R f :=
