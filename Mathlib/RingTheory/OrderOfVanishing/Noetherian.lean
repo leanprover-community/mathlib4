@@ -117,7 +117,7 @@ lemma ord_mul_of_isUnit_left (a : R) (h : IsUnit a) (x : R) : ord R (a * x) = or
 lemma ord_mul_of_isUnit_right (a : R) (h : IsUnit a) (x : R) : ord R (x * a) = ord R x := by
   rw [ord, ord, Ideal.span_singleton_mul_right_unit h x]
 
-lemma ord_mul_of_associated (x y : R) (h : Associated x y) : ord R x = ord R y := by
+lemma ord_eq_of_associated (x y : R) (h : Associated x y) : ord R x = ord R y := by
   obtain ⟨a, rfl⟩ := h
   simp
 
