@@ -21,10 +21,10 @@ We collect results about effective epimorphisms in the category of schemes.
 schemes is an effective epimorphism in the category of affine schemes.
 
 For a surjective and flat morphism `π : X ⟶ Y` between affine schemes, we prove the following.
-* `exists_comp_eq_of_flat_of_isAffine`: Any morphism `g : X ⟶ S` of schemes whose two pullbacks to
-  `X ×[Y] X` agree descends to a morphism `f : Y ⟶ S` with `π ≫ f = g`.
-* `effectiveEpi_of_flat_of_surjective_of_isAffine`: The map `π : X ⟶ Y` is an effective epimorphism in the
-  category of schemes.
+* `exists_comp_eq_of_flat_of_isAffine`: Any morphism `f : X ⟶ S` of schemes whose two pullbacks to
+  `X ×[Y] X` agree descends to a morphism `u : Y ⟶ S` with `π ≫ u = f`.
+* `effectiveEpi_of_flat_of_surjective_of_isAffine`: The map `π : X ⟶ Y` is an effective epimorphism
+  in the category of schemes.
 
 ## Reference
 
@@ -118,12 +118,13 @@ lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π
   simp [reassoc_of% hu, f']
 
 /-- If `π : X ⟶ Y` is a surjective and flat morphism between affine schemes, then any morphism
-`g : X ⟶ S` of schemes whose two pullbacks to `X ×[Y] X` agree descends to a morphism `f : Y ⟶ S`
-with `π ≫ f = g`. -/
-lemma exists_comp_eq_of_flat_of_isAffine {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
-    [Surjective π] [Flat π] (g : X ⟶ S) (hg : pullback.fst π π ≫ g = pullback.snd π π ≫ g) :
-    ∃ (f : Y ⟶ S), π ≫ f = g := by
-  obtain ⟨𝒰, h⟩ := exists_openCover_exists π g hg
+`f : X ⟶ S` of schemes whose two pullbacks to `X ×[Y] X` agree descends to a morphism `u : Y ⟶ S`
+with `π ≫ u = f`. -/
+lemma exists_comp_eq_of_flat_of_isAffine {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y]
+    (π : X ⟶ Y) [Surjective π] [Flat π]
+    (f : X ⟶ S) (hf : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
+    ∃ (u : Y ⟶ S), π ≫ u = f := by
+  obtain ⟨𝒰, h⟩ := exists_openCover_exists π f hf
   choose u hfac using h
   refine ⟨𝒰.glueMorphisms u ?_, ?_⟩
   · intro i j
