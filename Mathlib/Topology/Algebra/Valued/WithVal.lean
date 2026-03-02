@@ -438,9 +438,6 @@ theorem IsEquiv.uniformContinuous_equivWithVal
   use .mk0 ((WithVal.valueGroup₀_equiv _).symm (v.restrict r/ v.restrict s))
      (by simp [restrict₀_eq_zero_iff, h.eq_zero, hr₀.ne.symm, hs₀.ne.symm] ),
     fun x hx ↦ ?_
-  --simp_rw [restrict_def] at hx
-  --simp only [restrict_def, map_div₀, Units.val_mk0, Set.mem_setOf_eq] at hx
-  --simp only [restrict_def, congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq]
   rw [← (valueGroup₀_equiv _).symm_apply_eq, ← restrict_def, ← restrict_def ] at hr
   rw [← hr, Set.mem_setOf_eq]
   by_cases hx0 : Valued.v.restrict (WithVal.congr v w (.refl R) x) = 0
@@ -452,10 +449,32 @@ theorem IsEquiv.uniformContinuous_equivWithVal
     exact div_ne_zero_iff.mpr ⟨WithZero.pos_iff_ne_zero.mp hr₀,
       WithZero.pos_iff_ne_zero.mp hs₀⟩
     --exact div_pos hr₀ hs₀ -- Does not longer work
-  suffices w ((equiv v) x) * w s < w r by
+  suffices hlt :  w ((equiv v) x) * w s < w r by
+    rw [← map_mul, ← restrict_lt_iff, map_mul, ← lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
+      at hlt
+    have : PosMulStrictMono (ValueGroup₀ w) := by
+      sorry
+    have hs0 : 0 < restrict₀ w s := sorry
+    replace hlt := mul_lt_mul_of_pos_left hlt hs0
+    simp only [equiv_apply, restrict_def, div_eq_mul_inv, ← mul_assoc] at hlt
+    rw [mul_comm _ ( (restrict₀ w) r), mul_assoc] at hlt
+    rw [mul_inv_cancel₀, mul_one] at hlt
     rw [← strictMono_valueGroup₀_equiv.lt_iff_lt]
+    rw [div_eq_mul_inv, map_mul]
+
     simp only [congr_apply, RingEquiv.refl_apply, restrict_def, map_div₀, MulEquiv.apply_symm_apply]
-    --rw [lt_div_iff₀]
+    simp only [valueGroup₀_equiv, MulEquiv.coe_mk, Equiv.coe_fn_mk]
+    split_ifs
+    · sorry
+    --rw [← restrict_lt_iff]
+    --rw [lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
+    --simp? [WithZero.unzero_coe]
+    have hlin : LinearOrderedCommGroupWithZero (ValueGroup₀ w) :=
+      ValueGroup₀.instLinearOrderedCommGroupWithZero
+
+
+    rw [div_eq_mul_inv]
+    apply mul_lt_mul_of_pos_left _ hs0
     sorry
   sorry
   /- suffices w ((equiv v) x) * w s < w r by
@@ -482,6 +501,8 @@ theorem IsEquiv.uniformContinuous_equivWithVal
       simpa using hx0
     rw [ne_eq, h.eq_zero]
     exact ne_zero_of_lt hs₀ -/
+
+#exit
 
 theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w)
     (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ) (h : v.IsEquiv w) :
