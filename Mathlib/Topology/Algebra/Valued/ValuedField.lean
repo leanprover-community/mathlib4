@@ -9,6 +9,7 @@ public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.GroupWithZero.Range
 
 /-!
 # Valued fields and their completions
@@ -138,7 +139,7 @@ theorem Valued.continuous_valuation [hv : Valued K Γ₀] :
   · have v_ne : (v.restrict x : ValueGroup₀ hv.v) ≠ 0 := (Valuation.ne_zero_iff _).mpr h
     rw [ContinuousAt, WithZeroTopology.tendsto_of_ne_zero v_ne]
     simp_rw [v.restrict_inj]
-    apply Valued.loc_const (by simpa using v_ne)
+    apply Valued.loc_const (by simpa [restrict₀_apply] using v_ne)
 
 -- TODO: can we generalize further?
 theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
@@ -153,7 +154,7 @@ theorem Valued.continuous_valuation_of_surjective [hv : Valued K Γ₀]
     obtain ⟨x, hx⟩ := hsurj γ
     let := Units.mk0 γ hγ;
     have := restrict₀ hv.v x
-    use Units.mk0 (restrict₀ hv.v x) (by simp [hx, hγ])
+    use Units.mk0 (restrict₀ hv.v x) (by simp [restrict₀_apply, hx, hγ])
     simp only [Units.val_mk0, setOf_subset_setOf, ← v.restrict_def, Valuation.restrict_lt_iff, hx,
       imp_self, implies_true]
   · have h0 : hv.v x ≠ 0 :=  (Valuation.ne_zero_iff _).mpr h
@@ -302,7 +303,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → ValueGro
     filter_upwards [nhds_right] with x x_in a ha
     rcases x_in with ⟨y, y_in, rfl⟩
     have : (v.restrict (a * z₀⁻¹) ) = 1 := by
-      rw [v.restrict_def, ValueGroup₀.restrict₀_eq_one_iff]
+      rw [v.restrict_def, ValuedGroup₀.restrict₀_eq_one_iff]
       apply hV
       have : (z₀⁻¹ : K) = (z₀ : hat K)⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
       rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y,

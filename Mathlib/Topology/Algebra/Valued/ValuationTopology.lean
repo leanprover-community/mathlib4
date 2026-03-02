@@ -93,8 +93,10 @@ theorem subgroups_basis :
         change v (x * y) < _
         rw [Valuation.map_mul, Hx, zero_mul]
         exact Units.zero_lt _
-      · set u : (ValueGroup₀ v)ˣ := Units.mk0 ((ValueGroup₀.restrict₀ v) x) (by aesop) with hu_def
-        have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by simp [embedding_apply, hu_def, Hx]
+      · set u : (ValueGroup₀ v)ˣ := Units.mk0 ((restrict₀ v) x)
+          (by simp [restrict₀_apply]; aesop) with hu_def
+        have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by
+          simp [restrict₀_apply, embedding_apply, hu_def, Hx]
         use u⁻¹ * γ
         rintro y (vy_lt : v y < ValueGroup₀.embedding (u⁻¹ * γ).1)
         change (v (x * y) : Γ₀) < ValueGroup₀.embedding γ.1
@@ -109,8 +111,10 @@ theorem subgroups_basis :
         change v (y * x) < _
         rw [Valuation.map_mul, Hx, mul_zero]
         exact Units.zero_lt _
-      · set u : (ValueGroup₀ v)ˣ := Units.mk0 ((ValueGroup₀.restrict₀ v) x) (by aesop) with hu_def
-        have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by simp [embedding_apply, hu_def, Hx]
+      · set u : (ValueGroup₀ v)ˣ := Units.mk0 ((restrict₀ v) x)
+          (by simp [restrict₀_apply]; aesop) with hu_def
+        have hu : ValueGroup₀.embedding u⁻¹.1 = γx⁻¹ := by simp [restrict₀_apply, embedding_apply,
+          hu_def, Hx]
         use u⁻¹ * γ
         rintro y (vy_lt : v y < ValueGroup₀.embedding (u⁻¹ * γ).1)
         change (v (y * x) : Γ₀) < ValueGroup₀.embedding γ.1
@@ -200,7 +204,7 @@ theorem mem_nhds_zero {s : Set R} : s ∈ 𝓝 (0 : R) ↔
 
 theorem loc_const {x : R} (h : (v x : Γ₀) ≠ 0) : { y : R | v y = v x } ∈ 𝓝 x := by
   rw [mem_nhds]
-  have h' : v.restrict x ≠ 0 := by simp [h]
+  have h' : v.restrict x ≠ 0 := by simp [restrict₀_apply, h]
   use Units.mk0 _ h'
   rw [Units.val_mk0]
   intro y y_in
