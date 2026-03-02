@@ -122,7 +122,7 @@ theorem CommGroup.fg_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → �
     conv => enter [1, y]; rw [eq_comm, ← div_eq_iff_eq_mul', SetLike.mem_coe]
     simp only [↓existsAndEq, and_true]
     exact eq_iff_div_mem.mp (Function.surjInv_eq mk_surjective _).symm
-  have H₃' x : b * h x - c' ≤ h (f x) := by simp only [powMonoidHom_apply, f]; grind
+  have H₃' x : b * h x - c' ≤ h (f x) := by grind [powMonoidHom_apply]
   refine Group.fg_of_descent (fun U u hu ↦ ?_) ha H₀ s.toFinite H₁' (fun g' hg' x ↦ ?_) H₃' H₄
   · obtain ⟨u', hu₁, rfl⟩ := mem_map.mp hu
     exact U.pow_mem hu₁ n
