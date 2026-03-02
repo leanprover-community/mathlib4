@@ -78,9 +78,11 @@ open Classical in
 explicit measurability assumptions. -/
 noncomputable def _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartition s)
     (hs : MeasurableSet s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
-    Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
+    Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) := by
+  classical
   letI : Fintype (Subtype (P.parts : Set (Set X))) :=
     Fintype.subtype P.parts (by intro; exact Iff.of_eq rfl)
+  exact
   { parts := Finset.image
       (fun p : (Subtype (P.parts : Set (Set X))) =>
         (⟨p.val, hP p.val p.property⟩ : Subtype MeasurableSet))
@@ -90,7 +92,7 @@ noncomputable def _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartit
       simp_all only [Finset.supIndep_iff_pairwiseDisjoint]
       intro u hu v hv h
       simp_all only [Finset.coe_image, Finset.coe_univ, Set.image_univ, Set.mem_range,
-        Subtype.exists, ne_eq, ]
+        Subtype.exists, ne_eq]
       obtain ⟨a, hap, ha⟩ := hu
       obtain ⟨b, hbp, hb⟩ := hv
       have hab := hPd hap hbp (by simpa [← ha, ← hb, Subtype.mk.injEq] using h)
@@ -306,7 +308,7 @@ lemma ennrealPreVariation_apply (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ =
 
 @[simp]
 lemma ennrealPreVariation_zero :
-  ennrealPreVariation (0 : Set X → ℝ≥0∞) (isSigmaSubadditiveSetFun_zero) (by simp) = 0 := by
+    ennrealPreVariation (0 : Set X → ℝ≥0∞) (isSigmaSubadditiveSetFun_zero) (by simp) = 0 := by
   ext; simp
 
 /-- The `Measure X` built from a σ-subadditive function. -/

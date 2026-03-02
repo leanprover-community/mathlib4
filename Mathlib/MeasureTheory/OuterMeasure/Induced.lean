@@ -204,7 +204,7 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
 
 omit msU m_mono in
 theorem inducedOuterMeasure_zero (Pu : P univ) :
-    inducedOuterMeasure (fun s _ => 0) P0 (by simp) = 0:= by
+    inducedOuterMeasure (fun s _ => 0) P0 (by simp) = 0 := by
   ext s
   rw [inducedOuterMeasure_eq_iInf PU (fun _ _ => by simp) (fun _ _ => by simp)]
   simp only [coe_zero, Pi.zero_apply]

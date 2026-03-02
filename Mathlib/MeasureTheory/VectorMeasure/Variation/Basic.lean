@@ -8,7 +8,7 @@ module
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 
 /-!
-## Properties of variation
+# Properties of variation
 
 ## Main results
 
@@ -71,7 +71,7 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
         rw [h]
         exact MeasurableSet.diff hs (measurableSet_biUnion P hP₂)
 
-theorem norm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
+theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
   wlog hE : MeasurableSet E
   · simp [μ.not_measurable' hE]
   wlog hE' : (⟨E, hE⟩ : Subtype MeasurableSet) ≠ ⊥
