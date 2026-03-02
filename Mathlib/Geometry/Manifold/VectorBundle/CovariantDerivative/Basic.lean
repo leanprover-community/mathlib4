@@ -912,9 +912,8 @@ lemma pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
     (e.pushCovDer cov) X (fun x ↦ (e (σ x)).2) x = (e (cov X σ x)).2 := by
   have : cov X (fun x' ↦ e.symm x' (e (T% σ x')).2) x = cov X σ x := by
     apply hcov.congr_σ_of_eqOn hX _ hσ (e.baseSet_mem_nhds hx)
-    · exact fun y hy ↦ symm_apply_apply_mk e hy (σ y) --FIXME extract as lemma?
-    · rw [(e.symm_apply_apply_mk_eventuallyEq hx σ).mdifferentiableAt_iff]
-      exact hσ
+    · exact fun y hy ↦ by simp [hy] --FIXME extract as lemma?
+    · rwa [(e.symm_apply_apply_mk_eventuallyEq hx σ).mdifferentiableAt_iff]
   unfold pushCovDer
   rw [this]
 
@@ -993,9 +992,7 @@ lemma coordChangeL_pushCovDer
   let σ := (fun x' ↦ e.symm x' (s x'))
   rw [coordChangeL_apply e e' hx]
   refold_let σ
-  have : e.symm x (e ⟨x, cov X σ x⟩).2 = cov X σ x := by
-    -- TODO fix `simp [hx.1]` not working
-    exact symm_apply_apply_mk e hx.1 (cov X σ x)
+  have : e.symm x (e ⟨x, cov X σ x⟩).2 = cov X σ x := by simp [hx.1]
   rw [this]
   -- TODO: extract lemma?
   have : ∀ x' ∈ e.baseSet ∩ e'.baseSet, σ x' =
