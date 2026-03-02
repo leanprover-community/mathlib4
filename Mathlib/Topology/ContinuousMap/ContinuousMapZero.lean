@@ -132,7 +132,7 @@ theorem postcomp_injective (g : C(Y, R)₀) (hg : Injective g) :
   fun _ _ h ↦ ext fun x ↦ hg congr($h x)
 
 @[fun_prop]
-theorem continuous_postcomp (g : C(Y, R)₀) : Continuous (g.comp  : C(X, Y)₀ → C(X, R)₀) := by
+theorem continuous_postcomp (g : C(Y, R)₀) : Continuous (g.comp : C(X, Y)₀ → C(X, R)₀) := by
   rw [ContinuousMapZero.isEmbedding_toContinuousMap.continuous_iff]
   exact g.toContinuousMap.continuous_postcomp |>.comp <|
     ContinuousMapZero.isEmbedding_toContinuousMap.continuous

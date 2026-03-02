@@ -37,7 +37,6 @@ noncomputable def _root_.AddMonoidAlgebra.tensorEquiv.invFun [AddCommMonoid M] :
     (Algebra.TensorProduct.includeRight.toMonoidHom.comp <| AddMonoidAlgebra.of B M)
       fun _ _ ↦ .all ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Implementation detail. -/
 @[to_additive existing (dont_translate := R A B)]
 def tensorEquiv.invFun : (A ⊗[R] B)[M] →ₐ[A] A ⊗[R] B[M] :=

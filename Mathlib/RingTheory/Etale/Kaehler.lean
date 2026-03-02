@@ -136,7 +136,6 @@ def tensorCotangentSpace
       ext a
       simp; rfl }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation)
 If `J ≃ Q ⊗ₚ I` (e.g. when `T = Q ⊗ₚ S` and `P → Q` is flat), then `T ⊗ₛ I/I² ≃ J/J²`.
 This is the inverse. -/
