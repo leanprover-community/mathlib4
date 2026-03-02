@@ -223,7 +223,6 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*} (φ : ι → R�
 
 alias order_mul_ge := le_order_mul
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem one_le_order_iff_constCoeff_eq_zero :
     1 ≤ φ.order ↔ φ.constantCoeff = 0 := by
@@ -246,7 +245,6 @@ theorem le_order_pow_of_constantCoeff_eq_zero (n : ℕ) (hf : φ.constantCoeff =
   refine .trans ?_ (le_order_pow _ n)
   simpa using le_mul_of_one_le_right' (one_le_order_iff_constCoeff_eq_zero.mpr hf)
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The order of the monomial `a*X^n` is infinite if `a = 0` and `n` otherwise. -/
 theorem order_monomial (n : ℕ) (a : R) [Decidable (a = 0)] :

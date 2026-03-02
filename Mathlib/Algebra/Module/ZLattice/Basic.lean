@@ -297,7 +297,6 @@ end NormedLatticeField
 
 section Real
 
-set_option backward.isDefEq.respectTransparency false in
 theorem discreteTopology_pi_basisFun [Finite ι] :
     DiscreteTopology (span ℤ (Set.range (Pi.basisFun ℝ ι))) := by
   cases nonempty_fintype ι

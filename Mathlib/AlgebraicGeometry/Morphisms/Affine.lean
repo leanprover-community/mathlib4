@@ -86,7 +86,6 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
 lemma isRetrocompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
   IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr (X.basicOpen s).ι.isSpectralMap
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- Superseded by `isAffine_of_isAffineOpen_basicOpen`. -/
 private lemma isAffine_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
@@ -107,7 +106,6 @@ private lemma isAffine_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
     exact (V.2.basicOpen _).isCompact
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 @[stacks 01QF]
 lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
@@ -206,7 +204,6 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine 
   letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
   isAffine_of_isAffineHom (pullback.fst f g)
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAffineHom g] :
     IsAffineHom (coprod.desc f g) := by

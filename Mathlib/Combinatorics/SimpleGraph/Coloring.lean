@@ -366,7 +366,6 @@ theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton
   cases Subsingleton.elim v w
   simp
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.chromaticNumber := by
   rw [hc.chromaticNumber_eq_sInf, Nat.cast_pos]
@@ -422,7 +421,6 @@ theorem chromaticNumber_mono_of_embedding {V' : Type*} {G' : SimpleGraph V'}
     (f : G ↪g G') : G.chromaticNumber ≤ G'.chromaticNumber :=
   chromaticNumber_mono_of_hom f
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     card α ≤ G.chromaticNumber ↔ ∀ C : G.Coloring α, Surjective C := by

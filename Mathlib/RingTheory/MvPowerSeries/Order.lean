@@ -180,7 +180,6 @@ theorem coeff_eq_zero_of_lt_weightedOrder {d : σ →₀ ℕ} (h : (weight w d) 
     coeff d f = 0 := by
   contrapose! h; exact weightedOrder_le w h
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The order of a formal power series is at least `n` if
 the `d`th coefficient is `0` for all `d` such that `weight w d < n`. -/
@@ -204,7 +203,6 @@ theorem le_weightedOrder {n : ℕ∞} (h : ∀ d : σ →₀ ℕ, weight w d < n
   · apply nat_le_weightedOrder;
     simpa only [ENat.some_eq_coe, Nat.cast_lt] using h
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The order of a formal power series is exactly `n` if and only if some coefficient of weight `n`
 is nonzero, and the `d`th coefficient is `0` for all `d` such that `weight w d < n`. -/
@@ -252,7 +250,6 @@ theorem min_weightedOrder_le_add :
     [coeff_eq_zero_of_lt_weightedOrder w, lt_min_iff, map_add, add_zero,
       imp_true_iff]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 private theorem weightedOrder_add_of_weightedOrder_lt.aux
     (H : f.weightedOrder w < g.weightedOrder w) :
@@ -484,7 +481,6 @@ theorem le_order_prod {R : Type*} [CommSemiring R] {ι : Type*}
     (f : ι → MvPowerSeries σ R) (s : Finset ι) : ∑ i ∈ s, (f i).order ≤ (∏ i ∈ s, f i).order :=
   le_weightedOrder_prod _ _ _
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem one_le_order_iff_constCoeff_eq_zero :
     1 ≤ f.order ↔ f.constantCoeff = 0 := by

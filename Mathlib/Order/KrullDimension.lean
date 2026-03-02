@@ -343,7 +343,6 @@ private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α �
   use x
   simpa [hx] using h
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- There exists a series ending in an element for any length up to the element’s height. -/
 lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
@@ -477,7 +476,6 @@ lemma coheight_pos_of_lt_top {x : α} [OrderTop α] (h : x < ⊤) : 0 < coheight
   rw [coheight_pos]
   grind [not_isMax_iff]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma coe_lt_height_iff {x : α} {n : ℕ} (hfin : height x < ⊤) :
     n < height x ↔ ∃ y < x, height y = n where

@@ -438,7 +438,6 @@ theorem Finite.eq_insert_of_subset_of_encard_eq_succ (hs : s.Finite) (h : s ⊆ 
     encard_eq_one] at hst
   obtain ⟨x, hx⟩ := hst; use x; rw [← diff_union_of_subset h, hx, singleton_union]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem exists_subset_encard_eq {k : ℕ∞} (hk : k ≤ s.encard) : ∃ t, t ⊆ s ∧ t.encard = k := by
   induction k using ENat.nat_induction with
@@ -616,7 +615,6 @@ theorem encard_le_coe_iff_finite_ncard_le {k : ℕ} : s.encard ≤ k ↔ s.Finit
 theorem Infinite.ncard (hs : s.Infinite) : s.ncard = 0 := by
   rw [← _root_.Nat.card_coe_set_eq, @Nat.card_eq_zero_of_infinite _ hs.to_subtype]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 @[gcongr]
 theorem ncard_le_ncard (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
@@ -626,7 +624,6 @@ theorem ncard_le_ncard (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
 
 theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ ncard_le_ncard
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem ncard_eq_zero (hs : s.Finite := by toFinite_tac) :
     s.ncard = 0 ↔ s = ∅ := by
@@ -663,7 +660,6 @@ theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
 @[simp] theorem ncard_singleton (a : α) : ({a} : Set α).ncard = 1 := by
   simp [ncard]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 := by
   rw [← Nat.cast_le (α := ℕ∞), (toFinite _).cast_ncard_eq, Nat.cast_one]
@@ -682,7 +678,6 @@ theorem ncard_powerset (s : Set α) (hs : s.Finite := by toFinite_tac) :
 
 section InsertErase
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem ncard_insert_of_notMem {a : α} (h : a ∉ s) (hs : s.Finite := by toFinite_tac) :
     (insert a s).ncard = s.ncard + 1 := by
@@ -777,7 +772,6 @@ theorem InjOn.ncard_image (H : Set.InjOn f s) : (f '' s).ncard = s.ncard :=
 
 @[deprecated (since := "2026-01-30")] alias ncard_image_of_injOn := InjOn.ncard_image
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem injOn_of_ncard_image_eq (h : (f '' s).ncard = s.ncard) (hs : s.Finite := by toFinite_tac) :
     Set.InjOn f s := by
@@ -838,7 +832,6 @@ theorem sep_of_ncard_eq {a : α} {P : α → Prop} (h : { x ∈ s | P x }.ncard 
     (hs : s.Finite := by toFinite_tac) : P a :=
   sep_eq_self_iff_mem_true.mp (eq_of_subset_of_ncard_le (by simp) h.symm.le hs) _ ha
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem ncard_lt_ncard (h : s ⊂ t) (ht : t.Finite := by toFinite_tac) :
     s.ncard < t.ncard := by

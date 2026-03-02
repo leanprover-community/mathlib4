@@ -61,7 +61,6 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
     exact continuous_subtype_val.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
@@ -91,7 +90,6 @@ noncomputable instance instPartialOrder : PartialOrder A⁺¹ :=
 instance instStarOrderedRing : StarOrderedRing A⁺¹ :=
     CStarAlgebra.spectralOrderedRing _
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma inr_le_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
     (hb : IsSelfAdjoint b := by cfc_tac) :
@@ -110,7 +108,6 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
     · exact isSelfAdjoint_inr (R := ℂ) |>.mp <| .of_nonneg h
     · exact .of_nonneg h
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
@@ -199,7 +196,6 @@ lemma norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
 
 variable [PartialOrder A] [StarOrderedRing A]
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by
@@ -423,7 +419,6 @@ instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A whe
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
     exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
@@ -450,7 +445,6 @@ theorem nnnorm_le_nnnorm_of_nonneg_of_le {a : A} {b : A} (ha : 0 ≤ a := by cfc
     ‖a‖₊ ≤ ‖b‖₊ :=
   norm_le_norm_of_nonneg_of_le ha hab
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma star_left_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by

@@ -94,7 +94,6 @@ theorem trailingDegree_eq_natTrailingDegree (hp : p ≠ 0) :
     trailingDegree p = (natTrailingDegree p : ℕ∞) :=
   .symm <| ENat.coe_toNat <| mt trailingDegree_eq_top.1 hp
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem trailingDegree_eq_iff_natTrailingDegree_eq {p : R[X]} {n : ℕ} (hp : p ≠ 0) :
     p.trailingDegree = n ↔ p.natTrailingDegree = n := by

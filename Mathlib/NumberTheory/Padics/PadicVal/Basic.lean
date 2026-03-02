@@ -450,7 +450,6 @@ theorem pow_padicValNat_dvd {n : ℕ} : p ^ padicValNat p n ∣ n := by
   apply pow_dvd_of_le_multiplicity
   rw [padicValNat_def'] <;> assumption
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem padicValNat_dvd_iff_le [hp : Fact p.Prime] {a n : ℕ} (ha : a ≠ 0) :
     p ^ n ∣ a ↔ n ≤ padicValNat p a := by
@@ -557,7 +556,6 @@ theorem range_pow_padicValNat_subset_divisors' {n : ℕ} [hp : Fact p.Prime] :
   refine ⟨?_, (pow_dvd_pow p <| succ_le_iff.2 hk).trans pow_padicValNat_dvd, hn⟩
   exact (Nat.one_lt_pow k.succ_ne_zero hp.out.one_lt).ne'
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- The `p`-adic valuation of `(p * n)!` is `n` more than that of `n!`. -/
 theorem padicValNat_factorial_mul (n : ℕ) [hp : Fact p.Prime] :

@@ -58,7 +58,6 @@ lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X ⟶ Y) (y : Y) (x : f.fibe
   Subsingleton.elim (α := PrimeSpectrum _) _ _
 
 set_option backward.isDefEq.respectTransparency false in
-set_option backward.whnf.reducibleClassField false in
 lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X}
     {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (y : Y) :
     IsPullback (pullback.map _ _ _ _ fst (Spec.map (g.residueFieldMap y)) g h.w.symm (by simp))
