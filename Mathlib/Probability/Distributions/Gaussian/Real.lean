@@ -301,12 +301,7 @@ lemma gaussianReal_map_const_mul (c : ℝ) :
   by_cases hv : v = 0
   · simp [hv, mul_zero, gaussianReal_zero_var]
   by_cases hc : c = 0
-  · simp only [hc, zero_mul]
-    rw [Measure.map_const]
-    simp only [measure_univ, one_smul]
-    convert (gaussianReal_zero_var 0).symm
-    simp only [ne_eq, zero_pow, mul_eq_zero, hv, or_false, not_false_eq_true, reduceCtorEq,
-      NNReal.mk_zero]
+  · simp [hc, zero_mul]
   let e : ℝ ≃ᵐ ℝ := (Homeomorph.mulLeft₀ c hc).symm.toMeasurableEquiv
   have he' : ∀ x, HasDerivAt e ((fun _ ↦ c⁻¹) x) x := by
     suffices ∀ x, HasDerivAt (fun x => c⁻¹ * x) (c⁻¹ * 1) x by rwa [mul_one] at this
@@ -568,10 +563,7 @@ variable {μ : ℝ} {v : ℝ≥0}
 
 lemma gaussianReal_map_linearMap (L : ℝ →ₗ[ℝ] ℝ) :
     (gaussianReal μ v).map L = gaussianReal (L μ) ((L 1 ^ 2).toNNReal * v) := by
-  have : (L : ℝ → ℝ) = fun x ↦ L 1 * x := by
-    ext x
-    have : x = x • 1 := by simp
-    conv_lhs => rw [this, L.map_smul, smul_eq_mul, mul_comm]
+  have : (L : ℝ → ℝ) = fun x ↦ L 1 * x := by simp
   rw [this, gaussianReal_map_const_mul]
   congr
   simp only [mul_one, left_eq_sup]
