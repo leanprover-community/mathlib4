@@ -375,14 +375,18 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
 -- TODO: golf
+-- **FAE** instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 theorem IsEquiv.uniformContinuous_equivWithVal
     (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
       w.restrict r / w.restrict s = γ.1) (h : v.IsEquiv w) :
-    UniformContinuous (equivWithVal v w) := by
+    UniformContinuous (WithVal.congr v w (.refl R)) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
+  let hw := Valued.mk' w-- with hhw
+  have : w = hw.v := rfl
   intro γ
+  -- rw [← this] at γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
   use .mk0 (v.restrict r / v.restrict s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]),
     fun x hx ↦ ?_
