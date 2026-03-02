@@ -283,8 +283,8 @@ theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S]
         Nat.cast_eq_zero, Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff hp_bot, not_and]
   intro _ H
   rw [Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at H
-  exact hvp (((isPrime_of_irreducible hp.irreducible).isMaximal hp.ne_zero).eq_of_le
-    (by exact(isPrime_of_irreducible hv).ne_top') H).symm
+  exact hvp (((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le
+    (by exact (isPrime_of_prime hv.prime).ne_top') H).symm
 
 theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [Algebra R S]
     [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {p : Ideal R}
@@ -295,7 +295,7 @@ theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [
   have hp_bot : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp.ne_zero
   by_cases hvp : v = p
   · simp [hvp, (FiniteMultiplicity.of_prime_left hp hp.ne_zero).emultiplicity_self]
-    simp [ramificationIdx_eq_normalizedFactors_count hp_bot (isPrime_of_irreducible hw) hw_bot,
+    simp [ramificationIdx_eq_normalizedFactors_count hp_bot (isPrime_of_prime hw.prime) hw_bot,
     emultiplicity_eq_count_normalizedFactors hw hp_bot]
   · rw [emultiplicity_eq_zero_of_ne hv hp.irreducible hvp hp.ne_zero, mul_zero,
       emultiplicity_map_eq_zero_of_ne hv hp hw hvp]
