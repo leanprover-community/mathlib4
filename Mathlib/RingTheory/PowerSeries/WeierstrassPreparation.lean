@@ -259,7 +259,6 @@ theorem coeff_seq_mem (k : ℕ) {i : ℕ} (hi : i ≥ (g.map (Ideal.Quotient.mk 
     rw [coeff_mk]
     exact hq (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_seq_succ_sub_seq_mem (k i : ℕ) :
     coeff i (H.seq f (k + 1) - H.seq f k) ∈ I ^ k := by
   rw [seq, add_sub_cancel_left]

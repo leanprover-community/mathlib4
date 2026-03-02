@@ -271,7 +271,6 @@ variable {s p} in
   ext x
   simp [signedInfDist_def, orthogonalProjection_eq_self_iff.2 h]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {s p} in
 lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_insert {x : P}
     (h : x ∈ affineSpan ℝ (insert p s)) :

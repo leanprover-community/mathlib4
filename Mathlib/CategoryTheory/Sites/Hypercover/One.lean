@@ -909,6 +909,7 @@ variable {X : C} (E : PreZeroHypercover.{w} X) [E.HasPullbacks]
 
 instance : (E.refineOneHypercover F).HasPullbacks := ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma PreZeroHypercover.sieve₁'_refineOneHypercover (i j : E.I₀) :
     (E.refineOneHypercover F).sieve₁' i j = (F i j).sieve₀ := by
