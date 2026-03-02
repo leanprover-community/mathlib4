@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.ExactSequenceFour
 public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
-# Kernel and cokernel of the differentiel of a spectral object
+# Kernel and cokernel of the differential of a spectral object
 
 Let `X` be a spectral object index by the category `ι`
 in the abelian category `C`. In this file, we introduce
