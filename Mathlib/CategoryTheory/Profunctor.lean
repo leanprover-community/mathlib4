@@ -12,9 +12,11 @@ public import Mathlib.Tactic.CategoryTheory.CategoryStar
 /-!
 # Profunctors and Natural Transformations
 
-In this file we define profunctors between two categories and natural transformations between profunctors.
+In this file we define profunctors between two categories and natural transformations between
+profunctors.
 
-Profunctors are defined as a structure with a mapping operation `map` that lets us map on both sides of the profunctor at once. We also provide operations `mapL` and `mapR` to map only on one side.
+Profunctors are defined as a structure with a mapping operation `map` that lets us map on both sides
+of the profunctor at once. We also provide operations `mapL` and `mapR` to map only on one side.
 -/
 
 @[expose] public section
