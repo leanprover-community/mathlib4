@@ -1030,9 +1030,9 @@ variable [RCLike 𝕜]
 
 /-- Postcomposition with a continuous linear map is a continuous linear map on Schwartz
 functions. -/
-def postcompCLM (L : F →L[𝕜] G) : 𝓢(E, F) →L[𝕜] 𝓢(E, G) := by
-  refine mkCLM (fun f ↦ L ∘ f) (fun _ _ _ ↦ by simp) (fun _ _ _ ↦ by simp)
-    (fun f ↦ (L.restrictScalars ℝ).contDiff.comp (f.smooth ⊤)) ?_
+def postcompCLM (L : F →L[𝕜] G) : 𝓢(E, F) →L[𝕜] 𝓢(E, G) :=
+  mkCLM (fun f ↦ L ∘ f) (fun _ _ _ ↦ by simp) (fun _ _ _ ↦ by simp)
+    (fun f ↦ (L.restrictScalars ℝ).contDiff.comp (f.smooth ⊤)) <| by
   intro ⟨k, n⟩
   use {⟨k, n⟩}, ‖L‖, by positivity
   intro f x
