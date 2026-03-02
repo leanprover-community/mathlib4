@@ -32,7 +32,7 @@ the course of their studies at ETH Zürich.
 
 open Finset QuadraticMap
 
-@[expose] public noncomputable section
+public noncomputable section
 
 variable {R M M' : Type*} [AddCommGroup M] [AddCommGroup M']
 
@@ -56,17 +56,17 @@ end Equiv
 
 open Classical in
 /-- The maximal rank of a positive-definite submodule of `M`. -/
--- Note this proof is absurdly overcomplicated in order to avoid assuming `Nontrivial R`.
-noncomputable def sigPos : ℕ := max'
-  {r ∈ Iic (Module.finrank R M) | ∃ V : Submodule R M,
-    Module.finrank R V = r ∧ (Q.restrict V).PosDef}
-  ⟨if Nontrivial R then 0 else 1, by
-    split_ifs with h
-    · simp only [mem_filter, mem_Iic, zero_le, true_and]
-      exact ⟨⊥, finrank_bot _ _, fun x hx' ↦ (hx' <| Subsingleton.elim x 0).elim⟩
-    · have : Subsingleton R := not_nontrivial_iff_subsingleton.mp h
-      simp only [mem_filter, mem_Iic, Module.finrank_subsingleton, true_and, le_refl]
-      exact ⟨⊥, fun x hx' ↦ (hx' <| Subsingleton.elim x 0).elim⟩⟩
+/-
+Note the proof of nonemptiness needed for `max'` is a little fiddly since we are not assuming
+`Nontrivial R`, and the `⊥` submodule of a module over the zero ring has finrank 1, not 0.
+-/
+def sigPos : ℕ := max' {r ∈ Iic (Module.finrank R M) |
+    ∃ V : Submodule R M, Module.finrank R V = r ∧ (Q.restrict V).PosDef}
+  ⟨Module.finrank R (⊥ : Submodule R M), by
+    simp only [mem_filter, mem_Iic]
+    refine ⟨?_, ⟨⊥, rfl, fun x hx' ↦ (hx' <| Subsingleton.elim x 0).elim⟩⟩
+    nontriviality R
+    simp [finrank_bot]⟩
 
 lemma sigPos_le_finrank : sigPos Q ≤ Module.finrank R M := by
   classical
@@ -91,9 +91,8 @@ lemma le_sigPos_of_posDef [Module.Finite R M] [StrongRankCondition R]
     Module.finrank R V ≤ sigPos Q :=
   (sigPos_isGreatest Q).2 ⟨V, by tauto⟩
 
-open Classical in
 /-- The maximal dimension of a negative-definite subspace of `M`. -/
-noncomputable def sigNeg : ℕ := sigPos (-Q)
+def sigNeg : ℕ := sigPos (-Q)
 
 /-- Defining property of `sigNeg`. -/
 lemma sigNeg_isGreatest [Module.Finite R M] [StrongRankCondition R] : IsGreatest
@@ -111,7 +110,7 @@ lemma le_sigNeg_of_negDef [Module.Finite R M] [StrongRankCondition R]
 
 variable {Q}
 
-@[simp] lemma sigPos_neg : sigPos (-Q) = sigNeg Q := rfl
+@[simp] lemma sigPos_neg : sigPos (-Q) = sigNeg Q := by rfl -- `by` needed since def not exposed
 
 @[simp] lemma sigNeg_neg : sigNeg (-Q) = sigPos Q := by rw [← sigPos_neg, neg_neg]
 
