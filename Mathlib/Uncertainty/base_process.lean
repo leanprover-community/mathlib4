@@ -44,8 +44,10 @@ structure UncertainProcess (U : UncertainSpace) where
 /-- A simple model for an uncertain renewal process. -/
 structure UncertainRenewalProcess (U : UncertainSpace) where
   interarrival : ℕ → UncertainVariable U  -- ξ₁, ξ₂, …
-  iid : ∀ n m, uncertainDistribution U (interarrival n)
-          = uncertainDistribution U (interarrival m)
+  /-- Interarrival times are identically distributed (same uncertain distribution for all `n`). -/
+  identicallyDistributed :
+    ∀ n m, uncertainDistribution U (interarrival n)
+      = uncertainDistribution U (interarrival m)
   positive : ∀ n ω, (interarrival n).f ω > 0
   /-- Nₜ = max{n ≥ 0 | Sₙ ≤ t} where Sₙ = ξ₁ + … + ξₙ -/
   N : ℝ → UncertainVariable U
