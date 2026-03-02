@@ -93,7 +93,6 @@ instance : Unique (Σ n, Language.order.Relations n) :=
       match n, R with
       | 2, .le => rfl⟩
 
-set_option backward.whnf.reducibleClassField false in
 instance : Unique Language.order.Symbols := ⟨⟨Sum.inr default⟩, by
   have : IsEmpty (Σ n, Language.order.Functions n) := isEmpty_sigma.2 inferInstance
   simp only [Symbols, Sum.forall, reduceCtorEq, Sum.inr.injEq, IsEmpty.forall_iff, true_and]
@@ -386,7 +385,6 @@ def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   le_antisymm := (Relations.realize_antisymmetric.mp <|
     Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
@@ -460,7 +458,6 @@ section Fraisse
 
 variable (M)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma dlo_isExtensionPair
     (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.linearOrderTheory]
     (N : Type w') [Language.order.Structure N] [N ⊨ Language.order.dlo] [Nonempty N] :

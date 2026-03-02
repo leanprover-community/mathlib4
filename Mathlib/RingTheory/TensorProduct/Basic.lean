@@ -598,7 +598,6 @@ theorem moduleAux_apply (a : A) (b : B) (m : M) : moduleAux (a ⊗ₜ[R] b) m = 
 
 variable [SMulCommClass A B M]
 
-set_option backward.whnf.reducibleClassField false in
 /-- If `M` is a representation of two different `R`-algebras `A` and `B` whose actions commute,
 then it is a representation the `R`-algebra `A ⊗[R] B`.
 

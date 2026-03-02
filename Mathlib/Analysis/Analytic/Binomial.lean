@@ -163,7 +163,7 @@ theorem one_div_one_sub_cpow_hasFPowerSeriesOnBall_zero (a : ℂ) :
   have H : ((binomialSeries ℂ (-a)).compContinuousLinearMap (-1)) =
       .ofScalars ℂ fun n ↦ Ring.choose (a + n - 1) n := by
     ext n; simp [FormalMultilinearSeries.compContinuousLinearMap, binomialSeries, Ring.choose_neg,
-      Units.smul_def, Int.coe_negOnePow_natCast, ← pow_add, ← mul_assoc]
+      Units.smul_def, ← pow_add, ← mul_assoc]
   have : HasFPowerSeriesOnBall (fun x ↦ (1 + x) ^ (-a)) (binomialSeries ℂ (-a : ℂ)) (-0) 1 := by
     simpa using one_add_cpow_hasFPowerSeriesOnBall_zero
   simpa [cpow_neg, Function.comp_def, ← sub_eq_add_neg, H] using

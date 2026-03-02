@@ -76,17 +76,19 @@ include hf
 
 section MulAction
 
+open Bundle
+
 variable [ContinuousConstSMul G E]
 variable (hfG : ∀ {e₁ e₂}, f e₁ = f e₂ ↔ e₁ ∈ MulAction.orbit G e₂)
 include hfG
 
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all other
 `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
-`Trivialization` over the base set `p(U)`. -/
+`Bundle.Trivialization` over the base set `p(U)`. -/
 @[to_additive (attr := simps! source target baseSet)
 /-- If a group `G` acts on a space `E` and `U` is an open subset disjoint from all
 other `G`-translates of itself, and `p` is a quotient map by this action, then `p` admits a
-`Trivialization` over the base set `p(U)`. -/]
+`Bundle.Trivialization` over the base set `p(U)`. -/]
 noncomputable def trivializationOfSMulDisjoint [TopologicalSpace G] [DiscreteTopology G]
     (U : Set E) (open_U : IsOpen U) (disjoint : ∀ g : G, ((g • ·) '' U ∩ U).Nonempty → g = 1) :
     Trivialization G f := by
