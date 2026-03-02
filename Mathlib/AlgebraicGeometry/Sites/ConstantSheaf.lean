@@ -12,6 +12,7 @@ public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 
 Given a topological space `T`, we consider the presheaf on `Scheme` given by `U ↦ C(U, T)`
 and show that it is a Zariski sheaf (TODO: show that it is a fpqc sheaf).
+When `T` is discrete, this is the constant sheaf associated to `T` (TODO).
 
 ## Main declarations
 
