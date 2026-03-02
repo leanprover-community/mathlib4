@@ -127,6 +127,14 @@ theorem add_measure {f : α → β} (hμ : AEMeasurable f μ) (hν : AEMeasurabl
     AEMeasurable f (μ + ν) :=
   aemeasurable_add_measure_iff.2 ⟨hμ, hν⟩
 
+protected theorem map_add₀ {μ ν : Measure α} {f : α → β}
+    (hμ : AEMeasurable f μ) (hν : AEMeasurable f ν) :
+    (μ + ν).map f = μ.map f + ν.map f := by
+  rw [Measure.map_congr (hμ.add_measure hν).ae_eq_mk, Measure.map_add _ _ (by fun_prop)]
+  congr 1 <;> apply Measure.map_congr
+  · exact (AbsolutelyContinuous.rfl.add_right ν) (hμ.add_measure hν).ae_eq_mk.symm
+  · exact (AbsolutelyContinuous.rfl.add_right' μ) (hμ.add_measure hν).ae_eq_mk.symm
+
 @[measurability]
 protected theorem iUnion [Countable ι] {s : ι → Set α}
     (h : ∀ i, AEMeasurable f (μ.restrict (s i))) : AEMeasurable f (μ.restrict (⋃ i, s i)) :=
@@ -143,7 +151,7 @@ theorem _root_.aemeasurable_union_iff {s t : Set α} :
       AEMeasurable f (μ.restrict s) ∧ AEMeasurable f (μ.restrict t) := by
   simp only [union_eq_iUnion, aemeasurable_iUnion_iff, Bool.forall_bool, cond, and_comm]
 
-@[measurability]
+@[fun_prop]
 theorem smul_measure [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (h : AEMeasurable f μ) (c : R) : AEMeasurable f (c • μ) :=
   ⟨h.mk f, h.measurable_mk, ae_smul_measure h.ae_eq_mk c⟩

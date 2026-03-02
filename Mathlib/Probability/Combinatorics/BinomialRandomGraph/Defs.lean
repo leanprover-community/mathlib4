@@ -66,9 +66,10 @@ lemma binomialRandom_apply' (S : Set (SimpleGraph V)) :
 variable (p) in
 lemma binomialRandom_apply (S : Set (SimpleGraph V)) :
     G(V, p) S = infinitePi
-      (fun e : Sym2 V ↦ toNNReal p • .dirac (¬ e.IsDiag) + toNNReal (σ p) • .dirac False)
+      (fun e : Sym2 V ↦ ENNReal.ofReal p • dirac (¬ e.IsDiag) + ENNReal.ofReal (σ p) • dirac False)
       ((fun G e ↦ e ∈ G.edgeSet) '' S) := by
-  simp [binomialRandom_apply', setBernoulli_apply, ← Set.image_comp]
+  simp [binomialRandom_apply', setBernoulli_def, independentSetMeasure_apply,
+    bernoulli_measure_def, ← Set.image_comp]
 
 instance : IsProbabilityMeasure G(V, p) := by
   refine measurableEmbedding_edgeSet.isProbabilityMeasure_comap ?_
@@ -86,8 +87,8 @@ end Countable
 
 variable (p) in
 @[simp] lemma binomialRandom_singleton [Finite V] (G : SimpleGraph V) :
-    G(V, p) {G} = toNNReal p ^ G.edgeSet.ncard *
-      toNNReal (σ p) ^ ((Nat.card V).choose 2 - G.edgeSet.ncard) := by
+    G(V, p) {G} = ENNReal.ofReal p ^ G.edgeSet.ncard *
+      ENNReal.ofReal (σ p) ^ ((Nat.card V).choose 2 - G.edgeSet.ncard) := by
   classical
   cases nonempty_fintype V
   simp only [binomialRandom, measurableEmbedding_edgeSet.comap_apply, Set.image_singleton,

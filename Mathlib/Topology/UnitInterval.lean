@@ -533,8 +533,7 @@ theorem iccHomeoI_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc a b) :
 
 @[simp]
 theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜) (1 : 𝕜)) :
-    ((iccHomeoI a b h).symm x : 𝕜) = (b - a) * x + a :=
-  rfl
+    ((iccHomeoI a b h).symm x : 𝕜) = (b - a) * x + a := rfl
 
 end
 
@@ -555,5 +554,15 @@ def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
 @[simp] lemma toNNReal_add_toNNReal_symm (x : I) : toNNReal x + toNNReal (σ x) = 1 := by ext; simp
 @[simp] lemma toNNReal_symm_add_toNNReal (x : I) : toNNReal (σ x) + toNNReal x = 1 := by ext; simp
+
+open ENNReal
+
+@[simp] lemma ennreal_ofReal_add_ennreal_ofReal_symm (x : I) :
+    ENNReal.ofReal x + ENNReal.ofReal (1 - x) = 1 := by
+  grind [add_sub_cancel, ENNReal.ofReal_one, ENNReal.ofReal_add]
+
+@[simp] lemma ennreal_ofReal_symm_add_ennreal_ofReal (x : I) :
+    ENNReal.ofReal (1 - x) + ENNReal.ofReal x = 1 := by
+  simp [add_comm]
 
 end unitInterval
