@@ -515,6 +515,7 @@ lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y 
   split_ifs with hx hy <;> simp_all [← Units.val_le_val]
 
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
+  simp only [restrict_def, restrict₀_apply]
   aesop
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
@@ -524,44 +525,12 @@ lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
   add_mem' {x y} x_in y_in := lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
   neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
 
-/- /-- The subgroup of elements whose valuation is less than a certain unit. -/
-@[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : (ValueGroup₀ v)ˣ) : AddSubgroup R where
-  carrier := { x | v.restrict x < γ.1 }
-  zero_mem' := by simp
-  add_mem' {x y} x_in y_in := by
-    rcases (eq_zero_or_neZero (v x)).symm, (eq_zero_or_neZero (v y)).symm with ⟨hx₀ | _, hy₀ | _⟩
-    · simp only [restrict_def, restrict₀_apply, Set.mem_setOf_eq]
-      split_ifs with h
-      · simp only [Units.zero_lt]
-      apply lt_of_le_of_lt _ (max_lt x_in y_in)
-      simp only [restrict_def, restrict₀_of_ne_zero hx₀.ne, restrict₀_of_ne_zero hy₀.ne, le_sup_iff,
-        WithZero.coe_le_coe]
-      exact v.map_add' ..
-    all_goals simp_all [v.map_add_of_left_eq_zero, v.map_add_of_right_eq_zero]
-  neg_mem' x_in := by rwa [Set.mem_setOf, map_neg] -/
-
-/- @[simp] lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ x} :
-    x ∈ ltAddSubgroup v γ ↔ v.restrict x < γ :=
-  Iff.rfl -/
-
 @[simp] lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ x} :
     x ∈ ltAddSubgroup v γ ↔ v x < γ :=
   Iff.rfl
 
 lemma ltAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.ltAddSubgroup :=
   fun _ _ h _ ↦ (Units.val_le_val.mpr h).trans_lt'
-
-/- lemma ltAddSubgroup_le_leAddSubgroup (v : Valuation R Γ₀) (γ : (ValueGroup₀ v)ˣ) :
-    v.ltAddSubgroup γ ≤ v.leAddSubgroup (ValueGroup₀.orderEmbedding' γ.1) := by
-  intro x hx
-  simp only [mem_ltAddSubgroup_iff, restrict_def, restrict₀_apply,
-    ← orderEmbedding'.lt_iff_lt] at hx
-  simp only [mem_leAddSubgroup_iff]
-  convert hx.le
-  split_ifs with h
-  · simp only [h]
-    rfl
-  · rfl -/
 
 lemma ltAddSubgroup_le_leAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) :
     v.ltAddSubgroup γ ≤ v.leAddSubgroup γ :=
