@@ -5,7 +5,6 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
 module
 
-public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
 public import Mathlib.Algebra.Polynomial.Bivariate
 public import Mathlib.Algebra.Ring.Defs
 
@@ -36,17 +35,12 @@ variable [Ring A] [Algebra R A]
 /-- The `AlgEquiv` between `R[X][Y]` and `R[a][Y]` for some transcendental `a`. -/
 def Bivariate.equivAdjoinOfTranscendental (x : A) (hx : Transcendental R x) :
     R[X][Y] ≃ₐ[R] (Algebra.adjoin R {x})[X] :=
-  mapAlgEquiv (equivPolynomialAdjoin x hx)
+  mapAlgEquiv (algEquivOfTranscendental _ x hx)
 
 theorem Bivariate.equivAdjoinOfTranscendental_apply (x : A) (hx : Transcendental R x)
     (p : R[X][Y]) :
   equivAdjoinOfTranscendental x hx p = mapAlgHom
-    ((Algebra.equivRangeAevalAdjoinSingleton R x).toAlgHom.comp (aeval x).rangeRestrict) p := rfl
-
-theorem Bivariate.equivAdjoinOfTranscendental_apply' (x : A) (hx : Transcendental R x)
-    (p : R[X][Y]) :
-  equivAdjoinOfTranscendental x hx p = mapAlgHom
-    ((Algebra.equivRangeAevalAdjoinSingleton R x).toAlgHom.comp (aeval x).rangeRestrict) p := rfl
+    (aeval (R := R) (A := Algebra.adjoin R {x}) ⟨x, Algebra.self_mem_adjoin_singleton R x⟩) p := rfl
 
 attribute [local instance] algebra in
 theorem Bivariate.equivAdjoinOfTranscendental_swap_eq_aeval (x : A) (p : R[X][Y])
@@ -75,7 +69,9 @@ theorem Bivariate.aeval_aeval_eq_aeval_equivAdjoinOfTranscendental (x : A) (y : 
       Algebra.adjoin R {y})) p) = aeval y (equivAdjoinOfTranscendental x hx p) := by
   induction p using Polynomial.induction_on' with
   | add p q hp hq => simp_all [map_add]
-  | monomial n a => simp_all [aeval_algebraMap_apply, Bivariate.equivAdjoinOfTranscendental]
+  | monomial n a =>
+    simp_all [aeval_algebraMap_apply, Bivariate.equivAdjoinOfTranscendental,
+      Subalgebra.algebraMap_def];
 
 theorem _root_.IsAlgebraic.adjoin_singleton {x : A} {y : B} (hx : Transcendental R x)
     (hy : Transcendental R y) (h : IsAlgebraic (Algebra.adjoin R {x}) y) :
