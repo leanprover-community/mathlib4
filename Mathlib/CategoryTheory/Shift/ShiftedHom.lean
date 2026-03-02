@@ -192,6 +192,7 @@ lemma map_naturality {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (τ : F ⟶ 
   rw [comp_mk₀, mk₀_comp, map, map, Category.assoc, ← τ.naturality_assoc,
     τ.shift_app_comm a]
 
+@[simp]
 lemma map_naturality_1
     {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (e : F ≅ G)
     [F.CommShift M] [G.CommShift M] [NatTrans.CommShift e.hom M] :
