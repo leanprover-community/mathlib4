@@ -934,6 +934,7 @@ theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A
 
 variable {A : Type*} [Semiring A] [Algebra S A] [Algebra R' A]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Assemble an algebra morphism `TrivSqZeroExt R M →ₐ[S] A` from separate morphisms on `R` and `M`.
 
@@ -1082,14 +1083,17 @@ def map (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N 
 theorem map_inl (f : M →ₗ[R'] N) (r : R') : map f (inl r) = inl r := by
   rw [map, liftEquivOfComm_apply, lift_apply_inl, Algebra.ofId_apply, algebraMap_eq_inl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_inr (f : M →ₗ[R'] N) (x : M) : map f (inr x) = inr (f x) := by
   rw [map, liftEquivOfComm_apply, lift_apply_inr, LinearMap.comp_apply, inrHom_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : fst (map f x) = fst x := by
   simp [map, lift_def, Algebra.ofId_apply, algebraMap_eq_inl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : snd (map f x) = f (snd x) := by
   simp [map, lift_def, Algebra.ofId_apply, algebraMap_eq_inl]

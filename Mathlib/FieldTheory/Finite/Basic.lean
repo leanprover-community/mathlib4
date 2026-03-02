@@ -487,6 +487,7 @@ namespace ZMod
 
 open FiniteField Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   rcases hp.1.eq_two_or_odd with hp2 | hp_odd
   · subst p
@@ -569,6 +570,7 @@ namespace ZMod
 
 variable {p : ℕ} [Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (Subfield (ZMod p)) :=
   subsingleton_of_bot_eq_top <| top_unique (a := ⊥) fun n _ ↦
   have := zsmul_mem (one_mem (⊥ : Subfield (ZMod p))) n.val

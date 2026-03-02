@@ -104,6 +104,7 @@ variable {M}
 theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_val_image {t : Set (ofFixingSubgroup M s)} :
     Disjoint s (Subtype.val '' t) := by
@@ -439,6 +440,7 @@ section Construction
 
 open Function.Embedding Fin.Embedding
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/
 @[to_additive
 /-- Append `Fin m ↪ ofFixingSubgroup M s` at the end of an enumeration of `s`. -/]
