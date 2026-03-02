@@ -130,6 +130,12 @@ instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category* C] {D : T
       change IsLimit (((evaluation _ _).obj k ⋙ F).mapCone c)
       exact isLimitOfPreserves _ hc⟩⟩⟩
 
+instance whiskeringRight_reflectsLimitsOfShape {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
+    [HasLimitsOfShape J D] (F : D ⥤ E) [F.ReflectsIsomorphisms] [PreservesLimitsOfShape J F] :
+    ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
+  reflectsLimitsOfShape_of_reflectsIsomorphisms
+
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
 functor. -/
 def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category* C] {D : Type*}
