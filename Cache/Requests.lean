@@ -357,12 +357,12 @@ private structure TransferState where
   decompFailed : Nat                               -- total decompression failures
 
 /-- Harvest the result of a completed decompression task, updating counters.
-    Returns `(successful, failed)` counts. -/
+    Returns `(successful, failed, error?)`. -/
 def harvestDecompTask (task : Task (Except IO.Error Unit)) (batchSize : Nat)
-    (decompressed decompFailed : Nat) : Nat × Nat :=
+    (decompressed decompFailed : Nat) : Nat × Nat × Option IO.Error :=
   match task.get with
-  | .ok () => (decompressed + batchSize, decompFailed)
-  | .error _ => (decompressed, decompFailed + batchSize)
+  | .ok () => (decompressed + batchSize, decompFailed, none)
+  | .error e => (decompressed, decompFailed + batchSize, some e)
 
 /-- Dispatch a new decompression batch if there are pending files -/
 def dispatchDecompBatch (pending : Array (FilePath × Lean.Name)) (config : DecompConfig)
@@ -409,17 +409,23 @@ def monitorCurl (args : Array String) (size : Nat)
               IO.FS.rename fn finalPath
               -- Add to decompression queue if enabled
               if let some config := decompConfig then
-                let some hash := hashFromFileName ⟨fn⟩
-                  | IO.eprintln s!"Warning: Failed to extract hash from filename: {fn}"
-                let some mod := config.hashToMod[hash]?
-                  | IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {fn})"
+                let some hash := hashFromFileName finalPath | do
+                  IO.eprintln s!"Warning: Failed to extract hash from filename: {finalPath}"
+                  decompFailed := decompFailed + 1
+                let some mod := config.hashToMod[hash]? | do
+                  IO.eprintln s!"Warning: No module mapping found for hash {hash} (file: {finalPath})"
+                  decompFailed := decompFailed + 1
                 pending := pending.push (finalPath, mod)
                 -- Check if we should dispatch a batch
                 match currentTask with
                 | some task =>
                   if (← IO.hasFinished task) then
                     -- Harvest completed task
-                    (decompressed, decompFailed) := harvestDecompTask task lastBatchSize decompressed decompFailed
+                    let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
+                    decompressed := d
+                    decompFailed := f
+                    if let some e := err? then
+                      IO.eprintln s!"Decompression error: {e}"
                     -- Dispatch new batch with all pending files
                     lastBatchSize := pending.size
                     currentTask ← dispatchDecompBatch pending config
@@ -473,7 +479,7 @@ def downloadFiles
     (repo : String) (hashMap : IO.ModuleHashMap)
     (forceDownload : Bool) (parallel : Bool) (warnOnMissing : Bool)
     (decompress : Bool := false) (forceUnpack : Bool := false)
-    (isMathlibRoot : Bool) (mathlibDepPath : FilePath) : IO Nat := do
+    (isMathlibRoot : Bool := false) (mathlibDepPath : FilePath := ".") : IO Nat := do
   let hashMap ← if forceDownload then pure hashMap else hashMap.filterExists false
   if hashMap.isEmpty then IO.println "No files to download"; return 0
   let size := hashMap.size
@@ -518,14 +524,19 @@ def downloadFiles
 
     -- Wait for current task to complete if any
     if let some task := currentTask then
-      (decompressed, decompFailed) := harvestDecompTask task lastBatchSize decompressed decompFailed
+      let (d, f, err?) := harvestDecompTask task lastBatchSize decompressed decompFailed
+      decompressed := d
+      decompFailed := f
+      if let some e := err? then
+        IO.eprintln s!"Decompression error: {e}"
 
     -- Process any remaining pending files
     if !pending.isEmpty then
       try
         decompressBatch pending config.force config.isMathlibRoot config.mathlibDepPath
         decompressed := decompressed + pending.size
-      catch _ =>
+      catch e =>
+        IO.eprintln s!"Decompression error: {e}"
         decompFailed := decompFailed + pending.size
 
     IO.println s!"Decompressed {decompressed} file(s)"
@@ -644,8 +655,12 @@ def getFiles
       IO.println s!"Downloading {failed} files failed"
       IO.Process.exit 1
 
-  -- When decompress=true, decompression happens inside downloadFiles
-  unless decompress do
+  if decompress then
+    -- When parallel, decompression was pipelined inside downloadFiles.
+    -- When non-parallel, fall back to batch decompression.
+    unless parallel do
+      IO.unpackCache hashMap forceUnpack
+  else
     IO.println "Downloaded all files successfully!"
 
 end Get
