@@ -28,7 +28,7 @@ of the simplex.
 * `centroid` is the centroid of a simplex, defined via `Finset.univ.centroid` on its vertices.
 
 * `faceOppositeCentroid` is the centroid of the facet obtained by removing one vertex from the
-simplex.
+  simplex.
 
 * `median` is the line connecting a vertex to the corresponding faceOppositeCentroid.
 
@@ -487,6 +487,7 @@ theorem median_eq_line_point_centroid [CharZero k] (s : Simplex k P n) (i : Fin 
     exact centroid_mem_median s i
   exact le_antisymm h1 h2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The medians of a simplex are concurrent at its centroid. -/
 theorem eq_centroid_of_forall_mem_median [CharZero k] (s : Simplex k P n) {hn : 1 < n} {p : P}
     (h : ∀ i, p ∈ s.median i) :

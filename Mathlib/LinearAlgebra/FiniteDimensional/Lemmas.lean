@@ -79,8 +79,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     le_antisymm hdim (finrank_add_finrank_le_of_disjoint hdisjoint)
   rw [hdim]
   convert s.finrank_sup_add_finrank_inf_eq t
-  rw [h_finrank_inf]
-  rfl
+  rw [h_finrank_inf, add_zero]
 
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     (hdim : finrank K V ≤ finrank K s + finrank K t) :
@@ -319,6 +318,7 @@ open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Subalgebra.isSimpleOrder_of_finrank (hr : finrank F E = 2) :
     IsSimpleOrder (Subalgebra F E) :=
   let i := nontrivial_of_finrank_pos (zero_lt_two.trans_eq hr.symm)
