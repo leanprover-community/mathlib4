@@ -186,9 +186,8 @@ lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
     fun_prop
   simp only [integral_smul_nnreal_measure, measureReal_nnreal_smul_apply]
   rw [integral_congr_ae h_llr, integral_add h_int (integrable_const _)]
-  simp only [integral_const, smul_eq_mul, smul_add]
   have h_smul (a : ℝ) : c • a = c * a := rfl
-  simp only [h_smul]
+  simp [h_smul]
   ring
 
 lemma toReal_klDiv_smul_right_eq_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ)
