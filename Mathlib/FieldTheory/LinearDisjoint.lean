@@ -731,7 +731,6 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
   change Function.Injective (Ideal.Quotient.mk M) at H
   rwa [RingHom.injective_iff_ker_eq_bot, Ideal.mk_ker] at H
 
-set_option backward.isDefEq.respectTransparency false in
 variable (F E) in
 /-- If `E` and `K` are field extensions of `F`, one of them is algebraic, such that
 `E ⊗[F] K` is a domain, then `E ⊗[F] K` is also a field. It is a corollary of

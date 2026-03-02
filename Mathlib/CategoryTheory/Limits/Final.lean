@@ -225,7 +225,6 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
 
 variable {F G}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
 @[simps]
@@ -249,7 +248,6 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
             · rw [← Functor.map_comp_assoc] } }
   map f := { hom := f.hom }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
@@ -279,7 +277,6 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
 
 variable (F G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is final,
 the category of cocones on `F ⋙ G` is equivalent to the category of cocones on `G`,
 for any `G : D ⥤ E`.

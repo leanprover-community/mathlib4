@@ -147,7 +147,6 @@ theorem FiniteDimensional.exists_is_basis_integral :
 
 variable [Algebra.IsSeparable K L]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `L` is a finite separable extension of `K = Frac(A)`, where `A` is
 integrally closed and Noetherian, the integral closure `C` of `A` in `L` is
 Noetherian over `A`. -/
