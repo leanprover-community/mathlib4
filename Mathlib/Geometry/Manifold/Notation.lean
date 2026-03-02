@@ -666,8 +666,8 @@ where
 set_option linter.style.emptyLine false in -- linter false positive
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance.
-TODO not yet: This supports all `ModelWithCorners`
-instances that are currently defined in mathlib. Further cases can be added as necessary.
+This supports all `ModelWithCorners` instances that are currently defined in mathlib.
+Further cases can be added as necessary.
 
 Return an expression describing the found model with corners.
 
