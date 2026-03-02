@@ -9,6 +9,10 @@ import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Ring.Associator
 import Mathlib.CategoryTheory.Linear.Basic
 
+/-!
+# Category algebra of a linear category
+-/
+
 universe w' w v u
 
 namespace CategoryTheory.Linear
@@ -19,30 +23,31 @@ open CategoryTheory.Preadditive
 def CategoryAlgebra (R : Type w) [CommSemiring R] (C : Type u) [Category.{v} C] [Preadditive C]
   [Linear R C] := ⨁ (p : C × C), p.1 ⟶ p.2
 
+namespace CategoryAlgebra
+
 variable {R : Type w} [CommSemiring R] {C : Type u} [Category.{v} C] [Preadditive C]
   [Linear R C] [DecidableEq C]
 
-
-instance CategoryAlgebra.inhabited : Inhabited (CategoryAlgebra R C) :=
+instance inhabited : Inhabited (CategoryAlgebra R C) :=
   inferInstanceAs (Inhabited (⨁ (p : C × C), p.1 ⟶ p.2))
 
-instance CategoryAlgebra.addCommMonoid : AddCommMonoid (CategoryAlgebra R C) :=
+instance addCommMonoid : AddCommMonoid (CategoryAlgebra R C) :=
   inferInstanceAs (AddCommMonoid (⨁ (p : C × C), p.1 ⟶ p.2))
 
-instance CategoryAlgebra.instIsCancelAdd [IsCancelAdd R] : IsCancelAdd (CategoryAlgebra R C) :=
+instance instIsCancelAdd [IsCancelAdd R] : IsCancelAdd (CategoryAlgebra R C) :=
   inferInstanceAs (IsCancelAdd (⨁ (p : C × C), p.1 ⟶ p.2))
 
-instance CategoryAlgebra.instModule : Module R (CategoryAlgebra R C) :=
+instance instModule : Module R (CategoryAlgebra R C) :=
   inferInstanceAs (Module R (⨁ (p : C × C), p.1 ⟶ p.2))
 
-def CategoryAlgebra.of (a b : C) : (a ⟶ b) →+ CategoryAlgebra R C :=
+protected def of (a b : C) : (a ⟶ b) →+ CategoryAlgebra R C :=
   DirectSum.of (fun (p : C × C) ↦ p.1 ⟶ p.2) (a,b)
 
-theorem CategoryAlgebra.addHom_ext {γ : Type w'} [AddZeroClass γ] ⦃f g : CategoryAlgebra R C →+ γ⦄
+theorem addHom_ext {γ : Type w'} [AddZeroClass γ] ⦃f g : CategoryAlgebra R C →+ γ⦄
     (H : ∀ (X Y : C) (y : X ⟶ Y), f (CategoryAlgebra.of X Y y) = g (CategoryAlgebra.of X Y y)) :
     f = g := DFinsupp.addHom_ext (fun p => H p.1 p.2)
 
-theorem CategoryAlgebra.of_eq_single (a b : C) (f : a ⟶ b) :
+theorem of_eq_single (a b : C) (f : a ⟶ b) :
     (CategoryAlgebra.of a b f : CategoryAlgebra R C) =
     DFinsupp.single (a,b) f := by rfl
 
@@ -88,21 +93,25 @@ theorem mul_of (X₁ Y₁ X₂ Y₂ : C) (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂)
     CategoryAlgebra.of X₁ Y₂ (comp₀ X₁ Y₁ X₂ Y₂ f g) := by
   simp [mul_def, CategoryAlgebra.of_eq_single, DFinsupp.sumAddHom₂_single]
 
+theorem mul_assoc' :
+    AddMonoidHom.mulLeft₃ (R := (CategoryAlgebra R C)) = AddMonoidHom.mulRight₃ := by
+  apply CategoryAlgebra.addHom_ext
+  rintro X₁ Y₁ f
+  apply CategoryAlgebra.addHom_ext
+  rintro X₂ Y₂ g
+  apply CategoryAlgebra.addHom_ext
+  rintro X₃ Y₃ h
+  simp only [AddMonoidHom.mulLeft₃, AddMonoidHom.mul, AddMonoidHom.mulLeft, AddMonoidHom.coe_mk,
+    ZeroHom.coe_mk, AddMonoidHom.coe_comp, Function.comp_apply, mul_of, AddMonoidHom.mulRight₃,
+    AddMonoidHom.compr₂, AddMonoidHom.compHom_apply_apply]
+  apply congrArg
+  apply comp₀_assoc
 
 instance : NonUnitalSemiring (CategoryAlgebra R C) where
-  mul_assoc := by
-    rw [Std.Associative, ← AddMonoidHom.mulLeft₃_eq_mulRight₃_iff_associative]
-    apply CategoryAlgebra.addHom_ext
-    rintro X₁ Y₁ f
-    apply CategoryAlgebra.addHom_ext
-    rintro X₂ Y₂ g
-    apply CategoryAlgebra.addHom_ext
-    rintro X₃ Y₃ h
-    simp only [AddMonoidHom.mull₃, AddMonoidHom.mul, AddMonoidHom.mulLeft, AddMonoidHom.coe_mk,
-      ZeroHom.coe_mk, AddMonoidHom.coe_comp, Function.comp_apply, mul_of, AddMonoidHom.mulr₃,
-      AddMonoidHom.compr₂, AddMonoidHom.compHom_apply_apply]
-    apply congrArg
-    apply comp₀_assoc
+  mul_assoc a b c := by
+    have : AddMonoidHom.mulLeft₃ a b c = AddMonoidHom.mulRight₃ a b c := by simp [mul_assoc']
+    simpa
+
 
 section Unital
 
@@ -139,4 +148,5 @@ instance [Fintype C] : Semiring (CategoryAlgebra R C) where
     apply DFunLike.congr_fun (h₁ := H)
 
 end Unital
+end CategoryAlgebra
 end CategoryTheory.Linear
