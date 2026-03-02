@@ -159,18 +159,20 @@ end
 
 section
 
-variable (hn₁ : n₀ + 1 = n₁) {A : C} (x : (X.H n₁).obj (mk₁ f) ⟶ A)
+variable {A : C} (x : (X.H n₁).obj (mk₁ f) ⟶ A)
 
 /-- Constructor for morphisms from `X.opcycles`. -/
-noncomputable def descOpcycles (hx : X.δ f g n₀ n₁ hn₁ ≫ x = 0 := by cat_disch) :
+noncomputable def descOpcycles (hn₁ : n₀ + 1 = n₁ := by lia)
+    (hx : X.δ f g n₀ n₁ hn₁ ≫ x = 0 := by cat_disch) :
     X.opcycles f g n₁ ⟶ A :=
   cokernel.desc _ x (by
     obtain rfl : n₀ = n₁ -1 := by lia
     exact hx)
 
 @[reassoc (attr := simp)]
-lemma p_descOpcycles (hx : X.δ f g n₀ n₁ hn₁ ≫ x = 0 := by cat_disch) :
-    X.pOpcycles f g n₁ ≫ X.descOpcycles f g n₀ n₁ hn₁ x hx = x := by
+lemma p_descOpcycles (hn₁ : n₀ + 1 = n₁ := by lia)
+    (hx : X.δ f g n₀ n₁ hn₁ ≫ x = 0 := by cat_disch) :
+    X.pOpcycles f g n₁ ≫ X.descOpcycles f g n₀ n₁ x = x := by
   apply cokernel.π_desc
 
 end
