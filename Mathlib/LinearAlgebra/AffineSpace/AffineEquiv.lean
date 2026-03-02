@@ -697,6 +697,45 @@ end arrowCongr
 
 end CommRing
 
+section congrLeft
+
+variable (R W : Type*) [Ring R] [AddCommGroup W] [Module k W] [Module R W] [SMulCommClass k R W]
+  (e : P₁ ≃ᵃ[k] P₂)
+
+/-- An affine isomorphism between the domains of affine spaces induces a linear isomorphism over
+another ring between the two function spaces. -/
+def congrLeftₗ : (P₁ →ᵃ[k] W) ≃ₗ[R] (P₂ →ᵃ[k] W) where
+  __ := e.arrowCongrEquiv (.refl k W)
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+@[simp]
+theorem congrLeftₗ_apply (f : P₁ →ᵃ[k] W) (x : P₂) : e.congrLeftₗ R W f x = f (e.symm x) :=
+  rfl
+
+@[simp]
+theorem congrLeftₗ_symm_apply (f : P₂ →ᵃ[k] W) (x : P₁) : (e.congrLeftₗ R W).symm f x = f (e x) :=
+  rfl
+
+variable {W} (Q : Type*) [AddTorsor W Q]
+
+/-- An affine isomorphism between the domains of affine spaces induces an affine isomorphism over
+another ring between the two function spaces. -/
+def congrLeft : (P₁ →ᵃ[k] Q) ≃ᵃ[R] (P₂ →ᵃ[k] Q) where
+  __ := e.arrowCongrEquiv (.refl k Q)
+  linear := e.congrLeftₗ R W
+  map_vadd' _ _ := by ext; simp
+
+@[simp]
+theorem congrLeft_apply (f : P₁ →ᵃ[k] Q) (x : P₂) : e.congrLeft R Q f x = f (e.symm x) :=
+  rfl
+
+@[simp]
+theorem congrLeft_symm_apply (f : P₂ →ᵃ[k] Q) (x : P₁) : (e.congrLeft R Q).symm f x = f (e x) :=
+  rfl
+
+end congrLeft
+
 end AffineEquiv
 
 namespace AffineMap
