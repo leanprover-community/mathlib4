@@ -3,8 +3,10 @@ Copyright (c) 2024 Miguel Marco. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miguel Marco
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Sets in subtypes
@@ -36,6 +38,8 @@ Theorem names refer to `↓∩` as `preimage_val`.
 
 subsets
 -/
+
+public section
 
 open Set
 
@@ -113,8 +117,6 @@ lemma image_val_union_self_left_eq : ↑D ∪ A = A :=
 @[simp]
 lemma image_val_inter_self_right_eq_coe : A ∩ ↑D = ↑D :=
   inter_eq_right.2 image_val_subset
-@[deprecated (since := "2024-10-25")]
-alias cou_inter_self_right_eq_coe := image_val_inter_self_right_eq_coe
 
 @[simp]
 lemma image_val_inter_self_left_eq_coe : ↑D ∩ A = ↑D :=

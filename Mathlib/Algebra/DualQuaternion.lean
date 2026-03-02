@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.Algebra.Quaternion
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.Algebra.Quaternion
 
 /-!
 # Dual quaternions
@@ -22,11 +24,14 @@ rigid motions in 3D space can be represented by dual quaternions of unit length.
 * <https://en.wikipedia.org/wiki/Dual_quaternion>
 -/
 
+@[expose] public section
+
 
 variable {R : Type*} [CommRing R]
 
 namespace Quaternion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The dual quaternions can be equivalently represented as a quaternion with dual coefficients,
 or as a dual number with quaternion coefficients.
 
@@ -96,36 +101,43 @@ theorem fst_re_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).re.fst = d.fst.re :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imI_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imI.fst = d.fst.imI :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imJ_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imJ.fst = d.fst.imJ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_imK_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imK.fst = d.fst.imK :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_re_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).re.snd = d.snd.re :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imI_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imI.snd = d.snd.imI :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imJ_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imJ.snd = d.snd.imJ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_imK_dualNumberEquiv_symm (d : DualNumber (Quaternion R)) :
     (dualNumberEquiv.symm d).imK.snd = d.snd.imK :=

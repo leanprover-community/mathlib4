@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler, Michael Stoll
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.Positivity
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.LSeries.Deriv
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.Positivity
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.LSeries.Deriv
 
 /-!
 # Positivity of values of L-series
@@ -22,6 +24,8 @@ The main results of this file are as follows.
   see `LSeries.positive_of_eq_differentiable` and
   `ArithmeticFunction.LSeries_positive_of_eq_differentiable`.
 -/
+
+public section
 
 open scoped ComplexOrder
 

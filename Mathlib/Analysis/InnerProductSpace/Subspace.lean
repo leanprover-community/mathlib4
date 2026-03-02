@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Orthonormal
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 
 /-!
 # Subspaces of inner product spaces
@@ -12,9 +14,11 @@ This file defines the inner-product structure on a subspace of an inner-product 
 some theorems about orthogonal families of subspaces.
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology ComplexConjugate Finsupp Module
 
 open LinearMap (BilinForm)
 
@@ -195,7 +199,8 @@ theorem OrthogonalFamily.norm_sq_diff_sum [DecidableEq ι] (f : ∀ i, G i) (s�
 theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : ∀ i, G i) :
     (Summable fun i => V i (f i)) ↔ Summable fun i => ‖f i‖ ^ 2 := by
   classical
-    simp only [summable_iff_cauchySeq_finset, NormedAddCommGroup.cauchySeq_iff, Real.norm_eq_abs]
+    simp only [summable_iff_cauchySeq_finset, NormedAddCommGroup.cauchySeq_iff, norm_neg_add,
+      Real.norm_eq_abs]
     constructor
     · intro hf ε hε
       obtain ⟨a, H⟩ := hf _ (sqrt_pos.mpr hε)

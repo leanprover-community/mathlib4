@@ -3,12 +3,14 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
-import Mathlib.CategoryTheory.Abelian.Indization
-import Mathlib.CategoryTheory.Limits.Indization.Category
-import Mathlib.CategoryTheory.Generator.Indization
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Types
+public import Mathlib.CategoryTheory.Abelian.Indization
+public import Mathlib.CategoryTheory.Limits.Indization.Category
+public import Mathlib.CategoryTheory.Generator.Indization
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 
 /-!
 # AB axioms in the category of ind-objects
@@ -16,6 +18,8 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 We show that `Ind C` satisfies Grothendieck's axiom AB5 if `C` has finite limits and deduce that
 `Ind C` is Grothendieck abelian if `C` is small and abelian.
 -/
+
+@[expose] public section
 
 universe v u
 

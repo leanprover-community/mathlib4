@@ -3,9 +3,11 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Topology.Bases
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-! # Stone-Čech compactification
 
@@ -32,6 +34,8 @@ on all compact Hausdorff spaces. We replace it by a two steps construction.
 The first step called `PreStoneCech` guarantees the expected universal property but
 not the Hausdorff condition. We then define `StoneCech α` as `T2Quotient (PreStoneCech α)`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -127,12 +131,6 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
 
 section Embedding
 
-theorem ultrafilter_pure_injective : Function.Injective (pure : α → Ultrafilter α) := by
-  intro x y h
-  have : {x} ∈ (pure x : Ultrafilter α) := singleton_mem_pure
-  rw [h] at this
-  exact (mem_singleton_iff.mp (mem_pure.mp this)).symm
-
 open TopologicalSpace
 
 /-- The range of `pure : α → Ultrafilter α` is dense in `Ultrafilter α`. -/
@@ -157,7 +155,7 @@ theorem isDenseInducing_pure : @IsDenseInducing _ _ ⊥ _ (pure : α → Ultrafi
 /-- `pure : α → Ultrafilter α` defines a dense embedding of `α` in `Ultrafilter α`. -/
 theorem isDenseEmbedding_pure : @IsDenseEmbedding _ _ ⊥ _ (pure : α → Ultrafilter α) :=
   letI : TopologicalSpace α := ⊥
-  { isDenseInducing_pure with injective := ultrafilter_pure_injective }
+  { isDenseInducing_pure with injective := Ultrafilter.pure_injective }
 
 end Embedding
 
@@ -295,6 +293,7 @@ lemma preStoneCechExtend_preStoneCechUnit (a : α) :
     preStoneCechExtend hg (preStoneCechUnit a) = g a :=
   congr_fun (preStoneCechExtend_extends hg) a
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCechUnit b) :
     g a = g b := by
   have e := ultrafilter_extend_extends g

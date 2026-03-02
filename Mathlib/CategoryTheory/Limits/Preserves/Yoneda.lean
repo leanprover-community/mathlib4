@@ -3,8 +3,10 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Limits.FunctorToTypes
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.FunctorToTypes
 
 /-!
 # Yoneda preserves certain colimits
@@ -26,6 +28,8 @@ There is also a relative version of this statement where `F : J ⥤ Over A` for 
 `A`, see `Mathlib/CategoryTheory/Comma/Presheaf/Colimit.lean`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -52,6 +56,7 @@ noncomputable def yonedaYonedaColimit :
   _ ≅ yoneda.op ⋙ colimit (F ⋙ yoneda) :=
         isoWhiskerLeft yoneda.op (colimitIsoFlipCompColim (F ⋙ yoneda)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X)).inv =
     (colimitObjIsoColimitCompEvaluation _ _).hom ≫
       (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) := by
@@ -68,6 +73,7 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
   simp [largeCurriedYonedaLemma, yonedaOpCompYonedaObj, FunctorToTypes.colimit.map_ι_apply,
     map_yonedaEquiv]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
   suffices IsIso (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) from
     preservesColimit_of_isIso_post _ _

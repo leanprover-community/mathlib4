@@ -3,8 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Submonoid.Basic
+module
+
+public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Submonoid of opposite monoids
@@ -13,6 +16,8 @@ For every monoid `M`, we construct an equivalence between submonoids of `M` and 
 
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 variable {ι : Sort*} {M : Type*} [MulOneClass M]
@@ -20,8 +25,8 @@ variable {ι : Sort*} {M : Type*} [MulOneClass M]
 namespace Submonoid
 
 /-- Pull a submonoid back to an opposite submonoid along `MulOpposite.unop` -/
-@[to_additive (attr := simps) "Pull an additive submonoid back to an opposite submonoid along
-`AddOpposite.unop`"]
+@[to_additive (attr := simps) /-- Pull an additive submonoid back to an opposite submonoid along
+`AddOpposite.unop` -/]
 protected def op (x : Submonoid M) : Submonoid Mᵐᵒᵖ where
   carrier := MulOpposite.unop ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
@@ -30,9 +35,13 @@ protected def op (x : Submonoid M) : Submonoid Mᵐᵒᵖ where
 @[to_additive (attr := simp)]
 theorem mem_op {x : Mᵐᵒᵖ} {S : Submonoid M} : x ∈ S.op ↔ x.unop ∈ S := Iff.rfl
 
+@[to_additive (attr := simp)] lemma op_toSubsemigroup (H : Submonoid M) :
+    H.op.toSubsemigroup = H.toSubsemigroup.op :=
+  rfl
+
 /-- Pull an opposite submonoid back to a submonoid along `MulOpposite.op` -/
-@[to_additive (attr := simps) "Pull an opposite additive submonoid back to a submonoid along
-`AddOpposite.op`"]
+@[to_additive (attr := simps) /-- Pull an opposite additive submonoid back to a submonoid along
+`AddOpposite.op` -/]
 protected def unop (x : Submonoid Mᵐᵒᵖ) : Submonoid M where
   carrier := MulOpposite.op ⁻¹' x
   mul_mem' ha hb := x.mul_mem hb ha
@@ -40,6 +49,10 @@ protected def unop (x : Submonoid Mᵐᵒᵖ) : Submonoid M where
 
 @[to_additive (attr := simp)]
 theorem mem_unop {x : M} {S : Submonoid Mᵐᵒᵖ} : x ∈ S.unop ↔ MulOpposite.op x ∈ S := Iff.rfl
+
+@[to_additive (attr := simp)] lemma unop_toSubsemigroup (H : Submonoid Mᵐᵒᵖ) :
+    H.unop.toSubsemigroup = H.toSubsemigroup.unop :=
+  rfl
 
 @[to_additive (attr := simp)]
 theorem unop_op (S : Submonoid M) : S.op.unop = S := rfl
@@ -65,9 +78,9 @@ theorem op_le_op_iff {S₁ S₂ : Submonoid M} : S₁.op ≤ S₂.op ↔ S₁ �
 theorem unop_le_unop_iff {S₁ S₂ : Submonoid Mᵐᵒᵖ} : S₁.unop ≤ S₂.unop ↔ S₁ ≤ S₂ :=
   MulOpposite.unop_surjective.forall
 
-/-- A submonoid `H` of `G` determines a submonoid `H.op` of the opposite group `Gᵐᵒᵖ`. -/
-@[to_additive (attr := simps) "A additive submonoid `H` of `G` determines an additive submonoid
-`H.op` of the opposite group `Gᵐᵒᵖ`."]
+/-- A submonoid `H` of `M` determines a submonoid `H.op` of the opposite monoid `Mᵐᵒᵖ`. -/
+@[to_additive (attr := simps) /-- An additive submonoid `H` of `M` determines an additive submonoid
+`H.op` of the opposite monoid `Mᵐᵒᵖ`. -/]
 def opEquiv : Submonoid M ≃o Submonoid Mᵐᵒᵖ where
   toFun := Submonoid.op
   invFun := Submonoid.unop
@@ -167,7 +180,7 @@ theorem unop_closure (s : Set Mᵐᵒᵖ) : (closure s).unop = closure (MulOppos
   simp_rw [Set.preimage_preimage, MulOpposite.op_unop, Set.preimage_id']
 
 /-- Bijection between a submonoid `H` and its opposite. -/
-@[to_additive (attr := simps!) "Bijection between an additive submonoid `H` and its opposite."]
+@[to_additive (attr := simps!) /-- Bijection between an additive submonoid `H` and its opposite. -/]
 def equivOp (H : Submonoid M) : H ≃ H.op :=
   MulOpposite.opEquiv.subtypeEquiv fun _ => Iff.rfl
 

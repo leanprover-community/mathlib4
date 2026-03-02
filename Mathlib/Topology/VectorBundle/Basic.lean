@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Patrick Massot, Floris van Doorn
 -/
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Topology.FiberBundle.Basic
+module
+
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Vector bundles
@@ -30,15 +32,17 @@ We define constructions on vector bundles like pullbacks and direct sums in othe
 
 ## Main Definitions
 
-* `Trivialization.IsLinear`: a class stating that a trivialization is fiberwise linear on its base
-  set.
-* `Trivialization.linearEquivAt` and `Trivialization.continuousLinearMapAt` are the
+* `Bundle.Trivialization.IsLinear`: a class stating that a trivialization is fiberwise linear
+  on its base set.
+* `Bundle.Trivialization.linearEquivAt` and `Bundle.Trivialization.continuousLinearMapAt` are the
   (continuous) linear fiberwise equivalences a trivialization induces.
-* They have forward maps `Trivialization.linearMapAt` / `Trivialization.continuousLinearMapAt`
-  and inverses `Trivialization.symmₗ` / `Trivialization.symmL`. Note that these are all defined
+* They have forward maps `Bundle.Trivialization.linearMapAt` /
+  `Bundle.Trivialization.continuousLinearMapAt` and inverses `Bundle.Trivialization.symmₗ` /
+  `Bundle.Trivialization.symmL`. Note that these are all defined
   everywhere, since they are extended using the zero function.
-* `Trivialization.coordChangeL` is the coordinate change induced by two trivializations. It only
-  makes sense on the intersection of their base sets, but is extended outside it using the identity.
+* `Bundle.Trivialization.coordChangeL` is the coordinate change induced by two trivializations.
+  It only makes sense on the intersection of their base sets,
+  but is extended outside it using the identity.
 * Given a continuous (semi)linear map between `E x` and `E' y` where `E` and `E'` are bundles over
   possibly different base sets, `ContinuousLinearMap.inCoordinates` turns this into a continuous
   (semi)linear map between the chosen fibers of those bundles.
@@ -51,6 +55,8 @@ notes" section of `Mathlib/Topology/FiberBundle/Basic.lean`.
 ## Tags
 Vector bundle
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -65,18 +71,18 @@ variable [Semiring R] [TopologicalSpace F] [TopologicalSpace B]
 
 /-- A mixin class for `Pretrivialization`, stating that a pretrivialization is fiberwise linear with
 respect to given module structures on its fibers and the model fiber. -/
-protected class Pretrivialization.IsLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
-  [∀ x, Module R (E x)] (e : Pretrivialization F (π F E)) : Prop where
+protected class Bundle.Pretrivialization.IsLinear [AddCommMonoid F] [Module R F]
+  [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)] (e : Pretrivialization F (π F E)) : Prop where
   linear : ∀ b ∈ e.baseSet, IsLinearMap R fun x : E b => (e ⟨b, x⟩).2
 
-namespace Pretrivialization
+namespace Bundle.Pretrivialization
 
 variable (e : Pretrivialization F (π F E)) {x : TotalSpace F E} {b : B} {y : E b}
 
 theorem linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
     [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) :
     IsLinearMap R fun x : E b => (e ⟨b, x⟩).2 :=
-  Pretrivialization.IsLinear.linear b hb
+  IsLinear.linear b hb
 
 variable [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)] [∀ x, Module R (E x)]
 
@@ -132,8 +138,6 @@ theorem linearMapAt_def_of_notMem (e : Pretrivialization F (π F E)) [e.IsLinear
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
 
-@[deprecated (since := "2025-05-23")] alias linearMapAt_def_of_not_mem := linearMapAt_def_of_notMem
-
 theorem linearMapAt_eq_zero (e : Pretrivialization F (π F E)) [e.IsLinear R] {b : B}
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
@@ -152,8 +156,8 @@ end Pretrivialization
 
 variable [TopologicalSpace (TotalSpace F E)]
 
-/-- A mixin class for `Trivialization`, stating that a trivialization is fiberwise linear with
-respect to given module structures on its fibers and the model fiber. -/
+/-- A mixin class for `Bundle.Trivialization`, stating that a trivialization is fiberwise linear
+with respect to given module structures on its fibers and the model fiber. -/
 protected class Trivialization.IsLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
   [∀ x, Module R (E x)] (e : Trivialization F (π F E)) : Prop where
   linear : ∀ b ∈ e.baseSet, IsLinearMap R fun x : E b => (e ⟨b, x⟩).2
@@ -227,8 +231,6 @@ theorem linearMapAt_def_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R]
     (hb : b ∉ e.baseSet) : e.linearMapAt R b = 0 :=
   dif_neg hb
 
-@[deprecated (since := "2025-05-23")] alias linearMapAt_def_of_not_mem := linearMapAt_def_of_notMem
-
 theorem symmₗ_linearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symmₗ R b (e.linearMapAt R b y) = y :=
   e.toPretrivialization.symmₗ_linearMapAt hb y
@@ -298,15 +300,15 @@ theorem mk_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.Is
 
 theorem apply_symm_apply_eq_coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R]
     [e'.IsLinear R] {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) (v : F) :
-    e' (e.toPartialHomeomorph.symm (b, v)) = (b, e.coordChangeL R e' b v) := by
+    e' (e.toOpenPartialHomeomorph.symm (b, v)) = (b, e.coordChangeL R e' b v) := by
   rw [e.mk_coordChangeL e' hb, e.mk_symm hb.1]
 
-/-- A version of `Trivialization.coordChangeL_apply` that fully unfolds `coordChange`. The
+/-- A version of `Bundle.Trivialization.coordChangeL_apply` that fully unfolds `coordChange`. The
 right-hand side is ugly, but has good definitional properties for specifically defined
 trivializations. -/
 theorem coordChangeL_apply' (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R] {b : B}
     (hb : b ∈ e.baseSet ∩ e'.baseSet) (y : F) :
-    coordChangeL R e e' b y = (e' (e.toPartialHomeomorph.symm (b, y))).2 := by
+    coordChangeL R e e' b y = (e' (e.toOpenPartialHomeomorph.symm (b, y))).2 := by
   rw [e.coordChangeL_apply e' hb, e.mk_symm hb.1]
 
 theorem coordChangeL_symm_apply (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear R]
@@ -315,7 +317,7 @@ theorem coordChangeL_symm_apply (e e' : Trivialization F (π F E)) [e.IsLinear R
       (e'.linearEquivAt R b hb.2).symm.trans (e.linearEquivAt R b hb.1) :=
   congr_arg LinearEquiv.invFun (dif_pos hb)
 
-end Trivialization
+end Bundle.Trivialization
 
 end TopologicalVectorSpace
 
@@ -365,9 +367,9 @@ theorem continuousOn_coordChange [VectorBundle R F E] (e e' : Trivialization F (
       (e.baseSet ∩ e'.baseSet) :=
   VectorBundle.continuousOn_coordChange' e e'
 
-namespace Trivialization
+namespace Bundle.Trivialization
 
-/-- Forward map of `Trivialization.continuousLinearEquivAt` (only propositionally equal),
+/-- Forward map of `Bundle.Trivialization.continuousLinearEquivAt` (only propositionally equal),
   defined everywhere (`0` outside domain). -/
 @[simps -fullyApplied apply]
 def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →L[R] F :=
@@ -380,7 +382,7 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
       exact (e.continuousOn.comp_continuous (FiberBundle.totalSpaceMk_isInducing F E b).continuous
         fun x => e.mem_source.mpr hb).snd }
 
-/-- Backwards map of `Trivialization.continuousLinearEquivAt`, defined everywhere. -/
+/-- Backwards map of `Bundle.Trivialization.continuousLinearEquivAt`, defined everywhere. -/
 @[simps -fullyApplied apply]
 def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b :=
   { e.symmₗ R b with
@@ -447,14 +449,8 @@ variable {R}
 
 theorem symm_apply_eq_mk_continuousLinearEquivAt_symm (e : Trivialization F (π F E)) [e.IsLinear R]
     (b : B) (hb : b ∈ e.baseSet) (z : F) :
-    e.toPartialHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
-  have h : (b, z) ∈ e.target := by
-    rw [e.target_eq]
-    exact ⟨hb, mem_univ _⟩
-  apply e.injOn (e.map_target h)
-  · simpa only [e.source_eq, mem_preimage]
-  · simp_rw [e.right_inv h, coe_coe, e.apply_eq_prod_continuousLinearEquivAt R b hb,
-      ContinuousLinearEquiv.apply_symm_apply]
+    e.toOpenPartialHomeomorph.symm ⟨b, z⟩ = ⟨b, (e.continuousLinearEquivAt R b hb).symm z⟩ := by
+  simpa using (mk_symm _ hb _).symm
 
 theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (π F E))
     [e.IsLinear R] [e'.IsLinear R] {b : B} (hb : b ∈ e.baseSet ∩ e'.baseSet) :
@@ -464,7 +460,7 @@ theorem comp_continuousLinearEquivAt_eq_coord_change (e e' : Trivialization F (�
   rw [coordChangeL_apply e e' hb]
   rfl
 
-end Trivialization
+end Bundle.Trivialization
 
 /-! ### Constructing vector bundles -/
 
@@ -505,7 +501,7 @@ variable {R B F} {ι : Type*}
 variable (Z : VectorBundleCore R B F ι)
 
 /-- Natural identification to a `FiberBundleCore`. -/
-@[simps (config := mfld_cfg)]
+@[simps (attr := mfld_simps) -fullyApplied]
 def toFiberBundleCore : FiberBundleCore ι B F :=
   { Z with
     coordChange := fun i j b => Z.coordChange i j b
@@ -559,7 +555,7 @@ protected def TotalSpace :=
   Bundle.TotalSpace F Z.Fiber
 
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) :=
+def trivChange (i j : ι) : OpenPartialHomeomorph (B × F) (B × F) :=
   Z.toFiberBundleCore.trivChange i j
 
 @[simp, mfld_simps]
@@ -588,6 +584,7 @@ theorem localTriv_apply {i : ι} (p : Z.TotalSpace) :
     (Z.localTriv i) p = ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The standard local trivializations of a vector bundle constructed from core are linear. -/
 instance localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
   linear x _ :=
@@ -611,7 +608,8 @@ theorem mem_localTriv_target (p : B × F) :
 
 @[simp, mfld_simps]
 theorem localTriv_symm_fst (p : B × F) :
-    (Z.localTriv i).toPartialHomeomorph.symm p = ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
+    (Z.localTriv i).toOpenPartialHomeomorph.symm p =
+      ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
   rfl
 
 @[simp, mfld_simps]
@@ -730,7 +728,7 @@ open VectorBundle
 /-- This structure permits to define a vector bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space or the fibers.
 The total space is hence given a topology in such a way that there is a fiber bundle structure for
-which the partial equivalences are also partial homeomorphisms and hence vector bundle
+which the partial equivalences are also open partial homeomorphisms and hence vector bundle
 trivializations. The topology on the fibers is induced from the one on the total space.
 
 The field `exists_coordChange` is stated as an existential statement (instead of 3 separate
@@ -875,8 +873,9 @@ change of this continuous linear map w.r.t. the chart around `x₀` and the char
 
 It is defined by composing `ϕ` with appropriate coordinate changes given by the vector bundles
 `E` and `E'`.
-We use the operations `Trivialization.continuousLinearMapAt` and `Trivialization.symmL` in the
-definition, instead of `Trivialization.continuousLinearEquivAt`, so that
+We use the operations `Bundle.Trivialization.continuousLinearMapAt` and
+`Bundle.Trivialization.symmL` in the definition, instead of
+`Bundle.Trivialization.continuousLinearEquivAt`, so that
 `ContinuousLinearMap.inCoordinates` is defined everywhere (but see
 `ContinuousLinearMap.inCoordinates_eq`).
 
@@ -902,6 +901,7 @@ theorem inCoordinates_eq {x₀ x : B} {y₀ y : B'} {ϕ : E x →SL[σ] E' y}
   simp_rw [inCoordinates, ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe,
     Trivialization.coe_continuousLinearEquivAt_eq, Trivialization.symm_continuousLinearEquivAt_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Rewrite `ContinuousLinearMap.inCoordinates` in a `VectorBundleCore`. -/
 protected theorem _root_.VectorBundleCore.inCoordinates_eq {ι ι'} (Z : VectorBundleCore 𝕜₁ B F ι)
     (Z' : VectorBundleCore 𝕜₂ B' F' ι') {x₀ x : B} {y₀ y : B'} (ϕ : F →SL[σ] F')

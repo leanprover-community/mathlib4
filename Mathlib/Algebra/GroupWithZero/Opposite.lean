@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.NeZero
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Opposites of groups with zero
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -46,11 +50,11 @@ instance instNoZeroDivisors [Zero α] [Mul α] [NoZeroDivisors α] : NoZeroDivis
         (fun hy => Or.inr <| unop_injective <| hy) fun hx => Or.inl <| unop_injective <| hx
 
 instance [Mul α] [Zero α] [IsLeftCancelMulZero α] : IsRightCancelMulZero αᵐᵒᵖ where
-  mul_right_cancel_of_ne_zero h eq := unop_injective <|
+  mul_right_cancel_of_ne_zero h _ _ eq := unop_injective <|
     mul_left_cancel₀ (unop_injective.ne_iff.mpr h) (congr_arg unop eq)
 
 instance [Mul α] [Zero α] [IsRightCancelMulZero α] : IsLeftCancelMulZero αᵐᵒᵖ where
-  mul_left_cancel_of_ne_zero h eq := unop_injective <|
+  mul_left_cancel_of_ne_zero h _ _ eq := unop_injective <|
     mul_right_cancel₀ (unop_injective.ne_iff.mpr h) (congr_arg unop eq)
 
 instance [Mul α] [Zero α] [IsCancelMulZero α] : IsCancelMulZero αᵐᵒᵖ where

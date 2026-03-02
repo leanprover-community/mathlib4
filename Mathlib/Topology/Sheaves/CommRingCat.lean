@@ -3,12 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.Category.Ring.FilteredColimits
-import Mathlib.Topology.Category.TopCommRingCat
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Algebra.Category.Ring.FilteredColimits
+public import Mathlib.Topology.Category.TopCommRingCat
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Sheaves of (commutative) rings.
@@ -25,6 +27,8 @@ As more results accumulate, please consider splitting this file.
 ## References
 * https://stacks.math.columbia.edu/tag/0073
 -/
+
+@[expose] public section
 
 universe u v w v₁ v₂ u₁ u₂
 
@@ -47,24 +51,6 @@ example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
     F.IsSheaf :=
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
 
-/-- Deprecated: usage of this definition should be replaceable with `TopCat.Presheaf.restrictOpen`.
-
-Before, we had to specialze `restrictOpen` to `CommRingCat` because inferring `C := CommRingCat`
-was not reliable. Unification hints appear to solve that issue.
-
-The following still holds for `restrictOpen`: instead of unfolding the definition, rewrite with
-`restrictOpenCommRingCat_apply` to ensure the correct coercion to functions is taken.
-
-(The correct fix in the longer term is to redesign concrete categories so we don't use `forget`
-everywhere, but the correct `FunLike` instance for the morphisms of those categories.)
--/
-@[deprecated TopCat.Presheaf.restrictOpen (since := "2024-12-19")]
-abbrev restrictOpenCommRingCat {X : TopCat}
-    {F : Presheaf CommRingCat X} {V : Opens ↑X} (f : CommRingCat.carrier (F.obj (op V)))
-    (U : Opens ↑X) (e : U ≤ V := by restrict_tac) :
-    CommRingCat.carrier (F.obj (op U)) :=
-  TopCat.Presheaf.restrictOpen f U e
-
 open AlgebraicGeometry in
 /-- Unfold `restrictOpen` in the category of commutative rings (with the correct carrier type).
 
@@ -77,22 +63,13 @@ lemma restrictOpenCommRingCat_apply {X : TopCat}
     f |_ U = F.map (homOfLE e).op f :=
   rfl
 
-open AlgebraicGeometry in
-@[deprecated TopCat.Presheaf.restrict_restrict (since := "2024-12-19")]
-lemma _root_.CommRingCat.presheaf_restrict_restrict (X : TopCat)
-    {F : TopCat.Presheaf CommRingCat X}
-    {U V W : Opens ↑X} (e₁ : U ≤ V := by restrict_tac) (e₂ : V ≤ W := by restrict_tac)
-    (f : CommRingCat.carrier (F.obj (op W))) :
-    f |_ V |_ U = f |_ U :=
-  TopCat.Presheaf.restrict_restrict e₁ e₂ f
-
 section SubmonoidPresheaf
 
 open scoped nonZeroDivisors
 
 variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 
--- note: this was specialized to `CommRingCat` in #19757
+-- note: this was specialized to `CommRingCat` in https://github.com/leanprover-community/mathlib4/issues/19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
   /-- The submonoid structure for each component -/
@@ -122,6 +99,7 @@ instance (U) : Algebra (F.obj U) (G.localizationPresheaf.obj U) :=
 instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
   show IsLocalization (G.obj U) (Localization (G.obj U)) from inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map into the localization presheaf. -/
 @[simps app]
 def SubmonoidPresheaf.toLocalizationPresheaf : F ⟶ G.localizationPresheaf where
@@ -157,16 +135,10 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 /-- The map into the presheaf of total quotient rings -/
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
-
--- The following instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
+deriving Epi
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
-  -- Porting note: was an `apply (config := { instances := false })`
-  -- See https://github.com/leanprover/lean4/issues/2273
-  suffices ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U) from
-    NatTrans.mono_of_mono_app _
+  apply +allowSynthFailures NatTrans.mono_of_mono_app
   intro U
   apply ConcreteCategory.mono_of_injective
   dsimp [toTotalQuotientPresheaf]
@@ -178,7 +150,7 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   intro s hs t e
   apply section_ext F (unop U)
   intro x hx
-  rw [RingHom.map_zero]
+  rw [map_zero]
   apply (Submonoid.mem_iInf.mp hs ⟨x, hx⟩).2
   rw [← map_mul, e, map_zero]
 
@@ -244,8 +216,8 @@ def pullback {X Y : TopCatᵒᵖ} (f : X ⟶ Y) (R : TopCommRingCat) :
   { toFun g := f.unop ≫ g
     map_one' := rfl
     map_zero' := rfl
-    map_add' := by aesop_cat
-    map_mul' := by aesop_cat }
+    map_add' := by cat_disch
+    map_mul' := by cat_disch }
 
 /-- A homomorphism of topological rings can be postcomposed with functions from a source space `X`;
 this is a ring homomorphism (with respect to the pointwise ring operations on functions). -/
@@ -281,7 +253,7 @@ def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u}
 /-- The presheaf (of commutative rings), consisting of functions on an open set `U ⊆ X` with
 values in some topological commutative ring `T`.
 
-For example, we could construct the presheaf of continuous complex valued functions of `X` as
+For example, we could construct the presheaf of continuous complex-valued functions of `X` as
 ```
 presheafToTopCommRing X (TopCommRingCat.of ℂ)
 ```
@@ -364,6 +336,7 @@ theorem objSupIsoProdEqLocus_inv_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V
       (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right)
     x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem objSupIsoProdEqLocus_inv_eq_iff {X : TopCat.{u}} (F : X.Sheaf CommRingCat.{u})
     {U V W UW VW : Opens X} (e : W ≤ U ⊔ V) (x) (y : F.1.obj (op W))
     (h₁ : UW = U ⊓ W) (h₂ : VW = V ⊓ W) :

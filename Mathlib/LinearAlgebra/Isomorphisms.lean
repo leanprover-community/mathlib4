@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Quotient.Card
 
 /-!
 # Isomorphism theorems for modules.
@@ -13,6 +16,8 @@ import Mathlib.LinearAlgebra.Quotient.Basic
   `Submodule.quotientQuotientEquivQuotient`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -47,9 +52,19 @@ theorem quotKerEquivRange_apply_mk (x : M) :
   rfl
 
 @[simp]
+theorem quotKerEquivOfSurjective_apply_mk (hf : Function.Surjective f) (x : M) :
+    (f.quotKerEquivOfSurjective hf (Submodule.Quotient.mk x) : M₂) = f x :=
+  rfl
+
+@[simp]
 theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range f) :
     f.quotKerEquivRange.symm ⟨f x, h⟩ = (LinearMap.ker f).mkQ x :=
   f.quotKerEquivRange.symm_apply_apply ((LinearMap.ker f).mkQ x)
+
+@[simp]
+theorem quotKerEquivOfSurjective_symm_apply (hf : Function.Surjective f) (x : M) :
+    (f.quotKerEquivOfSurjective hf).symm (f x) = Submodule.Quotient.mk x := by
+  simp [LinearEquiv.symm_apply_eq]
 
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
 abbrev subToSupQuotient (p p' : Submodule R M) :
@@ -65,21 +80,23 @@ theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 
 Note that in the following declaration the type of the domain is expressed using
-``comap p.subtype p ⊓ comap p.subtype p'`
+`comap p.subtype p ⊓ comap p.subtype p'`
 instead of
 `comap p.subtype (p ⊓ p')`
 because the former is the simp normal form (see also `Submodule.comap_inf`). -/
 def quotientInfToSupQuotient (p p' : Submodule R M) :
     (↥p) ⧸ (comap p.subtype p ⊓ comap p.subtype p') →ₗ[R]
       (↥(p ⊔ p')) ⧸ (comap (p ⊔ p').subtype p') :=
-   (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
+  (comap p.subtype (p ⊓ p')).liftQ (subToSupQuotient p p') (comap_leq_ker_subToSupQuotient p p')
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_injective (p p' : Submodule R M) :
     Function.Injective (quotientInfToSupQuotient p p') := by
   rw [← ker_eq_bot, quotientInfToSupQuotient, ker_liftQ_eq_bot]
   rw [ker_comp, ker_mkQ]
   exact fun ⟨x, hx1⟩ hx2 => ⟨hx1, hx2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
     Function.Surjective (quotientInfToSupQuotient p p') := by
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
@@ -91,7 +108,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
 
 Note that in the following declaration the type of the domain is expressed using
-``comap p.subtype p ⊓ comap p.subtype p'`
+`comap p.subtype p ⊓ comap p.subtype p'`
 instead of
 `comap p.subtype (p ⊓ p')`
 because the former is the simp normal form (see also `Submodule.comap_inf`). -/

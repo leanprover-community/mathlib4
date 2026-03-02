@@ -3,8 +3,10 @@ Copyright (c) 2025 Pablo Donato. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pablo Donato
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+module
+
+public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Subobjects presheaf
@@ -30,6 +32,8 @@ Let `C` refer to a category with pullbacks.
 subobject, representable functor, presheaf, topos theory
 -/
 
+@[expose] public section
+
 open CategoryTheory Subobject
 
 namespace Subobject
@@ -39,8 +43,8 @@ universe u v
 variable (C : Type u) [Category.{v} C] [Limits.HasPullbacks C]
 
 /-- This is the presheaf that sends every object `X : C` to its type of subobjects `Subobject X`,
-    and every morphism `f : X ⟶ Y` to the function `Subobject Y → Subobject X` that maps every
-    subobject of `Y` to its pullback along `f`. -/
+and every morphism `f : X ⟶ Y` to the function `Subobject Y → Subobject X` that maps every
+subobject of `Y` to its pullback along `f`. -/
 @[simps]
 noncomputable def presheaf : Cᵒᵖ ⥤ Type max u v where
   obj X := Subobject X.unop

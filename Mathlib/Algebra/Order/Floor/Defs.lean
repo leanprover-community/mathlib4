@@ -3,7 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Nat.Cast.Basic
+
+import Mathlib.Data.Int.LeastGreatest
 
 /-!
 # Floor and ceil
@@ -22,7 +27,7 @@ We also provide `positivity` extensions to handle floor and ceil.
 * `Int.ceil a`: Least integer `z` such that `a ≤ z`.
 * `Int.fract a`: Fractional part of `a`, defined as `a - floor a`.
 
-## Notations
+## Notation
 
 * `⌊a⌋₊` is `Nat.floor a`.
 * `⌈a⌉₊` is `Nat.ceil a`.
@@ -41,6 +46,8 @@ many lemmas.
 
 rounding, floor, ceil
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -171,6 +178,38 @@ def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (c
     gc_coe_floor := fun a z => by rw [le_neg, gc_ceil_coe, Int.cast_neg, neg_le_neg_iff]
     gc_ceil_coe }
 
+open Classical in
+private noncomputable def floorAux {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] {x : α}
+    (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
+    {n : ℤ // n ≤ x ∧ ∀ m : ℤ, m ≤ x → m ≤ n} := by
+  let n := Classical.indefiniteDescription _ above
+  refine Int.greatestOfBdd (P := (· ≤ x)) n.1 (fun m hm ↦ ?_) below
+  rw [← Int.cast_le (R := α)]
+  exact hm.trans n.2
+
+/-- See `exists_floor` for a variant which instead assumes an `Archimedean` ring. -/
+theorem exists_floor' {α} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] (x : α)
+    (below : ∃ n : ℤ, n ≤ x) (above : ∃ n : ℤ, x ≤ n) :
+    ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α) ≤ x := by
+  refine ⟨_, fun n ↦ ⟨?_, (floorAux below above).2.2 _⟩⟩
+  rw [← Int.cast_le (R := α)]
+  exact le_trans' (floorAux below above).2.1
+
+/-- Construct a `FloorRing` instance noncomputably, from the hypothesis that every element is
+bounded above by a natural number. -/
+@[no_expose]
+noncomputable def FloorRing.ofBounded (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+    (bounded : ∀ x : α, ∃ n : ℕ, x ≤ n) : FloorRing α :=
+  have below (x : α) : ∃ n : ℤ, n ≤ x := by
+    obtain ⟨n, hn⟩ := bounded (-x)
+    use -n
+    simpa [neg_le]
+  have above (x : α) : ∃ n : ℤ, x ≤ n := by
+    obtain ⟨n, hn⟩ := bounded x
+    use n
+    exact_mod_cast hn
+  .ofFloor _ _ fun n x ↦ (Classical.choose_spec (exists_floor' x (below x) (above x)) n).symm
+
 namespace Int
 
 variable [Ring α] [LinearOrder α] [FloorRing α] {z : ℤ} {a b : α}
@@ -266,7 +305,6 @@ variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
 /-! #### A floor ring as a floor semiring -/
 
-
 -- see Note [lower instance priority]
 instance (priority := 100) FloorRing.toFloorSemiring : FloorSemiring α where
   floor a := ⌊a⌋.toNat
@@ -290,70 +328,3 @@ theorem Nat.ceil_int : (Nat.ceil : ℤ → ℕ) = Int.toNat :=
   rfl
 
 end FloorRingToSemiring
-
-namespace Mathlib.Meta.Positivity
-open Lean.Meta Qq
-
-private theorem int_floor_nonneg [Ring α] [LinearOrder α] [FloorRing α] {a : α} (ha : 0 ≤ a) :
-    0 ≤ ⌊a⌋ :=
-  Int.floor_nonneg.2 ha
-
-private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α}
-    (ha : 0 < a) :
-    0 ≤ ⌊a⌋ :=
-  int_floor_nonneg ha.le
-
-/-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
-@[positivity ⌊_⌋]
-def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
-    match ← core q(inferInstance) q(inferInstance) a with
-    | .positive pa =>
-        assertInstancesCommute
-        pure (.nonnegative q(int_floor_nonneg_of_pos (α := $α') $pa))
-    | .nonnegative pa =>
-        assertInstancesCommute
-        pure (.nonnegative q(int_floor_nonneg (α := $α') $pa))
-    | _ => pure .none
-  | _, _, _ => throwError "failed to match on Int.floor application"
-
-private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} :
-    0 < a → 0 < ⌈a⌉₊ :=
-  Nat.ceil_pos.2
-
-/-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
-@[positivity ⌈_⌉₊]
-def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
-    let _i ← synthInstanceQ q(LinearOrder $α')
-    let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
-    assertInstancesCommute
-    match ← core q(inferInstance) q(inferInstance) a with
-    | .positive pa =>
-      assertInstancesCommute
-      pure (.positive q(nat_ceil_pos (α := $α') $pa))
-    | _ => pure .none
-  | _, _, _ => throwError "failed to match on Nat.ceil application"
-
-private theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} : 0 < a → 0 < ⌈a⌉ :=
-  Int.ceil_pos.2
-
-/-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
-@[positivity ⌈_⌉]
-def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
-    match ← core q(inferInstance) q(inferInstance) a with
-    | .positive pa =>
-        assertInstancesCommute
-        pure (.positive q(int_ceil_pos (α := $α') $pa))
-    | .nonnegative pa =>
-        let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
-        assertInstancesCommute
-        pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
-    | _ => pure .none
-  | _, _, _ => throwError "failed to match on Int.ceil application"
-
-end Mathlib.Meta.Positivity

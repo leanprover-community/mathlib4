@@ -3,11 +3,13 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+module
+
+public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Minimal polynomial of roots of unity
@@ -20,6 +22,8 @@ We gather several results about minimal polynomial of root of unity.
   primitive root of unity is at least `totient n`.
 
 -/
+
+public section
 
 
 open minpoly Polynomial
@@ -34,9 +38,6 @@ variable {n : ℕ} {K : Type*} [CommRing K] {μ : K} (h : IsPrimitiveRoot μ n)
 include h
 
 /-- `μ` is integral over `ℤ`. -/
--- Porting note: `hpos` was in the `variable` line, with an `omit` in mathlib3 just after this
--- declaration. For some reason, in Lean4, `hpos` gets included also in the declarations below,
--- even if it is not used in the proof.
 theorem isIntegral (hpos : 0 < n) : IsIntegral ℤ μ := by
   use X ^ n - 1
   constructor
@@ -81,7 +82,7 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
   letI : IsIntegrallyClosed ℤ := GCDMonoid.toIsIntegrallyClosed
   refine minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos) ?_
   rw [aeval_def, coe_expand, ← comp, eval₂_eq_eval_map, map_comp, Polynomial.map_pow, map_X,
-    eval_comp, eval_pow, eval_X, ← eval₂_eq_eval_map, ← aeval_def]
+    eval_comp, eval_X_pow, ← eval₂_eq_eval_map, ← aeval_def]
   exact minpoly.aeval _ _
 
 /-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of
@@ -171,8 +172,7 @@ theorem minpoly_eq_pow_coprime {m : ℕ} (hcop : Nat.Coprime m n) :
   · intro u hunit _ _
     congr
     simp [Nat.isUnit_iff.mp hunit]
-  · intro a p _ hprime
-    intro hind h hcop
+  · intro a p _ hprime hind h hcop
     rw [hind h (Nat.Coprime.coprime_mul_left hcop)]; clear hind
     replace hprime := hprime.nat_prime
     have hdiv := (Nat.Prime.coprime_iff_not_dvd hprime).1 (Nat.Coprime.coprime_mul_right hcop)

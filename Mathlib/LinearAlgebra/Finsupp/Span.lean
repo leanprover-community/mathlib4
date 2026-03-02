@@ -3,8 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.LinearAlgebra.Finsupp.Defs
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.Defs
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Finitely supported functions and spans
@@ -13,6 +16,8 @@ import Mathlib.LinearAlgebra.Span.Basic
 
 function with finite support, module, linear algebra
 -/
+
+public section
 
 noncomputable section
 
@@ -35,7 +40,7 @@ theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
   refine iSup_le fun a₁ => iSup_le fun h₁ => range_le_iff_comap.2 ?_
   simp only [(ker_comp _ _).symm, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   intro b _ a₂ h₂
-  have : a₁ ≠ a₂ := fun eq => h.le_bot ⟨h₁, eq.symm ▸ h₂⟩
+  have : a₂ ≠ a₁ := fun eq => h.le_bot ⟨h₁, eq.symm ▸ h₂⟩
   exact single_eq_of_ne this
 
 theorem iInf_ker_lapply_le_bot : ⨅ a, ker (lapply a : (α →₀ M) →ₗ[R] M) ≤ ⊥ := by
@@ -68,14 +73,41 @@ theorem span_single_image (s : Set M) (a : α) :
     Submodule.span R (single a '' s) = (Submodule.span R s).map (lsingle a : M →ₗ[R] α →₀ M) := by
   rw [← span_image]; rfl
 
+lemma range_lmapDomain {β : Type*} (u : α → β) :
+    LinearMap.range (lmapDomain R R u) = .span R (.range fun x ↦ single (u x) 1) := by
+  refine le_antisymm ?_ ?_
+  · rintro x ⟨x, rfl⟩
+    induction x using induction_linear with
+    | single i s =>
+        rw [lmapDomain_apply, mapDomain_single, ← Finsupp.smul_single_one]
+        exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩)
+    | zero => simp
+    | add f g hf hg =>
+        rw [map_add]
+        exact Submodule.add_mem _ hf hg
+  · rw [Submodule.span_le, Set.range_subset_iff]
+    intro i
+    exact ⟨Finsupp.single i 1, by simp⟩
+
+lemma span_single_eq_top : span R {single i x | (i : α) (x : M)} = ⊤ := by
+  refine eq_top_iff'.mpr fun x ↦ ?_
+  induction x using Finsupp.induction_linear with
+  | zero => exact Submodule.zero_mem ..
+  | add f g f_in g_in => exact add_mem f_in g_in
+  | single a b => exact mem_span_of_mem ⟨a, b, rfl⟩
+
 end Finsupp
+
+open Finsupp
+
+namespace Submodule
+
+section Semiring
 
 variable {R : Type*} {M : Type*} {N : Type*}
 variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
 
-open Finsupp
-
-theorem Submodule.exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule R M) {m : M}
+theorem exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule R M) {m : M}
     (hm : m ∈ ⨆ i, p i) : ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i := by
   have :=
     CompleteLattice.IsCompactElement.exists_finset_of_le_iSup (Submodule R M)
@@ -84,18 +116,46 @@ theorem Submodule.exists_finset_of_mem_iSup {ι : Sort _} (p : ι → Submodule 
   exact this hm
 
 /-- `Submodule.exists_finset_of_mem_iSup` as an `iff` -/
-theorem Submodule.mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule R M} {m : M} :
+theorem mem_iSup_iff_exists_finset {ι : Sort _} {p : ι → Submodule R M} {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∃ s : Finset ι, m ∈ ⨆ i ∈ s, p i :=
   ⟨Submodule.exists_finset_of_mem_iSup p, fun ⟨_, hs⟩ =>
     iSup_mono (fun i => (iSup_const_le : _ ≤ p i)) hs⟩
 
-theorem Submodule.mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
+theorem mem_sSup_iff_exists_finset {S : Set (Submodule R M)} {m : M} :
     m ∈ sSup S ↔ ∃ s : Finset (Submodule R M), ↑s ⊆ S ∧ m ∈ ⨆ i ∈ s, i := by
   rw [sSup_eq_iSup, iSup_subtype', Submodule.mem_iSup_iff_exists_finset]
-  refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype S), ?_, ?_⟩,
+  refine ⟨fun ⟨s, hs⟩ ↦ ⟨s.map (Function.Embedding.subtype (· ∈ S)), ?_, ?_⟩,
           fun ⟨s, hsS, hs⟩ ↦ ⟨s.preimage (↑) Subtype.coe_injective.injOn, ?_⟩⟩
-  · simpa using fun x _ ↦ x.property
+  · simp
   · suffices m ∈ ⨆ (i) (hi : i ∈ S) (_ : ⟨i, hi⟩ ∈ s), i by simpa
     rwa [iSup_subtype']
-  · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert rfl; aesop
+  · have : ⨆ (i) (_ : i ∈ S ∧ i ∈ s), i = ⨆ (i) (_ : i ∈ s), i := by convert rfl; grind
     simpa only [Finset.mem_preimage, iSup_subtype, iSup_and', this]
+
+end Semiring
+
+section CommSemiring
+
+variable {R M N σ : Type*} [CommSemiring R] [AddCommMonoid M]
+variable [AddCommMonoid N] [Module R M] [Module R N]
+
+open scoped Pointwise in
+lemma range_lsum_smul (φ : M →ₗ[R] N) (f : σ → R) :
+    (lsum (S := R) (f · • φ)).range = Set.range f • φ.range := by
+  simp_rw [range_eq_map, ← span_single_eq_top, ← span_univ, map_span, set_smul_span]
+  congr 1
+  aesop (add simp Set.mem_smul)
+
+open scoped Pointwise in
+theorem image_smul_top_eq_range_lsum (s : Set σ) (f : σ → R) :
+    (f '' s • ⊤ : Submodule R M) = (lsum (S := R) fun i : s ↦ f i • .id).range := by
+  simpa [Set.range_comp] using (range_lsum_smul (.id (R := R) (M := M)) (f ∘ (↑) : s → R)).symm
+
+open scoped Pointwise in
+theorem smul_top_eq_range_lsum (s : Set R) :
+    (s • ⊤ : Submodule R M) = (lsum (S := R) fun i : s ↦ i.val • .id).range := by
+  simpa using image_smul_top_eq_range_lsum (M := M) s id
+
+end CommSemiring
+
+end Submodule

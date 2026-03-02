@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # (Semi)linear equivalences
@@ -32,6 +34,8 @@ The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provid
 
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
+
+@[expose] public section
 
 assert_not_exists Field Pi.module
 
@@ -105,7 +109,7 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
 
 instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
+    [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with }
 
 variable {F}
@@ -132,7 +136,8 @@ variable [Semiring R] [Semiring S]
 section
 
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-variable [Module R M] [Module S M₂] {σ : R →+* S} {σ' : S →+* R}
+-- See note [implicit instance arguments]
+variable {modM : Module R M} {modM₂ : Module S M₂} {σ : R →+* S} {σ' : S →+* R}
 variable [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
 
 instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
@@ -140,9 +145,10 @@ instance : Coe (M ≃ₛₗ[σ] M₂) (M →ₛₗ[σ] M₂) :=
 
 -- This exists for compatibility, previously `≃ₗ[R]` extended `≃` instead of `≃+`.
 /-- The equivalence of types underlying a linear equivalence. -/
-def toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂ := fun f ↦ f.toAddEquiv.toEquiv
+def toEquiv (e : M ≃ₛₗ[σ] M₂) : M ≃ M₂ := e.toAddEquiv.toEquiv
 
-theorem toEquiv_injective : Function.Injective (toEquiv : (M ≃ₛₗ[σ] M₂) → M ≃ M₂) :=
+theorem toEquiv_injective :
+    (toEquiv (modM := modM) (modM₂ := modM₂) : (M ≃ₛₗ[σ] M₂) → M ≃ M₂).Injective :=
   fun ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ ⟨⟨⟨_, _⟩, _⟩, _, _, _⟩ h ↦
     (LinearEquiv.mk.injEq _ _ _ _ _ _ _ _).mpr
       ⟨LinearMap.ext (congr_fun (Equiv.mk.inj h).1), (Equiv.mk.inj h).2⟩
@@ -352,13 +358,19 @@ theorem apply_symm_apply (c : M₂) : e (e.symm c) = c :=
 theorem symm_apply_apply (b : M) : e.symm (e b) = b :=
   e.left_inv b
 
-@[simp]
 theorem comp_symm : e.toLinearMap ∘ₛₗ e.symm.toLinearMap = LinearMap.id :=
   LinearMap.ext e.apply_symm_apply
 
-@[simp]
 theorem symm_comp : e.symm.toLinearMap ∘ₛₗ e.toLinearMap = LinearMap.id :=
   LinearMap.ext e.symm_apply_apply
+
+@[simp]
+lemma comp_symm_assoc (f : M₃ →ₛₗ[σ₃₂] M₂) [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂] :
+    e₁₂.toLinearMap ∘ₛₗ e₁₂.symm.toLinearMap ∘ₛₗ f = f := by ext; simp
+
+@[simp]
+lemma symm_comp_assoc (f : M₃ →ₛₗ[σ₃₁] M₁) [RingHomCompTriple σ₃₁ σ₁₂ σ₃₂] :
+    e₁₂.symm.toLinearMap ∘ₛₗ e₁₂.toLinearMap ∘ₛₗ f = f := by ext; simp
 
 @[simp]
 theorem trans_symm : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃).symm = e₂₃.symm.trans e₁₂.symm :=
@@ -393,6 +405,11 @@ theorem eq_symm_comp {α : Type*} (f : α → M₁) (g : α → M₂) : f = e₁
 
 theorem symm_comp_eq {α : Type*} (f : α → M₁) (g : α → M₂) : e₁₂.symm ∘ g = f ↔ g = e₁₂ ∘ f :=
   e₁₂.toEquiv.symm_comp_eq f g
+
+@[simp]
+theorem comp_coe (f : M₁ ≃ₛₗ[σ₁₂] M₂) (f' : M₂ ≃ₛₗ[σ₂₃] M₃) :
+    (f' : M₂ →ₛₗ[σ₂₃] M₃).comp (f : M₁ →ₛₗ[σ₁₂] M₂) = (f.trans f' : M₁ ≃ₛₗ[σ₁₃] M₃) :=
+  rfl
 
 lemma trans_assoc (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) (e₃₄ : M₃ ≃ₛₗ[σ₃₄] M₄) :
     (e₁₂.trans e₂₃).trans e₃₄ = e₁₂.trans (e₂₃.trans e₃₄) := rfl
@@ -478,11 +495,6 @@ theorem refl_toLinearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) =
   rfl
 
 @[simp]
-theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M₂) (f' : M₂ ≃ₗ[R] M₃) :
-    (f' : M₂ →ₗ[R] M₃).comp (f : M →ₗ[R] M₂) = (f.trans f' : M ≃ₗ[R] M₃) :=
-  rfl
-
-@[simp]
 theorem mk_coe (f h₁ h₂) : (LinearEquiv.mk e f h₁ h₂ : M ≃ₛₗ[σ] M₂) = e :=
   ext fun _ ↦ rfl
 
@@ -527,10 +539,16 @@ theorem symm_mk (f h₁ h₂ h₃ h₄) :
         invFun := e } :=
   rfl
 
-@[simp]
+/-- For a more powerful version, see `coe_symm_mk'`. -/
 theorem coe_symm_mk [Module R M] [Module R M₂]
     {to_fun inv_fun map_add map_smul left_inv right_inv} :
     ⇑(⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
+  rfl
+
+@[simp]
+theorem coe_symm_mk' [Module R M] [Module R M₂]
+    {f inv_fun left_inv right_inv} :
+    ⇑(⟨f, inv_fun, left_inv, right_inv⟩ : M ≃ₗ[R] M₂).symm = inv_fun :=
   rfl
 
 protected theorem bijective : Function.Bijective e :=
@@ -542,13 +560,24 @@ protected theorem injective : Function.Injective e :=
 protected theorem surjective : Function.Surjective e :=
   e.toEquiv.surjective
 
-protected theorem image_eq_preimage (s : Set M) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+protected theorem image_eq_preimage_symm (s : Set M) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm s
 
 protected theorem image_symm_eq_preimage (s : Set M₂) : e.symm '' s = e ⁻¹' s :=
-  e.toEquiv.symm.image_eq_preimage s
+  e.toEquiv.symm.image_eq_preimage_symm s
 
 end
+
+/-- `Equiv.cast (congrArg _ h)` as a linear equiv.
+
+Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
+to avoid having to deal with an equality of the algebraic structure itself. -/
+@[simps!]
+protected def cast {ι : Type*} {M : ι → Type*}
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] {i j : ι} (h : i = j) :
+    M i ≃ₗ[R] M j where
+  toAddEquiv := AddEquiv.cast h
+  map_smul' _ _ := by cases h; rfl
 
 /-- Interpret a `RingEquiv` `f` as an `f`-semilinear equiv. -/
 @[simps]
@@ -561,6 +590,10 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
   { f with
     toFun := f
     map_smul' := f.map_mul }
+
+@[simp]
+lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
+  f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl
 
 variable [AddCommMonoid M]
 
@@ -576,4 +609,38 @@ theorem coe_ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomIn
 
 end AddCommMonoid
 
+section smul
+variable {S R V W G : Type*} [Semiring R] [Semiring S]
+  [AddCommMonoid V] [Module R V] [Module S V]
+  [AddCommMonoid W] [Module R W] [Module S W]
+  [AddCommMonoid G] [Module R G] [Module S G]
+  [SMulCommClass R S W] [SMul S R] [IsScalarTower S R V] [IsScalarTower S R W]
+
+/-- Left scalar multiplication of a unit and a linear equivalence, as a linear equivalence. -/
+instance : SMul Sˣ (V ≃ₗ[R] W) where smul α e :=
+  { __ := (α : S) • e.toLinearMap
+    invFun x := (↑α⁻¹ : S) • e.symm x
+    left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
+    right_inv _ := by simp [smul_smul] }
+
+@[simp] theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
+
+theorem symm_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
+    (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl
+
+@[simp] theorem symm_smul [SMulCommClass R S V] (e : V ≃ₗ[R] W) (α : Sˣ) :
+    (α • e).symm = α⁻¹ • e.symm := rfl
+
+@[simp] theorem toLinearMap_smul (e : V ≃ₗ[R] W) (α : Sˣ) :
+    (α • e).toLinearMap = (α : S) • e.toLinearMap := rfl
+
+theorem smul_trans [SMulCommClass R S V] [IsScalarTower S R G]
+    (α : Sˣ) (e : G ≃ₗ[R] V) (f : V ≃ₗ[R] W) :
+    (α • e).trans f = α • (e.trans f) := by ext; simp [LinearMapClass.map_smul_of_tower f]
+
+theorem trans_smul [IsScalarTower S R G]
+    (α : Sˣ) (e : G ≃ₗ[R] V) (f : V ≃ₗ[R] W) :
+    e.trans (α • f) = α • (e.trans f) := by ext; simp
+
+end smul
 end LinearEquiv

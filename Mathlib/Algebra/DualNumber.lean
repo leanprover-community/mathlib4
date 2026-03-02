@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.TrivSqZeroExt
+module
+
+public import Mathlib.Algebra.TrivSqZeroExt
 
 /-!
 # Dual numbers
@@ -33,6 +35,8 @@ Rather than duplicating the API of `TrivSqZeroExt`, this file reuses the functio
 
 * https://en.wikipedia.org/wiki/Dual_number
 -/
+
+@[expose] public section
 
 
 variable {R A B : Type*}
@@ -105,9 +109,10 @@ nonrec theorem algHom_ext' ⦃f g : A[ε] →ₐ[R] B⦄
     change f (inr a) = g (inr a)
     simpa only [inr_eq_smul_eps] using DFunLike.congr_fun hinr a)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For two `R`-algebra morphisms out of `R[ε]` to agree, it suffices for them to agree on `ε`. -/
 @[ext 1200]
-nonrec theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
+theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f = g := by
   ext
   dsimp
   simp only [one_smul, hε]

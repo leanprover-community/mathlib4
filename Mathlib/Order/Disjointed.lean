@@ -3,8 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies, David Loeffler
 -/
-import Mathlib.Order.PartialSups
-import Mathlib.Order.Interval.Finset.Fin
+module
+
+public import Mathlib.Order.PartialSups
+public import Mathlib.Order.Interval.Finset.Fin
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
+public import Mathlib.Order.Interval.Finset.SuccPred
 
 /-!
 # Making a sequence disjoint
@@ -32,6 +36,8 @@ It is actually unique, as `disjointed_unique` shows.
 
 We also provide set notation variants of some lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists SuccAddOrder
 
@@ -127,7 +133,7 @@ theorem partialSups_disjointed (f : ι → α) :
     rcases lt_or_eq_of_le hi with hn | hn
     · exact ih _ <| Nat.le_of_lt_succ hn
     simp only [partialSups_apply (disjointed f), Iic_eq_cons_Iio, sup'_eq_sup, sup_cons]
-    -- Key claim: we can write `Iio i` as a union of (finitely many) `Ici` intervals.
+    -- Key claim: we can write `Iio i` as a union of (finitely many) `Iic` intervals.
     have hun : (Iio i).biUnion Iic = Iio i := by
       ext r; simpa using ⟨fun ⟨a, ha⟩ ↦ ha.2.trans_lt ha.1, fun hr ↦ ⟨r, hr, le_rfl⟩⟩
     -- Use claim and `sup_biUnion` to rewrite the supremum in the definition of `disjointed f`
@@ -177,6 +183,15 @@ theorem disjointed_unique {f d : ι → α} (hdisj : ∀ {i j : ι} (_ : i < j),
   rw [← disjointed_partialSups, ← hsups, disjointed_partialSups]
   exact funext fun _ ↦ (disjointed_eq_self (fun _ hj ↦ hdisj hj)).symm
 
+lemma biUnion_Iic_disjointed {α : Type*} (f : ι → Set α) (n : ι) :
+    (⋃ i ∈ Finset.Iic n, disjointed f i) = partialSups f n := by
+  rw [← partialSups_disjointed, partialSups_eq_biSup]
+  simp
+
+lemma biUnion_range_succ_disjointed {α : Type*} (f : ℕ → Set α) (n : ℕ) :
+    (⋃ i ∈ Finset.range (n + 1), disjointed f i) = partialSups f n := by
+  rw [Nat.range_succ_eq_Iic, biUnion_Iic_disjointed]
+
 end PartialOrder
 
 section LinearOrder -- the index type is a linear order
@@ -195,6 +210,13 @@ as `f`. -/
 theorem disjointed_unique' {f d : ι → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f :=
   disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
+
+omit [GeneralizedBooleanAlgebra α] in
+lemma Finset.disjiUnion_Iic_disjointed [DecidableEq α] (n : ι) (t : ι → Finset α) :
+    (Iic n).disjiUnion (disjointed t) ((disjoint_disjointed t).set_pairwise _) =
+      partialSups t n := by
+  rw [← partialSups_disjointed, partialSups_apply, Finset.sup'_eq_sup, Finset.sup_eq_biUnion,
+    disjiUnion_eq_biUnion]
 
 section SuccOrder
 
@@ -219,10 +241,30 @@ lemma Monotone.disjointed_succ_sup {f : ι → α} (hf : Monotone f) (i : ι) :
     have : Iio (succ i) = Iic i := by
       ext
       simp only [mem_Iio, lt_succ_iff_eq_or_lt_of_not_isMax h, mem_Iic, le_iff_lt_or_eq, Or.comm]
-    rw [this, ← sup'_eq_sup, ← partialSups_apply, hf.partialSups_eq,
+    rw [this, ← sup'_eq_sup nonempty_Iic, ← partialSups_apply, hf.partialSups_eq,
       sdiff_sup_cancel <| hf <| le_succ i]
 
 end SuccOrder
+
+lemma sup_Ioc_disjointed_of_monotone
+    {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+    {f : ι → α} (hf : Monotone f) {m n : ι} (hm : n ≤ m) :
+    (Finset.Ioc n m).sup (disjointed f) = f m \ f n := by
+  let : SuccOrder ι := LinearLocallyFiniteOrder.succOrder ι
+  induction hm using Succ.rec with
+  | rfl => simp
+  | succ m hm ih =>
+    by_cases h'm : IsMax m
+    · simpa [Order.succ_eq_iff_isMax.mpr h'm] using ih
+    · rw [← Finset.insert_Ioc_right_eq_Ioc_succ_of_not_isMax hm h'm]
+      simp only [sup_insert, hf.disjointed_succ h'm, ih]
+      exact sdiff_sup_sdiff_cancel (hf (Order.le_succ m)) (hf hm)
+
+lemma biUnion_Ioc_disjointed_of_monotone
+    {α ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+    {f : ι → Set α} (hf : Monotone f) {m n : ι} (hm : n ≤ m) :
+    ⋃ i ∈ Finset.Ioc n m, disjointed f i = f m \ f n := by
+  simp [← sup_Ioc_disjointed_of_monotone hf hm]
 
 end LinearOrder
 
@@ -293,7 +335,7 @@ section Nat
 /-!
 ### Functions on `ℕ`
 
-(See also `Mathlib/Algebra/Order/Disjointed.lean` for results with more algebra pre-requsisites.)
+(See also `Mathlib/Algebra/Order/Disjointed.lean` for results with more algebra pre-requisites.)
 -/
 
 variable [GeneralizedBooleanAlgebra α]

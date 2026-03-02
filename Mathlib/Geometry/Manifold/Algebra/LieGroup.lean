@@ -3,7 +3,9 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.Monoid
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
 
 /-!
 # Lie groups
@@ -12,9 +14,9 @@ A Lie group is a group that is also a `C^n` manifold, in which the group operati
 multiplication and inversion are `C^n` maps. Regularity of the group multiplication means that
 multiplication is a `C^n` mapping of the product manifold `G` × `G` into `G`.
 
-Note that, since a manifold here is not second-countable and Hausdorff a Lie group here is not
-guaranteed to be second-countable (even though it can be proved it is Hausdorff). Note also that Lie
-groups here are not necessarily finite dimensional.
+Note that, since a manifold here is not second-countable and Hausdorff, a Lie group here is not
+guaranteed to be second-countable (even though it can be proved that it is Hausdorff). Note also
+that Lie groups here are not necessarily finite dimensional.
 
 ## Main definitions
 
@@ -46,6 +48,8 @@ the model space is `ModelProd E E'` and the model vector space is `E × E'`, whi
 so the definition does not apply. Hence the definition should be more general, allowing
 `I : ModelWithCorners 𝕜 E H`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -96,6 +100,7 @@ protected theorem LieGroup.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
 instance {a : WithTop ℕ∞} [LieGroup I ∞ G] [h : ENat.LEInfty a] : LieGroup I a G :=
   LieGroup.of_le h.out
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance {a : WithTop ℕ∞} [LieGroup I ω G] : LieGroup I a G :=
   LieGroup.of_le le_top
@@ -117,15 +122,15 @@ section
 variable (I n)
 
 /-- In a Lie group, inversion is `C^n`. -/
-@[to_additive "In an additive Lie group, inversion is a smooth map."]
+@[to_additive /-- In an additive Lie group, inversion is a smooth map. -/]
 theorem contMDiff_inv : ContMDiff I I n fun x : G => x⁻¹ :=
   LieGroup.contMDiff_inv
 
 include I n in
 /-- A Lie group is a topological group. This is not an instance for technical reasons,
 see note [Design choices about smooth algebraic structures]. -/
-@[to_additive "An additive Lie group is an additive topological group. This is not an instance for
-technical reasons, see note [Design choices about smooth algebraic structures]."]
+@[to_additive /-- An additive Lie group is an additive topological group. This is not an instance
+for technical reasons, see note [Design choices about smooth algebraic structures]. -/]
 theorem topologicalGroup_of_lieGroup : IsTopologicalGroup G :=
   { continuousMul_of_contMDiffMul I n with continuous_inv := (contMDiff_inv I n).continuous }
 
@@ -210,8 +215,6 @@ class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} 
   /-- Inversion is `C^n` away from `0`. -/
   contMDiffAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → ContMDiffAt I I n (fun y ↦ y⁻¹) x
 
-@[deprecated (since := "2025-01-09")] alias SmoothInv₀ := ContMDiffInv₀
-
 instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
   contMDiffAt_inv₀ x hx := by
     change ContMDiffAt 𝓘(𝕜) 𝓘(𝕜) n Inv.inv x
@@ -233,10 +236,11 @@ protected theorem ContMDiffInv₀.of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
 instance {a : WithTop ℕ∞} [ContMDiffInv₀ I ∞ G] [h : ENat.LEInfty a] : ContMDiffInv₀ I a G :=
   ContMDiffInv₀.of_le h.out
 
+set_option backward.isDefEq.respectTransparency false in
 instance {a : WithTop ℕ∞} [ContMDiffInv₀ I ω G] : ContMDiffInv₀ I a G :=
   ContMDiffInv₀.of_le le_top
 
-instance [HasContinuousInv₀ G] : ContMDiffInv₀ I 0 G := by
+instance [ContinuousInv₀ G] : ContMDiffInv₀ I 0 G := by
   have : T1Space G := I.t1Space G
   constructor
   have A : ContMDiffOn I I 0 (fun (x : G) ↦ x⁻¹) {0}ᶜ := by
@@ -259,11 +263,11 @@ include I n in
 /-- In a manifold with `C^n` inverse away from `0`, the inverse is continuous away from `0`.
 This is not an instance for technical reasons, see
 note [Design choices about smooth algebraic structures]. -/
-theorem hasContinuousInv₀_of_hasContMDiffInv₀ : HasContinuousInv₀ G :=
+theorem continuousInv₀_of_contMDiffInv₀ : ContinuousInv₀ G :=
   { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
 
-@[deprecated (since := "2025-01-09")]
-alias hasContinuousInv₀_of_hasSmoothInv₀ := hasContinuousInv₀_of_hasContMDiffInv₀
+@[deprecated (since := "2025-09-01")] alias hasContinuousInv₀_of_hasContMDiffInv₀ :=
+  continuousInv₀_of_contMDiffInv₀
 
 theorem contMDiffOn_inv₀ : ContMDiffOn I I n (Inv.inv : G → G) {0}ᶜ := fun _x hx =>
   (contMDiffAt_inv₀ hx).contMDiffWithinAt

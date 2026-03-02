@@ -3,23 +3,25 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
-import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
-import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
-import Mathlib.AlgebraicTopology.ModelCategory.Instances
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
+public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
+public import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
 /-!
 # Model categories
 
 We introduce a typeclass `ModelCategory C` expressing that `C` is equipped with
 classes of morphisms named "fibrations", "cofibrations" and "weak equivalences"
-with satisfy the axioms of (closed) model categories as they appear for example
+which satisfy the axioms of (closed) model categories as they appear for example
 in *Simplicial Homotopy Theory* by Goerss and Jardine. We also provide an
 alternate constructor `ModelCategory.mk'` which uses a formulation of the axioms
-using weak factorizations systems.
+using weak factorization systems.
 
 As a given category `C` may have several model category structures, it is advisable
 to define only local instances of `ModelCategory`, or to set these instances on type synonyms.
@@ -31,6 +33,8 @@ to define only local instances of `ModelCategory`, or to set these instances on 
 
 -/
 
+@[expose] public section
+
 universe w v u
 
 namespace HomotopicalAlgebra
@@ -40,7 +44,7 @@ open CategoryTheory Limits
 variable (C : Type u) [Category.{v} C]
 
 /-- A model category is a category equipped with classes of morphisms named cofibrations,
-fibrations and weak equivalences which satisfies the axioms CM1/CM2/CM3/CM4/CM5
+fibrations and weak equivalences which satisfy the axioms CM1/CM2/CM3/CM4/CM5
 of (closed) model categories. -/
 class ModelCategory where
   categoryWithFibrations : CategoryWithFibrations C := by infer_instance
@@ -63,6 +67,8 @@ class ModelCategory where
 
 namespace ModelCategory
 
+attribute [instance_reducible]
+  categoryWithFibrations categoryWithCofibrations categoryWithWeakEquivalences
 attribute [instance] categoryWithFibrations categoryWithCofibrations categoryWithWeakEquivalences
   cm1a cm1b cm2 cm3a cm3b cm3c cm4a cm4b cm5a cm5b
 
@@ -72,7 +78,7 @@ variable [ModelCategory C]
 
 instance : MorphismProperty.IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C) :=
   MorphismProperty.IsWeakFactorizationSystem.mk' _ _ (fun {A B X Y} i p hi hp ↦ by
-    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i|>.mp hi
+    obtain ⟨_, _⟩ := mem_trivialCofibrations_iff i |>.mp hi
     rw [← fibration_iff] at hp
     infer_instance)
 
@@ -90,6 +96,7 @@ section mk'
 
 open MorphismProperty
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C]
@@ -105,7 +112,6 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations 
   have sq : CommSq h.r.left hw.i f (hw.p ≫ h.r.right) := ⟨by simp⟩
   have hf : fibrations C f := by rwa [← fibration_iff]
   have : HasLiftingProperty hw.i f := hasLiftingProperty_of_wfs _ _ hw.hi hf
-  have : WeakEquivalence hw.i := by simpa only [weakEquivalence_iff] using hw.hi.2
   have : RetractArrow f hw.p :=
     { i := Arrow.homMk (h.i.left ≫ hw.i) h.i.right
       r := Arrow.homMk sq.lift h.r.right }
@@ -113,8 +119,9 @@ private lemma mk'.cm3a_aux [CategoryWithFibrations C] [CategoryWithCofibrations 
     ⟨hw.hp, (weakEquivalence_iff _).1 (weakEquivalence_of_precomp_of_fac hw.fac)⟩
   simpa only [weakEquivalence_iff] using (of_retract this h').2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for `ModelCategory C` which assumes a formulation of axioms
-using weak factorizations systems. -/
+using weak factorization systems. -/
 def mk' [CategoryWithFibrations C] [CategoryWithCofibrations C]
     [CategoryWithWeakEquivalences C] [HasFiniteLimits C] [HasFiniteColimits C]
     [(weakEquivalences C).HasTwoOutOfThreeProperty]

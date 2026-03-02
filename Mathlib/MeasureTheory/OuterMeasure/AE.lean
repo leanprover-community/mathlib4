@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
 /-!
 # The “almost everywhere” filter of co-null sets.
@@ -24,13 +26,15 @@ In this file we define the filter and prove some basic theorems about it.
 
 All notation introduced in this file
 reducibly unfolds to the corresponding definitions about filters,
-so generic lemmas about `Filter.Eventually`, `Filter.EventuallyEq` etc apply.
+so generic lemmas about `Filter.Eventually`, `Filter.EventuallyEq` etc. apply.
 However, we restate some lemmas specifically for `ae`.
 
 ## Tags
 
 outer measure, measure, almost everywhere
 -/
+
+@[expose] public section
 
 open Filter Set
 open scoped ENNReal
@@ -81,11 +85,11 @@ theorem frequently_ae_iff {p : α → Prop} : (∃ᵐ a ∂μ, p a) ↔ μ { a |
 theorem frequently_ae_mem_iff {s : Set α} : (∃ᵐ a ∂μ, a ∈ s) ↔ μ s ≠ 0 :=
   not_congr compl_mem_ae_iff
 
-theorem measure_zero_iff_ae_notMem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a ∉ s :=
+theorem measure_eq_zero_iff_ae_notMem {s : Set α} : μ s = 0 ↔ ∀ᵐ a ∂μ, a ∉ s :=
   compl_mem_ae_iff.symm
 
-@[deprecated (since := "2025-05-24")] alias measure_zero_iff_ae_nmem := measure_zero_iff_ae_notMem
-
+@[deprecated (since := "2025-08-26")]
+alias measure_zero_iff_ae_notMem := measure_eq_zero_iff_ae_notMem
 theorem ae_of_all {p : α → Prop} (μ : F) : (∀ a, p a) → ∀ᵐ a ∂μ, p a :=
   Eventually.of_forall
 
@@ -157,6 +161,7 @@ theorem union_ae_eq_right : (s ∪ t : Set α) =ᵐ[μ] t ↔ μ (s \ t) = 0 := 
   simp [eventuallyLE_antisymm_iff, ae_le_set, union_diff_right,
     diff_eq_empty.2 Set.subset_union_right]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem diff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set]
 
@@ -171,6 +176,7 @@ open scoped symmDiff in
 theorem measure_symmDiff_eq_zero_iff {s t : Set α} : μ (s ∆ t) = 0 ↔ s =ᵐ[μ] t := by
   simp [ae_eq_set, symmDiff_def]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ae_eq_set_compl_compl {s t : Set α} : sᶜ =ᵐ[μ] tᶜ ↔ s =ᵐ[μ] t := by
   simp only [← measure_symmDiff_eq_zero_iff, compl_symmDiff_compl]

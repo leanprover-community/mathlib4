@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Constructions
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Constructions
+public import Mathlib.Analysis.Normed.Operator.Prod
 
 /-! ## Equivalence of smoothness with the basic definition for functions between vector spaces
 
@@ -14,6 +16,8 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 * `smooth_smul`: multiplication by scalars is a smooth operation
 
 -/
+
+public section
 
 open Set ChartedSpace
 open scoped Topology Manifold
@@ -35,6 +39,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Module
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffWithinAt_iff_contDiffWithinAt {f : E → E'} {s : Set E} {x : E} :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') n f s x ↔ ContDiffWithinAt 𝕜 n f s x := by
   simp +contextual only [ContMDiffWithinAt, liftPropWithinAt_iff',
@@ -264,6 +269,7 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
   contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
     (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
     ContMDiffWithinAt I 𝓘(𝕜, V) n (fun p => f p • g p) s x :=
