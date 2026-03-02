@@ -137,6 +137,7 @@ lemma evaluation_coevaluation_iso [IsIso (ε_ X Y)] [IsIso (η_ X Y)] : (asIso (
   simp only [Iso.trans_hom, whiskerRightIso_hom, asIso_hom, whiskerLeftIso_hom,
     evaluation_coevaluation, Iso.symm_hom]
 
+/-- Swapped exact pairing, provided isomorphic evaluation and coevaluation. -/
 def Symm [IsIso (ε_ X Y)] [IsIso (η_ X Y)] :
 ExactPairing Y X where
   coevaluation' := inv (ε_ X Y)
@@ -220,12 +221,14 @@ theorem leftDual_rightDual {X : C} [HasRightDual X] : ᘁXᘁ = X :=
 theorem rightDual_leftDual {X : C} [HasLeftDual X] : (ᘁX)ᘁ = X :=
   rfl
 
-def hasLeftDual_of_hasRightDual {X : C} [HasRightDual X] [IsIso (ε_ X (Xᘁ))] [IsIso (η_ X (Xᘁ))]
+/-- The left dual treated as right dual provided isomorphic evaluation and coevaluation. -/
+abbrev hasLeftDual_of_hasRightDual {X : C} [HasRightDual X] [IsIso (ε_ X (Xᘁ))] [IsIso (η_ X (Xᘁ))]
 : HasLeftDual X where
   leftDual := Xᘁ
   exact := ExactPairing.Symm X (Xᘁ)
 
-def hasRightDual_of_hasLeftDual {X : C} [HasLeftDual X] [IsIso (ε_ (ᘁX) X)] [IsIso (η_ (ᘁX) X)]
+/-- The right dual treated as left dual provided isomorphic evaluation and coevaluation. -/
+abbrev hasRightDual_of_hasLeftDual {X : C} [HasLeftDual X] [IsIso (ε_ (ᘁX) X)] [IsIso (η_ (ᘁX) X)]
 : HasRightDual X where
   rightDual := ᘁX
   exact := ExactPairing.Symm (ᘁX) X
@@ -628,6 +631,18 @@ theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Is
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext
   simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id]
+
+/-- Left dual and right dual are isomorphic provided left dual has isomorphic evaluation and
+coevaluation. -/
+def LeftDualRightDualIso {Xₗ X Xᵣ : C} (p : ExactPairing Xₗ X) [IsIso (ε_ Xₗ X)] [IsIso (η_ Xₗ X)]
+(q : ExactPairing X Xᵣ) : Xₗ ≅ Xᵣ :=
+  rightDualIso (p.Symm) (q)
+
+/-- Left dual and right dual are isomorphic provided right dual has isomorphic evaluation and
+coevaluation. -/
+def RightDualLeftDualIso {Xₗ X Xᵣ : C} (p : ExactPairing Xₗ X)
+(q : ExactPairing X Xᵣ) [IsIso (ε_ X Xᵣ)] [IsIso (η_ X Xᵣ)] : Xₗ ≅ Xᵣ :=
+  leftDualIso p (q.Symm)
 
 /-- A right rigid monoidal category is one in which every object has a right dual. -/
 class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
