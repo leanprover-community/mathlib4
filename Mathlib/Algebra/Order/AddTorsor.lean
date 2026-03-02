@@ -74,8 +74,8 @@ instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : CovariantClass G P (Â· â
 
 @[to_additive]
 instance [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G] : IsOrderedSMul G G where
-  smul_le_smul_left _ _ := mul_le_mul_left'
-  smul_le_smul_right _ _ := mul_le_mul_right'
+  smul_le_smul_left _ _ := mul_le_mul_right
+  smul_le_smul_right _ _ := mul_le_mul_left
 
 @[to_additive]
 theorem IsOrderedSMul.smul_le_smul [LE G] [Preorder P] [SMul G P] [IsOrderedSMul G P]

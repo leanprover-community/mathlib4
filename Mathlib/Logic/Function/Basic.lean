@@ -285,6 +285,10 @@ theorem injective_of_isPartialInv_right {α β} {f : α → β} {g} (H : IsParti
     (h₁ : b ∈ g x) (h₂ : b ∈ g y) : x = y :=
   ((H _ _).1 h₁).symm.trans ((H _ _).1 h₂)
 
+lemma LeftInverse.eq {g : β → α} {f : α → β} (h : LeftInverse g f) (x : α) : g (f x) = x := h x
+
+lemma RightInverse.eq {g : β → α} {f : α → β} (h : RightInverse g f) (x : β) : f (g x) = x := h x
+
 theorem LeftInverse.comp_eq_id {f : α → β} {g : β → α} (h : LeftInverse f g) : f ∘ g = id :=
   funext h
 

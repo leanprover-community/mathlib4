@@ -181,12 +181,12 @@ theorem subset_iUnion₂ {s : ∀ i, κ i → Set α} (i : ι) (j : κ i) : s i 
 theorem iInter₂_subset {s : ∀ i, κ i → Set α} (i : ι) (j : κ i) : ⋂ (i) (j), s i j ⊆ s i j :=
   iInf₂_le i j
 
-/-- This rather trivial consequence of `subset_iUnion`is convenient with `apply`, and has `i`
+/-- This rather trivial consequence of `subset_iUnion` is convenient with `apply`, and has `i`
 explicit for this purpose. -/
 theorem subset_iUnion_of_subset {s : Set α} {t : ι → Set α} (i : ι) (h : s ⊆ t i) : s ⊆ ⋃ i, t i :=
   le_iSup_of_le i h
 
-/-- This rather trivial consequence of `iInter_subset`is convenient with `apply`, and has `i`
+/-- This rather trivial consequence of `iInter_subset` is convenient with `apply`, and has `i`
 explicit for this purpose. -/
 theorem iInter_subset_of_subset {s : ι → Set α} {t : Set α} (i : ι) (h : s i ⊆ t) :
     ⋂ i, s i ⊆ t :=

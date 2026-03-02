@@ -501,10 +501,10 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
   · obtain ⟨d, hd⟩ :=
       mul_eq_right_iff_opow_omega0_dvd.1 ((isNormal_mul_right ha).nfp_fp ((a ^ ω) * b + c))
     rw [hd]
-    apply mul_le_mul_left'
+    apply mul_le_mul_right
     have := le_nfp (a * ·) (a ^ ω * b + c)
     rw [hd] at this
-    have := (add_lt_add_left hc (a ^ ω * b)).trans_le this
+    have := (add_lt_add_right hc (a ^ ω * b)).trans_le this
     rw [add_zero, mul_lt_mul_iff_right₀ (opow_pos ω ha)] at this
     rwa [succ_le_iff]
 

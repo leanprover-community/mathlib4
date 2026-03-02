@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 public import Mathlib.Order.Filter.AtTopBot.Group
 public import Mathlib.Topology.Algebra.Group.Basic
 

@@ -177,6 +177,11 @@ theorem conjugate_comp (φ : K →+* ℂ) (σ : k →+* K) :
     (conjugate φ).comp σ = conjugate (φ.comp σ) :=
   rfl
 
+variable (K) in
+theorem involutive_conjugate :
+    Function.Involutive (conjugate : (K →+* ℂ) → (K →+* ℂ)) := by
+  intro; simp
+
 @[simp]
 theorem conjugate_coe_eq (φ : K →+* ℂ) (x : K) : (conjugate φ) x = conj (φ x) := rfl
 

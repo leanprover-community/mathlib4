@@ -85,6 +85,10 @@ theorem IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot (ae μ) 
 theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ s + μ sᶜ = 1 :=
   (measure_add_measure_compl h).trans measure_univ
 
+lemma probReal_add_probReal_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) :
+    μ.real s + μ.real sᶜ = 1 := by
+  simpa [Measure.real, ENNReal.toReal_add] using congr($(prob_add_prob_compl (μ := μ) h).toReal)
+
 instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
@@ -103,6 +107,8 @@ instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν
   measure_univ := by simp [← add_smul]
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
+
+@[simp] lemma probReal_univ : μ.real .univ = 1 := by simp [Measure.real]
 
 theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=

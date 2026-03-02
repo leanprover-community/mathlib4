@@ -64,7 +64,7 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
     catch _e =>
       let name ← mkAuxDeclName `extracted
       -- Rerun in the original tactic context, since `omega` changes the state.
-      let ((sig, _, modules), _) ← ctxI.runTactic i goal (fun goal =>
+      let ((sig, _, modules, _), _) ← ctxI.runTactic i goal (fun goal =>
         (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run)
       let imports := modules.toList.map (s!"import {·}")
       return .error tac m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success {tac}\n  {stx}"

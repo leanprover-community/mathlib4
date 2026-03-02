@@ -27,7 +27,7 @@ lemma isIntegral_coeff_prod
     exact IsIntegral.sum _ fun i hi ↦ .mul (H _ (by simp) _) (IH (fun _ _ ↦ H _ (by aesop)) _)
 
 lemma isIntegral_coeff_of_factors [IsDomain S] (p : S[X])
-    (hpmon : IsIntegral R p.leadingCoeff) (hp : p.Factors)
+    (hpmon : IsIntegral R p.leadingCoeff) (hp : p.Splits)
     (hpr : ∀ x ∈ p.roots, IsIntegral R x) (i : ℕ) :
     IsIntegral R (p.coeff i) := by
   classical

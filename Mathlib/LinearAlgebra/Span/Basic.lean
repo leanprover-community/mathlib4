@@ -432,6 +432,24 @@ theorem _root_.LinearMap.exists_ne_zero_of_sSup_eq {N : Submodule R M} {f : N �
     by rw [sSup_eq_iSup] at hs; rw [sSup_image, ← hs, biSup_comap_subtype_eq_top]
   ⟨m, hm, fun eq ↦ ne (LinearMap.ext fun x ↦ congr($eq ⟨x, x.2⟩))⟩
 
+lemma span_range_subtype_eq_top_iff {ι : Type*} (p : Submodule R M) {s : ι → M}
+    (hs : ∀ i, s i ∈ p) :
+    span R (Set.range fun i ↦ (⟨s i, hs i⟩ : p)) = ⊤ ↔ span R (Set.range s) = p := by
+  rw [← (map_injective_of_injective p.injective_subtype).eq_iff]
+  simp [map_span, ← Set.range_comp, Function.comp_def]
+
+lemma comap_le_comap_iff_of_le_range {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂]
+    {p q : Submodule R₂ M₂} (hp : p ≤ LinearMap.range f) :
+    p.comap f ≤ q.comap f ↔ p ≤ q := by
+  rw [← Submodule.map_le_iff_le_comap, Submodule.map_comap_eq_of_le hp]
+
+lemma comap_sup_of_injective {f : M →ₛₗ[σ₁₂] M₂} [RingHomSurjective σ₁₂] {p q : Submodule R₂ M₂}
+    (hf : Function.Injective f) (hp : p ≤ LinearMap.range f) (hq : q ≤ LinearMap.range f) :
+    comap f (p ⊔ q) = comap f p ⊔ comap f q := by
+  apply map_injective_of_injective hf
+  rw [map_sup, map_comap_eq_self, map_comap_eq_self hp, map_comap_eq_self hq]
+  simp [sup_le_iff, hp, hq]
+
 end AddCommMonoid
 
 section AddCommGroup

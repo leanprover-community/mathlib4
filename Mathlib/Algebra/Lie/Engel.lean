@@ -237,12 +237,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     apply lt_of_le_of_ne K.le_normalizer
     rw [Ne, eq_comm, K.normalizer_eq_self_iff, ← Ne, ←
       LieSubmodule.nontrivial_iff_ne_bot R K]
-    have : Nontrivial (L' ⧸ K.toLieSubmodule) := by
-      replace hK₂ : K.toLieSubmodule ≠ ⊤ := by
-        rwa [Ne, ← LieSubmodule.toSubmodule_inj, K.coe_toLieSubmodule,
-          LieSubmodule.top_toSubmodule, ← LieSubalgebra.top_toSubmodule,
-          K.toSubmodule_inj]
-      exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
+    have : Nontrivial (L' ⧸ K.toLieSubmodule) := Submodule.Quotient.nontrivial_iff.2 <| by simpa
     have : LieModule.IsNilpotent K (L' ⧸ K.toLieSubmodule) := by
       refine hK₁ _ fun x => ?_
       have hx := LieAlgebra.isNilpotent_ad_of_isNilpotent (h x)

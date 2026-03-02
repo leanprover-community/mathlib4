@@ -22,8 +22,6 @@ variable {F Γ₀ O : Type*} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
 
 instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*₀ Γ₀) :
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
-  __ : CommGroupWithZero (MonoidHom.mrange v) := inferInstance
-  __ : LinearOrder (MonoidHom.mrange v) := inferInstance
   bot := ⟨⊥, by simp [bot_eq_zero'']⟩
   bot_le a := by simp [bot_eq_zero'', ← Subtype.coe_le_coe]
   zero_le_one := Subtype.coe_le_coe.mp zero_le_one

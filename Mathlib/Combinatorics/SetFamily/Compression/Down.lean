@@ -186,7 +186,7 @@ it suffices to prove it for
 * the finset family which only contains the empty finset.
 * `{s ∪ {a} | s ∈ 𝒜}` assuming the property for `𝒜` a family of finsets not containing `a`.
 * `ℬ ∪ 𝒞` assuming the property for `ℬ` and `𝒞`, where `a` is an element of the ground type and
-  `ℬ`is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
+  `ℬ` is a family of finsets not containing `a` and `𝒞` a family of finsets containing `a`.
   Note that instead of giving `ℬ` and `𝒞`, the `subfamily` case gives you `𝒜 = ℬ ∪ 𝒞`, so that
   `ℬ = {s ∈ 𝒜 | a ∉ s}` and `𝒞 = {s ∈ 𝒜 | a ∈ s}`.
 

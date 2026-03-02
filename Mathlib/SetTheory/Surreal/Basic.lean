@@ -233,12 +233,12 @@ theorem add : ∀ {x y : PGame} (_ : Numeric x) (_ : Numeric y), Numeric (x + y)
   | ⟨xl, xr, xL, xR⟩, ⟨yl, yr, yL, yR⟩, ox, oy =>
     ⟨by
       rintro (ix | iy) (jx | jy)
-      · exact add_lt_add_right (ox.1 ix jx) _
+      · exact add_lt_add_left (ox.1 ix jx) _
       · exact (add_lf_add_of_lf_of_le (lf_mk _ _ ix) (oy.le_moveRight jy)).lt
           ((ox.moveLeft ix).add oy) (ox.add (oy.moveRight jy))
       · exact (add_lf_add_of_lf_of_le (mk_lf _ _ jx) (oy.moveLeft_le iy)).lt
           (ox.add (oy.moveLeft iy)) ((ox.moveRight jx).add oy)
-      · exact add_lt_add_left (oy.1 iy jy) ⟨xl, xr, xL, xR⟩, by
+      · exact add_lt_add_right (oy.1 iy jy) ⟨xl, xr, xL, xR⟩, by
       constructor
       · rintro (ix | iy)
         · exact (ox.moveLeft ix).add oy

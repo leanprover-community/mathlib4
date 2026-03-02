@@ -42,7 +42,7 @@ section mul
 
 /-- If `α` is an infinite type, then `α × α` and `α` have the same cardinality. -/
 theorem mul_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c * c = c := by
-  refine le_antisymm ?_ (by simpa only [mul_one] using mul_le_mul_left' (one_le_aleph0.trans h) c)
+  refine le_antisymm ?_ (by simpa only [mul_one] using mul_le_mul_right (one_le_aleph0.trans h) c)
   -- the only nontrivial part is `c * c ≤ c`. We prove it inductively.
   refine Acc.recOn (Cardinal.lt_wf.apply c) (fun c _ => Cardinal.inductionOn c fun α IH ol => ?_) h
   -- consider the minimal well-order `r` on `α` (a type with cardinality `c`).
@@ -93,8 +93,8 @@ theorem mul_eq_max {a b : Cardinal} (ha : ℵ₀ ≤ a) (hb : ℵ₀ ≤ b) : a 
   le_antisymm
       (mul_eq_self (ha.trans (le_max_left a b)) ▸
         mul_le_mul' (le_max_left _ _) (le_max_right _ _)) <|
-    max_le (by simpa only [mul_one] using mul_le_mul_left' (one_le_aleph0.trans hb) a)
-      (by simpa only [one_mul] using mul_le_mul_right' (one_le_aleph0.trans ha) b)
+    max_le (by simpa only [mul_one] using mul_le_mul_right (one_le_aleph0.trans hb) a)
+      (by simpa only [one_mul] using mul_le_mul_left (one_le_aleph0.trans ha) b)
 
 @[simp]
 theorem mul_mk_eq_max {α β : Type u} [Infinite α] [Infinite β] : #α * #β = max #α #β :=
@@ -144,7 +144,7 @@ theorem mul_eq_max_of_aleph0_le_left {a b : Cardinal} (h : ℵ₀ ≤ a) (h' : b
   refine (mul_le_max_of_aleph0_le_left h).antisymm ?_
   have : b ≤ a := hb.le.trans h
   rw [max_eq_left this]
-  convert mul_le_mul_left' (one_le_iff_ne_zero.mpr h') a
+  convert mul_le_mul_right (one_le_iff_ne_zero.mpr h') a
   rw [mul_one]
 
 theorem mul_le_max_of_aleph0_le_right {a b : Cardinal} (h : ℵ₀ ≤ b) : a * b ≤ max a b := by
@@ -178,7 +178,7 @@ theorem mul_eq_right {a b : Cardinal} (hb : ℵ₀ ≤ b) (ha : a ≤ b) (ha' : 
   rw [mul_comm, mul_eq_left hb ha ha']
 
 theorem le_mul_left {a b : Cardinal} (h : b ≠ 0) : a ≤ b * a := by
-  convert mul_le_mul_right' (one_le_iff_ne_zero.mpr h) a
+  convert mul_le_mul_left (one_le_iff_ne_zero.mpr h) a
   rw [one_mul]
 
 theorem le_mul_right {a b : Cardinal} (h : b ≠ 0) : a ≤ a * b := by
@@ -238,7 +238,7 @@ section add
 theorem add_eq_self {c : Cardinal} (h : ℵ₀ ≤ c) : c + c = c :=
   le_antisymm
     (by
-      convert mul_le_mul_right' ((nat_lt_aleph0 2).le.trans h) c using 1
+      convert mul_le_mul_left ((nat_lt_aleph0 2).le.trans h) c using 1
       <;> simp [two_mul, mul_eq_self h])
     (self_le_add_left c c)
 

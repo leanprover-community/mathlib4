@@ -468,7 +468,7 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
   { lift
     fac := fun s j =>
       WalkingParallelPair.casesOn j (fac s) <| by
-        erw [← s.w left, ← t.w left, ← Category.assoc, fac]; rfl
+        simp [← Category.assoc, fac]
     uniq := fun s m j => by aesop}
 
 /-- This is another convenient method to verify that a fork is a limit cone. It

@@ -254,8 +254,7 @@ theorem Module.support_quotient (I : Ideal R) :
       Submodule.quotEquivOfEq _ _ (by rw [Submodule.localized,
         Submodule.localized'_smul, Ideal.localized'_eq_map, Submodule.localized'_top])
     have : Nontrivial Mₚ'' := by
-      apply Submodule.Quotient.nontrivial_of_lt_top
-      rw [lt_top_iff_ne_top, ne_comm]
+      rw [Submodule.Quotient.nontrivial_iff, ne_comm]
       apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
       refine trans ?_ (IsLocalRing.maximalIdeal_le_jacobson _)
       rw [← Localization.AtPrime.map_eq_maximalIdeal]
