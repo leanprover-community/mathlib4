@@ -373,28 +373,57 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
+ --set_option backward.isDefEq.respectTransparency true in
+def _root_.WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃* ValueGroup₀ w where
+  toFun γ := if hγ : γ = 0 then 0 else by
+      let ⟨u, hu⟩ := WithZero.unzero hγ
+      rw [mem_valueGroup_iff_of_comm (instValued w).v (y := u)] at hu
+      exact ((⟨u, by
+        rw [mem_valueGroup_iff_of_comm]
+        exact ⟨WithVal.equiv w hu.choose, ⟨hu.choose_spec.1,
+          ⟨WithVal.equiv w hu.choose_spec.2.choose, hu.choose_spec.2.choose_spec⟩⟩⟩⟩ :
+            valueGroup w) : ValueGroup₀ w)
+  invFun γ := if hγ : γ = 0 then 0 else by
+    let ⟨u, hu⟩ := WithZero.unzero hγ
+    rw [mem_valueGroup_iff_of_comm w (y := u)] at hu
+    exact ((⟨u, by
+      rw [mem_valueGroup_iff_of_comm]
+      exact ⟨(WithVal.equiv w).symm hu.choose, ⟨hu.choose_spec.1,
+        ⟨(WithVal.equiv w).symm hu.choose_spec.2.choose, hu.choose_spec.2.choose_spec⟩⟩⟩⟩ :
+         valueGroup (instValued w).v) : ValueGroup₀ (instValued w).v)
+  left_inv := by
+    sorry
+  right_inv := sorry
+  map_mul' := sorry
+
+#exit
+
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
 -- TODO: golf
 -- **FAE** instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 theorem IsEquiv.uniformContinuous_equivWithVal
-    (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
-      w.restrict r / w.restrict s = γ.1) (h : v.IsEquiv w) :
+    (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ (instValued w).v)ˣ, ∃ r s, 0 < (instValued w).v r ∧
+      0 < (instValued w).v s ∧
+      (instValued w).v.restrict r / (instValued w).v.restrict s = γ.1) (h : v.IsEquiv w) :
     UniformContinuous (WithVal.congr v w (.refl R)) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
-  let hw := Valued.mk' w-- with hhw
-  have : w = hw.v := rfl
   intro γ
   -- rw [← this] at γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
-  use .mk0 (v.restrict r / v.restrict s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]),
+  have := WithVal.valueGroup₀_equiv.symm
+    (v.restrict ((WithVal.equiv w) r) / v.restrict ((WithVal.equiv w) s))
+  use .mk0 ( WithVal.valueGroup₀_equiv.symm
+    (v.restrict ((WithVal.equiv w) r) / v.restrict ((WithVal.equiv w) s)))
+     (by sorry/- simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm] -/),
     fun x hx ↦ ?_
   rw [← hr, Set.mem_setOf_eq]
-  by_cases hx0 : Valued.v.restrict ((equivWithVal v w) x) = 0
+  by_cases hx0 : Valued.v.restrict (WithVal.congr v w (.refl R) x) = 0
   · rw [hx0]
-    rw [← w.restrict_pos_iff] at hr₀ hs₀
-    exact div_pos hr₀ hs₀
+    sorry
+    /- rw [← w.restrict_pos_iff] at hr₀ hs₀
+    exact div_pos hr₀ hs₀ -/
   suffices w ((equiv v) x) * w s < w r by
     rwa [← map_mul, ← restrict_lt_iff, map_mul, ← lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
       at this
