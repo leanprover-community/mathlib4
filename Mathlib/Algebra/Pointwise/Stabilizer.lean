@@ -84,6 +84,7 @@ lemma stabilizer_inf_stabilizer_le_stabilizer_sdiff :
     stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s \ t) :=
   stabilizer_inf_stabilizer_le_stabilizer_apply₂ fun _ ↦ smul_set_sdiff
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s ≤ stabilizer G t)
     (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G t) :

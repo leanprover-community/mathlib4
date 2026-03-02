@@ -179,6 +179,7 @@ theorem forget_bddLat_lat_eq_forget_distLat_lat :
       forget₂ BddDistLat DistLat ⋙ forget₂ DistLat Lat :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded distributive lattices from an order isomorphism
 between them. -/
 @[simps]
