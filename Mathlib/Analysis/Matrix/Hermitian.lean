@@ -42,7 +42,7 @@ lemma IsHermitian.coe_re_diag (h : A.IsHermitian) : (fun i => (re (A.diag i) : �
 lemma isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
   rw [LinearMap.IsSymmetric, (WithLp.toLp_surjective _).forall₂]
-  simp only [toEuclideanLin_toLp, Matrix.toLin'_apply, EuclideanSpace.inner_eq_star_dotProduct,
+  simp only [toLpLin_toLp, Matrix.toLin'_apply, EuclideanSpace.inner_eq_star_dotProduct,
     star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y

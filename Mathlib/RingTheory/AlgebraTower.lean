@@ -69,6 +69,9 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
 noncomputable def algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
 
+@[deprecated (since := "2025-12-15")]
+alias algebraMapCoeffs_repr_apply_toFun := algebraMapCoeffs_repr_apply_apply
+
 @[simp]
 theorem algebraMapCoeffs_repr (m : M) :
     (b.algebraMapCoeffs A h).repr m = (b.repr m).mapRange (algebraMap R A) (map_zero _) := by
@@ -113,7 +116,7 @@ theorem isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScal
 theorem isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
   b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
-variable {R} {ι ι' : Type*} [DecidableEq ι'] (b : Basis ι R S) (c : Basis ι' S A)
+variable {R} {ι ι' : Type*} (b : Basis ι R S) (c : Basis ι' S A)
 
 /-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 
@@ -246,5 +247,29 @@ lemma isAffineHom_of_isInducing
     refine ⟨U, hyU, hU, ?_⟩
     convert isAffineOpen_bot _
     exact Opens.ext hU'
+
+lemma IsAffineOpen.isCompact_pullback_inf {X Y Z : Scheme.{u}} {f : X ⟶ Z} {g : Y ⟶ Z}
+    {U : X.Opens} (hU : IsAffineOpen U) {V : Y.Opens} (hV : IsCompact (V : Set Y))
+    {W : Z.Opens} (hW : IsAffineOpen W) (hUW : U ≤ f ⁻¹ᵁ W) (hVW : V ≤ g ⁻¹ᵁ W) :
+    IsCompact (pullback.fst f g ⁻¹ᵁ U ⊓ pullback.snd f g ⁻¹ᵁ V : Set ↑(pullback f g)) := by
+  have : IsAffine U.toScheme := hU
+  have : IsAffine W.toScheme := hW
+  have : CompactSpace V := isCompact_iff_compactSpace.mp hV
+  let f' : U.toScheme ⟶ W := f.resLE _ _ hUW
+  let q : Scheme.Opens.toScheme V ⟶ W :=
+    IsOpenImmersion.lift W.ι (Scheme.Opens.ι _ ≫ g) <| by simpa [Set.range_comp]
+  let p : pullback f' q ⟶ pullback f g :=
+    pullback.map _ _ _ _ U.ι (Scheme.Opens.ι _) W.ι (by simp [f']) (by simp [q])
+  convert isCompact_range p.continuous
+  simp [p, Scheme.Pullback.range_map]
+
+lemma isIso_morphismRestrict_iff_isIso_app [IsAffineHom f] {U : Y.Opens} (hU : IsAffineOpen U) :
+    IsIso (f ∣_ U) ↔ IsIso (f.app U) := by
+  have : IsAffine U := hU
+  refine (HasAffineProperty.iff_of_isAffine (P := .isomorphisms _)).trans <|
+    (and_iff_right (hU.preimage f)).trans ?_
+  rw [Scheme.Hom.app_eq_appLE]
+  simp only [morphismRestrict_app', TopologicalSpace.Opens.map_top]
+  congr! <;> simp [Scheme.Opens.toScheme_presheaf_obj]
 
 end AlgebraicGeometry

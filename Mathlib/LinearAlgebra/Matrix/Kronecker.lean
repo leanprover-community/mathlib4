@@ -5,12 +5,9 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
-public import Mathlib.Data.Matrix.Block
+public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Associator
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -118,7 +115,7 @@ theorem kroneckerMap_single_single
     kroneckerMap f (single i₁ j₁ a) (single i₂ j₂ b) = single (i₁, i₂) (j₁, j₂) (f a b) := by
   ext ⟨i₁', i₂'⟩ ⟨j₁', j₂'⟩
   dsimp [single]
-  aesop
+  grind
 
 theorem kroneckerMap_diagonal_diagonal [Zero α] [Zero β] [Zero γ] [DecidableEq m] [DecidableEq n]
     (f : α → β → γ) (hf₁ : ∀ b, f 0 b = 0) (hf₂ : ∀ a, f a 0 = 0) (a : m → α) (b : n → β) :
@@ -324,6 +321,7 @@ theorem natCast_kronecker_natCast [NonAssocSemiring α] [DecidableEq m] [Decidab
     (a : Matrix m m α) ⊗ₖ (b : Matrix n n α) = ↑(a * b) :=
   (diagonal_kronecker_diagonal _ _).trans <| by simp_rw [← Nat.cast_mul]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) :
     A ⊗ₖ (b : Matrix n n α) = blockDiagonal fun _ => b • A :=
   kronecker_diagonal _ _ |>.trans <| by
@@ -331,6 +329,7 @@ theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m 
     ext
     simp [(Nat.cast_commute b _).eq]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : Matrix m n α) :
     (a : Matrix l l α) ⊗ₖ B =
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun _ => a • B) :=
@@ -388,11 +387,7 @@ theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
     (A : Matrix m m R) (B : Matrix n n R) :
     det (A ⊗ₖ B) = det A ^ Fintype.card n * det B ^ Fintype.card m := by
   refine (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans ?_
-  congr 3
-  · ext i j
-    exact mul_one _
-  · ext i j
-    exact one_mul _
+  simp
 
 theorem conjTranspose_kronecker [CommMagma R] [StarMul R] (x : Matrix l m R) (y : Matrix n p R) :
     (x ⊗ₖ y)ᴴ = xᴴ ⊗ₖ yᴴ := by

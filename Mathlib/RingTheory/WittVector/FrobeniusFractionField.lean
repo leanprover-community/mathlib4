@@ -163,15 +163,8 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
     solution p a₁ a₂ ^ p * a₁.coeff 0 = solution p a₁ a₂ * a₂.coeff 0 := by
   have := solution_spec p a₁ a₂
-  obtain ⟨q, hq⟩ := Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero
-  have hq' : q = p - 1 := by simp only [hq, tsub_zero, Nat.succ_sub_succ_eq_sub]
-  conv_lhs =>
-    congr
-    congr
-    · skip
-    · rw [hq]
-  rw [pow_succ', hq', this]
-  field
+  have := Nat.exists_eq_succ_of_ne_zero hp.out.ne_zero
+  grind
 
 end RecursionBase
 
