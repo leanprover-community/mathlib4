@@ -828,7 +828,11 @@ noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Group G] [Group G']
   apply mulEquivOfCyclicCardEq
   exact hG.trans hH.symm
 
-lemma zpowersHom_bijective {G : Type*} [Group G] [Infinite G] {g : G}
+section Infinite
+
+variable [Infinite G]
+
+lemma zpowersHom_bijective [Group G] {g : G}
     (hg : zpowers g = ⊤) : Function.Bijective (zpowersHom G g) := by
   refine ⟨(MonoidHom.ker_eq_bot_iff _).mp ?_, MonoidHom.range_eq_top.mp hg⟩
   simp [zpowersHom_ker_eq, ← infinite_zpowers, hg, Set.infinite_univ]
@@ -836,29 +840,36 @@ lemma zpowersHom_bijective {G : Type*} [Group G] [Infinite G] {g : G}
 /-- The isomorphism between `Multiplicative ℤ` and the infinite cyclic group `G` sending
 `Multiplicative.ofAdd 1` to the generator `g : G`. -/
 @[simps! apply]
-noncomputable def intCyclicMulEquiv {G : Type*} [Group G] [Infinite G] (g : G)
+noncomputable def intCyclicMulEquiv [Group G] (g : G)
     (hg : zpowers g = ⊤) : Multiplicative ℤ ≃* G :=
   .ofBijective (zpowersHom G g) (zpowersHom_bijective hg)
 
 @[simp]
-lemma intCyclicMulEquiv_symm_self {G : Type*} [Group G] [Infinite G] {g : G}
+lemma intCyclicMulEquiv_symm_self [Group G] {g : G}
     (hg : zpowers g = ⊤) :
     (intCyclicMulEquiv g hg).symm g = Multiplicative.ofAdd 1 := by
   simp [MulEquiv.symm_apply_eq]
 
-lemma mulIntCyclicMulEquiv_symm_apply_zpow {G : Type*} [Group G] [Infinite G] {g : G}
+lemma mulIntCyclicMulEquiv_symm_apply_zpow [Group G] {g : G}
     (hg : zpowers g = ⊤) (k : ℤ) :
     (intCyclicMulEquiv g hg).symm (g ^ k) = Multiplicative.ofAdd k := by
   simp [← ofAdd_zsmul]
 
-lemma mulIntCyclicMulEquiv_strictMono {G : Type*} [CommGroup G] [PartialOrder G] [Infinite G]
-    [Nontrivial G] [IsOrderedMonoid G] {g : G} (hg : zpowers g = ⊤) (hg1 : 1 < g) :
+lemma mulIntCyclicMulEquiv_strictMono [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
+    {g : G} (hg : zpowers g = ⊤) (hg1 : 1 < g) :
     StrictMono (intCyclicMulEquiv g hg) := by
   intro x y hxy
   simp only [intCyclicMulEquiv, MulEquiv.ofBijective_apply, zpowersHom_apply]
   exact zpow_lt_zpow_right hg1 hxy
 
-lemma zmultiplesHom_bijective {G : Type*} [AddGroup G] [Infinite G] {g : G}
+lemma mulIntCyclicMulEquiv_strictAnti [CommGroup G] [PartialOrder G] [IsOrderedMonoid G]
+    {g : G} (hg : zpowers g = ⊤) (hg1 : g < 1) :
+    StrictAnti (intCyclicMulEquiv g hg) := by
+  intro x y hxy
+  simp only [intCyclicMulEquiv, MulEquiv.ofBijective_apply, zpowersHom_apply]
+  exact zpow_right_strictAnti hg1 hxy
+
+lemma zmultiplesHom_bijective [AddGroup G] {g : G}
     (hg : zmultiples g = ⊤) : Function.Bijective (zmultiplesHom G g) := by
   refine ⟨(AddMonoidHom.ker_eq_bot_iff _).mp ?_, AddMonoidHom.range_eq_top.mp hg⟩
   simp [zmultiplesHom_ker_eq, ← infinite_zmultiples, hg, Set.infinite_univ]
@@ -866,19 +877,21 @@ lemma zmultiplesHom_bijective {G : Type*} [AddGroup G] [Infinite G] {g : G}
 /-- The isomorphism between `ℤ` and the infinite cyclic group `G` sending
 `1` to the generator `g : G`. -/
 @[simps! apply]
-noncomputable def intCyclicAddEquiv {G : Type*} [AddGroup G] [Infinite G] (g : G)
+noncomputable def intCyclicAddEquiv [AddGroup G] (g : G)
     (hg : zmultiples g = ⊤) : ℤ ≃+ G :=
   .ofBijective (zmultiplesHom G g) (zmultiplesHom_bijective hg)
 
 @[simp]
-lemma intCyclicAddEquiv_symm_self {G : Type*} [AddGroup G] [Infinite G] (g : G)
+lemma intCyclicAddEquiv_symm_self [AddGroup G] (g : G)
     (hg : zmultiples g = ⊤) :
     (intCyclicAddEquiv g hg).symm g = 1 := by
   simp [AddEquiv.symm_apply_eq]
 
-lemma intCyclicAddEquiv_symm_apply_zsmul {G : Type*} [AddGroup G] [Infinite G] {g : G}
+lemma intCyclicAddEquiv_symm_apply_zsmul [AddGroup G] {g : G}
     (hg : zmultiples g = ⊤) (k : ℤ) : (intCyclicAddEquiv g hg).symm (k • g) = k := by
   simp
+
+end Infinite
 
 variable (G) in
 /-- The automorphism group of a cyclic group is isomorphic to the multiplicative group of ZMod. -/
