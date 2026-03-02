@@ -665,7 +665,6 @@ end MulOneClass
 
 variable (M N P : Type*) [Monoid M] [Monoid N] [Monoid P]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A multiplicative equivalence between `(M ∗ N) ∗ P` and `M ∗ (N ∗ P)`. -/
 @[to_additive /-- An additive equivalence between `AddMonoid.Coprod (AddMonoid.Coprod M N) P` and
 `AddMonoid.Coprod M (AddMonoid.Coprod N P)`. -/]

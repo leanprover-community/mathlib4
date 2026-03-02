@@ -73,6 +73,7 @@ instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
 
 end Scheme
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Zariski sheaves preserve products. -/
 lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}ᵒᵖ ⥤ Type v}
     {ι : Type*} [Small.{u} ι] [Small.{v} ι] (hF : Presieve.IsSheaf Scheme.zariskiTopology F) :
@@ -91,7 +92,7 @@ lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}
   · intro i j
     exact CoproductDisjoint.isPullback_of_isInitial
       (coproductIsCoproduct' <| Discrete.functor <| unop ∘ X) initialIsInitial
-  · exact hF.isSheafFor _ _ (sigmaOpenCover _).mem_grothendieckTopology
+  · exact hF.isSheafFor _ (sigmaOpenCover _).mem_grothendieckTopology
 
 /-- Let `F` be a locally directed diagram of open immersions, i.e., a diagram of schemes
 for which whenever `xᵢ ∈ Fᵢ` and `xⱼ ∈ Fⱼ` map to the same `xₖ ∈ Fₖ`, there exists
