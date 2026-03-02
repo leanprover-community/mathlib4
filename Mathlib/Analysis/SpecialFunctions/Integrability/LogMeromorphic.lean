@@ -117,6 +117,7 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
   {c : ℂ} {R : ℝ} {f : ℂ → E}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f` is complex meromorphic on a circle in the complex plane, then `log ‖f ·‖` is circle
 integrable over that circle.

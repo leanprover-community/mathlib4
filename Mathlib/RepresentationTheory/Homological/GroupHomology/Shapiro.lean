@@ -47,6 +47,7 @@ open CategoryTheory Finsupp TensorProduct Rep Representation
 
 variable {k G : Type u} [CommRing k] [Group G] (S : Subgroup G) (A : Rep k S)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a projective resolution `P` of `k` as a `k`-linear `G`-representation, a subgroup
 `S ≤ G`, and a `k`-linear `S`-representation `A`, this is an isomorphism of complexes
 `(A ⊗ Res(S)(P))_S ≅ (Ind_S^G(A) ⊗ P)_G`. -/
@@ -56,6 +57,7 @@ noncomputable abbrev coinvariantsTensorResProjectiveResolutionIso
       P.complex.coinvariantsTensorObj (ind S.subtype A) :=
   (NatIso.mapHomologicalComplex (coinvariantsTensorIndNatIso S.subtype A).symm _).app _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shapiro's lemma: given a subgroup `S ≤ G` and an `S`-representation `A`, we have
 `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A).` -/
 noncomputable def indIso [DecidableEq G] (A : Rep k S) (n : ℕ) :

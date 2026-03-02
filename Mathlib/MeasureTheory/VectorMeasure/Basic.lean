@@ -201,6 +201,7 @@ theorem of_nonpos_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (
   rw [of_union h hA₁ hB₁] at hAB
   linarith
 
+set_option backward.isDefEq.respectTransparency false in
 lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
     (hm : ∀ b ∈ s, MeasurableSet (f b)) : v (⋃ b ∈ s, f b) = ∑ p ∈ s, v (f p) := by
   classical
@@ -213,7 +214,7 @@ lemma of_biUnion_finset {ι : Type*} {s : Finset ι} {f : ι → Set α} (hd : P
     · exact hd.subset (by simp)
     · grind
     · simp only [disjoint_iUnion_right]
-      exact fun i hi ↦  hd (by simp) (by simp [hi]) (by grind)
+      exact fun i hi ↦ hd (by simp) (by simp [hi]) (by grind)
     · apply hm _ (by simp)
     · apply Finset.measurableSet_biUnion _ (by grind)
 

@@ -74,6 +74,7 @@ def chainLength (α β : Weight K H L) : ℕ :=
 
 lemma chainLength_of_isZero (hα : α.IsZero) : chainLength α β = 0 := dif_pos hα
 
+set_option backward.isDefEq.respectTransparency false in
 lemma chainLength_nsmul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     chainLength α β • x = ⁅coroot α, x⁆ := by
   by_cases hα : α.IsZero
@@ -382,6 +383,7 @@ lemma reflectRoot_isNonZero (α β : Weight K H L) (hβ : β.IsNonZero) :
 
 variable (H)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The root system of a finite-dimensional Lie algebra with non-degenerate Killing form over a
 field of characteristic zero, relative to a splitting Cartan subalgebra. -/
 def rootSystem :
@@ -415,6 +417,7 @@ lemma corootForm_rootSystem_eq_killing :
 @[simp] lemma rootSystem_root_apply (α) : (rootSystem H).root α = α := rfl
 @[simp] lemma rootSystem_coroot_apply (α) : (rootSystem H).coroot α = coroot α := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open LieSubmodule in
 @[simp]
 lemma biSup_corootSpace_eq_top :
@@ -426,6 +429,7 @@ lemma biSup_corootSpace_eq_top :
   ext α
   simp [eq_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma biSup_corootSubmodule_eq_cartan :
     ⨆ α : Weight K H L, ⨆ (_ : α.IsNonZero), corootSubmodule α = H.toLieSubmodule := by
@@ -437,6 +441,7 @@ instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=
     ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (rootSystem H).IsReduced where
   eq_or_eq_neg := by
     intro ⟨α, hα⟩ ⟨β, hβ⟩ e
