@@ -259,7 +259,8 @@ lemma nonempty_divisors : (divisors n).Nonempty ↔ n ≠ 0 :=
   ⟨fun ⟨m, hm⟩ hn ↦ by simp [hn] at hm, fun hn ↦ ⟨1, one_mem_divisors.2 hn⟩⟩
 
 /-- A natural number has infinitely many divisors if and only if it is zero. -/
-lemma infinite_setOf_divisors (n : ℕ) : { m | m ∣ n }.Infinite ↔ n = 0 := by
+@[simp]
+lemma infinite_setOf_divisors_iff (n : ℕ) : { m | m ∣ n }.Infinite ↔ n = 0 := by
   cases n
   case zero => simp [Set.infinite_univ]
   case succ n =>
