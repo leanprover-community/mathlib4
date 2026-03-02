@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Smooth.Pi
-import Mathlib.RingTheory.Unramified.Pi
-import Mathlib.RingTheory.Etale.Basic
+module
+
+public import Mathlib.RingTheory.Smooth.Pi
+public import Mathlib.RingTheory.Unramified.Pi
+public import Mathlib.RingTheory.Etale.Basic
 
 /-!
 
@@ -18,19 +20,19 @@ import Mathlib.RingTheory.Etale.Basic
 
 -/
 
-universe u v
+@[expose] public section
 
 namespace Algebra.FormallyEtale
 
-variable {R : Type (max u v)} {I : Type u} (A : I → Type (max u v))
+variable {R : Type*} {I : Type*} (A : I → Type*)
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 
 theorem pi_iff [Finite I] :
     FormallyEtale R (Π i, A i) ↔ ∀ i, FormallyEtale R (A i) := by
-  simp_rw [FormallyEtale.iff_unramified_and_smooth, forall_and]
+  simp_rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, forall_and]
   rw [FormallyUnramified.pi_iff A, FormallySmooth.pi_iff A]
 
 instance [Finite I] [∀ i, FormallyEtale R (A i)] : FormallyEtale R (Π i, A i) :=
-  .of_unramified_and_smooth
+  .of_formallyUnramified_and_formallySmooth
 
 end Algebra.FormallyEtale

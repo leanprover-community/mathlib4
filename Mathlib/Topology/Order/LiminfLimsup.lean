@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Lemmas about liminf and limsup in an order topology.
@@ -20,6 +22,8 @@ import Mathlib.Topology.Order.Monotone
 The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace ι ℝ`. To avoid code
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
+
+@[expose] public section
 
 open Filter TopologicalSpace
 open scoped Topology
@@ -48,11 +52,11 @@ theorem isBounded_le_nhds (a : α) : (𝓝 a).IsBounded (· ≤ ·) :=
 theorem Filter.Tendsto.isBoundedUnder_le (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≤ ·) u :=
   (isBounded_le_nhds a).mono h
 
-theorem Filter.Tendsto.bddAbove_range_of_cofinite [IsDirected α (· ≤ ·)]
+theorem Filter.Tendsto.bddAbove_range_of_cofinite [IsDirectedOrder α]
     (h : Tendsto u cofinite (𝓝 a)) : BddAbove (Set.range u) :=
   h.isBoundedUnder_le.bddAbove_range_of_cofinite
 
-theorem Filter.Tendsto.bddAbove_range [IsDirected α (· ≤ ·)] {u : ℕ → α}
+theorem Filter.Tendsto.bddAbove_range [IsDirectedOrder α] {u : ℕ → α}
     (h : Tendsto u atTop (𝓝 a)) : BddAbove (Set.range u) :=
   h.isBoundedUnder_le.bddAbove_range
 
@@ -90,11 +94,11 @@ theorem isBounded_ge_nhds (a : α) : (𝓝 a).IsBounded (· ≥ ·) :=
 theorem Filter.Tendsto.isBoundedUnder_ge (h : Tendsto u f (𝓝 a)) : f.IsBoundedUnder (· ≥ ·) u :=
   (isBounded_ge_nhds a).mono h
 
-theorem Filter.Tendsto.bddBelow_range_of_cofinite [IsDirected α (· ≥ ·)]
+theorem Filter.Tendsto.bddBelow_range_of_cofinite [IsCodirectedOrder α]
     (h : Tendsto u cofinite (𝓝 a)) : BddBelow (Set.range u) :=
   h.isBoundedUnder_ge.bddBelow_range_of_cofinite
 
-theorem Filter.Tendsto.bddBelow_range [IsDirected α (· ≥ ·)] {u : ℕ → α}
+theorem Filter.Tendsto.bddBelow_range [IsCodirectedOrder α] {u : ℕ → α}
     (h : Tendsto u atTop (𝓝 a)) : BddBelow (Set.range u) :=
   h.isBoundedUnder_ge.bddBelow_range
 
@@ -175,6 +179,7 @@ theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝
       a = (𝓝 a).limsInf := (limsInf_nhds a).symm
       _ ≤ f.limsInf := limsInf_le_limsInf_of_le h (isBounded_ge_nhds a) hb_le.isCobounded_flip)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a filter is converging, its liminf coincides with its limit. -/
 theorem limsSup_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsSup = a :=
   limsInf_eq_of_le_nhds (α := αᵒᵈ) h
@@ -303,7 +308,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
         using Antitone.isCoboundedUnder_ge_of_isCobounded f_decr cobdd
     · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
       filter_upwards [he] with x hx using (fe_eq_d.symm ▸ f_decr hx)
-  · by_cases h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
+  · by_cases! h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
     · rcases h' with ⟨c, c_lt, hc⟩
       have B : ∃ᶠ n in F, F.limsSup ≤ n := by
         apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
@@ -313,7 +318,6 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
         simp only [hc, Set.not_nonempty_empty] at this
       apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
       exact B.mono fun x hx ↦ f_decr hx
-    push_neg at h'
     by_contra! H
     have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
       lt_irrefl (F.liminf f) <| lt_of_le_of_lt
@@ -344,6 +348,7 @@ theorem Antitone.map_limsup_of_continuousAt {f : R → S} (f_decr : Antitone f) 
     f (F.limsup a) = F.liminf (f ∘ a) :=
   f_decr.map_limsSup_of_continuousAt f_cont bdd_above cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An antitone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.limsup` of the image if the function is continuous at the `limsInf`
 (and the filter is bounded from below and frequently bounded from above). -/
@@ -382,6 +387,7 @@ theorem Monotone.map_limsup_of_continuousAt {f : R → S} (f_incr : Monotone f) 
     f (F.limsup a) = F.limsup (f ∘ a) :=
   f_incr.map_limsSup_of_continuousAt f_cont bdd_above cobdd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monotone function between (conditionally) complete linear ordered spaces sends a
 `Filter.limsInf` to the `Filter.liminf` of the image if the function is continuous at the `limsInf`
 (and the filter is bounded from below and frequently bounded from above). -/

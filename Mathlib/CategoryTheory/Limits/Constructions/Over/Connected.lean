@@ -3,10 +3,12 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Filtered.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Filtered.Final
 
 /-!
 # Connected limits in the over category
@@ -18,21 +20,24 @@ In particular, `CostructuredArrow K B` has any connected limit which `C` has.
 From this we deduce the corresponding results for the over category.
 -/
 
+@[expose] public section
+
 universe v' u' v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type u'} [Category.{v'} J]
-variable {C : Type u} [Category.{v} C] {D : Type*} [Category D] {K : C ⥤ D}
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category* D] {K : C ⥤ D}
 variable {X : C}
 
 namespace CategoryTheory.CostructuredArrow
 
 namespace CreatesConnected
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Given a diagram in `CostructuredArrow K B`, produce a natural transformation
 from the diagram legs to the specific object.
 -/
@@ -64,6 +69,7 @@ theorem mapCone_raiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K
     (c : Cone (F ⋙ CostructuredArrow.proj K B)) :
     (CostructuredArrow.proj K B).mapCone (raiseCone c) = c := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Show that the raised cone is a limit. -/
 def isLimitRaiseCone [IsConnected J] {B : D} {F : J ⥤ CostructuredArrow K B}
     {c : Cone (F ⋙ CostructuredArrow.proj K B)}
@@ -87,6 +93,7 @@ instance [IsConnected J] {B : D} : CreatesLimitsOfShape J (CostructuredArrow.pro
         validLift := eqToIso (CreatesConnected.mapCone_raiseCone c)
         makesLimit := CreatesConnected.isLimitRaiseCone t }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `CostructuredArrow K B` preserves any connected limit. -/
 instance [IsConnected J] {B : D} : PreservesLimitsOfShape J (CostructuredArrow.proj K B) where
   preservesLimit.preserves hc := ⟨{
@@ -131,6 +138,7 @@ instance hasLimitsOfShape_of_isConnected {B : C} [IsConnected J] [HasLimitsOfSha
     HasLimitsOfShape J (Over B) where
   has_limit F := hasLimit_of_created F (forget B)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor taking a cone over `F` to a cone over `Over.post F : Over i ⥤ Over (F.obj i)`.
 This takes limit cones to limit cones when `J` is cofiltered. See `isLimitConePost` -/
 @[simps]

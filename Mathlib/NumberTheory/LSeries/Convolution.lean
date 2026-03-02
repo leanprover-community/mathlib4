@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.LSeries.Convergence
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.LSeries.Convergence
 
 /-!
 # Dirichlet convolution of sequences and products of L-series
@@ -20,6 +22,8 @@ We then consider the case `R = ℂ` and show that `L (f ⍟ g) = L f * L g` on t
 of convergence of the L-series `L f`  and `L g` of `f` and `g`; see `LSeries_convolution`
 and `LSeries_convolution'`.
 -/
+
+@[expose] public section
 
 open scoped LSeries.notation
 
@@ -102,6 +106,7 @@ lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
   rw [term_of_ne_zero hp₁, term_of_ne_zero hp₂, mul_comm_div, div_div, ← mul_div_assoc,
     ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
+set_option backward.isDefEq.respectTransparency false in
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
 in terms of an a priori infinite sum over all pairs `(k, m)` with `k * m = n`

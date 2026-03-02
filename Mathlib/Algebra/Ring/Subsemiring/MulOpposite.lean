@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 
@@ -15,6 +17,8 @@ For every semiring `R`, we construct an equivalence between subsemirings of `R` 
 
 -/
 
+@[expose] public section
+
 namespace Subsemiring
 
 variable {ι : Sort*} {R : Type*} [NonAssocSemiring R]
@@ -23,7 +27,7 @@ variable {ι : Sort*} {R : Type*} [NonAssocSemiring R]
 @[simps! coe toSubmonoid]
 protected def op (S : Subsemiring R) : Subsemiring Rᵐᵒᵖ where
   toSubmonoid := S.toSubmonoid.op
-  add_mem' {x} {y} hx hy := add_mem (show x.unop ∈ S from hx) (show y.unop ∈ S from hy)
+  add_mem' hx hy := by simp_all [add_mem]
   zero_mem' := zero_mem S
 
 attribute [norm_cast] coe_op
@@ -35,8 +39,7 @@ theorem mem_op {x : Rᵐᵒᵖ} {S : Subsemiring R} : x ∈ S.op ↔ x.unop ∈ 
 @[simps! coe toSubmonoid]
 protected def unop (S : Subsemiring Rᵐᵒᵖ) : Subsemiring R where
   toSubmonoid := S.toSubmonoid.unop
-  add_mem' {x} {y} hx hy := add_mem
-    (show MulOpposite.op x ∈ S from hx) (show MulOpposite.op y ∈ S from hy)
+  add_mem' hx hy := by simp_all [add_mem]
   zero_mem' := zero_mem S
 
 attribute [norm_cast] coe_unop
@@ -83,12 +86,14 @@ theorem unop_injective : (@Subsemiring.unop R _).Injective := opEquiv.symm.injec
 @[simp]
 theorem unop_inj {S T : Subsemiring Rᵐᵒᵖ} : S.unop = T.unop ↔ S = T := opEquiv.symm.eq_iff_eq
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem op_bot : (⊥ : Subsemiring R).op = ⊥ := opEquiv.map_bot
 
 @[simp]
 theorem op_eq_bot {S : Subsemiring R} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem unop_bot : (⊥ : Subsemiring Rᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 

@@ -3,10 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
-import Batteries.WF
-import Mathlib.Data.Part
-import Mathlib.Data.Rel
-import Mathlib.Tactic.GeneralizeProofs
+module
+
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Data.Part
+public import Mathlib.Data.Rel
 
 /-!
 # Partial functions
@@ -31,7 +32,7 @@ This file defines partial functions. Partial functions are like functions, excep
 * `PFun.restrict`: Restriction of a partial function to a smaller `Dom`.
 * `PFun.res`: Turns a function into a partial function with a prescribed domain.
 * `PFun.fix` : First return map of a partial function `f : α →. β ⊕ α`.
-* `PFun.fix_induction`: A recursion principle for `PFun.fix`.
+* `PFun.fixInduction`: A recursion principle for `PFun.fix`.
 
 ### Partial functions as relations
 
@@ -40,8 +41,8 @@ Partial functions can be considered as relations, so we specialize some `Rel` de
 * `PFun.ran`: Range of a partial function.
 * `PFun.preimage`: Preimage of a set under a partial function.
 * `PFun.core`: Core of a set under a partial function.
-* `PFun.graph`: Graph of a partial function `a →. β`as a `Set (α × β)`.
-* `PFun.graph'`: Graph of a partial function `a →. β`as a `Rel α β`.
+* `PFun.graph`: Graph of a partial function `a →. β` as a `Set (α × β)`.
+* `PFun.graph'`: Graph of a partial function `a →. β` as a `Rel α β`.
 
 ### `PFun α` as a monad
 
@@ -50,6 +51,8 @@ Monad operations:
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -70,7 +73,7 @@ instance inhabited : Inhabited (α →. β) :=
 
 /-- The domain of a partial function -/
 def Dom (f : α →. β) : Set α :=
-  { a | (f a).Dom }
+  {a | (f a).Dom}
 
 @[simp]
 theorem mem_dom (f : α →. β) (x : α) : x ∈ Dom f ↔ ∃ y, y ∈ f x := by simp [Dom, Part.dom_iff_mem]
@@ -83,7 +86,7 @@ theorem dom_eq (f : α →. β) : Dom f = { x | ∃ y, y ∈ f x } :=
   Set.ext (mem_dom f)
 
 /-- Evaluate a partial function -/
-def fn (f : α →. β) (a : α) : Dom f a → β :=
+def fn (f : α →. β) (a : α) : a ∈ Dom f → β :=
   (f a).get
 
 @[simp]
@@ -202,7 +205,7 @@ theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
 
 theorem bind_defined {α β γ} (p : Set α) {f : α →. β} {g : β → α →. γ} (H1 : p ⊆ f.Dom)
     (H2 : ∀ x, p ⊆ (g x).Dom) : p ⊆ (f >>= g).Dom := fun a ha =>
-  (⟨H1 ha, H2 _ ha⟩ : (f >>= g).Dom a)
+  (⟨H1 ha, H2 _ ha⟩ : a ∈ (f >>= g).Dom)
 
 /-- First return map. Transforms a partial function `f : α →. β ⊕ α` into the partial function
 `α →. β` which sends `a : α` to the first value in `β` it hits by iterating `f`, if such a value
@@ -253,14 +256,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
       · obtain ⟨h₁, h₂⟩ := h
-        rw [WellFounded.fixF_eq]
-        -- Porting note: used to be simp [h₁, h₂, h₄]
-        apply Part.mem_assert h₁
-        split
-        next e =>
-          injection h₂.symm.trans e
-        next e =>
-          injection h₂.symm.trans e; subst a'; exact h₄⟩
+        grind [WellFounded.fixF_eq]⟩
 
 /-- If advancing one step from `a` leads to `b : β`, then `f.fix a = b` -/
 theorem fix_stop {f : α →. β ⊕ α} {b : β} {a : α} (hb : Sum.inl b ∈ f a) : b ∈ f.fix a := by
@@ -287,7 +283,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
   have h₂ := (Part.mem_assert_iff.1 h).snd
   generalize_proofs at h₂
   clear h
-  induction ‹Acc _ _› with | intro a ha IH => _
+  induction ‹Acc (Sum.inr · ∈ f ·) a› with | intro a ha IH => _
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 
@@ -366,7 +362,7 @@ def preimage (s : Set β) : Set α := f.graph'.preimage s
 theorem Preimage_def (s : Set β) : f.preimage s = { x | ∃ y ∈ s, y ∈ f x } :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_preimage (s : Set β) (x : α) : x ∈ f.preimage s ↔ ∃ y ∈ s, y ∈ f x :=
   Iff.rfl
 
@@ -479,7 +475,7 @@ theorem id_apply (a : α) : PFun.id α a = Part.some a :=
 /-- Composition of partial functions as a partial function. -/
 def comp (f : β →. γ) (g : α →. β) : α →. γ := fun a => (g a).bind f
 
-@[simp]
+@[simp, grind =]
 theorem comp_apply (f : β →. γ) (g : α →. β) (a : α) : f.comp g a = (g a).bind f :=
   rfl
 
@@ -494,25 +490,19 @@ theorem comp_id (f : α →. β) : f.comp (PFun.id α) = f :=
 @[simp]
 theorem dom_comp (f : β →. γ) (g : α →. β) : (f.comp g).Dom = g.preimage f.Dom := by
   ext
-  simp_rw [mem_preimage, mem_dom, comp_apply, Part.mem_bind_iff, ← exists_and_right]
-  rw [exists_comm]
-  simp_rw [and_comm]
+  simp
+  grind
 
 @[simp]
 theorem preimage_comp (f : β →. γ) (g : α →. β) (s : Set γ) :
     (f.comp g).preimage s = g.preimage (f.preimage s) := by
-  ext
-  simp_rw [mem_preimage, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
-  rw [exists_comm]
-  simp_rw [and_assoc, and_comm]
+  grind
 
 @[simp]
 theorem Part.bind_comp (f : β →. γ) (g : α →. β) (a : Part α) :
     a.bind (f.comp g) = (a.bind g).bind f := by
-  ext c
-  simp_rw [Part.mem_bind_iff, comp_apply, Part.mem_bind_iff, ← exists_and_right, ← exists_and_left]
-  rw [exists_comm]
-  simp_rw [and_assoc]
+  ext
+  grind
 
 @[simp]
 theorem comp_assoc (f : γ →. δ) (g : β →. γ) (h : α →. β) : (f.comp g).comp h = f.comp (g.comp h) :=

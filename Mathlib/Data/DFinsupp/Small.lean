@@ -3,9 +3,11 @@ Copyright (c) 2025 Sophie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.Data.Finsupp.ToDFinsupp
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Smallness of the `DFinsupp` type
@@ -15,6 +17,8 @@ instance on `DFinsupp π`.
 
 As an application, `σ →₀ R` has a `Small.{v}` instance if `σ` and `R` have one.
 -/
+
+@[expose] public section
 
 universe u v w
 

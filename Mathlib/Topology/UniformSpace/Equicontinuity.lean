@@ -3,7 +3,9 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Equicontinuity of a family of functions
@@ -76,6 +78,8 @@ types, and in that case one should go back to the family definition rather than 
 
 equicontinuity, uniform convergence, ascoli
 -/
+
+@[expose] public section
 
 
 section
@@ -302,8 +306,8 @@ theorem equicontinuousWithinAt_iff_pair {F : ι → X → α} {S : Set X} {x₀ 
       ∀ U ∈ 𝓤 α, ∃ V ∈ 𝓝[S] x₀, ∀ x ∈ V, ∀ y ∈ V, ∀ i, (F i x, F i y) ∈ U := by
   constructor <;> intro H U hU
   · rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-    refine ⟨_, H V hV, fun x hx y hy i => hVU (prodMk_mem_compRel ?_ (hy i))⟩
-    exact hVsymm.mk_mem_comm.mp (hx i)
+    refine ⟨_, H V hV, fun x hx y hy i => hVU (SetRel.prodMk_mem_comp ?_ (hy i))⟩
+    exact SetRel.symm V (hx i)
   · rcases H U hU with ⟨V, hV, hVU⟩
     filter_upwards [hV] using fun x hx i => hVU x₀ (mem_of_mem_nhdsWithin hx₀ hV) x hx i
 
@@ -531,9 +535,9 @@ theorem uniformEquicontinuousOn_iff_uniformContinuousOn {F : ι → β → α} {
   rfl
 
 theorem equicontinuousWithinAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
-    {S : Set X} {x₀ : X} : EquicontinuousWithinAt (uα :=  ⨅ k, u k) F S x₀ ↔
-      ∀ k, EquicontinuousWithinAt (uα :=  u k) F S x₀ := by
-  simp only [equicontinuousWithinAt_iff_continuousWithinAt (uα := _), topologicalSpace]
+    {S : Set X} {x₀ : X} : EquicontinuousWithinAt (uα := ⨅ k, u k) F S x₀ ↔
+      ∀ k, EquicontinuousWithinAt (uα := u k) F S x₀ := by
+  simp +instances only [equicontinuousWithinAt_iff_continuousWithinAt (uα := _), topologicalSpace]
   unfold ContinuousWithinAt
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, nhds_iInf, tendsto_iInf]
 
@@ -544,7 +548,7 @@ theorem equicontinuousAt_iInf_rng {u : κ → UniformSpace α'} {F : ι → X �
 
 theorem equicontinuous_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'} :
     Equicontinuous (uα := ⨅ k, u k) F ↔ ∀ k, Equicontinuous (uα := u k) F := by
-  simp_rw [equicontinuous_iff_continuous (uα := _), UniformFun.topologicalSpace]
+  simp_rw +instances [equicontinuous_iff_continuous (uα := _), UniformFun.topologicalSpace]
   rw [UniformFun.iInf_eq, toTopologicalSpace_iInf, continuous_iInf_rng]
 
 theorem equicontinuousOn_iInf_rng {u : κ → UniformSpace α'} {F : ι → X → α'}
@@ -968,7 +972,7 @@ theorem EquicontinuousAt.tendsto_of_mem_closure {l : Filter ι} {F : ι → X �
     eventually_mem_nhdsWithin.and <| ((hF V hV).filter_mono nhdsWithin_le_nhds).and (hf V hV)
   rcases this.exists with ⟨y, hys, hFy, hfy⟩
   filter_upwards [hs y hys (ball_mem_nhds _ hV)] with i hi
-  exact hVU ⟨_, ⟨_, hFy i, (mem_ball_symmetry hVs).2 hi⟩, hfy⟩
+  exact hVU ⟨_, ⟨_, hFy i, mem_ball_symmetry.2 hi⟩, hfy⟩
 
 /-- If `F : ι → X → α` is an equicontinuous family of functions,
 `f : X → α` is a continuous function, and `l` is a filter on `ι`,

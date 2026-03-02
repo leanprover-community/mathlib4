@@ -3,8 +3,10 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.W
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.W
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # The initial algebra of a multivariate qpf is again a qpf.
@@ -37,6 +39,8 @@ See [avigad-carneiro-hudon2019] for more details.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -62,6 +66,7 @@ theorem recF_eq {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (a
     recF g (q.P.wMk a f' f) = g (abs ⟨a, splitFun f' (recF g ∘ f)⟩) := by
   rw [recF, MvPFunctor.wRec_eq]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem recF_eq' {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (x : q.P.W α) :
     recF g x = g (abs (appendFun id (recF g) <$$> q.P.wDest' x)) := by
   apply q.P.w_cases _ x
@@ -99,7 +104,6 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
   apply q.P.w_cases _ x
   intro a₀ f'₀ f₀
   apply q.P.w_cases _ y
-  intro a₁ f'₁ f₁
   apply WEquiv.abs
 
 theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := abs' x x rfl
@@ -120,6 +124,7 @@ theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.drop.B a ⟹ α)
       q.P.wMk' (repr (abs (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))) := by
   rw [wrepr, recF_eq', q.P.wDest'_wMk]; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
   apply q.P.w_ind _ x; intro a f' f ih
   apply WEquiv.trans _ (q.P.wMk' (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))
@@ -145,6 +150,7 @@ theorem wEquiv_map {α β : TypeVec n} (g : α ⟹ β) (x y : q.P.W α) :
 
 /-- Define the fixed point as the quotient of trees under the equivalence relation.
 -/
+@[instance_reducible]
 def wSetoid (α : TypeVec n) : Setoid (q.P.W α) :=
   ⟨WEquiv, wEquiv.refl, wEquiv.symm _ _, WEquiv.trans _ _ _⟩
 
@@ -215,6 +221,7 @@ theorem Fix.ind_aux (a : q.P.A) (f' : q.P.drop.B a ⟹ α) (f : q.P.last.B a →
   apply Quot.sound
   apply wrepr_equiv
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Fix.ind_rec {β : Type u} (g₁ g₂ : Fix F α → β)
     (h :
       ∀ x : F (append1 α (Fix F α)),

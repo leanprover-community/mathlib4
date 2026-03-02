@@ -3,15 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.CountablyGenerated
-import Mathlib.Order.Filter.Ker
-import Mathlib.Order.Filter.Pi
-import Mathlib.Order.Filter.Prod
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.Filter.CountablyGenerated
+public import Mathlib.Order.Filter.Ker
+public import Mathlib.Order.Filter.Pi
+public import Mathlib.Order.Filter.Prod
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The cofinite filter
@@ -26,6 +28,8 @@ and prove its basic properties. In particular, we prove that for `ℕ` it is equ
 
 Define filters for other cardinalities of the complement.
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -82,14 +86,8 @@ theorem _root_.Set.Finite.eventually_cofinite_notMem {s : Set α} (hs : s.Finite
     ∀ᶠ x in cofinite, x ∉ s :=
   hs.compl_mem_cofinite
 
-@[deprecated (since := "2025-05-24")]
-alias _root_.Set.Finite.eventually_cofinite_nmem := _root_.Set.Finite.eventually_cofinite_notMem
-
 theorem _root_.Finset.eventually_cofinite_notMem (s : Finset α) : ∀ᶠ x in cofinite, x ∉ s :=
   s.finite_toSet.eventually_cofinite_notMem
-
-@[deprecated (since := "2025-05-24")]
-alias _root_.Finset.eventually_cofinite_nmem := _root_.Finset.eventually_cofinite_notMem
 
 theorem _root_.Set.infinite_iff_frequently_cofinite {s : Set α} :
     Set.Infinite s ↔ ∃ᶠ x in cofinite, x ∈ s :=
@@ -218,8 +216,9 @@ lemma Nat.eventually_pos : ∀ᶠ (k : ℕ) in Filter.atTop, 0 < k :=
 theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] {s : Set α}
     (hs : s.Nonempty) {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atTop) :
     ∃ a₀ ∈ s, ∀ a ∈ s, f a₀ ≤ f a := by
-  rcases em (∃ y ∈ s, ∃ x, f y < x) with (⟨y, hys, x, hx⟩ | not_all_top)
+  by_cases! all_top : ∃ y ∈ s, ∃ x, f y < x
   · -- the set of points `{y | f y < x}` is nonempty and finite, so we take `min` over this set
+    rcases all_top with ⟨y, hys, x, hx⟩
     have : { y | ¬x ≤ f y }.Finite := Filter.eventually_cofinite.mp (tendsto_atTop.1 hf x)
     simp only [not_le] at this
     obtain ⟨a₀, ⟨ha₀ : f a₀ < x, ha₀s⟩, others_bigger⟩ :=
@@ -227,9 +226,8 @@ theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] 
     refine ⟨a₀, ha₀s, fun a has => (lt_or_ge (f a) x).elim ?_ (le_trans ha₀.le)⟩
     exact fun h => others_bigger a ⟨h, has⟩
   · -- in this case, f is constant because all values are at top
-    push_neg at not_all_top
     obtain ⟨a₀, ha₀s⟩ := hs
-    exact ⟨a₀, ha₀s, fun a ha => not_all_top a ha (f a₀)⟩
+    exact ⟨a₀, ha₀s, fun a ha => all_top a ha (f a₀)⟩
 
 theorem Filter.Tendsto.exists_forall_le [Nonempty α] [LinearOrder β] {f : α → β}
     (hf : Tendsto f cofinite atTop) : ∃ a₀, ∀ a, f a₀ ≤ f a :=

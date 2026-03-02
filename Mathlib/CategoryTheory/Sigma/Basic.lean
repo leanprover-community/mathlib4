@@ -3,15 +3,19 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.NatIso
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Disjoint union of categories
 
 We define the category structure on a sigma-type (disjoint union) of categories.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -23,7 +27,8 @@ universe w₁ w₂ w₃ v₁ v₂ u₁ u₂
 variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
 
 /-- The type of morphisms of a disjoint union of categories: for `X : C i` and `Y : C j`, a morphism
-`(i, X) ⟶ (j, Y)` if `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` there are no such morphisms.
+`(i, X) ⟶ (j, Y)` when `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` then there are no such
+morphisms.
 -/
 inductive SigmaHom : (Σ i, C i) → (Σ i, C i) → Type max w₁ v₁ u₁
   | mk : ∀ {i : I} {X Y : C i}, (X ⟶ Y) → SigmaHom ⟨i, X⟩ ⟨i, Y⟩
@@ -161,6 +166,7 @@ lemma descUniq_inv_app (q : (Σ i, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i)
     (descUniq F q h).inv.app ⟨i, X⟩ = (h i).inv.app X :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `q₁` and `q₂` when restricted to each subcategory `C i` agree, then `q₁` and `q₂` are isomorphic.
 -/
@@ -196,6 +202,7 @@ def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
 
 variable (I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
 @[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σ i, C i) :=

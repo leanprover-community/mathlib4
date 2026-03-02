@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Tactic.Order
-import Mathlib.Topology.Order.IsLUB
+module
+
+public import Mathlib.Tactic.Order
+public import Mathlib.Topology.Order.IsLUB
 
 /-!
 # Monotone functions on an order topology
@@ -14,6 +16,8 @@ linearly-ordered sets (with the order topology). For example, we prove that a mo
 has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.tendsto_nhdsGT`).
 
 -/
+
+public section
 
 open Set Filter TopologicalSpace Topology Function
 
@@ -45,6 +49,7 @@ lemma MonotoneOn.insert_of_continuousWithinAt [TopologicalSpace β] [OrderClosed
     filter_upwards [this] with y hy
     exact hf hy.1 hb (le_of_lt hy.2)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a function is monotone on a set in a second countable topological space, then there
 are only countably many points that have several preimages. -/
 lemma MonotoneOn.countable_setOf_two_preimages [SecondCountableTopology α]

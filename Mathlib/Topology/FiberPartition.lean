@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Logic.Function.FiberPartition
+module
+
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Logic.Function.FiberPartition
 /-!
 
 This file provides some API surrounding `Function.Fiber` (see
@@ -16,6 +18,8 @@ the functor which takes a set to the condensed set corresponding to locally cons
 set, and the forgetful functor from the category of condensed sets to the category of sets
 (see PR https://github.com/leanprover-community/mathlib4/pull/14027).
 -/
+
+@[expose] public section
 
 
 open Function

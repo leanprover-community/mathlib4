@@ -3,12 +3,14 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.CharZero.Infinite
-import Mathlib.Data.Rat.Encodable
-import Mathlib.Data.Finset.Sort
-import Mathlib.ModelTheory.Complexity
-import Mathlib.ModelTheory.Fraisse
-import Mathlib.Order.CountableDenseLinearOrder
+module
+
+public import Mathlib.Algebra.CharZero.Infinite
+public import Mathlib.Data.Rat.Encodable
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.ModelTheory.Complexity
+public import Mathlib.ModelTheory.Fraisse
+public import Mathlib.Order.CountableDenseLinearOrder
 
 /-!
 # Ordered First-Ordered Structures
@@ -49,6 +51,8 @@ This file defines ordered first-order languages and structures, as well as their
   `ℵ₀`-categorical, and thus complete.
 
 -/
+
+@[expose] public section
 
 
 universe u v w w'
@@ -323,7 +327,7 @@ instance model_partialOrder [PartialOrder M] [L.OrderedStructure M] :
   simp only [partialOrderTheory, Theory.model_insert_iff, Relations.realize_antisymmetric,
     relMap_leSymb, Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one,
     model_preorder, and_true]
-  exact fun _ _ => le_antisymm
+  infer_instance
 
 section LinearOrder
 
@@ -333,7 +337,7 @@ instance model_linearOrder : M ⊨ L.linearOrderTheory := by
   simp only [linearOrderTheory, Theory.model_insert_iff, Relations.realize_total, relMap_leSymb,
     Fin.isValue, Matrix.cons_val_zero, Matrix.cons_val_one, model_partialOrder,
     and_true]
-  exact le_total
+  infer_instance
 
 instance model_dlo [DenselyOrdered M] [NoTopOrder M] [NoBotOrder M] :
     M ⊨ L.dlo := by
@@ -349,7 +353,7 @@ variable (L) [IsOrdered L] (M) [L.Structure M]
 
 /-- Any structure in an ordered language can be ordered correspondingly. -/
 def leOfStructure : LE M where
-  le a b := Structure.RelMap (leSymb : L.Relations 2) ![a,b]
+  le a b := Structure.RelMap (leSymb : L.Relations 2) ![a, b]
 
 instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   letI := L.leOfStructure M
@@ -361,7 +365,7 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
 /-- The order structure on an ordered language is decidable. -/
 -- This should not be a global instance,
 -- because it will match with any `LE` typeclass search
-@[local instance]
+@[instance_reducible, local instance]
 def decidableLEOfStructure
     [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     letI := L.leOfStructure M
@@ -378,16 +382,16 @@ def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
 /-- Any model of a theory of partial orders is a partial order. -/
 def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   __ := L.preorderOfModels M
-  le_antisymm := Relations.realize_antisymmetric.1 ((Theory.model_iff _).1 h _
-    (by simp only [partialOrderTheory, Set.mem_insert_iff, true_or]))
+  le_antisymm := (Relations.realize_antisymmetric.mp <|
+    Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
     LinearOrder M where
   __ := L.partialOrderOfModels M
-  le_total := Relations.realize_total.1 ((Theory.model_iff _).1 h _
-    (by simp only [linearOrderTheory, Set.mem_insert_iff, true_or]))
+  le_total := (Relations.realize_total.1 <| (Theory.model_iff _).1 h _ <|
+    by simp only [linearOrderTheory, Set.mem_insert_iff, true_or]).total
   toDecidableLE := inferInstance
 
 end structure_to_order
@@ -445,7 +449,7 @@ lemma StrongHomClass.toOrderIsoClass
     (F : Type*) [EquivLike F M N] [L.StrongHomClass F M N] :
     OrderIsoClass F M N where
   map_le_map_iff f a b := by
-    have h := StrongHomClass.map_rel f leSymb ![a,b]
+    have h := StrongHomClass.map_rel f leSymb ![a, b]
     simp only [relMap_leSymb, Fin.isValue, Function.comp_apply, Matrix.cons_val_zero,
       Matrix.cons_val_one] at h
     exact h
@@ -485,12 +489,14 @@ lemma dlo_isExtensionPair
   refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
   simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by
   letI := orderStructure ℚ
   obtain ⟨f, _⟩ := embedding_from_cg cg_of_countable default (dlo_isExtensionPair ℚ M)
   exact Infinite.of_injective f f.injective
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [Nonempty M] :
     Language.order.age M = {M : CategoryTheory.Bundled.{w'} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
@@ -511,6 +517,7 @@ theorem isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
   ⟨(isUltrahomogeneous_iff_IsExtensionPair cg_of_countable).2 (dlo_isExtensionPair M M), dlo_age M⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The class of finite models of the theory of linear orders is Fraïssé. -/
 theorem isFraisse_finite_linear_order :
     IsFraisse {M : CategoryTheory.Bundled.{0} Language.order.Structure |
@@ -527,6 +534,7 @@ theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun 
   exact (isFraisseLimit_of_countable_nonempty_dlo M₁).nonempty_equiv
     (isFraisseLimit_of_countable_nonempty_dlo M₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The theory of dense linear orders is `ℵ₀`-complete. -/
 theorem dlo_isComplete : Language.order.dlo.IsComplete :=
   aleph0_categorical_dlo.{0}.isComplete ℵ₀ _ le_rfl (by simp [one_le_aleph0])
@@ -545,6 +553,7 @@ namespace Order
 
 open FirstOrder FirstOrder.Language
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A model-theoretic adaptation of the proof of `Order.iso_of_countable_dense`: two countable,
   dense, nonempty linear orders without endpoints are order isomorphic. -/
 example (α β : Type w') [LinearOrder α] [LinearOrder β]

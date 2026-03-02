@@ -3,15 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Order.Ring.Abs
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # Further lemmas about the integers
 
-The distinction between this file and `Data.Int.Order.Basic` is not particularly clear.
+The distinction between this file and `Mathlib/Data/Int/Order/Basic.lean` is not particularly clear.
 They are separated by now to minimize the porting requirements for tactics during the transition to
 mathlib4. Please feel free to reorganize these two files.
 -/
+
+public section
 
 open Function Nat
 

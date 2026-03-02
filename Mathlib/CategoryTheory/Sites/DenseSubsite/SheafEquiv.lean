@@ -3,15 +3,18 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
 /-!
 # The equivalence of categories of sheaves of a dense subsite
 
-- `CategoryTheory.Functor.IsDenseSubsite.sheafEquiv`:
-  If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`,
-  it induces an equivalence of category of sheaves valued in a category with suitable limits.
+If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`, and `A` is
+a category with suitable limits, then the functor
+`G.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A` is an equivalence
+of categories. The equivalence of categories can be obtained as `sheafEquiv J K G A`
+which is defined in the file `Mathlib/CategoryTheory/Sites/DenseSubsite/Basic.lean`.
 
 ## References
 
@@ -21,18 +24,21 @@ import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 
 -/
 
+@[expose] public section
+
 universe w v u w'
 
 namespace CategoryTheory.Functor.IsDenseSubsite
 
 open CategoryTheory Opposite
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 variable (G : C ⥤ D)
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 variable {A : Type w} [Category.{w'} A] [∀ X, Limits.HasLimitsOfShape (StructuredArrow X G.op) A]
 variable [G.IsDenseSubsite J K]
 
+set_option backward.isDefEq.respectTransparency false in
 include K in
 lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     IsIso ((yoneda.map ((G.op.ranCounit.app Y.val).app (op U))).app (op X)) := by
@@ -49,8 +55,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     simp only [comp_obj, yoneda_map_app, Category.assoc, comp_map,
       ← NatTrans.naturality, op_obj, op_map, Quiver.Hom.unop_op, ← map_comp_assoc,
       ← op_comp, ← e'] at this ⊢
-    erw [← NatTrans.naturality] at this
-    exact this
+    simpa [← NatTrans.naturality] using this
   · intro f
     have (X Y Z) (f : X ⟶ Y) (g : G.obj Y ⟶ G.obj Z) (hf : G.imageSieve g f) : Exists _ := hf
     choose l hl using this
@@ -97,39 +102,18 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
       simp [← Functor.map_comp, ← op_comp, hiUV]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by
-  apply (config := { allowSynthFailures := true })
-    ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
+  apply +allowSynthFailures ReflectsIsomorphisms.reflects (sheafToPresheaf J A)
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨U⟩
-  apply (config := { allowSynthFailures := true }) ReflectsIsomorphisms.reflects yoneda
+  apply +allowSynthFailures ReflectsIsomorphisms.reflects yoneda
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨X⟩
   simp only [comp_obj, sheafToPresheaf_obj, sheafPushforwardContinuous_obj_val_obj, yoneda_obj_obj,
     id_obj, sheafToPresheaf_map, sheafAdjunctionCocontinuous_counit_app_val, ranAdjunction_counit]
   exact isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
 
-variable (A)
-
-/--
-If `G : C ⥤ D` exhibits `(C, J)` as a dense subsite of `(D, K)`,
-it induces an equivalence of category of sheaves valued in a category with suitable limits.
--/
-@[simps! functor inverse]
-noncomputable def sheafEquiv : Sheaf J A ≌ Sheaf K A :=
-  (G.sheafAdjunctionCocontinuous A J K).toEquivalence.symm
-
 instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=
-  inferInstanceAs (IsDenseSubsite.sheafEquiv G _ _ _).inverse.IsEquivalence
-
-variable [HasWeakSheafify J A] [HasWeakSheafify K A]
-
-/-- The natural isomorphism exhibiting the compatibility of
-`IsDenseSubsite.sheafEquiv` with sheafification. -/
-noncomputable
-abbrev sheafEquivSheafificationCompatibility :
-    (whiskeringLeft _ _ A).obj G.op ⋙ presheafToSheaf _ _ ≅
-      presheafToSheaf _ _ ⋙ (sheafEquiv G J K A).inverse := by
-  apply Functor.pushforwardContinuousSheafificationCompatibility
+  (G.sheafAdjunctionCocontinuous A J K).toEquivalence.isEquivalence_functor
 
 end IsDenseSubsite
 

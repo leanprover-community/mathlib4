@@ -3,7 +3,9 @@ Copyright (c) 2024 Ira Fesefeldt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ira Fesefeldt
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+module
+
+public import Mathlib.SetTheory.Ordinal.Arithmetic
 
 /-!
 # Ordinal Approximants for the Fixed points on complete lattices
@@ -37,6 +39,8 @@ ordinals from mathlib. It still allows an approximation scheme indexed over the 
 fixed point, complete lattice, monotone function, ordinals, approximation
 -/
 
+@[expose] public section
+
 namespace Cardinal
 
 universe u
@@ -64,14 +68,12 @@ variable [CompleteLattice α] (f : α →o α) (x : α)
 
 open Function fixedPoints Cardinal Order OrderHom
 
-set_option linter.unusedVariables false in
 /-- The ordinal-indexed sequence approximating the least fixed point greater than
 an initial value `x`. It is defined in such a way that we have `lfpApprox 0 x = x` and
 `lfpApprox a x = ⨆ b < a, f (lfpApprox b x)`. -/
 def lfpApprox (a : Ordinal.{u}) : α :=
-  sSup ({ f (lfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
+  sSup ({ f (lfpApprox b) | (b : Ordinal) (_ : b < a) } ∪ {x})
 termination_by a
-decreasing_by exact h
 
 theorem lfpApprox_monotone : Monotone (lfpApprox f x) := by
   intro a b h
@@ -93,7 +95,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
   apply le_antisymm
   · conv => left; rw [lfpApprox]
     apply sSup_le
-    simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop, Set.union_singleton,
+    simp only [lt_add_one_iff, exists_prop, Set.union_singleton,
       Set.mem_insert_iff, Set.mem_setOf_eq, forall_eq_or_imp, forall_exists_index, and_imp,
       forall_apply_eq_imp_iff₂]
     apply And.intro
@@ -104,7 +106,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
       apply f.2; apply lfpApprox_monotone; exact h
   · conv => right; rw [lfpApprox]
     apply le_sSup
-    simp only [Ordinal.add_one_eq_succ, lt_succ_iff, exists_prop]
+    simp only [lt_add_one_iff, exists_prop]
     rw [Set.mem_union]
     apply Or.inl
     simp only [Set.mem_setOf_eq]
@@ -155,12 +157,11 @@ theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_
       forall_eq_or_imp, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     apply And.intro (le_lfpApprox f x)
     intro a' ha'b
-    by_cases haa : a' < a
+    by_cases! haa : a' < a
     · rw [← lfpApprox_add_one f x h_init]
       apply lfpApprox_monotone
-      simp only [Ordinal.add_one_eq_succ, succ_le_iff]
-      exact haa
-    · rw [IH a' ha'b (le_of_not_gt haa), h]
+      simpa
+    · rw [IH a' ha'b haa, h]
   · exact lfpApprox_monotone f x h_ab
 
 /-- There are distinct indices smaller than the successor of the domain's cardinality
@@ -241,14 +242,12 @@ theorem lfp_mem_range_lfpApprox : f.lfp ∈ Set.range (lfpApprox f ⊥) := by
   use ord <| succ #α
   exact lfpApprox_ord_eq_lfp f
 
-set_option linter.unusedVariables false in
 /-- The ordinal-indexed sequence approximating the greatest fixed point greater than
 an initial value `x`. It is defined in such a way that we have `gfpApprox 0 x = x` and
 `gfpApprox a x = ⨅ b < a, f (lfpApprox b x)`. -/
 def gfpApprox (a : Ordinal.{u}) : α :=
-  sInf ({ f (gfpApprox b) | (b : Ordinal) (h : b < a) } ∪ {x})
+  sInf ({ f (gfpApprox b) | (b : Ordinal) (_ : b < a) } ∪ {x})
 termination_by a
-decreasing_by exact h
 
 -- By unsealing these recursive definitions we can relate them
 -- by definitional equality

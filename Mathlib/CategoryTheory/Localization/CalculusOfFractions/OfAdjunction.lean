@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions
 
 /-!
 # The calculus of fractions deduced from an adjunction
@@ -23,15 +25,18 @@ the class of isomorphisms by `G`.
 
 -/
 
+public section
+
 namespace CategoryTheory
 
 open MorphismProperty
 
 namespace Adjunction
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
   {G : C₁ ⥤ C₂} {F : C₂ ⥤ C₁}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasLeftCalculusOfFractions (adj : G ⊣ F) (W : MorphismProperty C₁)
     [W.IsMultiplicative] (hW : W.IsInvertedBy G) (hW' : (W.functorCategory C₁) adj.unit) :
     W.HasLeftCalculusOfFractions where
@@ -86,12 +91,14 @@ lemma isLocalization_rightAdjoint
     G.IsLocalization W := by
   simpa using isLocalization_leftAdjoint adj.op W.op hW.op (fun X ↦ hW' X.unop)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functorCategory_inverseImage_isomorphisms_unit (adj : G ⊣ F) :
     ((isomorphisms C₂).inverseImage G).functorCategory C₁ adj.unit := by
   intro
   simp only [Functor.id_obj, Functor.comp_obj, inverseImage_iff, isomorphisms.iff]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma functorCategory_inverseImage_isomorphisms_counit (adj : F ⊣ G) :
     ((isomorphisms C₂).inverseImage G).functorCategory C₁ adj.counit := by
   intro

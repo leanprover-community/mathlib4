@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.WithTop
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Data.ENNReal.Inv
+module
+
+public import Mathlib.Algebra.BigOperators.WithTop
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Data.ENNReal.Inv
 
 /-!
 # Properties of big operators extended non-negative real numbers
@@ -13,6 +15,8 @@ import Mathlib.Data.ENNReal.Inv
 In this file we prove elementary properties of sums and products on `ℝ≥0∞`, as well as how these
 interact with the order structure on `ℝ≥0∞`.
 -/
+
+public section
 
 open Set NNReal ENNReal
 
@@ -123,8 +127,11 @@ end Sum
 
 section Inv
 
-lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
-    (hf : s.toSet.Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) : (∏ i ∈ s, f i)⁻¹ = ∏ i ∈ s, (f i)⁻¹ := by
+variable {ι : Type*} {f g : ι → ℝ≥0∞} {s : Finset ι}
+
+set_option backward.isDefEq.respectTransparency false in
+lemma prod_inv_distrib (hf : (s : Set ι).Pairwise fun i j ↦ f i ≠ 0 ∨ f j ≠ ∞) :
+    (∏ i ∈ s, f i)⁻¹ = ∏ i ∈ s, (f i)⁻¹ := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons i s hi ih => ?_
@@ -134,7 +141,19 @@ lemma prod_inv_distrib {ι : Type*} {f : ι → ℝ≥0∞} {s : Finset ι}
   · exact imp_iff_not_or.2 (hf (by simp) (by simp [hj]) <| .symm <| ne_of_mem_of_not_mem hj hi) hi₀
   · exact imp_iff_not_or.2 (hf (by simp [hj]) (by simp) <| ne_of_mem_of_not_mem hj hi).symm hi₀
 
-lemma finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
+lemma prod_div_distrib (hg : (s : Set ι).Pairwise fun i j ↦ g i ≠ 0 ∨ g j ≠ ∞) :
+    (∏ i ∈ s, f i / g i) = (∏ i ∈ s, f i) / (∏ i ∈ s, g i) := by
+  simp only [div_eq_mul_inv, prod_inv_distrib hg, ← Finset.prod_mul_distrib]
+
+lemma prod_div_distrib_of_ne_top (hg : ∀ i ∈ s, g i ≠ ∞) :
+    (∏ i ∈ s, f i / g i) = (∏ i ∈ s, f i) / (∏ i ∈ s, g i) :=
+  prod_div_distrib (by grind [Set.Pairwise])
+
+lemma prod_div_distrib_of_ne_zero (hg : ∀ i ∈ s, g i ≠ 0) :
+    (∏ i ∈ s, f i / g i) = (∏ i ∈ s, f i) / (∏ i ∈ s, g i) :=
+  prod_div_distrib (by grind [Set.Pairwise])
+
+lemma finsetSum_iSup {α : Type*} {s : Finset α} {f : α → ι → ℝ≥0∞}
     (hf : ∀ i j, ∃ k, ∀ a, f a i ≤ f a k ∧ f a j ≤ f a k) :
     ∑ a ∈ s, ⨆ i, f a i = ⨆ i, ∑ a ∈ s, f a i := by
   induction s using Finset.cons_induction with
@@ -145,7 +164,7 @@ lemma finsetSum_iSup {α ι : Type*} {s : Finset α} {f : α → ι → ℝ≥0�
     gcongr
     exacts [(hk a).1, (hk _).2]
 
-lemma finsetSum_iSup_of_monotone {α ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {s : Finset α}
+lemma finsetSum_iSup_of_monotone {α : Type*} [Preorder ι] [IsDirectedOrder ι] {s : Finset α}
     {f : α → ι → ℝ≥0∞} (hf : ∀ a, Monotone (f a)) : (∑ a ∈ s, iSup (f a)) = ⨆ n, ∑ a ∈ s, f a n :=
   finsetSum_iSup fun i j ↦ (exists_ge_ge i j).imp fun _k ⟨hi, hj⟩ a ↦ ⟨hf a hi, hf a hj⟩
 

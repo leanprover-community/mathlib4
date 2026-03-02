@@ -3,7 +3,9 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
-import Mathlib.Data.Real.Basic
+module
+
+public import Mathlib.Data.Real.Basic
 
 /-!
 # Real sign function
@@ -21,6 +23,8 @@ real numbers to -1, positive real numbers to 1, and 0 to 0.
 
 sign function
 -/
+
+@[expose] public section
 
 
 namespace Real

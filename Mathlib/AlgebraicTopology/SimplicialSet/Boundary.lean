@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
 /-!
 # The boundary of the standard simplex
@@ -21,6 +23,8 @@ a morphism `Δ[n] ⟶ ∂Δ[n]`.
 
 -/
 
+@[expose] public section
+
 universe u
 
 open Simplicial
@@ -37,6 +41,7 @@ def boundary (n : ℕ) : (Δ[n] : SSet.{u}).Subcomplex where
 /-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma boundary_eq_iSup (n : ℕ) :
     boundary.{u} n = ⨆ (i : Fin (n + 1)), stdSimplex.face {i}ᶜ := by
   ext

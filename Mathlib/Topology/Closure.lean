@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Topology.Basic
 
 /-!
 # Interior, closure and frontier of a set
@@ -23,6 +25,8 @@ endowed with a topology.
 
 interior, closure, frontier
 -/
+
+public section
 
 open Set
 
@@ -45,8 +49,17 @@ theorem interior_subset : interior s ⊆ s :=
 theorem interior_maximal (h₁ : t ⊆ s) (h₂ : IsOpen t) : t ⊆ interior s :=
   subset_sUnion_of_mem ⟨h₂, h₁⟩
 
+@[grind =]
 theorem IsOpen.interior_eq (h : IsOpen s) : interior s = s :=
   interior_subset.antisymm (interior_maximal (Subset.refl s) h)
+
+theorem forall_isOpen_iff {p : Set X → Prop} :
+    (∀ t, IsOpen t → p t) ↔ ∀ t, p (interior t) :=
+  ⟨fun h t ↦ h (interior t) isOpen_interior, fun h t ht ↦ ht.interior_eq ▸ h t⟩
+
+theorem exists_isOpen_iff {p : Set X → Prop} :
+    (∃ t, IsOpen t ∧ p t) ↔ ∃ t, p (interior t) :=
+  ⟨fun ⟨_, h⟩ ↦ ⟨_, h.1.interior_eq ▸ h.2⟩, fun ⟨_, h⟩ ↦ ⟨_, isOpen_interior, h⟩⟩
 
 theorem interior_eq_iff_isOpen : interior s = s ↔ IsOpen s :=
   ⟨fun h => h ▸ isOpen_interior, IsOpen.interior_eq⟩
@@ -183,8 +196,6 @@ theorem subset_closure : s ⊆ closure s :=
 theorem notMem_of_notMem_closure {P : X} (hP : P ∉ closure s) : P ∉ s := fun h =>
   hP (subset_closure h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 theorem closure_minimal (h₁ : s ⊆ t) (h₂ : IsClosed t) : closure s ⊆ t :=
   sInter_subset_of_mem ⟨h₂, h₁⟩
 
@@ -198,6 +209,14 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
 
 @[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
+
+theorem forall_isClosed_iff {p : Set X → Prop} :
+    (∀ t, IsClosed t → p t) ↔ ∀ t, p (closure t) :=
+  ⟨fun h t ↦ h (closure t) isClosed_closure, fun h t ht ↦ ht.closure_eq ▸ h t⟩
+
+theorem exists_isClosed_iff {p : Set X → Prop} :
+    (∃ t, IsClosed t ∧ p t) ↔ ∃ t, p (closure t) :=
+  ⟨fun ⟨_, h⟩ ↦ ⟨_, h.1.closure_eq ▸ h.2⟩, fun ⟨_, h⟩ ↦ ⟨_, isClosed_closure, h⟩⟩
 
 theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
   closure_minimal (Subset.refl _) hs
@@ -408,7 +427,7 @@ theorem Dense.nonempty_iff (hs : Dense s) : s.Nonempty ↔ Nonempty X :=
 theorem Dense.nonempty [h : Nonempty X] (hs : Dense s) : s.Nonempty :=
   hs.nonempty_iff.2 h
 
-@[mono]
+@[mono, gcongr]
 theorem Dense.mono (h : s₁ ⊆ s₂) (hd : Dense s₁) : Dense s₂ := fun x =>
   closure_mono h (hd x)
 
@@ -456,6 +475,7 @@ section Frontier
 theorem closure_diff_interior (s : Set X) : closure s \ interior s = frontier s :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Interior and frontier are disjoint. -/
 lemma disjoint_interior_frontier : Disjoint (interior s) (frontier s) := by
   rw [disjoint_iff_inter_eq_empty, ← closure_diff_interior, diff_eq,
@@ -469,6 +489,14 @@ theorem closure_diff_frontier (s : Set X) : closure s \ frontier s = interior s 
 theorem self_diff_frontier (s : Set X) : s \ frontier s = interior s := by
   rw [frontier, diff_diff_right, diff_eq_empty.2 subset_closure,
     inter_eq_self_of_subset_right interior_subset, empty_union]
+
+lemma mem_interior_iff_notMem_frontier {s : Set X} {x : X} (hx : x ∈ s) :
+    x ∈ interior s ↔ x ∉ frontier s := by
+  simp [← self_diff_frontier, hx]
+
+lemma mem_frontier_iff_notMem_interior {s : Set X} {x : X} (hx : x ∈ s) :
+    x ∈ frontier s ↔ x ∉ interior s := by
+  simp [← self_diff_frontier, hx]
 
 theorem frontier_eq_closure_inter_closure : frontier s = closure s ∩ closure sᶜ := by
   rw [closure_compl, frontier, diff_eq]
@@ -492,9 +520,11 @@ theorem frontier_interior_subset : frontier (interior s) ⊆ frontier s :=
 theorem frontier_compl (s : Set X) : frontier sᶜ = frontier s := by
   simp only [frontier_eq_closure_inter_closure, compl_compl, inter_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem frontier_univ : frontier (univ : Set X) = ∅ := by simp [frontier]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem frontier_empty : frontier (∅ : Set X) = ∅ := by simp [frontier]
 
