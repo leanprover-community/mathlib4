@@ -167,7 +167,7 @@ noncomputable abbrev extensionByAlgebraicAlgebraK (x : K) (int : IsIntegral (Res
   ((extensionByAlgebraicResidueToK K S x).comp
     (extensionByAlgebraicResidueFieldEquiv K S x int).toRingHom).toAlgebra
 
-def extensionByAlgebraicIsScalarTower (x : K) (int : IsIntegral (ResidueField S) x) :
+abbrev extensionByAlgebraicIsScalarTower (x : K) (int : IsIntegral (ResidueField S) x) :
     letI := extensionByAlgebraic_algebraMap_isLocalHom K S x int
     letI := extensionByAlgebraicAlgebraK K S x int
     IsScalarTower (ResidueField S) (ResidueField (extensionByAlgebraic K S x int)) K := by
@@ -191,14 +191,37 @@ lemma extensionByAlgebraic_mem_range (x : K) (int : IsIntegral (ResidueField S) 
 abbrev extensionByTranscendental : Type w :=
   Localization.AtPrime ((maximalIdeal S).map Polynomial.C)
 
+lemma extensionByTranscendental_maximalIdeal_eq_map :
+    maximalIdeal (extensionByTranscendental S) =
+    (maximalIdeal S).map (algebraMap S (extensionByTranscendental S)) := by
+  rw [IsScalarTower.algebraMap_eq S S[X], ← Ideal.map_map]
+  exact Localization.AtPrime.map_eq_maximalIdeal.symm
+
 instance : IsLocalHom (algebraMap S (extensionByTranscendental S)) :=
+  ((IsLocalRing.local_hom_TFAE _).out 0 2).mpr
+    (le_of_eq (extensionByTranscendental_maximalIdeal_eq_map S).symm)
+
+noncomputable abbrev extensionByTranscendentalToK (x : K) [Algebra S K]
+    [IsScalarTower S (ResidueField S) K] : extensionByTranscendental S →+* K :=
+  IsLocalization.lift (M := ((maximalIdeal S).map Polynomial.C).primeCompl)
+    (g := (Polynomial.aeval x).toRingHom) (fun y ↦ by
+
+      sorry)
+
+lemma extensionByTranscendentalToK_ker (x : K) [Algebra S K]
+    [IsScalarTower S (ResidueField S) K] : RingHom.ker (extensionByTranscendentalToK K S x) =
+    maximalIdeal (extensionByTranscendental S) := by
+  --IsLocalization.lift_eq
   sorry
 
-def extensionByTranscendentalAlgebraK (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
+--letI := ((algebraMap (ResidueField S) K).comp (algebraMap S (ResidueField S))).toAlgebra
+--letI : IsScalarTower S (ResidueField S) K := IsScalarTower.of_algebraMap_eq' rfl
+
+abbrev extensionByTranscendentalAlgebraK (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
     Algebra (ResidueField (extensionByTranscendental S)) K :=
   sorry
 
-def extensionByTranscendentalIsScalarTower (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
+abbrev extensionByTranscendentalIsScalarTower (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
     letI := extensionByTranscendentalAlgebraK K S x nint
     IsScalarTower (ResidueField S) (ResidueField (extensionByTranscendental S)) K :=
   sorry
