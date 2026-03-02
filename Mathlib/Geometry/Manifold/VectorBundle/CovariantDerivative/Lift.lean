@@ -377,4 +377,3 @@ lemma CovariantDerivative.orbit_geodVF {X : Π x : M, TangentSpace I x}
   rw [ht'.proj_acceleration cov ht]
 
 end geodesics
-
