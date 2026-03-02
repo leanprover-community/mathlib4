@@ -85,7 +85,7 @@ noncomputable def tensorQuotientEquiv (I : Ideal T) :
         (I.map (includeRight (A := A) (R := R))).restrictScalars S := by
     rw [← (Submodule.restrictScalars_injective R _ _).eq_iff]
     exact (I.map_includeRight_eq (R := R) (A := A)).symm
-  letI g : (A ⊗[R] T ⧸ LinearMap.range ((AlgebraTensorModule.lTensor S A)
+  letI g : (A ⊗[R] T ⧸ LinearMap.range (AlgebraTensorModule.lTensor S A
       (I.subtype.restrictScalars R))) ≃ₗ[S]
       A ⊗[R] T ⧸ (I.map (includeRight (A := A) (R := R))).restrictScalars S :=
     Submodule.quotEquivOfEq _ _ heq
