@@ -659,7 +659,6 @@ abbrev Hom.image : Scheme.{u} := f.ker.subscheme
 /-- The embedding from the scheme-theoretic image to the codomain. -/
 abbrev Hom.imageι : f.image ⟶ Y := f.ker.subschemeι
 
-set_option backward.isDefEq.respectTransparency false in
 lemma ideal_ker_le_ker_ΓSpecIso_inv_comp :
     f.ker.ideal U ≤ RingHom.ker ((ΓSpecIso Γ(Y, ↑U)).inv ≫
       (pullback.snd f U.1.ι ≫ U.1.toSpecΓ).appTop).hom := by
@@ -727,6 +726,9 @@ instance [QuasiCompact f] : QuasiCompact f.toImage :=
 instance : IsIso (IdealSheafData.subschemeι ⊥ : _ ⟶ X) :=
   ⟨Scheme.Hom.toImage (𝟙 X) ≫ IdealSheafData.inclusion bot_le,
     by simp [← cancel_mono (IdealSheafData.subschemeι _)], by simp⟩
+
+lemma isIso_subschemeι_iff_eq_bot (I : X.IdealSheafData) : IsIso I.subschemeι ↔ I = ⊥ :=
+  ⟨fun h ↦ by simp [← I.ker_subschemeι], fun h ↦ h ▸ inferInstance⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Hom.toImage_app :

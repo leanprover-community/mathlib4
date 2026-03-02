@@ -300,7 +300,7 @@ theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure
 
 @[simp]
 theorem dirac_bind {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by
-  simp [bind, map_dirac hf]
+  simp [bind, map_dirac' hf]
 
 @[simp]
 theorem bind_dirac {m : Measure α} : bind m dirac = m := by
