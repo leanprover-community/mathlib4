@@ -57,19 +57,14 @@ def limit.lift (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c
       π.naturality i j f := by have := c.π.naturality f; simp_all }
   mon.one_mul := by
     apply hc.hom_ext
-    intro j
-    -- aesop_cat
-    simp
-  mon.mul_one := _
-  mon.mul_assoc := _
-
-
-  -- lim.mapMon.hom ((monFunctorCategoryEquivalence J C).inverse.mapCone
-  --   { pt := c.pt
-  --     π := { app := fun j => .mk' (c.π.app j)
-  --           naturality := fun j j' f => by ext; exact c.π.naturality f } })
-
-#exit
+    simp [whiskerRight_comp_tensorHom_assoc]
+  mon.mul_one := by
+    apply hc.hom_ext
+    simp [whiskerLeft_comp_tensorHom_assoc]
+  mon.mul_assoc := by
+    apply hc.hom_ext
+    simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, IsLimit.fac,
+      mon_tauto, implies_true]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.hasLimits`: a limiting cone over a functor `F : J ⥤ Mon C`.
