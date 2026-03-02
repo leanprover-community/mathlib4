@@ -115,6 +115,11 @@ In complex variable theory, this is also referred to as "having a primitive". -/
 def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
   ∃ g, ∀ z ∈ U, HasDerivAt g (f z) z
 
+lemma IsExactOn.with_val_at {f : ℂ → E} {s : Set ℂ} (h : IsExactOn f s) (x₀ : ℂ) (y : E) :
+    ∃ g, g x₀ = y ∧ ∀ x ∈ s, HasDerivAt g (f x) x := by
+  obtain ⟨η, hη⟩ := h
+  use fun z ↦ η z - η x₀ + y, by simp, by simpa using hη
+
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
 lemma IsConservativeOn.mono {U V : Set ℂ} (h : U ⊆ V) (hf : IsConservativeOn f V) :
@@ -288,5 +293,24 @@ theorem isConservativeOn_and_continuousOn_iff_isDifferentiableOn
 theorem _root_.DifferentiableOn.isExactOn_ball (hf : DifferentiableOn ℂ f (ball c r)) :
     IsExactOn f (ball c r) :=
   hf.isConservativeOn.isExactOn_ball hf.continuousOn
+
+/--
+**Morera's theorem for the complex plane** A continuous function on `ℂ` whose integrals on
+rectangles vanish, has primitives.
+-/
+theorem IsConservativeOn.isExactOn_univ (h₁ : Continuous f) (h₂ : IsConservativeOn f univ) :
+    IsExactOn f univ := by
+  use (wedgeIntegral 0 · f)
+  intro z _
+  have h₃ : IsConservativeOn f (ball 0 (‖z‖ + 1)) := h₂.mono (subset_univ _)
+  exact h₃.hasDerivAt_wedgeIntegral (by fun_prop) (by aesop)
+
+/--
+**Morera's theorem for the complex plane** A holomorphic function on `ℂ` has
+primitives.
+-/
+theorem _root_.Differentiable.isExactOn_univ (hf : Differentiable ℂ f) : IsExactOn f univ := by
+  apply IsConservativeOn.isExactOn_univ hf.continuous
+    ((isConservativeOn_and_continuousOn_iff_isDifferentiableOn isOpen_univ).2 hf.differentiableOn).1
 
 end Complex
