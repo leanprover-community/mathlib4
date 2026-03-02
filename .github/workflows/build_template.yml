@@ -693,175 +693,38 @@ jobs:
           name: cache-staging
           path: cache-staging
 
-      - name: Mint Azure cache upload token
-        id: cache-token
-        uses: ./.github/actions/azure-create-cache-token
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
         with:
-          azure-client-id: ${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}
-          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+          client-id: ${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+          allow-no-subscriptions: true
 
-      - name: Debug Azure cache token metadata (safe)
+      - name: Mint short-lived SAS token for cache upload
         shell: bash
         run: |
-          TOKEN="$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW"
-          TOKEN_LENGTH=${#TOKEN}
-          WHITESPACE_CHARS="$(printf '%s' "$TOKEN" | tr -d -c '[:space:]' | wc -c | tr -d ' ')"
-          JWT_SEGMENTS="$(printf '%s' "$TOKEN" | awk -F'.' '{print NF}')"
-          echo "token_length=$TOKEN_LENGTH"
-          echo "token_whitespace_chars=$WHITESPACE_CHARS"
-          echo "token_jwt_segments=$JWT_SEGMENTS"
-
-          python3 - <<'PY'
-          import base64
-          import json
-          import os
-
-          def decode_b64url(raw: str) -> bytes:
-              padded = raw + "=" * ((4 - len(raw) % 4) % 4)
-              return base64.urlsafe_b64decode(padded.encode("ascii"))
-
-          token = os.environ.get("MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW", "")
-          parts = token.split(".")
-          if len(parts) != 3:
-              print("jwt_parse=invalid_segment_count")
-              raise SystemExit(0)
-
-          try:
-              header = json.loads(decode_b64url(parts[0]).decode("utf-8"))
-              payload = json.loads(decode_b64url(parts[1]).decode("utf-8"))
-          except Exception as exc:
-              print(f"jwt_parse_error={type(exc).__name__}")
-              raise SystemExit(0)
-
-          aud = payload.get("aud", "")
-          if isinstance(aud, list):
-              aud = ",".join(str(x) for x in aud)
-
-          print(f"jwt_alg={header.get('alg', '')}")
-          print(f"jwt_typ={header.get('typ', '')}")
-          print(f"jwt_aud={aud}")
-          print(f"jwt_iss={payload.get('iss', '')}")
-          print(f"jwt_tid={payload.get('tid', '')}")
-          oid = str(payload.get("oid", ""))
-          appid = str(payload.get("appid", ""))
-          def redact(value: str) -> str:
-              if len(value) <= 12:
-                  return value
-              return f"{value[:6]}...{value[-6:]}"
-          print(f"jwt_oid_redacted={redact(oid)}")
-          print(f"jwt_appid_redacted={redact(appid)}")
-          print(f"jwt_exp={payload.get('exp', '')}")
-          print(f"jwt_nbf={payload.get('nbf', '')}")
-          print(f"jwt_iat={payload.get('iat', '')}")
-          print(f"jwt_has_oid={int('oid' in payload)}")
-          print(f"jwt_has_sub={int('sub' in payload)}")
-          print(f"jwt_has_appid={int('appid' in payload)}")
-          print(f"jwt_has_xms_mirid={int('xms_mirid' in payload)}")
-          PY
-        env:
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
-
-      - name: Probe Azure Blob auth response headers (safe)
-        shell: bash
-        run: |
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN="$(printf '%s' "$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW" | tr -d '[:space:]')"
-          export MATHLIB_CACHE_AZURE_BEARER_TOKEN
-
-          PROBE_URL="https://lakecache.blob.core.windows.net/mathlib4?restype=container&comp=metadata"
-          HEADER_FILE="$RUNNER_TEMP/cache-auth-probe-headers.txt"
-
-          HTTP_CODE="$(
-            curl --silent --show-error \
-              --output /dev/null \
-              --dump-header "$HEADER_FILE" \
-              --write-out "%{http_code}" \
-              --oauth2-bearer "${MATHLIB_CACHE_AZURE_BEARER_TOKEN}" \
-              -H "x-ms-version: 2026-02-06" \
-              -H "x-ms-date: $(LC_ALL=C date -u '+%a, %d %b %Y %H:%M:%S GMT')" \
-              "$PROBE_URL"
+          EXPIRY="$(LC_ALL=C date -u -d '+10 minutes' '+%Y-%m-%dT%H:%MZ')"
+          MATHLIB_CACHE_SAS_RAW="$(
+            az storage container generate-sas \
+              --as-user \
+              --auth-mode login \
+              --account-name lakecache \
+              --name mathlib4 \
+              --permissions acdlrw \
+              --expiry "$EXPIRY" \
+              --https-only \
+              --output tsv
           )"
-
-          echo "probe_http_code=$HTTP_CODE"
-          echo "probe_selected_headers_begin"
-          grep -i -E '^(www-authenticate|x-ms-error-code|x-ms-request-id|date):' "$HEADER_FILE" || true
-          echo "probe_selected_headers_end"
-        env:
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
-
-      - name: Probe Azure Blob auth via Python urllib (safe)
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          import os
-          import urllib.error
-          import urllib.request
-          from email.utils import formatdate
-
-          token = "".join(os.environ.get("MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW", "").split())
-          url = "https://lakecache.blob.core.windows.net/mathlib4?restype=container&comp=metadata"
-          req = urllib.request.Request(url=url, method="GET")
-          req.add_header("Authorization", f"Bearer {token}")
-          req.add_header("x-ms-version", "2026-02-06")
-          req.add_header("x-ms-date", formatdate(usegmt=True))
-
-          try:
-              with urllib.request.urlopen(req) as resp:
-                  print(f"py_probe_http_code={resp.status}")
-                  headers = resp.headers
-          except urllib.error.HTTPError as err:
-              print(f"py_probe_http_code={err.code}")
-              headers = err.headers
-          except Exception as exc:
-              print(f"py_probe_error={type(exc).__name__}")
-              raise SystemExit(0)
-
-          print("py_probe_selected_headers_begin")
-          for key in ("www-authenticate", "x-ms-error-code", "x-ms-request-id", "date"):
-              value = headers.get(key)
-              if value is not None:
-                  print(f"{key}: {value}")
-          print("py_probe_selected_headers_end")
-          PY
-        env:
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
-
-      - name: Probe Azure Blob read access (safe)
-        shell: bash
-        run: |
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN="$(printf '%s' "$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW" | tr -d '[:space:]')"
-          export MATHLIB_CACHE_AZURE_BEARER_TOKEN
-
-          PROBE_URL="https://lakecache.blob.core.windows.net/mathlib4?restype=container&comp=list&maxresults=1"
-          HEADER_FILE="$RUNNER_TEMP/cache-read-probe-headers.txt"
-
-          HTTP_CODE="$(
-            curl --silent --show-error \
-              --output /dev/null \
-              --dump-header "$HEADER_FILE" \
-              --write-out "%{http_code}" \
-              --oauth2-bearer "${MATHLIB_CACHE_AZURE_BEARER_TOKEN}" \
-              -H "x-ms-version: 2026-02-06" \
-              -H "x-ms-date: $(LC_ALL=C date -u '+%a, %d %b %Y %H:%M:%S GMT')" \
-              "$PROBE_URL"
-          )"
-
-          echo "read_probe_http_code=$HTTP_CODE"
-          echo "read_probe_selected_headers_begin"
-          grep -i -E '^(www-authenticate|x-ms-error-code|x-ms-request-id|date):' "$HEADER_FILE" || true
-          echo "read_probe_selected_headers_end"
-        env:
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
+          MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          echo "::add-mask::$MATHLIB_CACHE_SAS"
+          echo "cache_sas_length=${#MATHLIB_CACHE_SAS}"
+          echo "MATHLIB_CACHE_SAS=$MATHLIB_CACHE_SAS" >> "$GITHUB_ENV"
 
       - name: Upload staged cache to Azure
         shell: bash
         run: |
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN="$(printf '%s' "$MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW" | tr -d '[:space:]')"
-          export MATHLIB_CACHE_AZURE_BEARER_TOKEN
-
           echo "Uploading cache to Azure..."
           MATHLIB_CACHE_USE_CLOUDFLARE=0 lake env "$CACHE_BIN" put-staged --staging-dir="cache-staging" --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
-        env:
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW: ${{ steps.cache-token.outputs.token }}
 
   post_steps:
     name: Post-Build Step
