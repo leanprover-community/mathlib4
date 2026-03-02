@@ -49,7 +49,6 @@ def TensorProduct.toIntegralClosure
       (R := R) (A := S))).tower_top (A := S)).smul x
     simp [smul_tmul']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma TensorProduct.toIntegralClosure_injective_of_flat [Module.Flat R S] :
     Function.Injective (toIntegralClosure R S B) := by
   refine Function.Injective.of_comp (f := (integralClosure _ _).val) ?_
@@ -394,4 +393,4 @@ theorem TensorProduct.toIntegralClosure_bijective_of_smooth [Algebra.Smooth R S]
     (s := Set.range f) (B := B) ?_ (Localization.Away ·.1) (Set.forall_subtype_range_iff.mpr hf)
   by_contra H
   obtain ⟨m, hm, e⟩ := Ideal.exists_le_maximal _ H
-  exact hfm ⟨m, inferInstance⟩ (e (Ideal.subset_span (Set.mem_range_self ⟨m, inferInstance⟩)):)
+  exact hfm ⟨m, inferInstance⟩ (e (Ideal.subset_span (Set.mem_range_self ⟨m, inferInstance⟩)) :)

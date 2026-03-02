@@ -364,7 +364,7 @@ theorem Fintype.card_prop : Fintype.card Prop = 2 :=
 
 theorem set_fintype_card_le_univ [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s ≤ Fintype.card α :=
-  Fintype.card_le_of_embedding (Function.Embedding.subtype s)
+  Fintype.card_le_of_embedding (Function.Embedding.subtype (· ∈ s))
 
 theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s = Fintype.card α ↔ s = Set.univ := by
