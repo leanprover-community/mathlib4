@@ -241,7 +241,6 @@ set_option backward.isDefEq.respectTransparency false in
 
 variable [DecidableEq α]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffFinset_sup (a b : α) :
     birkhoffFinset (a ⊔ b) = birkhoffFinset a ∪ birkhoffFinset b := by
   classical
@@ -249,7 +248,6 @@ set_option backward.isDefEq.respectTransparency false in
   rw [birkhoffSet_sup, OrderIso.coe_toOrderEmbedding]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffFinset_inf (a b : α) :
     birkhoffFinset (a ⊓ b) = birkhoffFinset a ∩ birkhoffFinset b := by
   classical

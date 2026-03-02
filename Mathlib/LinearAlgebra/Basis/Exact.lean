@@ -112,6 +112,7 @@ end
 section
 include hfg
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.linearProjOfIsCompl_comp_surjective_of_exact
     {p q : Submodule R M} (hpq : IsCompl p q)
     (hmap : Submodule.map g q = ⊤) :

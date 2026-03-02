@@ -900,16 +900,16 @@ instance : SuccOrder Ordinal.{u} :=
 
 instance : SuccAddOrder Ordinal := ⟨fun _ => rfl⟩
 
--- TODO: deprecate this in favor of `Order.succ_eq_add_one`
+@[deprecated succ_eq_add_one (since := "2026-02-26")]
 theorem add_one_eq_succ (o : Ordinal) : o + 1 = succ o :=
   rfl
 
-@[simp]
+@[deprecated zero_add (since := "2026-02-26")]
 theorem succ_zero : succ (0 : Ordinal) = 1 :=
   zero_add 1
 
-@[simp]
-theorem succ_one : succ (1 : Ordinal) = 2 := by congr; simp only [Nat.unaryCast, zero_add]
+-- TODO: deprecate
+theorem succ_one : succ (1 : Ordinal) = 2 := one_add_one_eq_two
 
 theorem add_succ (o₁ o₂ : Ordinal) : o₁ + succ o₂ = succ (o₁ + o₂) :=
   (add_assoc _ _ _).symm
@@ -920,8 +920,12 @@ theorem one_le_iff_ne_zero {o : Ordinal} : 1 ≤ o ↔ o ≠ 0 := by
 theorem succ_pos (o : Ordinal) : 0 < succ o :=
   bot_lt_succ o
 
+theorem add_one_ne_zero (o : Ordinal) : o + 1 ≠ 0 :=
+  (succ_pos o).ne'
+
+-- TODO: deprecate
 theorem succ_ne_zero (o : Ordinal) : succ o ≠ 0 :=
-  ne_of_gt <| succ_pos o
+  add_one_ne_zero o
 
 @[simp]
 theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 := by
@@ -930,9 +934,9 @@ theorem lt_one_iff_zero {a : Ordinal} : a < 1 ↔ a = 0 := by
 theorem le_one_iff {a : Ordinal} : a ≤ 1 ↔ a = 0 ∨ a = 1 := by
   simpa using @le_succ_bot_iff _ _ _ a _
 
-@[simp]
+-- TODO: deprecate
 theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
-  simp only [← add_one_eq_succ, card_add, card_one]
+  simp
 
 theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl

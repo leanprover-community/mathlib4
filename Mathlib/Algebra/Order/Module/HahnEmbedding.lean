@@ -116,7 +116,6 @@ instance archimedean_stratum : Archimedean (u.stratum c) := by
   rw [u.archimedeanClassMk_of_mem_stratum a.prop (by simpa using ha)]
   rw [u.archimedeanClassMk_of_mem_stratum b.prop (by simpa using hb)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSupIndep_stratum : iSupIndep u.stratum := by
   intro c
   rw [Submodule.disjoint_def']

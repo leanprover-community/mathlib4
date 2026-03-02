@@ -142,7 +142,6 @@ theorem face_centroid_eq_centroid {n : ℕ} (s : Simplex k P n) {fs : Finset (Fi
   rw [← Finset.coe_inj, Finset.coe_map, Finset.coe_univ, Set.image_univ]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Over a characteristic-zero division ring, the centroids given by
 two subsets of the points of a simplex are equal if and only if those
 faces are given by the same subset of points. -/

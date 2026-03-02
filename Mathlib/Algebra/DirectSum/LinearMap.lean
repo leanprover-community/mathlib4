@@ -82,7 +82,6 @@ lemma trace_eq_sum_trace_restrict' (h : IsInternal N) (hN : {i | N i ≠ ⊥}.Fi
   rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) (hf ·)]
   exact Fintype.sum_equiv hN.subtypeEquivToFinset _ _ (fun i ↦ rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
     (σ : ι → ι) (hσ : ∀ i, σ i ≠ i) {f : Module.End R M}
     (hf : ∀ i, MapsTo f (N i) (N <| σ i)) :

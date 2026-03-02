@@ -1104,7 +1104,6 @@ theorem pi_eq_generateFrom :
     simp +instances only [generateFrom_setOf_isOpen]
   _ = _ := pi_generateFrom_eq
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pi_generateFrom_eq_finite {X : ι → Type*} {g : ∀ a, Set (Set (X a))} [Finite ι]
     (hg : ∀ a, ⋃₀ g a = univ) :
     (@Pi.topologicalSpace ι X fun a => generateFrom (g a)) =

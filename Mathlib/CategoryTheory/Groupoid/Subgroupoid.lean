@@ -128,7 +128,7 @@ theorem id_mem_of_tgt {c d : C} {f : c ⟶ d} (h : f ∈ S.arrows c d) : 𝟙 d 
 
 /-- A subgroupoid seen as a quiver on vertex set `C` -/
 def asWideQuiver : Quiver C :=
-  ⟨fun c d => Subtype <| S.arrows c d⟩
+  ⟨fun c d => S.arrows c d⟩
 
 /-- The coercion of a subgroupoid as a groupoid -/
 @[simps comp_coe, simps -isSimp inv_coe]

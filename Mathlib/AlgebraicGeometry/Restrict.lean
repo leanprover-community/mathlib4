@@ -806,7 +806,7 @@ lemma Scheme.Hom.isPullback_resLE
     IsPullback (g.resLE UX UY (by simp [*])) (iY.resLE UT UY (by simp [*]))
       (iX.resLE US UX hUSX) (f.resLE US UT hUST) := by
   refine .paste_horiz (v₁₂ := iY.resLE _ _
-    ((g.preimage_mono hUSX).trans_eq congr(($H.w) ⁻¹ᵁ US):)) ?_ ?_
+    ((g.preimage_mono hUSX).trans_eq congr(($H.w) ⁻¹ᵁ US) :)) ?_ ?_
   · refine (IsOpenImmersion.isPullback _ _ _ _ (by simp) ?_).flip
     simp only [Scheme.opensRange_homOfLE, ← Scheme.Hom.comp_preimage, Scheme.Hom.resLE_comp_ι]
     rw [Scheme.Hom.comp_preimage, ← (g ⁻¹ᵁ UX).ι.image_injective.eq_iff]

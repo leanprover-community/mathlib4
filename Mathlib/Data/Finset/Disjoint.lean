@@ -136,7 +136,6 @@ def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
 theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by
   rcases s with ⟨⟨s⟩⟩; rcases t with ⟨⟨t⟩⟩; apply List.mem_append
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_disjUnion {s t : Finset α} (h : Disjoint s t) :
     (disjUnion s t h : Set α) = (s : Set α) ∪ t :=

@@ -117,16 +117,16 @@ section Function
 @[simp]
 theorem mapsTo_sUnion {S : Set (Set α)} {t : Set β} {f : α → β} :
     MapsTo f (⋃₀ S) t ↔ ∀ s ∈ S, MapsTo f s t :=
-  sUnion_subset_iff
+  mapsTo_iff_subset_preimage.trans sUnion_subset_iff
 
 @[simp]
 theorem mapsTo_iUnion {s : ι → Set α} {t : Set β} {f : α → β} :
     MapsTo f (⋃ i, s i) t ↔ ∀ i, MapsTo f (s i) t :=
-  iUnion_subset_iff
+  mapsTo_iff_subset_preimage.trans iUnion_subset_iff
 
 theorem mapsTo_iUnion₂ {s : ∀ i, κ i → Set α} {t : Set β} {f : α → β} :
     MapsTo f (⋃ (i) (j), s i j) t ↔ ∀ i j, MapsTo f (s i j) t :=
-  iUnion₂_subset_iff
+  mapsTo_iff_subset_preimage.trans iUnion₂_subset_iff
 
 theorem mapsTo_iUnion_iUnion {s : ι → Set α} {t : ι → Set β} {f : α → β}
     (H : ∀ i, MapsTo f (s i) (t i)) : MapsTo f (⋃ i, s i) (⋃ i, t i) :=
