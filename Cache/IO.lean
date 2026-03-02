@@ -98,6 +98,18 @@ def getCurl : IO String := do
 def getLeanTar : IO String := do
   return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
 
+/-- Spawn a `leantar` process for decompression, writing the given JSON config to its stdin.
+    Returns the process exit code. -/
+def spawnLeanTarDecompress (config : Array Lean.Json) (force : Bool) : IO UInt32 := do
+  let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
+  let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
+  let (stdin, child) ← child.takeStdin
+  stdin.putStr <| Lean.Json.compress <| .arr config
+  stdin.flush
+  -- leantar reads the complete JSON array and proceeds; stdin handle is released when
+  -- the child exits.
+  child.wait
+
 /-- Bump this number to invalidate the cache, in case the existing hashing inputs are insufficient.
 It is not a global counter, and can be reset to 0 as long as the lean githash or lake manifest has
 changed since the last time this counter was touched. -/
@@ -390,6 +402,15 @@ def getLocalCacheSet : IO <| Std.TreeSet String compare := do
 def isFromMathlib (mod : Name) : Bool :=
   mod.getRoot == `Mathlib
 
+/-- Build a leantar JSON config entry for a single file.
+    Non-Mathlib-root Mathlib modules include a `base` path for redirection. -/
+def mkLeanTarConfigEntry (path : FilePath) (mod : Name)
+    (isMathlibRoot : Bool) (mathlibDepPath : FilePath) : Lean.Json :=
+  if isMathlibRoot || !isFromMathlib mod then
+    .str path.toString
+  else
+    .mkObj [("file", path.toString), ("base", mathlibDepPath.toString)]
+
 /-- Get the trace file path for a module. -/
 def getTracePath (mod : Name) : CacheM FilePath := do
   let sp := (← read).srcSearchPath
@@ -462,9 +483,6 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
       IO.println s!"Decompressing {size} file(s) ({skipped} already decompressed)"
     else
       IO.println s!"Decompressing {size} file(s)"
-    let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
-    let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
-    let (stdin, child) ← child.takeStdin
     /-
     TODO: The case distinction below could be avoided by making use of the `leantar` option `-C`
     (rsp the `"base"` field in JSON format, see below) here and in `packCache`.
@@ -481,16 +499,10 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     (e.g. any modification to lakefile, lean-toolchain or manifest)
     -/
     let isMathlibRoot ← isMathlibRoot
-    let mathlibDepPath := (← read).mathlibDepPath.toString
+    let mathlibDepPath := (← read).mathlibDepPath
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config mod hash =>
-      let pathStr := s!"{CACHEDIR / hash.asLTar}"
-      if isMathlibRoot || !isFromMathlib mod then
-        config.push <| .str pathStr
-      else
-        -- only mathlib files, when not in the mathlib4 repo, need to be redirected
-        config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
-    stdin.putStr <| Lean.Json.compress <| .arr config
-    let exitCode ← child.wait
+      config.push <| mkLeanTarConfigEntry (CACHEDIR / hash.asLTar) mod isMathlibRoot mathlibDepPath
+    let exitCode ← spawnLeanTarDecompress config force
     if exitCode != 0 then throw <| IO.userError s!"leantar failed with error code {exitCode}"
     IO.println s!"Decompressed in {(← IO.monoMsNow) - now} ms"
     IO.println "Completed successfully!"
