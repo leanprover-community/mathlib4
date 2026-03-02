@@ -166,4 +166,3 @@ For a list containing more detailed information, see https://leanprover-communit
 * Johannes Hölzl (@johoelzl): measure theory, topology
 * Simon Hudon (@cipher1024): tactics
 * Chris Hughes (@ChrisHughes24): algebra
-# cb-impl
