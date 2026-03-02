@@ -57,7 +57,7 @@ abbrev ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
   Submodule.restrictScalarsEmbedding ..
 
 /-- Coercion of submodule to pointed cone as a lattice homomorphism. -/
-abbrev ofSubmodule_latticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
+abbrev ofSubmoduleLatticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
   Submodule.restrictScalarsLatticeHom ..
 
 lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E) :=
@@ -67,13 +67,13 @@ lemma ofSubmodule_sup (S T : Submodule R E) : S ⊔ T = (S ⊔ T : PointedCone R
     := Submodule.restrictScalars_sup _ _ _
 
 lemma ofSubmodule_sInf (s : Set (Submodule R E)) : sInf s = sInf (ofSubmodule '' s) :=
-  ofSubmodule_latticeHom.map_sInf' s
+  ofSubmoduleLatticeHom.map_sInf' s
 
 lemma ofSubmodule_iInf (s : Set (Submodule R E)) : ⨅ S ∈ s, S = ⨅ S ∈ s, (S : PointedCone R E) := by
   rw [← sInf_eq_iInf, ofSubmodule_sInf, sInf_eq_iInf, iInf_image]
 
 lemma ofSubmodule_sSup (s : Set (Submodule R E)) : sSup s = sSup (ofSubmodule '' s) :=
-  ofSubmodule_latticeHom.map_sSup' s
+  ofSubmoduleLatticeHom.map_sSup' s
 
 lemma ofSubmodule_iSup (s : Set (Submodule R E)) : ⨆ S ∈ s, S = ⨆ S ∈ s, (S : PointedCone R E) := by
   rw [← sSup_eq_iSup, ofSubmodule_sSup, sSup_eq_iSup, iSup_image]
