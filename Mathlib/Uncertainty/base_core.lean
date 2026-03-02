@@ -87,7 +87,7 @@ structure UncertainVariable (U : UncertainSpace) where
 These definitions explicitly mark the four original axioms from the book.
 `bookAxiom4_product` is intentionally separated because the current core file
 models one uncertain space and does not yet formalize a product uncertain space.
-【BOOK_AXIOM_1_NORMALITY] `M(∅)=0` and `M(Ω)=1`. -/
+[BOOK_AXIOM_1_NORMALITY] `M(∅)=0` and `M(Ω)=1`. -/
 def bookAxiom1_normality (U : UncertainSpace) : Prop :=
   U.M ∅ = 0 ∧ U.M Set.univ = 1
 
