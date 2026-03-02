@@ -626,7 +626,7 @@ theorem denseRange_algebraMap_pi [NumberField K] :
       have hu : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
         ⟨u.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 u hw⟩
       have := u.1.tendsto_div_one_add_pow_nhds_zero hu
-      simp_rw [← WithAbs.norm_eq_abv'] at this
+      simp_rw [← WithAbs.norm_toAbs_eq] at this
       simpa using (tendsto_zero_iff_norm_tendsto_zero.2 this).mul_const
         ((WithAbs.equiv u.1).symm (WithAbs.equiv w.1 (z w)))
   -- So taking a sufficiently large index of the sequence `yₙ` gives the desired term.
