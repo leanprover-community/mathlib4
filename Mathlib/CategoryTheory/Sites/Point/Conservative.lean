@@ -99,7 +99,7 @@ lemma jointlyFaithful [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
 
 variable {A} in
 lemma W_iff {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [HasWeakSheafify J A]
-    [J.WEqualsLocallyBijective A] :
+    [HasProducts.{w} A] :
     J.W f ↔ ∀ (Φ : P.FullSubcategory), IsIso (Φ.obj.presheafFiber.map f) := by
   rw [GrothendieckTopology.W_iff, (hP.jointlyReflectIsomorphisms A).isIso_iff]
   exact forall_congr'

@@ -33,12 +33,12 @@ open Limits GrothendieckTopology MonoidalCategory
 variable {C : Type u} [Category.{v} C] [LocallySmall.{w} C]
   {J : GrothendieckTopology C}
   {P : ObjectProperty (Point.{w} J)} (hP : P.IsConservativeFamilyOfPoints)
-  (A : Type u') [Category.{v'} A] [MonoidalCategory A] [HasColimitsOfSize.{w, w} A]
+  (A : Type u') [Category.{v'} A] [MonoidalCategory A]
+  [HasColimitsOfSize.{w, w} A] [HasProducts.{w} A]
   {FC : A → A → Type*} {CC : A → Type w}
   [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
   [ConcreteCategory.{w} A FC]
   [HasWeakSheafify J A]
-  [J.WEqualsLocallyBijective A]
   [(forget A).ReflectsIsomorphisms]
   [PreservesFilteredColimitsOfSize.{w, w} (forget A)]
   [∀ (X : A), PreservesFilteredColimitsOfSize.{w, w} (tensorLeft X)]
