@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Monoidal.Discrete
 public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
@@ -47,8 +46,7 @@ Please read the documentation in `Mathlib/Tactic/Attr/Register.lean` for full de
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃ u
 
-open Function CategoryTheory MonoidalCategory CartesianMonoidalCategory
-  Functor.LaxMonoidal Functor.OplaxMonoidal
+open Function CategoryTheory MonoidalCategory Functor.LaxMonoidal Functor.OplaxMonoidal
 
 namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
@@ -543,21 +541,6 @@ open CategoryTheory.Limits
 
 instance : HasInitial (Mon C) :=
   hasInitial_of_unique (Mon.trivial C)
-
-section SemiCartesianMonoidalCategory
-
-variable {D : Type*} [Category* D] [SemiCartesianMonoidalCategory D]
-
-@[simps]
-instance uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
-  default.hom := toUnit A.X
-  default.isMonHom_hom.mul_hom := toUnit_unique _ _
-  uniq f := Hom.ext (toUnit_unique _ _)
-
-instance : HasTerminal (Mon D) :=
-  hasTerminal_of_unique (Mon.trivial D)
-
-end SemiCartesianMonoidalCategory
 
 section BraidedCategory
 variable [BraidedCategory C]
