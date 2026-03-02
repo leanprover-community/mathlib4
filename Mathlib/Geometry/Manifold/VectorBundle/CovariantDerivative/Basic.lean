@@ -80,7 +80,7 @@ This is a class so typeclass inference can deduce this automatically.
 -/
 class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] (k : ℕ∞)
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x))
-    (u : Set M)  where
+    (u : Set M) where
   contMDiff : ∀ {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x},
     CMDiff[u] (k + 1) (T% σ) → CMDiff[u] k (T% X) →
     CMDiff[u] k (T% (cov X σ))
@@ -212,9 +212,9 @@ section operations
 variable {s : Set M}
     {f : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
 
-/-- A convex combination of covariant derivatives is a covariant derivative. -/
+/-- An affine combination of covariant derivatives is a covariant derivative. -/
 @[simps]
-def convexCombination
+def affineCombination
     {f' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     (hf : IsCovariantDerivativeOn F f s) (hf' : IsCovariantDerivativeOn F f' s) (g : M → 𝕜) :
     IsCovariantDerivativeOn F (fun X σ ↦ (g • (f X σ)) + (1 - g) • (f' X σ)) s where
@@ -230,8 +230,8 @@ def convexCombination
     simp [hf.leibniz hX hσ hφ, hf'.leibniz hX hσ hφ]
     module
 
-/-- A convex combination of two `C^k` connections is a `C^k` connection. -/
-lemma _root_.ContMDiffCovariantDerivativeOn.convexCombination
+/-- An affine combination of two `C^k` connections is a `C^k` connection. -/
+lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination
     [VectorBundle 𝕜 F V]
     {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     {u: Set M} {f : M → 𝕜} {n : ℕ∞} (hf : CMDiff[u] n f)
@@ -243,8 +243,8 @@ lemma _root_.ContMDiffCovariantDerivativeOn.convexCombination
     · exact hf.smul_section <| Hcov.contMDiff hX hσ
     · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hX hσ
 
-/-- A finite convex combination of covariant derivatives is a covariant derivative. -/
-def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
+/-- A finite affine combination of covariant derivatives is a covariant derivative. -/
+def affineCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     {u : Set M} {cov : ι → (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     (h : ∀ i, IsCovariantDerivativeOn F (cov i) u) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
     IsCovariantDerivativeOn F (fun X σ x ↦ ∑ i ∈ s, (f i x) • (cov i) X σ x) u where
@@ -293,8 +293,8 @@ def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
         rw [this, one_smul]
     simp
 
-/-- A convex combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
-lemma _root_.ContMDiffCovariantDerivativeOn.convexCombination' {n : ℕ∞}
+/-- An affine combination of finitely many `C^k` connections on `u` is a `C^k` connection on `u`. -/
+lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination' {n : ℕ∞}
     [VectorBundle 𝕜 F V] {ι : Type*} {s : Finset ι} {u : Set M}
     {cov : ι → (Π x : M, TangentSpace I x) → (Π x : M, V x) → (Π x : M, V x)}
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivativeOn F n (cov i) u)
@@ -436,40 +436,40 @@ end computational_properties
 
 section operations
 
-/-- A convex combination of covariant derivatives is a covariant derivative. -/
+/-- An affine combination of covariant derivatives is a covariant derivative. -/
 @[simps]
-def convexCombination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
+def affineCombination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
     CovariantDerivative I F V where
   toFun := fun X σ ↦ (g • (cov X σ)) + (1 - g) • (cov' X σ)
   isCovariantDerivativeOn :=
-    cov.isCovariantDerivativeOn.convexCombination cov'.isCovariantDerivativeOn _
+    cov.isCovariantDerivativeOn.affineCombination cov'.isCovariantDerivativeOn _
 
-/-- A finite convex combination of covariant derivatives is a covariant derivative. -/
-def convexCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
+/-- A finite affine combination of covariant derivatives is a covariant derivative. -/
+def affineCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) :
     CovariantDerivative I F V where
   toFun X t x := ∑ i ∈ s, (f i x) • (cov i) X t x
-  isCovariantDerivativeOn := IsCovariantDerivativeOn.convexCombination'
+  isCovariantDerivativeOn := IsCovariantDerivativeOn.affineCombination'
     (fun i ↦ (cov i).isCovariantDerivativeOn) hf
 
-/-- A convex combination of two `C^k` connections is a `C^k` connection. -/
-lemma ContMDiffCovariantDerivative.convexCombination [VectorBundle 𝕜 F V]
+/-- An affine combination of two `C^k` connections is a `C^k` connection. -/
+lemma ContMDiffCovariantDerivative.affineCombination [VectorBundle 𝕜 F V]
   (cov cov' : CovariantDerivative I F V)
     {f : M → 𝕜} {n : ℕ∞} (hf : ContMDiff I 𝓘(𝕜) n f)
     (hcov : ContMDiffCovariantDerivative cov n) (hcov' : ContMDiffCovariantDerivative cov' n) :
-    ContMDiffCovariantDerivative (convexCombination cov cov' f) n where
+    ContMDiffCovariantDerivative (affineCombination cov cov' f) n where
   contMDiff :=
-    ContMDiffCovariantDerivativeOn.convexCombination hf.contMDiffOn hcov.contMDiff hcov'.contMDiff
+    ContMDiffCovariantDerivativeOn.affineCombination hf.contMDiffOn hcov.contMDiff hcov'.contMDiff
 
-/-- A convex combination of finitely many `C^k` connections is a `C^k` connection. -/
-lemma ContMDiffCovariantDerivative.convexCombination' [VectorBundle 𝕜 F V]
+/-- An affine combination of finitely many `C^k` connections is a `C^k` connection. -/
+lemma ContMDiffCovariantDerivative.affineCombination' [VectorBundle 𝕜 F V]
     {ι : Type*} {s : Finset ι} [Nonempty s]
     (cov : ι → CovariantDerivative I F V) {f : ι → M → 𝕜} (hf : ∑ i ∈ s, f i = 1) {n : ℕ∞}
     (hf' : ∀ i ∈ s, ContMDiff I 𝓘(𝕜) n (f i))
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivative (cov i) n) :
-    ContMDiffCovariantDerivative (convexCombination' cov hf) n where
+    ContMDiffCovariantDerivative (affineCombination' cov hf) n where
   contMDiff :=
-    ContMDiffCovariantDerivativeOn.convexCombination'
+    ContMDiffCovariantDerivativeOn.affineCombination'
       (fun i hi ↦ (hcov i hi).contMDiff) (fun i hi ↦ (hf' i hi).contMDiffOn)
 
 -- Future: prove a version with a locally finite sum, and deduce that C^k connections always
