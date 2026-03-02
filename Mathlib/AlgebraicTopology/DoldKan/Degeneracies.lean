@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
 public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
 
 /-!
 
@@ -27,7 +28,7 @@ statement vanishing statement `σ_comp_P_eq_zero` for the `P q`.
 
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -37,7 +38,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌}
     (v : HigherFacesVanish q φ) (hnbq : n + 1 = b + q) :
@@ -55,18 +56,19 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
     rw [Fin.lt_def, Fin.val_succ]
     linarith
 
+set_option backward.isDefEq.respectTransparency false in
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
     X.σ i ≫ (P q).f (n + 1) = 0 := by
   induction q generalizing i with
-  | zero => cutsat
+  | zero => lia
   | succ q hq =>
     by_cases h : n + 1 ≤ (i : ℕ) + q
     · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
-    · replace hi : n = i + q := by omega
+    · replace hi : n = i + q := by lia
       rcases n with _ | n
       · fin_cases i
         dsimp at h hi
-        rw [show q = 0 by cutsat]
+        rw [show q = 0 by lia]
         change X.σ 0 ≫ (P 1).f 1 = 0
         simp only [P_succ, HomologicalComplex.add_f_apply, comp_add,
           AlternatingFaceMapComplex.obj_d_eq, Hσ,
@@ -103,17 +105,17 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
         simp only [Finset.mem_univ, Finset.mem_filter] at hj
         obtain ⟨k, hk⟩ := Nat.le.dest (Nat.lt_succ_iff.mp (Fin.is_lt j))
         rw [add_comm] at hk
-        have hi' : i = Fin.castSucc ⟨i, by cutsat⟩ := by
+        have hi' : i = Fin.castSucc ⟨i, by lia⟩ := by
           ext
           simp only [Fin.castSucc_mk, Fin.eta]
         have eq := hq j.rev.succ (by
           simp only [← hk, Fin.rev_eq j hk.symm, Fin.succ_mk, Fin.val_mk]
-          cutsat)
+          lia)
         rw [assoc, assoc, assoc, hi',
           SimplicialObject.σ_comp_σ_assoc, reassoc_of% eq, zero_comp, comp_zero, comp_zero,
           comp_zero]
         simp only [Fin.rev_eq j hk.symm, Fin.le_iff_val_le_val]
-        cutsat
+        lia
 
 @[reassoc (attr := simp)]
 theorem σ_comp_PInfty (X : SimplicialObject C) {n : ℕ} (i : Fin (n + 1)) :

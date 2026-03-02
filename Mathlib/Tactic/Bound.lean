@@ -5,11 +5,12 @@ Authors: Geoffrey Irving
 -/
 module
 
-public meta import Aesop
+public import Aesop
 public meta import Mathlib.Tactic.Bound.Attribute
 public meta import Mathlib.Tactic.Lemma
-public meta import Mathlib.Tactic.Linarith.Frontend
 public meta import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Linarith.Frontend
 
 /-!
 ## The `bound` tactic
@@ -179,7 +180,7 @@ end Guessing
 /-!
 ### Closing tactics
 
-TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `omega` as well.
+TODO: Kim Morrison noted that we could check for `ℕ` or `ℤ` and try `lia` as well.
 -/
 
 /-- Close numerical goals with `norm_num` -/
@@ -204,7 +205,8 @@ attribute [aesop unsafe 5% tactic (rule_sets := [Bound])] boundLinarith
 
 /-- Aesop configuration for `bound` -/
 def boundConfig : Aesop.Options := {
-  enableSimp := false
+  enableSimp := false,
+  terminal := true
 }
 
 end Mathlib.Tactic.Bound
@@ -239,7 +241,7 @@ by turning the goal into `b * c ≤ a * c`, then using `mul_le_mul_of_nonneg_rig
 contains lemmas for goals of the form `1 ≤ x, 1 < x, x ≤ 1, x < 1`.  Conversely, `gcongr` can prove
 inequalities for more types of relations, supports all `positivity` functionality, and is likely
 faster since it is more specialized (not built atop `aesop`). -/
-syntax "bound " (" [" term,* "]")? : tactic
+syntax "bound" (" [" term,* "]")? : tactic
 
 -- Plain `bound` elaboration, with no hypotheses
 elab_rules : tactic
@@ -258,3 +260,4 @@ We register `bound` with the `hint` tactic.
 -/
 
 register_hint 70 bound
+register_try?_tactic (priority := 70) bound

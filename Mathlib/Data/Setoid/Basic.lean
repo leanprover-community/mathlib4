@@ -110,7 +110,7 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
   toFun | (x, y) => Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
   invFun q := Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
-    fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
+    fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
     exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
@@ -126,7 +126,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
   toFun x := Quotient.mk'' fun i ↦ (x i).out
   invFun q := Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
     ext i
-    simpa using hxy i
+    simpa [Quotient.eq] using hxy i
   left_inv q := by
     ext i
     simp
@@ -196,6 +196,13 @@ theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
 theorem bot_def : ⇑(⊥ : Setoid α) = (· = ·) :=
   rfl
 
+@[simp] lemma mk_eq_top {r : α → α → Prop} (iseqv) : mk r iseqv = ⊤ ↔ r = ⊤ := by
+  simp [eq_iff_rel_eq]
+
+@[simp] lemma mk_eq_bot {r : α → α → Prop} (iseqv) : mk r iseqv = ⊥ ↔ r = (· = ·) := by
+  simp [eq_iff_rel_eq]
+
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
@@ -209,7 +216,7 @@ lemma sInf_iff {S : Set (Setoid α)} {x y : α} :
 
 lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
     Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s x y := by
-  simp [sInf_iff]
+  simp [sInf_iff, Quotient.eq]
 
 /-- The map induced between quotients by a setoid inequality. -/
 def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
@@ -296,6 +303,7 @@ end EqvGen
 
 open Function
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function from α to β is injective iff its kernel is the bottom element of the complete lattice
 of equivalence relations on α. -/
 theorem injective_iff_ker_bot (f : α → β) : Injective f ↔ ker f = ⊥ :=
@@ -463,6 +471,7 @@ def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
 
 end Setoid
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply]

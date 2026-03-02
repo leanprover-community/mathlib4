@@ -33,8 +33,9 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] [HasFiniteCoproducts C]
+variable {C : Type*} [Category* C] [Preadditive C] [HasFiniteCoproducts C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for all `K : ChainComplex C ℕ`. -/
 @[simps!]
 def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegComplex ≅ K :=
@@ -58,9 +59,10 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
         · intro h
           replace h := congr_arg SimplexCategory.len h
           change n + 1 = n at h
-          cutsat
+          lia
         · simpa only [Isδ₀.iff] using hi)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for `K : ChainComplex C ℕ`. -/
 def Γ₀'CompNondegComplexFunctor : Γ₀' ⋙ Split.nondegComplexFunctor ≅ 𝟭 (ChainComplex C ℕ) :=
   NatIso.ofComponents Γ₀NondegComplexIso
@@ -75,13 +77,12 @@ def N₁Γ₀ : Γ₀ ⋙ N₁ ≅ toKaroubi (ChainComplex C ℕ) :=
     _ ≅ 𝟭 _ ⋙ toKaroubi (ChainComplex C ℕ) := isoWhiskerRight Γ₀'CompNondegComplexFunctor _
     _ ≅ toKaroubi (ChainComplex C ℕ) := Functor.leftUnitor _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem N₁Γ₀_app (K : ChainComplex C ℕ) :
     N₁Γ₀.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.symm ≪≫
       (toKaroubi _).mapIso (Γ₀NondegComplexIso K) := by
-  ext1
-  dsimp [N₁Γ₀]
-  erw [id_comp, comp_id, comp_id]
-  rfl
+  ext
+  simp [N₁Γ₀, Γ₀'CompNondegComplexFunctor]
 
 theorem N₁Γ₀_hom_app (K : ChainComplex C ℕ) :
     N₁Γ₀.hom.app K = (Γ₀.splitting K).toKaroubiNondegComplexIsoN₁.inv ≫
@@ -121,6 +122,7 @@ def N₂Γ₂ToKaroubiIso : toKaroubi (ChainComplex C ℕ) ⋙ Γ₂ ⋙ N₂ �
     _ ≅ Γ₀ ⋙ N₁ :=
       isoWhiskerLeft Γ₀ ((functorExtension₁CompWhiskeringLeftToKaroubiIso _ _).app N₁)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma N₂Γ₂ToKaroubiIso_hom_app (X : ChainComplex C ℕ) :
     (N₂Γ₂ToKaroubiIso.hom.app X).f = PInfty := by
@@ -135,6 +137,7 @@ lemma N₂Γ₂ToKaroubiIso_hom_app (X : ChainComplex C ℕ) :
   rw [Splitting.ι_desc_assoc, assoc]
   apply id_comp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma N₂Γ₂ToKaroubiIso_inv_app (X : ChainComplex C ℕ) :
     (N₂Γ₂ToKaroubiIso.inv.app X).f = PInfty := by
@@ -152,6 +155,7 @@ def N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ)) :=
   ((whiskeringLeft _ _ _).obj (toKaroubi (ChainComplex C ℕ))).preimageIso
       (N₂Γ₂ToKaroubiIso ≪≫ N₁Γ₀)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
     (N₂Γ₂.inv.app X).f.f n =

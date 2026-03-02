@@ -87,13 +87,28 @@ lemma ext' {f g : Path X (m + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g := 
       rw [← f.arrow_tgt (Fin.last m), ← g.arrow_tgt (Fin.last m), h]
   · exact h j
 
+/-- Constructor for paths of length `2` from two paths of length `1`. -/
+@[simps!]
+def mk₂ {n : ℕ} {X : Truncated.{u} (n + 1)} (p q : X.Path 1)
+  (h : p.vertex 1 = q.vertex 0) : X.Path 2 where
+  vertex := ![p.vertex 0, p.vertex 1, q.vertex 1]
+  arrow := ![p.arrow 0, q.arrow 0]
+  arrow_src i := by
+    fin_cases i
+    · exact p.arrow_src 0
+    · exact (q.arrow_src 0).trans h.symm
+  arrow_tgt i := by
+    fin_cases i
+    · exact p.arrow_tgt 0
+    · exact q.arrow_tgt 0
+
 /-- For `j + l ≤ m`, a path of length `m` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
 def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l where
-  vertex i := f.vertex ⟨j + i, by omega⟩
-  arrow i := f.arrow ⟨j + i, by omega⟩
-  arrow_src i := f.arrow_src ⟨j + i, by omega⟩
-  arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
+  vertex i := f.vertex ⟨j + i, by lia⟩
+  arrow i := f.arrow ⟨j + i, by lia⟩
+  arrow_src i := f.arrow_src ⟨j + i, by lia⟩
+  arrow_tgt i := f.arrow_tgt ⟨j + i, by lia⟩
 
 variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
@@ -129,6 +144,7 @@ end Path
 
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m`
 formed by traversing in order through its vertices. -/
 def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : Path X m where
@@ -138,12 +154,14 @@ def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : P
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
       Functor.whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_one_mkOfSucc]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ObjectProperty.ιOfLE_map,
+      ← tr_comp, ObjectProperty.homMk_hom, δ_one_mkOfSucc]
   arrow_tgt i := by
     dsimp only [tr, trunc, SimplicialObject.Truncated.trunc, incl,
       Functor.whiskeringLeft_obj_obj, id_eq, Functor.comp_map, Functor.op_map,
       Quiver.Hom.unop_op]
-    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp, δ_zero_mkOfSucc]
+    rw [← FunctorToTypes.map_comp_apply, ← op_comp, ObjectProperty.ιOfLE_map,
+      ← tr_comp, ObjectProperty.homMk_hom, δ_zero_mkOfSucc]
 
 /-- Further truncating `X` above `m` does not change the `m`-spine. -/
 lemma trunc_spine (k m : ℕ) (h : m ≤ k + 1) (hₙ : k ≤ n) :
@@ -168,13 +186,14 @@ lemma spine_arrow (Δ : X _⦋m⦌ₙ₊₁) (i : Fin m) :
 lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
     (φ : ⦋a⦌ₙ₊₁ ⟶ ⦋m⦌ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a hₐ (X.map φ.op Δ)).vertex i =
-      (X.spine m hₘ Δ).vertex (φ.toOrderHom i) := by
+      (X.spine m hₘ Δ).vertex (φ.hom.toOrderHom i) := by
   dsimp only [spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp',
     SimplexCategory.const_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
-    X.spine l (by cutsat) (X.map (tr (subinterval j l h)).op Δ) =
+    X.spine l (by lia) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
   ext i
   · dsimp only [spine_vertex, Path.interval]
@@ -240,7 +259,7 @@ def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by grind) : Path X l
   Truncated.Path.interval f j l h
 
 lemma arrow_interval (f : Path X n) (j l : ℕ) (k' : Fin l) (k : Fin n)
-    (h : j + l ≤ n := by omega) (hkk' : j + k' = k := by grind) :
+    (h : j + l ≤ n := by lia) (hkk' : j + k' = k := by grind) :
     (f.interval j l h).arrow k' = f.arrow k := by
   dsimp [interval, arrow, Truncated.Path.interval, Truncated.Path.arrow]
   congr
@@ -287,6 +306,7 @@ lemma spine_arrow (Δ : X _⦋n⦌) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
     X.spine m (X.δ 0 x) = (X.spine (m + 1) x).interval 1 m := by
   obtain _ | m := m
@@ -312,11 +332,11 @@ lemma spine_map_vertex (Δ : X _⦋n⦌) {m : ℕ}
     (X.spine m (X.map φ.op Δ)).vertex i =
       (X.spine n Δ).vertex (φ.toOrderHom i) :=
   truncation (max m n + 1) |>.obj X
-    |>.spine_map_vertex n (by omega) Δ m (by omega) φ i
+    |>.spine_map_vertex n (by omega) Δ m (by omega) (InducedCategory.homMk φ) i
 
 lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ n) (Δ : X _⦋n⦌) :
     X.spine l (X.map (subinterval j l h).op Δ) = (X.spine n Δ).interval j l h :=
-  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by cutsat) j l h Δ
+  truncation (n + 1) |>.obj X |>.spine_map_subinterval n (by lia) j l h Δ
 
 end spine
 
@@ -354,6 +374,7 @@ lemma Subcomplex.map_ι_liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p 
     (hp₁ : ∀ j, p.arrow j ∈ A.obj _) :
     (A.liftPath p hp₀ hp₁).map A.ι = p := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
 in `Δ[n]`. -/
 @[simps! vertex_coe arrow_coe]

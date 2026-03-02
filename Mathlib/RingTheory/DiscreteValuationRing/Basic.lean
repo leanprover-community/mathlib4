@@ -78,8 +78,7 @@ theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommSemiring R] [IsLoca
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
   refine ⟨h2, ?_⟩
   intro a b hab
-  by_contra! h
-  obtain ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩ := h
+  by_contra! ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩
   rw [h, mem_span_singleton'] at ha hb
   rcases ha with ⟨a, rfl⟩
   rcases hb with ⟨b, rfl⟩
@@ -177,12 +176,11 @@ theorem unique_irreducible (hR : HasUnitMulPowIrreducibleFactorization R)
     · rw [add_comm, pow_succ'] at H0
       exact (hϖ.not_isUnit (isUnit_of_mul_isUnit_left H0)).elim
 
-variable [IsDomain R]
-
 /-- An integral domain in which there is an irreducible element `p`
 such that every nonzero element is associated to a power of `p` is a unique factorization domain.
 See `IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization`. -/
-theorem toUniqueFactorizationMonoid (hR : HasUnitMulPowIrreducibleFactorization R) :
+theorem toUniqueFactorizationMonoid [IsCancelMulZero R]
+    (hR : HasUnitMulPowIrreducibleFactorization R) :
     UniqueFactorizationMonoid R :=
   let p := Classical.choose hR
   let spec := Classical.choose_spec hR
@@ -232,7 +230,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
 
 end HasUnitMulPowIrreducibleFactorization
 
-theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain R]
+theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R]
     [UniqueFactorizationMonoid R] (h₁ : ∃ p : R, Irreducible p)
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     IsPrincipalIdealRing R := by
@@ -473,6 +471,7 @@ lemma addVal_eq_zero_iff {x : R} :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by

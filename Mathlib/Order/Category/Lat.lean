@@ -48,6 +48,7 @@ attribute [coe] Lat.carrier
 /-- Construct a bundled `Lat` from the underlying type and typeclass. -/
 abbrev of (X : Type*) [Lattice X] : Lat := ⟨X⟩
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Lat R`. -/
 @[ext]
 structure Hom (X Y : Lat.{u}) where
@@ -55,11 +56,15 @@ structure Hom (X Y : Lat.{u}) where
   /-- The underlying `LatticeHom`. -/
   hom' : LatticeHom X Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category Lat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨LatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory Lat (LatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -91,7 +96,7 @@ lemma coe_comp {X Y Z : Lat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Lat} (f : X ⟶ Y) :
-    (forget Lat).map f = f := rfl
+    (forget Lat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Lat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -149,6 +154,7 @@ instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
   forget₂.obj X := .of X
   forget₂.map f := PartOrd.ofHom f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : Lat.{u}} (e : α ≃o β) : α ≅ β where

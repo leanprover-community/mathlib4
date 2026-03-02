@@ -111,10 +111,11 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   funext v i
   apply p.congr (Composition.ones_blocksFun _ _)
   intro j hjn hj1
-  obtain rfl : j = 0 := by cutsat
+  obtain rfl : j = 0 := by lia
   refine congr_arg v ?_
-  rw [Fin.ext_iff, Fin.coe_castLE, Composition.ones_embedding, Fin.val_mk]
+  rw [Fin.ext_iff, Fin.val_castLE, Composition.ones_embedding, Fin.val_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem applyComposition_single (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ} (hn : 0 < n)
     (v : Fin n → E) : p.applyComposition (Composition.single n hn) v = fun _j => p n v := by
   ext j
@@ -376,7 +377,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) (x : E) : p.comp (id 𝕜
     intros
     rw [applyComposition_ones]
     refine congr_arg v ?_
-    rw [Fin.ext_iff, Fin.coe_castLE, Fin.val_mk]
+    rw [Fin.ext_iff, Fin.val_castLE, Fin.val_mk]
   · change
     ∀ b : Composition n,
       b ∈ Finset.univ → b ≠ Composition.ones n → compAlongComposition p (id 𝕜 E x) b = 0
@@ -418,7 +419,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (v0 : Fin 0 → E) :
       have A : 1 < b.length := by
         have : b.length ≠ 1 := by simpa [Composition.eq_single_iff_length] using hb
         have : 0 < b.length := Composition.length_pos_of_pos b n_pos
-        omega
+        lia
       ext v
       rw [compAlongComposition_apply, id_apply_of_one_lt _ _ _ A,
         ContinuousMultilinearMap.zero_apply, ContinuousMultilinearMap.zero_apply]
@@ -435,6 +436,7 @@ theorem id_comp' (p : FormalMultilinearSeries 𝕜 E F) (x : F) (v0 : Fin 0 → 
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two formal multilinear series have positive radius of convergence, then the terms appearing
 in the definition of their composition are also summable (when multiplied by a suitable positive
 geometric term). -/
@@ -636,6 +638,7 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
   -- 4 - show that the composition gives the `compAlongComposition` application
   · assumption
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
 all possible compositions. -/
 theorem compPartialSumTarget_tendsto_prod_atTop :
@@ -689,6 +692,7 @@ end FormalMultilinearSeries
 
 open FormalMultilinearSeries
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two functions `g` and `f` have power series `q` and `p` respectively at `f x` and `x`, within
 two sets `s` and `t` such that `f` maps `s` to `t`, then `g ∘ f` admits the power
 series `q.comp p` at `x` within `s`. -/
@@ -706,11 +710,11 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
     `f (x + y)` is close enough to `f x` to be in the disk where `g` is well behaved. Let
     `min (r, rf, δ)` be this new radius. -/
   obtain ⟨δ, δpos, hδ⟩ :
-    ∃ δ : ℝ≥0∞, 0 < δ ∧ ∀ {z : E}, z ∈ insert x s ∩ EMetric.ball x δ
-      → f z ∈ insert (f x) t ∩ EMetric.ball (f x) rg := by
-    have : insert (f x) t ∩ EMetric.ball (f x) rg ∈ 𝓝[insert (f x) t] (f x) := by
+    ∃ δ : ℝ≥0∞, 0 < δ ∧ ∀ {z : E}, z ∈ insert x s ∩ Metric.eball x δ
+      → f z ∈ insert (f x) t ∩ Metric.eball (f x) rg := by
+    have : insert (f x) t ∩ Metric.eball (f x) rg ∈ 𝓝[insert (f x) t] (f x) := by
       apply inter_mem_nhdsWithin
-      exact EMetric.ball_mem_nhds _ Hg.r_pos
+      exact Metric.eball_mem_nhds _ Hg.r_pos
     have := Hf.analyticWithinAt.continuousWithinAt_insert.tendsto_nhdsWithin (hs.insert x) this
     rcases EMetric.mem_nhdsWithin_iff.1 this with ⟨δ, δpos, Hδ⟩
     exact ⟨δ, δpos, fun {z} hz => Hδ (by rwa [Set.inter_comm])⟩
@@ -726,12 +730,12 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   /- Let `y` satisfy `‖y‖ < min (r, rf', δ)`. We want to show that `g (f (x + y))` is the sum of
     `q.comp p` applied to `y`. -/
   -- First, check that `y` is small enough so that estimates for `f` and `g` apply.
-  have y_mem : y ∈ EMetric.ball (0 : E) rf :=
-    (EMetric.ball_subset_ball (le_trans (min_le_left _ _) (min_le_left _ _))) hy
-  have fy_mem : f (x + y) ∈ insert (f x) t ∩ EMetric.ball (f x) rg := by
+  have y_mem : y ∈ Metric.eball (0 : E) rf :=
+    (Metric.eball_subset_eball (le_trans (min_le_left _ _) (min_le_left _ _))) hy
+  have fy_mem : f (x + y) ∈ insert (f x) t ∩ Metric.eball (f x) rg := by
     apply hδ
-    have : y ∈ EMetric.ball (0 : E) δ :=
-      (EMetric.ball_subset_ball (le_trans (min_le_left _ _) (min_le_right _ _))) hy
+    have : y ∈ Metric.eball (0 : E) δ :=
+      (Metric.eball_subset_eball (le_trans (min_le_left _ _) (min_le_right _ _))) hy
     simpa [-Set.mem_insert_iff, edist_eq_enorm_sub, h'y]
   /- Now the proof starts. To show that the sum of `q.comp p` at `y` is `g (f (x + y))`,
     we will write `q.comp p` applied to `y` as a big sum over all compositions.
@@ -795,7 +799,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
         _ ≤ ‖compAlongComposition q p c‖ * (r : ℝ) ^ n := by
           rw [Finset.prod_const, Finset.card_fin]
           gcongr
-          rw [EMetric.mem_ball, edist_zero_eq_enorm] at hy
+          rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
           rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
     tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C
@@ -1219,7 +1223,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       exact (Fin.heq_fun_iff A (α := List ℕ)).2 fun i => rfl
     · have B : Composition.length (Composition.gather a b) = List.length b.blocks :=
         Composition.length_gather _ _
-      conv_rhs => rw [← ofFn_getElem b.blocks]
+      conv_rhs => rw [← ofFn_getElem (xs := b.blocks)]
       congr 1
       refine (Fin.heq_fun_iff B).2 fun i => ?_
       rw [sigmaCompositionAux, Composition.length, List.getElem_map_rev List.length,
@@ -1252,6 +1256,7 @@ namespace FormalMultilinearSeries
 
 open Composition
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) : (r.comp q).comp p = r.comp (q.comp p) := by
   ext n v

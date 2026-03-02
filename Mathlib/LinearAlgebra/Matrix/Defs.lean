@@ -6,6 +6,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 module
 
 public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # Matrices
@@ -29,7 +30,7 @@ The scope `Matrix` gives the following notation:
 
 * `ᵀ` for `Matrix.transpose`
 
-See `Mathlib/Data/Matrix/ConjTranspose.lean` for
+See `Mathlib/LinearAlgebra/Matrix/ConjTranspose.lean` for
 
 * `ᴴ` for `Matrix.conjTranspose`
 
@@ -232,6 +233,7 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem dite_apply (P : Prop) [Decidable P]
     (A : P → Matrix m n α) (B : ¬P → Matrix m n α) (i : m) (j : n) :
     dite P A B i j = dite P (A · i j) (B · i j) := by

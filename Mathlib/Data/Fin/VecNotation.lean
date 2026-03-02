@@ -145,7 +145,8 @@ open Lean Qq
 
 `let ⟨xs, tailn, tail⟩ ← matchVecConsPrefix n e` decomposes `e : Fin n → _` in the form
 `vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`. -/
-meta def matchVecConsPrefix (n : Q(Nat)) (e : Expr) : MetaM <| List Expr × Q(Nat) × Expr := do
+meta partial def matchVecConsPrefix (n : Q(Nat)) (e : Expr) :
+    MetaM <| List Expr × Q(Nat) × Expr := do
   match_expr ← Meta.whnfR e with
   | Matrix.vecCons _ n x xs => do
     let (elems, n', tail) ← matchVecConsPrefix n xs
@@ -198,6 +199,10 @@ theorem head_cons (x : α) (u : Fin m → α) : vecHead (vecCons x u) = x :=
 theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
+
+@[simp]
+theorem _root_.Fin.tail_vecCons (x : α) (t : Fin n → α) : Fin.tail (Matrix.vecCons x t) = t :=
+  rfl
 
 theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
@@ -305,7 +310,7 @@ def vecAppend {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fi
 
 theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → α) (v : Fin n → α) :
     vecAppend ho u v = fun i : Fin o =>
-      if h : (i : ℕ) < m then u ⟨i, h⟩ else v ⟨(i : ℕ) - m, by cutsat⟩ := by
+      if h : (i : ℕ) < m then u ⟨i, h⟩ else v ⟨(i : ℕ) - m, by lia⟩ := by
   ext i
   rw [vecAppend, Fin.append, Function.comp_apply, Fin.addCases]
   congr with hi
@@ -329,7 +334,7 @@ theorem vecAppend_empty (v : Fin n → α) : vecAppend rfl v ![] = v := by
 
 @[simp]
 theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v : Fin n → α) :
-    vecAppend ho (vecCons x u) v = vecCons x (vecAppend (by cutsat) u v) := by
+    vecAppend ho (vecCons x u) v = vecCons x (vecAppend (by lia) u v) := by
   ext i
   simp_rw [vecAppend_eq_ite]
   split_ifs with h
@@ -344,7 +349,7 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
 
 /-- `vecAlt0 v` gives a vector with half the length of `v`, with
 only alternate elements (even-numbered). -/
-def vecAlt0 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α := v ⟨(k : ℕ) + k, by cutsat⟩
+def vecAlt0 (hm : m = n + n) (v : Fin m → α) (k : Fin n) : α := v ⟨(k : ℕ) + k, by lia⟩
 
 /-- `vecAlt1 v` gives a vector with half the length of `v`, with
 only alternate elements (odd-numbered). -/
@@ -363,7 +368,7 @@ theorem vecAlt0_vecAppend (v : Fin n → α) :
   · rw [Fin.val_mk, not_lt] at h
     simp only [Nat.mod_eq_sub_mod h]
     refine (Nat.mod_eq_of_lt ?_).symm
-    cutsat
+    lia
 
 theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
     vecAlt1 rfl (vecAppend rfl v v) = v ∘ (fun n ↦ (n + n) + 1) := by
@@ -378,9 +383,9 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
     · simp [Nat.mod_eq_of_lt, h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Nat.mod_add_mod,
-        Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by cutsat)]
+        Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by lia)]
       refine (Nat.mod_eq_of_lt ?_).symm
-      cutsat
+      lia
 
 @[simp]
 theorem vecHead_vecAlt0 (hm : m + 2 = n + 1 + (n + 1)) (v : Fin (m + 2) → α) :
@@ -403,7 +408,7 @@ end bits
 
 @[simp]
 theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m → α) :
-    vecAlt0 h (vecCons x (vecCons y u)) = vecCons x (vecAlt0 (by cutsat) u) := by
+    vecAlt0 h (vecCons x (vecCons y u)) = vecCons x (vecAlt0 (by lia) u) := by
   ext i
   simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
@@ -417,7 +422,7 @@ theorem empty_vecAlt0 (α) {h} : vecAlt0 h (![] : Fin 0 → α) = ![] := by
 
 @[simp]
 theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m → α) :
-    vecAlt1 h (vecCons x (vecCons y u)) = vecCons y (vecAlt1 (by cutsat) u) := by
+    vecAlt1 h (vecCons x (vecCons y u)) = vecCons y (vecAlt1 (by lia) u) := by
   ext i
   simp_rw [vecAlt1]
   rcases i with ⟨⟨⟩ | i, hi⟩

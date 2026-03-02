@@ -43,7 +43,7 @@ separable degree, degree, separable closure, purely inseparable
 
 -/
 
-@[expose] public section
+public section
 
 open Polynomial IntermediateField Field
 
@@ -142,6 +142,7 @@ lemma insepDegree_eq_of_isSeparable [Algebra.IsSeparable F E] :
   rw [insepDegree, insepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
 then $[K:F]_s = [K:E]_s$.
 It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
@@ -172,6 +173,7 @@ lemma rank_mul_insepDegree_of_isPurelyInseparable (K : Type v) [Field K] [Algebr
     Module.rank F E * insepDegree E K = insepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_rank_mul_lift_insepDegree_of_isPurelyInseparable F E K
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
 separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$. -/
 theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
@@ -187,6 +189,7 @@ theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F
     sepDegree F E * sepDegree E K = sepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
 inseparable degrees satisfy the tower law: $[E:F]_i [K:E]_i = [K:F]_i$. -/
 theorem lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
@@ -212,6 +215,7 @@ theorem finInsepDegree_mul_finInsepDegree_of_isAlgebraic [Algebra.IsAlgebraic F 
 
 end Field
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any subset `S` of `K` such that `F(S) / F` is algebraic, the `E(S) / E` and `F(S) / F` have
@@ -258,6 +262,7 @@ theorem IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInsepara
   have := sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable (F := F) E (S : Set K)
   rwa [adjoin_self] at this
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F K} in
 /-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
 for any element `x` of `K` separable over `F`, it has the same minimal polynomials over `F` and

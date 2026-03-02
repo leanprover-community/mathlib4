@@ -5,7 +5,6 @@ Authors: Alvan Caleb Arulandu
 -/
 module
 
-public import Mathlib.Probability.Notation
 public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
@@ -62,12 +61,12 @@ lemma lintegral_paretoPDF_of_le (hx : x ≤ t) :
     rw [if_neg (by linarith)]
 
 /-- The Pareto pdf is measurable. -/
-@[measurability, fun_prop]
+@[fun_prop]
 lemma measurable_paretoPDFReal (t r : ℝ) : Measurable (paretoPDFReal t r) :=
   Measurable.ite measurableSet_Ici ((measurable_id.pow_const _).const_mul _) measurable_const
 
 /-- The Pareto pdf is strongly measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_paretoPDFReal (t r : ℝ) :
     StronglyMeasurable (paretoPDFReal t r) :=
   (measurable_paretoPDFReal t r).stronglyMeasurable
@@ -94,6 +93,7 @@ lemma paretoPDFReal_nonneg (ht : 0 ≤ t) (hr : 0 ≤ r) (x : ℝ) :
 
 open Measure
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pdf of the Pareto distribution integrates to `1`. -/
 @[simp]
 lemma lintegral_paretoPDF_eq_one (ht : 0 < t) (hr : 0 < r) :

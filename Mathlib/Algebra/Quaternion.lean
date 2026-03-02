@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+import Mathlib.Algebra.Module.Torsion.Prod
+
 /-!
 # Quaternions
 
@@ -219,6 +221,24 @@ theorem mk_add_mk (a₁ a₂ a₃ a₄ b₁ b₂ b₃ b₄ : R) :
     mk (a₁ + b₁) (a₂ + b₂) (a₃ + b₃) (a₄ + b₄) :=
   rfl
 
+/-- The additive equivalence between a quaternion algebra over `R` and `Fin 4 → R`. -/
+def addEquivTuple (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃+ (Fin 4 → R) := (equivTuple ..).addEquiv
+
+@[simp]
+lemma coe_addEquivTuple (c₁ c₂ c₃ : R) : ⇑(addEquivTuple c₁ c₂ c₃) = equivTuple c₁ c₂ c₃ := rfl
+
+@[simp] lemma coe_symm_addEquivTuple (c₁ c₂ c₃ : R) :
+    ⇑(addEquivTuple c₁ c₂ c₃).symm = (equivTuple c₁ c₂ c₃).symm := rfl
+
+/-- The additive equivalence between a quaternion algebra over `R` and `R × R × R × R`. -/
+def addEquivProd (c₁ c₂ c₃ : R) : ℍ[R,c₁,c₂,c₃] ≃+ R × R × R × R := (equivProd ..).addEquiv
+
+@[simp]
+lemma coe_addEquivProd (c₁ c₂ c₃ : R) : ⇑(addEquivProd c₁ c₂ c₃) = equivProd c₁ c₂ c₃ := rfl
+
+@[simp] lemma coe_symm_addEquivProd (c₁ c₂ c₃ : R) :
+    ⇑(addEquivProd c₁ c₂ c₃).symm = (equivProd c₁ c₂ c₃).symm := rfl
+
 end Add
 
 section AddZeroClass
@@ -352,14 +372,22 @@ theorem smul_mk (re im_i im_j im_k : R) :
 
 end SMul
 
+instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] :=
+  (equivProd ..).injective.mulAction _ fun _ _ ↦ rfl
+
+instance [AddCommGroup R] : AddCommGroup ℍ[R,c₁,c₂,c₃] := by
+  apply (equivProd c₁ c₂ c₃).injective.addCommGroup <;> intros <;> rfl
+
 @[simp, norm_cast]
 theorem coe_smul [Zero R] [SMulZeroClass S R] (s : S) (r : R) :
     (↑(s • r) : ℍ[R,c₁,c₂,c₃]) = s • (r : ℍ[R,c₁,c₂,c₃]) :=
   QuaternionAlgebra.ext rfl (smul_zero _).symm (smul_zero _).symm (smul_zero _).symm
 
-instance [AddCommGroup R] : AddCommGroup ℍ[R,c₁,c₂,c₃] :=
-  (equivProd c₁ c₂ c₃).injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+instance [Semiring S] [AddCommGroup R] [DistribMulAction S R] : DistribMulAction S ℍ[R,c₁,c₂,c₃] :=
+  (addEquivProd ..).injective.distribMulAction (addEquivProd c₁ c₂ c₃).toAddMonoidHom fun _ _ ↦ rfl
+
+instance [Semiring S] [AddCommGroup R] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] :=
+  (addEquivProd ..).injective.module _ (addEquivProd c₁ c₂ c₃).toAddMonoidHom fun _ _ ↦ rfl
 
 section AddCommGroupWithOne
 variable [AddCommGroupWithOne R]
@@ -490,8 +518,6 @@ lemma coe_ofNat {n : ℕ} [n.AtLeastTwo] :
     ((ofNat(n) : R) : ℍ[R,c₁,c₂,c₃]) = (ofNat(n) : ℍ[R,c₁,c₂,c₃]) :=
   rfl
 
--- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
--- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
   algebraMap :=
   { toFun s := coe (algebraMap S R s)
@@ -508,11 +534,8 @@ theorem algebraMap_eq (r : R) : algebraMap R ℍ[R,c₁,c₂,c₃] r = ⟨r, 0, 
 theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂,c₃] : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
 
-instance [NoZeroDivisors R] : NoZeroSMulDivisors R ℍ[R,c₁,c₂,c₃] := ⟨by
-  rintro t ⟨a, b, c, d⟩ h
-  rw [or_iff_not_imp_left]
-  intro ht
-  simpa [QuaternionAlgebra.ext_iff, ht] using h⟩
+instance : IsTorsionFree R ℍ[R,c₁,c₂,c₃] :=
+ (addEquivProd ..).injective.moduleIsTorsionFree _ fun _ _ ↦ rfl
 
 section
 
@@ -547,13 +570,7 @@ def imKₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   map_smul' _ _ := rfl
 
 /-- `QuaternionAlgebra.equivTuple` as a linear equivalence. -/
-def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R :=
-  LinearEquiv.symm -- proofs are not `rfl` in the forward direction
-    { (equivTuple c₁ c₂ c₃).symm with
-      toFun := (equivTuple c₁ c₂ c₃).symm
-      invFun := equivTuple c₁ c₂ c₃
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl }
+def linearEquivTuple : ℍ[R,c₁,c₂,c₃] ≃ₗ[R] Fin 4 → R := (equivTuple ..).linearEquiv _
 
 @[simp]
 theorem coe_linearEquivTuple :
@@ -650,7 +667,7 @@ theorem star_mk (a₁ a₂ a₃ a₄ : R) : star (mk a₁ a₂ a₃ a₄ : ℍ[R
 
 instance instStarRing : StarRing ℍ[R,c₁,c₂,c₃] where
   star_involutive x := by simp [Star.star]
-  star_add a b := by ext <;> simp [add_comm] ; ring
+  star_add a b := by ext <;> simp [add_comm]; ring
   star_mul a b := by ext <;> simp <;> ring
 
 theorem self_add_star' : a + star a = ↑(2 * a.re + c₂ * a.imI) := by ext <;> simp [two_mul]; ring
@@ -781,6 +798,15 @@ instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower 
 
 instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
   inferInstanceAs <| SMulCommClass S T ℍ[R,-1,0,-1]
+
+instance [Monoid S] [MulAction S R] : MulAction S ℍ[R] :=
+  inferInstanceAs <| MulAction S ℍ[R,-1,0,-1]
+
+instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R] :=
+  inferInstanceAs <| DistribMulAction S ℍ[R,-1,0,-1]
+
+instance [Semiring S] [Module S R] : Module S ℍ[R] :=
+  inferInstanceAs <| Module S ℍ[R,-1,0,-1]
 
 protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,0,-1]
@@ -1120,6 +1146,7 @@ theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
 theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
   QuaternionAlgebra.finrank_eq_four _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem re_star : (star a).re = a.re := by
   rw [QuaternionAlgebra.re_star, zero_mul, add_zero]
 

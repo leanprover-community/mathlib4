@@ -68,8 +68,8 @@ instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsSca
 instance inhabited : Inhabited (M ⧸ N) :=
   ⟨0⟩
 
-/-- Map sending an element of `M` to the corresponding element of `M/N`, when `N` is a
-lie_submodule of the lie_module `N`. -/
+/-- Map sending an element of `M` to the corresponding element of `M ⧸ N`, when `N` is a
+Lie submodule of the Lie module `M`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
@@ -216,6 +216,7 @@ variable {R L L' : Type*}
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 variable (f : L →ₗ⁅R⁆ L')
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The first isomorphism theorem for morphisms of Lie algebras. -/
 @[simps]
 noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=

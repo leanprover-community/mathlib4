@@ -108,8 +108,6 @@ instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [Subsemiring
   Subtype.coe_injective.semiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-@[deprecated (since := "2025-07-29")] alias coe_pow := SubmonoidClass.coe_pow
-
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
     CommSemiring s := fast_instance%
@@ -137,6 +135,8 @@ namespace Subsemiring
 instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+instance : PartialOrder (Subsemiring R) := .ofSetLike (Subsemiring R) R
 
 initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 

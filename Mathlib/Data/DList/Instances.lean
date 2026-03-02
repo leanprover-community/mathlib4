@@ -39,7 +39,4 @@ instance : Traversable DList :=
 instance : LawfulTraversable DList :=
   Equiv.isLawfulTraversable DList.listEquivDList
 
-instance {α} : Inhabited (DList α) :=
-  ⟨DList.empty⟩
-
 end Batteries

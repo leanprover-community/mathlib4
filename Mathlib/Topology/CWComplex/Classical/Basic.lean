@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Logic.Equiv.PartialEquiv
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 # CW complexes
@@ -149,6 +148,7 @@ class CWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) where
   /-- The union of all closed cells equals `C`. Use `CWComplex.union` instead. -/
   protected union' : ⋃ (n : ℕ) (j : cell n), map n j '' closedBall 0 1 = C
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps -isSimp]
 instance (priority := high) CWComplex.instRelCWComplex {X : Type*} [TopologicalSpace X] (C : Set X)
     [CWComplex C] : RelCWComplex C ∅ where
@@ -268,6 +268,7 @@ lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cel
     map n i 0 ∈ closedCell n i :=
   openCell_subset_closedCell _ _ (map_zero_mem_openCell _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is an auxiliary lemma used to prove `RelCWComplex.eq_of_eq_union_iUnion`. -/
 private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : Π n, Set (cell C n))
     (hIJ : D ∪ ⋃ (n : ℕ) (j : I n), openCell (C := C) n j =
@@ -280,7 +281,7 @@ private lemma RelCWComplex.subset_of_eq_union_iUnion [RelCWComplex C D] (I J : �
       (subset_iUnion_of_subset n (subset_iUnion_of_subset ⟨i, hi⟩ (subset_refl (openCell n i)))) D
   have h' : Disjoint (openCell n i) (D ∪ ⋃ n, ⋃ (j : J n), openCell (C := C) n j) := by
     simp_rw [disjoint_union_right, disjoint_iUnion_right]
-    exact ⟨disjointBase n i, fun m j ↦ disjoint_openCell_of_ne (by aesop)⟩
+    exact ⟨disjointBase n i, fun m j ↦ disjoint_openCell_of_ne (by lia)⟩
   rw [disjoint_of_subset_iff_left_eq_empty h] at h'
   exact notMem_empty _ (h' ▸ map_zero_mem_openCell n i)
 
@@ -420,6 +421,7 @@ lemma RelCWComplex.eq_of_not_disjoint_openCell [RelCWComplex C D] {n : ℕ} {j :
   contrapose! h
   exact disjoint_openCell_of_ne h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RelCWComplex.disjoint_base_iUnion_openCell [RelCWComplex C D] :
     Disjoint D (⋃ (n : ℕ) (j : cell C n), openCell n j) := by
   simp_rw [disjoint_iff_inter_eq_empty, inter_iUnion, iUnion_eq_empty]
@@ -572,6 +574,8 @@ instance : SetLike (Subcomplex C) X where
     rw [hE, hF]
     simpa using h
 
+instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
+
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 
 lemma mem_carrier {E : Subcomplex C} {x : X} : x ∈ E.carrier ↔ x ∈ (E : Set X) := Iff.rfl
@@ -628,6 +632,7 @@ lemma CWComplex.Subcomplex.union {C : Set X} [CWComplex C] {E : Subcomplex C} :
   rw [empty_union] at this
   exact this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An alternative version of `Subcomplex.mk`: Instead of requiring that `E` is closed it requires
 that for every cell of the subcomplex the corresponding closed cell is a subset of `E`. -/
 @[simps -isSimp]
@@ -889,6 +894,7 @@ lemma CWComplex.exists_mem_openCell_of_mem_skeleton [CWComplex C] {n : ℕ∞} {
     x ∈ skeleton C n ↔ ∃ (m : ℕ) (_ : m ≤ n) (j : cell C m), x ∈ openCell m j := by
   rw [RelCWComplex.mem_skeleton_iff, mem_empty_iff_false, false_or]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A skeleton and an open cell of a higher dimension are disjoint. -/
 lemma RelCWComplex.disjoint_skeletonLT_openCell [RelCWComplex C D] {n : ℕ∞} {m : ℕ}
     {j : cell C m} (hnm : n ≤ m) : Disjoint (skeletonLT C n : Set X) (openCell m j) := by
@@ -925,6 +931,7 @@ lemma RelCWComplex.skeleton_inter_closedCell_eq_skeleton_inter_cellFrontier [Rel
 
 end skeleton
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RelCWComplex.disjoint_interior_base_closedCell [T2Space X] [RelCWComplex C D] {n : ℕ}
     {j : cell C n} : Disjoint (interior D) (closedCell n j) := by
   rw [disjoint_iff_inter_eq_empty]
@@ -936,6 +943,7 @@ lemma RelCWComplex.disjoint_interior_base_closedCell [T2Space X] [RelCWComplex C
     rwa [(disjoint_skeletonLT_openCell n.cast_nonneg').inter_eq] at this
   exact ⟨(skeletonLT C 0).base_subset (interior_subset xmemD), xmemcell⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma RelCWComplex.disjoint_interior_base_iUnion_closedCell [T2Space X] [RelCWComplex C D] :
     Disjoint (interior D) (⋃ (n : ℕ) (j : cell C n), closedCell n j) := by
   simp_rw [disjoint_iff_inter_eq_empty, inter_iUnion, disjoint_interior_base_closedCell.inter_eq,

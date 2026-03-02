@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Linear.Yoneda
 /-!
 # Ext
 
-We define `Ext R C n : Cᵒᵖ ⥤ C ⥤ Module R` for any `R`-linear abelian category `C`
+We define `Ext R C n : Cᵒᵖ ⥤ C ⥤ ModuleCat R` for any `R`-linear abelian category `C`
 by (left) deriving in the first argument of the bifunctor `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`.
 
 ## Implementation
@@ -33,7 +33,7 @@ noncomputable section
 
 open CategoryTheory Limits
 
-variable (R : Type*) [Ring R] (C : Type*) [Category C] [Abelian C] [Linear R C]
+variable (R : Type*) [Ring R] (C : Type*) [Category* C] [Abelian C] [Linear R C]
   [EnoughProjectives C]
 
 /-- `Ext R C n` is defined by deriving in

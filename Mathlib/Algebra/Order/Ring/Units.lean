@@ -10,7 +10,7 @@ public import Mathlib.GroupTheory.Index
 
 /-! # Lemmas about units of ordered rings -/
 
-@[expose] public section
+public section
 
 lemma Units.index_posSubgroup (R : Type*) [Ring R] [LinearOrder R] [IsStrictOrderedRing R] :
     (posSubgroup R).index = 2 := by

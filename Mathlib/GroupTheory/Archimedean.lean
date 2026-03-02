@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Order
 public import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Algebra.Order.Group.Basic
 
 /-!
 # Archimedean groups
@@ -33,7 +34,7 @@ The result is also used in `Topology.Instances.Real` as an ingredient in the cla
 subgroups of `ℝ`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Finset
 
@@ -91,7 +92,7 @@ theorem Subgroup.exists_isLeast_one_lt {H : Subgroup G} (hbot : H ≠ ⊥) {a : 
   rcases lt_or_ge m n with hmn | hnm
   · exact hmin m hmn ⟨y, hyH, hm, hya⟩
   · refine disjoint_left.1 hd (div_mem hxH hyH) ⟨one_lt_div'.2 hxy, div_lt_iff_lt_mul'.2 ?_⟩
-    calc x ≤ a^ (n + 1) := hxn
+    calc x ≤ a ^ (n + 1) := hxn
     _ ≤ a ^ (m + 1) := by grw [hnm]; exact h₀.le
     _ = a ^ m * a := pow_succ _ _
     _ < y * a := by gcongr
@@ -107,6 +108,7 @@ theorem Subgroup.cyclic_of_isolated_one {H : Subgroup G} {a : G} (h₀ : 1 < a)
   · exact ⟨1, closure_singleton_one.symm⟩
   · exact (exists_isLeast_one_lt hbot h₀ hd).imp fun _ => cyclic_of_min
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every subgroup of `ℤ` is cyclic. -/
 theorem Int.subgroup_cyclic (H : AddSubgroup ℤ) : ∃ a, H = AddSubgroup.closure {a} :=
   have : Ioo (0 : ℤ) 1 = ∅ := eq_empty_of_forall_notMem fun _ hm =>

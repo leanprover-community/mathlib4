@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Exact
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
-public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.Order.KrullDimension
 public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 
@@ -148,6 +148,7 @@ variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R 
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
 
+set_option backward.isDefEq.respectTransparency false in
 include hf hg H in
 /-- Length is additive in exact sequences. -/
 lemma Module.length_eq_add_of_exact :
@@ -209,6 +210,7 @@ lemma Module.length_pi_of_fintype : ∀ {ι : Type*} [Fintype ι]
     rw [(LinearEquiv.piOptionEquivProd _).length_eq, Module.length_prod, IH, add_comm,
       Fintype.sum_option, add_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Module.length_finsupp {ι : Type*} :
     Module.length R (ι →₀ M) = ENat.card ι * Module.length R M := by
@@ -258,7 +260,7 @@ variable (R M) in
 lemma Module.length_of_free_of_finite
     [StrongRankCondition R] [Module.Free R M] [Module.Finite R M] :
     Module.length R M = Module.finrank R M * Module.length R R := by
-  rw [length_of_free, Cardinal.toENat_eq_nat.mpr (finrank_eq_rank _ _).symm]
+  rw [length_of_free, Cardinal.toENat_eq_natCast.mpr (finrank_eq_rank _ _).symm]
 
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by

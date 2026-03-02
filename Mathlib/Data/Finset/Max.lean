@@ -44,7 +44,7 @@ theorem max_eq_sup_withBot (s : Finset α) : s.max = sup s (↑) :=
 theorem max_empty : (∅ : Finset α).max = ⊥ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem max_insert {a : α} {s : Finset α} : (insert a s).max = max ↑a s.max :=
   fold_insert_idem
 
@@ -73,15 +73,7 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
   induction s using Finset.induction_on with
   | empty => intro _ H; cases H
-  | insert b s _ ih =>
-    intro a h
-    by_cases p : b = a
-    · induction p
-      exact mem_insert_self b s
-    · rcases max_choice (↑b) s.max with q | q <;> rw [max_insert, q] at h
-      · cases h
-        cases p rfl
-      · exact mem_insert_of_mem (ih h)
+  | _ => grind [WithBot.coe_eq_coe]
 
 theorem le_max {a : α} {s : Finset α} (as : a ∈ s) : ↑a ≤ s.max :=
   le_sup as
@@ -89,15 +81,11 @@ theorem le_max {a : α} {s : Finset α} (as : a ∈ s) : ↑a ≤ s.max :=
 theorem notMem_of_max_lt_coe {a : α} {s : Finset α} (h : s.max < a) : a ∉ s :=
   mt le_max h.not_ge
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_max_lt_coe := notMem_of_max_lt_coe
-
 theorem le_max_of_eq {s : Finset α} {a b : α} (h₁ : a ∈ s) (h₂ : s.max = b) : a ≤ b :=
   WithBot.coe_le_coe.mp <| (le_max h₁).trans h₂.le
 
 theorem notMem_of_max_lt {s : Finset α} {a b : α} (h₁ : b < a) (h₂ : s.max = ↑b) : a ∉ s :=
   Finset.notMem_of_max_lt_coe <| h₂.trans_lt <| WithBot.coe_lt_coe.mpr h₁
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_max_lt := notMem_of_max_lt
 
 theorem max_union {s t : Finset α} : (s ∪ t).max = s.max ⊔ t.max := sup_union
 
@@ -117,12 +105,14 @@ protected lemma max_le_iff {m : WithBot α} {s : Finset α} : s.max ≤ m ↔ �
 protected lemma max_eq_top [OrderTop α] {s : Finset α} : s.max = ⊤ ↔ ⊤ ∈ s :=
   Finset.sup_eq_top_iff.trans <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `s` be a finset in a linear order. Then `s.min` is the minimum of `s` if `s` is not empty,
 and `⊤` otherwise. It belongs to `WithTop α`. If you want to get an element of `α`, see
 `s.min'`. -/
 protected def min (s : Finset α) : WithTop α :=
   inf s (↑)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem min_eq_inf_withTop (s : Finset α) : s.min = inf s (↑) :=
   rfl
 
@@ -143,6 +133,7 @@ lemma min_pair (a b : α) :
     Finset.min {a, b} = min (↑a) (↑b) := by
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem min_of_mem {s : Finset α} {a : α} (h : a ∈ s) : ∃ b : α, s.min = b :=
   let ⟨b, h, _⟩ := WithTop.le_iff_forall.1 (inf_le (α := WithTop α) h) _ rfl; ⟨b, h⟩
 
@@ -157,13 +148,12 @@ theorem min_eq_top {s : Finset α} : s.min = ⊤ ↔ s = ∅ := by
 theorem mem_of_min {s : Finset α} : ∀ {a : α}, s.min = a → a ∈ s :=
   @mem_of_max αᵒᵈ _ s
 
+set_option backward.isDefEq.respectTransparency false in
 theorem min_le {a : α} {s : Finset α} (as : a ∈ s) : s.min ≤ a :=
   inf_le as
 
 theorem notMem_of_coe_lt_min {a : α} {s : Finset α} (h : ↑a < s.min) : a ∉ s :=
   mt min_le h.not_ge
-
-@[deprecated (since := "2025-05-23")] alias not_mem_of_coe_lt_min := notMem_of_coe_lt_min
 
 theorem min_le_of_eq {s : Finset α} {a b : α} (h₁ : b ∈ s) (h₂ : s.min = a) : a ≤ b :=
   WithTop.coe_le_coe.mp <| h₂.ge.trans (min_le h₁)
@@ -171,17 +161,19 @@ theorem min_le_of_eq {s : Finset α} {a b : α} (h₁ : b ∈ s) (h₂ : s.min =
 theorem notMem_of_lt_min {s : Finset α} {a b : α} (h₁ : a < b) (h₂ : s.min = ↑b) : a ∉ s :=
   Finset.notMem_of_coe_lt_min <| (WithTop.coe_lt_coe.mpr h₁).trans_eq h₂.symm
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_min := notMem_of_lt_min
-
+set_option backward.isDefEq.respectTransparency false in
 theorem min_union {s t : Finset α} : (s ∪ t).min = s.min ⊓ t.min := inf_union
 
+set_option backward.isDefEq.respectTransparency false in
 @[gcongr]
 theorem min_mono {s t : Finset α} (st : s ⊆ t) : t.min ≤ s.min :=
   inf_mono st
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem le_min {m : WithTop α} {s : Finset α} (st : ∀ a : α, a ∈ s → m ≤ a) : m ≤ s.min :=
   Finset.le_inf st
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected theorem le_min_iff {m : WithTop α} {s : Finset α} : m ≤ s.min ↔ ∀ a ∈ s, m ≤ a :=
   Finset.le_inf_iff
@@ -272,7 +264,7 @@ theorem min'_lt_max' {i j} (H1 : i ∈ s) (H2 : j ∈ s) (H3 : i ≠ j) :
 `min'_lt_max'` which is sometimes more convenient.
 -/
 theorem min'_lt_max'_of_card (h₂ : 1 < card s) :
-    s.min' (Finset.card_pos.1 <| by cutsat) < s.max' (Finset.card_pos.1 <| by cutsat) := by
+    s.min' (Finset.card_pos.1 <| by lia) < s.max' (Finset.card_pos.1 <| by lia) := by
   rcases one_lt_card.1 h₂ with ⟨a, ha, b, hb, hab⟩
   exact s.min'_lt_max' ha hb hab
 
@@ -286,6 +278,7 @@ theorem map_ofDual_min (s : Finset αᵒᵈ) : s.min.map ofDual = (s.image ofDua
   rw [max_eq_sup_withBot, sup_image]
   exact congr_fun WithBot.map_id _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_ofDual_max (s : Finset αᵒᵈ) : s.max.map ofDual = (s.image ofDual).min := by
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun WithTop.map_id _
@@ -294,6 +287,7 @@ theorem map_toDual_min (s : Finset α) : s.min.map toDual = (s.image toDual).max
   rw [max_eq_sup_withBot, sup_image]
   exact congr_fun WithBot.map_id _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min := by
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun WithTop.map_id _
@@ -302,10 +296,12 @@ theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
   simp [min'_eq_inf', max'_eq_sup']
@@ -405,10 +401,10 @@ theorem min'_erase_ne_self {s : Finset α} (s0 : (s.erase x).Nonempty) : (s.eras
   ne_of_mem_erase (min'_mem _ s0)
 
 theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
-  by_cases s0 : (s.erase x).Nonempty
+  by_cases! s0 : (s.erase x).Nonempty
   · refine ne_of_eq_of_ne (coe_max' s0).symm ?_
     exact WithBot.coe_eq_coe.not.mpr (max'_erase_ne_self _)
-  · rw [not_nonempty_iff_eq_empty.mp s0, max_empty]
+  · rw [s0, max_empty]
     exact WithBot.bot_ne_coe
 
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
@@ -426,6 +422,7 @@ theorem exists_next_left {x : α} {s : Finset α} (h : ∃ y ∈ s, y < x) :
     ∃ y ∈ s, y < x ∧ ∀ z ∈ s, z < x → z ≤ y :=
   @exists_next_right αᵒᵈ _ x s h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If finsets `s` and `t` are interleaved, then `Finset.card s ≤ Finset.card t + 1`. -/
 theorem card_le_of_interleaved {s t : Finset α}
     (h : ∀ᵉ (x ∈ s) (y ∈ s),

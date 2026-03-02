@@ -18,7 +18,7 @@ The lemmas in this file require at least one of the following of the Lebesgue in
 * The measure is finite, s-finite or sigma-finite
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
@@ -140,6 +140,7 @@ theorem lintegral_countable [MeasurableSingletonClass α] (f : α → ℝ≥0∞
       (lintegral_biUnion hs (fun _ _ => measurableSet_singleton _) (pairwiseDisjoint_fiber id s) _)
     _ = ∑' a : s, f a * μ {(a : α)} := by simp only [lintegral_singleton]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lintegral_insert [MeasurableSingletonClass α] {a : α} {s : Set α} (h : a ∉ s)
     (f : α → ℝ≥0∞) : ∫⁻ x in insert a s, f x ∂μ = f a * μ {a} + ∫⁻ x in s, f x ∂μ := by
   rw [← union_singleton, lintegral_union (measurableSet_singleton a), lintegral_singleton,
@@ -188,7 +189,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
   -- we can choose a measurable function $g_{n}$
   -- such that $g_{n}(x) ≤ \min (f(x), n)$ for all $x$
   -- and both sides have the same integral over the whole space w.r.t. $μ$.
-  have (n : ℕ): ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ g ≤ n ∧
+  have (n : ℕ) : ∃ g : α → ℝ≥0∞, Measurable g ∧ g ≤ f ∧ g ≤ n ∧
       ∫⁻ a, min (f a) n ∂μ = ∫⁻ a, g a ∂μ := by
     simpa [and_assoc] using exists_measurable_le_lintegral_eq μ (f ⊓ n)
   choose g hgm hgf hgle hgint using this

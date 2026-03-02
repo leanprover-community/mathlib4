@@ -88,6 +88,7 @@ theorem integralSum_biUnionTagged (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[
   refine (π.sum_biUnion_boxes _ _).trans <| sum_congr rfl fun J hJ => sum_congr rfl fun J' hJ' => ?_
   rw [π.tag_biUnionTagged hJ hJ']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integralSum_biUnion_partition (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F)
     (π : TaggedPrepartition I) (πi : ∀ J, Prepartition J) (hπi : ∀ J ∈ π, (πi J).IsPartition) :
     integralSum f vol (π.biUnionPrepartition πi) = integralSum f vol π := by
@@ -143,7 +144,7 @@ theorem integralSum_neg (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (�
 @[simp]
 theorem integralSum_smul (c : ℝ) (f : ℝⁿ → E) (vol : ι →ᵇᵃ E →L[ℝ] F) (π : TaggedPrepartition I) :
     integralSum (c • f) vol π = c • integralSum f vol π := by
-  simp only [integralSum, Finset.smul_sum, Pi.smul_apply, ContinuousLinearMap.map_smul]
+  simp only [integralSum, Finset.smul_sum, Pi.smul_apply, map_smul]
 
 variable [Fintype ι]
 
@@ -281,6 +282,7 @@ theorem integral_sub (hf : Integrable I l f vol) (hg : Integrable I l g vol) :
     integral I l (f - g) vol = integral I l f vol - integral I l g vol :=
   (hf.hasIntegral.sub hg.hasIntegral).integral_eq
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasIntegral_const (c : E) : HasIntegral I l (fun _ => c) vol (vol I c) :=
   tendsto_const_nhds.congr' <| (l.eventually_isPartition I).mono fun _π hπ => Eq.symm <|
     (vol.map ⟨⟨fun g : E →L[ℝ] F ↦ g c, rfl⟩, fun _ _ ↦ rfl⟩).sum_partition_boxes le_top hπ
@@ -646,7 +648,8 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
   let μ' := μ.restrict (Box.Icc I)
   have μ'D : μ' D = 0 := by
     rcases eventually_iff_exists_mem.1 hc with ⟨V, ae, hV⟩
-    exact eq_of_le_of_not_lt (mem_ae_iff.1 ae ▸ (μ'.mono <| fun x h xV ↦ h.2 (hV x xV))) not_lt_zero
+    exact eq_of_le_of_not_lt (mem_ae_iff.1 ae ▸ (μ'.mono <| fun x h xV ↦ h.2 (hV x xV)))
+      _root_.not_lt_zero
   obtain ⟨U, UD, Uopen, hU⟩ := Set.exists_isOpen_lt_add D (show μ' D ≠ ⊤ by simp [μ'D]) ε₂0'
   rw [μ'D, zero_add] at hU
   /- Box.Icc I \ U is compact and avoids discontinuities of f, so there exists r > 0 such that for
@@ -681,19 +684,19 @@ theorem integrable_of_bounded_and_ae_continuousWithinAt [CompleteSpace E] {I : B
      the contribution of J to the overall sum. -/
   · have : ∀ J ∈ B \ B', ‖μ.toBoxAdditive J • (f (t₁ J) - f (t₂ J))‖ ≤ μ.toBoxAdditive J * ε₁ := by
       intro J hJ
-      rw [mem_sdiff, B.mem_filter, not_and] at hJ
+      rw [Finset.mem_sdiff, B.mem_filter, not_and] at hJ
       rw [norm_smul, μ.toBoxAdditive_apply, Real.norm_of_nonneg measureReal_nonneg]
       gcongr _ * ?_
       obtain ⟨x, xJ, xnU⟩ : ∃ x ∈ J, x ∉ U := Set.not_subset.1 (hJ.2 hJ.1)
       have hx : x ∈ Box.Icc I \ U := ⟨Box.coe_subset_Icc ((le_of_mem' _ J hJ.1) xJ), xnU⟩
-      have ineq : edist (f (t₁ J)) (f (t₂ J)) ≤ EMetric.diam (f '' (ball x r ∩ (Box.Icc I))) := by
-        apply edist_le_diam_of_mem <;>
+      have ineq : edist (f (t₁ J)) (f (t₂ J)) ≤ ediam (f '' (ball x r ∩ (Box.Icc I))) := by
+        apply edist_le_ediam_of_mem <;>
           refine Set.mem_image_of_mem f ⟨?_, tag_mem_Icc _ J⟩ <;>
           refine closedBall_subset_ball (div_two_lt_of_pos r0) <| mem_closedBall_comm.1 ?_
         · exact h₁.isSubordinate.infPrepartition π₂.toPrepartition J hJ.1 (Box.coe_subset_Icc xJ)
         · exact h₂.isSubordinate.infPrepartition π₁.toPrepartition J
             ((π₁.mem_infPrepartition_comm).1 hJ.1) (Box.coe_subset_Icc xJ)
-      rw [← emetric_ball] at ineq
+      rw [← Metric.eball_ofReal] at ineq
       simpa only [edist_le_ofReal (le_of_lt ε₁0), dist_eq_norm, hJ.1] using ineq.trans (hr x hx)
     refine (norm_sum_le _ _).trans <| (sum_le_sum this).trans ?_
     rw [← sum_mul]

@@ -16,7 +16,7 @@ Some of the main results include
 
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -73,7 +73,7 @@ theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degr
   lt_of_not_ge fun hlt => by
     have := eq_C_of_degree_le_zero hlt
     rw [IsRoot, this, eval_C] at h
-    simp only [h, RingHom.map_zero] at this
+    simp only [h, map_zero] at this
     exact hp this
 
 theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < N → p.coeff N = 0 := by
@@ -108,7 +108,7 @@ theorem natDegree_C_mul_eq_of_mul_eq_one {ai : R} (au : ai * a = 1) :
   le_antisymm (natDegree_C_mul_le a p)
     (calc
       p.natDegree = (1 * p).natDegree := by nth_rw 1 [← one_mul p]
-      _ = (C ai * (C a * p)).natDegree := by rw [← C_1, ← au, RingHom.map_mul, ← mul_assoc]
+      _ = (C ai * (C a * p)).natDegree := by rw [← C_1, ← au, map_mul, ← mul_assoc]
       _ ≤ (C a * p).natDegree := natDegree_C_mul_le ai (C a * p))
 
 theorem natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
@@ -116,7 +116,7 @@ theorem natDegree_mul_C_eq_of_mul_eq_one {ai : R} (au : a * ai = 1) :
   le_antisymm (natDegree_mul_C_le p a)
     (calc
       p.natDegree = (p * 1).natDegree := by nth_rw 1 [← mul_one p]
-      _ = (p * C a * C ai).natDegree := by rw [← C_1, ← au, RingHom.map_mul, ← mul_assoc]
+      _ = (p * C a * C ai).natDegree := by rw [← C_1, ← au, map_mul, ← mul_assoc]
       _ ≤ (p * C a).natDegree := natDegree_mul_C_le (p * C a) ai)
 
 /-- Although not explicitly stated, the assumptions of lemma `natDegree_mul_C_eq_of_mul_ne_zero`
@@ -147,9 +147,6 @@ theorem natDegree_add_coeff_mul (f g : R[X]) :
 theorem natDegree_lt_coeff_mul (h : p.natDegree + q.natDegree < m + n) :
     (p * q).coeff (m + n) = 0 :=
   coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt h)
-
-@[deprecated (since := "2025-08-14")] alias coeff_mul_of_natDegree_le :=
-  coeff_mul_add_eq_of_natDegree_le
 
 theorem coeff_pow_of_natDegree_le (pn : p.natDegree ≤ n) :
     (p ^ m).coeff (m * n) = p.coeff n ^ m := by
@@ -242,7 +239,7 @@ theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) 
   lt_of_not_ge fun hlt => by
     have A : p = C (p.coeff 0) := eq_C_of_natDegree_le_zero hlt
     rw [A, eval₂_C] at hz
-    simp only [inj (p.coeff 0) hz, RingHom.map_zero] at A
+    simp only [inj (p.coeff 0) hz, map_zero] at A
     exact hp A
 
 theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
@@ -258,7 +255,7 @@ theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n 
 @[simp]
 theorem degree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     degree (map f p) = degree p ↔ f (leadingCoeff p) ≠ 0 ∨ p = 0 := by
-  rcases eq_or_ne p 0 with h|h
+  rcases eq_or_ne p 0 with h | h
   · simp [h]
   simp only [h, or_false]
   refine ⟨fun h2 ↦ ?_, degree_map_eq_of_leadingCoeff_ne_zero f⟩
@@ -270,7 +267,7 @@ theorem degree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
 @[simp]
 theorem natDegree_map_eq_iff {f : R →+* S} {p : Polynomial R} :
     natDegree (map f p) = natDegree p ↔ f (p.leadingCoeff) ≠ 0 ∨ natDegree p = 0 := by
-  rcases eq_or_ne (natDegree p) 0 with h|h
+  rcases eq_or_ne (natDegree p) 0 with h | h
   · simp_rw [h, ne_eq, or_true, iff_true, ← Nat.le_zero, ← h, natDegree_map_le]
   simp_all [natDegree, WithBot.unbotD_eq_unbotD_iff]
 
@@ -418,6 +415,10 @@ end NoZeroDivisors
   rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
   simp [((Commute.neg_one_left _).pow_left _).eq, h]
 
+@[simp]
+theorem comp_neg_X_eq_zero_iff [Ring R] {p : R[X]} : p.comp (-X) = 0 ↔ p = 0 := by
+  simp [← leadingCoeff_eq_zero]
+
 lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
     p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q = C (q.coeff 0) := by
   refine ⟨fun h ↦ ?_, Or.rec (fun h ↦ by simp [h]) fun h ↦ by rw [h.2, comp_C, h.1, C_0]⟩
@@ -428,6 +429,24 @@ lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
     exact Or.inl (key.trans h)
   · rw [key, comp_C, C_eq_zero] at h
     exact Or.inr ⟨h, key⟩
+
+lemma degree_comp [Semiring R] [NoZeroDivisors R] {p q : R[X]} (hq : 0 < q.degree) :
+    (p.comp q).degree = p.degree * q.degree := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · rw [zero_comp, degree_zero, WithBot.bot_mul']
+    simp [hq.ne']
+  rw [degree_eq_natDegree hp, degree_eq_natDegree (ne_zero_of_degree_gt hq), ← Nat.cast_mul,
+    ← natDegree_comp]
+  apply degree_eq_natDegree
+  simp_rw [Ne, comp_eq_zero_iff, hp, false_or, not_and_or, ← degree_le_zero_iff]
+  simp [hq]
+
+@[simp] lemma degree_comp_neg_X [Ring R] {p : R[X]} : (p.comp (-X)).degree = p.degree := by
+  nontriviality R
+  rcases eq_or_ne p 0 with rfl | hp
+  · rw [zero_comp]
+  rw [degree_eq_natDegree (by simp [hp]), degree_eq_natDegree hp, Nat.cast_inj,
+    natDegree_comp_eq_of_mul_ne_zero (by simp [hp]), natDegree_neg, natDegree_X, mul_one]
 
 section DivisionRing
 

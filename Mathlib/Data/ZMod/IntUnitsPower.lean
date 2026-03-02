@@ -57,7 +57,7 @@ variable {R : Type*} [CommSemiring R] [Module R (Additive ℤˣ)]
 
 /-- There is a canonical power operation on `ℤˣ` by `R` if `Additive ℤˣ` is an `R`-module.
 
-In lemma names, this operations is called `uzpow` to match `zpow`.
+In lemma names, this operation is called `uzpow` to match `zpow`.
 
 Notably this is satisfied by `R ∈ {ℕ, ℤ, ZMod 2}`. -/
 instance Int.instUnitsPow : Pow ℤˣ R where
@@ -72,6 +72,7 @@ example : Int.instUnitsPow = DivInvMonoid.toZPow := rfl
 
 @[simp] lemma toMul_uzpow (u : Additive ℤˣ) (r : R) : (r • u).toMul = u.toMul ^ r := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma uzpow_natCast (u : ℤˣ) (n : ℕ) : u ^ (n : R) = u ^ n := by
   change ((n : R) • Additive.ofMul u).toMul = _
   rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
@@ -109,6 +110,7 @@ lemma uzpow_sub (s : ℤˣ) (x y : R) : s ^ (x - y) = s ^ x / s ^ y :=
 lemma uzpow_neg (s : ℤˣ) (x : R) : s ^ (-x) = (s ^ x)⁻¹ :=
   Additive.ofMul.injective <| neg_smul x (Additive.ofMul s)
 
+set_option backward.isDefEq.respectTransparency false in
 @[norm_cast] lemma uzpow_intCast (u : ℤˣ) (z : ℤ) : u ^ (z : R) = u ^ z := by
   change ((z : R) • Additive.ofMul u).toMul = _
   rw [Int.cast_smul_eq_zsmul, toMul_zsmul, toMul_ofMul]

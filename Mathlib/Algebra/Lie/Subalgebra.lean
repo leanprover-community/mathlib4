@@ -66,6 +66,8 @@ instance : SetLike (LieSubalgebra R L) L where
     congr
     exact SetLike.coe_injective' h
 
+instance : PartialOrder (LieSubalgebra R L) := .ofSetLike (LieSubalgebra R L) L
+
 instance : AddSubgroupClass (LieSubalgebra R L) L where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
@@ -400,6 +402,9 @@ theorem bot_coe : ((⊥ : LieSubalgebra R L) : Set L) = {0} :=
 theorem bot_toSubmodule : ((⊥ : LieSubalgebra R L) : Submodule R L) = ⊥ :=
   rfl
 
+@[simp] lemma toSubmodule_eq_bot (K : LieSubalgebra R L) : K.toSubmodule = ⊥ ↔ K = ⊥ := by
+  simp [← toSubmodule_inj]
+
 @[simp]
 theorem mem_bot (x : L) : x ∈ (⊥ : LieSubalgebra R L) ↔ x = 0 :=
   mem_singleton_iff
@@ -414,6 +419,9 @@ theorem top_coe : ((⊤ : LieSubalgebra R L) : Set L) = univ :=
 @[simp]
 theorem top_toSubmodule : ((⊤ : LieSubalgebra R L) : Submodule R L) = ⊤ :=
   rfl
+
+@[simp] lemma toSubmodule_eq_top (K : LieSubalgebra R L) : K.toSubmodule = ⊤ ↔ K = ⊤ := by
+  simp [← toSubmodule_inj]
 
 @[simp]
 theorem mem_top (x : L) : x ∈ (⊤ : LieSubalgebra R L) :=
@@ -494,7 +502,7 @@ instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   nsmul := nsmulRec
 
 instance : IsOrderedAddMonoid (LieSubalgebra R L) where
-  add_le_add_left _ _ := sup_le_sup_left
+  add_le_add_left _ _ := sup_le_sup_right
 
 instance : CanonicallyOrderedAdd (LieSubalgebra R L) where
   exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
@@ -515,10 +523,12 @@ theorem mem_inf (x : L) : x ∈ K ⊓ K' ↔ x ∈ K ∧ x ∈ K' := by
   rw [← mem_toSubmodule, ← mem_toSubmodule, ← mem_toSubmodule, inf_toSubmodule,
     Submodule.mem_inf]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_bot_iff : K = ⊥ ↔ ∀ x : L, x ∈ K → x = 0 := by
   rw [_root_.eq_bot_iff]
   exact Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance subsingleton_of_bot : Subsingleton (LieSubalgebra R (⊥ : LieSubalgebra R L)) := by
   apply subsingleton_of_bot_eq_top
   ext ⟨x, hx⟩; change x ∈ ⊥ at hx; rw [LieSubalgebra.mem_bot] at hx; subst hx
@@ -670,10 +680,12 @@ protected def gi : GaloisInsertion (lieSpan R L : Set L → LieSubalgebra R L) (
   le_l_u _ := subset_lieSpan
   choice_eq _ _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem span_empty : lieSpan R L (∅ : Set L) = ⊥ :=
   (LieSubalgebra.gi R L).gc.l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set L) = ⊤ :=
   eq_top_iff.2 <| SetLike.le_def.2 <| subset_lieSpan

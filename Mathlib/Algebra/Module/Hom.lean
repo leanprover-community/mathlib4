@@ -20,8 +20,7 @@ This file defines instances for `Module` on bundled `Hom` types.
 These are analogous to the instances in `Algebra.Module.Pi`, but for bundled instead of unbundled
 functions.
 
-We also define bundled versions of `(c • ·)` and `(· • ·)` as `AddMonoidHom.smulLeft` and
-`AddMonoidHom.smul`, respectively.
+We also define a bundled versions of `(· • ·)` as `AddMonoidHom.smul`.
 -/
 
 @[expose] public section
@@ -47,6 +46,7 @@ instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
   zero_smul _ := ext fun _ => zero_smul _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance instDomMulActModule
     {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :
     Module Sᵈᵐᵃ (M →+ M₂) where
@@ -112,10 +112,12 @@ end AddMonoid.End
 
 namespace AddMonoidHom
 
-/-- Scalar multiplication on the left as an additive monoid homomorphism. -/
-@[simps! -fullyApplied]
-protected def smulLeft [Monoid M] [AddMonoid A] [DistribMulAction M A] (c : M) : A →+ A :=
-  DistribMulAction.toAddMonoidHom _ c
+/-- Scalar multiplication on the left as an additive monoid homomorphism.
+
+See also the linear map version of this `Module.End.smulLeft`. -/
+@[simps! -fullyApplied, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
+protected def smulLeft [AddMonoid A] [DistribSMul M A] (c : M) : A →+ A :=
+  DistribSMul.toAddMonoidHom _ c
 
 /-- Scalar multiplication as a biadditive monoid homomorphism. We need `M` to be commutative
 to have addition on `M →+ M`. -/
@@ -123,6 +125,6 @@ protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M
   (Module.toAddMonoidEnd R M).toAddMonoidHom
 
 @[simp] theorem coe_smul' [Semiring R] [AddCommMonoid M] [Module R M] :
-    ⇑(.smul : R →+ M →+ M) = AddMonoidHom.smulLeft := rfl
+    ⇑(.smul : R →+ M →+ M) = DistribSMul.toAddMonoidHom _ := rfl
 
 end AddMonoidHom

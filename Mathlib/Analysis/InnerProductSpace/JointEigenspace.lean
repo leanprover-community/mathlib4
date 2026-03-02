@@ -39,7 +39,7 @@ symmetric operator, simultaneous eigenspaces, joint eigenspaces
 
 -/
 
-@[expose] public section
+public section
 
 open Module.End
 
@@ -84,6 +84,7 @@ variable [FiniteDimensional 𝕜 E]
 
 open IsFinitelySemisimple
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If A and B are commuting symmetric operators on a finite-dimensional inner product space
 then the eigenspaces of the restriction of B to any eigenspace of A exhaust that eigenspace. -/
 theorem iSup_eigenspace_inf_eigenspace_of_commute (hB : B.IsSymmetric) (hAB : Commute A B) :
@@ -109,7 +110,7 @@ space, the space decomposes as an internal direct sum of simultaneous eigenspace
 operators. -/
 theorem directSum_isInternal_of_commute (hA : A.IsSymmetric) (hB : B.IsSymmetric)
     (hAB : Commute A B) :
-    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)):= by
+    DirectSum.IsInternal (fun (i : 𝕜 × 𝕜) ↦ (eigenspace A i.2 ⊓ eigenspace B i.1)) := by
   apply (orthogonalFamily_eigenspace_inf_eigenspace hA hB).isInternal_iff.mpr
   rw [Submodule.orthogonal_eq_bot_iff, iSup_prod, iSup_comm]
   exact iSup_iSup_eigenspace_inf_eigenspace_eq_top_of_commute hA hB hAB

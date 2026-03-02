@@ -17,7 +17,8 @@ The `p`-adic valuation on `ℚ` is the difference of the multiplicities of `p` i
 denominator of `q`. This function obeys the standard properties of a valuation, with the appropriate
 assumptions on `p`. The `p`-adic valuations on `ℕ` and `ℤ` agree with that on `ℚ`.
 
-The valuation induces a norm on `ℚ`. This norm is defined in padicNorm.lean.
+The valuation induces a norm on `ℚ`. This norm is defined in
+`Mathlib/NumberTheory/Padics/PadicNorm.lean`.
 -/
 
 @[expose] public section
@@ -35,6 +36,7 @@ that `p^k` divides `n`. If `n = 0` or `p = 1`, then `padicValNat p q` defaults t
 def padicValNat (p : ℕ) (n : ℕ) : ℕ :=
   if h : p ≠ 1 ∧ 0 < n then Nat.find (finiteMultiplicity_iff.2 h) else 0
 
+set_option backward.isDefEq.respectTransparency false in
 theorem padicValNat_def' {n : ℕ} (hp : p ≠ 1) (hn : n ≠ 0) :
     padicValNat p n = multiplicity p n := by
   simp only [padicValNat, ne_eq, hp, not_false_eq_true, Nat.pos_iff_ne_zero.mpr hn, and_self,

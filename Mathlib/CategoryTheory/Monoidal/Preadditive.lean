@@ -25,7 +25,7 @@ open CategoryTheory.Limits
 
 open CategoryTheory.MonoidalCategory
 
-variable (C : Type*) [Category C] [Preadditive C] [MonoidalCategory C]
+variable (C : Type*) [Category* C] [Preadditive C] [MonoidalCategory C]
 
 /-- A category is `MonoidalPreadditive` if tensoring is additive in both factors.
 
@@ -74,7 +74,7 @@ instance tensoringRight_additive (X : C) : ((tensoringRight C).obj X).Additive w
 
 /-- A faithful additive monoidal functor to a monoidal preadditive category
 ensures that the domain is monoidal preadditive. -/
-theorem monoidalPreadditive_of_faithful {D} [Category D] [Preadditive D] [MonoidalCategory D]
+theorem monoidalPreadditive_of_faithful {D} [Category* D] [Preadditive D] [MonoidalCategory D]
     (F : D ⥤ C) [F.Monoidal] [F.Faithful] [F.Additive] :
     MonoidalPreadditive D :=
   { whiskerLeft_zero := by
@@ -112,6 +112,7 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
     (∑ j ∈ s, g j) ⊗ₘ f = ∑ j ∈ s, g j ⊗ₘ f := by
   simp only [tensorHom_def, sum_whiskerRight, Preadditive.sum_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 -- In a closed monoidal category, this would hold because
 -- `tensorLeft X` is a left adjoint and hence preserves all colimits.
 -- In any case it is true in any preadditive category.
@@ -125,6 +126,7 @@ instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
             simp only [tensorHom_comp_tensorHom, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
               IsBilimit.total i])⟩ } }
 
+set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
   preserves {J} :=
     let ⟨_⟩ := nonempty_fintype J
@@ -151,6 +153,7 @@ theorem leftDistributor_hom {J : Type} [Fintype J] (X : C) (f : J → C) :
   simp only [Preadditive.sum_comp, Category.assoc, biproduct.ι_π, comp_dite, comp_zero,
     Finset.sum_dite_eq', Finset.mem_univ, ite_true, eqToHom_refl, Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem leftDistributor_inv {J : Type} [Fintype J] (X : C) (f : J → C) :
     (leftDistributor X f).inv = ∑ j : J, biproduct.π _ j ≫ (X ◁ biproduct.ι f j) := by
   classical
@@ -219,6 +222,7 @@ theorem rightDistributor_hom {J : Type} [Fintype J] (f : J → C) (X : C) :
   simp only [Preadditive.sum_comp, Category.assoc, biproduct.ι_π, comp_dite, comp_zero,
     Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id, ite_true]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rightDistributor_inv {J : Type} [Fintype J] (f : J → C) (X : C) :
     (rightDistributor f X).inv = ∑ j : J, biproduct.π _ j ≫ (biproduct.ι f j ▷ X) := by
   classical

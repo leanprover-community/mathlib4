@@ -173,8 +173,6 @@ theorem one_le_count_iff_mem {a : α} {s : Multiset α} : 1 ≤ count a s ↔ a 
 theorem count_eq_zero_of_notMem {a : α} {s : Multiset α} (h : a ∉ s) : count a s = 0 :=
   by_contradiction fun h' => h <| count_pos.1 (Nat.pos_of_ne_zero h')
 
-@[deprecated (since := "2025-05-23")] alias count_eq_zero_of_not_mem := count_eq_zero_of_notMem
-
 lemma count_ne_zero {a : α} : count a s ≠ 0 ↔ a ∈ s := Nat.pos_iff_ne_zero.symm.trans count_pos
 
 @[simp] lemma count_eq_zero {a : α} : count a s = 0 ↔ a ∉ s := count_ne_zero.not_right
@@ -205,7 +203,7 @@ section Rel
 
 variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
-theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
+theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [Std.Symm r] {s t : Multiset α} (x : α)
     [DecidablePred (r x)] (h : Rel r s t) : countP (r x) s = countP (r x) t := by
   induction s using Multiset.induction_on generalizing t with
   | empty => rw [rel_zero_left.mp h]

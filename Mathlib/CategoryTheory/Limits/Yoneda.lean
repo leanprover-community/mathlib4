@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-public import Mathlib.Util.AssertExists
 
 /-!
 # Limit properties relating to the (co)yoneda embedding.
@@ -99,6 +98,7 @@ variable (J) in
 noncomputable instance yoneda_preservesLimitsOfShape (X : C) :
     PreservesLimitsOfShape J (yoneda.obj X) where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embeddings jointly reflect limits. -/
 def yonedaJointlyReflectsLimits (F : J ⥤ Cᵒᵖ) (c : Cone F)
     (hc : ∀ X : C, IsLimit ((yoneda.obj X).mapCone c)) : IsLimit c where
@@ -141,6 +141,7 @@ variable (J) in
 noncomputable instance coyonedaPreservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (coyoneda.obj X) where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coyoneda embeddings jointly reflect limits. -/
 def coyonedaJointlyReflectsLimits (F : J ⥤ C) (c : Cone F)
     (hc : ∀ X : Cᵒᵖ, IsLimit ((coyoneda.obj X).mapCone c)) : IsLimit c where
@@ -204,7 +205,7 @@ namespace Functor
 
 section Representable
 
-variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category J]
+variable (F : Cᵒᵖ ⥤ Type v) [F.IsRepresentable] {J : Type*} [Category* J]
 
 instance representable_preservesLimit (G : J ⥤ Cᵒᵖ) :
     PreservesLimit G F :=
@@ -221,7 +222,7 @@ end Representable
 
 section Corepresentable
 
-variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category J]
+variable (F : C ⥤ Type v) [F.IsCorepresentable] {J : Type*} [Category* J]
 
 instance corepresentable_preservesLimit (G : J ⥤ C) :
     PreservesLimit G F :=

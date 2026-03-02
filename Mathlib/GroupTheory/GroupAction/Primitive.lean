@@ -10,6 +10,7 @@ public import Mathlib.Data.Nat.Prime.Basic
 public import Mathlib.Data.Setoid.Partition.Card
 public import Mathlib.GroupTheory.GroupAction.Blocks
 public import Mathlib.GroupTheory.GroupAction.Transitive
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Primitive actions
@@ -137,7 +138,7 @@ theorem isTrivialBlock_of_card_le_two
 
 variable [Group G] [MulAction G X]
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- If the action is pretransitive, then the trivial blocks condition implies preprimitivity
 (based condition) -/
@@ -181,14 +182,7 @@ theorem IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints {a : X} (ha : a �
         rw [← IsTrivialBlock.smul_iff g]
         exact H ⟨b, hb, hg⟩ (hB.translate g) }
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
-  AddAction.IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints :=
-  IsPreprimitive.of_isTrivialBlock_of_notMem_fixedPoints
-
+set_option backward.isDefEq.respectTransparency false in
 /-- If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic) -/
 @[to_additive
@@ -236,7 +230,7 @@ section Stabilizer
 
 variable (G : Type*) [Group G] {X : Type*} [MulAction G X]
 
-open scoped BigOperators Pointwise
+open scoped Pointwise
 
 /-- A pretransitive action on a nontrivial type is preprimitive iff
 the set of blocks containing a given element is a simple order -/
@@ -262,6 +256,7 @@ theorem isSimpleOrder_blockMem_iff_isPreprimitive [IsPretransitive G X] [Nontriv
     | inr h =>
       simp [BlockMem.coe_top, h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitive action is preprimitive
 iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5) -/
 @[to_additive
@@ -273,6 +268,7 @@ theorem isCoatom_stabilizer_iff_preprimitive [IsPretransitive G X] [Nontrivial X
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preprimitive action, stabilizers are maximal subgroups -/
 @[to_additive /-- In a preprimitive action, stabilizers are maximal subgroups. -/]
 theorem IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
@@ -402,13 +398,6 @@ theorem exists_mem_smul_and_notMem_smul [IsPreprimitive G X]
     obtain ⟨x, hx⟩ := hA
     obtain ⟨g, hg⟩ := MulAction.exists_smul_eq G x a
     use g, x
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddAction.IsPreprimitive.exists_mem_vadd_and_not_mem_vadd :=
-  AddAction.IsPreprimitive.exists_mem_vadd_and_notMem_vadd
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias exists_mem_smul_and_not_mem_smul := exists_mem_smul_and_notMem_smul
 
 end IsPreprimitive
 

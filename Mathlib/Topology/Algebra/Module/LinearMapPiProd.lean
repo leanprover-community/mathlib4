@@ -84,10 +84,9 @@ theorem coe_inr : (inr R M₁ M₂ : M₂ →ₗ[R] M₁ × M₂) = LinearMap.in
 lemma comp_inl_add_comp_inr (L : M₁ × M₂ →L[R] M₃) (v : M₁ × M₂) :
     L.comp (.inl R M₁ M₂) v.1 + L.comp (.inr R M₁ M₂) v.2 = L v := by simp [← map_add]
 
-@[simp]
 theorem ker_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
-    ker (f.prod g) = ker f ⊓ ker g :=
-  LinearMap.ker_prod (f : M₁ →ₗ[R] M₂) (g : M₁ →ₗ[R] M₃)
+    ker (f.prod g : M₁ →ₗ[R] M₂ × M₃) = ker (f : M₁ →ₗ[R] M₂) ⊓ ker (g : M₁ →ₗ[R] M₃) := by
+  simp
 
 variable (R M₁ M₂)
 
@@ -132,6 +131,11 @@ theorem fst_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
 theorem snd_comp_prod (f : M₁ →L[R] M₂) (g : M₁ →L[R] M₃) :
     (snd R M₂ M₃).comp (f.prod g) = g :=
   ext fun _x => rfl
+
+@[simp] theorem fst_comp_inl : fst R M₁ M₂ ∘L inl R M₁ M₂ = .id R M₁ := rfl
+@[simp] theorem fst_comp_inr : fst R M₁ M₂ ∘L inr R M₁ M₂ = 0 := rfl
+@[simp] theorem snd_comp_inl : snd R M₁ M₂ ∘L inl R M₁ M₂ = 0 := rfl
+@[simp] theorem snd_comp_inr : snd R M₁ M₂ ∘L inr R M₁ M₂ = .id R M₂ := rfl
 
 /-- `Prod.map` of two continuous linear maps. -/
 def prodMap (f₁ : M₁ →L[R] M₂) (f₂ : M₃ →L[R] M₄) :
@@ -204,8 +208,33 @@ theorem pi_proj : pi proj = .id R (∀ i, φ i) := rfl
 @[simp]
 theorem pi_proj_comp (f : M₂ →L[R] ∀ i, φ i) : pi (proj · ∘L f) = f := rfl
 
-theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) = ⊥ :=
+theorem iInf_ker_proj :
+    (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i).toLinearMap : Submodule R (∀ i, φ i)) = ⊥ :=
   LinearMap.iInf_ker_proj
+
+section PiMap
+variable {ψ : ι → Type*} [∀ i, TopologicalSpace (ψ i)] [∀ i, AddCommMonoid (ψ i)]
+  [∀ i, Module R (ψ i)]
+
+/-- Construct a continuous linear map between two (dependent) function spaces
+by applying index-dependent linear maps to the coordinates.
+A bundled version of `Pi.map`.
+
+If the index type is finite, then this map can be seen as a “block diagonal” map
+between indexed products of modules. -/
+def piMap (f : ∀ i, φ i →L[R] ψ i) : (∀ i, φ i) →L[R] (∀ i, ψ i) :=
+  .pi fun i ↦ f i ∘L .proj i
+
+@[simp]
+theorem coe_piMap (f : ∀ i, φ i →L[R] ψ i) :
+    (piMap f : (∀ i, φ i) →ₗ[R] (∀ i, ψ i)) = .piMap fun i ↦ f i :=
+  rfl
+
+@[simp]
+theorem coe_piMap' (f : ∀ i, φ i →L[R] ψ i) : ⇑(piMap f) = Pi.map fun i ↦ f i :=
+  rfl
+
+end PiMap
 
 variable (R φ)
 
@@ -239,12 +268,12 @@ variable {R : Type*} [Ring R]
   {M₂ : Type*} [TopologicalSpace M₂] [AddCommGroup M₂] [Module R M₂]
   {M₃ : Type*} [TopologicalSpace M₃] [AddCommGroup M₃] [Module R M₃]
 
-theorem range_prod_eq {f : M →L[R] M₂} {g : M →L[R] M₃} (h : ker f ⊔ ker g = ⊤) :
-    range (f.prod g) = (range f).prod (range g) :=
+theorem range_prod_eq {f : M →L[R] M₂} {g : M →L[R] M₃} (h : f.ker ⊔ g.ker = ⊤) :
+    (f.prod g).range = f.range.prod g.range :=
   LinearMap.range_prod_eq h
 
 theorem ker_prod_ker_le_ker_coprod (f : M →L[R] M₃) (g : M₂ →L[R] M₃) :
-    (LinearMap.ker f).prod (LinearMap.ker g) ≤ LinearMap.ker (f.coprod g) :=
+    f.ker.prod g.ker ≤ (f.coprod g).ker :=
   LinearMap.ker_prod_ker_le_ker_coprod f.toLinearMap g.toLinearMap
 
 end Ring
@@ -307,7 +336,7 @@ def coprod (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) : M₁ × M₂ →L[R
     (f₁ + g₁).coprod (f₂ + g₂) = f₁.coprod f₂ + g₁.coprod g₂ := by ext <;> simp
 
 lemma range_coprod (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) :
-    range (f₁.coprod f₂) = range f₁ ⊔ range f₂ := LinearMap.range_coprod ..
+    (f₁.coprod f₂).range = f₁.range ⊔ f₂.range := LinearMap.range_coprod ..
 
 lemma comp_fst_add_comp_snd (f₁ : M₁ →L[R] M) (f₂ : M₂ →L[R] M) :
     f₁.comp (.fst _ _ _) + f₂.comp (.snd _ _ _) = f₁.coprod f₂ := rfl
@@ -325,6 +354,11 @@ lemma comp_coprod (f : M →L[R] N) (g₁ : M₁ →L[R] M) (g₂ : M₂ →L[R]
 @[simp]
 lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .id R (M × N) :=
   coe_injective <| LinearMap.coprod_inl_inr
+
+@[simp]
+lemma coprod_comp_inl_inr [ContinuousAdd M₁] [ContinuousAdd M₂] (f : M × M₁ →L[R] M₂) :
+    (f ∘L .inl R M M₁).coprod (f ∘L .inr R M M₁) = f := by
+  rw [← ContinuousLinearMap.comp_coprod, coprod_inl_inr, comp_id]
 
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
@@ -353,8 +387,8 @@ variable [AddCommGroup M] [Module R M] [ContinuousAdd M] [AddCommMonoid M₁] [M
   [AddCommGroup M₂] [Module R M₂]
 
 lemma ker_coprod_of_disjoint_range {f₁ : M₁ →L[R] M} {f₂ : M₂ →L[R] M}
-    (hf : Disjoint (range f₁) (range f₂)) :
-    LinearMap.ker (f₁.coprod f₂) = (LinearMap.ker f₁).prod (LinearMap.ker f₂) :=
+    (hf : Disjoint f₁.range f₂.range) :
+    (f₁.coprod f₂).ker = f₁.ker.prod f₂.ker :=
   LinearMap.ker_coprod_of_disjoint_range f₁.toLinearMap f₂.toLinearMap hf
 
 end AddCommGroup

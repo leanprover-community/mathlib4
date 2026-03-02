@@ -39,7 +39,7 @@ universe v u
 
 open Limits Opposite Presieve CategoryTheory
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] (G : C ⥤ D)
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] (G : C ⥤ D)
 variable {J : GrothendieckTopology C} (K : GrothendieckTopology D)
 variable (A : Type v) [Category.{u} A]
 
@@ -135,7 +135,7 @@ instance over_forget_locallyCoverDense (X : C) : (Over.forget X).LocallyCoverDen
     · intro hf
       exact ⟨Over.mk (f ≫ Y.hom), Over.homMk f, 𝟙 _, hf, (Category.id_comp _).symm⟩
 
-/-- Cover-dense functors induces an equivalence of categories of sheaves.
+/-- Cover-dense functors induce an equivalence of categories of sheaves.
 
 This is known as the comparison lemma. It requires that the sites are small and the value category
 is complete.
@@ -143,8 +143,7 @@ is complete.
 noncomputable def sheafInducedTopologyEquivOfIsCoverDense
     [G.IsCoverDense K] [∀ (X : Dᵒᵖ), HasLimitsOfShape (StructuredArrow X G.op) A] :
     Sheaf (G.inducedTopology K) A ≌ Sheaf K A :=
-  Functor.IsDenseSubsite.sheafEquiv G
-    (G.inducedTopology K) K A
+  Functor.IsDenseSubsite.sheafEquiv (G.inducedTopology K) K G A
 
 end Functor
 

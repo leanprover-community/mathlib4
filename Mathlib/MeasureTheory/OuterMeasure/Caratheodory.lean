@@ -9,7 +9,7 @@ public import Mathlib.MeasureTheory.OuterMeasure.OfFunction
 public import Mathlib.MeasureTheory.PiSystem
 
 /-!
-# The Caratheodory σ-algebra of an outer measure
+# The Carathéodory σ-algebra of an outer measure
 
 Given an outer measure `m`, the Carathéodory-measurable sets are the sets `s` such that
 for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurable space.

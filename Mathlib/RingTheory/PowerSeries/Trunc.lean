@@ -37,6 +37,7 @@ section Trunc
 variable [Semiring R]
 open Finset Nat
 
+set_option backward.privateInPublic true in
 private def trunc_aux (n : ℕ) (φ : R⟦X⟧) : R[X] :=
   ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ)
 
@@ -44,6 +45,8 @@ private theorem coeff_trunc_aux (m) (n) (φ : R⟦X⟧) :
     (trunc_aux n φ).coeff m = if m < n then coeff m φ else 0 := by
   simp [trunc_aux, Polynomial.coeff_monomial]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The `n`th truncation of a formal power series to a polynomial. -/
 def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
   toFun := trunc_aux n
@@ -55,7 +58,7 @@ def trunc (n : ℕ) : R⟦X⟧ →ₗ[R] R[X] where
   map_smul' t φ := by ext; simp [trunc_aux, Polynomial.coeff_monomial]
 
 lemma trunc_apply (n : ℕ) (φ : R⟦X⟧) :
-  trunc n φ = ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ) := rfl
+    trunc n φ = ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff m φ) := rfl
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
     (trunc n φ).coeff m = if m < n then coeff m φ else 0 := by
@@ -77,24 +80,12 @@ theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
   rw [trunc_apply, Ico_zero_eq_range, sum_range_succ, trunc_apply, Ico_zero_eq_range]
 
 theorem natDegree_trunc_lt (f : R⟦X⟧) (n) : (trunc (n + 1) f).natDegree < n + 1 := by
-  rw [Nat.lt_succ_iff, natDegree_le_iff_coeff_eq_zero]
-  intros
-  rw [coeff_trunc]
-  split_ifs with h
-  · rw [Nat.lt_succ_iff, ← not_lt] at h
-    contradiction
-  · rfl
+  simp +contextual [natDegree_le_iff_coeff_eq_zero, coeff_trunc]
 
 @[simp] lemma trunc_zero' {f : R⟦X⟧} : trunc 0 f = 0 := rfl
 
 theorem degree_trunc_lt (f : R⟦X⟧) (n) : (trunc n f).degree < n := by
-  rw [degree_lt_iff_coeff_zero]
-  intros
-  rw [coeff_trunc]
-  split_ifs with h
-  · rw [← not_le] at h
-    contradiction
-  · rfl
+  simp +contextual [degree_lt_iff_coeff_zero, coeff_trunc]
 
 theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+* S) (n) (f : R⟦X⟧) :
     (trunc n f).eval₂ G s = ∑ i ∈ range n, G (coeff i f) * s ^ i := by
@@ -123,12 +114,8 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+*
     exact n.one_lt_succ_succ
 
 lemma trunc_X_of {n : ℕ} (hn : 2 ≤ n) : trunc n X = (Polynomial.X : R[X]) := by
-  cases n with
-  | zero => contradiction
-  | succ n =>
-    cases n with
-    | zero => contradiction
-    | succ n => exact trunc_X n
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le' hn
+  exact trunc_X n
 
 @[simp]
 lemma trunc_one_left (p : R⟦X⟧) : trunc (R := R) 1 p = .C (coeff 0 p) := by
@@ -149,8 +136,8 @@ lemma eq_shift_mul_X_pow_add_trunc (n : ℕ) (f : R⟦X⟧) :
     f = (mk fun i ↦ coeff (i + n) f) * X ^ n + (f.trunc n : R⟦X⟧) := by
   ext j
   rw [map_add, Polynomial.coeff_coe, coeff_mul_X_pow', coeff_trunc]
-  simp_rw [← not_le]
-  split_ifs with h <;> simp [h]
+  simp_rw [← not_le, ite_not, ite_add_ite]
+  simp +contextual
 
 /-- Split off the first `n` coefficients. -/
 lemma eq_X_pow_mul_shift_add_trunc (n : ℕ) (f : R⟦X⟧) :
@@ -198,6 +185,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     rw [coeff_coe, coeff_trunc, if_pos ha]
   · rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (f * (trunc n g) : R⟦X⟧) = trunc n (f * g) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
@@ -206,6 +194,7 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) := by
   rw [trunc_trunc_mul, trunc_mul_trunc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
     trunc n ((trunc n f : R⟦X⟧) ^ a) = trunc n (f ^ a) := by
   induction a with

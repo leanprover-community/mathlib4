@@ -14,7 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 This file contains lemmas about continuity of the power functions on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -186,11 +186,9 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
   cases hp with
   | inl hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_neg hp)]
-    refine ContinuousAt.mul ?_ (continuous_cos.continuousAt.comp ?_)
+    refine ContinuousAt.mul ?_ (by fun_prop)
     · refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
-      refine (continuousAt_log ?_).comp continuous_fst.continuousAt
-      exact hp.ne
-    · exact continuous_snd.continuousAt.mul continuousAt_const
+      exact (continuousAt_log hp.ne).comp continuous_fst.continuousAt
   | inr hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_pos hp)]
     refine continuous_exp.continuousAt.comp (ContinuousAt.mul ?_ continuous_snd.continuousAt)
@@ -222,7 +220,7 @@ theorem continuousAt_rpow (p : ℝ × ℝ) (h : p.1 ≠ 0 ∨ 0 < p.2) :
 theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 ≤ q) :
     ContinuousAt (fun x : ℝ => x ^ q) x := by
   rw [le_iff_lt_or_eq, ← or_assoc] at h
-  obtain h|rfl := h
+  obtain h | rfl := h
   · exact (continuousAt_rpow (x, q) h).comp₂ continuousAt_id continuousAt_const
   · simp_rw [rpow_zero]; exact continuousAt_const
 
@@ -297,6 +295,7 @@ section CpowLimits2
 
 namespace Complex
 
+set_option backward.isDefEq.respectTransparency false in
 /-- See also `continuousAt_cpow` and `Complex.continuousAt_cpow_of_re_pos`. -/
 theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) (0, z) := by
@@ -338,6 +337,7 @@ theorem continuousAt_cpow_const_of_re_pos {z w : ℂ} (hz : 0 ≤ re z ∨ im z 
   Tendsto.comp (@continuousAt_cpow_of_re_pos (z, w) hz hw)
     (continuousAt_id.prodMk continuousAt_const)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Continuity of `(x, y) ↦ x ^ y` as a function on `ℝ × ℂ`. -/
 theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun p => (p.1 : ℂ) ^ p.2 : ℝ × ℂ → ℂ) (x, y) := by
@@ -361,7 +361,7 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
     apply ContinuousAt.mul
     · refine (continuousAt_cpow (Or.inl ?_)).comp A
       rwa [neg_re, ofReal_re, neg_pos]
-    · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
+    · fun_prop
 
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
     ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
