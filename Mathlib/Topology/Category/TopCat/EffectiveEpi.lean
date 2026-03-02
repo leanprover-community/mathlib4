@@ -39,7 +39,7 @@ def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : IsQ
       (ofHom ⟨fun _ ↦ b, continuous_const⟩)
     (by ext; exact hab)) a
   /- `IsQuotientMap.lift_comp` gives the factorisation -/
-  fac e h := hom_ext (hπ.lift_comp e.hom
+  fac e h := ConcreteCategory.ext (hπ.lift_comp e.hom
     fun a b hab ↦ CategoryTheory.congr_fun (h
       (ofHom ⟨fun _ ↦ a, continuous_const⟩)
       (ofHom ⟨fun _ ↦ b, continuous_const⟩)
@@ -53,8 +53,8 @@ def effectiveEpiStructOfQuotientMap {B X : TopCat.{u}} (π : X ⟶ B) (hπ : IsQ
           (ofHom ⟨fun _ ↦ b, continuous_const⟩)
           (by ext; exact hab))
         a⟩) by assumption
-    apply hom_ext
-    rw [hom_ofHom, ← Equiv.symm_apply_eq hπ.liftEquiv]
+    apply ConcreteCategory.ext
+    rw [ConcreteCategory.hom_ofHom, ← Equiv.symm_apply_eq hπ.liftEquiv]
     ext
     simp only [IsQuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl

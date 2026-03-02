@@ -98,9 +98,9 @@ noncomputable instance Forget₂.createsLimit :
           { pt := GrpCat.of (Types.Small.limitCone (F ⋙ forget GrpCat)).pt
             π :=
               { app j := ofHom <| MonCat.limitπMonoidHom (F ⋙ forget₂ GrpCat MonCat) j
-                naturality i j h := hom_ext <| congr_arg MonCat.Hom.hom <|
-                  (MonCat.HasLimits.limitCone
-                        (F ⋙ forget₂ GrpCat MonCat.{u})).π.naturality h } }
+                naturality i j h := ConcreteCategory.hom_ext _ _ fun x ↦
+                  ConcreteCategory.congr_hom ((MonCat.HasLimits.limitCone
+                    (F ⋙ forget₂ GrpCat MonCat.{u})).π.naturality h) x } }
         validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
         makesLimit :=
          IsLimit.ofFaithful (forget₂ GrpCat MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
@@ -259,7 +259,7 @@ noncomputable instance Forget₂.createsLimit :
             π :=
               { app j := ofHom <| MonCat.limitπMonoidHom
                   (F ⋙ forget₂ CommGrpCat GrpCat.{u} ⋙ forget₂ GrpCat MonCat.{u}) j
-                naturality i j h := hom_ext <| congr_arg MonCat.Hom.hom <|
+                naturality i j h := ConcreteCategory.ext <| congr_arg MonCat.Hom.hom <|
                   (MonCat.HasLimits.limitCone _).π.naturality h } }
         validLift := by apply IsLimit.uniqueUpToIso (GrpCat.limitConeIsLimit _) hc
         makesLimit :=
@@ -462,7 +462,7 @@ def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     ext
     simp
   inv_hom_id := by
-    apply AddCommGrpCat.ext
+    apply ConcreteCategory.hom_ext
     rintro ⟨x, mem⟩
     refine Subtype.ext ?_
     apply ConcreteCategory.congr_hom (kernel.lift_ι f _ _)

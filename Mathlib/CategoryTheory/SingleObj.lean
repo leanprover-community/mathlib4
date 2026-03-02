@@ -248,6 +248,6 @@ instance toCat_full : toCat.Full where
 
 set_option backward.isDefEq.respectTransparency false in
 instance toCat_faithful : toCat.Faithful where
-  map_injective h := MonCat.hom_ext <| by simpa [toCat] using congr(($h).toFunctor)
+  map_injective h := ConcreteCategory.ext <| by simpa [toCat] using congr(($h).toFunctor)
 
 end MonCat

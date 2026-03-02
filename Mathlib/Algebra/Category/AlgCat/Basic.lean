@@ -96,36 +96,12 @@ def Hom.Simps.hom (A B : AlgCat.{v} R) (f : Hom A B) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
 @[simp]
 lemma hom_id {A : AlgCat.{v} R} : (𝟙 A : A ⟶ A).hom = AlgHom.id R A := rfl
-
-/- Provided for rewriting. -/
-lemma id_apply (A : AlgCat.{v} R) (a : A) :
-    (𝟙 A : A ⟶ A) a = a := by simp
 
 @[simp]
 lemma hom_comp {A B C : AlgCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {A B C : AlgCat.{v} R} (f : A ⟶ B) (g : B ⟶ C) (a : A) :
-    (f ≫ g) a = g (f a) := by simp
-
-@[ext]
-lemma hom_ext {A B : AlgCat.{v} R} {f g : A ⟶ B} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
-    [Algebra R Y] (f : X →ₐ[R] Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {A B : AlgCat.{v} R} (f : A ⟶ B) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type v} [Ring X] [Algebra R X] : ofHom (AlgHom.id R X) = 𝟙 (of R X) := rfl
@@ -139,20 +115,8 @@ lemma ofHom_comp {X Y Z : Type v} [Ring X] [Ring Y] [Ring Z] [Algebra R X] [Alge
 lemma ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
 
-lemma inv_hom_apply {A B : AlgCat.{v} R} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by
-  simp
-
-lemma hom_inv_apply {A B : AlgCat.{v} R} (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by
-  simp
-
 instance : Inhabited (AlgCat R) :=
   ⟨of R R⟩
-
-lemma forget_obj {A : AlgCat.{v} R} : (forget (AlgCat.{v} R)).obj A = A := rfl
-
-lemma forget_map {A B : AlgCat.{v} R} (f : A ⟶ B) :
-    (forget (AlgCat.{v} R)).map f = (f : _ → _) :=
-  rfl
 
 instance {S : AlgCat.{v} R} : Ring ((forget (AlgCat R)).obj S) :=
   (inferInstance : Ring S.carrier)

@@ -58,23 +58,10 @@ def Hom.Simps.hom (X Y : LinOrd.{u}) (f : Hom X Y) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[simp]
-lemma coe_id {X : LinOrd} : (𝟙 X : X → X) = id := rfl
-
-@[simp]
-lemma coe_comp {X Y Z : LinOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[simp]
-lemma forget_map {X Y : LinOrd} (f : X ⟶ Y) :
-    (forget LinOrd).map f = (f : _ → _) := rfl
-
-@[ext]
-lemma ext {X Y : LinOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
+@[deprecated (since := "2026-02-10")] alias coe_id := ConcreteCategory.coe_id
+@[deprecated (since := "2026-02-10")] alias coe_comp := ConcreteCategory.coe_comp
+@[deprecated (since := "2026-02-10")] alias forget_map := ConcreteCategory.forget_map_eq_coe
+@[deprecated (since := "2026-02-10")] alias ext := ConcreteCategory.hom_ext
 
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [LinearOrder X] : (LinOrd.of X : Type u) = X := rfl
@@ -82,29 +69,16 @@ theorem coe_of (X : Type u) [LinearOrder X] : (LinOrd.of X : Type u) = X := rfl
 @[simp]
 lemma hom_id {X : LinOrd} : (𝟙 X : X ⟶ X).hom = OrderHom.id := rfl
 
-/- Provided for rewriting. -/
-lemma id_apply (X : LinOrd) (x : X) :
-    (𝟙 X : X ⟶ X) x = x := by simp
+@[deprecated (since := "2026-02-10")] alias id_apply := CategoryTheory.id_apply
 
 @[simp]
 lemma hom_comp {X Y Z : LinOrd} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
 
-/- Provided for rewriting. -/
-lemma comp_apply {X Y Z : LinOrd} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[ext]
-lemma hom_ext {X Y : LinOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [LinearOrder X] [LinearOrder Y] (f : X →o Y) : (ofHom f).hom = f :=
-  rfl
-
-@[simp]
-lemma ofHom_hom {X Y : LinOrd} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
+@[deprecated (since := "2026-02-10")] alias comp_apply := CategoryTheory.comp_apply
+@[deprecated (since := "2026-02-10")] alias hom_ext := ConcreteCategory.ext
+@[deprecated (since := "2026-02-10")] alias hom_ofHom := ConcreteCategory.hom_ofHom
+@[deprecated (since := "2026-02-10")] alias ofHom_hom := ConcreteCategory.ofHom_hom
 
 @[simp]
 lemma ofHom_id {X : Type u} [LinearOrder X] : ofHom OrderHom.id = 𝟙 (of X) := rfl
@@ -118,11 +92,8 @@ lemma ofHom_comp {X Y Z : Type u} [LinearOrder X] [LinearOrder Y] [LinearOrder Z
 lemma ofHom_apply {X Y : Type u} [LinearOrder X] [LinearOrder Y] (f : X →o Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-lemma inv_hom_apply {X Y : LinOrd} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  simp
-
-lemma hom_inv_apply {X Y : LinOrd} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  simp
+@[deprecated (since := "2026-02-10")] alias inv_hom_apply := Iso.hom_inv_id_apply
+@[deprecated (since := "2026-02-10")] alias hom_inv_apply := Iso.inv_hom_id_apply
 
 instance : Inhabited LinOrd :=
   ⟨of PUnit⟩

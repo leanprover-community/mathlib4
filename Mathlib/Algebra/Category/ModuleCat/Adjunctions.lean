@@ -53,7 +53,7 @@ noncomputable def freeMk {X : Type u} (x : X) : (free R).obj X := Finsupp.single
 lemma free_hom_ext {X : Type u} {M : ModuleCat.{u} R} {f g : (free R).obj X ⟶ M}
     (h : ∀ (x : X), f (freeMk x) = g (freeMk x)) :
     f = g :=
-  ModuleCat.hom_ext (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
+  ConcreteCategory.ext (Finsupp.lhom_ext' (fun x ↦ LinearMap.ext_ring (h x)))
 
 /-- The morphism of modules `(free R).obj X ⟶ M` corresponding
 to a map `f : X ⟶ M`. -/

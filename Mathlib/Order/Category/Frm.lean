@@ -81,52 +81,15 @@ def Hom.Simps.hom (X Y : Frm.{u}) (f : Hom X Y) :=
 
 initialize_simps_projections Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[simp]
-lemma coe_id {X : Frm} : (𝟙 X : X → X) = id := rfl
-
-@[simp]
-lemma coe_comp {X Y Z : Frm} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[simp]
-lemma forget_map {X Y : Frm} (f : X ⟶ Y) :
-    (forget Frm).map f = (f : _ → _) := rfl
-
-@[ext]
-lemma ext {X Y : Frm} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (X : Type u) [Frame X] : (Frm.of X : Type u) = X := rfl
 
 @[simp]
 lemma hom_id {X : Frm} : (𝟙 X : X ⟶ X).hom = FrameHom.id _ := rfl
 
-/- Provided for rewriting. -/
-lemma id_apply (X : Frm) (x : X) :
-    (𝟙 X : X ⟶ X) x = x := by simp
-
 @[simp]
 lemma hom_comp {X Y Z : Frm} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {X Y Z : Frm} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[ext]
-lemma hom_ext {X Y : Frm} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[simp]
-lemma hom_ofHom {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) : (ofHom f).hom = f := rfl
-
-@[simp]
-lemma ofHom_hom {X Y : Frm} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [Frame X] : ofHom (FrameHom.id _) = 𝟙 (of X) := rfl
@@ -139,12 +102,6 @@ lemma ofHom_comp {X Y Z : Type u} [Frame X] [Frame Y] [Frame Z]
 
 lemma ofHom_apply {X Y : Type u} [Frame X] [Frame Y] (f : FrameHom X Y) (x : X) :
     (ofHom f) x = f x := rfl
-
-lemma inv_hom_apply {X Y : Frm} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  simp
-
-lemma hom_inv_apply {X Y : Frm} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  simp
 
 instance : Inhabited Frm :=
   ⟨of PUnit⟩

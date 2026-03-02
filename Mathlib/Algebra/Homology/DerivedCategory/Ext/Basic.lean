@@ -428,7 +428,7 @@ noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrpCat.{w} wher
     rw [← Ext.mk₀_comp_mk₀]
     symm
     apply Ext.comp_assoc
-    lia
+    all_goals lia
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrpCat` which sends `X : C` and `Y : C`

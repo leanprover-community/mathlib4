@@ -272,13 +272,13 @@ end
 
 lemma tensor_ext {f g : M₁ ⊗ M₂ ⟶ M₃} (h : ∀ m n, f.hom (m ⊗ₜ n) = g.hom (m ⊗ₜ n)) :
     f = g :=
-  hom_ext <| TensorProduct.ext (by ext; apply h)
+  ConcreteCategory.ext <| TensorProduct.ext (by ext; apply h)
 
 /-- Extensionality lemma for morphisms from a module of the form `(M₁ ⊗ M₂) ⊗ M₃`. -/
 lemma tensor_ext₃' {f g : (M₁ ⊗ M₂) ⊗ M₃ ⟶ M₄}
     (h : ∀ m₁ m₂ m₃, f (m₁ ⊗ₜ m₂ ⊗ₜ m₃) = g (m₁ ⊗ₜ m₂ ⊗ₜ m₃)) :
     f = g :=
-  hom_ext <| TensorProduct.ext_threefold h
+  ConcreteCategory.ext <| TensorProduct.ext_threefold h
 
 /-- Extensionality lemma for morphisms from a module of the form `M₁ ⊗ (M₂ ⊗ M₃)`. -/
 lemma tensor_ext₃ {f g : M₁ ⊗ (M₂ ⊗ M₃) ⟶ M₄}
@@ -430,13 +430,13 @@ end
 
 lemma tensor_ext {f g : M₁ ⊗ M₂ ⟶ M₃} (h : ∀ m n, f.hom (m ⊗ₜ n) = g.hom (m ⊗ₜ n)) :
     f = g :=
-  hom_ext <| TensorProduct.ext (by ext; apply h)
+  ConcreteCategory.ext <| TensorProduct.ext (by ext; apply h)
 
 /-- Extensionality lemma for morphisms from a module of the form `(M₁ ⊗ M₂) ⊗ M₃`. -/
 lemma tensor_ext₃' {f g : (M₁ ⊗ M₂) ⊗ M₃ ⟶ M₄}
     (h : ∀ m₁ m₂ m₃, f (m₁ ⊗ₜ m₂ ⊗ₜ m₃) = g (m₁ ⊗ₜ m₂ ⊗ₜ m₃)) :
     f = g :=
-  hom_ext <| TensorProduct.ext_threefold h
+  ConcreteCategory.ext <| TensorProduct.ext_threefold h
 
 /-- Extensionality lemma for morphisms from a module of the form `M₁ ⊗ (M₂ ⊗ M₃)`. -/
 lemma tensor_ext₃ {f g : M₁ ⊗ (M₂ ⊗ M₃) ⟶ M₄}

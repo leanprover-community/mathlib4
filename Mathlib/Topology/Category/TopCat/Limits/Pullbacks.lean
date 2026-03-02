@@ -15,7 +15,7 @@ public import Mathlib.Topology.Category.TopCat.Limits.Products
 
 open TopologicalSpace Topology
 
-open CategoryTheory
+open CategoryTheory ConcreteCategory
 
 open CategoryTheory.Limits
 
@@ -64,10 +64,10 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
-        dsimp
+        simp
       · delta pullbackCone
         ext a
-        dsimp
+        simp
       · intro m h₁ h₂
         ext x
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`.

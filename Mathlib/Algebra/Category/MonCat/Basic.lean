@@ -112,24 +112,6 @@ def Hom.Simps.hom (X Y : MonCat.{u}) (f : Hom X Y) :=
 initialize_simps_projections Hom (hom' → hom)
 initialize_simps_projections AddMonCat.Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[to_additive (attr := simp)]
-lemma coe_id {X : MonCat} : (𝟙 X : X → X) = id := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_comp {X Y Z : MonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : MonCat} (f : X ⟶ Y) :
-    (forget MonCat).map f = (f : _ → _) := rfl
-
-@[to_additive (attr := ext)]
-lemma ext {X Y : MonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
 @[to_additive]
 -- This is not `simp` to avoid rewriting in types of terms.
 theorem coe_of (M : Type u) [Monoid M] : (MonCat.of M : Type u) = M := rfl
@@ -137,30 +119,9 @@ theorem coe_of (M : Type u) [Monoid M] : (MonCat.of M : Type u) = M := rfl
 @[to_additive (attr := simp)]
 lemma hom_id {M : MonCat} : (𝟙 M : M ⟶ M).hom = MonoidHom.id M := rfl
 
-/- Provided for rewriting. -/
-@[to_additive]
-lemma id_apply (M : MonCat) (x : M) :
-    (𝟙 M : M ⟶ M) x = x := by simp
-
 @[to_additive (attr := simp)]
 lemma hom_comp {M N T : MonCat} (f : M ⟶ N) (g : N ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-@[to_additive]
-lemma comp_apply {M N T : MonCat} (f : M ⟶ N) (g : N ⟶ T) (x : M) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[to_additive (attr := ext)]
-lemma hom_ext {M N : MonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [Monoid M] [Monoid N] (f : M →* N) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {M N : MonCat} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {M : Type u} [Monoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := rfl
@@ -174,14 +135,6 @@ lemma ofHom_comp {M N P : Type u} [Monoid M] [Monoid N] [Monoid P]
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
-
-@[to_additive]
-lemma inv_hom_apply {M N : MonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  simp
-
-@[to_additive]
-lemma hom_inv_apply {M N : MonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  simp
 
 @[to_additive]
 instance : Inhabited MonCat :=
@@ -299,52 +252,12 @@ def Hom.Simps.hom (X Y : CommMonCat.{u}) (f : Hom X Y) :=
 initialize_simps_projections Hom (hom' → hom)
 initialize_simps_projections AddCommMonCat.Hom (hom' → hom)
 
-/-!
-The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
--/
-
-@[to_additive (attr := simp)]
-lemma coe_id {X : CommMonCat} : (𝟙 X : X → X) = id := rfl
-
-@[to_additive (attr := simp)]
-lemma coe_comp {X Y Z : CommMonCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[to_additive (attr := simp)]
-lemma forget_map {X Y : CommMonCat} (f : X ⟶ Y) :
-    (forget CommMonCat).map f = (f : X → Y) :=
-  rfl
-
-@[to_additive (attr := ext)]
-lemma ext {X Y : CommMonCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
-  ConcreteCategory.hom_ext _ _ w
-
 @[to_additive (attr := simp)]
 lemma hom_id {M : CommMonCat} : (𝟙 M : M ⟶ M).hom = MonoidHom.id M := rfl
-
-/- Provided for rewriting. -/
-@[to_additive]
-lemma id_apply (M : CommMonCat) (x : M) :
-    (𝟙 M : M ⟶ M) x = x := by simp
 
 @[to_additive (attr := simp)]
 lemma hom_comp {M N T : CommMonCat} (f : M ⟶ N) (g : N ⟶ T) :
     (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-/- Provided for rewriting. -/
-@[to_additive]
-lemma comp_apply {M N T : CommMonCat} (f : M ⟶ N) (g : N ⟶ T) (x : M) :
-    (f ≫ g) x = g (f x) := by simp
-
-@[to_additive (attr := ext)]
-lemma hom_ext {M N : CommMonCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
-  Hom.ext hf
-
-@[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [CommMonoid M] [CommMonoid N] (f : M →* N) : (ofHom f).hom = f := rfl
-
-@[to_additive (attr := simp)]
-lemma ofHom_hom {M N : CommMonCat} (f : M ⟶ N) :
-    ofHom (Hom.hom f) = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_id {M : Type u} [CommMonoid M] : ofHom (MonoidHom.id M) = 𝟙 (of M) := rfl
@@ -358,14 +271,6 @@ lemma ofHom_comp {M N P : Type u} [CommMonoid M] [CommMonoid N] [CommMonoid P]
 @[to_additive]
 lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
-
-@[to_additive]
-lemma inv_hom_apply {M N : CommMonCat} (e : M ≅ N) (x : M) : e.inv (e.hom x) = x := by
-  simp
-
-@[to_additive]
-lemma hom_inv_apply {M N : CommMonCat} (e : M ≅ N) (s : N) : e.hom (e.inv s) = s := by
-  simp
 
 @[to_additive]
 instance : Inhabited CommMonCat :=

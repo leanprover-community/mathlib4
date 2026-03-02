@@ -107,7 +107,7 @@ def limitCone : Cone F where
   pt := ModuleCat.of R (Types.Small.limitCone.{v, w} (F ⋙ forget _)).pt
   π :=
     { app := fun j => ofHom (limitπLinearMap F j)
-      naturality := fun _ _ f => hom_ext <| LinearMap.coe_injective <|
+      naturality := fun _ _ f => ConcreteCategory.ext <| LinearMap.coe_injective <|
         ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -254,7 +254,7 @@ def directLimitIsColimit : IsColimit (directLimitCocone G f) where
       rfl
   fac s i := by
     ext
-    dsimp only [hom_comp, directLimitCocone, hom_ofHom, LinearMap.comp_apply]
+    simp only [hom_comp, directLimitCocone, ConcreteCategory.hom_ofHom, LinearMap.comp_apply]
     apply DirectLimit.lift_of
   uniq s m h := by
     have :
