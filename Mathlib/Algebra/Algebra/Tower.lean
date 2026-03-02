@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.LinearAlgebra.Span.Basic
 
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Towers of algebras

@@ -339,6 +339,7 @@ noncomputable abbrev LFunctionTrivChar₁ : ℂ → ℂ :=
   Function.update (fun s ↦ (s - 1) * LFunctionTrivChar n s) 1
     (∏ p ∈ n.primeFactors, (1 - (p : ℂ)⁻¹))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma LFunctionTrivChar₁_apply_one_ne_zero : LFunctionTrivChar₁ n 1 ≠ 0 := by
   simp only [Function.update_self]
   refine Finset.prod_ne_zero_iff.mpr fun p hp ↦ ?_

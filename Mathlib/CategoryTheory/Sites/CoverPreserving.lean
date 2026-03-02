@@ -25,8 +25,8 @@ Then, a cover-preserving and compatible-preserving functor is continuous.
 ## Main results
 
 - `CategoryTheory.isContinuous_of_coverPreserving`: If `G : C ⥤ D` is
-cover-preserving and compatible-preserving, then `G` is a continuous functor,
-i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
+  cover-preserving and compatible-preserving, then `G` is a continuous functor,
+  i.e. `G.op ⋙ -` as a functor `(Dᵒᵖ ⥤ A) ⥤ (Cᵒᵖ ⥤ A)` of presheaves maps sheaves to sheaves.
 
 ## References
 
@@ -111,7 +111,8 @@ end
 
 open Limits.WalkingCospan
 
-theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₁} [Category.{v₁} D]
+set_option backward.isDefEq.respectTransparency false in
+theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
     (K : GrothendieckTopology D) (G : C ⥤ D) [RepresentablyFlat G] : CompatiblePreserving K G := by
   constructor
   intro ℱ Z T x hx Y₁ Y₂ X f₁ f₂ g₁ g₂ hg₁ hg₂ e

@@ -174,7 +174,7 @@ def cocone : Cocone (diagram U) where
 def coconeIsColimit : IsColimit (cocone U) where
   desc s := homOfLE
     (by
-      apply CompleteSemilatticeSup.sSup_le
+      apply sSup_le
       rintro _ ⟨j, rfl⟩
       exact (s.ι.app (single j)).le)
 

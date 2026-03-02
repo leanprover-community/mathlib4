@@ -101,6 +101,7 @@ theorem disjoint_singleton : Disjoint ({a} : Finset α) {b} ↔ a ≠ b := by
 theorem disjoint_self_iff_empty (s : Finset α) : Disjoint s s ↔ s = ∅ :=
   disjoint_self
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
   simp only [Finset.disjoint_left, Set.disjoint_left, mem_coe]

@@ -44,6 +44,7 @@ instance isSmall_ofHoms {ι : Type t} [Small.{w} ι] {A B : ι → C} (f : ∀ i
     exact ⟨i, rfl⟩
   exact ⟨small_of_surjective hφ⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSmall_iff_eq_ofHoms :
     IsSmall.{w} W ↔ ∃ (ι : Type w) (A B : ι → C) (f : ∀ i, A i ⟶ B i),
       W = ofHoms f := by

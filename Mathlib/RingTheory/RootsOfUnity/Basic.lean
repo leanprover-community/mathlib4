@@ -62,6 +62,13 @@ def rootsOfUnity (k : ℕ) (M : Type*) [CommMonoid M] : Subgroup Mˣ where
 theorem mem_rootsOfUnity (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ ζ ^ k = 1 :=
   Iff.rfl
 
+theorem rootsOfUnity_eq_ker : rootsOfUnity k M = (powMonoidHom k).ker := by
+  rfl
+
+theorem ker_zpowGroupHom_eq_rootsOfUnity {k : ℤ} :
+    (zpowGroupHom k).ker = rootsOfUnity k.natAbs M := by
+  ext; simp
+
 /-- A variant of `mem_rootsOfUnity` using `ζ : Mˣ`. -/
 theorem mem_rootsOfUnity' (k : ℕ) (ζ : Mˣ) : ζ ∈ rootsOfUnity k M ↔ (ζ : M) ^ k = 1 := by
   rw [mem_rootsOfUnity]; norm_cast
@@ -107,6 +114,7 @@ lemma rootsOfUnity_inf_rootsOfUnity {m n : ℕ} :
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_rootsOfUnity_of_coprime {m n : ℕ} (h : m.Coprime n) :
     Disjoint (rootsOfUnity m M) (rootsOfUnity n M) := by
   simp [disjoint_iff_inf_le, rootsOfUnity_inf_rootsOfUnity, Nat.coprime_iff_gcd_eq_one.mp h]
@@ -250,6 +258,15 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [MonoidHomClass F R R] (σ 
       (m.emod_nonneg (Int.natCast_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
+
+instance {L : Type*} [LeftCancelMonoid L] [Finite L] :
+    Finite (L →* Rˣ) := by
+  let S := rootsOfUnity (Monoid.exponent L) R
+  have : Finite (L →* S) := .of_injective _ DFunLike.coe_injective
+  refine .of_surjective (fun f : L →* S ↦ (Subgroup.subtype _).comp f) fun f ↦ ?_
+  have H a : f a ∈ S := by
+    rw [mem_rootsOfUnity, ← map_pow, Monoid.pow_exponent_eq_one, map_one]
+  exact ⟨.codRestrict f S H, MonoidHom.ext fun _ ↦ by simp⟩
 
 end IsDomain
 
