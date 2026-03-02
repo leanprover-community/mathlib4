@@ -693,45 +693,29 @@ jobs:
           name: cache-staging
           path: cache-staging
 
+      - name: Checkout mathlib-ci
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: ${{ inputs.mathlib_ci_ref }}
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
+
       - name: Azure CLI OIDC login and mint storage bearer token
+        id: mint_cache_token
         shell: bash
         run: |
-          CLIENT_ID='${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}'
-          TENANT_ID='${{ secrets.MATHLIB_CI_TENANT_ID }}'
-          AUDIENCE='api://AzureADTokenExchange'
-
-          if [ -z "$CLIENT_ID" ] || [ -z "$TENANT_ID" ]; then
-            echo "Missing CACHE_MASTER_WRITER_AZURE_CLIENT_ID or MATHLIB_CI_TENANT_ID"
-            exit 1
-          fi
-
-          OIDC_URL="$ACTIONS_ID_TOKEN_REQUEST_URL"
-          if [[ "$OIDC_URL" == *\?* ]]; then
-            OIDC_URL="${OIDC_URL}&audience=${AUDIENCE}"
-          else
-            OIDC_URL="${OIDC_URL}?audience=${AUDIENCE}"
-          fi
-          OIDC_TOKEN="$(
-            curl --silent --show-error \
-              -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
-              "$OIDC_URL" | python3 -c 'import json,sys; print(json.load(sys.stdin)["value"])'
-          )"
-
-          az login \
-            --service-principal \
-            --username "$CLIENT_ID" \
-            --tenant "$TENANT_ID" \
-            --federated-token "$OIDC_TOKEN" \
-            --allow-no-subscriptions \
-            --output none
-
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW="$(az account get-access-token --resource https://storage.azure.com/ --query accessToken -o tsv)"
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN="${MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW%"${MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW##*[![:space:]]}"}"
-          echo "::add-mask::$MATHLIB_CACHE_AZURE_BEARER_TOKEN"
-          echo "MATHLIB_CACHE_AZURE_BEARER_TOKEN=$MATHLIB_CACHE_AZURE_BEARER_TOKEN" >> "$GITHUB_ENV"
+          python3 "${CI_SCRIPTS_DIR}/cache/mint_azure_storage_bearer_token.py" \
+            --client-id "${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}" \
+            --tenant-id "${{ secrets.MATHLIB_CI_TENANT_ID }}"
 
       - name: Upload staged cache to Azure
         shell: bash
+        env:
+          MATHLIB_CACHE_AZURE_BEARER_TOKEN: ${{ steps.mint_cache_token.outputs.cache_bearer_token }}
         run: |
           echo "Uploading cache to Azure..."
           MATHLIB_CACHE_USE_CLOUDFLARE=0 lake env "$CACHE_BIN" put-staged --staging-dir="cache-staging" --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
