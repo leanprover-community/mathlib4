@@ -64,12 +64,9 @@ lemma tensorCotangentHom_surjective :
     Function.Surjective (I.tensorCotangentHom R T) := by
   let a : S →+* T ⊗[R] S := Algebra.TensorProduct.includeRight.toRingHom
   intro x
-  obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
-  have := I.map_includeRight_eq (R := R) (A := T)
-  simp only [Submodule.ext_iff, Submodule.restrictScalars_mem, LinearMap.mem_range] at this
-  obtain ⟨y, rfl⟩ : ∃ (y : T ⊗[R] I),
-      ⟨(I.subtype.restrictScalars R).lTensor T y, (this _).mpr ⟨y, rfl⟩⟩ = x := by
-    obtain ⟨y, hy⟩ := (this _).mp x.property; exact ⟨y, by ext; simpa⟩
+  obtain ⟨⟨x, hx⟩, rfl⟩ := Ideal.toCotangent_surjective _ x
+  obtain ⟨y, rfl⟩ := I.map_includeRight_eq.le hx
+  obtain rfl : hx = I.map_includeRight_eq.ge ⟨y, rfl⟩ := rfl
   have heq (t : T) (x : I) :
       (map a I).toCotangent ⟨t ⊗ₜ[R] x, (this _).mpr ⟨t ⊗ₜ[R] ↑x, rfl⟩⟩ =
         t • (I.map a).toCotangent ⟨1 ⊗ₜ x, Ideal.mem_map_of_mem _ x.2⟩ := by
