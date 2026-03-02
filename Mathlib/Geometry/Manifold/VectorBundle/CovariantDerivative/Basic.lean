@@ -889,7 +889,7 @@ end IsCovariantDerivativeOn
 
 section to_trivialization
 
-namespace Trivialization
+namespace Bundle.Trivialization
 
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e] [IsManifold I 1 M]
 
@@ -1016,7 +1016,6 @@ lemma coordChangeL_pushCovDer
   have := contMDiffAt_coordChangeL (n := 1) (IB := I) hx.1 hx.2
   exact this.mdifferentiableAt (zero_ne_one.symm) |>.clm_apply hs
 
-
 variable {e} in
 lemma coordChangeL_mem_horiz
     [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ F]
@@ -1103,7 +1102,7 @@ lemma coordChangeL_mem_horiz_iff
   · convert hu using 2
     apply inter_comm
 
-end Trivialization
+end Bundle.Trivialization
 
 end to_trivialization
 

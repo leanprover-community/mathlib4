@@ -376,22 +376,25 @@ theorem contDiff_extend
 
 end extend
 
+namespace Bundle.Trivialization
+
 section trivilization_topology
 
 variable {B F Z : Type*} [TopologicalSpace B]
   [TopologicalSpace F]
 
 section any_proj
+
 variable [TopologicalSpace Z] {proj : Z → B} (e : Trivialization F proj)
-lemma Trivialization.baseSet_mem_nhds {x : B} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
+lemma baseSet_mem_nhds {x : B} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
   e.open_baseSet.mem_nhds_iff.mpr hx
 
-lemma Trivialization.baseSet_prod_univ_mem_nhds {v : Z}
+lemma baseSet_prod_univ_mem_nhds {v : Z}
     (hv : proj v ∈ e.baseSet) : e.baseSet ×ˢ univ ∈ 𝓝 (e v) := by
   rw [← mk_proj_snd' e hv]
   exact prod_mem_nhds (e.baseSet_mem_nhds hv) univ_mem
 
-lemma Trivialization.comp_invFun_eventuallyEq
+lemma comp_invFun_eventuallyEq
     {v : Z} (hv : proj v ∈ e.baseSet) : e ∘ e.invFun =ᶠ[𝓝 (e v)] id := by
   filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp using
     apply_symm_apply e <| (mem_target e).2 hp.1
@@ -402,41 +405,41 @@ section fiber_bundle
 variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
   (e : Trivialization F (π F E))
 
-lemma Trivialization.proj_invFun_eventuallyEq
+lemma proj_invFun_eventuallyEq
     {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
     (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
   filter_upwards [e.baseSet_prod_univ_mem_nhds  hv] with ⟨x, f⟩ ⟨hx, hf⟩
   exact symm_coe_proj e hx
 
-lemma Trivialization.injective_symm [(x : B) → Zero (E x)]
+lemma injective_symm [(x : B) → Zero (E x)]
   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
     Function.Injective (e.symm v.proj) := by
   intro f f' hff'
   simpa [hv] using congr(e $hff')
 
-lemma Trivialization.surjective_symm [(x : B) → Zero (E x)]
+lemma surjective_symm [(x : B) → Zero (E x)]
   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
     Function.Surjective (e.symm v.proj) :=
   fun u ↦ ⟨(e u).2, symm_apply_apply_mk e hv u⟩
 
-lemma Trivialization.bijective_symm [(x : B) → Zero (E x)]
+lemma bijective_symm [(x : B) → Zero (E x)]
   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
     Function.Bijective (e.symm v.proj) :=
   ⟨e.injective_symm hv, e.surjective_symm hv⟩
 
 variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
 
-lemma Trivialization.preimage_baseSet_mem_nhds
+lemma preimage_baseSet_mem_nhds
    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
     TotalSpace.proj ⁻¹' e.baseSet ∈ 𝓝 v :=
   FiberBundle.continuous_proj F E |>.continuousAt <| e.baseSet_mem_nhds  hv
 
-lemma Trivialization.fst_comp_eventuallyEq
+lemma fst_comp_eventuallyEq
    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
     Prod.fst ∘ e =ᶠ[𝓝 v] (π F E) := by
   filter_upwards [preimage_baseSet_mem_nhds e hv] with y hy using coe_fst' e hy
 
-lemma Trivialization.invFun_comp_eventuallyEq
+lemma invFun_comp_eventuallyEq
   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
    e.invFun ∘ e =ᶠ[𝓝 v] id := by
   filter_upwards [e.preimage_baseSet_mem_nhds hv] with w hw using
@@ -450,7 +453,7 @@ variable {B F : Type*} {E : B → Type*} [TopologicalSpace B]
   [(x : B) → Zero (E x)]
   (e : Trivialization F (π F E))
 
-lemma Trivialization.eq_of {x : B} {v v' : E x}
+lemma eq_of {x : B} {v v' : E x}
    (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
     v = v' := by
   have := e.symm_proj_apply v hx
@@ -458,7 +461,7 @@ lemma Trivialization.eq_of {x : B} {v v' : E x}
   grind [e.symm_proj_apply v' hx]
 
 @[simp]
-lemma Trivialization.apply_symm_eventuallyEq {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
+lemma apply_symm_eventuallyEq {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
   (fun x ↦ (e ⟨x, e.symm x (s x)⟩).2) =ᶠ[𝓝 x] s := by
     filter_upwards [e.baseSet_mem_nhds hx] with y hy
     rw [e.apply_mk_symm hy]
@@ -468,7 +471,7 @@ variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
 -- FIXME super weird elaborator bug: removing the
 -- omitted assumption from the variable line breaks the lemma
 omit [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
-lemma Trivialization.symm_apply_apply_mk_eventuallyEq
+lemma symm_apply_apply_mk_eventuallyEq
     {b : B} (hb : b ∈ e.baseSet) (σ : Π x, E x) :
     (T% fun x' ↦ e.symm x' (e (T% σ x')).2) =ᶠ[𝓝 b] T% σ := by
   filter_upwards [e.baseSet_mem_nhds hb] with y hy
@@ -477,7 +480,7 @@ lemma Trivialization.symm_apply_apply_mk_eventuallyEq
 -- FIXME super weird elaborator bug: removing the
 -- omitted assumption from the variable line breaks the lemma
 omit [(x : B) → Zero (E x)] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
-lemma Trivialization.apply_section_eventuallyEq
+lemma apply_section_eventuallyEq
     {x : B} (hx : x ∈ e.baseSet) (σ : Π x, E x) :
     e ∘ T%σ =ᶠ[𝓝 x] fun x ↦ ⟨x, (e (σ x)).2⟩ := by
   filter_upwards [e.baseSet_mem_nhds hx] with y hy
@@ -497,14 +500,14 @@ variable {R B F : Type*} {E : B → Type*} [Semiring R]
   (e : Trivialization F (π F E))
   [AddCommMonoid F] [Module R F] [(x : B) → AddCommMonoid (E x)] [(x : B) → Module R (E x)]
 
-lemma Trivialization.map_smul [Trivialization.IsLinear R e]
+lemma map_smul [Trivialization.IsLinear R e]
     {b : B} (hb : b ∈ e.baseSet) (a : R) (v : E b) :
     (e ⟨b, a • v⟩).2 = a • (e ⟨b, v⟩).2 :=
   e.linear R hb |>.map_smul a v
 
 variable (R)
 
-lemma Trivialization.map_add [Trivialization.IsLinear R e]
+lemma map_add [Trivialization.IsLinear R e]
     {b : B} (hb : b ∈ e.baseSet) (v v' : E b) :
     (e ⟨b, v + v'⟩).2 = (e ⟨b, v⟩).2 + (e ⟨b, v'⟩).2 :=
   e.linear R hb |>.map_add v v'
@@ -520,19 +523,19 @@ variable (R : Type*) {B F : Type*} {E : B → Type*}
   [(x : B) → TopologicalSpace (E x)]
   [FiberBundle F E] (e : Trivialization F (π F E))
 
-lemma Trivialization.symm_map_add [Trivialization.IsLinear R e] {x : B}
+lemma symm_map_add [Trivialization.IsLinear R e] {x : B}
   (f f' : F) :
     e.symm x (f + f') = e.symm x f + e.symm x f' :=
   (symmL R e x).map_add f f'
 
 @[simp]
-lemma Trivialization.symm_map_zero [Trivialization.IsLinear R e] {x : B} :
+lemma symm_map_zero [Trivialization.IsLinear R e] {x : B} :
     e.symm x 0 = 0 :=
   (symmL R e x).map_zero
 
 variable {R}
 
-lemma Trivialization.symm_map_smul [Trivialization.IsLinear R e] {x : B} (a : R) (f : F) :
+lemma symm_map_smul [Trivialization.IsLinear R e] {x : B} (a : R) (f : F) :
     e.symm x (a • f) = a • e.symm x f :=
   (symmL R e x).map_smul a f
 
@@ -555,8 +558,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e]
 
-
-lemma Trivialization.mdifferentiableAt
+lemma mdifferentiableAt
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) (v : V x) :
 MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v := by
@@ -565,7 +567,7 @@ MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v := by
   have := foo.contMDiffAt (e.open_source.mem_nhds this)
   exact this.mdifferentiableAt zero_ne_one.symm
 
-lemma Trivialization.mdifferentiableAt_invFun
+lemma mdifferentiableAt_invFun
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) (f : F) :
     MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (x, f) := by
@@ -580,18 +582,18 @@ lemma Trivialization.mdifferentiableAt_invFun
 -- which is $T_{π(v)} M × F$.
 variable (I) in
 noncomputable
-def Trivialization.deriv (v : TotalSpace F V) :
+def deriv (v : TotalSpace F V) :
     TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] TangentSpace I v.proj × F :=
   mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v
 
 variable (I) in
 noncomputable
-def Trivialization.derivInv (v : TotalSpace F V) :
+def derivInv (v : TotalSpace F V) :
     TangentSpace I v.proj × F →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, F)) v :=
   mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (e v)
 
 @[simp]
-lemma Trivialization.derivInv_deriv
+lemma derivInv_deriv
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     (e.derivInv I v) ∘L (e.deriv I v) = .id ℝ _ := by
@@ -603,7 +605,7 @@ lemma Trivialization.derivInv_deriv
   simp [deriv, derivInv, comp]
 
 @[simp]
-lemma Trivialization.derivInv_deriv_apply
+lemma derivInv_deriv_apply
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
     (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
@@ -611,7 +613,7 @@ lemma Trivialization.derivInv_deriv_apply
   show ((e.derivInv I v) ∘L (e.deriv I v)) u = u by simp [hv]
 
 @[simp]
-lemma Trivialization.mfderiv_proj_fst_deriv
+lemma mfderiv_proj_fst_deriv
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
     (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
@@ -622,7 +624,7 @@ lemma Trivialization.mfderiv_proj_fst_deriv
   rfl -- TODO: understand why `simp` does not handle `ContinuousLinearMap.fst`
 
 @[simp]
-lemma Trivialization.mfderiv_proj_derivInv_apply
+lemma mfderiv_proj_derivInv_apply
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
     (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
@@ -647,9 +649,8 @@ lemma Trivialization.mfderiv_proj_derivInv_apply
   simp
   rfl
 
-
 @[simp]
-lemma Trivialization.deriv_derivInv
+lemma deriv_derivInv
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     (e.deriv I v) ∘L (e.derivInv I v) = .id ℝ _ := by
@@ -665,14 +666,14 @@ lemma Trivialization.deriv_derivInv
   convert comp <;> rw [this]
 
 @[simp]
-lemma Trivialization.deriv_derivInv_apply
+lemma deriv_derivInv_apply
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
     (u : TangentSpace I v.proj × F) :
     e.deriv I v (e.derivInv I v u) = u :=
   show ((e.deriv I v) ∘L (e.derivInv I v)) u = u by simp [hv]
 
-lemma Trivialization.bijective_deriv
+lemma bijective_deriv
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     Function.Bijective (e.deriv I v) := by
@@ -681,7 +682,7 @@ lemma Trivialization.bijective_deriv
    constructor
    all_goals { intro u; simp [hv] }
 
-lemma Trivialization.mdifferentiableAt_section_of_function
+lemma mdifferentiableAt_section_of_function
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {x : M} (hx : x ∈ e.baseSet) {s : M → F}
     (hs : MDiffAt s x) :
@@ -694,7 +695,7 @@ noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
   (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
 
-lemma Trivialization.comap_vert
+lemma comap_vert
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
     Bundle.vert v = Submodule.comap (e.deriv I v).toLinearMap
@@ -709,7 +710,7 @@ lemma Trivialization.comap_vert
   simp
   rfl
 
-lemma Trivialization.mfderiv_comp_section
+lemma mfderiv_comp_section
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
     {σ : Π x : M, V x} {x : M} (hσ : MDiffAt T%σ x)
     (u : TangentSpace I x) (hx : x ∈ e.baseSet) :
@@ -735,14 +736,14 @@ lemma Trivialization.mfderiv_comp_section
   · exact (mdifferentiableAt_section_iff I e σ hx).mp hσ
 
 @[simp]
-lemma mdifferentiableAt_section_trivial_iff {s : M → F} {x : M} :
+lemma _root_.mdifferentiableAt_section_trivial_iff {s : M → F} {x : M} :
     MDiffAt (T% s) x ↔ MDiffAt s x := by
   rw [mdifferentiableAt_section I]
   simp
 
-
 end to_trivialization
 
+end Bundle.Trivialization
 
 section linear_algebra_isCompl
 lemma LinearMap.comap_isCompl {R R₂ M M₂ : Type*}

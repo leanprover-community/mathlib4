@@ -455,7 +455,7 @@ lemma localFrame_coeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
     e.localFrame_coeff I b i x (s x) = b.repr (e ((T% s) x)).2 i := by
   simp [e.localFrame_coeff_apply_of_mem_baseSet b hxe, basisAt]
 
-end Trivialization
+end Bundle.Trivialization
 
 /-! # Determining smoothness of a section via its local frame coefficients
 We show that for finite rank bundles over a complete field, a section is smooth iff its coefficients
