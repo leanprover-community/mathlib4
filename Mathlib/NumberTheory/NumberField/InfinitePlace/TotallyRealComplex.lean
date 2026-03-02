@@ -181,7 +181,6 @@ instance isTotallyReal_sup {E F : Subfield K} [hE : IsTotallyReal E] [hF : IsTot
     ← isTotallyReal_iff_le_maximalRealSubfield, ← isTotallyReal_iff_le_maximalRealSubfield]
   exact ⟨hE, hF⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   obtain hι | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι

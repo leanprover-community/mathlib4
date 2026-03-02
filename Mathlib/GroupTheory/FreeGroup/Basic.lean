@@ -954,7 +954,6 @@ theorem mul_bind (f : α → FreeGroup β) (x y : FreeGroup α) : x * y >>= f = 
 theorem inv_bind (f : α → FreeGroup β) (x : FreeGroup α) : x⁻¹ >>= f = (x >>= f)⁻¹ :=
   (lift f).map_inv _
 
-set_option backward.whnf.reducibleClassField false in
 @[to_additive]
 instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
   (id_map := fun x =>
