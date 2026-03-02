@@ -373,6 +373,7 @@ theorem IsEquiv.orderRingIso_symm_apply (h : v.IsEquiv w) (x : WithVal w) :
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
+variable (w) in
  --set_option backward.isDefEq.respectTransparency true in
 def _root_.WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃* ValueGroup₀ w where
   toFun γ := if hγ : γ = 0 then 0 else by
@@ -411,26 +412,29 @@ def _root_.WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃* Val
     · aesop
     · simp [← WithZero.coe_mul, WithZero.unzero_mul]
 
+lemma _root_.WithVal.strictMono_valueGroup₀_equiv :
+  StrictMono (_root_.WithVal.valueGroup₀_equiv w) := sorry
+
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
 -- TODO: golf
 -- **FAE** instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 theorem IsEquiv.uniformContinuous_equivWithVal
-    (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ (instValued w).v)ˣ, ∃ r s, 0 < (instValued w).v r ∧
-      0 < (instValued w).v s ∧
-      (instValued w).v.restrict r / (instValued w).v.restrict s = γ.1) (h : v.IsEquiv w) :
+    (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
+      w.restrict r / w.restrict s = γ.1) (h : v.IsEquiv w) :
     UniformContinuous (WithVal.congr v w (.refl R)) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
-  -- rw [← this] at γ
-  obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
-  have := WithVal.valueGroup₀_equiv.symm
-    (v.restrict ((WithVal.equiv w) r) / v.restrict ((WithVal.equiv w) s))
-  use .mk0 ( WithVal.valueGroup₀_equiv.symm
-    (v.restrict ((WithVal.equiv w) r) / v.restrict ((WithVal.equiv w) s)))
-     (by sorry/- simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm] -/),
+  obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw (Units.map (WithVal.valueGroup₀_equiv _).toMonoidHom γ)
+  simp only [restrict_def, MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe] at hr
+  use .mk0 ((WithVal.valueGroup₀_equiv _).symm (v.restrict r/ v.restrict s))
+     (by simp [restrict₀_eq_zero_iff, h.eq_zero, hr₀.ne.symm, hs₀.ne.symm] ),
     fun x hx ↦ ?_
+  --simp_rw [restrict_def] at hx
+  --simp only [restrict_def, map_div₀, Units.val_mk0, Set.mem_setOf_eq] at hx
+  --simp only [restrict_def, congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq]
+  rw [← (valueGroup₀_equiv _).symm_apply_eq ] at hr
   rw [← hr, Set.mem_setOf_eq]
   by_cases hx0 : Valued.v.restrict (WithVal.congr v w (.refl R) x) = 0
   · rw [hx0]
