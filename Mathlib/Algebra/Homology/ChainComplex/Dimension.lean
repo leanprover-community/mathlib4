@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Jesse Alama. All rights reserved.
+Copyright (c) 2026 Jesse Alama. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Alama
 -/
@@ -97,6 +97,7 @@ lemma dTo_range_finrank_eq_d (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
     (C.xPrevIso rel).toLinearEquiv.surjective
   rw [LinearMap.range_eq_top.mpr hsurj, Submodule.map_top]
 
+/-- The range of `dFrom (i + 1)` has the same dimension as the range of `dTo i`. -/
 lemma dFrom_succ_range_finrank_eq_dTo
     (C : ChainComplex (ModuleCat k) ℤ) (i : ℤ) :
     Module.finrank k (LinearMap.range (C.dFrom (i + 1)).hom) =
