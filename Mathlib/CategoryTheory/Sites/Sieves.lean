@@ -399,23 +399,6 @@ lemma map_ofArrows {X : C} {ι : Type*} {Y : ι → C} (f : ∀ i, Y i ⟶ X) :
 lemma map_singleton {X Y : C} (f : X ⟶ Y) : (singleton f).map F = singleton (F.map f) := by
   rw [← ofArrows_pUnit.{_, _, 0}, map_ofArrows, ofArrows_pUnit]
 
-lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback F).map F ≤ R :=
-  fun _ _ ⟨hu⟩ ↦ hu
-
-@[simp]
-lemma map_functorPullback_map {X : C} (R : Presieve X) :
-    Presieve.map F (Presieve.functorPullback F (R.map F)) = R.map F := by
-  refine le_antisymm (Presieve.map_functorPullback _) ?_
-  intro Y f (.of (Y := Y) (u := u) hu)
-  exact .of (.of hu)
-
-@[simp]
-lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
-  le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
-
-lemma map_monotone {R S : Presieve X} (h : R ≤ S) : R.map F ≤ S.map F :=
-  fun _ _ ⟨hf⟩ ↦ ⟨h _ _ hf⟩
-
 lemma map_le_iff_le_functorPullback {R : Presieve X} {S : Presieve (F.obj X)} :
     R.map F ≤ S ↔ R ≤ S.functorPullback F :=
   ⟨fun h _ _ hf ↦ h _ _ (.of hf), fun h _ f ⟨hu⟩ ↦ h _ _ hu⟩
@@ -424,6 +407,21 @@ variable (F) in
 lemma galoisConnection_map_functorPullback (X : C) :
     GaloisConnection (Presieve.map F (X := X)) (Presieve.functorPullback F) :=
   fun _ _ ↦ Presieve.map_le_iff_le_functorPullback
+
+lemma map_functorPullback {X : C} (R : Presieve (F.obj X)) : (R.functorPullback F).map F ≤ R :=
+  (galoisConnection_map_functorPullback _ _).l_u_le _
+
+@[simp]
+lemma map_functorPullback_map {X : C} (R : Presieve X) :
+    Presieve.map F (Presieve.functorPullback F (R.map F)) = R.map F :=
+  (galoisConnection_map_functorPullback _ _).l_u_l_eq_l _
+
+@[simp]
+lemma map_id {X : C} (R : Presieve X) : R.map (𝟭 C) = R :=
+  le_antisymm (fun _ _ ⟨hg⟩ ↦ hg) fun _ _ hg ↦ ⟨hg⟩
+
+lemma map_monotone : Monotone (map (X := X) F) :=
+  (galoisConnection_map_functorPullback _ _).monotone_l
 
 lemma functorPullback_monotone {X : C} : Monotone (Presieve.functorPullback (X := X) F) :=
   (Presieve.galoisConnection_map_functorPullback F X).monotone_u
