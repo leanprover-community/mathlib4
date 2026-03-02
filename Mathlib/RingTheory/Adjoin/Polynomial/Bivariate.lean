@@ -71,7 +71,7 @@ theorem Bivariate.aeval_aeval_eq_aeval_equivAdjoinOfTranscendental (x : A) (y : 
   | add p q hp hq => simp_all [map_add]
   | monomial n a =>
     simp_all [aeval_algebraMap_apply, Bivariate.equivAdjoinOfTranscendental,
-      Subalgebra.algebraMap_def];
+      Subalgebra.algebraMap_def]
 
 theorem _root_.IsAlgebraic.adjoin_singleton {x : A} {y : B} (hx : Transcendental R x)
     (hy : Transcendental R y) (h : IsAlgebraic (Algebra.adjoin R {x}) y) :
