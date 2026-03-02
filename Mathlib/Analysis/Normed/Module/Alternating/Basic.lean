@@ -23,7 +23,7 @@ Most proofs just invoke the corresponding fact about continuous multilinear maps
 
 noncomputable section
 
-open scoped BigOperators NNReal
+open scoped NNReal
 open Finset Metric
 
 /-!

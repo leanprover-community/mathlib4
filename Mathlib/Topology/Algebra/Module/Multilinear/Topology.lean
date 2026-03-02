@@ -154,6 +154,7 @@ variable (𝕜' : Type*) [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
   [∀ i, Module 𝕜' (E i)] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] [Module 𝕜' F] [IsScalarTower 𝕜' 𝕜 F]
   [∀ i, ContinuousSMul 𝕜 (E i)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUniformEmbedding_restrictScalars :
     IsUniformEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) := by
@@ -252,8 +253,7 @@ def compContinuousLinearMapL (f : ∀ i, E i →L[𝕜] E₁ i) :
       apply continuous_of_tendsto_nhds_zero (f := aux)
       rw [hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero]
       rintro ⟨U, V⟩ ⟨hU, hV⟩
-      set φ : (∀ i, E i) →L[𝕜] (∀ i, E₁ i) :=
-        .pi fun i ↦ f i ∘L .proj i
+      set φ : (∀ i, E i) →L[𝕜] (∀ i, E₁ i) := .piMap f
       exact ⟨(φ '' U, V), ⟨hU.image φ, hV⟩, fun g hg ↦ hg.comp (mapsTo_image _ _)⟩ }
 
 end CompContinuousLinearMap

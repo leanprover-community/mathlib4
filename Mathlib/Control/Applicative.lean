@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Group.Defs
 public import Mathlib.Control.Functor
 public import Mathlib.Control.Basic
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # `applicative` instances
 

@@ -263,6 +263,7 @@ theorem sUnion_empty : ⋃₀ (∅ : Class.{u}) = (∅ : Class.{u}) := by
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sInter_empty : ⋂₀ (∅ : Class.{u}) = univ := by
   rw [sInter, classToCong_empty, Set.sInter_empty, univ]

@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Analytic.Polynomial
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Analysis.Polynomial.Norm
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
 /-!
@@ -128,7 +129,7 @@ theorem mahlerMeasure_mul (p q : ℂ[X]) :
   apply integral_congr_ae
   rw [MeasureTheory.ae_iff]
   apply Set.Finite.measure_zero _ MeasureTheory.volume
-  simp only [_root_.not_imp]
+  simp only [Classical.not_imp]
   apply Set.Finite.of_finite_image (f := circleMap 0 1) _ <|
     (injOn_circleMap_of_abs_sub_le one_ne_zero (by simp [le_of_eq, pi_nonneg])).mono (fun _ h ↦ h.1)
   apply (p * q).roots.finite_toSet.subset
@@ -188,6 +189,7 @@ theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z�
 theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z‖ := by
   simp [← sub_neg_eq_add, ← map_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
     (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
@@ -323,5 +325,14 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
         card_powersetCard, S, ← Nat.choose_symm hn]
       congr
       exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
+
+theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial ℂ) :
+    p.supNorm ≤ p.natDegree.choose (p.natDegree / 2) * p.mahlerMeasure := by
+  obtain ⟨i, hi⟩ := p.exists_eq_supNorm
+  calc p.supNorm = ‖p.coeff i‖ := hi
+    _ ≤ (p.natDegree.choose i) * p.mahlerMeasure := p.norm_coeff_le_choose_mul_mahlerMeasure i
+    _ ≤ (p.natDegree.choose (p.natDegree / 2)) * p.mahlerMeasure :=
+      mul_le_mul_of_nonneg_right (by exact_mod_cast Nat.choose_le_middle i p.natDegree)
+        p.mahlerMeasure_nonneg
 
 end Polynomial

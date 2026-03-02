@@ -10,6 +10,8 @@ public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Inhabit
 public import Batteries.Tactic.Trans
 
+import Mathlib.Tactic.Attr.Register
+
 /-!
 # Extra facts about `Prod`
 
@@ -181,7 +183,7 @@ instance total_left {r : α → α → Prop} {s : β → β → Prop} [Std.Total
     Std.Total (Prod.Lex r s) :=
   ⟨fun ⟨a₁, _⟩ ⟨a₂, _⟩ ↦ (Std.Total.total a₁ a₂).imp (Lex.left _ _) (Lex.left _ _)⟩
 
-instance total_right {r : α → α → Prop} {s : β → β → Prop} [IsTrichotomous α r] [Std.Total s] :
+instance total_right {r : α → α → Prop} {s : β → β → Prop} [Std.Trichotomous r] [Std.Total s] :
     Std.Total (Prod.Lex r s) :=
   ⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
     obtain hij | rfl | hji := trichotomous_of r i j
@@ -189,13 +191,14 @@ instance total_right {r : α → α → Prop} {s : β → β → Prop} [IsTricho
     · exact (total_of s a b).imp (.right _) (.right _)
     · exact Or.inr (.left _ _ hji) ⟩
 
-instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
-    IsTrichotomous (α × β) (Prod.Lex r s) :=
-⟨fun ⟨i, a⟩ ⟨j, b⟩ ↦ by
-  obtain hij | rfl | hji := trichotomous_of r i j
-  { exact Or.inl (Lex.left _ _ hij) }
-  { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
-  { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
+instance trichotomous [Std.Trichotomous r] [Std.Trichotomous s] :
+    Std.Trichotomous (Prod.Lex r s) :=
+  Std.trichotomous_of_rel_or_eq_or_rel_swap <| by
+    intro ⟨i, a⟩ ⟨j, b⟩
+    obtain hij | rfl | hji := trichotomous_of r i j
+    { exact Or.inl (Lex.left _ _ hij) }
+    { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
+    { exact Or.inr (Or.inr <| Lex.left _ _ hji) }
 
 instance [Std.Asymm r] [Std.Asymm s] :
     Std.Asymm (Prod.Lex r s) where

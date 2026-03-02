@@ -51,7 +51,7 @@ variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : NormSMulClass 𝕜 E :=
+instance (priority := 100) NormedSpace.toNormSMulClass : NormSMulClass 𝕜 E :=
   haveI : IsBoundedSMul 𝕜 E := .of_norm_smul_le NormedSpace.norm_smul_le
   NormedDivisionRing.toNormSMulClass
 
@@ -59,7 +59,7 @@ instance (priority := 100) NormedSpace.toNormSMulClass [NormedSpace 𝕜 E] : No
 https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Normed.20modules/near/516757412.
 
 It is implied via `NormedSpace.toNormSMulClass`. -/
-instance NormedSpace.toIsBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E := inferInstance
+instance NormedSpace.toIsBoundedSMul : IsBoundedSMul 𝕜 E := inferInstance
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
@@ -122,7 +122,7 @@ lemma Metric.diam_sphere_eq (x : E) {r : ℝ} (hr : 0 ≤ r) : diam (sphere x r)
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
   calc
     2 * r = dist (x + r • ‖y‖⁻¹ • y) (x - r • ‖y‖⁻¹ • y) := by
-      simp [dist_eq_norm, ← two_nsmul, ← smul_assoc, norm_smul, abs_of_nonneg hr, mul_assoc, hy]
+      simp [dist_eq_norm, ← two_nsmul, ← smul_assoc, norm_smul, abs_of_nonneg hr, hy, mul_assoc]
     _ ≤ diam (sphere x r) := by
       apply dist_le_diam_of_mem isBounded_sphere <;> simp [norm_smul, hy, abs_of_nonneg hr]
 
@@ -152,8 +152,7 @@ instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
 instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
   { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
     norm_smul_le := fun s x => by
-      simp only [norm_smul, Prod.norm_def,
-        mul_max_of_nonneg, norm_nonneg, le_rfl] }
+      simp only [norm_smul, Prod.norm_def, le_rfl] }
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
 instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
@@ -235,6 +234,7 @@ variable (𝕜 E)
 variable [NormedField 𝕜] [Infinite 𝕜] [NormedAddCommGroup E] [Nontrivial E] [NormedSpace 𝕜 E]
 include 𝕜
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A normed vector space over an infinite normed field is a noncompact space.
 This cannot be an instance because in order to apply it,
 Lean would have to search for `NormedSpace 𝕜 E` with unknown `𝕜`.
@@ -402,6 +402,7 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
   letI := SeminormedRing.induced R S f
   ⟨fun a b ↦ show ‖f (a • b)‖ ≤ ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul_le a (f b)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.val
@@ -468,6 +469,7 @@ variable (𝕜 𝕜' E)
 variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
   [SeminormedAddCommGroup E] [NormedSpace 𝕜' E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a normed space over `𝕜'` and `𝕜` is a normed algebra over `𝕜'`, then
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
 instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
@@ -569,21 +571,21 @@ topology on the type. See note [reducible non-instances]. -/
 abbrev PseudoMetricSpace.ofSeminormedSpaceCore {𝕜 E : Type*} [NormedField 𝕜] [AddCommGroup E]
     [Norm E] [Module 𝕜 E] (core : SeminormedSpace.Core 𝕜 E) :
     PseudoMetricSpace E where
-  dist x y := ‖x - y‖
+  dist x y := ‖-x + y‖
   dist_self x := by
-    show ‖x - x‖ = 0
-    simp only [sub_self]
+    show ‖-x + x‖ = 0
+    simp only [add_comm, ← sub_eq_add_neg, sub_self]
     have : (0 : E) = (0 : 𝕜) • (0 : E) := by simp
     rw [this, core.norm_smul]
     simp
   dist_comm x y := by
-    show ‖x - y‖ = ‖y - x‖
-    have : y - x = (-1 : 𝕜) • (x - y) := by simp
+    show ‖-x + y‖ = ‖-y + x‖
+    have : -y + x = (-1 : 𝕜) • (-x + y) := by simp; abel
     rw [this, core.norm_smul]
     simp
   dist_triangle x y z := by
-    show ‖x - z‖ ≤ ‖x - y‖ + ‖y - z‖
-    have : x - z = (x - y) + (y - z) := by abel
+    show ‖-x + z‖ ≤ ‖-x + y‖ + ‖-y + z‖
+    have : -x + z = (-x + y) + (-y + z) := by abel
     rw [this]
     exact core.norm_triangle _ _
   edist_dist x y := by exact (ENNReal.ofReal_eq_coe_nnreal _).symm
@@ -695,8 +697,9 @@ See note [reducible non-instances]. -/
 abbrev NormedAddCommGroup.ofCore (core : NormedSpace.Core 𝕜 E) : NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCore core.toCore with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
@@ -708,8 +711,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceUniformity [U : UniformSpace E] (core : N
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceUniformity core.toCore H with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedAddCommGroup E` instance from a `NormedSpace.Core` on a type
@@ -722,8 +726,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceTopology [T : TopologicalSpace E]
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceTopology core.toCore H with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 open Bornology in
@@ -740,8 +745,9 @@ abbrev NormedAddCommGroup.ofCoreReplaceAll [U : UniformSpace E] [B : Bornology E
     NormedAddCommGroup E :=
   { SeminormedAddCommGroup.ofCoreReplaceAll core.toCore HU HB with
     eq_of_dist_eq_zero := by
+      letI := SeminormedAddCommGroup.ofCore core.toCore
       intro x y h
-      rw [← sub_eq_zero, ← core.norm_eq_zero_iff]
+      rw [← sub_eq_zero, ← core.norm_eq_zero_iff, ← norm_neg_add]
       exact h }
 
 /-- Produces a `NormedSpace 𝕜 E` instance from a `NormedSpace.Core`. This is meant to be used
