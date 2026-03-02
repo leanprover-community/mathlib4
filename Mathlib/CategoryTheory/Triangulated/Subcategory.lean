@@ -165,7 +165,7 @@ def extensionProduct : ObjectProperty C :=
   fun X => ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
     Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z
 
-lemma prop_extensionProduct_iff (X : C) : extensionProduct P Q X ↔
+lemma extensionProduct_iff (X : C) : extensionProduct P Q X ↔
   ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
     Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z := Iff.rfl
 
