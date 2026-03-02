@@ -237,15 +237,17 @@ instance {P : Type*} [SMul P R] [SMul P T] [SMul R T]
     [IsScalarTower P R T] : IsScalarTower P (WithAbs v) T where
   smul_assoc := by simp [smul_right_def, smul_left_def]
 
-instance [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
+/-- Not an instance because it causes non-reducible diamonds when `T = WithAbs v`. -/
+@[implicit_reducible]
+def moduleLeft [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
   .compHom T (equiv v).toRingHom
 
-@[deprecated (since := "2026-03-02")] alias instModule_left := instModule
+@[deprecated (since := "2026-03-02")] alias instModule_left := moduleLeft
 
 instance [Semiring T] [Module T R] : Module T (WithAbs v) :=
   fast_instance% (equiv v).module T
 
-@[deprecated (since := "2026-03-02")] alias instModule_right := instModule_1
+@[deprecated (since := "2026-03-02")] alias instModule_right := instModule
 
 variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 

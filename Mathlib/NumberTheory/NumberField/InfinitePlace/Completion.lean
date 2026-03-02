@@ -87,9 +87,10 @@ lemma norm_coe (x : WithAbs v.1) :
   UniformSpace.Completion.norm_coe x
 
 set_option backward.isDefEq.respectTransparency false in
-@[deprecated UniformSpace.Completion.algebra (since := "2026-01-21")]
 instance : Algebra K v.Completion :=
-  inferInstance
+  UniformSpace.Completion.algebra (WithAbs v.1) K
+
+instance : IsTopologicalRing v.Completion := UniformSpace.Completion.topologicalRing
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The coercion from the rationals to its completion along an infinite place is `Rat.cast`. -/

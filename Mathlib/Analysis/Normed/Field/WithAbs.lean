@@ -40,6 +40,7 @@ noncomputable instance normedField (v : AbsoluteValue R ℝ) : NormedField (With
   letI := v.toNormedField
   (equiv v).normedField
 
+attribute [local instance] moduleLeft in
 instance [Module R T] [FiniteDimensional R T] :
     FiniteDimensional (WithAbs v) T :=
   Module.Finite.of_restrictScalars_finite R (WithAbs v) T
