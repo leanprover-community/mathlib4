@@ -386,7 +386,7 @@ lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>
 theorem tendsto_norm_inv_mul_self_nhdsNE (a : E) :
     Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) := by
   apply (tendsto_norm_inv_mul_self a).inf
-  apply tendsto_principal_principal.2 (fun _x hx => norm_pos_iff'.2 ?_)
+  refine tendsto_principal_principal.2 (fun _x hx => norm_pos_iff'.2 ?_)
   simpa [inv_mul_eq_one] using hx
 
 variable (E)

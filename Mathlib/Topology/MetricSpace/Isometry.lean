@@ -182,6 +182,8 @@ alias mapsTo_emetric_closedBall := mapsTo_closedEBall
 /-- The injection from a subtype is an isometry -/
 theorem _root_.isometry_subtype_coe {s : Set α} : Isometry ((↑) : s → α) := fun _ _ => rfl
 
+theorem _root_.NNReal.isometry_toReal : Isometry ((↑) : NNReal → ℝ) := fun _ _ ↦ rfl
+
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] (hf : Isometry f) {g : γ → α} {s : Set γ} :
     ContinuousOn (f ∘ g) s ↔ ContinuousOn g s :=
   hf.isUniformInducing.isInducing.continuousOn_iff.symm

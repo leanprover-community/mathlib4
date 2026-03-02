@@ -541,6 +541,7 @@ lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     Metric.isCompact_iff_isClosed_bounded]
   constructor
   · -- show closed
+    simp only [Set.setOf_and]
     apply (isClosed_le continuous_const Complex.continuous_im).inter
     apply (isClosed_le Complex.continuous_im continuous_const).inter
     apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter

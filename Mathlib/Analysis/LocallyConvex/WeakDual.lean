@@ -221,7 +221,7 @@ theorem LinearMap.weakBilin_withSeminorms (B : E →ₗ[𝕜] F →ₗ[𝕜] �
 
 set_option backward.isDefEq.respectTransparency false in
 theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
-    (𝓝 (0 : WeakBilin B)).HasBasis B.toSeminormFamily.basisSets _root_.id :=
+    (𝓝 (0 : WeakBilin B)).HasBasis (· ∈ B.toSeminormFamily.basisSets) _root_.id :=
   LinearMap.weakBilin_withSeminorms B |>.hasBasis
 
 end Topology

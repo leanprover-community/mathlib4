@@ -305,14 +305,25 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
   exact (htn j).mono (subset_inter hji₀ hji)
 
+/-- Cantor's intersection theorem for `iInter`:
+the intersection of a directed family of nonempty compact closed sets is nonempty. -/
+theorem IsCompact.nonempty_biInter_of_directedOn_nonempty_isCompact_isClosed
+    {ι : Type v} {s : Set ι} (hs : s.Nonempty) (t : ι → Set X) (htd : DirectedOn ((· ⊇ ·) on t) s)
+    (htn : ∀ i ∈ s, (t i).Nonempty) (htc : ∀ i ∈ s, IsCompact (t i))
+    (htcl : ∀ i ∈ s, IsClosed (t i)) :
+    (⋂ i ∈ s, t i).Nonempty := by
+  have := hs.to_subtype
+  rw [biInter_eq_iInter]
+  apply IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ htd.directed_val <;>
+    rwa [Subtype.forall]
+
 /-- Cantor's intersection theorem for `sInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
 theorem IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed
-    {S : Set (Set X)} [hS : Nonempty S] (hSd : DirectedOn (· ⊇ ·) S) (hSn : ∀ U ∈ S, U.Nonempty)
+    {S : Set (Set X)} (hS : S.Nonempty) (hSd : DirectedOn (· ⊇ ·) S) (hSn : ∀ U ∈ S, U.Nonempty)
     (hSc : ∀ U ∈ S, IsCompact U) (hScl : ∀ U ∈ S, IsClosed U) : (⋂₀ S).Nonempty := by
-  rw [sInter_eq_iInter]
-  exact IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
-    (DirectedOn.directed_val hSd) (fun i ↦ hSn i i.2) (fun i ↦ hSc i i.2) (fun i ↦ hScl i i.2)
+  rw [sInter_eq_biInter]
+  apply IsCompact.nonempty_biInter_of_directedOn_nonempty_isCompact_isClosed <;> assumption
 
 /-- Cantor's intersection theorem for sequences indexed by `ℕ`:
 the intersection of a decreasing sequence of nonempty compact closed sets is nonempty. -/
