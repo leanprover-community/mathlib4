@@ -240,6 +240,7 @@ theorem uniformOfFinset_apply_of_mem (ha : a ∈ s) : uniformOfFinset s hs a = (
 
 theorem uniformOfFinset_apply_of_notMem (ha : a ∉ s) : uniformOfFinset s hs a = 0 := by simp [ha]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
   Set.ext
@@ -247,6 +248,7 @@ theorem support_uniformOfFinset : (uniformOfFinset s hs).support = s :=
       let ⟨a, ha⟩ := hs
       simp [mem_support_iff])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_support_uniformOfFinset_iff (a : α) : a ∈ (uniformOfFinset s hs).support ↔ a ∈ s := by
   simp
 
@@ -294,11 +296,13 @@ variable [Fintype α] [Nonempty α]
 theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
   simp [uniformOfFintype, Finset.mem_univ, uniformOfFinset_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem support_uniformOfFintype (α : Type*) [Fintype α] [Nonempty α] :
     (uniformOfFintype α).support = ⊤ :=
   Set.ext fun x => by simp [mem_support_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_support_uniformOfFintype (a : α) : a ∈ (uniformOfFintype α).support := by simp
 
 section Measure
@@ -322,6 +326,7 @@ end UniformOfFintype
 
 section OfMultiset
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Given a non-empty multiset `s` we construct the `PMF` which sends `a` to the fraction of
   elements in `s` that are `a`. -/
@@ -349,11 +354,13 @@ open scoped Classical in
 theorem ofMultiset_apply (a : α) : ofMultiset s hs a = s.count a / (Multiset.card s) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 @[simp]
 theorem support_ofMultiset : (ofMultiset s hs).support = s.toFinset :=
   Set.ext (by simp [mem_support_iff])
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support ↔ a ∈ s.toFinset := by
   simp
