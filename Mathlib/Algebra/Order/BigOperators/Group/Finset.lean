@@ -222,6 +222,22 @@ theorem prod_le_pow_card [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N) 
 theorem pow_card_le_prod [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, n ≤ f x) :
     n ^ #s ≤ s.prod f := Finset.prod_le_pow_card (N := Nᵒᵈ) _ _ _ h
 
+/-- If `s ⊆ t` and each term over `s` is bounded below by `n`, then `n * card s`
+is bounded by the sum over `t`. -/
+theorem card_nsmul_le_sum_of_subset {ι : Type*} (s t : Finset ι) (f : ι → ℕ) (n : ℕ)
+    (hsubset : s ⊆ t) (hpointwise : ∀ x ∈ s, n ≤ f x) :
+    n * #s ≤ ∑ x ∈ t, f x := by
+  calc
+    n * #s = ∑ _x ∈ s, n := by simp [Nat.mul_comm]
+    _ ≤ ∑ x ∈ s, f x := by
+      refine Finset.sum_le_sum ?_
+      intro x hx
+      exact hpointwise x hx
+    _ ≤ ∑ x ∈ t, f x := by
+      refine Finset.sum_le_sum_of_subset_of_nonneg hsubset ?_
+      intro x hx_t hx_notin_s
+      exact Nat.zero_le (f x)
+
 theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
     (h : ∀ a ∈ s, #(f a) ≤ n) : #(s.biUnion f) ≤ #s * n :=
   card_biUnion_le.trans <| sum_le_card_nsmul _ _ _ h
