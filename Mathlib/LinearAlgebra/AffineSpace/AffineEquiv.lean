@@ -613,6 +613,90 @@ theorem ofLinearEquiv_trans_ofLinearEquiv (A B : V ≃ₗ[k] V) (p₀ p₁ p₂ 
 
 end ofLinearEquiv
 
+section arrowCongrEquiv
+
+variable (e₁ : P₁ ≃ᵃ[k] P₂) (e₂ : P₃ ≃ᵃ[k] P₄)
+
+/-- Affine isomorphisms between the domains and codomains of two spaces of affine maps give a
+bijection between the two function spaces.
+
+See `AffineEquiv.arrowCongr` and `AffineEquiv.arrowCongrₗ` for the affine and linear versions of
+this bijection. -/
+def arrowCongrEquiv : (P₁ →ᵃ[k] P₃) ≃ (P₂ →ᵃ[k] P₄) where
+  toFun f := e₂.toAffineMap.comp <| f.comp e₁.symm.toAffineMap
+  invFun f := e₂.symm.toAffineMap.comp <| f.comp e₁.toAffineMap
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+@[simp]
+theorem arrowCongrEquiv_apply (f : P₁ →ᵃ[k] P₃) (x : P₂) :
+    e₁.arrowCongrEquiv e₂ f x = e₂ (f (e₁.symm x)) :=
+  rfl
+
+@[simp]
+theorem arrowCongrEquiv_symm_apply (f : P₂ →ᵃ[k] P₄) (x : P₁) :
+    (e₁.arrowCongrEquiv e₂).symm f x = e₂.symm (f (e₁ x)) :=
+  rfl
+
+end arrowCongrEquiv
+
+section CommRing
+
+variable {R : Type*} [CommRing R] [Module R V₁] [Module R V₂] [Module R V₃] [Module R V₄]
+
+section arrowCongrₗ
+
+variable (e₁ : P₁ ≃ᵃ[R] P₂) (e₂ : V₃ ≃ₗ[R] V₄)
+
+/-- An affine isomorphism between the domains and a linear isomorphism between the codomains of two
+spaces of affine maps give a linear isomorphism between the two function spaces.
+
+See also `AffineEquiv.arrowCongrEquiv` and `AffineEquiv.arrowCongr`. -/
+def arrowCongrₗ : (P₁ →ᵃ[R] V₃) ≃ₗ[R] (P₂ →ᵃ[R] V₄) where
+  __ := e₁.arrowCongrEquiv e₂.toAffineEquiv
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
+@[simp]
+theorem arrowCongrₗ_apply (f : P₁ →ᵃ[R] V₃) (x : P₂) :
+    e₁.arrowCongrₗ e₂ f x = e₂ (f (e₁.symm x)) :=
+  rfl
+
+@[simp]
+theorem arrowCongrₗ_symm_apply (f : P₂ →ᵃ[R] V₄) (x : P₁) :
+    (e₁.arrowCongrₗ e₂).symm f x = e₂.symm (f (e₁ x)) :=
+  rfl
+
+end arrowCongrₗ
+
+section arrowCongr
+
+variable (e₁ : P₁ ≃ᵃ[R] P₂) (e₂ : P₃ ≃ᵃ[R] P₄)
+
+/-- Affine isomorphisms between the domains and codomains of two spaces of affine maps give an
+affine isomorphism between the two function spaces.
+
+See also `AffineEquiv.arrowCongrEquiv` and `AffineEquiv.arrowCongrₗ`. -/
+@[simps linear]
+def arrowCongr : (P₁ →ᵃ[R] P₃) ≃ᵃ[R] (P₂ →ᵃ[R] P₄) where
+  __ := e₁.arrowCongrEquiv e₂
+  linear := e₁.arrowCongrₗ e₂.linear
+  map_vadd' _ _ := by ext; simp
+
+@[simp]
+theorem arrowCongr_apply (f : P₁ →ᵃ[R] P₃) (x : P₂) :
+    e₁.arrowCongr e₂ f x = e₂ (f (e₁.symm x)) :=
+  rfl
+
+@[simp]
+theorem arrowCongr_symm_apply (f : P₂ →ᵃ[R] P₄) (x : P₁) :
+    (e₁.arrowCongr e₂).symm f x = e₂.symm (f (e₁ x)) :=
+  rfl
+
+end arrowCongr
+
+end CommRing
+
 end AffineEquiv
 
 namespace AffineMap
