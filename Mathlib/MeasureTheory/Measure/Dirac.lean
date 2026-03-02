@@ -136,6 +136,11 @@ theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α
 theorem sum_smul_dirac [Countable α] [MeasurableSingletonClass α] (μ : Measure α) :
     (sum fun a => μ {a} • dirac a) = μ := by simpa using (map_eq_sum μ id measurable_id).symm
 
+/-- The sum of scaled Dirac measures applied to a singleton is the coefficient of that singleton. -/
+lemma sum_smul_dirac_singleton [MeasurableSingletonClass α] {f : α → ℝ≥0∞} {a : α} :
+    sum (fun b : α ↦ f b • dirac b) {a} = f a := by
+  simp +contextual [tsum_eq_single a]
+
 /-- A measure on a countable type is a sum of Dirac measures.
 If `α` has measurable singletons, `sum_smul_dirac` gives a simpler sum. -/
 lemma exists_sum_smul_dirac [Countable α] (μ : Measure α) :
