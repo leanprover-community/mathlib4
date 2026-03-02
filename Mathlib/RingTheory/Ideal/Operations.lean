@@ -1274,6 +1274,23 @@ theorem range_finsuppTotal :
 
 end Total
 
+
+/-- `Associates (Ideal R)` almost never has decidable equality.
+We add a global instance that `Associates (Ideal R)` has decidable
+equality, coming from the choice axiom, so that we don't have to provide
+`[DecidableEq (Associates (Ideal R))]` arguments in lemma statements. -/
+noncomputable instance {R : Type*} [CommSemiring R] :
+    DecidableEq (Associates (Ideal R)) :=
+  Classical.typeDecidableEq _
+
+/-- `Associates (Ideal R)` almost never has a decidable reducibility check.
+We add a global instance that members of `Associates (Ideal R)` have decidable
+reducibility, coming from the choice axiom, so that we don't have to provide
+this as an arguments in lemma statements. -/
+noncomputable instance {R : Type*} [CommSemiring R] (I : Associates (Ideal R)) :
+    Decidable (Irreducible I) :=
+  Classical.propDecidable _
+
 end Ideal
 
 section span_range
