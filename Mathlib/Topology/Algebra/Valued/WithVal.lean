@@ -55,8 +55,32 @@ instance [Field R] (v : Valuation R Γ₀) : Field (WithVal v) := inferInstanceA
 
 instance [Ring R] (v : Valuation R Γ₀) : Inhabited (WithVal v) := ⟨0⟩
 
-instance [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    {v : Valuation R Γ₀} : Preorder (WithVal v) := v.toPreorder
+instance [Ring R] (v : Valuation R Γ₀) : Preorder (WithVal v) := v.toPreorder
+
+instance [CommSemiring S] [CommRing R] [Algebra S R] (v : Valuation R Γ₀) :
+    Algebra S (WithVal v) := inferInstanceAs (Algebra S R)
+
+instance [CommRing S] [CommRing R] [Algebra S R] [IsFractionRing S R] (v : Valuation R Γ₀) :
+    IsFractionRing S (WithVal v) := inferInstanceAs (IsFractionRing S R)
+
+instance [Ring R] [SMul S R] (v : Valuation R Γ₀) : SMul S (WithVal v) :=
+  inferInstanceAs (SMul S R)
+
+instance [Ring R] [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] (v : Valuation R Γ₀) :
+    IsScalarTower P S (WithVal v) :=
+  inferInstanceAs (IsScalarTower P S R)
+
+variable [CommRing R] (v : Valuation R Γ₀)
+
+instance {S : Type*} [Ring S] [Algebra R S] :
+    Algebra (WithVal v) S := inferInstanceAs (Algebra R S)
+
+instance {S : Type*} [Ring S] [Algebra R S] (w : Valuation S Γ₀) :
+    Algebra R (WithVal w) := inferInstanceAs (Algebra R S)
+
+instance {P S : Type*} [Ring S] [Semiring P] [Module P R] [Module P S]
+    [Algebra R S] [IsScalarTower P R S] :
+    IsScalarTower P (WithVal v) S := inferInstanceAs (IsScalarTower P R S)
 
 end Instances
 
@@ -206,7 +230,7 @@ theorem IsEquiv.uniformContinuous_equivWithVal
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
-  use .mk0 (v r / v s) (by simp [h.ne_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
+  use .mk0 (v r / v s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
   rw [← hr, Set.mem_setOf_eq, ← WithVal.apply_equiv, ← (equiv w).apply_symm_apply r,
     lt_div_iff₀ hs₀, ← (equiv w).apply_symm_apply s, ← map_mul, ← map_mul, ← lt_def,
     ← h.orderRingIso_apply, ← h.orderRingIso.apply_symm_apply ((equiv w).symm s), ← map_mul,
@@ -257,6 +281,7 @@ instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDom
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := ‹IsIntegralClosure R ℤ K›
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
 `ℤ` in `K`. -/
 @[simps!]

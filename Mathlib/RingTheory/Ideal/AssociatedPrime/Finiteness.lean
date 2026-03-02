@@ -51,10 +51,11 @@ variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
 def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
   N₁ ≤ N₂ ∧ ∃ (p : PrimeSpectrum A), Nonempty ((↥N₂ ⧸ N₁.submoduleOf N₂) ≃ₗ[A] A ⧸ p.1)
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
     N₁.IsQuotientEquivQuotientPrime N₂ ↔
-      ∃ x, Ideal.IsPrime (ker (toSpanSingleton A _ (N₁.mkQ x))) ∧ N₂ = N₁ ⊔ span A {x} := by
+      ∃ x, Ideal.IsPrime ((⊥ : Submodule A (M ⧸ N₁)).colon {N₁.mkQ x}) ∧ N₂ = N₁ ⊔ span A {x} := by
   let f := mapQ (N₁.submoduleOf N₂) N₁ N₂.subtype le_rfl
   have hf₁ : ker f = ⊥ := ker_liftQ_eq_bot _ _ _ (by simp [ker_comp, submoduleOf])
   have hf₂ : range f = N₂.map N₁.mkQ := by simp [f, mapQ, range_liftQ, range_comp]
@@ -84,6 +85,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
 
 variable (A M) [IsNoetherianRing A] [Module.Finite A M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A` is a Noetherian ring and `M` is a finitely generated `A`-module, then there exists
 a chain of submodules `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, such that for each `0 ≤ i < n`,
 `Mᵢ₊₁ / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`. -/
@@ -94,7 +96,9 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
   refine WellFoundedGT.induction_top ⟨⊥, .singleton _ ⊥, rfl, rfl⟩ ?_
   rintro N hN ⟨s, hs₁, hs₂⟩
   have := Submodule.Quotient.nontrivial_iff.mpr hN
-  obtain ⟨p, hp, x, rfl⟩ := associatedPrimes.nonempty A (M ⧸ N)
+  obtain ⟨p, hp⟩ := associatedPrimes.nonempty A (M ⧸ N)
+  rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at hp
+  obtain ⟨hp, x, rfl⟩ := hp
   obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
   have hxN : x ∉ N := fun h ↦ hp.ne_top (by rw [show N.mkQ x = 0 by simpa]; simp)
   have := Submodule.isQuotientEquivQuotientPrime_iff.mpr ⟨x, hp, rfl⟩
@@ -190,11 +194,14 @@ is annihilated by some nonzero element if each element is annihilated by some no
 see https://math.stackexchange.com/a/3187153. -/
 theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     (h : Disjoint (I : Set A) (nonZeroDivisors A)) : ⊥ < Module.annihilator A I := by
-  obtain ⟨P, ⟨prime, x, rfl⟩, hP⟩ : ∃ P ∈ associatedPrimes A A, I ≤ P :=
+  obtain ⟨P, h, hP⟩ : ∃ P ∈ associatedPrimes A A, I ≤ P :=
     (I.subset_union_prime_finite (associatedPrimes.finite ..) (f := id) 0 0 fun _ h _ _ ↦ h.1).1 <|
     biUnion_associatedPrimes_eq_compl_nonZeroDivisors A ▸ h.subset_compl_right
+  rw [AssociatedPrimes.mem_iff, isAssociatedPrime_iff] at h
+  obtain ⟨prime, x, rfl⟩ := h
   exact SetLike.lt_iff_le_and_exists.mpr ⟨bot_le, x, Submodule.mem_annihilator.mpr <| by
-    simpa only [smul_eq_mul, mul_comm x] using hP, fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
+    simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using hP,
+      fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
 
 theorem Ideal.nonempty_inter_nonZeroDivisors_of_faithfulSMul {I : Ideal A} [FaithfulSMul A I] :
     ((I : Set A) ∩ nonZeroDivisors A).Nonempty := by

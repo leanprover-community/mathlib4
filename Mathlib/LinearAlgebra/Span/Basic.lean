@@ -211,6 +211,7 @@ theorem span_span_of_tower :
 theorem span_eq_top_of_span_eq_top (s : Set M) (hs : span R s = ⊤) : span S s = ⊤ :=
   le_top.antisymm (hs.ge.trans (span_le_restrictScalars R S s))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R S} in
 lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
     (h₁ : p ≤ q.restrictScalars R) (h₂ : q ≤ span S p) :
@@ -322,7 +323,7 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {motive : ∀ x,
     exact ⟨_, add _ _ _ _ Cx Cy⟩
 
 theorem singleton_span_isCompactElement (x : M) :
-    CompleteLattice.IsCompactElement (span R {x} : Submodule R M) := by
+    IsCompactElement (span R {x} : Submodule R M) := by
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro d hemp hdir hsup
   have : x ∈ (sSup d) := (SetLike.le_def.mp hsup) (mem_span_singleton_self x)
@@ -331,7 +332,7 @@ theorem singleton_span_isCompactElement (x : M) :
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
 theorem finset_span_isCompactElement (S : Finset M) :
-    CompleteLattice.IsCompactElement (span R S : Submodule R M) := by
+    IsCompactElement (span R S : Submodule R M) := by
   rw [span_eq_iSup_of_singleton_spans]
   simp only [Finset.mem_coe]
   rw [← Finset.sup_eq_iSup]
@@ -340,7 +341,7 @@ theorem finset_span_isCompactElement (S : Finset M) :
 
 /-- The span of a finite subset is compact in the lattice of submodules. -/
 theorem finite_span_isCompactElement (S : Set M) (h : S.Finite) :
-    CompleteLattice.IsCompactElement (span R S : Submodule R M) :=
+    IsCompactElement (span R S : Submodule R M) :=
   Finite.coe_toFinset h ▸ finset_span_isCompactElement h.toFinset
 
 instance : IsCompactlyGenerated (Submodule R M) :=

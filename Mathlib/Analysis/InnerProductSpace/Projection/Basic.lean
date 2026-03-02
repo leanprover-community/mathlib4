@@ -80,6 +80,10 @@ instance HasOrthogonalProjection.map_linearIsometryEquiv' [K.HasOrthogonalProjec
 
 instance : (⊤ : Submodule 𝕜 E).HasOrthogonalProjection := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 
+instance (K : ClosedSubmodule 𝕜 E) [CompleteSpace E] : K.HasOrthogonalProjection := by
+  letI := K.isClosed'
+  infer_instance
+
 noncomputable section
 
 section orthogonalProjection
@@ -247,13 +251,6 @@ theorem starProjection_minimal {U : Submodule 𝕜 E} [U.HasOrthogonalProjection
   rw [starProjection_apply, U.norm_eq_iInf_iff_inner_eq_zero (Submodule.coe_mem _)]
   exact starProjection_inner_eq_zero _
 
-/-- The orthogonal projections onto equal subspaces are coerced back to the same point in `E`. -/
-@[deprecated "As there are no subtypes causing dependent type issues, there is no need for this
-result as `simp` will suffice" (since := "12-07-2025")]
-theorem eq_starProjection_of_eq_submodule {K' : Submodule 𝕜 E} [K'.HasOrthogonalProjection]
-    (h : K = K') (u : E) : K.starProjection u = K'.starProjection u := by
-  simp [h]
-
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
 theorem orthogonalProjection_mem_subspace_eq_self (v : K) : K.orthogonalProjection v = v := by
@@ -345,6 +342,7 @@ lemma starProjection_bot : (⊥ : Submodule 𝕜 E).starProjection = 0 := by
 
 variable (K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The orthogonal projection has norm `≤ 1`. -/
 theorem orthogonalProjection_norm_le : ‖K.orthogonalProjection‖ ≤ 1 :=
   LinearMap.mkContinuous_norm_le _ (by simp) _
@@ -360,6 +358,7 @@ theorem norm_starProjection_apply {v : E} (hv : v ∈ K) :
     ‖K.starProjection v‖ = ‖v‖ :=
   norm_orthogonalProjection_apply _ hv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The orthogonal projection onto a closed subspace is norm non-increasing. -/
 theorem norm_orthogonalProjection_apply_le (v : E) :
     ‖orthogonalProjection K v‖ ≤ ‖v‖ := by calc
@@ -379,6 +378,7 @@ theorem lipschitzWith_starProjection :
     LipschitzWith 1 K.starProjection :=
   ContinuousLinearMap.lipschitzWith_of_opNorm_le (starProjection_norm_le K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm of the orthogonal projection onto a nontrivial subspace is `1`. -/
 theorem norm_orthogonalProjection (hK : K ≠ ⊥) :
     ‖K.orthogonalProjection‖ = 1 := by
@@ -473,10 +473,6 @@ theorem starProjection_comp_starProjection_eq_zero_iff {U V : Submodule 𝕜 E}
 theorem orthogonalProjection_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) : Kᗮ.orthogonalProjection v = 0 :=
   orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero (K.le_orthogonal_orthogonal hv)
-
-@[deprecated (since := "22-07-2025")] alias
-  orthogonalProjection_mem_subspace_orthogonal_precomplement_eq_zero :=
-  orthogonalProjection_orthogonal_apply_eq_zero
 
 theorem starProjection_orthogonal_apply_eq_zero
     [Kᗮ.HasOrthogonalProjection] {v : E} (hv : v ∈ K) :

@@ -52,7 +52,7 @@ namespace ProperCone
 /-- The dual cone of a set `s` is the cone consisting of all points `y` such that for all points
 `x ∈ s` we have `0 ≤ ⟪x, y⟫`. -/
 @[simps! toSubmodule]
-def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
+noncomputable def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
 
 @[simp] lemma mem_innerDual : y ∈ innerDual s ↔ ∀ ⦃x⦄, x ∈ s → 0 ≤ ⟪x, y⟫ := .rfl
 
@@ -151,6 +151,7 @@ section CompleteSpace
 
 variable [CompleteSpace H]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped InnerProductSpace in
 /-- This is a stronger version of the Hahn-Banach separation theorem for closed convex cones. This
 is also the geometric interpretation of Farkas' lemma. -/
@@ -185,11 +186,6 @@ theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_notMem (K : 
       _ ≤ ⟪b - z, b - z⟫_ℝ + ⟪b - z, z⟫_ℝ := add_le_add rfl.ge hinner₀
       _ = ⟪b - z, b - z + z⟫_ℝ := (inner_add_right _ _ _).symm
       _ = ⟪b - z, b⟫_ℝ := by rw [sub_add_cancel]
-
-namespace ProperCone
-variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-
-end ProperCone
 
 end CompleteSpace
 

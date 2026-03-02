@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Tactic.Bound.Attribute
@@ -169,7 +168,7 @@ lemma Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
 
 lemma Odd.pow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.pow_neg_iff, pow_eq_zero_iff]
-  rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+  rintro rfl; simp at hn
 
 lemma Odd.pow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.pow_nonpos_iff
 
@@ -177,7 +176,7 @@ alias ⟨_, Odd.pow_nonpos⟩ := Odd.pow_nonpos_iff
 alias ⟨_, Odd.pow_neg⟩ := Odd.pow_neg_iff
 
 lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+  have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd] at hn
   intro a b hab
   obtain ha | ha := le_total 0 a
   · exact pow_lt_pow_left₀ hab ha hn₀
