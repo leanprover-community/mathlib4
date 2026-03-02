@@ -7,6 +7,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.Algebra.Category.Ring.Epi
+public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
 
@@ -36,7 +37,9 @@ the preimage of any affine open subset of `Y` is affine and the induced ring
 hom is finite. -/
 @[mk_iff]
 class IsFinite {X Y : Scheme} (f : X ⟶ Y) : Prop extends IsAffineHom f where
-  finite_app (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
+  finite_app (f) (U : Y.Opens) (hU : IsAffineOpen U) : (f.app U).hom.Finite
+
+alias Scheme.Hom.finite_app := IsFinite.finite_app
 
 namespace IsFinite
 
@@ -105,6 +108,7 @@ instance (priority := 900) [IsFinite f] : IsIntegralHom f :=
 instance (priority := 900) [IsFinite f] : LocallyOfFiniteType f :=
   ((IsFinite.iff_isIntegralHom_and_locallyOfFiniteType f).mp ‹_›).2
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     IsClosedImmersion f ↔ IsFinite f ∧ Mono f := by
   wlog hY : IsAffine Y
@@ -140,8 +144,17 @@ lemma comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsFinite g] :
     IsFinite (f ≫ g) ↔ IsFinite f :=
   ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
+instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsFinite f] [IsFinite g] :
+    IsFinite (Limits.coprod.desc f g) := by
+  refine HasAffineProperty.coprodDesc_affineAnd inferInstance RingHom.finite_respectsIso
+    ?_ _ _ ‹_› ‹_›
+  intros R S T _ _ _ f g _ _
+  algebraize [f, g]
+  refine RingHom.finite_algebraMap.mpr inferInstance
+
 end IsFinite
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a Jacobson scheme and `k` is a field,
 `Spec(k) ⟶ X` is finite iff it is (locally) of finite type.
 (The statement is more general to allow the empty scheme as well) -/
@@ -175,6 +188,7 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
   change Module.Finite _ _ ↔ Algebra.FiniteType _ _
   exact ⟨fun _ ↦ inferInstance, fun _ ↦ finite_of_finite_type_of_isJacobsonRing _ _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 01TB "(1) => (3)"]
 lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
     {X Y : Scheme.{u}} (f : X ⟶ Y) [JacobsonSpace Y] [LocallyOfFiniteType f] :
@@ -186,6 +200,7 @@ lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
   simpa [Set.range_comp, Scheme.range_fromSpecResidueField] using
     (X.fromSpecResidueField x ≫ f).isClosedMap.isClosed_range
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 01TB "(1) => (2)"]
 lemma isClosed_singleton_iff_locallyOfFiniteType {X : Scheme.{u}} [JacobsonSpace X] {x : X} :
     IsClosed {x} ↔ LocallyOfFiniteType (X.fromSpecResidueField x) := by

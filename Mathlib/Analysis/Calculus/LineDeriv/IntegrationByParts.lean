@@ -46,7 +46,7 @@ TODO: prove similar theorems assuming that the functions tend to zero at infinit
 integrable derivatives.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Measure Module Topology
 

@@ -5,15 +5,16 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 module
 
-public meta import Mathlib.Algebra.Order.Group.PosPart
-public meta import Mathlib.Algebra.Order.Ring.Basic
-public meta import Mathlib.Algebra.Order.Hom.Basic
-public meta import Mathlib.Data.Int.CharZero
-public meta import Mathlib.Data.Nat.Factorial.Basic
-public meta import Mathlib.Data.NNRat.Defs
-public meta import Mathlib.Data.PNat.Defs
-public meta import Mathlib.Tactic.Positivity.Core
 public meta import Qq
+public import Mathlib.Algebra.Order.Group.PosPart  -- shake: keep (Qq dependency)
+public import Mathlib.Data.Nat.Factorial.Basic  -- shake: keep (Qq dependency)
+public import Mathlib.Data.Int.CharZero  -- shake: keep (Qq dependency)
+public import Mathlib.Data.PNat.Defs  -- shake: keep (Qq dependency)
+public import Mathlib.Algebra.Order.Ring.Basic  -- shake: keep (Qq dependency)
+public meta import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 ## `positivity` core extensions
@@ -31,25 +32,25 @@ open Lean Meta Qq Function
 section ite
 variable [Zero α] (p : Prop) [Decidable p] {a b : α}
 
-private lemma ite_pos [LT α] (ha : 0 < a) (hb : 0 < b) : 0 < ite p a b := by
+lemma ite_pos [LT α] (ha : 0 < a) (hb : 0 < b) : 0 < ite p a b := by
   by_cases p <;> simp [*]
 
-private lemma ite_nonneg [LE α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ ite p a b := by
+lemma ite_nonneg [LE α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ ite p a b := by
   by_cases p <;> simp [*]
 
-private lemma ite_nonneg_of_pos_of_nonneg [Preorder α] (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
+lemma ite_nonneg_of_pos_of_nonneg [Preorder α] (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
   ite_nonneg _ ha.le hb
 
-private lemma ite_nonneg_of_nonneg_of_pos [Preorder α] (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ ite p a b :=
+lemma ite_nonneg_of_nonneg_of_pos [Preorder α] (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ ite p a b :=
   ite_nonneg _ ha hb.le
 
-private lemma ite_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by by_cases p <;> simp [*]
+lemma ite_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by by_cases p <;> simp [*]
 
-private lemma ite_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) :
+lemma ite_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) :
     ite p a b ≠ 0 :=
   ite_ne_zero _ ha.ne' hb
 
-private lemma ite_ne_zero_of_ne_zero_of_pos [Preorder α] (ha : a ≠ 0) (hb : 0 < b) :
+lemma ite_ne_zero_of_ne_zero_of_pos [Preorder α] (ha : a ≠ 0) (hb : 0 < b) :
     ite p a b ≠ 0 :=
   ite_ne_zero _ ha hb.ne'
 
@@ -91,16 +92,14 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 section LinearOrder
 variable {R : Type*} [LinearOrder R] {a b c : R}
 
-private lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
-private lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
-private lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c := by
-  grind
+lemma le_min_of_lt_of_le (ha : a < b) (hb : a ≤ c) : a ≤ min b c := le_min ha.le hb
+lemma le_min_of_le_of_lt (ha : a ≤ b) (hb : a < c) : a ≤ min b c := le_min ha hb.le
+lemma min_ne (ha : a ≠ c) (hb : b ≠ c) : min a b ≠ c := by grind
 
-private lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
-private lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
+lemma min_ne_of_ne_of_lt (ha : a ≠ c) (hb : c < b) : min a b ≠ c := min_ne ha hb.ne'
+lemma min_ne_of_lt_of_ne (ha : c < a) (hb : b ≠ c) : min a b ≠ c := min_ne ha.ne' hb
 
-private lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c := by
-  grind
+lemma max_ne (ha : a ≠ c) (hb : b ≠ c) : max a b ≠ c := by grind
 
 end LinearOrder
 
@@ -164,8 +163,8 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let ra ← core zα pα a; let rb ← core zα pα b
   match ra, rb with
   | .positive pa, .positive pb =>
-    let _a ← synthInstanceQ q(AddLeftStrictMono $α)
-    pure (.positive q(add_pos $pa $pb))
+    let _a ← synthInstanceQ q(AddLeftMono $α)
+    pure (.positive q(add_pos' $pa $pb))
   | .positive pa, .nonnegative pb =>
     let _a ← synthInstanceQ q(AddLeftMono $α)
     pure (.positive q(add_pos_of_pos_of_nonneg $pa $pb))
@@ -214,16 +213,16 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   result ← orElse result (tryProveNonzero ra.toNonzero rb.toNonzero)
   return result
 
-private lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
+lemma int_div_self_pos {a : ℤ} (ha : 0 < a) : 0 < a / a := by
   rw [Int.ediv_self ha.ne']; exact zero_lt_one
 
-private lemma int_div_nonneg_of_pos_of_nonneg {a b : ℤ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
+lemma int_div_nonneg_of_pos_of_nonneg {a b : ℤ} (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ a / b :=
   Int.ediv_nonneg ha.le hb
 
-private lemma int_div_nonneg_of_nonneg_of_pos {a b : ℤ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
+lemma int_div_nonneg_of_nonneg_of_pos {a b : ℤ} (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ a / b :=
   Int.ediv_nonneg ha hb.le
 
-private lemma int_div_nonneg_of_pos_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) : 0 ≤ a / b :=
+lemma int_div_nonneg_of_pos_of_pos {a b : ℤ} (ha : 0 < a) (hb : 0 < b) : 0 ≤ a / b :=
   Int.ediv_nonneg ha.le hb.le
 
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
@@ -249,7 +248,7 @@ where `a` and `b` are integers. -/
     | _, _ => pure .none
   | _, _, _ => throwError "not /"
 
-private theorem pow_zero_pos [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
+theorem pow_zero_pos [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
     (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
@@ -317,7 +316,7 @@ meta def evalPow : PositivityExt where eval {u α} zα pα e := do
         ofNonzero q($pa) q($sα) q($oα)
     | .none => pure .none
 
-private theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
+theorem abs_pos_of_ne_zero {α : Type*} [AddGroup α] [LinearOrder α]
     [AddLeftMono α] {a : α} : a ≠ 0 → 0 < |a| := abs_pos.mpr
 
 /-- The `positivity` extension which identifies expressions of the form `|a|`. -/
@@ -332,12 +331,12 @@ meta def evalAbs : PositivityExt where eval {_u} (α zα pα) (e : Q($α)) := do
     | .nonzero pa =>
       let pa' ← mkAppM ``abs_pos_of_ne_zero #[pa]
       pure (.positive pa')
-    | _ => pure .none
+    | _ => throwError "goto catch"
   catch _ => do
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative pa')
 
-private theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
+theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
   Int.natAbs_pos.mpr hn.ne'
 
 /-- Extension for the `positivity` tactic: `Int.natAbs` is positive when its input is.
@@ -526,8 +525,8 @@ meta def evalIntLCM : PositivityExt where eval {u α} _ _ e := do
 section NNRat
 open NNRat
 
-private alias ⟨_, NNRat.num_pos_of_pos⟩ := num_pos
-private alias ⟨_, NNRat.num_ne_zero_of_ne_zero⟩ := num_ne_zero
+alias ⟨_, NNRat.num_pos_of_pos⟩ := num_pos
+alias ⟨_, NNRat.num_ne_zero_of_ne_zero⟩ := num_ne_zero
 
 /-- The `positivity` extension which identifies expressions of the form `NNRat.num q`,
 such that `positivity` successfully recognises `q`. -/
@@ -563,9 +562,9 @@ end NNRat
 
 open Rat
 
-private alias ⟨_, num_pos_of_pos⟩ := num_pos
-private alias ⟨_, num_nonneg_of_nonneg⟩ := num_nonneg
-private alias ⟨_, num_ne_zero_of_ne_zero⟩ := num_ne_zero
+alias ⟨_, num_pos_of_pos⟩ := num_pos
+alias ⟨_, num_nonneg_of_nonneg⟩ := num_nonneg
+alias ⟨_, num_ne_zero_of_ne_zero⟩ := num_ne_zero
 
 /-- The `positivity` extension which identifies expressions of the form `Rat.num a`,
 such that `positivity` successfully recognises `a`. -/

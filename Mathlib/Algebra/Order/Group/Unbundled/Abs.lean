@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Group.Even
 public import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Order.Group.Lattice
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Absolute values in ordered groups
@@ -34,7 +35,7 @@ section Group
 variable [Group α] {a b : α}
 
 /-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
-@[to_additive /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
+@[to_additive (attr := grind) /-- `abs a`, denoted `|a|`, is the absolute value of `a` -/]
 def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
@@ -153,6 +154,7 @@ lemma inf_sq_eq_mul_div_mabs_div (a b : α) : (a ⊓ b) ^ 2 = a * b / |b / a|ₘ
   rw [← inf_mul_sup a b, ← sup_div_inf_eq_mabs_div, div_eq_mul_inv, div_eq_mul_inv, mul_inv_rev,
     inv_inv, mul_assoc, mul_inv_cancel_comm_assoc, ← pow_two]
 
+set_option backward.isDefEq.respectTransparency false in
 -- See, e.g. Zaanen, Lectures on Riesz Spaces
 -- 3rd lecture
 @[to_additive]

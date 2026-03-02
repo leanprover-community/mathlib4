@@ -36,7 +36,7 @@ Note a tail-recursive version of `Nat.log` is also possible:
 def logTR (b n : ℕ) : ℕ :=
   let rec go : ℕ → ℕ → ℕ | n, acc => if h : b ≤ n ∧ 1 < b then go (n / b) (acc + 1) else acc
   decreasing_by
-    have : n / b < n := Nat.div_lt_self (by omega) h.2
+    have : n / b < n := Nat.div_lt_self (by lia) h.2
     decreasing_trivial
   go n 0
 ```
@@ -213,11 +213,8 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
   have hm : m ≠ 0 := h.resolve_right hbn
   rw [not_and_or, not_lt, Ne, not_not] at hbn
   rcases hbn with (hb | rfl)
-  · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb
-    any_goals
-      simp only [ne_eq, lt_self_iff_false, not_lt_zero, false_and, or_false]
-        at h
-      simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> omega
+  · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb <;>
+      simp only [log_zero_left, log_one_left] <;> lia
   · simp [@eq_comm _ 0, hm]
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :
@@ -307,12 +304,12 @@ theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
   rcases lt_or_ge n b with h | h
   · rw [div_eq_of_lt h, Nat.zero_mul, log_zero_right, log_of_lt h]
-  rw [log_mul_base hb (Nat.div_pos h (by cutsat)).ne', log_div_base,
+  rw [log_mul_base hb (Nat.div_pos h (by lia)).ne', log_div_base,
     Nat.sub_add_cancel (succ_le_iff.2 <| log_pos hb h)]
 
 theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / b < n := by
-  rw [div_lt_iff_lt_mul (by cutsat), ← succ_le_iff, ← pred_eq_sub_one,
-    succ_pred_eq_of_pos (by cutsat)]
+  rw [div_lt_iff_lt_mul (by lia), ← succ_le_iff, ← pred_eq_sub_one,
+    succ_pred_eq_of_pos (by lia)]
   exact Nat.add_le_mul hn hb
 
 lemma log_two_bit {b n} (hn : n ≠ 0) : Nat.log 2 (n.bit b) = Nat.log 2 n + 1 := by
@@ -428,7 +425,7 @@ theorem clog_of_two_le {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) :
 
 theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := by
   rw [clog_of_two_le (hn.trans h) hn, clog_of_right_le_one]
-  rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul] <;> omega
+  rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul] <;> lia
 
 theorem clog_le_of_le_pow {b x y : ℕ} (h : x ≤ b ^ y) : clog b x ≤ y := by
   rcases Nat.lt_or_ge 1 b with hb | hb
@@ -513,7 +510,7 @@ theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
 
-/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉, using operations on natural numbers
+/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉`, using operations on natural numbers
 to express this equality.
 
 Since Lean has no dedicated function for the ceiling division,

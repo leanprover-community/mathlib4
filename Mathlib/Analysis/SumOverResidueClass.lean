@@ -5,9 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Data.ZMod.Basic
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Sums over residue classes
@@ -60,6 +60,7 @@ lemma not_summable_of_antitone_of_neg {f : ℕ → ℝ} (hf : Antitone f) {n : �
   have H : f (max n N) ≤ f n := hf (n.le_max_left N)
   rwa [abs_of_neg hn, abs_of_neg (H.trans_lt hn), neg_le_neg_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : ℕ → ℝ` is decreasing and has a negative term, then `f` restricted to a residue
 class is not summable. -/
 lemma not_summable_indicator_mod_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f : ℕ → ℝ}
@@ -70,6 +71,7 @@ lemma not_summable_indicator_mod_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f
     (hf.comp_monotone <| (Covariant.monotone_of_const m).add_const k.val) <|
     (hf <| (Nat.le_mul_of_pos_left n Fin.pos').trans <| Nat.le_add_right ..).trans_lt hn
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a decreasing sequence of real numbers is summable on one residue class
 modulo `m`, then it is also summable on every other residue class mod `m`. -/
 lemma summable_indicator_mod_iff_summable_indicator_mod {m : ℕ} [NeZero m] {f : ℕ → ℝ}

@@ -51,13 +51,13 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.C
     have nej : (k + 1) * j % n ≠ j := by
       by_contra! h; nth_rw 2 [← Nat.mod_eq_of_lt hj.2, ← one_mul j] at h
       replace h : (k + 1) % n = 1 % n := Nat.ModEq.cancel_right_of_coprime cpj h
-      rw [Nat.mod_eq_of_lt hk.2, Nat.mod_eq_of_lt (by omega)] at h
-      omega
+      rw [Nat.mod_eq_of_lt hk.2, Nat.mod_eq_of_lt (by lia)] at h
+      lia
     have b₁ : (k + 1) * j % n ∈ Set.Ico 1 n := by
-      refine ⟨?_, Nat.mod_lt _ (by omega)⟩
+      refine ⟨?_, Nat.mod_lt _ (by lia)⟩
       by_contra! h; rw [Nat.lt_one_iff, ← Nat.dvd_iff_mod_eq_zero] at h
       have ek := Nat.eq_zero_of_dvd_of_lt (cpj.dvd_of_dvd_mul_right h) hk.2
-      omega
+      lia
     rw [← ih ⟨hk₁, Nat.lt_of_succ_lt hk.2⟩, hC.2 _ b₁ nej]
     rcases nej.lt_or_gt with h | h
     · rw [Int.natAbs_natCast_sub_natCast_of_ge h.le]
@@ -65,8 +65,8 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.C
         ⟨Nat.sub_pos_iff_lt.mpr h, (Nat.sub_le ..).trans_lt hj.2⟩
       have q : n - (j - (k + 1) * j % n) = (k + 1) * j % n + (n - j) % n := by
         rw [tsub_tsub_eq_add_tsub_of_le h.le, add_comm, Nat.add_sub_assoc hj.2.le,
-          Nat.mod_eq_of_lt (show n - j < n by omega)]
-      rw [hC.1 _ b₂, q, ← Nat.add_mod_of_add_mod_lt (by omega), ← Nat.add_sub_assoc hj.2.le,
+          Nat.mod_eq_of_lt (show n - j < n by lia)]
+      rw [hC.1 _ b₂, q, ← Nat.add_mod_of_add_mod_lt (by lia), ← Nat.add_sub_assoc hj.2.le,
         add_comm, Nat.add_sub_assoc (Nat.le_mul_of_pos_left _ hk.1), ← tsub_one_mul,
         Nat.add_mod_left, add_tsub_cancel_right]
     · rw [Int.natAbs_natCast_sub_natCast_of_le h.le, Nat.mod_sub_of_le h.le]
@@ -75,13 +75,13 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.C
 theorem result {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Coprime n j)
     {C : ℕ → Fin 2} (hC : Condition n j C) {i : ℕ} (hi : i ∈ Set.Ico 1 n) :
     C i = C j := by
-  obtain ⟨v, -, hv⟩ := exists_mul_mod_eq_one_of_coprime cpj.symm (by omega)
+  obtain ⟨v, -, hv⟩ := exists_mul_mod_eq_one_of_coprime cpj.symm (by lia)
   have hvi : i = (v * i % n) * j % n := by
     rw [mod_mul_mod, ← mul_rotate, ← mod_mul_mod, hv, one_mul, mod_eq_of_lt hi.2]
   have vib : v * i % n ∈ Set.Ico 1 n := by
-    refine ⟨(?_ : 0 < _), mod_lt _ (by omega)⟩
+    refine ⟨(?_ : 0 < _), mod_lt _ (by lia)⟩
     by_contra! h; rw [le_zero, ← dvd_iff_mod_eq_zero] at h
-    rw [mul_comm, ← mod_eq_of_lt (show 1 < n by omega)] at hv
+    rw [mul_comm, ← mod_eq_of_lt (show 1 < n by lia)] at hv
     have i0 := eq_zero_of_dvd_of_lt
       ((coprime_of_mul_modEq_one _ hv).symm.dvd_of_dvd_mul_left h) hi.2
     subst i; simp at hi

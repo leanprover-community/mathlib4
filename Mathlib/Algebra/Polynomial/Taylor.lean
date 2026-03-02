@@ -117,6 +117,10 @@ theorem eq_zero_of_hasseDeriv_eq_zero (f : R[X]) (r : R)
   ext k
   rw [taylor_coeff, h, coeff_zero]
 
+@[simp] lemma map_taylor {R S : Type*} [Semiring R] [Semiring S] (p : R[X]) (r : R) (f : R →+* S) :
+    (p.taylor r).map f = (p.map f).taylor (f r) := by
+  simp [taylor_apply, Polynomial.map_comp]
+
 end Semiring
 
 section Ring
@@ -174,6 +178,7 @@ section CommRing
 
 variable {R : Type*} [CommRing R] (r : R) (f : R[X])
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- `Polynomial.taylor` as an `AlgEquiv` for commutative rings. -/
 noncomputable def taylorEquiv (r : R) : R[X] ≃ₐ[R] R[X] where
   invFun      := taylorAlgHom (-r)

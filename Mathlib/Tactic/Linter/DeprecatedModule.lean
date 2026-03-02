@@ -7,6 +7,7 @@ module
 
 public meta import Std.Time.Format
 public import Mathlib.Init
+public import Std.Time.Date
 
 /-!
 # The `deprecated.module` linter
@@ -27,7 +28,7 @@ This triggers the `deprecated.module` linter to notify every file with `import A
 to instead import the *direct imports* of `A`, that is `B, ..., Z`.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
@@ -39,7 +40,7 @@ is imported.
 The default value is `true`, since this linter is designed to warn projects downstream of `Mathlib`
 of refactors and deprecations in `Mathlib` itself.
 -/
-register_option linter.deprecated.module : Bool := {
+public register_option linter.deprecated.module : Bool := {
   defValue := true
   descr := "enable the `deprecated.module` linter"
 }
@@ -52,7 +53,7 @@ Defines the `deprecatedModuleExt` extension for adding a `HashSet` of triples of
 
 to the environment.
 -/
-initialize deprecatedModuleExt :
+public initialize deprecatedModuleExt :
     SimplePersistentEnvExtension
       (Name × Array Name × Option String) (Std.HashSet (Name × Array Name × Option String)) ←
   registerSimplePersistentEnvExtension {
@@ -133,6 +134,10 @@ def deprecated.moduleLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless getLinterValue linter.deprecated.module (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
+    return
+  -- Exempt Mathlib.lean since it's auto-generated and imports all modules
+  -- for backwards compatibility
+  if (← getFileName).endsWith "Mathlib.lean" then
     return
   let laterCommand ← IsLaterCommand.get
   -- If `laterCommand` is `true`, then the linter already did what it was supposed to do.

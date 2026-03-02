@@ -128,7 +128,7 @@ noncomputable section
 
 open CategoryTheory Category Idempotents
 
-variable {A : Type*} [Category A] [Abelian A]
+variable {A : Type*} [Category* A] [Abelian A]
 
 namespace CategoryTheory
 

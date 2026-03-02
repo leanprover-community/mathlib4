@@ -41,7 +41,9 @@ theorem IsLocalization.flat : Module.Flat R S := by
     ext; change _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
   simpa [this] using e.injective
 
-instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.flat _ p
+instance Localization.flat [Module.Flat R S] (p : Submonoid S) : Module.Flat R (Localization p) :=
+  have : Module.Flat S (Localization p) := IsLocalization.flat _ p
+  .trans R S _
 
 namespace Module
 

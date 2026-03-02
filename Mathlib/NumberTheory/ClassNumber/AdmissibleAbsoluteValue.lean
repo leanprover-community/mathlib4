@@ -62,9 +62,10 @@ theorem exists_partition {ι : Type*} [Finite ι] {ε : ℝ} (hε : 0 < ε) {b :
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   obtain ⟨t, ht⟩ := h.exists_partition' n hε hb (A ∘ e.symm)
   refine ⟨t ∘ e, fun i₀ i₁ h ↦ ?_⟩
-  convert (config := {transparency := .default})
+  convert (config := { transparency := .default })
     ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any large enough family of vectors in `R^n` has a pair of elements
 whose remainders are close together, pointwise. -/
 theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
@@ -81,7 +82,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
   intro ε hε b hb A
   let M := h.card ε
   -- By the "nicer" pigeonhole principle, we can find a collection `s`
-  -- of more than `M^n` remainders where the first components lie close together:
+  -- of more than `M ^ n` remainders where the first components lie close together:
   obtain ⟨s, s_inj, hs⟩ :
     ∃ s : Fin (M ^ n).succ → Fin (M ^ n.succ).succ,
       Function.Injective s ∧ ∀ i₀ i₁, (abv (A (s i₁) 0 % b - A (s i₀) 0 % b) : ℝ) < abv b • ε := by
@@ -101,7 +102,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     refine ⟨fun i ↦ (Finset.toList {x | t x = s})[i.castLE this], fun i j h ↦ ?_,
       fun i₀ i₁ ↦ ht _ _ ?_⟩
     · simpa [(Finset.nodup_toList _).getElem_inj_iff, Fin.val_inj] using h
-    · have : ∀ (i : Fin (M^n).succ), t (Finset.toList {x | t x = s})[i.castLE this] = s := fun i ↦
+    · have (i : Fin (M ^ n).succ) : t (Finset.toList {x | t x = s})[i.castLE this] = s :=
         (Finset.mem_filter.mp ((Finset.mem_toList (s := {x | t x = s})).mp (List.getElem_mem _))).2
       simp_rw [this]
   -- Since `s` is large enough, there are two elements of `A ∘ s`

@@ -13,8 +13,8 @@ public import Mathlib.Tactic.AdaptationNote
 
 Given a stochastic process, the hitting time provides the first time the process "hits" some
 subset of the state space. The hitting time is a stopping time in the case that the time index is
-discrete and the process is adapted (this is true in a far more general setting however we have
-only proved it for the discrete case so far).
+discrete and the process is strongly adapted (this is true in a far more general setting however
+we have only proved it for the discrete case so far).
 
 ## Main definition
 
@@ -25,10 +25,10 @@ only proved it for the discrete case so far).
 
 ## Main results
 
-* `MeasureTheory.hittingBtwn_isStoppingTime`: a discrete hitting time of an adapted process is a
-  stopping time
-* `MeasureTheory.hittingAfter_isStoppingTime`: a discrete hitting time of an adapted process is a
-  stopping time
+* `MeasureTheory.Adapted.isStoppingTime_hittingBtwn`: a discrete hitting time of an adapted process
+  is a stopping time
+* `MeasureTheory.Adapted.isStoppingTime_hittingAfter`: a discrete hitting time of a adapted process
+  is a stopping time
 
 -/
 
@@ -52,7 +52,7 @@ open scoped Classical in
 the first time `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s`
 after time `n` and before `m` then the hitting time is simply `m`).
 
-The hitting time is a stopping time if the process is adapted and discrete. -/
+The hitting time is a stopping time if the process is strongly adapted and discrete. -/
 noncomputable def hittingBtwn (u : ι → Ω → β)
     (s : Set β) (n m : ι) : Ω → ι :=
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
@@ -138,8 +138,7 @@ theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω)
 
 @[deprecated (since := "2025-10-25")] alias notMem_of_lt_hitting := notMem_of_lt_hittingBtwn
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_lt_hitting := notMem_of_lt_hittingBtwn
-
+set_option backward.isDefEq.respectTransparency false in
 theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   refine fun h ↦ not_le.2 hk₁ ?_
@@ -180,6 +179,7 @@ theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u 
 
 @[deprecated (since := "2025-10-25")] alias le_hitting := le_hittingBtwn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω := by
   simp only [hittingAfter]
   split_ifs with h
@@ -245,6 +245,7 @@ theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u 
 
 @[deprecated (since := "2025-10-25")] alias hitting_le_of_mem := hittingBtwn_le_of_mem
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i := by
   have h_exists : ∃ k, n ≤ k ∧ u k ω ∈ s := ⟨i, hin, his⟩
@@ -269,6 +270,7 @@ theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
 @[deprecated (since := "2025-10-25")] alias hitting_le_iff_of_exists :=
   hittingBtwn_le_iff_of_exists
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hittingAfter_le_iff [WellFoundedLT ι] :
     hittingAfter u s n ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s := by
   constructor <;> intro h'
@@ -306,6 +308,7 @@ theorem hittingBtwn_lt_iff [WellFoundedLT ι] {m : ι} (i : ι) (hi : i ≤ m) :
 
 @[deprecated (since := "2025-10-25")] alias hitting_lt_iff := hittingBtwn_lt_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hittingAfter_lt_iff [WellFoundedLT ι] :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s := by
   constructor <;> intro h'
@@ -347,6 +350,7 @@ lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `hittingAfter` is nonincreasing with respect to the set. -/
 lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter u · n) := by
   intro E F hEF ω
@@ -376,8 +380,7 @@ theorem hittingBtwn_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) :
     split_ifs with h'
     · obtain ⟨j, hj₁, hj₂⟩ := h'
       refine le_csInf ⟨j, hj₁, hj₂⟩ ?_
-      by_contra! hneg
-      obtain ⟨i, hi₁, hi₂⟩ := hneg
+      by_contra! ⟨i, hi₁, hi₂⟩
       exact h ⟨i, ⟨hi₁.1.1, hi₂.le⟩, hi₁.2⟩
     · exact hm
 
@@ -398,6 +401,7 @@ lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
     exact absurd ⟨t, ⟨hnn'.trans ht.1.1, ht.1.2⟩, ht.2⟩ h_n
   · simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `hittingAfter` is monotone with respect to the minimal time. -/
 lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingAfter u s) := by
   intro n m hnm ω
@@ -422,39 +426,38 @@ lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
 
 end Inequalities
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A discrete hitting time is a stopping time. -/
-theorem hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : Adapted f u)
-    (hs : MeasurableSet s) : IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
+theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
+    [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β} {s : Set β}
+    {n n' : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
+    IsStoppingTime f (fun ω ↦ (hittingBtwn u s n n' ω : ι)) := by
   intro i
   rcases le_or_gt n' i with hi | hi
   · have h_le : ∀ ω, hittingBtwn u s n n' ω ≤ i := fun x => (hittingBtwn_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hittingBtwn u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
-      ext x
-      rw [Set.mem_setOf_eq, hittingBtwn_le_iff_of_lt _ hi]
-      simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
-    simp_rw [WithTop.coe_le_coe, h_set_eq_Union]
-    exact MeasurableSet.iUnion fun j =>
-      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
+      ext; simp [hittingBtwn_le_iff_of_lt _ hi]
+    simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
+      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
 
-@[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime := hittingBtwn_isStoppingTime
+@[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime :=
+  Adapted.isStoppingTime_hittingBtwn
+@[deprecated (since := "2026-01-25")]
+alias hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn
 
-/-- A discrete hitting time is a stopping time. -/
-theorem hittingAfter_isStoppingTime [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
-    [Countable ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β]
-    {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n : ι}
-    (hu : Adapted f u) (hs : MeasurableSet s) :
+theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
+    [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
+    {s : Set β} {n : ι} (hu : Adapted f u) (hs : MeasurableSet s) :
     IsStoppingTime f (hittingAfter u s n) := by
   intro i
   have h_set_eq_Union : {ω | hittingAfter u s n ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
-    ext x
-    rw [Set.mem_setOf_eq, hittingAfter_le_iff]
-    simp only [Set.mem_Icc, exists_prop, Set.mem_iUnion, Set.mem_preimage]
-  rw [h_set_eq_Union]
-  exact MeasurableSet.iUnion fun j =>
-      MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j).measurable hs)
+    ext; simp [hittingAfter_le_iff]
+  simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
+    MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
+
+@[deprecated (since := "2026-01-25")]
+alias hittingAfter_isStoppingTime := Adapted.isStoppingTime_hittingAfter
 
 theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -467,13 +470,13 @@ theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [Well
 
 @[deprecated (since := "2025-10-25")] alias stoppedValue_hitting_mem := stoppedValue_hittingBtwn_mem
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The hitting time of a discrete process with the starting time indexed by a stopping time
 is a stopping time. -/
-theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
+theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] [TopologicalSpace ι] [OrderTopology ι]
-    [FirstCountableTopology ι] [TopologicalSpace β] [PseudoMetrizableSpace β] [MeasurableSpace β]
-    [BorelSpace β] {f : Filtration ι m} {u : ι → Ω → β} {τ : Ω → WithTop ι}
-    (hτ : IsStoppingTime f τ)
+    [FirstCountableTopology ι] [MeasurableSpace β] {f : Filtration ι m} {u : ι → Ω → β}
+    {τ : Ω → WithTop ι} (hτ : IsStoppingTime f τ)
     {N : ι} (hτbdd : ∀ x, τ x ≤ N) {s : Set β} (hs : MeasurableSet s) (hf : Adapted f u) :
     IsStoppingTime f fun x ↦ (hittingBtwn u s (τ x).untopA N x : ι) := by
   intro n
@@ -497,15 +500,15 @@ theorem isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyCompleteLinearOr
     lift τ x to ι using h_top with t
     rw [hτ] at hτbdd
     exact mod_cast hτbdd
-  simp only [WithTop.coe_le_coe]
-  rw [h₁, h₂, Set.union_empty]
+  simp only [WithTop.coe_le_coe, h₁, h₂, Set.union_empty]
   refine MeasurableSet.iUnion fun i => MeasurableSet.iUnion fun hi =>
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
-  have h := hittingBtwn_isStoppingTime (n := i) (n' := N) hf hs n
-  simpa only [WithTop.coe_le_coe] using h
+  simpa using hf.isStoppingTime_hittingBtwn hs n
 
 @[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
-  isStoppingTime_hittingBtwn_isStoppingTime
+  Adapted.isStoppingTime_hittingBtwn_isStoppingTime
+@[deprecated (since := "2026-01-25")]
+alias isStoppingTime_hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn_isStoppingTime
 
 section CompleteLattice
 

@@ -49,6 +49,7 @@ def coconeTypesEquiv : CoconeTypes.{u} F ≃ Cocone F where
 
 variable {F}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CoconeTypes.isColimit_iff (c : CoconeTypes.{u} F) :
     c.IsColimit ↔ Nonempty (Limits.IsColimit (F.coconeTypesEquiv c)) := by
   constructor
@@ -102,15 +103,9 @@ theorem hasColimit_iff_small_colimitType (F : J ⥤ Type u) :
       ((isColimit_iff_coconeTypesIsColimit _).1 ⟨colimit.isColimit F⟩).bijective.1,
     fun _ ↦ ⟨_, colimitCoconeIsColimit F⟩⟩
 
-@[deprecated (since := "2025-06-22")] alias hasColimit_iff_small_quot :=
-  hasColimit_iff_small_colimitType
-
 theorem small_colimitType_of_hasColimit (F : J ⥤ Type u) [HasColimit F] :
     Small.{u} F.ColimitType :=
   (hasColimit_iff_small_colimitType F).mp inferInstance
-
-@[deprecated (since := "2025-06-22")] alias small_quot_of_hasColimit :=
-  small_colimitType_of_hasColimit
 
 instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
   (hasColimit_iff_small_colimitType F).mpr inferInstance
@@ -235,21 +230,5 @@ theorem jointly_surjective' (x : colimit F) :
 theorem nonempty_of_nonempty_colimit {F : J ⥤ Type u} [HasColimit F] :
     Nonempty (colimit F) → Nonempty J :=
   Nonempty.map <| Sigma.fst ∘ Quot.out ∘ (colimitEquivColimitType F).toFun
-
-@[deprecated (since := "2025-06-22")] alias Quot.Rel := Functor.ColimitTypeRel
-@[deprecated (since := "2025-06-22")] alias Quot := Functor.ColimitType
-@[deprecated (since := "2025-06-22")] alias Quot.ι := Functor.ιColimitType
-@[deprecated (since := "2025-06-22")] alias Quot.jointly_surjective :=
-  Functor.ιColimitType_jointly_surjective
-@[deprecated (since := "2025-06-22")] alias Quot.desc := Functor.descColimitType
-@[deprecated (since := "2025-06-22")] alias Quot.ι_desc := Functor.descColimitType_comp_ι
-@[deprecated (since := "2025-06-22")] alias Quot.map_ι := Functor.ιColimitType_map
-@[deprecated (since := "2025-06-22")] alias isColimit_iff_bijective_desc :=
-  isColimit_iff_coconeTypesIsColimit
-@[deprecated (since := "2025-06-22")] alias colimitEquivQuot := colimitEquivColimitType
-@[deprecated (since := "2025-06-22")] alias colimitEquivQuot_symm_apply :=
-  colimitEquivColimitType_symm_apply
-@[deprecated (since := "2025-06-22")] alias colimitEquivQuot_apply :=
-  colimitEquivColimitType_apply
 
 end CategoryTheory.Limits.Types

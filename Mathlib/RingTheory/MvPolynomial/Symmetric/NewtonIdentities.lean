@@ -41,7 +41,7 @@ terms).
 See [zeilberger1984] for the combinatorial proof of Newton's identities.
 -/
 
-@[expose] public section
+public section
 
 open Equiv (Perm)
 
@@ -192,12 +192,14 @@ private theorem esymm_summand_to_weight (k : ℕ) (A : Finset σ) (h : A ∈ pow
     ∑ j ∈ A, weight σ R k (A, j) = k * (-1) ^ k * (∏ i ∈ A, X i : MvPolynomial σ R) := by
   simp [weight, mem_powersetCard_univ.mp h, mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem esymm_to_weight [DecidableEq σ] (k : ℕ) : k * esymm σ R k =
     (-1) ^ k * ∑ t ∈ pairs σ k with #t.1 = k, weight σ R k t := by
   rw [esymm, sum_filter_pairs_eq_sum_powersetCard_sum σ R k (fun t ↦ weight σ R k t),
     sum_congr rfl (esymm_summand_to_weight σ R k), mul_comm (k : MvPolynomial σ R) ((-1) ^ k),
     ← mul_sum, ← mul_assoc, ← mul_assoc, ← pow_add, Even.neg_one_pow ⟨k, rfl⟩, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha : a ∈ antidiagonal k) :
     ∑ A ∈ powersetCard a.fst univ, ∑ j, weight σ R k (A, j) =
     (-1) ^ a.fst * esymm σ R a.fst * psum σ R a.snd := by
@@ -262,7 +264,7 @@ theorem psum_eq_mul_esymm_sub_sum (k : ℕ) (h : 0 < k) :
   have : {a ∈ antidiagonal k | a.fst < k ∧ ¬0 < a.fst} = {(0, k)} := by
     ext a
     rw [mem_filter, mem_antidiagonal, mem_singleton]
-    refine ⟨?_, by rintro rfl; cutsat⟩
+    refine ⟨?_, by rintro rfl; lia⟩
     rintro ⟨ha, ⟨_, ha0⟩⟩
     rw [← ha, Nat.eq_zero_of_not_pos ha0, zero_add, ← Nat.eq_zero_of_not_pos ha0]
   rw [this, sum_singleton] at sub_both_sides

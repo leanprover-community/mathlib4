@@ -34,6 +34,14 @@ variable {S' : Type*} [SetLike S' M'] (s : S')
 instance (priority := low) [SMul M' α] : SMul s α where
   smul m a := (m : M') • a
 
+@[to_additive]
+instance (priority := low) [SMul M' α] [IsLeftCancelSMul M' α] : IsLeftCancelSMul s α where
+  left_cancel' x _ _ := IsLeftCancelSMul.left_cancel x.1 _ _
+
+@[to_additive]
+instance (priority := low) [SMul M' α] [IsCancelSMul M' α] : IsCancelSMul s α where
+  right_cancel' _ _ _ eq := Subtype.ext <| IsCancelSMul.right_cancel _ _ _ eq
+
 section MulOneClass
 
 variable [MulOneClass M']
@@ -105,6 +113,10 @@ variable [Monoid M']
       /-- The additive action by an `AddSubmonoid` is the action by the underlying `AddMonoid`. -/]
 instance mulAction [MulAction M' α] (S : Submonoid M') : MulAction S α :=
   inferInstance
+
+instance smulDistribClass {β S : Type*} [SMul M' α] [SMul M' β] [SMul α β] [SetLike S M']
+    [h : SMulDistribClass M' α β] (N' : S) :
+    SMulDistribClass N' α β := ⟨fun g _ _ ↦ h.smul_distrib_smul g _ _⟩
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
 

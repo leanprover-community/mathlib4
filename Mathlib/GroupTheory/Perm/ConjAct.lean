@@ -23,7 +23,7 @@ Let `α` be a decidable fintype.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Equiv.Perm
 

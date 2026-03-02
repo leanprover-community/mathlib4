@@ -5,13 +5,14 @@ Authors: Robert Y. Lewis
 -/
 module
 
-public meta import Mathlib.Algebra.Field.Basic
-public meta import Mathlib.Algebra.Order.Ring.Defs
 public meta import Mathlib.Data.Tree.Basic
 public meta import Mathlib.Logic.Basic
-public meta import Mathlib.Tactic.NormNum.Core
-public meta import Mathlib.Util.SynthesizeUsing
-public meta import Mathlib.Util.Qq
+public import Mathlib.Algebra.Field.Basic
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Tree.Basic
+public import Mathlib.Tactic.NormNum.Core
+public import Mathlib.Util.SynthesizeUsing
 
 /-!
 # A tactic for canceling numeric denominators
@@ -341,6 +342,7 @@ def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
     (fun _ ↦ throwError "Failed to cancel any denominators")
 
+@[tactic_alt cancelDenoms]
 elab "cancel_denoms" loc?:(location)? : tactic => do
   cancelDenominators (expandOptLocation (Lean.mkOptionalNode loc?))
   Lean.Elab.Tactic.evalTactic (← `(tactic| try norm_num [← mul_assoc] $[$loc?]?))

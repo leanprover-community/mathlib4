@@ -17,7 +17,7 @@ public import Mathlib.Topology.Algebra.Group.Pointwise
 Lemmas on topological sums in groups (as opposed to monoids).
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -46,7 +46,7 @@ theorem Multipliable.of_inv (hf : Multipliable (fun b ↦ (f b)⁻¹) L) : Multi
   simpa only [inv_inv] using hf.inv
 
 @[to_additive]
-theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L:=
+theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L :=
   ⟨Multipliable.of_inv, Multipliable.inv⟩
 
 @[to_additive]
@@ -231,6 +231,7 @@ theorem cauchySeq_finset_iff_prod_vanishing :
     simp only [this]
     exact hde _ (h _ Finset.sdiff_disjoint) _ (h _ Finset.sdiff_disjoint)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem cauchySeq_finset_iff_tprod_vanishing :
     (CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b) ↔
@@ -394,7 +395,7 @@ theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
 
 @[to_additive (attr := simp)]
 theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := by
-  rcases finite_or_infinite β with hβ|hβ
+  rcases finite_or_infinite β with hβ | hβ
   · letI : Fintype β := Fintype.ofFinite β
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
     simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]

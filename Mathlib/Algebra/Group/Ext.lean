@@ -27,7 +27,7 @@ former uses `HMul.hMul` which is the canonical spelling.
 monoid, group, extensionality
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -96,6 +96,14 @@ theorem CancelMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelMonoid M⦄
     (h_mul : (letI := m₁; HMul.hMul : M → M → M) = (letI := m₂; HMul.hMul : M → M → M)) :
     m₁ = m₂ :=
   CancelMonoid.toLeftCancelMonoid_injective <| LeftCancelMonoid.ext h_mul
+
+@[to_additive]
+theorem CancelMonoid.toRightCancelMonoid_injective {M : Type u} :
+    Function.Injective (@CancelMonoid.toRightCancelMonoid M) := by
+  intro m₁ m₂ h
+  apply CancelMonoid.ext
+  exact congrArg (fun m : Monoid M => (letI := m; HMul.hMul : M → M → M)) <|
+    congrArg (@RightCancelMonoid.toMonoid M) h
 
 @[to_additive]
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :

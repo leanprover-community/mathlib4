@@ -79,6 +79,13 @@ theorem supported_eq_span_single (s : Set α) :
     rw [show single i (l i) = l i • single i 1 by simp]
     exact smul_mem _ (l i) (subset_span (mem_image_of_mem _ (hl il)))
 
+lemma single_mem_span_single [Nontrivial R] {a : α} {s : Set α} :
+    single a 1 ∈ Submodule.span R ((single · (1 : R)) '' s) ↔ a ∈ s := by
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem _ h⟩
+  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
+    Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
+  simpa using h
+
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
     span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
   span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (SetLike.coe ·.support))

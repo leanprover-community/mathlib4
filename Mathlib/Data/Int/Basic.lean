@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Int.Init
 public import Mathlib.Data.Nat.Basic
-public import Mathlib.Logic.Nontrivial.Defs
+public import Mathlib.Logic.Function.Basic
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Lift
@@ -27,10 +27,7 @@ open Nat
 namespace Int
 variable {a b c d m n : ℤ}
 
--- TODO: Tag in Lean
-attribute [simp] natAbs_pos
-
-@[gcongr] alias ⟨_, GCongr.ofNat_le_ofNat⟩ := ofNat_le
+attribute [gcongr] ofNat_le
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
@@ -47,8 +44,8 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
     (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
   apply cast_eq_iff_heq.mpr
   lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by cutsat]
-  have : b + zb = z := by omega
+  rw [show z + 1 - b = zb + 1 by lia]
+  have : b + zb = z := by lia
   subst this
   convert cast_heq _ _
   rw [Int.inductionOn', cast_eq_iff_heq, ← hzb]

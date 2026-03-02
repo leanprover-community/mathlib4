@@ -233,6 +233,7 @@ theorem supDegree_add_le {f g : R[A]} :
     (f + g).supDegree D ≤ (f.supDegree D) ⊔ (g.supDegree D) :=
   sup_support_add_le D f g
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem supDegree_neg {f : R'[A]} :
     (-f).supDegree D = f.supDegree D := by
@@ -272,6 +273,7 @@ theorem supDegree_eq_of_isMaxOn {p : R[A]} {a : A} (hmem : a ∈ p.support)
 
 variable [AddZeroClass A] {p q : R[A]}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem supDegree_zero : (0 : R[A]).supDegree D = ⊥ := by simp [supDegree]
 
@@ -379,6 +381,7 @@ lemma supDegree_sum_lt (hs : s.Nonempty) {b : B}
 
 variable [AddZeroClass A]
 
+set_option backward.isDefEq.respectTransparency false in
 open Finsupp in
 lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).supDegree D = p.supDegree D := by
@@ -393,6 +396,7 @@ lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
     (p + q).supDegree D = q.supDegree D := by
   rw [add_comm, supDegree_add_eq_left h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma leadingCoeff_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).leadingCoeff D = p.leadingCoeff D := by
   obtain ⟨a, he⟩ := supDegree_mem_range D (ne_zero_of_not_supDegree_le h.not_ge)
@@ -418,6 +422,7 @@ lemma leadingCoeff_eq_zero (hD : D.Injective) : p.leadingCoeff D = 0 ↔ p = 0 :
 lemma leadingCoeff_ne_zero (hD : D.Injective) : p.leadingCoeff D ≠ 0 ↔ p ≠ 0 :=
   (leadingCoeff_eq_zero hD).ne
 
+set_option backward.isDefEq.respectTransparency false in
 lemma supDegree_sub_lt_of_leadingCoeff_eq (hD : D.Injective) {R} [Ring R] {p q : R[A]}
     (hd : p.supDegree D = q.supDegree D) (hc : p.leadingCoeff D = q.leadingCoeff D) :
     (p - q).supDegree D < p.supDegree D ∨ p = q := by
@@ -434,11 +439,11 @@ lemma supDegree_leadingCoeff_sum_eq
     (∑ j ∈ s, f j).leadingCoeff D = (f i).leadingCoeff D := by
   classical
   rw [← s.add_sum_erase _ hi]
-  by_cases hs : s.erase i = ∅
+  by_cases! hs : s.erase i = ∅
   · rw [hs, Finset.sum_empty, add_zero]; exact ⟨rfl, rfl⟩
   suffices _ from ⟨supDegree_add_eq_left this, leadingCoeff_add_eq_left this⟩
   refine supDegree_sum_lt ?_ (fun j hj => ?_)
-  · rw [Finset.nonempty_iff_ne_empty]; exact hs
+  · exact hs
   · rw [Finset.mem_erase] at hj; exact hmax j hj.2 hj.1
 
 open Finset in
@@ -457,21 +462,22 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
   rw [(supDegree_leadingCoeff_sum_eq hi this).1]
   exact (this j hj hne).ne_bot
 
-lemma sum_ne_zero_of_injOn_supDegree (hs : s ≠ ∅)
+lemma sum_ne_zero_of_injOn_supDegree (hs : s.Nonempty)
     (hf : ∀ i ∈ s, f i ≠ 0) (hd : (s : Set ι).InjOn (supDegree D ∘ f)) :
     ∑ i ∈ s, f i ≠ 0 :=
-  let ⟨i, hi⟩ := Finset.nonempty_iff_ne_empty.2 hs
+  let ⟨i, hi⟩ := hs
   sum_ne_zero_of_injOn_supDegree' ⟨i, hi, hf i hi⟩ hd
 
 variable [Add B]
 variable [AddLeftStrictMono B] [AddRightStrictMono B]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma apply_supDegree_add_supDegree (hD : D.Injective) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2) :
     (p * q) (D.invFun (p.supDegree D + q.supDegree D)) = p.leadingCoeff D * q.leadingCoeff D := by
   obtain rfl | hp := eq_or_ne p 0
-  · simp_rw [leadingCoeff_zero, zero_mul, Finsupp.coe_zero, Pi.zero_apply]
+  · simp
   obtain rfl | hq := eq_or_ne q 0
-  · simp_rw [leadingCoeff_zero, mul_zero, Finsupp.coe_zero, Pi.zero_apply]
+  · simp
   obtain ⟨ap, -, hp⟩ := exists_supDegree_mem_support D hp
   obtain ⟨aq, -, hq⟩ := exists_supDegree_mem_support D hq
   simp_rw [leadingCoeff, hp, hq, ← hadd, Function.leftInverse_invFun hD _]
@@ -591,6 +597,7 @@ theorem le_infDegree_add (f g : R[A]) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
 
+set_option backward.isDefEq.respectTransparency false in
 variable {D} in
 theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
     infDegree (WithTop.some ∘ D) s = infDegree D s := by

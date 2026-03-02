@@ -107,7 +107,7 @@ lemma not_isG2_iff_isNotG2 :
     have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
     aesop
   · specialize h i j
-    cutsat
+    lia
 
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
@@ -119,7 +119,7 @@ lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     have aux₂ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i j h h'
     simp only [mem_insert_iff, mem_singleton_iff, Prod.mk_zero_zero, Prod.mk_eq_zero,
       Prod.mk_one_one, Prod.mk_eq_one, Prod.mk.injEq] at aux₂ ⊢
-    cutsat
+    lia
   obtain ⟨k, l, hkl⟩ := exists_pairingIn_neg_three (P := P)
   push_neg
   refine ⟨k, l, ?_⟩
@@ -163,7 +163,7 @@ lemma pairingIn_le_zero_of_root_add_mem [P.IsNotG2] (h : P.root i + P.root j ∈
   have aux₃ : 1 ≤ P.chainTopCoeff j i := by
     rwa [← root_add_nsmul_mem_range_iff_le_chainTopCoeff aux₁, one_smul]
   rw [← P.chainBotCoeff_sub_chainTopCoeff aux₁]
-  cutsat
+  lia
 
 lemma zero_le_pairingIn_of_root_sub_mem [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     0 ≤ P.pairingIn ℤ i j := by
@@ -185,7 +185,7 @@ lemma chainBotCoeff_if_one_zero [P.IsNotG2] (h : P.root i + P.root j ∈ range P
   rcases eq_or_ne (P.chainBotCoeff i j) (P.chainTopCoeff i j) with aux₄ | aux₄ <;>
   simp_rw [P.pairingIn_eq_zero_iff (i := i) (j := j), ← P.chainBotCoeff_sub_chainTopCoeff aux₁,
     sub_eq_zero, Nat.cast_inj, aux₄, reduceIte] <;>
-  omega
+  lia
 
 lemma chainTopCoeff_if_one_zero [P.IsNotG2] (h : P.root i - P.root j ∈ range P.root) :
     P.chainTopCoeff i j = if P.pairingIn ℤ i j = 0 then 1 else 0 := by
@@ -608,7 +608,7 @@ variable [P.IsG2] (b : P.Base) [Finite ι] [CharZero R] [IsDomain R]
   have _i : P.EmbeddedG2 := toEmbeddedG2 P
   have _i : Nonempty ι := IsG2.nonempty P
   rw [← Fintype.card_fin 2, ← Module.finrank_eq_card_basis (EmbeddedG2.basis P),
-    Module.finrank_eq_card_basis (b.toWeightBasis (P := P.toRootSystem)), Fintype.card_coe]
+    Module.finrank_eq_card_basis b.toWeightBasis, Fintype.card_coe]
 
 variable {b} in
 lemma span_eq_rootSpan_int {i j : ι} (hi : i ∈ b.support) (hj : j ∈ b.support) (h_ne : i ≠ j) :

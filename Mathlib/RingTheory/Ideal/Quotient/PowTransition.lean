@@ -40,6 +40,7 @@ open Ideal Quotient
 variable {R : Type*} [Ring R] {I J K : Ideal R}
     {M : Type*} [AddCommGroup M] [Module R M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.Quotient.factor_ker (H : I ≤ J) [I.IsTwoSided] [J.IsTwoSided] :
     RingHom.ker (factor H) = J.map (Ideal.Quotient.mk I) := by
   ext x
@@ -65,7 +66,7 @@ lemma Submodule.eq_factor_of_eq_factor_succ {p : ℕ → Submodule R M}
     subst this
     rw [ih (m.le_add_right k) (by simp), h]
     · simp
-    · cutsat
+    · lia
 
 lemma Ideal.Quotient.eq_factor_of_eq_factor_succ {I : ℕ → Ideal R} [∀ n, (I n).IsTwoSided]
     (hI : Antitone I) (x : (n : ℕ) → R ⧸ (I n)) (h : ∀ m, x m = factor (hI m.le_succ) (x (m + 1)))
@@ -158,6 +159,7 @@ lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
   apply Ideal.map_mk_comap_factor
   exact pow_le_self (Nat.ne_zero_of_lt apos)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}
     (h : IsUnit (factorPow I n.le_succ a)) : IsUnit a := by

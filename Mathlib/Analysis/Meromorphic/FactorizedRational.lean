@@ -30,7 +30,7 @@ There are elementary examples of functions `d` where `∏ᶠ u, (· - u) ^ d u` 
 `fun x ↦ ∏ᶠ u, (x - u) ^ d u` is not continuous.
 -/
 
-@[expose] public section
+public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -159,8 +159,6 @@ theorem meromorphicOrderAt_eq {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.support.F
   filter_upwards
   simp [extractFactor z h₁d]
 
-@[deprecated (since := "2025-05-22")] alias order := meromorphicOrderAt_eq
-
 /--
 Factorized rational functions are nowhere locally constant zero.
 -/
@@ -171,8 +169,6 @@ theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
   · simp [meromorphicOrderAt_eq d hd]
   · rw [← mulSupport] at hd
     simp [finprod_of_infinite_mulSupport hd]
-
-@[deprecated (since := "2025-05-22")] alias order_ne_top := meromorphicOrderAt_ne_top
 
 /--
 If `D` is a divisor, then the divisor of the factorized rational function equals `D`.
@@ -195,11 +191,11 @@ private lemma mulSupport_update {d : 𝕜 → ℤ} {x : 𝕜}
     simp
   · simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.
 -/
-
 /-
 Low-priority TODO: Using that non-trivially normed fields contain infinitely many elements that are
 no roots of unity, it might be possible to drop assumption `h` here and in some of the theorems

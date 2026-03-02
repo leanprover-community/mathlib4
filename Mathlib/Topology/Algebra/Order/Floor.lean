@@ -26,7 +26,7 @@ This file proves statements about limits and continuity of functions involving `
   `Int.fract` yields another continuous function.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Function Int Set Topology
