@@ -204,12 +204,10 @@ open CategoryTheory
 
 variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G) (S : Subgroup G) [S.Normal]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the invariants of `ρ|_S`. -/
 abbrev toInvariants : Rep k G := Rep.of <| A.ρ.toInvariants S
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the invariants of `ρ|_S`. -/
 abbrev quotientToInvariants : Rep k (G ⧸ S) := Rep.of (A.ρ.quotientToInvariants S)

@@ -148,7 +148,6 @@ theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ 
   rw [sum_cycleType]
   exact Finset.card_le_univ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem count_le_one_of_centralizer_le_alternating
     (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     ∀ i, g.cycleType.count i ≤ 1 := by
@@ -200,7 +199,6 @@ theorem count_le_one_of_centralizer_le_alternating
   simp only [cycleType_def, Multiset.mem_map]
   exact ⟨c, hc, by simp only [Function.comp_apply]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
     (h_count : ∀ i, g.cycleType.count i ≤ 1) :
     (kerParam g).range = Subgroup.centralizer {g} := by
@@ -214,7 +212,6 @@ theorem OnCycleFactors.kerParam_range_eq_centralizer_of_count_le_one
     Multiset.nodup_map_iff_inj_on (cycleFactorsFinset g).nodup] at h_count
   exact h_count _ (by simp) _ c.prop ((mem_range_toPermHom_iff).mp (by simp) c)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The centralizer of a permutation is contained in the alternating group if and only if
 its cycles have odd length, with at most one of each, and there is at most one fixed point. -/
 theorem centralizer_le_alternating_iff :

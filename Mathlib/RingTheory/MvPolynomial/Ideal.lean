@@ -95,7 +95,6 @@ theorem pow_idealOfVars_eq_span (n) : idealOfVars σ R ^ n =
     image_pow_eq_finsuppProd_image]
   simp [monomial_eq, Set.preimage, degree]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_pow_idealOfVars_iff (n : ℕ) (p : MvPolynomial σ R) :
     p ∈ idealOfVars σ R ^ n ↔ ∀ x ∈ p.support, n ≤ degree x := by
   rw [pow_idealOfVars]
