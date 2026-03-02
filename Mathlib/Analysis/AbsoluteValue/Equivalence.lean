@@ -360,9 +360,9 @@ theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (Wit
   refine ⟨ε ^ c, rpow_pos_of_pos hε _, fun x hx ↦ ?_⟩
   rw [← RingEquiv.apply_symm_apply (WithAbs.congr v w (.refl F)) x]
   refine Set.mem_image_of_mem _ (hU ?_)
-  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_abv, ← funext_iff.1 hvw,
+  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_apply_ofAbs, ← funext_iff.1 hvw,
     rpow_lt_rpow_iff (v.nonneg _) hε.le hc] at hx
-  simpa [WithAbs.norm_eq_abv]
+  simpa [WithAbs.norm_eq_apply_ofAbs]
 
 open Topology IsTopologicalAddGroup in
 theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
@@ -382,9 +382,10 @@ theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
   rw [isHomeomorph_iff_isEmbedding_surjective]
   refine ⟨fun h ↦ ⟨h.isEmbedding_equivWithAbs, RingEquiv.surjective _⟩, fun ⟨hi, _⟩ ↦ ?_⟩
   refine isEquiv_iff_lt_one_iff.2 fun x ↦ ?_
-  conv_lhs => rw [← (WithAbs.equiv v).apply_symm_apply x]
-  conv_rhs => rw [← (WithAbs.equiv w).apply_symm_apply x]
-  simp_rw [← WithAbs.norm_eq_abv, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
+  conv_lhs => rw [← WithAbs.ofAbs_toAbs v x]
+  conv_rhs => rw [← WithAbs.ofAbs_toAbs w x]
+  rw [← WithAbs.norm_eq_apply_ofAbs, ← WithAbs.norm_eq_apply_ofAbs,
+    ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
   exact ⟨fun h ↦ by simpa [Function.comp_def] using (hi.continuous.tendsto 0).comp h, fun h ↦ by
     simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.congr v w (.refl F)).symm)).2
       continuous_id |>.tendsto 0 |>.comp h ⟩

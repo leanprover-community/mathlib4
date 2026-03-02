@@ -52,11 +52,11 @@ end Notation
 
 namespace WithAbs
 
-section semiring
+section Semiring
 
 variable [Semiring R] (v : AbsoluteValue R S)
 
-instance instSemiring : Semiring (WithAbs v) := Equiv.semiring {toFun := ofAbs, invFun := toAbs v}
+instance : Semiring (WithAbs v) := Equiv.semiring { toFun := ofAbs, invFun := toAbs v }
 
 lemma ofAbs_toAbs (x : R) : ofAbs (toAbs v x) = x := rfl
 @[simp] lemma toAbs_ofAbs (x : WithAbs v) : toAbs v (ofAbs x) = x := rfl
@@ -138,16 +138,16 @@ theorem congr_symm : (congr v w f).symm = congr w v f.symm := rfl
 
 /-- The canonical (semiring) equivalence between `WithAbs v` and `WithAbs w`, for any two
 absolute values `v` and `w` on `R`. -/
-@[deprecated "Use `WithAbs.congr` instead." (since := "2026-01-23")]
+@[deprecated "Use `WithAbs.congr` instead." (since := "2026-03-02")]
 def equivWithAbs (v w : AbsoluteValue R S) : WithAbs v ≃+* WithAbs w :=
     congr v w (.refl R)
 
-@[deprecated "Use `WithAbs.congr_symm` instead." (since := "2026-01-23")]
+@[deprecated "Use `WithAbs.congr_symm` instead." (since := "2026-03-02")]
 theorem equivWithAbs_symm (v w : AbsoluteValue R S) :
     (congr v w (.refl R)).symm = (congr w v (RingEquiv.refl R).symm) :=
   congr_symm _ _ _
 
-@[deprecated "Use `simp`." (since := "2026-01-23")]
+@[deprecated "Use `simp`." (since := "2026-03-02")]
 theorem equiv_equivWithAbs_symm_apply {v w : AbsoluteValue R S} {x : WithAbs w} :
     equiv v ((congr v w (.refl R)).symm x) = equiv w x := by simp
 
@@ -159,17 +159,17 @@ theorem equivWithAbs_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
 theorem equivWithAbs_symm_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
     (congr v w (.refl R)).symm ((equiv w).symm x) = (equiv v).symm x := by simp
 
-end semiring
+end Semiring
 
-section comm_semiring
+section CommSemiring
 
 variable [CommSemiring R] (v : AbsoluteValue R S)
 
 instance : CommSemiring (WithAbs v) := fast_instance% (equiv v).commSemiring
 
-end comm_semiring
+end CommSemiring
 
-section ring
+section Ring
 
 variable [Ring R]
 
@@ -179,8 +179,11 @@ noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAb
   letI := v.toNormedRing
   fast_instance% (equiv v).normedRing
 
-lemma norm_eq_abv (v : AbsoluteValue R ℝ) (x : WithAbs v) : ‖x‖ = v (WithAbs.equiv v x) := rfl
-lemma norm_eq_abv' (v : AbsoluteValue R ℝ) (x : R) : ‖(WithAbs.equiv v).symm x‖ = v x := rfl
+lemma norm_eq_apply_ofAbs (v : AbsoluteValue R ℝ) (x : WithAbs v) : ‖x‖ = v x.ofAbs := rfl
+lemma norm_toAbs_eq (v : AbsoluteValue R ℝ) (x : R) : ‖toAbs v x‖ = v x := rfl
+
+@[deprecated (since := "2026-03-02")] alias norm_eq_abv := norm_eq_apply_ofAbs
+@[deprecated (since := "2026-03-02")] alias norm_eq_abv' := norm_toAbs_eq
 
 variable (v : AbsoluteValue R S)
 
@@ -190,15 +193,15 @@ variable (v : AbsoluteValue R S)
 @[simp] lemma toAbs_neg (x : R) : toAbs v (-x) = - toAbs v x := rfl
 @[simp] lemma ofAbs_neg (x : WithAbs v) : ofAbs (-x) = - ofAbs x := rfl
 
-end ring
+end Ring
 
-section comm_ring
+section CommRing
 
 variable [CommRing R] (v : AbsoluteValue R S)
 
 instance : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
 
-end comm_ring
+end CommRing
 
 section Module
 
@@ -263,17 +266,22 @@ section algebra
 
 variable {R T : Type*} [CommSemiring R] [Semiring T] [Algebra R T]
 
-instance instAlgebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
+variable (T) in
+@[implicit_reducible]
+def instAlgebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
   .compHom T (equiv v).toRingHom
 
+attribute [local instance] instAlgebraLeft in
 theorem algebraMap_left_apply {v : AbsoluteValue R S} (x : WithAbs v) :
     algebraMap (WithAbs v) T x = algebraMap R T x.ofAbs := rfl
 
+attribute [local instance] instAlgebraLeft in
 theorem algebraMap_left_injective (v : AbsoluteValue R S)
-    (h : Function.Injective (algebraMap R T)) : Function.Injective (algebraMap (WithAbs v) T) :=
+    (h : Function.Injective (algebraMap R T)) :
+    Function.Injective (algebraMap (WithAbs v) T) :=
   h.comp (ofAbs_injective v)
 
-instance instAlgebraRight (v : AbsoluteValue T S) : Algebra R (WithAbs v) :=
+instance (v : AbsoluteValue T S) : Algebra R (WithAbs v) :=
   fast_instance% (equiv v).algebra R
 
 theorem algebraMap_right_apply {v : AbsoluteValue T S} (x : R) :
@@ -283,11 +291,12 @@ theorem algebraMap_right_injective (v : AbsoluteValue T S)
     (h : Function.Injective (algebraMap R T)) : Function.Injective (algebraMap R (WithAbs v)) :=
   (toAbs_injective v).comp h
 
-theorem algebraMap_apply_ofAbs (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
+attribute [local instance] instAlgebraLeft in
+theorem ofAbs_algebraMap (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
     (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
 
 @[deprecated (since := "2026-01-29")] alias instAlgebra_left := instAlgebraLeft
-@[deprecated (since := "2026-01-29")] alias instAlgebra_right := instAlgebraRight
+@[deprecated (since := "2026-01-29")] alias instAlgebra_right := instAlgebra
 
 variable (R) in
 /-- The canonical algebra isomorphism from an `R`-algebra `R'` with an absolute value `v`
