@@ -241,9 +241,8 @@ theorem iCondIndepSets'_singleton_iff {s : ι → Set Ω} :
       ∀ S : Finset ι, P⁻⸨⋂ i ∈ S, s i| mΩ⸩ =ᵐ[P] ∏ i ∈ S, P⁻⸨s i| mΩ⸩  := by
   refine ⟨fun h S ↦ h S (fun i _ ↦ rfl), fun h S f hf ↦ ?_⟩
   filter_upwards [h S] with a ha
-  have : ∀ i ∈ S, P⁻⸨f i| mΩ⸩ =ᵐ[P] P⁻⸨s i| mΩ⸩ := fun i hi ↦ by rw [hf i hi]
-  sorry
-  -- rwa [Finset.prod_congr rfl this, Set.iInter₂_congr hf]
+  have : ∀ i ∈ S, P⁻⸨f i| mΩ⸩ = P⁻⸨s i| mΩ⸩ := fun i hi ↦ by rw [hf i hi]
+  rwa [Finset.prod_congr rfl this, Set.iInter₂_congr hf]
 
 theorem condIndepSets'_singleton_iff {s t : Set Ω} :
     CondIndepSets' P mΩ {s} {t} ↔ P⁻⸨s ∩ t| mΩ⸩ =ᵐ[P] P⁻⸨s| mΩ⸩ * P⁻⸨t| mΩ⸩ :=
