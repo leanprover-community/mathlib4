@@ -10,9 +10,8 @@ public import Mathlib.AlgebraicGeometry.Sites.BigZariski
 /-!
 # Constant sheaf associated to topological space
 
-In this file we define a constant sheaf associated to a topological space. For a topological space
-`T`, this is the sheaf on `Scheme` given by `U ↦ C(U, T)`. This is a sheaf
-for the fpqc topology (TODO, see below).
+Given a topological space `T`, we consider the presheaf on `Scheme` given by `U ↦ C(U, T)`
+and show that it is a Zariski sheaf (TODO: show that it is a fpqc sheaf).
 
 ## Main declarations
 
