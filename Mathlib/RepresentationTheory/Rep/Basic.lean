@@ -42,14 +42,17 @@ instance (k : Type u) (G : Type v) [Ring k] [Monoid G] : Category (Rep k G) wher
   Hom := Rep.Hom
   __ := inferInstanceAs (Category (Action (ModuleCat.{w, u} k) G))
 
+def V {k : Type u} {G : Type v} [Ring k] [Monoid G] (A : Rep k G) : ModuleCat k := Action.V A
+
 variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
 
-def V (A : Rep k G) : ModuleCat k := Action.V A
+
 
 instance : CoeSort (Rep.{w} k G) (Type _) := ⟨fun V => V.V⟩
 
 def ρ (A : Rep k G) : Representation k G A.V :=
   (ModuleCat.endRingEquiv A.V).toMonoidHom.comp (Action.ρ A)
+set_option pp.universes true in
 
 instance : ConcreteCategory (Rep k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) where
   hom f :=

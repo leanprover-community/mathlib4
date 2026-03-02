@@ -15,20 +15,26 @@ namespace Rep
 /--
 The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`.
 -/
-def res (f : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) f
+def resFunctor (f : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) f
 
-/--
-If `M` is an object of `Rep R G` and `φ : H →* G` then `M ↓ φ` is the restriction of the
-representation `M` to `H`, as an object of `Rep R H`.
+abbrev res (f : H →* G) (M : Rep R G) := (resFunctor f).obj M
 
-This is notation for `(Rep.res H).obj M`, which is an abbreviation of
-`(Action.res (ModuleCat R) H.subtype).obj M`
--/
-notation3:60 M:60 " ↓ " f:61 => (res f).obj M
+-- /--
+-- If `M` is an object of `Rep R G` and `φ : H →* G` then `M ↓ φ` is the restriction of the
+-- representation `M` to `H`, as an object of `Rep R H`.
 
-variable (f : H →* G)
+-- This is notation for `(Rep.res H).obj M`, which is an abbreviation of
+-- `(Action.res (ModuleCat R) H.subtype).obj M`
+-- -/
+-- notation3:60 M:60 " ↓ " f:61 => (res f).obj M
 
-lemma res_obj_ρ' : (M ↓ f).ρ = M.ρ.comp f := rfl
+variable (f : H →* G) (M : Rep R G)
+
+#exit
+lemma res_obj_ρ :
+  have := res f M
+  -- have := this.ρ (k := R)
+  sorry = (M.ρ.comp f) := rfl
 
 lemma coe_res_obj_ρ' (h : H) : (M ↓ f).ρ h = M.ρ (f h) := rfl
 
