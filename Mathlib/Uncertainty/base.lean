@@ -23,6 +23,6 @@ Copyright (c) 2026 Prof. Dr. Fei Gao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 
-import uncertainty.base_core
-import uncertainty.base_distribution
-import uncertainty.base_process
+import Mathlib.Uncertainty.base_core
+import Mathlib.Uncertainty.base_distribution
+import Mathlib.Uncertainty.base_process
