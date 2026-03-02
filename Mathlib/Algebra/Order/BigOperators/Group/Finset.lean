@@ -222,6 +222,15 @@ theorem prod_le_pow_card [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N) 
 theorem pow_card_le_prod [MulLeftMono N] (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, n ≤ f x) :
     n ^ #s ≤ s.prod f := Finset.prod_le_pow_card (N := Nᵒᵈ) _ _ _ h
 
+@[to_additive sum_le_card_nsmul_add_sum]
+theorem prod_le_pow_card_mul_prod [MulLeftMono N] (s : Finset ι) (f g : ι → N) (n : N)
+    (h : ∀ x ∈ s, f x ≤ n * g x) :
+    (∏ x ∈ s, f x) ≤ n ^ #s * ∏ x ∈ s, g x := by
+  calc
+    (∏ x ∈ s, f x) ≤ ∏ x ∈ s, n * g x := Finset.prod_le_prod' h
+    _ = (∏ x ∈ s, n) * ∏ x ∈ s, g x := by rw [Finset.prod_mul_distrib]
+    _ = n ^ #s * ∏ x ∈ s, g x := by simp
+
 theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Finset β) (n : ℕ)
     (h : ∀ a ∈ s, #(f a) ≤ n) : #(s.biUnion f) ≤ #s * n :=
   card_biUnion_le.trans <| sum_le_card_nsmul _ _ _ h
