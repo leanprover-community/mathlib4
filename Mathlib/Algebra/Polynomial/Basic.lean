@@ -662,6 +662,7 @@ theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
   rw [← Nat.cast_ofNat]
   simp [-Nat.cast_ofNat]
 
+@[grind =]
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
   | n + 1 => by

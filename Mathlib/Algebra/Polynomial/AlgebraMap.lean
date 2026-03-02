@@ -383,6 +383,7 @@ theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x
 theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
   algHom_ext <| aeval_X X
 
+@[simp, grind =]
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
   AlgHom.congr_fun (@aeval_X_left R _) p
 

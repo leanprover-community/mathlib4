@@ -573,6 +573,7 @@ class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B
   eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
 
 attribute [grind =>] Valuation.IsTrivialOn.eq_one
+attribute [grind =] Valuation.IsTrivialOn.eq_one
 
 variable {B : Type*} {A : Type*} [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
   [v.IsTrivialOn A]
