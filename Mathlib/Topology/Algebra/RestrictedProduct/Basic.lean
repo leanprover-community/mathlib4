@@ -507,6 +507,9 @@ lemma mulSingle_inj {x y : G i} : mulSingle A i x = mulSingle A i y ↔ x = y :=
   (mulSingle_injective A i).eq_iff
 
 @[to_additive]
+lemma mulSingle_eq_same (r : G i) : mulSingle A i r i = r := Pi.mulSingle_eq_same i r
+
+@[to_additive]
 lemma mulSingle_eq_of_ne {i j : ι} (r : G i) (h : j ≠ i) : mulSingle A i r j = 1 :=
   Pi.mulSingle_eq_of_ne h r
 
@@ -570,7 +573,7 @@ lemma mulSingle_pow [∀ i, Monoid (G i)] [∀ i, SubmonoidClass (S i) (G i)]
 @[to_additive]
 lemma mulSingle_zpow [∀ i, Group (G i)] [∀ i, SubgroupClass (S i) (G i)]
     (i : ι) (r : G i) (n : ℤ) :
-    mulSingle A i (r  ^ n) = mulSingle A i r ^ n := by
+    mulSingle A i (r ^ n) = mulSingle A i r ^ n := by
   ext; simp [Pi.mulSingle_zpow, RestrictedProduct.zpow_apply]
 
 end single

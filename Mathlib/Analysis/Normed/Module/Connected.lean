@@ -205,7 +205,6 @@ end Metric
 
 end Ball
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is
 path connected. -/
 theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr : 0 ≤ r) :
@@ -256,7 +255,6 @@ section
 variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
 theorem isPathConnected_compl_of_one_lt_codim {E : Submodule ℝ F}

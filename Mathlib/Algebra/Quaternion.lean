@@ -1228,7 +1228,6 @@ def starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ :=
 theorem coe_starAe : ⇑(starAe : ℍ[R] ≃ₐ[R] ℍ[R]ᵐᵒᵖ) = op ∘ star :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Square of the norm. -/
 def normSq : ℍ[R] →*₀ R where
   toFun a := (a * star a).re

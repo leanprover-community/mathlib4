@@ -186,7 +186,6 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
     ext a
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem definable_iff_finitely_definable :
     A.Definable L s ↔ ∃ (A0 : Finset M), (A0 : Set M) ⊆ A ∧
       (A0 : Set M).Definable L s := by
@@ -430,7 +429,6 @@ theorem TermDefinable.map_expansion (h : A.TermDefinable L f) (φ : L →ᴸ L')
   use (φ.addConstants A).onTerm ψ
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem termDefinable_empty_iff :
     (∅ : Set M).TermDefinable L f ↔ ∃ φ : L.Term α, f = φ.realize := by
   rw [TermDefinable, Equiv.exists_congr_left (LEquiv.addEmptyConstants L (∅ : Set M)).onTerm]
