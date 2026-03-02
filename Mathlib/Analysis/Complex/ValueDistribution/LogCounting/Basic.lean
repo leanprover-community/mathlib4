@@ -192,6 +192,7 @@ lemma logCounting_mono [ProperSpace E] {D : locallyFinsupp E ℤ} (hD : 0 ≤ D)
         linarith
   · exact Int.cast_nonneg (hD 0)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The logarithmic counting function of a positive function with locally finite support is
 asymptotically strictly monotone.

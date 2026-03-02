@@ -65,6 +65,7 @@ lemma Module.length_pos_iff : 0 < Module.length R M ↔ Nontrivial M := by
 lemma Module.length_pos [Nontrivial M] : 0 < Module.length R M :=
   Module.length_pos_iff.mpr ‹_›
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h₁ : s.head = ⊥)
     (h₂ : s.last = ⊤) : s.length = Module.length R M := by
   have H := isFiniteLength_of_exists_compositionSeries ⟨s, h₁, h₂⟩
@@ -234,6 +235,7 @@ lemma Module.length_finsupp {ι : Type*} :
   rw [this]
   exact ENat.self_le_mul_right _ length_pos.ne'
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Module.length_pi {ι : Type*} :
     Module.length R (ι → M) = ENat.card ι * Module.length R M := by

@@ -439,6 +439,7 @@ section
 variable {Rf Sf : Type*} [CommRing Rf] [CommRing Sf] [Algebra R Rf] [Algebra S Sf]
     [Algebra Rf Sf] [Algebra R Sf] [IsScalarTower R S Sf] [IsScalarTower R Rf Sf]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking integral closure commutes with localizations. -/
 -- We take in an arbitrary `Algebra (integralClosure R S) (integralClosure Rf Sf)` instance
 -- so that it applies more easily.

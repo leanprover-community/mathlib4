@@ -117,7 +117,6 @@ lemma Module.finitePresentation_iff_finite [IsNoetherianRing R] :
 
 variable {R M N}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.finitePresentation_of_free_of_surjective [Module.Free R M] [Module.Finite R M]
     (l : M →ₗ[R] N)
     (hl : Function.Surjective l) (hl' : (LinearMap.ker l).FG) :
