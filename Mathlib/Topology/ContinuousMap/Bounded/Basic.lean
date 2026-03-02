@@ -460,6 +460,7 @@ theorem isometry_extend (f : α ↪ δ) (h : δ →ᵇ β) : Isometry fun g : α
 
 end Extend
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The indicator function of a clopen set, as a bounded continuous function. -/
 @[simps]
 noncomputable def indicator (s : Set α) (hs : IsClopen s) : BoundedContinuousFunction α ℝ where

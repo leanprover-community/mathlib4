@@ -14,10 +14,10 @@ public import Mathlib.Algebra.Homology.SpectralSequence.ComplexShape
 
 In this file, we define the category `SpectralSequence C c r₀` of spectral sequences
 in an abelian category `C` with `Eᵣ`-pages defined from `r₀ : ℤ` having differentials
-given by complex shapes `c : ℤ → ComplexShape ι`, where `ι` is the index type
-for the objects on each page (e.g. `ι := ℤ × ℤ` or `ι := ℕ × ℕ`).
+given by complex shapes `c : ℤ → ComplexShape κ`, where `κ` is the index type
+for the objects on each page (e.g. `κ := ℤ × ℤ` or `κ := ℕ × ℕ`).
 A spectral sequence is defined as the data of a sequence of homological complexes
-(the pages) and a sequence of isomorphism between the homology of a page and the
+(the pages) and a sequence of isomorphisms between the homology of a page and the
 next page.
 
 -/
@@ -31,13 +31,13 @@ open Category Limits
 variable (C : Type*) [Category C] [Abelian C]
   {κ : Type*} (c : ℤ → ComplexShape κ) (r₀ : ℤ)
 
-/-- Given an abelian category `C`, a sequence of complex shapes `c : ℤ → ComplexShape ι`
+/-- Given an abelian category `C`, a sequence of complex shapes `c : ℤ → ComplexShape κ`
 and a starting page `r₀ : ℤ`, a spectral sequence involves pages which are homological
 complexes and isomorphisms saying that the homology of a page identifies to the next page. -/
 structure SpectralSequence where
   /-- the `r`th page of a spectral sequence is an homological complex -/
   page (r : ℤ) (hr : r₀ ≤ r := by lia) : HomologicalComplex C (c r)
-  /-- the isomorphism between the homology of the `r`-th page at an object `pq : ι`
+  /-- the isomorphism between the homology of the `r`-th page at an object `pq : κ`
   and the corresponding object on the next page -/
   iso (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     (page r).homology pq ≅ (page r').X pq
@@ -46,7 +46,7 @@ namespace SpectralSequence
 
 variable {C c r₀}
 
-/-- A morphism of spectral sequence is a sequence of morphisms between the
+/-- A morphism of spectral sequences is a sequence of morphisms between the
 pages which commutes with the isomorphisms in homology. -/
 @[ext]
 structure Hom (E E' : SpectralSequence C c r₀) where
@@ -68,11 +68,10 @@ attribute [reassoc (attr := simp)] Hom.comm
 @[simps! id_hom comp_hom]
 instance : Category (SpectralSequence C c r₀) where
   Hom := Hom
-  id _ := { hom _ _ := 𝟙 _}
+  id _ := { hom _ _ := 𝟙 _ }
   comp f g :=
     { hom r hr := f.hom r ≫ g.hom r
       comm r r' hrr' pq hr := by
-        dsimp
         simp [HomologicalComplex.homologyMap_comp, assoc, g.comm r r', f.comm_assoc r r'] }
 
 @[ext]
@@ -95,7 +94,7 @@ def pageFunctor (r : ℤ) (hr : r₀ ≤ r := by lia) :
   map f := f.hom r
 
 /-- The natural isomorphism between the homology of a spectral sequence on the
-object `pq : ι` of the `r`th page and the corresponding object on the next page. -/
+object `pq : κ` of the `r`th page and the corresponding object on the next page. -/
 @[simps!]
 noncomputable def pageHomologyNatIso
     (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :

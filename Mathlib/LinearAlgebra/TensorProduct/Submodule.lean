@@ -71,7 +71,7 @@ theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T] (f : S →ₐ
       TensorProduct.map ((f : S →ₗ[R] T).submoduleMap M) ((f : S →ₗ[R] T).submoduleMap N)
         = (f : S →ₗ[R] T) ∘ₗ mulMap M N := by
   ext
-  simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp,
+  simp only [TensorProduct.AlgebraTensorModule.curry_apply,
     TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
     Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_coe, map_mul]
   rfl
@@ -145,6 +145,7 @@ def lTensorOne' : (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N :=
     (LinearEquiv.ofEq _ _ (by rw [Algebra.toSubmodule_bot, mulMap_range, one_mul])).toLinearMap ∘ₗ
       (mulMap _ N).rangeRestrict
 
+set_option backward.isDefEq.respectTransparency false in
 variable {N} in
 @[simp]
 theorem lTensorOne'_tmul (y : R) (n : N) :
@@ -196,6 +197,7 @@ def rTensorOne' : M ⊗[R] (⊥ : Subalgebra R S) →ₗ[R] M :=
     (LinearEquiv.ofEq _ _ (by rw [Algebra.toSubmodule_bot, mulMap_range, mul_one])).toLinearMap ∘ₗ
       (mulMap M _).rangeRestrict
 
+set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 @[simp]
 theorem rTensorOne'_tmul (y : R) (m : M) :

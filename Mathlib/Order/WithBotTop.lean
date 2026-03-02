@@ -71,6 +71,7 @@ lemma coe_lt_coe [LT ι] {a b : ι} :
 theorem coe_strictMono [Preorder ι] : StrictMono (WithBotTop.coe : ι → _) :=
   WithBot.coe_strictMono.comp WithTop.coe_strictMono
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_monotone [Preorder ι] :
     Monotone (WithBotTop.coe : ι → _) :=
   fun _ _ _ ↦ by simpa

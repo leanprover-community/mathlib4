@@ -13,8 +13,8 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 ## Main definitions
 
 * `WellFormedBasis basis`: a predicate meaning that all functions from `basis` tend to `atTop`,
-and `basis` is sorted such that if
-`g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
+  and `basis` is sorted such that if
+  `g` goes after `f` in `basis`, then `log f =o[atTop] log g`.
 
 -/
 

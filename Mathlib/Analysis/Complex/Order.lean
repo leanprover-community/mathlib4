@@ -35,6 +35,7 @@ namespace Complex
 /-- We put a partial order on ℂ so that `z ≤ w` exactly if `w - z` is real and nonnegative.
 Complex numbers with different imaginary parts are incomparable.
 -/
+@[instance_reducible]
 protected def partialOrder : PartialOrder ℂ where
   le z w := z.re ≤ w.re ∧ z.im = w.im
   lt z w := z.re < w.re ∧ z.im = w.im
@@ -71,6 +72,7 @@ theorem nonpos_iff {z : ℂ} : z ≤ 0 ↔ z.re ≤ 0 ∧ z.im = 0 :=
 theorem neg_iff {z : ℂ} : z < 0 ↔ z.re < 0 ∧ z.im = 0 :=
   lt_def
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sq_nonneg_iff {z : ℂ} : 0 ≤ z ^ 2 ↔ z.im = 0 := by
   rw [nonneg_iff, pow_two, mul_re, mul_im, mul_comm z.im z.re, ← mul_two, eq_comm,
     mul_eq_zero_iff_right two_ne_zero, ← pow_two, ← pow_two, mul_eq_zero]

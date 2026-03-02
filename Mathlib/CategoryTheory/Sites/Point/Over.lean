@@ -28,6 +28,7 @@ namespace CategoryTheory.GrothendieckTopology.Point
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
   [LocallySmall.{w} C] (Φ : Point.{w} J) {X : C} (x : Φ.fiber.obj X)
 
+set_option backward.isDefEq.respectTransparency false in
 open InitiallySmall in
 /-- Given a point `Φ` of a site `(C, J)`, an object `X : C`, and `x : Φ.fiber.obj X`,
 this is the point of the site `(Over X, J.over X)` such that the fiber of

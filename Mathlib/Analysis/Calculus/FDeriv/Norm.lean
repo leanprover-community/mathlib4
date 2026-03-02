@@ -88,6 +88,7 @@ theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t �
     exact not_differentiableAt_norm_zero E <| h.differentiableAt hn
   · exact contDiffAt_norm_smul_iff ht |>.2 h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
     (ht : t ≠ 0) (h : HasStrictFDerivAt (‖·‖) f x) :
     HasStrictFDerivAt (‖·‖) ((SignType.sign t : ℝ) • f) (t • x) := by
@@ -112,6 +113,7 @@ theorem HasStrictFDerivAt.hasStrictDerivAt_norm_smul_pos
     HasStrictFDerivAt (‖·‖) f (t • x) := by
   simpa [ht] using h.hasStrictFDerivAt_norm_smul ht.ne'
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasFDerivAt.hasFDerivAt_norm_smul
     (ht : t ≠ 0) (h : HasFDerivAt (‖·‖) f x) :
     HasFDerivAt (‖·‖) ((SignType.sign t : ℝ) • f) (t • x) := by

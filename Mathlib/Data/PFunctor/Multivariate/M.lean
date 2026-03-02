@@ -289,6 +289,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
     all_goals simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
   obtain ⟨a, f⟩ := x

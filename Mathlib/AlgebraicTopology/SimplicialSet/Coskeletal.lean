@@ -93,6 +93,7 @@ lemma fac_aux₁ {n : ℕ}
   rw [spineToSimplex_arrow]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))
     (x : s.pt) (i j : ℕ) (hij : i ≤ j) (hj : j ≤ n) :
@@ -175,6 +176,7 @@ end isPointwiseRightKanExtensionAt
 
 open Truncated
 
+set_option backward.isDefEq.respectTransparency false in
 open isPointwiseRightKanExtensionAt in
 /-- A strict Segal simplicial set is 2-coskeletal. -/
 noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
