@@ -415,8 +415,8 @@ lemma simplicialEvalδ_of_isAdmissible (hL : IsAdmissible (n + 1) L)
       simp only [Fin.succAbove, a₀]
       split_ifs with h₁ _ _
       · rfl
-      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val] at h₁; grind
-      · simp only [Fin.lt_def, Fin.coe_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
+      · grind [IsAdmissible.head_val]
+      · grind [IsAdmissible.head_val]
       · rfl
     have ha₀ : a = a₀ := by simp [a₀]
     have := h_rec (l := n + (L.length + 1)) hL.of_cons (by grind) ↑(a₀.succAbove ⟨j, hj⟩)
@@ -443,7 +443,7 @@ lemma simplicialEvalδ_eq_self_of_isAdmissible_and_lt (hL : IsAdmissible (n + 1)
     (hj : ∀ k ∈ L, j < k) : simplicialEvalδ L j = j := by
   induction L generalizing n j with
   | nil => grind [simplicialEvalδ]
-  | cons a L h_rec => grind [simplicialEvalδ, → IsAdmissible.tail]
+  | cons a L h_rec => grind [simplicialEvalδ]
 
 lemma simplicialEvalδ_eq_self_of_isAdmissible_cons (a : ℕ)
     (hL : IsAdmissible (n + 1) (a :: L)) : simplicialEvalδ L a = a :=
@@ -468,7 +468,7 @@ lemma standardδ_simplicialInsert (hL : IsAdmissible (n + 2) L) (j : ℕ) (hj : 
         convert δ_comp_δ_nat (n := n) a j (by grind) (by grind) (by grind) <;> grind
       simp only [standardδ_cons, reassoc_of% this, h_rec hL.of_cons (j + 1) (by grind) (by grind)]
 
-attribute [local grind] simplicialInsert_length simplicialInsert_isAdmissible in
+attribute [local grind .] simplicialInsert_length simplicialInsert_isAdmissible in
 /-- Using `standardδ_simplicialInsert`, we can prove that every morphism satisfying
 `P_δ` is equal to some `standardδ` for some admissible list of indices, which shows
 that every such morphism is equal to a morphism in "normal form". -/
@@ -495,7 +495,7 @@ theorem exists_normal_form_P_δ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
     symm
     have := standardδ_simplicialInsert L₁ hL₁ j
     rw [show Fin.ofNat (n + 2) ↑j = j by simp] at this
-    apply this (by grind)
+    apply this (by lia)
     simp +arith [SimplexCategoryGenRel.mk]
 
 /-- An admissible list is fully determined by its length and the attached function
@@ -519,15 +519,14 @@ lemma eq_of_simplicialEvalδ_eq
         simp only [simplicialEvalδ, lt_self_iff_false, ↓reduceIte] at ha₁ hb₁
         split_ifs at ha₁ with ha₂ <;> split_ifs at hb₁ with hb₂ <;>
         grind [→ IsAdmissible.head_lt', le_simplicialEvalδ_self,
-          simplicialEvalδ_eq_self_of_isAdmissible_and_lt, → IsAdmissible.tail,
-          List.sorted_cons]
+          simplicialEvalδ_eq_self_of_isAdmissible_and_lt]
       intro h_length
       simp only [List.cons.injEq, true_and]
       refine hrec hL₁.of_cons _ hL₂.of_cons (fun x hx => ?_) (by grind)
       have := h (x - 1) (by grind) -- helps grind
-      have := Nat.lt_add_one_iff_lt_or_eq.mp hx -- helps grind
-      grind (splits := 12) [simplicialEvalδ, simplicialEvalδ_eq_self_of_isAdmissible_cons,
-          → IsAdmissible.head_lt']
+      grind (splits := 12) [h (x - 1), Nat.lt_add_one_iff_lt_or_eq.mp hx,
+        simplicialEvalδ, simplicialEvalδ_eq_self_of_isAdmissible_cons,
+        → IsAdmissible.head_lt']
 
 end NormalFormsP_δ
 
