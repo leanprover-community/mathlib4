@@ -98,10 +98,9 @@ lemma tensorCotangentHom_injective_of_flat [Module.Flat R T] :
   have : f ∘ₗ tensorCotangentHom R T I = hₐ.toLinearMap ∘ₗ g := by
     ext x
     obtain ⟨x, rfl⟩ := I.toCotangent_surjective x
-    dsimp
-    rw [tensorCotangentHom_tmul]
-    simp [f, g, hₐ]
-    rfl
+    dsimp [f, g, hₐ]
+    rw [tensorCotangentHom_tmul, one_smul, Ideal.toCotangent_to_quotient_square]
+    simp
   rw [this, LinearMap.coe_comp]
   apply Function.Injective.comp
   · exact hₐ.injective
