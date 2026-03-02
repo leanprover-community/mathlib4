@@ -269,14 +269,14 @@ variable {R T : Type*} [CommSemiring R] [Semiring T] [Algebra R T]
 variable (T) in
 /-- Not an instance because it causes non-reducible diamonds when `T = WithAbs v`. -/
 @[implicit_reducible]
-def instAlgebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
+def algebraLeft (v : AbsoluteValue R S) : Algebra (WithAbs v) T :=
   .compHom T (equiv v).toRingHom
 
-attribute [local instance] instAlgebraLeft in
+attribute [local instance] algebraLeft in
 theorem algebraMap_left_apply {v : AbsoluteValue R S} (x : WithAbs v) :
     algebraMap (WithAbs v) T x = algebraMap R T x.ofAbs := rfl
 
-attribute [local instance] instAlgebraLeft in
+attribute [local instance] algebraLeft in
 theorem algebraMap_left_injective (v : AbsoluteValue R S)
     (h : Function.Injective (algebraMap R T)) :
     Function.Injective (algebraMap (WithAbs v) T) :=
@@ -292,11 +292,11 @@ theorem algebraMap_right_injective (v : AbsoluteValue T S)
     (h : Function.Injective (algebraMap R T)) : Function.Injective (algebraMap R (WithAbs v)) :=
   (toAbs_injective v).comp h
 
-attribute [local instance] instAlgebraLeft in
+attribute [local instance] algebraLeft in
 theorem ofAbs_algebraMap (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
     (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
 
-@[deprecated (since := "2026-03-02")] alias instAlgebra_left := instAlgebraLeft
+@[deprecated (since := "2026-03-02")] alias instAlgebra_left := algebraLeft
 @[deprecated (since := "2026-03-02")] alias instAlgebra_right := instAlgebra
 
 variable (R) in
