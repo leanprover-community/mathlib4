@@ -943,6 +943,7 @@ public import Mathlib.Algebra.Order.GroupWithZero.Bounds
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Algebra.Order.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.GroupWithZero.Lex
+public import Mathlib.Algebra.Order.GroupWithZero.Range
 public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 public import Mathlib.Algebra.Order.GroupWithZero.Synonym
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
@@ -1374,6 +1375,7 @@ public import Mathlib.AlgebraicGeometry.ResidueField
 public import Mathlib.AlgebraicGeometry.Restrict
 public import Mathlib.AlgebraicGeometry.Scheme
 public import Mathlib.AlgebraicGeometry.Sites.BigZariski
+public import Mathlib.AlgebraicGeometry.Sites.ConstantSheaf
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
@@ -3738,6 +3740,7 @@ public import Mathlib.Data.FunLike.Basic
 public import Mathlib.Data.FunLike.Embedding
 public import Mathlib.Data.FunLike.Equiv
 public import Mathlib.Data.FunLike.Fintype
+public import Mathlib.Data.FunLike.Graded
 public import Mathlib.Data.Holor
 public import Mathlib.Data.Ineq
 public import Mathlib.Data.Int.AbsoluteValue
@@ -4503,6 +4506,7 @@ public import Mathlib.GroupTheory.GroupExtension.Defs
 public import Mathlib.GroupTheory.HNNExtension
 public import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.GroupTheory.IsSubnormal
 public import Mathlib.GroupTheory.MonoidLocalization.Away
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
@@ -5920,6 +5924,7 @@ public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 public import Mathlib.Probability.Kernel.Composition.ParallelComp
 public import Mathlib.Probability.Kernel.Composition.Prod
+public import Mathlib.Probability.Kernel.Composition.RadonNikodym
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.Kernel.Condexp
 public import Mathlib.Probability.Kernel.Defs
@@ -7574,6 +7579,7 @@ public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.Sets.Opens
 public import Mathlib.Topology.Sets.Order
 public import Mathlib.Topology.Sets.VietorisTopology
+public import Mathlib.Topology.Sheaves.Abelian
 public import Mathlib.Topology.Sheaves.Alexandrov
 public import Mathlib.Topology.Sheaves.CommRingCat
 public import Mathlib.Topology.Sheaves.Forget
