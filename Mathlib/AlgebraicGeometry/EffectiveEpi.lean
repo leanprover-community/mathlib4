@@ -21,9 +21,9 @@ We collect results about effective epimorphisms in the category of schemes.
 schemes is an effective epimorphism in the category of affine schemes.
 
 For a surjective and flat morphism `π : X ⟶ Y` between affine schemes, we prove the following.
-* `exists_of_flat`: Any morphism `g : X ⟶ S` of schemes whose two pullbacks to `X ×[Y] X` agree
-  descends to a morphism `f : Y ⟶ S` with `π ≫ f = g`.
-* `effectiveEpi_Spec_of_flat_of_surjective`: The map `π : X ⟶ Y` is an effective epimorphism in the
+* `exists_comp_eq_of_flat_of_isAffine`: Any morphism `g : X ⟶ S` of schemes whose two pullbacks to
+  `X ×[Y] X` agree descends to a morphism `f : Y ⟶ S` with `π ≫ f = g`.
+* `effectiveEpi_of_flat_of_surjective_of_isAffine`: The map `π : X ⟶ Y` is an effective epimorphism in the
   category of schemes.
 
 ## Reference
@@ -42,24 +42,14 @@ namespace AlgebraicGeometry
 
 open Scheme
 
-section AffineScheme
-
-/-- A flat surjective morphism is an effective epimorphism in the category of affine schemes. -/
-lemma AffineScheme.effectiveEpi_of_flat_of_surjective {X Y : AffineScheme.{u}} (f : X ⟶ Y)
-    [Flat f.hom] [Surjective f.hom] :
-    EffectiveEpi f := by
-  apply AffineScheme.equivCommRingCat.functor.effectiveEpi_of_map
-  apply CommRingCat.Opposite.effectiveEpi_of_faithfullyFlat
-  exact (Flat.flat_and_surjective_iff_faithfullyFlat_of_isAffine f.hom).mp ⟨‹_›, ‹_›⟩
-
-end AffineScheme
-
 section Scheme
+
+namespace EffectiveEpiConstruction
 
 /-- If `π : X ⟶ Y` is a surjective morphism of schemes, then any morphism `f : X ⟶ S` of schemes
 whose two pullbacks to `X ×[Y] X` agree descends to a function `u : ↥Y → ↥S` (as types) with
-`u ∘ ⇑π.base.hom = ⇑f.base.hom`. See `exists_of_flat` for the scheme morphism version. -/
-lemma exists_base_hom_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y} [Surjective π]
+`u ∘ ⇑π.base.hom = ⇑f.base.hom`. -/
+private lemma exists_base_hom_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y} [Surjective π]
     {f : X ⟶ S} (h : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
     ∃ (u : ↥Y → ↥S), u ∘ ⇑π.base.hom = ⇑f.base.hom := by
   let : RegularEpi (Scheme.forget.map π) := by
@@ -72,44 +62,24 @@ lemma exists_base_hom_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y} [Surject
   simp only [← Category.assoc, pullbackComparison_comp_fst, ← Functor.map_comp, h,
     pullbackComparison_comp_snd]
 
-/-- If `π : X ⟶ Y` is a flat, surjective and quasi-compact morphism of schemes, then any morphism
-`f : X ⟶ S` of schemes whose two pullbacks to `X ×[Y] X` agree descends to a continuous map
-`u : Y.carrier ⟶ S.carrier` with `π.base ≫ u = f.base`. See `exists_of_flat` for the scheme
-morphism version. -/
-lemma exists_base_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y}
-    [Flat π] [Surjective π] [QuasiCompact π]
-    {f : X ⟶ S} (h : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
-    ∃ (u : Y.carrier ⟶ S.carrier), π.base ≫ u = f.base := by
-  have h' {Z : TopCat} (g₁ g₂ : Z ⟶ X.carrier) (hg : g₁ ≫ π.base = g₂ ≫ π.base) :
-      g₁ ≫ f.base = g₂ ≫ f.base := by
-    apply TopCat.hom_ext
-    apply ContinuousMap.coe_injective
-    simp only [TopCat.hom_comp, ContinuousMap.coe_comp]
-    rw [(exists_base_hom_of_surjective h).choose_spec.symm, Function.comp_assoc]
-    congr 1
-    exact congrArg ContinuousMap.toFun ((TopCat.hom_comp _ _).trans (congrArg TopCat.Hom.hom hg))
-  exact ⟨(TopCat.effectiveEpiStructOfQuotientMap _ (Flat.isQuotientMap_of_surjective π)).desc _ h',
-    (TopCat.effectiveEpiStructOfQuotientMap _ (Flat.isQuotientMap_of_surjective π)).fac _ h'⟩
-
 /-- If `π : X ⟶ Y` is a surjective and flat morphism between affine schemes, then any morphism
 `f : X ⟶ S` to an affine scheme `S` whose two pullbacks to `X ×[Y] X` agree descends to a morphism
-`u : Y ⟶ S` with `π ≫ u = f`. See `exists_of_flat` for the general form with an arbitrary target. -/
-lemma of_isAffine_target {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
+`u : Y ⟶ S` with `π ≫ u = f`. -/
+private lemma of_isAffine_target {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
     [Surjective π] [Flat π]
     (f : X ⟶ S) (hg : pullback.fst π π ≫ f = pullback.snd π π ≫ f)
     [IsAffine S] :
     ∃ u : Y ⟶ S, π ≫ u = f := by
-  have : EffectiveEpi (AffineScheme.ofHom π) :=
-    @AffineScheme.effectiveEpi_of_flat_of_surjective _ _ _ (by simpa) (by simpa)
-  let u : AffineScheme.of Y ⟶ AffineScheme.of S := by
-    apply EffectiveEpi.desc (AffineScheme.ofHom π) (AffineScheme.ofHom f)
-    intro _ g₁ g₂ hg₁₂
-    apply InducedCategory.hom_ext
-    have hg₁₂' : g₁.hom ≫ π = g₂.hom ≫ π := by
-      simpa using congrArg InducedCategory.Hom.hom hg₁₂
-    simpa using congrArg (fun k => pullback.lift _ _ hg₁₂' ≫ k) hg
-  have : (AffineScheme.ofHom π ≫ u).hom = (AffineScheme.ofHom f).hom := by simp [u]
-  exact ⟨u.hom, by simpa⟩
+  have : EffectiveEpi (AffineScheme.ofHom π) := by
+    apply AffineScheme.equivCommRingCat.functor.effectiveEpi_of_map
+    apply CommRingCat.Opposite.effectiveEpi_of_faithfullyFlat
+    exact (Flat.flat_and_surjective_iff_faithfullyFlat_of_isAffine π).mp ⟨‹_›, ‹_›⟩
+  obtain ⟨u, hu⟩ := IsRegularEpi.exists_of_isKernelPair
+    (AffineScheme.ofHom π)
+    (IsPullback.of_map (f := AffineScheme.ofHom (pullback.fst π π)) (AffineScheme.forgetToScheme)
+      (InducedCategory.Hom.ext pullback.condition) (.of_hasPullback _ _))
+    (AffineScheme.ofHom f) (InducedCategory.Hom.ext hg)
+  use u.hom, InducedCategory.Hom.ext_iff.mp hu
 
 open pullback in
 /-- If `π : X ⟶ Y` is surjective and flat between affine schemes, then any morphism `f : X ⟶ S` of
@@ -121,7 +91,11 @@ lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π
     (f : X ⟶ S) (hg : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
     ∃ (𝒰 : OpenCover.{u} Y),
       ∀ i : 𝒰.I₀, ∃ (u : 𝒰.X i ⟶ S), pullback.fst π (𝒰.f i) ≫ f = pullback.snd _ _ ≫ u := by
-  obtain ⟨b, hfac⟩ := exists_base_of_surjective hg
+  obtain ⟨b, hfac⟩ : ∃ (u : Y.carrier ⟶ S.carrier), π.base ≫ u = f.base := by
+    apply IsRegularEpi.exists_of_isKernelPair _ (IsPullback.of_hasPullback _ _)
+    have := congr(Scheme.forgetToTop.map $hg)
+    rwa [Functor.map_comp, Functor.map_comp, ← pullbackComparison_comp_fst_assoc,
+      ← pullbackComparison_comp_snd_assoc, cancel_epi] at this
   let 𝒰 := Y.openCoverOfIsOpenCover _ <| Y.isBasis_affineOpens.isOpenCover_mem_and_le
     (S.isBasis_affineOpens.isOpenCover.comap b.hom)
   refine ⟨𝒰, fun i ↦ ?_⟩
@@ -146,7 +120,7 @@ lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π
 /-- If `π : X ⟶ Y` is a surjective and flat morphism between affine schemes, then any morphism
 `g : X ⟶ S` of schemes whose two pullbacks to `X ×[Y] X` agree descends to a morphism `f : Y ⟶ S`
 with `π ≫ f = g`. -/
-lemma exists_of_flat {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
+lemma exists_comp_eq_of_flat_of_isAffine {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
     [Surjective π] [Flat π] (g : X ⟶ S) (hg : pullback.fst π π ≫ g = pullback.snd π π ≫ g) :
     ∃ (f : Y ⟶ S), π ≫ f = g := by
   obtain ⟨𝒰, h⟩ := exists_openCover_exists π g hg
@@ -167,6 +141,9 @@ lemma exists_of_flat {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ 
     intro i
     simp [pullback.condition_assoc, hfac]
 
+end EffectiveEpiConstruction
+
+open EffectiveEpiConstruction in
 /-- If `π : X ⟶ Y` is a flat and surjective morphism between affine schemes, the cofork formed by
 the two projections `X ×[Y] X ⟶ X` followed by `X ⟶ Y` is a colimit. -/
 noncomputable def isColimitCoforkSpecPullbackOfFlatOfSurjective
@@ -174,19 +151,19 @@ noncomputable def isColimitCoforkSpecPullbackOfFlatOfSurjective
     IsColimit (Cofork.ofπ π pullback.condition) := by
   apply Cofork.IsColimit.mk'
   intro s
-  refine ⟨(exists_of_flat _ _ s.condition).choose,
-    ⟨by simp [(exists_of_flat _ _ s.condition).choose_spec], ?_⟩⟩
+  refine ⟨(exists_comp_eq_of_flat_of_isAffine _ _ s.condition).choose,
+    ⟨by simp [(exists_comp_eq_of_flat_of_isAffine _ _ s.condition).choose_spec], ?_⟩⟩
   intro _ h
   haveI : Epi π := Flat.epi_of_flat_of_surjective π
   apply (cancel_epi π).mp
   trans s.ι.app WalkingParallelPair.one
   · simpa using h
-  · simpa using (exists_of_flat _ _ s.condition).choose_spec.symm
+  · simpa using (exists_comp_eq_of_flat_of_isAffine _ _ s.condition).choose_spec.symm
 
 /-- If `π : X ⟶ Y` is a flat and surjective morphism between affine schemes, then `π` is an
 effective epimorphism in the category of schemes. -/
 @[stacks 023Q]
-lemma effectiveEpi_Spec_of_flat_of_surjective
+lemma effectiveEpi_of_flat_of_surjective_of_isAffine
     {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y) [Surjective π] [Flat π] :
     EffectiveEpi π :=
   effectiveEpi_of_kernelPair _ (isColimitCoforkSpecPullbackOfFlatOfSurjective π)
