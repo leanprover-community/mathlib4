@@ -21,8 +21,9 @@ computed from any sum-of-squares representation.
 * `QuadraticForm.sigPos_of_equiv_weightedSumOfSquares`,
   `QuadraticForm.sigNeg_of_equiv_weightedSumOfSquares`: for any isomorphism from `Q` to a
   weighted sum of squares, `Q.sigPos` and `Q.sigNeg` are the number of positive and negative
-  weights. (This is the uniqueness part of **Sylvester's law of inertia**; the existence is proved
-  in `Mathlib.LinearAlgebra.QuadraticForm.Real`.)
+  weights. (This is the uniqueness part of **Sylvester's law of inertia**; the existence is
+  `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared` in file
+  `Mathlib.LinearAlgebra.QuadraticForm.Real`.)
 
 ## Acknowledgements
 
@@ -55,7 +56,7 @@ variable {Q}
 end Equiv
 
 open Classical in
-/-- The maximal rank of a positive-definite submodule of `M`. -/
+/-- The maximal finrank of a positive-definite submodule of `M`. -/
 /-
 Note the proof of nonemptiness needed for `max'` is a little fiddly since we are not assuming
 `Nontrivial R`, and the `⊥` submodule of a module over the zero ring has finrank 1, not 0.
@@ -151,8 +152,7 @@ lemma sigPos_add_finrank_le_of_nonpos [FiniteDimensional 𝕜 M]
   by_contra hx'
   have := hVp ⟨x, hWp hx⟩ (by simpa using hx')
   have := hV x (hWm hx)
-  simp_all only [restrict_apply]
-  grind
+  grind [restrict_apply]
 
 variable {ι : Type*} [Fintype ι] {w : ι → 𝕜} [IsStrictOrderedRing 𝕜]
 
