@@ -745,7 +745,6 @@ lemma sheafifyHomEquivOfIsEquivalence_naturality_right
 
 variable (A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assuming that `(C, J)` is a dense subsite of `(D, K)` (via a functor `G : C ⥤ D`)
 and `sheafPushforwardContinuous G A J K` is an equivalence of categories, and
 that `HasWeakSheafify J A` holds, then this adjunction shows the existence

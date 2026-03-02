@@ -34,7 +34,6 @@ open Finset
 
 namespace Imo2019Q4
 
-set_option backward.isDefEq.respectTransparency false in
 theorem upper_bound {k n : ℕ} (hk : k > 0)
     (h : (k ! : ℤ) = ∏ i ∈ range n, ((2 : ℤ) ^ n - (2 : ℤ) ^ i)) : n < 6 := by
   have h2 : ∑ i ∈ range n, i < k := by

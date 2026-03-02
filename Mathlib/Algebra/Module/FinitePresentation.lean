@@ -210,7 +210,6 @@ lemma Module.FinitePresentation.fg_ker_iff [Module.FinitePresentation R M]
     Submodule.FG (LinearMap.ker l) ↔ Module.FinitePresentation R N :=
   ⟨finitePresentation_of_surjective l hl, fun _ ↦ fg_ker l hl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     (l : M →ₗ[R] N) (hl : Function.Surjective l) [Module.FinitePresentation R (LinearMap.ker l)] :
     Module.FinitePresentation R M := by
@@ -285,7 +284,6 @@ instance (priority := 900) of_subsingleton [Subsingleton M] :
     Module.FinitePresentation R M :=
   .of_equiv (default : (Fin 0 → R) ≃ₗ[R] M)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M N) in
 instance prod [Module.FinitePresentation R M] [Module.FinitePresentation R N] :
     Module.FinitePresentation R (M × N) := by
@@ -330,7 +328,6 @@ lemma Module.FinitePresentation.trans (S : Type*) [CommRing S] [Algebra R S]
     simp only [f, LinearMap.ker_restrictScalars, ← Module.Finite.iff_fg]
     exact Module.Finite.trans S _
 
-set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
 instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
     Module.FinitePresentation A (A ⊗[R] M) := by

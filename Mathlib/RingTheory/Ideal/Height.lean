@@ -360,7 +360,6 @@ lemma mem_minimalPrimes_of_primeHeight_eq_height {I J : Ideal R} [J.IsPrime] (e 
   rw [← J.height_eq_primeHeight] at e'
   exact mem_minimalPrimes_of_height_eq e (e' ▸ le_refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_spanRank_le_and_le_height_of_le_height [IsNoetherianRing R] (I : Ideal R) (r : ℕ)
     (hr : r ≤ I.height) : ∃ J ≤ I, J.spanRank ≤ r ∧ r ≤ J.height := by
   induction r with

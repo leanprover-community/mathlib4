@@ -47,7 +47,6 @@ def embeddingOfSubset : ℓ^∞(ℕ) :=
 theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0) (x n) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding map is always a semi-contraction. -/
 theorem embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by

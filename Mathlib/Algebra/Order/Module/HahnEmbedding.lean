@@ -772,7 +772,6 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
       exact (f.coeff_eq_of_mem y.val (by simp) hzy (by simp)).le
   exact hieq ▸ hi
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Extend `f` to a larger partial linear map by adding a new `x`. -/
 noncomputable
 def extendFun [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val.domain) :

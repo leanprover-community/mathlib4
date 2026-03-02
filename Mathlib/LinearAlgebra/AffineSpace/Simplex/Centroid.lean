@@ -215,7 +215,6 @@ theorem centroid_reindex {m n : ℕ} (s : Simplex k P m)
   subst h_eq
   convert Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem centroid_restrict [CharZero k] {n : ℕ} (s : Simplex k P n) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -399,7 +398,6 @@ theorem faceOppositeCentroid_eq_smul_vsub_vadd_point [CharZero k] (s : Simplex k
   rw [sum_centroidWeights_eq_one_of_card_ne_zero]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem faceOppositeCentroid_restrict [CharZero k] (s : Simplex k P n)
     (S : AffineSubspace k P) (hS : affineSpan k (Set.range s.points) ≤ S) {i : Fin (n + 1)} :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -439,7 +437,6 @@ theorem median_map [CharZero k] {V₂ P₂ : Type*} [AddCommGroup V₂] [Module 
     (s.map f hf).median i = (s.median i).map f := by
   simp [median, map_span, Set.image_pair]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem median_restrict [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
@@ -585,7 +582,6 @@ theorem affineSpan_range_medial [CharZero k] (s : Simplex k P n) :
   congrm ∃ a b, ?_ = v
   simp [← smul_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem medial_restrict [CharZero k] (s : Simplex k P n) (S : AffineSubspace k P)
     (hS : affineSpan k (Set.range s.points) ≤ S) :
     haveI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
