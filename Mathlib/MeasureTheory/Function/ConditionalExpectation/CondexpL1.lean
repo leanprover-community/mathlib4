@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.MeasureTheory.VectorMeasure.AddContent
 
 /-! # Conditional expectation in L1
 
@@ -205,6 +206,12 @@ theorem norm_condExpIndL1_le (x : G) : ‖condExpIndL1 hm μ s x‖ ≤ μ.real 
   · rw [condExpIndL1_of_measurableSet_of_measure_ne_top hs hμs x]
     exact norm_condExpIndL1Fin_le hs hμs x
 
+theorem enorm_condExpIndL1_le [IsFiniteMeasure μ] (x : G) :
+    ‖condExpIndL1 hm μ s x‖ₑ ≤ μ s * ‖x‖ₑ := by
+  rw [← ofReal_norm_eq_enorm, ← ofReal_norm_eq_enorm, ← ofReal_measureReal,
+    ← ENNReal.ofReal_mul (by positivity)]
+  exact ENNReal.ofReal_le_ofReal (norm_condExpIndL1_le _)
+
 theorem continuous_condExpIndL1 : Continuous fun x : G => condExpIndL1 hm μ s x :=
   continuous_of_linear_of_bound condExpIndL1_add condExpIndL1_smul norm_condExpIndL1_le
 
@@ -257,6 +264,10 @@ theorem condExpInd_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (c : �
 
 theorem norm_condExpInd_apply_le (x : G) : ‖condExpInd G hm μ s x‖ ≤ μ.real s * ‖x‖ :=
   norm_condExpIndL1_le x
+
+theorem enorm_condExpInd_apply_le [IsFiniteMeasure μ] (x : G) :
+    ‖condExpInd G hm μ s x‖ₑ ≤ μ s * ‖x‖ₑ :=
+  enorm_condExpIndL1_le x
 
 theorem norm_condExpInd_le : ‖(condExpInd G hm μ s : G →L[ℝ] α →₁[μ] G)‖ ≤ μ.real s :=
   ContinuousLinearMap.opNorm_le_bound _ ENNReal.toReal_nonneg norm_condExpInd_apply_le
@@ -513,5 +524,31 @@ theorem condExpL1_mono {E}
   exact setToFun_mono (dominatedFinMeasAdditive_condExpInd E hm μ) h_nonneg hf hg hfg
 
 end CondexpL1
+
+section CondProb
+
+variable {Ω : Type*} {mΩ₀ mΩ : MeasurableSpace Ω}
+
+noncomputable
+def condProb' (hm : mΩ ≤ mΩ₀) (P : Measure[mΩ₀] Ω) [IsFiniteMeasure P] [SigmaFinite (P.trim hm)] :
+    VectorMeasure[mΩ₀] Ω (Ω →₁[P] ℝ) :=
+  VectorMeasure.of_additive_of_le_measure (μ := P) (condExpInd ℝ hm P · 1)
+  (by intros s; grw [enorm_condExpInd_apply_le]; simp)
+  (fun _ _ hs ht hst ↦ condExpInd_disjoint_union_apply hs ht (by simp) (by simp) hst _)
+  (fun _ hs ↦ condExpIndL1_of_not_measurableSet hs _)
+
+open Classical in
+noncomputable
+def condProb (mΩ : MeasurableSpace Ω) (P : Measure[mΩ₀] Ω) [IsFiniteMeasure P] :
+    VectorMeasure[mΩ₀] Ω (Ω →₁[P] ℝ) :=
+  if hm : mΩ ≤ mΩ₀ then
+    if SigmaFinite (P.trim hm) then
+      condProb' hm P
+    else 0
+  else 0
+
+scoped notation P "⸨ " s "|" mΩ "⸩" => condProb mΩ P s
+
+end CondProb
 
 end MeasureTheory

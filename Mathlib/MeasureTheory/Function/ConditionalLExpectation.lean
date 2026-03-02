@@ -94,6 +94,8 @@ meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
 #guard_msgs in
 #check P⁻[X|mΩ] (sorry : Ω)
 
+scoped notation P "⁻⸨ " s "|" mΩ "⸩" => condLExp mΩ P (Set.indicator s 1)
+
 theorem condLExp_of_not_le (hm_not : ¬mΩ ≤ mΩ₀) : P⁻[X|mΩ] = 0 := by
   rw [condLExp, dif_neg hm_not]
 
@@ -168,8 +170,21 @@ theorem ae_eq_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)]
     (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, Y ω ∂P = ∫⁻ ω in s, X ω ∂P) :
     Y =ᵐ[P] P⁻[X|mΩ] := ae_eq_condLExp₀ _ _ hY.aemeasurable hXY
 
+@[simp]
 theorem condLExp_const (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)] (c : ℝ≥0∞) :
     P⁻[fun _ : Ω ↦ c|mΩ] = fun _ ↦ c := condLExp_eq_self _ _ (measurable_const)
+
+@[simp]
+theorem condLExp_zero (P : Measure[mΩ₀] Ω) : P⁻[0|mΩ] = 0 := by
+  by_cases hm : mΩ ≤ mΩ₀
+  swap; · simp [condLExp_of_not_le hm]
+  by_cases hσ : SigmaFinite (P.trim hm)
+  swap; · simp [condLExp_of_not_sigmaFinite hm hσ]
+  exact condLExp_const hm P 0
+
+@[simp]
+theorem condLExp_one (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim hm)] :
+    P⁻[1|mΩ] = 1 := condLExp_const hm P 1
 
 @[gcongr]
 theorem condLExp_congr_ae {P : Measure[mΩ₀] Ω}
