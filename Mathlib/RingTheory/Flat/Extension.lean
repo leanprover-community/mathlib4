@@ -201,15 +201,28 @@ instance : IsLocalHom (algebraMap S (adjoinTranscendental S)) :=
   ((IsLocalRing.local_hom_TFAE _).out 0 2).mpr
     (le_of_eq (adjoinTranscendental_maximalIdeal_eq_map S).symm)
 
-noncomputable abbrev adjoinTranscendentalToK (x : K) [Algebra S K]
-    [IsScalarTower S (ResidueField S) K] : adjoinTranscendental S →+* K :=
+lemma adjoinTranscendental_aeval_ker (x : K) (nint : ¬ IsIntegral (ResidueField S) x)
+    [Algebra S K] [IsScalarTower S (ResidueField S) K] :
+    RingHom.ker (Polynomial.aeval x) = (maximalIdeal S).map Polynomial.C := by
+  have : (Polynomial.aeval x).toRingHom = (Polynomial.aeval x).toRingHom.comp
+    (Polynomial.mapRingHom (IsLocalRing.residue S)) :=
+    RingHom.ext (fun p ↦ (Polynomial.aeval_map_algebraMap (ResidueField S) _ _).symm)
+  have inj : Function.Injective (Polynomial.aeval (R := ResidueField S) x) := by
+    apply (iff_not_comm.mpr isAlgebraic_iff_not_injective).mpr
+    exact isAlgebraic_iff_isIntegral.not.mpr nint
+  change RingHom.ker (Polynomial.aeval x).toRingHom = _
+  rw [this, RingHom.ker_comp_of_injective _ inj, Polynomial.ker_mapRingHom, ker_residue]
+
+noncomputable abbrev adjoinTranscendentalToK (x : K) (nint : ¬ IsIntegral (ResidueField S) x)
+    [Algebra S K] [IsScalarTower S (ResidueField S) K] : adjoinTranscendental S →+* K :=
   IsLocalization.lift (M := ((maximalIdeal S).map Polynomial.C).primeCompl)
     (g := (Polynomial.aeval x).toRingHom) (fun y ↦ by
+      simpa [← RingHom.mem_ker, adjoinTranscendental_aeval_ker K S x nint] using
+        Ideal.mem_primeCompl_iff.mp y.2)
 
-      sorry)
-
-lemma adjoinTranscendentalToK_ker (x : K) [Algebra S K]
-    [IsScalarTower S (ResidueField S) K] : RingHom.ker (adjoinTranscendentalToK K S x) =
+lemma adjoinTranscendentalToK_ker (x : K) (nint : ¬ IsIntegral (ResidueField S) x)
+    [Algebra S K] [IsScalarTower S (ResidueField S) K] :
+    RingHom.ker (adjoinTranscendentalToK K S x nint) =
     maximalIdeal (adjoinTranscendental S) := by
   --IsLocalization.lift_eq
   sorry
