@@ -59,7 +59,7 @@ section monogenic
 
 variable (S : Type w) [CommRing S] [IsLocalRing S] [Algebra (ResidueField S) K]
 
-noncomputable abbrev minpolyLift (x : K) (int : IsIntegral (ResidueField S) x) : S[X] :=
+noncomputable def minpolyLift (x : K) (int : IsIntegral (ResidueField S) x) : S[X] :=
   Classical.choose (Polynomial.lifts_and_natDegree_eq_and_monic
     (Polynomial.map_surjective (IsLocalRing.residue S) IsLocalRing.residue_surjective
     (minpoly (ResidueField S) x)) (minpoly.monic int))
@@ -83,30 +83,46 @@ instance (x : K) (int : IsIntegral (ResidueField S) x) :
     Module.Free S (extensionByAlgebraic K S x int) :=
   (minpolyLift_spec K S x int).2.2.free_quotient
 
-set_option backward.isDefEq.respectTransparency false in
-lemma extensionByAlgebraic_maximalIdeal_map (x : K) (int : IsIntegral (ResidueField S) x) :
-    ((maximalIdeal S).map (algebraMap S (extensionByAlgebraic K S x int))).IsMaximal := by
-  let f' := (Ideal.Quotient.mk (Ideal.span {(minpoly (ResidueField S) x)})).comp
+noncomputable abbrev extensionByAlgebraicToResidueAux (x : K) (int : IsIntegral (ResidueField S) x) :
+    S[X] →+* (ResidueField S)[X] ⧸ Ideal.span {minpoly (ResidueField S) x} :=
+  (Ideal.Quotient.mk (Ideal.span {(minpoly (ResidueField S) x)})).comp
     (Polynomial.mapRingHom (IsLocalRing.residue S))
+
+lemma extensionByAlgebraicToResidueAux_ker (x : K) (int : IsIntegral (ResidueField S) x) :
+    RingHom.ker (extensionByAlgebraicToResidueAux K S x int) =
+    Ideal.span {minpolyLift K S x int} ⊔ (maximalIdeal S).map Polynomial.C := by
   have eqmap : Ideal.span {(minpoly (ResidueField S) x)} =
     (Ideal.span {minpolyLift K S x int}).map (Polynomial.mapRingHom (IsLocalRing.residue S)) := by
     simp [Ideal.map_span, (minpolyLift_spec K S x int).1]
-  have kereq : RingHom.ker f' = Ideal.span {minpolyLift K S x int} ⊔
-    (maximalIdeal S).map Polynomial.C := by
-    rw [← RingHom.comap_ker, Ideal.mk_ker, eqmap, Ideal.comap_map_of_surjective' _
+  rw [← RingHom.comap_ker, Ideal.mk_ker, eqmap, Ideal.comap_map_of_surjective' _
       (Polynomial.map_surjective _ residue_surjective), Polynomial.ker_mapRingHom, ker_residue]
-  let f : (extensionByAlgebraic K S x int) →+* _ :=
-    Ideal.Quotient.lift _ f' (fun x hx ↦ (le_of_le_of_eq le_sup_left kereq.symm) hx)
-  have surjf : Function.Surjective f := by
-    apply Ideal.Quotient.lift_surjective_of_surjective
-    exact (Ideal.Quotient.mk_surjective.comp
-      (Polynomial.map_surjective _ IsLocalRing.residue_surjective))
+
+noncomputable abbrev extensionByAlgebraicToResidue (x : K) (int : IsIntegral (ResidueField S) x) :
+    (extensionByAlgebraic K S x int) →+*
+    (ResidueField S)[X] ⧸ Ideal.span {minpoly (ResidueField S) x} :=
+  Ideal.Quotient.lift _ (extensionByAlgebraicToResidueAux K S x int) (fun _ h ↦
+    (le_of_le_of_eq le_sup_left (extensionByAlgebraicToResidueAux_ker K S x int).symm) h)
+
+lemma extensionByAlgebraicToResidue_surjective (x : K) (int : IsIntegral (ResidueField S) x) :
+    Function.Surjective (extensionByAlgebraicToResidue K S x int) := by
+  apply Ideal.Quotient.lift_surjective_of_surjective
+  exact (Ideal.Quotient.mk_surjective.comp (Polynomial.map_surjective _ residue_surjective))
+
+lemma extensionByAlgebraicToResidue_ker (x : K) (int : IsIntegral (ResidueField S) x) :
+    RingHom.ker (extensionByAlgebraicToResidue K S x int) =
+    (maximalIdeal S).map (algebraMap S (extensionByAlgebraic K S x int)) := by
+  apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
+  rw [RingHom.comap_ker, Ideal.Quotient.lift_comp_mk, extensionByAlgebraicToResidueAux_ker,
+    IsScalarTower.algebraMap_eq S S[X]]
+  simp [← Ideal.map_map]
+
+set_option backward.isDefEq.respectTransparency false in
+lemma extensionByAlgebraic_maximalIdeal_map (x : K) (int : IsIntegral (ResidueField S) x) :
+    ((maximalIdeal S).map (algebraMap S (extensionByAlgebraic K S x int))).IsMaximal := by
   let : Fact _ := ⟨minpoly.irreducible int⟩
   let := Ideal.Quotient.field (Ideal.span {(minpoly (ResidueField S) x)})
-  convert RingHom.ker_isMaximal_of_surjective f surjf
-  apply Ideal.comap_injective_of_surjective _ Ideal.Quotient.mk_surjective
-  rw [RingHom.comap_ker, Ideal.Quotient.lift_comp_mk, kereq, IsScalarTower.algebraMap_eq S S[X]]
-  simp [← Ideal.map_map]
+  rw [← extensionByAlgebraicToResidue_ker K S x int]
+  exact RingHom.ker_isMaximal_of_surjective _ (extensionByAlgebraicToResidue_surjective K S x int)
 
 instance (x : K) (int : IsIntegral (ResidueField S) x) :
     IsLocalRing (extensionByAlgebraic K S x int) := by
