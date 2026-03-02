@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Modular forms
@@ -63,9 +64,9 @@ open ModularForm
 
 /-- The weight `k` slash action of `GL(2, ℝ)⁺` preserves holomorphic functions. This is private,
 since it is a step towards the proof of `MDifferentiable.slash` which is more general. -/
-private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
+private lemma MDifferentiable.slash_of_pos {f : ℍ → ℂ} (hf : MDiff f)
     (k : ℤ) {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
+    MDiff (f ∣[k] g) := by
   refine .mul (.mul ?_ mdifferentiable_const) (mdifferentiable_denom_zpow g _)
   simpa only [σ, hg, ↓reduceIte] using hf.comp (mdifferentiable_smul hg)
 
@@ -76,8 +77,8 @@ private lemma slash_J (f : ℍ → ℂ) (k : ℤ) :
 
 /-- The weight `k` slash action of the negative-determinant matrix `J` preserves holomorphic
 functions. -/
-private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f) (k : ℤ) :
-    MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] J) := by
+private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDiff f) (k : ℤ) :
+    MDiff (f ∣[k] J) := by
   simp only [mdifferentiable_iff, slash_J, Function.comp_def] at hf ⊢
   have : {z | 0 < z.im}.EqOn (fun x ↦ conj (f <| ofComplex <| -conj ↑(ofComplex x)))
       (fun x ↦ conj (f <| ofComplex <| -conj x)) := fun z h ↦ by simp [ofComplex_apply_of_im_pos h]
@@ -88,8 +89,8 @@ private lemma MDifferentiable.slashJ {f : ℍ → ℂ} (hf : MDifferentiable �
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The weight `k` slash action of `GL(2, ℝ)` preserves holomorphic functions. -/
-lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) f)
-    (k : ℤ) (g : GL (Fin 2) ℝ) : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f ∣[k] g) := by
+lemma MDifferentiable.slash {f : ℍ → ℂ} (hf : MDiff f)
+    (k : ℤ) (g : GL (Fin 2) ℝ) : MDiff (f ∣[k] g) := by
   refine g.det_ne_zero.lt_or_gt.elim (fun hg ↦ ?_) (hf.slash_of_pos k)
   rw [show g = J * (J * g) by simp [← mul_assoc, ← sq], SlashAction.slash_mul]
   exact (hf.slashJ k).slash_of_pos _ (by simpa using hg)
@@ -100,7 +101,7 @@ open scoped ModularForm
 
 /-- These are `SlashInvariantForm`'s that are holomorphic and bounded at infinity. -/
 structure ModularForm extends SlashInvariantForm Γ k where
-  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toSlashInvariantForm : ℍ → ℂ)
+  holo' : MDiff (toSlashInvariantForm : ℍ → ℂ)
   bdd_at_cusps' {c : OnePoint ℝ} (hc : IsCusp c Γ) : c.IsBoundedAt toFun k
 
 /-- The `SlashInvariantForm` associated to a `ModularForm`. -/
@@ -108,7 +109,7 @@ add_decl_doc ModularForm.toSlashInvariantForm
 
 /-- These are `SlashInvariantForm`s that are holomorphic and zero at infinity. -/
 structure CuspForm extends SlashInvariantForm Γ k where
-  holo' : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (toSlashInvariantForm : ℍ → ℂ)
+  holo' : MDiff (toSlashInvariantForm : ℍ → ℂ)
   zero_at_cusps' {c : OnePoint ℝ} (hc : IsCusp c Γ) : c.IsZeroAt toFun k
 
 /-- The `SlashInvariantForm` associated to a `CuspForm`. -/
@@ -119,7 +120,7 @@ add_decl_doc CuspForm.toSlashInvariantForm
 at all cusps. -/
 class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k : outParam ℤ)
     [FunLike F ℍ ℂ] : Prop extends SlashInvariantFormClass F Γ k where
-  holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
+  holo : ∀ f : F, MDiff (f : ℍ → ℂ)
   bdd_at_cusps (f : F) {c : OnePoint ℝ} (hc : IsCusp c Γ) : c.IsBoundedAt f k
 
 /-- `CuspFormClass F Γ k` says that `F` is a type of bundled functions that extend
@@ -127,7 +128,7 @@ class ModularFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) 
 at all cusps. -/
 class CuspFormClass (F : Type*) (Γ : outParam <| Subgroup (GL (Fin 2) ℝ)) (k : outParam ℤ)
     [FunLike F ℍ ℂ] : Prop extends SlashInvariantFormClass F Γ k where
-  holo : ∀ f : F, MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (f : ℍ → ℂ)
+  holo : ∀ f : F, MDiff (f : ℍ → ℂ)
   zero_at_cusps (f : F) {c : OnePoint ℝ} (hc : IsCusp c Γ) : c.IsZeroAt f k
 
 instance (priority := 100) ModularForm.funLike :
