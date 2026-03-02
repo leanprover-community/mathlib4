@@ -116,12 +116,12 @@ theorem CommGroup.fg_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → �
   let qi : G ⧸ f.range → G := Function.surjInv mk_surjective
   let s : Set G := Set.range qi
   obtain ⟨g, hg₁, hg₂⟩ := s.exists_max_image c s.toFinite <| Set.range_nonempty qi
-  let c' : ℝ := max c₀ (c g)
   have H₁' : s * f.range = .univ := by
     refine Set.eq_univ_iff_forall.mpr fun x ↦ Set.mem_mul.mpr ⟨qi (q x), by simp [s], ?_⟩
     conv => enter [1, y]; rw [eq_comm, ← div_eq_iff_eq_mul', SetLike.mem_coe]
     simp only [↓existsAndEq, and_true]
     exact eq_iff_div_mem.mp (Function.surjInv_eq mk_surjective _).symm
+  let c' : ℝ := max c₀ (c g)
   have H₃' x : b * h x - c' ≤ h (f x) := by grind [powMonoidHom_apply]
   refine Group.fg_of_descent (fun U u hu ↦ ?_) ha H₀ s.toFinite H₁' (fun g' hg' x ↦ ?_) H₃' H₄
   · obtain ⟨u', hu₁, rfl⟩ := mem_map.mp hu
