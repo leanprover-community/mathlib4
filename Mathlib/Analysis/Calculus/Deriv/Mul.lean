@@ -66,8 +66,7 @@ theorem hasDerivAt_of_bilinear (hu : x ∈ tsupport v → HasDerivAt u u' x)
     · have hx : x ∉ tsupport fun x ↦ B (u x) (v x) :=
         mt (closure_mono (fun x ↦ mt fun h ↦ by simp [h]) ·) hxv
       convert HasDerivAt.of_notMem_tsupport hx
-      have hv' : v' = 0 := (hv hxu).unique <| .of_notMem_tsupport hxv
-      simp [hv', image_eq_zero_of_notMem_tsupport hxv]
+      simp [(hv hxu).unique <| .of_notMem_tsupport hxv, image_eq_zero_of_notMem_tsupport hxv]
   · have hx : x ∉ tsupport fun x ↦ B (u x) (v x) :=
       mt (closure_mono (fun x ↦ mt fun h ↦ by simp [h]) ·) hxu
     convert HasDerivAt.of_notMem_tsupport hx
