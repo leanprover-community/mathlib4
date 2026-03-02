@@ -143,6 +143,22 @@ noncomputable def teichmuller₀ : Perfection (R ⧸ I) p →*₀ R where
 @[simp] lemma teichmullerFun_eq_teichmuller₀ :
     teichmullerFun = teichmuller₀ p I := rfl
 
+theorem teichmuller₀_sModEq {x : Perfection (R ⧸ I) p} {y : R} {n : ℕ}
+    (h : Ideal.Quotient.mk I y = coeff _ p n x) :
+    teichmuller₀ p I x ≡ y ^ p ^ n [SMOD I ^ (n + 1)] :=
+  teichmullerFun_sModEq h
+
+theorem teichmuller₀_spec' {x : Perfection (R ⧸ I) p} {y : R}
+    (h : ∃ N, ∀ n ≥ N, ∃ z, Ideal.Quotient.mk I z = coeff _ p n x ∧
+      z ^ p ^ n ≡ y [SMOD I ^ (n + 1)]) :
+    teichmuller₀ p I x = y :=
+  teichmullerFun_spec' h
+
+theorem teichmuller₀_spec {x : Perfection (R ⧸ I) p} {y : R}
+    (h : ∀ n, ∃ z, Ideal.Quotient.mk I z = coeff _ p n x ∧ z ^ p ^ n ≡ y [SMOD I ^ (n + 1)]) :
+    teichmuller₀ p I x = y :=
+  teichmullerFun_spec h
+
 theorem mk_teichmuller (x : Perfection (R ⧸ I) p) :
     Ideal.Quotient.mk I (teichmuller p I x) = coeff _ p 0 x := by
   have := teichmuller_sModEq <| Ideal.Quotient.mk_out <| coeff _ p 0 x
