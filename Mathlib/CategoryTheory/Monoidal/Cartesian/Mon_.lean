@@ -22,6 +22,22 @@ showing that it is fully faithful and its (essential) image is the representable
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 namespace CategoryTheory
+
+section SemiCartesianMonoidalCategory
+
+variable {D : Type*} [Category* D] [SemiCartesianMonoidalCategory D]
+
+@[simps]
+instance uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
+  default.hom := toUnit A.X
+  default.isMonHom_hom.mul_hom := toUnit_unique _ _
+  uniq f := Mon.Hom.ext (toUnit_unique _ _)
+
+instance : HasTerminal (Mon D) :=
+  hasTerminal_of_unique (Mon.trivial D)
+
+end SemiCartesianMonoidalCategory
+
 universe w v u
 variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
   [Category.{w} D] [CartesianMonoidalCategory D]

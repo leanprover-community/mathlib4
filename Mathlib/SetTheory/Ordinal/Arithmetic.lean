@@ -155,8 +155,11 @@ theorem one_lt_of_isSuccLimit {o : Ordinal} (h : IsSuccLimit o) : 1 < o :=
 theorem zero_or_succ_or_isSuccLimit (o : Ordinal) : o = 0 ∨ o ∈ range succ ∨ IsSuccLimit o := by
   simpa using isMin_or_mem_range_succ_or_isSuccLimit o
 
-/-- Main induction principle of ordinals: if one can prove a property by
-  induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
+/-- Limit induction on ordinals: if one can prove a property by induction at successor ordinals and
+at limit ordinals, then it holds for all ordinals.
+
+Note that this is just a special (though sometimes convenient) case of the more general
+well-founded recursion `WellFoundedLT.fix`. -/
 @[elab_as_elim]
 def limitRecOn {motive : Ordinal → Sort*} (o : Ordinal)
     (zero : motive 0) (succ : ∀ o, motive o → motive (succ o))
