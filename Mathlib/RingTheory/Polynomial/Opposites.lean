@@ -38,6 +38,7 @@ def opRingEquiv (R : Type*) [Semiring R] : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X] :=
 `Finsupp.single`: `monomial`, `C a`, `X`, `C a * X ^ n`. -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem opRingEquiv_op_monomial (n : ℕ) (r : R) :
     opRingEquiv R (op (monomial n r : R[X])) = monomial n (op r) := by
@@ -78,6 +79,7 @@ theorem opRingEquiv_symm_C_mul_X_pow (r : Rᵐᵒᵖ) (n : ℕ) :
 
 /-!  Lemmas about more global properties of polynomials and opposites. -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
     (opRingEquiv R p).coeff n = op ((unop p).coeff n) := by simp [opRingEquiv, coeff]

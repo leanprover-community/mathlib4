@@ -491,8 +491,9 @@ theorem edgeSet_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
 lemma nil_append_iff {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
   cases p <;> cases q <;> simp
 
-lemma Nil.append {p : G.Walk u v} {q : G.Walk v w} (hp : p.Nil) (hq : q.Nil) : (p.append q).Nil :=
-  by simp [hp, hq]
+lemma Nil.append {p : G.Walk u v} {q : G.Walk v w} (hp : p.Nil) (hq : q.Nil) :
+    (p.append q).Nil := by
+  simp [hp, hq]
 
 @[simp]
 lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
@@ -509,10 +510,12 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
 lemma drop_length (p : G.Walk u v) (n : ℕ) : (p.drop n).length = p.length - n := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma drop_getVert (p : G.Walk u v) (n m : ℕ) : (p.drop n).getVert m = p.getVert (n + m) := by
   induction p generalizing n <;> cases n <;> simp [*, drop, add_right_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma drop_add_heq (p : G.Walk u v) (n m : ℕ) : p.drop (n + m) ≍ (p.drop n).drop m := by
   rw [add_comm]
   induction p generalizing n <;> cases n <;> simp [*, drop]
@@ -521,6 +524,7 @@ lemma drop_add_eq (p : G.Walk u v) (n m : ℕ) :
     p.drop (n + m) = ((p.drop n).drop m).copy (drop_getVert ..) rfl :=
   eq_of_heq <| drop_add_heq .. |>.trans <| by simp [Walk.copy]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nil_drop_iff (p : G.Walk u v) (n : ℕ) : (p.drop n).Nil ↔ p.length ≤ n := by
   induction p generalizing n <;> cases n <;> simp [*, drop]
 
@@ -552,10 +556,12 @@ lemma take_zero (p : G.Walk u v) : p.take 0 = nil.copy rfl p.getVert_zero.symm :
 lemma take_length (p : G.Walk u v) (n : ℕ) : (p.take n).length = n ⊓ p.length := by
   induction p generalizing n <;> cases n <;> simp [*, take]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma take_getVert (p : G.Walk u v) (n m : ℕ) : (p.take n).getVert m = p.getVert (n ⊓ m) := by
   induction p generalizing n m <;> cases n <;> cases m <;> simp [*, take]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma take_add_heq (p : G.Walk u v) (n m : ℕ) :
     p.take (n + m) ≍ (p.take n).append ((p.drop n).take m) := by
   rw [add_comm]
@@ -566,6 +572,7 @@ lemma take_add_eq (p : G.Walk u v) (n m : ℕ) :
     p.take (n + m) = ((p.take n).append ((p.drop n).take m)).copy rfl (drop_getVert ..) :=
   eq_of_heq <| take_add_heq .. |>.trans <| by simp [Walk.copy]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nil_take_iff (p : G.Walk u v) (n : ℕ) : (p.take n).Nil ↔ p.Nil ∨ n = 0 := by
   cases p <;> cases n <;> simp [take]
 
