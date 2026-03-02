@@ -197,6 +197,10 @@ instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨fun n => -f n, by simp⟩
 
+@[simp]
+theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n = -f n := by
+  rfl
+
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid with
     neg_add_cancel := fun _ => ext fun _ => neg_add_cancel _

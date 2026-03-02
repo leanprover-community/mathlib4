@@ -452,8 +452,7 @@ instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
   mul_assoc _ _ _ := by ext <;> simpa using by ring
   mul_comm _ _ := by ext <;> simpa using by ring
 
-instance [CommSemiring S] [CommSemiring R] [Algebra S R] :
-    Algebra S (QuadraticAlgebra R a b) where
+instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
   algebraMap.map_one' := by ext <;> simp
   algebraMap.map_mul' x y := by ext <;> simp

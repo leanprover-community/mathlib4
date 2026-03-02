@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri
 -/
 module
 
+public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Field.TransferInstance
 public import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.Analysis.SpecificLimits.Basic
@@ -53,7 +54,7 @@ instance instIsSeparableLeft [Algebra R T] [Algebra.IsSeparable R T] :
     Algebra.IsSeparable (WithAbs v) T :=
   .of_equiv_equiv (equiv v).symm (.refl T) (by ext; simp [algebraMap_left_apply])
 
-@[deprecated  (since := "2026-01-29")] alias instIsSeparable := instIsSeparableLeft
+@[deprecated (since := "2026-01-29")] alias instIsSeparable := instIsSeparableLeft
 
 instance instIsSeparableRight [Algebra T R] [Algebra.IsSeparable T R] :
     Algebra.IsSeparable T (WithAbs v) :=
@@ -140,11 +141,12 @@ namespace Completion
 
 /-- This is a `CoeTail` so that it does not apply to the defeq `(WithAbs v`) and replace the
 already existing `Coe (WithAbs v) v.Completion` from `UniformSpace.Completion.instCoe`. -/
-instance : Coe K v.Completion where
+noncomputable instance : Coe K v.Completion where
   coe k : v.Completion := ↑((WithAbs.equiv v).symm k)
 
 variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {v}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field
 `L`, then we can extend that embedding to an embedding on the completion `v.Completion →+* L`. -/
 @[deprecated "Use `Isometry.extensionHom` in combination with `AddMonoidHomClass.isometry_of_norm`"
@@ -152,12 +154,14 @@ variable {L : Type*} [NormedField L] [CompleteSpace L] {f : WithAbs v →+* L} {
 noncomputable abbrev extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v (equiv v x)) :
     v.Completion →+* L := (AddMonoidHomClass.isometry_of_norm _ h).extensionHom
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated "Use `Isometry.extensionHom_coe` in combination with
   `AddMonoidHomClass.isometry_of_norm`" (since := "2025-11-28")]
 theorem extensionEmbedding_of_comp_coe (h : ∀ x, ‖f x‖ = v (equiv v x)) (x : K) :
     (AddMonoidHomClass.isometry_of_norm _ h).extensionHom x = f ((equiv v).symm x) :=
   AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom_coe _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` preserves distances. -/
 @[deprecated "Use `Isometry.dist_eq` in combination with `AddMonoidHomClass.isometry_of_norm`"
@@ -167,6 +171,7 @@ theorem extensionEmbedding_dist_eq_of_comp (h : ∀ x, ‖f x‖ = v (equiv v x)
     dist (f x) (f y) = dist x y :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension.dist_eq _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is an isometry. -/
 @[deprecated "Use `Isometry.completion_extension` in combination with
@@ -175,6 +180,7 @@ theorem isometry_extensionEmbedding_of_comp (h : ∀ x, ‖f x‖ = v (equiv v x
     Isometry (AddMonoidHomClass.isometry_of_norm _ h |>.extensionHom) :=
   AddMonoidHomClass.isometry_of_norm _ h |>.completion_extension
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the absolute value of a normed field factors through an embedding into another normed field,
 then the extended embedding `v.Completion →+* L` is a closed embedding. -/
 @[deprecated "Use `Isometry.isClosedEmbedding` in combination with `Isometry.completion_extension`

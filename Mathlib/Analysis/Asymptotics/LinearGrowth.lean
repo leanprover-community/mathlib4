@@ -18,7 +18,7 @@ versions, using a `liminf` and a `limsup` respectively. Most properties are deve
 
 - `linearGrowthInf`, `linearGrowthSup`: respectively, `liminf` and `limsup` of `(u n) / n`.
 - `linearGrowthInfTopHom`, `linearGrowthSupBotHom`: the functions `linearGrowthInf`,
-`linearGrowthSup` as homomorphisms preserving finitary `Inf`/`Sup` respectively.
+  `linearGrowthSup` as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## TODO
 
@@ -170,6 +170,7 @@ lemma linearGrowthInf_top : linearGrowthInf ⊤ = (⊤ : EReal) := by
   refine liminf_congr (eventually_atTop.2 ?_)
   exact ⟨1, fun n n_pos ↦ top_div_of_pos_ne_top (Nat.cast_pos'.2 n_pos) (natCast_ne_top n)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearGrowthSup_top : linearGrowthSup (⊤ : ℕ → EReal) = (⊤ : EReal) := by
   apply top_le_iff.1
   rw [← linearGrowthInf_top]
@@ -295,6 +296,7 @@ noncomputable def linearGrowthInfTopHom : InfTopHom (ℕ → EReal) EReal where
   map_inf' _ _ := linearGrowthInf_inf
   map_top' := linearGrowthInf_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma linearGrowthInf_biInf {α : Type*} (u : α → ℕ → EReal) {s : Set α} (hs : s.Finite) :
     linearGrowthInf (⨅ x ∈ s, u x) = ⨅ x ∈ s, linearGrowthInf (u x) := by
   have := map_finset_inf linearGrowthInfTopHom hs.toFinset u
@@ -339,12 +341,7 @@ lemma Real.eventually_atTop_exists_int_between {a b : ℝ} (h : a < b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℤ, a * x ≤ n ∧ n ≤ b * x := by
   refine (eventually_ge_atTop (b - a)⁻¹).mono fun x ab_x ↦ ?_
   rw [inv_le_iff_one_le_mul₀ (sub_pos_of_lt h), mul_comm, sub_mul, le_sub_iff_add_le'] at ab_x
-  obtain ⟨n, n_bx, hn⟩ := (b * x).exists_floor
-  refine ⟨n, ?_, n_bx⟩
-  specialize hn (n + 1)
-  simp only [Int.cast_add, Int.cast_one, add_le_iff_nonpos_right, Int.reduceLE, imp_false,
-    not_le] at hn
-  exact le_of_add_le_add_right (ab_x.trans hn.le)
+  exact ⟨_, le_of_add_le_add_right (ab_x.trans (Int.lt_floor_add_one _).le), Int.floor_le _⟩
 
 lemma Real.eventually_atTop_exists_nat_between {a b : ℝ} (h : a < b) (hb : 0 ≤ b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℕ, a * x ≤ n ∧ n ≤ b * x := by
