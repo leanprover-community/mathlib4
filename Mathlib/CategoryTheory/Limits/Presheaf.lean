@@ -19,10 +19,10 @@ is a colimit of representables. This result is also known as the density theorem
 the co-Yoneda lemma and the Ninja Yoneda lemma. Three formulations are given:
 * `colimitOfRepresentable` uses the category of elements of a functor to types;
 * `isColimitTautologicalCocone` uses the category of costructured arrows
-for `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`;
+  for `yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁`;
 * `isColimitTautologicalCocone'` uses the category of costructured arrows
-for `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁`, when the presheaf has values
-in `Type (max w v₁)`;
+  for `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁`, when the presheaf has values
+  in `Type (max w v₁)`;
 
 In this file, we also study the left Kan extensions of functors `A : C ⥤ ℰ`
 along the Yoneda embedding `uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type max w v₁ v₂`

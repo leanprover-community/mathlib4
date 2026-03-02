@@ -22,6 +22,22 @@ showing that it is fully faithful and its (essential) image is the representable
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 namespace CategoryTheory
+
+section SemiCartesianMonoidalCategory
+
+variable {D : Type*} [Category* D] [SemiCartesianMonoidalCategory D]
+
+@[simps]
+instance uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
+  default.hom := toUnit A.X
+  default.isMonHom_hom.mul_hom := toUnit_unique _ _
+  uniq f := Mon.Hom.ext (toUnit_unique _ _)
+
+instance : HasTerminal (Mon D) :=
+  hasTerminal_of_unique (Mon.trivial D)
+
+end SemiCartesianMonoidalCategory
+
 universe w v u
 variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
   [Category.{w} D] [CartesianMonoidalCategory D]
@@ -177,10 +193,7 @@ variable (F : C ⥤ D) [F.Monoidal]
 open scoped Obj
 
 protected lemma map_mul (f g : X ⟶ M) : F.map (f * g) = F.map f * F.map g := by
-  simp only [Hom.mul_def, map_comp, obj.μ_def, ← Category.assoc]
-  congr 1
-  rw [← IsIso.comp_inv_eq]
-  ext <;> simp
+  simp [Hom.mul_def]
 
 @[simp] protected lemma map_one : F.map (1 : X ⟶ M) = 1 := by simp [Hom.one_def]
 
@@ -323,7 +336,7 @@ instance : yonedaMon (C := C).Full := yonedaMonFullyFaithful.full
 instance : yonedaMon (C := C).Faithful := yonedaMonFullyFaithful.faithful
 
 lemma essImage_yonedaMon :
-    yonedaMon (C := C).essImage = (· ⋙ forget _) ⁻¹' setOf Functor.IsRepresentable := by
+    yonedaMon (C := C).essImage = fun F ↦ (F ⋙ forget _).IsRepresentable := by
   ext F
   constructor
   · rintro ⟨M, ⟨α⟩⟩

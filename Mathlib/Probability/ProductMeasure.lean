@@ -471,7 +471,6 @@ lemma infinitePi_singleton [Countable ι] [∀ i, MeasurableSingletonClass (X i)
 lemma infinitePi_singleton_of_fintype [Fintype ι] [∀ i, MeasurableSingletonClass (X i)]
     (f : ∀ i, X i) : infinitePi μ {f} = ∏ i, μ i {f i} := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
   .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
 
@@ -542,12 +541,7 @@ lemma infinitePi_map_piCurry_symm :
   rw [map_apply (by fun_prop) (.pi (countable_toSet _) fun _ _ ↦ ht _),
     ← Finset.sigma_image_fst_preimage_mk s, coe_piCurry_symm, Finset.coe_sigma,
     Set.uncurry_preimage_sigma_pi, infinitePi_pi, Finset.prod_sigma]
-  · apply Finset.prod_congr rfl
-    simp only [Finset.mem_image, Sigma.exists, exists_and_right, exists_eq_right,
-      forall_exists_index]
-    intro i j hij
-    rw [infinitePi_pi]
-    simp [ht]
+  · exact Finset.prod_congr rfl (fun _ _ ↦ infinitePi_pi _ fun _ _ ↦ ht _)
   · simp only [mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
     exact fun i j hij ↦ MeasurableSet.pi (countable_toSet _) fun k hk ↦ by simp_all
 
