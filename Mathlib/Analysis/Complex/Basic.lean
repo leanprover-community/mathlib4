@@ -436,9 +436,7 @@ theorem eq_coe_norm_of_nonneg {z : ℂ} (hz : 0 ≤ z) : z = ↑‖z‖ := by
 /-- We show that the partial order and the topology on `ℂ` are compatible.
 We turn this into an instance scoped to `ComplexOrder`. -/
 lemma orderClosedTopology : OrderClosedTopology ℂ where
-  isClosed_le' := by
-    simp_rw [le_def, Set.setOf_and]
-    refine IsClosed.inter (isClosed_le ?_ ?_) (isClosed_eq ?_ ?_) <;> continuity
+  isClosed_le' := OrderClosedTopology.isClosed_le'
 
 scoped[ComplexOrder] attribute [instance] Complex.orderClosedTopology
 
