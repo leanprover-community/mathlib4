@@ -434,14 +434,24 @@ theorem IsEquiv.uniformContinuous_equivWithVal
   --simp_rw [restrict_def] at hx
   --simp only [restrict_def, map_div₀, Units.val_mk0, Set.mem_setOf_eq] at hx
   --simp only [restrict_def, congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq]
-  rw [← (valueGroup₀_equiv _).symm_apply_eq ] at hr
+  rw [← (valueGroup₀_equiv _).symm_apply_eq, ← restrict_def, ← restrict_def ] at hr
   rw [← hr, Set.mem_setOf_eq]
   by_cases hx0 : Valued.v.restrict (WithVal.congr v w (.refl R) x) = 0
   · rw [hx0]
-    sorry
-    /- rw [← w.restrict_pos_iff] at hr₀ hs₀
-    exact div_pos hr₀ hs₀ -/
+    rw [← w.restrict_pos_iff] at hr₀ hs₀
+    rw [← strictMono_valueGroup₀_equiv.lt_iff_lt]
+    simp only [map_zero, map_div₀, MulEquiv.apply_symm_apply]
+    apply WithZero.pos_iff_ne_zero.mpr ?_
+    exact div_ne_zero_iff.mpr ⟨WithZero.pos_iff_ne_zero.mp hr₀,
+      WithZero.pos_iff_ne_zero.mp hs₀⟩
+    --exact div_pos hr₀ hs₀ -- Does not longer work
   suffices w ((equiv v) x) * w s < w r by
+    rw [← strictMono_valueGroup₀_equiv.lt_iff_lt]
+    simp only [congr_apply, RingEquiv.refl_apply, restrict_def, map_div₀, MulEquiv.apply_symm_apply]
+    --rw [lt_div_iff₀]
+    sorry
+  sorry
+  /- suffices w ((equiv v) x) * w s < w r by
     rwa [← map_mul, ← restrict_lt_iff, map_mul, ← lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
       at this
   simp only [restrict_def, Units.val_mk0, Set.mem_setOf_eq] at hx ⊢
@@ -464,7 +474,7 @@ theorem IsEquiv.uniformContinuous_equivWithVal
       erw [ne_eq, h.eq_zero]
       simpa using hx0
     rw [ne_eq, h.eq_zero]
-    exact ne_zero_of_lt hs₀
+    exact ne_zero_of_lt hs₀ -/
 
 theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w)
     (hw : ∀ γ : Γ₀'ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧ w r / w s = γ) (h : v.IsEquiv w) :
