@@ -20,9 +20,9 @@ open scoped MonoidAlgebra
 
 namespace Representation
 
-variable {A G V W : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
-  [Module A V] [Module A W] (ρ : Representation A G V) (σ : Representation A G W)
-  (f : V →ₗ[A] W)
+variable {A G V W P : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
+  [AddCommMonoid P] [Module A V] [Module A W] [Module A P] (ρ : Representation A G V)
+  (σ : Representation A G W) (τ : Representation A G P) (f : V →ₗ[A] W)
 
 /-- An unbundled version of `IntertwiningMap`. -/
 @[mk_iff] structure IsIntertwiningMap : Prop where
@@ -116,7 +116,27 @@ noncomputable def id : IntertwiningMap ρ ρ where
   toLinearMap := LinearMap.id
   isIntertwining' := by simp
 
-@[simp] lemma id_apply (v : V) : IntertwiningMap.id ρ v = v := rfl
+@[simp]
+lemma id_toLinearMap : (IntertwiningMap.id ρ).toLinearMap = LinearMap.id := rfl
+
+lemma id_apply (v : V) : IntertwiningMap.id ρ v = v := rfl
+
+section comp
+
+variable {ρ σ τ}
+
+def comp (f : IntertwiningMap ρ σ) (g : IntertwiningMap σ τ) : IntertwiningMap ρ τ where
+  toLinearMap := g.toLinearMap ∘ₗ f.toLinearMap
+  isIntertwining' g' v := by simp [f.isIntertwining, g.isIntertwining]
+
+@[simp]
+lemma comp_toLinearMap (f : IntertwiningMap ρ σ) (g : IntertwiningMap σ τ) :
+    (f.comp g).toLinearMap = g.toLinearMap ∘ₗ f.toLinearMap := rfl
+
+lemma comp_apply (f : IntertwiningMap ρ σ) (g : IntertwiningMap σ τ) (v : V) :
+    f.comp g v = g (f v) := rfl
+
+end comp
 
 theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) :
     IsIntertwiningMap ρ ρ (ρ g) := by
