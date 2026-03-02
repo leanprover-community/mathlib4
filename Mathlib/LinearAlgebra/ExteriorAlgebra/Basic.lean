@@ -321,9 +321,9 @@ lemma ιMulti_eq_zero_of_not_inj {n : ℕ} {v : Fin n → M} (hv : ¬Function.In
   (ιMulti R n).map_eq_zero_of_not_injective v hv
 
 lemma ιMulti_mul_ιMulti {m n : ℕ} (a : Fin m → M) (b : Fin n → M) :
-    ιMulti R m a * ιMulti R n b = ιMulti R (m+n) (Fin.append a b) := by
+    ιMulti R m a * ιMulti R n b = ιMulti R (m + n) (Fin.append a b) := by
   simp only [ιMulti_apply]
-  rw [show (fun i => (ι R) (Fin.append a b i)) = (ι R) ∘ Fin.append a b by ext; simp]
+  change _ = (List.ofFn ((ι R) ∘ Fin.append a b)).prod
   rw [← List.map_ofFn, List.ofFn_fin_append, List.map_append, List.prod_append]
   simp only [List.map_ofFn]
   congr
@@ -379,8 +379,8 @@ lemma ιMulti_family_mul_of_not_disjoint {m n : ℕ} {I : Type*} [LinearOrder I]
 
 lemma ιMulti_family_mul_of_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v : I → M)
     (s : powersetCard I m) (t : powersetCard I n) (h : Disjoint s.val t.val) :
-    ιMulti_family R m v s * ιMulti_family R n v t = (permOfDisjoint h).sign •
-    ιMulti_family R (m + n) v (disjUnion h) := by
+    ιMulti_family R m v s * ιMulti_family R n v t =
+      (permOfDisjoint h).sign • ιMulti_family R (m + n) v (disjUnion h) := by
   simp only [ιMulti_family, ιMulti_mul_ιMulti]
   rw [← AlternatingMap.map_perm, permOfDisjoint]
   congr
