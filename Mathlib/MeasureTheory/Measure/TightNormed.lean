@@ -208,7 +208,6 @@ lemma isTightMeasureSet_iff_inner_tendsto :
   exact le_iSup_of_le (i := μ) <| by simp [hμS, h_le]
 
 variable [BorelSpace E] {μ : ℕ → Measure E} [∀ i, IsFiniteMeasure (μ i)]
-    [MeasurableSpace 𝕜] [BorelSpace 𝕜]
 
 lemma isTightMeasureSet_range_of_tendsto_limsup_inner
     (h : ∀ y, Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖⟪y, x⟫_𝕜‖}) atTop) atTop (𝓝 0)) :
