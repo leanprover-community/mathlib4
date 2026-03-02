@@ -82,6 +82,15 @@ lemma sigPos_isGreatest [Module.Finite R M] [StrongRankCondition R] : IsGreatest
   rw [mem_filter, mem_Iic]
   exact ⟨V.finrank_le, V, rfl, hV⟩
 
+lemma exists_finrank_eq_sigPos_and_posDef [Module.Finite R M] [StrongRankCondition R] :
+    ∃ V : Submodule R M, Module.finrank R V = sigPos Q ∧ (Q.restrict V).PosDef :=
+  (sigPos_isGreatest Q).1
+
+lemma le_sigPos_of_posDef [Module.Finite R M] [StrongRankCondition R]
+    {V : Submodule R M} (hV : (Q.restrict V).PosDef) :
+    Module.finrank R V ≤ sigPos Q :=
+  (sigPos_isGreatest Q).2 ⟨V, by tauto⟩
+
 open Classical in
 /-- The maximal dimension of a negative-definite subspace of `M`. -/
 noncomputable def sigNeg : ℕ := sigPos (-Q)
@@ -91,7 +100,20 @@ lemma sigNeg_isGreatest [Module.Finite R M] [StrongRankCondition R] : IsGreatest
     {r | ∃ V : Submodule R M, Module.finrank R V = r ∧ ((-Q).restrict V).PosDef} (sigNeg Q) :=
   sigPos_isGreatest (-Q)
 
+lemma exists_finrank_eq_sigNeg_and_negDef [Module.Finite R M] [StrongRankCondition R] :
+    ∃ V : Submodule R M, Module.finrank R V = sigNeg Q ∧ ((-Q).restrict V).PosDef :=
+  exists_finrank_eq_sigPos_and_posDef (-Q)
+
+lemma le_sigNeg_of_negDef [Module.Finite R M] [StrongRankCondition R]
+    {V : Submodule R M} (hV : ((-Q).restrict V).PosDef) :
+    Module.finrank R V ≤ sigNeg Q :=
+  le_sigPos_of_posDef (-Q) hV
+
 variable {Q}
+
+@[simp] lemma sigPos_neg : sigPos (-Q) = sigNeg Q := rfl
+
+@[simp] lemma sigNeg_neg : sigNeg (-Q) = sigPos Q := by rw [← sigPos_neg, neg_neg]
 
 lemma QuadraticMap.Equivalent.sigPos_eq (h : Equivalent Q Q') : sigPos Q = sigPos Q' := by
   obtain ⟨e⟩ := h
@@ -121,7 +143,7 @@ negative-semidefinite subspace is bounded above by the dimension of the whole sp
 lemma sigPos_add_finrank_le_of_nonpos [FiniteDimensional 𝕜 M]
     {V : Subspace 𝕜 M} (hV : ∀ x ∈ V, Q x ≤ 0) :
     sigPos Q + Module.finrank 𝕜 V ≤ Module.finrank 𝕜 M := by
-  obtain ⟨Vp, hr, hVp⟩ := (sigPos_isGreatest Q).1
+  obtain ⟨Vp, hr, hVp⟩ := exists_finrank_eq_sigPos_and_posDef Q
   rw [← hr]
   apply Submodule.finrank_add_finrank_le_of_disjoint
   intro W hWp hWm
