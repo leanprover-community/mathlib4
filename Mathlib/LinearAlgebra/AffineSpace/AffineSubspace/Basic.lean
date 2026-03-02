@@ -8,7 +8,7 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
-import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Affine spaces
@@ -118,6 +118,12 @@ theorem AffineMap.lineMap_mem {k V P : Type*} [Ring k] [AddCommGroup V] [Module 
     AffineMap.lineMap p₀ p₁ c ∈ Q := by
   rw [AffineMap.lineMap_apply]
   exact Q.smul_vsub_vadd_mem c h₁ h₀ h₀
+
+theorem AffineMap.homothety_mem {k V P : Type*} [CommRing k] [AddCommGroup V] [Module k V]
+    [AddTorsor V P] {s : AffineSubspace k P} {c : P} (hc : c ∈ s) (r : k) {p : P} (hp : p ∈ s) :
+    AffineMap.homothety c r p ∈ s := by
+  rw [AffineMap.homothety_eq_lineMap]
+  exact lineMap_mem r hc hp
 
 namespace AffineSubspace
 
@@ -309,6 +315,7 @@ theorem vectorSpan_range_eq_span_range_vsub_right_ne (p : ι → P) (i₀ : ι) 
 
 variable {k}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A set, considered as a subset of its spanned affine subspace, spans the whole subspace. -/
 @[simp]
 theorem affineSpan_coe_preimage_eq_top (A : Set P) [Nonempty A] :

@@ -146,6 +146,7 @@ theorem sSup_apply_le {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex 
     (h : ∀ f ∈ s, (∀ j > i, f j = sSup s j) → f i ≤ e i) : sSup s i ≤ e i :=
   Lex.sSup_apply_le (ι := ιᵒᵈ) h
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance completeLattice : CompleteLattice (Colex ((i : ι) → α i)) where
   sInf_le _ _ := by exact Lex.sInf_le (ι := ιᵒᵈ)
   le_sInf _ _ := by exact Lex.le_sInf (ι := ιᵒᵈ)

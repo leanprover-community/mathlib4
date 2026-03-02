@@ -33,13 +33,13 @@ Approximation*][MR3156076] for a detailed discussion.
 
 @[expose] public section
 
-open Metric Real Set
+open Filter Metric Real Set
 
 namespace ValueDistribution
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {f : ℂ → E} {a : WithTop E}
+  {f g : ℂ → E} {a : WithTop E}
 
 variable (f a) in
 /--
@@ -57,6 +57,14 @@ noncomputable def characteristic : ℝ → ℝ := proximity f a + logCounting f 
 -/
 
 /--
+If two functions differ only on a discrete set, then their characteristic functions agree, except
+perhaps at radius 0.
+-/
+theorem characteristic_congr_codiscrete {r : ℝ} (hfg : f =ᶠ[codiscrete ℂ] g) (hr : r ≠ 0) :
+    characteristic f a r = characteristic g a r := by
+  simp [characteristic, proximity_congr_codiscrete hfg hr, logCounting_congr_codiscrete hfg]
+
+/--
 The difference between the characteristic functions for the poles of `f` and `f - const` simplifies
 to the difference between the proximity functions.
 -/
@@ -68,20 +76,20 @@ lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorp
 /--
 The characteristic function is even.
 -/
-theorem characteristic_even {a : WithTop E} :
+theorem characteristic_even :
     (characteristic f a).Even := proximity_even.add logCounting_even
 
 /--
 For `1 ≤ r`, the characteristic function is non-negative.
 -/
-theorem characteristic_nonneg {r : ℝ} {a : WithTop E} (hr : 1 ≤ r) :
+theorem characteristic_nonneg {r : ℝ} (hr : 1 ≤ r) :
     0 ≤ characteristic f a r :=
   add_nonneg (proximity_nonneg r) (logCounting_nonneg hr)
 
 /--
 The characteristic function is asymptotically non-negative.
 -/
-theorem characteristic_eventually_nonneg {f : ℂ → ℂ} {a : WithTop ℂ} :
+theorem characteristic_eventually_nonneg :
     0 ≤ᶠ[Filter.atTop] characteristic f a := by
   filter_upwards [Filter.eventually_ge_atTop 1] using fun _ hr ↦ by simp [characteristic_nonneg hr]
 

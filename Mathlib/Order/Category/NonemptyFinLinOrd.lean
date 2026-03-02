@@ -169,7 +169,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
       congr
       rw [← cancel_epi f]
       ext a : 3
-      simp only [p₁, p₂, hom_hom_comp, OrderHom.comp_coe, Function.comp_apply, hom_hom_ofHom]
+      simp only [p₁, p₂, hom_hom_comp, OrderHom.comp_coe, Function.comp_apply]
       change ite _ _ _ = ite _ _ _
       split_ifs with h₁ h₂ h₂
       any_goals rfl
@@ -205,6 +205,7 @@ instance : SplitEpiCategory NonemptyFinLinOrd.{u} :=
       have H : f (φ b) ≤ f (φ a) := f.hom.hom.monotone (le_of_lt h)
       simpa only [hφ] using H⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasStrongEpiMonoFactorisations NonemptyFinLinOrd.{u} :=
   ⟨fun {X Y} f => by
     let I := of (Set.image f ⊤)

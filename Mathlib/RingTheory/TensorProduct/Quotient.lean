@@ -43,6 +43,7 @@ private lemma quotIdealMapEquivTensorQuotAux_mk (b : B) :
     (quotIdealMapEquivTensorQuotAux B I) b = b ⊗ₜ[A] 1 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- `B ⊗[A] (A ⧸ I)` is isomorphic as an `A`-algebra to `B ⧸ I B`. -/

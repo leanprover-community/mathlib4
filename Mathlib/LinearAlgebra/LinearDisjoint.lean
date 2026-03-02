@@ -174,6 +174,7 @@ theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N :=
 theorem LinearDisjoint.of_subsingleton_top [Subsingleton S] : M.LinearDisjoint N :=
   ⟨Function.injective_of_subsingleton _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Linear disjointness is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
@@ -337,6 +338,7 @@ theorem linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N
   rw [LinearIndependent] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_left {ι : Type*} (m : Basis ι R M)
@@ -356,6 +358,7 @@ theorem linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R 
   rw [LinearIndependent] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
 then `M` and `N` are linearly disjoint. -/
 theorem of_basis_right {ι : Type*} (n : Basis ι R N)

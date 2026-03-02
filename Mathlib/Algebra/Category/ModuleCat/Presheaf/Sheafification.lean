@@ -38,6 +38,11 @@ variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
 
 namespace PresheafOfModules
 
+instance : (SheafOfModules.toSheaf.{v} R).ReflectsIsomorphisms :=
+  have : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomorphisms :=
+    inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
+  reflectsIsomorphisms_of_comp _ (sheafToPresheaf _ _)
+
 section
 
 variable [HasWeakSheafify J AddCommGrpCat.{v}]
@@ -90,6 +95,7 @@ lemma toPresheaf_map_sheafificationHomEquiv_def
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
       CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.val).map f.val := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toPresheaf_map_sheafificationHomEquiv
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
@@ -110,6 +116,7 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rw [Equiv.apply_symm_apply, Adjunction.homEquiv_unit, Equiv.symm_apply_apply]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
@@ -138,8 +145,30 @@ lemma toPresheaf_map_sheafificationAdjunction_unit_app (M₀ : PresheafOfModules
     (toPresheaf _).map ((sheafificationAdjunction α).unit.app M₀) =
       CategoryTheory.toSheafify J M₀.presheaf := rfl
 
+@[simp]
+lemma toSheaf_map_sheafificationAdjunction_counit_app (M : SheafOfModules.{v} R) :
+    (SheafOfModules.toSheaf R).map ((sheafificationAdjunction α).counit.app M) =
+      (CategoryTheory.sheafificationAdjunction J
+          AddCommGrpCat.{v}).counit.app ((SheafOfModules.toSheaf R).obj M) :=
+  (toSheaf_map_sheafificationHomEquiv_symm _ _).trans
+    (by rw [← Adjunction.homEquiv_symm_id]; rfl)
+
 instance : (sheafification.{v} α).IsLeftAdjoint :=
   (sheafificationAdjunction α).isLeftAdjoint
+
+instance : IsIso (sheafificationAdjunction α).counit := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  intro F
+  rw [← isIso_iff_of_reflects_iso _ (SheafOfModules.toSheaf.{v} R)]
+  simp only [Functor.comp_obj, SheafOfModules.forget_obj, restrictScalars_obj, Functor.id_obj,
+    toSheaf_map_sheafificationAdjunction_counit_app]
+  infer_instance
+
+instance : (SheafOfModules.forget.{v} R ⋙ restrictScalars α).Full :=
+  (sheafificationAdjunction.{v} α).fullyFaithfulROfIsIsoCounit.full
+
+instance : (SheafOfModules.forget.{v} R ⋙ restrictScalars α).Faithful :=
+  (sheafificationAdjunction.{v} α).fullyFaithfulROfIsIsoCounit.faithful
 
 end
 
@@ -150,9 +179,6 @@ variable [HasSheafify J AddCommGrpCat.{v}]
 noncomputable instance :
     PreservesFiniteLimits (sheafification.{v} α ⋙ SheafOfModules.toSheaf.{v} R) :=
   comp_preservesFiniteLimits (toPresheaf.{v} R₀) (presheafToSheaf J AddCommGrpCat)
-
-instance : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomorphisms :=
-  inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
 
 instance : (SheafOfModules.toSheaf.{v} R).ReflectsIsomorphisms :=
   reflectsIsomorphisms_of_comp (SheafOfModules.toSheaf.{v} R) (sheafToPresheaf J _)

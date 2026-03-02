@@ -158,6 +158,7 @@ theorem mfderivWithin_id (hxs : UniqueMDiffWithinAt I s x) :
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_id hxs]
   exact mfderiv_id
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
 theorem tangentMap_id : tangentMap I I (id : M → M) = id := by ext1 ⟨x, v⟩; simp [tangentMap]
 
@@ -177,10 +178,10 @@ section Const
 
 variable {c : M'}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasMFDerivAt_const (c : M') (x : M) :
-    HasMFDerivAt I I' (fun _ : M => c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) := by
-  refine ⟨continuous_const.continuousAt, ?_⟩
-  simp only [writtenInExtChartAt, Function.comp_def, hasFDerivWithinAt_const]
+    HasMFDerivAt I I' (fun _ : M => c) x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
+  ⟨by fun_prop, by simp [Function.comp_def, hasFDerivWithinAt_const]⟩
 
 theorem hasMFDerivWithinAt_const (c : M') (s : Set M) (x : M) :
     HasMFDerivWithinAt I I' (fun _ : M => c) s x (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
@@ -510,6 +511,7 @@ theorem MDifferentiable.prodMap (hf : MDifferentiable I I' f) (hg : MDifferentia
     MDifferentiable (I.prod J) (I'.prod J') (Prod.map f g) := fun p ↦
   (hf p.1).prodMap' (hg p.2)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- TODO: fix non-terminal simp_all followed by use
 lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)}
@@ -530,11 +532,12 @@ lemma HasMFDerivWithinAt.prodMap {s : Set <| M × M'} {p : M × M'} {f : M → N
       use (chartAt H' p.2).symm <| I'.symm p₀.2
     · simp_all
       use (chartAt H p.1).symm <| I.symm p₀.1
-  rw [writtenInExtChart_prod]
+  rw [writtenInExtChartAt_prod]
   apply HasFDerivWithinAt.mono ?_ better
   apply HasFDerivWithinAt.prodMap
   exacts [hf.2.mono (fst_image_prod_subset ..), hg.2.mono (snd_image_prod_subset ..)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivAt.prodMap {p : M × M'} {f : M → N} {g : M' → N'}
     {df : TangentSpace I p.1 →L[𝕜] TangentSpace J (f p.1)} (hf : HasMFDerivAt I J f p.1 df)
     {dg : TangentSpace I' p.2 →L[𝕜] TangentSpace J' (g p.2)} (hg : HasMFDerivAt I' J' g p.2 dg) :
@@ -585,6 +588,7 @@ theorem tangentMapWithin_prodSnd {s : Set (M × M')} {p : TangentBundle (I.prod 
 -- Kept as an alias for discoverability.
 alias MDifferentiableAt.mfderiv_prod := mfderiv_prodMk
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv I (I.prod I') (fun x => (x, y₀)) x₀ =
       ContinuousLinearMap.inl 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
@@ -596,6 +600,7 @@ theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
   simp only [tangentMap, mfderiv_prod_left, TotalSpace.mk_inj]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv I' (I.prod I') (fun y => (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
@@ -928,6 +933,7 @@ theorem mdifferentiableAt_neg :
 theorem MDifferentiable.neg (hf : MDifferentiable I 𝓘(𝕜, E') f) : MDifferentiable I 𝓘(𝕜, E') (-f) :=
   fun x => (hf x).neg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mfderiv_neg (f : M → E') (x : M) :
     (mfderiv I 𝓘(𝕜, E') (-f) x : TangentSpace I x →L[𝕜] E') =
       (-mfderiv I 𝓘(𝕜, E') f x : TangentSpace I x →L[𝕜] E') := by
@@ -1012,6 +1018,7 @@ section AlgebraOverCommRing
 variable {z : M} {F' : Type*} [NormedCommRing F'] [NormedAlgebra 𝕜 F'] {p q : M → F'}
   {p' q' : TangentSpace I z →L[𝕜] F'}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem HasMFDerivWithinAt.mul (hp : HasMFDerivWithinAt I 𝓘(𝕜, F') p s z p')
     (hq : HasMFDerivWithinAt I 𝓘(𝕜, F') q s z q') :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (p * q) s z (p z • q' + q z • p' : E →L[𝕜] F') := by
@@ -1025,6 +1032,7 @@ theorem HasMFDerivAt.mul (hp : HasMFDerivAt I 𝓘(𝕜, F') p z p')
 section prod
 variable {ι : Type} {t : Finset ι} {f : ι → M → F'} {f' : ι → TangentSpace I z →L[𝕜] F'}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma HasMFDerivWithinAt.prod [DecidableEq ι]
     (hf : ∀ i ∈ t, HasMFDerivWithinAt I 𝓘(𝕜, F') (f i) s z (f' i)) :
     HasMFDerivWithinAt I 𝓘(𝕜, F') (∏ i ∈ t, f i) s z
