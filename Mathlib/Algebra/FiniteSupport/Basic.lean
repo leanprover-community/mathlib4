@@ -26,10 +26,15 @@ namespace Function
 
 variable {α M : Type*} [One M]
 
--- why do we need both versions?
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_one' : HasFiniteMulSupport (1 : α → M) := by
   simp [HasFiniteMulSupport]
+
+@[to_additive (attr := fun_prop)]
+lemma hasFiniteMulSupport_comp {N : Type*} [One N] (g : M → N) (f : α → M)
+    (hf : HasFiniteMulSupport f) (hg : g 1 = 1) :
+    HasFiniteMulSupport fun a ↦ g (f a) :=
+  hf.subset <| mulSupport_comp_subset hg f
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_fst {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
@@ -137,12 +142,6 @@ lemma hasFiniteMulSupport_iInf [ConditionallyCompleteLattice M] {ι : Sort*} [No
     [Finite ι] (f : ι → α → M) (hf : ∀ i, HasFiniteMulSupport (f i)) :
     HasFiniteMulSupport fun a ↦ ⨅ i, f i a :=
   (Set.finite_iUnion hf).subset <| mulSupport_iInf f
-
-@[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_comp {N : Type*} [One N] (g : M → N) (f : α → M)
-    (hf : HasFiniteMulSupport f) (hg : g 1 = 1) :
-    HasFiniteMulSupport fun a ↦ g (f a) :=
-  hf.subset <| mulSupport_comp_subset hg f
 
 @[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_pi {ι : Type*} [Finite α] (f : ι → α → M)
