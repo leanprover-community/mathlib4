@@ -6,9 +6,10 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Tight
-public import Mathlib.Order.CompletePartialOrder
+
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Tight sets of measures in normed spaces
