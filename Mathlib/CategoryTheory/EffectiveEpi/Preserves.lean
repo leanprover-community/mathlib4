@@ -35,6 +35,7 @@ variable {D : Type*} [Category* D] (e : C ≌ D) {B : C}
 
 variable {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.functor.obj (X a) ⟶ W)
     (h : ∀ {Z : D} (a₁ a₂ : α) (g₁ : Z ⟶ e.functor.obj (X a₁)) (g₂ : Z ⟶ e.functor.obj (X a₂)),
       g₁ ≫ e.functor.map (π a₁) = g₂ ≫ e.functor.map (π a₂) → g₁ ≫ ε a₁ = g₂ ≫ ε a₂)
@@ -47,6 +48,7 @@ theorem effectiveEpiFamilyStructOfEquivalence_aux {W : D} (ε : (a : α) → e.f
 
 variable [EffectiveEpiFamily X π]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Equivalences preserve effective epimorphic families -/
 def effectiveEpiFamilyStructOfEquivalence : EffectiveEpiFamilyStruct (fun a ↦ e.functor.obj (X a))
     (fun a ↦ e.functor.map (π a)) where
@@ -150,6 +152,26 @@ instance (F : C ⥤ D) [PreservesFiniteEffectiveEpiFamilies F] : PreservesEffect
 instance (F : C ⥤ D) [IsEquivalence F] : F.PreservesEffectiveEpiFamilies where
   preserves _ _ := inferInstance
 
+section Composition
+
+variable {E : Type*} [Category* E]
+
+instance (F : C ⥤ D) (G : D ⥤ E) [PreservesEffectiveEpis F] [PreservesEffectiveEpis G] :
+    PreservesEffectiveEpis (F ⋙ G) where
+  preserves _ _ := by dsimp; infer_instance
+
+instance (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteEffectiveEpiFamilies F]
+    [PreservesFiniteEffectiveEpiFamilies G] :
+    PreservesFiniteEffectiveEpiFamilies (F ⋙ G) where
+  preserves _ _ _ := by dsimp; infer_instance
+
+instance (F : C ⥤ D) (G : D ⥤ E) [PreservesEffectiveEpiFamilies.{u} F]
+    [PreservesEffectiveEpiFamilies.{u} G] :
+    PreservesEffectiveEpiFamilies.{u} (F ⋙ G) where
+  preserves _ _ _ := by dsimp; infer_instance
+
+end Composition
+
 end Preserves
 
 section Reflects
@@ -216,6 +238,7 @@ instance (F : C ⥤ D) [ReflectsFiniteEffectiveEpiFamilies F] : ReflectsEffectiv
     have := F.finite_effectiveEpiFamily_of_map _ _ h
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
   reflects {α B} X π _ := by
     let i : (a : α) → X a ⟶ (inv F).obj (F.obj (X a)) := fun a ↦ (asEquivalence F).unit.app _
@@ -224,6 +247,27 @@ instance (F : C ⥤ D) [IsEquivalence F] : F.ReflectsEffectiveEpiFamilies where
     have : EffectiveEpiFamily X (fun a ↦ (π a ≫ (asEquivalence F).unit.app B) ≫
         (asEquivalence F).unitInv.app _) := inferInstance
     simpa
+
+section Composition
+
+variable {E : Type*} [Category* E]
+
+instance (F : C ⥤ D) (G : D ⥤ E) [ReflectsEffectiveEpis F] [ReflectsEffectiveEpis G] :
+    ReflectsEffectiveEpis (F ⋙ G) where
+  reflects _ h := F.effectiveEpi_of_map _ (G.effectiveEpi_of_map _ h)
+
+instance (F : C ⥤ D) (G : D ⥤ E) [ReflectsFiniteEffectiveEpiFamilies F]
+    [ReflectsFiniteEffectiveEpiFamilies G] :
+    ReflectsFiniteEffectiveEpiFamilies (F ⋙ G) where
+  reflects _ _ h :=
+    F.finite_effectiveEpiFamily_of_map _ _ (G.finite_effectiveEpiFamily_of_map _ _ h)
+
+instance (F : C ⥤ D) (G : D ⥤ E) [ReflectsEffectiveEpiFamilies.{u} F]
+    [ReflectsEffectiveEpiFamilies.{u} G] :
+    ReflectsEffectiveEpiFamilies.{u} (F ⋙ G) where
+  reflects _ _ h := F.effectiveEpiFamily_of_map _ _ (G.effectiveEpiFamily_of_map _ _ h)
+
+end Composition
 
 end Reflects
 

@@ -124,6 +124,7 @@ section group
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 lemma noncommCoprod_injective {M N P : Type*} [Group M] [Group N] [Group P]
     (f : M →* P) (g : N →* P) (comm : ∀ (m : M) (n : N), Commute (f m) (g n)) :
     Function.Injective (noncommCoprod f g comm) ↔

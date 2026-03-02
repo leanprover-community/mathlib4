@@ -46,7 +46,7 @@ theorem mdifferentiableWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M
   simp +singlePass only [mdifferentiableWithinAt_iff_target]
   rw [and_and_and_comm, ← FiberBundle.continuousWithinAt_totalSpace, and_congr_right_iff]
   intro hf
-  simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
+  simp_rw +instances [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
     extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
   refine (mdifferentiableWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
@@ -226,7 +226,9 @@ lemma MDifferentiableWithinAt.change_section_trivialization
     rw [Function.comp_apply, e.coordChange_apply_snd e' hy]
   · rw [Function.comp_apply, e.coordChange_apply_snd _ he]
 
-theorem Trivialization.mdifferentiableWithinAt_snd_comp_iff₂
+namespace Bundle.Trivialization
+
+theorem mdifferentiableWithinAt_snd_comp_iff₂
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {s : Set M} {x₀ : M}
     (hex₀ : f x₀ ∈ e.source) (he'x₀ : f x₀ ∈ e'.source)
@@ -238,7 +240,7 @@ theorem Trivialization.mdifferentiableWithinAt_snd_comp_iff₂
 
 variable (e e')
 
-theorem Trivialization.mdifferentiableAt_snd_comp_iff₂
+theorem mdifferentiableAt_snd_comp_iff₂
     {e e' : Trivialization F TotalSpace.proj} [MemTrivializationAtlas e] [MemTrivializationAtlas e']
     {f : M → TotalSpace F E} {x₀ : M}
     (he : f x₀ ∈ e.source) (he' : f x₀ ∈ e'.source)
@@ -250,7 +252,7 @@ theorem Trivialization.mdifferentiableAt_snd_comp_iff₂
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within a set. -/
-theorem Trivialization.mdifferentiableWithinAt_totalSpace_iff
+theorem mdifferentiableWithinAt_totalSpace_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (f : M → TotalSpace F E) {s : Set M} {x₀ : M}
     (he : f x₀ ∈ e.source) :
@@ -266,7 +268,7 @@ theorem Trivialization.mdifferentiableWithinAt_totalSpace_iff
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point. -/
-theorem Trivialization.mdifferentiableAt_totalSpace_iff
+theorem mdifferentiableAt_totalSpace_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (f : M → TotalSpace F E) {x₀ : M}
     (he : f x₀ ∈ e.source) :
@@ -282,7 +284,7 @@ theorem Trivialization.mdifferentiableAt_totalSpace_iff
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point within a set. -/
-theorem Trivialization.mdifferentiableWithinAt_section_iff
+theorem mdifferentiableWithinAt_section_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (s : Π b : B, E b) {u : Set B} {b₀ : B}
     (hex₀ : b₀ ∈ e.baseSet) :
@@ -295,7 +297,7 @@ theorem Trivialization.mdifferentiableWithinAt_section_iff
 
 /-- Characterization of differentiable functions into a vector bundle in terms
 of any trivialization. Version at a point. -/
-theorem Trivialization.mdifferentiableAt_section_iff
+theorem mdifferentiableAt_section_iff
     (e : Trivialization F (TotalSpace.proj : TotalSpace F E → B)) [MemTrivializationAtlas e]
     (s : Π b : B, E b) {b₀ : B}
     (hex₀ : b₀ ∈ e.baseSet) :
@@ -306,7 +308,7 @@ theorem Trivialization.mdifferentiableAt_section_iff
 variable {IB} in
 /-- Differentiability of a section on `s` can be determined
 using any trivialisation whose `baseSet` contains `s`. -/
-theorem Trivialization.mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B}
+theorem mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] (ha : IsOpen a) (ha' : a ⊆ e.baseSet) :
     MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) a ↔
@@ -319,12 +321,30 @@ theorem Trivialization.mdifferentiableOn_section_iff {s : ∀ x, E x} {a : Set B
 variable {IB} in
 /-- For any trivialization `e`, the differentiability of a section on `e.baseSet`
 can be determined using `e`. -/
-theorem Trivialization.mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
+theorem mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
     (e : Trivialization F (Bundle.TotalSpace.proj : Bundle.TotalSpace F E → B))
     [MemTrivializationAtlas e] :
     MDifferentiableOn IB (IB.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (s x)) e.baseSet ↔
       MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
   e.mdifferentiableOn_section_iff e.open_baseSet subset_rfl
+
+section
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  (Z : M → Type*) [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)]
+  [FiberBundle F Z] [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
+
+theorem Bundle.Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]
+    (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
+    e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
+  ⟨e.contMDiffOn.mdifferentiableOn one_ne_zero, e.contMDiffOn_symm.mdifferentiableOn one_ne_zero⟩
+
+end
+
+end Bundle.Trivialization
 
 end
 

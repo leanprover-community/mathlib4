@@ -34,7 +34,7 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 noncomputable section
 
-open scoped BigOperators ArithmeticFunction
+open scoped ArithmeticFunction
 
 open Finset Real Nat
 
@@ -180,9 +180,6 @@ theorem siftedSum_eq_sum_support_mul_ite :
     s.siftedSum = ∑ d ∈ s.support, s.weights d * if Nat.gcd s.prodPrimes d = 1 then 1 else 0 := by
   dsimp only [siftedSum]
   simp_rw [mul_ite, mul_one, mul_zero]
-
-@[deprecated (since := "2025-07-27")]
-alias siftedsum_eq_sum_support_mul_ite := siftedSum_eq_sum_support_mul_ite
 
 omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
