@@ -35,7 +35,7 @@ structure Profunctor (C : Type*) [Category* C] (D : Type*) [Category* D] where
     map (f' ≫ f) (g ≫ g') e = map f' g' (map f g e)
 
 
-variable {C : Type*} [Category C] {D : Type*} [Category D]
+variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
 namespace Profunctor
 
@@ -135,7 +135,7 @@ theorem comp_id {H K : Profunctor.{w} C D} (α : NatTrans H K) :
   simp [comp, id]
 
 theorem comp_assoc {H K L M : Profunctor.{w} C D}
-    (γ : NatTrans R S) (β : NatTrans K R) (α : NatTrans H K) :
+    (γ : NatTrans L M) (β : NatTrans K L) (α : NatTrans H K) :
     (γ.comp β).comp α = γ.comp (β.comp α) :=
   rfl
 
