@@ -151,11 +151,11 @@ theorem equivWithAbs_symm (v w : AbsoluteValue R S) :
 theorem equiv_equivWithAbs_symm_apply {v w : AbsoluteValue R S} {x : WithAbs w} :
     equiv v ((congr v w (.refl R)).symm x) = equiv w x := by simp
 
-@[deprecated "Use `simp`." (since := "2026-01-23")]
+@[deprecated "Use `simp`." (since := "2026-03-02")]
 theorem equivWithAbs_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
     congr v w (.refl R) ((equiv v).symm x) = (equiv w).symm x := by simp
 
-@[deprecated "Use `simp`." (since := "2026-01-23")]
+@[deprecated "Use `simp`." (since := "2026-03-02")]
 theorem equivWithAbs_symm_equiv_symm_apply {v w : AbsoluteValue R S} {x : R} :
     (congr v w (.refl R)).symm ((equiv w).symm x) = (equiv v).symm x := by simp
 
@@ -240,12 +240,12 @@ instance {P : Type*} [SMul P R] [SMul P T] [SMul R T]
 instance [AddCommMonoid T] [Module R T] : Module (WithAbs v) T :=
   .compHom T (equiv v).toRingHom
 
-@[deprecated (since := "2026-01-29")] alias instModule_left := instModule
+@[deprecated (since := "2026-03-02")] alias instModule_left := instModule
 
 instance [Semiring T] [Module T R] : Module T (WithAbs v) :=
   fast_instance% (equiv v).module T
 
-@[deprecated (since := "2026-01-29")] alias instModule_right := instModule_1
+@[deprecated (since := "2026-03-02")] alias instModule_right := instModule_1
 
 variable [Semiring T] [Module R T] (v : AbsoluteValue T S)
 
@@ -295,8 +295,8 @@ attribute [local instance] instAlgebraLeft in
 theorem ofAbs_algebraMap (v : AbsoluteValue R S) (w : AbsoluteValue T S) (x : WithAbs v) :
     (algebraMap (WithAbs v) (WithAbs w) x).ofAbs = algebraMap R T x.ofAbs := rfl
 
-@[deprecated (since := "2026-01-29")] alias instAlgebra_left := instAlgebraLeft
-@[deprecated (since := "2026-01-29")] alias instAlgebra_right := instAlgebra
+@[deprecated (since := "2026-03-02")] alias instAlgebra_left := instAlgebraLeft
+@[deprecated (since := "2026-03-02")] alias instAlgebra_right := instAlgebra
 
 variable (R) in
 /-- The canonical algebra isomorphism from an `R`-algebra `R'` with an absolute value `v`
