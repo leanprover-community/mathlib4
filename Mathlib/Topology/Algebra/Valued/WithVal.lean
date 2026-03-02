@@ -391,12 +391,25 @@ def _root_.WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃* Val
       exact ⟨(WithVal.equiv w).symm hu.choose, ⟨hu.choose_spec.1,
         ⟨(WithVal.equiv w).symm hu.choose_spec.2.choose, hu.choose_spec.2.choose_spec⟩⟩⟩⟩ :
          valueGroup (instValued w).v) : ValueGroup₀ (instValued w).v)
-  left_inv := by
-    sorry
-  right_inv := sorry
-  map_mul' := sorry
-
-#exit
+  left_inv x := by
+    simp only [dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
+    split_ifs with h
+    · simp [h]
+    · simp
+  right_inv x := by
+    simp [dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
+    split_ifs with h
+    · simp [h]
+    · simp
+  map_mul' x y := by
+    simp only [mul_eq_zero, mul_dite, mul_zero, dite_mul, zero_mul]
+    split_ifs
+    · rfl
+    · rfl
+    · aesop
+    · aesop
+    · aesop
+    · simp [← WithZero.coe_mul, WithZero.unzero_mul]
 
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
 -- TODO: golf
