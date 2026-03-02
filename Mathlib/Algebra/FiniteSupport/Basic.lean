@@ -31,23 +31,23 @@ lemma hasFiniteMulSupport_one' : HasFiniteMulSupport (1 : α → M) := by
   simp [HasFiniteMulSupport]
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_comp {N : Type*} [One N] (g : M → N) (f : α → M)
+lemma HasFiniteMulSupport.comp {N : Type*} [One N] (g : M → N) (f : α → M)
     (hf : HasFiniteMulSupport f) (hg : g 1 = 1) :
     HasFiniteMulSupport fun a ↦ g (f a) :=
   hf.subset <| mulSupport_comp_subset hg f
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_fst {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
+lemma HasFiniteMulSupport.fst {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport fun a ↦ (f a).fst :=
-  hasFiniteMulSupport_comp _ _ hf rfl
+  HasFiniteMulSupport.comp _ _ hf rfl
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_snd {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
+lemma HasFiniteMulSupport.snd {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport fun a ↦ (f a).snd :=
-  hasFiniteMulSupport_comp _ _ hf rfl
+  HasFiniteMulSupport.comp _ _ hf rfl
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_prodMk {M' : Type*} [One M'] (f : α → M) (g : α → M')
+lemma HasFiniteMulSupport.prodMk {M' : Type*} [One M'] (f : α → M) (g : α → M')
     (hf : HasFiniteMulSupport f) (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ (f a, g a) := by
   simp only [HasFiniteMulSupport] at hf hg ⊢
@@ -55,80 +55,80 @@ lemma hasFiniteMulSupport_prodMk {M' : Type*} [One M'] (f : α → M) (g : α �
   exact hf.union hg
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_mul {M : Type*} [MulOneClass M] (f g : α → M)
+lemma HasFiniteMulSupport.mul {M : Type*} [MulOneClass M] (f g : α → M)
     (hf : HasFiniteMulSupport f) (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ f a * g a :=
   (hf.union hg).subset <| mulSupport_mul ..
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_inv {M : Type*} [DivisionMonoid M] (f : α → M)
+lemma HasFiniteMulSupport.inv {M : Type*} [DivisionMonoid M] (f : α → M)
     (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport fun a ↦ (f a)⁻¹ :=
-  hasFiniteMulSupport_comp _ _ hf inv_one
+  HasFiniteMulSupport.comp _ _ hf inv_one
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_prod {M : Type*} [CommMonoid M] {ι : Type*} (f : ι → α → M)
+lemma HasFiniteMulSupport.prod {M : Type*} [CommMonoid M] {ι : Type*} (f : ι → α → M)
     (hf : ∀ i, HasFiniteMulSupport (f i)) (s : Finset ι) :
     HasFiniteMulSupport fun a ↦ ∏ i ∈ s, f i a :=
   (s.finite_toSet.biUnion fun i _ ↦ hf i).subset <| s.mulSupport_prod f
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_div {M : Type*} [DivisionMonoid M] (f g : α → M)
+lemma HasFiniteMulSupport.div {M : Type*} [DivisionMonoid M] (f g : α → M)
     (hf : HasFiniteMulSupport f) (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ f a / g a :=
   (hf.union hg).subset <| mulSupport_div ..
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_pow {M : Type*} [Monoid M] (f : α → M) (hf : HasFiniteMulSupport f)
+lemma HasFiniteMulSupport.pow {M : Type*} [Monoid M] (f : α → M) (hf : HasFiniteMulSupport f)
     (n : ℕ) :
     HasFiniteMulSupport fun a ↦ f a ^ n :=
-  hasFiniteMulSupport_comp _ _ hf (one_pow n)
+  HasFiniteMulSupport.comp _ _ hf (one_pow n)
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_zpow {M : Type*} [DivisionMonoid M] (f : α → M)
+lemma HasFiniteMulSupport.zpow {M : Type*} [DivisionMonoid M] (f : α → M)
     (hf : HasFiniteMulSupport f)
     (n : ℤ) :
     HasFiniteMulSupport fun a ↦ f a ^ n :=
-  hasFiniteMulSupport_comp _ _ hf (one_zpow n)
+  HasFiniteMulSupport.comp _ _ hf (one_zpow n)
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_max [LinearOrder M] (f g : α → M) (hf : HasFiniteMulSupport f)
+lemma HasFiniteMulSupport.max [LinearOrder M] (f g : α → M) (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ max (f a) (g a) :=
   (hf.union hg).subset <| mulSupport_max ..
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_min [LinearOrder M] (f g : α → M) (hf : HasFiniteMulSupport f)
+lemma HasFiniteMulSupport.min [LinearOrder M] (f g : α → M) (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ min (f a) (g a) :=
   (hf.union hg).subset <| mulSupport_min ..
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_sup [SemilatticeSup M] (f g : α → M) (hf : HasFiniteMulSupport f)
+lemma HasFiniteMulSupport.sup [SemilatticeSup M] (f g : α → M) (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ f a ⊔ g a :=
   (hf.union hg).subset <| mulSupport_sup ..
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_inf [SemilatticeInf M] (f g : α → M) (hf : HasFiniteMulSupport f)
+lemma HasFiniteMulSupport.inf [SemilatticeInf M] (f g : α → M) (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ f a ⊓ g a :=
   (hf.union hg).subset <| mulSupport_inf ..
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_iSup [ConditionallyCompleteLattice M] {ι : Sort*} [Nonempty ι]
+lemma HasFiniteMulSupport.iSup [ConditionallyCompleteLattice M] {ι : Sort*} [Nonempty ι]
     [Finite ι] (f : ι → α → M) (hf : ∀ i, HasFiniteMulSupport (f i)) :
     HasFiniteMulSupport fun a ↦ ⨆ i, f i a :=
   (Set.finite_iUnion hf).subset <| mulSupport_iSup f
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_iInf [ConditionallyCompleteLattice M] {ι : Sort*} [Nonempty ι]
+lemma HasFiniteMulSupport.iInf [ConditionallyCompleteLattice M] {ι : Sort*} [Nonempty ι]
     [Finite ι] (f : ι → α → M) (hf : ∀ i, HasFiniteMulSupport (f i)) :
     HasFiniteMulSupport fun a ↦ ⨅ i, f i a :=
   (Set.finite_iUnion hf).subset <| mulSupport_iInf f
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_pi {ι : Type*} [Finite α] (f : ι → α → M)
+lemma HasFiniteMulSupport.pi {ι : Type*} [Finite α] (f : ι → α → M)
     (hf : ∀ a, HasFiniteMulSupport (f · a)) :
     HasFiniteMulSupport f := by
   simp only [HasFiniteMulSupport] at hf ⊢
@@ -137,7 +137,7 @@ lemma hasFiniteMulSupport_pi {ι : Type*} [Finite α] (f : ι → α → M)
   exact ne_iff.mp hi
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_sup' [SemilatticeSup M] {ι : Type*} (f : ι → α → M)
+lemma HasFiniteMulSupport.sup' [SemilatticeSup M] {ι : Type*} (f : ι → α → M)
     (s : Finset ι) (hf : ∀ i ∈ s, HasFiniteMulSupport (f i)) (hs : s.Nonempty) :
     HasFiniteMulSupport fun a ↦ s.sup' hs (f · a) := by
   simp only [HasFiniteMulSupport] at hf ⊢
@@ -147,7 +147,7 @@ lemma hasFiniteMulSupport_sup' [SemilatticeSup M] {ι : Type*} (f : ι → α �
   exact Finset.sup'_eq_of_forall hs (fun x ↦ f x a) ha
 
 @[to_additive (attr := fun_prop)]
-lemma hasFiniteMulSupport_inf' [SemilatticeInf M] {ι : Type*} (f : ι → α → M)
+lemma HasFiniteMulSupport.inf' [SemilatticeInf M] {ι : Type*} (f : ι → α → M)
     (s : Finset ι) (hf : ∀ i ∈ s, HasFiniteMulSupport (f i)) (hs : s.Nonempty) :
     HasFiniteMulSupport fun a ↦ s.inf' hs (f · a) := by
   simp only [HasFiniteMulSupport] at hf ⊢
