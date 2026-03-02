@@ -20,7 +20,7 @@ include hpI
 
 theorem pow_mul_of_le {x y : R} (h : x ≡ y [SMOD J]) (hJI : J ≤ I) :
     x ^ p ≡ y ^ p [SMOD J * I] := by
-  have h₁ := ideal.mp <| h.mono hJI
+  have h₁ := idealQuotientMk.mp <| h.mono hJI
   rw [SModEq.sub_mem] at h ⊢
   rw [← Commute.mul_neg_geom_sum₂ (.all _ _)]
   refine Ideal.mul_mem_mul h ?_
