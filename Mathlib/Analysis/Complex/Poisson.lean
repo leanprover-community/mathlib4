@@ -73,7 +73,8 @@ private lemma re_herglotzRieszKernel_le_aux (φ θ r R : ℝ) (h₁ : 0 < r) (h�
   rw [div_eq_mul_inv]
   have h_cos : (R ^ 2 + r ^ 2 - 2 * R * r * Real.cos (θ - φ)) ≥ (R - r) ^ 2 := by
     nlinarith [mul_pos h₁ (sub_pos.mpr h₂), Real.cos_le_one (θ - φ)]
-  have h_subst : (R^2 - r^2) / (R^2 + r^2 - 2 * R * r * Real.cos (θ - φ)) ≤ (R + r) / (R - r) := by
+  have h_subst :
+      (R ^ 2 - r ^ 2) / (R ^ 2 + r ^ 2 - 2 * R * r * Real.cos (θ - φ)) ≤ (R + r) / (R - r) := by
     rw [div_le_div_iff₀] <;> nlinarith [mul_pos h₁ (sub_pos.mpr h₂)]
   convert h_subst using 1
   rw [← div_eq_mul_inv, poissonKernel_eq_re_herglotzRieszKernel_aux]
@@ -133,7 +134,7 @@ theorem le_re_herglotzRieszKernel {c z : ℂ} (hz : z ∈ sphere c R) (hw : w �
 -- Trigonometric identity used in the computation of
 -- `DiffContOnCl.circleAverage_re_smul_on_ball_zero`.
 private lemma circleAverage_re_smul_on_ball_zero_aux {φ θ : ℝ} {r : ℝ} :
-    (R * exp (θ * I)) / (R * exp (θ * I)  - r * exp (φ * I)) - (r * exp (θ * I))
+    (R * exp (θ * I)) / (R * exp (θ * I) - r * exp (φ * I)) - (r * exp (θ * I))
       / (r * exp (θ * I) - R * exp (φ * I))
       = ((R * exp (θ * I) + r * exp (φ * I)) / (R * exp (θ * I) - r * exp (φ * I))).re := by
   simp only [Complex.ext_iff, exp_ofReal_mul_I, add_re, sub_re, mul_re, div_re, ofReal_re,
@@ -144,6 +145,8 @@ private lemma circleAverage_re_smul_on_ball_zero_aux {φ θ : ℝ} {r : ℝ} :
 ## Integral Formulas
 -/
 
+set_option backward.whnf.reducibleClassField false in
+set_option backward.isDefEq.respectTransparency false in
 -- Version of `DiffContOnCl.circleAverage_re_smul` in case where the center of the ball is zero.
 private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
     (hf : DiffContOnCl ℂ f (ball 0 R)) (hw : w ∈ ball 0 R) :
@@ -204,6 +207,8 @@ private lemma DiffContOnCl.circleAverage_re_smul_on_ball_zero [CompleteSpace E]
       rw [← abs_of_pos hR] at hw hf
       simp [← hf.circleAverage_smul_div hw, circleAverage_eq_circleIntegral (ne_of_lt hR).symm, h0]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.whnf.reducibleClassField false in
 /--
 **Poisson integral formula** for ℂ-differentiable functions on arbitrary disks in the complex plane,
 formulated with the real part of the Herglotz–Riesz kernel of integration.

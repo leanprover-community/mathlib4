@@ -308,7 +308,7 @@ lemma le_spanRank_restrictScalars (N : Submodule S M) :
     N.spanRank ≤ (N.restrictScalars R).spanRank := by
   obtain ⟨s, hs, e⟩ := (N.restrictScalars R).exists_span_set_card_eq_spanRank
   obtain rfl : span S s = N :=
-    le_antisymm (span_le.mpr (span_le.mp e.le:)) (e.ge.trans (span_le_restrictScalars R S s))
+    le_antisymm (span_le.mpr (span_le.mp e.le :)) (e.ge.trans (span_le_restrictScalars R S s))
   grw [← hs, spanRank_span_le_card]
 
 lemma spanRank_restrictScalars_eq (H : Function.Surjective (algebraMap R S))

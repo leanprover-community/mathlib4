@@ -402,6 +402,12 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
 instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
+/-- Taking stalks is the left adjoint of `skyscraperSheafFunctor ⋙ Sheaf.forget`. Useful
+only when the fact that `skyscraperPresheafFunctor` factors through `Sheaf C X` is relevant. -/
+noncomputable def skyscraperSheafForgetAdjunction [HasColimits C] :
+    Presheaf.stalkFunctor C p₀ ⊣ skyscraperSheafFunctor p₀ ⋙ Sheaf.forget C X :=
+  skyscraperPresheafStalkAdjunction p₀
+
 end
 
 end

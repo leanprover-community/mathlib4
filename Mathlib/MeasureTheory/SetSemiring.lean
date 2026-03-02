@@ -183,7 +183,6 @@ lemma sUnion_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   simp only [disjointOfDiff, coe_sdiff, coe_singleton]
   rw [sUnion_diff_singleton_empty]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     t ∉ hC.disjointOfDiff hs ht := by
   intro hs_mem
@@ -223,7 +222,6 @@ section disjointOfDiffUnion
 
 variable {I : Finset (Set α)}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`, there is a
 finite set of sets in `C` whose union is `s \ ⋃₀ I`.
 See `IsSetSemiring.disjointOfDiffUnion` for a definition that gives such a set. -/
