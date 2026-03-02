@@ -10,12 +10,23 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Defs
 /-!
 # Properties of variation
 
+We prove basic properties of `variation` for `μ : VectorMeasure X V` in `ENormedAddCommMonoid V` on
+`MeasurableSpace X`. It is defined as the supremum over partitions `{Eᵢ}` of `E`, of the quantity
+`∑ᵢ, ‖μ(Eᵢ)‖`. This definition allows one to define integral of such vector valued measures.
+
+When `μ` is a signed measure, it will be shown that `μ.variation E = μ.totalVariation E`. When `μ`
+is `ℝ≥0∞`-valued measure, `μ.variation` coincides with `μ` on measurable sets.
+
 ## Main results
 
 * `norm_measure_le_variation`: `‖μ E‖ₑ ≤ variation μ E`.
 * `variation_neg`: `(-μ).variation = μ.variation`.
 * `variation_zero`: `(0 : VectorMeasure X V).variation = 0`.
 * `absolutelyContinuous`: `μ ≪ᵥ μ.variation`.
+
+## References
+
+* [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
 
@@ -35,17 +46,17 @@ lemma variation_apply (μ : VectorMeasure X V) {s : Set X} :
 lemma ennrealVariation_apply (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
     μ.ennrealVariation s = μ.variation s := Measure.toENNRealVectorMeasure_apply_measurable hs
 
-open Classical Finset in
 /-- Measure version of `le_var_aux` which was for subadditive functions. -/
 lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : ∀ t ∈ P, MeasurableSet t)
     (hP₃ : (P : Set (Set X)).PairwiseDisjoint id) : ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
+  classical
   set Q := Finpartition.ofPairwiseDisjoint P hP₃ with hQ
   calc
     ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ (Finpartition.ofPairwiseDisjoint P hP₃).parts, ‖μ p‖ₑ := by
       by_cases hbot : ⊥ ∈ P
       · simp only [Finpartition.ofPairwiseDisjoint]
-        rw [← erase_union_eq ⊥ P hbot, Finset.union_comm,
+        rw [← Finset.erase_union_eq ⊥ P hbot, Finset.union_comm,
           Finset.sum_union_eq_right (by intro _ _ _; simp_all)]
         simp
       · have : P = (Finpartition.ofPairwiseDisjoint P hP₃).parts := by
@@ -65,26 +76,25 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
         apply Finpartition.mem_parts_or_mem_sdiff_of_mem_extendOfLE Q _ _ hp
       rcases this with h | h
       · rw [hQ, Finpartition.ofPairwiseDisjoint] at h
-        simp only [Set.bot_eq_empty, mem_erase, ne_eq] at h
+        simp only [Set.bot_eq_empty, Finset.mem_erase, ne_eq] at h
         exact hP₂ p h.2
-      · simp only [sup_set_eq_biUnion, id_eq] at h
+      · simp only [Finset.sup_set_eq_biUnion, id_eq] at h
         rw [h]
-        exact MeasurableSet.diff hs (measurableSet_biUnion P hP₂)
+        exact MeasurableSet.diff hs (Finset.measurableSet_biUnion P hP₂)
 
-theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) : ‖μ E‖ₑ ≤ variation μ E := by
-  wlog hE : MeasurableSet E
+theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
+    ‖μ E‖ₑ ≤ variation μ E := by
+  by_cases hE : MeasurableSet E
+  · by_cases hE' : (⟨E, hE⟩ : Subtype MeasurableSet) = ⊥
+    · rw [← MeasurableSet.subtype_bot_eq, Subtype.ext_iff] at hE'
+      have : E = ∅ := Set.subset_eq_empty Set.Subset.rfl hE'
+      simp [this]
+    · rw [variation]
+      simp only [preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
+      calc
+        ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
+        _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
   · simp [μ.not_measurable' hE]
-  wlog hE' : (⟨E, hE⟩ : Subtype MeasurableSet) ≠ ⊥
-  · simp only [ne_eq, not_not, ] at hE'
-    rw [← MeasurableSet.subtype_bot_eq, Subtype.ext_iff] at hE'
-    have : E = ∅ := by exact Set.subset_eq_empty (fun ⦃a⦄ a_1 ↦ a_1) hE'
-    rw [this]
-    simp
-  rw [variation]
-  simp only [preVariation, ennrealToMeasure_apply hE, ennrealPreVariation_apply]
-  calc
-    ‖μ E‖ₑ = ∑ p ∈ (Finpartition.indiscrete hE').parts, ‖μ p‖ₑ := by simp
-    _ ≤ preVariationFun (‖μ ·‖ₑ) E := by apply preVariation.sum_le
 
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   simp only [variation, coe_zero, Pi.zero_apply, enorm_zero]
@@ -100,7 +110,7 @@ lemma absolutelyContinuous (μ : VectorMeasure X V) : μ ≪ᵥ μ.ennrealVariat
     refine (lt_self_iff_false (0 : ℝ≥0∞)).mp ?_
     calc
       0 < ‖μ s‖ₑ := enorm_pos.mpr hc
-      _ ≤ μ.variation s := norm_measure_le_variation μ s
+      _ ≤ μ.variation s := enorm_measure_le_variation μ s
       _ = 0 := by simpa [ennrealVariation_apply _ hsm] using hs
   · exact μ.not_measurable' hsm
 
