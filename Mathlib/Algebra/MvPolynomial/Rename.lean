@@ -118,7 +118,7 @@ theorem rename_injective (f : σ → τ) (hf : Function.Injective f) :
   exact Finsupp.mapDomain_injective (Finsupp.mapDomain_injective hf)
 
 @[simp]
-lemma rename_eq_zero_of_injective (p : MvPolynomial σ R) {f : σ → τ}
+lemma rename_eq_zero_iff_of_injective (p : MvPolynomial σ R) {f : σ → τ}
     (hf : f.Injective) : p.rename f = 0 ↔ p = 0 := by
   rw [← rename_zero f, (MvPolynomial.rename_injective _ hf).eq_iff]
 
