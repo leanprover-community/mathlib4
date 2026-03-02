@@ -81,7 +81,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
--- Note: this lemma is no longer used, but still pretty nice
+-- unused; could move to `SpecificFunctions`
 lemma injective_mfderiv_of_eventually_leftInverse
     {f : M → M'} (x : M) {g : M' → M}
     (hg : MDiffAt g (f x)) (hf : MDiffAt f x)
@@ -93,7 +93,7 @@ lemma injective_mfderiv_of_eventually_leftInverse
     simpa using congr($this u).symm
   exact LeftInverse.injective this
 
--- Note: this lemma is no longer used, but still pretty nice
+-- unused; could move to `SpecificFunctions`
 lemma surjective_mfderiv_of_eventually_rightInverse
     {f : M → M'} {x : M} {y : M'} (hxy : y = f x) {g : M' → M}
     (hg : MDiffAt g y) (hf : MDiffAt f x)
