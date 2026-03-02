@@ -226,6 +226,35 @@ theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Fi
     (h : ∀ a ∈ s, #(f a) ≤ n) : #(s.biUnion f) ≤ #s * n :=
   card_biUnion_le.trans <| sum_le_card_nsmul _ _ _ h
 
+/-- Weighted cover inequality over finite sets:
+if every `x ∈ s` is related to some `y ∈ t`, then
+`∑ x∈s, w x ≤ ∑ y∈t, ∑ x∈s.filter (R x y), w x`. -/
+theorem sum_le_sum_sum_filter_of_forall_exists [DecidableEq ι] [DecidableEq β]
+    (s : Finset ι) (t : Finset β) (R : ι → β → Prop) [DecidableRel R] (w : ι → ℕ)
+    (hcover : ∀ x ∈ s, ∃ y ∈ t, R x y) :
+    (∑ x ∈ s, w x) ≤ ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := by
+  have hswap :
+      (∑ x ∈ s, ∑ y ∈ t.filter (fun y => R x y), w x) =
+        (∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x) := by
+    simp_rw [sum_filter]
+    rw [sum_comm]
+  calc
+    (∑ x ∈ s, w x)
+        ≤ ∑ x ∈ s, ∑ y ∈ t.filter (fun y => R x y), w x := by
+            refine sum_le_sum ?_
+            intro x hx
+            rcases hcover x hx with ⟨y, hy, hxy⟩
+            have hyf : y ∈ t.filter (fun y => R x y) := mem_filter.2 ⟨hy, hxy⟩
+            have hcard_pos : 0 < #(t.filter fun y => R x y) := card_pos.mpr ⟨y, hyf⟩
+            have hmul :
+                w x ≤ #(t.filter fun y => R x y) * w x := by
+              calc
+                w x = 1 * w x := by simp
+                _ ≤ #(t.filter fun y => R x y) * w x := by
+                  exact Nat.mul_le_mul_right (w x) (Nat.succ_le_of_lt hcard_pos)
+            simpa [sum_const, Nat.mul_comm] using hmul
+    _ = ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := hswap
+
 variable {ι' : Type*} [DecidableEq ι']
 
 @[to_additive sum_fiberwise_le_sum_of_sum_fiber_nonneg]
