@@ -3,7 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.SetLike.Basic
+module
+
+public import Mathlib.Data.SetLike.Basic
 
 /-! # Class of grading-preserving functions
 
@@ -20,15 +22,13 @@ homomorphisms, such as `GradedRingHom` and `GradedAlgHom`. For example, what wou
 -/
 class GradedFunLike (F : Type*) {A B σ τ ι : outParam Type*}
     [SetLike σ A] [SetLike τ B] (𝒜 : outParam <| ι → σ) (ℬ : outParam <| ι → τ)
-    extends FunLike F A B where
+    [FunLike F A B] where
   map_mem (f : F) {i x} : x ∈ 𝒜 i → f x ∈ ℬ i
 
 section GradedFunLike
 
-attribute [instance 100] GradedFunLike.toDFunLike
-
 variable {F A B σ τ ι : Type*}
-  [SetLike σ A] [SetLike τ B] {𝒜 : ι → σ} {ℬ : ι → τ} [GradedFunLike F 𝒜 ℬ]
+  [SetLike σ A] [SetLike τ B] {𝒜 : ι → σ} {ℬ : ι → τ} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
 
 lemma map_mem (f : F) {i x} (h : x ∈ 𝒜 i) : f x ∈ ℬ i :=
   GradedFunLike.map_mem f h
