@@ -51,3 +51,69 @@ set_option pp.all true in
 
 -- Both instances should compute the same thing
 example : myNatInv_leaky.myInv (α := MyNat) (5 : Nat) = myNatInv_fixed.myInv (5 : Nat) := rfl
+
+/-! ## Deeper hierarchy: reproducing the grind failure pattern
+
+The original failure involved `Field (FiniteResidueField K)` defined via
+`inferInstanceAs (Field (IsLocalRing.ResidueField _))`. Deeply nested sub-instances
+(e.g. `DivisionMonoid.toDivInvOneMonoid.toInvOneClass.toInv`) had lambda domains
+referring to `IsLocalRing.ResidueField _` instead of `FiniteResidueField K`.
+This caused `isDefEq` failures at `instances` transparency — the level used by
+grind's `checkInst`.
+
+We reproduce the pattern with a smaller 3-level hierarchy and verify the
+transparency-level failure directly.
+-/
+
+class TestInv (α : Type) where
+  inv : α → α
+
+class TestDivInvMonoid (α : Type) extends TestInv α where
+  mul : α → α → α
+
+class TestField (α : Type) extends TestDivInvMonoid α where
+  add : α → α → α
+  neg : α → α
+
+instance : TestField Nat where
+  inv n := n
+  mul := Nat.mul
+  add := Nat.add
+  neg n := n
+
+def TestNat := Nat
+
+-- Direct instance: all lambda domains correctly use TestNat
+instance testField_direct : TestField TestNat where
+  inv n := n
+  mul := Nat.mul
+  add := Nat.add
+  neg n := n
+
+-- Leaky: internal lambda domains use Nat instead of TestNat
+instance testField_leaky : TestField TestNat := inferInstanceAs (TestField Nat)
+
+-- Fixed: inferInstanceAs% patches lambda domains to use TestNat
+instance testField_fixed : TestField TestNat := inferInstanceAs% (TestField Nat)
+
+-- All three are defeq at default transparency (Nat = TestNat at this level).
+example : testField_leaky = testField_direct := rfl
+example : testField_fixed = testField_direct := rfl
+
+-- At `instances` transparency (the level grind's `checkInst` uses):
+-- the leaky instance is NOT defeq to a directly-defined instance,
+-- because lambda domains say `Nat` instead of `TestNat` and
+-- `TestNat := Nat` is not unfolded at this transparency.
+/--
+error: Tactic `rfl` failed: The left-hand side
+  testField_leaky
+is not definitionally equal to the right-hand side
+  testField_direct
+
+⊢ testField_leaky = testField_direct
+-/
+#guard_msgs in
+example : testField_leaky = testField_direct := by with_reducible_and_instances rfl
+
+-- The fixed instance IS defeq at `instances` transparency.
+example : testField_fixed = testField_direct := by with_reducible_and_instances rfl
