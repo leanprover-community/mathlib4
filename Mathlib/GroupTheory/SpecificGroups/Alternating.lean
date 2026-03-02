@@ -460,7 +460,6 @@ namespace Equiv.Perm
 
 open Subgroup Group
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The alternating group is the only subgroup of index 2 of the permutation group. -/
 theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG : G.index = 2) :
     G = alternatingGroup α := by

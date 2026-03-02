@@ -982,10 +982,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
-  · rw [@mul_eq_zero ℤ, @mul_eq_zero ℕ, val_eq_zero]
-    exact
-      ⟨fun h => h.elim (by simp) Or.inl, fun h =>
-        Or.inr (h.elim id fun h => h.elim (by simp) id)⟩
+  · simp
   conv_lhs =>
     rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_eq_zero_iff]
   constructor
