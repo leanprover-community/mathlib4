@@ -307,7 +307,7 @@ variable {s t : Cₛ^n⟮I; F, V⟯}
 @[simp]
 theorem coeFn_mk (s : ∀ x, V x) (hs : CMDiff n (T% s)) : (mk s hs : ∀ x, V x) = s := rfl
 
-protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) : CMDiff n (T% (fun x => s x)) :=
+protected theorem contMDiff (s : Cₛ^n⟮I; F, V⟯) : CMDiff n (T% fun x ↦ s x) :=
   s.contMDiff_toFun
 
 theorem coe_inj ⦃s t : Cₛ^n⟮I; F, V⟯⦄ (h : (s : ∀ x, V x) = t) : s = t :=
@@ -399,13 +399,13 @@ instance instModule : Module 𝕜 Cₛ^n⟮I; F, V⟯ :=
 
 end
 
-protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : n ≠ 0) : MDiff (T% (fun x ↦ s x)) :=
+protected theorem mdifferentiable' (s : Cₛ^n⟮I; F, V⟯) (hn : n ≠ 0) : MDiff (T% fun x ↦ s x) :=
   s.contMDiff.mdifferentiable hn
 
-protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) : MDiff (T% (fun x ↦ s x)) :=
+protected theorem mdifferentiable (s : Cₛ^∞⟮I; F, V⟯) : MDiff (T% fun x ↦ s x) :=
   s.contMDiff.mdifferentiable (by simp)
 
-protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} : MDiffAt (T% (fun x ↦ s x)) x :=
+protected theorem mdifferentiableAt (s : Cₛ^∞⟮I; F, V⟯) {x} : MDiffAt (T% fun x ↦ s x) x :=
   s.mdifferentiable x
 
 end ContMDiffSection
