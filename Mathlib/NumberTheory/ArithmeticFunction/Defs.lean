@@ -349,6 +349,8 @@ section DirichletInverse
 
 section Ring
 
+/- We use `(hf : Invertible (f 1))` instead of `[hf : Invertible (f 1)]` because in practice such
+an instance is unlikely to be automatically synthesized due to the presence of `f`. -/
 variable [Ring R] (f : ℕ → R) (hf : Invertible (f 1))
 
 /-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. We use `Invertible` to make
@@ -369,7 +371,7 @@ theorem dirichletInverseFun_apply_one : dirichletInverseFun f hf 1 = ⅟(f 1) :=
   rw [dirichletInverseFun, if_neg one_ne_zero, if_pos rfl]
 
 @[simp]
-theorem dirichletInverseFun_apply_ne (n : ℕ) (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
+theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
     dirichletInverseFun f hf n =
       - ⅟(f 1) * ∑ d ∈ n.properDivisors, f (n / d) * dirichletInverseFun f hf d := by
   rw [dirichletInverseFun, if_neg hn0, if_neg hn1]
