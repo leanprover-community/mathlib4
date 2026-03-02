@@ -42,6 +42,12 @@ theorem min_le_iff : min a b ≤ c ↔ a ≤ c ∨ b ≤ c :=
 theorem max_le_iff : max a b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   sup_le_iff
 
+instance [LinearOrder α] : Std.LawfulOrderSup α where
+  max_le_iff _ _ _ := max_le_iff
+
+instance [LinearOrder α] : Std.LawfulOrderInf α where
+  le_min_iff _ _ _ := le_min_iff
+
 theorem lt_min_iff : a < min b c ↔ a < b ∧ a < c :=
   lt_inf_iff
 
@@ -191,17 +197,13 @@ theorem AntitoneOn.map_max (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) :
 theorem AntitoneOn.map_min (hf : AntitoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (min a b) =
     max (f a) (f b) := hf.dual.map_max ha hb
 
+@[to_dual]
 theorem Monotone.map_max (hf : Monotone f) : f (max a b) = max (f a) (f b) := by
   rcases le_total a b with h | h <;> simp [h, hf h]
 
-theorem Monotone.map_min (hf : Monotone f) : f (min a b) = min (f a) (f b) :=
-  hf.dual.map_max
-
+@[to_dual]
 theorem Antitone.map_max (hf : Antitone f) : f (max a b) = min (f a) (f b) := by
   rcases le_total a b with h | h <;> simp [h, hf h]
-
-theorem Antitone.map_min (hf : Antitone f) : f (min a b) = max (f a) (f b) :=
-  hf.dual.map_max
 
 theorem min_choice (a b : α) : min a b = a ∨ min a b = b := by cases le_total a b <;> simp [*]
 

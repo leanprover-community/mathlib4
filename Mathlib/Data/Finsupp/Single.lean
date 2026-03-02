@@ -53,6 +53,7 @@ def single (a : α) (b : M) : α →₀ M where
     Pi.single a b
   mem_support_toFun a' := by grind
 
+set_option backward.isDefEq.respectTransparency false in
 @[grind =]
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
@@ -396,8 +397,8 @@ variable [Zero M] [Zero N] [Zero P]
 
 @[simp]
 theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
-    mapRange f hf (single a b) = single a (f b) :=
-  by classical grind
+    mapRange f hf (single a b) = single a (f b) := by
+  classical grind
 
 end MapRange
 

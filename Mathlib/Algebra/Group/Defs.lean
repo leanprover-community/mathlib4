@@ -224,7 +224,7 @@ variable [CommMagma G] {a : G}
 theorem mul_comm : ∀ a b : G, a * b = b * a := CommMagma.mul_comm
 
 @[to_additive]
-instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
+instance CommMagma.to_isCommutative : Std.Commutative (α := G) (· * ·) := ⟨mul_comm⟩
 
 @[to_additive (attr := simp)]
 lemma isLeftRegular_iff_isRegular : IsLeftRegular a ↔ IsRegular a := by
@@ -523,7 +523,7 @@ theorem npowRec'_two_mul {M : Type*} [Semigroup M] [One M] (k : ℕ) (m : M) :
     match k' with
     | 0 => rfl
     | 1 => simp [npowRec']
-    | k + 2 => simp [npowRec', ← mul_assoc, Nat.mul_add, ← ih]
+    | k + 2 => simp [npowRec', ← mul_assoc, ← ih]
 
 @[to_additive]
 theorem npowRec'_mul_comm {M : Type*} [Semigroup M] [One M] {k : ℕ} (k0 : k ≠ 0) (m : M) :

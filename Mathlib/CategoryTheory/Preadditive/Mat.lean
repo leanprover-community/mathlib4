@@ -164,6 +164,7 @@ instance : Preadditive (Mat_ C) where
 
 open CategoryTheory.Limits
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- We now prove that `Mat_ C` has finite biproducts.
 
@@ -197,7 +198,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               simp only [ite_self, dite_eq_ite, Limits.comp_zero, Limits.zero_comp,
                 eqToHom_trans]
               erw [Finset.sum_sigma]
-              dsimp
+              dsimp +instances
               simp only [if_true, Finset.sum_dite_irrel, Finset.mem_univ,
                 Finset.sum_const_zero, Finset.sum_dite_eq']
               split_ifs with h h'
@@ -253,6 +254,7 @@ def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D where
   obj M := ⟨M.ι, fun i => F.obj (M.X i)⟩
   map f i j := F.map (f i j)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor induces the identity functor on matrix categories.
 -/
 @[simps!]
@@ -263,6 +265,7 @@ def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
     cases M; cases N
     simp [comp_dite, dite_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Composite functors induce composite functors on matrix categories.
 -/
 @[simps!]
@@ -305,6 +308,7 @@ open CategoryTheory.Limits
 
 variable {C}
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/
@@ -378,6 +382,7 @@ theorem natTrans_ext
   rw [← η.naturality p, ← θ.naturality p]
   simpa using congrArg (fun t => F.map p ≫ t) (h (M.X i))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M : Mat_ C) (i : M.ι) :
     biproduct.ι _ i ≫ (additiveObjIsoBiproduct F M).inv =
@@ -387,6 +392,7 @@ lemma ι_additiveObjIsoBiproduct_inv (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
 
 variable [HasFiniteBiproducts D]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive F] {M N : Mat_ C}
     (f : M ⟶ N) :
@@ -427,6 +433,7 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
     · subst h; simp
     · simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
 
 /-- An additive functor `C ⥤ D` factors through its lift to `Mat_ C ⥤ D`. -/
@@ -437,6 +444,7 @@ def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F
       { hom := biproduct.desc fun _ => 𝟙 (F.obj X)
         inv := biproduct.lift fun _ => 𝟙 (F.obj X) })
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Mat_.lift F` is the unique additive functor `L : Mat_ C ⥤ D` such that `F ≅ embedding C ⋙ L`.
 -/
 def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Additive L]
