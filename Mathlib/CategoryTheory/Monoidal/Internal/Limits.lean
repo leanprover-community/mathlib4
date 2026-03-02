@@ -52,10 +52,8 @@ def limit (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c) :
     { pt := _
       π.app X := (c.π.app X ⊗ₘ c.π.app X) ≫ μ[(F.obj X).X]
       π.naturality i j f := by have := c.π.naturality f; simp_all }
-  mon.one_mul := hc.hom_ext <| by
-    simp [whiskerRight_comp_tensorHom_assoc]
-  mon.mul_one := hc.hom_ext <| by
-    simp [whiskerLeft_comp_tensorHom_assoc]
+  mon.one_mul := hc.hom_ext <| by simp [whiskerRight_comp_tensorHom_assoc]
+  mon.mul_one := hc.hom_ext <| by simp [whiskerLeft_comp_tensorHom_assoc]
   mon.mul_assoc := by
     apply hc.hom_ext
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, IsLimit.fac,
@@ -85,10 +83,10 @@ def limitConeIsLimit (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsL
     IsLimit (limitCone F c hc) where
   lift s :=
     { hom := hc.lift ((Mon.forget C).mapCone s)
-      isMonHom_hom.mul_hom := hc.hom_ext fun j ↦ by simp
-      isMonHom_hom.one_hom := hc.hom_ext fun j ↦ by simp }
+      isMonHom_hom.mul_hom := hc.hom_ext <| by simp
+      isMonHom_hom.one_hom := hc.hom_ext <| by simp }
   fac s h := by ext; simp
-  uniq s m w := Hom.ext' <| hc.hom_ext fun j ↦ (by simpa using congr($(w j).hom))
+  uniq s m w := Hom.ext' <| hc.hom_ext fun j ↦ by simpa using congr($(w j).hom)
 
 def limitConeLiftsToLimit (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c) :
     LiftsToLimit F (forget C) c hc where
