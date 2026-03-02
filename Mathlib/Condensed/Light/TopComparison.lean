@@ -16,7 +16,7 @@ We define the functor `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

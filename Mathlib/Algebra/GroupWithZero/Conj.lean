@@ -12,7 +12,7 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 # Conjugacy in a group with zero
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Multiset Ring
 -- TODO

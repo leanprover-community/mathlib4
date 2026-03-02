@@ -21,7 +21,7 @@ endomorphisms.
 
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 

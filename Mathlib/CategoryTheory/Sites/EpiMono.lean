@@ -39,17 +39,18 @@ namespace Sheaf
 
 /-- The class of locally injective morphisms of sheaves, see `Sheaf.IsLocallyInjective`. -/
 def locallyInjective : MorphismProperty (Sheaf J A) :=
-  fun _ _  f => IsLocallyInjective f
+  fun _ _ f => IsLocallyInjective f
 
 /-- The class of locally surjective morphisms of sheaves, see `Sheaf.IsLocallySurjective`. -/
 def locallySurjective : MorphismProperty (Sheaf J A) :=
-  fun _ _  f => IsLocallySurjective f
+  fun _ _ f => IsLocallySurjective f
 
 section
 
 variable {A}
 variable (data : FunctorialSurjectiveInjectiveFactorizationData A) [HasWeakSheafify J A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functorial surjective/injective factorizations of morphisms in a concrete
 category `A`, this is the induced functorial locally surjective/locally injective
 factorization of morphisms in the category `Sheaf J A`. -/

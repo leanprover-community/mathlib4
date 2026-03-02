@@ -9,9 +9,11 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Commute.Defs
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Logic.Unique
-public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Subsingleton
+public import Mathlib.Tactic.Attr.Core
+
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -116,6 +118,10 @@ theorem mul_eq_one_iff_inv_eq {a : α} : ↑u * a = 1 ↔ ↑u⁻¹ = a := by rw
 @[to_additive]
 theorem inv_unique {u₁ u₂ : αˣ} (h : (↑u₁ : α) = ↑u₂) : (↑u₁⁻¹ : α) = ↑u₂⁻¹ :=
   Units.inv_eq_of_mul_eq_one_right <| by rw [h, u₂.mul_inv]
+
+@[to_additive (attr := simp)]
+theorem val_inv_inj {u₁ u₂ : αˣ} : ((u₁⁻¹ : αˣ) : α) = u₂⁻¹ ↔ (u₁ : α) = u₂ :=
+  Units.ext_iff.symm.trans <| inv_inj.trans Units.ext_iff
 
 end Monoid
 
@@ -277,13 +283,6 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
 @[to_additive /-- A subsingleton `AddMonoid` has a unique additive unit. -/]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
   uniq _ := Units.val_eq_one.mp (by subsingleton)
-
-section Monoid
-variable [Monoid M]
-
-theorem units_eq_one [Subsingleton Mˣ] (u : Mˣ) : u = 1 := by subsingleton
-
-end Monoid
 
 namespace IsUnit
 

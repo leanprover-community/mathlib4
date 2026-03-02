@@ -9,7 +9,7 @@ public import Mathlib.Data.Countable.Basic
 public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Order.Disjointed
 public import Mathlib.MeasureTheory.OuterMeasure.Defs
-public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Outer Measures
@@ -32,7 +32,7 @@ Note that we do not need `α` to be measurable to define an outer measure.
 outer measure
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -192,7 +192,7 @@ theorem iUnion_nat_of_monotone_of_tsum_ne_top (m : OuterMeasure α) {s : ℕ →
   clear hx i
   rcases le_or_gt j n with hjn | hnj
   · exact Or.inl (h' hjn hj)
-  have : j - (n + 1) + n + 1 = j := by omega
+  have : j - (n + 1) + n + 1 = j := by lia
   refine Or.inr (mem_iUnion.2 ⟨j - (n + 1), ?_, hlt _ ?_⟩)
   · rwa [this]
   · rw [← Nat.succ_le_iff, Nat.succ_eq_add_one, this]

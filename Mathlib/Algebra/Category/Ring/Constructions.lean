@@ -5,14 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Category.Ring.Colimits
 public import Mathlib.Algebra.Category.Ring.Instances
 public import Mathlib.Algebra.Category.Ring.Limits
-public import Mathlib.Algebra.Category.Ring.Colimits
-public import Mathlib.Tactic.Algebraize
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-public import Mathlib.RingTheory.TensorProduct.Basic
-public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -68,6 +66,7 @@ theorem pushoutCocone_pt :
     (pushoutCocone R A B).pt = CommRingCat.of (A ⊗[R] B) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Verify that the `pushout_cocone` is indeed the colimit. -/
 def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
   Limits.PushoutCocone.isColimitAux' _ fun s => by
@@ -129,6 +128,7 @@ lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
     (Algebra.IsPushout.equiv R S A B).toCommRingCatIso (by simp) (by simp)
     (by ext; simp [Algebra.IsPushout.equiv_tmul]) (by ext; simp [Algebra.IsPushout.equiv_tmul])
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] Algebra.TensorProduct.rightAlgebra in
 lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
     {R' S' : Type u} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [Algebra R' S']
@@ -155,6 +155,18 @@ lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra 
   dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h4
   simp [Iso.commRingCatIsoToRingEquiv, h1, e', e, h4]
 
+lemma isPushout_of_isLocalization {R S Rₘ Sₘ : Type u}
+    [CommRing R] [CommRing Rₘ] [Algebra R Rₘ] [CommRing S] [CommRing Sₘ] [Algebra S Sₘ]
+    (f : R →+* S) (fₘ : Rₘ →+* Sₘ) (H : fₘ.comp (algebraMap _ _) = (algebraMap _ _).comp f)
+    (M : Submonoid R) [IsLocalization M Rₘ] [IsLocalization (M.map f) Sₘ] :
+    IsPushout (CommRingCat.ofHom f) (CommRingCat.ofHom (algebraMap R Rₘ))
+      (CommRingCat.ofHom (algebraMap S Sₘ)) (CommRingCat.ofHom fₘ) := by
+  algebraize [f, fₘ, fₘ.comp (algebraMap R Rₘ)]
+  have : IsScalarTower R S Sₘ := .of_algebraMap_eq' H
+  have : IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ := ‹_›
+  exact CommRingCat.isPushout_iff_isPushout.mpr (Algebra.isPushout_of_isLocalization M _ _ _)
+
+set_option backward.isDefEq.respectTransparency false in
 lemma closure_range_union_range_eq_top_of_isPushout
     {R A B X : CommRingCat.{u}} {f : R ⟶ A} {g : R ⟶ B} {a : A ⟶ X} {b : B ⟶ X}
     (H : IsPushout f g a b) :
@@ -178,8 +190,8 @@ variable (A B : CommRingCat.{u})
 @[simps! pt ι]
 def coproductCocone : BinaryCofan A B :=
   BinaryCofan.mk
-    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
-    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶ of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶ of (A ⊗[ℤ] B))
 
 @[simp]
 theorem coproductCocone_inl :
@@ -189,6 +201,7 @@ theorem coproductCocone_inl :
 theorem coproductCocone_inr :
     (coproductCocone A B).inr = ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
 @[simps]
 def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
@@ -205,9 +218,9 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
     rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
     constructor
     · ext a
-      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
+      simp [map_one, mul_one, ← hm (Discrete.mk WalkingPair.left)]
     · ext b
-      simp [map_one, ←hm (Discrete.mk WalkingPair.right)]
+      simp [map_one, ← hm (Discrete.mk WalkingPair.right)]
 
 /-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
 def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
@@ -266,6 +279,7 @@ variable (A B : CommRingCat.{u})
 def prodFan : BinaryFan A B :=
   BinaryFan.mk (CommRingCat.ofHom <| RingHom.fst A B) (CommRingCat.ofHom <| RingHom.snd A B)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product in `CommRingCat` is the Cartesian product. -/
 def prodFanIsLimit : IsLimit (prodFan A B) where
   lift c := ofHom <| RingHom.prod (c.π.app ⟨WalkingPair.left⟩).hom (c.π.app ⟨WalkingPair.right⟩).hom
@@ -277,9 +291,9 @@ def prodFanIsLimit : IsLimit (prodFan A B) where
     ext x
     change m x = (BinaryFan.fst s x, BinaryFan.snd s x)
     have eq1 : (m ≫ (A.prodFan B).fst) x = (BinaryFan.fst s) x :=
-      congr_hom (h ⟨WalkingPair.left⟩) x
+      ConcreteCategory.congr_hom (h ⟨WalkingPair.left⟩) x
     have eq2 : (m ≫ (A.prodFan B).snd) x = (BinaryFan.snd s) x :=
-      congr_hom (h ⟨WalkingPair.right⟩) x
+      ConcreteCategory.congr_hom (h ⟨WalkingPair.right⟩) x
     rw [← eq1, ← eq2]
     simp [prodFan]
 
@@ -370,6 +384,7 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
+set_option backward.isDefEq.respectTransparency false in
 instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by
   have := limit.isoLimitCone_inv_π

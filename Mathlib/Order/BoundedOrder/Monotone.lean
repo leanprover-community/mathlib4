@@ -13,7 +13,7 @@ public import Mathlib.Order.Monotone.Basic
 
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists SemilatticeSup
 

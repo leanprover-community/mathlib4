@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
 public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
 public import Mathlib.Topology.Algebra.Constructions.DomMulAct
-import all Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic  -- for `to_additive` to unfold proof
 
 /-!
 # Continuity of the action of `Mᵈᵐᵃ` on `MeasureSpace.Lp E p μ`

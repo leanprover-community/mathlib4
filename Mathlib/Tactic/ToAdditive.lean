@@ -5,7 +5,7 @@ Authors: Miyahara Kō
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.ToAdditive
+public import Mathlib.Tactic.Translate.ToAdditive
 
 /-!
 ## `@[to_additive]` attributes for basic types
@@ -13,9 +13,10 @@ public meta import Mathlib.Tactic.Translate.ToAdditive
 
 public meta section
 
-attribute [to_additive self] Empty PEmpty Unit PUnit
+set_option linter.privateModule false
 
-attribute [translate_change_numeral 2] OfNat OfNat.ofNat
+attribute [to_additive_do_translate] Empty PEmpty Unit PUnit
+attribute [to_additive_ignore_args 2] Subtype
 
 attribute [to_additive] One
 attribute [to_additive existing Zero.toOfNat0] One.toOfNat1

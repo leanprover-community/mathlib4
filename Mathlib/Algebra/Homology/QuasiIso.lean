@@ -223,6 +223,7 @@ lemma quasiIso_of_comp_right (φ : K ⟶ L) (φ' : L ⟶ M) [∀ i, K.HasHomolog
   rw [← quasiIso_iff_comp_right φ φ']
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiIso_iff_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ ≅ Arrow.mk φ')
     [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
     [∀ i, K'.HasHomology i] [∀ i, L'.HasHomology i] :
@@ -246,7 +247,7 @@ namespace HomologicalComplex
 
 section PreservesHomology
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂] [Preadditive C₁] [Preadditive C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂] [Preadditive C₁] [Preadditive C₂]
   {K L : HomologicalComplex C₁ c} (φ : K ⟶ L) (F : C₁ ⥤ C₂) [F.Additive]
   [F.PreservesHomology]
 
@@ -327,26 +328,36 @@ end HomologicalComplex
 
 end
 
-section
+namespace HomotopyEquiv
 
 variable {ι : Type*} {C : Type u} [Category.{v} C] [Preadditive C]
   {c : ComplexShape ι} {K L : HomologicalComplex C c}
-  (e : HomotopyEquiv K L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+  (e : HomotopyEquiv K L)
 
-instance : QuasiIso e.hom where
-  quasiIsoAt n := by
-    classical
-    rw [quasiIsoAt_iff_isIso_homologyMap]
-    exact (e.toHomologyIso n).isIso_hom
+instance quasiIsoAt_hom (n : ι) [K.HasHomology n] [L.HasHomology n] :
+    QuasiIsoAt e.hom n := by
+  classical
+  rw [quasiIsoAt_iff, ShortComplex.quasiIso_iff]
+  exact (e.toHomologyIso n).isIso_hom
 
-instance : QuasiIso e.inv := (inferInstance : QuasiIso e.symm.hom)
+instance quasiIsoAt_inv (n : ι) [K.HasHomology n] [L.HasHomology n] :
+    QuasiIsoAt e.inv n :=
+  e.symm.quasiIsoAt_hom n
 
-variable (C c)
+instance quasiIso_hom [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
+    QuasiIso e.hom :=
+  ⟨fun _ => inferInstance⟩
 
-lemma homotopyEquivalences_le_quasiIso [CategoryWithHomology C] :
+instance quasiIso_inv [∀ n, K.HasHomology n] [∀ n, L.HasHomology n] :
+    QuasiIso e.inv :=
+  ⟨fun _ => inferInstance⟩
+
+end HomotopyEquiv
+
+lemma homotopyEquivalences_le_quasiIso
+    {ι : Type*} (C : Type u) [Category.{v} C] [Preadditive C]
+    (c : ComplexShape ι) [CategoryWithHomology C] :
     homotopyEquivalences C c ≤ quasiIso C c := by
   rintro K L _ ⟨e, rfl⟩
   simp only [HomologicalComplex.mem_quasiIso_iff]
   infer_instance
-
-end

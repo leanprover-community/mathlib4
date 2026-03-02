@@ -16,7 +16,7 @@ This file establishes basic facts about the interval integrability of special fu
 powers and the logarithm.
 -/
 
-@[expose] public section
+public section
 
 open Interval MeasureTheory Real Set
 
@@ -62,7 +62,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     rw [intervalIntegrable_iff] at m ⊢
     refine m.congr_fun ?_ measurableSet_Ioc; intro x hx
     rw [uIoc_of_le (by linarith : 0 ≤ -c)] at hx
-    simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, log_neg_eq_log, mul_comm,
+    simp only [Pi.smul_apply, smul_eq_mul, log_neg_eq_log, mul_comm,
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
 
 /-- The power function `x ↦ x^s` is integrable on `(0, t)` iff `-1 < s`. -/
@@ -222,6 +222,7 @@ hypothesis on the interval, but assuming the measure is the volume.
 theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable log μ a b :=
   IntervalIntegrable.log continuousOn_id fun _ hx => ne_of_mem_of_not_mem hx h
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The real logarithm is interval integrable (with respect to the volume measure) on every interval.
 See `intervalIntegrable_log` for a version applying to any locally finite measure, but with an
@@ -253,9 +254,8 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
 
 theorem intervalIntegrable_one_div_one_add_sq :
     IntervalIntegrable (fun x : ℝ => 1 / (↑1 + x ^ 2)) μ a b := by
-  refine (continuous_const.div ?_ fun x => ?_).intervalIntegrable a b
-  · fun_prop
-  · nlinarith
+  apply Continuous.intervalIntegrable
+  fun_prop (discharger := intro; nlinarith)
 
 @[simp]
 theorem intervalIntegrable_inv_one_add_sq :

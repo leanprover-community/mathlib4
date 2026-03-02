@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Ring.Commute
 
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 

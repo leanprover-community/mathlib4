@@ -11,7 +11,7 @@ public import Mathlib.Data.Set.Image
 ### Recursion on the natural numbers and `Set.range`
 -/
 
-@[expose] public section
+public section
 
 
 namespace Nat

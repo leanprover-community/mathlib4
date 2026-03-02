@@ -20,9 +20,9 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
-* `Mathlib/Data/Finset/Colex.lean`: Colexicographic order on finite sets.
+* `Mathlib/Combinatorics/Colex.lean`: Colexicographic order on finite sets.
 * `Mathlib/Data/PSigma/Order.lean`: Lexicographic order on `Σ' i, α i`.
-* `Mathlib/Data/Pi/Lex.lean`: Lexicographic order on `Πₗ i, α i`.
+* `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.
 * `Mathlib/Data/Sigma/Order.lean`: Lexicographic order on `Σ i, α i`.
 * `Mathlib/Data/Prod/Lex.lean`: Lexicographic order on `α × β`.
 -/
@@ -40,7 +40,7 @@ variable {α : Type u}
 
 /-! ### lexicographic ordering -/
 
-theorem lex_cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
+theorem lex_cons_iff {r : α → α → Prop} [Std.Irrefl r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
   ⟨fun h => by obtain - | h | h := h; exacts [(irrefl_of r a h).elim, h], Lex.cons⟩
 
@@ -55,7 +55,7 @@ theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [
 
 namespace Lex
 
-instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
+instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [Std.Trichotomous r] :
     IsOrderConnected (List α) (Lex r) where
   conn := aux where
     aux
@@ -70,25 +70,22 @@ instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTr
       · exact (aux _ l₂ _ h).imp cons cons
       · exact Or.inr (rel ab)
 
-instance isTrichotomous (r : α → α → Prop) [IsTrichotomous α r] :
-    IsTrichotomous (List α) (Lex r) where
+instance trichotomous (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (Lex r) where
   trichotomous := aux where
     aux
-    | [], [] => Or.inr (Or.inl rfl)
-    | [], _ :: _ => Or.inl nil
-    | _ :: _, [] => Or.inr (Or.inr nil)
-    | a :: l₁, b :: l₂ => by
-      rcases trichotomous_of r a b with (ab | rfl | ab)
-      · exact Or.inl (rel ab)
-      · exact (aux l₁ l₂).imp cons (Or.imp (congr_arg _) cons)
-      · exact Or.inr (Or.inr (rel ab))
+    | [], [], _, _ => rfl
+    | [], _ :: _, hab, _ => hab nil |>.elim
+    | _ :: _, [], _, hba => hba nil |>.elim
+    | a :: l₁, b :: l₂, hab, hba => by
+      obtain rfl := Std.Trichotomous.trichotomous a b (mt rel hab) (mt rel hba)
+      rw [aux l₁ l₂ (mt cons hab) (mt cons hba)]
 
-instance isAsymm (r : α → α → Prop) [IsAsymm α r] : IsAsymm (List α) (Lex r) where
+instance asymm (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (Lex r) where
   asymm := aux where
     aux
-    | _, _, Lex.rel h₁, Lex.rel h₂ => asymm h₁ h₂
-    | _, _, Lex.rel h₁, Lex.cons _ => asymm h₁ h₁
-    | _, _, Lex.cons _, Lex.rel h₂ => asymm h₂ h₂
+    | _, _, Lex.rel h₁, Lex.rel h₂ => _root_.asymm h₁ h₂
+    | _, _, Lex.rel h₁, Lex.cons _ => _root_.asymm h₁ h₁
+    | _, _, Lex.cons _, Lex.rel h₂ => _root_.asymm h₂ h₂
     | _, _, Lex.cons h₁, Lex.cons h₂ => aux _ _ h₁ h₂
 
 instance decidableRel [DecidableEq α] (r : α → α → Prop) [DecidableRel r] : DecidableRel (Lex r)

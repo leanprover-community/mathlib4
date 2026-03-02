@@ -18,7 +18,7 @@ Note that this statement does not need topology on the domain.
 In particular, it applies to discontinuous quadratic forms on infinite-dimensional spaces.
 -/
 
-@[expose] public section
+public section
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]

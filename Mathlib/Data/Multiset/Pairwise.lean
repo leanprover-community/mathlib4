@@ -15,7 +15,7 @@ This file provides basic results about `Multiset.Pairwise` (definitions are in
 `Mathlib/Data/Multiset/Defs.lean`).
 -/
 
-@[expose] public section
+public section
 
 namespace Multiset
 

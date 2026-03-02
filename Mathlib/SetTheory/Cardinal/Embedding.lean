@@ -33,7 +33,7 @@ Let `s : Set α` be a finite set.
   map from `Fin (m + n) ↪ α` to `Fin m ↪ α` is surjective.
 -/
 
-@[expose] public section
+public section
 
 open Set Fin Function Function.Embedding
 
@@ -41,6 +41,7 @@ namespace Fin.Embedding
 
 variable {α : Type*} {m n : ℕ} {s : Set α}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_embedding_disjoint_range_of_add_le_ENat_card
     [Finite s] (hs : s.ncard + n ≤ ENat.card α) :
     ∃ y : Fin n ↪ α, Disjoint s (range y) := by

@@ -27,7 +27,7 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 
 -/
 
-@[expose] public section
+public section
 
 universe uM
 
@@ -125,8 +125,6 @@ theorem Module.projective_of_localization_maximal (H : ∀ (I : Ideal R) (_ : I.
     Module.Projective (Localization.AtPrime I) (LocalizedModule I.primeCompl M))
     [Module.FinitePresentation R M] : Module.Projective R M := by
   have : Module.Finite R M := by infer_instance
-  have : (⊤ : Submodule R M).FG := this.fg_top
-  have : ∃ (s : Finset M), _ := this
   obtain ⟨s, hs⟩ := this
   let N := s →₀ R
   let f : N →ₗ[R] M := Finsupp.linearCombination R (Subtype.val : s → M)
@@ -153,7 +151,7 @@ variable
   (f : ∀ (P : Ideal R) [P.IsMaximal], M →ₗ[R] Mₚ P)
   [inst : ∀ (P : Ideal R) [P.IsMaximal], IsLocalizedModule P.primeCompl (f P)]
 
-attribute [local instance] RingHomInvPair.of_ringEquiv in
+attribute [local instance] RingHomInvPair.of_ringEquiv RingHomInvPair.of_ringEquiv_symm in
 include f in
 /--
 A variant of `Module.projective_of_localization_maximal` that accepts `IsLocalizedModule`.
@@ -163,8 +161,9 @@ theorem Module.projective_of_localization_maximal'
     [Module.FinitePresentation R M] : Module.Projective R M := by
   apply Module.projective_of_localization_maximal
   intro P hP
-  refine Module.Projective.of_ringEquiv (M := Mₚ P)
-    (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
+  set e := (IsLocalization.algEquiv P.primeCompl (Rₚ P) (Localization.AtPrime P)).toRingEquiv
+  refine Module.Projective.of_equiv (M := Mₚ P) (R := Rₚ P)
+    (σ := e)
     { __ := IsLocalizedModule.linearEquiv P.primeCompl (f P)
         (LocalizedModule.mkLinearMap P.primeCompl M)
       map_smul' := ?_ }
@@ -172,6 +171,6 @@ theorem Module.projective_of_localization_maximal'
     obtain ⟨r, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl r
     apply ((Module.End.isUnit_iff _).mp
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap P.primeCompl M) s)).1
-    dsimp
+    dsimp [e]
     simp only [← map_smul, ← smul_assoc, IsLocalization.smul_mk'_self, algebraMap_smul,
       IsLocalization.map_id_mk']

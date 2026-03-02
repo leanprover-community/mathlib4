@@ -5,7 +5,6 @@ Authors: Josha Dekker
 -/
 module
 
-public import Mathlib.Probability.Notation
 public import Mathlib.Probability.CDF
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
@@ -29,6 +28,7 @@ open scoped ENNReal NNReal
 
 open MeasureTheory Real Set Filter Topology
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A Lebesgue Integral from -∞ to y can be expressed as the sum of one from -∞ to 0 and 0 to x -/
 lemma lintegral_Iic_eq_lintegral_Iio_add_Icc {y z : ℝ} (f : ℝ → ℝ≥0∞) (hzy : z ≤ y) :
     ∫⁻ x in Iic y, f x = (∫⁻ x in Iio z, f x) + ∫⁻ x in Icc z y, f x := by
@@ -73,13 +73,13 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
 /-- The gamma pdf is strongly measurable -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
     StronglyMeasurable (gammaPDFReal a r) :=
   (measurable_gammaPDFReal a r).stronglyMeasurable
@@ -141,7 +141,7 @@ section GammaCDF
 /-- CDF of the gamma distribution -/
 @[deprecated "Use `cdf (gammaMeasure a r)` instead." (since := "2025-08-28")]
 noncomputable
-def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
+def gammaCDFReal (a r : ℝ) : StieltjesFunction ℝ :=
   cdf (gammaMeasure a r)
 
 lemma cdf_gammaMeasure_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :

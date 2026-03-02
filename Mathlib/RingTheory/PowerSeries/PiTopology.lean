@@ -50,7 +50,7 @@ TODO: add the similar result for the series of homogeneous components.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace PowerSeries
@@ -212,6 +212,29 @@ theorem multipliable_one_add_of_tendsto_order_atTop_nhds_top
   multipliable_one_add_of_summable_prod <| summable_prod_of_tendsto_order_atTop_nhds_top _ h
 
 end Prod
+
+section ProdOneSubPow
+variable (R : Type*) [CommRing R] [TopologicalSpace R]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + 1) := by
+  nontriviality R
+  simp_rw [sub_eq_add_neg]
+  apply multipliable_one_add_of_tendsto_order_atTop_nhds_top
+  refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
+  intro m hm
+  rw [order_neg, order_X_pow]
+  norm_cast
+  exact Nat.lt_add_one_iff.mpr hm
+
+theorem tprod_one_sub_X_pow_ne_zero [T2Space R] [Nontrivial R] :
+    ∏' i, (1 - X ^ (i + 1)) ≠ (0 : R⟦X⟧) := by
+  by_contra! h
+  obtain h := PowerSeries.ext_iff.mp h 0
+  simp [coeff_zero_eq_constantCoeff, (multipliable_one_sub_X_pow R).map_tprod _
+    (continuous_constantCoeff R)] at h
+
+end ProdOneSubPow
 
 end WithPiTopology
 

@@ -52,13 +52,13 @@ noncomputable def mlconvolution (f g : G → ℝ≥0∞) (μ : Measure G) :
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to a measure `μ`.
 -/
-scoped[MeasureTheory] notation:67 f " ⋆ₘₗ["μ:67"] " g:66 => MeasureTheory.mlconvolution f g μ
+scoped[MeasureTheory] notation:67 f " ⋆ₘₗ[" μ:67 "] " g:66 => MeasureTheory.mlconvolution f g μ
 
 /-- Scoped notation for the multiplicative convolution of functions with respect to `volume`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₘₗ " g:66 => MeasureTheory.mlconvolution f g volume
 
 /-- Scoped notation for the additive convolution of functions with respect to a measure `μ`. -/
-scoped[MeasureTheory] notation:67 f " ⋆ₗ["μ:67"] " g:66 => MeasureTheory.lconvolution f g μ
+scoped[MeasureTheory] notation:67 f " ⋆ₗ[" μ:67 "] " g:66 => MeasureTheory.lconvolution f g μ
 
 /-- Scoped notation for the additive convolution of functions with respect to `volume`. -/
 scoped[MeasureTheory] notation:67 f " ⋆ₗ " g:66 => MeasureTheory.lconvolution f g volume
@@ -85,7 +85,7 @@ section Measurable
 variable [MeasurableMul₂ G] [MeasurableInv G]
 
 /-- The convolution of measurable functions is measurable. -/
-@[to_additive (attr := measurability, fun_prop)
+@[to_additive (attr := fun_prop)
 /-- The convolution of measurable functions is measurable. -/]
 theorem measurable_mlconvolution {f g : G → ℝ≥0∞} (μ : Measure G) [SFinite μ]
     (hf : Measurable f) (hg : Measurable g) : Measurable (f ⋆ₘₗ[μ] g) := by
@@ -103,7 +103,7 @@ variable [Group G] [MeasurableMul₂ G] [MeasurableInv G]
 variable {μ : Measure G} [IsMulLeftInvariant μ] [SFinite μ]
 
 /-- The convolution of `AEMeasurable` functions is `AEMeasurable`. -/
-@[to_additive (attr := measurability, fun_prop)
+@[to_additive (attr := fun_prop)
 /-- The convolution of `AEMeasurable` functions is `AEMeasurable`. -/]
 theorem aemeasurable_mlconvolution {f g : G → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
@@ -117,9 +117,9 @@ theorem mlconvolution_assoc₀ {f g k : G → ℝ≥0∞}
     f ⋆ₘₗ[μ] g ⋆ₘₗ[μ] k = (f ⋆ₘₗ[μ] g) ⋆ₘₗ[μ] k := by
   ext x
   simp only [mlconvolution_def]
-  conv in f _ * (∫⁻ _ , _ ∂μ) =>
+  conv in f _ * (∫⁻ _, _ ∂μ) =>
     rw [← lintegral_const_mul'' _ (by fun_prop), ← lintegral_mul_left_eq_self _ y⁻¹]
-  conv in (∫⁻ _ , _ ∂μ) * k _ =>
+  conv in (∫⁻ _, _ ∂μ) * k _ =>
     rw [← lintegral_mul_const'' _ (by fun_prop)]
   rw [lintegral_lintegral_swap]
   · simp [mul_assoc]

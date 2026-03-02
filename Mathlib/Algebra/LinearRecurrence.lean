@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Degree.Operations
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 
@@ -75,7 +76,7 @@ def mkSol (init : Fin E.order → R) : ℕ → R
     if h : n < E.order then init ⟨n, h⟩
     else
       ∑ k : Fin E.order,
-        have _ : n - E.order + k < n := by omega
+        have _ : n - E.order + k < n := by lia
         E.coeffs k * mkSol init (n - E.order + k)
 
 /-- `E.mkSol` indeed gives solutions to `E`. -/
@@ -111,6 +112,8 @@ theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → R} {init : Fin E.order → R} (
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
 
+-- TODO: there's a non-terminal simp here
+set_option linter.flexible false in
 /-- The space of solutions of `E`, as a `Submodule` over `R` of the module `ℕ → R`. -/
 def solSpace : Submodule R (ℕ → R) where
   carrier := { u | E.IsSolution u }
@@ -163,7 +166,8 @@ def tupleSucc : (Fin E.order → R) →ₗ[R] Fin E.order → R where
     split_ifs with h <;> simp [h, mul_add, sum_add_distrib]
   map_smul' x y := by
     ext i
-    split_ifs with h <;> simp [h, mul_sum]
+    split_ifs with h <;>
+      simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply, h, ↓reduceDIte, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl
 
 end CommSemiring
@@ -189,6 +193,21 @@ variable {R : Type*} [CommRing R] (E : LinearRecurrence R)
 `X ^ E.order - ∑ i : Fin E.order, (E.coeffs i) * X ^ i`. -/
 def charPoly : R[X] :=
   Polynomial.monomial E.order 1 - ∑ i : Fin E.order, Polynomial.monomial i (E.coeffs i)
+
+@[simp]
+theorem charPoly_degree_eq_order [Nontrivial R] : (charPoly E).degree = E.order := by
+  rw [charPoly, degree_sub_eq_left_of_degree_lt]
+    <;> rw [degree_monomial E.order one_ne_zero]
+  simp_rw [← C_mul_X_pow_eq_monomial]
+  exact degree_sum_fin_lt E.coeffs
+
+theorem charPoly_monic : charPoly E |>.Monic := by
+  nontriviality R
+  rw [Monic, leadingCoeff, natDegree_eq_of_degree_eq_some <| charPoly_degree_eq_order _, charPoly,
+    coeff_sub, coeff_monomial_same, finset_sum_coeff, sub_eq_self]
+  refine sum_eq_zero fun _ _ ↦ coeff_eq_zero_of_degree_lt ?_
+  grw [degree_monomial_le]
+  simp
 
 /-- The geometric sequence `q^n` is a solution of `E` iff
   `q` is a root of `E`'s characteristic polynomial. -/

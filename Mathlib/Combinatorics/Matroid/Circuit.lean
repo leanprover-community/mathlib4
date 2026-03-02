@@ -233,9 +233,6 @@ lemma fundCircuit_eq_of_notMem_ground (heX : e ∉ M.E) : M.fundCircuit e X = {e
   simp_rw [← M.closure_inter_ground {e}, singleton_inter_eq_empty.2 heX]
   exact fun a haX h ↦ by simpa using h ∅ (empty_subset X) rfl.subset
 
-@[deprecated (since := "2025-05-23")]
-alias fundCircuit_eq_of_not_mem_ground := fundCircuit_eq_of_notMem_ground
-
 lemma Indep.fundCircuit_isCircuit (hI : M.Indep I) (hecl : e ∈ M.closure I) (heI : e ∉ I) :
     M.IsCircuit (M.fundCircuit e I) := by
   have aux : ⋂₀ {J | J ⊆ I ∧ e ∈ M.closure J} ⊆ I := sInter_subset_of_mem (by simpa)
@@ -414,10 +411,11 @@ lemma IsCircuit.strong_multi_elimination_insert (x : ι → α) (I : ι → Set 
   rw [union_diff_distrib, union_comm]
   exact union_subset_union_left _ diff_subset
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalization of the strong circuit elimination axiom `Matroid.IsCircuit.strong_elimination`
 to an infinite collection of circuits.
 
-It states that, given a circuit `C₀`, a arbitrary collection `C : ι → Set α` of circuits,
+It states that, given a circuit `C₀`, an arbitrary collection `C : ι → Set α` of circuits,
 an element `x i` of `C₀ ∩ C i` for each `i`, and an element `z ∈ C₀` outside all the `C i`,
 the union of `C₀` and the `C i` contains a circuit containing `z` but none of the `x i`.
 
@@ -580,6 +578,7 @@ lemma isCocircuit_iff_minimal :
   rw [inter_assoc, inter_eq_self_of_subset_right hB.subset_ground]
   exact hX B hB
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cocircuit is a minimal set whose complement is nonspanning. -/
 lemma isCocircuit_iff_minimal_compl_nonspanning :
     M.IsCocircuit K ↔ Minimal (fun X ↦ ¬ M.Spanning (M.E \ X)) K := by
@@ -638,6 +637,7 @@ lemma IsCircuit.isCocircuit_inter_nontrivial (hC : M.IsCircuit C) (hK : M.IsCoci
   rw [nontrivial_iff_ne_singleton heCK]
   exact hC.inter_isCocircuit_ne_singleton hK
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsCircuit.isCocircuit_disjoint_or_nontrivial_inter (hC : M.IsCircuit C)
     (hK : M.IsCocircuit K) : Disjoint C K ∨ (C ∩ K).Nontrivial := by
   rw [or_iff_not_imp_left, disjoint_iff_inter_eq_empty, ← ne_eq, ← nonempty_iff_ne_empty]
@@ -687,18 +687,12 @@ lemma fundCocircuit_eq_of_notMem_ground (X : Set α) (he : e ∉ M.E) :
     M.fundCocircuit e X = {e} := by
   rwa [fundCocircuit, fundCircuit_eq_of_notMem_ground]
 
-@[deprecated (since := "2025-05-23")]
-alias fundCocircuit_eq_of_not_mem_ground := fundCocircuit_eq_of_notMem_ground
-
 /-- The fundamental cocircuit of `X` and `e` has the junk value `{e}` if `e ∉ X` -/
 lemma fundCocircuit_eq_of_notMem (M : Matroid α) (heX : e ∉ X) : M.fundCocircuit e X = {e} := by
   by_cases he : e ∈ M.E
   · rw [fundCocircuit, fundCircuit_eq_of_mem]
     exact ⟨he, heX⟩
   rw [fundCocircuit_eq_of_notMem_ground _ he]
-
-@[deprecated (since := "2025-05-23")]
-alias fundCocircuit_eq_of_not_mem := fundCocircuit_eq_of_notMem
 
 /-- For every element `e` of an independent set `I`,
 there is a cocircuit whose intersection with `I` is `{e}`. -/
@@ -735,8 +729,8 @@ lemma IsBase.mem_fundCocircuit_iff_mem_fundCircuit {e f : α} (hB : M.IsBase B) 
   obtain hfB | hfB := em' <| f ∈ B
   · rw [fundCocircuit, fundCircuit_eq_of_mem (by simp [hfE, hfB])] at he
     contradiction
-  obtain ⟨heE, heB⟩ : e ∈ M.E \ B :=
-    by simpa [hne] using (M.fundCocircuit_subset_insert_compl f B) he
+  obtain ⟨heE, heB⟩ : e ∈ M.E \ B := by
+    simpa [hne] using (M.fundCocircuit_subset_insert_compl f B) he
   -- Use basis exchange to argue the equivalence.
   rw [fundCocircuit, hB'.indep.mem_fundCircuit_iff (by rwa [hB'.closure_eq]) (by simp [hfB])] at he
   rw [hB.indep.mem_fundCircuit_iff (by rwa [hB.closure_eq]) heB]

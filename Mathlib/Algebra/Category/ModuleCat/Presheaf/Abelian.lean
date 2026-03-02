@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe v v₁ u₁ u
 

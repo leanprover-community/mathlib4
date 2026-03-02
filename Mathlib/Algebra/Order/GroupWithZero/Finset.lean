@@ -13,7 +13,7 @@ public import Mathlib.Data.Finset.Lattice.Fold
 # `Finset.sup` in a group with zero
 -/
 
-@[expose] public section
+public section
 
 namespace Finset
 variable {ι M₀ G₀ : Type*}
@@ -46,20 +46,31 @@ end MonoidWithZero
 section GroupWithZero
 variable [GroupWithZero G₀] [SemilatticeSup G₀] {s : Finset ι} {a : G₀}
 
-lemma sup'_mul₀ [MulPosReflectLT G₀] (ha : 0 < a) (f : ι → G₀) (s : Finset ι) (hs) :
-    s.sup' hs f * a = s.sup' hs fun i ↦ f i * a := map_finset_sup' (OrderIso.mulRight₀ _ ha) hs f
+set_option backward.isDefEq.respectTransparency false in
+lemma sup'_mul₀ [MulPosReflectLT G₀] (ha : 0 ≤ a) (f : ι → G₀) (s : Finset ι) (hs) :
+    s.sup' hs f * a = s.sup' hs fun i ↦ f i * a := by
+  by_cases! h : 0 = a
+  · simp [← h]
+  exact map_finset_sup' (OrderIso.mulRight₀ _ (lt_of_le_of_ne ha h)) hs f
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.docPrime false in
-lemma mul₀_sup' [PosMulReflectLT G₀] (ha : 0 < a) (f : ι → G₀) (s : Finset ι) (hs) :
-    a * s.sup' hs f = s.sup' hs fun i ↦ a * f i := map_finset_sup' (OrderIso.mulLeft₀ _ ha) hs f
+lemma mul₀_sup' [PosMulReflectLT G₀] (ha : 0 ≤ a) (f : ι → G₀) (s : Finset ι) (hs) :
+    a * s.sup' hs f = s.sup' hs fun i ↦ a * f i := by
+  by_cases! h : 0 = a
+  · simp [← h]
+  exact map_finset_sup' (OrderIso.mulLeft₀ _ (lt_of_le_of_ne ha h)) hs f
 
-lemma sup'_div₀ [MulPosReflectLT G₀] (ha : 0 < a) (f : ι → G₀) (s : Finset ι) (hs) :
-    s.sup' hs f / a = s.sup' hs fun i ↦ f i / a :=
-  map_finset_sup' (OrderIso.divRight₀ _ ha) hs f
+set_option backward.isDefEq.respectTransparency false in
+lemma sup'_div₀ [MulPosReflectLT G₀] (ha : 0 ≤ a) (f : ι → G₀) (s : Finset ι) (hs) :
+    s.sup' hs f / a = s.sup' hs fun i ↦ f i / a := by
+  by_cases! h : 0 = a
+  · simp [← h]
+  exact map_finset_sup' (OrderIso.divRight₀ _ (lt_of_le_of_ne ha h)) hs f
 
 end GroupWithZero
 
-lemma sup_div₀ [LinearOrderedCommGroupWithZero G₀] [OrderBot G₀] {a : G₀} (ha : 0 < a)
+lemma sup_div₀ [LinearOrderedCommGroupWithZero G₀] {a : G₀} (ha : 0 ≤ a)
     (s : Finset ι) (f : ι → G₀) : s.sup f / a = s.sup fun i ↦ f i / a := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [← show (0 : G₀) = ⊥ from bot_unique zero_le']

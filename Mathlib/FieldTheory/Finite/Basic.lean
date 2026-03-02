@@ -334,7 +334,7 @@ variable (R) [CommRing R] [Algebra K R]
     have : ExpChar R p := .prime hp
     simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply, card_eq]
     exact add_pow_expChar_pow ..
-  commutes' _ := by simp [← RingHom.map_pow, pow_card]
+  commutes' _ := by simp [← map_pow, pow_card]
 
 theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 
@@ -478,7 +478,8 @@ theorem expand_card (f : K[X]) : expand K q f = f ^ q := by
   rcases FiniteField.card K p with ⟨⟨n, npos⟩, ⟨hp, hn⟩⟩
   haveI : Fact p.Prime := ⟨hp⟩
   dsimp at hn
-  rw [hn, ← map_expand_pow_char, frobenius_pow hn, RingHom.one_def, map_id]
+  rw [hn, ← map_iterateFrobenius_expand, iterateFrobenius_eq_pow,
+    frobenius_pow hn, RingHom.one_def, map_id]
 
 end FiniteField
 
@@ -486,6 +487,7 @@ namespace ZMod
 
 open FiniteField Polynomial
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   rcases hp.1.eq_two_or_odd with hp2 | hp_odd
   · subst p
@@ -559,7 +561,7 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1
 
 /-- For each `n ≥ 0`, the unit group of `ZMod n` is finite. -/
 instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
-| 0     => Finite.of_fintype ℤˣ
+| 0 => Finite.of_fintype ℤˣ
 | _ + 1 => inferInstance
 
 open FiniteField
@@ -568,6 +570,7 @@ namespace ZMod
 
 variable {p : ℕ} [Fact p.Prime]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (Subfield (ZMod p)) :=
   subsingleton_of_bot_eq_top <| top_unique (a := ⊥) fun n _ ↦
   have := zsmul_mem (one_mem (⊥ : Subfield (ZMod p))) n.val
@@ -735,7 +738,7 @@ theorem Subfield.roots_X_pow_char_sub_X_bot :
   exact FiniteField.roots_X_pow_card_sub_X _
 
 theorem Subfield.splits_bot :
-    Splits (RingHom.id (⊥ : Subfield F)) (X ^ p - X) := by
+    Splits (X ^ p - X : (⊥ : Subfield F)[X]) := by
   let _ := Subfield.fintypeBot F p
   rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
     FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
@@ -743,7 +746,7 @@ theorem Subfield.splits_bot :
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
-      Polynomial.roots_map (Subfield.subtype _) (splits_bot F p) ▸ Multiset.mem_map (b := x)
+      (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
   simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
 
 end prime_subfield

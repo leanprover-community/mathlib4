@@ -21,7 +21,7 @@ and a `Set.Finite` constructor.
 finite sets
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 

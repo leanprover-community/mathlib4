@@ -128,7 +128,7 @@ theorem stabilizer_card' :
     simp only [this, stabilizer_card]
     apply Finset.prod_bij (fun g _ => g.val)
     · exact fun g _ => Finset.coe_mem g
-    · exact fun g _ g' _ =>  SetCoe.ext
+    · exact fun g _ g' _ => SetCoe.ext
     · simp
     · intro i _
       apply congr_arg

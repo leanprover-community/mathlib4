@@ -35,21 +35,19 @@ If `π` is a surjective morphism in `CompHausLike P`, then it is an effective ep
 noncomputable
 def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Surjective π) :
     EffectiveEpiStruct π where
-  desc e h := ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).lift e.hom
-    fun a b hab ↦
-      CategoryTheory.congr_fun (h
-        (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
-        (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
-      (by ext; exact hab)) a)
-  fac e h := TopCat.hom_ext ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).lift_comp
-    e.hom
-    fun a b hab ↦ CategoryTheory.congr_fun (h
-      (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
-      (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
-    (by ext; exact hab)) a)
+  desc e h :=
+    ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).lift e.hom.hom
+      fun a b hab ↦
+        CategoryTheory.congr_fun (h
+          (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
+          (ofHom _ ⟨fun _ ↦ b, continuous_const⟩)
+        (by ext; exact hab)) a)
+  fac e h :=
+    InducedCategory.hom_ext (TopCat.hom_ext
+      ((IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).lift_comp _ _))
   uniq e h g hm := by
-    suffices g = ofHom _ ((IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).liftEquiv
-      ⟨e.hom,
+    suffices g = ofHom _
+        ((IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).liftEquiv ⟨e.hom.hom,
       fun a b hab ↦ CategoryTheory.congr_fun
         (h
           (ofHom _ ⟨fun _ ↦ a, continuous_const⟩)
@@ -57,8 +55,8 @@ def effectiveEpiStruct {B X : CompHausLike P} (π : X ⟶ B) (hπ : Function.Sur
           (by ext; exact hab))
         a⟩) by assumption
     apply ConcreteCategory.ext
-    rw [hom_ofHom,
-      ← Equiv.symm_apply_eq (IsQuotientMap.of_surjective_continuous hπ π.hom.continuous).liftEquiv]
+    rw [hom_ofHom, ← Equiv.symm_apply_eq
+      (IsQuotientMap.of_surjective_continuous hπ π.hom.hom.continuous).liftEquiv]
     ext
     simp only [IsQuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl

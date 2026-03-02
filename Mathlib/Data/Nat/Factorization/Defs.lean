@@ -104,6 +104,10 @@ theorem eq_of_factorization_eq {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
   eq_of_perm_primeFactorsList ha hb
     (by simpa only [List.perm_iff_count, primeFactorsList_count_eq] using h)
 
+theorem eq_of_factorization_eq' {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0)
+    (h : a.factorization = b.factorization) : a = b :=
+  eq_of_factorization_eq ha hb (congrFun (congrArg DFunLike.coe h))
+
 
 /-- Every nonzero natural number has a unique prime factorization -/
 theorem factorization_inj : Set.InjOn factorization { x : ℕ | x ≠ 0 } := fun a ha b hb h =>
@@ -156,15 +160,12 @@ theorem factorization_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 theorem factorization_le_iff_dvd {d n : ℕ} (hd : d ≠ 0) (hn : n ≠ 0) :
     d.factorization ≤ n.factorization ↔ d ∣ n := by
-  constructor
-  · intro hdn
-    set K := n.factorization - d.factorization with hK
-    use K.prod (· ^ ·)
-    rw [← factorization_prod_pow_eq_self hn, ← factorization_prod_pow_eq_self hd,
-        ← Finsupp.prod_add_index' pow_zero pow_add, hK, add_tsub_cancel_of_le hdn]
-  · rintro ⟨c, rfl⟩
-    rw [factorization_mul hd (right_ne_zero_of_mul hn)]
-    simp
+  refine ⟨fun hdn ↦ ?_, fun ⟨c, h⟩ ↦ ?_⟩
+  · rw [← factorization_prod_pow_eq_self hn, ← factorization_prod_pow_eq_self hd]
+    exact prod_dvd_prod_of_subset_of_dvd (support_mono hdn) fun a _ ↦ pow_dvd_pow a (hdn a)
+  · subst h
+    rw [factorization_mul hd <| right_ne_zero_of_mul hn]
+    apply self_le_add_right
 
 /-- For any `p : ℕ` and any function `g : α → ℕ` that's non-zero on `S : Finset α`,
 the power of `p` in `S.prod g` equals the sum over `x ∈ S` of the powers of `p` in `g x`.
@@ -172,7 +173,6 @@ Generalises `factorization_mul`, which is the special case where `#S = 2` and `g
 theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
-    ext p
     refine Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH
@@ -214,7 +214,7 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
     n.factorization n.minFac ≠ 0 := by
   refine mt (factorization_eq_zero_iff _ _).mp ?_
   push_neg
-  exact ⟨minFac_prime (by cutsat), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
+  exact ⟨minFac_prime (by lia), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 
@@ -223,13 +223,9 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
 the product `∏ (a : ℕ) ∈ f.support, a ^ f a`. -/
 theorem prod_pow_factorization_eq_self {f : ℕ →₀ ℕ} (hf : ∀ p : ℕ, p ∈ f.support → Prime p) :
     (f.prod (· ^ ·)).factorization = f := by
-  have h : ∀ x : ℕ, x ∈ f.support → x ^ f x ≠ 0 := fun p hp =>
-    pow_ne_zero _ (Prime.ne_zero (hf p hp))
-  simp only [Finsupp.prod, factorization_prod h]
-  conv =>
-    rhs
-    rw [(sum_single f).symm]
-  exact sum_congr rfl fun p hp => Prime.factorization_pow (hf p hp)
+  rw [Finsupp.prod, factorization_prod (pow_ne_zero _ <| hf · · |>.ne_zero),
+    sum_congr rfl (hf · · |>.factorization_pow)]
+  exact sum_single f
 
 /-- The equiv between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ | ∀ p ∈ f.support, Prime p } where

@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.Polynomial.Vieta
 # Vieta's Formula for polynomial of small degrees.
 -/
 
-@[expose] public section
+public section
 
 namespace Polynomial
 

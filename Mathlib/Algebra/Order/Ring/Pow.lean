@@ -19,7 +19,7 @@ which can be regarded as Bernoulli's inequality for `b / a` multiplied by `a ^ n
 Also, we prove versions for different typeclass assumptions on the (semi)ring.
 -/
 
-@[expose] public section
+public section
 
 variable {R : Type*}
 

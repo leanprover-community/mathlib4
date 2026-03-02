@@ -159,7 +159,7 @@ end EventuallyConst
 
 lemma eventuallyConst_atTop [SemilatticeSup α] [Nonempty α] :
     EventuallyConst f atTop ↔ (∃ i, ∀ j, i ≤ j → f j = f i) :=
-  (atTop_basis.eventuallyConst_iff' fun _ _ ↦ left_mem_Ici).trans <| by
+  (atTop_basis.eventuallyConst_iff' fun _ _ ↦ self_mem_Ici).trans <| by
     simp only [true_and, mem_Ici]
 
 lemma eventuallyConst_atTop_nat {f : ℕ → α} :

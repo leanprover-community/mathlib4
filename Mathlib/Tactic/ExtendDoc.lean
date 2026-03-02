@@ -6,7 +6,6 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Init
-public meta import Lean.Elab.ElabRules
 public meta import Lean.DocString
 
 /-!

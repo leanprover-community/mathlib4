@@ -38,6 +38,7 @@ lemma mul {f f' : R[X]} {I : Ideal R} (hf : f.IsDistinguishedAt I) (hf' : f'.IsD
     (f * f').IsDistinguishedAt I :=
   ⟨hf.toIsWeaklyEisensteinAt.mul hf'.toIsWeaklyEisensteinAt, hf.monic.mul hf'.monic⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I) :
     f.map (Ideal.Quotient.mk I) = Polynomial.X ^ f.natDegree := by
   ext i
@@ -46,9 +47,6 @@ lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I
   · rcases lt_or_gt_of_ne ne with lt | gt
     · simpa [ne, eq_zero_iff_mem] using (distinguish.mem lt)
     · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
-
-@[deprecated (since := "2025-04-27")]
-alias _root_.IsDistinguishedAt.map_eq_X_pow := map_eq_X_pow
 
 section degree_eq_order_map
 
@@ -63,6 +61,7 @@ lemma map_ne_zero_of_eq_mul (distinguish : g.IsDistinguishedAt I)
   apply_fun PowerSeries.coeff g.natDegree at H
   simp [mapf, PowerSeries.coeff_X_pow_mul', eq_zero_iff_mem, notMem] at H
 
+set_option backward.isDefEq.respectTransparency false in
 lemma degree_eq_coe_lift_order_map (distinguish : g.IsDistinguishedAt I)
     (notMem : PowerSeries.constantCoeff h ∉ I) (eq : f = g * h) :
     g.degree = (f.map (Ideal.Quotient.mk I)).order.lift
@@ -78,12 +77,6 @@ lemma degree_eq_coe_lift_order_map (distinguish : g.IsDistinguishedAt I)
   · simp [mapf, PowerSeries.coeff_X_pow_mul', eq_zero_iff_mem, notMem]
   · intro i hi
     simp [mapf, PowerSeries.coeff_X_pow_mul', hi]
-
-@[deprecated (since := "2025-04-27")]
-alias _root_.IsDistinguishedAt.degree_eq_order_map := degree_eq_coe_lift_order_map
-
-@[deprecated (since := "2025-05-19")]
-alias degree_eq_order_map := degree_eq_coe_lift_order_map
 
 lemma coe_natDegree_eq_order_map (distinguish : g.IsDistinguishedAt I)
     (notMem : PowerSeries.constantCoeff h ∉ I) (eq : f = g * h) :
