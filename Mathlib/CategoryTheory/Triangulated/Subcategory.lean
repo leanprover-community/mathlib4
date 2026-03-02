@@ -235,7 +235,7 @@ lemma extensionProduct_assoc [IsTriangulated C] :
     exact ⟨_, _, _, _, _, hT'', hP, ⟨_, _, _, _, _, o.mem, hQ, hR⟩⟩
   · intro ⟨A, Z, f, g, h, hT, hP, ⟨B, C, f', g', h', hT', hQ, hR⟩⟩
     obtain ⟨Y, f'', h'', hT''⟩ := distinguished_cocone_triangle₁ (g ≫ g')
-    let o := someOctahedron₁ rfl hT hT' hT''
+    let o := someOctahedron' rfl hT hT' hT''
     exact ⟨_, _, _, _, _, hT'', ⟨_, _, _, _, _, o.mem, hP, hQ⟩, hR⟩
 
 end
