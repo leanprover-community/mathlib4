@@ -232,10 +232,12 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
   let e := Equiv.sumEquivSigmaBool (ULift.{v} α) (ULift.{u} β)
   (S.mapEquiv e.symm).mapEquiv (Equiv.sumCongr Equiv.ulift Equiv.ulift)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum_ground (M : Matroid α) (N : Matroid β) :
     (M.sum N).E = (.inl '' M.E) ∪ (.inr '' N.E) := by
   simp [Matroid.sum, Set.ext_iff, mapEquiv, mapEmbedding, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum_indep_iff (M : Matroid α) (N : Matroid β) {I : Set (α ⊕ β)} :
     (M.sum N).Indep I ↔ M.Indep (.inl ⁻¹' I) ∧ N.Indep (.inr ⁻¹' I) := by
   simp only [Matroid.sum, mapEquiv_indep_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
@@ -243,6 +245,7 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
   convert Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum_isBase_iff {M : Matroid α} {N : Matroid β} {B : Set (α ⊕ β)} :
     (M.sum N).IsBase B ↔ M.IsBase (.inl ⁻¹' B) ∧ N.IsBase (.inr ⁻¹' B) := by
   simp only [Matroid.sum, mapEquiv_isBase_iff, Equiv.sumCongr_symm, Equiv.sumCongr_apply,
@@ -250,6 +253,7 @@ protected def sum (M : Matroid α) (N : Matroid β) : Matroid (α ⊕ β) :=
   convert Iff.rfl <;>
     simp [Set.ext_iff, Equiv.ulift, Equiv.sumEquivSigmaBool]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma sum_isBasis_iff {M : Matroid α} {N : Matroid β} {I X : Set (α ⊕ β)} :
     (M.sum N).IsBasis I X ↔
       (M.IsBasis (Sum.inl ⁻¹' I) (Sum.inl ⁻¹' X) ∧ N.IsBasis (Sum.inr ⁻¹' I) (Sum.inr ⁻¹' X)) := by

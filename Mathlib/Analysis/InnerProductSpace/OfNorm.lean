@@ -75,12 +75,12 @@ variable (𝕜) {E}
 
 theorem InnerProductSpace.toInnerProductSpaceable [InnerProductSpace 𝕜 E] :
     InnerProductSpaceable E :=
-  ⟨parallelogram_law_with_norm 𝕜⟩
+  ⟨parallelogram_law_with_norm_mul 𝕜⟩
 
 -- See note [lower instance priority]
 instance (priority := 100) InnerProductSpace.toInnerProductSpaceable_ofReal
     [InnerProductSpace ℝ E] : InnerProductSpaceable E :=
-  ⟨parallelogram_law_with_norm ℝ⟩
+  ⟨parallelogram_law_with_norm_mul ℝ⟩
 
 variable [NormedSpace 𝕜 E]
 

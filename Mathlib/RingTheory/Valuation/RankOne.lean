@@ -50,6 +50,7 @@ class RankOne (v : Valuation R Γ₀) extends Valuation.IsNontrivial v where
 
 open WithZero
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
     Nonempty v.RankOne ↔ MulArchimedean Γ₀ := by
   constructor

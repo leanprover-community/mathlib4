@@ -55,6 +55,7 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
     · apply mul_nonneg <;> grind
     · apply mul_le_one₀ <;> grind
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
   `p.trans p.symm`. -/
 def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.symm) where

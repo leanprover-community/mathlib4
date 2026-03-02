@@ -240,6 +240,7 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
       Iff.trans (forall_congr' fun i => (e i).isSMulRegular_congr (rs.get i))
         (isWeaklyRegular_iff_Fin _ _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isWeaklyRegular_cons_iff' (r : R) (rs : List R) :
     IsWeaklyRegular M (r :: rs) ↔
       IsSMulRegular M r ∧
@@ -255,6 +256,7 @@ lemma isRegular_cons_iff (r : R) (rs : List R) :
   rw [isRegular_iff, isRegular_iff, isWeaklyRegular_cons_iff M r rs,
     ne_eq, top_eq_ofList_cons_smul_iff, and_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
     IsRegular M (r :: rs) ↔
       IsSMulRegular M r ∧ IsRegular (QuotSMulTop r M)

@@ -59,11 +59,20 @@ def subalgebra (D : DescentAux A B) : Subalgebra R A :=
        (⋃ i, ⋃ x ∈ (D.p i).coeffs, x.coeffs)) : Set A)
 
 instance : CommRing (D.subalgebra R) := inferInstanceAs <| CommRing (Algebra.adjoin _ _)
+
 instance algebra₀ : Algebra R (D.subalgebra R) := inferInstanceAs <| Algebra R (Algebra.adjoin _ _)
+
+set_option backward.isDefEq.respectTransparency false in
 instance algebra₁ : Algebra (D.subalgebra R) A := inferInstanceAs <| Algebra (Algebra.adjoin _ _) A
+
+set_option backward.isDefEq.respectTransparency false in
 instance algebra₂ : Algebra (D.subalgebra R) B := inferInstanceAs <| Algebra (Algebra.adjoin _ _) B
+
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
+
+set_option backward.isDefEq.respectTransparency false in
 instance : FaithfulSMul (D.subalgebra R) A := inferInstanceAs <| FaithfulSMul (Algebra.adjoin _ _) _
 
 lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
@@ -76,6 +85,7 @@ lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
   · refine Set.finite_iUnion fun i ↦ ?_
     exact Set.Finite.biUnion (Finset.finite_toSet _) (fun i hi ↦ Finset.finite_toSet _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasCoeffs : D.P.HasCoeffs (D.subalgebra R) where
   coeffs_subset_range := by
     grind [subalgebra, Subalgebra.setRange_algebraMap, Algebra.subset_adjoin]
@@ -108,6 +118,7 @@ lemma coeffs_q_subset (i) :
   grind [MvPolynomial.mem_range_map_iff_coeffs_subset, subalgebra, Subalgebra.setRange_algebraMap,
     Algebra.subset_adjoin]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_kerSquareLift_comp_eq_id :
     ∃ (σ₀ : D.P.ModelOfHasCoeffs (D.subalgebra R) →ₐ[D.subalgebra R]
         MvPolynomial D.vars (D.subalgebra R) ⧸ (RingHom.ker f₀ ^ 2)),
@@ -155,6 +166,7 @@ end DescentAux
 
 variable (R A B)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-subalgebra of finite type `A₀` of `A` and a smooth `A₀`-algebra `B₀` such that
@@ -201,6 +213,7 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated exists_subalgebra_fg (since := "2026-01-07")]
 public theorem exists_subalgebra_finiteType [Smooth A B] :
     ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
@@ -208,6 +221,7 @@ public theorem exists_subalgebra_finiteType [Smooth A B] :
   obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
   exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-algebra of finite type `A₀` and a smooth `A₀`-algebra `B₀` such that `B ≃ₐ A ⊗[A₀] B₀`
@@ -224,6 +238,7 @@ public theorem exists_finiteType [Smooth A B] :
   use A₀, B₀, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
     Subtype.val_injective, ⟨A₀.fg_top.mpr hA₀⟩, inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg
     (n : ℕ) [IsStandardSmoothOfRelativeDimension n A B] :
     ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
@@ -235,6 +250,7 @@ public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalge
     ⟨P.finite_coeffs.toFinset, by simp [A₀]⟩, ⟨_, _, _, inferInstance,
       P.ofHasCoeffs A₀, hP⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A₀).symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `A` be an `R`-algebra. If `B` is an etale `A`-algebra, there exists an
 `R`-subalgebra of finite type `A₀` of `A` and an etale `A₀`-algebra `B₀` such that
