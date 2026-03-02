@@ -267,6 +267,24 @@ variable {A} in
 @[simp]
 theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 := rfl
 
+variable (T) in
+lemma linearMap_comp_rid : (Algebra.linearMap S (S ⊗[R] B)).restrictScalars R ∘ₗ
+    (TensorProduct.rid R R S).toLinearMap = (Algebra.linearMap R B).lTensor S := by
+  ext; simp
+
+section
+
+variable (R A B C : Type*) [CommSemiring R] [CommSemiring A] [Algebra R A] [Semiring B]
+  [Algebra R B] [Semiring C] [Algebra R C]
+
+lemma tmul_one_tmul_one_tmul (x : A) (y : C) :
+    x ⊗ₜ[R] (1 : B) ⊗ₜ[A] ((1 : A) ⊗ₜ[R] y) = 1 ⊗ₜ[A] (x ⊗ₜ[R] y) := by
+  trans x • 1 ⊗ₜ[A] (1 ⊗ₜ[R] y)
+  · simp [Algebra.smul_def]
+  · simp [← tmul_smul, smul_tmul' (M := A)]
+
+end
+
 section CompatibleSMul
 
 variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]

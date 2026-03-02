@@ -135,7 +135,6 @@ theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
   rw [associated_tmul (QuadraticMap.sq (R := A)) Q, associated_sq]
   exact rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = BilinForm.baseChange A (polarBilin Q) := by
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,

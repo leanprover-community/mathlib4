@@ -617,7 +617,6 @@ theorem nilpotencyClass_zero_iff_subsingleton [IsNilpotent G] :
   rw [Group.nilpotencyClass, Nat.find_eq_zero, upperCentralSeries_zero,
     subsingleton_iff_bot_eq_top, Subgroup.subsingleton_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Quotienting the `center G` reduces the nilpotency class by 1 -/
 theorem nilpotencyClass_quotient_center [hH : IsNilpotent G] :
     Group.nilpotencyClass (G ⧸ center G) = Group.nilpotencyClass G - 1 := by
@@ -694,6 +693,53 @@ def commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 
   Group.commGroupOfCenterEqTop <| by
     rw [← upperCentralSeries_one]
     exact upperCentralSeries_eq_top_iff_nilpotencyClass_le.mpr h
+
+lemma upperCentralSeries.eq_ge_of_eq_succ {a b : ℕ} (ab : a ≤ b)
+    (hn : upperCentralSeries G a = upperCentralSeries G (a + 1)) :
+    upperCentralSeries G a = upperCentralSeries G b := by
+  refine Nat.le_induction rfl ?_ b ab
+  grind only [eq_def, upperCentralSeriesAux.eq_def]
+
+/-- If two different elements of the `upperCentralSeries` of a group `G` are equal, then
+they are all equal, starting from the smaller index. -/
+lemma upperCentralSeries.eq_ge_of_eq_gt {a b c : ℕ} (ab : a < b) (ac : a ≤ c)
+    (hn : upperCentralSeries G a = upperCentralSeries G b) :
+    upperCentralSeries G a = upperCentralSeries G c := by
+  refine eq_ge_of_eq_succ ac (le_antisymm ?_ ?_)
+  · exact upperCentralSeries_mono _ <| Nat.le_succ ..
+  · rw [hn]
+    exact upperCentralSeries_mono _ (by grind)
+
+lemma upperCentralSeries.eq_top [IsNilpotent G] {a b : ℕ} (ab : a < b)
+    (hn : upperCentralSeries G a = upperCentralSeries G b) :
+    upperCentralSeries G a = ⊤ := by
+  grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent,
+    upperCentralSeries_eq_top_iff_nilpotencyClass_le, eq_ge_of_eq_gt]
+
+lemma nilpotencyClass_le_of_upperCentralSeries_eq [IsNilpotent G] {a b : ℕ} (ab : a < b)
+    (hn : upperCentralSeries G a = upperCentralSeries G b) :
+    nilpotencyClass G ≤ a := by
+  grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, upperCentralSeries.eq_top,
+    upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+
+variable (G) in
+lemma upperCentralSeries.StrictMonoOn [IsNilpotent G] :
+    StrictMonoOn (upperCentralSeries G) (Set.Iic (nilpotencyClass G)) := by
+  intros a ha b hb ab
+  simp only [Set.mem_Iic] at ha hb
+  apply lt_of_le_of_ne
+  · exact upperCentralSeries_mono _ ab.le
+  · grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, eq_top,
+      upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+
+lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass [IsNilpotent G] {a : ℕ}
+    (h2 : a ≤ nilpotencyClass G) :
+    (upperCentralSeries G '' (Set.Iic a)).ncard = a + 1 := by
+  refine Set.ncard_eq_of_bijective (fun _ => upperCentralSeries G ·) ?_ ?_ ?_
+  · grind
+  · grind
+  · intros i j hi hj
+    refine (upperCentralSeries.StrictMonoOn G).injOn ?_ ?_ <;> grind
 
 section Prod
 
@@ -811,7 +857,16 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSol
   rw [eq_bot_iff, ← hn]
   exact derived_le_lower_central n
 
-set_option backward.isDefEq.respectTransparency false in
+instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
+  ⟨IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance⟩
+
+instance [IsSimpleGroup G] [IsNilpotent G] : IsCyclic G :=
+  inferInstance
+
+lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [IsSimpleGroup G] [IsNilpotent G] :
+    nilpotencyClass G ≤ 1 :=
+  CommGroup.nilpotencyClass_le_one
+
 theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondition G := by
   -- roughly based on https://groupprops.subwiki.org/wiki/Nilpotent_implies_normalizer_condition
   rw [normalizerCondition_iff_only_full_group_self_normalizing]

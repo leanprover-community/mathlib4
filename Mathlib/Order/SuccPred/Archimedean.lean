@@ -286,6 +286,7 @@ section OrderIso
 variable {X Y : Type*} [PartialOrder X] [PartialOrder Y]
 
 -- `to_dual` cannot yet reorder arguments of arguments
+set_option backward.isDefEq.respectTransparency false in
 /-- `IsSuccArchimedean` transfers across equivalences between `SuccOrder`s. -/
 protected lemma IsSuccArchimedean.of_orderIso [SuccOrder X] [IsSuccArchimedean X] [SuccOrder Y]
     (f : X ≃o Y) : IsSuccArchimedean Y where
@@ -299,6 +300,7 @@ protected lemma IsSuccArchimedean.of_orderIso [SuccOrder X] [IsSuccArchimedean X
     | zero => simp
     | succ n IH => simp only [Function.iterate_succ', Function.comp_apply, IH, f.map_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `IsPredArchimedean` transfers across equivalences between `PredOrder`s. -/
 @[to_dual existing]
 protected lemma IsPredArchimedean.of_orderIso [PredOrder X] [IsPredArchimedean X] [PredOrder Y]
