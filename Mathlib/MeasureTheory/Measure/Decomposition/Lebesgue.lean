@@ -680,7 +680,7 @@ theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
   simp_rw [this, ENNReal.smul_def, ENNReal.coe_toNNReal hr_ne_top] at h
   exact h
 
-theorem rnDeriv_smul_both (ν μ : Measure α) [IsFiniteMeasure ν]
+theorem rnDeriv_smul_same (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
     (r • ν).rnDeriv (r • μ) =ᵐ[μ] ν.rnDeriv μ := by
   have h1 := rnDeriv_smul_left ν μ r
