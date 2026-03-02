@@ -3,11 +3,14 @@ Copyright (c) 2025 Bernhard Reinke. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bernhard Reinke
 -/
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Ring.Associator
-import Mathlib.CategoryTheory.Linear.Basic
+
+module
+
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Ring.Associator
+public import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
 # Category algebra of a linear category
