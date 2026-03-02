@@ -54,29 +54,13 @@ local notation "𝕢" => Periodic.qParam
 
 section auxiliary
 
-lemma csqrt_eq_cexp {z : ℂ} (hz : z ≠ 0) : Complex.sqrt z = cexp ((log z) * (1 / 2)) := by
-  unfold sqrt
-  rw [cpow_def]
-  simp [one_div, hz]
-
-lemma deriv_csqrt {z : ℂ} (hz : z ∈ slitPlane) :
-    deriv (sqrt) z = (2 : ℂ)⁻¹ * (z ^ (-1 / (2 : ℂ))) := by
-  unfold sqrt
-  grind [deriv_cpow_const (c := 1 / 2) hz]
-
-lemma differentiableAt_csqrt {z : ℂ} (hz : z ∈ slitPlane) : DifferentiableAt ℂ sqrt z := by
-  exact DifferentiableAt.cpow_const (by fun_prop) hz
-
-lemma csqrt_I : (sqrt I) ^ 24 = 1 := by
-  rw [csqrt_eq_cexp (by simp), ← exp_nat_mul]
-  ring_nf
-  rw [show (log I * 12) = (12 : ℕ) * log I by ring, exp_nat_mul, exp_log (I_ne_zero)]
-  simp [show I ^ 12 = (I ^ 4) ^ 3 by rw [← @pow_mul], I_pow_four]
-
-lemma csqrt_pow_24_eq (z : ℂ) (hz : z ≠ 0) : (sqrt z) ^ 24 = z ^ 12 := by
-  rw [csqrt_eq_cexp (by simp [hz]), ← exp_nat_mul]
+lemma csqrt_pow_24_eq {z : ℂ} (hz : z ≠ 0) : sqrt z ^ 24 = z ^ 12 := by
+  rw [sqrt_eq_exp (by simp [hz]), ← exp_nat_mul]
   ring_nf
   rw [show (log z * 12) = (12 : ℕ) * log z by ring, exp_nat_mul, exp_log hz]
+
+lemma csqrt_I_pow_24 : sqrt I ^ 24 = 1 := by
+  rw [csqrt_pow_24_eq I_ne_zero, show 12 = 4 * 3 by lia, pow_mul, I_pow_four, one_pow]
 
 lemma logDeriv_eta_comp_div_eq (z : ℍ) :
     let Z := (UpperHalfPlane.mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos)
@@ -93,23 +77,24 @@ lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
     logDeriv (η ∘ (fun z : ℂ ↦ -1 / z)) z = logDeriv (sqrt * η) z := by
   rw [logDeriv_eta_comp_div_eq z, show ((sqrt) * η) = (fun x ↦ (sqrt) x * η x) by rfl,
       logDeriv_mul _ (by simp [sqrt, ne_zero z]) (ModularForm.eta_ne_zero z.2)
-      (differentiableAt_csqrt (mem_slitPlane z))
+      (differentiableAt_sqrt (mem_slitPlane z))
       (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2)]
   nth_rw 2 [logDeriv_apply]
   have hE2 := congrFun (EisensteinSeries.E2_slash_action ModularGroup.S) z
   simp only [one_div, SL_slash_def, modular_S_smul, ModularGroup.denom_S,
     Int.reduceNeg, zpow_neg, riemannZeta_two, mul_inv_rev, inv_div, Pi.sub_apply, Pi.smul_apply,
     EisensteinSeries.D2, Fin.isValue, ModularGroup.denom_S, smul_eq_mul] at hE2
-  rw [deriv_csqrt (mem_slitPlane z), div_eq_mul_inv, logDeriv_eta_eq_E2 z,
+  rw [deriv_sqrt (mem_slitPlane z), div_eq_mul_inv, logDeriv_eta_eq_E2 z,
     logDeriv_eta_eq_E2 (UpperHalfPlane.mk (-z : ℂ)⁻¹ z.im_inv_neg_coe_pos),
-    ← mul_assoc, mul_comm, ← mul_assoc, hE2]
+    ← mul_assoc, mul_comm, ← mul_assoc, hE2, ModularGroup.S, sqrt]
   have hpow : (z : ℂ) * z ^ (- 1 / (2 : ℂ)) = z ^ (1 - (1 / 2 : ℂ)) := by
     simp [cpow_sub _ _ (ne_zero z), div_eq_mul_inv, neg_mul, one_mul, cpow_one, ← cpow_neg]
-  field_simp [I_ne_zero, ne_zero z, Real.pi_ne_zero]
+  have hh :  -((z : ℂ)⁻¹ * (-1 / 2)) = z ^ (-(1 : ℂ) / 2) * ((z : ℂ) ^ (2 : ℂ)⁻¹)⁻¹ * 2⁻¹ := by
+    field_simp [ne_zero z]
+    grind
   ring_nf
-  simp [hpow, ModularGroup.S, sqrt]
-  ring_nf
-  field_simp [I_ne_zero, ne_zero z]
+  simp
+  grind
 
 lemma eta_comp_eqOn_const_mul_csqrt_eta :
     ∃ c : ℂ, c ≠ 0 ∧ upperHalfPlaneSet.EqOn (η ∘ (fun z : ℂ ↦ -1 / z)) (c • (sqrt * η)) := by
@@ -121,15 +106,12 @@ lemma eta_comp_eqOn_const_mul_csqrt_eta :
         (fun x hx ↦ ne_zero (⟨x, hx⟩ : ℍ))
     · exact fun y hy ↦ by grind [im_pnat_div_pos 1 (⟨y, hy⟩ : ℍ)]
   · intro x hx
-    exact (((differentiableAt_csqrt (mem_slitPlane ⟨x, hx⟩))).mul
+    exact (((differentiableAt_sqrt (mem_slitPlane ⟨x, hx⟩))).mul
      (differentiableAt_eta_of_mem_upperHalfPlaneSet hx)).differentiableWithinAt
-  · exact isOpen_lt continuous_const continuous_im
+  · exact isOpen_upperHalfPlaneSet
   · exact Convex.isPreconnected (convex_halfSpace_im_gt 0)
-  · intro x hx
-    simp only [Pi.mul_apply, ne_eq, mul_eq_zero, not_or]
-    exact ⟨by simp [sqrt, ne_zero ⟨x, hx⟩], eta_ne_zero hx⟩
-  · intro x hx
-    simpa using eta_ne_zero (z := -1 / x) (by grind [im_pnat_div_pos 1 ⟨x, hx⟩])
+  · exact fun x hx ↦ mul_ne_zero (by simp [sqrt, ne_zero ⟨x, hx⟩]) (eta_ne_zero hx)
+  · exact fun x hx ↦ eta_ne_zero (by grind [im_pnat_div_pos 1 ⟨x, hx⟩])
 
 end auxiliary
 
@@ -161,8 +143,7 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
     ((sqrt I)⁻¹ • ((sqrt) * η)) := by
   obtain ⟨z, hz, h⟩ := eta_comp_eqOn_const_mul_csqrt_eta
   have h3 :  η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
-  simp [sqrt] at *
-  grind [(mul_eq_right₀ (eta_ne_zero <| by simp)).mp h3.symm]
+  grind [sqrt, eta_ne_zero (show 0 < I.im by simp)]
 
 /-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:
 we have `Δ(-1 / z) = z ^ 12 · Δ(z)`. -/
@@ -173,7 +154,7 @@ lemma delta_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
     simpa [denom, ModularGroup.S]
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
     simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
-  simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I, csqrt_pow_24_eq z.1 (ne_zero z)]
+  simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
 end

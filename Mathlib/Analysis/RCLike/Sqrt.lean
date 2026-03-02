@@ -6,6 +6,7 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
@@ -146,3 +147,20 @@ theorem RCLike.sqrt_neg_I : sqrt (-I : 𝕜) = √2⁻¹ * (1 + I) * -I := by
     simp [h, mul_assoc, add_comm, Complex.sqrt_neg_I, neg_mul, mul_add, add_mul, mul_sub,
       mul_comm Complex.I, ← sub_eq_add_neg]
   grind [I_eq_zero_or_im_I_eq_one]
+
+section differentiable
+
+namespace Complex
+
+lemma sqrt_eq_exp {z : ℂ} (hz : z ≠ 0) : sqrt z = exp (log z / 2) := by
+  simp [sqrt, cpow_def, hz, div_eq_mul_inv]
+
+lemma deriv_sqrt {z : ℂ} (hz : z ∈ slitPlane) :
+    deriv (sqrt) z = (2 : ℂ)⁻¹ * (z ^ (-1 / (2 : ℂ))) := by
+  unfold sqrt
+  grind [deriv_cpow_const (c := 1 / 2) hz]
+
+lemma differentiableAt_sqrt {z : ℂ} (hz : z ∈ slitPlane) : DifferentiableAt ℂ sqrt z :=
+  DifferentiableAt.cpow_const (by fun_prop) hz
+
+end Complex
