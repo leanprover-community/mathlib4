@@ -277,6 +277,13 @@ theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) 
   congr($(hx.nnnorm_pow_two_pow n))
 
 end SelfAdjoint
+
+theorem IsStarProjection.norm_le [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
+    (e : E) (he : IsStarProjection e) : ‖e‖ ≤ 1 := by
+  suffices ‖e‖ * (‖e‖ - 1) = 0 by grind [sub_eq_zero]
+  rw [mul_sub, ← CStarRing.norm_star_mul_self, he.isSelfAdjoint.star_eq, he.isIdempotentElem.eq]
+  simp
+
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]
