@@ -36,7 +36,8 @@ lifts to a functor `Mat_.lift F : Mat_ C ⥤ D`.
 Moreover, this functor is unique (up to natural isomorphisms) amongst functors `L : Mat_ C ⥤ D`
 such that `embedding C ⋙ L ≅ F`.
 We also show that natural transformations and natural isomorphisms between additive functors
-`Mat_ C ⥤ D` are determined by their components on objects coming from `C` via `embedding C`.
+`Mat_ C ⥤ D` are determined by their components on objects coming from `C` via `embedding C`;
+see `natTrans_ext`, `natIso_ext`, and `liftIso_ext`.
 (As we don't have 2-category theory, we can't explicitly state that `Mat_ C` is
 the initial object in the 2-category of categories under `C` which have biproducts.)
 
@@ -54,7 +55,6 @@ Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 @[expose] public section
 
-
 open CategoryTheory CategoryTheory.Preadditive
 
 noncomputable section
@@ -65,8 +65,7 @@ universe w v₁ v₂ u₁ u₂
 
 variable (C : Type u₁) [Category.{v₁} C] [Preadditive C]
 
-/-- An object in `Mat_ C` is a finite tuple of objects in `C`.
--/
+/-- An object in `Mat_ C` is a finite tuple of objects in `C`. -/
 structure Mat_ where
   /-- The index type `ι` -/
   ι : Type
@@ -363,8 +362,8 @@ lemma additiveObjIsoBiproduct_hom_π (F : Mat_ C ⥤ D) [Functor.Additive F] (M 
   erw [biproduct.lift_π, ← F.map_comp]
   simp
 
-/-- A natural transformation between functors `Mat_ C ⥤ D` is determined by its
-components on objects coming from `C` via `embedding C`. -/
+/-- A natural transformation `η` between `F G : Mat_ C ⥤ D` is determined by its components on
+objects from the image of `embedding C`. -/
 @[ext]
 theorem natTrans_ext
     {F G : Mat_ C ⥤ D} [Functor.Additive G]
@@ -381,6 +380,17 @@ theorem natTrans_ext
   change η.app M ≫ G.map p = θ.app M ≫ G.map p
   rw [← η.naturality p, ← θ.naturality p]
   simpa using congrArg (fun t => F.map p ≫ t) (h (M.X i))
+
+/-- A natural isomorphism `η` between `F G : Mat_ C ⥤ D` is determined by its `hom` components on
+objects from the image of `embedding C`. -/
+@[ext]
+theorem natIso_ext
+    {F G : Mat_ C ⥤ D} [Functor.Additive G]
+    {η θ : F ≅ G}
+    (h : ∀ X : C, η.hom.app ((embedding C).obj X) = θ.hom.app ((embedding C).obj X)) :
+    η = θ := by
+  ext : 1
+  exact natTrans_ext h
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
@@ -468,17 +478,25 @@ def liftUnique (F : C ⥤ D) [Functor.Additive F] (L : Mat_ C ⥤ D) [Functor.Ad
 variable (F : C ⥤ D) [Functor.Additive F]
 variable (L : Mat_ C ⥤ D)
 
-/-- Two natural isomorphisms `β γ : L ≅ lift F` are equal if, for every `X : C`,
-their components at `(embedding C).obj X` become equal after composing with
-`(embeddingLiftIso F).hom.app X`. -/
+/-- Two natural isomorphisms `β γ : L ≅ lift F` are equal when they agree on the image of
+`embedding C`. -/
+theorem liftIso_ext
+    {β γ : L ≅ lift F}
+    (h : ∀ X : C,
+      β.hom.app ((embedding C).obj X) =
+        γ.hom.app ((embedding C).obj X)) :
+    β = γ :=
+  natIso_ext h
+
+/-- Variant of `liftIso_ext`: equality can be checked after post-composition with
+`(embeddingLiftIso F).hom`. -/
 theorem liftIso_ext_comp_embeddingLiftIso
     {β γ : L ≅ lift F}
     (h : ∀ X : C,
       β.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X =
         γ.hom.app ((embedding C).obj X) ≫ (embeddingLiftIso F).hom.app X) :
-    β = γ := by
-  ext X
-  simpa only [← cancel_mono ((embeddingLiftIso F).hom.app X)] using h X
+    β = γ :=
+  liftIso_ext F L fun X => (cancel_mono ((embeddingLiftIso F).hom.app X)).1 (h X)
 
 /-- Two additive functors `Mat_ C ⥤ D` are naturally isomorphic if
 their precompositions with `embedding C` are naturally isomorphic as functors `C ⥤ D`. -/
