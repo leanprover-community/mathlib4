@@ -277,6 +277,14 @@ def fixingSubgroupEquiv : fixingSubgroup K ≃* Gal(E/K) where
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
   map_mul' _ _ := by ext; rfl
 
+@[simp]
+theorem fixingSubgroupEquiv_apply_apply (σ : fixingSubgroup K) (x : E) :
+    fixingSubgroupEquiv K σ x = σ • x := rfl
+
+@[simp]
+theorem fixingSubgroupEquiv_symm_apply_apply (σ : Gal(E/K)) (x : E) :
+    (fixingSubgroupEquiv K).symm σ • x = σ x := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixedField H) = H := by
   have H_le : H ≤ fixingSubgroup (fixedField H) := (le_iff_le _ _).mp le_rfl
@@ -379,6 +387,11 @@ lemma ofDual_intermediateFieldEquivSubgroup_apply (K : IntermediateField F E) :
 
 lemma intermediateFieldEquivSubgroup_symm_apply_toDual (H : Subgroup Gal(E/F)) :
     intermediateFieldEquivSubgroup.symm (.toDual H) = fixedField H := rfl
+
+theorem fixedField_eq_iff_fixingSubgroup_eq {K : IntermediateField F E} {H : Subgroup Gal(E/F)} :
+    fixedField H = K ↔ K.fixingSubgroup = H := by
+  simp [← OrderIso.apply_eq_iff_eq intermediateFieldEquivSubgroup, fixingSubgroup_fixedField,
+    eq_comm]
 
 end
 
