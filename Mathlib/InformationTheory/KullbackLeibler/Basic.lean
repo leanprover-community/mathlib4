@@ -177,8 +177,7 @@ lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
       c * (klDiv μ ν).toReal + (1 - c) * ν.real univ + c * log c * μ.real univ := by
   by_cases hc : c = 0
   · simp [hc, measureReal_def]
-  have h_llr := llr_smul_left hμν c (by simpa) (by simp)
-  simp only [Measure.coe_nnreal_smul, ENNReal.coe_toReal] at h_llr
+  have h_llr := llr_smul_nnreal_left hμν c (by simpa)
   rw [toReal_klDiv hμν h_int, toReal_klDiv (hμν.smul_left c)]
   swap
   · refine Integrable.smul_measure_nnreal ?_
@@ -196,10 +195,8 @@ lemma toReal_klDiv_smul_right_eq_smul_left (hμν : μ ≪ ν) (h_int : Integrab
   by_cases hc : c = 0
   · simp only [hc, zero_smul, NNReal.coe_zero, inv_zero, klDiv_zero_left, zero_mul]
     rcases eq_zero_or_neZero μ with rfl | hμ <;> simp
-  have h_llr_left := llr_smul_left hμν c⁻¹ (by simp) (by simpa)
-  have h_llr_right := llr_smul_right hμν c (by simpa) (by simp)
-  simp only [Measure.coe_nnreal_smul, ENNReal.coe_toReal, ← ENNReal.coe_inv hc]
-    at h_llr_right h_llr_left
+  have h_llr_left := llr_smul_nnreal_left hμν c⁻¹ (by simpa)
+  have h_llr_right := llr_smul_nnreal_right hμν c (by simpa)
   rw [toReal_klDiv, toReal_klDiv]
   rotate_left
   · exact hμν.smul_left _
