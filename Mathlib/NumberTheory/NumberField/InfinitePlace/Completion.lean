@@ -270,15 +270,18 @@ open Completion
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver v.1] {v}
 
+
+attribute [local instance] WithAbs.algebraLeft
+
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
-    simpa [WithAbs.norm_eq_abv] using
-      WithAbs.algebraMap_apply_ofAbs v.1 w.1 x ▸ comp_of_comap_eq (comap_eq w v) x.ofAbs
+    simpa [WithAbs.norm_eq_apply_ofAbs] using
+      WithAbs.ofAbs_algebraMap v.1 w.1 x ▸ comp_of_comap_eq (comap_eq w v) x.ofAbs
 
 variable [Algebra v.Completion w.Completion] [IsScalarTower (WithAbs v.1) v.Completion w.Completion]
 
-theorem isExtension_extensionEmbedding_of_isReal [ContinuousSMul v.Completion w.Completion]
-    (h : v.IsReal) :
+theorem isExtension_extensionEmbedding_of_isReal
+    [ContinuousSMul v.Completion w.Completion] (h : v.IsReal) :
     IsExtension (extensionEmbedding v) (extensionEmbedding w) :=
   isExtension_extensionEmbedding w
     (comap_eq w v ▸ comap_embedding_of_isReal _ (comap_eq w v ▸ h)).symm
