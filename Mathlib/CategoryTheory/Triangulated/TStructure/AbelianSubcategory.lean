@@ -155,7 +155,7 @@ lemma exists_lift_ιK {B : A} (x₁ : B ⟶ X₁) (hx₁ : x₁ ≫ f₁ = 0) :
 
 /-- `ιK` is a kernel. -/
 noncomputable def isLimitKernelFork : IsLimit (KernelFork.ofι _ (ιK_mor₁ hT α)) :=
-  KernelFork.IsLimit.ofι _ _  _
+  KernelFork.IsLimit.ofι _ _ _
     (fun x₁ hx₁ ↦ (exists_lift_ιK hι hT hT' x₁ hx₁).choose_spec)
     (fun x₁ hx₁ m hm ↦ by
       have := mono_ιK hι hT hT'

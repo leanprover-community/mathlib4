@@ -43,7 +43,7 @@ class IsDecompositionField [MulSemiringAction Gal(L/K) B] extends
     IsGaloisGroup (stabilizer Gal(L/K) P) D L
 
 instance [MulSemiringAction Gal(L/K) B] [h : IsGaloisGroup (stabilizer Gal(L/K) P) D L] :
-    IsDecompositionField K L P D :=  { toIsGaloisGroup := h }
+    IsDecompositionField K L P D := { toIsGaloisGroup := h }
 
 variable (E : Type*) [Field E] [Algebra E L]
 
@@ -57,7 +57,7 @@ class IsInertiaField [MulSemiringAction Gal(L/K) B] extends
     IsGaloisGroup (inertia Gal(L/K) P) E L
 
 instance [MulSemiringAction Gal(L/K) B] [h : IsGaloisGroup (inertia Gal(L/K) P) D L] :
-    IsInertiaField K L P D :=  { toIsGaloisGroup := h }
+    IsInertiaField K L P D := { toIsGaloisGroup := h }
 
 variable [MulSemiringAction Gal(L/K) B]
 

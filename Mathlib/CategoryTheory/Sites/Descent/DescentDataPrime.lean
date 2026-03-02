@@ -237,9 +237,9 @@ lemma comm {D₁ D₂ : F.DescentData' sq sq₃} (φ : D₁ ⟶ D₂)
     (hf₁ : f₁ ≫ f i₁ = q := by cat_disch) (hf₂ : f₂ ≫ f i₂ = q := by cat_disch) :
     (F.map f₁.op.toLoc).toFunctor.map (φ.hom i₁) ≫ pullHom' D₂.hom q f₁ f₂ hf₁ hf₂ =
       pullHom' D₁.hom q f₁ f₂ hf₁ hf₂ ≫ (F.map f₂.op.toLoc).toFunctor.map (φ.hom i₂) := by
-  obtain ⟨p, _, _⟩  := (sq i₁ i₂).isPullback.exists_lift f₁ f₂ (by cat_disch)
-  rw [← pullHom_pullHom' D₂.hom p (sq i₁ i₂).p q  (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ f₁ f₂,
-    ← pullHom_pullHom' D₁.hom p (sq i₁ i₂).p q  (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ f₁ f₂,
+  obtain ⟨p, _, _⟩ := (sq i₁ i₂).isPullback.exists_lift f₁ f₂ (by cat_disch)
+  rw [← pullHom_pullHom' D₂.hom p (sq i₁ i₂).p q (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ f₁ f₂,
+    ← pullHom_pullHom' D₁.hom p (sq i₁ i₂).p q (sq i₁ i₂).p₁ (sq i₁ i₂).p₂ f₁ f₂,
     pullHom'_p₁_p₂, pullHom'_p₁_p₂]
   dsimp only [pullHom]
   rw [NatTrans.naturality_assoc]

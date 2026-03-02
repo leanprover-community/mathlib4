@@ -43,7 +43,7 @@ open Function
 assert_not_exists Field
 
 set_option backward.isDefEq.respectTransparency false in
-deriving instance Zero, CommSemiring, Nontrivial,
+deriving instance Zero, Nontrivial,
   LinearOrder, Bot, Sub,
   LinearOrderedAddCommMonoidWithTop,
   IsOrderedRing, CanonicallyOrderedAdd,
@@ -52,6 +52,17 @@ deriving instance Zero, CommSemiring, Nontrivial,
   CharZero,
   NoZeroDivisors
   for ENat
+
+#adaptation_note /-- Upon bumping to v4.29.0-rc3, we write out the `CommSemiring` instance rather
+than using `deriving`, to ensure that the `NatCast` instance is definitionally equal to the one
+expected by `grind`. The `deriving` mechanism produces a `NatCast` instance
+(`ENat.instNatCast`) that is not reducibly defeq to `Lean.Grind.Semiring.natCast`.
+See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576566138
+-/
+instance : CommSemiring ENat := {
+  __ := inferInstanceAs (CommSemiring (WithTop ℕ))
+  toNatCast := inferInstance
+}
 
 namespace ENat
 
