@@ -134,10 +134,6 @@ def ValueGroup₀.embedding : ValueGroup₀ f →*₀ B :=
   MonoidWithZeroHom.comp (WithZero.withZeroUnitsEquiv (G := B))
     <| WithZero.map' (valueGroup f).subtype
 
-lemma ValueGroup₀.embedding_apply (a : ValueGroup₀ f) :
-  ValueGroup₀.embedding a =
-    WithZero.recZeroCoe 0 Units.val ((WithZero.map' (valueGroup f).subtype) a) := rfl
-
 variable (f) in
 /-- This is the restriction of `f` as a function taking values in `valueGroup₀ f`. -/
 @[simps! -isSimp]
@@ -161,8 +157,6 @@ lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by si
 lemma embedding_restrict₀ (a : A) : ValueGroup₀.embedding (restrict₀ f a) = f a := by
   simp only [restrict₀_apply, embedding_apply]
   aesop
-
-end ValueGroup₀
 
 end ValueGroup₀
 
@@ -198,8 +192,6 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
 
-variable [DecidablePred fun b : B ↦ b = 0]
-
 lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ f) = ⊤ := by
   rw [top_eq_univ, range_eq_univ]
   intro x
@@ -216,8 +208,6 @@ open Function
 
 lemma ValueGroup₀.restrict₀_surjective : Surjective (ValueGroup₀.restrict₀ f) :=
   fun _ ↦ mem_range.mp (by simp [ValueGroup₀.restrict₀_range_eq_top])
-
-variable [DecidablePred fun b : B ↦ b = 0]
 
 open Function
 
