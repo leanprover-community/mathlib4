@@ -511,20 +511,20 @@ lemma opcyclesMap_opcyclesIso_hom
   simp [← cancel_epi (ShortComplex.pOpcycles _), p_opcyclesMap]
 
 @[reassoc]
-lemma πE_EMap (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂')
+lemma πE_EMap (β : mk₂ f₁ f₂ ⟶ mk₂ f₁' f₂') (n₀ n₁ n₂ : ℤ)
     (hβ : β = homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1 (by lia) (by lia))
       (naturality' α 1 2 (by lia) (by lia)) := by cat_disch)
-    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
+    (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.πE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ≫ X.EMap f₁ f₂ f₃ f₁' f₂' f₃' α n₀ n₁ n₂ hn₁ hn₂ =
       X.cyclesMap f₁ f₂ f₁' f₂' β n₁ ≫ X.πE f₁' f₂' f₃' n₀ n₁ n₂ hn₁ hn₂ := by
   simp [πE, EMap, X.cyclesIso_inv_cyclesMap_assoc f₁ f₂ f₃ f₁' f₂' f₃' α β hβ n₀ n₁ n₂]
 
 @[reassoc]
 lemma EMap_ιE
-    (γ : mk₂ f₂ f₃ ⟶ mk₂ f₂' f₃')
+    (γ : mk₂ f₂ f₃ ⟶ mk₂ f₂' f₃') (n₀ n₁ n₂ : ℤ)
     (hγ : γ = homMk₂ (α.app 1) (α.app 2) (α.app 3) (naturality' α 1 2)
       (naturality' α 2 3) := by cat_disch)
-    (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
+    (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     X.EMap f₁ f₂ f₃ f₁' f₂' f₃' α n₀ n₁ n₂ hn₁ hn₂ ≫ X.ιE f₁' f₂' f₃' n₀ n₁ n₂ hn₁ hn₂ =
       X.ιE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ≫ X.opcyclesMap f₂ f₃ f₂' f₃' γ n₁ := by
   simp [ιE, EMap, X.opcyclesMap_opcyclesIso_hom f₁ f₂ f₃ f₁' f₂' f₃' α γ hγ n₀ n₁ n₂ hn₁ hn₂ ]
@@ -879,7 +879,7 @@ lemma opcyclesToE_EMap (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (
   rw [← cancel_mono (X.ιE ..), Category.assoc, Category.assoc, opcyclesToE_ιE _ _ _ _ _ _ _ _ _,
     ← cancel_epi (X.pOpcycles ..), p_opcyclesToE_assoc _ _ _ _ _ _ _ _ _,
     X.πE_EMap_assoc _ _ _ _ _ _ _
-    (homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2)) rfl _ _ _,
+    (homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2)) _ _ _,
     πE_ιE _ _ _ _ _ _ _, X.cyclesMap_i_assoc _ _ _ _ _ _ _ rfl, toCycles_i_assoc,
     X.p_opcyclesMap_assoc _ _ _ _ _ _ _ rfl, X.p_opcyclesMap _ _ _ _ _ _ _ rfl,
     ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
