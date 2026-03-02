@@ -291,7 +291,7 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
 
 end Algebra
 
-variable {v : Valuation (RatFunc K) Γ} [v.IsTrivialOn K]
+variable (v : Valuation (RatFunc K) Γ) [v.IsTrivialOn K]
 
 open Valuation
 
