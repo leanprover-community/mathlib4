@@ -613,17 +613,13 @@ class OperationalLawStructure (U : UncertainSpace) where
     ∀ (X Y : UncertainVariable U)
       (invX invY invZ : ℝ → ℝ)
       (f : ℝ → ℝ → ℝ),
-      (∀ x, uncertainDistribution U X x ≤ 1) →
-      (∀ x, uncertainDistribution U Y x ≤ 1) →
-      (∀ α, invZ α = f (invX α) (invY α))
+      ∀ α, invZ α = f (invX α) (invY α)
 
 theorem operational_inverse_transform_formula (U : UncertainSpace)
     [OperationalLawStructure U]
-    (X Y : UncertainVariable U) (invX invY invZ : ℝ → ℝ) (f : ℝ → ℝ → ℝ)
-    (hX : ∀ x, uncertainDistribution U X x ≤ 1)
-    (hY : ∀ x, uncertainDistribution U Y x ≤ 1) :
+    (X Y : UncertainVariable U) (invX invY invZ : ℝ → ℝ) (f : ℝ → ℝ → ℝ) :
     ∀ α, invZ α = f (invX α) (invY α) :=
-  OperationalLawStructure.inverse_transform_formula X Y invX invY invZ f hX hY
+  OperationalLawStructure.inverse_transform_formula X Y invX invY invZ f
 
 instance : UncertainDistributionLike NormalParams where
   cdf := normalUncertainDistribution
