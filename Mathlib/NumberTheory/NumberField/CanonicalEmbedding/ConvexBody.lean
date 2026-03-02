@@ -298,11 +298,7 @@ theorem convexBodySumFun_eq_zero_iff (x : mixedSpace K) :
     convexBodySumFun x = 0 ↔ x = 0 := by
   rw [← forall_normAtPlace_eq_zero_iff, convexBodySumFun, Finset.sum_eq_zero_iff_of_nonneg
     fun _ _ ↦ mul_nonneg (Nat.cast_pos.mpr mult_pos).le (normAtPlace_nonneg _ _)]
-  conv =>
-    enter [1, w, hw]
-    rw [mul_left_mem_nonZeroDivisors_eq_zero_iff
-      (mem_nonZeroDivisors_iff_ne_zero.mpr mult_coe_ne_zero)]
-  simp_rw [Finset.mem_univ, true_implies]
+  simp
 
 open scoped Classical in
 theorem norm_le_convexBodySumFun (x : mixedSpace K) : ‖x‖ ≤ convexBodySumFun x := by
