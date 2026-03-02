@@ -39,12 +39,12 @@ lemma HasFiniteMulSupport.comp {N : Type*} [One N] (g : M → N) (f : α → M)
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.fst {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport fun a ↦ (f a).fst :=
-  HasFiniteMulSupport.comp _ _ hf rfl
+  hf.comp _ _ rfl
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.snd {M' : Type*} [One M'] (f : α → M × M') (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport fun a ↦ (f a).snd :=
-  HasFiniteMulSupport.comp _ _ hf rfl
+  hf.comp _ _ rfl
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.prodMk {M' : Type*} [One M'] (f : α → M) (g : α → M')
@@ -64,7 +64,7 @@ lemma HasFiniteMulSupport.mul {M : Type*} [MulOneClass M] (f g : α → M)
 lemma HasFiniteMulSupport.inv {M : Type*} [DivisionMonoid M] (f : α → M)
     (hf : HasFiniteMulSupport f) :
     HasFiniteMulSupport fun a ↦ (f a)⁻¹ :=
-  HasFiniteMulSupport.comp _ _ hf inv_one
+  hf.comp _ _ inv_one
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.prod {M : Type*} [CommMonoid M] {ι : Type*} (f : ι → α → M)
@@ -82,14 +82,14 @@ lemma HasFiniteMulSupport.div {M : Type*} [DivisionMonoid M] (f g : α → M)
 lemma HasFiniteMulSupport.pow {M : Type*} [Monoid M] (f : α → M) (hf : HasFiniteMulSupport f)
     (n : ℕ) :
     HasFiniteMulSupport fun a ↦ f a ^ n :=
-  HasFiniteMulSupport.comp _ _ hf (one_pow n)
+  hf.comp _ _ (one_pow n)
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.zpow {M : Type*} [DivisionMonoid M] (f : α → M)
     (hf : HasFiniteMulSupport f)
     (n : ℤ) :
     HasFiniteMulSupport fun a ↦ f a ^ n :=
-  HasFiniteMulSupport.comp _ _ hf (one_zpow n)
+  hf.comp _ _ (one_zpow n)
 
 @[to_additive (attr := fun_prop)]
 lemma HasFiniteMulSupport.max [LinearOrder M] (f g : α → M) (hf : HasFiniteMulSupport f)
