@@ -287,7 +287,7 @@ variable [HasBinaryBiproducts C]
 /-- Given a morphism `φ : K ⟶ L` of cochain complexes, this is the triangle
 `mappingCocone φ ⟶ K ⟶ L ⟶ ...`. -/
 @[simps! obj₁ obj₂ obj₃ mor₁ mor₂]
-noncomputable def triangle : Triangle (CochainComplex C ℤ ) :=
+noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
   Triangle.mk (fst φ) φ
     ((mappingCone.triangle φ).mor₂ ≫ (shiftFunctorCompIsoId _ (-1 : ℤ) 1 (by lia)).inv.app _)
 
