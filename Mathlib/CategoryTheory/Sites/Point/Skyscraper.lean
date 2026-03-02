@@ -277,5 +277,4 @@ instance [HasWeakSheafify J A] :
     PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
   PreservesColimitsOfSize.preservesFiniteColimits _
 
-
 end CategoryTheory.GrothendieckTopology.Point

@@ -42,7 +42,8 @@ its associated sheaf.
 
 Under suitable assumptions on the target category `A`, we show that
 both `Φ.presheafFiber` and `Φ.sheafFiber` commute with finite limits
-and with arbitrary colimits.
+and with arbitrary colimits. (The commutation of `Φ.sheafFiber` with colimits
+is obtained in the file `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.)
 
 -/
 
