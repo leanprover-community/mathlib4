@@ -36,9 +36,9 @@ variable {ι A B C D σ τ ψ ω : Type*}
 section SetLike
 
 /-- Bundled graded (semi)ring homomorphisms. Use `GradedRingHom` for the namespace,
-and `GRingHom` for other identifiers, and `𝒜 →+*ᵍ ℬ` for the notation. -/
+and `GradedRingHom` for other identifiers, and `𝒜 →+*ᵍ ℬ` for the notation. -/
 structure GradedRingHom (𝒜 : ι → σ) (ℬ : ι → τ) extends A →+* B where
-  map_mem' {i : ι} {x : A} : x ∈ 𝒜 i → toRingHom x ∈ ℬ i
+  map_mem {i : ι} {x : A} : x ∈ 𝒜 i → toRingHom x ∈ ℬ i
 
 variable {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ψ} {𝒟 : ι → ω}
 
@@ -59,14 +59,14 @@ def ofClass (f : F) : 𝒜 →+*ᵍ ℬ where
 
 /-- Any type satisfying `GradedRingHomClass` can be cast into `GradedRingHom` via
 `GradedRingHomClass.toGRingHom`. -/
-instance instCoeOfClass : CoeTC F (𝒜 →+*ᵍ ℬ) :=
+instance : CoeTC F (𝒜 →+*ᵍ ℬ) :=
   ⟨ofClass⟩
 
 end ofClass
 
 section coe
 
-instance instGradedFunLike : GradedFunLike (𝒜 →+*ᵍ ℬ) 𝒜 ℬ where
+instance : GradedFunLike (𝒜 →+*ᵍ ℬ) 𝒜 ℬ where
   map_mem f := f.map_mem'
   coe f := f.toFun
   coe_injective' f g h := by
@@ -84,6 +84,7 @@ instance instRingHomClass : RingHomClass (𝒜 →+*ᵍ ℬ) A B where
 
 initialize_simps_projections GradedRingHom (toFun → apply)
 
+@[simp]
 theorem toFun_eq_coe (f : 𝒜 →+*ᵍ ℬ) : f.toFun = f :=
   rfl
 
