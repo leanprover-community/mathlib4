@@ -70,6 +70,7 @@ lemma isPullback_fiberToSpecResidueField_of_isPullback {P X Y Z : Scheme.{u}} {f
   · simpa using (IsPullback.of_hasPullback _ _).paste_horiz h
   · simp [Scheme.Hom.fiberToSpecResidueField]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The morphism from the fiber of `Spec S ⟶ Spec R` at some prime `p` to `Spec κ(p)`
 is isomorphic to the map induced by `κ(p) ⟶ κ(p) ⊗[R] S`. -/
 noncomputable def Spec.fiberToSpecResidueFieldIso (R S : Type u) [CommRing R] [CommRing S]

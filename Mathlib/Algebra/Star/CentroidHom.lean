@@ -61,6 +61,7 @@ instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHo
   star_involutive f := SetCoe.ext (star_involutive f.val)
   star_add f g := SetCoe.ext (star_add f.val g.val)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by

@@ -58,6 +58,7 @@ namespace FiniteElement
 noncomputable instance : CommRing (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsDomain (FiniteElement K) := by
   unfold FiniteElement; infer_instance
 

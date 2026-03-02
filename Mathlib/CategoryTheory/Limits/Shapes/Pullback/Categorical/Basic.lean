@@ -322,6 +322,8 @@ def toCatCommSqOver : (X ⥤ F ⊡ G) ⥤ CatCommSqOver F G X where
   map_id := by intros; ext <;> simp
   map_comp := by intros; ext <;> simp
 
+set_option backward.whnf.reducibleClassField false in
+set_option backward.isDefEq.respectTransparency false in
 /-- Interpret a `CatCommSqOver` as a functor to the categorical pullback. -/
 @[simps!]
 def CatCommSqOver.toFunctorToCategoricalPullback :
@@ -341,6 +343,8 @@ def CatCommSqOver.toFunctorToCategoricalPullback :
   map_id := by intros; ext <;> simp
   map_comp := by intros; ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.whnf.reducibleClassField false in
 /-- The universal property of categorical pullbacks, stated as an equivalence
 of categories between functors `X ⥤ (F ⊡ G)` and categorical commutative squares
 over X. -/
@@ -419,6 +423,8 @@ lemma toCatCommSqOver_mapIso_mkNatIso_eq_mkIso
       (by simpa [functorEquiv, toCatCommSqOver] using coh) := by
   ext <;> simp
 
+set_option backward.whnf.reducibleClassField false in
+set_option backward.isDefEq.respectTransparency false in
 /-- Comparing mkNatIso with the corresponding construction one can deduce from
 `functorEquiv`. -/
 lemma mkNatIso_eq
@@ -455,6 +461,8 @@ variable {A₁ : Type u₄} {B₁ : Type u₅} {C₁ : Type u₆}
   [Category.{v₄} A₁] [Category.{v₅} B₁] [Category.{v₆} C₁]
   {F₁ : A₁ ⥤ B₁} {G₁ : C₁ ⥤ B₁}
 
+set_option backward.whnf.reducibleClassField false in
+set_option backward.isDefEq.respectTransparency false in
 /-- Functorially transform a `CatCommSqOver F G X` by whiskering it with a
 `CatCospanTransform`. -/
 @[simps!]
@@ -500,6 +508,8 @@ variable {A₂ : Type u₇} {B₂ : Type u₈} {C₂ : Type u₉}
   [Category.{v₇} A₂] [Category.{v₈} B₂] [Category.{v₉} C₂]
   {F₂ : A₂ ⥤ B₂} {G₂ : C₂ ⥤ B₂}
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.whnf.reducibleClassField false in
 /-- The construction `CatCommSqOver.transform` respects vertical composition
 of `CatCospanTransform`s. -/
 @[simps!]
@@ -512,6 +522,7 @@ def transformObjComp (X : Type u₁₀) [Category.{v₁₀} X]
       (Functor.associator _ _ _).symm)
     (fun {x y} f ↦ by ext <;> simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The construction `CatCommSqOver.transform` respects the identity
 `CatCospanTransform`s. -/
 @[simps!]
@@ -525,6 +536,7 @@ def transformObjId (X : Type u₄) [Category.{v₄} X]
 
 open scoped CatCospanTransform
 
+set_option backward.isDefEq.respectTransparency false in
 lemma transform_map_whiskerLeft
     (X : Type u₇) [Category.{v₇} X]
     (ψ : CatCospanTransform F G F₁ G₁)
@@ -535,6 +547,7 @@ lemma transform_map_whiskerLeft
       (transformObjComp X ψ φ').inv := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma transform_map_whiskerRight
     (X : Type u₇) [Category.{v₇} X]
     {ψ ψ' : CatCospanTransform F G F₁ G₁} (α : ψ ⟶ ψ')
@@ -545,6 +558,7 @@ lemma transform_map_whiskerRight
       (transformObjComp X ψ' φ).inv := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma transform_map_associator
     {A₃ : Type u₁₀} {B₃ : Type u₁₁} {C₃ : Type u₁₂}
     [Category.{v₁₀} A₃] [Category.{v₁₁} B₃] [Category.{v₁₂} C₃]
@@ -561,6 +575,7 @@ lemma transform_map_associator
       (transformObjComp X ψ (φ.comp τ)).inv := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma transform_map_leftUnitor (X : Type u₇) [Category.{v₇} X]
     (ψ : CatCospanTransform F G F₁ G₁) :
     (transform X).map (λ_ ψ).hom =
@@ -569,6 +584,7 @@ lemma transform_map_leftUnitor (X : Type u₇) [Category.{v₇} X]
       (transform X |>.obj ψ).leftUnitor.hom := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma transform_map_rightUnitor (X : Type u₇) [Category.{v₇} X]
     (ψ : CatCospanTransform F G F₁ G₁) :
     (transform X).map (ρ_ ψ).hom =
@@ -587,6 +603,7 @@ variable
     {X : Type u₄} {Y : Type u₅} {Z : Type u₆}
     [Category.{v₄} X] [Category.{v₅} Y] [Category.{v₆} Z]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `U : X ⥤ Y` (functorially) induces a functor
 `CatCommSqOver F G Y ⥤ CatCommSqOver F G X` by whiskering left the underlying
 categorical commutative square by U. -/
