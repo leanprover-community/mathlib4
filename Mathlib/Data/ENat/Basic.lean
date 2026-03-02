@@ -42,7 +42,8 @@ open Function
 
 assert_not_exists Field
 
-deriving instance Zero, CommSemiring, Nontrivial,
+set_option backward.isDefEq.respectTransparency false in
+deriving instance Zero, Nontrivial,
   LinearOrder, Bot, Sub,
   LinearOrderedAddCommMonoidWithTop,
   IsOrderedRing, CanonicallyOrderedAdd,
@@ -51,6 +52,17 @@ deriving instance Zero, CommSemiring, Nontrivial,
   CharZero,
   NoZeroDivisors
   for ENat
+
+#adaptation_note /-- Upon bumping to v4.29.0-rc3, we write out the `CommSemiring` instance rather
+than using `deriving`, to ensure that the `NatCast` instance is definitionally equal to the one
+expected by `grind`. The `deriving` mechanism produces a `NatCast` instance
+(`ENat.instNatCast`) that is not reducibly defeq to `Lean.Grind.Semiring.natCast`.
+See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576566138
+-/
+instance : CommSemiring ENat := {
+  __ := inferInstanceAs (CommSemiring (WithTop ℕ))
+  toNatCast := inferInstance
+}
 
 namespace ENat
 
@@ -62,6 +74,7 @@ variable {a b c m n : ℕ∞}
 
 theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
 
+set_option backward.isDefEq.respectTransparency false in
 instance : SuccAddOrder ℕ∞ where
   succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
 
@@ -117,6 +130,7 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
 
 @[simp] theorem add_lt_top {a b : ℕ∞} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := WithTop.add_lt_top
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem lift_add (a b : ℕ∞) (h : a + b < ⊤) :
     lift (a + b) h = lift a (add_lt_top.1 h).1 + lift b (add_lt_top.1 h).2 := by
   apply coe_inj.1
@@ -232,6 +246,7 @@ theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNat_eq_iff_eq_coe (n : ℕ∞) (m : ℕ) [NeZero m] :
     n.toNat = m ↔ n = m := by
   cases n
@@ -252,6 +267,7 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b
   · simp
@@ -259,9 +275,11 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rename_i a; cases a <;> simp
   · simp only [toNat_coe]; rw [← coe_mul, toNat_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
   lift m to ℕ using ne_top_of_le_ne_top (coe_ne_top n) h
   simpa using h
@@ -270,7 +288,7 @@ lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n :=
 lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
   toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
-@[simp]
+-- TODO: deprecate
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
   Order.succ_eq_add_one m
 
@@ -311,8 +329,10 @@ protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
   WithTop.coe_lt_top n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
 
 @[elab_as_elim]
@@ -327,6 +347,7 @@ theorem nat_induction {motive : ℕ∞ → Prop} (a : ℕ∞) (zero : motive 0)
 lemma add_one_pos : 0 < n + 1 :=
   succ_def n ▸ Order.bot_lt_succ n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natCast_lt_succ {n : ℕ} :
     (n : ℕ∞) < (n : ℕ∞) + 1 := by
   rw [← Nat.cast_one, ← Nat.cast_add, coe_lt_coe]
@@ -388,9 +409,11 @@ lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inj
   simp_rw [add_comm n _]
   exact add_left_injective_of_ne_top hn
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) :=
   WithTop.mul_right_strictMono (pos_iff_ne_zero.2 ha) h_top
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) :=
   WithTop.mul_left_strictMono (pos_iff_ne_zero.2 ha) h_top
 
@@ -419,6 +442,7 @@ lemma self_le_mul_left (a : ℕ∞) (hc : c ≠ 0) : a ≤ c * a := by
   rw [mul_comm]
   exact ENat.self_le_mul_right a hc
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Unique ℕ∞ˣ where
   uniq x := by
     have := x.val_inv
@@ -436,6 +460,7 @@ instance : Unique ℕ∞ˣ where
 
 section withTop_enat
 
+set_option backward.isDefEq.respectTransparency false in
 lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n) : (m + 1 : ℕ) ≤ n := by
   match n with
   | ⊤ => exact le_top
@@ -444,6 +469,7 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
 
 @[simp] lemma coe_top_add_one : ((⊤ : ℕ∞) : WithTop ℕ∞) + 1 = (⊤ : ℕ∞) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma add_one_eq_coe_top_iff {n : WithTop ℕ∞} : n + 1 = (⊤ : ℕ∞) ↔ n = (⊤ : ℕ∞) := by
   match n with
   | ⊤ => exact Iff.rfl
@@ -454,13 +480,16 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
+set_option backward.isDefEq.respectTransparency false in
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_natCast_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natCast_le_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n ≤ N :=
   le_trans (mod_cast le_top) hN
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natCast_lt_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n < N :=
   lt_of_lt_of_le (mod_cast lt_add_one n) (natCast_le_of_coe_top_le_withTop hN (n + 1))
 
@@ -502,6 +531,7 @@ theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_natCast_nonneg : 0 ≤ n.map (Nat.cast : ℕ → α) := by cases n <;> simp
 
 variable [CharZero α]
@@ -551,6 +581,7 @@ protected def _root_.AddMonoidHom.ENatMap {N : Type*} [AddZeroClass N]
     (f : ℕ →+ N) : ℕ∞ →+ WithTop N :=
   { ZeroHom.ENatMap f.toZeroHom, AddHom.ENatMap f.toAddHom with toFun := ENat.map f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `ENat.map` for `MonoidWithZeroHom`s. -/
 @[simps -fullyApplied]
 protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [DecidableEq S]
@@ -572,14 +603,14 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
         | top =>
           have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
           simp [mul_top hx, WithTop.mul_top this]
-        | coe y => simp [← Nat.cast_mul, - coe_mul] }
+        | coe y => simp [← Nat.cast_mul, -coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]
 protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder S]
     [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
-  {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
+  { MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with }
 
 @[simp]
 lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero R] (a b : ℕ∞) :
@@ -588,6 +619,7 @@ lemma map_natCast_mul {R : Type*} [NonAssocSemiring R] [DecidableEq R] [CharZero
 
 end ENat
 
+set_option backward.isDefEq.respectTransparency false in
 lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases n
@@ -595,6 +627,7 @@ lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n �
   · rw [WithBot.coe_lt_coe, Nat.cast_add, ENat.coe_one, ENat.lt_add_one_iff (ENat.coe_ne_top _),
       ← WithBot.coe_le_coe, WithBot.coe_natCast]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
   rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
   cases m

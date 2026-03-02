@@ -14,6 +14,7 @@ public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 public import Mathlib.RingTheory.Polynomial.SeparableDegree
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
+
 /-!
 
 # Separable degree
@@ -247,6 +248,7 @@ def embProdEmbOfIsAlgebraic [Algebra E K] [IsScalarTower F E K] [Algebra.IsAlgeb
         (IsAlgClosure.equivOfAlgebraic E K (AlgebraicClosure K)
           (AlgebraicClosure E)).restrictScalars F).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the field extension `E / F` is transcendental, then `Field.Emb F E` is infinite. -/
 instance infinite_emb_of_transcendental [H : Algebra.Transcendental F E] : Infinite (Emb F E) := by
   obtain ⟨ι, x, hx⟩ := exists_isTranscendenceBasis' F E
@@ -363,13 +365,14 @@ dot notation. -/
 theorem Separable.natSepDegree_eq_natDegree (h : f.Separable) :
     f.natSepDegree = f.natDegree := natSepDegree_eq_natDegree_of_separable f h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a polynomial splits over `E`, then its separable degree is equal to
 the number of distinct roots of it over `E`. -/
 theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).Splits) :
     f.natSepDegree = (f.aroots E).toFinset.card := by
   classical
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
-    (SplittingField.splits f).map_roots,
+    (SplittingField.splits f).roots_map,
     Multiset.toFinset_map, Finset.card_image_of_injective _ (RingHom.injective _), natSepDegree]
 
 variable (E) in
@@ -692,6 +695,7 @@ theorem finSepDegree_adjoin_simple_eq_natSepDegree {α : E} (halg : IsAlgebraic 
     ← Fintype.card_coe]
   simp_rw [Multiset.mem_toFinset]
 
+set_option backward.isDefEq.respectTransparency false in
 -- The separable degree of `F⟮α⟯ / F` divides the degree of `F⟮α⟯ / F`.
 -- Marked as `private` because it is a special case of `finSepDegree_dvd_finrank`.
 private theorem finSepDegree_adjoin_simple_dvd_finrank (α : E) :
@@ -722,6 +726,7 @@ end IntermediateField
 
 namespace Field
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The separable degree of any field extension `E / F` divides the degree of `E / F`. -/
 theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
   by_cases hfd : FiniteDimensional F E
@@ -741,6 +746,7 @@ theorem finSepDegree_dvd_finrank : finSepDegree F E ∣ finrank F E := by
 theorem finSepDegree_le_finrank [FiniteDimensional F E] :
     finSepDegree F E ≤ finrank F E := Nat.le_of_dvd finrank_pos <| finSepDegree_dvd_finrank F E
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a separable extension, then its separable degree is equal to its degree.
 When `E / F` is infinite, it means that `Field.Emb F E` has infinitely many elements.
 (But the cardinality of `Field.Emb F E` is not equal to `Module.rank F E` in general!) -/
@@ -767,6 +773,7 @@ theorem finSepDegree_eq_finrank_of_isSeparable [Algebra.IsSeparable F E] :
 
 alias Algebra.IsSeparable.finSepDegree_eq := finSepDegree_eq_finrank_of_isSeparable
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a finite extension, then its separable degree is equal to its degree if and
 only if it is a separable extension. -/
 @[stacks 09HA "The equality condition"]
@@ -787,6 +794,7 @@ lemma IntermediateField.isSeparable_of_mem_isSeparable {L : IntermediateField F 
     [Algebra.IsSeparable F L] {x : E} (h : x ∈ L) : IsSeparable F x := by
   simpa only [IsSeparable, minpoly_eq] using Algebra.IsSeparable.isSeparable F (K := L) ⟨x, h⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `F⟮x⟯ / F` is a separable extension if and only if `x` is a separable element.
 As a consequence, any rational function of `x` is also a separable element. -/
 theorem IntermediateField.isSeparable_adjoin_simple_iff_isSeparable {x : E} :
@@ -798,6 +806,7 @@ theorem IntermediateField.isSeparable_adjoin_simple_iff_isSeparable {x : E} :
     rwa [← finSepDegree_eq_finrank_iff,
       finSepDegree_adjoin_simple_eq_finrank_iff F E x h.isAlgebraic]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {E K} in
 /-- If `K / E / F` is an extension tower such that `E / F` is separable,
 `x : K` is separable over `E`, then it's also separable over `F`. -/
@@ -836,6 +845,7 @@ theorem Algebra.IsSeparable.trans [Algebra E K] [IsScalarTower F E K]
   ⟨fun x ↦ IsSeparable.of_algebra_isSeparable_of_isSeparable F
     (Algebra.IsSeparable.isSeparable E x)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `x` and `y` are both separable elements, then `F⟮x, y⟯ / F` is a separable extension.
 As a consequence, any rational function of `x` and `y` is also a separable element. -/
 theorem IntermediateField.isSeparable_adjoin_pair_of_isSeparable {x y : E}
@@ -892,12 +902,15 @@ end Field
 if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
     PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → Splits f := by
-  refine ⟨fun ⟨h⟩ f hf ↦ splits_iff_splits.2 <| or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_,
-      fun h ↦ ?_⟩
-  · have := natSepDegree_le_of_dvd g f hd hn
-    rw [hf, (h hg).natSepDegree_eq_natDegree] at this
-    exact (degree_eq_iff_natDegree_eq_of_pos one_pos).2 <| this.antisymm <|
-      natDegree_pos_iff_degree_pos.2 (degree_pos_of_irreducible hg)
+  refine ⟨fun ⟨h⟩ f hf ↦ ?_, fun h ↦ ?_⟩
+  · have hf0 : f ≠ 0 := by aesop
+    obtain ⟨u, hu⟩ := UniqueFactorizationMonoid.factors_prod hf0
+    rw [← hu]
+    refine (Splits.multisetProd fun g hg ↦ ?_).mul u.isUnit.splits
+    specialize h (UniqueFactorizationMonoid.irreducible_of_factor g hg)
+    have key := natSepDegree_le_of_dvd g f (UniqueFactorizationMonoid.dvd_of_mem_factors hg) hf0
+    rw [h.natSepDegree_eq_natDegree, hf] at key
+    exact Splits.of_natDegree_le_one key
   obtain ⟨p, _⟩ := ExpChar.exists F
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
     obtain ⟨y, hy⟩ := Splits.exists_eval_eq_zero

@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Order.Filter.Pointwise
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.Algebra.Support
 
@@ -27,7 +28,7 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
   many `γ:Γ` move `K` to have nontrivial intersection with `L`.
 * `Homeomorph.smul`: scalar multiplication by an element of a group `Γ` acting on `T`
   is a homeomorphism of `T`.
-*`Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
+* `Homeomorph.smulOfNeZero`: if a group with zero `G₀` (e.g., a field) acts on `X` and `c : G₀`
   is a nonzero element of `G₀`, then scalar multiplication by `c` is a homeomorphism of `X`;
 * `Homeomorph.smul`: scalar multiplication by an element of a group `G` acting on `X`
   is a homeomorphism of `X`.
@@ -267,6 +268,16 @@ theorem Dense.smul (c : G) {s : Set α} (hs : Dense s) : Dense (c • s) := by
 theorem interior_smul (c : G) (s : Set α) : interior (c • s) = c • interior s :=
   ((Homeomorph.smul c).image_interior s).symm
 
+open scoped Pointwise in
+@[to_additive]
+lemma nhds_smul (c : G) (x : α) : 𝓝 (c • x) = c • 𝓝 x :=
+  (Homeomorph.smul c).map_nhds_eq x |>.symm
+
+open scoped Pointwise in
+@[to_additive]
+lemma punctured_nhds_smul (c : G) (x : α) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
+  (Homeomorph.smul c).map_punctured_nhds_eq x |>.symm
+
 @[to_additive]
 theorem IsOpen.smul_left {s : Set G} {t : Set α} (ht : IsOpen t) : IsOpen (s • t) := by
   rw [← iUnion_smul_set]
@@ -373,6 +384,14 @@ theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpac
     · rw [zero_smul_set hs, zero_smul_set hs.closure]
       exact closure_singleton
   · exact closure_smul₀' hc s
+
+open scoped Pointwise in
+lemma nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝 (c • x) = c • 𝓝 x :=
+  nhds_smul (Units.mk0 c hc) x
+
+open scoped Pointwise in
+lemma punctured_nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
+  punctured_nhds_smul (Units.mk0 c hc) x
 
 /-- `smul` is a closed map in the second argument.
 
@@ -517,6 +536,7 @@ variable [T2Space T] [LocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T)
   let γ : Γ₀ := ⟨γ, ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩
   exact (u_v_disjoint γ).le_bot ⟨(hz.2 γ).1, (hγz.2 γ).2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive] lemma ProperlyDiscontinuousSMul.exists_nhds_disjoint_image :
     ∃ U ∈ 𝓝 x, ∀ γ : Γ, γ • x ≠ x → Disjoint ((γ • ·) '' U) U := by
   convert exists_nhds_image_smul_eq_self Γ x using 4

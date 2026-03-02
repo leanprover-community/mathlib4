@@ -222,6 +222,7 @@ instance (c : BinaryBicone P Q) : IsSplitEpi c.snd :=
     { section_ := c.inr
       id := c.inr_snd }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert a `BinaryBicone` into a `Bicone` over a pair. -/
 @[simps]
 def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) where
@@ -255,6 +256,7 @@ end BinaryBicone
 
 namespace Bicone
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Convert a `Bicone` over a function on `WalkingPair` to a BinaryBicone. -/
 @[simps]
 def toBinaryBiconeFunctor {X Y : C} : Bicone (pairFunction X Y) ⥤ BinaryBicone X Y where
@@ -533,11 +535,13 @@ theorem biprod.hom_ext' {X Y Z : C} [HasBinaryBiproduct X Y] (f g : X ⊞ Y ⟶ 
 def biprod.isoProd (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨯ Y :=
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit X Y) (limit.isLimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoProd_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).hom = prod.lift biprod.fst biprod.snd := by
       ext <;> simp [biprod.isoProd]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoProd X Y).inv = biprod.lift prod.fst prod.snd := by
@@ -547,16 +551,19 @@ theorem biprod.isoProd_inv {X Y : C} [HasBinaryBiproduct X Y] :
 def biprod.isoCoprod (X Y : C) [HasBinaryBiproduct X Y] : X ⊞ Y ≅ X ⨿ Y :=
   IsColimit.coconePointUniqueUpToIso (BinaryBiproduct.isColimit X Y) (colimit.isColimit _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod.isoCoprod_inv {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).inv = coprod.desc biprod.inl biprod.inr := by
   ext <;> simp [biprod.isoCoprod]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem biprod_isoCoprod_hom {X Y : C} [HasBinaryBiproduct X Y] :
     (biprod.isoCoprod X Y).hom = biprod.desc coprod.inl coprod.inr := by
   ext <;> simp [← Iso.eq_comp_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem biprod.map_eq_map' {W X Y Z : C} [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z]
     (f : W ⟶ Y) (g : X ⟶ Z) : biprod.map f g = biprod.map' f g := by
   ext
@@ -629,6 +636,7 @@ theorem biprod.conePointUniqueUpToIso_hom (X Y : C) [HasBinaryBiproduct X Y] {b 
     (hb.isLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit _ _)).hom =
       biprod.lift b.fst b.snd := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma for `biprod.uniqueUpToIso`. -/
 theorem biprod.conePointUniqueUpToIso_inv (X Y : C) [HasBinaryBiproduct X Y] {b : BinaryBicone X Y}
     (hb : b.IsBilimit) :
@@ -670,6 +678,7 @@ theorem biprod.isIso_inl_iff_id_eq_fst_comp_inl (X Y : C) [HasBinaryBiproduct X 
   · intro h
     exact ⟨⟨biprod.fst, biprod.inl_fst, h.symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (biprod.map f g) := by
   rw [show biprod.map f g =
@@ -682,6 +691,7 @@ instance prod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     (biprod.isoProd _ _).hom by simp]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (biprod.map f g) := by
   rw [show biprod.map f g = (biprod.isoProd _ _).hom ≫ prod.map f g ≫
@@ -734,22 +744,26 @@ theorem BinaryBicone.inrCokernelCofork_π : (BinaryBicone.inrCokernelCofork c).�
 
 variable {c}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork defined in `BinaryBicone.fstKernelFork` is indeed a kernel. -/
 def BinaryBicone.isLimitFstKernelFork (i : IsLimit c.toCone) : IsLimit c.fstKernelFork :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨s.ι ≫ c.snd, by apply BinaryFan.IsLimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fork defined in `BinaryBicone.sndKernelFork` is indeed a kernel. -/
 def BinaryBicone.isLimitSndKernelFork (i : IsLimit c.toCone) : IsLimit c.sndKernelFork :=
   Fork.IsLimit.mk' _ fun s =>
     ⟨s.ι ≫ c.fst, by apply BinaryFan.IsLimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofork defined in `BinaryBicone.inlCokernelCofork` is indeed a cokernel. -/
 def BinaryBicone.isColimitInlCokernelCofork (i : IsColimit c.toCocone) :
     IsColimit c.inlCokernelCofork :=
   Cofork.IsColimit.mk' _ fun s =>
     ⟨c.inr ≫ s.π, by apply BinaryCofan.IsColimit.hom_ext i <;> simp, fun hm => by simp [← hm]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofork defined in `BinaryBicone.inrCokernelCofork` is indeed a cokernel. -/
 def BinaryBicone.isColimitInrCokernelCofork (i : IsColimit c.toCocone) :
     IsColimit c.inrCokernelCofork :=

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Algebraic properties of dual numbers
