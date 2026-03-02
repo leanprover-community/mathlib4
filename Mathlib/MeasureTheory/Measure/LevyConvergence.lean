@@ -9,9 +9,10 @@ public import Mathlib.MeasureTheory.Measure.IntegralCharFun
 public import Mathlib.MeasureTheory.Measure.TightNormed
 
 /-!
-# TightCharFun
+# Lévy's convergence theorem
 
-Tightness from convergence of characteristic functions.
+This file contains developments retaled to Lévy's convergence theorem, which links convergence of
+characteristic functions and convergence in distribution.
 
 ## Main statements
 
@@ -21,7 +22,7 @@ Tightness from convergence of characteristic functions.
 
 -/
 
-@[expose] public section
+public section
 
 open Filter
 open scoped Topology RealInnerProductSpace ENNReal
