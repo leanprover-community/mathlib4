@@ -158,6 +158,9 @@ instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 theorem apply_ofVal (r : WithVal v) : v r.ofVal = Valued.v r := rfl
 @[simp] theorem valued_toVal (r : R) : Valued.v (toVal v r) = v r := rfl
 
+@[deprecated (since := "2026-03-02")] alias apply_equiv := apply_ofVal
+@[deprecated (since := "2026-03-02")] alias apply_symm_equiv := valued_toVal
+
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
 
