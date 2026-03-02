@@ -141,16 +141,18 @@ lemma cokernelSequenceOpcycles_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
 
 section
 
-variable (hn₁ : n₀ + 1 = n₁) {A : C} (x : A ⟶ (X.H n₀).obj (mk₁ g))
+variable {A : C} (x : A ⟶ (X.H n₀).obj (mk₁ g))
 
 /-- Constructor for morphisms to `X.cycles`. -/
-noncomputable def liftCycles (hx : x ≫ X.δ f g n₀ n₁ hn₁ = 0 := by cat_disch) :
+noncomputable def liftCycles (hn₁ : n₀ + 1 = n₁ := by lia)
+    (hx : x ≫ X.δ f g n₀ n₁ hn₁ = 0 := by cat_disch) :
     A ⟶ X.cycles f g n₀ :=
   kernel.lift _ x (by subst hn₁; exact hx)
 
 @[reassoc (attr := simp)]
-lemma liftCycles_i (hx : x ≫ X.δ f g n₀ n₁ hn₁ = 0 := by cat_disch) :
-    X.liftCycles f g n₀ n₁ hn₁ x hx ≫ X.iCycles f g n₀ = x := by
+lemma liftCycles_i (hn₁ : n₀ + 1 = n₁ := by lia)
+    (hx : x ≫ X.δ f g n₀ n₁ hn₁ = 0 := by cat_disch) :
+    X.liftCycles f g n₀ n₁ x ≫ X.iCycles f g n₀ = x := by
   apply kernel.lift_ι
 
 end
