@@ -713,7 +713,7 @@ theorem normal_variance_positive_interface [SpecialDistributionStatsStructure]
     0 < normalVarianceClosedForm params :=
   SpecialDistributionStatsStructure.normal_variance_positive params
 
-/-- 
+/--
 An engineering cutoff used to truncate improper integrals over `ℝ`.
 
 In particular, `engineeringCutoff` is used in `expectedValue_via_cdf` to
