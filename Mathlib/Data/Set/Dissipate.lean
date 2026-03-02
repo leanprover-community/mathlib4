@@ -7,6 +7,7 @@ Authors: Peter Pfaffelhuber
 module
 
 public import Mathlib.Data.Set.Accumulate
+public import Mathlib.MeasureTheory.PiSystem
 
 /-!
 # Dissipate
@@ -27,6 +28,9 @@ def dissipate [LE α] (s : α → Set β) (x : α) : Set β :=
   ⋂ y ≤ x, s y
 
 theorem dissipate_def [LE α] {x : α} : dissipate s x = ⋂ y ≤ x, s y := rfl
+
+theorem dissipate_eq {s : ℕ → Set β} {n : ℕ} : dissipate s n = ⋂ k < n + 1, s k := by
+  simp_rw [Nat.lt_add_one_iff, dissipate]
 
 @[simp]
 theorem mem_dissipate [LE α] {x : α} {z : β} : z ∈ dissipate s x ↔ ∀ y ≤ x, z ∈ s y := by
@@ -79,5 +83,48 @@ theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
   ext x
   simp_all only [dissipate_def, mem_iInter, mem_inter_iff]
   grind
+
+/-- For a directed set of sets `s : ℕ → Set α` and `n : ℕ`, there exists `m : ℕ` (maybe
+larger than `n`)such that `s m ⊆ dissipate s n`. -/
+lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
+  (hd : Directed (fun (x y : Set α) => y ⊆ x) s) (n : ℕ) : ∃ m, s m ⊆ dissipate s n := by
+  induction n with
+  | zero => use 0; simp [dissipate_def]
+  | succ n hn =>
+    obtain ⟨m, hm⟩ := hn
+    simp_rw [dissipate_succ]
+    obtain ⟨k, hk⟩ := hd m (n+1)
+    simp only at hk
+    use k
+    simp only [subset_inter_iff]
+    exact ⟨le_trans hk.1 hm, hk.2⟩
+
+lemma directed_dissipate {s : ℕ → Set α} :
+    Directed (fun (x y : Set α) => y ⊆ x) (dissipate s) :=
+  antitone_dissipate.directed_ge
+
+lemma exists_dissipate_eq_empty_iff_of_directed (C : ℕ → Set α)
+    (hd : Directed (fun (x y : Set α) => y ⊆ x) C) :
+    (∃ n, C n = ∅) ↔ (∃ n, dissipate C n = ∅) := by
+  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n, ?_⟩ , ?_⟩
+  · exact subset_eq_empty (dissipate_subset (Nat.le_refl n)) hn
+  · rw [← not_imp_not]
+    push_neg
+    intro h n
+    obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n
+    exact Set.Nonempty.mono hm (h m)
+
+/-- For a ∩-stable set of sets `p` on `α` and a sequence of sets `s` with this attribute,
+`dissipate s n` belongs to `p`. -/
+lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {p : Set (Set α)}
+    (hp : IsPiSystem p) (h : ∀ n, s n ∈ p) (n : ℕ) (h' : (dissipate s n).Nonempty) :
+      (dissipate s n) ∈ p := by
+  induction n with
+  | zero =>
+    simp only [dissipate_def, Nat.le_zero_eq, iInter_iInter_eq_left]
+    exact h 0
+  | succ n hn =>
+    rw [dissipate_succ] at *
+    apply hp (dissipate s n) (hn (Nonempty.left h')) (s (n+1)) (h (n+1)) h'
 
 end Set
