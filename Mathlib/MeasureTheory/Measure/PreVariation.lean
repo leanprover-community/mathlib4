@@ -76,11 +76,8 @@ lemma sum_le {s : Set X} (hs : MeasurableSet s)
 explicit measurability assumptions. -/
 noncomputable def _root_.Finpartition.toMeasurableSet {s : Set X} (P : Finpartition s)
     (hs : MeasurableSet s) (hP : ∀ p ∈ P.parts, MeasurableSet p) :
-    Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) := by
-  classical
-  letI : Fintype (Subtype (P.parts : Set (Set X))) :=
-    Fintype.subtype P.parts (by intro; exact Iff.of_eq rfl)
-  exact
+    Finpartition (⟨s, hs⟩ : Subtype MeasurableSet) :=
+  letI : Fintype (Subtype (P.parts : Set (Set X))) := Fintype.subtype P.parts (by intro; rfl)
   { parts := Finset.image
       (fun p : (Subtype (P.parts : Set (Set X))) =>
         (⟨p.val, hP p.val p.property⟩ : Subtype MeasurableSet))
@@ -201,7 +198,6 @@ lemma sum_le_preVariationFun_iUnion' {s : ℕ → Set X} (hs : ∀ i, Measurable
     (P : ∀ (i : ℕ), Finpartition (⟨s i, hs i⟩ : Subtype MeasurableSet)) (n : ℕ) :
     ∑ i ∈ Finset.range n, ∑ p ∈ (P i).parts, f p ≤ preVariationFun f (⋃ i, s i) := by
   let s' (i : ℕ) : Subtype MeasurableSet := ⟨s i, hs i⟩
-  classical
   have hs_disj : Set.PairwiseDisjoint (Finset.range n : Set ℕ) s' := fun i _ j _ hij => by
     simp only [Function.onFun, disjoint_iff, Subtype.ext_iff]
     exact Set.disjoint_iff_inter_eq_empty.mp (hs' hij)
@@ -255,7 +251,6 @@ variable {f : Set X → ℝ≥0∞}
 lemma iUnion (hf : IsSigmaSubadditiveSetFun f) (hf' : f ∅ = 0) (s : ℕ → Set X)
     (hs : ∀ i, MeasurableSet (s i)) (hs' : Pairwise (Disjoint on s)) :
     HasSum (fun i ↦ preVariationFun f (s i)) (preVariationFun f (⋃ i, s i)) := by
-  classical
   refine ENNReal.summable.hasSum_iff.mpr (le_antisymm (sum_le_preVariationFun_iUnion f hs hs') ?_)
   refine ENNReal.le_tsum_of_forall_lt_exists_sum fun b hb ↦ ?_
   simp only [preVariationFun, MeasurableSet.iUnion hs, reduceDIte, lt_iSup_iff] at hb

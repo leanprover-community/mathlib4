@@ -50,7 +50,6 @@ lemma ennrealVariation_apply (μ : VectorMeasure X V) {s : Set X} (hs : Measurab
 lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {P : Finset (Set X)}
     (hP₁ : ∀ t ∈ P, t ⊆ s) (hP₂ : ∀ t ∈ P, MeasurableSet t)
     (hP₃ : (P : Set (Set X)).PairwiseDisjoint id) : ∑ p ∈ P, ‖μ p‖ₑ ≤ μ.variation s := by
-  classical
   set Q := Finpartition.ofPairwiseDisjoint P hP₃ with hQ
   calc
     ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ (Finpartition.ofPairwiseDisjoint P hP₃).parts, ‖μ p‖ₑ := by
