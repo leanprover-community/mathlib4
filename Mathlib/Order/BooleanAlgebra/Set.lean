@@ -35,7 +35,9 @@ variable {α β : Type*} {s s₁ s₂ t t₁ t₂ u : Set α} {a b : α}
 
 instance instBooleanAlgebra : BooleanAlgebra (Set α) where
   __ : DistribLattice (Set α) := inferInstance
-  __ : BooleanAlgebra (α → Prop) := inferInstance
+  __ : Top (Set α) := inferInstance
+  __ : Bot (Set α) := inferInstance
+  __ : BooleanAlgebra (Set α) := inferInstanceAs (BooleanAlgebra (α → Prop))
   compl := (·ᶜ)
   sdiff := (· \ ·)
 
