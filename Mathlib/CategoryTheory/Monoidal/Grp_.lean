@@ -378,8 +378,15 @@ instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
   Equiv.unique (show _ ≃ (Mon.trivial C ⟶ A.toMon) from
     InducedCategory.homEquiv)
 
+instance uniqueHomToTrivial (A : Grp C) : Unique (A ⟶ trivial C) :=
+  Equiv.unique (show _ ≃ (A.toMon ⟶ Mon.trivial C) from
+    InducedCategory.homEquiv)
+
 instance : HasInitial (Grp C) :=
   hasInitial_of_unique (trivial C)
+
+instance : HasTerminal (Grp C) :=
+  hasTerminal_of_unique (trivial C)
 
 /-! ### `Grp C` is cartesian-monoidal -/
 
