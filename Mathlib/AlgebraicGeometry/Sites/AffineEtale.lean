@@ -131,7 +131,7 @@ lemma exists_nhd {X : Scheme.{u}} (f : X ⟶ S) [LocallyOfFinitePresentation f] 
     { U := V.1, hU := V.prop, g := n, r := r, rel := ρ }
   let e : P.Ring ≃+* Γ(X, U.1) :=
     (Ideal.quotEquivOfEq hρ).trans (φ.toRingHom.quotientKerEquivRange.trans
-      ((Subring.equivOfEq (RingHom.range_eq_top_of_surjective _ h₁)).trans Subring.topEquiv))
+      ((RingEquiv.subringCongr (RingHom.range_eq_top_of_surjective _ h₁)).trans Subring.topEquiv))
   exact ⟨U, hx, P, ⟨asIso (toSpecΓ U) ≪≫ Scheme.Spec.mapIso U.1.topIso.op.symm ≪≫
     Scheme.Spec.mapIso e.toCommRingCatIso.op⟩⟩
 
