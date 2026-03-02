@@ -280,7 +280,6 @@ theorem stereographic_source (hv : ‖v‖ = 1) : (stereographic hv).source = {�
 theorem stereographic_target (hv : ‖v‖ = 1) : (stereographic hv).target = Set.univ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem stereographic_apply_neg (v : sphere (0 : E) 1) :
     stereographic (norm_eq_of_mem_sphere v) (-v) = 0 := by

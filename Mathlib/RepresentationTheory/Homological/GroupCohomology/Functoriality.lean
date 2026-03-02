@@ -105,7 +105,6 @@ lemma cochainsMap_f_map_epi (hf : Function.Injective f) [Epi φ] (i : ℕ) :
     ((Rep.epi_iff_surjective φ).1 inferInstance).comp_left.comp <|
     LinearMap.funLeft_surjective_of_injective k A _ hf.comp_left
 
-set_option backward.isDefEq.respectTransparency false in
 instance cochainsMap_id_f_map_epi {A B : Rep k G} (φ : A ⟶ B) [Epi φ] (i : ℕ) :
     Epi ((cochainsMap (MonoidHom.id G) φ).f i) :=
   cochainsMap_f_map_epi (MonoidHom.id G) φ (fun _ _ h => h) i
@@ -291,7 +290,6 @@ theorem mapShortComplexH1_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C
     mapShortComplexH1 (MonoidHom.id G) (φ ≫ ψ) =
       mapShortComplexH1 (MonoidHom.id G) φ ≫ mapShortComplexH1 (MonoidHom.id G) ψ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Z¹(H, A) ⟶ Z¹(G, B)`. -/
 noncomputable abbrev mapCocycles₁ :
@@ -454,7 +452,6 @@ theorem mapShortComplexH2_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C
     mapShortComplexH2 (MonoidHom.id G) (φ ≫ ψ) =
       mapShortComplexH2 (MonoidHom.id G) φ ≫ mapShortComplexH2 (MonoidHom.id G) ψ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` and a representation morphism `φ : Res(f)(A) ⟶ B`,
 this is induced map `Z²(H, A) ⟶ Z²(G, B)`. -/
 noncomputable abbrev mapCocycles₂ :

@@ -507,7 +507,6 @@ theorem sum_sq_inner_left {ι E : Type*} [NormedAddCommGroup E]
     ∑ i : ι, ⟪x, b i⟫ ^ 2 = ‖x‖ ^ 2 := by
   simp_rw [← b.sum_sq_inner_right, real_inner_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_le_card_mul_iSup_norm_inner (b : OrthonormalBasis ι 𝕜 E) (x : E) :
     ‖x‖ ≤ √(Fintype.card ι) * ⨆ i, ‖⟪b i, x⟫‖ := by
   calc ‖x‖
@@ -1188,7 +1187,6 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
     { toLinearMap := M
       norm_map' := M_norm_map }
 
-set_option backward.isDefEq.respectTransparency false in
 theorem LinearIsometry.extend_apply (L : S →ₗᵢ[𝕜] V) (s : S) : L.extend s = L s := by
   simp only [LinearIsometry.extend, ← LinearIsometry.coe_toLinearMap]
   simp only [add_eq_left, LinearIsometry.coe_toLinearMap,
@@ -1276,7 +1274,6 @@ theorem LinearMap.toMatrix_innerₛₗ_apply [Fintype n] [DecidableEq n] [Fintyp
 
 end Matrix
 
-set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearMap LinearMap in
 theorem InnerProductSpace.toMatrix_rankOne {𝕜 E F ι ι' : Type*} [RCLike 𝕜]
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
