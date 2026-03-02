@@ -79,7 +79,7 @@ theorem nonempty_orbit (a : α) : Set.Nonempty (orbit M a) :=
 
 @[to_additive]
 theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
-  Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
+  Set.mapsTo_iff_subset_preimage.mpr <| Set.range_subset_iff.mpr fun m' => ⟨m * m', mul_smul _ _ _⟩
 
 @[to_additive]
 theorem smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=

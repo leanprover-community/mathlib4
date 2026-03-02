@@ -780,7 +780,6 @@ namespace CyclotomicRing
 instance : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
