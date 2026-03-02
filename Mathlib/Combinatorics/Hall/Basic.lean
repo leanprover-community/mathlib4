@@ -84,9 +84,9 @@ theorem hallMatchingsOn.nonempty {ι : Type u} {α : Type v} [DecidableEq α] (t
 /-- This is the `hallMatchingsOn` sets assembled into a directed system.
 -/
 def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) :
-    (Finset ι)ᵒᵖ ⥤ Type max u v where
-  obj ι' := hallMatchingsOn t ι'.unop
-  map {_ _} g f := hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop) f
+    (Finset ι)ᵒᵖ ⥤ TypeCat.{max u v} where
+  obj ι' := TypeCat.of <| hallMatchingsOn t ι'.unop
+  map {_ _} g := TypeCat.ofHom ⟨hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Finset ι) :

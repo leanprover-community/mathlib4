@@ -24,7 +24,7 @@ universe w v u
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] {F₁ F₂ : C ⥤ Type w} {A : Subfunctor F₁}
+variable {C : Type u} [Category.{v} C] {F₁ F₂ : C ⥤ TypeCat.{w}} {A : Subfunctor F₁}
   (f g : A.toFunctor ⟶ F₂)
 
 namespace Subfunctor
@@ -37,8 +37,8 @@ protected def equalizer : Subfunctor F₁ where
   map φ x := by
     rintro ⟨hx, h⟩
     exact ⟨A.map _ hx,
-      (FunctorToTypes.naturality _ _ f φ ⟨x, hx⟩).trans (Eq.trans (by rw [h])
-        (FunctorToTypes.naturality _ _ g φ ⟨x, hx⟩).symm)⟩
+      (NatTrans.naturality_apply f φ ⟨x, hx⟩).trans (Eq.trans (by rw [h])
+        (NatTrans.naturality_apply g φ ⟨x, hx⟩).symm)⟩
 
 attribute [local simp] equalizer_obj
 
@@ -52,10 +52,10 @@ lemma mem_equalizer_iff {i : C} (x : A.toFunctor.obj i) :
     x.1 ∈ (Subfunctor.equalizer f g).obj i ↔ f.app i x = g.app i x := by
   simp
 
-lemma range_le_equalizer_iff {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor) :
+lemma range_le_equalizer_iff {G : C ⥤ TypeCat.{w}} (φ : G ⟶ A.toFunctor) :
     range (φ ≫ A.ι) ≤ Subfunctor.equalizer f g ↔ φ ≫ f = φ ≫ g := by
   rw [NatTrans.ext_iff]
-  simp [le_def, Set.subset_def, funext_iff, CategoryTheory.types_ext_iff]
+  simp [le_def, Set.subset_def, ConcreteCategory.hom_ext_iff, funext_iff]
 
 lemma equalizer_eq_iff :
     Subfunctor.equalizer f g = A ↔ f = g := by
@@ -89,19 +89,19 @@ is such that `φ ≫ f = φ ≫ g`, then this is the lifted morphism
 `G ⟶ (Subfunctor.equalizer f g).toFunctor`. This is part of the universal
 property of the equalizer that is satisfied by
 the functor `(Subfunctor.equalizer f g).toFunctor`. -/
-def equalizer.lift {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor)
+def equalizer.lift {G : C ⥤ TypeCat.{w}} (φ : G ⟶ A.toFunctor)
     (w : φ ≫ f = φ ≫ g) :
     G ⟶ (Subfunctor.equalizer f g).toFunctor :=
   Subfunctor.lift (φ ≫ A.ι) (by simpa only [range_le_equalizer_iff] using w)
 
 @[reassoc (attr := simp)]
-lemma equalizer.lift_ι' {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor)
+lemma equalizer.lift_ι' {G : C ⥤ TypeCat.{w}} (φ : G ⟶ A.toFunctor)
     (w : φ ≫ f = φ ≫ g) :
     equalizer.lift f g φ w ≫ (Subfunctor.equalizer f g).ι = φ ≫ A.ι :=
   rfl
 
 @[reassoc (attr := simp)]
-lemma equalizer.lift_ι {G : C ⥤ Type w} (φ : G ⟶ A.toFunctor)
+lemma equalizer.lift_ι {G : C ⥤ TypeCat.{w}} (φ : G ⟶ A.toFunctor)
     (w : φ ≫ f = φ ≫ g) :
     equalizer.lift f g φ w ≫ equalizer.ι f g = φ :=
   rfl

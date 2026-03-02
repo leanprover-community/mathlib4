@@ -944,7 +944,7 @@ end Fubini
 the product of copies of `X` indexed by `α`. -/
 @[simps]
 def piFunctor [HasProducts.{w} C] :
-    C ⥤ (Type w)ᵒᵖ ⥤ C where
+    C ⥤ TypeCat.{w}ᵒᵖ ⥤ C where
   obj X :=
     { obj α := ∏ᶜ (fun (t : α.unop) ↦ X)
       map f := Pi.map' f.unop (fun _ ↦ 𝟙 _) }
@@ -954,7 +954,7 @@ def piFunctor [HasProducts.{w} C] :
 the coproduct of copies of `X` indexed by `α`. -/
 @[simps]
 def sigmaFunctor [HasCoproducts.{w} C] :
-    C ⥤ Type w ⥤ C where
+    C ⥤ TypeCat.{w} ⥤ C where
   obj X :=
     { obj α := ∐ (fun (t : α) ↦ X)
       map f := Sigma.map' f (fun _ ↦ 𝟙 _) }

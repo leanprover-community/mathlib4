@@ -731,7 +731,7 @@ theorem isSheafFor_subsieve_aux (P : Cᵒᵖ ⥤ TypeCat.{w}) {S : Sieve X} {R :
     apply (trans hj).ext
     intro Y f hf
     rw [← comp_apply, ← Functor.map_comp, ← op_comp, hS.valid_glue (hx.restrict h) _ hf,
-      FamilyOfElements.restrict, ← hx (𝟙 _) f (h _ hf) _ (id_comp _)]
+      FamilyOfElements.restrict, ← hx (𝟙 _) f (h _ _ hf) _ (id_comp _)]
     simp
 
 /--

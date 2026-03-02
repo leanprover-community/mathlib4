@@ -53,39 +53,28 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) := ⟨.mk T default
 
 variable (T)
 
-variable {T} in
-@[ext]
-structure Hom (X Y : Kleisli T) where
-  hom : @Quiver.Hom C inferInstance X (T.obj Y)
-
-variable {T} in
-@[ext]
-structure Hom (X Y : Kleisli T) where
-  hom : @Quiver.Hom C inferInstance X (T.obj Y)
-
 set_option backward.isDefEq.respectTransparency false in
 attribute [local ext] Hom in
 /-- The Kleisli category on a monad `T`.
 cf Definition 5.2.9 in [Riehl][riehl2017]. -/
 @[simps!]
-@[simps!]
 instance category : Category (Kleisli T) where
-  Hom := Hom
-  id X := ⟨T.η.app X⟩
-  comp {_} {_} {Z} f g := ⟨f.hom ≫ (T : C ⥤ C).map g.hom ≫ T.μ.app Z⟩
   Hom X Y := Hom X Y
   id X := .mk <| T.η.app X.of
   comp {_} {_} {Z} f g := .mk <| f.of ≫ T.map g.of ≫ T.μ.app Z.of
   id_comp {X} {Y} f := by
     ext
-    simp [← T.η.naturality_assoc f.hom, T.left_unit]
+    dsimp
+    rw [← T.η.naturality_assoc f.of, T.left_unit]
+    apply Category.comp_id
   assoc f g h := by
-    ext
     simp [Monad.assoc, T.mu_naturality_assoc]
 
 variable {T} in
+attribute [local ext] Hom in
 @[ext]
-lemma ext {X Y : Kleisli T} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g := Hom.ext h
+lemma hom_ext {x y : Kleisli T} {f g : x ⟶ y} (h : f.of = g.of) : f = g :=
+  Hom.ext h
 
 namespace Adjunction
 
@@ -93,34 +82,29 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The left adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def toKleisli : C ⥤ Kleisli T where
-  obj X := (X : Kleisli T)
-  map {X} {Y} f := ⟨(f ≫ T.η.app Y : X ⟶ T.obj Y)⟩
+  obj X := .mk T X
+  map {X} {Y} f := .mk <| f ≫ T.η.app Y
   map_comp {X} {Y} {Z} f g := by
-    ext
+    unfold_projs
     simp [← T.η.naturality g]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The right adjoint of the adjunction which induces the monad `(T, η_ T, μ_ T)`. -/
 @[simps]
 def fromKleisli : Kleisli T ⥤ C where
-  obj X := T.obj X
-  map {_} {Y} f := T.map f.hom ≫ T.μ.app Y
+  obj X := T.obj X.of
+  map {_} {Y} f := T.map f.of ≫ T.μ.app Y.of
   map_id _ := T.right_unit _
   map_comp {X} {Y} {Z} f g := by
-    simp [← T.μ.naturality_assoc g.hom, T.assoc]
+    simp [← T.μ.naturality_assoc g.of, T.assoc]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
 cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
 def adj : toKleisli T ⊣ fromKleisli T :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y => {
-        toFun f := f.hom
-        invFun f := ⟨f⟩
-        left_inv := by intro; rfl
-        right_inv := by intro; rfl }
+    { homEquiv X Y := { toFun f := f.of, invFun f := .mk f }
       homEquiv_naturality_left_symm := fun {X} {Y} {Z} f g => by
-        ext
         ext
         simp [← T.η.naturality_assoc g] }
 
