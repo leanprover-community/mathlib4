@@ -53,11 +53,11 @@ lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ 
   := Submodule.restrictScalars_inj ..
 
 /-- Coercion of submodule to pointed cone as an order embedding. -/
-def ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
+abbrev ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
   Submodule.restrictScalarsEmbedding ..
 
 /-- Coercion of submodule to pointed cone as a lattice homomorphism. -/
-def ofSubmodule_latticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
+abbrev ofSubmodule_latticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
   Submodule.restrictScalarsLatticeHom ..
 
 lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E) :=
