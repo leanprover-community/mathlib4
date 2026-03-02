@@ -46,7 +46,7 @@ This last version is one of the main ingredients of the standard proof of the
 Replacing `ℝ` by an ordered field (`{R : Type*} [LinearOrder R] [Field R] [IsOrderedRing R]`)
 works, but makes the type check quite slow (and `to_additive` needs some  help...).
 As the application(s) work with `ℝ`-valued height functions, we think that generalizing
-is not really work the trouble.
+is not really worth the trouble.
 -/
 
 public section
