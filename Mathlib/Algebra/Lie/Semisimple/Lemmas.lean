@@ -15,11 +15,11 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
 
 ## Main definitions / results:
 * `LieAlgebra.hasCentralRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
-  algebra with a irreducible faithful finite-dimensional representation is reductive.
+  algebra with an irreducible faithful finite-dimensional representation is reductive.
 * `LieAlgebra.hasTrivialRadical_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
-  algebra with a irreducible faithful finite-dimensional trace-free representation is semisimple.
+  algebra with an irreducible faithful finite-dimensional trace-free representation is semisimple.
 
-## TODO
+## TODO
 
 * Introduce a `Prop`-valued typeclass `LieModule.IsTracefree` stating
   `(toEnd R L M).range ≤ LieAlgebra.derivedSeries R (Module.End R M) 1`, prove
@@ -28,7 +28,7 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
 
 -/
 
-@[expose] public section
+public section
 
 namespace LieAlgebra
 
@@ -39,6 +39,7 @@ variable (k L M : Type*) [Field k] [CharZero k]
   [AddCommGroup M] [Module k M] [LieRingModule L M] [LieModule k L M] [Module.Finite k M]
   [IsIrreducible k L M] [IsFaithful k L M] [IsTriangularizable k L M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasCentralRadical_and_of_isIrreducible_of_isFaithful :
     HasCentralRadical k L ∧ (∀ x, x ∈ center k L ↔ toEnd k L M x ∈ k ∙ LinearMap.id) := by
   have _i := nontrivial_of_isIrreducible k L M

@@ -37,7 +37,7 @@ In general non-abelian groups, small doubling doesn't imply small powers anymore
 does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
 
-@[expose] public section
+public section
 
 open MulOpposite Nat
 open scoped Pointwise

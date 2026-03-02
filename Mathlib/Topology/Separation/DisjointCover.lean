@@ -25,7 +25,7 @@ We prove various results about covering profinite spaces by disjoint clopens, in
   `S`-approximated by a function factoring through `Fin n` for some `n`.
 -/
 
-@[expose] public section
+public section
 
 open Set TopologicalSpace
 
@@ -133,6 +133,7 @@ lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal (hS : S ∈ nhd
     exact (map_continuous _).continuousAt.preimage_mem_nhds (hS _ rfl)
   exact exists_finite_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_profinite this
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 For any continuous function `f : X → V`, with `X` profinite, and `S` a neighbourhood of the
 diagonal in `V × V`, the function `f` can be `S`-approximated by a function factoring through

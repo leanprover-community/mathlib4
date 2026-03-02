@@ -85,12 +85,13 @@ lemma covarianceBilin_apply_eq_cov [CompleteSpace E] [IsFiniteMeasure μ]
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_eq_covariance h]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_real {μ : Measure ℝ} [IsFiniteMeasure μ] (x y : ℝ) :
     covarianceBilin μ x y = x * y * Var[id; μ] := by
   by_cases h : MemLp id 2 μ
   · simp only [covarianceBilin_apply_eq_cov h, RCLike.inner_apply, conj_trivial, mul_comm]
-    rw [covariance_mul_left, covariance_mul_right, ← mul_assoc, covariance_self aemeasurable_id']
-    rfl
+    rw [covariance_const_mul_left, covariance_const_mul_right, ← mul_assoc,
+      covariance_self aemeasurable_id', Function.id_def]
   · simp [h, variance_of_not_memLp, aestronglyMeasurable_id]
 
 lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ) :
@@ -139,6 +140,7 @@ lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] 
     convert (memLp_const (-c)).add h
     ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_apply_basisFun {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [IsFiniteMeasure μ] {X : ι → Ω → ℝ} (hX : ∀ i, MemLp (X i) 2 μ) (i j : ι) :
     covarianceBilin (μ.map (fun ω ↦ toLp 2 (X · ω)))
@@ -159,6 +161,7 @@ lemma covarianceBilin_apply_basisFun_self {ι Ω : Type*} [Fintype ι] {mΩ : Me
   have (i : ι) := (hX i).aemeasurable
   fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_apply_pi {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpace Ω}
     {μ : Measure Ω} [IsFiniteMeasure μ] {X : ι → Ω → ℝ}
     (hX : ∀ i, MemLp (X i) 2 μ) (x y : EuclideanSpace ℝ ι) :
@@ -170,7 +173,7 @@ lemma covarianceBilin_apply_pi {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpa
   · simp_rw [sum_inner, real_inner_smul_left, basisFun_inner]
     rw [covariance_fun_sum_fun_sum]
     · refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_
-      rw [covariance_mul_left, covariance_mul_right]
+      rw [covariance_const_mul_left, covariance_const_mul_right]
       ring
     all_goals exact fun i ↦ (hX i).const_mul _
   any_goals exact Measurable.aestronglyMeasurable (by fun_prop)

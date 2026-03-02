@@ -5,8 +5,8 @@ Authors: Lenny Taelman
 -/
 module
 
-public meta import Mathlib.Data.Set.SymmDiff
-public meta import Mathlib.Data.Set.Disjoint
+public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # The `tauto_set` tactic

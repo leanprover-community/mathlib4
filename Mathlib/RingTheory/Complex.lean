@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.Trace.Defs
 
 /-! # Lemmas about `Algebra.trace` and `Algebra.norm` on `ℂ` -/
 
-@[expose] public section
+public section
 
 
 open Complex
@@ -29,11 +29,13 @@ theorem Algebra.leftMulMatrix_complex (z : ℂ) :
       mul_one, zero_sub, add_zero]
     fin_cases i <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.trace_complex_apply (z : ℂ) : Algebra.trace ℝ ℂ z = 2 * z.re := by
   rw [Algebra.trace_eq_matrix_trace Complex.basisOneI, Algebra.leftMulMatrix_complex,
     Matrix.trace_fin_two]
   exact (two_mul _).symm
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Algebra.norm_complex_apply (z : ℂ) : Algebra.norm ℝ z = Complex.normSq z := by
   rw [Algebra.norm_eq_matrix_det Complex.basisOneI, Algebra.leftMulMatrix_complex,
     Matrix.det_fin_two, normSq_apply]

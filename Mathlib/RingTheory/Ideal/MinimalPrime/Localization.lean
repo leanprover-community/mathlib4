@@ -31,7 +31,7 @@ of localizations.
   the resulting ring only has a single prime ideal.
 -/
 
-@[expose] public section
+public section
 
 
 section
@@ -88,6 +88,7 @@ theorem IsSMulRegular.notMem_of_mem_minimalPrimes
   rcases not_forall.mp (Module.mem_annihilator.not.mp hy) with ⟨m, hm⟩
   exact hm (reg.right_eq_zero_of_smul ((smul_smul x y m).trans (Module.mem_annihilator.mp hxy m)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Minimal primes are contained in zero divisors. -/
 lemma Ideal.disjoint_nonZeroDivisors_of_mem_minimalPrimes {p : Ideal R} (hp : p ∈ minimalPrimes R) :
     Disjoint (p : Set R) (nonZeroDivisors R) := by
@@ -182,7 +183,7 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     refine (Ideal.comap_mono <|
       hp.2 ⟨?_, Ideal.map_mono hI.2⟩ (Ideal.map_le_iff_le_comap.mpr e)).trans_eq ?_
     · exact IsLocalization.isPrime_of_isPrime_disjoint S A I hI.1 hI'
-    · exact IsLocalization.comap_map_of_isPrime_disjoint S A _ hI.1 hI'
+    · exact IsLocalization.comap_map_of_isPrime_disjoint S A hI.1 hI'
   · intro hp
     refine ⟨⟨?_, Ideal.map_le_iff_le_comap.mpr hp.1.2⟩, ?_⟩
     · rw [IsLocalization.isPrime_iff_isPrime_disjoint S A, IsLocalization.disjoint_comap_iff S]

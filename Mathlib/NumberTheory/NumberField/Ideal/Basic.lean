@@ -29,18 +29,19 @@ We study results about integral ideals of a number field `K`.
 
 @[expose] public section
 
-section torsionMapQuot
-
 open Ideal NumberField Units
 
 variable {K : Type*} [Field K] {I : Ideal (𝓞 K)}
 
+section torsionMapQuot
+
+set_option backward.isDefEq.respectTransparency false in
 theorem IsPrimitiveRoot.not_coprime_norm_of_mk_eq_one [NumberField K] (hI : absNorm I ≠ 1) {n : ℕ}
     {ζ : K} (hn : 2 ≤ n) (hζ : IsPrimitiveRoot ζ n)
     (h : letI _ : NeZero n := NeZero.of_gt hn; Ideal.Quotient.mk I hζ.toInteger = 1) :
     ¬ (absNorm I).Coprime n := by
   intro h₁
-  rw [← RingHom.map_one (Ideal.Quotient.mk I), Ideal.Quotient.eq] at h
+  rw [← map_one (Ideal.Quotient.mk I), Ideal.Quotient.eq] at h
   obtain ⟨p, hp, h₂⟩ := Nat.exists_prime_and_dvd hI
   have : Fact (p.Prime) := ⟨hp⟩
   refine hp.not_dvd_one <| h₁ ▸ Nat.dvd_gcd h₂ ?_
@@ -109,3 +110,6 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀
   rwa [Nat.card_eq_fintype_card, Nat.card_units] at h
 
 end torsionMapQuot
+
+instance [NumberField K] [I.IsMaximal] : Finite (𝓞 K ⧸ I) :=
+  I.finiteQuotientOfFreeOfNeBot (I.bot_lt_of_maximal (RingOfIntegers.not_isField K)).ne'

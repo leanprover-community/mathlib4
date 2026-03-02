@@ -23,7 +23,7 @@ namespace CategoryTheory
 
 open Category Limits Preadditive
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category* C] [Preadditive C]
 
 namespace ShortComplex
 
@@ -493,6 +493,7 @@ def comp (h : Homotopy φ₁ φ₂) {ψ₁ ψ₂ : S₂ ⟶ S₃} (h' : Homotopy
     Homotopy (φ₁ ≫ ψ₁) (φ₂ ≫ ψ₂) :=
   (h.compRight ψ₁).trans (h'.compLeft φ₂)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between morphisms in `ShortComplex Cᵒᵖ` that is induced by a homotopy
 between morphisms in `ShortComplex C`. -/
 @[simps]
@@ -507,6 +508,7 @@ def op (h : Homotopy φ₁ φ₂) : Homotopy (opMap φ₁) (opMap φ₂) where
   comm₂ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₂]; abel)
   comm₃ := Quiver.Hom.unop_inj (by dsimp; rw [h.comm₁]; abel)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between morphisms in `ShortComplex C` that is induced by a homotopy
 between morphisms in `ShortComplex Cᵒᵖ`. -/
 @[simps]
@@ -672,7 +674,7 @@ lemma homologyMap_congr (h : Homotopy φ₁ φ₂) [S₁.HasHomology] [S₂.HasH
 
 end Homotopy
 
-/-- An homotopy equivalence between two short complexes `S₁` and `S₂` consists
+/-- A homotopy equivalence between two short complexes `S₁` and `S₂` consists
 of morphisms `hom : S₁ ⟶ S₂` and `inv : S₂ ⟶ S₁` such that both compositions
 `hom ≫ inv` and `inv ≫ hom` are homotopic to the identity. -/
 @[ext]

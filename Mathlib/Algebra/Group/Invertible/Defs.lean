@@ -241,4 +241,14 @@ theorem mul_invOf_eq_iff_eq_mul_right : a * ⅟c = b ↔ a = b * c := by
 theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
   rw [← mul_left_inj_of_invertible (c := ⅟c), mul_invOf_cancel_right]
 
+variable [IsDedekindFiniteMonoid α] (a b : α)
+
+/-- An element in a Dedekind-finite monoid is invertible if it has a left inverse. -/
+def invertibleOfLeftInverse (h : b * a = 1) : Invertible a :=
+  ⟨b, h, mul_eq_one_symm h⟩
+
+/-- An element in a Dedekind-finite monoid is invertible if it has a right inverse. -/
+def invertibleOfRightInverse (h : a * b = 1) : Invertible a :=
+  ⟨b, mul_eq_one_symm h, h⟩
+
 end

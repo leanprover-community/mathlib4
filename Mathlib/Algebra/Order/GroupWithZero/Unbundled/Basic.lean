@@ -9,9 +9,12 @@ public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
 public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Order.Monotone.Basic
 public import Mathlib.Tactic.Bound.Attribute
 public import Mathlib.Tactic.Monotonicity.Attr
+
+import Mathlib.Data.Set.Function
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Util.CompileInductive
 
 /-!
 # Lemmas on the monotone multiplication typeclasses
@@ -704,40 +707,48 @@ end MonoidWithZero.LinearOrder
 
 section CancelMonoidWithZero
 
-variable [CancelMonoidWithZero α]
+variable [MonoidWithZero α]
 
 section PartialOrder
 
 variable [PartialOrder α]
 
-theorem PosMulMono.toPosMulStrictMono [PosMulMono α] : PosMulStrictMono α where
+theorem PosMulMono.toPosMulStrictMono [IsLeftCancelMulZero α] [PosMulMono α] :
+    PosMulStrictMono α where
   mul_lt_mul_of_pos_left _a ha _b _c hbc :=
     (mul_le_mul_of_nonneg_left hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_left_cancel₀ ha.ne')
 
-theorem posMulMono_iff_posMulStrictMono : PosMulMono α ↔ PosMulStrictMono α :=
-  ⟨@PosMulMono.toPosMulStrictMono α _ _, @PosMulStrictMono.toPosMulMono α _ _⟩
+theorem posMulMono_iff_posMulStrictMono [IsLeftCancelMulZero α] :
+    PosMulMono α ↔ PosMulStrictMono α :=
+  ⟨(·.toPosMulStrictMono), (·.toPosMulMono)⟩
 
-theorem MulPosMono.toMulPosStrictMono [MulPosMono α] : MulPosStrictMono α where
+theorem MulPosMono.toMulPosStrictMono [IsRightCancelMulZero α] [MulPosMono α] :
+    MulPosStrictMono α where
   mul_lt_mul_of_pos_right _a ha _b _c hbc :=
     (mul_le_mul_of_nonneg_right hbc.le ha.le).lt_of_ne (hbc.ne ∘ mul_right_cancel₀ ha.ne')
 
-theorem mulPosMono_iff_mulPosStrictMono : MulPosMono α ↔ MulPosStrictMono α :=
-  ⟨@MulPosMono.toMulPosStrictMono α _ _, @MulPosStrictMono.toMulPosMono α _ _⟩
+theorem mulPosMono_iff_mulPosStrictMono [IsRightCancelMulZero α] :
+    MulPosMono α ↔ MulPosStrictMono α :=
+  ⟨(·.toMulPosStrictMono), (·.toMulPosMono)⟩
 
-theorem PosMulReflectLT.toPosMulReflectLE [PosMulReflectLT α] : PosMulReflectLE α where
+theorem PosMulReflectLT.toPosMulReflectLE [IsLeftCancelMulZero α] [PosMulReflectLT α] :
+    PosMulReflectLE α where
   elim := fun x _ _ h =>
     h.eq_or_lt.elim (le_of_eq ∘ mul_left_cancel₀ x.2.ne.symm) fun h' =>
       (lt_of_mul_lt_mul_left h' x.2.le).le
 
-theorem posMulReflectLE_iff_posMulReflectLT : PosMulReflectLE α ↔ PosMulReflectLT α :=
-  ⟨@PosMulReflectLE.toPosMulReflectLT α _ _, @PosMulReflectLT.toPosMulReflectLE α _ _⟩
+theorem posMulReflectLE_iff_posMulReflectLT [IsLeftCancelMulZero α] :
+    PosMulReflectLE α ↔ PosMulReflectLT α :=
+  ⟨(·.toPosMulReflectLT), (·.toPosMulReflectLE)⟩
 
-theorem MulPosReflectLT.toMulPosReflectLE [MulPosReflectLT α] : MulPosReflectLE α where
+theorem MulPosReflectLT.toMulPosReflectLE [IsRightCancelMulZero α] [MulPosReflectLT α] :
+    MulPosReflectLE α where
   elim := fun x _ _ h => h.eq_or_lt.elim (le_of_eq ∘ mul_right_cancel₀ x.2.ne.symm) fun h' =>
     (lt_of_mul_lt_mul_right h' x.2.le).le
 
-theorem mulPosReflectLE_iff_mulPosReflectLT : MulPosReflectLE α ↔ MulPosReflectLT α :=
-  ⟨@MulPosReflectLE.toMulPosReflectLT α _ _, @MulPosReflectLT.toMulPosReflectLE α _ _⟩
+theorem mulPosReflectLE_iff_mulPosReflectLT [IsRightCancelMulZero α] :
+    MulPosReflectLE α ↔ MulPosReflectLT α :=
+  ⟨(·.toMulPosReflectLT), (·.toMulPosReflectLE)⟩
 
 end PartialOrder
 
@@ -947,11 +958,6 @@ lemma zpow_pos (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   | -(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 
-omit [ZeroLEOneClass G₀] in
-lemma zpow_left_strictMonoOn₀ [MulPosMono G₀] (hn : 0 < n) :
-    StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
-  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by cutsat)
-
 lemma zpow_right_mono₀ (ha : 1 ≤ a) : Monotone fun n : ℤ ↦ a ^ n := by
   refine monotone_int_of_le_succ fun n ↦ ?_
   rw [zpow_add_one₀ (zero_lt_one.trans_le ha).ne']
@@ -1047,6 +1053,24 @@ lemma zpow_lt_zpow_iff_right_of_lt_one₀ (ha₀ : 0 < a) (ha₁ : a < 1) :
 end ZPow
 
 end ZeroLEOneClass
+
+section MulPosMono
+
+variable [MulPosMono G₀] {n : ℤ}
+
+lemma zpow_left_monoOn₀ (hn : 0 ≤ n) : MonotoneOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn; simpa using pow_left_monotoneOn
+
+lemma zpow_left_strictMonoOn₀ (hn : 0 < n) : StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by lia)
+
+lemma zpow_le_zpow_left₀ (hn : 0 ≤ n) (ha : 0 ≤ a) (h : a ≤ b) : a ^ n ≤ b ^ n :=
+  zpow_left_monoOn₀ (G₀ := G₀) hn ha (by grind) h
+
+lemma zpow_lt_zpow_left₀ (hn : 0 < n) (ha : 0 ≤ a) (h : a < b) : a ^ n < b ^ n :=
+  zpow_left_strictMonoOn₀ (G₀ := G₀) hn ha (by grind) h
+
+end MulPosMono
 
 end PosMulReflectLT
 
@@ -1290,9 +1314,11 @@ lemma neg_of_div_neg_left (h : a / b < 0) (hb : 0 ≤ b) : a < 0 :=
 
 end PosMulMono
 
-variable [PosMulStrictMono G₀] {m n : ℤ}
+variable {m n : ℤ}
 
 section ZeroLEOne
+
+variable [PosMulStrictMono G₀]
 
 variable [ZeroLEOneClass G₀]
 
@@ -1317,8 +1343,30 @@ lemma zpow_eq_one_iff_right₀ (ha₀ : 0 ≤ a) (ha₁ : a ≠ 1) {n : ℤ} : a
 
 end ZeroLEOne
 
-variable [MulPosStrictMono G₀]
+section MulPosMono
 
+variable [PosMulReflectLT G₀] [MulPosMono G₀]
+
+lemma zpow_le_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) : a ^ n ≤ b ^ n ↔ a ≤ b :=
+  (zpow_left_strictMonoOn₀ (G₀ := G₀) hn).le_iff_le ha hb
+
+lemma zpow_lt_zpow_iff_left₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : 0 < n) : a ^ n < b ^ n ↔ a < b :=
+  (zpow_left_strictMonoOn₀ (G₀ := G₀) hn).lt_iff_lt ha hb
+
+end MulPosMono
+
+section PosMulStrictMono
+variable [PosMulStrictMono G₀] [MulPosMono G₀]
+
+lemma zpow_left_injOn₀ : ∀ {n : ℤ}, n ≠ 0 → {a | 0 ≤ a}.InjOn fun a : G₀ ↦ a ^ n
+  | (n + 1 : ℕ), _ => by simpa using mod_cast (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+  | .negSucc n, _ => by
+    simpa using inv_injective.comp_injOn (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+
+lemma zpow_left_inj₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) :
+    a ^ n = b ^ n ↔ a = b := (zpow_left_injOn₀ hn).eq_iff ha hb
+
+end PosMulStrictMono
 end GroupWithZero.LinearOrder
 
 section CommGroupWithZero

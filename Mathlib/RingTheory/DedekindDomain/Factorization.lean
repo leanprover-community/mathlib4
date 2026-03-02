@@ -37,7 +37,7 @@ prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
   the fractional ideal `(k)` is equal to the product `∏_v v^(val_v(r) - val_v(s))`.
 - `FractionalIdeal.finite_factors` : If `I ≠ 0`, then `val_v(I) = 0` for all but finitely many
   maximal ideals of `R`.
-- `IsDedekindDomain.exists_sup_span_eq`: For every ideals `0 < I ≤ J`,
+- `IsDedekindDomain.exists_sup_span_eq`: For all ideals `0 < I ≤ J`,
   there exists `a` such that `J = I + ⟨a⟩`.
 - `Ideal.map_algebraMap_eq_finset_prod_pow`: if `p` is a maximal ideal, then the lift of `p`
   in an extension is the product of the primes over `p` to the power the ramification index.
@@ -72,7 +72,7 @@ def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
 
 open Associates in
 theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
-    [DecidableEq (Ideal R)] {I : Ideal R} (hI : I ≠ 0) :
+    {I : Ideal R} (hI : I ≠ 0) :
     maxPowDividing v I =
       v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
   classical
@@ -359,7 +359,7 @@ theorem count_mul {I I' : FractionalIdeal R⁰ K} (hI : I ≠ 0) (hI' : I' ≠ 0
     Associates.mk_ne_zero.mpr (ideal_factor_ne_zero hI' haJ')
   have h_prod : I * I' = spanSingleton R⁰ ((algebraMap R K) (a * a'))⁻¹ * ↑(J * J') := by
     rw [haJ, haJ', mul_assoc, mul_comm (J : FractionalIdeal R⁰ K), mul_assoc, ← mul_assoc,
-      spanSingleton_mul_spanSingleton, coeIdeal_mul, RingHom.map_mul, mul_inv,
+      spanSingleton_mul_spanSingleton, coeIdeal_mul, map_mul, mul_inv,
       mul_comm (J : FractionalIdeal R⁰ K)]
   rw [count_well_defined K v hI haJ, count_well_defined K v hI' haJ',
     count_well_defined K v (mul_ne_zero hI hI') h_prod, ← Associates.mk_mul_mk,
@@ -606,7 +606,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   have : ∀ p ∈ s, J * ∏ q ∈ s, q.asIdeal < J * ∏ q ∈ s \ {p}, q.asIdeal := by
     intro p hps
     conv_rhs => rw [← mul_one (J * _)]
-    rw [Finset.prod_eq_mul_prod_diff_singleton hps, ← mul_assoc,
+    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem hps, ← mul_assoc,
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
@@ -640,7 +640,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   by_cases hqp : q = p'
   · subst hqp
     convert sub_mem H₁ H₂
-    rw [Finset.sum_eq_add_sum_diff_singleton hp's, add_sub_cancel_right]
+    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
 
@@ -742,7 +742,7 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
     refine Submodule.comap_mono ?_
     intro x hx
     refine (Submodule.mem_inf.mp (this.ge ?_)).1
-    simp only [val_eq_coe, Algebra.lsmul_coe, smul_eq_mul, mem_coe]
+    simp only [Algebra.lsmul_coe, smul_eq_mul]
     exact mul_mem_mul (mem_spanSingleton_self _ _) hx
   · rw [← LinearMap.ker_eq_bot, Submodule.mapQ, Submodule.ker_liftQ,
       LinearMap.ker_comp, Submodule.ker_mkQ, ← Submodule.comap_comp,
@@ -785,7 +785,8 @@ end div
 
 section primesOver
 
-variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [NoZeroSMulDivisors S R]
+variable {S : Type*} [CommRing S] [Algebra S R] [Algebra.IsIntegral S R] [IsDomain S]
+  [Module.IsTorsionFree S R]
 
 open IsDedekindDomain Ideal.IsDedekindDomain HeightOneSpectrum
 

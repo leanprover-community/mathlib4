@@ -25,7 +25,7 @@ public import Mathlib.Data.Finset.Sigma
 The main definition of this file is `Equiv.Perm.sign`,
 associating a `ℤˣ` sign with a permutation.
 
-Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Fintype.lean`
+Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Finite.lean`
 
 -/
 
@@ -113,7 +113,7 @@ theorem swap_induction_on [Finite α] {motive : Perm α → Prop} (f : Perm α)
 theorem mclosure_isSwap [Finite α] : Submonoid.closure { σ : Perm α | IsSwap σ } = ⊤ := by
   cases nonempty_fintype α
   refine top_unique fun x _ ↦ ?_
-  obtain ⟨h1, h2⟩ := Subtype.mem (truncSwapFactors x).out
+  obtain ⟨h1, h2⟩ := (truncSwapFactors x).out.prop
   rw [← h1]
   exact Submonoid.list_prod_mem _ fun y hy ↦ Submonoid.subset_closure (h2 y hy)
 
@@ -363,7 +363,7 @@ variable [Fintype α]
 
 @[simp]
 theorem sign_mul (f g : Perm α) : sign (f * g) = sign f * sign g :=
-  MonoidHom.map_mul sign f g
+  map_mul sign f g
 
 @[simp]
 theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
@@ -371,15 +371,15 @@ theorem sign_trans (f g : Perm α) : sign (f.trans g) = sign g * sign f := by
 
 @[simp]
 theorem sign_one : sign (1 : Perm α) = 1 :=
-  MonoidHom.map_one sign
+  map_one sign
 
 @[simp]
 theorem sign_refl : sign (Equiv.refl α) = 1 :=
-  MonoidHom.map_one sign
+  map_one sign
 
 @[simp]
 theorem sign_inv (f : Perm α) : sign f⁻¹ = sign f := by
-  rw [MonoidHom.map_inv sign f, Int.units_inv_eq_self]
+  rw [map_inv sign f, Int.units_inv_eq_self]
 
 @[simp]
 theorem sign_symm (e : Perm α) : sign e.symm = sign e :=

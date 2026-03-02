@@ -15,6 +15,8 @@ public import Mathlib.RepresentationTheory.Basic
 
 @[expose] public section
 
+open scoped MonoidAlgebra
+
 variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
 
@@ -59,13 +61,12 @@ instance [Nontrivial V] : Nontrivial ρ.invtSubmodule :=
 end invtSubmodule
 
 lemma asAlgebraHom_mem_of_forall_mem (p : Submodule k V) (hp : ∀ g, ∀ v ∈ p, ρ g v ∈ p)
-    (v : V) (hv : v ∈ p) (x : MonoidAlgebra k G) :
+    (v : V) (hv : v ∈ p) (x : k[G]) :
     ρ.asAlgebraHom x v ∈ p := by
   apply x.induction_on <;> aesop
 
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
-noncomputable def mapSubmodule :
-    ρ.invtSubmodule ≃o Submodule (MonoidAlgebra k G) ρ.asModule where
+noncomputable def mapSubmodule : ρ.invtSubmodule ≃o Submodule k[G] ρ.asModule where
   toFun p :=
     { toAddSubmonoid := (p : Submodule k V).toAddSubmonoid.map ρ.asModuleEquiv.symm
       smul_mem' := by
@@ -79,7 +80,7 @@ noncomputable def mapSubmodule :
     intro g v hv
     simp only [Submodule.orderIsoMapComap_symm_apply, Submodule.mem_comap] at hv ⊢
     convert q.smul_mem (MonoidAlgebra.of k G g) hv using 1
-    rw [← asModuleEquiv_symm_map_rho]⟩
+    rw [LinearEquiv.coe_coe, ← asModuleEquiv_symm_map_rho]⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
   map_rel_iff' {p q} :=

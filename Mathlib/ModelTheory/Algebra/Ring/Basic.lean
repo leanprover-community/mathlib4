@@ -66,6 +66,7 @@ namespace Ring
 
 open ringFunc Language
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This instance does not get inferred without `instDecidableEqFunctions` in
 `ModelTheory/Basic`. -/
 example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
@@ -218,6 +219,7 @@ This is a `def` and not an `instance`, because the path
 `Ring` => `Language.ring.Structure` => `Ring` cannot be made to
 commute by definition
 -/
+@[instance_reducible]
 def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
     CompatibleRing R :=
   { funMap := fun {n} f =>
@@ -314,7 +316,7 @@ abbrev compatibleRingOfRingStructure : CompatibleRing R :=
       rfl
     funMap_one := by
       simp only [Fin.forall_fin_zero_pi]
-      rfl  }
+      rfl }
 
 end Ring
 

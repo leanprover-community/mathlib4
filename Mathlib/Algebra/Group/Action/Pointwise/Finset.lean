@@ -79,7 +79,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
 
 /-- A multiplicative action of a monoid `α` on a type `β` gives a multiplicative action of
 `Finset α` on `Finset β`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- An additive action of an additive monoid `α` on a type `β` gives an additive action
       of `Finset α` on `Finset β` -/]
 protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
@@ -89,7 +89,7 @@ protected def mulAction [DecidableEq α] [Monoid α] [MulAction α β] :
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Finset β`.
 -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- An additive action of an additive monoid on a type `β` gives an additive action
       on `Finset β`. -/]
 protected def mulActionFinset [Monoid α] [MulAction α β] : MulAction α (Finset β) :=
@@ -207,6 +207,10 @@ theorem smul_finset_symmDiff : a • s ∆ t = (a • s) ∆ (a • t) :=
 @[to_additive (attr := simp)]
 theorem smul_finset_univ [Fintype β] : a • (univ : Finset β) = univ :=
   image_univ_of_surjective <| MulAction.surjective a
+
+@[to_additive (attr := simp)]
+theorem smul_finset_eq_univ [Fintype β] : a • s = univ ↔ s = univ := by
+  rw [smul_eq_iff_eq_inv_smul, smul_finset_univ]
 
 @[to_additive (attr := simp)]
 theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ : Finset β) = univ :=

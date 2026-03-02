@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Star.Conjneg
 # Order properties of conjugation-negation
 -/
 
-@[expose] public section
+public section
 
 open scoped ComplexConjugate
 

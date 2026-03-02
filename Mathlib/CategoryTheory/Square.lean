@@ -121,7 +121,7 @@ lemma hom_ext {sq₁ sq₂ : Square C} {f g : sq₁ ⟶ sq₂}
     (h₃ : f.τ₃ = g.τ₃) (h₄ : f.τ₄ = g.τ₄) : f = g :=
   Hom.ext h₁ h₂ h₃ h₄
 
-/-- Constructor for isomorphisms in `Square c` -/
+/-- Constructor for isomorphisms in `Square C` -/
 def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq₁.X₂ ≅ sq₂.X₂)
     (e₃ : sq₁.X₃ ≅ sq₂.X₃) (e₄ : sq₁.X₄ ≅ sq₂.X₄)
     (comm₁₂ : sq₁.f₁₂ ≫ e₂.hom = e₁.hom ≫ sq₂.f₁₂)
@@ -316,6 +316,7 @@ def unopFunctor : (Square Cᵒᵖ)ᵒᵖ ⥤ Square C where
       comm₂₄ := Quiver.Hom.op_inj (by simp)
       comm₃₄ := Quiver.Hom.op_inj (by simp) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `(Square C)ᵒᵖ ≌ Square Cᵒᵖ`. -/
 def opEquivalence : (Square C)ᵒᵖ ≌ Square Cᵒᵖ where
   functor := opFunctor

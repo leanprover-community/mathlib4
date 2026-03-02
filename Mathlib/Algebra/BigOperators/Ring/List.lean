@@ -18,7 +18,7 @@ public import Mathlib.Algebra.BigOperators.Group.List.Basic
 This file contains the results concerning the interaction of list big operators with rings.
 -/
 
-@[expose] public section
+public section
 
 open MulOpposite List
 

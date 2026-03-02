@@ -6,8 +6,9 @@ Authors: Xavier Roblot, Kenny Lau
 module
 
 public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Prime fields
@@ -29,16 +30,19 @@ contains a unique prime field: it is the smallest field contained in `K`.
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
   have h := Subsingleton.elim ((⊥ : Subfield ℚ).subtype.comp (Rat.castHom _)) (.id _ : ℚ →+* ℚ)
   (congr($h x) : _ = x) ▸ Subtype.prop _
 
+set_option backward.isDefEq.respectTransparency false in
 instance (p : ℕ) [hp : Fact (Nat.Prime p)] : Subsingleton (Subfield (ZMod p)) :=
- subsingleton_of_top_le_bot fun x _ ↦
-  have h := Subsingleton.elim ((⊥ : Subfield (ZMod p)).subtype.comp
-    (ZMod.castHom dvd_rfl _)) (.id _ : ZMod p →+* ZMod p)
-  (congr($h x) : _ = x) ▸ Subtype.prop _
+  subsingleton_of_top_le_bot fun x _ ↦
+    have h := Subsingleton.elim ((⊥ : Subfield (ZMod p)).subtype.comp
+      (ZMod.castHom dvd_rfl _)) (.id _ : ZMod p →+* ZMod p)
+    (congr($h x) : _ = x) ▸ Subtype.prop _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The smallest subfield of a field of characteristic `0` is (the image of) `ℚ`.
 -/
@@ -47,6 +51,7 @@ theorem Subfield.bot_eq_of_charZero {K : Type*} [Field K] [CharZero K] :
   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap ℚ K),
     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The smallest subfield of a field of characteristic `p` is (the image of) `ZMod p`.
 Note that the fact that the field `K` is of characteristic `p` is stated by the fact that it is

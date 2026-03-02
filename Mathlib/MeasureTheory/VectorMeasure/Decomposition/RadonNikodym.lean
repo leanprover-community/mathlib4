@@ -16,7 +16,7 @@ that depend both on the Lebesgue decomposition of signed measures
 and the theory of Radon-Nikodym derivatives of usual measures.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

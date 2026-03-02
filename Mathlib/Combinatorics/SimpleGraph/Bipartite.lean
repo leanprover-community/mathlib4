@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Combinatorics.Enumerative.DoubleCounting
 public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Copy
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
@@ -44,6 +45,11 @@ This file proves results about bipartite simple graphs, including several double
   See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version, and
   `SimpleGraph.isBipartiteWith_sum_degrees_eq_card_edges'` for the version from the "right".
 
+* `SimpleGraph.completeBipartiteGraph_isContained_iff` is the proof that simple graphs contain a
+  copy of a `completeBipartiteGraph α β` iff there exists a "left" subset of `card α` vertices and
+  a "right" subset of `card β` vertices such that every vertex in the "left" subset is adjacent to
+  every vertex in the "right" subset.
+
 * `SimpleGraph.between`; the simple graph `G.between s t` is the subgraph of `G` containing edges
   that connect a vertex in the set `s` to a vertex in the set `t`.
 
@@ -61,7 +67,7 @@ relation `r : α → β → Prop`, see `Mathlib/Combinatorics/Enumerative/Double
 @[expose] public section
 
 
-open BigOperators Finset Fintype
+open Finset Fintype
 
 namespace SimpleGraph
 
@@ -275,6 +281,7 @@ section IsBipartite
 /-- The predicate for a simple graph to be bipartite. -/
 abbrev IsBipartite (G : SimpleGraph V) : Prop := G.Colorable 2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a simple graph `G` is bipartite, then there exist disjoint sets `s` and `t`
 such that all edges in `G` connect a vertex in `s` to a vertex in `t`. -/
 lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipartiteWith s t := by
@@ -283,7 +290,7 @@ lemma IsBipartite.exists_isBipartiteWith (h : G.IsBipartite) : ∃ s t, G.IsBipa
   rintro v w hvw
   apply hc at hvw
   simp [Set.mem_setOf_eq] at hvw ⊢
-  cutsat
+  lia
 
 /-- If a simple graph `G` has a bipartition, then it is bipartite. -/
 lemma IsBipartiteWith.isBipartite {s t : Set V} (h : G.IsBipartiteWith s t) : G.IsBipartite := by
@@ -297,6 +304,64 @@ theorem isBipartite_iff_exists_isBipartiteWith :
   ⟨IsBipartite.exists_isBipartiteWith, fun ⟨_, _, h⟩ ↦ h.isBipartite⟩
 
 end IsBipartite
+
+section Copy
+
+variable {α β : Type*} [Fintype α] [Fintype β]
+
+/-- A "left" subset of `card α` vertices and a "right" subset of `card β` vertices such that every
+vertex in the "left" subset is adjacent to every vertex in the "right" subset gives rise to a copy
+of a complete bipartite graph. -/
+noncomputable def Copy.completeBipartiteGraph
+    (left right : Finset V) (card_left : #left = card α) (card_right : #right = card β)
+    (h : G.IsCompleteBetween left right) : Copy (completeBipartiteGraph α β) G := by
+  have : Nonempty (α ↪ left) := by
+    rw [← card_coe] at card_left
+    exact Function.Embedding.nonempty_of_card_le card_left.symm.le
+  let fα : α ↪ left := Classical.arbitrary (α ↪ left)
+  have : Nonempty (β ↪ right) := by
+    rw [← card_coe] at card_right
+    exact Function.Embedding.nonempty_of_card_le card_right.symm.le
+  let fβ : β ↪ right := Classical.arbitrary (β ↪ right)
+  let f : α ⊕ β ↪ V := by
+    refine ⟨Sum.elim (Subtype.val ∘ fα) (Subtype.val ∘ fβ), fun s₁ s₂ ↦ ?_⟩
+    match s₁, s₂ with
+    | .inl p₁, .inl p₂ => simp
+    | .inr p₁, .inl p₂ =>
+      simpa using (h (fα p₂).prop (fβ p₁).prop).ne'
+    | .inl p₁, .inr p₂ =>
+      simpa using (h (fα p₁).prop (fβ p₂).prop).symm.ne'
+    | .inr p₁, .inr p₂ => simp
+  refine ⟨⟨f.toFun, fun {s₁ s₂} hadj ↦ ?_⟩, f.injective⟩
+  rcases hadj with ⟨hs₁, hs₂⟩ | ⟨hs₁, hs₂⟩
+  all_goals dsimp [f]
+  · rw [← Sum.inl_getLeft s₁ hs₁, ← Sum.inr_getRight s₂ hs₂,
+      Sum.elim_inl, Sum.elim_inr]
+    exact h (by simp) (by simp)
+  · rw [← Sum.inr_getRight s₁ hs₁, ← Sum.inl_getLeft s₂ hs₂,
+      Sum.elim_inl, Sum.elim_inr, adj_comm]
+    exact h (by simp) (by simp)
+
+/-- Simple graphs contain a copy of a `completeBipartiteGraph α β` iff there exists a "left"
+subset of `card α` vertices and a "right" subset of `card β` vertices such that every vertex
+in the "left" subset is adjacent to every vertex in the "right" subset. -/
+theorem completeBipartiteGraph_isContained_iff :
+    completeBipartiteGraph α β ⊑ G ↔
+      ∃ (left right : Finset V), #left = card α ∧ #right = card β
+        ∧ G.IsCompleteBetween left right where
+  mp := by
+    refine fun ⟨f⟩ ↦ ⟨univ.map ⟨f ∘ Sum.inl, f.injective.comp Sum.inl_injective⟩,
+      univ.map ⟨f ∘ Sum.inr, f.injective.comp Sum.inr_injective⟩, by simp, by simp,
+      fun _ hl _ hr ↦ ?_⟩
+    rw [mem_coe, mem_map] at hl hr
+    replace ⟨_, _, hl⟩ := hl
+    replace ⟨_, _, hr⟩ := hr
+    rw [← hl, ← hr]
+    exact f.toHom.map_adj (by simp)
+  mpr := fun ⟨left, right, card_left, card_right, h⟩ ↦
+    ⟨.completeBipartiteGraph left right card_left card_right h⟩
+
+end Copy
 
 section Between
 

@@ -5,12 +5,10 @@ Authors: Kim Morrison
 -/
 module
 
-public meta import Lean.Meta.Tactic.TryThis
-public meta import Batteries.Linter.UnreachableTactic
+public import Lean.Meta.Tactic.TryThis
 public meta import Batteries.Control.Nondet.Basic
-public import Mathlib.Init
-public meta import Mathlib.Lean.Elab.InfoTree
-public meta import Mathlib.Tactic.Basic
+public import Batteries.Linter.UnreachableTactic
+public import Mathlib.Tactic.Basic
 
 /-!
 # The `hint` tactic.

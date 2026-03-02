@@ -83,8 +83,8 @@ class CeilDiv where
   /-- Do not use this. Use `zero_ceilDiv` instead. -/
   protected zero_ceilDiv (a) : ceilDiv 0 a = 0
 
-@[inherit_doc] infixl:70 " ⌊/⌋ "   => FloorDiv.floorDiv
-@[inherit_doc] infixl:70 " ⌈/⌉ "   => CeilDiv.ceilDiv
+@[inherit_doc] infixl:70 " ⌊/⌋ " => FloorDiv.floorDiv
+@[inherit_doc] infixl:70 " ⌈/⌉ " => CeilDiv.ceilDiv
 
 variable {α β}
 

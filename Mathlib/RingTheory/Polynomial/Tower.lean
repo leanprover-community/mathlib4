@@ -19,10 +19,10 @@ When you update this file, you can also try to make a corresponding update in
 `RingTheory.MvPolynomial.Tower`.
 -/
 
-@[expose] public section
+public section
 
 
-open Polynomial
+open Module
 
 variable (R A B : Type*)
 
@@ -52,8 +52,8 @@ theorem aeval_algebraMap_apply (x : A) (p : R[X]) :
   rw [aeval_def, aeval_def, hom_eval₂, ← IsScalarTower.algebraMap_eq]
 
 @[simp]
-theorem aeval_algebraMap_eq_zero_iff [NoZeroSMulDivisors A B] [Nontrivial B] (x : A) (p : R[X]) :
-    aeval (algebraMap A B x) p = 0 ↔ aeval x p = 0 := by
+theorem aeval_algebraMap_eq_zero_iff [IsDomain A] [IsTorsionFree A B] [Nontrivial B] (x : A)
+    (p : R[X]) : aeval (algebraMap A B x) p = 0 ↔ aeval x p = 0 := by
   rw [aeval_algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_eq_zero,
     iff_false_intro (one_ne_zero' B), or_false]
 
@@ -75,6 +75,7 @@ section CommSemiring
 
 variable {R A} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = aeval x p :=
   aeval_algebraMap_apply A x p
@@ -82,3 +83,15 @@ theorem aeval_coe (S : Subalgebra R A) (x : S) (p : R[X]) : aeval (x : A) p = ae
 end CommSemiring
 
 end Subalgebra
+
+namespace Polynomial
+
+variable {R A} [CommSemiring R] [CommRing A] [Algebra R A]
+
+theorem aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C (s : Multiset A) {x : A} (hx : x ∈ s)
+    {p : R[X]} (hp : p.mapAlg R A = (s.map (X - C ·)).prod) : aeval x p = 0 := by
+  rw [← aeval_map_algebraMap A, ← mapAlg_eq_map, hp, map_multiset_prod, Multiset.prod_eq_zero]
+  rw [Multiset.map_map, Multiset.mem_map]
+  exact ⟨x, hx, by simp⟩
+
+end Polynomial

@@ -81,6 +81,7 @@ section Fintype
 
 variable {J : Type*} [Fintype J]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preadditive category, we can construct a biproduct for `f : J → C` from
 any bicone `b` for `f` satisfying `total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.X`.
 
@@ -151,6 +152,7 @@ def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functo
     (ht : IsLimit t) : (Bicone.ofLimitCone ht).IsBilimit :=
   isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cones.ext (Iso.refl _) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
 bicone. -/
 def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone) : t.IsBilimit :=
@@ -275,6 +277,7 @@ theorem biproduct.map_matrix {f : J → C} {g : J → C} {h : K → C} (m : ∀ 
 
 end HasFiniteBiproducts
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reindex a categorical biproduct via an equivalence of the index types. -/
 @[simps]
 def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
@@ -337,6 +340,7 @@ theorem hasBinaryBiproduct_of_total {X Y : C} (b : BinaryBicone X Y)
     { bicone := b
       isBilimit := isBinaryBilimitOfTotal b total }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can turn any limit cone over a pair into a bicone. -/
 @[simps]
 def BinaryBicone.ofLimitCone {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) :
@@ -361,6 +365,7 @@ def isBinaryBilimitOfIsLimit {X Y : C} (t : BinaryBicone X Y) (ht : IsLimit t.to
     t.IsBilimit :=
   isBinaryBilimitOfTotal _ (by refine BinaryFan.IsLimit.hom_ext ht ?_ ?_ <;> simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def binaryBiconeIsBilimitOfLimitConeOfIsLimit {X Y : C} {t : Cone (pair X Y)} (ht : IsLimit t) :
     (BinaryBicone.ofLimitCone ht).IsBilimit :=
@@ -378,6 +383,7 @@ theorem HasBinaryBiproduct.of_hasBinaryProduct (X Y : C) [HasBinaryProduct X Y] 
 theorem HasBinaryBiproducts.of_hasBinaryProducts [HasBinaryProducts C] : HasBinaryBiproducts C :=
   { has_binary_biproduct := fun X Y => HasBinaryBiproduct.of_hasBinaryProduct X Y }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- We can turn any colimit cocone over a pair into a bicone. -/
 @[simps]
 def BinaryBicone.ofColimitCocone {X Y : C} {t : Cocone (pair X Y)} (ht : IsColimit t) :
@@ -473,6 +479,7 @@ lemma biprod.ext_from_iff {f g : X ⊞ Y ⟶ Z} :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every split mono `f` with a cokernel induces a binary bicone with `f` as its `inl` and
 the cokernel map as its `snd`.
 We will show in `is_bilimit_binary_bicone_of_split_mono_of_cokernel` that this binary bicone is in
@@ -505,6 +512,7 @@ def binaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f] 
     apply Category.id_comp
   inr_snd := by apply SplitEpi.id
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bicone constructed in `binaryBiconeOfSplitMonoOfCokernel` is a bilimit.
 This is a version of the splitting lemma that holds in all preadditive categories. -/
 def isBilimitBinaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSplitMono f]
@@ -520,6 +528,7 @@ def isBilimitBinaryBiconeOfIsSplitMonoOfCokernel {X Y : C} {f : X ⟶ Y} [IsSpli
       simp only [binaryBiconeOfIsSplitMonoOfCokernel_inl, Cofork.IsColimit.π_desc,
         cokernelCoforkOfCofork_π, Cofork.π_ofπ, add_sub_cancel])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `b` is a binary bicone such that `b.inl` is a kernel of `b.snd`, then `b` is a bilimit
 bicone. -/
 def BinaryBicone.isBilimitOfKernelInl {X Y : C} (b : BinaryBicone X Y)
@@ -536,6 +545,7 @@ def BinaryBicone.isBilimitOfKernelInl {X Y : C} (b : BinaryBicone X Y)
       rw [← sub_eq_zero, ← hq, ← Category.comp_id q, ← b.inl_fst, ← Category.assoc, hq, h₁',
         zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `b` is a binary bicone such that `b.inr` is a kernel of `b.fst`, then `b` is a bilimit
 bicone. -/
 def BinaryBicone.isBilimitOfKernelInr {X Y : C} (b : BinaryBicone X Y)
@@ -551,6 +561,7 @@ def BinaryBicone.isBilimitOfKernelInr {X Y : C} (b : BinaryBicone X Y)
       rw [← sub_eq_zero, ← hq, ← Category.comp_id q, ← b.inr_snd, ← Category.assoc, hq, h₂',
         zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `b` is a binary bicone such that `b.fst` is a cokernel of `b.inr`, then `b` is a bilimit
 bicone. -/
 def BinaryBicone.isBilimitOfCokernelFst {X Y : C} (b : BinaryBicone X Y)
@@ -566,6 +577,7 @@ def BinaryBicone.isBilimitOfCokernelFst {X Y : C} (b : BinaryBicone X Y)
       rw [← sub_eq_zero, ← hq, ← Category.id_comp q, ← b.inl_fst, Category.assoc, hq, h₁',
         comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `b` is a binary bicone such that `b.snd` is a cokernel of `b.inl`, then `b` is a bilimit
 bicone. -/
 def BinaryBicone.isBilimitOfCokernelSnd {X Y : C} (b : BinaryBicone X Y)
@@ -581,6 +593,7 @@ def BinaryBicone.isBilimitOfCokernelSnd {X Y : C} (b : BinaryBicone X Y)
       rw [← sub_eq_zero, ← hq, ← Category.id_comp q, ← b.inr_snd, Category.assoc, hq, h₂',
         comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every split epi `f` with a kernel induces a binary bicone with `f` as its `snd` and
 the kernel map as its `inl`.
 We will show in `binary_bicone_of_is_split_mono_of_cokernel` that this binary bicone is in fact
@@ -610,6 +623,7 @@ def binaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f] {c :
         Fork.ι_ofι, IsSplitEpi.id_assoc]
     inr_snd := by simp }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The bicone constructed in `binaryBiconeOfIsSplitEpiOfKernel` is a bilimit.
 This is a version of the splitting lemma that holds in all preadditive categories. -/
 def isBilimitBinaryBiconeOfIsSplitEpiOfKernel {X Y : C} {f : X ⟶ Y} [IsSplitEpi f]
@@ -785,8 +799,7 @@ def Biprod.isoElim (f : X₁ ⊞ X₂ ≅ Y₁ ⊞ Y₂) [IsIso (biprod.inl ≫ 
 
 theorem Biprod.column_nonzero_of_iso {W X Y Z : C} (f : W ⊞ X ⟶ Y ⊞ Z) [IsIso f] :
     𝟙 W = 0 ∨ biprod.inl ≫ f ≫ biprod.fst ≠ 0 ∨ biprod.inl ≫ f ≫ biprod.snd ≠ 0 := by
-  by_contra! h
-  rcases h with ⟨nz, a₁, a₂⟩
+  by_contra! ⟨nz, a₁, a₂⟩
   set x := biprod.inl ≫ f ≫ inv f ≫ biprod.fst
   have h₁ : x = 𝟙 W := by simp [x]
   have h₀ : x = 0 := by
@@ -886,6 +899,7 @@ lemma preservesBiproduct_of_preservesProduct {f : J → C} [PreservesLimit (Disc
             (isLimitOfPreserves F hb.isLimit)) <|
         Cones.ext (Iso.refl _) (by rintro ⟨⟩; simp)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the (product-like) biproduct comparison for `F` and `f` is a monomorphism, then `F`
 preserves the biproduct of `f`. For the converse, see `mapBiproduct`. -/
 lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct f]
@@ -999,6 +1013,7 @@ lemma preservesBinaryBiproduct_of_preservesBinaryProduct {X Y : C} [PreservesLim
         Cones.ext (by dsimp; rfl) fun j => by
           rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the (product-like) biproduct comparison for `F`, `X` and `Y` is a monomorphism, then
 `F` preserves the biproduct of `X` and `Y`. For the converse, see `map_biprod`. -/
 lemma preservesBinaryBiproduct_of_mono_biprodComparison {X Y : C} [HasBinaryBiproduct X Y]

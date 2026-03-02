@@ -59,7 +59,7 @@ def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
     { obj := fun Y => F.obj (X, Y)
       map := fun g => F.map (𝟙 X ×ₘ g)
       map_id := fun Y => by rw [← prod_id]; exact F.map_id ⟨X,Y⟩
-      map_comp := fun f g => by simp [← F.map_comp]}
+      map_comp := fun f g => by simp [← F.map_comp] }
   map f :=
     { app := fun Y => F.map (f ×ₘ 𝟙 Y)
       naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
@@ -110,6 +110,16 @@ def flipping : C ⥤ D ⥤ E ≌ D ⥤ C ⥤ E where
 def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulFunctor
 
+/-- The functor `curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E` is fully faithful. -/
+def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).FullyFaithful :=
+  currying.fullyFaithfulInverse
+
+instance : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).Full :=
+  fullyFaithfulCurry.full
+
+instance : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).Faithful :=
+  fullyFaithfulCurry.faithful
+
 instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
   fullyFaithfulUncurry.full
 
@@ -120,7 +130,7 @@ instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
 between `curry.obj ((F₁.prod F₂).comp G)` and
 `F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂` in the category `C ⥤ C' ⥤ E`. -/
 @[simps!]
-def curryObjProdComp {C' D' : Type*} [Category C'] [Category D']
+def curryObjProdComp {C' D' : Type*} [Category* C'] [Category* D']
     (F₁ : C ⥤ D) (F₂ : C' ⥤ D') (G : D × D' ⥤ E) :
     curry.obj ((F₁.prod F₂).comp G) ≅
       F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂ :=

@@ -9,11 +9,13 @@ public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Fintype.BigOperators
 
+import Mathlib.Algebra.Module.End
+
 /-!
 # Finite sums over modules over a ring
 -/
 
-@[expose] public section
+public section
 
 variable {ι κ α β R M : Type*}
 

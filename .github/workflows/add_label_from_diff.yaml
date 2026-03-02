@@ -21,33 +21,42 @@ jobs:
     # Don't run on forks, where we wouldn't have permissions to add the label anyway.
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
-    - name: Checkout code
-      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+    - name: Checkout master branch to build autolabel from
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        ref: ${{ github.event.pull_request.head.sha }}
-        fetch-depth: 0
+        ref: master
+        path: tools
     - name: Configure Lean
-      uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+      uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
       with:
         auto-config: false
         use-github-cache: false
         use-mathlib-cache: false
-    - name: lake exe autolabel
+        lake-package-directory: tools # Building here
+    - name: Build autolabel from master
+      working-directory: tools
       run: |
-        # the checkout dance, to avoid a detached head
-        git checkout master
-        git checkout -
-        labels="$(lake exe autolabel)"
+        lake build autolabel
+    - name: Checkout branch to label
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        ref: ${{ github.event.pull_request.head.sha || github.sha }}
+        fetch-depth: 0
+        path: pr-branch
+    - name: Run autolabel
+      working-directory: pr-branch
+      run: |
+        labels="$("${GITHUB_WORKSPACE}/tools/.lake/build/bin/autolabel")"
         printf '%s\n' "${labels}"
         # extract
-        label="$(printf '%s' "${labels}" | sed -n 's=.*#\[\([^,]*\)\].*=\1=p')"
+        label="$(printf '%s' "${labels}" | sed -n 's=^::notice::.*#\[\([^,]*\)\].*=\1=p')"
         printf 'label: "%s"\n' "${label}"
-        if [ -n "${label}" ]
+        if [ -n "${label}" ] && [ -n "${PR_NUMBER}" ]
         then
           printf 'Applying label %s\n' "${label}"
           # we use curl rather than octokit/request-action so that the job won't fail
           # (and send an annoying email) if the labels don't exist
-          url="https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels"
+          url="https://api.github.com/repos/${{ github.repository }}/issues/${PR_NUMBER}/labels"
           printf 'url: %s\n' "${url}"
           jsonLabel="$(printf '{"labels":["%s"]}' "${label}")"
           printf 'jsonLabel: %s\n' "${jsonLabel}"
@@ -62,3 +71,6 @@ jobs:
         fi
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # the PR number could be undefined in workflows triggered by 'push',
+        # in which case we only log the applicable label and exit
+        PR_NUMBER: ${{ github.event.pull_request.number }}

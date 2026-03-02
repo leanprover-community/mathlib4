@@ -31,6 +31,7 @@ namespace FGModuleCat
 
 variable {J : Type} [SmallCategory J] [FinCategory J] {k : Type u} [Ring k]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, Module.Finite k (Z j)] :
     Module.Finite k (∐ fun j => Z j : ModuleCat.{v} k) := by
   classical
@@ -57,7 +58,7 @@ def forget₂CreatesColimit (F : J ⥤ FGModuleCat k) :
 instance : CreatesColimitsOfShape J (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) where
   CreatesColimit {F} := forget₂CreatesColimit F
 
-instance (J : Type) [Category J] [FinCategory J] :
+instance (J : Type) [SmallCategory J] [FinCategory J] :
     HasColimitsOfShape J (FGModuleCat.{v} k) :=
   hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape
     (forget₂ (FGModuleCat k) (ModuleCat.{v} k))

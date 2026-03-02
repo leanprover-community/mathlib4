@@ -270,7 +270,7 @@ theorem translate_inv_apply (x y : ℝ) : (translate <| Multiplicative.ofAdd x)�
 @[simp]
 theorem translate_zpow (x : ℝ) (n : ℤ) :
     translate (Multiplicative.ofAdd x) ^ n = translate (Multiplicative.ofAdd <| ↑n * x) := by
-  simp only [← zsmul_eq_mul, ofAdd_zsmul, MonoidHom.map_zpow]
+  simp only [← zsmul_eq_mul, ofAdd_zsmul, map_zpow]
 
 @[simp]
 theorem translate_pow (x : ℝ) (n : ℕ) :
@@ -802,7 +802,7 @@ theorem exists_eq_add_translationNumber (hf : Continuous f) : ∃ x, f x = x + �
   obtain ⟨b, hb⟩ : ∃ x, x + τ f ≤ f x := by
     by_contra! H
     exact lt_irrefl _ (f.translationNumber_lt_of_forall_lt_add hf H)
-  exact intermediate_value_univ₂ hf (continuous_id.add continuous_const) ha hb
+  exact intermediate_value_univ₂ hf (by fun_prop) ha hb
 
 theorem translationNumber_eq_int_iff (hf : Continuous f) {m : ℤ} :
     τ f = m ↔ ∃ x : ℝ, f x = x + m := by
@@ -838,7 +838,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
     refine fun x => ⟨x + 2, ?_⟩
     rintro _ ⟨g, rfl⟩
     have : τ (f₂ g⁻¹) = -τ (f₂ g) := by
-      rw [← MonoidHom.coe_toHomUnits, MonoidHom.map_inv, translationNumber_units_inv,
+      rw [← MonoidHom.coe_toHomUnits, map_inv, translationNumber_units_inv,
         MonoidHom.coe_toHomUnits]
     calc
       f₂ g⁻¹ (f₁ g x) ≤ f₂ g⁻¹ (x + τ (f₁ g) + 1) :=
@@ -857,7 +857,7 @@ theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Gro
     csSup_div_semiconj F₂ F₁ fun x => ?_⟩ <;> simp only [hF₁, hF₂, ← map_inv]
   · exact ciSup_mono (this y) fun g => mono _ (mono _ hxy)
   · simp only [map_add_one]
-    exact (Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const)
+    exact (Monotone.map_ciSup_of_continuousAt (by fun_prop)
       (monotone_id.add_const (1 : ℝ)) (this x)).symm
   · exact this x
 

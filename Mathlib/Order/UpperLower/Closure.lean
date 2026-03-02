@@ -241,6 +241,7 @@ protected alias ⟨BddAbove.of_lowerClosure, BddAbove.lowerClosure⟩ := bddAbov
 
 protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelow_upperClosure
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma IsLowerSet.disjoint_upperClosure_left (ht : IsLowerSet t) :
     Disjoint ↑(upperClosure s) t ↔ Disjoint s t := by
   refine ⟨Disjoint.mono_left subset_upperClosure, ?_⟩
@@ -284,6 +285,24 @@ lemma IsAntichain.maximal_mem_lowerClosure_iff_mem (hs : IsAntichain (· ≤ ·)
 
 end PartialOrder
 
+section LinearOrder
+
+variable [LinearOrder α]
+
+lemma upperClosure_eq_bot {s : Set α} (hs : ¬ BddBelow s) : upperClosure s = ⊥ :=
+  le_bot_iff.mp fun x _ ↦ ⟨_, (not_bddBelow_iff.mp hs x).choose_spec.imp id le_of_lt⟩
+
+lemma upperClosure_eq_bot_iff [NoMinOrder α] {s : Set α} : upperClosure s = ⊥ ↔ ¬ BddBelow s :=
+  ⟨fun h₁ h₂ ↦ by simpa [h₁] using bddBelow_upperClosure.mpr h₂, upperClosure_eq_bot⟩
+
+lemma lowerClosure_eq_top {s : Set α} (hs : ¬ BddAbove s) : lowerClosure s = ⊤ :=
+  SetLike.coe_injective congr($(upperClosure_eq_bot (α := αᵒᵈ) hs).1)
+
+lemma lowerClosure_eq_top_iff [NoMaxOrder α] {s : Set α} : lowerClosure s = ⊤ ↔ ¬ BddAbove s :=
+  ⟨fun h₁ h₂ ↦ by simpa [h₁] using bddAbove_lowerClosure.mpr h₂, lowerClosure_eq_top⟩
+
+end LinearOrder
+
 /-! ### Set Difference -/
 
 namespace LowerSet
@@ -314,6 +333,7 @@ lemma erase_le : s.erase a ≤ s := diff_subset
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma sdiff_lt_left : s.sdiff t < s ↔ ¬ Disjoint ↑s t :=
@@ -350,12 +370,12 @@ end LowerSet
 namespace UpperSet
 variable [Preorder α] {s : UpperSet α} {t : Set α} {a : α}
 
-/-- The biggest upper subset of a upper set `s` disjoint from a set `t`. -/
+/-- The biggest upper subset of an upper set `s` disjoint from a set `t`. -/
 def sdiff (s : UpperSet α) (t : Set α) : UpperSet α where
   carrier := s \ lowerClosure t
   upper' := s.upper.sdiff_of_isLowerSet (lowerClosure t).lower
 
-/-- The biggest upper subset of a upper set `s` not containing an element `a`. -/
+/-- The biggest upper subset of an upper set `s` not containing an element `a`. -/
 def erase (s : UpperSet α) (a : α) : UpperSet α where
   carrier := s \ LowerSet.Iic a
   upper' := s.upper.sdiff_of_isLowerSet (LowerSet.Iic a).lower
@@ -375,6 +395,7 @@ lemma le_erase : s ≤ s.erase a := diff_subset
 @[simp] protected lemma sdiff_eq_left : s.sdiff t = s ↔ Disjoint ↑s t := by
   simp [← SetLike.coe_set_eq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma erase_eq : s.erase a = s ↔ a ∉ s := by rw [← sdiff_singleton]; simp [-sdiff_singleton]
 
 @[simp] lemma lt_sdiff_left : s < s.sdiff t ↔ ¬ Disjoint ↑s t :=

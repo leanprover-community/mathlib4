@@ -88,6 +88,7 @@ def hallMatchingsFunctor {ι : Type u} {α : Type v} (t : ι → Finset α) :
   obj ι' := hallMatchingsOn t ι'.unop
   map {_ _} g f := hallMatchingsOn.restrict t (CategoryTheory.leOfHom g.unop) f
 
+set_option backward.isDefEq.respectTransparency false in
 instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset α) (ι' : Finset ι) :
     Finite (hallMatchingsOn t ι') := by
   classical
@@ -103,6 +104,7 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     rw [funext_iff] at h
     simpa [g] using h a
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is the version of **Hall's Marriage Theorem** in terms of indexed
 families of finite sets `t : ι → Finset α`.  It states that there is a
 set of distinct representatives if and only if every union of `k` of the
@@ -131,7 +133,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
       obtain ⟨u, hu⟩ := nonempty_sections_of_finite_inverse_system (hallMatchingsFunctor t)
       -- Interpret the resulting section of the inverse limit
       refine ⟨?_, ?_, ?_⟩
-      ·-- Build the matching function from the section
+      · -- Build the matching function from the section
         exact fun i =>
           (u (Opposite.op ({i} : Finset ι))).val ⟨i, by simp only [mem_singleton]⟩
       · -- Show that it is injective
@@ -162,6 +164,7 @@ instance {α : Type u} {β : Type v} [DecidableEq β] (R : SetRel α β)
   rw [h]
   apply FinsetCoe.fintype
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a version of **Hall's Marriage Theorem** in terms of a relation
 between types `α` and `β` such that `α` is finite and the image of
 each `x : α` is finite (it suffices for `β` to be finite; see

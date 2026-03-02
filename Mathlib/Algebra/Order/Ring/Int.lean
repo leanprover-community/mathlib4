@@ -43,6 +43,7 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℤ := .of_mul_pos @Int.m
 
 /-! ### Miscellaneous lemmas -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
   simp [← not_even_iff_odd, ← Set.compl_setOf, isCompl_compl]
 
@@ -81,15 +82,15 @@ theorem Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le (p q n : ℕ) (dvd : p.g
   have : a * p.succ + b * q.succ = n := by rw [add_mul, ← add_assoc,
     add_right_comm, mul_right_comm, ← add_mul, Int.emod_add_ediv_mul, eq, mul_comm, mul_comm b_n]
   rw [Nat.cast_add, Nat.cast_mul, Nat.cast_mul, Int.natCast_toNat_eq_self.mpr
-    (Int.emod_nonneg _ <| by cutsat), Int.natCast_toNat_eq_self.mpr, this]
+    (Int.emod_nonneg _ <| by lia), Int.natCast_toNat_eq_self.mpr, this]
   -- show b ≥ 0 by contradiction
   by_contra hb
-  replace hb : b ≤ -1 := by omega
+  replace hb : b ≤ -1 := by lia
   apply lt_irrefl (n : ℤ)
-  have ha := Int.emod_lt a_n (by cutsat : (q.succ : ℤ) ≠ 0)
+  have ha := Int.emod_lt a_n (by lia : (q.succ : ℤ) ≠ 0)
   rw [p.pred_succ, q.pred_succ] at le
   calc n = a * p.succ + b * q.succ := this.symm
-       _ ≤ q * p.succ + -1 * q.succ := by gcongr <;> omega
-       _ = p * q - 1 := by simp_rw [Nat.cast_succ, mul_add, mul_comm]; cutsat
+       _ ≤ q * p.succ + -1 * q.succ := by gcongr <;> lia
+       _ = p * q - 1 := by simp_rw [Nat.cast_succ, mul_add, mul_comm]; lia
        _ ≤ n - 1 := by rwa [sub_le_sub_iff_right, ← Nat.cast_mul, Nat.cast_le]
-       _ < n := by cutsat
+       _ < n := by lia

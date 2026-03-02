@@ -5,13 +5,16 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 module
 
-public import Mathlib.Control.Basic
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.List.Defs
 public import Mathlib.Data.List.Monad
 public import Mathlib.Logic.OpClass
 public import Mathlib.Logic.Unique
 public import Mathlib.Tactic.Common
+public import Batteries.Data.List
+public import Batteries.Tactic.Lint.Simp
+public import Batteries.Tactic.SeqFocus
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Basic properties of lists
@@ -33,7 +36,7 @@ namespace List
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
+variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l l₁ l₂ : List α}
 
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
@@ -258,10 +261,6 @@ theorem reverse_concat' (l : List α) (a : α) : (l ++ [a]).reverse = a :: l.rev
   rw [reverse_append]; rfl
 
 @[simp]
-theorem reverse_singleton (a : α) : reverse [a] = [a] :=
-  rfl
-
-@[simp]
 theorem reverse_involutive : Involutive (@reverse α) :=
   reverse_reverse
 
@@ -276,7 +275,7 @@ theorem reverse_bijective : Bijective (@reverse α) :=
   reverse_involutive.bijective
 
 theorem concat_eq_reverse_cons (a : α) (l : List α) : concat l a = reverse (a :: reverse l) := by
-  simp only [concat_eq_append, reverse_cons, reverse_reverse]
+  grind
 
 theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
     map f (reverseAux l₁ l₂) = reverseAux (map f l₁) (map f l₂) := by
@@ -348,12 +347,16 @@ theorem dropLast_append_getLast? : ∀ {l : List α}, ∀ a ∈ l.getLast?, drop
     rw [getLast?_cons_cons] at hc
     rw [dropLast_cons₂, cons_append, dropLast_append_getLast? _ hc]
 
-theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.iget
+theorem getLastI_eq_getLast?_getD [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default
   | [] => by simp [getLastI]
   | [_] => rfl
   | [_, _] => rfl
   | [_, _, _] => rfl
-  | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast? (c :: l)]
+  | _ :: _ :: c :: l => by simp [getLastI, getLastI_eq_getLast?_getD (c :: l)]
+
+@[deprecated getLastI_eq_getLast?_getD (since := "2026-01-05")]
+theorem getLastI_eq_getLast? [Inhabited α] : ∀ l : List α, l.getLastI = l.getLast?.getD default :=
+  getLastI_eq_getLast?_getD
 
 theorem getLast?_append_cons :
     ∀ (l₁ : List α) (a : α) (l₂ : List α), getLast? (l₁ ++ a :: l₂) = getLast? (a :: l₂)
@@ -370,19 +373,33 @@ theorem getLast?_append_of_ne_nil (l₁ : List α) :
 theorem mem_getLast?_append_of_mem_getLast? {l₁ l₂ : List α} {x : α} (h : x ∈ l₂.getLast?) :
     x ∈ (l₁ ++ l₂).getLast? := by grind
 
+theorem mem_dropLast_of_mem_of_ne_getLast {a : α} (ha : a ∈ l)
+    (ha' : a ≠ l.getLast (ne_nil_of_mem ha)) : a ∈ l.dropLast := by
+  grind [dropLast_concat_getLast]
+
+theorem mem_dropLast_of_mem_of_ne_getLastD {a d : α} (ha : a ∈ l) (ha' : a ≠ l.getLastD d) :
+    a ∈ l.dropLast :=
+  mem_dropLast_of_mem_of_ne_getLast ha <| by grind
+
+theorem mem_dropLast_of_mem_of_ne_getLast? {a : α} (ha : a ∈ l) (ha' : a ≠ l.getLast?) :
+    a ∈ l.dropLast :=
+  mem_dropLast_of_mem_of_ne_getLast ha <| by grind
+
 /-! ### head(!?) and tail -/
 
 @[simp]
 theorem head!_nil [Inhabited α] : ([] : List α).head! = default := rfl
 
-@[deprecated cons_head_tail (since := "2025-08-15")]
-theorem head_cons_tail (x : List α) (h : x ≠ []) : x.head h :: x.tail = x := by simp
-
 theorem head_eq_getElem_zero {l : List α} (hl : l ≠ []) :
     l.head hl = l[0]'(length_pos_iff.2 hl) :=
   (getElem_zero _).symm
 
-theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).iget := by cases l <;> rfl
+theorem head!_eq_head?_getD [Inhabited α] (l : List α) : head! l = (head? l).getD default := by
+  cases l <;> rfl
+
+@[deprecated head!_eq_head?_getD (since := "2026-01-05")]
+theorem head!_eq_head? [Inhabited α] (l : List α) : head! l = (head? l).getD default :=
+  head!_eq_head?_getD l
 
 theorem surjective_head! [Inhabited α] : Surjective (@head! α _) := fun x => ⟨[x], rfl⟩
 
@@ -474,7 +491,7 @@ theorem getElem?_surjective_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjec
   | some x => exact mem_iff_getElem?.mp <| h x
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
-    (h' : i + 1 < l.length := (by simp only [length_tail] at h; cutsat)) :
+    (h' : i + 1 < l.length := (by simp only [length_tail] at h; lia)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
@@ -521,14 +538,66 @@ theorem idxOf_eq_length_iff {a : α} {l : List α} : idxOf a l = length l ↔ a 
 theorem idxOf_of_notMem {l : List α} {a : α} : a ∉ l → idxOf a l = length l :=
   idxOf_eq_length_iff.2
 
-@[deprecated (since := "2025-05-23")] alias idxOf_of_not_mem := idxOf_of_notMem
+theorem idxOf_eq_zero_iff_eq_nil_or_head_eq {l : List α} (a : α) :
+    l.idxOf a = 0 ↔ l = [] ∨ l.head? = a := by
+  cases l
+  · simp
+  · grind
+
+theorem idxOf_eq_zero_iff_head_eq {l : List α} (hl : l ≠ []) {a : α} :
+    l.idxOf a = 0 ↔ l.head hl = a := by
+  simp [hl, idxOf_eq_zero_iff_eq_nil_or_head_eq, head?_eq_some_head]
 
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by grind
 
 theorem idxOf_append_of_notMem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by grind
 
-@[deprecated (since := "2025-05-23")] alias idxOf_append_of_not_mem := idxOf_append_of_notMem
+theorem IsPrefix.idxOf_le (hl : l₁ <+: l₂) (a : α) : l₁.idxOf a ≤ l₂.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
+
+theorem IsPrefix.idxOf_eq_of_mem (hl : l₁ <+: l₂) {a : α} (ha : a ∈ l₁) :
+    l₁.idxOf a = l₂.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  exact idxOf_append_of_mem ha |>.symm
+
+theorem IsPrefix.mem_iff_idxOf_lt_length (hl : l₁ <+: l₂) (a : α) :
+    a ∈ l₁ ↔ l₂.idxOf a < l₁.length := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact hl.idxOf_eq_of_mem h ▸ idxOf_lt_length_of_mem h
+  · have := hl.idxOf_le a
+    grind [List.idxOf_lt_length_iff]
+
+theorem IsSuffix.idxOf_le (hl : l₁ <:+ l₂) (a : α) :
+    l₂.idxOf a ≤ l₂.length - l₁.length + l₁.idxOf a := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
+
+theorem IsSuffix.idxOf_add_length_le (hl : l₁ <:+ l₂) (a : α) :
+    l₂.idxOf a + l₁.length ≤ l₁.idxOf a + l₂.length := by
+  obtain ⟨l₃, rfl⟩ := hl
+  grind
+
+theorem mem_take_iff_idxOf_lt {a : α} {n : ℕ} {l : List α} (ha : a ∈ l) :
+    a ∈ l.take n ↔ l.idxOf a < n := by
+  rw [l.take_prefix n |>.mem_iff_idxOf_lt_length]
+  grind
+
+theorem mem_dropLast_iff_idxOf_lt {l : List α} {a : α} (ha : a ∈ l) :
+    a ∈ l.dropLast ↔ l.idxOf a < l.length - 1 := by
+  rw [dropLast_eq_take, mem_take_iff_idxOf_lt ha]
+
+theorem succ_idxOf_lt_length_of_mem_dropLast {l : List α} {a : α} (ha : a ∈ l.dropLast) :
+    l.idxOf a + 1 < l.length := by
+  have := idxOf_lt_length_of_mem ha
+  grind [IsPrefix.idxOf_eq_of_mem]
+
+theorem idxOf_getLast {l : List α} (hl : l ≠ []) (hl' : l.getLast hl ∉ l.dropLast) :
+    l.idxOf (l.getLast hl) = l.length - 1 :=
+  Nat.le_antisymm (Nat.le_pred_of_lt <| l.idxOf_lt_length_of_mem <| getLast_mem hl) <| by
+    contrapose! hl'
+    rwa [mem_dropLast_iff_idxOf_lt <| getLast_mem hl, ← Nat.not_le]
 
 end IndexOf
 
@@ -574,13 +643,6 @@ theorem ext_getElem! [Inhabited α] (hl : length l₁ = length l₂) (h : ∀ n 
     l₁ = l₂ :=
   ext_getElem hl fun n h₁ h₂ ↦ by simpa only [← getElem!_pos] using h n
 
-@[simp]
-theorem getElem_idxOf [BEq α] [LawfulBEq α] {a : α} : ∀ {l : List α} (h : idxOf a l < l.length),
-    l[idxOf a l] = a
-  | b :: l, h => by
-    by_cases h' : b = a <;>
-    simp [h', getElem_idxOf]
-
 -- This is incorrectly named and should be `get_idxOf`;
 -- this already exists, so will require a deprecation dance.
 theorem idxOf_get [BEq α] [LawfulBEq α] {a : α} {l : List α} (h) : get l ⟨idxOf a l, h⟩ = a := by
@@ -601,7 +663,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
 
-theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
+theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
   refine ext_get (by convert h) (by grind)
 
 end deprecated
@@ -798,8 +860,6 @@ lemma append_cons_inj_of_notMem {x₁ x₂ z₁ z₂ : List α} {a₁ a₂ : α}
   · rintro ⟨rfl, rfl, rfl⟩
     rfl
 
-@[deprecated (since := "2025-05-23")] alias append_cons_inj_of_not_mem := append_cons_inj_of_notMem
-
 section FoldlEqFoldr
 
 -- foldl and foldr coincide when f is commutative and associative
@@ -867,7 +927,7 @@ local notation a " ⋆ " b => op a b
 -- Setting `priority := high` means that Lean will prefer this notation to the identical one
 -- for `Seq.seq`
 /-- Notation for `foldl op a l`. -/
-local notation l " <*> " a => foldl op a l
+local notation (priority := high) l " <*> " a => foldl op a l
 
 theorem foldl_op_eq_op_foldr_assoc :
     ∀ {l : List α} {a₁ a₂}, ((l <*> a₁) ⋆ a₂) = a₁ ⋆ l.foldr (· ⋆ ·) a₂
@@ -918,6 +978,7 @@ theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
   induction l with | nil => ?_ | cons a l ih => ?_ <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
 
+@[congr]
 theorem filterMap_congr {f g : α → Option β} {l : List α}
     (h : ∀ x ∈ l, f x = g x) : l.filterMap f = l.filterMap g := by
   induction l <;> simp_all [filterMap_cons]
@@ -932,6 +993,11 @@ theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → �
       grind
     · simp +contextual [ha, ih]
   mpr h := Eq.trans (filterMap_congr <| by simpa) (congr_fun filterMap_eq_map _)
+
+@[simp]
+lemma filterMap_none (l : List α) :
+    l.filterMap (fun _ ↦ @Option.none β) = [] := by
+  induction l <;> simp [*]
 
 /-! ### filter -/
 

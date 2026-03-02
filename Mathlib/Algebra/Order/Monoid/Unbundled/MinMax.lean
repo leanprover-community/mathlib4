@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 # Lemmas about `min` and `max` in an ordered monoid.
 -/
 
-@[expose] public section
+public section
 
 
 open Function

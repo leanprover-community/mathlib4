@@ -17,13 +17,13 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   chain condition on principal ideals.
 -/
 
-@[expose] public section
+public section
 
 variable {α : Type*}
 
 open UniqueFactorizationMonoid in
 /-- Every non-zero prime ideal in a unique factorization domain contains a prime element. -/
-theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R] [IsDomain R]
+theorem Ideal.IsPrime.exists_mem_prime_of_ne_bot {R : Type*} [CommSemiring R]
     [UniqueFactorizationMonoid R] {I : Ideal R} (hI₂ : I.IsPrime) (hI : I ≠ ⊥) :
     ∃ x ∈ I, Prime x := by
   classical

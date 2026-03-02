@@ -14,7 +14,7 @@ public import Mathlib.Topology.IndicatorConstPointwise
 # Measurable functions in (pseudo-)metrizable Borel spaces
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory TopologicalSpace Topology NNReal ENNReal MeasureTheory
 

@@ -193,10 +193,11 @@ def ForgetEnrichment.equivFunctor (D : Type u'') [Category.{v''} D] [EnrichedOrd
   obj X := ForgetEnrichment.to V X
   map f := (eHomEquiv V).symm (ForgetEnrichment.homTo V f)
   map_id X := by rw [ForgetEnrichment.homTo_id, ← eHomEquiv_id, Equiv.symm_apply_apply]
-  map_comp {X} {Y} {Z} f g :=  Equiv.injective
+  map_comp {X} {Y} {Z} f g := Equiv.injective
     (eHomEquiv V (X := ForgetEnrichment.to V X) (Y := ForgetEnrichment.to V Z))
     (by simp [eHomEquiv_comp])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is already an enriched ordinary category, it is equivalent to `ForgetEnrichment V D`. -/
 @[simps]
 def ForgetEnrichment.equiv {D : Type u''} [Category.{v''} D] [EnrichedOrdinaryCategory V D] :
@@ -226,18 +227,19 @@ def TransportEnrichment.ofOrdinaryEnrichedCategoryEquiv : TransportEnrichment F 
 
 open EnrichedCategory
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If for a lax monoidal functor `F : V ⥤ W` the canonical function
 `(𝟙_ V ⟶ v) → (𝟙_ W ⟶ F.obj v)` is bijective, and `C` is an enriched ordinary category on `V`,
 then `F` induces the structure of a `W`-enriched ordinary category on `TransportEnrichment F C`,
 i.e. on the same underlying category `C`. -/
 def TransportEnrichment.enrichedOrdinaryCategory
-  (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
-  (h : ∀ v : V, ∀ f : 𝟙_ V ⟶ v, e v f = Functor.LaxMonoidal.ε F ≫ F.map f) :
+    (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
+    (h : ∀ v : V, ∀ f : 𝟙_ V ⟶ v, e v f = Functor.LaxMonoidal.ε F ≫ F.map f) :
     EnrichedOrdinaryCategory W (TransportEnrichment F C) where
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans (e (Hom (C := C) X Y))
   homEquiv_id {X} := by simpa using h _ (eId V _)
   homEquiv_comp f g := by
-    dsimp [instEnrichedCategoryTransportEnrichment]
+    dsimp +instances [instEnrichedCategoryTransportEnrichment]
     rw [h, h, h, ← tensorHom_comp_tensorHom_assoc, eComp_eq, tensorHom_def_assoc,
       whiskerRight_id_assoc, unitors_inv_equal, Iso.inv_hom_id_assoc,
       Functor.LaxMonoidal.μ_natural_assoc, Functor.LaxMonoidal.right_unitality_inv_assoc,
@@ -251,6 +253,7 @@ variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
   (e : ∀ v : V, (𝟙_ V ⟶ v) ≃ (𝟙_ W ⟶ F.obj v))
   (h : ∀ (v : V) (f : 𝟙_ V ⟶ v), (e v) f = Functor.LaxMonoidal.ε F ≫ F.map f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
 @[simps]
 def TransportEnrichment.forgetEnrichmentEquivFunctor :
@@ -270,6 +273,7 @@ def TransportEnrichment.forgetEnrichmentEquivFunctor :
       tensorHom_comp_tensorHom_assoc]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse functor that makes up `TransportEnrichment.forgetEnrichmentEquiv`. -/
 @[simps]
 def TransportEnrichment.forgetEnrichmentEquivInverse :
@@ -294,6 +298,7 @@ def TransportEnrichment.forgetEnrichmentEquivInverse :
         tensorHom_comp_tensorHom_assoc]
     simp [← h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `D` is a `V`-enriched category, then forgetting the enrichment and transporting the resulting
 enriched ordinary category along a functor `F : V ⥤ W`, for which
 `f ↦ Functor.LaxMonoidal.ε F ≫ F.map f` has an inverse, results in a category equivalent to

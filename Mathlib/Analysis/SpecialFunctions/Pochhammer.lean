@@ -30,7 +30,7 @@ This file proves analysis theorems for Pochhammer polynomials.
   for `Nat.choose`.
 -/
 
-@[expose] public section
+public section
 
 
 section DescPochhammer

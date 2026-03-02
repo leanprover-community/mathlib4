@@ -25,7 +25,7 @@ under the following operations:
 - `Fin.rev`.
 -/
 
-@[expose] public section
+public section
 
 open Function Set
 
@@ -471,7 +471,7 @@ theorem range_natAdd (m n : ℕ) : range (natAdd m : Fin n → Fin (m + n)) = {i
   constructor
   · rintro ⟨i, rfl⟩
     apply le_coe_natAdd
-  · refine fun (hi : m ≤ i) ↦ ⟨⟨i - m, by cutsat⟩, ?_⟩
+  · refine fun (hi : m ≤ i) ↦ ⟨⟨i - m, by lia⟩, ?_⟩
     ext
     simp [hi]
 
@@ -645,8 +645,8 @@ theorem image_addNat_Ici (m) (i : Fin n) : (addNat · m) '' Ici i = Ici (i.addNa
   rw [← preimage_addNat_Ici_addNat, image_preimage_eq_of_subset]
   intro j hj
   have : (i : ℕ) + m ≤ j := hj
-  refine ⟨⟨j - m, by cutsat⟩, ?_⟩
-  simp (disch := omega)
+  refine ⟨⟨j - m, by lia⟩, ?_⟩
+  simp (disch := lia)
 
 @[simp]
 theorem image_addNat_Ioi (m) (i : Fin n) : (addNat · m) '' Ioi i = Ioi (i.addNat m) := by

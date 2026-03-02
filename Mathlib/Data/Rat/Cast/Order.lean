@@ -32,6 +32,7 @@ theorem cast_pos_of_pos (hq : 0 < q) : (0 : K) < q := by
   rw [Rat.cast_def]
   exact div_pos (Int.cast_pos.2 <| num_pos.2 hq) (Nat.cast_pos.2 q.pos)
 
+set_option backward.isDefEq.respectTransparency false in
 @[gcongr, mono]
 theorem cast_strictMono : StrictMono ((↑) : ℚ → K) := fun p q => by
   simpa only [sub_pos, cast_sub] using cast_pos_of_pos (K := K) (q := q - p)

@@ -120,7 +120,7 @@ By combining the previous two lemmas, we see that since `f` is injective, the pa
 must also be unique.
 -/
 private lemma paired_injective (hf : Injective f) : Injective (paired f) := by
-  apply injective_of_lt_imp_ne
+  apply Injective.of_lt_imp_ne
   intro i j hij q
   cases lt_or_gt_of_ne (hf.ne hij.ne)
   case inl h => exact (maxIncSequencesTo_lt hij h).ne congr($q.1)

@@ -33,7 +33,7 @@ namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C] [HasZeroMorphisms C]
+variable {C : Type*} [Category* C] [HasZeroMorphisms C]
 
 /-- The composable arrows associated to a short complex. -/
 @[simps!]
@@ -72,6 +72,7 @@ namespace ComposableArrows
 
 variable {n : ℕ} (S : ComposableArrows C n)
 
+-- We do not yet replace `omega` with `lia` here, as it is measurably slower.
 /-- `F : ComposableArrows C n` is a complex if all compositions of
 two consecutive arrows are zero. -/
 structure IsComplex : Prop where
@@ -105,7 +106,7 @@ lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
   zero i hi := by simp at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
-  zero i hi := by omega
+  zero i hi := by lia
 
 variable (S)
 
@@ -134,6 +135,19 @@ lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
     (S.sc' hS.toIsComplex i j k).Exact := by
   subst hij hjk
   exact hS.exact i hk
+
+/-- The (exact) short complex consisting of maps `S.map' i j` and `S.map' j k` when we know
+that `S : ComposableArrows C n` is exact. -/
+abbrev Exact.sc' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by lia)
+    (hjk : j + 1 = k := by lia) (hk : k ≤ n := by lia) :
+    ShortComplex C :=
+  S.sc' hS.toIsComplex i j k
+
+/-- The short complex consisting of maps `S.map' i (i + 1)` and `S.map' (i + 1) (i + 2)`
+when we know that `S : ComposableArrows C n` is exact. -/
+abbrev Exact.sc (hS : S.Exact) (i : ℕ) (hi : i + 2 ≤ n := by lia) :
+    ShortComplex C :=
+  S.sc' hS.toIsComplex i (i + 1) (i + 2)
 
 /-- Functoriality maps for `ComposableArrows.sc'`. -/
 @[simps]
@@ -192,22 +206,23 @@ lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
 
 lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
   toIsComplex := S.isComplex₁
-  exact i hi := by exfalso; omega
+  exact i hi := by exfalso; lia
 
 lemma isComplex₂_iff (S : ComposableArrows C 2) :
     S.IsComplex ↔ S.map' 0 1 ≫ S.map' 1 2 = 0 := by
   constructor
   · intro h
-    exact h.zero 0 (by cutsat)
+    exact h.zero 0 (by lia)
   · intro h
     refine IsComplex.mk (fun i hi => ?_)
-    obtain rfl : i = 0 := by cutsat
+    obtain rfl : i = 0 := by lia
     exact h
 
 lemma isComplex₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 = 0) :
     S.IsComplex :=
   S.isComplex₂_iff.2 w
 
+set_option backward.isDefEq.respectTransparency false in
 lemma _root_.CategoryTheory.ShortComplex.isComplex_toComposableArrows (S : ShortComplex C) :
     S.toComposableArrows.IsComplex :=
   -- Disable `Fin.reduceFinMk` because otherwise `Precompose.map_one_succ` does not apply. (https://github.com/leanprover-community/mathlib4/issues/27382)
@@ -217,10 +232,10 @@ lemma exact₂_iff (S : ComposableArrows C 2) (hS : S.IsComplex) :
     S.Exact ↔ (S.sc' hS 0 1 2).Exact := by
   constructor
   · intro h
-    exact h.exact 0 (by cutsat)
+    exact h.exact 0 (by lia)
   · intro h
     refine Exact.mk hS (fun i hi => ?_)
-    obtain rfl : i = 0 := by cutsat
+    obtain rfl : i = 0 := by lia
     exact h
 
 lemma exact₂_mk (S : ComposableArrows C 2) (w : S.map' 0 1 ≫ S.map' 1 2 = 0)
@@ -245,7 +260,7 @@ lemma exact_iff_δ₀ (S : ComposableArrows C (n + 2)) :
     · rw [exact₂_iff]; swap
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero 0
-      exact h.exact 0 (by cutsat)
+      exact h.exact 0 (by lia)
     · exact Exact.mk (IsComplex.mk (fun i hi => h.toIsComplex.zero (i + 1)))
         (fun i hi => h.exact (i + 1))
   · rintro ⟨h, h₀⟩
@@ -281,7 +296,7 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
     · rw [exact₂_iff]; swap
       · rw [isComplex₂_iff]
         exact h.toIsComplex.zero n
-      exact h.exact n (by cutsat)
+      exact h.exact n (by lia)
   · rintro ⟨h, h'⟩
     refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
     · simp only [Nat.add_le_add_iff_right] at hi
@@ -304,7 +319,7 @@ lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
   rw [exact_iff_δlast]
   constructor <;> assumption
 
-lemma Exact.isIso_map' {C : Type*} [Category C] [Preadditive C]
+lemma Exact.isIso_map' {C : Type*} [Category* C] [Preadditive C]
     [Balanced C] {n : ℕ} {S : ComposableArrows C n} (hS : S.Exact) (k : ℕ) (hk : k + 3 ≤ n)
     (h₀ : S.map' k (k + 1) = 0) (h₁ : S.map' (k + 2) (k + 3) = 0) :
     IsIso (S.map' (k + 1) (k + 2)) := by

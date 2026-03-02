@@ -137,12 +137,20 @@ def cast {p₀ p₁ q₀ q₁ : Path x₀ x₁} (F : Homotopy p₀ p₁) (h₀ :
     Homotopy q₀ q₁ :=
   ContinuousMap.HomotopyRel.cast F (congr_arg _ h₀) (congr_arg _ h₁)
 
+/-- If paths `p` and `q` are homotopic as paths `x ⟶ y`,
+then they are homotopic as paths `x' ⟶ y'`, where `x' = x` and `y' = y`. -/
+@[simp]
+def pathCast {x x' y y' : X} {p q : Path x y} (F : p.Homotopy q) (hx : x' = x) (hy : y' = y) :
+    (p.cast hx hy).Homotopy (q.cast hx hy) :=
+  F
+
 end
 
 section
 
 variable {p₀ q₀ : Path x₀ x₁} {p₁ q₁ : Path x₁ x₂}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `p₀` and `q₀` are paths from `x₀` to `x₁`, `p₁` and `q₁` are paths from `x₁` to `x₂`.
 Furthermore, suppose `F : Homotopy p₀ q₀` and `G : Homotopy p₁ q₁`. Then we can define a homotopy
 from `p₀.trans p₁` to `q₀.trans q₁`.
@@ -151,8 +159,8 @@ def hcomp (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) : Homotopy (p₀.tra
   toFun x :=
     if (x.2 : ℝ) ≤ 1 / 2 then (F.eval x.1).extend (2 * x.2) else (G.eval x.1).extend (2 * x.2 - 1)
   continuous_toFun := continuous_if_le (continuous_induced_dom.comp continuous_snd) continuous_const
-    (F.toHomotopy.continuous.comp (by continuity)).continuousOn
-    (G.toHomotopy.continuous.comp (by continuity)).continuousOn fun x hx => by norm_num [hx]
+    (F.toHomotopy.continuous.comp (by fun_prop)).continuousOn
+    (G.toHomotopy.continuous.comp (by fun_prop)).continuousOn fun x hx ↦ by norm_num [hx]
   map_zero_left x := by simp [Path.trans]
   map_one_left x := by simp [Path.trans]
   prop' x t ht := by
@@ -170,6 +178,7 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
           ⟨2 * x.2 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.2.2.2⟩⟩ :=
   show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
   show ite _ _ _ = _ by norm_num
@@ -268,10 +277,17 @@ theorem hcomp {p₀ p₁ : Path x₀ x₁} {q₀ q₁ : Path x₁ x₂} (hp : p�
     (hq : q₀.Homotopic q₁) : (p₀.trans q₀).Homotopic (p₁.trans q₁) :=
   hp.map2 Homotopy.hcomp hq
 
+/-- If paths `p` and `q` are homotopic as paths `x ⟶ y`,
+then they are homotopic as paths `x' ⟶ y'`, where `x' = x` and `y' = y`. -/
+theorem pathCast {p q : Path x₀ x₁} (hpq : p.Homotopic q) (hsource : x₂ = x₀) (htarget : x₃ = x₁) :
+    (p.cast hsource htarget).Homotopic (q.cast hsource htarget) :=
+  hpq
+
 /--
 The setoid on `Path`s defined by the equivalence relation `Path.Homotopic`. That is, two paths are
 equivalent if there is a `Homotopy` between them.
 -/
+@[instance_reducible]
 protected def setoid (x₀ x₁ : X) : Setoid (Path x₀ x₁) :=
   ⟨Homotopic, equivalence⟩
 
@@ -287,14 +303,12 @@ instance : Inhabited (Homotopic.Quotient () ()) :=
 
 namespace Quotient
 
-/--
-The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`.
-
-We prefer this as the normal form, rather than generic `_root_.Quotient.mk'`,
-to have better control of simp lemmas.
--/
+/-- The canonical map from `Path x₀ x₁` to `Path.Homotopic.Quotient x₀ x₁`. -/
 def mk (p : Path x₀ x₁) : Path.Homotopic.Quotient x₀ x₁ :=
-  _root_.Quotient.mk' p
+  Quotient.mk' p
+
+theorem mk_surjective : Function.Surjective (@mk X _ x₀ x₁) :=
+  Quotient.mk'_surjective
 
 /-- `Path.Homotopic.Quotient.mk` is the simp normal form. -/
 @[simp] theorem mk'_eq_mk (p : Path x₀ x₁) : Quotient.mk' p = mk p := rfl
@@ -348,8 +362,7 @@ theorem mk_symm (P : Path x₀ x₁) : mk P.symm = symm (mk P) :=
 /-- Cast a path homotopy class using equalities of endpoints. -/
 def cast {x y : X} (γ : Homotopic.Quotient x y) {x' y'} (hx : x' = x) (hy : y' = y) :
     Homotopic.Quotient x' y' :=
-  _root_.Quotient.map (fun p => p.cast hx hy)
-    (fun _ _ h => Nonempty.map (fun F => F.cast (by simp) (by simp)) h) γ
+  _root_.Quotient.map (fun p => p.cast hx hy) (fun _ _ h => h) γ
 
 @[simp, grind =]
 theorem mk_cast {x y : X} (P : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) :

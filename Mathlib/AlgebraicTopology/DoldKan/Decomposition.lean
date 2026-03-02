@@ -43,8 +43,9 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type*} [Category C] [Preadditive C] {X X' : SimplicialObject C}
+variable {C : Type*} [Category* C] [Preadditive C] {X X' : SimplicialObject C}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.
 As `Q q` is the complement projection to `P q`, this implies that in the case of
@@ -60,11 +61,11 @@ theorem decomposition_Q (n q : ℕ) :
       Finset.filter_false, Finset.sum_empty]
   | succ q hq =>
     by_cases! hqn : n < q
-    · rw [Q_is_eventually_constant (show n + 1 ≤ q by cutsat), hq]
+    · rw [Q_is_eventually_constant (show n + 1 ≤ q by lia), hq]
       congr 1
       ext ⟨x, hx⟩
       simp_rw [Finset.mem_filter_univ]
-      cutsat
+      lia
     · obtain ⟨a, ha⟩ := Nat.le.dest hqn
       rw [Q_succ, HomologicalComplex.sub_f_apply, HomologicalComplex.comp_f, hq]
       symm
@@ -72,12 +73,12 @@ theorem decomposition_Q (n q : ℕ) :
       let q' : Fin (n + 1) := ⟨q, Nat.lt_succ_of_le hqn⟩
       rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
       congr
-      · have hnaq' : n = a + q := by omega
+      · have hnaq' : n = a + q := by lia
         simp only [(HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq', q'.rev_eq hnaq', neg_neg]
         rfl
       · ext ⟨i, hi⟩
         simp_rw [Finset.mem_erase, Finset.mem_filter_univ, q', ne_eq, Fin.mk.injEq]
-        cutsat
+        lia
 
 variable (X)
 
@@ -109,6 +110,7 @@ def id : MorphComponents X n (X _⦋n + 1⦌) where
   a := PInfty.f (n + 1)
   b i := X.σ i
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem id_φ : (id X n).φ = 𝟙 _ := by
   simp only [← P_add_Q_f (n + 1) (n + 1), φ]
@@ -124,6 +126,7 @@ def postComp : MorphComponents X n Z' where
   a := f.a ≫ h
   b i := f.b i ≫ h
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem postComp_φ : (f.postComp h).φ = f.φ ≫ h := by
   unfold φ postComp
@@ -135,6 +138,7 @@ def preComp : MorphComponents X' n Z where
   a := g.app (op ⦋n + 1⦌) ≫ f.a
   b i := g.app (op ⦋n⦌) ≫ f.b i
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem preComp_φ : (f.preComp g).φ = g.app (op ⦋n + 1⦌) ≫ f.φ := by
   unfold φ preComp
