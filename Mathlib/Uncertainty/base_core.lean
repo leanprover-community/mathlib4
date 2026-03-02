@@ -383,14 +383,6 @@ theorem expectedValue_linear (U : UncertainSpace) [AlgebraicUncertainSpace U]
           exact ExpectationIndependenceStructure.independent_smul c d X Y hXY
     _ = c * E U X + d * E U Y := by simp
 
-/-- Compatibility alias for the requested name spelling. -/
-theorem expectedValue_linea (U : UncertainSpace) [AlgebraicUncertainSpace U]
-    [ExpectationStructure U] [ExpectationIndependenceStructure U]
-    (c d : ℝ) (X Y : UncertainVariable U)
-    (hXY : ExpectationIndependenceStructure.Independent X Y) :
-    E U (linearComb_uncertain U c d X Y) = c * E U X + d * E U Y :=
-  expectedValue_linear U c d X Y hXY
-
 /-- Stage 5: uncertain-variable subtraction as a reusable derived operator. -/
 noncomputable def sub_uncertain (U : UncertainSpace) [AlgebraicUncertainSpace U]
     (X Y : UncertainVariable U) : UncertainVariable U :=
