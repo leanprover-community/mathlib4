@@ -170,7 +170,7 @@ lemma isIntegral_of_isIntegralElem_of_monic_of_natDegree_lt
     rw [AlgHom.toRingHom_eq_coe, eval₂_map, ← map_zero (algebraMap S St), ← hq',
       hom_eval₂]
     congr 1
-    ext <;> simp [- Polynomial.algebraMap_apply, ← algebraMap_eq, ← IsScalarTower.algebraMap_apply]
+    ext <;> simp [-Polynomial.algebraMap_apply, ← algebraMap_eq, ← IsScalarTower.algebraMap_apply]
   simpa using IsLocalization.Away.isIntegral_of_isIntegral_map t
     (isIntegral_of_isIntegral_adjoin_of_mul_eq_one _ _ ht't this)
 
@@ -200,7 +200,7 @@ lemma exists_isIntegral_leadingCoeff_pow_smul_sub_of_isIntegralElem_of_mul_mem_r
   have ha : IsUnit (algebraMap R R' a) := IsLocalization.Away.algebraMap_isUnit a
   have H : (aeval ((algebraMap S S') (φ X))).toRingHom.comp (mapRingHom (algebraMap R R')) =
     (algebraMap S S').comp φ := by ext <;>
-      simp [- Polynomial.algebraMap_apply, ← Polynomial.algebraMap_eq, ← algebraMap_apply]
+      simp [-Polynomial.algebraMap_apply, ← Polynomial.algebraMap_eq, ← algebraMap_apply]
   obtain ⟨q, hq⟩ := exists_isIntegral_sub_of_isIntegralElem_of_mul_mem_range (R := R')
     (aeval (algebraMap S S' (φ X))) (algebraMap S S' t) (C ha.unit⁻¹.1 * p.map (algebraMap _ _)) (by
       obtain ⟨q, hqm, hq⟩ := ht
@@ -270,7 +270,7 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
     | zero =>
       obtain hi' | hi' := lt_or_ge p.natDegree i
       · simp [coeff_eq_zero_of_natDegree_lt hi']
-      · simpa [← coeff_natDegree, hpn, show i = 0 by aesop] using this _ hp
+      · simpa [← coeff_natDegree, hpn, show i = 0 by lia] using this _ hp
     | succ n =>
       obtain hi' | hi' := eq_or_ne i p.natDegree
       · simpa [hi'] using this _ hp
@@ -279,15 +279,15 @@ lemma exists_leadingCoeff_pow_smul_mem_radical_conductor
           map_pow, sub_mul, mul_right_comm _ _ t, ← Algebra.smul_def _ t]
         exact sub_mem hp (Ideal.mul_mem_right _ _ (this _ hp))
       simpa [eraseLead_coeff, hi'] using
-        IH _ ((eraseLead_natDegree_le _).trans_lt (by aesop)) _ this rfl
+        IH _ ((eraseLead_natDegree_le _).trans_lt (by lia)) _ this rfl
   obtain ⟨n, hn⟩ := hp
-  obtain ⟨k, hk⟩ := exists_leadingCoeff_pow_smul_mem_conductor φ  (t ^ n) (p ^ n) hRS hφ
+  obtain ⟨k, hk⟩ := exists_leadingCoeff_pow_smul_mem_conductor φ (t ^ n) (p ^ n) hRS hφ
     (by simpa [mul_pow] using hn)
   by_cases hpn : p.leadingCoeff ^ n = 0
   · use n; simp [_root_.smul_pow, hpn, hi]
   rw [leadingCoeff_pow' hpn, ← pow_mul] at hk
   refine ⟨n * k + n, ?_⟩
-  rw [_root_.smul_pow,  pow_add, add_comm, pow_add, mul_smul_mul_comm, hi]
+  rw [_root_.smul_pow, pow_add, add_comm, pow_add, mul_smul_mul_comm, hi]
   exact Ideal.mul_mem_right _ _ hk
 
 set_option backward.isDefEq.respectTransparency false in
@@ -514,7 +514,7 @@ private lemma ZariskisMainProperty.of_algHom_polynomial
       OreLocalization.instAlgebra
     have inst : Algebra.WeaklyQuasiFiniteAt (integralClosure R S) p :=
       .of_restrictScalars R (integralClosure R S) _
-    refine .restrictScalars (this p (aeval (f X)) ?_  (integralClosure_idem (R := R)))
+    refine .restrictScalars (this p (aeval (f X)) ?_ (integralClosure_idem (R := R)))
     refine RingHom.Finite.of_comp_finite (f := mapRingHom (algebraMap R _)) ?_
     convert (show f.toRingHom.Finite from hf)
     ext <;> simp [show ∀ x, f (C x) = algebraMap _ _ x from f.commutes]
@@ -730,6 +730,7 @@ lemma QuasiFiniteAt.of_weaklyQuasiFiniteAt
     Algebra.QuasiFiniteAt R p :=
   ZariskisMainProperty.quasiFiniteAt _ (.of_finiteType_of_weaklyQuasiFiniteAt _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma QuasiFiniteAt.of_quasiFiniteAt_residueField
     [FiniteType R S] (p : Ideal R) (q : Ideal S) [q.IsPrime]
     [p.IsPrime] [q.LiesOver p]
@@ -753,6 +754,7 @@ lemma QuasiFiniteAt.of_isOpen_singleton_fiber
   refine .of_isOpen_singleton _ ?_
   rwa [← Set.image_singleton, e.isOpen_image]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quasiFiniteAt_iff_isOpen_singleton_fiber
     [FiniteType R S] (q : PrimeSpectrum S) :
     Algebra.QuasiFiniteAt R q.asIdeal ↔

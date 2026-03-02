@@ -55,7 +55,6 @@ lemma isBigO_exp_neg_mul_of_le {c d : ℝ} (hcd : c ≤ d) :
 private lemma exp_lt_aux {t : ℝ} (ht : 0 < t) : rexp (-π * t) < 1 := by
   simpa only [exp_lt_one_iff, neg_mul, neg_lt_zero] using mul_pos pi_pos ht
 
-set_option backward.isDefEq.respectTransparency false in
 private lemma isBigO_one_aux :
     IsBigO atTop (fun t : ℝ ↦ (1 - rexp (-π * t))⁻¹) (fun _ ↦ (1 : ℝ)) := by
   refine ((Tendsto.const_sub _ ?_).inv₀ (by simp)).isBigO_one ℝ (c := ((1 - 0)⁻¹ : ℝ))
@@ -85,7 +84,6 @@ lemma f_le_g_nat (k : ℕ) {a t : ℝ} (ha : 0 ≤ a) (ht : 0 < t) (n : ℕ) :
 /-- The sum to be bounded (`ℕ` version). -/
 def F_nat (k : ℕ) (a t : ℝ) : ℝ := ∑' n, f_nat k a t n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_nat k a t) := by
   have : Summable fun n : ℕ ↦ n ^ k * exp (-π * (n + a) ^ 2 * t) := by
     refine (((summable_pow_mul_jacobiTheta₂_term_bound (|a| * t) ht k).mul_right

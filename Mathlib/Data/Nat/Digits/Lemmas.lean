@@ -356,7 +356,7 @@ theorem mapsTo_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
 
 theorem injOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InjOn (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
-  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by aesop) (by aesop) (by aesop) h
+  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by simp_all) (by simp_all) (by simp_all) h
 
 theorem setInvOn_digitsAppend_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InvOn (digitsAppend b l) (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}
@@ -384,7 +384,6 @@ theorem bijOn_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) {n | n < b ^ l} {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
   (bijOn_ofDigits hb l).symm (setInvOn_digitsAppend_ofDigits hb l).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_digits_ofDigits_eq_sum {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List ℕ}
     (hL : L ∈ {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}) :
     (b.digits (ofDigits b L)).sum = L.sum := by
