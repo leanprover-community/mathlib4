@@ -324,6 +324,10 @@ variable (E 𝓞E : Type*) [Field E] [Algebra E L] [IsInertiaField K L P E] [Com
   [IsScalarTower 𝓞E B L] (𝓟E : Ideal 𝓞E) [P.LiesOver 𝓟E]
 
 include L K E in
+/--
+Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
+then `P` is the only prime of `L` above `𝓟E`.
+-/
 theorem primesOver_eq_singleton [IsIntegrallyClosed 𝓞E] [Algebra.IsIntegral 𝓞E B] [P.IsPrime]
     [Finite (inertia Gal(L/K) P)] :
     primesOver 𝓟E B = {P} := by
@@ -334,6 +338,10 @@ theorem primesOver_eq_singleton [IsIntegrallyClosed 𝓞E] [Algebra.IsIntegral �
   exact inertia_le_stabilizer _ σ.prop
 
 include K L P E in
+/--
+Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
+then the inertia degree of `𝓟E` in `L` is equal to `1`.
+-/
 theorem inertiaDegIn_eq [Ring.HasFiniteQuotients B] [IsIntegrallyClosed 𝓞E]
     [Algebra.IsIntegral 𝓞E B] [P.IsMaximal] [𝓟E.IsMaximal] [Finite (inertia Gal(L/K) P)]
     (hP : P ≠ ⊥) :
@@ -348,6 +356,10 @@ theorem inertiaDegIn_eq [Ring.HasFiniteQuotients B] [IsIntegrallyClosed 𝓞E]
 variable [FiniteDimensional K L] [IsGalois K L] [Algebra.IsIntegral A B] [Algebra.IsIntegral 𝓞E B]
 
 include K L E P in
+/--
+Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
+then the inertia degree of `𝓟E` over `K` is equal to the inertia degree of `p` in `L`.
+-/
 theorem inertiaDeg_eq [IsIntegrallyClosed A] [Ring.HasFiniteQuotients B] [IsIntegrallyClosed 𝓞E]
     [Algebra A 𝓞E] [IsScalarTower A 𝓞E B] [𝓟E.LiesOver p] [P.IsMaximal] [𝓟E.IsMaximal]
     [p.IsMaximal] (hP : P ≠ ⊥) :
@@ -363,6 +375,10 @@ variable [IsDedekindDomain A] [IsDedekindDomain B] [Module.IsTorsionFree A B] [M
   [IsDedekindDomain 𝓞E] [Module.Finite 𝓞E B] [Module.IsTorsionFree 𝓞E B]
 
 include L K P E in
+/--
+Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
+then the ramification index of `𝓟E` in `L` is equal to the ramification index of `p` in `L`.
+-/
 theorem ramificationIdxIn_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients B] [p.IsMaximal]
     [P.IsMaximal] [𝓟E.IsMaximal] (hp : p ≠ ⊥) :
     ramificationIdxIn 𝓟E B = p.ramificationIdxIn B := by
@@ -380,6 +396,10 @@ theorem ramificationIdxIn_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotient
 variable [Algebra A 𝓞E] [Module.IsTorsionFree A 𝓞E] [IsScalarTower A 𝓞E B] [𝓟E.LiesOver p]
 
 include K L E P in
+/--
+Let `E` be the inertia field of `P` in `L/K`. Let `𝓟E` be a prime ideal of `E` below `P`,
+then `𝓟E` is unramified over `K`.
+-/
 theorem ramificationIdx_eq [Ring.HasFiniteQuotients A] [Ring.HasFiniteQuotients B] [𝓟E.IsMaximal]
     [P.IsMaximal] [p.IsMaximal] (hp : p ≠ ⊥) :
     ramificationIdx (algebraMap A 𝓞E) p 𝓟E = 1 := by
