@@ -16,6 +16,8 @@ public import Mathlib.CategoryTheory.Linear.Basic
 # Category algebra of a linear category
 -/
 
+@[expose] public section
+
 universe w' w v u
 
 namespace CategoryTheory.Linear
