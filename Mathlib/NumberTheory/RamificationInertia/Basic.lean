@@ -277,26 +277,23 @@ theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S]
     (hv : Irreducible v) (hp : Prime p) (hw : Irreducible w)
     (hvp : v ≠ p) [w.LiesOver v] :
     emultiplicity w (p.map (algebraMap R S)) = 0 := by
-  classical
   have hp_bot : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp.ne_zero
   rw [emultiplicity_eq_count_normalizedFactors hw hp_bot, normalize_eq,
         Nat.cast_eq_zero, Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff hp_bot, not_and]
-  intro _ H
-  rw [Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at H
-  exact hvp (((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le
-    (by exact (isPrime_of_prime hv.prime).ne_top') H).symm
+  refine fun _ h ↦ hvp.symm ?_
+  rw [Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at h
+  exact ((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le (isPrime_of_prime hv.prime).ne_top' h
 
 theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [Algebra R S]
     [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {p : Ideal R}
     (hv : Irreducible v) (hp : Prime p) (hw : Irreducible w) (hw_bot : w ≠ ⊥)
     [w.LiesOver v] : emultiplicity w (p.map (algebraMap R S)) =
       v.ramificationIdx (algebraMap R S) w * emultiplicity v p := by
-  classical
   have hp_bot : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp.ne_zero
   by_cases hvp : v = p
-  · simp [hvp, (FiniteMultiplicity.of_prime_left hp hp.ne_zero).emultiplicity_self]
-    simp [ramificationIdx_eq_normalizedFactors_count hp_bot (isPrime_of_prime hw.prime) hw_bot,
-    emultiplicity_eq_count_normalizedFactors hw hp_bot]
+  · simp [hvp, (FiniteMultiplicity.of_prime_left hp hp.ne_zero).emultiplicity_self,
+      ramificationIdx_eq_normalizedFactors_count hp_bot (isPrime_of_prime hw.prime) hw_bot,
+      emultiplicity_eq_count_normalizedFactors hw hp_bot]
   · rw [emultiplicity_eq_zero_of_ne hv hp.irreducible hvp hp.ne_zero, mul_zero,
       emultiplicity_map_eq_zero_of_ne hv hp hw hvp]
 
@@ -308,7 +305,6 @@ theorem emultiplicity_map_eq_ramificationIdx_mul [IsDedekindDomain R] [Algebra R
     (hv : Irreducible v) (hw : Irreducible w) (hw_bot : w ≠ ⊥) [w.LiesOver v] :
     emultiplicity w (I.map (algebraMap R S)) =
       v.ramificationIdx (algebraMap R S) w * emultiplicity v I := by
-  classical
   induction I using induction_on_prime with
   | h₁ => aesop
   | h₂ I hI =>
