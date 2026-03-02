@@ -328,6 +328,22 @@ theorem mdifferentiableOn_section_baseSet_iff {s : ∀ x, E x}
       MDifferentiableOn IB 𝓘(𝕜, F) (fun x ↦ (e ⟨x, s x⟩).2) e.baseSet :=
   e.mdifferentiableOn_section_iff e.open_baseSet subset_rfl
 
+section
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  (Z : M → Type*) [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)]
+  [FiberBundle F Z] [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
+
+theorem Bundle.Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]
+    (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
+    e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
+  ⟨e.contMDiffOn.mdifferentiableOn one_ne_zero, e.contMDiffOn_symm.mdifferentiableOn one_ne_zero⟩
+
+end
+
 end Bundle.Trivialization
 
 end

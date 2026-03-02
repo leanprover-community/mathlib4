@@ -123,7 +123,6 @@ theorem mongePoint_mem_affineSpan {n : ℕ} (s : Simplex ℝ P n) :
   smul_vsub_vadd_mem _ _ (centroid_mem_affineSpan_of_card_eq_add_one ℝ _ (card_fin (n + 1)))
     s.circumcenter_mem_affineSpan s.circumcenter_mem_affineSpan
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mongePoint_restrict {n : ℕ} (s : Simplex ℝ P n) (S : AffineSubspace ℝ P)
     (hS : affineSpan ℝ (Set.range s.points) ≤ S) :

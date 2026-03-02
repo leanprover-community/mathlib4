@@ -274,7 +274,7 @@ lemma cuspFunction_add {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFuncti
   ext y
   obtain hy | rfl := ne_or_eq y 0
   · simp [hy]
-  ·  simpa using (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
+  · simpa using (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hfcts⟩).add
       (tendsto_nhds_limUnder ⟨_, tendsto_nhds_zero hgcts⟩) |>.limUnder_eq
 
 lemma cuspFunction_sub {h} {f g : ℂ → ℂ} (hfcts : ContinuousAt (cuspFunction h f) 0)

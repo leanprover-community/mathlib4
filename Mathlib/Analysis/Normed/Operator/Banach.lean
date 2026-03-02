@@ -416,8 +416,7 @@ noncomputable def leftInverse_of_injective_of_isClosed_range
     simp only [dist_zero_right, map_zero] at aux
     convert aux
     exact f.rangeRestrict.leftInverse_apply_of_inj
-      (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x
-  )
+      (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x)
 
 end
 

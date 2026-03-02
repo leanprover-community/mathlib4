@@ -96,7 +96,6 @@ variable (n) {β : Type*}
 def map (f : α ↪ β) (s : powersetCard α n) : powersetCard β n :=
     ⟨Finset.map f s, by rw [mem_iff, card_map, s.prop]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mem_map_iff_mem_range (f : α ↪ β) (s : powersetCard α n) (b : β) :
     b ∈ map n f s ↔ b ∈ f '' s := by
   simp [map]
@@ -133,7 +132,6 @@ variable (n) (β : Type*)
 def ofFinEmb (f : Fin n ↪ β) : powersetCard β n :=
   map n f ⟨Finset.univ, by rw [mem_iff, Finset.card_univ, Fintype.card_fin]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mem_ofFinEmb_iff_mem_range (f : Fin n ↪ β) (b : β) :
     b ∈ ofFinEmb n β f ↔ b ∈ Set.range f := by
@@ -206,7 +204,6 @@ end disjUnion
 
 variable (α n)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_finset [Fintype α] :
     powersetCard α n = Finset.powersetCard n (Finset.univ : Finset α) := by
   ext; simp
@@ -251,6 +248,7 @@ protected theorem card :
 
 variable {α n}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `0 < n < ENat.card α`, then `powersetCard α n` is nontrivial. -/
 theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
     Nontrivial (powersetCard α n) := by
@@ -269,6 +267,7 @@ theorem nontrivial (h1 : 0 < n) (h2 : n < ENat.card α) :
   · have : NeZero n := NeZero.of_pos h1
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `Set.powersetCard.nontrivial` that uses `Nat.card`. -/
 theorem nontrivial' (h1 : 0 < n) (h2 : n < Nat.card α) :
     Nontrivial (powersetCard α n) := by

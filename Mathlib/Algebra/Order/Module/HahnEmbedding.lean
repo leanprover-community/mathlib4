@@ -116,7 +116,6 @@ instance archimedean_stratum : Archimedean (u.stratum c) := by
   rw [u.archimedeanClassMk_of_mem_stratum a.prop (by simpa using ha)]
   rw [u.archimedeanClassMk_of_mem_stratum b.prop (by simpa using hb)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iSupIndep_stratum : iSupIndep u.stratum := by
   intro c
   rw [Submodule.disjoint_def']
@@ -773,7 +772,6 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
       exact (f.coeff_eq_of_mem y.val (by simp) hzy (by simp)).le
   exact hieq ▸ hi
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Extend `f` to a larger partial linear map by adding a new `x`. -/
 noncomputable
 def extendFun [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val.domain) :

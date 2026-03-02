@@ -102,7 +102,6 @@ lemma Module.Dual.exists_forall_ne_zero_of_forall_exists
   obtain ⟨x, hx⟩ := Submodule.exists_forall_notMem_of_forall_ne_top p h
   exact ⟨x, by simpa [p] using hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A convenience variation of `Module.Dual.exists_forall_ne_zero_of_forall_exists` where we are
 concerned only about behaviour on a fixed submodule. -/
 lemma Module.Dual.exists_forall_mem_ne_zero_of_forall_exists (p : Submodule K M)
