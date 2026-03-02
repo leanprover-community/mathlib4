@@ -56,6 +56,7 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
     rw [Fin.lt_def, Fin.val_succ]
     linarith
 
+set_option backward.isDefEq.respectTransparency false in
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
     X.σ i ≫ (P q).f (n + 1) = 0 := by
   induction q generalizing i with

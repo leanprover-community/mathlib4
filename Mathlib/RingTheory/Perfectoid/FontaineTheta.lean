@@ -79,6 +79,7 @@ v                   v
 ```
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ker_map_le_ker_mk_comp_ghostComponent (n : ℕ) :
     RingHom.ker (WittVector.map (Ideal.Quotient.mk 𝔭)) ≤
     RingHom.ker (((Ideal.Quotient.mk (𝔭 ^ (n + 1)))).comp
@@ -139,6 +140,7 @@ theorem fontaineThetaModPPow_teichmuller (n : ℕ) (x : R♭) :
     fontaineThetaModPPow R p n (teichmuller p x) = Ideal.Quotient.mk _ x.untilt := by
   simp [fontaineThetaModPPow]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factorPowSucc_comp_fontaineThetaModPPow (n : ℕ) :
     (factorPowSucc _ _).comp (fontaineThetaModPPow R p (n + 1)) = fontaineThetaModPPow R p n := by
   apply eq_of_apply_teichmuller_eq ((factorPowSucc _ _).comp (fontaineThetaModPPow R p (n + 1)))

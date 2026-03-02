@@ -72,6 +72,8 @@ instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
+instance : PartialOrder (Opens α) := .ofSetLike (Opens α) α
+
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
 
@@ -209,10 +211,12 @@ theorem coe_sSup {S : Set (Opens α)} : (↑(sSup S) : Set α) = ⋃ i ∈ S, �
 theorem coe_finset_sup (f : ι → Opens α) (s : Finset ι) : (↑(s.sup f) : Set α) = s.sup ((↑) ∘ f) :=
   map_finset_sup (⟨⟨(↑), coe_sup⟩, coe_bot⟩ : SupBotHom (Opens α) (Set α)) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Opens α) (Set α)) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_disjoint {s t : Opens α} : Disjoint (s : Set α) t ↔ Disjoint s t := by
   simp [disjoint_iff, ← SetLike.coe_set_eq]
@@ -253,6 +257,13 @@ def frameMinimalAxioms : Frame.MinimalAxioms (Opens α) where
 
 instance instFrame : Frame (Opens α) := .ofMinimalAxioms frameMinimalAxioms
 
+/-- The coercion from open sets to sets as a `FrameHom`. -/
+@[simps] protected def frameHom : FrameHom (Opens α) (Set α) where
+  toFun := (·)
+  map_inf' _ _ := rfl
+  map_top' := rfl
+  map_sSup' _ := by simp
+
 theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → α) :=
   U.isOpen.isOpenEmbedding_subtypeVal
 
@@ -263,18 +274,21 @@ theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     rw [Set.range_inclusion i]
     exact U.isOpen.preimage continuous_subtype_val
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
 
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
   rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An open set in the indiscrete topology is either empty or the whole space. -/
 theorem eq_bot_or_top [IndiscreteTopology α] (U : Opens α) :
     U = ⊥ ∨ U = ⊤ := by
   rw [← coe_eq_empty, ← coe_eq_univ, ← IndiscreteTopology.isOpen_iff]
   exact U.2
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Nonempty α] [IndiscreteTopology α] : IsSimpleOrder (Opens α) where
   eq_bot_or_eq_top := eq_bot_or_top
 
@@ -352,6 +366,7 @@ lemma IsBasis.of_isInducing {B : Set (Opens β)} (H : IsBasis B) {f : α → β}
   convert H.isInducing h
   ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem isCompactElement_iff (s : Opens α) :
     IsCompactElement s ↔ IsCompact (s : Set α) := by
@@ -441,6 +456,8 @@ instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective' := SetLike.coe_injective.comp toOpens_injective
 
+instance : PartialOrder (OpenNhdsOf x) := .ofSetLike (OpenNhdsOf x) α
+
 instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩
 
@@ -462,7 +479,7 @@ instance [Subsingleton α] : Unique (OpenNhdsOf x) where
   uniq U := SetLike.ext' <| Subsingleton.eq_univ_of_nonempty ⟨x, U.mem⟩
 
 instance : DistribLattice (OpenNhdsOf x) :=
-  toOpens_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl
+  toOpens_injective.distribLattice _ .rfl .rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 theorem basis_nhds : (𝓝 x).HasBasis (fun _ : OpenNhdsOf x => True) (↑) :=
   (nhds_basis_opens x).to_hasBasis (fun U hU => ⟨⟨⟨U, hU.2⟩, hU.1⟩, trivial, Subset.rfl⟩) fun U _ =>

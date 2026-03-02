@@ -18,6 +18,7 @@ public section
 
 open Module Submodule
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Subalgebra.isSimpleOrder_of_finrank_prime (F A) [Field F] [Ring A] [IsDomain A]
     [Algebra F A] (hp : (finrank F A).Prime) : IsSimpleOrder (Subalgebra F A) :=
   { toNontrivial :=

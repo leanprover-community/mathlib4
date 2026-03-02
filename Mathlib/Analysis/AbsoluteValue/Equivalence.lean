@@ -186,7 +186,7 @@ private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j 
     simpa [c] using Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha)
   have hcⱼ (j : ι) (hj : j ≠ i) : Tendsto (fun n ↦ (v j) (c n)) atTop (𝓝 0) := by
     simpa [c] using (tendsto_pow_atTop_nhds_zero_of_lt_one ((v j).nonneg _) (haj j hj)).mul_const _
-  simp_rw [OrderTopology.topology_eq_generate_intervals,
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals,
     TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using tendsto_atTop_atTop.1 hcᵢ 2
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
@@ -221,7 +221,7 @@ private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j 
   have hcₙ : atTop.Tendsto (fun n ↦ w (c n)) (𝓝 (w b)) := by
     have : w a⁻¹ < 1 := map_inv₀ w _ ▸ inv_lt_one_of_one_lt₀ haw
     simpa [c] using (tendsto_div_one_add_pow_nhds_one this).mul_const (w b)
-  simp_rw [OrderTopology.topology_eq_generate_intervals,
+  simp_rw +instances [OrderTopology.topology_eq_generate_intervals,
     TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_atTop_sets, Set.mem_preimage] at hcⱼ
   choose r₁ hr₁ using Filter.eventually_atTop.1 <| Filter.Tendsto.eventually_const_lt hb hcᵢ
   choose rₙ hrₙ using fun j hj ↦ hcⱼ j hj (.Iio 1) (by simpa using ⟨1, .inr rfl⟩) (by simp)
@@ -351,6 +351,7 @@ theorem isEquiv_iff_exists_rpow_eq {v w : AbsoluteValue F ℝ} :
         rcases eq_or_ne x 0 with rfl | h₀ <;>
         aesop (add simp [h.isNontrivial_congr])⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (WithAbs v)}
     (hU : U ∈ 𝓝 0) : WithAbs.congr v w (.refl F) '' U ∈ 𝓝 0 := by
   rw [Metric.mem_nhds_iff] at hU ⊢
@@ -359,9 +360,9 @@ theorem IsEquiv.equivWithAbs_image_mem_nhds_zero (h : v.IsEquiv w) {U : Set (Wit
   refine ⟨ε ^ c, rpow_pos_of_pos hε _, fun x hx ↦ ?_⟩
   rw [← RingEquiv.apply_symm_apply (WithAbs.congr v w (.refl F)) x]
   refine Set.mem_image_of_mem _ (hU ?_)
-  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_abv, ← funext_iff.1 hvw,
+  rw [Metric.mem_ball, dist_zero_right, WithAbs.norm_eq_apply_ofAbs, ← funext_iff.1 hvw,
     rpow_lt_rpow_iff (v.nonneg _) hε.le hc] at hx
-  simpa [WithAbs.norm_eq_abv]
+  simpa [WithAbs.norm_eq_apply_ofAbs]
 
 open Topology IsTopologicalAddGroup in
 theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
@@ -375,14 +376,16 @@ theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
     rw [← RingEquiv.coe_toEquiv_symm, WithAbs.congr_symm] at hss
     exact Filter.mem_of_superset (h.symm.equivWithAbs_image_mem_nhds_zero hs) hss
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isEquiv_iff_isHomeomorph (v w : AbsoluteValue F ℝ) :
     v.IsEquiv w ↔ IsHomeomorph (WithAbs.congr v w (.refl F)) := by
   rw [isHomeomorph_iff_isEmbedding_surjective]
   refine ⟨fun h ↦ ⟨h.isEmbedding_equivWithAbs, RingEquiv.surjective _⟩, fun ⟨hi, _⟩ ↦ ?_⟩
   refine isEquiv_iff_lt_one_iff.2 fun x ↦ ?_
-  conv_lhs => rw [← (WithAbs.equiv v).apply_symm_apply x]
-  conv_rhs => rw [← (WithAbs.equiv w).apply_symm_apply x]
-  simp_rw [← WithAbs.norm_eq_abv, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
+  conv_lhs => rw [← WithAbs.ofAbs_toAbs v x]
+  conv_rhs => rw [← WithAbs.ofAbs_toAbs w x]
+  rw [← WithAbs.norm_eq_apply_ofAbs, ← WithAbs.norm_eq_apply_ofAbs,
+    ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one, ← tendsto_pow_atTop_nhds_zero_iff_norm_lt_one]
   exact ⟨fun h ↦ by simpa [Function.comp_def] using (hi.continuous.tendsto 0).comp h, fun h ↦ by
     simpa [Function.comp_def] using (hi.continuous_iff (f := (WithAbs.congr v w (.refl F)).symm)).2
       continuous_id |>.tendsto 0 |>.comp h ⟩

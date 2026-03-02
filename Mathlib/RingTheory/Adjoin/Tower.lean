@@ -40,12 +40,7 @@ theorem adjoin_restrictScalars (C D E : Type*) [CommSemiring C] [CommSemiring D]
     ext x
     change x ∈ Subsemiring.closure (_ ∪ S) ↔ x ∈ Subsemiring.closure (_ ∪ S)
     rw [this]
-  ext x
-  constructor
-  · rintro ⟨y, hy⟩
-    exact ⟨⟨algebraMap D E y, ⟨y, ⟨Algebra.mem_top, rfl⟩⟩⟩, hy⟩
-  · rintro ⟨⟨y, ⟨z, ⟨h0, h1⟩⟩⟩, h2⟩
-    exact ⟨z, Eq.trans h1 h2⟩
+  simp
 
 theorem adjoin_res_eq_adjoin_res (C D E F : Type*) [CommSemiring C] [CommSemiring D]
     [CommSemiring E] [CommSemiring F] [Algebra C D] [Algebra C E] [Algebra C F] [Algebra D F]
@@ -141,6 +136,7 @@ section Ring
 variable [CommRing A] [CommRing B] [CommRing C]
 variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Artin--Tate lemma**: if A ⊆ B ⊆ C is a chain of subrings of commutative rings, and
 A is Noetherian, and C is algebra-finite over A, and C is module-finite over B,
 then B is algebra-finite over A.
