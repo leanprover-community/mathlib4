@@ -5,15 +5,11 @@ Authors: Jiedong Jiang, Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Etale
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
-public import Mathlib.AlgebraicGeometry.Sites.BigZariski
-public import Mathlib.AlgebraicGeometry.Sites.Small
-public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
+public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
-public import Mathlib.CategoryTheory.Limits.Elements
-public import Mathlib.CategoryTheory.Sites.Point.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.CommaSites
 
 /-!
 
@@ -40,116 +36,6 @@ over `S` and equip it with the induced topology.
 universe v u
 
 open CategoryTheory MorphismProperty Limits
-
-namespace CategoryTheory
-
-variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) (K : Precoverage D)
-  [F.LocallyCoverDense K.toGrothendieck] [F.IsLocallyFull K.toGrothendieck]
-  [F.IsLocallyFaithful K.toGrothendieck]
-
-lemma Precoverage.toGrothendieck_le_iff_le_toPrecoverage' {K : Precoverage C}
-    {J : GrothendieckTopology C} :
-    K.toGrothendieck ≤ J ↔ K ≤ J.toPrecoverage := by
-  refine ⟨fun h X R hR ↦ ?_, fun h ↦ ?_⟩
-  · rw [GrothendieckTopology.mem_toPrecoverage_iff]
-    exact h _ (generate_mem_toGrothendieck hR)
-  · intro X R hR
-    induction hR with
-    | of X S hS => exact h _ hS
-    | top X => grind
-    | pullback X S _ Y f _ => grind
-    | transitive X S R _ _ _ _ => grind
-
-lemma toGrothendieck_comap_le_inducedTopology :
-    (K.comap F).toGrothendieck ≤ F.inducedTopology K.toGrothendieck := by
-  rw [Precoverage.toGrothendieck_le_iff_le_toPrecoverage']
-  intro X R hR
-  rw [Precoverage.mem_comap_iff] at hR
-  rw [GrothendieckTopology.mem_toPrecoverage_iff, Functor.mem_inducedTopology_sieves_iff,
-    ← Sieve.generate_map_eq_functorPushforward]
-  exact Precoverage.generate_mem_toGrothendieck hR
-
-variable {P : MorphismProperty C} {S : C} (K : Precoverage D)
-  [K.HasIsos] [K.IsStableUnderBaseChange] [K.IsStableUnderComposition]
-  [K.HasPullbacks] [P.IsStableUnderComposition]
-
-lemma Precoverage.locallyCoverDense_of_map_functorPullback_mem
-    (H : ∀ {S : C} {R : Presieve (F.obj S)}, R ∈ K (F.obj S) →
-      Presieve.map F (Presieve.functorPullback F R) ∈ K (F.obj S)) :
-    F.LocallyCoverDense K.toGrothendieck where
-  functorPushforward_functorPullback_mem U := fun ⟨T, hT⟩ ↦ by
-    rw [Precoverage.mem_toGrothendieck_iff_of_isStableUnderComposition] at hT ⊢
-    obtain ⟨R, hR, hle⟩ := hT
-    refine ⟨_, H hR, ?_⟩
-    refine le_trans ?_
-      (Presieve.functorPushforward_monotone _ (Presieve.functorPullback_monotone hle))
-    rw [← Sieve.arrows_generate_map_eq_functorPushforward]
-    exact Sieve.le_generate _
-
-lemma Precoverage.toGrothendieck_comap_eq_inducedTopology [F.Faithful] [F.Full]
-    (H : ∀ {S : C} {R : Presieve (F.obj S)}, R ∈ K (F.obj S) →
-      Presieve.map F (Presieve.functorPullback F R) ∈ K (F.obj S)) :
-    haveI : F.LocallyCoverDense K.toGrothendieck :=
-      K.locallyCoverDense_of_map_functorPullback_mem F H
-    (K.comap F).toGrothendieck = F.inducedTopology K.toGrothendieck := by
-  haveI : F.LocallyCoverDense K.toGrothendieck :=
-    K.locallyCoverDense_of_map_functorPullback_mem F H
-  refine le_antisymm ?_ fun X T hT ↦ ?_
-  · apply toGrothendieck_comap_le_inducedTopology
-  · rw [Functor.mem_inducedTopology_sieves_iff] at hT
-    rw [Precoverage.mem_toGrothendieck_iff_of_isStableUnderComposition] at hT
-    obtain ⟨R, hR, hle⟩ := hT
-    refine GrothendieckTopology.superset_covering
-        (S := Sieve.generate (Presieve.functorPullback F R)) _ ?_ ?_
-    · refine le_trans (le_trans (Sieve.generate_functorPullback_le F R)
-        (Sieve.functorPullback_monotone _ _ (Sieve.generate_mono hle))) ?_
-      rw [Sieve.generate_sieve, Sieve.functorPullback_functorPushforward_eq]
-    · exact Precoverage.generate_mem_toGrothendieck (H hR)
-
-lemma MorphismProperty.exists_map_eq_of_presieve (K : Precoverage C)
-    (H : K ≤ P.precoverage)
-    {X : P.Over ⊤ S} {R : Presieve ((MorphismProperty.Over.forget P ⊤ S).obj X)}
-    (hR : R ∈ (K.comap <| CategoryTheory.Over.forget S) _) :
-    ∃ T : Presieve X, T.map (MorphismProperty.Over.forget P ⊤ S) = R := by
-  rw [Precoverage.mem_iff_exists_zeroHypercover] at hR
-  obtain ⟨𝒰, rfl⟩ := hR
-  let 𝒱 : PreZeroHypercover X :=
-    ⟨𝒰.I₀, fun i ↦ Over.mk _ (𝒰.X i).hom ?_, fun i ↦ Over.homMk (𝒰.f i).left (by simp) trivial⟩
-  · use 𝒱.presieve₀
-    rw [Presieve.map_ofArrows]
-    rfl
-  · rw [← CategoryTheory.Over.w (𝒰.f i)]
-    exact P.comp_mem _ _ (H _ 𝒰.mem₀ ⟨⟨i⟩⟩) X.prop
-
-variable {P : MorphismProperty C} {S : C} (K : Precoverage C)
-  [K.HasIsos] [K.IsStableUnderBaseChange] [K.IsStableUnderComposition]
-  [K.HasPullbacks] [P.IsStableUnderComposition]
-
-lemma MorphismProperty.locallyCoverDense_forget_of_le (H : K ≤ P.precoverage) :
-    (MorphismProperty.Over.forget P ⊤ S).LocallyCoverDense (K.toGrothendieck.over S) := by
-  rw [over_toGrothendieck_eq_toGrothendieck_comap_forget]
-  apply Precoverage.locallyCoverDense_of_map_functorPullback_mem
-  intro X R hR
-  obtain ⟨R, rfl⟩ := MorphismProperty.exists_map_eq_of_presieve _ H hR
-  simpa
-
-lemma MorphismProperty.toGrothendieck_comap_forget_eq_inducedTopology
-    (H : K ≤ P.precoverage) :
-    haveI := MorphismProperty.locallyCoverDense_forget_of_le (S := S) K H
-    (K.comap (MorphismProperty.Over.forget P ⊤ _ ⋙ CategoryTheory.Over.forget S)).toGrothendieck =
-      (MorphismProperty.Over.forget P ⊤ _).inducedTopology (K.toGrothendieck.over S) := by
-  have : (Over.forget P ⊤ S).LocallyCoverDense
-      (K.comap (CategoryTheory.Over.forget S)).toGrothendieck := by
-    rw [← over_toGrothendieck_eq_toGrothendieck_comap_forget]
-    exact MorphismProperty.locallyCoverDense_forget_of_le (S := S) K H
-  rw [Precoverage.comap_comp]
-  simp_rw [over_toGrothendieck_eq_toGrothendieck_comap_forget]
-  apply Precoverage.toGrothendieck_comap_eq_inducedTopology
-  intro X R hR
-  obtain ⟨T, rfl⟩ := MorphismProperty.exists_map_eq_of_presieve K H hR
-  simpa
-
-end CategoryTheory
 
 namespace AlgebraicGeometry.Scheme
 
