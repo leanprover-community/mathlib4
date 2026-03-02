@@ -130,6 +130,22 @@ theorem finrank_orthogonal_span_singleton {n : ℕ} [_i : Fact (finrank 𝕜 E =
   exact finrank_add_finrank_orthogonal' <| by
     simp [finrank_span_singleton hv, _i.elim, add_comm]
 
+/-- If two nonzero vectors `w` and `u` are both orthogonal to the same nonzero vector `v`
+in a two-dimensional inner product space, then `u` lies in the span of `w`. -/
+theorem mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero
+    {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+    [Fact (finrank 𝕜 E = 2)] {u v w : E}
+    (hv : v ≠ 0) (hw : w ≠ 0)
+    (huv : ⟪v, u⟫_𝕜 = 0) (hwv : ⟪v, w⟫_𝕜 = 0) :
+    u ∈ Submodule.span 𝕜 {w} := by
+  haveI : FiniteDimensional 𝕜 E := .of_fact_finrank_eq_succ 1
+  have heq : 𝕜 ∙ w = (𝕜 ∙ v)ᗮ :=
+      Submodule.eq_of_le_of_finrank_le
+        ((Submodule.span_singleton_le_iff_mem _ _).mpr
+          (Submodule.mem_orthogonal_singleton_iff_inner_right.mpr hwv))
+        (by rw [finrank_orthogonal_span_singleton (n := 1) hv, finrank_span_singleton hw])
+  rwa [heq, Submodule.mem_orthogonal_singleton_iff_inner_right]
+
 end Submodule
 
 open Module Submodule
