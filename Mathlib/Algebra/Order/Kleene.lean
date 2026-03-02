@@ -103,7 +103,6 @@ instance (priority := 100) IdemSemiring.toOrderBot [IdemSemiring α] : OrderBot 
 -- See note [reducible non-instances]
 /-- Construct an idempotent semiring from an idempotent addition. -/
 abbrev IdemSemiring.ofSemiring [Semiring α] (h : ∀ a : α, a + a = a) : IdemSemiring α where
-  __ := ‹Semiring α›
   le a b := a + b = b
   le_refl := h
   le_trans a b c hab hbc := by rw [← hbc, ← add_assoc, hab]
@@ -286,8 +285,6 @@ abbrev KleeneAlgebra.ofInequalities
 namespace Prod
 
 instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) where
-  __ := Prod.instSemiring
-  __ := Prod.instSemilatticeSup _ _
   __ := Prod.instOrderBot _ _
   add_eq_sup _ _ := Prod.ext (add_eq_sup _ _) (add_eq_sup _ _)
 
@@ -298,7 +295,6 @@ instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × �
 variable [KleeneAlgebra α] [KleeneAlgebra β]
 
 instance : KleeneAlgebra (α × β) where
-  __ := Prod.instIdemSemiring
   kstar a := (a.1∗, a.2∗)
   one_add_mul_kstar _ := Prod.ext one_add_mul_kstar one_add_mul_kstar
   one_add_kstar_mul _ := Prod.ext one_add_kstar_mul one_add_kstar_mul
@@ -321,8 +317,6 @@ end Prod
 namespace Pi
 
 instance instIdemSemiring [∀ i, IdemSemiring (π i)] : IdemSemiring (∀ i, π i) where
-  __ := Pi.semiring
-  __ := Pi.instSemilatticeSup
   __ := Pi.instOrderBot
   add_eq_sup _ _ := funext fun _ ↦ add_eq_sup _ _
 
@@ -333,7 +327,6 @@ instance [∀ i, IdemCommSemiring (π i)] : IdemCommSemiring (∀ i, π i) where
 variable [∀ i, KleeneAlgebra (π i)]
 
 instance : KleeneAlgebra (∀ i, π i) where
-  __ := Pi.instIdemSemiring
   kstar a i := (a i)∗
   one_add_mul_kstar _ := funext fun _ ↦ one_add_mul_kstar
   one_add_kstar_mul _ := funext fun _ ↦ one_add_kstar_mul
