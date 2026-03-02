@@ -660,6 +660,7 @@ theorem ContDiffWithinAt.fderivWithin_right_apply
     (ContDiffWithinAt.comp (x₀, x₀) hf contDiffWithinAt_snd <| prod_subset_preimage_snd s s)
     contDiffWithinAt_id hk hs hmn hx₀s (by rw [preimage_id'])
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
 theorem ContDiffWithinAt.iteratedFDerivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
     (hs : UniqueDiffOn 𝕜 s) (hmn : m + i ≤ n) (hx₀s : x₀ ∈ s) :

@@ -878,6 +878,7 @@ section
 -- Per https://github.com/leanprover-community/mathlib3/pull/15067, we only allow indexing in `Type 0` here.
 variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
 @[simps]
@@ -909,12 +910,14 @@ def kernelForkBiproductToSubtype (p : K → Prop) :
 instance (p : K → Prop) : HasKernel (biproduct.toSubtype f p) :=
   HasLimit.mk (kernelForkBiproductToSubtype f p)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel of `biproduct.toSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
 @[simps!]
 def kernelBiproductToSubtypeIso (p : K → Prop) :
     kernel (biproduct.toSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
   limit.isoLimitCone (kernelForkBiproductToSubtype f p)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cocone exhibiting `⨁ Subtype.restrict pᶜ f` as the cokernel of
 `biproduct.fromSubtype f p` -/
 @[simps]

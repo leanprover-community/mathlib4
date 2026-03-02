@@ -225,6 +225,8 @@ def induction {d : D} (Z : ∀ (X : C) (_ : d ⟶ F.obj X), Sort*)
 
 variable {F G}
 
+set_option backward.whnf.reducibleClassField false in
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone over `F ⋙ G`, we can construct a `Cocone G` with the same cocone point.
 -/
 @[simps]
@@ -248,6 +250,8 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
             · rw [← Functor.map_comp_assoc] } }
   map f := { hom := f.hom }
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.whnf.reducibleClassField false in
 /-- Alternative equational lemma for `(extendCocone c).ι.app` in case a lift of the object
 is given explicitly. -/
 lemma extendCocone_obj_ι_app' (c : Cocone (F ⋙ G)) {X : D} {Y : C} (f : X ⟶ F.obj Y) :
@@ -277,6 +281,8 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
 
 variable (F G)
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.whnf.reducibleClassField false in
 /-- If `F` is final,
 the category of cocones on `F ⋙ G` is equivalent to the category of cocones on `G`,
 for any `G : D ⥤ E`.
@@ -290,12 +296,14 @@ def coconesEquiv : Cocone (F ⋙ G) ≌ Cocone G where
 
 variable {G}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `F : C ⥤ D` is final, and `t : Cocone G` for some `G : D ⥤ E`,
 `t.whisker F` is a colimit cocone exactly when `t` is.
 -/
 def isColimitWhiskerEquiv (t : Cocone G) : IsColimit (t.whisker F) ≃ IsColimit t :=
   IsColimit.ofCoconeEquiv (coconesEquiv F G).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `F` is final, and `t : Cocone (F ⋙ G)`,
 `extendCocone.obj t` is a colimit cocone exactly when `t` is.
 -/
@@ -312,6 +320,7 @@ def colimitCoconeComp (t : ColimitCocone G) : ColimitCocone (F ⋙ G) where
 instance (priority := 100) comp_hasColimit [HasColimit G] : HasColimit (F ⋙ G) :=
   HasColimit.mk (colimitCoconeComp F (getColimitCocone G))
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) comp_preservesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [PreservesColimit G H] : PreservesColimit (F ⋙ G) H where
   preserves {c} hc := by
@@ -319,6 +328,7 @@ instance (priority := 100) comp_preservesColimit {B : Type u₄} [Category.{v₄
     let hc' := isColimitOfPreserves H ((isColimitExtendCoconeEquiv F c).symm hc)
     exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) comp_reflectsColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [ReflectsColimit G H] : ReflectsColimit (F ⋙ G) H where
   reflects {c} hc := by
@@ -326,6 +336,7 @@ instance (priority := 100) comp_reflectsColimit {B : Type u₄} [Category.{v₄}
     let hc' := (isColimitExtendCoconeEquiv (G := G ⋙ H) F _).symm hc
     exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) compCreatesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit G H] : CreatesColimit (F ⋙ G) H where
   lifts {c} hc := by
@@ -406,6 +417,8 @@ theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B
     let hc' := (isColimitWhiskerEquiv F _).symm hc
     exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
 
+set_option backward.whnf.reducibleClassField false in
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is final and `F ⋙ G` creates colimits of `H`, then so does `G`. -/
 def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
     [CreatesColimit (F ⋙ G) H] : CreatesColimit G H where

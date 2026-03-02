@@ -516,6 +516,7 @@ theorem chromaticNumber_eq_one_iff : G.chromaticNumber = 1 ↔ G = ⊥ ∧ Nonem
     have := G.colorable_zero_iff.mpr h |>.chromaticNumber_le
     simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem two_le_chromaticNumber_iff_ne_bot : 2 ≤ G.chromaticNumber ↔ G ≠ ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h
