@@ -56,39 +56,40 @@ end AffineScheme
 
 section Scheme
 
-/-- A preparation lemma for `base_factorization` below. -/
-private lemma base_factorization_type {X Y S : Scheme.{u}} {f : X ⟶ Y} {e : X ⟶ S}
-    [Surjective f] (h : pullback.fst f f ≫ e = pullback.snd f f ≫ e) :
-    ∃ (g : ↥Y → ↥S), ⇑e.base.hom = g ∘ ⇑f.base.hom := by
-  let : RegularEpi (Scheme.forget.map f) := by
-    have := (isSplitEpi_iff_surjective (Scheme.forget.map f)).mpr ‹Surjective f›.surj
-    exact regularEpiOfEffectiveEpi (Scheme.forget.map f)
-  refine ⟨_, types_comp _ _ ▸ Cofork.IsColimit.π_desc' this.isColimit _ ?_|>.symm⟩
-  change pullback.fst _ _ ≫ Scheme.forget.map e = pullback.snd _ _ ≫ Scheme.forget.map e
+/-- If `π : X ⟶ Y` is a surjective morphism of schemes, then any morphism `f : X ⟶ S` of schemes
+whose two pullbacks to `X ×[Y] X` agree descends to a function `u : ↥Y → ↥S` (as types) with
+`u ∘ ⇑π.base.hom = ⇑f.base.hom`. See `exists_of_flat` for the scheme morphism version. -/
+lemma exists_base_hom_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y} [Surjective π]
+    {f : X ⟶ S} (h : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
+    ∃ (u : ↥Y → ↥S), u ∘ ⇑π.base.hom = ⇑f.base.hom := by
+  let : RegularEpi (Scheme.forget.map π) := by
+    have := (isSplitEpi_iff_surjective (Scheme.forget.map π)).mpr ‹Surjective π›.surj
+    exact regularEpiOfEffectiveEpi (Scheme.forget.map π)
+  refine ⟨_, types_comp _ _ ▸ Cofork.IsColimit.π_desc' this.isColimit _ ?_⟩
+  change pullback.fst _ _ ≫ Scheme.forget.map f = pullback.snd _ _ ≫ Scheme.forget.map f
   apply ((epi_iff_surjective _).mpr
     (Scheme.pullbackComparison_forget_surjective _ _)).left_cancellation
   simp only [← Category.assoc, pullbackComparison_comp_fst, ← Functor.map_comp, h,
     pullbackComparison_comp_snd]
 
-/-- For a flat surjective and quasi-compact morphism `f : X ⟶ Y` of schemes,
-any morphism `e : X ⟶ Z` of schemes satisfying `pullback.fst f f ≫ e = pullback.snd f f ≫ e`
-factors through a unique *continuous map* on underlying topological spaces. -/
-private lemma base_factorization {X Y S : Scheme.{u}} {f : X ⟶ Y} {e : X ⟶ S}
-    [Flat f] [Surjective f] [QuasiCompact f]
-    (h : pullback.fst f f ≫ e = pullback.snd f f ≫ e) :
-    ∃! (g : Y.carrier ⟶ S.carrier), f.base ≫ g = e.base := by
-  have h' {Z : TopCat} (g₁ g₂ : Z ⟶ X.carrier) (hg : g₁ ≫ f.base = g₂ ≫ f.base) :
-      g₁ ≫ e.base = g₂ ≫ e.base := by
+/-- If `π : X ⟶ Y` is a flat, surjective and quasi-compact morphism of schemes, then any morphism
+`f : X ⟶ S` of schemes whose two pullbacks to `X ×[Y] X` agree descends to a continuous map
+`u : Y.carrier ⟶ S.carrier` with `π.base ≫ u = f.base`. See `exists_of_flat` for the scheme
+morphism version. -/
+lemma exists_base_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y}
+    [Flat π] [Surjective π] [QuasiCompact π]
+    {f : X ⟶ S} (h : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
+    ∃ (u : Y.carrier ⟶ S.carrier), π.base ≫ u = f.base := by
+  have h' {Z : TopCat} (g₁ g₂ : Z ⟶ X.carrier) (hg : g₁ ≫ π.base = g₂ ≫ π.base) :
+      g₁ ≫ f.base = g₂ ≫ f.base := by
     apply TopCat.hom_ext
     apply ContinuousMap.coe_injective
     simp only [TopCat.hom_comp, ContinuousMap.coe_comp]
-    rw [(base_factorization_type h).choose_spec, Function.comp_assoc]
+    rw [(exists_base_hom_of_surjective h).choose_spec.symm, Function.comp_assoc]
     congr 1
     exact congrArg ContinuousMap.toFun ((TopCat.hom_comp _ _).trans (congrArg TopCat.Hom.hom hg))
-  exact ⟨(TopCat.effectiveEpiStructOfQuotientMap _ (Flat.isQuotientMap_of_surjective f)).desc _ h',
-    ⟨(TopCat.effectiveEpiStructOfQuotientMap _ (Flat.isQuotientMap_of_surjective f)).fac _ h',
-      fun g' hg' ↦ (TopCat.effectiveEpiStructOfQuotientMap _
-        (Flat.isQuotientMap_of_surjective f)).uniq _ h' g' hg'⟩⟩
+  exact ⟨(TopCat.effectiveEpiStructOfQuotientMap _ (Flat.isQuotientMap_of_surjective π)).desc _ h',
+    (TopCat.effectiveEpiStructOfQuotientMap _ (Flat.isQuotientMap_of_surjective π)).fac _ h'⟩
 
 /-- If `π : X ⟶ Y` is a surjective and flat morphism between affine schemes, then any morphism
 `f : X ⟶ S` to an affine scheme `S` whose two pullbacks to `X ×[Y] X` agree descends to a morphism
@@ -120,7 +121,7 @@ lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π
     (f : X ⟶ S) (hg : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
     ∃ (𝒰 : OpenCover.{u} Y),
       ∀ i : 𝒰.I₀, ∃ (u : 𝒰.X i ⟶ S), pullback.fst π (𝒰.f i) ≫ f = pullback.snd _ _ ≫ u := by
-  obtain ⟨b, hfac, _⟩ := base_factorization hg
+  obtain ⟨b, hfac⟩ := exists_base_of_surjective hg
   let 𝒰 := Y.openCoverOfIsOpenCover _ <| Y.isBasis_affineOpens.isOpenCover_mem_and_le
     (S.isBasis_affineOpens.isOpenCover.comap b.hom)
   refine ⟨𝒰, fun i ↦ ?_⟩
