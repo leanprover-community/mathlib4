@@ -12,6 +12,7 @@ public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Order.WellFounded
 public import Mathlib.Tactic.Nontriviality
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Tactic.Attr.Core
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -137,8 +138,6 @@ protected lemma IsAtom.le_iSup (ha : IsAtom a) : a ≤ iSup f ↔ ∃ i, a ≤ f
   obtain rfl := le_bot_iff.1 (ha'' le_rfl h)
   exact ha.1 rfl
 
-@[deprecated (since := "2025-07-11")] alias atom_le_iSup := IsAtom.le_iSup
-
 protected lemma IsAtom.le_sSup (ha : IsAtom a) : a ≤ sSup s ↔ ∃ b ∈ s, a ≤ b := by
   simp [sSup_eq_iSup', ha.le_iSup]
 
@@ -218,7 +217,7 @@ alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
 
 namespace SetLike
 
-variable {A B : Type*} [SetLike A B]
+variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsConcreteLE A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
@@ -256,8 +255,6 @@ variable [Coframe α] {f : ι → α} {s : Set α} {a : α}
 
 protected lemma IsCoatom.iInf_le (ha : IsCoatom a) : iInf f ≤ a ↔ ∃ i, f i ≤ a :=
   IsAtom.le_iSup (α := αᵒᵈ) ha
-
-@[deprecated (since := "2025-07-11")] alias iInf_le_coatom := IsCoatom.iInf_le
 
 protected lemma IsCoatom.sInf_le (ha : IsCoatom a) : sInf s ≤ a ↔ ∃ b ∈ s, b ≤ a := by
   simp [sInf_eq_iInf', ha.iInf_le]
@@ -299,16 +296,6 @@ lemma IsAtom.not_le_iff_disjoint (ha : IsAtom a) : ¬ a ≤ b ↔ Disjoint a b :
 lemma IsAtom.disjoint_of_ne (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b := by
   simp [← ha.not_le_iff_disjoint, hb.le_iff, hab, ha.ne_bot]
 
-@[deprecated disjoint_of_ne (since := "2025-07-11")]
-theorem IsAtom.inf_eq_bot_of_ne (ha : IsAtom a) (hb : IsAtom b) (hab : a ≠ b) : a ⊓ b = ⊥ :=
-  hab.not_le_or_not_ge.elim (ha.lt_iff.1 ∘ inf_lt_left.2) (hb.lt_iff.1 ∘ inf_lt_right.2)
-
-@[deprecated not_le_iff_disjoint (since := "2025-07-11")]
-theorem IsAtom.inf_eq_bot_iff (ha : IsAtom a) : a ⊓ b = ⊥ ↔ ¬ a ≤ b := by
-  by_cases hb : b = ⊥
-  · simpa [hb] using ha.1
-  · exact ⟨fun h ↦ inf_lt_left.mp (h ▸ bot_lt ha), fun h ↦ ha.2 _ (inf_lt_left.mpr h)⟩
-
 end SemilatticeInf
 
 section SemilatticeSup
@@ -326,11 +313,6 @@ lemma IsCoatom.codisjoint_of_ne (ha : IsCoatom a) (hb : IsCoatom b) (hab : a ≠
 
 theorem IsCoatom.sup_eq_top_of_ne (ha : IsCoatom a) (hb : IsCoatom b) (hab : a ≠ b) : a ⊔ b = ⊤ :=
   codisjoint_iff.1 <| ha.codisjoint_of_ne hb hab
-
-set_option linter.deprecated false in
-@[deprecated not_le_iff_codisjoint (since := "2025-07-11")]
-theorem IsCoatom.sup_eq_top_iff (ha : IsCoatom a) : a ⊔ b = ⊤ ↔ ¬ b ≤ a :=
-  ha.dual.inf_eq_bot_iff
 
 end SemilatticeSup
 
@@ -711,7 +693,7 @@ theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α
 lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
     (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
   ext a
-  refine ⟨fun h => ⟨CompleteLattice.le_sSup S a h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
+  refine ⟨fun h => ⟨le_sSup h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
   obtain ⟨b, hbS, hba⟩ := (IsAtom.le_sSup hatom).mp hale
   obtain rfl | rfl := (hS b hbS).le_iff.mp hba
   · simpa using hatom.1
@@ -932,12 +914,14 @@ protected noncomputable def completeLattice : CompleteLattice α :=
         intro con
         exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
     __ := IsSimpleOrder.booleanAlgebra }
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
 
@@ -1294,6 +1278,7 @@ namespace Set
 theorem isAtom_singleton (x : α) : IsAtom ({x} : Set α) :=
   ⟨singleton_ne_empty _, fun _ hs => ssubset_singleton_iff.mp hs⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
   refine
     ⟨?_, by
@@ -1305,6 +1290,7 @@ theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
     ⟨x, eq_singleton_iff_unique_mem.2
         ⟨hx, fun y hy => (hs {y} (singleton_ne_empty _) (singleton_subset_iff.2 hy) hx).symm⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isCoatom_iff (s : Set α) : IsCoatom s ↔ ∃ x, s = {x}ᶜ := by
   rw [isCompl_compl.isCoatom_iff_isAtom, isAtom_iff]
   simp_rw [@eq_comm _ s, compl_eq_comm]
@@ -1314,6 +1300,7 @@ theorem isCoatom_singleton_compl (x : α) : IsCoatom ({x}ᶜ : Set α) :=
 
 instance : IsAtomistic (Set α) := inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsCoatomistic (Set α) := inferInstance
 
 end Set

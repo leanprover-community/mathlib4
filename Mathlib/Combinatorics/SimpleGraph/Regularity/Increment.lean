@@ -62,6 +62,7 @@ open Finpartition Finpartition.IsEquipartition
 
 variable {hP G ε}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The increment partition has a prescribed (very big) size in terms of the original partition. -/
 theorem card_increment (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPG : ¬P.IsUniform G ε) :
     #(increment hP G ε).parts = stepBound #P.parts := by
@@ -74,7 +75,7 @@ theorem card_increment (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPG : ¬P.
   rw [Nat.sub_add_cancel a_add_one_le_four_pow_parts_card,
     Nat.sub_add_cancel ((Nat.le_succ _).trans a_add_one_le_four_pow_parts_card), ← add_mul]
   congr
-  rw [filter_card_add_filter_neg_card_eq_card, card_attach]
+  rw [card_filter_add_card_filter_not, card_attach]
 
 variable (hP G ε)
 
@@ -85,6 +86,7 @@ theorem increment_isEquipartition : (increment hP G ε).IsEquipartition := by
   obtain ⟨U, hU, hA⟩ := hA
   exact card_eq_of_mem_parts_chunk hA
 
+set_option backward.privateInPublic true in
 /-- The contribution to `Finpartition.energy` of a pair of distinct parts of a `Finpartition`. -/
 private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
     Finset (Finset α × Finset α) :=
@@ -92,6 +94,7 @@ private noncomputable def distinctPairs (x : {x // x ∈ P.parts.offDiag}) :
 
 variable {hP G ε}
 
+set_option backward.isDefEq.respectTransparency false in
 private theorem distinctPairs_increment :
     P.parts.offDiag.attach.biUnion (distinctPairs hP G ε) ⊆ (increment hP G ε).parts.offDiag := by
   rintro ⟨Ui, Vj⟩
@@ -108,7 +111,7 @@ private lemma pairwiseDisjoint_distinctPairs :
     (P.parts.offDiag.attach : Set {x // x ∈ P.parts.offDiag}).PairwiseDisjoint
       (distinctPairs hP G ε) := by
   simp +unfoldPartialApp only [distinctPairs, Set.PairwiseDisjoint,
-    Function.onFun, disjoint_left, mem_product]
+    Function.onFun, Finset.disjoint_left, mem_product]
   rintro ⟨⟨s₁, s₂⟩, hs⟩ _ ⟨⟨t₁, t₂⟩, ht⟩ _ hst ⟨u, v⟩ huv₁ huv₂
   rw [mem_offDiag] at hs ht
   obtain ⟨a, ha⟩ := Finpartition.nonempty_of_mem_parts _ huv₁.1
@@ -121,6 +124,8 @@ private lemma pairwiseDisjoint_distinctPairs :
 
 variable [Nonempty α]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma le_sum_distinctPairs_edgeDensity_sq (x : {i // i ∈ P.parts.offDiag}) (hε₁ : ε ≤ 1)
     (hPα : #P.parts * 16 ^ #P.parts ≤ card α) (hPε : ↑100 ≤ ↑4 ^ #P.parts * ε ^ 5) :
     (G.edgeDensity x.1.1 x.1.2 : ℝ) ^ 2 +
@@ -166,7 +171,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ #P.parts)
     _ ≤ _ := sum_le_sum fun i _ ↦ le_sum_distinctPairs_edgeDensity_sq i hε₁ hPα hPε
   gcongr
   calc
-    _ = (6/7 * #P.parts ^ 2) * ε ^ 5 * (7 / 24) := by ring
+    _ = (6 / 7 * #P.parts ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ #P.parts.offDiag * ε ^ 5 * (22 / 75) := by
         gcongr ?_ * _ * ?_
         · rw [← mul_div_right_comm, div_le_iff₀ (by simp), offDiag_card]

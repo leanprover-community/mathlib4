@@ -17,7 +17,7 @@ This file proves some theorems on `radical` and `divRadical` of polynomials.
 See `RingTheory.Radical` for the definition of `radical` and `divRadical`.
 -/
 
-@[expose] public section
+public section
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
 

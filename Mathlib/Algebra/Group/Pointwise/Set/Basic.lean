@@ -53,7 +53,7 @@ pointwise subtraction
 
 assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
-library_note2 «pointwise nat action» /--
+library_note «pointwise nat action» /--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
 `SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
 nat or int action coming from `Set β` being a `Monoid` or `DivInvMonoid`. For example,
@@ -78,7 +78,8 @@ section One
 variable [One α] {s : Set α} {a : α}
 
 /-- The set `1 : Set α` is defined as `{1}` in scope `Pointwise`. -/
-@[to_additive /-- The set `0 : Set α` is defined as `{0}` in scope `Pointwise`. -/]
+@[to_additive (attr := instance_reducible)
+  /-- The set `0 : Set α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Set α) :=
   ⟨{1}⟩
 
@@ -92,7 +93,7 @@ open Pointwise
 theorem singleton_one : ({1} : Set α) = 1 :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem mem_one : a ∈ (1 : Set α) ↔ a = 1 :=
   Iff.rfl
 
@@ -143,7 +144,7 @@ section Inv
 
 /-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in scope `Pointwise`. It is
 equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv_eq_inv`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in scope `Pointwise`.
       It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`. -/]
 protected def inv [Inv α] : Inv (Set α) :=
@@ -161,7 +162,7 @@ variable {ι : Sort*} [Inv α] {s t : Set α} {a : α}
 theorem inv_setOf (p : α → Prop) : {x | p x}⁻¹ = {x | p x⁻¹} :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, push)]
 theorem mem_inv : a ∈ s⁻¹ ↔ a⁻¹ ∈ s :=
   Iff.rfl
 
@@ -241,6 +242,16 @@ theorem inv_range {ι : Sort*} {f : ι → α} : (range f)⁻¹ = range fun i =>
   rw [← image_inv_eq_inv]
   exact (range_comp ..).symm
 
+@[to_additive]
+theorem image_inv_of_apply_inv_eq {f g : α → β} (H : ∀ x ∈ s, f x⁻¹ = g x) :
+    f '' (s⁻¹) = g '' s := by
+  rw [← Set.image_inv_eq_inv, Set.image_image]; exact Set.image_congr H
+
+@[to_additive]
+theorem image_inv_of_apply_inv_eq_inv [InvolutiveInv β] {f g : α → β}
+    (H : ∀ x ∈ s, f x⁻¹ = (g x)⁻¹) : f '' s⁻¹ = (g '' s)⁻¹ := by
+  conv_rhs => rw [← image_inv_eq_inv, image_image, ← image_inv_of_apply_inv_eq H]
+
 @[to_additive (attr := simp)]
 theorem forall_inv_mem {p : α → Prop} : (∀ x, x⁻¹ ∈ s → p x) ↔ ∀ x ∈ s, p x⁻¹ := by
   rw [← (Equiv.inv _).forall_congr_right]
@@ -272,7 +283,7 @@ variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : 
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 scope `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
       `Pointwise`. -/]
 protected def mul : Mul (Set α) :=
@@ -284,7 +295,7 @@ scoped[Pointwise] attribute [instance] Set.mul Set.add
 theorem image2_mul : image2 (· * ·) s t = s * t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_mul : a ∈ s * t ↔ ∃ x ∈ s, ∃ y ∈ t, x * y = a :=
   Iff.rfl
 
@@ -414,7 +425,7 @@ variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : 
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in locale
       `Pointwise`. -/]
 protected def div : Div (Set α) :=
@@ -426,7 +437,7 @@ scoped[Pointwise] attribute [instance] Set.div Set.sub
 theorem image2_div : image2 (· / ·) s t = s / t :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := push)]
 theorem mem_div : a ∈ s / t ↔ ∃ x ∈ s, ∃ y ∈ t, x / y = a :=
   Iff.rfl
 
@@ -522,30 +533,33 @@ end Div
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
 note [pointwise nat action]. -/
+@[instance_reducible]
 protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Set`. See note [pointwise nat action]. -/
-@[to_additive existing]
+@[instance_reducible, to_additive existing]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
 addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
+@[instance_reducible]
 protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
   ⟨zsmulRec⟩
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
-@[to_additive existing]
+@[instance_reducible, to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
 /-- `Set α` is a `Semigroup` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Set α) :=
   { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
 
@@ -554,7 +568,8 @@ section CommSemigroup
 variable [CommSemigroup α] {s t : Set α}
 
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Set α) :=
   { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
 
@@ -573,7 +588,8 @@ section MulOneClass
 variable [MulOneClass α]
 
 /-- `Set α` is a `MulOneClass` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
 protected def mulOneClass : MulOneClass (Set α) :=
   { Set.one, Set.mul with
     mul_one := image2_right_identity mul_one
@@ -612,7 +628,8 @@ section Monoid
 variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
 /-- `Set α` is a `Monoid` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddMonoid` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddMonoid` under pointwise operations if `α` is. -/]
 protected def monoid : Monoid (Set α) :=
   { Set.semigroup, Set.mulOneClass, @Set.NPow α _ _ with }
 
@@ -652,10 +669,9 @@ lemma Nonempty.pow (hs : s.Nonempty) : ∀ {n}, (s ^ n).Nonempty
   | 0 => by simp
   | n + 1 => by rw [pow_succ]; exact hs.pow.mul hs
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma pow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
     · exact hs.pow
     · simp
@@ -739,7 +755,8 @@ lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivi
 end CancelMonoid
 
 /-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
 protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
   { Set.monoid, Set.commSemigroup with }
 
@@ -765,8 +782,16 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
   · rintro ⟨b, c, rfl, rfl, h⟩
     rw [singleton_mul_singleton, h, singleton_one]
 
+@[to_additive] theorem nonempty_image_mulLeft_inv_inter_iff {a : α} :
+    ((a⁻¹ * ·) '' s ∩ t).Nonempty ↔ ((· * a) '' s⁻¹ ∩ t⁻¹).Nonempty := by
+  rw [← nonempty_inv, inter_inv]; simp_rw [← image_inv_eq_inv, image_image, mul_inv_rev, inv_inv]
+
+@[to_additive] theorem nonempty_image_mulRight_inv_inter_iff {a : α} :
+    ((· * a⁻¹) '' s ∩ t).Nonempty ↔ ((a * ·) '' s⁻¹ ∩ t⁻¹).Nonempty := by
+  rw [← nonempty_inv, inter_inv]; simp_rw [← image_inv_eq_inv, image_image, mul_inv_rev, inv_inv]
+
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
     /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
@@ -810,10 +835,9 @@ lemma Nonempty.zpow (hs : s.Nonempty) : ∀ {n : ℤ}, (s ^ n).Nonempty
   | (n : ℕ) => hs.pow
   | .negSucc n => by simpa using hs.pow
 
-set_option push_neg.use_distrib true in
 @[to_additive (attr := simp)] lemma zpow_eq_empty : s ^ n = ∅ ↔ s = ∅ ∧ n ≠ 0 := by
   constructor
-  · contrapose!
+  · contrapose! +distrib
     rintro (hs | rfl)
     · exact hs.zpow
     · simp
@@ -826,7 +850,7 @@ lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by cas
 end DivisionMonoid
 
 /-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionCommMonoid
+@[to_additive (attr := instance_reducible) subtractionCommMonoid
       /-- `Set α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=
@@ -841,10 +865,12 @@ variable [Group α] {s t : Set α} {a b : α}
 /-! Note that `Set` is not a `Group` because `s / s ≠ 1` in general. -/
 
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem one_mem_div_iff : (1 : α) ∈ s / t ↔ ¬Disjoint s t := by
   simp [not_disjoint_iff_nonempty_inter, mem_div, div_eq_one, Set.Nonempty]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
   aesop (add simp [not_disjoint_iff_nonempty_inter, mem_mul, mul_eq_one_iff_eq_inv, Set.Nonempty])
@@ -853,29 +879,12 @@ lemma one_mem_inv_mul_iff : (1 : α) ∈ t⁻¹ * s ↔ ¬Disjoint s t := by
 theorem one_notMem_div_iff : (1 : α) ∉ s / t ↔ Disjoint s t :=
   one_mem_div_iff.not_left
 
-@[deprecated (since := "2025-05-23")] alias not_zero_mem_sub_iff := zero_notMem_sub_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_div_iff := one_notMem_div_iff
-
 @[to_additive]
 lemma one_notMem_inv_mul_iff : (1 : α) ∉ t⁻¹ * s ↔ Disjoint s t := one_mem_inv_mul_iff.not_left
-
-@[deprecated (since := "2025-05-23")]
-alias not_zero_mem_neg_add_iff := zero_notMem_neg_add_iff
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_one_mem_inv_mul_iff := one_notMem_inv_mul_iff
 
 alias ⟨_, _root_.Disjoint.one_notMem_div_set⟩ := one_notMem_div_iff
 
 attribute [to_additive] Disjoint.one_notMem_div_set
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.zero_not_mem_sub_set := Disjoint.zero_notMem_sub_set
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias _root_.Disjoint.one_not_mem_div_set := Disjoint.one_notMem_div_set
 
 @[to_additive]
 theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
@@ -985,6 +994,13 @@ lemma image_pow_of_ne_zero [MulHomClass F α β] :
 lemma image_pow [MonoidHomClass F α β] (f : F) (s : Set α) : ∀ n, f '' (s ^ n) = (f '' s) ^ n
   | 0 => by simp [singleton_one]
   | n + 1 => image_pow_of_ne_zero n.succ_ne_zero ..
+
+@[to_additive]
+lemma preimage_pow_subset [MonoidHomClass F α β] (f : F) (s : Set β) :
+    ∀ n, (f ⁻¹' s) ^ n ⊆ f ⁻¹' (s ^ n)
+  | 0 => by simp [Set.subset_def]
+  | n + 1 => by simpa [pow_succ] using Subset.trans (mul_subset_mul_right
+    (preimage_pow_subset f s n)) (preimage_mul_preimage_subset f)
 
 end Monoid
 

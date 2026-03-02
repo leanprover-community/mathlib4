@@ -147,8 +147,8 @@ class HasLeftDual (Y : C) where
   leftDual : C
   [exact : ExactPairing leftDual Y]
 
-attribute [instance] HasRightDual.exact
-attribute [instance] HasLeftDual.exact
+attribute [instance_reducible, instance] HasRightDual.exact
+attribute [instance_reducible, instance] HasLeftDual.exact
 
 open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 
@@ -363,7 +363,7 @@ This has to be a definition rather than an instance to avoid diamonds, for examp
 `category_theory.monoidal_closed.functor_closed` and
 `CategoryTheory.Monoidal.functorHasLeftDual`. Moreover, in concrete applications there is often
 a more useful definition of the internal hom object than `ᘁY ⊗ X`, in which case the closed
-structure shouldn't come from `has_left_dual` (e.g. in the category `FinVect k`, it is more
+structure shouldn't come from `HasLeftDual` (e.g. in the category `FinVect k`, it is more
 convenient to define the internal hom as `Y →ₗ[k] X` rather than `ᘁY ⊗ X` even though these are
 naturally isomorphic).
 -/
@@ -583,8 +583,8 @@ class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] 
 class LeftRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   [leftDual : ∀ X : C, HasLeftDual X]
 
-attribute [instance 100] RightRigidCategory.rightDual
-attribute [instance 100] LeftRigidCategory.leftDual
+attribute [instance_reducible, instance 100] RightRigidCategory.rightDual
+attribute [instance_reducible, instance 100] LeftRigidCategory.leftDual
 
 /-- Any left rigid category is monoidal closed, with the internal hom `X ⟶[C] Y = ᘁX ⊗ Y`.
 This has to be a definition rather than an instance to avoid diamonds, for example between

@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Normed spaces over R or C
@@ -28,7 +30,7 @@ None.
 This file exists mainly to avoid importing `RCLike` in the main normed space theory files.
 -/
 
-@[expose] public section
+public section
 
 
 open Metric
@@ -50,6 +52,13 @@ theorem norm_smul_inv_norm' {r : ℝ} (r_nonneg : 0 ≤ r) {x : E} (hx : x ≠ 0
     ‖((r : 𝕜) * (‖x‖ : 𝕜)⁻¹) • x‖ = r := by
   have : ‖x‖ ≠ 0 := by simp [hx]
   simp [field, norm_smul, r_nonneg, rclike_simps]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem ContinuousLinearEquiv.coord_norm' {x : E} (h : x ≠ 0) :
+    ‖(‖x‖ : 𝕜) • ContinuousLinearEquiv.coord 𝕜 x h‖ = 1 := by
+  simp only [norm_smul, RCLike.norm_coe_norm, coord_norm, mul_inv_cancel₀ (mt norm_eq_zero.mp h)]
+
+@[deprecated (since := "2026-02-01")] alias coord_norm' := ContinuousLinearEquiv.coord_norm'
 
 theorem LinearMap.bound_of_sphere_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[𝕜] 𝕜)
     (h : ∀ z ∈ sphere (0 : E) r, ‖f z‖ ≤ c) (z : E) : ‖f z‖ ≤ c / r * ‖z‖ := by
@@ -88,6 +97,22 @@ theorem ContinuousLinearMap.opNorm_bound_of_ball_bound {r : ℝ} (r_pos : 0 < r)
         (h 0 (by simp only [norm_zero, mem_closedBall, dist_zero_left, r_pos.le]))
   apply LinearMap.bound_of_ball_bound' r_pos
   exact fun z hz => h z hz
+
+/-- If a map `f` over an `RCLike` space satisfies `‖x‖ = 1 → 1 ≤ K * ‖f x‖`, then
+`f` is antilipschitz with constant `K`.
+We require that the map is an additive monoid homomorphism, and acts as a multiplicative action:
+in practice this means `f` is a linear map, but we allow the flexibility so it is convenient
+to apply for eg continuous linear maps also, without a coercion in the goal.
+-/
+lemma antilipschitz_of_bound_of_norm_one {𝓕 E F : Type*}
+    [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+    [FunLike 𝓕 E F] [AddMonoidHomClass 𝓕 E F] [MulActionHomClass 𝓕 𝕜 E F]
+    (f : 𝓕) {K : NNReal} (h : ∀ x, ‖x‖ = 1 → 1 ≤ K * ‖f x‖) :
+    AntilipschitzWith K f :=
+  AddMonoidHomClass.antilipschitz_of_bound f fun x ↦ by
+    obtain rfl | hx := eq_or_ne x 0
+    · simp
+    simpa [norm_smul, field] using h ((‖x‖⁻¹ : 𝕜) • x) (norm_smul_inv_norm hx)
 
 variable (𝕜)
 include 𝕜 in

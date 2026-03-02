@@ -18,13 +18,14 @@ If `f : ℂ → ℝ` is harmonic at `x`, we show that `∂f/∂1 - I • ∂f/�
 holomorphic on the ball.  This implies in particular that harmonic functions are real-analytic.
 -/
 
-@[expose] public section
+public section
 
 open Complex InnerProductSpace Metric Topology
 
 variable
   {f : ℂ → ℝ} {x : ℂ}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex differentiable at `x`.
 -/
@@ -55,6 +56,7 @@ theorem HarmonicAt.differentiableAt_complex_partial (hf : HarmonicAt f x) :
       add_eq_zero_iff_eq_neg] at h₂f
     simp [h₂f]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : ℂ → ℝ` is harmonic at `x`, then `∂f/∂1 - I • ∂f/∂I` is complex analytic at `x`.
 -/
@@ -64,6 +66,7 @@ theorem HarmonicAt.analyticAt_complex_partial (hf : HarmonicAt f x) :
     (fun _ hy ↦ (HarmonicAt.differentiableAt_complex_partial hy).differentiableWithinAt)
     ((isOpen_setOf_harmonicAt f).mem_nhds hf)
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 If a function `f : ℂ → ℝ` is harmonic on an open ball, then `f` is the real part of a function
 `F : ℂ → ℂ` that is holomorphic on the ball.
@@ -88,14 +91,14 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
   intro x hx
   apply (convex_ball z R).eqOn_of_fderivWithin_eq (𝕜 := ℝ) (x := z)
   · exact reCLM.differentiable.comp_differentiableOn h₃F
-  · exact fun y hy ↦ (ContDiffAt.differentiableAt (hf y hy).1 one_le_two).differentiableWithinAt
+  · exact fun y hy ↦ (ContDiffAt.differentiableAt (hf y hy).1 two_ne_zero).differentiableWithinAt
   · exact isOpen_ball.uniqueDiffOn
   · intro y hy
     have h₄F := (h₁F y hy).differentiableAt
     have h₅F := h₄F.restrictScalars (𝕜 := ℝ) (𝕜' := ℂ)
     rw [fderivWithin_eq_fderiv (isOpen_ball.uniqueDiffWithinAt hy)
       (reCLM.differentiableAt.comp y h₅F), fderivWithin_eq_fderiv
-      (isOpen_ball.uniqueDiffWithinAt hy) ((hf y hy).1.differentiableAt one_le_two), fderiv_comp y
+      (isOpen_ball.uniqueDiffWithinAt hy) ((hf y hy).1.differentiableAt two_ne_zero), fderiv_comp y
       (by fun_prop) h₅F, ContinuousLinearMap.fderiv, h₄F.fderiv_restrictScalars (𝕜 := ℝ)]
     ext a
     nth_rw 2 [(by simp : a = a.re • (1 : ℂ) + a.im • (I : ℂ))]
@@ -105,6 +108,7 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
   · simp [F]
   · assumption
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 Harmonic functions are real analytic.
 TODO: Prove this for harmonic functions on an arbitrary f.d. inner product space (not just on `ℂ`).

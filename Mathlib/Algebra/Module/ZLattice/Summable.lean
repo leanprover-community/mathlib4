@@ -35,6 +35,7 @@ variable {ι : Type*} (b : Basis ι ℤ L)
 
 namespace ZLattice
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_forall_abs_repr_le_norm :
     ∃ (ε : ℝ), 0 < ε ∧ ∀ (x : L), ∀ i, ε * |b.repr x i| ≤ ‖x‖ := by
   wlog H : IsZLattice ℝ L
@@ -110,22 +111,11 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     simp [hd, hr'.ne]
   replace hd : 1 ≤ d := by rwa [Nat.one_le_iff_ne_zero]
   have hs0 : s 0 = {0} := by ext; simp [s, funext_iff]
-  have hs {a b : ℕ} (ha : a ≤ b) : s a ⊆ s b := by
-    intros x hx
-    simp only [Fintype.mem_piFinset, s] at hx ⊢
-    exact fun i ↦ Icc_subset_Icc (by simpa) (by simpa) (hx i)
+  have hs {a b : ℕ} (ha : a ≤ b) : s a ⊆ s b := by grind
   have (k : ℕ) : #(s (k + 1) \ s k) ≤ 2 * d * (2 * k + 3) ^ (d - 1) := by
-    trans (2 * k + 3) ^ d - (2 * k + 1) ^ d
-    · simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s]
-      simp only [Fintype.card_piFinset, Int.card_Icc, sub_neg_eq_add, prod_const, card_univ]
-      gcongr <;> norm_cast <;> omega
-    · have := abs_pow_sub_pow_le (α := ℤ) ↑(2 * k + 3) ↑(2 * k + 1) d
-      norm_num at this
-      zify
-      convert this using 3
-      · rw [abs_eq_self.mpr (sub_nonneg.mpr (by gcongr; omega)), Nat.cast_sub (by gcongr; omega)]
-        simp
-      · rw [max_eq_left (by gcongr; omega), abs_eq_self.mpr (by positivity)]
+    simp only [le_add_iff_nonneg_right, zero_le, hs, card_sdiff_of_subset, s, Fintype.card_piFinset,
+      Int.card_Icc, prod_const]
+    grind [abs_pow_sub_pow_le (α := ℤ) (2 * k + 3) (2 * k + 1) d]
   let ε := normBound b
   have hε : 0 < ε := normBound_pos b
   calc ∑ p ∈ s n, ‖∑ i, p i • b i‖ ^ r
@@ -146,7 +136,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
         gcongr with k hk
         refine (this _).trans ?_
         gcongr
-        omega
+        lia
     _ = 2 * d * 3 ^ (d - 1) * ε ^ r * ∑ k ∈ range n, (k + 1) ^ (d - 1) * (k + 1 : ℝ) ^ r := by
         simp_rw [Finset.mul_sum]
         congr with k
@@ -168,6 +158,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 variable (L)
 
+set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- simp followed by positivity
 lemma exists_finsetSum_norm_rpow_le_tsum :
     ∃ A > (0 : ℝ), ∀ r < (-Module.finrank ℤ L : ℝ), ∀ s : Finset L,
@@ -208,7 +199,6 @@ lemma exists_finsetSum_norm_rpow_le_tsum :
     simp only [Submodule.norm_coe]
     convert sum_piFinset_Icc_rpow_le b rfl n r hr with x
     simp [e, Finsupp.linearCombination]
-    rfl
   by_cases hA' : A ≤ 1
   · refine ⟨B, hB, fun r hr s ↦ (H r hr s).trans ?_⟩
     rw [mul_assoc]
@@ -249,6 +239,7 @@ lemma tsum_norm_rpow_le (r : ℝ) (hr : r < -Module.finrank ℤ L) :
       tsumNormRPowBound L ^ r * ∑' k : ℕ, (k : ℝ) ^ (Module.finrank ℤ L - 1 + r) :=
   Summable.tsum_le_of_sum_le (summable_norm_rpow L r hr) (tsumNormRPowBound_spec L r hr)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) :
     Summable fun z : L ↦ ‖z - x‖ ^ r := by
   cases subsingleton_or_nontrivial L

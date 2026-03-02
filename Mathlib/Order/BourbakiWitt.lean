@@ -46,6 +46,8 @@ instance {α : Type*} [LE α] : SetLike (NonemptyChain α) α where
   coe := NonemptyChain.carrier
   coe_injective' _ _ := NonemptyChain.ext
 
+instance {α : Type*} [LE α] : PartialOrder (NonemptyChain α) := .ofSetLike (NonemptyChain α) α
+
 /-- A chain complete partial order (CCPO) is a nonempty partial order such that every
 nonempty chain has a supremum (which we call `cSup`) -/
 class ChainCompletePartialOrder (α : Type*) extends PartialOrder α where
@@ -144,10 +146,9 @@ lemma bot_eq_of_le_or_map_le {y : α} (le_map : ∀ x, x ≤ f x) (hy : IsExtrem
       · right; exact le_trans hyz (le_map z)
     · intro c hc
       refine ⟨(bot_isAdmissible le_map).cSup_mem _ (subset_trans hc (sep_subset _ _)), ?_⟩
-      · by_cases h : ∀ z ∈ c, z ≤ y
+      · by_cases! h : ∀ z ∈ c, z ≤ y
         · left; apply cSup_le c y h
-        · push_neg at h
-          rcases h with ⟨z, hz, hzy⟩
+        · rcases h with ⟨z, hz, hzy⟩
           have h' := Or.resolve_left (hc hz).2 hzy
           right
           apply le_trans h' (le_cSup _ _ hz)

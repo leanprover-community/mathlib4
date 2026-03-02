@@ -12,8 +12,8 @@ public import Mathlib.MeasureTheory.Function.L2Space
 /-! # Conditional expectation in L2
 
 This file contains one step of the construction of the conditional expectation, which is completed
-in `MeasureTheory.Function.ConditionalExpectation.Basic`. See that file for a description of the
-full process.
+in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
+description of the full process.
 
 We build the conditional expectation of an `L²` function, as an element of `L²`. This is the
 orthogonal projection on the subspace of almost everywhere `m`-measurable functions.
@@ -85,6 +85,7 @@ theorem integrable_condExpL2_of_isFiniteMeasure (hm : m ≤ m0) [IsFiniteMeasure
     Integrable (ε := E) (condExpL2 E 𝕜 hm f) μ :=
   integrableOn_univ.mp <| integrableOn_condExpL2_of_measure_ne_top hm (measure_ne_top _ _) f
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_condExpL2_le_one (hm : m ≤ m0) : ‖@condExpL2 α E 𝕜 _ _ _ _ _ _ μ hm‖ ≤ 1 :=
   haveI : Fact (m ≤ m0) := ⟨hm⟩
   Submodule.orthogonalProjection_norm_le _

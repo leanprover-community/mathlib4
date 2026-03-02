@@ -21,10 +21,10 @@ only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for
 `S : LightProfinite` and all morphisms `g : P ⊗ R[S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
 ```
-P ⊗ R[S'] ⟶ A
-  |          |
-  v          v
-P ⊗ R[S]  ⟶ B
+P ⊗ R[S'] --> A
+  |           |
+  v           v
+P ⊗ R[S]  --> B
 ```
 commute.
 
@@ -68,6 +68,7 @@ lemma ihomPoints_symm_apply (A B : LightCondMod.{u} R) (S : LightProfinite)
       ((freeForgetAdjunction R).homEquiv _ _ (MonoidalClosed.curry x)) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A ⟶ B)
     (x : (P ⟶[LightCondMod R] A).val.obj ⟨S⟩) :
     (((ihom P).map e).val.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
@@ -77,6 +78,7 @@ lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A 
   congr
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
@@ -93,10 +95,10 @@ only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for
 `S : LightProfinite` and all morphisms `g : P ⊗ R[S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
 ```
-P ⊗ R[S'] ⟶ A
-  |          |
-  v          v
-P ⊗ R[S]  ⟶ B
+P ⊗ R[S'] --> A
+  |           |
+  v           v
+P ⊗ R[S]  --> B
 ```
 commute.
 -/
@@ -132,10 +134,10 @@ only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for
 `S : LightProfinite` and all morphisms `g : R[S] ⊗ P ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S'] ⊗ P ⟶ A`, making the diagram
 ```
-R[S'] ⊗ P ⟶ A
-  |          |
-  v          v
-R[S] ⊗ P  ⟶ B
+R[S'] ⊗ P --> A
+  |           |
+  v           v
+R[S] ⊗ P  --> B
 ```
 commute.
 -/
@@ -155,16 +157,17 @@ lemma internallyProjective_iff_tensor_condition' (P : LightCondMod R) : Internal
     refine ⟨S', π, hπ, (β_ _ _).hom ≫ g', ?_⟩
     simp [← hh]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a `P : LightCondSet`, the light free light condensed module `R[P]` is internally projective if
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[P × S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
 ```
-R[P × S'] ⟶ A
-  |          |
-  v          v
-R[P × S]  ⟶ B
+R[P × S'] --> A
+  |           |
+  v           v
+R[P × S]  --> B
 ```
 commute.
 -/
@@ -172,7 +175,7 @@ lemma free_internallyProjective_iff_tensor_condition (P : LightCondSet.{u}) :
     InternallyProjective ((free R).obj P) ↔
       ∀ {A B : LightCondMod R} (e : A ⟶ B) [Epi e], (∀ (S : LightProfinite)
         (g : (free R).obj (P ⊗ S.toCondensed) ⟶ B), ∃ (S' : LightProfinite)
-          (π : S' ⟶ S) (_ : Function.Surjective π) (g' : (free R).obj (P ⊗  S'.toCondensed) ⟶ A),
+          (π : S' ⟶ S) (_ : Function.Surjective π) (g' : (free R).obj (P ⊗ S'.toCondensed) ⟶ A),
             ((free R).map (P ◁ ((lightProfiniteToLightCondSet).map π))) ≫ g = g' ≫ e) := by
   rw [internallyProjective_iff_tensor_condition]
   refine ⟨fun h A B e he S g ↦ ?_, fun h A B e he S g ↦ ?_⟩
@@ -198,10 +201,10 @@ and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`,
 `S : LightProfinite` and all morphisms `g : R[S × P] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
 ```
-R[S' × P] ⟶ A
-  |          |
-  v          v
-R[S × P]  ⟶ B
+R[S' × P] --> A
+  |           |
+  v           v
+R[S × P]  --> B
 ```
 commute.
 -/
@@ -234,10 +237,10 @@ if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ 
 `S : LightProfinite` and all morphisms `g : R[P × S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
 ```
-R[P × S'] ⟶ A
-  |          |
-  v          v
-R[P × S]  ⟶ B
+R[P × S'] --> A
+  |           |
+  v           v
+R[P × S]  --> B
 ```
 commute.
 -/
@@ -268,10 +271,10 @@ if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ 
 `S : LightProfinite` and all morphisms `g : R[S × P] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjeciton `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
 ```
-R[S' × P] ⟶ A
-  |          |
-  v          v
-R[S × P]  ⟶ B
+R[S' × P] --> A
+  |           |
+  v           v
+R[S × P]  --> B
 ```
 commute.
 -/

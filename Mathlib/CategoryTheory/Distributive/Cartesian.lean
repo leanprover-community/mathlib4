@@ -54,7 +54,7 @@ open Category Limits MonoidalCategory Distributive CartesianMonoidalCategory
 
 variable (C : Type u) [Category.{v} C] [CartesianMonoidalCategory C] [HasBinaryCoproducts C]
 
-/-- A category `C` with finite products is Cartesian distributive if is monoidal distributive
+/-- A category `C` with finite products is Cartesian distributive if it is monoidal distributive
 with respect to the Cartesian monoidal structure. -/
 abbrev IsCartesianDistributive :=
   IsMonoidalDistrib C
@@ -67,6 +67,7 @@ lemma of_isMonoidalLeftDistrib [IsMonoidalLeftDistrib C] : IsCartesianDistributi
   letI : BraidedCategory C := Nonempty.some inferInstance
   SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The coproduct coprojections are monic in a Cartesian distributive category. -/
 instance monoCoprod [IsCartesianDistributive C] : MonoCoprod C :=
   MonoCoprod.mk' fun A B =>

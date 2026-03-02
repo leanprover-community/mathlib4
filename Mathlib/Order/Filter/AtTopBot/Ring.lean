@@ -12,7 +12,7 @@ public import Mathlib.Order.Filter.AtTopBot.Group
 # Convergence to ±infinity in ordered rings
 -/
 
-@[expose] public section
+public section
 
 variable {α β : Type*}
 

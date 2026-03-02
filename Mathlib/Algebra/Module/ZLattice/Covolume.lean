@@ -80,21 +80,26 @@ variable [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 variable (μ : Measure E := by volume_tac) [Measure.IsAddHaarMeasure μ]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
 theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalDomain L F μ) :
     covolume L μ = μ.real F := by
   have : MeasurableVAdd L E := (inferInstance : MeasurableVAdd L.toAddSubgroup E)
   have : VAddInvariantMeasure L E μ := (inferInstance : VAddInvariantMeasure L.toAddSubgroup E μ)
   exact congr_arg ENNReal.toReal (h.covolume_eq_volume μ)
 
+set_option backward.privateInPublic true in
 theorem covolume_ne_zero : covolume L μ ≠ 0 := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
     measureReal_ne_zero_iff (ne_of_lt _)]
   · exact measure_fundamentalDomain_ne_zero _
   · exact Bornology.IsBounded.measure_lt_top (fundamentalDomain_isBounded _)
 
+set_option backward.privateInPublic true in
 theorem covolume_pos : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
 
+set_option backward.privateInPublic true in
 theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
     [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac) [Measure.IsAddHaarMeasure ν]
     {e : F ≃L[ℝ] E} (he : MeasurePreserving e ν μ) :
@@ -107,6 +112,7 @@ theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [F
   congr!
   ext; simp
 
+set_option backward.privateInPublic true in
 theorem covolume_eq_det_mul_measureReal {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ L)
     (b₀ : Basis ι ℝ E) :
     covolume L μ = |b₀.det ((↑) ∘ b)| * μ.real (fundamentalDomain b₀) := by
@@ -157,9 +163,6 @@ theorem covolume_div_covolume_eq_relIndex {ι : Type*} [Fintype ι] (L₁ L₂ :
     rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.toMatrix_apply, Basis.ofZLatticeBasis_apply]
     exact (b₂.ofZLatticeBasis_repr_apply ℝ L₂ ⟨b₁ j, h (coe_mem _)⟩ i)
 
-@[deprecated (since := "2025-08-12")]
-alias covolume_div_covolume_eq_relindex := covolume_div_covolume_eq_relIndex
-
 /--
 A more general version of `covolume_div_covolume_eq_relIndex`;
 see the `Naming conventions` section in the introduction.
@@ -178,9 +181,6 @@ theorem covolume_div_covolume_eq_relIndex' {E : Type*} [NormedAddCommGroup E]
     ZLattice.comap_toAddSubgroup, Nat.cast_inj, LinearEquiv.toAddMonoidHom_commutes,
     AddSubgroup.comap_equiv_eq_map_symm', AddSubgroup.comap_equiv_eq_map_symm',
     AddSubgroup.relIndex_map_map_of_injective _ _ f.symm.injective]
-
-@[deprecated (since := "2025-08-12")]
-alias covolume_div_covolume_eq_relindex' := covolume_div_covolume_eq_relIndex'
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] (L : Submodule ℤ (ι → ℝ))
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) {s : Set (ι → ℝ)} :
@@ -299,7 +299,7 @@ section Pi
 
 open Filter Fintype Pointwise Topology Bornology
 
-private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Fintype ι]
+private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Finite ι]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
     (b : Basis ι ℝ E) (s : Set E) :
     frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by

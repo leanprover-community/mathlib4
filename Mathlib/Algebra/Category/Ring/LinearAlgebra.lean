@@ -6,7 +6,6 @@ Authors: Christian Merten
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
@@ -20,7 +19,7 @@ public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
@@ -28,6 +27,7 @@ open CategoryTheory Limits TensorProduct
 
 namespace CommRingCat
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nontrivial_of_isPushout_of_isField {A B C D : CommRingCat.{u}}
     (hA : IsField A) {f : A ⟶ B} {g : A ⟶ C} {inl : B ⟶ D} {inr : C ⟶ D}
     [Nontrivial B] [Nontrivial C]

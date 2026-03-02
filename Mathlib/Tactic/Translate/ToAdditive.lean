@@ -6,7 +6,7 @@ Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
+public import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_additive]` attribute.
@@ -23,10 +23,10 @@ open Lean Elab Translate
 @[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_additive_ignore_args) "to_additive_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc relevantArgOption]
-syntax (name := to_additive_relevant_arg) "to_additive_relevant_arg " num : attr
+@[inherit_doc TranslateData.doTranslateAttr]
+syntax (name := to_additive_do_translate) "to_additive_do_translate" : attr
 
-@[inherit_doc TranslateData.dontTranslateAttr]
+@[inherit_doc TranslateData.doTranslateAttr]
 syntax (name := to_additive_dont_translate) "to_additive_dont_translate" : attr
 
 /-- The attribute `to_additive` can be used to automatically transport theorems
@@ -153,12 +153,12 @@ mismatch error.
   Solutions:
   * First figure out what the fixed type is in the first argument of the declaration that didn't
     get additivized. Note that this fixed type can occur in implicit arguments. If manually finding
-    it is hard, you can run `set_option trace.to_additive_detail true` and search the output for the
+    it is hard, you can run `set_option trace.translate_detail true` and search the output for the
     fragment "contains the fixed type" to find what the fixed type is.
   * If the fixed type has an additive counterpart (like `↥Semigroup`), give it the `@[to_additive]`
     attribute.
   * If the fixed type has nothing to do with algebraic operations (like `TopCat`), add the attribute
-    `@[to_additive self]` to the fixed type `Foo`.
+    `@[to_additive_do_translate]` to the fixed type `Foo`.
   * If the fixed type occurs inside the `k`-th argument of a declaration `d`, and the
     `k`-th argument is not connected to the multiplicative structure on `d`, consider adding
     attribute `[to_additive_ignore_args k]` to `d`.
@@ -262,21 +262,23 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-@[inherit_doc TranslateData.argInfoAttr]
-initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
+@[inherit_doc TranslateData.doTranslateAttr]
+initialize doTranslateAttr : NameMapExtension Bool ← registerNameMapExtension _
 
-@[inherit_doc to_additive_dont_translate]
-initialize dontTranslateAttr : NameMapExtension Unit ←
-  registerNameMapAttribute {
+initialize
+  registerBuiltinAttribute {
+    name := `to_additive_do_translate
+    descr := "Auxiliary attribute for `to_additive` stating \
+      that the operations on this type should be translated."
+    add name _ _ := doTranslateAttr.add name true }
+  registerBuiltinAttribute {
     name := `to_additive_dont_translate
     descr := "Auxiliary attribute for `to_additive` stating \
       that the operations on this type should not be translated."
-    add := fun
-    | _, `(attr| to_additive_dont_translate) => return
-    | _, _ => throwUnsupportedSyntax }
+    add name _ _ := doTranslateAttr.add name false }
 
 /-- Maps multiplicative names to their additive counterparts. -/
-initialize translations : NameMapExtension Name ← registerNameMapExtension _
+initialize translations : NameMapExtension TranslationInfo ← registerNameMapExtension _
 
 @[inherit_doc GuessName.GuessNameData.nameDict]
 def nameDict : Std.HashMap String (List String) := .ofList [
@@ -365,11 +367,13 @@ def abbreviationDict : Std.HashMap String String := .ofList [
   ("function_addCommute", "Function_commute"),
   ("divisionAddMonoid", "SubtractionMonoid"),
   ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
-  ("modularCharacter", "AddModularCharacter")]
+  ("modularCharacter", "AddModularCharacter"),
+  ("isQuotientCoveringMap", "IsAddQuotientCoveringMap"),
+  ("addExact", "exact")]
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
-  ignoreArgsAttr; argInfoAttr; dontTranslateAttr; translations
+  ignoreArgsAttr; doTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false
@@ -388,6 +392,6 @@ initialize registerBuiltinAttribute {
 into the `to_additive` dictionary. This is useful for translating namespaces that don't (yet)
 have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
-  translations.add src.getId tgt.getId
+  translations.add src.getId { translation := tgt.getId }
 
 end Mathlib.Tactic.ToAdditive

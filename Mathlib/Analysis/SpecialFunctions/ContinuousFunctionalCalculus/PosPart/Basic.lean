@@ -16,7 +16,7 @@ the continuous functional calculus and develops the basic API, including the uni
 positive and negative parts.
 -/
 
-@[expose] public section
+public section
 
 open scoped NNReal
 
@@ -102,6 +102,7 @@ section SMul
 
 variable [StarModule ℝ A]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   by_cases ha : IsSelfAdjoint a
@@ -129,6 +130,7 @@ lemma posPart_smul_of_nonpos {r : ℝ} (hr : r ≤ 0) {a : A} : (r • a)⁺ = -
 lemma negPart_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) {a : A} : (r • a)⁻ = r • a⁻ := by
   conv_lhs => rw [← neg_neg r, neg_smul, negPart_neg, posPart_smul_of_nonpos (by simpa), neg_neg]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma negPart_smul_of_nonpos {r : ℝ} (hr : r ≤ 0) {a : A} : (r • a)⁻ = -r • a⁺ := by
   conv_lhs => rw [← neg_neg r, neg_smul, negPart_neg, posPart_smul_of_nonneg (by simpa)]
 
@@ -182,6 +184,7 @@ lemma negPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
   nth_rw 2 [← posPart_sub_negPart a]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma negPart_eq_neg (a : A) : a⁻ = -a ↔ a ≤ 0 := by
   rw [← neg_inj, neg_neg, eq_comm]
   refine ⟨fun ha ↦ by rw [ha, neg_nonpos]; exact negPart_nonneg a, fun ha ↦ ?_⟩
@@ -207,8 +210,8 @@ open ContinuousMapZero
 
 variable [IsTopologicalRing A] [T2Space A]
 
--- The definition of `f` has a non-terminal simp.
-set_option linter.flexible false in
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.flexible false in -- simp followed by `exact le_rfl`
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if
 `a = b - c` is the difference of nonnegative elements whose product is zero, then these are

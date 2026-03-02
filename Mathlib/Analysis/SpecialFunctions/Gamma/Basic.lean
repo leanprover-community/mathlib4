@@ -112,6 +112,7 @@ See `Complex.GammaIntegral_convergent` for a proof of the convergence of the int
 def GammaIntegral (s : ℂ) : ℂ :=
   ∫ x in Ioi (0 : ℝ), ↑(-x).exp * ↑x ^ (s - 1)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaIntegral s) := by
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
   refine setIntegral_congr_fun measurableSet_Ioi fun x hx => ?_
@@ -186,6 +187,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
     simp
   · exact measurableSet_Ioc
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The recurrence relation for the indefinite version of the `Γ` function. -/
 theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) :
     partialGamma (s + 1) X = s * partialGamma s X - (-X).exp * X ^ s := by
@@ -210,13 +212,13 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
       (Gamma_integrand_deriv_integrable_B hs hX),
     intervalIntegral.integral_neg, neg_add, neg_neg] at int_eval
   rw [eq_sub_of_add_eq int_eval, sub_neg_eq_add, neg_sub, add_comm, add_sub]
-  have : (fun x => (-x).exp * (s * x ^ (s - 1)) : ℝ → ℂ) =
-      (fun x => s * (-x).exp * x ^ (s - 1) : ℝ → ℂ) := by ext1; ring
-  rw [this]
-  rw [← intervalIntegral.integral_const_mul, ofReal_zero, zero_cpow]
-  · rw [mul_zero, add_zero]; congr 2; ext1; ring
-  · contrapose! hs; rw [hs, zero_re]
+  have hn : s ≠ 0 := by contrapose! hs; rw [hs, zero_re]
+  simp only [Pi.mul_apply, Function.comp_apply, ofReal_zero, zero_cpow hn, mul_zero, add_zero,
+    ← intervalIntegral.integral_const_mul]
+  congr with x
+  ring
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The recurrence relation for the `Γ` integral. -/
 theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
     GammaIntegral (s + 1) = s * GammaIntegral s := by
@@ -307,7 +309,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
   · rw [Nat.floor_of_nonpos]
-    · cutsat
+    · lia
     · linarith
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -369,6 +371,7 @@ theorem Gamma_conj (s : ℂ) : Gamma (conj s) = conj (Gamma s) := by
     suffices conj s + 1 = conj (s + 1) by rw [this, IH]
     rw [map_add, map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Expresses the integral over `Ioi 0` of `t ^ (a - 1) * exp (-(r * t))` in terms of the Gamma
 function, for complex `a`. -/
 lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr : 0 < r) :
@@ -405,6 +408,7 @@ namespace Real
 def Gamma (s : ℝ) : ℝ :=
   (Complex.Gamma s).re
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
     Gamma s = ∫ x in Ioi 0, exp (-x) * x ^ (s - 1) := by
   rw [Gamma, Complex.Gamma_eq_integral (by rwa [Complex.ofReal_re] : 0 < Complex.re s)]

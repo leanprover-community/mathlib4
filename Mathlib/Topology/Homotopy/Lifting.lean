@@ -8,7 +8,7 @@ module
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
 public import Mathlib.Topology.Connected.LocPathConnected
-public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Covering.Basic
 public import Mathlib.Topology.Homotopy.Path
 public import Mathlib.Topology.UnitInterval
 
@@ -464,3 +464,32 @@ theorem existsUnique_continuousMap_lifts_of_range_le
 end homotopy_lifting
 
 end IsCoveringMap
+
+/-- A version of `IsCoveringMap.existsUnique_continuousMap_lifts` for maps
+that are covering on a subset of the codomain.
+
+Let `p` be a covering map on `s`.
+Let `f` be a continuous map with a simply connected locally path connected domain
+such that all values of `f` belong to `s`.
+Given a point `a₀` in the domain of `f` and a lift `e₀` of `f a₀` along `p`,
+there exists a unique lift `F` of `f` along `p` such that `F a₀ = e₀`.
+-/
+theorem IsCoveringMapOn.existsUnique_continuousMap_lifts [SimplyConnectedSpace A]
+    [LocPathConnectedSpace A] {s : Set X} (cov : IsCoveringMapOn p s) (f : C(A, X)) {a₀ : A}
+    {e₀ : E} (he : p e₀ = f a₀) (hs : ∀ a, f a ∈ s) :
+    ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
+  obtain ⟨f, rfl⟩ : ∃ f' : C(A, s), f = .comp ⟨Subtype.val, by fun_prop⟩ f' :=
+    ⟨⟨fun a ↦ ⟨f a, hs a⟩, by fun_prop⟩, rfl⟩
+  lift e₀ to p ⁻¹' s using by rw [Set.mem_preimage, he]; apply hs
+  rcases cov.isCoveringMap_restrictPreimage.existsUnique_continuousMap_lifts f a₀ e₀
+    (Subtype.ext he) with ⟨F, ⟨rfl, hF⟩, hF_unique⟩
+  refine ⟨.comp ⟨Subtype.val, by fun_prop⟩ F, ⟨rfl, ?_⟩, ?_⟩
+  · simp [← hF, Function.comp_def]
+  · rintro F' ⟨hF'₁, hF'₂⟩
+    simp only [ContinuousMap.coe_comp, ContinuousMap.coe_mk, funext_iff,
+      Function.comp_apply] at hF'₂
+    specialize hF_unique
+      ⟨fun a ↦ ⟨F' a, by rw [Set.mem_preimage, hF'₂]; exact (f a).2⟩, by fun_prop⟩
+      ⟨Subtype.ext hF'₁, ?_⟩
+    · ext; simp [← hF'₂]
+    · ext; simp [← hF_unique]

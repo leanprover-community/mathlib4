@@ -9,7 +9,7 @@ public import Mathlib.Order.Filter.Tendsto
 public import Mathlib.Order.Filter.Finite
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.SetTheory.Cardinal.Regular
-public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Filters with a cardinal intersection property

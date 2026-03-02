@@ -30,7 +30,7 @@ if it is surjective and the preimages of `1` under iterations of `f` are dense i
 This theorem applies, e.g., to the map `z ↦ n • z` on the additive circle or a torus.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Set Function
 open scoped Pointwise Topology
@@ -147,6 +147,7 @@ section IsTopologicalGroup
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the left multiplication by `g` is ergodic
 with respect to a measure which is positive on nonempty open sets,
 then the integer powers of `g` are dense in `G`. -/

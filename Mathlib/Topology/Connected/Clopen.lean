@@ -113,14 +113,10 @@ theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
 theorem isClopen_iff [PreconnectedSpace α] {s : Set α} : IsClopen s ↔ s = ∅ ∨ s = univ :=
   ⟨fun hs =>
     by_contradiction fun h =>
-      have h1 : s ≠ ∅ ∧ sᶜ ≠ ∅ :=
-        ⟨mt Or.inl h,
-          mt (fun h2 => Or.inr <| (by rw [← compl_compl s, h2, compl_empty] : s = univ)) h⟩
-      let ⟨_, h2, h3⟩ :=
-        nonempty_inter hs.2 hs.1.isOpen_compl (union_compl_self s) (nonempty_iff_ne_empty.2 h1.1)
-          (nonempty_iff_ne_empty.2 h1.2)
+      have h1 : s.Nonempty ∧ sᶜ.Nonempty := by simpa [nonempty_iff_ne_empty] using h
+      have ⟨_, h2, h3⟩ := nonempty_inter hs.2 hs.1.isOpen_compl (union_compl_self s) h1.1 h1.2
       h3 h2,
-    by rintro (rfl | rfl) <;> [exact isClopen_empty; exact isClopen_univ]⟩
+    by rintro (rfl | rfl); exacts [isClopen_empty, isClopen_univ]⟩
 
 theorem IsClopen.eq_univ [PreconnectedSpace α] {s : Set α} (h' : IsClopen s) (h : s.Nonempty) :
     s = univ :=
@@ -142,22 +138,22 @@ variable [PreconnectedSpace α]
   {s : ι → Set α} (h_nonempty : ∀ i, (s i).Nonempty) (h_disj : Pairwise (Disjoint on s))
 include h_nonempty h_disj
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preconnected space, any disjoint family of non-empty clopen subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isClopen
     (h_clopen : ∀ i, IsClopen (s i)) :
     Subsingleton ι := by
-  replace h_nonempty : ∀ i, s i ≠ ∅ := by intro i; rw [← nonempty_iff_ne_empty]; exact h_nonempty i
   rw [← not_nontrivial_iff_subsingleton]
-  by_contra contra
-  obtain ⟨i, j, h_ne⟩ := contra
+  by_contra ⟨i, j, h_ne⟩
   replace h_ne : s i ∩ s j = ∅ := by
     simpa only [← bot_eq_empty, eq_bot_iff, ← inf_eq_inter, ← disjoint_iff_inf_le] using h_disj h_ne
   rcases isClopen_iff.mp (h_clopen i) with hi | hi
-  · exact h_nonempty i hi
+  · exact (h_nonempty i).ne_empty hi
   · rw [hi, univ_inter] at h_ne
-    exact h_nonempty j h_ne
+    exact (h_nonempty j).ne_empty h_ne
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preconnected space, any disjoint cover by non-empty open subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
@@ -170,6 +166,7 @@ lemma subsingleton_of_disjoint_isOpen_iUnion_eq_univ
   · simp
   · simpa only [(h_disj h_ne.symm).sdiff_eq_left] using h_open j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a preconnected space, any finite disjoint cover by non-empty closed subsets has at most one
 element. -/
 lemma subsingleton_of_disjoint_isClosed_iUnion_eq_univ [Finite ι]
@@ -331,6 +328,7 @@ theorem isPreconnected_iff_subset_of_disjoint_closed :
     · rcases hsu with ⟨x, hxs, hxu⟩
       exact ⟨x, hxs, ⟨hxu, h hxs⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A closed set `s` is preconnected if and only if for every cover by two closed sets that are
 disjoint, it is contained in one of the two covering sets. -/
 theorem isPreconnected_iff_subset_of_fully_disjoint_closed {s : Set α} (hs : IsClosed s) :
@@ -380,6 +378,7 @@ lemma IsClopen.biUnion_connectedComponentIn {X : Type*} [TopologicalSpace X] {u 
 
 variable [TopologicalSpace β] {f : α → β}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The preimage of a connected component is preconnected if the function has connected fibers
 and a subset is closed iff the preimage is. -/
 theorem preimage_connectedComponent_connected
@@ -543,8 +542,7 @@ continuous on a set `s`, is constant on s, then s is preconnected -/
 theorem isPreconnected_of_forall_constant {s : Set α}
     (hs : ∀ f : α → Bool, ContinuousOn f s → ∀ x ∈ s, ∀ y ∈ s, f x = f y) : IsPreconnected s := by
   unfold IsPreconnected
-  by_contra!
-  rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
+  by_contra! ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
   have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩

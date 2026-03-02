@@ -32,7 +32,7 @@ Given a commutative semiring `R`, and a type `X`, we construct the free unital, 
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
   of the composition of an algebra morphism with `ι` is the algebra morphism itself.
-5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X)`
+5. `equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X]`
 6. An inductive principle `induction`.
 
 ## Implementation details
@@ -52,9 +52,9 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 
 @[expose] public section
 
+open scoped MonoidAlgebra
 
-variable (R : Type*) [CommSemiring R]
-variable (X : Type*)
+variable (R X : Type*) [CommSemiring R]
 
 namespace FreeAlgebra
 
@@ -72,26 +72,33 @@ instance : Inhabited (Pre R X) := ⟨ofScalar 0⟩
 
 -- Note: These instances are only used to simplify the notation.
 /-- Coercion from `X` to `Pre R X`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasCoeGenerator : Coe X (Pre R X) := ⟨of⟩
 
 /-- Coercion from `R` to `Pre R X`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasCoeSemiring : Coe R (Pre R X) := ⟨ofScalar⟩
 
 /-- Multiplication in `Pre R X` defined as `Pre.mul`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasMul : Mul (Pre R X) := ⟨mul⟩
 
 /-- Addition in `Pre R X` defined as `Pre.add`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasAdd : Add (Pre R X) := ⟨add⟩
 
 /-- Zero in `Pre R X` defined as the image of `0` from `R`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasZero : Zero (Pre R X) := ⟨ofScalar 0⟩
 
 /-- One in `Pre R X` defined as the image of `1` from `R`. Note: Used for notation only. -/
+@[instance_reducible]
 def hasOne : One (Pre R X) := ⟨ofScalar 1⟩
 
 /-- Scalar multiplication defined as multiplication by the image of elements from `R`.
 Note: Used for notation only.
 -/
+@[instance_reducible]
 def hasSMul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
 
 end Pre
@@ -238,7 +245,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
     exact Quot.sound Rel.zero_mul
   nsmul_succ n := by
     rintro ⟨a⟩
-    dsimp only [HSMul.hSMul, instSMul, Quot.map]
+    dsimp +instances only [HSMul.hSMul, instSMul, Quot.map]
     rw [map_add, map_one, mk_mul, mk_mul, ← add_one_mul (_ : FreeAlgebra R X)]
     congr 1
     exact Quot.sound Rel.add_scalar
@@ -305,6 +312,7 @@ theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by r
 
 variable {A : Type*} [Semiring A] [Algebra R A]
 
+set_option backward.privateInPublic true in
 /-- Internal definition used to define `lift` -/
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
@@ -355,6 +363,8 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
     rfl
   commutes' := by tauto
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[irreducible]
@@ -388,6 +398,8 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
         grind }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[simp]
 theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by
   rw [lift]
@@ -444,21 +456,10 @@ theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
 This would be useful when constructing linear maps out of a free algebra,
 for example.
 -/
-noncomputable def equivMonoidAlgebraFreeMonoid :
-    FreeAlgebra R X ≃ₐ[R] MonoidAlgebra R (FreeMonoid X) :=
-  AlgEquiv.ofAlgHom (lift R fun x ↦ (MonoidAlgebra.of R (FreeMonoid X)) (FreeMonoid.of x))
-    ((MonoidAlgebra.lift R (FreeMonoid X) (FreeAlgebra R X)) (FreeMonoid.lift (ι R)))
-    (by
-      apply MonoidAlgebra.algHom_ext; intro x
-      refine FreeMonoid.recOn x ?_ ?_
-      · simp
-        rfl
-      · intro x y ih
-        simp at ih
-        simp [ih])
-    (by
-      ext
-      simp)
+noncomputable def equivMonoidAlgebraFreeMonoid : FreeAlgebra R X ≃ₐ[R] R[FreeMonoid X] :=
+  .ofAlgHom (lift R fun x ↦ .of R (FreeMonoid X) (.of x))
+    (MonoidAlgebra.lift R (FreeAlgebra R X) (FreeMonoid X) (FreeMonoid.lift (ι R)))
+    (by ext; simp) (by ext; simp)
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=

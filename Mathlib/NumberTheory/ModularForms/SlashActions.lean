@@ -52,6 +52,14 @@ theorem SlashAction.neg_slash {β G α : Type*} [Monoid G] [AddGroup α]
 
 attribute [simp] SlashAction.zero_slash SlashAction.slash_one SlashAction.add_slash
 
+@[simp] lemma SlashAction.sum_slash {β G α ι : Type*} [Monoid G] [AddCommGroup α]
+    [SlashAction β G α] (k : β) (g : G) {a : ι → α} {s : Finset ι} :
+    (∑ i ∈ s, a i) ∣[k] g = ∑ i ∈ s, a i ∣[k] g := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i t hi IH => simp [hi, IH]
+
 /-- Slash_action induced by a monoid homomorphism. -/
 def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H]
     [SlashAction β G α] (h : H →* G) : SlashAction β H α where
@@ -61,6 +69,13 @@ def monoidHomSlashAction {β G H α : Type*} [Monoid G] [AddMonoid α] [Monoid H
   slash_mul k g gg a := by simp only [map_mul, SlashAction.slash_mul]
   add_slash _ g _ _ := SlashAction.add_slash _ (h g) _ _
 
+@[simp]
+lemma SlashAction.slash_eq_zero_iff {β G α : Type*} [Group G] [AddGroup α] [SlashAction β G α]
+    (k : β) (g : G) (a : α) : a ∣[k] g = 0 ↔ a = 0 := by
+  refine ⟨fun h ↦ ?_, by simp +contextual⟩
+  apply_fun (· ∣[k] g⁻¹) at h
+  simpa [← SlashAction.slash_mul] using h
+
 namespace ModularForm
 
 noncomputable section
@@ -69,17 +84,21 @@ variable {k : ℤ} (f : ℍ → ℂ)
 
 section privateSlash
 
+set_option backward.privateInPublic true in
 /-- The weight `k` action of `GL (Fin 2) ℝ` on functions `f : ℍ → ℂ`. Invoking this directly is
 deprecated; it should always be used via the `SlashAction` instance. -/
 private def privateSlash (k : ℤ) (γ : GL (Fin 2) ℝ) (f : ℍ → ℂ) (x : ℍ) : ℂ :=
   σ γ (f (γ • x)) * |γ.det.val| ^ (k - 1) * UpperHalfPlane.denom γ x ^ (-k)
 
 -- Why is `noncomputable` flag needed here, when we're in a noncomputable section already?
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[deprecated (since := "2025-09-19")] noncomputable alias slash := privateSlash
 
 -- temporary notation until the instance is built
 local notation:100 f " ∣[" k "] " γ:100 => ModularForm.privateSlash k γ f
 
+set_option backward.privateInPublic true in
 private theorem slash_mul (k : ℤ) (A B : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
     f ∣[k] (A * B) = (f ∣[k] A) ∣[k] B := by
   ext1 τ
@@ -94,17 +113,23 @@ private theorem slash_mul (k : ℤ) (A B : GL (Fin 2) ℝ) (f : ℍ → ℂ) :
      ring
   _ = ((f ∣[k] A) ∣[k] B) τ := rfl
 
+set_option backward.privateInPublic true in
 private theorem add_slash (k : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
     (f + g) ∣[k] A = f ∣[k] A + g ∣[k] A := by
   ext1 τ
   simp [privateSlash, add_mul]
 
+set_option backward.isDefEq.respectTransparency false in
+set_option backward.privateInPublic true in
 private theorem slash_one (k : ℤ) (f : ℍ → ℂ) : f ∣[k] 1 = f :=
   funext <| by simp [privateSlash, σ, denom]
 
+set_option backward.privateInPublic true in
 private theorem zero_slash (k : ℤ) (A : GL (Fin 2) ℝ) : (0 : ℍ → ℂ) ∣[k] A = 0 :=
   funext fun _ => by simp [privateSlash]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The weight `k` action of `GL (Fin 2) ℝ` on functions `f : ℍ → ℂ`. -/
 instance : SlashAction ℤ (GL (Fin 2) ℝ) (ℍ → ℂ) where
   map := privateSlash
@@ -134,10 +159,12 @@ instance SLAction : SlashAction ℤ SL(2, ℤ) (ℍ → ℂ) :=
 theorem SL_slash (γ : SL(2, ℤ)) : f ∣[k] γ = f ∣[k] (γ : GL (Fin 2) ℝ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem SL_slash_def (γ : SL(2, ℤ)) :
     f ∣[k] γ = fun τ ↦ f (γ • τ) * denom γ τ ^ (-k) := by
   simp [SL_slash, slash_def, σ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem SL_slash_apply (γ : SL(2, ℤ)) (τ : ℍ) :
     (f ∣[k] γ) τ = f (γ • τ) * denom γ τ ^ (-k) := by
   simp [SL_slash, slash_def, σ]
@@ -187,9 +214,50 @@ theorem mul_slash (k1 k2 : ℤ) (A : GL (Fin 2) ℝ) (f g : ℍ → ℂ) :
   rw [h1]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mul_slash_SL2 (k1 k2 : ℤ) (A : SL(2, ℤ)) (f g : ℍ → ℂ) :
     (f * g) ∣[k1 + k2] A = f ∣[k1] A * g ∣[k2] A := by
   simp [SL_slash, mul_slash]
+
+open Finset
+
+set_option backward.isDefEq.respectTransparency false in
+lemma prod_slash_sum_weights {ι : Type*} {k : ι → ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
+    {s : Finset ι} :
+    (∏ i ∈ s, f i) ∣[∑ i ∈ s, k i] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k i] g) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty =>
+    simp only [sum_empty, prod_empty, Matrix.GeneralLinearGroup.val_det_apply, card_empty,
+      CharP.cast_eq_zero, zero_sub, Int.reduceNeg, zpow_neg, zpow_one]
+    ext _
+    simp [slash_apply]
+  | insert i t hi IH =>
+    rcases t.eq_empty_or_nonempty with rfl | ht
+    · simp
+    simp only [prod_insert hi, card_insert_of_notMem hi, Nat.cast_succ, add_sub_cancel_right,
+    show ∑ i ∈ insert i t, k i = (k i) + ∑ i ∈ t, k i by grind, mul_slash, IH, mul_smul_comm,
+      ← mul_smul]
+    congr 1
+    nth_rw 2 [show (#t : ℤ) = 1 + (#t - 1) by grind]
+    rw [zpow_add', zpow_one]
+    left
+    exact abs_ne_zero.mpr (Matrix.GeneralLinearGroup.det_ne_zero g)
+
+lemma prod_slash {ι : Type*} {k : ℤ} {g : GL (Fin 2) ℝ} {f : ι → ℍ → ℂ}
+    {s : Finset ι} :
+    (∏ i ∈ s, f i) ∣[k * #s] g = |g.det.val| ^ (#s - 1 : ℤ) • (∏ i ∈ s, f i ∣[k] g) := by
+  have : k * (#s) = ∑ i ∈ s, k := by
+    rw [Finset.sum_const, nsmul_eq_mul']
+  rw [this]
+  exact prod_slash_sum_weights
+
+@[deprecated prod_slash (since := "2026-01-22")]
+lemma prod_fintype_slash {ι : Type*} [Fintype ι] [Nonempty ι] {k : ℤ} {g : GL (Fin 2) ℝ}
+    {f : ι → ℍ → ℂ} : (∏ i, f i) ∣[k * Fintype.card ι] g =
+      |g.det.val| ^ (Fintype.card ι - 1) • (∏ i, f i ∣[k] g) := by
+  have : 0 < Fintype.card ι := Fintype.card_pos
+  simpa [← zpow_natCast, this] using ModularForm.prod_slash (s := (.univ : Finset ι))
 
 end
 

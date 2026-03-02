@@ -53,6 +53,7 @@ open Limits
 
 attribute [local instance] hasPullback_of_right_iso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a category with pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
 by pulling back a morphism along `f`. -/
 @[simps! +simpRhs obj_left obj_hom map_left]
@@ -63,6 +64,7 @@ def pullback {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd _ _)
       (by simp [pullback.condition]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Over.map f` is left adjoint to `Over.pullback f`. -/
 @[simps! unit_app counit_app]
 def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
@@ -81,6 +83,7 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
             · simp
             · simpa using (Over.w v).symm } }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pullback along an epi that's preserved under pullbacks is faithful.
 
 This "preserved under pullbacks" condition is automatically satisfied in abelian categories:
@@ -108,6 +111,7 @@ instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) [HasPullbacksAlong f] :
     (pullback f).IsRightAdjoint :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open pullback in
 /-- If `F` is a left adjoint and its source category has pullbacks, then so is
 `post F : Over Y ⥤ Over (G Y)`.
@@ -148,11 +152,31 @@ Note that the binary products assumption is necessary: the existence of a right 
 -/
 def forgetAdjStar : forget X ⊣ star X := (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
 
+@[simp]
+lemma forgetAdjStar_counit_app (X Y : C) : (Over.forgetAdjStar X).counit.app Y = prod.snd := by
+  simp [Over.forgetAdjStar, CategoryTheory.coalgebraEquivOver]
+
+@[simp]
+lemma forgetAdjStar_unit_app_left (X : C) (Y : Over X) :
+    ((Over.forgetAdjStar X).unit.app Y).left = prod.lift Y.hom (𝟙 _) := by
+  simp [Over.forgetAdjStar, CategoryTheory.coalgebraEquivOver]
+
 instance : (star X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`. -/
 instance : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Lifting to over `Y` and pulling back along `X ⟶ Y` is the same as lifting to over `X`. -/
+@[simps!]
+noncomputable def starPullbackIsoStar [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    star Y ⋙ pullback f ≅ star X :=
+  NatIso.ofComponents
+    (fun Z ↦
+      Over.isoMk
+      (pullback.congrHom (by simp) rfl ≪≫ pullbackSymmetry _ _ ≪≫ pullbackProdFstIsoProd _ _)
+    (by simp))
 
 end HasBinaryProducts
 end Over
@@ -161,6 +185,7 @@ namespace Under
 
 attribute [local instance] hasPushout_of_right_iso
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
 by pushing a morphism forward along `f`. -/
 @[simps]
@@ -171,6 +196,7 @@ def pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     Under.homMk (pushout.desc (u.right ≫ pushout.inl _ _) (pushout.inr _ _)
       (by simp [← pushout.condition]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Under.pushout f` is left adjoint to `Under.map f`. -/
 @[simps! unit_app counit_app]
 def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
@@ -194,8 +220,8 @@ def mapPushoutAdj {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     }
   }
 
--- TODO: fix the non-terminal simp in a nice way
-set_option linter.flexible false in
+set_option backward.isDefEq.respectTransparency false in
+set_option linter.flexible false in -- simp followed by infer_instance
 /-- The pushout along a mono that's preserved under pushouts is faithful.
 
 This "preserved under pushouts" condition is automatically satisfied in abelian categories:
@@ -210,20 +236,21 @@ instance faithful_pushout {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f]
 
 /-- pushout (𝟙 X) : Under X ⥤ Under X is the identity functor. -/
 def pushoutId {X : C} : pushout (𝟙 X) ≅ 𝟭 _ :=
-  (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _)) ).symm
+  (conjugateIsoEquiv (Adjunction.id (C := Under _)) (mapPushoutAdj (𝟙 _))).symm
     (Under.mapId X).symm
 
 /-- pushout commutes with composition (up to natural isomorphism). -/
 def pushoutComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
     [HasPushoutsAlong f] [HasPushoutsAlong g] :
     pushout (f ≫ g) ≅ pushout f ⋙ pushout g :=
-  (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _) ).symm
+  (conjugateIsoEquiv ((mapPushoutAdj _).comp (mapPushoutAdj _)) (mapPushoutAdj _)).symm
     (mapComp f g).symm
 
 instance pushoutIsLeftAdjoint {X Y : C} (f : X ⟶ Y) [HasPushoutsAlong f] :
     (pushout f).IsLeftAdjoint :=
   ⟨_, ⟨mapPushoutAdj f⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open pushout in
 /-- If `G` is a right adjoint and its source category has pushouts, then so is
 `post G : Under Y ⥤ Under (G Y)`.

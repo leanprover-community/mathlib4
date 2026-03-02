@@ -6,7 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Notation.Indicator
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Sets.Closeds
 
@@ -467,11 +466,6 @@ theorem mulIndicator_of_mem (hU : IsClopen U) (h : a ∈ U) : f.mulIndicator hU 
 @[to_additive]
 theorem mulIndicator_of_notMem (hU : IsClopen U) (h : a ∉ U) : f.mulIndicator hU a = 1 :=
   Set.mulIndicator_of_notMem h _
-
-@[deprecated (since := "2025-05-23")] alias indicator_of_not_mem := indicator_of_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias mulIndicator_of_not_mem := mulIndicator_of_notMem
 
 end Indicator
 

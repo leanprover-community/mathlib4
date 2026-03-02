@@ -188,6 +188,7 @@ theorem zmodChar_primitive_of_primitive_root (n : ℕ) [NeZero n] {ζ : C} (h : 
   rw [zmodChar_apply, ← pow_zero ζ] at ha
   exact (ZMod.val_eq_zero a).mp (IsPrimitiveRoot.pow_inj h (ZMod.val_lt a) (NeZero.pos _) ha)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There is a primitive additive character on `ZMod n` if the characteristic of the target
 does not divide `n` -/
 noncomputable def primitiveZModChar (n : ℕ+) (F' : Type v) [Field F'] (h : (n : F') ≠ 0) :
@@ -298,12 +299,14 @@ variable (F : Type*) [Field F] [Finite F]
 private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
-  letI ch := primitiveChar F ℂ <| ringChar_ne F
+  letI ch := primitiveChar F ℂ <| by exact ringChar_ne F
   refine MonoidHom.compAddChar ?_ ch.char
   exact (IsCyclotomicExtension.algEquiv {(ch.n : ℕ)} ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
 
+set_option backward.isDefEq.respectTransparency false in
 lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
     (primitiveChar_to_Complex F).IsPrimitive := by
   refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_

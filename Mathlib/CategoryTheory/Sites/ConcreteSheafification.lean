@@ -144,11 +144,12 @@ noncomputable section
 def mk {X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) : ToType ((J.plusObj P).obj (op X)) :=
   colimit.ι (J.diagram P X) (op S) ((Meq.equiv P S).symm x)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x : Meq P S) (f : Y ⟶ X) :
     (J.plusObj P).map f.op (mk x) = mk (x.pullback f) := by
   dsimp [mk, plusObj]
-  rw [← comp_apply (x := (Meq.equiv P S).symm x), ι_colimMap_assoc, colimit.ι_pre,
-    comp_apply (x := (Meq.equiv P S).symm x)]
+  rw [← CategoryTheory.comp_apply (x := (Meq.equiv P S).symm x), ι_colimMap_assoc, colimit.ι_pre,
+    CategoryTheory.comp_apply (x := (Meq.equiv P S).symm x)]
   apply congr_arg
   apply (Meq.equiv P _).injective
   dsimp only [Functor.op_obj, pullback_obj]
@@ -160,6 +161,7 @@ theorem res_mk_eq_mk_pullback {Y X : C} {P : Cᵒᵖ ⥤ D} {S : J.Cover X} (x :
   erw [Meq.equiv_symm_eq_apply]
   cases i; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj (op X))) :
     (J.toPlus P).app _ x = mk (Meq.mk S x) := by
   dsimp [mk, toPlus]
@@ -175,6 +177,7 @@ theorem toPlus_mk {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : ToType (P.obj
     Meq.equiv_symm_eq_apply]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toPlus_apply {X : C} {P : Cᵒᵖ ⥤ D} (S : J.Cover X) (x : Meq P S) (I : S.Arrow) :
     (J.toPlus P).app _ (x I) = (J.plusObj P).map I.f.op (mk x) := by
   dsimp only [toPlus, plusObj]
@@ -207,6 +210,7 @@ theorem exists_rep {X : C} {P : Cᵒᵖ ⥤ D} (x : ToType ((J.plusObj P).obj (o
   dsimp [mk]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_mk_iff_exists {X : C} {P : Cᵒᵖ ⥤ D} {S T : J.Cover X} (x : Meq P S) (y : Meq P T) :
     mk x = mk y ↔ ∃ (W : J.Cover X) (h1 : W ⟶ S) (h2 : W ⟶ T), x.refine h1 = y.refine h2 := by
   constructor
@@ -294,6 +298,7 @@ theorem inj_of_sep (P : Cᵒᵖ ⥤ D)
   apply_fun fun e => e I at hh
   exact hh
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary definition to be used in the proof of `exists_of_sep` below.
   Given a compatible family of local sections for `P⁺`, and representatives of said sections,
   construct a compatible family of local sections of `P` over the combination of the covers
@@ -379,6 +384,7 @@ theorem exists_of_sep (P : Cᵒᵖ ⥤ D)
 
 variable [(forget D).ReflectsIsomorphisms]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `P` is separated, then `P⁺` is a sheaf. -/
 theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     (hsep :
@@ -393,7 +399,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
   · intro x y h
     apply sep P S _ _
     intro I
-    apply_fun Meq.equiv _ _ at h
+    apply_fun Meq.equiv (J.plusObj P) S at h
     apply_fun fun e => e I at h
     dsimp only [ConcreteCategory.forget_map_eq_coe] at h
     convert h <;> erw [Meq.equiv_apply] <;>
@@ -485,6 +491,7 @@ theorem toSheafification_app (P : Cᵒᵖ ⥤ D) :
 
 variable {D}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIso_toSheafify {P : Cᵒᵖ ⥤ D} (hP : Presheaf.IsSheaf J P) : IsIso (J.toSheafify P) := by
   dsimp [toSheafify]
   haveI := isIso_toPlus_of_isSheaf J P hP
@@ -506,6 +513,7 @@ noncomputable def sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Preshe
     J.sheafify P ⟶ Q :=
   J.plusLift (J.plusLift η hQ) hQ
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem toSheafify_sheafifyLift {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.IsSheaf J Q) :
     J.toSheafify P ≫ sheafifyLift J η hQ = η := by
@@ -564,6 +572,7 @@ noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   map_id _ := Sheaf.Hom.ext <| J.sheafifyMap_id _
   map_comp _ _ := Sheaf.Hom.ext <| J.sheafifyMap_comp _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     (plusPlusSheaf J D).PreservesZeroMorphisms where
   map_zero F G := by
@@ -572,6 +581,7 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
     erw [colimit.ι_map, comp_zero]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
 @[simps! unit_app counit_app_val]
 noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D :=
@@ -588,7 +598,7 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
         dsimp
         rw [Category.assoc] }
 
-instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint  :=
+instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint :=
   (plusPlusAdjunction J D).isRightAdjoint
 
 instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=

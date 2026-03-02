@@ -26,7 +26,7 @@ We introduce the dual typeclass `G.PreservesRightKanExtension`.
 
 namespace CategoryTheory.Functor
 
-variable {A B C D : Type*} [Category A] [Category B] [Category C] [Category D]
+variable {A B C D : Type*} [Category* A] [Category* B] [Category* C] [Category* D]
   (G : B ⥤ D) (F : A ⥤ B) (L : A ⥤ C)
 
 noncomputable section
@@ -51,6 +51,7 @@ lemma PreservesLeftKanExtension.mk'
     ⟨⟨Limits.IsInitial.equivOfIso
         (LeftExtension.postcompose₂ObjMkIso _ _) <| (preserves h.nonempty_isUniversal.some).some⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Show that `G` preserves left Kan extensions if it maps some left Kan extension to a left
 Kan extension. -/
 lemma PreservesLeftKanExtension.mk_of_preserves_isLeftKanExtension
@@ -267,6 +268,7 @@ Kan extensions along `L : A ⥤ C` of every functor `A ⥤ B`. -/
 abbrev PreservesPointwiseLeftKanExtensions :=
   ∀ (F : A ⥤ B), G.PreservesPointwiseLeftKanExtension F L
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Commuting a functor that preserves left Kan extensions with the `lan` functor. -/
 @[simps!]
 def lanCompIsoOfPreserves [G.PreservesLeftKanExtensions L]
@@ -411,6 +413,7 @@ lemma rightKanExtensionCompIsoOfPreserves_hom_fac :
     (Functor.associator _ _ _).inv ≫ whiskerRight (L.rightKanExtensionCounit F) G := by
   simp [rightKanExtensionCompIsoOfPreserves]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma rightKanExtensionCompIsoOfPreserves_hom_fac_app (a : A) :
     (G.rightKanExtensionCompIsoOfPreserves F L).hom.app (L.obj a) ≫

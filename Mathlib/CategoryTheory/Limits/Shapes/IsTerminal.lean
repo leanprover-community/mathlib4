@@ -71,7 +71,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
       uniq := fun s _ _ => (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.RightInverse,Function.LeftInverse]
+    dsimp [Function.RightInverse, Function.LeftInverse]
     subsingleton
 
 /-- An object `Y` is terminal if for every `X` there is a unique morphism `X ⟶ Y`
@@ -136,7 +136,7 @@ def IsInitial.ofUniqueHom {X : C} (h : ∀ Y : C, X ⟶ Y) (uniq : ∀ (Y : C) (
 def isInitialBot {α : Type*} [Preorder α] [OrderBot α] : IsInitial (⊥ : α) :=
   IsInitial.ofUnique _
 
-/-- Transport a term of type `is_initial` across an isomorphism. -/
+/-- Transport a term of type `IsInitial` across an isomorphism. -/
 def IsInitial.ofIso {X Y : C} (hX : IsInitial X) (i : X ≅ Y) : IsInitial Y :=
   IsColimit.ofIsoColimit hX
     { hom := { hom := i.hom }
@@ -236,12 +236,12 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
   invFun hl := isLimitChangeEmptyCone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.LeftInverse,Function.RightInverse]; intro
+    dsimp [Function.LeftInverse, Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 
 /-- If `F` is an empty diagram, then a cone over `F` is limiting iff the cone point is terminal. -/
 noncomputable
-def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category J] [IsEmpty J] {F : J ⥤ C} (c : Cone F) :
+def isLimitEquivIsTerminalOfIsEmpty {J : Type*} [Category* J] [IsEmpty J] {F : J ⥤ C} (c : Cone F) :
     IsLimit c ≃ IsTerminal c.pt :=
   (IsLimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
     (isLimitEmptyConeEquiv _ _ _ (.refl _))
@@ -265,13 +265,13 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
   invFun hl := isColimitChangeEmptyCocone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.LeftInverse,Function.RightInverse]; intro
+    dsimp [Function.LeftInverse, Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 
 /-- If `F` is an empty diagram,
 then a cocone over `F` is colimiting iff the cocone point is initial. -/
 noncomputable
-def isColimitEquivIsInitialOfIsEmpty {J : Type*} [Category J] [IsEmpty J]
+def isColimitEquivIsInitialOfIsEmpty {J : Type*} [Category* J] [IsEmpty J]
     {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c.pt :=
   (IsColimit.whiskerEquivalenceEquiv (equivalenceOfIsEmpty (Discrete PEmpty.{1}) _)).trans
     (isColimitEmptyCoconeEquiv _ _ _ (.refl _))
@@ -334,12 +334,6 @@ theorem InitialMonoClass.of_isTerminal {I T : C} (hI : IsInitial I) (hT : IsTerm
     (_ : Mono (hI.to T)) : InitialMonoClass C :=
   InitialMonoClass.of_isInitial hI fun X => mono_of_mono_fac (hI.hom_ext (_ ≫ hT.from X) (hI.to T))
 
-section Comparison
-
-variable {D : Type u₂} [Category.{v₂} D] (G : C ⥤ D)
-
-end Comparison
-
 variable {J : Type u} [Category.{v} J]
 
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cone for `J`.
@@ -353,6 +347,7 @@ def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
         dsimp
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, show the cone
 `coneOfDiagramInitial` is a limit. -/
 def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
@@ -363,6 +358,7 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, construct a cone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
 In `limitOfDiagramTerminal` we show it is a limit cone. -/
@@ -378,6 +374,7 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.id_comp, ← F.map_comp,
           hX.hom_ext (hX.from i) (f ≫ hX.from j)] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coneOfDiagramTerminal` is a limit. -/
 def limitOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
@@ -395,6 +392,7 @@ def coconeOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) : Cocone F
         dsimp
         rw [← F.map_comp, Category.comp_id, tX.hom_ext (k ≫ tX.from j') (tX.from j)] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given a terminal object of `J`, show the cocone
 `coconeOfDiagramTerminal` is a colimit. -/
 def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
@@ -408,6 +406,7 @@ lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : Is
   change IsIso (coconePointUniqueUpToIso (colimitOfDiagramTerminal hX F) hc).hom
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J`, construct a cocone for `J`,
 provided that the morphisms in the diagram are isomorphisms.
 In `colimitOfDiagramInitial` we show it is a colimit cocone. -/
@@ -423,6 +422,7 @@ def coconeOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
         simp only [IsIso.eq_inv_comp, IsIso.comp_inv_eq, Category.comp_id, ← F.map_comp,
           hX.hom_ext (hX.to i ≫ f) (hX.to j)] }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- From a functor `F : J ⥤ C`, given an initial object of `J` and that the morphisms in the
 diagram are isomorphisms, show the cone `coconeOfDiagramInitial` is a colimit. -/
 def colimitOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)

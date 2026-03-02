@@ -19,7 +19,7 @@ compact support.
 derivative, support
 -/
 
-@[expose] public section
+public section
 
 
 universe u v

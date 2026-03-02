@@ -5,8 +5,7 @@ Authors: Kyle Miller
 -/
 module
 
-public meta import Mathlib.Util.WhatsNew
-public meta import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Init
 
 /-!
 # `ToExpr` instances for Mathlib
@@ -30,6 +29,9 @@ deriving instance ToExpr for String.Pos.Raw
 deriving instance ToExpr for Substring.Raw
 deriving instance ToExpr for SourceInfo
 deriving instance ToExpr for Syntax
+
+set_option backward.privateInPublic true
+set_option backward.privateInPublic.warn false
 
 open DataValue in
 /-- Core of a hand-written `ToExpr` handler for `MData`.

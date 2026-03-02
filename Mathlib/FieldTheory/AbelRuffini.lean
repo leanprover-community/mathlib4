@@ -80,6 +80,7 @@ theorem gal_isSolvable_tower (p q : F[X]) (hpq : (p.map (algebraMap F q.Splittin
 
 section GalXPowSubC
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).Gal := by
   by_cases hn : n = 0
   · rw [hn, pow_zero, sub_self]
@@ -98,6 +99,7 @@ theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).G
   obtain ⟨d, hd⟩ := key τ
   rw [σ.mul_apply, τ.mul_apply, hc, map_pow, hd, map_pow, hc, ← pow_mul, pow_mul']
 
+set_option backward.isDefEq.respectTransparency false in
 theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
     (h : ((X ^ n - 1 : F[X]).map (RingHom.id F)).Splits) : IsSolvable (X ^ n - C a).Gal := by
   by_cases ha : a = 0
@@ -113,9 +115,10 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
   have hn''' : (X ^ n - 1 : F[X]) ≠ 0 := X_pow_sub_C_ne_zero hn' 1
   have mem_range : ∀ {c : (X ^ n - C a).SplittingField},
       (c ^ n = 1 → (∃ d, algebraMap F (X ^ n - C a).SplittingField d = c)) := fun {c} hc =>
-    RingHom.mem_range.mp (minpoly.mem_range_of_degree_eq_one F c (h.def.resolve_left hn'''
-      (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))
-      (minpoly.dvd F c (by rwa [map_id, map_sub, sub_eq_zero, aeval_X_pow, aeval_one]))))
+    RingHom.mem_range.mp (minpoly.mem_range_of_degree_eq_one F c
+      (Splits.degree_eq_one_of_irreducible (h.of_dvd (map_ne_zero hn''')
+        (minpoly.dvd F c (by rwa [map_id, map_sub, sub_eq_zero, aeval_X_pow, aeval_one])))
+          (minpoly.irreducible ((SplittingField.instNormal (X ^ n - C a)).isIntegral c))))
   apply isSolvable_of_comm
   intro σ τ
   ext b hb
@@ -144,8 +147,8 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   have hn' : 0 < n := pos_iff_ne_zero.mpr hn
   have hn'' : (X ^ n - C a).degree ≠ 0 :=
     ne_of_eq_of_ne (degree_X_pow_sub_C hn' a) (mt WithBot.coe_eq_coe.mp hn)
-  obtain ⟨b, hb⟩ := exists_root_of_splits i h hn''
-  rw [eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at hb
+  obtain ⟨b, hb⟩ := Splits.exists_eval_eq_zero h (by rwa [degree_map])
+  rw [eval_map, eval₂_sub, eval₂_X_pow, eval₂_C, sub_eq_zero] at hb
   have hb' : b ≠ 0 := by
     intro hb'
     rw [hb', zero_pow hn] at hb
@@ -153,8 +156,10 @@ theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [F
   let s := ((X ^ n - C a).map i).roots
   have hs : _ = _ * (s.map _).prod := h.eq_prod_roots
   rw [leadingCoeff_map, leadingCoeff_X_pow_sub_C hn', RingHom.map_one, C_1, one_mul] at hs
-  have hs' : Multiset.card s = n := (natDegree_eq_card_roots h).symm.trans natDegree_X_pow_sub_C
-  apply @splits_of_exists_multiset F E _ _ i (X ^ n - 1) (s.map fun c : E => c / b)
+  have hs' : Multiset.card s = n := by
+    rw [← h.natDegree_eq_card_roots, natDegree_map, natDegree_X_pow_sub_C]
+  rw [splits_iff_exists_multiset, leadingCoeff_map]
+  use (s.map fun c ↦ c / b)
   rw [leadingCoeff_X_pow_sub_one hn', map_one, C_1, one_mul, Multiset.map_map]
   have C_mul_C : C (i a⁻¹) * C (i a) = 1 := by
     rw [← C_mul, ← i.map_mul, inv_mul_cancel₀ ha, i.map_one, C_1]
@@ -282,7 +287,7 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
     · exact minpoly.ne_zero (isIntegral (α ^ n)) h'
     · exact hn (by rw [← @natDegree_C F, ← h'.2, natDegree_X_pow])
   apply gal_isSolvable_of_splits
-  · exact ⟨(SplittingField.splits (p.comp (X ^ n))).splits_of_dvd (map_ne_zero hp)
+  · exact ⟨(SplittingField.splits (p.comp (X ^ n))).of_dvd (map_ne_zero hp)
       ((map_dvd_map' _).mpr (minpoly.dvd F α (by rw [aeval_comp, aeval_X_pow, minpoly.aeval])))⟩
   · refine gal_isSolvable_tower p (p.comp (X ^ n)) ?_ hα ?_
     · exact Gal.splits_in_splittingField_of_comp _ _ (by rwa [natDegree_X_pow])
@@ -301,6 +306,7 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
 
 open IntermediateField
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
 theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
   let p := minpoly F α
@@ -311,7 +317,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   let f : ↥F⟮α, β⟯ →ₐ[F] (p * q).SplittingField :=
     Classical.choice <| nonempty_algHom_adjoin_of_splits <| by
       intro x hx
-      simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+      push _ ∈ _ at hx
       cases hx with rw [hx]
       | inl hx => exact ⟨isIntegral α, hpq.1⟩
       | inr hx => exact ⟨isIntegral β, hpq.2⟩
@@ -342,6 +348,7 @@ theorem isSolvable (α : solvableByRad F E) : IsSolvable (minpoly F α).Gal := b
   · exact fun α => induction1 (inv_mem (mem_adjoin_simple_self F α))
   · exact fun α n => induction3
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Abel-Ruffini Theorem** (one direction): An irreducible polynomial with an
 `IsSolvableByRad` root has solvable Galois group -/
 theorem isSolvable' {α : E} {q : F[X]} (q_irred : Irreducible q) (q_aeval : aeval α q = 0)

@@ -337,6 +337,7 @@ instance fintypeLENat (n : ℕ) : Fintype { i | i ≤ n } := by
 
 /-- This is not an instance so that it does not conflict with the one
 in `Mathlib/Order/Interval/Finset/Defs.lean`. -/
+@[instance_reducible]
 def Nat.fintypeIio (n : ℕ) : Fintype (Iio n) :=
   Set.fintypeLTNat n
 
@@ -478,8 +479,7 @@ variable {s t u : Set α} {a : α}
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
   s.toFinite
 
-theorem finite_univ [Finite α] : (@univ α).Finite :=
-  Set.toFinite _
+@[simp] theorem finite_univ [Finite α] : (@univ α).Finite := Set.toFinite _
 
 theorem finite_univ_iff : (@univ α).Finite ↔ Finite α := (Equiv.Set.univ α).finite_iff
 
@@ -518,18 +518,19 @@ theorem Finite.inf_of_right {s : Set α} (h : s.Finite) (t : Set α) : (t ⊓ s)
 protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
   mt fun ht ↦ ht.subset h
 
-theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
+@[simp] theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
 
 theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
   (hd.union ht).subset <| subset_diff_union _ _
 
+@[simp]
 lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.diff.union ht.diff
 
 lemma Finite.symmDiff_congr (hst : (s ∆ t).Finite) : (s ∆ u).Finite ↔ (t ∆ u).Finite where
   mp hsu := (hst.union hsu).subset (symmDiff_comm s t ▸ symmDiff_triangle ..)
   mpr htu := (hst.union htu).subset (symmDiff_triangle ..)
 
-@[simp]
+@[simp, grind .]
 theorem finite_empty : (∅ : Set α).Finite :=
   toFinite _
 
@@ -753,9 +754,10 @@ end
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
-  simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
+  simp [Fintype.card_ofFinset]
 
 @[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
@@ -820,14 +822,8 @@ theorem infinite_univ [h : Infinite α] : (@univ α).Infinite :=
 lemma Infinite.exists_notMem_finite (hs : s.Infinite) (ht : t.Finite) : ∃ a, a ∈ s ∧ a ∉ t := by
   by_contra! h; exact hs <| ht.subset h
 
-@[deprecated (since := "2025-05-23")]
-alias Infinite.exists_not_mem_finite := Infinite.exists_notMem_finite
-
 lemma Infinite.exists_notMem_finset (hs : s.Infinite) (t : Finset α) : ∃ a ∈ s, a ∉ t :=
   hs.exists_notMem_finite t.finite_toSet
-
-@[deprecated (since := "2025-05-23")]
-alias Infinite.exists_not_mem_finset := Infinite.exists_notMem_finset
 
 section Infinite
 variable [Infinite α]
@@ -835,12 +831,7 @@ variable [Infinite α]
 lemma Finite.exists_notMem (hs : s.Finite) : ∃ a, a ∉ s := by
   by_contra! h; exact infinite_univ (hs.subset fun a _ ↦ h _)
 
-@[deprecated (since := "2025-05-23")] alias Finite.exists_not_mem := Finite.exists_notMem
-
 lemma _root_.Finset.exists_notMem (s : Finset α) : ∃ a, a ∉ s := s.finite_toSet.exists_notMem
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Finset.exists_not_mem := _root_.Finset.exists_notMem
 
 end Infinite
 

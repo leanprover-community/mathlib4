@@ -9,6 +9,7 @@ public import Mathlib.Logic.Equiv.Option
 public import Mathlib.Logic.Equiv.Sum
 public import Mathlib.Logic.Function.Conjugate
 public import Mathlib.Tactic.Lift
+public import Mathlib.Data.Int.Notation
 
 /-!
 # Equivalence between types
@@ -17,8 +18,9 @@ In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/
 a lot of equivalences between various types and operations on these equivalences.
 
 More definitions of this kind can be found in other files.
-E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-`Group`, `Module`, etc.
+E.g., `Mathlib/Algebra/Group/TransferInstance.lean` does it for `Group`,
+`Mathlib/Algebra/Module/TransferInstance.lean` does it for `Module`, and similar files exist for
+other algebraic type classes.
 
 ## Tags
 
@@ -95,12 +97,7 @@ theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr e
 theorem Perm.subtypeCongr.trans :
     (ep.subtypeCongr en).trans (ep'.subtypeCongr en')
     = Perm.subtypeCongr (ep.trans ep') (en.trans en') := by
-  ext x
-  by_cases h : p x
-  · have : p (ep ⟨x, h⟩) := Subtype.property _
-    simp [h, this]
-  · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
-    simp [h, this]
+  grind [eq_def, coe_trans]
 
 end subtypeCongr
 
@@ -709,6 +706,21 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
   grind
+
+theorem swap_injective_of_left (a : α) :
+    Function.Injective (fun x ↦ Equiv.swap a x) := fun c d h ↦ by
+  simp only at h
+  rw [← Equiv.swap_apply_left a c, h, Equiv.swap_apply_left]
+
+theorem swap_injective_of_right (a : α) :
+    Function.Injective (fun x ↦ Equiv.swap x a) := by
+  simp_rw [swap_comm _ a]
+  exact swap_injective_of_left a
+
+instance (α : Type*) [Nontrivial α] : Nontrivial (Equiv.Perm α) := by
+  classical
+  obtain ⟨a : α⟩ := Nontrivial.to_nonempty (α := α)
+  exact Function.Injective.nontrivial (Equiv.swap_injective_of_left a)
 
 lemma image_swap_of_mem_of_notMem {α : Type*} [DecidableEq α] {s : Set α} {i j : α}
     (hi : i ∈ s) (hj : j ∉ s) : s.image (swap i j) = insert j s \ {i} :=

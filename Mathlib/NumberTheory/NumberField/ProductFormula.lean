@@ -31,7 +31,7 @@ ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 number field, embeddings, places, infinite places, finite places, product formula
 -/
 
-@[expose] public section
+public section
 
 namespace NumberField
 
@@ -39,6 +39,7 @@ variable {K : Type*} [Field K] [NumberField K]
 
 open Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 open Function Ideal IsDedekindDomain HeightOneSpectrum in
 /-- For any non-zero `x` in `𝓞 K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℤ x`. -/
@@ -72,6 +73,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   rw [h_prod, ← finprod_mul_distrib h_fin₁ h_fin₂]
   exact finprod_eq_one_of_forall_eq_one fun v ↦ v.embedding_mul_absNorm h_x_nezero
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any non-zero `x` in `K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℚ x`. -/
 theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :

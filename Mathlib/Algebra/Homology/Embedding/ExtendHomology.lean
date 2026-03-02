@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Homology.Embedding.IsSupported
 public import Mathlib.Algebra.Homology.QuasiIso
 
 /-!
-# Homology of the extension of an homological complex
+# Homology of the extension of a homological complex
 
 Given an embedding `e : c.Embedding c'` and `K : HomologicalComplex C c`, we shall
 compute the homology of `K.extend e`. In degrees that are not in the image of `e.f`,
@@ -26,7 +26,7 @@ open CategoryTheory Limits Category
 namespace HomologicalComplex
 
 variable {ι ι' : Type*} {c : ComplexShape ι} {c' : ComplexShape ι'}
-  {C : Type*} [Category C] [HasZeroMorphisms C]
+  {C : Type*} [Category* C] [HasZeroMorphisms C]
   [HasZeroObject C]
 
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (φ' : L ⟶ M) (e : c.Embedding c')
@@ -66,6 +66,7 @@ namespace leftHomologyData
 
 variable (cone : KernelFork (K.d j k)) (hcone : IsLimit cone)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kernel fork of `(K.extend e).d j' k'` that is deduced from a kernel
 fork of `K.d j k `. -/
 @[simp]
@@ -82,6 +83,7 @@ noncomputable def isLimitKernelFork : IsLimit (kernelFork K e hj' hk hk' cone) :
 variable (cocone : CokernelCofork (hcone.lift (KernelFork.ofι (K.d i j) (K.d_comp_d i j k))))
   (hcocone : IsColimit cocone)
 
+set_option backward.isDefEq.respectTransparency false in
 include hi hi' hcone in
 /-- Auxiliary lemma for `lift_d_comp_eq_zero_iff`. -/
 lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
@@ -133,6 +135,7 @@ noncomputable def isColimitCokernelCofork :
 
 end leftHomologyData
 
+set_option backward.isDefEq.respectTransparency false in
 open leftHomologyData in
 /-- The left homology data of `(K.extend e).sc' i' j' k'` that is deduced
 from a left homology data of `K.sc' i j k`. -/
@@ -174,6 +177,7 @@ noncomputable def isColimitCokernelCofork : IsColimit (cokernelCofork K e hj' hi
 variable (cone : KernelFork (hcocone.desc (CokernelCofork.ofπ (K.d j k) (K.d_comp_d i j k))))
   (hcone : IsLimit cone)
 
+set_option backward.isDefEq.respectTransparency false in
 include hk hk' hcocone in
 lemma d_comp_desc_eq_zero_iff' ⦃W : C⦄ (f' : cocone.pt ⟶ K.X k)
     (hf' : cocone.π ≫ f' = K.d j k)
@@ -208,6 +212,7 @@ lemma d_comp_desc_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ cocone.pt) :
     simpa using (isColimitCokernelCofork K e hj' hi hi' cocone hcocone).fac _
       WalkingParallelPair.one) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `extend.rightHomologyData`. -/
 noncomputable def kernelFork :
     KernelFork ((isColimitCokernelCofork K e hj' hi hi' cocone hcocone).desc
@@ -224,6 +229,7 @@ noncomputable def isLimitKernelFork :
 
 end rightHomologyData
 
+set_option backward.isDefEq.respectTransparency false in
 open rightHomologyData in
 /-- The right homology data of `(K.extend e).sc' i' j' k'` that is deduced
 from a right homology data of `K.sc' i j k`. -/
@@ -245,6 +251,7 @@ noncomputable def rightHomologyData (h : (K.sc' i j k).RightHomologyData) :
     exact h.wι
   hι := isLimitKernelFork K e hj' hi hi' hk hk' _ h.hp _ h.hι
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Computation of the `g'` field of `extend.rightHomologyData`. -/
 lemma rightHomologyData_g' (h : (K.sc' i j k).RightHomologyData) (hk'' : e.f k = k') :
     (rightHomologyData K e hj' hi hi' hk hk' h).g' = h.g' ≫ (K.extendXIso e hk'').inv := by
@@ -323,6 +330,7 @@ lemma extend_exactAt_iff :
   simp only [HomologicalComplex.exactAt_iff_isZero_homology]
   exact (K.extendHomologyIso e hj').isZero_iff
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma extendCyclesIso_hom_iCycles :
     (K.extendCyclesIso e hj').hom ≫ K.iCycles j =
@@ -341,6 +349,7 @@ lemma extendCyclesIso_inv_iCycles :
   simp only [← cancel_epi (K.extendCyclesIso e hj').hom, Iso.hom_inv_id_assoc,
     extendCyclesIso_hom_iCycles_assoc, Iso.hom_inv_id, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma homologyπ_extendHomologyIso_hom :
     (K.extend e).homologyπ j' ≫ (K.extendHomologyIso e hj').hom =
@@ -360,6 +369,7 @@ lemma homologyπ_extendHomologyIso_inv :
   simp only [← cancel_mono (K.extendHomologyIso e hj').hom,
     assoc, Iso.inv_hom_id, comp_id, homologyπ_extendHomologyIso_hom, Iso.inv_hom_id_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pOpcycles_extendOpcyclesIso_inv :
     K.pOpcycles j ≫ (K.extendOpcyclesIso e hj').inv =

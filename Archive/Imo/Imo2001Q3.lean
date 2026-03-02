@@ -16,7 +16,7 @@ Twenty-one girls and twenty-one boys took part in a mathematical competition. It
 
 1. each contestant solved at most six problems, and
 2. for each pair of a girl and a boy, there was at least one problem that was solved by
-both the girl and the boy.
+   both the girl and the boy.
 
 Show that there is a problem that was solved by at least three girls and at least three boys.
 
@@ -66,7 +66,7 @@ lemma card_not_easy_le_five {i : Fin 21} (hG : #(G i) ≤ 6) (hB : ∀ j, ¬Disj
     _ = #((G i).biUnion fun p ↦ {j | p ∈ B j}) := by congr 1; ext j; simp [not_disjoint_iff]
     _ ≤ ∑ p ∈ G i, #{j | p ∈ B j} := card_biUnion_le
     _ ≤ ∑ p ∈ G i, 2 := sum_le_sum fun p mp ↦ Nat.le_of_lt_succ (h p mp)
-    _ ≤ _ := by rw [sum_const, smul_eq_mul]; omega
+    _ ≤ _ := by rw [sum_const, smul_eq_mul]; lia
 
 open Classical in
 /-- There are at most 210 girl-boy pairs who solved some problem in common that was not easy for

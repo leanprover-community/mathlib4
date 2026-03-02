@@ -13,13 +13,13 @@ public import Mathlib.CategoryTheory.Monoidal.Transport
 # Transporting a closed monoidal structure along an equivalence of categories
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Monoidal
 
 namespace CategoryTheory.MonoidalClosed
 
-noncomputable instance {C D : Type*} [Category C] [Category D]
+noncomputable instance {C D : Type*} [Category* C] [Category* D]
     (e : C ≌ D) [MonoidalCategory C] [MonoidalClosed C] :
     MonoidalClosed (Transported e) :=
   MonoidalClosed.ofEquiv _ (equivalenceTransported e).symm.toAdjunction

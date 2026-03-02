@@ -32,7 +32,7 @@ This file gathers some results about non-local rings.
 
 -/
 
-@[expose] public section
+public section
 
 namespace IsLocalRing
 

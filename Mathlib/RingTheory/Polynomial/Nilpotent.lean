@@ -128,6 +128,7 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     · simp_rw [P₁, eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
     · simp_rw [coeff_eq_zero_of_natDegree_lt H, IsNilpotent.zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.
 
@@ -168,7 +169,7 @@ theorem isUnit_iff_coeff_isUnit_isNilpotent :
     ← Polynomial.isNilpotent_iff]
 
 lemma isUnit_iff' :
-    IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X)  := by
+    IsUnit P ↔ IsUnit (eval 0 P) ∧ IsNilpotent (P /ₘ X) := by
   suffices P = C (eval 0 P) + X * (P /ₘ X) by
     conv_lhs => rw [this]; simp
   conv_lhs => rw [← modByMonic_add_div P monic_X]
@@ -187,6 +188,12 @@ theorem not_isUnit_of_natDegree_pos_of_isReduced [IsReduced R] (p : R[X])
 theorem not_isUnit_of_degree_pos_of_isReduced [IsReduced R] (p : R[X])
     (hpl : 0 < p.degree) : ¬ IsUnit p :=
   not_isUnit_of_natDegree_pos_of_isReduced _ (natDegree_pos_iff_degree_pos.mpr hpl)
+
+instance : IsLocalHom (C : _ →+* Polynomial R) where
+  map_nonunit := by classical simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
+
+instance : IsLocalHom (algebraMap R (Polynomial R)) :=
+  inferInstanceAs (IsLocalHom C)
 
 end CommRing
 

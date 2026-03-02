@@ -37,7 +37,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -76,7 +76,7 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
   have := minpoly.monic pb.isIntegral_gen
   rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, map_mul,
     ← coeff_map,
-    coeff_zero_eq_prod_roots_of_monic_of_splits (this.map _) hf,
+    hf.coeff_zero_eq_prod_roots_of_monic (this.map _),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
   simp only [map_neg, map_one, neg_mul, neg_neg, one_pow, one_mul]
 
@@ -127,6 +127,11 @@ theorem norm_ne_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {
     Algebra.norm R x ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr (norm_eq_zero_iff_of_basis b)
 
+theorem norm_inv [Module.Finite K L] (x : L) : Algebra.norm K x⁻¹ = (Algebra.norm K x)⁻¹ := by
+  by_cases hx : x = 0
+  · simp [hx]
+  exact mul_left_injective₀ (norm_ne_zero_iff.mpr hx) (by simp [hx, ← map_mul])
+
 end EqZeroIff
 
 open IntermediateField
@@ -142,6 +147,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
     (hf : ((minpoly K x).map (algebraMap K F)).Splits) :
     (algebraMap K F) (norm K (AdjoinSimple.gen K x)) =
@@ -198,6 +204,7 @@ lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
     Algebra.norm R (e x) = Algebra.norm R x := by
   simp_rw [Algebra.norm_apply, ← LinearMap.det_conj _ e.toLinearEquiv]; congr; ext; simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_eq_of_ringEquiv {A B C : Type*} [CommRing A] [CommRing B] [Ring C]
     [Algebra A C] [Algebra B C] (e : A ≃+* B) (he : (algebraMap B C).comp e = algebraMap A C)
     (x : C) :

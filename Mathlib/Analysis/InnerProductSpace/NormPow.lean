@@ -19,7 +19,7 @@ an inner product space and for a real number `p > 1`.
 
 -/
 
-@[expose] public section
+public section
 
 section ContDiffNormPow
 
@@ -29,12 +29,13 @@ open scoped NNReal
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasFDerivAt_norm_rpow (x : E) {p : ℝ} (hp : 1 < p) :
     HasFDerivAt (fun x : E ↦ ‖x‖ ^ p) ((p * ‖x‖ ^ (p - 2)) • innerSL ℝ x) x := by
   by_cases hx : x = 0
   · simp only [hx, norm_zero, map_zero, smul_zero]
     have h2p : 0 < p - 1 := sub_pos.mpr hp
-    rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO]
+    refine .of_isLittleO ?_
     calc (fun x : E ↦ ‖x‖ ^ p - ‖(0 : E)‖ ^ p - 0)
         = (fun x : E ↦ ‖x‖ ^ p) := by simp [zero_lt_one.trans hp |>.ne']
       _ = (fun x : E ↦ ‖x‖ * ‖x‖ ^ (p - 1)) := by
@@ -56,6 +57,7 @@ theorem differentiable_norm_rpow {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x : E ↦ ‖x‖ ^ p) :=
   fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasDerivAt_norm_rpow (x : ℝ) {p : ℝ} (hp : 1 < p) :
     HasDerivAt (fun x : ℝ ↦ ‖x‖ ^ p) (p * ‖x‖ ^ (p - 2) * x) x := by
   convert hasFDerivAt_norm_rpow x hp |>.hasDerivAt using 1; simp
@@ -105,6 +107,7 @@ lemma enorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
   simpa [enorm, ← ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.2 <| NNReal.one_le_coe.2 hp.le),
     ← ENNReal.coe_mul] using nnnorm_fderiv_norm_rpow_le hf hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
   rw [contDiff_one_iff_fderiv]
   refine ⟨fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt, ?_⟩
@@ -115,7 +118,7 @@ theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E �
     rw [tendsto_zero_iff_norm_tendsto_zero]
     refine tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds) ?_
       (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_fderiv_norm_id_rpow _ hp |>.le)
-    suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0  by
+    suffices ContinuousAt (fun x : E ↦ p * ‖x‖ ^ (p - 1)) 0 by
       simpa [ContinuousAt, sub_ne_zero_of_ne hp.ne'] using this
     fun_prop (discharger := simp [hp.le])
   · simp_rw [funext fun x ↦ fderiv_norm_rpow (E := E) (x := x) hp]
@@ -127,6 +130,6 @@ theorem ContDiff.norm_rpow {f : F → E} (hf : ContDiff ℝ 1 f) {p : ℝ} (hp :
 
 theorem Differentiable.norm_rpow {f : F → E} (hf : Differentiable ℝ f) {p : ℝ} (hp : 1 < p) :
     Differentiable ℝ (fun x ↦ ‖f x‖ ^ p) :=
-  contDiff_norm_rpow hp |>.differentiable le_rfl |>.comp hf
+  contDiff_norm_rpow hp |>.differentiable one_ne_zero |>.comp hf
 
 end ContDiffNormPow

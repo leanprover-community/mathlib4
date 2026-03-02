@@ -37,8 +37,9 @@ abbrev AlgHom.mulLeftRightMatrix_inv :
   toFun f := ∑ ⟨⟨i, j⟩, k, l⟩ : (n × n) × n × n,
     f (single j k 1) i l • (single i j 1) ⊗ₜ[R] op (single k l 1)
   map_add' f1 f2 := by simp [add_smul, Finset.sum_add_distrib]
-  map_smul' r f := by simp [MulAction.mul_smul, Finset.smul_sum]
+  map_smul' r f := by simp [SemigroupAction.mul_smul, Finset.smul_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AlgHom.mulLeftRightMatrix.inv_comp :
     (AlgHom.mulLeftRightMatrix_inv R n).comp
     (AlgHom.mulLeftRight R (Matrix n n R)).toLinearMap = .id :=
@@ -47,6 +48,7 @@ lemma AlgHom.mulLeftRightMatrix.inv_comp :
     simp [stdBasis_eq_single, ite_and, Fintype.sum_prod_type,
       mulLeftRight_apply, single, Matrix.mul_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma AlgHom.mulLeftRightMatrix.comp_inv :
     (AlgHom.mulLeftRight R (Matrix n n R)).toLinearMap.comp
     (AlgHom.mulLeftRightMatrix_inv R n) = .id := by
@@ -61,6 +63,7 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv :
 
 namespace IsAzumaya
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A nontrivial matrix ring over `R` is an Azumaya algebra over `R`. -/
 theorem matrix [Nonempty n] : IsAzumaya R (Matrix n n R) where
   eq_of_smul_eq_smul := by nontriviality R; exact eq_of_smul_eq_smul

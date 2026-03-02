@@ -46,13 +46,13 @@ universe v u
 open CategoryTheory Topology CompHausLike
 
 /-- The type of profinite topological spaces. -/
-@[to_additive self]
+@[to_additive_do_translate] -- This is required
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
 
 instance (X : Type*) [TopologicalSpace X]
-    [TotallyDisconnectedSpace X] :  HasProp (fun Y ↦ TotallyDisconnectedSpace Y) X :=
+    [TotallyDisconnectedSpace X] : HasProp (fun Y ↦ TotallyDisconnectedSpace Y) X :=
   ⟨(inferInstance : TotallyDisconnectedSpace X)⟩
 
 /-- Construct a term of `Profinite` from a type endowed with the structure of a
@@ -100,16 +100,20 @@ def CompHaus.toProfiniteObj (X : CompHaus.{u}) : Profinite.{u} where
   is_hausdorff := ConnectedComponents.t2
   prop := ConnectedComponents.totallyDisconnectedSpace
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) The bijection of homsets to establish the reflective adjunction of Profinite
 spaces in compact Hausdorff spaces.
 -/
 def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     (CompHaus.toProfiniteObj X ⟶ Y) ≃ (X ⟶ profiniteToCompHaus.obj Y) where
-  toFun f := ofHom _ (f.hom.comp ⟨Quotient.mk'', continuous_quotient_mk'⟩)
-  invFun g := TopCat.ofHom
-    { toFun := Continuous.connectedComponentsLift g.hom.2
-      continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.2 }
-  left_inv _ := TopCat.ext <| ConnectedComponents.surjective_coe.forall.2 fun _ => rfl
+  toFun f := ofHom _ (f.hom.hom.comp ⟨Quotient.mk'', continuous_quotient_mk'⟩)
+  invFun g := ConcreteCategory.ofHom
+    { toFun := Continuous.connectedComponentsLift g.hom.hom.2
+      continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.hom.2 }
+  left_inv f :=
+    InducedCategory.hom_ext (TopCat.ext (fun y ↦ by
+      obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
+      rfl))
 
 /-- The connected_components functor from compact Hausdorff spaces to profinite spaces,
 left adjoint to the inclusion functor.
@@ -122,6 +126,7 @@ theorem CompHaus.toProfinite_obj' (X : CompHaus) :
   rfl
 
 /-- Finite types are given the discrete topology. -/
+@[instance_reducible]
 def FintypeCat.botTopology (A : FintypeCat) : TopologicalSpace A := ⊥
 
 section DiscreteTopology
@@ -135,14 +140,14 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `Profinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! -isSimp map_hom_apply]
+@[simps! -isSimp map_hom_hom_apply]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
-  map f := ofHom _ ⟨f, by continuity⟩
+  map f := ofHom _ ⟨f, by fun_prop⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toProfiniteFullyFaithful : toProfinite.FullyFaithful where
-  preimage f := (f : _ → _)
+  preimage f := InducedCategory.homMk (f : _ → _)
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -169,7 +174,8 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) : L
         change TotallyDisconnectedSpace ({ u : ∀ j : J, F.obj j | _ } : Type _)
         exact Subtype.totallyDisconnectedSpace }
   π :=
-  { app := (CompHaus.limitCone.{v, u} (F ⋙ profiniteToCompHaus)).π.app
+  { app j := InducedCategory.homMk
+        (((CompHaus.limitCone.{v, u} (F ⋙ profiniteToCompHaus)).π.app j).hom)
     -- Porting note: was `by tidy`:
     naturality := by
       intro j k f
@@ -180,9 +186,15 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) : L
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) :
     Limits.IsLimit (limitCone F) where
   lift S :=
-    (CompHaus.limitConeIsLimit.{v, u} (F ⋙ profiniteToCompHaus)).lift
-      (profiniteToCompHaus.mapCone S)
-  uniq S _ h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _ h
+    InducedCategory.homMk
+      ((CompHaus.limitConeIsLimit.{v, u} (F ⋙ profiniteToCompHaus)).lift
+        (profiniteToCompHaus.mapCone S)).hom
+  uniq S _ h :=
+    profiniteToCompHaus.map_injective
+      ((CompHaus.limitConeIsLimit.{v, u} _).uniq (profiniteToCompHaus.mapCone S) _
+        (fun j ↦ by
+          simp [← h]
+          rfl))
 
 /-- The adjunction between CompHaus.to_Profinite and Profinite.to_CompHaus -/
 def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
@@ -211,13 +223,14 @@ instance hasColimits : Limits.HasColimits Profinite :=
 instance forget_preservesLimits : Limits.PreservesLimits (forget Profinite) := by
   apply Limits.comp_preservesLimits Profinite.toTopCat (forget TopCat)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Function.Surjective f := by
   constructor
   · dsimp [Function.Surjective]
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
+    have hC : IsClosed C := (isCompact_range f.hom.hom.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
       refine Set.mem_compl ?_

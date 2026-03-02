@@ -16,7 +16,7 @@ some results on asymptotics as `x → 0` (those which are not just continuity st
 located here.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -49,6 +49,7 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
   Tendsto.congr' (eventuallyEq_of_mem (Ioi_mem_atTop 0) fun _ hx => (rpow_neg (le_of_lt hx) y).symm)
     (tendsto_rpow_atTop hy).inv_tendsto_atTop
 
+set_option backward.isDefEq.respectTransparency false in
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
     Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0 : ℝ)) := by
@@ -293,6 +294,23 @@ theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
     (zero_le_one.trans ht) (a + b))]
   exact Real.rpow_le_rpow_of_exponent_le ht h
 
+/-- If `a ≤ b`, then `x^b = O(x^a)` as `x → 0`, `x ≥ 0`, unless `b = 0` and `a ≠ 0`. -/
+theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le_of_imp {a b : ℝ} (h : a ≤ b) (himp : b = 0 → a = 0) :
+    (· ^ b : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) :=
+  .of_bound' <| mem_of_superset (Icc_mem_nhdsGE one_pos) fun x hx ↦ by
+    simpa [Real.abs_rpow_of_nonneg hx.1, abs_of_nonneg hx.1]
+     using Real.rpow_le_rpow_of_exponent_ge_of_imp hx.1 hx.2 h fun _ ↦ himp
+
+/-- If `a ≤ b`, `b ≠ 0`, then `x^b = O(x^a)` as `x → 0`, `x ≥ 0`. -/
+theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le {a b : ℝ} (h : a ≤ b) (hb : b ≠ 0) :
+    (· ^ b : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) :=
+  .rpow_rpow_nhdsGE_zero_of_le_of_imp h (absurd · hb)
+
+/-- If `a ≤ 1`, then `x = O(x ^ a)` as `x → 0`, `x ≥ 0`. -/
+theorem IsBigO.id_rpow_of_le_one {a : ℝ} (ha : a ≤ 1) :
+    (id : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) := by
+  simpa using rpow_rpow_nhdsGE_zero_of_le ha (by simp)
+
 end Asymptotics
 
 open Asymptotics
@@ -328,6 +346,13 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
   · refine (tendsto_exp_mul_div_rpow_atTop (-b) a ha).inv_tendsto_atTop.congr' ?_
     refine (eventually_ge_atTop 0).mono fun t ht => ?_
     simp [field, Real.exp_neg, rpow_neg ht]
+
+theorem isLittleO_exp_mul_rpow_of_lt (k : ℝ) {a b : ℝ} (ha' : a < b) :
+    (fun t ↦ Real.exp (a * t) * t ^ k) =o[atTop] fun t ↦ Real.exp (b * t) := by
+  refine (isLittleO_of_tendsto (fun _ h ↦ (Real.exp_ne_zero _ h).elim) ?_)
+  simp_rw [← div_mul_eq_mul_div₀, ← Real.exp_sub, ← sub_mul, ← neg_sub b a,
+    mul_comm _ (_ ^ k)]
+  exact tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero _ _ (sub_pos.mpr ha')
 
 theorem isLittleO_log_rpow_atTop {r : ℝ} (hr : 0 < r) : log =o[atTop] fun x => x ^ r :=
   calc
@@ -388,5 +413,5 @@ lemma tendsto_log_mul_self_nhdsLT_zero : Filter.Tendsto (fun x ↦ log x * x) (�
   nth_rewrite 3 [← neg_zero]
   refine (h.comp (tendsto_abs_nhdsNE_zero.mono_left ?_)).neg
   refine nhdsWithin_mono 0 (fun x hx ↦ ?_)
-  simp only [Set.mem_Iio] at hx
+  push _ ∈ _ at hx
   simp only [Set.mem_compl_iff, Set.mem_singleton_iff, hx.ne, not_false_eq_true]

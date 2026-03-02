@@ -55,7 +55,7 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
                  is implemented as `f.toFun`.
                  For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
                  characterizing, say, `(f op g : α → β)`.
-* `AEEqFun.mk`:  To constructs an `L⁰` function `α →ₘ β` from an almost everywhere strongly
+* `AEEqFun.mk`:  To construct an `L⁰` function `α →ₘ β` from an almost everywhere strongly
                  measurable function `f : α → β`, use `ae_eq_fun.mk`
 * `comp`:        Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
                  continuous. Use `compMeasurable` if `g` is only measurable (this requires the
@@ -889,13 +889,11 @@ variable [LinearOrder γ] [OrderClosedTopology γ] [Zero γ]
 
 /-- Positive part of an `AEEqFun`. -/
 def posPart (f : α →ₘ[μ] γ) : α →ₘ[μ] γ :=
-  comp (fun x => max x 0) (continuous_id.max continuous_const) f
+  comp (fun x => max x 0) (by fun_prop) f
 
 @[simp]
 theorem posPart_mk (f : α → γ) (hf) :
-    posPart (mk f hf : α →ₘ[μ] γ) =
-      mk (fun x => max (f x) 0)
-        ((continuous_id.max continuous_const).comp_aestronglyMeasurable hf) :=
+    posPart (mk f hf : α →ₘ[μ] γ) = mk (fun x ↦ max (f x) 0) (by fun_prop) :=
   rfl
 
 theorem coeFn_posPart (f : α →ₘ[μ] γ) : ⇑(posPart f) =ᵐ[μ] fun a => max (f a) 0 :=

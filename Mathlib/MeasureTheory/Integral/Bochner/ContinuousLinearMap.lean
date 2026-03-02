@@ -19,7 +19,7 @@ the composition, as we are dealing with classes of functions, but it has already
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory RCLike
 open scoped ENNReal NNReal
@@ -73,7 +73,7 @@ theorem integral_apply {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {
     (φ_int : Integrable φ μ) (v : H) : (∫ x, φ x ∂μ) v = ∫ x, φ x v ∂μ := by
   by_cases hE : CompleteSpace E
   · exact ((ContinuousLinearMap.apply 𝕜 E v).integral_comp_comm φ_int).symm
-  · rcases subsingleton_or_nontrivial H with hH|hH
+  · rcases subsingleton_or_nontrivial H with hH | hH
     · simp [Subsingleton.eq_zero v]
     · have : ¬(CompleteSpace (H →L[𝕜] E)) := by
         rwa [SeparatingDual.completeSpace_continuousLinearMap_iff]
@@ -125,7 +125,7 @@ variable [NormedSpace ℝ F] [NormedSpace 𝕜 F] [NormedSpace ℝ E]
 theorem integral_comp_comm (L : E ≃L[𝕜] F) (φ : X → E) : ∫ x, L (φ x) ∂μ = L (∫ x, φ x ∂μ) := by
   have : CompleteSpace E ↔ CompleteSpace F :=
     completeSpace_congr (e := L.toEquiv) L.isUniformEmbedding
-  obtain ⟨_, _⟩|⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
+  obtain ⟨_, _⟩ | ⟨_, _⟩ := iff_iff_and_or_not_and_not.mp this
   · exact L.toContinuousLinearMap.integral_comp_comm' L.antilipschitz _
   · simp [integral, *]
 
@@ -135,6 +135,7 @@ section ContinuousMap
 
 variable [TopologicalSpace Y] [CompactSpace Y]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X → C(Y, E)}
     (hf : Integrable f μ) (y : Y) : (∫ x, f x ∂μ) y = ∫ x, f x y ∂μ := by
   calc (∫ x, f x ∂μ) y = ContinuousMap.evalCLM ℝ y (∫ x, f x ∂μ) := rfl
@@ -142,6 +143,7 @@ lemma ContinuousMap.integral_apply [NormedSpace ℝ E] [CompleteSpace E] {f : X 
           (ContinuousLinearMap.integral_comp_comm _ hf).symm
     _ = _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped ContinuousMapZero in
 theorem ContinuousMapZero.integral_apply {R : Type*} [NormedCommRing R] [Zero Y]
     [NormedAlgebra ℝ R] [CompleteSpace R] {f : X → C(Y, R)₀}
@@ -246,6 +248,7 @@ lemma integral_mul_const_of_integrable {A : Type*} [NonUnitalNormedRing A] [Norm
     rw [ContinuousLinearMap.integral_comp_comm _ hf]
   · simp [integral, hA]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Measurable f) (g : X → E) :
     ∫ x, g x ∂μ.withDensity (fun x => f x) = ∫ x, f x • g x ∂μ := by
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE]

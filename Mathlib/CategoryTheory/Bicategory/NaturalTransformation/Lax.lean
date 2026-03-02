@@ -15,9 +15,10 @@ Just as there are natural transformations between functors, there are transforma
 between lax functors. The equality in the naturality condition of a natural transformation gets
 replaced by a specified 2-morphism. Now, there are three possible types of transformations (between
 lax functors):
-* Lax natural transformations;
-* OpLax natural transformations;
-* Strong natural transformations.
+* lax natural transformations;
+* oplax natural transformations;
+* strong natural transformations.
+
 These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
 condition.
 
@@ -29,24 +30,24 @@ condition.
 * `Lax.OplaxTrans F G`: oplax transformations between lax functors `F` and `G`. The naturality
   condition is given by a 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
-* `Lax.StrongTrans F G`: Strong transformations between lax functors `F` and `G`. The naturality
-  condition is given by a 2-morphism `app a ≫ G.map f ≅ F.map f ≫ app b` for each 1-morphism
+* `Lax.StrongTrans F G`: strong transformations between lax functors `F` and `G`. The naturality
+  condition is given by a 2-isomorphism `app a ≫ G.map f ≅ F.map f ≫ app b` for each 1-morphism
   `f : a ⟶ b`.
 
-Using these, we define three `CategoryStruct` (scoped) instances on `B ⥤ᴸ C`, in the
-`Lax.LaxTrans`, `Lax.Oplax`, and `Lax.StrongTrans` namespaces. The arrows in these
-CategoryStruct's are given by lax transformations, oplax transformations, and strong
+Using these, we define three (scoped) `CategoryStruct` instances on `B ⥤ᴸ C`, in the
+`Lax.LaxTrans`, `Lax.OplaxTrans`, and `Lax.StrongTrans` namespaces. The arrows in these
+`CategoryStruct` instances are given by lax transformations, oplax transformations, and strong
 transformations respectively.
 
 We also provide API for going between lax transformations and strong transformations:
-* `Lax.StrongCore F G`: a structure on a lax transformation between lax functors that
-promotes it to a strong transformation.
-* `Lax.mkOfLax η η'`: given an lax transformation `η` such that each component
+* `LaxTrans.StrongCore η`: a structure on a lax transformation between lax functors that
+  promotes it to a strong transformation.
+* `StrongTrans.mkOfLax η η'`: given a lax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfLax` gives the corresponding strong transformation.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
-section 4.2.
+  section 4.2.
 
 -/
 
@@ -189,7 +190,7 @@ end LaxTrans
 /-- If `η` is an oplax transformation between `F` and `G`, we have a 1-morphism
 `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
 `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism `f : a ⟶ b`.
-These 2-morphisms satisfies the naturality condition, and preserve the identities and
+These 2-morphisms satisfy the naturality condition, and preserve the identities and
 the compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
 structure OplaxTrans (F G : B ⥤ᴸ C) where
@@ -224,7 +225,7 @@ def id : OplaxTrans F F where
   app a := 𝟙 (F.obj a)
   naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 
-instance : Inhabited (OplaxTrans F F ) :=
+instance : Inhabited (OplaxTrans F F) :=
   ⟨id F⟩
 
 /-- Auxiliary definition for `vComp`. -/
@@ -313,7 +314,7 @@ that is "natural up to 2-isomorphisms".
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : app a ≫ G.map f ≅ F.map f ≫ app b` for each 1-morphism
-`f : a ⟶ b`.
+  `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
@@ -341,9 +342,9 @@ attribute [nolint docBlame] CategoryTheory.Lax.StrongTrans.app
 attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
   StrongTrans.naturality_id StrongTrans.naturality_comp
 
-/-- A structure on an lax transformation that promotes it to a strong transformation.
+/-- A structure on a lax transformation that promotes it to a strong transformation.
 
-See `Pseudofunctor.StrongTrans.mkOfLax`. -/
+See `StrongTrans.mkOfLax`. -/
 structure LaxTrans.StrongCore {F G : B ⥤ᴸ C} (η : F ⟶ G) where
   /-- The underlying 2-isomorphisms of the naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : η.app a ≫ G.map f ≅ F.map f ≫ η.app b
@@ -360,14 +361,14 @@ def toLax {F G : B ⥤ᴸ C} (η : StrongTrans F G) : LaxTrans F G where
   app := η.app
   naturality f := (η.naturality f).hom
 
-/-- Construct a strong natural transformation from an lax natural transformation whose
+/-- Construct a strong natural transformation from a lax natural transformation whose
 naturality 2-morphism is an isomorphism. -/
 def mkOfLax {F G : B ⥤ᴸ C} (η : LaxTrans F G) (η' : LaxTrans.StrongCore η) :
     StrongTrans F G where
   app := η.app
   naturality := η'.naturality
 
-/-- Construct a strong natural transformation from an lax natural transformation whose
+/-- Construct a strong natural transformation from a lax natural transformation whose
 naturality 2-morphism is an isomorphism. -/
 noncomputable def mkOfLax' {F G : B ⥤ᴸ C} (η : LaxTrans F G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongTrans F G where

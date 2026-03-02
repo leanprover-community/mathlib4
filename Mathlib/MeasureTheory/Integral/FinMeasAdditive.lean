@@ -183,7 +183,7 @@ theorem of_measure_le {μ' : Measure α} (h : μ ≤ μ') (hT : DominatedFinMeas
     _ ≤ C * μ'.real s := by
       simp only [measureReal_def]
       gcongr
-      exacts [hμ's.ne, h s]
+      exact hμ's.ne
 
 theorem add_measure_right {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
@@ -197,7 +197,7 @@ theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : Dominated
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
   have h : ∀ s, MeasurableSet s → c • μ s = ∞ → μ s = ∞ := by
     intro s _ hcμs
-    simp only [hc_ne_top, Algebra.id.smul_eq_mul, ENNReal.mul_eq_top, or_false, Ne,
+    simp only [hc_ne_top, smul_eq_mul, ENNReal.mul_eq_top, or_false, Ne,
       false_and] at hcμs
     exact hcμs.2
   refine ⟨hT.1.of_eq_top_imp_eq_top (μ := c • μ) h, fun s hs hμs => ?_⟩

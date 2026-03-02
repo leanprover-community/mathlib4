@@ -28,7 +28,7 @@ This is a special case of the so-called *Kummer's lemma* (see for example [washi
 Theorem 5.36).
 -/
 
-@[expose] public section
+public section
 
 open NumberField Units InfinitePlace nonZeroDivisors Polynomial
 
@@ -99,7 +99,6 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
   replace hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K) := by
     obtain ⟨n, x, hx⟩ := hcong
     exact ⟨n, -η * x, by rw [← mul_assoc, mul_neg, ← neg_mul, ← lambda_sq, hx]⟩
-  have hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have := Units.mem hζ u
   fin_cases this
   · left; rfl
@@ -124,6 +123,7 @@ theorem eq_one_or_neg_one_of_unit_of_congruent
 
 variable (x : 𝓞 K)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `(x : 𝓞 K)`. Then we have that `λ` divides one amongst `x`, `x - 1` and `x + 1`. -/
 lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by

@@ -14,7 +14,7 @@ We prove that `f : X → Π i, E i` is in `Lᵖ` if and only if for all `i`, `f 
 We do the same for `f : X → (E × F)`.
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 

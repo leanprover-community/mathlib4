@@ -36,7 +36,7 @@ Lattice, Congruence
 variable {F α β : Type*} [Lattice α] [Lattice β]
 
 variable (α) in
-/-- An equivalence relation is a congruence relation for the latice structure if it is compatible
+/-- An equivalence relation is a congruence relation for the lattice structure if it is compatible
 with the `inf` and `sup` operations. -/
 structure LatticeCon extends Setoid α where
   inf : ∀ {w x y z}, r w x → r y z → r (w ⊓ y) (x ⊓ z)
@@ -60,6 +60,7 @@ private lemma closed_interval {r : α → α → Prop}
   simpa [sup_eq_right.mpr (le_inf hab hac), sup_eq_left.mpr (inf_le_of_left_le hbd)] using
     ((h₄ (le_trans hab hbd) had).2 : r (a ⊔ b ⊓ c) (d ⊔ b ⊓ c))
 
+set_option backward.privateInPublic true in
 private lemma transitive {r : α → α → Prop}
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
@@ -78,8 +79,10 @@ private lemma transitive {r : α → α → Prop}
         simpa [sup_comm y x, sup_sup_distrib_left y x z, sup_assoc] using
           ((h₄ inf_le_sup (h₂.mp hxy)).2 : r (x ⊓ y ⊔ (y ⊔ z)) (x ⊔ y ⊔ (y ⊔ z)))))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Alternative conditions for a lattice congruence. -/
-def mk' [Lattice α] (r : α → α → Prop) [h₁ : IsRefl α r]
+def mk' (r : α → α → Prop) [h₁ : Std.Refl r]
     (h₂ : ∀ ⦃x y : α⦄, r x y ↔ r (x ⊓ y) (x ⊔ y))
     (h₃ : ∀ ⦃x y z : α⦄, x ≤ y → y ≤ z → r x y → r y z → r x z)
     (h₄ : ∀ ⦃x y t : α⦄, x ≤ y → r x y → r (x ⊓ t) (y ⊓ t) ∧ r (x ⊔ t) (y ⊔ t)) : LatticeCon α where
@@ -113,9 +116,9 @@ open Function
 
 /-- The kernel of a lattice homomorphism as a lattice congruence. -/
 @[simps!]
-def ker [Lattice α] [Lattice β] [LatticeHomClass F α β] (f : F) : LatticeCon α where
+def ker [LatticeHomClass F α β] (f : F) : LatticeCon α where
   toSetoid := Setoid.ker f
-  inf _ _ := by simp_all only [Setoid.ker, onFun, map_inf]
-  sup _ _ := by simp_all only [Setoid.ker, onFun, map_sup]
+  inf _ _ := by simp_all +instances only [Setoid.ker, onFun, map_inf]
+  sup _ _ := by simp_all +instances only [Setoid.ker, onFun, map_sup]
 
 end LatticeCon

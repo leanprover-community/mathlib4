@@ -57,7 +57,7 @@ def exp' (z : ℂ) : CauSeq ℂ (‖·‖) :=
 
 /-- The complex exponential function, defined via its Taylor series -/
 @[pp_nodot]
-def exp (z : ℂ) : ℂ :=
+irreducible_def exp (z : ℂ) : ℂ :=
   CauSeq.lim (exp' z)
 
 /-- scoped notation for the complex exponential function -/
@@ -143,7 +143,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℂ) :
   map_prod (M := Multiplicative ℂ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
-  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _  expMonoidHom _ _
+  @MonoidHom.map_pow (Multiplicative ℂ) ℂ _ _ expMonoidHom _ _
 
 /-- This is a useful version of `exp_nsmul` for q-expansions of modular forms. -/
 lemma exp_nsmul' (x a p : ℂ) (n : ℕ) : exp (a * n * x / p) = exp (a * x / p) ^ n := by
@@ -171,7 +171,7 @@ theorem exp_int_mul (z : ℂ) (n : ℤ) : Complex.exp (n * z) = Complex.exp z ^ 
 
 @[simp]
 theorem exp_conj : exp (conj x) = conj (exp x) := by
-  dsimp [exp]
+  simp only [exp]
   rw [← lim_conj]
   refine congr_arg CauSeq.lim (CauSeq.ext fun _ => ?_)
   dsimp [exp', Function.comp_def, cauSeqConj]
@@ -224,7 +224,7 @@ theorem exp_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
   map_prod (M := Multiplicative ℝ) expMonoidHom f s
 
 lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n :=
-  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _  expMonoidHom _ _
+  @MonoidHom.map_pow (Multiplicative ℝ) ℝ _ _ expMonoidHom _ _
 
 nonrec theorem exp_nat_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n :=
   ofReal_injective (by simp [exp_nat_mul])
@@ -257,6 +257,7 @@ lemma pow_div_factorial_le_exp (hx : 0 ≤ x) (n : ℕ) : x ^ n / n ! ≤ exp x 
         single_le_sum (f := fun k ↦ x ^ k / k !) (fun k _ ↦ by positivity) (self_mem_range_succ n)
     _ ≤ exp x := sum_le_exp_of_nonneg hx _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem quadratic_le_exp_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 1 + x + x ^ 2 / 2 ≤ exp x :=
   calc
     1 + x + x ^ 2 / 2 = ∑ i ∈ range 3, x ^ i / i ! := by
@@ -564,8 +565,6 @@ noncomputable def expNear (n : ℕ) (x r : ℝ) : ℝ :=
 @[simp]
 theorem expNear_zero (x r) : expNear 0 x r = r := by simp [expNear]
 
--- Non-terminal simp: should ac_rfl be considered normalising?
-set_option linter.flexible false in
 @[simp]
 theorem expNear_succ (n x r) : expNear (n + 1) x r = expNear n x (1 + x / (n + 1) * r) := by
   simp [expNear, range_add_one, mul_add, add_left_comm, add_assoc, pow_succ, div_eq_mul_inv,
@@ -581,10 +580,8 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
   · simp [field]
-  · cutsat
+  · lia
 
--- TODO: fix non-terminal simp
-set_option linter.flexible false in
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
     (e : |1 + x / m * a₂ - a₁| ≤ b₁ - |x| / m * b₂)
     (h : |exp x - expNear m x a₂| ≤ |x| ^ m / m.factorial * b₂) :
@@ -609,7 +606,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
   simp
-  field_simp [show (m : ℝ) ≠ 0 by norm_cast; cutsat]
+  field_simp [show (m : ℝ) ≠ 0 by norm_cast; lia]
   simp
 
 theorem exp_approx_start (x a b : ℝ) (h : |exp x - expNear 0 x a| ≤ |x| ^ 0 / Nat.factorial 0 * b) :
@@ -658,6 +655,7 @@ lemma one_sub_lt_exp_neg {x : ℝ} (hx : x ≠ 0) : 1 - x < exp (-x) :=
 lemma one_sub_le_exp_neg (x : ℝ) : 1 - x ≤ exp (-x) :=
   (sub_eq_neg_add _ _).trans_le <| add_one_le_exp _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t / n) ^ n ≤ exp (-t) := by
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp

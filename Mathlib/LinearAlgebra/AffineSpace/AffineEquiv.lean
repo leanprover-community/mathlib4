@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
 /-!
 # Affine equivalences
@@ -171,20 +171,12 @@ def symm (e : P₁ ≃ᵃ[k] P₂) : P₂ ≃ᵃ[k] P₁ where
 theorem toEquiv_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.toEquiv = e.toEquiv.symm :=
   rfl
 
-@[deprecated "use instead `toEquiv_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : e.toEquiv.symm = e.symm.toEquiv :=
-  rfl
-
 @[simp]
 theorem coe_symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv.symm = e.symm :=
   rfl
 
 @[simp]
 theorem linear_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.linear = e.linear.symm :=
-  rfl
-
-@[deprecated "use instead `linear_symm`, in the reverse direction" (since := "2025-06-08")]
-theorem symm_linear (e : P₁ ≃ᵃ[k] P₂) : e.linear.symm = e.symm.linear :=
   rfl
 
 /-- See Note [custom simps projection] -/

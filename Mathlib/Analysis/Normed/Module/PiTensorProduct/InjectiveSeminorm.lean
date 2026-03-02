@@ -59,7 +59,7 @@ space.
 
 * `PiTensorProduct.norm_eval_le_injectiveSeminorm`: The main property of the injective seminorm
   on `⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuous multilinear map `f` from
-`E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
+  `E = Πᵢ Eᵢ` to a normed space `F`, we have `‖f.lift x‖ ≤ ‖f‖ * injectiveSeminorm x `.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
 * `PiTensorProduct.mapLMultilinear_opNorm` : If `F` is a normed vecteor space, then
@@ -154,6 +154,7 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
   simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
     /- If `F` were in `Type (max uι u𝕜 uE)` (which is the type of `⨂[𝕜] i, E i`), then the
@@ -340,6 +341,7 @@ theorem mapL_coe : (mapL f).toLinearMap = map (fun i ↦ (f i).toLinearMap) := b
 theorem mapL_apply (x : ⨂[𝕜] i, E i) : mapL f x = map (fun i ↦ (f i).toLinearMap) x := by
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given submodules `pᵢ ⊆ Eᵢ`, this is the natural map: `⨂[𝕜] i, pᵢ → ⨂[𝕜] i, Eᵢ`.
 This is the continuous version of `PiTensorProduct.mapIncl`.
 -/
@@ -427,7 +429,7 @@ theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
   simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply]
   refine le_trans (injectiveSeminorm_tprod_le (fun i ↦ (f i) (m i))) ?_
   rw [← Finset.prod_mul_distrib]
-  exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _ )
+  exact Finset.prod_le_prod (fun _ _ ↦ norm_nonneg _) (fun _ _ ↦ ContinuousLinearMap.le_opNorm _ _)
 
 variable (𝕜 E E')
 

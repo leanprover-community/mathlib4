@@ -496,6 +496,7 @@ lemma mk_eq_zero_of_den (f : NumDenSameDeg 𝒜 x) (h : f.den = 0) : mk f = 0 :=
   have := subsingleton 𝒜 (h ▸ f.den_mem)
   exact Subsingleton.elim _ _
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝒜 x) in
 /-- The map from `𝒜 0` to the degree `0` part of `𝒜ₓ` sending `f ↦ f/1`. -/
 def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
@@ -675,6 +676,7 @@ variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι]
 variable (𝒜 : ι → σ) [GradedRing 𝒜]
 variable {e : ι} {f : A} {g : A} (hg : g ∈ 𝒜 e) {x : A} (hx : x = f * g)
 
+set_option backward.privateInPublic true in
 /-- Given `f ∣ x`, this is the map `A_{(f)} → A_f → A_x`. We will lift this to a map
 `A_{(f)} → A_{(x)}` in `awayMap`. -/
 private def awayMapAux (hx : f ∣ x) : Away 𝒜 f →+* Localization.Away x :=
@@ -682,6 +684,8 @@ private def awayMapAux (hx : f ∣ x) : Away 𝒜 f →+* Localization.Away x :=
     (isUnit_of_dvd_unit (map_dvd _ hx) (IsLocalization.Away.algebraMap_isUnit x))).comp
       (algebraMap (Away 𝒜 f) (Localization.Away f))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma awayMapAux_mk (n a i hi) :
     awayMapAux 𝒜 ⟨_, hx⟩ (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩) =
       Localization.mk (a * g ^ i) ⟨x ^ i, (Submonoid.mem_powers_iff _ _).mpr ⟨i, rfl⟩⟩ := by
@@ -695,6 +699,8 @@ lemma awayMapAux_mk (n a i hi) :
   subst hx
   rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 include hg in
 lemma range_awayMapAux_subset :
     Set.range (awayMapAux 𝒜 (f := f) ⟨_, hx⟩) ⊆ Set.range (val (𝒜 := 𝒜)) := by
@@ -708,6 +714,8 @@ lemma range_awayMapAux_subset :
     apply SetLike.mul_mem_graded hb'
     exact SetLike.pow_mem_graded _ hg
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Given `x = f * g` with `g` homogeneous of positive degree,
 this is the map `A_{(f)} → A_{(x)}` taking `a/f^i` to `ag^i/(fg)^i`. -/
 def awayMap : Away 𝒜 f →+* Away 𝒜 x := by
@@ -717,6 +725,8 @@ def awayMap : Away 𝒜 f →+* Away 𝒜 x := by
     (awayMapAux 𝒜 (f := f) ⟨_, hx⟩).rangeRestrict
   exact range_awayMapAux_subset 𝒜 hg hx
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma val_awayMap_eq_aux (a) : (awayMap 𝒜 hg hx a).val = awayMapAux 𝒜 ⟨_, hx⟩ a := by
   let e := RingEquiv.ofLeftInverse (f := algebraMap (Away 𝒜 x) (Localization.Away x))
     (h := (val_injective _).hasLeftInverse.choose_spec)
@@ -734,7 +744,7 @@ lemma awayMap_fromZeroRingHom (a) :
     awayMap 𝒜 hg hx (fromZeroRingHom 𝒜 _ a) = fromZeroRingHom 𝒜 _ a := by
   ext
   simp only [fromZeroRingHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    val_awayMap, val_mk, SetLike.GradeZero.coe_one]
+    val_awayMap, val_mk]
   convert IsLocalization.lift_eq _ _
 
 lemma val_awayMap_mk (n a i hi) : (awayMap 𝒜 hg hx (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩)).val =
@@ -795,7 +805,7 @@ theorem Away.isLocalization_mul (hd : d ≠ 0) :
     letI := (awayMap 𝒜 hg hx).toAlgebra
     IsLocalization.Away (isLocalizationElem hf hg) (Away 𝒜 x) := by
   letI := (awayMap 𝒜 hg hx).toAlgebra
-  constructor
+  constructor; constructor
   · rintro ⟨r, n, rfl⟩
     rw [map_pow, RingHom.algebraMap_toAlgebra]
     let z : Away 𝒜 x := Away.mk 𝒜 (hx ▸ SetLike.mul_mem_graded hf hg) (d + e)
@@ -844,6 +854,7 @@ end isLocalization
 
 section span
 
+set_option backward.isDefEq.respectTransparency false in
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
 /--
 Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,

@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.EuclideanDomain.Field
 public import Mathlib.Algebra.Polynomial.Module.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 public import Mathlib.Analysis.Calculus.MeanValue
@@ -165,6 +165,7 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
   field_simp
   module
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
 Version for arbitrary sets -/
@@ -235,6 +236,7 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ �
   congr 1
   simp [field, Nat.factorial_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Taylor's theorem** using little-o notation. -/
 theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :
@@ -254,7 +256,7 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     · simp
     · intro x hx
       refine HasDerivWithinAt.sub ?_ (hasDerivAt_taylorWithinEval_succ f n).hasDerivWithinAt
-      exact (hf.differentiableOn le_add_self _ hx).hasDerivWithinAt
+      exact (hf.differentiableOn (by simp) _ hx).hasDerivWithinAt
 
 /-- **Taylor's theorem** as a limit. -/
 theorem taylor_tendsto {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
@@ -316,7 +318,8 @@ set_option linter.unusedSimpArgs false in
 
 We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x₀ x` and
 `n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
-that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
+that
+$$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
 theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
@@ -341,6 +344,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
   rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
   simp [field, xy_ne y hy, Nat.factorial]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A corollary of Taylor's theorem with the Lagrange form of the remainder. -/
 lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
     (hf : ContDiffOn ℝ (n + 1) f (Icc x₀ x)) :
@@ -361,7 +365,8 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc x₀ x` and
 `n+1`-times differentiable on the open set `Ioo x₀ x`. Then there exists an `x' ∈ Ioo x₀ x` such
-that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
+that
+$$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x')^n (x-x₀)}{n!},$$
 where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
 derivative. -/
 theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x₀ < x)
@@ -378,6 +383,7 @@ theorem taylor_mean_remainder_cauchy {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} 
   rw [h]
   simp [field]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Taylor's theorem** with a polynomial bound on the remainder
 
 We assume that `f` is `n+1`-times continuously differentiable on the closed set `Icc a b`.

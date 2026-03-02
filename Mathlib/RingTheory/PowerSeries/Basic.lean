@@ -116,6 +116,7 @@ instance [Nontrivial R] : Nontrivial R⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R A⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
@@ -124,6 +125,7 @@ instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module 
     [IsScalarTower R S A] : IsScalarTower R S A⟦X⟧ :=
   Pi.isScalarTower
 
+set_option backward.isDefEq.respectTransparency false in
 instance {A} [Semiring A] [CommSemiring R] [Algebra R A] : Algebra R A⟦X⟧ := by
   dsimp only [PowerSeries]
   infer_instance
@@ -227,6 +229,7 @@ theorem coeff_zero_eq_constantCoeff : ⇑(coeff (R := R) 0) = constantCoeff := b
 theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff 0 φ = constantCoeff φ := by
   rw [coeff_zero_eq_constantCoeff]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem monomial_zero_eq_C : ⇑(monomial (R := R) 0) = C := by
   -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
@@ -265,6 +268,7 @@ theorem X_eq : (X : R⟦X⟧) = monomial 1 1 :=
 theorem coeff_X (n : ℕ) : coeff n (X : R⟦X⟧) = if n = 1 then 1 else 0 := by
   rw [X_eq, coeff_monomial]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_zero_X : coeff 0 (X : R⟦X⟧) = 0 := by
   rw [coeff, Finsupp.single_zero, X, MvPowerSeries.coeff_zero_X]
@@ -322,12 +326,14 @@ theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C a * f := by
   ext
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_succ_mul_X (n : ℕ) (φ : R⟦X⟧) : coeff (n + 1) (φ * X) = coeff n φ := by
   simp only [coeff, Finsupp.single_add]
   convert φ.coeff_add_mul_monomial (single () n) (single () 1) _
   rw [mul_one]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coeff_succ_X_mul (n : ℕ) (φ : R⟦X⟧) : coeff (n + 1) (X * φ) = coeff n φ := by
   simp only [coeff, Finsupp.single_add, add_comm n 1]
@@ -560,12 +566,35 @@ theorem X_dvd_iff {φ : R⟦X⟧} : (X : R⟦X⟧) ∣ φ ↔ constantCoeff φ =
 
 end Semiring
 
+section toSubring
+
+variable [Ring R] (p : PowerSeries R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+/-- Given a formal power series `p` and a subring `T` that contains the
+ coefficients of `p`, return the corresponding formal power series
+ whose coefficients are in `T`. -/
+def toSubring : PowerSeries T := mk fun n => ⟨p.coeff n, hp n⟩
+
+@[simp]
+theorem coeff_toSubring {n : ℕ} : (p.toSubring T hp).coeff n = p.coeff n := by
+  rw [toSubring, coeff_mk]
+
+@[simp]
+theorem constantCoeff_toSubring : (p.toSubring T hp).constantCoeff = p.constantCoeff :=
+  coeff_zero_eq_constantCoeff_apply p
+
+@[simp]
+theorem map_toSubring : (p.toSubring T hp).map T.subtype = p := ext fun n => by simp
+
+end toSubring
+
 section CommSemiring
 
 variable [CommSemiring R]
 
 open Finset Nat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The ring homomorphism taking a power series `f(X)` to `f(aX)`. -/
 noncomputable def rescale (a : R) : R⟦X⟧ →+* R⟦X⟧ where
   toFun f := PowerSeries.mk fun n => a ^ n * PowerSeries.coeff n f
@@ -632,6 +661,7 @@ open Finset.HasAntidiagonal Finset
 
 variable {R : Type*} [CommSemiring R] {ι : Type*}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff (l i) (f i) := by
@@ -671,20 +701,21 @@ lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff 1 (φ * ψ) =
     mul_comm, add_comm]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- First coefficient of the `n`-th power of a power series. -/
 lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
     coeff 1 (φ ^ n) = n * coeff 1 φ * (constantCoeff φ) ^ (n - 1) := by
   rcases Nat.eq_zero_or_pos n with (rfl | hn)
   · simp
   induction n with
-  | zero => cutsat
+  | zero => lia
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
       rw [h₁, coeff_mul, h₂, Finset.sum_insert, Finset.sum_singleton]
       · simp only [coeff_zero_eq_constantCoeff, map_pow, Nat.cast_add, Nat.cast_one,
           add_tsub_cancel_right]
-        have h₀ : n' = 0 ∨ 1 ≤ n' := by omega
+        have h₀ : n' = 0 ∨ 1 ≤ n' := by lia
         rcases h₀ with h' | h'
         · by_contra h''
           rw [h'] at h''
@@ -707,6 +738,7 @@ section CommRing
 
 variable {A : Type*} [CommRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_isField : ¬IsField A⟦X⟧ := by
   by_cases hA : Subsingleton A
   · exact not_isField_of_subsingleton _
@@ -726,6 +758,7 @@ theorem rescale_X (a : A) : rescale a X = C a * X := by
   simp only [coeff_rescale, coeff_C_mul, coeff_X]
   split_ifs with h <;> simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem rescale_neg_one_X : rescale (-1 : A) X = -X := by
   rw [rescale_X, map_neg, map_one, neg_one_mul]
 
@@ -749,6 +782,7 @@ theorem C_eq_algebraMap {r : R} : C r = (algebraMap R R⟦X⟧) r :=
 theorem algebraMap_apply {r : R} : algebraMap R A⟦X⟧ r = C (algebraMap R A r) :=
   MvPowerSeries.algebraMap_apply
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
   { inferInstanceAs <| Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with }
 
@@ -871,6 +905,7 @@ theorem coeToPowerSeries.ringHom_apply : coeToPowerSeries.ringHom φ = φ :=
 theorem coe_pow (n : ℕ) : ((φ ^ n : R[X]) : PowerSeries R) = (φ : PowerSeries R) ^ n :=
   coeToPowerSeries.ringHom.map_pow _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eval₂_C_X_eq_coe : φ.eval₂ PowerSeries.C PowerSeries.X = ↑φ := by
   nth_rw 2 [← eval₂_C_X (p := φ)]
   rw [← coeToPowerSeries.ringHom_apply, eval₂_eq_sum_range, eval₂_eq_sum_range, map_sum]
@@ -885,6 +920,7 @@ section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
   induction f using MvPolynomial.induction_on' with

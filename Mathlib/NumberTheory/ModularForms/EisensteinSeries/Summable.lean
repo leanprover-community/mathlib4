@@ -23,7 +23,7 @@ noncomputable section
 
 open Complex UpperHalfPlane Set Finset Topology Filter Asymptotics
 
-open scoped UpperHalfPlane Topology BigOperators Nat
+open scoped UpperHalfPlane Topology Nat
 
 variable (z : ℍ)
 
@@ -94,7 +94,7 @@ lemma r_pos : 0 < r z := by
 lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (hz : z ∈ verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z := by
   apply min_le_min hz.2
-  rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
+  gcongr
   simp only [r1_eq, div_pow, one_div]
   rw [inv_le_inv₀ (by positivity) (by positivity), add_le_add_iff_right, ← even_two.pow_abs]
   gcongr
@@ -114,6 +114,7 @@ lemma auxbound2 (c : ℝ) {d : ℝ} (hd : 1 ≤ d ^ 2) : r z ≤ ‖c * (z : ℂ
   simpa only [r, norm_def, normSq_apply, add_re, re_ofReal_mul, coe_re, ofReal_re, ← pow_two,
     add_im, im_ofReal_mul, coe_im, ofReal_im, add_zero, min_le_iff] using Or.inr H1
 
+set_option backward.isDefEq.respectTransparency false in
 lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     1 ≤ (x 0 / ‖x‖) ^ 2 ∨ 1 ≤ (x 1 / ‖x‖) ^ 2 := by
   refine (max_choice (x 0).natAbs (x 1).natAbs).imp (fun H0 ↦ ?_) (fun H1 ↦ ?_)
@@ -138,6 +139,7 @@ lemma r_mul_max_le {x : Fin 2 → ℤ} (hx : x ≠ 0) : r z * ‖x‖ ≤ ‖x 0
     · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound1 z (x 1 / ‖x‖) H1
     · simpa only [norm_eq_max_natAbs, ofReal_div, ofReal_intCast] using auxbound2 z (x 0 / ‖x‖) H2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Upper bound for the summand `|c * z + d| ^ (-k)`, as a product of a function of `z` and a
 function of `c, d`. -/
 lemma summand_bound {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ) :
@@ -159,12 +161,17 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
   exact Real.rpow_le_rpow_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
     (neg_nonpos.mpr hk)
 
+lemma linear_isTheta_right_add (c e : ℤ) (z : ℂ) :
+    (fun d : ℤ ↦ c * z + d + e) =Θ[cofinite] fun n ↦ (n : ℝ) := by
+  apply IsTheta.add_isLittleO <;>
+  [refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real); skip] <;>
+  simpa [-Int.cofinite_eq] using
+    .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real
+
+@[deprecated linear_isTheta_right_add (since := "2025-12-27")]
 lemma linear_isTheta_right (c : ℤ) (z : ℂ) :
     (fun (d : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
-  refine Asymptotics.IsLittleO.add_isTheta ?_ (Int.cast_complex_isTheta_cast_real )
-  rw [isLittleO_const_left]
-  exact Or.inr
-    (tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real)
+  simpa using linear_isTheta_right_add c 0 z
 
 lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)) =Θ[cofinite] fun n ↦ (n : ℝ) := by
@@ -174,16 +181,31 @@ lemma linear_isTheta_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
   · simp only [isLittleO_const_left, Int.cast_eq_zero,
       tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding Int.isClosedEmbedding_coe_real, or_true]
 
+lemma linear_inv_isBigO_right_add (c e : ℤ) (z : ℂ) :
+    (fun (d : ℤ) ↦ (c * z + d + e)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
+  (linear_isTheta_right_add c e z).inv.isBigO
+
 lemma linear_inv_isBigO_right (c : ℤ) (z : ℂ) :
-    (fun (d : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
-  (linear_isTheta_right c z).inv.isBigO
+    (fun (d : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ := by
+  grind [add_zero, (linear_isTheta_right_add c 0 z).inv.isBigO]
 
 lemma linear_inv_isBigO_left (d : ℤ) {z : ℂ} (hz : z ≠ 0) :
     (fun (c : ℤ) ↦ (c * z + d)⁻¹) =O[cofinite] fun n ↦ (n : ℝ)⁻¹ :=
   (linear_isTheta_left d hz).inv.isBigO
 
+lemma tendsto_zero_inv_linear (z : ℂ) (b : ℤ) :
+    Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z + d)) atTop (𝓝 0) := by
+  apply IsBigO.trans_tendsto ?_ tendsto_inv_atTop_nhds_zero_nat (F'' := ℝ)
+  have := (isBigO_sup.mp (Int.cofinite_eq ▸ linear_inv_isBigO_right b z)).2
+  simpa [← Nat.map_cast_int_atTop, isBigO_map]
+
+lemma tendsto_zero_inv_linear_sub (z : ℂ) (b : ℤ) :
+    Tendsto (fun d : ℕ ↦ 1 / ((b : ℂ) * z - d)) atTop (𝓝 0) := by
+  grind [neg_zero, (tendsto_zero_inv_linear z (-b)).neg]
+
 end bounding_functions
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `ℤ ^ 2 → ℝ` given by `x ↦ ‖x‖ ^ (-k)` is summable if `2 < k`. We prove this by
 splitting into boxes using `Finset.box`. -/
 lemma summable_one_div_norm_rpow {k : ℝ} (hk : 2 < k) :
@@ -216,23 +238,68 @@ lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpa
 lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun d : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by cutsat)
-  simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
-  apply (linear_inv_isBigO_right c z).abs_right.pow
+  lift k to ℕ using by lia
+  grind [(linear_inv_isBigO_right c z).abs_right.pow k,
+    zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
 
 /-- For `z : ℂ` the function `c : ℤ ↦ ((c z + d) ^ k)⁻¹` is Summable for `2 ≤ k`. -/
 lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun c : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by cutsat)
+  lift k to ℕ using (by lia)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply (linear_inv_isBigO_left d hz).abs_right.pow
 
 lemma summable_linear_sub_mul_linear_add (z : ℂ) (c₁ c₂ : ℤ) :
-    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹  := by
+    Summable fun n : ℤ ↦ ((c₁ * z - n) * (c₂ * z + n))⁻¹ := by
+  apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
+  simpa [pow_two] using (linear_inv_isBigO_right c₂ z).mul
+      (linear_inv_isBigO_right c₁ z).comp_neg_int
+
+lemma summable_linear_right_add_one_mul_linear_right (z : ℂ) (c₁ c₂ : ℤ) :
+    Summable fun n : ℤ ↦ ((c₁ * z + n + 1) * (c₂ * z + n))⁻¹ := by
+  apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
+  simpa [pow_two] using (linear_inv_isBigO_right c₂ z).mul
+    (linear_inv_isBigO_right_add c₁ 1 z)
+
+lemma summable_linear_left_mul_linear_left {z : ℂ} (hz : z ≠ 0) (c₁ c₂ : ℤ) :
+    Summable fun n : ℤ ↦ ((n * z + c₁) * (n * z + c₂))⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := 2) (by norm_cast)
   simp only [Real.rpow_two, abs_mul_abs_self, pow_two]
-  simpa [sub_eq_add_neg] using (linear_inv_isBigO_right c₂ z).mul
-    (linear_inv_isBigO_right c₁ z).comp_neg_int
+  simpa using (linear_inv_isBigO_left c₂ hz).mul (linear_inv_isBigO_left c₁ hz)
+
+private lemma aux_isBigO_linear (z : ℍ) (a b : ℤ) :
+    (fun (m : Fin 2 → ℤ) ↦ ((m 0 + a : ℂ) * z + m 1 + b)⁻¹) =O[cofinite]
+    fun (m : Fin 2 → ℤ) ↦ ‖![m 0 + a, m 1 + b]‖⁻¹ := by
+  rw [Asymptotics.isBigO_iff]
+  have h0 : z ∈ verticalStrip |z.re| (z.im) := by simp [mem_verticalStrip_iff]
+  use ‖r ⟨⟨|z.re|, z.im⟩, z.2⟩‖⁻¹
+  filter_upwards with m
+  apply le_trans (by simpa [Real.rpow_neg_one, add_assoc] using
+    summand_bound_of_mem_verticalStrip zero_le_one ![m 0 + a, m 1 + b] z.2 h0)
+  simp [abs_of_pos (r_pos _)]
+
+lemma isLittleO_const_left_of_properSpace_of_discreteTopology
+    {α : Type*} (a : α) [NormedAddCommGroup α] [DiscreteTopology α]
+    [ProperSpace α] : (fun _ : α ↦ a) =o[cofinite] (‖·‖) := by
+  simpa [isLittleO_const_left, Function.comp_def] using
+    .inr <| tendsto_norm_comp_cofinite_atTop_of_isClosedEmbedding IsClosedEmbedding.id
+
+lemma vec_add_const_isTheta (a b : ℤ) :
+    (fun (m : Fin 2 → ℤ) => ‖![m 0 + a, m 1 + b]‖⁻¹) =Θ[cofinite] (fun m => ‖m‖⁻¹) := by
+  have (x : Fin 2 → ℤ) : ![x 0 + a, x 1 + b] = x + ![a, b] := List.ofFn_inj.mp rfl
+  simpa only [isTheta_inv, isTheta_norm_left, this] using (IsTheta.add_isLittleO
+  (by rw [← isTheta_norm_left]) (isLittleO_const_left_of_properSpace_of_discreteTopology ![a, b]))
+
+lemma isBigO_linear_add_const_vec (z : ℍ) (a b : ℤ) :
+    (fun m : (Fin 2 → ℤ) => (((m 0 : ℂ) + a) * z + m 1 + b)⁻¹) =O[cofinite] (fun m => ‖m‖⁻¹) :=
+  (aux_isBigO_linear z a b).trans (vec_add_const_isTheta a b).isBigO
+
+/-- If a function `ℤ² → ℂ` is `O (‖n‖ ^ a)⁻¹` for `2 < a`, then the function is summable. -/
+lemma summable_of_isBigO_rpow_norm {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
+    {f : (Fin 2 → ℤ) → E} {a : ℝ} (hab : 2 < a)
+    (hf : f =O[cofinite] fun n ↦ (‖n‖ ^ a)⁻¹) : Summable f :=
+  summable_of_isBigO
+    ((summable_one_div_norm_rpow hab).congr fun b ↦ Real.rpow_neg (norm_nonneg b) a) hf
 
 end EisensteinSeries

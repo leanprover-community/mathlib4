@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Algebra.CharP.IntermediateField
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
 
@@ -99,6 +100,7 @@ instance perfectClosure.isPurelyInseparable : IsPurelyInseparable F (perfectClos
 instance perfectClosure.isAlgebraic : Algebra.IsAlgebraic F (perfectClosure F E) :=
   IsPurelyInseparable.isAlgebraic F _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is separable, then the perfect closure of `F` in `E` is equal to `F`. Note that
   the converse is not necessarily true (see https://math.stackexchange.com/a/3009197)
   even when `E / F` is algebraic. -/
@@ -174,6 +176,7 @@ alias AlgEquiv.perfectClosure := perfectClosure.algEquivOfAlgEquiv
 
 end map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a perfect field of exponential characteristic `p`, then the (relative) perfect closure
 `perfectClosure F E` is perfect. -/
 instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
@@ -186,6 +189,7 @@ instance perfectClosure.perfectRing (p : ℕ) [ExpChar E p]
   exact ⟨⟨x', (mem_perfectClosure_iff_pow_mem p).2 ⟨n + 1, y, hy⟩⟩, by
     simp_rw [frobenius_def, SubmonoidClass.mk_pow, hx]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a perfect field, then the (relative) perfect closure
 `perfectClosure F E` is perfect. -/
 instance perfectClosure.perfectField [PerfectField E] : PerfectField (perfectClosure F E) :=
@@ -228,6 +232,7 @@ instance isPurelyInseparable_iSup {ι : Sort*} {t : ι → IntermediateField F E
   simp_rw [← le_perfectClosure_iff] at h ⊢
   exact iSup_le h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F` is a field of exponential characteristic `q`, `F(S) / F` is separable, then
 `F(S) = F(S ^ (q ^ n))` for any natural number `n`. -/
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
@@ -243,12 +248,12 @@ theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable (S : Set E)
   haveI : Algebra.IsSeparable M (extendScalars hi) :=
     Algebra.isSeparable_tower_top_of_isSeparable F M L
   haveI : IsPurelyInseparable M (extendScalars hi) := by
-    haveI := expChar_of_injective_algebraMap (algebraMap F M).injective q
     rw [extendScalars_adjoin hi, isPurelyInseparable_adjoin_iff_pow_mem M _ q]
     exact fun x hx ↦ ⟨n, ⟨x ^ q ^ n, subset_adjoin F _ ⟨x, hx, rfl⟩⟩, rfl⟩
   simpa only [extendScalars_restrictScalars, restrictScalars_bot_eq_self] using congr_arg
     (restrictScalars F) (extendScalars hi).eq_bot_of_isPurelyInseparable_of_isSeparable
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a separable field extension of exponential characteristic `q`, then
 `F(S) = F(S ^ (q ^ n))` for any subset `S` of `E` and any natural number `n`. -/
 theorem adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' [Algebra.IsSeparable F E] (S : Set E)
@@ -282,7 +287,6 @@ theorem adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable {a : E} (ha : IsS
 `F⟮a⟯ = F⟮a ^ q ^ n⟯` for any subset `a : E` and any natural number `n`. -/
 theorem adjoin_simple_eq_adjoin_pow_expChar_pow_of_isSeparable' [Algebra.IsSeparable F E] (a : E)
     (q : ℕ) [ExpChar F q] (n : ℕ) : F⟮a⟯ = F⟮a ^ q ^ n⟯ := by
-  haveI := Algebra.isSeparable_tower_bot_of_isSeparable F F⟮a⟯ E
   simpa using adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable F E {a} q n
 
 /-- If `F` is a field of exponential characteristic `q`, `a : E` is separable over `F`, then
@@ -342,6 +346,7 @@ private theorem LinearIndependent.map_pow_expChar_pow_of_fd_isSeparable
   simp_rw [Function.comp_apply, b]
   rw [Basis.extend_apply_self]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E / F` is a separable extension of exponential characteristic `q`, if `{ u_i }` is a
 family of elements of `E` which is `F`-linearly independent, then `{ u_i ^ (q ^ n) }` is also
 `F`-linearly independent for any natural number `n`. -/
@@ -353,7 +358,6 @@ theorem LinearIndependent.map_pow_expChar_pow_of_isSeparable [Algebra.IsSeparabl
   let E' := adjoin F (s.image v : Set E)
   haveI : FiniteDimensional F E' := finiteDimensional_adjoin
     fun x _ ↦ Algebra.IsIntegral.isIntegral x
-  haveI : Algebra.IsSeparable F E' := Algebra.isSeparable_tower_bot_of_isSeparable F E' E
   let v' (i : s) : E' := ⟨v i.1, subset_adjoin F _ (Finset.mem_image.2 ⟨i.1, i.2, rfl⟩)⟩
   have h' : LinearIndependent F v' := (h s).of_comp E'.val.toLinearMap
   exact (h'.map_pow_expChar_pow_of_fd_isSeparable q n).map'

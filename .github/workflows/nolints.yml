@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'leanprover-community/mathlib4'
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Configure Lean
-        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
+        uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
         with:
           auto-config: false
           use-github-cache: false
@@ -23,19 +23,30 @@ jobs:
       - name: update nolints.json
         shell: bash
         run: |
-          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --update Mathlib
+          env LEAN_ABORT_ON_PANIC=1 lake exe runLinter --trace --update Mathlib
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
         with:
-          token: "${{ secrets.UPDATE_NOLINTS_TOKEN }}"
-          author: "leanprover-community-bot <leanprover.community@gmail.com>"
+          app-id: ${{ secrets.MATHLIB_NOLINTS_APP_ID }}
+          private-key: ${{ secrets.MATHLIB_NOLINTS_PRIVATE_KEY }}
+
+      # The create-github-app-token README states that this token is masked and will not be logged accidentally.
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
+        with:
+          # this needs to be set, otherwise the last person who edited the `cron` line may get tagged
+          author: "mathlib-nolints[bot] <258989889+mathlib-nolints[bot]@users.noreply.github.com>"
+          token: ${{ steps.app-token.outputs.token }}
           commit-message: "chore(scripts): update nolints.json"
           branch: "nolints"
           base: master
           title: "chore(scripts): update nolints.json"
           body: |
             I am happy to remove some nolints for you!
+
+            ---
 
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"

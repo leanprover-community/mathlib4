@@ -50,7 +50,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 ## Future work
 * TODO: coimages, and abelian categories.
-* TODO: connect this with existing working in the group theory and ring theory libraries.
+* TODO: connect this with existing work in the group theory and ring theory libraries.
 
 -/
 
@@ -59,7 +59,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 
 noncomputable section
 
-universe v u
+universe w v u
 
 open CategoryTheory
 
@@ -146,6 +146,7 @@ def ofIsoComp {X' : C} (g : X' ⟶ X) [IsIso g] (F : MonoFactorisation (g ≫ f)
   m := F.m
   e := inv g ≫ F.e
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are isomorphic arrows, then a mono factorisation of `f`
 gives a mono factorisation of `g` -/
 @[simps]
@@ -180,6 +181,11 @@ def copy (F : MonoFactorisation f) (m : F.I ⟶ Y) (e : X ⟶ F.I)
   m := m
   e := e
   m_mono := by rw [hm]; infer_instance
+
+@[simp]
+lemma fac_apply {F G : C ⥤ Type w} {f : F ⟶ G} {X : C}
+    (H : MonoFactorisation f) (x : F.obj X) : H.m.app X (H.e.app X x) = f.app X x := by
+  simp [← types_comp_apply, ← NatTrans.comp_app]
 
 end MonoFactorisation
 
@@ -233,6 +239,7 @@ theorem e_isoExt_hom : F.e ≫ (isoExt hF hF').hom = F'.e := by simp
 
 theorem e_isoExt_inv : F'.e ≫ (isoExt hF hF').inv = F.e := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are isomorphic arrows, then a mono factorisation of `f` that is an image
 gives a mono factorisation of `g` that is an image -/
 @[simps]
@@ -463,6 +470,7 @@ theorem imageMonoIsoSource_hom_self [Mono f] : (imageMonoIsoSource f).hom ≫ f 
   simp only [← imageMonoIsoSource_inv_ι f]
   rw [← Category.assoc, Iso.hom_inv_id, Category.id_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 -- This is the proof that `factorThruImage f` is an epimorphism
 -- from https://en.wikipedia.org/wiki/Image_%28category_theory%29, which is in turn taken from:
 -- Mitchell, Barry (1965), Theory of categories, MR 0202787, p.12, Proposition 10.1
@@ -521,7 +529,7 @@ def image.eqToHom (h : f = f') : image f ⟶ image f' :=
     { I := image f'
       m := image.ι f'
       e := factorThruImage f'
-      fac := by rw [h]; simp only [image.fac]}
+      fac := by rw [h]; simp only [image.fac] }
 
 instance (h : f = f') : IsIso (image.eqToHom h) :=
   ⟨⟨image.eqToHom h.symm,
@@ -597,6 +605,7 @@ instance image.preComp_epi_of_epi [HasImage g] [HasImage (f ≫ g)] [Epi f] :
   apply @epi_of_epi_fac _ _ _ _ _ _ _ _ ?_ (image.factorThruImage_preComp _ _)
   exact epi_comp _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation g).isoComp f
@@ -604,7 +613,7 @@ instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
                    lift_fac := fun F' => by
                     dsimp
                     have : (MonoFactorisation.ofIsoComp f F').m = F'.m := rfl
-                    rw [← this,image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
+                    rw [← this, image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
 
 /-- `image.preComp f g` is an isomorphism when `f` is an isomorphism
 (we need `C` to have equalizers to prove this).
@@ -620,6 +629,7 @@ instance image.isIso_precomp_iso (f : X ⟶ Y) [IsIso f] [HasImage g] : IsIso (i
         ext
         simp [image.preComp]⟩⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- Note that in general we don't have the other comparison map you might expect
 -- `image f ⟶ image (f ≫ g)`.
 instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
@@ -629,26 +639,29 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
       { lift := fun F' => image.lift F'.ofCompIso
         lift_fac := fun F' => by
           rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
-            ← IsIso.inv_hom_id g,← Category.assoc]
+            ← IsIso.inv_hom_id g, ← Category.assoc]
           refine congrArg (· ≫ g) ?_
           have : (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m) ≫ inv g =
             image.lift (MonoFactorisation.ofCompIso F') ≫
             ((MonoFactorisation.ofCompIso F').m) := by
               simp only [MonoFactorisation.ofCompIso_I, Category.assoc,
                 MonoFactorisation.ofCompIso_m]
-          rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'),image.as_ι] }}
+          rw [this, image.lift_fac (MonoFactorisation.ofCompIso F'), image.as_ι] } }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Postcomposing by an isomorphism induces an isomorphism on the image. -/
 def image.compIso [HasImage f] [IsIso g] : image f ≅ image (f ≫ g) where
   hom := image.lift (Image.monoFactorisation (f ≫ g)).ofCompIso
   inv := image.lift ((Image.monoFactorisation f).compMono g)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem image.compIso_hom_comp_image_ι [HasImage f] [IsIso g] :
     (image.compIso f g).hom ≫ image.ι (f ≫ g) = image.ι f ≫ g := by
   ext
   simp [image.compIso]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem image.compIso_inv_comp_image_ι [HasImage f] [IsIso g] :
     (image.compIso f g).inv ≫ image.ι f = image.ι (f ≫ g) ≫ inv g := by
@@ -687,11 +700,13 @@ instance inhabitedImageMap {f : Arrow C} [HasImage f.hom] : Inhabited (ImageMap 
 
 attribute [reassoc (attr := simp)] ImageMap.map_ι
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ImageMap.factor_map {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
     (m : ImageMap sq) : factorThruImage f.hom ≫ m.map = sq.left ≫ factorThruImage g.hom :=
   (cancel_mono (image.ι g.hom)).1 <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To give an image map for a commutative square with `f` at the top and `g` at the bottom, it
 suffices to give a map between any mono factorisation of `f` and any image factorisation of `g`. -/
 def ImageMap.transport {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq : f ⟶ g)
@@ -721,6 +736,7 @@ def HasImageMap.imageMap {f g : Arrow C} [HasImage f.hom] [HasImage g.hom] (sq :
     [HasImageMap sq] : ImageMap sq :=
   Classical.choice <| @HasImageMap.has_image_map _ _ _ _ _ _ sq _
 
+set_option backward.isDefEq.respectTransparency false in
 -- see Note [lower instance priority]
 instance (priority := 100) hasImageMapOfIsIso {f g : Arrow C} [HasImage f.hom] [HasImage g.hom]
     (sq : f ⟶ g) [IsIso sq] : HasImageMap sq :=
@@ -731,6 +747,7 @@ instance (priority := 100) hasImageMapOfIsIso {f g : Arrow C} [HasImage f.hom] [
           image.lift_fac, Category.assoc, ← Comma.comp_right, IsIso.hom_inv_id, Comma.id_right,
           Category.comp_id] }
 
+set_option backward.isDefEq.respectTransparency false in
 instance HasImageMap.comp {f g h : Arrow C} [HasImage f.hom] [HasImage g.hom] [HasImage h.hom]
     (sq1 : f ⟶ g) (sq2 : g ⟶ h) [HasImageMap sq1] [HasImageMap sq2] : HasImageMap (sq1 ≫ sq2) :=
   HasImageMap.mk
@@ -778,9 +795,11 @@ variable [HasImageMap sq]
 abbrev image.map : image f.hom ⟶ image g.hom :=
   (HasImageMap.imageMap sq).map
 
+set_option backward.isDefEq.respectTransparency false in
 theorem image.factor_map :
     factorThruImage f.hom ≫ image.map sq = sq.left ≫ factorThruImage g.hom := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem image.map_ι : image.map sq ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by simp
 
 theorem image.map_homMk'_ι {X Y P Q : C} {k : X ⟶ Y} [HasImage k] {l : P ⟶ Q} [HasImage l]
@@ -793,6 +812,7 @@ section
 variable {h : Arrow C} [HasImage h.hom] (sq' : g ⟶ h)
 variable [HasImageMap sq']
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Image maps for composable commutative squares induce an image map in the composite square. -/
 def imageMapComp : ImageMap (sq ≫ sq') where map := image.map sq ≫ image.map sq'
 
@@ -825,7 +845,7 @@ section
 
 variable (C) [HasImages C]
 
-/-- If a category `has_image_maps`, then all commutative squares induce morphisms on images. -/
+/-- If a category `HasImageMaps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps : Prop where
   has_image_map : ∀ {f g : Arrow C} (st : f ⟶ g), HasImageMap st
 
@@ -936,6 +956,7 @@ section HasStrongEpiImages
 
 variable [HasImages C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category with strong epi images has image maps. -/
 instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages C] :
     HasImageMaps C where
@@ -948,6 +969,7 @@ instance (priority := 100) hasImageMapsOfHasStrongEpiImages [HasStrongEpiImages 
                   factorThruImage f.hom ≫ image.ι f.hom ≫ st.right
                 by simp)).lift }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a category has images, equalizers and pullbacks, then images are automatically strong epi
 images. -/
 instance (priority := 100) hasStrongEpiImages_of_hasPullbacks_of_hasEqualizers [HasPullbacks C]
@@ -979,7 +1001,7 @@ factorisation.
 -/
 def image.isoStrongEpiMono {I' : C} (e : X ⟶ I') (m : I' ⟶ Y) (comm : e ≫ m = f) [StrongEpi e]
     [Mono m] : I' ≅ image f :=
-  let F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e}
+  let F : StrongEpiMonoFactorisation f := { I := I', m := m, e := e }
   IsImage.isoExt F.toMonoIsImage <| Image.isImage f
 
 @[simp]
@@ -997,6 +1019,7 @@ open MorphismProperty
 
 variable (C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A category with strong epi mono factorisations admits functorial epi/mono factorizations. -/
 noncomputable def functorialEpiMonoFactorizationData :
     FunctorialFactorizationData (epimorphisms C) (monomorphisms C) where
@@ -1012,8 +1035,9 @@ namespace CategoryTheory.Functor
 
 open CategoryTheory.Limits
 
-variable {C D : Type*} [Category C] [Category D]
+variable {C D : Type*} [Category* C] [Category* D]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hasStrongEpiMonoFactorisations_imp_of_isEquivalence (F : C ⥤ D) [IsEquivalence F]
     [h : HasStrongEpiMonoFactorisations C] : HasStrongEpiMonoFactorisations D :=
   ⟨fun {X} {Y} f => by

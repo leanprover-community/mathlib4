@@ -185,6 +185,7 @@ theorem lintegral_mul_norm_pow_le {α} [MeasurableSpace α] {μ : Measure α}
     (hf.pow_const p) (hg.pow_const q)
   simpa [← ENNReal.rpow_mul, hp.ne', hq.ne'] using this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of Hölder with multiple arguments -/
 theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
     (s : Finset ι) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
@@ -195,7 +196,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
   | empty =>
     simp at hp
   | insert i₀ s hi₀ ih =>
-    rcases eq_or_ne (p i₀) 1 with h2i₀|h2i₀
+    rcases eq_or_ne (p i₀) 1 with h2i₀ | h2i₀
     · simp only [hi₀, not_false_eq_true, prod_insert]
       have h2p : ∀ i ∈ s, p i = 0 := by
         simpa [hi₀, h2i₀, sum_eq_zero_iff_of_nonneg (fun i hi ↦ h2p i <| mem_insert_of_mem hi)]

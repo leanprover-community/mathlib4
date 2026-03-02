@@ -5,7 +5,6 @@ Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
@@ -73,6 +72,8 @@ theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
 instance : SetLike (OpenSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+
+@[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G) G
 
 @[to_additive]
 instance : SubgroupClass (OpenSubgroup G) G where
@@ -195,8 +196,7 @@ instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferIn
 -- We override `toPartialorder` to get better `le`
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
-  { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ ↦ rfl with
-    toPartialOrder := instPartialOrderOpenSubgroup }
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance : OrderTop (OpenSubgroup G) where
@@ -324,12 +324,10 @@ instance : Max (OpenSubgroup G) :=
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
 
--- We override `toPartialorder` to get better `le`
 @[to_additive]
-instance : Lattice (OpenSubgroup G) :=
-  { instSemilatticeInfOpenSubgroup,
-    toSubgroup_injective.semilatticeSup ((↑) : OpenSubgroup G → Subgroup G) fun _ _ ↦ rfl with
-    toPartialOrder := instPartialOrderOpenSubgroup }
+instance : Lattice (OpenSubgroup G) where
+  __ := toSubgroup_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
+  __ := instSemilatticeInfOpenSubgroup
 
 end OpenSubgroup
 
@@ -403,6 +401,8 @@ instance : SetLike (OpenNormalSubgroup G) G where
   coe U := U.1
   coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
 
+@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G) G
+
 @[to_additive]
 instance : SubgroupClass (OpenNormalSubgroup G) G where
   mul_mem := Subsemigroup.mul_mem' _
@@ -423,7 +423,7 @@ instance instInfOpenNormalSubgroup : Min (OpenNormalSubgroup G) :=
 
 @[to_additive]
 instance instSemilatticeInfOpenNormalSubgroup : SemilatticeInf (OpenNormalSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : OpenNormalSubgroup G → Set G) fun _ _ ↦ rfl
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
@@ -433,13 +433,10 @@ instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
 @[to_additive]
 instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
     SemilatticeSup (OpenNormalSubgroup G) :=
-  toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
+  toSubgroup_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
-instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
-  { instSemilatticeInfOpenNormalSubgroup,
-    instSemilatticeSupOpenNormalSubgroup with
-    toPartialOrder := instPartialOrderOpenNormalSubgroup}
+instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) where
 
 end OpenNormalSubgroup
 
@@ -497,10 +494,6 @@ lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝
   exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,
     V, IsOpen.mem_nhds Vopen onememV, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩
 
-@[deprecated (since := "2025-05-22")] alias exist_mul_closure_nhd := exist_mul_closure_nhds
-@[deprecated (since := "2025-05-22")] alias _root_.IsTopologicalAddGroup.exist_add_closure_nhd :=
-  IsTopologicalAddGroup.exist_add_closure_nhds
-
 @[to_additive]
 lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
     ∃ T, mulInvClosureNhd T W := by
@@ -554,12 +547,5 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
     use 1, einW, x, xin
     rw [one_mul]
   apply iUnion_subset fun i _ a ↦ mulVpow i (this i a)
-
-@[deprecated (since := "2025-05-22")]
-alias exist_openSubgroup_sub_clopen_nhd_of_one := exist_openSubgroup_sub_clopen_nhds_of_one
-
-@[deprecated (since := "2025-05-22")]
-alias _root_.IsTopologicalAddGroup.exist_openAddSubgroup_sub_clopen_nhd_of_zero :=
-  IsTopologicalAddGroup.exist_openAddSubgroup_sub_clopen_nhds_of_zero
 
 end IsTopologicalGroup
