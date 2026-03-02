@@ -200,6 +200,7 @@ lemma map_naturality_1
       (mk₀ 0 rfl (e.hom.app Y)) (zero_add _)) (add_zero _) = f.map G := by
   simp [map_naturality]
 
+@[simp]
 lemma map_naturality_2
     {a : M} (f : ShiftedHom X Y a) {F G : C ⥤ D} (e : F ≅ G)
     [F.CommShift M] [G.CommShift M] [NatTrans.CommShift e.hom M] :
