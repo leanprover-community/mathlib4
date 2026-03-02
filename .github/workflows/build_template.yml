@@ -693,16 +693,38 @@ jobs:
           name: cache-staging
           path: cache-staging
 
-      - name: Azure login (OIDC)
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
-          allow-no-subscriptions: true
-
-      - name: Mint Azure storage bearer token via az CLI
+      - name: Azure CLI OIDC login and mint storage bearer token
         shell: bash
         run: |
+          CLIENT_ID='${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}'
+          TENANT_ID='${{ secrets.MATHLIB_CI_TENANT_ID }}'
+          AUDIENCE='api://AzureADTokenExchange'
+
+          if [ -z "$CLIENT_ID" ] || [ -z "$TENANT_ID" ]; then
+            echo "Missing CACHE_MASTER_WRITER_AZURE_CLIENT_ID or MATHLIB_CI_TENANT_ID"
+            exit 1
+          fi
+
+          OIDC_URL="$ACTIONS_ID_TOKEN_REQUEST_URL"
+          if [[ "$OIDC_URL" == *\?* ]]; then
+            OIDC_URL="${OIDC_URL}&audience=${AUDIENCE}"
+          else
+            OIDC_URL="${OIDC_URL}?audience=${AUDIENCE}"
+          fi
+          OIDC_TOKEN="$(
+            curl --silent --show-error \
+              -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+              "$OIDC_URL" | python3 -c 'import json,sys; print(json.load(sys.stdin)["value"])'
+          )"
+
+          az login \
+            --service-principal \
+            --username "$CLIENT_ID" \
+            --tenant "$TENANT_ID" \
+            --federated-token "$OIDC_TOKEN" \
+            --allow-no-subscriptions \
+            --output none
+
           MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW="$(az account get-access-token --resource https://storage.azure.com/ --query accessToken -o tsv)"
           MATHLIB_CACHE_AZURE_BEARER_TOKEN="${MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW%"${MATHLIB_CACHE_AZURE_BEARER_TOKEN_RAW##*[![:space:]]}"}"
           echo "::add-mask::$MATHLIB_CACHE_AZURE_BEARER_TOKEN"
