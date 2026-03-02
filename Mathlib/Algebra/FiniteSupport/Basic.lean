@@ -89,6 +89,20 @@ lemma hasFiniteMulSupport_pow {M : Type*} [Monoid M] (f : α → M) (hf : HasFin
   hf.subset <| f.mulSupport_pow n
 
 @[to_additive (attr := fun_prop)]
+lemma hasFiniteMulSupport_zpow {M : Type*} [DivisionMonoid M] (f : α → M)
+    (hf : HasFiniteMulSupport f)
+    (n : ℤ) :
+    HasFiniteMulSupport fun a ↦ f a ^ n := by
+  rcases le_or_gt 0 n with hn | hn
+  · lift n to ℕ using hn
+    simp only [zpow_natCast]
+    exact hasFiniteMulSupport_pow f hf n
+  · conv => enter [1, a]; rw [← neg_neg n]
+    lift (-n) to ℕ using by lia with m hm
+    simp only [zpow_neg_coe_of_pos _ (show 0 < m by lia)]
+    exact hasFiniteMulSupport_inv _ <| hasFiniteMulSupport_pow f hf m
+
+@[to_additive (attr := fun_prop)]
 lemma hasFiniteMulSupport_max [LinearOrder M] (f g : α → M) (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) :
     HasFiniteMulSupport fun a ↦ max (f a) (g a) :=
@@ -158,10 +172,6 @@ lemma hasFiniteMulSupport_inf' [SemilatticeInf M] {ι : Type*} (f : ι → α �
   simp only [mem_mulSupport, SetLike.mem_coe, Set.mem_iUnion, exists_prop] at ha ⊢
   contrapose! ha
   exact Finset.inf'_eq_of_forall hs (fun x ↦ f x a) ha
-
-example {K ι : Type*} {v : ι → K → ℤ} (hv : ∀ x, HasFiniteMulSupport fun i ↦ v i x) (x y : K) :
-    HasFiniteMulSupport fun i ↦ max (v i x * v i y) 1 := by
-  fun_prop
 
 end Function
 
