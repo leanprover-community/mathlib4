@@ -94,8 +94,6 @@ meta def condLExpUnexpander : Lean.PrettyPrinter.Unexpander
 #guard_msgs in
 #check P⁻[X|mΩ] (sorry : Ω)
 
-scoped notation P "⁻⸨ " s "|" mΩ "⸩" => condLExp mΩ P (Set.indicator s 1)
-
 theorem condLExp_of_not_le (hm_not : ¬mΩ ≤ mΩ₀) : P⁻[X|mΩ] = 0 := by
   rw [condLExp, dif_neg hm_not]
 
@@ -307,5 +305,172 @@ theorem condLExp_smul' (X : Ω → ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞)
   intro s hs
   simp only [Pi.smul_apply, smul_eq_mul]
   rw [lintegral_const_mul' _ _ hc, lintegral_const_mul' _ _ hc, setLIntegral_condLExp _ _ _ hs]
+
+section ConditionalProbability
+
+open Set
+
+notation P "⁻⸨ " s "|" mΩ "⸩" => condLExp mΩ P (Set.indicator s 1)
+
+variable {s s₁ s₂ t : Set Ω}
+
+theorem condLProb_le_union (hd : Disjoint s₁ s₂) :
+     P⁻⸨s₁| mΩ⸩ + P⁻⸨s₂| mΩ⸩ ≤ᵐ[P] P⁻⸨s₁ ∪ s₂| mΩ⸩ := by
+  grw [condLExp_add_le, indicator_union_of_disjoint hd, Pi.add_def]
+
+theorem condLProb_union (hd : Disjoint s₁ s₂) (hs₂ : MeasurableSet[mΩ₀] s₂) :
+    P⁻⸨s₁ ∪ s₂| mΩ⸩ =ᵐ[P] P⁻⸨s₁| mΩ⸩ + P⁻⸨s₂| mΩ⸩ := by
+  grw [indicator_union_of_disjoint hd, ← condLExp_add_right _ (by measurability), Pi.add_def]
+
+theorem condLProb_union' (hd : Disjoint s₁ s₂) (hs₁ : MeasurableSet[mΩ₀] s₁) :
+    P⁻⸨s₁ ∪ s₂| mΩ⸩ =ᵐ[P] P⁻⸨s₁| mΩ⸩ + P⁻⸨s₂| mΩ⸩ := by
+  grw [union_comm, condLProb_union hd.symm hs₁, add_comm]
+
+theorem condLProb_le_inter_add_diff : P⁻⸨s ∩ t| mΩ⸩ + P⁻⸨s \ t| mΩ⸩ ≤ᵐ[P] P⁻⸨s| mΩ⸩ := by
+  grw [condLProb_le_union disjoint_sdiff_inter.symm]
+  filter_upwards using by simp
+
+theorem condLProb_inter_add_diff
+    (hs : MeasurableSet[mΩ₀] s) (ht : MeasurableSet[mΩ₀] t) :
+    P⁻⸨s ∩ t| mΩ⸩ + P⁻⸨s \ t| mΩ⸩ =ᵐ[P] P⁻⸨s| mΩ⸩ := by
+  grw [← condLProb_union disjoint_sdiff_inter.symm (by measurability)]
+  simp
+
+theorem condLProb_add_inter (s : Set Ω) (hs : MeasurableSet[mΩ₀] s) (ht : MeasurableSet[mΩ₀] t) :
+    P⁻⸨s \ t| mΩ⸩ + P⁻⸨s ∩ t| mΩ⸩ =ᵐ[P] P⁻⸨s| mΩ⸩ := by
+  grw [add_comm, condLProb_inter_add_diff hs ht]
+
+theorem condLProb_union_add_inter (s : Set Ω)
+    (hs : MeasurableSet[mΩ₀] s) (ht : MeasurableSet[mΩ₀] t) :
+    P⁻⸨s ∪ t| mΩ⸩ + P⁻⸨s ∩ t| mΩ⸩ =ᵐ[P] P⁻⸨s| mΩ⸩ + P⁻⸨t| mΩ⸩ := by
+  grw [← condLProb_inter_add_diff (by measurability) ht, union_inter_cancel_right,
+    union_diff_right, ← condLProb_inter_add_diff hs ht]
+  ring_nf
+  rfl
+
+-- lemma measure_symmDiff_eq (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ) :
+--     μ (s ∆ t) = μ (s \ t) + μ (t \ s) := by
+--   simpa only [symmDiff_def, sup_eq_union]
+--     using measure_union₀ (ht.diff hs) disjoint_sdiff_sdiff.aedisjoint
+
+-- lemma measure_symmDiff_le (s t u : Set α) :
+--     μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) :=
+--   le_trans (μ.mono <| symmDiff_triangle s t u) (measure_union_le (s ∆ t) (t ∆ u))
+
+-- theorem measure_symmDiff_eq_top (hs : μ s ≠ ∞) (ht : μ t = ∞) : μ (s ∆ t) = ∞ :=
+--   measure_mono_top subset_union_right (measure_diff_eq_top ht hs)
+
+theorem condLProb_add_measure_compl (h : MeasurableSet[mΩ₀] s) :
+    P⁻⸨s| mΩ⸩ + P⁻⸨sᶜ| mΩ⸩ =ᵐ[P] P⁻⸨univ| mΩ⸩ := by
+  grw [← condLProb_union disjoint_compl_right (by measurability)]
+  simp
+
+-- theorem measure_biUnion₀ {s : Set β} {f : β → Set α} (hs : s.Countable)
+--     (hd : s.Pairwise (AEDisjoint μ on f)) (h : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
+--     μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) := by
+--   haveI := hs.toEncodable
+--   rw [biUnion_eq_iUnion]
+--   exact measure_iUnion₀ (hd.on_injective Subtype.coe_injective fun x => x.2) fun x => h x x.2
+
+-- theorem measure_biUnion {s : Set β} {f : β → Set α} (hs : s.Countable) (hd : s.PairwiseDisjoint f)
+--     (h : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑' p : s, μ (f p) :=
+--   measure_biUnion₀ hs hd.aedisjoint fun b hb => (h b hb).nullMeasurableSet
+
+-- theorem measure_sUnion₀ {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise (AEDisjoint μ))
+--     (h : ∀ s ∈ S, NullMeasurableSet s μ) : μ (⋃₀ S) = ∑' s : S, μ s := by
+--   rw [sUnion_eq_biUnion, measure_biUnion₀ hs hd h]
+
+-- theorem measure_sUnion {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise Disjoint)
+--     (h : ∀ s ∈ S, MeasurableSet s) : μ (⋃₀ S) = ∑' s : S, μ s := by
+--   rw [sUnion_eq_biUnion, measure_biUnion hs hd h]
+
+-- set_option backward.isDefEq.respectTransparency false in
+-- theorem measure_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
+--     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
+--     μ (⋃ b ∈ s, f b) = ∑ p ∈ s, μ (f p) := by
+--   rw [← Finset.sum_attach, Finset.attach_eq_univ, ← tsum_fintype (L := .unconditional s)]
+--   exact measure_biUnion₀ s.countable_toSet hd hm
+
+-- theorem measure_biUnion_finset {s : Finset ι} {f : ι → Set α} (hd : PairwiseDisjoint (↑s) f)
+--     (hm : ∀ b ∈ s, MeasurableSet (f b)) : μ (⋃ b ∈ s, f b) = ∑ p ∈ s, μ (f p) :=
+--   measure_biUnion_finset₀ hd.aedisjoint fun b hb => (hm b hb).nullMeasurableSet
+
+-- /-- The measure of an a.e. disjoint union (even uncountable) of null-measurable sets is at least
+-- the sum of the measures of the sets. -/
+-- theorem tsum_meas_le_meas_iUnion_of_disjoint₀ {ι : Type*} {_ : MeasurableSpace α} (μ : Measure α)
+--     {As : ι → Set α} (As_mble : ∀ i : ι, NullMeasurableSet (As i) μ)
+--     (As_disj : Pairwise (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
+--   rw [ENNReal.tsum_eq_iSup_sum, iSup_le_iff]
+--   intro s
+--   simp only [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
+--   gcongr
+--   exact iUnion_subset fun _ ↦ Subset.rfl
+
+-- /-- The measure of a disjoint union (even uncountable) of measurable sets is at least the sum of
+-- the measures of the sets. -/
+-- theorem tsum_meas_le_meas_iUnion_of_disjoint {ι : Type*} {_ : MeasurableSpace α} (μ : Measure α)
+--     {As : ι → Set α} (As_mble : ∀ i : ι, MeasurableSet (As i))
+--     (As_disj : Pairwise (Disjoint on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) :=
+--   tsum_meas_le_meas_iUnion_of_disjoint₀ μ (fun i ↦ (As_mble i).nullMeasurableSet)
+--     (fun _ _ h ↦ Disjoint.aedisjoint (As_disj h))
+
+-- /-- If `s` is a countable set, then the measure of its preimage can be found as the sum of measures
+-- of the fibers `f ⁻¹' {y}`. -/
+-- theorem tsum_measure_preimage_singleton {s : Set β} (hs : s.Countable) {f : α → β}
+--     (hf : ∀ y ∈ s, MeasurableSet (f ⁻¹' {y})) : (∑' b : s, μ (f ⁻¹' {↑b})) = μ (f ⁻¹' s) := by
+--   rw [← Set.biUnion_preimage_singleton, measure_biUnion hs (pairwiseDisjoint_fiber f s) hf]
+
+-- lemma measure_preimage_eq_zero_iff_of_countable {s : Set β} {f : α → β} (hs : s.Countable) :
+--     μ (f ⁻¹' s) = 0 ↔ ∀ x ∈ s, μ (f ⁻¹' {x}) = 0 := by
+  -- rw [← biUnion_preimage_singleton, measure_biUnion_null_iff hs]
+
+/-- If `s` is a `Finset`, then the measure of its preimage can be found as the sum of measures
+of the fibers `f ⁻¹' {y}`. -/
+-- theorem sum_measure_preimage_singleton (s : Finset β) {f : α → β}
+--     (hf : ∀ y ∈ s, MeasurableSet (f ⁻¹' {y})) : (∑ b ∈ s, μ (f ⁻¹' {b})) = μ (f ⁻¹' ↑s) := by
+--   simp only [← measure_biUnion_finset (pairwiseDisjoint_fiber f s) hf,
+--     Finset.set_biUnion_preimage_singleton]
+
+-- @[simp] lemma sum_measure_singleton {s : Finset α} [MeasurableSingletonClass α] :
+--     ∑ x ∈ s, μ {x} = μ s := by
+--   trans ∑ x ∈ s, μ (id ⁻¹' {x})
+--   · simp
+--   rw [sum_measure_preimage_singleton]
+--   · simp
+--   · simp
+
+-- theorem measure_diff_null' (h : μ (s₁ ∩ s₂) = 0) : μ (s₁ \ s₂) = μ s₁ :=
+--   measure_congr <| diff_ae_eq_self.2 h
+
+-- theorem measure_add_diff (hs : NullMeasurableSet s μ) (t : Set α) :
+--     μ s + μ (t \ s) = μ (s ∪ t) := by
+--   rw [← measure_union₀' hs disjoint_sdiff_right.aedisjoint, union_diff_self]
+
+-- theorem measure_diff' (s : Set α) (hm : NullMeasurableSet t μ) (h_fin : μ t ≠ ∞) :
+--     μ (s \ t) = μ (s ∪ t) - μ t :=
+--   ENNReal.eq_sub_of_add_eq h_fin <| by rw [add_comm, measure_add_diff hm, union_comm]
+theorem le_condLProb_diff (hs₂ : MeasurableSet[mΩ₀] s₂) :
+    P⁻⸨s₁| mΩ⸩ - P⁻⸨s₂| mΩ⸩ ≤ᵐ[P] P⁻⸨s₁ \ s₂| mΩ⸩ := by
+  have := condLProb_union (P := P) (mΩ := mΩ) (s₁ := s₁ \ s₂) (s₂ := s₂) (by sorry) hs₂
+  filter_upwards [this] with ω hω
+  simp at hω
+  simp [← hω]
+  --grw [tsub_le_iff_left]
+
+theorem condLProb_diff (h : s₂ ⊆ s₁) (hs₁ : MeasurableSet[mΩ₀] s₁) (hs₂ : MeasurableSet[mΩ₀] s₂) :
+    P⁻⸨s₁ \ s₂| mΩ⸩ =ᵐ[P] P⁻⸨s₁| mΩ⸩ - P⁻⸨s₂| mΩ⸩ := by
+  sorry
+
+-- theorem measure_diff (h : s₂ ⊆ s₁) (h₂ : NullMeasurableSet s₂ μ) (h_fin : μ s₂ ≠ ∞) :
+--     μ (s₁ \ s₂) = μ s₁ - μ s₂ := by rw [measure_diff' _ h₂ h_fin, union_eq_self_of_subset_right h]
+
+-- theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
+--   tsub_le_iff_left.2 <| (measure_le_inter_add_diff μ s₁ s₂).trans <| by
+--     gcongr; apply inter_subset_right
+
+-- theorem le_measure_symmDiff : μ s₁ - μ s₂ ≤ μ (s₁ ∆ s₂) :=
+--   le_trans le_measure_diff (measure_mono <| by simp [symmDiff_def])
+
+end ConditionalProbability
 
 end MeasureTheory
