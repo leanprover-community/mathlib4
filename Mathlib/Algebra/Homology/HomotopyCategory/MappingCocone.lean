@@ -223,8 +223,8 @@ lemma liftCochain_comp_snd :
 
 lemma δ_liftCochain (n' : ℤ) (hn' : n + 1 = n') :
     δ n n' (liftCochain φ α β h) =
-        (δ n n' α).comp (inl φ) (add_zero _) -
-      (δ m n β + α.comp (Cochain.ofHom φ) (add_zero n)).comp (inr φ).1 hn' := by
+      (δ n n' α).comp (inl φ) (add_zero _) -
+        (δ m n β + α.comp (Cochain.ofHom φ) (add_zero n)).comp (inr φ).1 hn' := by
   dsimp [liftCochain, inl, inr]
   ext p q hpq
   simp [mappingCone.δ_liftCochain _ _ _ _ n' hn',
