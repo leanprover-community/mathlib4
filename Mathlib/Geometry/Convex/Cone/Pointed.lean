@@ -45,7 +45,7 @@ variable {C : PointedCone R E}
 
 instance : Coe (Submodule R E) (PointedCone R E) := ⟨ofSubmodule⟩
 
-@[simp] lemma ofSubmodule_coe (S : Submodule R E) : (ofSubmodule S : Set E) = S := by rfl
+@[simp] lemma coe_ofSubmodule (S : Submodule R E) : (ofSubmodule S : Set E) = S := rfl
 
 lemma mem_ofSubmodule_iff {S : Submodule R E} {x : E} : x ∈ (S : PointedCone R E) ↔ x ∈ S := by rfl
 
@@ -53,15 +53,15 @@ lemma ofSubmodule_inj {S T : Submodule R E} : ofSubmodule S = ofSubmodule T ↔ 
   := Submodule.restrictScalars_inj ..
 
 /-- Coercion of submodule to pointed cone as an order embedding. -/
-def ofSubmodule_embedding : Submodule R E ↪o PointedCone R E :=
+def ofSubmoduleEmbedding : Submodule R E ↪o PointedCone R E :=
   Submodule.restrictScalarsEmbedding ..
 
 /-- Coercion of submodule to pointed cone as a lattice homomorphism. -/
 def ofSubmodule_latticeHom : CompleteLatticeHom (Submodule R E) (PointedCone R E) :=
   Submodule.restrictScalarsLatticeHom ..
 
-lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E)
-    := Submodule.restrictScalars_inf _ _ _
+lemma ofSubmodule_inf (S T : Submodule R E) : S ⊓ T = (S ⊓ T : PointedCone R E) :=
+  Submodule.restrictScalars_inf _ _ _
 
 lemma ofSubmodule_sup (S T : Submodule R E) : S ⊔ T = (S ⊔ T : PointedCone R E)
     := Submodule.restrictScalars_sup _ _ _
