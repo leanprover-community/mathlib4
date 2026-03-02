@@ -17,8 +17,8 @@ We collect results about effective epimorphisms in the category of schemes.
 
 ## Main results
 
-* `AffineScheme.effectiveEpi_of_flat_of_surjective`: A flat surjective morphism between affine schemes
-  is an effective epimorphism in the category of affine schemes.
+* `AffineScheme.effectiveEpi_of_flat_of_surjective`: A flat surjective morphism between affine
+schemes is an effective epimorphism in the category of affine schemes.
 
 For a surjective and flat morphism `π : X ⟶ Y` between affine schemes, we prove the following.
 * `exists_of_flat`: Any morphism `g : X ⟶ S` of schemes whose two pullbacks to `X ×[Y] X` agree
