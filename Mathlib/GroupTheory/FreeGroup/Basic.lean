@@ -12,6 +12,7 @@ public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Group.PUnit
 public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Free groups
@@ -246,12 +247,12 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
       | tail hLL' h ih =>
         obtain @⟨s, e, a, b⟩ := h
         rcases List.append_eq_append_iff.1 eq with (⟨s', rfl, rfl⟩ | ⟨e', rfl, rfl⟩)
-        · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) = L₁ ++ s' ++ (a, b) :: (a, not b) :: e :=
-            by simp
+        · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) =
+            L₁ ++ s' ++ (a, b) :: (a, not b) :: e := by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁, h₂.tail Step.not⟩
-        · have : s ++ (a, b) :: (a, not b) :: e' ++ L₂ = s ++ (a, b) :: (a, not b) :: (e' ++ L₂) :=
-            by simp
+        · have : s ++ (a, b) :: (a, not b) :: e' ++ L₂ =
+            s ++ (a, b) :: (a, not b) :: (e' ++ L₂) := by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁.tail Step.not, h₂⟩)
     fun ⟨_, _, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
@@ -823,6 +824,42 @@ theorem freeGroupCongr_trans {α β γ} (e : α ≃ β) (f : β ≃ γ) :
     (freeGroupCongr e).trans (freeGroupCongr f) = freeGroupCongr (e.trans f) :=
   MulEquiv.ext <| map.comp _ _
 
+/-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves surjectivity. -/
+@[to_additive /-- Composing an additive homomorphism with a reindexing `freeGroupCongr`
+preserves surjectivity. -/]
+lemma surjective_comp_freeGroupCongr {G : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f) :
+  Function.Surjective (f ∘ freeGroupCongr e.symm) := by
+  let iso : FreeGroup β ≃* FreeGroup α := freeGroupCongr e.symm
+  simpa [iso] using hfsurj.comp iso.surjective
+
+/-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves injectivity. -/
+@[to_additive /-- Composing an additive homomorphism with a reindexing `freeGroupCongr`
+preserves injectivity. -/]
+lemma injective_comp_freeGroupCongr {G : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfinj : Function.Injective f) :
+  Function.Injective (f ∘ freeGroupCongr e.symm) := by
+  let iso : FreeGroup β ≃* FreeGroup α := freeGroupCongr e.symm
+  simpa [iso] using hfinj.comp iso.injective
+
+/-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves bijectivity. -/
+@[to_additive /-- Composing a homomorphism with a reindexing `freeGroupCongr`
+preserves bijectivity. -/]
+lemma bijective_comp_freeGroupCongr {G : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α →* G) (hfbij : Function.Bijective f) :
+  Function.Bijective (f ∘ freeGroupCongr e.symm) := by
+  exact ⟨
+    injective_comp_freeGroupCongr (G := G) e f hfbij.injective,
+    surjective_comp_freeGroupCongr (G := G) e f hfbij.surjective
+  ⟩
+
+/-- Reindexing free-group generators via an equivalence preserves isomorphisms. -/
+@[to_additive /-- Reindexing additive `FreeGroup` generators via an equivalence preserves
+isomorphisms. -/]
+def mulEquiv_comp_freeGroupCongr {G : Type*} [Group G]
+    (e : α ≃ β) (f : FreeGroup α ≃* G) : FreeGroup β ≃* G :=
+  (freeGroupCongr e.symm).trans f
+
 end Map
 
 section Prod
@@ -1003,9 +1040,9 @@ instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
       fun x y ihx ihy => by rw [map_mul, ihx, ihy])
   (pure_bind := fun x f => pure_bind f x)
   (bind_assoc := fun x => by
-    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +instances +contextual [instMonad])
   (bind_pure_comp := fun f x => by
-    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +contextual [instMonad])
+    refine FreeGroup.induction_on x ?_ ?_ ?_ ?_ <;> simp +instances +contextual [instMonad])
 
 end Category
 

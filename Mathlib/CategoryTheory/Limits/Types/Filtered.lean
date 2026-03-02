@@ -121,6 +121,7 @@ theorem colimit_eq_iff_aux [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j
   rw [← (equivShrink _).symm.injective.eq_iff, Equiv.symm_apply_apply, Equiv.symm_apply_apply,
     Functor.ιColimitType_eq_iff, FilteredColimit.rel_eq_eqvGen_colimitTypeRel]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
     t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
   have : HasColimit F := ⟨_, ht⟩

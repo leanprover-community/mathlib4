@@ -96,6 +96,7 @@ lemma isKProjective_shift_iff (K : CochainComplex C ℤ) (n : ℤ) :
   ⟨fun _ ↦ isKProjective_of_iso (show K⟦n⟧⟦-n⟧ ≅ K from (shiftEquiv _ n).unitIso.symm.app K),
     fun _ ↦ inferInstance⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isKProjective_of_op {K : CochainComplex C ℤ}
     (hK : IsKInjective ((opEquivalence C).functor.obj (op K))) :
     K.IsKProjective where
@@ -104,6 +105,7 @@ lemma isKProjective_of_op {K : CochainComplex C ℤ}
       ((opEquivalence C).functor.map f.op) (acyclic_op hL)).trans
         (.ofEq (by simp)))⟩
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] opEquivalence ChainComplex.cochainComplexEquivalence in
 open Cochain.InductionUp in
 lemma isKProjective_of_projective (K : CochainComplex C ℤ) (d : ℤ)

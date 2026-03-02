@@ -88,7 +88,7 @@ section
 
 variable (p : 𝒳 ⥤ 𝒮) [HasFibers p] (S : 𝒮)
 
-attribute [instance] category
+attribute [instance_reducible, instance] category
 
 /-- The induced functor from `Fib p S` to the standard fiber. -/
 @[simps!]
@@ -180,6 +180,7 @@ noncomputable def pullbackMap : (ι R).obj (mkPullback f ha) ⟶ a :=
   (Fib.mkIsoSelf (domain_eq p f (IsPreFibered.pullbackMap ha f))).hom ≫
     (IsPreFibered.pullbackMap ha f)
 
+set_option backward.isDefEq.respectTransparency false in
 instance pullbackMap.isCartesian : IsCartesian p f (pullbackMap f ha) := by
   conv in f => rw [← id_comp f]
   simp only [id_comp, pullbackMap]

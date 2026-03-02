@@ -177,7 +177,7 @@ printf $'<details>
 ```
 </details>
 
-The doc-module for `script/declarations_diff.sh` contains some details about this script.'
+The doc-module for `scripts/declarations_diff.sh` contains some details about this script.'
 
  : <<ReferenceTest
 theorem oh hello
