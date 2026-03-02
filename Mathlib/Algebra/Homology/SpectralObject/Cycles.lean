@@ -141,38 +141,34 @@ lemma cokernelSequenceOpcycles_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
 
 section
 
-variable {A : C} (x : A ⟶ (X.H n₀).obj (mk₁ g))
+variable (hn₁ : n₀ + 1 = n₁) {A : C} (x : A ⟶ (X.H n₀).obj (mk₁ g))
+    (hx : x ≫ X.δ f g n₀ n₁ hn₁ = 0)
 
 /-- Constructor for morphisms to `X.cycles`. -/
-noncomputable def liftCycles (hn₁ : n₀ + 1 = n₁ := by lia)
-    (hx : x ≫ X.δ f g n₀ n₁ hn₁ = 0 := by cat_disch) :
+noncomputable def liftCycles :
     A ⟶ X.cycles f g n₀ :=
   kernel.lift _ x (by subst hn₁; exact hx)
 
 @[reassoc (attr := simp)]
-lemma liftCycles_i (hn₁ : n₀ + 1 = n₁ := by lia)
-    (hx : x ≫ X.δ f g n₀ n₁ hn₁ = 0 := by cat_disch) :
-    X.liftCycles f g n₀ n₁ x ≫ X.iCycles f g n₀ = x := by
+lemma liftCycles_i : X.liftCycles f g n₀ n₁ hn₁ x hx ≫ X.iCycles f g n₀ = x := by
   apply kernel.lift_ι
 
 end
 
 section
 
-variable {A : C} (x : (X.H n₁).obj (mk₁ f) ⟶ A)
+variable (hn₁ : n₀ + 1 = n₁) {A : C} (x : (X.H n₁).obj (mk₁ f) ⟶ A)
+    (hx : X.δ f g n₀ n₁ hn₁ ≫ x = 0)
 
 /-- Constructor for morphisms from `X.opcycles`. -/
-noncomputable def descOpcycles (hn₁ : n₀ + 1 = n₁ := by lia)
-    (hx : X.δ f g n₀ n₁ hn₁ ≫ x = 0 := by cat_disch) :
+noncomputable def descOpcycles :
     X.opcycles f g n₁ ⟶ A :=
   cokernel.desc _ x (by
     obtain rfl : n₀ = n₁ -1 := by lia
     exact hx)
 
 @[reassoc (attr := simp)]
-lemma p_descOpcycles (hn₁ : n₀ + 1 = n₁ := by lia)
-    (hx : X.δ f g n₀ n₁ hn₁ ≫ x = 0 := by cat_disch) :
-    X.pOpcycles f g n₁ ≫ X.descOpcycles f g n₀ n₁ x = x := by
+lemma p_descOpcycles : X.pOpcycles f g n₁ ≫ X.descOpcycles f g n₀ n₁ hn₁ x hx = x := by
   apply cokernel.π_desc
 
 end
@@ -227,7 +223,7 @@ lemma cyclesMap_comp (α : mk₂ f g ⟶ mk₂ f' g') (α' : mk₂ f' g' ⟶ mk�
 `ComposableArrows ι 2`. -/
 noncomputable def opcyclesMap (α : mk₂ f g ⟶ mk₂ f' g') (n : ℤ) :
     X.opcycles f g n ⟶ X.opcycles f' g' n :=
-  X.descOpcycles _ _ (n - 1) _ (by lia)
+  X.descOpcycles _ _ (n - 1) n (by lia)
     ((X.H n).map (homMk₁ (by exact α.app 0) (by exact α.app 1)
       (naturality' α 0 1)) ≫ X.pOpcycles f' g' n) (by
       rw [← X.δ_naturality_assoc f g f' g'
