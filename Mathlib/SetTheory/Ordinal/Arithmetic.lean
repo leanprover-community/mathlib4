@@ -577,8 +577,8 @@ private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 := 
   exact isEmpty_prod
 
 instance monoidWithZero : MonoidWithZero Ordinal where
-  mul_zero _ := private mul_eq_zero'.2 (.inr rfl)
-  zero_mul _ := private mul_eq_zero'.2 (.inl rfl)
+  mul_zero _ := by exact mul_eq_zero'.2 (.inr rfl)
+  zero_mul _ := by exact mul_eq_zero'.2 (.inl rfl)
 
 instance noZeroDivisors : NoZeroDivisors Ordinal where
   eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_zero'.1
