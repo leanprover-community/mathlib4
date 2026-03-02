@@ -51,9 +51,9 @@ lemma prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : 
   convert ← prod_le_prod h0 h1
   exact Finset.prod_const_one
 
-/-- A version of `Finset.one_le_prod'` for `PosMulMono` in place of `MulLeftMono`. -/
-lemma one_le_prod (hf : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i := by
-  simpa using prod_le_prod (by simp) hf
+/-- A version of `Finset.one_le_prod''` for `PosMulMono` in place of `MulLeftMono`. -/
+lemma one_le_prod (hf : ∀ i, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i := by
+  simpa using prod_le_prod (by simp) (fun i _ ↦ hf i)
 
 lemma le_prod_max_one {M : Type*} [CommMonoidWithZero M] [LinearOrder M] [ZeroLEOneClass M]
     [PosMulMono M] {i : ι} (hi : i ∈ s) (f : ι → M) :
