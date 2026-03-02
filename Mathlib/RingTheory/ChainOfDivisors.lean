@@ -3,11 +3,13 @@ Copyright (c) 2021 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-import Mathlib.Order.Atoms
-import Mathlib.Order.Hom.Bounded
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Hom.Bounded
 /-!
 
 # Chains of divisors
@@ -35,9 +37,11 @@ and the set of factors of `a`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
-variable {M : Type*} [CancelCommMonoidWithZero M]
+variable {M : Type*} [CommMonoidWithZero M] [IsCancelMulZero M]
 
 theorem Associates.isAtom_iff {p : Associates M} (h₁ : p ≠ 0) : IsAtom p ↔ Irreducible p :=
   ⟨fun hp =>
@@ -67,7 +71,7 @@ theorem exists_chain_of_prime_pow {p : Associates M} {n : ℕ} (hn : n ≠ 0) (h
       c 1 = p ∧ StrictMono c ∧ ∀ {r : Associates M}, r ≤ p ^ n ↔ ∃ i, r = c i := by
   refine ⟨fun i => p ^ (i : ℕ), ?_, fun n m h => ?_, @fun y => ⟨fun h => ?_, ?_⟩⟩
   · dsimp only
-    rw [Fin.val_one', Nat.mod_eq_of_lt, pow_one]
+    rw [Fin.coe_ofNat_eq_mod, Nat.mod_eq_of_lt, pow_one]
     exact Nat.lt_succ_of_le (Nat.one_le_iff_ne_zero.mpr hn)
   · exact Associates.dvdNotUnit_iff_lt.mp
         ⟨pow_ne_zero n hp.ne_zero, p ^ (m - n : ℕ),
@@ -97,11 +101,11 @@ theorem second_of_chain_is_irreducible {q : Associates M} {n : ℕ} (hn : n ≠ 
     (hq : q ≠ 0) : Irreducible (c 1) := by
   rcases n with - | n; · contradiction
   refine (Associates.isAtom_iff (ne_zero_of_dvd_ne_zero hq (h₂.2 ⟨1, rfl⟩))).mp ⟨?_, fun b hb => ?_⟩
-  · exact ne_bot_of_gt (h₁ (show (0 : Fin (n + 2)) < 1 from Fin.one_pos))
+  · exact ne_bot_of_gt (h₁ (show (0 : Fin (n + 2)) < 1 from Fin.zero_lt_one))
   obtain ⟨⟨i, hi⟩, rfl⟩ := h₂.1 (hb.le.trans (h₂.2 ⟨1, rfl⟩))
   cases i
   · exact (Associates.isUnit_iff_eq_one _).mp (first_of_chain_isUnit h₁ @h₂)
-  · simpa [Fin.lt_iff_val_lt_val] using h₁.lt_iff_lt.mp hb
+  · simpa [Fin.lt_def] using h₁.lt_iff_lt.mp hb
 
 theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
@@ -110,9 +114,9 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
   rcases n with - | n
   · contradiction
   obtain ⟨i, rfl⟩ := h₂.1 (dvd_trans hp' hr)
-  refine congr_arg c (eq_of_ge_of_not_gt ?_ fun hi => ?_)
+  refine congr_arg c (eq_of_le_of_not_lt' ?_ fun hi => ?_)
   · rw [Fin.le_iff_val_le_val, Fin.val_one, Nat.succ_le_iff, ← Fin.val_zero (n.succ + 1), ←
-      Fin.lt_iff_val_lt_val, Fin.pos_iff_ne_zero]
+      Fin.lt_def, Fin.pos_iff_ne_zero]
     rintro rfl
     exact hp.not_unit (first_of_chain_isUnit h₁ @h₂)
   obtain rfl | ⟨j, rfl⟩ := i.eq_zero_or_eq_succ
@@ -124,7 +128,9 @@ theorem eq_second_of_chain_of_prime_dvd {p q r : Associates M} {n : ℕ} (hn : n
       ?_ hp.irreducible
   · simpa using Fin.lt_def.mp hi
   · refine Associates.dvdNotUnit_iff_lt.2 (h₁ ?_)
-    simpa only [Fin.coe_eq_castSucc] using Fin.lt_succ
+    simpa only [Fin.coe_eq_castSucc] using Fin.castSucc_lt_succ
+
+omit [IsCancelMulZero M]
 
 theorem card_subset_divisors_le_length_of_chain {q : Associates M} {n : ℕ}
     {c : Fin (n + 1) → Associates M} (h₂ : ∀ {r}, r ≤ q ↔ ∃ i, r = c i) {m : Finset (Associates M)}
@@ -175,7 +181,6 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     · exact H
     · exact Nat.succ_le_succ_iff.mp a.2
 
-open Fin.NatCast in -- TODO: should this be refactored to avoid needing the coercion?
 theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
     {c : Fin (n + 1) → Associates M} (h₁ : StrictMono c)
     (h₂ : ∀ {r : Associates M}, r ≤ q ↔ ∃ i, r = c i) (hq : q ≠ 0) : q = c 1 ^ n := by
@@ -196,9 +201,8 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
     rw [hi'] at this
     have h := (dvd_prime_pow (show Prime (c 1) from ?_) i).1 this
     · rcases h with ⟨u, hu, hu'⟩
-      refine Finset.mem_image.mpr ⟨u, Finset.mem_univ _, ?_⟩
-      rw [associated_iff_eq] at hu'
-      rw [Fin.val_cast_of_lt (Nat.lt_succ_of_le hu), hu']
+      refine Finset.mem_image.mpr ⟨⟨u, Nat.lt_succ_of_le hu⟩, Finset.mem_univ _, ?_⟩
+      rwa [associated_iff_eq, eq_comm] at hu'
     · rw [← irreducible_iff_prime]
       exact second_of_chain_is_irreducible hn h₁ (@h₂) hq
 
@@ -210,9 +214,9 @@ theorem isPrimePow_of_has_chain {q : Associates M} {n : ℕ} (hn : n ≠ 0)
 
 end DivisorChain
 
-variable {N : Type*} [CancelCommMonoidWithZero N]
+variable {N : Type*} [CommMonoidWithZero N]
 
-theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
+theorem factor_orderIso_map_one_eq_bot [IsCancelMulZero N] {m : Associates M} {n : Associates N}
     (d : { l : Associates M // l ≤ m } ≃o { l : Associates N // l ≤ n }) :
     (d ⟨1, one_dvd m⟩ : Associates N) = 1 := by
   letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
@@ -221,7 +225,9 @@ theorem factor_orderIso_map_one_eq_bot {m : Associates M} {n : Associates N}
   letI : BotHomClass ({ l // l ≤ m } ≃o { l // l ≤ n }) _ _ := OrderIsoClass.toBotHomClass
   exact map_bot d
 
-theorem coe_factor_orderIso_map_eq_one_iff {m u : Associates M} {n : Associates N} (hu' : u ≤ m)
+set_option backward.isDefEq.respectTransparency false in
+theorem coe_factor_orderIso_map_eq_one_iff [IsCancelMulZero N]
+    {m u : Associates M} {n : Associates N} (hu' : u ≤ m)
     (d : Set.Iic m ≃o Set.Iic n) : (d ⟨u, hu'⟩ : Associates N) = 1 ↔ u = 1 :=
   ⟨fun hu => by
     rw [show u = (d.symm ⟨d ⟨u, hu'⟩, (d ⟨u, hu'⟩).prop⟩) by
@@ -269,6 +275,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
     simpa [Subtype.mk_le_mk] using hc₁''.2 ⟨i, rfl⟩
   exact ne_zero_of_dvd_ne_zero hn (Subtype.prop (d ⟨c₁ 1 ^ s, _⟩))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn : n ≠ 0)
     (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     Prime (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) := by
@@ -279,9 +286,9 @@ theorem map_prime_of_factor_orderIso {m p : Associates M} {n : Associates N} (hn
       coe_factor_orderIso_map_eq_one_iff _ d]
     rintro rfl
     exact (prime_of_normalized_factor 1 hp).not_unit isUnit_one
-  · obtain ⟨x, hx⟩ :=
-      d.surjective ⟨b, le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop⟩
-    rw [← Subtype.coe_mk b _, ← hx] at hb
+  · have : b ≤ n := le_trans (le_of_lt hb) (d ⟨p, dvd_of_mem_normalizedFactors hp⟩).prop
+    obtain ⟨x, hx⟩ := d.surjective ⟨b, this⟩
+    rw [← Subtype.coe_mk (p := (· ≤ n)) b this, ← hx] at hb
     letI : OrderBot { l : Associates M // l ≤ m } := Subtype.orderBot bot_le
     letI : OrderBot { l : Associates N // l ≤ n } := Subtype.orderBot bot_le
     suffices x = ⊥ by
@@ -336,7 +343,8 @@ variable [Subsingleton Mˣ] [Subsingleton Nˣ]
 /-- The order isomorphism between the factors of `mk m` and the factors of `mk n` induced by a
   bijection between the factors of `m` and the factors of `n` that preserves `∣`. -/
 @[simps]
-def mkFactorOrderIsoOfFactorDvdEquiv {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
+def mkFactorOrderIsoOfFactorDvdEquiv [IsCancelMulZero N]
+    {m : M} {n : N} {d : { l : M // l ∣ m } ≃ { l : N // l ∣ n }}
     (hd : ∀ l l', (d l : N) ∣ d l' ↔ (l : M) ∣ (l' : M)) :
     Set.Iic (Associates.mk m) ≃o Set.Iic (Associates.mk n) where
   toFun l :=
@@ -364,7 +372,7 @@ def mkFactorOrderIsoOfFactorDvdEquiv {m : M} {n : N} {d : { l : M // l ∣ m } �
   map_rel_iff' := by
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Associates.mk_le_mk_iff_dvd, hd,
-        Subtype.coe_mk, associatesEquivOfUniqueUnits_apply, out_dvd_iff, mk_out]
+        associatesEquivOfUniqueUnits_apply, out_dvd_iff, mk_out]
 
 variable [UniqueFactorizationMonoid M] [UniqueFactorizationMonoid N]
 

@@ -3,18 +3,22 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Types.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 
 /-!
 # Filtered categories and limits
 
-In this file , we show that `C` is filtered if and only if for every functor `F : J ⥤ C` from a
+In this file, we show that `C` is filtered if and only if for every functor `F : J ⥤ C` from a
 finite category there is some `X : C` such that `lim Hom(F·, X)` is nonempty.
 
 Furthermore, we define the type classes `HasCofilteredLimitsOfSize` and `HasFilteredColimitsOfSize`.
 -/
+
+@[expose] public section
 
 
 universe w' w w₂' w₂ v u
@@ -66,13 +70,17 @@ section
 variable (C)
 
 /-- Class for having all cofiltered limits of a given size. -/
-@[pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes in
+-- `HasCofilteredLimitsOfSize` and `HasFilteredColimitsOfSize` would default to universe
+-- output parameters. See Note [universe output parameters and typeclass caching].
+@[univ_out_params, pp_with_univ]
 class HasCofilteredLimitsOfSize : Prop where
   /-- For all filtered types of size `w`, we have limits -/
   HasLimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsCofiltered I], HasLimitsOfShape I C
 
 /-- Class for having all filtered colimits of a given size. -/
-@[pp_with_univ]
+@[univ_out_params, pp_with_univ]
 class HasFilteredColimitsOfSize : Prop where
   /-- For all filtered types of a size `w`, we have colimits -/
   HasColimitsOfShape : ∀ (I : Type w) [Category.{w'} I] [IsFiltered I], HasColimitsOfShape I C
@@ -108,9 +116,9 @@ lemma hasCofilteredLimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}
     HasCofilteredLimitsOfSize.{w', w} C where
   HasLimitsOfShape J :=
     haveI := IsCofiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J))
+      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J))
     hasLimitsOfShape_of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J)).symm
+      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J)).symm
 
 lemma hasCofilteredLimitsOfSize_shrink [HasCofilteredLimitsOfSize.{max w' w₂', max w w₂} C] :
     HasCofilteredLimitsOfSize.{w', w} C :=
@@ -121,9 +129,9 @@ lemma hasFilteredColimitsOfSize_of_univLE [UnivLE.{w, w₂}] [UnivLE.{w', w₂'}
     HasFilteredColimitsOfSize.{w', w} C where
   HasColimitsOfShape J :=
     haveI := IsFiltered.of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J))
+      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J))
     hasColimitsOfShape_of_equivalence ((ShrinkHoms.equivalence.{w₂'} J).trans <|
-      Shrink.equivalence.{w₂} (ShrinkHoms.{w} J)).symm
+      Shrink.equivalence.{w₂, w₂'} (ShrinkHoms.{w} J)).symm
 
 lemma hasFilteredColimitsOfSize_shrink [HasFilteredColimitsOfSize.{max w' w₂', max w w₂} C] :
     HasFilteredColimitsOfSize.{w', w} C :=

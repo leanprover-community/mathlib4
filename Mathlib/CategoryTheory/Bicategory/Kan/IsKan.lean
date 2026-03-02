@@ -3,7 +3,9 @@ Copyright (c) 2023 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Extension
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Extension
 
 /-!
 # Kan extensions and Kan lifts in bicategories
@@ -35,6 +37,8 @@ in the namespace `StructuredArrow.IsUniversal`.
 https://ncatlab.org/nlab/show/Kan+extension
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -97,6 +101,7 @@ of extensions. -/
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `t : LeftExtension f (g ≫ 𝟙 c)` is a Kan extension, then `t.ofCompId : LeftExtension f g`
 is also a Kan extension. -/
 def ofCompId (t : LeftExtension f (g ≫ 𝟙 c)) (P : IsKan t) : IsKan t.ofCompId :=
@@ -188,6 +193,7 @@ theorem uniqueUpToIso_inv_right (P : IsKan s) (Q : IsKan t) :
 def ofIsoKan (P : IsKan s) (i : s ≅ t) : IsKan t :=
   Limits.IsInitial.ofIso P i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `t : LeftLift f (𝟙 c ≫ g)` is a Kan lift, then `t.ofIdComp : LeftLift f g` is also
 a Kan lift. -/
 def ofIdComp (t : LeftLift f (𝟙 c ≫ g)) (P : IsKan t) : IsKan t.ofIdComp :=

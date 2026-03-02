@@ -3,7 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Forall2
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # zip & unzip
@@ -18,6 +21,8 @@ applies, until one of the lists is exhausted. For example,
 `unzip` undoes `zip`. For example, `unzip [(a₁, b₁), (a₂, b₂)] = ([a₁, a₂], [b₁, b₂])`.
 -/
 
+@[expose] public section
+
 -- Make sure we don't import algebra
 assert_not_exists Monoid
 
@@ -28,6 +33,11 @@ open Nat
 namespace List
 
 variable {α : Type u} {β γ δ ε : Type*}
+
+open Function in
+theorem rightInverse_unzip_zip :
+    RightInverse (unzip : List (α × β) → List α × List β) (uncurry zip) := by
+  grind [zip_unzip]
 
 @[simp]
 theorem zip_swap : ∀ (l₁ : List α) (l₂ : List β), (zip l₁ l₂).map Prod.swap = zip l₂ l₁
@@ -117,21 +127,17 @@ theorem reverse_revzip (l : List α) : reverse l.revzip = revzip l.reverse := by
 
 theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse := by simp [revzip]
 
-@[deprecated (since := "2025-02-14")] alias get?_zipWith' := getElem?_zipWith'
-@[deprecated (since := "2025-02-14")] alias get?_zipWith_eq_some := getElem?_zipWith_eq_some
-@[deprecated (since := "2025-02-14")] alias get?_zip_eq_some := getElem?_zip_eq_some
-
 theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
     (init, tail) ∈ zip l.inits l.tails ↔ init ++ tail = l := by
-  induction' l with hd tl ih generalizing init tail <;> simp_rw [tails, inits, zip_cons_cons]
-  · simp
-  · constructor <;> rw [mem_cons, zip_map_left, mem_map, Prod.exists]
+  induction l generalizing init tail <;> simp_rw [tails, inits, zip_cons_cons]
+  case nil => simp
+  case cons hd tl ih =>
+    constructor <;> rw [mem_cons, zip_map_left, mem_map, Prod.exists]
     · rintro (⟨rfl, rfl⟩ | ⟨_, _, h, rfl, rfl⟩)
       · simp
       · simp [ih.mp h]
     · rcases init with - | ⟨hd', tl'⟩
-      · rintro rfl
-        simp
+      · simp
       · intro h
         right
         use tl', tail

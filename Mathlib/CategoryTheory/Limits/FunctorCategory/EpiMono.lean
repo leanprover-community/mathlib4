@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Monomorphisms and epimorphisms in functor categories
@@ -16,11 +18,13 @@ see `NatTrans.mono_iff_mono_app` and `NatTrans.epi_iff_epi_app`.
 
 -/
 
+@[expose] public section
+
 universe v v' v'' u u' u''
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 variable {K : Type u} [Category.{v} K] {C : Type u'} [Category.{v'} C]
   {D : Type u''} [Category.{v''} D] {F G : K ⥤ C} (f : F ⟶ G)

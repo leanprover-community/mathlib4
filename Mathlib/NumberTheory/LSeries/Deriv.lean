@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.NumberTheory.LSeries.Convergence
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.Complex.HalfPlane
+module
+
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.NumberTheory.LSeries.Convergence
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.Complex.HalfPlane
 
 /-!
 # Differentiability and derivatives of L-series
@@ -28,6 +30,8 @@ We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log
 the problem that this expression does not type-check.
 -/
 
+public section
+
 open Complex LSeries
 
 /-!
@@ -47,6 +51,7 @@ lemma LSeries.hasDerivAt_term (f : ℕ → ℂ) (n : ℕ) (s : ℂ) :
   exact HasDerivAt.const_mul (f n) (by simpa only [mul_comm, ← mul_neg_one (log n), ← mul_assoc]
     using (hasDerivAt_neg' s).const_cpow (Or.inl <| Nat.cast_ne_zero.mpr hn))
 
+set_option backward.isDefEq.respectTransparency false in
 /- This lemma proves two things at once, since their proofs are intertwined; we give separate
 non-private lemmas below that extract the two statements. -/
 private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s : ℂ}
@@ -74,19 +79,19 @@ private lemma LSeries.LSeriesSummable_logMul_and_hasDerivAt {f : ℕ → ℂ} {s
 of `f` is differentiable with derivative the negative of the L-series of the point-wise
 product of `log` with `f`. -/
 lemma LSeries_hasDerivAt {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
-    HasDerivAt (LSeries f) (- LSeries (logMul f) s) s :=
+    HasDerivAt (LSeries f) (-LSeries (logMul f) s) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).2
 
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the derivative of this L-series at `s` is the negative of the L-series of `log * f`. -/
 lemma LSeries_deriv {f : ℕ → ℂ} {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
-    deriv (LSeries f) s = - LSeries (logMul f) s :=
+    deriv (LSeries f) s = -LSeries (logMul f) s :=
   (LSeries_hasDerivAt h).deriv
 
 /-- The derivative of the L-series of `f` agrees with the negative of the L-series of
 `log * f` on the right half-plane of absolute convergence. -/
 lemma LSeries_deriv_eqOn {f : ℕ → ℂ} :
-    {s | abscissaOfAbsConv f < s.re}.EqOn (deriv (LSeries f)) (- LSeries (logMul f)) :=
+    {s | abscissaOfAbsConv f < s.re}.EqOn (deriv (LSeries f)) (-LSeries (logMul f)) :=
   deriv_eqOn (isOpen_re_gt_EReal _) fun _ hs ↦ (LSeries_hasDerivAt hs).hasDerivWithinAt
 
 /-- If the L-series of `f` is summable at `s` and `re s < re s'`, then the L-series of the
@@ -95,6 +100,7 @@ lemma LSeriesSummable_logMul_of_lt_re {f : ℕ → ℂ} {s : ℂ} (h : abscissaO
     LSeriesSummable (logMul f) s :=
   (LSeriesSummable_logMul_and_hasDerivAt h).1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The abscissa of absolute convergence of the point-wise product of `log` and `f`
 is the same as that of `f`. -/
 @[simp]
@@ -124,6 +130,7 @@ lemma LSeries.absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
   | succ n ih => simp [ih, Function.iterate_succ', Function.comp_def,
       -Function.comp_apply, -Function.iterate_succ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m * f`. -/
 lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :
@@ -136,7 +143,7 @@ lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
     have := derivWithin_congr ih' (ih h)
     simp_rw [derivWithin_of_isOpen (isOpen_re_gt_EReal _) h] at this
     rw [iteratedDeriv_succ, this]
-    simp [Pi.mul_def, pow_succ, mul_assoc, Function.iterate_succ', Function.comp_def,
+    simp [Pi.mul_def, pow_succ, Function.iterate_succ',
       LSeries_deriv <| absicssaOfAbsConv_logPowMul.symm ▸ h, -Function.iterate_succ]
 
 /-!

@@ -3,8 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Algebra.FreeAlgebra
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.FreeAlgebra
 
 /-!
 # A *-algebra structure on the free algebra.
@@ -15,6 +17,8 @@ Reversing words gives a *-structure on the free monoid or on the free algebra on
 We have this in a separate file, rather than in `Algebra.FreeMonoid` and `Algebra.FreeAlgebra`,
 to avoid importing `Algebra.Star.Basic` into the entire hierarchy.
 -/
+
+@[expose] public section
 
 
 namespace FreeMonoid

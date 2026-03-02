@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Determinant
+module
+
+public import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # Norm for (finite) ring extensions
@@ -31,6 +33,8 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 * https://en.wikipedia.org/wiki/Field_norm
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -98,7 +102,6 @@ protected theorem norm_algebraMap {L : Type*} [Ring L] [Algebra K L] (x : K) :
   by_cases H : ∃ s : Finset L, Nonempty (Basis s K L)
   · rw [norm_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
   · rw [norm_eq_one_of_not_exists_basis K H, finrank_eq_zero_of_not_exists_basis, pow_zero]
-    rintro ⟨s, ⟨b⟩⟩
-    exact H ⟨s, ⟨b⟩⟩
+    assumption_mod_cast
 
 end Algebra

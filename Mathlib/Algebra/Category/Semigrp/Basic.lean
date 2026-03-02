@@ -3,10 +3,12 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.PEmptyInstances
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+module
+
+public import Mathlib.Algebra.PEmptyInstances
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`
@@ -27,6 +29,8 @@ This closely follows `Mathlib/Algebra/Category/MonCat/Basic.lean`.
 * free/forgetful adjunctions
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -46,7 +50,6 @@ structure MagmaCat : Type (u + 1) where
   [str : Mul carrier]
 
 attribute [instance] AddMagmaCat.str MagmaCat.str
-attribute [to_additive existing] MagmaCat.carrier MagmaCat.str
 
 initialize_simps_projections AddMagmaCat (carrier → coe, -str)
 initialize_simps_projections MagmaCat (carrier → coe, -str)
@@ -60,7 +63,7 @@ instance : CoeSort MagmaCat (Type u) :=
 attribute [coe] AddMagmaCat.carrier MagmaCat.carrier
 
 /-- Construct a bundled `MagmaCat` from the underlying type and typeclass. -/
-@[to_additive "Construct a bundled `AddMagmaCat` from the underlying type and typeclass."]
+@[to_additive /-- Construct a bundled `AddMagmaCat` from the underlying type and typeclass. -/]
 abbrev of (M : Type u) [Mul M] : MagmaCat := ⟨M⟩
 
 end MagmaCat
@@ -72,6 +75,7 @@ structure AddMagmaCat.Hom (A B : AddMagmaCat.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `MagmaCat R`. -/
 @[to_additive, ext]
 structure MagmaCat.Hom (A B : MagmaCat.{u}) where
@@ -79,28 +83,30 @@ structure MagmaCat.Hom (A B : MagmaCat.{u}) where
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
 
-attribute [to_additive existing AddMagmaCat.Hom.mk] MagmaCat.Hom.mk
-
 namespace MagmaCat
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category MagmaCat.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MulHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory MagmaCat (· →ₙ* ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
 
 /-- Turn a morphism in `MagmaCat` back into a `MulHom`. -/
-@[to_additive "Turn a morphism in `AddMagmaCat` back into an `AddHom`."]
+@[to_additive /-- Turn a morphism in `AddMagmaCat` back into an `AddHom`. -/]
 abbrev Hom.hom {X Y : MagmaCat.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := MagmaCat) f
 
 /-- Typecheck a `MulHom` as a morphism in `MagmaCat`. -/
-@[to_additive "Typecheck an `AddHom` as a morphism in `AddMagmaCat`. "]
+@[to_additive /-- Typecheck an `AddHom` as a morphism in `AddMagmaCat`. -/]
 abbrev ofHom {X Y : Type u} [Mul X] [Mul Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := MagmaCat) f
 
@@ -124,7 +130,7 @@ lemma coe_comp {X Y Z : MagmaCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X →
 
 @[to_additive (attr := simp)]
 lemma forget_map {X Y : MagmaCat} (f : X ⟶ Y) :
-    (forget MagmaCat).map f = f := rfl
+    (forget MagmaCat).map f = (f : _ → _) := rfl
 
 @[to_additive (attr := ext)]
 lemma ext {X Y : MagmaCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -156,8 +162,7 @@ lemma hom_ext {M N : MagmaCat} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[to_additive (attr := simp)]
-lemma hom_ofHom {M N : Type u} [Mul M] [Mul N] (f : M →ₙ* N) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {M N : Type u} [Mul M] [Mul N] (f : M →ₙ* N) : (ofHom f).hom = f := rfl
 
 @[to_additive (attr := simp)]
 lemma ofHom_hom {M N : MagmaCat} (f : M ⟶ N) :
@@ -209,7 +214,6 @@ structure Semigrp : Type (u + 1) where
   [str : Semigroup carrier]
 
 attribute [instance] AddSemigrp.str Semigrp.str
-attribute [to_additive existing] Semigrp.carrier Semigrp.str
 
 initialize_simps_projections AddSemigrp (carrier → coe, -str)
 initialize_simps_projections Semigrp (carrier → coe, -str)
@@ -223,7 +227,7 @@ instance : CoeSort Semigrp (Type u) :=
 attribute [coe] AddSemigrp.carrier Semigrp.carrier
 
 /-- Construct a bundled `Semigrp` from the underlying type and typeclass. -/
-@[to_additive "Construct a bundled `AddSemigrp` from the underlying type and typeclass."]
+@[to_additive /-- Construct a bundled `AddSemigrp` from the underlying type and typeclass. -/]
 abbrev of (M : Type u) [Semigroup M] : Semigrp := ⟨M⟩
 
 end Semigrp
@@ -235,6 +239,7 @@ structure AddSemigrp.Hom (A B : AddSemigrp.{u}) where
   /-- The underlying `AddHom`. -/
   hom' : A →ₙ+ B
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `Semigrp R`. -/
 @[to_additive, ext]
 structure Semigrp.Hom (A B : Semigrp.{u}) where
@@ -242,28 +247,30 @@ structure Semigrp.Hom (A B : Semigrp.{u}) where
   /-- The underlying `MulHom`. -/
   hom' : A →ₙ* B
 
-attribute [to_additive existing AddSemigrp.Hom.mk] Semigrp.Hom.mk
-
 namespace Semigrp
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : Category Semigrp.{u} where
   Hom X Y := Hom X Y
   id X := ⟨MulHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive]
 instance : ConcreteCategory Semigrp (· →ₙ* ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
 
 /-- Turn a morphism in `Semigrp` back into a `MulHom`. -/
-@[to_additive "Turn a morphism in `AddSemigrp` back into an `AddHom`."]
+@[to_additive /-- Turn a morphism in `AddSemigrp` back into an `AddHom`. -/]
 abbrev Hom.hom {X Y : Semigrp.{u}} (f : Hom X Y) :=
   ConcreteCategory.hom (C := Semigrp) f
 
 /-- Typecheck a `MulHom` as a morphism in `Semigrp`. -/
-@[to_additive "Typecheck an `AddHom` as a morphism in `AddSemigrp`. "]
+@[to_additive /-- Typecheck an `AddHom` as a morphism in `AddSemigrp`. -/]
 abbrev ofHom {X Y : Type u} [Semigroup X] [Semigroup Y] (f : X →ₙ* Y) : of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := Semigrp) f
 
@@ -284,9 +291,6 @@ lemma coe_id {X : Semigrp} : (𝟙 X : X → X) = id := rfl
 
 @[to_additive (attr := simp)]
 lemma coe_comp {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
-
-@[to_additive (attr := deprecated "Use hom_comp instead" (since := "2025-01-28"))]
-lemma comp_def {X Y Z : Semigrp} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g).hom = g.hom.comp f.hom := rfl
 
 @[simp] lemma forget_map {X Y : Semigrp} (f : X ⟶ Y) : (forget Semigrp).map f = (f : X → Y) := rfl
 
@@ -373,7 +377,7 @@ variable [Mul X] [Mul Y]
 
 /-- Build an isomorphism in the category `MagmaCat` from a `MulEquiv` between `Mul`s. -/
 @[to_additive (attr := simps)
-      "Build an isomorphism in the category `AddMagmaCat` from an `AddEquiv` between `Add`s."]
+      /-- Build an isomorphism in the category `AddMagmaCat` from an `AddEquiv` between `Add`s. -/]
 def MulEquiv.toMagmaCatIso (e : X ≃* Y) : MagmaCat.of X ≅ MagmaCat.of Y where
   hom := MagmaCat.ofHom e.toMulHom
   inv := MagmaCat.ofHom e.symm.toMulHom
@@ -386,8 +390,8 @@ variable [Semigroup X] [Semigroup Y]
 
 /-- Build an isomorphism in the category `Semigroup` from a `MulEquiv` between `Semigroup`s. -/
 @[to_additive (attr := simps)
-  "Build an isomorphism in the category
-  `AddSemigroup` from an `AddEquiv` between `AddSemigroup`s."]
+  /-- Build an isomorphism in the category
+  `AddSemigroup` from an `AddEquiv` between `AddSemigroup`s. -/]
 def MulEquiv.toSemigrpIso (e : X ≃* Y) : Semigrp.of X ≅ Semigrp.of Y where
   hom := Semigrp.ofHom e.toMulHom
   inv := Semigrp.ofHom e.symm.toMulHom
@@ -398,13 +402,13 @@ namespace CategoryTheory.Iso
 
 /-- Build a `MulEquiv` from an isomorphism in the category `MagmaCat`. -/
 @[to_additive
-      "Build an `AddEquiv` from an isomorphism in the category `AddMagmaCat`."]
+      /-- Build an `AddEquiv` from an isomorphism in the category `AddMagmaCat`. -/]
 def magmaCatIsoToMulEquiv {X Y : MagmaCat} (i : X ≅ Y) : X ≃* Y :=
   MulHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
 /-- Build a `MulEquiv` from an isomorphism in the category `Semigroup`. -/
 @[to_additive
-  "Build an `AddEquiv` from an isomorphism in the category `AddSemigroup`."]
+  /-- Build an `AddEquiv` from an isomorphism in the category `AddSemigroup`. -/]
 def semigrpIsoToMulEquiv {X Y : Semigrp} (i : X ≅ Y) : X ≃* Y :=
   MulHom.toMulEquiv i.hom.hom i.inv.hom (by ext; simp) (by ext; simp)
 
@@ -413,8 +417,8 @@ end CategoryTheory.Iso
 /-- multiplicative equivalences between `Mul`s are the same as (isomorphic to) isomorphisms
 in `MagmaCat` -/
 @[to_additive
-    "additive equivalences between `Add`s are the same
-    as (isomorphic to) isomorphisms in `AddMagmaCat`"]
+    /-- additive equivalences between `Add`s are the same
+    as (isomorphic to) isomorphisms in `AddMagmaCat` -/]
 def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
     X ≃* Y ≅ MagmaCat.of X ≅ MagmaCat.of Y where
   hom e := e.toMagmaCatIso
@@ -423,8 +427,8 @@ def mulEquivIsoMagmaIso {X Y : Type u} [Mul X] [Mul Y] :
 /-- multiplicative equivalences between `Semigroup`s are the same as (isomorphic to) isomorphisms
 in `Semigroup` -/
 @[to_additive
-  "additive equivalences between `AddSemigroup`s are
-  the same as (isomorphic to) isomorphisms in `AddSemigroup`"]
+  /-- additive equivalences between `AddSemigroup`s are
+  the same as (isomorphic to) isomorphisms in `AddSemigroup` -/]
 def mulEquivIsoSemigrpIso {X Y : Type u} [Semigroup X] [Semigroup Y] :
     X ≃* Y ≅ Semigrp.of X ≅ Semigrp.of Y where
   hom e := e.toSemigrpIso
@@ -444,10 +448,7 @@ instance Semigrp.forgetReflectsIsos : (forget Semigrp.{u}).ReflectsIsomorphisms 
     let e : X ≃* Y := { f.hom, i.toEquiv with }
     exact e.toSemigrpIso.isIso_hom
 
-/--
-Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms.
-We could have used `CategoryTheory.HasForget.ReflectsIso` alternatively.
--/
+/-- Ensure that `forget₂ CommMonCat MonCat` automatically reflects isomorphisms. -/
 @[to_additive]
 instance Semigrp.forget₂_full : (forget₂ Semigrp MagmaCat).Full where
   map_surjective f := ⟨ofHom f.hom, rfl⟩

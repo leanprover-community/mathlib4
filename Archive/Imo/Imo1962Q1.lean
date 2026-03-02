@@ -3,7 +3,7 @@ Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
 -/
-import Mathlib.Data.Nat.Digits
+import Mathlib.Data.Nat.Digits.Lemmas
 
 /-!
 # IMO 1962 Q1
@@ -38,7 +38,7 @@ abbrev ProblemPredicate' (c n : ℕ) : Prop :=
 lemma without_digits {n : ℕ} (hn : ProblemPredicate n) : ∃ c : ℕ, ProblemPredicate' c n := by
   use n / 10
   rcases n with - | n
-  · have hpp : ¬ProblemPredicate 0 := by norm_num [ProblemPredicate]
+  · have hpp : ¬ProblemPredicate 0 := by simp [ProblemPredicate]
     contradiction
   · rw [ProblemPredicate, digits_def' (by decide : 2 ≤ 10) n.succ_pos, List.headI, List.tail_cons,
       List.concat_eq_append] at hn
@@ -53,31 +53,31 @@ Now we can eliminate possibilities for `(digits 10 c).length` until we get to th
 lemma case_0_digits {c n : ℕ} (hc : (digits 10 c).length = 0) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 0 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 lemma case_1_digits {c n : ℕ} (hc : (digits 10 c).length = 1) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 1 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 lemma case_2_digits {c n : ℕ} (hc : (digits 10 c).length = 2) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 2 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 lemma case_3_digits {c n : ℕ} (hc : (digits 10 c).length = 3) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 3 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 lemma case_4_digits {c n : ℕ} (hc : (digits 10 c).length = 4) : ¬ProblemPredicate' c n := by
   intro hpp
   have hpow : 6 * 10 ^ 4 = 6 * 10 ^ (digits 10 c).length := by rw [hc]
-  omega
+  lia
 
 /-- Putting this inline causes a deep recursion error, so we separate it out. -/
 private lemma helper_5_digits {c : ℤ} (hc : 6 * 10 ^ 5 + c = 4 * (10 * c + 6)) : c = 15384 := by
-  omega
+  lia
 
 lemma case_5_digits {c n : ℕ} (hc : (digits 10 c).length = 5) (hpp : ProblemPredicate' c n) :
     c = 15384 := by
@@ -99,7 +99,7 @@ lemma case_more_digits {c n : ℕ} (hc : (digits 10 c).length ≥ 6) (hpp : Prob
     n ≥ 10 * c := le.intro hpp.left.symm
     _ ≥ 10 ^ (digits 10 c).length := base_pow_length_digits_le 10 c (by decide) hnz
     _ ≥ 10 ^ 6 := pow_right_mono₀ (by decide) hc
-    _ ≥ 153846 := by norm_num
+    _ ≥ 153846 := by simp
 
 /-!
 Now we combine these cases to show that 153846 is the smallest solution.

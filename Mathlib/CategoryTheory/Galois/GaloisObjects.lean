@@ -3,17 +3,18 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Limits.FintypeCat
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Algebra.Equiv.TransferInstance
+module
+
+public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Limits.FintypeCat
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.SingleObj
+public import Mathlib.GroupTheory.GroupAction.Basic
 
 /-!
 # Galois objects in Galois categories
 
-We define when a connected object of a Galois category `C` is Galois in a fiber functor independent
+We define when a connected object of a Galois category `C` is Galois in a fiber-functor-independent
 way and show equivalent characterisations.
 
 ## Main definitions
@@ -26,6 +27,8 @@ way and show equivalent characterisations.
                                acts transitively on `F.obj X` for a fiber functor `F`.
 
 -/
+
+@[expose] public section
 universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
@@ -50,10 +53,10 @@ variable {C : Type u₁} [Category.{u₂, u₁} C]
 instance autMulFiber (F : C ⥤ FintypeCat.{w}) (X : C) : MulAction (Aut X) (F.obj X) where
   smul σ a := F.map σ.hom a
   one_smul a := by
-    show F.map (𝟙 X) a = a
+    change F.map (𝟙 X) a = a
     simp only [map_id, FintypeCat.id_apply]
   mul_smul g h a := by
-    show F.map (h.hom ≫ g.hom) a = (F.map h.hom ≫ F.map g.hom) a
+    change F.map (h.hom ≫ g.hom) a = (F.map h.hom ≫ F.map g.hom) a
     simp only [map_comp, FintypeCat.comp_apply]
 
 variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
@@ -100,7 +103,7 @@ lemma stabilizer_normal_of_isGalois (X : C) [IsGalois X] (x : F.obj X) :
     Subgroup.Normal (MulAction.stabilizer (Aut F) x) where
   conj_mem n ninstab g := by
     rw [MulAction.mem_stabilizer_iff]
-    show g • n • (g⁻¹ • x) = x
+    change g • n • (g⁻¹ • x) = x
     have : ∃ (φ : Aut X), F.map φ.hom x = g⁻¹ • x :=
       MulAction.IsPretransitive.exists_smul_eq x (g⁻¹ • x)
     obtain ⟨φ, h⟩ := this
@@ -144,7 +147,7 @@ lemma exists_autMap {A B : C} (f : A ⟶ B) [IsConnected A] [IsGalois B] (σ : A
     simp
   · intro τ hτ
     apply evaluation_aut_injective_of_isConnected F B (F.map f a)
-    simpa using congr_fun (F.congr_map hτ) a
+    simpa using DFunLike.congr_fun (F.congr_map hτ) a
 
 /-- A morphism from a connected object to a Galois object induces a map on automorphism
 groups. This is a group homomorphism (see `autMapHom`). -/
@@ -161,7 +164,7 @@ lemma comp_autMap {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut
 lemma comp_autMap_apply (F : C ⥤ FintypeCat.{w}) {A B : C} [IsConnected A] [IsGalois B]
     (f : A ⟶ B) (σ : Aut A) (a : F.obj A) :
     F.map (autMap f σ).hom (F.map f a) = F.map f (F.map σ.hom a) := by
-  simpa [-comp_autMap] using congrFun (F.congr_map (comp_autMap f σ)) a
+  simpa [-comp_autMap] using DFunLike.congr_fun (F.congr_map (comp_autMap f σ)) a
 
 /-- `autMap` is uniquely characterized by making the canonical diagram commute. -/
 lemma autMap_unique {A B : C} [IsConnected A] [IsGalois B] (f : A ⟶ B) (σ : Aut A)

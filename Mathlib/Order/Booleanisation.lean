@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.BooleanAlgebra
-import Mathlib.Order.Hom.Lattice
+module
+
+public import Mathlib.Order.BooleanAlgebra.Basic
+public import Mathlib.Order.Hom.Lattice
 
 /-!
 # Adding complements to a generalized Boolean algebra
@@ -28,6 +30,8 @@ If mathlib ever acquires `GenBoolAlg`, the category of generalised Boolean algeb
 show that `Booleanisation` is the free functor from `GenBoolAlg` to `BoolAlg`.
 -/
 
+@[expose] public section
+
 open Function
 
 variable {α : Type*}
@@ -47,11 +51,11 @@ instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) :=
 algebra. -/
 @[match_pattern] def lift : α → Booleanisation α := Sum.inl
 
-/-- The inclusion `a ↦ aᶜ from a generalized Boolean algebra to its generated Boolean algebra. -/
+/-- The inclusion `a ↦ aᶜ` from a generalized Boolean algebra to its generated Boolean algebra. -/
 @[match_pattern] def comp : α → Booleanisation α := Sum.inr
 
 /-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
-instance instCompl : HasCompl (Booleanisation α) where
+instance instCompl : Compl (Booleanisation α) where
   compl
     | lift a => comp a
     | comp a => lift a
@@ -59,7 +63,7 @@ instance instCompl : HasCompl (Booleanisation α) where
 @[simp] lemma compl_lift (a : α) : (lift a)ᶜ = comp a := rfl
 @[simp] lemma compl_comp (a : α) : (comp a)ᶜ = lift a := rfl
 
-variable [GeneralizedBooleanAlgebra α] {a b : α}
+variable [GeneralizedBooleanAlgebra α]
 
 /-- The order on `Booleanisation α` is as follows: For `a b : α`,
 * `a ≤ b` iff `a ≤ b` in `α`
@@ -132,6 +136,8 @@ instance instSDiff : SDiff (Booleanisation α) where
     | lift a, comp b => lift (a ⊓ b)
     | comp a, lift b => comp (a ⊔ b)
     | comp a, comp b => lift (b \ a)
+
+variable {a b : α}
 
 @[simp] lemma lift_le_lift : lift a ≤ lift b ↔ a ≤ b := ⟨by rintro ⟨_⟩; assumption, LE.lift⟩
 @[simp] lemma comp_le_comp : comp a ≤ comp b ↔ b ≤ a := ⟨by rintro ⟨_⟩; assumption, LE.comp⟩
@@ -231,7 +237,7 @@ instance instDistribLattice : DistribLattice (Booleanisation α) where
   le_inf _ _ _ := le_inf
   le_sup_inf
     | lift _, lift _, lift _ => LE.lift le_sup_inf
-    | lift a, lift b, comp c => LE.lift <| by simp [sup_left_comm, sup_comm, sup_assoc]
+    | lift a, lift b, comp c => LE.lift <| by simp [sup_comm, sup_assoc]
     | lift a, comp b, lift c => LE.lift <| by
       simp [sup_left_comm (a := b \ a), sup_comm (a := b \ a)]
     | lift a, comp b, comp c => LE.comp <| by rw [sup_sdiff]

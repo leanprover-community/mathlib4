@@ -3,14 +3,16 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
 /-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
 
 In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryGenRel`
 each admits a normal form.
 
 In both cases, the normal forms are encoded as an integer `m`, and a strictly increasing
-lists of integers `[i₀,…,iₙ]` such that `iₖ ≤ m + k` for all `k`. We define a predicate
+list of integers `[i₀,…,iₙ]` such that `iₖ ≤ m + k` for all `k`. We define a predicate
 `isAdmissible m : List ℕ → Prop` encoding this property. And provide some lemmas to help
 work with such lists.
 
@@ -30,9 +32,9 @@ stones towards proving that the canonical functor
 
 -/
 
-namespace SimplexCategoryGenRel
+@[expose] public section
 
-open CategoryTheory
+namespace SimplexCategoryGenRel
 
 open CategoryTheory
 
@@ -44,67 +46,111 @@ section AdmissibleLists
 -- propositions asserting that various List constructions produce admissible lists.
 
 variable (m : ℕ)
-/-- A list of natural numbers [i₀, ⋯, iₙ]) is said to be `m`-admissible (for `m : ℕ`) if
-`i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`.
+/-- A list of natural numbers `[i₀, ⋯, iₙ]` is said to be `m`-admissible (for `m : ℕ`) if
+`i₀ < ⋯ < iₙ` and `iₖ ≤ m + k` for all `k`. This would suggest the definition
+`L.IsChain (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k`.
+However, we instead define `IsAdmissible` inductively and show, in
+`isAdmissible_iff_isChain_and_le`, that this is equivalent to the non-inductive definition.
 -/
-def IsAdmissible (L : List ℕ) : Prop :=
-  List.Sorted (· < ·) L ∧
-  ∀ (k : ℕ), (h : k < L.length) → L[k] ≤ m + k
+@[mk_iff]
+inductive IsAdmissible : (m : ℕ) → (L : List ℕ) → Prop
+  | nil (m : ℕ) : IsAdmissible m []
+  | singleton {m a} (ha : a ≤ m) : IsAdmissible m [a]
+  | cons_cons {m a b L'} (hab : a < b) (hbL : IsAdmissible (m + 1) (b :: L'))
+      (ha : a ≤ m) : IsAdmissible m (a :: b :: L')
+
+attribute [simp, grind ←] IsAdmissible.nil
+attribute [grind →] IsAdmissible.cons_cons
+
+section IsAdmissible
+
+variable {m a b : ℕ} {L : List ℕ}
+
+@[simp, grind =]
+theorem isAdmissible_singleton_iff : IsAdmissible m [a] ↔ a ≤ m :=
+  ⟨fun | .singleton h => h, .singleton⟩
+
+@[simp, grind =]
+theorem isAdmissible_cons_cons_iff : IsAdmissible m (a :: b :: L) ↔
+    a < b ∧ IsAdmissible (m + 1) (b :: L) ∧ a ≤ m :=
+  ⟨fun | .cons_cons hab hbL ha => ⟨hab, hbL, ha⟩, by grind⟩
+
+theorem isAdmissible_cons_iff : IsAdmissible m (a :: L) ↔
+    a ≤ m ∧ ((_ : 0 < L.length) → a < L[0]) ∧ IsAdmissible (m + 1) L := by
+  cases L <;> grind
+
+theorem isAdmissible_iff_isChain_and_le : IsAdmissible m L ↔
+    L.IsChain (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k := by
+  induction L using List.twoStepInduction generalizing m with
+  | nil => grind
+  | singleton _ => simp
+  | cons_cons _ _ _ _ IH =>
+    simp_rw [isAdmissible_cons_cons_iff, IH, List.length_cons, and_assoc,
+      List.isChain_cons_cons, and_assoc, and_congr_right_iff, and_comm]
+    exact fun _ _ => ⟨fun h => by grind,
+      fun h => ⟨h 0 (by grind), fun k _ => (h (k + 1) (by grind)).trans (by grind)⟩⟩
+
+theorem isAdmissible_iff_pairwise_and_le : IsAdmissible m L ↔
+    L.Pairwise (· < ·) ∧ ∀ k, (h : k < L.length) → L[k] ≤ m + k := by
+  rw [isAdmissible_iff_isChain_and_le, List.isChain_iff_pairwise]
+
+theorem isAdmissible_of_isChain_of_forall_getElem_le {m L} (hL : L.IsChain (· < ·))
+    (hL₂ : ∀ k, (h : k < L.length) → L[k] ≤ m + k) : IsAdmissible m L :=
+  isAdmissible_iff_isChain_and_le.mpr ⟨hL, hL₂⟩
 
 namespace IsAdmissible
 
-lemma nil : IsAdmissible m [] := by simp [IsAdmissible]
+@[grind →] theorem isChain {m L} (hL : IsAdmissible m L) :
+    L.IsChain (· < ·) := (isAdmissible_iff_isChain_and_le.mp hL).1
 
-variable {m}
-
-lemma sorted {L : List ℕ} (hL : IsAdmissible m L) : L.Sorted (· < ·) := hL.1
-
-lemma le {L : List ℕ} (hL : IsAdmissible m L) : ∀ (k : ℕ), (h : k < L.length) → L[k] ≤ m + k := hL.2
-
-/-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
-lemma head_lt (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) :
-    ∀ a' ∈ L, a < a' := fun i hi ↦ (List.sorted_cons.mp hl.sorted).left i hi
-
-/-- If `L` is a `(m + 1)`-admissible list, and `a` is natural number such that a ≤ m and a < L[0],
-then `a::L` is `m`-admissible -/
-lemma cons (L : List ℕ) (hL : IsAdmissible (m + 1) L) (a : ℕ) (ha : a ≤ m)
-    (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by
-  cases L with
-  | nil => constructor <;> simp [ha]
-  | cons head tail =>
-    simp only [List.length_cons, lt_add_iff_pos_left, add_pos_iff,
-      Nat.lt_one_iff, pos_of_gt, or_true, List.getElem_cons_zero,
-      forall_const] at ha'
-    simp only [IsAdmissible, List.sorted_cons, List.mem_cons, forall_eq_or_imp]
-    constructor <;> repeat constructor
-    · exact ha'
-    · rw [← List.forall_getElem]
-      intro i hi
-      exact ha'.trans <| (List.sorted_cons.mp hL.sorted).left tail[i] <| List.getElem_mem hi
-    · exact List.sorted_cons.mp hL.sorted
-    · rintro ⟨_ | _⟩ hi
-      · simp [ha]
-      · haveI := hL.le _ <| Nat.lt_of_succ_lt_succ hi
-        rw [List.getElem_cons_succ]
-        omega
+@[grind →] theorem le {m} {L : List ℕ} (hL : IsAdmissible m L) : ∀ k (h : k < L.length),
+    L[k] ≤ m + k := (isAdmissible_iff_isChain_and_le.mp hL).2
 
 /-- The tail of an `m`-admissible list is (m+1)-admissible. -/
-lemma tail (a : ℕ) (l : List ℕ) (h : IsAdmissible m (a::l)) :
-    IsAdmissible (m + 1) l := by
-  refine ⟨(List.sorted_cons.mp h.sorted).right, ?_⟩
-  intro k _
-  simpa [Nat.add_assoc, Nat.add_comm 1] using h.le (k + 1) (by simpa)
+@[grind →] lemma of_cons {m a L} (h : IsAdmissible m (a :: L)) :
+    IsAdmissible (m + 1) L := by cases L <;> grind
 
-/-- An element of a `m`-admissible list, as an element of the appropriate `Fin` -/
+@[deprecated (since := "2025-10-15")]
+alias tail := IsAdmissible.of_cons
+
+lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
+    (ha' : (_ : 0 < L.length) → a < L[0]) : IsAdmissible m (a :: L) := by cases L <;> grind
+
+theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
+  hL.isChain.sortedLT
+
+@[deprecated (since := "2025-11-27")] alias pairwise := sortedLT
+
+@[deprecated (since := "2025-10-16")]
+alias sorted := pairwise
+
+/-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
+@[grind →]
+lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
+    ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.sortedLT.pairwise
+
+@[grind →] lemma getElem_lt {m L} (hL : IsAdmissible m L)
+    {k : ℕ} {hk : k < L.length} : L[k] < m + L.length :=
+  (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
+
+/-- An element of an `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
-def getElemAsFin {L : List ℕ} (hl : IsAdmissible m L) (k : ℕ)
+def getElemAsFin {m L} (hl : IsAdmissible m L) (k : ℕ)
     (hK : k < L.length) : Fin (m + k + 1) :=
-  Fin.mk L[k] <| Nat.le_iff_lt_add_one.mp (by simp [hl.le])
+  Fin.mk L[k] <| Nat.le_iff_lt_add_one.mp (by grind)
 
 /-- The head of an `m`-admissible list. -/
 @[simps!]
-def head (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) : Fin (m + 1) :=
-  hl.getElemAsFin 0 (by simp)
+def head {m a L} (hl : IsAdmissible m (a :: L)) : Fin (m + 1) :=
+  hl.getElemAsFin 0 (by grind)
+
+theorem mono {n} (hmn : m ≤ n) (hL : IsAdmissible m L) : IsAdmissible n L :=
+  isAdmissible_of_isChain_of_forall_getElem_le (by grind) (by grind)
+
+lemma head_lt' (a : ℕ) (L : List ℕ) (hl : IsAdmissible m (a :: L)) : a < m + 1 :=
+  hl.getElemAsFin 0 (by simp)|>.prop
+
+end IsAdmissible
 
 end IsAdmissible
 
@@ -116,6 +162,7 @@ satisfying `P_σ`!
 
 This is similar in nature to `List.orderedInsert`, but note that we increment one of the element
 every time we perform an exchange, making it a different construction. -/
+@[local grind]
 def simplicialInsert (a : ℕ) : List ℕ → List ℕ
   | [] => [a]
   | b :: l => if a < b then a :: b :: l else b :: simplicialInsert (a + 1) l
@@ -123,33 +170,15 @@ def simplicialInsert (a : ℕ) : List ℕ → List ℕ
 /-- `simplicialInsert` just adds one to the length. -/
 lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
     (simplicialInsert a L).length = L.length + 1 := by
-  induction L generalizing a with
-  | nil => rfl
-  | cons head tail h_rec =>
-    dsimp only [simplicialInsert, List.length_cons]
-    split_ifs with h <;> simp only [List.length_cons, add_left_inj, h_rec (a + 1)]
+  induction L generalizing a <;> grind
 
 /-- `simplicialInsert` preserves admissibility -/
 theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) L) (j : ℕ)
-    (hj : j < m + 1) :
+    (hj : j ≤ m) :
     IsAdmissible m <| simplicialInsert j L := by
   induction L generalizing j m with
-  | nil => constructor <;> simp [simplicialInsert, j.le_of_lt_add_one hj]
-  | cons a L h_rec =>
-    dsimp only [simplicialInsert]
-    split_ifs with ha
-    · exact .cons _ hL _ (j.le_of_lt_add_one hj) (fun _ ↦ ha)
-    · refine IsAdmissible.cons _ ?_ _ (not_lt.mp ha |>.trans <| j.le_of_lt_add_one hj) ?_
-      · refine h_rec _ (.tail a L hL) _ (by simp [hj])
-      · rw [not_lt, Nat.le_iff_lt_add_one] at ha
-        intro u
-        cases L with
-        | nil => simp [simplicialInsert, ha]
-        | cons a' l' =>
-          dsimp only [simplicialInsert]
-          split_ifs
-          · exact ha
-          · exact (List.sorted_cons_cons.mp hL.sorted).1
+  | nil => exact IsAdmissible.singleton hj
+  | cons a L h_rec => cases L <;> grind
 
 end AdmissibleLists
 
@@ -164,116 +193,108 @@ section NormalFormsP_σ
 but it is intended to behave well only when the list is admissible. -/
 def standardσ (L : List ℕ) {m₁ m₂ : ℕ} (h : m₂ + L.length = m₁) : mk m₁ ⟶ mk m₂ :=
   match L with
-  | .nil => eqToHom (by congr; aesop)
-  | .cons a t => standardσ t (by subst h; simp only [List.length_cons]; omega) ≫ σ a
+  | .nil => eqToHom (by grind)
+  | .cons a t => standardσ t (by grind) ≫ σ (Fin.ofNat _ a)
 
 @[simp]
-lemma standardσ_nil (m : ℕ) : standardσ .nil (by simp) = 𝟙 (mk m) := rfl
+lemma standardσ_nil (m : ℕ) : standardσ .nil (by grind) = 𝟙 (mk m) := rfl
 
 @[simp, reassoc]
 lemma standardσ_cons (L : List ℕ) (a : ℕ) {m₁ m₂ : ℕ} (h : m₂ + (a :: L).length = m₁) :
-    standardσ (L.cons a) h = standardσ L (by dsimp at h; omega) ≫ σ a := rfl
+    standardσ (L.cons a) h = standardσ L (by grind) ≫ σ (Fin.ofNat _ a) := rfl
 
 @[reassoc]
 lemma standardσ_comp_standardσ (L₁ L₂ : List ℕ) {m₁ m₂ m₃ : ℕ}
     (h : m₂ + L₁.length = m₁) (h' : m₃ + L₂.length = m₂) :
-    standardσ L₁ h ≫ standardσ L₂ h' =
-      standardσ (List.append L₂ L₁) (by simp; omega) := by
+    standardσ L₁ h ≫ standardσ L₂ h' = standardσ (L₂ ++ L₁) (by grind) := by
   induction L₂ generalizing L₁ m₁ m₂ m₃ with
   | nil =>
-    obtain rfl : m₃ = m₂ := by simpa using h'
+    obtain rfl : m₃ = m₂ := by grind
     simp
   | cons a t H =>
     dsimp at h' ⊢
-    obtain rfl : m₂ = (m₃ + t.length) + 1 := by omega
-    rw [reassoc_of% (H L₁ (m₁ := m₁) (m₂ := m₃ + t.length + 1) (m₃ := m₃ + 1)
-      (by omega) (by omega))]
-    simp
+    obtain rfl : m₂ = (m₃ + t.length) + 1 := by grind
+    simp [reassoc_of% (H L₁ (m₁ := m₁) (m₂ := m₃ + t.length + 1) (m₃ := m₃ + 1)
+      (by grind) (by grind))]
 
 variable (m : ℕ) (L : List ℕ)
 
-/-- `simplicialEvalσ` is a lift to ℕ of `toSimplexCategory.map (standardσ m L _ _)).toOrderHom`.
+/-- `simplicialEvalσ` is a lift to ℕ of `(toSimplexCategory.map (standardσ m L _ _)).toOrderHom`.
 Rather than defining it as such, we define it inductively for less painful inductive reasoning,
-and we keep the (hidden) `eqToHom` business in the proof that it is indeed such a lift
 (see `simplicialEvalσ_of_isAdmissible`).
 It is expected to produce the correct result only if `L` is admissible, and values for
-non-admissible lists should be considered junk values. Similarly, values for out-of-bonds inputs
+non-admissible lists should be considered junk values. Similarly, values for out-of-bounds inputs
 are junk values. -/
+@[local grind]
 def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
   fun j ↦ match L with
   | [] => j
   | a :: L => if a < simplicialEvalσ L j then simplicialEvalσ L j - 1 else simplicialEvalσ L j
 
-lemma simplicialEvalσ_of_lt_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
-  induction L with
-  | nil => simp [simplicialEvalσ]
-  | cons a h h_rec =>
-    dsimp only [simplicialEvalσ]
-    split_ifs with h1 <;> {
-      simp only [List.mem_cons, forall_eq_or_imp] at hj
-      haveI := h_rec hj.2
-      omega }
+@[grind ←]
+lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
+  induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
+
+@[deprecated (since := "2025-10-16")]
+alias simplicialEvalσ_of_lt_mem := simplicialEvalσ_of_le_mem
 
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
-  intro a b hab
-  induction L generalizing a b with
-  | nil => exact hab
-  | cons head tail h_rec =>
-    dsimp only [simplicialEvalσ]
-    haveI := h_rec hab
-    split_ifs with h h' h' <;> omega
+  induction L <;> grind [Monotone]
 
 variable {m}
+
+set_option backward.isDefEq.respectTransparency false in
 /- We prove that `simplicialEvalσ` is indeed a lift of
-`toSimplexCategory.map (standardσ m L _ _)).toOrderHom` when the list is admissible. -/
+`(toSimplexCategory.map (standardσ m L _ _)).toOrderHom` when the list is admissible. -/
 lemma simplicialEvalσ_of_isAdmissible
-    (m₁ m₂: ℕ) (hL : IsAdmissible m₂ L) (hk : m₂ + L.length = m₁)
+    (m₁ m₂ : ℕ) (hL : IsAdmissible m₂ L) (hk : m₂ + L.length = m₁)
     (j : ℕ) (hj : j < m₁ + 1) :
-    ((toSimplexCategory.map <| standardσ L hk).toOrderHom ⟨j, hj⟩ : ℕ) =
+    (toSimplexCategory.map <| standardσ L hk).toOrderHom ⟨j, hj⟩ =
     simplicialEvalσ L j := by
   induction L generalizing m₁ m₂ with
   | nil =>
-    obtain rfl : m₁ = m₂ := by dsimp at hk; omega
+    obtain rfl : m₁ = m₂ := by grind
     simp [simplicialEvalσ]
   | cons a L h_rec =>
-    simp only [toSimplexCategory_obj_mk, SimplexCategory.len_mk, standardσ_cons, Functor.map_comp,
+    simp only [List.length_cons] at hk
+    subst hk
+    set a₀ := hL.head
+    have aux (t : Fin (m₂ + 2)) :
+        (a₀.predAbove t : ℕ) = if a < ↑t then (t : ℕ) - 1 else ↑t := by
+      simp only [Fin.predAbove, a₀]
+      split_ifs with h₁ h₂ h₂
+      · rfl
+      · simp only [Fin.lt_def, Fin.val_castSucc, IsAdmissible.head_val] at h₁; grind
+      · simp only [Fin.lt_def, Fin.val_castSucc, IsAdmissible.head_val, not_lt] at h₁; grind
+      · rfl
+    have := h_rec _ _ hL.of_cons (by grind) hj
+    have ha₀ : Fin.ofNat (m₂ + 1) a = a₀ := by ext; simpa [a₀] using hL.head.prop
+    simpa only [toSimplexCategory_obj_mk, SimplexCategory.len_mk, standardσ_cons, Functor.map_comp,
       toSimplexCategory_map_σ, SimplexCategory.σ, SimplexCategory.mkHom,
       SimplexCategory.comp_toOrderHom, SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe,
-      Function.comp_apply, Fin.predAboveOrderHom_coe, simplicialEvalσ]
-    set a₀ := hL.head
-    conv_lhs => congr; arg 1; equals a₀ => ext; simpa [a₀] using hL.head.prop
-    simp at hk
-    subst hk
-    haveI := h_rec _ _ hL.tail (by simp +arith) hj
-    rw [← this]
-    generalize_proofs u
-    generalize
-      ((SimplexCategory.Hom.toOrderHom (toSimplexCategory.map (standardσ L u))) ⟨j, hj⟩) = t
-    simp only [Fin.predAbove, toSimplexCategory_obj_mk, SimplexCategory.len_mk, a₀]
-    split_ifs with h₁ h₂ h₂
-    · simp
-    · exfalso; simp [a₀, Fin.lt_def] at h₁; omega
-    · exfalso; simp [a₀, Fin.lt_def] at h₁; omega
-    · simp
+      Function.comp_apply, Fin.predAboveOrderHom_coe, simplicialEvalσ, ha₀, ← this] using aux _
 
-/-- Performing a simplicial insert in a list is the same as composition on the right by the
+/-- Performing a simplicial insertion in a list is the same as composition on the right by the
 corresponding degeneracy operator. -/
 lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : j < m + 1)
-    (m₁ : ℕ) (hm₁ : m + L.length + 1 = m₁):
+    (m₁ : ℕ) (hm₁ : m + L.length + 1 = m₁) :
     standardσ (m₂ := m) (simplicialInsert j L) (m₁ := m₁)
       (by simpa only [simplicialInsert_length, add_assoc]) =
-    standardσ (m₂ := m + 1) L (by omega) ≫ σ j := by
+    standardσ (m₂ := m + 1) L (by grind) ≫ σ (Fin.ofNat _ j) := by
   induction L generalizing m j with
   | nil => simp [standardσ, simplicialInsert]
   | cons a L h_rec =>
-    simp only [List.length_cons, simplicialInsert, Category.id_comp]
+    simp only [simplicialInsert]
     split_ifs
     · simp
-    · have : σ (a : Fin (m + 2)) ≫ σ j = σ ((j + 1 : ℕ)) ≫ σ a := by
-        convert σ_comp_σ_nat (n := m) a j (by omega) (by omega) ( by omega) <;> simp <;> omega
-      simp only [standardσ_cons, Category.assoc, this,
-        h_rec hL.tail (j + 1) (by omega) (by simp only [List.length_cons] at hm₁; omega)]
+    · have : ∀ (j k : ℕ) (h : j < (k + 1)), Fin.ofNat (k + 1) j = j := by simp -- helps grind below
+      have : a < m + 2 := by grind -- helps grind below
+      have : σ (Fin.ofNat (m + 2) a) ≫ σ (.ofNat _ j) = σ (.ofNat _ (j + 1)) ≫ σ (.ofNat _ a) := by
+        convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
+      grind [standardσ_cons]
 
+set_option backward.isDefEq.respectTransparency false in
+attribute [local grind! .] simplicialInsert_length simplicialInsert_isAdmissible in
 /-- Using `standardσ_simplicialInsert`, we can prove that every morphism satisfying `P_σ` is equal
 to some `standardσ` for some admissible list of indices. -/
 theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf : P_σ f) :
@@ -287,117 +308,47 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
     rfl
   | of f hf =>
     cases hf with | @σ m k =>
-    use [k.val], m, 1 , rfl, rfl, rfl
-    constructor <;> simp [IsAdmissible, Nat.le_of_lt_add_one k.prop, standardσ]
+    use [k.val], m, 1, rfl, rfl, rfl, IsAdmissible.singleton k.is_le
+    simp [standardσ]
   | @comp_of _ j x' g g' hg hg' h_rec =>
     cases hg' with | @σ m k =>
-    obtain ⟨L₁, m₁, b₁, h₁', h₂', h', hL₁, e₁⟩ := h_rec
+    obtain ⟨L₁, m₁, b₁, h₁', rfl, h', hL₁, e₁⟩ := h_rec
     obtain rfl : m₁ = m + 1 := congrArg (fun x ↦ x.len) h₁'
-    use simplicialInsert k.val L₁, m, b₁ + 1, rfl, ?_, ?_, ?_
-    rotate_right 3
-    · rwa [← Nat.add_comm 1, ← Nat.add_assoc]
-    · rw [simplicialInsert_length, h']
-    · exact simplicialInsert_isAdmissible _ _ hL₁ _ k.prop
-    · subst e₁
-      subst h'
-      subst h₂'
-      haveI := standardσ (m₁ := m + 1 + L₁.length) [] (by simp +arith [simplicialInsert_length]) ≫=
-        (standardσ_simplicialInsert L₁ hL₁ k k.prop _ rfl).symm
-      simp only [Fin.cast_val_eq_self, standardσ_comp_standardσ_assoc, List.append_eq,
-        List.append_nil] at this
-      simp [this, standardσ_comp_standardσ]
+    use simplicialInsert k.val L₁, m, b₁ + 1, rfl, by grind, by grind, by grind
+    subst_vars
+    have := standardσ (m₁ := m + 1 + L₁.length) [] (by grind) ≫=
+      (standardσ_simplicialInsert L₁ hL₁ k k.prop _ rfl).symm
+    simp_all [Fin.ofNat_eq_cast, Fin.cast_val_eq_self, standardσ_comp_standardσ_assoc,
+      standardσ_comp_standardσ]
 
 section MemIsAdmissible
 
-lemma mem_isAdmissible_of_lt_and_eval_eq_eval_succ (hL : IsAdmissible m L)
-    (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L j.succ) :
+lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
+    {k : ℕ} {hk : k < L.length} : simplicialEvalσ L L[k] = simplicialEvalσ L (L[k] + 1) := by
+  induction L generalizing m k <;> grind [→ IsAdmissible.singleton]
+
+local grind_pattern IsAdmissible.simplicialEvalσ_succ_getElem =>
+  IsAdmissible m L, simplicialEvalσ L L[k]
+
+lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
+    (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
     j ∈ L := by
   induction L generalizing m with
-  | nil => simp [simplicialEvalσ] at hj₂
+  | nil => grind
   | cons a L h_rec =>
-    simp only [List.mem_cons]
-    by_cases hja : j = a
-    · left; exact hja
-    · right
-      apply h_rec hL.tail
-      · simpa [← Nat.add_comm 1 L.length, ← Nat.add_assoc] using hj₁
-      · simp only [simplicialEvalσ, Nat.succ_eq_add_one] at hj₂
-        split_ifs at hj₂ with h₁ h₂ h₂
-        · simp only [Nat.succ_eq_add_one]
-          omega
-        · rw [← hj₂, Nat.eq_self_sub_one]
-          rw [not_lt] at h₂
-          haveI : simplicialEvalσ L j ≤ simplicialEvalσ L (j + 1) :=
-            simplicialEvalσ_monotone L (by simp)
-          omega
-        · rw [hj₂, Nat.succ_eq_add_one, Eq.comm, Nat.eq_self_sub_one]
-          rw [not_lt] at h₁
-          simp only [IsAdmissible, List.sorted_cons, List.length_cons] at hL
-          obtain h | h | h := Nat.lt_trichotomy j a
-          · haveI : simplicialEvalσ L j ≤ simplicialEvalσ L (j + 1) :=
-              simplicialEvalσ_monotone L (by simp)
-            have ha := simplicialEvalσ_of_lt_mem L a <| fun x h ↦ le_of_lt <| hL.1.1 x h
-            have hj₁ := simplicialEvalσ_monotone L h
-            linarith
-          · exfalso; exact hja h
-          · haveI := simplicialEvalσ_of_lt_mem L a <| fun x h ↦ le_of_lt <| hL.1.1 x h
-            rw [← this] at h₁ h₂
-            have ha₁ := le_antisymm (simplicialEvalσ_monotone L <| le_of_lt h) h₁
-            have ha₂ := simplicialEvalσ_of_lt_mem L (a + 1) <| fun x h ↦ hL.1.1 x h
-            rw (occs := .pos [2]) [← this] at ha₂
-            rw [ha₁, hj₂] at ha₂
-            by_cases h' : simplicialEvalσ L (j + 1) = 0
-            · exact h'
-            · rw [Nat.sub_one_add_one h'] at ha₂
-              have ha₃ := simplicialEvalσ_monotone L h
-              rw [Nat.succ_eq_add_one] at ha₃
-              omega
-        · exact hj₂
+    have := simplicialEvalσ_monotone L (a := a + 1)
+    rcases lt_trichotomy j a with h | h | h <;> grind
 
-lemma lt_and_eval_eq_eval_succ_of_mem_isAdmissible (hL : IsAdmissible m L) (j : ℕ) (hj : j ∈ L) :
-    j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L j.succ := by
-  induction L generalizing m with
-  | nil => simp [simplicialEvalσ] at hj
-  | cons a L h_rec =>
-    constructor
-    · simp only [IsAdmissible, List.sorted_cons] at hL
-      have aux : ∀ (k : ℕ), (_ : k < (a::L).length) → (a::L)[k] < m + (a::L).length := by
-        intro k hk
-        apply hL.2 k hk|>.trans_lt
-        simpa using hk
-      obtain ⟨k, hk, hk'⟩ := List.mem_iff_getElem.mp hj
-      subst hk'
-      exact aux k hk
-    · simp only [List.mem_cons] at hj
-      obtain h | h := hj
-      · subst h
-        simp only [simplicialEvalσ, Nat.succ_eq_add_one]
-        simp only [IsAdmissible, List.sorted_cons] at hL
-        rw [simplicialEvalσ_of_lt_mem L j <| fun x hx ↦ le_of_lt <| hL.1.1 x hx,
-          simplicialEvalσ_of_lt_mem L (j + 1) <| fun x hx ↦ hL.1.1 x hx]
-        simp
-      · simp only [simplicialEvalσ, Nat.succ_eq_add_one]
-        split_ifs with h₁ h₂ h₂
-        · rw [h_rec hL.tail h |>.2]
-        · rw [h_rec hL.tail h |>.2]
-          rw [not_lt] at h₂
-          haveI : simplicialEvalσ L j ≤ simplicialEvalσ L (j + 1) :=
-            simplicialEvalσ_monotone L (by simp)
-          omega
-        · rw [not_lt] at h₁
-          obtain ⟨h_rec₁, h_rec₂⟩ := h_rec hL.tail h
-          linarith
-        · rw [h_rec hL.tail h |>.2]
+lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j : ℕ) (hj : j ∈ L) :
+    j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
+  grind [List.mem_iff_getElem]
 
 /-- We can characterize elements in an admissible list as exactly those for which
 `simplicialEvalσ` takes the same value twice in a row. -/
 lemma mem_isAdmissible_iff (hL : IsAdmissible m L) (j : ℕ) :
-    j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L j.succ := by
-  constructor
-  · intro hj
-    exact lt_and_eval_eq_eval_succ_of_mem_isAdmissible _ hL j hj
-  · rintro ⟨hj₁, hj₂⟩
-    exact mem_isAdmissible_of_lt_and_eval_eq_eval_succ L hL j hj₁ hj₂
+    j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
+  grind [lt_and_eval_eq_eval_add_one_of_mem_isAdmissible,
+    mem_isAdmissible_of_lt_and_eval_eq_eval_add_one]
 
 end MemIsAdmissible
 
@@ -407,27 +358,38 @@ section NormalFormsP_δ
 
 /-- Given a sequence `L = [ i 0, ..., i b ]`, `standardδ n L` i is the morphism
 `δ (i b) ≫ … ≫ δ (i 0)`. The construction is provided for any list of natural numbers,
-but it is intended to behave well only when the list is δ-admissible. -/
-def standardδ (n : ℕ) (L: List ℕ) (k : ℕ) (hK : L.length = k): mk n ⟶ mk (n + k) :=
+but it is intended to behave well only when the list is admissible. -/
+def standardδ (L : List ℕ) {k l : ℕ} (hkl : k + L.length = l) : mk k ⟶ mk l :=
   match L with
-  | .nil => eqToHom (by rw [← hK]; rfl)
-  | .cons a t =>
-      δ a ≫ (standardδ (n + 1) t t.length rfl) ≫
-        eqToHom (by ext; simp [← hK, Nat.add_assoc, Nat.add_comm 1])
+  | .nil => eqToHom (by grind)
+  | .cons a t => δ (Fin.ofNat (k + 2) a) ≫ standardδ t (by grind)
 
--- Because we gave a degree of liberty with the parameter `k`, we need this kind of lemma to ease
--- working with different `k`s
-lemma standardδ_heq (n : ℕ) (L: List ℕ) (k₁ : ℕ) (hk₁ : L.length = k₁)
-    (k₂ : ℕ) (hk₂ : L.length = k₂) : HEq (standardδ n L k₁ hk₁) (standardδ n L k₂ hk₂) := by
-  subst hk₁
-  subst hk₂
-  simp
+@[simp]
+lemma standardδ_nil (m : ℕ) : standardδ .nil (by grind) = 𝟙 (mk m) := rfl
 
-/-- `simplicialEvalδ` is a lift to ℕ of `toSimplexCategory.map (standardδ m L _ _)).toOrderHom`,
-but we define it this way to enable for less painful inductive reasoning,
-and we keep the eqToHom shenanigans in the proof that it is indeed such a lift
-(see `simplicialEvalδ_of_isAdmissible`). It is expected to produce the "correct result" only if
-`L` is admissible, but as usual, it is more convenient to have it defined for any list. -/
+@[simp, reassoc]
+lemma standardδ_cons (L : List ℕ) (a : ℕ) {k l : ℕ}
+    (hkl : k + (a::L).length = l) :
+    standardδ (a::L) hkl = δ (Fin.ofNat _ a) ≫ standardδ L (by grind) := rfl
+
+@[reassoc]
+lemma standardδ_comp_standardδ (L₁ L₂ : List ℕ) {m₁ m₂ m₃ : ℕ}
+    (h : m₁ + L₁.length = m₂) (h' : m₂ + L₂.length = m₃) :
+    standardδ L₁ h ≫ standardδ L₂ h' = standardδ (L₁ ++ L₂) (by grind) := by
+  induction L₁ generalizing L₂ m₁ m₂ m₃ with
+  | nil =>
+    obtain rfl : m₁ = m₂ := by grind
+    simp
+  | cons a t H =>
+    dsimp at h' ⊢
+    grind
+
+/-- `simplicialEvalδ` is a lift to ℕ of `(toSimplexCategory.map (standardδ m L _ _)).toOrderHom`,
+but we define it in an explicit recursive way to enable for less painful inductive reasoning.
+It is expected to produce the correct result only if `L` is admissible but it is more convenient
+to have it defined for any list of natural numbers.
+See `simplicialEvalδ_of_isAdmissible` for the fact that it is the function we claim it is when
+the list is admissible. -/
 def simplicialEvalδ (L : List ℕ) : ℕ → ℕ :=
   fun j ↦ match L with
   | [] => j
@@ -435,51 +397,34 @@ def simplicialEvalδ (L : List ℕ) : ℕ → ℕ :=
 
 variable {n : ℕ} (L : List ℕ)
 
-/-- We prove that simplicialEvalδ is indeed the lift we claimed when the list is admissible. -/
-lemma simplicialEvalδ_of_isAdmissible (hL : isAdmissible (n + 1) L)
-    (k : ℕ) (hk : L.length = k)
+/-- We prove that simplicialEvalδ is indeed a lift to ℕ of
+`(toSimplexCategory.map <| standardδ L hnl).toOrderHom` when the list is admissible. -/
+lemma simplicialEvalδ_of_isAdmissible (hL : IsAdmissible (n + 1) L)
+    {l : ℕ} (hnl : n + L.length = l)
     (j : ℕ) (hj : j < n + 1) :
-    ((toSimplexCategory.map (standardδ n L k hk)).toOrderHom ⟨j, hj⟩ : ℕ)
-      = simplicialEvalδ L j := by
-  induction L generalizing j n k with
+    (toSimplexCategory.map <| standardδ L hnl).toOrderHom ⟨j, hj⟩ =
+    simplicialEvalδ L j := by
+  induction L generalizing j n l with
   | nil =>
-    simp [standardδ, simplicialEvalδ, eqToHom_map, eqToHom_toOrderHom_eq_cast]
+    obtain rfl : n = l := by grind
+    simp [standardδ, simplicialEvalδ]
   | cons a L h_rec =>
-    simp only [toSimplexCategory_obj_mk, SimplexCategory.len_mk, standardδ, Functor.map_comp,
-      toSimplexCategory_map_δ, SimplexCategory.δ, SimplexCategory.mkHom, eqToHom_map,
-      SimplexCategory.comp_toOrderHom, eqToHom_toOrderHom_eq_cast, Nat.add_eq, Nat.add_zero,
-      Nat.succ_eq_add_one, SimplexCategory.Hom.toOrderHom_mk, OrderHom.comp_coe,
-      OrderEmbedding.toOrderHom_coe, OrderIso.coe_toOrderEmbedding, Function.comp_apply,
-      Fin.succAboveOrderEmb_apply, Fin.castOrderIso_apply, Fin.coe_cast, simplicialEvalδ]
-    have adm_L : isAdmissible (n + 1 + 1) L := isAdmissible_tail a L hL
-    split_ifs with hj₁
-    · rw [Fin.succAbove]
-      split_ifs with hj₂
-      · apply h_rec (n := n + 1) (j := j) (hj := Nat.lt_succ_of_lt hj) adm_L
-      · simp only [Fin.lt_def, Fin.coe_castSucc, Fin.val_natCast, not_lt] at hj₁ hj₂
-        haveI := h_rec (j := j) (hj := Nat.lt_succ_of_lt hj) adm_L L.length rfl
-        rw [← this]
-        have ha₁ : a < n + 1 + 1 := by
-          dsimp only [isAdmissible] at hL
-          haveI := hL.right 0 (by simp)
-          simp only [List.getElem_cons_zero, tsub_zero] at this
-          omega
-        rw [Nat.mod_eq_of_lt ha₁] at hj₂
-        omega
-    · rw [Fin.succAbove]
-      split_ifs with hj₂
-      · simp only [Fin.lt_def, Fin.coe_castSucc, Fin.val_natCast, not_lt] at hj₁ hj₂
-        haveI := h_rec (j := j) adm_L L.length rfl
-        have ha₁ : a < n + 1 + 1 := by
-          dsimp only [isAdmissible] at hL
-          haveI := hL.right 0 (by simp)
-          simp only [List.getElem_cons_zero, tsub_zero] at this
-          omega
-        rw [Nat.mod_eq_of_lt ha₁] at hj₂
-        omega
-      · rw [not_lt] at hj₁ hj₂
-        simp only [Fin.succ_mk]
-        apply h_rec adm_L
+    simp only [List.length_cons] at hnl
+    subst hnl
+    set a₀ := hL.head
+    have aux (t : Fin (n + 1)) :
+        (a₀.succAbove t : ℕ) = if ↑t < a then (t : ℕ) else ↑t + 1 := by
+      simp only [Fin.succAbove, a₀]
+      split_ifs with h₁ _ _
+      · rfl
+      · grind [IsAdmissible.head_val]
+      · grind [IsAdmissible.head_val]
+      · rfl
+    have ha₀ : a = a₀ := by simp [a₀]
+    have := h_rec (l := n + (L.length + 1)) hL.of_cons (by grind) ↑(a₀.succAbove ⟨j, hj⟩)
+      (a₀.succAbove ⟨j, hj⟩).prop
+    simp only [toSimplexCategory_obj_mk, SimplexCategory.len_mk, Fin.eta] at this
+    simp [standardδ, simplicialEvalδ, SimplexCategory.δ, ha₀, this, aux]
 
 lemma simplicialEvalδ_monotone : Monotone (simplicialEvalδ L) := by
   intro a b hab
@@ -487,232 +432,103 @@ lemma simplicialEvalδ_monotone : Monotone (simplicialEvalδ L) := by
   | nil => exact hab
   | cons head tail h_rec =>
     dsimp only [simplicialEvalδ]
-    split_ifs with h h' h'
-    · exact h_rec hab
-    · have hab' : a ≤ b + 1 := by omega
-      exact h_rec hab'
-    · have hab' : a + 1 ≤ b := by omega
-      exact h_rec hab'
-    · exact h_rec (Nat.succ_le_succ hab)
+    split_ifs with h h' h' <;> exact h_rec (by grind)
 
 variable (j : ℕ)
 
 lemma le_simplicialEvalδ_self : j ≤ simplicialEvalδ L j := by
   induction L generalizing j with
-  | nil => simp [simplicialEvalδ]
-  | cons head tail h_rec =>
-    dsimp only [simplicialEvalδ]
-    split_ifs with h
-    · haveI := h_rec j
-      omega
-    · have hj := simplicialEvalδ_monotone tail (j.le_succ)
-      haveI := h_rec j
-      exact this.trans hj
+  | nil => grind [simplicialEvalδ]
+  | cons head tail h_rec => grind [simplicialEvalδ]
 
-lemma simplicialEvalδ_eq_self_of_isAdmissible_and_lt (hL : isAdmissible (n + 1) L)
+lemma simplicialEvalδ_eq_self_of_isAdmissible_and_lt (hL : IsAdmissible (n + 1) L)
     (hj : ∀ k ∈ L, j < k) : simplicialEvalδ L j = j := by
   induction L generalizing n j with
-  | nil => simp [simplicialEvalδ]
-  | cons a L h_rec =>
-    dsimp only [simplicialEvalδ]
-    split_ifs with h
-    · apply h_rec _ (isAdmissible_tail a L hL)
-      simp only [List.mem_cons, forall_eq_or_imp] at hj
-      exact hj.right
-    · simp only [not_lt] at h
-      simp only [List.mem_cons, forall_eq_or_imp] at hj
-      obtain ⟨hj₁, hj₂⟩ := hj
-      linarith
+  | nil => grind [simplicialEvalδ]
+  | cons a L h_rec => grind [simplicialEvalδ]
 
 lemma simplicialEvalδ_eq_self_of_isAdmissible_cons (a : ℕ)
-    (hL : isAdmissible (n + 1) (a :: L)) : simplicialEvalδ L a = a := by
-  apply simplicialEvalδ_eq_self_of_isAdmissible_and_lt _ _ (isAdmissible_tail a L hL)
-  simp only [isAdmissible, List.sorted_cons] at hL
-  tauto
+    (hL : IsAdmissible (n + 1) (a :: L)) : simplicialEvalδ L a = a :=
+  simplicialEvalδ_eq_self_of_isAdmissible_and_lt _ _ hL.of_cons hL.head_lt
 
-/-- Performing a simplicial insert in a list is (up to some unfortunate `eqToHom`) the same
-as composition on the right by the corresponding face operator. -/
-lemma standardδ_simplicialInsert (hL : isAdmissible (n + 2) L) (j : ℕ) (hj : j < n + 2) :
-    standardδ n (simplicialInsert j L) (L.length + 1) (simplicialInsert_length _ _) =
-        δ j ≫ standardδ (n + 1) L L.length rfl ≫
-          eqToHom (by rw [← Nat.add_comm 1 L.length, Nat.add_assoc]) := by
+/-- Performing a simplicial insertion in a list is the same
+as composition on the left by the corresponding face operator. -/
+lemma standardδ_simplicialInsert (hL : IsAdmissible (n + 2) L) (j : ℕ) (hj : j < n + 2)
+    (m₁ : ℕ) (hm₁ : n + L.length + 1 = m₁) :
+    standardδ (k := n) (l := m₁) (simplicialInsert j L)
+      (by grind [simplicialInsert_length]) =
+    δ (Fin.ofNat _ j) ≫ standardδ L (by grind) := by
   induction L generalizing n j with
-  | nil =>
-    simp [standardδ, simplicialInsert]
+  | nil => grind [standardδ, simplicialInsert]
   | cons a L h_rec =>
-    simp only [List.length_cons, eqToHom_refl, simplicialInsert, Category.id_comp]
-    split_ifs <;> rename_i h <;> simp only [standardδ, eqToHom_refl, Category.comp_id,
-      Category.assoc]
-    haveI : isAdmissible (n + 2) (a::L) := by
-      rw [isAdmissible] at hL ⊢
-      refine ⟨hL.left, ?_⟩
-      intro k hk
-      haveI := hL.right k hk
-      simp only [not_lt] at h
-      omega
-    haveI := h_rec (isAdmissible_tail a L hL) (j + 1) (by omega)
-    simp only [eqToHom_refl, Category.id_comp] at this
-    simp only [gt_iff_lt, not_lt] at h
-    slice_rhs 1 2 => equals δ a ≫ δ (↑(j + 1)) =>
-      haveI := hL.right 0 (by simp)
-      simp only [List.getElem_cons_zero, tsub_zero] at this
-      -- same dance as previously: getting rid of natCasts
-      have simplicial_id := δ_comp_δ_nat (n:=n) a j (h.trans_lt hj) hj h
-      generalize_proofs p p' p'' at simplicial_id
-      have ha₁ : (⟨a, p⟩ : Fin (n + 1 + 1)) = ↑a := by ext; simp [Nat.mod_eq_of_lt p]
-      have ha₂ : (⟨a, p''⟩ : Fin (n + 1 + 2)) = ↑a := by ext; simp [Nat.mod_eq_of_lt p'']
-      have hj₁ : (⟨j + 1, p'⟩ : Fin (n + 1 + 2)) = ↑(j + 1) := by ext; simp [Nat.mod_eq_of_lt p']
-      have hj₂ : (⟨j, hj⟩ : Fin (n + 1 + 1)) = ↑j := by ext; simp [Nat.mod_eq_of_lt hj]
-      symm
-      rwa [← ha₁, ← ha₂, ← hj₁, ← hj₂]
-    slice_rhs 2 4 => rw [← this]
-    rw [← heq_iff_eq, ← Category.assoc, comp_eqToHom_heq_iff]
-    congr 1 <;> try { ext; simp [simplicialInsert_length, ← Nat.add_comm 1 L.length, add_assoc] }
-    simp only [heq_comp_eqToHom_iff]
-    apply standardδ_heq
+    simp only [simplicialInsert]
+    split_ifs
+    · simp
+    · have : ∀ (j k : ℕ) (h : j < (k + 1)), Fin.ofNat (k + 1) j = j := by simp -- helps grind below
+      have : a < n + 3 := by grind -- helps grind below
+      have : δ (Fin.ofNat (n + 2) a) ≫ δ (.ofNat _ (j + 1)) = δ (.ofNat _ j) ≫ δ (.ofNat _ a) := by
+        convert δ_comp_δ_nat (n := n) a j (by grind) (by grind) (by grind) <;> grind
+      simp only [standardδ_cons, reassoc_of% this, h_rec hL.of_cons (j + 1) (by grind) (by grind)]
 
-/-- Using the above property, we can prove that every morphism satisfying `P_δ` is equal to some
-`standardδ` for some admissible list of indices. Because morphisms of the form `standardδ` have a
-rather  constrained sources and targets, we have again to splice in some `eqToHom`'s to make
-everything work. -/
+attribute [local grind .] simplicialInsert_length simplicialInsert_isAdmissible in
+/-- Using `standardδ_simplicialInsert`, we can prove that every morphism satisfying
+`P_δ` is equal to some `standardδ` for some admissible list of indices, which shows
+that every such morphism is equal to a morphism in "normal form". -/
 theorem exists_normal_form_P_δ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf : P_δ f) :
-    ∃ L : List ℕ,
-    ∃ m : ℕ,
-    ∃ b : ℕ,
-    ∃ h₁ : x = mk m,
-    ∃ h₂ : mk (m + b) = y,
-    ∃ h: (L.length = b),
-    (isAdmissible (m + 1) L) ∧ f = eqToHom h₁ ≫ (standardδ m L b h) ≫ eqToHom h₂ := by
-  rw [P_δ_eq_P_δ'] at hf
+    ∃ L : List ℕ, ∃ m : ℕ, ∃ b : ℕ,
+    ∃ h₁ : mk m = x, ∃ h₂ : y = mk b, ∃ h : m + L.length = b,
+    (IsAdmissible (m + 1) L) ∧ f = standardδ L (by rwa [← h₁, h₂]) := by
+  dsimp [P_δ] at hf
+  rw [MorphismProperty.multiplicativeClosure_eq_multiplicativeClosure'] at hf
   induction hf with
-  | @id n =>
-    use [], n, 0, rfl, rfl, rfl, isAdmissible_nil _
-    simp [standardδ]
-  | @δ n j =>
-    use [j.val], n, 1 , rfl, rfl, rfl
-    constructor <;> simp [isAdmissible, Nat.le_of_lt_add_one j.prop, standardδ]
-  | @comp x' m j g hg h_rec =>
-    obtain ⟨L₁, m₁, b₁, h₁', h₂', h', hL₁, e₁⟩ := h_rec
-    have hm₁ : m + 1 = m₁ := by haveI := h₁'; apply_fun (fun x ↦ x.len) at this; exact this
-    use simplicialInsert j.val L₁, m, b₁ + 1, rfl, ?_, ?_, ?_
-    rotate_right 3
-    · rwa [← Nat.add_comm 1, ← Nat.add_assoc, hm₁]
-    · rw [simplicialInsert_length, h']
-    · exact simplicialInsert_isAdmissible _ (by rwa [hm₁]) _ (j.prop)
-    · subst e₁
-      subst h'
-      rw [standardδ_simplicialInsert]
-      · simp only [Category.assoc, Fin.cast_val_eq_self, eqToHom_refl, Category.comp_id,
-        eqToHom_trans_assoc]
-        subst m₁
-        simp
-      · subst m₁
-        exact hL₁
-      · exact j.prop
+  | id n =>
+    use [], n.len, n.len, rfl, rfl, rfl, IsAdmissible.nil _
+    exact (standardδ_nil _).symm
+  | of f hf =>
+    cases hf with | @δ n j
+    use [j.val], n, (n + 1) , rfl, rfl, rfl
+    constructor <;> simp [Nat.le_of_lt_add_one j.prop, standardδ]
+  | @of_comp x' m j f g hf hg h_rec =>
+    cases hf with | @δ n j
+    obtain ⟨L₁, m₁, b₁, h₁', rfl, h', hL₁, e₁⟩ := h_rec
+    obtain rfl : m₁ = n + 1 := congrArg (fun x ↦ x.len) h₁'
+    use simplicialInsert j.val L₁, n, n + 1 + L₁.length, rfl, by grind, by grind, by grind
+    subst_vars
+    symm
+    have := standardδ_simplicialInsert L₁ hL₁ j
+    rw [show Fin.ofNat (n + 2) ↑j = j by simp] at this
+    apply this (by lia)
+    simp +arith [SimplexCategoryGenRel.mk]
 
-private lemma head_eq_head_of_simplicialEvalδ_eq
-    (L₁ : List ℕ) (a : ℕ) (hL₁ : isAdmissible (n + 1) (a :: L₁))
-    (L₂ : List ℕ) (b : ℕ) (hL₂ : isAdmissible (n + 1) (b :: L₂))
-    (h : ∀ x < n + 1, simplicialEvalδ (a::L₁) x = simplicialEvalδ (b::L₂) x) :
-    a = b := by
-  have ha₁ := h a
-  simp only [simplicialEvalδ, lt_self_iff_false, ↓reduceIte] at ha₁
-  have hb₁ := h b
-  simp only [simplicialEvalδ, lt_self_iff_false, ↓reduceIte] at hb₁
-  split_ifs at ha₁ with ha₂ <;> split_ifs at hb₁ with hb₂
-  · omega
-  · exfalso
-    haveI : simplicialEvalδ L₂ a = a := by
-      apply simplicialEvalδ_eq_self_of_isAdmissible_and_lt L₂ _ (isAdmissible_tail b L₂ hL₂)
-      simp only [isAdmissible, List.sorted_cons, List.length_cons] at hL₂
-      intro k hk
-      haveI := hL₂.left.left k hk
-      omega
-    rw [this] at ha₁
-    haveI := le_simplicialEvalδ_self L₁ (a + 1)
-    obtain hb | hb := Nat.lt_add_one_iff_lt_or_eq.mp (isAdmissibleHead b L₂ hL₂).prop
-    · haveI := hb₁ hb
-      haveI := ha₁ (ha₂.trans hb)
-      linarith
-    · dsimp only [isAdmissibleHead_val] at hb
-      subst hb
-      omega
-  · exfalso
-    haveI : simplicialEvalδ L₁ b = b := by
-      apply simplicialEvalδ_eq_self_of_isAdmissible_and_lt L₁ _ (isAdmissible_tail a L₁ hL₁)
-      simp only [isAdmissible, List.sorted_cons, List.length_cons] at hL₁
-      intro k hk
-      haveI := hL₁.left.left k hk
-      omega
-    rw [this] at hb₁
-    haveI := le_simplicialEvalδ_self L₂ (b + 1)
-    obtain ha | ha := Nat.lt_add_one_iff_lt_or_eq.mp (isAdmissibleHead a L₁ hL₁).prop
-    · haveI := ha₁ ha
-      haveI := hb₁ (hb₂.trans ha)
-      linarith
-    · dsimp at ha
-      subst ha
-      omega
-  · omega
-
-/-- Again, the key point is that admissible lists are determined by simplicialEvalδ, which only
-depends on the realization of `standardδ` in the usual simplex category. -/
+/-- An admissible list is fully determined by its length and the attached function
+`simplicialEvalδ`, which are both determined by the morphism in the usual `SimplexCategory`
+corresponding to `standarδ` of this list.
+This essentially shows that the admissible list from `exists_normal_form_P_δ` is unique. -/
 lemma eq_of_simplicialEvalδ_eq
-    (L₁ : List ℕ) (hL₁ : isAdmissible (n + 1) L₁)
-    (L₂ : List ℕ) (hL₂ : isAdmissible (n + 1) L₂)
+    (L₁ : List ℕ) (hL₁ : IsAdmissible (n + 1) L₁)
+    (L₂ : List ℕ) (hL₂ : IsAdmissible (n + 1) L₂)
     (h : ∀ x < n + 1, simplicialEvalδ L₁ x = simplicialEvalδ L₂ x) :
     (L₁.length = L₂.length) → (L₁ = L₂) := by
   induction L₁ generalizing L₂ n with
-  | nil =>
-    intro a
-    symm at a ⊢
-    simpa using a
+  | nil => grind [List.eq_nil_of_length_eq_zero]
   | cons a L₁ hrec =>
     cases L₂ with
     | nil => tauto
     | cons b L₂ =>
-      haveI : a = b := head_eq_head_of_simplicialEvalδ_eq L₁ a hL₁ L₂ b hL₂ h
-      subst this
-      simp only [List.cons.injEq, true_and]
+      obtain rfl : a = b := by
+        have ha₁ := h a
+        have hb₁ := h b
+        simp only [simplicialEvalδ, lt_self_iff_false, ↓reduceIte] at ha₁ hb₁
+        split_ifs at ha₁ with ha₂ <;> split_ifs at hb₁ with hb₂ <;>
+        grind [→ IsAdmissible.head_lt', le_simplicialEvalδ_self,
+          simplicialEvalδ_eq_self_of_isAdmissible_and_lt]
       intro h_length
-      apply hrec (isAdmissible_tail a L₁ hL₁) _ (isAdmissible_tail a L₂ hL₂)
-      · intro x hx
-        obtain hx | hx := Nat.lt_add_one_iff_lt_or_eq.mp hx
-        · haveI := h x hx
-          by_cases hax : x < a
-          · simpa [simplicialEvalδ, hax] using this
-          · haveI := h x
-            simp only [simplicialEvalδ] at this
-            simp only [not_lt] at hax
-            split_ifs at this with hax₁
-            · exact this hx
-            · cases x with
-              | zero =>
-                haveI : a = 0 := by omega
-                subst this
-                rw [simplicialEvalδ_eq_self_of_isAdmissible_cons L₁ 0 hL₁
-                  , simplicialEvalδ_eq_self_of_isAdmissible_cons L₂ 0 hL₂]
-              | succ x =>
-                haveI := h x (Nat.lt_of_add_right_lt hx)
-                simp only [simplicialEvalδ] at this
-                split_ifs at this
-                · simp at hax₁
-                  haveI : a = x + 1 := by omega
-                  subst this
-                  rw [simplicialEvalδ_eq_self_of_isAdmissible_cons L₁ (x + 1) hL₁
-                    , simplicialEvalδ_eq_self_of_isAdmissible_cons L₂ (x + 1) hL₂]
-                · linarith
-        · subst hx
-          obtain ha | ha := Nat.lt_add_one_iff_lt_or_eq.mp (isAdmissibleHead a L₁ hL₁).prop
-          · dsimp at ha
-            haveI := h n (by simp)
-            simp only [simplicialEvalδ] at this
-            split_ifs at this <;> linarith
-          · dsimp at ha
-            subst ha
-            rw [simplicialEvalδ_eq_self_of_isAdmissible_cons L₁ (n + 1) hL₁
-              , simplicialEvalδ_eq_self_of_isAdmissible_cons L₂ (n + 1) hL₂]
-      · simpa using h_length
+      simp only [List.cons.injEq, true_and]
+      refine hrec hL₁.of_cons _ hL₂.of_cons (fun x hx => ?_) (by grind)
+      have := h (x - 1) (by grind) -- helps grind
+      grind (splits := 12) [h (x - 1), Nat.lt_add_one_iff_lt_or_eq.mp hx,
+        simplicialEvalδ, simplicialEvalδ_eq_self_of_isAdmissible_cons,
+        → IsAdmissible.head_lt']
 
 end NormalFormsP_δ
 

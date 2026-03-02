@@ -3,8 +3,10 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Data.Finset.Max
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Data.Finset.Max
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -28,17 +30,17 @@ https://en.wikipedia.org/wiki/Back-and-forth_method
 back and forth, dense, countable, order
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 namespace Order
 
 variable {α β : Type*} [LinearOrder α] [LinearOrder β]
-
 /-- Suppose `α` is a nonempty dense linear order without endpoints, and
-    suppose `lo`, `hi`, are finite subsets with all of `lo` strictly
-    before `hi`. Then there is an element of `α` strictly between `lo`
-    and `hi`. -/
+suppose `lo`, `hi`, are finite subsets with all of `lo` strictly before `hi`.
+Then there is an element of `α` strictly between `lo` and `hi`. -/
 theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
     [NoMaxOrder α] [nonem : Nonempty α] (lo hi : Finset α) (lo_lt_hi : ∀ x ∈ lo, ∀ y ∈ hi, x < y) :
     ∃ m : α, (∀ x ∈ lo, x < m) ∧ ∀ y ∈ hi, m < y :=
@@ -49,7 +51,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         (exists_between (lo_lt_hi _ (Finset.max'_mem _ nlo) _ (Finset.min'_mem _ nhi))) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm.1, fun y hy ↦
           lt_of_lt_of_le hm.2 (Finset.min'_le hi y hy)⟩
-    else-- upper set is empty, use `NoMaxOrder`
+    else -- upper set is empty, use `NoMaxOrder`
         Exists.elim
         (exists_gt (Finset.max' lo nlo)) fun m hm ↦
         ⟨m, fun x hx ↦ lt_of_le_of_lt (Finset.le_max' lo x hx) hm, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
@@ -64,7 +66,7 @@ theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
 lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
-    [nonem : Nonempty β]  (S : Finset α) (f : S ↪o β) (a : α) :
+    [nonem : Nonempty β] (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),
       g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
   let Slt := {x ∈ S.attach | x.val < a}.image f
@@ -93,15 +95,14 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
         exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
       else simp only [Finset.eq_of_mem_insert_of_notMem hy hyS, lt_self_iff_false] at hxy
   · ext x
-    simp only [Finset.coe_sort_coe, OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
+    simp only [OrderEmbedding.coe_ofStrictMono,
       Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
 
 variable (α β)
 
--- Porting note: Mathport warning: expanding binder collection (p q «expr ∈ » f)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
-    A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
-    of pairs which should be identified. -/
+A partial order isomorphism is encoded as a finite subset of `α × β`, consisting
+of pairs which should be identified. -/
 def PartialIso : Type _ :=
   { f : Finset (α × β) //
     ∀ p ∈ f, ∀ q ∈ f,
@@ -156,17 +157,17 @@ protected def comm : PartialIso α β → PartialIso β α :=
     Eq.symm <|
       hf ((Equiv.prodComm α β).symm p)
         (by
-          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage] at hp
+          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm] at hp
           rwa [← Finset.mem_coe])
         ((Equiv.prodComm α β).symm q)
         (by
-          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage] at hq
+          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm] at hq
           rwa [← Finset.mem_coe])
 
 variable (β)
 
 /-- The set of partial isomorphisms defined at `a : α`, together with a proof that any
-    partial isomorphism can be extended to one defined at `a`. -/
+partial isomorphism can be extended to one defined at `a`. -/
 def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ b : β, (a, b) ∈ f.val}
@@ -186,7 +187,7 @@ def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty 
 variable (α) {β}
 
 /-- The set of partial isomorphisms defined at `b : β`, together with a proof that any
-    partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
+partial isomorphism can be extended to include `b`. We prove this by symmetry. -/
 def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ a, (a, b) ∈ f.val}
@@ -194,7 +195,7 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
     rcases (definedAtLeft α b).isCofinal f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
     · change (a, b) ∈ f'.val.image _
-      rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]
+      rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm]
     · change _ ⊆ f'.val.image _
       rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
         Finset.coe_subset]
@@ -202,14 +203,14 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
 variable {α}
 
 /-- Given an ideal which intersects `definedAtLeft β a`, pick `b : β` such that
-    some partial function in the ideal maps `a` to `b`. -/
+some partial function in the ideal maps `a` to `b`. -/
 def funOfIdeal [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α)
     (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtLeft β a ∧ f ∈ I) → { b // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=
   Classical.indefiniteDescription _ ∘ fun ⟨f, ⟨b, hb⟩, hf⟩ ↦ ⟨b, f, hf, hb⟩
 
 /-- Given an ideal which intersects `definedAtRight α b`, pick `a : α` such that
-    some partial function in the ideal maps `a` to `b`. -/
+some partial function in the ideal maps `a` to `b`. -/
 def invOfIdeal [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β)
     (I : Ideal (PartialIso α β)) :
     (∃ f, f ∈ definedAtRight α b ∧ f ∈ I) → { a // ∃ f ∈ I, (a, b) ∈ Subtype.val f } :=

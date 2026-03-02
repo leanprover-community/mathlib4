@@ -3,11 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Topology.Algebra.Group.GroupTopology
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
 
@@ -25,6 +27,8 @@ of topological (semi)rings.
 - The product of two topological (semi)rings is a topological (semi)ring.
 - The indexed product of topological (semi)rings is a topological (semi)ring.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -45,9 +49,6 @@ mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` or
 class IsTopologicalSemiring [TopologicalSpace R] [NonUnitalNonAssocSemiring R] : Prop
     extends ContinuousAdd R, ContinuousMul R
 
-@[deprecated (since := "2025-02-14")] alias TopologicalSemiring :=
-  IsTopologicalSemiring
-
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
@@ -57,9 +58,6 @@ multiplication as it is multiplication with `-1`. (See
 class IsTopologicalRing [TopologicalSpace R] [NonUnitalNonAssocRing R] : Prop
     extends IsTopologicalSemiring R, ContinuousNeg R
 
-@[deprecated (since := "2025-02-14")] alias TopologicalRing :=
-  IsTopologicalRing
-
 variable {R}
 
 /-- If `R` is a ring with a continuous multiplication, then negation is continuous as well since it
@@ -67,7 +65,7 @@ is just multiplication with `-1`. -/
 theorem IsTopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
     [ContinuousMul R] : ContinuousNeg R where
   continuous_neg := by
-    simpa using (continuous_const.mul continuous_id : Continuous fun x : R => -1 * x)
+    simpa using (continuous_const.fun_mul continuous_id : Continuous fun x : R => -1 * x)
 
 /-- If `R` is a ring which is a topological semiring, then it is automatically a topological
 ring. This exists so that one can place a topological ring structure on `R` without explicitly
@@ -75,9 +73,6 @@ proving `continuous_neg`. -/
 theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace R] [NonAssocRing R]
     (_ : IsTopologicalSemiring R) : IsTopologicalRing R where
   toContinuousNeg := IsTopologicalSemiring.continuousNeg_of_mul
-
-@[deprecated (since := "2025-02-14")] alias TopologicalSemiring.toTopologicalRing :=
-  IsTopologicalSemiring.toIsTopologicalRing
 
 -- See note [lower instance priority]
 instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing R]
@@ -118,6 +113,11 @@ theorem isClosed_topologicalClosure (s : NonUnitalSubsemiring R) :
 theorem topologicalClosure_minimal (s : NonUnitalSubsemiring R) {t : NonUnitalSubsemiring R}
     (h : s ≤ t) (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalSubsemiring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
 
 /-- If a non-unital subsemiring of a non-unital topological semiring is commutative, then so is its
 topological closure.
@@ -166,6 +166,11 @@ theorem Subsemiring.topologicalClosure_minimal (s : Subsemiring R) {t : Subsemir
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem Subsemiring.topologicalClosure_mono {s t : Subsemiring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 /-- If a subsemiring of a topological semiring is commutative, then so is its
 topological closure.
 
@@ -180,12 +185,12 @@ section
 
 variable {S : Type*} [TopologicalSpace R] [TopologicalSpace S]
 
-/-- The product topology on the cartesian product of two topological semirings
+/-- The product topology on the Cartesian product of two topological semirings
   makes the product into a topological semiring. -/
 instance [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] [IsTopologicalSemiring R]
     [IsTopologicalSemiring S] : IsTopologicalSemiring (R × S) where
 
-/-- The product topology on the cartesian product of two topological rings
+/-- The product topology on the Cartesian product of two topological rings
   makes the product into a topological ring. -/
 instance [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] [IsTopologicalRing R]
     [IsTopologicalRing S] : IsTopologicalRing (R × S) where
@@ -307,6 +312,11 @@ theorem topologicalClosure_minimal (s : NonUnitalSubring R) {t : NonUnitalSubrin
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalSubring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
+
 /-- If a non-unital subring of a non-unital topological ring is commutative, then so is its
 topological closure.
 
@@ -341,6 +351,11 @@ theorem Subring.isClosed_topologicalClosure (s : Subring R) :
 theorem Subring.topologicalClosure_minimal (s : Subring R) {t : Subring R} (h : s ≤ t)
     (ht : IsClosed (t : Set R)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem Subring.topologicalClosure_mono {s t : Subring R} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  _root_.closure_mono h
 
 /-- If a subring of a topological ring is commutative, then so is its topological closure.
 
@@ -392,6 +407,7 @@ theorem ext {f g : RingTopology R} (h : f.IsOpen = g.IsOpen) : f = g :=
 instance : PartialOrder (RingTopology R) :=
   PartialOrder.lift RingTopology.toTopologicalSpace toTopologicalSpace_injective
 
+set_option backward.privateInPublic true in
 private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
   let _ := sInf (toTopologicalSpace '' S)
   { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
@@ -401,6 +417,8 @@ private def def_sInf (S : Set (RingTopology R)) : RingTopology R :=
     toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
       let _ := t.1; t.toContinuousNeg }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Ring topologies on `R` form a complete lattice, with `⊥` the discrete topology and `⊤` the
 indiscrete topology.
 

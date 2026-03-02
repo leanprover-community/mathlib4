@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # The category of pointed types
@@ -16,6 +18,8 @@ This defines `Pointed`, the category of pointed types.
 * Monoidal structure
 * Upgrade `typeToPointed` to an equivalence
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -119,8 +123,7 @@ def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
             funext x
             cases x
             · exact f.map_point.symm
-            · rfl
-          right_inv := fun _ => funext fun _ => rfl }
+            · rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Pointed.Hom.ext
         funext x

@@ -3,7 +3,9 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Integrals against peak functions
@@ -33,6 +35,8 @@ Note that there are related results about convolution with respect to peak funct
 `Mathlib/Analysis/Convolution.lean`, such as `MeasureTheory.convolution_tendsto_right` there.
 -/
 
+public section
+
 open Set Filter MeasureTheory MeasureTheory.Measure TopologicalSpace Metric
 
 open scoped Topology ENNReal
@@ -47,6 +51,7 @@ variable {α E ι : Type*} {hm : MeasurableSpace α} {μ : Measure α} [Topologi
   [BorelSpace α] [NormedAddCommGroup E] [NormedSpace ℝ E] {g : α → E} {l : Filter ι} {x₀ : α}
   {s t : Set α} {φ : ι → α → ℝ} {a : E}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀`, and
 `g` is integrable and has a limit at `x₀`, then `φᵢ • g` is eventually integrable. -/
 theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
@@ -83,6 +88,7 @@ theorem integrableOn_peak_smul_of_integrableOn_of_tendsto
   convert A.union B
   simp only [diff_union_inter]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its
 integral on some finite-measure neighborhood of `x₀` converges to `1`, and `g` is integrable and
 has a limit `a` at `x₀`, then `∫ φᵢ • g` converges to `a`.
@@ -234,6 +240,7 @@ theorem tendsto_integral_peak_smul_of_integrable_of_tendsto
 ### Peak functions of the form `x ↦ (c x) ^ n / ∫ (c y) ^ n`
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a continuous function `c` realizes its maximum at a unique point `x₀` in a compact set `s`,
 then the sequence of functions `(c x) ^ n / ∫ (c x) ^ n` is a sequence of peak functions
 concentrating around `x₀`. Therefore, `∫ (c x) ^ n * g / ∫ (c x) ^ n` converges to `g x₀` if `g` is
@@ -384,6 +391,7 @@ open Module Bornology
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F] {μ : Measure F} [IsAddHaarMeasure μ]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider a nonnegative function `φ` with integral one, decaying quickly enough at infinity.
 Then suitable renormalizations of `φ` form a sequence of peak functions around the origin:
 `∫ (c ^ d * φ (c • x)) • g x` converges to `g 0` as `c → ∞` if `g` is continuous at `0`
@@ -427,7 +435,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable
         apply hM
         rw [div_lt_iff₀ δpos] at hc
         simp only [mem_compl_iff, mem_closedBall, dist_zero_right, norm_smul, Real.norm_eq_abs,
-          abs_of_nonneg cpos.le, not_le, gt_iff_lt]
+          abs_of_nonneg cpos.le, not_le]
         exact hc.trans_le (by gcongr)
   · have : Tendsto (fun c ↦ ∫ (x : F) in closedBall 0 c, φ x ∂μ) atTop (𝓝 1) := by
       rw [← h'φ]
@@ -463,4 +471,4 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
   convert this using 2 with c
   conv_rhs => rw [← integral_add_left_eq_self x₀ (μ := μ)
     (f := fun x ↦ (c ^ finrank ℝ F * φ (c • x)) • g (x₀ - x)), ← integral_neg_eq_self]
-  simp [smul_sub, sub_eq_add_neg]
+  simp [sub_eq_add_neg]

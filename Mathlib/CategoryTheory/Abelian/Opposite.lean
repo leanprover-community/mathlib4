@@ -3,13 +3,17 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.CategoryTheory.Limits.Opposites
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.Preadditive.Opposite
+public import Mathlib.CategoryTheory.Limits.Opposites
 
 /-!
 # The opposite of an abelian category is abelian.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -18,14 +22,11 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable (C : Type*) [Category C] [Abelian C]
+variable (C : Type*) [Category* C] [Abelian C]
 
-instance : Abelian Cᵒᵖ := by
-  -- Porting note: priorities of `Abelian.has_kernels` and `Abelian.has_cokernels` have
-  -- been set to 90 in `Abelian.Basic` in order to prevent a timeout here
-  exact {
-    normalMonoOfMono := fun f => ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩
-    normalEpiOfEpi := fun f => ⟨normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop)⟩ }
+instance : Abelian Cᵒᵖ :=
+  { normalMonoOfMono f := ⟨normalMonoOfNormalEpiUnop _ (normalEpiOfEpi f.unop)⟩
+    normalEpiOfEpi f := ⟨normalEpiOfNormalMonoUnop _ (normalMonoOfMono f.unop)⟩ }
 
 section
 
@@ -118,7 +119,7 @@ theorem cokernel.π_unop :
 def cokernelUnopUnop : cokernel g.unop ≅ (kernel g).unop :=
   (cokernelUnopOp g).unop.symm
 
-/-- The opposite of the image of `g.unop` is the image of `g.` -/
+/-- The opposite of the image of `g.unop` is the image of `g`. -/
 def imageUnopOp : Opposite.op (image g.unop) ≅ image g :=
   (Abelian.imageIsoImage _).op ≪≫
     (cokernelOpOp _).symm ≪≫
@@ -137,6 +138,7 @@ def imageOpUnop : (image f.op).unop ≅ image f :=
 def imageUnopUnop : (image g).unop ≅ image g.unop :=
   (imageUnopOp g).unop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem image_ι_op_comp_imageUnopOp_hom :
     (image.ι g.unop).op ≫ (imageUnopOp g).hom = factorThruImage g := by
   simp only [imageUnopOp, Iso.trans, Iso.symm, Iso.op, cokernelOpOp_inv, cokernelEpiComp_hom,
