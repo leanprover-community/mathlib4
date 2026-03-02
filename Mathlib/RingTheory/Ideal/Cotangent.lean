@@ -239,8 +239,8 @@ either as a quotient of `I` by its submodule `I • ⊤`,
 or the image of `I` under the `R`-module quotient map `R → R / (I ^ 2)`.
 -/
 noncomputable def cotangentEquivSubmodule (I : Ideal R) :
-    I.Cotangent ≃ₗ[R] (Submodule.map (I ^ 2).mkQ I) := by
-  rw [pow_two]; exact Submodule.quotientIdealSubmoduleEquivMap I I
+    I.Cotangent ≃ₗ[R] I.cotangentSubmodule := by
+  rw [cotangentSubmodule, pow_two]; exact Submodule.quotientIdealSubmoduleEquivMap I I
 
 end Ideal
 
