@@ -72,6 +72,7 @@ theorem Group.fg_of_descent {G : Type*} [Group G] {f : G →* G} (hf : ∀ U : S
   suffices U = ⊤ from Group.fg_iff.mpr ⟨S, this, hs.union <| H₄ _⟩  -- Assume this is false.
   by_contra! H
   -- Then we can find an element `x : G` not in `U` and of minimal height.
+  -- TODO: refactor in terms of Northcott functions API when available
   obtain ⟨x₀, hx₀⟩ : ∃ x₀, x₀ ∉ U := SetLike.exists_not_mem_of_ne_top U H rfl
   let T : Set G := {x | h x ≤ h x₀} ∩ {x | x ∉ U}
   have hx₀T : x₀ ∈ T := by simp [T, hx₀]
