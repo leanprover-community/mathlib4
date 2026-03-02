@@ -217,9 +217,9 @@ a natural transformation `toHoCat ⟶ ι ⋙ HoCat.resolution`. -/
 @[simps]
 noncomputable def HoCat.ιCompResolutionNatTrans : toHoCat ⟶ ι ⋙ HoCat.resolution (C := C) where
   app X := toHoCat.map { hom := (HoCat.iResolutionObj (ι.obj X)) }
-  naturality _ _ f :=  toHoCat.congr_map (by
+  naturality _ _ f := toHoCat.congr_map (by
     ext : 1
-    exact (HoCat.resolutionMap_fac f.hom).symm )
+    exact (HoCat.resolutionMap_fac f.hom).symm)
 
 set_option backward.isDefEq.respectTransparency false in
 instance (X : FibrantObject C) :

@@ -210,7 +210,6 @@ theorem torusIntegral_dim1 (f : ℂ¹ → E) (c : ℂ¹) (R : ℝ¹) :
       (MeasurableEquiv.measurableEmbedding _), H₁, H₂]
   simp [circleMap_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Recurrent formula for `torusIntegral`, see also `torusIntegral_succ`. -/
 theorem torusIntegral_succAbove
     {f : ℂⁿ⁺¹ → E} {c : ℂⁿ⁺¹} {R : ℝⁿ⁺¹} (hf : TorusIntegrable f c R)

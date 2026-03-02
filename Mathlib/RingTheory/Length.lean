@@ -107,7 +107,6 @@ lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R
   rw [length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.length_submodule {N : Submodule R M} :
     Module.length R N = Order.height N := by
   apply WithBot.coe_injective
@@ -125,17 +124,14 @@ lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃
   rw [Module.coe_length, Module.coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Module.length_bot :
     Module.length R (⊥ : Submodule R M) = 0 :=
   Module.length_eq_zero
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma Module.length_top :
     Module.length R (⊤ : Submodule R M) = Module.length R M := by
   rw [Module.length_submodule, Module.length_eq_height]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.height_lt_top [IsArtinian R M] [IsNoetherian R M] (N : Submodule R M) :
     Order.height N < ⊤ := by
   simpa only [← Module.length_submodule] using Module.length_ne_top.lt_top
@@ -144,7 +140,6 @@ lemma Submodule.height_strictMono [IsArtinian R M] [IsNoetherian R M] :
     StrictMono (Order.height : Submodule R M → ℕ∞) :=
   fun N _ h ↦ Order.height_strictMono h N.height_lt_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.length_lt [IsArtinian R M] [IsNoetherian R M] {N : Submodule R M} (h : N ≠ ⊤) :
     Module.length R N < Module.length R M := by
   simpa [← Module.length_top (M := M), Module.length_submodule] using height_strictMono h.lt_top
@@ -188,7 +183,6 @@ lemma Module.length_le_of_injective : Module.length R N ≤ Module.length R M :=
     (Submodule.mkQ_surjective _) (LinearMap.exact_map_mkQ_range f)]
   exact le_self_add
 
-set_option backward.isDefEq.respectTransparency false in
 include hg in
 lemma Module.length_le_of_surjective : Module.length R P ≤ Module.length R M := by
   rw [Module.length_eq_add_of_exact (LinearMap.ker g).subtype g (Submodule.subtype_injective _) hg
@@ -266,7 +260,7 @@ variable (R M) in
 lemma Module.length_of_free_of_finite
     [StrongRankCondition R] [Module.Free R M] [Module.Finite R M] :
     Module.length R M = Module.finrank R M * Module.length R R := by
-  rw [length_of_free, Cardinal.toENat_eq_nat.mpr (finrank_eq_rank _ _).symm]
+  rw [length_of_free, Cardinal.toENat_eq_natCast.mpr (finrank_eq_rank _ _).symm]
 
 lemma Module.length_eq_one_iff :
     Module.length R M = 1 ↔ IsSimpleModule R M := by

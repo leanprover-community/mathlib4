@@ -878,11 +878,10 @@ section
 -- Per https://github.com/leanprover-community/mathlib3/pull/15067, we only allow indexing in `Type 0` here.
 variable {K : Type} [Finite K] [HasFiniteBiproducts C] (f : K → C)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The limit cone exhibiting `⨁ Subtype.restrict pᶜ f` as the kernel of
 `biproduct.toSubtype f p` -/
 @[simps]
-def kernelForkBiproductToSubtype (p : Set K) :
+def kernelForkBiproductToSubtype (p : K → Prop) :
     LimitCone (parallelPair (biproduct.toSubtype f p) 0) where
   cone :=
     KernelFork.ofι (biproduct.fromSubtype f pᶜ)
@@ -907,20 +906,19 @@ def kernelForkBiproductToSubtype (p : Set K) :
           simpa using w.symm)
       (by cat_disch)
 
-instance (p : Set K) : HasKernel (biproduct.toSubtype f p) :=
+instance (p : K → Prop) : HasKernel (biproduct.toSubtype f p) :=
   HasLimit.mk (kernelForkBiproductToSubtype f p)
 
 /-- The kernel of `biproduct.toSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
 @[simps!]
-def kernelBiproductToSubtypeIso (p : Set K) :
+def kernelBiproductToSubtypeIso (p : K → Prop) :
     kernel (biproduct.toSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
   limit.isoLimitCone (kernelForkBiproductToSubtype f p)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The colimit cocone exhibiting `⨁ Subtype.restrict pᶜ f` as the cokernel of
 `biproduct.fromSubtype f p` -/
 @[simps]
-def cokernelCoforkBiproductFromSubtype (p : Set K) :
+def cokernelCoforkBiproductFromSubtype (p : K → Prop) :
     ColimitCocone (parallelPair (biproduct.fromSubtype f p) 0) where
   cocone :=
     CokernelCofork.ofπ (biproduct.toSubtype f pᶜ)
@@ -941,16 +939,16 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
         simp only [biproduct.toSubtype_fromSubtype_assoc, Pi.compl_apply, biproduct.ι_map_assoc]
         split_ifs with h
         · simp
-        · replace w := biproduct.ι _ (⟨j, not_not.mp h⟩ : p) ≫= w
+        · replace w := biproduct.ι _ (⟨j, not_not.mp h⟩ : Subtype p) ≫= w
           simpa using w.symm)
       (by cat_disch)
 
-instance (p : Set K) : HasCokernel (biproduct.fromSubtype f p) :=
+instance (p : K → Prop) : HasCokernel (biproduct.fromSubtype f p) :=
   HasColimit.mk (cokernelCoforkBiproductFromSubtype f p)
 
 /-- The cokernel of `biproduct.fromSubtype f p` is `⨁ Subtype.restrict pᶜ f`. -/
 @[simps!]
-def cokernelBiproductFromSubtypeIso (p : Set K) :
+def cokernelBiproductFromSubtypeIso (p : K → Prop) :
     cokernel (biproduct.fromSubtype f p) ≅ ⨁ Subtype.restrict pᶜ f :=
   colimit.isoColimitCocone (cokernelCoforkBiproductFromSubtype f p)
 

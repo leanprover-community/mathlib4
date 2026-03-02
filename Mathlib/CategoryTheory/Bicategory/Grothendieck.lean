@@ -49,7 +49,7 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 ## Future work / TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
-pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
+   pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
 2. Deduce the results in `CategoryTheory.Grothendieck` as a specialization of
    `Pseudofunctor.Grothendieck`.
 
@@ -374,7 +374,6 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ᶜ F) :=
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism witnessing the pseudo-functoriality of `CoGrothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
   NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch)) (fun f ↦ by

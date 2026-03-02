@@ -619,7 +619,6 @@ instance {G : ι → Type*} [∀ i, Group (G i)] [∀ i, MeasureSpace (G i)] [�
     IsInvInvariant (volume : Measure (∀ i, G i)) :=
   pi.isInvInvariant _
 
-set_option backward.isDefEq.respectTransparency false in
 instance pi.isOpenPosMeasure [∀ i, TopologicalSpace (α i)] [∀ i, IsOpenPosMeasure (μ i)] :
     IsOpenPosMeasure (MeasureTheory.Measure.pi μ) := by
   constructor

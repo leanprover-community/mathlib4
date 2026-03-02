@@ -115,6 +115,7 @@ theorem map_eq_span_zeta_sub_one_pow :
   rw [Finset.prod_const, Finset.card_univ, ← Fintype.card_congr (galRestrict ℤ ℚ K (𝓞 K)).toEquiv,
     ← Nat.card_eq_fintype_card, IsGalois.card_aut_eq_finrank]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ramificationIdx_span_zeta_sub_one :
     ramificationIdx (algebraMap ℤ (𝓞 K)) 𝒑 (span {hζ.toInteger - 1}) = p ^ k * (p - 1) := by
   have h := isPrime_span_zeta_sub_one p k hζ
@@ -284,12 +285,14 @@ theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
 @[deprecated (since := "2025-12-10")]
 alias ramificationIdx_of_not_dvd := ramificationIdx_eq_of_not_dvd
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inertiaDegIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
   obtain ⟨⟨P, _, _⟩⟩ := 𝒑.nonempty_primesOver (S := 𝓞 K)
   rw [inertiaDegIn_eq_inertiaDeg 𝒑 P Gal(K/ℚ), inertiaDeg_eq_of_not_dvd p K P hm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ramificationIdxIn_eq_of_not_dvd (hm : ¬ p ∣ m) :
     𝒑.ramificationIdxIn (𝓞 K) = 1 := by
   have : IsGalois ℚ K := isGalois {m} ℚ K
