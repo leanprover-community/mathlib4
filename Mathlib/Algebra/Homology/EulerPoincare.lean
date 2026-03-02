@@ -313,14 +313,10 @@ lemma cycles_dimension_decomposition
       (LinearMap.range (C.dTo i).hom) : ℤ) := by
   rw [← homology_finrank_formula C i]
 
-/-- `Int.negOnePow i` equals `(-1)^i.natAbs` as an integer. -/
-private lemma negOnePow_eq_pow_natAbs (i : ℤ) :
-    (Int.negOnePow i : ℤ) = (-1 : ℤ) ^ i.natAbs := by
-  cases i with
-  | ofNat n =>
-    simp [Int.negOnePow_def, Units.val_pow_eq_pow_val]
-  | negSucc n =>
-    simp [Int.negOnePow_def, Units.val_pow_eq_pow_val]
+/-- `Int.negOnePow n` equals `(-1) ^ n.natAbs` as an integer. -/
+private lemma negOnePow_val (n : ℤ) :
+    (↑(n.negOnePow) : ℤ) = (-1) ^ n.natAbs :=
+  Int.coe_negOnePow ℤ n
 
 /-- `IsZero` implies `finrank` is zero. -/
 private lemma finrank_eq_zero_of_isZero (M : ModuleCat k)
@@ -379,7 +375,7 @@ theorem eulerChar_eq_homologyEulerChar
   -- Bridge from (c.χ i : ℤ) to (-1)^i.natAbs
   -- For chain complexes (down ℤ), χ i = Int.negOnePow i
   simp only [ComplexShape.eulerCharSignsDownInt_χ]
-  simp_rw [negOnePow_eq_pow_natAbs]
+  simp_rw [negOnePow_val]
   -- Now both sides use (-1)^i.natAbs, apply the telescoping argument
   let s := fun i => (Module.finrank k (C.X i) : ℤ)
   let h := fun i => (Module.finrank k (C.homology i) : ℤ)
