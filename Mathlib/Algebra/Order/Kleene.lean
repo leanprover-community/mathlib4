@@ -85,17 +85,16 @@ open Computability
 
 /-- A Kleene Algebra is an idempotent semiring with an additional unary operator `kstar` (for Kleene
 star) that satisfies the following properties:
-* `1 + a * a∗ ≤ a∗`
-* `1 + a∗ * a ≤ a∗`
-* If `a * c + b ≤ c`, then `a∗ * b ≤ c`
-* If `c * a + b ≤ c`, then `b * a∗ ≤ c`
+* `1 + a * a∗ = a∗`
+* `1 + a∗ * a = a∗`
+* If `b * a ≤ b`, then `b * a∗ ≤ b`
+* If `a * b ≤ b`, then `a∗ * b ≤ b`
 -/
 class KleeneAlgebra (α : Type*) extends IdemSemiring α, KStar α where
-  protected one_le_kstar : ∀ a : α, 1 ≤ a∗
-  protected mul_kstar_le_kstar : ∀ a : α, a * a∗ ≤ a∗
-  protected kstar_mul_le_kstar : ∀ a : α, a∗ * a ≤ a∗
-  protected mul_kstar_le_self : ∀ a b : α, b * a ≤ b → b * a∗ ≤ b
-  protected kstar_mul_le_self : ∀ a b : α, a * b ≤ b → a∗ * b ≤ b
+  protected one_add_mul_kstar (a : α) : 1 + a * a∗ = a∗
+  protected one_add_kstar_mul (a : α) : 1 + a∗ * a = a∗
+  protected mul_kstar_le_self (a b : α) : b * a ≤ b → b * a∗ ≤ b
+  protected kstar_mul_le_self (a b : α) : a * b ≤ b → a∗ * b ≤ b
 
 -- See note [lower instance priority]
 instance (priority := 100) IdemSemiring.toOrderBot [IdemSemiring α] : OrderBot α :=
@@ -186,15 +185,21 @@ section KleeneAlgebra
 
 variable [KleeneAlgebra α] {a b c : α}
 
+theorem one_add_mul_kstar : 1 + a * a∗ = a∗ :=
+  KleeneAlgebra.one_add_mul_kstar _
+
+theorem one_add_kstar_mul : 1 + a∗ * a = a∗ :=
+  KleeneAlgebra.one_add_kstar_mul _
+
 @[simp]
 theorem one_le_kstar : 1 ≤ a∗ :=
-  KleeneAlgebra.one_le_kstar _
+  (add_le_iff.mp (KleeneAlgebra.one_add_mul_kstar a).le).1
 
 theorem mul_kstar_le_kstar : a * a∗ ≤ a∗ :=
-  KleeneAlgebra.mul_kstar_le_kstar _
+  (add_le_iff.mp (KleeneAlgebra.one_add_mul_kstar a).le).2
 
 theorem kstar_mul_le_kstar : a∗ * a ≤ a∗ :=
-  KleeneAlgebra.kstar_mul_le_kstar _
+  (add_le_iff.mp (KleeneAlgebra.one_add_kstar_mul a).le).2
 
 theorem mul_kstar_le_self : b * a ≤ b → b * a∗ ≤ b :=
   KleeneAlgebra.mul_kstar_le_self _ _
@@ -265,12 +270,15 @@ variable [KleeneAlgebra α] [KleeneAlgebra β]
 
 instance : KleeneAlgebra (α × β) :=
   { Prod.instIdemSemiring with
-    kstar := fun a ↦ (a.1∗, a.2∗)
-    one_le_kstar := fun _ ↦ ⟨one_le_kstar, one_le_kstar⟩
-    mul_kstar_le_kstar := fun _ ↦ ⟨mul_kstar_le_kstar, mul_kstar_le_kstar⟩
-    kstar_mul_le_kstar := fun _ ↦ ⟨kstar_mul_le_kstar, kstar_mul_le_kstar⟩
-    mul_kstar_le_self := fun _ _ ↦ And.imp mul_kstar_le_self mul_kstar_le_self
-    kstar_mul_le_self := fun _ _ ↦ And.imp kstar_mul_le_self kstar_mul_le_self }
+    kstar a := (a.1∗, a.2∗)
+    one_add_mul_kstar _ := by
+      rw [mk_mul_mk, mk_add_mk, mk_inj]
+      exact ⟨one_add_mul_kstar, one_add_mul_kstar⟩
+    one_add_kstar_mul _ := by
+      rw [mk_mul_mk, mk_add_mk, mk_inj]
+      exact ⟨one_add_kstar_mul, one_add_kstar_mul⟩
+    mul_kstar_le_self _ _ := And.imp mul_kstar_le_self mul_kstar_le_self
+    kstar_mul_le_self _ _ := And.imp kstar_mul_le_self kstar_mul_le_self }
 
 theorem kstar_def (a : α × β) : a∗ = (a.1∗, a.2∗) :=
   rfl
@@ -298,12 +306,11 @@ variable [∀ i, KleeneAlgebra (π i)]
 
 instance : KleeneAlgebra (∀ i, π i) :=
   { Pi.instIdemSemiring with
-    kstar := fun a i ↦ (a i)∗
-    one_le_kstar := fun _ _ ↦ one_le_kstar
-    mul_kstar_le_kstar := fun _ _ ↦ mul_kstar_le_kstar
-    kstar_mul_le_kstar := fun _ _ ↦ kstar_mul_le_kstar
-    mul_kstar_le_self := fun _ _ h _ ↦ mul_kstar_le_self <| h _
-    kstar_mul_le_self := fun _ _ h _ ↦ kstar_mul_le_self <| h _ }
+    kstar a i := (a i)∗
+    one_add_mul_kstar _ := funext fun _ ↦ one_add_mul_kstar
+    one_add_kstar_mul _ := funext fun _ ↦ one_add_kstar_mul
+    mul_kstar_le_self _ _ h _ := mul_kstar_le_self (h _)
+    kstar_mul_le_self _ _ h _ := kstar_mul_le_self (h _) }
 
 @[push ←]
 theorem kstar_def (a : ∀ i, π i) : a∗ = fun i ↦ (a i)∗ :=
@@ -356,15 +363,12 @@ protected abbrev kleeneAlgebra [KleeneAlgebra α] [LE β] [LT β] [Zero β] [One
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
     (kstar : ∀ a, f a∗ = (f a)∗) : KleeneAlgebra β where
   __ := hf.idemSemiring f le lt zero one add mul nsmul npow natCast sup bot
-  one_le_kstar a := by
-    rw [← le, one, kstar]
-    exact one_le_kstar
-  mul_kstar_le_kstar a := by
-    rw [← le, mul, kstar]
-    exact mul_kstar_le_kstar
-  kstar_mul_le_kstar a := by
-    rw [← le, mul, kstar]
-    exact kstar_mul_le_kstar
+  one_add_mul_kstar a := by
+    rw [← hf.eq_iff, add, one, mul, kstar]
+    exact one_add_mul_kstar
+  one_add_kstar_mul a := by
+    rw [← hf.eq_iff, add, one, mul, kstar]
+    exact one_add_kstar_mul
   mul_kstar_le_self a b h := by
     rw [← le, mul, kstar]
     rw [← le, mul] at h
