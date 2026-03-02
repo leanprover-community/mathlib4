@@ -507,10 +507,8 @@ theorem IsAcyclic.card_edgeSet_add_one_le_card_vert [Finite V] [Nonempty V] (h :
 
 /-- A graph on `n` vertices with at least `n` edges is not acyclic -/
 theorem card_vert_le_card_edgeSet_isAcyclic [Finite V] [Nonempty V]
-    (h : Nat.card V ≤ Nat.card G.edgeSet) : ¬G.IsAcyclic := by
-  intro h
-  have := h.card_edgeSet_add_one_le_card_vert
-  lia
+    (h : Nat.card V ≤ Nat.card G.edgeSet) : ¬G.IsAcyclic :=
+  (Nat.not_le_of_lt ·.card_edgeSet_add_one_le_card_vert h)
 
 /-- A graph on `n` vertices with at least `n` edges has a cycle -/
 theorem card_vert_le_card_edgeSet_exists_isCycle [Finite V] [Nonempty V]
