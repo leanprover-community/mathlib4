@@ -56,7 +56,8 @@ variable {Q}
 end Equiv
 
 open Classical in
-/-- The maximal finrank of a positive-definite submodule of `M`. -/
+/-- For quadratic forms on finite-dimensional spaces, the maximal finrank of a positive-definite
+subspace of `M`. (Defined as `0` if `M` is infinite-dimensional). -/
 /-
 Note the proof of nonemptiness needed for `max'` is a little fiddly since we are not assuming
 `Nontrivial R`, and the `⊥` submodule of a module over the zero ring has finrank 1, not 0.
@@ -92,7 +93,8 @@ lemma le_sigPos_of_posDef [Module.Finite R M] [StrongRankCondition R]
     Module.finrank R V ≤ sigPos Q :=
   (sigPos_isGreatest Q).2 ⟨V, by tauto⟩
 
-/-- The maximal dimension of a negative-definite subspace of `M`. -/
+/-- For quadratic forms on finite-dimensional spaces, the maximal finrank of a negative-definite
+subspace of `M`. (Defined as `0` if `M` is infinite-dimensional). -/
 def sigNeg : ℕ := sigPos (-Q)
 
 /-- Defining property of `sigNeg`. -/
@@ -236,11 +238,17 @@ lemma sigPos_add_sigNeg_add_radical [FiniteDimensional 𝕜 M] :
   convert QuadraticForm.sigPos_add_sigNeg_add_radical₁ (w := w)
   exact Eq.symm (Nat.card_fin (Module.finrank 𝕜 M))
 
+/-- Uniqueness part of **Sylvester's law of inertia** (positive part):
+for any weighted sum of squares equivalent to `Q`,
+the number of strictly positive weights is equal to `sigPos Q`. -/
 lemma sigPos_of_equiv_weightedSumSquares (hQ : Equivalent Q (weightedSumSquares 𝕜 w)) :
     sigPos Q = {i | 0 < w i}.ncard := by
   rw [hQ.sigPos_eq]
   exact sigPos_weightedSumSquares
 
+/-- Uniqueness part of **Sylvester's law of inertia** (negative part):
+for any weighted sum of squares equivalent to `Q`,
+the number of strictly negative weights is equal to `sigNeg Q`. -/
 lemma sigNeg_of_equiv_weightedSumSquares (hQ : Equivalent Q (weightedSumSquares 𝕜 w)) :
     sigNeg Q = {i | w i < 0}.ncard := by
   rw [hQ.sigNeg_eq]
