@@ -208,7 +208,6 @@ theorem intValuation_le_one (x : R) : v.intValuation x ≤ 1 := by
   · rw [v.intValuation_if_neg hx, ← exp_zero, exp_le_exp, Right.neg_nonpos_iff]
     exact Int.natCast_nonneg _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
 theorem intValuation_lt_one_iff_dvd (r : R) :
     v.intValuation r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
@@ -477,7 +476,7 @@ instance : Algebra S (v.adicCompletion K) where
   commutes' r x := by
     induction x using Completion.induction_on with
     | hp =>
-      exact isClosed_eq (continuous_mul_left _) (continuous_mul_right _)
+      exact isClosed_eq (continuous_const_mul _) (continuous_mul_const _)
     | ih x =>
       change (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
         = x * (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K)
@@ -486,7 +485,7 @@ instance : Algebra S (v.adicCompletion K) where
   smul_def' r x := by
     induction x using Completion.induction_on with
     | hp =>
-      exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
+      exact isClosed_eq (continuous_const_smul _) (continuous_const_mul _)
     | ih x =>
       change _ = (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
       norm_cast

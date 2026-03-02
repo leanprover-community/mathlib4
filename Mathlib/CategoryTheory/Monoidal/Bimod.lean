@@ -216,7 +216,6 @@ noncomputable def actLeft : R.X ⊗ X P Q ⟶ X P Q :=
           slice_lhs 3 4 => rw [whisker_exchange]
           simp))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem whiskerLeft_π_actLeft :
     (R.X ◁ coequalizer.π _ _) ≫ actLeft P Q =
       (α_ _ _ _).inv ≫ (P.actLeft ▷ Q.X) ≫ coequalizer.π _ _ := by

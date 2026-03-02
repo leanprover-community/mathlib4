@@ -442,6 +442,26 @@ namespace Nat
 
 theorem radical_pos (n : ℕ) : 0 < radical n := pos_of_ne_zero radical_ne_zero
 
+open Qq Lean Mathlib.Meta Finset
+
+namespace Mathlib.Meta.Positivity
+open Positivity
+
+attribute [local instance] monadLiftOptionMetaM in
+/-- Positivity extension for radical. Proves radicals are nonzero. -/
+@[positivity UniqueFactorizationMonoid.radical _]
+meta def evalRadical : PositivityExt where eval {u α} _ _ e := do
+  match e with
+  | ~q(@radical _ $inst $inst' $inst'' $n) =>
+    have _ := ← synthInstanceQ q(Nontrivial $α)
+    assertInstancesCommute
+    return .nonzero q(radical_ne_zero)
+  | _ => throwError "not radical"
+
+example : 0 < radical 100 := by positivity
+
+end Mathlib.Meta.Positivity
+
 end Nat
 
 end Nat

@@ -269,7 +269,6 @@ theorem Finset.hasProd_support (s : Finset β) (f : β → α) (L := uncondition
       (∏ b ∈ (L.support.toFinset.map <| Embedding.subtype _), f b) L := by
   simpa [prod_attach] using hasProd_fintype_support (f ∘ Subtype.val) L
 
-set_option backward.isDefEq.respectTransparency false in
 -- note this is not deduced from `Finset.hasProd_support` to avoid needing `[DecidableEq β]`
 @[to_additive]
 protected theorem Finset.hasProd (s : Finset β) (f : β → α)
@@ -314,7 +313,7 @@ theorem Multipliable.hasProd (ha : Multipliable f L) : HasProd f (∏'[L] b, f b
     · simp only [Set.inter_eq_left.mpr (show ↑h.2.toFinset ⊆ L.support by simp)]
       simp only [Set.Finite.coe_toFinset, Finset.toFinset_coe]
       rw [finprod_eq_prod_of_mulSupport_subset (s := h.2.toFinset)]
-      · exact Finset.prod_congr rfl (by aesop)
+      · exact Finset.prod_congr rfl (by simp_all)
       · simp
     · grind [Set.Finite.mem_toFinset, mem_mulSupport]
     · exact h.1

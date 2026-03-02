@@ -182,7 +182,6 @@ theorem vanishesTrivially_iff_sum_tmul_eq_zero (hm : Submodule.span R (Set.range
     VanishesTrivially R m n ↔ ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) :=
   ⟨sum_tmul_eq_zero_of_vanishesTrivially R, vanishesTrivially_of_sum_tmul_eq_zero R hm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2021term],
 forward direction, generalization.

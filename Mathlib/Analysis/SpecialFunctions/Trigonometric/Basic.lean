@@ -838,7 +838,6 @@ theorem quadratic_root_cos_pi_div_five :
                  _ = s * (2 * c * c) + s * (2 * c ^ 2 - 1) := by linarith
                  _ = s * (4 * c ^ 2 - 1) := by linarith
 
-set_option backward.isDefEq.respectTransparency false in
 open Polynomial in
 theorem Polynomial.isRoot_cos_pi_div_five :
     (4 • X ^ 2 - 2 • X - C 1 : ℝ[X]).IsRoot (cos (π / 5)) := by

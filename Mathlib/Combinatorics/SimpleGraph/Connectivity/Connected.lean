@@ -844,6 +844,22 @@ theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G 
     isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
       (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
 
+/-- Connecting two unreachable vertices by an edge creates a bridge. -/
+theorem IsBridge.sup_fromEdgeSet_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
+    (G ⊔ fromEdgeSet {s(u, v)}).IsBridge s(u, v) := by
+  refine isBridge_iff.mpr ⟨.inr ⟨Set.mem_singleton _, mt (· ▸ .rfl) h⟩, ?_⟩
+  exact fun h' ↦ h <| .mono (sdiff_le_iff'.mpr <| refl _) h'
+
+/-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
+theorem IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
+    (h : ¬G.Reachable u v) (h' : G.IsBridge e) : (G ⊔ fromEdgeSet {s(u, v)}).IsBridge e := by
+  refine isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨edgeSet_mono le_sup_left h'.left, ?_⟩
+  refine fun _ p hp hpe ↦ isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
+    (p.transfer G fun e' he' ↦ ?_) (hp.transfer _) (Walk.edges_transfer p _ ▸ hpe)
+  refine edgeSet_sup .. ▸ Walk.edges_subset_edgeSet _ he' |>.elim id fun h' ↦ h ?_ |>.elim
+  exact .mono (sdiff_le_iff'.mpr <| refl _) <|
+    adj_and_reachable_delete_edges_iff_exists_cycle.mpr (by grind [edgeSet_fromEdgeSet]) |>.right
+
 end BridgeEdges
 
 /-!
