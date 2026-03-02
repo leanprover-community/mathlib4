@@ -218,8 +218,11 @@ theorem leadingCoeff_X {s : σ} :
 theorem leadingCoeff_one : m.leadingCoeff (1 : MvPolynomial σ R) = 1 :=
   m.leadingCoeff_monomial 1
 
-theorem monic_one : m.Monic (C 1 : MvPolynomial σ R) :=
+theorem monic_C_one : m.Monic (C 1 : MvPolynomial σ R) :=
   monic_monomial_one
+
+@[simp]
+lemma monic_one : m.Monic (1 : MvPolynomial σ R) := monic_monomial_one
 
 theorem degree_le_iff {f : MvPolynomial σ R} {d : σ →₀ ℕ} :
     m.degree f ≼[m] d ↔ ∀ c ∈ f.support, c ≼[m] d := by
@@ -795,9 +798,6 @@ lemma leadingTerm_eq_leadingTerm_iff {p q : MvPolynomial σ R} :
     m.leadingCoeff p = m.leadingCoeff q ∧ m.degree p = m.degree q := by
   rw [leadingTerm, leadingTerm, monomial_eq_monomial_iff]
   aesop
-
-@[simp]
-lemma monic_one' : m.Monic (1 : MvPolynomial σ R) := monic_one
 
 @[simp, nontriviality]
 lemma monic_of_subsingleton [Subsingleton R] (p : MvPolynomial σ R) :
