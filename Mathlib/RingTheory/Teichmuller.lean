@@ -45,17 +45,20 @@ theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
 /-- `teichmullerAux` as an adic Cauchy sequence. -/
 noncomputable def teichmullerCauchy (x : Perfection (R ⧸ I) p) :
     AdicCompletion.AdicCauchySequence I R :=
-  .mk _ _ _ <| by simpa using teichmullerAux_sModEq x
+  .mk _ _ (teichmullerAux x) <| by simpa using teichmullerAux_sModEq x
 
-variable [IsAdicComplete I R]
+section IsPrecomplete
+variable [IsPrecomplete I R]
 
 theorem exists_teichmullerFun (x : Perfection (R ⧸ I) p) :
     ∃ y : R, ∀ n, teichmullerAux x n ≡ y [SMOD I ^ n • (⊤ : Ideal R)] :=
   IsPrecomplete.prec' _ (teichmullerCauchy x).2
 
-/-- Given an `I`-adically complete ring `R`, where `p ∈ I`, this is the underlying function of the
-Teichmüller map. It is defined as the limit of `p^n`-th powers of arbitrary lifts in `R` of the
-`n`-th component from the perfection of `R ⧸ I`. -/
+/-- Given an `I`-adically **pre**complete ring `R`, where `p ∈ I`, this is the underlying function
+of the Teichmüller map. It is defined as the limit of `p^n`-th powers of arbitrary lifts in `R` of
+the `n`-th component from the perfection of `R ⧸ I`.
+
+The simp NF is `teichmuller₀` when `R` is `I`-adically complete. -/
 noncomputable def teichmullerFun (x : Perfection (R ⧸ I) p) : R :=
   (exists_teichmullerFun x).choose
 
@@ -66,6 +69,10 @@ theorem teichmullerFun_sModEq {x : Perfection (R ⧸ I) p} {y : R} {n : ℕ}
   rw [smul_eq_mul, Ideal.mul_top] at this
   exact this.symm.trans <| SModEq.pow_prime_pow Fact.out (I.natCast_mem_of_charP_quotient p) <| by
     simp [SModEq.ideal, h]
+
+end IsPrecomplete
+
+variable [IsAdicComplete I R]
 
 theorem teichmullerFun_spec' {x : Perfection (R ⧸ I) p} {y : R}
     (h : ∃ N, ∀ n ≥ N, ∃ z, Ideal.Quotient.mk I z = coeff _ p n x ∧
@@ -89,7 +96,9 @@ variable (p I) in
 /-- Given an `I`-adically complete ring `R`, and a prime number `p` with `p ∈ I`, this is the
 multiplicative map from `Perfection (R ⧸ I) p` to `R` itself. Specifically, it is defined as the
 limit of `p^n`-th powers of arbitrary lifts in `R` of the `n`-th component from the perfection of
-`R ⧸ I`. -/
+`R ⧸ I`.
+
+The simp NF is `teichmuller₀`. -/
 noncomputable def teichmuller : Perfection (R ⧸ I) p →* R where
   toFun := teichmullerFun
   map_one' := teichmullerFun_spec fun _ ↦ ⟨1, by simp; rfl⟩
@@ -115,17 +124,24 @@ theorem teichmuller_spec {x : Perfection (R ⧸ I) p} {y : R}
     teichmuller p I x = y :=
   teichmullerFun_spec h
 
-@[simp] theorem teichmuller_zero : teichmuller p I 0 = 0 :=
+theorem teichmuller_zero : teichmuller p I 0 = 0 :=
   have : p ≠ 0 := Nat.Prime.ne_zero Fact.out
   teichmuller_spec fun n ↦ ⟨0, by simp [zero_pow (pow_ne_zero n this)]; rfl⟩
 
 variable (p I) in
-/-- `teichmuller` as a `MonoidWithZeroHom` -/
-@[simps!] noncomputable def teichmuller₀ : Perfection (R ⧸ I) p →*₀ R where
+/-- `teichmuller` as a `MonoidWithZeroHom`. This is the simp NF. -/
+noncomputable def teichmuller₀ : Perfection (R ⧸ I) p →*₀ R where
   __ := teichmuller p I
   map_zero' := teichmuller_zero
 
-@[simp] lemma teichmuller₀_toMonoidHom : (teichmuller₀ p I).toMonoidHom = teichmuller p I := rfl
+@[simp] lemma teichmuller_eq_teichmuller₀_toMonoidHom :
+    teichmuller p I = (teichmuller₀ p I).toMonoidHom := rfl
+
+@[simp] lemma coe_teichmuller_eq_teichmuller₀ :
+    ⇑(teichmuller p I) = teichmuller₀ p I := rfl
+
+@[simp] lemma teichmullerFun_eq_teichmuller₀ :
+    teichmullerFun = teichmuller₀ p I := rfl
 
 theorem mk_teichmuller (x : Perfection (R ⧸ I) p) :
     Ideal.Quotient.mk I (teichmuller p I x) = coeff _ p 0 x := by
