@@ -118,7 +118,7 @@ lemma biprodX_ext_to_iff {f g : A ⟶ (K ⊞ L).X i} :
       f ≫ (biprod.snd : K ⊞ L ⟶ L).f i = g ≫ (biprod.snd : K ⊞ L ⟶ L).f i := by
   refine ⟨by rintro rfl; simp, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   rw [← cancel_mono (𝟙 _)]
-  simp [← biprod_total_f, reassoc_of% h₁, reassoc_of%h₂]
+  simp [← biprod_total_f, reassoc_of% h₁, reassoc_of% h₂]
 
 @[ext]
 lemma biprodX_ext_to {f g : A ⟶ (K ⊞ L).X i}
