@@ -32,7 +32,7 @@ is `ℝ≥0∞`-valued measure, `μ.variation` coincides with `μ` on measurable
 
 @[expose] public section
 
-open MeasureTheory BigOperators NNReal ENNReal Function Filter
+open MeasureTheory BigOperators NNReal ENNReal Function Filter Finset
 
 namespace MeasureTheory.VectorMeasure
 
@@ -56,15 +56,15 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
     ∑ p ∈ P, ‖μ p‖ₑ = ∑ p ∈ (Finpartition.ofPairwiseDisjoint P hP₃).parts, ‖μ p‖ₑ := by
       by_cases hbot : ⊥ ∈ P
       · simp only [Finpartition.ofPairwiseDisjoint]
-        rw [← Finset.erase_union_eq ⊥ P hbot, Finset.union_comm,
-          Finset.sum_union_eq_right (by intro _ _ _; simp_all)]
+        rw [← erase_union_eq ⊥ P hbot, union_comm,
+          sum_union_eq_right (by intro _ _ _; simp_all)]
         simp
       · have : P = (Finpartition.ofPairwiseDisjoint P hP₃).parts := by
           ext p
           simpa [Finpartition.ofPairwiseDisjoint] using (fun hp => ne_of_mem_of_not_mem hp hbot)
         simp_rw [this]
     _ ≤ ∑ p ∈ (Finpartition.extendOfLE Q (Finset.sup_le hP₁)).parts, ‖μ p‖ₑ :=
-        Finset.sum_le_sum_of_subset
+        sum_le_sum_of_subset
           (Finpartition.parts_subset_extendOfLE (Finpartition.ofPairwiseDisjoint P hP₃)
           (Finset.sup_le hP₁))
     _ ≤ μ.variation s := by
@@ -76,11 +76,11 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
         apply Finpartition.mem_parts_or_mem_sdiff_of_mem_extendOfLE Q _ _ hp
       rcases this with h | h
       · rw [hQ, Finpartition.ofPairwiseDisjoint] at h
-        simp only [Set.bot_eq_empty, Finset.mem_erase, ne_eq] at h
+        simp only [Set.bot_eq_empty, mem_erase, ne_eq] at h
         exact hP₂ p h.2
-      · simp only [Finset.sup_set_eq_biUnion, id_eq] at h
+      · simp only [sup_set_eq_biUnion, id_eq] at h
         rw [h]
-        exact MeasurableSet.diff hs (Finset.measurableSet_biUnion P hP₂)
+        exact MeasurableSet.diff hs (measurableSet_biUnion P hP₂)
 
 theorem enorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
     ‖μ E‖ₑ ≤ variation μ E := by
