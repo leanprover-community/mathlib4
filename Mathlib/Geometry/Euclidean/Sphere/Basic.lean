@@ -386,6 +386,15 @@ theorem inner_vsub_vsub_of_mem_sphere_of_mem_sphere {p₁ p₂ : P} {s₁ s₂ :
   inner_vsub_vsub_of_dist_eq_of_dist_eq (dist_center_eq_dist_center_of_mem_sphere hp₁s₁ hp₂s₁)
     (dist_center_eq_dist_center_of_mem_sphere hp₁s₂ hp₂s₂)
 
+/-- The vector from the midpoint of a chord to the center of the sphere is
+orthogonal to the chord. -/
+theorem Sphere.inner_vsub_center_midpoint_vsub {A C : P} {s : Sphere P}
+    (hA : A ∈ s) (hC : C ∈ s) :
+    ⟪s.center -ᵥ midpoint ℝ A C, C -ᵥ A⟫ = 0 :=
+  inner_vsub_vsub_of_dist_eq_of_dist_eq
+    (dist_left_midpoint_eq_dist_right_midpoint A C)
+    (dist_center_eq_dist_center_of_mem_sphere hA hC)
+
 /-- Two spheres intersect in at most two points in a two-dimensional subspace containing their
 centers; this is a version of `eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two` for bundled
 spheres. -/
