@@ -395,8 +395,8 @@ lemma baseSet_prod_univ_mem_nhds {v : Z}
 
 lemma comp_invFun_eventuallyEq
     {v : Z} (hv : proj v ∈ e.baseSet) : e ∘ e.invFun =ᶠ[𝓝 (e v)] id := by
-  filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp using
-    apply_symm_apply e <| (mem_target e).2 hp.1
+  filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp
+    using by simp [(mem_target e).2 hp.1]
 
 end any_proj
 
@@ -408,7 +408,7 @@ lemma proj_invFun_eventuallyEq
     {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
     (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
   filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with ⟨x, f⟩ ⟨hx, hf⟩
-  exact symm_coe_proj e hx
+  simp [hx]
 
 lemma injective_symm [(x : B) → Zero (E x)]
   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
@@ -419,7 +419,7 @@ lemma injective_symm [(x : B) → Zero (E x)]
 lemma surjective_symm [(x : B) → Zero (E x)]
   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
     Function.Surjective (e.symm v.proj) :=
-  fun u ↦ ⟨(e u).2, symm_apply_apply_mk e hv u⟩
+  fun u ↦ ⟨(e u).2, by simp [*]⟩
 
 lemma bijective_symm [(x : B) → Zero (E x)]
   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
@@ -442,7 +442,7 @@ lemma invFun_comp_eventuallyEq
   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
    e.invFun ∘ e =ᶠ[𝓝 v] id := by
   filter_upwards [e.preimage_baseSet_mem_nhds hv] with w hw using
-    symm_apply_apply e <| (mem_source e).mpr hw
+    by simp [(mem_source e).mpr hw]
 
 end fiber_bundle
 
@@ -462,8 +462,7 @@ lemma eq_of {x : B} {v v' : E x}
 @[simp]
 lemma apply_symm_eventuallyEq {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
   (fun x ↦ (e ⟨x, e.symm x (s x)⟩).2) =ᶠ[𝓝 x] s := by
-    filter_upwards [e.baseSet_mem_nhds hx] with y hy
-    rw [e.apply_mk_symm hy]
+    filter_upwards [e.baseSet_mem_nhds hx] with y hy using by simp [hy]
 
 variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
 
@@ -473,8 +472,7 @@ omit [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
 lemma symm_apply_apply_mk_eventuallyEq
     {b : B} (hb : b ∈ e.baseSet) (σ : Π x, E x) :
     (T% fun x' ↦ e.symm x' (e (T% σ x')).2) =ᶠ[𝓝 b] T% σ := by
-  filter_upwards [e.baseSet_mem_nhds hb] with y hy
-  simp [symm_apply_apply_mk e hy (σ y)]
+  filter_upwards [e.baseSet_mem_nhds hb] with y hy using by simp [*]
 
 -- FIXME super weird elaborator bug: removing the
 -- omitted assumption from the variable line breaks the lemma
@@ -598,6 +596,8 @@ lemma derivInv_deriv
     (e.derivInv I v) ∘L (e.deriv I v) = .id ℝ _ := by
   have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
   have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
+  have D1' := D₁
+  simp only [PartialEquiv.invFun_as_coe, OpenPartialHomeomorph.coe_coe_symm] at D1'
   rw [mk_proj_snd' e hv] at D₁
   have comp := mfderiv_comp v D₁ D₂
   rw [(invFun_comp_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
@@ -632,13 +632,12 @@ lemma mfderiv_proj_derivInv_apply
   rw [mk_proj_snd' e hv] at D₁
   have diff : MDifferentiableAt (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v :=
     mdifferentiableAt_proj _
-  have eq : e.invFun (e v) = v := by
-    simp [symm_apply_apply e ((mem_source e).mpr hv)]
+  have eq : e.invFun (e v) = v := by simp [((mem_source e).mpr hv)]
   rw [← eq] at diff
   have := mfderiv_comp (e v) diff D₁
   have C : (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
     filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with ⟨x, f⟩ ⟨hx, hf⟩
-    exact symm_coe_proj e hx
+    simp [hx]
   rw [C.mfderiv_eq, eq] at this
   have := congr($this u).symm
   change mfderiv (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v _ = _ at this
@@ -656,8 +655,7 @@ lemma deriv_derivInv
   have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
   rw [mk_proj_snd' e hv] at D₁
   have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
-  have : e.invFun (e v) = v := by
-    simp [symm_apply_apply e ((mem_source e).mpr hv)]
+  have : e.invFun (e v) = v := by simp [(mem_source e).mpr hv]
   rw [← this] at D₂
   have comp := mfderiv_comp (e v) D₂ D₁
   rw [(comp_invFun_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
