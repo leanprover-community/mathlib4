@@ -683,7 +683,8 @@ lemma LinearOrderedAddCommGroup.isAddCyclic_iff_nonempty_equiv_int {A : Type*}
     obtain ⟨m, rfl⟩ := hs a
     aesop
   wlog hg' : 0 < g
-  · exact this (g := -g) (by simpa using neg_surjective.comp hs) (by grind) (by grind)
+  · exact this (g := -g) (by simpa [-neg_bijective] using neg_surjective.comp hs) (by grind)
+      (by grind)
   have hi : (fun n : ℤ ↦ n • g).Injective := injective_zsmul_iff_not_isOfFinAddOrder.mpr
       <| not_isOfFinAddOrder_of_isAddTorsionFree h_ne
   exact ⟨.symm { Equiv.ofBijective _ ⟨hi, hs⟩ with
