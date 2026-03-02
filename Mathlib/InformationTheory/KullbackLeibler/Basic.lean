@@ -186,9 +186,8 @@ lemma toReal_klDiv_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν)
     fun_prop
   simp only [integral_smul_nnreal_measure, measureReal_nnreal_smul_apply]
   rw [integral_congr_ae h_llr, integral_add h_int (integrable_const _)]
-  simp only [integral_const, smul_eq_mul, smul_add]
   have h_smul (a : ℝ) : c • a = c * a := rfl
-  simp only [h_smul]
+  simp [h_smul]
   ring
 
 lemma toReal_klDiv_smul_right_eq_smul_left (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ)
@@ -223,7 +222,6 @@ lemma toReal_klDiv_smul_right (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν
       (klDiv μ ν).toReal + (c - 1) * ν.real univ - log c * μ.real univ := by
   rw [toReal_klDiv_smul_right_eq_smul_left hμν h_int c, toReal_klDiv_smul_left hμν h_int c⁻¹]
   simp only [NNReal.coe_inv, log_inv, mul_neg, neg_mul, ← sub_eq_add_neg]
-  have hc' : (c : ℝ) ≠ 0 := by simpa
   field_simp
 
 lemma toReal_klDiv_smul_same (hμν : μ ≪ ν) (h_int : Integrable (llr μ ν) μ) (c : ℝ≥0) :

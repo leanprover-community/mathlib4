@@ -683,13 +683,8 @@ theorem rnDeriv_smul_right_of_ne_top (ν μ : Measure α) [IsFiniteMeasure ν]
 theorem rnDeriv_smul_same (ν μ : Measure α) [IsFiniteMeasure ν]
     [ν.HaveLebesgueDecomposition μ] {r : ℝ≥0} (hr : r ≠ 0) :
     (r • ν).rnDeriv (r • μ) =ᵐ[μ] ν.rnDeriv μ := by
-  have h1 := rnDeriv_smul_left ν μ r
-  have h2 := rnDeriv_smul_right (r • ν) μ hr
-  refine h2.trans ?_
-  filter_upwards [h1] with x hx
-  simp only [Pi.smul_apply, hx]
-  simp only [ENNReal.smul_def, smul_eq_mul, ← mul_assoc, ENNReal.coe_inv hr]
-  rw [ENNReal.inv_mul_cancel (by simpa) (by simp), one_mul]
+  filter_upwards [rnDeriv_smul_left ν μ r, rnDeriv_smul_right (r • ν) μ hr] with x hx1 hx2
+  simp [hx1, hx2, hr]
 
 /-- Radon-Nikodym derivative of a sum of two measures.
 See also `rnDeriv_add'`, which requires sigma-finite `ν₁`, `ν₂` and `μ`. -/
