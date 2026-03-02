@@ -227,7 +227,6 @@ lemma mem_stabilizer_set_iff_smul_set_subset {s : Set α} (hs : s.Finite) :
   rw [stabilizer_coe_finset, mem_stabilizer_finset_iff_smul_finset_subset, ← Finset.coe_smul_finset,
     Finset.coe_subset]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :
     a ∈ stabilizer G s ↔ ∀ ⦃b⦄, b ∈ s → a • b ∈ s := by

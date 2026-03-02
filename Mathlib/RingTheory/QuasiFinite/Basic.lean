@@ -51,6 +51,7 @@ attribute [-instance] Module.Free.instFaithfulSMulOfNontrivial Algebra.IsIntegra
 
 namespace Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R S) in
 /--
 We say that an `R`-algebra `S` is quasi-finite

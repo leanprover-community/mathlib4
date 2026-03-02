@@ -87,21 +87,21 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : StrongDual 𝕜 p) :
   obtain ⟨g, ⟨(hextends : ∀ x : p, g x = fr x), hnormeq⟩⟩ :=
     Real.exists_extension_norm_eq (p.restrictScalars ℝ) fr
   -- Now `g` can be extended to the `StrongDual 𝕜 E` we need.
-  refine ⟨g.extendTo𝕜', ?_⟩
+  refine ⟨g.extendRCLike, ?_⟩
   -- It is an extension of `f`.
-  have h (x : p) : g.extendTo𝕜' x = f x := by
-    rw [ContinuousLinearMap.extendTo𝕜'_apply, ← Submodule.coe_smul,
+  have h (x : p) : g.extendRCLike x = f x := by
+    rw [g.extendRCLike_apply, ← Submodule.coe_smul,
       hextends, hextends]
     simp [fr, RCLike.algebraMap_eq_ofReal, mul_comm I, RCLike.re_add_im]
   -- And we derive the equality of the norms by bounding on both sides.
   refine ⟨h, le_antisymm ?_ ?_⟩
   · calc
-      ‖g.extendTo𝕜'‖ = ‖g‖ := g.norm_extendTo𝕜'
+      ‖g.extendRCLike‖ = ‖g‖ := g.norm_extendRCLike
       _ = ‖fr‖ := hnormeq
       _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
-  · exact f.opNorm_le_bound (g.extendTo𝕜' (𝕜 := 𝕜)).opNorm_nonneg
-      fun x ↦ h x ▸ (g.extendTo𝕜' (𝕜 := 𝕜) |>.le_opNorm x)
+  · exact f.opNorm_le_bound (g.extendRCLike (𝕜 := 𝕜)).opNorm_nonneg
+      fun x ↦ h x ▸ (g.extendRCLike (𝕜 := 𝕜) |>.le_opNorm x)
 
 open Module
 

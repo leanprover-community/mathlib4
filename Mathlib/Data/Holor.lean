@@ -217,7 +217,6 @@ theorem slice_sum [AddCommMonoid α] {β : Type} (i : ℕ) (hid : i < d) (s : Fi
   · intro _ _ h_not_in ih
     rw [Finset.sum_insert h_not_in, ih, slice_add, Finset.sum_insert h_not_in]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The original holor can be recovered from its slices by multiplying with unit vectors and
 summing up. -/
 @[simp]
@@ -243,13 +242,14 @@ theorem sum_unitVec_mul_slice [Semiring α] (x : Holor α (d :: ds)) :
   it is the tensor product of 1-dimensional holors. -/
 inductive CPRankMax1 [Mul α] : ∀ {ds}, Holor α ds → Prop
   | nil (x : Holor α []) : CPRankMax1 x
-  | cons {d} {ds} (x : Holor α [d]) (y : Holor α ds) : CPRankMax1 y → CPRankMax1 (x ⊗ y)
+  | cons {d : ℕ} {ds : List ℕ} (x : Holor α [d]) (y : Holor α ds) :
+    CPRankMax1 y → CPRankMax1 (x ⊗ y)
 
 /-- `CPRankMax N x` means `x` has CP rank at most `N`, that is,
   it can be written as the sum of N holors of rank at most 1. -/
 inductive CPRankMax [Mul α] [AddMonoid α] : ℕ → ∀ {ds}, Holor α ds → Prop
-  | zero {ds} : CPRankMax 0 (0 : Holor α ds)
-  | succ (n) {ds} (x : Holor α ds) (y : Holor α ds) :
+  | zero {ds : List ℕ} : CPRankMax 0 (0 : Holor α ds)
+  | succ (n : ℕ) {ds : List ℕ} (x : Holor α ds) (y : Holor α ds) :
     CPRankMax1 x → CPRankMax n y → CPRankMax (n + 1) (x + y)
 
 theorem cprankMax_nil [Mul α] [AddMonoid α] (x : Holor α nil) : CPRankMax 1 x := by
@@ -274,7 +274,6 @@ theorem cprankMax_add [Mul α] [AddMonoid α] :
     · assumption
     · exact cprankMax_add hx₂ hy
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cprankMax_mul [NonUnitalNonAssocSemiring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)
   | 0, x, _, CPRankMax.zero => by simp [mul_zero x, CPRankMax.zero]
