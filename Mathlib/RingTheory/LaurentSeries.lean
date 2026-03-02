@@ -1040,7 +1040,7 @@ theorem valuation_LaurentSeries_equal_extension :
     (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤᵐ⁰) := by
   apply IsDenseInducing.extend_unique
   · intro x
-    rw [← WithVal.apply_equiv, valuation_eq_LaurentSeries_valuation K]
+    rw [← WithVal.apply_ofVal, valuation_eq_LaurentSeries_valuation K]
     rfl
   · exact Valued.continuous_valuation (K := K⸨X⸩)
 
