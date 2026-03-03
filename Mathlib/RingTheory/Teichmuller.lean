@@ -26,8 +26,6 @@ variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommRing R] {I : Ideal R} [CharP 
 
 namespace Perfection
 
-open Ring (Perfection)
-
 /-- An auxiliary sequence to define the Teichmüller map. The `(n + 1)`-st term is the `p^n`-th
 power of an arbitrary lift in `R` of the `n`-th component from the perfection of `R ⧸ I`. -/
 noncomputable def teichmullerAux (x : Perfection (R ⧸ I) p) : ℕ → R
