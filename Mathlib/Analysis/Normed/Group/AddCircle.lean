@@ -42,7 +42,6 @@ variable (p : ℝ)
 
 instance : NormedAddCommGroup (AddCircle p) := QuotientAddGroup.instNormedAddCommGroup _
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_coe_mul (x : ℝ) (t : ℝ) :
     ‖(↑(t * x) : AddCircle (t * p))‖ = |t| * ‖(x : AddCircle p)‖ := by
@@ -92,7 +91,6 @@ theorem norm_eq' (hp : 0 < p) {x : ℝ} : ‖(x : AddCircle p)‖ = p * |p⁻¹ 
     rw [← abs_eq_self.mpr hp.le]
   rw [← abs_mul, mul_sub, mul_inv_cancel_left₀ hp.ne.symm, norm_eq, mul_comm p]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_le_half_period {x : AddCircle p} (hp : p ≠ 0) : ‖x‖ ≤ |p| / 2 := by
   obtain ⟨x⟩ := x
   change ‖(x : AddCircle p)‖ ≤ |p| / 2
@@ -140,7 +138,6 @@ theorem coe_real_preimage_closedBall_period_zero (x ε : ℝ) :
   ext y
   simp [dist_eq_norm, ← QuotientAddGroup.mk_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
     (↑) ⁻¹' closedBall (x : AddCircle p) ε = ⋃ z : ℤ, closedBall (x + z • p) ε := by
   rcases eq_or_ne p 0 with (rfl | hp)
@@ -193,7 +190,6 @@ section FiniteOrderPoints
 
 variable {p} [hp : Fact (0 < p)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_div_natCast {m n : ℕ} :
     ‖(↑(↑m / ↑n * p) : AddCircle p)‖ = p * (↑(min (m % n) (n - m % n)) / n) := by
   have : p⁻¹ * (↑m / ↑n * p) = ↑m / ↑n := by rw [mul_comm _ p, inv_mul_cancel_left₀ hp.out.ne.symm]
@@ -207,7 +203,6 @@ theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrde
   refine ⟨min (m % n) (n - m % n), ?_⟩
   rw [← hm, norm_div_natCast]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_add_order_smul_norm_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u)
     (hu' : u ≠ 0) : p ≤ addOrderOf u • ‖u‖ := by
   obtain ⟨n, hn⟩ := exists_norm_eq_of_isOfFinAddOrder hu
