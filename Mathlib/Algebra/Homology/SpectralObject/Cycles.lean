@@ -71,10 +71,12 @@ noncomputable def pOpcycles :
     (X.H n).obj (mk₁ f) ⟶ X.opcycles f g n :=
   cokernel.π _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mono (X.iCycles f g n) := by
   dsimp [iCycles]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi (X.pOpcycles f g n) := by
   dsimp [pOpcycles]
   infer_instance
@@ -95,12 +97,14 @@ section
 
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n₀ n₁ : ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma iCycles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.iCycles f g n₀ ≫ X.δ f g n₀ n₁ hn₁ = 0 := by
   subst hn₁
   simp [iCycles]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma δ_pOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.δ f g n₀ n₁ hn₁ ≫ X.pOpcycles f g n₁ = 0 := by
