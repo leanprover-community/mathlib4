@@ -702,7 +702,6 @@ theorem pow_finite_co_support {x : R⟦Γ⟧} (hx : 0 < x.orderTop) (g : Γ) :
       simp only [mem_coe, mem_addAntidiagonal, mem_support, ne_eq, Set.mem_iUnion]
       exact ⟨hj, ⟨n, hi⟩, add_comm j i⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A summable family of powers of a Hahn series `x`. If `x` has non-positive `orderTop`, then
 return a junk value given by pretending `x = 0`. -/
 @[simps]
@@ -731,7 +730,6 @@ theorem powers_of_not_orderTop_pos {x : R⟦Γ⟧} (hx : ¬ 0 < x.orderTop) :
   ext a
   obtain rfl | ha := eq_or_ne a 0 <;> simp [powers, *]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem powers_zero : powers (0 : R⟦Γ⟧) = .single 0 1 := by
   ext n
@@ -780,7 +778,6 @@ theorem one_minus_single_neg_mul {x y : R⟦Γ⟧} {r : R} (hr : r * x.leadingCo
   rw [mul_add, single_mul_single, hr, hxo,
     sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq single_zero_one.symm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem unit_aux (x : R⟦Γ⟧) {r : R} (hr : r * x.leadingCoeff = 1)
     (oinv : Γ) (hxo : oinv + x.order = 0) :
     0 < (1 - single oinv r * x).orderTop := by

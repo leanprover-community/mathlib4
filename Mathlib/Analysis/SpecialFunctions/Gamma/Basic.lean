@@ -218,7 +218,6 @@ theorem partialGamma_add_one {s : ℂ} (hs : 0 < s.re) {X : ℝ} (hX : 0 ≤ X) 
   congr with x
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The recurrence relation for the `Γ` integral. -/
 theorem GammaIntegral_add_one {s : ℂ} (hs : 0 < s.re) :
     GammaIntegral (s + 1) = s * GammaIntegral s := by
