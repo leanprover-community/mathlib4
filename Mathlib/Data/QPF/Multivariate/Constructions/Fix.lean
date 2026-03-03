@@ -126,7 +126,8 @@ theorem wrepr_wMk {α : TypeVec n} (a : q.P.A) (f' : q.P.drop.B a ⟹ α)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem wrepr_equiv {α : TypeVec n} (x : q.P.W α) : WEquiv (wrepr x) x := by
-  apply q.P.w_ind _ x; intro a f' f ih
+  induction x using q.P.w_ind
+  case ih a f' f ih =>
   apply WEquiv.trans _ (q.P.wMk' (appendFun id wrepr <$$> ⟨a, q.P.appendContents f' f⟩))
   · apply wEquiv.abs'
     rw [wrepr_wMk, q.P.wDest'_wMk', q.P.wDest'_wMk', abs_repr]
@@ -229,8 +230,8 @@ theorem Fix.ind_rec {β : Type u} (g₁ g₂ : Fix F α → β)
     ∀ x, g₁ x = g₂ x := by
   apply Quot.ind
   intro x
-  apply q.P.w_ind _ x
-  intro a f' f ih
+  induction x using q.P.w_ind
+  case ih a f' f ih =>
   change g₁ ⟦q.P.wMk a f' f⟧ = g₂ ⟦q.P.wMk a f' f⟧
   rw [← Fix.ind_aux a f' f]
   apply h
@@ -274,7 +275,8 @@ theorem Fix.ind {α : TypeVec n} (p : Fix F α → Prop)
     (h : ∀ x : F (α.append1 (Fix F α)), LiftP (PredLast α p) x → p (Fix.mk x)) : ∀ x, p x := by
   apply Quot.ind
   intro x
-  apply q.P.w_ind _ x; intro a f' f ih
+  induction x using q.P.w_ind
+  case ih a f' f ih =>
   change p ⟦q.P.wMk a f' f⟧
   rw [← Fix.ind_aux a f' f]
   apply h
