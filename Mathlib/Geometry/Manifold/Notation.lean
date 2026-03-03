@@ -172,7 +172,11 @@ def totalSpaceMk (e : Expr) : MetaM Expr := do
               some <$> mkLambdaFVars #[x] body
             else return none
           | _ => return none
-        return f?.getD e.headBeta
+        match f? with
+        | some e => return e.headBeta
+        | none =>
+          throwError "error: `{e}` is a dependent function into `{V}`, but could not find a
+          `FiberBundle` instance on `{V}`: you may be missing suitable typeclass assumptions"
       | tgt =>
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a trivial bundle as a non-dependent function"
         -- TODO: can `tgt` depend on `x` in a way that is not a function application?
