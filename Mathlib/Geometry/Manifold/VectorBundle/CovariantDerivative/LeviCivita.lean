@@ -5,6 +5,7 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
@@ -637,6 +638,12 @@ lemma leviCivitaRhs_smulZ [CompleteSpace E] {f : M → ℝ}
   simp only [leviCivitaRhs]
   rw [smul_comm, leviCivitaRhs'_smulZ I hf hX hY hZ]
 
+lemma leviCivitaRhs_smulZ_apply [CompleteSpace E] {f : M → ℝ}
+    (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    leviCivitaRhs I X Y (f • Z) x = f x * leviCivitaRhs I X Y Z x := by
+  simp [leviCivitaRhs, leviCivitaRhs'_smulZ_apply I hf hX hY hZ]
+  ring
+
 end leviCivitaRhs
 
 variable (X Y Z) in
@@ -734,142 +741,72 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   · exact hcov.eq_leviCivitaRhs I X σ Z
   · exact (hcov'.eq_leviCivitaRhs I X σ Z ).symm
 
-/-- Auxiliary definition towards defining the Levi-Civita connection on `M`:
-given a trivialisation `e` and a choice `o` of linear order on the standard basis of `E`,
-we take the expression defined by the Koszul formula (using the orthonormal frame determined by `e`
-and `o`). -/
-noncomputable def lcCandidateAux' [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
-    (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
-    ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x :=
-  open scoped Classical in
-  fun X Y x ↦
-  if hE : Subsingleton E then X x else
-  -- Choose a trivialisation of `TM` near `x`.
-  -- Since `E` is non-trivial, `b` is non-empty.
-  let b := Basis.ofVectorSpace ℝ E
-  have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
-  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
-  letI frame := b.orthonormalFrame e
-  -- The coefficient of the desired tangent vector `∇ X Y x` w.r.t. `s i`
-  -- is given by `leviCivitaRhs X Y (s i)`.
-  ∑ i, ((leviCivitaRhs I X Y (frame i)) x) • (frame i x)
-
-noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
-    (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E))
-    (Y : (x : M) → TangentSpace I x) (x : M) :
-    TangentSpace I x →L[ℝ] TangentSpace I x :=
-  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
-  LinearMap.toContinuousLinearMap <|
-  { toFun X₀ := lcCandidateAux' I e o Y (_root_.extend I E X₀) x
-    map_add' X₀ Y₀ := by
-      sorry
-      -- simp only [lcCandidateAux', hE, ↓reduceDIte]
-      -- simp only [← Finset.sum_add_distrib, ← add_smul]
-      -- congr; ext i
-      -- rw [leviCivitaRhs_addX_apply] <;> try assumption
-      -- let b := Basis.ofVectorSpace ℝ E
-      -- have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-      -- exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-    map_smul' a X₀ := by
-      sorry
-      -- simp only [lcCandidateAux', hE, ↓reduceDIte]
-      -- rw [Finset.smul_sum]
-      -- congr; ext i
-      -- rw [leviCivitaRhs_smulX_apply] <;> try assumption
-      -- · simp [← smul_assoc]
-      -- · let b := Basis.ofVectorSpace ℝ E
-      --   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-      --   exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx }
-    }
-
-variable (M) in
--- TODO: make g part of the notation!
-/-- Given two vector fields X and Y on TM, compute
-the candidate definition for the Levi-Civita connection on `TM`. -/
-noncomputable def lcCandidate [FiniteDimensional ℝ E]
-    (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
-    (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x) :=
-  -- Use the preferred trivialisation at `x` to write down a candidate for the existence.
-  fun X x ↦ lcCandidateAux I (trivializationAt E (TangentSpace I : M → Type _) x) o X x
-
-variable (X Y) in
-/-- The definition `lcCandidate` behaves well: for each compatible trivialisation `e`,
-the candidate definition using `e` agrees with `lcCandidate` on `e.baseSet`. -/
-lemma lcCandidate_eq_lcCandidateAux [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
-    {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} {x : M} (hx : x ∈ e.baseSet) :
-    lcCandidate I M o X x = lcCandidateAux I e o X x := by
-  by_cases hE : Subsingleton E
-  · simp [lcCandidate, lcCandidateAux, hE]
-  · simp only [lcCandidate, lcCandidateAux, hE, ↓reduceDIte]
-    -- Now, start the real proof.
-    sorry
-
-lemma isCovariantDerivativeOn_lcCandidateAux_of_nonempty [FiniteDimensional ℝ E]
-    (hE : ¬(Subsingleton E)) [Nontrivial E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
-    {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
-    IsCovariantDerivativeOn E (lcCandidateAux I (M := M) e o) e.baseSet where
-  addσ {σ σ' x} hσ hσ' hx := by
-    simp only [lcCandidateAux, hE, ↓reduceDIte]
-    simp only [← Finset.sum_add_distrib, ← add_smul]
-    congr; ext i
-    rw [leviCivitaRhs_addY_apply] <;> try assumption
-    let b := Basis.ofVectorSpace ℝ E
-    have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-    exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-  leibniz {σ g x} hσ hg hx := by
-    simp only [lcCandidateAux, hE, ↓reduceDIte]
-    let b := Basis.ofVectorSpace ℝ E
-    have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-    let Z (i : (Basis.ofVectorSpaceIndex ℝ E)) := ((Basis.ofVectorSpace ℝ E).orthonormalFrame e i)
-    have hZ : IsOrthonormalFrameOn I E 1 Z e.baseSet :=
-      (Basis.ofVectorSpace ℝ E).orthonormalFrame_isOrthonormalFrameOn e
-    have hZ' : ∑ i, ⟪σ, Z i⟫ x • Z i x = σ x := by
-      calc _
-        _ = ∑ i, hZ.coeff i σ x • Z i x := by
-          congr; ext i
-          rw [hZ.coeff_eq_inner' σ hx i, product_swap]
-        _ = σ x := (hZ.toIsLocalFrameOn.coeff_sum_eq _ hx).symm
-    trans ∑ i, leviCivitaRhs I X (g • σ) (Z i) x • (Z i) x
-    · congr
-    have (i : (Basis.ofVectorSpaceIndex ℝ E)) : MDiffAt (T% (Z i)) x :=
-      mdifferentiableAt_orthonormalFrame_of_mem _ _ i hx
-    have aux (i) := leviCivitaRhs_smulY_apply I hg hX hσ (this i)
-    simp_rw [aux]
-    trans ∑ i, (g x • leviCivitaRhs I X σ (Z i) x • Z i x)
-        + ∑ i, ((bar (g x)) ((mfderiv I 𝓘(ℝ, ℝ) g x) (X x)) • ⟪σ, Z i⟫ x) • Z i x
-    · simp only [← Finset.sum_add_distrib, add_smul, smul_assoc]
+open Classical in
+noncomputable def lcCandidateAux₀ [FiniteDimensional ℝ E]
+    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
+    TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
+  mk2TensorAt I E ℝ (fun (X Z : Π x : M, TangentSpace I x) ↦
+      if hX : MDiffAt (T% X) x then if hZ : MDiffAt (T% Z) x then
+        leviCivitaRhs I X Y Z
+      else 0 else 0) (x := x)
+    (fun {f X Z} hf hX ↦ by
       dsimp
-    have : ∑ i, g x • leviCivitaRhs I X σ (Z i) x • Z i x = (g • lcCandidateAux I e o X σ) x := by
-      simp only [lcCandidateAux, hE, ↓reduceDIte, Pi.smul_apply', Finset.smul_sum]
-      congr
-    rw [this]
-    simp_rw [← hZ', smul_assoc, Finset.smul_sum]
+      rw [if_pos hX, if_pos]
+      · split_ifs with hZ
+        · exact leviCivitaRhs_smulX_apply hf hX hY hZ
+        · simp
+      · exact hf.smul_section hX)
+    (fun {X₁ X₂ Z} hX₁ hX₂ ↦ by
+      dsimp
+      rw [if_pos hX₁, if_pos hX₂, if_pos]
+      · split_ifs with hZ
+        · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY hZ
+        · simp
+      · exact mdifferentiableAt_add_section hX₁ hX₂)
+    (fun {f X Z} hf hZ ↦ by
+      dsimp
+      rw [if_pos hZ]
+      nth_rw 2 [if_pos]
+      · split_ifs with hX
+        · exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
+        · simp
+      · exact hf.smul_section hZ)
+    (fun {X Z₁ Z₂} hZ₁ hZ₂ ↦ by
+      dsimp
+      rw [if_pos hZ₁, if_pos hZ₂]
+      nth_rw 2 [if_pos]
+      · split_ifs with hX
+        · exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
+        · simp
+      · exact mdifferentiableAt_add_section hZ₁ hZ₂)
+
+noncomputable def lcCandidateAux₁ [FiniteDimensional ℝ E]
+    {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
+    TangentSpace I x →L[ℝ] TangentSpace I x :=
+  -- use the musical isomorphism to produce a candidate ∇ Y as a (1,1)-tensor
+  -- (rather than a 2-tensor)
+  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
+  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
+  (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
+    (lcCandidateAux₀ I x hY)
+
+open Classical in
+noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
+    (Y : Π x : M, TangentSpace I x) (x : M) :
+    TangentSpace I x →L[ℝ] TangentSpace I x :=
+  if hY : MDiffAt (T% Y) x then lcCandidateAux₁ I x hY else 0
+
+lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E] :
+    IsCovariantDerivativeOn E (lcCandidateAux I (M := M)) where
+  addσ {Y Y'} x hY hY' _ := by
+    unfold lcCandidateAux
+    rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
+    unfold lcCandidateAux₁
     dsimp
-
-/-- The candidate definition `lcCandidateAux` is a covariant derivative
-on each local trivialisation's domain. -/
-lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
-    {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
-    IsCovariantDerivativeOn E (lcCandidateAux I (M := M) e o) e.baseSet := by
-  by_cases hE : Subsingleton E
-  · exact (IsCovariantDerivativeOn.of_subsingleton E _).mono (Set.subset_univ _)
-  · have : Nontrivial E := not_subsingleton_iff_nontrivial.mp hE
-    exact isCovariantDerivativeOn_lcCandidateAux_of_nonempty I hE e
-
--- The candidate definition is a covariant derivative on each local frame's domain.
-lemma isCovariantDerivativeOn_lcCandidate [FiniteDimensional ℝ E]
-    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
-    {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
-    IsCovariantDerivativeOn E (lcCandidate I M o) e.baseSet := by
-  apply IsCovariantDerivativeOn.congr (isCovariantDerivativeOn_lcCandidateAux I e (o := o))
-  intro X σ x hx
-  exact (lcCandidate_eq_lcCandidateAux I X σ e hx).symm
+    rw [← ContinuousLinearMap.comp_add]
+    congr! 1
+    sorry
+  leibniz := sorry
 
 end
 
