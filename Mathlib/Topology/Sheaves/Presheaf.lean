@@ -5,9 +5,10 @@ Authors: Kim Morrison, Mario Carneiro, Reid Barton, Andrew Yang
 -/
 module
 
+public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.Topology.Sheaves.Init
 
 /-!
 # Presheaves on a topological space
@@ -395,5 +396,3 @@ def pullback {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) :
 end
 
 end IsOpenMap
-
-#min_imports
