@@ -46,6 +46,19 @@ lemma IndepFun.charFun_map_add_eq_mul {Y : Ω → E}
   ext t
   rw [hXY.map_add_eq_map_conv_map₀ mX mY, charFun_conv, Pi.mul_apply]
 
+lemma IndepFun.charFun_map_fun_add_eq_mul {Y : Ω → E}
+    (mX : AEMeasurable X P) (mY : AEMeasurable Y P) (hXY : X ⟂ᵢ[P] Y) :
+    charFun (P.map (fun ω ↦ X ω + Y ω)) = charFun (P.map X) * charFun (P.map Y) :=
+  hXY.charFun_map_add_eq_mul mX mY
+
+lemma charFun_map_add_prod_eq_mul {μ ν : Measure E}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    charFun ((μ.prod ν).map (fun p ↦ p.1 + p.2)) = charFun μ * charFun ν := by
+  rw [IndepFun.charFun_map_fun_add_eq_mul, measurePreserving_fst.map_eq,
+    measurePreserving_snd.map_eq]
+  any_goals fun_prop
+  exact indepFun_prod (X := id) (Y := id) measurable_id measurable_id
+
 /-- Two random variables are independent if and only if their joint characteristic function is equal
 to the product of the characteristic functions. This is the version for Hilbert spaces, see
 `indepFun_iff_charFunDual_prod` for the Banach space version. -/
@@ -66,6 +79,19 @@ lemma IndepFun.charFunDual_map_add_eq_mul {Y : Ω → E}
     charFunDual (P.map (X + Y)) = charFunDual (P.map X) * charFunDual (P.map Y) := by
   ext L
   rw [hXY.map_add_eq_map_conv_map₀ mX mY, charFunDual_conv, Pi.mul_apply]
+
+lemma IndepFun.charFunDual_map_fun_add_eq_mul {Y : Ω → E}
+    (mX : AEMeasurable X P) (mY : AEMeasurable Y P) (hXY : X ⟂ᵢ[P] Y) :
+    charFunDual (P.map (fun ω ↦ X ω + Y ω)) = charFunDual (P.map X) * charFunDual (P.map Y) :=
+  hXY.charFunDual_map_add_eq_mul mX mY
+
+lemma charFunDual_map_add_prod_eq_mul {μ ν : Measure E}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    charFunDual ((μ.prod ν).map (fun p ↦ p.1 + p.2)) = charFunDual μ * charFunDual ν := by
+  rw [IndepFun.charFunDual_map_fun_add_eq_mul, measurePreserving_fst.map_eq,
+    measurePreserving_snd.map_eq]
+  any_goals fun_prop
+  exact indepFun_prod (X := id) (Y := id) measurable_id measurable_id
 
 variable [CompleteSpace E]
 
@@ -132,11 +158,38 @@ lemma iIndepFun.charFunDual_map_sum_eq_prod [NormedSpace ℝ E]
   rw [← Finset.sum_image (Option.some_injective α).injOn]
   exact indepFun_finset_sum_of_notMem₀ hX (by fun_prop) (by simp)
 
+lemma iIndepFun.charFunDual_map_fun_sum_eq_prod [NormedSpace ℝ E]
+    (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
+    charFunDual (P.map (fun ω ↦ ∑ i, X i ω)) = ∏ i, charFunDual (P.map (X i)) := by
+  convert hX.charFunDual_map_sum_eq_prod mX
+  simp
+
+lemma charFunDual_map_sum_pi_eq_prod [NormedSpace ℝ E] {μ : ι → Measure E}
+    [∀ i, IsProbabilityMeasure (μ i)] :
+    charFunDual ((Measure.pi μ).map (fun p ↦ ∑ i, p i)) = ∏ i, charFunDual (μ i) := by
+  rw [iIndepFun.charFunDual_map_fun_sum_eq_prod]
+  · refine Finset.prod_congr rfl fun i _ ↦ ?_
+    rw [(measurePreserving_eval μ i).map_eq]
+  · exact aemeasurable_id.eval
+  · exact iIndepFun_pi (X := fun _ ↦ id) (fun _ ↦ aemeasurable_id)
+
 lemma iIndepFun.charFun_map_sum_eq_prod [InnerProductSpace ℝ E]
     (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
     charFun (P.map (∑ i, X i)) = ∏ i, charFun (P.map (X i)) := by
   ext
   simp [charFun_eq_charFunDual_toDualMap, hX.charFunDual_map_sum_eq_prod mX]
+
+lemma iIndepFun.charFun_map_fun_sum_eq_prod [InnerProductSpace ℝ E]
+    (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
+    charFun (P.map (fun ω ↦ ∑ i, X i ω)) = ∏ i, charFun (P.map (X i)) := by
+  ext
+  simp [charFun_eq_charFunDual_toDualMap, hX.charFunDual_map_fun_sum_eq_prod mX]
+
+lemma charFun_map_sum_pi_eq_prod [InnerProductSpace ℝ E]
+    (μ : ι → Measure E) [∀ i, IsProbabilityMeasure (μ i)] :
+    charFun ((Measure.pi μ).map (fun p ↦ ∑ i, p i)) = ∏ i, charFun (μ i) := by
+  ext
+  simp [charFun_eq_charFunDual_toDualMap, charFunDual_map_sum_pi_eq_prod]
 
 end Sum
 
