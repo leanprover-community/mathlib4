@@ -84,6 +84,7 @@ noncomputable def chainComplexXIso (n : ℕ) :
     (Λ.chainComplex X).X (n + 2) ≅ Λ.F.obj (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) := by
   apply ChainComplex.mk'XIso
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_chainComplex_d (n : ℕ) :
     ι.map ((Λ.chainComplex X).d (n + 2) (n + 1)) =
     ι.map (Λ.chainComplexXIso X n).hom ≫ Λ.π.app (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) ≫
@@ -96,6 +97,7 @@ lemma map_chainComplex_d (n : ℕ) :
 
 attribute [irreducible] chainComplex
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exactAt_map_chainComplex_succ (n : ℕ) :
     ((ι.mapHomologicalComplex _).obj (Λ.chainComplex X)).ExactAt (n + 1) := by
   rw [HomologicalComplex.exactAt_iff' _ (n + 2) (n + 1) n
@@ -118,8 +120,7 @@ noncomputable def chainComplexMap : Λ.chainComplex X ⟶ Λ.chainComplex Y :=
     (ι.map_injective (by
         dsimp
         simp only [Category.assoc, Functor.map_comp, map_chainComplex_d_1_0]
-        simp only [← ι.map_comp, ← ι.map_comp_assoc, Iso.inv_hom_id_assoc,
-          Iso.inv_hom_id, comp_id]
+        simp only [← ι.map_comp, ← ι.map_comp_assoc]
         simp))
     (fun n p ↦
       ⟨(Λ.chainComplexXIso X n).hom ≫ (Λ.F.map

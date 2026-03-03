@@ -78,7 +78,8 @@ section One
 variable [One α] {s : Set α} {a : α}
 
 /-- The set `1 : Set α` is defined as `{1}` in scope `Pointwise`. -/
-@[to_additive /-- The set `0 : Set α` is defined as `{0}` in scope `Pointwise`. -/]
+@[to_additive (attr := instance_reducible)
+  /-- The set `0 : Set α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Set α) :=
   ⟨{1}⟩
 
@@ -143,7 +144,7 @@ section Inv
 
 /-- The pointwise inversion of set `s⁻¹` is defined as `{x | x⁻¹ ∈ s}` in scope `Pointwise`. It is
 equal to `{x⁻¹ | x ∈ s}`, see `Set.image_inv_eq_inv`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- The pointwise negation of set `-s` is defined as `{x | -x ∈ s}` in scope `Pointwise`.
       It is equal to `{-x | x ∈ s}`, see `Set.image_neg_eq_neg`. -/]
 protected def inv [Inv α] : Inv (Set α) :=
@@ -282,7 +283,7 @@ variable {ι : Sort*} {κ : ι → Sort*} [Mul α] {s s₁ s₂ t t₁ t₂ u : 
 
 /-- The pointwise multiplication of sets `s * t` and `t` is defined as `{x * y | x ∈ s, y ∈ t}` in
 scope `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- The pointwise addition of sets `s + t` is defined as `{x + y | x ∈ s, y ∈ t}` in locale
       `Pointwise`. -/]
 protected def mul : Mul (Set α) :=
@@ -424,7 +425,7 @@ variable {ι : Sort*} {κ : ι → Sort*} [Div α] {s s₁ s₂ t t₁ t₂ u : 
 
 /-- The pointwise division of sets `s / t` is defined as `{x / y | x ∈ s, y ∈ t}` in locale
 `Pointwise`. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
       /-- The pointwise subtraction of sets `s - t` is defined as `{x - y | x ∈ s, y ∈ t}` in locale
       `Pointwise`. -/]
 protected def div : Div (Set α) :=
@@ -532,30 +533,33 @@ end Div
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
 note [pointwise nat action]. -/
+@[instance_reducible]
 protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 
 /-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
 `Set`. See note [pointwise nat action]. -/
-@[to_additive existing]
+@[instance_reducible, to_additive existing]
 protected def NPow [One α] [Mul α] : Pow (Set α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
 /-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
 addition/subtraction!) of a `Set`. See note [pointwise nat action]. -/
+@[instance_reducible]
 protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
   ⟨zsmulRec⟩
 
 /-- Repeated pointwise multiplication/division (not the same as pointwise repeated
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
-@[to_additive existing]
+@[instance_reducible, to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 
 /-- `Set α` is a `Semigroup` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Set α) :=
   { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
 
@@ -564,7 +568,8 @@ section CommSemigroup
 variable [CommSemigroup α] {s t : Set α}
 
 /-- `Set α` is a `CommSemigroup` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Set α) :=
   { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
 
@@ -583,7 +588,8 @@ section MulOneClass
 variable [MulOneClass α]
 
 /-- `Set α` is a `MulOneClass` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
 protected def mulOneClass : MulOneClass (Set α) :=
   { Set.one, Set.mul with
     mul_one := image2_right_identity mul_one
@@ -622,7 +628,8 @@ section Monoid
 variable [Monoid α] {s t : Set α} {a : α} {m n : ℕ}
 
 /-- `Set α` is a `Monoid` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddMonoid` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddMonoid` under pointwise operations if `α` is. -/]
 protected def monoid : Monoid (Set α) :=
   { Set.semigroup, Set.mulOneClass, @Set.NPow α _ _ with }
 
@@ -748,7 +755,8 @@ lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivi
 end CancelMonoid
 
 /-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
-@[to_additive /-- `Set α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
+@[to_additive (attr := instance_reducible)
+  /-- `Set α` is an `AddCommMonoid` under pointwise operations if `α` is. -/]
 protected def commMonoid [CommMonoid α] : CommMonoid (Set α) :=
   { Set.monoid, Set.commSemigroup with }
 
@@ -783,7 +791,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
   rw [← nonempty_inv, inter_inv]; simp_rw [← image_inv_eq_inv, image_image, mul_inv_rev, inv_inv]
 
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive
+@[to_additive (attr := instance_reducible)
     /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
@@ -842,7 +850,7 @@ lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by cas
 end DivisionMonoid
 
 /-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionCommMonoid
+@[to_additive (attr := instance_reducible) subtractionCommMonoid
       /-- `Set α` is a commutative subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=

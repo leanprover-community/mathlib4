@@ -72,7 +72,7 @@ def IsDedekindDomain.HeightOneSpectrum.maxPowDividing (I : Ideal R) : Ideal R :=
 
 open Associates in
 theorem IsDedekindDomain.HeightOneSpectrum.maxPowDividing_eq_pow_multiset_count
-    [DecidableEq (Ideal R)] {I : Ideal R} (hI : I ≠ 0) :
+    {I : Ideal R} (hI : I ≠ 0) :
     maxPowDividing v I =
       v.asIdeal ^ Multiset.count v.asIdeal (normalizedFactors I) := by
   classical
@@ -110,7 +110,7 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
   `v^(val_v(I))` is not the unit ideal. -/
 theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => v.maxPowDividing I).Finite :=
+    HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ v.maxPowDividing I :=
   haveI h_subset : {v : HeightOneSpectrum R | v.maxPowDividing I ≠ 1} ⊆
       {v : HeightOneSpectrum R |
         ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) ≠ 0} := by
@@ -125,9 +125,9 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
 theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
-      ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)).Finite := by
-  rw [mulSupport]
+    HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
+      ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) := by
+  rw [HasFiniteMulSupport, mulSupport]
   simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
   exact finite_mulSupport hI
 
@@ -135,9 +135,9 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
 theorem finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
-      (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ))).Finite := by
-  rw [mulSupport]
+    HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
+      (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) := by
+  rw [HasFiniteMulSupport, mulSupport]
   simp_rw [zpow_neg, Ne, inv_eq_one]
   exact finite_mulSupport_coe hI
 
@@ -606,7 +606,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   have : ∀ p ∈ s, J * ∏ q ∈ s, q.asIdeal < J * ∏ q ∈ s \ {p}, q.asIdeal := by
     intro p hps
     conv_rhs => rw [← mul_one (J * _)]
-    rw [Finset.prod_eq_mul_prod_diff_singleton hps, ← mul_assoc,
+    rw [Finset.prod_eq_mul_prod_diff_singleton_of_mem hps, ← mul_assoc,
       mul_right_comm _ p.asIdeal]
     refine mul_lt_mul_of_pos_left ?_ ?_
     · rw [Ideal.one_eq_top, lt_top_iff_ne_top]
@@ -640,7 +640,7 @@ lemma IsDedekindDomain.exists_sup_span_eq {I J : Ideal R} (hIJ : I ≤ J) (hI : 
   by_cases hqp : q = p'
   · subst hqp
     convert sub_mem H₁ H₂
-    rw [Finset.sum_eq_add_sum_diff_singleton hp's, add_sub_cancel_right]
+    rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hp's, add_sub_cancel_right]
   · refine Ideal.mul_mono_right ?_ (ha p' hp's)
     exact Ideal.prod_le_inf.trans (Finset.inf_le (b := q) (by simpa [hq] using hqp))
 

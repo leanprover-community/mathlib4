@@ -284,8 +284,9 @@ lemma compl_loops_eq (M : Matroid α) : M.E \ M.loops = {e | M.IsNonloop e} := b
 lemma isNonloop_of_not_isLoop (he : e ∈ M.E := by aesop_mat) (h : ¬ M.IsLoop e) : M.IsNonloop e :=
   ⟨h,he⟩
 
-lemma isLoop_of_not_isNonloop (he : e ∈ M.E := by aesop_mat) (h : ¬ M.IsNonloop e) : M.IsLoop e :=
-  by rwa [isNonloop_iff, and_iff_left he, not_not] at h
+lemma isLoop_of_not_isNonloop (he : e ∈ M.E := by aesop_mat) (h : ¬ M.IsNonloop e) :
+    M.IsLoop e := by
+  rwa [isNonloop_iff, and_iff_left he, not_not] at h
 
 @[simp]
 lemma not_isLoop_iff (he : e ∈ M.E := by aesop_mat) : ¬M.IsLoop e ↔ M.IsNonloop e :=
@@ -482,8 +483,7 @@ lemma IsColoop.dual_isLoop (he : M.IsColoop e) : M✶.IsLoop e :=
 lemma IsColoop.isCocircuit (he : M.IsColoop e) : M.IsCocircuit {e} :=
   IsLoop.isCircuit he
 
-lemma IsLoop.dual_isColoop (he : M.IsLoop e) : M✶.IsColoop e :=
-  by rwa [IsColoop, dual_dual]
+lemma IsLoop.dual_isColoop (he : M.IsLoop e) : M✶.IsColoop e := by rwa [IsColoop, dual_dual]
 
 @[simp]
 lemma dual_isColoop_iff_isLoop : M✶.IsColoop e ↔ M.IsLoop e :=

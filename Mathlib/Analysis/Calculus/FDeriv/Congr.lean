@@ -33,7 +33,7 @@ variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
 variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {L : Filter (E × E)}
 
 section congr
 
@@ -102,12 +102,14 @@ theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
     fderivWithin 𝕜 f s =ᶠ[𝓝 x] fderivWithin 𝕜 f t :=
   (eventually_eventually_nhds.2 h).mono fun _ => fderivWithin_congr_set
 
+theorem Filter.EventuallyEq.hasFDerivAtFilter_iff (h₀ : Prod.map f₀ f₀ =ᶠ[L] Prod.map f₁ f₁)
+    (h₁ : ∀ x, f₀' x = f₁' x) : HasFDerivAtFilter f₀ f₀' L ↔ HasFDerivAtFilter f₁ f₁' L := by
+  simp only [hasFDerivAtFilter_iff_isLittleOTVS]
+  exact isLittleOTVS_congr (h₀.mono fun y hy => by simp_all [Prod.map]) .rfl
+
 theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
-    HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x := by
-  rw [hasStrictFDerivAt_iff_isLittleOTVS, hasStrictFDerivAt_iff_isLittleOTVS]
-  refine isLittleOTVS_congr ((h.prodMk_nhds h).mono ?_) .rfl
-  rintro p ⟨hp₁, hp₂⟩
-  simp only [*]
+    HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x :=
+  h.prodMap_nhds h |>.hasFDerivAtFilter_iff h'
 
 theorem HasStrictFDerivAt.congr_fderiv (h : HasStrictFDerivAt f f' x) (h' : f' = g') :
     HasStrictFDerivAt f g' x :=
@@ -124,18 +126,14 @@ theorem HasStrictFDerivAt.congr_of_eventuallyEq (h : HasStrictFDerivAt f f' x)
     (h₁ : f =ᶠ[𝓝 x] f₁) : HasStrictFDerivAt f₁ f' x :=
   (h₁.hasStrictFDerivAt_iff fun _ => rfl).1 h
 
-theorem Filter.EventuallyEq.hasFDerivAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
-    (h₁ : ∀ x, f₀' x = f₁' x) : HasFDerivAtFilter f₀ f₀' x L ↔ HasFDerivAtFilter f₁ f₁' x L := by
-  simp only [hasFDerivAtFilter_iff_isLittleOTVS]
-  exact isLittleOTVS_congr (h₀.mono fun y hy => by simp only [hy, h₁, hx]) .rfl
-
-theorem HasFDerivAtFilter.congr_of_eventuallyEq (h : HasFDerivAtFilter f f' x L) (hL : f₁ =ᶠ[L] f)
-    (hx : f₁ x = f x) : HasFDerivAtFilter f₁ f' x L :=
-  (hL.hasFDerivAtFilter_iff hx fun _ => rfl).2 h
+theorem HasFDerivAtFilter.congr_of_eventuallyEq (h : HasFDerivAtFilter f f' L)
+    (hL : Prod.map f₁ f₁ =ᶠ[L] Prod.map f f) :
+    HasFDerivAtFilter f₁ f' L :=
+  (hL.hasFDerivAtFilter_iff fun _ => rfl).2 h
 
 theorem Filter.EventuallyEq.hasFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
     HasFDerivAt f₀ f' x ↔ HasFDerivAt f₁ f' x :=
-  h.hasFDerivAtFilter_iff h.eq_of_nhds fun _ => _root_.rfl
+  h.prodMap (h.filter_mono <| pure_le_nhds _) |>.hasFDerivAtFilter_iff fun _ => rfl
 
 theorem Filter.EventuallyEq.differentiableAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
     DifferentiableAt 𝕜 f₀ x ↔ DifferentiableAt 𝕜 f₁ x :=
@@ -143,7 +141,7 @@ theorem Filter.EventuallyEq.differentiableAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) :
 
 theorem Filter.EventuallyEq.hasFDerivWithinAt_iff (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : f₀ x = f₁ x) :
     HasFDerivWithinAt f₀ f' s x ↔ HasFDerivWithinAt f₁ f' s x :=
-  h.hasFDerivAtFilter_iff hx fun _ => _root_.rfl
+  h.prodMap (by assumption) |>.hasFDerivAtFilter_iff fun _ => _root_.rfl
 
 theorem Filter.EventuallyEq.hasFDerivWithinAt_iff_of_mem (h : f₀ =ᶠ[𝓝[s] x] f₁) (hx : x ∈ s) :
     HasFDerivWithinAt f₀ f' s x ↔ HasFDerivWithinAt f₁ f' s x :=
@@ -157,25 +155,25 @@ theorem Filter.EventuallyEq.differentiableWithinAt_iff_of_mem (h : f₀ =ᶠ[�
     DifferentiableWithinAt 𝕜 f₀ s x ↔ DifferentiableWithinAt 𝕜 f₁ s x :=
   h.differentiableWithinAt_iff (h.eq_of_nhdsWithin hx)
 
-theorem HasFDerivWithinAt.congr_mono (h : HasFDerivWithinAt f f' s x) (ht : EqOn f₁ f t)
-    (hx : f₁ x = f x) (h₁ : t ⊆ s) : HasFDerivWithinAt f₁ f' t x :=
-  HasFDerivAtFilter.congr_of_eventuallyEq (h.mono h₁) (Filter.mem_inf_of_right ht) hx
+theorem HasFDerivWithinAt.congr_of_eventuallyEq (h : HasFDerivWithinAt f f' s x)
+    (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasFDerivWithinAt f₁ f' s x :=
+  h₁.hasFDerivWithinAt_iff hx |>.mpr h
 
 theorem HasFDerivWithinAt.congr (h : HasFDerivWithinAt f f' s x) (hs : EqOn f₁ f s)
     (hx : f₁ x = f x) : HasFDerivWithinAt f₁ f' s x :=
-  h.congr_mono hs hx (Subset.refl _)
+  h.congr_of_eventuallyEq hs.eventuallyEq_nhdsWithin hx
 
 theorem HasFDerivWithinAt.congr' (h : HasFDerivWithinAt f f' s x) (hs : EqOn f₁ f s) (hx : x ∈ s) :
     HasFDerivWithinAt f₁ f' s x :=
   h.congr hs (hs hx)
 
-theorem HasFDerivWithinAt.congr_of_eventuallyEq (h : HasFDerivWithinAt f f' s x)
-    (h₁ : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) : HasFDerivWithinAt f₁ f' s x :=
-  HasFDerivAtFilter.congr_of_eventuallyEq h h₁ hx
+theorem HasFDerivWithinAt.congr_mono (h : HasFDerivWithinAt f f' s x) (ht : EqOn f₁ f t)
+    (hx : f₁ x = f x) (h₁ : t ⊆ s) : HasFDerivWithinAt f₁ f' t x :=
+  h.mono h₁ |>.congr ht hx
 
 theorem HasFDerivAt.congr_of_eventuallyEq (h : HasFDerivAt f f' x) (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasFDerivAt f₁ f' x :=
-  HasFDerivAtFilter.congr_of_eventuallyEq h h₁ (mem_of_mem_nhds h₁ :)
+  h₁.hasFDerivAt_iff.mpr h
 
 theorem DifferentiableWithinAt.congr_mono (h : DifferentiableWithinAt 𝕜 f s x) (ht : EqOn f₁ f t)
     (hx : f₁ x = f x) (h₁ : t ⊆ s) : DifferentiableWithinAt 𝕜 f₁ t x :=
@@ -219,6 +217,7 @@ theorem DifferentiableWithinAt.fderivWithin_congr_mono
     fderivWithin 𝕜 f₁ t x = fderivWithin 𝕜 f s x :=
   (HasFDerivWithinAt.congr_mono h.hasFDerivWithinAt hs hx h₁).fderivWithin hxt
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Filter.EventuallyEq.fderivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x := by
   classical
