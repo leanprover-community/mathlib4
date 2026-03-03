@@ -74,6 +74,7 @@ def pthRootMonoidHom : Perfection M p →* Perfection M p where
 
 variable {M p}
 
+-- To prioritize `Perfection.ext` for the ring case.
 @[ext low]
 theorem extMonoid {f g : Perfection M p}
     (h : ∀ n, coeffMonoidHom M p n f = coeffMonoidHom M p n g) :
@@ -109,12 +110,10 @@ theorem coe_pthRootMonoidHom_eq_powMulEquiv_symm :
     ⇑(pthRootMonoidHom M p) = (powMulEquiv (Perfection M p) p).symm :=
   congr($pthRootMonoidHom_eq_powMulEquiv_symm)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem coeffMonoidHom_symm_powMulEquiv (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p n ((powMulEquiv _ p).symm f) = coeffMonoidHom M p (n + 1) f := by
   rw [← coe_pthRootMonoidHom_eq_powMulEquiv_symm]; rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem coeffMonoidHom_iterate_symm_powMulEquiv (f : Perfection M p) (n m : ℕ) :
     coeffMonoidHom M p n ((powMulEquiv _ p).symm^[m] f) = coeffMonoidHom M p (n + m) f := by
   induction m generalizing n with
@@ -144,7 +143,7 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
 @[simps]
 noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRing M p]
-    (N : Type*) [CommMonoid N] : (M →* N) ≃ (M →* Perfection N p) where
+    (N : Type*) [CommMonoid N] : (M →* N) ≃* (M →* Perfection N p) where
   toFun f :=
     { toFun r := ⟨fun n ↦ f ((powMulEquiv M (p ^ n)).symm r), fun n ↦ by
         rw [← map_pow, powMulEquiv_pow, pow_succ, MulAut.mul_def, MulEquiv.symm_trans_apply,
@@ -152,14 +151,13 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
       map_one' := extMonoid fun _ ↦ by simp_rw [coeffMonoidHom_mk, map_one]
       map_mul' x y := extMonoid fun _ ↦ by simp_rw [map_mul, coeffMonoidHom_mk] }
   invFun := (coeffMonoidHom N p 0).comp
-  left_inv f := by
-    ext m
-    simp
+  left_inv f := by ext; simp
   right_inv f := by
     ext m n
     simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.coe_mk, OneHom.coe_mk,
       coeffMonoidHom_mk]
     rw [← coeffMonoidHom_pow_p_pow _ 0 n, ← map_pow, powMulEquiv_symm_pow_p, zero_add]
+  map_mul' _ _ := by ext; simp
 
 /-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
 @[simps!]
