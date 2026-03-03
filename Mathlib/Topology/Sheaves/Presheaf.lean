@@ -345,7 +345,7 @@ If `f : X ⟶ Y` is an open map and `ℱ` is a presheaf on `Y`, then the pullbac
 isomorphic to the composition of `ℱ` and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
 -/
 @[simps!]
-def pullbackObj {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.Presheaf C) :
+def pullbackObjIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.Presheaf C) :
     (pullback C f).obj ℱ ≅ hf.functor.op ⋙ ℱ :=
   NatIso.ofComponents
     (fun U ↦ pullbackObjObjOfImageOpen f ℱ U.1 (hf (unop U).1 (unop U).2))
@@ -355,15 +355,15 @@ def pullbackObj {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.Pre
 set_option backward.isDefEq.respectTransparency false in
 /--
 If `f : X ⟶ Y` is an open map, this expresses the naturality of the isomorphism
-`IsOpenMap.pullbackObj` between the pullback by `f` of a presheaf and the composition
+`IsOpenMap.pullbackObjIso` between the pullback by `f` of a presheaf and the composition
 of that presheaf and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
 -/
-lemma pullbackObj_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f)
+lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f)
    {ℱ 𝒢 : Y.Presheaf C} (u : ℱ ⟶ 𝒢) :
-   (pullback C f).map u ≫ (hf.pullbackObj 𝒢).hom =
-   (hf.pullbackObj ℱ).hom ≫ Functor.whiskerLeft hf.functor.op u := by
+   (pullback C f).map u ≫ (hf.pullbackObjIso 𝒢).hom =
+   (hf.pullbackObjIso ℱ).hom ≫ Functor.whiskerLeft hf.functor.op u := by
   ext U
-  dsimp [pullbackObj, pullbackObjObjOfImageOpen]
+  dsimp [pullbackObjIso, pullbackObjObjOfImageOpen]
   refine ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U)).hom_ext
     (fun j ↦ ?_)
   have eq : ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
@@ -389,9 +389,9 @@ If `f : X ⟶ Y`, this is the isomorphism between the pullback functor by `f` an
 induced by `f`.
 -/
 @[simps!]
-def pullback {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) :
+def pullbackIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) :
     pullback C f ≅ (Functor.whiskeringLeft _ _ _).obj hf.functor.op :=
-  NatIso.ofComponents hf.pullbackObj hf.pullbackObj_hom_naturality
+  NatIso.ofComponents hf.pullbackObjIso hf.pullbackObjIso_hom_naturality
 
 end
 
