@@ -6,11 +6,12 @@ Authors: Sébastien Gouëzel
 module
 
 public import Mathlib.Init
-public import ImportGraph.Tools.FindHome
+public import Mathlib.Tactic.MinImports
 
 /-! # The `classReturningDef` linter
 
-If a definition returns a class, then it should be marked `reducible` or `implicit_reducible`.
+If a definition returns a class (possibly after binders),
+then it should be marked `reducible` or `implicit_reducible`.
 -/
 
 open Lean Meta Elab Command Linter Mathlib.Command.MinImports
@@ -19,31 +20,39 @@ meta section
 
 namespace Mathlib.Linter
 
-/-- A linter warning if a definition outputs a class but is not marked reducible. -/
+/-- Returns `true` if the type (after removing binders) is a class. -/
+private def returnsClass (type : Expr) : MetaM Bool := do
+  forallTelescopeReducing type fun _ body => do
+    match body.getAppFn with
+    | Expr.const typeName _ =>
+        let typeExpr := mkConst typeName
+        return (← isClass? typeExpr).isSome
+    | _ =>
+        return false
+
+/-- A linter warning if a definition outputs a class
+    (possibly after parameters) but is not marked reducible. -/
 def classReturningDef : Linter where
   name := `classReturningDef
   run stx := do
     let declName ← getDeclName stx
-    -- Skip if either reducible/abbrev or implicit_reducible
+
+    -- Skip if reducible / implicit_reducible / abbrev
     if (← Lean.isReducible declName) ||
         (← Lean.isImplicitReducible declName) then
       return
+
     let env ← getEnv
     let some decl := env.find? declName | return
+
     match decl with
     | .defnInfo defInfo =>
-        -- Inspect the type inside TermElabM
         Lean.Elab.Command.liftTermElabM do
           let type ← inferType defInfo.value
-          let resultType := type.getAppFn
-          match resultType with
-          | Expr.const typeName _ =>
-              let typeExpr := mkConst typeName
-              if (← isClass? typeExpr).isSome then
-                log m!"definition `{declName}` returns the class `{typeName}` but is not \
-                  marked @[reducible] or @[implicit_reducible]. \
+          if (← returnsClass type) then
+            log m!"definition `{declName}` returns a class \
+                  but is not marked @[reducible] or @[implicit_reducible]. \
                   Consider marking it @[implicit_reducible]."
-          | _ => return
     | _ => return
 
 initialize addLinter classReturningDef

@@ -4,10 +4,16 @@ class Foo where
   x : Nat
 
 /--
-error: definition `bad` returns the class `Foo` but is not marked @[reducible] or @[implicit_reducible]. Consider marking it @[implicit_reducible].
+error: definition `bad` returns a class but is not marked @[reducible] or @[implicit_reducible]. Consider marking it @[implicit_reducible].
 -/
 #guard_msgs in
 def bad : Foo := { x := 1 }   -- should warn
+
+/--
+error: definition `bad2` returns a class but is not marked @[reducible] or @[implicit_reducible]. Consider marking it @[implicit_reducible].
+-/
+#guard_msgs in
+def bad2 (n : Nat) : Foo := { x := n } -- should warn
 
 @[reducible]
 def ok1 : Foo := { x := 2 }  -- no warning
@@ -18,6 +24,5 @@ def ok2 : Foo := { x := 3 }  -- no warning
 abbrev ok3 : Foo := { x := 4 }  -- no warning
 
 class Bar (α : Type) : Prop where
-  eq : true
 
-theorem ok4 : Bar (unit) := ⟨rfl⟩  -- no warning because it's a theorem
+theorem ok4 : Bar Nat := ⟨⟩  -- no warning because it's a theorem
