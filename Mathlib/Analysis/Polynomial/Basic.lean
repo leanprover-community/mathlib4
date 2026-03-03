@@ -383,7 +383,7 @@ lemma finite_abs_eval_le_of_degree_lt {P Q : ℤ[X]} (h : Q.degree < P.degree) :
 /-- If `Q(x) ∣ P(x)` at infinitely many integers `x` and `Q` is monic, `Q ∣ P`. -/
 theorem dvd_of_infinite_eval_dvd_eval
     {P Q : ℤ[X]} (mQ : Q.Monic) (h : {a | Q.eval a ∣ P.eval a}.Infinite) : Q ∣ P := by
-  have eqR := modByMonic_add_div P mQ
+  have eqR := modByMonic_add_div P Q
   have degR := degree_modByMonic_lt P mQ
   rw [← modByMonic_eq_zero_iff_dvd mQ]
   set R := P %ₘ Q

@@ -127,11 +127,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
       rw [← Nat.succ_injective h2]
       apply h1
   rw [h]
-  simp only [Finset.map_val, Function.comp_apply, Function.Embedding.coeFn_mk, Multiset.map_map]
-  refine congr (congr rfl ?_) rfl
-  ext a
-  rw [mul_comm]
-  simp [coeff_mul_X]
+  simp
 
 @[simp]
 theorem content_X_pow {k : ℕ} : content ((X : R[X]) ^ k) = 1 := by
