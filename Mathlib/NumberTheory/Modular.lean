@@ -582,12 +582,12 @@ private lemma mem_closure_of_one_lt_norm {x : ℍ}
     · simp only [one_lt_normSq_iff]
       refine Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds)
       apply Filter.Tendsto.norm
-   have : ContinuousAt (fun a : ℝ ↦ (UpperHalfPlane.ofComplex (a * x : ℂ) : ℂ)) 1 := by
+      have : ContinuousAt (fun a : ℝ ↦ (UpperHalfPlane.ofComplex (a * x : ℂ) : ℂ)) 1 := by
         apply ContinuousAt.comp (by fun_prop)
         apply ContinuousAt.comp _ (by fun_prop)
         apply OpenPartialHomeomorph.continuousAt
         simpa [UpperHalfPlane.ofComplex] using x.coe_im_pos
-    simpa [UpperHalfPlane.ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] using
+      simpa [UpperHalfPlane.ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] using
         this.tendsto
     · simp only [eventually_nhdsWithin_iff]
       filter_upwards [eventually_gt_nhds zero_lt_one] with a ha ha'
@@ -631,10 +631,9 @@ private lemma mem_closure_of_arc {x : ℍ}
     rw [← NNReal.coe_pos] at ha
     positivity
   · refine .mono_left ?_ nhdsWithin_le_nhds
-  rw [UpperHalfPlane.isOpenEmbedding_coe.tendsto_nhds_iff, Function.comp_def,
-      show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp]
-    apply Continuous.tendsto
-    fun_prop
+    simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp,
+      UpperHalfPlane.isOpenEmbedding_coe.tendsto_nhds_iff] using Continuous.tendsto (by fun_prop) _
+
 
 lemma fd_eq_closure_fdo : 𝒟 = closure 𝒟ᵒ := by
   refine subset_antisymm ?_ (isClosed_fd.closure_subset_iff.mpr fdo_subset_fd)
