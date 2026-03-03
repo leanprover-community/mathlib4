@@ -48,7 +48,8 @@ variable [HasZeroMorphisms C]
 /-- The inclusion of the full subcategory of bounded below cochain complexes. -/
 abbrev ι : Plus C ⥤ CochainComplex C ℤ := ObjectProperty.ι _
 
-/-- The inclusion of the full subcategory of bounded below cochain complexes. -/
+/-- The inclusion of the full subcategory of bounded below cochain complexes
+is fully faithful. -/
 def fullyFaithfulι : (ι C).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
