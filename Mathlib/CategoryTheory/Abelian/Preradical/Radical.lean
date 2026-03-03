@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.Preradical.Colon
+public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 
 /-!
 # Radicals of preradicals
@@ -59,26 +60,28 @@ class IsRadical (Φ : Preradical C) : Prop where
 in the sense of `IsRadical`. -/
 abbrev Radical := { Φ : Preradical C // IsRadical Φ }
 
-/-- A preradical `Φ` is radical if and only if it vanishes on the quotients `Φ.quotient.obj X`
-for all objects `X`. -/
-theorem isRadical_iff_isZero_whisker {Φ : Preradical C} :
+open Functor
+
+/-- A preradical `Φ` is radical if and only if it `Φ` vanishes on the quotient `Φ.quotient`. -/
+theorem isRadical_iff_quotient_comp_eq_zero {Φ : Preradical C} :
     IsRadical Φ ↔ IsZero (Φ.quotient ⋙ Φ.r) := by
+  let g := Φ.quotient.whiskerLeft Φ.ι ≫ (rightUnitor _).hom
   constructor
   · intro h
     obtain ⟨μ⟩ := h.iso_self_colon
-    refine IsZero.of_mono_eq_zero (Φ.quotient.whiskerLeft Φ.ι)
-      (zero_of_epi_comp (pullback.snd Φ.π (Φ.quotient.whiskerLeft Φ.ι)) ?_)
+    refine IsZero.of_mono_eq_zero (g)
+      (zero_of_epi_comp (pullback.snd Φ.π (g)) ?_)
     calc
-        _ = (pullback.fst Φ.π (Functor.whiskerLeft Φ.quotient Φ.ι)) ≫ Φ.π := by
+        _ = (pullback.fst Φ.π g) ≫ Φ.π := by
           rw [pullback.condition]
-        _ = (Φ.colon Φ).ι ≫ Φ.π := rfl
+        _ = (Φ.colon Φ).ι ≫ Φ.π := by rfl
         _ = (μ.hom.hom.left ≫ Φ.ι) ≫ Φ.π := by
           rw [MonoOver.w μ.hom]
         _ = μ.hom.hom.left ≫ Φ.ι ≫ Φ.π := by rw [Category.assoc]
         _ = 0 := by simp
   · intro h
     constructor
-    haveI := (isIso_toColon_of_isZero_whisker Φ Φ h : IsIso (Φ.toColon Φ))
+    haveI := (isIso_toColon_iff.mpr h : IsIso (Φ.toColon Φ))
     exact ⟨(asIso (Φ.toColon Φ)).symm⟩
 
 end Preradical
