@@ -244,6 +244,20 @@ theorem IsTheta.rpow (hr : 0 ≤ r) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h
     (fun x => f x ^ r) =Θ[l] fun x => g x ^ r :=
   ⟨h.1.rpow hr hg, h.2.rpow hr hf⟩
 
+theorem IsTheta.rpow' (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) (h : f =Θ[l] g) :
+    (fun x => f x ^ r) =Θ[l] fun x => g x ^ r := by
+  wlog hr : r ≥ 0 with rpow_pos
+  · rw[← isTheta_inv]
+    calc
+      (fun x ↦ (f x ^ r)⁻¹) =ᶠ[l] (fun x ↦ f x ^ (-r)) := by
+          filter_upwards [hf] with x hfx
+          exact (Real.rpow_neg hfx _).symm
+      _ =Θ[l] fun x ↦ (g x ^ (-r)) := rpow_pos hf hg h (by linarith)
+      _ =ᶠ[l] fun x ↦ (g x ^ r)⁻¹ := by
+          filter_upwards [hg] with x hgx
+          exact Real.rpow_neg hgx _
+  exact IsTheta.rpow hr hf hg h
+
 theorem IsLittleO.rpow (hr : 0 < r) (hg : 0 ≤ᶠ[l] g) (h : f =o[l] g) :
     (fun x => f x ^ r) =o[l] fun x => g x ^ r := by
   refine .of_isBigOWith fun c hc ↦ ?_
