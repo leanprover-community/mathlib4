@@ -40,7 +40,6 @@ namespace SingleObj
 
 variable {M G : Type v} [Monoid M] [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The induced `G`-action on the target of `J : SingleObj G ⥤ Type u`. -/
 instance (J : SingleObj M ⥤ Type u) : MulAction M (J.obj (SingleObj.star M)) where
   smul g x := J.map g x

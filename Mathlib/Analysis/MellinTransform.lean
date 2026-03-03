@@ -59,7 +59,6 @@ nonrec theorem MellinConvergent.div_const {f : ℝ → ℂ} {s : ℂ} (hf : Mell
     MellinConvergent (fun t => f t / a) s := by
   simpa only [MellinConvergent, smul_eq_mul, ← mul_div_assoc] using hf.div_const a
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MellinConvergent.comp_mul_left {f : ℝ → E} {s : ℂ} {a : ℝ} (ha : 0 < a) :
     MellinConvergent (fun t => f (a * t)) s ↔ MellinConvergent f s := by
   have := integrableOn_Ioi_comp_mul_left_iff (fun t : ℝ => (t : ℂ) ^ (s - 1) • f t) 0 ha
@@ -135,7 +134,6 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
     cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht), ofReal_sub, ofReal_one, mul_sub,
     mul_div_cancel₀ _ (ofReal_ne_zero.mpr ha), add_comm, ← add_sub_assoc, mul_one, sub_add_cancel]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mellin_comp_mul_left (f : ℝ → E) (s : ℂ) {a : ℝ} (ha : 0 < a) :
     mellin (fun t => f (a * t)) s = (a : ℂ) ^ (-s) • mellin f s := by
   simp_rw [mellin]
@@ -189,7 +187,6 @@ section MellinConvergent
 
 /-! ## Convergence of Mellin transform integrals -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary lemma to reduce convergence statements from vector-valued functions to real
 scalar-valued functions. -/
 theorem mellin_convergent_iff_norm [NormedSpace ℂ E] {f : ℝ → E} {T : Set ℝ} (hT : T ⊆ Ioi 0)

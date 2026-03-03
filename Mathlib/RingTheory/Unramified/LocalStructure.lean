@@ -202,6 +202,8 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     ∃ t ∉ Q, (∀ Q' ∈ (Q.under R).primesOver S, Q' ≠ Q → t ∈ Q') ∧
       adjoin (Ideal.under R Q).ResidueField {algebraMap _ Q.ResidueField t} = ⊤ := by
   let p := Q.under R
+  #adaptation_note /-- Needed after nightly-2023-02-23 -/
+  have : p.IsPrime := Ideal.IsPrime.under R Q
   classical
   have : IsArtinianRing (p.Fiber S) := .of_finite p.ResidueField _
   let α := PrimeSpectrum.primesOverOrderIsoFiber R S p
@@ -234,7 +236,7 @@ lemma exists_notMem_forall_ne_mem_and_adjoin_eq_top
     let φ' : p.Fiber S →ₐ[p.ResidueField] Q'.ResidueField := Algebra.TensorProduct.lift
         (Algebra.ofId _ _) (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
     have H : φ' r = 0 := (hr (α ⟨Q', ⟨‹_›, ‹_›⟩⟩).asIdeal inferInstance (by
-        rwa [ne_eq, ← PrimeSpectrum.ext_iff, EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]):)
+        rwa [ne_eq, ← PrimeSpectrum.ext_iff, EmbeddingLike.apply_eq_iff_eq, Subtype.mk.injEq]) :)
     rw [← Ideal.algebraMap_residueField_eq_zero]
     trans φ' (1 ⊗ₜ t)
     · simp [φ']
@@ -328,7 +330,7 @@ lemma exists_hasStandardEtaleSurjectionOn
     |>.exists_fg_and_exists_notMem_and_awayMap_bijective
   have : Module.Finite R S' := ⟨(Submodule.fg_top _).mpr hS'⟩
   have : Algebra.FormallyUnramified R (Localization.Away r) :=
-    .of_equiv (AlgEquiv.ofBijective (Localization.awayMapₐ S'.val r) hr:).symm
+    .of_equiv (AlgEquiv.ofBijective (Localization.awayMapₐ S'.val r) hr :).symm
   have : IsUnramifiedAt R (Ideal.under (↥S') Q) := by
     rw [← Algebra.basicOpen_subset_unramifiedLocus_iff] at this
     exact @this ⟨Q.under S', inferInstance⟩ hrQ
