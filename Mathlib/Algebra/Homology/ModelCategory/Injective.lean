@@ -22,54 +22,9 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 open CategoryTheory HomotopicalAlgebra Limits
 
-namespace CochainComplex
+namespace CochainComplex.Plus.modelCategoryQuillen
 
 variable {C : Type*} [Category C] [Abelian C]
-
-namespace Plus
-
-instance (J : Type) [Category J] [FinCategory J] :
-    (CochainComplex.plus C).IsClosedUnderLimitsOfShape J where
-  limitsOfShape_le := by
-    rintro K ⟨p⟩
-    obtain ⟨n, hn⟩ : ∃ (n : ℤ), ∀ (j : J), (p.diag.obj j).IsStrictlyGE n := by
-      choose n hn using p.prop_diag_obj
-      exact ⟨Finset.min' (Finset.image n ⊤ ∪ {0}) ⟨0, by grind⟩, fun j ↦
-        (p.diag.obj j).isStrictlyGE_of_ge _ _ (Finset.min'_le _ (n j) (by simp))⟩
-    refine ⟨n, ?_⟩
-    rw [isStrictlyGE_iff]
-    intro i hi
-    rw [IsZero.iff_id_eq_zero]
-    exact (isLimitOfPreserves (HomologicalComplex.eval _ _ i) p.isLimit).hom_ext
-      (fun j ↦ (isZero_of_isStrictlyGE (p.diag.obj j) n i).eq_of_tgt _ _)
-
-instance (J : Type) [Category J] [FinCategory J] :
-    (CochainComplex.plus C).IsClosedUnderColimitsOfShape J where
-  colimitsOfShape_le := by
-    rintro K ⟨p⟩
-    obtain ⟨n, hn⟩ : ∃ (n : ℤ), ∀ (j : J), (p.diag.obj j).IsStrictlyGE n := by
-      choose n hn using p.prop_diag_obj
-      exact ⟨Finset.min' (Finset.image n ⊤ ∪ {0}) ⟨0, by grind⟩, fun j ↦
-        (p.diag.obj j).isStrictlyGE_of_ge _ _ (Finset.min'_le _ (n j) (by simp))⟩
-    refine ⟨n, ?_⟩
-    rw [isStrictlyGE_iff]
-    intro i hi
-    rw [IsZero.iff_id_eq_zero]
-    exact (isColimitOfPreserves (HomologicalComplex.eval _ _ i) p.isColimit).hom_ext
-      (fun j ↦ (isZero_of_isStrictlyGE (p.diag.obj j) n i).eq_of_src _ _)
-
-instance : HasFiniteLimits (Plus C) where
-  out J _ _ := by infer_instance
-
-instance : HasFiniteColimits (Plus C) where
-  out J _ _ := by infer_instance
-
-lemma mono_iff {X Y : Plus C} (f : X ⟶ Y) :
-    Mono f ↔ Mono f.hom :=
-  ⟨fun _ ↦ inferInstanceAs (Mono ((ι C).map f)),
-    fun _ ↦ Functor.mono_of_mono_map (ι C) (by assumption)⟩
-
-namespace modelCategoryQuillen
 
 scoped instance : CategoryWithWeakEquivalences (CochainComplex.Plus C) where
   weakEquivalences := quasiIso C
@@ -168,8 +123,7 @@ lemma lifting {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
         have : (ShortComplex.mk _ _ (kernel.condition p)).ShortExact :=
           { exact := ShortComplex.exact_kernel p }
         exact this.acyclic_X₁ (by dsimp; infer_instance)
-    exact Lifting.hasLift sq _ (cokernelIsCokernel _) (kernelIsKernel _)
-      (hπ := by simp) (hι := by simp) α hα
+    exact Lifting.hasLift sq _ (cokernelIsCokernel _) (kernelIsKernel _) α hα
 
 instance {A B X Y : CochainComplex.Plus C} (i : A ⟶ B) (p : X ⟶ Y)
     [Cofibration i] [WeakEquivalence i] [Fibration p] :
@@ -225,8 +179,4 @@ lemma isFibrant_iff (X : Plus C) :
     degreewiseEpiWithInjectiveKernel_iff_of_isZero]
   exact Functor.map_isZero (Plus.ι C) (IsZero.of_mono_zero _ X)
 
-end modelCategoryQuillen
-
-end Plus
-
-end CochainComplex
+end CochainComplex.Plus.modelCategoryQuillen
