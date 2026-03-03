@@ -283,7 +283,7 @@ variable [InvolutiveInv G] {a b : G}
 theorem inv_involutive : Function.Involutive (Inv.inv : G → G) :=
   inv_inv
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem inv_bijective : Function.Bijective (Inv.inv : G → G) :=
   inv_involutive.bijective
 
