@@ -208,6 +208,53 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
   conv => rhs; equals (S.g.val.app (op t.V)) t.sec |_ U =>
     rw [t.app_s, restrict_restrict, restrictOpen, restrict]
     cat_disch
+    obtain ⟨W, Wle, ⟨t₁, ht₁⟩, hW⟩ := (isLocallySurjective_iff S.g.val).mp this U s x hx
+    --`t.sec` and `t₁` need not agree on their overlap so we need to deal with their difference `t₂`
+    let t₂ := t.sec |_ (t.V ⊓ W) - t₁ |_ (t.V ⊓ W)
+    have : (S.g.val.app (op (t.V ⊓ W))) t₂ = 0 := by
+      simp only [map_sub, map_restrict, t.app_s, restrict_restrict, ht₁, sub_eq_zero, t₂]
+    -- Since `S` is exact and `t₂` maps to zero, we can lift it to a section `t₃` of `S.X₁`
+    obtain ⟨t₃, ht₃⟩ := addCommGrpCat_shortExact_app_zero t₂ this hS.1 hS.2
+    have i₁ : t.V ⊓ W ⟶ W := homOfLE inf_le_right
+    -- Using that `S.X₁` is flasque, we can lift `t₃` to a section on `W`
+    obtain ⟨t₄, (ht₄ : t₄ |_ (t.V ⊓ W) = t₃)⟩ :=
+      (AddCommGrpCat.epi_iff_surjective (S.X₁.val.map i₁.op)).mp inferInstance t₃
+    let f : Fin 2 → Opens X
+    | 0 => t.V
+    | 1 => W
+    let sf : (i : Fin 2) → S.X₂.val.obj (op (f i))
+    | 0 => t.sec
+    | 1 => t₁ + (S.f.val.app (op W)) t₄
+    have : sf 0 |_ (t.V ⊓ W) = sf 1 |_ (t.V ⊓ W) := by
+      rw [restrict_sum, ← map_restrict, ht₄]
+      simp only [ht₃, t₂, Fin.isValue, add_sub_cancel]
+      rfl
+    -- We glue `t.sec` and `t₁ + (S.f.val.app (op W)) t₄` together to form `t₅`
+    obtain ⟨t₅, ht₅, _⟩ : ∃! t₅, IsGluing S.X₂.val f sf t₅ := by
+      apply Sheaf.existsUnique_gluing
+      simp only [IsCompatible, Fin.forall_fin_two]
+      exact ⟨⟨rfl, this⟩, Eq.symm (restrict_inf_flip this), rfl⟩
+    have le : iSup f ≤ U := by
+      simp only [iSup_le_iff, Fin.forall_fin_two]
+      exact ⟨t.le, Wle⟩
+    have app : S.g.val.app (op (iSup f)) t₅ = s |_ (iSup f) := by
+      apply eq_app_of_forall_eq ht₅
+        (by rw [Fin.forall_fin_two]; exact ⟨t.le, Wle⟩) ?_
+      rw [Fin.forall_fin_two]
+      refine ⟨t.app_s, ?_⟩
+      change S.g.val.app (op W) (t₁ + (S.f.val.app (op W)) t₄) = s |_ W
+      have : (S.f.val.app (op W) ≫ S.g.val.app (op W)) = 0 := by
+        change (S.f ≫ S.g).val.app (op W) = 0; rw [S.6]; rfl
+      simp only [map_add, ← ConcreteCategory.comp_apply, this, AddCommGrpCat.hom_zero,
+        AddMonoidHom.zero_apply, add_zero]
+      exact ht₁
+    let t₆ : Under S.g s := ⟨iSup f, le, t₅, app⟩
+    have htt₆ : R S.g s t t₆ := ⟨_, ht₅ 0⟩
+    exact (ht t₆ htt₆).le (by cat_disch)
+  use t.sec |_ U
+  conv => rhs; equals (S.g.val.app (op t.V)) t.sec |_ U =>
+    rw [t.app_s, restrict_restrict, restrictOpen, restrict]
+    cat_disch
   apply map_restrict
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` and `𝓖` are flasque,
