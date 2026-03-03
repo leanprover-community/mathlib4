@@ -90,12 +90,10 @@ theorem range_subset {n s} : range n ⊆ s ↔ ∀ x, x < n → x ∈ s := by gr
 
 theorem subset_range {s n} : s ⊆ range n ↔ ∀ x, x ∈ s → x < n := by grind
 
-@[simp]
+@[simp, gcongr]
 theorem range_subset_range {n m} : range n ⊆ range m ↔ n ≤ m := by grind
 
 theorem range_mono : Monotone range := fun _ _ => range_subset_range.2
-
-@[gcongr] alias ⟨_, _root_.GCongr.finset_range_subset_of_le⟩ := range_subset_range
 
 theorem mem_range_succ_iff {a b : ℕ} : a ∈ range b.succ ↔ a ≤ b := by grind
 

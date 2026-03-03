@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Analysis.Normed.Group.Subgroup
 public import Mathlib.Analysis.Normed.Group.Submodule
 
@@ -36,7 +37,7 @@ endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ �
 class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
   PseudoMetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is submultiplicative. -/
   protected norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
@@ -44,7 +45,7 @@ class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is submultiplicative. -/
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
@@ -58,7 +59,7 @@ instance (priority := 100) SeminormedRing.toNonUnitalSeminormedRing [β : Semino
 endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, MetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is submultiplicative. -/
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
@@ -71,7 +72,7 @@ instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
 /-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
 class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
   /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+  dist_eq : ∀ x y, dist x y = norm (-x + y)
   /-- The norm is submultiplicative. -/
   norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
@@ -666,8 +667,6 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
   /-- The ring homomorphism is an isometry. -/
   norm_map : ∀ {x : R₁}, ‖σ x‖ = ‖x‖
 
-@[deprecated (since := "2025-08-03")] alias RingHomIsometric.is_iso := RingHomIsometric.norm_map
-
 attribute [simp] RingHomIsometric.norm_map
 
 @[simp]
@@ -911,13 +910,16 @@ namespace AbsoluteValue
 /-- A real absolute value on a ring determines a `NormedRing` structure. -/
 noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
   norm := v
-  dist x y := v (x - y)
+  dist x y := v (-x + y)
   dist_eq _ _ := rfl
-  dist_self x := by simp only [sub_self, map_zero]
-  dist_comm := v.map_sub
-  dist_triangle := v.sub_le
+  dist_self x := by simp
+  dist_comm x y := by rw [add_comm (-x), add_comm (-y), ← sub_eq_add_neg, v.map_sub, sub_eq_add_neg]
+  dist_triangle x y z := by simpa [neg_add_eq_sub, add_comm (v (y - x))] using v.sub_le z y x
   edist_dist x y := rfl
   norm_mul_le x y := (v.map_mul x y).le
-  eq_of_dist_eq_zero := by simp only [AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
+  eq_of_dist_eq_zero := by
+    intro x y hxy
+    rw [add_comm, ← sub_eq_add_neg, AbsoluteValue.map_sub_eq_zero_iff] at hxy
+    exact hxy.symm
 
 end AbsoluteValue

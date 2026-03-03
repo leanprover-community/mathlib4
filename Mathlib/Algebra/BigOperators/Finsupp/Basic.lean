@@ -361,19 +361,13 @@ theorem prod_hom_add_index [AddZeroClass M] [CommMonoid N] {f g : α →₀ M}
 and monoid homomorphisms `(α →₀ M) →+ N`. -/
 def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α →₀ M) →+ N) where
   toFun F :=
-    { toFun := fun f ↦ f.sum fun x ↦ F x
-      map_zero' := Finset.sum_empty
-      map_add' := fun _ _ => sum_add_index' (fun x => (F x).map_zero) fun x => (F x).map_add }
+    { toFun f := f.sum (F ·)
+      map_zero' := Finsupp.sum_zero_index
+      map_add' f g := Finsupp.sum_hom_add_index F }
   invFun F x := F.comp (singleAddHom x)
-  left_inv F := by
-    ext
-    simp [singleAddHom]
-  right_inv F := by
-    ext
-    simp [singleAddHom, AddMonoidHom.comp, Function.comp_def]
-  map_add' F G := by
-    ext x
-    exact sum_add
+  left_inv F := by ext; simp
+  right_inv F := by ext; simp
+  map_add' F G := by ext; simp
 
 @[simp]
 theorem liftAddHom_apply [AddZeroClass M] [AddCommMonoid N] (F : α → M →+ N) (f : α →₀ M) :

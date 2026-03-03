@@ -240,7 +240,7 @@ lemma spanRank_sup_le_sum_spanRank {p q : Submodule R M} :
 
 lemma spanFinrank_eq_zero_iff_eq_bot {p : Submodule R M} (h : p.FG) :
     p.spanFinrank = 0 ↔ p = ⊥ := by
-  refine ⟨fun heq ↦ ?_, fun h ↦ h ▸ by simp⟩
+  refine ⟨fun heq ↦ ?_, fun h ↦ by simp [h]⟩
   rw [← Submodule.FG.generators_ncard h, Set.ncard_eq_zero h.finite_generators] at heq
   rw [← p.span_generators, heq, span_empty]
 
@@ -308,7 +308,7 @@ lemma le_spanRank_restrictScalars (N : Submodule S M) :
     N.spanRank ≤ (N.restrictScalars R).spanRank := by
   obtain ⟨s, hs, e⟩ := (N.restrictScalars R).exists_span_set_card_eq_spanRank
   obtain rfl : span S s = N :=
-    le_antisymm (span_le.mpr (span_le.mp e.le:)) (e.ge.trans (span_le_restrictScalars R S s))
+    le_antisymm (span_le.mpr (span_le.mp e.le :)) (e.ge.trans (span_le_restrictScalars R S s))
   grw [← hs, spanRank_span_le_card]
 
 lemma spanRank_restrictScalars_eq (H : Function.Surjective (algebraMap R S))

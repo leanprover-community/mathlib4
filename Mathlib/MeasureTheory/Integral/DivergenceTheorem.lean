@@ -136,6 +136,7 @@ private theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₁ (I
       Box.coe_subset_Icc
     exact (this.hasBoxIntegral ⊥ rfl).integral_eq
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma for
 `MeasureTheory.integral_divergence_of_hasFDerivAt_off_countable`. Compared to the previous
 lemma, here we drop the assumption of differentiability on the boundary of the box. -/

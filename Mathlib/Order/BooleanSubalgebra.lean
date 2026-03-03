@@ -121,10 +121,13 @@ instance instHImpCoe : HImp L where himp a b := ⟨a ⇨ b, himp_mem a.2 b.2⟩
 @[simp] lemma mk_himp_mk (a b : α) (ha hb) : (⟨a, ha⟩ ⇨ ⟨b, hb⟩ : L) = ⟨a ⇨ b, himp_mem ha hb⟩ :=
   rfl
 
+instance (L : BooleanSubalgebra α) : PartialOrder L :=
+  PartialOrder.lift _ Subtype.coe_injective
+
 /-- A Boolean subalgebra of a lattice inherits a Boolean algebra structure. -/
 instance instBooleanAlgebraCoe (L : BooleanSubalgebra α) : BooleanAlgebra L :=
-  Subtype.coe_injective.booleanAlgebra _ val_sup val_inf val_top val_bot val_compl val_sdiff
-    val_himp
+  Subtype.coe_injective.booleanAlgebra _ .rfl .rfl val_sup val_inf val_top val_bot val_compl
+    val_sdiff val_himp
 
 /-- The natural lattice hom from a Boolean subalgebra to the original lattice. -/
 def subtype (L : BooleanSubalgebra α) : BoundedLatticeHom L α where
@@ -280,17 +283,21 @@ lemma map_mono : Monotone (map f) := fun _ _ ↦ image_mono
 @[simp] lemma map_map (g : BoundedLatticeHom β γ) (f : BoundedLatticeHom α β) :
     (L.map f).map g = L.map (g.comp f) := SetLike.coe_injective <| image_image _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_map_equiv {f : α ≃o β} {a : β} : a ∈ L.map f ↔ f.symm a ∈ L := Set.mem_image_equiv
 
 lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.mem_set_image
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : BooleanSubalgebra α) :
     L.map f = L.comap (f.symm : BoundedLatticeHom β α) :=
   SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : BooleanSubalgebra α) :
     L.comap f = L.map (f.symm : BoundedLatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_symm_eq_iff_eq_map {M : BooleanSubalgebra β} {e : β ≃o α} :
     L.map ↑e.symm = M ↔ L = M.map ↑e := by
   simp_rw [← coe_inj]; exact (Equiv.eq_image_iff_symm_image_eq _ _ _).symm
@@ -301,6 +308,7 @@ lemma map_le_iff_le_comap {f : BoundedLatticeHom α β} {M : BooleanSubalgebra �
 lemma gc_map_comap (f : BoundedLatticeHom α β) : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_bot (f : BoundedLatticeHom α β) : (⊥ : BooleanSubalgebra α).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
@@ -310,6 +318,7 @@ lemma map_sup (f : BoundedLatticeHom α β) (L M : BooleanSubalgebra α) :
 lemma map_iSup (f : BoundedLatticeHom α β) (L : ι → BooleanSubalgebra α) :
     (⨆ i, L i).map f = ⨆ i, (L i).map f := (gc_map_comap f).l_iSup
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma comap_top (f : BoundedLatticeHom α β) : (⊤ : BooleanSubalgebra β).comap f = ⊤ :=
   (gc_map_comap f).u_top
 

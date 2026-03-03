@@ -67,7 +67,7 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
           Classical.not_not, exists_prop, not_true, false_and,
           and_iff_right_iff_imp]
         rintro rfl rfl
-        exact G.loopless _ huv
+        exact G.loopless.irrefl _ huv
       · have := huv.ne; grind
     · grind
 
