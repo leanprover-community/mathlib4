@@ -55,7 +55,7 @@ The indices `i₀` and `i₃` depend on `r` and `pq`, but `i₁`, `i₂` only de
 Various conditions are added in order to construct the differentials on the pages
 and show that the homology of a page identifies to the next page; in certain
 cases, additional conditions may be required on the spectral object. -/
-structure SpectralSequenceMkData where
+structure SpectralSequenceDataCore where
   /-- The cohomological degree of objects in the pages -/
   deg : κ → ℤ
   /-- The zeroth index -/
