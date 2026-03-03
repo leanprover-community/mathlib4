@@ -3,12 +3,14 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.GlueData
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
-import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.Tactic.Generalize
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.GlueData
+public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.Types.Coequalizers
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Gluing Topological spaces
@@ -49,6 +51,8 @@ provided.
 * `TopCat.GlueData.ι_isOpenEmbedding`: Each of the `ι i`s are open embeddings.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -95,6 +99,7 @@ local notation "𝖣" => D.toGlueData
 theorem π_surjective : Function.Surjective 𝖣.π :=
   (TopCat.epi_iff_surjective 𝖣.π).mp inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i ⁻¹' U) := by
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
@@ -113,9 +118,7 @@ def Rel (a b : Σ i, ((D.U i : TopCat) : Type _)) : Prop :=
 
 theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => ⟨inv (D.f _ _) x.2, IsIso.inv_hom_id_apply (D.f x.fst x.fst) _,
-    -- Use `elementwise_of%` elaborator instead of `IsIso.inv_hom_id_apply` to work around
-    -- `ConcreteCategory`/`HasForget` mismatch:
-    by simp [elementwise_of% IsIso.inv_hom_id (D.f x.fst x.fst)]⟩, by
+    by simp [IsIso.inv_hom_id_apply (D.f x.fst x.fst)]⟩, by
     rintro a b ⟨x, e₁, e₂⟩
     exact ⟨D.t _ _ x, e₂, by rw [← e₁, D.t_inv_apply]⟩, by
     rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ ⟨x, e₁, e₂⟩
@@ -127,7 +130,7 @@ theorem rel_equiv : Equivalence D.Rel :=
     have eq₂ : (pullback.snd _ _ : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     use (pullback.fst _ _ : _ ⟶ D.V (i, k)) (D.t' _ _ _ z)
-    dsimp only at *
+    dsimp +instances only at *
     substs eq₁ eq₂ e₁ e₃ e₄
     have h₁ : D.t' j i k ≫ pullback.fst _ _ ≫ D.f i k = pullback.fst _ _ ≫ D.t j i ≫ D.f i j := by
       rw [← 𝖣.t_fac_assoc]; congr 1; exact pullback.condition
@@ -141,10 +144,9 @@ theorem rel_equiv : Equivalence D.Rel :=
 
 open CategoryTheory.Limits.WalkingParallelPair
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eqvGen_of_π_eq
-    -- Porting note: was `{x y : ∐ D.U}`
-    {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
-    (h : 𝖣.π x = 𝖣.π y) :
+    {x y : ↑(∐ D.U)} (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
       (Function.Coequalizer.Rel 𝖣.diagram.fstSigmaMap 𝖣.diagram.sndSigmaMap) x y := by
   delta GlueData.π Multicoequalizer.sigmaπ at h
@@ -156,8 +158,7 @@ theorem eqvGen_of_π_eq
   have : colimit.ι diagram one x = colimit.ι diagram one y := by
     dsimp only [coequalizer.π] at h
     rw [← ι_preservesColimitIso_hom, ConcreteCategory.forget_map_eq_coe, types_comp_apply]
-    erw [h]
-    simp
+    simp_all
   have :
     (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ =
       (colimit.ι diagram _ ≫ colim.map _ ≫ (colimit.isoColimitCocone _).hom) _ :=
@@ -166,13 +167,8 @@ theorem eqvGen_of_π_eq
           (colimit.isoColimitCocone (Types.coequalizerColimit _ _)).hom)
         this :
       _)
-  -- Porting note: was
-  -- simp only [eqToHom_refl, types_comp_apply, colimit.ι_map_assoc,
-  --   diagramIsoParallelPair_hom_app, colimit.isoColimitCocone_ι_hom, types_id_apply] at this
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  rw [colimit.ι_map_assoc, diagramIsoParallelPair_hom_app, eqToHom_refl,
-    colimit.isoColimitCocone_ι_hom, types_comp_apply, types_id_apply, types_comp_apply,
-    types_id_apply] at this
+  simp only [eqToHom_refl, colimit.ι_map_assoc, diagramIsoParallelPair_hom_app,
+    colimit.isoColimitCocone_ι_hom, Category.id_comp] at this
   exact Quot.eq.1 this
 
 theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
@@ -296,13 +292,12 @@ structure MkCore where
   t_inter : ∀ ⦃i j⦄ (k) (x : V i j), ↑x ∈ V i k → (((↑) : (V j i) → (U j)) (t i j x)) ∈ V j k
   cocycle :
     ∀ (i j k) (x : V i j) (h : ↑x ∈ V i k),
-      -- Porting note: the underscore in the next line was `↑(t i j x)`, but Lean type-mismatched
       (((↑) : (V k j) → (U k)) (t j k ⟨_, t_inter k x h⟩)) = ((↑) : (V k i) → (U k)) (t i k ⟨x, h⟩)
 
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
-    · convert Subtype.eq this
+    · convert Subtype.ext this
   rw [h.V_id]
   trivial
 
@@ -320,6 +315,7 @@ def MkCore.t' (h : MkCore.{u}) (i j k : h.J) :
     exact h.t_inter _ ⟨x, hx⟩ hx'
   fun_prop
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a constructor of `TopCat.GlueData` whose arguments are in terms of elements and
 intersections rather than subobjects and pullbacks. Please refer to `TopCat.GlueData.MkCore` for
 details. -/
@@ -364,7 +360,7 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
       t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
-      V_id := fun i => by ext; simp
+      V_id := fun i => by simp
       t_id := fun i => by ext; rfl
       t_inter := fun _ _ _ _ hx => hx
       cocycle := fun _ _ _ _ _ => rfl }
@@ -376,8 +372,6 @@ and its range is `⋃ i, (U i : Set α)` (`range_fromOpenSubsetsGlue`).
 def fromOpenSubsetsGlue : (ofOpenSubsets U).toGlueData.glued ⟶ TopCat.of α :=
   Multicoequalizer.desc _ _ (fun _ => Opens.inclusion' _) (by rintro ⟨i, j⟩; ext x; rfl)
 
--- Porting note: `elementwise` here produces a bad lemma,
--- where too much has been simplified, despite the `nosimp`.
 @[simp, elementwise nosimp]
 theorem ι_fromOpenSubsetsGlue (i : J) :
     (ofOpenSubsets U).toGlueData.ι i ≫ fromOpenSubsetsGlue U = Opens.inclusion' _ :=
@@ -387,13 +381,12 @@ theorem fromOpenSubsetsGlue_injective : Function.Injective (fromOpenSubsetsGlue 
   intro x y e
   obtain ⟨i, ⟨x, hx⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective x
   obtain ⟨j, ⟨y, hy⟩, rfl⟩ := (ofOpenSubsets U).ι_jointly_surjective y
-  -- see the porting note on `ι_fromOpenSubsetsGlue`
   rw [ι_fromOpenSubsetsGlue_apply, ι_fromOpenSubsetsGlue_apply] at e
-  change x = y at e
   subst e
   rw [(ofOpenSubsets U).ι_eq_iff_rel]
   exact ⟨⟨⟨x, hx⟩, hy⟩, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
   intro s hs
   rw [(ofOpenSubsets U).isOpen_iff] at hs
@@ -428,7 +421,7 @@ theorem range_fromOpenSubsetsGlue : Set.range (fromOpenSubsetsGlue U) = ⋃ i, (
     rename_i x
     exact ⟨(ofOpenSubsets U).toGlueData.ι i ⟨x, hx⟩, ι_fromOpenSubsetsGlue_apply _ _ _⟩
 
-/-- The gluing of an open cover is homeomomorphic to the original space. -/
+/-- The gluing of an open cover is homeomorphic to the original space. -/
 def openCoverGlueHomeo (h : ⋃ i, (U i : Set α) = Set.univ) :
     (ofOpenSubsets U).toGlueData.glued ≃ₜ α :=
   Equiv.toHomeomorphOfContinuousOpen

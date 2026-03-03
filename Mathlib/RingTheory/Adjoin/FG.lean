@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Adjoining elements to form subalgebras
@@ -24,6 +26,8 @@ This file develops the basic theory of finitely-generated subalgebras.
 adjoin, algebra, finitely-generated algebra
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -164,6 +168,13 @@ theorem induction_on_adjoin [IsNoetherian R A] (P : Subalgebra R A → Prop) (ba
   intro x t _ h
   rw [Finset.coe_insert]
   simpa only [Algebra.adjoin_insert_adjoin] using ih _ x h
+
+theorem FG.sup {S S' : Subalgebra R A} (hS : Subalgebra.FG S) (hS' : Subalgebra.FG S') :
+    Subalgebra.FG (S ⊔ S') :=
+  let ⟨s, hs⟩ := Subalgebra.fg_def.1 hS
+  let ⟨s', hs'⟩ := Subalgebra.fg_def.1 hS'
+  fg_def.mpr ⟨s ∪ s', Set.Finite.union hs.1 hs'.1,
+    (by rw [Algebra.adjoin_union, hs.2, hs'.2])⟩
 
 end Subalgebra
 

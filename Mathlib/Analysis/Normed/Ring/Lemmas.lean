@@ -3,21 +3,22 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.Order.GroupWithZero.Finset
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Topology.MetricSpace.Dilation
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Finset
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Normed rings
 
 In this file we continue building the theory of (semi)normed rings.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -39,6 +40,7 @@ theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter 
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
     (norm_mul_le y x).trans_eq (mul_comm _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- Non-unital seminormed ring structure on the product of finitely many non-unital seminormed
 rings, using the sup norm. -/
@@ -49,7 +51,7 @@ instance Pi.nonUnitalSeminormedRing {R : ι → Type*} [Fintype ι]
       (univ.sup fun i ↦ ‖x i * y i‖₊) ≤ univ.sup ((‖x ·‖₊) * (‖y ·‖₊)) :=
         sup_mono_fun fun _ _ ↦ nnnorm_mul_le _ _
       _ ≤ (univ.sup (‖x ·‖₊)) * univ.sup (‖y ·‖₊) :=
-        sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le _) fun _ _ ↦ zero_le _}
+        sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le _) fun _ _ ↦ zero_le _ }
 
 end NonUnitalSeminormedRing
 
@@ -65,15 +67,20 @@ instance Pi.seminormedRing {R : ι → Type*} [Fintype ι] [∀ i, SeminormedRin
 
 lemma RingHom.isometry {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
     (σ : 𝕜₁ →+* 𝕜₂) [RingHomIsometric σ] :
-    Isometry σ := fun x y ↦ by
-  simp only [edist_eq_enorm_sub, enorm_eq_iff_norm_eq, ← map_sub, RingHomIsometric.is_iso]
+    Isometry σ := AddMonoidHomClass.isometry_of_norm _ fun _ => RingHomIsometric.norm_map
 
 /-- If `σ` and `σ'` are mutually inverse, then one is `RingHomIsometric` if the other is. Not an
 instance, as it would cause loops. -/
 lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [SeminormedRing 𝕜₂]
     (σ : 𝕜₁ →+* 𝕜₂) {σ' : 𝕜₂ →+* 𝕜₁} [RingHomInvPair σ σ'] [RingHomIsometric σ] :
     RingHomIsometric σ' :=
-  ⟨fun {x} ↦ by rw [← RingHomIsometric.is_iso (σ := σ), RingHomInvPair.comp_apply_eq₂]⟩
+  ⟨fun {x} ↦ by rw [← RingHomIsometric.norm_map (σ := σ), RingHomInvPair.comp_apply_eq₂]⟩
+
+lemma tendsto_pow_cobounded_cobounded
+    [NormOneClass α] [NormMulClass α] {m : ℕ} (hm : m ≠ 0) :
+    Tendsto (· ^ m) (cobounded α) (cobounded α) := by
+  simpa [← tendsto_norm_atTop_iff_cobounded] using
+    (tendsto_pow_atTop hm).comp (tendsto_norm_cobounded_atTop (E := α))
 
 end SeminormedRing
 
@@ -165,12 +172,8 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
         convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
-            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
-        -- Porting note: `show` used to select a goal to work on
-        rotate_right
-        · show Tendsto _ _ _
-          exact tendsto_const_nhds
-        · simp⟩
+            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul tendsto_const_nhds)
+        simp⟩
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
@@ -207,6 +210,7 @@ end SeparationQuotient
 
 namespace NNReal
 
+set_option backward.isDefEq.respectTransparency false in
 lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 - p.2) := by
   rw [← isometry_subtype_coe.lipschitzWith_iff]
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
@@ -268,17 +272,3 @@ lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 end Filter
 
 end NonUnitalNormedRing
-
-section NormedRing
-variable [NormedRing α] [NormMulClass α] [NormOneClass α] {a : α}
-
-protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
-  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
-
-example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
-
-@[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
-    (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
-
-end NormedRing

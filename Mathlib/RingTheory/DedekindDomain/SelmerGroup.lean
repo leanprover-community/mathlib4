@@ -3,10 +3,12 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.Algebra.Group.Int.TypeTags
+module
+
+public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.Algebra.Group.Int.TypeTags
 
 /-!
 # Selmer groups of fraction fields of Dedekind domains
@@ -38,7 +40,7 @@ This file defines the Selmer group $K(S, n)$ and some basic facts.
 * TODO: proofs of exactness of the sequence.
 * TODO: proofs of finiteness for global fields.
 
-## Notations
+## Notation
 
 * `K⟮S, n⟯`: the Selmer group with parameters `K`, `S`, and `n`.
 
@@ -61,6 +63,8 @@ https://doc.sagemath.org/html/en/reference/number_fields/sage/rings/number_field
 class group, selmer group, unit group
 -/
 
+@[expose] public section
+
 set_option quotPrecheck false
 local notation K "/" n => Kˣ ⧸ (powMonoidHom n : Kˣ →* Kˣ).range
 
@@ -68,7 +72,8 @@ namespace IsDedekindDomain
 
 noncomputable section
 
-open scoped Multiplicative nonZeroDivisors
+open WithZero
+open scoped WithZero nonZeroDivisors
 
 universe u v
 
@@ -90,7 +95,7 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
-    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation K x := by
+    (v.valuationOfNeZeroToFun x : ℤᵐ⁰) = v.valuation K x := by
   classical
   rw [show v.valuation K x = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
@@ -98,8 +103,7 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
     if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero,
     if_neg (nonZeroDivisors.coe_ne_zero _),
-    valuationOfNeZeroToFun, ofAdd_sub, ofAdd_neg, div_inv_eq_mul, WithZero.coe_mul,
-    WithZero.coe_inv, inv_inv]
+    ← exp_neg, ← exp_add, valuationOfNeZeroToFun, ← sub_eq_add_neg, exp]
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/
 def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
@@ -110,7 +114,7 @@ def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
     simp only [valuationOfNeZeroToFun_eq]; exact map_mul _ _ _
 
 @[simp]
-theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.valuation K x :=
+theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤᵐ⁰) = v.valuation K x :=
   valuationOfNeZeroToFun_eq v x
 
 @[simp]
@@ -123,15 +127,12 @@ theorem valuation_of_unit_eq (x : Rˣ) :
     change ¬v.valuation K (algebraMap R K x) < 1
     apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx
-    rw [not_lt, ← hx, ← mul_one <| v.valuation _ _, valuation_of_algebraMap,
-      mul_le_mul_left <| zero_lt_iff.2 <| left_ne_zero_of_mul_eq_one hx]
+    rw [not_lt, ← hx, ← mul_one <| v.valuation _ _, valuation_of_algebraMap]
+    gcongr
     exact v.intValuation_le_one _
 
--- Porting note: invalid attribute 'semireducible', declaration is in an imported module
--- attribute [local semireducible] MulOpposite
-
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
-def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
+def valuationOfNeZeroMod (n : ℕ) : (K / n) →* Multiplicative (ZMod n) :=
   -- TODO: this definition does a lot of defeq abuse between `Multiplicative` and `Additive`,
   -- so we need `erw` below.
   (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
@@ -145,7 +146,7 @@ def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
 
 @[simp]
 theorem valuation_of_unit_mod_eq (n : ℕ) (x : Rˣ) :
-    v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K/n) = 1 := by
+    v.valuationOfNeZeroMod n (Units.map (algebraMap R K : R →* K) x : K / n) = 1 := by
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [valuationOfNeZeroMod, MonoidHom.comp_apply, ← QuotientGroup.coe_mk',
     QuotientGroup.map_mk' (G := Kˣ) (N := MonoidHom.range (powMonoidHom n)),
@@ -159,7 +160,7 @@ end HeightOneSpectrum
 variable {S S' : Set <| HeightOneSpectrum R} {n : ℕ}
 
 /-- The Selmer group `K⟮S, n⟯`. -/
-def selmerGroup : Subgroup <| K/n where
+def selmerGroup : Subgroup <| K / n where
   carrier := {x : K/n | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuationOfNeZeroMod n x = 1}
   one_mem' _ _ := by rw [map_one]
   mul_mem' hx hy v hv := by rw [map_mul, hx v hv, hy v hv, one_mul]
@@ -174,7 +175,7 @@ theorem monotone (hS : S ≤ S') : K⟮S,n⟯ ≤ K⟮S',n⟯ := fun _ hx v => h
 
 /-- The multiplicative `v`-adic valuations on `K⟮S, n⟯` for all `v ∈ S`. -/
 def valuation : K⟮S,n⟯ →* S → Multiplicative (ZMod n) where
-  toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K/n)
+  toFun x v := (v : HeightOneSpectrum R).valuationOfNeZeroMod n (x : K / n)
   map_one' := funext fun _ => map_one _
   map_mul' x y := by simp only [Subgroup.coe_mul, map_mul]; rfl
 
@@ -225,7 +226,7 @@ theorem fromUnit_ker [hn : Fact <| 0 < n] :
       by simp only [powMonoidHom_apply, RingHom.toMonoidHom_eq_coe, map_pow]⟩
 
 /-- The injection induced by the natural homomorphism from `Rˣ` to `K⟮∅, n⟯`. -/
-def fromUnitLift [Fact <| 0 < n] : (R/n) →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ :=
+def fromUnitLift [Fact <| 0 < n] : (R / n) →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ :=
   (QuotientGroup.kerLift _).comp
     (QuotientGroup.quotientMulEquivOfEq (fromUnit_ker (R := R))).symm.toMonoidHom
 

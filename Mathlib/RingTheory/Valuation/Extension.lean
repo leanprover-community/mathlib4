@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jiedong Jiang, Bichang Lei
+Authors: Jiedong Jiang, Bichang Lei, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.Algebra.Group.Units.Hom
+module
+
+public import Mathlib.RingTheory.Valuation.ValuationSubring
+
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Extension of Valuations
@@ -23,7 +25,7 @@ A motivation for choosing the more flexible `Valuation.Equiv` rather than strict
 to allow for possible normalization. As an example, consider a finite extension `K` of `ℚ_[p]`,
 which is a discretely valued field. We may choose the valuation on `K` to be either:
 
-1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤₘ₀`) or
+1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤᵐ⁰`) or
 
 2. the valuation where `p` is mapped to one.
 
@@ -35,7 +37,7 @@ without first determining the normalizations once and for all.
 ## Main Definition
 
 * `Valuation.HasExtension vR vA` : The valuation `vA` on `A` is an extension of the valuation
-`vR` on `R`.
+  `vR` on `R`.
 
 ## References
 
@@ -46,6 +48,11 @@ without first determining the normalizations once and for all.
 Valuation, Extension of Valuations
 
 -/
+
+@[expose] public section
+
+open Module
+
 namespace Valuation
 
 variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
@@ -59,8 +66,6 @@ the valuation `vR` on `R`. More precisely, `vR` is equivalent to the comap of th
 class HasExtension : Prop where
   /-- The valuation `vR` on `R` is equivalent to the comap of the valuation `vA` on `A` -/
   val_isEquiv_comap : vR.IsEquiv <| vA.comap (algebraMap R A)
-
-@[deprecated (since := "2025-04-02")] alias _root_.IsValExtension := HasExtension
 
 namespace HasExtension
 
@@ -92,7 +97,7 @@ end algebraMap
 
 instance id : vR.HasExtension vR where
   val_isEquiv_comap := by
-    simp only [Algebra.id.map_eq_id, comap_id, IsEquiv.refl]
+    simp only [Algebra.algebraMap_self, comap_id, IsEquiv.refl]
 
 section integer
 
@@ -124,6 +129,11 @@ instance instAlgebraInteger : Algebra vR.integer vA.integer where
 theorem val_smul (r : vR.integer) (a : vA.integer) : ↑(r • a : vA.integer) = (r : R) • (a : A) := by
   rfl
 
+@[simp]
+lemma mk_smul_mk (r : R) (hr) (a : A) (ha) :
+    (⟨r, hr⟩ : vR.integer) • (⟨a, ha⟩ : vA.integer) =
+      ⟨r • a, Algebra.smul_def r a ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr hr) ha⟩ := rfl
+
 @[simp, norm_cast]
 theorem val_algebraMap (r : vR.integer) :
     ((algebraMap vR.integer vA.integer) r : A) = (algebraMap R A) (r : R) := by
@@ -134,18 +144,12 @@ instance instIsScalarTowerInteger : IsScalarTower vR.integer vA.integer A where
     simp only [Algebra.smul_def]
     exact mul_assoc _ _ _
 
-instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
-    NoZeroSMulDivisors vR.integer vA.integer := by
-  refine ⟨fun {x y} e ↦ ?_⟩
-  have : (x : R) • (y : A) = 0 := by simpa [Subtype.ext_iff, Algebra.smul_def] using e
-  simpa only [Subtype.ext_iff, smul_eq_zero] using this
+instance instIsTorsionFreeInteger [IsDomain R] [IsTorsionFree R A] :
+    IsTorsionFree vR.integer vA.integer := .of_smul_eq_zero <| by simp
 
 theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
-    Function.Injective (algebraMap vK.integer vA.integer) := by
-  intro x y h
-  simp only [Subtype.ext_iff, val_algebraMap] at h
-  ext
-  apply RingHom.injective (algebraMap K A) h
+    Function.Injective (algebraMap vK.integer vA.integer) :=
+  FaithfulSMul.algebraMap_injective _ _
 
 @[instance]
 theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
@@ -159,6 +163,55 @@ theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
       exact (val_map_eq_one_iff vR vS _).mp hr
 
 end integer
+
+section AlgebraInstances
+
+open IsLocalRing Valuation ValuationSubring
+
+variable {K L Γ₀ Γ₁ : outParam Type*} [Field K] [Field L] [Algebra K L]
+  [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ₁] (vK : Valuation K Γ₀)
+  (vL : Valuation L Γ₁) [vK.HasExtension vL]
+
+local notation "K₀" => Valuation.valuationSubring vK
+local notation "L₀" => Valuation.valuationSubring vL
+
+lemma algebraMap_mem_valuationSubring (x : K₀) : algebraMap K L x ∈ L₀ := by
+  rw [mem_valuationSubring_iff, ← _root_.map_one vL, ← _root_.map_one (algebraMap K L),
+    val_map_le_iff (vR := vK), _root_.map_one]
+  exact x.2
+
+instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
+  inferInstanceAs (Algebra vK.integer vL.integer)
+
+@[simp]
+lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
+    (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
+
+instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L :=
+  inferInstanceAs (IsScalarTower vK.integer K L)
+
+instance instIsScalarTower_valuationSubring' : IsScalarTower K₀ L₀ L :=
+  instIsScalarTowerInteger
+
+instance : IsLocalHom (algebraMap K₀ L₀) := instIsLocalHomValuationInteger
+
+lemma algebraMap_mem_maximalIdeal_iff {x : K₀} :
+    algebraMap K₀ L₀ x ∈ (maximalIdeal L₀) ↔ x ∈ maximalIdeal K₀ := by
+  simp [mem_maximalIdeal, map_mem_nonunits_iff, _root_.mem_nonunits_iff]
+
+lemma maximalIdeal_comap_algebraMap_eq_maximalIdeal :
+    (maximalIdeal L₀).comap (algebraMap K₀ L₀) = maximalIdeal K₀ :=
+  Ideal.ext fun _ ↦ by rw [Ideal.mem_comap, algebraMap_mem_maximalIdeal_iff]
+
+instance : Ideal.LiesOver (maximalIdeal L₀) (maximalIdeal K₀) :=
+  ⟨(maximalIdeal_comap_algebraMap_eq_maximalIdeal _ _).symm⟩
+
+lemma algebraMap_residue_eq_residue_algebraMap (x : K₀) :
+    (algebraMap (ResidueField K₀) (ResidueField L₀)) (IsLocalRing.residue K₀ x) =
+      IsLocalRing.residue L₀ (algebraMap K₀ L₀ x) :=
+  rfl
+
+end AlgebraInstances
 
 end HasExtension
 

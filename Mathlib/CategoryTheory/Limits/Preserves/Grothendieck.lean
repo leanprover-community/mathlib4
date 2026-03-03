@@ -3,8 +3,10 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 
 /-!
 # Colimits on Grothendieck constructions preserving limits
@@ -13,10 +15,14 @@ We characterize the condition in which colimits on Grothendieck constructions pr
 preserving limits on the Grothendieck construction's base category as well as on each of its fibers.
 -/
 
+@[expose] public section
+
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
+
+open Functor
 
 namespace Limits
 
@@ -27,6 +33,7 @@ variable {H : Type u₂} [Category.{v₂} H]
 variable {J : Type u₃} [Category.{v₃} J]
 variable {F : C ⥤ Cat.{v₄, u₄}}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `colim` on each fiber `F.obj c` of a functor `F : C ⥤ Cat` preserves limits of shape `J`,
 then the fiberwise colimit of the limit of a functor `K : J ⥤ Grothendieck F ⥤ H` is naturally
 isomorphic to taking the limit of the composition `K ⋙ fiberwiseColim F H`. -/
@@ -40,9 +47,9 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
        (limitCompWhiskeringLeftIsoCompLimit K (Grothendieck.ι F c)).symm ≪≫
       preservesLimitIso colim _ ≪≫
       HasLimit.isoOfNatIso
-        (Functor.associator _ _ _ ≪≫
+        (associator _ _ _ ≪≫
         isoWhiskerLeft _ (fiberwiseColimCompEvaluationIso _).symm ≪≫
-        (Functor.associator _ _ _).symm) ≪≫
+        (associator _ _ _).symm) ≪≫
       (limitObjIsoLimitCompEvaluation _ c).symm)
     fun {c₁ c₂} f => by
       simp only [fiberwiseColimit_obj, fiberwiseColimit_map, Iso.trans_hom, Iso.symm_hom,
@@ -55,6 +62,7 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
       intro e
       simp [← NatTrans.comp_app_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (C) (F) in
 /-- If `colim` on a category `C` preserves limits of shape `J` and if it does so for `colim` on
 every `F.obj c` for a functor `F : C ⥤ Cat`, then `colim` on `Grothendieck F` also preserves limits
@@ -73,7 +81,7 @@ instance preservesLimitsOfShape_colim_grothendieck [HasColimitsOfShape C H] [Has
           preservesLimitIso colim (K ⋙ fiberwiseColim _ _)
     _ ≅ limit (K ⋙ colim) :=
       HasLimit.isoOfNatIso
-       (Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
+       (associator _ _ _ ≪≫ isoWhiskerLeft _ fiberwiseColimCompColimIso)
   haveI : IsIso (limit.post K colim) := by
     convert Iso.isIso_hom i₂
     ext

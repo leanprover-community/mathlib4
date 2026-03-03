@@ -3,11 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
+module
 
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Combinatorics.Enumerative.Bell
-import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Combinatorics.Enumerative.Bell
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Divided powers
 
@@ -22,14 +23,14 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`
-* `DividedPowers.dpow_add` : `dpow n (x + y) =
-(antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y`,
-this is the binomial theorem without binomial coefficients.
+* `DividedPowers.dpow_add` :
+  `dpow n (x + y) = (antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y`,
+  this is the binomial theorem without binomial coefficients.
 * `DividedPowers.dpow_mul`: `dpow n (a * x) = a ^ n * dpow n x`
 * `DividedPowers.mul_dpow` : `dpow m x * dpow n x = choose (m + n) m * dpow (m + n) x`
 * `DividedPowers.dpow_comp` : `dpow m (dpow n x) = uniformBell m n * dpow (m * n) x`
 * `DividedPowers.dividedPowersBot` : the trivial divided powers structure on the zero ideal
-* `DividedPowers.prod_dpow`: a product of divided powers is a multinomial coefficients
+* `DividedPowers.prod_dpow`: a product of divided powers is a multinomial coefficient
   times a divided power
 * `DividedPowers.dpow_sum`: the multinomial theorem for divided powers,
   without multinomial coefficients.
@@ -55,13 +56,15 @@ modules*][Roby-1963]
 ## Discussion
 
 * In practice, one often has a single such structure to handle on a given ideal,
-but several ideals of the same ring might be considered.
-Without any explicit mention of the ideal, it is not clear whether such structures
-should be provided as instances.
+  but several ideals of the same ring might be considered.
+  Without any explicit mention of the ideal, it is not clear whether such structures
+  should be provided as instances.
 
 * We do not provide any notation such as `a ^[n]` for `dpow a n`.
 
 -/
+
+@[expose] public section
 
 open Finset Nat Ideal
 
@@ -70,7 +73,7 @@ section DividedPowersDefinition
 
 variable {A : Type*} [CommSemiring A] (I : Ideal A)
 
-/-- The divided power structure on an ideal I of a commutative ring A -/
+/-- The divided power structure on an ideal `I` of a commutative ring `A`. -/
 structure DividedPowers where
   /-- The divided power function underlying a divided power structure -/
   dpow : ℕ → A → A
@@ -105,19 +108,12 @@ noncomputable def dividedPowersBot : DividedPowers (⊥ : Ideal A) where
     exact fun _ a ↦ False.elim (hn a)
   dpow_add ha hb := by
     rw [mem_bot.mp ha, mem_bot.mp hb, add_zero]
-    simp only [true_and, ge_iff_le, tsub_eq_zero_iff_le, mul_ite, mul_one, mul_zero]
+    simp only [true_and, mul_ite, mul_one, mul_zero]
     split_ifs with h
     · simp [h]
     · symm
       apply sum_eq_zero
-      intro i hi
-      simp only [mem_antidiagonal] at hi
-      split_ifs with h2 h1
-      · rw [h1, h2, add_zero] at hi
-        exfalso
-        exact h hi.symm
-      · rfl
-      · rfl
+      grind [mem_antidiagonal]
   dpow_mul {n} _ _ hx := by
     rw [mem_bot.mp hx]
     simp only [mul_zero, true_and, mul_ite, mul_one]
@@ -157,10 +153,7 @@ theorem DividedPowers.ext (hI : DividedPowers I) (hI' : DividedPowers I)
   obtain ⟨hI, h₀, _⟩ := hI
   obtain ⟨hI', h₀', _⟩ := hI'
   simp only [mk.injEq]
-  ext n x
-  by_cases hx : x ∈ I
-  · exact h_eq n hx
-  · rw [h₀ hx, h₀' hx]
+  grind
 
 theorem DividedPowers.coe_injective :
     Function.Injective (fun (h : DividedPowers I) ↦ (h : ℕ → A → A)) := fun hI hI' h ↦ by
@@ -193,7 +186,7 @@ theorem exp_add' (dp : ℕ → A → A)
     PowerSeries.mk (fun n ↦ dp n (a + b)) =
       (PowerSeries.mk fun n ↦ dp n a) * (PowerSeries.mk fun n ↦ dp n b) := by
   ext n
-  simp only [exp, PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
+  simp only [PowerSeries.coeff_mk, PowerSeries.coeff_mul, dp_add n,
     sum_antidiagonal_eq_sum_range_succ_mk]
 
 theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :
@@ -249,7 +242,7 @@ theorem coincide_on_smul {J : Ideal A} (hJ : DividedPowers J) {n : ℕ} (ha : a 
     hI.dpow n a = hJ.dpow n a := by
   induction ha using Submodule.smul_induction_on' generalizing n with
   | smul a ha b hb =>
-    rw [Algebra.id.smul_eq_mul, hJ.dpow_mul hb, mul_comm a b, hI.dpow_mul ha,
+    rw [smul_eq_mul, hJ.dpow_mul hb, mul_comm a b, hI.dpow_mul ha,
       ← hJ.factorial_mul_dpow_eq_pow hb, ← hI.factorial_mul_dpow_eq_pow ha]
     ring
   | add x hx y hy hx' hy' =>

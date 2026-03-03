@@ -3,10 +3,13 @@ Copyright (c) 2021 Sebastian Ullrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Ullrich
 -/
-import Mathlib.Init
-import Batteries.Util.Cache
-import Lean.HeadIndex
-import Lean.Elab.Command
+module
+
+public import Mathlib.Init
+public meta import Batteries.Util.Cache
+public meta import Lean.HeadIndex
+public meta import Lean.Elab.Command
+public import Batteries.Util.Cache
 
 /-!
 # The `#find` command and tactic.
@@ -23,10 +26,12 @@ or the `find` tactic which looks for lemmas which are `apply`able against the cu
 
 -/
 
+public meta section
+
 open Lean Std
 open Lean.Meta
 open Lean.Elab
-open Lean.Elab
+
 open Batteries.Tactic
 
 namespace Mathlib.Tactic.Find
@@ -85,17 +90,21 @@ def findType (t : Expr) : TermElabM Unit := withReducible do
       logInfo m!"{n}: {cTy}"
 
 open Lean.Elab.Command in
-/-
-The `#find` command finds definitions & lemmas using pattern matching on the type. For instance:
+/--
+`#find t` finds definitions and theorems whose result type matches the term `t`, and prints them as
+info lines. Use holes in `t` to indicate arbitrary subexpressions, for example `#find _ ∧ _` will
+match any conjunction.
+
+`#find` is also available as a tactic, and there is also the `find` tactic which looks for lemmas
+which are `apply`able against the current goal.
+
+Examples:
 ```lean
 #find _ + _ = _ + _
 #find ?n + _ = _ + ?n
 #find (_ : Nat) + _ = _ + _
 #find Nat → Nat
 ```
-Inside tactic proofs, the `#find` tactic can be used instead.
-There is also the `find` tactic which looks for
-lemmas which are `apply`able against the current goal.
 -/
 elab "#find " t:term : command =>
   liftTermElabM do
@@ -104,8 +113,8 @@ elab "#find " t:term : command =>
     findType t
 
 /- (Note that you'll get an error trying to run these here:
-   ``cannot evaluate `[init]` declaration 'findDeclsPerHead' in the same module``
-   but they will work fine in a new file!) -/
+``cannot evaluate `[init]` declaration 'findDeclsPerHead' in the same module``
+but they will work fine in a new file!) -/
 -- #find _ + _ = _ + _
 -- #find _ + _ = _ + _
 -- #find ?n + _ = _ + ?n
@@ -114,22 +123,42 @@ elab "#find " t:term : command =>
 -- #find ?n ≤ ?m → ?n + _ ≤ ?m + _
 
 open Lean.Elab.Tactic
-/-
-Display theorems (and definitions) whose result type matches the current goal,
-i.e. which should be `apply`able.
-```lean
-example : True := by find
-```
+/--
+`find` finds definitions and theorems whose result type matches the current goal exactly,
+and prints them as info lines.
+In other words, `find` lists definitions and theorems that are `apply`able against the current goal.
 `find` will not affect the goal by itself and should be removed from the finished proof.
-For a command that takes the type to search for as an argument,
-see `#find`, which is also available as a tactic.
+
+For a command or tactic that takes the type to search for as an argument, see `#find`.
+
+Example:
+```lean
+example : True := by
+  find
+  -- True.intro: True
+  -- trivial: True
+  -- ...
+```
 -/
 elab "find" : tactic => do
   findType (← getMainTarget)
 
-/-
-Tactic version of the `#find` command.
-See also the `find` tactic to search for theorems matching the current goal.
+/--
+`#find t` finds definitions and theorems whose result type matches the term `t`, and prints them as
+info lines. Use holes in `t` to indicate arbitrary subexpressions, for example `#find _ ∧ _` will
+match any conjunction. `#find` is also available as a command.
+`#find` will not affect the goal by itself and should be removed from the finished proof.
+
+There is also the `find` tactic which looks for lemmas which are `apply`able against the current
+goal.
+
+Examples:
+```lean
+#find _ + _ = _ + _
+#find ?n + _ = _ + ?n
+#find (_ : Nat) + _ = _ + _
+#find Nat → Nat
+```
 -/
 elab "#find " t:term : tactic => do
   let t ← Term.elabTerm t none

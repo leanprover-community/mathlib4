@@ -3,15 +3,19 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.NatIso
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.NatIso
 
 /-!
 # Disjoint union of categories
 
 We define the category structure on a sigma-type (disjoint union) of categories.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -23,7 +27,8 @@ universe w₁ w₂ w₃ v₁ v₂ u₁ u₂
 variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
 
 /-- The type of morphisms of a disjoint union of categories: for `X : C i` and `Y : C j`, a morphism
-`(i, X) ⟶ (j, Y)` if `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` there are no such morphisms.
+`(i, X) ⟶ (j, Y)` when `i = j` is just a morphism `X ⟶ Y`, and if `i ≠ j` then there are no such
+morphisms.
 -/
 inductive SigmaHom : (Σ i, C i) → (Σ i, C i) → Type max w₁ v₁ u₁
   | mk : ∀ {i : I} {X Y : C i}, (X ⟶ Y) → SigmaHom ⟨i, X⟩ ⟨i, Y⟩
@@ -33,7 +38,6 @@ namespace SigmaHom
 /-- The identity morphism on an object. -/
 def id : ∀ X : Σ i, C i, SigmaHom X X
   | ⟨_, _⟩ => mk (𝟙 _)
--- Porting note: reordered universes
 
 instance (X : Σ i, C i) : Inhabited (SigmaHom X X) :=
   ⟨id X⟩
@@ -41,7 +45,6 @@ instance (X : Σ i, C i) : Inhabited (SigmaHom X X) :=
 /-- Composition of sigma homomorphisms. -/
 def comp : ∀ {X Y Z : Σ i, C i}, SigmaHom X Y → SigmaHom Y Z → SigmaHom X Z
   | _, _, _, mk f, mk g => mk (f ≫ g)
--- Porting note: reordered universes
 
 instance : CategoryStruct (Σ i, C i) where
   Hom := SigmaHom
@@ -106,7 +109,6 @@ lemma natTrans_app {F G : (Σ i, C i) ⥤ D} (h : ∀ i : I, incl i ⋙ F ⟶ in
 /-- (Implementation). An auxiliary definition to build the functor `desc`. -/
 def descMap : ∀ X Y : Σ i, C i, (X ⟶ Y) → ((F X.1).obj X.2 ⟶ (F Y.1).obj Y.2)
   | _, _, SigmaHom.mk g => (F _).map g
--- Porting note: reordered universes
 
 /-- Given a collection of functors `F i : C i ⥤ D`, we can produce a functor `(Σ i, C i) ⥤ D`.
 
@@ -164,6 +166,7 @@ lemma descUniq_inv_app (q : (Σ i, C i) ⥤ D) (h : ∀ i, incl i ⋙ q ≅ F i)
     (descUniq F q h).inv.app ⟨i, X⟩ = (h i).inv.app X :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `q₁` and `q₂` when restricted to each subcategory `C i` agree, then `q₁` and `q₂` are isomorphic.
 -/
@@ -179,7 +182,7 @@ section
 variable (C) {J : Type w₂} (g : J → I)
 
 /-- A function `J → I` induces a functor `Σ j, C (g j) ⥤ Σ i, C i`. -/
-def map : (Σj : J, C (g j)) ⥤ Σ i : I, C i :=
+def map : (Σ j : J, C (g j)) ⥤ Σ i : I, C i :=
   desc fun j => incl (g j)
 
 @[simp]
@@ -199,6 +202,7 @@ def inclCompMap (j : J) : incl j ⋙ map C g ≅ incl (g j) :=
 
 variable (I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `Sigma.map` applied to the identity function is just the identity functor. -/
 @[simps!]
 def mapId : map C (id : I → I) ≅ 𝟭 (Σ i, C i) :=
@@ -206,13 +210,11 @@ def mapId : map C (id : I → I) ≅ 𝟭 (Σ i, C i) :=
 
 variable {I} {K : Type w₃}
 
--- Porting note: Had to expand (C ∘ g) to (fun x => C (g x)) in lemma statement
--- so that the suitable category instances could be found
 /-- The functor `Sigma.map` applied to a composition is a composition of functors. -/
 @[simps!]
 def mapComp (f : K → J) (g : J → I) : map (fun x ↦ C (g x)) f ⋙ (map C g :) ≅ map C (g ∘ f) :=
   (descUniq _ _) fun k =>
-    (isoWhiskerRight (inclCompMap (fun i => C (g i)) f k) (map C g :) :) ≪≫ inclCompMap _ _ _
+    (Functor.isoWhiskerRight (inclCompMap _ f k) (map C g :) :) ≪≫ inclCompMap _ g (f k)
 
 end
 

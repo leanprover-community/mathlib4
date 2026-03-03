@@ -3,9 +3,11 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.Algebra.Polynomial.Module.AEval
-import Mathlib.Algebra.Module.Torsion
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 # Polynomial modules in finite dimensions
@@ -20,6 +22,8 @@ by an `R`-linear endomorphism, which require the concept of finite-dimensionalit
 
 -/
 
+public section
+
 open Polynomial
 
 variable {R K M A : Type*} {a : A}
@@ -30,7 +34,8 @@ theorem isTorsion_of_aeval_eq_zero [CommSemiring R] [NoZeroDivisors R] [Semiring
     [AddCommMonoid M] [Module A M] [Module R M] [IsScalarTower R A M]
     {p : R[X]} (h : aeval a p = 0) (h' : p ≠ 0) :
     IsTorsion R[X] (AEval R M a) := by
-  have hp : p ∈ nonZeroDivisors R[X] := fun q hq ↦ Or.resolve_right (mul_eq_zero.mp hq) h'
+  have hp : p ∈ nonZeroDivisors R[X] := mem_nonZeroDivisors_iff_right.mpr
+    fun q hq ↦ Or.resolve_right (mul_eq_zero.mp hq) h'
   exact fun x ↦ ⟨⟨p, hp⟩, (of R M a).symm.injective <| by simp [h]⟩
 
 variable (K M a)

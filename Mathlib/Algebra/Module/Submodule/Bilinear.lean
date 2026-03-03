@@ -3,8 +3,10 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.LinearAlgebra.BilinearMap
+module
+
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Images of pairs of submodules under bilinear maps
@@ -18,9 +20,15 @@ This file provides `Submodule.map₂`, which is later used to implement `Submodu
 
 ## Notes
 
-This file is quite similar to the n-ary section of `Data.Set.Basic` and to `Order.Filter.NAry`.
-Please keep them in sync.
+This file is quite similar to the n-ary section of `Mathlib/Data/Set/Basic.lean` and to
+`Mathlib/Order/Filter/NAry.lean`. Please keep them in sync.
+
+## TODO
+
+Generalize this file to semilinear maps.
 -/
+
+@[expose] public section
 
 
 universe uι u v
@@ -73,7 +81,7 @@ theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : m
   eq_bot_iff.2 <|
     map₂_le.2 fun m _hm n hn => by
       rw [Submodule.mem_bot] at hn
-      rw [hn, LinearMap.map_zero]; simp only [mem_bot]
+      rw [hn, map_zero]; simp only [mem_bot]
 
 @[simp]
 theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : map₂ f ⊥ q = ⊥ :=
@@ -146,5 +154,34 @@ theorem map₂_span_singleton_eq_map (f : M →ₗ[R] N →ₗ[R] P) (m : M) :
 
 theorem map₂_span_singleton_eq_map_flip (f : M →ₗ[R] N →ₗ[R] P) (s : Submodule R M) (n : N) :
     map₂ f s (span R {n}) = map (f.flip n) s := by rw [← map₂_span_singleton_eq_map, map₂_flip]
+
+section comp
+variable {M₂ N₂ P₂ : Type*}
+variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
+variable [Module R M₂] [Module R N₂] [Module R P₂]
+
+theorem map_map₂ (f : P →ₗ[R] P₂) (g : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) (q : Submodule R N) :
+    map f (map₂ g p q) = map₂ (g.compr₂ f) p q :=
+  map_iSup _ _ |>.trans <| iSup_congr fun _ => map_comp _ _ _ |>.symm
+
+theorem map₂_map_right
+    (f : M →ₗ[R] N₂ →ₗ[R] P) (g : N →ₗ[R] N₂) (p : Submodule R M) (q : Submodule R N) :
+    map₂ f p (map g q) = map₂ (f.compl₂ g) p q :=
+  iSup_congr fun _ => map_comp _ _ _ |>.symm
+
+theorem map₂_map_left
+    (f : M₂ →ₗ[R] N →ₗ[R] P) (g : M →ₗ[R] M₂) (p : Submodule R M) (q : Submodule R N) :
+    map₂ f (map g p) q = map₂ (f ∘ₗ g) p q := by
+  rw [← map₂_flip, map₂_map_right, ← map₂_flip]
+  rfl
+
+theorem map₂_map_map
+    (f : M₂ →ₗ[R] N₂ →ₗ[R] P) (g : M →ₗ[R] M₂) (h : N →ₗ[R] N₂)
+    (p : Submodule R M) (q : Submodule R N) :
+    map₂ f (map g p) (map h q) = map₂ (f.compl₁₂ g h) p q := by
+  rw [map₂_map_right, map₂_map_left]
+  rfl
+
+end comp
 
 end Submodule

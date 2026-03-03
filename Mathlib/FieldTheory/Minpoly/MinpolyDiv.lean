@@ -3,9 +3,11 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+module
+
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Results about `minpoly R x / (X - C x)`
@@ -20,6 +22,8 @@ See `traceForm_dualBasis_powerBasis_eq`.
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
 
+@[expose] public section
+
 open Polynomial Module
 
 variable (R K) {L S} [CommRing R] [Field K] [Field L] [CommRing S] [Algebra R S] [Algebra K L]
@@ -31,7 +35,7 @@ noncomputable def minpolyDiv : S[X] := (minpoly R x).map (algebraMap R S) /ₘ (
 lemma minpolyDiv_spec :
     minpolyDiv R x * (X - C x) = (minpoly R x).map (algebraMap R S) := by
   delta minpolyDiv
-  rw [mul_comm, mul_divByMonic_eq_iff_isRoot, IsRoot, eval_map, ← aeval_def, minpoly.aeval]
+  rw [mul_comm, mul_divByMonic_eq_iff_isRoot, IsRoot, eval_map_algebraMap, minpoly.aeval]
 
 lemma coeff_minpolyDiv (i) : coeff (minpolyDiv R x) i =
     algebraMap R S (coeff (minpoly R x) (i + 1)) + coeff (minpolyDiv R x) (i + 1) * x := by
@@ -44,11 +48,11 @@ lemma minpolyDiv_eq_zero (hx : ¬IsIntegral R x) : minpolyDiv R x = 0 := by
   rw [dif_neg hx, Polynomial.map_zero, zero_divByMonic]
 
 lemma eval_minpolyDiv_self : (minpolyDiv R x).eval x = aeval x (derivative <| minpoly R x) := by
-  rw [aeval_def, ← eval_map, ← derivative_map, ← minpolyDiv_spec R x]; simp
+  rw [← eval_map_algebraMap, ← derivative_map, ← minpolyDiv_spec R x]; simp
 
 lemma minpolyDiv_eval_eq_zero_of_ne_of_aeval_eq_zero [IsDomain S]
     {y} (hxy : y ≠ x) (hy : aeval y (minpoly R x) = 0) : (minpolyDiv R x).eval y = 0 := by
-  rw [aeval_def, ← eval_map, ← minpolyDiv_spec R x] at hy
+  rw [← eval_map_algebraMap, ← minpolyDiv_spec R x] at hy
   simp only [eval_mul, eval_sub, eval_X, eval_C, mul_eq_zero] at hy
   exact hy.resolve_right (by rwa [sub_eq_zero])
 
@@ -68,7 +72,7 @@ lemma eval₂_minpolyDiv_self {T} [CommRing T] [Algebra R T] [IsDomain T] [Decid
       if σ₁ x = σ₂ x then σ₁ (aeval x (derivative <| minpoly R x)) else 0 := by
   apply eval₂_minpolyDiv_of_eval₂_eq_zero
   rw [AlgHom.comp_algebraMap, ← σ₂.comp_algebraMap, ← eval₂_map, ← RingHom.coe_coe, eval₂_hom,
-    eval_map, ← aeval_def, minpoly.aeval, map_zero]
+    eval_map_algebraMap, minpoly.aeval, map_zero]
 
 lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
     {y} (hy : aeval y (minpoly R x) = 0) :
@@ -91,9 +95,7 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
   apply this (natDegree (minpolyDiv R x) + 1)
   rw [coeff_eq_zero_of_natDegree_lt]
   · exact zero_mem _
-  · refine (Nat.le_add_left _ i).trans_lt ?_
-    rw [← add_assoc]
-    exact Nat.lt_succ_self _
+  · lia
 
 section IsIntegral
 variable (hx : IsIntegral R x)
@@ -203,15 +205,15 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
   · intro σ
     simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finset_sum,
       eval_smul, eval_map, eval₂_minpolyDiv_self, this.eq_iff, smul_eq_mul, mul_ite, mul_zero,
-      Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_pow, eval_X]
+      Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_X_pow]
     rw [sub_eq_zero, div_mul_cancel₀]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
     exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
-    · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,
-        map_div₀, map_pow, RingHom.coe_coe, AlgHom.coe_coe, Function.comp_apply,
-        Finset.mem_univ, forall_true_left, true_and, Finset.fold_max_lt, AlgHom.card]
+    · simp only [Polynomial.map_smul,
+        map_div₀, map_pow, RingHom.coe_coe, Function.comp_apply,
+        Finset.mem_univ, forall_true_left, Finset.fold_max_lt, AlgHom.card]
       refine ⟨finrank_pos, ?_⟩
       intro σ
       exact ((Polynomial.natDegree_smul_le _ _).trans natDegree_map_le).trans_lt

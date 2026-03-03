@@ -3,11 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.NormedSpace.Extr
-import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.Topology.Order.ExtrClosure
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Extr
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Topology.Order.ExtrClosure
 
 /-!
 # Maximum modulus principle
@@ -58,13 +61,13 @@ its values on the frontier of the set. All these lemmas assume that `E` is a non
 this section `f g : E → F` are functions that are complex differentiable on a bounded set `s` and
 are continuous on its closure. We prove the following theorems.
 
-- `Complex.exists_mem_frontier_isMaxOn_norm`: If `E` is a finite dimensional space and `s` is a
+- `Complex.exists_mem_frontier_isMaxOn_norm`: If `E` is a finite-dimensional space and `s` is a
   nonempty bounded set, then there exists a point `z ∈ frontier s` such that `(‖f ·‖)` takes it
   maximum value on `closure s` at `z`.
 
 - `Complex.norm_le_of_forall_mem_frontier_norm_le`: if `‖f z‖ ≤ C` for all `z ∈ frontier s`, then
-  `‖f z‖ ≤ C` for all `z ∈ s`; note that this theorem does not require `E` to be a finite
-  dimensional space.
+  `‖f z‖ ≤ C` for all `z ∈ s`; note that this theorem does not require `E` to be a
+  finite-dimensional space.
 
 - `Complex.eqOn_closure_of_eqOn_frontier`: if `f x = g x` on the frontier of `s`, then `f x = g x`
   on `closure s`;
@@ -76,6 +79,8 @@ are continuous on its closure. We prove the following theorems.
 
 maximum modulus principle, complex analysis
 -/
+
+public section
 
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory AffineMap Bornology
@@ -102,6 +107,7 @@ The lemmas with names `*_auxₙ` are considered to be private and should not be 
 file.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     (hd : DiffContOnCl ℂ f (ball z (dist w z)))
     (hz : IsMaxOn (norm ∘ f) (closedBall z (dist w z)) z) : ‖f w‖ = ‖f z‖ := by
@@ -128,11 +134,12 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
     refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
   · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
-    rintro ζ (hζ : ‖ζ - z‖ = r)
-    rw [le_div_iff₀ hr, norm_smul, norm_inv, hζ, mul_comm, mul_inv_cancel_left₀ hr.ne']
+    rintro ζ hζ
+    rw [le_div_iff₀ hr, norm_smul, norm_inv, mem_sphere_iff_norm.1 hζ, mul_comm,
+      mul_inv_cancel_left₀ hr.ne']
     exact hz (hsub hζ)
   show ‖(w - z)⁻¹ • f w‖ < ‖f z‖ / r
-  rw [norm_smul, norm_inv, ← div_eq_inv_mul]
+  rw [norm_smul, norm_inv, ← div_eq_inv_mul, ← dist_eq_norm]
   exact (div_lt_div_iff_of_pos_right hr).2 hw_lt
 
 /-!
@@ -171,6 +178,7 @@ If we do not assume that the codomain is a strictly convex space, then we can on
 Finally, we generalize the theorem from a disk in `ℂ` to a closed ball in any normed space.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Maximum modulus principle** on a closed ball: if `f : E → F` is continuous on a closed ball,
 is complex differentiable on the corresponding open ball, and the norm `‖f w‖` takes its maximum
 value on the open ball at its center, then the norm `‖f w‖` is constant on the closed ball. -/
@@ -396,7 +404,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
   rcases hz with hz | hz; · exact hC z hz
-  /- In case of a finite dimensional domain, one can just apply
+  /- In case of a finite-dimensional domain, one can just apply
     `Complex.exists_mem_frontier_isMaxOn_norm`. To make it work in any Banach space, we restrict
     the function to a line first. -/
   rcases exists_ne z with ⟨w, hne⟩

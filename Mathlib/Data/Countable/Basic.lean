@@ -3,16 +3,20 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Countable.Defs
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.ENat.Defs
-import Mathlib.Logic.Equiv.Nat
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types
 
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -80,6 +84,8 @@ instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
 instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) := Option.instUncountable
 instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) := Option.instUncountable
 
+@[simp] lemma untopD_coe_enat (d n : ℕ) : WithTop.untopD d (n : ℕ∞) = n := rfl
+
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
@@ -94,13 +100,11 @@ instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
   exact (Prod.mk_right_injective default).uncountable
 
 lemma countable_left_of_prod_of_nonempty [Nonempty β] (h : Countable (α × β)) : Countable α := by
-  contrapose h
-  rw [not_countable_iff] at *
+  contrapose! h
   infer_instance
 
 lemma countable_right_of_prod_of_nonempty [Nonempty α] (h : Countable (α × β)) : Countable β := by
-  contrapose h
-  rw [not_countable_iff] at *
+  contrapose! h
   infer_instance
 
 lemma countable_prod_swap [Countable (α × β)] : Countable (β × α) :=
@@ -137,15 +141,13 @@ instance [Countable α] [Countable β] : Countable (PProd α β) :=
   Countable.of_equiv (PLift α × PLift β) (Equiv.plift.prodPProd Equiv.plift)
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (PSigma π) :=
-  Countable.of_equiv (Σa : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
+  Countable.of_equiv (Σ a : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
 
 instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
-  have : ∀ n, Countable (Fin n → ℕ) := by
-    intro n
-    induction' n with n ihn
-    · change Countable (Fin 0 → ℕ); infer_instance
-    · haveI := ihn
-      exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Fin.consEquiv fun _ ↦ ℕ)
+  have (n : ℕ) : Countable (Fin n → ℕ) := by
+    induction n with
+    | zero => infer_instance
+    | succ n ihn => exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Fin.consEquiv fun _ ↦ ℕ)
   rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
   have f := fun a => (nonempty_embedding_nat (π a)).some
   exact ((Embedding.piCongrRight f).trans (Equiv.piCongrLeft' _ e).toEmbedding).countable

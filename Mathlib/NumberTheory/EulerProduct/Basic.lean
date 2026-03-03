@@ -3,10 +3,12 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.NumberTheory.SmoothNumbers
+module
+
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.SmoothNumbers
 
 /-!
 # Euler Products
@@ -41,6 +43,8 @@ for `s : Finset ℕ`.
 
 Euler product, multiplicative function
 -/
+
+public section
 
 /-- If `f` is multiplicative and summable, then its values at natural numbers `> 1`
 have norm strictly less than `1`. -/
@@ -170,10 +174,9 @@ multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   let F : ℕ → R := fun n ↦ ∑' e, f (n ^ e)
-  change HasProd (F ∘ Subtype.val) _
-  rw [hasProd_subtype_iff_mulIndicator,
-    show Set.mulIndicator (fun p : ℕ ↦ Irreducible p) =  {p | Nat.Prime p}.mulIndicator from rfl,
-    HasProd, Metric.tendsto_atTop]
+  change HasProd (F ∘ Subtype.val (p := (· ∈ {x | Nat.Prime x}))) _
+  rw [hasProd_subtype_iff_mulIndicator, HasProd, SummationFilter.unconditional,
+    Metric.tendsto_atTop]
   intro ε hε
   obtain ⟨N₀, hN₀⟩ := norm_tsum_factoredNumbers_sub_tsum_lt hsum.of_norm hf₀ hε
   refine ⟨range N₀, fun s hs ↦ ?_⟩
@@ -186,12 +189,12 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
 include hf₁ hmul in
 /-- The *Euler Product* for multiplicative (on coprime arguments) functions.
 
-If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, `f 1 = 1`, `f` i
+If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, `f 1 = 1`, `f` is
 multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 `∏' p : ℕ, if p.Prime then ∑' e, f (p ^ e) else 1 = ∑' n, f n`.
 This version is stated using `HasProd` and `Set.mulIndicator`. -/
 theorem eulerProduct_hasProd_mulIndicator (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
-    HasProd (Set.mulIndicator {p | Nat.Prime p} fun p ↦  ∑' e, f (p ^ e)) (∑' n, f n) := by
+    HasProd (Set.mulIndicator {p | Nat.Prime p} fun p ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   rw [← hasProd_subtype_iff_mulIndicator]
   exact eulerProduct_hasProd hf₁ hmul hsum hf₀
 

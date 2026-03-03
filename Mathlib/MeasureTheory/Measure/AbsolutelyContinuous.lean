@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Map
+module
+
+public import Mathlib.MeasureTheory.Measure.Map
 
 /-!
 # Absolute Continuity of Measures
@@ -28,6 +30,8 @@ It is equivalent to an inequality of the almost everywhere filters of the measur
   with respect to `ν`
 
 -/
+
+@[expose] public section
 
 variable {α β δ ι R : Type*}
 
@@ -71,7 +75,7 @@ protected theorem refl {_m0 : MeasurableSpace α} (μ : Measure α) : μ ≪ μ 
 
 protected theorem rfl : μ ≪ μ := fun _s hs => hs
 
-instance instIsRefl {_ : MeasurableSpace α} : IsRefl (Measure α) (· ≪ ·) :=
+instance instRefl {_ : MeasurableSpace α} : @Std.Refl (Measure α) (· ≪ ·) :=
   ⟨fun _ => AbsolutelyContinuous.rfl⟩
 
 @[simp]
@@ -97,8 +101,6 @@ protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0�
   rw [smul_apply, ← smul_one_smul ℝ≥0∞, smul_eq_mul, mul_eq_zero] at hνs ⊢
   exact hνs.imp_right fun hs ↦ h hs
 
-@[deprecated (since := "2024-11-14")] protected alias smul_both := AbsolutelyContinuous.smul
-
 protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
   intro s hs
   simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
@@ -119,6 +121,18 @@ lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   intro s hs
   simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
   exact h1 hs.1
+
+lemma add_right' (h : μ ≪ ν') (ν : Measure α) : μ ≪ ν + ν' := by
+  simp [add_comm, add_right h]
+
+lemma null_mono {μ ν : Measure α} (hμν : μ ≪ ν) ⦃t : Set α⦄
+    (ht : ν t = 0) : μ t = 0 :=
+  hμν ht
+
+lemma pos_mono {μ ν : Measure α} (hμν : μ ≪ ν) ⦃t : Set α⦄
+    (ht : 0 < μ t) : 0 < ν t := by
+  contrapose! ht
+  simp_all [hμν.null_mono]
 
 end AbsolutelyContinuous
 
@@ -150,7 +164,7 @@ lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • �
 
 theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
   ⟨fun h s => by
-    rw [measure_zero_iff_ae_notMem, measure_zero_iff_ae_notMem]
+    rw [measure_eq_zero_iff_ae_notMem, measure_eq_zero_iff_ae_notMem]
     exact fun hs => h hs, fun h _ hs => h hs⟩
 
 alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=

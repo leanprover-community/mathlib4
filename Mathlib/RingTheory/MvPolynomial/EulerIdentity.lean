@@ -3,8 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # Euler's homogeneous identity
@@ -17,6 +19,8 @@ import Mathlib.RingTheory.MvPolynomial.Homogeneous
   sums up to the degree times the polynomial.
 * `IsWeightedHomogeneous.sum_weight_X_mul_pderiv`: the weighted version of Euler's identity.
 -/
+
+public section
 
 namespace MvPolynomial
 
@@ -49,6 +53,7 @@ protected lemma IsHomogeneous.pderiv {n : ℕ} {i : σ} (h : φ.IsHomogeneous n)
 
 variable [Fintype σ] {n : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- Euler's identity for weighted homogeneous polynomials. -/
 theorem IsWeightedHomogeneous.sum_weight_X_mul_pderiv {w : σ → ℕ}

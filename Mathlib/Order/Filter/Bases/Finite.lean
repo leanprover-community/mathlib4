@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Filter.Finite
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.Finite
 
 /-!
 # Finiteness results on filter bases
@@ -13,6 +15,8 @@ A filter basis `B : FilterBasis α` on a type `α` is a nonempty collection of s
 such that the intersection of two elements of this collection contains some element of
 the collection.
 -/
+
+@[expose] public section
 
 open Set Filter
 
@@ -27,7 +31,7 @@ variable {l l' : Filter α} {p : ι → Prop} {s : ι → Set α} {t : Set α} {
 
 theorem hasBasis_generate (s : Set (Set α)) :
     (generate s).HasBasis (fun t => Set.Finite t ∧ t ⊆ s) fun t => ⋂₀ t :=
-  ⟨fun U => by simp only [mem_generate_iff, exists_prop, and_assoc, and_left_comm]⟩
+  ⟨fun U => by simp only [mem_generate_iff, and_assoc, and_left_comm]⟩
 
 /-- The smallest filter basis containing a given collection of sets. -/
 def FilterBasis.ofSets (s : Set (Set α)) : FilterBasis α where
@@ -69,9 +73,6 @@ protected theorem HasBasis.iInf' {ι : Type*} {ι' : ι → Type*} {l : ι → F
       refine mem_of_superset ?_ hsub
       exact (biInter_mem hI₁).mpr fun i hi => mem_iInf_of_mem i <| (hl i).mem_of_mem <| hI₂ _ hi⟩
 
-@[deprecated (since := "2025-05-05")]
-alias hasBasis_iInf' := HasBasis.iInf'
-
 protected theorem HasBasis.iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α}
     {p : ∀ i, ι' i → Prop} {s : ∀ i, ι' i → Set α} (hl : ∀ i, (l i).HasBasis (p i) (s i)) :
     (⨅ i, l i).HasBasis
@@ -84,9 +85,6 @@ protected theorem HasBasis.iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Fi
     refine mem_of_superset ?_ hsub
     cases hI.nonempty_fintype
     exact iInter_mem.2 fun i => mem_iInf_of_mem ↑i <| (hl i).mem_of_mem <| hf _
-
-@[deprecated (since := "2025-05-05")]
-alias hasBasis_iInf := HasBasis.iInf
 
 open scoped Function in -- required for scoped `on` notation
 theorem _root_.Pairwise.exists_mem_filter_basis_of_disjoint {I} [Finite I] {l : I → Filter α}
@@ -110,7 +108,7 @@ of `⨅ i, 𝓟 (s i)`. -/
 theorem hasBasis_iInf_principal_finite {ι : Type*} (s : ι → Set α) :
     (⨅ i, 𝓟 (s i)).HasBasis (fun t : Set ι => t.Finite) fun t => ⋂ i ∈ t, s i := by
   refine ⟨fun U => (mem_iInf_finite _).trans ?_⟩
-  simp only [iInf_principal_finset, mem_iUnion, mem_principal, exists_prop,
+  simp only [iInf_principal_finset, mem_principal,
     exists_finite_iff_finset, Finset.set_biInter_coe]
 
 end SameType

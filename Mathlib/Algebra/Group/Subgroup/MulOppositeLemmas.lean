@@ -3,10 +3,12 @@ Copyright (c) 2022 Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Logic.Encodable.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Logic.Encodable.Basic
 
 /-!
 # Mul-opposite subgroups
@@ -19,6 +21,8 @@ which might be organized and split up further.
 subgroup, subgroups
 
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {G : Type*} [Group G]
 
@@ -33,12 +37,14 @@ compared to the keys for `Submonoid.smul`
 
 /-! ### Lattice results -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot
 
 @[to_additive (attr := simp)]
 theorem op_eq_bot {S : Subgroup G} : S.op = ⊥ ↔ S = ⊥ := op_injective.eq_iff' op_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive (attr := simp)]
 theorem unop_bot : (⊥ : Subgroup Gᵐᵒᵖ).unop = ⊥ := opEquiv.symm.map_bot
 
