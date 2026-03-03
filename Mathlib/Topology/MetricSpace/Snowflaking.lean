@@ -463,7 +463,7 @@ theorem dist_ofSnowflaking_ofSnowflaking (x y : Snowflaking X α hα₀ hα₁) 
 theorem preimage_ofSnowflaking_ball (x : X) {r : ℝ} (hr : 0 ≤ r) :
     ofSnowflaking ⁻¹' ball x r = ball (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   ext ⟨y⟩
-  simp (disch := positivity) [Real.rpow_lt_rpow_iff]
+  simp (disch := positivity) [Real.rpow_lt_rpow_iff_left]
 
 @[simp]
 theorem image_toSnowflaking_ball (x : X) {r : ℝ} (hr : 0 ≤ r) :
@@ -486,7 +486,7 @@ theorem preimage_ofSnowflaking_closedBall (x : X) {r : ℝ} (hr : 0 ≤ r) :
     ofSnowflaking ⁻¹' closedBall x r =
       closedBall (toSnowflaking x : Snowflaking X α hα₀ hα₁) (r ^ α) := by
   ext ⟨y⟩
-  simp (disch := positivity) [Real.rpow_le_rpow_iff]
+  simp (disch := positivity) [Real.rpow_le_rpow_iff_left]
 
 @[simp]
 theorem image_toSnowflaking_closedBall (x : X) {r : ℝ} (hr : 0 ≤ r) :

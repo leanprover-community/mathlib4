@@ -99,4 +99,4 @@ theorem Nat.Primes.summable_rpow {r : ℝ} :
     refine fun H ↦ Nat.Primes.not_summable_one_div <| H.of_nonneg_of_le (fun _ ↦ by positivity) ?_
     intro p
     rw [one_div, ← Real.rpow_neg_one]
-    exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast p.prop.one_lt.le) <| not_lt.mp h
+    exact Real.rpow_le_rpow_right (by exact_mod_cast p.prop.one_lt.le) <| not_lt.mp h

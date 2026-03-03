@@ -136,7 +136,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     rw [max_lt_iff] at hx
     obtain ⟨hx1, hx2⟩ := hx
     rw [← mul_rpow] <;> try positivity
-    apply rpow_le_rpow_of_nonpos <;> linarith
+    apply rpow_le_rpow_left_of_nonpos <;> linarith
   -- Now the main proof.
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
   simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢

@@ -124,7 +124,7 @@ lemma sum_piFinset_Icc_rpow_le {ι : Type*} [Fintype ι] [DecidableEq ι]
     _ ≤ ∑ k ∈ range n, ∑ p ∈ (s (k + 1) \ s k), ((k + 1) * ε) ^ r := by
         gcongr ∑ k ∈ Finset.range n, ∑ p ∈ (s (k + 1) \ s k), ?_ with k hk v hv
         rw [← Nat.cast_one, ← Nat.cast_add]
-        refine Real.rpow_le_rpow_of_nonpos (by positivity) ?_ hr'.le
+        refine Real.rpow_le_rpow_left_of_nonpos (by positivity) ?_ hr'.le
         obtain ⟨j, hj⟩ : ∃ i, v i ∉ Icc (-k : ℤ) k := by simpa [s] using (mem_sdiff.mp hv).2
         refine mul_comm _ ε ▸ le_norm_of_le_abs_repr b _ _ j ?_
         suffices ↑k + 1 ≤ |v j| by simpa [Finsupp.single_apply] using this
@@ -257,7 +257,7 @@ lemma summable_norm_sub_rpow (r : ℝ) (hr : r < -Module.finrank ℤ L) (x : E) 
   · simpa [show t = x by simpa [sub_eq_zero] using ht₂, two_mul] using t.2
   have : 0 < Module.finrank ℤ L := Module.finrank_pos
   have : ‖t - x‖ < 2⁻¹ * ‖t‖ := by
-    rw [← Real.rpow_lt_rpow_iff_of_neg (by positivity) (by positivity) (hr.trans (by simpa))]
+    rw [← Real.rpow_lt_rpow_iff_left_of_neg (by positivity) (by positivity) (hr.trans (by simpa))]
     simpa [Real.mul_rpow, abs_eq_self.mpr (show 0 ≤ ‖t - x‖ ^ r by positivity)] using ht
   have := (norm_sub_norm_le _ _).trans_lt this
   rw [sub_lt_iff_lt_add, ← sub_lt_iff_lt_add', AddSubgroupClass.coe_norm] at this

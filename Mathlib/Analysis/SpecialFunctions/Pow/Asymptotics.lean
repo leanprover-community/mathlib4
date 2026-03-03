@@ -124,7 +124,7 @@ theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x
   refine tendsto_atTop_mono' _ ?_ (tendsto_exp_div_pow_atTop n)
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_ge_atTop (1 : ℝ)] with x hx₀ hx₁
   gcongr
-  simpa using rpow_le_rpow_of_exponent_le hx₁ hn.le
+  simpa using rpow_le_rpow_right hx₁ hn.le
 
 /-- The function `exp (b * x) / x ^ s` tends to `+∞` at `+∞`, for any real `s` and `b > 0`. -/
 theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
@@ -280,7 +280,7 @@ theorem IsBigO.mul_atTop_rpow_of_isBigO_rpow {f g : ℝ → E}
   filter_upwards [eventually_ge_atTop 1] with t ht
   rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
     (zero_le_one.trans ht) (a + b))]
-  exact Real.rpow_le_rpow_of_exponent_le ht h
+  exact Real.rpow_le_rpow_right ht h
 
 theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
     (hf : f =O[atTop] fun n ↦ (n : ℝ) ^ a) (hg : g =O[atTop] fun n ↦ (n : ℝ) ^ b)
@@ -291,14 +291,14 @@ theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
   replace ht : 1 ≤ (t : ℝ) := Nat.one_le_cast.mpr ht
   rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
     (zero_le_one.trans ht) (a + b))]
-  exact Real.rpow_le_rpow_of_exponent_le ht h
+  exact Real.rpow_le_rpow_right ht h
 
 /-- If `a ≤ b`, then `x^b = O(x^a)` as `x → 0`, `x ≥ 0`, unless `b = 0` and `a ≠ 0`. -/
 theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le_of_imp {a b : ℝ} (h : a ≤ b) (himp : b = 0 → a = 0) :
     (· ^ b : ℝ → ℝ) =O[𝓝[≥] 0] (· ^ a) :=
   .of_bound' <| mem_of_superset (Icc_mem_nhdsGE one_pos) fun x hx ↦ by
     simpa [Real.abs_rpow_of_nonneg hx.1, abs_of_nonneg hx.1]
-     using Real.rpow_le_rpow_of_exponent_ge_of_imp hx.1 hx.2 h fun _ ↦ himp
+     using Real.rpow_le_rpow_right_of_le_one_of_imp hx.1 hx.2 h fun _ ↦ himp
 
 /-- If `a ≤ b`, `b ≠ 0`, then `x^b = O(x^a)` as `x → 0`, `x ≥ 0`. -/
 theorem IsBigO.rpow_rpow_nhdsGE_zero_of_le {a b : ℝ} (h : a ≤ b) (hb : b ≠ 0) :

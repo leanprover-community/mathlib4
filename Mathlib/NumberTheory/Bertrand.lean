@@ -110,7 +110,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     rw [rpow_natCast, ← pow_mul, ← pow_add]
     conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
     rw [← rpow_mul, ← rpow_natCast]
-    on_goal 1 => apply rpow_le_rpow_of_exponent_le
+    on_goal 1 => apply rpow_le_rpow_right
     all_goals norm_num1
 
 end Bertrand

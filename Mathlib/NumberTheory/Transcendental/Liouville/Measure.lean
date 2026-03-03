@@ -61,7 +61,7 @@ theorem setOf_liouvilleWith_subset_aux :
     calc
       (b : ℝ) = (b : ℝ) ^ (1 : ℝ) := (rpow_one _).symm
       _ ≤ (b : ℝ) ^ (2 + 1 / (n + 1 : ℕ) : ℝ) :=
-        rpow_le_rpow_of_exponent_le hb (one_le_two.trans ?_)
+        rpow_le_rpow_right hb (one_le_two.trans ?_)
     simpa using n.cast_add_one_pos.le
   rw [sub_div' hb0.ne', abs_div, abs_of_pos hb0, div_lt_div_iff_of_pos_right hb0, abs_sub_lt_iff,
     sub_lt_iff_lt_add, sub_lt_iff_lt_add, ← sub_lt_iff_lt_add'] at hlt

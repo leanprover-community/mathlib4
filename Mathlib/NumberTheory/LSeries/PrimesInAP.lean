@@ -433,7 +433,7 @@ lemma not_summable_residueClass_prime_div (ha : IsUnit a) :
       · simp only [Nat.cast_zero, Real.zero_rpow (zero_lt_one.trans hx).ne', div_zero, le_refl]
       · refine div_le_div_of_nonneg_left (residueClass_nonneg a _) (mod_cast hn) ?_
         conv_lhs => rw [← Real.rpow_one n]
-        exact Real.rpow_le_rpow_of_exponent_le (by norm_cast) hx.le
+        exact Real.rpow_le_rpow_right (by norm_cast) hx.le
     · exact summable_real_of_abscissaOfAbsConv_lt <|
         (abscissaOfAbsConv_residueClass_le_one a).trans_lt <| mod_cast hx
   obtain ⟨C', hC'⟩ := LSeries_residueClass_lower_bound ha

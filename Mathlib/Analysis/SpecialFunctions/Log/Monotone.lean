@@ -64,13 +64,13 @@ theorem log_div_self_rpow_antitoneOn {a : ℝ} (ha : 0 < a) :
     mul_div_assoc, mul_le_mul_iff_right₀ (one_div_pos.mpr ha)]
   refine log_div_self_antitoneOn ?_ ?_ ?_
   · simp only [Set.mem_setOf_eq]
-    convert rpow_le_rpow _ hex (le_of_lt ha) using 1
+    convert rpow_le_rpow_left _ hex (le_of_lt ha) using 1
     · rw [← exp_mul]
       simp only [Real.exp_eq_exp]
       field
     positivity
   · simp only [Set.mem_setOf_eq]
-    convert rpow_le_rpow _ (_root_.trans hex hxy) (le_of_lt ha) using 1
+    convert rpow_le_rpow_left _ (_root_.trans hex hxy) (le_of_lt ha) using 1
     · rw [← exp_mul]
       simp only [Real.exp_eq_exp]
       field

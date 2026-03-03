@@ -146,7 +146,7 @@ theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     have x_one : 1 ≤ x := ((le_max_left _ _).trans_lt (mem_Ioi.1 hx)).le
     simp only [norm_inv, Real.norm_eq_abs, abs_of_nonneg (zero_le_one.trans x_one)]
     rw [← Real.rpow_neg_one x]
-    exact Real.rpow_le_rpow_of_exponent_le x_one h
+    exact Real.rpow_le_rpow_right x_one h
   exact not_integrableOn_Ioi_inv this
 
 theorem integrableAtFilter_rpow_atTop_iff {s : ℝ} :

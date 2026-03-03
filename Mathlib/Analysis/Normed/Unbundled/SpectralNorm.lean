@@ -196,7 +196,7 @@ theorem spectralValue_eq_zero_iff [Nontrivial R] {p : R[X]} (hp : p.Monic) :
       rw [iSup, csSup_le_iff (spectralValueTerms_bddAbove p) (Set.range_nonempty _)] at h_le
       specialize h_le (spectralValueTerms p n) ⟨n, rfl⟩
       simp only [spectralValueTerms, if_pos hn'] at h_le
-      rw [h0, rpow_le_rpow_iff (norm_nonneg _) (le_refl _) h_exp] at h_le
+      rw [h0, rpow_le_rpow_iff_left (norm_nonneg _) (le_refl _) h_exp] at h_le
       exact norm_eq_zero.mp (le_antisymm h_le (norm_nonneg _))
     · exact coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt hn') (ne_comm.mpr hn))
 
@@ -262,7 +262,8 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
           Set.range (spectralValueTerms p) := by use n; simp only [spectralValueTerms, if_pos hn]
         exact h_ge (‖p.coeff n‖₊ ^ (1 / (p.natDegree - n : ℝ))) h_rg
       rw [← hexp, ← rpow_natCast, ← rpow_natCast]
-      exact rpow_lt_rpow (rpow_nonneg (norm_nonneg _) _) h_base (cast_pos.mpr (tsub_pos_of_lt hn))
+      exact rpow_lt_rpow_left (rpow_nonneg (norm_nonneg _) _) h_base
+        (cast_pos.mpr (tsub_pos_of_lt hn))
     have h_deg : 0 < p.natDegree := natDegree_pos_of_monic_of_aeval_eq_zero hp hx
     have h_lt : f ((Finset.range p.natDegree).sum fun i : ℕ ↦ p.coeff i • x ^ i) <
         f (x ^ p.natDegree) := by
@@ -317,8 +318,9 @@ theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf
     by_cases hm : m < p.natDegree
     · rw [spectralValueTerms_of_lt_natDegree _ hm]
       have h : 0 < (p.natDegree - m : ℝ) := by rw [sub_pos, Nat.cast_lt]; exact hm
-      rw [← rpow_le_rpow_iff (rpow_nonneg (norm_nonneg _) _) h_le h, ← rpow_mul (norm_nonneg _),
-        one_div_mul_cancel (ne_of_gt h), rpow_one, ← Nat.cast_sub (le_of_lt hm), rpow_natCast]
+      rw [← rpow_le_rpow_iff_left (rpow_nonneg (norm_nonneg _) _) h_le h,
+        ← rpow_mul (norm_nonneg _), one_div_mul_cancel (ne_of_gt h), rpow_one,
+        ← Nat.cast_sub (le_of_lt hm), rpow_natCast]
       have hps : card s = p.natDegree := by
         rw [← natDegree_map (algebraMap K L), ← mapAlg_eq_map, hp,
           natDegree_multiset_prod_X_sub_C_eq_card]

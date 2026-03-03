@@ -153,7 +153,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx ↦ ?_⟩
   rw [one_mul, Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity),
     ← Real.rpow_intCast, Int.cast_neg, Int.cast_natCast]
-  exact Real.rpow_le_rpow_of_exponent_le hx hk
+  exact Real.rpow_le_rpow_right hx hk
 
 theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
     f =O[cocompact E] (‖·‖ ^ k) := by

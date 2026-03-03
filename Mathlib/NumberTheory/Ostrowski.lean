@@ -192,12 +192,12 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
     calc
     x ^ k = x ^ (k : ℝ) := (rpow_natCast x k).symm
     _ < x ^ M.logb (1 / 2) := by
-      apply rpow_lt_rpow_of_exponent_gt hx0 hx1
+      apply rpow_lt_rpow_right_of_lt_one hx0 hx1
       rw [hk]
       push_cast
       exact lt_add_of_le_of_pos (Nat.le_ceil _) zero_lt_one
     _ ≤ x ^ x.logb (1 / 2) := by
-      apply rpow_le_rpow_of_exponent_ge hx0 hx1.le
+      apply rpow_le_rpow_right_of_le_one hx0 hx1.le
       simp only [one_div, ← log_div_log, log_inv, neg_div, ← div_neg, hM]
       gcongr
       simp only [Left.neg_pos_iff]
@@ -388,7 +388,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ ≤ ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ logb ↑m ↑n := by
       gcongr
       · exact (expr_pos hm notbdd).le
-      · rw [← rpow_natCast, rpow_le_rpow_left_iff (one_lt_of_not_bounded notbdd hm)]
+      · rw [← rpow_natCast, rpow_le_rpow_iff_right (one_lt_of_not_bounded notbdd hm)]
         exact natLog_le_logb n m
   apply le_of_pow_le_pow_left₀ hk <| mul_nonneg (rpow_nonneg (expr_pos hm notbdd).le _)
     (rpow_nonneg (apply_nonneg f ↑m) _)
@@ -414,7 +414,7 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
 include hm hn notbdd in
 /-- Given `m, n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
 private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : t ≤ s := by
-  rw [← rpow_le_rpow_left_iff (x := n) (mod_cast hn), ← hfn]
+  rw [← rpow_le_rpow_iff_right (x := n) (mod_cast hn), ← hfn]
   apply le_trans <| le_pow_log hm hn notbdd
   rw [hfm, ← rpow_mul (Nat.cast_nonneg m), mul_comm, rpow_mul (Nat.cast_nonneg m),
     rpow_logb (mod_cast zero_lt_of_lt hm) (mod_cast hm.ne') (mod_cast zero_lt_of_lt hn)]

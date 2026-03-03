@@ -282,7 +282,7 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
   · have : ‖c‖ ≤ ‖y‖ + ‖y - c‖ := Eq.trans_le (by abel_nf) (norm_sub_le y (y - c))
     calc ‖c‖ ^ (p : ℝ)
     _ ≤ (2 * ‖y - c‖) ^ (p : ℝ) :=
-      Real.rpow_le_rpow (by positivity) (by linarith) (by positivity)
+      Real.rpow_le_rpow_left (by positivity) (by linarith) (by positivity)
     _ = 0 + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by
       rw [Real.mul_rpow (by simp) (by positivity)]
       ring

@@ -379,8 +379,8 @@ theorem hasTemperateGrowth_one_add_norm_sq_rpow (r : ℝ) :
   by_cases! h : 0 ≤ r - n
   · have : r - n ≤ k := by simpa using hk₁.trans (by simp)
     rw [← Real.rpow_natCast]
-    exact (Real.rpow_le_rpow (by positivity) (by simp) h).trans
-      (Real.rpow_le_rpow_of_exponent_le (by simp) this)
+    exact (Real.rpow_le_rpow_left (by positivity) (by simp) h).trans
+      (Real.rpow_le_rpow_right (by simp) this)
   have h : 0 < n - r := by grind
   calc
     /- In the case `0 < n - r`, we need the factor `Real.log 2 / (Real.log (3 / 2))` to control
@@ -468,7 +468,7 @@ lemma _root_.pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f :
       simp
     _ ≤ ((1 + x) / 2) ^ (-(l : ℝ)) * (C₁ + C₂) := by
       apply mul_le_mul _ _ (by positivity) (by positivity)
-      · exact Real.rpow_le_rpow_of_nonpos (by positivity) (by linarith) (by simp)
+      · exact Real.rpow_le_rpow_left_of_nonpos (by positivity) (by linarith) (by simp)
       · exact h₂.trans (by linarith)
 
 variable [NormedAddCommGroup F]

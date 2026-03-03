@@ -718,9 +718,9 @@ theorem Lp_add_le (hp : 1 ≤ p) :
     NNReal.coe_le_coe.2
       (NNReal.Lp_add_le s (fun i => ⟨_, abs_nonneg (f i)⟩) (fun i => ⟨_, abs_nonneg (g i)⟩) hp)
   push_cast at this
-  refine le_trans (rpow_le_rpow ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
+  refine le_trans (rpow_le_rpow_left ?_ (sum_le_sum fun i _ => ?_) ?_) this <;>
     simp [sum_nonneg, rpow_nonneg, abs_nonneg, le_trans zero_le_one hp, abs_add_le,
-      rpow_le_rpow]
+      rpow_le_rpow_left]
 
 variable {f g}
 

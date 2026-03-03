@@ -81,7 +81,7 @@ lemma integrableOn_Ioo_rpow_iff {s t : ℝ} (ht : 0 < t) :
     apply H'.mono' measurable_inv.aestronglyMeasurable
     filter_upwards [ae_restrict_mem measurableSet_Ioo] with x hx
     simp only [norm_inv, Real.norm_eq_abs, abs_of_nonneg (le_of_lt hx.1)]
-    rwa [← Real.rpow_neg_one x, Real.rpow_le_rpow_left_iff_of_base_lt_one hx.1]
+    rwa [← Real.rpow_neg_one x, Real.rpow_le_rpow_iff_right_of_lt_one hx.1]
     exact lt_of_lt_of_le hx.2 (min_le_left _ _)
   have : IntervalIntegrable (fun x ↦ x⁻¹) volume 0 (min 1 t) := by
     rwa [intervalIntegrable_iff_integrableOn_Ioo_of_le I.le]

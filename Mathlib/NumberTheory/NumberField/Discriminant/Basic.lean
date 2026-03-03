@@ -221,9 +221,10 @@ theorem abs_discr_rpow_ge_of_isTotallyComplex [IsTotallyComplex K] :
     (finrank ℚ K) ^ 2 / ((4 / π) * (finrank ℚ K).factorial ^ (2 * (finrank ℚ K : ℝ)⁻¹)) ≤
         |discr K| ^ (finrank ℚ K : ℝ)⁻¹ := by
   have h : 0 < (finrank ℚ K : ℝ) := Nat.cast_pos.mpr finrank_pos
-  rw [← Real.rpow_le_rpow_iff (z := finrank ℚ K) (by positivity) (by positivity) h, Real.div_rpow
-    (by positivity) (by positivity), ← Real.rpow_mul (by positivity), inv_mul_cancel₀ h.ne',
-    Real.rpow_one, Real.mul_rpow (by positivity) (by positivity), Real.rpow_natCast,
+  rw [← Real.rpow_le_rpow_iff_left (z := finrank ℚ K) (by positivity) (by positivity) h,
+    Real.div_rpow (by positivity) (by positivity), ← Real.rpow_mul (by positivity),
+    inv_mul_cancel₀ h.ne', Real.rpow_one, Real.mul_rpow (by positivity) (by positivity),
+    Real.rpow_natCast,
     Real.rpow_natCast, ← pow_mul, ← Real.rpow_mul (by positivity),
     inv_mul_cancel_right₀ h.ne', Real.rpow_two]
   exact abs_discr_ge_of_isTotallyComplex K
@@ -347,7 +348,7 @@ theorem rank_le_rankOfDiscrBdd :
       rw [← Real.rpow_natCast]
       rw [Real.log_div_log] at h
       refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
-        (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0 : ℝ) < 4 / 9))
+        (Real.rpow_lt_rpow_right h₂ h) (by positivity : (0 : ℝ) < 4 / 9))
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
             ← inv_div, inv_mul_cancel₀ (by simp), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))

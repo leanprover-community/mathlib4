@@ -243,7 +243,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
       gcongr
       · exact sub_nonneg.2 C.le
       · rw [← Real.rpow_natCast]
-        exact Real.rpow_le_rpow_of_exponent_ge A C.le (Nat.sub_one_lt_floor _).le
+        exact Real.rpow_le_rpow_right_of_le_one A C.le (Nat.sub_one_lt_floor _).le
     _ = c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ / j ^ 2 := by
       have I : (c⁻¹ ^ 2) ^ (Real.log j / Real.log c) = (1 : ℝ) / j ^ 2 := by
         apply Real.log_injOn_pos (Real.rpow_pos_of_pos A _)

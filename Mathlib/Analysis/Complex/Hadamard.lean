@@ -173,7 +173,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
     · rw [not_le] at hM0_one; apply le_trans _ (le_max_right _ _)
       simp only [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 0), sub_re,
         one_re]
-      apply Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 0) (le_of_lt hM0_one) _
+      apply Real.rpow_le_rpow_right_of_le_one (sSupNormIm_eps_pos f hε 0) (le_of_lt hM0_one) _
       simp only [neg_le_sub_iff_le_add, le_add_iff_nonneg_left, hset.1]
   · by_cases hM1_one : 1 ≤ ε + sSupNormIm f 1
     -- `1 ≤ sSupNormIm f 1`
@@ -184,7 +184,7 @@ lemma F_BddAbove (f : ℂ → E) (ε : ℝ) (hε : ε > 0)
     -- `0 < sSupNormIm f 1 < 1`
     · rw [not_le] at hM1_one; apply le_trans _ (le_max_right _ _)
       simp only [norm_cpow_eq_rpow_re_of_pos (sSupNormIm_eps_pos f hε 1),
-        neg_re, Real.rpow_le_rpow_of_exponent_ge (sSupNormIm_eps_pos f hε 1)
+        neg_re, Real.rpow_le_rpow_right_of_le_one (sSupNormIm_eps_pos f hε 1)
         (le_of_lt hM1_one) (neg_le_neg_iff.mpr hset.2)]
 
 /-- Proof that `F` is bounded by one on the edges. -/
@@ -520,7 +520,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
     specialize hb 1
     simp only [mem_preimage, one_re, mem_singleton_iff, forall_true_left] at hb
     exact (norm_nonneg _).trans hb
-  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ (sub_nonneg.mpr hz.2)
+  · apply Real.rpow_le_rpow_left (sSupNormIm_nonneg f _) _ (sub_nonneg.mpr hz.2)
     · rw [sSupNormIm]
       apply csSup_le _
       · simpa [comp_apply, mem_image, forall_exists_index,
@@ -528,7 +528,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip₀₁' (f : ℂ → E) {z : ℂ}
       · use ‖(f 0)‖, 0
         simp only [mem_preimage, zero_re, mem_singleton_iff, comp_apply,
           and_self]
-  · apply Real.rpow_le_rpow (sSupNormIm_nonneg f _) _ hz.1
+  · apply Real.rpow_le_rpow_left (sSupNormIm_nonneg f _) _ hz.1
     · rw [sSupNormIm]
       apply csSup_le _
       · simpa [comp_apply, mem_image, forall_exists_index,

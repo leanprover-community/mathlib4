@@ -205,7 +205,7 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
   refine ⟨g, g_support, ?_, g_cont, g_mem⟩
   rwa [(hf.sub g_mem).eLpNorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
-    Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
+    Real.rpow_le_rpow_iff_left _ hε.le (inv_pos.2 hp)] at hg
   positivity
 
 
@@ -295,7 +295,7 @@ theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {
   refine ⟨g, ?_, g_mem⟩
   rwa [(hf.sub g_mem).eLpNorm_eq_integral_rpow_norm B ENNReal.coe_ne_top,
     ENNReal.ofReal_le_ofReal_iff I.le, one_div, ENNReal.toReal_ofReal hp.le,
-    Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
+    Real.rpow_le_rpow_iff_left _ hε.le (inv_pos.2 hp)] at hg
   positivity
 
 /-- Any integrable function can be approximated by bounded continuous functions,

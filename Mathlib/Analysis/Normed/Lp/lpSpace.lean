@@ -183,7 +183,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
     rintro x ⟨i, rfl⟩
     have : 0 ≤ ‖f i‖ ^ q.toReal := by positivity
     simpa [← Real.rpow_mul, mul_inv_cancel₀ hq.ne'] using
-      Real.rpow_le_rpow this (hA ⟨i, rfl⟩) (inv_nonneg.mpr hq.le)
+      Real.rpow_le_rpow_left this (hA ⟨i, rfl⟩) (inv_nonneg.mpr hq.le)
   · apply memℓp_gen
     have hf' := hfq.summable hq
     refine .of_norm_bounded_eventually hf' (@Set.Finite.subset _ { i | 1 ≤ ‖f i‖ } ?_ _ ?_)
@@ -195,7 +195,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
       have : 0 ≤ ‖f i‖ ^ p.toReal := Real.rpow_nonneg (norm_nonneg _) p.toReal
       simp only [abs_of_nonneg, this] at hi
       contrapose! hi
-      exact Real.rpow_le_rpow_of_exponent_ge' (norm_nonneg _) hi.le hq.le hpq'
+      exact Real.rpow_le_rpow_right_of_le_one' (norm_nonneg _) hi.le hq.le hpq'
 
 theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (f + g) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -215,7 +215,7 @@ theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (
   let C : ℝ := if p.toReal < 1 then 1 else (2 : ℝ) ^ (p.toReal - 1)
   refine .of_nonneg_of_le ?_ (fun i => ?_) (((hf.summable hp).add (hg.summable hp)).mul_left C)
   · intro; positivity
-  · refine (Real.rpow_le_rpow (norm_nonneg _) (norm_add_le _ _) hp.le).trans ?_
+  · refine (Real.rpow_le_rpow_left (norm_nonneg _) (norm_add_le _ _) hp.le).trans ?_
     dsimp only [C]
     split_ifs with h
     · simpa using NNReal.coe_le_coe.2 (NNReal.rpow_add_le_add_rpow ‖f i‖₊ ‖g i‖₊ hp.le h.le)
@@ -481,7 +481,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           obtain ⟨C, hC₁, hC₂, hCfg⟩ :=
             Real.Lp_add_le_hasSum_of_nonneg hp' hf₁ hg₁ (norm_nonneg' _) (norm_nonneg' _) hf₂ hg₂
           refine le_trans ?_ hC₂
-          rw [← Real.rpow_le_rpow_iff (norm_nonneg' (f + g)) hC₁ hp'']
+          rw [← Real.rpow_le_rpow_iff_left (norm_nonneg' (f + g)) hC₁ hp'']
           refine hasSum_le ?_ (lp.hasSum_norm hp'' (f + g)) hCfg
           intro i
           gcongr
@@ -519,7 +519,7 @@ theorem norm_apply_le_norm (hp : p ≠ 0) (f : lp E p) (i : α) : ‖f i‖ ≤ 
     exact (isLUB_norm f).1 ⟨i, rfl⟩
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp hp'
   have : ∀ i, 0 ≤ ‖f i‖ ^ p.toReal := fun i => Real.rpow_nonneg (norm_nonneg _) _
-  rw [← Real.rpow_le_rpow_iff (norm_nonneg _) (norm_nonneg' _) hp'']
+  rw [← Real.rpow_le_rpow_iff_left (norm_nonneg _) (norm_nonneg' _) hp'']
   convert le_hasSum (hasSum_norm hp'' f) i fun i _ => this i
 
 theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
@@ -543,7 +543,7 @@ theorem norm_le_of_forall_le {f : lp E ∞} {C : ℝ} (hC : 0 ≤ C) (hCf : ∀ 
 
 theorem norm_le_of_tsum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
     (hf : ∑' i, ‖f i‖ ^ p.toReal ≤ C ^ p.toReal) : ‖f‖ ≤ C := by
-  rw [← Real.rpow_le_rpow_iff (norm_nonneg' _) hC hp, norm_rpow_eq_tsum hp]
+  rw [← Real.rpow_le_rpow_iff_left (norm_nonneg' _) hC hp, norm_rpow_eq_tsum hp]
   exact hf
 
 theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f : lp E p}
@@ -1041,7 +1041,7 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
   intro ε hε
   refine (this _ (Real.rpow_pos_of_pos hε p.toReal)).mono ?_
   intro s hs
-  rw [← Real.rpow_lt_rpow_iff dist_nonneg (le_of_lt hε) hp']
+  rw [← Real.rpow_lt_rpow_iff_left dist_nonneg (le_of_lt hε) hp']
   rw [dist_comm] at hs
   simp only [dist_eq_norm, Real.norm_eq_abs] at hs ⊢
   have H : ‖(∑ i ∈ s, lp.single p i (f i : E i)) - f‖ ^ p.toReal =

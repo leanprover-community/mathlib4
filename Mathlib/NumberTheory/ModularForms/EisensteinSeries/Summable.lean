@@ -148,7 +148,9 @@ lemma summand_bound {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ) :
     · rw [h, Real.rpow_zero, Real.rpow_zero, one_mul]
     · rw [Real.zero_rpow h, mul_zero]
   · rw [← Real.mul_rpow (r_pos _).le (norm_nonneg _)]
-    exact Real.rpow_le_rpow_of_nonpos (mul_pos (r_pos _) (norm_pos_iff.mpr hx)) (r_mul_max_le z hx)
+    exact Real.rpow_le_rpow_left_of_nonpos
+      (mul_pos (r_pos _) (norm_pos_iff.mpr hx))
+      (r_mul_max_le z hx)
       (neg_nonpos.mpr hk)
 
 variable {z} in
@@ -156,7 +158,7 @@ lemma summand_bound_of_mem_verticalStrip {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 →
     {A B : ℝ} (hB : 0 < B) (hz : z ∈ verticalStrip A B) :
     ‖x 0 * (z : ℂ) + x 1‖ ^ (-k) ≤ r ⟨⟨A, B⟩, hB⟩ ^ (-k) * ‖x‖ ^ (-k) := by
   refine (summand_bound z hk x).trans (mul_le_mul_of_nonneg_right ?_ (by positivity))
-  exact Real.rpow_le_rpow_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
+  exact Real.rpow_le_rpow_left_of_nonpos (r_pos _) (r_lower_bound_on_verticalStrip z hB hz)
     (neg_nonpos.mpr hk)
 
 lemma linear_isTheta_right_add (c e : ℤ) (z : ℂ) :

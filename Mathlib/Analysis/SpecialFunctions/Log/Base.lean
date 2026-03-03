@@ -204,16 +204,16 @@ theorem logb_lt_logb_iff (hx : 0 < x) (hy : 0 < y) : logb b x < logb b y ↔ x <
   exact log_lt_log_iff hx hy
 
 theorem logb_le_iff_le_rpow (hx : 0 < x) : logb b x ≤ y ↔ x ≤ b ^ y := by
-  rw [← rpow_le_rpow_left_iff hb, rpow_logb (b_pos hb) (b_ne_one' hb) hx]
+  rw [← rpow_le_rpow_iff_right hb, rpow_logb (b_pos hb) (b_ne_one' hb) hx]
 
 theorem logb_lt_iff_lt_rpow (hx : 0 < x) : logb b x < y ↔ x < b ^ y := by
-  rw [← rpow_lt_rpow_left_iff hb, rpow_logb (b_pos hb) (b_ne_one' hb) hx]
+  rw [← rpow_lt_rpow_iff_right hb, rpow_logb (b_pos hb) (b_ne_one' hb) hx]
 
 theorem le_logb_iff_rpow_le (hy : 0 < y) : x ≤ logb b y ↔ b ^ x ≤ y := by
-  rw [← rpow_le_rpow_left_iff hb, rpow_logb (b_pos hb) (b_ne_one' hb) hy]
+  rw [← rpow_le_rpow_iff_right hb, rpow_logb (b_pos hb) (b_ne_one' hb) hy]
 
 theorem lt_logb_iff_rpow_lt (hy : 0 < y) : x < logb b y ↔ b ^ x < y := by
-  rw [← rpow_lt_rpow_left_iff hb, rpow_logb (b_pos hb) (b_ne_one' hb) hy]
+  rw [← rpow_lt_rpow_iff_right hb, rpow_logb (b_pos hb) (b_ne_one' hb) hy]
 
 theorem logb_pos_iff (hx : 0 < x) : 0 < logb b x ↔ 1 < x := by
   rw [← @logb_one b]
@@ -294,16 +294,16 @@ theorem logb_lt_logb_iff_of_base_lt_one (hx : 0 < x) (hy : 0 < y) :
   exact log_lt_log_iff hy hx
 
 theorem logb_le_iff_le_rpow_of_base_lt_one (hx : 0 < x) : logb b x ≤ y ↔ b ^ y ≤ x := by
-  rw [← rpow_le_rpow_left_iff_of_base_lt_one b_pos b_lt_one, rpow_logb b_pos (b_ne_one b_lt_one) hx]
+  rw [← rpow_le_rpow_iff_right_of_lt_one b_pos b_lt_one, rpow_logb b_pos (b_ne_one b_lt_one) hx]
 
 theorem logb_lt_iff_lt_rpow_of_base_lt_one (hx : 0 < x) : logb b x < y ↔ b ^ y < x := by
-  rw [← rpow_lt_rpow_left_iff_of_base_lt_one b_pos b_lt_one, rpow_logb b_pos (b_ne_one b_lt_one) hx]
+  rw [← rpow_lt_rpow_iff_right_of_lt_one b_pos b_lt_one, rpow_logb b_pos (b_ne_one b_lt_one) hx]
 
 theorem le_logb_iff_rpow_le_of_base_lt_one (hy : 0 < y) : x ≤ logb b y ↔ y ≤ b ^ x := by
-  rw [← rpow_le_rpow_left_iff_of_base_lt_one b_pos b_lt_one, rpow_logb b_pos (b_ne_one b_lt_one) hy]
+  rw [← rpow_le_rpow_iff_right_of_lt_one b_pos b_lt_one, rpow_logb b_pos (b_ne_one b_lt_one) hy]
 
 theorem lt_logb_iff_rpow_lt_of_base_lt_one (hy : 0 < y) : x < logb b y ↔ y < b ^ x := by
-  rw [← rpow_lt_rpow_left_iff_of_base_lt_one b_pos b_lt_one, rpow_logb b_pos (b_ne_one b_lt_one) hy]
+  rw [← rpow_lt_rpow_iff_right_of_lt_one b_pos b_lt_one, rpow_logb b_pos (b_ne_one b_lt_one) hy]
 
 theorem logb_pos_iff_of_base_lt_one (hx : 0 < x) : 0 < logb b x ↔ x < 1 := by
   rw [← @logb_one b, logb_lt_logb_iff_of_base_lt_one b_pos b_lt_one zero_lt_one hx]
@@ -370,7 +370,7 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     apply le_antisymm
     · rw [← Int.zpow_le_iff_le_log hb hr, ← rpow_intCast b]
       refine le_of_le_of_eq ?_ (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr)
-      exact rpow_le_rpow_of_exponent_le hb1'.le (Int.floor_le _)
+      exact rpow_le_rpow_right hb1'.le (Int.floor_le _)
     · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_intCast]
       exact Int.zpow_log_le_self hb hr
   · rw [Nat.one_lt_iff_ne_zero_and_ne_one, ← or_iff_not_and_not] at hb
@@ -390,7 +390,7 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
       exact Int.self_le_zpow_clog hb r
     · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_intCast b]
       refine (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le ?_
-      exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)
+      exact rpow_le_rpow_right hb1'.le (Int.le_ceil _)
   · rw [Nat.one_lt_iff_ne_zero_and_ne_one, ← or_iff_not_and_not] at hb
     cases hb
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.ceil_zero, Int.clog_zero_left]

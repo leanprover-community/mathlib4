@@ -789,7 +789,7 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
     · calc
         z.re ≤ ‖z‖ := re_le_norm _
         _ = ‖z‖ ^ (1 : ℝ) := (Real.rpow_one _).symm
-        _ ≤ ‖z‖ ^ max c 1 := Real.rpow_le_rpow_of_exponent_le hz (le_max_right _ _)
+        _ ≤ ‖z‖ ^ max c 1 := Real.rpow_le_rpow_right hz (le_max_right _ _)
     exacts [le_max_left _ _, hz, le_max_left _ _]
   · rw [tendsto_zero_iff_norm_tendsto_zero]; simp only [hg]
     exact hre n
