@@ -285,6 +285,7 @@ lemma IsLocalization.exists_isIntegral_smul_of_isIntegral_map
   exact ⟨m, hm, by simpa [Algebra.smul_def, leadingCoeff_mul_monic hpm] using
     RingHom.isIntegralElem_leadingCoeff_mul (algebraMap R S) (C m * p) x (by simpa)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `t` is `R`-integral in `S[1/r]` where `r : S` is integral over `R`,
 then `r ^ n • t` is integral in `S` for some `n`. -/
 lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_algebraMap
@@ -313,6 +314,7 @@ lemma IsLocalization.Away.exists_isIntegral_mul_of_isIntegral_mk'
   convert (hr.pow n).algebraMap.mul hx
   exact (mk'_spec'_mk ..).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `t` is integral over `R[1/t]`, then it is integral over `R`. -/
 lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
     (t s : S) (hst : s * t = 1) (ht : IsIntegral (Algebra.adjoin R {s}) t) :
@@ -334,7 +336,7 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
   have (i : _) : aeval t (reflect N (q.coeff i)) = t ^ N * (aeval s (q.coeff i)) := by
     letI : Invertible t := ⟨s, hst, (mul_comm _ _).trans hst⟩
     rw [aeval_def, ← eval₂_reflect_mul_pow _ _ N _ ((natDegree_reflect_le ..).trans (by simp [hN]))]
-    simp [mul_comm, this, aeval_def]
+    simp +instances [mul_comm, this, aeval_def]
   refine ⟨q', ?_, ?_⟩
   · refine monic_of_natDegree_le_of_coeff_eq_one (q.natDegree + N) ?_ ?_
     · refine natDegree_sum_le_of_forall_le _ _ fun i hi ↦ ?_
@@ -414,6 +416,7 @@ variable {L : Type*} [Field K] [Field L] [Algebra A K] [IsFractionRing A K]
 
 open Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the field `L` is an algebraic extension of the integral domain `A`,
 the integral closure of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_algebraic [Algebra A L] [Algebra.IsAlgebraic A L]
@@ -422,6 +425,7 @@ theorem isFractionRing_of_algebraic [Algebra A L] [Algebra.IsAlgebraic A L]
 
 variable (K L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the field `L` is a finite extension of the fraction field of the integral domain `A`,
 the integral closure of `A` in `L` has fraction field `L`. -/
 theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra A L] [Algebra K L]

@@ -5,10 +5,11 @@ Authors: Christopher Hoskin
 -/
 module
 
-public import Mathlib.Order.Bounds.Basic
 public import Mathlib.Tactic.FunProp.Attr
 public import Mathlib.Tactic.ToFun
 import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Directed
 
 /-!
 # Scott continuity
@@ -100,7 +101,7 @@ theorem ScottContinuousOn.image_comp {g : β → γ}
     (hg : ScottContinuousOn ((f '' ·) '' D) g)
     (hf : ScottContinuousOn D f) :
     ScottContinuousOn D (g ∘ f) :=
-  ScottContinuousOn.comp hD (Set.mapsTo_image  (f '' ·) D) hg hf
+  ScottContinuousOn.comp hD (Set.mapsTo_image (f '' ·) D) hg hf
 
 @[fun_prop]
 lemma ScottContinuousOn.prodMk {g : α → γ} (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D)

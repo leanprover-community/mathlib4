@@ -38,6 +38,7 @@ open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: fix non-terminal simp (acting on three goals, with different simp sets)
 set_option linter.flexible false in
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}

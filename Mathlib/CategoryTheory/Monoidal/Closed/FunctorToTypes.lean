@@ -54,6 +54,7 @@ def rightAdj : (C ⥤ Type max w v u) ⥤ C ⥤ Type max w v u where
   obj G := F.functorHom G
   map f := { app := rightAdj_map f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
 def adj : tensorLeft F ⊣ rightAdj F where
   unit := {
