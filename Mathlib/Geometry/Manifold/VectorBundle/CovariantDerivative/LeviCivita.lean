@@ -179,13 +179,15 @@ namespace CovariantDerivative
 -- TODO: include in cheat sheet!
 variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 
+local notation "∇" X "," Y => fun (x:M) ↦ cov X x (Y x)
+
 /-- Predicate saying for a connection `∇` on a Riemannian manifold `M`  to be compatible with the
 ambient metric, i.e. for all smooth vector fields `X`, `Y` and `Z` on `M`, we have
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
 def IsCompatible : Prop :=
   ∀ X Y Z : Π x : M, TangentSpace I x, -- XXX: missing differentiability hypotheses!
   ∀ x : M,
-  mfderiv% ⟪Y, Z⟫ x (X x) = ⟪cov X Y, Z⟫ x + ⟪Y, cov X Z⟫ x
+  mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x
 
 /-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
 iff it is torsion-free and compatible with `g`.
@@ -639,8 +641,8 @@ end leviCivitaRhs
 
 variable (X Y Z) in
 lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
-    ⟪cov X Y, Z⟫ + ⟪Y, cov Z X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
-  trans ⟪cov X Y, Z⟫ + ⟪Y, cov X Z⟫
+    ⟪∇ X, Y, Z⟫ + ⟪Y, ∇ Z, X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
+  trans ⟪∇ X, Y, Z⟫ + ⟪Y, ∇ X, Z⟫
   · ext x
     exact h.1 X Y Z x
   · simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
@@ -654,23 +656,23 @@ variable (X Y Z) {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
 lemma IsLeviCivitaConnection.eq_leviCivitaRhs (h : cov.IsLeviCivitaConnection) :
-    ⟪cov X Y, Z⟫ = leviCivitaRhs I X Y Z := by
-  set A := ⟪cov X Y, Z⟫
-  set B := ⟪cov Z X, Y⟫
-  set C := ⟪cov Y Z, X⟫
+    ⟪∇ X, Y, Z⟫ = leviCivitaRhs I X Y Z := by
+  set A := ⟪∇ X, Y, Z⟫
+  set B := ⟪∇ Z, X, Y⟫
+  set C := ⟪∇ Y, Z, X⟫
   set D := ⟪Y, VectorField.mlieBracket I X Z⟫ with D_eq
   set E := ⟪Z, VectorField.mlieBracket I Y X⟫ with E_eq
   set F := ⟪X, VectorField.mlieBracket I Z Y⟫ with F_eq
   have eq1 : rhs_aux I X Y Z = A + B + D := by
-    simp only [aux I X Y Z cov h, A, B, D, product_swap _ Y (cov Z X)]
+    simp only [aux I X Y Z cov h, A, B, D, product_swap _ Y (∇ Z, X)]
   have eq2 : rhs_aux I Y Z X = C + A + E := by
-    simp only [aux I Y Z X cov h, A, C, E, product_swap _ (cov X Y) Z]
+    simp only [aux I Y Z X cov h, A, C, E, product_swap _ (∇ X, Y) Z]
   have eq3 : rhs_aux I Z X Y = B + C + F := by
-    simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (cov Y Z)]
+    simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (∇ Y, Z)]
   -- Add eq1 and eq2 and subtract eq3.
   have : rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y = A + A + D + E - F := by
     rw [eq1, eq2, eq3]; abel
-  -- Solve for ⟪cov X Y, Z⟫ and obtain the claim.
+  -- Solve for ⟪∇ X, Y, Z⟫ and obtain the claim.
   have almost := isolate_aux A D E F (rhs_aux I X Y Z) (rhs_aux I Y Z X) (rhs_aux I Z X Y)
     (by simp [this])
   have almoster : A + A = leviCivitaRhs' I X Y Z := by simp only [leviCivitaRhs', *]
@@ -736,7 +738,7 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
 given a trivialisation `e` and a choice `o` of linear order on the standard basis of `E`,
 we take the expression defined by the Koszul formula (using the orthonormal frame determined by `e`
 and `o`). -/
-noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
+noncomputable def lcCandidateAux' [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
     ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x :=
@@ -754,15 +756,44 @@ noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
   -- is given by `leviCivitaRhs X Y (s i)`.
   ∑ i, ((leviCivitaRhs I X Y (frame i)) x) • (frame i x)
 
+noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
+    (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
+    (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E))
+    (Y : (x : M) → TangentSpace I x) (x : M) :
+    TangentSpace I x →L[ℝ] TangentSpace I x :=
+  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
+  LinearMap.toContinuousLinearMap <|
+  { toFun X₀ := lcCandidateAux' I e o Y (_root_.extend I E X₀) x
+    map_add' X₀ Y₀ := by
+      sorry
+      -- simp only [lcCandidateAux', hE, ↓reduceDIte]
+      -- simp only [← Finset.sum_add_distrib, ← add_smul]
+      -- congr; ext i
+      -- rw [leviCivitaRhs_addX_apply] <;> try assumption
+      -- let b := Basis.ofVectorSpace ℝ E
+      -- have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+      -- exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
+    map_smul' a X₀ := by
+      sorry
+      -- simp only [lcCandidateAux', hE, ↓reduceDIte]
+      -- rw [Finset.smul_sum]
+      -- congr; ext i
+      -- rw [leviCivitaRhs_smulX_apply] <;> try assumption
+      -- · simp [← smul_assoc]
+      -- · let b := Basis.ofVectorSpace ℝ E
+      --   have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
+      --   exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx }
+    }
+
 variable (M) in
 -- TODO: make g part of the notation!
 /-- Given two vector fields X and Y on TM, compute
 the candidate definition for the Levi-Civita connection on `TM`. -/
 noncomputable def lcCandidate [FiniteDimensional ℝ E]
     (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
-    (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
+    (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x) :=
   -- Use the preferred trivialisation at `x` to write down a candidate for the existence.
-  fun X Y x ↦ lcCandidateAux I (trivializationAt E (TangentSpace I : M → Type _) x) o X Y x
+  fun X x ↦ lcCandidateAux I (trivializationAt E (TangentSpace I : M → Type _) x) o X x
 
 variable (X Y) in
 /-- The definition `lcCandidate` behaves well: for each compatible trivialisation `e`,
@@ -770,7 +801,7 @@ the candidate definition using `e` agrees with `lcCandidate` on `e.baseSet`. -/
 lemma lcCandidate_eq_lcCandidateAux [FiniteDimensional ℝ E]
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} {x : M} (hx : x ∈ e.baseSet) :
-    lcCandidate I M o X Y x = lcCandidateAux I e o X Y x := by
+    lcCandidate I M o X x = lcCandidateAux I e o X x := by
   by_cases hE : Subsingleton E
   · simp [lcCandidate, lcCandidateAux, hE]
   · simp only [lcCandidate, lcCandidateAux, hE, ↓reduceDIte]
@@ -782,31 +813,7 @@ lemma isCovariantDerivativeOn_lcCandidateAux_of_nonempty [FiniteDimensional ℝ 
     (e : Trivialization E (TotalSpace.proj : TangentBundle I M → M)) [MemTrivializationAtlas e]
     {o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)} :
     IsCovariantDerivativeOn E (lcCandidateAux I (M := M) e o) e.baseSet where
-  addX {_X _X' _σ x} hX hX' hσ hx := by
-    simp only [lcCandidateAux, hE, ↓reduceDIte]
-    simp only [← Finset.sum_add_distrib, ← add_smul]
-    congr; ext i
-    rw [leviCivitaRhs_addX_apply] <;> try assumption
-    let b := Basis.ofVectorSpace ℝ E
-    have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-    exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-  smulX {_X _σ _g _x} hX hσ hg hx := by
-    simp only [lcCandidateAux, hE, ↓reduceDIte]
-    rw [Finset.smul_sum]
-    congr; ext i
-    rw [leviCivitaRhs_smulX_apply] <;> try assumption
-    · simp [← smul_assoc]
-    · let b := Basis.ofVectorSpace ℝ E
-      have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-      exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-  smul_const_σ {X _σ x} a hX hσ hx := by
-    simp only [lcCandidateAux, hE, ↓reduceDIte]
-    rw [Finset.smul_sum]; congr; ext i
-    rw [leviCivitaRhs_smulY_const_apply hX hσ, ← smul_assoc]
-    · let b := Basis.ofVectorSpace ℝ E
-      have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-      exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-  addσ {X σ σ' x} hX hσ hσ' hx := by
+  addσ {σ σ' x} hσ hσ' hx := by
     simp only [lcCandidateAux, hE, ↓reduceDIte]
     simp only [← Finset.sum_add_distrib, ← add_smul]
     congr; ext i
@@ -814,7 +821,7 @@ lemma isCovariantDerivativeOn_lcCandidateAux_of_nonempty [FiniteDimensional ℝ 
     let b := Basis.ofVectorSpace ℝ E
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
     exact mdifferentiableAt_orthonormalFrame_of_mem b e i hx
-  leibniz {X σ g x} hX hσ hg hx := by
+  leibniz {σ g x} hσ hg hx := by
     simp only [lcCandidateAux, hE, ↓reduceDIte]
     let b := Basis.ofVectorSpace ℝ E
     have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
@@ -903,22 +910,22 @@ section
 with respect to a local frame `(s_i)` on `U`: for each triple `(i, j, k)` of indices,
 this is a function `Γᵢⱼᵏ : M → ℝ`, whose value outside of `U` is meaningless. -/
 noncomputable def ChristoffelSymbol
-    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x))
     {U : Set M} {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
     (hs : IsLocalFrameOn I E n s U) (i j k : ι) : M → ℝ :=
-  hs.coeff k (f (s i) (s j))
+  hs.coeff k (fun x ↦ f (s i) x (s j x))
 
 -- special case of `foobar` below; needed?
 lemma ChristoffelSymbol.sum_eq
-    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x))
     {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSpace I x}
     (hs : IsLocalFrameOn I E n s U) (i j : ι) (hx : x ∈ U) :
-    f (s i) (s j) x = ∑ k, (ChristoffelSymbol I f hs i j k x) • (s k) x := by
+    f (s i) x (s j x) = ∑ k, (ChristoffelSymbol I f hs i j k x) • (s k) x := by
   simp only [ChristoffelSymbol]
   exact hs.coeff_sum_eq _ hx
 
 variable {U : Set M}
-  {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+  {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
   {ι : Type*} {s : ι → (x : M) → TangentSpace I x}
 
 -- Note that this result is false if `{s i}` is merely a local frame.
@@ -926,7 +933,7 @@ lemma eq_product_apply [Fintype ι]
     (hf : IsCovariantDerivativeOn E f U)
     (hs : IsOrthonormalFrameOn I E n s U)
     (i j k : ι) (hx : x ∈ U) :
-    ChristoffelSymbol I f hs.toIsLocalFrameOn i j k x = ⟪f (s i) (s j), (s k)⟫ x := by
+    ChristoffelSymbol I f hs.toIsLocalFrameOn i j k x = inner ℝ (f (s i) x (s j x)) (s k x) := by
   -- Choose a linear order on ι: which one really does not matter for our result.
   have : LinearOrder ι := by
     choose r wo using exists_wellOrder _
@@ -937,7 +944,7 @@ lemma eq_product_apply [Fintype ι]
 -- Lemma 4.3 in Lee, Chapter 5: first term still missing
 lemma foobar [Fintype ι] [FiniteDimensional ℝ E] (hf : IsCovariantDerivativeOn E f U)
     (hs : IsLocalFrameOn I E 1 s U) {x : M} (hx : x ∈ U) :
-    f X Y x = ∑ k,
+    f X x (Y x) = ∑ k,
       letI S₁ := ∑ i, ∑ j, (hs.coeff i X) * (hs.coeff j Y) * (ChristoffelSymbol I f hs i j k)
       letI S₂ : M → ℝ := sorry -- first summand in Leibniz' rule!
       S₁ x • s k x := by
@@ -946,7 +953,7 @@ lemma foobar [Fintype ι] [FiniteDimensional ℝ E] (hf : IsCovariantDerivativeO
   have : ∀ x ∈ U, Y x = ∑ i, (hs.coeff i) Y x • s i x := by
     intro x hx
     apply hs.coeff_sum_eq Y hx
-  have : f X Y x = f X (fun x ↦ ∑ i, (hs.coeff i) Y x • s i x) x := by
+  have : f X x (Y x) = f X (fun x ↦ ∑ i, (hs.coeff i) Y x • s i x) x := by
     -- apply `congr_σ_of_eventuallyEq` from Basic.lean (after restoring it)
     -- want U to be a neighbourhood of x to make this work
     sorry
@@ -966,7 +973,7 @@ lemma _root_.IsCovariantDerivativeOn.congr_of_christoffelSymbol_eq [Fintype ι]
     (hf : IsCovariantDerivativeOn E f U) (hg : IsCovariantDerivativeOn E g U)
     (hs : IsLocalFrameOn I E n s U)
     (hfg : ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I g hs i j k x) :
-    ∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X Y x = g X Y x := by
+    ∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X x (Y x) = g X x (Y x) := by
   have (i j : ι) : ∀ x ∈ U, f (s i) (s j) x = g (s i) (s j) x := by
     intro x hx
     rw [hs.eq_iff_coeff hx]
@@ -981,7 +988,7 @@ lemma _root_.IsCovariantDerivativeOn.congr_iff_christoffelSymbol_eq [Fintype ι]
     [FiniteDimensional ℝ E] -- TODO: this is implied by Finite ι, right?
     (hf : IsCovariantDerivativeOn E f U) (hg : IsCovariantDerivativeOn E g U)
     (hs : IsLocalFrameOn I E n s U) :
-    (∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X Y x = g X Y x) ↔
+    (∀ X Y : Π x : M, TangentSpace I x, ∀ x ∈ U, f X x (Y x) = g X x (Y x)) ↔
     ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I g hs i j k x :=
   ⟨fun hfg _i _j _k _x hx ↦ hs.coeff_congr (hfg _ _ _ hx ) ..,
     fun h X Y x hx ↦ hf.congr_of_christoffelSymbol_eq I hg hs h X Y x hx⟩
@@ -1003,7 +1010,7 @@ end
 
 -- Lemma 4.3 in Lee, Chapter 5: first term still missing
 variable {U : Set M} {ι : Type*} [Fintype ι] {s : ι → (x : M) → TangentSpace I x}
-  {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+  {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
 
 -- errors: omit [IsContMDiffRiemannianBundle I 1 E fun x ↦ TangentSpace I x] in
 /-- Let `{s i}` be a local frame on `U` such that `[s i, s j] = 0` on `U` for all `i, j`.
@@ -1018,7 +1025,7 @@ lemma isTorsionFreeOn_iff_christoffelSymbols [CompleteSpace E] {ι : Type*} [Fin
       ∀ i j k, ∀ x ∈ U, ChristoffelSymbol I f hs i j k x = ChristoffelSymbol I f hs j i k x := by
   rw [hf.isTorsionFreeOn_iff_localFrame (n := n) hs]
   have (i j : ι) {x} (hx : x ∈ U) :
-      torsion f (s i) (s j) x = f (s i) (s j) x - f (s j) (s i) x := by
+      torsion f (s i) (s j) x = f (s i) x (s j x) - f (s j) x (s i x) := by
     simp [torsion, hs'' i j ⟨x, hx⟩]
   peel with i j
   refine ⟨?_, ?_⟩
