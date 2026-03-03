@@ -230,7 +230,7 @@ def isometryEquivRealOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Completi
 attribute [local instance] WithAbs.algebraLeft
 
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
-  [Algebra v.Completion w.Completion] [IsScalarTower (WithAbs v.1) v.Completion w.Completion]
+  [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
@@ -285,7 +285,7 @@ theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) 
 theorem embedding_liesOver_of_isReal (h : v.IsReal) : LiesOver v.embedding w.embedding where
   over := (comap_eq w v ▸ comap_embedding_of_isReal _ (comap_eq w v ▸ h)).symm
 
-variable [Algebra v.Completion w.Completion] [IsScalarTower (WithAbs v.1) v.Completion w.Completion]
+variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
 theorem extensionEmbedding_liesOver_of_isReal
     [ContinuousSMul v.Completion w.Completion] (h : v.IsReal) :
