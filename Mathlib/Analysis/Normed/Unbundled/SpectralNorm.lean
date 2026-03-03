@@ -293,7 +293,6 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
 
 open Multiset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
 value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
 maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
@@ -499,7 +498,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     · obtain ⟨σ, hσ⟩ : ∃ σ : Gal(L/K), σ x = y := minpoly.exists_algEquiv_of_root'
         (Algebra.IsAlgebraic.isAlgebraic x) (aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C s h hs)
       rw [← hσ]
-      apply le_ciSup (Finite.bddAbove_range _) σ
+      apply Finite.le_ciSup _ σ
     · exact iSup_nonneg fun σ ↦ apply_nonneg _ _
 
 open IsUltrametricDist

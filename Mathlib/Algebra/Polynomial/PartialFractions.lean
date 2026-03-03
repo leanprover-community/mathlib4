@@ -99,7 +99,7 @@ theorem eq_quo_mul_pow_add_sum_rem_mul_pow (f : R[X]) {g : R[X]} (hg : g.Monic)
       | last => simpa using degree_modByMonic_lt q hg
     · rw [Fin.sum_univ_castSucc, ← add_rotate', Fin.snoc_last, Fin.val_last,
         ← add_assoc, pow_succ', ← mul_assoc, ← add_mul, mul_comm (q /ₘ g) g,
-        modByMonic_add_div q hg]
+        modByMonic_add_div q]
       simp
 
 end OneDenominator
@@ -138,7 +138,7 @@ theorem eq_quo_mul_prod_add_sum_rem_mul_prod {ι : Type*} [DecidableEq ι] {s : 
       exact degree_modByMonic_lt _ (hg.2 j hj)
     · rw [Finset.prod_cons, Finset.sum_cons, Function.update_self, Finset.erase_cons, add_mul,
         add_add_add_comm, ← mul_assoc, ← add_mul, add_comm (_ * g i), ← mul_comm (g i),
-        modByMonic_add_div _ hg.1, add_mul, add_assoc, add_right_inj, Finset.sum_mul,
+        modByMonic_add_div, add_mul, add_assoc, add_right_inj, Finset.sum_mul,
         Finset.sum_mul, ← Finset.sum_add_distrib, ← Finset.sum_add_distrib]
       refine Finset.sum_congr rfl fun j hj => ?_
       rw [Function.update_of_ne (hjs hj).symm, Finset.erase_cons_of_ne _ (hjs hj),
@@ -146,9 +146,9 @@ theorem eq_quo_mul_prod_add_sum_rem_mul_prod {ι : Type*} [DecidableEq ι] {s : 
       simp_rw [← mul_assoc, ← add_mul]
       refine congrArg (· * _) ?_
       rw [add_mul, add_mul, ← add_assoc, ← add_assoc, ← add_mul, ← mul_comm (g i),
-        modByMonic_add_div _ hg.1, add_assoc, mul_right_comm (_ /ₘ g j),
+        modByMonic_add_div, add_assoc, mul_right_comm (_ /ₘ g j),
         ← add_mul, add_comm (_ * g j) (_ %ₘ g j), mul_comm (_ /ₘ g j),
-        modByMonic_add_div _ (hg.2 j hj), mul_assoc, mul_assoc, ← mul_add,
+        modByMonic_add_div, mul_assoc, mul_assoc, ← mul_add,
         add_comm, hab j hj, mul_one]
 
 /-- Let `R` be a commutative ring and `f : R[X]`. Let `s` be a finite index set.

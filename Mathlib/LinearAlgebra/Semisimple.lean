@@ -60,7 +60,6 @@ structure on `M` is semisimple. This is equivalent to saying that every `f`-inva
 of `M` has an `f`-invariant complement: see `Module.End.isSemisimple_iff`. -/
 def IsSemisimple := IsSemisimpleModule R[X] (AEval' f)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A weaker version of semisimplicity that only prescribes behaviour on finitely-generated
 submodules. -/
 def IsFinitelySemisimple : Prop :=
@@ -95,7 +94,6 @@ lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
     exists_and_left, exists_and_right, invtSubmodule.mk_eq_bot_iff, exists_prop, and_assoc]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism is finitely semisimple if it is semisimple on every finitely-generated
 invariant submodule.
 
@@ -140,7 +138,6 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical _ _ ⟨n, h0⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_isNilpotent_of_isFinitelySemisimple
     (hn : IsNilpotent f) (hs : IsFinitelySemisimple f) : f = 0 := by
   have (p) (hp₁ : p ∈ f.invtSubmodule) (hp₂ : Module.Finite R p) : f.restrict hp₁ = 0 := by
@@ -202,7 +199,6 @@ lemma isFinitelySemisimple_sub_algebraMap_iff {μ : R} :
   refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
   simpa using p.add_mem (h hx) (p.smul_mem μ hx)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsFinitelySemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule)
     (hf : f.IsFinitelySemisimple) :
     IsFinitelySemisimple (f.restrict hp) := by
