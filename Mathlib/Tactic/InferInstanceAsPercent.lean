@@ -126,7 +126,7 @@ mutual
 normalize instance-implicit fields, and patch lambda binder domains in other fields. -/
 private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
     (args : Array Expr) (fieldInfo : Array (Bool × Bool))
-    (replacements : Array (Expr × Expr)) (fuel : Nat) : MetaM Expr := do
+    (replacements : Array (Expr × Expr)) : MetaM Expr := do
   let mut args := args
   -- Replace carrier type in constructor parameters
   for i in *...ci.numParams do
@@ -138,7 +138,7 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
       if isProof then
         pure ()
       else if isInst then
-        args := args.set! i (← normalizeInstance args[i]! replacements (fuel - 1))
+        args := args.set! i (← normalizeInstance args[i]! replacements)
       else
         args := args.set! i (← replaceLamDomains args[i]! replacements)
   return mkAppN (.const ci.name us) args
@@ -148,15 +148,14 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
 2. Replace the carrier type parameter(s) in the constructor.
 3. For each instance-implicit, non-proof field: recurse.
 4. For each non-instance function field: replace lambda binder domains only. -/
-private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × Expr))
-    (fuel : Nat := 50) : MetaM Expr := do
-  if fuel == 0 then return e
+private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × Expr)) :
+    MetaM Expr := do
   let ty ← inferType e
   let some _className ← isClass? ty | return e
   if ← Meta.isProp ty then return e
   let some (ci, us, args) ← getCtorApp? e | return e
   let fieldInfo ← getFieldInfo ci
-  normalizeCtorArgs ci us args fieldInfo replacements fuel
+  normalizeCtorArgs ci us args fieldInfo replacements
 
 end
 
