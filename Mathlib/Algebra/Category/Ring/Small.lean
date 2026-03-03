@@ -5,12 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 public import Mathlib.CategoryTheory.ObjectProperty.Small
-public import Mathlib.RingTheory.RingHom.EssFiniteType
 
-@[expose] public section
 
 /-! # Smallness results on the category of `CommRing` -/
+
+@[expose] public section
 
 universe u
 
@@ -20,17 +21,17 @@ namespace CommRingCat
 
 variable {P Q : ObjectProperty CommRingCat.{u}}
 
-lemma essentiallySmall_of_essFiniteType [ObjectProperty.EssentiallySmall.{u} Q]
-    (hPQ : ∀ S, P S → ∃ R, Q R ∧ ∃ (f : R ⟶ S), f.hom.EssFiniteType) :
+lemma essentiallySmall_of_finiteType [ObjectProperty.EssentiallySmall.{u} Q]
+    (hPQ : ∀ S, P S → ∃ R, Q R ∧ ∃ (f : R ⟶ S), f.hom.FiniteType) :
     ObjectProperty.EssentiallySmall.{u} P := by
   obtain ⟨Q', _, hQ'Q, hQQ'⟩ := ObjectProperty.EssentiallySmall.exists_small_le Q
-  let f (S : Σ R : Subtype Q', Algebra.EssFiniteType.SmallRepr R) : CommRingCat := .of S.2.Ring
+  let f (S : Σ R : Subtype Q', FGAlgCatSkeleton R) : CommRingCat := .of S.2.eval.obj
   refine ⟨.ofObj f, inferInstance, fun S hS ↦ ?_⟩
   obtain ⟨R, hR, φ, hφ⟩ := hPQ S hS
   wlog hR' : Q' R generalizing R
   · obtain ⟨R', hR', ⟨e⟩⟩ := hQQ' _ hR
     exact this R' (hQ'Q _ hR') (e.inv ≫ φ)
-      (.comp (e.symm.commRingCatIsoToRingEquiv.finite.finiteType.essFiniteType) hφ) hR'
+      (hφ.comp e.symm.commRingCatIsoToRingEquiv.finite.finiteType) hR'
   obtain ⟨T, e, he⟩ := hφ.exists_smallRepr
   exact ⟨_, ⟨⟨_, hR'⟩, T⟩, ⟨RingEquiv.toCommRingCatIso e.symm⟩⟩
 

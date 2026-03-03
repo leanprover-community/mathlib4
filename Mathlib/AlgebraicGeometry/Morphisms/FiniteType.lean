@@ -148,8 +148,8 @@ lemma essentiallySmall_costructuredArrow_Spec
   let F := MorphismProperty.CostructuredArrow.forget P ⊤ Scheme.Spec X ⋙ CostructuredArrow.proj _ _
   refine .of_functor F ?_ ?_
   · let Q' : ObjectProperty CommRingCat.{u} := fun S ↦
-      ∃ R, (R ∈ Set.range fun U ↦ Γ(X, U)) ∧ ∃ (f : R ⟶ S), f.hom.EssFiniteType
-    have : Q'.EssentiallySmall := CommRingCat.essentiallySmall_of_essFiniteType fun S ↦ id
+      ∃ R, (R ∈ Set.range fun U ↦ Γ(X, U)) ∧ ∃ (f : R ⟶ S), f.hom.FiniteType
+    have : Q'.EssentiallySmall := CommRingCat.essentiallySmall_of_finiteType fun S ↦ id
     suffices ObjectProperty.EssentiallySmall.{u} (· ∈ Set.range (Opposite.unop ∘ F.obj)) by
       rw [← ObjectProperty.essentiallySmall_unop_iff]
       refine .of_le (Q := .isoClosure (· ∈ Set.range (Opposite.unop ∘ F.obj))) ?_
@@ -164,7 +164,7 @@ lemma essentiallySmall_costructuredArrow_Spec
         PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hqU (S.hom ⁻¹ᵁ U).isOpen
       have : LocallyOfFiniteType S.hom := hP _ S.prop
       exact ⟨f, hqf, _, ⟨U, rfl⟩, S.hom.appLE _ _ hfU,
-        (S.hom.finiteType_appLE hU (.Spec_basicOpen _) _).essFiniteType⟩
+        (S.hom.finiteType_appLE hU (.Spec_basicOpen _)) _⟩
     choose f hqf hf using this
     refine ⟨Set.range f, PrimeSpectrum.iSup_basicOpen_eq_top_iff.mp ?_, Set.forall_mem_range.mpr ?_⟩
     · exact top_le_iff.mp fun x _ ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨x, hqf _⟩
