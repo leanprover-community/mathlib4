@@ -50,22 +50,6 @@ instance effectiveEpi_base_of_flat {X Y : Scheme.{u}} {f : X ⟶ Y} [Flat f] [Su
 
 namespace EffectiveEpiConstruction
 
-/-- If `π : X ⟶ Y` is a surjective morphism of schemes, then any morphism `f : X ⟶ S` of schemes
-whose two pullbacks to `X ×[Y] X` agree descends to a function `u : ↥Y → ↥S` (as types) with
-`u ∘ ⇑π.base.hom = ⇑f.base.hom`. -/
-private lemma exists_base_hom_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y} [Surjective π]
-    {f : X ⟶ S} (hf : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
-    ∃ (u : ↥Y → ↥S), u ∘ ⇑π.base.hom = ⇑f.base.hom := by
-  let : RegularEpi (Scheme.forget.map π) := by
-    have := (isSplitEpi_iff_surjective (Scheme.forget.map π)).mpr ‹Surjective π›.surj
-    exact regularEpiOfEffectiveEpi (Scheme.forget.map π)
-  refine ⟨_, types_comp _ _ ▸ Cofork.IsColimit.π_desc' this.isColimit _ ?_⟩
-  change pullback.fst _ _ ≫ Scheme.forget.map f = pullback.snd _ _ ≫ Scheme.forget.map f
-  apply ((epi_iff_surjective _).mpr
-    (Scheme.pullbackComparison_forget_surjective _ _)).left_cancellation
-  simp only [← Category.assoc, pullbackComparison_comp_fst, ← Functor.map_comp, hf,
-    pullbackComparison_comp_snd]
-
 /-- If `π : X ⟶ Y` is a surjective and flat morphism between affine schemes, then any morphism
 `f : X ⟶ S` to an affine scheme `S` whose two pullbacks to `X ×[Y] X` agree descends to a morphism
 `u : Y ⟶ S` with `π ≫ u = f`. -/
