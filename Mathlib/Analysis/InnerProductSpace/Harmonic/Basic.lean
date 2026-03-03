@@ -45,6 +45,12 @@ Let `E` be a real, finite-dimensional, inner product space and `s` be a subset o
 -/
 def HarmonicOnNhd := ∀ x ∈ s, HarmonicAt f x
 
+/--
+Harmonic functions are two times continuously differentiable.
+-/
+lemma HarmonicOnNhd.contDiffOn (hf : HarmonicOnNhd f s) : ContDiffOn ℝ 2 f s :=
+  fun x hx ↦ (hf x hx).1.contDiffWithinAt
+
 /-!
 ## Elementary Properties
 -/
@@ -66,6 +72,18 @@ theorem HarmonicAt.eventually {f : E → F} {x : E} (h : HarmonicAt f x) :
   filter_upwards [h.1.eventually (by simp), h.2.eventually_nhds] with a h₁a h₂a
   exact ⟨h₁a, h₂a⟩
 
+/--
+Constant functions are harmonic
+-/
+@[simp] theorem harmonicAt_const (c : F) :
+    HarmonicAt (fun _ ↦ c) x := ⟨by fun_prop, by simp⟩
+
+/--
+Constant functions are harmonic
+-/
+@[simp] theorem harmonicOnNhd_const (c : F) :
+    HarmonicOnNhd (fun _ ↦ c) s := fun _ _ ↦ by simp
+
 variable (f) in
 /--
 Harmonicity is an open property.
@@ -78,6 +96,13 @@ If `f` is harmonic in a neighborhood of `s`, it is harmonic in a neighborhood of
 -/
 lemma HarmonicOnNhd.mono (h : HarmonicOnNhd f s) (hst : t ⊆ s) :
     HarmonicOnNhd f t := fun x hx ↦ h x (hst hx)
+
+/--
+Harmonic functions are continuous.
+-/
+@[fun_prop] theorem HarmonicOnNhd.continuousOn (h : HarmonicOnNhd f s) :
+    ContinuousOn f s :=
+  fun x hx ↦ (h x hx).1.continuousAt.continuousWithinAt (s := s)
 
 /-!
 ## Vector Space Structure
@@ -94,10 +119,42 @@ theorem HarmonicAt.add (h₁ : HarmonicAt f₁ x) (h₂ : HarmonicAt f₂ x) :
     simp_all
 
 /--
+Differences of harmonic functions are harmonic.
+-/
+theorem HarmonicAt.sub (h₁ : HarmonicAt f₁ x) (h₂ : HarmonicAt f₂ x) :
+    HarmonicAt (f₁ - f₂) x := by
+  constructor
+  · exact h₁.1.sub h₂.1
+  · filter_upwards [h₁.1.laplacian_sub_nhds h₂.1, h₁.2, h₂.2]
+    simp_all
+
+/--
 Sums of harmonic functions are harmonic.
 -/
 theorem HarmonicOnNhd.add (h₁ : HarmonicOnNhd f₁ s) (h₂ : HarmonicOnNhd f₂ s) :
     HarmonicOnNhd (f₁ + f₂) s := fun x hx ↦ (h₁ x hx).add (h₂ x hx)
+
+/--
+Differences of harmonic functions are harmonic.
+-/
+theorem HarmonicOnNhd.sub (h₁ : HarmonicOnNhd f₁ s) (h₂ : HarmonicOnNhd f₂ s) :
+    HarmonicOnNhd (f₁ - f₂) s := fun x hx ↦ (h₁ x hx).sub (h₂ x hx)
+
+/--
+The negative of a harmonic function is harmonic.
+-/
+theorem HarmonicAt.neg (h : HarmonicAt f x) :
+    HarmonicAt (-f) x := by
+  constructor
+  · simpa using h.1.neg
+  · filter_upwards [h.2] with x hx
+    simp_all [laplacian_neg]
+
+/--
+The negative of a harmonic function is harmonic.
+-/
+theorem HarmonicOnNhd.neg (h : HarmonicOnNhd f s) :
+    HarmonicOnNhd (-f) s := fun x hx ↦ (h x hx).neg
 
 /--
 Scalar multiples of harmonic functions are harmonic.

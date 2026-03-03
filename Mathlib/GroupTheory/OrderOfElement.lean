@@ -9,6 +9,7 @@ public import Mathlib.Algebra.CharP.Two
 public import Mathlib.Algebra.Group.Commute.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Group.Action
 public import Mathlib.Algebra.Order.Ring.Abs
@@ -494,6 +495,18 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (h : Commute x y) (hy : IsO
   by_cases h : p ∣ orderOf x
   exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 
+/-- If each prime factor of `orderOf y` has higher multiplicity in `orderOf x`, and `x` commutes
+  with `y`, then `x * y` has the same order as `x`. -/
+@[to_additive addOrderOf_add_eq_left_of_forall_prime_mul_dvd
+  /-- If each prime factor of
+  `addOrderOf y` has higher multiplicity in `addOrderOf x`, and `x` commutes with `y`,
+  then `x + y` has the same order as `x`. -/]
+theorem orderOf_mul_eq_left_of_forall_prime_mul_dvd (h : Commute x y) (hx : IsOfFinOrder x)
+    (hdvd : ∀ p : ℕ, p.Prime → p ∣ orderOf y → p * orderOf y ∣ orderOf x) :
+    orderOf (x * y) = orderOf x := by
+  simpa [h.eq] using
+    orderOf_mul_eq_right_of_forall_prime_mul_dvd (x := y) (y := x) h.symm hx hdvd
+
 end Commute
 
 section PPrime
@@ -634,6 +647,95 @@ lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
     rw [orderOf_eq_zero ha, Nat.card_eq_zero_of_infinite]
 
 end CancelMonoid
+
+section RightCancelMonoid
+variable [RightCancelMonoid G] {x y : G} {a : G} {m n : ℕ}
+
+namespace RightCancelMonoid
+
+@[to_additive]
+theorem pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
+  wlog hmn : m ≤ n generalizing m n
+  · rw [eq_comm, Nat.ModEq.comm, this (le_of_not_ge hmn)]
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  constructor
+  · intro h
+    have hk : x ^ k = 1 := by
+      apply (mul_right_cancel_iff (a := x ^ m)).1
+      calc
+        x ^ k * x ^ m = x ^ (k + m) := (pow_add _ _ _).symm
+        _ = x ^ (m + k) := by simp [Nat.add_comm]
+        _ = x ^ m := h
+        _ = 1 * x ^ m := by simp
+    exact by simpa using Nat.ModEq.add_left m ((pow_eq_one_iff_modEq).1 hk)
+  · intro h
+    have hk : x ^ k = 1 := by
+      apply (pow_eq_one_iff_modEq).2
+      exact Nat.ModEq.add_left_cancel' m (by simpa using h)
+    calc
+      x ^ (m + k) = x ^ m * x ^ k := by rw [pow_add]
+      _ = x ^ m := by simp [hk]
+
+@[to_additive (attr := simp)]
+lemma injective_pow_iff_not_isOfFinOrder : Function.Injective (fun n : ℕ ↦ x ^ n) ↔
+    ¬IsOfFinOrder x := by
+  refine ⟨fun h => not_isOfFinOrder_of_injective_pow h, fun h n m hnm => ?_⟩
+  rwa [pow_eq_pow_iff_modEq, orderOf_eq_zero_iff.mpr h, Nat.modEq_zero_iff] at hnm
+
+@[to_additive]
+lemma pow_inj_mod {n m : ℕ} : x ^ n = x ^ m ↔ n % orderOf x = m % orderOf x :=
+  pow_eq_pow_iff_modEq
+
+@[to_additive]
+theorem pow_inj_iff_of_orderOf_eq_zero (h : orderOf x = 0) {n m : ℕ} : x ^ n = x ^ m ↔ n = m := by
+  rw [pow_eq_pow_iff_modEq, h, Nat.modEq_zero_iff]
+
+@[to_additive]
+theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
+    { y : G | ¬IsOfFinOrder y }.Infinite := by
+  let s := { n | 0 < n }.image fun n : ℕ => x ^ n
+  have hs : s ⊆ { y : G | ¬IsOfFinOrder y } := by
+    rintro - ⟨n, hn : 0 < n, rfl⟩ (contra : IsOfFinOrder (x ^ n))
+    apply h
+    rw [isOfFinOrder_iff_pow_eq_one] at contra ⊢
+    obtain ⟨m, hm, hm'⟩ := contra
+    exact ⟨n * m, mul_pos hn hm, by rwa [pow_mul]⟩
+  suffices s.Infinite by exact this.mono hs
+  contrapose! h
+  have : ¬Function.Injective fun n : ℕ => x ^ n := by
+    have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) h
+    contrapose! this
+    exact Set.injOn_of_injective this
+  rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
+
+@[to_additive (attr := simp)]
+lemma finite_powers : (powers a : Set G).Finite ↔ IsOfFinOrder a := by
+  refine ⟨fun h ↦ ?_, IsOfFinOrder.finite_powers⟩
+  obtain ⟨m, n, hmn, ha⟩ := h.exists_lt_map_eq_of_forall_mem (f := fun n : ℕ ↦ a ^ n)
+    (fun n ↦ by simp [mem_powers_iff])
+  refine isOfFinOrder_iff_pow_eq_one.2 ⟨n - m, tsub_pos_iff_lt.2 hmn, ?_⟩
+  apply (mul_right_cancel_iff (a := a ^ m)).1
+  calc
+    a ^ (n - m) * a ^ m = a ^ (n - m + m) := (pow_add _ _ _).symm
+    _ = a ^ n := by simp [tsub_add_cancel_of_le hmn.le]
+    _ = a ^ m := ha.symm
+    _ = 1 * a ^ m := by simp
+
+@[to_additive (attr := simp)]
+lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := finite_powers.not
+
+/-- See also `orderOf_eq_card_powers`. -/
+@[to_additive /-- See also `addOrder_eq_card_multiples`. -/]
+lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
+  classical
+  by_cases ha : IsOfFinOrder a
+  · exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp
+  · have := (infinite_powers.2 ha).to_subtype
+    rw [orderOf_eq_zero ha, Nat.card_eq_zero_of_infinite]
+
+end RightCancelMonoid
+
+end RightCancelMonoid
 
 section Group
 
@@ -831,15 +933,29 @@ end FiniteMonoid
 
 section FiniteCancelMonoid
 variable [LeftCancelMonoid G]
--- TODO: Of course everything also works for `RightCancelMonoid`.
 
 section Finite
 variable [Finite G] {x y : G} {n : ℕ}
 
--- TODO: Use this to show that a finite left cancellative monoid is a group.
 @[to_additive]
 lemma isOfFinOrder_of_finite (x : G) : IsOfFinOrder x := by
   by_contra h; exact infinite_not_isOfFinOrder h <| Set.toFinite _
+
+/-- Every finite left cancellative monoid is a group. -/
+@[to_additive /-- Every finite left cancellative additive monoid is an additive group. -/]
+noncomputable def LeftCancelMonoid.groupOfFinite : Group G where
+  inv x := x ^ (orderOf x - 1)
+  inv_mul_cancel x := by
+    rw [← pow_succ, tsub_add_cancel_of_le, pow_orderOf_eq_one]
+    exact (isOfFinOrder_of_finite x).orderOf_pos
+
+/-- Every finite right cancellative monoid is a group. -/
+@[to_additive /-- Every finite right cancellative additive monoid is an additive group. -/]
+noncomputable def RightCancelMonoid.groupOfFinite {H : Type*} [RightCancelMonoid H] [Finite H] :
+    Group H := by
+  letI : Finite Hᵐᵒᵖ := Finite.of_equiv H MulOpposite.opEquiv
+  letI : Group Hᵐᵒᵖ := LeftCancelMonoid.groupOfFinite (G := Hᵐᵒᵖ)
+  exact (MulEquiv.opOp H).toEquiv.group
 
 /-- This is the same as `IsOfFinOrder.orderOf_pos` but with one fewer explicit assumption since this
 is automatic in case of a finite cancellative monoid. -/
@@ -910,7 +1026,6 @@ theorem zpow_eq_one_iff_modEq {n : ℤ} : x ^ n = 1 ↔ n ≡ 0 [ZMOD orderOf x]
   rw [Int.modEq_zero_iff_dvd, orderOf_dvd_iff_zpow_eq_one]
 
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem zpow_eq_zpow_iff_modEq {m n : ℤ} : x ^ m = x ^ n ↔ m ≡ n [ZMOD orderOf x] := by
   rw [← mul_inv_eq_one, ← zpow_sub, zpow_eq_one_iff_modEq, Int.modEq_iff_dvd, Int.modEq_iff_dvd,
@@ -1020,7 +1135,6 @@ theorem orderOf_dvd_card : orderOf x ∣ Fintype.card G := by
   rw [← card_zpowers, mul_comm, ← Fintype.card_prod,
     ← Fintype.card_congr groupEquivQuotientProdSubgroup]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem orderOf_dvd_natCard {G : Type*} [Group G] (x : G) : orderOf x ∣ Nat.card G := by
   obtain h | h := fintypeOrInfinite G

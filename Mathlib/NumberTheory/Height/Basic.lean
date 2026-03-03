@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
@@ -154,6 +154,23 @@ lemma logHeight₁_one : logHeight₁ (1 : K) = 0 := by
 
 lemma zero_le_logHeight₁ (x : K) : 0 ≤ logHeight₁ x :=
   Real.log_nonneg <| one_le_mulHeight₁ x
+
+/-- The logarithmic height of a field element can be expressed as a sum over the positive parts
+of the logarithms of its various absolute values. -/
+lemma logHeight₁_eq (x : K) :
+    logHeight₁ x =
+      (archAbsVal.map fun v ↦ log⁺ (v x)).sum + ∑ᶠ v : nonarchAbsVal, log⁺ (v.val x) := by
+  simp only [logHeight₁_eq_log_mulHeight₁, mulHeight₁_eq]
+  have H : mulHeight₁ x ≠ 0 := mulHeight₁_ne_zero x
+  rw [mulHeight₁_eq] at H
+  have : ∀ a ∈ archAbsVal.map (fun v ↦ max (v x) 1), a ≠ 0 := by
+    intro a ha
+    contrapose! ha
+    rw [ha]
+    exact Multiset.prod_eq_zero_iff.not.mp <| left_ne_zero_of_mul H
+  rw [log_mul (left_ne_zero_of_mul H) (right_ne_zero_of_mul H), log_multiset_prod this,
+    Multiset.map_map, log_finprod (fun _ ↦ by positivity)]
+  congr 2 <;> simp [max_comm, posLog_eq_log_max_one]
 
 end Height
 
