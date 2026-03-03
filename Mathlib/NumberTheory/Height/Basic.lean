@@ -537,9 +537,50 @@ multiplicative heights of `x` and `y` (and the analogous statement for logarithm
 We also show the corresponding statements for product with arbitrarily many factors.
 -/
 
-namespace AbsoluteValue
+lemma ciSup_prod {α ι ι' : Type*} [Nonempty ι] [Nonempty ι'] [ConditionallyCompleteLattice α]
+    {f : ι × ι' → α} (hf : BddAbove (Set.range f)) :
+    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') := by
+  have h₂ : BddAbove (Set.range fun i ↦ ⨆ i', f (i, i')) := by
+    rw [bddAbove_def] at hf ⊢
+    obtain ⟨B, hB⟩ := hf
+    refine ⟨B, fun y hy ↦ ?_⟩
+    obtain ⟨z, rfl⟩ := Set.mem_range.mp hy
+    exact ciSup_le fun i' ↦ by grind
+  have h₃ i : BddAbove (Set.range fun i' ↦ f (i, i')) := by
+    rw [bddAbove_def] at hf ⊢
+    obtain ⟨B, hB⟩ := hf
+    exact ⟨B, by grind⟩
+  refine eq_of_forall_ge_iff fun c ↦ ?_
+  rw [ciSup_le_iff (bddAbove_iff_subset_Iic.mpr hf), ciSup_le_iff h₂]
+  conv_rhs => enter [i]; rw [ciSup_le_iff (h₃ i)]
+  simp [Prod.forall]
+
+lemma Finite.ciSup_prod {α ι ι' : Type*} [Finite ι] [Finite ι'] [Nonempty ι] [Nonempty ι']
+    [ConditionallyCompleteLattice α] (f : ι × ι' → α) :
+    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') :=
+  _root_.ciSup_prod (bddAbove_range f)
 
 variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
+
+/-
+Note: We cannot easily generalize these to targets other than `ℝ`, because we need
+the fact that `⨆ i, f i = 0` when the indexing type is empty (`Real.iSup_of_isEmpty`).
+-/
+
+lemma Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg {v : R → ℝ} (hv₀ : ∀ r, 0 ≤ v r)
+    (hv : ∀ r s, v (r * s) = v r * v s) (x : ι → R) (y : ι' → R) :
+    ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
+  rcases isEmpty_or_nonempty ι
+  · simp
+  rcases isEmpty_or_nonempty ι'
+  · simp
+  simp [hv, Finite.ciSup_prod, ← Real.mul_iSup_of_nonneg (hv₀ _),
+    ← Real.iSup_mul_of_nonneg (iSup_nonneg fun i ↦ hv₀ (y i))]
+
+lemma AbsoluteValue.iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue R ℝ)
+    (x : ι → R) (y : ι' → R) :
+    ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) :=
+  Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg v.nonneg v.map_mul ..
 
 section many
 
@@ -547,40 +588,26 @@ universe u v
 
 variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
 
-lemma iSup_prod_abv_eq_prod_iSup_abv (v : AbsoluteValue R ℝ) {x : (a : α) → ι a → R} :
-    ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) := by
+lemma Real.iSup_prod_eq_prod_iSup_of_nonneg {f : (a : α) → ι a → ℝ} (hf₀ : ∀ a i, 0 ≤ f a i) :
+    ⨆ (i : (a : α) → ι a), ∏ a, f a (i a) = ∏ a, ⨆ i, f a i := by
   rcases isEmpty_or_nonempty ((a : α) → ι a) with h | h
   · rw [Real.iSup_of_isEmpty, eq_comm, Finset.prod_eq_zero_iff]
     obtain ⟨a, ha⟩ := isEmpty_pi.mp h
     exact ⟨a, by simp⟩
   refine le_antisymm ?_ ?_
-  · exact ciSup_le fun i ↦ Finset.prod_le_prod (by simp) fun a ha ↦ Finite.le_ciSup_of_le _ le_rfl
+  · exact ciSup_le fun i ↦ Finset.prod_le_prod (by simp [hf₀])
+      fun a ha ↦ Finite.le_ciSup_of_le _ le_rfl
   · rw [Classical.nonempty_pi] at h
-    have H a : ∃ i : ι a, v (x a i) = ⨆ i, v (x a i) := exists_eq_ciSup_of_finite
+    have H a : ∃ i : ι a, f a i = ⨆ i, f a i := exists_eq_ciSup_of_finite
     choose i hi using H
     simp only [← hi]
     exact Finite.le_ciSup_of_le i le_rfl
 
+lemma AbsoluteValue.iSup_prod_abv_eq_prod_iSup_abv (v : AbsoluteValue R ℝ) {x : (a : α) → ι a → R} :
+    ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) :=
+  Real.iSup_prod_eq_prod_iSup_of_nonneg (f := fun a i ↦ v (x a i)) (fun _ _ ↦ v.nonneg _)
+
 end many
-
-lemma iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue R ℝ) (x : ι → R) (y : ι' → R) :
-    ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
-  rcases isEmpty_or_nonempty ι
-  · simp
-  rcases isEmpty_or_nonempty ι'
-  · simp
-  simp only [map_mul]
-  refine le_antisymm (ciSup_le fun a ↦ ?_) ?_
-  · gcongr
-    · exact iSup_abv_nonneg v
-    · exact Finite.le_ciSup (fun i ↦ v (x i)) a.1
-    · exact Finite.le_ciSup (fun j ↦ v (y j)) a.2
-  · obtain ⟨i, hi⟩ := exists_eq_ciSup_of_finite (f := fun i ↦ v (x i))
-    obtain ⟨j, hj⟩ := exists_eq_ciSup_of_finite (f := fun j ↦ v (y j))
-    rw [← hi, ← hj]
-    exact Finite.le_ciSup (fun a : ι × ι' ↦ v (x a.1) * v (y a.2)) ⟨i, j⟩
-
-end AbsoluteValue
 
 namespace Height
 
@@ -623,6 +650,12 @@ lemma logHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
 end many
 
 section two
+
+/-
+Note: One could try to deduce the binary case from the general case above,
+but this leads into dependent type shenanigans (because `ι` and `ι'` can live in different
+universes) that would likely obfuscate the proofs more than simplify them.
+-/
 
 variable {ι ι' : Type*} [Finite ι] [Finite ι']
 
