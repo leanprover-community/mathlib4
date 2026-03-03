@@ -435,6 +435,19 @@ noncomputable def mkTensorAt
         · exact mdifferentiable_const ..
         · exact mdifferentiable_extend .. }
 
+variable {I} in
+theorem mkTensorAt_apply
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    {φ : (Π x : M, V x) → (Π x, V' x)} {x}
+    (φ_smul : ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') x = φ σ x + φ σ' x) {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) :
+    mkTensorAt I F F' φ x φ_smul φ_add (σ x) = φ σ x := by
+  apply tensoriality_criterion I F _ F' _ _ hσ _ φ_smul φ_add
+  · exact mdifferentiable_extend ..
+  · simp
+
 noncomputable def mkTensor
     -- `φ` explicit to make it easier to generate the side conditions at point of use
     (φ : (Π x : M, V x) → (Π x, V' x))

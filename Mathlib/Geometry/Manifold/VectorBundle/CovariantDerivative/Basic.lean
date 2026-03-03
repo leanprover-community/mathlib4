@@ -525,84 +525,9 @@ noncomputable def differenceAux
     (Π x : M, V x) → (Π x : M, TangentSpace I x →L[ℝ] V x) :=
   fun σ ↦ cov σ - cov' σ
 
-@[simp]
-lemma differenceAux_apply
-    [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
-    (cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[ℝ] V x))
-    (σ : Π x : M, V x) :
-    differenceAux cov cov' σ = cov σ - cov' σ := rfl
-
-lemma differenceAux_smul_eq [IsManifold I 1 M]
-    [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
-    {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[ℝ] V x)}
-    {u : Set M} (hcov : IsCovariantDerivativeOn F cov u)
-    (hcov' : IsCovariantDerivativeOn F cov' u)
-    (σ : Π x : M, V x) (f : M → ℝ)
-    {x : M} (hx : x ∈ u := by trivial)
-    (hσ : MDiffAt (T% σ) x)
-    (hf : MDiffAt f x) :
-    differenceAux cov cov' ((f : M → ℝ) • σ) x = f x • differenceAux cov cov' σ x := by
-  simp [differenceAux, hcov.leibniz hσ hf, hcov'.leibniz hσ hf]
-  module
-
-/-- The value of `differenceAux cov cov' σ` at `x₀` depends only on `σ x₀`. -/
-lemma differenceAux_tensorial
-    [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
-    [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
-    {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[ℝ] V x)}
-    {u : Set M} (hcov : IsCovariantDerivativeOn F cov u)
-    (hcov' : IsCovariantDerivativeOn F cov' u)
-    [FiniteDimensional ℝ F] [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {σ σ' : Π x : M, V x} {x₀ : M}
-    (hσ : MDiffAt (T% σ) x₀)
-    (hσ' : MDiffAt (T% σ') x₀)
-    (hσσ' : σ x₀ = σ' x₀) (hx : x₀ ∈ u := by trivial) :
-    differenceAux cov cov' σ x₀ = differenceAux cov cov' σ' x₀ := by
-  apply tensoriality_criterion (I := I) F V (E →L[ℝ] F)
-    (fun x ↦ TangentSpace I x →L[ℝ] V x) hσ hσ' hσσ'
-  · intro f σ hf hσ
-    rw [hcov.differenceAux_smul_eq hcov' σ f hx hσ hf]
-  · intro σ σ' hσ hσ'
-    unfold differenceAux
-    simp only [Pi.sub_apply]
-    rw [hcov.addσ, hcov'.addσ] <;> try assumption
-    abel
-
-lemma isLinearMap_differenceAux
-    [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I ∞ M]
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle ∞ F V I]
-    [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
-    {s : Set M} {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[ℝ] V x)} {x : M}
-    (hcov : IsCovariantDerivativeOn F cov s)
-    (hcov' : IsCovariantDerivativeOn F cov' s) (hx : x ∈ s := by trivial) :
-    IsLinearMap ℝ (fun (σ₀ : V x) ↦
-      differenceAux cov cov' (extend I F σ₀) x) where
-  map_add u v := by
-    simp only [differenceAux, extend_add, Pi.sub_apply]
-    rw [hcov.addσ, hcov'.addσ]; · abel
-    all_goals apply mdifferentiable_extend
-  map_smul a u := by
-    simp only [differenceAux, extend_smul, Pi.sub_apply]
-    rw [hcov.smul_const_σ, hcov'.smul_const_σ]; · module
-    all_goals apply mdifferentiable_extend
-
--- TODO this should be unnecessary, kept for now to minimize refactor
-lemma isBilinearMap_differenceAux
-    [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I ∞ M]
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle ∞ F V I]
-    [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
-    {s : Set M} {cov cov' : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[ℝ] V x)} {x : M}
-    (hcov : IsCovariantDerivativeOn F cov s)
-    (hcov' : IsCovariantDerivativeOn F cov' s) (hx : x ∈ s := by trivial) :
-    IsBilinearMap ℝ (fun (σ₀ : V x) ↦
-      differenceAux cov cov' (extend I F σ₀) x) where
-  add_left u v := by rw [(isLinearMap_differenceAux hcov hcov').map_add]; simp
-  add_right u v w := by rw [map_add]
-  smul_left u v := by rw [(isLinearMap_differenceAux hcov hcov').map_smul]; simp
-  smul_right a u := by simp [map_smul]
-
 variable [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
 
+open Classical in
 /-- The difference of two covariant derivatives, as a tensorial map -/
 noncomputable def difference [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x)]
     [FiniteDimensional ℝ F] [T2Space M] [FiniteDimensional ℝ E] [IsManifold I ∞ M]
@@ -612,12 +537,14 @@ noncomputable def difference [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Spac
     (hcov : IsCovariantDerivativeOn F cov s)
     (hcov' : IsCovariantDerivativeOn F cov' s)
     (x : M) : V x →L[ℝ] TangentSpace I x →L[ℝ] V x :=
-  -- TODO give a construction which doesn't pass through `IsBilinearMap`, only `IsLinearMap`
-  haveI : FiniteDimensional ℝ (TangentSpace I x) := by assumption
-  open Classical in
-  if hx : x ∈ s then (isBilinearMap_differenceAux (F := F) hcov hcov').toContinuousLinearMap
-  else 0
+  if hxs : x ∈ s then
+    mkTensorAt I F (E →L[ℝ] F) (differenceAux cov cov') x
+      (fun f σ hf hσ ↦ by simp [differenceAux, hcov.leibniz hσ hf, hcov'.leibniz hσ hf]; module)
+      (fun σ σ' hσ hσ' ↦ by simp [differenceAux, hcov.addσ hσ hσ', hcov'.addσ hσ hσ']; abel)
+  else
+    0
 
+-- do we need this?
 lemma difference_def [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x)]
     [FiniteDimensional ℝ F] [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
     [VectorBundle ℝ F V] [ContMDiffVectorBundle ∞ F V I]
@@ -644,8 +571,8 @@ lemma difference_apply [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x
     difference hcov hcov' x (σ x) =
       cov σ x - cov' σ x := by
   simp only [difference, hx, reduceDIte]
-  exact hcov.differenceAux_tensorial hcov'
-    (mdifferentiable_extend ..) hσ (extend_apply_self _) hx
+  rw [mkTensorAt_apply _ _ _ _ hσ]
+  rfl
 
 -- The classification of real connections over a trivial bundle
 section classification
