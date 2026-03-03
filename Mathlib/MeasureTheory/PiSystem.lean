@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 module
 
+public import Mathlib.Data.Set.Dissipate
 public import Mathlib.Logic.Encodable.Lattice
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Order.Disjointed
@@ -695,3 +696,16 @@ theorem induction_on_inter {m : MeasurableSpace α} {C : ∀ s : Set α, Measura
   | @iUnion f hfd hf ihf => exact iUnion f hfd (eq ▸ hf) ihf
 
 end MeasurableSpace
+
+/-- For a ∩-stable set of sets `p` on `α` and a sequence of sets `s` with this attribute,
+`dissipate s n` belongs to `p`. -/
+lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {p : Set (Set α)}
+    (hp : IsPiSystem p) (h : ∀ n, s n ∈ p) (n : ℕ) (h' : (dissipate s n).Nonempty) :
+      (dissipate s n) ∈ p := by
+  induction n with
+  | zero =>
+    simp only [dissipate_def, Nat.le_zero_eq, iInter_iInter_eq_left]
+    exact h 0
+  | succ n hn =>
+    rw [dissipate_succ] at *
+    apply hp (dissipate s n) (hn (Nonempty.left h')) (s (n+1)) (h (n+1)) h'
