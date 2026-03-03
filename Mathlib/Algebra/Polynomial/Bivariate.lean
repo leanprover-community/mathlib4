@@ -234,7 +234,7 @@ lemma aevalAevalEquiv_apply (xy : A × A) : aevalAevalEquiv R A xy = aevalAeval 
 
 theorem coe_aevalAeval_eq_evalEval (x y : A) : ⇑(aevalAeval x y) = evalEval x y := by
   ext
-  simp [aeval]
+  simp [aeval, aevalEquiv]
 
 @[simp]
 lemma aevalAeval_C (x y : A) (p : R[X]) : (C p).aevalAeval x y = aeval x p := by simp
