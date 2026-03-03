@@ -252,6 +252,14 @@ abbrev adjoinTranscendentalIsScalarTower (x : K) (nint : ¬ IsIntegral (ResidueF
   rw [IsScalarTower.algebraMap_eq S S[X], RingHom.comp_apply, IsLocalization.lift_eq]
   simpa using (IsScalarTower.algebraMap_apply S (ResidueField S) K y).symm
 
+lemma adjoinTranscendental_mem_range (x : K) (nint : ¬ IsIntegral (ResidueField S) x)
+    [Algebra S K] [IsScalarTower S (ResidueField S) K] :
+    letI := adjoinTranscendentalAlgebraK K S x nint
+    x ∈ (algebraMap (ResidueField (adjoinTranscendental S)) K).range := by
+  let := adjoinTranscendentalAlgebraK K S x nint
+  use residue _ (algebraMap S[X] _ Polynomial.X)
+  simp [adjoinTranscendentalAlgebraK_apply_residue]
+
 --letI := ((algebraMap (ResidueField S) K).comp (algebraMap S (ResidueField S))).toAlgebra
 --letI : IsScalarTower S (ResidueField S) K := IsScalarTower.of_algebraMap_eq' rfl
 
