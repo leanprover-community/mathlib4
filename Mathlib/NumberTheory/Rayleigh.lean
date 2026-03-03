@@ -61,7 +61,6 @@ namespace Beatty
 
 variable {r s : ℝ} {j : ℤ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/
 private theorem no_collision (hrs : r.HolderConjugate s) :
