@@ -26,6 +26,13 @@ if all monomials occurring in `φ` have degree `n`.
   their summand that is homogeneous of degree `n`.
 * `sum_homogeneousComponent`: every polynomial is the sum of its homogeneous components.
 
+## Library notes
+
+* The `MvPolynomial.weightedGradedAlgebra` instance provides a `GradedAlgebra` structure, yielding
+  the isomorphism `MvPolynomial σ R ≃ₐ[R] ⨁ m, weightedHomogeneousSubmodule R w m` for a weight
+  function `w`.
+* The special case with `w = 1` of the above yields the algebra isomorphism
+  `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`.
 -/
 
 @[expose] public section
@@ -588,26 +595,6 @@ theorem decomposition.decompose'_eq :
         fun m => ⟨homogeneousComponent m φ, homogeneousComponent_mem m φ⟩ := by
   rw [degree_eq_weight_one]
   rfl
-
-local instance {M} [AddCommMonoid M] {w : σ → M}
-    : SetLike.GradedMonoid (weightedHomogeneousSubmodule R w) :=
-  WeightedHomogeneousSubmodule.gradedMonoid
-
-open _root_.DirectSum
-
-/-- The `R`-algebra isomorphism of `MvPolynomial σ R` to the direct sum of its weighted homogeneous
-submodules with respoect to a weight `w : σ → M` -/
-def algEquivDirectSumWeightedHomogeneousSubmodule {M} [AddCommMonoid M] [DecidableEq M]
-    (w : σ → M) : MvPolynomial σ R ≃ₐ[R] ⨁ m, weightedHomogeneousSubmodule R w m :=
-  letI := weightedGradedAlgebra R w
-  DirectSum.decomposeAlgEquiv (weightedHomogeneousSubmodule R w)
-
-/-- The `R`-algebra isomorphism of `MvPolynomial σ R` to the direct sum of its homogeneous
-submodules. This is the special case of `algEquivDirectSumWeightedHomogeneousSubmodule` for the
-weight `w = 1 : σ → ℕ`. -/
-def algEquivDirectSumHomogeneousSubmodule :
-    MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i :=
-  algEquivDirectSumWeightedHomogeneousSubmodule (fun _ => 1)
 
 end GradedAlgebra
 
