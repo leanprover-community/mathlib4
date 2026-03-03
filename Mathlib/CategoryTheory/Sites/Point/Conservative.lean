@@ -125,6 +125,7 @@ lemma jointly_reflect_isLocallySurjective
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma jointly_reflect_ofArrows_mem
     [HasSheafify J (Type w)] [J.WEqualsLocallyBijective (Type w)]
     (hP : P.IsConservativeFamilyOfPoints)
@@ -135,7 +136,7 @@ lemma jointly_reflect_ofArrows_mem
   refine ⟨fun hf Φ x ↦ ?_, fun hf ↦ ?_⟩
   · obtain ⟨Z, _, ⟨_, p, _, ⟨i⟩, rfl⟩, z, rfl⟩ := Φ.obj.jointly_surjective _ hf x
     exact ⟨i, Φ.obj.fiber.map p z, by simp⟩
-  · rw [J.ofArrows_mem_iff_isLocallySurjective]
+  · rw [J.ofArrows_mem_iff_isLocallySurjective_sigmaDesc_shrinkYoneda_map]
     refine hP.jointly_reflect_isLocallySurjective _ (fun Φ x ↦ ?_)
     obtain ⟨x, rfl⟩ := (Φ.obj.shrinkYonedaCompPresheafFiberIso.app X).toEquiv.symm.surjective x
     obtain ⟨i, y, rfl⟩ := hf Φ x
@@ -164,6 +165,7 @@ lemma jointly_reflect_ofArrows_mem_of_small
     · rw [hP.jointly_reflect_ofArrows_mem]
       exact fun Φ x ↦ ⟨_, _, hy ⟨Φ, x⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma mk'.isLocallySurjective
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
@@ -216,10 +218,10 @@ private lemma mk'.isLocallySurjective
         (Φ.obj.toPresheafFiber_naturality_apply f _ v y).symm
 
 /- Let `P` be family of points of a site `(C, J)`, we show that `P` is a conservative
-family of points if the following condition is satisfied:
+family of points if the following condition is satisfied (SGA 4 IV 6.5 (a)):
 for any sieve `S : Sieve X`, if the family of maps `Φ.map.fiber.map f`
 for all morphisms `f` in the sieve `S` is jointly surjective for any `Φ` in `P`,
-then `S` is a covering sieve for `J`. SGA 4 IV 6.5 (a) -/
+then `S` is a covering sieve for `J`. -/
 lemma mk' [HasSheafify J (Type w)]
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
