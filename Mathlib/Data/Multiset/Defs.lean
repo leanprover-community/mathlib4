@@ -302,6 +302,7 @@ variable {m : Multiset α}
 
 /-- If `p` is a decidable predicate,
 so is the predicate that all elements of a multiset satisfy `p`. -/
+@[implicit_reducible]
 protected def decidableForallMultiset {p : α → Prop} [∀ a, Decidable (p a)] :
     Decidable (∀ a ∈ m, p a) :=
   Quotient.recOnSubsingleton m fun l => decidable_of_iff (∀ a ∈ l, p a) <| by simp
@@ -319,6 +320,7 @@ instance decidableEqPiMultiset {β : α → Type*} [∀ a, DecidableEq (β a)] :
 
 /-- If `p` is a decidable predicate,
 so is the existence of an element in a multiset satisfying `p`. -/
+@[implicit_reducible]
 protected def decidableExistsMultiset {p : α → Prop} [DecidablePred p] : Decidable (∃ x ∈ m, p x) :=
   Quotient.recOnSubsingleton m fun l => decidable_of_iff (∃ a ∈ l, p a) <| by simp
 
@@ -333,7 +335,7 @@ end Decidable
 
 /-- `Pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
 list. -/
-@[implicit_reducible, implicit_reducible]
+@[implicit_reducible]
 def Pairwise (r : α → α → Prop) (m : Multiset α) : Prop :=
   ∃ l : List α, m = l ∧ l.Pairwise r
 
