@@ -421,7 +421,6 @@ theorem inner_smul_rotation_pi_div_two_smul_right (x : V) (r₁ r₂ : ℝ) :
     ⟪r₂ • x, r₁ • o.rotation (π / 2 : ℝ) x⟫ = 0 := by
   rw [real_inner_comm, inner_smul_rotation_pi_div_two_smul_left]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inner product between two vectors is zero if and only if the first vector is zero or
 the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
