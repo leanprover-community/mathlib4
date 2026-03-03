@@ -91,14 +91,12 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
       Matrix.neg_mul, invOf_mul_self, Matrix.invOf_mul_cancel_right, neg_add_cancel,
       fromBlocks_one]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A B 0 D)] :
     ⅟(fromBlocks A B 0 D) = fromBlocks (⅟A) (-(⅟A * B * ⅟D)) 0 (⅟D) := by
   letI := fromBlocksZero₂₁Invertible A B D
   convert (rfl : ⅟(fromBlocks A B 0 D) = _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_fromBlocks_zero₁₂_eq (A : Matrix m m α) (C : Matrix n m α) (D : Matrix n n α)
     [Invertible A] [Invertible D] [Invertible (fromBlocks A 0 C D)] :
     ⅟(fromBlocks A 0 C D) = fromBlocks (⅟A) 0 (-(⅟D * C * ⅟A)) (⅟D) := by
@@ -270,7 +268,6 @@ def fromBlocks₁₁Invertible (A : Matrix m m α) (B : Matrix m n α) (C : Matr
       (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
       (fromBlocks_submatrix_sum_swap_sum_swap _ _ _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible D] [Invertible (A - B * ⅟D * C)]
     [Invertible (fromBlocks A B C D)] :
@@ -280,7 +277,6 @@ theorem invOf_fromBlocks₂₂_eq (A : Matrix m m α) (B : Matrix m n α) (C : M
   letI := fromBlocks₂₂Invertible A B C D
   convert (rfl : ⅟(fromBlocks A B C D) = _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem invOf_fromBlocks₁₁_eq (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α)
     (D : Matrix n n α) [Invertible A] [Invertible (D - C * ⅟A * B)]
     [Invertible (fromBlocks A B C D)] :
@@ -369,7 +365,6 @@ theorem det_fromBlocks₁₁ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
   rw [fromBlocks_eq_of_invertible₁₁ (A := A), det_mul, det_mul, det_fromBlocks_zero₂₁,
     det_fromBlocks_zero₂₁, det_fromBlocks_zero₁₂, det_one, det_one, one_mul, one_mul, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_fromBlocks_one₁₁ (B : Matrix m n α) (C : Matrix n m α) (D : Matrix n n α) :
     (Matrix.fromBlocks 1 B C D).det = det (D - C * B) := by
@@ -387,7 +382,6 @@ theorem det_fromBlocks₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix
     cases i <;> cases j <;> rfl
   rw [this, det_submatrix_equiv_self, det_fromBlocks₁₁]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_fromBlocks_one₂₂ (A : Matrix m m α) (B : Matrix m n α) (C : Matrix n m α) :
     (Matrix.fromBlocks A B C 1).det = det (A - B * C) := by

@@ -18,17 +18,17 @@ public import Mathlib.Topology.Order.Basic
 
 ### Basic definitions
 
-* `Trivialization F p` : structure extending open partial homeomorphisms, defining a local
+* `Bundle.Trivialization F p` : structure extending open partial homeomorphisms, defining a local
   trivialization of a topological space `Z` with projection `p` and fiber `F`.
 
-* `Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
+* `Bundle.Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
   topology on the total space has not yet been defined.
 
 ### Operations on bundles
 
 We provide the following operations on `Trivialization`s.
 
-* `Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
+* `Bundle.Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
   `p : Z → B` and a homeomorphism `h : Z' ≃ₜ Z`, returns a local trivialization of the fiber bundle
   `p ∘ h`.
 
@@ -36,8 +36,8 @@ We provide the following operations on `Trivialization`s.
 
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fiber_bundle.trivialization` by a linearity hypothesis. As
-of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single structure
-`Trivialization` (no namespace), together with a mixin class `Trivialization.IsLinear`.
+of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single
+structure `Bundle.Trivialization`, together with a mixin class `Bundle.Trivialization.IsLinear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fiber bundles, so that the
 same trivializations can underlie an object's structure as (say) a vector bundle over `ℂ` and as a
@@ -63,7 +63,7 @@ below as `Trivialization F proj`) if the total space has not been given a topolo
 have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
 `Pretrivialization F proj` to a `Trivialization F proj`. -/
-structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
+structure Bundle.Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
   open_target : IsOpen target
   /-- The domain of the local trivialisation (i.e., a subset of the bundle `Z`'s base):
   outside of it, the pretrivialisation returns a junk value -/
@@ -73,7 +73,7 @@ structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) whe
   target_eq : target = baseSet ×ˢ univ
   proj_toFun : ∀ p ∈ source, (toFun p).1 = proj p
 
-namespace Pretrivialization
+namespace Bundle.Pretrivialization
 
 variable {F}
 variable (e : Pretrivialization F proj) {x : Z}
@@ -529,7 +529,7 @@ theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj �
   Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp`
-with `Trivialization.preimageHomeomorph_symm_apply`. -/
+with `Bundle.Trivialization.preimageHomeomorph_symm_apply`. -/
 protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSet) :=
   (e.preimageHomeomorph hb).symm
 
@@ -549,7 +549,7 @@ theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
   e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
 
 /-- Auxiliary definition to avoid looping in `dsimp`
-with `Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
+with `Bundle.Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
 protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBaseSetProd.symm
 
 @[simp]
@@ -582,7 +582,7 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 theorem continuousOn_proj : ContinuousOn proj e.source :=
   continuousOn_of_forall_continuousAt fun _ ↦ e.continuousAt_proj
 
-/-- Pre-composition of a `Trivialization` and a `Homeomorph`. -/
+/-- Pre-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
   toOpenPartialHomeomorph := h.transOpenPartialHomeomorph e.toOpenPartialHomeomorph
@@ -594,7 +594,7 @@ protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z
     have hp : h p ∈ e.source := by simpa using hp
     simp [hp]
 
-/-- Post-composition of a `Trivialization` and a `Homeomorph`. -/
+/-- Post-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
 protected def homeomorphComp {B' : Type*} [TopologicalSpace B'] (h : B ≃ₜ B') :
     Trivialization F (h ∘ proj) where
   toOpenPartialHomeomorph := e.toOpenPartialHomeomorph.transHomeomorph (h.prodCongr <| .refl _)
@@ -715,7 +715,7 @@ theorem transFiberHomeomorph_apply {F' : Type*} [TopologicalSpace F'] (e : Trivi
   rfl
 
 /-- Coordinate transformation in the fiber induced by a pair of bundle trivializations. See also
-`Trivialization.coordChangeHomeomorph` for a version bundled as `F ≃ₜ F`. -/
+`Bundle.Trivialization.coordChangeHomeomorph` for a version bundled as `F ≃ₜ F`. -/
 def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
   (e₂ <| e₁.toOpenPartialHomeomorph.symm (b, x)).2
 
@@ -967,4 +967,4 @@ theorem proj_clift : proj (T.clift (e, γ) i) = γ i := by
 
 end Lift
 
-end Trivialization
+end Bundle.Trivialization

@@ -391,6 +391,15 @@ protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →�
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
   log_prod fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
 
+-- Note: This is wrong assuming only `f a ≠ 0` (as in `Real.log_prod`).
+-- E.g., `f = (2, -1, -1, ...)` (with infinitely many `-1`s).
+lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
+    log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
+  classical
+  simp only [finprod_def, finsum_def, show (fun i ↦ log (f i)).support = f.mulSupport by
+    grind [mem_mulSupport, mem_support, log_eq_zero]]
+  grind [log_prod, log_eq_zero]
+
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by
   rcases eq_or_ne n 0 with (rfl | hn)
@@ -516,7 +525,6 @@ lemma log_pos_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) (w : Nat
   apply Real.log_pos
   simpa using w
 
-set_option backward.isDefEq.respectTransparency false in
 lemma log_pos_of_isNNRat {n : ℕ} :
     (NormNum.IsNNRat e n d) → (decide ((1 : ℚ) < n / d)) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
@@ -525,7 +533,6 @@ lemma log_pos_of_isNNRat {n : ℕ} :
       simpa using (Rat.cast_lt (K := ℝ)).2 (of_decide_eq_true h)
     exact Real.log_pos this
 
-set_option backward.isDefEq.respectTransparency false in
 lemma log_pos_of_isRat_neg {n : ℤ} :
     (NormNum.IsRat e n d) → (decide (n / d < (-1 : ℚ))) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
@@ -533,7 +540,6 @@ lemma log_pos_of_isRat_neg {n : ℤ} :
     have : (n : ℝ) / d < -1 := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos_of_lt_neg_one this
 
-set_option backward.isDefEq.respectTransparency false in
 lemma log_nz_of_isNNRat {n : ℕ} : (NormNum.IsNNRat e n d) → (decide ((0 : ℚ) < n / d))
     → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
@@ -544,7 +550,6 @@ lemma log_nz_of_isNNRat {n : ℕ} : (NormNum.IsNNRat e n d) → (decide ((0 : �
       simpa using (Rat.cast_lt (K := ℝ)).2 (of_decide_eq_true h₂)
     exact ne_of_lt <| Real.log_neg h₁' h₂'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
     → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by

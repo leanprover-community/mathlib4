@@ -91,13 +91,16 @@ instance : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq' rfl
 set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower R L E := IsScalarTower.to₁₃₄ R K L E
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower R S E := IsScalarTower.to₁₂₄ R S L E
 
+set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower R T E := IsScalarTower.to₁₃₄ R S T E
 
 local instance : FaithfulSMul S E := (faithfulSMul_iff_algebraMap_injective S E).mpr <|
       (FaithfulSMul.algebraMap_injective L E).comp (FaithfulSMul.algebraMap_injective S L)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module.IsTorsionFree S T := Subalgebra.instIsTorsionFree (integralClosure S E)
 
 instance : FaithfulSMul R T :=
@@ -118,7 +121,6 @@ instance : IsIntegrallyClosed T :=
 
 variable [PerfectField (FractionRing R)]
 
-set_option backward.isDefEq.respectTransparency false in
 local instance : Algebra.IsSeparable L E :=
   Algebra.isSeparable_tower_top_of_isSeparable K L E
 
@@ -133,9 +135,11 @@ instance : IsGalois K (FractionRing T) := by
 
 variable [IsDedekindDomain S]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite S T :=
   IsIntegralClosure.finite S L E T
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module.Finite R T :=
   Module.Finite.trans S T
 

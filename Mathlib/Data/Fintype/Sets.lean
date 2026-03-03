@@ -119,7 +119,6 @@ theorem disjoint_toFinset [Fintype s] [Fintype t] :
 theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
   rw [Finset.Nontrivial, coe_toFinset]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem subsingleton_toFinset_iff [Fintype s] : Subsingleton s.toFinset ↔ s.Subsingleton := by
   simp
 
