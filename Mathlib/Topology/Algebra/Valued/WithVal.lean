@@ -457,80 +457,81 @@ theorem IsEquiv.uniformContinuous_congr
     (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
       w.restrict r / w.restrict s = γ.1) (h : v.IsEquiv w) :
     UniformContinuous (WithVal.congr v w (.refl R)) := by
-  refine uniformContinuous_of_continuousAt_zero _ ?_
-  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
-    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
-  intro γ
-  obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw (Units.map (WithVal.valueGroup₀_equiv _).toMonoidHom γ)
-  simp only [/- restrict_def,  -/MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe] at hr
-  use .mk0 ((WithVal.valueGroup₀_equiv v).symm (v.restrict r/ v.restrict s))
-     (by simp [restrict₀_eq_zero_iff, h.eq_zero, hr₀.ne.symm, hs₀.ne.symm] ),
-    fun x hx ↦ ?_
-  have := (@(WithVal.valueGroup₀_equiv w).symm_apply_eq (x := (w.restrict) r)
-    (y := γ)).mpr
-  simp only [/- restrict_def,  -/congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq, gt_iff_lt]
-  simp [- restrict_def] at hx
-  split_ifs at hx with hvr _ hvs
-  · simp at hx
-  · simp at hx
-  · simp at hx
-  let ψ := WithVal.valueGroup₀_equiv w.restrict
+--   refine uniformContinuous_of_continuousAt_zero _ ?_
+--   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+--     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
+--   intro γ
+--   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw (Units.map (WithVal.valueGroup₀_equiv _).toMonoidHom γ)
+--   simp only [/- restrict_def,  -/MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe] at hr
+--   use .mk0 ((WithVal.valueGroup₀_equiv v).symm (v.restrict r/ v.restrict s))
+--      (by simp [restrict₀_eq_zero_iff, h.eq_zero, hr₀.ne.symm, hs₀.ne.symm] ),
+--     fun x hx ↦ ?_
+--   have := (@(WithVal.valueGroup₀_equiv w).symm_apply_eq (x := (w.restrict) r)
+--     (y := γ)).mpr
+--   simp only [/- restrict_def,  -/congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq, gt_iff_lt]
+--   simp [- restrict_def] at hx
+--   split_ifs at hx with hvr _ hvs
+--   · simp at hx
+--   · simp at hx
+--   · simp at hx
+--   let ψ := WithVal.valueGroup₀_equiv w.restrict
 
 
-  rw [/- ← (WithVal.valueGroup₀_equiv w).symm_apply_eq, -/this, ← restrict_def, ← restrict_def ] at hr
-  -- simp at hr
-  rw [← hr, Set.mem_setOf_eq]
-  by_cases hx0 : Valued.v.restrict (WithVal.congr v w (.refl R) x) = 0
-  · rw [hx0]
-    rw [← w.restrict_pos_iff] at hr₀ hs₀
-    rw [← strictMono_valueGroup₀_equiv.lt_iff_lt]
-    simp only [map_zero, map_div₀, MulEquiv.apply_symm_apply]
-    apply WithZero.pos_iff_ne_zero.mpr ?_
-    exact div_ne_zero_iff.mpr ⟨WithZero.pos_iff_ne_zero.mp hr₀,
-      WithZero.pos_iff_ne_zero.mp hs₀⟩
-    --exact div_pos hr₀ hs₀ -- Does not longer work
-  suffices hlt :  w ((equiv v) x) * w s < w r by
-    rw [← map_mul, ← restrict_lt_iff, map_mul, ← lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
-      at hlt
-    have : PosMulStrictMono (ValueGroup₀ w) := by
-      sorry
-    have hs0 : 0 < restrict₀ w s := sorry
-    replace hlt := mul_lt_mul_of_pos_left hlt hs0
-    simp only [equiv_apply, restrict_def, div_eq_mul_inv, ← mul_assoc] at hlt
-    rw [mul_comm _ ( (restrict₀ w) r), mul_assoc] at hlt
-    rw [mul_inv_cancel₀, mul_one] at hlt
-    rw [div_eq_mul_inv, mul_comm]
-    apply_fun valueGroup₀_equiv
-    have hws : 0 < (valueGroup₀_equiv w).symm (w.restrict s)⁻¹ := sorry
-    have := @mul_lt_mul_of_pos_left
-    rw [← strictMono_valueGroup₀_equiv.lt_iff_lt, MulEquiv.apply_symm_apply]
-    · rw [div_eq_mul_inv]
+--   rw [/- ← (WithVal.valueGroup₀_equiv w).symm_apply_eq, -/this, ← restrict_def, ← restrict_def ] at hr
+--   -- simp at hr
+--   rw [← hr, Set.mem_setOf_eq]
+--   by_cases hx0 : Valued.v.restrict (WithVal.congr v w (.refl R) x) = 0
+--   · rw [hx0]
+--     rw [← w.restrict_pos_iff] at hr₀ hs₀
+--     rw [← strictMono_valueGroup₀_equiv.lt_iff_lt]
+--     simp only [map_zero, map_div₀, MulEquiv.apply_symm_apply]
+--     apply WithZero.pos_iff_ne_zero.mpr ?_
+--     exact div_ne_zero_iff.mpr ⟨WithZero.pos_iff_ne_zero.mp hr₀,
+--       WithZero.pos_iff_ne_zero.mp hs₀⟩
+--     --exact div_pos hr₀ hs₀ -- Does not longer work
+--   suffices hlt :  w ((equiv v) x) * w s < w r by
+--     rw [← map_mul, ← restrict_lt_iff, map_mul, ← lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
+--       at hlt
+--     have : PosMulStrictMono (ValueGroup₀ w) := by
+--       sorry
+--     have hs0 : 0 < restrict₀ w s := sorry
+--     replace hlt := mul_lt_mul_of_pos_left hlt hs0
+--     simp only [equiv_apply, restrict_def, div_eq_mul_inv, ← mul_assoc] at hlt
+--     rw [mul_comm _ ( (restrict₀ w) r), mul_assoc] at hlt
+--     rw [mul_inv_cancel₀, mul_one] at hlt
+--     rw [div_eq_mul_inv, mul_comm]
+--     apply_fun valueGroup₀_equiv
+--     have hws : 0 < (valueGroup₀_equiv w).symm (w.restrict s)⁻¹ := sorry
+--     have := @mul_lt_mul_of_pos_left
+--     rw [← strictMono_valueGroup₀_equiv.lt_iff_lt, MulEquiv.apply_symm_apply]
+--     · rw [div_eq_mul_inv]
 
 
-      sorry
-    /- simp only [congr_apply, RingEquiv.refl_apply, restrict_def, map_div₀,
-      MulEquiv.apply_symm_apply]
-    simp only [valueGroup₀_equiv, MulEquiv.coe_mk, Equiv.coe_fn_mk]
-    split_ifs
-    · sorry
-    --rw [← restrict_lt_iff]
-    --rw [lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
-    --simp? [WithZero.unzero_coe]
-    have hlin : LinearOrderedCommGroupWithZero (ValueGroup₀ w) :=
-      ValueGroup₀.instLinearOrderedCommGroupWithZero
+--       sorry
+--     /- simp only [congr_apply, RingEquiv.refl_apply, restrict_def, map_div₀,
+--       MulEquiv.apply_symm_apply]
+--     simp only [valueGroup₀_equiv, MulEquiv.coe_mk, Equiv.coe_fn_mk]
+--     split_ifs
+--     · sorry
+--     --rw [← restrict_lt_iff]
+--     --rw [lt_div_iff₀ ((w.restrict_pos_iff _).mpr hs₀)]
+--     --simp? [WithZero.unzero_coe]
+--     have hlin : LinearOrderedCommGroupWithZero (ValueGroup₀ w) :=
+--       ValueGroup₀.instLinearOrderedCommGroupWithZero
 
 
-    rw [div_eq_mul_inv] -/
-    --apply mul_lt_mul_of_pos_left _ hs0
-    · sorry
+--     rw [div_eq_mul_inv] -/
+--     --apply mul_lt_mul_of_pos_left _ hs0
+--     · sorry
+--   sorry
+
+-- -- TODO: move
+-- lemma _root_.Valuation.IsEquiv.restrict {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
+--     (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
+--   simp only [IsEquiv] at h ⊢
+--   intro r s
+--   simp only [restrict_le_iff, h]
   sorry
-
--- TODO: move
-lemma _root_.Valuation.IsEquiv.restrict {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
-    (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
-  simp only [IsEquiv] at h ⊢
-  intro r s
-  simp only [restrict_le_iff, h]
 
 theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w) (h : v.IsEquiv w) :
     UniformContinuous (WithVal.equiv v) := by
@@ -548,7 +549,7 @@ theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w) (h
   have hy : toVal v y = x := rfl
   have hs0' : 0 < Valued.v.restrict (toVal v s) := by
     simp only [restrict_pos_iff, apply_symm_equiv, h.pos_iff, ← hv, hs₀]
-  have h' : v.restrict.IsEquiv w.restrict := h.restrict
+  have h' : v.restrict.IsEquiv w.restrict := sorry--h.restrict
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
     ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
@@ -565,7 +566,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [Valued R Γ₀'] (hv : Valued.v = 
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := exists_div_eq_of_unit Valued.v γ
-  have h' : w.restrict.IsEquiv v.restrict := h.restrict
+  have h' : w.restrict.IsEquiv v.restrict := sorry-- h.restrict
   use .mk0 ((Valued.v.restrict ((WithVal.equiv v) r)) /
     (Valued.v.restrict ((WithVal.equiv v) s))) (by
     simp only [equiv_apply, restrict_def, restrict₀_eq_zero_iff, ne_eq, div_eq_zero_iff, not_or,
