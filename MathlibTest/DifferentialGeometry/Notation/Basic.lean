@@ -158,6 +158,31 @@ hint: you may be missing suitable typeclass assumptions
 #guard_msgs in
 #check (T% (T% X)) x
 
+-- Error message when missing typeclass assumptions for sections of a fiber bundle.
+-- This used to silently do nothing; no there is a helpful error.
+section
+
+variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
+  {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
+  (e : Trivialization F (π F E)) [(x : B) → Zero (E x)]
+
+variable (σ : (b : B) → E b) in
+/--
+error: could not find a `FiberBundle` instance on `E`:
+`σ` is a function into `E`
+
+hint: you may be missing suitable typeclass assumptions
+-/
+#guard_msgs in
+#check T% σ
+
+/-- info: fun b ↦ TotalSpace.mk' F b (σ b) : B → TotalSpace F E -/
+#guard_msgs in
+variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] (σ : (b : B) → E b) in
+#check T% σ
+
+end
+
 end TotalSpace
 
 /-! Tests for the elaborators for `MDifferentiable{WithinAt,At,On}`. -/
