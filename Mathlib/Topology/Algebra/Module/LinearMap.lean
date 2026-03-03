@@ -234,8 +234,8 @@ theorem _root_.Submodule.topologicalClosure_map [RingHomSurjective σ₁₂] [To
 closure. -/
 theorem _root_.Submodule.topologicalClosure_mem_invtSubmodule [TopologicalSpace R₁]
     [ContinuousSMul R₁ M₁] [ContinuousAdd M₁] {f : M₁ →L[R₁] M₁} {s : Submodule R₁ M₁}
-    (hs : s ∈ Module.End.invtSubmodule (f : M₁ →ₗ[R₁] M₁)) :
-    s.topologicalClosure ∈ Module.End.invtSubmodule (f : M₁ →ₗ[R₁] M₁) := by
+    (hs : s ∈ Module.End.invtSubmodule f) :
+    s.topologicalClosure ∈ Module.End.invtSubmodule f := by
   rw [Module.End.mem_invtSubmodule_iff_map_le] at hs ⊢
   exact (s.topologicalClosure_map f).trans (Submodule.topologicalClosure_mono hs)
 
