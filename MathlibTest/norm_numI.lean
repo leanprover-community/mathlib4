@@ -3,6 +3,8 @@ import Mathlib.Data.Complex.Basic
 import Mathlib.Tactic.NormNum.NormNumI
 import Mathlib.Data.ZMod.Basic
 
+private axiom test_sorry : ∀ {α}, α
+
 open Complex ComplexConjugate Real Qq
 
 example : (1:ℂ) = 1 + 0 * I := by norm_num1
@@ -17,7 +19,7 @@ example : (1 + 3.5 + I) * (1 + I) = 7 / 2 + 11 / 2 * I := by norm_num1
 example : (3 + 4.5 * I)⁻¹ * (3 + 4.5 * I) = 1 := by norm_num1
 example : -1 / (1 + I) = (I - 1) / 2 := by norm_num1
 example : (I:ℂ) = 0 + 1 * I := by norm_num1
-example : (1.5:ℂ) = ⟨3 / 2, 0⟩ := by norm_num1; sorry
+example : (1.5:ℂ) = ⟨3 / 2, 0⟩ := by norm_num1; exact test_sorry
 example : 0 + (1:ℂ) = 1 := by norm_num1
 example : (1.0:ℂ) + 0 = 1 := by norm_num1
 example : (1.0:ℂ) + 0.5 = 3/2 := by norm_num1
@@ -51,7 +53,7 @@ example : (3 : ℂ) ^ 2 + (4 ^ 2 : ℂ) = 25 := by norm_num1
 -- example : 3 + I ≠ I ^ 2 := by norm_num1
 -- example : I ^ 2 ≠ 3 := by norm_num1
 example : (5 + 2 * I) * (3 - 5 * I) ≠ (3 - 5 * I)⁻¹ := by norm_num1
-example : (1 + 2 * I) * I ≠ -2 := by sorry
+example : (1 + 2 * I) * I ≠ -2 := test_sorry
 example : (1 + 2 * I) * I ≠ I := by norm_num1
 example : 1 + I ≠ 0 := by norm_num1
 example : 1 + I ≠ 1 + 2 * I := by norm_num1
