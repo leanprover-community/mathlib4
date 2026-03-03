@@ -78,6 +78,7 @@ theorem SameCycle.equivalence : Equivalence (SameCycle f) :=
   ⟨SameCycle.refl f, SameCycle.symm, SameCycle.trans⟩
 
 /-- The setoid defined by the `SameCycle` relation. -/
+@[implicit_reducible]
 def SameCycle.setoid (f : Perm α) : Setoid α where
   r := f.SameCycle
   iseqv := SameCycle.equivalence f

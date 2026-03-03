@@ -362,6 +362,7 @@ end Atoms
 section Prod
 
 /-- A `MeasurableSpace` structure on the product of two measurable spaces. -/
+@[implicit_reducible]
 def MeasurableSpace.prod {α β} (m₁ : MeasurableSpace α) (m₂ : MeasurableSpace β) :
     MeasurableSpace (α × β) :=
   m₁.comap Prod.fst ⊔ m₂.comap Prod.snd

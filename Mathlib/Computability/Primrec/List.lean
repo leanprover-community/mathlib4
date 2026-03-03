@@ -35,6 +35,7 @@ variable (H : Nat.Primrec fun n => Encodable.encode (@decode (List β) _ n))
 open Primrec
 
 set_option backward.privateInPublic true in
+@[implicit_reducible]
 private def prim : Primcodable (List β) := ⟨H⟩
 
 private theorem list_casesOn' {f : α → List β} {g : α → σ} {h : α → β × List β → σ}
@@ -590,7 +591,7 @@ theorem tail {n f} (hf : @Primrec' n f) : @Primrec' n.succ fun v => f v.tail :=
     rw [← ofFn_get v.tail]; congr; funext i; simp
 
 /-- A function from vectors to vectors is primitive recursive when all of its projections are. -/
-@[implicit_reducible, implicit_reducible]
+@[implicit_reducible]
 def Vec {n m} (f : List.Vector ℕ n → List.Vector ℕ m) : Prop :=
   ∀ i, Primrec' fun v => (f v).get i
 
