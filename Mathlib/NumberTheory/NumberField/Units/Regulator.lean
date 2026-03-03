@@ -265,14 +265,12 @@ open scoped Classical in
 /-- The regulator of a number field `K`. -/
 def regulator : ℝ := ZLattice.covolume (unitLattice K)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isMaxRank_fundSystem :
     IsMaxRank (fundSystem K) := by
   classical
   convert ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).linearIndependent
   rw [logEmbedding_fundSystem, Basis.ofZLatticeBasis_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem basisOfIsMaxRank_fundSystem :
     basisOfIsMaxRank (isMaxRank_fundSystem K) = (basisUnitLattice K).ofZLatticeBasis ℝ := by

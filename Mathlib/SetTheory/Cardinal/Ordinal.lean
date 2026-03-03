@@ -53,6 +53,7 @@ end Cardinal
 
 namespace Ordinal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordinal.{v}) :
     Cardinal.lift.{u} (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
   simp_rw [← mk_toType]

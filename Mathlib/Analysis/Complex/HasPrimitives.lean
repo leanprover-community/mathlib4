@@ -145,7 +145,6 @@ section ContinuousOnBall
 variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 omit [CompleteSpace E] in
 /-- If a function `f` `IsConservativeOn` on a disk of center `c`, then for points `z` in this disk,
@@ -195,7 +194,6 @@ lemma IsConservativeOn.eventually_nhds_wedgeIntegral_sub_wedgeIntegral
       hf (z.re + c.im * I) (w.re + z.im * I) hU
   grind [wedgeIntegral]
 
-set_option backward.isDefEq.respectTransparency false in
 /- The horizontal integral of `f` from `z` to `z.re + w.im * I` is equal to `(w - z).re * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 private lemma hasDerivAt_wedgeIntegral_re_aux :
@@ -218,7 +216,6 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
     isOpen_Ioo.continuousOn_iff.mp f_contOn zRe_mem_s
   simpa using intervalIntegral.integral_hasDerivAt_right int1 int2 int3 |>.isLittleO
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
 private lemma hasDerivAt_wedgeIntegral_im_aux :
