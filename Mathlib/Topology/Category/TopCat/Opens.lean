@@ -293,10 +293,8 @@ end TopologicalSpace.Opens
 images are open, this is the morphism `f'' U ⟶ f'' Y` in `Opens Y`. Useful for applications
 to presheaves when we don't want to suppose that `f` is an open map.
 -/
-@[simps!]
 def IsOpenMap.functorMap {X Y : TopCat.{u}} {f : X ⟶ Y} {U V : Opens X}
-     (HU : IsOpen (⇑(CategoryTheory.ConcreteCategory.hom f) '' ↑U))
-     (HV : IsOpen (⇑(CategoryTheory.ConcreteCategory.hom f) '' ↑V)) (le : U ≤ V) :
+     (HU : IsOpen (f '' U)) (HV : IsOpen (f '' V)) (le : U ≤ V) :
      (⟨_, HU⟩ : Opens Y) ⟶ ⟨_, HV⟩ := ⟨⟨Set.image_mono le⟩⟩
 
 /-- An open map `f : X ⟶ Y` induces a functor `Opens X ⥤ Opens Y`.
@@ -305,15 +303,6 @@ def IsOpenMap.functorMap {X Y : TopCat.{u}} {f : X ⟶ Y} {U V : Opens X}
 def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
   obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
   map {U V} h := IsOpenMap.functorMap (hf _ U.2) (hf _ V.2) h.down.down
-
-/-
-/-- An open map `f : X ⟶ Y` induces a functor `Opens X ⥤ Opens Y`.
--/
-@[simps obj_coe]
-def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
-  obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
-  map h := ⟨⟨Set.image_mono h.down.down⟩⟩
--/
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/
