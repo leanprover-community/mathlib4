@@ -119,7 +119,6 @@ As one may use the same right invariant measure, this shows that two different l
 measures will give the same integral, up to some fixed scalar.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a group with a left invariant measure `μ` and a right invariant measure `ν`, one can express
 integrals with respect to `μ` as integrals with respect to `ν` up to a constant scaling factor
 (given in the statement as `∫ x, g x ∂μ` where `g` is a fixed reference function) and an
@@ -434,7 +433,6 @@ and `μ'` coincide on these supersets, this yields `μ s = μ' s`.
 See `measure_isMulInvariant_eq_smul_of_isCompact_closure`.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Two left invariant measures give the same mass to level sets of continuous compactly supported
 functions, up to the scalar `haarScalarFactor μ' μ`.
 
@@ -689,7 +687,6 @@ Two Haar measures give the same measure to open sets (or more generally to sets 
 positive), up to the scalar `haarScalarFactor μ' μ `.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive measure_isAddHaarMeasure_eq_smul_of_isEverywherePos]
 theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']
