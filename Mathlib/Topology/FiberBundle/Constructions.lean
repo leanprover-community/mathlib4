@@ -169,14 +169,14 @@ theorem Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
     Prod.invFun' e₁ e₂ (Prod.toFun' e₁ e₂ x) = x := by
   obtain ⟨x, v₁, v₂⟩ := x
   obtain ⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩ := h
-  simp only [Prod.toFun', Prod.invFun', symm_apply_apply_mk, h₁, h₂]
+  simp [Prod.toFun', Prod.invFun', h₁, h₂]
 
 theorem Prod.right_inv {x : B × F₁ × F₂}
     (h : x ∈ (e₁.baseSet ∩ e₂.baseSet) ×ˢ (univ : Set (F₁ × F₂))) :
     Prod.toFun' e₁ e₂ (Prod.invFun' e₁ e₂ x) = x := by
   obtain ⟨x, w₁, w₂⟩ := x
   obtain ⟨⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩, -⟩ := h
-  simp only [Prod.toFun', Prod.invFun', apply_mk_symm, h₁, h₂]
+  simp [Prod.toFun', Prod.invFun', h₁, h₂]
 
 theorem Prod.continuous_inv_fun :
     ContinuousOn (Prod.invFun' e₁ e₂) ((e₁.baseSet ∩ e₂.baseSet) ×ˢ univ) := by

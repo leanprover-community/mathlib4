@@ -112,7 +112,6 @@ so we replace his circumlocution about functions into a disjoint union with
 def isLocallyFraction : LocalPredicate (Localizations (R := R) M) :=
   (isFractionPrelocal R M).sheafify
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 /-- The functions satisfying `isLocallyFraction` form a submodule. -/
 def sectionsSubmodule (U : (Opens (PrimeSpectrum.Top R))) :
