@@ -1024,7 +1024,6 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp] lemma coheight_coe_withTop (x : α) : coheight (x : WithTop α) = coheight x + 1 :=
   height_coe_withBot (α := αᵒᵈ) x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma height_coe_withTop (x : α) : height (x : WithTop α) = height x := by
   apply le_antisymm
   · apply height_le
@@ -1053,7 +1052,6 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
   height_coe_withTop (α := αᵒᵈ) x
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
   norm_cast

@@ -491,7 +491,6 @@ end
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 theorem ofMulAction_self_smul_eq_mul (x : k[G]) (y : (ofMulAction k G G).asModule) :
     x • y = (x * y : k[G]) := by

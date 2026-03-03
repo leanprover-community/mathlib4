@@ -183,7 +183,6 @@ lemma sUnion_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   simp only [disjointOfDiff, coe_sdiff, coe_singleton]
   rw [sUnion_diff_singleton_empty]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     t ∉ hC.disjointOfDiff hs ht := by
   intro hs_mem
@@ -349,7 +348,6 @@ lemma disjoint_sUnion_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C)
     Disjoint (⋃₀ (I : Set (Set α))) (⋃₀ hC.disjointOfDiffUnion hs hI) := by
   rw [← hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion]; exact Set.disjoint_sdiff_right
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_disjointOfDiffUnion (hC : IsSetSemiring C) (hs : s ∈ C) (hI : ↑I ⊆ C) :
     Disjoint I (hC.disjointOfDiffUnion hs hI) := by
   by_contra h
@@ -393,7 +391,6 @@ variable {j : Set α} {J : Finset (Set α)}
 
 open MeasureTheory Order
 
-set_option backward.isDefEq.respectTransparency false in
 theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     ∃ K : Set α → Finset (Set α),
       PairwiseDisjoint J K

@@ -529,7 +529,6 @@ lemma integral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     ∫ x, density κ ν a x s ∂(ν a) = (κ a).real (univ ×ˢ s) := by
   rw [← setIntegral_univ, setIntegral_density_of_measurableSet hκν 0 a hs MeasurableSet.univ]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
     ∫ x in A, density κ ν a x s ∂(ν a) = (κ a).real (A ×ˢ s) := by
