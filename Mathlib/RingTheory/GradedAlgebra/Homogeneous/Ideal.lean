@@ -150,6 +150,7 @@ theorem Ideal.mul_homogeneous_element_mem_of_mem
   · exact I.mul_mem_left _ hx₂
   · exact I.zero_mem
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.homogeneous_span (s : Set A) (h : ∀ x ∈ s, SetLike.IsHomogeneousElem 𝒜 x) :
     (Ideal.span s).IsHomogeneous 𝒜 := by
   rintro i r hr
@@ -372,8 +373,8 @@ theorem eq_bot_iff (I : HomogeneousIdeal 𝒜) : I = ⊥ ↔ I.toIdeal = ⊥ :=
   toIdeal_injective.eq_iff.symm
 
 instance completeLattice : CompleteLattice (HomogeneousIdeal 𝒜) :=
-  toIdeal_injective.completeLattice _ toIdeal_sup toIdeal_inf toIdeal_sSup toIdeal_sInf toIdeal_top
-    toIdeal_bot
+  toIdeal_injective.completeLattice _ .rfl .rfl toIdeal_sup toIdeal_inf toIdeal_sSup toIdeal_sInf
+    toIdeal_top toIdeal_bot
 
 instance : Add (HomogeneousIdeal 𝒜) :=
   ⟨(· ⊔ ·)⟩

@@ -414,6 +414,9 @@ theorem one_lt_coe [LT α] : 1 < (a : WithBot α) ↔ 1 < a := coe_lt_coe
 theorem coe_lt_one [LT α] : (a : WithBot α) < 1 ↔ a < 1 := coe_lt_coe
 
 @[to_additive (attr := simp)]
+theorem bot_lt_one [LT α] : ⊥ < (1 : WithBot α) := bot_lt_coe _
+
+@[to_additive (attr := simp)]
 protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 
