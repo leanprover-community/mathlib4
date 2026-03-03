@@ -66,6 +66,33 @@ We say that the vertices in `M.support` are *matched* or *saturated*.
 -/
 def IsMatching (M : Subgraph G) : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w, M.Adj v w
 
+/--
+The subgraph `M` of `G` is a maximal matching if it is a matching and cannot be extended by adding
+more edges.
+-/
+def IsMaximalMatching (M : Subgraph G) : Prop :=
+  Maximal IsMatching M
+
+/--
+The subgraph `M` of `G` is a maximum matching if it is a matching and has the largest possible
+number of edges.
+-/
+def IsMaximumMatching (M : Subgraph G) : Prop :=
+  MaximalFor IsMatching (fun M ↦ Cardinal.mk M.edgeSet) M
+
+theorem isMaximalMatching_iff :
+    M.IsMaximalMatching ↔ M.IsMatching ∧ ∀ M' : Subgraph G, M'.IsMatching → M ≤ M' → M' ≤ M :=
+  Iff.rfl
+
+theorem isMaximumMatching_iff :
+    M.IsMaximumMatching ↔ M.IsMatching ∧
+      ∀ M' : Subgraph G, M'.IsMatching → Cardinal.mk M'.edgeSet ≤ Cardinal.mk M.edgeSet := by
+  constructor
+  · intro h
+    exact ⟨h.prop, fun M' hM' ↦ h.le hM'⟩
+  · rintro ⟨hM, hmax⟩
+    exact ⟨hM, fun M' hM' _ ↦ hmax M' hM'⟩
+
 /-- Given a vertex, returns the unique edge of the matching it is incident to. -/
 noncomputable def IsMatching.toEdge (h : M.IsMatching) (v : M.verts) : M.edgeSet :=
   ⟨s(v, (h v.property).choose), (h v.property).choose_spec.1⟩
