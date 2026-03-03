@@ -464,18 +464,19 @@ theorem IsEquiv.uniformContinuous_congr
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw (Units.map (WithVal.valueGroup₀_equiv _).toMonoidHom γ)
-  simp only [restrict_def, MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe] at hr
-  use .mk0 ((WithVal.valueGroup₀_equiv _).symm (v.restrict r/ v.restrict s))
+  simp only [/- restrict_def,  -/MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe] at hr
+  use .mk0 ((WithVal.valueGroup₀_equiv v).symm (v.restrict r/ v.restrict s))
      (by simp [restrict₀_eq_zero_iff, h.eq_zero, hr₀.ne.symm, hs₀.ne.symm] ),
     fun x hx ↦ ?_
-  have := (@(WithVal.valueGroup₀_equiv w).symm_apply_eq (x := (restrict₀ w) r)
+  have := (@(WithVal.valueGroup₀_equiv w).symm_apply_eq (x := (w.restrict) r)
     (y := γ)).mpr
-  simp only [restrict_def, congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq, gt_iff_lt]
-  simp at hx
-  split_ifs at hx with hwr _ hws
+  simp only [/- restrict_def,  -/congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq, gt_iff_lt]
+  simp [- restrict_def] at hx
+  split_ifs at hx with hvr _ hvs
   · simp at hx
   · simp at hx
   · simp at hx
+  let ψ := WithVal.valueGroup₀_equiv w.restrict
 
 
   rw [/- ← (WithVal.valueGroup₀_equiv w).symm_apply_eq, -/this, ← restrict_def, ← restrict_def ] at hr
