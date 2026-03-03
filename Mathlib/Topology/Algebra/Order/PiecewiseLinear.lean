@@ -40,13 +40,13 @@ variable {α : Type*} [Field α] [LinearOrder α] [FloorSemiring α] [IsStrictOr
 /-- The piecewise linear interpolation of a sequence `y` with slopes `c` on a regular grid
 with step size `h` starting at `a`. On `[a + n * h, a + (n + 1) * h)`, the value is
 `y n + (t - (a + n * h)) • c n`. -/
-noncomputable def piecewiseLinear {E : Type*} [AddCommGroup E] [Module α E]
+def piecewiseLinear {E : Type*} [AddCommGroup E] [Module α E]
     (y : ℕ → E) (c : ℕ → E) (h : α) (a : α) (t : α) : E :=
   let n := ⌊(t - a) / h⌋₊
   y n + (t - (a + n * h)) • c n
 
 /-- The piecewise constant function taking value `c n` on `[a + n * h, a + (n + 1) * h)`. -/
-noncomputable def piecewiseConst {E : Type*} (c : ℕ → E) (h : α) (a : α) (t : α) : E :=
+def piecewiseConst {E : Type*} (c : ℕ → E) (h : α) (a : α) (t : α) : E :=
   c ⌊(t - a) / h⌋₊
 
 /-- The piecewise constant function equals `c n` on `[a + n * h, a + (n + 1) * h)`. -/
