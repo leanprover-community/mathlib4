@@ -84,6 +84,37 @@ under `ci-tools/`).
   provided on stdin, outputs only those modules in topological order.
   Usage: `python3 scripts/topological_sort.py [--reverse]`
 
+**Analyzing `defeq` abuse**
+- `analyze_defeq_abuse.py`
+  Classifies every `set_option backward.isDefEq.respectTransparency false in` in Mathlib
+  using the `#defeq_abuse` diagnostic command. For each occurrence it swaps in `#defeq_abuse in`,
+  type-checks with `lake env lean`, parses the diagnostic, and records the result in
+  `defeq_abuse_results.db` (SQLite). Occurrences classified as `no_abuse` are then verified by
+  removing the `set_option` entirely and rebuilding; confirmed cases are recorded as `removable`.
+
+  Usage:
+  ```bash
+  python3 scripts/analyze_defeq_abuse.py            # full run (builds first, resumes automatically)
+  python3 scripts/analyze_defeq_abuse.py --no-initial  # skip the initial `lake build`
+  ```
+
+  Querying the database:
+  ```bash
+  # summary
+  sqlite3 scripts/defeq_abuse_results.db "SELECT category, COUNT(*) FROM occurrences GROUP BY category"
+  # most common isDefEq failures
+  sqlite3 scripts/defeq_abuse_results.db \
+    "SELECT failure, COUNT(*) c FROM failures GROUP BY failure ORDER BY c DESC LIMIT 20"
+  ```
+
+- `update_defeq_abuse_gist.py`
+  Updates the public gist with frequent failure patterns from the database.
+  Merges reversed pairs (`A =?= B` and `B =?= A`), filters to patterns with >= 10 occurrences,
+  and pushes an index plus one `.txt` file per pattern.
+  Requires `gh` (GitHub CLI) authenticated.
+  Usage: `python3 scripts/update_defeq_abuse_gist.py`
+  Current gist: https://gist.github.com/kim-em/6a26f33c00bf444502eddf05296ec644
+
 **Backward-compatibility `set_option` migration tools**
 
 These scripts help with testing Lean PRs that change backward-compatibility option

@@ -8,3 +8,6 @@
 scripts/__pycache__/
 # Progress file from scripts/rm_set_option.py
 scripts/.rm_set_option_progress.jsonl
+# Progress and results from scripts/analyze_defeq_abuse.py
+scripts/.analyze_defeq_abuse_progress.jsonl
+scripts/defeq_abuse_results.db
