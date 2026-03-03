@@ -56,43 +56,6 @@ variable {mΩ₀ : MeasurableSpace Ω} {P : Measure[mΩ₀] Ω} {mΩ : Measurabl
 variable {π : ι → Set (Set Ω)} {s : ι → Set Ω} {m : ι → MeasurableSpace Ω} {S : Finset ι}
   {g : ι' → ι}
 
--- lemma iCondIndepSets_congr (h : κ =ᵐ[P] η) : iIndepSets π κ μ ↔ iIndepSets π η μ := by
---   peel 3
---   refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩ <;>
---   · filter_upwards [h, h'] with a ha h'a
---     simpa [ha] using h'a
-
--- alias ⟨iIndepSets.congr, _⟩ := iIndepSets_congr
-
--- lemma indepSets_congr (h : κ =ᵐ[μ] η) : IndepSets s1 s2 κ μ ↔ IndepSets s1 s2 η μ := by
---   peel 4
---   refine ⟨fun h' ↦ ?_, fun h' ↦ ?_⟩ <;>
---   · filter_upwards [h, h'] with a ha h'a
---     simpa [ha] using h'a
-
--- alias ⟨IndepSets.congr, _⟩ := indepSets_congr
-
--- lemma iIndep_congr (h : κ =ᵐ[μ] η) : iIndep m κ μ ↔ iIndep m η μ :=
---   iIndepSets_congr h
-
--- alias ⟨iIndep.congr, _⟩ := iIndep_congr
-
--- lemma indep_congr {m₁ m₂ : MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
---     {κ η : Kernel α Ω} (h : κ =ᵐ[μ] η) : Indep m₁ m₂ κ μ ↔ Indep m₁ m₂ η μ :=
---   indepSets_congr h
-
--- alias ⟨Indep.congr, _⟩ := indep_congr
-
--- lemma iIndepSet_congr (h : κ =ᵐ[μ] η) : iIndepSet s κ μ ↔ iIndepSet s η μ :=
---   iIndep_congr h
-
--- alias ⟨iIndepSet.congr, _⟩ := iIndepSet_congr
-
--- lemma indepSet_congr {s t : Set Ω} (h : κ =ᵐ[μ] η) : IndepSet s t κ μ ↔ IndepSet s t η μ :=
---   indep_congr h
-
--- alias ⟨indepSet.congr, _⟩ := indepSet_congr
-
 lemma iCondIndepSets'.meas_biInter (h : iCondIndepSets' P mΩ π) (s : Finset ι)
     {f : ι → Set Ω} (hf : ∀ i, i ∈ s → f i ∈ π i) :
     P⁻⸨⋂ i ∈ s, f i| mΩ⸩ =ᵐ[P] ∏ i ∈ s, P⁻⸨f i| mΩ⸩ := h s hf

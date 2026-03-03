@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL2
 public import Mathlib.MeasureTheory.Measure.Real
-public import Mathlib.MeasureTheory.VectorMeasure.AddContent
 
 /-! # Conditional expectation in L1
 
