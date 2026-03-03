@@ -171,6 +171,37 @@ alias iteratedPDeriv_eq_iteratedFDeriv := iteratedLineDerivOp_eq_iteratedFDeriv
 
 end Derivatives
 
+section support
+
+variable (𝕜)
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
+
+theorem tsupport_derivCLM_subset (f : 𝓢(ℝ, F)) : tsupport (derivCLM 𝕜 F f) ⊆ tsupport f := by
+  change tsupport (deriv f ·) ⊆ _
+  simp_rw [← fderiv_apply_one_eq_deriv]
+  exact tsupport_fderiv_apply_subset ℝ 1
+
+variable [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 F]
+
+theorem tsupport_fderivCLM_subset (f : 𝓢(E, F)) : tsupport (fderivCLM 𝕜 E F f) ⊆ tsupport f :=
+  tsupport_fderiv_subset ℝ
+
+open LineDeriv
+
+theorem tsupport_lineDerivOp_subset (m : E) (f : 𝓢(E, F)) :
+    tsupport (∂_{m} f : 𝓢(E, F)) ⊆ tsupport f :=
+  tsupport_fderiv_apply_subset ℝ m
+
+theorem tsupport_iteratedLineDerivOp_subset {n : ℕ} (m : Fin n → E) (f : 𝓢(E, F)) :
+    tsupport (∂^{m} f : 𝓢(E, F)) ⊆ tsupport f := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    rw [iteratedLineDerivOp_succ_left]
+    exact (tsupport_lineDerivOp_subset (m 0) _).trans (IH <| Fin.tail m)
+
+end support
+
 section Laplacian
 
 /-! ## Laplacian on `𝓢(E, F)` -/
@@ -196,12 +227,8 @@ theorem laplacianCLM_eq [RCLike 𝕜] [NormedSpace 𝕜 F] (f : 𝓢(E, F)) :
 
 theorem laplacian_apply (f : 𝓢(E, F)) (x : E) : Δ f x = Δ (f : E → F) x := by
   rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E)]
-  simp only [InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis f
-    (stdOrthonormalBasis ℝ E), sum_apply]
-  congr 1
-  ext i
-  rw [← iteratedLineDerivOp_eq_iteratedFDeriv]
-  rfl
+  simp [InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E),
+    sum_apply, ← iteratedLineDerivOp_eq_iteratedFDeriv, iteratedLineDerivOp_succ_left]
 
 end Laplacian
 
@@ -222,7 +249,7 @@ theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(�
     (L : E →L[ℝ] F →L[ℝ] V) :
     ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
   MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
-    f.hasDerivAt g.hasDerivAt (pairing L f (derivCLM ℝ F g)).integrable
+    (fun x _ ↦ f.hasDerivAt x) (fun x _ ↦ g.hasDerivAt x) (pairing L f (derivCLM ℝ F g)).integrable
     (pairing L (derivCLM ℝ E f) g).integrable (pairing L f g).integrable
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
@@ -268,9 +295,7 @@ theorem integral_bilinear_lineDerivOp_right_eq_neg_left (f : 𝓢(D, E)) (g : �
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
     (bilinLeftCLM L (∂_{v} g).hasTemperateGrowth _).integrable
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
-  all_goals
-  intro x
-  exact (hasFDerivAt _ x).hasLineDerivAt v
+  all_goals exact fun x _ ↦ (hasFDerivAt _ x).hasLineDerivAt v
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for directional derivatives.

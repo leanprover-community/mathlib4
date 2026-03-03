@@ -271,7 +271,9 @@ theorem orderTop_of_ne_zero (hx : x ≠ 0) :
 @[deprecated (since := "2025-08-19")] alias orderTop_of_ne := orderTop_of_ne_zero
 
 @[simp] lemma orderTop_eq_top : orderTop x = ⊤ ↔ x = 0 := by simp [orderTop]
+
 @[simp] lemma orderTop_lt_top : orderTop x < ⊤ ↔ x ≠ 0 := by simp [lt_top_iff_ne_top]
+
 lemma orderTop_ne_top : orderTop x ≠ ⊤ ↔ x ≠ 0 := orderTop_eq_top.not
 
 @[deprecated (since := "2025-08-19")] alias orderTop_eq_top_iff := orderTop_eq_top

@@ -157,6 +157,7 @@ theorem stabilizer_ne_top_of_nonempty_of_nonempty_compl
   rw [← hg, Set.mem_smul_set]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     (s : Set α) (G : Subgroup (Perm α))
     (hG : stabilizer (Perm α) s < G) :
@@ -246,13 +247,7 @@ lemma subsingleton_of_ssubset_of_stabilizer_le
       toFun := Subtype.val
       map_smul' _ _ := rfl }
     exact hB.preimage f'
-  let φ : stabilizer M (s : Set α) → Perm (s : Set α) := MulAction.toPerm
-  let f : (s : Set α) →ₑ[φ] (s : Set α) := {
-    toFun := id
-    map_smul' _ _ := rfl }
-  have hf : Function.Bijective f := Function.bijective_id
-  rw [isPreprimitive_congr hG hf]
-  infer_instance
+  exact isPreprimitive_stabilizer_of_surjective _ hG
 
 @[deprecated (since := "2025-12-16")]
 alias _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le :=
@@ -281,7 +276,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
       rw [← inter_eq_self_of_subset_right hBs, ← Subtype.image_preimage_val]
       apply Set.Subsingleton.image hB'
     · -- `Subtype.val ⁻¹' B = s`
-      have hBs' : B = s := Set.Subset.antisymm hBs (by aesop)
+      have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
       obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
@@ -375,7 +370,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     apply hB.eq_univ_of_card_lt
     have : sᶜ.ncard ≤ B.ncard := ncard_le_ncard this
     rw [← Set.ncard_add_ncard_compl s]
-    linarith
+    lia
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
        This uses that `Nat.card s < Nat.card sᶜ`.
@@ -396,7 +391,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton :=
     -- uses Step 1
-    hB.subsingleton_of_ssubset_of_stabilizer_Perm_le (hBsc.ssubset_of_ne (by aesop)) hG'.le
+    hB.subsingleton_of_ssubset_of_stabilizer_Perm_le (hBsc.ssubset_of_ne (by lia)) hG'.le
   -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) : B.Subsingleton :=
     have := isPreprimitive_stabilizer_subgroup hG.le

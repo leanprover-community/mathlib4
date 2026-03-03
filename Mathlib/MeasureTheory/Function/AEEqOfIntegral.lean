@@ -67,7 +67,7 @@ theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace �
   refine hf'.mono fun x hx => ?_
   rw [Pi.zero_apply, ← @inner_self_eq_zero 𝕜]
   have h_closed : IsClosed {c : E | ⟪c, f x⟫_𝕜 = 0} :=
-    isClosed_eq (continuous_id.inner continuous_const) continuous_const
+    isClosed_eq (by fun_prop) (by fun_prop)
   exact @isClosed_property ℕ E _ s (fun c => ⟪c, f x⟫_𝕜 = 0) hs h_closed hx _
 
 local notation "⟪" x ", " y "⟫" => y x

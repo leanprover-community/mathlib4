@@ -259,7 +259,7 @@ lemma setIntegral_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     rw [setIntegral_densityProcess_of_mem hκν _ _ hs (hS_subset (by simp))]
     rfl
   · intro u v huv
-    simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self, bot_eq_empty]
+    simp only [Finset.coe_sort_coe, Set.disjoint_prod, disjoint_self]
     exact Or.inl (h_disj huv)
   · exact fun _ ↦ (measurableSet_countablePartition n (hS_subset (by simp))).prod hs
   · exact fun _ ↦ measurableSet_countablePartition n (hS_subset (by simp))
@@ -279,7 +279,7 @@ lemma setIntegral_densityProcess_of_le (hκν : fst κ ≤ ν)
 
 lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     {i j : ℕ} (hij : i ≤ j) (a : α) {s : Set β} (hs : MeasurableSet s) :
-    (ν a)[fun x ↦ densityProcess κ ν j a x s|countableFiltration γ i]
+    (ν a)[fun x ↦ densityProcess κ ν j a x s | countableFiltration γ i]
       =ᵐ[ν a] fun x ↦ densityProcess κ ν i a x s := by
   refine (ae_eq_condExp_of_forall_setIntegral_eq ?_ ?_ ?_ ?_ ?_).symm
   · exact integrable_densityProcess hκν j a hs

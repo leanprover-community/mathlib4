@@ -62,6 +62,7 @@ theorem algebraMap_C (a : K) : algebraMap K[X] (RatFunc K) (Polynomial.C a) = C 
 theorem algebraMap_comp_C : (algebraMap K[X] (RatFunc K)).comp Polynomial.C = C :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_eq_C_mul (r : K) (x : RatFunc K) : r • x = C r * x := by
   rw [Algebra.smul_def, algebraMap_eq_C]
 
@@ -82,6 +83,7 @@ theorem algebraMap_monomial (n : ℕ) (a : K) :
     algebraMap K[X] (RatFunc K) (Polynomial.monomial n a) = C a * X ^ n := by
   simp [← Polynomial.C_mul_X_pow_eq_monomial]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_X_left_eq_algebraMap (p : K[X]) :
     p.aeval (X : RatFunc K) = algebraMap K[X] (RatFunc K) p := by
@@ -219,6 +221,8 @@ variable [CommRing K] [IsDomain K]
 lemma transcendental_X : Transcendental K (X : RatFunc K) := by
   rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
   exact Polynomial.transcendental_X K
+
+instance transcendental : Algebra.Transcendental K (RatFunc K) := ⟨X, transcendental_X⟩
 
 end Algebra
 

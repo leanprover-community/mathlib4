@@ -228,7 +228,7 @@ lemma isProjectiveMeasureFamily_partialTraj {a : ℕ} (x₀ : Π i : Iic a, X i)
 trajectory up to time `a` we can construct an additive content over cylinders. It corresponds
 to composing the kernels, starting at time `a + 1`. -/
 noncomputable def trajContent {a : ℕ} (x₀ : Π i : Iic a, X i) :
-    AddContent (measurableCylinders X) :=
+    AddContent ℝ≥0∞ (measurableCylinders X) :=
   projectiveFamilyContent (isProjectiveMeasureFamily_partialTraj κ x₀)
 
 variable {κ}
@@ -393,7 +393,7 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
     exact lmarginalPartialTraj_mono _ _ (χ_anti hmn) _
   -- Therefore it converges to some function `lₖ`.
   have this k x : ∃ l, Tendsto (fun n ↦ lmarginalPartialTraj κ k (a n) (χ n) x) atTop (𝓝 l) := by
-    obtain h | h := tendsto_of_antitone (anti_lma k x)
+    obtain h | h := tendsto_atTop_of_antitone (anti_lma k x)
     · rw [OrderBot.atBot_eq] at h
       exact ⟨0, h.mono_right <| pure_le_nhds 0⟩
     · exact h
@@ -718,7 +718,7 @@ open Filtration
 
 theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
     {f : (Π n, X n) → E} (i_f : Integrable f (traj κ a x₀)) :
-    (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
+    (traj κ a x₀)[f | piLE b] =ᵐ[traj κ a x₀]
       fun x ↦ ∫ y, f y ∂traj κ b (frestrictLe b x) := by
   have i_f' : Integrable (fun x ↦ ∫ y, f y ∂(traj κ b) x)
       (((traj κ a) x₀).map (frestrictLe b)) := by
@@ -737,12 +737,12 @@ theorem condExp_traj {a b : ℕ} (hab : a ≤ b) {x₀ : Π i : Iic a, X i}
 
 theorem condExp_traj' {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c)
     (x₀ : Π i : Iic a, X i) (f : (Π n, X n) → E) :
-    (traj κ a x₀)[f|piLE b] =ᵐ[traj κ a x₀]
-      fun x ↦ ∫ y, ((traj κ a x₀)[f|piLE c]) (updateFinset x (Iic c) y)
+    (traj κ a x₀)[f | piLE b] =ᵐ[traj κ a x₀]
+      fun x ↦ ∫ y, ((traj κ a x₀)[f | piLE c]) (updateFinset x (Iic c) y)
         ∂partialTraj κ b c (frestrictLe b x) := by
-  have i_cf : Integrable ((traj κ a x₀)[f|piLE c]) (traj κ a x₀) :=
+  have i_cf : Integrable ((traj κ a x₀)[f | piLE c]) (traj κ a x₀) :=
     integrable_condExp
-  have mcf : StronglyMeasurable ((traj κ a x₀)[f|piLE c]) :=
+  have mcf : StronglyMeasurable ((traj κ a x₀)[f | piLE c]) :=
     stronglyMeasurable_condExp.mono (piLE.le c)
   filter_upwards [piLE.condExp_condExp f hbc, condExp_traj hab i_cf] with x h1 h2
   rw [← h1, h2, ← traj_map_frestrictLe, Kernel.map_apply, integral_map]
@@ -766,6 +766,7 @@ def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n
 
 variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
   rw [trajMeasure]
   have : IsProbabilityMeasure (μ₀.map (MeasurableEquiv.piUnique ((fun i : Iic 0 ↦ X i))).symm) :=

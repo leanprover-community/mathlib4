@@ -31,15 +31,6 @@ variable {α : Type u} {β : Type v} {γ : Type w} [UniformSpace α] [UniformSpa
 ### Uniform inducing maps
 -/
 
-/-- A map `f : α → β` between uniform spaces is called *uniform inducing* if the uniformity filter
-on `α` is the pullback of the uniformity filter on `β` under `Prod.map f f`. If `α` is a separated
-space, then this implies that `f` is injective, hence it is a `IsUniformEmbedding`. -/
-@[mk_iff]
-structure IsUniformInducing (f : α → β) : Prop where
-  /-- The uniformity filter on the domain is the pullback of the uniformity filter on the codomain
-  under `Prod.map f f`. -/
-  comap_uniformity : comap (fun x : α × α => (f x.1, f x.2)) (𝓤 β) = 𝓤 α
-
 lemma isUniformInducing_iff_uniformSpace {f : α → β} :
     IsUniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
   rw [isUniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
@@ -133,16 +124,6 @@ protected theorem IsUniformInducing.injective [T0Space α] {f : α → β} (h : 
 /-!
 ### Uniform embeddings
 -/
-
-/-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
-injective. If `α` is a separated space, then the latter assumption follows from the former. -/
-@[mk_iff]
-structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
-  /-- A uniform embedding is injective. -/
-  injective : Function.Injective f
-
-lemma IsUniformEmbedding.isUniformInducing (hf : IsUniformEmbedding f) : IsUniformInducing f :=
-  hf.toIsUniformInducing
 
 theorem isUniformEmbedding_iff' {f : α → β} :
     IsUniformEmbedding f ↔
@@ -417,6 +398,12 @@ instance CompleteSpace.sum [CompleteSpace α] [CompleteSpace β] : CompleteSpace
   rw [completeSpace_iff_isComplete_univ, ← range_inl_union_range_inr]
   exact isUniformEmbedding_inl.isUniformInducing.isComplete_range.union
     isUniformEmbedding_inr.isUniformInducing.isComplete_range
+
+theorem IsUniformEmbedding.discreteUniformity [DiscreteUniformity β] {f : α → β}
+    (hf : IsUniformEmbedding f) : DiscreteUniformity α := by
+  simp_rw [discreteUniformity_iff_eq_principal_setRelId, ← hf.comap_uniformity,
+    DiscreteUniformity.eq_principal_setRelId, comap_principal, SetRel.id, preimage_setOf_eq,
+    hf.injective.eq_iff]
 
 end
 

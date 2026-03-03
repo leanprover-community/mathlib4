@@ -110,7 +110,7 @@ lemma root_ne_neg_of_ne [Nontrivial R] {i j : ι}
 lemma linearIndependent_pair_of_ne {i j : b.support} (hij : i ≠ j) :
     LinearIndependent R ![P.root i, P.root j] := by
   have : ({(j : ι), (i : ι)} : Set ι) ⊆ b.support := by simp [pair_subset_iff]
-  rw [← linearIndepOn_id_range_iff (by aesop)]
+  rw [← linearIndepOn_id_range_iff (by simp_all)]
   simpa [image_pair] using LinearIndepOn.id_image <| b.linearIndepOn_root.mono this
 
 lemma root_mem_span_int (i : ι) :
@@ -257,7 +257,7 @@ lemma sub_notMem_range_root
   let f : ι → ℤ := fun k ↦ if k = i then 1 else if k = j then -1 else 0
   have hf : ∑ k ∈ b.support, f k • P.root k = P.root i - P.root j := by
     have : {i, j} ⊆ b.support := by aesop (add simp Finset.insert_subset_iff)
-    rw [← Finset.sum_subset (s₁ := {i, j}) (s₂ := b.support) (by aesop) (by aesop),
+    rw [← Finset.sum_subset (s₁ := {i, j}) (s₂ := b.support) (by lia) (by aesop),
       Finset.sum_insert (by aesop), Finset.sum_singleton]
     simp [f, hij, sub_eq_add_neg]
   intro contra
@@ -559,6 +559,7 @@ lemma IsPos.reflectionPerm {i j : ι} (hi : b.IsPos i) (hj : j ∈ b.support) (h
     rw [root_reflectionPerm, neg_smul, reflection_apply_root' ℤ, sub_eq_add_neg]
   exact hi.add_zsmul hij hj this
 
+set_option backward.isDefEq.respectTransparency false in
 omit [P.IsReduced] in
 lemma IsPos.induction_on_add
     {i : ι} (h₀ : b.IsPos i)
@@ -614,6 +615,7 @@ lemma induction_add (i : ι) {p : ι → Prop}
   · suffices p (-i) by rw [← neg_neg i]; exact h₀ (-i) this
     exact hi.induction_on_add h₁ h₂
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsPos.induction_on_reflect
     {i : ι} (h₀ : b.IsPos i)
     {p : ι → Prop}
