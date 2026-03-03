@@ -36,6 +36,28 @@ section IsVertexCover
 def IsVertexCover (G : SimpleGraph V) (c : Set V) : Prop :=
   ∀ ⦃v w : V⦄, G.Adj v w → v ∈ c ∨ w ∈ c
 
+/-- A minimal vertex cover is a vertex cover with no strictly smaller vertex cover. -/
+def IsMinimalCover (G : SimpleGraph V) (c : Set V) : Prop :=
+  Minimal G.IsVertexCover c
+
+/-- A minimum vertex cover is a vertex cover with minimal cardinality among all vertex covers. -/
+def IsMinimumCover (G : SimpleGraph V) (c : Set V) : Prop :=
+  MinimalFor G.IsVertexCover (fun c ↦ Cardinal.mk c) c
+
+theorem isMinimalCover_iff {c : Set V} :
+    G.IsMinimalCover c ↔ G.IsVertexCover c ∧
+      ∀ d : Set V, G.IsVertexCover d → d ⊆ c → c ⊆ d :=
+  Iff.rfl
+
+theorem isMinimumCover_iff {c : Set V} :
+    G.IsMinimumCover c ↔ G.IsVertexCover c ∧
+      ∀ d : Set V, G.IsVertexCover d → Cardinal.mk c ≤ Cardinal.mk d := by
+  constructor
+  · intro h
+    exact ⟨h.prop, fun d hd ↦ h.le hd⟩
+  · rintro ⟨hc, hmin⟩
+    exact ⟨hc, fun d hd _ ↦ hmin d hd⟩
+
 @[simp]
 theorem isVertexCover_empty : IsVertexCover G ∅ ↔ G = ⊥ := by
   simp [IsVertexCover, eq_bot_iff_forall_not_adj]
