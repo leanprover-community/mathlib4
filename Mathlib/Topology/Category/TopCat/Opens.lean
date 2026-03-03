@@ -293,7 +293,6 @@ end TopologicalSpace.Opens
 images are open, this is the morphism `f'' U ⟶ f'' Y` in `Opens Y`. Useful for applications
 to presheaves when we don't want to suppose that `f` is an open map.
 -/
-@[simps!]
 def IsOpenMap.functorMap {X Y : TopCat.{u}} {f : X ⟶ Y} {U V : Opens X}
      (HU : IsOpen (f '' U)) (HV : IsOpen (f '' V)) (le : U ≤ V) :
      (⟨_, HU⟩ : Opens Y) ⟶ ⟨_, HV⟩ := ⟨⟨Set.image_mono le⟩⟩
