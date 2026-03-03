@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Abelian.Exact
 /-!
 # Kernel and cokernel of the differential of a spectral object
 
-Let `X` be a spectral object index by the category `ι`
+Let `X` be a spectral object indexed by the category `ι`
 in the abelian category `C`. In this file, we introduce
 the kernel `X.cycles` and the cokernel `X.opcycles` of `X.δ`.
 These are defined when `f` and `g` are composable morphisms
