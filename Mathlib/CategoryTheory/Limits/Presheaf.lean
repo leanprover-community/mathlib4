@@ -713,6 +713,7 @@ namespace Functor.Elements
 
 variable [LocallySmall.{w} C] (F : C ⥤ Type w)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
 this is the colimit cocone which identifies `F.obj X` to the colimit of
 `(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
@@ -726,6 +727,7 @@ noncomputable def coconeπOpCompShrinkYonedaObj (X : C) :
     obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
     simp [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then for any `X : C`,
 `F.obj X` identifies to the colimit of
 `(CategoryOfElements.π F).op ⋙ shrinkYoneda.obj X`. -/
@@ -751,6 +753,7 @@ noncomputable def isColimitCoconeπOpCompShrinkYonedaObj (X : C) :
   · exact ⟨Functor.ιColimitType _ (op (elementsMk _ _ x))
       (shrinkYonedaObjObjEquiv.symm (𝟙 X)), by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
     {X₁ X₂ : C} (f : X₁ ⟶ X₂) (u : F.Elements) :
@@ -761,6 +764,7 @@ lemma shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app
   obtain ⟨g, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective g
   simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `C` is a locally `w`-small category, this is a (colimit) cocone
 expressing `F : C ⥤ Type w` as a colimit of corepresentable functors. -/
 noncomputable def coconeπOpCompShrinkYonedaFlip :
@@ -783,6 +787,7 @@ noncomputable def isColimitCoconeπOpCompShrinkYonedaFlip :
     IsColimit (coconeπOpCompShrinkYonedaFlip F) :=
   evaluationJointlyReflectsColimits _ (isColimitCoconeπOpCompShrinkYonedaObj F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F : C ⥤ Type w` and `C` is locally `w`-small, then `F` identifies to the composition
 `shrinkYoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π F).op ⋙ colim`. -/
 noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
@@ -795,6 +800,7 @@ noncomputable def shrinkYonedaCompWhiskeringLeftObjπCompColimIso
         intro u
         simp [shrinkYoneda_map_app_coconeπOpCompShrinkYonedaObj_ι_app F f u.unop]))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma shrinkYonedaCompWhiskeringLeftObjπCompColimIso_inv_app_apply
     [HasColimitsOfShape F.Elementsᵒᵖ (Type w)] (u : F.Elements) :
       (shrinkYonedaCompWhiskeringLeftObjπCompColimIso F).inv.app _ u.snd =
