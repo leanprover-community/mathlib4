@@ -39,7 +39,7 @@ the unit sphere, and this makes some of the intermediate statements more complic
 @[expose] public section
 
 variable {𝕜 X : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-variable {T : X →L[𝕜] X}
+variable {T : X →L[𝕜] X} {μ : 𝕜}
 
 open Module End
 
@@ -49,8 +49,8 @@ eigenvalue of `T`, then `T - μ • 1` is antilipschitz with positive constant.
 That is, `T - μ • 1` is bounded below as an operator.
 
 This is a useful step in the proof of the Fredholm alternative for compact operators. -/
-theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T)
-    {μ : 𝕜} (hμ : μ ≠ 0) (h : ¬ HasEigenvalue (T : End 𝕜 X) μ) :
+theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ ≠ 0)
+    (h : ¬ HasEigenvalue (T : End 𝕜 X) μ) :
     ∃ K > 0, AntilipschitzWith K (T - μ • 1 : X →L[𝕜] X) := by
   -- Suppose not, then for every K > 0, there is some x such that ‖(T - μ • 1) x‖ < K * ‖x‖.
   by_contra! hK
@@ -123,9 +123,7 @@ range of `S ^ n` but is at least `1` away from any vector in the range of `S ^ (
 This is a useful construction for the proof of the Fredholm alternative for compact operators.
 The conditions about `c` and `R` are to mimic those in Riesz's lemma.
 -/
-private theorem exists_seq {𝕜 X : Type*}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-    {S : End 𝕜 X} (hS_not_surj : ¬ (S : X → X).Surjective)
+private theorem exists_seq {S : End 𝕜 X} (hS_not_surj : ¬ (S : X → X).Surjective)
     (hS_anti : Topology.IsClosedEmbedding S)
     {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖c‖ < R) :
     ∃ f : ℕ → X,
@@ -156,12 +154,11 @@ private theorem exists_seq {𝕜 X : Type*}
   choose x hxv hxn hxn' hxy using x
   exact ⟨x, hxn, hxn', hxv, hxy⟩
 
+variable [CompleteSpace X]
+
 /-- The **Fredholm alternative** for compact operators: if `T` is a compact operator and `μ ≠ 0`,
 then either `μ` is an eigenvalue of `T`, or `μ` is in the resolvent set of `T`. -/
-theorem fredholm_alternative {𝕜 X : Type*}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup X] [NormedSpace 𝕜 X]
-    [CompleteSpace X] {T : X →L[𝕜] X} (hT : IsCompactOperator T)
-    {μ : 𝕜} (hμ : μ ≠ 0) :
+theorem fredholm_alternative (hT : IsCompactOperator T) (hμ : μ ≠ 0) :
     HasEigenvalue (T : End 𝕜 X) μ ∨ μ ∈ resolventSet 𝕜 T := by
   -- Suppose not, then `μ` is not an eigenvalue and is in the spectrum.
   by_contra!
@@ -214,7 +211,7 @@ theorem fredholm_alternative {𝕜 X : Type*}
   refine this.not_ge (hp ?_)
   simp [hψ.injective.eq_iff]
 
-theorem ContinuousLinearMap.spectrum_eq [CompleteSpace X] :
+theorem ContinuousLinearMap.spectrum_eq :
     spectrum 𝕜 (T : X →L[𝕜] X) = spectrum 𝕜 (T : End 𝕜 X) := by
   ext μ
   rw [spectrum, resolventSet, Set.mem_compl_iff, Set.mem_setOf,
@@ -225,8 +222,7 @@ theorem ContinuousLinearMap.spectrum_eq [CompleteSpace X] :
 If `T` is a compact operator on a Banach space, then the nonzero eigenvalues of `T` are exactly
 the nonzero points in the spectrum of `T`. This is a consequence of the Fredholm alternative for
 compact operators. -/
-theorem hasEigenvalue_iff_mem_spectrum [CompleteSpace X] (hT : IsCompactOperator T)
-    {μ : 𝕜} (hμ : μ ≠ 0) :
+theorem hasEigenvalue_iff_mem_spectrum (hT : IsCompactOperator T) (hμ : μ ≠ 0) :
     HasEigenvalue (T : End 𝕜 X) μ ↔ μ ∈ spectrum 𝕜 T := by
   constructor
   · intro hμ'
