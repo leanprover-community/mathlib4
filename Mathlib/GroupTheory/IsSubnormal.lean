@@ -90,7 +90,6 @@ inductive _root_.AddSubgroup.IsSubnormal {G : Type*} [AddGroup G] : AddSubgroup 
 
 attribute [simp] Subgroup.IsSubnormal.top
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A normal subgroup is subnormal. -/
 @[to_additive /-- A normal additive subgroup is subnormal. -/]
 lemma Normal.isSubnormal (hn : H.Normal) : IsSubnormal H :=
