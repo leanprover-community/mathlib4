@@ -45,14 +45,16 @@ theorem adjoin_X : K⟮(X : RatFunc K)⟯ = ⊤ :=
   eq_top_iff.mpr fun g _ ↦ (mem_adjoin_simple_iff _ _).mpr ⟨g.num, g.denom, by simp⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem adjoin_adjoin_X : K⟮f⟯⟮(X : RatFunc K)⟯ = ⊤ := by
-  rw [← restrictScalars_eq_top_iff (K := K), adjoin_simple_adjoin_simple, eq_top_iff]
-  exact le_trans (le_of_eq adjoin_X.symm) (IntermediateField.adjoin.mono _ _ _ (by simp))
+theorem IntermediateField.adjoin_X (E : IntermediateField K (RatFunc K)) :
+    E⟮(X : RatFunc K)⟯ = ⊤ := by
+  rw [← restrictScalars_eq_top_iff (K := K), restrictScalars_adjoin, eq_top_iff]
+  exact le_trans (le_of_eq RatFunc.adjoin_X.symm) (IntermediateField.adjoin.mono _ _ _ (by simp))
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The equivalence between `K⟮f⟯⟮X⟯` and `RatFunc K` as `K⟮f⟯`-algebras. -/
-noncomputable def adjoinAdjoinXEquiv : K⟮f⟯⟮(X : RatFunc K)⟯ ≃ₐ[K⟮f⟯] RatFunc K :=
-  (IntermediateField.equivOfEq (adjoin_adjoin_X f)).trans IntermediateField.topEquiv
+/-- The equivalence between `E⟮X⟯` and `RatFunc K` as `E`-algebras. -/
+noncomputable def IntermediateField.adjoinXEquiv (E : IntermediateField K (RatFunc K)) :
+    E⟮(X : RatFunc K)⟯ ≃ₐ[E] RatFunc K :=
+  (IntermediateField.equivOfEq (IntermediateField.adjoin_X E)).trans IntermediateField.topEquiv
 
 /-- The minimal polynomial of `X` over `K⟮f⟯`. It is defined as `f.num - f * f.denom`, viewed
 as a polynomial with coefficients in `A`, where `A` is a `K[f]`-algebra. -/
@@ -105,7 +107,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_simple_X' : Algebra.IsAlgebraic K⟮f⟯ (RatFunc K) := by
   have : Algebra.IsAlgebraic K⟮f⟯ K⟮f⟯⟮(X : RatFunc K)⟯ :=
     isAlgebraic_adjoin_simple <| isAlgebraic_iff_isIntegral.mp <| f.isAlgebraic_adjoin_simple_X hf
-  exact f.adjoinAdjoinXEquiv.isAlgebraic
+  exact (IntermediateField.adjoinXEquiv K⟮f⟯).isAlgebraic
 
 theorem natDegree_denom_le_natDegree_minpolyX :
     f.denom.natDegree ≤ (f.minpolyX K⟮f⟯).natDegree :=
@@ -203,7 +205,7 @@ theorem finrank_eq_max_natDegree :
       Module.finrank_of_not_finite fun H ↦  Algebra.transcendental_iff_not_isAlgebraic.mp
       transcendental <| Algebra.IsAlgebraic.of_finite K (RatFunc K)]
     simp
-  rw [← (adjoinAdjoinXEquiv f).toLinearEquiv.finrank_eq,
+  rw [← (IntermediateField.adjoinXEquiv K⟮f⟯).toLinearEquiv.finrank_eq,
     adjoin.finrank (f.isAlgebraic_adjoin_simple_X hf).isIntegral,
     ← minpoly.eq_of_irreducible (f.irreducible_minpolyX hf) f.minpolyX_aeval_X, mul_comm,
     Polynomial.natDegree_C_mul <| inv_ne_zero <| Polynomial.leadingCoeff_ne_zero.mpr fun H ↦
