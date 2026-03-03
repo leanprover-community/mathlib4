@@ -350,11 +350,7 @@ theorem vecMul_injective_iff_isUnit {A : Matrix m m K} :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · rw [← vecMul_surjective_iff_isUnit]
     exact LinearMap.surjective_of_injective (f := A.vecMulLinear) h
-  change Function.Injective A.vecMulLinear
-  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-  intro c hc
-  replace h := h.invertible
-  simpa using congr_arg A⁻¹.vecMulLinear hc
+  exact vecMul_injective_of_isUnit h
 
 theorem mulVec_injective_iff_isUnit {A : Matrix m m K} :
     Function.Injective A.mulVec ↔ IsUnit A := by
