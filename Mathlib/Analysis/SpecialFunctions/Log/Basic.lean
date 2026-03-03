@@ -396,9 +396,14 @@ protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →�
 lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
     log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
   classical
-  simp only [finprod_def, finsum_def, show (fun i ↦ log (f i)).support = f.mulSupport by
-    grind [mem_mulSupport, mem_support, log_eq_zero]]
-  grind [log_prod, log_eq_zero]
+  have H : (fun i ↦ log (f i)).support = f.mulSupport := by
+    grind [mem_mulSupport, mem_support, log_eq_zero]
+  have H' : HasFiniteMulSupport f ↔ HasFiniteSupport fun a ↦ log (f a) := by
+    simp [HasFiniteMulSupport, HasFiniteSupport, H]
+  simp only [finprod_def, finsum_def]
+  by_cases h' : HasFiniteMulSupport f
+  · simp [h', log_prod (fun a _ ↦ (h a).ne'), H'.mp h', H]
+  · simp [h', mt H'.mpr h']
 
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by
