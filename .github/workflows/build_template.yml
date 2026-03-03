@@ -23,6 +23,7 @@ on:
       mathlib_ci_ref:
         type: string
         required: false
+        # TODO: update the mathlib-ci refs before merging!
         default: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
       cache_application_id:
         type: string
