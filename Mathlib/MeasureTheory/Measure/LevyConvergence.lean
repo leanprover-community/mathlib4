@@ -11,7 +11,7 @@ public import Mathlib.MeasureTheory.Measure.TightNormed
 /-!
 # Lévy's convergence theorem
 
-This file contains developments retaled to Lévy's convergence theorem, which links convergence of
+This file contains developments related to Lévy's convergence theorem, which links convergence of
 characteristic functions and convergence in distribution.
 
 ## Main statements
