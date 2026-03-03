@@ -43,6 +43,15 @@ public meta section
 
 open Lean Meta Elab Term
 
+/-- When `true` (the default), `inferInstanceAs%` warns about sub-instances that are
+synthesizable for the target carrier type but leaky at `reducibleAndInstances` transparency.
+These warnings suggest defining intermediate instances with `inferInstanceAs%` to produce
+smaller, more modular instance terms. -/
+register_option inferInstanceAsPercent.leakySubInstWarning : Bool := {
+  defValue := true
+  descr := "warn about leaky sub-instances in inferInstanceAs%"
+}
+
 /-- Compute the chain of delta-unfoldings starting from `e` at default transparency.
 Returns all intermediate forms including `e` itself (unless `skipHead` is true). -/
 private def unfoldChain (e : Expr) (skipHead : Bool := false) :
@@ -92,6 +101,17 @@ private def matchesAnyDefeq (e : Expr) (replacements : Array (Expr × Expr)) :
       return some to_
   return none
 
+/-- Replace carrier type arguments in a class type expression using the replacement table.
+For example, transforms `TestDivInvMonoid Nat` into `TestDivInvMonoid TestNat`. -/
+private def replaceCarriersInType (ty : Expr) (replacements : Array (Expr × Expr)) :
+    MetaM Expr := do
+  let args := ty.getAppArgs
+  let mut args' := args
+  for i in [:args.size] do
+    if let some r ← matchesAnyDefeq args[i]! replacements then
+      args' := args'.set! i r
+  return mkAppN ty.getAppFn args'
+
 /-- Replace binder domains in a chain of lambdas, stopping at the body.
 Only replaces domains that are defeq to entries in `replacements`. -/
 private partial def replaceLamDomains (e : Expr) (replacements : Array (Expr × Expr)) :
@@ -123,10 +143,14 @@ private def getFieldInfo (ci : ConstructorVal) : MetaM (Array (Bool × Bool)) :=
 mutual
 
 /-- Process each constructor argument: replace carrier type parameters, recursively
-normalize instance-implicit fields, and patch lambda binder domains in other fields. -/
+normalize instance-implicit fields, and patch lambda binder domains in other fields.
+For each instance-implicit field, first tries to find a clean synthesized sub-instance
+for the target carrier type; if found, uses it instead of the patched constructor tree.
+If synthesis finds a leaky sub-instance, records a warning. -/
 private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
     (args : Array Expr) (fieldInfo : Array (Bool × Bool))
-    (replacements : Array (Expr × Expr)) : MetaM Expr := do
+    (replacements : Array (Expr × Expr))
+    (warnings : IO.Ref (Array MessageData)) : MetaM Expr := do
   let mut args := args
   -- Replace carrier type in constructor parameters
   for i in *...ci.numParams do
@@ -138,7 +162,26 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
       if isProof then
         pure ()
       else if isInst then
-        args := args.set! i (← normalizeInstance args[i]! replacements)
+        -- Always compute the patched version (needed as fallback and for comparison)
+        let patched ← normalizeInstance args[i]! replacements warnings
+        -- Try to find a synthesized sub-instance for the target carrier type
+        let fieldType ← inferType args[i]!
+        let targetFieldType ← replaceCarriersInType fieldType replacements
+        match ← trySynthInstance targetFieldType with
+        | .some synthInst =>
+          -- Check if the synthesized version is clean (defeq to patched at instances)
+          if ← withReducibleAndInstances <| withNewMCtxDepth <| isDefEq synthInst patched then
+            args := args.set! i synthInst
+          else
+            -- Leaky: warn the user
+            warnings.modify (·.push
+              m!"inferInstanceAs%: synthesized sub-instance for \
+                {targetFieldType} is not defeq to the patched version at \
+                `reducibleAndInstances` transparency. Consider defining it \
+                separately with `inferInstanceAs%`.")
+            args := args.set! i patched
+        | _ =>
+          args := args.set! i patched
       else
         args := args.set! i (← replaceLamDomains args[i]! replacements)
   return mkAppN (.const ci.name us) args
@@ -146,16 +189,16 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
 /-- Recursively normalize a class instance expression:
 1. WHNF at `default` transparency to expose the constructor.
 2. Replace the carrier type parameter(s) in the constructor.
-3. For each instance-implicit, non-proof field: recurse.
+3. For each instance-implicit, non-proof field: try synthesis, else recurse.
 4. For each non-instance function field: replace lambda binder domains only. -/
-private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × Expr)) :
-    MetaM Expr := do
+private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × Expr))
+    (warnings : IO.Ref (Array MessageData)) : MetaM Expr := do
   let ty ← inferType e
   let some _className ← isClass? ty | return e
   if ← Meta.isProp ty then return e
   let some (ci, us, args) ← getCtorApp? e | return e
   let fieldInfo ← getFieldInfo ci
-  normalizeCtorArgs ci us args fieldInfo replacements
+  normalizeCtorArgs ci us args fieldInfo replacements warnings
 
 end
 
@@ -193,4 +236,10 @@ elab "inferInstanceAs% " source:term : term <= expectedType => do
   -- Build replacement table from differing carrier type arguments
   let replacements ← buildReplacements sourceType expectedType
   if replacements.isEmpty then return inst
-  normalizeInstance inst replacements
+  let warnLeaky := inferInstanceAsPercent.leakySubInstWarning.get (← getOptions)
+  let warnings ← IO.mkRef #[]
+  let result ← normalizeInstance inst replacements warnings
+  if warnLeaky then
+    for w in ← warnings.get do
+      logWarning w
+  return result

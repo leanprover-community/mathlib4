@@ -94,7 +94,21 @@ instance testField_direct : TestField TestNat where
 instance testField_leaky : TestField TestNat := inferInstanceAs (TestField Nat)
 
 -- Fixed: inferInstanceAs% patches lambda domains to use TestNat
+-- (warns about leaky sub-instances that could be defined separately)
+/--
+warning: inferInstanceAs%: synthesized sub-instance for TestInv
+  TestNat is not defeq to the patched version at `reducibleAndInstances` transparency. Consider defining it separately with `inferInstanceAs%`.
+---
+warning: inferInstanceAs%: synthesized sub-instance for TestDivInvMonoid
+  TestNat is not defeq to the patched version at `reducibleAndInstances` transparency. Consider defining it separately with `inferInstanceAs%`.
+-/
+#guard_msgs in
 instance testField_fixed : TestField TestNat := inferInstanceAs% (TestField Nat)
+
+-- The warning can be disabled:
+#guard_msgs in
+set_option inferInstanceAsPercent.leakySubInstWarning false in
+instance testField_fixed' : TestField TestNat := inferInstanceAs% (TestField Nat)
 
 -- All three are defeq at default transparency (Nat = TestNat at this level).
 example : testField_leaky = testField_direct := rfl
