@@ -33,6 +33,7 @@ variable {C : Type u₁} [Category.{v₁} C] (W : MorphismProperty C)
 a `HasLocalization.{w} W` instance by shrinking the morphisms in `D`.
 (This version assumes that the types of objects of the categories
 `C` and `D` are in the same universe.) -/
+@[implicit_reducible]
 noncomputable def hasLocalizationOfLocallySmall
     {D : Type u₁} [Category.{v₂} D] [LocallySmall.{w} D]
     (L : C ⥤ D) [L.IsLocalization W] :

@@ -221,6 +221,7 @@ Given a braiding `β : curriedTensor C ≅ (curriedTensor C).flip` as a natural 
 bifunctors, and the two equalities `hexagon_forward` and `hexagon_reverse` of natural
 transformations between trifunctors, we obtain a braided category structure.
 -/
+@[implicit_reducible]
 def ofBifunctor : BraidedCategory C where
   braiding X Y := (β.app X).app Y
   braiding_naturality_right _ _ _ _ := (β.app _).hom.naturality _
@@ -238,6 +239,7 @@ open BraidedCategory
 Alternative constructor for symmetric categories, where the symmetry of the braiding is phrased
 as an equality of natural transformation of bifunctors.
 -/
+@[implicit_reducible]
 def SymmetricCategory.ofCurried [BraidedCategory C]
     (h : (curriedBraidingNatIso C).hom ≫ (flipFunctor _ _ _).map (curriedBraidingNatIso C).hom =
       𝟙 _) :

@@ -172,6 +172,7 @@ variable
 
 /-- The construction `bifunctorComp₁₂` of a trifunctor by composition of bifunctors
 is compatible with localization. -/
+@[implicit_reducible]
 noncomputable def Lifting₃.bifunctorComp₁₂ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
       ((Functor.postcompose₃.obj L).obj (bifunctorComp₁₂ F₁₂ G))
@@ -186,6 +187,7 @@ noncomputable def Lifting₃.bifunctorComp₁₂ :
 
 /-- The construction `bifunctorComp₂₃` of a trifunctor by composition of bifunctors
 is compatible with localization. -/
+@[implicit_reducible]
 noncomputable def Lifting₃.bifunctorComp₂₃ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
       ((Functor.postcompose₃.obj L).obj (bifunctorComp₂₃ F G₂₃))

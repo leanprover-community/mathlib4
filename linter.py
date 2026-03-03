@@ -38,6 +38,8 @@ class MathLibFixer:
                 cwd=self.mathlib_root,
                 capture_output=True,
                 text=True,
+                encoding='utf-8',
+                errors='replace',  # Replace unencodable characters instead of crashing
                 timeout=600  # 10 minute timeout
             )
             # Combine stdout and stderr since lake outputs to both
