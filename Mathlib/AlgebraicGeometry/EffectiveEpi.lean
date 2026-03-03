@@ -46,7 +46,7 @@ effective epimorphism in the category of topological spaces. -/
 instance effectiveEpi_base_of_flat {X Y : Scheme.{u}} {f : X ⟶ Y} [Flat f] [Surjective f]
     [QuasiCompact f] : EffectiveEpi f.base := by
   rw [TopCat.effectiveEpi_iff_isQuotientMap]
-  exact Flat.isQuotientMap_of_surjective ?_
+  exact Flat.isQuotientMap_of_surjective _
 
 namespace EffectiveEpiConstruction
 
