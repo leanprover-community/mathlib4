@@ -108,7 +108,8 @@ noncomputable def toColon : Φ ⟶ Φ.colon Ψ :=
 
 /-- The morphism `(toColon Φ Ψ)` is an isomorphism if and only if `Φ.quotient ⋙ Ψ.r` is the zero
 object. -/
-theorem isIso_toColon_iff : IsIso (toColon Φ Ψ) ↔ IsZero (Φ.quotient ⋙ Ψ.r) := by
+theorem isIso_toColon_iff {Φ Ψ : Preradical C} :
+    IsIso (toColon Φ Ψ) ↔ IsZero (Φ.quotient ⋙ Ψ.r) := by
   haveI : Epi (colonπ Φ Ψ) := by dsimp [colonπ]; infer_instance
   let g := (Φ.quotient.whiskerLeft Ψ.ι ≫ (rightUnitor _).hom)
   constructor <;> intro h
