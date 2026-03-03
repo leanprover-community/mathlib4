@@ -188,7 +188,6 @@ open ContDiff in
 lemma ContDiff.sigmoid (hf : ContDiff ℝ ω f) : ContDiff ℝ ω (sigmoid ∘ f) :=
   contDiff_sigmoid.comp hf
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma differentiable_sigmoid : Differentiable ℝ sigmoid :=
    contDiff_sigmoid.of_le le_top |>.differentiable_one

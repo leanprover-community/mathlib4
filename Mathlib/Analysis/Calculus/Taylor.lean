@@ -236,7 +236,6 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ �
   congr 1
   simp [field, Nat.factorial_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Taylor's theorem** using little-o notation. -/
 theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s) (hf : ContDiffOn ℝ n f s) :

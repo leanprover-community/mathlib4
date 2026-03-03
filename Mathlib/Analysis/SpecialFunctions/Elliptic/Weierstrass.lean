@@ -1010,7 +1010,6 @@ private lemma iteratedDeriv_six_relation_mul_id_pow_six :
     show Nat.choose 6 4 = 15 by rfl, show Nat.choose 6 3 = 20 by rfl]
   ring
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local fun_prop] AnalyticAt.contDiffAt in
 private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
   refine .of_meromorphicOrderAt_pos (one_pos.trans_le ?_) (by simp [relation])

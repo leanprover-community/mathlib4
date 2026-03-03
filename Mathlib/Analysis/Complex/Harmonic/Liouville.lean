@@ -29,7 +29,7 @@ theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant (f : ℂ
     (h_harm : HarmonicOnNhd f univ) (h_bound : Bornology.IsBounded (range f)) :
     ∀ z w, f z = f w := by
   -- By assumption, there exists a holomorphic function $f$ such that $\Re(f) = u$.
-  obtain ⟨F, hF_diff, hF_re⟩ := harmonic_is_realOfHolomorphic_univ h_harm
+  obtain ⟨F, hF_diff, hF_re⟩ := h_harm.exists_analyticOnNhd_univ_re_eq
   -- Since $g(z)$ is bounded, by Liouville's theorem, $g(z)$ is constant.
   suffices ∀ z w, Complex.exp (F z) = Complex.exp (F w) by grind
   apply Differentiable.apply_eq_apply_of_bounded
