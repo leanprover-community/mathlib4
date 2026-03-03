@@ -259,8 +259,7 @@ theorem taylor_isLittleO {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
 
 theorem taylor_isLittleO_univ {f : ℝ → E} {x₀ : ℝ} {n : ℕ} (hf : ContDiff ℝ n f) :
     (fun x ↦ f x - taylorWithinEval f n univ x₀ x) =o[𝓝 x₀] fun x ↦ (x - x₀) ^ n := by
-  convert taylor_isLittleO convex_univ (mem_univ x₀) hf.contDiffOn
-  simp
+  simpa using taylor_isLittleO convex_univ (mem_univ x₀) hf.contDiffOn
 
 /-- **Taylor's theorem** as a limit. -/
 theorem taylor_tendsto {f : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
