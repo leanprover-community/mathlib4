@@ -302,8 +302,7 @@ end
 
 section CompatibleSMul
 
-variable (R) (A : Type*) (S : Type*) (M : Type*) (N : Type*)
-  [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+variable (R) (A S M N : Type*) [AddCommMonoid M] [AddCommMonoid N] [Module R M]
   [Module R N] [CommSemiring A] [Module A M] [Module A N] [SMulCommClass R A M]
   [CommSemiring S] [Module S M] [SMulCommClass R S M] [SMulCommClass A S M]
   [CompatibleSMul R A M N]
