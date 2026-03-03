@@ -156,7 +156,7 @@ lemma sqrt_eq_exp {z : ℂ} (hz : z ≠ 0) : sqrt z = exp (log z / 2) := by
   simp [sqrt, cpow_def, hz, div_eq_mul_inv]
 
 lemma deriv_sqrt {z : ℂ} (hz : z ∈ slitPlane) :
-    deriv (sqrt) z = (2 : ℂ)⁻¹ * (z ^ (-1 / (2 : ℂ))) := by
+    deriv sqrt z = z ^ (-1 / 2 : ℂ) / 2 := by
   unfold sqrt
   grind [deriv_cpow_const (c := 1 / 2) hz]
 

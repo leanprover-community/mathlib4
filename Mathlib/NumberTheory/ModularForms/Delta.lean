@@ -63,35 +63,32 @@ lemma csqrt_I_pow_24 : sqrt I ^ 24 = 1 := by
   rw [csqrt_pow_24_eq I_ne_zero, show 12 = 4 * 3 by lia, pow_mul, I_pow_four, one_pow]
 
 lemma logDeriv_eta_comp_div_eq (z : ℍ) :
-    (logDeriv (η ∘ (-1 / ·))) z = ((z : ℂ) ^ (2 : ℤ))⁻¹ * (logDeriv η) (-z : ℂ)⁻¹ := by
+    logDeriv (η ∘ (-1 / ·)) z = ((z : ℂ) ^ (2 : ℤ))⁻¹ * logDeriv η (-z)⁻¹ := by
   simp only [neg_div, one_div, inv_neg]
   rw [logDeriv_comp, mul_comm]
   · simp [zpow_ofNat]
   · exact differentiableAt_eta_of_mem_upperHalfPlaneSet (by grind [im_pnat_div_pos 1 z])
   · fun_prop (disch := exact z.ne_zero)
 
+open EisensteinSeries in
 lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
     logDeriv (η ∘ (-1 / ·)) z = logDeriv (sqrt * η) z := by
   rw [logDeriv_eta_comp_div_eq z, Pi.mul_def,
       logDeriv_mul _ (by simp [sqrt, ne_zero z]) (eta_ne_zero z.2)
       (differentiableAt_sqrt (mem_slitPlane z))
-      (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2)]
-  nth_rw 2 [logDeriv_apply]
-  have hE2 := congrFun (EisensteinSeries.E2_slash_action ModularGroup.S) z
+      (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2), logDeriv_apply sqrt]
+  have hE2 := congrFun (E2_slash_action ModularGroup.S) z
   simp only [one_div, SL_slash_def, modular_S_smul, ModularGroup.denom_S,
     Int.reduceNeg, zpow_neg, riemannZeta_two, mul_inv_rev, inv_div, Pi.sub_apply, Pi.smul_apply,
-    EisensteinSeries.D2, Fin.isValue, ModularGroup.denom_S, smul_eq_mul] at hE2
+    D2, ModularGroup.denom_S, smul_eq_mul] at hE2
   rw [deriv_sqrt (mem_slitPlane z), div_eq_mul_inv, logDeriv_eta_eq_E2 z,
-    logDeriv_eta_eq_E2 (.mk _ z.im_inv_neg_coe_pos),  ← mul_assoc, mul_comm, ← mul_assoc, hE2,
-    ModularGroup.S, sqrt]
-  have hpow : (z : ℂ) * z ^ (- 1 / (2 : ℂ)) = z ^ (1 - (1 / 2 : ℂ)) := by
-    simp [cpow_sub _ _ (ne_zero z), div_eq_mul_inv, neg_mul, one_mul, cpow_one, ← cpow_neg]
-  have hh :  -((z : ℂ)⁻¹ * (-1 / 2)) = z ^ (-(1 : ℂ) / 2) * ((z : ℂ) ^ (2 : ℂ)⁻¹)⁻¹ * 2⁻¹ := by
-    field_simp [ne_zero z]
-    grind
-  ring_nf
-  simp
-  grind
+    logDeriv_eta_eq_E2 (.mk _ z.im_inv_neg_coe_pos),  ← mul_assoc, mul_comm, ← mul_assoc, hE2, sqrt,
+    show ModularGroup.S 1 0 = 1 by simp [ModularGroup.S]]
+  transitivity 1 / z / 2 + π * I / 12 * E2 z
+  · field_simp
+    grind [I_sq]
+  · rw [div_mul_eq_mul_div₀ _ _ (2 : ℂ), neg_div, cpow_neg, ← mul_inv, ← cpow_add _ _ z.ne_zero]
+    norm_num
 
 lemma eta_comp_eqOn_const_mul_csqrt_eta :
     ∃ c : ℂ, c ≠ 0 ∧ upperHalfPlaneSet.EqOn (η ∘ (fun z : ℂ ↦ -1 / z)) (c • (sqrt * η)) := by
@@ -102,8 +99,7 @@ lemma eta_comp_eqOn_const_mul_csqrt_eta :
     · exact DifferentiableOn.div (by fun_prop) (by fun_prop)
         (fun x hx ↦ ne_zero (⟨x, hx⟩ : ℍ))
     · exact fun y hy ↦ by grind [im_pnat_div_pos 1 (⟨y, hy⟩ : ℍ)]
-  · intro x hx
-    exact (((differentiableAt_sqrt (mem_slitPlane ⟨x, hx⟩))).mul
+  · exact fun x hx ↦ ((differentiableAt_sqrt (mem_slitPlane ⟨x, hx⟩)).mul
      (differentiableAt_eta_of_mem_upperHalfPlaneSet hx)).differentiableWithinAt
   · exact isOpen_upperHalfPlaneSet
   · exact Convex.isPreconnected (convex_halfSpace_im_gt 0)
@@ -136,8 +132,7 @@ lemma delta_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
 /-- The transformation formula for `η` under `S : z ↦ -1 / z`: we have
 `η(-1 / z) = (√I)⁻¹ · √z · η(z)` on the upper half-plane. -/
 lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
-    (η ∘ (fun z : ℂ ↦ -1 / z))
-    ((sqrt I)⁻¹ • ((sqrt) * η)) := by
+    (η ∘ (-1 / ·)) ((sqrt I)⁻¹ • (sqrt * η)) := by
   obtain ⟨z, hz, h⟩ := eta_comp_eqOn_const_mul_csqrt_eta
   have h3 :  η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
   grind [sqrt, eta_ne_zero (show 0 < I.im by simp)]
@@ -146,7 +141,7 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
 we have `Δ(-1 / z) = z ^ 12 · Δ(z)`. -/
 lemma delta_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   ext z
-  suffices η (-(↑z)⁻¹) ^ 24 * ((z : ℂ) ^ 12)⁻¹ = η ↑z ^ 24 by
+  suffices η (-(↑z)⁻¹) ^ 24 * ((z : ℂ) ^ 12)⁻¹ = η z ^ 24 by
     rw [SL_slash_apply, UpperHalfPlane.modular_S_smul]
     simpa [denom, ModularGroup.S]
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
