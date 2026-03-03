@@ -326,7 +326,7 @@ theorem pullbackObjObjOfImageOpen_hom_naturality {X Y : TopCat.{v}} (f : X ⟶ Y
     Limits.coconeOfDiagramTerminal_ι_app,Limits.coconeOfDiagramTerminal_ι_app]
   dsimp
   rw [← Functor.map_comp]
-  aesop_cat
+  cat_disch
 
 end
 
