@@ -71,6 +71,7 @@ lemma Homotopy.mapMultiforkOfIsLimit_eq
     multicospanIndex_fst, multicospanShape_snd, multicospanIndex_snd] at heq
   simp [-Homotopy.wl, -Homotopy.wr, ← H.wl, ← H.wr, reassoc_of% heq]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : E ⟶ F` and `g : F ⟶ E` are refinement morphisms of pre-`1`-hypercovers such that
 the composition `g ≫ f` is homotopic to the identity, then if the multifork associated
 to `E` is exact also the multifork associated to `F` is exact. -/
@@ -89,9 +90,8 @@ def Homotopy.isLimitMultifork (f : E.Hom F) (g : F.Hom E) (hgf : Homotopy (g.com
   · intro t i
     simp only [multicospanIndex_left, multicospanShape_L, multifork_ι]
     have h1 := hgf.wl i
-    dsimp at h1
     have h2 := t.condition ⟨⟨_, _⟩, hgf.H i⟩
-    dsimp at h2
+    dsimp at h1 h2
     rw [← g.w₀, op_comp, Functor.map_comp, ← E.multifork_ι, Multifork.IsLimit.fac_assoc,
       Category.assoc, ← Functor.map_comp, ← op_comp, ← h1, op_comp, Functor.map_comp,
       reassoc_of% h2, ← Functor.map_comp, ← op_comp, hgf.wr i]
