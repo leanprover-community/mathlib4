@@ -231,7 +231,7 @@ theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Fi
 If each `x ∈ s` is related to at least `m x` elements of `t`, then the weighted double-count
 `∑ y∈t, ∑ x∈s.filter (R x y), w x` is at least
 `∑ x∈s, m x * w x`. -/
-theorem sum_mul_le_sum_sum_filter_of_le_card_filter [DecidableEq ι] [DecidableEq β]
+theorem sum_mul_le_sum_sum_filter_of_le_card_filter
     (s : Finset ι) (t : Finset β) (R : ι → β → Prop) [DecidableRel R] (w m : ι → ℕ)
     (hcover : ∀ x ∈ s, m x ≤ #(t.filter (fun y => R x y))) :
     (∑ x ∈ s, m x * w x) ≤ ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := by
@@ -253,7 +253,7 @@ theorem sum_mul_le_sum_sum_filter_of_le_card_filter [DecidableEq ι] [DecidableE
 /-- Weighted cover inequality over finite sets:
 if every `x ∈ s` is related to some `y ∈ t`, then
 `∑ x∈s, w x ≤ ∑ y∈t, ∑ x∈s.filter (R x y), w x`. -/
-theorem sum_le_sum_sum_filter_of_forall_exists [DecidableEq ι] [DecidableEq β]
+theorem sum_le_sum_sum_filter_of_forall_exists
     (s : Finset ι) (t : Finset β) (R : ι → β → Prop) [DecidableRel R] (w : ι → ℕ)
     (hcover : ∀ x ∈ s, ∃ y ∈ t, R x y) :
     (∑ x ∈ s, w x) ≤ ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := by
