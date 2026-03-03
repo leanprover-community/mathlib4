@@ -299,12 +299,12 @@ variable [Preorder ι] [LocallyFiniteOrderBot ι] [LinearOrder α]
 
 theorem exists_partialSups_eq (f : ι → α) (i : ι) :
     ∃ j ≤ i, partialSups f i = f j := by
-  obtain ⟨j, hj⟩ : ∃ j ∈ Finset.Iic i, ∀ k ∈ Finset.Iic i, f k ≤ f j :=
+  obtain ⟨j, hj_mem, hj_le⟩ : ∃ j ∈ Finset.Iic i, ∀ k ∈ Finset.Iic i, f k ≤ f j :=
     Finset.exists_max_image _ _ ⟨i, Finset.mem_Iic.mpr le_rfl⟩
-  simp_all only [Finset.mem_Iic, partialSups, OrderHom.coe_mk]
-  use j, hj.1
+  simp only [Finset.mem_Iic] at hj_mem hj_le
+  use j, hj_mem
   apply le_antisymm
-  · exact Finset.sup'_le _ _ fun k hk => hj.2 k (Finset.mem_Iic.1 hk)
-  · exact Finset.le_sup' _ (Finset.mem_Iic.2 hj.1 )
+  · exact partialSups_le _ _ _ fun k hk => hj_le k hk
+  · exact le_partialSups_of_le f hj_mem
 
 end LinearOrder
