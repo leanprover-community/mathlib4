@@ -295,6 +295,7 @@ lemma toMonObj_injective {X : C} :
 lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h₁ = h₂ :=
   GrpObj.toMonObj_injective H
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monoid object with invertible homs is a group object. -/
 def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
     (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
