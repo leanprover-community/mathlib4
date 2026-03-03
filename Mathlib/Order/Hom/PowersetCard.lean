@@ -70,9 +70,8 @@ def permOfDisjoint {m n : ℕ} {I : Type*} [LinearOrder I]
     Equiv.Perm (Fin (m + n)) :=
   letI e₁ : Fin (m + n) ≃ Fin m ⊕ Fin n := finSumFinEquiv.symm
   letI e₂ : Fin m ⊕ Fin n ≃ s.val ⊕ t.val := (orderIsoOfFin s).sumCongr (orderIsoOfFin t)
-  letI e₃ : s.val ⊕ t.val ≃ (s.val ∪ t.val : Finset I) := Equiv.Finset.union _ _ h
-  letI e₄ : (s.val ∪ t.val : Finset I) ≃o Fin (m + n) :=
-    ((s.val ∪ t.val).orderIsoOfFin (by rw [Finset.card_union_of_disjoint h, s.prop, t.prop])).symm
+  letI e₃ : s.val ⊕ t.val ≃ disjUnion h := Equiv.Finset.disjUnionEquiv _ _ h
+  letI e₄ : disjUnion h ≃o Fin (m + n) := (orderIsoOfFin (disjUnion h)).symm
   e₁.trans <| e₂.trans <| e₃.trans <| e₄
 
 end order

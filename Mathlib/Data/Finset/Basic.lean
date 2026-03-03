@@ -602,30 +602,30 @@ theorem Finset.union_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
   simp [Equiv.symm_apply_eq]
 
 /-- The disjoint union of finsets is a sum -/
-def Finset.disjUnion (s t : Finset α) (h : Disjoint s t) :
+def Finset.disjUnionEquiv (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ s.disjUnion t h :=
   Equiv.setCongr (coe_disjUnion h) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
-theorem Finset.disjUnion_inl (h : Disjoint s t) (x : s) :
-    Equiv.Finset.disjUnion s t h (Sum.inl x) = ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.2⟩ :=
+theorem Finset.disjUnionEquiv_inl (h : Disjoint s t) (x : s) :
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inl x) = ⟨x, Finset.mem_disjUnion.mpr <| Or.inl x.2⟩ :=
   rfl
 
 @[simp]
-theorem Finset.disjUnion_inr (h : Disjoint s t) (y : t) :
-    Equiv.Finset.disjUnion s t h (Sum.inr y) = ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.2⟩ :=
+theorem Finset.disjUnionEquiv_inr (h : Disjoint s t) (y : t) :
+    Equiv.Finset.disjUnionEquiv s t h (Sum.inr y) = ⟨y, Finset.mem_disjUnion.mpr <| Or.inr y.2⟩ :=
   rfl
 
 @[simp]
-theorem Finset.disjUnion_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ s)
+theorem Finset.disjUnionEquiv_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ s)
     (hi' : i ∈ s.disjUnion t h) :
-    (Equiv.Finset.disjUnion s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
+    (Equiv.Finset.disjUnionEquiv s t h).symm ⟨i, hi'⟩ = Sum.inl ⟨i, hi⟩ := by
   simp [Equiv.symm_apply_eq]
 
 @[simp]
 theorem Finset.disjUnion_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
     (hi' : i ∈ s.disjUnion t h) :
-    (Equiv.Finset.disjUnion s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
+    (Equiv.Finset.disjUnionEquiv s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
   simp [Equiv.symm_apply_eq]
 
 /-- The type of dependent functions on the disjoint union of finsets `s ∪ t` is equivalent to the
