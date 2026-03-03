@@ -37,6 +37,7 @@ variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
 
 open MonObj
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 We construct the limit object of a functor `F : J ⥤ Mon C` given a limit cone `c` of
 `F ⋙ forget C`.
@@ -59,6 +60,7 @@ def limit (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c) :
     simp only [Functor.comp_obj, forget_obj, Functor.const_obj_obj, IsLimit.fac,
       mon_tauto, implies_true]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.hasLimits`: a limiting cone over a functor `F : J ⥤ Mon C`.
 -/
 @[simps]
@@ -75,6 +77,7 @@ def forgetMapConeLimitConeIso (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) 
     (forget C).mapCone (limitCone F c hc) ≅ c :=
   Cones.ext (Iso.refl _) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Implementation of `Mon.hasLimitsOfShape`:
 the proposed cone over a functor `F : J ⥤ Mon C` is a limit cone.
 -/
