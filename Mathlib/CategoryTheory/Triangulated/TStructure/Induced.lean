@@ -19,7 +19,7 @@ If `P` is a triangulated subcategory of `C`, we introduce a typeclass
 
 In particular, we show that the triangulated subcategory `t.plus`
 of `t`-bounded above objects can be endowed with a t-structure `t.onPlus`,
-and the same applis to `t.minus` and `t.bounded`.
+and the same applies to `t.minus` and `t.bounded`.
 
 -/
 
