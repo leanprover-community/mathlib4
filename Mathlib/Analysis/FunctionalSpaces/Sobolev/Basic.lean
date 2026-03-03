@@ -82,7 +82,7 @@ def PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} [Fintype ι] (β : ι → Type*
 attribute [fun_prop] TestFunction.contDiff
 attribute [gcongr] ae_mono
 
--- temporary lemma for fun_prop
+-- lemma for fun_prop
 @[fun_prop]
 lemma TestFunction.contDiff_one {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
     [NormedAddCommGroup F] [NormedSpace ℝ F] (φ : 𝓓(Ω, F)) : ContDiff ℝ 1 φ :=
@@ -621,6 +621,13 @@ lemma zero : HasWTaylorSeriesUpTo Ω 0 (0 : E → FormalMultilinearSeries ℝ E 
 end HasWTaylorSeriesUpTo
 
 variable (Ω) in
+/--
+A function `f` is in the Sobolev space `W^{k,p}(Ω; μ)` if it has a weak taylor series up to order
+`k`.
+`k` is called the *order* of the Sobolev space and `p` the *exponent*. We use this terminology in
+lemma names (compare `MemSobolev.mono_order`, `MemSobolev.mono_exponent` and
+`MemSobolev.mono_measure`).
+-/
 def MemSobolev (f : E → F) (k : ℕ∞) (p : ℝ≥0∞) (μ : Measure E) : Prop :=
   ∃ g : E → FormalMultilinearSeries ℝ E F, HasWTaylorSeriesUpTo Ω f g k p μ
 
@@ -632,13 +639,23 @@ lemma memLp (hf : MemSobolev Ω f n p μ) : MemLp f p (μ.restrict Ω) := by
   exact hg.memLp 0 (zero_le _) |>.continuousLinearMap_comp
     (L := (continuousMultilinearCurryFin0 ℝ E F).toContinuousLinearEquiv.toContinuousLinearMap)
 
+lemma memSobolev_zero : MemSobolev Ω f 0 p μ ↔ MemLp f p (μ.restrict Ω) := by
+  refine ⟨(·.memLp), fun hf ↦ ?_⟩
+
+
+-- check whether this is true. Do we need `n : ℕ`?
+lemma memSobolev_succ : MemSobolev Ω f (n + 1) p μ ↔
+    MemLp f p (μ.restrict Ω) ∧
+    ∃ g : E → E →L[ℝ] F, HasWeakDeriv Ω f g μ ∧ MemSobolev Ω g n p μ := by
+  sorry
+
 lemma aestronglyMeasurable (hf : MemSobolev Ω f k p μ) :
     AEStronglyMeasurable f (μ.restrict Ω) :=
   hf.memLp.aestronglyMeasurable
 
 section monotonicity
 
-lemma _root_.memSobolev_zero_middle :
+lemma _root_.memSobolev_zero_order :
     MemSobolev Ω f 0 p μ ↔ MemLp f p (μ.restrict Ω) := by
   refine ⟨fun hf ↦ hf.memLp, fun hf ↦ ?_⟩
   use fun x ↦ Nat.rec (ContinuousMultilinearMap.uncurry0 _ _ (f x)) 0
@@ -654,7 +671,7 @@ lemma _root_.memSobolev_zero_middle :
 
 /-- `MemSobolev Ω f k p μ` is monotone in `k`:
 if `f ∈ W^{k,p}(Ω)` and `k' ≤ k`, then also `f ∈ W^{k',p}(Ω)`. -/
-lemma mono_k {k' : ℕ∞} (hf : MemSobolev Ω f k p μ) (hk' : k' ≤ k) : MemSobolev Ω f k' p μ := by
+lemma mono_order {k' : ℕ∞} (hf : MemSobolev Ω f k p μ) (hk' : k' ≤ k) : MemSobolev Ω f k' p μ := by
   obtain ⟨g, hg⟩ := hf
   exact ⟨g, hg.mono hk'⟩
 
@@ -667,14 +684,14 @@ lemma mono_measure (hf : MemSobolev Ω f k p μ)
 
 /-- If `Ω` is bounded, `MemSobolev Ω f k p μ` is monotone in `p`:
 `f ∈ W^{k,p}(Ω)` and `q ≤ p`, then also `f ∈ W^{k,q}(Ω)`. -/
-lemma mono_p_of_measure_lt_top [IsFiniteMeasure μ] (hf : MemSobolev Ω f k p μ)
+lemma mono_exponent [IsFiniteMeasure μ] (hf : MemSobolev Ω f k p μ)
     {p' : ℝ≥0∞} (hp' : p' ≤ p) : MemSobolev Ω f k p' μ := by
   obtain ⟨g, hg⟩ := hf
   exact ⟨g, hg.mono_exponent hp'⟩
 
 end monotonicity
 
-lemma add [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
+lemma add [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
     (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
     MemSobolev Ω (f + f') k p μ := by
   obtain ⟨g, hg⟩ := hf
@@ -689,7 +706,7 @@ lemma neg (hf : MemSobolev Ω f k p μ) : MemSobolev Ω (-f) k p μ := by
 lemma _root_.memSobolev_neg : MemSobolev Ω (-f) k p μ ↔ MemSobolev Ω f k p μ :=
   ⟨fun h ↦ by simpa using h.neg, (·.neg)⟩
 
-lemma sub [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
+lemma sub [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
     (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) : MemSobolev Ω (f - f') k p μ := by
   obtain ⟨g, hg⟩ := hf
   obtain ⟨g', hg'⟩ := hf'
@@ -708,9 +725,8 @@ lemma _root_.TestFunction.memSobolev [μ.IsAddHaarMeasure] (f : 𝓓^{k}(Ω, F))
 @[simp]
 lemma zero : MemSobolev Ω (0 : E → F) k p μ := ⟨0, by simp⟩
 
--- TODO: probably, the hypothesis can be weakened!
 -- TODO: better test for MemSobolev: e.g. from being Lp and the weakderiv being nice
-lemma const (a : F) [IsFiniteMeasure μ] : MemSobolev Ω (fun _ : E ↦ a) k p μ := by
+lemma const (a : F) (h : μ Ω ≠ ∞) : MemSobolev Ω (fun _ : E ↦ a) k p μ := by
   sorry
 
 /- Add analogous lemmas for RepresentedBy and HasWeakDeriv-/
@@ -802,7 +818,7 @@ lemma sobolevNorm_congr (h : f =ᵐ[μ.restrict Ω] f') :
 lemma sobolevNorm_zero : sobolevNorm Ω (0 : E → F) k p μ = 0 := by
   simp [HasWTaylorSeriesUpTo.zero.sobolevNorm_eq, sobolevNormAux]
 
-lemma sobolevNorm_measure_zero : sobolevNorm Ω f k p 0 = 0 := by
+lemma sobolevNorm_zero_measure : sobolevNorm Ω f k p 0 = 0 := by
   sorry
 
 @[simp]
@@ -840,9 +856,9 @@ lemma eLpNorm_le_sobolevNorm : eLpNorm f p (μ.restrict Ω) ≤ sobolevNorm Ω f
     exact hg.eLpNorm_zero.symm.trans_le (enorm_le_eLpNorm_count _ 0 hp)
   · simp_rw [sobolevNorm, dif_neg hf, le_top]
 
-lemma sobolevNorm_zero_middle (h : MemLp f p (μ.restrict Ω)) (hp : p ≠ 0) :
+lemma sobolevNorm_zero_order (h : MemLp f p (μ.restrict Ω)) (hp : p ≠ 0) :
     sobolevNorm Ω f 0 p μ = eLpNorm f p (μ.restrict Ω) := by
-  obtain ⟨g, hg⟩ := memSobolev_zero_middle.mpr h
+  obtain ⟨g, hg⟩ := memSobolev_zero_order.mpr h
   simp_rw [hg.sobolevNorm_eq, sobolevNormAux, Subsingleton.count_eq_dirac (0 : Fin 1)]
   simp [hp, hg.eLpNorm_zero]
 
@@ -905,7 +921,7 @@ variable [FiniteDimensional ℝ E]
 
 variable (Ω F) in
 def Sobolev (k : ℕ∞) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
-    [IsLocallyFiniteMeasure μ] :
+    [IsLocallyFiniteMeasure (μ.restrict Ω)] :
     AddSubgroup (E →ₘ[μ.restrict Ω] F) where
   carrier := {f | MemSobolev Ω f k p μ}
   zero_mem' := by simp [memSobolev_congr AEEqFun.coeFn_zero, MemSobolev.zero]
@@ -917,7 +933,7 @@ open AEEqFun
 variable {g : E → F}
 namespace MemSobolev
 
-variable [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
+variable [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
 
 -- AEStronglyMeasurable f (μ.restrict Ω)
 /-- make an element of Lp from a function verifying `MemSobolev` -/
@@ -961,7 +977,7 @@ end MemSobolev
 
 namespace Sobolev
 
-variable [IsLocallyFiniteMeasure μ] [hp : Fact (1 ≤ p)]
+variable [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
 
 instance instCoeFun : CoeFun (Sobolev Ω F k p μ) (fun _ => E → F) :=
   ⟨fun f => ((f : E →ₘ[μ.restrict Ω] F) : E → F)⟩
@@ -1019,14 +1035,13 @@ theorem coeFn_add (f g : Sobolev Ω F k p μ) : ⇑(f + g) =ᵐ[μ.restrict Ω] 
 theorem coeFn_sub (f g : Sobolev Ω F k p μ) : ⇑(f - g) =ᵐ[μ.restrict Ω] f - g :=
   AEEqFun.coeFn_sub _ _
 
-theorem const_mem_sobolev (c : F) [IsFiniteMeasure μ] :
+theorem const_mem_sobolev (c : F) (h : μ Ω ≠ ∞) :
     AEEqFun.const E c ∈ Sobolev Ω F k p μ :=
-  (MemSobolev.const c).aeeqFunMk.mem_sobolev
+  (MemSobolev.const c h).aeeqFunMk.mem_sobolev
 
 section norm
-/-! The Sobolev norm is only defined for `k < ∞` -/
+/-! The Sobolev norm is only defined for `k < ∞`. -/
 variable {k : ℕ}
-
 theorem sobolevNorm_lt_top (f : Sobolev Ω F k p μ) : sobolevNorm Ω f k p μ < ∞ :=
   (memSobolev f).sobolevNorm_lt_top
 
@@ -1114,8 +1129,8 @@ theorem norm_zero : ‖(0 : Sobolev Ω F k p μ)‖ = 0 :=
   congr_arg ((↑) : ℝ≥0 → ℝ) nnnorm_zero
 
 @[simp]
-theorem norm_measure_zero (f : Sobolev Ω F k p 0) : ‖f‖ = 0 := by
-  simp_rw [norm_def, sobolevNorm_measure_zero, ENNReal.toReal_zero]
+theorem norm_zero_measure (f : Sobolev Ω F k p 0) : ‖f‖ = 0 := by
+  simp_rw [norm_def, sobolevNorm_zero_measure, ENNReal.toReal_zero]
 
 theorem eq_zero_iff_aeEq_zero {f : Sobolev Ω F k p μ} : f = 0 ↔ f =ᵐ[μ.restrict Ω] 0 := by
   rw [Sobolev.ext_iff]
@@ -1151,18 +1166,65 @@ instance instNormedAddCommGroup : NormedAddCommGroup (Sobolev Ω F k p μ) :=
     edist := edist
     edist_dist := Sobolev.edist_dist }
 
+theorem smul_mem_sobolev (c : ℝ) (f : Sobolev Ω F k p μ) :
+    c • (f : E →ₘ[μ.restrict Ω] F) ∈ Sobolev Ω F k p μ := by
+  obtain ⟨f, hf⟩ := f
+  rw [mem_sobolev_iff_memSobolev] at hf ⊢
+  exact hf.smul.congr (AEEqFun.coeFn_smul _ _).symm
+
+variable (Ω F k) in
+/-- The `ℝ`-submodule of elements of `E →ₘ[μ.restrict Ω] F` whose Sobolev-norm is finite.
+This is `Sobolev Ω F k p μ`, with extra structure. -/
+def _root_.SobolevSubmodule (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
+    [IsLocallyFiniteMeasure (μ.restrict Ω)] : Submodule ℝ (E →ₘ[μ.restrict Ω] F) :=
+  { Sobolev Ω F k p μ with smul_mem' := fun c f hf => smul_mem_sobolev c ⟨f, hf⟩ }
+
+theorem coe_LpSubmodule : (SobolevSubmodule Ω F k p μ).toAddSubgroup = Sobolev Ω F k p μ :=
+  rfl
+
+instance instNormedSpace : NormedSpace ℝ (Sobolev Ω F k p μ) :=
+  { (SobolevSubmodule Ω F k p μ).module with
+    norm_smul_le := sorry }
+
+theorem coeFn_smul (c : ℝ) (f : Sobolev Ω F k p μ) : ⇑(c • f) =ᵐ[μ.restrict Ω] c • ⇑f :=
+  AEEqFun.coeFn_smul _ _
+
+instance : CompleteSpace (Sobolev Ω F k p μ) := sorry
+
+theorem _root_.MemSobolev.toSobolev_smul {c : ℝ} {f : E → F} (hf : MemSobolev Ω f k p μ) :
+    hf.smul.toSobolev (c • f) = c • hf.toSobolev f :=
+  rfl
+
+variable (Ω F k) in
+/-- The inclusion from test functions into the Sobolev space. -/
+def _root_.TestFunction.toSobolev (p : ℝ≥0∞) [Fact (1 ≤ p)] (μ : Measure E := by volume_tac)
+    [IsLocallyFiniteMeasure (μ.restrict Ω)] [IsAddHaarMeasure μ] :
+    𝓓^{k}(Ω, F) →ₗ[ℝ] Sobolev Ω F k p μ where
+  toFun f := f.memSobolev.toSobolev f
+  map_add' _ _ := MemSobolev.toSobolev_add ..
+  map_smul' _ _ := MemSobolev.toSobolev_smul ..
+
+/- The compactly supported functions in the Sobolev space `Sobolev Ω F k p μ` is the closure
+of the test functions inside the Sobolev space. -/
+def compactlySupportedSobolev [IsAddHaarMeasure μ] : AddSubgroup (Sobolev Ω F k p μ) :=
+  (TestFunction.toSobolev Ω F k p μ).toAddMonoidHom.range.topologicalClosure
+
 end norm
 end Sobolev
 
 /-
 To do:
-1. Basic lemmas (closure under `+`, `•`, ...)                   basically done
-2. define Sobolev spaces
-2'. relate MemSobolev and finite Sobolev norm                   TODO
-3. [Adams, Th 3.3] prove Banach space
-4. monotonicity in `k` and (if `Ω` is bounded) in `p`.          basically done; μ could be added
+0. Finish work on distributions and test functions              todo
+1. Basic lemmas (closure under `+`, `•`, ...)                   done
+2. define Sobolev spaces                                        done
+2'. relate MemSobolev and finite Sobolev norm                   done
+3. [Adams, Th 3.3] prove Banach space                           needs completeness
+4. monotonicity in `k` and (if `Ω` is bounded) in `p`.          basically done
 4'. relate W^{0,p} and L^p                                      TODO!
-5. [Adams, Cor 3.4] C^k functions are contained in W^{k, p}
+5. [Adams, Cor 3.4] C^k functions are contained in W^{k, p}     done(?)
+  -- we have it for test functions, and `MemSobolev.toSobolev` gives a way to show the inclusion.
+  -- the precise statement where we close C^k functions w.r.t. the Sobolev norm is probably
+  -- not immediately necessary
 6. [Adams, Th 3.6] separable, uniform convexity
 7. [Adams, Th 3.15-3.17] density of smooth functions in W^{k, p}
 8. [Adams, Ch 4] Sobolev embedding theorem
