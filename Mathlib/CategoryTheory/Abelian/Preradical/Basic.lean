@@ -73,6 +73,13 @@ instance [Φ.IsIdempotent] (X : C) :
   rw [r_map_ι_app]
   infer_instance
 
+instance {D : Type*} [Category* D] (F : D ⥤ C) :
+    Mono (Functor.whiskerLeft F Φ.ι) := by
+  rw [NatTrans.mono_iff_mono_app]
+  intro
+  dsimp
+  infer_instance
+
 end Preradical
 
 end CategoryTheory.Abelian
