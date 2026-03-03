@@ -539,6 +539,26 @@ noncomputable def mk2TensorAt
         · exact mdifferentiable_extend .. }
     H.toContinuousLinearMap
 
+variable {I} in
+theorem mk2TensorAt_apply
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
+    (σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) τ x = f x • φ σ τ x)
+    (σ_add : ∀ {σ σ' τ}, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
+    (τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
+        φ σ (f • τ) x = f x • φ σ τ x)
+    (τ_add : ∀ {σ τ τ'}, MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+        φ σ (τ + τ') x = φ σ τ x + φ σ τ' x)
+    {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) {τ : Π x : M, V x} (hτ : MDiffAt (T% τ) x) :
+    mk2TensorAt I F F' φ σ_smul σ_add τ_smul τ_add (σ x) (τ x) = φ σ τ x := by
+  apply tensoriality_criterion₂ I F _ F' _ _ hσ _ hτ _ _ σ_smul σ_add τ_smul τ_add
+  · exact mdifferentiable_extend ..
+  · exact mdifferentiable_extend ..
+  · simp
+  · simp
+
 theorem mk2TensorAt_add
     (φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)) {x}
     (φ_σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →

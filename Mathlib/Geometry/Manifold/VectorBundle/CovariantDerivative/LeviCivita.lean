@@ -780,6 +780,14 @@ noncomputable def lcCandidateAux₀ [FiniteDimensional ℝ E]
         · simp
       · exact mdifferentiableAt_add_section hZ₁ hZ₂)
 
+theorem lcCandidateAux₀_apply [FiniteDimensional ℝ E] {x : M}
+    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    lcCandidateAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
+  unfold lcCandidateAux₀
+  rw [mk2TensorAt_apply _ _ _ _ _ _ hX hZ, dif_pos hX, dif_pos hZ]
+
 noncomputable def lcCandidateAux₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
@@ -790,11 +798,27 @@ noncomputable def lcCandidateAux₁ [FiniteDimensional ℝ E]
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
     (lcCandidateAux₀ I x hY)
 
+theorem lcCandidateAux₁_apply [FiniteDimensional ℝ E] {x : M}
+    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    inner ℝ (lcCandidateAux₁ I x hY (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
+  simpa [lcCandidateAux₁] using lcCandidateAux₀_apply I hX hY hZ
+
 open Classical in
 noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
     (Y : Π x : M, TangentSpace I x) (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
   if hY : MDiffAt (T% Y) x then lcCandidateAux₁ I x hY else 0
+
+theorem lcCandidateAux_apply [FiniteDimensional ℝ E] {x : M}
+    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    inner ℝ (lcCandidateAux I Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
+  unfold lcCandidateAux
+  rw [dif_pos hY]
+  simpa [lcCandidateAux] using lcCandidateAux₁_apply I hX hY hZ
 
 lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcCandidateAux I (M := M)) where
