@@ -40,8 +40,6 @@ def Abelianization : Type u :=
 
 namespace Abelianization
 
-attribute [local instance] QuotientGroup.leftRel
-
 instance commGroup : CommGroup (Abelianization G) where
   __ := QuotientGroup.Quotient.group _
   mul_comm x y := Quotient.inductionOn₂ x y fun a b ↦ Quotient.sound' <|
