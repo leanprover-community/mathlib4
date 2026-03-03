@@ -89,6 +89,7 @@ end IsBrauerEquivalent
 variable (K)
 
 /-- `CSA` equipped with Brauer Equivalence is indeed a setoid. -/
+@[implicit_reducible]
 def Brauer.CSA_Setoid : Setoid (CSA K) where
   r := IsBrauerEquivalent
   iseqv := IsBrauerEquivalent.is_eqv
