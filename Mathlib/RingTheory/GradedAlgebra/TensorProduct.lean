@@ -11,8 +11,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 /-! # Tensor product of graded algebra
 
 In this file we show that if `𝒜` is a graded `R`-algebra, and `S` is any `R`-algebra, then
-`S ⊗[R] 𝒜` (which is actually `fun i ↦ (𝒜 i).baseChange S`) is a graded `S`-algebra with the same
-grading.
+`S ⊗[R] 𝒜` is a graded `S`-algebra with the grading `fun i ↦ (𝒜 i).baseChange S`.
 
 ## Implementation notes
 

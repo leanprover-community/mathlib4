@@ -673,7 +673,7 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
   AlgebraTensorModule.congr (.refl _ _) e
 
 @[simp] lemma _root_.LinearEquiv.baseChange_tmul {e : M ≃ₗ[R] N} (a : A) (m : M) :
-    (e.baseChange R A) (a ⊗ₜ m) = a ⊗ₜ e m :=
+    e.baseChange R A (a ⊗ₜ m) = a ⊗ₜ e m :=
   rfl
 
 @[simp] lemma _root_.LinearEquiv.baseChange_symm_tmul {e : M ≃ₗ[R] N} (a : A) (n : N) :
@@ -831,7 +831,7 @@ lemma baseChange_span (s : Set M) :
 def toBaseChange : A ⊗[R] p →ₗ[A] p.baseChange A :=
   LinearMap.rangeRestrict _
 
-@[simp] lemma toBaseChange_apply_tmul_coe (a : A) (x : p) :
+@[simp] lemma coe_toBaseChange_tmul (a : A) (x : p) :
     (p.toBaseChange A (a ⊗ₜ x) : A ⊗[R] M) = a ⊗ₜ (x : M) := rfl
 
 lemma toBaseChange_surjective : Function.Surjective (p.toBaseChange A) :=

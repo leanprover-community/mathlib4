@@ -53,10 +53,10 @@ theorem baseChange (hm : IsInternal ℳ) : IsInternal fun i ↦ (ℳ i).baseChan
   haveI := hm.chooseDecomposition
   Decomposition.isInternal _
 
-nonrec theorem toBaseChange_bijective (hm : IsInternal ℳ) (i : ι) :
+theorem toBaseChange_bijective (hm : IsInternal ℳ) (i : ι) :
     Function.Bijective ((ℳ i).toBaseChange S) :=
   haveI := hm.chooseDecomposition
-  toBaseChange_bijective ℳ i
+  DirectSum.toBaseChange_bijective ℳ i
 
 theorem toBaseChange_injective (hm : IsInternal ℳ) (i : ι) :
     Function.Injective ((ℳ i).toBaseChange S) :=
