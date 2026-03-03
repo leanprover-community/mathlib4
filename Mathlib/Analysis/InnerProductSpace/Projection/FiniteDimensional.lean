@@ -57,7 +57,6 @@ variable [FiniteDimensional 𝕜 K]
 theorem topologicalClosure_eq_self : K.topologicalClosure = K :=
   K.closed_of_finiteDimensional.submodule_topologicalClosure_eq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem det_reflection : LinearMap.det K.reflection.toLinearMap = (-1) ^ finrank 𝕜 Kᗮ := by
   by_cases hK : FiniteDimensional 𝕜 Kᗮ

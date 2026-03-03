@@ -1050,7 +1050,6 @@ lemma nnnorm_seminormedAddCommGroupToProd [SeminormedAddCommGroup α] [Seminorme
     @NNNorm.nnnorm _ (seminormedAddCommGroupToProd p α β).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isBoundedSMulSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [SeminormedRing R]
     [Module R α] [Module R β] [IsBoundedSMul R α] [IsBoundedSMul R β] :
