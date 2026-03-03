@@ -9,6 +9,7 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Whiskering
 public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
+public import Mathlib.CategoryTheory.Sites.Continuous
 /-!
 
 # Subcanonical Grothendieck topologies
@@ -325,5 +326,24 @@ lemma preservesColimitsOfShape_yoneda_of_ofArrows_inj_mem {ι : Type*}
   have (i : ι) : Mono (c.inj i) := .of_coproductDisjoint hc _
   refine isColimitCofanMkYoneda _ _ (hcov hc) htriv fun hij Y a b hab ↦ ⟨?_⟩
   exact .ofCoproductDisjointOfCommSq hij hc _ _ hab
+
+variable {D : Type*} [Category.{v'} D] (F : C ⥤ D) (J : GrothendieckTopology C)
+  (K : GrothendieckTopology D)
+
+lemma subcanonical_of_full_of_faithful [F.Full] [F.Faithful]
+    [Functor.IsContinuous.{max v v'} F J K] [K.Subcanonical] :
+    J.Subcanonical := by
+  refine .of_isSheaf_yoneda_obj _ fun Y ↦ ?_
+  suffices h : Presieve.IsSheaf J (CategoryTheory.uliftYoneda.{v'}.obj Y) by
+    rwa [Presieve.isSheaf_iff_of_nat_equiv]
+    · intro
+      exact Equiv.ulift.symm
+    · intros
+      rfl
+  rw [← isSheaf_iff_isSheaf_of_type, Presheaf.isSheaf_of_iso_iff
+    ((Functor.FullyFaithful.ofFullyFaithful F).compUliftYonedaCompWhiskeringLeft.app Y).symm]
+  refine F.op_comp_isSheaf_of_isSheaf J K _ ?_
+  rw [isSheaf_iff_isSheaf_of_type]
+  apply GrothendieckTopology.Subcanonical.isSheaf_of_isRepresentable
 
 end CategoryTheory.GrothendieckTopology
