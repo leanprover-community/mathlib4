@@ -139,7 +139,6 @@ lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
   rw [tensor] at nat
   exact ConcreteCategory.congr_hom ((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
 an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/
 def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by

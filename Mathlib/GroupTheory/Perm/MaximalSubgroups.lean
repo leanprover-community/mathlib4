@@ -73,7 +73,6 @@ theorem isPreprimitive_stabilizer_subgroup [IsPreprimitive (stabilizer M s) s]
       map_smul' _ _ := rfl }
   IsPreprimitive.of_surjective (f := f) Function.surjective_id
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPretransitive.of_partition
     (hs : ∀ a ∈ s, ∀ b ∈ s, ∃ g : M, g • a = b)
     (hs' : ∀ a ∈ sᶜ, ∀ b ∈ sᶜ, ∃ g : M, g • a = b)
@@ -277,7 +276,7 @@ lemma subsingleton_of_stabilizer_lt_of_subset {B : Set α}
       rw [← inter_eq_self_of_subset_right hBs, ← Subtype.image_preimage_val]
       apply Set.Subsingleton.image hB'
     · -- `Subtype.val ⁻¹' B = s`
-      have hBs' : B = s := Set.Subset.antisymm hBs (by aesop)
+      have hBs' : B = s := Set.Subset.antisymm hBs (by simp_all)
       subst hBs'
       obtain ⟨g', hg', hg's⟩ := SetLike.exists_of_lt hG
       have h := (isBlock_iff_smul_eq_or_disjoint.mp hB ⟨g', hg'⟩).resolve_left hg's
@@ -342,7 +341,6 @@ open MulAction Equiv
 
 variable [Finite α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     {s : Set α} (h0 : s.Nonempty) (hα : s.ncard < sᶜ.ncard) :
     IsCoatom (stabilizer (Perm α) s) := by
@@ -393,7 +391,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton :=
     -- uses Step 1
-    hB.subsingleton_of_ssubset_of_stabilizer_Perm_le (hBsc.ssubset_of_ne (by aesop)) hG'.le
+    hB.subsingleton_of_ssubset_of_stabilizer_Perm_le (hBsc.ssubset_of_ne (by lia)) hG'.le
   -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s) : B.Subsingleton :=
     have := isPreprimitive_stabilizer_subgroup hG.le
@@ -403,7 +401,6 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   apply MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;>
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `MulAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
 provided `s` and `sᶜ` are nonempty, and `Nat.card α ≠ 2 * Nat.card s`.
 
