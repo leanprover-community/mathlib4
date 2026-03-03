@@ -270,7 +270,7 @@ noncomputable def cokernelSequenceCyclesEIso
     (Iso.refl _) (by simp) (by simp [πE])
 
 lemma cokernelSequenceCyclesE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
-    (X.cokernelSequenceCyclesE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ).Exact :=
+    (X.cokernelSequenceCyclesE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).Exact :=
   ShortComplex.exact_of_iso (X.cokernelSequenceCyclesEIso f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ).symm
     (ShortComplex.exact_of_g_is_cokernel _ (ShortComplex.homologyIsCokernel _))
 
