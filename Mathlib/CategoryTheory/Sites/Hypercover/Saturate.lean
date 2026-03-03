@@ -79,6 +79,7 @@ def toSaturateOfHasPullbacks {S : C} (E : PreZeroHypercover S) [E.HasPullbacks] 
   s₁ {i j} k := ⟨pullback (E.f i) (E.f j), _, _, pullback.condition⟩
   h₁ {i j} k := 𝟙 _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` has pairwise pullbacks, this is the canonical map to the minimal `1`-hypercover
 from the saturation. -/
 @[simps]
@@ -110,6 +111,7 @@ lemma toSaturateOfHasPullbacks_fromSaturateOfHasPullbacks :
     E.toSaturateOfHasPullbacks.comp E.fromSaturateOfHasPullbacks = .id _ := by
   refine PreOneHypercover.Hom.ext' rfl (by simp) (by simp) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition `E.saturate ⟶ E.toPreOneHypercover ⟶ E.saturate` is homotopic to the
 identity. -/
 noncomputable
