@@ -50,6 +50,9 @@ lemma of_algEquiv {S' : Type*} [CommRing S'] [Algebra R S'] (e : S ≃ₐ[R] S')
   obtain ⟨n, ⟨f⟩⟩ := nonempty_algEquiv_fun R S
   exact ⟨n, ⟨e.symm.trans f⟩⟩
 
+instance : IsFiniteSplit R R :=
+  .of_algEquiv (AlgEquiv.funUnique (ι := Fin 1) _ _)
+
 lemma of_subsingleton [Subsingleton R] : IsFiniteSplit R S := by
   have : Subsingleton S := RingHom.codomain_trivial (algebraMap R S)
   exact ⟨0, ⟨default⟩⟩
