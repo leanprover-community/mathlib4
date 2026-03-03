@@ -113,15 +113,14 @@ end TopCat
 
 namespace Topology.IsOpenEmbedding
 
+open TopCat Sheaf
+
 variable (A : Type*) [Category.{w} A] {FA : A → A → Type*} {CA : A → Type w}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
 variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
 variable [PreservesFilteredColimits (CategoryTheory.forget A)]
 variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
-
 variable {f : X ⟶ Y} (hf : IsOpenEmbedding f)
-
-open TopCat Sheaf
 
 /--
 The "naive" sheaf pullback by an open embedding `f`: on the underlying presheaf, this is just
