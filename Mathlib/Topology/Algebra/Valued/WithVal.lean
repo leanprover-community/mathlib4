@@ -549,7 +549,7 @@ theorem IsEquiv.uniformContinuous_congr
       erw [ne_eq, h.eq_zero]
       simpa using hx0
     rw [ne_eq, h.eq_zero]
-    exact ne_zero_of_lt hs₀ -/
+    exact ne_zero_of_lt hs₀ -/ -/
 
 -- TODO: reinstate (From #34049)
 /- theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w)
@@ -562,6 +562,54 @@ theorem IsEquiv.uniformContinuous_congr
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
   use .mk0 (v r / v s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ hs₀, hv, ← map_mul, ← lt_def, ← ofVal_mul,
+    ← h.orderRingIso_apply, ← h.orderRingIso.lt_symm_apply]
+  simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx -/
+
+-- TODO: move
+lemma _root_.Valuation.IsEquiv.restrict {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
+    (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
+  simp only [IsEquiv] at h ⊢
+  intro r s
+  simp only [restrict_le_iff, h]
+
+theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w) (h : v.IsEquiv w) :
+    UniformContinuous (WithVal.equiv v) := by
+  refine uniformContinuous_of_continuousAt_zero _ ?_
+  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
+  intro γ
+  obtain ⟨r, s, hr₀, hs₀, hr⟩ := exists_div_eq_of_unit Valued.v γ
+  use .mk0 ((instValued v).v.restrict ((WithVal.equiv v).symm r) /
+    (instValued v).v.restrict ((WithVal.equiv v).symm s)) (by
+    simp [ restrict₀_eq_zero_iff, (eq_zero h (r := r)).ne, ← hv, (eq_zero h (r := s)).ne,
+      hr₀.ne', hs₀.ne'])
+  intro x hx
+  let y := (WithVal.equiv v) x
+  have hy : toVal v y = x := rfl
+  have hs0' : 0 < Valued.v.restrict (toVal v s) := by
+    simp only [restrict_pos_iff, apply_symm_equiv, h.pos_iff, ← hv, hs₀]
+  have h' : v.restrict.IsEquiv w.restrict := h.restrict
+  rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
+    ← map_mul, ← lt_def, ← ofVal_mul,
+    ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
+  simp only [toVal_mul, orderRingIso_symm_apply, lt_def, ofVal_mul, restrict_lt_iff]
+  simp only [equiv_symm_apply, Units.val_mk0, Set.mem_setOf_eq, lt_div_iff₀ hs0'] at hx
+  erw [← map_mul] at hx -- Why erw?
+  rw [restrict_lt_iff] at hx
+  exact hx
+
+theorem IsEquiv.uniformContinuous_equiv_symm [Valued R Γ₀'] (hv : Valued.v = w) (h : w.IsEquiv v) :
+    UniformContinuous (WithVal.equiv v).symm := by
+  refine uniformContinuous_of_continuousAt_zero _ ?_
+  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
+  intro γ
+  obtain ⟨r, s, hr₀, hs₀, hr⟩ := exists_div_eq_of_unit Valued.v γ
+  sorry
+  /- use .mk0 (w r / w s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
+  simp only [equiv_symm_apply, Set.mem_setOf_eq, valued_toVal]
+  simp [hv] at hx
+  rw [← hr, lt_div_iff₀ hs₀, ← map_mul, ← lt_def,
     ← h.orderRingIso_apply, ← h.orderRingIso.lt_symm_apply]
   simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx -/
 
@@ -590,6 +638,15 @@ def _root_.WithVal.uniformEquiv [Valued R Γ₀'] (hV : Valued.v = w)
   __ := WithVal.equiv v
   uniformContinuous_toFun := h.uniformContinuous_equiv hV hw
   uniformContinuous_invFun := h.symm.uniformContinuous_equiv_symm hV hv -/
+
+/-- Let `v : Valuation R Γ₀`. If `R` has `Valued R Γ₀'` defined via construction through
+`w : Valuation R Γ₀'`, with `v` equivalent to `w`, then `WithVal.equiv` defines a uniform
+space isomorphism `WithVal v ≃ᵤ R`. -/
+def _root_.WithVal.uniformEquiv [Valued R Γ₀'] (hV : Valued.v = w) (h : v.IsEquiv w) :
+    WithVal v ≃ᵤ R where
+  __ := WithVal.equiv v
+  uniformContinuous_toFun := h.uniformContinuous_equiv hV
+  uniformContinuous_invFun := h.symm.uniformContinuous_equiv_symm hV
 
 theorem exists_div_eq_of_surjective {K : Type*} [Field K] {Γ₀ : Type*}
     [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation K Γ₀} (hv : Function.Surjective v)

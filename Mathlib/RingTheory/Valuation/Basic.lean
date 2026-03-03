@@ -519,6 +519,23 @@ lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
   simp only [restrict_def, restrict₀_apply]
   aesop
 
+lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
+    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
+  set u := WithZero.unzero (Units.ne_zero γ ) with hu_def
+  obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
+  have hx : 0 < v x := by
+    rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
+    aesop
+  use x, a, hx, zero_lt_iff.mpr ha
+  have hx0 : v.restrict x ≠ 0 := by simp [restrict₀_eq_zero_iff, hx.ne']
+  have ha0 : v.restrict a ≠ 0 := by simp [restrict₀_eq_zero_iff, ha]
+  rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff]
+  simp only [restrict_def, map_mul]
+  erw [embedding_restrict₀ x, embedding_restrict₀ a, ← hax] -- Why erw?
+  congr
+  rw [← WithZero.coe_unzero (Units.ne_zero γ)]
+  rfl -- Why rfl?
+
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
