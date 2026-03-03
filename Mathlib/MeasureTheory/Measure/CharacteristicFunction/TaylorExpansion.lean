@@ -3,9 +3,12 @@ Copyright (c) 2024 Thomas Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Zhu, Etienne Marion
 -/
-import Mathlib.Analysis.Calculus.Taylor
+module
+
+public import Mathlib.Analysis.Calculus.Taylor
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
+
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 import Mathlib.Probability.Notation
 
 /-!
@@ -14,8 +17,13 @@ import Mathlib.Probability.Notation
 This file provides the Taylor expansion of the characteristic function of a measure.
 -/
 
-open MeasureTheory ProbabilityTheory Complex Set
+public section
+
+
+open MeasureTheory ProbabilityTheory Complex Set VectorFourier
 open scoped Nat Real NNReal ENNReal Topology RealInnerProductSpace
+
+namespace MeasureTheory
 
 section InnerProductSpace
 
@@ -24,19 +32,31 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   {μ : Measure E} [IsFiniteMeasure μ]
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The characteristic function of a finite measure with a moment of order `n` is `C^n`.
+See `contDiff_charFun'` for the version proving `C^∞` by assuming all moments exist. -/
 @[fun_prop]
 theorem contDiff_charFun {n : ℕ} (hint : Integrable (‖·‖ ^ n) μ) :
     ContDiff ℝ n (charFun μ) := by
   simp_rw [funext charFun_eq_fourierIntegral']
-  refine (VectorFourier.contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
+  refine (contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
   simpa using integrable_norm_pow_of_le aestronglyMeasurable_id (Nat.cast_le.1 hk) hint
+
+set_option backward.isDefEq.respectTransparency false in
+omit [IsFiniteMeasure μ] in
+/-- The characteristic function of a measure with all moments is `C^∞`. See `contDiff_charFun`
+for the version proving only `C^n` by only assuming that the moment of order `n` exists. -/
+@[fun_prop]
+theorem contDiff_charFun' {n : ℕ∞} (hint : ∀ k, Integrable (‖·‖ ^ k) μ) :
+    ContDiff ℝ n (charFun μ) := by
+  simp_rw [funext charFun_eq_fourierIntegral']
+  refine (contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
+  simpa using hint k
 
 @[fun_prop]
 lemma continuous_charFun : Continuous (charFun μ) :=
   contDiff_zero.1 (contDiff_charFun (by simp))
 
 set_option backward.isDefEq.respectTransparency false in
-open VectorFourier in
 theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : Integrable (‖·‖ ^ n) μ) (x : Fin n → E) :
     iteratedFDeriv ℝ n (charFun μ) t x = I ^ n * ∫ y, (∏ i, ⟪y, x i⟫) * exp (⟪y, t⟫ * I) ∂μ := by
   have h : innerₗ E = (innerSL ℝ).toLinearMap₁₂ := rfl
@@ -61,9 +81,11 @@ theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : Integrable (‖·‖ ^ 
   simp_rw [mul_left_comm (exp _), integral_const_mul, ← mul_assoc, ← mul_pow]
   field_simp
   congr with
-  ring_nf
+  ring
 
 end InnerProductSpace
+
+section Real
 
 variable {μ : Measure ℝ} [IsFiniteMeasure μ]
 
@@ -91,42 +113,37 @@ lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : Integrable (|·| ^ n) μ) 
     integrable_norm_pow_of_le aestronglyMeasurable_id (Finset.mem_range_succ_iff.1 hkn) hint
   simp [iteratedDeriv_charFun_zero hint', mul_pow, mul_comm, mul_assoc, mul_left_comm]
 
-theorem taylor_charFun {n : ℕ} (hint : Integrable (|·| ^ n) μ) :
-    (fun t ↦ charFun μ t -
-      ∑ k ∈ Finset.range (n + 1), (k ! : ℂ)⁻¹ * (t * I) ^ k * ∫ x, x ^ k ∂μ) =o[𝓝 0]
-    fun t ↦ t ^ n := by
-  convert taylor_isLittleO_univ (contDiff_charFun hint)
-  · exact (taylorWithinEval_charFun_zero hint _).symm
-  · simp
-
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
   {X : Ω → ℝ}
 
 set_option backward.isDefEq.respectTransparency false in
-lemma taylor_charFun_two' (hX : Measurable X) (hint : Integrable (|·| ^ 2) (P.map X)) :
-    (fun t ↦ charFun (P.map X) t - (1 + P[X] * t * I - P[X ^ 2] * t ^ 2 / 2))
-      =o[𝓝 0] fun t ↦ t ^ 2 := by
-  have : IsProbabilityMeasure (P.map X) := Measure.isProbabilityMeasure_map hX.aemeasurable
-  convert taylor_charFun hint with x
+lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
+    (hint : Integrable (|·| ^ 2) (P.map X)) (t : ℝ) :
+    taylorWithinEval (charFun (P.map X)) 2 univ 0 t =
+      1 + (P[X] : ℝ) * t * I - (P[X ^ 2] : ℝ) * t ^ 2 / 2 := by
+  have : IsProbabilityMeasure (P.map X) := Measure.isProbabilityMeasure_map hX
+  convert taylorWithinEval_charFun_zero hint t with x
   simp only [Pi.pow_apply, Nat.reduceAdd, Finset.sum_range_succ, Finset.range_one,
     Finset.sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, mul_one,
     integral_const, probReal_univ, smul_eq_mul, ofReal_one, Nat.factorial_one, pow_one, one_mul,
     Nat.factorial_two, Nat.cast_ofNat]
-  rw [integral_map, integral_map, ← integral_complex_ofReal, ← integral_complex_ofReal]
+  rw [integral_map, integral_map]
   any_goals fun_prop
   simp [field]
   ring
 
 set_option backward.isDefEq.respectTransparency false in
-lemma taylor_charFun_two {X : Ω → ℝ} (hX : Measurable X) {P : Measure Ω} [IsProbabilityMeasure P]
-    (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) :
-    (fun t ↦ charFun (P.map X) t - (1 - t ^ 2 / 2)) =o[𝓝 0] fun t ↦ t ^ 2 := by
-  convert taylor_charFun_two' hX ?_
-  · simp [h0, integral_complex_ofReal]
-  · simp [h1, ← Pi.pow_apply, integral_complex_ofReal]
-  · infer_instance
-  · apply Integrable.of_integral_ne_zero
-    rw [integral_map]
-    any_goals fun_prop
-    simp_rw [sq_abs, ← Pi.pow_apply, h1]
-    grind
+lemma taylorWithinEval_charFun_two_zero' (hX : AEMeasurable X P)
+    (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) (t : ℝ) :
+    taylorWithinEval (charFun (P.map X)) 2 univ 0 t = 1 - t ^ 2 / 2 := by
+  rw [taylorWithinEval_charFun_two_zero hX, h0, h1]
+  · simp
+  apply Integrable.of_integral_ne_zero
+  rw [integral_map]
+  any_goals fun_prop
+  simp_rw [sq_abs, ← Pi.pow_apply, h1]
+  grind
+
+end Real
+
+end MeasureTheory
