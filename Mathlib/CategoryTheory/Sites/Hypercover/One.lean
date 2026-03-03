@@ -404,12 +404,14 @@ section
 variable (f : E.Hom F) (P : Cᵒᵖ ⥤ A)
   {c : Multifork (E.multicospanIndex P)} (hc : IsLimit c) {d : Multifork (F.multicospanIndex P)}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Hom.mapMultiforkOfIsLimit_id (d : Multifork (E.multicospanIndex P)) :
     (Hom.id E).mapMultiforkOfIsLimit P hc d = Multifork.IsLimit.lift hc d.ι d.condition := by
   apply Multifork.IsLimit.hom_ext hc
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma Hom.mapMultiforkOfIsLimit_comp (g : F.Hom G) (t : Multifork (G.multicospanIndex P))
     (hd : IsLimit d) :
@@ -752,6 +754,7 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
     | .fst _, .id _ => by simp
     | .snd _, .id _ => by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Isomorphic pre-`1`-hypercovers have equivalent mutifork index categories. -/
 @[simps! functor inverse]
 def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
@@ -771,6 +774,7 @@ def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
   functor_unitIso_comp c := by
     cases c <;> rw [eqToIso.hom, eqToHom_app, eqToHom_map] <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` and `F` are isomorphic pre-`1`-hypercovers and `G` is a presheaf,
 the multifork for `E` is exact if and only if the multifork for `E` is exact. -/
 noncomputable
