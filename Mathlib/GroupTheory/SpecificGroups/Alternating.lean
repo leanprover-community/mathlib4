@@ -256,7 +256,6 @@ theorem _root_.alternatingGroup.closure_cycleType_eq_two_two_eq_top (h5 : 5 ≤ 
     simp only [Set.mem_setOf_eq] at hg
     simp [sign_of_cycleType, hg, ← Units.val_inj]⟩, by simpa⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
 theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f : Perm α}
