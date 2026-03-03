@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 universe w
 
-/-- A profunctor between two categories `C` and `D` is a functor from `Cᵒᵖ × D` to the category of
+/-- A profunctor between two categories `C` and `D` is a functor from `Dᵒᵖ × C` to the category of
 types. We encode this data as a structure. -/
 structure Profunctor (C : Type*) [Category* C] (D : Type*) [Category* D] where
   /-- Apply a profunctor to a pair of objects. -/
