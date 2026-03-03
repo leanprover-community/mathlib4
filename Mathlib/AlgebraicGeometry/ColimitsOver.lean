@@ -289,7 +289,7 @@ lemma hasColimit_of_locallyDirected
   let d : ColimitGluingData D 𝒰 :=
     { cocone _ := colimit.cocone _
       isColimit _ := colimit.isColimit _
-      prop_trans := H  }
+      prop_trans := H }
   ⟨d.gluedCocone, d.isColimitGluedCocone⟩
 
 end AlgebraicGeometry.Scheme.Cover

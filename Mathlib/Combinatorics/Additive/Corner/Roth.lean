@@ -81,7 +81,6 @@ Note that this depends on `SzemerediRegularity.bound`, which is a tower-type exp
 `cornersTheoremBound` is in practice absolutely tiny. -/
 noncomputable def cornersTheoremBound (ε : ℝ) : ℕ := ⌊(triangleRemovalBound (ε / 9) * 27)⁻¹⌋₊ + 1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **corners theorem** for finite abelian groups.
 
 The maximum density of a corner-free set in `G × G` goes to zero as `|G|` tends to infinity. -/
@@ -199,7 +198,6 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
 
 open Asymptotics Filter
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Roth's theorem** for `ℕ` as an asymptotic statement.
 
 The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/
