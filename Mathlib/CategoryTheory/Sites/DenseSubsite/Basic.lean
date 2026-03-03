@@ -286,7 +286,7 @@ Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of typ
 where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
 we may obtain a natural isomorphism between sheaves.
 -/
-@[simps!]
+@[simps! hom_val inv_val]
 noncomputable def sheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
     ℱ ≅ ℱ' :=
   (fullyFaithfulSheafToPresheaf _ _).preimageIso (presheafIso i)
@@ -370,7 +370,7 @@ Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arb
 where `G` is locally-full and cover-dense, and `ℱ', ℱ` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/
-@[simps!]
+@[simps! hom_val inv_val]
 noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) : ℱ ≅ ℱ' :=
   (fullyFaithfulSheafToPresheaf _ _).preimageIso (presheafIso i)
 
