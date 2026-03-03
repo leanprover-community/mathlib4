@@ -132,7 +132,8 @@ lemma continuous_integralFun {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set E
     (g := fun t ↦ ∫ τ in t₀..t, g (compProj t₀ α τ) (fun i ↦ compProj t₀ (dα i) τ)) _
     continuous_subtype_val
   rw [continuous_iff_continuousAt]
-  exact fun t ↦ ((continuous_integrand hg t₀ hα dα).integral_hasStrictDerivAt t₀ t).continuousAt
+  exact fun t ↦ (continuous_integrand hg t₀ hα dα).integral_hasStrictDerivAt t₀ t
+    |>.hasDerivAt.continuousAt
 
 /-- The integral as a function from continuous curves to continuous curves, enabling us to take
 derivatives with respect to the curve -/
@@ -292,7 +293,7 @@ lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set
     (hα : range α ⊆ u) :
     HasFDerivAt (integralCMLM g u t₀)
       ((integralCMLM (fun x ↦ (fderiv ℝ g x).uncurryLeft) u t₀ α).curryLeft) α := by
-  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
+  rw [hasFDerivAt_iff_isLittleO, Asymptotics.isLittleO_iff]
   intro ε hε
   let ε' := ε / (1 + |tmax - tmin|)
   have hε' : 0 < ε' := by positivity
@@ -305,7 +306,7 @@ lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set
   refine ⟨min δ₁ δ₂, lt_min hδ₁ hδ₂, fun α' hdist' ↦ ?_⟩
   have h1 : ∀ x ∈ range α, ∀ z, dist x z < min δ₁ δ₂ → z ∈ u := fun x hx z hz ↦
     hthick (mem_thickening_iff.mpr ⟨x, hx, dist_comm x z ▸ hz.trans_le (min_le_left _ _)⟩)
-  have h2 : ∀ x ∈ range α, ∀ z, dist x z < min δ₁ δ₂ → ‖fderiv ℝ g x - fderiv ℝ g z‖ < ε' :=
+  have h2 : ∀ x ∈ range α, ∀ z, dist x z < min δ₁ δ₂ → dist (fderiv ℝ g x) (fderiv ℝ g z) < ε' :=
     fun x hx z hz ↦ hdist x hx z (hz.trans_le (min_le_right _ _))
   have hα' : range α' ⊆ u := fun _ ⟨t, ht⟩ ↦ ht ▸ h1 (α t) (mem_range_self t) _ (by
     rw [dist_comm, dist_eq_norm]
@@ -333,7 +334,7 @@ lemma hasFDerivAt_integralCMLM {n : ℕ} {g : E → E [×n]→L[ℝ] E} {u : Set
     apply (hg.differentiableOn one_ne_zero).differentiableAt (hu.mem_nhds _)
     exact h1 x (mem_range_self _) z (hseg z hz)
   · intro z hz
-    rw [norm_sub_rev]
+    rw [norm_sub_rev, ← dist_eq_norm]
     exact h2 x (mem_range_self _) z (hseg z hz) |>.le
 
 /-! ## Smoothness of `integralCMLM` -/
@@ -597,9 +598,10 @@ lemma exists_integralCurve_T_eq_zero {f : E → E} {x₀ : E}
     ∃ (ε : ℝ) (hε : 0 < ε) (α : C(Icc (t₀ - ε) (t₀ + ε), E)),
       range α ⊆ u ∧ T f u ⟨t₀, by simp [le_of_lt hε]⟩ (x₀, α) = 0 := by
   -- Get Picard-Lindelöf parameters from the C^1 condition
-  obtain ⟨ε₀, hε₀pos, a, r, L, K, hrpos, hPL⟩ := IsPicardLindelof.of_contDiffAt_one hf t₀
+  obtain ⟨ε₀, hε₀pos, a, r, L, K, hrpos, hPL⟩ := IsPicardLindelof.of_contDiffAt_one hf
   have hapos : (0 : ℝ) < a := by
-    have := hPL.mul_max_le; simp only [add_sub_cancel_left, sub_sub_cancel, max_self] at this
+    have := (hPL t₀).mul_max_le
+    simp only [add_sub_cancel_left, sub_sub_cancel, max_self] at this
     have hLε : (0 : ℝ) ≤ L * ε₀ := by positivity
     have hrpos' : (0 : ℝ) < r := hrpos
     linarith
@@ -612,7 +614,7 @@ lemma exists_integralCurve_T_eq_zero {f : E → E} {x₀ : E}
   have ha'lt : (a' : ℝ) < δ := (min_le_right _ _).trans_lt (half_lt_self hδpos)
   -- Shrink Picard-Lindelöf to a smaller time interval with `r = 0` and smaller `a'`
   obtain ⟨ε, hεpos, hPL'⟩ :=
-    hPL.exists_shrink_radius hε₀pos ha'le (zero_lt_iff.mpr (ne_of_gt ha'pos))
+    (hPL t₀).exists_shrink_radius hε₀pos ha'le (zero_lt_iff.mpr (ne_of_gt ha'pos))
   -- Get the fixed point (integral curve) from Picard-Lindelöf
   obtain ⟨α_fun, hα_fixed⟩ := ODE.FunSpace.exists_isFixedPt_next hPL' (mem_closedBall_self le_rfl)
   let α := α_fun.toContinuousMap
