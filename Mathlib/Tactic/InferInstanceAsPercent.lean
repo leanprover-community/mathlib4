@@ -44,7 +44,7 @@ public meta section
 open Lean Meta Elab Term
 
 /-- Compute the chain of delta-unfoldings starting from `e` at default transparency.
-    Returns all intermediate forms including `e` itself (unless `skipHead` is true). -/
+Returns all intermediate forms including `e` itself (unless `skipHead` is true). -/
 private def unfoldChain (e : Expr) (skipHead : Bool := false) :
     MetaM (Array Expr) := do
   let mut out : Array Expr := #[]
@@ -57,7 +57,7 @@ private def unfoldChain (e : Expr) (skipHead : Bool := false) :
   return out
 
 /-- Add all unfoldings of `e` to `acc` as replacement sources mapping to `target`.
-    If `skipHead` is true, the first element (i.e. `e` itself) is not added. -/
+If `skipHead` is true, the first element (i.e. `e` itself) is not added. -/
 private def addUnfoldings (acc : Array (Expr × Expr)) (e target : Expr)
     (skipHead : Bool := false) : MetaM (Array (Expr × Expr)) := do
   let chain ← unfoldChain e (skipHead := skipHead)
@@ -68,8 +68,8 @@ private def addUnfoldings (acc : Array (Expr × Expr)) (e target : Expr)
   return acc
 
 /-- Build the replacement table for differing arguments between `sourceType` and
-    `expectedType`. For each differing argument position, all unfoldings of both the
-    source and expected arguments are mapped to the expected argument. -/
+`expectedType`. For each differing argument position, all unfoldings of both the
+source and expected arguments are mapped to the expected argument. -/
 private def buildReplacements (sourceType expectedType : Expr) :
     MetaM (Array (Expr × Expr)) := do
   let sourceArgs := sourceType.getAppArgs
@@ -84,7 +84,7 @@ private def buildReplacements (sourceType expectedType : Expr) :
   return replacements
 
 /-- Check whether `e` is defeq (at `default` transparency) to any source expression
-    in `replacements`. Returns the target if found. -/
+in `replacements`. Returns the target if found. -/
 private def matchesAnyDefeq (e : Expr) (replacements : Array (Expr × Expr)) :
     MetaM (Option Expr) := do
   for (from_, to_) in replacements do
@@ -93,7 +93,7 @@ private def matchesAnyDefeq (e : Expr) (replacements : Array (Expr × Expr)) :
   return none
 
 /-- Replace binder domains in a chain of lambdas, stopping at the body.
-    Only replaces domains that are defeq to entries in `replacements`. -/
+Only replaces domains that are defeq to entries in `replacements`. -/
 private partial def replaceLamDomains (e : Expr) (replacements : Array (Expr × Expr)) :
     MetaM Expr := do
   match e with
@@ -103,7 +103,7 @@ private partial def replaceLamDomains (e : Expr) (replacements : Array (Expr × 
   | _ => return e
 
 /-- WHNF `e` at default transparency and return the constructor info, universe levels,
-    and arguments, or `none` if `e` doesn't reduce to a constructor application. -/
+and arguments, or `none` if `e` doesn't reduce to a constructor application. -/
 private def getCtorApp? (e : Expr) :
     MetaM (Option (ConstructorVal × List Level × Array Expr)) := do
   let e' ← withDefault <| whnf e
@@ -112,7 +112,7 @@ private def getCtorApp? (e : Expr) :
   return some (ci, us, e'.getAppArgs)
 
 /-- For each constructor parameter, determine whether it is instance-implicit and
-    whether it is a proof. -/
+whether it is a proof. -/
 private def getFieldInfo (ci : ConstructorVal) : MetaM (Array (Bool × Bool)) :=
   withDefault <| forallTelescopeReducing ci.type fun ctorArgs _ =>
     ctorArgs.mapM fun arg => do
@@ -123,7 +123,7 @@ private def getFieldInfo (ci : ConstructorVal) : MetaM (Array (Bool × Bool)) :=
 mutual
 
 /-- Process each constructor argument: replace carrier type parameters, recursively
-    normalize instance-implicit fields, and patch lambda binder domains in other fields. -/
+normalize instance-implicit fields, and patch lambda binder domains in other fields. -/
 private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
     (args : Array Expr) (fieldInfo : Array (Bool × Bool))
     (replacements : Array (Expr × Expr)) (fuel : Nat) : MetaM Expr := do
@@ -144,10 +144,10 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
   return mkAppN (.const ci.name us) args
 
 /-- Recursively normalize a class instance expression:
-    1. WHNF at `default` transparency to expose the constructor.
-    2. Replace the carrier type parameter(s) in the constructor.
-    3. For each instance-implicit, non-proof field: recurse.
-    4. For each non-instance function field: replace lambda binder domains only. -/
+1. WHNF at `default` transparency to expose the constructor.
+2. Replace the carrier type parameter(s) in the constructor.
+3. For each instance-implicit, non-proof field: recurse.
+4. For each non-instance function field: replace lambda binder domains only. -/
 private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × Expr))
     (fuel : Nat := 50) : MetaM Expr := do
   if fuel == 0 then return e
@@ -161,21 +161,21 @@ private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × 
 end
 
 /-- `inferInstanceAs%` — like `inferInstanceAs`, but rewrites internal sub-expressions
-    (e.g. lambda binder domains) to use the expected carrier type instead of
-    intermediate unfoldings that leaked during instance synthesis.
+(e.g. lambda binder domains) to use the expected carrier type instead of
+intermediate unfoldings that leaked during instance synthesis.
 
-    When `inferInstanceAs (SomeClass A)` is used to define `SomeClass B` (where
-    `B` is a non-reducible alias for `A`), the synthesized instance may contain
-    sub-expressions referring to `A` or its unfoldings instead of `B`. This
-    causes `isDefEq` failures at `reducibleAndInstances` transparency.
-    `inferInstanceAs%` fixes this by recursively normalizing the constructor
-    tree, patching carrier types and lambda binder domains.
+When `inferInstanceAs (SomeClass A)` is used to define `SomeClass B` (where
+`B` is a non-reducible alias for `A`), the synthesized instance may contain
+sub-expressions referring to `A` or its unfoldings instead of `B`. This
+causes `isDefEq` failures at `reducibleAndInstances` transparency.
+`inferInstanceAs%` fixes this by recursively normalizing the constructor
+tree, patching carrier types and lambda binder domains.
 
-    Example:
-    ```
-    noncomputable instance : Field (FiniteResidueField K) :=
-      inferInstanceAs% (Field (IsLocalRing.ResidueField _))
-    ```
+Example:
+```
+noncomputable instance : Field (FiniteResidueField K) :=
+  inferInstanceAs% (Field (IsLocalRing.ResidueField _))
+```
 -/
 elab "inferInstanceAs% " source:term : term <= expectedType => do
   let sourceType ← elabType source
