@@ -273,6 +273,9 @@ def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
 
+@[deprecated (since := "2026-03-03")]
+alias pushforwardPullbackAdjunction := pullbackPushforwardAdjunction
+
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
 def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.hom ≅ pushforward C H.inv :=
