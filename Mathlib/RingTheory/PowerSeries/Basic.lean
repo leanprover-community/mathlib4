@@ -148,6 +148,10 @@ theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) :
     coeff (R := R) n = MvPowerSeries.coeff s := by
   rw [coeff, ← h, ← Finsupp.unique_single s]
 
+@[simp]
+lemma coeff_coe {f : R⟦X⟧} (n : ℕ) :
+    MvPowerSeries.coeff (Finsupp.single () n) f = f.coeff n := rfl
+
 /-- Two formal power series are equal if all their coefficients are equal. -/
 @[ext]
 theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff n φ = coeff n ψ) : φ = ψ :=
@@ -202,6 +206,10 @@ def constantCoeff : R⟦X⟧ →+* R :=
 /-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C
+
+@[simp]
+lemma constantCoeff_coe {f : PowerSeries R} :
+    MvPowerSeries.constantCoeff f = constantCoeff f := rfl
 
 @[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C := rfl
 
