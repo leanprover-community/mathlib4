@@ -322,23 +322,23 @@ theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ
       convert sym_filterNe_mem a hm
       rw [erase_insert ha]
 
+variable {ι : Type*} [DecidableEq ι]
+
 /-- A “multinomial” theorem for divided powers — without multinomial coefficients. -/
-theorem dpow_sum {ι : Type*} [DecidableEq ι] {s : Finset ι} {x : ι → A}
-    (hx : ∀ i ∈ s, x i ∈ I) {n : ℕ} :
+theorem dpow_sum {s : Finset ι} {x : ι → A} (hx : ∀ i ∈ s, x i ∈ I) {n : ℕ} :
     hI.dpow n (s.sum x) =
       (s.sym n).sum fun k ↦ s.prod fun i ↦ hI.dpow (Multiset.count i k) (x i) :=
   dpow_sum' hI.dpow hI.dpow_zero hI.dpow_add hI.dpow_eval_zero hx
 
 /-- A "multinomial" theorem for divided powers — without multinomial coefficients — for finitely
 supported functions. -/
-theorem dpow_finsupp_sum {ι : Type*} [DecidableEq ι] {x : ι →₀ A} (hx : ∀ i, x i ∈ I) {n : ℕ} :
+theorem dpow_finsupp_sum {x : ι →₀ A} (hx : ∀ i, x i ∈ I) {n : ℕ} :
     hI.dpow n (x.sum fun _ r ↦ r) =
       ∑ k ∈ (x.support.sym n), x.prod fun i r ↦ hI.dpow (Multiset.count i k) r := by
   simp [Finsupp.sum, hI.dpow_sum (fun i _ ↦ hx i), Finsupp.prod]
 
-theorem dpow_linearCombination {ι : Type*} [DecidableEq ι] {S : Type*} [CommSemiring S]
-    [Algebra A S] {J : Ideal S} (hJ : DividedPowers J) {b : ι → S} {x : ι →₀ A}
-    (hx : ∀ i ∈ x.support, b i ∈ J) {n : ℕ} :
+theorem dpow_linearCombination {S : Type*} [CommSemiring S] [Algebra A S] {J : Ideal S}
+    (hJ : DividedPowers J) {b : ι → S} {x : ι →₀ A} (hx : ∀ i ∈ x.support, b i ∈ J) {n : ℕ} :
     hJ.dpow n (x.sum fun i r ↦ r • (b i)) =
       ∑ k ∈ x.support.sym n,
         x.prod fun i r ↦ r ^ (Multiset.count i k) • hJ.dpow (Multiset.count i k) (b i) := by
