@@ -13,6 +13,7 @@ public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
 public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.Flat.Extension
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.MvPowerSeries.Basic
@@ -57,17 +58,6 @@ lemma IsBaseChange.of_eq_map {R S : Type*} [CommRing R] [CommRing S] [Algebra R 
   simp only [LinearEquiv.extendScalarsOfSurjective_apply, LinearEquiv.trans_apply, e]
   rw [← map_one (Ideal.Quotient.mk I), TensorProduct.quotTensorEquivQuotSMul_mk_tmul]
   simp
-
-end
-
-section
-
-lemma exists_isLocalHom_flat [IsLocalRing R] (K : Type v) [Field K] [Algebra (ResidueField R) K] :
-    ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : IsLocalRing R') (_ : Algebra R R')
-    (_ : IsLocalHom (algebraMap R R')), Module.Flat R R' ∧
-    maximalIdeal R' = (maximalIdeal R).map (algebraMap R R') ∧
-    Nonempty (K ≃ₐ[ResidueField R] (ResidueField R')) := by
-  sorry
 
 end
 
@@ -268,8 +258,8 @@ lemma quotient_power_char_formallySmooth [IsDomain R] [IsCohenRing R] (p : ℕ) 
           ext
           simp
         rw [this]
-        apply RingHom.FormallySmooth.of_ringEquiv_comp
-        exact RingHom.FormallySmooth.of_comp_ringEquiv _ _ ih'
+        apply RingHom.FormallySmooth.comp _ (RingHom.FormallySmooth.of_bijective e.symm.bijective)
+        exact (RingHom.FormallySmooth.of_bijective (RingEquiv.bijective _)).comp ih'
 
 end IsCohenRing
 
@@ -372,8 +362,9 @@ lemma exists_isCohenRing_residueField_map_bijective [IsAdicComplete (maximalIdea
       Ideal.quotEquivOfEq (by simp [cohen.span, ringChar.eq, Ideal.span_singleton_pow])
     let _ := (E.toRingHom.comp F).toAlgebra
     let _ : Algebra.FormallySmooth (ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)})
-      (S ⧸ maximalIdeal S ^ (n + 1 + 1)) := RingHom.FormallySmooth.of_ringEquiv_comp E F
-      (quotient_power_char_formallySmooth S p prime.out char' (n + 1 + 1) (by omega))
+      (S ⧸ maximalIdeal S ^ (n + 1 + 1)) :=
+      (quotient_power_char_formallySmooth S p prime.out char' (n + 1 + 1) (by omega)).comp
+      (RingHom.FormallySmooth.of_bijective E.bijective)
     let G : ℤ ⧸ Ideal.span {(p ^ (n + 1 + 1) : ℤ)} →+* R ⧸ (maximalIdeal R) ^ (n + 1 + 1) :=
       Ideal.quotientMap _ (Int.castRingHom R) (by
         simp only [Ideal.span_singleton_le_iff_mem, Ideal.mem_comap, eq_intCast, Int.cast_pow]
