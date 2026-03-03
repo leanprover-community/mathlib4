@@ -193,14 +193,4 @@ lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
 
 end ofComplex
 
-section J
-
-open scoped ComplexConjugate
-
-lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
-  ext
-  rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos)]
-
-end J
-
 end UpperHalfPlane

@@ -259,7 +259,7 @@ lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
 
 @[simp] lemma det_J : J.det = -1 := by ext; simp [J]
 
-@[simp] lemma sigma_J : σ J = starRingEnd ℂ := by simp [σ, J]
+@[simp] lemma sigma_J : σ J = Complex.conjCAE := by simp [σ, J]
 
 @[simp] lemma denom_J (τ : ℍ) : denom J τ = 1 := by simp [J, denom]
 
@@ -267,6 +267,10 @@ lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
     J • Subtype.mk t ht • I = Subtype.mk t ht • I := by
   ext
   simp [coe_J_smul]
+
+@[simp]
+lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g τ := by
+  simp [denom, vecMul, vecHead, vecTail]
 
 end J
 
@@ -334,6 +338,7 @@ lemma forall_smul_eq_iff {g : GL (Fin 2) ℝ} : (∀ τ : ℍ, g • τ = τ) �
   mpr := fun ⟨r, hr⟩ τ ↦ UpperHalfPlane.ext <| by
     simp [hr, coe_smul, σ, Units.smul_def, sq_pos_of_ne_zero r.ne_zero, num, denom]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma forall_smul_eq_iff_of_det_eq_one {g : GL (Fin 2) ℝ} (hg : g.det = 1) :
     (∀ τ : ℍ, g • τ = τ) ↔ g = 1 ∨ g = -1 := by
   rw [UpperHalfPlane.forall_smul_eq_iff]
@@ -415,31 +420,6 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
   grind
 
 end SLAction
-
-section J
-
-/-- The matrix `[-1, 0; 0, 1]`, which defines an anti-holomorphic involution of `ℍ` via
-`τ ↦ -conj τ`. -/
-def J : GL (Fin 2) ℝ := .mkOfDetNeZero !![-1, 0; 0, 1] (by simp)
-
-lemma coe_J_smul (τ : ℍ) : (↑(J • τ) : ℂ) = -conj ↑τ := by
-  simp [UpperHalfPlane.coe_smul, σ, J, show ¬(1 : ℝ) < 0 by simp, num, denom]
-
-@[simp] lemma val_J : J.val = !![-1, 0; 0, 1] := rfl
-
-@[simp] lemma J_sq : J ^ 2 = 1 := by ext; simp [J, sq, Matrix.one_fin_two]
-
-@[simp] lemma det_J : J.det = -1 := by ext; simp [J]
-
-@[simp] lemma sigma_J : σ J = Complex.conjCAE := by simp [σ, J]
-
-@[simp] lemma denom_J (τ : ℂ) : denom J τ = 1 := by simp [J, denom]
-
-@[simp]
-lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g τ := by
-  simp [denom, vecMul, vecHead, vecTail]
-
-end J
 
 end UpperHalfPlane
 

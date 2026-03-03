@@ -50,6 +50,7 @@ namespace GeneralLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v}
 
+set_option backward.isDefEq.respectTransparency false in
 instance [CommSemiring R] : IsScalarTower Rˣ (GL n R) (GL n R) where
   smul_assoc r g h := by ext; simp
 
