@@ -526,6 +526,36 @@ noncomputable def mk2TensorAt
         · exact mdifferentiable_extend .. }
     H.toContinuousLinearMap
 
+theorem mk2TensorAt_add
+    (φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)) {x}
+    (φ_σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) τ x = f x • φ σ τ x)
+    (φ_σ_add : ∀ {σ σ' τ}, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
+    (φ_τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
+        φ σ (f • τ) x = f x • φ σ τ x)
+    (φ_τ_add : ∀ {σ τ τ'}, MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+        φ σ (τ + τ') x = φ σ τ x + φ σ τ' x)
+    (ψ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x))
+    (ψ_σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
+      ψ (f • σ) τ x = f x • ψ σ τ x)
+    (ψ_σ_add : ∀ {σ σ' τ}, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      ψ (σ + σ') τ x = ψ σ τ x + ψ σ' τ x)
+    (ψ_τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
+        ψ σ (f • τ) x = f x • ψ σ τ x)
+    (ψ_τ_add : ∀ {σ τ τ'}, MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+        ψ σ (τ + τ') x = ψ σ τ x + ψ σ τ' x) :
+    mk2TensorAt I F F' (φ + ψ)
+      (fun {_ _ τ} hf hσ ↦
+      (congr($(φ_σ_smul hf hσ (τ := τ)) + $(ψ_σ_smul hf hσ (τ := τ)))).trans (smul_add _ _ _).symm)
+      sorry
+      (fun {_ σ _} hf hτ ↦
+      (congr($(φ_τ_smul hf hτ (σ := σ)) + $(ψ_τ_smul hf hτ (σ := σ)))).trans (smul_add _ _ _).symm)
+      sorry
+    = mk2TensorAt I F F' φ φ_σ_smul φ_σ_add φ_τ_smul φ_τ_add
+      + mk2TensorAt I F F' ψ ψ_σ_smul ψ_σ_add ψ_τ_smul ψ_τ_add := by
+  sorry
+
 end tensoriality
 
 section trivilization_topology
