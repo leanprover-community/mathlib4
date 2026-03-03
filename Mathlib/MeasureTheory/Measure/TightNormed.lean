@@ -259,8 +259,8 @@ lemma isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one
   positivity
 
 lemma isTightMeasureSet_range_of_tendsto_limsup_measureReal_inner_of_norm_eq_one
-    (h : ∀ y, ‖y‖ = 1
-      → Tendsto (fun r : ℝ ↦ limsup (fun n ↦ (μ n).real {x | r < ‖⟪y, x⟫_𝕜‖}) atTop) atTop (𝓝 0))
+    (h : ∀ y, ‖y‖ = 1 →
+      Tendsto (fun r : ℝ ↦ limsup (fun n ↦ (μ n).real {x | r < ‖⟪y, x⟫_𝕜‖}) atTop) atTop (𝓝 0))
     {C : ℝ≥0∞} (hC : C ≠ ∞) (hμ : ∀ n, μ n .univ ≤ C) :
     IsTightMeasureSet (Set.range μ) := by
   refine isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one 𝕜 fun z hz ↦ ?_
