@@ -45,33 +45,39 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The characteristic function of a finite measure with a moment of order `n` is `C^n`.
 See `contDiff_charFun'` for the version proving `C^∞` by assuming all moments exist. -/
 @[fun_prop]
-theorem contDiff_charFun {n : ℕ} (hint : Integrable (‖·‖ ^ n) μ) :
+theorem contDiff_charFun {n : ℕ} (hint : MemLp (‖·‖) n μ) :
     ContDiff ℝ n (charFun μ) := by
   simp_rw [funext charFun_eq_fourierIntegral']
   refine (contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
-  simpa using integrable_norm_pow_of_le aestronglyMeasurable_id (Nat.cast_le.1 hk) hint
+  simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
+  refine MemLp.integrable_norm_pow' ?_
+  exact ((memLp_norm_iff aestronglyMeasurable_id).1 hint).mono_exponent (by simp_all)
 
 set_option backward.isDefEq.respectTransparency false in
-omit [IsFiniteMeasure μ] in
 /-- The characteristic function of a measure with all moments is `C^∞`. See `contDiff_charFun`
 for the version proving only `C^n` by only assuming that the moment of order `n` exists. -/
 @[fun_prop]
-theorem contDiff_charFun' {n : ℕ∞} (hint : ∀ k, Integrable (‖·‖ ^ k) μ) :
+theorem contDiff_charFun' {n : ℕ∞} (hint : ∀ (k : ℕ), MemLp (‖·‖) k μ) :
     ContDiff ℝ n (charFun μ) := by
   simp_rw [funext charFun_eq_fourierIntegral']
   refine (contDiff_fourierIntegral (L := innerSL ℝ) fun k hk ↦ ?_).comp (by fun_prop)
-  simpa using hint k
+  simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
+  refine MemLp.integrable_norm_pow' ?_
+  exact ((memLp_norm_iff aestronglyMeasurable_id).1 (hint k)).mono_exponent (by simp_all)
 
 @[fun_prop]
-lemma continuous_charFun : Continuous (charFun μ) :=
-  contDiff_zero.1 (contDiff_charFun (by simp))
+lemma continuous_charFun : Continuous (charFun μ) := by
+  refine contDiff_zero.1 (contDiff_charFun ?_)
+  simpa using by fun_prop
 
 set_option backward.isDefEq.respectTransparency false in
-theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : Integrable (‖·‖ ^ n) μ) (x : Fin n → E) :
+theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : MemLp (‖·‖) n μ) (x : Fin n → E) :
     iteratedFDeriv ℝ n (charFun μ) t x = I ^ n * ∫ y, (∏ i, ⟪y, x i⟫) * exp (⟪y, t⟫ * I) ∂μ := by
   have h : innerₗ E = (innerSL ℝ).toLinearMap₁₂ := rfl
   have hint' (k : ℕ) (hk : k ≤ (n : ℕ∞)) : Integrable (fun x ↦ ‖x‖ ^ k * ‖(1 : E → ℂ) x‖) μ := by
-    simpa using integrable_norm_pow_of_le aestronglyMeasurable_id (Nat.cast_le.1 hk) hint
+    simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, mul_one]
+    refine MemLp.integrable_norm_pow' ?_
+    exact ((memLp_norm_iff aestronglyMeasurable_id).1 hint).mono_exponent (by simp_all)
   simp_rw [funext charFun_eq_fourierIntegral']
   rw [iteratedFDeriv_comp_const_smul]
   swap
@@ -82,7 +88,8 @@ theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : Integrable (‖·‖ ^ 
   simp only [ContinuousMultilinearMap.smul_apply, real_smul, ofReal_pow, ofReal_neg, ofReal_mul,
     ofReal_inv, ofReal_ofNat, ofReal_prod]
   rw [fourierIntegral_continuousMultilinearMap_apply Real.continuous_fourierChar]
-  swap; · exact integrable_fourierPowSMulRight _ (by simpa) (by fun_prop)
+  swap;
+  · exact integrable_fourierPowSMulRight _ (by simpa using hint.integrable_norm_pow') (by fun_prop)
   simp only [fourierIntegral, Real.fourierChar, Circle.exp, ContinuousMap.coe_mk, ofReal_mul,
     ofReal_ofNat, innerSL, map_neg, map_smul, ContinuousLinearMap.toLinearMap₁₂_apply,
     LinearMap.mkContinuous₂_apply, innerₛₗ_apply_apply, smul_eq_mul, neg_neg, AddChar.coe_mk,
@@ -100,27 +107,26 @@ section Real
 variable {μ : Measure ℝ} [IsFiniteMeasure μ]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem iteratedDeriv_charFun {n : ℕ} {t : ℝ} (hint : Integrable (|·| ^ n) μ) :
+theorem iteratedDeriv_charFun {n : ℕ} {t : ℝ} (hint : MemLp (‖·‖) n μ) :
     iteratedDeriv n (charFun μ) t = I ^ n * ∫ x, x ^ n * exp (t * x * I) ∂μ := by
   rw [iteratedDeriv, iteratedFDeriv_charFun]
   swap; · exact hint
   simp
 
 set_option backward.isDefEq.respectTransparency false in
-theorem iteratedDeriv_charFun_zero {n : ℕ} (hint : Integrable (|·| ^ n) μ) :
+theorem iteratedDeriv_charFun_zero {n : ℕ} (hint : MemLp (‖·‖) n μ) :
     iteratedDeriv n (charFun μ) 0 = I ^ n * ∫ x, x ^ n ∂μ := by
   simp [iteratedDeriv_charFun hint]
   norm_cast
 
 set_option backward.isDefEq.respectTransparency false in
-lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : Integrable (|·| ^ n) μ) (t : ℝ) :
+lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : MemLp (‖·‖) n μ) (t : ℝ) :
     taylorWithinEval (charFun μ) n univ 0 t
       = ∑ k ∈ Finset.range (n + 1), (k ! : ℂ)⁻¹ * (t * I) ^ k * ∫ x, x ^ k ∂μ := by
   simp_rw [taylor_within_apply, sub_zero, RCLike.real_smul_eq_coe_mul]
   refine Finset.sum_congr rfl fun k hkn ↦ ?_
   push_cast
-  have hint' : Integrable (fun x ↦ |x| ^ k) μ :=
-    integrable_norm_pow_of_le aestronglyMeasurable_id (Finset.mem_range_succ_iff.1 hkn) hint
+  have hint' : MemLp (‖·‖) k μ := hint.mono_exponent (by simp_all)
   simp [iteratedDeriv_charFun_zero hint', mul_pow, mul_comm, mul_assoc, mul_left_comm]
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
@@ -128,7 +134,7 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbability
 
 set_option backward.isDefEq.respectTransparency false in
 lemma taylorWithinEval_charFun_two_zero (hX : AEMeasurable X P)
-    (hint : Integrable (|·| ^ 2) (P.map X)) (t : ℝ) :
+    (hint : MemLp (‖·‖) 2 (P.map X)) (t : ℝ) :
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t =
       1 + (P[X] : ℝ) * t * I - (P[X ^ 2] : ℝ) * t ^ 2 / 2 := by
   have : IsProbabilityMeasure (P.map X) := Measure.isProbabilityMeasure_map hX
@@ -148,10 +154,10 @@ lemma taylorWithinEval_charFun_two_zero' (hX : AEMeasurable X P)
     taylorWithinEval (charFun (P.map X)) 2 univ 0 t = 1 - t ^ 2 / 2 := by
   rw [taylorWithinEval_charFun_two_zero hX, h0, h1]
   · simp
-  apply Integrable.of_integral_ne_zero
+  refine (memLp_two_iff_integrable_sq (by fun_prop)).2 (.of_integral_ne_zero ?_)
   rw [integral_map]
   any_goals fun_prop
-  simp_rw [sq_abs, ← Pi.pow_apply, h1]
+  simp_rw [Real.norm_eq_abs, sq_abs, ← Pi.pow_apply, h1]
   grind
 
 end Real
