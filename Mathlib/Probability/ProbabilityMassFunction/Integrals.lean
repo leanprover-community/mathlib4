@@ -29,6 +29,20 @@ section General
 variable {α : Type*} [MeasurableSpace α] [MeasurableSingletonClass α]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
+omit [NormedSpace ℝ E] [CompleteSpace E] in
+/-- A function is integrable with respect to a PMF if the weighted norms are summable. -/
+theorem integrable_of_summable_norm [Countable α] (p : PMF α) {f : α → E}
+    (hf : Summable fun a => ‖f a‖ * (p a).toReal) :
+    Integrable f p.toMeasure := by
+  refine ⟨.of_discrete, ?_⟩
+  rw [hasFiniteIntegral_iff_enorm, lintegral_countable']
+  simp_rw [PMF.toMeasure_apply_singleton _ _ (measurableSet_singleton _)]
+  have : ∀ a, ‖f a‖ₑ * (p a) = ENNReal.ofReal (‖f a‖ * (p a).toReal) := fun a => by
+    rw [← ofReal_norm_eq_enorm, ENNReal.ofReal_mul (norm_nonneg _),
+      ENNReal.ofReal_toReal (PMF.apply_ne_top p a)]
+  simp_rw [this, ← ENNReal.ofReal_tsum_of_nonneg (fun a => by positivity) hf]
+  exact ENNReal.ofReal_lt_top
+
 theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeasure) :
     ∫ a, f a ∂(p.toMeasure) = ∑' a, (p a).toReal • f a := calc
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
