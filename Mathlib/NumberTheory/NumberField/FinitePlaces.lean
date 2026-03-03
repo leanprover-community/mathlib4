@@ -30,8 +30,8 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
   absolute value of `x`. See also `NumberField.FinitePlace.norm_def'` and
   `NumberField.FinitePlace.norm_def_int` for versions where the `v`-adic absolute value is
   unfolded.
-* `NumberField.FinitePlace.mulSupport_finite`: the `v`-adic absolute value of a non-zero element of
-  `K` is different from 1 for at most finitely many `v`.
+* `NumberField.FinitePlace.hasFiniteMulSupport`: the `v`-adic absolute value of a non-zero element
+  of `K` is different from 1 for at most finitely many `v`.
 *  The valuation subrings of the field at the `v`-valuation and it's adic completion are
    discrete valuation rings.
 
@@ -298,7 +298,7 @@ lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Inject
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
   equivHeightOneSpectrum.injective.eq_iff
 
-theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
+theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 :=
     ne_iff_lt_iff_le.mpr <| norm_embedding_eq w x ▸ norm_le_one w.maximalIdeal x
@@ -312,17 +312,21 @@ theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   refine (h.subset ?_).of_finite_image h_inj
   simp only [dvd_span_singleton, Set.image_subset_iff, Set.preimage_setOf_eq, subset_refl]
 
-theorem mulSupport_finite {x : K} (h_x_nezero : x ≠ 0) :
+@[deprecated (since := "2026-03-03")] alias mulSupport_finite_int := hasFiniteMulSupport_int
+
+theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
     (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
   rcases IsFractionRing.div_surjective (A := 𝓞 K) x with ⟨a, b, hb, rfl⟩
   simp_all only [ne_eq, div_eq_zero_iff, FaithfulSMul.algebraMap_eq_zero_iff, not_or, map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
-  apply ((mulSupport_finite_int ha).union (mulSupport_finite_int hb)).subset
+  apply ((hasFiniteMulSupport_int ha).union (hasFiniteMulSupport_int hb)).subset
   intro w
   simp only [Function.mem_mulSupport, ne_eq, Set.mem_union]
   contrapose!
   simp +contextual only [ne_eq, one_ne_zero, not_false_eq_true, div_self, implies_true]
+
+@[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 
 protected
 lemma add_le (v : FinitePlace K) (x y : K) :

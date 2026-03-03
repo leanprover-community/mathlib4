@@ -233,6 +233,7 @@ namespace FractionalIdeal
 
 open Int IsLocalization
 
+open Ideal in
 open scoped Classical in
 /-- If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of `R` such that
 `I = a⁻¹J`, then `I` is equal to the product `∏_v v^(val_v(J) - val_v(a))`. -/
