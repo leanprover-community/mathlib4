@@ -53,13 +53,15 @@ theorem HarmonicContOnCl.circleAverage_eq {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
     circleAverage f c R = f c := by
   by_cases hR : R = 0
   · simp_all
+  have H : ContinuousOn (circleAverage f c) (Set.Ioc 0 |R|) := by
+    refine (h₁f.2.mono ?_).circleAverage (·.2.1.le)
+    intro x hx
+    rw [closure_ball _ (by aesop), mem_closedBall_iff_norm]
+    exact hx.2
   rw [← circleAverage_abs_radius]
-  apply ((h₁f.2.mono _).circleAverage (·.2.1.le)).eq_of_eqOn_Ioo (by aesop)
+  apply H.eq_of_eqOn_Ioo (by aesop)
   · intro r hr
     apply HarmonicOnNhd.circleAverage_eq
     · apply h₁f.1.mono
       rw [abs_of_pos hr.1]
       exact closedBall_subset_ball hr.2
-  · intro x hx
-    rw [closure_ball _ (by aesop), mem_closedBall_iff_norm]
-    exact hx.2
