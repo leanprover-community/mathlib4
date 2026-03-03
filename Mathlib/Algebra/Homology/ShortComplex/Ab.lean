@@ -3,10 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.Kernels
-import Mathlib.Algebra.Exact
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.Grp.Kernels
+public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.GroupTheory.QuotientGroup.Finite
 
 /-!
 # Homology and exactness of short complexes of abelian groups
@@ -27,6 +30,8 @@ is exact iff any element in the kernel of `S.g` belongs to the image of `S.f`.
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace CategoryTheory
@@ -45,6 +50,7 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g.hom :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The explicit left homology data of a short complex of abelian group that is
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 @[simps]
@@ -73,6 +79,7 @@ the abstract `S.cycles` of the homology API and the more concrete description as
 noncomputable def abCyclesIso : S.cycles ≅ AddCommGrpCat.of (AddMonoidHom.ker S.g.hom) :=
   S.abLeftHomologyData.cyclesIso
 
+set_option backward.isDefEq.respectTransparency false in
 -- This was a simp lemma until we made `AddCommGrpCat.coe_of` a simp lemma,
 -- after which the simp normal form linter complains.
 -- It was not used a simp lemma in Mathlib.
@@ -121,6 +128,8 @@ lemma ab_exact_iff_function_exact :
     simp only [ab_zero_apply]
   · tauto
 
+variable {S}
+
 lemma ab_exact_iff_ker_le_range : S.Exact ↔ S.g.hom.ker ≤ S.f.hom.range := S.ab_exact_iff
 
 lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.hom.range = S.g.hom.ker := by
@@ -134,7 +143,17 @@ lemma ab_exact_iff_range_eq_ker : S.Exact ↔ S.f.hom.range = S.g.hom.ker := by
   · intro h
     rw [h]
 
-variable {S}
+alias ⟨Exact.ab_range_eq_ker, _⟩ := ab_exact_iff_range_eq_ker
+
+/-- In an exact sequence of abelian groups, if the first and last groups are finite, then so is the
+middle one. -/
+lemma Exact.ab_finite {S : ShortComplex Ab.{u}} (hS : S.Exact) [Finite S.X₁] [Finite S.X₃] :
+    Finite S.X₂ := by
+  have : Finite S.f.hom.range := Set.finite_range _
+  have : Finite (S.X₂ ⧸ S.f.hom.range) := by
+    rw [hS.ab_range_eq_ker]
+    exact .of_equiv _ (QuotientAddGroup.quotientKerEquivRange _).toEquiv.symm
+  exact .of_addSubgroup_quotient (H := S.f.hom.range)
 
 lemma ShortExact.ab_injective_f (hS : S.ShortExact) :
     Function.Injective S.f :=
@@ -144,12 +163,15 @@ lemma ShortExact.ab_surjective_g (hS : S.ShortExact) :
     Function.Surjective S.g :=
   (AddCommGrpCat.epi_iff_surjective _).1 hS.epi_g
 
-variable (S)
+/-- In a short exact sequence of abelian groups, the middle group is finite iff the first and last
+are. -/
+lemma ShortExact.ab_finite_iff {S : ShortComplex Ab.{u}} (hS : S.ShortExact) :
+    Finite S.X₂ ↔ Finite S.X₁ ∧ Finite S.X₃ where
+  mp _ := ⟨.of_injective _ hS.ab_injective_f, .of_surjective _ hS.ab_surjective_g⟩
+  mpr | ⟨_, _⟩ => hS.exact.ab_finite
 
-lemma ShortExact.ab_exact_iff_function_exact :
-    S.Exact ↔ Function.Exact S.f S.g := by
-  rw [ab_exact_iff_range_eq_ker, AddMonoidHom.exact_iff]
-  tauto
+@[deprecated (since := "2025-11-03")]
+protected alias ShortExact.ab_exact_iff_function_exact := ab_exact_iff_function_exact
 
 end ShortComplex
 

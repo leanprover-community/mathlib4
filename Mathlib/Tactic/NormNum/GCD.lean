@@ -3,9 +3,11 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller, Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Data.Int.GCD
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Data.Int.GCD
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for GCD-adjacent functions
 
@@ -15,6 +17,8 @@ This module defines some `norm_num` extensions for functions such as
 Note that `Nat.coprime` is reducible and defined in terms of `Nat.gcd`, so the `Nat.gcd` extension
 also indirectly provides a `Nat.coprime` extension.
 -/
+
+public meta section
 
 namespace Tactic
 
@@ -131,7 +135,7 @@ def evalNatGCD : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Nat.gcd $x $y := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, q⟩ ← deriveNat y sℕ
   let ⟨ed, pf⟩ := proveNatGCD ex ey
@@ -160,7 +164,7 @@ def evalNatLCM : NormNumExt where eval {u α} e := do
   let .app (.app _ (x : Q(ℕ))) (y : Q(ℕ)) ← Meta.whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
   haveI' : $e =Q Nat.lcm $x $y := ⟨⟩
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(Nat.instAddMonoidWithOne)
   let ⟨ex, p⟩ ← deriveNat x sℕ
   let ⟨ey, q⟩ ← deriveNat y sℕ
   let ⟨ed, pf⟩ := proveNatLCM ex ey

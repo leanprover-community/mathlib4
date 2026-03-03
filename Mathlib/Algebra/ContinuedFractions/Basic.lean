@@ -3,8 +3,10 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Data.Seq.Defs
-import Mathlib.Algebra.Field.Defs
+module
+
+public import Mathlib.Data.Seq.Defs
+public import Mathlib.Algebra.Field.Defs
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
@@ -37,6 +39,8 @@ fractions. We hence just call them `ContFract` in the library.
 
 numerics, number theory, approximations, fractions
 -/
+
+@[expose] public section
 
 -- Fix a carrier `α`.
 variable (α : Type*)

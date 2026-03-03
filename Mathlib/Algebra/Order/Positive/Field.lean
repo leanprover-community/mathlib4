@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Positive.Ring
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Positive.Ring
 
 /-!
 # Algebraic structures on the set of positive numbers
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.Positive.Ring
 In this file we prove that the set of positive elements of a linear ordered field is a linear
 ordered commutative group.
 -/
+
+@[expose] public section
 
 
 variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]

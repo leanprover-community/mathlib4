@@ -3,13 +3,17 @@ Copyright (c) 2023 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn
 -/
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+module
+
+public import Mathlib.Algebra.Category.Grp.EpiMono
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 # The concrete (co)kernels in the category of abelian groups are categorical (co)kernels.
 -/
+
+@[expose] public section
 
 namespace AddCommGrpCat
 
@@ -37,6 +41,7 @@ def cokernelCocone : CokernelCofork f :=
   CokernelCofork.ofπ (Z := of <| H ⧸ f.hom.range) (ofHom (mk' f.hom.range)) <| ext fun x =>
     (eq_zero_iff _).mpr ⟨x, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The projection onto the quotient is a cokernel in the categorical sense. -/
 def cokernelIsColimit : IsColimit <| cokernelCocone f :=
   Cofork.IsColimit.mk _

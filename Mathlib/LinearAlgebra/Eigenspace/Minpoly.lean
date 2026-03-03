@@ -3,10 +3,13 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.Module.Torsion.Field
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
 # Eigenvalues are the roots of the minimal polynomial.
@@ -15,6 +18,8 @@ import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 eigenvalue, minimal polynomial
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -50,9 +55,9 @@ theorem aeval_apply_of_hasEigenvector {f : End R M} {p : R[X]} {μ : R} {x : M}
   · intro n a hna
     rw [mul_comm, pow_succ', mul_assoc, map_mul, Module.End.mul_apply, mul_comm, hna]
     simp only [mem_eigenspace_iff.1 h.1, smul_smul, aeval_X, eval_mul, eval_C, eval_pow, eval_X,
-      LinearMap.map_smulₛₗ, RingHom.id_apply, mul_comm]
+      map_smulₛₗ, RingHom.id_apply, mul_comm]
 
-theorem isRoot_of_hasEigenvalue [NoZeroSMulDivisors R M] {f : End R M} {μ : R}
+theorem isRoot_of_hasEigenvalue [IsDomain R] [IsTorsionFree R M] {f : End R M} {μ : R}
     (h : f.HasEigenvalue μ) : (minpoly R f).IsRoot μ := by
   rcases (Submodule.ne_bot_iff _).1 h with ⟨w, ⟨H, ne0⟩⟩
   refine Or.resolve_right (smul_eq_zero.1 ?_) ne0
@@ -77,7 +82,7 @@ theorem hasEigenvalue_of_isRoot (h : (minpoly R f).IsRoot μ) : f.HasEigenvalue 
   refine Module.End.hasEigenvalue_of_hasEigenvector (hasEigenvector_iff.mpr ⟨?_, hv⟩)
   simpa [sub_eq_zero, hq] using congr($(minpoly.aeval R f) v)
 
-variable [NoZeroSMulDivisors R M]
+variable [IsTorsionFree R M]
 
 theorem hasEigenvalue_iff_isRoot : f.HasEigenvalue μ ↔ (minpoly R f).IsRoot μ :=
   ⟨isRoot_of_hasEigenvalue, hasEigenvalue_of_isRoot⟩

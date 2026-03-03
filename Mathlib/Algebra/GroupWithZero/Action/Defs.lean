@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Notation.Pi.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Opposite
+public import Mathlib.Algebra.Notation.Pi.Basic
 
 /-!
 # Definitions of group actions
@@ -35,6 +37,8 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 
 group action
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul Ring
 
@@ -373,7 +377,7 @@ protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (
 variable (A)
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps!]
+@[simps!, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x
 
@@ -383,7 +387,7 @@ variable (M)
 @[simps]
 def DistribMulAction.toAddMonoidEnd :
     M →* AddMonoid.End A where
-  toFun := DistribMulAction.toAddMonoidHom A
+  toFun := DistribSMul.toAddMonoidHom A
   map_one' := AddMonoidHom.ext <| one_smul M
   map_mul' x y := AddMonoidHom.ext <| mul_smul x y
 

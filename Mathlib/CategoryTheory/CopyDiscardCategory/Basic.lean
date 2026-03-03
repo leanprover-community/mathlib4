@@ -3,7 +3,9 @@ Copyright (c) 2025 Jacob Reinhold. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jacob Reinhold
 -/
-import Mathlib.CategoryTheory.Monoidal.Comon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # Copy-Discard Categories
@@ -36,6 +38,8 @@ The key axioms ensure tensor products respect the comonoid structure.
 copy-discard, comonoid, symmetric monoidal
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
@@ -60,6 +64,7 @@ class CopyDiscardCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
     /-- Discard on the unit object. -/
   discard_unit : ε[𝟙_ C] = 𝟙 (𝟙_ C) := by cat_disch
 
+attribute [instance_reducible] CopyDiscardCategory.comonObj
 attribute [instance] CopyDiscardCategory.comonObj CopyDiscardCategory.isCommComonObj
 
 end CategoryTheory

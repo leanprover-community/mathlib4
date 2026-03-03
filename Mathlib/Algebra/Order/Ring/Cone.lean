@@ -3,8 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Artie Khovanov
 -/
-import Mathlib.Algebra.Order.Group.Cone
-import Mathlib.Algebra.Ring.Subsemiring.Order
+module
+
+public import Mathlib.Algebra.Order.Group.Cone
+public import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
 # Construct ordered rings from rings with a specified positive cone.
@@ -16,6 +18,8 @@ in terms of the subset of non-negative elements.
 We also provide constructors that convert between
 cones in rings and the corresponding ordered rings.
 -/
+
+@[expose] public section
 
 /-- `RingConeClass S R` says that `S` is a type of cones in `R`. -/
 class RingConeClass (S : Type*) (R : outParam Type*) [Ring R] [SetLike S R] : Prop
@@ -33,6 +37,8 @@ add_decl_doc RingCone.toAddGroupCone
 instance RingCone.instSetLike (R : Type*) [Ring R] : SetLike (RingCone R) R where
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
+
+instance (R : Type*) [Ring R] : PartialOrder (RingCone R) := .ofSetLike (RingCone R) R
 
 instance RingCone.instRingConeClass (R : Type*) [Ring R] :
     RingConeClass (RingCone R) R where

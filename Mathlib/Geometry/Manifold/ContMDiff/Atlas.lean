@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Basic
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 /-!
 ## Smoothness of charts and local structomorphisms
@@ -11,6 +13,8 @@ import Mathlib.Geometry.Manifold.ContMDiff.Basic
 We show that the model with corners, charts, extended charts and their inverses are `C^n`,
 and that local structomorphisms are `C^n` with `C^n` inverses.
 -/
+
+public section
 
 open Set ChartedSpace IsManifold
 open scoped Manifold ContDiff
@@ -30,6 +34,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 section Atlas
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
   intro x
   refine contMDiffAt_iff.mpr ⟨I.continuousAt, ?_⟩
@@ -38,6 +43,7 @@ theorem contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
   · exact Filter.eventuallyEq_of_mem self_mem_nhdsWithin fun x₂ => I.right_inv
   simp_rw [Function.comp_apply, I.left_inv, Function.id_def]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) := by
   rw [contMDiffOn_iff]
   refine ⟨I.continuousOn_symm, fun x y => ?_⟩

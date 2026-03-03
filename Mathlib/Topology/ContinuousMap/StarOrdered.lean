@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
-import Mathlib.Topology.ContinuousMap.Ordered
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-! # Continuous functions as a star-ordered ring
 
@@ -32,6 +34,8 @@ be a problem since the only purpose is to obtain the instance `StarOrderedRing C
 `Prop`, but we note it for future reference.
 -/
 
+@[expose] public section
+
 /-- A type class encoding the property that there is a continuous square root function on
 nonnegative elements. This holds for `ℝ≥0`, `ℝ` and `ℂ` (as well as any C⋆-algebra), and this
 allows us to derive an instance of `StarOrderedRing C(α, R)` under appropriate hypotheses.
@@ -48,6 +52,7 @@ namespace ContinuousMap
 
 variable {α : Type*} [TopologicalSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 instance {R : Type*} [PartialOrder R] [NonUnitalSemiring R] [StarRing R]
     [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [IsTopologicalSemiring R]
     [ContinuousSqrt R] : StarOrderedRing C(α, R) := by

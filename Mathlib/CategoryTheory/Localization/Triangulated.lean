@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Shift.Localization
+module
+
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Preadditive
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Shift.Localization
 
 /-! # Localization of triangulated categories
 
@@ -20,13 +22,15 @@ and that it is triangulated.
 
 -/
 
+@[expose] public section
+
 assert_not_exists TwoSidedIdeal
 
 namespace CategoryTheory
 
 open Category Limits Pretriangulated Localization
 
-variable {C D : Type*} [Category C] [Category D] (L : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (L : C ⥤ D)
   [HasShift C ℤ] [Preadditive C] [HasZeroObject C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
   [HasShift D ℤ] [L.CommShift ℤ]
@@ -53,7 +57,7 @@ namespace Functor
 /-- Given a functor `C ⥤ D` from a pretriangulated category, this is the set of
 triangles in `D` that are in the essential image of distinguished triangles of `C`. -/
 def essImageDistTriang : Set (Triangle D) :=
-  fun T => ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C
+  {T | ∃ (T' : Triangle C) (_ : T ≅ L.mapTriangle.obj T'), T' ∈ distTriang C}
 
 lemma essImageDistTriang_mem_of_iso {T₁ T₂ : Triangle D} (e : T₂ ≅ T₁)
     (h : T₁ ∈ L.essImageDistTriang) : T₂ ∈ L.essImageDistTriang := by
@@ -78,6 +82,7 @@ lemma rotate_essImageDistTriang [Preadditive D] [L.Additive]
     exact ⟨T'.invRotate, (triangleRotation D).unitIso.app T ≪≫ (invRotate D).mapIso e' ≪≫
       L.mapTriangleInvRotateIso.app T', inv_rot_of_distTriang T' hT'⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma complete_distinguished_essImageDistTriang_morphism
     (H : ∀ (T₁' T₂' : Triangle C) (_ : T₁' ∈ distTriang C) (_ : T₂' ∈ distTriang C)
       (a : L.obj (T₁'.obj₁) ⟶ L.obj (T₂'.obj₁)) (b : L.obj (T₁'.obj₂) ⟶ L.obj (T₂'.obj₂))
@@ -122,6 +127,7 @@ namespace Localization
 variable (W : MorphismProperty C) [L.IsLocalization W]
   [W.HasLeftCalculusOfFractions]
 
+set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
@@ -141,6 +147,7 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
 section
 variable [W.IsCompatibleWithTriangulation]
 
+set_option backward.isDefEq.respectTransparency false in
 include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)

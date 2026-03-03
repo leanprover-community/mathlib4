@@ -3,13 +3,15 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -34,6 +36,8 @@ inequality.
 In general non-abelian groups, small doubling doesn't imply small powers anymore, but small tripling
 does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
+
+public section
 
 open MulOpposite Nat
 open scoped Pointwise
@@ -132,16 +136,21 @@ theorem pluennecke_petridis_inequality_mul (C : Finset G)
       gcongr
       exact inter_subset_right
     have h₂ : {x} * A' * B ⊆ {x} * A * B := by gcongr; exact inter_subset_left
-    have h₃ : #(C' * A * B) ≤ #(C * A * B) + #(A * B) - #(A' * B) := by
-      rw [h₁]
-      refine (card_union_le _ _).trans_eq ?_
-      rw [card_sdiff_of_subset h₂, ← add_tsub_assoc_of_le (card_le_card h₂), mul_assoc {_},
-        mul_assoc {_}, card_singleton_mul, card_singleton_mul]
-    refine (mul_le_mul_right' h₃ _).trans ?_
-    rw [tsub_mul, add_mul]
-    refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_
-    rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, union_mul, ← card_singleton_mul x A, ←
-      card_singleton_mul x A', add_comm #_, h₀, eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
+    calc
+      #(C' * A * B) * #A
+      _ ≤ (#(C * A * B) + #(A * B) - #(A' * B)) * #A := by
+        gcongr
+        rw [h₁]
+        refine (card_union_le _ _).trans_eq ?_
+        rw [card_sdiff_of_subset h₂, ← add_tsub_assoc_of_le (card_le_card h₂), mul_assoc {_},
+          mul_assoc {_}, card_singleton_mul, card_singleton_mul]
+      _ = #(C * A * B) * #A + #(A * B) * #A - #(A' * B) * #A := by rw [tsub_mul, add_mul]
+      _ ≤ #(A * B) * #(C * A) + #(A * B) * #A - #(A * B) * #(A ∩ ({x}⁻¹ * C * A)) := by
+        gcongr ?_ + _ - ?_; exact hA _ inter_subset_left
+      _ = #(A * B) * #(C' * A) := by
+        rw [← mul_add, ← mul_tsub, ← hA', hC', insert_eq, union_mul, ← card_singleton_mul x A,
+          ← card_singleton_mul x A', add_comm #_, h₀,
+          eq_tsub_of_add_eq (card_union_add_card_inter _ _)]
 
 end Group
 

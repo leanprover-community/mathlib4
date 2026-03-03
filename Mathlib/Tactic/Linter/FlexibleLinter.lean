@@ -3,8 +3,14 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Mathlib.Tactic.Linter.Header
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.Tactic.Simp
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
+public import Lean.Parser.Term
 
 /-!
 # The "flexible" linter
@@ -89,12 +95,14 @@ We then propagate all the `FVarId`s that were present in the "before" goals to t
 while leaving untouched the ones in the "inert" goals.
 -/
 
-open Lean Elab Linter
+meta section
+
+open Lean Elab Command Linter
 
 namespace Mathlib.Linter
 
 /-- The flexible linter makes sure that "rigid" tactics do not follow "flexible" tactics. -/
-register_option linter.flexible : Bool := {
+public register_option linter.flexible : Bool := {
   defValue := false
   descr := "enable the flexible linter"
 }
@@ -140,30 +148,39 @@ end goals_heuristic
 
 namespace Mathlib.Linter.Flexible
 
-variable (take? : Syntax → Bool) in
-/-- `extractCtxAndGoals take? tree` takes as input a function `take? : Syntax → Bool` and
-an `InfoTree` and returns the array of pairs `(stx, mvars)`,
-where `stx` is a syntax node such that `take? stx` is `true` and
-`mvars` indicates the goal state:
-* the context before `stx`
-* the context after `stx`
-* a list of metavariables closed by `stx`
-* a list of metavariables created by `stx`
+/-- Data extracted from an InfoTree for each tactic. -/
+structure TacticData where
+  /-- The tactic syntax -/
+  stx : Syntax
+  /-- ContextInfo for running MetaM -/
+  ci : ContextInfo
+  /-- MetavarContext before the tactic -/
+  mctxBefore : MetavarContext
+  /-- MetavarContext after the tactic -/
+  mctxAfter : MetavarContext
+  /-- Goals targeted by the tactic -/
+  goalsTargetedBy : List MVarId
+  /-- Goals created by the tactic -/
+  goalsCreatedBy : List MVarId
 
-A typical usage is to find the goals following a `simp` application.
+/-- `extractTacticData tree` extracts tactic information from an `InfoTree`,
+including the `ContextInfo` needed to run `MetaM` computations.
 -/
-partial
-def extractCtxAndGoals : InfoTree →
-    Array (Syntax × MetavarContext × MetavarContext × List MVarId × List MVarId)
-  | .node k args =>
-    let kargs := (args.map extractCtxAndGoals).foldl (· ++ ·) #[]
-    if let .ofTacticInfo i := k then
-      if take? i.stx && (i.stx.getRange? true).isSome then
-        #[(i.stx, i.mctxBefore, i.mctxAfter, i.goalsTargetedBy, i.goalsCreatedBy)] ++ kargs
-      else kargs
-    else kargs
-  | .context _ t => extractCtxAndGoals t
-  | _ => default
+def extractTacticData (tree : InfoTree) : Array TacticData :=
+  tree.foldInfo (init := #[]) fun ci info acc =>
+    match info with
+    | .ofTacticInfo i =>
+      if (i.stx.getRange? true).isSome then
+        acc.push {
+          stx := i.stx
+          ci := ci
+          mctxBefore := i.mctxBefore
+          mctxAfter := i.mctxAfter
+          goalsTargetedBy := i.goalsTargetedBy
+          goalsCreatedBy := i.goalsCreatedBy
+        }
+      else acc
+    | _ => acc
 
 /-- `Stained` is the type of the stained locations: it can be
 * a `Name` (typically of associated to the `FVarId` of a local declaration);
@@ -192,8 +209,7 @@ The function is used to extract "location" information about `stx`: either expli
 
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
-partial
-def toStained : Syntax → Std.HashSet Stained
+partial def toStained : Syntax → Std.HashSet Stained
   | .node _ _ arg => (arg.map toStained).foldl (.union) {}
   | .ident _ _ val _ => {.name val}
   | .atom _ val => match val with
@@ -283,8 +299,8 @@ def stoppers : Std.HashSet Name :=
     ``cdot }
 
 /-- `SyntaxNodeKind`s that are allowed to follow a flexible tactic:
-  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`,
-  `omega` and `cutsat`, `grobner`
+  `simp`, `simp_all`, `simpa`, `dsimp`, `grind`, `constructor`, `congr`, `done`, `rfl`, `ac_rfl`,
+  `omega` and `lia`, `grobner`
   `abel` and `abel!`, `group`, `ring` and `ring!`, `module`, `field_simp` and `field`, `norm_num`,
   `linarith`, `nlinarith` and `nlinarith!`, `norm_cast`, `tauto`,
   `aesop`, `cfc_tac` (and `cfc_zero_tac` and `cfc_cont_tac`),
@@ -300,6 +316,7 @@ def flexible : Std.HashSet Name :=
     ``Lean.Parser.Tactic.congr,
     ``Lean.Parser.Tactic.done,
     ``Lean.Parser.Tactic.tacticRfl,
+    ``Lean.Parser.Tactic.acRfl,
     ``Lean.Parser.Tactic.omega,
     `Mathlib.Tactic.Abel.abel,
     `Mathlib.Tactic.Abel.tacticAbel!,
@@ -316,7 +333,7 @@ def flexible : Std.HashSet Name :=
     `Mathlib.Tactic.FieldSimp.field,
     ``Lean.Parser.Tactic.grind,
     ``Lean.Parser.Tactic.grobner,
-    ``Lean.Parser.Tactic.cutsat,
+    ``Lean.Parser.Tactic.lia,
     `Mathlib.Tactic.normNum,
     `Mathlib.Tactic.linarith,
     `Mathlib.Tactic.nlinarith,
@@ -331,7 +348,7 @@ def flexible : Std.HashSet Name :=
     `cfcContTac,
     -- `continuity` and `measurability` also use `aesop` under the hood.
     `tacticContinuity,
-    `tacticMeasurability,
+    `Mathlib.Tactic.measurability,
     `finiteness,
     `finiteness?,
     `Mathlib.Tactic.Tauto.tauto,
@@ -340,7 +357,7 @@ def flexible : Std.HashSet Name :=
 
 /-- By default, if a `SyntaxNodeKind` is not special-cased here, then the linter assumes that
 the tactic will use the goal as well: this heuristic works well with `exact`, `refine`, `apply`.
-For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false. -/
+For tactics such as `cases` this is not true: for these tactics, `usesGoal?` yields `false`. -/
 def usesGoal? : SyntaxNodeKind → Bool
   | ``Lean.Parser.Tactic.cases => false
   | `Mathlib.Tactic.cases' => false
@@ -404,6 +421,39 @@ def reallyPersist
               new := new.push (persisted_fv, mv1)
   return inert ++ new
 
+/-- Data stored for each "stained" location. -/
+structure StainData where
+  /-- The stained location -/
+  stained : Stained
+  /-- The syntax of the flexible tactic that caused the stain -/
+  stx : Syntax
+  /-- ContextInfo for running MetaM -/
+  ci : ContextInfo
+  /-- MetavarContext before the flexible tactic -/
+  mctx : MetavarContext
+  /-- Goals before the flexible tactic -/
+  goals : List MVarId
+
+/-- Generate a "simp only [...]" suggestion for a simp/simpAll tactic.
+Returns `none` if the tactic is not simp/simpAll or if suggestion generation fails. -/
+def generateSimpSuggestion (stainData : StainData) (stainStx : Syntax) :
+    CoreM (Option Syntax) := do
+  match stainStx.getKind with
+  | ``Lean.Parser.Tactic.simp | ``Lean.Parser.Tactic.simpAll => try
+    let some mv := stainData.goals[0]? | return none
+    let some mvDecl := stainData.mctx.decls.find? mv | return none
+    stainData.ci.runMetaM mvDecl.lctx do
+      Lean.Meta.withMCtx stainData.mctx do
+        let ctx ← Lean.Meta.Simp.Context.mkDefault
+        let simprocs ← Lean.Meta.Simp.getSimprocs
+        let (_, stats) ← Lean.Meta.simpGoal mv ctx #[simprocs]
+        if stats.usedTheorems.map.isEmpty then
+          return none
+        let suggStx ← Lean.Elab.Tactic.mkSimpOnly stainStx stats.usedTheorems
+        return some suggStx
+  catch _ => return none
+  | _ => return none
+
 /-- The main implementation of the flexible linter. -/
 def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   unless getLinterValue linter.flexible (← getLinterOptions) && (← getInfoState).enabled do
@@ -411,13 +461,19 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
   if (← MonadState.get).messages.hasErrors then
     return
   let trees ← getInfoTrees
-  let x := trees.map (extractCtxAndGoals (fun _ => true))
+  let tacticData := trees.foldl (init := #[]) fun acc tree => acc ++ extractTacticData tree
   -- `stains` records pairs `(location, mvar)`, where
   -- * `location` is either a hypothesis or the main goal modified by a flexible tactic and
   -- * `mvar` is the metavariable containing the modified location
-  let mut stains : Array ((FVarId × MVarId) × (Stained × Syntax)) := #[]
-  let mut msgs : Array (Syntax × Syntax × Stained) := #[]
-  for d in x do for (s, ctx0, ctx1, mvs0, mvs1) in d do
+  -- We also track the ContextInfo and MetavarContext for generating suggestions
+  let mut stains : Array ((FVarId × MVarId) × StainData) := #[]
+  let mut msgs : Array (Syntax × StainData) := #[]
+  for td in tacticData do
+    let s := td.stx
+    let ctx0 := td.mctxBefore
+    let ctx1 := td.mctxAfter
+    let mvs0 := td.goalsTargetedBy
+    let mvs1 := td.goalsCreatedBy
     let skind := s.getKind
     if stoppers.contains skind then continue
     let shouldStain? := flexible? s && mvs1.length == mvs0.length
@@ -426,7 +482,11 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
         for currMVar1 in mvs1 do
           let lctx1 := (ctx1.decls.findD currMVar1 default).lctx
           let locsAfter := d.toFMVarId currMVar1 lctx1
-          stains := stains ++ locsAfter.map (fun l ↦ (l, (d, s)))
+          -- Store ContextInfo, mctxBefore, and goals for generating suggestions later
+          let stainData : StainData := {
+            stained := d, stx := s, ci := td.ci, mctx := ctx0, goals := mvs0
+          }
+          stains := stains ++ locsAfter.map (fun l ↦ (l, stainData))
       else
         let stained_in_syntax := if usesGoal? skind then (toStained s).insert d else toStained s
         if !flexible.contains skind then
@@ -437,23 +497,45 @@ def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
               for d in st.toFMVarId currMv0 lctx0 do
                 if !foundFvs.contains d then foundFvs := foundFvs.insert d
             for l in foundFvs do
-              if let some (_stdLoc, (st, kind)) := stains.find? (Prod.fst · == l) then
-                msgs := msgs.push (s, kind, st)
+              if let some (_stdLoc, stainData) := stains.find? (Prod.fst · == l) then
+                msgs := msgs.push (s, stainData)
 
       -- tactics often change the name of the current `MVarId`, so we migrate the `FvarId`s
       -- in the "old" `mvars` to the "same" `FVarId` in the "new" `mvars`
-      let mut new : Array ((FVarId × MVarId) × (Stained × Syntax)) := .empty
-      for (fv, (stLoc, kd)) in stains do
+      let mut new : Array ((FVarId × MVarId) × StainData) := .empty
+      for (fv, stainData) in stains do
         let psisted := reallyPersist #[fv] mvs0 mvs1 ctx0 ctx1
         if psisted == #[] && mvs1 != [] then
-          new := new.push (fv, (stLoc, kd))
-          dbg_trace "lost {((fv.1.name, fv.2.name), stLoc, kd)}"
-        for p in psisted do new := new.push (p, (stLoc, kd))
+          new := new.push (fv, stainData)
+          dbg_trace "lost {((fv.1.name, fv.2.name), stainData.stained, stainData.stx)}"
+        for p in psisted do new := new.push (p, stainData)
       stains := new
 
-  for (s, stainStx, d) in msgs do
-    Linter.logLint linter.flexible stainStx m!"'{stainStx}' is a flexible tactic modifying '{d}'…"
-    logInfoAt s m!"… and '{s}' uses '{d}'!"
+  for (s, stainData) in msgs do
+    let stainStx := stainData.stx
+    let d := stainData.stained
+    let stainStr := (stainStx.reprint.getD s!"{stainStx}").trimAscii
+    let suggestion? ← liftCoreM <| generateSimpSuggestion stainData stainStx
+    -- Emit warning and suggestion
+    let msg := match stainStx.getKind with
+      | ``Lean.Parser.Tactic.simp =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'simp?' and use the suggested 'simp only [...]'. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | ``Lean.Parser.Tactic.simpAll =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'simp_all?' and use the suggested 'simp_all only [...]'. \
+          Alternatively, use `suffices` to explicitly state the simplified form."
+      | `Aesop.Frontend.Parser.aesopTactic =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'. \
+          Try 'aesop?' and use the suggested proof."
+      | _ =>
+        m!"'{stainStr}' is a flexible tactic modifying '{d}'."
+    Linter.logLint linter.flexible stainStx msg
+    if let some suggStx := suggestion? then
+      liftCoreM <| Lean.Meta.Tactic.TryThis.addSuggestion stainStx
+        { suggestion := .tsyntax (kind := `tactic) ⟨suggStx⟩ } (origSpan? := stainStx)
+    logInfoAt s m!"'{s}' uses '{d}'!"
 
 initialize addLinter flexibleLinter
 

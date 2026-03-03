@@ -3,11 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.RCLike.TangentCone
-import Mathlib.Data.Bundle
-import Mathlib.Geometry.Manifold.ChartedSpace
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.RCLike.TangentCone
+public import Mathlib.Data.Bundle
+public import Mathlib.Geometry.Manifold.HasGroupoid
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -108,7 +110,7 @@ vector space. With the drawback that the whole vector space itself (which is the
 example) is not directly a subtype of itself: the inclusion of `univ : Set E` in `Set E` would
 show up in the definition, instead of `id`.
 
-A good abstraction covering both cases it to have a vector
+A good abstraction covering both cases is to have a vector
 space `E` (with basic example the Euclidean space), a model space `H` (with basic example the upper
 half space), and an embedding of `H` into `E` (which can be the identity for `H = E`, or
 `Subtype.val` for manifolds with corners). We say that the pair `(E, H)` with their embedding is a
@@ -125,6 +127,8 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 `mfderiv 𝕜 f` (the field has to be explicit anyway, as some manifolds could be considered both as
 real and complex manifolds).
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -148,9 +152,10 @@ open scoped Manifold Topology ContDiff
 
 /-! ### Models with corners. -/
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- A structure containing information on the way a space `H` embeds in a
-model vector space `E` over the field `𝕜`. This is all what is needed to
+model vector space `E` over the field `𝕜`. This is all that is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
 We require that, when the field is `ℝ` or `ℂ`, the range is `ℝ`-convex, as this is what is needed
@@ -164,7 +169,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   source_eq : source = univ
   /-- To check this condition when the space already has a real normed space structure,
   use `Convex.convex_isRCLikeNormedField` which eliminates the `letI`s below, or the constructor
-  `ModelWithCorners.of_convex_range` -/
+  `ModelWithCorners.ofConvexRange` -/
   convex_range' :
     if h : IsRCLikeNormedField 𝕜 then
       letI := h.rclike 𝕜
@@ -180,8 +185,9 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
     range I.toPartialEquiv = I.target := by
   rw [← I.image_source_eq_target, I.source_eq, image_univ.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a model with corners has full range, the `convex_range'` condition is satisfied. -/
-def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) : ModelWithCorners 𝕜 E H where
@@ -198,12 +204,15 @@ def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, htarget]
 
+@[deprecated (since := "2025-12-19")]
+alias ModelWithCorners.of_target_univ := ModelWithCorners.ofTargetUniv
+
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners, denoted as `𝓘(𝕜, E)` within the `Manifold` namespace. -/
 def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E :=
-  ModelWithCorners.of_target_univ 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
+  ModelWithCorners.ofTargetUniv 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
 
 @[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
 
@@ -295,6 +304,7 @@ theorem range_eq_univ_of_not_isRCLikeNormedField (h : ¬ IsRCLikeNormedField �
     range I = univ := by
   simpa [h] using I.convex_range'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a set is `ℝ`-convex for some normed space structure, then it is `ℝ`-convex for the
 normed space structure coming from an `IsRCLikeNormedField 𝕜`. Useful when constructing model
 spaces to avoid diamond issues when populating the field `convex_range'`. -/
@@ -312,7 +322,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
 
 /-- Construct a model with corners over `ℝ` from a continuous partial equiv with convex range. -/
-def of_convex_range
+def ofConvexRange
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : Convex ℝ φ.target)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) (hint : (interior φ.target).Nonempty) :
@@ -327,6 +337,10 @@ def of_convex_range
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, hint]
 
+@[deprecated (since := "2025-12-19")] noncomputable alias of_convex_range :=
+  ModelWithCorners.ofConvexRange
+
+set_option backward.isDefEq.respectTransparency false in
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI : RCLike 𝕜 := h.rclike
@@ -341,6 +355,7 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
       rfl
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, convex_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI := h.rclike 𝕜
@@ -349,6 +364,7 @@ protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
     simpa [h] using I.convex_range
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, uniqueDiffOn_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI := h.rclike 𝕜
@@ -482,6 +498,7 @@ end
 
 section ModelWithCornersProd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
@@ -512,6 +529,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
 `ModelPi H`. -/
@@ -802,9 +820,6 @@ instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
     {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} : IsManifold I n H :=
   { hasGroupoid_model_space _ _ with }
 
-@[deprecated (since := "2025-04-22")]
-alias intIsManifoldModelSpace := instIsManifoldModelSpace
-
 end IsManifold
 
 namespace IsManifold
@@ -830,10 +845,15 @@ class _root_.ENat.LEInfty (m : WithTop ℕ∞) where
 
 open ENat
 
+instance (n : ℕ∞) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+
 instance (n : ℕ) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+
 instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : WithTop ℕ∞) :=
   inferInstanceAs (LEInfty (n : WithTop ℕ∞))
+
 instance : LEInfty (1 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((1 : ℕ) : WithTop ℕ∞))
+
 instance : LEInfty (0 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((0 : ℕ) : WithTop ℕ∞))
 
 instance {a : WithTop ℕ∞} [IsManifold I ∞ M] [h : LEInfty a] :
@@ -862,6 +882,10 @@ variable (I n M) in
 model with corners `I`. -/
 def maximalAtlas :=
   (contDiffGroupoid n I).maximalAtlas M
+
+lemma mem_maximalAtlas_iff {e : OpenPartialHomeomorph M H} :
+    e ∈ maximalAtlas I n M ↔ e ∈ (contDiffGroupoid n I).maximalAtlas M := by
+  rfl
 
 theorem subset_maximalAtlas [IsManifold I n M] : atlas H M ⊆ maximalAtlas I n M :=
   StructureGroupoid.subset_maximalAtlas _
@@ -908,6 +932,7 @@ theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
 attribute [local instance] ChartedSpace.of_discreteTopology in
 example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
@@ -923,13 +948,33 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
 
+section
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+set_option backward.isDefEq.respectTransparency false in
+lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
+    {e : OpenPartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
+    {e' : OpenPartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
+    e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
+  simp only [mem_maximalAtlas_iff]
+  rintro e'' ⟨f, hf, f', hf', rfl⟩
+  rw [OpenPartialHomeomorph.prod_symm_trans_prod,
+    OpenPartialHomeomorph.prod_symm_trans_prod]
+  constructor <;>
+    apply contDiffGroupoid_prod <;> grind [compatible_of_mem_maximalAtlas, subset_maximalAtlas]
+
+end
+
 section DisjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   [hM : IsManifold I n M] [hM' : IsManifold I n M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
-is a `C^n` manifold modeled on `(E, H)`. -/
+is a `C^n` manifold modelled on `(E, H)`. -/
 instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
     obtain (h | h) := isEmpty_or_nonempty H

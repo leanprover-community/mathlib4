@@ -3,8 +3,10 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Basic
-import Mathlib.Algebra.Order.Floor.Defs
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Basic
+public import Mathlib.Algebra.Order.Floor.Defs
 
 /-!
 # Computable Continued Fractions
@@ -57,6 +59,8 @@ with a head term (`seq1`) is then transformed to a generalized continued fractio
 
 numerics, number theory, approximations, fractions
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

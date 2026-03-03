@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Coalgebra.Equiv
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # Tensor products of coalgebras
@@ -21,6 +23,8 @@ In particular, when `R = S` we get tensor products of coalgebras, and when `A = 
 the base change `S ⊗[R] B` as an `S`-coalgebra.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -72,7 +76,9 @@ of coalgebras, bialgebras, and hopf algebras, and shouldn't be relied on downstr
 scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂:ident : tactic =>
   `(tactic|
     (induction $var with
-      | zero => simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
+      | zero =>
+        -- avoid the more general `map_zero` for performance reasons
+        simp only [tmul_zero, LinearEquiv.map_zero, LinearMap.map_zero,
           zero_tmul, zero_mul, mul_zero]
       | add _ _ h₁ h₂ =>
         -- avoid the more general `map_add` for performance reasons
@@ -80,6 +86,7 @@ scoped macro "hopf_tensor_induction " var:elimTarget "with " var₁:ident var₂
           tmul_add, add_tmul, add_mul, mul_add, h₁, h₂]
       | tmul $var₁ $var₂ => ?_))
 
+set_option backward.privateInPublic true in
 private lemma coassoc :
     TensorProduct.assoc S (A ⊗[R] B) (A ⊗[R] B) (A ⊗[R] B) ∘ₗ
       (comul (R := S) (A := (A ⊗[R] B))).rTensor (A ⊗[R] B) ∘ₗ
@@ -112,6 +119,8 @@ private lemma coassoc :
     hopf_tensor_induction comul (R := R) y₂ with y₂₁ y₂₂
     rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable
 instance instCoalgebra : Coalgebra S (A ⊗[R] B) where
   coassoc := coassoc (R := R)

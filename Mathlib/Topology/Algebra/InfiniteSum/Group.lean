@@ -3,17 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Group.Pointwise
+module
+
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Infinite sums and products in topological groups
 
 Lemmas on topological sums in groups (as opposed to monoids).
 -/
+
+public section
 
 noncomputable section
 
@@ -42,7 +46,7 @@ theorem Multipliable.of_inv (hf : Multipliable (fun b ↦ (f b)⁻¹) L) : Multi
   simpa only [inv_inv] using hf.inv
 
 @[to_additive]
-theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L:=
+theorem multipliable_inv_iff : (Multipliable (fun b ↦ (f b)⁻¹) L) ↔ Multipliable f L :=
   ⟨Multipliable.of_inv, Multipliable.inv⟩
 
 @[to_additive]
@@ -324,7 +328,7 @@ variable {G : Type*} [TopologicalSpace G] [CommGroup G] [IsTopologicalGroup G] {
 theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -332,7 +336,7 @@ theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈
 theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
@@ -390,7 +394,7 @@ theorem multipliable_const_iff [Infinite β] [T2Space G] (a : G) :
 
 @[to_additive (attr := simp)]
 theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := by
-  rcases finite_or_infinite β with hβ|hβ
+  rcases finite_or_infinite β with hβ | hβ
   · letI : Fintype β := Fintype.ofFinite β
     rw [tprod_eq_prod (s := univ) (fun x hx ↦ (hx (mem_univ x)).elim)]
     simp only [prod_const, Nat.card_eq_fintype_card, Fintype.card]

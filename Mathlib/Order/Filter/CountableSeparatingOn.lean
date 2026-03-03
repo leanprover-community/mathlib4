@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountableInter
+module
+
+public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Filters with countable intersections and countable separating families
@@ -69,6 +71,8 @@ We formalize several versions of this theorem in
 
 filter, countable
 -/
+
+@[expose] public section
 
 open Function Set Filter
 

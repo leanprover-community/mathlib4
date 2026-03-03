@@ -3,11 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Divisor
-import Mathlib.Analysis.Meromorphic.IsolatedZeros
-import Mathlib.Analysis.Meromorphic.NormalForm
-import Mathlib.Analysis.Meromorphic.TrailingCoefficient
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.Meromorphic.Divisor
+public import Mathlib.Analysis.Meromorphic.IsolatedZeros
+public import Mathlib.Analysis.Meromorphic.NormalForm
+public import Mathlib.Analysis.Meromorphic.TrailingCoefficient
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Factorized Rational Functions
@@ -27,6 +29,8 @@ is finite, then evaluation of functions commutes with finprod, and the helper le
 There are elementary examples of functions `d` where `∏ᶠ u, (· - u) ^ d u` is constant one, while
 `fun x ↦ ∏ᶠ u, (x - u) ^ d u` is not continuous.
 -/
+
+public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -155,8 +159,6 @@ theorem meromorphicOrderAt_eq {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : d.support.F
   filter_upwards
   simp [extractFactor z h₁d]
 
-@[deprecated (since := "2025-05-22")] alias order := meromorphicOrderAt_eq
-
 /--
 Factorized rational functions are nowhere locally constant zero.
 -/
@@ -167,8 +169,6 @@ theorem meromorphicOrderAt_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
   · simp [meromorphicOrderAt_eq d hd]
   · rw [← mulSupport] at hd
     simp [finprod_of_infinite_mulSupport hd]
-
-@[deprecated (since := "2025-05-22")] alias order_ne_top := meromorphicOrderAt_ne_top
 
 /--
 If `D` is a divisor, then the divisor of the factorized rational function equals `D`.
@@ -195,7 +195,6 @@ open Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.
 -/
-
 /-
 Low-priority TODO: Using that non-trivially normed fields contain infinitely many elements that are
 no roots of unity, it might be possible to drop assumption `h` here and in some of the theorems
@@ -213,7 +212,7 @@ theorem meromorphicTrailingCoeffAt_factorizedRational {d : 𝕜 → ℤ} {x : �
   by_cases hxy : x = y
   · rw [hxy, meromorphicTrailingCoeffAt_id_sub_const]
     simp_all
-  · grind [Function.update_of_ne, meromorphicTrailingCoeffAt_id_sub_const]
+  · grind [meromorphicTrailingCoeffAt_id_sub_const]
 
 /--
 Variant of `meromorphicTrailingCoeffAt_factorizedRational`: Compute the trailing coefficient of the

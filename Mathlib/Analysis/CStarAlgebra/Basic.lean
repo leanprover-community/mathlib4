@@ -3,15 +3,17 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Algebra.Star.Pi
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.Subalgebra
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Data.Real.Star
-import Mathlib.Topology.Algebra.Module.Star
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Data.Real.Star
+public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
 # Normed star rings and algebras
@@ -31,6 +33,8 @@ Note that the type classes corresponding to C⋆-algebras are defined in
   definition of C*-algebras in some sources (e.g. Wikipedia).
 
 -/
+
+@[expose] public section
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
@@ -273,6 +277,12 @@ theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) 
   congr($(hx.nnnorm_pow_two_pow n))
 
 end SelfAdjoint
+
+theorem IsStarProjection.norm_le [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
+    (e : E) (he : IsStarProjection e) : ‖e‖ ≤ 1 := by
+  suffices ‖e‖ * (‖e‖ - 1) = 0 by grind [sub_eq_zero]
+  simp [mul_sub, ← CStarRing.norm_star_mul_self, he.isSelfAdjoint.star_eq, he.isIdempotentElem.eq]
+
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]

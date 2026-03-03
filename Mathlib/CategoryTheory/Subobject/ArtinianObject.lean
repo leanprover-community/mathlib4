@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-import Mathlib.CategoryTheory.ObjectProperty.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.Order.OrderIsoNat
-import Mathlib.CategoryTheory.Simple
+module
+
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.CategoryTheory.Simple
 
 /-!
 # Artinian objects
@@ -19,12 +21,14 @@ satisfies the descending chain condition. The corresponding property of
 objects `isArtinianObject : ObjectProperty C` is always
 closed under subobjects.
 
-## Future works
+## Future work
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
-with `IsNoetherianObject` in `Cᵒᵖ`.
+  with `IsNoetherianObject` in `Cᵒᵖ`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -149,6 +153,7 @@ noncomputable def simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZer
     simpleSubobject h ⟶ X :=
   (exists_simple_subobject h).choose.arrow
 
+set_option backward.isDefEq.respectTransparency false in
 instance mono_simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     Mono (simpleSubobjectArrow h) := by
   dsimp only [simpleSubobjectArrow]

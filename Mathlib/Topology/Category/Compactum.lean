@@ -3,12 +3,14 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Monad.Types
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Data.Set.Constructions
+module
+
+public import Mathlib.CategoryTheory.Monad.Types
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Data.Set.Constructions
 
 /-!
 
@@ -20,7 +22,8 @@ Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the 
 This data must also satisfy a distributivity and unit axiom, and algebras for `M` form a category
 in an evident way.
 
-See the file `CategoryTheory.Monad.Algebra` for a general version, as well as the following link.
+See the file `Mathlib/CategoryTheory/Monad/Algebra.lean` for a general version, as well as the
+following link.
 https://ncatlab.org/nlab/show/monad
 
 This file proves the equivalence between the category of *compact Hausdorff topological spaces*
@@ -68,6 +71,8 @@ We also add wrappers around structures which already exist. Here are the main on
 - https://ncatlab.org/nlab/show/ultrafilter
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -181,6 +186,7 @@ instance {X : Compactum} : CompactSpace X := by
 private def basic {X : Compactum} (A : Set X) : Set (Ultrafilter X) :=
   { F | A ∈ F }
 
+set_option backward.privateInPublic true in
 /-- A local definition used only in the proofs. -/
 private def cl {X : Compactum} (A : Set X) : Set X :=
   X.str '' basic A
@@ -256,6 +262,8 @@ private theorem cl_cl {X : Compactum} (A : Set X) : cl (cl A) ⊆ cl A := by
   intro t ht
   exact finiteInterClosure.basic (@hT t ht)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem isClosed_cl {X : Compactum} (A : Set X) : IsClosed (cl A) := by
   rw [isClosed_iff]
   intro F hF
@@ -345,6 +353,8 @@ theorem lim_eq_str {X : Compactum} (F : Ultrafilter X) : F.lim = X.str F := by
   rw [Ultrafilter.lim_eq_iff_le_nhds, le_nhds_iff]
   tauto
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 theorem cl_eq_closure {X : Compactum} (A : Set X) : cl A = closure A := by
   ext
   rw [mem_closure_iff_ultrafilter]
@@ -416,7 +426,7 @@ namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
 instance full : compactumToCompHaus.{u}.Full where
-  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.hom.2, rfl⟩
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.hom.hom.2, rfl⟩
 
 /-- The functor `compactumToCompHaus` is faithful. -/
 instance faithful : compactumToCompHaus.Faithful where
@@ -425,7 +435,7 @@ instance faithful : compactumToCompHaus.Faithful where
     intro _ _ _ _ h
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
-    apply congrArg (fun f => f.hom.toFun) h
+    apply congrArg (fun f => f.hom.hom.toFun) h
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :

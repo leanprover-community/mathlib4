@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
 
@@ -41,6 +43,8 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   if it is surjective
   and the topology on the codomain is equal to the coinduced topology.
 -/
+
+@[expose] public section
 
 open Set
 open scoped Topology

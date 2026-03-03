@@ -41,9 +41,9 @@ theorem isGood_iff : IsGood x A ↔
   | inl hx =>
     have hx' : 0 ≤ 2 * x - 1 := by linarith
     have h₁ : x + sqrt (2 * x - 1) = (sqrt (2 * x - 1) + 1) ^ 2 / 2 := by
-      rw [add_sq, sq_sqrt hx']; field_simp; ring
+      rw [add_sq, sq_sqrt hx']; field
     have h₂ : x - sqrt (2 * x - 1) = (sqrt (2 * x - 1) - 1) ^ 2 / 2 := by
-      rw [sub_sq, sq_sqrt hx']; field_simp; ring
+      rw [sub_sq, sq_sqrt hx']; field
     simp only [IsGood, *, div_nonneg (sq_nonneg _) (zero_le_two (α := ℝ)), sqrt_div (sq_nonneg _),
       and_true]
     rw [sqrt_sq, sqrt_sq_eq_abs] <;> [skip; positivity]
@@ -88,6 +88,7 @@ theorem IsGood.sqrt_two_le (h : IsGood x A) : sqrt 2 ≤ A :=
   (le_or_gt x 1).elim (fun hx ↦ (h.eq_sqrt_two_iff_le_one.2 hx).ge) fun hx ↦
     (h.sqrt_two_lt_of_one_lt hx).le
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isGood_iff_of_sqrt_two_lt (hA : sqrt 2 < A) : IsGood x A ↔ x = (A / 2) ^ 2 + 1 / 2 := by
   have : 0 < A := lt_trans (by simp) hA
   constructor

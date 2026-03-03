@@ -3,9 +3,11 @@ Copyright (c) 2024 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Compactness.DeltaGeneratedSpace
+module
+
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 
 /-!
 # Delta-generated topological spaces
@@ -19,6 +21,8 @@ Adapted from `Mathlib/Topology/Category/CompactlyGenerated.lean`.
 ## TODO
 * `DeltaGenerated` is Cartesian closed.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -39,7 +43,7 @@ instance : CoeSort DeltaGenerated Type* :=
 attribute [instance] deltaGenerated
 
 instance : LargeCategory.{u} DeltaGenerated.{u} :=
-  InducedCategory.category toTop
+  inferInstanceAs (Category (InducedCategory _ toTop))
 
 instance : ConcreteCategory.{u} DeltaGenerated.{u} (C(·, ·)) :=
   InducedCategory.concreteCategory toTop
@@ -67,7 +71,7 @@ instance : deltaGeneratedToTop.{u}.Faithful := fullyFaithfulDeltaGeneratedToTop.
 @[simps!]
 def topToDeltaGenerated : TopCat.{u} ⥤ DeltaGenerated.{u} where
   obj X := of (DeltaGeneratedSpace.of X)
-  map {_ Y} f := TopCat.ofHom ⟨f, (continuous_to_deltaGenerated (Y := Y)).mpr <|
+  map {_ Y} f := ConcreteCategory.ofHom ⟨f, (continuous_to_deltaGenerated (Y := Y)).mpr <|
     continuous_le_dom deltaGenerated_le f.hom.continuous⟩
 
 instance : topToDeltaGenerated.{u}.Faithful :=
@@ -77,9 +81,11 @@ instance : topToDeltaGenerated.{u}.Faithful :=
 def coreflectorAdjunction : deltaGeneratedToTop ⊣ topToDeltaGenerated :=
   Adjunction.mkOfUnitCounit {
     unit := {
-      app X := TopCat.ofHom ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
+      app X := ConcreteCategory.ofHom
+        ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
     counit := {
-      app X := TopCat.ofHom ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ }}
+      app X := ConcreteCategory.ofHom
+        ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ } }
 
 /-- The category of delta-generated spaces is coreflective in the category of topological spaces. -/
 instance deltaGeneratedToTop.coreflective : Coreflective deltaGeneratedToTop where

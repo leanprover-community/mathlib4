@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Groupoid
+module
+
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Groupoid
 
 /-!
 # Facts about epimorphisms and monomorphisms.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Groupoid
 The definitions of `Epi` and `Mono` are in `CategoryTheory.Category`,
 since they are used by some lemmas for `Iso`, which is used everywhere.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂

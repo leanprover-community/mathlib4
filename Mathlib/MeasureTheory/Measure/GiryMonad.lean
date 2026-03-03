@@ -3,7 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
 /-!
 # The Giry monad
@@ -15,7 +17,7 @@ measurable spaces and measurable functions, called the Giry monad.
 Note that most sources use the term "Giry monad" for the restriction
 to *probability* measures. Here we include all measures on X.
 
-See also `MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
+See also `Mathlib/MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
 monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 ## References
@@ -26,6 +28,8 @@ monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 giry monad
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -141,6 +145,11 @@ theorem join_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ �
   ext s hs
   simp [hs]
 
+lemma join_sum {ι : Type*} (m : ι → Measure (Measure α)) :
+    (sum m).join = sum fun (i : ι) ↦ (m i).join := by
+  ext s hs
+  simp_rw [sum_apply _ hs, join_apply hs, lintegral_sum_measure]
+
 @[simp]
 theorem join_dirac (μ : Measure α) : join (dirac μ) = μ := by
   ext s hs
@@ -232,7 +241,7 @@ theorem bind_apply_le {m : Measure α} (f : α → Measure β) {s : Set β} (hs 
   apply lintegral_map_le
 
 theorem ae_ae_of_ae_bind {m : Measure α} {f : α → Measure β} {p : β → Prop} (hf : AEMeasurable f m)
-    (h : ∀ᵐ b ∂m.bind f, p b) : ∀ᵐ a ∂m, ∀ᵐ b ∂ f a, p b :=
+    (h : ∀ᵐ b ∂m.bind f, p b) : ∀ᵐ a ∂m, ∀ᵐ b ∂f a, p b :=
   ae_of_ae_map hf <| ae_ae_of_ae_join h
 
 theorem _root_.AEMeasurable.ae_of_bind {γ : Type*} {_ : MeasurableSpace γ} {m : Measure α}
@@ -263,6 +272,15 @@ theorem aemeasurable_bind {g : α → Measure β} {m : Measure (Measure α)}
   let ⟨f, hfm, hf⟩ := hg
   ⟨(bind · f), measurable_bind' hfm, (ae_ae_of_ae_join hf).mono fun _ ↦ bind_congr_right⟩
 
+theorem bind_sum {ι : Type*} (m : ι → Measure α) (f : α → Measure β)
+    (h : AEMeasurable f (sum fun i => m i)) :
+    (sum fun (i : ι) ↦ m i).bind f = sum fun (i : ι) ↦ (m i).bind f := by
+  simp_rw [bind, map_sum h, join_sum]
+
+lemma bind_smul {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (c : R) (m : Measure α)
+    (f : α → Measure β) : (c • m).bind f = c • (m.bind f) := by
+  simp_rw [bind, Measure.map_smul, join_smul]
+
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : AEMeasurable μ m)
     (hf : AEMeasurable f (bind m μ)) : ∫⁻ x, f x ∂bind m μ = ∫⁻ a, ∫⁻ x, f x ∂μ a ∂m :=
   (lintegral_join hf).trans (lintegral_map' (aemeasurable_lintegral hf) hμ)
@@ -282,7 +300,7 @@ theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure
 
 @[simp]
 theorem dirac_bind {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by
-  simp [bind, map_dirac hf]
+  simp [bind, map_dirac' hf]
 
 @[simp]
 theorem bind_dirac {m : Measure α} : bind m dirac = m := by

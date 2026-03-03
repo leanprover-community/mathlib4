@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # Defining precoverages via pre-`0`-hypercovers
@@ -13,6 +15,8 @@ to instead define a condition on all pre-`0`-hypercovers. Such a condition
 for every object is a pre-`0`-hypercover family if these conditions are
 invariant under deduplication.
 -/
+
+@[expose] public section
 
 universe w' w v u
 
@@ -46,7 +50,7 @@ inductive PreZeroHypercoverFamily.presieve (P : PreZeroHypercoverFamily C) {X : 
 /-- The associated precoverage to a pre-`0`-hypercover family. -/
 def PreZeroHypercoverFamily.precoverage (P : PreZeroHypercoverFamily C) :
     Precoverage C where
-  coverings _ R := P.presieve R
+  coverings _ := {R | P.presieve R}
 
 lemma PreZeroHypercoverFamily.mem_precoverage_iff {P : PreZeroHypercoverFamily C} {X : C}
     {R : Presieve X} :
@@ -90,6 +94,7 @@ lemma Precoverage.HasIsos.of_preZeroHypercoverFamily {P : PreZeroHypercoverFamil
     rw [← PreZeroHypercover.presieve₀_singleton.{_, _, max u v}]
     refine .mk _ (h _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Precoverage.IsStableUnderBaseChange.of_preZeroHypercoverFamily_of_isClosedUnderIsomorphisms
     {P : PreZeroHypercoverFamily C}
     (h₁ : ∀ {X : C}, (P (X := X)).IsClosedUnderIsomorphisms)
@@ -120,5 +125,17 @@ lemma Precoverage.IsStableUnderComposition.of_preZeroHypercoverFamily
     · rwa [← E.presieve₀_mem_precoverage_iff]
     · rw [← (F i).presieve₀_mem_precoverage_iff]
       exact hg i
+
+lemma Precoverage.IsStableUnderSup.of_preZeroHypercoverFamily
+    {P : PreZeroHypercoverFamily C}
+    (h : ∀ ⦃X : C⦄ ⦃E F : PreZeroHypercover.{max u v} X⦄,
+      P E → P F → P (E.sum F)) :
+    P.precoverage.IsStableUnderSup where
+  sup_mem_coverings {X} R S hR hS := by
+    obtain ⟨E, rfl⟩ := R.exists_eq_preZeroHypercover
+    obtain ⟨F, rfl⟩ := S.exists_eq_preZeroHypercover
+    rw [← PreZeroHypercover.presieve₀_sum]
+    rw [PreZeroHypercover.presieve₀_mem_precoverage_iff] at hR hS ⊢
+    exact h hR hS
 
 end CategoryTheory

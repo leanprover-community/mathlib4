@@ -3,10 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Results on the category of rings requiring linear algebra
@@ -18,12 +19,15 @@ import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 -/
 
+public section
+
 universe u
 
 open CategoryTheory Limits TensorProduct
 
 namespace CommRingCat
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nontrivial_of_isPushout_of_isField {A B C D : CommRingCat.{u}}
     (hA : IsField A) {f : A ⟶ B} {g : A ⟶ C} {inl : B ⟶ D} {inr : C ⟶ D}
     [Nontrivial B] [Nontrivial C]

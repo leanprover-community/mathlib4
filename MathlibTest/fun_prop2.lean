@@ -3,6 +3,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
 
 noncomputable
@@ -16,18 +17,17 @@ example (y : ℝ) (hy : y ≠ 0) : ContinuousAt (fun x => x * (Real.log x) ^ 2 -
 
 
 example : DifferentiableOn ℝ foo {0}ᶜ := by
-  unfold foo; fun_prop (disch:=aesop)
+  fun_prop (disch := aesop) [foo] -- equivalent to `unfold foo; fun_prop (disch := aesop)`
 
-example (y : ℝ) (hy : y ≠ 0) :
-    DifferentiableAt ℝ foo y := by
-  unfold foo; fun_prop (disch:=aesop)
+example (y : ℝ) (hy : y ≠ 0) : DifferentiableAt ℝ foo y := by
+  unfold foo; fun_prop (disch := aesop)
 
 example {n} : ContDiffOn ℝ n foo {0}ᶜ := by
-  unfold foo; fun_prop (disch:=aesop)
+  unfold foo; fun_prop (disch := aesop)
 
 example {n} (y : ℝ) (hy : y ≠ 0) :
     ContDiffAt ℝ n foo y := by
-  unfold foo; fun_prop (disch:=aesop)
+  unfold foo; fun_prop (disch := aesop)
 
 example : Continuous fun ((x, _, _) : ℝ × ℝ × ℝ) ↦ x := by fun_prop
 example : Continuous fun ((_, y, _) : ℝ × ℝ × ℝ) ↦ y := by fun_prop
@@ -39,11 +39,11 @@ example : Continuous fun ((_, _, z) : ℝ × ℝ × ℝ) ↦ z := by fun_prop
 theorem ContinuousOn.log' : ContinuousOn Real.log {0}ᶜ := ContinuousOn.log (by fun_prop) (by aesop)
 
 -- Notice that no theorems about measuability of log are used. It is inferred from continuity.
-example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
+example : Measurable (fun x ↦ x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop
 
 -- Notice that no theorems about measuability of log are used. It is inferred from continuity.
-example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) := by
+example : AEMeasurable (fun x ↦ x * (Real.log x) ^ 2 - Real.exp x / x) := by
   fun_prop (maxTransitionDepth := 2)
 
 
@@ -56,16 +56,16 @@ private noncomputable def T (t : ℝ) : ℝ := S 1 (1 - t) t (t * (1 - t))
 
 example : ContinuousOn T (Set.Icc 0 1) := by
   unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch := (rintro x ⟨a,b⟩; nlinarith))
 
 
 example : DifferentiableOn ℝ T (Set.Icc 0 1) := by
   unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch := (rintro x ⟨a,b⟩; nlinarith))
 
 example {n}: ContDiffOn ℝ n T (Set.Icc 0 1) := by
   unfold T S
-  fun_prop (disch:=(rintro x ⟨a,b⟩; nlinarith))
+  fun_prop (disch := (rintro x ⟨a,b⟩; nlinarith))
 
 example : Measurable T := by
   unfold T S
@@ -81,3 +81,18 @@ private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by nor
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
     Differentiable ℝ (iteratedDeriv 5 (fun x ↦ f (2 * (f (x + x))) + x)) := by
   fun_prop (disch := (exact t1))
+
+-- This example used to panic due to loose bvars before #31001.
+-- TODO: this still fails because `fun_prop` cannot use `hl`.
+/--
+error: `fun_prop` was unable to prove `MeasureTheory.AEStronglyMeasurable l.prod μ`
+
+Issues:
+  No theorems found for `f` in order to prove `MeasureTheory.AEStronglyMeasurable (fun a => f a) μ`
+-/
+#guard_msgs in
+example {α : Type*} {m₀ : MeasurableSpace α} {μ : MeasureTheory.Measure α} {M : Type*}
+    [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] (l : Multiset (α → M))
+    (hl : ∀ f ∈ l, MeasureTheory.AEStronglyMeasurable f μ) :
+    MeasureTheory.AEStronglyMeasurable l.prod μ := by
+  fun_prop (disch := assumption)

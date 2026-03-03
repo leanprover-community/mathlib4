@@ -3,9 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Order.Real
+module
+
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.Order.MonotoneContinuity
+public import Mathlib.Topology.Order.Real
 
 /-!
 # `ENNReal` is metrizable
@@ -15,6 +18,8 @@ import Mathlib.Topology.Order.Real
 This file currently only contains results on `ENNReal` but is named `Real.lean`
 to make it clear we can accept more `(E)(NN)Real` results.
 -/
+
+@[expose] public section
 
 namespace ENNReal
 

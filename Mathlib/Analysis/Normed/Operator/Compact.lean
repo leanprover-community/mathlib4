@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.Module.StrongTopology
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Compact operators
@@ -47,6 +49,8 @@ coercing from continuous linear maps to linear maps often needs type ascriptions
 Compact operator
 -/
 
+@[expose] public section
+
 
 open Function Set Filter Bornology Metric Pointwise Topology
 
@@ -63,6 +67,15 @@ def IsCompactOperator {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace M₁] [T
 theorem isCompactOperator_zero {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace M₁]
     [TopologicalSpace M₂] [Zero M₂] : IsCompactOperator (0 : M₁ → M₂) :=
   ⟨{0}, isCompact_singleton, mem_of_superset univ_mem fun _ _ => rfl⟩
+
+theorem isCompactOperator_id_iff_locallyCompactSpace {E : Type*}
+    [AddGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E] :
+    IsCompactOperator (id : E → E) ↔ LocallyCompactSpace E :=
+  ⟨fun ⟨_, hK, hK0⟩ ↦ hK.locallyCompactSpace_of_mem_nhds_of_addGroup hK0,
+    fun _ ↦ exists_compact_mem_nhds 0⟩
+
+alias ⟨IsCompactOperator.locallyCompactSpace, isCompactOperator_id⟩ :=
+  isCompactOperator_id_iff_locallyCompactSpace
 
 section Characterizations
 
@@ -190,6 +203,27 @@ theorem IsCompactOperator.smul {S : Type*} [Monoid S] [DistribMulAction S M₂]
   ⟨c • K, hK.image <| continuous_id.const_smul c,
     mem_of_superset hKf fun _ hx => smul_mem_smul_set hx⟩
 
+theorem IsCompactOperator.smul_unit_iff {S : Type*} [Monoid S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : Sˣ} :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  ⟨fun h ↦ by simpa using h.smul c⁻¹, fun h ↦ h.smul c⟩
+
+theorem IsCompactOperator.smul_isUnit_iff {S : Type*} [Monoid S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : S} (hc : IsUnit c) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f := by
+  obtain ⟨c, rfl⟩ := hc
+  exact smul_unit_iff
+
+theorem IsCompactOperator.smul_iff {S : Type*} [Group S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} (c : S) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  smul_isUnit_iff (Group.isUnit c)
+
+theorem IsCompactOperator.smul_iff₀ {S : Type*} [GroupWithZero S] [DistribMulAction S M₂]
+    [ContinuousConstSMul S M₂] {f : M₁ → M₂} {c : S} (hc : c ≠ 0) :
+    IsCompactOperator (c • f) ↔ IsCompactOperator f :=
+  smul_isUnit_iff hc.isUnit
+
 theorem IsCompactOperator.add [ContinuousAdd M₂] {f g : M₁ → M₂} (hf : IsCompactOperator f)
     (hg : IsCompactOperator g) : IsCompactOperator (f + g) :=
   let ⟨A, hA, hAf⟩ := hf
@@ -304,7 +338,7 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
 @[continuity]
 theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : IsCompactOperator f) :
     Continuous f := by
-  letI : UniformSpace M₂ := IsTopologicalAddGroup.toUniformSpace _
+  letI : UniformSpace M₂ := IsTopologicalAddGroup.rightUniformSpace _
   haveI : IsUniformAddGroup M₂ := isUniformAddGroup_of_addCommGroup
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.

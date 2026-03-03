@@ -3,10 +3,12 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Domain
-import Mathlib.RingTheory.WittVector.MulCoeff
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.RingTheory.WittVector.Domain
+public import Mathlib.RingTheory.WittVector.MulCoeff
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 
@@ -24,6 +26,8 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 * `WittVector.isDiscreteValuationRing`: `𝕎 k` is a discrete valuation ring if `k` is a perfect field
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

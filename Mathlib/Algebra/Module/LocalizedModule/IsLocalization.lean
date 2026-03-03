@@ -3,12 +3,16 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Equivalence between `IsLocalizedModule` and `IsLocalization`
 -/
+
+@[expose] public section
 
 section IsLocalizedModule
 

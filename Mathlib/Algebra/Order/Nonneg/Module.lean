@@ -3,18 +3,22 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Algebra.Module.RingHom
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Algebra.Order.Nonneg.Basic
+module
+
+public import Mathlib.Algebra.Module.RingHom
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Algebra.Order.Nonneg.Basic
 
 /-!
 # Modules over nonnegative elements
 
 For an ordered ring `R`, this file proves that any (ordered) `R`-module `M` is also an (ordered)
-`R≥0`-module`.
+`R≥0`-module.
 
 Among other things, these instances are useful for working with `ConvexCone`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

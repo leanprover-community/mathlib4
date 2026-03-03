@@ -3,13 +3,17 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.UniformSpace.Pi
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Constructions of new uniform groups from old ones
 -/
+
+@[expose] public section
 
 variable {G H hom : Type*} [Group G] [Group H]
 
@@ -75,7 +79,7 @@ end PiProd
 
 section DiscreteUniformity
 
-/-- The discrete uniformity makes a group a `IsUniformGroup. -/
+/-- The discrete uniformity makes a group a `IsUniformGroup`. -/
 @[to_additive /-- The discrete uniformity makes an additive group a `IsUniformAddGroup`. -/]
 instance [UniformSpace G] [DiscreteUniformity G] : IsUniformGroup G where
   uniformContinuous_div := DiscreteUniformity.uniformContinuous (G × G) fun p ↦ p.1 / p.2

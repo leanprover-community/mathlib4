@@ -3,9 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Algebra.Group.Submonoid.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 
@@ -22,6 +24,8 @@ In this file we define
 
 submodule, subspace, linear map
 -/
+
+@[expose] public section
 
 assert_not_exists DivisionRing
 
@@ -50,6 +54,8 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M) M
 
 initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
@@ -107,7 +113,7 @@ theorem mem_mk {S : AddSubmonoid M} {x : M} (h) : x ∈ (⟨S, h⟩ : Submodule 
 theorem coe_set_mk (S : AddSubmonoid M) (h) : ((⟨S, h⟩ : Submodule R M) : Set M) = S :=
   rfl
 
-@[simp] theorem eta (h) : ({p with smul_mem' := h} : Submodule R M) = p :=
+@[simp] theorem eta (h) : ({ p with smul_mem' := h } : Submodule R M) = p :=
   rfl
 
 @[simp]
@@ -151,6 +157,13 @@ theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
 @[simp]
 theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
   rfl
+
+/-- `Submodule R M` almost never has decidable equality.
+Given an element `m ≠ 0` in `M`, `Submodule R M` has decidable equality iff
+all propositions are decidable. We add a global instance that `Submodule R M` has decidable
+equality, coming from the choice axiom, so that we don't have to provide
+`[DecidableEq (Submodule R M)]` arguments in lemma statements. -/
+noncomputable instance decidableEq : DecidableEq (Submodule R M) := Classical.typeDecidableEq _
 
 end Submodule
 
@@ -309,6 +322,7 @@ protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
 
 /-- Reinterpret a submodule as an additive subgroup. -/
+@[reducible]
 def toAddSubgroup : AddSubgroup M :=
   { p.toAddSubmonoid with neg_mem' := fun {_} => p.neg_mem }
 
@@ -316,14 +330,12 @@ def toAddSubgroup : AddSubgroup M :=
 theorem coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=
   rfl
 
-@[simp]
 theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 
 theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
   | _, _, h => SetLike.ext (SetLike.ext_iff.1 h :)
 
-@[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
 

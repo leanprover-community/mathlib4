@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.Set.Prod
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Set.Prod
 
 /-!
 # Finite products of types
@@ -33,6 +35,8 @@ construction/theorem that is easier to define/prove on binary products than on f
   if `l` contains every element of `ι` exactly once.
 * The product of sets is `Set.tprod : (∀ i, Set (α i)) → Set (TProd α l)`.
 -/
+
+@[expose] public section
 
 
 open List Function
@@ -133,6 +137,7 @@ protected def tprod : ∀ (l : List ι) (_t : ∀ i, Set (α i)), Set (TProd α 
   | [], _ => univ
   | i :: is, t => t i ×ˢ Set.tprod is t
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_preimage_tprod :
     ∀ (l : List ι) (t : ∀ i, Set (α i)), TProd.mk l ⁻¹' Set.tprod l t = { i | i ∈ l }.pi t
   | [], t => by simp [Set.tprod]

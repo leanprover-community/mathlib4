@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.Module.AEval
+module
+
+public import Mathlib.Algebra.Polynomial.Module.AEval
 
 /-!
 # Polynomial module
@@ -13,6 +15,8 @@ In this file, we define the polynomial module for an `R`-module `M`, i.e. the `R
 This is defined as a type alias `PolynomialModule R M := ℕ →₀ M`, since there might be different
 module structures on `ℕ →₀ M` of interest. See the docstring of `PolynomialModule` for details.
 -/
+
+@[expose] public section
 universe u v
 open Polynomial
 
@@ -136,6 +140,7 @@ theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : �
     rw [monomial_smul_single, single_apply, single_apply, smul_ite, smul_zero, ← ite_and]
     grind
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
     (f • single R i m) n = ite (i ≤ n) (f.coeff (n - i) • m) 0 := by
@@ -146,6 +151,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
     exacts [rfl, zero_add 0]
   | monomial => grind [monomial_smul_single, single_apply, coeff_monomial, zero_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
   induction f using Polynomial.induction_on' with
@@ -160,6 +166,7 @@ theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     simp_rw [Polynomial.coeff_monomial, ← Finset.mem_range_succ_iff]
     simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `PolynomialModule R R` is isomorphic to `R[X]` as an `R[X]` module. -/
 noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :=
   { (Polynomial.toFinsuppIso R).symm with

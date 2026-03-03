@@ -3,7 +3,10 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Instances.Real
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 ## (Unoriented) bordism theory
@@ -22,7 +25,7 @@ and is called the `n`-th (unoriented) bordism group.
 
 This construction can be generalised one step further, to produce an extraordinary homology theory.
 Given a topological space `X`, a **singular manifold** on `X` is a closed smooth manifold `M`
-together with a continuous map `M → F`. (The word *singular* does not refer to singularities,
+together with a continuous map `M → X`. (The word *singular* does not refer to singularities,
 but is by analogy to singular chains in the definition of singular homology.)
 
 Given two `n`-dimensional singular manifolds `s` and `t`, an (oriented) bordism between `s` and `t`
@@ -42,8 +45,8 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
   a closed `C^k`-manifold `M` modelled on `I` together with a continuous map `M → X`.
   We don't assume `M` to be modelled on `ℝⁿ`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
-  If we wish to emphasize the model, with will speak of a singular `I`-manifold.
-  To define a disjoint unions of singular manifolds, we require their domains to be manifolds
+  If we wish to emphasize the model, we will speak of a singular `I`-manifold.
+  To define a disjoint union of singular manifolds, we require their domains to be manifolds
   over the same model with corners: this is why we make the model explicit.
 
 ## Main results
@@ -89,6 +92,8 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
 singular manifold, bordism, bordism group
 -/
 
+@[expose] public section
+
 open scoped Manifold
 open Module Set
 
@@ -96,7 +101,7 @@ suppress_compilation
 
 /-- A **singular manifold** on a topological space `X` is a pair `(M, f)` of a closed
 `C^k`-manifold `M` modelled on `I` together with a continuous map `M → X`.
-If we wish to emphasize the model, with will speak of a singular `I`-manifold.
+If we wish to emphasize the model, we will speak of a singular `I`-manifold.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.)
