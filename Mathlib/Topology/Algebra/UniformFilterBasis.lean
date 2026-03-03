@@ -31,6 +31,7 @@ variable {G : Type*} [AddCommGroup G] (B : AddGroupFilterBasis G)
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure. -/
+@[implicit_reducible]
 protected def uniformSpace : UniformSpace G :=
   @IsTopologicalAddGroup.rightUniformSpace G _ B.topology B.isTopologicalAddGroup
 
