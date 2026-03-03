@@ -127,6 +127,14 @@ theorem add_measure {f : α → β} (hμ : AEMeasurable f μ) (hν : AEMeasurabl
     AEMeasurable f (μ + ν) :=
   aemeasurable_add_measure_iff.2 ⟨hμ, hν⟩
 
+protected theorem map_add₀ {μ ν : Measure α} {f : α → β}
+    (hμ : AEMeasurable f μ) (hν : AEMeasurable f ν) :
+    (μ + ν).map f = μ.map f + ν.map f := by
+  rw [Measure.map_congr (hμ.add_measure hν).ae_eq_mk, Measure.map_add _ _ (by fun_prop)]
+  congr 1 <;> apply Measure.map_congr
+  · exact (AbsolutelyContinuous.rfl.add_right ν) (hμ.add_measure hν).ae_eq_mk.symm
+  · exact (AbsolutelyContinuous.rfl.add_right' μ) (hμ.add_measure hν).ae_eq_mk.symm
+
 @[measurability]
 protected theorem iUnion [Countable ι] {s : ι → Set α}
     (h : ∀ i, AEMeasurable f (μ.restrict (s i))) : AEMeasurable f (μ.restrict (⋃ i, s i)) :=
@@ -275,8 +283,8 @@ theorem aemeasurable_one [One β] : AEMeasurable (fun _ : α => (1 : β)) μ :=
 @[simp]
 theorem aemeasurable_smul_measure_iff {c : ℝ≥0∞} (hc : c ≠ 0) :
     AEMeasurable f (c • μ) ↔ AEMeasurable f μ :=
-  ⟨fun h => ⟨h.mk f, h.measurable_mk, (ae_smul_measure_iff hc).1 h.ae_eq_mk⟩, fun h =>
-    ⟨h.mk f, h.measurable_mk, (ae_smul_measure_iff hc).2 h.ae_eq_mk⟩⟩
+  ⟨fun h => ⟨h.mk f, h.measurable_mk, (ae_ennreal_smul_measure_iff hc).1 h.ae_eq_mk⟩, fun h =>
+    ⟨h.mk f, h.measurable_mk, (ae_ennreal_smul_measure_iff hc).2 h.ae_eq_mk⟩⟩
 
 theorem aemeasurable_of_aemeasurable_trim {α} {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) {f : α → β} (hf : AEMeasurable f (μ.trim hm)) : AEMeasurable f μ :=
@@ -292,6 +300,7 @@ theorem aemeasurable_map_equiv_iff (e : α ≃ᵐ β) {f : β → γ} :
 
 end
 
+@[fun_prop]
 theorem AEMeasurable.restrict (hfm : AEMeasurable f μ) {s} : AEMeasurable f (μ.restrict s) :=
   ⟨AEMeasurable.mk f hfm, hfm.measurable_mk, ae_restrict_of_ae hfm.ae_eq_mk⟩
 

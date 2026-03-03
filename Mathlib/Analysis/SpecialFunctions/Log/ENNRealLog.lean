@@ -23,8 +23,8 @@ in the extended reals `EReal`, with `log 0 = ⊥` and `log ⊤ = ⊤`.
 - `ENNReal.log_injective`, `ENNReal.log_surjective`, `ENNReal.log_bijective`: `log` is
   injective, surjective, and bijective;
 - `ENNReal.log_mul_add`, `ENNReal.log_pow`, `ENNReal.log_rpow`: `log` satisfies
-the identities `log (x * y) = log x + log y` and `log (x ^ y) = y * log x`
-(with either `y ∈ ℕ` or `y ∈ ℝ`).
+  the identities `log (x * y) = log x + log y` and `log (x ^ y) = y * log x`
+  (with either `y ∈ ℕ` or `y ∈ ℝ`).
 
 ## Tags
 ENNReal, EReal, logarithm
@@ -78,6 +78,7 @@ end Definition
 /-! ### Monotonicity -/
 section Monotonicity
 
+set_option backward.isDefEq.respectTransparency false in
 theorem log_strictMono : StrictMono log := by
   intro x y h
   unfold log

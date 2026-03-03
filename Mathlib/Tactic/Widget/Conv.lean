@@ -6,9 +6,11 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot, Aaron Liu
 module
 
 public import Mathlib.Lean.Name
-public import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.OfRpcMethod
+public import Lean.Server.Rpc.RequestHandling
+public import ProofWidgets.Component.Basic
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! # Conv widget
 
@@ -162,7 +164,7 @@ corresponding to `enter [xs,*]` followed by traversing `path`. If `loc` is `some
 start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`.
 We end every `conv` sequence with `skip`, and highlight `skip` upon insertion.
 -/
-def pathToStx {m} [Monad m] [MonadEnv m] [MonadRef m] [MonadQuotation m]
+def pathToStx {m} [Monad m] [MonadEnv m] [MonadQuotation m]
     (path : Path) (loc : Option Name) (xs : Syntax.TSepArray ``enterArg "," := {}) :
     m (TSyntax `tactic) := do
   match path with

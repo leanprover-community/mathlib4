@@ -107,6 +107,7 @@ def prefixedEquiv (s : Finset X) : prefixed s ≃ Numbering s × Numbering ↑(s
 lemma card_prefixed (s : Finset X) : #(prefixed s) = (#s)! * (card X - #s)! := by
   simpa [-mem_prefixed] using Fintype.card_congr (prefixedEquiv s)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma dens_prefixed (s : Finset X) : (prefixed s).dens = ((card X).choose #s : ℚ≥0)⁻¹ := by
   simp [dens, card_prefixed, Nat.cast_choose _ s.card_le_univ]

@@ -358,7 +358,8 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
   rw [preimage_union, preimage_compl]
   apply union_subset_union_right (f ⁻¹' s)
   intro x hx
-  simp only [mem_compl_iff, mem_preimage, mem_image, not_exists, not_and] at hx ⊢
+  push _ ∈ _ at hx ⊢
+  push_neg at hx
   tauto
 
 /-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and

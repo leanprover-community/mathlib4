@@ -60,11 +60,34 @@ theorem convexOn_dist (z : E) (hs : Convex ℝ s) : ConvexOn ℝ s fun z' => dis
 theorem convexOn_univ_dist (z : E) : ConvexOn ℝ univ fun z' => dist z' z :=
   convexOn_dist z convex_univ
 
-theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (Metric.ball a r) := by
-  simpa only [Metric.ball, sep_univ] using (convexOn_univ_dist a).convex_lt r
+theorem convex_ball (a : E) (r : ℝ) : Convex ℝ (ball a r) := by
+  simpa only [ball, sep_univ] using (convexOn_univ_dist a).convex_lt r
 
-theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (Metric.closedBall a r) := by
-  simpa only [Metric.closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
+theorem convex_eball (a : E) (r : ENNReal) : Convex ℝ (eball a r) := by
+  cases r with
+  | top => simp [convex_univ]
+  | coe r => simp [eball_coe, convex_ball]
+
+theorem convex_closedBall (a : E) (r : ℝ) : Convex ℝ (closedBall a r) := by
+  simpa only [closedBall, sep_univ] using (convexOn_univ_dist a).convex_le r
+
+/-- The segment from `x` to `y` is contained in the closed ball centered at `x` with radius
+`dist x y`. -/
+theorem segment_subset_closedBall_left (x y : E) : segment ℝ x y ⊆ closedBall x (dist x y) :=
+  (convex_closedBall x _).segment_subset (mem_closedBall_self dist_nonneg)
+    (mem_closedBall.mpr (dist_comm y x ▸ le_refl _))
+
+/-- The segment from `x` to `y` is contained in the closed ball centered at `y` with radius
+`dist x y`. -/
+theorem segment_subset_closedBall_right (x y : E) :
+    segment ℝ x y ⊆ closedBall y (dist x y) := by
+  rw [segment_symm]
+  exact dist_comm x y ▸ segment_subset_closedBall_left y x
+
+theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) := by
+  cases r with
+  | top => simp [convex_univ]
+  | coe r => simp [closedEBall_coe, convex_closedBall]
 
 open Pointwise in
 theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -133,14 +156,14 @@ theorem convexHull_ediam (s : Set E) : ediam (convexHull ℝ s) = ediam s := by
 
 /-- Diameter of the convex hull of a set `s` equals the emetric diameter of `s`. -/
 @[simp]
-theorem convexHull_diam (s : Set E) : Metric.diam (convexHull ℝ s) = Metric.diam s := by
-  simp only [Metric.diam, convexHull_ediam]
+theorem convexHull_diam (s : Set E) : diam (convexHull ℝ s) = diam s := by
+  simp only [diam, convexHull_ediam]
 
 /-- Convex hull of `s` is bounded if and only if `s` is bounded. -/
 @[simp]
 theorem isBounded_convexHull {s : Set E} :
     Bornology.IsBounded (convexHull ℝ s) ↔ Bornology.IsBounded s := by
-  simp only [Metric.isBounded_iff_ediam_ne_top, convexHull_ediam]
+  simp only [isBounded_iff_ediam_ne_top, convexHull_ediam]
 
 instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpace E :=
   IsTopologicalAddGroup.pathConnectedSpace
@@ -149,13 +172,13 @@ instance (priority := 100) NormedSpace.instPathConnectedSpace : PathConnectedSpa
 theorem isConnected_setOf_sameRay (x : E) : IsConnected { y | SameRay ℝ x y } := by
   by_cases hx : x = 0; · simpa [hx] using isConnected_univ (α := E)
   simp_rw [← exists_nonneg_left_iff_sameRay hx]
-  exact isConnected_Ici.image _ (continuous_id.smul continuous_const).continuousOn
+  exact isConnected_Ici.image _ (by fun_prop)
 
 /-- The set of nonzero vectors in the same ray as the nonzero vector `x` is connected. -/
 theorem isConnected_setOf_sameRay_and_ne_zero {x : E} (hx : x ≠ 0) :
     IsConnected { y | SameRay ℝ x y ∧ y ≠ 0 } := by
   simp_rw [← exists_pos_left_iff_sameRay_and_ne_zero hx]
-  exact isConnected_Ioi.image _ (continuous_id.smul continuous_const).continuousOn
+  exact isConnected_Ioi.image _ (by fun_prop)
 
 lemma norm_sub_le_of_mem_segment {x y z : E} (hy : y ∈ segment ℝ x z) :
     ‖y - x‖ ≤ ‖z - x‖ := by

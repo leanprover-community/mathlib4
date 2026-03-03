@@ -134,10 +134,10 @@ theorem nonempty_of_nonempty_iUnion_eq_univ
   nonempty_of_nonempty_iUnion (s := s) (by simpa only [h_Union] using univ_nonempty)
 
 theorem setOf_exists (p : ι → β → Prop) : { x | ∃ i, p i x } = ⋃ i, { x | p i x } :=
-  ext fun _ => mem_iUnion.symm
+  ext fun _ => .symm <| mem_iUnion
 
 theorem setOf_forall (p : ι → β → Prop) : { x | ∀ i, p i x } = ⋂ i, { x | p i x } :=
-  ext fun _ => mem_iInter.symm
+  ext fun _ => .symm <| mem_iInter
 
 theorem iUnion_subset {s : ι → Set α} {t : Set α} (h : ∀ i, s i ⊆ t) : ⋃ i, s i ⊆ t :=
   iSup_le h
@@ -281,6 +281,20 @@ lemma iInter₂_congr {s t : ∀ i, κ i → Set α} (h : ∀ i j, s i j = t i j
     ⋂ (i) (j), s i j = ⋂ (i) (j), t i j :=
   iInter_congr fun i => iInter_congr <| h i
 
+theorem BijOn.iUnion_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → Set α)
+    (hf : Set.BijOn f s t) : ⋃ x ∈ s, g (f x) = ⋃ y ∈ t, g y := hf.iSup_comp g
+
+theorem BijOn.iInter_comp {s : Set β} {t : Set γ} {f : β → γ} (g : γ → Set α)
+    (hf : Set.BijOn f s t) : ⋂ x ∈ s, g (f x) = ⋂ y ∈ t, g y := hf.iInf_comp g
+
+theorem BijOn.iUnion_congr {s : Set β} {t : Set γ} (f : β → Set α) (g : γ → Set α) {h : β → γ}
+    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⋃ x ∈ s, f x = ⋃ y ∈ t, g y :=
+  h1.iSup_congr f g h2
+
+theorem BijOn.iInter_congr {s : Set β} {t : Set γ} (f : β → Set α) (g : γ → Set α) {h : β → γ}
+    (h1 : Set.BijOn h s t) (h2 : ∀ x, g (h x) = f x) : ⋂ x ∈ s, f x = ⋂ y ∈ t, g y :=
+  h1.iInf_congr f g h2
+
 section Nonempty
 variable [Nonempty ι] {f : ι → Set α} {s : Set α}
 
@@ -357,14 +371,14 @@ theorem iInter_union (s : ι → Set β) (t : Set β) : (⋂ i, s i) ∪ t = ⋂
 theorem insert_iInter (x : β) (t : ι → Set β) : insert x (⋂ i, t i) = ⋂ i, insert x (t i) := by
   simp_rw [← union_singleton, iInter_union]
 
-theorem iUnion_diff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s :=
-  iUnion_inter _ _
+theorem iUnion_diff (s : Set β) (t : ι → Set β) : (⋃ i, t i) \ s = ⋃ i, t i \ s := by
+  simp only [diff_eq, iUnion_inter]
 
 theorem diff_iUnion [Nonempty ι] (s : Set β) (t : ι → Set β) : (s \ ⋃ i, t i) = ⋂ i, s \ t i := by
-  rw [diff_eq, compl_iUnion, inter_iInter]; rfl
+  simp only [diff_eq, compl_iUnion, inter_iInter]
 
 theorem diff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i, s \ t i := by
-  rw [diff_eq, compl_iInter, inter_iUnion]; rfl
+  simp only [diff_eq, compl_iInter, inter_iUnion]
 
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t

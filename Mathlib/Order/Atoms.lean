@@ -217,7 +217,7 @@ alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
 
 namespace SetLike
 
-variable {A B : Type*} [SetLike A B]
+variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsConcreteLE A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
@@ -693,7 +693,7 @@ theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α
 lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
     (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
   ext a
-  refine ⟨fun h => ⟨CompleteLattice.le_sSup S a h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
+  refine ⟨fun h => ⟨le_sSup h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
   obtain ⟨b, hbS, hba⟩ := (IsAtom.le_sSup hatom).mp hale
   obtain rfl | rfl := (hS b hbS).le_iff.mp hba
   · simpa using hatom.1
@@ -914,12 +914,14 @@ protected noncomputable def completeLattice : CompleteLattice α :=
         intro con
         exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :=
   { __ := IsSimpleOrder.completeLattice
     __ := IsSimpleOrder.booleanAlgebra }
 
+set_option backward.isDefEq.respectTransparency false in
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
 

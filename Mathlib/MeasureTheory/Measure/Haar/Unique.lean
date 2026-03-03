@@ -137,7 +137,7 @@ lemma integral_isMulLeftInvariant_isMulRightInvariant_combo
   have D_cont : Continuous D := continuous_integral_apply_inv_mul hg h'g
   have D_pos : ∀ x, 0 < D x := by
     intro x
-    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := hg.comp (continuous_inv.mul continuous_const)
+    have C : Continuous (fun y ↦ g (y⁻¹ * x)) := by fun_prop
     apply (integral_pos_iff_support_of_nonneg _ _).2
     · apply C.isOpen_support.measure_pos ν
       exact ⟨x * x₀⁻¹, by simpa using g_pos⟩
@@ -334,8 +334,8 @@ lemma mul_haarScalarFactor_smul [LocallyCompactSpace G] (μ' μ : Measure G)
     ne_of_gt (g_cont.integral_pos_of_hasCompactSupport_nonneg_nonzero g_comp g_nonneg g_one)
   apply NNReal.coe_injective
   calc
-    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) :=
-      by rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
+    c * haarScalarFactor μ' (c • μ) = c * ((∫ x, g x ∂μ') / ∫ x, g x ∂(c • μ)) := by
+      rw [haarScalarFactor_eq_integral_div _ _ g_cont g_comp (by simp [int_g_ne_zero, hc])]
     _ = c * ((∫ x, g x ∂μ') / (c • ∫ x, g x ∂μ)) := by simp
     _ = (∫ x, g x ∂μ') / (∫ x, g x ∂μ) := by
       rw [NNReal.smul_def, smul_eq_mul, ← mul_div_assoc]
@@ -872,10 +872,7 @@ lemma isMulLeftInvariant_eq_smul_of_regular [LocallyCompactSpace G]
     congr! 4 with K _KU K_comp
     exact measure_isMulLeftInvariant_eq_smul_of_ne_top μ' μ K_comp.measure_lt_top.ne
       K_comp.measure_lt_top.ne
-  ext s _hs
-  rw [s.measure_eq_iInf_isOpen, s.measure_eq_iInf_isOpen]
-  congr! 4 with U _sU U_open
-  exact A U U_open
+  exact OuterRegular.ext_isOpen A
 
 /-- **Uniqueness of left-invariant measures**:
 Two Haar measures coincide up to a multiplicative constant in a second countable group. -/
@@ -901,6 +898,7 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
   rw [haarMeasure_unique μ K, h, smul_smul]
   exact smul_absolutelyContinuous
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A continuous surjective monoid homomorphism of topological groups with compact codomain
 is measure preserving, provided that the Haar measures on the domain and on the codomain
 have the same total mass.

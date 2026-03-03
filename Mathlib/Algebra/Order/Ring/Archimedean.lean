@@ -169,6 +169,18 @@ theorem mk_le_add_mk_of_archimedean [Archimedean S] (f : S →+*o R) (x : R) (y 
 theorem mk_map_nonneg_of_archimedean [Archimedean S] (f : S →+*o R) (y : S) : 0 ≤ mk (f y) := by
   simpa using mk_le_mk_add_of_archimedean f 1 y
 
+theorem lt_of_pos_of_archimedean [Archimedean S] (f : S →+*o R)
+    {x : R} (hx : 0 < mk x) {y : S} (hy : 0 < y) : x < f y := by
+  apply lt_of_mk_lt_mk_of_nonneg
+  · rwa [mk_map_of_archimedean' f hy.ne']
+  · simpa using f.monotone' hy.le
+
+theorem lt_of_neg_of_archimedean [Archimedean S] (f : S →+*o R)
+    {x : R} (hx : 0 < mk x) {y : S} (hy : y < 0) : f y < x := by
+  apply lt_of_mk_lt_mk_of_nonpos
+  · rwa [mk_map_of_archimedean' f hy.ne]
+  · simpa using f.monotone' hy.le
+
 @[simp]
 theorem mk_intCast {n : ℤ} (h : n ≠ 0) : mk (n : S) = 0 := by
   obtain _ | _ := subsingleton_or_nontrivial S

@@ -8,6 +8,7 @@ module
 public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 public import Mathlib.Topology.Algebra.UniformField
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Valued fields and their completions
@@ -253,7 +254,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       have r : Function.RightInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
         simp only [mul_assoc, inv_mul_cancel₀ h, mul_one]
-      have c : Continuous fun x : hat K => x * x₀⁻¹ := continuous_id.mul continuous_const
+      have c : Continuous fun x : hat K => x * x₀⁻¹ := by fun_prop
       rw [image_eq_preimage_of_inverse l r]
       rw [← mul_inv_cancel₀ h] at V'_in
       exact c.continuousAt V'_in

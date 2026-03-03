@@ -555,7 +555,7 @@ secant line with left endpoint at `x` is bounded below by the right derivative o
 lemma le_slope_of_hasDerivWithinAt_Ioi (hfc : ConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Ioi x) x) :
     f' ≤ slope f x y := by
-  apply le_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' notMem_Ioi_self).mp hf'
+  apply le_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' self_notMem_Ioi).mp hf'
   simp_rw [eventually_nhdsWithin_iff, slope_def_field]
   filter_upwards [eventually_lt_nhds hxy] with t ht (ht' : x < t)
   refine hfc.secant_mono hx (?_ : t ∈ S) hy ht'.ne' hxy.ne' ht.le
@@ -615,7 +615,7 @@ line with right endpoint at `y` is bounded above by the left derivative of `f` a
 lemma slope_le_of_hasDerivWithinAt_Iio (hfc : ConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' (Iio y) y) :
     slope f x y ≤ f' := by
-  apply ge_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' notMem_Iio_self).mp hf'
+  apply ge_of_tendsto <| (hasDerivWithinAt_iff_tendsto_slope' self_notMem_Iio).mp hf'
   simp_rw [eventually_nhdsWithin_iff, slope_comm f x y, slope_def_field]
   filter_upwards [eventually_gt_nhds hxy] with t ht (ht' : t < y)
   refine hfc.secant_mono hy hx (?_ : t ∈ S) hxy.ne ht'.ne ht.le
