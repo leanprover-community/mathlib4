@@ -270,6 +270,39 @@ def append_results(results: list[OccurrenceResult]):
         conn.commit()
 
 
+def delete_module_results(module: str):
+    """Delete all DB rows for a module (stale data cleanup)."""
+    with _results_lock:
+        conn = _get_db()
+        occ_ids = [
+            r[0]
+            for r in conn.execute(
+                "SELECT id FROM occurrences WHERE module = ?", (module,)
+            )
+        ]
+        if not occ_ids:
+            return
+        placeholders = ",".join("?" * len(occ_ids))
+        conn.execute(
+            f"""DELETE FROM synth_app_failures WHERE synth_app_id IN
+                (SELECT id FROM synth_apps WHERE occurrence_id IN ({placeholders}))""",
+            occ_ids,
+        )
+        conn.execute(
+            f"DELETE FROM synth_apps WHERE occurrence_id IN ({placeholders})",
+            occ_ids,
+        )
+        conn.execute(
+            f"DELETE FROM failures WHERE occurrence_id IN ({placeholders})",
+            occ_ids,
+        )
+        conn.execute(
+            f"DELETE FROM occurrences WHERE id IN ({placeholders})",
+            occ_ids,
+        )
+        conn.commit()
+
+
 # ---------------------------------------------------------------------------
 # DAG helpers
 # ---------------------------------------------------------------------------
@@ -910,19 +943,54 @@ def main():
     total_occurrences = sum(len(v) for v in occurrence_map.values())
     print(f"  {len(occurrence_map)} files with {total_occurrences} occurrences")
 
-    # Step 3: load/manage progress
+    # Step 3: load/manage progress — skip unchanged files, purge stale data
     resumed = 0
     if not args.no_resume:
         progress = load_progress()
         if progress:
             to_skip = []
+            stale = []
             for name in list(occurrence_map):
                 if name in progress:
                     fp = full_dag.project_root / full_dag.modules[name].filepath
                     if fp.exists() and file_sha256(fp) == progress[name]:
                         to_skip.append(name)
+                    else:
+                        # File changed since last run — purge old DB rows
+                        stale.append(name)
             for name in to_skip:
                 del occurrence_map[name]
+            # Purge DB rows for changed files so they get fresh data
+            if not args.dry_run:
+                for name in stale:
+                    delete_module_results(name)
+            # Also purge modules that are in the DB but no longer have
+            # any occurrences (e.g. set_option was removed entirely).
+            # Only do this for full scans — --files restricts the
+            # occurrence_map and would incorrectly mark everything else
+            # as vanished.
+            if not args.dry_run and not args.files and RESULTS_DB.exists():
+                init_results()
+                db_modules = {
+                    r[0]
+                    for r in _get_db().execute(
+                        "SELECT DISTINCT module FROM occurrences"
+                    )
+                }
+                vanished = db_modules - set(occurrence_map) - set(to_skip)
+                for name in vanished:
+                    delete_module_results(name)
+                if vanished:
+                    print(
+                        f"  Purged {len(vanished)} modules whose"
+                        f" set_option lines were removed"
+                    )
+            if stale:
+                print(
+                    f"  {'Would purge' if args.dry_run else 'Purged'}"
+                    f" stale DB entries for {len(stale)}"
+                    f" changed modules"
+                )
             resumed = len(to_skip)
             if resumed:
                 total_occurrences = sum(len(v) for v in occurrence_map.values())
