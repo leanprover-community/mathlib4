@@ -49,9 +49,10 @@ lemma torsion_self : torsion f X X = 0 := by
 
 variable (X Y) in
 lemma torsion_antisymm : torsion f X Y = - torsion f Y X := by
-  ext
-  simp only [torsion]
+  ext x
+  unfold torsion
   rw [VectorField.mlieBracket_swap]
+  dsimp
   module
 
 namespace IsCovariantDerivativeOn
@@ -64,9 +65,9 @@ lemma torsion_add_left_apply [CompleteSpace E]
     (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) :
     torsion f (X + X') Y x = torsion f X Y x + torsion f X' Y x := by
-  sorry -- simp [torsion, hf.addX (x := x) (hx := sorry) hX hX']
+  simp [torsion]--, hf.addX (x := x) (hx := sorry) hX hX']
   -- rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
-  -- module
+  sorry -- module
 
 lemma torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
     (hX : MDiffAt (T% X) x)
@@ -151,13 +152,14 @@ variable {U : Set M} (hf : IsCovariantDerivativeOn E f U)
 -- TODO: prove applied versions of these, for IsCovariantDerivativeOn --- using tensoriality, later!
 variable (f) in
 @[simp]
-lemma torsion_zero (hX : MDiff T% X) : torsion cov 0 X = 0 := by
-  simp [torsion, cov.zeroX hX, cov.zeroσ hX]
+lemma torsion_zero : torsion cov 0 X = 0 := by
+  ext x
+  simp [torsion]
 
 
 @[simp]
-lemma torsion_zero' (hX : MDiff T% X) : torsion cov X 0 = 0 := by
-  rw [torsion_antisymm, torsion_zero hX]; simp
+lemma torsion_zero' : torsion cov X 0 = 0 := by
+  rw [torsion_antisymm, torsion_zero]; simp
 
 variable (Y) in
 lemma torsion_add_left [CompleteSpace E]
@@ -233,17 +235,8 @@ lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTo
 -- This should be obvious; am I doing something wrong?
 lemma isTorsionFree_iff : IsTorsionFree cov ↔
     ∀ X Y x, cov X x (Y x) - cov Y x (X x) = VectorField.mlieBracket I X Y x := by
-  simp only [IsTorsionFree]
-  constructor
-  · intro h X Y
-    have : torsion cov X Y = 0 := by simp [h]
-    -- XXX: abel, ring, module and grind all fail here
-    exact eq_of_sub_eq_zero this
-  · intro h
-    ext X Y x
-    specialize h X Y
-    apply congr_fun
-    simp_all [torsion]
+  unfold IsTorsionFree torsion
+  simp [funext_iff, sub_eq_iff_eq_add']
 
 variable {n} in
 lemma aux1 {ι : Type*} [Fintype ι]
