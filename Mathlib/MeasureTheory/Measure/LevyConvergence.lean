@@ -126,9 +126,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   rw [abs_of_nonneg hr.le]
   calc 2⁻¹ * r * ‖∫ t in -(2 * r⁻¹)..2 * r⁻¹, 1 - f (t • z)‖
   _ ≤ 2⁻¹ * r * ∫ t in -(2 * r⁻¹)..2 * r⁻¹, ‖1 - f (t • z)‖ := by
-    gcongr
-    rw [intervalIntegral.integral_of_le hr', intervalIntegral.integral_of_le hr']
-    exact norm_integral_le_integral_norm _
+    grw [intervalIntegral.norm_integral_le_integral_norm hr']
   _ ≤ 2⁻¹ * r * ∫ t in -(2 * r⁻¹)..2 * r⁻¹, ε / 4 := by
     gcongr
     rw [intervalIntegral.integral_of_le hr', intervalIntegral.integral_of_le hr']
