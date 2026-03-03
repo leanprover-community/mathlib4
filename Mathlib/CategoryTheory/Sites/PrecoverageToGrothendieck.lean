@@ -312,10 +312,12 @@ lemma galoisConnection_toGrothendieck_toPrecoverage :
 
 end Precoverage
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma Precoverage.toGrothendieck_bot : toGrothendieck (⊥ : Precoverage C) = ⊥ :=
   (galoisConnection_toGrothendieck_toPrecoverage C).l_bot
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma GrothendieckTopology.toPrecoverage_top : toPrecoverage (⊤ : GrothendieckTopology C) = ⊤ :=
   (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).u_top
