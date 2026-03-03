@@ -235,18 +235,21 @@ theorem not_isHamiltonian_of_isBridge (G : SimpleGraph V)
   classical
   refine Sym2.ind (fun x y hbr => ?_) e he
   intro hHam
-  have hxne : x ≠ y :=
-    ((SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).1).ne
+  have hxne : x ≠ y := by
+    intro hxy
+    subst hxy
+    exact (SimpleGraph.isBridge_iff.mp hbr)
+      (SimpleGraph.Reachable.refl (G := G.deleteEdges {s(x, x)}) x)
   haveI : Nontrivial V := ⟨⟨x, y, hxne⟩⟩
   have hne : Fintype.card V ≠ 1 := by
     have : 1 < Fintype.card V := by omega
     exact ne_of_gt this
   obtain ⟨u, c, hcHam⟩ := hHam hne
   have he_not_in_cycle : s(x, y) ∉ c.edges :=
-    (SimpleGraph.isBridge_iff_adj_and_forall_cycle_notMem.mp hbr).2 c hcHam.isCycle
+    hbr.forall_cycle_notMem c hcHam.isCycle
   have hWalkAllMem :
       ∀ p : G.Walk x y, s(x, y) ∈ p.edges :=
-    (SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr).2
+    (SimpleGraph.isBridge_iff_adj_and_forall_walk_mem_edges.mp hbr)
   let cX := c.rotate (hcHam.mem_support x)
   have hcycleX : cX.IsCycle := hcHam.isCycle.rotate (hcHam.mem_support x)
   have he_not_in_cX : s(x, y) ∉ cX.edges :=

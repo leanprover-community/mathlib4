@@ -102,11 +102,11 @@ lemma isEdgeConnected_add_one (hk : k ≠ 0) :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- An edge is a bridge iff its endpoints are adjacent and not 2-edge-reachable. -/
-lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} :
-    G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬G.IsEdgeReachable 2 u v := by
-  refine ⟨fun h ↦ ⟨h.left, fun hc ↦ ?_⟩, fun ⟨hadj, hc⟩ ↦ ?_⟩
-  · exact isBridge_iff.mp h |>.right <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat
-  · refine isBridge_iff.mpr ⟨hadj, fun hr ↦ hc fun s hs₂ ↦ ?_⟩
+lemma isBridge_iff_adj_and_not_isEdgeConnected_two {u v : V} (hadj : G.Adj u v) :
+    G.IsBridge s(u, v) ↔ ¬G.IsEdgeReachable 2 u v := by
+  refine ⟨fun h hc ↦ ?_, fun hc ↦ ?_⟩
+  · exact isBridge_iff.mp h <| hc <| Set.encard_singleton _ |>.trans_lt Nat.one_lt_ofNat
+  · refine isBridge_iff.mpr <| fun hr ↦ hc fun s hs₂ ↦ ?_
     by_cases! hs₁ : s.encard ≠ (1 : ℕ)
     · apply G.isEdgeReachable_one.mpr hadj.reachable
       exact lt_of_le_of_ne (ENat.lt_coe_add_one_iff.mp hs₂) hs₁

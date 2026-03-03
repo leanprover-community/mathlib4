@@ -158,17 +158,15 @@ theorem IsTree.coe_subgraphOfAdj {u v : V} (h : G.Adj u v) : G.subgraphOfAdj h |
 
 theorem isAcyclic_iff_forall_adj_isBridge :
     G.IsAcyclic ↔ ∀ ⦃v w : V⦄, G.Adj v w → G.IsBridge s(v, w) := by
-  simp_rw [isBridge_iff_adj_and_forall_cycle_notMem]
   constructor
   · intro ha v w hvw
-    apply And.intro hvw
-    intro u p hp
-    cases ha p hp
+    refine (isBridge_iff_adj_and_forall_cycle_notMem hvw).2 ?_
+    intro u p hp hmem
+    exact (ha p hp).elim
   · rintro hb v (_ | ⟨ha, p⟩) hp
     · exact hp.not_of_nil
-    · apply (hb ha).2 _ hp
-      rw [Walk.edges_cons]
-      apply List.mem_cons_self
+    · exact (hb ha).forall_cycle_notMem _ hp <| by
+        simp [Walk.edges_cons]
 
 theorem isAcyclic_iff_forall_edge_isBridge :
     G.IsAcyclic ↔ ∀ ⦃e⦄, e ∈ (G.edgeSet) → G.IsBridge e := by
@@ -187,7 +185,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
     rw [isAcyclic_iff_forall_adj_isBridge] at h
     specialize h ph
     rw [isBridge_iff_adj_and_forall_walk_mem_edges] at h
-    replace h := h.2 (q.append p.reverse)
+    replace h := h (q.append p.reverse)
     simp only [Walk.edges_append, Walk.edges_reverse, List.mem_append, List.mem_reverse] at h
     rcases h with h | h
     · cases q with
@@ -379,8 +377,8 @@ theorem isAcyclic_sup_fromEdgeSet_iff {u v : V} :
   refine ⟨?_, fun ⟨hacyc, hreach⟩ ↦ hacyc.isAcyclic_sup_fromEdgeSet_of_not_reachable <| by grind⟩
   refine fun hacyc ↦ ⟨hacyc.anti le_sup_left, fun hreach ↦ False.elim ?_⟩
   have := isAcyclic_iff_forall_edge_isBridge.mp (e := s(u, v)) hacyc <| by simp [huv]
-  refine isBridge_iff.mp this |>.right <| hreach.mono <| Eq.le <| Eq.symm ?_
-  rw [sup_sdiff_right_self]
+  refine isBridge_iff.mp this <| hreach.mono <| Eq.le <| Eq.symm ?_
+  rw [deleteEdges, sup_sdiff_right_self]
   exact deleteEdges_eq_self.mpr <| Set.disjoint_singleton_right.mpr hadj
 
 /--
@@ -414,8 +412,11 @@ theorem maximal_isAcyclic_iff_reachable_eq {F : SimpleGraph V} (hle : F ≤ G) (
     exact hH.anti <| sup_le_iff.mpr ⟨hFH.le, H.fromEdgeSet_le.mpr <| by grind⟩
   have : (F ⊔ fromEdgeSet {e}) \ fromEdgeSet {e} = F := by simpa using heF
   cases e
-  rw [isBridge_iff, this, h] at h_bridge
-  exact h_bridge.right <| hHG heH |>.reachable
+  rename_i x y
+  have hdelete : (F ⊔ fromEdgeSet {s(x, y)}).deleteEdges {s(x, y)} = F := by
+    simpa [deleteEdges] using this
+  rw [isBridge_iff, hdelete, h] at h_bridge
+  exact h_bridge <| hHG heH |>.reachable
 
 /-- A subgraph of a connected graph is maximal acyclic iff it is a tree. -/
 theorem Connected.maximal_le_isAcyclic_iff_isTree {T : SimpleGraph V} (hG : G.Connected)
