@@ -108,7 +108,7 @@ theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T)
     obtain ⟨d, hd₀, hd⟩ := hy_lower
     rintro rfl
     suffices ∀ᶠ n : ℕ in atTop, False by rwa [eventually_const] at this
-    rw [NormedAddCommGroup.tendsto_nhds_zero] at hψy
+    rw [NormedAddGroup.tendsto_nhds_zero] at hψy
     filter_upwards [hψ.tendsto_atTop.eventually hd, hψy d (by positivity)] using by grind
   -- So y is an eigenvector of T with eigenvalue μ,
   have : HasEigenvector (T : End 𝕜 X) μ y := by
