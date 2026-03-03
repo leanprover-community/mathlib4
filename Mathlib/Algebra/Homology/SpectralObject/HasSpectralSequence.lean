@@ -27,11 +27,6 @@ to define the pages and the differentials directly from the `SpectralObject` API
 
 -/
 
-/-!
-# The spectral sequence of a spectral object
-
--/
-
 @[expose] public section
 
 namespace CategoryTheory
