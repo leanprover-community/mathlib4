@@ -198,7 +198,6 @@ theorem roth_3ap_theorem_nat (ε : ℝ) (hε : 0 < ε) (hG : cornersTheoremBound
 
 open Asymptotics Filter
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Roth's theorem** for `ℕ` as an asymptotic statement.
 
 The maximum density of a 3AP-free set in `{1, ..., n}` goes to zero as `n` tends to infinity. -/
