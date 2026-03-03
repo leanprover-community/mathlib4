@@ -425,6 +425,15 @@ theorem aeval_prod (x : A × B) : aeval (R := R) x = (aeval x.1).prod (aeval x.2
 theorem aeval_prod_apply (x : A × B) (p : Polynomial R) :
     p.aeval x = (p.aeval x.1, p.aeval x.2) := by simp [aeval_prod]
 
+variable (R A) in
+/-- The bijection `(R[X] →ₐ[R] A) ≃ A` induced by `Polynomial.aeval`. -/
+@[simps]
+noncomputable def algHomEquiv : (R[X] →ₐ[R] A) ≃ A where
+  toFun f := f X
+  invFun := aeval
+  left_inv _ := algHom_ext <| aeval_X _
+  right_inv := aeval_X
+
 section Pi
 
 variable {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
