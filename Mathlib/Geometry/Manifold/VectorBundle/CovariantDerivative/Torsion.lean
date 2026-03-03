@@ -113,6 +113,15 @@ noncomputable def torsionTensorRight (hcov : IsCovariantDerivativeOn E cov univ)
     (fun _x _f _Y hf hY ↦ hcov.torsion_smul_right_apply hf hY)
     (fun _x _f _σ hf hσ ↦ hcov.torsion_add_right_apply hf hσ) ..
 
+noncomputable def torsionTensor (hcov : IsCovariantDerivativeOn E cov univ) :
+    TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] TangentSpace I x :=
+  mk2TensorAt I E E (Bundle.torsion cov)
+    (fun {f σ τ} hf hσ ↦ hcov.torsion_smul_left_apply τ hf hσ)
+    (fun {f σ τ} hf hσ ↦ hcov.torsion_add_left_apply τ hf hσ)
+    (fun {f σ τ} hf hτ ↦ hcov.torsion_smul_right_apply hf hτ)
+    (fun {f σ τ} hσ hτ ↦ hcov.torsion_add_right_apply hσ hτ)
+
+
 end
 
 /-- `∇` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
