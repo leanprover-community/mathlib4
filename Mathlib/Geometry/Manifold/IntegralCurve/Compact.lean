@@ -33,50 +33,23 @@ variable
   [T2Space M] [Nonempty M] [CompactSpace M] [BoundarylessManifold I M]
   {v : (x : M) → TangentSpace I x}
 
-/-
-Use `exists_isIntegralCurve_of_isIntegralCurveOn`
-
--/
-
--- may have to restate lemmas `UniformTime` to path local flows together, not just local curves
-
 omit [T2Space M] in
 lemma exist_uniform_time (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     ∃ ε > 0, ∀ x, ∃ γ : ℝ → M, γ 0 = x ∧ IsMIntegralCurveOn γ v (Ioo (-ε) ε) := by
   have (x : M) := exists_mem_nhds_isMIntegralCurveOn_Ioo_of_contMDiffAt 0 (hv.contMDiffAt (x := x))
     BoundarylessManifold.isInteriorPoint
   choose u hu ε hε h using this
-  have ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover u hu
-  -- extract `εmin` as minimum of `{ ε x | x ∈ t }`
-  have ht' : t.Nonempty := by
-    have : (⊤ : Set M).Nonempty := univ_nonempty
-    rw [← ht] at this
-    simp only [nonempty_iUnion, exists_prop] at this
-    have ⟨x, hx⟩ := this -- missing lemma? `Finset.nonempty_of_exists_mem`
-    exact ⟨x, hx.1⟩
-  let εmin := Finset.image ε t |>.min' (Finset.image_nonempty.mpr ht')
-  have hpos : 0 < εmin := by
-    dsimp only [εmin]
-    rw [Finset.image ε t |>.min'_eq_inf' (Finset.image_nonempty.mpr ht'), Finset.lt_inf'_iff]
-    intro r hr
-    rw [Finset.mem_image] at hr
-    replace ⟨x, hx, hr⟩ := hr
-    rw [← hr]
-    exact hε x
-  have hle (x) (hx : x ∈ t) : εmin ≤ ε x := by
-    apply Finset.min'_le
-    exact Finset.mem_image_of_mem _ hx
-  refine ⟨εmin, hpos, fun x ↦ ?_⟩
-  have hx := mem_univ x
-  rw [← top_eq_univ, ← ht, mem_iUnion] at hx
-  simp only [mem_iUnion, exists_prop] at hx
-  replace ⟨x₀, hx₀, hx⟩ := hx
-  have ⟨γ, hγ⟩ := h x₀
-  replace ⟨hγ0, hγ, _⟩ := hγ x hx
-  refine ⟨fun t ↦ γ ⟨x, t⟩, hγ0, ?_⟩
-  apply IsMIntegralCurveOn.mono hγ
-  replace hle := hle x₀ hx₀
-  exact Ioo_subset_Ioo (by linarith) (by linarith)
+  obtain ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover u hu
+  -- pick a point `x₀ ∈ t` minimising `ε`
+  obtain ⟨x₀, hx₀, hle⟩ : ∃ x ∈ t, ∀ x' ∈ t, ε x ≤ ε x' := by
+    apply Finset.exists_min_image
+    exact nonempty_of_union_eq_top_of_nonempty t u (by infer_instance) ht
+  refine ⟨ε x₀, hε x₀, fun x ↦ ?_⟩
+  obtain ⟨x₁, hx₁, hx⟩ := mem_iUnion₂.mp (show x ∈ ⋃ x₁ ∈ t, u x₁ from ht ▸ mem_univ x)
+  obtain ⟨γ, hγ⟩ := h x₁
+  obtain ⟨hγ0, hγ, -⟩ := hγ x hx
+  exact ⟨fun s ↦ γ ⟨x, s⟩, hγ0,
+    hγ.mono (Ioo_subset_Ioo (by linarith [hle x₁ hx₁]) (by linarith [hle x₁ hx₁]))⟩
 
 theorem exist_isIntegralCurve
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
@@ -84,7 +57,6 @@ theorem exist_isIntegralCurve
   have ⟨ε, hε, h⟩ := exist_uniform_time hv
   exact exists_isMIntegralCurve_of_isMIntegralCurveOn hv hε h x
 
--- swap t x arguments in γ?
 theorem exist_global_flow
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     ∃ γ : ℝ → M → M, ∀ x, γ 0 x = x ∧ IsMIntegralCurve (γ · x) v := by
