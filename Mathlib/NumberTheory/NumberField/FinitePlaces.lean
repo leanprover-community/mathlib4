@@ -321,8 +321,36 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
 value. -/
 theorem FinitePlace.norm_def (x : K) :
     ‖embedding v x‖ = adicAbv v x := by
-  simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
-    Valued.norm, Valuation.RankOne.hom, embedding_apply, adicAbv_def]
+  simp +instances only [NormedField.toNorm, instNormedFieldValuedAdicCompletion,
+    Valued.toNormedField, Valued.norm, Valuation.RankOne.hom, Valuation.restrict_def,
+    embedding_apply, WithVal.equiv_symm_apply, adicAbv_def, NNReal.coe_inj]
+  rw [rankOne_hom'_def]
+  simp only [ValueGroup₀.restrict₀_apply]
+  split_ifs with h0
+  · aesop
+  · -- TODO : generalise this and derive mulIntCyclicMulEquiv_symm_apply_zpow from it
+    simp only [Valued.valuedCompletion_apply, WithVal.apply_symm_equiv, coe_comp, coe_coe,
+      Function.comp_apply, valueGroup₀_equiv_withZeroMulInt_apply, map'_coe, MonoidHom.coe_coe]
+    rw [((toNNReal_strictMono (one_lt_absNorm_nnreal v)).strictMonoOn .univ).eq_iff_eq
+      (by simp) (by simp)]
+    rw [Valued.valuedCompletion_apply] at h0
+    simp only [WithVal.apply_symm_equiv] at h0
+    conv_rhs => rw [← coe_unzero h0]
+    have hv : (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).IsRankOneDiscrete := inferInstance
+    rw [WithZero.coe_inj, ← (MulEquiv.injective (mulIntCyclicMulEquiv
+      (Subgroup.zpowers_inv (g := hv.generator') ▸ hv.generator'_zpowers_eq_top))).eq_iff,
+      MulEquiv.apply_symm_apply]
+    ext
+    simp only [Units.val_mk0, mulIntCyclicMulEquiv_apply, inv_zpow',
+      Valuation.IsRankOneDiscrete.generator',  SubgroupClass.coe_zpow]
+    have hg : hv.generator = Units.mk0 (WithZero.exp (-1 : ℤ) : ℤᵐ⁰) (by simp) :=
+      generator_eq_neg_exp_one_of_surjective (by exact valuedAdicCompletion_surjective K v)
+    rw [hg]
+    conv_lhs => rw [← coe_unzero h0]
+    simp only [coe_unzero, Int.reduceNeg, exp_neg, zpow_neg, Units.val_inv_eq_inv_val,
+      Units.val_zpow_eq_zpow_val, Units.val_mk0, inv_zpow', ← exp_zsmul, Int.zsmul_eq_mul, mul_one,
+      inv_inv]
+    simp [WithZero.exp]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
