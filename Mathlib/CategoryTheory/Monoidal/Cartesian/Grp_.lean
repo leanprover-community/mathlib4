@@ -131,7 +131,7 @@ instance : yonedaGrp (C := C).Full := yonedaGrpFullyFaithful.full
 instance : yonedaGrp (C := C).Faithful := yonedaGrpFullyFaithful.faithful
 
 lemma essImage_yonedaGrp :
-    yonedaGrp (C := C).essImage = (· ⋙ forget _) ⁻¹' setOf Functor.IsRepresentable := by
+    yonedaGrp (C := C).essImage = fun F ↦ (F ⋙ forget _).IsRepresentable := by
   ext F
   constructor
   · rintro ⟨G, ⟨α⟩⟩

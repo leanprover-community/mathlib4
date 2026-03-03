@@ -416,7 +416,7 @@ theorem ofElement_apply {α : Type*} (r : α → α → Prop) (a : α) (b) : ofE
 @[simps! symm_apply]
 noncomputable def subrelIso (f : r ≺i s) : Subrel s (s · f.top) ≃r r :=
   RelIso.symm ⟨(Equiv.ofInjective f f.injective).trans
-    (Equiv.setCongr (funext fun _ ↦ propext f.mem_range_iff_rel)), f.map_rel_iff⟩
+    (Equiv.subtypeEquivProp <| funext fun _ ↦ propext f.mem_range_iff_rel), f.map_rel_iff⟩
 
 @[simp]
 theorem apply_subrelIso (f : r ≺i s) (b : {b // s b f.top}) : f (f.subrelIso b) = b :=

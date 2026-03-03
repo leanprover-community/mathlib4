@@ -624,7 +624,6 @@ namespace Submodule
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (I : Ideal R) : Module (R ⧸ I) (torsionBySet R M I) :=
   -- Porting note: times out without the (R := R)
   Module.IsTorsionBySet.module <| torsionBySet_isTorsionBySet (R := R) I
@@ -638,7 +637,6 @@ instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `a`-torsion submodule as an `(R ⧸ R ∙ a)`-module. -/
 instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
   Module.IsTorsionBySet.module <|
