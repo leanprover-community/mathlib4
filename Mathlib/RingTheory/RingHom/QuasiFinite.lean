@@ -68,6 +68,7 @@ lemma QuasiFinite.holdsForLocalizationAway : HoldsForLocalizationAway QuasiFinit
   introv R _
   exact quasiFinite_algebraMap.mpr (.of_isLocalization (.powers r))
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance high] Algebra.TensorProduct.leftAlgebra Algebra.toModule
     IsScalarTower.right DivisionRing.instIsArtinianRing in
 lemma QuasiFinite.ofLocalizationSpanTarget : OfLocalizationSpanTarget QuasiFinite := by

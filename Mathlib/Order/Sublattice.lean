@@ -244,17 +244,21 @@ lemma map_mono : Monotone (map f) := fun _ _ ↦ image_mono
 @[simp] lemma map_map (g : LatticeHom β γ) (f : LatticeHom α β) :
     (L.map f).map g = L.map (g.comp f) := SetLike.coe_injective <| image_image _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_map_equiv {f : α ≃o β} {a : β} : a ∈ L.map f ↔ f.symm a ∈ L := Set.mem_image_equiv
 
 lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.mem_set_image
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : Sublattice α) :
     L.map f = L.comap (f.symm : LatticeHom β α) :=
   SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
+set_option backward.isDefEq.respectTransparency false in
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : Sublattice α) :
     L.comap f = L.map (f.symm : LatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_symm_eq_iff_eq_map {M : Sublattice β} {e : β ≃o α} :
     L.map ↑e.symm = M ↔ L = M.map ↑e := by
   simp_rw [← coe_inj]; exact (Equiv.eq_image_iff_symm_image_eq _ _ _).symm

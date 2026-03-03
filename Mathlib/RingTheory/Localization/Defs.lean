@@ -483,6 +483,7 @@ theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w'
     mul_comm]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
 `g : R →+* P` such that `g y` is invertible for all `y : M`, the homomorphism induced from
 `S` to `P` sending `z : S` to `g x * (g y)⁻¹`, where `(x, y) : R × M` are such that
@@ -774,6 +775,14 @@ theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
   apply Algebra.algebra_ext
   intro r
   rw [RingHom.algebraMap_toAlgebra]
+
+theorem of_ringEquiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring K]
+    [Algebra R K] (e : R ≃+* S) [Algebra S K] {M₁ : Submonoid S} {M₂ : Submonoid R}
+    (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
+    IsLocalization M₂ K := by
+  rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e, hM]
+  convert inferInstanceAs (IsLocalization M₁ K)
+  exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h])
 
 end
 

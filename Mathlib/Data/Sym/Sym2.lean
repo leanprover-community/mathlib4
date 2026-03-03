@@ -78,6 +78,7 @@ theorem Rel.is_equivalence : Equivalence (Rel α) :=
 
 /-- One can use `attribute [local instance] Sym2.Rel.setoid` to temporarily
 make `Quotient` functionality work for `α × α`. -/
+@[instance_reducible]
 def Rel.setoid (α : Type u) : Setoid (α × α) :=
   ⟨Rel α, Rel.is_equivalence⟩
 

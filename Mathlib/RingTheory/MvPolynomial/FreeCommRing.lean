@@ -75,6 +75,7 @@ theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R
   (mvPolynomialSupportLEEquiv (R := R) (fun i : ι => (p i).support)).symm_apply_apply
     ⟨p, fun _ => Finset.Subset.refl _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lift_genericPolyMap [DecidableEq κ] [CommRing R]
     [DecidableEq R] (monoms : ι → Finset (κ →₀ ℕ))
