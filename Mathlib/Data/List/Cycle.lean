@@ -686,6 +686,7 @@ variable [DecidableEq α]
 
 /-- Auxiliary decidability algorithm for lists that contain at least two unique elements.
 -/
+@[implicit_reducible]
 def decidableNontrivialCoe : ∀ l : List α, Decidable (Nontrivial (l : Cycle α))
   | [] => isFalse (by simp [Nontrivial])
   | [x] => isFalse (by simp [Nontrivial])

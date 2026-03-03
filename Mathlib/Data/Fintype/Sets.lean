@@ -62,6 +62,7 @@ theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x
 
 Using this as an instance leads to potential loops with `Subtype.fintype` under certain decidability
 assumptions, so it should only be declared a local instance. -/
+@[implicit_reducible]
 def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decidable (a ∈ s) :=
   decidable_of_iff _ mem_toFinset
 
@@ -265,6 +266,7 @@ instance Subtype.fintype (p : α → Prop) [DecidablePred p] [Fintype α] : Fint
   Fintype.subtype (univ.filter p) (by simp)
 
 /-- A set on a fintype, when coerced to a type, is a fintype. -/
+@[implicit_reducible]
 def setFintype [Fintype α] (s : Set α) [DecidablePred (· ∈ s)] : Fintype s :=
   Subtype.fintype fun x => x ∈ s
 
