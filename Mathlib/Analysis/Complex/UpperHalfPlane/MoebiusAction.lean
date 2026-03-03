@@ -221,7 +221,7 @@ lemma denom_cocycle_σ (g h : GL (Fin 2) ℝ) (z : ℍ) :
   denom_cocycle' g h z
 
 lemma glPos_smul_def {g : GL (Fin 2) ℝ} (hg : 0 < g.det.val) (z : ℍ) :
-    g • z = mk (num g z / denom g z) (coe_smul_of_det_pos hg z ▸ (g • z).property) := by
+    g • z = ⟨num g z / denom g z, coe_smul_of_det_pos hg z ▸ (g • z).im_pos⟩ := by
   ext; simp [coe_smul_of_det_pos hg]
 
 variable (g : GL (Fin 2) ℝ) (z : ℍ)
@@ -272,7 +272,7 @@ theorem specialLinearGroup_apply {R : Type*} [CommRing R] [Algebra R ℝ] (g : S
     g • z = mk
       (((algebraMap R ℝ (g 0 0) : ℂ) * z + (algebraMap R ℝ (g 0 1) : ℂ)) /
       ((algebraMap R ℝ (g 1 0) : ℂ) * z + (algebraMap R ℝ (g 1 1) : ℂ)))
-      (coe_specialLinearGroup_apply g z ▸ (g • z).property) := by
+      (coe_specialLinearGroup_apply g z ▸ (g • z).im_pos) := by
   ext; simp [coe_specialLinearGroup_apply]
 
 /- these next few lemmas are *not* flagged `@simp` because of the constructors on the RHS;

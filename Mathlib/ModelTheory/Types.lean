@@ -74,6 +74,8 @@ instance Sentence.instSetLike : SetLike (T.CompleteType α) L[[α]].Sentence :=
     cases q
     congr ⟩
 
+instance : PartialOrder (T.CompleteType α) := .ofSetLike (T.CompleteType α) (L[[α]].Sentence)
+
 theorem isMaximal (p : T.CompleteType α) : IsMaximal (p : L[[α]].Theory) :=
   p.isMaximal'
 
@@ -219,6 +221,7 @@ def realizedTypes (α : Type w) : Set (T.CompleteType α) :=
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_modelType_is_realized_in (p : T.CompleteType α) :
     ∃ M : Theory.ModelType.{u, v, max u v w} T, p ∈ T.realizedTypes M α := by
   obtain ⟨M⟩ := p.isMaximal.1

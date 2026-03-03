@@ -1,4 +1,4 @@
-module
+module -- shake: keep-all
 
 public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Order.Field.Power

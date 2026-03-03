@@ -48,4 +48,10 @@ theorem smooth_iff_locally_isStandardSmooth : Smooth f ↔ Locally IsStandardSmo
     Smooth.ofLocalizationSpanTarget]
   exact locally_of_locally (fun hf ↦ hf.smooth) hf
 
+/-- A ring homomorphism is étale if and only if it is standard smooth of relative dimension `0`. -/
+lemma etale_iff_isStandardSmoothOfRelativeDimension_zero :
+    Etale f ↔ IsStandardSmoothOfRelativeDimension 0 f := by
+  algebraize [f]
+  exact Algebra.Etale.iff_isStandardSmoothOfRelativeDimension_zero
+
 end RingHom

@@ -212,6 +212,7 @@ section IsCyclotomicExtension
 
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
@@ -278,6 +279,7 @@ lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
     _ = S'.u⁻¹ * (S'.u * S'.c ^ 3) := by rw [S'.H]
     _ = S'.c ^ 3 := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have hm := S'.multiplicity_lambda_c_finite
@@ -318,6 +320,7 @@ lemma a_cube_add_b_cube_eq_mul :
 section IsCyclotomicExtension
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides one amongst `S'.a + S'.b`,
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :
@@ -766,6 +769,7 @@ end eisenstein
 
 end case2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
 `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
