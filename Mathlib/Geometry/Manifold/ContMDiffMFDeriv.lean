@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 public import Mathlib.Geometry.Manifold.ContMDiffMap
 public import Mathlib.Geometry.Manifold.VectorBundle.Hom
+public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives
