@@ -489,7 +489,7 @@ def length (x : FreeSemigroup α) : ℕ := x.tail.length + 1
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : FreeSemigroup α) : (x * y).length = x.length + y.length := by
-  simp [length, Nat.add_right_comm, List.length, List.length_append]
+  simp [length, Nat.add_right_comm]
 
 @[to_additive (attr := simp)]
 theorem length_of (x : α) : (of x).length = 1 := rfl
@@ -503,12 +503,12 @@ instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
       FreeSemigroup.recOn x fun f s ↦
-      List.recOn s ih1 (fun hd tl ih f ↦ ih2 f ⟨hd, tl⟩ (ih1 f) (ih hd)) f
+      s.recOn ih1 (fun hd tl ih f ↦ ih2 f ⟨hd, tl⟩ (ih1 f) (ih hd)) f
 
 @[to_additive (attr := ext 1100)]
 theorem hom_ext {β : Type v} [Mul β] {f g : FreeSemigroup α →ₙ* β} (h : f ∘ of = g ∘ of) : f = g :=
   (DFunLike.ext _ _) fun x ↦
-    FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
+    FreeSemigroup.recOnMul x (congr_fun h) fun x y hx hy ↦ by simp [*]
 
 section lift
 
@@ -552,7 +552,7 @@ theorem map_of (x) : map f (of x) = of (f x) := rfl
 
 @[to_additive (attr := simp)]
 theorem length_map (x) : (map f x).length = x.length :=
-  FreeSemigroup.recOnMul x (fun _ ↦ rfl) (fun x y hx hy ↦ by simp only [map_mul, length_mul, *])
+  FreeSemigroup.recOnMul x (fun _ ↦ rfl) (by simp [*])
 
 end Map
 
