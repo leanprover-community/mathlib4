@@ -108,7 +108,6 @@ instance [CategoryWithHomology C] : (quasiIso C).IsStableUnderRetracts := by
   dsimp [quasiIso]
   infer_instance
 
-
 end
 
 instance [Preadditive C] : (CochainComplex.plus C).IsStableUnderShift ℤ where
