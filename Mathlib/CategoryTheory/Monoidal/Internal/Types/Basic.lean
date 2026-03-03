@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Monoidal.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
-# `Mon (Type u) ≌ MonCat.{u}`
+# `Mon TypeCat.{u} ≌ MonCat.{u}`
 
 The category of internal monoid objects in `Type`
 is equivalent to the category of "native" bundled monoids.
@@ -24,38 +24,38 @@ assert_not_exists MonoidWithZero
 
 universe v u
 
-open CategoryTheory MonObj
+open CategoryTheory MonObj ConcreteCategory
 
 namespace MonTypeEquivalenceMon
 
-instance monMonoid (A : Type u) [MonObj A] : Monoid A where
+instance monMonoid (A : TypeCat.{u}) [MonObj A] : Monoid A.carrier where
   one := η[A] PUnit.unit
   mul x y := μ[A] (x, y)
-  one_mul x := by convert congr_fun (one_mul A) (PUnit.unit, x)
-  mul_one x := by convert congr_fun (mul_one A) (x, PUnit.unit)
-  mul_assoc x y z := by convert congr_fun (mul_assoc A) ((x, y), z)
+  one_mul x := by convert congr_hom (one_mul A) (PUnit.unit, x)
+  mul_one x := by convert congr_hom (mul_one A) (x, PUnit.unit)
+  mul_assoc x y z := by convert congr_hom (mul_assoc A) ((x, y), z)
 
 /-- Converting a monoid object in `Type` to a bundled monoid.
 -/
-noncomputable def functor : Mon (Type u) ⥤ MonCat.{u} where
+noncomputable def functor : Mon TypeCat.{u} ⥤ MonCat.{u} where
   obj A := MonCat.of A.X
   map f := MonCat.ofHom
     { toFun := f.hom
-      map_one' := congr_fun (IsMonHom.one_hom f.hom) PUnit.unit
-      map_mul' x y := congr_fun (IsMonHom.mul_hom f.hom) (x, y) }
+      map_one' := congr_hom (IsMonHom.one_hom f.hom) PUnit.unit
+      map_mul' x y := congr_hom (IsMonHom.mul_hom f.hom) (x, y) }
 
 /-- Converting a bundled monoid to a monoid object in `Type`.
 -/
-noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where
+noncomputable def inverse : MonCat.{u} ⥤ Mon TypeCat.{u} where
   obj A :=
-    { X := A
+    { X := TypeCat.of A
       mon :=
-        { one := fun _ => 1
-          mul := fun p => p.1 * p.2
-          one_mul := by ext ⟨_, _⟩; simp
-          mul_one := by ext ⟨_, _⟩; simp
+        { one := TypeCat.ofHom ⟨fun _ => 1⟩
+          mul := TypeCat.ofHom ⟨fun p => p.1 * p.2⟩
+          one_mul := by cat_disch
+          mul_one := by cat_disch
           mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
-  map f := .mk' f
+  map f := .mk' (TypeCat.ofHom ⟨f⟩)
     (one_f := by
       #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
       this argument was provided by the auto_param. -/
@@ -74,7 +74,7 @@ open MonTypeEquivalenceMon
 /-- The category of internal monoid objects in `Type`
 is equivalent to the category of "native" bundled monoids.
 -/
-noncomputable def monTypeEquivalenceMon : Mon (Type u) ≌ MonCat.{u} where
+noncomputable def monTypeEquivalenceMon : Mon TypeCat.{u} ≌ MonCat.{u} where
   functor := functor
   inverse := inverse
   unitIso := Iso.refl _
@@ -86,27 +86,27 @@ noncomputable def monTypeEquivalenceMon : Mon (Type u) ≌ MonCat.{u} where
 is naturally compatible with the forgetful functors to `Type u`.
 -/
 noncomputable def monTypeEquivalenceMonForget :
-    MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon.forget (Type u) :=
+    MonTypeEquivalenceMon.functor ⋙ forget MonCat ≅ Mon.forget TypeCat.{u} :=
   NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
-noncomputable instance monTypeInhabited : Inhabited (Mon (Type u)) :=
+noncomputable instance monTypeInhabited : Inhabited (Mon TypeCat.{u}) :=
   ⟨MonTypeEquivalenceMon.inverse.obj (MonCat.of PUnit)⟩
 
 namespace CommMonTypeEquivalenceCommMon
 
-instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A :=
+instance commMonCommMonoid (A : TypeCat.{u}) [MonObj A] [IsCommMonObj A] : CommMonoid A.carrier :=
   { MonTypeEquivalenceMon.monMonoid A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
+    mul_comm := fun x y => by convert congr_hom (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
 -/
-noncomputable def functor : CommMon (Type u) ⥤ CommMonCat.{u} where
+noncomputable def functor : CommMon TypeCat.{u} ⥤ CommMonCat.{u} where
   obj A := CommMonCat.of A.X
   map f := CommMonCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a bundled commutative monoid to a commutative monoid object in `Type`.
 -/
-noncomputable def inverse : CommMonCat.{u} ⥤ CommMon (Type u) where
+noncomputable def inverse : CommMonCat.{u} ⥤ CommMon (TypeCat.{u}) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ CommMonCat MonCat).obj A) with
       comm :=
@@ -122,7 +122,7 @@ open CommMonTypeEquivalenceCommMon
 /-- The category of internal commutative monoid objects in `Type`
 is equivalent to the category of "native" bundled commutative monoids.
 -/
-noncomputable def commMonTypeEquivalenceCommMon : CommMon (Type u) ≌ CommMonCat.{u} where
+noncomputable def commMonTypeEquivalenceCommMon : CommMon TypeCat.{u} ≌ CommMonCat.{u} where
   functor := functor
   inverse := inverse
   unitIso := Iso.refl _
@@ -135,5 +135,5 @@ are naturally compatible with the forgetful functors to `MonCat` and `Mon (Type 
 -/
 noncomputable def commMonTypeEquivalenceCommMonForget :
     CommMonTypeEquivalenceCommMon.functor ⋙ forget₂ CommMonCat MonCat ≅
-      CommMon.forget₂Mon (Type u) ⋙ MonTypeEquivalenceMon.functor :=
+      CommMon.forget₂Mon TypeCat.{u} ⋙ MonTypeEquivalenceMon.functor :=
   Iso.refl _

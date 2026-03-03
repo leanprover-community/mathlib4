@@ -37,13 +37,13 @@ variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
 /-- When `F : C ⥤ D` and `P : D ⥤ Type _`, this is the obvious map
 `P.sections → (F ⋙ P).sections`. -/
 @[simps]
-def sectionsPrecomp (F : C ⥤ D) {P : D ⥤ Type w} (x : P.sections) :
+def sectionsPrecomp (F : C ⥤ D) {P : D ⥤ TypeCat.{w}} (x : P.sections) :
     (F ⋙ P).sections where
   val _ := x.val _
   property _ := x.property _
 
 set_option backward.isDefEq.respectTransparency false in
-lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
+lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ TypeCat.{w}) [F.Initial] :
     Function.Bijective (F.sectionsPrecomp (P := P)) := by
   refine ⟨fun s₁ s₂ h ↦ ?_, fun t ↦ ?_⟩
   · ext Y
@@ -53,13 +53,14 @@ lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
     have h₂ := s₂.property X.hom
     dsimp at this h₁ h₂
     rw [← h₁, this, h₂]
-  · have h (Y : D) := constant_of_preserves_morphisms'
-      (fun (Z : CostructuredArrow F Y) ↦ P.map Z.hom (t.val Z.left)) (by
-          intro Z₁ Z₂ φ
-          dsimp
-          rw [← t.property φ.left]
-          dsimp
-          rw [← FunctorToTypes.map_comp_apply, CostructuredArrow.w])
+  · have h (Y : D) : ∃ (a : P.obj Y),
+        ∀ (j : CostructuredArrow F Y), P.map j.hom (t.val j.left) = a := by
+      apply constant_of_preserves_morphisms'
+      intro Z₁ Z₂ φ
+      dsimp
+      rw [← t.property φ.left]
+      dsimp
+      rw [← comp_apply, ← Functor.map_comp, CostructuredArrow.w]
     choose val hval using h
     refine ⟨⟨val, fun {Y₁ Y₂} f ↦ ?_⟩, ?_⟩
     · let X : CostructuredArrow F Y₁ := Classical.arbitrary _
@@ -69,30 +70,31 @@ lemma bijective_sectionsPrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Initial] :
 
 /-- Given `P : D ⥤ Type w` and `F : C ⥤ D`, this is the obvious map
 `(F ⋙ P).ColimitType → P.ColimitType`. -/
-def colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ Type w) :
+def colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ TypeCat.{w}) :
     (F ⋙ P).ColimitType → P.ColimitType :=
   (F ⋙ P).descColimitType (P.coconeTypes.precomp F)
 
 @[simp]
-lemma colimitTypePrecomp_ιColimitType (F : C ⥤ D) {P : D ⥤ Type w}
+lemma colimitTypePrecomp_ιColimitType (F : C ⥤ D) {P : D ⥤ TypeCat.{w}}
     (i : C) (x : P.obj (F.obj i)) :
     colimitTypePrecomp F P ((F ⋙ P).ιColimitType i x) = P.ιColimitType (F.obj i) x :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-lemma bijective_colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ Type w) [F.Final] :
+lemma bijective_colimitTypePrecomp (F : C ⥤ D) (P : D ⥤ TypeCat.{w}) [F.Final] :
     Function.Bijective (F.colimitTypePrecomp (P := P)) := by
   refine ⟨?_, fun x ↦ ?_⟩
-  · have h (Y : D) := constant_of_preserves_morphisms'
-      (fun (Z : StructuredArrow Y F) ↦ (F ⋙ P).ιColimitType Z.right ∘ P.map Z.hom) (by
-        intro Z₁ Z₂ f
-        ext x
-        dsimp
-        rw [← (F ⋙ P).ιColimitType_map f.right, comp_map,
-          ← FunctorToTypes.map_comp_apply, StructuredArrow.w f])
+  · have h (Y : D) : ∃ (a : P.obj Y → (F ⋙ P).ColimitType), ∀ (j : StructuredArrow Y F),
+        (F ⋙ P).ιColimitType j.right ∘ P.map j.hom = a := by
+      apply constant_of_preserves_morphisms'
+      intro Z₁ Z₂ f
+      ext x
+      dsimp
+      rw [← (F ⋙ P).ιColimitType_map f.right, comp_map]
+      simp [← comp_apply, ← Functor.map_comp]
     choose φ hφ using h
     let c : P.CoconeTypes :=
-      { pt := (F ⋙ P).ColimitType
+      { pt := .of (F ⋙ P).ColimitType
         ι Y := φ Y
         ι_naturality {Y₁ Y₂} f := by
           ext

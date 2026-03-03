@@ -419,6 +419,7 @@ section
 
 /-- `ofTypeFunctor m` converts from Lean's `Type`-based `Category` to `CategoryTheory`. This
 allows us to use these functors in category theory. -/
+@[simps obj map]
 def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] :
     TypeCat.{u} ⥤ TypeCat.{v} where
   obj x := of (m x.carrier)
@@ -430,14 +431,14 @@ def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] :
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
 
-@[simp]
-theorem ofTypeFunctor_obj (X : TypeCat.{u}) : (ofTypeFunctor m).obj X = m X.carrier :=
-  rfl
+-- @[simp]
+-- theorem ofTypeFunctor_obj (X : TypeCat.{u}) : (ofTypeFunctor m).obj X = of (m X.carrier) :=
+--   rfl
 
-@[simp]
-theorem ofTypeFunctor_map {α β} (f : α → β) :
-    ((ofTypeFunctor m).map (ofHom ⟨f⟩)).hom = ⟨(_root_.Functor.map f : m α → m β)⟩ :=
-  rfl
+-- @[simp]
+-- theorem ofTypeFunctor_map {α β} (f : α → β) :
+--     ((ofTypeFunctor m).map (ofHom ⟨f⟩)).hom = ⟨(_root_.Functor.map f : m α → m β)⟩ :=
+--   rfl
 
 end
 

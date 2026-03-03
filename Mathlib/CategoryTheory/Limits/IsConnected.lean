@@ -50,13 +50,13 @@ namespace Limits.Types
 variable (C : Type u) [Category.{v} C]
 
 /-- The functor mapping every object to `PUnit`. -/
-def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
+def constPUnitFunctor : C ⥤ TypeCat.{w} := (Functor.const C).obj (.of PUnit.{w + 1})
 
 /-- The cocone on `constPUnitFunctor` with cone point `PUnit`. -/
 @[simps]
 def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
-  pt := PUnit
-  ι := { app := fun _ => id }
+  pt := .of PUnit
+  ι := 𝟙 _
 
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
 cocone. -/
@@ -64,9 +64,10 @@ noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.
   desc s := s.ι.app Classical.ofNonempty
   fac s j := by
     ext ⟨⟩
-    apply constant_of_preserves_morphisms (s.ι.app · PUnit.unit)
+    refine constant_of_preserves_morphisms (α := s.pt)
+      (fun (k : C) ↦ s.ι.app k PUnit.unit) ?_ Classical.ofNonempty j
     intro X Y f
-    exact congrFun (s.ι.naturality f).symm PUnit.unit
+    exact ConcreteCategory.congr_hom (s.ι.naturality f).symm PUnit.unit
   uniq s m h := by
     ext ⟨⟩
     simp [← h Classical.ofNonempty]
@@ -76,7 +77,7 @@ instance instHasColimitConstPUnitFunctor [IsConnected C] : HasColimit (constPUni
 
 instance instSubsingletonColimitPUnit
     [IsPreconnected C] [HasColimit (constPUnitFunctor.{w} C)] :
-    Subsingleton (colimit (constPUnitFunctor.{w} C)) where
+    Subsingleton (colimit (constPUnitFunctor.{w} C) : TypeCat) where
   allEq a b := by
     obtain ⟨c, ⟨⟩, rfl⟩ := jointly_surjective' a
     obtain ⟨d, ⟨⟩, rfl⟩ := jointly_surjective' b
@@ -85,12 +86,12 @@ instance instSubsingletonColimitPUnit
 
 /-- Given a connected index category, the colimit of the constant unit-valued functor is `PUnit`. -/
 noncomputable def colimitConstPUnitIsoPUnit [IsConnected C] :
-    colimit (constPUnitFunctor.{w} C) ≅ PUnit.{w + 1} :=
+    colimit (constPUnitFunctor.{w} C) ≅ .of PUnit.{w + 1} :=
   IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (isColimitPUnitCocone.{w} C)
 
-/-- Let `F` be a `Type`-valued functor. If two elements `a : F c` and `b : F d` represent the same
-element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
-theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
+/-- Let `F` be a `TypeCat`-valued functor. If two elements `a : F c` and `b : F d` represent the
+same element of `colimit F`, then `c` and `d` are related by a `Zigzag`. -/
+theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ TypeCat.{w}) (c d : Σ j, F.obj j)
     (h : Relation.EqvGen F.ColimitTypeRel c d) : Zigzag c.1 d.1 := by
   induction h with
   | rel _ _ h => exact Zigzag.of_hom <| Exists.choose h
@@ -102,7 +103,7 @@ theorem zigzag_of_eqvGen_colimitTypeRel (F : C ⥤ Type w) (c d : Σ j, F.obj j)
 singleton. -/
 theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit
     [HasColimit (constPUnitFunctor.{w} C)] :
-    IsConnected C ↔ Nonempty (colimit (constPUnitFunctor.{w} C) ≅ PUnit) := by
+    IsConnected C ↔ Nonempty (colimit (constPUnitFunctor.{w} C) ≅ .of PUnit) := by
   refine ⟨fun _ => ⟨colimitConstPUnitIsoPUnit.{w} C⟩, fun ⟨h⟩ => ?_⟩
   have : Nonempty C := nonempty_of_nonempty_colimit <| Nonempty.map h.inv inferInstance
   refine zigzag_isConnected <| fun c d => ?_

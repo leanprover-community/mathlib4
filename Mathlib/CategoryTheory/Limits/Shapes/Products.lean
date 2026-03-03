@@ -249,7 +249,7 @@ abbrev Pi.lift {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) : P 
   limit.lift _ (Fan.mk P p)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc]
+@[reassoc, elementwise]
 theorem Pi.lift_π {β : Type w} {f : β → C} [HasProduct f] {P : C} (p : ∀ b, P ⟶ f b) (b : β) :
     Pi.lift p ≫ Pi.π f b = p b := by
   simp only [limit.lift_π, Fan.mk_pt, Fan.mk_π_app]
@@ -329,7 +329,7 @@ abbrev Pi.map {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶
   limMap (Discrete.natTrans fun X => p X.as)
 
 set_option backward.isDefEq.respectTransparency false in
-@[reassoc (attr := simp high)]
+@[reassoc (attr := simp high), elementwise nosimp]
 lemma Pi.map_π {f g : β → C} [HasProduct f] [HasProduct g] (p : ∀ b, f b ⟶ g b) (b : β) :
     Pi.map p ≫ Pi.π g b = Pi.π f b ≫ p b := by simp
 
@@ -635,7 +635,7 @@ def piComparison [HasProduct f] [HasProduct fun b => G.obj (f b)] :
     G.obj (∏ᶜ f) ⟶ ∏ᶜ fun b => G.obj (f b) :=
   Pi.lift fun b => G.map (Pi.π f b)
 
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise nosimp]
 theorem piComparison_comp_π [HasProduct f] [HasProduct fun b => G.obj (f b)] (b : β) :
     piComparison G f ≫ Pi.π _ b = G.map (Pi.π f b) :=
   limit.lift_π _ (Discrete.mk b)

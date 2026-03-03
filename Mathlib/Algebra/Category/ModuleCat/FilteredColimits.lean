@@ -29,7 +29,7 @@ universe v u
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Limits ConcreteCategory
 
 open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
@@ -74,7 +74,8 @@ theorem colimitSMulAux_eq_of_rel (r : R) (x y : Σ j, F.obj j)
   apply M.mk_eq
   obtain ⟨k, f, g, hfg⟩ := h
   use k, f, g
-  simp only [Functor.comp_obj, Functor.comp_map, forget_map] at hfg
+  simp only [Functor.comp_obj, Functor.comp_map, ConcreteCategory.hom_ofHom,
+    TypeCat.Fun.mk_apply] at hfg
   simp [hfg]
 
 /-- Scalar multiplication in the colimit. See also `colimitSMulAux`. -/
@@ -151,9 +152,10 @@ def colimitCocone : Cocone F where
   pt := colimit F
   ι :=
     { app := coconeMorphism F
-      naturality := fun _ _' f =>
-        hom_ext <| LinearMap.coe_injective
-          ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
+      naturality _ _ f := by
+        ext
+        simpa using (Types.TypeMax.colimitCocone
+          (F ⋙ forget (ModuleCat R))).ι.naturality_apply f _ }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
@@ -164,7 +166,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
   let h := (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ _ _))
   let f : colimit F →+ t.pt := (h.desc ((forget₂ _ _).mapCocone t)).hom
   have hf {j : J} (x : F.obj j) : f (M.mk _ ⟨j, x⟩) = t.ι.app j x :=
-    congr_fun ((forget AddCommGrpCat).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
+    congr_hom ((forget AddCommGrpCat).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
       map_smul' := fun r x => by
@@ -184,8 +186,8 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   fac t j := by simp
   uniq t _ h := by
     ext ⟨j, x⟩
-    exact (congr_fun ((forget (ModuleCat _)).congr_map (h j)) _).trans
-      (congr_fun ((forget (ModuleCat _)).congr_map (ι_colimitDesc F t j)) x).symm
+    exact (congr_hom ((forget (ModuleCat _)).congr_map (h j)) _).trans
+      (congr_hom ((forget (ModuleCat _)).congr_map (ι_colimitDesc F t j)) x).symm
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u}) where

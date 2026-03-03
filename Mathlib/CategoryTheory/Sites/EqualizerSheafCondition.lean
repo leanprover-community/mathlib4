@@ -326,7 +326,7 @@ def secondMap : FirstObj P X ⟶ SecondObj P X π :=
 theorem w : forkMap P X π ≫ firstMap P X π = forkMap P X π ≫ secondMap P X π := by
   ext x ij
   dsimp [forkMap, firstMap, secondMap]
-  simp [← Functor.map_comp, ← op_comp, pullback.condition]
+  simp [← comp_apply, -types_comp_apply, ← Functor.map_comp, ← op_comp, pullback.condition]
 
 /--
 The family of elements given by `x : FirstObj P S` is compatible iff `firstMap` and `secondMap`

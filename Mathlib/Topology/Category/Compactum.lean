@@ -87,8 +87,8 @@ def Compactum :=
 
 namespace Compactum
 
-/-- The forgetful functor to Type* -/
-def forget : Compactum ⥤ Type* :=
+/-- The forgetful functor to TypeCat -/
+def forget : Compactum ⥤ TypeCat :=
   Monad.forget _
 
 instance : forget.Faithful :=
@@ -98,7 +98,7 @@ noncomputable instance : CreatesLimits forget :=
   show CreatesLimits <| Monad.forget _ from inferInstance
 
 /-- The "free" Compactum functor. -/
-def free : Type* ⥤ Compactum :=
+def free : TypeCat ⥤ Compactum :=
   Monad.free _
 
 /-- The adjunction between `free` and `forget`. -/
@@ -110,7 +110,7 @@ instance : CoeSort Compactum Type* :=
 
 instance {X Y : Compactum} : FunLike (X ⟶ Y) X Y where
   coe f := f.f
-  coe_injective' _ _ h := (Monad.forget_faithful β).map_injective h
+  coe_injective' _ _ h := (Monad.forget_faithful β).map_injective (by aesop)
 
 -- Basic instances
 instance : ConcreteCategory Compactum (· ⟶ ·) where
@@ -374,10 +374,10 @@ theorem continuous_of_hom {X Y : Compactum} (f : X ⟶ Y) : Continuous f := by
   apply h
 
 /-- Given any compact Hausdorff space, we construct a Compactum. -/
-noncomputable def ofTopologicalSpace (X : Type*) [TopologicalSpace X] [CompactSpace X]
+noncomputable def ofTopologicalSpace (X : TypeCat) [TopologicalSpace X] [CompactSpace X]
     [T2Space X] : Compactum where
   A := X
-  a := Ultrafilter.lim
+  a := TypeCat.ofHom ⟨Ultrafilter.lim⟩
   unit := by
     ext x
     exact lim_eq (pure_le_nhds _)
@@ -405,13 +405,12 @@ noncomputable def ofTopologicalSpace (X : Type*) [TopologicalSpace X] [CompactSp
 
 /-- Any continuous map between Compacta is a morphism of compacta. -/
 def homOfContinuous {X Y : Compactum} (f : X → Y) (cont : Continuous f) : X ⟶ Y :=
-  { f
+  { f := TypeCat.ofHom ⟨f⟩
     h := by
       rw [continuous_iff_ultrafilter] at cont
       ext (F : Ultrafilter X)
       specialize cont (X.str F) F (le_nhds_of_str_eq F (X.str F) rfl)
-      simp only [types_comp_apply]
-      exact str_eq_of_le_nhds (Ultrafilter.map f F) _ cont }
+      simpa using str_eq_of_le_nhds (Ultrafilter.map f F) _ cont }
 
 end Compactum
 
@@ -435,11 +434,12 @@ instance faithful : compactumToCompHaus.Faithful where
     intro _ _ _ _ h
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
-    apply congrArg (fun f => f.hom.hom.toFun) h
+    ext
+    simpa using ConcreteCategory.congr_hom h _
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :
-    compactumToCompHaus.obj (Compactum.ofTopologicalSpace D) ≅ D where
+    compactumToCompHaus.obj (Compactum.ofTopologicalSpace (TypeCat.of D)) ≅ D where
   hom := CompHausLike.ofHom _
     { toFun := id
       continuous_toFun :=
@@ -456,7 +456,8 @@ noncomputable def isoOfTopologicalSpace {D : CompHaus} :
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
 instance essSurj : compactumToCompHaus.EssSurj :=
-  { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X, ⟨isoOfTopologicalSpace⟩⟩ }
+  { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace (TypeCat.of X),
+      ⟨isoOfTopologicalSpace⟩⟩ }
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/
 instance isEquivalence : compactumToCompHaus.IsEquivalence where
