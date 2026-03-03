@@ -13,12 +13,7 @@ public import Mathlib.FieldTheory.SeparableDegree
 /-!
 # Krasner's Lemma
 
-In this file, we prove Krasner's lemma. Instead of state and prove the Krasner's lemma directly,
-we define predicates `IsKrasner K L` for arbitary field extensions
-`L / K` with a normed instance on `L` as the abstraction of the conclusion of the
-Krasner's lemma. Then we prove the Krasner's lemma holds for every algebraic field extension
-`L / K` when `K` is a complete normed field and the norm
-on `L` is compatible with the one on `K`.
+In this file, we prove Krasner's lemma.
 
 ## Main definitions
 

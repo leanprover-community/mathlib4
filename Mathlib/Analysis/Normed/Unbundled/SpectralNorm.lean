@@ -807,10 +807,9 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K]
 theorem NormedAlgebra.norm_eq_spectralNorm (K : Type*) {L : Type*} [NontriviallyNormedField K]
     [IsUltrametricDist K] [NormedField L] [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
     [CompleteSpace K] (x : L) : ‖x‖ = spectralNorm K L x := by
-  rw [← toMulAlgebraNorm_apply K x, ← spectralAlgNorm_def, ← MulAlgebraNorm.coe_AlgebraNorm]
-  congr
-  apply spectralNorm_unique
-  exact MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm
+  rw [← toMulAlgebraNorm_apply K x, ← spectralAlgNorm_def, ← MulAlgebraNorm.coe_AlgebraNorm,
+      spectralNorm_unique (f := (toMulAlgebraNorm K L).toAlgebraNorm)
+      (MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm)]
 
 /-- Given a nonzero `x : L`, and assuming that `(spectralAlgNorm h_alg hna) 1 ≤ 1`, this is
   the real-valued function sending `y ∈ L` to the limit of  `(f (y * x^n))/((f x)^n)`,
