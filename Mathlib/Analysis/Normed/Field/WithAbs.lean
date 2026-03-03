@@ -12,6 +12,7 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.MetricSpace.Completion
+public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
