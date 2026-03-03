@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.IntegrableExpMul
 
