@@ -705,28 +705,14 @@ jobs:
         uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       - name: Azure CLI OIDC login and mint storage bearer token
-        id: mint_cache_token
         shell: bash
         run: |
           python3 "${CI_SCRIPTS_DIR}/cache/mint_azure_storage_bearer_token.py" \
             --client-id "${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}" \
             --tenant-id "${{ secrets.MATHLIB_CI_TENANT_ID }}"
 
-      - name: Verify minted cache bearer token output
-        shell: bash
-        run: |
-          TOKEN='${{ steps.mint_cache_token.outputs.cache_bearer_token }}'
-          if [ -z "$TOKEN" ]; then
-            echo "mint_cache_token output cache_bearer_token is empty"
-            exit 1
-          fi
-          echo "::add-mask::$TOKEN"
-          echo "cache_bearer_token_length=${#TOKEN}"
-
       - name: Upload staged cache to Azure
         shell: bash
-        env:
-          MATHLIB_CACHE_AZURE_BEARER_TOKEN: ${{ steps.mint_cache_token.outputs.cache_bearer_token }}
         run: |
           echo "Uploading cache to Azure..."
           MATHLIB_CACHE_USE_CLOUDFLARE=0 lake env "$CACHE_BIN" put-staged --staging-dir="cache-staging" --repo=${{ github.event.pull_request.head.repo.full_name || github.repository }}
