@@ -493,9 +493,6 @@ theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
 theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (↑) ∘ algebraMap S K :=
   rfl
 
-instance [CharZero K] : CharZero (v.adicCompletion K) :=
-  charZero_of_injective_algebraMap (FaithfulSMul.algebraMap_injective K _)
-
 variable {R} in
 theorem denseRange_algebraMap :
     DenseRange (algebraMap K (v.adicCompletion K)) :=
