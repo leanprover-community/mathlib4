@@ -1322,7 +1322,8 @@ def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
   toEquiv := .symm <| Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ G'.verts) (· ∉ s)
   map_rel_iff' := by
-    simp [Equiv.subtypeSubtypeEquivSubtypeInter, Equiv.subtypeEquivRight, Equiv.subtypeEquiv]
+    rintro ⟨a, ha⟩ ⟨b, hb⟩
+    simp
 
 end DeleteVerts
 

@@ -71,7 +71,7 @@ theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
   have ha : a ∈ doubleCoset b H K := mem_doubleCoset_of_not_disjoint h
   apply doubleCoset_eq_of_mem ha
 
-/-- The setoid defined by the double_coset relation -/
+/-- The setoid defined by the `doubleCoset` relation -/
 def setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doubleCoset x H K
 
@@ -118,6 +118,7 @@ instance (H K : Subgroup G) : Inhabited (Quotient (H : Set G) K) :=
 
 theorem eq (H K : Subgroup G) (a b : G) :
     mk H K a = mk H K b ↔ ∃ h ∈ H, ∃ k ∈ K, b = h * a * k := by
+  unfold DoubleCoset.Quotient
   rw [Quotient.eq'']
   apply rel_iff
 
