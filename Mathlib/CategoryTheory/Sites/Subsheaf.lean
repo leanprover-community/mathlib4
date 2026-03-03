@@ -43,7 +43,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subfunctor F)
+variable {F F' F'' : Cᵒᵖ ⥤ TypeCat.{w}} (G G' : Subfunctor F)
 
 /-- Every subpresheaf of a separated presheaf is itself separated. -/
 theorem Subfunctor.isSeparated {J : GrothendieckTopology C} (h : Presieve.IsSeparated J F) :
@@ -61,7 +61,7 @@ def Subfunctor.sheafify : Subfunctor F where
     refine J.superset_covering ?_ (J.pullback_stable i.unop hs)
     intro _ _ h
     dsimp at h ⊢
-    rwa [← FunctorToTypes.map_comp_apply]
+    rwa [← comp_apply, ← Functor.map_comp]
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.sheafify := Subfunctor.sheafify
 
@@ -109,8 +109,8 @@ theorem Subfunctor.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     exact this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
   have : x''.Compatible := by
     intro V₁ V₂ V₃ g₁ g₂ g₃ g₄ S₁ S₂ e
-    rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
-    exact
+    rw [← comp_apply, ← Functor.map_comp, ← comp_apply, Functor.map_comp]
+    simpa using
       congr_arg Subtype.val
         (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
         (by simp only [Category.assoc, h₂, e]))
@@ -151,8 +151,8 @@ alias Subpresheaf.sheafify_sheafify := Subfunctor.sheafify_sheafify
 /-- The lift of a presheaf morphism onto the sheafification subpresheaf. -/
 noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve.IsSheaf J F') :
     (G.sheafify J).toFunctor ⟶ F' where
-  app _ s := (h (G.sieveOfSection s.1) s.prop).amalgamate
-    (_) ((G.family_of_elements_compatible s.1).map f)
+  app _ := TypeCat.ofHom ⟨fun s ↦ (h (G.sieveOfSection s.1) s.prop).amalgamate
+    (_) ((G.family_of_elements_compatible s.1).map f)⟩
   naturality := by
     intro U V i
     ext s
@@ -161,14 +161,13 @@ noncomputable def Subfunctor.sheafifyLift (f : G.toFunctor ⟶ F') (h : Presieve
     refine (Presieve.IsSheafFor.valid_glue (h _ ((G.sheafify J).toFunctor.map i s).2)
       ((G.family_of_elements_compatible _).map _) _ hj).trans ?_
     dsimp
-    conv_rhs => rw [← FunctorToTypes.map_comp_apply]
+    simp only [← comp_apply, Category.assoc, ← Functor.map_comp]
     change _ = F'.map (j ≫ i.unop).op _
     refine Eq.trans ?_ (Presieve.IsSheafFor.valid_glue (h _ s.2)
       ((G.family_of_elements_compatible s.1).map f) (j ≫ i.unop) ?_).symm
-    · dsimp [Presieve.FamilyOfElements.map]
-      exact congr_arg _ (Subtype.ext (FunctorToTypes.map_comp_apply _ _ _ _).symm)
+    · simp [Presieve.FamilyOfElements.map, Subfunctor.familyOfElementsOfSection]
     · dsimp [Presieve.FamilyOfElements.map] at hj ⊢
-      rwa [FunctorToTypes.map_comp_apply]
+      rwa [Functor.map_comp, comp_apply]
 
 @[deprecated (since := "2025-12-11")] alias Subpresheaf.sheafifyLift := Subfunctor.sheafifyLift
 
@@ -191,9 +190,8 @@ theorem Subfunctor.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
   ext U ⟨s, hs⟩
   apply (h _ hs).isSeparatedFor.ext
   rintro V i hi
-  dsimp at hi
-  rw [← FunctorToTypes.naturality, ← FunctorToTypes.naturality]
-  exact (congr_fun (congr_app e <| op V) ⟨_, hi⟩ :)
+  erw [← NatTrans.naturality_apply, ← NatTrans.naturality_apply]
+  exact ConcreteCategory.congr_hom (congr_app e <| op V) ⟨_, hi⟩
 
 @[deprecated (since := "2025-12-11")]
 alias Subpresheaf.to_sheafify_lift_unique := Subfunctor.to_sheafify_lift_unique
@@ -228,7 +226,7 @@ alias Subpresheaf.toRangeSheafify := Subfunctor.toRangeSheafify
 /-- The image sheaf of a morphism between sheaves, defined to be the sheafification of
 `image_presheaf`. -/
 @[simps]
-def Sheaf.image {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Sheaf J (Type w) :=
+def Sheaf.image {F F' : Sheaf J (TypeCat.{w})} (f : F ⟶ F') : Sheaf J (TypeCat.{w}) :=
   ⟨((Subfunctor.range f.1).sheafify J).toFunctor, by
     rw [isSheaf_iff_isSheaf_of_type]
     apply Subfunctor.sheafify_isSheaf
@@ -237,28 +235,28 @@ def Sheaf.image {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Sheaf J (Type w) :=
 
 /-- A morphism factors through the image sheaf. -/
 @[simps]
-def Sheaf.toImage {F F' : Sheaf J (Type w)} (f : F ⟶ F') : F ⟶ Sheaf.image f :=
+def Sheaf.toImage {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') : F ⟶ Sheaf.image f :=
   ⟨Subfunctor.toRangeSheafify J f.1⟩
 
 /-- The inclusion of the image sheaf to the target. -/
 @[simps]
-def Sheaf.imageι {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Sheaf.image f ⟶ F' :=
+def Sheaf.imageι {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') : Sheaf.image f ⟶ F' :=
   ⟨Subfunctor.ι _⟩
 
 
 @[reassoc (attr := simp)]
-theorem Sheaf.toImage_ι {F F' : Sheaf J (Type w)} (f : F ⟶ F') :
+theorem Sheaf.toImage_ι {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') :
     toImage f ≫ imageι f = f := by
   ext1
   simp [Subfunctor.toRangeSheafify]
 
-instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Mono (Sheaf.imageι f) :=
+instance {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') : Mono (Sheaf.imageι f) :=
   (sheafToPresheaf J _).mono_of_mono_map
     (by
       dsimp
       infer_instance)
 
-instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
+instance {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   refine ⟨@fun G' g₁ g₂ e => ?_⟩
   ext U ⟨s, hx⟩
   apply ((isSheaf_iff_isSheaf_of_type J _).mp G'.2 _ hx).isSeparatedFor.ext
@@ -268,22 +266,25 @@ instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   have E : (Sheaf.toImage f).val.app (op V) y = (Sheaf.image f).val.map i.op ⟨s, hx⟩ :=
     Subtype.ext e'
   have := congr_arg (fun f : F ⟶ G' => (Sheaf.Hom.val f).app _ y) e
-  dsimp at this ⊢
+  simp only [Sheaf.comp_val, Sheaf.image_val, Sheaf.toImage_val, NatTrans.comp_app,
+    Subfunctor.toFunctor_obj, comp_apply, op_unop, Subfunctor.toFunctor_map,
+    ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Subtype.ext_iff] at this E ⊢
   convert this <;> exact E.symm
 
 /-- The mono factorization given by `image_sheaf` for a morphism. -/
-def imageMonoFactorization {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Limits.MonoFactorisation f where
+def imageMonoFactorization {F F' : Sheaf J TypeCat.{w}} (f : F ⟶ F') :
+    Limits.MonoFactorisation f where
   I := Sheaf.image f
   m := Sheaf.imageι f
   e := Sheaf.toImage f
 
 /-- The mono factorization given by `image_sheaf` for a morphism is an image. -/
-noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F ⟶ F') :
+noncomputable def imageFactorization {F F' : Sheaf J TypeCat.{max v u}} (f : F ⟶ F') :
     Limits.ImageFactorisation f where
   F := imageMonoFactorization f
   isImage :=
     { lift := fun I => by
-        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J (Type (max v u)) _).mp I.m_mono
+        haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J TypeCat.{max v u} _).mp I.m_mono
         refine ⟨Subfunctor.homOfLe ?_ ≫ inv (Subfunctor.toRange I.m.1)⟩
         apply Subfunctor.sheafify_le
         · conv_lhs => rw [← I.fac]
@@ -301,7 +302,7 @@ noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F �
         congr 1
         rw [IsIso.inv_comp_eq, Subfunctor.toRange_ι] }
 
-instance : Limits.HasImages (Sheaf J (Type max v u)) :=
+instance : Limits.HasImages (Sheaf J TypeCat.{max v u}) :=
   ⟨fun f => ⟨⟨imageFactorization f⟩⟩⟩
 
 end Image

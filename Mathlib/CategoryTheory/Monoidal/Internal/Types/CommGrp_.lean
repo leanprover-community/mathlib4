@@ -23,21 +23,21 @@ assert_not_exists Field
 
 universe v u
 
-open CategoryTheory MonObj
+open CategoryTheory MonObj ConcreteCategory
 
 namespace CommGrpTypeEquivalenceCommGrp
 
-instance commGrpCommGroup (A : Type u) [GrpObj A] [IsCommMonObj A] : CommGroup A :=
+instance commGrpCommGroup (A : TypeCat.{u}) [GrpObj A] [IsCommMonObj A] : CommGroup A :=
   { GrpTypeEquivalenceGrp.grpGroup A with
-    mul_comm := fun x y => by convert congr_fun (IsCommMonObj.mul_comm A) (y, x) }
+    mul_comm := fun x y => by convert congr_hom (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative group object in `Type u` into a group. -/
-noncomputable def functor : CommGrp (Type u) ⥤ CommGrpCat.{u} where
+noncomputable def functor : CommGrp TypeCat.{u} ⥤ CommGrpCat.{u} where
   obj A := CommGrpCat.of A.X
   map f := CommGrpCat.ofHom (GrpTypeEquivalenceGrp.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/
-noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
+noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp TypeCat.{u} where
   obj A :=
     { grpTypeEquivalenceGrp.inverse.obj ((forget₂ CommGrpCat GrpCat).obj A) with
       comm :=
@@ -48,7 +48,7 @@ noncomputable def inverse : CommGrpCat.{u} ⥤ CommGrp (Type u) where
     (GrpTypeEquivalenceGrp.inverse.map ((forget₂ CommGrpCat GrpCat).map f))
 
 @[simp]
-theorem inverse_obj_X {A : CommGrpCat.{u}} : (inverse.obj A).X = A := rfl
+theorem inverse_obj_X {A : CommGrpCat.{u}} : (inverse.obj A).X = TypeCat.of A := rfl
 @[simp]
 theorem inverse_obj_one {A : CommGrpCat.{u}} {x} : η[(inverse.obj A).X] x = (1 : A) := rfl
 @[simp]
@@ -60,7 +60,7 @@ end CommGrpTypeEquivalenceCommGrp
 
 /-- The category of commutative group objects in `Type u` is equivalent to the category of
 commutative groups. -/
-noncomputable def commGrpTypeEquivalenceCommGrp : CommGrp (Type u) ≌ CommGrpCat.{u} where
+noncomputable def commGrpTypeEquivalenceCommGrp : CommGrp TypeCat.{u} ≌ CommGrpCat.{u} where
   functor := CommGrpTypeEquivalenceCommGrp.functor
   inverse := CommGrpTypeEquivalenceCommGrp.inverse
   unitIso := Iso.refl _
@@ -73,7 +73,7 @@ are naturally compatible with the forgetful functors to `GrpCat` and `Grp (Type 
 -/
 noncomputable def commGrpTypeEquivalenceCommGrpForgetGrp :
     CommGrpTypeEquivalenceCommGrp.functor ⋙ forget₂ CommGrpCat GrpCat ≅
-      CommGrp.forget₂Grp (Type u) ⋙ GrpTypeEquivalenceGrp.functor :=
+      CommGrp.forget₂Grp TypeCat.{u} ⋙ GrpTypeEquivalenceGrp.functor :=
   Iso.refl _
 
 /-- The equivalences `CommMon (Type u) ≌ CommMonCat.{u}` and `CommGrp (Type u) ≌ CommGrpCat.{u}`
@@ -81,5 +81,5 @@ are naturally compatible with the forgetful functors to `GrpCat` and `Grp (Type 
 -/
 noncomputable def commGrpTypeEquivalenceCommGrpForgetCommMon :
     CommGrpTypeEquivalenceCommGrp.functor ⋙ forget₂ CommGrpCat CommMonCat ≅
-      CommGrp.forget₂CommMon (Type u) ⋙ CommMonTypeEquivalenceCommMon.functor :=
+      CommGrp.forget₂CommMon TypeCat.{u} ⋙ CommMonTypeEquivalenceCommMon.functor :=
   Iso.refl _
