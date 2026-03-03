@@ -51,6 +51,7 @@ variable {A : Type u} [CommRing A] {M : Type v} [AddCommGroup M] [Module A M]
 def Submodule.IsQuotientEquivQuotientPrime (N₁ N₂ : Submodule A M) :=
   N₁ ≤ N₂ ∧ ∃ (p : PrimeSpectrum A), Nonempty ((↥N₂ ⧸ N₁.submoduleOf N₂) ≃ₗ[A] A ⧸ p.1)
 
+set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
     N₁.IsQuotientEquivQuotientPrime N₂ ↔

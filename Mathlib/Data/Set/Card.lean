@@ -220,16 +220,19 @@ theorem encard_union_add_encard_inter (s t : Set α) :
   rw [← diff_union_self, encard_union_eq disjoint_sdiff_left, add_right_comm,
     encard_diff_add_encard_inter]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_encard_iff_encard_diff_eq_encard_diff (h : (s ∩ t).Finite) :
     s.encard = t.encard ↔ (s \ t).encard = (t \ s).encard := by
   rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
     WithTop.add_right_inj h.encard_lt_top.ne]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_le_encard_iff_encard_diff_le_encard_diff (h : (s ∩ t).Finite) :
     s.encard ≤ t.encard ↔ (s \ t).encard ≤ (t \ s).encard := by
   rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
     WithTop.add_le_add_iff_right h.encard_lt_top.ne]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_lt_encard_iff_encard_diff_lt_encard_diff (h : (s ∩ t).Finite) :
     s.encard < t.encard ↔ (s \ t).encard < (t \ s).encard := by
   rw [← encard_diff_add_encard_inter s t, ← encard_diff_add_encard_inter t s, inter_comm t s,
@@ -248,6 +251,7 @@ theorem Finite.finite_of_encard_le {s : Set α} {t : Set β} (hs : s.Finite)
     (h : t.encard ≤ s.encard) : t.Finite :=
   encard_lt_top_iff.1 (h.trans_lt hs.encard_lt_top)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Finite.eq_of_subset_of_encard_le' (ht : t.Finite) (hst : s ⊆ t) (hts : t.encard ≤ s.encard) :
     s = t := by
   rw [← zero_add (a := encard s), ← encard_diff_add_encard_of_subset hst] at hts
@@ -300,6 +304,7 @@ theorem encard_diff_singleton_add_one (h : a ∈ s) :
   rw [← encard_insert_of_notMem, insert_diff_singleton, insert_eq_of_mem h]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_diff_singleton_of_mem (h : a ∈ s) :
     (s \ {a}).encard = s.encard - 1 := by
   rw [← encard_diff_singleton_add_one h, ← WithTop.add_right_inj WithTop.one_ne_top,
@@ -316,6 +321,7 @@ theorem encard_exchange (ha : a ∉ s) (hb : b ∈ s) : (insert a (s \ {b})).enc
 theorem encard_exchange' (ha : a ∉ s) (hb : b ∈ s) : (insert a s \ {b}).encard = s.encard := by
   rw [← insert_diff_singleton_comm (by rintro rfl; exact ha hb), encard_exchange ha hb]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_add_one_iff {k : ℕ∞} :
     s.encard = k + 1 ↔ (∃ a t, a ∉ t ∧ insert a t = s ∧ t.encard = k) := by
   refine ⟨fun h ↦ ?_, ?_⟩
@@ -409,6 +415,7 @@ theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β}
     (hle : s.encard ≤ t.encard) : ∃ (f : α → β), MapsTo f s t ∧ InjOn f s :=
   hs.countable.exists_injOn_of_encard_le hle
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_eq_natCast_iff_fin {n : ℕ} :
     s.encard = n ↔ ∃ f : Fin n → α, f.Injective ∧ Set.range f = s := by
   constructor
@@ -443,6 +450,7 @@ end Function
 
 section SmallSets
 
+set_option backward.isDefEq.respectTransparency false in
 theorem encard_pair {x y : α} (hne : x ≠ y) : ({x, y} : Set α).encard = 2 := by
   rw [encard_insert_of_notMem (by simpa), ← one_add_one_eq_two,
     WithTop.add_right_inj WithTop.one_ne_top, encard_singleton]
@@ -512,12 +520,14 @@ theorem Nat.encard_range (k : ℕ) : {i | i < k}.encard = k := by
 
 end SmallSets
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Finite.eq_insert_of_subset_of_encard_eq_succ (hs : s.Finite) (h : s ⊆ t)
     (hst : t.encard = s.encard + 1) : ∃ a, t = insert a s := by
   rw [← encard_diff_add_encard_of_subset h, add_comm, WithTop.add_left_inj hs.encard_lt_top.ne,
     encard_eq_one] at hst
   obtain ⟨x, hx⟩ := hst; use x; rw [← diff_union_of_subset h, hx, singleton_union]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_subset_encard_eq {k : ℕ∞} (hk : k ≤ s.encard) : ∃ t, t ⊆ s ∧ t.encard = k := by
   induction k using ENat.nat_induction with
   | zero => exact ⟨∅, empty_subset _, by simp⟩

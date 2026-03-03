@@ -335,9 +335,12 @@ theorem closure_diff : closure s \ closure t ⊆ closure (s \ t) :=
     _ = closure (s \ closure t) := by simp only [diff_eq, inter_comm]
     _ ⊆ closure (s \ t) := closure_mono <| diff_subset_diff (Subset.refl s) subset_closure
 
-theorem Filter.Frequently.mem_of_closed (h : ∃ᶠ x in 𝓝 x, x ∈ s)
-    (hs : IsClosed s) : x ∈ s :=
+theorem Filter.Frequently.mem_of_closed (h : ∃ᶠ x in 𝓝 x, x ∈ s) (hs : IsClosed s) : x ∈ s :=
   hs.closure_subset h.mem_closure
+
+theorem Filter.Frequently.prop_of_isClosed {p : X → Prop} (h : ∃ᶠ x in 𝓝 x, p x)
+    (hp : IsClosed {x | p x}) : p x :=
+  h.mem_of_closed hp
 
 theorem IsClosed.mem_of_frequently_of_tendsto {f : α → X} {b : Filter α}
     (hs : IsClosed s) (h : ∃ᶠ x in b, f x ∈ s) (hf : Tendsto f b (𝓝 x)) : x ∈ s :=
