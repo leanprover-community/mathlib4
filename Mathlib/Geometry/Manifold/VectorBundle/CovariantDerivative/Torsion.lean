@@ -34,21 +34,21 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 -- TODO: where is a good namespace for this?
 /-- The torsion of a covariant derivative on the tangent bundle `TM` -/
 noncomputable def Bundle.torsion
-    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)) :
+    (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
-  fun X Y x ↦ f X x (Y x) - f Y x (X x) - VectorField.mlieBracket I X Y x
+  fun X Y x ↦ cov X x (Y x) - cov Y x (X x) - VectorField.mlieBracket I X Y x
 
 variable
-  {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
+  {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
   {X X' Y : Π x : M, TangentSpace I x}
 
 variable (f X) in
-lemma torsion_self : torsion f X X = 0 := by
+lemma torsion_self : torsion cov X X = 0 := by
   ext
   simp [torsion]
 
 variable (X Y) in
-lemma torsion_antisymm : torsion f X Y = - torsion f Y X := by
+lemma torsion_antisymm : torsion cov X Y = - torsion cov Y X := by
   ext x
   unfold torsion
   rw [VectorField.mlieBracket_swap]
@@ -57,22 +57,21 @@ lemma torsion_antisymm : torsion f X Y = - torsion f Y X := by
 
 namespace IsCovariantDerivativeOn
 
-variable [h : IsManifold I ∞ M]
-variable {U : Set M} (hf : IsCovariantDerivativeOn E f U)
+variable [IsManifold I ∞ M] {U : Set M} (hf : IsCovariantDerivativeOn E cov U)
 
 variable (Y) in
 lemma torsion_add_left_apply [CompleteSpace E]
-    (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
+    (hf : IsCovariantDerivativeOn E cov U) (hx : x ∈ U)
     (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) :
-    torsion f (X + X') Y x = torsion f X Y x + torsion f X' Y x := by
+    torsion cov (X + X') Y x = torsion cov X Y x + torsion cov X' Y x := by
   simp [torsion]--, hf.addX (x := x) (hx := sorry) hX hX']
   -- rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
   sorry -- module
 
-lemma torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E f U) (hx : x ∈ U)
+lemma torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E cov U) (hx : x ∈ U)
     (hX : MDiffAt (T% X) x)
     (hX' : MDiffAt (T% X') x) :
-    torsion f Y (X + X') x = torsion f Y X x + torsion f Y X' x := by
+    torsion cov Y (X + X') x = torsion cov Y X x + torsion cov Y X' x := by
   rw [torsion_antisymm, Pi.neg_apply,
     hf.torsion_add_left_apply _ hx hX hX', torsion_antisymm Y, torsion_antisymm Y]
   simp; abel
@@ -100,11 +99,11 @@ lemma torsion_smul_right_apply [CompleteSpace E]
 
 end IsCovariantDerivativeOn
 
-/-- `f` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
+/-- `∇` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
 noncomputable def IsTorsionFreeOn
-    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x))
+    (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x))
     (U : Set M) : Prop :=
-  ∀ x ∈ U, ∀ X Y : Π x : M, TangentSpace I x, torsion f X Y x = 0
+  ∀ x ∈ U, ∀ X Y : Π x : M, TangentSpace I x, torsion cov X Y x = 0
 
 namespace IsTorsionFreeOn
 
@@ -114,11 +113,11 @@ section changing_set
 In this changing we change `s` in `IsTorsionFreeOn F f s`.
 -/
 
-lemma mono {s t : Set M} (hf : IsTorsionFreeOn f t) (hst : s ⊆ t) : IsTorsionFreeOn f s :=
+lemma mono {s t : Set M} (hf : IsTorsionFreeOn cov t) (hst : s ⊆ t) : IsTorsionFreeOn cov s :=
   fun _ hx _ _ ↦ hf _ (hst hx) ..
 
-lemma iUnion {ι : Type*} {s : ι → Set M} (hf : ∀ i, IsTorsionFreeOn f (s i)) :
-    IsTorsionFreeOn f (⋃ i, s i) := by
+lemma iUnion {ι : Type*} {s : ι → Set M} (hf : ∀ i, IsTorsionFreeOn cov (s i)) :
+    IsTorsionFreeOn cov (⋃ i, s i) := by
   rintro x ⟨si, ⟨i, hi⟩, hxsi⟩ X Y
   exact hf i x (by simp [hi, hxsi]) X Y
 
@@ -128,9 +127,9 @@ end changing_set
 section
 
 -- unused?
-lemma congr {s : Set M} (h : IsTorsionFreeOn f s)
-    (hfg : ∀ {X Y : Π x : M, TangentSpace I x}, ∀ {x}, x ∈ s → f X x (Y x) = g X x (Y x)) :
-    IsTorsionFreeOn g s := by
+lemma congr {s : Set M} (h : IsTorsionFreeOn cov s)
+    (hfg : ∀ {X Y : Π x : M, TangentSpace I x}, ∀ {x}, x ∈ s → cov X x (Y x) = cov' X x (Y x)) :
+    IsTorsionFreeOn cov' s := by
   intro x hx X Y
   specialize h x hx X Y
   -- now, use torsion congruence lemma, i.e. tensoriality of sorts!
@@ -143,11 +142,11 @@ end IsTorsionFreeOn
 
 namespace CovariantDerivative
 
-variable [h : IsManifold I ∞ M]
+variable [IsManifold I ∞ M]
 -- The torsion tensor of a covariant derivative on the tangent bundle `TM`.
 variable {cov : CovariantDerivative I E (TangentSpace I : M → Type _)}
 
-variable {U : Set M} (hf : IsCovariantDerivativeOn E f U)
+variable {U : Set M} (hf : IsCovariantDerivativeOn E cov U)
 
 -- TODO: prove applied versions of these, for IsCovariantDerivativeOn --- using tensoriality, later!
 variable (f) in
