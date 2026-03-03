@@ -451,6 +451,7 @@ def congrIndexOneOfEqIso {E : PreOneHypercover S} {i i' j j' : E.I₀}
     E.Y (E.congrIndexOneOfEq hii' hjj' k) ≅ E.Y k :=
   eqToIso (by subst hii' hjj'; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma congrIndexOneOfEqIso_refl {i j : E.I₀} (k : E.I₁ i j) :
     E.congrIndexOneOfEqIso rfl rfl k = Iso.refl _ := by
@@ -500,6 +501,7 @@ lemma congrIndexOneOfEqIso_inv_naturality :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Hom.ext' {E F : PreOneHypercover S} {f g : E.Hom F}
     (hs₀ : f.s₀ = g.s₀) (hh₀ : ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by simp [hs₀]))
     (hs₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
@@ -552,6 +554,7 @@ lemma isoMk_aux (h₁ : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), E.Y k ≅ F.Y (
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct an isomorphism of `1`-hypercovers by giving the compatibility conditions only
 in the forward direction. -/
 @[simps!]

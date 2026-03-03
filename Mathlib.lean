@@ -1730,6 +1730,7 @@ public import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.Complex.Hadamard
 public import Mathlib.Analysis.Complex.HalfPlane
 public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.Complex.Harmonic.Liouville
 public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.Complex.HasPrimitives
 public import Mathlib.Analysis.Complex.IntegerCompl
@@ -4435,6 +4436,7 @@ public import Mathlib.GroupTheory.Coxeter.Inversion
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.GroupTheory.Coxeter.Matrix
 public import Mathlib.GroupTheory.DedekindFinite
+public import Mathlib.GroupTheory.Descent
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.GroupTheory.DivisibleHull
 public import Mathlib.GroupTheory.DoubleCoset
