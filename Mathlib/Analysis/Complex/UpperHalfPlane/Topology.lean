@@ -207,8 +207,7 @@ lemma isOpenMap_norm : IsOpenMap (fun τ : ℍ ↦ ‖(τ : ℂ)‖) := by
     rw [mem_ball_iff_norm, Real.norm_eq_abs, abs_lt] at hr
     have : ‖(τ : ℂ)‖ < ε := by linarith
     have : 0 ∈ Metric.ball (τ : ℂ) ε := by rwa [mem_ball_iff_norm', sub_zero]
-    obtain ⟨w, -, hw⟩ := hεs this
-    exact w.ne_zero hw
+    simpa  [UpperHalfPlane.ne_zero] using hεs this
   have : r / ‖(τ : ℂ)‖ * (τ : ℂ) ∈ Metric.ball (τ : ℂ) ε := by
     rwa [mem_ball_iff_norm,
       show r / ‖(τ : ℂ)‖ * (τ : ℂ) - τ = ↑(r / ‖(τ : ℂ)‖ - 1) * (τ : ℂ) by simp; ring,

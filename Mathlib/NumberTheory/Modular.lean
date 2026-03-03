@@ -582,16 +582,13 @@ private lemma mem_closure_of_one_lt_norm {x : ℍ}
     · simp only [one_lt_normSq_iff]
       refine Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds)
       apply Filter.Tendsto.norm
-      have : ContinuousAt (fun a : ℝ ↦ (UpperHalfPlane.ofComplex (a * x : ℂ) : ℂ)) 1 := by
-        apply ContinuousAt.comp
-        · fun_prop
-        · apply ContinuousAt.comp
-          · apply OpenPartialHomeomorph.continuousAt
-            simpa [UpperHalfPlane.ofComplex] using x.coe_im_pos
-          · fun_prop
-      have := this.tendsto
-      rw [UpperHalfPlane.ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] at this
-      simpa
+   have : ContinuousAt (fun a : ℝ ↦ (UpperHalfPlane.ofComplex (a * x : ℂ) : ℂ)) 1 := by
+        apply ContinuousAt.comp (by fun_prop)
+        apply ContinuousAt.comp _ (by fun_prop)
+        apply OpenPartialHomeomorph.continuousAt
+        simpa [UpperHalfPlane.ofComplex] using x.coe_im_pos
+    simpa [UpperHalfPlane.ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] using 
+        this.tendsto
     · simp only [eventually_nhdsWithin_iff]
       filter_upwards [eventually_gt_nhds zero_lt_one] with a ha ha'
       rw [← UpperHalfPlane.coe_re, UpperHalfPlane.ofComplex_apply_of_im_pos]
@@ -634,9 +631,8 @@ private lemma mem_closure_of_arc {x : ℍ}
     rw [← NNReal.coe_pos] at ha
     positivity
   · refine .mono_left ?_ nhdsWithin_le_nhds
-    rw [UpperHalfPlane.isOpenEmbedding_coe.tendsto_nhds_iff, Function.comp_def]
-    dsimp only
-    rw [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp]
+  rw [UpperHalfPlane.isOpenEmbedding_coe.tendsto_nhds_iff, Function.comp_def,
+      show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp]
     apply Continuous.tendsto
     fun_prop
 
@@ -653,20 +649,15 @@ lemma fdo_eq_interior_fd : 𝒟ᵒ = interior 𝒟 := by
   have ho1 := UpperHalfPlane.isOpenMap_re.image_interior_subset 𝒟
   have ho2 := UpperHalfPlane.isOpenMap_norm.image_interior_subset 𝒟
   intro x hx
+  rw [Set.image_subset_iff] at *
   constructor
-  · rw [Set.image_subset_iff] at ho2
-    have := ho2 hx
-    rw [Set.mem_preimage] at this
-    rw [one_lt_normSq_iff, ← Set.mem_Ioi, ← interior_Ici]
-    apply Set.mem_of_mem_of_subset this (interior_mono ?_)
+  · rw [one_lt_normSq_iff, ← Set.mem_Ioi, ← interior_Ici]
+    apply Set.mem_of_mem_of_subset (Set.mem_preimage.mp (ho2 hx)) (interior_mono ?_)
     rw [Set.image_subset_iff]
     intro ξ hξ
     simpa [Set.mem_preimage, Set.mem_Ici, one_le_normSq_iff] using hξ.1
-  · rw [Set.image_subset_iff] at ho1
-    have := ho1 hx
-    rw [Set.mem_preimage] at this
-    rw [abs_lt, ← Set.mem_Ioo, ← interior_Icc]
-    apply Set.mem_of_mem_of_subset this (interior_mono ?_)
+  · rw [abs_lt, ← Set.mem_Ioo, ← interior_Icc]
+    apply Set.mem_of_mem_of_subset ((Set.mem_preimage.mp (ho1 hx))) (interior_mono ?_)
     rw [Set.image_subset_iff]
     intro ξ hξ
     simpa [Set.mem_preimage, Set.mem_Icc, abs_le] using hξ.2
