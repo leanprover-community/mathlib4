@@ -369,8 +369,7 @@ lemma mulHeight_comp_le (f : ι → ι') (x : ι' → K) :
   have : Nonempty ι := .intro (ne_iff.mp h₀).choose
   rw [mulHeight_eq h₀, mulHeight_eq hx]
   have H (v : AbsoluteValue K ℝ) : ⨆ i, v ((x ∘ f) i) ≤ ⨆ i, v (x i) :=
-    -- TODO: use `Finite.le_ciSup_of_le` when #35260 is merged
-    ciSup_le fun i ↦ le_ciSup_of_le (Finite.bddAbove_range _) (f i) le_rfl
+    ciSup_le fun i ↦ Finite.le_ciSup_of_le (f i) le_rfl
   gcongr
   · exact finprod_nonneg fun v ↦ v.val.iSup_abv_nonneg
   · exact Multiset.prod_map_nonneg fun v _ ↦ v.iSup_abv_nonneg
