@@ -12,6 +12,9 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.MetricSpace.Completion
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Analysis.Normed.Module.Completion
+--public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # WithAbs for fields
@@ -60,6 +63,8 @@ instance [Algebra T R] [Algebra.IsSeparable T R] :
     Algebra.IsSeparable T (WithAbs v) :=
   AlgEquiv.Algebra.isSeparable (algEquiv T v).symm
 
+variable (v : AbsoluteValue R ℝ)
+#synth IsTopologicalRing (WithAbs v)
 @[simp] lemma toAbs_div (x y : R) : toAbs v (x / y) = toAbs v x / toAbs v y := rfl
 @[simp] lemma ofAbs_div (x y : WithAbs v) : ofAbs (x / y) = ofAbs x / ofAbs y := rfl
 
@@ -202,20 +207,20 @@ variable {w : AbsoluteValue L ℝ} {σ : WithAbs v →+* WithAbs w}
 /-- If `L/K` and `w` is an absolute value on `L` factors through `K` via an embedding `σ : K →+* L`
 to give the absolute value `v` on `K`, then `mapOfComp` is natural ring homomorphism
 `v.Completion →+* w.Completion` lifting `σ`. -/
-abbrev mapOfComp (h : ∀ x, w ((WithAbs.equiv w).symm (σ x)) = v ((WithAbs.equiv v).symm x)) :
+noncomputable abbrev mapOfComp (h : ∀ x, w ((WithAbs.equiv w) (σ x)) = v ((WithAbs.equiv v) x)) :
     v.Completion →+* w.Completion :=
   UniformSpace.Completion.mapRingHom σ
-    (WithAbs.isUniformInducing_of_comp h).uniformContinuous.continuous
+    (AddMonoidHomClass.isometry_of_norm _ h).isUniformInducing.uniformContinuous.continuous
 
 omit [CompleteSpace L] in
-theorem mapOfComp_coe (h : ∀ x, w ((WithAbs.equiv w).symm (σ x)) = v ((WithAbs.equiv v).symm x))
-  (x : WithAbs v) : mapOfComp h x = σ x :=
-  UniformSpace.Completion.mapRingHom_coe
-    (WithAbs.isUniformInducing_of_comp h).uniformContinuous x
+theorem mapOfComp_coe (h : ∀ x, w ((WithAbs.equiv w) (σ x)) = v ((WithAbs.equiv v) x))
+    (x : WithAbs v) : mapOfComp h x = σ x :=
+  sorry -- UniformSpace.Completion.mapRingHom_coe (f := σ)
+  --   (AddMonoidHomClass.isometry_of_norm _ h).isUniformInducing.uniformContinuous x
 
 omit [CompleteSpace L] in
 theorem mapOfComp_dist_eq
-    (h : ∀ x, w ((WithAbs.equiv w).symm (σ x)) = v ((WithAbs.equiv v).symm x))
+    (h : ∀ x, w ((WithAbs.equiv w) (σ x)) = v ((WithAbs.equiv v) x))
     (x y : v.Completion) :
     dist (mapOfComp h x) (mapOfComp h y) = dist x y := by
   refine UniformSpace.Completion.induction_on₂ x y ?_ (fun x y => ?_)
@@ -223,11 +228,11 @@ theorem mapOfComp_dist_eq
     exact continuous_iff_continuous_dist.1 UniformSpace.Completion.continuous_extension
   · rw [mapOfComp_coe, mapOfComp_coe, UniformSpace.Completion.dist_eq]
     exact UniformSpace.Completion.dist_eq x y ▸
-      (WithAbs.isometry_of_comp (L := WithAbs w) h).dist_eq x y
+      (AddMonoidHomClass.isometry_of_norm _ h).dist_eq x y
 
 omit [CompleteSpace L] in
 theorem isometry_mapOfComp
-    (h : ∀ x, w ((WithAbs.equiv w).symm (σ x)) = v ((WithAbs.equiv v).symm x)) :
+    (h : ∀ x, w ((WithAbs.equiv w) (σ x)) = v ((WithAbs.equiv v) x)) :
     Isometry (mapOfComp h) :=
   Isometry.of_dist_eq <| mapOfComp_dist_eq h
 
