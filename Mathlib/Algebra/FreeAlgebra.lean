@@ -380,7 +380,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
       rcases t with ⟨x⟩
       induction x with
       | of =>
-        change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
+        change (F ∘ ι R) _ = _
         rw [Function.comp_apply, ι_def]
       | ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
@@ -481,7 +481,7 @@ def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
 
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
-  simp [algebraMapInv]
+  simp
 
 @[simp]
 theorem algebraMap_inj (x y : R) :
@@ -558,7 +558,7 @@ theorem induction {motive : FreeAlgebra R X → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
-    simp [of, Subtype.coind]
+    simp [of]
   -- finding a proof is finding an element of the subalgebra
   suffices a = lift R of a by
     rw [this]
