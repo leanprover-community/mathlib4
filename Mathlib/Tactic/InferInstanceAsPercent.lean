@@ -180,11 +180,17 @@ noncomputable instance : Field (FiniteResidueField K) :=
 elab "inferInstanceAs% " source:term : term <= expectedType => do
   let sourceType ← elabType source
   -- Unify source with expected type to resolve metavariables (e.g., _ placeholders)
-  discard <| withDefault <| isDefEq sourceType expectedType
+  unless ← withDefault <| isDefEq sourceType expectedType do
+    throwError "inferInstanceAs%: source type{indentExpr sourceType}\n\
+      is not defeq to expected type{indentExpr expectedType}"
   let sourceType ← instantiateMVars sourceType
   let inst ← synthInstance sourceType
   let inst ← instantiateMVars inst
   let expectedType ← instantiateMVars expectedType
+  -- Check that the class heads match before comparing arguments pairwise
+  unless sourceType.getAppFn == expectedType.getAppFn do
+    throwError "inferInstanceAs%: source type head{indentExpr sourceType.getAppFn}\n\
+      does not match expected type head{indentExpr expectedType.getAppFn}"
   -- Build replacement table from differing carrier type arguments
   let replacements ← buildReplacements sourceType expectedType
   if replacements.isEmpty then return inst
