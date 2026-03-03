@@ -123,12 +123,28 @@ instance : AddLeftMono ℚ where
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
 
+theorem div_le_div_iff_mul_le_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
+    (a : ℚ) / b ≤ c / d ↔ a * d ≤ c * b := by
+  apply Iff.intro <;> simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
+
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
   simp only [lt_iff_le_not_ge]
   apply and_congr
   · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
   · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
+
+theorem div_le_div_iff_num_le_num {a b c : ℤ} (c_pos : 0 < c) :
+    (a : ℚ) / c ≤ b / c ↔ a ≤ b := by
+  apply Iff.intro
+  · intro h; exact (Int.mul_le_mul_right c_pos).mp ((div_le_div_iff_mul_le_mul c_pos c_pos).mp h)
+  · intro h; exact (div_le_div_iff_mul_le_mul c_pos c_pos).mpr ((Int.mul_le_mul_right c_pos).mpr h)
+
+theorem div_lt_div_iff_num_lt_num {a b c : ℤ} (c_pos : 0 < c) :
+    (a : ℚ) / c < b / c ↔ a < b := by
+  apply Iff.intro
+  · intro h; exact (Int.mul_lt_mul_right c_pos).mp ((div_lt_div_iff_mul_lt_mul c_pos c_pos).mp h)
+  · intro h; exact (div_lt_div_iff_mul_lt_mul c_pos c_pos).mpr ((Int.mul_lt_mul_right c_pos).mpr h)
 
 theorem num_le_denom_iff {q : ℚ} : q.num ≤ q.den ↔ q ≤ 1 := by simp [Rat.le_iff]
 
