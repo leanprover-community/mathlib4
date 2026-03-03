@@ -899,9 +899,6 @@ theorem RCLike.inner_apply (x y : 𝕜) : ⟪x, y⟫ = y * conj x :=
 /-- A version of `RCLike.inner_apply` that swaps the order of multiplication. -/
 theorem RCLike.inner_apply' (x y : 𝕜) : ⟪x, y⟫ = conj x * y := mul_comm _ _
 
-@[simp]
-theorem Real.inner_apply (x y : ℝ) : inner ℝ x y = x * y := RCLike.inner_apply' x y
-
 end RCLike
 
 section RCLikeToReal
