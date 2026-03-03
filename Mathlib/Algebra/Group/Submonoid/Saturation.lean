@@ -35,9 +35,10 @@ lattice.
 
 namespace Submonoid
 
-/-- A saturated submonoid is `s` that satisfies `x * y ∈ s ↔ x ∈ s ∧ y ∈ s`.
+/-- A saturated submonoid is `s` that satisfies `x * y ∈ s → x ∈ s ∧ y ∈ s`.
 
-Not to be confused with `AddSubgroup.Saturated`. -/
+Not to be confused with `Submonoid.PowSaturated` or `AddSubmonoid.NSMulSaturated`, which is also
+called "saturated" in the literature. -/
 def MulSaturated {M : Type*} [MulOneClass M] (s : Submonoid M) : Prop :=
   ∀ ⦃x y⦄, x * y ∈ s → x ∈ s ∧ y ∈ s
 
@@ -78,7 +79,7 @@ end MulSaturated
 
 end Submonoid
 
-/-- A saturated submonoid is a submonoid `s` that satisfies `x * y ∈ s ↔ x ∈ s ∧ y ∈ s`. -/
+/-- A saturated submonoid is a submonoid `s` that satisfies `x * y ∈ s → x ∈ s ∧ y ∈ s`. -/
 structure SaturatedSubmonoid (M : Type*) [MulOneClass M] extends Submonoid M where
   MulSaturated : toSubmonoid.MulSaturated
 
@@ -179,8 +180,7 @@ theorem le_toSubmonoid_saturation : a ≤ a.saturation.toSubmonoid := (gc_satura
 @[simp]
 theorem saturation_toSubmonoid : b.saturation = b := (giSaturation M).l_u_eq b
 
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-theorem saturation_induction {s : Submonoid M}
+@[elab_as_elim] theorem saturation_induction {s : Submonoid M}
     {p : (x : M) → x ∈ s.saturation → Prop}
     (mem : ∀ (x) (hx : x ∈ s), p x (le_toSubmonoid_saturation hx))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
@@ -203,7 +203,7 @@ variable {s : Submonoid M} {x : M}
 
 theorem mem_saturation_iff : x ∈ s.saturation ↔ ∃ y, x * y ∈ s := by
   refine ⟨fun h ↦ ?_, fun ⟨y, hxy⟩ ↦ (s.saturation.2 <| le_toSubmonoid_saturation hxy).1⟩
-  induction h with
+  induction h using saturation_induction with
   | mem _ hx => exact ⟨1, by simpa⟩
   | mul _ _ _ _ ih₁ ih₂ =>
     exact ih₁.elim fun y₁ h₁ ↦ ih₂.elim fun y₂ h₂ ↦
