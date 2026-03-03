@@ -587,7 +587,7 @@ private lemma mem_closure_of_one_lt_norm {x : ℍ}
         apply ContinuousAt.comp _ (by fun_prop)
         apply OpenPartialHomeomorph.continuousAt
         simpa [UpperHalfPlane.ofComplex] using x.coe_im_pos
-    simpa [UpperHalfPlane.ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] using 
+    simpa [UpperHalfPlane.ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] using
         this.tendsto
     · simp only [eventually_nhdsWithin_iff]
       filter_upwards [eventually_gt_nhds zero_lt_one] with a ha ha'
