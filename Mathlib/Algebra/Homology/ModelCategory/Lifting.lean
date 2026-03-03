@@ -50,7 +50,7 @@ variable {A B X Y : CochainComplex C ℤ}
 abbrev cochain₀ : Cochain B X 0 := Cochain.ofHoms (fun n ↦ (hsq n).l)
 
 /-- A `1`-cocycle from `B` to `X` obtained as the boundary of
-the `0`-cochain `cochain`0 sq hsq` consisting of the degreewise liftings.
+the `0`-cochain `cochain₀ sq hsq` consisting of the degreewise liftings.
 This is refined below as a `1`-cocycle from `Q` to `K` where `Q` is a
 cokernel of `i : A ⟶ B` and `K` a kernel of `p : X ⟶ Y` (see `cocycle₁`). -/
 def cocycle₁' : Cocycle B X 1 :=
