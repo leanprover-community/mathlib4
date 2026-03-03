@@ -136,7 +136,7 @@ def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
       return none
 
 /-- Ordering on `Expr`. -/
-@[deprecated
+@[implicit_reducible, deprecated
   "Use `Expr.lt` and `Expr.equal` or `Expr.eqv` directly. \
   If you need to order expressions, consider ordering them by order seen, with AtomM."
   (since := "2025-08-31")]
