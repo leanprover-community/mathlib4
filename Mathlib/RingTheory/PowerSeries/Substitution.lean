@@ -361,6 +361,7 @@ theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : PowerSer
     subst b (subst a f) = subst (subst b a) f :=
   congr_fun (subst_comp_subst ha hb) f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rescale_eq (r : R) (f : PowerSeries R) :
     rescale r f = MvPowerSeries.rescale (fun _ ↦ r) f := by
   ext n
@@ -369,6 +370,7 @@ lemma rescale_eq (r : R) (f : PowerSeries R) :
 
 @[deprecated (since := "2026-02-27")] alias _root_.MvPowerSeries.rescaleUnit := rescale_eq
 
+set_option backward.isDefEq.respectTransparency false in
 lemma rescale_eq_subst (r : R) (f : PowerSeries R) :
     PowerSeries.rescale r f = PowerSeries.subst (r • X : R⟦X⟧) f := by
   rw [rescale_eq, MvPowerSeries.rescale_eq_subst, X, subst, Pi.smul_def']
@@ -377,10 +379,12 @@ lemma rescale_eq_subst (r : R) (f : PowerSeries R) :
 noncomputable abbrev rescaleAlgHom (r : R) : R⟦X⟧ →ₐ[R] R⟦X⟧ :=
   MvPowerSeries.rescaleAlgHom (fun _ ↦ r)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coe_rescaleAlgHom (r : R) : rescaleAlgHom r = rescale r := by
   ext f
   rw [rescale_eq, RingHom.coe_coe, MvPowerSeries.rescaleAlgHom_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Substitution by `p` commutes with scalar homothety. -/
 lemma subst_rescale_of_degree_eq_one (a : R) {σ : Type*} (p : MvPowerSeries σ R)
     (hp_lin : ∀ d ∈ Function.support p, d.degree = 1) (f : PowerSeries R) :
