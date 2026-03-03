@@ -252,9 +252,8 @@ attribute [local instance] OfCoimageImageComparisonIsIso.isNormalEpiCategory
 /-- A preadditive category with kernels, cokernels, and finite products,
 in which the coimage-image comparison morphism is always an isomorphism,
 is an abelian category. -/
-@[stacks 0109
+@[implicit_reducible, stacks 0109
 "The Stacks project uses this characterisation at the definition of an abelian category."]
-@[implicit_reducible]
 def ofCoimageImageComparisonIsIso : Abelian C where
 
 end CategoryTheory.Abelian

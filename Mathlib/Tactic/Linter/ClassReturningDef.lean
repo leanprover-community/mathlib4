@@ -59,7 +59,7 @@ def classReturningDefLinter : Linter where
             log m!"definition `{declName}` returns a class \
                   but is not marked @[reducible] or @[implicit_reducible].\n\
                   Consider marking it @[implicit_reducible]. \n\
-                  Otherwise,use `set_option linter.classReturningDef false` inside a section \
+                  Otherwise, use `set_option linter.classReturningDef false` inside a section \
                   enclosing the definition to disable the linter."
     | _ => return
 
