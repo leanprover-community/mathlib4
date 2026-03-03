@@ -57,7 +57,7 @@ def cocycle₁' : Cocycle B X 1 :=
   Cocycle.mk (δ 0 1 (cochain₀ sq hsq)) 2 (by simp) (by simp [δ_δ])
 
 @[reassoc (attr := simp)]
-lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m) :
+lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     (cocycle₁' sq hsq).1.v n m hnm ≫ p.f m = 0 := by
   have fac_right (k : ℤ) := (hsq k).fac_right
   dsimp at fac_right
