@@ -660,6 +660,7 @@ theorem iteratedFDeriv_smul_const_apply {f : E → A} (hf : ContDiffAt 𝕜 i f 
         (iteratedFDeriv 𝕜 i f x) :=
   (ContinuousLinearMap.id 𝕜 A).smulRight v |>.iteratedFDeriv_comp_left hf le_rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedFDeriv_comp_const_smul (a : 𝕜) (hf : ContDiff 𝕜 i f) :
     iteratedFDeriv 𝕜 i (fun z ↦ f (a • z)) = fun x ↦ a ^ i • iteratedFDeriv 𝕜 i f (a • x) := by
   induction i with
@@ -674,7 +675,7 @@ theorem iteratedFDeriv_comp_const_smul (a : 𝕜) (hf : ContDiff 𝕜 i f) :
     · simp
     rw [← Function.comp_def (g := (a • ·))]
     apply DifferentiableAt.comp
-    · exact hf.contDiffAt.differentiableAt_iteratedFDeriv (Nat.cast_lt.mpr i.lt_succ_self)
+    · exact hf.contDiffAt.differentiableAt_iteratedFDeriv (Nat.cast_lt.2 i.lt_succ_self)
     · exact differentiableAt_id.const_smul _
 
 end ConstSMul
