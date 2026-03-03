@@ -964,11 +964,11 @@ theorem isMaximumIndepSet_iff {s : Finset α} :
   · rintro ⟨hs, hsmax⟩
     exact ⟨hs, fun t ht _ ↦ hsmax t ht⟩
 
-@[simp] lemma isMaximumClique_compl [Finite α] (s : Finset α) :
+@[simp] lemma isMaximumClique_compl (s : Finset α) :
     Gᶜ.IsMaximumClique s ↔ G.IsMaximumIndepSet s := by
   simp [isMaximumIndepSet_iff, isMaximumClique_iff]
 
-@[simp] lemma isMaximumIndepSet_compl [Finite α] (s : Finset α) :
+@[simp] lemma isMaximumIndepSet_compl (s : Finset α) :
     Gᶜ.IsMaximumIndepSet s ↔ G.IsMaximumClique s := by
   simp [isMaximumIndepSet_iff, isMaximumClique_iff]
 
