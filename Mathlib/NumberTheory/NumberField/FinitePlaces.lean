@@ -692,3 +692,32 @@ instance compact_adicCompletionIntegers :
     exact ResidueField.finite_of_finite h (S := v.adicCompletionIntegers K)
 
 end IsDedekindDomain.HeightOneSpectrum
+
+section LiesOver
+
+namespace NumberField.HeightOneSpectrum
+
+variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
+variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
+variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
+
+local notation "Kv" => v.adicCompletion K
+local notation "Lw" => w.adicCompletion L
+
+open scoped TensorProduct Valued in
+instance : Module.Finite Kv Lw :=
+  let Φ : Kv ⊗[K] L →ₗ[Kv] Lw := Algebra.TensorProduct.lift (Algebra.algHom Kv Kv Lw)
+    (Algebra.algHom K L Lw) (fun _ _ ↦ mul_comm ..) |>.toLinearMap
+  have h_dense : DenseRange Φ := by
+    apply (w.denseRange_algebraMap L).mono
+    rintro _ ⟨l, rfl⟩
+    exact ⟨1 ⊗ₜ l, by simp [Φ, Algebra.algHom]⟩
+  .of_surjective Φ (by
+    rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
+    exact h_dense.closure_range)
+
+end NumberField.HeightOneSpectrum
+
+end LiesOver
