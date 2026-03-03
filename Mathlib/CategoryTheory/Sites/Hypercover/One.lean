@@ -752,32 +752,21 @@ def Hom.mapMulticospan {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S
 /-- Isomorphic pre-`1`-hypercovers have equivalent mutifork index categories. -/
 @[simps! functor inverse]
 def equivalenceMulticospanOfIso {E F : PreOneHypercover.{w} S} (f : E ≅ F) :
-    WalkingMulticospan E.multicospanShape ≌ WalkingMulticospan F.multicospanShape := by
-  refine .mk f.hom.mapMulticospan f.inv.mapMulticospan ?_ ?_
-  · refine WalkingMulticospan.functorExt (fun i ↦ eqToIso (by simp)) (fun i ↦ eqToIso ?_) ?_ ?_
-    · dsimp
-      rw [WalkingMulticospan.right.injEq]
-      apply PreOneHypercover.I₁'.ext <;> simp
-    · intro i
-      dsimp
-      rw [eqToHom_naturality]
-      apply PreOneHypercover.I₁'.ext <;> simp
-    · intro i
-      dsimp
-      rw [eqToHom_naturality]
-      apply PreOneHypercover.I₁'.ext <;> simp
-  · refine WalkingMulticospan.functorExt (fun i ↦ eqToIso (by simp)) (fun i ↦ eqToIso ?_) ?_ ?_
-    · dsimp
-      rw [WalkingMulticospan.right.injEq]
-      apply PreOneHypercover.I₁'.ext <;> simp
-    · intro i
-      dsimp
-      rw [eqToHom_naturality]
-      apply PreOneHypercover.I₁'.ext <;> simp
-    · intro i
-      dsimp
-      rw [eqToHom_naturality]
-      apply PreOneHypercover.I₁'.ext <;> simp
+    WalkingMulticospan E.multicospanShape ≌ WalkingMulticospan F.multicospanShape where
+  functor := f.hom.mapMulticospan
+  inverse := f.inv.mapMulticospan
+  unitIso :=
+    eqToIso (WalkingMulticospan.functor_ext (by simp)
+      (fun _ ↦ by dsimp; congr; apply PreOneHypercover.I₁'.ext <;> simp)
+      (fun _ ↦ by dsimp; rw [eqToHom_naturality]; apply PreOneHypercover.I₁'.ext <;> simp)
+      (fun _ ↦ by dsimp; rw [eqToHom_naturality]; apply PreOneHypercover.I₁'.ext <;> simp))
+  counitIso :=
+    eqToIso (WalkingMulticospan.functor_ext (by simp)
+      (fun _ ↦ by dsimp; congr 1; apply PreOneHypercover.I₁'.ext <;> simp)
+      (fun _ ↦ by dsimp; rw [eqToHom_naturality]; apply PreOneHypercover.I₁'.ext <;> simp)
+      (fun _ ↦ by dsimp; rw [eqToHom_naturality]; apply PreOneHypercover.I₁'.ext <;> simp))
+  functor_unitIso_comp c := by
+    cases c <;> rw [eqToIso.hom, eqToHom_app, eqToHom_map] <;> simp
 
 /-- If `E` and `F` are isomorphic pre-`1`-hypercovers and `G` is a presheaf,
 the multifork for `E` is exact if and only if the multifork for `E` is exact. -/
