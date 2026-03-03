@@ -16,6 +16,8 @@ public import Mathlib.RingTheory.Valuation.Archimedean
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 
+import Mathlib.Algebra.FiniteSupport.Basic
+
 /-!
 # Finite places of number fields
 This file defines finite places of a number field `K` as absolute values coming from an embedding
@@ -298,6 +300,7 @@ lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Inject
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
   equivHeightOneSpectrum.injective.eq_iff
 
+@[fun_prop]
 theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 :=
@@ -314,17 +317,14 @@ theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
 
 @[deprecated (since := "2026-03-03")] alias mulSupport_finite_int := hasFiniteMulSupport_int
 
+@[fun_prop]
 theorem hasFiniteMulSupport {x : K} (h_x_nezero : x ≠ 0) :
     (fun w : FinitePlace K ↦ w x).HasFiniteMulSupport := by
   rcases IsFractionRing.div_surjective (A := 𝓞 K) x with ⟨a, b, hb, rfl⟩
   simp_all only [ne_eq, div_eq_zero_iff, FaithfulSMul.algebraMap_eq_zero_iff, not_or, map_div₀]
   obtain ⟨ha, hb⟩ := h_x_nezero
   simp_rw [← RingOfIntegers.coe_eq_algebraMap]
-  apply ((hasFiniteMulSupport_int ha).union (hasFiniteMulSupport_int hb)).subset
-  intro w
-  simp only [Function.mem_mulSupport, ne_eq, Set.mem_union]
-  contrapose!
-  simp +contextual only [ne_eq, one_ne_zero, not_false_eq_true, div_self, implies_true]
+  fun_prop (disch := assumption)
 
 @[deprecated (since := "2026-03-03")] alias mulSupport_finite := hasFiniteMulSupport
 

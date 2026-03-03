@@ -374,6 +374,7 @@ theorem Multipliable.hasFiniteMulSupport_of_discreteTopology
     {β : Type*} (f : β → α) (h : Multipliable f) : HasFiniteMulSupport f :=
   haveI : IsTopologicalGroup α := ⟨⟩
   h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
+
 @[deprecated (since := "2026-03-03")] alias
   Multipliable.finite_mulSupport_of_discreteTopology :=
     Multipliable.hasFiniteMulSupport_of_discreteTopology
