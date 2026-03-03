@@ -64,9 +64,14 @@ structure IsCovariantDerivativeOn [IsManifold I 1 M]
     f (g • σ) x = g x • f σ x
       + ContinuousLinearMap.toSpanSingleton 𝕜 (σ x) ∘L
         (((bar (g x)).toContinuousLinearMap ∘L (mfderiv I 𝓘(𝕜) g x)))
-  smul_const_σ {σ : Π x : M, V x} {x} (a : 𝕜)
+
+theorem IsCovariantDerivativeOn.smul_const_σ [IsManifold I 1 M]
+    {f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
+    (s : Set M) (hf : IsCovariantDerivativeOn F f s)
+    {σ : Π x : M, V x} {x} (a : 𝕜)
     (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
-    f (a • σ) x = a • f σ x
+    f (a • σ) x = a • f σ x := by
+  simpa using hf.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
 
 /--
 A covariant derivative ∇ is called of class `C^k` iff,
@@ -97,7 +102,6 @@ lemma of_subsingleton [hE : Subsingleton E] [TopologicalSpace (TotalSpace E V)] 
     have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
     exact Subsingleton.eq_zero _
   exact {
-    smul_const_σ {_σ x} a hσ hx := by simp [this]
     addσ {σ σ' x} hσ hσ' hx := by simp [this]
     leibniz {σ g x} hσ hg hx := by
       have H : (mfderiv I 𝓘(𝕜, 𝕜) g x) = 0 :=
@@ -116,7 +120,6 @@ lemma mono
     (hf : IsCovariantDerivativeOn F f t) (hst : s ⊆ t) : IsCovariantDerivativeOn F f s where
   addσ {_σ _σ' _x} hσ hσ' hx := hf.addσ hσ hσ' (hst hx)
   leibniz {_σ _f _x} hσ hf' hx := hf.leibniz hσ hf' (hst hx)
-  smul_const_σ {_σ _x} a hσ hx := hf.smul_const_σ a hσ (hst hx)
 
 lemma iUnion {ι : Type*}
     {f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)} {s : ι → Set M}
@@ -127,9 +130,6 @@ lemma iUnion {ι : Type*}
   leibniz {σ f x} hσ hf' hx := by
     obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
     exact (hf i).leibniz hσ hf'
-  smul_const_σ {_σ _x} a hσ hx := by
-    obtain ⟨si, ⟨i, rfl⟩, hxsi⟩ := hx
-    exact (hf i).smul_const_σ _ hσ
 
 end changing_set
 
@@ -143,7 +143,6 @@ lemma congr {f g : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V 
     IsCovariantDerivativeOn F g s where
   addσ hσ hσ' hx := by simp [← hfg hx, hf.addσ hσ hσ']
   leibniz hσ hf' hx := by simp [← hfg hx, hf.leibniz hσ hf']
-  smul_const_σ a hσ hx := by simp [← hfg hx, hf.smul_const_σ a hσ]
 
 end
 
@@ -174,9 +173,6 @@ def affineCombination
   addσ {_σ _σ' x} hσ hσ' hx := by
     simp [hf.addσ hσ hσ', hf'.addσ hσ hσ']
     module
-  smul_const_σ {_σ _x} a hσ hx := by
-    simp [hf.smul_const_σ a hσ, hf'.smul_const_σ a hσ]
-    module
   leibniz {σ φ x} hσ hφ hx := by
     simp [hf.leibniz hσ hφ, hf'.leibniz hσ hφ]
     module
@@ -204,12 +200,6 @@ def affineCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     congr
     ext i
     rw [← smul_add, (h i).addσ hσ hσ' hx]
-  smul_const_σ {_σ _x} a hσ hx := by
-    rw [Finset.smul_sum]
-    congr
-    ext i
-    simp [(h i).smul_const_σ a hσ]
-    module
   leibniz {σ g x} hσ hg hx := by
     set B := (ContinuousLinearMap.toSpanSingleton 𝕜 (σ x) ∘L
             ((bar (g x)).toContinuousLinearMap ∘L (mfderiv I 𝓘(𝕜, 𝕜) g x)))
@@ -244,7 +234,6 @@ lemma add_one_form [∀ (x : M), IsTopologicalAddGroup (V x)]
   addσ {_σ _σ' _x} hσ hσ' hx := by
     simp [hf.addσ hσ hσ']
     abel
-  smul_const_σ {_σ _x} a hσ hx := by simp [hf.smul_const_σ a hσ]
   leibniz {σ g x} hσ hg hx := by
     simp [hf.leibniz hσ hg]
     module
@@ -264,7 +253,6 @@ noncomputable def trivial [IsManifold I 1 M] :
     change MDifferentiableAt I 𝓘(𝕜, F) σ x at hσ
     change MDifferentiableAt I 𝓘(𝕜, F) σ' x at hσ'
     rw [mfderiv_add hσ hσ']
-  smul_const_σ {_σ _x} a hσ hx := by ext X; rw [mfderiv_const_smul]; rfl
   leibniz {σ f x} hσ hf hx := by
     rw [mdifferentiableAt_section] at hσ
     ext1 X₀
@@ -400,7 +388,6 @@ noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial 
       change MDifferentiableAt I 𝓘(𝕜, F) σ x at hσ
       change MDifferentiableAt I 𝓘(𝕜, F) σ' x at hσ'
       rw [mfderiv_add hσ hσ']
-    smul_const_σ {_σ _x} a hσ hx := by ext; rw [mfderiv_const_smul]; rfl
     leibniz {σ f x} hσ hf hx := by
       rw [mdifferentiableAt_section] at hσ
       ext1 X₀
@@ -813,15 +800,6 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     {u : Set M} (hu : u ⊆ e.baseSet)
     (hcov : IsCovariantDerivativeOn F cov u) :
     IsCovariantDerivativeOn F (e.pushCovDer cov) u where
-  smul_const_σ {σ x} a hσ hx := by
-    set s := (fun x' ↦ e.symm x' (σ x'))
-    have hs : MDiffAt (T% s) x :=
-      e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ
-    unfold Trivialization.pushCovDer
-    rw [← ContinuousLinearMap.comp_smul, ← hcov.smul_const_σ a hs hx]
-    congr
-    ext y
-    simp [e.symm_map_smul, s]
   addσ {σ σ' x} hσ hσ' hx := by
     set s := (fun x' ↦ e.symm x' (σ x'))
     have hs : MDiffAt (T% s) x :=
