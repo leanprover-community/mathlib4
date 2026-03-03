@@ -288,6 +288,7 @@ variable (X)
 
 /-- The module structure on the sections of the sheafification of the underlying
 presheaf of abelian groups of a presheaf of modules. -/
+@[implicit_reducible]
 noncomputable def module : Module (R.val.obj X) (A.val.obj X) where
   smul r m := smul α φ r m
   one_smul := Sheafify.one_smul α φ

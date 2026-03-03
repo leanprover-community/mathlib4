@@ -59,6 +59,7 @@ This could be an instance but that causes some slowness issues with typeclass se
 keep it as a def and turn it on as an instance for the explicit examples of `CompHausLike` as
 needed.
 -/
+@[implicit_reducible]
 def cartesianMonoidalCategory [∀ (X Y : CompHausLike.{u} P), HasProp P (X × Y)]
     [HasProp P PUnit.{u + 1}] : CartesianMonoidalCategory (CompHausLike.{u} P) :=
   .ofChosenFiniteProducts

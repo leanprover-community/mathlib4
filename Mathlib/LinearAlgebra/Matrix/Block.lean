@@ -332,6 +332,7 @@ theorem BlockTriangular.inv_toBlock [LinearOrder α] [Invertible M] (hM : BlockT
   inv_eq_left_inv <| hM.toBlock_inverse_mul_toBlock_eq_one k
 
 /-- An upper-left subblock of an invertible block-triangular matrix is invertible. -/
+@[implicit_reducible]
 def BlockTriangular.invertibleToBlock [LinearOrder α] [Invertible M] (hM : BlockTriangular M b)
     (k : α) : Invertible (M.toBlock (fun i => b i < k) fun i => b i < k) :=
   invertibleOfLeftInverse _ ((⅟M).toBlock (fun i => b i < k) fun i => b i < k) <| by

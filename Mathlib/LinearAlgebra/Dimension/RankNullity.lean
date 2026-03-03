@@ -163,6 +163,8 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
 
 open Cardinal Basis Submodule Function Set LinearMap
 
+set_option synthInstance.maxHeartbeats 30000 in
+-- timeout without the option, as of #36031
 theorem Submodule.rank_sup_add_rank_inf_eq (s t : Submodule R M) :
     Module.rank R (s ⊔ t : Submodule R M) + Module.rank R (s ⊓ t : Submodule R M) =
     Module.rank R s + Module.rank R t := by
