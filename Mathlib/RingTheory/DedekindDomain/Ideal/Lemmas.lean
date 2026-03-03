@@ -1067,18 +1067,14 @@ theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
 
 end primesOverFinset
 
-open IsDedekindDomain
-
+open IsDedekindDomain in
 lemma Algebra.IsIntegral.nontrivial_heightOneSpectrum [IsDomain A] [Algebra R A]
-    [FaithfulSMul R A] [Algebra.IsIntegral R A] [h : Nontrivial (HeightOneSpectrum R)] :
+    [FaithfulSMul R A] [Algebra.IsIntegral R A] [Nontrivial (HeightOneSpectrum R)] :
     Nontrivial (HeightOneSpectrum A) := by
-  contrapose! h
-  refine ⟨fun ⟨P, _, hP⟩ ⟨Q, _, hQ⟩ ↦ HeightOneSpectrum.ext_iff.mpr ?_⟩
-  obtain ⟨P', hP', rfl⟩ := P.exists_ideal_over_prime_of_isIntegral_of_isDomain (S := A) (by simp)
-  obtain ⟨Q', hQ', rfl⟩ := Q.exists_ideal_over_prime_of_isIntegral_of_isDomain (S := A) (by simp)
-  refine congrArg (Ideal.comap (algebraMap R A))
-    (HeightOneSpectrum.ext_iff.1 (h.elim ⟨P', hP', ?_⟩ ⟨Q', hQ', ?_⟩))
-  · contrapose! hP
-    simp [hP, ← RingHom.ker_eq_comap_bot]
-  · contrapose! hQ
-    simp [hQ, ← RingHom.ker_eq_comap_bot]
+  have := (FaithfulSMul.algebraMap_injective R A).isDomain
+  let f (p : HeightOneSpectrum A) : HeightOneSpectrum R :=
+    ⟨p.asIdeal.under R, inferInstance, mt Ideal.eq_bot_of_comap_eq_bot p.ne_bot⟩
+  have : Function.Surjective f := fun ⟨p, _, hp⟩ ↦ by
+    obtain ⟨P, hP, rfl⟩ := p.exists_ideal_over_prime_of_isIntegral_of_isDomain (S := A) (by simp)
+    exact ⟨⟨P, hP, by aesop⟩, rfl⟩
+  exact this.nontrivial
