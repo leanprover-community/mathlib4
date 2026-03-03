@@ -1133,11 +1133,20 @@ theorem valuation_compare (f : K⸨X⸩) :
       Valued.v f := by
   letI : UniformSpace (ratfuncAdicComplPkg (K := K).space) :=
       ratfuncAdicComplPkg.uniformStruct
-  rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare
-    (pkg := ratfuncAdicComplPkg) (cont_f := Valued.continuous_valuation)]
-  · rfl
-  intro x
-  apply Tendsto.comp (tendsto_valuation K x) (by simpa using tendsto_comap)
+  rw [← valuation_LaurentSeries_equal_extension, ← compare_comp_eq_compare ratfuncAdicComplPkg _]
+  · exact congr_fun (ratfuncAdicComplPkg.isDenseInducing.extend_unique
+      Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective
+        (valuedAdicCompletion_surjective _ _))).symm _
+  · refine Valued.continuous_valuation_of_surjective (fun x ↦ ?_)
+    obtain ⟨y, rfl⟩ := valuation_surjective' K x
+    exact ⟨.toVal _ y, rfl⟩
+  · intro x
+    have h_cont := Valued.continuous_valuation_of_surjective
+      (valuedAdicCompletion_surjective (RatFunc K) (idealX K))
+    rw [ratfuncAdicComplPkg.isDenseInducing.extend_unique
+        Valued.valuedCompletion_apply h_cont]
+    exact (h_cont.continuousAt.tendsto.comp tendsto_comap).congr
+      Valued.valuedCompletion_apply
 
 section PowerSeries
 
