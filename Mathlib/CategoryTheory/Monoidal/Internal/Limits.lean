@@ -98,17 +98,17 @@ def limitConeLiftsToLimit (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc 
   validLift := forgetMapConeLimitConeIso _ _ _
   makesLimit := limitConeIsLimit _ _ _
 
-instance createsLimit (F : J ⥤ Mon C) : CreatesLimit F (forget C) :=
+instance (F : J ⥤ Mon C) : CreatesLimit F (forget C) :=
   createsLimitOfReflectsIso (limitConeLiftsToLimit _)
 
-instance createsLimitsOfShape : CreatesLimitsOfShape J (forget C) := ⟨inferInstance⟩
-instance createsLimitsOfSize : CreatesLimitsOfSize.{w} (forget C) := ⟨inferInstance⟩
-instance createsLimits : CreatesLimits (forget C) := ⟨inferInstance⟩
+instance : CreatesLimitsOfShape J (forget C) := ⟨inferInstance⟩
+instance : CreatesLimitsOfSize.{w} (forget C) := ⟨inferInstance⟩
+instance : CreatesLimits (forget C) := ⟨inferInstance⟩
 
-instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon C) :=
+instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon C) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (forget C)
 
-instance forget_preservesLimitsOfShape [HasLimitsOfShape J C] :
+instance [HasLimitsOfShape J C] :
     PreservesLimitsOfShape J (Mon.forget C) :=
   CategoryTheory.preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape _
 
