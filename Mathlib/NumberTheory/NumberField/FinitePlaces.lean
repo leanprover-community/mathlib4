@@ -349,6 +349,47 @@ end FinitePlace
 
 end NumberField
 
+namespace NumberField.HeightOneSpectrum
+
+variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
+  (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
+variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L)]
+
+open scoped TensorProduct Valued in
+instance [w.asIdeal.LiesOver v.asIdeal] :
+    Module.Finite (v.adicCompletion K) (w.adicCompletion L) := by
+  let Lw := w.adicCompletion L
+  let Kᵥ := v.adicCompletion K
+  let Φ : Kᵥ ⊗[ℚ] L →ₗ[Kᵥ] Lw :=
+    Algebra.TensorProduct.lift (Algebra.algHom Kᵥ Kᵥ Lw) (Algebra.algHom ℚ L Lw)
+      (fun x y ↦ mul_comm ..) |>.toLinearMap
+  -- Φ has closed image
+  have hclosed : IsClosed (Φ.range : Set Lw) :=
+    (LinearMap.range Φ).closed_of_finiteDimensional
+  -- Φ has dense range
+  have h_dense : DenseRange Φ := by
+    have hss : Set.range (algebraMap L Lw) ⊆ LinearMap.range Φ := by
+      rintro z ⟨x, rfl⟩
+      exact ⟨1 ⊗ₜ[ℚ] x, by simp [Φ, Algebra.algHom]⟩
+    have : DenseRange (algebraMap L Lw) := by
+      apply DenseRange.comp UniformSpace.Completion.denseRange_coe
+        (WithVal.equiv (w.valuation L)).symm.surjective.denseRange
+        (UniformSpace.Completion.continuous_coe _)
+    exact this.mono hss
+  -- thus the linear map Φ is surjective since its range is closed and dense
+  have hsurj : Function.Surjective Φ := by
+    rw [← Set.range_eq_univ, ← Φ.coe_range, ← hclosed.closure_eq]
+    exact h_dense.closure_range
+  exact Module.Finite.of_surjective _ hsurj
+
+instance : CharZero (v.adicCompletion K) :=
+  charZero_of_injective_algebraMap (FaithfulSMul.algebraMap_injective K _)
+
+end NumberField.HeightOneSpectrum
+
+
 -- open UniqueFactorizationMonoid in
 -- theorem Ideal.IsDedekindDomain.emultiplicity_eq_zero_of_ne {R : Type*} [CommRing R]
 --     [IsDedekindDomain R] {a b : Ideal R} (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b)
@@ -480,36 +521,6 @@ lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
   simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
 
 open NumberField
-
-open scoped TensorProduct in
-instance [w.asIdeal.LiesOver v.asIdeal] :
-    Module.Finite (v.adicCompletion K) (w.adicCompletion L) := by
-  let Lw := w.adicCompletion L
-  let Kᵥ := v.adicCompletion K
-  let Φ : Kᵥ ⊗[ℚ] L →ₗ[Kᵥ] Lw :=
-    Algebra.TensorProduct.lift (Algebra.algHom Kᵥ Kᵥ Lw) (Algebra.algHom ℚ L Lw)
-      (fun x y ↦ mul_comm ..) |>.toLinearMap
-  -- Φ has closed image
-  have hclosed : IsClosed (Φ.range : Set Lw) :=
-    (LinearMap.range Φ).closed_of_finiteDimensional
-  -- Φ has dense range
-  have h_dense : DenseRange Φ := by
-    have hss : Set.range (algebraMap L Lw) ⊆ LinearMap.range Φ := by
-      rintro z ⟨x, rfl⟩
-      exact ⟨1 ⊗ₜ[ℚ] x, by simp [Φ, Algebra.algHom]⟩
-    have : DenseRange (algebraMap L Lw) := by
-      apply DenseRange.comp UniformSpace.Completion.denseRange_coe
-        (WithVal.equiv (w.valuation L)).symm.surjective.denseRange
-        (UniformSpace.Completion.continuous_coe _)
-    exact this.mono hss
-  -- thus the linear map Φ is surjective since its range is closed and dense
-  have hsurj : Function.Surjective Φ := by
-    rw [← Set.range_eq_univ, ← Φ.coe_range, ← hclosed.closure_eq]
-    exact h_dense.closure_range
-  exact Module.Finite.of_surjective _ hsurj
-
-instance : CharZero (v.adicCompletion K) :=
-  charZero_of_injective_algebraMap (FaithfulSMul.algebraMap_injective K _)
 
 -- instance [w.asIdeal.LiesOver v.asIdeal] :
 --     Algebra.IsSeparable (v.adicCompletion K) (w.adicCompletion L) :=
