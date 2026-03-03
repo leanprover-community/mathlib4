@@ -24,8 +24,7 @@ Copyright (c) 2026 Prof. Dr. Fei Gao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 -/
 
-import uncertainty.base_distribution
-import uncertainty.base_distribution
+import Mathlib.Uncertainty.base_distribution
 
 open Filter
 open scoped Topology
