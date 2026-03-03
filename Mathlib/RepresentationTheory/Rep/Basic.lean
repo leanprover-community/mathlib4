@@ -38,6 +38,10 @@ def Rep (k : Type u) (G : Type v) [Ring k] [Monoid G] := Action (ModuleCat.{w, u
 
 namespace Rep
 
+section non_comm
+
+variable {k : Type u} {G : Type v} [Ring k] [Monoid G]
+
 def Hom {k : Type u} {G : Type v} [Ring k] [Monoid G] (A B : Rep k G) : Type w := Action.Hom A B
 
 instance (k : Type u) (G : Type v) [Ring k] [Monoid G] : Category (Rep k G) where
@@ -46,22 +50,18 @@ instance (k : Type u) (G : Type v) [Ring k] [Monoid G] : Category (Rep k G) wher
 
 def V {k : Type u} {G : Type v} [Ring k] [Monoid G] (A : Rep k G) : ModuleCat k := Action.V A
 
-variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
-
 instance : CoeSort (Rep.{w} k G) (Type _) := ⟨fun V => V.V⟩
 
 def ρ (A : Rep k G) : Representation k G A.V :=
   (ModuleCat.endRingEquiv A.V).toMonoidHom.comp (Action.ρ A)
-set_option pp.universes true in
 
 instance : ConcreteCategory (Rep k G) (fun A B ↦ A.ρ.IntertwiningMap B.ρ) where
   hom f :=
   { __ := (Action.Hom.hom f).hom
-    isIntertwining' g v := congr($(f.comm g) v)}
-  ofHom f := {
-    hom := ModuleCat.ofHom f.toLinearMap
-    comm g := by ext; exact f.isIntertwining' g _
-  }
+    isIntertwining' g := ModuleCat.hom_ext_iff.1 (f.comm g)}
+  ofHom f :=
+  { hom := ModuleCat.ofHom f.toLinearMap
+    comm g := ModuleCat.hom_ext <| f.2 g }
 
 abbrev Hom.hom {A B : Rep k G} (f : A ⟶ B) : A.ρ.IntertwiningMap B.ρ :=
   ConcreteCategory.hom (C := Rep k G) f
@@ -101,23 +101,12 @@ lemma id_hom_apply {M : Rep k G} (x : M) : (𝟙 M : M ⟶ M) x = x := by
   simp [Representation.IntertwiningMap.id]
 
 @[simp]
-lemma hom_comp {M N O : Rep k G} (f : M ⟶ N) (g : N ⟶ O) :
-    (f ≫ g).hom = g.hom.comp f.hom := rfl
-
-lemma hom_comp_toLinearMap {M N O : Rep k G} (f : M ⟶ N) (g : N ⟶ O) :
-    (f ≫ g).hom.toLinearMap = g.hom.toLinearMap ∘ₗ f.hom.toLinearMap := rfl
-
-/- Provided for rewriting. -/
-lemma comp_apply {M N O : Rep k G} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
-    (f ≫ g) x = g (f x) := by rfl
+lemma ofHom_hom {M N : Rep k G} (f : M ⟶ N) :
+    Rep.ofHom f.hom = f := rfl
 
 @[ext]
 lemma hom_ext {M N : Rep k G} {f g : M ⟶ N} (hf : f.hom = g.hom) : f = g :=
   ConcreteCategory.ext hf
-
-@[simp]
-lemma ofHom_hom {M N : Rep k G} (f : M ⟶ N) :
-    Rep.ofHom f.hom = f := rfl
 
 @[simp]
 lemma hom_ofHom {X Y : Type w} [AddCommGroup X] [Module k X] [AddCommGroup Y]
@@ -143,12 +132,6 @@ lemma hom_surjective {M N : Rep k G} :
 lemma ofHom_id {M : Type w} [AddCommGroup M] [Module k M] (σ : Representation k G M) :
   ofHom (.id σ) = 𝟙 (of σ) := rfl
 
-@[simp]
-lemma ofHom_comp {M N O : Type w} [AddCommGroup M] [AddCommGroup N] [AddCommGroup O] [Module k M]
-    [Module k N] [Module k O] {σ : Representation k G M} {ρ : Representation k G N}
-    {τ : Representation k G O} (f : σ.IntertwiningMap ρ) (g : ρ.IntertwiningMap τ) :
-    ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
-
 /- Doesn't need to be `@[simp]` since `simp only` can solve this. -/
 lemma ofHom_apply {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
     {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (x : M) :
@@ -168,10 +151,9 @@ def homEquiv {M N : Rep k G} : (M ⟶ N) ≃ (M.ρ.IntertwiningMap N.ρ) where
 def Hom.toModuleCatHom {M N : Rep k G} (f : M ⟶ N) : M.V ⟶ N.V := ModuleCat.ofHom f.hom.toLinearMap
 
 instance : HasForget₂ (Rep k G) (ModuleCat.{w, u} k) where
-  forget₂ := {
-    obj A := A.V
-    map f := f.toModuleCatHom
-  }
+  forget₂ :=
+  { obj A := A.V
+    map f := f.toModuleCatHom}
 
 @[simp]
 lemma forget₂_map {M N : Rep k G} (f : M ⟶ N) :
@@ -201,6 +183,17 @@ lemma ofHom_add {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [M
 
 lemma add_hom {M N : Rep k G} (f g : M ⟶ N) : (f + g).hom = f.hom + g.hom := rfl
 
+@[simp]
+lemma hom_comp {M N O : Rep k G} (f : M ⟶ N) (g : N ⟶ O) :
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+lemma hom_comp_toLinearMap {M N O : Rep k G} (f : M ⟶ N) (g : N ⟶ O) :
+    (f ≫ g).hom.toLinearMap = g.hom.toLinearMap ∘ₗ f.hom.toLinearMap := rfl
+
+/- Provided for rewriting. -/
+lemma comp_apply {M N O : Rep k G} (f : M ⟶ N) (g : N ⟶ O) (x : M) :
+    (f ≫ g) x = g (f x) := by rfl
+
 lemma add_comp {M N O : Rep k G} (f₁ f₂ : M ⟶ N) (g : N ⟶ O) :
     (f₁ + f₂) ≫ g = f₁ ≫ g + f₂ ≫ g := by
   ext1
@@ -222,6 +215,12 @@ lemma zero_hom {M N : Rep k G} : (0 : M ⟶ N).hom = 0 := rfl
 
 instance {M N : Rep k G} : SMul ℕ (M ⟶ N) where
   smul n f := ofHom (n • f.hom)
+
+@[simp]
+lemma ofHom_comp {M N O : Type w} [AddCommGroup M] [AddCommGroup N] [AddCommGroup O] [Module k M]
+    [Module k N] [Module k O] {σ : Representation k G M} {ρ : Representation k G N}
+    {τ : Representation k G O} (f : σ.IntertwiningMap ρ) (g : ρ.IntertwiningMap τ) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g := rfl
 
 lemma ofHom_nsmul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
     {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (n : ℕ) :
@@ -261,30 +260,6 @@ instance : Preadditive (Rep k G) where
   add_comp _ _ _ := add_comp
   comp_add _ _ _ := comp_add
 
-instance {M N : Rep k G} : SMul k (M ⟶ N) where
-  smul r f := ofHom (r • f.hom)
-
-lemma ofHom_smul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
-    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (r : k) :
-    ofHom (r • f) = r • ofHom f := rfl
-
-lemma smul_hom {M N : Rep k G} (f : M ⟶ N) (r : k) : (r • f).hom = r • f.hom := rfl
-
-lemma smul_comp {M N O : Rep k G} (r : k) (f : M ⟶ N) (g : N ⟶ O) :
-    (r • f) ≫ g = r • (f ≫ g) := by
-  ext1
-  simp [smul_hom, Representation.IntertwiningMap.comp_smul]
-
-lemma comp_smul {M N O : Rep k G} (f : M ⟶ N) (r : k) (g : N ⟶ O) :
-    f ≫ (r • g) = r • (f ≫ g) := by
-  ext1
-  simp [smul_hom, Representation.IntertwiningMap.smul_comp]
-
-instance : Linear k (Rep k G) where
-  homModule X Y := hom_injective.module _ ⟨⟨_, zero_hom⟩, add_hom⟩ <| by simp [smul_hom]
-  smul_comp _ _ _ := smul_comp
-  comp_smul _ _ _ := comp_smul
-
 variable (k G) in
 /-- The trivial `k`-linear `G`-representation on a `k`-module `V.` -/
 abbrev trivial (V : Type u) [AddCommGroup V] [Module k V] : Rep k G :=
@@ -311,6 +286,7 @@ instance {V : Type u} [AddCommGroup V] [Module k V] :
 
 instance {V : Type u} [AddCommGroup V] [Module k V] (ρ : Representation k G V) [ρ.IsTrivial] :
     IsTrivial (Rep.of ρ) where
+  out := Representation.isTrivial_def ρ
 
 instance {H V : Type u} [Group H] [AddCommGroup V] [Module k V] (ρ : Representation k H V)
     (f : G →* H) [Representation.IsTrivial (ρ.comp f)] :
@@ -337,8 +313,6 @@ lemma applyAsHom_apply {A : Rep k G} (g : G) (x : A) : (A.applyAsHom g).hom x = 
 lemma applyAsHom_comm {A B : Rep k G} (f : A ⟶ B) (g : G) :
     A.applyAsHom g ≫ f = f ≫ B.applyAsHom g := by
   ext; simp [hom_comm_apply]
-
-end Commutative
 
 variable (A : Rep k G)
 
@@ -383,6 +357,186 @@ instance {A B : Rep k G} (f : A ⟶ B) [Mono f] : Mono f.toModuleCatHom :=
 
 instance {A B : Rep k G} (f : A ⟶ B) [Epi f] : Epi f.toModuleCatHom :=
   inferInstanceAs <| Epi ((forget₂ _ _).map f)
+
+end Commutative
+
+suppress_compilation
+
+variable (k G)
+
+/-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
+`G →* End(k[H])` as a term of type `Rep k G`. -/
+def ofMulAction (H : Type w') [MulAction G H] : Rep k G :=
+  of <| Representation.ofMulAction k G H
+
+def ofMulAction.equivFinsupp (H : Type w') [MulAction G H] :
+  ofMulAction k G H ≃ₗ[k] (H →₀ k) := .refl _ _
+
+variable {k} in
+def ofMulAction.single {H : Type w'} [MulAction G H] (g : H) :
+    k →ₗ[k] ofMulAction k G H := Finsupp.lsingle g
+
+@[simp]
+lemma ofMulAction.ρ_single (H : Type w') [MulAction G H] (g : G) (h : H) (x : k) :
+    (ofMulAction k G H).ρ g (ofMulAction.single G h x) = ofMulAction.single G (g • h) x := by
+  simp only [ofMulAction, coe_of, of_ρ, single]
+  conv_lhs => enter [2]; tactic => convert Finsupp.lsingle_apply (M := k) _ _
+  exact Representation.ofMulAction_single g h x
+
+@[simp]
+lemma ofMulAction.ρ_comp_single (H : Type w') [MulAction G H] (g : G) (h : H) :
+    (ofMulAction k G H).ρ g ∘ₗ ofMulAction.single G h = ofMulAction.single G (g • h) :=
+  LinearMap.ext (by simp)
+
+@[simp]
+lemma ofMulAction.equivFinsupp_single (H : Type w') [MulAction G H] (h : H) (x : k) :
+    ofMulAction.equivFinsupp k G H (ofMulAction.single G h x) = .single h x := rfl
+
+@[simp]
+lemma ofMulAction.equivFinsupp_symm_single (H : Type w') [MulAction G H] (h : H) (x : k) :
+    (ofMulAction.equivFinsupp k G H).symm (.single h x) = ofMulAction.single G h x := rfl
+
+@[ext high]
+lemma ofMulAction.hom_ext {H : Type w'} [MulAction G H]
+    {M : Type*} [AddCommGroup M] [Module k M]
+    (l₁ l₂ : ofMulAction k G H →ₗ[k] M) (heq : ∀ g, l₁ ∘ₗ single G g = l₂ ∘ₗ single G g) :
+    l₁ = l₂ := Finsupp.lhom_ext' heq
+
+/-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
+abbrev leftRegular : Rep k G :=
+  ofMulAction k G G
+
+/-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
+abbrev diagonal (n : ℕ) : Rep k G :=
+  ofMulAction k G (Fin n → G)
+
+variable {k G} in
+@[simps]
+def mkIso (M₁ M₂ : Rep.{w} k G) (f : M₁.V ≃ₗ[k] M₂.V) (hf : ∀ g : G, f ∘ₗ M₁.ρ g =
+    M₂.ρ g ∘ₗ f := by aesop) : M₁ ≅ M₂ where
+  hom := ofHom (σ := M₁.ρ) (ρ := M₂.ρ) ⟨f, fun g ↦ congr($(hf g))⟩
+  inv := ofHom (σ := M₂.ρ) (ρ := M₁.ρ) ⟨f.symm, fun g ↦ by
+    rw [← LinearMap.cancel_left f.injective, ← LinearMap.comp_assoc, ← LinearMap.comp_assoc,
+      hf g, LinearEquiv.comp_symm, LinearMap.id_comp, LinearMap.comp_assoc,
+      LinearEquiv.comp_symm, LinearMap.comp_id]⟩
+  hom_inv_id := by
+    conv_rhs => tactic => convert (ofHom_id (σ := M₁.ρ)).symm -- how to get rid of this
+    conv_lhs => tactic => convert (ofHom_comp (σ := M₁.ρ) (ρ := M₂.ρ) (τ := M₁.ρ) _ _).symm
+    congr 1
+    ext1
+    simp [Representation.IntertwiningMap.id ]
+  inv_hom_id := by
+    conv_rhs => tactic => convert (ofHom_id (σ := M₂.ρ)).symm
+    conv_lhs => tactic => convert (ofHom_comp (σ := M₂.ρ) (ρ := M₁.ρ) (τ := M₂.ρ) _ _).symm
+    congr 1
+    ext1
+    simp [Representation.IntertwiningMap.id ]
+
+/-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
+multiplication in `G`. -/
+@[simps! hom_hom inv_hom]
+def diagonalOneIsoLeftRegular :
+    diagonal k G 1 ≅ leftRegular k G :=
+  Rep.mkIso (diagonal k G 1) (leftRegular k G) (ofMulAction.equivFinsupp _ _ _ ≪≫ₗ
+    Finsupp.domLCongr (Equiv.funUnique (Fin 1) G) ≪≫ₗ (ofMulAction.equivFinsupp _ _ _).symm)
+    fun g ↦ by ext; simp
+
+/-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
+isomorphic to the trivial representation on `k`. -/
+@[simps! hom_hom inv_hom]
+def ofMulActionSubsingletonIsoTrivial
+    (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
+    ofMulAction k G H ≅ trivial k G k :=
+  letI : Unique H := uniqueOfSubsingleton 1
+  mkIso _ _ (ofMulAction.equivFinsupp _ _ _ ≪≫ₗ Finsupp.LinearEquiv.finsuppUnique _ _ _) fun g ↦ by
+  ext x; --simp [Subsingleton.elim (g • x) x]
+  sorry -- types
+
+section
+
+variable (A : Type w') [AddCommGroup A] [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
+
+/-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
+`k`-linear `G`-representation on `A`. -/
+def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k G A)
+
+@[simp] theorem ofDistribMulAction_ρ_apply_apply (g : G) (a : A) :
+    (ofDistribMulAction k G A).ρ g a = g • a := rfl
+
+/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
+`S ≃ₐ[R] S` on `S`. -/
+@[simp] def ofAlgebraAut (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
+    Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction ℤ (S ≃ₐ[R] S) S
+
+end
+
+section
+variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
+
+/-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
+`ℤ`-linear `M`-representation on `Additive G`. -/
+def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
+
+variable {G M}
+
+/-- Unfolds `ofMulDistribMulAction`; useful to keep track of additivity. -/
+@[simps!]
+def toAdditive : ofMulDistribMulAction M G ≃+ Additive G := AddEquiv.refl _
+
+@[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
+    (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • a.toMul) := rfl
+
+/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
+`S ≃ₐ[R] S` on `Sˣ`. -/
+@[simp] def ofAlgebraAutOnUnits (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
+    Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
+
+end
+
+variable {k G}
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
+`g ↦ A.ρ(g)(x).` -/
+def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
+  Rep.ofHom (σ := (leftRegular k G).ρ) (ρ := A.ρ) ⟨(Finsupp.lift A k G fun g ↦ A.ρ g x) ∘ₗ
+    (ofMulAction.equivFinsupp k G G).toLinearMap, fun g ↦ by ext; simp⟩
+
+-- set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
+    (leftRegularHom A x).hom (ofMulAction.single G g r) = r • A.ρ g x := by
+  simp only [leftRegularHom]
+  conv_lhs => enter [1]; tactic => convert hom_ofHom _ -- why???
+  simp
+
+end non_comm
+
+variable {k : Type u} {G : Type v} [CommRing k] [Monoid G]
+
+instance {M N : Rep k G} : SMul k (M ⟶ N) where
+  smul r f := ofHom (r • f.hom)
+
+lemma ofHom_smul {M N : Type w} [AddCommGroup M] [AddCommGroup N] [Module k M] [Module k N]
+    {σ : Representation k G M} {ρ : Representation k G N} (f : σ.IntertwiningMap ρ) (r : k) :
+    ofHom (r • f) = r • ofHom f := rfl
+
+lemma smul_hom {M N : Rep k G} (f : M ⟶ N) (r : k) : (r • f).hom = r • f.hom := rfl
+
+lemma smul_comp {M N O : Rep k G} (r : k) (f : M ⟶ N) (g : N ⟶ O) :
+    (r • f) ≫ g = r • (f ≫ g) := by
+  ext1
+  simp [smul_hom, Representation.IntertwiningMap.comp_smul]
+
+lemma comp_smul {M N O : Rep k G} (f : M ⟶ N) (r : k) (g : N ⟶ O) :
+    f ≫ (r • g) = r • (f ≫ g) := by
+  ext1
+  simp [smul_hom, Representation.IntertwiningMap.smul_comp]
+
+instance : Linear k (Rep k G) where
+  homModule X Y := hom_injective.module _ ⟨⟨_, zero_hom⟩, add_hom⟩ <| by simp [smul_hom]
+  smul_comp _ _ _ := smul_comp
+  comp_smul _ _ _ := comp_smul
 
 section Monoidal
 
@@ -456,7 +610,7 @@ theorem coe_linearization_obj_ρ (X : Action (Type u) G) (g : G) :
       (fun _ => (X.V →₀ k) →ₗ[k] (X.V →₀ k)) _
       ((linearization k G).obj X).ρ g = Finsupp.lmapDomain k k (X.ρ g) := rfl
 
--- set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency false in
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
 theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
     ((linearization k G).obj X).ρ g (Finsupp.single x r) = Finsupp.single (X.ρ g x) r := by
@@ -496,8 +650,6 @@ theorem linearization_η_hom_apply (r : k) :
     (η (linearization k G)).hom (Finsupp.single PUnit.unit r) = r :=
   (εIso (linearization k G)).hom_inv_id_apply r
 
-variable (k G)
-
 /-- The linearization of a type `X` on which `G` acts trivially is the trivial `G`-representation
 on `k[X]`. -/
 @[simps! hom_hom inv_hom]
@@ -506,76 +658,8 @@ def linearizationTrivialIso (X : Type u) :
   Action.mkIso (Iso.refl _) fun _ => ModuleCat.hom_ext <| Finsupp.lhom_ext' fun _ => LinearMap.ext
     fun _ => linearization_single ..
 
-/-- Given a `G`-action on `H`, this is `k[H]` bundled with the natural representation
-`G →* End(k[H])` as a term of type `Rep k G`. -/
-def ofMulAction (H : Type w') [MulAction G H] : Rep k G :=
-  of <| Representation.ofMulAction k G H
 
-def ofMulAction.equivFinsupp (H : Type w') [MulAction G H] :
-  ofMulAction k G H ≃ₗ[k] (H →₀ k) := .refl _ _
 
-variable {k} in
-def ofMulAction.single {H : Type w'} [MulAction G H] (g : H) :
-    k →ₗ[k] ofMulAction k G H := Finsupp.lsingle g
-
-@[simp]
-lemma ofMulAction.ρ_single (H : Type w') [MulAction G H] (g : G) (h : H) (x : k) :
-    (ofMulAction k G H).ρ g (ofMulAction.single G h x) = ofMulAction.single G (g • h) x := by
-  simp [ofMulAction, ofMulAction.single]
-
-@[simp]
-lemma ofMulAction.ρ_comp_single (H : Type w') [MulAction G H] (g : G) (h : H) :
-    (ofMulAction k G H).ρ g ∘ₗ ofMulAction.single G h = ofMulAction.single G (g • h) :=
-  LinearMap.ext (by simp)
-
-@[simp]
-lemma ofMulAction.equivFinsupp_single (H : Type w') [MulAction G H] (h : H) (x : k) :
-    ofMulAction.equivFinsupp k G H (ofMulAction.single G h x) = .single h x := rfl
-
-@[simp]
-lemma ofMulAction.equivFinsupp_symm_single (H : Type w') [MulAction G H] (h : H) (x : k) :
-    (ofMulAction.equivFinsupp k G H).symm (.single h x) = ofMulAction.single G h x := rfl
-
-@[ext high]
-lemma ofMulAction.hom_ext {H : Type w'} [MulAction G H]
-    {M : Type*} [AddCommGroup M] [Module k M]
-    (l₁ l₂ : ofMulAction k G H →ₗ[k] M) (heq : ∀ g, l₁ ∘ₗ single G g = l₂ ∘ₗ single G g) :
-    l₁ = l₂ := Finsupp.lhom_ext' heq
-
-/-- The `k`-linear `G`-representation on `k[G]`, induced by left multiplication. -/
-abbrev leftRegular : Rep k G :=
-  ofMulAction k G G
-
-/-- The `k`-linear `G`-representation on `k[Gⁿ]`, induced by left multiplication. -/
-abbrev diagonal (n : ℕ) : Rep k G :=
-  ofMulAction k G (Fin n → G)
-
-variable {k G} in
-@[simps]
-def mkIso (M₁ M₂ : Rep.{w} k G) (f : M₁.V ≃ₗ[k] M₂.V) (hf : ∀ g : G, f ∘ₗ M₁.ρ g =
-    M₂.ρ g ∘ₗ f := by aesop) : M₁ ≅ M₂ where
-  hom := ofHom (σ := M₁.ρ) (ρ := M₂.ρ) ⟨f, fun g m ↦ congr($(hf g) m)⟩
-  inv := ofHom (σ := M₂.ρ) (ρ := M₁.ρ) ⟨f.symm, fun g v ↦ f.injective <| by
-    simpa using congr($(hf g) (f.symm v)).symm⟩
-
-/-- The natural isomorphism between the representations on `k[G¹]` and `k[G]` induced by left
-multiplication in `G`. -/
-@[simps! hom_hom inv_hom]
-def diagonalOneIsoLeftRegular :
-    diagonal k G 1 ≅ leftRegular k G :=
-  Rep.mkIso (diagonal k G 1) (leftRegular k G) (ofMulAction.equivFinsupp _ _ _ ≪≫ₗ
-    Finsupp.domLCongr (Equiv.funUnique (Fin 1) G) ≪≫ₗ (ofMulAction.equivFinsupp _ _ _).symm)
-    fun g ↦ by ext; simp
-
-/-- When `H = {1}`, the `G`-representation on `k[H]` induced by an action of `G` on `H` is
-isomorphic to the trivial representation on `k`. -/
-@[simps! hom_hom inv_hom]
-def ofMulActionSubsingletonIsoTrivial
-    (H : Type u) [Subsingleton H] [MulOneClass H] [MulAction G H] :
-    ofMulAction k G H ≅ trivial k G k :=
-  letI : Unique H := uniqueOfSubsingleton 1
-  mkIso _ _ (ofMulAction.equivFinsupp _ _ _ ≪≫ₗ Finsupp.LinearEquiv.finsuppUnique _ _ _) fun g ↦ by
-  ext x; simp [Subsingleton.elim (g • x) x]
 
 /-- The linearization of a type `H` with a `G`-action is definitionally isomorphic to the
 `k`-linear `G`-representation on `k[H]` induced by the `G`-action on `H`. -/
@@ -583,65 +667,6 @@ def linearizationOfMulActionIso (H : Type _) [MulAction G H] :
     (linearization k G).obj (Action.ofMulAction G H) ≅ ofMulAction k G H :=
   Iso.refl _
 
-section
-
-variable (k : Type u) (G : Type v) (A : Type w') [CommRing k] [Monoid G] [AddCommGroup A]
-  [Module k A] [DistribMulAction G A] [SMulCommClass G k A]
-
-/-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
-`k`-linear `G`-representation on `A`. -/
-def ofDistribMulAction : Rep k G := Rep.of (Representation.ofDistribMulAction k G A)
-
-@[simp] theorem ofDistribMulAction_ρ_apply_apply (g : G) (a : A) :
-    (ofDistribMulAction k G A).ρ g a = g • a := rfl
-
-/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
-`S ≃ₐ[R] S` on `S`. -/
-@[simp] def ofAlgebraAut (R S : Type) [CommRing R] [CommRing S] [Algebra R S] :
-    Rep ℤ (S ≃ₐ[R] S) := ofDistribMulAction ℤ (S ≃ₐ[R] S) S
-
-end
-section
-variable (M G : Type*) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
-
-/-- Turns a `CommGroup` `G` with a `MulDistribMulAction` of a monoid `M` into a
-`ℤ`-linear `M`-representation on `Additive G`. -/
-def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
-
-variable {G M}
-
-/-- Unfolds `ofMulDistribMulAction`; useful to keep track of additivity. -/
-@[simps!]
-def toAdditive : ofMulDistribMulAction M G ≃+ Additive G := AddEquiv.refl _
-
-@[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
-    (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • a.toMul) := rfl
-
-/-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
-`S ≃ₐ[R] S` on `Sˣ`. -/
-@[simp] def ofAlgebraAutOnUnits (R S : Type*) [CommRing R] [CommRing S] [Algebra R S] :
-    Rep ℤ (S ≃ₐ[R] S) := Rep.ofMulDistribMulAction (S ≃ₐ[R] S) Sˣ
-
-end
-
-variable {k G}
-
-set_option backward.isDefEq.respectTransparency false in
-/-- Given an element `x : A`, there is a natural morphism of representations `k[G] ⟶ A` sending
-`g ↦ A.ρ(g)(x).` -/
-def leftRegularHom (A : Rep k G) (x : A) : leftRegular k G ⟶ A :=
-  Rep.ofHom (σ := (leftRegular k G).ρ) (ρ := A.ρ) ⟨(Finsupp.lift A k G fun g ↦ A.ρ g x) ∘ₗ
-    (ofMulAction.equivFinsupp k G G).toLinearMap, fun g v ↦ by
-    dsimp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply]
-    congr 1
-    ext g'
-    simp⟩
-
--- set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem leftRegularHom_hom_single {A : Rep k G} (g : G) (x : A) (r : k) :
-    (leftRegularHom A x).hom (ofMulAction.single G g r) = r • A.ρ g x := by
-  simp [leftRegularHom]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a `k`-linear `G`-representation `A`, there is a `k`-linear isomorphism between
@@ -660,7 +685,7 @@ def leftRegularHomEquiv (A : Rep k G) : (leftRegular k G ⟶ A) ≃ₗ[k] A wher
     ext; simp [← hom_comm_apply f]
   right_inv x := by simp
 
--- set_option backward.isDefEq.respectTransparency false in
+set_option backward.isDefEq.respectTransparency false in
 theorem leftRegularHomEquiv_symm_single {A : Rep k G} (x : A) (g : G) :
     ((leftRegularHomEquiv A).symm x).hom (ofMulAction.single G g 1) = A.ρ g x := by
   simp
@@ -705,6 +730,8 @@ lemma free.ρ_single (i : α) (g g' : G) (r : k) :
     (free k G α).ρ g' (free.single α i (Finsupp.single g r)) =
     free.single α i (Finsupp.single (g' * g) r) := by
   simp [free, free.single]
+  erw? [Finsupp.lsingle_apply]
+  sorry
 
 lemma free.single_single (i : α) (g : G) (r : k) :
     free.single α i (Finsupp.single g r) = (freeEquivFinsupp k G α).symm
@@ -728,17 +755,13 @@ set_option backward.isDefEq.respectTransparency false in
 def freeLift (f : α → A) :
     free k G α ⟶ A := Rep.ofHom (σ := (free k G α).ρ) (ρ := A.ρ)
   ⟨linearCombination k (fun x => A.ρ x.2 (f x.1)) ∘ₗ (curryLinearEquiv k).symm.toLinearMap ∘ₗ
-    freeEquivFinsupp k G α, fun g v ↦ by
-    dsimp only [LinearEquiv.comp_coe, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
-      ← LinearMap.comp_apply]
-    congr 1
-    ext i x
-    simp ⟩
+    freeEquivFinsupp k G α, fun g ↦ by ext; simp ⟩
 
 set_option backward.isDefEq.respectTransparency false in
 variable {A} in
+@[simp]
 lemma freeLift_hom_single_single (f : α → A) (i : α) (g : G) (r : k) :
-    (freeLift A f).hom (single i (single g r)) = r • A.ρ g (f i) := by
+    (freeLift A f).hom (free.single α i (single g r)) = r • A.ρ g (f i) := by
   simp [freeLift]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -751,10 +774,12 @@ def freeLiftLEquiv :
   toFun f i := f.hom (single i (single 1 1))
   invFun := freeLift A
   left_inv x := by
-      ext : 2
-      dsimp -- this has to be added otherwise the `ext` don't `ext` into two variables
-      ext i j
-      simpa [freeLift, ← map_smul] using (hom_comm_apply x j (single i (single 1 1))).symm
+    ext i j
+    simp [← hom_comm_apply, free.ρ_single]
+      -- ext : 2
+      -- dsimp -- this has to be added otherwise the `ext` don't `ext` into two variables
+      -- ext i j
+      -- simpa [freeLift, ← map_smul] using (hom_comm_apply x j (single i (single 1 1))).symm
   right_inv _ := by ext; simp [freeLift]
     -- erw? [freeLift_hom_single_single] -- why doesn't this work?
   map_add' _ _ := rfl

@@ -84,6 +84,10 @@ instance : Add (IntertwiningMap ρ σ) :=
 @[simp] lemma coe_add (f g : IntertwiningMap ρ σ) :
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
 
+@[simp]
+lemma add_toLinearMap (f g : IntertwiningMap ρ σ) :
+    (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := rfl
+
 instance : SMul ℕ (IntertwiningMap ρ σ) :=
   ⟨fun n f ↦ ⟨n • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.2]⟩⟩
 
@@ -113,6 +117,10 @@ instance : Sub (IntertwiningMap ρ σ) :=
 @[simp] lemma coe_sub (f g : IntertwiningMap ρ σ) :
     ((f - g : IntertwiningMap ρ σ) : V → W) = f - g := rfl
 
+@[simp]
+lemma sub_toLinearMap (f g : IntertwiningMap ρ σ) :
+    (f - g).toLinearMap = f.toLinearMap - g.toLinearMap := rfl
+
 instance : SMul ℤ (IntertwiningMap ρ σ) :=
   ⟨fun z f ↦ ⟨z • f.toLinearMap, by simp [LinearMap.smul_comp, LinearMap.comp_smul, f.2]⟩⟩
 
@@ -136,6 +144,28 @@ def coeFnAddMonoidHom : IntertwiningMap ρ σ →+ V → W where
 def id : IntertwiningMap ρ ρ where
   toLinearMap := LinearMap.id
   isIntertwining' := by simp
+
+variable {ρ σ τ} in
+/-- Composition of intertwining maps.
+
+A convenience variant of `IntertwiningMap.llcomp` for use in dot notation. -/
+def comp (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) : IntertwiningMap ρ τ where
+  __ := f.toLinearMap ∘ₗ g.toLinearMap
+  isIntertwining' := by simp [LinearMap.comp_assoc, g.2, f.isIntertwining_assoc]
+
+@[simp]
+lemma comp_toLinearMap (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
+    (comp f g).toLinearMap = f.toLinearMap.comp g.toLinearMap := rfl
+
+@[simp]
+lemma comp_apply (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) (v : V) :
+    comp f g v = f (g v) := rfl
+
+lemma comp_add (f₁ f₂ : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
+    (f₁ + f₂).comp g = comp f₁ g + comp f₂ g := by ext1; simp [LinearMap.add_comp]
+
+lemma add_comp (f : IntertwiningMap σ τ) (g₁ g₂ : IntertwiningMap ρ σ) :
+    comp f (g₁ + g₂) = comp f g₁ + comp f g₂ := by ext1; simp [LinearMap.comp_add]
 
 end IntertwiningMap
 
@@ -196,25 +226,8 @@ def llcomp : IntertwiningMap σ τ →ₗ[A] IntertwiningMap ρ σ →ₗ[A] Int
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
-variable {ρ σ τ} in
-/-- Composition of intertwining maps.
-
-A convenience variant of `IntertwiningMap.llcomp` for use in dot notation. -/
-def comp (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) : IntertwiningMap ρ τ :=
-  llcomp _ _ _ f g
-
 lemma comp_def (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
     comp f g = llcomp _ _ _ f g := rfl
-
-@[simp]
-lemma comp_apply (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) (v : V) :
-    comp f g v = f (g v) := rfl
-
-lemma comp_add (f₁ f₂ : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
-    (f₁ + f₂).comp g = comp f₁ g + comp f₂ g := by simp [comp_def]
-
-lemma add_comp (f : IntertwiningMap σ τ) (g₁ g₂ : IntertwiningMap ρ σ) :
-    comp f (g₁ + g₂) = comp f g₁ + comp f g₂ := by simp [comp_def]
 
 lemma smul_comp (a : A) (f : IntertwiningMap σ τ) (g : IntertwiningMap ρ σ) :
     (a • f).comp g = a • comp f g := by simp [comp_def]
