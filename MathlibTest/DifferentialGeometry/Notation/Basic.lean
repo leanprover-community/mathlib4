@@ -139,12 +139,22 @@ example : (fun m ↦ (X m : TangentBundle I M)) = (fun m ↦ TotalSpace.mk' E m 
 #guard_msgs in
 #check T% (fun x ↦ X x) x
 
--- Applying the same elaborator twice is fine (and idempotent).
-/-- info: fun m ↦ TotalSpace.mk' E m (X m) : M → TotalSpace E (TangentSpace I) -/
+-- Applying the same elaborator twice errors.
+/--
+error: could not find a `FiberBundle` instance on `TotalSpace E`:
+`fun m ↦ TotalSpace.mk' E m (X m)` is a function into `TotalSpace E`
+
+hint: you may be missing suitable typeclass assumptions
+-/
 #guard_msgs in
 #check (T% (T% X))
 
-/-- info: (fun m ↦ TotalSpace.mk' E m (X m)) x : TotalSpace E (TangentSpace I) -/
+/--
+error: could not find a `FiberBundle` instance on `TotalSpace E`:
+`fun m ↦ TotalSpace.mk' E m (X m)` is a function into `TotalSpace E`
+
+hint: you may be missing suitable typeclass assumptions
+-/
 #guard_msgs in
 #check (T% (T% X)) x
 
