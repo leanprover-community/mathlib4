@@ -3,9 +3,10 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao
 -/
+module
 
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 
@@ -19,11 +20,13 @@ In a field extension `K/k`
 * `adjoin` : The finite Galois intermediate field obtained from the normal closure of adjoining a
   finite `s : Set K` to `k`.
 
-# TODO
+## TODO
 
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
 
 -/
+
+@[expose] public section
 
 open IntermediateField
 
@@ -57,11 +60,13 @@ lemma val_injective : Function.Injective (toIntermediateField (k := k) (K := K))
 instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂] :
     IsGalois k ↑(L₁ ⊔ L₂) where
 
+set_option backward.isDefEq.respectTransparency false in
 instance (L₁ L₂ : IntermediateField k K) [FiniteDimensional k L₁] :
     FiniteDimensional k ↑(L₁ ⊓ L₂) :=
   .of_injective (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₁) inf_le_left).toLinearMap
     (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₁) inf_le_left).toRingHom.injective
 
+set_option backward.isDefEq.respectTransparency false in
 instance (L₁ L₂ : IntermediateField k K) [FiniteDimensional k L₂] :
     FiniteDimensional k ↑(L₁ ⊓ L₂) :=
   .of_injective (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₂) inf_le_right).toLinearMap
@@ -84,8 +89,11 @@ instance : Max (FiniteGaloisIntermediateField k K) where
 instance : Min (FiniteGaloisIntermediateField k K) where
   min L₁ L₂ := .mk <| L₁ ⊓ L₂
 
+instance : PartialOrder (FiniteGaloisIntermediateField k K) :=
+  PartialOrder.lift _ val_injective
+
 instance : Lattice (FiniteGaloisIntermediateField k K) :=
-  val_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+  val_injective.lattice _ .rfl .rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance : OrderBot (FiniteGaloisIntermediateField k K) where
   bot := .mk ⊥
@@ -96,9 +104,10 @@ lemma le_iff (L₁ L₂ : FiniteGaloisIntermediateField k K) :
     L₁ ≤ L₂ ↔ L₁.toIntermediateField ≤ L₂.toIntermediateField :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (k) in
 /-- The minimal (finite) Galois intermediate field containing a finite set `s : Set K` in a
-Galois extension `K/k` defined as the the normal closure of the field obtained by adjoining
+Galois extension `K/k` defined as the normal closure of the field obtained by adjoining
 the set `s : Set K` to `k`. -/
 noncomputable def adjoin [IsGalois k K] (s : Set K) [Finite s] :
     FiniteGaloisIntermediateField k K := {
@@ -138,11 +147,12 @@ theorem adjoin_simple_map_algHom [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
   simpa only [Set.image_singleton] using adjoin_map f { x }
 
 @[simp]
-theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
+theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : Gal(K/k)) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
   adjoin_simple_map_algHom (f : K →ₐ[k] K) x
 
-nonrec lemma mem_fixingSubgroup_iff (α : K ≃ₐ[k] K) (L : FiniteGaloisIntermediateField k K) :
+set_option backward.isDefEq.respectTransparency false in
+nonrec lemma mem_fixingSubgroup_iff (α : Gal(K/k)) (L : FiniteGaloisIntermediateField k K) :
     α ∈ L.fixingSubgroup ↔ α.restrictNormalHom L = 1 := by
   simp [IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
     AlgEquiv.restrictNormalHom_apply]

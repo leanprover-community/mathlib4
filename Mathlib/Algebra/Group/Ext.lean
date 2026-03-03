@@ -3,7 +3,9 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Extensionality lemmas for monoid and group structures
@@ -25,6 +27,8 @@ former uses `HMul.hMul` which is the canonical spelling.
 monoid, group, extensionality
 -/
 
+public section
+
 assert_not_exists MonoidWithZero DenselyOrdered
 
 open Function
@@ -37,7 +41,7 @@ theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄
     m₁ = m₂ := by
   have : m₁.toMulOneClass = m₂.toMulOneClass := MulOneClass.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) this
-  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+  let f : @MonoidHom M M m₁.toMulOne m₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.npow = m₂.npow := by
@@ -94,6 +98,14 @@ theorem CancelMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelMonoid M⦄
   CancelMonoid.toLeftCancelMonoid_injective <| LeftCancelMonoid.ext h_mul
 
 @[to_additive]
+theorem CancelMonoid.toRightCancelMonoid_injective {M : Type u} :
+    Function.Injective (@CancelMonoid.toRightCancelMonoid M) := by
+  intro m₁ m₂ h
+  apply CancelMonoid.ext
+  exact congrArg (fun m : Monoid M => (letI := m; HMul.hMul : M → M → M)) <|
+    congrArg (@RightCancelMonoid.toMonoid M) h
+
+@[to_additive]
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h
@@ -111,7 +123,7 @@ theorem DivInvMonoid.ext {M : Type*} ⦃m₁ m₂ : DivInvMonoid M⦄
     (h_inv : (letI := m₁; Inv.inv : M → M) = (letI := m₂; Inv.inv : M → M)) : m₁ = m₂ := by
   have h_mon := Monoid.ext h_mul
   have h₁ : m₁.one = m₂.one := congr_arg (·.one) h_mon
-  let f : @MonoidHom M M m₁.toMulOneClass m₂.toMulOneClass :=
+  let f : @MonoidHom M M m₁.toMulOne m₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   have : m₁.zpow = m₂.zpow := by
@@ -133,7 +145,7 @@ theorem Group.ext {G : Type*} ⦃g₁ g₂ : Group G⦄
     (h_mul : (letI := g₁; HMul.hMul : G → G → G) = (letI := g₂; HMul.hMul : G → G → G)) :
     g₁ = g₂ := by
   have h₁ : g₁.one = g₂.one := congr_arg (·.one) (Monoid.ext h_mul)
-  let f : @MonoidHom G G g₁.toMulOneClass g₂.toMulOneClass :=
+  let f : @MonoidHom G G g₁.toMulOne g₂.toMulOne :=
     @MonoidHom.mk _ _ (_) _ (@OneHom.mk _ _ (_) _ id h₁)
       (fun x y => congr_fun (congr_fun h_mul x) y)
   exact

@@ -3,13 +3,15 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Prime ideals in ℕ and ℤ
@@ -22,10 +24,12 @@ import Mathlib.RingTheory.PrincipalIdealDomain
 * `Ideal.isPrime_int_iff` : the prime ideals in ℤ are ⟨0⟩ and ⟨p⟩ (for prime `p`).
 -/
 
+@[expose] public section
+
 /-- The natural numbers form a local semiring. -/
 instance : IsLocalRing ℕ where
   isUnit_or_isUnit_of_add_one {a b} hab := by
-    have h : a = 1 ∨ b = 1 := by omega
+    have h : a = 1 ∨ b = 1 := by lia
     apply h.imp <;> simp +contextual
 
 open IsLocalRing Ideal
@@ -39,7 +43,7 @@ theorem Nat.maximalIdeal_eq_span_two_three : maximalIdeal ℕ = span {2, 3} := b
   obtain lt | lt := (mem_maximalIdeal_iff.mp h).lt_or_gt
   · obtain rfl := lt_one_iff.mp lt; exact zero_mem _
   exact mem_span_pair.mpr <|
-    exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le 2 3 n (by simp) (show 2 ≤ n by cutsat)
+    exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le 2 3 n (by simp) (show 2 ≤ n by lia)
 
 theorem Nat.one_mem_span_iff {s : Set ℕ} : 1 ∈ span s ↔ 1 ∈ s := by
   rw [← SetLike.mem_coe, ← not_iff_not]
@@ -55,7 +59,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
   refine .symm ⟨?_, fun h ↦ or_iff_not_imp_left.mpr fun h0 ↦ or_iff_not_imp_right.mpr fun hsp ↦
     (le_maximalIdeal h.ne_top).antisymm fun n hn ↦ ?_⟩
   · rintro (rfl | rfl | ⟨p, hp, rfl⟩)
-    · exact bot_prime
+    · exact isPrime_bot
     · exact (maximalIdeal.isMaximal ℕ).isPrime
     · rwa [span_singleton_prime (by simp [hp.ne_zero]), ← Nat.prime_iff]
   rw [← le_bot_iff, SetLike.not_le_iff_exists] at h0
@@ -63,7 +67,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
   let p := Nat.find h0
   have ⟨(hp : p ∈ P), (hp0 : p ≠ 0)⟩ := Nat.find_spec h0
   have : p ≠ 1 := ne_of_mem_of_not_mem hp P.one_notMem
-  have prime : p.Prime := Nat.prime_iff_not_exists_mul_eq.mpr <| .intro (by cutsat)
+  have prime : p.Prime := Nat.prime_iff_not_exists_mul_eq.mpr <| .intro (by lia)
     fun ⟨m, n, hm, hn, eq⟩ ↦ have := mul_ne_zero_iff.mp (eq ▸ hp0)
     (h.mem_or_mem (eq ▸ hp)).elim (Nat.find_min h0 hm ⟨·, this.1⟩) (Nat.find_min h0 hn ⟨·, this.2⟩)
   push_neg at hsp
@@ -74,7 +78,7 @@ theorem Ideal.isPrime_nat_iff {P : Ideal ℕ} :
   have : n ≠ 1 := Nat.mem_maximalIdeal_iff.mp hn
   have ⟨a, b, eq⟩ := Nat.exists_add_mul_eq_of_gcd_dvd_of_mul_pred_le p q _
     (by simp [prime.coprime_iff_not_dvd.mpr (Ideal.mem_span_singleton.not.mp hqp)])
-    (Nat.lt_pow_self (show 1 < n by cutsat)).le
+    (Nat.lt_pow_self (show 1 < n by lia)).le
   exact h.mem_of_pow_mem _ (eq ▸ add_mem (P.mul_mem_left _ hp) (P.mul_mem_left _ hq))
 
 theorem Ideal.map_comap_natCastRingHom_int {I : Ideal ℤ} :
@@ -91,7 +95,7 @@ theorem Ideal.isPrime_int_iff {P : Ideal ℤ} :
 theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
   refine le_antisymm (iSup_le fun s ↦ le_of_not_gt fun hs ↦ ?_) ?_
   · replace hs : 2 < s.length := ENat.coe_lt_coe.mp (WithBot.coe_lt_coe.mp hs)
-    let s := s.take ⟨3, by cutsat⟩
+    let s := s.take ⟨3, by lia⟩
     have : NeZero s.length := ⟨three_ne_zero⟩
     have h1 : ⊥ < (s 1).asIdeal := bot_le.trans_lt (s.step 0)
     obtain hmax | ⟨p, hp, hsp⟩ := (Ideal.isPrime_nat_iff.mp (s 1).2).resolve_left h1.ne'

@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 
 /-!
 # Subfields
@@ -42,6 +44,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 ## Tags
 subfield, subfields
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -144,6 +148,8 @@ instance : SetLike (Subfield K) K where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+instance : PartialOrder (Subfield K) := .ofSetLike (Subfield K) K
+
 instance : SubfieldClass (Subfield K) K where
   add_mem {s} := s.add_mem'
   zero_mem s := s.zero_mem'
@@ -180,7 +186,7 @@ protected def copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : Subfield K :=
     carrier := s
     inv_mem' := hs.symm ▸ S.inv_mem' }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : Subfield K) (s : Set K) (hs : s = ↑S) : (S.copy s hs : Set K) = s :=
   rfl
 
@@ -268,7 +274,6 @@ instance toDivisionRing (s : Subfield K) : DivisionRing s := fast_instance%
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ ↦ rfl) fun _ ↦ rfl
 
-/-- A subfield inherits a field structure -/
 instance toField {K} [Field K] (s : Subfield K) : Field s := fast_instance%
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
@@ -330,7 +335,7 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
     S.toSubring.subtype = S.subtype :=
   rfl
 
-/-! # Partial order -/
+/-! ### Partial order -/
 
 
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=

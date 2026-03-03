@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Order.Interval.Basic
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Order.Interval.Basic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Interval arithmetic
@@ -17,6 +19,8 @@ This file defines arithmetic operations on intervals and prove their correctness
 full precision operations. The essentials of float operations can be found
 in `Data.FP.Basic`. We have not yet integrated these with the rest of the library.
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -219,17 +223,15 @@ end Pow
 namespace NonemptyInterval
 
 @[to_additive]
-instance commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (NonemptyInterval α) :=
   NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
 
 end NonemptyInterval
 
 @[to_additive]
-instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     MulOneClass (Interval α) where
-  mul := (· * ·)
-  one := 1
   one_mul s :=
     (WithBot.map₂_coe_left _ _ _).trans <| by
       simp_rw [one_mul, ← Function.id_def, WithBot.map_id, id]
@@ -238,7 +240,7 @@ instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid
       simp_rw [mul_one, ← Function.id_def, WithBot.map_id, id]
 
 @[to_additive]
-instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance Interval.commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (Interval α) :=
   { Interval.mulOneClass with
     mul_comm := fun _ _ => Option.map₂_comm mul_comm
@@ -247,7 +249,7 @@ instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid 
 namespace NonemptyInterval
 
 @[to_additive]
-theorem coe_pow_interval [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+theorem coe_pow_interval [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
     (s : NonemptyInterval α) (n : ℕ) :
     ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
@@ -259,7 +261,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
+variable [CommMonoid α] [Preorder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
@@ -488,8 +490,6 @@ instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.addCommMonoid with
-    neg := Neg.neg
-    sub := Sub.sub
     sub_eq_add_neg := fun s t => by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact sub_eq_add_neg _ _
@@ -506,8 +506,6 @@ instance subtractionCommMonoid {α : Type u}
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.commMonoid with
-    inv := Inv.inv
-    div := (· / ·)
     div_eq_mul_inv := fun s t => by
       refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
       exact div_eq_mul_inv _ _
@@ -539,13 +537,11 @@ instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with
-    neg := Neg.neg
-    sub := Sub.sub
     sub_eq_add_neg := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (sub_eq_add_neg _ _)
-    neg_neg := by rintro (_ | s) <;> first |rfl|exact congr_arg WithBot.some (neg_neg _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (sub_eq_add_neg _ _)
+    neg_neg := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (neg_neg _)
     neg_add_rev := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (neg_add_rev _ _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (neg_add_rev _ _)
     neg_eq_of_add := by
       rintro (_ | s) (_ | t) h <;>
         first
@@ -557,13 +553,11 @@ instance subtractionCommMonoid {α : Type u}
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
   { Interval.commMonoid with
-    inv := Inv.inv
-    div := (· / ·)
     div_eq_mul_inv := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (div_eq_mul_inv _ _)
-    inv_inv := by rintro (_ | s) <;> first |rfl|exact congr_arg WithBot.some (inv_inv _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (div_eq_mul_inv _ _)
+    inv_inv := by rintro (_ | s) <;> first | rfl | exact congr_arg WithBot.some (inv_inv _)
     mul_inv_rev := by
-      rintro (_ | s) (_ | t) <;> first |rfl|exact congr_arg WithBot.some (mul_inv_rev _ _)
+      rintro (_ | s) (_ | t) <;> first | rfl | exact congr_arg WithBot.some (mul_inv_rev _ _)
     inv_eq_of_mul := by
       rintro (_ | s) (_ | t) h <;>
         first
@@ -647,6 +641,7 @@ theorem length_neg : ∀ s : Interval α, (-s).length = s.length
   | ⊥ => rfl
   | (s : NonemptyInterval α) => s.length_neg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem length_add_le : ∀ s t : Interval α, (s + t).length ≤ s.length + t.length
   | ⊥, _ => by simp
   | _, ⊥ => by simp
@@ -657,7 +652,7 @@ theorem length_sub_le : (s - t).length ≤ s.length + t.length := by
 
 theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
     (∑ i ∈ s, f i).length ≤ ∑ i ∈ s, (f i).length :=
-  Finset.le_sum_of_subadditive _ length_zero length_add_le _ _
+  Finset.le_sum_of_subadditive _ length_zero.le length_add_le _ _
 
 end Interval
 
@@ -668,7 +663,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
-def evalNonemptyIntervalLength : PositivityExt where
+meta def evalNonemptyIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
@@ -678,7 +673,7 @@ def evalNonemptyIntervalLength : PositivityExt where
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
-def evalIntervalLength : PositivityExt where
+meta def evalIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)

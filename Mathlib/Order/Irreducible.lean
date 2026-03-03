@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Irreducible and prime elements in an order
@@ -27,6 +29,8 @@ Both hold for all (non-minimal) elements in a linear order.
 * `exists_supIrred_decomposition`/`exists_infIrred_decomposition`: Decomposition into irreducibles
   in a well-founded semilattice.
 -/
+
+@[expose] public section
 
 
 open Finset OrderDual

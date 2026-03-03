@@ -3,8 +3,10 @@ Copyright (c) 2024 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
-import Mathlib.CategoryTheory.Sites.Limits
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+public import Mathlib.CategoryTheory.Sites.Limits
 
 /-!
 # Chosen finite products on sheaves
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Sites.Limits
 In this file, we put a `CartesianMonoidalCategory` instance on `A`-valued sheaves for a
 `GrothendieckTopology` whenever `A` has a `CartesianMonoidalCategory` instance.
 -/
+
+public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -43,14 +47,14 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 `CartesianMonoidalCategory` structure on `A`-valued sheaves. -/
 noncomputable instance cartesianMonoidalCategory : CartesianMonoidalCategory (Sheaf J A) :=
   .ofChosenFiniteProducts
-    ({cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _}
-      isLimit.lift f := ⟨toUnit f.pt.val⟩
-      isLimit.fac := by rintro _ ⟨⟨⟩⟩
-      isLimit.uniq x f h := Sheaf.hom_ext _ _ (toUnit_unique f.val _) })
+    ({ cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _ }
+       isLimit.lift f := ⟨toUnit f.pt.val⟩
+       isLimit.fac := by rintro _ ⟨⟨⟩⟩
+       isLimit.uniq x f h := Sheaf.hom_ext _ _ (toUnit_unique f.val _) })
   fun X Y ↦ {
     cone := BinaryFan.mk
         (P := { val := X.val ⊗ Y.val
-                cond := tensorProd_isSheaf J X Y})
+                cond := tensorProd_isSheaf J X Y })
         ⟨(fst _ _)⟩ ⟨(snd _ _)⟩
     isLimit.lift f := ⟨lift (BinaryFan.fst f).val (BinaryFan.snd f).val⟩
     isLimit.fac := by rintro s ⟨⟨j⟩⟩ <;> apply Sheaf.hom_ext <;> simp
@@ -77,6 +81,7 @@ variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
 end Sheaf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion from sheaves to presheaves is monoidal with respect to the Cartesian monoidal
 structures. -/
 noncomputable instance sheafToPresheafMonoidal : (sheafToPresheaf J A).Monoidal :=

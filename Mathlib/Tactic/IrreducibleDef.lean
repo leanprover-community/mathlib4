@@ -3,9 +3,12 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Data.Subtype
-import Mathlib.Tactic.Eqns
-import Mathlib.Util.TermReduce
+module
+
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Eqns
+public meta import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Util.TermReduce
 
 /-!
 # Irreducible definitions
@@ -27,6 +30,8 @@ example : frobnicate a 0 = a := by
 ```
 
 -/
+
+public meta section
 
 namespace Lean.Elab.Command
 

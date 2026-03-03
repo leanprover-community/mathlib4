@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.IsoIoo
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.UrysohnsBounded
+module
+
+public import Mathlib.Order.Interval.Set.IsoIoo
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.UrysohnsBounded
 
 /-!
 # Tietze extension theorem
@@ -36,6 +38,8 @@ topological space, then specialize them to the case `X = s : Set Y`, `e = (↑)`
 
 Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -257,7 +261,6 @@ theorem exists_extension_norm_eq_of_isClosedEmbedding' (f : X →ᵇ ℝ) (e : C
     refine
       (dist_le_of_le_geometric_of_tendsto₀ _ _ (by norm_num1)
         hg_dist hg_cau.tendsto_limUnder).trans_eq ?_
-    field_simp
     ring
   · rw [← hge]
     exact norm_compContinuous_le _ _
@@ -460,7 +463,7 @@ theorem exists_extension_forall_mem_of_isClosedEmbedding (f : C(X, ℝ)) {t : Se
   have h : ℝ ≃o Ioo (-1 : ℝ) 1 := orderIsoIooNegOneOne ℝ
   let F : X →ᵇ ℝ :=
     { toFun := (↑) ∘ h ∘ f
-      continuous_toFun := continuous_subtype_val.comp (h.continuous.comp f.continuous)
+      continuous_toFun := by fun_prop
       map_bounded' := isBounded_range_iff.1
         ((isBounded_Ioo (-1 : ℝ) 1).subset <| range_subset_iff.2 fun x => (h (f x)).2) }
   let t' : Set ℝ := (↑) ∘ h '' t

@@ -3,8 +3,10 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Mul
-import Mathlib.Analysis.Calculus.FDeriv.Comp
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
 
 /-!
 # Fréchet Derivative of `f x ^ n`, `n : ℕ`
@@ -22,6 +24,8 @@ see the module docstring of `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`.
 derivative, power
 -/
 
+public section
+
 variable {𝕜 𝔸 E : Type*}
 
 section NormedRing
@@ -38,7 +42,7 @@ private theorem aux (f : E → 𝔸) (f' : E →L[𝕜] 𝔸) (x : E) (n : ℕ) 
   simp only [Nat.pred_eq_sub_one, add_tsub_cancel_right, tsub_self, pow_zero, one_smul]
   simp_rw [smul_comm (_ : 𝔸) (_ : 𝔸ᵐᵒᵖ), smul_smul, ← pow_succ']
   congr! 5 with x hx
-  simp [Nat.lt_succ_iff] at hx
+  simp only [Finset.mem_range, Nat.lt_succ_iff] at hx
   rw [tsub_add_eq_add_tsub hx]
 
 theorem HasStrictFDerivAt.fun_pow' (h : HasStrictFDerivAt f f' x) (n : ℕ) :

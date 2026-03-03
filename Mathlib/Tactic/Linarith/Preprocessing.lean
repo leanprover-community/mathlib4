@@ -3,11 +3,15 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Zify
-import Mathlib.Tactic.CancelDenoms.Core
-import Mathlib.Control.Basic
-import Mathlib.Util.AtomM
+module
+
+public meta import Mathlib.Control.Basic
+public meta import Mathlib.Lean.Meta.Tactic.Rewrite
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Mathlib.Util.AtomM
+public import Mathlib.Tactic.CancelDenoms.Core
+public import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Zify
 
 /-!
 # Linarith preprocessing
@@ -24,6 +28,8 @@ A `GlobalPreprocessor` is a function `List Expr → TacticM (List Expr)`. Users 
 preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.defaultPreprocessors`
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith
 
@@ -99,7 +105,7 @@ open Zify
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
 or the negation thereof.
 -/
-partial def isNatProp (e : Expr) : MetaM Bool := succeeds <| do
+partial def isNatProp (e : Expr) : MetaM Bool := succeeds do
   let (_, _, .const ``Nat [], _, _) ← e.ineqOrNotIneq? | failure
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
@@ -161,7 +167,7 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    withNewMCtxDepth <| AtomM.run .reducible <| do
+    withNewMCtxDepth <| AtomM.run .reducible do
     let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Nat × Nat) lexOrd.compare) h => do
       try
         let (_, _, a, b) ← (← inferType h).ineq?
@@ -357,12 +363,13 @@ end nlinarith
 section removeNe
 /--
 `removeNe_aux` case splits on any proof `h : a ≠ b` in the input,
-turning it into `a < b ∨ a > b`.
+turning it into `a < b ∨ a > b`, provided the type has a `LinearOrder` instance.
 This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g hs => do
   let some (e, α, a, b) ← hs.findSomeM? (fun e : Expr => do
     let some (α, a, b) := (← instantiateMVars (← inferType e)).ne?' | return none
+    unless (← synthInstance? (← mkAppM ``LinearOrder #[α])).isSome do return none
     return some (e, α, a, b)) | return [(g, hs)]
   let [ng1, ng2] ← g.apply (← mkAppOptM ``Or.elim #[none, none, ← g.getType,
       ← mkAppOptM ``lt_or_gt_of_ne #[α, none, a, b, e]]) | failure
@@ -375,7 +382,7 @@ partial def removeNe_aux : MVarId → List Expr → MetaM (List Branch) := fun g
 
 /--
 `removeNe` case splits on any proof `h : a ≠ b` in the input, turning it into `a < b ∨ a > b`,
-by calling `linarith.removeNe_aux`.
+by calling `linarith.removeNe_aux`, provided the type has a `LinearOrder` instance.
 This produces `2^n` branches when there are `n` such hypotheses in the input.
 -/
 def removeNe : GlobalBranchingPreprocessor where
@@ -383,12 +390,23 @@ def removeNe : GlobalBranchingPreprocessor where
   transform := removeNe_aux
 end removeNe
 
+/-- Definition overridden in `Mathlib.Tactic.Linarith.NNRealPreprocessor`. -/
+initialize nnrealToRealTransform : IO.Ref (List Expr → MetaM (List Expr)) ← IO.mkRef pure
+
+/--
+If `h` is an equality or inequality between NNReals, `nnrealToReal` lifts this inequality to the
+Reals. It also adds the facts that the reals involved are nonnegative. To avoid adding the same
+nonnegativity facts many times, it is a global preprocessor. This preprocessor does nothing unless
+`Mathlib.Tactic.Linarith.NNRealPreprocessor` is imported -/
+def nnrealToReal : GlobalPreprocessor where
+  description := "move nnreals to reals"
+  transform l := do (← nnrealToRealTransform.get) l
 
 /--
 The default list of preprocessors, in the order they should typically run.
 -/
 def defaultPreprocessors : List GlobalBranchingPreprocessor :=
-  [filterComparisons, removeNegations, natToInt, strengthenStrictInt,
+  [filterComparisons, removeNegations, nnrealToReal, natToInt, strengthenStrictInt,
     compWithZero, cancelDenoms]
 
 /--

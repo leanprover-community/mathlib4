@@ -3,11 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.RCLike.TangentCone
-import Mathlib.Data.Bundle
-import Mathlib.Geometry.Manifold.ChartedSpace
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.RCLike.TangentCone
+public import Mathlib.Data.Bundle
+public import Mathlib.Geometry.Manifold.HasGroupoid
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -48,8 +50,8 @@ We define a few constructions of smooth manifolds:
 * the disjoint union of two manifolds (over the same charted space)
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
-* `modelWithCornersEuclideanHalfSpace n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
+* `modelWithCornersSelf n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace n)` for the model space used to
   define `n`-dimensional real manifolds without boundary
   (with notation `𝓡 n` in the scope `Manifold`)
 * `modelWithCornersEuclideanHalfSpace n :
@@ -108,7 +110,7 @@ vector space. With the drawback that the whole vector space itself (which is the
 example) is not directly a subtype of itself: the inclusion of `univ : Set E` in `Set E` would
 show up in the definition, instead of `id`.
 
-A good abstraction covering both cases it to have a vector
+A good abstraction covering both cases is to have a vector
 space `E` (with basic example the Euclidean space), a model space `H` (with basic example the upper
 half space), and an embedding of `H` into `E` (which can be the identity for `H = E`, or
 `Subtype.val` for manifolds with corners). We say that the pair `(E, H)` with their embedding is a
@@ -125,6 +127,8 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 `mfderiv 𝕜 f` (the field has to be explicit anyway, as some manifolds could be considered both as
 real and complex manifolds).
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -148,9 +152,10 @@ open scoped Manifold Topology ContDiff
 
 /-! ### Models with corners. -/
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /-- A structure containing information on the way a space `H` embeds in a
-model vector space `E` over the field `𝕜`. This is all what is needed to
+model vector space `E` over the field `𝕜`. This is all that is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
 We require that, when the field is `ℝ` or `ℂ`, the range is `ℝ`-convex, as this is what is needed
@@ -164,7 +169,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   source_eq : source = univ
   /-- To check this condition when the space already has a real normed space structure,
   use `Convex.convex_isRCLikeNormedField` which eliminates the `letI`s below, or the constructor
-  `ModelWithCorners.of_convex_range` -/
+  `ModelWithCorners.ofConvexRange` -/
   convex_range' :
     if h : IsRCLikeNormedField 𝕜 then
       letI := h.rclike 𝕜
@@ -180,8 +185,9 @@ lemma ModelWithCorners.range_eq_target {𝕜 E H : Type*} [NontriviallyNormedFie
     range I.toPartialEquiv = I.target := by
   rw [← I.image_source_eq_target, I.source_eq, image_univ.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a model with corners has full range, the `convex_range'` condition is satisfied. -/
-def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+def ModelWithCorners.ofTargetUniv (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) : ModelWithCorners 𝕜 E H where
@@ -198,12 +204,15 @@ def ModelWithCorners.of_target_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, htarget]
 
+@[deprecated (since := "2025-12-19")]
+alias ModelWithCorners.of_target_univ := ModelWithCorners.ofTargetUniv
+
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners, denoted as `𝓘(𝕜, E)` within the `Manifold` namespace. -/
 def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E :=
-  ModelWithCorners.of_target_univ 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
+  ModelWithCorners.ofTargetUniv 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
 
 @[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
 
@@ -295,6 +304,7 @@ theorem range_eq_univ_of_not_isRCLikeNormedField (h : ¬ IsRCLikeNormedField �
     range I = univ := by
   simpa [h] using I.convex_range'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a set is `ℝ`-convex for some normed space structure, then it is `ℝ`-convex for the
 normed space structure coming from an `IsRCLikeNormedField 𝕜`. Useful when constructing model
 spaces to avoid diamond issues when populating the field `convex_range'`. -/
@@ -312,7 +322,7 @@ lemma _root_.Convex.convex_isRCLikeNormedField [NormedSpace ℝ E] [h : IsRCLike
   · rw [← @algebraMap_smul (R := ℝ) (A := 𝕜), ← @algebraMap_smul (R := ℝ) (A := 𝕜)]
 
 /-- Construct a model with corners over `ℝ` from a continuous partial equiv with convex range. -/
-def of_convex_range
+def ofConvexRange
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
     (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : Convex ℝ φ.target)
     (hcont : Continuous φ) (hcont_inv : Continuous φ.symm) (hint : (interior φ.target).Nonempty) :
@@ -327,6 +337,10 @@ def of_convex_range
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [this, hint]
 
+@[deprecated (since := "2025-12-19")] noncomputable alias of_convex_range :=
+  ModelWithCorners.ofConvexRange
+
+set_option backward.isDefEq.respectTransparency false in
 theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI : RCLike 𝕜 := h.rclike
@@ -341,6 +355,7 @@ theorem convex_range [NormedSpace ℝ E] : Convex ℝ (range I) := by
       rfl
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, convex_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI := h.rclike 𝕜
@@ -349,6 +364,7 @@ protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
     simpa [h] using I.convex_range
   · simp [range_eq_univ_of_not_isRCLikeNormedField I h, uniqueDiffOn_univ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   by_cases h : IsRCLikeNormedField 𝕜
   · letI := h.rclike 𝕜
@@ -417,8 +433,8 @@ theorem uniqueDiffOn_preimage {s : Set H} (hs : IsOpen s) :
   rw [inter_comm]
   exact I.uniqueDiffOn.inter (hs.preimage I.continuous_invFun)
 
-theorem uniqueDiffOn_preimage_source {β : Type*} [TopologicalSpace β] {e : PartialHomeomorph H β} :
-    UniqueDiffOn 𝕜 (I.symm ⁻¹' e.source ∩ range I) :=
+theorem uniqueDiffOn_preimage_source {β : Type*} [TopologicalSpace β]
+    {e : OpenPartialHomeomorph H β} : UniqueDiffOn 𝕜 (I.symm ⁻¹' e.source ∩ range I) :=
   I.uniqueDiffOn_preimage e.open_source
 
 theorem uniqueDiffWithinAt_image {x : H} : UniqueDiffWithinAt 𝕜 (range I) (I x) :=
@@ -482,6 +498,7 @@ end
 
 section ModelWithCornersProd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
 corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
@@ -512,6 +529,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
 corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
 `ModelPi H`. -/
@@ -679,11 +697,11 @@ theorem contDiffGroupoid_le (h : m ≤ n) : contDiffGroupoid n I ≤ contDiffGro
   exact ContDiffOn.of_le hfs h
 
 /-- The groupoid of `0`-times continuously differentiable maps is just the groupoid of all
-partial homeomorphisms -/
+open partial homeomorphisms -/
 theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H := by
   apply le_antisymm le_top
   intro u _
-  -- we have to check that every partial homeomorphism belongs to `contDiffGroupoid 0 I`,
+  -- we have to check that every open partial homeomorphism belongs to `contDiffGroupoid 0 I`,
   -- by unfolding its definition
   change u ∈ contDiffGroupoid 0 I
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid, contDiffPregroupoid]
@@ -697,7 +715,7 @@ theorem contDiffGroupoid_zero_eq : contDiffGroupoid 0 I = continuousGroupoid H :
 -- FIXME: does this generalise to other groupoids? The argument is not specific
 -- to C^n functions, but uses something about the groupoid's property that is not easy to abstract.
 /-- Any change of coordinates with empty source belongs to `contDiffGroupoid`. -/
-lemma ContDiffGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
+lemma ContDiffGroupoid.mem_of_source_eq_empty (f : OpenPartialHomeomorph H H)
     (hf : f.source = ∅) : f ∈ contDiffGroupoid n I := by
   constructor
   · intro x ⟨hx, _⟩
@@ -709,37 +727,38 @@ lemma ContDiffGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
 
 include I in
 /-- Any change of coordinates with empty source belongs to `continuousGroupoid`. -/
-lemma ContinuousGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
+lemma ContinuousGroupoid.mem_of_source_eq_empty (f : OpenPartialHomeomorph H H)
     (hf : f.source = ∅) : f ∈ continuousGroupoid H := by
   rw [← contDiffGroupoid_zero_eq (I := I)]
   exact ContDiffGroupoid.mem_of_source_eq_empty f hf
 
-/-- An identity partial homeomorphism belongs to the `C^n` groupoid. -/
+/-- An identity open partial homeomorphism belongs to the `C^n` groupoid. -/
 theorem ofSet_mem_contDiffGroupoid {s : Set H} (hs : IsOpen s) :
-    PartialHomeomorph.ofSet s hs ∈ contDiffGroupoid n I := by
+    OpenPartialHomeomorph.ofSet s hs ∈ contDiffGroupoid n I := by
   rw [contDiffGroupoid, mem_groupoid_of_pregroupoid]
   suffices h : ContDiffOn 𝕜 n (I ∘ I.symm) (I.symm ⁻¹' s ∩ range I) by
     simp [h, contDiffPregroupoid]
   have : ContDiffOn 𝕜 n id (univ : Set E) := contDiff_id.contDiffOn
   exact this.congr_mono (fun x hx => I.right_inv hx.2) (subset_univ _)
 
-/-- The composition of a partial homeomorphism from `H` to `M` and its inverse belongs to
+/-- The composition of an open partial homeomorphism from `H` to `M` and its inverse belongs to
 the `C^n` groupoid. -/
-theorem symm_trans_mem_contDiffGroupoid (e : PartialHomeomorph M H) :
+theorem symm_trans_mem_contDiffGroupoid (e : OpenPartialHomeomorph M H) :
     e.symm.trans e ∈ contDiffGroupoid n I :=
-  haveI : e.symm.trans e ≈ PartialHomeomorph.ofSet e.target e.open_target :=
-    PartialHomeomorph.symm_trans_self _
+  haveI : e.symm.trans e ≈ OpenPartialHomeomorph.ofSet e.target e.open_target :=
+    OpenPartialHomeomorph.symm_trans_self _
   StructureGroupoid.mem_of_eqOnSource _ (ofSet_mem_contDiffGroupoid e.open_target) this
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
 
-/-- The product of two `C^n` partial homeomorphisms is `C^n`. -/
+/-- The product of two `C^n` open partial homeomorphisms is `C^n`. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-    {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid n I)
-    (he' : e' ∈ contDiffGroupoid n I') : e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
+    {e : OpenPartialHomeomorph H H} {e' : OpenPartialHomeomorph H' H'}
+    (he : e ∈ contDiffGroupoid n I) (he' : e' ∈ contDiffGroupoid n I') :
+    e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
   obtain ⟨he, he_symm⟩ := he
   obtain ⟨he', he'_symm⟩ := he'
-  constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
+  constructor <;> simp only [PartialEquiv.prod_source, OpenPartialHomeomorph.prod_toPartialEquiv,
     contDiffPregroupoid]
   · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
@@ -788,7 +807,7 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
     [TopologicalSpace M] [ChartedSpace H M]
-    (h : ∀ e e' : PartialHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
+    (h : ∀ e e' : OpenPartialHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
       ContDiffOn 𝕜 n (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
     IsManifold I n M where
   compatible := by
@@ -800,9 +819,6 @@ instance instIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] 
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} : IsManifold I n H :=
   { hasGroupoid_model_space _ _ with }
-
-@[deprecated (since := "2025-04-22")]
-alias intIsManifoldModelSpace := instIsManifoldModelSpace
 
 end IsManifold
 
@@ -829,10 +845,15 @@ class _root_.ENat.LEInfty (m : WithTop ℕ∞) where
 
 open ENat
 
+instance (n : ℕ∞) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+
 instance (n : ℕ) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+
 instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : WithTop ℕ∞) :=
   inferInstanceAs (LEInfty (n : WithTop ℕ∞))
+
 instance : LEInfty (1 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((1 : ℕ) : WithTop ℕ∞))
+
 instance : LEInfty (0 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((0 : ℕ) : WithTop ℕ∞))
 
 instance {a : WithTop ℕ∞} [IsManifold I ∞ M] [h : LEInfty a] :
@@ -862,6 +883,10 @@ model with corners `I`. -/
 def maximalAtlas :=
   (contDiffGroupoid n I).maximalAtlas M
 
+lemma mem_maximalAtlas_iff {e : OpenPartialHomeomorph M H} :
+    e ∈ maximalAtlas I n M ↔ e ∈ (contDiffGroupoid n I).maximalAtlas M := by
+  rfl
+
 theorem subset_maximalAtlas [IsManifold I n M] : atlas H M ⊆ maximalAtlas I n M :=
   StructureGroupoid.subset_maximalAtlas _
 
@@ -869,8 +894,9 @@ theorem chart_mem_maximalAtlas [IsManifold I n M] (x : M) :
     chartAt H x ∈ maximalAtlas I n M :=
   StructureGroupoid.chart_mem_maximalAtlas _ x
 
-theorem compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
-    (he' : e' ∈ maximalAtlas I n M) : e.symm.trans e' ∈ contDiffGroupoid n I :=
+theorem compatible_of_mem_maximalAtlas {e e' : OpenPartialHomeomorph M H}
+    (he : e ∈ maximalAtlas I n M) (he' : e' ∈ maximalAtlas I n M) :
+    e.symm.trans e' ∈ contDiffGroupoid n I :=
   StructureGroupoid.compatible_of_mem_maximalAtlas he he'
 
 lemma maximalAtlas_subset_of_le {m n : WithTop ℕ∞} (h : m ≤ n) :
@@ -885,7 +911,7 @@ instance empty [IsEmpty M] : IsManifold I n M := by
   set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I
   -- Since `M` is empty, the condition about compatibility of transition maps is vacuous.
   have : (e.symm ≫ₕ e').source = ∅ := calc (e.symm ≫ₕ e').source
-    _ = (e.symm.source) ∩ e.symm ⁻¹' e'.source := by rw [← PartialHomeomorph.trans_source]
+    _ = (e.symm.source) ∩ e.symm ⁻¹' e'.source := by rw [← OpenPartialHomeomorph.trans_source]
     _ = (e.symm.source) ∩ e.symm ⁻¹' ∅ := by rw [eq_empty_of_isEmpty (e'.source)]
     _ = (e.symm.source) ∩ ∅ := by rw [preimage_empty]
     _ = ∅ := inter_empty e.symm.source
@@ -906,6 +932,7 @@ theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
 attribute [local instance] ChartedSpace.of_discreteTopology in
 example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
@@ -916,10 +943,30 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     IsManifold (I.prod I') n (M × M') where
   compatible := by
     rintro f g ⟨f1, hf1, f2, hf2, rfl⟩ ⟨g1, hg1, g2, hg2, rfl⟩
-    rw [PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
+    rw [OpenPartialHomeomorph.prod_symm, OpenPartialHomeomorph.prod_trans]
     have h1 := (contDiffGroupoid n I).compatible hf1 hg1
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
+
+section
+
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*}
+  [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {n : WithTop ℕ∞}
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+
+set_option backward.isDefEq.respectTransparency false in
+lemma mem_maximalAtlas_prod [IsManifold I n M] [IsManifold I' n M']
+    {e : OpenPartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
+    {e' : OpenPartialHomeomorph M' H'} (he' : e' ∈ maximalAtlas I' n M') :
+    e.prod e' ∈ maximalAtlas (I.prod I') n (M × M') := by
+  simp only [mem_maximalAtlas_iff]
+  rintro e'' ⟨f, hf, f', hf', rfl⟩
+  rw [OpenPartialHomeomorph.prod_symm_trans_prod,
+    OpenPartialHomeomorph.prod_symm_trans_prod]
+  constructor <;>
+    apply contDiffGroupoid_prod <;> grind [compatible_of_mem_maximalAtlas, subset_maximalAtlas]
+
+end
 
 section DisjointUnion
 
@@ -927,7 +974,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   [hM : IsManifold I n M] [hM' : IsManifold I n M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
-is a `C^n` manifold modeled on `(E, H)`. -/
+is a `C^n` manifold modelled on `(E, H)`. -/
 instance disjointUnion : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
     obtain (h | h) := isEmpty_or_nonempty H
@@ -953,10 +1000,10 @@ end DisjointUnion
 
 end IsManifold
 
-theorem PartialHomeomorph.isManifold_singleton
+theorem OpenPartialHomeomorph.isManifold_singleton
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
-    {M : Type*} [TopologicalSpace M] (e : PartialHomeomorph M H) (h : e.source = Set.univ) :
+    {M : Type*} [TopologicalSpace M] (e : OpenPartialHomeomorph M H) (h : e.source = Set.univ) :
     @IsManifold 𝕜 _ E _ _ H _ I n M _ (e.singletonChartedSpace h) :=
   @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid n I)
@@ -966,7 +1013,7 @@ theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
     {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H} (h : IsOpenEmbedding f) :
     @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
-  (h.toPartialHomeomorph f).isManifold_singleton (by simp)
+  (h.toOpenPartialHomeomorph f).isManifold_singleton (by simp)
 
 namespace TopologicalSpace.Opens
 

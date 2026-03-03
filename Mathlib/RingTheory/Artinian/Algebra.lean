@@ -3,9 +3,11 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.RingTheory.Artinian.Ring
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Algebras over Artinian rings
@@ -13,13 +15,16 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 In this file we collect results about algebras over Artinian rings.
 -/
 
+public section
+
 namespace IsArtinianRing
 
 variable {R A : Type*}
-variable [CommRing R] [IsArtinianRing R] [CommRing A] [Algebra R A]
+variable [CommRing R] [IsArtinianRing R] [Ring A] [Algebra R A]
 
 open nonZeroDivisors
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In an `R`-algebra over an Artinian ring `R`, if an element is integral and
 is not a zero divisor, then it is a unit. -/
 theorem isUnit_of_isIntegral_of_nonZeroDivisor {a : A}
@@ -28,7 +33,7 @@ theorem isUnit_of_isIntegral_of_nonZeroDivisor {a : A}
   let b : B := ⟨a, Algebra.self_mem_adjoin_singleton R a⟩
   haveI : Module.Finite R B := Algebra.finite_adjoin_simple_of_isIntegral hi
   haveI : IsArtinianRing B := isArtinian_of_tower R inferInstance
-  have hinj : Function.Injective (B.subtype) := Subtype.val_injective
+  have hinj : Function.Injective B.subtype := Subtype.val_injective
   have hb : b ∈ B⁰ := comap_nonZeroDivisors_le_of_injective hinj ha
   (isUnit_of_mem_nonZeroDivisors hb).map B.subtype
 

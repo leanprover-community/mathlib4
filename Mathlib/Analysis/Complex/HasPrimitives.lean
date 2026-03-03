@@ -3,8 +3,10 @@ Copyright (c) 2024 Ian Jauslin and Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Jauslin, Alex Kontorovich, Oliver Nash
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Complex.Convex
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.Convex
 
 /-!
 # Primitives of Holomorphic Functions
@@ -26,6 +28,8 @@ segment in the disk), and compute its derivative.
 
 TODO: Extend to holomorphic functions on simply connected domains.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -111,6 +115,11 @@ In complex variable theory, this is also referred to as "having a primitive". -/
 def IsExactOn (f : ℂ → E) (U : Set ℂ) : Prop :=
   ∃ g, ∀ z ∈ U, HasDerivAt g (f z) z
 
+lemma IsExactOn.with_val_at {f : ℂ → E} {s : Set ℂ} (h : IsExactOn f s) (x₀ : ℂ) (y : E) :
+    ∃ g, g x₀ = y ∧ ∀ x ∈ s, HasDerivAt g (f x) x := by
+  obtain ⟨η, hη⟩ := h
+  use fun z ↦ η z - η x₀ + y, by simp, by simpa using hη
+
 variable {c : ℂ} {r : ℝ} {f : ℂ → E}
 
 lemma IsConservativeOn.mono {U V : Set ℂ} (h : U ⊆ V) (hf : IsConservativeOn f V) :
@@ -136,6 +145,7 @@ section ContinuousOnBall
 variable (f_cont : ContinuousOn f (ball c r)) {z : ℂ} (hz : z ∈ ball c r)
 include f_cont hz
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 omit [CompleteSpace E] in
 /-- If a function `f` `IsConservativeOn` on a disk of center `c`, then for points `z` in this disk,
 the wedge integral from `c` to `z` is additive under a detour through a nearby point `w`. -/
@@ -196,7 +206,7 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
   have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s :=
-    f_cont.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn <|
+    f_cont.comp ((continuous_add_const _).comp continuous_ofReal).continuousOn <|
       fun _ ↦ mem_ball_re_aux
   have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re :=
     ContinuousOn.intervalIntegrable <| f_contOn.mono <| by simpa
@@ -204,8 +214,7 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
     f_contOn.stronglyMeasurableAtFilter isOpen_Ioo _ zRe_mem_s
   have int3 : ContinuousAt (fun (x : ℝ) ↦ f (x + z.im * I)) z.re :=
     isOpen_Ioo.continuousOn_iff.mp f_contOn zRe_mem_s
-  simpa [HasDerivAt, HasDerivAtFilter, hasFDerivAtFilter_iff_isLittleO] using
-    intervalIntegral.integral_hasDerivAt_right int1 int2 int3
+  simpa using intervalIntegral.integral_hasDerivAt_right int1 int2 int3 |>.isLittleO
 
 /-- The vertical integral of `f` from `w.re + z.im * I` to `w` is equal to `(w - z).im * f z`
   up to `o(w - z)`, as `w` tends to `z`. -/
@@ -281,5 +290,24 @@ theorem isConservativeOn_and_continuousOn_iff_isDifferentiableOn
 theorem _root_.DifferentiableOn.isExactOn_ball (hf : DifferentiableOn ℂ f (ball c r)) :
     IsExactOn f (ball c r) :=
   hf.isConservativeOn.isExactOn_ball hf.continuousOn
+
+/--
+**Morera's theorem for the complex plane** A continuous function on `ℂ` whose integrals on
+rectangles vanish, has primitives.
+-/
+theorem IsConservativeOn.isExactOn_univ (h₁ : Continuous f) (h₂ : IsConservativeOn f univ) :
+    IsExactOn f univ := by
+  use (wedgeIntegral 0 · f)
+  intro z _
+  have h₃ : IsConservativeOn f (ball 0 (‖z‖ + 1)) := h₂.mono (subset_univ _)
+  exact h₃.hasDerivAt_wedgeIntegral (by fun_prop) (by aesop)
+
+/--
+**Morera's theorem for the complex plane** A holomorphic function on `ℂ` has
+primitives.
+-/
+theorem _root_.Differentiable.isExactOn_univ (hf : Differentiable ℂ f) : IsExactOn f univ := by
+  apply IsConservativeOn.isExactOn_univ hf.continuous
+    ((isConservativeOn_and_continuousOn_iff_isDifferentiableOn isOpen_univ).2 hf.differentiableOn).1
 
 end Complex

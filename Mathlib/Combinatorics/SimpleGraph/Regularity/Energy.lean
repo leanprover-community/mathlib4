@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Combinatorics.SimpleGraph.Density
-import Mathlib.Data.Rat.BigOperators
+module
+
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.SimpleGraph.Density
+public import Mathlib.Data.Rat.BigOperators
 
 /-!
 # Energy of a partition
@@ -21,6 +23,8 @@ has an energy greater than the previous one plus some fixed constant.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset

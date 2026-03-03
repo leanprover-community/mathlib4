@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
@@ -32,6 +34,8 @@ While the statements of these lemmas are defeq, we repeat them here due to them 
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
 -/
+
+@[expose] public section
 
 assert_not_exists GroupWithZero
 
@@ -118,7 +122,8 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive /-- The additive submonoid with every element negated. -/]
+@[to_additive (attr := instance_reducible)
+  /-- The additive submonoid with every element negated. -/]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
@@ -136,7 +141,7 @@ theorem mem_inv {g : G} {S : Submonoid G} : g ∈ S⁻¹ ↔ g⁻¹ ∈ S :=
   Iff.rfl
 
 /-- Inversion is involutive on submonoids. -/
-@[to_additive /-- Inversion is involutive on additive submonoids. -/]
+@[to_additive (attr := instance_reducible) /-- Inversion is involutive on additive submonoids. -/]
 def involutiveInv : InvolutiveInv (Submonoid G) :=
   SetLike.coe_injective.involutiveInv _ fun _ => rfl
 
@@ -205,18 +210,19 @@ variable [Monoid α] [MulDistribMulAction α M]
 /-- The action on a submonoid corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction α (Submonoid M) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)
   one_smul S := by
     change S.map _ = S
     simpa only [map_one] using S.map_id
   mul_smul _ _ S :=
-    (congr_arg (fun f : Monoid.End M => S.map f) (MonoidHom.map_mul _ _ _)).trans
+    (congr_arg (fun f : Monoid.End M => S.map f) (map_mul _ _ _)).trans
       (S.map_map _ _).symm
 
 scoped[Pointwise] attribute [instance] Submonoid.pointwiseMulAction
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (a : α) (S : Submonoid M) : ↑(a • S) = a • (S : Set M) :=
   rfl
 

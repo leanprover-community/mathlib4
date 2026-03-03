@@ -3,9 +3,11 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Combinatorics.Enumerative.Partition
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 
 /-!
 # Symmetric Polynomials and Elementary Symmetric Polynomials
@@ -52,6 +54,8 @@ As in other polynomial files, we typically use the notation:
 + `φ ψ : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 open Equiv (Perm)

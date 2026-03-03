@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Topology.Algebra.NonUnitalAlgebra
-import Mathlib.Topology.Algebra.Star
+module
+
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
+public import Mathlib.Topology.Algebra.NonUnitalAlgebra
+public import Mathlib.Topology.Algebra.Star
 
 /-!
 # Non-unital topological star (sub)algebras
@@ -21,6 +23,8 @@ Any non-unital star subalgebra of a non-unital topological star algebra is itsel
 non-unital topological star algebra, and its closure is again a non-unital star subalgebra.
 
 -/
+
+@[expose] public section
 
 namespace NonUnitalStarSubalgebra
 
@@ -50,6 +54,11 @@ theorem topologicalClosure_minimal (s : NonUnitalStarSubalgebra R A)
     {t : NonUnitalStarSubalgebra R A} (h : s ≤ t) (ht : IsClosed (t : Set A)) :
     s.topologicalClosure ≤ t :=
   closure_minimal h ht
+
+@[gcongr]
+theorem topologicalClosure_mono {s t : NonUnitalStarSubalgebra R A} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  closure_mono h
 
 /-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.

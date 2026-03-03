@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Basic
+module
+
+public import Mathlib.Data.ENNReal.Basic
 
 /-!
 # Maps between real and extended non-negative real numbers
@@ -15,7 +17,7 @@ files.
 
 This file provides a `positivity` extension for `ENNReal.ofReal`.
 
-# Main theorems
+## Main statements
 
   - `trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal`: often used for `WithLp` and `lp`
   - `dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal`: often used for `WithLp` and `lp`
@@ -23,6 +25,8 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
     indexed or set infima and suprema in `ℝ`, `ℝ≥0` and `ℝ≥0∞`. This is especially useful because
     `ℝ≥0∞` is a complete lattice.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -100,12 +104,14 @@ theorem toNNReal_lt_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal < b.
 theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
   @toNNReal_coe p ▸ toNNReal_strict_mono coe_ne_top h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim
     (fun h => by simp only [h, ENNReal.toReal_mono hp h, max_eq_right]) fun h => by
     simp only [h, ENNReal.toReal_mono hr h, max_eq_left]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_min {a b : ℝ≥0∞} (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (min a b) = min (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim (fun h => by simp only [h, ENNReal.toReal_mono hp h, min_eq_left])
@@ -147,6 +153,10 @@ theorem ofReal_le_ofReal_iff {p q : ℝ} (h : 0 ≤ q) :
 lemma ofReal_le_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p ≤ .ofReal q ↔ p ≤ q ∨ p ≤ 0 :=
   coe_le_coe.trans Real.toNNReal_le_toNNReal_iff'
 
+@[simp, norm_cast]
+lemma ofReal_le_coe {a : ℝ} {b : ℝ≥0} : ENNReal.ofReal a ≤ b ↔ a ≤ b := by
+  simp [← ofReal_le_ofReal_iff]
+
 lemma ofReal_lt_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p < .ofReal q ↔ p < q ∧ 0 < q :=
   coe_lt_coe.trans Real.toNNReal_lt_toNNReal_iff'
 
@@ -179,7 +189,7 @@ theorem ofReal_eq_zero {p : ℝ} : ENNReal.ofReal p = 0 ↔ p ≤ 0 := by simp [
   ofReal_mono.map_max
 
 theorem ofReal_ne_zero_iff {r : ℝ} : ENNReal.ofReal r ≠ 0 ↔ 0 < r := by
-  rw [← zero_lt_iff, ENNReal.ofReal_pos]
+  rw [← pos_iff_ne_zero, ENNReal.ofReal_pos]
 
 @[simp]
 theorem zero_eq_ofReal {p : ℝ} : 0 = ENNReal.ofReal p ↔ p ≤ 0 :=
@@ -261,6 +271,9 @@ theorem ofReal_lt_iff_lt_toReal {a : ℝ} {b : ℝ≥0∞} (ha : 0 ≤ a) (hb : 
   lift b to ℝ≥0 using hb
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.toNNReal_lt_iff_lt_coe ha
 
+@[simp] lemma coe_lt_ofReal {a : ℝ≥0} {b : ℝ} : a < ENNReal.ofReal b ↔ a < b := by
+  simp [ENNReal.ofReal, Real.lt_toNNReal_iff_coe_lt]
+
 theorem ofReal_lt_coe_iff {a : ℝ} {b : ℝ≥0} (ha : 0 ≤ a) : ENNReal.ofReal a < b ↔ a < b :=
   (ofReal_lt_iff_lt_toReal ha coe_ne_top).trans <| by rw [coe_toReal]
 
@@ -308,7 +321,7 @@ theorem toNNReal_mul_top (a : ℝ≥0∞) : ENNReal.toNNReal (a * ∞) = 0 := by
 theorem toNNReal_top_mul (a : ℝ≥0∞) : ENNReal.toNNReal (∞ * a) = 0 := by simp
 
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/
-def toNNRealHom : ℝ≥0∞ →*₀ ℝ≥0 where
+noncomputable def toNNRealHom : ℝ≥0∞ →*₀ ℝ≥0 where
   toFun := ENNReal.toNNReal
   map_one' := toNNReal_coe _
   map_mul' _ _ := toNNReal_mul
@@ -319,7 +332,7 @@ theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal 
   toNNRealHom.map_pow a n
 
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
-def toRealHom : ℝ≥0∞ →*₀ ℝ :=
+noncomputable def toRealHom : ℝ≥0∞ →*₀ ℝ :=
   (NNReal.toRealHom : ℝ≥0 →*₀ ℝ).comp toNNRealHom
 
 @[simp]
@@ -343,10 +356,7 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   rw [mul_comm]
   exact toReal_mul_top _
 
-theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
-  lift a to ℝ≥0 using ha
-  lift b to ℝ≥0 using hb
-  simp only [coe_inj, NNReal.coe_inj, coe_toReal]
+@[deprecated (since := "2025-11-07")] alias toReal_eq_toReal := toReal_eq_toReal_iff'
 
 protected theorem trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal := by
   simpa only [or_iff_not_imp_left] using toReal_pos
@@ -361,7 +371,6 @@ protected theorem trichotomy₂ {p q : ℝ≥0∞} (hpq : p ≤ q) :
   · simpa using q.trichotomy
   rcases eq_or_lt_of_le (le_top : q ≤ ∞) with (rfl | hq)
   · simpa using p.trichotomy
-  repeat' right
   have hq' : 0 < q := lt_of_lt_of_le hp hpq
   have hp' : p < ∞ := lt_of_le_of_lt hpq hq
   simp [ENNReal.toReal_mono hq.ne hpq, ENNReal.toReal_pos_iff, hp, hp', hq', hq]
@@ -379,6 +388,7 @@ theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal �
 
 end Real
 
+@[deprecated max_eq_zero_iff (since := "2025-10-25")]
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
 
@@ -390,7 +400,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
-def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a

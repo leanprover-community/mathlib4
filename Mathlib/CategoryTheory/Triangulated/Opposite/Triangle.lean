@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Basic
-import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Basic
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 
 /-!
 # Triangles in the opposite category of a (pre)triangulated category
@@ -23,14 +25,17 @@ between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Pretriangulated
 
 open Category Limits Preadditive ZeroObject Opposite
 
-variable (C : Type*) [Category C] [HasShift C ℤ]
+variable (C : Type*) [Category* C] [HasShift C ℤ]
 
 namespace TriangleOpEquivalence
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `C` to the triangle
 `op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` in `Cᵒᵖ` (without introducing signs). -/
 @[simps]
@@ -50,6 +55,7 @@ noncomputable def functor : (Triangle C)ᵒᵖ ⥤ Triangle Cᵒᵖ where
           opShiftFunctorEquivalence_counitIso_inv_naturality_assoc]
         rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor which sends a triangle `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` in `Cᵒᵖ` to the triangle
 `Z.unop ⟶ Y.unop ⟶ X.unop ⟶ Z.unop⟦1⟧` in `C` (without introducing signs). -/
 @[simps]
@@ -68,6 +74,7 @@ noncomputable def inverse : Triangle Cᵒᵖ ⥤ (Triangle C)ᵒᵖ where
           ← op_comp_assoc, ← Functor.map_comp, ← unop_comp, ← φ.comm₃,
           unop_comp, Functor.map_comp, op_comp, assoc]) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The unit isomorphism of the
 equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
 @[simps!]
@@ -78,6 +85,7 @@ noncomputable def unitIso : 𝟭 _ ≅ functor C ⋙ inverse C :=
         (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))))
     (fun {T₁ T₂} f => Quiver.Hom.unop_inj (by cat_disch))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit isomorphism of the
 equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
 @[simps!]
@@ -97,7 +105,7 @@ noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
 end TriangleOpEquivalence
 
 /-- An anti-equivalence between the categories of triangles in `C` and in `Cᵒᵖ`.
-A triangle in `Cᵒᵖ` shall be distinguished iff it correspond to a distinguished
+A triangle in `Cᵒᵖ` shall be distinguished iff it corresponds to a distinguished
 triangle in `C` via this equivalence. -/
 @[simps]
 noncomputable def triangleOpEquivalence :

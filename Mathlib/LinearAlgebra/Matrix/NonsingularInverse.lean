@@ -3,13 +3,15 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Lu-Ming Zhang
 -/
-import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.Data.Matrix.Invertible
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Nonsingular inverses
@@ -51,6 +53,8 @@ The rest of the results in the file are then about `A⁻¹`
 
 matrix inverse, cramer, cramer's rule, adjugate
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -190,9 +194,6 @@ theorem nonsing_inv_eq_ringInverse : A⁻¹ = Ring.inverse A := by
   · have h := mt A.isUnit_iff_isUnit_det.mp h_det
     rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit A h_det]
 
-@[deprecated (since := "2025-04-22")]
-alias nonsing_inv_eq_ring_inverse := nonsing_inv_eq_ringInverse
-
 theorem transpose_nonsing_inv : A⁻¹ᵀ = Aᵀ⁻¹ := by
   rw [inv_def, inv_def, transpose_smul, det_transpose, adjugate_transpose]
 
@@ -260,12 +261,12 @@ theorem inv_mul_cancel_right_of_invertible (B : Matrix m n α) [Invertible A] : 
 theorem inv_mul_cancel_left_of_invertible (B : Matrix n m α) [Invertible A] : A⁻¹ * (A * B) = B :=
   nonsing_inv_mul_cancel_left A B (isUnit_det_of_invertible A)
 
-theorem inv_mul_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
+theorem inv_mul_eq_iff_eq_mul_of_invertible (A : Matrix n n α) [Invertible A] (B C : Matrix n m α) :
     A⁻¹ * B = C ↔ B = A * C :=
   ⟨fun h => by rw [← h, mul_inv_cancel_left_of_invertible],
    fun h => by rw [h, inv_mul_cancel_left_of_invertible]⟩
 
-theorem mul_inv_eq_iff_eq_mul_of_invertible (A B C : Matrix n n α) [Invertible A] :
+theorem mul_inv_eq_iff_eq_mul_of_invertible (A : Matrix n n α) [Invertible A] (B C : Matrix m n α) :
     B * A⁻¹ = C ↔ B = C * A :=
   ⟨fun h => by rw [← h, inv_mul_cancel_right_of_invertible],
    fun h => by rw [h, mul_inv_cancel_right_of_invertible]⟩
@@ -287,6 +288,9 @@ lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x =
 
 lemma mul_left_inj_of_invertible [Invertible A] {x y : Matrix m n α} : x * A = y * A ↔ x = y :=
   (mul_left_injective_of_invertible A).eq_iff
+
+lemma IsSymm.inv {A : Matrix n n α} (hA : A.IsSymm) : A⁻¹.IsSymm :=
+  hA.adjugate.smul _
 
 end Inv
 
@@ -335,11 +339,11 @@ variable [DecidableEq m] {R K : Type*} [CommRing R] [Field K] [Fintype m]
 
 theorem vecMul_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.vecMul ↔ IsUnit A := by
-  rw [vecMul_surjective_iff_exists_left_inverse, exists_left_inverse_iff_isUnit]
+  rw [vecMul_surjective_iff_exists_left_inverse, isUnit_iff_exists_inv']
 
 theorem mulVec_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.mulVec ↔ IsUnit A := by
-  rw [mulVec_surjective_iff_exists_right_inverse, exists_right_inverse_iff_isUnit]
+  rw [mulVec_surjective_iff_exists_right_inverse, isUnit_iff_exists_inv]
 
 theorem vecMul_injective_iff_isUnit {A : Matrix m m K} :
     Function.Injective A.vecMul ↔ IsUnit A := by
@@ -414,7 +418,7 @@ theorem det_nonsing_inv : A⁻¹.det = Ring.inverse A.det := by
   · rw [Ring.inverse_non_unit _ h, nonsing_inv_apply_not_isUnit _ h, det_zero ‹_›]
 
 theorem isUnit_nonsing_inv_det (h : IsUnit A.det) : IsUnit A⁻¹.det :=
-  isUnit_of_mul_eq_one _ _ (A.det_nonsing_inv_mul_det h)
+  .of_mul_eq_one _ (A.det_nonsing_inv_mul_det h)
 
 @[simp]
 theorem nonsing_inv_nonsing_inv (h : IsUnit A.det) : A⁻¹⁻¹ = A :=
@@ -484,6 +488,7 @@ end InvEqInv
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
   rcases subsingleton_or_nontrivial α with ht | ht
@@ -493,7 +498,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
     subsingleton
   · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
     refine nonsing_inv_apply_not_isUnit _ ?_
-    simp
+    simp [det]
 
 noncomputable instance : InvOneClass (Matrix n n α) :=
   { Matrix.one, Matrix.inv with inv_one := inv_eq_left_inv (by simp) }
@@ -501,9 +506,11 @@ noncomputable instance : InvOneClass (Matrix n n α) :=
 theorem inv_smul (k : α) [Invertible k] (h : IsUnit A.det) : (k • A)⁻¹ = ⅟k • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A⁻¹ :=
   inv_eq_left_inv (by simp [h, smul_smul])
 
+set_option backward.isDefEq.respectTransparency false in
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
   refine inv_eq_left_inv ?_
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
@@ -588,7 +595,9 @@ section Woodbury
 variable [Fintype m] [DecidableEq m]
 variable (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
 
-/-- The **Woodbury Identity** (`⁻¹` version). -/
+/-- The **Woodbury Identity** (`⁻¹` version).
+
+See `add_mul_mul_inv_eq_sub'` for the binomial inverse theorem. -/
 theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C⁻¹ + V * A⁻¹ * U)) :
     (A + U * C * V)⁻¹ = A⁻¹ - A⁻¹ * U * (C⁻¹ + V * A⁻¹ * U)⁻¹ * V * A⁻¹ := by
   obtain ⟨_⟩ := hA.nonempty_invertible
@@ -598,6 +607,16 @@ theorem add_mul_mul_inv_eq_sub (hA : IsUnit A) (hC : IsUnit C) (hAC : IsUnit (C�
   letI := invertibleAddMulMul A U C V
   simp only [← invOf_eq_nonsing_inv]
   apply invOf_add_mul_mul
+
+/-- The **binomial inverse theorem** (variant of the Woodbury identity). -/
+theorem add_mul_mul_inv_eq_sub' (hA : IsUnit A) (h : IsUnit (C + C * V * A⁻¹ * U * C)) :
+    (A + U * C * V)⁻¹ = A⁻¹ - A⁻¹ * U * C * (C + C * V * A⁻¹ * U * C)⁻¹ * C * V * A⁻¹ := by
+  obtain ⟨_⟩ := hA.nonempty_invertible
+  obtain ⟨ih⟩ := h.nonempty_invertible
+  simp only [← invOf_eq_nonsing_inv] at ih
+  letI := invertibleAddMulMul' A U C V
+  simp only [← invOf_eq_nonsing_inv]
+  apply invOf_add_mul_mul'
 
 end Woodbury
 
