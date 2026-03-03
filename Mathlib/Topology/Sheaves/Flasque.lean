@@ -47,7 +47,28 @@ class IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) : Prop where
 namespace IsFlasque
 
 instance (priority := low) {C : Type v} [Category.{w} C] (F : Sheaf C X) [h : IsFlasque F]
-    {U V : Opens X} (i : U ⟶ V) : Epi (F.val.map i.op) := h.epi i
+namespace TopCat
+
+namespace Presheaf
+
+/-- A sheaf is flasque if all of the restriction morphisms are epimorphisms. -/
+class IsFlasque {C : Type v} [Category.{w} C] (F : Presheaf C X) : Prop where
+  epi : ∀{U V : Opens X} (i : U ⟶ V), Epi (F.map i.op)
+
+namespace IsFlasque
+
+instance (priority := low) {C : Type v} [Category.{w} C] (F : Presheaf C X) [h : IsFlasque F]
+    {U V : Opens X} (i : U ⟶ V) : Epi (F.map i.op) := h.epi i
+
+end IsFlasque
+
+end Presheaf
+
+namespace Sheaf
+
+abbrev IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) := Presheaf.IsFlasque F.val
+
+namespace IsFlasque
 
 variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.val.obj (op U))
 
