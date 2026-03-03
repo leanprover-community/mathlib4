@@ -6,6 +6,7 @@ Authors: Youheng Luo
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 
 /-!
@@ -37,9 +38,33 @@ variable (G k) in
 /-- A graph is `k`-edge-connected if any two vertices are `k`-edge-reachable. -/
 def IsEdgeConnected : Prop := ∀ u v, G.IsEdgeReachable k u v
 
+variable (G u v) in
+/-- The edge reachability number between two vertices. -/
+noncomputable def edgeReachability : ℕ∞ :=
+  ⨆ (k : ℕ) (_ : G.IsEdgeReachable k u v), (k : ℕ∞)
+
+variable (G) in
+/-- The edge connectivity number of a graph. -/
+noncomputable def edgeConnectivity : ℕ∞ :=
+  ⨆ (k : ℕ) (_ : G.IsEdgeConnected k), (k : ℕ∞)
+
 @[refl, simp] lemma IsEdgeReachable.refl (u : V) : G.IsEdgeReachable k u u := fun _ _ ↦ .rfl
 
 @[deprecated (since := "2026-01-06")] alias IsEdgeReachable.rfl := IsEdgeReachable.refl
+
+lemma le_edgeReachability (h : G.IsEdgeReachable k u v) : (k : ℕ∞) ≤ G.edgeReachability u v :=
+  le_iSup_of_le k <| le_iSup_of_le h le_rfl
+
+lemma le_edgeConnectivity (h : G.IsEdgeConnected k) : (k : ℕ∞) ≤ G.edgeConnectivity :=
+  le_iSup_of_le k <| le_iSup_of_le h le_rfl
+
+lemma edgeConnectivity_le_edgeReachability (u v : V) :
+    G.edgeConnectivity ≤ G.edgeReachability u v := by
+  refine iSup_le ?_
+  intro k
+  refine iSup_le ?_
+  intro hk
+  exact G.le_edgeReachability (u := u) (v := v) (hk u v)
 
 @[symm]
 lemma IsEdgeReachable.symm (h : G.IsEdgeReachable k u v) : G.IsEdgeReachable k v u :=
