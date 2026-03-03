@@ -249,7 +249,7 @@ instance IsSelfAdjoint.instContinuousFunctionalCalculus :
 lemma IsSelfAdjoint.spectrum_nonempty {A : Type*} [Ring A] [StarRing A]
     [TopologicalSpace A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [Nontrivial A] {a : A} (ha : IsSelfAdjoint a) : (σ ℝ a).Nonempty :=
-  CFC.spectrum_nonempty ℝ a ha
+  ContinuousFunctionalCalculus.spectrum_nonempty a ha
 
 end SelfAdjointUnital
 
@@ -324,7 +324,7 @@ open NNReal in
 lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [LE A]
     [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
     [Nontrivial A] {a : A} (ha : 0 ≤ a) : (spectrum ℝ≥0 a).Nonempty :=
-  CFC.spectrum_nonempty ℝ≥0 a ha
+  ContinuousFunctionalCalculus.spectrum_nonempty a ha
 
 end Nonneg
 

@@ -144,7 +144,8 @@ lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨r, hr, hr_le⟩
     exact (hr.trans_le <| hr_le · ·)
-  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn (spectrum_nonempty ℝ a ha) continuousOn_id
+  · obtain ⟨r, hr, hr_min⟩ := h_cpct.exists_isMinOn
+      (ContinuousFunctionalCalculus.spectrum_nonempty a ha) continuousOn_id
     exact ⟨r, h _ hr, hr_min⟩
 
 section CStar_unital
