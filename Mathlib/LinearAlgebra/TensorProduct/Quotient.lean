@@ -271,6 +271,7 @@ variable {R : Type*} (A B : Type*) [CommRing R] [CommRing A] [Algebra R A]
 variable (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
 variable {N : Type*} [AddCommGroup N] [Module R N] [Module B N] [IsScalarTower R B N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- More linear version of `TensorProduct.tensorQuotientEquiv`. -/
 noncomputable def tensorQuotientEquiv (n : Submodule B N) :
     M ⊗[R] (N ⧸ n) ≃ₗ[A]
