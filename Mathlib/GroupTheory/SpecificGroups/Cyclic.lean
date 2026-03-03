@@ -787,7 +787,7 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     rw [← Nat.card_zmultiples]
     exact Nat.card_congr (Equiv.subtypeUnivEquiv surj).symm
   exact Int.quotientZMultiplesNatEquivZMod n |>.symm.trans <|
-    QuotientAddGroup.liftEquiv _ (φ := zmultiplesHom G g) surj kereq
+    QuotientAddGroup.quotientEquivOfSurjective _ (φ := zmultiplesHom G g) surj kereq
 
 /-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
 theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
