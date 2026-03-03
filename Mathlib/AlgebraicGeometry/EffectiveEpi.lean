@@ -54,7 +54,7 @@ namespace EffectiveEpiConstruction
 whose two pullbacks to `X ×[Y] X` agree descends to a function `u : ↥Y → ↥S` (as types) with
 `u ∘ ⇑π.base.hom = ⇑f.base.hom`. -/
 private lemma exists_base_hom_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y} [Surjective π]
-    {f : X ⟶ S} (h : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
+    {f : X ⟶ S} (hf : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
     ∃ (u : ↥Y → ↥S), u ∘ ⇑π.base.hom = ⇑f.base.hom := by
   let : RegularEpi (Scheme.forget.map π) := by
     have := (isSplitEpi_iff_surjective (Scheme.forget.map π)).mpr ‹Surjective π›.surj
@@ -63,7 +63,7 @@ private lemma exists_base_hom_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y} 
   change pullback.fst _ _ ≫ Scheme.forget.map f = pullback.snd _ _ ≫ Scheme.forget.map f
   apply ((epi_iff_surjective _).mpr
     (Scheme.pullbackComparison_forget_surjective _ _)).left_cancellation
-  simp only [← Category.assoc, pullbackComparison_comp_fst, ← Functor.map_comp, h,
+  simp only [← Category.assoc, pullbackComparison_comp_fst, ← Functor.map_comp, hf,
     pullbackComparison_comp_snd]
 
 /-- If `π : X ⟶ Y` is a surjective and flat morphism between affine schemes, then any morphism
@@ -71,7 +71,7 @@ private lemma exists_base_hom_of_surjective {X Y S : Scheme.{u}} {π : X ⟶ Y} 
 `u : Y ⟶ S` with `π ≫ u = f`. -/
 private lemma of_isAffine_target {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
     [Surjective π] [Flat π]
-    (f : X ⟶ S) (hg : pullback.fst π π ≫ f = pullback.snd π π ≫ f)
+    (f : X ⟶ S) (hf : pullback.fst π π ≫ f = pullback.snd π π ≫ f)
     [IsAffine S] :
     ∃ u : Y ⟶ S, π ≫ u = f := by
   have : EffectiveEpi (AffineScheme.ofHom π) := by
@@ -82,7 +82,7 @@ private lemma of_isAffine_target {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] 
     (AffineScheme.ofHom π)
     (IsPullback.of_map (f := AffineScheme.ofHom (pullback.fst π π)) (AffineScheme.forgetToScheme)
       (InducedCategory.Hom.ext pullback.condition) (.of_hasPullback _ _))
-    (AffineScheme.ofHom f) (InducedCategory.Hom.ext hg)
+    (AffineScheme.ofHom f) (InducedCategory.Hom.ext hf)
   use u.hom, InducedCategory.Hom.ext_iff.mp hu
 
 open pullback in
@@ -92,7 +92,7 @@ open cover `𝒰` of `Y` such that for each `i` there is `u : 𝒰.X i ⟶ S` wi
 `pullback.fst π (𝒰.f i) ≫ f = pullback.snd π (𝒰.f i) ≫ u`. -/
 private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
     [Surjective π] [Flat π]
-    (f : X ⟶ S) (hg : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
+    (f : X ⟶ S) (hf : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
     ∃ (𝒰 : OpenCover.{u} Y),
       ∀ i : 𝒰.I₀, ∃ (u : 𝒰.X i ⟶ S), pullback.fst π (𝒰.f i) ≫ f = pullback.snd _ _ ≫ u := by
   obtain ⟨b, hfac⟩ : ∃ (u : Y.carrier ⟶ S.carrier), π.base ≫ u = f.base := by
@@ -117,7 +117,7 @@ private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffin
     condition.symm condition.symm ≫ snd π π := by simp
   obtain ⟨u, hu⟩ := of_isAffine_target (pullback.snd π (𝒰.f i)) f' <| by
     simp only [← cancel_mono (Scheme.Opens.ι i.1.2.1),
-      Category.assoc, IsOpenImmersion.lift_fac, f', reassoc_of% h1, reassoc_of% h2, hg]
+      Category.assoc, IsOpenImmersion.lift_fac, f', reassoc_of% h1, reassoc_of% h2, hf]
   refine ⟨u ≫ Scheme.Opens.ι _, ?_⟩
   simp [reassoc_of% hu, f']
 
