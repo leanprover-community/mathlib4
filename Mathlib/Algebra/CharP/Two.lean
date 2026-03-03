@@ -140,7 +140,7 @@ section CommSemiring
 variable [CommSemiring R] [CharP R 2]
 
 theorem add_sq (x y : R) : (x + y) ^ 2 = x ^ 2 + y ^ 2 := by
-  simp [add_pow_two, two_eq_zero (R := R)]
+  simp [add_pow_two]
 
 theorem add_mul_self (x y : R) : (x + y) * (x + y) = x * x + y * y := by
   rw [← pow_two, ← pow_two, ← pow_two, add_sq]
