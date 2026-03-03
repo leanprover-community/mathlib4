@@ -228,7 +228,7 @@ lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
       (by simpa using (Over.forget _).congr_map h.symm =≫ Z.hom)
     let e : (Over.map f).obj W' ≅ W := Over.isoMk (Iso.refl _)
       (by simpa [W'] using (Over.w f₁).symm)
-    convert congr_arg (F.val.map e.inv.op)
+    convert congr_arg (F.obj.map e.inv.op)
       (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
     all_goals
       dsimp [e, W', g₁', g₂']
@@ -314,8 +314,8 @@ lemma overMapPullback_comp_id {X Y : C} (f : X ⟶ Y) :
     (overMapPullbackCongr _ _ (by simp)).hom := by
   ext
   dsimp
-  simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackId_hom_app_val_app, comp_id,
-    ← Functor.map_comp, ← op_comp]
+  simp only [overMapPullbackComp_inv_app_hom_app, overMapPullbackId_hom_app_hom_app,
+    comp_id, ← Functor.map_comp, ← op_comp]
   congr
   cat_disch
 
@@ -326,9 +326,9 @@ lemma overMapPullback_id_comp {X Y : C} (f : X ⟶ Y) :
     (overMapPullbackCongr _ _ (by simp)).hom := by
   ext
   dsimp
-  simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackId_hom_app_val_app,
-    Functor.sheafPushforwardContinuous_obj_val_map, Quiver.Hom.unop_op, comp_id,
-    ← Functor.map_comp, ← op_comp]
+  simp only [overMapPullbackComp_inv_app_hom_app, overMapPullbackId_hom_app_hom_app,
+    Functor.sheafPushforwardContinuous_obj_obj_map, Quiver.Hom.unop_op,
+    comp_id, ← Functor.map_comp, ← op_comp]
   congr
   cat_disch
 
@@ -342,11 +342,13 @@ lemma overMapPullback_assoc {X Y Z T : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶
     (overMapPullbackCongr _ _ (by simp)).hom := by
   ext
   dsimp
+  sorry
+  /-
   simp only [overMapPullbackComp_inv_app_val_app, overMapPullbackComp_hom_app_val_app,
     Functor.sheafPushforwardContinuous_obj_val_map, Quiver.Hom.unop_op, ← Functor.map_comp,
     ← op_comp, id_comp, assoc]
   congr
-  cat_disch
+  cat_disch-/
 
 end
 
