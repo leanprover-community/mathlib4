@@ -164,8 +164,6 @@ def congr (e : M ≃ N) : Ω^ M X x ≃ₜ Ω^ N X x where
     simpa using p.2 _ ⟨e m, by simpa using hm⟩⟩
   left_inv p := by ext t; simp
   right_inv p := by ext t; simp
-  continuous_toFun := by fun_prop
-  continuous_invFun := by fun_prop
 
 theorem _root_.Cube.boundary_sum_iff {y : I^(M ⊕ N)} :
     y ∈ Cube.boundary (M ⊕ N) ↔ y ∘ Sum.inl ∈ Cube.boundary M ∨ y ∘ Sum.inr ∈ Cube.boundary N := by
@@ -193,7 +191,7 @@ def currySum (q : Ω^ (M ⊕ N) X x) : C(I^M, Ω^ N X x) where
     sumArrowHomeomorphProdArrow.continuous_invFun⟩).curry.toFun a,
       fun _ hm => q.2 _ (Cube.boundary_sum_iff.mpr (Or.inr hm))⟩
   continuous_toFun := Continuous.subtype_mk (q.1.comp
-    ⟨(sumArrowHomeomorphProdArrow).invFun,
+    ⟨sumArrowHomeomorphProdArrow.invFun,
       sumArrowHomeomorphProdArrow.continuous_invFun⟩).curry.continuous_toFun _
 
 @[simp]
@@ -217,7 +215,7 @@ lemma uncurry_apply (p : Ω^ M (Ω^ N X x) const) (y : (I^M) × (I^N)) :
 
 /-- `Ω^M (Ω^N X) ≃ₜ Ω^(M ⊕ N) X`. -/
 @[simps]
-def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (Sum M N) X x where
+def genLoopGenLoopEquiv : Ω^ M (Ω^ N X x) GenLoop.const ≃ₜ Ω^ (M ⊕ N) X x where
   toFun p := ⟨(GenLoop.uncurry x p).comp ⟨sumArrowHomeomorphProdArrow.toFun,
     sumArrowHomeomorphProdArrow.continuous_toFun⟩, fun y hy => by simp [hy]⟩
   invFun q :=
