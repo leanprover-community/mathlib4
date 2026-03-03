@@ -18,7 +18,7 @@ public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 - `w` is a height one prime ideal of `B` lying over `v`.
 
 This file establishes the relationship between the adic valuation on `K` associated to `v` and the
-adic valuation on `L` associated to `w`, in terms of ramification indices.
+adic valuation on `L` associated to `w`, in terms of the ramification index.
 -/
 
 @[expose] public section
