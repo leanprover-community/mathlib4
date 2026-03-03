@@ -16,13 +16,13 @@ This file prepares for the construction of the spectral sequence
 of a spectral object in an abelian category which shall be conducted
 in the file `Mathlib/Algebra/Homology/SpectralObject/SpectralSequence.lean` (TODO).
 
-In this file, we introduce a structure `SpectralSequenceMkData` which
+In this file, we introduce a structure `SpectralSequenceDataCore` which
 contains a recipe for the construction of the pages of the spectral sequence.
 For example, from a spectral object `X` indexed by `EInt` the definition
-`mkDataE₂Cohomological` will allow to construct an `E₂` cohomological
+`coreE₂Cohomological` will allow to construct an `E₂` cohomological
 spectral sequence such that the object on position `(p, q)` on the `r`th
 page is `E^{p + q}(q - r + 2 ≤ q ≤ q + 1 ≤ q + r - 1)`.
-The data (and properties) in the structure `SpectralSequenceMkData` shall allow
+The data (and properties) in the structure `SpectralSequenceDataCore` shall allow
 to define the pages and the differentials directly from the `SpectralObject` API (TODO).
 
 -/
@@ -83,9 +83,9 @@ structure SpectralSequenceDataCore where
       (hr : r₀ ≤ r := by lia) :
       i₃ r' pq' = i₂ pq
 
-namespace SpectralSequenceMkData
+namespace SpectralSequenceDataCore
 
-variable (data : SpectralSequenceMkData ι c r₀)
+variable (data : SpectralSequenceDataCore ι c r₀)
 
 lemma i₀_le (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ ≤ r := by lia) :
     data.i₀ r' pq ≤ data.i₀ r pq :=
@@ -126,13 +126,13 @@ lemma le₃₃' {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
     i₃ ≤ i₃' := by
   simpa only [hi₃, hi₃'] using data.monotone_i₃ r r' pq'
 
-end SpectralSequenceMkData
+end SpectralSequenceDataCore
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℤ × ℤ` from a spectral object indexed by `EInt`. -/
 @[simps!]
 def coreE₂Cohomological :
-    SpectralSequenceMkData EInt (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 where
+    SpectralSequenceDataCore EInt (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 where
   deg pq := pq.1 + pq.2
   i₀ r pq hr := (pq.2 - r + 2 :)
   i₁ pq := pq.2
