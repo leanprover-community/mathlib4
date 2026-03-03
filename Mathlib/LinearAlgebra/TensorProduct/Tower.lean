@@ -668,18 +668,6 @@ lemma baseChange_mul (f g : Module.End R M) :
 
 variable (R A M N)
 
-/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
-def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.congr (.refl _ _) e
-
-@[simp] lemma _root_.LinearEquiv.baseChange_tmul {e : M ≃ₗ[R] N} (a : A) (m : M) :
-    e.baseChange R A (a ⊗ₜ m) = a ⊗ₜ e m :=
-  rfl
-
-@[simp] lemma _root_.LinearEquiv.baseChange_symm_tmul {e : M ≃ₗ[R] N} (a : A) (n : N) :
-    (e.baseChange R A).symm (a ⊗ₜ n) = a ⊗ₜ e.symm n :=
-  rfl
-
 /-- `baseChange` as a linear map.
 
 When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
@@ -704,11 +692,15 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
 
 @[simp]
 theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
-    (f.baseChange R A M N) = f.toLinearMap.baseChange A :=
+    f.baseChange R A M N = f.toLinearMap.baseChange A :=
    rfl
 
-theorem _root_.LinearEquiv.baseChange_tmul (e : M ≃ₗ[R] N) (a : A) (m : M) :
-    LinearEquiv.baseChange R A M N e (a ⊗ₜ[R] m) = a ⊗ₜ e m :=
+@[simp] lemma _root_.LinearEquiv.baseChange_tmul {e : M ≃ₗ[R] N} (a : A) (m : M) :
+    e.baseChange R A M N (a ⊗ₜ m) = a ⊗ₜ e m :=
+  rfl
+
+@[simp] lemma _root_.LinearEquiv.baseChange_symm_tmul {e : M ≃ₗ[R] N} (a : A) (n : N) :
+    (e.baseChange R A).symm (a ⊗ₜ n) = a ⊗ₜ e.symm n :=
   rfl
 
 @[simp]
