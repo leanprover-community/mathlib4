@@ -109,7 +109,7 @@ lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
       have := h1.1
       change i.1.sec |_ ((f i) ⊓ (f j)) = (i.1.sec |_ j.1.V) |_ ((f i) ⊓ (f j))
       rw [restrict_restrict]
-  use ⟨iSup f, iSup_le <| fun i => i.1.le, t, eq_app_of_forall_eq ht _ (fun i => i.val.app_s)⟩
+  use ⟨iSup f, iSup_le <| fun j => j.1.le, t, eq_app_of_forall_eq ht _ (fun i => i.val.app_s)⟩
   exact fun a ha => ⟨_, ht ⟨a, ha⟩⟩
 
 set_option backward.isDefEq.respectTransparency false
@@ -160,19 +160,15 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
       simp only [iSup_le_iff, Fin.forall_fin_two]
       exact ⟨t.le, Wle⟩
     have app : S.g.val.app (op (iSup f)) t₅ = s |_ (iSup f) := by
-      apply eq_app_of_forall_eq ht₅
-        (by rw [Fin.forall_fin_two]; exact ⟨t.le, Wle⟩) ?_
+      apply eq_app_of_forall_eq ht₅ (by rw [Fin.forall_fin_two]; exact ⟨t.le, Wle⟩)
       rw [Fin.forall_fin_two]
       refine ⟨t.app_s, ?_⟩
       change S.g.val.app (op W) (t₁ + (S.f.val.app (op W)) t₄) = s |_ W
       have : (S.f.val.app (op W) ≫ S.g.val.app (op W)) = 0 := by
         change (S.f ≫ S.g).val.app (op W) = 0; rw [S.6]; rfl
-      simp only [map_add, ← ConcreteCategory.comp_apply, this, AddCommGrpCat.hom_zero,
-        AddMonoidHom.zero_apply, add_zero]
-      exact ht₁
+      simp [← ConcreteCategory.comp_apply, this, ht₁]
     let t₆ : Under S.g s := ⟨iSup f, le, t₅, app⟩
-    have htt₆ : R S.g s t t₆ := ⟨_, ht₅ 0⟩
-    exact (ht t₆ htt₆).le (by cat_disch)
+    exact (ht t₆ ⟨_, ht₅ 0⟩).le (by cat_disch)
   use t.sec |_ U
   conv => rhs; equals (S.g.val.app (op t.V)) t.sec |_ U =>
     rw [t.app_s, restrict_restrict, restrictOpen, restrict]
