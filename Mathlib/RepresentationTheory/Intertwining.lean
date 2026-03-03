@@ -23,7 +23,7 @@ namespace Representation
 section non_comm
 section Monoid
 
-variable {A G V W U : Type*} [Ring A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
+variable {A G V W U : Type*} [Semiring A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
   [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
   (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
@@ -141,7 +141,7 @@ end Monoid
 
 end non_comm
 
-variable {A G V W U : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
+variable {A G V W U : Type*} [CommSemiring A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
   [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
   (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
