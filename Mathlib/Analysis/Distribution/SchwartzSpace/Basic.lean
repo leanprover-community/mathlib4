@@ -276,7 +276,6 @@ end SMul
 
 section Zero
 
-set_option backward.isDefEq.respectTransparency false in
 instance instZero : Zero 𝓢(E, F) :=
   ⟨{  toFun := fun _ => 0
       smooth' := contDiff_const
@@ -296,7 +295,6 @@ theorem coeFn_zero : ⇑(0 : 𝓢(E, F)) = (0 : E → F) :=
 theorem zero_apply {x : E} : (0 : 𝓢(E, F)) x = 0 :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem seminormAux_zero (k n : ℕ) : (0 : 𝓢(E, F)).seminormAux k n = 0 :=
   le_antisymm (seminormAux_le_bound k n _ rfl.le fun _ => by simp [Pi.zero_def])
     (seminormAux_nonneg _ _ _)
@@ -682,6 +680,7 @@ section bilin
 
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 G]
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid a PANIC. -/
 set_option backward.isDefEq.respectTransparency false in
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
@@ -1029,6 +1028,44 @@ theorem smulLeftCLM_compCLMOfContinuousLinearEquiv {u : D → 𝕜'} (hu : u.Has
 
 end Comp
 
+section Postcomp
+
+variable [RCLike 𝕜]
+  [NormedSpace 𝕜 F]
+  [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedSpace 𝕜 G]
+  [NormedAddCommGroup H] [NormedSpace ℝ H] [NormedSpace 𝕜 H]
+
+/-- Postcomposition with a continuous linear map is a continuous linear map on Schwartz
+functions. -/
+def postcompCLM (L : F →L[𝕜] G) : 𝓢(E, F) →L[𝕜] 𝓢(E, G) :=
+  mkCLM (fun f ↦ L ∘ f) (fun _ _ _ ↦ by simp) (fun _ _ _ ↦ by simp)
+    (fun f ↦ (L.restrictScalars ℝ).contDiff.comp (f.smooth ⊤)) <| by
+  intro ⟨k, n⟩
+  use {⟨k, n⟩}, ‖L‖, by positivity
+  intro f x
+  simp only [Finset.sup_singleton, schwartzSeminormFamily_apply]
+  calc
+    _ = ‖x‖ ^ k * ‖(L.restrictScalars ℝ).compContinuousMultilinearMap
+        (iteratedFDeriv ℝ n f x)‖ := by
+      congr
+      exact (L.restrictScalars ℝ).iteratedFDeriv_comp_left f.smooth'.contDiffAt (mod_cast le_top)
+    _ ≤ ‖x‖ ^ k * (‖L‖ * ‖iteratedFDeriv ℝ n f x‖) := by
+      gcongr
+      apply (L.restrictScalars ℝ).norm_compContinuousMultilinearMap_le
+    _ = ‖L‖ * (‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖) := by ring
+    _ ≤ ‖L‖ * (SchwartzMap.seminorm 𝕜 k n) f := by
+      grw [le_seminorm 𝕜 k n f x]
+
+@[simp]
+theorem postcompCLM_apply (L : F →L[𝕜] G) (f : 𝓢(E, F)) (x : E) : f.postcompCLM L x = L (f x) :=
+  rfl
+
+@[simp]
+theorem postcompCLM_postcompCLM (L₁ : F →L[𝕜] G) (L₂ : G →L[𝕜] H) (f : 𝓢(E, F)) :
+  (f.postcompCLM L₁).postcompCLM L₂ = f.postcompCLM (L₂ ∘L L₁) := rfl
+
+end Postcomp
+
 section Integration
 
 /-! ### Integration -/
@@ -1073,7 +1110,6 @@ lemma integrable (f : 𝓢(D, V)) : Integrable f μ :=
   (f.integrable_pow_mul μ 0).mono f.continuous.aestronglyMeasurable
     (Eventually.of_forall (fun _ ↦ by simp))
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 μ) in
 /-- The integral as a continuous linear map from Schwartz space to the codomain. -/
 def integralCLM : 𝓢(D, V) →L[𝕜] V := by

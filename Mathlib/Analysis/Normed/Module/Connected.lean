@@ -255,7 +255,6 @@ section
 variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
   [IsTopologicalAddGroup F] [ContinuousSMul ℝ F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `E` be a linear subspace in a real vector space.
 If `E` has codimension at least two, its complement is path-connected. -/
 theorem isPathConnected_compl_of_one_lt_codim {E : Submodule ℝ F}

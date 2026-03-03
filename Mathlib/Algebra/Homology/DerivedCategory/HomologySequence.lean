@@ -40,10 +40,12 @@ noncomputable def homologyFunctorFactors (n : ℤ) : Q ⋙ homologyFunctor C n �
     HomologicalComplex.homologyFunctor _ _ n :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactors C (ComplexShape.up ℤ) n
 
+-- needed in `homologyMap_comp_eq_zero_of_distTriang`
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 @[reassoc (attr := simp)]
 lemma homologyFunctorFactors_hom_naturality
-    (n : ℤ) {K L : CochainComplex C ℤ} (f : K ⟶ L) :
+    {K L : CochainComplex C ℤ} (f : K ⟶ L) (n : ℤ) :
     (homologyFunctor C n).map (Q.map f) ≫ (homologyFunctorFactors C n).hom.app L =
     (homologyFunctorFactors C n).hom.app K ≫ HomologicalComplex.homologyMap f n :=
   (homologyFunctorFactors C n).hom.naturality f
@@ -57,17 +59,17 @@ noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n
 @[reassoc]
 lemma homologyFunctorFactorsh_hom_app_quotient_obj (K : CochainComplex C ℤ) (n : ℤ) :
     (homologyFunctorFactorsh C n).hom.app ((HomotopyCategory.quotient _ _).obj K) =
-      (homologyFunctor C n).map ((quotientCompQhIso C).hom.app K) ≫
-        (homologyFunctorFactors C n).hom.app K ≫
-          (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).inv.app _ :=
+    (homologyFunctor C n).map ((quotientCompQhIso C).hom.app K) ≫
+      (homologyFunctorFactors C n).hom.app K ≫
+        (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).inv.app _ :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh_hom_app_quotient_obj ..
 
 @[reassoc]
 lemma homologyFunctorFactorsh_inv_app_quotient_obj (K : CochainComplex C ℤ) (n : ℤ) :
     (homologyFunctorFactorsh C n).inv.app ((HomotopyCategory.quotient _ _).obj K) =
-      (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).hom.app _ ≫
-        (homologyFunctorFactors C n).inv.app K ≫
-          (homologyFunctor C n).map ((quotientCompQhIso C).inv.app K) :=
+    (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).hom.app _ ≫
+      (homologyFunctorFactors C n).inv.app K ≫
+        (homologyFunctor C n).map ((quotientCompQhIso C).inv.app K) :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh_inv_app_quotient_obj ..
 
 variable {C} in
@@ -102,19 +104,20 @@ lemma shiftMap_homologyFunctor_map_Qh
     {K L : HomotopyCategory C (.up ℤ)} {n : ℤ} (f : K ⟶ L⟦n⟧)
     (a a' : ℤ) (h : n + a = a') :
     (homologyFunctor C 0).shiftMap (ShiftedHom.map f Qh) a a' h =
-      (homologyFunctorFactorsh C a).hom.app _ ≫
-        (HomotopyCategory.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
-          (homologyFunctorFactorsh C a').inv.app _ :=
+    (homologyFunctorFactorsh C a).hom.app _ ≫
+      (HomotopyCategory.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
+        (homologyFunctorFactorsh C a').inv.app _ :=
   Functor.ShiftSequence.induced_shiftMap ..
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftMap_homologyFunctor_map_Q
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧)
     (a a' : ℤ) (h : n + a = a') :
     (homologyFunctor C 0).shiftMap (ShiftedHom.map f Q) a a' h =
-      (homologyFunctorFactors C a).hom.app _ ≫
-        (HomologicalComplex.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
-          (homologyFunctorFactors C a').inv.app _ := by
+    (homologyFunctorFactors C a).hom.app _ ≫
+      (HomologicalComplex.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
+        (homologyFunctorFactors C a').inv.app _ := by
   rw [← ShiftedHom.map_naturality_1 f (quotientCompQhIso C),
     ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
     Functor.shiftMap_comp', Functor.shiftMap_comp,
@@ -189,6 +192,7 @@ noncomputable def homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
   homologyMap T.mor₃ n₀ ≫
     ((homologyFunctor C (.up ℤ) 0).shiftIso 1 n₀ n₁ (by lia)).hom.app _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma homologyFunctorFactors_hom_app_homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (DerivedCategory.homologyFunctorFactors C n₀).hom.app T.obj₃ ≫
@@ -207,6 +211,7 @@ variable (hT : DerivedCategory.Q.mapTriangle.obj T ∈ distTriang _)
 
 include hT
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyMap_comp_eq_zero_of_distTriang (n : ℤ) :
     homologyMap T.mor₁ n ≫ homologyMap T.mor₂ n = 0 := by
@@ -218,6 +223,7 @@ lemma homologyMap_comp_eq_zero_of_distTriang (n : ℤ) :
     ← Functor.map_comp_assoc, this, Functor.map_zero,
     Limits.zero_comp, Limits.comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyδOfTriangle_homologyMap (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     homologyδOfTriangle T n₀ n₁ h ≫ homologyMap T.mor₁ n₁ = 0 := by
@@ -229,6 +235,7 @@ lemma homologyδOfTriangle_homologyMap (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
   rw [reassoc_of% this]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyMap_homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     homologyMap T.mor₂ n₀ ≫ homologyδOfTriangle T n₀ n₁ h = 0 := by
@@ -237,6 +244,7 @@ lemma homologyMap_homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
   simp [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
     ← DerivedCategory.homologyFunctorFactors_hom_naturality_assoc, reassoc_of% this]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_exact₁_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (ShortComplex.mk _ _ (homologyδOfTriangle_homologyMap T hT n₀ n₁ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (DerivedCategory.HomologySequence.exact₁ _ hT n₀ n₁ h)
@@ -245,6 +253,7 @@ lemma homologyMap_exact₁_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
     ((DerivedCategory.homologyFunctorFactors _ _).app _)
     ((DerivedCategory.homologyFunctorFactors _ _).app _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_exact₂_of_distTriang (n : ℤ) :
     (ShortComplex.mk _ _ (homologyMap_comp_eq_zero_of_distTriang T hT n)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (DerivedCategory.HomologySequence.exact₂ _ hT n)
@@ -253,6 +262,7 @@ lemma homologyMap_exact₂_of_distTriang (n : ℤ) :
     ((DerivedCategory.homologyFunctorFactors _ _).app _)
     ((DerivedCategory.homologyFunctorFactors _ _).app _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_exact₃_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     (ShortComplex.mk _ _ (homologyMap_homologyδOfTriangle T hT n₀ n₁ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (DerivedCategory.HomologySequence.exact₃ _ hT n₀ n₁ h)

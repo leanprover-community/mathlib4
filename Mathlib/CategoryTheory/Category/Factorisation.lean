@@ -60,18 +60,15 @@ protected structure Hom (d e : Factorisation f) : Type (max u v) where
 
 attribute [reassoc (attr := simp)] Factorisation.Hom.ι_h Factorisation.Hom.h_π
 
-instance : Category.{max u v} (Factorisation f) where
+instance : Quiver (Factorisation f) where
   Hom d e := Factorisation.Hom d e
+
+@[simps]
+instance : Category.{max u v} (Factorisation f) where
   id d := { h := 𝟙 _ }
   comp f g := { h := f.h ≫ g.h }
 
-@[simp]
-lemma id_h (d : Factorisation f) :
-    Hom.h (𝟙 d) = 𝟙 d.mid := rfl
-
-@[reassoc, simp]
-lemma comp_h {d₀ d₁ d₂ : Factorisation f} (a : d₀ ⟶ d₁) (b : d₁ ⟶ d₂) :
-    (a ≫ b).h = a.h ≫ b.h := rfl
+attribute [reassoc] comp_h
 
 variable (d : Factorisation f)
 

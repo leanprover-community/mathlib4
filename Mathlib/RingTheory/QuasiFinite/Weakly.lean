@@ -213,7 +213,7 @@ lemma of_restrictScalars [Algebra S T] [IsScalarTower R S T]
     .of_restrictScalars R _ _
   have H : (q.under R).map (algebraMap R T) ≤ (q.under S).map (algebraMap S T) := by
     simpa [Ideal.under, IsScalarTower.algebraMap_eq R S T, ← Ideal.map_map,
-      ← Ideal.comap_comap, - Ideal.under_under] using Ideal.map_mono Ideal.map_comap_le
+      ← Ideal.comap_comap, -Ideal.under_under] using Ideal.map_mono Ideal.map_comap_le
   delta WeaklyQuasiFiniteAt
   refine .of_surjectiveOnStalks (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R T))))
     (Ideal.quotientMapₐ _ (.id _ _) (by exact H)) (RingHom.surjectiveOnStalks_of_surjective

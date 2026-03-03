@@ -67,6 +67,7 @@ theorem mk_ball {x : E} {r : ℝ} (hd : HarmonicOnNhd f (ball x r))
 theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     ContDiffAt ℝ 2 f x := (h.1 x hx).1
 
+set_option backward.isDefEq.respectTransparency false in
 theorem differentiableAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     DifferentiableAt ℝ f x := (h.contDiffAt hx).differentiableAt two_ne_zero
 
@@ -83,7 +84,7 @@ theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
   HarmonicContOnCl ((fun _ ↦ c) + f) s := harmonicContOnCl_const.add hf
 
 @[to_fun] theorem neg (hf : HarmonicContOnCl f s) :
-    HarmonicContOnCl  (-f) s := ⟨hf.1.neg, hf.2.neg⟩
+    HarmonicContOnCl (-f) s := ⟨hf.1.neg, hf.2.neg⟩
 
 @[to_fun] theorem sub (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
     HarmonicContOnCl (f₁ - f₂) s := ⟨hf₁.1.sub hf₂.1, hf₁.2.sub hf₂.2⟩

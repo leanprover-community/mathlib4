@@ -340,6 +340,7 @@ omit [EnoughInjectives C] in
 lemma shortExact [Mono f] : (ShortComplex.mk _ _ (cokernel.condition f)).ShortExact where
   exact := ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel f)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exact_homologyShortComplex [Mono f] :
     (homologyShortComplex f n).Exact := by
   let T := ShortComplex.mk (homologyMap f n) (homologyMap (cokernel.π f) n)
@@ -384,6 +385,7 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (ι f n) q := by
@@ -582,6 +584,7 @@ lemma quasiIsoAt_midπ (q : ℕ) (i : ℤ) (h : i + 1 ≤ n₀ + q) :
 noncomputable def ι : K ⟶ mid f n₀ :=
   limit.lift _ (Cone.mk _ { app q := ((functor f n₀).obj q).obj.ι })
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_midπ (q : ℕ) : ι f n₀ ≫ midπ f n₀ q = ((functor f n₀).obj (op q)).obj.ι := by
   simp [ι, midπ]
@@ -609,6 +612,7 @@ lemma midπ_π_f (q : ℕ) (i : ℤ) :
   rw [← midπ_π f n₀ q]
   dsimp
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (mid f n₀).IsStrictlyGE (n₀ + 1) := by
   rw [isStrictlyGE_iff]
   intro i hi
