@@ -406,8 +406,8 @@ def Exact.splitInjectiveEquiv
     { l // l ∘ₗ f = .id } ≃
       { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
   refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (l.1.prod g) ?_), ?_⟩
-    invFun := fun e ↦ ⟨fst R M P ∘ₗ e.1, ?_⟩
+  { toFun l := ⟨LinearEquiv.ofBijective (l.1.prod g) ?_, ?_⟩
+    invFun e := ⟨fst R M P ∘ₗ e, ?_⟩
     left_inv := ?_
     right_inv := ?_ }
   · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
