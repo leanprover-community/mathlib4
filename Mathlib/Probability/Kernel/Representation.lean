@@ -21,34 +21,29 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
 
 ## Auxiliary lemmas
 
-* `ProbabilityTheory.Kernel.unitInterval_representation₀`:
+* `ProbabilityTheory.Kernel.exists_measurable_map_eq_unitInterval₀`:
   for a Markov kernel `κ : Kernel α I`, there exists a jointly measurable function
   `f : α → I → I` such that for all `a : α`, `volume.map (f a) = κ a`.
 
-* `ProbabilityTheory.Kernel.embedding_representation`:
-  for a measurable embedding `g : β → I` and a Markov kernel `κ : Kernel α β`,
-  there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
-  `volume.map (f a) = κ a`.
-
 ## Main theorems
 
-* `ProbabilityTheory.Kernel.unitInterval_representation`:
+* `ProbabilityTheory.Kernel.exists_measurable_map_eq_unitInterval`:
   for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space,
   there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
   `volume.map (f a) = κ a`.
   This is a consequence of `ProbabilityTheory.Kernel.embedding_representation` and the fact that
   any standard Borel space can be embedded in `ℝ`, and then composed with `unitInterval.sigmoid`.
 
-* `ProbabilityTheory.Kernel.representation_not_countable`:
+* `ProbabilityTheory.Kernel.exists_measurable_map_eq_not_countable`:
   for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space
-  and `ι` a non-countable standard Borel space,
-  there exists a jointly measurable function `f : α → ι → β` such that for all `a : α`,
+  and `ι` a non-countable standard Borel space, there exists a jointly
+  measurable function `f : α → ι → β` such that for all `a : α`,
   `volume.map (f a ∘ equiv) = κ a`, where `equiv : I ≃ᵐ ι` is a measurable equivalence
   between `I` and `ι`.
-  This is a consequence of `ProbabilityTheory.Kernel.unitInterval_representation` and the fact that
-  any non-countable standard Borel space is measurably equivalent to `I`.
+  This is a consequence of `ProbabilityTheory.Kernel.unitInterval_representation` and the
+  fact that any non-countable standard Borel space is measurably equivalent to `I`.
 
-* `ProbabilityTheory.Kernel.representation_measure`:
+* `ProbabilityTheory.Kernel.exists_measurable_map_eq`:
   for a probability measure `μ` on a standard Borel space `β`,
   there exists a measurable function `f : I → β` such that `volume.map f = μ`.
   This is a consequence of `ProbabilityTheory.Kernel.unitInterval_representation`.
@@ -62,7 +57,7 @@ namespace ProbabilityTheory.Kernel
 
 variable {α : Type*} [MeasurableSpace α]
 
-lemma unitInterval_representation₀ (κ : Kernel α I) [IsMarkovKernel κ] :
+lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKernel κ] :
     ∃ (f : α → I → I), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a := by
   let f := fun s (t : I) ↦ sSup {x | (κ s).real (Icc 0 x) < t}
   have measurable_f : Measurable (uncurry f) := by
@@ -138,30 +133,26 @@ lemma unitInterval_representation₀ (κ : Kernel α I) [IsMarkovKernel κ] :
       specialize hξ y h
       grind
 
-lemma embedding_representation {β : Type*} [Nonempty β] [MeasurableSpace β] {g : β → I}
-    (hg : MeasurableEmbedding g) (κ : Kernel α β) [IsMarkovKernel κ] :
+theorem exists_measurable_map_eq_unitInterval {β : Type*} [Nonempty β] [MeasurableSpace β]
+    [StandardBorelSpace β] (κ : Kernel α β) [IsMarkovKernel κ] :
     ∃ (f : α → I → β), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a := by
+  let g := sigmoid ∘ embeddingReal β
+  have hg := measurableEmbedding_sigmoid_comp_embeddingReal β
   have hκg : IsMarkovKernel (κ.map g) := Kernel.IsMarkovKernel.map κ hg.measurable
-  classical
   have hg'κ : κ = (κ.map g).map hg.invFun := by
     rw [← Kernel.map_comp_right _ hg.measurable (by fun_prop), LeftInverse.id hg.leftInverse_invFun,
       Kernel.map_id]
-  obtain ⟨f', hf', hf'κ⟩ := (κ.map g).unitInterval_representation₀
+  obtain ⟨f', hf', hf'κ⟩ := (κ.map g).exists_measurable_map_eq_unitInterval₀
   refine ⟨fun a u ↦ hg.invFun (f' a u), by fun_prop, fun a ↦ ?_⟩
   rw [hg'κ, Kernel.map_apply _ (by fun_prop), ← hf'κ, Measure.map_map (by fun_prop) (by fun_prop)]
   rfl
 
-theorem unitInterval_representation {β : Type*} [Nonempty β] [MeasurableSpace β]
-    [StandardBorelSpace β] (κ : Kernel α β) [IsMarkovKernel κ] :
-    ∃ (f : α → I → β), Measurable (uncurry f) ∧ ∀ a, volume.map (f a) = κ a :=
-  κ.embedding_representation (measurableEmbedding_sigmoid_comp_embeddingReal β)
-
-theorem representation_not_countable {β ι : Type*} [Nonempty β] [MeasurableSpace β]
+theorem exists_measurable_map_eq_not_countable {β ι : Type*} [Nonempty β] [MeasurableSpace β]
     [StandardBorelSpace β] [MeasurableSpace ι] [StandardBorelSpace ι]
     (hι : ¬Countable ι) (κ : Kernel α β) [IsMarkovKernel κ] :
     ∃ (f : α → ι → β), Measurable (uncurry f) ∧ ∀ a, (volume.map <|
       (f a) ∘ PolishSpace.measurableEquivOfNotCountable not_countable_unitInterval hι) = κ a := by
-  obtain ⟨f, hfm, hf⟩ := κ.unitInterval_representation
+  obtain ⟨f, hfm, hf⟩ := κ.exists_measurable_map_eq_unitInterval
   set equiv_I_ι := PolishSpace.measurableEquivOfNotCountable not_countable_unitInterval hι
   let f' : α → ι → β := fun a i ↦ f a (equiv_I_ι.symm i)
   refine ⟨f', by fun_prop, ?_⟩
@@ -175,10 +166,9 @@ theorem representation_not_countable {β ι : Type*} [Nonempty β] [MeasurableSp
 
 end ProbabilityTheory.Kernel
 
-theorem MeasureTheory.Measure.representation {β : Type*} {mβ : MeasurableSpace β}
-    [Nonempty β] [StandardBorelSpace β]
-    (μ : Measure β) [IsProbabilityMeasure μ] :
+theorem MeasureTheory.Measure.exists_measurable_map_eq {β : Type*} {mβ : MeasurableSpace β}
+    [Nonempty β] [StandardBorelSpace β] (μ : Measure β) [IsProbabilityMeasure μ] :
     ∃ (f : I → β), Measurable f ∧ volume.map f = μ := by
-  obtain ⟨f, hf_meas, hf_map⟩ := Kernel.unitInterval_representation (Kernel.const Unit μ)
-  specialize hf_map ⟨⟩
-  exact ⟨f ⟨⟩, by fun_prop, by simpa⟩
+  obtain ⟨f, hf_meas, hf_map⟩ := Kernel.exists_measurable_map_eq_unitInterval (Kernel.const Unit μ)
+  specialize hf_map ()
+  exact ⟨f (), by fun_prop, by simpa⟩
