@@ -3,8 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.LocalProperties.Exactness
+module
+
+public import Mathlib.RingTheory.Flat.Stability
+public import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
 # Flatness and localization
@@ -22,6 +24,8 @@ In this file we show that localizations are flat, and flatness is a local proper
   over `Localization.Away s`, then `M` is flat over `R`.
 -/
 
+@[expose] public section
+
 open IsLocalizedModule LocalizedModule LinearMap TensorProduct
 
 variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
@@ -37,7 +41,9 @@ theorem IsLocalization.flat : Module.Flat R S := by
     ext; change _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
   simpa [this] using e.injective
 
-instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.flat _ p
+instance Localization.flat [Module.Flat R S] (p : Submonoid S) : Module.Flat R (Localization p) :=
+  have : Module.Flat S (Localization p) := IsLocalization.flat _ p
+  .trans R S _
 
 namespace Module
 

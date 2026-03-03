@@ -3,75 +3,33 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Definition of nilpotent elements
 
-This file defines the notion of a nilpotent element and proves the immediate consequences.
+This file proves basic facts about nilpotent elements.
 For results that require further theory, see `Mathlib/RingTheory/Nilpotent/Basic.lean`
 and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
 ## Main definitions
 
-  * `IsNilpotent`
   * `Commute.isNilpotent_mul_left`
   * `Commute.isNilpotent_mul_right`
   * `nilpotencyClass`
 
 -/
 
-universe u v
+@[expose] public section
 
-open Function Set
+open Set
 
 variable {R S : Type*} {x y : R}
-
-/-- An element is said to be nilpotent if some natural-number-power of it equals zero.
-
-Note that we require only the bare minimum assumptions for the definition to make sense. Even
-`MonoidWithZero` is too strong since nilpotency is important in the study of rings that are only
-power-associative. -/
-def IsNilpotent [Zero R] [Pow R ℕ] (x : R) : Prop :=
-  ∃ n : ℕ, x ^ n = 0
-
-theorem IsNilpotent.mk [Zero R] [Pow R ℕ] (x : R) (n : ℕ) (e : x ^ n = 0) : IsNilpotent x :=
-  ⟨n, e⟩
-
-@[simp] lemma isNilpotent_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] : IsNilpotent x :=
-  ⟨0, Subsingleton.elim _ _⟩
-
-@[simp] theorem IsNilpotent.zero [MonoidWithZero R] : IsNilpotent (0 : R) :=
-  ⟨1, pow_one 0⟩
-
-theorem not_isNilpotent_one [MonoidWithZero R] [Nontrivial R] :
-    ¬ IsNilpotent (1 : R) := fun ⟨_, H⟩ ↦ zero_ne_one (H.symm.trans (one_pow _))
-
-lemma IsNilpotent.pow_succ (n : ℕ) {S : Type*} [MonoidWithZero S] {x : S}
-    (hx : IsNilpotent x) : IsNilpotent (x ^ n.succ) := by
-  obtain ⟨N, hN⟩ := hx
-  use N
-  rw [← pow_mul, Nat.succ_mul, pow_add, hN, mul_zero]
-
-theorem IsNilpotent.of_pow [MonoidWithZero R] {x : R} {m : ℕ}
-    (h : IsNilpotent (x ^ m)) : IsNilpotent x := by
-  obtain ⟨n, h⟩ := h
-  use m * n
-  rw [← h, pow_mul x m n]
-
-lemma IsNilpotent.pow_of_pos {n} {S : Type*} [MonoidWithZero S] {x : S}
-    (hx : IsNilpotent x) (hn : n ≠ 0) : IsNilpotent (x ^ n) := by
-  cases n with
-  | zero => contradiction
-  | succ => exact IsNilpotent.pow_succ _ hx
-
-@[simp]
-lemma IsNilpotent.pow_iff_pos {n} {S : Type*} [MonoidWithZero S] {x : S} (hn : n ≠ 0) :
-    IsNilpotent (x ^ n) ↔ IsNilpotent x :=
-  ⟨of_pow, (pow_of_pos · hn)⟩
 
 theorem IsNilpotent.map [MonoidWithZero R] [MonoidWithZero S] {r : R} {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S] (hr : IsNilpotent r) (f : F) :
@@ -161,50 +119,6 @@ lemma eq_zero_of_nilpotencyClass_eq_one (hx : nilpotencyClass x = 1) :
 end MonoidWithZero
 
 end NilpotencyClass
-
-/-- A structure that has zero and pow is reduced if it has no nonzero nilpotent elements. -/
-@[mk_iff]
-class IsReduced (R : Type*) [Zero R] [Pow R ℕ] : Prop where
-  /-- A reduced structure has no nonzero nilpotent elements. -/
-  eq_zero : ∀ x : R, IsNilpotent x → x = 0
-
-namespace IsReduced
-
-theorem pow_eq_zero [Zero R] [Pow R ℕ] [IsReduced R] {n : ℕ} (h : x ^ n = 0) :
-    x = 0 := IsReduced.eq_zero x ⟨n, h⟩
-
-@[simp]
-theorem pow_eq_zero_iff [MonoidWithZero R] [IsReduced R] {n : ℕ} (hn : n ≠ 0) :
-    x ^ n = 0 ↔ x = 0 := ⟨pow_eq_zero, fun h ↦ h.symm ▸ zero_pow hn⟩
-
-theorem pow_ne_zero_iff [MonoidWithZero R] [IsReduced R] {n : ℕ} (hn : n ≠ 0) :
-    x ^ n ≠ 0 ↔ x ≠ 0 := not_congr (pow_eq_zero_iff hn)
-
-theorem pow_ne_zero [Zero R] [Pow R ℕ] [IsReduced R] (n : ℕ) (h : x ≠ 0) :
-    x ^ n ≠ 0 := fun H ↦ h (pow_eq_zero H)
-
-/-- A variant of `IsReduced.pow_eq_zero_iff` assuming `R` is not trivial. -/
-@[simp]
-theorem pow_eq_zero_iff' [MonoidWithZero R] [IsReduced R] [Nontrivial R] {n : ℕ} :
-    x ^ n = 0 ↔ x = 0 ∧ n ≠ 0 := by
-  cases n <;> simp
-
-end IsReduced
-
-instance (priority := 900) isReduced_of_noZeroDivisors [MonoidWithZero R] [NoZeroDivisors R] :
-    IsReduced R :=
-  ⟨fun _ ⟨_, hn⟩ => eq_zero_of_pow_eq_zero hn⟩
-
-instance (priority := 900) isReduced_of_subsingleton [Zero R] [Pow R ℕ] [Subsingleton R] :
-    IsReduced R :=
-  ⟨fun _ _ => Subsingleton.elim _ _⟩
-
-theorem IsNilpotent.eq_zero [Zero R] [Pow R ℕ] [IsReduced R] (h : IsNilpotent x) : x = 0 :=
-  IsReduced.eq_zero x h
-
-@[simp]
-theorem isNilpotent_iff_eq_zero [MonoidWithZero R] [IsReduced R] : IsNilpotent x ↔ x = 0 :=
-  ⟨fun h => h.eq_zero, fun h => h.symm ▸ IsNilpotent.zero⟩
 
 theorem isReduced_of_injective [MonoidWithZero R] [MonoidWithZero S] {F : Type*}
     [FunLike F R S] [MonoidWithZeroHomClass F R S]

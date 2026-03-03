@@ -3,8 +3,10 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Order.SuccPred.LinearLocallyFinite
+module
+
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Order.SuccPred.LinearLocallyFinite
 
 /-!
 # Instances related to the discrete topology
@@ -19,6 +21,8 @@ When importing this file and `Data.Nat.SuccPred`, the instances `SecondCountable
 and `OrderTopology ℕ` become available.
 
 -/
+
+@[expose] public section
 
 
 open Order Set TopologicalSpace Filter
@@ -37,6 +41,7 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
   secondCountableTopology_of_countable_cover (fun _ ↦ isOpen_discrete _)
     (iUnion_of_singleton α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem LinearOrder.bot_topologicalSpace_eq_generateFrom {α} [LinearOrder α] [PredOrder α]
     [SuccOrder α] : (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
   let _ := Preorder.topology α

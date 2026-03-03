@@ -3,11 +3,13 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.Algebra.Algebra.Field
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.FieldTheory.Differential.Basic
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+module
+
+public import Mathlib.Algebra.Algebra.Field
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.FieldTheory.Differential.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
 /-!
 # Liouville's theorem
@@ -27,6 +29,8 @@ literature, and we introduce it as part of the formalization of Liouville's theo
   (of a field with characteristic 0) are Liouville.
 
 -/
+
+@[expose] public section
 
 open Differential algebraMap IntermediateField Finset Polynomial
 
@@ -76,6 +80,7 @@ The case of Liouville's theorem for algebraic extensions.
 
 variable {F K} [CharZero F]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `K` is a Liouville extension of `F` and `B` is a finite-dimensional intermediate
 field `K / B / F`, then it's also a Liouville extension of `F`.
@@ -188,6 +193,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
           simp [logDeriv, algEquiv_deriv']
         · rw [algEquiv_deriv']
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 We lift `isLiouville_of_finiteDimensional_galois` to non-Galois field extensions by using it for the
 normal closure then obtaining it for `F`.

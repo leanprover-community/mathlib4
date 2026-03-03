@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -15,12 +17,15 @@ import Mathlib.Data.Fintype.Basic
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero
 
 namespace Equiv
 variable {M N O α β : Type*}
 
 variable (M) [Monoid M] in
+set_option backward.proofsInPublic true in
 /-- Transfer `MulAction` across an `Equiv` -/
 @[to_additive /-- Transfer `AddAction` across an `Equiv` -/]
 protected abbrev mulAction (e : α ≃ β) [MulAction M β] : MulAction M α where
@@ -70,5 +75,19 @@ protected abbrev mulDistribMulAction (e : N ≃ O) [MulDistribMulAction M O] :
   { e.mulAction M with
     smul_one := by simp [one_def, smul_def, smul_one]
     smul_mul := by simp [mul_def, smul_def, smul_mul'] }
+
+variable (M) [SMul M β] in
+/-- Transfer `FaithfulSMul` across an `Equiv`.
+
+See `FaithfulSMul.of_injective` for the general statement not about transferring. -/
+@[to_additive /-- Transfer `FaithfulVAdd` across an `Equiv`
+
+See `FaithfulVAdd.of_injective` for the general statement not about transferring. -/]
+protected lemma faithfulSMul (e : α ≃ β) [FaithfulSMul M β] :
+    letI := e.smul M
+    FaithfulSMul M α :=
+  letI := e.smul M
+  { eq_of_smul_eq_smul {m₁ m₂} := by
+      simpa [← e.forall_congr_right, smul_def] using eq_of_smul_eq_smul (α := β) }
 
 end Equiv

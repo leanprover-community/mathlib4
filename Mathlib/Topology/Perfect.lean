@@ -3,8 +3,9 @@ Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
+module
 
-import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Perfect Sets
@@ -49,6 +50,8 @@ namely Polish spaces.
 accumulation point, perfect set, dense-in-itself, cantor-bendixson.
 
 -/
+
+@[expose] public section
 
 
 open Topology Filter Set TopologicalSpace
@@ -187,6 +190,12 @@ lemma IsPreconnected.preperfect_of_nontrivial [T1Space α] {U : Set α} (hu : U.
     rw [Set.singleton_inter_nonempty, mem_closure_iff_clusterPt,
       ← accPt_principal_iff_clusterPt] at h
     exact h
+
+instance [T1Space α] [ConnectedSpace α] [Nontrivial α] : PerfectSpace α := by
+  constructor
+  apply isPreconnected_univ.preperfect_of_nontrivial
+  rw [Set.nontrivial_univ_iff]
+  infer_instance
 
 end Preperfect
 

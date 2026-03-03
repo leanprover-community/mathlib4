@@ -3,12 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 
 /-!
 # The symmetric monoidal structure on `Module R`.
 -/
+
+@[expose] public section
 
 universe v w x u
 
@@ -113,7 +117,7 @@ instance : BraidedCategory (ModuleCat.{u} R) :=
 instance : equivalenceSemimoduleCat (R := R).functor.Braided where
 
 instance symmetricCategory : SymmetricCategory (ModuleCat.{u} R) :=
-  symmetricCategoryOfFaithful equivalenceSemimoduleCat.functor
+  .ofFaithful equivalenceSemimoduleCat.functor
 
 @[simp]
 theorem braiding_hom_apply {M N : ModuleCat.{u} R} (m : M) (n : N) :

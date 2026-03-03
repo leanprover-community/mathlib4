@@ -3,9 +3,11 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Group.Idempotent
-import Mathlib.Algebra.Ring.Idempotent
+module
+
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Group.Idempotent
+public import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Star projections
@@ -16,6 +18,8 @@ In star-ordered rings, star projections are non-negative.
 (See `IsStarProjection.nonneg` in `Mathlib/Algebra/Order/Star/Basic.lean`.)
 -/
 
+@[expose] public section
+
 variable {R : Type*}
 
 /-- A star projection is a self-adjoint idempotent. -/
@@ -23,6 +27,9 @@ variable {R : Type*}
 structure IsStarProjection [Mul R] [Star R] (p : R) : Prop where
   protected isIdempotentElem : IsIdempotentElem p
   protected isSelfAdjoint : IsSelfAdjoint p
+
+attribute [grind →, aesop safe forward]
+  IsStarProjection.isIdempotentElem IsStarProjection.isSelfAdjoint
 
 namespace IsStarProjection
 
@@ -35,6 +42,12 @@ lemma _root_.isStarProjection_iff' [Mul R] [Star R] :
 theorem isStarNormal [Mul R] [Star R]
     (hp : IsStarProjection p) : IsStarNormal p :=
   hp.isSelfAdjoint.isStarNormal
+
+protected theorem map {A B : Type*} [Mul A] [Star A] [Mul B] [Star B]
+    {F : Type*} [FunLike F A B] [StarHomClass F A B] [MulHomClass F A B]
+    {x : A} (hx : IsStarProjection x) (f : F) : IsStarProjection (f x) where
+  isIdempotentElem := hx.isIdempotentElem.map f
+  isSelfAdjoint := hx.isSelfAdjoint.map f
 
 variable (R) in
 @[simp]

@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.FunLike.Basic
+module
+
+public import Mathlib.Data.FunLike.Basic
 
 /-!
 # Typeclass for a type `F` with an injective map to `A ↪ B`
@@ -123,6 +125,8 @@ This means anything set up for `MyEmbedding`s will automatically work for `Coole
 and defining `CoolerEmbeddingClass` only takes a constant amount of effort,
 instead of linearly increasing the work per `MyEmbedding`-related declaration.
 -/
+
+@[expose] public section
 
 
 /-- The class `EmbeddingLike F α β` expresses that terms of type `F` have an

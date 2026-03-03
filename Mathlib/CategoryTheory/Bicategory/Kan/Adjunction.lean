@@ -3,9 +3,11 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Kan.HasKan
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Adjunctions as Kan extensions
@@ -26,6 +28,8 @@ At the moment, the results are stated for left Kan extensions and left Kan lifts
 similar results for right Kan extensions and right Kan lifts.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -196,6 +200,7 @@ end LeftLift
 
 namespace LeftExtension
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A left adjoint commutes with a left Kan extension. -/
 def isKanOfWhiskerLeftAdjoint
     {f : a ⟶ b} {g : a ⟶ c} {t : LeftExtension f g} (H : LeftExtension.IsKan t)

@@ -3,15 +3,19 @@ Copyright (c) 2024 Yaël Dillies, Patrick Luo, Eric Rodriguez. All rights reserv
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Finset
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Linear lower bound on the growth of a generating set
 
 This file proves that the growth of a set generating an infinite group is at least linear.
 -/
+
+public section
 
 open Subgroup
 open scoped Pointwise
@@ -67,7 +71,7 @@ lemma pow_right_strictMonoOn (hX₁ : 1 ∈ X) (hX : X.Nontrivial) :
   · simp [eq_comm (a := (1 : Set _)), coe_set_eq_one, -Set.subset_singleton_iff,
       hX.coe.not_subset_singleton] at hm
   · calc (X : Set G) ^ (n - 1)
-    _ = X ^ (n - m) * X ^ (m - 1) := by rw [← pow_add]; congr 1; cutsat
+    _ = X ^ (n - m) * X ^ (m - 1) := by rw [← pow_add]; congr 1; lia
     _ = closure (X : Set G) := by rw [hm, Set.pow_mul_subgroupClosure hX.nonempty.to_set]
 
 @[to_additive]

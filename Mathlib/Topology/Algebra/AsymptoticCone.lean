@@ -3,9 +3,11 @@ Copyright (c) 2025 Attila Gáspár. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Attila Gáspár
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Topology.Algebra.Group.AddTorsor
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Topology.Algebra.Group.AddTorsor
 
 /-!
 # Asymptotic cone of a set
@@ -27,11 +29,13 @@ that `∃ᶠ p in Filter.atTop • 𝓝 v, p ∈ s` holds.
 ## Main statements
 
 * `Convex.smul_vadd_mem_of_isClosed_of_mem_asymptoticCone`: if `v` is in the asymptotic cone of a
-closed convex set `s`, then every ray of direction `v` starting from `s` is contained in `s`.
+  closed convex set `s`, then every ray of direction `v` starting from `s` is contained in `s`.
 * `Convex.smul_vadd_mem_of_mem_nhds_of_mem_asymptoticCone`: if `v` is in the asymptotic cone of a
-convex set `s`, then every ray of direction `v` starting from the interior of `s` is contained in
-`s`.
+  convex set `s`, then every ray of direction `v` starting from the interior of `s` is contained in
+  `s`.
 -/
+
+@[expose] public section
 
 open scoped Pointwise Topology
 open Filter
@@ -365,13 +369,13 @@ of direction `v` starting from `p` is contained in `s`. -/
 theorem Convex.smul_vadd_mem_of_mem_nhds_of_mem_asymptoticCone {c : k} {v p : V}
     (hs : Convex k s) (hc : 0 ≤ c) (hp : s ∈ 𝓝 p) (hv : v ∈ asymptoticCone k s) :
     c • v +ᵥ p ∈ s := by
-  rw [mem_asymptoticCone_iff, asymptoticNhds_eq_smul_vadd v (c • v +ᵥ p),  vadd_pure,
+  rw [mem_asymptoticCone_iff, asymptoticNhds_eq_smul_vadd v (c • v +ᵥ p), vadd_pure,
     frequently_map, ← map₂_smul, ← map_prod_eq_map₂, frequently_map] at hv
   refine frequently_const.mp (hv.mp ?_)
-  have : Tendsto (fun u => - (c • u : V) +ᵥ c • v +ᵥ p) (𝓝 v) (𝓝 p) :=
+  have : Tendsto (fun u => -(c • u : V) +ᵥ c • v +ᵥ p) (𝓝 v) (𝓝 p) :=
     Continuous.tendsto' (by fun_prop) _ _ (by simp)
   filter_upwards [tendsto_fst.eventually <| eventually_gt_atTop 0, this.comp tendsto_snd hp]
-    with ⟨t, u⟩ (ht : 0 < t) (hu : - (c • u) +ᵥ c • v +ᵥ p ∈ s) (h : t • u +ᵥ c • v +ᵥ p ∈ s)
+    with ⟨t, u⟩ (ht : 0 < t) (hu : -(c • u) +ᵥ c • v +ᵥ p ∈ s) (h : t • u +ᵥ c • v +ᵥ p ∈ s)
   apply hs.segment_subset hu h
   simp_rw [mem_segment_iff_sameRay, ← vsub_eq_sub]
   rw [vsub_vadd_eq_vsub_sub, vsub_self, zero_sub, neg_neg, vadd_vsub]

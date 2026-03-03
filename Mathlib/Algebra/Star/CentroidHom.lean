@@ -3,11 +3,12 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Algebra.Ring.CentroidHom
-import Mathlib.Algebra.Star.StarRingHom
-import Mathlib.Algebra.Star.Subsemiring
-import Mathlib.Algebra.Star.Basic
+public import Mathlib.Algebra.Ring.CentroidHom
+public import Mathlib.Algebra.Star.StarRingHom
+public import Mathlib.Algebra.Star.Subsemiring
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # Centroid homomorphisms on Star Rings
@@ -20,6 +21,8 @@ the semiring into the centre of the centroid becomes a *-homomorphism.
 
 centroid
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -58,6 +61,7 @@ instance instStarAddMonoidCenter : StarAddMonoid (Subsemiring.center (CentroidHo
   star_involutive f := SetCoe.ext (star_involutive f.val)
   star_add f g := SetCoe.ext (star_add f.val g.val)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : StarRing (Subsemiring.center (CentroidHom α)) where
   __ := instStarAddMonoidCenter
   star_mul f g := by

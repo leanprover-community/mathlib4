@@ -3,9 +3,11 @@ Copyright (c) 2025 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
+module
 
-import Mathlib.SetTheory.Ordinal.Exponential
-import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.SetTheory.Ordinal.Exponential
+public import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # `norm_num` extensions for Ordinals
@@ -15,6 +17,8 @@ which without a right distributive law, ordinals do not have.
 
 We must therefore define new extensions for them.
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 open Lean Lean.Meta Qq Ordinal
@@ -180,7 +184,7 @@ def evalOrdinalMod : NormNumExt where
 
 lemma isNat_ordinalOPow.{u} : ∀ {a b : Ordinal.{u}} {an bn rn : ℕ},
     IsNat a an → IsNat b bn → an ^ bn = rn → IsNat (a ^ b) rn
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_opow ..⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨(opow_natCast ..).trans (natCast_pow ..).symm⟩
 
 /-- The `norm_num` extension for homogeneous power on ordinals. -/
 @[norm_num (_ : Ordinal) ^ (_ : Ordinal)]
@@ -204,7 +208,7 @@ def evalOrdinalOPow : NormNumExt where
 
 lemma isNat_ordinalNPow.{u} : ∀ {a : Ordinal.{u}} {b an bn rn : ℕ},
     IsNat a an → IsNat b bn → an ^ bn = rn → IsNat (a ^ b) rn
-  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_opow .. |>.trans <| opow_natCast ..⟩
+  | _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, rfl => ⟨Eq.symm <| natCast_pow ..⟩
 
 /-- The `norm_num` extension for natural power on ordinals. -/
 @[norm_num (_ : Ordinal) ^ (_ : ℕ)]

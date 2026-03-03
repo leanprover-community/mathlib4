@@ -3,7 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.AbstractCompletion
+module
+
+public import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 /-!
 # Hausdorff completions of uniform spaces
@@ -40,6 +42,8 @@ This formalization is mostly based on
 From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Filter Set
@@ -74,6 +78,7 @@ theorem monotone_gen : Monotone (gen : SetRel α α → _) :=
   monotone_setOf fun p => @Filter.monotone_mem _ (p.1.val ×ˢ p.2.val)
 
 -- Porting note: this was a calc proof, but I could not make it work
+set_option backward.privateInPublic true in
 private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lift' gen := by
   let f := fun s : SetRel α α =>
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
@@ -101,6 +106,7 @@ private theorem subset_gen_relComp {s t : SetRel α α} : gen s ○ gen t ⊆ ge
     fun ⟨a, b⟩ ⟨(ha : a ∈ t₁), (hb : b ∈ t₄)⟩ =>
     ⟨x, h₁ (show (a, x) ∈ t₁ ×ˢ t₂ from ⟨ha, xt₂⟩), h₂ (show (x, b) ∈ t₃ ×ˢ t₄ from ⟨xt₃, hb⟩)⟩
 
+set_option backward.privateInPublic true in
 private theorem comp_gen : ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s) ≤ (𝓤 α).lift' gen :=
   calc
         ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s)
@@ -115,6 +121,8 @@ private theorem comp_gen : ((𝓤 α).lift' gen).lift' (fun s ↦ s ○ s) ≤ (
       · exact monotone_gen
     _ ≤ (𝓤 α).lift' gen := lift'_mono comp_le_uniformity le_rfl
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : UniformSpace (CauchyFilter α) :=
   UniformSpace.ofCore
     { uniformity := (𝓤 α).lift' gen
@@ -473,7 +481,7 @@ protected def map (f : α → β) : Completion α → Completion β :=
 theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 
@@ -494,6 +502,7 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
     simp [hf, hg, hf.comp hg, map_coe, extension_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     Completion.map g ∘ Completion.map f = Completion.map (g ∘ f) :=
   extension_map ((uniformContinuous_coe _).comp hg) hf

@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Directed
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Directed
 
 /-!
 # Union lift
@@ -35,6 +37,8 @@ constants, unary functions, or binary functions are preserved. These lemmas are:
 
 directed union, directed supremum, glue, gluing
 -/
+
+@[expose] public section
 
 variable {α : Type*} {ι β : Sort _}
 
@@ -158,7 +162,7 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S f hf hS x = f i x :=
 
 theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
     liftCover S f hf hS x = f i ⟨x, hx⟩ :=
-  iUnionLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
+  iUnionLift_of_mem ⟨x, mem_univ x⟩ hx
 
 theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _

@@ -3,9 +3,11 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.Int.Range
-import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.MulChar.Basic
+module
+
+public import Mathlib.Data.Int.Range
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.NumberTheory.MulChar.Basic
 
 /-!
 # Quadratic characters on ℤ/nℤ
@@ -19,11 +21,13 @@ We set them up to be of type `MulChar (ZMod n) ℤ`, where `n` is `4` or `8`.
 quadratic character, zmod
 -/
 
+@[expose] public section
+
 
 /-!
 ### Quadratic characters mod 4 and 8
 
-We define the primitive quadratic characters `χ₄`on `ZMod 4`
+We define the primitive quadratic characters `χ₄` on `ZMod 4`
 and `χ₈`, `χ₈'` on `ZMod 8`.
 -/
 
@@ -51,8 +55,7 @@ theorem isQuadratic_χ₄ : χ₄.IsQuadratic := by
   decide
 
 /-- The value of `χ₄ n`, for `n : ℕ`, depends only on `n % 4`. -/
-theorem χ₄_nat_mod_four (n : ℕ) : χ₄ n = χ₄ (n % 4 : ℕ) := by
-  rw [← ZMod.natCast_mod n 4]
+theorem χ₄_nat_mod_four (n : ℕ) : χ₄ n = χ₄ (n % 4 : ℕ) := by grind
 
 /-- The value of `χ₄ n`, for `n : ℤ`, depends only on `n % 4`. -/
 theorem χ₄_int_mod_four (n : ℤ) : χ₄ n = χ₄ (n % 4 : ℤ) := by
@@ -63,8 +66,8 @@ theorem χ₄_int_eq_if_mod_four (n : ℤ) :
     χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 := by
   have help : ∀ m : ℤ, 0 ≤ m → m < 4 → χ₄ m = if m % 2 = 0 then 0 else if m = 1 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by cutsat : (2 : ℤ) ∣ 4), ← ZMod.intCast_mod n 4]
-  exact help (n % 4) (Int.emod_nonneg n (by cutsat)) (Int.emod_lt_abs n (by cutsat))
+  rw [← Int.emod_emod_of_dvd n (by lia : (2 : ℤ) ∣ 4), ← ZMod.intCast_mod n 4]
+  exact help (n % 4) (Int.emod_nonneg n (by lia)) (Int.emod_lt_abs n (by lia))
 
 theorem χ₄_nat_eq_if_mod_four (n : ℕ) :
     χ₄ n = if n % 2 = 0 then 0 else if n % 4 = 1 then 1 else -1 :=
@@ -75,11 +78,11 @@ theorem χ₄_eq_neg_one_pow {n : ℕ} (hn : n % 2 = 1) : χ₄ n = (-1) ^ (n / 
   rw [χ₄_nat_eq_if_mod_four]
   simp only [hn, Nat.one_ne_zero, if_false]
   nth_rewrite 3 [← Nat.div_add_mod n 4]
-  nth_rewrite 3 [show 4 = 2 * 2 by cutsat]
+  nth_rewrite 3 [show 4 = 2 * 2 by lia]
   rw [mul_assoc, add_comm, Nat.add_mul_div_left _ _ zero_lt_two, pow_add, pow_mul,
     neg_one_sq, one_pow, mul_one]
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → ite (m = 1) (1 : ℤ) (-1) = (-1) ^ (m / 2) := by decide
-  exact help _ (Nat.mod_lt n (by cutsat)) <| (Nat.mod_mod_of_dvd n (by cutsat : 2 ∣ 4)).trans hn
+  exact help _ (Nat.mod_lt n (by lia)) <| (Nat.mod_mod_of_dvd n (by lia : 2 ∣ 4)).trans hn
 
 /-- If `n % 4 = 1`, then `χ₄ n = 1`. -/
 theorem χ₄_nat_one_mod_four {n : ℕ} (hn : n % 4 = 1) : χ₄ n = 1 := by
@@ -141,8 +144,8 @@ theorem χ₈_int_eq_if_mod_eight (n : ℤ) :
   have help :
     ∀ m : ℤ, 0 ≤ m → m < 8 → χ₈ m = if m % 2 = 0 then 0 else if m = 1 ∨ m = 7 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by cutsat : (2 : ℤ) ∣ 8), ← ZMod.intCast_mod n 8]
-  exact help (n % 8) (Int.emod_nonneg n (by cutsat)) (Int.emod_lt_abs n (by cutsat))
+  rw [← Int.emod_emod_of_dvd n (by lia : (2 : ℤ) ∣ 8), ← ZMod.intCast_mod n 8]
+  exact help (n % 8) (Int.emod_nonneg n (by lia)) (Int.emod_lt_abs n (by lia))
 
 theorem χ₈_nat_eq_if_mod_eight (n : ℕ) :
     χ₈ n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 7 then 1 else -1 :=
@@ -172,8 +175,8 @@ theorem χ₈'_int_eq_if_mod_eight (n : ℤ) :
   have help :
     ∀ m : ℤ, 0 ≤ m → m < 8 → χ₈' m = if m % 2 = 0 then 0 else if m = 1 ∨ m = 3 then 1 else -1 := by
     decide
-  rw [← Int.emod_emod_of_dvd n (by cutsat : (2 : ℤ) ∣ 8), ← ZMod.intCast_mod n 8]
-  exact help (n % 8) (Int.emod_nonneg n (by cutsat)) (Int.emod_lt_abs n (by cutsat))
+  rw [← Int.emod_emod_of_dvd n (by lia : (2 : ℤ) ∣ 8), ← ZMod.intCast_mod n 8]
+  exact help (n % 8) (Int.emod_nonneg n (by lia)) (Int.emod_lt_abs n (by lia))
 
 theorem χ₈'_nat_eq_if_mod_eight (n : ℕ) :
     χ₈' n = if n % 2 = 0 then 0 else if n % 8 = 1 ∨ n % 8 = 3 then 1 else -1 :=
@@ -184,7 +187,7 @@ theorem χ₈'_eq_χ₄_mul_χ₈ : ∀ a : ZMod 8, χ₈' a = χ₄ (cast a) * 
   decide
 
 theorem χ₈'_int_eq_χ₄_mul_χ₈ (a : ℤ) : χ₈' a = χ₄ a * χ₈ a := by
-  rw [← @cast_intCast 8 (ZMod 4) _ 4 _ (by cutsat) a]
+  rw [← @cast_intCast 8 (ZMod 4) _ 4 _ (by lia) a]
   exact χ₈'_eq_χ₄_mul_χ₈ a
 
 end QuadCharModP

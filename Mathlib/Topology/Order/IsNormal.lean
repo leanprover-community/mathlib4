@@ -3,8 +3,10 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.IsNormal
-import Mathlib.Topology.Order.IsLUB
+module
+
+public import Mathlib.Order.IsNormal
+public import Mathlib.Topology.Order.IsLUB
 
 /-!
 # A normal function is strictly monotone and continuous
@@ -13,6 +15,8 @@ We defined the predicate `Order.IsNormal` in terms of `IsLUB`, which avoids havi
 topology in order theory files. This file shows that the predicate is equivalent to the definition
 in the literature, being that of a strictly monotonic function, continuous in the order topology.
 -/
+
+public section
 
 open Set
 

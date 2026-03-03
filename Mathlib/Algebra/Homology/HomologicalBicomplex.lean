@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Bicomplexes
@@ -21,10 +23,12 @@ which is obtained by exchanging the horizontal and vertical directions.
 
 -/
 
+@[expose] public section
+
 
 open CategoryTheory Limits
 
-variable (C : Type*) [Category C] [HasZeroMorphisms C]
+variable (C : Type*) [Category* C] [HasZeroMorphisms C]
   {I₁ I₂ : Type*} (c₁ : ComplexShape I₁) (c₂ : ComplexShape I₂)
 
 /-- Given a category `C` and two complex shapes `c₁` and `c₂` on types `I₁` and `I₂`,

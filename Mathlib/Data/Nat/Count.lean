@@ -3,8 +3,10 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Nat.Range
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Range
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Counting on ℕ
@@ -15,6 +17,8 @@ We then prove several expected lemmas about `count`, relating it to the cardinal
 objects, and helping to evaluate it for specific `k`.
 
 -/
+
+@[expose] public section
 
 assert_not_imported Mathlib.Dynamics.FixedPoints.Basic
 assert_not_exists Ring
@@ -37,11 +41,9 @@ def count (n : ℕ) : ℕ :=
 theorem count_zero : count p 0 = 0 := by simp [count]
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in scope `count` -/
+@[instance_reducible]
 def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } :=
-  Fintype.ofFinset {x ∈ range n | p x} <| by
-    intro x
-    rw [mem_filter, mem_range]
-    rfl
+  Fintype.subtype {x ∈ range n | p x} <| by simp
 
 scoped[Count] attribute [instance] Nat.CountSet.fintype
 
@@ -68,6 +70,7 @@ theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 
 theorem count_monotone : Monotone (count p) :=
   monotone_nat_of_le_succ (by grind)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p (a + k)) b := by
   have : Disjoint {x ∈ range a | p x} {x ∈ (range b).map <| addLeftEmbedding a | p x} := by
     grind [Finset.disjoint_left]

@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Turning a preorder into a partial order
@@ -22,6 +24,8 @@ such that `a ≤ b` and `b ≤ a`.
 * `Antisymmetrization α r`: The quotient of `α` by `AntisymmRel r`. Even when `r` is just a
   preorder, `Antisymmetrization α` is a partial order.
 -/
+
+@[expose] public section
 
 open Function OrderDual
 
@@ -43,25 +47,25 @@ theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b 
   and_comm
 
 @[simp, refl]
-theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
+theorem AntisymmRel.refl [Std.Refl r] (a : α) : AntisymmRel r a a :=
   ⟨_root_.refl _, _root_.refl _⟩
 
 variable {r} in
-lemma AntisymmRel.rfl [IsRefl α r] {a : α} : AntisymmRel r a a := .refl ..
+lemma AntisymmRel.rfl [Std.Refl r] {a : α} : AntisymmRel r a a := .refl ..
 
-instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
+instance [Std.Refl r] : Std.Refl (AntisymmRel r) where
   refl := .refl r
 
 variable {r}
 
-theorem AntisymmRel.of_eq [IsRefl α r] {a b : α} (h : a = b) : AntisymmRel r a b := h ▸ .rfl
+theorem AntisymmRel.of_eq [Std.Refl r] {a b : α} (h : a = b) : AntisymmRel r a b := h ▸ .rfl
 alias Eq.antisymmRel := AntisymmRel.of_eq
 
 @[symm]
 theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
   And.symm
 
-instance : IsSymm α (AntisymmRel r) where
+instance : Std.Symm (AntisymmRel r) where
   symm _ _ := AntisymmRel.symm
 
 theorem antisymmRel_comm : AntisymmRel r a b ↔ AntisymmRel r b a :=
@@ -79,7 +83,7 @@ instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r
   fun _ _ ↦ instDecidableAnd
 
 @[simp]
-theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b ↔ a = b :=
+theorem antisymmRel_iff_eq [Std.Refl r] [Std.Antisymm r] : AntisymmRel r a b ↔ a = b :=
   antisymm_iff
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
@@ -92,11 +96,11 @@ lemma AntisymmRel.left (h : AntisymmRel r a b) : r a b := h.1
 lemma AntisymmRel.right (h : AntisymmRel r a b) : r b a := h.2
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
-@[gcongr_forward] def exactAntisymmRelLeft : ForwardExt where
+@[gcongr_forward] meta def exactAntisymmRelLeft : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.left #[h])
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r b a`. -/
-@[gcongr_forward] def exactAntisymmRelRight : ForwardExt where
+@[gcongr_forward] meta def exactAntisymmRelRight : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.right #[h])
 
 end Mathlib.Tactic.GCongr
@@ -286,6 +290,7 @@ theorem wellFoundedLT_antisymmetrization_iff :
     WellFoundedLT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedLT α := by
   simp_rw [isWellFounded_iff, wellFounded_antisymmetrization_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wellFoundedGT_antisymmetrization_iff :
     WellFoundedGT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedGT α := by
   simp_rw [isWellFounded_iff]
@@ -299,7 +304,7 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
   wellFoundedGT_antisymmetrization_iff.mpr ‹_›
 
-instance [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] :
+instance [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
@@ -331,7 +336,7 @@ theorem toAntisymmetrization_mono : Monotone (toAntisymmetrization (α := α) (�
   fun _ _ => id
 
 open scoped Relator in
-private theorem liftFun_antisymmRel (f : α →o β) :
+theorem liftFun_antisymmRel (f : α →o β) :
     ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩
 
@@ -340,7 +345,7 @@ private theorem liftFun_antisymmRel (f : α →o β) :
 -/
 protected def OrderHom.antisymmetrization (f : α →o β) :
     Antisymmetrization α (· ≤ ·) →o Antisymmetrization β (· ≤ ·) :=
-  ⟨Quotient.map' f <| liftFun_antisymmRel f, fun a b => Quotient.inductionOn₂' a b <| f.mono⟩
+  ⟨Quotient.map' f <| liftFun_antisymmRel f, fun a b => Quotient.inductionOn₂' a b f.mono⟩
 
 @[simp]
 theorem OrderHom.coe_antisymmetrization (f : α →o β) :
@@ -363,6 +368,7 @@ variable (α)
 noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α :=
   { Quotient.outRelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o Antisymmetrization αᵒᵈ (· ≤ ·) where
@@ -386,6 +392,60 @@ theorem OrderIso.dualAntisymmetrization_symm_apply (a : α) :
 
 end Preorder
 
+section SymmGen
+
+open Relation
+
+variable {r : α → α → Prop}
+
+theorem AntisymmRel.symmGen (h : AntisymmRel r a b) : SymmGen r a b :=
+  Or.inl h.1
+
+variable [Preorder α]
+
+theorem Relation.SymmGen.of_lt (h : a < b) : SymmGen (· ≤ ·) a b := h.le.symmGen
+theorem Relation.SymmGen.of_gt (h : b < a) : SymmGen (· ≤ ·) a b := h.le.symmGen_symm
+
+alias _root_.LT.lt.symmGen := SymmGen.of_lt
+alias _root_.LT.lt.symmGen_symm := SymmGen.of_gt
+
+@[trans]
+theorem Relation.SymmGen.of_symmGen_of_antisymmRel
+    (h₁ : SymmGen (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) b c) : SymmGen (· ≤ ·) a c := by
+  obtain (h | h) := h₁
+  · exact (h.trans h₂.le).symmGen
+  · exact (h₂.ge.trans h).symmGen_symm
+
+alias Relation.SymmGen.trans_antisymmRel := SymmGen.of_symmGen_of_antisymmRel
+
+instance : @Trans α α α (SymmGen (· ≤ ·)) (AntisymmRel (· ≤ ·)) (SymmGen (· ≤ ·)) where
+  trans := SymmGen.of_symmGen_of_antisymmRel
+
+@[trans]
+theorem Relation.SymmGen.of_antisymmRel_of_symmGen
+    (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : SymmGen (· ≤ ·) b c) : SymmGen (· ≤ ·) a c :=
+  (h₂.symm.trans_antisymmRel h₁.symm).symm
+
+alias AntisymmRel.trans_symmGen := SymmGen.of_antisymmRel_of_symmGen
+
+instance : @Trans α α α (AntisymmRel (· ≤ ·)) (SymmGen (· ≤ ·)) (SymmGen (· ≤ ·)) where
+  trans := SymmGen.of_antisymmRel_of_symmGen
+
+theorem AntisymmRel.symmGen_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
+    SymmGen (· ≤ ·) a c ↔ SymmGen (· ≤ ·) b d where
+  mp h := (h₁.symm.trans_symmGen h).trans_antisymmRel h₂
+  mpr h := (h₁.trans_symmGen h).trans_antisymmRel h₂.symm
+
+theorem AntisymmRel.symmGen_congr_left (h : AntisymmRel (· ≤ ·) a b) :
+    SymmGen (· ≤ ·) a c ↔ SymmGen (· ≤ ·) b c :=
+  h.symmGen_congr .rfl
+
+theorem AntisymmRel.symmGen_congr_right (h : AntisymmRel (· ≤ ·) b c) :
+    SymmGen (· ≤ ·) a b ↔ SymmGen (· ≤ ·) a c :=
+  AntisymmRel.rfl.symmGen_congr h
+
+end SymmGen
+
 section Prod
 
 variable (α β) [Preorder α] [Preorder β]
@@ -408,15 +468,5 @@ def prodEquiv : Antisymmetrization (α × β) (· ≤ ·) ≃o
 @[simp] lemma prodEquiv_symm_apply_mk {a b} : (prodEquiv α β).symm (⟦a⟧, ⟦b⟧) = ⟦(a, b)⟧ := rfl
 
 end Antisymmetrization
-
-attribute [local instance] Prod.wellFoundedLT' Prod.wellFoundedGT'
-
-instance Prod.wellFoundedLT [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α × β) :=
-  wellFoundedLT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedLT
-
-instance Prod.wellFoundedGT [WellFoundedGT α] [WellFoundedGT β] : WellFoundedGT (α × β) :=
-  wellFoundedGT_antisymmetrization_iff.mp <|
-    (Antisymmetrization.prodEquiv α β).strictMono.wellFoundedGT
 
 end Prod

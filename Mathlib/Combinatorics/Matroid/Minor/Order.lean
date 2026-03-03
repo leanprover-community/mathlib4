@@ -3,7 +3,9 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Minor.Contract
+module
+
+public import Mathlib.Combinatorics.Matroid.Minor.Contract
 
 /-!
 # Matroid Minors
@@ -17,7 +19,7 @@ Although we provide a `PartialOrder` instance on `Matroid α` corresponding to t
 we do not use the `M ≤ N` / `N < M` notation directly,
 instead writing `N ≤m M` and `N <m M` for more convenient dot notation.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.IsMinor N M`, written `N ≤m M`, means that `N = M ／ C ＼ D` for some
   subset `C` and `D` of `M.E`.
@@ -26,6 +28,8 @@ instead writing `N ≤m M` and `N <m M` for more convenient dot notation.
 * `Matroid.IsMinor.exists_eq_contract_delete_disjoint` : we can choose `C` and `D` disjoint.
 
 -/
+
+@[expose] public section
 
 namespace Matroid
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 
 /-!
 A discrimination tree for the purpose of unifying local expressions with library results.
@@ -60,7 +62,7 @@ and includes many more features.
 ## Lazy computation
 
 To encode an `Expr` as a sequence of `Key`s, we start with a `LazyEntry` and
-we have a incremental evaluation function of type
+we have an incremental evaluation function of type
 `LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
 and lazy entries, or returns `none` if the last key has been reached already.
 
@@ -96,6 +98,8 @@ matching, the lookup algorithm is most optimized for matching.
 Improve the unification lookup.
 
 -/
+
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

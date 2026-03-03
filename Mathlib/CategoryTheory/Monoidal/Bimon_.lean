@@ -3,7 +3,9 @@ Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Comon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # The category of bimonoids in a braided monoidal category.
@@ -23,12 +25,15 @@ We verify that this is equivalent to the monoid objects in the category of comon
   `C` is monoidally equivalent to the modules over that bimonoid.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
+namespace CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C] [BraidedCategory C]
 
 open scoped MonObj ComonObj
@@ -101,6 +106,7 @@ def toComon : Bimon C ⥤ Comon C := (Mon.forget C).mapComon
 @[simp]
 theorem toComon_forget : toComon C ⋙ Comon.forget C = forget C := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 /-- The object level part of the forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
 @[simps]
@@ -142,6 +148,7 @@ theorem ofMonComonObjX_mul (M : Mon (Comon C)) :
 
 @[deprecated (since := "2025-09-15")] alias ofMon_Comon_ObjX_mul := ofMonComonObjX_mul
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] ComonObj.instTensorUnit in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def tensorμ in
 /-- The object level part of the backward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
@@ -189,8 +196,10 @@ def equivMonComonUnitIsoAppXAux (M : Bimon C) :
 @[deprecated (since := "2025-09-15")]
 alias equivMon_Comon_UnitIsoAppXAux := equivMonComonUnitIsoAppXAux
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : Bimon C) : IsMonHom (equivMonComonUnitIsoAppXAux M).hom where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `equivMonComonUnitIsoApp`. -/
 @[simps!]
 def equivMonComonUnitIsoAppX (M : Bimon C) :
@@ -199,6 +208,7 @@ def equivMonComonUnitIsoAppX (M : Bimon C) :
 
 @[deprecated (since := "2025-09-15")] alias equivMon_Comon_UnitIsoAppX := equivMonComonUnitIsoAppX
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : Bimon C) : IsComonHom (equivMonComonUnitIsoAppX M).hom where
 
 /-- The unit for the equivalence `Comon (Mon C) ≌ Mon (Comon C)`. -/
@@ -234,6 +244,7 @@ def equivMonComonCounitIsoAppXAux (M : Mon (Comon C)) :
 @[deprecated (since := "2025-09-15")]
 alias equivMon_Comon_CounitIsoAppXAux := equivMonComonCounitIsoAppXAux
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : Mon (Comon C)) : IsComonHom (equivMonComonCounitIsoAppXAux M).hom where
 
 /-- Auxiliary definition for `equivMonComonCounitIsoApp`. -/
@@ -245,8 +256,10 @@ def equivMonComonCounitIsoAppX (M : Mon (Comon C)) :
 @[deprecated (since := "2025-09-15")]
 alias equivMon_Comon_CounitIsoAppX := equivMonComonCounitIsoAppX
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : Mon (Comon C)) : IsMonHom (equivMonComonCounitIsoAppX M).hom where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the equivalence `Comon (Mon C) ≌ Mon (Comon C)`. -/
 @[simps!]
 def equivMonComonCounitIsoApp (M : Mon (Comon C)) :
@@ -264,7 +277,7 @@ def equivMonComon : Bimon C ≌ Mon (Comon C) where
 
 @[deprecated (since := "2025-09-15")] alias equivMon_Comon_ := equivMonComon
 
-/-! # The trivial bimonoid -/
+/-! ### The trivial bimonoid -/
 
 variable (C) in
 /-- The trivial bimonoid object. -/
@@ -281,7 +294,7 @@ def trivialTo (A : Bimon C) : trivial C ⟶ A :=
 def toTrivial (A : Bimon C) : A ⟶ trivial C :=
   (default : @Quiver.Hom (Comon (Mon C)) _ A (Comon.trivial (Mon C)))
 
-/-! # Additional lemmas -/
+/-! ### Additional lemmas -/
 
 theorem BimonObjAux_counit (M : Bimon C) :
     ε[((toComon C).obj M).X] = ε[M.X].hom :=
@@ -295,6 +308,7 @@ theorem BimonObjAux_comul (M : Bimon C) :
 
 @[deprecated (since := "2025-09-09")] alias Bimon_ClassAux_comul := BimonObjAux_comul
 
+set_option backward.isDefEq.respectTransparency false in
 instance (M : Bimon C) : BimonObj M.X.X where
   counit := ε[M.X].hom
   comul := Δ[M.X].hom
@@ -330,6 +344,7 @@ theorem mul_counit (M : C) [BimonObj M] :
 @[simps X]
 def mk'X (X : C) [BimonObj X] : Mon C := { X := X }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct an object of `Bimon C` from an object `X : C` and `BimonObj X` instance. -/
 @[simps X]
 def mk' (X : C) [BimonObj X] : Bimon C where
@@ -339,3 +354,4 @@ def mk' (X : C) [BimonObj X] : Bimon C where
       comul := .mk' (Δ : X ⟶ X ⊗ X) }
 
 end Bimon
+end CategoryTheory

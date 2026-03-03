@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Operations
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.Operations
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Outer measures from functions
@@ -33,6 +35,8 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 outer measure, Carathéodory-measurable, Carathéodory's criterion
 
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis
 

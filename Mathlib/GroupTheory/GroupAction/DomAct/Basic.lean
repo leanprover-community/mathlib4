@@ -3,11 +3,14 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.GroupWithZero.Action.Hom
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Action.Hom
+public import Mathlib.Algebra.Ring.Defs
+public meta import Mathlib.Tactic.ToDual
 
 /-!
 # Type tags for right action on the domain of a function
@@ -17,7 +20,7 @@ By default, `M` acts on `α → β` if it acts on `β`, and the action is given 
 
 In some cases, it is useful to consider another action: if `M` acts on `α` on the left, then it acts
 on `α → β` on the right so that `(c • f) a = f (c • a)`. E.g., this action is used to reformulate
-the Mean Ergodic Theorem in terms of an operator on \(L^2\).
+the Mean Ergodic Theorem in terms of an operator on `L²`.
 
 ## Main definitions
 
@@ -80,6 +83,8 @@ right action, so lemmas can be formulated in terms of `DomMulAct`.
 
 group action, function, domain
 -/
+
+@[expose] public section
 
 open Function
 

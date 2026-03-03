@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Prod
-import Mathlib.CategoryTheory.Localization.Equivalence
-import Mathlib.Data.Fintype.Option
+module
+
+public import Mathlib.CategoryTheory.Localization.Prod
+public import Mathlib.CategoryTheory.Localization.Equivalence
+public import Mathlib.Data.Fintype.Option
 
 /-!
 # Localization of product categories
@@ -19,6 +21,8 @@ The proof proceeds by induction on the cardinal of `J` using the
 main result of the file `Mathlib/CategoryTheory/Localization/Prod.lean`.
 
 -/
+
+@[expose] public section
 
 universe w v₁ v₂ u₁ u₂
 
