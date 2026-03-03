@@ -30,11 +30,12 @@ open WithZero Ideal.IsDedekindDomain
 section AKLB
 
 variable {A K : Type*} (L : Type*) {B : Type*} [CommRing A] [CommRing B] [Field K] [Algebra A B]
-  [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A] [Algebra A L]
-  [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L] [IsScalarTower A K L]
+  [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L]
+  [IsDedekindDomain A] [Algebra A L] [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L]
+  [IsScalarTower A K L] [Module.IsTorsionFree A B]
   (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
 
-theorem intValuation_liesOver [NoZeroSMulDivisors A B] (x : A) [w.asIdeal.LiesOver v.asIdeal] :
+theorem intValuation_liesOver (x : A) [w.asIdeal.LiesOver v.asIdeal] :
     v.intValuation x ^ (v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal) =
       w.intValuation (algebraMap A B x) := by
   rcases eq_or_ne x 0 with rfl | hx; · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
@@ -46,8 +47,7 @@ theorem intValuation_liesOver [NoZeroSMulDivisors A B] (x : A) [w.asIdeal.LiesOv
   rw [emultiplicity_map_eq_ramificationIdx_mul hx v.irreducible w.irreducible w.ne_bot,
     Nat.cast_mul, (FiniteMultiplicity.of_prime_left v.prime hx).emultiplicity_eq_multiplicity]
 
-theorem valuation_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
-    [w.asIdeal.LiesOver v.asIdeal] (x : K) :
+theorem valuation_liesOver [w.asIdeal.LiesOver v.asIdeal] (x : K) :
     v.valuation K x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
       w.valuation L (algebraMap K L x) := by
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) x
@@ -55,8 +55,7 @@ theorem valuation_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
     IsScalarTower.algebraMap_apply A B L, intValuation_liesOver v w]
 
 variable (K) in
-theorem uniformContinuous_algebraMap_liesOver [IsFractionRing B L] [NoZeroSMulDivisors A B]
-    [w.asIdeal.LiesOver v.asIdeal] :
+theorem uniformContinuous_algebraMap_liesOver [w.asIdeal.LiesOver v.asIdeal] :
     UniformContinuous (algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L))) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
