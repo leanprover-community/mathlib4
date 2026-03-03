@@ -110,9 +110,10 @@ private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffin
     rw [← hfac, ← TopCat.coe_comp, ← Scheme.Hom.comp_base_assoc, pullback.condition]
     simp only [Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp,
       range_eq_univ, Set.image_univ, Opens.range_ι, Set.image_subset_iff]
-    exact le_trans (by simp [𝒰]) i.2.2
+    exact le_trans (Opens.range_ι _ ▸ le_refl _) i.2.2
   have h1 : fst (snd π (𝒰.f i)) _ ≫ fst _ _ = map _ _ _ _ (fst _ _) (fst _ _) _
-    condition.symm condition.symm ≫ fst π π := by simp
+    condition.symm condition.symm ≫ fst π π := by
+      simp
   have h2 : snd (snd π (𝒰.f i)) _ ≫ fst _ _ = map _ _ _ _ (fst _ _) (fst _ _) _
     condition.symm condition.symm ≫ snd π π := by simp
   obtain ⟨u, hu⟩ := of_isAffine_target (pullback.snd π (𝒰.f i)) f' <| by
