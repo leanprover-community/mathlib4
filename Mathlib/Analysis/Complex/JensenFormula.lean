@@ -85,7 +85,7 @@ function of Value Distribution Theory, as discussed in
 `Mathlib/Analysis/Complex/ValueDistribution/CountingFunction.lean`.
 -/
 lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
-    (hD : D.support.Finite) :
+    (hD : D.HasFiniteSupport) :
     ∑ᶠ u, D u * (log R - log ‖c - u‖) = ∑ᶠ u, D u * log (R * ‖c - u‖⁻¹) + D c * log R := by
   by_cases h : c ∈ D.support
   · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=

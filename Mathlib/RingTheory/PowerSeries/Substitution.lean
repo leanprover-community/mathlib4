@@ -202,7 +202,8 @@ theorem subst_smul [Algebra A S] [IsScalarTower A R S]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
-    Set.Finite (fun (d : ℕ) ↦ coeff d f • MvPowerSeries.coeff e (a ^ d)).support := by
+    (fun (d : ℕ) ↦ coeff d f • MvPowerSeries.coeff e (a ^ d)).HasFiniteSupport := by
+  rw [Function.HasFiniteSupport]
   convert (MvPowerSeries.coeff_subst_finite ha.const f e).image
     (Finsupp.LinearEquiv.finsuppUnique ℕ ℕ Unit).toEquiv
   rw [← Equiv.preimage_eq_iff_eq_image, ← Function.support_comp_eq_preimage]
@@ -212,7 +213,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ 
   simp [coeff]
 
 theorem coeff_subst_finite' (hb : HasSubst b) (f : PowerSeries R) (e : ℕ) :
-    Set.Finite (fun (d : ℕ) ↦ coeff d f • (PowerSeries.coeff e (b ^ d))).support :=
+    (fun (d : ℕ) ↦ coeff d f • (PowerSeries.coeff e (b ^ d))).HasFiniteSupport :=
   coeff_subst_finite hb f _
 
 theorem coeff_subst (ha : HasSubst a) (f : PowerSeries R) (e : τ →₀ ℕ) :
