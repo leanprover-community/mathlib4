@@ -37,6 +37,7 @@ public import Archive.Imo.Imo2001Q3
 public import Archive.Imo.Imo2001Q4
 public import Archive.Imo.Imo2001Q5
 public import Archive.Imo.Imo2001Q6
+public import Archive.Imo.Imo2002Q3
 public import Archive.Imo.Imo2005Q3
 public import Archive.Imo.Imo2005Q4
 public import Archive.Imo.Imo2006Q3
@@ -62,6 +63,7 @@ public import Archive.Imo.Imo2024Q5
 public import Archive.Imo.Imo2024Q6
 public import Archive.Imo.Imo2025Q3
 public import Archive.Kuratowski
+public import Archive.MinimalSheffer
 public import Archive.MiuLanguage.Basic
 public import Archive.MiuLanguage.DecisionNec
 public import Archive.MiuLanguage.DecisionSuf

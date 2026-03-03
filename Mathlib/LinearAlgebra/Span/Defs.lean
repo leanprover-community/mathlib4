@@ -315,7 +315,6 @@ theorem span_iUnion₂ {ι} {κ : ι → Sort*} (s : ∀ i, κ i → Set M) :
 theorem span_biUnion (s : Set (Submodule R M)) : span R (⋃ S ∈ s, S) = sSup s := by
   simpa using (Submodule.gi R M).l_sSup_u_image s
 
-set_option backward.isDefEq.respectTransparency false in
 theorem span_attach_biUnion [DecidableEq M] {α : Type*} (s : Finset α) (f : s → Finset M) :
     span R (s.attach.biUnion f : Set M) = ⨆ x, span R (f x) := by simp [span_iUnion]
 

@@ -105,7 +105,6 @@ lemma addContent_sUnion (h_ss : ↑I ⊆ C)
     m (⋃₀ I) = ∑ u ∈ I, m u :=
   m.sUnion' I h_ss h_dis h_mem
 
-set_option backward.isDefEq.respectTransparency false in
 lemma addContent_biUnion {ι : Type*} {a : Finset ι} {f : ι → Set α} (hf : ∀ i ∈ a, f i ∈ C)
     (h_dis : PairwiseDisjoint ↑a f) (h_mem : ⋃ i ∈ a, f i ∈ C) :
     m (⋃ i ∈ a, f i) = ∑ i ∈ a, m (f i) := by
@@ -281,7 +280,6 @@ lemma AddContent.supClosure_apply (hC : IsSetSemiring C)
     m.supClosure hC s = ∑ s ∈ J, m s :=
   m.supClosureFun_apply hC hJ h'J hs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma AddContent.supClosure_apply_finpartition (hC : IsSetSemiring C)
     (m : AddContent G C) {s : Set α} {J : Finpartition s} (hJ : ↑J.parts ⊆ C) :
     m.supClosure hC s = ∑ s ∈ J.parts, m s := by
