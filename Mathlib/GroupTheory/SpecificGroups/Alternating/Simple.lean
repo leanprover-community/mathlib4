@@ -103,9 +103,11 @@ theorem alternatingGroup_of_le_of_normal
     exact hg_ne s
   rw [Set.powersetCard.mulAction_faithful (n := 2) (G := Perm α) (α := α) (g := g)
     (by norm_num)
-    (by rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
+    (by
+      have : CharZero ℕ∞ := instCharZeroENat
+      rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
           Nat.ofNat_lt_cast, ← Nat.card_eq_fintype_card]
-        exact le_trans (by norm_num) hα)] at hg_ne
+      exact le_trans (by norm_num) hα)] at hg_ne
   exact hg_ne
 
 end Equiv.Perm
@@ -159,16 +161,19 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_six
     apply hs
     rw [← Subgroup.mk_smul g hgN, h]
   contrapose! hg_ne
+  rw [← Subtype.coe_inj]
   replace hg_ne : (toPerm g : Perm (Set.powersetCard α 3)) = 1 := by
     ext1 s
     exact hg_ne s
-  rw [← Subtype.coe_inj]
-  rwa [Set.powersetCard.mulAction_faithful (n := 3)
+  convert hg_ne
+  exact (Set.powersetCard.mulAction_faithful (n := 3)
     (G := alternatingGroup α) (α := α) (g := g)
     (by norm_num)
-    (by rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
+    (by
+      have : CharZero ℕ∞ := instCharZeroENat
+      rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
           Nat.ofNat_lt_cast, ← Nat.card_eq_fintype_card]
-        apply le_trans (by norm_num) hα)] at hg_ne
+      apply le_trans (by norm_num) hα)).symm
 
 theorem mem_map_kleinFour_ofSubtype (s : Finset α) (hs : s.card = 4) (k : alternatingGroup α) :
     k ∈ (kleinFour s).map (ofSubtype s) ↔
@@ -263,12 +268,15 @@ theorem normal_subgroup_eq_bot_or_eq_top_of_card_ne_eight
     ext1 s
     exact hg_ne s
   rw [← Subtype.coe_inj]
-  rwa [Set.powersetCard.mulAction_faithful (n := 4)
+  convert hg_ne
+  exact (Set.powersetCard.mulAction_faithful (n := 4)
     (G := alternatingGroup α) (α := α) (g := g)
     (by norm_num)
-    (by rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
+    (by
+      have : CharZero ℕ∞ := instCharZeroENat
+      rw [ENat.card_eq_coe_fintype_card, Nat.cast_ofNat,
           Nat.ofNat_lt_cast]
-        simpa using hα)] at hg_ne
+      simpa using hα)).symm
 
 /-- If `α` has at least 5 elements,
 then the only nontrivial normal subgroup of `alternatingGroup α`
