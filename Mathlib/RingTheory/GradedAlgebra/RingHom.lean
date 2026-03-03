@@ -27,8 +27,8 @@ We do **not** define a separate class of graded ring homomorphisms; instead, we 
 
 ## Implementation notes
 
-* We don't really need the fact that they are graded rings until the theorem `decompose_directSumMap` which
-describes how the decomposition interacts with the map.
+* We don't really need the fact that they are graded rings until the theorem
+`decompose_directSumMap` which describes how the decomposition interacts with the map.
 -/
 
 @[expose] public section
@@ -294,6 +294,7 @@ lemma map_directSumDecompose (f : F) {x : A} {i : ι} :
   simp [DirectSum.decompose_map 𝒜]
 
 @[simp] lemma GradedRingHom.map_directSumDecompose (f : 𝒜 →+*ᵍ ℬ) {x : A} {i : ι} :
-    f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i := map_directSumDecompose ..
+    f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i :=
+  _root_.map_directSumDecompose ..
 
 end GradedRing
