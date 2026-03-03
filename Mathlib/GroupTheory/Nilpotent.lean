@@ -362,8 +362,6 @@ theorem nilpotent_iff_lowerCentralSeries : IsNilpotent G ↔ ∃ n, lowerCentral
 
 section Classical
 
-variable [hG : IsNilpotent G]
-
 variable (G) in
 open scoped Classical in
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that
@@ -372,15 +370,16 @@ class takes the junk value 0. -/
 noncomputable def Group.nilpotencyClass : ℕ :=
   if hG : IsNilpotent G then Nat.find hG.nilpotent else 0
 
+theorem Group.nilpotencyClass_of_not_nilpotent (hG : ¬ IsNilpotent G) :
+    Group.nilpotencyClass G = 0 :=
+  dif_neg hG
+
+variable [hG : IsNilpotent G]
+
 open scoped Classical in
 theorem Group.nilpotencyClass_def :
     Group.nilpotencyClass G = Nat.find (IsNilpotent.nilpotent G) :=
   dif_pos hG
-
-omit hG in
-theorem Group.nilpotencyClass_of_not_nilpotent (hG : ¬ IsNilpotent G) :
-    Group.nilpotencyClass G = 0 :=
-  dif_neg hG
 
 @[simp]
 theorem upperCentralSeries_nilpotencyClass :
@@ -528,9 +527,9 @@ theorem lowerCentralSeries_succ_eq_bot {n : ℕ} (h : lowerCentralSeries G n ≤
 /-- The preimage of a nilpotent group is nilpotent if the kernel of the homomorphism is contained
 in the center -/
 theorem isNilpotent_of_ker_le_center {H : Type*} [Group H] (f : G →* H) (hf1 : f.ker ≤ center G)
-    [hH : IsNilpotent H] : IsNilpotent G := by
-  rw [nilpotent_iff_lowerCentralSeries] at *
-  rcases hH with ⟨n, hn⟩
+    [IsNilpotent H] : IsNilpotent G := by
+  rw [nilpotent_iff_lowerCentralSeries]
+  rcases nilpotent_iff_lowerCentralSeries.mp ‹_› with ⟨n, hn⟩
   use n + 1
   refine lowerCentralSeries_succ_eq_bot (le_trans ((Subgroup.map_eq_bot_iff _).mp ?_) hf1)
   exact eq_bot_iff.mpr (hn ▸ lowerCentralSeries.map f n)
