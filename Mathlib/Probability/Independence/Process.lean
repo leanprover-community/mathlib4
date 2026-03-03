@@ -179,6 +179,35 @@ lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {�
   exact process_congr (h I J) (fun i ↦ Measure.ae_ae_of_ae_comp (hX i).ae_eq_mk)
     (fun j ↦ Measure.ae_ae_of_ae_comp (hY j).ae_eq_mk)
 
+/-- If `X` is a process independent from `Y` and for all `i`, `X' i` is almost everywhere equal
+to `X i`, then `X'` is also independent from `Y`. This implies that independence results about
+measurable processes should generally also hold
+for processes whose marginals are only aemeasurable. -/
+lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
+    [∀ i j, MeasurableSpace (𝓧 i j)] {X X' : (i : S) → (j : T i) → Ω → 𝓧 i j}
+    (h1 : iIndepFun (fun i ω j ↦ X i j ω) κ P) (h2 : ∀ i j, ∀ᵐ a ∂P, X i j =ᵐ[κ a] X' i j) :
+    iIndepFun (fun i ω j ↦ X' i j ω) κ P := by
+  intro s f hf
+  choose! g mg hg using hf
+  have := h1 s (fun i hi ↦ ⟨g i, mg i hi, rfl⟩)
+  choose! I u hI hu using fun i hi ↦ (mg i hi).eq_preimage_restrict_countable
+  have aux i (f : (j : T i) → Ω → 𝓧 i j) : (fun ω j ↦ f j ω) ⁻¹' ((I i).restrict ⁻¹' (u i)) =
+      (fun ω (j : I i) ↦ f j ω) ⁻¹' (u i) := rfl
+  simp_rw [aux] at *
+  -- have _ i hi : Countable (I i) := (hI i hi).to_subtype
+  have h :
+      ∀ᵐ a ∂P, ∀ i ∈ s, (fun ω (j : I i) ↦ X i j ω) =ᵐ[κ a] (fun ω (j : I i) ↦ X' i j ω) := by
+    simp_rw [← s.mem_coe]
+    refine (ae_ball_iff s.countable_toSet).2 fun i hi ↦ ?_
+    have := (hI i hi).to_subtype
+    filter_upwards [ae_all_iff.2 fun (j : I i) ↦ h2 i j] with
+      a (ha : ∀ (j : I i), ∀ᵐ ω ∂κ a, X i j ω = X' i j ω)
+    filter_upwards [ae_all_iff.2 ha] with ω hω using by simp [hω]
+  filter_upwards [this, h] with a ha1 ha2
+  refine .trans (measure_congr (ae_eq_set_inter (ha2.symm.preimage _) .rfl)) (ha1.trans ?_)
+  congr 1
+  exact measure_congr (ha2.preimage _)
+
 /-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
 for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
 $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
