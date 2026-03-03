@@ -68,8 +68,7 @@ theorem krasner [Field K] [Algebra K L]
 variable [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
     [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
 
--- We first prove the Krasner's lemma for the case `L / K` is normal.
--- Only the version without the `[Normal K L]` assumption is made into an instance.
+/-- Krasner's lemma assuming `Normal K L`. -/
 theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L := by
   constructor
   intro x y xsep sp yint kr
