@@ -110,12 +110,17 @@ private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffin
     rw [← hfac, ← TopCat.coe_comp, ← Scheme.Hom.comp_base_assoc, pullback.condition]
     simp only [Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp,
       range_eq_univ, Set.image_univ, Opens.range_ι, Set.image_subset_iff]
-    exact le_trans (Opens.range_ι _ ▸ le_refl _) i.2.2
+    exact trans (le_of_eq (Opens.range_ι _)) i.2.2
   have h1 : fst (snd π (𝒰.f i)) _ ≫ fst _ _ = map _ _ _ _ (fst _ _) (fst _ _) _
     condition.symm condition.symm ≫ fst π π := by
-      simp
+      #check limit.lift_π _ WalkingCospan.left
+      exact
+        of_eq_true
+          (Eq.trans (congrArg _ (limit.lift_π _ WalkingCospan.left)) (eq_self _))
   have h2 : snd (snd π (𝒰.f i)) _ ≫ fst _ _ = map _ _ _ _ (fst _ _) (fst _ _) _
-    condition.symm condition.symm ≫ snd π π := by simp
+    condition.symm condition.symm ≫ snd π π :=
+      of_eq_true
+          (Eq.trans (congrArg _ (limit.lift_π _ WalkingCospan.right)) (eq_self _))
   obtain ⟨u, hu⟩ := of_isAffine_target (pullback.snd π (𝒰.f i)) f' <| by
     simp only [← cancel_mono (Scheme.Opens.ι i.1.2.1),
       Category.assoc, IsOpenImmersion.lift_fac, f', reassoc_of% h1, reassoc_of% h2, hf]
@@ -140,10 +145,13 @@ lemma isRegularEpi_of_flat_of_surjective_of_isAffine
       Flat.epi_of_flat_of_surjective _
     rw [← cancel_epi (pullback.snd π (pullback.fst (𝒰.f i) (𝒰.f j) ≫ 𝒰.f i)),
       ← cancel_epi (pullback.congrHom rfl pullback.condition.symm).hom]
-    conv_rhs => simp only [pullback.congrHom_hom, limit.lift_π_assoc, PullbackCone.mk_pt,
-      cospan_right, PullbackCone.mk_π_app, Category.comp_id]
-    rw [← pullbackLeftPullbackSndIso_inv_snd_snd, Category.assoc,
-      ← pullbackLeftPullbackSndIso_inv_snd_snd, Category.assoc, ← pullback.condition_assoc,
+    conv_rhs =>
+      simp only [pullback.congrHom_hom]
+    simp only [limit.lift_π_assoc]
+    simp only [PullbackCone.mk_pt]
+    simp only [cospan_right, PullbackCone.mk_π_app, Category.comp_id]
+    rw [← pullbackLeftPullbackSndIso_inv_snd_snd, Category.assoc]
+    rw [← pullbackLeftPullbackSndIso_inv_snd_snd, Category.assoc, ← pullback.condition_assoc,
       ← hfac i, ← pullback.condition_assoc, ← hfac j]
     simp
   · apply Cover.hom_ext (𝒰.pullback₁ π)
