@@ -8,8 +8,10 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # The fixed submodule of a linear map
@@ -79,7 +81,7 @@ theorem smul_submodule_def (W : Submodule R V) :
 
 theorem mem_stabilizer_submodule_iff_map_eq (W : Submodule R V) :
     e ∈ stabilizer (V ≃ₗ[R] V) W ↔ map e.toLinearMap W = W := by
-  simp [mem_stabilizer_iff, smul_submodule_def]
+  rfl
 
 variable {P : Submodule R U} {Q : Submodule R V}
 
@@ -105,6 +107,13 @@ theorem mem_stabilizer_fixedSubmodule (e : V ≃ₗ[R] V) :
     e ∈ stabilizer _ e.fixedSubmodule :=
   mem_stabilizer_submodule_of_le_fixedSubmodule (le_refl _)
 
+theorem fixingSubgroup_le_stabilizer (W : Submodule R V) :
+    fixingSubgroup (V ≃ₗ[R] V) (W : Set V) ≤ stabilizer _ W := by
+  intro u
+  rw [mem_stabilizer_iff, SetLike.ext'_iff, coe_pointwise_smul,
+    ← mem_stabilizer_iff]
+  apply MulAction.fixingSubgroup_le_stabilizer
+
 theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
     (he : e ∈ fixingSubgroup _ W.carrier) :
     map e.toLinearMap W = W := by
@@ -114,6 +123,60 @@ theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
   · simp only [SetLike.mem_coe, coe_coe] at hv hv'
     rwa [← hv', he w hv]
   · refine ⟨v, hv, he v hv⟩
+
+open Pointwise MulAction
+
+variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
+
+/-- When `u : V ≃ₗ[R] V` maps a submodule `W` into itself,
+this is the induced linear equivalence of `V ⧸ W`, as a group morphism. -/
+def reduce (W : Submodule R V) : stabilizer (V ≃ₗ[R] V) W →* (V ⧸ W) ≃ₗ[R] (V ⧸ W) where
+  toFun u := Quotient.equiv W W u.val u.prop
+  map_mul' u v := by
+    ext x
+    obtain ⟨y, rfl⟩ := W.mkQ_surjective x
+    simp
+  map_one' := by aesop
+
+@[simp]
+theorem reduce_mk (W : Submodule R V) (u : stabilizer (V ≃ₗ[R] V) W) (x : V) :
+    reduce W u (Submodule.Quotient.mk x) = Submodule.Quotient.mk (u.val x) :=
+  rfl
+
+theorem reduce_mkQ (W : Submodule R V) (u : stabilizer (V ≃ₗ[R] V) W) (x : V) :
+    reduce W u (W.mkQ x) = W.mkQ (u.val x) :=
+  rfl
+
+/-- The linear equivalence deduced from `e : V ≃ₗ[R] V`
+by passing to the quotient by `e.fixedSubmodule`. -/
+def fixedReduce (e : V ≃ₗ[R] V) :
+    (V ⧸ e.fixedSubmodule) ≃ₗ[R] V ⧸ e.fixedSubmodule :=
+  reduce e.fixedSubmodule ⟨e, e.mem_stabilizer_fixedSubmodule⟩
+
+@[simp]
+theorem fixedReduce_mk (e : V ≃ₗ[R] V) (x : V) :
+    fixedReduce e (Submodule.Quotient.mk x) = Submodule.Quotient.mk (e x) :=
+  rfl
+
+@[simp]
+theorem fixedReduce_mkQ (e : V ≃ₗ[R] V) (x : V) :
+    fixedReduce e (e.fixedSubmodule.mkQ x) = e.fixedSubmodule.mkQ (e x) :=
+  rfl
+
+theorem fixedReduce_eq_smul_iff (e : V ≃ₗ[R] V) (a : R) :
+    (∀ x, e.fixedReduce x = a • x) ↔
+      ∀ v, e v - a • v ∈ e.fixedSubmodule := by
+  simp only [← e.fixedSubmodule.ker_mkQ, mem_ker, map_sub, ← fixedReduce_mkQ, sub_eq_zero]
+  constructor
+  · intro H x; simp [H]
+  · intro H x
+    have ⟨y, hy⟩ := e.fixedSubmodule.mkQ_surjective x
+    rw [← hy]
+    apply H
+
+theorem fixedReduce_eq_one (e : V ≃ₗ[R] V) :
+    e.fixedReduce = LinearEquiv.refl R _ ↔ ∀ v, e v - v ∈ e.fixedSubmodule := by
+  simpa [LinearEquiv.ext_iff] using fixedReduce_eq_smul_iff e 1
 
 end LinearEquiv
 
