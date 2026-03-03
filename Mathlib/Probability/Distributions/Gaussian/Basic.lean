@@ -108,7 +108,7 @@ variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpa
 
 /-- Dirac measures are Gaussian. -/
 instance {x : E} : IsGaussian (Measure.dirac x) where
-  map_eq_gaussianReal L := by rw [Measure.map_dirac (by fun_prop)]; simp
+  map_eq_gaussianReal L := by simp
 
 lemma IsGaussian.memLp_dual (μ : Measure E) [IsGaussian μ] (L : StrongDual ℝ E)
     (p : ℝ≥0∞) (hp : p ≠ ∞) :

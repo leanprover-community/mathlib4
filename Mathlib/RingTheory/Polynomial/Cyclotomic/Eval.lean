@@ -45,7 +45,6 @@ theorem eval_one_cyclotomic_prime_pow {R : Type*} [CommRing R] {p : ℕ} (k : �
 theorem eval₂_one_cyclotomic_prime_pow {R S : Type*} [CommRing R] [Semiring S] (f : R →+* S)
     {p : ℕ} (k : ℕ) [Fact p.Prime] : eval₂ f 1 (cyclotomic (p ^ (k + 1)) R) = p := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
     [CommRing R] [PartialOrder R] [IsStrictOrderedRing R] :
     0 < eval (-1 : R) (cyclotomic n R) := by
@@ -65,7 +64,6 @@ private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
   rw [hy.eq_orderOf] at hn
   exact hn.not_ge LinearOrderedRing.orderOf_le_two
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
     [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     0 < eval x (cyclotomic n R) := by
@@ -135,7 +133,6 @@ theorem cyclotomic_nonneg (n : ℕ) {R}
     0 ≤ eval x (cyclotomic n R) :=
   (cyclotomic_pos_and_nonneg n x).2 hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
     (h : ∀ {p : ℕ}, p.Prime → ∀ k : ℕ, p ^ k ≠ n) : eval 1 (cyclotomic n R) = 1 := by
   rcases n.eq_zero_or_pos with (rfl | hn')
@@ -299,7 +296,6 @@ theorem cyclotomic_eval_le_add_one_pow_totient {q : ℝ} (hq' : 1 < q) :
   | 2 => by simp
   | _ + 3 => (cyclotomic_eval_lt_add_one_pow_totient le_add_self hq').le
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' : 1 < n) (hq : q ≠ 1) :
     (q - 1) ^ totient n < ((cyclotomic n ℤ).eval ↑q).natAbs := by
   rcases hq.lt_or_gt.imp_left Nat.lt_one_iff.mp with (rfl | hq')

@@ -195,7 +195,7 @@ variable [AddCancelCommMonoid E] [ContinuousAdd E] [Module 𝕜 E] {s : Set E}
 theorem StrictConvex.preimage_add_right (hs : StrictConvex 𝕜 s) (z : E) :
     StrictConvex 𝕜 ((fun x => z + x) ⁻¹' s) := by
   intro x hx y hy hxy a b ha hb hab
-  refine preimage_interior_subset_interior_preimage (continuous_add_left _) ?_
+  refine preimage_interior_subset_interior_preimage (continuous_const_add _) ?_
   have h := hs hx hy ((add_right_injective _).ne hxy) ha hb hab
   rwa [smul_add, smul_add, add_add_add_comm, ← _root_.add_smul, hab, one_smul] at h
 

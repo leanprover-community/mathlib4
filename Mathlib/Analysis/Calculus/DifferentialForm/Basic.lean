@@ -236,6 +236,7 @@ theorem extDeriv_extDeriv (h : ContDiff 𝕜 r ω) (hr : minSmoothness 𝕜 2 �
     extDeriv (extDeriv ω) = 0 :=
   funext fun _ ↦ extDeriv_extDeriv_apply h.contDiffAt hr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Exterior derivative within a set commutes with pullback. -/
 theorem extDerivWithin_pullback {ω : F → F [⋀^Fin n]→L[𝕜] G} {f : E → F} {t : Set F}
     (hω : DifferentiableWithinAt 𝕜 ω t (f x)) (hf : ContDiffWithinAt 𝕜 r f s x)

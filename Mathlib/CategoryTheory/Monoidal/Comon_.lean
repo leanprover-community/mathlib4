@@ -246,7 +246,6 @@ instance : HasTerminal (Comon C) :=
 
 open Opposite
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `ComonToMonOpOpObj`. -/
 abbrev ComonToMonOpOpObjMon (A : Comon C) : MonObj (op A.X) where
   one := ε[A.X].op
@@ -273,7 +272,6 @@ Turn a comonoid object into a monoid object in the opposite category.
 
 @[deprecated (since := "2025-09-15")] alias Comon_ToMon_OpOpObj := ComonToMonOpOpObj
 
-set_option backward.isDefEq.respectTransparency false in
 variable (C) in
 /--
 The contravariant functor turning comonoid objects into monoid objects in the opposite category.
@@ -287,7 +285,6 @@ The contravariant functor turning comonoid objects into monoid objects in the op
 
 @[deprecated (since := "2025-09-15")] alias Comon_ToMon_OpOp := ComonToMonOpOp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `MonOpOpToComonObj`. -/
 abbrev MonOpOpToComonObjComon (A : Mon Cᵒᵖ) : ComonObj (unop A.X) where
   counit := η[A.X].unop
@@ -312,7 +309,6 @@ Turn a monoid object in the opposite category into a comonoid object.
 
 variable (C)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The contravariant functor turning monoid objects in the opposite category into comonoid objects.
 -/
@@ -379,7 +375,6 @@ theorem tensorObj_comul' (A B : C) [ComonObj A] [ComonObj B] :
       (Δ[A] ⊗ₘ Δ[B]) ≫ (tensorμ (op A) (op B) (op A) (op B)).unop := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The comultiplication on the tensor product of two comonoids is
 the tensor product of the comultiplications followed by the tensor strength
@@ -388,12 +383,7 @@ the tensor product of the comultiplications followed by the tensor strength
 @[simp]
 theorem tensorObj_comul (A B : C) [ComonObj A] [ComonObj B] :
     Δ[A ⊗ B] = (Δ[A] ⊗ₘ Δ[B]) ≫ tensorμ A A B B := by
-  rw [tensorObj_comul']
-  congr
-  simp only [tensorμ, unop_tensorObj, unop_op]
-  apply Quiver.Hom.unop_inj
-  dsimp [op_tensorObj, op_associator]
-  rw [Category.assoc, Category.assoc, Category.assoc]
+  simp [tensorObj_comul']
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The forgetful functor from `Comon C` to `C` is monoidal when `C` is monoidal. -/

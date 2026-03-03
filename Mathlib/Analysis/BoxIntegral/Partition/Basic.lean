@@ -545,7 +545,6 @@ theorem filter_of_true {p : Box ι → Prop} (hp : ∀ J ∈ π, p J) : π.filte
 theorem filter_true : (π.filter fun _ => True) = π :=
   π.filter_of_true fun _ _ => trivial
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by

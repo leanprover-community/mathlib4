@@ -826,7 +826,11 @@ instance : Norm ℚ_[p] :=
 instance normedField : NormedField ℚ_[p] :=
   { Padic.field,
     Padic.metricSpace p with
-    dist_eq := fun _ _ ↦ rfl
+    dist_eq x y := by
+      rw [add_comm, ← sub_eq_add_neg]
+      change ‖x - y‖ = ‖y - x‖
+      have : y - x = (-1) * (x - y) := by ring
+      simp only [this, Norm.norm, map_mul, map_neg_eq_map, AbsoluteValue.map_one, one_mul]
     norm_mul := by simp [Norm.norm, map_mul]
     norm := norm }
 
@@ -836,7 +840,6 @@ instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_add' := norm_add_le
   abv_mul' := by simp [Norm.norm, map_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rat_dense (q : ℚ_[p]) {ε : ℝ} (hε : 0 < ε) : ∃ r : ℚ, ‖q - r‖ < ε :=
   let ⟨ε', hε'l, hε'r⟩ := exists_rat_btwn hε
   let ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)

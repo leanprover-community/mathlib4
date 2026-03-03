@@ -372,7 +372,6 @@ end Basic
 
 section Fintype
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
     Module.Finite A B := by
   classical
@@ -719,7 +718,6 @@ instance isCyclotomicExtension [NeZero (n : K)] :
   · rw [← Algebra.eq_top_iff, ← SplittingField.adjoin_rootSet, eq_comm]
     exact IsCyclotomicExtension.adjoin_roots_cyclotomic_eq_adjoin_nth_roots hζ
 
-set_option backward.isDefEq.respectTransparency false in
 instance : IsCyclotomicExtension {0} K (CyclotomicField 0 K) where
   exists_isPrimitiveRoot := by aesop
   adjoin_roots x := by

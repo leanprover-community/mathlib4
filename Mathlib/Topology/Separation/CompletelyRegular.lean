@@ -127,7 +127,6 @@ lemma completelyRegularSpace_induced
     (f : X → Y) : @CompletelyRegularSpace X (t.induced f) :=
   @IsInducing.completelyRegularSpace _ (t.induced f) _ t _ _ (IsInducing.induced f)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @CompletelyRegularSpace X (t i)) : @CompletelyRegularSpace X (⨅ i, t i) := by
   letI := (⨅ i, t i) -- register this as default topological space to reduce `@`s
@@ -238,7 +237,6 @@ instance {ι : Type*} {X : ι → Type*} [t : Π (i : ι), TopologicalSpace (X i
 instance {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [htX : T35Space X] [htY : T35Space Y] : T35Space (X × Y) where
 
-set_option backward.isDefEq.respectTransparency false in
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints {f : X → ℝ | Continuous f} := by
   intro x y x_ne_y
