@@ -312,9 +312,10 @@ lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) : (x : R) ≠ 0 := by
   contrapose! this
   simp [this]
 
+section
+set_option linter.classReturningDef false
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
-@[implicit_reducible]
 def valueSetoid : Setoid (R × posSubmonoid R) where
   r := fun (x, s) (y, t) => x * t ≤ᵥ y * s ∧ y * s ≤ᵥ x * t
   iseqv := {
@@ -334,6 +335,7 @@ def valueSetoid : Setoid (R × posSubmonoid R) where
         rw [mul_right_comm t, mul_right_comm r] at this
         simpa using this
   }
+end
 
 variable (R) in
 /-- The "canonical" value group-with-zero of a ring with a valuative relation. -/

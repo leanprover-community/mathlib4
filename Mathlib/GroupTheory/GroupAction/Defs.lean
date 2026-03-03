@@ -276,11 +276,15 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
 
 variable (G α)
 
+section
+set_option linter.classReturningDef false
 /-- The relation 'in the same orbit'. -/
-@[to_additive (attr := implicit_reducible) /-- The relation 'in the same orbit'. -/]
+@[to_additive /-- The relation 'in the same orbit'. -/]
 def orbitRel : Setoid α where
   r a b := a ∈ orbit G b
   iseqv := ⟨mem_orbit_self, mem_orbit_symm.mp, by grind [orbit_eq_iff]⟩
+
+end
 
 variable {G α}
 

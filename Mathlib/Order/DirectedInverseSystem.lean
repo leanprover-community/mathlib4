@@ -95,8 +95,9 @@ open DirectedSystem
 
 variable [IsDirectedOrder ι]
 
+section
+set_option linter.classReturningDef false
 /-- The setoid on the sigma type defining the direct limit. -/
-@[implicit_reducible]
 def setoid : Setoid (Σ i, F i) where
   r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
   iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
@@ -104,6 +105,7 @@ def setoid : Setoid (Σ i, F i) where
       have ⟨i, hji, hki⟩ := exists_ge_ge j k
       ⟨i, hx.trans hji, hz.trans hki, by
         rw [← map_map' _ hx hji, ← map_map' _ hz hki, jeq, ← keq, map_map', map_map']⟩⟩
+end
 
 theorem r_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) : (setoid f).r x ⟨i, f _ _ h x.2⟩ :=
   ⟨i, h, le_rfl, (map_map' _ _ _ _).symm⟩

@@ -201,14 +201,18 @@ theorem trans {s₁ s₂ s₃ : S.Splitting} (h₁ : S.IsConj s₁ s₂) (h₂ :
   obtain ⟨n₂, hn₂⟩ := h₂
   exact ⟨n₁ * n₂, by simp only [hn₁, hn₂, map_mul]; group⟩
 
+section
+set_option linter.classReturningDef false
 /-- The setoid of splittings with `N`-conjugacy -/
-@[to_additive (attr := implicit_reducible) /-- The setoid of splittings with `N`-conjugacy -/]
+@[to_additive /-- The setoid of splittings with `N`-conjugacy -/]
 def setoid : Setoid S.Splitting where
   r := S.IsConj
   iseqv :=
   { refl := refl S
     symm := symm S
     trans := trans S }
+
+end
 
 end IsConj
 
