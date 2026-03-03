@@ -537,29 +537,6 @@ multiplicative heights of `x` and `y` (and the analogous statement for logarithm
 We also show the corresponding statements for product with arbitrarily many factors.
 -/
 
-lemma ciSup_prod {α ι ι' : Type*} [Nonempty ι] [Nonempty ι'] [ConditionallyCompleteLattice α]
-    {f : ι × ι' → α} (hf : BddAbove (Set.range f)) :
-    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') := by
-  have h₂ : BddAbove (Set.range fun i ↦ ⨆ i', f (i, i')) := by
-    rw [bddAbove_def] at hf ⊢
-    obtain ⟨B, hB⟩ := hf
-    refine ⟨B, fun y hy ↦ ?_⟩
-    obtain ⟨z, rfl⟩ := Set.mem_range.mp hy
-    exact ciSup_le fun i' ↦ by grind
-  have h₃ i : BddAbove (Set.range fun i' ↦ f (i, i')) := by
-    rw [bddAbove_def] at hf ⊢
-    obtain ⟨B, hB⟩ := hf
-    exact ⟨B, by grind⟩
-  refine eq_of_forall_ge_iff fun c ↦ ?_
-  rw [ciSup_le_iff (bddAbove_iff_subset_Iic.mpr hf), ciSup_le_iff h₂]
-  conv_rhs => enter [i]; rw [ciSup_le_iff (h₃ i)]
-  simp [Prod.forall]
-
-lemma Finite.ciSup_prod {α ι ι' : Type*} [Finite ι] [Finite ι'] [Nonempty ι] [Nonempty ι']
-    [ConditionallyCompleteLattice α] (f : ι × ι' → α) :
-    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') :=
-  _root_.ciSup_prod (bddAbove_range f)
-
 variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
 
 /-
