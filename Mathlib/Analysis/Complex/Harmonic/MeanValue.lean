@@ -54,7 +54,7 @@ theorem HarmonicContOnCl.circleAverage_eq {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
   by_cases hR : R = 0
   · simp_all
   have H : ContinuousOn (circleAverage f c) (Set.Ioc 0 |R|) := by
-    refine (h₁f.2.mono ?_).circleAverage (·.2.1.le)
+    refine (h₁f.2.mono ?_).circleAverage (fun z hz ↦ hz.1.le)
     intro x hx
     rw [closure_ball _ (by aesop), mem_closedBall_iff_norm]
     exact hx.2
