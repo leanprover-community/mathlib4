@@ -131,7 +131,7 @@ end SpectralSequenceMkData
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℤ × ℤ` from a spectral object indexed by `EInt`. -/
 @[simps!]
-def mkDataE₂Cohomological :
+def coreE₂Cohomological :
     SpectralSequenceMkData EInt (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 where
   deg pq := pq.1 + pq.2
   i₀ r pq hr := (pq.2 - r + 2 :)
