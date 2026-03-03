@@ -123,11 +123,20 @@ variable {f : X ⟶ Y} (hf : IsOpenEmbedding f)
 
 open TopCat Sheaf
 
+/--
+The "naive" sheaf pullback by an open embedding `f`: on the underlying presheaf, this is just
+composition by the functor `IsOpenMap.functor f` (sending an open `U` to `f '' U`).
+-/
 def sheafPullback : Y.Sheaf A ⥤ X.Sheaf A :=
   haveI := Topology.IsOpenEmbedding.functor_isContinuous hf
   hf.isOpenMap.functor.sheafPushforwardContinuous _ _ _
 
 set_option backward.isDefEq.respectTransparency false in
+/--
+The pullback of a sheaf by an open embedding `f` is isomorphic to its naive pullback
+`IsOpenEmbedding.sheafPullback`, i.e. to the composition by the functor `IsOpenMap.functor f`.
+Also, this is an isomorphism of functors.
+-/
 def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
   refine Sheaf.pullbackIso A f ≪≫ (NatIso.ofComponents (fun F ↦ ?_) (fun u ↦ ?_))
   · exact (presheafToSheaf (Opens.grothendieckTopology ↑X) A).mapIso
