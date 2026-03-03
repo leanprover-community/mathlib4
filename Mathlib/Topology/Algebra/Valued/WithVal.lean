@@ -452,13 +452,6 @@ def WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃*o ValueGrou
         · assumption
     · exact (WithVal.strictMono_valueGroup₀_equiv w).monotone h
 
--- **FAE** instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
-theorem IsEquiv.uniformContinuous_congr
-    (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ, ∃ r s, 0 < w r ∧ 0 < w s ∧
-      w.restrict r / w.restrict s = γ.1) (h : v.IsEquiv w) :
-    UniformContinuous (WithVal.congr v w (.refl R)) := by
-  sorry
-
 -- TODO: move
 lemma _root_.Valuation.IsEquiv.restrict {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
     (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
@@ -466,8 +459,8 @@ lemma _root_.Valuation.IsEquiv.restrict {v : Valuation R Γ₀} {w : Valuation R
   intro r s
   simp only [restrict_le_iff, h]
 
-theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w) (h : v.IsEquiv w) :
-    UniformContinuous (WithVal.equiv v) := by
+theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
+    (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
@@ -492,8 +485,8 @@ theorem IsEquiv.uniformContinuous_equiv [Valued R Γ₀'] (hv : Valued.v = w) (h
   rw [restrict_lt_iff] at hx
   exact hx
 
-theorem IsEquiv.uniformContinuous_equiv_symm [Valued R Γ₀'] (hv : Valued.v = w) (h : w.IsEquiv v) :
-    UniformContinuous (WithVal.equiv v).symm := by
+theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
+    (h : w.IsEquiv v) : UniformContinuous (WithVal.equiv v).symm := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
@@ -517,19 +510,47 @@ theorem IsEquiv.uniformContinuous_equiv_symm [Valued R Γ₀'] (hv : Valued.v = 
   · rw [restrict_pos_iff, hv, h.pos_iff]
     exact hs₀
 
+
+--def bar (h : v.IsEquiv w) : valueGroup v ≃* valueGroup w := by apply?
+
+lemma foo (h : v.IsEquiv w) :
+    @UniformContinuous R R (Valued.mk' w).toUniformSpace (Valued.mk' v).toUniformSpace
+      (RingHom.id R) := by
+  refine @uniformContinuous_of_continuousAt_zero _ _ (Valued.mk' w).toUniformSpace _ _
+    _ (Valued.mk' v).toUniformSpace _ _ _ _ (RingHom.id R) ?_
+  simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
+    (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
+  intro x
+  let u := WithZero.unzero (Units.ne_zero x)
+  obtain ⟨a, ha, x, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
+  --let γ : valueGroup (Valued.mk' w).v := ⟨u.1, by sorry⟩
+
+
+  sorry
+
+-- **FAE** instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
+theorem IsEquiv.uniformContinuous_congr (h : v.IsEquiv w) :
+    UniformContinuous (WithVal.congr v w (.refl R)) := by
+  have hcomp : WithVal.congr v w (.refl R) = (equiv v).trans
+    ((RingEquiv.refl R).trans (equiv w).symm) := RingEquiv.ext_iff.mpr (congrFun rfl)
+  have h1 := IsEquiv.uniformContinuous_equiv (hval := Valued.mk' w) rfl h
+  have h2 := IsEquiv.uniformContinuous_equiv_symm (hval := Valued.mk' v) rfl h
+  have hR : @UniformContinuous R R (Valued.mk' w).toUniformSpace (Valued.mk' v).toUniformSpace
+      (RingHom.id R) := foo h
+  apply @UniformContinuous.comp (WithVal v) R (WithVal w) _ (Valued.mk' w).toUniformSpace _
+    ((RingEquiv.refl R).trans (equiv w).symm) (equiv v) ?_ h1
+  exact @UniformContinuous.comp R R (WithVal w) (Valued.mk' w).toUniformSpace
+       (Valued.mk' v).toUniformSpace _ (equiv w).symm (RingEquiv.refl R) h2 hR
+
 @[deprecated (since := "2026-01-27")]
   alias IsEquiv.uniformContinuous_equivWithVal := IsEquiv.uniformContinuous_congr
 
 /-- If two valuations `v` and `w` are equivalent then `WithVal v` and `WithVal w` are
 isomorphic as uniform spaces. -/
-def IsEquiv.uniformEquiv (hv : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ v)ˣ,
-    ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1)
-    (hw : ∀ γ : (MonoidWithZeroHom.ValueGroup₀ w)ˣ,
-      ∃ r s, 0 < w r ∧ 0 < w s ∧ w.restrict r / w.restrict s = γ.1)
-    (h : v.IsEquiv w) : WithVal v ≃ᵤ WithVal w where
+def IsEquiv.uniformEquiv (h : v.IsEquiv w) : WithVal v ≃ᵤ WithVal w where
   __ := WithVal.congr v w (.refl R)
-  uniformContinuous_toFun := h.uniformContinuous_congr hw
-  uniformContinuous_invFun := h.symm.uniformContinuous_congr hv
+  uniformContinuous_toFun := h.uniformContinuous_congr
+  uniformContinuous_invFun := h.symm.uniformContinuous_congr
 
 /-- Let `v : Valuation R Γ₀`. If `R` has `Valued R Γ₀'` defined via construction through
 `w : Valuation R Γ₀'`, with `v` equivalent to `w`, then `WithVal.equiv` defines a uniform
@@ -561,15 +582,13 @@ theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
     {w : Valuation K Γ₀'} (h : v.IsEquiv w) {x : v.Completion} :
-    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv (h.uniformEquiv (restrict_exists_div_eq v)
-      (restrict_exists_div_eq w)) x) ≤ 1 := by
+    Valued.v x ≤ 1 ↔ Valued.v (mapEquiv h.uniformEquiv x) ≤ 1 := by
   induction x using induction_on with
   | hp =>
     have h1 (x : UniformSpace.Completion (WithVal v)) :
       Valued.v x ≤ 1 ↔ Valued.v.restrict x ≤ 1 := by rw [restrict_le_one_iff]
     simp_rw [h1]
-    convert (mapEquiv (h.uniformEquiv (restrict_exists_div_eq v)
-      (restrict_exists_div_eq w))).toHomeomorph.isClosed_setOf_iff
+    convert (mapEquiv h.uniformEquiv).toHomeomorph.isClosed_setOf_iff
       (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
     rw [restrict_le_one_iff]
     rfl
