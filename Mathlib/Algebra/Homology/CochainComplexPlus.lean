@@ -52,11 +52,6 @@ abbrev ι : Plus C ⥤ CochainComplex C ℤ := ObjectProperty.ι _
 def fullyFaithfulι : (ι C).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
-/-- The class of quasi-isomorphisms in the category of bounded
-below cochain complexes. -/
-def quasiIso [CategoryWithHomology C] : MorphismProperty (Plus C) :=
-  (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).inverseImage (ι C)
-
 instance (J : Type) [Category J] [FinCategory J] [HasLimitsOfShape J C] :
     (CochainComplex.plus C).IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := by
@@ -98,6 +93,20 @@ lemma mono_iff [HasLimitsOfShape WalkingCospan C] {X Y : Plus C} (f : X ⟶ Y) :
     Mono f ↔ Mono f.hom :=
   ⟨fun _ ↦ inferInstanceAs (Mono ((ι C).map f)),
     fun _ ↦ Functor.mono_of_mono_map (ι C) (by assumption)⟩
+
+/-- The class of quasi-isomorphisms in the category of bounded
+below cochain complexes. -/
+def quasiIso [CategoryWithHomology C] : MorphismProperty (Plus C) :=
+  (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).inverseImage (ι C)
+
+instance [CategoryWithHomology C] : (quasiIso C).HasTwoOutOfThreeProperty := by
+  dsimp [quasiIso]
+  infer_instance
+
+instance [CategoryWithHomology C] : (quasiIso C).IsStableUnderRetracts := by
+  dsimp [quasiIso]
+  infer_instance
+
 
 end
 

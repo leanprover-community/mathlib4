@@ -14,7 +14,16 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 
 /-!
-# The model category structure on C^+
+# The model category structure on bounded below complexes
+
+Let `C` be an abelian category with enough injectives. In this file,
+we define a model category structure on the category `CochainComplex.Plus C`
+of bounded below cochain complexes in `C`.
+The cofibrations are monomorphisms, the weak equivalences are
+quasi-isomorphisms and the fibrations are those morphisms
+that are degreewise epimorphisms with an injective kernel.
+The `ModelCategory` instance is scoped in the namespace
+`CochainComplex.Plus.modelCategoryQuillen`.
 
 -/
 
@@ -35,14 +44,6 @@ scoped instance : CategoryWithCofibrations (CochainComplex.Plus C) where
 scoped instance : CategoryWithFibrations (CochainComplex.Plus C) where
   fibrations := degreewiseEpiWithInjectiveKernel.inverseImage (ι C)
 
-instance : (quasiIso C).HasTwoOutOfThreeProperty := by
-  dsimp [quasiIso]
-  infer_instance
-
-instance : (quasiIso C).IsStableUnderRetracts := by
-  dsimp [quasiIso]
-  infer_instance
-
 instance : (weakEquivalences (Plus C)).HasTwoOutOfThreeProperty :=
   inferInstanceAs (quasiIso C).HasTwoOutOfThreeProperty
 
@@ -62,6 +63,12 @@ lemma cofibration_iff {X Y : Plus C} (f : X ⟶ Y) :
 lemma fibration_iff {X Y : Plus C} (f : X ⟶ Y) :
     Fibration f ↔ degreewiseEpiWithInjectiveKernel f.hom :=
   HomotopicalAlgebra.fibration_iff _
+
+lemma isFibrant_iff (X : Plus C) :
+    IsFibrant X ↔ ∀ (n : ℤ), Injective (X.obj.X n) := by
+  rw [HomotopicalAlgebra.isFibrant_iff, fibration_iff,
+    degreewiseEpiWithInjectiveKernel_iff_of_isZero]
+  exact Functor.map_isZero (Plus.ι C) (IsZero.of_mono_zero _ X)
 
 lemma weakEquivalence_iff {X Y : Plus C} (f : X ⟶ Y) :
     WeakEquivalence f ↔ QuasiIso f.hom :=
@@ -151,8 +158,7 @@ instance : (trivialCofibrations (Plus C)).HasFactorization (fibrations (Plus C))
       hi :=
         ⟨by rwa [← HomotopicalAlgebra.cofibration_iff, cofibration_iff, Plus.mono_iff],
           by assumption⟩
-      hp := hp
-    }⟩
+      hp := hp }⟩
 
 instance : (cofibrations (Plus C)).HasFactorization (trivialFibrations (Plus C)) where
   nonempty_mapFactorizationData := by
@@ -167,16 +173,8 @@ instance : (cofibrations (Plus C)).HasFactorization (trivialFibrations (Plus C))
       p := ObjectProperty.homMk p
       hi := by
         rwa [← HomotopicalAlgebra.cofibration_iff, cofibration_iff, Plus.mono_iff]
-      hp := ⟨hp, by assumption⟩
-    }⟩
+      hp := ⟨hp, by assumption⟩ }⟩
 
 scoped instance : ModelCategory (CochainComplex.Plus C) where
-
-omit [EnoughInjectives C] in
-lemma isFibrant_iff (X : Plus C) :
-    IsFibrant X ↔ ∀ (n : ℤ), Injective (X.obj.X n) := by
-  rw [HomotopicalAlgebra.isFibrant_iff, fibration_iff,
-    degreewiseEpiWithInjectiveKernel_iff_of_isZero]
-  exact Functor.map_isZero (Plus.ι C) (IsZero.of_mono_zero _ X)
 
 end CochainComplex.Plus.modelCategoryQuillen
