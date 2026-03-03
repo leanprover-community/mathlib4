@@ -400,9 +400,7 @@ lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_
   · simp only [coveringNumber, le_iInf_iff]
     intro C hC_subset hC_cover
     obtain ⟨C', hC'_subset, rfl⟩ : ∃ C', C' ⊆ A ∧ C = C'.image f := by
-      have (x : C) : ∃ y ∈ A, f y = x := by
-        have hx : (x : Y) ∈ f '' A := hC_subset x.2
-        simpa only [Set.mem_image] using hx
+      have (x : C) : ∃ y ∈ A, f y = x := by simpa using hC_subset x.2
       choose g hg_mem hg using this
       refine ⟨Set.range g, ?_, ?_⟩
       · rwa [Set.range_subset_iff]
