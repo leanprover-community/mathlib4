@@ -259,12 +259,6 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_apply {n : ℕ} (f : Fin (n + 1) �
     <;> simp_all [diagonalSuccIsoTensorTrivial]
     <;> rfl
 
-
-    -- <;> simp_all only [tensorObj_V, diagonalSuccIsoTensorTrivial, Iso.trans_hom, tensorIso_hom,
-    --   Iso.refl_hom, id_tensorHom, comp_hom, whiskerLeft_hom, types_comp_apply, whiskerLeft_apply,
-    --   leftRegularTensorIso_hom_hom, tensor_ρ, tensor_apply, ofMulAction_apply]
-    -- <;> cat_disch
-
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem diagonalSuccIsoTensorTrivial_inv_hom_apply {n : ℕ} (g : G) (f : Fin n → G) :
