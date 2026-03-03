@@ -318,7 +318,6 @@ lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜
     postcompLM T f = T ∘ f :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (n k) in
 /-- `iteratedFDerivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓^{k}_{K}(E, E [×i]→L[ℝ] F)`.
@@ -378,7 +377,6 @@ lemma iteratedFDerivWithOrderLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [Nontriv
       = iteratedFDerivWithOrderLM 𝕜' n k i :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `iteratedFDerivLM 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓_{K}(E, E [×i]→L[ℝ] F)`.
 
@@ -680,7 +678,6 @@ instance : T3Space 𝓓^{n}_{K}(E, F) :=
     (toBoundedContinuousFunctionCLM ℝ).continuous
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 theorem seminorm_postcompLM_le [LinearMap.CompatibleSMul F F' ℝ 𝕜] {i : ℕ} (T : F →L[𝕜] F')
     (f : 𝓓^{n}_{K}(E, F)) :
     N[𝕜]_{K, n, i} (postcompLM T f) ≤ ‖T‖ * N[𝕜]_{K, n, i} f := by

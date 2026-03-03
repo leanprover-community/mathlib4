@@ -99,7 +99,6 @@ theorem hasSeparatingCovers_iff_separatedNhds {s t : Set X} :
         fun _ ↦
           ⟨V_open, disjoint_of_subset (fun ⦃a⦄ a ↦ a) h_sub_U (UV_dis.closure_right U_open).symm⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Set.hasSeparatingCover_empty_left (s : Set X) : HasSeparatingCover ∅ s :=
   ⟨fun _ ↦ ∅, empty_subset (⋃ _, ∅),
    fun _ ↦ ⟨isOpen_empty, by simp only [closure_empty, empty_disjoint]⟩⟩
