@@ -259,21 +259,13 @@ instance hasRightDualLeftDual {X : C} [HasLeftDual X] : HasRightDual ᘁX where
 instance hasLeftDualRightDual {X : C} [HasRightDual X] : HasLeftDual Xᘁ where
   leftDual := X
 
-instance hasRightDualTensor {X Y : C} [HasRightDual X] [HasRightDual Y] :
+def hasRightDualTensor {X Y : C} [HasRightDual X] [HasRightDual Y] :
     HasRightDual (X ⊗ Y) where
   rightDual := Yᘁ ⊗ Xᘁ
 
-instance hasLeftDualTensor {X Y : C} [HasLeftDual X] [HasLeftDual Y] :
+def hasLeftDualTensor {X Y : C} [HasLeftDual X] [HasLeftDual Y] :
     HasLeftDual (X ⊗ Y) where
   leftDual := ᘁY ⊗ ᘁX
-
-@[simp]
-theorem rightDual_tensor {X Y : C} [HasRightDual X] [HasRightDual Y] :
-    (X ⊗ Y)ᘁ = Yᘁ ⊗ Xᘁ := rfl
-
-@[simp]
-theorem leftDual_tensor {X Y : C} [HasLeftDual X] [HasLeftDual Y] :
-    ᘁ(X ⊗ Y) = ᘁY ⊗ ᘁX := rfl
 
 @[simp]
 theorem leftDual_rightDual {X : C} [HasRightDual X] : ᘁXᘁ = X :=
@@ -677,6 +669,20 @@ theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Is
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext
   simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id]
+
+/-- The right dual of a tensor product is isomorphic to the reversed tensor product of
+the right duals. -/
+def rightDualTensorIso (X Y : C) [HasRightDual X] [HasRightDual Y]
+    [HasRightDual (X ⊗ Y)] :
+    (X ⊗ Y)ᘁ ≅ Yᘁ ⊗ Xᘁ :=
+  rightDualIso HasRightDual.exact ExactPairing.tensor
+
+/-- The left dual of a tensor product is isomorphic to the reversed tensor product of
+the left duals. -/
+def leftDualTensorIso (X Y : C) [HasLeftDual X] [HasLeftDual Y]
+    [HasLeftDual (X ⊗ Y)] :
+    leftDual (X ⊗ Y) ≅ leftDual Y ⊗ leftDual X :=
+  leftDualIso HasLeftDual.exact ExactPairing.tensor
 
 /-- A right rigid monoidal category is one in which every object has a right dual. -/
 class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
