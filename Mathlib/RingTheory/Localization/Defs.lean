@@ -313,6 +313,7 @@ theorem exists_mk'_eq (z : S) : ∃ (x : R) (y : M), mk' S x y = z :=
 
 variable (S) in
 /-- The localization of a `Fintype` is a `Fintype`. Cannot be an instance. -/
+@[implicit_reducible]
 noncomputable def fintype' [Fintype R] : Fintype S :=
   have := Classical.propDecidable
   .ofSurjective (Function.uncurry <| IsLocalization.mk' S) <| mk'_surjective M
@@ -320,6 +321,7 @@ noncomputable def fintype' [Fintype R] : Fintype S :=
 variable {M}
 
 /-- Localizing at a submonoid with 0 inside it leads to the trivial ring. -/
+@[implicit_reducible]
 def uniqueOfZeroMem (h : (0 : R) ∈ M) : Unique S :=
   uniqueOfZeroEqOne <| by simpa using IsLocalization.map_units S ⟨0, h⟩
 

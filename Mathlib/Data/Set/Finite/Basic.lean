@@ -67,6 +67,7 @@ This is the `Fintype` projection for a `Set.Finite`.
 
 Note that because `Finite` isn't a typeclass, this definition will not fire if it
 is made into an instance -/
+@[implicit_reducible]
 protected noncomputable def Finite.fintype {s : Set α} (h : s.Finite) : Fintype s :=
   h.nonempty_fintype.some
 
@@ -237,6 +238,7 @@ instance fintypeUniv [Fintype α] : Fintype (@univ α) :=
 instance fintypeTop [Fintype α] : Fintype (⊤ : Set α) := inferInstanceAs (Fintype (univ : Set α))
 
 /-- If `(Set.univ : Set α)` is finite then `α` is a finite type. -/
+@[implicit_reducible]
 noncomputable def fintypeOfFiniteUniv (H : (univ (α := α)).Finite) : Fintype α :=
   @Fintype.ofEquiv _ (univ : Set α) H.fintype (Equiv.Set.univ _)
 
@@ -263,6 +265,7 @@ instance fintypeInterOfRight (s t : Set α) [Fintype t] [DecidablePred (· ∈ s
   Fintype.ofFinset {a ∈ t.toFinset | a ∈ s} <| by simp [and_comm]
 
 /-- A `Fintype` structure on a set defines a `Fintype` structure on its subset. -/
+@[implicit_reducible]
 def fintypeSubset (s : Set α) {t : Set α} [Fintype s] [DecidablePred (· ∈ t)] (h : t ⊆ s) :
     Fintype t := by
   rw [← inter_eq_self_of_subset_right h]
@@ -290,11 +293,13 @@ instance fintypeInsert (a : α) (s : Set α) [DecidableEq α] [Fintype s] :
   Fintype.ofFinset (insert a s.toFinset) <| by simp
 
 /-- A `Fintype` structure on `insert a s` when inserting a new element. -/
+@[implicit_reducible]
 def fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     Fintype (insert a s : Set α) :=
   Fintype.ofFinset ⟨a ::ₘ s.toFinset.1, s.toFinset.nodup.cons (by simp [h])⟩ <| by simp
 
 /-- A `Fintype` structure on `insert a s` when inserting a pre-existing element. -/
+@[implicit_reducible]
 def fintypeInsertOfMem {a : α} (s : Set α) [Fintype s] (h : a ∈ s) : Fintype (insert a s : Set α) :=
   Fintype.ofFinset s.toFinset <| by simp [h]
 
@@ -315,6 +320,7 @@ instance fintypeImage [DecidableEq β] (s : Set α) (f : α → β) [Fintype s] 
 
 /-- If a function `f` has a partial inverse `g` and the image of `s` under `f` is a set with
 a `Fintype` instance, then `s` has a `Fintype` structure as well. -/
+@[implicit_reducible]
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
   Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩

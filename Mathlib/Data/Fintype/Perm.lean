@@ -137,6 +137,7 @@ theorem card_perms_of_finset : ∀ s : Finset α, #(permsOfFinset s) = (#s)! := 
   rintro ⟨⟨l⟩, hs⟩; exact length_permsOfList l
 
 /-- The collection of permutations of a fintype is a fintype. -/
+@[implicit_reducible]
 def fintypePerm [Fintype α] : Fintype (Perm α) :=
   ⟨permsOfFinset (@Finset.univ α _), by simp [mem_perms_of_finset_iff]⟩
 

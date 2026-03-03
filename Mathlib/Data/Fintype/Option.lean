@@ -42,11 +42,13 @@ theorem Fintype.card_option {α : Type*} [Fintype α] :
   (Finset.card_cons (by simp)).trans <| congr_arg₂ _ (card_map _) rfl
 
 /-- If `Option α` is a `Fintype` then so is `α` -/
+@[implicit_reducible]
 def fintypeOfOption {α : Type*} [Fintype (Option α)] : Fintype α :=
   ⟨Finset.eraseNone (Fintype.elems (α := Option α)), fun x =>
     mem_eraseNone.mpr (Fintype.complete (some x))⟩
 
 /-- A type is a `Fintype` if its successor (using `Option`) is a `Fintype`. -/
+@[implicit_reducible]
 def fintypeOfOptionEquiv [Fintype α] (f : α ≃ Option β) : Fintype β :=
   haveI := Fintype.ofEquiv _ f
   fintypeOfOption
