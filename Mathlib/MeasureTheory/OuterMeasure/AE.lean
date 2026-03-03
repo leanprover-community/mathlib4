@@ -233,12 +233,12 @@ theorem inter_ae_eq_empty_of_ae_eq_empty_right (h : t =ᵐ[μ] (∅ : Set α)) :
   convert ae_eq_set_inter (ae_eq_refl s) h
   rw [inter_empty]
 
-theorem ae_eq_set_iInter {s : Set β} (hs : s.Countable) {t t' : β → Set α}
+theorem ae_eq_set_biInter {s : Set β} (hs : s.Countable) {t t' : β → Set α}
     (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :
     (⋂ b ∈ s, t b : Set α) =ᵐ[μ] (⋂ b ∈ s, t' b : Set α) :=
   .countable_bInter hs h
 
-theorem ae_eq_set_iUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
+theorem ae_eq_set_biUnion {s : Set β} (hs : s.Countable) {t t' : β → Set α}
     (h : ∀ b ∈ s, t b =ᵐ[μ] t' b) :
     (⋃ b ∈ s, t b : Set α) =ᵐ[μ] (⋃ b ∈ s, t' b : Set α) :=
   .countable_bUnion hs h
