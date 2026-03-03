@@ -617,7 +617,8 @@ lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
   case empty => simp
   case equiv =>
     have (a : β) : Finite ((ι ∘ ⇑e) a) := inferInstanceAs <| Finite (ι (e a))
-    specialize H (ι ∘ ⇑e) (x := fun b ↦ x (e b)) (by simp [hx])
+    specialize H (ι ∘ ⇑e) (x := fun b ↦ x (e b)) (fun b ↦ hx _)
+    set_option backward.isDefEq.respectTransparency false in -- temporary measure
     rw [prod_equiv e (t := .univ) (by simp) (g := fun b ↦ mulHeight (x b)) (fun _ _ ↦ rfl)] at H
     rw [← H, ← mulHeight_comp_equiv (e.piCongrLeft ι).symm]
     refine congrArg mulHeight <| funext fun I ↦ ?_
@@ -628,6 +629,7 @@ lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
   case option =>
     simp only [Fintype.prod_option]
     have (b : β) : Finite ((ι ∘ some) b) := by grind
+    set_option backward.isDefEq.respectTransparency false in -- temporary measure
     rw [← ih (ι ∘ Option.some) (x := fun b i ↦ x (some b) i) (by grind),
       ← mulHeight_fun_mul_eq (hx none) ?hprod]
     case hprod =>
