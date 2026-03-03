@@ -28,6 +28,7 @@ noncomputable section
 
 namespace TopologicalSpace
 
+set_option backward.isDefEq.respectTransparency false in
 theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     t = ⨅ u : Opens X, sierpinskiSpace.induced (· ∈ u) := by
   apply le_antisymm

@@ -134,6 +134,7 @@ theorem compl_beattySeq' {r s : ℝ} (hrs : r.HolderConjugate s) :
 
 open scoped symmDiff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Generalization of Rayleigh's theorem on Beatty sequences. Let `r` be a real number greater
 than 1, and `1/r + 1/s = 1`. Then `B⁺_r` and `B⁺'_s` partition the positive integers. -/
 theorem beattySeq_symmDiff_beattySeq'_pos {r s : ℝ} (hrs : r.HolderConjugate s) :

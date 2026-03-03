@@ -77,6 +77,7 @@ lemma IsStrictSegal.ext [X.IsStrictSegal] {d : ℕ} {hd} {x y : X _⦋d + 1⦌�
     x = y :=
   X.spine_injective (by ext i; apply h)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {X} in
 lemma IsStrictSegal.hom_ext {Y : SSet.Truncated.{u} (n + 1)} [Y.IsStrictSegal]
     {f g : X ⟶ Y} (h : ∀ (x : X _⦋1⦌ₙ₊₁), f.app _ x = g.app _ x) : f = g := by
@@ -197,6 +198,7 @@ section spine_δ
 variable (m : ℕ) (h : m ≤ n) (f : Path X (m + 1))
 variable {i : Fin (m + 1)} {j : Fin (m + 2)}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 the common vertices will agree with those of the original path `f`. In particular,
 a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
@@ -209,6 +211,7 @@ lemma spine_δ_vertex_lt (hij : i.castSucc < j) :
     Fin.succAboveOrderEmb_apply, OrderEmbedding.toOrderHom_coe]
   rw [Fin.succAbove_of_castSucc_lt j i hij]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 a vertex `i` with `j ≤ i` can be identified with vertex `i + 1` in the original
 path. -/
@@ -378,6 +381,7 @@ lemma spineToSimplex_map {X Y : SSet.{u}} (sx : StrictSegal X)
 variable (f : Path X (n + 1))
 variable {i : Fin (n + 1)} {j : Fin (n + 2)}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 the common vertices will agree with those of the original path `f`. In particular,
 a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
@@ -391,6 +395,7 @@ lemma spine_δ_vertex_lt (h : i.castSucc < j) :
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_castSucc_lt j i h]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 a vertex `i` with `i ≥ j` can be identified with vertex `i + 1` in the original
 path. -/
@@ -450,6 +455,7 @@ namespace StrictSegalCore
 
 variable {X} (h : ∀ n, X.StrictSegalCore n) {n : ℕ} (p : X.Path n)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `StrictSegalCore.spineToSimplex`. -/
 def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
   induction n with
@@ -489,6 +495,7 @@ lemma δ₀_spineToSimplex (p : X.Path (n + 1)) :
     X.δ 0 (spineToSimplex h p) = spineToSimplex h (p.interval 1 n) := by
   rw [spineToSimplex_succ, δ₀_concat]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma spineToSimplex_spine (s : X _⦋n⦌) : spineToSimplex h (X.spine _ s) = s := by
   induction n with
@@ -515,6 +522,7 @@ open SSet
 
 variable (C : Type u) [Category.{v} C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Simplices in the nerve of categories are uniquely determined by their spine.
 Indeed, this property describes the essential image of the nerve functor. -/
 def strictSegal : StrictSegal (nerve C) :=

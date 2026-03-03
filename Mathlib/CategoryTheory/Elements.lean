@@ -6,8 +6,8 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-public import Mathlib.CategoryTheory.Category.Cat
-public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.ShrinkYoneda
 
 /-!
 # The category of elements
@@ -39,6 +39,8 @@ category of elements, Grothendieck construction, comma category
 namespace CategoryTheory
 
 universe w v u
+
+open Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
 
@@ -147,6 +149,7 @@ def π : F.Elements ⥤ C where
 
 instance : (π F).Faithful where
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (π F).ReflectsIsomorphisms where
   reflects {X Y} f h := ⟨⟨⟨inv ((π F).map f),
     by rw [← map_snd f, ← FunctorToTypes.map_comp_apply]; simp⟩, by cat_disch⟩⟩
@@ -238,6 +241,7 @@ theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoned
     (fromCostructuredArrow F).obj (op (CostructuredArrow.mk f)) = ⟨op X, yonedaEquiv.1 f⟩ :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `F.Elementsᵒᵖ ≅ (yoneda, F)` given by yoneda lemma. -/
 @[simps]
 def costructuredArrowYonedaEquivalence (F : Cᵒᵖ ⥤ Type v) :
@@ -276,6 +280,7 @@ def costructuredArrowYonedaEquivalenceInverseπ (F : Cᵒᵖ ⥤ Type v) :
     (costructuredArrowYonedaEquivalence F).inverse ⋙ (π F).leftOp ≅ CostructuredArrow.proj _ _ :=
   Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The opposite of the category of elements of a presheaf of types
 is equivalent to a category of costructured arrows for the Yoneda embedding functor. -/
 @[simps]
@@ -315,7 +320,7 @@ def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.Rep
 /-- If `F` is represented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
 def Elements.isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
-    Limits.IsInitial (initialOfRepresentableBy h) :=
+    IsInitial (initialOfRepresentableBy h) :=
   .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd |>.op, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
     simp [← m.2, ← h.homEquiv_unop_comp]
 
@@ -328,7 +333,7 @@ def Elements.initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.Corepre
 /-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
 def Elements.isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
-    Limits.IsInitial (initialOfCorepresentableBy h) :=
+    IsInitial (initialOfCorepresentableBy h) :=
   .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
     simp [← m.2, ← h.homEquiv_comp]
 
@@ -341,7 +346,7 @@ def Elements.initial (A : C) : (yoneda.obj A).Elements :=
 
 /-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
 -/
-def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) :=
+def Elements.isInitial (A : C) : IsInitial (Elements.initial A) :=
   isInitialOfRepresentableBy (.yoneda A)
 
 end Functor

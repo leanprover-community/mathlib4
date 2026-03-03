@@ -83,6 +83,7 @@ def of_additive_of_le_measure
 
 open scoped ENNReal
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Consider an additive content on a dense ring of sets. Assume that it is dominated by a finite
 positive measure. Then it extends to a countably additive vector measure. -/
 lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]

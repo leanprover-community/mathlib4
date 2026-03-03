@@ -323,6 +323,7 @@ def toPreorder (C : ConvexCone R G) (h₁ : C.Pointed) : Preorder G where
   le_trans x y z xy zy := by simpa using add_mem zy xy
 
 /-- A pointed and salient cone defines a partial order. -/
+@[instance_reducible]
 def toPartialOrder (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Salient) : PartialOrder G :=
   { toPreorder C h₁ with
     le_antisymm := by

@@ -78,6 +78,7 @@ protected lemma Submartingale.stoppedAbove [IsFiniteMeasure μ] (hf : Submarting
 
 variable {r : ℝ} {R : ℝ≥0}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     (hbdd : ∀ᵐ ω ∂μ, ∀ i, |f (i + 1) ω - f i ω| ≤ R) (i : ℕ) :
     ∀ᵐ ω ∂μ, stoppedAbove f r i ω ≤ r + R := by
