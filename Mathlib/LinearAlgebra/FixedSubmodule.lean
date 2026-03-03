@@ -183,4 +183,3 @@ theorem fixedReduce_eq_one (e : V ≃ₗ[R] V) :
 end LinearEquiv
 
 end
-
