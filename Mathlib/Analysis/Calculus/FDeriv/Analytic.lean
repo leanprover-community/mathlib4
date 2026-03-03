@@ -771,7 +771,6 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     apply continuous_finset_sum _ (fun e _ ↦ ?_)
     exact (ContinuousMultilinearMap.coe_continuous _).comp (ContinuousLinearMap.continuous _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem iteratedFDeriv_eq (n : ℕ) :
     iteratedFDeriv 𝕜 n f = f.iteratedFDeriv n :=
   funext fun x ↦ (f.hasFTaylorSeriesUpTo_iteratedFDeriv.eq_iteratedFDeriv (m := n) le_top x).symm

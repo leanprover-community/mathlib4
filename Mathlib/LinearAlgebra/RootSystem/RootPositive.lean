@@ -172,7 +172,6 @@ def rootLength (i : ι) : S :=
 lemma rootLength_pos (i : ι) : 0 < B.rootLength i := by
   simpa using B.zero_lt_posForm_apply_root i
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rootLength_reflectionPerm_self (i : ι) :
     B.rootLength (P.reflectionPerm i i) = B.rootLength i := by
