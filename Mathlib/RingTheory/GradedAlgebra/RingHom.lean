@@ -154,12 +154,12 @@ protected theorem map_one (f : 𝒜 →+*ᵍ ℬ) : f 1 = 1 :=
   map_one f
 
 /-- Graded ring homomorphisms preserve addition. -/
-protected theorem map_add (f : 𝒜 →+*ᵍ ℬ) : ∀ a b, f (a + b) = f a + f b :=
-  map_add f
+protected theorem map_add (f : 𝒜 →+*ᵍ ℬ) (a b : A) : f (a + b) = f a + f b :=
+  map_add ..
 
 /-- Graded ring homomorphisms preserve multiplication. -/
-protected theorem map_mul (f : 𝒜 →+*ᵍ ℬ) : ∀ a b, f (a * b) = f a * f b :=
-  map_mul f
+protected theorem map_mul (f : 𝒜 →+*ᵍ ℬ) (a b : A) : f (a * b) = f a * f b :=
+  map_mul ..
 
 end
 
@@ -252,64 +252,48 @@ theorem cancel_left {g : ℬ →+*ᵍ 𝒞} {f₁ f₂ : 𝒜 →+*ᵍ ℬ} (hg 
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
 
-end GradedRingHom
-
-end SetLike
-
-section GradedRingHomClass
-
-variable [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
-
-section
-variable (𝒜 : ι → σ) (ℬ : ι → τ)
-variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
-
 -- Note: if `GradedAddHom` is added later, then the assumptions can be relaxed.
 /-- A graded ring homomorphism descends to an additive homomorphism on each indexed component. -/
-@[simps!] def gradedAddHom (f : F) (i : ι) : 𝒜 i →+ ℬ i where
+@[simps!] def gradedAddHom [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
+    (f : 𝒜 →+*ᵍ ℬ) (i : ι) : 𝒜 i →+ ℬ i where
   toFun x := ⟨f x, map_mem f x.2⟩
   map_zero' := by ext; simp
   map_add' x y := by ext; simp
 
-end
-
-section
-variable [AddMonoid ι] (𝒜 : ι → σ) (ℬ : ι → τ) [SetLike.GradedMonoid 𝒜] [SetLike.GradedMonoid ℬ]
-variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
-
 /-- A graded ring homomorphism descends to a ring homomorphism on the zeroth component. -/
-@[simps!] def gradedZeroRingHom (f : F) : 𝒜 0 →+* ℬ 0 where
-  __ := gradedAddHom _ _ f 0
+@[simps!] def gradedZeroRingHom [AddSubmonoidClass σ A] [AddSubmonoidClass τ B] [AddMonoid ι]
+    [SetLike.GradedMonoid 𝒜] [SetLike.GradedMonoid ℬ] (f : 𝒜 →+*ᵍ ℬ) : 𝒜 0 →+* ℬ 0 where
+  __ := f.gradedAddHom 0
   map_one' := Subtype.ext <| map_one _
   map_mul' _ _ := Subtype.ext <| map_mul ..
 
-end
+end GradedRingHom
+
+end SetLike
 
 section GradedRing
-variable [DecidableEq ι] [AddMonoid ι] (𝒜 : ι → σ) (ℬ : ι → τ) [GradedRing 𝒜] [GradedRing ℬ]
+variable [DecidableEq ι] [AddMonoid ι] [AddSubmonoidClass σ A] [AddSubmonoidClass τ B]
+variable (𝒜 : ι → σ) (ℬ : ι → τ) [GradedRing 𝒜] [GradedRing ℬ]
 variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [RingHomClass F A B]
 
 -- not simp because `𝒜` cannot be inferred
-lemma decompose_map (f : F) {x : A} :
-    DirectSum.decompose ℬ (f x) = .map (gradedAddHom _ _ f) (.decompose 𝒜 x) := by
+lemma DirectSum.decompose_map (f : F) {x : A} :
+    DirectSum.decompose ℬ (f x) =
+    .map (GradedRingHom.gradedAddHom <| .ofClass f) (.decompose 𝒜 x) := by
   classical
   rw [← DirectSum.sum_support_decompose 𝒜 x, map_sum, DirectSum.decompose_sum,
     DirectSum.decompose_sum, map_sum]
   congr 1
-  ext n : 1
-  rw [DirectSum.decompose_of_mem _ (map_mem f (Subtype.prop _)),
-    DirectSum.decompose_of_mem _ (Subtype.prop _), DirectSum.map_of]
-  rfl
+  simp [DirectSum.decompose_of_mem _ (map_mem f (Subtype.prop _)),
+    DirectSum.decompose_of_mem _ (Subtype.prop _), DirectSum.map_of, GradedRingHom.gradedAddHom]
 
 -- not simp because `ℬ` cannot be inferred
 -- for every concrete instance of GradedFunLike, we need one simp lemma
-lemma map_coe_decompose (f : F) {x : A} {i : ι} :
+lemma map_directSumDecompose (f : F) {x : A} {i : ι} :
     f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i := by
-  simp [decompose_map 𝒜]
+  simp [DirectSum.decompose_map 𝒜]
 
-@[simp] lemma map_decompose (f : 𝒜 →+*ᵍ ℬ) {x : A} {i : ι} :
-    f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i := map_coe_decompose _ _ f
+@[simp] lemma GradedRingHom.map_decompose (f : 𝒜 →+*ᵍ ℬ) {x : A} {i : ι} :
+    f (DirectSum.decompose 𝒜 x i) = DirectSum.decompose ℬ (f x) i := map_directSumDecompose ..
 
 end GradedRing
-
-end GradedRingHomClass
