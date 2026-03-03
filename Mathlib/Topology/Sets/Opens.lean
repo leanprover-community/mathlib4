@@ -339,7 +339,6 @@ theorem IsBasis.isCompact_open_iff_eq_finite_iUnion {ι : Type*} (b : ι → Ope
     simp
   · exact hb'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsBasis.exists_finite_of_isCompact {B : Set (Opens α)} (hB : IsBasis B) {U : Opens α}
     (hU : IsCompact U.1) : ∃ Us ⊆ B, Us.Finite ∧ U = sSup Us := by
   classical

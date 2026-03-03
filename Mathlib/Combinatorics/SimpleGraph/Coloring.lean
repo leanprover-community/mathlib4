@@ -468,7 +468,6 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_of_chromaticNumber_eq_card [Fintype V]
     (h : G.chromaticNumber = Fintype.card V) : G = ⊤ := by
   classical
