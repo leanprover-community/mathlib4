@@ -19,7 +19,7 @@ directed iff each pair of elements has a shared upper bound.
 * `Directed r f`: Predicate stating that the indexed family `f` is `r`-directed.
 * `DirectedOn r s`: Predicate stating that the set `s` is `r`-directed.
 * `IsDirected α r`: Prop-valued mixin stating that `α` is `r`-directed. Follows the style of the
-  unbundled relation classes such as `IsTotal`.
+  unbundled relation classes such as `Std.Total`.
 
 ## TODO
 
@@ -126,8 +126,11 @@ theorem directedOn_of_inf_mem [SemilatticeInf α] {S : Set α}
     (H : ∀ ⦃i j⦄, i ∈ S → j ∈ S → i ⊓ j ∈ S) : DirectedOn (· ≥ ·) S :=
   directedOn_of_sup_mem (α := αᵒᵈ) H
 
-theorem IsTotal.directed [IsTotal α r] (f : ι → α) : Directed r f := fun i j =>
+theorem Std.Total.directed [Std.Total r] (f : ι → α) : Directed r f := fun i j =>
   Or.casesOn (total_of r (f i) (f j)) (fun h => ⟨j, h, refl _⟩) fun h => ⟨i, refl _, h⟩
+
+theorem Std.Total.directedOn [Std.Total r] (s : Set α) : DirectedOn r s := fun a ha b hb =>
+  Or.casesOn (total_of r a b) (fun h => ⟨b, hb, h, refl _⟩) fun h => ⟨a, ha, refl _, h⟩
 
 /-- `IsDirected α r` states that for any elements `a`, `b` there exists an element `c` such that
 `r a c` and `r b c`. -/
@@ -136,7 +139,7 @@ class IsDirected (α : Type*) (r : α → α → Prop) : Prop where
   directed (a b : α) : ∃ c, r a c ∧ r b c
 
 /-- A class for an `IsDirected` relation `≤`. -/
-@[to_dual IsCodirectedOrder /-- A class for an `IsDirected` relation `≥`. -/]
+@[to_dual /-- A class for an `IsDirected` relation `≥`. -/]
 abbrev IsDirectedOrder (α : Type*) [LE α] : Prop := IsDirected α (· ≤ ·)
 
 theorem directed_of (r : α → α → Prop) [IsDirected α r] (a b : α) : ∃ c, r a c ∧ r b c :=
@@ -165,8 +168,8 @@ theorem directedOn_univ_iff : DirectedOn r Set.univ ↔ IsDirected α r :=
     @directedOn_univ _ _⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsTotal.to_isDirected [IsTotal α r] : IsDirected α r :=
-  directed_id_iff.1 <| IsTotal.directed _
+instance (priority := 100) Std.Total.to_isDirected [Std.Total r] : IsDirected α r :=
+  directed_id_iff.1 <| Std.Total.directed _
 
 theorem isDirected_mono [IsDirected α r] (h : ∀ ⦃a b⦄, r a b → s a b) : IsDirected α s :=
   ⟨fun a b =>
@@ -181,33 +184,37 @@ theorem exists_ge_ge [LE α] [IsDirectedOrder α] (a b : α) : ∃ c, a ≤ c �
 instance OrderDual.isDirected_ge [LE α] [IsDirectedOrder α] : IsCodirectedOrder αᵒᵈ := by
   assumption
 
+-- `to_dual` cannot yet reorder arguments of arguments
 /-- A monotone function on an upwards-directed type is directed. -/
+@[to_dual none] -- @[to_dual directed_of_isDirected_ge]
 theorem directed_of_isDirected_le [LE α] [IsDirectedOrder α] {f : α → β} {r : β → β → Prop}
     (H : ∀ ⦃i j⦄, i ≤ j → r (f i) (f j)) : Directed r f :=
   directed_id.mono_comp _ H
 
+@[to_dual directed_ge]
 theorem Monotone.directed_le [Preorder α] [IsDirectedOrder α] [Preorder β] {f : α → β} :
     Monotone f → Directed (· ≤ ·) f :=
   directed_of_isDirected_le
 
-theorem Antitone.directed_ge [Preorder α] [IsDirectedOrder α] [Preorder β] {f : α → β}
-    (hf : Antitone f) : Directed (· ≥ ·) f :=
-  directed_of_isDirected_le hf
-
 /-- An antitone function on a downwards-directed type is directed. -/
+@[to_dual none]
 theorem directed_of_isDirected_ge [LE α] [IsCodirectedOrder α] {r : β → β → Prop} {f : α → β}
     (hf : ∀ a₁ a₂, a₁ ≤ a₂ → r (f a₂) (f a₁)) : Directed r f :=
   directed_of_isDirected_le (α := αᵒᵈ) fun _ _ ↦ hf _ _
 
-@[to_dual existing directed_le]
-theorem Monotone.directed_ge [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}
-    (hf : Monotone f) : Directed (· ≥ ·) f :=
-  directed_of_isDirected_ge fun _ _ h ↦ hf h
-
-@[to_dual existing directed_ge]
+@[to_dual directed_ge]
 theorem Antitone.directed_le [Preorder α] [IsCodirectedOrder α] [Preorder β] {f : α → β}
     (hf : Antitone f) : Directed (· ≤ ·) f :=
-  directed_of_isDirected_ge fun _ _ h ↦ hf h
+  directed_of_isDirected_ge hf
+
+@[to_dual]
+lemma directedOn_iff_isDirectedOrder [LE α] {s : Set α} :
+    DirectedOn (· ≤ ·) s ↔ IsDirectedOrder s := by
+  rw [directedOn_iff_directed, IsDirectedOrder]
+  exact ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
+
+@[to_dual]
+alias ⟨DirectedOn.isDirectedOrder, DirectedOn.of_isDirectedOrder⟩ := directedOn_iff_isDirectedOrder
 
 section Reflexive
 
@@ -258,6 +265,15 @@ theorem isTop_or_exists_gt [IsDirectedOrder α] (a : α) : IsTop a ∨ ∃ b, a 
 theorem isTop_iff_isMax [IsDirectedOrder α] : IsTop a ↔ IsMax a :=
   ⟨IsTop.isMax, IsMax.isTop⟩
 
+/-- If `f` is monotone, `g` is antitone, and `f ≤ g`, then for all `a`, `b` we have `f a ≤ g b`. -/
+theorem Monotone.forall_le_of_antitone [IsDirectedOrder α] [Preorder β] {f g : α → β}
+    (hf : Monotone f) (hg : Antitone g) (h : f ≤ g) (m n : α) : f m ≤ g n := by
+  obtain ⟨k, hkm, hkn⟩ := exists_ge_ge m n
+  calc
+    f m ≤ f k := hf hkm
+    _ ≤ g k := h _
+    _ ≤ g n := hg hkn
+
 end Preorder
 
 section PartialOrder
@@ -297,8 +313,8 @@ variable [Preorder α] {f : α → β} {s : Set α}
 /-- If `f` is monotone and antitone on a directed order, then `f` is constant. -/
 lemma constant_of_monotone_antitone [IsDirectedOrder α] (hf : Monotone f) (hf' : Antitone f)
     (a b : α) : f a = f b := by
-  obtain ⟨c, hac, hbc⟩ := exists_ge_ge a b
-  exact le_antisymm ((hf hac).trans <| hf' hbc) ((hf hbc).trans <| hf' hac)
+  have := hf.forall_le_of_antitone hf' le_rfl
+  exact le_antisymm (this a b) (this b a)
 
 /-- If `f` is monotone and antitone on a directed set `s`, then `f` is constant on `s`. -/
 lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn f s)
@@ -310,13 +326,13 @@ lemma constant_of_monotoneOn_antitoneOn (hf : MonotoneOn f s) (hf' : AntitoneOn 
 end PartialOrder
 
 -- see Note [lower instance priority]
-@[to_dual instIsCodirectedOrder]
+@[to_dual]
 instance (priority := 100) SemilatticeSup.instIsDirectedOrder [SemilatticeSup α] :
     IsDirectedOrder α :=
   ⟨fun a b => ⟨a ⊔ b, le_sup_left, le_sup_right⟩⟩
 
 -- see Note [lower instance priority]
-@[to_dual instIsCodirectedOrder]
+@[to_dual]
 instance (priority := 100) OrderTop.instIsDirectedOrder [LE α] [OrderTop α] : IsDirectedOrder α :=
   ⟨fun _ _ => ⟨⊤, le_top _, le_top _⟩⟩
 

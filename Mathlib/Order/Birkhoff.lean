@@ -227,16 +227,18 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   -- `OrderIso.coe_toOrderEmbedding` and `Fintype.coe_finsetOrderIsoSet_symm`
   simp [birkhoffFinset, (OrderIso.coe_toOrderEmbedding)]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
   unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
 
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by
   have : Subsingleton (OrderBot α) := inferInstance
-  simp [birkhoffSet, this.allEq]
+  simp +instances [birkhoffSet, this.allEq]
 
 variable [DecidableEq α]
 

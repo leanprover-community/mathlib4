@@ -99,6 +99,30 @@ lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
   simp [Set.disjoint_left]
 
 include M in
+protected theorem map_inf (I J : Ideal R) :
+    (I ⊓ J).map (algebraMap R S) = I.map (algebraMap R S) ⊓ J.map (algebraMap R S) := by
+  refine le_antisymm (Ideal.map_inf_le (algebraMap R S)) fun x hx ↦ ?_
+  simp only [Ideal.mem_inf, IsLocalization.mem_map_algebraMap_iff M, Prod.exists] at hx ⊢
+  obtain ⟨⟨⟨i, hi⟩, mi, hi'⟩, ⟨j, hj⟩, mj, hj'⟩ := hx
+  simp only [← IsLocalization.eq_mk'_iff_mul_eq] at hi' hj'
+  obtain ⟨m, hm⟩ := IsLocalization.eq.mp (hi'.symm.trans hj')
+  rw [← mul_assoc, ← mul_assoc, mul_comm, ← mul_comm (j : R)] at hm
+  refine ⟨⟨i * (m * mj : M), I.mul_mem_right _ hi, hm ▸ J.mul_mem_right _ hj⟩, mi * (m * mj), ?_⟩
+  rwa [← IsLocalization.eq_mk'_iff_mul_eq, Subtype.coe_mk, IsLocalization.mk'_cancel]
+
+/-- `IsLocalization.map_inf` as an `FrameHom`. -/
+def mapFrameHom : FrameHom (Ideal R) (Ideal S) where
+  toFun := Ideal.map (algebraMap R S)
+  map_inf' := IsLocalization.map_inf M S
+  map_top' := Ideal.map_top (algebraMap R S)
+  map_sSup' _ := (Ideal.gc_map_comap (algebraMap R S)).l_sSup.trans sSup_image.symm
+
+@[simp]
+lemma mapFrameHom_apply (I : Ideal R) :
+    IsLocalization.mapFrameHom M S I = I.map (algebraMap R S) :=
+  rfl
+
+include M in
 theorem map_comap (J : Ideal S) :
     Ideal.map (algebraMap R S) (Ideal.comap (algebraMap R S) J) = J :=
   le_antisymm (Ideal.map_le_iff_le_comap.2 le_rfl) fun x hJ => by
@@ -243,6 +267,14 @@ theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     rw [pow_add, mul_assoc, ← mul_comm x, e]
     exact I.mul_mem_left _ y.2
 
+lemma map_eq_top_of_not_subset {I : Ideal R} (hle : ¬ (I : Set R) ⊆ Mᶜ) :
+    Ideal.map (algebraMap R S) I = ⊤ := by
+  simp only [Set.not_subset_iff_exists_mem_notMem, Set.mem_compl_iff, not_not] at hle
+  obtain ⟨y, hy, hny⟩ := hle
+  apply Ideal.eq_top_of_isUnit_mem
+  · exact Ideal.mem_map_of_mem (algebraMap R _) hy
+  · exact IsLocalization.map_units _ (⟨y, hny⟩ : M)
+
 end CommSemiring
 
 section CommRing
@@ -250,6 +282,7 @@ section CommRing
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 variable [Algebra R S] [IsLocalization M S]
 
+set_option backward.isDefEq.respectTransparency false in
 include M in
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,

@@ -91,7 +91,7 @@ lemma coe_comp {X Y Z : BddOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z
 
 @[simp]
 lemma forget_map {X Y : BddOrd} (f : X ⟶ Y) :
-    (forget BddOrd).map f = f := rfl
+    (forget BddOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : BddOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -168,6 +168,7 @@ def dual : BddOrd ⥤ BddOrd where
   obj X := of Xᵒᵈ
   map f := ofHom f.hom.dual
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded orders from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BddOrd.{u}} (e : α ≃o β) : α ≅ β where

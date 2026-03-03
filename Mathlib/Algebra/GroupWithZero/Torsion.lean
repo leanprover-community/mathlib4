@@ -20,9 +20,10 @@ torsion-free.
 
 @[expose] public section
 
-variable {M : Type*} [CancelCommMonoidWithZero M]
+variable {M : Type*} [CommMonoidWithZero M]
 
-theorem IsMulTorsionFree.mk' (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :
+theorem IsMulTorsionFree.mk' [NoZeroDivisors M]
+    (ih : ∀ x ≠ 0, ∀ y ≠ 0, ∀ n ≠ 0, (x ^ n : M) = y ^ n → x = y) :
     IsMulTorsionFree M := by
   refine ⟨fun n hn x y hxy ↦ ?_⟩
   by_cases h : x ≠ 0 ∧ y ≠ 0

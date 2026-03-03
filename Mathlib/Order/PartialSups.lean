@@ -11,6 +11,8 @@ public import Mathlib.Order.Interval.Finset.Nat
 public import Mathlib.Order.SuccPred.Basic
 import Mathlib.Data.Finset.Max
 
+import Mathlib.Data.Fintype.Order
+
 /-!
 # The monotone sequence of partial supremums of a sequence
 
@@ -221,7 +223,7 @@ theorem partialSups_eq_ciSup_Iic [ConditionallyCompleteLattice α] (f : ι → �
     partialSups f i = ⨆ i : Set.Iic i, f i := by
   simp only [partialSups_apply]
   apply le_antisymm
-  · exact sup'_le _ _ fun j hj ↦ le_ciSup_of_le (Set.finite_range _).bddAbove
+  · exact sup'_le _ _ fun j hj ↦ Finite.le_ciSup_of_le
       ⟨j, by simpa only [Set.mem_Iic, mem_Iic] using hj⟩ le_rfl
   · exact ciSup_le fun ⟨j, hj⟩ ↦ le_sup' f (by simpa only [mem_Iic, Set.mem_Iic] using hj)
 
@@ -278,7 +280,7 @@ section Set
 ### Functions into `Set α`
 -/
 
-lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
+lemma partialSups_eq_sUnion_image (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
   simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 

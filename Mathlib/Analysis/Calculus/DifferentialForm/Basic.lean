@@ -115,7 +115,7 @@ theorem extDeriv_fun_add (hω₁ : DifferentiableAt 𝕜 ω₁ x) (hω₂ : Diff
 
 theorem extDerivWithin_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F) (hsx : UniqueDiffWithinAt 𝕜 s x) :
     extDerivWithin (c • ω) s x = c • extDerivWithin ω s x := by
-  simp [extDerivWithin, fderivWithin_const_smul_of_field, hsx, alternatizeUncurryFin_smul]
+  simp [extDerivWithin, fderivWithin_const_smul_field, hsx, alternatizeUncurryFin_smul]
 
 theorem extDerivWithin_fun_smul (c : 𝕜) (ω : E → E [⋀^Fin n]→L[𝕜] F)
     (hsx : UniqueDiffWithinAt 𝕜 s x) :

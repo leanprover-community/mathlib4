@@ -210,6 +210,28 @@ theorem closure_three_cycles_eq_alternating :
           (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
         (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
 
+/-- The alternating group is the closure of the set of permutations with cycle type (2, 2). -/
+theorem closure_cycleType_eq_2_2_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
+    Subgroup.closure {g : Perm α | g.cycleType = {2, 2}} = alternatingGroup α := by
+  apply le_antisymm
+  · rw [Subgroup.closure_le]
+    intro g hg
+    simp only [Set.mem_setOf_eq] at hg
+    simp [mem_alternatingGroup, sign_of_cycleType, hg, ← Units.val_inj]
+  · rw [← Equiv.Perm.closure_three_cycles_eq_alternating, Subgroup.closure_le]
+    intro g hg3
+    obtain ⟨a, ha⟩ := hg3.isCycle.nonempty_support
+    have h_support := hg3.support_eq_iff_mem_support.mpr ha
+    have h_nodup := hg3.nodup_iff_mem_support.mpr ha
+    have : 1 < g.supportᶜ.card := by grind [Finset.card_compl, Nat.card_eq_fintype_card]
+    obtain ⟨b, c, hb, hc, hbc⟩ := Finset.one_lt_card_iff.mp this
+    have H : g = (swap a (g a) * (swap b c)) * (swap b c * (swap (g a) (g (g a)))) := by
+      simp [mul_assoc, ← hg3.eq_swap_mul_swap_iff_mem_support.mpr ha]
+    rw [H]
+    apply mul_mem <;>
+    · apply Subgroup.subset_closure
+      exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
+
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
 theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f : Perm α}

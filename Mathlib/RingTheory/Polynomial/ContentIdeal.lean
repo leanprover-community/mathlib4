@@ -5,7 +5,6 @@ Authors: Fabrizio Barroero
 -/
 module
 
-public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Content
 
@@ -189,7 +188,7 @@ theorem contentIdeal_mul_eq_top_of_contentIdeal_eq_top (hp : p.contentIdeal = ‚ä
 end Ring
 section NormalizedGCDMonoid
 
-variable {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R] {p : R[X]}
+variable {R : Type*} [CommRing R] [NormalizedGCDMonoid R] {p : R[X]}
 
 theorem contentIdeal_le_span_content : p.contentIdeal ‚â§ span {p.content} := by
   rw [contentIdeal_def, span_le]

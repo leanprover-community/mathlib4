@@ -111,6 +111,8 @@ open Lean Parser Elab Tactic Meta
 integer `z` (in the supertype) to `ℕ` (the subtype), given a proof that `z ≥ 0`;
 propositions concerning `z` will still be over `ℤ`. `zify` changes propositions about `ℕ` (the
 subtype) to propositions about `ℤ` (the supertype), without changing the type of any variable.
+
+The `norm_cast` tactic can be used after `lift` to normalize introduced casts.
 -/
 syntax (name := lift) "lift " term " to " term (" using " term)?
   (" with " ident (ppSpace colGt ident)? (ppSpace colGt ident)?)? : tactic
