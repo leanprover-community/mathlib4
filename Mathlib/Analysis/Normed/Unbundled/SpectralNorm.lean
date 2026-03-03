@@ -807,7 +807,7 @@ theorem spectralNorm_unique_field_norm_ext [CompleteSpace K]
 theorem NormedAlgebra.norm_eq_spectralNorm (K : Type*) {L : Type*} [NontriviallyNormedField K]
     [IsUltrametricDist K] [NormedField L] [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
     [CompleteSpace K] (x : L) : ‖x‖ = spectralNorm K L x := by
-  rw [← toMulAlgebraNorm_apply K x, ← spectralAlgNorm_def, ← MulAlgebraNorm.coe_AlgebraNorm,
+  rw [← toMulAlgebraNorm_apply K L x, ← spectralAlgNorm_def, ← MulAlgebraNorm.coe_AlgebraNorm,
       spectralNorm_unique (f := (toMulAlgebraNorm K L).toAlgebraNorm)
       (MulRingNorm.isPowMul (toMulAlgebraNorm K L).toMulRingNorm)]
 
