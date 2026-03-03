@@ -489,6 +489,14 @@ theorem self_diff_frontier (s : Set X) : s \ frontier s = interior s := by
   rw [frontier, diff_diff_right, diff_eq_empty.2 subset_closure,
     inter_eq_self_of_subset_right interior_subset, empty_union]
 
+lemma mem_interior_iff_notMem_frontier {s : Set X} {x : X} (hx : x ∈ s) :
+    x ∈ interior s ↔ x ∉ frontier s := by
+  simp [← self_diff_frontier, hx]
+
+lemma mem_frontier_iff_notMem_interior {s : Set X} {x : X} (hx : x ∈ s) :
+    x ∈ frontier s ↔ x ∉ interior s := by
+  simp [← self_diff_frontier, hx]
+
 theorem frontier_eq_closure_inter_closure : frontier s = closure s ∩ closure sᶜ := by
   rw [closure_compl, frontier, diff_eq]
 

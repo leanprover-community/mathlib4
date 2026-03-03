@@ -308,7 +308,10 @@ theorem preAleph_max (o₁ o₂ : Ordinal) : preAleph (max o₁ o₂) = max (pre
 theorem preAleph_zero : preAleph 0 = 0 :=
   preAleph.map_bot
 
-@[simp]
+theorem preAleph_add_one (o : Ordinal) : preAleph (o + 1) = succ (preAleph o) :=
+  preAleph.map_succ o
+
+-- TODO: deprecate
 theorem preAleph_succ (o : Ordinal) : preAleph (succ o) = succ (preAleph o) :=
   preAleph.map_succ o
 
@@ -401,8 +404,12 @@ theorem preAleph_le_aleph (o : Ordinal) : preAleph o ≤ ℵ_ o :=
   preAleph_le_preAleph.2 le_add_self
 
 @[simp]
-theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) := by
-  rw [aleph_eq_preAleph, add_succ, preAleph_succ, aleph_eq_preAleph]
+theorem aleph_add_one (o : Ordinal) : ℵ_ (o + 1) = succ (ℵ_ o) := by
+  rw [aleph_eq_preAleph, ← add_assoc, preAleph_add_one, aleph_eq_preAleph]
+
+-- TODO: deprecate
+theorem aleph_succ (o : Ordinal) : ℵ_ (succ o) = succ (ℵ_ o) :=
+  aleph_add_one o
 
 @[simp]
 theorem aleph_zero : ℵ_ 0 = ℵ₀ := by rw [aleph_eq_preAleph, add_zero, preAleph_omega0]
@@ -460,11 +467,21 @@ theorem mem_range_aleph_iff {c : Cardinal} : c ∈ range aleph ↔ ℵ₀ ≤ c 
 
 @[simp]
 theorem succ_aleph0 : succ ℵ₀ = ℵ₁ := by
-  rw [← aleph_zero, ← aleph_succ, Ordinal.succ_zero]
+  rw [← aleph_zero, ← aleph_add_one, zero_add]
 
 theorem aleph0_lt_aleph_one : ℵ₀ < ℵ₁ := by
   rw [← succ_aleph0]
   apply lt_succ
+
+theorem aleph0_lt_iff_aleph_one_le {c} : ℵ₀ < c ↔ ℵ₁ ≤ c := by
+  rw [← succ_le_iff, succ_aleph0]
+
+theorem aleph1_le_mk_iff {α : Type*} : ℵ₁ ≤ #α ↔ Uncountable α := by
+  rw [← aleph0_lt_iff_aleph_one_le, aleph0_lt_mk_iff]
+
+@[simp]
+theorem aleph1_le_mk (α : Type*) [Uncountable α] : ℵ₁ ≤ #α :=
+  aleph1_le_mk_iff.mpr ‹_›
 
 theorem countable_iff_lt_aleph_one {α : Type*} (s : Set α) : s.Countable ↔ #s < ℵ₁ := by
   rw [← succ_aleph0, lt_succ_iff, le_aleph0_iff_set_countable]
@@ -556,9 +573,13 @@ theorem preBeth_zero : preBeth 0 = 0 := by
   simp
 
 @[simp]
-theorem preBeth_succ (o : Ordinal) : preBeth (succ o) = 2 ^ preBeth o := by
-  rw [preBeth, Iio_succ]
+theorem preBeth_add_one (o : Ordinal) : preBeth (o + 1) = 2 ^ preBeth o := by
+  rw [preBeth, ← succ_eq_add_one, Iio_succ]
   exact ciSup_Iic o fun x y h ↦ power_le_power_left two_ne_zero (preBeth_mono h)
+
+-- TODO: deprecate
+theorem preBeth_succ (o : Ordinal) : preBeth (succ o) = 2 ^ preBeth o :=
+  preBeth_add_one o
 
 theorem preBeth_limit {o : Ordinal} (ho : IsSuccPrelimit o) :
     preBeth o = ⨆ a : Iio o, preBeth a := by
@@ -621,7 +642,7 @@ theorem isStrongLimit_preBeth {o : Ordinal} : IsStrongLimit (preBeth o) ↔ IsSu
     obtain ho | ⟨a, rfl⟩ := H
     · simp [ho.eq_bot]
     · intro h
-      simpa using h.two_power_lt (preBeth_strictMono (lt_succ a))
+      simpa using h.two_power_lt (preBeth_strictMono (lt_add_one a))
 
 @[simp]
 theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lift.{v} o) := by
@@ -676,8 +697,12 @@ theorem beth_zero : ℶ_ 0 = ℵ₀ := by
   simp [beth]
 
 @[simp]
-theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o := by
-  simp [beth, add_succ]
+theorem beth_add_one (o : Ordinal) : ℶ_ (o + 1) = 2 ^ ℶ_ o := by
+  simp [beth, ← add_assoc]
+
+-- TODO; deprecate
+theorem beth_succ (o : Ordinal) : ℶ_ (succ o) = 2 ^ ℶ_ o :=
+  beth_add_one o
 
 theorem isNormal_beth : Order.IsNormal beth :=
   isNormal_preBeth.comp (isNormal_add_right _)

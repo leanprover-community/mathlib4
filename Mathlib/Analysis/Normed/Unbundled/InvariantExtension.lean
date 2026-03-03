@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Ultra
 public import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
+public import Mathlib.Data.Fintype.Order
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
@@ -105,18 +106,16 @@ def invariantExtension : AlgebraNorm K L where
   toFun x := iSup fun σ : L ≃ₐ[K] L ↦ algNormOfAlgEquiv σ x
   map_zero' := by simp only [map_zero, ciSup_const]
   add_le' x y := ciSup_le fun σ ↦ le_trans (map_add_le_add (algNormOfAlgEquiv σ) x y)
-    (add_le_add (le_ciSup_of_le (Set.finite_range _).bddAbove σ (le_refl _))
-      (le_ciSup_of_le (Set.finite_range _).bddAbove σ (le_refl _)))
+    (add_le_add (Finite.le_ciSup_of_le σ le_rfl) (Finite.le_ciSup_of_le σ le_rfl))
   neg' x := by simp only [map_neg_eq_map]
   mul_le' x y := ciSup_le fun σ ↦ le_trans (map_mul_le_mul (algNormOfAlgEquiv σ) x y)
-    (mul_le_mul (le_ciSup_of_le (Set.finite_range _).bddAbove σ (le_refl _))
-      (le_ciSup_of_le (Set.finite_range _).bddAbove σ (le_refl _)) (apply_nonneg _ _)
-      (le_ciSup_of_le (Set.finite_range _).bddAbove σ (apply_nonneg _ _)))
+    (mul_le_mul (Finite.le_ciSup_of_le σ le_rfl)
+      (Finite.le_ciSup_of_le σ le_rfl) (apply_nonneg _ _)
+      (Finite.le_ciSup_of_le σ (apply_nonneg _ _)))
   eq_zero_of_map_eq_zero' x := by
     contrapose!
     exact fun hx ↦ ne_of_gt (lt_of_lt_of_le (map_pos_of_ne_zero _ hx)
-      (le_ciSup (Set.range fun σ : L ≃ₐ[K] L ↦ algNormOfAlgEquiv σ x).toFinite.bddAbove
-        AlgEquiv.refl))
+      (Finite.le_ciSup (fun σ ↦ (algNormOfAlgEquiv σ) x) AlgEquiv.refl))
   smul' r x := by
     simp only [AlgebraNormClass.map_smul_eq_mul,
       Real.mul_iSup_of_nonneg (norm_nonneg _)]
@@ -138,8 +137,7 @@ theorem isPowMul_invariantExtension :
 theorem isNonarchimedean_invariantExtension :
     IsNonarchimedean (invariantExtension K L) := fun x y ↦
   ciSup_le fun σ ↦ le_trans (isNonarchimedean_algNormOfAlgEquiv σ x y)
-    (max_le_max (le_ciSup_of_le (Set.finite_range _).bddAbove σ (le_refl _))
-      (le_ciSup_of_le (Set.finite_range _).bddAbove σ (le_refl _)))
+    (max_le_max (Finite.le_ciSup_of_le σ le_rfl) (Finite.le_ciSup_of_le σ le_rfl))
 
 /-- The algebra norm `invariantExtension` extends the norm on `K`. -/
 theorem invariantExtension_extends (x : K) :
