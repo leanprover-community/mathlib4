@@ -371,7 +371,7 @@ section LiesOver
 namespace NumberField.HeightOneSpectrum
 
 variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
-variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L)) [w.asIdeal.LiesOver v.asIdeal]
+variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
     [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
