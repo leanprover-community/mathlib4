@@ -39,6 +39,8 @@ This file defines the focal subgroup and proves the Focal Subgroup Theorem.
 
 @[expose] public section
 
+open scoped commutatorElement
+
 open Function Sylow
 
 namespace Subgroup
