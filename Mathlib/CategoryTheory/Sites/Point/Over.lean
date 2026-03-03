@@ -60,6 +60,7 @@ end GrothendieckTopology.Point
 
 namespace ObjectProperty
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsConservativeFamilyOfPoints.over
     {P : ObjectProperty (Point.{w} J)} [ObjectProperty.Small.{w} P]
     [J.WEqualsLocallyBijective (Type w)] [HasSheafify J (Type w)]
