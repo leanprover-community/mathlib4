@@ -285,9 +285,9 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
   simp only [Finset.mem_sdiff, Finset.mem_range, Nat.lt_add_one_iff, Finset.mem_singleton,
     ← lt_iff_le_and_ne] at hi
   simp only [← C_mul_X_pow_eq_monomial, map_mul, aeval_C, map_pow, aeval_X, coeff_natDegree]
-  by_cases h0 : (p.coeff i) = 0 <;>
-    grind [zero_mul, leadingCoeff_ne_zero, one_mul,
-    pow_pos (lt_trans zero_lt_one hpos), pow_lt_pow_right₀]
+  by_cases h0 : p.coeff i = 0 <;>
+    grind [zero_mul, leadingCoeff_ne_zero, one_mul, pow_pos (lt_trans zero_lt_one hpos),
+      pow_lt_pow_right₀]
 
 end Algebra
 
@@ -297,7 +297,7 @@ open Valuation
 
 /-- If a valuation `v` is trivial on constants then for every `n : ℕ` the valuation of
 `(monomial n a)` is equal to `(v RatFunc.X) ^ n`. -/
-@[grind =]
+@[grind =, simp]
 lemma valuation_monomial_eq_valuation_X_pow (n : ℕ) {a : K} (ha : a ≠ 0) :
     v (monomial n a) = v RatFunc.X ^ n := by
   grind =>
@@ -330,7 +330,7 @@ theorem valuation_le_one_of_valuation_X_le_one (hle : v RatFunc.X ≤ 1) (p : K[
 to `(v RatFunc.X) ^ (- n)`. -/
 lemma valuation_inv_monomial_eq_valuation_X_zpow (n : ℕ) {a : K} (ha : a ≠ 0) :
     v (1 / monomial n a) = v RatFunc.X ^ (-(n : ℤ)) := by
-  grind [map_inv₀, zpow_neg, zpow_natCast]
+  simp [*]
 
 end TrivialOnConstants
 
