@@ -81,6 +81,27 @@ theorem Differentiable.comp_mdifferentiable {g : F → F'} {f : M → F} (hg : D
     (hf : MDifferentiable I 𝓘(𝕜, F) f) : MDifferentiable I 𝓘(𝕜, F') (g ∘ f) := fun x =>
   hg.differentiableAt.comp_mdifferentiableAt (hf x)
 
+section extChartAt
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {f : M → F}
+
+-- TODO: add pre-composition version also
+theorem MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
+    (hf : MDifferentiableWithinAt I 𝓘(𝕜, F) f s x) :
+    letI φ := extChartAt I x
+    DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
+  simpa [extChartAt_self_eq] using (mdifferentiableWithinAt_iff.1 hf).2
+
+-- TODO: the `IsManifold I 1 M` assumption can probably be removed
+theorem DifferentiableWithinAt.mdifferentiableWithinAt_of_comp_extChartAt_symm [IsManifold I 1 M]
+    (hf : letI φ := extChartAt I x
+      DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x)) :
+    MDifferentiableWithinAt I 𝓘(𝕜, F) f s x := by
+  refine (mdifferentiableWithinAt_iff_source_of_mem_source (mem_chart_source H x)).2 ?_
+  simpa [extChartAt_self_eq] using hf.mdifferentiableWithinAt
+
+end extChartAt
+
 end Module
 
 /-! ### Linear maps between normed spaces are differentiable -/
