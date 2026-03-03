@@ -202,6 +202,7 @@ section CommRing
 
 variable [CommRing R] (v : AbsoluteValue R S)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
 
 end CommRing
