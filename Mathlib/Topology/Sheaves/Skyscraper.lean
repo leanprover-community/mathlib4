@@ -399,6 +399,10 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   right_triangle_components _ :=
     Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 
+instance [HasColimits C] : (Sheaf.forget C X ⋙ Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
+  have : ∀ U : Opens X, Decidable (p₀ ∈ U) := fun _ ↦ Classical.dec _
+  (stalkSkyscraperSheafAdjunction p₀).isLeftAdjoint
+
 instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint :=
   (stalkSkyscraperSheafAdjunction _).isRightAdjoint
 
