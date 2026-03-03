@@ -13,8 +13,8 @@ public import Mathlib.CategoryTheory.Subobject.Presheaf
 
 # Subobject Classifier
 
-We define what it means for a morphism in a category to be a subobject classifier as
-`CategoryTheory.HasSubobjectClassifier`.
+We define a structure containing the data of a subobject classifier in a category `C` as
+`CategoryTheory.Subobject.Classifier C`.
 
 c.f. the following Lean 3 code, where similar work was done:
 https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
