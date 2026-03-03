@@ -108,7 +108,6 @@ instance : One (SpecialLinearGroup R V) :=
 instance : Pow (SpecialLinearGroup R V) ℕ where
   pow x n := ⟨x ^ n, by simp [x.prop]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Pow (SpecialLinearGroup R V) ℤ where
   pow x n := ⟨x ^ n, by simp [x.prop]⟩
 

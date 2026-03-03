@@ -42,8 +42,7 @@ open Function
 
 assert_not_exists Field
 
-set_option backward.isDefEq.respectTransparency false in
-deriving instance Zero, CommSemiring, Nontrivial,
+deriving instance Zero, Nontrivial,
   LinearOrder, Bot, Sub,
   LinearOrderedAddCommMonoidWithTop,
   IsOrderedRing, CanonicallyOrderedAdd,
@@ -52,6 +51,17 @@ deriving instance Zero, CommSemiring, Nontrivial,
   CharZero,
   NoZeroDivisors
   for ENat
+
+#adaptation_note /-- Upon bumping to v4.29.0-rc3, we write out the `CommSemiring` instance rather
+than using `deriving`, to ensure that the `NatCast` instance is definitionally equal to the one
+expected by `grind`. The `deriving` mechanism produces a `NatCast` instance
+(`ENat.instNatCast`) that is not reducibly defeq to `Lean.Grind.Semiring.natCast`.
+See https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/576566138
+-/
+instance : CommSemiring ENat := {
+  __ := inferInstanceAs (CommSemiring (WithTop ℕ))
+  toNatCast := inferInstance
+}
 
 namespace ENat
 
@@ -234,6 +244,7 @@ theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma toNat_eq_iff_eq_coe (n : ℕ∞) (m : ℕ) [NeZero m] :
     n.toNat = m ↔ n = m := by
   cases n
@@ -261,9 +272,11 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rename_i a; cases a <;> simp
   · simp only [toNat_coe]; rw [← coe_mul, toNat_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n := by
   lift m to ℕ using ne_top_of_le_ne_top (coe_ne_top n) h
   simpa using h
@@ -272,7 +285,7 @@ lemma toNat_le_of_le_coe {m : ℕ∞} {n : ℕ} (h : m ≤ n) : toNat m ≤ n :=
 lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤ toNat n :=
   toNat_le_of_le_coe <| h.trans_eq (coe_toNat hn).symm
 
-@[simp]
+-- TODO: deprecate
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
   Order.succ_eq_add_one m
 
@@ -313,8 +326,10 @@ protected lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := not_lt_zero
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
   WithTop.coe_lt_top n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
 
 @[elab_as_elim]
@@ -390,11 +405,9 @@ lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inj
   simp_rw [add_comm n _]
   exact add_left_injective_of_ne_top hn
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) :=
   WithTop.mul_right_strictMono (pos_iff_ne_zero.2 ha) h_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) :=
   WithTop.mul_left_strictMono (pos_iff_ne_zero.2 ha) h_top
 
@@ -459,12 +472,10 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
-set_option backward.isDefEq.respectTransparency false in
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_natCast_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma natCast_le_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n ≤ N :=
   le_trans (mod_cast le_top) hN
 
@@ -510,7 +521,6 @@ theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_natCast_nonneg : 0 ≤ n.map (Nat.cast : ℕ → α) := by cases n <;> simp
 
 variable [CharZero α]
@@ -560,6 +570,7 @@ protected def _root_.AddMonoidHom.ENatMap {N : Type*} [AddZeroClass N]
     (f : ℕ →+ N) : ℕ∞ →+ WithTop N :=
   { ZeroHom.ENatMap f.toZeroHom, AddHom.ENatMap f.toAddHom with toFun := ENat.map f }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A version of `ENat.map` for `MonoidWithZeroHom`s. -/
 @[simps -fullyApplied]
 protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [DecidableEq S]
