@@ -689,7 +689,6 @@ Two Haar measures give the same measure to open sets (or more generally to sets 
 positive), up to the scalar `haarScalarFactor μ' μ `.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive measure_isAddHaarMeasure_eq_smul_of_isEverywherePos]
 theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']

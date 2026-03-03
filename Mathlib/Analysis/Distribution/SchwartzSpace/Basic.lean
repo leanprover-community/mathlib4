@@ -93,7 +93,6 @@ theorem decay (f : 𝓢(E, F)) (k n : ℕ) :
   rcases f.decay' k n with ⟨C, hC⟩
   exact ⟨max C 1, by positivity, fun x => (hC x).trans (le_max_left _ _)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every Schwartz function is smooth. -/
 @[fun_prop]
 theorem smooth (f : 𝓢(E, F)) (n : ℕ∞) : ContDiff ℝ n f :=
@@ -554,7 +553,6 @@ theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := b
 
 section HasCompactSupport
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A smooth compactly supported function is a Schwartz function. -/
 @[simps]
 def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSupport f)
@@ -862,7 +860,6 @@ end pairing
 
 open ContinuousLinearMap
 
-set_option backward.isDefEq.respectTransparency false in
 variable (𝕜 F) in
 /-- Scalar multiplication with a continuous linear map as a continuous linear map on Schwartz
 functions. -/
@@ -922,7 +919,6 @@ variable [RCLike 𝕜]
 variable [NormedAddCommGroup D] [NormedSpace ℝ D]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Composition with a function on the right is a continuous linear map on Schwartz space
 provided that the function is temperate and growths polynomially near infinity. -/
 def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
@@ -1095,7 +1091,6 @@ lemma integral_pow_mul_iteratedFDeriv_le (f : 𝓢(D, V)) (k n : ℕ) :
 
 variable [BorelSpace D] [SecondCountableTopology D]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (μ) in
 lemma integrable_pow_mul_iteratedFDeriv
     (f : 𝓢(D, V))

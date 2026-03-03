@@ -422,7 +422,6 @@ theorem isCoseparating_iff_mono
 
 end ObjectProperty
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An ingredient of the proof of the Special Adjoint Functor Theorem: a complete well-powered
     category with a small coseparating set has an initial object.
 

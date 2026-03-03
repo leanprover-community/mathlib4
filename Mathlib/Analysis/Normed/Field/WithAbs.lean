@@ -40,6 +40,7 @@ noncomputable instance normedField (v : AbsoluteValue R ℝ) : NormedField (With
   letI := v.toNormedField
   (equiv v).normedField
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] moduleLeft in
 instance [Module R T] [FiniteDimensional R T] :
     FiniteDimensional (WithAbs v) T :=
@@ -64,6 +65,7 @@ instance [Algebra T R] [Algebra.IsSeparable T R] :
 @[simp] lemma toAbs_inv (x : R) : toAbs v x⁻¹ = (toAbs v x)⁻¹ := rfl
 @[simp] lemma ofAbs_inv (x : WithAbs v) : ofAbs (x⁻¹) = (ofAbs x)⁻¹ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /- Note that `AbsoluteValue.tendsto_div_one_add_pow_nhds_one` would follow from the below
 result if `WithAbs v` had a topology for general value rings `S`. Currently `WithAbs v` only has
 a topology when `S = ℝ`. -/

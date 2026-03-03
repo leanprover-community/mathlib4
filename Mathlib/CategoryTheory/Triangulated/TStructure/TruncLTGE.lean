@@ -36,6 +36,7 @@ namespace TStructure
 
 variable (t : TStructure C)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms `T ⟶ T'` between distinguished triangles must coincide when
 they coincide on the middle object, and there are integers `a ≤ b` such that
 for a t-structure, we have `T.obj₁ ≤ a` and `T'.obj₃ ≥ b`. -/
@@ -449,6 +450,7 @@ lemma isLE_iff_isIso_truncLTι_app (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : 
   rw [this]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isGE_iff_isIso_truncGEπ_app (n : ℤ) (X : C) :
     t.IsGE X n ↔ IsIso ((t.truncGEπ n).app X) := by
   constructor
