@@ -33,7 +33,7 @@ namespace CochainComplex
 
 open CategoryTheory Limits HomComplex
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 namespace Lifting
 
