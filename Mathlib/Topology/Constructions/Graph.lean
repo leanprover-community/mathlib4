@@ -16,7 +16,7 @@ This file proves that the graph of a continuous function is homeomorphic to its 
 
 * `Set.graphOn.homeomorph`: The graph of a continuous function `f : E → E'` restricted to `s`,
   with the subspace topology, is homeomorphic to `s`.
-* `Set.graphOn.homeomorph_univ`: Special case for globally continuous functions, proving
+* `Set.graphOn.homeomorphUniv`: Special case for globally continuous functions, proving
   `univ.graphOn f ≃ₜ E`.
 
 ## Implementation Notes
@@ -62,16 +62,16 @@ theorem homeomorph_symm_apply {s : Set E} {f : E → E'} (hf : ContinuousOn f s)
 The graph of a globally continuous function `f : E → E'` is homeomorphic to `E`.
 Special case of `graphOn.homeomorph` when the domain is the whole space.
 -/
-def homeomorph_univ {f : E → E'} (hf : Continuous f) : (Set.univ.graphOn f) ≃ₜ E :=
+def homeomorphUniv {f : E → E'} (hf : Continuous f) : (Set.univ.graphOn f) ≃ₜ E :=
   (homeomorph hf.continuousOn).trans (Homeomorph.Set.univ E)
 
 @[simp]
-theorem homeomorph_univ_apply {f : E → E'} (hf : Continuous f) (x : Set.univ.graphOn f) :
-    homeomorph_univ hf x = x.1.1 := by simp [homeomorph_univ]
+theorem homeomorphUniv_apply {f : E → E'} (hf : Continuous f) (x : Set.univ.graphOn f) :
+    homeomorphUniv hf x = x.1.1 := by simp [homeomorphUniv]
 
 @[simp]
-theorem homeomorph_univ_symm_apply {f : E → E'} (hf : Continuous f) (x : E) :
-    (homeomorph_univ hf).symm x = ⟨(x, f x), mem_graphOn.mpr ⟨by simp, rfl⟩⟩ := by
-  simp [homeomorph_univ]
+theorem homeomorphUniv_symm_apply {f : E → E'} (hf : Continuous f) (x : E) :
+    (homeomorphUniv hf).symm x = ⟨(x, f x), mem_graphOn.mpr ⟨by simp, rfl⟩⟩ := by
+  simp [homeomorphUniv]
 
 end Set.graphOn

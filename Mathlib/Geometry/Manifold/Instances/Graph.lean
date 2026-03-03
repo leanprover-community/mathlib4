@@ -52,7 +52,6 @@ open Set Topology
 
 namespace Set.graphOn
 
-
 section Manifold
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -209,8 +208,8 @@ open Manifold
 
 /-- Two `OpenPartialHomeomorph`s with equal underlying `PartialEquiv`s are `EqOnSource`. -/
 private lemma eqOnSource_of_eq_toPartialEquiv
-    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (a b : OpenPartialHomeomorph X Y) (h : a.toPartialEquiv = b.toPartialEquiv) :
+    {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
+    (a b : OpenPartialHomeomorph α β) (h : a.toPartialEquiv = b.toPartialEquiv) :
     a.EqOnSource b :=
   ⟨congr_arg PartialEquiv.source h, fun _ _ ↦ congr_fun (congr_arg PartialEquiv.toFun h) _⟩
 
@@ -258,11 +257,6 @@ private noncomputable def localStraighten [I'.Boundaryless]
 
 /-! ### Groupoid membership -/
 
-private theorem mem_range_I' {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-    {G : Type*} [TopologicalSpace G] {J : ModelWithCorners 𝕜 F G} [J.Boundaryless]
-    (x : F) : x ∈ range (J : G → F) := by
-  rw [J.range_eq_univ]; trivial
-
 /-- The domain of the straightened codomain chart equals `D ×ˢ univ`. -/
 private lemma localStraighten_domain_eq (I : ModelWithCorners 𝕜 E H) (I' : ModelWithCorners 𝕜 E' H')
     [I.Boundaryless] [I'.Boundaryless]
@@ -275,7 +269,7 @@ private lemma localStraighten_domain_eq (I : ModelWithCorners 𝕜 E H) (I' : Mo
   apply Set.ext
   rintro ⟨a, snd⟩
   have h_r_prod : (a, snd) ∈ range (I.prod I') := by
-    rw [ModelWithCorners.range_prod]; exact ⟨mem_range_I' a, mem_range_I' snd⟩
+    rw [ModelWithCorners.range_prod]; exact ⟨I.mem_range a, I'.mem_range snd⟩
   have h_f_eq : (chartAt H m₀).symm (I.symm a) = (extChartAt I m₀).symm a := rfl
   have h_symm : (↑(I.prod I').symm : E × E' → H × H') (a, snd) = (I.symm a, I'.symm snd) := rfl
   have h_str_source : str.source = (chartAt H m₀).target ×ˢ univ ∩
@@ -286,10 +280,11 @@ private lemma localStraighten_domain_eq (I : ModelWithCorners 𝕜 E H) (I' : Mo
   simp only [D, h_str_source, extChartAt_target, extChartAt_source, h_symm,
     mem_inter_iff, mem_prod, mem_preimage]
   dsimp only [Function.comp_apply, Prod.fst]
-  exact ⟨(fun x ↦ ⟨⟨⟨(show I.symm a ∈ _ from x.1.1.1), mem_range_I' a⟩,
-      by rw [← h_f_eq]; exact x.1.2⟩, trivial⟩),
-    (fun x ↦ ⟨⟨⟨(show I.symm a ∈ _ from x.1.1.1), trivial⟩,
-      by rw [h_f_eq]; exact x.1.2⟩, h_r_prod⟩)⟩
+  constructor
+  · intro ⟨⟨⟨h_tgt, _⟩, h_pre⟩, h_rng⟩
+    exact ⟨⟨⟨h_tgt, I.mem_range a⟩, by rw [← h_f_eq]; exact h_pre⟩, trivial⟩
+  · intro ⟨⟨⟨h_tgt, _⟩, h_pre⟩, _⟩
+    exact ⟨⟨⟨h_tgt, trivial⟩, by rw [h_f_eq]; exact h_pre⟩, h_r_prod⟩
 
 /-- Coordinate expression for the forward local straightening map. -/
 private lemma localStraighten_extend_toFun
@@ -308,8 +303,8 @@ private lemma localStraighten_extend_toFun
   dsimp [g, str, localStraighten, ModelWithCorners.prod_apply]
   have h_g_eq : I' (chartAt H' (f m₀) (f ((chartAt H m₀).symm (I.symm a)))) = g a := rfl
   rw [h_g_eq]
-  rw [I'.right_inv (mem_range_I' snd)]
-  exact Prod.ext (I.right_inv (mem_range_I' a)) (I'.right_inv (mem_range_I' _))
+  rw [I'.right_inv (I'.mem_range snd)]
+  exact Prod.ext (I.right_inv (I.mem_range a)) (I'.right_inv (I'.mem_range _))
 
 /-- Coordinate expression for the inverse local straightening map. -/
 private lemma localStraighten_extend_invFun
@@ -326,8 +321,8 @@ private lemma localStraighten_extend_invFun
   dsimp [g, str, localStraighten, ModelWithCorners.prod_apply]
   have h_g_eq : I' (chartAt H' (f m₀) (f ((chartAt H m₀).symm (I.symm a)))) = g a := rfl
   rw [h_g_eq]
-  rw [I'.right_inv (mem_range_I' snd)]
-  exact Prod.ext (I.right_inv (mem_range_I' a)) (I'.right_inv (mem_range_I' _))
+  rw [I'.right_inv (I'.mem_range snd)]
+  exact Prod.ext (I.right_inv (I.mem_range a)) (I'.right_inv (I'.mem_range _))
 
 /-- The local straightening belongs to the `contDiffGroupoid`. At the `E × E'` extend level,
 the straightening is `(a, b) ↦ (a, b - g(a))` where `g = writtenInExtChartAt`, which is `C^n`
@@ -440,8 +435,8 @@ theorem isImmersion_graphMap {f : M → M'}
     exact ⟨hu_tgt, hu_pre'⟩
   simp only [OpenPartialHomeomorph.extend_coe, OpenPartialHomeomorph.extend_coe_symm]
   dsimp [domChart, codChart, str, localStraighten, ModelWithCorners.prod_apply]
-  exact Prod.ext (by rw [φ.right_inv hu_W.1, I.right_inv (mem_range_I' _)])
-         (by rw [φ.right_inv hu_W.1, sub_self]; exact I'.right_inv (mem_range_I' _))
+  exact Prod.ext (by rw [φ.right_inv hu_W.1, I.right_inv (I.mem_range _)])
+         (by rw [φ.right_inv hu_W.1, sub_self]; exact I'.right_inv (I'.mem_range _))
 
 end Immersion
 
