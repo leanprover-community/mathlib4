@@ -462,6 +462,7 @@ end Localization
 
 open IsLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :
@@ -617,6 +618,17 @@ end IsLocalization
 
 theorem Localization.mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
+
+theorem Localization.r_iff_of_le_nonZeroDivisors (hM : M ≤ nonZeroDivisors R) (a c : R) (b d : M) :
+    Localization.r _ (a, b) (c, d) ↔ a * d = b * c  := by
+  simp only [Localization.r_eq_r', Localization.r', Subtype.exists, exists_prop, Con.rel_mk]
+  refine ⟨fun ⟨u, hu, h⟩ ↦ ?_,
+    fun h ↦ ⟨1, Submonoid.one_mem M, by simpa only [one_mul, mul_comm a] using h⟩⟩
+  have hu' : u ∈ nonZeroDivisors R := hM hu
+  simp only [mem_nonZeroDivisors_iff, mul_comm, and_self] at hu'
+  rw [← sub_eq_zero]
+  apply hu'
+  rwa [mul_sub, sub_eq_zero, mul_comm a]
 
 end CommRing
 

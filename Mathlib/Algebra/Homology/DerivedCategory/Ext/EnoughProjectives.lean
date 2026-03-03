@@ -35,6 +35,7 @@ namespace CochainComplex
 
 open HomologicalComplex
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSplitEpi_to_singleFunctor_obj_of_projective
     {P : C} [Projective P] {K : CochainComplex C ℤ} {i : ℤ}
     (π : K ⟶ (CochainComplex.singleFunctor C i).obj P) [K.IsStrictlyLE i] [QuasiIsoAt π i] :
@@ -94,6 +95,7 @@ namespace Abelian.Ext
 
 open DerivedCategory
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_projective [HasExt.{w} C] {P Y : C} {n : ℕ} [Projective P]
     (e : Ext P Y (n + 1)) : e = 0 := by
   letI := HasDerivedCategory.standard C

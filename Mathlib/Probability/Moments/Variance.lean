@@ -425,6 +425,21 @@ nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : F
   refine Finset.sum_eq_single_of_mem i hi fun j hj1 hj2 ↦ ?_
   exact (h hi hj1 hj2.symm).covariance_eq_zero (hs i hi) (hs j hj1)
 
+lemma variance_sum_pi [Fintype ι] {Ω : ι → Type*} {mΩ : ∀ i, MeasurableSpace (Ω i)}
+    {μ : (i : ι) → Measure (Ω i)} [∀ i, IsProbabilityMeasure (μ i)]
+    {X : Π i, Ω i → ℝ} (h : ∀ i, MemLp (X i) 2 (μ i)) :
+    Var[∑ i, fun ω ↦ X i (ω i); Measure.pi μ] = ∑ i, Var[X i; μ i] := by
+  rw [IndepFun.variance_sum]
+  · congr with i
+    change Var[(X i) ∘ (fun ω ↦ ω i); Measure.pi μ] = _
+    rw [← variance_map, (measurePreserving_eval _ i).map_eq]
+    · rw [(measurePreserving_eval _ i).map_eq]
+      exact (h i).aestronglyMeasurable.aemeasurable
+    · exact Measurable.aemeasurable (by fun_prop)
+  · exact fun i _ ↦ (h i).comp_measurePreserving (measurePreserving_eval _ i)
+  · exact fun i _ j _ hij ↦
+      (iIndepFun_pi fun i ↦ (h i).aestronglyMeasurable.aemeasurable).indepFun hij
+
 /-- **The Bhatia-Davis inequality on variance**
 
 The variance of a random variable `X` satisfying `a ≤ X ≤ b` almost everywhere is at most

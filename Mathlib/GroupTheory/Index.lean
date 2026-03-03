@@ -683,7 +683,7 @@ theorem not_finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
     ¬ H.FiniteIndex ↔ H.index = 0 := by simp [finiteIndex_iff]
 
 /-- A finite index subgroup has finite quotient. -/
-@[to_additive /-- A finite index subgroup has finite quotient -/]
+@[to_additive (attr := instance_reducible) /-- A finite index subgroup has finite quotient -/]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
   fintypeOfIndexNeZero FiniteIndex.index_ne_zero
 

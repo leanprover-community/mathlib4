@@ -77,6 +77,7 @@ attribute [instance] FormallySmooth.projective_kaehlerDifferential
 @[deprecated (since := "2025-10-25")]
 alias FormallySmooth.iff_subsingleton_and_projective := Algebra.formallySmooth_iff
 
+set_option backward.isDefEq.respectTransparency false in
 variable (R A) in
 lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I ^ 2 = ⊥) :
     Function.Surjective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I) := by
@@ -109,6 +110,7 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
     simpa using (Function.surjInv_eq _ _).symm
   exact ⟨l.comp g, by rw [← AlgHom.comp_assoc, ← this, AlgHom.comp_assoc, hg, AlgHom.comp_id]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance mvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P : Generators R (MvPolynomial σ R) σ :=
     .ofSurjective X (by simp [aeval_X_left, Function.Surjective])
@@ -168,6 +170,7 @@ noncomputable def liftOfSurjective [FormallySmooth R A] (f : A →ₐ[R] C)
     A →ₐ[R] B :=
   FormallySmooth.lift _ hg' ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B →ₐ[R] C)
     (hg : Function.Surjective g) (hg' : IsNilpotent <| RingHom.ker g) (x : A) :
@@ -192,6 +195,7 @@ end FormallySmooth
 
 namespace Extension
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given extensions `0 → I₁ → P₁ → A → 0` and `0 → I₂ → P₂ → A → 0` with `P₁` formally smooth,
 this is an arbitrarily chosen map `P₁/I₁² → P₂/I₂²` of extensions.
@@ -248,6 +252,7 @@ lemma H1Cotangent.equivOfFormallySmooth_symm (P₁ P₂ : Extension R A)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
     (equivOfFormallySmooth P₁ P₂).symm = equivOfFormallySmooth P₂ P₁ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any formally smooth extension can be used to calculate `H¹(L_{A/R})`. -/
 noncomputable
 def equivH1CotangentOfFormallySmooth (P : Extension R A) [FormallySmooth R P.Ring] :
@@ -270,6 +275,7 @@ section iff_split
 
 variable [Algebra.FormallySmooth R P]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma kerCotangentToTensor_injective_iff
     [Algebra P A] [IsScalarTower R P A] (hf : Function.Surjective (algebraMap P A)) :
     Function.Injective (kerCotangentToTensor R P A) ↔ Subsingleton (Algebra.H1Cotangent R A) :=
@@ -336,6 +342,7 @@ theorem of_split (f : P →ₐ[R] A) (g : A →ₐ[R] P ⧸ RingHom.ker f.toRing
   obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (g x)
   exact ⟨y, congr(f.kerSquareLift $hy).trans congr($h x)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_comp_surjective
     (H : ∀ ⦃B : Type max u v⦄ [CommRing B] [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Surjective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)) :

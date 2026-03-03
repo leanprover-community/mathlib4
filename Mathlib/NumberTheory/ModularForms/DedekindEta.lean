@@ -153,7 +153,7 @@ lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
     (differentiableAt_eta_tprod z.2)]
   have HG := logDeriv_tprod_eq_tsum isOpen_upperHalfPlaneSet z.2
     (one_sub_eta_q_ne_zero · z.2) (by fun_prop) (summable_logDeriv_one_sub_eta_q z.2)
-    (multipliableLocallyUniformlyOn_eta ) (eta_tprod_ne_zero z.2)
+    multipliableLocallyUniformlyOn_eta (eta_tprod_ne_zero z.2)
   simp only [logDeriv_qParam 24 z, HG, tsum_logDeriv_eta_q z, E2, one_div,
     mul_inv_rev, Pi.smul_apply, smul_eq_mul]
   rw [G2_eq_tsum_cexp, riemannZeta_two, ← tsum_pow_div_one_sub_eq_tsum_sigma

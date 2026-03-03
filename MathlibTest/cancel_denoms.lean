@@ -10,39 +10,48 @@ variable {α : Type u} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b
 -- prior to https://github.com/leanprover-community/mathlib4/pull/12083, `cancel_denoms` would not make progress on this
 example : ¬ (4 / 2 : ℚ) = 3 := by cancel_denoms
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : a > 0) : a / 5 > 0 := by
   cancel_denoms
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms
   rw [← h]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : 0 < a) : a / (3/2) > 0 := by
   cancel_denoms
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : 0 < a): 0 < a / 1 := by
   cancel_denoms
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : a < 0): 0 < a / -1 := by
   cancel_denoms
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : -a < 2 * b): a / -2 < b := by
   cancel_denoms
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : a < 6 * a) : a / 2 / 3 < a := by
   cancel_denoms
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : a < 9 * a) : a / 3 / 3 < a := by
   cancel_denoms
   exact h
@@ -53,15 +62,19 @@ end
 section
 variable {α : Type} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d : α)
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
   exact h
 
+set_option backward.isDefEq.respectTransparency false in
 example (h : a > 0) : a / 5 > 0 := by
   cancel_denoms
   exact h
 
 variable {α : Type} [Field α] [CharZero α] (a b c d : α)
+
+set_option backward.isDefEq.respectTransparency false in
 example (h : a + b = c) : a/5 + d*(b/4) = c - 4*a/5 + b*2*d/8 - b := by
   cancel_denoms
   rw [← h]
@@ -125,6 +138,7 @@ example (h : (5 * a ^ 3 + 8) ^ 2 = 1600 * c) : ((a / 2) ^ 3 + 1 / 5) ^ 2 = c := 
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 section
 -- simulate the type of complex numbers
 def C : Type := test_sorry

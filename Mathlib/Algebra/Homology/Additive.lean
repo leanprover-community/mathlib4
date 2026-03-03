@@ -186,6 +186,7 @@ def NatIso.mapHomologicalComplex {F G : W₁ ⥤ W₂} [F.PreservesZeroMorphisms
   inv_hom_id := by simp only [← NatTrans.mapHomologicalComplex_comp, α.inv_hom_id,
     NatTrans.mapHomologicalComplex_id]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories induces an equivalences between the respective categories
 of homological complex.
 -/
@@ -206,6 +207,7 @@ namespace ChainComplex
 
 variable {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_chain_complex_of (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms] (X : α → W₁)
     (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) ≫ d n = 0) :
     (F.mapHomologicalComplex _).obj (ChainComplex.of X d sq) =
@@ -222,6 +224,7 @@ variable [HasZeroObject W₁] [HasZeroObject W₂]
 
 namespace HomologicalComplex
 
+set_option backward.isDefEq.respectTransparency false in
 instance (W : Type*) [Category* W] [Preadditive W] [HasZeroObject W] [DecidableEq ι] (j : ι) :
     (single W c j).Additive where
   map_add {_ _ f g} := by ext; simp [single]
@@ -229,6 +232,7 @@ instance (W : Type*) [Category* W] [Preadditive W] [HasZeroObject W] [DecidableE
 variable (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     (c : ComplexShape ι) [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Turning an object into a complex supported at `j` then applying a functor is
 the same as applying the functor then forming the complex.
 -/

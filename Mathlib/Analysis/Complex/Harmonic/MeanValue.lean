@@ -18,6 +18,7 @@ open InnerProductSpace Metric Real
 
 variable {f : ℂ → ℝ} {c : ℂ} {R : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The **Mean Value Property** of harmonic functions: If `f : ℂ → ℝ` is harmonic in a neighborhood of a
 closed disc of radius `R` and center `c`, then the circle average `circleAverage f c R` equals
@@ -28,7 +29,7 @@ theorem HarmonicOnNhd.circleAverage_eq (hf : HarmonicOnNhd f (closedBall c |R|))
   obtain ⟨e, h₁e, h₂e⟩ := (isCompact_closedBall c |R|).exists_thickening_subset_open
     (isOpen_setOf_harmonicAt f) hf
   rw [thickening_closedBall h₁e (abs_nonneg R)] at h₂e
-  obtain ⟨F, h₁F, h₂F⟩ := harmonic_is_realOfHolomorphic h₂e
+  obtain ⟨F, h₁F, h₂F⟩ := InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq h₂e
   have h₃F : DifferentiableOn ℂ F (closure (ball c |R|)) := by
     intro x hx
     apply (h₁F x _).differentiableWithinAt
