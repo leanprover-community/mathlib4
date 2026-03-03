@@ -105,6 +105,13 @@ theorem Asymptotics.isLittleO_pow_pow_atTop_of_lt
   refine (isLittleO_iff_tendsto' ?_).mpr (tendsto_pow_div_pow_atTop_zero hpq)
   exact (eventually_gt_atTop 0).mono fun x hx hxq => (pow_ne_zero q hx.ne' hxq).elim
 
+theorem Asymptotics.isBigO_pow_pow_atTop_of_le
+    [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [OrderTopology 𝕜] {p q : ℕ} (hpq : p ≤ q) :
+    (fun x : 𝕜 => x ^ p) =O[atTop] fun x => x ^ q := by
+  obtain hpq | rfl := hpq.lt_or_eq
+  · exact (Asymptotics.isLittleO_pow_pow_atTop_of_lt hpq).isBigO
+  · exact isBigO_refl ..
+
 theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → 𝕜} {l : Filter α}
     (huv : u =O[l] v) (hu : Tendsto (fun x => ‖u x‖) l atTop) :
     Tendsto (fun x => ‖v x‖) l atTop := by

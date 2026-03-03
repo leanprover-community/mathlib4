@@ -7,6 +7,7 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Finite
 public import Mathlib.Data.Set.Finite.Powerset
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # Noncomputable Set Cardinality
@@ -493,6 +494,11 @@ theorem Finite.injOn_of_encard_image_eq (hs : s.Finite) (h : (f '' s).encard = s
   rw [injOn_iff_invFunOn_image_image_eq_self]
   exact hs.eq_of_subset_of_encard_le' (f.invFunOn_image_image_subset s) h.symm.le
 
+theorem encard_image2_le {γ : Type*} {g : α → β → γ} {t : Set β} :
+    (Set.image2 g s t).encard ≤ s.encard * t.encard := by
+  rw [← Set.image_prod]
+  exact (encard_image_le _ _).trans_eq encard_prod
+
 theorem encard_preimage_of_injective_subset_range (hf : f.Injective) (ht : t ⊆ range f) :
     (f ⁻¹' t).encard = t.encard := by
   rw [← hf.encard_image, image_preimage_eq_inter_range, inter_eq_self_of_subset_left ht]
@@ -771,6 +777,13 @@ theorem ncard_image_iff (hs : s.Finite := by toFinite_tac) :
 
 theorem ncard_image_of_injective (s : Set α) (H : f.Injective) : (f '' s).ncard = s.ncard :=
   H.injOn.ncard_image
+
+set_option backward.isDefEq.respectTransparency false in
+theorem ncard_image2_le {γ : Type*} {g : α → β → γ} {t : Set β} (hs : s.Finite := by toFinite_tac)
+    (ht : t.Finite := by toFinite_tac) : (Set.image2 g s t).ncard ≤ s.ncard * t.ncard := by
+  to_encard_tac
+  rw [Nat.cast_mul _ _, hs.cast_ncard_eq, ht.cast_ncard_eq, (hs.image2 g ht).cast_ncard_eq]
+  exact encard_image2_le
 
 theorem ncard_preimage_of_injective_subset_range {s : Set β} (H : f.Injective)
     (hs : s ⊆ Set.range f) :
