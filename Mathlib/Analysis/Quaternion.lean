@@ -41,18 +41,15 @@ open scoped RealInnerProductSpace
 
 namespace Quaternion
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Inner ℝ ℍ :=
   ⟨fun a b => (a * star b).re⟩
 
 theorem inner_self (a : ℍ) : ⟪a, a⟫ = normSq a :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
@@ -62,7 +59,6 @@ noncomputable instance : NormedAddCommGroup ℍ :=
       add_left := fun x y z => by simp only [inner_def, add_mul, re_add]
       smul_left := fun x y r => by simp [inner_def] }
 
-set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
 
@@ -79,7 +75,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
   rw [norm_eq_sqrt_real_inner, inner_self, normSq_coe, Real.sqrt_sq_eq_abs, Real.norm_eq_abs]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
@@ -89,7 +84,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 
-set_option backward.isDefEq.respectTransparency false in
 -- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
@@ -99,11 +93,11 @@ noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
   norm_mul _ _ := by simp_rw [norm_eq_sqrt_real_inner, inner_self]; simp
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
   toAlgebra := Quaternion.algebra
 
-set_option backward.isDefEq.respectTransparency false in
 instance : CStarRing ℍ where
   norm_mul_self_le x :=
     le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
@@ -154,7 +148,6 @@ theorem coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
 @[simp, norm_cast]
 theorem coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem coeComplex_coe (r : ℝ) : ((r : ℂ) : ℍ) = r :=
   rfl

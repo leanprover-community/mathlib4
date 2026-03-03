@@ -618,6 +618,7 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexSingle
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 public import Mathlib.Algebra.Homology.HomotopyCategory.KProjective
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCocone
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
@@ -1730,6 +1731,7 @@ public import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.Complex.Hadamard
 public import Mathlib.Analysis.Complex.HalfPlane
 public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.Complex.Harmonic.Liouville
 public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.Complex.HasPrimitives
 public import Mathlib.Analysis.Complex.IntegerCompl
@@ -2950,6 +2952,7 @@ public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Basic
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.CommGrp_
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp_
 public import Mathlib.CategoryTheory.Monoidal.Limits.Basic
+public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
 public import Mathlib.CategoryTheory.Monoidal.Linear
 public import Mathlib.CategoryTheory.Monoidal.Mod_

@@ -372,7 +372,6 @@ end Basic
 
 section Fintype
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
     Module.Finite A B := by
   classical
@@ -780,6 +779,7 @@ namespace CyclotomicRing
 instance : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 

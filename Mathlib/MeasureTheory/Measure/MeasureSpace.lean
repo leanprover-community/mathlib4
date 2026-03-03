@@ -170,7 +170,6 @@ theorem measure_sUnion {S : Set (Set α)} (hs : S.Countable) (hd : S.Pairwise Di
     (h : ∀ s ∈ S, MeasurableSet s) : μ (⋃₀ S) = ∑' s : S, μ s := by
   rw [sUnion_eq_biUnion, measure_biUnion hs hd h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem measure_biUnion_finset₀ {s : Finset ι} {f : ι → Set α}
     (hd : Set.Pairwise (↑s) (AEDisjoint μ on f)) (hm : ∀ b ∈ s, NullMeasurableSet (f b) μ) :
     μ (⋃ b ∈ s, f b) = ∑ p ∈ s, μ (f p) := by
