@@ -70,13 +70,15 @@ A covariant derivative ∇ is called of class `C^k` iff,
 whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k` section.
 This is a class so typeclass inference can deduce this automatically.
 -/
-class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] (k : ℕ∞)
+class ContMDiffCovariantDerivativeOn [IsManifold I 1 M] [VectorBundle 𝕜 F V] (k : ℕ∞)
     (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x))
     (u : Set M) where
-  contMDiff : ∀ {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x},
-    CMDiff[u] (k + 1) (T% σ) →
-    -- TODO phrase this in terms of the smoothness of a section of the bundle Hom(TM, V)
-    CMDiff[u] k (T% X) → CMDiff[u] k (T% (fun x ↦ cov σ x (X x)))
+  contMDiff : ∀ {σ : Π x : M, V x}, CMDiff[u] (k + 1) (T% σ) →
+    let f (x : M) : TotalSpace (E →L[𝕜] F) fun x ↦ TangentSpace I x →L[𝕜] V x := ⟨x, cov σ x⟩
+    ContMDiffOn I (I.prod 𝓘(𝕜, E →L[𝕜] F)) k f u
+    -- elaborators not working here, TODO investigate
+    -- ContMDiffOn I (I.prod 𝓘(𝕜, E →L[𝕜] F)) k (T% (cov σ)) u
+    -- CMDiff[u] k f
 
 variable {F}
 
@@ -183,10 +185,10 @@ lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination
     (Hcov : ContMDiffCovariantDerivativeOn (F := F) n cov u)
     (Hcov' : ContMDiffCovariantDerivativeOn (F := F) n cov' u) :
     ContMDiffCovariantDerivativeOn F n (fun σ ↦ (f • (cov σ)) + (1 - f) • (cov' σ)) u where
-  contMDiff hX hσ := by
+  contMDiff hσ := by
     apply ContMDiffOn.add_section
-    · exact hf.smul_section <| Hcov.contMDiff hX hσ
-    · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hX hσ
+    · exact hf.smul_section <| Hcov.contMDiff hσ
+    · exact (contMDiffOn_const.sub hf).smul_section <| Hcov'.contMDiff hσ
 
 /-- A finite affine combination of covariant derivatives is a covariant derivative. -/
 def affineCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
@@ -217,9 +219,9 @@ lemma _root_.ContMDiffCovariantDerivativeOn.affineCombination' {n : ℕ∞}
     (hcov : ∀ i ∈ s, ContMDiffCovariantDerivativeOn F n (cov i) u)
     {f : ι → M → 𝕜} (hf : ∀ i ∈ s, CMDiff[u] n (f i)) :
     ContMDiffCovariantDerivativeOn F n (fun σ x ↦ ∑ i ∈ s, (f i x) • (cov i) σ x) u where
-  contMDiff {X} σ hσ hX := by
+  contMDiff {σ} hσ := by
     simpa using ContMDiffOn.sum_section
-      (fun i hi ↦ (hf i hi).smul_section <| (hcov i hi).contMDiff hσ hX)
+      (fun i hi ↦ (hf i hi).smul_section <| (hcov i hi).contMDiff hσ)
 
 variable {s : Set M}
     {f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
@@ -310,11 +312,13 @@ A covariant derivative ∇ is called of class `C^k` iff,
 whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k` section.
 This is a class so typeclass inference can deduce this automatically.
 -/
-class ContMDiffCovariantDerivative (cov : CovariantDerivative I F V) (k : ℕ∞) where
+class ContMDiffCovariantDerivative [VectorBundle 𝕜 F V] (cov : CovariantDerivative I F V)
+    (k : ℕ∞) where
   contMDiff : ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ
 
 @[simp]
-lemma contMDiffCovariantDerivativeOn_univ_iff {cov : CovariantDerivative I F V} {k : ℕ∞} :
+lemma contMDiffCovariantDerivativeOn_univ_iff [VectorBundle 𝕜 F V] {cov : CovariantDerivative I F V}
+    {k : ℕ∞} :
     ContMDiffCovariantDerivativeOn F k cov.toFun Set.univ ↔ ContMDiffCovariantDerivative cov k :=
   ⟨fun h ↦ ⟨h⟩, fun h ↦ h.contMDiff⟩
 
