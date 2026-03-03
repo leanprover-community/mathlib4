@@ -985,7 +985,6 @@ abbrev comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
 lemma comparePkg_eq_extension (x : RatFuncAdicCompl K) :
     (comparePkg K) x = (extensionAsRingHom K (continuous_coe' _)) x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: this will be the *inverse* of the fundamental one. -/
 abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
@@ -1040,11 +1039,10 @@ theorem valuation_LaurentSeries_equal_extension :
     (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤᵐ⁰) := by
   apply IsDenseInducing.extend_unique
   · intro x
-    rw [← WithVal.apply_equiv, valuation_eq_LaurentSeries_valuation K]
+    rw [← WithVal.apply_ofVal, valuation_eq_LaurentSeries_valuation K]
     rfl
   · exact Valued.continuous_valuation (K := K⸨X⸩)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     Tendsto (Valued.v : RatFunc K → ℤᵐ⁰) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤᵐ⁰)) := by
   have := Valued.is_topological_valuation (R := (idealX K).adicCompletion (RatFunc K))
@@ -1068,7 +1066,6 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     rintro y val_y b rfl
     rw [← Valuation.map_eq_of_sub_lt _ val_y, valuedAdicCompletion_eq_valuation']
 
-set_option backward.isDefEq.respectTransparency false in
 /- The extension of the `X`-adic valuation from `RatFunc K` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
 theorem valuation_compare (f : K⸨X⸩) :

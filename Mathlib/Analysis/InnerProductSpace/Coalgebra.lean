@@ -109,7 +109,6 @@ lemma AlgebraOfCoalgebra.mul_def (x y : E) :
 
 attribute [local simp] AlgebraOfCoalgebra.mul_def
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] InnerProductSpace.mulOfCoalgebra in
 /-- A finite-dimensional inner product space with a coalgebra structure induces a ring structure,
