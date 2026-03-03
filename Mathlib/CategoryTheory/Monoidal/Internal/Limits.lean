@@ -88,6 +88,10 @@ def limitConeIsLimit (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsL
   fac s h := by ext; simp
   uniq s m w := Hom.ext' <| hc.hom_ext fun j ↦ by simpa using congr($(w j).hom)
 
+/--
+A helper definition to show that the forgetful functor `forget C : Mon C ⥤ C` creates limits:
+given a limit cone `c` of `F ⋙ forget C`, we can lift it to a limit cone of `F`.
+-/
 def limitConeLiftsToLimit (F : J ⥤ Mon C) (c : Cone (F ⋙ Mon.forget C)) (hc : IsLimit c) :
     LiftsToLimit F (forget C) c hc where
   liftedCone := limitCone F c hc
