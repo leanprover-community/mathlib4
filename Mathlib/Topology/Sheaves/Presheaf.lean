@@ -310,22 +310,21 @@ set_option backward.isDefEq.respectTransparency false in
 theorem truc {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) {U V : Opens X}
     (HU : IsOpen (f '' SetLike.coe U)) (HV : IsOpen (f '' SetLike.coe V)) {le : U ≤ V} :
     (pullbackObjObjOfImageOpen f ℱ V HV).hom ≫
-    ℱ.map (Quiver.Hom.op (homOfLE (Set.image_mono le)) : op (⟨_, HV⟩ : Opens Y) ⟶ op ⟨_, HU⟩) =
+    ℱ.map (IsOpenMap.functorMap HU HV le).op =
     ((pullback C f).obj ℱ).map (homOfLE le).op ≫ (pullbackObjObjOfImageOpen f ℱ U HU).hom := by
   dsimp [pullbackObjObjOfImageOpen]
   apply Limits.IsColimit.hom_ext ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit
     ℱ (op V))
   intro j
-  rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom_assoc]
   have eq : ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
       ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
       (op V)).ι.app j ≫ ((pullback C f).obj ℱ).map (homOfLE le).op  =
       ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
       ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
       (op U)).ι.app ((CostructuredArrow.map (homOfLE le).op).obj j) := by aesop_cat
-  rw [reassoc_of% eq]
-  rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom]
-  rw [Limits.coconeOfDiagramTerminal_ι_app,Limits.coconeOfDiagramTerminal_ι_app]
+  rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, reassoc_of% eq,
+    Limits.IsColimit.comp_coconePointUniqueUpToIso_hom,
+    Limits.coconeOfDiagramTerminal_ι_app,Limits.coconeOfDiagramTerminal_ι_app]
   dsimp
   rw [← Functor.map_comp]
   aesop_cat
