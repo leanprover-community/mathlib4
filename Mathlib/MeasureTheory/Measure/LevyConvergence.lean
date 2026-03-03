@@ -38,19 +38,10 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     {f : E → ℂ} (hf : ContinuousAt f 0) (hf_meas : Measurable f)
     (h : ∀ t, Tendsto (fun n ↦ charFun (μ n) t) atTop (𝓝 (f t))) :
     IsTightMeasureSet (Set.range μ) := by
-  refine isTightMeasureSet_range_of_tendsto_limsup_inner_of_norm_eq_one ℝ fun z hz ↦ ?_
-  suffices Tendsto (fun r : ℝ ↦ limsup (fun n ↦ (μ n).real {x | r < |⟪z, x⟫|}) atTop) atTop (𝓝 0) by
-    have h_ofReal (r : ℝ) : limsup (fun n ↦ μ n {x | r < |⟪z, x⟫|}) atTop
-        = ENNReal.ofReal (limsup (fun n ↦ (μ n).real {x | r < |⟪z, x⟫|}) atTop) := by
-      simp_rw [measureReal_def,
-        ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun _ ↦ prob_le_one)]
-      rw [ENNReal.ofReal_toReal]
-      refine ne_top_of_le_ne_top (by simp : 1 ≠ ∞) ?_
-      refine limsup_le_of_le ?_ (.of_forall fun _ ↦ prob_le_one)
-      exact IsCoboundedUnder.of_frequently_ge <| .of_forall fun _ ↦ zero_le _
-    simp only [Real.norm_eq_abs, h_ofReal]
-    rw [← ENNReal.ofReal_zero]
-    exact ENNReal.tendsto_ofReal this
+  -- it suffices to show that a limsup tends to 0
+  refine isTightMeasureSet_range_of_tendsto_limsup_measureReal_inner_of_norm_eq_one ℝ
+    (fun z hz ↦ ?_) (by simp : 1 ≠ ∞) (fun _ ↦ by simp)
+  -- first, prove an auxiliary inequality that will be used to bound the limsup
   have h_le_4 n r (hr : 0 < r) :
       2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun (μ n) (t • z)‖ ≤ 4 := by
     have hr' : -(2 * r⁻¹) ≤ 2 * r⁻¹ := by rw [neg_le_self_iff]; positivity
@@ -70,9 +61,11 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       simp only [intervalIntegral.integral_const, sub_neg_eq_add, smul_eq_mul]
       field_simp
       grind
-  have h_le n r := measureReal_abs_inner_gt_le_integral_charFun (μ := μ n) (a := z) (r := r)
+  have h_le n r (hr : 0 < r) : (μ n).real {x | r < |⟪z, x⟫|} ≤
+      2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun (μ n) (t • z)‖ :=
+    measureReal_abs_inner_gt_le_integral_charFun (μ := μ n) (a := z) hr
   -- We introduce an upper bound for the limsup.
-  -- This is where we use the fact that `charFun (μ n)` converges to `f`.
+  -- This is where we use that `charFun (μ n)` converges to `f`.
   have h_limsup_le r (hr : 0 < r) :
       limsup (fun n ↦ (μ n).real {x | r < |⟪z, x⟫|}) atTop
         ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - f (t • z)‖ := by
@@ -121,8 +114,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   refine ⟨4 * δ⁻¹, fun r hrδ ↦ ?_⟩
   have hr : 0 < r := lt_of_lt_of_le (by positivity) hrδ
   have hr' : -(2 * r⁻¹) ≤ 2 * r⁻¹ := by rw [neg_le_self_iff]; positivity
-  have h_le_Ioc x (hx : x ∈ Set.Ioc (-(2 * r⁻¹)) (2 * r⁻¹)) :
-      ‖1 - f (x • z)‖ ≤ ε / 4 := by
+  have h_le_Ioc x (hx : x ∈ Set.Ioc (-(2 * r⁻¹)) (2 * r⁻¹)) : ‖1 - f (x • z)‖ ≤ ε / 4 := by
     refine (hδ_lt ?_).le
     simp only [norm_smul, Real.norm_eq_abs, mul_one, hz]
     calc |x|
