@@ -349,46 +349,34 @@ end FinitePlace
 
 end NumberField
 
+section LiesOver
+
 namespace NumberField.HeightOneSpectrum
 
 variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
-  (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
+variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
-    [IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
+
+local notation "Kv" => v.adicCompletion K
+local notation "Lw" => w.adicCompletion L
 
 open scoped TensorProduct Valued in
-instance [w.asIdeal.LiesOver v.asIdeal] :
-    Module.Finite (v.adicCompletion K) (w.adicCompletion L) := by
-  let Lw := w.adicCompletion L
-  let Kᵥ := v.adicCompletion K
-  let Φ : Kᵥ ⊗[ℚ] L →ₗ[Kᵥ] Lw :=
-    Algebra.TensorProduct.lift (Algebra.algHom Kᵥ Kᵥ Lw) (Algebra.algHom ℚ L Lw)
-      (fun x y ↦ mul_comm ..) |>.toLinearMap
-  -- Φ has closed image
-  have hclosed : IsClosed (Φ.range : Set Lw) :=
-    (LinearMap.range Φ).closed_of_finiteDimensional
-  -- Φ has dense range
+instance : Module.Finite Kv Lw :=
+  let Φ : Kv ⊗[K] L →ₗ[Kv] Lw := Algebra.TensorProduct.lift (Algebra.algHom Kv Kv Lw)
+    (Algebra.algHom K L Lw) (fun _ _ ↦ mul_comm ..) |>.toLinearMap
   have h_dense : DenseRange Φ := by
-    have hss : Set.range (algebraMap L Lw) ⊆ LinearMap.range Φ := by
-      rintro z ⟨x, rfl⟩
-      exact ⟨1 ⊗ₜ[ℚ] x, by simp [Φ, Algebra.algHom]⟩
-    have : DenseRange (algebraMap L Lw) := by
-      apply DenseRange.comp UniformSpace.Completion.denseRange_coe
-        (WithVal.equiv (w.valuation L)).symm.surjective.denseRange
-        (UniformSpace.Completion.continuous_coe _)
-    exact this.mono hss
-  -- thus the linear map Φ is surjective since its range is closed and dense
-  have hsurj : Function.Surjective Φ := by
-    rw [← Set.range_eq_univ, ← Φ.coe_range, ← hclosed.closure_eq]
-    exact h_dense.closure_range
-  exact Module.Finite.of_surjective _ hsurj
-
-instance : CharZero (v.adicCompletion K) :=
-  charZero_of_injective_algebraMap (FaithfulSMul.algebraMap_injective K _)
+    apply (w.denseRange_algebraMap L).mono
+    rintro _ ⟨l, rfl⟩
+    exact ⟨1 ⊗ₜ l, by simp [Φ, Algebra.algHom]⟩
+  .of_surjective Φ (by
+    rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
+    exact h_dense.closure_range)
 
 end NumberField.HeightOneSpectrum
 
+end LiesOver
 
 -- open UniqueFactorizationMonoid in
 -- theorem Ideal.IsDedekindDomain.emultiplicity_eq_zero_of_ne {R : Type*} [CommRing R]
@@ -436,7 +424,7 @@ theorem valued_liesOver [IsFractionRing B L] [Module.IsTorsionFree A B]
     --rw [algebraMap_def] at this
     --rw [algebraMap_def] at this
     rw [Valued.valuedCompletion_apply]
-    erw [← this]
+    erw? [← this]
     --rw [adicValued_apply']
     --rw [Algebra.algebraMap_self, RingHom.id_apply] at this
     --rw [← this]
@@ -535,8 +523,6 @@ private lemma inertiaDeg_mul_ramificationIdx_ne_zero [w.asIdeal.LiesOver v.asIde
   simpa [-inertiaDeg_algebraMap] using
     ⟨Ideal.inertiaDeg_ne_zero _ _, ramificationIdx_ne_zero_of_liesOver _ v.ne_bot⟩
 
---instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) := sorry
-
 noncomputable
 def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
     AlgebraNorm (v.adicCompletion K) (w.adicCompletion L) where
@@ -583,6 +569,12 @@ def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
     split_ifs
     · rfl
     · simp [NNReal.zpow_pow_comm]
+
+--instance : CharZero (v.adicCompletion K) := sorry
+
+variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
 
 --#synth Algebra (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)
 instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
@@ -692,32 +684,3 @@ instance compact_adicCompletionIntegers :
     exact ResidueField.finite_of_finite h (S := v.adicCompletionIntegers K)
 
 end IsDedekindDomain.HeightOneSpectrum
-
-section LiesOver
-
-namespace NumberField.HeightOneSpectrum
-
-variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
-variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
-variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
-    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
-    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
-
-local notation "Kv" => v.adicCompletion K
-local notation "Lw" => w.adicCompletion L
-
-open scoped TensorProduct Valued in
-instance : Module.Finite Kv Lw :=
-  let Φ : Kv ⊗[K] L →ₗ[Kv] Lw := Algebra.TensorProduct.lift (Algebra.algHom Kv Kv Lw)
-    (Algebra.algHom K L Lw) (fun _ _ ↦ mul_comm ..) |>.toLinearMap
-  have h_dense : DenseRange Φ := by
-    apply (w.denseRange_algebraMap L).mono
-    rintro _ ⟨l, rfl⟩
-    exact ⟨1 ⊗ₜ l, by simp [Φ, Algebra.algHom]⟩
-  .of_surjective Φ (by
-    rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
-    exact h_dense.closure_range)
-
-end NumberField.HeightOneSpectrum
-
-end LiesOver
