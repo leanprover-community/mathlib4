@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Thomas Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Zhu, Rémy Degenne
+Authors: Thomas Zhu, Etienne Marion
 -/
 import Mathlib.Analysis.Calculus.Taylor
 import Mathlib.Analysis.Fourier.FourierTransformDeriv
@@ -23,6 +23,7 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
   [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   {μ : Measure E} [IsFiniteMeasure μ]
 
+set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem contDiff_charFun {n : ℕ} (hint : Integrable (‖·‖ ^ n) μ) :
     ContDiff ℝ n (charFun μ) := by
@@ -34,6 +35,7 @@ theorem contDiff_charFun {n : ℕ} (hint : Integrable (‖·‖ ^ n) μ) :
 lemma continuous_charFun : Continuous (charFun μ) :=
   contDiff_zero.1 (contDiff_charFun (by simp))
 
+set_option backward.isDefEq.respectTransparency false in
 open VectorFourier in
 theorem iteratedFDeriv_charFun {n : ℕ} {t : E} (hint : Integrable (‖·‖ ^ n) μ) (x : Fin n → E) :
     iteratedFDeriv ℝ n (charFun μ) t x = I ^ n * ∫ y, (∏ i, ⟪y, x i⟫) * exp (⟪y, t⟫ * I) ∂μ := by
@@ -65,17 +67,20 @@ end InnerProductSpace
 
 variable {μ : Measure ℝ} [IsFiniteMeasure μ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_charFun {n : ℕ} {t : ℝ} (hint : Integrable (|·| ^ n) μ) :
     iteratedDeriv n (charFun μ) t = I ^ n * ∫ x, x ^ n * exp (t * x * I) ∂μ := by
   rw [iteratedDeriv, iteratedFDeriv_charFun]
   swap; · exact hint
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem iteratedDeriv_charFun_zero {n : ℕ} (hint : Integrable (|·| ^ n) μ) :
     iteratedDeriv n (charFun μ) 0 = I ^ n * ∫ x, x ^ n ∂μ := by
   simp [iteratedDeriv_charFun hint]
   norm_cast
 
+set_option backward.isDefEq.respectTransparency false in
 lemma taylorWithinEval_charFun_zero {n : ℕ} (hint : Integrable (|·| ^ n) μ) (t : ℝ) :
     taylorWithinEval (charFun μ) n univ 0 t
       = ∑ k ∈ Finset.range (n + 1), (k ! : ℂ)⁻¹ * (t * I) ^ k * ∫ x, x ^ k ∂μ := by
@@ -97,6 +102,7 @@ theorem taylor_charFun {n : ℕ} (hint : Integrable (|·| ^ n) μ) :
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} [IsProbabilityMeasure P]
   {X : Ω → ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma taylor_charFun_two' (hX : Measurable X) (hint : Integrable (|·| ^ 2) (P.map X)) :
     (fun t ↦ charFun (P.map X) t - (1 + P[X] * t * I - P[X ^ 2] * t ^ 2 / 2))
       =o[𝓝 0] fun t ↦ t ^ 2 := by
@@ -111,6 +117,7 @@ lemma taylor_charFun_two' (hX : Measurable X) (hint : Integrable (|·| ^ 2) (P.m
   simp [field]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 lemma taylor_charFun_two {X : Ω → ℝ} (hX : Measurable X) {P : Measure Ω} [IsProbabilityMeasure P]
     (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) :
     (fun t ↦ charFun (P.map X) t - (1 - t ^ 2 / 2)) =o[𝓝 0] fun t ↦ t ^ 2 := by
