@@ -555,6 +555,7 @@ lemma contDiffOn_nat_picard_Icc
     rw [eq_of_mem_singleton ht]
     exact contDiffWithinAt_singleton
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `picard f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ∞`.
 

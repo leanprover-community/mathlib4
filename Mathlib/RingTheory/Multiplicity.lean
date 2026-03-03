@@ -679,6 +679,7 @@ theorem multiplicity_self {a : α} : multiplicity a a = 1 := by
     · simpa using ha.ne_zero
   · simp [ha]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem FiniteMultiplicity.emultiplicity_self {a : α} (hfin : FiniteMultiplicity a a) :
     emultiplicity a a = 1 := by
@@ -718,6 +719,7 @@ theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Fins
     exact emultiplicity_of_one_right hp.not_unit
   | insert a s has ih => simpa [has, ← ih] using emultiplicity_mul hp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by
   induction k with

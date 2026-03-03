@@ -95,6 +95,7 @@ theorem emultiplicity_self {p : ℕ} (hp : p.Prime) : emultiplicity p p = 1 :=
 theorem emultiplicity_pow_self {p n : ℕ} (hp : p.Prime) : emultiplicity p (p ^ n) = n :=
   _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_unit n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Legendre's Theorem**
 
 The multiplicity of a prime in `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
@@ -150,6 +151,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   rw [WithTop.add_left_inj h, sum_Ico_succ_top h2, hp.emultiplicity_mul, hp.emultiplicity_self,
     sum_congr rfl h4, sum_const_zero, zero_add, add_comm 1]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of `p` in `(p * n)!` is `n` more than that of `n!`. -/
 theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     emultiplicity p (p * n)! = emultiplicity p n ! + n := by
@@ -161,6 +163,7 @@ theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
     congr 1
     rw [add_comm, add_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /- The multiplicity of a prime `p` in `p ^ n` is the sum of `p ^ i`, where `i` ranges between `0`
   and `n - 1`. -/
 theorem multiplicity_factorial_pow {n p : ℕ} (hp : p.Prime) :
@@ -186,6 +189,7 @@ theorem emultiplicity_factorial_le_div_pred {p : ℕ} (hp : p.Prime) (n : ℕ) :
   apply WithTop.coe_mono
   exact Nat.geom_sum_Ico_le hp.two_le _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplicity of `p` in `choose (n + k) k` is the number of carries when `k` and `n`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
   is any bound greater than `log p (n + k)`. -/
@@ -228,6 +232,7 @@ theorem emultiplicity_le_emultiplicity_choose_add {p : ℕ} (hp : p.Prime) :
 
 variable {p n k : ℕ}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k ≤ p ^ n)
     (hk0 : k ≠ 0) : emultiplicity p (choose (p ^ n) k) + emultiplicity p k = n :=
   le_antisymm
@@ -248,6 +253,7 @@ theorem emultiplicity_choose_prime_pow_add_emultiplicity (hp : p.Prime) (hkn : k
       rwa [card_Ico 1 n.succ] at filter_le_Ico)
     (by rw [← hp.emultiplicity_pow_self]; exact emultiplicity_le_emultiplicity_choose_add hp _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤ p ^ n) (hk0 : k ≠ 0) :
     emultiplicity p (choose (p ^ n) k) = ↑(n - multiplicity p k) := by
   push_cast

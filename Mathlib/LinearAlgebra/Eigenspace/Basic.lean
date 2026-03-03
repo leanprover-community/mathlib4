@@ -116,6 +116,7 @@ lemma genEigenspace_top (f : End R M) (μ : R) :
   rw [genEigenspace_eq_iSup_genEigenspace_nat, iSup_subtype]
   simp only [le_top, iSup_pos]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma genEigenspace_one {f : End R M} {μ : R} :
     f.genEigenspace μ 1 = LinearMap.ker (f - μ • 1) := by
   rw [← Nat.cast_one, genEigenspace_nat, pow_one]
@@ -126,6 +127,7 @@ lemma mem_genEigenspace_one {f : End R M} {μ : R} {x : M} :
   rw [genEigenspace_one, LinearMap.mem_ker, LinearMap.sub_apply,
     sub_eq_zero, LinearMap.smul_apply, Module.End.one_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 -- `simp` can prove this using `genEigenspace_zero`
 lemma mem_genEigenspace_zero {f : End R M} {μ : R} {x : M} :
     x ∈ f.genEigenspace μ 0 ↔ x = 0 := by
@@ -265,6 +267,7 @@ lemma genEigenrange_nat {f : End R M} {μ : R} {k : ℕ} :
     rw [this, pow_add]
     exact ⟨_, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The exponent of a generalized eigenvalue is never 0. -/
 lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
     (h : f.HasUnifEigenvalue μ k) : k ≠ 0 := by
@@ -411,6 +414,7 @@ lemma eigenspace_def {f : End R M} {μ : R} :
     f.eigenspace μ = LinearMap.ker (f - μ • 1) := by
   rw [eigenspace, genEigenspace_one]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem eigenspace_zero (f : End R M) : f.eigenspace 0 = LinearMap.ker f := by
   simp only [eigenspace, ← Nat.cast_one (R := ℕ∞), genEigenspace_zero_nat, pow_one]
@@ -566,6 +570,7 @@ theorem eigenspace_le_maxGenEigenspace {f : End R M} {μ : R} :
     f.eigenspace μ ≤ f.maxGenEigenspace μ :=
   (f.genEigenspace _).monotone <| OrderTop.le_top _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- All eigenvalues are generalized eigenvalues. -/
 theorem hasGenEigenvalue_of_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k)
     (hμ : f.HasEigenvalue μ) : f.HasGenEigenvalue μ k :=
@@ -576,6 +581,7 @@ theorem hasEigenvalue_of_hasGenEigenvalue {f : End R M} {μ : R} {k : ℕ}
     (hμ : f.HasGenEigenvalue μ k) : f.HasEigenvalue μ :=
   hμ.lt zero_lt_one
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Generalized eigenvalues are actually just eigenvalues. -/
 theorem hasGenEigenvalue_iff_hasEigenvalue {f : End R M} {μ : R} {k : ℕ} (hk : 0 < k) :
     f.HasGenEigenvalue μ k ↔ f.HasEigenvalue μ := by

@@ -138,7 +138,6 @@ theorem sub_eq_eval {R₁ R₂ S₁ S₂ : Type*} [AddCommGroup M] [Ring R] [Mod
 instance [Neg R] : Neg (NF R M) where
   neg l := l.map fun (a, x) ↦ (-a, x)
 
-set_option backward.whnf.reducibleClassField false in
 theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
   simp +instances only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
   congr

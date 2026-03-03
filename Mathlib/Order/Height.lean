@@ -145,6 +145,7 @@ section Rel
 
 variable {r : α → α → Prop} {r' : β → β → Prop} (s : Set α)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem chainHeight_eq_of_relEmbedding (e : r ↪r r') :
     (e '' s).chainHeight r' = s.chainHeight r := by
   refine eq_of_forall_natCast_le_iff fun n ↦ ⟨fun hn ↦ ?_, fun hn ↦ ?_⟩

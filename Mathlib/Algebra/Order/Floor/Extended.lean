@@ -60,13 +60,19 @@ variable {r s : ℝ≥0∞} {n : ℕ∞}
 @[inherit_doc] notation "⌈" r "⌉ₑ" => ENat.ceil r
 
 @[simp] lemma floor_top : ⌊∞⌋ₑ = ⊤ := rfl
+
 @[simp] lemma ceil_top : ⌈∞⌉ₑ = ⊤ := rfl
+
 @[simp, norm_cast] lemma floor_coe (r : ℝ≥0) : ⌊r⌋ₑ = ⌊r⌋₊ := rfl
+
 @[simp, norm_cast] lemma ceil_coe (r : ℝ≥0) : ⌈r⌉ₑ = ⌈r⌉₊ := rfl
 
 @[simp] lemma floor_eq_top : ⌊r⌋ₑ = ⊤ ↔ r = ∞ := by cases r <;> simp
+
 @[simp] lemma ceil_eq_top : ⌈r⌉ₑ = ⊤ ↔ r = ∞ := by cases r <;> simp
+
 lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
+
 @[simp] lemma ceil_lt_top : ⌈r⌉ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -76,6 +82,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ceil_le : ⌈r⌉ₑ ≤ n ↔ r ≤ n := by cases r <;> cases n <;> simp
 
 @[simp] lemma floor_lt : ⌊r⌋ₑ < n ↔ r < n := lt_iff_lt_of_le_iff_le le_floor
+
 @[simp] lemma lt_ceil : n < ⌈r⌉ₑ ↔ n < r := lt_iff_lt_of_le_iff_le ceil_le
 
 lemma gc_toENNReal_floor : GaloisConnection (↑) floor := fun _ _ ↦ le_floor.symm

@@ -313,7 +313,7 @@ theorem lookupAll_sublist (a : α) : ∀ l : List (Sigma β), (lookupAll a l).ma
     by_cases h : a = a'
     · subst h
       simp only [lookupAll_cons_eq, List.map]
-      exact (lookupAll_sublist a l).cons₂ _
+      exact (lookupAll_sublist a l).cons_cons _
     · simp only [ne_eq, h, not_false_iff, lookupAll_cons_ne]
       exact (lookupAll_sublist a l).cons _
 

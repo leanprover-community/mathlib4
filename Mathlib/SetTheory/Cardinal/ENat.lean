@@ -187,6 +187,7 @@ lemma toENatAux_eq_nat {x : Cardinal} {n : ℕ} : toENatAux x = n ↔ x = n := b
 
 lemma toENatAux_eq_zero {x : Cardinal} : toENatAux x = 0 ↔ x = 0 := toENatAux_eq_nat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Projection from cardinals to `ℕ∞`. Sends all infinite cardinals to `⊤`.
 
 We define this function as a bundled monotone ring homomorphism. -/

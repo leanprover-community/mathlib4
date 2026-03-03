@@ -157,6 +157,7 @@ lemma netMaxcard_empty : netMaxcard T ∅ U n = 0 := by
   norm_cast at s_net
   rw [s_net, Finset.card_empty, CharP.cast_eq_zero, bot_eq_zero']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     netMaxcard T F U n = 0 ↔ F = ∅ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h, netMaxcard_empty]⟩

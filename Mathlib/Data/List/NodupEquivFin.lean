@@ -162,7 +162,7 @@ theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
       obtain ⟨f, hf⟩ := IH
       refine ⟨f.trans (OrderEmbedding.ofStrictMono (· + 1) fun _ => by simp), ?_⟩
       simpa using hf
-    | cons₂ _ _ IH =>
+    | cons_cons _ _ IH =>
       obtain ⟨f, hf⟩ := IH
       refine
         ⟨OrderEmbedding.ofMapLEIff (fun ix : ℕ => if ix = 0 then 0 else (f ix.pred).succ) ?_, ?_⟩

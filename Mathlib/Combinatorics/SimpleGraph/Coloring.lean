@@ -336,6 +336,7 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
   rw [Set.mem_setOf_eq] at this
   exact this.mono h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the chromatic number of `G` is `n + 1`, then `G` is colorable in no fewer than `n + 1`
 colors. -/
 theorem chromaticNumber_eq_iff_colorable_not_colorable :
@@ -355,6 +356,7 @@ theorem colorable_chromaticNumber_of_fintype (G : SimpleGraph V) [Finite V] :
   cases nonempty_fintype V
   exact colorable_chromaticNumber G.colorable_of_fintype
 
+set_option backward.isDefEq.respectTransparency false in
 theorem chromaticNumber_le_one_of_subsingleton (G : SimpleGraph V) [Subsingleton V] :
     G.chromaticNumber ≤ 1 := by
   rw [← Nat.cast_one, chromaticNumber_le_iff_colorable]
@@ -380,6 +382,7 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
   obtain ⟨n, hn⟩ := h
   exact colorable_chromaticNumber hn
 
+set_option backward.isDefEq.respectTransparency false in
 theorem chromaticNumber_eq_zero_of_isEmpty [IsEmpty V] : G.chromaticNumber = 0 := by
   rw [← nonpos_iff_eq_zero, ← Nat.cast_zero, chromaticNumber_le_iff_colorable]; exact .of_isEmpty _
 

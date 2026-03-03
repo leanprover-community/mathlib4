@@ -480,6 +480,7 @@ theorem starProjection_orthogonal_apply_eq_zero
   rw [starProjection_apply, coe_eq_zero]
   exact orthogonalProjection_orthogonal_apply_eq_zero hv
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `U ≤ V`, then projecting on `V` and then on `U` is the same as projecting on `U`. -/
 theorem orthogonalProjection_starProjection_of_le {U V : Submodule 𝕜 E}
     [U.HasOrthogonalProjection] [V.HasOrthogonalProjection] (h : U ≤ V) (x : E) :
