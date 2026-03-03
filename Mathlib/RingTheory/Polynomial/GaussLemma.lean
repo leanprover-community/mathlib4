@@ -234,7 +234,8 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCD
   · apply h0 con
   · apply Units.ne_zero _ con
 
-lemma mul_map_mem_lifts_iff [NormalizedGCDMonoid R] {f : R[X]} (hf : IsPrimitive f) (g : K[X]) :
+lemma IsPrimitive.mul_map_mem_lifts_iff [NormalizedGCDMonoid R] {f : R[X]} (hf : IsPrimitive f)
+    {g : K[X]} :
     g * f.map (algebraMap R K) ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
   refine ⟨?_, fun h ↦ Subsemiring.mul_mem _ h ⟨_, rfl⟩⟩
   intro ⟨k, (hk : Polynomial.map _ _ = _)⟩
@@ -256,9 +257,10 @@ lemma mul_map_mem_lifts_iff [NormalizedGCDMonoid R] {f : R[X]} (hf : IsPrimitive
   rw [← hf.content_eq_one, ← content_mul, g'_mul_f, smul_eq_C_mul, content_mul, content_C,
     normalize_apply, map_mul, map_mul, mul_assoc]
 
-lemma map_mul_mem_lifts_iff [NormalizedGCDMonoid R] {f : R[X]} (hf : IsPrimitive f) (g : K[X]) :
+lemma IsPrimitive.map_mul_mem_lifts_iff [NormalizedGCDMonoid R] {f : R[X]} (hf : IsPrimitive f)
+    {g : K[X]} :
     f.map (algebraMap R K) * g ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
-  rw [mul_comm, mul_map_mem_lifts_iff hf g]
+  rw [mul_comm, hf.mul_map_mem_lifts_iff]
 
 variable [Nonempty (NormalizedGCDMonoid R)]
 
