@@ -61,40 +61,46 @@ variable [IsManifold I ∞ M] {U : Set M} (hf : IsCovariantDerivativeOn E cov U)
 
 variable (Y) in
 lemma torsion_add_left_apply [CompleteSpace E]
-    (hf : IsCovariantDerivativeOn E cov U) (hx : x ∈ U)
-    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) :
+    (hcov : IsCovariantDerivativeOn E cov U)
+    (hX : MDiffAt (T% X) x) (hX' : MDiffAt (T% X') x) (hx : x ∈ U := by trivial) :
     torsion cov (X + X') Y x = torsion cov X Y x + torsion cov X' Y x := by
-  simp [torsion]--, hf.addX (x := x) (hx := sorry) hX hX']
-  -- rw [hf.addσ Y hX hX', VectorField.mlieBracket_add_left hX hX']
-  sorry -- module
+  simp [torsion, hcov.addσ hX hX', VectorField.mlieBracket_add_left hX hX']
+  module
 
-lemma torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E cov U) (hx : x ∈ U)
+lemma torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E cov U)
     (hX : MDiffAt (T% X) x)
-    (hX' : MDiffAt (T% X') x) :
+    (hX' : MDiffAt (T% X') x) (hx : x ∈ U := by trivial) :
     torsion cov Y (X + X') x = torsion cov Y X x + torsion cov Y X' x := by
   rw [torsion_antisymm, Pi.neg_apply,
-    hf.torsion_add_left_apply _ hx hX hX', torsion_antisymm Y, torsion_antisymm Y]
+    hf.torsion_add_left_apply _ hX hX', torsion_antisymm Y, torsion_antisymm Y]
   simp; abel
 
 variable (Y) in
 lemma torsion_smul_left_apply [CompleteSpace E]
-    {F : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[ℝ] TangentSpace I x}
-    (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
-    -- TODO: making hx an auto-param := by trivial doesn't fire at the application sites below
-    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
-    torsion F (f • X) Y x = f x • torsion F X Y x := by
+    (hcov : IsCovariantDerivativeOn E cov U)
+    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hx : x ∈ U := by trivial) :
+    torsion cov (f • X) Y x = f x • torsion cov X Y x := by
+  simp only [torsion]
+  rw [hcov.leibniz hX hf, VectorField.mlieBracket_smul_left hf hX]
+  simp? [bar, smul_sub] says
+    simp only [bar, ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+      ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, ContinuousLinearEquiv.coe_mk,
+      LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
+      ContinuousLinearMap.toSpanSingleton_apply, Pi.smul_apply', map_smul, neg_smul, smul_sub]
+  set A := f x • (cov X x) (Y x)
+  set B := f x • (cov Y x) (X x)
+  set C := f x • VectorField.mlieBracket I X Y x
   sorry /-simp only [torsion, Pi.sub_apply, hF.smulX (X := X) (σ := Y) (f := f)]
   rw [hF.leibniz Y hX hf hx, VectorField.mlieBracket_smul_left hf hX]
   simp [bar, smul_sub]
   abel -/
 
-variable (X) in
 lemma torsion_smul_right_apply [CompleteSpace E]
     {F : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[ℝ] TangentSpace I x}
-    (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
-    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% Y) x) :
+    (hF : IsCovariantDerivativeOn E F U)
+    {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% Y) x) (hx : x ∈ U := by trivial) :
     torsion F X (f • Y) x = f x • torsion F X Y x := by
-  rw [torsion_antisymm, Pi.neg_apply, hF.torsion_smul_left_apply X hx hf hX, torsion_antisymm X]
+  rw [torsion_antisymm, Pi.neg_apply, hF.torsion_smul_left_apply X hf hX, torsion_antisymm X]
   simp
 
 end IsCovariantDerivativeOn
