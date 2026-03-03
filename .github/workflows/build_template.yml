@@ -24,6 +24,9 @@ on:
         type: string
         required: false
         default: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
+      cache_application_id:
+        type: string
+        required: true
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -704,7 +707,7 @@ jobs:
       - name: Azure CLI OIDC login and mint storage bearer token
         uses: ./ci-tools/.github/actions/azure-create-cache-token
         with:
-          azure-client-id: ${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}
+          azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
 
       - name: Upload staged cache to Azure
