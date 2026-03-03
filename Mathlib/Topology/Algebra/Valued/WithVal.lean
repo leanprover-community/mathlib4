@@ -376,7 +376,7 @@ open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 variable (w) in
  --set_option backward.isDefEq.respectTransparency true in
 @[simps!]
-def _root_.WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃* ValueGroup₀ w where
+def WithVal.valueGroup₀_equiv_fun : ValueGroup₀ (instValued w).v ≃* ValueGroup₀ w where
   toFun γ := if hγ : γ = 0 then 0 else by
       let ⟨u, hu⟩ := WithZero.unzero hγ
       rw [mem_valueGroup_iff_of_comm (instValued w).v (y := u)] at hu
@@ -413,15 +413,45 @@ def _root_.WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃* Val
     · aesop
     · simp [← WithZero.coe_mul, WithZero.unzero_mul]
 
-lemma _root_.WithVal.strictMono_valueGroup₀_equiv :
-    StrictMono (_root_.WithVal.valueGroup₀_equiv w) := by
+variable (w) in
+lemma WithVal.strictMono_valueGroup₀_equiv :
+    StrictMono (WithVal.valueGroup₀_equiv_fun w) := by
   intro x y h
   match x, y with
   | 0, WithZero.coe b => simp
   | WithZero.coe a, 0 => simp at h
   | WithZero.coe a, WithZero.coe b => simp_all
 
--- TODO: prove `hw` as a lemma
+variable (w) in
+lemma WithVal.strictMono_valueGroup₀_equiv_symm :
+    StrictMono (WithVal.valueGroup₀_equiv_fun w).symm := by
+  intro x y h
+  match x, y with
+  | 0, WithZero.coe b => simp
+  | WithZero.coe a, 0 => simp at h
+  | WithZero.coe a, WithZero.coe b => simp_all
+
+variable (w) in
+@[simps!]
+def WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃*o ValueGroup₀ w where
+  __ := WithVal.valueGroup₀_equiv_fun w
+  map_le_map_iff' {a b} := by
+    have := (WithVal.strictMono_valueGroup₀_equiv w).monotone
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · have := (WithVal.strictMono_valueGroup₀_equiv_symm w).monotone h
+      simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+        valueGroup₀_equiv_fun_apply, valueGroup₀_equiv_fun_symm_apply, dite_eq_left_iff,
+        WithZero.coe_ne_zero, imp_false, Decidable.not_not] at this
+      split_ifs at this with ha hb
+      · rw [ha, hb]
+      · simp [ha]
+      · simp only [WithZero.unzero_coe, Subtype.coe_eta, WithZero.coe_unzero, dite_eq_ite] at this
+        split_ifs at this with hb
+        · simp only [WithZero.nonpos_iff_eq_zero] at this
+          exact False.elim (ha this)
+        · assumption
+    · exact (WithVal.strictMono_valueGroup₀_equiv w).monotone h
+
 -- TODO: remove hw when we have range bases for Valued's ValuativeRel #27314
 -- TODO: golf
 -- **FAE** instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
@@ -438,7 +468,18 @@ theorem IsEquiv.uniformContinuous_congr
   use .mk0 ((WithVal.valueGroup₀_equiv _).symm (v.restrict r/ v.restrict s))
      (by simp [restrict₀_eq_zero_iff, h.eq_zero, hr₀.ne.symm, hs₀.ne.symm] ),
     fun x hx ↦ ?_
-  rw [← (valueGroup₀_equiv _).symm_apply_eq, ← restrict_def, ← restrict_def ] at hr
+  have := (@(WithVal.valueGroup₀_equiv w).symm_apply_eq (x := (restrict₀ w) r)
+    (y := γ)).mpr
+  simp only [restrict_def, congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq, gt_iff_lt]
+  simp at hx
+  split_ifs at hx with hwr _ hws
+  · simp at hx
+  · simp at hx
+  · simp at hx
+
+
+  rw [/- ← (WithVal.valueGroup₀_equiv w).symm_apply_eq, -/this, ← restrict_def, ← restrict_def ] at hr
+  -- simp at hr
   rw [← hr, Set.mem_setOf_eq]
   by_cases hx0 : Valued.v.restrict (WithVal.congr v w (.refl R) x) = 0
   · rw [hx0]
@@ -459,6 +500,10 @@ theorem IsEquiv.uniformContinuous_congr
     simp only [equiv_apply, restrict_def, div_eq_mul_inv, ← mul_assoc] at hlt
     rw [mul_comm _ ( (restrict₀ w) r), mul_assoc] at hlt
     rw [mul_inv_cancel₀, mul_one] at hlt
+    rw [div_eq_mul_inv, mul_comm]
+    apply_fun valueGroup₀_equiv
+    have hws : 0 < (valueGroup₀_equiv w).symm (w.restrict s)⁻¹ := sorry
+    have := @mul_lt_mul_of_pos_left
     rw [← strictMono_valueGroup₀_equiv.lt_iff_lt, MulEquiv.apply_symm_apply]
     · rw [div_eq_mul_inv]
 
