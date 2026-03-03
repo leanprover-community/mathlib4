@@ -26,6 +26,8 @@ namespace TopCat
 
 variable {X : TopCat.{u}} {U : Opens X}
 
+set_option backward.isDefEq.respectTransparency false
+
 theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
     {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
     ∃(t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
