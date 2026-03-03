@@ -12,11 +12,11 @@ import Counterexamples.HeawoodUnitDistance
 import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.InvertibleModuleNotIdeal
 import Counterexamples.IrrationalPowerOfIrrational
+import Counterexamples.IsOrderedCancelAddMonoidWithBounds
 import Counterexamples.MapFloor
 import Counterexamples.MonicNonRegular
 import Counterexamples.Motzkin
 import Counterexamples.NowhereDifferentiable
-import Counterexamples.IsOrderedCancelAddMonoidWithBounds
 import Counterexamples.PeanoCurve
 import Counterexamples.Phillips
 import Counterexamples.PolynomialIsDomain
