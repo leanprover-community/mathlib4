@@ -150,7 +150,6 @@ def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
     rw [Sheaf.comp_val, Sheaf.comp_val, Sheaf.comp_val, Sheaf.comp_val]
     dsimp [sheafPullback, Functor.sheafPushforwardContinuous, Sheaf.forget]
     simp only [sheafifyMap_sheafifyLift, sheafifyMap_sheafifyLift_assoc]
-    refine (sheafifyLift_unique _ _ _ _ ?_).symm
-    cat_disch
+    rw [CategoryTheory.sheafifyLift_comp]
 
 end Topology.IsOpenEmbedding
