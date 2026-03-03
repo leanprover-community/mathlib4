@@ -320,9 +320,9 @@ theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
         let ⟨_, ha, h⟩ := h _ h'
         (h.trans_le <| le_sSup ha).false⟩
 
--- `to_dual existing` fails here: the `>` in the statement causes `to_dual` to try to project
--- through the `OrderTop → OrderBot` instance chain, producing a type-incorrect term.
-theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b > ⊥, ∃ a ∈ s, a < b :=
+-- `to_dual existing` fails here even with `⊥ < b` instead of `b > ⊥`:
+-- it produces an invalid projection through the `OrderBot` instance chain.
+theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b, ⊥ < b → ∃ a ∈ s, a < b :=
   @sSup_eq_top αᵒᵈ _ _
 
 @[to_dual iInf_lt_iff]

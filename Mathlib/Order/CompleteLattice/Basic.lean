@@ -63,6 +63,7 @@ section
 
 variable [CompleteSemilatticeInf α] {s t : Set α} {a b : α}
 
+-- We will generalize this to conditionally complete lattices in `csInf_singleton`.
 @[to_dual existing, simp]
 theorem sInf_singleton {a : α} : sInf {a} = a :=
   isGLB_singleton.sInf_eq
@@ -102,6 +103,7 @@ theorem sSup_univ : sSup univ = (⊤ : α) :=
 theorem sInf_univ : sInf univ = (⊥ : α) :=
   (@isGLB_univ α _ _).sInf_eq
 
+-- TODO(Jeremy): get this automatically
 @[to_dual (attr := simp)]
 theorem sSup_insert {a : α} {s : Set α} : sSup (insert a s) = a ⊔ sSup s :=
   ((isLUB_sSup s).insert a).sSup_eq
@@ -395,6 +397,7 @@ theorem Antitone.map_sSup_le [CompleteLattice β] {s : Set α} {f : α → β} (
 theorem iSup_const_le : ⨆ _ : ι, a ≤ a :=
   iSup_le fun _ => le_rfl
 
+-- We generalize this to conditionally complete lattices in `ciSup_const` and `ciInf_const`.
 @[to_dual]
 theorem iSup_const [Nonempty ι] : ⨆ _ : ι, a = a := by rw [iSup, range_const, sSup_singleton]
 
@@ -732,7 +735,7 @@ section le
 
 variable {ι : Type*} [PartialOrder ι] (f : ι → α) (i : ι)
 
--- TODO: @[to_dual] fails here (swaps order relation arguments)
+-- TODO: @[to_dual] fails here (swaps order relation arguments on ι, even with dont_translate)
 theorem biSup_le_eq_sup : (⨆ j ≤ i, f j) = (⨆ j < i, f j) ⊔ f i := by
   rw [iSup_split_single _ i]
   -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
