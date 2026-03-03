@@ -100,9 +100,8 @@ instance [DecidablePred (· ∈ s)] : DecidableEq (α ⧸ s) :=
 
 /-- The equivalence relation corresponding to the partition of a group by right cosets of a
 subgroup. -/
-@[to_additive /-- The equivalence relation corresponding to the partition of a group by right cosets
-of a subgroup. -/]
-@[implicit_reducible]
+@[to_additive (attr := implicit_reducible) /-- The equivalence relation corresponding to the
+partition of a group by right cosets of a subgroup. -/]
 def rightRel : Setoid α :=
   MulAction.orbitRel s α
 
