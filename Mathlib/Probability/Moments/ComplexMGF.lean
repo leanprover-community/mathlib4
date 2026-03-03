@@ -119,7 +119,6 @@ lemma complexMGF_mul_I (hX : AEMeasurable X μ) (t : ℝ) :
 
 section Analytic
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `z' ↦ μ[X ^ n * cexp (z' * X)]` at `z` is `μ[X ^ (n + 1) * cexp (z * X)]`. -/
 lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :
