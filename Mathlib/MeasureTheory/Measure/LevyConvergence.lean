@@ -133,8 +133,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     refine integral_mono_ae ?_ (by fun_prop) ?_
     · refine Integrable.mono' (integrable_const (ε / 4)) ?_ ?_
       · exact Measurable.aestronglyMeasurable <| by fun_prop
-      · simp_rw [norm_norm]
-        exact ae_restrict_of_forall_mem measurableSet_Ioc h_le_Ioc
+      · simpa using ae_restrict_of_forall_mem measurableSet_Ioc h_le_Ioc
     · exact ae_restrict_of_forall_mem measurableSet_Ioc h_le_Ioc
   _ = ε / 2 := by
     simp only [intervalIntegral.integral_div, intervalIntegral.integral_const, sub_neg_eq_add,
