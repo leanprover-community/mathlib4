@@ -976,7 +976,6 @@ public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Module.Equiv
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Algebra.Order.Module.HahnEmbedding
-public import Mathlib.Algebra.Order.Module.OrderedSMul
 public import Mathlib.Algebra.Order.Module.Pointwise
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Algebra.Order.Module.Rat
@@ -1732,6 +1731,7 @@ public import Mathlib.Analysis.Complex.ExponentialBounds
 public import Mathlib.Analysis.Complex.Hadamard
 public import Mathlib.Analysis.Complex.HalfPlane
 public import Mathlib.Analysis.Complex.Harmonic.Analytic
+public import Mathlib.Analysis.Complex.Harmonic.Liouville
 public import Mathlib.Analysis.Complex.Harmonic.MeanValue
 public import Mathlib.Analysis.Complex.HasPrimitives
 public import Mathlib.Analysis.Complex.IntegerCompl
@@ -3436,7 +3436,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
 public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
-public import Mathlib.Combinatorics.SimpleGraph.Turan
 public import Mathlib.Combinatorics.SimpleGraph.Tutte
 public import Mathlib.Combinatorics.SimpleGraph.UnitDistance.Basic
 public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
@@ -3550,13 +3549,6 @@ public import Mathlib.Data.Bundle
 public import Mathlib.Data.Char
 public import Mathlib.Data.Complex.Basic
 public import Mathlib.Data.Complex.BigOperators
-public import Mathlib.Data.Complex.Cardinality
-public import Mathlib.Data.Complex.Exponential
-public import Mathlib.Data.Complex.ExponentialBounds
-public import Mathlib.Data.Complex.FiniteDimensional
-public import Mathlib.Data.Complex.Norm
-public import Mathlib.Data.Complex.Order
-public import Mathlib.Data.Complex.Trigonometric
 public import Mathlib.Data.Countable.Basic
 public import Mathlib.Data.Countable.Defs
 public import Mathlib.Data.Countable.Small
@@ -4049,17 +4041,11 @@ public import Mathlib.Data.Rat.Sqrt
 public import Mathlib.Data.Rat.Star
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Data.Real.Basic
-public import Mathlib.Data.Real.Cardinality
 public import Mathlib.Data.Real.CompleteField
 public import Mathlib.Data.Real.ConjExponents
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Real.Embedding
-public import Mathlib.Data.Real.Hyperreal
 public import Mathlib.Data.Real.Irrational
-public import Mathlib.Data.Real.Pi.Bounds
-public import Mathlib.Data.Real.Pi.Irrational
-public import Mathlib.Data.Real.Pi.Leibniz
-public import Mathlib.Data.Real.Pi.Wallis
 public import Mathlib.Data.Real.Pointwise
 public import Mathlib.Data.Real.Sign
 public import Mathlib.Data.Real.Sqrt
@@ -4074,7 +4060,6 @@ public import Mathlib.Data.Seq.Basic
 public import Mathlib.Data.Seq.Computation
 public import Mathlib.Data.Seq.Defs
 public import Mathlib.Data.Seq.Parallel
-public import Mathlib.Data.Seq.Seq
 public import Mathlib.Data.Set.Accumulate
 public import Mathlib.Data.Set.Basic
 public import Mathlib.Data.Set.BoolIndicator
@@ -4452,6 +4437,7 @@ public import Mathlib.GroupTheory.Coxeter.Inversion
 public import Mathlib.GroupTheory.Coxeter.Length
 public import Mathlib.GroupTheory.Coxeter.Matrix
 public import Mathlib.GroupTheory.DedekindFinite
+public import Mathlib.GroupTheory.Descent
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.GroupTheory.DivisibleHull
 public import Mathlib.GroupTheory.DoubleCoset

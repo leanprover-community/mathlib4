@@ -183,6 +183,7 @@ lemma sUnion_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C)
   simp only [disjointOfDiff, coe_sdiff, coe_singleton]
   rw [sUnion_diff_singleton_empty]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma notMem_disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     t ∉ hC.disjointOfDiff hs ht := by
   intro hs_mem
