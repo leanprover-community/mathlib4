@@ -86,9 +86,9 @@ lemma HasInducedTStructure.mk' {P : ObjectProperty C} [P.IsTriangulated] {t : TS
     (h : ∀ (X : C) (_ : P X) (n : ℤ), P ((t.truncLE n).obj X) ∧ P ((t.truncGE n).obj X)) :
     P.HasInducedTStructure t where
   exists_triangle_zero_one X hX :=
-      ⟨_, _, inferInstance, inferInstance, _, _, _,
-        t.triangleLEGE_distinguished 0 1 (by lia) X,
-          P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
+    ⟨_, _, inferInstance, inferInstance, _, _, _,
+      t.triangleLEGE_distinguished 0 1 (by lia) X,
+        P.le_isoClosure _ ((h X hX _).1), P.le_isoClosure _ ((h X hX _).2)⟩
 
 lemma mem_of_hasInductedTStructure (P : ObjectProperty C) [P.IsTriangulated] (t : TStructure C)
     [P.IsClosedUnderIsomorphisms] [P.HasInducedTStructure t]
