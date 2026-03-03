@@ -278,8 +278,8 @@ theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S]
     (hvp : v ≠ p) [w.LiesOver v] :
     emultiplicity w (p.map (algebraMap R S)) = 0 := by
   have hp_bot : p.map (algebraMap R S) ≠ ⊥ := map_ne_bot_of_ne_bot hp.ne_zero
-  rw [emultiplicity_eq_count_normalizedFactors hw hp_bot, normalize_eq,
-        Nat.cast_eq_zero, Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff hp_bot, not_and]
+  rw [emultiplicity_eq_count_normalizedFactors hw hp_bot, normalize_eq, ← ENat.coe_zero,
+    ENat.coe_inj, Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff hp_bot, not_and]
   refine fun _ h ↦ hvp.symm ?_
   rw [Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at h
   exact ((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le (isPrime_of_prime hv.prime).ne_top' h

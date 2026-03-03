@@ -133,8 +133,8 @@ theorem emultiplicity_eq_zero_of_ne {R : Type*} [CommMonoidWithZero R] [IsCancel
     (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b) (hb₀ : b ≠ 0) :
     emultiplicity a b = 0 := by
   classical
-  rw [emultiplicity_eq_count_normalizedFactors ha hb.ne_zero, normalize_eq, Nat.cast_eq_zero,
-    Multiset.count_eq_zero, mem_normalizedFactors_iff hb₀, not_and]
+  rw [emultiplicity_eq_count_normalizedFactors ha hb.ne_zero, normalize_eq, ← ENat.coe_zero,
+    ENat.coe_inj, Multiset.count_eq_zero, mem_normalizedFactors_iff hb₀, not_and]
   intro ha_prime h_le
   have hb_prime := ((Irreducible.dvd_irreducible_iff_associated ha hb).1 h_le).prime_iff.1 ha_prime
   exact h <| (prime_dvd_prime_iff_eq ha_prime hb_prime).1 h_le
