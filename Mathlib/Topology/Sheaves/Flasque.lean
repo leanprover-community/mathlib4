@@ -121,6 +121,25 @@ lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
     rw [restrict_restrict]
   have le : iSup f ≤ U := by simp only [iSup_le_iff, Subtype.forall]; exact fun a _ => a.le
   use ⟨iSup f, le, t, eq_app_of_forall_eq ht _ (fun i => i.val.app_s)⟩
+lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
+    ∃ ub, ∀ a ∈ c, (R g s) a ub := by
+  let f : c → (Opens X) := fun x => x.val.V
+  obtain ⟨t, ht, _⟩ : ∃! s_1, IsGluing F.val f (fun x => x.val.sec) s_1 := by
+    refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
+    by_cases hij : i = j
+    · subst hij; rfl
+    dsimp
+    obtain h1 | h1 := h i.property j.property (by grind)
+    · rw [← h1.restricts]
+      have := h1.le
+      change (j.1.sec |_ i.1.V) |_ ((f i) ⊓ (f j)) = j.1.sec |_ ((f i) ⊓ (f j))
+      rw [restrict_restrict]
+    · rw [← h1.restricts]
+      have := h1.1
+      change i.1.sec |_ ((f i) ⊓ (f j)) = (i.1.sec |_ j.1.V) |_ ((f i) ⊓ (f j))
+      rw [restrict_restrict]
+  have le : iSup f ≤ U := by simp only [iSup_le_iff, Subtype.forall]; exact fun a _ => a.le
+  use ⟨iSup f, le, t, eq_app_of_forall_eq ht _ (fun i => i.val.app_s)⟩
   exact fun a ha => ⟨_, ht ⟨a, ha⟩⟩
 
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
