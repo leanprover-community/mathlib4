@@ -335,7 +335,7 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
     (there is such a ball, otherwise one would have used the color `k` and not `N`).
     Then this family of `N+1` balls forms a satellite configuration, which is forbidden by
     the assumption `hN`. -/
-  induction i using Ordinal.induction with | _ i IH
+  induction i using WellFoundedLT.induction with | ind i IH
   let A : Set ℕ :=
     ⋃ (j : { j // j < i })
       (_ : (closedBall (p.c (p.index j)) (p.r (p.index j)) ∩

@@ -202,7 +202,6 @@ theorem transfer_eq_pow_aux (g : G)
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
     simpa only [f, Finset.prod_pow_eq_pow_sum, index_eq_sum_minimalPeriod H g] using key
 
-set_option backward.isDefEq.respectTransparency false in
 theorem transfer_eq_pow [FiniteIndex H] (g : G)
     (key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g₀⁻¹ * g ^ k * g₀ = g ^ k) :
     transfer ϕ g = ϕ ⟨g ^ H.index, transfer_eq_pow_aux g key⟩ := by

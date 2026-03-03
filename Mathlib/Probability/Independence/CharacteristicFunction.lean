@@ -98,7 +98,49 @@ end IndepFun
 
 section iIndepFun
 
-variable [IsProbabilityMeasure P] {ι : Type*} [Fintype ι] {E : ι → Type*}
+variable {ι : Type*} [Fintype ι]
+
+section Sum
+
+variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E]
+    [BorelSpace E] [SecondCountableTopology E] {X : ι → Ω → E}
+
+lemma iIndepFun.charFunDual_map_sum_eq_prod [NormedSpace ℝ E]
+    (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
+    charFunDual (P.map (∑ i, X i)) = ∏ i, charFunDual (P.map (X i)) := by
+  have := hX.isProbabilityMeasure
+  refine Fintype.induction_empty_option (P := fun α _ ↦ ∀ (X : α → Ω → E),
+    (∀ a, AEMeasurable (X a) P) → iIndepFun X P →
+    charFunDual (P.map (∑ a, X a)) = ∏ a, charFunDual (P.map (X a))) ?_ ?_ ?_ ι X mX hX
+  · intro α β _ e hα X mX hX
+    let := Fintype.ofEquiv β e.symm
+    rw [← Equiv.prod_comp e, ← Equiv.sum_comp e]
+    exact hα (X ∘ e) (fun _ ↦ mX _) (hX.precomp (g := e) e.injective)
+  · simp only [IsEmpty.forall_iff, of_subsingleton, Finset.univ_eq_empty, Finset.sum_empty,
+    show (0 : Ω → E) = fun _ ↦ 0 from rfl, Measure.map_const, measure_univ, one_smul,
+    Finset.prod_empty, forall_const]
+    ext
+    simp
+  intro α _ hα X mX hX
+  simp only [Fintype.sum_option, Fintype.prod_option]
+  rw [IndepFun.charFunDual_map_add_eq_mul]
+  any_goals fun_prop
+  · congr
+    refine hα (X ∘ some) (fun _ ↦ mX _) (hX.precomp (g := some) (Option.some_injective α))
+  symm
+  classical
+  rw [← Finset.sum_image (Option.some_injective α).injOn]
+  exact indepFun_finset_sum_of_notMem₀ hX (by fun_prop) (by simp)
+
+lemma iIndepFun.charFun_map_sum_eq_prod [InnerProductSpace ℝ E]
+    (mX : ∀ i, AEMeasurable (X i) P) (hX : iIndepFun X P) :
+    charFun (P.map (∑ i, X i)) = ∏ i, charFun (P.map (X i)) := by
+  ext
+  simp [charFun_eq_charFunDual_toDualMap, hX.charFunDual_map_sum_eq_prod mX]
+
+end Sum
+
+variable [IsProbabilityMeasure P] {E : ι → Type*}
   {mE : ∀ i, MeasurableSpace (E i)} [∀ i, NormedAddCommGroup (E i)] [∀ i, CompleteSpace (E i)]
   [∀ i, BorelSpace (E i)] [∀ i, SecondCountableTopology (E i)] {X : (i : ι) → Ω → E i}
 

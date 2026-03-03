@@ -117,7 +117,6 @@ theorem liftLie_apply (f : M →ₗ⁅R,L⁆ N →ₗ[R] P) (m : M) (n : N) :
 
 variable {R L M N P Q}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A pair of Lie module morphisms `f : M → P` and `g : N → Q`, induce a Lie module morphism:
 `M ⊗ N → P ⊗ Q`. -/
 nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N →ₗ⁅R,L⁆ P ⊗[R] Q :=

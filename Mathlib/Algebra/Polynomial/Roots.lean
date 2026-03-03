@@ -637,7 +637,6 @@ theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
   classical
   exact Multiset.mem_toFinset.trans (mem_roots_map_of_injective h hp)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nthRootsFinset_toSet {n : ℕ} (h : 0 < n) (a : R) :
     nthRootsFinset n a = {r | r ^ n = a} := by
@@ -688,7 +687,6 @@ instance [CommRing S] [Algebra S R] (G H : Type*)
 
 end Roots
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_natDegree_lt_card_of_eval_eq_zero {R} [CommRing R] [IsDomain R]
     (p : R[X]) {ι} [Fintype ι] {f : ι → R} (hf : Function.Injective f)
     (heval : ∀ i, p.eval (f i) = 0) (hcard : natDegree p < Fintype.card ι) : p = 0 := by

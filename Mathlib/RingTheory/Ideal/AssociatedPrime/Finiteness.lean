@@ -103,7 +103,6 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
   have := Submodule.isQuotientEquivQuotientPrime_iff.mpr ⟨x, hp, rfl⟩
   refine ⟨_, by simpa [hs₂], s.snoc _ (hs₂ ▸ this), by simpa, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a property on finitely generated modules over a Noetherian ring satisfies that:
 
 - it holds for zero module (it's formalized as it holds for any module which is subsingleton),
@@ -204,7 +203,6 @@ theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     simpa only [smul_eq_mul, mul_comm x, SetLike.le_def, Submodule.mem_colon_singleton] using hP,
       fun h : x = 0 ↦ prime.ne_top <| by simp [h]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.nonempty_inter_nonZeroDivisors_of_faithfulSMul {I : Ideal A} [FaithfulSMul A I] :
     ((I : Set A) ∩ nonZeroDivisors A).Nonempty := by
   by_contra!
