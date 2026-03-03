@@ -160,9 +160,9 @@ theorem representation_not_countable {β ι : Type*} [Nonempty β] [MeasurableSp
     [StandardBorelSpace β] [MeasurableSpace ι] [StandardBorelSpace ι]
     (hι : ¬Countable ι) (κ : Kernel α β) [IsMarkovKernel κ] :
     ∃ (f : α → ι → β), Measurable (uncurry f) ∧ ∀ a, (volume.map <|
-      (f a) ∘ PolishSpace.measurableEquivOfNotCountable unitInterval_not_countable hι) = κ a := by
+      (f a) ∘ PolishSpace.measurableEquivOfNotCountable not_countable_unitInterval hι) = κ a := by
   obtain ⟨f, hfm, hf⟩ := κ.unitInterval_representation
-  set equiv_I_ι := PolishSpace.measurableEquivOfNotCountable unitInterval_not_countable hι
+  set equiv_I_ι := PolishSpace.measurableEquivOfNotCountable not_countable_unitInterval hι
   let f' : α → ι → β := fun a i ↦ f a (equiv_I_ι.symm i)
   refine ⟨f', by fun_prop, ?_⟩
   intro a
