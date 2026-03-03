@@ -78,6 +78,7 @@ lemma eTruncLT_obj_coe (n : ℤ) : t.eTruncLT.obj n = t.truncLT n := rfl
 lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
     t.eTruncLT.map (homOfLE (show (n : EInt) ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
   induction i using WithBotTop.rec <;> constructor <;> cat_disch
 
@@ -124,9 +125,11 @@ lemma eTruncGE_obj_top :
 @[simp]
 lemma eTruncGE_obj_coe (n : ℤ) : t.eTruncGE.obj n = t.truncGE n := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
   induction i using WithBotTop.rec <;> constructor <;> cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The connecting homomorphism from `t.eTruncGE` to the
 shift by `1` of `t.eTruncLT`. -/
 noncomputable def eTruncGEδLT :
@@ -166,12 +169,14 @@ instance : IsIso (t.eTruncLTι ⊤) := by
   dsimp [eTruncLTι]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLT_map_app_eTruncLTι_app {i j : EInt} (f : i ⟶ j) (X : C) :
     (t.eTruncLT.map f).app X ≫ (t.eTruncLTι j).app X = (t.eTruncLTι i).app X := by
   simp only [← NatTrans.comp_app, ← Functor.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma eTruncLT_obj_map_eTruncLTι_app (i : EInt) (X : C) :
     (t.eTruncLT.obj i).map ((t.eTruncLTι i).app X) =
@@ -198,12 +203,14 @@ instance : IsIso (t.eTruncGEπ ⊥) := by
   dsimp [eTruncGEπ]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncGEπ_app_eTruncGE_map_app {i j : EInt} (f : i ⟶ j) (X : C) :
     (t.eTruncGEπ i).app X ≫ (t.eTruncGE.map f).app X = (t.eTruncGEπ j).app X := by
   simp only [← NatTrans.comp_app, ← Functor.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma eTruncGE_obj_map_eTruncGEπ_app (i : EInt) (X : C) :
     (t.eTruncGE.obj i).map ((t.eTruncGEπ i).app X) =
@@ -213,6 +220,7 @@ lemma eTruncGE_obj_map_eTruncGEπ_app (i : EInt) (X : C) :
   | coe n => simp [truncGE_map_truncGEπ_app]
   | top => simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The (distinguished) triangles given by the natural transformations
 `t.eTruncLT.obj i ⟶ 𝟭 C ⟶ t.eTruncGE.obj i ⟶ ...` for all `i : EInt`. -/
 @[simps!]

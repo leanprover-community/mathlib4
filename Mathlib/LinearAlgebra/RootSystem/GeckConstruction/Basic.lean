@@ -157,6 +157,7 @@ def lieAlgebra [Fintype ι] [DecidableEq ι] :
     LieSubalgebra R (Matrix (b.support ⊕ ι) (b.support ⊕ ι) R) :=
   LieSubalgebra.lieSpan R _ (range h ∪ range e ∪ range f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A distinguished subalgebra corresponding to a Cartan subalgebra of the Geck construction.
 
 See also `RootPairing.GeckConstruction.cartanSubalgebra'`. -/
@@ -320,6 +321,7 @@ instance : LieModule.IsTriangularizable R (cartanSubalgebra' b) (b.support ⊕ �
     span_range_h_le_range_diagonal <| by simpa using hx
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cartanSubalgebra_le_lieAlgebra :
     cartanSubalgebra b ≤ lieAlgebra b := by
   rw [cartanSubalgebra, lieAlgebra, ← LieSubalgebra.toSubmodule_le_toSubmodule, Submodule.span_le]
@@ -407,6 +409,7 @@ def ωConjLieSubmodule :
     x ∈ ωConjLieSubmodule N ↔ (ω b) *ᵥ x ∈ N :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma ωConjLieSubmodule_eq_top_iff : ωConjLieSubmodule N = ⊤ ↔ N = ⊤ := by
   rw [← LieSubmodule.toSubmodule_eq_top]
   let e : Submodule R (b.support ⊕ ι → R) ≃o Submodule R (b.support ⊕ ι → R) :=

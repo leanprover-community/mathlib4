@@ -43,7 +43,7 @@ lemma enorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
   simpa [enorm, ← ENNReal.coe_mul] using nnnorm_smul_le ..
 
 theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y := by
-  simpa only [dist_eq_norm, sub_zero] using dist_smul_pair s x y
+  simpa only [dist_eq_norm_neg_add, add_zero, norm_neg] using dist_smul_pair s x y
 
 theorem nndist_smul_le (s : α) (x y : β) : nndist (s • x) (s • y) ≤ ‖s‖₊ * nndist x y :=
   dist_smul_le s x y

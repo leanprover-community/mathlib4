@@ -30,7 +30,7 @@ We use the filter version to prove that absolutely continuous functions are clos
 * negation - `AbsolutelyContinuousOnInterval.neg`;
 * subtraction - `AbsolutelyContinuousOnInterval.sub`;
 * scalar multiplication - `AbsolutelyContinuousOnInterval.const_smul`,
-`AbsolutelyContinuousOnInterval.const_mul`;
+  `AbsolutelyContinuousOnInterval.const_mul`;
 * multiplication - `AbsolutelyContinuousOnInterval.smul`,
 `AbsolutelyContinuousOnInterval.mul`;
 and that absolutely continuous implies uniformly continuous in
@@ -38,16 +38,17 @@ and that absolutely continuous implies uniformly continuous in
 
 We use the `ε`-`δ` definition to prove that
 * Lipschitz continuous functions are absolutely continuous -
-`LipschitzOnWith.absolutelyContinuousOnInterval`;
+  `LipschitzOnWith.absolutelyContinuousOnInterval`;
 * absolutely continuous functions have bounded variation -
-`AbsolutelyContinuousOnInterval.boundedVariationOn`.
+  `AbsolutelyContinuousOnInterval.boundedVariationOn`.
 
 We conclude that
 * absolutely continuous functions are a.e. differentiable -
-`AbsolutelyContinuousOnInterval.ae_differentiableAt`;
+  `AbsolutelyContinuousOnInterval.ae_differentiableAt`;
 * if `f` is integrable on `uIcc a b`, then for any `c` in `uIcc a b`, `fun x ↦ ∫ v in c..x, f v`
-is absolutely continuous on `uIcc a b` -
-`IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
+  is absolutely continuous on `uIcc a b` -
+  `IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral`.
+
 ## Tags
 absolutely continuous
 -/

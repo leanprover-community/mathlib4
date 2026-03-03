@@ -20,6 +20,27 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
+run_meta guard <| (← getConstInfo `Test.bar0).all == [`Test.bar0]
+
+/--
+error: `to_additive` does not support mutually recursive declarations.
+-/
+#guard_msgs (error) in
+mutual
+
+@[to_additive bar0a]
+theorem foo0a {α} [Monoid α] (n : ℕ) : True := by
+  cases n with
+  | zero => trivial
+  | succ n => exact foo0b (α := α) n
+
+theorem foo0b {α} [Monoid α] (n : ℕ) : True := by
+  cases n with
+  | zero => trivial
+  | succ n => exact foo0a (α := α) n
+
+end
+
 class my_has_pow (α : Type u) (β : Type v) where
   pow : α → β → α
 
@@ -138,6 +159,8 @@ example [Group α] (x : α) : foo17 x = x := by simp
 example [AddGroup α] (x : α) : bar17 x = 0 + x := by simp
 example [AddGroup α] (x : α) : bar17 x = x := by simp
 
+run_meta guard <| (← getConstInfo `Test.bar18).all == [`Test.bar18]
+
 /- Testing nested to_additive calls -/
 @[to_additive (attr := simp, to_additive baz19) bar19]
 def foo19 := 1
@@ -172,6 +195,7 @@ run_meta do
   -- some auxiliary definitions are also `abbrev` but not `reducible`
   guard <| (← getReducibilityStatus `Test.bar22.match_1) != .reducible
   guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22.match_1) == some .inline
+  guard <| (← getConstInfo `Test.bar22.match_1).all == [`Test.bar22.match_1]
 
 run_cmd do
   -- test that we cannot transport a declaration to itself
@@ -356,13 +380,6 @@ def Ones : ℕ → Q(Nat)
 run_cmd do
   let e : Expr := Ones 300
   let _ ← liftCoreM <| MetaM.run' <| (applyReplacementFun ToAdditive.data e).run #[] #[]
-
--- testing `isConstantApplication`
-run_cmd do
-  unless !(q((fun _ y => y) 3 4) : Q(Nat)).isConstantApplication do throwError "1"
-  unless (q((fun x _ => x) 3 4) : Q(Nat)).isConstantApplication do throwError "2"
-  unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
-  unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
 
 @[to_additive, to_additive_dont_translate] def MonoidEnd : Type := Unit
 def Unit' : Type := Unit
@@ -657,7 +674,7 @@ noncomputable def mulMarkedNoncomputable : Nat := 0
 
 noncomputable section
 
-/- Compilation should succeed despite `noncomputable` -/
+/- Compilation should succeed despite `noncomputable section` -/
 
 @[to_additive]
 def mulComputableTest' : Nat := 0
@@ -677,22 +694,14 @@ noncomputable def mulMarkedNoncomputable' : Nat := 0
 /-- info: `addMarkedNoncomputable'` is marked noncomputable -/
 #guard_msgs in #computability addMarkedNoncomputable'
 
-/-
-Compilation should fail silently.
-
-If `mulNoExec` ever becomes marked noncomputable (meaning Lean's handling of
-`noncomputable section` has changed), then the check for executable code in
-`Mathlib.Tactic.ToAdditive.Frontend` should be replaced with a simple `isNoncomputable` check and
-mark `addNoExec` `noncomputable` as well (plus a check for whether the original declaration is an
-axiom, if `to_additive` ever handles axioms).
--/
+/- Both should be marked noncomputable -/
 
 @[to_additive]
 def mulNoExec {G} (n : Nonempty G) : G := Classical.choice n
 
-/-- info: `mulNoExec` has no executable code -/
+/-- info: `mulNoExec` is marked noncomputable -/
 #guard_msgs in #computability mulNoExec
-/-- info: `addNoExec` has no executable code -/
+/-- info: `addNoExec` is marked noncomputable -/
 #guard_msgs in #computability addNoExec
 
 end

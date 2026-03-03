@@ -63,6 +63,7 @@ class Surjective : Prop where
 lemma surjective_eq_topologically :
     @Surjective = topologically Function.Surjective := by ext; exact surjective_iff _
 
+@[grind .]
 lemma Scheme.Hom.surjective (f : X ⟶ Y) [Surjective f] : Function.Surjective f :=
   Surjective.surj
 
@@ -72,6 +73,9 @@ instance [Surjective f] [Surjective g] : Surjective (f ≫ g) := ⟨g.surjective
 
 lemma Surjective.of_comp [Surjective (f ≫ g)] : Surjective g where
   surj := Function.Surjective.of_comp (g := f) (f ≫ g).surjective
+
+instance (priority := low) [Nonempty X] [Subsingleton Y] (f : X ⟶ Y) :
+    Surjective f := ⟨Function.surjective_to_subsingleton _⟩
 
 lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
@@ -130,6 +134,11 @@ def Scheme.Hom.cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X
   .singleton f <| by
     rw [singleton_mem_precoverage_iff]
     exact ⟨f.surjective, hf⟩
+
+@[simp]
+lemma Scheme.Hom.presieve₀_cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S)
+    (hf : P f) [Surjective f] : (f.cover hf).presieve₀ = Presieve.singleton f := by
+  simp [cover]
 
 instance {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
     [Surjective f] : Unique (Scheme.Hom.cover f hf).I₀ :=
