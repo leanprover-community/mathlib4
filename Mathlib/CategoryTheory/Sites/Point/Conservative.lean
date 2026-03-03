@@ -218,10 +218,10 @@ private lemma mk'.isLocallySurjective
         (Φ.obj.toPresheafFiber_naturality_apply f _ v y).symm
 
 /- Let `P` be family of points of a site `(C, J)`, we show that `P` is a conservative
-family of points if the following condition is satisfied:
+family of points if the following condition is satisfied (SGA 4 IV 6.5 (a)):
 for any sieve `S : Sieve X`, if the family of maps `Φ.map.fiber.map f`
 for all morphisms `f` in the sieve `S` is jointly surjective for any `Φ` in `P`,
-then `S` is a covering sieve for `J`. SGA 4 IV 6.5 (a) -/
+then `S` is a covering sieve for `J`. -/
 lemma mk' [HasSheafify J (Type w)]
     (hP : ∀ ⦃X : C⦄ (S : Sieve X) (_ : ∀ (Φ : P.FullSubcategory) (x : Φ.obj.fiber.obj X),
       ∃ (Y : C) (g : Y ⟶ X) (_ : S g) (y : Φ.obj.fiber.obj Y), Φ.obj.fiber.map g y = x),
