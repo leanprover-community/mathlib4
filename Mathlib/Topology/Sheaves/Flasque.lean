@@ -114,8 +114,6 @@ lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
 
 set_option backward.isDefEq.respectTransparency false
 
-#check isLocallySurjective_iff_epi
-
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
 `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`. -/
 theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.ShortExact)
