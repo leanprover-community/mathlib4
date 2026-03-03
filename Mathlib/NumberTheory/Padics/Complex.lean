@@ -145,7 +145,7 @@ instance : Algebra ℚ_[p] ℂ_[p] where
   algebraMap := (UniformSpace.Completion.coeRingHom).comp (algebraMap ℚ_[p] (PadicAlgCl p))
   commutes' r x := by rw [mul_comm]
   smul_def' r x := by
-    apply UniformSpace.Completion.ext' (continuous_const_smul r) (continuous_mul_left _)
+    apply UniformSpace.Completion.ext' (continuous_const_smul r) (continuous_const_mul _)
     intro a
     rw [RingHom.coe_comp, Function.comp_apply, Algebra.smul_def]
     rfl
@@ -198,11 +198,8 @@ theorem norm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖ = ‖x‖ := by
 theorem nnnorm_extends (x : PadicAlgCl p) : ‖(x : ℂ_[p])‖₊ = ‖x‖₊ := by ext; exact norm_extends p x
 
 /-- The norm on `ℂ_[p]` is nonarchimedean. -/
-theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) := fun x y ↦ by
-  refine UniformSpace.Completion.induction_on₂ x y
-    (isClosed_le (continuous_norm.comp continuous_add) (by fun_prop)) (fun a b ↦ ?_)
-  rw [← UniformSpace.Completion.coe_add, norm_extends, norm_extends, norm_extends]
-  exact PadicAlgCl.isNonarchimedean p a b
+theorem isNonarchimedean : IsNonarchimedean (Norm.norm : ℂ_[p] → ℝ) :=
+  IsUltrametricDist.norm_add_le_max
 
 end PadicComplex
 

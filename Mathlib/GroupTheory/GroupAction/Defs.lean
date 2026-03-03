@@ -79,7 +79,7 @@ theorem nonempty_orbit (a : α) : Set.Nonempty (orbit M a) :=
 
 @[to_additive]
 theorem mapsTo_smul_orbit (m : M) (a : α) : Set.MapsTo (m • ·) (orbit M a) (orbit M a) :=
-  Set.range_subset_iff.2 fun m' => ⟨m * m', mul_smul _ _ _⟩
+  Set.mapsTo_iff_subset_preimage.mpr <| Set.range_subset_iff.mpr fun m' => ⟨m * m', mul_smul _ _ _⟩
 
 @[to_additive]
 theorem smul_orbit_subset (m : M) (a : α) : m • orbit M a ⊆ orbit M a :=
@@ -135,7 +135,7 @@ variable {M α}
 theorem mem_fixedPoints {a : α} : a ∈ fixedPoints M α ↔ ∀ m : M, m • a = a :=
   Iff.rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mem_fixedBy {m : M} {a : α} : a ∈ fixedBy α m ↔ m • a = a :=
   Iff.rfl
 
@@ -313,7 +313,6 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
     convert hu₁
     simp only [inv_smul_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem disjoint_image_image_iff {U V : Set α} :
     letI := orbitRel G α
