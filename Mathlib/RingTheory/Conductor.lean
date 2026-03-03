@@ -153,6 +153,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
     rw [IsScalarTower.algebraMap_eq R R<x> S, ← Ideal.map_map]
     apply Ideal.le_comap_map
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical morphism of rings from `R<x> ⧸ (I*R<x>)` to `S ⧸ (I*S)` is an isomorphism
 when `I` and `(conductor R x) ∩ R` are coprime. -/
 noncomputable def quotAdjoinEquivQuotMap (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)

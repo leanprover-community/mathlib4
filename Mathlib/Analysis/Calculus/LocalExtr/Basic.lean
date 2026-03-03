@@ -77,6 +77,7 @@ theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
   intro s t hst
   exact tangentConeAt_mono hst
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0, x + t • y ∈ s) :
     y ∈ posTangentConeAt s x := by
   rw [← NNReal.coe_zero, ← NNReal.map_coe_nhdsGT, frequently_map, frequently_iff_neBot] at h
@@ -93,6 +94,7 @@ theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
     y ∈ posTangentConeAt s x := by
   simpa using sub_mem_posTangentConeAt_of_segment_subset h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem posTangentConeAt_univ : posTangentConeAt univ a = univ := tangentConeAt_univ
 
 /-!

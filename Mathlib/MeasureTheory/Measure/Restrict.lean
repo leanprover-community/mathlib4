@@ -822,6 +822,7 @@ variable {u : Set δ} [MeasureSpace δ] {p : δ → Prop}
 Not registered as an instance, as there are other natural choices such as the normalized restriction
 for a probability measure, or the subspace measure when restricting to a vector subspace. Enable
 locally if needed with `attribute [local instance] Measure.Subtype.measureSpace`. -/
+@[instance_reducible]
 noncomputable def Subtype.measureSpace : MeasureSpace (Subtype p) where
   volume := Measure.comap Subtype.val volume
 

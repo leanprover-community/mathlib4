@@ -1,16 +1,12 @@
 /-
 Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yakov Pechersky
+Authors: Thomas Browning, Yakov Pechersky
 -/
 module
 
 public import Mathlib.Order.Irreducible
-public import Mathlib.RingTheory.Ideal.Colon
-public import Mathlib.RingTheory.Ideal.IsPrimary
-public import Mathlib.RingTheory.Noetherian.Defs
-public import Mathlib.RingTheory.IsPrimary
-public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 
 /-!
 # Lasker ring
@@ -22,12 +18,10 @@ public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 - `IsLasker.exists_isMinimalPrimaryDecomposition`: Any `N : Submodule R N` in an `R`-module `M`
   satisfying `IsLasker R M` can be decomposed into finitely many primary submodules `Nᵢ`, such
   that the decomposition is minimal: each `Nᵢ` is necessary, and the `√Ann(M/Nᵢ)` are distinct.
+- `IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes`: The first uniqueness theorem
+  for primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
+  `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly the associated primes of `I`.
 - `Submodule.isLasker`: Every Noetherian module is Lasker.
-
-## TODO
-
-One needs to prove that the radicals of minimal decompositions are independent of the
-  precise decomposition.
 
 -/
 
@@ -48,7 +42,7 @@ variable {R M}
 
 namespace Submodule
 
-lemma decomposition_erase_inf [DecidableEq (Submodule R M)] {N : Submodule R M}
+lemma decomposition_erase_inf {N : Submodule R M}
     {s : Finset (Submodule R M)} (hs : s.inf id = N) :
     ∃ t : Finset (Submodule R M), t ⊆ s ∧ t.inf id = N ∧
       ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J := by
@@ -95,7 +89,7 @@ lemma isPrimary_decomposition_pairwise_ne_radical {N : Submodule R M}
         radical_finset_inf (i := J') (by simp [hJ']) (by simp), id_eq]
 
 lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
-    [DecidableEq (Submodule R M)] {N : Submodule R M} {s : Finset (Submodule R M)}
+    {N : Submodule R M} {s : Finset (Submodule R M)}
     (hs : s.inf id = N) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Submodule R M), t.inf id = N ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧
       ((t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)) ∧
@@ -106,14 +100,14 @@ lemma exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition
 
 /-- A `Finset` of submodules is a minimal primary decomposition of `N` if the submodules `Nᵢ`
 intersect to `N`, are primary, the `√Ann(M/Nᵢ)` are distinct, and each `Nᵢ` is necessary. -/
-structure IsMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
+structure IsMinimalPrimaryDecomposition
     (N : Submodule R M) (t : Finset (Submodule R M)) where
   inf_eq : t.inf id = N
   primary : ∀ ⦃J⦄, J ∈ t → J.IsPrimary
   distinct : (t : Set (Submodule R M)).Pairwise ((· ≠ ·) on fun J ↦ (J.colon Set.univ).radical)
   minimal : ∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J
 
-lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)]
+lemma IsLasker.exists_isMinimalPrimaryDecomposition
     (h : IsLasker R M) (N : Submodule R M) :
     ∃ t : Finset (Submodule R M), N.IsMinimalPrimaryDecomposition t := by
   obtain ⟨s, hs1, hs2⟩ := h N
@@ -121,10 +115,39 @@ lemma IsLasker.exists_isMinimalPrimaryDecomposition [DecidableEq (Submodule R M)
     exists_minimal_isPrimary_decomposition_of_isPrimary_decomposition hs1 hs2
   exact ⟨t, h1, h2, h3, h4⟩
 
+/-- The first uniqueness theorem for primary decomposition, Theorem 4.5 in Atiyah-Macdonald:
+In any minimal primary decomposition `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly
+the associated primes of `I`. -/
+lemma IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
+    {N : Submodule R M} {t : Finset (Submodule R M)} (ht : IsMinimalPrimaryDecomposition N t) :
+    (fun J : Submodule R M ↦ (J.colon Set.univ).radical) '' t = N.associatedPrimes := by
+  classical
+  replace h x : radical (N.colon {x}) = (t.filter (x ∉ ·)).inf fun q ↦ radical (q.colon .univ) := by
+    simp_rw [← ht.inf_eq, colon_finsetInf, ← radicalInfTopHom_apply, map_finset_inf,
+      Function.comp_def, radicalInfTopHom_apply, id_eq]
+    rw [Finset.inf_congr rfl (fun q hq ↦ (ht.primary hq).radical_colon_singleton_eq_ite x),
+      Finset.inf_ite, Finset.inf_top, top_inf_eq]
+  ext p
+  constructor
+  · rintro ⟨q, hqt, rfl⟩
+    obtain ⟨x, hxt, hxq⟩ := SetLike.not_le_iff_exists.mp (ht.minimal hqt)
+    use (ht.primary hqt).isPrime_radical_colon, x
+    rw [h, ← Finset.insert_erase (Finset.mem_filter.mpr ⟨hqt, hxq⟩), Finset.inf_insert,
+      eq_comm, inf_eq_left, Finset.le_inf_iff]
+    simp only [mem_finsetInf, Finset.mem_erase] at hxt
+    grind
+  · rintro ⟨hp, x, rfl⟩
+    rw [h] at hp ⊢
+    obtain ⟨q, hq1, hq2⟩ := eq_inf_of_isPrime_inf hp
+    exact ⟨q, Finset.mem_of_mem_filter q hq1, hq2⟩
+
+@[deprecated (since := "2026-01-19")]
+alias IsMinimalPrimaryDecomposition.mem_image_radical_colon_iff :=
+  IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes
+
 end Submodule
 
 lemma Ideal.IsMinimalPrimaryDecomposition.minimalPrimes_subset_image_radical
-    [DecidableEq (Ideal R)]
     {I : Ideal R} {t : Finset (Ideal R)} (ht : I.IsMinimalPrimaryDecomposition t) :
     I.minimalPrimes ⊆ radical '' t := by
   intro p hp
