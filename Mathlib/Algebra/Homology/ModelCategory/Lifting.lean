@@ -65,7 +65,7 @@ lemma coe_cocycle₁'_v_comp_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     ← p.comm, fac_right, reassoc_of% fac_right, b.comm]
 
 @[reassoc (attr := simp)]
-lemma comp_coe_cocyle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m) :
+lemma comp_coe_cocyle₁'_v_eq_zero (n m : ℤ) (hnm : n + 1 = m := by lia) :
     i.f n ≫ (cocycle₁' sq hsq).1.v n m hnm = 0 := by
   have fac_left (k : ℤ) := (hsq k).fac_left
   dsimp at fac_left
