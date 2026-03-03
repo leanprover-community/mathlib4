@@ -7,11 +7,18 @@ import Mathlib.Geometry.Manifold.IntegralCurve.UniformTime
 import Mathlib.Dynamics.Flow
 
 /-!
-# Vector fields with compact support
+# Integral curves on compact manifolds
 
+On a compact boundaryless $C^1$ manifold, every $C^1$ vector field admits a global flow. This is
+because compactness provides a uniform lower bound on the existence time of local integral curves
+across all points, which allows the local-to-global extension machinery of `UniformTime` to apply.
 
-## Main definitions
+## Main results
 
+* `exist_uniform_time_of_compactSpace`: Compactness gives a uniform `ε > 0` such that every point
+  admits an integral curve on `Ioo (-ε) ε`.
+* `exist_isMIntegralCurve_of_compactSpace`: Every point admits a global integral curve.
+* `exist_global_flow_of_compactSpace`: There exists a global flow `γ : ℝ → M → M`.
 
 ## Reference
 
@@ -19,7 +26,7 @@ import Mathlib.Dynamics.Flow
 
 ## Tags
 
-integral curve, vector field
+integral curve, vector field, compact manifold, global flow
 -/
 
 open scoped Manifold Topology
