@@ -5,9 +5,9 @@ public import Mathlib.CategoryTheory.Action.Monoidal
 
 @[expose] public section
 
-universe w u v1 v2
+universe w u v v1 v2
 
-variable {R : Type u} [CommRing R] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
+variable {k : Type u} [CommRing k] {G : Type v1} {H : Type v2} [Monoid G] [Monoid H]
 
 open CategoryTheory
 
@@ -16,11 +16,11 @@ namespace Rep
 /--
 The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`.
 -/
-def resFunctor (f : H →* G) : Rep R G ⥤ Rep R H := Action.res (ModuleCat R) f
+def resFunctor (f : H →* G) : Rep k G ⥤ Rep k H := Action.res (ModuleCat k) f
 
-abbrev res (f : H →* G) (M : Rep R G) := (resFunctor f).obj M
+abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 
-variable (f : H →* G) (M : Rep R G)
+variable (f : H →* G) (M : Rep k G)
 
 @[simp]
 lemma res_obj_ρ :
@@ -31,24 +31,39 @@ lemma coe_res_obj_ρ' (h : H) : (res f M).ρ h = M.ρ (f h) := rfl
 @[simp]
 lemma res_obj_V : (res f M).V = M.V := rfl
 
-@[simp] lemma res_map_hom_toLinearMap {M N : Rep R G} (p : M ⟶ N) :
+@[simp] lemma res_map_hom_toLinearMap {M N : Rep k G} (p : M ⟶ N) :
     ((resFunctor f).map p).hom.toLinearMap = p.hom.toLinearMap := rfl
 
 section
 
--- local notation3:max "res% " R':max f:max => res (R := R') f
-
-instance : (resFunctor (R := R) f).Faithful :=
+instance : (resFunctor (k := k) f).Faithful :=
   inferInstanceAs (Action.res _ _).Faithful
 
-theorem full_res (hf : (⇑f).Surjective) : (resFunctor (R := R) f).Full :=
+theorem full_res (hf : (⇑f).Surjective) : (resFunctor (k := k) f).Full :=
   Action.full_res _ _ hf
 
-instance : (resFunctor (R := R) f).Additive :=
+instance : (resFunctor (k := k) f).Additive :=
   inferInstanceAs <| (Action.res _ _).Additive
 
-instance : (resFunctor (R := R) f).Linear R :=
-  inferInstanceAs <| (Action.res _ _).Linear R
+instance : (resFunctor (k := k) f).Linear k :=
+  inferInstanceAs <| (Action.res _ _).Linear k
+
+section
+
+variable {G : Type v} [Group G] (A : Rep k G) (S : Subgroup G)
+  [S.Normal] [Representation.IsTrivial (A.ρ.comp S.subtype)]
+
+/-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` which is trivial on `S` factors
+through `G ⧸ S`. -/
+abbrev ofQuotient : Rep k (G ⧸ S) := Rep.of (A.ρ.ofQuotient S)
+
+/-- A `G`-representation `A` on which a normal subgroup `S ≤ G` acts trivially induces a
+`G ⧸ S`-representation on `A`, and composing this with the quotient map `G → G ⧸ S` gives the
+original representation by definition. Useful for typechecking. -/
+abbrev resOfQuotientIso [Representation.IsTrivial (A.ρ.comp S.subtype)] :
+    (Action.res _ (QuotientGroup.mk' S)).obj (A.ofQuotient S) ≅ A := Iso.refl _
+
+end
 
 #exit
 variable (R) in

@@ -96,7 +96,7 @@ noncomputable abbrev coind : Rep k H := Rep.of (Representation.coind φ A.ρ)
 /-- Given a monoid morphism `φ : G →* H` and a morphism of `G`-representations `f : A ⟶ B`, there
 is a natural `H`-representation morphism `coind φ A ⟶ coind φ B`, given by postcomposition by
 `f`. -/
--- @[simps]
+@[simps!]
 noncomputable def coindMap {A B : Rep k G} (f : A ⟶ B) : coind φ A ⟶ coind φ B :=
   Rep.ofHom {
     __ := (f.hom.toLinearMap.compLeft H).restrict <| by
@@ -112,7 +112,6 @@ noncomputable def coindFunctor : Rep k G ⥤ Rep k H where
   obj A := coind φ A
   map f := coindMap φ f
 
-#exit
 set_option backward.isDefEq.respectTransparency false in
 instance {G : Type u} [Group G] (S : Subgroup G) :
     (coindFunctor k S.subtype).PreservesEpimorphisms where
