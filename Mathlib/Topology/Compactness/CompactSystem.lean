@@ -91,15 +91,12 @@ lemma iff_nonempty_iInter_of_lt (p : Set α → Prop) :
     IsCompactSystem p ↔
       ∀ C : ℕ → Set α, (∀ i, p (C i)) → (∀ n, (⋂ k < n, C k).Nonempty) → (⋂ i, C i).Nonempty := by
   simp_rw [iff_nonempty_iInter]
-  refine ⟨fun h C hi h'↦ h C hi (fun n ↦ dissipate_eq ▸ (h' (n + 1))), fun h C hi h' ↦ h C hi ?_⟩
+  refine ⟨fun h C hi h'↦ h C hi (fun n ↦ dissipate_eq_iInter_lt ▸ (h' (n + 1))),
+    fun h C hi h' ↦ h C hi ?_⟩
   simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
-  intro n g
-  apply h' n
+  refine fun n g ↦ h' n ?_
   simp_rw [← subset_empty_iff, dissipate] at g ⊢
-  apply le_trans _ g
-  intro x
-  rw [mem_iInter₂, mem_iInter₂]
-  exact fun h i hi ↦ h i hi.le
+  exact le_trans (fun x ↦ by simp; grind) g
 
 /-- A set system is a compact system iff adding `∅` gives a compact system. -/
 lemma iff_isCompactSystem_of_or_empty :
