@@ -299,7 +299,6 @@ theorem not_lt_minimum_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a
 theorem not_maximum_lt_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
   cases h : l.maximum <;> simp_all [not_maximum_lt_of_mem ha]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l := by
   cases h : l.minimum <;> simp_all [not_lt_minimum_of_mem ha]
 
@@ -353,7 +352,6 @@ theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.
     simp only [maximum_cons, max_le_iff]
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum := by
   induction l with
   | nil => simp
@@ -380,7 +378,6 @@ theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a 
 theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
   induction l <;> simp [maximum_cons, *]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
   induction l <;> simp [minimum_cons, *]
 

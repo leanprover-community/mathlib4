@@ -156,7 +156,6 @@ def _root_.AbsolutelyContinuousOnInterval (f : ℝ → X) (a b : ℝ) :=
   Tendsto (fun E ↦ ∑ i ∈ Finset.range E.1, dist (f (E.2 i).1) (f (E.2 i).2))
     (totalLengthFilter ⊓ 𝓟 (disjWithin a b)) (𝓝 0)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The traditional `ε`-`δ` definition of absolutely continuous: A function `f` is
 *absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such that for
 any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`, `b i` are

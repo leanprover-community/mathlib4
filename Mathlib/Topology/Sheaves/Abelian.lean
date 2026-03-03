@@ -53,6 +53,7 @@ end Sheaf
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The stalk functor is additive -/
 instance (p₀ : X) {C : Type v} [Category.{u} C] [Abelian C] [HasColimits C] :
     (Presheaf.stalkFunctor C p₀).Additive := by

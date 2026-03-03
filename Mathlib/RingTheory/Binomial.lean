@@ -274,6 +274,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
 
 attribute [local instance] IsAddTorsionFree.of_module_nnrat
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance {R : Type*} [AddCommMonoid R] [Module ℚ≥0 R] [Pow R ℕ] : BinomialRing R where
   multichoose r n := (n.factorial : ℚ≥0)⁻¹ • Polynomial.smeval (ascPochhammer ℕ n) r
   factorial_nsmul_multichoose r n := by

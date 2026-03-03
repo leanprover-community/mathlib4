@@ -53,6 +53,7 @@ abbrev r : C ⥤ C := Φ.obj.left
 /-- The structure morphism `Φ.r ⟶ 𝟭 C` of a preradical `Φ`. -/
 abbrev ι : Φ.r ⟶ 𝟭 C := Φ.obj.hom
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma r_map_ι_app (X : C) : Φ.r.map (Φ.ι.app X) = Φ.ι.app (Φ.r.obj X) := by
   rw [← cancel_mono (Φ.ι.app X)]
@@ -68,6 +69,7 @@ instance [Φ.IsIdempotent] (X : C) :
     IsIso (Φ.ι.app (Φ.r.obj X)) :=
   inferInstanceAs (IsIso ((Functor.whiskerLeft Φ.r Φ.ι).app X))
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Φ.IsIdempotent] (X : C) :
     IsIso (Φ.r.map (Φ.ι.app X)) := by
   rw [r_map_ι_app]

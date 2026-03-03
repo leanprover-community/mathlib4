@@ -247,7 +247,6 @@ theorem weierstrass_slope {a : ℝ} (ha : a ∈ Set.Ioo 0 1) {b : ℕ} (hb : Odd
   rw [sub_mul (2 / 3), mul_sub |seq b x m - x|]
   exact sub_le_sub (weierstrass_remainder ha.1 hb hsum_shift) (weierstrass_partial ha.1 hab x m)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem not_differentiableAt_weierstrass
     {a : ℝ} (ha : a ∈ Set.Ioo 0 1) {b : ℕ} (hb : Odd b) (hab : 3 / 2 * π + 1 < a * b) (x : ℝ) :
     ¬ DifferentiableAt ℝ (weierstrass a b) x := by

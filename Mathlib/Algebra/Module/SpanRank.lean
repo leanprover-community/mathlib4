@@ -154,6 +154,7 @@ lemma spanFinrank_span_le_encard (s : Set M) : (span R s).spanFinrank ≤ s.enca
   rw [spanFinrank, Set.encard, ENat.card]
   exact le_trans (by simp) ((toENat).monotone' (spanRank_span_le_card (R := R) s))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma spanFinrank_span_le_ncard_of_finite {s : Set M} (hs : s.Finite) :
     (span R s).spanFinrank ≤ s.ncard := by
   rw [← Nat.cast_le (α := ℕ∞)]

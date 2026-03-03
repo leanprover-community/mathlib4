@@ -45,6 +45,12 @@ Let `E` be a real, finite-dimensional, inner product space and `s` be a subset o
 -/
 def HarmonicOnNhd := ∀ x ∈ s, HarmonicAt f x
 
+/--
+Harmonic functions are two times continuously differentiable.
+-/
+lemma HarmonicOnNhd.contDiffOn (hf : HarmonicOnNhd f s) : ContDiffOn ℝ 2 f s :=
+  fun x hx ↦ (hf x hx).1.contDiffWithinAt
+
 /-!
 ## Elementary Properties
 -/

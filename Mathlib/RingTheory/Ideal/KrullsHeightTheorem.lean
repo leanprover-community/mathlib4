@@ -163,6 +163,7 @@ theorem Ideal.mem_minimalPrimes_span_of_mem_minimalPrimes_span_insert {q p : Ide
       ← comap_map_of_surjective f hf p]
     exact comap_mono hrp
 
+set_option backward.isDefEq.respectTransparency false in
 open IsLocalRing in
 /-- **Krull's height theorem** (also known as **Krullscher Höhensatz**) :
   In a commutative Noetherian ring `R`, any prime ideal that is minimal over an ideal generated
@@ -310,6 +311,7 @@ lemma Ideal.exists_finset_card_eq_height_of_isNoetherianRing (p : Ideal R) [p.Is
       simpa [Submodule.fg_iff_spanRank_eq_spanFinrank] using (IsNoetherian.noetherian I)
     · exact I.height_le_spanRank_toENat_of_mem_minimal_primes _ hI
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `I ≤ p` and `p` is prime, the height of `p` is bounded by the height of `p ⧸ I R` plus
 the span rank of `I`. -/
 lemma Ideal.height_le_height_add_spanFinrank_of_le {I p : Ideal R} [p.IsPrime] (hrp : I ≤ p) :
@@ -399,6 +401,7 @@ section Algebra
 
 variable {S : Type*} [CommRing S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus
 the height of the image of `P` in `S ⧸ p S`.

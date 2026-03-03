@@ -385,6 +385,7 @@ def partialOrderOfModels [h : M ⊨ L.partialOrderTheory] : PartialOrder M where
   le_antisymm := (Relations.realize_antisymmetric.mp <|
     Theory.model_iff _ |>.mp h _ <| by simp [partialOrderTheory]).antisymm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any model of a theory of linear orders is a linear order. -/
 def linearOrderOfModels [h : M ⊨ L.linearOrderTheory]
     [DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a, b])] :
@@ -458,6 +459,7 @@ section Fraisse
 
 variable (M)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dlo_isExtensionPair
     (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.linearOrderTheory]
     (N : Type w') [Language.order.Structure N] [N ⊨ Language.order.dlo] [Nonempty N] :

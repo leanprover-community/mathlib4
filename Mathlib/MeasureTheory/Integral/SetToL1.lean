@@ -968,7 +968,6 @@ theorem setToFun_congr_measure {μ' : Measure α} (c c' : ℝ≥0∞) (hc : c �
       mt fun h => h.of_measure_le_smul hc hμ_le
     simp_rw [setToFun_undef _ hf, setToFun_undef _ (h_int f hf)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem setToFun_congr_measure_of_add_right {μ' : Measure α}
     (hT_add : DominatedFinMeasAdditive (μ + μ') T C') (hT : DominatedFinMeasAdditive μ T C)
     (f : α → E) (hf : Integrable f (μ + μ')) :

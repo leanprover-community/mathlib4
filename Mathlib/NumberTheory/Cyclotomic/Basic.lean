@@ -123,7 +123,6 @@ theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {0} A B :=
   (iff_adjoin_eq_top _ _ _).2 <| by simpa
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isCyclotomicExtension_zero_iff :
     IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
   rw [surjective_algebraMap_iff, eq_comm]
@@ -372,7 +371,6 @@ end Basic
 
 section Fintype
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_singleton [IsDomain B] [h : IsCyclotomicExtension {n} A B] :
     Module.Finite A B := by
   classical
@@ -780,6 +778,7 @@ namespace CyclotomicRing
 instance : CommRing (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsDomain (CyclotomicRing n A K) := by
   delta CyclotomicRing; infer_instance
 

@@ -1065,7 +1065,6 @@ end IndicatorFunction
 
 section Sum
 
-set_option backward.isDefEq.respectTransparency false in
 open Finset in
 /-- An upper bound on a sum of restrictions of a measure `μ`. This can be used to compare
 `∫ x ∈ X, f x ∂μ` with `∑ i, ∫ x ∈ (s i), f x ∂μ`, where `s` is a cover of `X`. -/

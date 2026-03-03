@@ -130,7 +130,6 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
-set_option backward.isDefEq.respectTransparency false in
 /- A linear functional `φ` is in the span of a collection of linear functionals if and only if `φ`
 is continuous with respect to the topology induced by the collection of linear functionals. See
 `LinearMap.mem_span_iff_continuous_of_finite` for a result about finite collections of linear
@@ -180,6 +179,7 @@ theorem mem_span_iff_bound {f : ι → E →ₗ[𝕜] 𝕜} (φ : E →ₗ[𝕜]
 
 variable [AddCommGroup F] [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Weak Representation Theorem: Every continuous functional on `E` endowed with
 the `σ(E, F; B)`-topology is of the form `x ↦ B(x, y)` for some `y : F`. -/
 theorem dualEmbedding_surjective : Function.Surjective (WeakBilin.eval B) := fun f ↦ by

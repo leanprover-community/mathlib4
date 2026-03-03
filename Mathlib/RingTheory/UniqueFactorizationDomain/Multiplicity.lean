@@ -96,6 +96,7 @@ theorem emultiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
 

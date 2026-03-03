@@ -145,7 +145,6 @@ variable {θ : 𝓞 K} {p : ℕ} [Fact (Nat.Prime p)]
 
 attribute [local instance] Int.ideal_span_isMaximal_of_prime Ideal.Quotient.field
 
-set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 open scoped Classical in
 private def primesOverSpanEquivMonicFactorsModAux (A : ℤ[X]) :

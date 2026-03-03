@@ -155,8 +155,11 @@ def valuation : Valuation (WithVal v) Γ₀ := v.comap (equiv v)
 
 instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 
-theorem apply_equiv (r : WithVal v) : v r.ofVal = Valued.v r := rfl
-@[simp] theorem apply_symm_equiv (r : R) : Valued.v (toVal v r) = v r := rfl
+theorem apply_ofVal (r : WithVal v) : v r.ofVal = Valued.v r := rfl
+@[simp] theorem valued_toVal (r : R) : Valued.v (toVal v r) = v r := rfl
+
+@[deprecated (since := "2026-03-02")] alias apply_equiv := apply_ofVal
+@[deprecated (since := "2026-03-02")] alias apply_symm_equiv := valued_toVal
 
 instance [CharZero R] : CharZero (WithVal v) :=
   .of_addMonoidHom (equiv v).symm.toAddMonoidHom (by simp) (equiv v).symm.injective
@@ -381,7 +384,7 @@ theorem IsEquiv.uniformContinuous_congr
   intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
   use .mk0 (v r / v s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
-  rw [← hr, congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq, apply_symm_equiv, lt_div_iff₀ hs₀,
+  rw [← hr, congr_apply, RingEquiv.refl_apply, Set.mem_setOf_eq, valued_toVal, lt_div_iff₀ hs₀,
     ← map_mul, ← lt_def, ← ofVal_mul, ← h.orderRingIso_apply, ← h.orderRingIso.lt_symm_apply]
   simpa [lt_def, lt_div_iff₀ (h.pos_iff.2 hs₀)] using hx
 
@@ -407,7 +410,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [Valued R Γ₀'] (hv : Valued.v = 
   intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := hw γ
   use .mk0 (w r / w s) (by simp [h.eq_zero, hr₀.ne.symm, hs₀.ne.symm]), fun x hx ↦ ?_
-  simp only [equiv_symm_apply, Set.mem_setOf_eq, apply_symm_equiv]
+  simp only [equiv_symm_apply, Set.mem_setOf_eq, valued_toVal]
   simp [hv] at hx
   rw [← hr, lt_div_iff₀ hs₀, ← map_mul, ← lt_def,
     ← h.orderRingIso_apply, ← h.orderRingIso.lt_symm_apply]
@@ -452,7 +455,7 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
   | hp =>
     exact (mapEquiv (h.uniformEquiv _ _)).toHomeomorph.isClosed_setOf_iff
       (Valued.isClopen_closedBall _ one_ne_zero) (Valued.isClopen_closedBall _ one_ne_zero)
-  | ih a => simpa [Valued.valuedCompletion_apply, ← WithVal.apply_equiv] using h.le_one_iff_le_one
+  | ih a => simpa [Valued.valuedCompletion_apply, ← WithVal.apply_ofVal] using h.le_one_iff_le_one
 
 end Equivalence
 

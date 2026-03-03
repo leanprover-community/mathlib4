@@ -45,6 +45,7 @@ section
 
 variable {P Q : Cᵒᵖ ⥤ A} {M N : A} [HasColimitsOfSize.{w, w} A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `Φ` is a point of a site `(C, J)`, `P : Cᵒᵖ ⥤ A` and `M : A`, this is
 the bijection `(Φ.presheafFiber.obj P ⟶ M) ≃ (P ⟶ Φ.skyscraperPresheaf M)`
 that is part of the adjunction `skyscraperPresheafAdjunction`. -/
@@ -77,6 +78,7 @@ lemma skyscraperPresheafHomEquiv_naturality_left_symm
       Φ.presheafFiber.map f ≫ Φ.skyscraperPresheafHomEquiv.symm g := by
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma skyscraperPresheafHomEquiv_app_π
     (f : Φ.presheafFiber.obj P ⟶ M) (X : C) (x : Φ.fiber.obj X) :
@@ -84,6 +86,7 @@ lemma skyscraperPresheafHomEquiv_app_π
       Φ.toPresheafFiber X x P ≫ f := by
   simp [skyscraperPresheafHomEquiv_apply_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma skyscraperPresheafHomEquiv_naturality_right
     (f : Φ.presheafFiber.obj P ⟶ M) (g : M ⟶ N) :
@@ -128,6 +131,7 @@ lemma skyscraperPresheafAdjunction_homEquiv_symm_apply {P : Cᵒᵖ ⥤ A} {M : 
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 variable {Φ} in
 private lemma isSheaf_skyscraperPresheaf_aux
     {M : A} {X : C} (R : Sieve X) (hR : R ∈ J X)

@@ -389,7 +389,6 @@ theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
 
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem linearIndependent_completeFamily :
     LinearIndependent ℝ (completeFamily K) := by
   classical
@@ -528,7 +527,6 @@ theorem norm_expMapBasis_ne_zero (x : realSpace K) :
     mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) ≠ 0 :=
   norm_expMapBasis x ▸ pow_ne_zero _ (Real.exp_ne_zero _)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem logMap_expMapBasis (x : realSpace K) :
     logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈

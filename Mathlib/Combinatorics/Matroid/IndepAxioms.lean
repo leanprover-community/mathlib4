@@ -383,6 +383,7 @@ instance ofBddAugment_rankFinite (E : Set α) Indep indep_empty indep_subset ind
   rw [IndepMatroid.ofBddAugment]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is finite, then any collection of subsets of `E` satisfying
   the usual independence axioms determines a matroid -/
 protected def ofFinite {E : Set α} (hE : E.Finite) (Indep : Set α → Prop)

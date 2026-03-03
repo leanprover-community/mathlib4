@@ -254,7 +254,6 @@ lemma ofSubtype_support_disjoint {σ : Perm α} (x : Perm (Function.fixedPoints 
 
 open Subgroup
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_of_disjoint_support {H K : Subgroup (Perm α)}
     (h : ∀ a ∈ H, ∀ b ∈ K, _root_.Disjoint a.support b.support) :
     _root_.Disjoint H K := by
@@ -274,7 +273,6 @@ lemma support_closure_subset_union (S : Set (Perm α)) :
     exact ⟨hc, hd⟩
   · simp only [support_inv, imp_self, implies_true]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
     (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
     ∀ a ∈ closure S, ∀ b ∈ closure T, _root_.Disjoint a.support b.support := by
@@ -285,7 +283,6 @@ lemma disjoint_support_closure_of_disjoint_support {S T : Set (Perm α)}
   simp_rw [Set.disjoint_iUnion_left, Set.disjoint_iUnion_right, Finset.disjoint_coe] at key
   exact key h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma disjoint_closure_of_disjoint_support {S T : Set (Perm α)}
     (h : ∀ a ∈ S, ∀ b ∈ T, _root_.Disjoint a.support b.support) :
     _root_.Disjoint (closure S) (closure T) := by

@@ -644,7 +644,6 @@ theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) :
   apply le_of_eq
   simpa [mk_surjective, subsemigroup] using heq
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   intro s t hst

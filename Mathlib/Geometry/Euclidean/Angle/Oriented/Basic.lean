@@ -927,7 +927,6 @@ theorem oangle_sign_smul_add_smul_left (x y : V) (r₁ r₂ : ℝ) :
   simp_rw [o.oangle_rev y, Real.Angle.sign_neg, add_comm (r₁ • x), oangle_sign_smul_add_smul_right,
     mul_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sign of the angle between two linear combinations of two vectors is the sign of the
 determinant of the factors in those combinations multiplied by the sign of the angle between the
 two vectors. -/

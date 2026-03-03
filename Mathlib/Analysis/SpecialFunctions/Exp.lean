@@ -74,7 +74,6 @@ theorem continuous_exp : Continuous exp :=
 theorem continuousOn_exp {s : Set ℂ} : ContinuousOn exp s :=
   continuous_exp.continuousOn
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
     (fun x ↦ exp x - ∑ i ∈ Finset.range n, x ^ i / i !) =O[𝓝 0] (· ^ n) := by
   rcases (zero_le n).eq_or_lt with rfl | hn
@@ -456,7 +455,6 @@ theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
       simp only [← comap_norm_atTop, comap_comap, comp_def, norm_exp]
     _ = comap re atTop := by rw [Real.comap_exp_atTop]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
   calc

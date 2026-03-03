@@ -30,7 +30,7 @@ which are continuous with continuous inverse.
 
 ## TODO
 - equip `ContinuousAffineEquiv k P P` with a `Group` structure,
-with multiplication corresponding to composition in `AffineEquiv.group`.
+  with multiplication corresponding to composition in `AffineEquiv.group`.
 
 -/
 

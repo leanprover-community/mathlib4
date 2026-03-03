@@ -641,6 +641,7 @@ theorem length_neg : ∀ s : Interval α, (-s).length = s.length
   | ⊥ => rfl
   | (s : NonemptyInterval α) => s.length_neg
 
+set_option backward.isDefEq.respectTransparency false in
 theorem length_add_le : ∀ s t : Interval α, (s + t).length ≤ s.length + t.length
   | ⊥, _ => by simp
   | _, ⊥ => by simp

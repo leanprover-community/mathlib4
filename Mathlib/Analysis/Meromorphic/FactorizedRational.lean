@@ -191,7 +191,6 @@ private lemma mulSupport_update {d : 𝕜 → ℤ} {x : 𝕜}
     simp
   · simp_all
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /--
 Compute the trailing coefficient of the factorized rational function associated with `d : 𝕜 → ℤ`.

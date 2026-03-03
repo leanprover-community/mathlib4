@@ -285,7 +285,6 @@ theorem arccos_le_pi (x : ℝ) : arccos x ≤ π := by
 theorem arccos_nonneg (x : ℝ) : 0 ≤ arccos x := by
   unfold arccos; linarith [arcsin_le_pi_div_two x]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem arccos_pos {x : ℝ} : 0 < arccos x ↔ x < 1 := by simp [arccos]
 

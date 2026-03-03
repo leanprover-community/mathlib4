@@ -117,7 +117,6 @@ See `Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_cons
 reformulation in terms of the logarithmic counting function of Value Distribution Theory.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → ℂ} (hR : R ≠ 0)
     (h₁f : MeromorphicOn f (closedBall c |R|)) :
     circleAverage (log ‖f ·‖) c R

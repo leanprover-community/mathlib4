@@ -133,7 +133,6 @@ private theorem c_nonneg : 0 ≤ c K := by
   rw [c]
   positivity
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in

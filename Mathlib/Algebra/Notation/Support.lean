@@ -230,7 +230,6 @@ lemma subsingleton_mulSupport_mulSingle : (mulSupport (mulSingle i a)).Subsingle
   rw [mulSupport_mulSingle]
   split_ifs with h <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mulSupport_mulSingle_disjoint (ha : a ≠ 1) (hb : b ≠ 1) :
     Disjoint (mulSupport (mulSingle i a)) (mulSupport (mulSingle j b)) ↔ i ≠ j := by

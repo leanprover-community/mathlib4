@@ -36,7 +36,6 @@ namespace Kernel
 
 variable {α : Type*} {mα : MeasurableSpace α} {κ : Kernel α Ω} {P : Measure α}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
 for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
 lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
@@ -91,7 +90,6 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
   refine IndepFun.process_indepFun hX (measurable_pi_lambda _ hY) fun I ↦ ?_
   exact IndepFun.indepFun_process (measurable_pi_lambda _ fun _ ↦ hX _) hY fun J ↦ h I J
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
 for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
 $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,

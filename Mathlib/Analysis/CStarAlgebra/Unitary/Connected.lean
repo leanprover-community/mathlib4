@@ -135,7 +135,6 @@ noncomputable def Unitary.argSelfAdjoint (u : unitary A) : selfAdjoint A :=
 
 @[deprecated (since := "2025-10-29")] alias unitary.argSelfAdjoint := Unitary.argSelfAdjoint
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ ≤ π) :
     ‖(expUnitary x - 1 : A)‖ ^ 2 = 2 * (1 - Real.cos ‖x‖) := by
@@ -154,7 +153,6 @@ lemma selfAdjoint.norm_sq_expUnitary_sub_one {x : selfAdjoint A} (hx : ‖x‖ �
     exact Real.cos_abs y ▸ Real.cos_le_cos_of_nonneg_of_le_pi (by positivity) hx <|
       spectrum.norm_le_norm_of_mem hy
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma argSelfAdjoint_expUnitary {x : selfAdjoint A} (hx : ‖x‖ < π) :
     argSelfAdjoint (expUnitary x) = x := by
@@ -183,7 +181,6 @@ lemma argSelfAdjoint_expUnitary {x : selfAdjoint A} (hx : ‖x‖ < π) :
   simp only [Real.norm_eq_abs, abs_lt] at hy
   rw [← Circle.coe_exp, Circle.arg_exp hy.1 hy.2.le]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma expUnitary_argSelfAdjoint {u : unitary A} (hu : ‖(u - 1 : A)‖ < 2) :
     expUnitary (argSelfAdjoint u) = u := by
   ext
@@ -272,7 +269,6 @@ lemma Unitary.continuousOn_argSelfAdjoint :
 @[deprecated (since := "2025-10-29")] alias unitary.continuousOn_argSelfAdjoint :=
   Unitary.continuousOn_argSelfAdjoint
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- the maps `unitary.argSelfAdjoint` and `selfAdjoint.expUnitary` form a partial
 homeomorphism between `ball (1 : unitary A) 2` and `ball (0 : selfAdjoint A) π`. -/
@@ -306,7 +302,6 @@ noncomputable def Unitary.openPartialHomeomorph :
   continuousOn_toFun := by fun_prop
   continuousOn_invFun := by fun_prop
 
-set_option backward.whnf.reducibleClassField false in
 @[deprecated (since := "2025-10-29")] alias unitary.openPartialHomeomorph :=
   Unitary.openPartialHomeomorph
 
@@ -324,7 +319,6 @@ lemma Unitary.expUnitary_eq_mul_inv (u v : unitary A) (huv : ‖(u - v : A)‖ <
 @[deprecated (since := "2025-10-29")] alias unitary.expUnitary_eq_mul_inv :=
   Unitary.expUnitary_eq_mul_inv
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- For a selfadjoint element `x` in a C⋆-algebra, this is the path from `1` to `expUnitary x`
 given by `t ↦ expUnitary (t • x)`. -/

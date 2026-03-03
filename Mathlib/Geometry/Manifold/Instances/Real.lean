@@ -320,7 +320,6 @@ lemma IccLeftChart_extend_bot : (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 :=
 lemma iccLeftChart_extend_zero {p : Set.Icc x y} :
     (IccLeftChart x y).extend (𝓡∂ 1) p 0 = p.val - x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     0 < (IccLeftChart x y).extend (𝓡∂ 1) p 0 := by
   simp_rw [iccLeftChart_extend_zero]

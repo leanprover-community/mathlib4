@@ -39,7 +39,6 @@ instance : T0Space X :=
     (X.affineCover.f _).opensRange.2, IsEmbedding.t0Space (Y := PrimeSpectrum _)
     (isAffineOpen_opensRange (X.affineCover.f _)).isoSpec.schemeIsoToHomeo.isEmbedding⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : QuasiSober X := by
   apply +allowSynthFailures
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.f x))

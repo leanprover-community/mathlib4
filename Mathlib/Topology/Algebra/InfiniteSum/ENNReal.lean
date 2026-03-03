@@ -536,7 +536,6 @@ theorem Summable.of_nonneg_of_le {f g : β → ℝ} (hg : ∀ b, 0 ≤ g b) (hgf
   rw [NNReal.summable_coe] at hf ⊢
   exact NNReal.summable_of_le (fun b => NNReal.coe_le_coe.1 (hgf b)) hf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Summable.toNNReal {f : α → ℝ} (hf : Summable f) : Summable fun n => (f n).toNNReal := by
   apply NNReal.summable_coe.1
   refine .of_nonneg_of_le (fun n => NNReal.coe_nonneg _) (fun n => ?_) hf.abs
@@ -635,7 +634,6 @@ namespace ENNReal
 
 variable {α : Type*} (s : Set α)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma tsum_set_one : ∑' _ : s, (1 : ℝ≥0∞) = s.encard := by
   obtain (hfin | hinf) := Set.finite_or_infinite s
   · lift s to Finset α using hfin

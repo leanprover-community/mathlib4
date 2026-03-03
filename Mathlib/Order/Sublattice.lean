@@ -269,7 +269,6 @@ lemma map_le_iff_le_comap {f : LatticeHom α β} {M : Sublattice β} : L.map f �
 lemma gc_map_comap (f : LatticeHom α β) : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_bot (f : LatticeHom α β) : (⊥ : Sublattice α).map f = ⊥ := (gc_map_comap f).l_bot
 
 lemma map_sup (f : LatticeHom α β) (L M : Sublattice α) : (L ⊔ M).map f = L.map f ⊔ M.map f :=
@@ -278,7 +277,6 @@ lemma map_sup (f : LatticeHom α β) (L M : Sublattice α) : (L ⊔ M).map f = L
 lemma map_iSup (f : LatticeHom α β) (L : ι → Sublattice α) : (⨆ i, L i).map f = ⨆ i, (L i).map f :=
   (gc_map_comap f).l_iSup
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma comap_top (f : LatticeHom α β) : (⊤ : Sublattice β).comap f = ⊤ :=
   (gc_map_comap f).u_top
 

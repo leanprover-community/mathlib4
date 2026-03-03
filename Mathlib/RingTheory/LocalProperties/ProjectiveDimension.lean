@@ -81,7 +81,6 @@ lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v,
     | top => simp
     | coe n => simpa using aux n
 
-set_option backward.isDefEq.respectTransparency false in
 lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : HasProjectiveDimensionLE M n ↔
     ∀ (m : MaximalSpectrum R), HasProjectiveDimensionLE (M.localizedModule m.1.primeCompl) n := by

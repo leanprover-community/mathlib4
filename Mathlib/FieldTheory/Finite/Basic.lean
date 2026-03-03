@@ -570,7 +570,6 @@ namespace ZMod
 
 variable {p : ℕ} [Fact p.Prime]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (Subfield (ZMod p)) :=
   subsingleton_of_bot_eq_top <| top_unique (a := ⊥) fun n _ ↦
   have := zsmul_mem (one_mem (⊥ : Subfield (ZMod p))) n.val

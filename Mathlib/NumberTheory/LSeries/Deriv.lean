@@ -130,7 +130,6 @@ lemma LSeries.absicssaOfAbsConv_logPowMul {f : ℕ → ℂ} {m : ℕ} :
   | succ n ih => simp [ih, Function.iterate_succ', Function.comp_def,
       -Function.comp_apply, -Function.iterate_succ]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `re s` is greater than the abscissa of absolute convergence of `f`, then
 the `m`th derivative of this L-series is `(-1)^m` times the L-series of `log^m * f`. -/
 lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaOfAbsConv f < s.re) :

@@ -109,7 +109,7 @@ def rootHashGeneration : UInt64 := 4
 * the Lean search path. This contains
   paths to the source directory of each imported package, i.e. where the `.lean` files
   can be found.
-  (Note: in a standard setup these might also be the paths where the correpsponding `.lake`
+  (Note: in a standard setup these might also be the paths where the corresponding `.lake`
   folders are located. However, `lake` has multiple options to customise these paths, like
   setting `srcDir` in a `lean_lib`. See `mkBuildPaths` below which currently assumes
   that no such options are set in any mathlib dependency)

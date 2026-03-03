@@ -174,7 +174,6 @@ theorem intervalGapsWithin_fst_le_snd {a b : α} (hab : a ≤ b)
   have hFabi := hFab (z := G ⟨j, by omega⟩) (by simp [G, F.orderEmbOfFin_mem (α := α ×ₗ α)])
   simp [hFabi, this.le, hG]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem intervalGapsWithin_pairwiseDisjoint_Ioc {a b : α}
     (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b) :
     (Set.Iio (k + 1)).PairwiseDisjoint (fun (j : ℕ) ↦

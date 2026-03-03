@@ -306,7 +306,6 @@ end FiberBundle
 variable (F)
 variable (E)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `E` is a fiber bundle over a conditionally complete linear order,
 then it is trivial over any closed interval. -/
 theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinearOrder B]

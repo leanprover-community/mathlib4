@@ -391,6 +391,15 @@ protected theorem _root_.Finsupp.log_prod {α β : Type*} [Zero β] (f : α →�
     (hg : ∀ a, g a (f a) = 0 → f a = 0) : log (f.prod g) = f.sum fun a b ↦ log (g a b) :=
   log_prod fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
 
+-- Note: This is wrong assuming only `f a ≠ 0` (as in `Real.log_prod`).
+-- E.g., `f = (2, -1, -1, ...)` (with infinitely many `-1`s).
+lemma log_finprod {α : Type*} {f : α → ℝ} (h : ∀ a, 0 < f a) :
+    log (∏ᶠ a, f a) = ∑ᶠ a, log (f a) := by
+  classical
+  simp only [finprod_def, finsum_def, show (fun i ↦ log (f i)).support = f.mulSupport by
+    grind [mem_mulSupport, mem_support, log_eq_zero]]
+  grind [log_prod, log_eq_zero]
+
 theorem log_nat_eq_sum_factorization (n : ℕ) :
     log n = n.factorization.sum fun p t => t * log p := by
   rcases eq_or_ne n 0 with (rfl | hn)

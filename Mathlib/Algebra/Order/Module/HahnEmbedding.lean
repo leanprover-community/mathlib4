@@ -106,7 +106,6 @@ theorem archimedeanClassMk_of_mem_stratum {a : M}
     rw [← u.ball_sup_stratum_eq c]
     exact Submodule.mem_sup_right ha
 
-set_option backward.isDefEq.respectTransparency false in
 instance archimedean_stratum : Archimedean (u.stratum c) := by
   apply ArchimedeanClass.archimedean_of_mk_eq_mk
   intro a ha b hb
@@ -163,7 +162,6 @@ theorem iSupIndep_stratum' : iSupIndep u.stratum' := by
   ext1 c
   simpa using le_iSup _ _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isInternal_stratum' : DirectSum.IsInternal u.stratum' := by
   apply DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top u.iSupIndep_stratum'
   apply Submodule.map_injective_of_injective u.baseDomain.subtype_injective
@@ -772,6 +770,7 @@ theorem eval_lt [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val
       exact (f.coeff_eq_of_mem y.val (by simp) hzy (by simp)).le
   exact hieq ▸ hi
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Extend `f` to a larger partial linear map by adding a new `x`. -/
 noncomputable
 def extendFun [IsOrderedAddMonoid R] [Archimedean R] {x : M} (hx : x ∉ f.val.domain) :

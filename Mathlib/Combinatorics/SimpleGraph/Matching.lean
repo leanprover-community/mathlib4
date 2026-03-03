@@ -126,7 +126,6 @@ lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     rw [sup_comm]
     exact aux hM' (Disjoint.symm hd) hmM'
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsMatching.iSup {ι : Sort _} {f : ι → Subgraph G} (hM : (i : ι) → (f i).IsMatching)
     (hd : Pairwise fun i j ↦ Disjoint (f i).support (f j).support) :
     (⨆ i, f i).IsMatching := by

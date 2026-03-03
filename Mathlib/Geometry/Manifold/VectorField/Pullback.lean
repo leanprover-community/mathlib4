@@ -73,12 +73,10 @@ instance [IsManifold I (minSmoothness 𝕜 1) M] :
     IsManifold I 1 M :=
   IsManifold.of_le (n := minSmoothness 𝕜 1) le_minSmoothness
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsManifold I (minSmoothness 𝕜 3) M] :
     IsManifold I (minSmoothness 𝕜 2) M :=
   IsManifold.of_le (n := minSmoothness 𝕜 3) (minSmoothness_monotone (by norm_cast))
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsManifold I (minSmoothness 𝕜 2) M] :
     IsManifold I (minSmoothness 𝕜 1) M :=
   IsManifold.of_le (n := minSmoothness 𝕜 2) (minSmoothness_monotone (by norm_cast))

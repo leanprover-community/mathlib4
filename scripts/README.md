@@ -4,6 +4,10 @@ This directory contains miscellaneous scripts that are useful for working on or 
 When adding a new script, please make sure to document it here, so other readers have a chance
 to learn about it as well!
 
+Note: CI automation scripts have been moved to `mathlib-ci`.
+Workflows that use those scripts now execute them from external checkouts (typically
+under `ci-tools/`).
+
 
 ## Current scripts and their purpose
 
@@ -136,18 +140,12 @@ behaviour. They share a common DAG traversal library that parallelises work in i
 - `lint-style.lean`, `lint-style.py`, `print-style-errors.sh`
   style linters, written in Python and Lean. Run via `lake exe lint-style`.
   Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
-- `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
+- `check_title_labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
   In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
   Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
-- `lean-pr-testing-comments.sh`
-  Generate comments and labels on a Lean or Batteries PR after CI has finished on a
-  `*-pr-testing-NNNN` branch.
-- `declarations_diff.sh`
-  Attempts to find which declarations have been removed and which have been added in the current PR
-  with respect to `master`, and posts a comment on github with the result.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
 - `auto_commit.sh` runs a command and creates a commit with the result. The commit message format
@@ -155,34 +153,6 @@ behaviour. They share a common DAG traversal library that parallelises work in i
   you can convert `pick abc # x scripts/auto_commit.sh cmd` to `x scripts/auto_commit.sh cmd`
   (by deleting the "pick abc # " prefix), and git will re-run the command via exec.
   Example: `scripts/auto_commit.sh lake exe mk_all`
-- `verify_commits.sh` verifies special commits in a PR:
-  - **Transient commits** (prefix `transient: `) must have zero net effect on the final tree
-  - **Automated commits** (prefix `x <command>`; or legacy `x: <command>`)
-    must match the effect of re-running the command.
-  Supports `--json` for machine-readable output and `--json-file PATH` to write JSON while
-  displaying human-readable output.
-- `verify_commits_summary.sh` generates a markdown PR comment from `verify_commits.sh` JSON output.
-  Used by CI to post verification summaries on pull requests.
-
-**Managing nightly-testing and bump branches**
-- `create-adaptation-pr.sh` implements some of the steps in the workflow described at
-  https://leanprover-community.github.io/contribute/tags_and_branches.html#mathlib-nightly-and-bump-branches
-  Specifically, it will:
-  - merge `master` into `bump/v4.x.y`
-  - create a new branch from `bump/v4.x.y`, called `bump/nightly-YYYY-MM-DD`
-  - merge `nightly-testing` into the new branch
-  - open a PR to merge the new branch back into `bump/v4.x.y`
-  - announce the PR on zulip
-  - finally, merge the new branch back into `nightly-testing`, if conflict resolution was required.
-
-  If there are merge conflicts, it pauses and asks for help from the human driver.
-- `merge-lean-testing-pr.sh` takes a PR number `NNNN` as argument,
-  and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
-  It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
-  If there are more conflicts, it will bail.
-- `zulip_build_report.sh` is used to analyse the output from building the nightly-testing-green
-  branch with additional linting enabled, and posts a summary of its findings on zulip.
-
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
 - `downstream-tags.py` is a script to check whether a given tag exists on the downstream
@@ -192,14 +162,6 @@ behaviour. They share a common DAG traversal library that parallelises work in i
 
 **Version tag verification**
 - `verify_version_tags.py` verifies that Mathlib version tags are correctly published across git, GitHub, elan toolchains, and build cache.
-
-**Managing and tracking technical debt**
-- `technical-debt-metrics.sh`
-  Prints information on certain kind of technical debt in Mathlib.
-  This output is automatically posted to zulip once a week.
-- `long_file_report.sh`
-  Prints the list of the 10 longest Lean files in `Mathlib`.
-  This output is automatically posted to zulip once a week.
 
 **Data files with linter exceptions**
 - `nolints.json` contains exceptions for all `env_linter`s in mathlib.
@@ -211,34 +173,6 @@ please do not add new entries to these files. PRs removing (the need for) entrie
 
 **API surrounding CI**
 - `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
-- `parse_lake_manifest_changes.py` compares two versions of `lake-manifest.json` to report
-  dependency changes in Zulip notifications. Used by the `update_dependencies_zulip.yml` workflow
-  to show which dependencies were updated, added, or removed, with links to GitHub diffs.
-- `update_PR_comment.sh` is a script that edits an existing message (or creates a new one).
-  It is used by the `PR_summary` workflow to maintain an up-to-date report with a searchable history.
-- `get_tlabel.sh` extracts the `t-`label that a PR has (assuming that there is exactly one).
-  It is used by the `maintainer_merge` family of workflows to dispatch `maintainer merge` requests
-  to the appropriate topic on zulip.
-- `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
-  summaries of changes in transitive imports that the `PR_summary` message incorporates.
-- `zulip_emoji_reactions.py` is called
-  * every time a `bors d`, `bors merge` or `bors r` comment is added to a PR,
-  * whenever bors merges a PR,
-  * whenever a PR is closed or reopened
-  * whenever a PR is labelled or unlabelled with `awaiting-author` or `maintainer-merge`
-  It looks through all zulip posts containing a reference to the relevant PR
-  and will post or update an emoji reaction corresponding to the current PR state to the message.
-  This reaction is ✌️ (`:peace_sign:`) for delegated, `:bors:` for PRs sent to bors,
-  `:merge` for merged PRs, ✍️ (`:writing:`) for PRs awaiting-author,
-  🔨 (`:hammer:`) for maintainer-merged PRs and `:closed-pr:` for closed PRs.
-  PRs which were migrated to a fork (as indicated by the `migrated-to-fork` label)
-  additionally receive a reaction ... (`skip_forward`).
-  Two of these are custom emojis configured on zulip.
-- `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
-  the `linter.minImports` output, summarizing the data in a table.  See the module docs of
-  `late_importers.sh` for further details.
-- `maintainer_merge_message.sh` contains a shell script that produces the Zulip message for a
-  `maintainer merge`/`maintainer delegate` comment.
 
 **Docker images**
 - `docker_build.sh` builds the `lean4`, `gitpod4`, and `gitpod4-blueprint` Docker images.

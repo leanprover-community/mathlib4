@@ -380,11 +380,12 @@ instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
 instance uniqueHomToTrivial (A : Grp C) : Unique (A ⟶ trivial C) :=
   (show _ ≃ (A.toMon ⟶ Mon.trivial C) from InducedCategory.homEquiv).unique
 
-instance : HasInitial (Grp C) :=
-  hasInitial_of_unique (trivial C)
+instance : HasZeroObject (Grp C) where
+  zero := ⟨Grp.trivial C,
+    fun A ↦ nonempty_unique (Grp.trivial C ⟶ A),
+    fun A ↦ nonempty_unique (A ⟶ Grp.trivial C)⟩
 
-instance : HasTerminal (Grp C) :=
-  hasTerminal_of_unique (trivial C)
+noncomputable instance : HasZeroMorphisms (Grp C) := HasZeroObject.zeroMorphismsOfZeroObject
 
 /-! ### `Grp C` is cartesian-monoidal -/
 

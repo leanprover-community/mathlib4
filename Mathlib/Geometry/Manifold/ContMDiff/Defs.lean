@@ -593,16 +593,13 @@ theorem contMDiffWithinAt_infty :
 theorem contMDiffAt_infty : ContMDiffAt I I' ∞ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_infty
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffOn_infty : ContMDiffOn I I' ∞ f s ↔ ∀ n : ℕ, ContMDiffOn I I' n f s :=
   ⟨fun h _ => h.of_le (mod_cast le_top),
     fun h x hx => contMDiffWithinAt_infty.2 fun n => h n x hx⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_infty : ContMDiff I I' ∞ f ↔ ∀ n : ℕ, ContMDiff I I' n f :=
   ⟨fun h _ => h.of_le (mod_cast le_top), fun h x => contMDiffWithinAt_infty.2 fun n => h n x⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
   refine ⟨fun h m hm => h.of_le (mod_cast hm), fun h => ?_⟩
@@ -614,7 +611,6 @@ theorem contMDiffAt_iff_nat {n : ℕ∞} :
     ContMDiffAt I I' n f x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffAt I I' m f x := by
   simp [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_nat]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function is `C^n` within a set at a point iff it is `C^m` within this set at this point, for
 any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
 `C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/

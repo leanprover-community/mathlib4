@@ -197,7 +197,7 @@ open LeftLift
 
 variable {f : b ⟶ a} {g : c ⟶ a}
 
-/-- The existence of a left kan lift of `g` along `f`. -/
+/-- The existence of a left Kan lift of `g` along `f`. -/
 class HasLeftKanLift (f : b ⟶ a) (g : c ⟶ a) : Prop where mk' ::
   hasInitial : HasInitial <| LeftLift f g
 

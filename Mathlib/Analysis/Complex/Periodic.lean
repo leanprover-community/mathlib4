@@ -92,7 +92,6 @@ lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
   unfold qParam
   fun_prop
 
-set_option backward.isDefEq.respectTransparency false in
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_
     (.of_forall fun q ↦ exp_ne_zero _)

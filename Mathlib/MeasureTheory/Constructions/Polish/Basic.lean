@@ -504,7 +504,6 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- this is a contradiction.
   exact M n B
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Lusin separation theorem**: if two analytic sets are disjoint, then they are contained in
 disjoint Borel sets. -/
 theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [OpensMeasurableSpace α]

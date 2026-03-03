@@ -158,6 +158,7 @@ theorem support_expand (φ : MvPowerSeries σ R) :
   rw [Function.mem_support, ← coeff_apply φ, ← coeff_expand_smul p hp, coeff_apply, hc] at hn₁
   contradiction
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem order_expand (φ : MvPowerSeries σ R) :
     (φ.expand p hp).order = p • φ.order := by

@@ -181,7 +181,6 @@ variable [TopologicalSpace α]
 variable [One β]
 variable {f : α → β} {x : α}
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem notMem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[𝓝 x] 1 := by
   simp_rw [mulTSupport, mem_closure_iff_nhds, not_forall, not_nonempty_iff_eq_empty, exists_prop,

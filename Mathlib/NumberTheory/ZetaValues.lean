@@ -137,7 +137,6 @@ theorem bernoulliFun_eval_one_sub {k : ℕ} {x : ℝ} :
   simpa [bernoulliFun, Polynomial.aeval_comp]
     using congr_arg (·.aeval x) (Polynomial.bernoulli_comp_one_sub_X k)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The multiplication theorem. Proof follows https://math.stackexchange.com/a/1721099/38218. -/
 theorem bernoulliFun_mul (k : ℕ) {m : ℕ} (m0 : m ≠ 0) (x : ℝ) :
     bernoulliFun k (m * x) =

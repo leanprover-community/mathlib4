@@ -249,7 +249,6 @@ private lemma lie_e_f_ne_aux₁ :
         rintro x - ⟨hx, -⟩; exact hij_mem ⟨x, hx⟩
       simp [Finset.sum_ite_of_false aux, b.cartanMatrix_apply_eq_zero_iff hij, hij_mem]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary lemma en route to `RootPairing.Base.lie_e_f_ne`. -/
 private lemma lie_e_f_ne_aux₂ :
     letI := P.indexNeg
@@ -263,7 +262,6 @@ private lemma lie_e_f_ne_aux₂ :
       Matrix.transpose_mul, Matrix.mul_apply', lie_e_f_ne_aux₁ hij.symm]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lemma 3.5 from [Geck](Geck2017). -/
 lemma lie_e_f_ne [P.IsReduced] [P.IsIrreducible] :
     ⁅e i, f j⁆ = 0 := by
