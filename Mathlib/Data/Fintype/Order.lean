@@ -272,6 +272,16 @@ lemma ciInf_inf [Nonempty ι] {f : ι → α} {a : α} :
     (⨅ i, f i) ⊓ a = ⨅ i, f i ⊓ a :=
   ciSup_sup (α := αᵒᵈ) ..
 
+lemma Finite.ciSup_prod {α ι ι' : Type*} [Finite ι] [Finite ι'] [Nonempty ι] [Nonempty ι']
+    [ConditionallyCompleteLattice α] (f : ι × ι' → α) :
+    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') :=
+  _root_.ciSup_prod (bddAbove_range f)
+
+lemma Finite.ciInf_prod {α ι ι' : Type*} [Finite ι] [Finite ι'] [Nonempty ι] [Nonempty ι']
+    [ConditionallyCompleteLattice α] (f : ι × ι' → α) :
+    ⨅ a, f a = ⨅ i, ⨅ i', f (i, i') :=
+  ciSup_prod (α := αᵒᵈ) f
+
 end CCL
 
 section CCLO
