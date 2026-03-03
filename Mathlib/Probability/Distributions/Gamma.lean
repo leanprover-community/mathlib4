@@ -3,16 +3,17 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+module
+
+public import Mathlib.Probability.CDF
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
 
 Define the gamma measure over the reals.
 
 ## Main definitions
-* `gammaPDFReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))`
+* `gammaPDFReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x))`
   for `0 ≤ x` or `0` else, which is the probability density function of a gamma distribution with
   shape `a` and rate `r` (when `ha : 0 < a ` and `hr : 0 < r`).
 * `gammaPDF`: `ℝ≥0∞`-valued pdf,
@@ -20,6 +21,8 @@ Define the gamma measure over the reals.
 * `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 
@@ -40,7 +43,7 @@ section GammaPDF
 /-- The pdf of the gamma distribution depending on its scale and rate -/
 noncomputable
 def gammaPDFReal (a r x : ℝ) : ℝ :=
-  if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0
+  if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x)) else 0
 
 /-- The pdf of the gamma distribution, as a function valued in `ℝ≥0∞` -/
 noncomputable
@@ -49,14 +52,14 @@ def gammaPDF (a r x : ℝ) : ℝ≥0∞ :=
 
 lemma gammaPDF_eq (a r x : ℝ) :
     gammaPDF a r x =
-      ENNReal.ofReal (if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x)) else 0) :=
+      ENNReal.ofReal (if 0 ≤ x then r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x)) else 0) :=
   rfl
 
 lemma gammaPDF_of_neg {a r x : ℝ} (hx : x < 0) : gammaPDF a r x = 0 := by
   simp only [gammaPDF_eq, if_neg (not_le.mpr hx), ENNReal.ofReal_zero]
 
 lemma gammaPDF_of_nonneg {a r x : ℝ} (hx : 0 ≤ x) :
-    gammaPDF a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a-1) * exp (-(r * x))) := by
+    gammaPDF a r x = ENNReal.ofReal (r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x))) := by
   simp only [gammaPDF_eq, if_pos hx]
 
 /-- The Lebesgue integral of the gamma pdf over nonpositive reals equals 0 -/
@@ -69,13 +72,13 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     rw [if_neg (by linarith)]
 
 /-- The gamma pdf is measurable. -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma measurable_gammaPDFReal (a r : ℝ) : Measurable (gammaPDFReal a r) :=
   Measurable.ite measurableSet_Ici (((measurable_id'.pow_const _).const_mul _).mul
     (measurable_id'.const_mul _).neg.exp) measurable_const
 
 /-- The gamma pdf is strongly measurable -/
-@[fun_prop, measurability]
+@[fun_prop]
 lemma stronglyMeasurable_gammaPDFReal (a r : ℝ) :
     StronglyMeasurable (gammaPDFReal a r) :=
   (measurable_gammaPDFReal a r).stronglyMeasurable
@@ -137,7 +140,7 @@ section GammaCDF
 /-- CDF of the gamma distribution -/
 @[deprecated "Use `cdf (gammaMeasure a r)` instead." (since := "2025-08-28")]
 noncomputable
-def gammaCDFReal (a r : ℝ) : StieltjesFunction :=
+def gammaCDFReal (a r : ℝ) : StieltjesFunction ℝ :=
   cdf (gammaMeasure a r)
 
 lemma cdf_gammaMeasure_eq_integral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) :

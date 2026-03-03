@@ -3,9 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Congruence.Hom
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Congruence relations
@@ -27,6 +29,8 @@ used, since this perspective adds more layers of definitional unfolding.
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid, isomorphism theorems
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) {N : Type*} {P : Type*}
@@ -204,7 +208,7 @@ noncomputable def quotientKerEquivRange (f : M →* P) : (ker f).Quotient ≃* M
         ⟨fun x y h =>
           kerLift_injective f <| by rcases x with ⟨⟩; rcases y with ⟨⟩; injections,
           fun ⟨w, z, hz⟩ => ⟨z, by rcases hz with ⟨⟩; rfl⟩⟩) with
-    map_mul' := MonoidHom.map_mul _ }
+    map_mul' := map_mul _ }
 
 /-- The first isomorphism theorem for monoids in the case of a homomorphism with right inverse. -/
 @[to_additive (attr := simps)

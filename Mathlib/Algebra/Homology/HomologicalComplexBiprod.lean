@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
-import Mathlib.Algebra.Homology.Additive
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
+public import Mathlib.Algebra.Homology.Additive
 
 /-! Binary biproducts of homological complexes
 
@@ -14,11 +16,13 @@ a preadditive category are such that for all `i : ι`, the binary biproduct
 `biprodXIso K L i : (K ⊞ L).X i ≅ (K.X i) ⊞ (L.X i)`.
 
 -/
+
+@[expose] public section
 open CategoryTheory Limits
 
 namespace HomologicalComplex
 
-variable {C ι : Type*} [Category C] [Preadditive C] {c : ComplexShape ι}
+variable {C ι : Type*} [Category* C] [Preadditive C] {c : ComplexShape ι}
   (K L : HomologicalComplex C c) [∀ i, HasBinaryBiproduct (K.X i) (L.X i)]
 
 instance (i : ι) : HasBinaryBiproduct ((eval C c i).obj K) ((eval C c i).obj L) := by
@@ -82,7 +86,49 @@ lemma biprod_inr_snd_f (i : ι) :
     (biprod.inr : L ⟶ K ⊞ L).f i ≫ (biprod.snd : K ⊞ L ⟶ L).f i = 𝟙 _ := by
   rw [← comp_f, biprod.inr_snd, id_f]
 
+@[simp]
+lemma biprod_total_f (i : ι) :
+    (biprod.fst : K ⊞ L ⟶ K).f i ≫ (biprod.inl : K ⟶ K ⊞ L).f i +
+      (biprod.snd : K ⊞ L ⟶ L).f i ≫ (biprod.inr : L ⟶ K ⊞ L).f i =
+    𝟙 ((biprod K L).X i) := by
+  simp [← comp_f, ← add_f_apply]
+
 variable {K L}
+
+section
+
+variable {A : C} {i : ι}
+
+lemma biprodX_ext_from_iff {f g : (K ⊞ L).X i ⟶ A} :
+    f = g ↔ (biprod.inl : K ⟶ K ⊞ L).f i ≫ f = (biprod.inl : K ⟶ K ⊞ L).f i ≫ g ∧
+      (biprod.inr : L ⟶ K ⊞ L).f i ≫ f = (biprod.inr : L ⟶ K ⊞ L).f i ≫ g := by
+  refine ⟨by rintro rfl; simp, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  rw [← cancel_epi (𝟙 _)]
+  simp [← biprod_total_f, h₁, h₂]
+
+@[ext]
+lemma biprodX_ext_from {f g : (K ⊞ L).X i ⟶ A}
+    (h₁ : (biprod.inl : K ⟶ K ⊞ L).f i ≫ f = (biprod.inl : K ⟶ K ⊞ L).f i ≫ g)
+    (h₂ : (biprod.inr : L ⟶ K ⊞ L).f i ≫ f = (biprod.inr : L ⟶ K ⊞ L).f i ≫ g) :
+    f = g := by
+  simp [biprodX_ext_from_iff, h₁, h₂]
+
+lemma biprodX_ext_to_iff {f g : A ⟶ (K ⊞ L).X i} :
+    f = g ↔ f ≫ (biprod.fst : K ⊞ L ⟶ K).f i = g ≫ (biprod.fst : K ⊞ L ⟶ K).f i ∧
+      f ≫ (biprod.snd : K ⊞ L ⟶ L).f i = g ≫ (biprod.snd : K ⊞ L ⟶ L).f i := by
+  refine ⟨by rintro rfl; simp, fun ⟨h₁, h₂⟩ ↦ ?_⟩
+  rw [← cancel_mono (𝟙 _)]
+  simp [← biprod_total_f, reassoc_of% h₁, reassoc_of% h₂]
+
+@[ext]
+lemma biprodX_ext_to {f g : A ⟶ (K ⊞ L).X i}
+    (h₁ : f ≫ (biprod.fst : K ⊞ L ⟶ K).f i = g ≫ (biprod.fst : K ⊞ L ⟶ K).f i)
+    (h₂ : f ≫ (biprod.snd : K ⊞ L ⟶ L).f i = g ≫ (biprod.snd : K ⊞ L ⟶ L).f i) :
+    f = g := by
+  simp [biprodX_ext_to_iff, h₁, h₂]
+
+end
+
 variable {M : HomologicalComplex C c}
 
 @[reassoc (attr := simp)]

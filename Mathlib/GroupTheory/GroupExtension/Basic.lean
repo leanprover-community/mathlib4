@@ -3,11 +3,12 @@ Copyright (c) 2024 Yudai Yamazaki. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yudai Yamazaki
 -/
+module
 
-import Mathlib.GroupTheory.GroupExtension.Defs
-import Mathlib.GroupTheory.SemidirectProduct
-import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.Tactic.Group
+public import Mathlib.GroupTheory.GroupExtension.Defs
+public import Mathlib.GroupTheory.SemidirectProduct
+public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.Tactic.Group
 
 /-!
 # Basic lemmas about group extensions
@@ -16,6 +17,8 @@ This file gives basic lemmas about group extensions.
 
 For the main definitions, see `Mathlib/GroupTheory/GroupExtension/Defs.lean`.
 -/
+
+@[expose] public section
 
 variable {N G : Type*} [Group N] [Group G]
 
@@ -31,8 +34,7 @@ noncomputable def quotientKerRightHomEquivRight : E ⧸ S.rightHom.ker ≃* G :=
 /-- The isomorphism `E ⧸ S.inl.range ≃* G` induced by `S.rightHom` -/
 @[to_additive /-- The isomorphism `E ⧸ S.inl.range ≃+ G` induced by `S.rightHom` -/]
 noncomputable def quotientRangeInlEquivRight : E ⧸ S.inl.range ≃* G :=
-  (QuotientGroup.quotientMulEquivOfEq S.range_inl_eq_ker_rightHom).trans
-    S.quotientKerRightHomEquivRight
+  QuotientGroup.liftEquiv _ S.rightHom_surjective S.range_inl_eq_ker_rightHom
 
 /-- An arbitrarily chosen section -/
 @[to_additive surjInvRightHom /-- An arbitrarily chosen section -/]

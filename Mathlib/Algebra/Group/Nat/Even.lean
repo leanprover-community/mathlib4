@@ -3,13 +3,17 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.Nat.Sqrt
+module
+
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.Nat.Sqrt
 
 /-!
 # `IsSquare` and `Even` for natural numbers
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -41,13 +45,13 @@ lemma not_even_iff : ¬ Even n ↔ n % 2 = 1 := by grind
 
 @[parity_simps] lemma even_add_one : Even (n + 1) ↔ ¬Even n := by grind
 
-lemma succ_mod_two_eq_zero_iff : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by cutsat
+lemma succ_mod_two_eq_zero_iff : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by lia
 
-lemma succ_mod_two_eq_one_iff : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by cutsat
+lemma succ_mod_two_eq_one_iff : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by lia
 
-lemma two_not_dvd_two_mul_add_one (n : ℕ) : ¬2 ∣ 2 * n + 1 := by cutsat
+lemma two_not_dvd_two_mul_add_one (n : ℕ) : ¬2 ∣ 2 * n + 1 := by lia
 
-lemma two_not_dvd_two_mul_sub_one {n} : 0 < n → ¬2 ∣ 2 * n - 1 := by cutsat
+lemma two_not_dvd_two_mul_sub_one {n} : 0 < n → ¬2 ∣ 2 * n - 1 := by lia
 
 @[parity_simps] lemma even_sub (h : n ≤ m) : Even (m - n) ↔ (Even m ↔ Even n) := by grind
 

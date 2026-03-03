@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.SimpTheorems
-import Lean.Meta.Tactic.Simp.RegisterCommand
-import Lean.LabelAttribute
+module
+
+public import Mathlib.Init
+public meta import Lean.LabelAttribute -- TODO: `registerLabelAttr` should be marked `meta`
+public import Lean.LabelAttribute
+public import Lean.Meta.Tactic.Simp
 
 /-!
 # Attributes used in `Mathlib`
@@ -17,6 +19,8 @@ of them in one file for two reasons:
 - in Lean 4, one cannot use an attribute in the same file where it was declared;
 - this way it is easy to see which simp sets contain a given lemma.
 -/
+
+public meta section
 
 /-- Simp set for `functor_norm` -/
 register_simp_attr functor_norm
@@ -112,7 +116,7 @@ objects "remembers" how it was proved: Every use of a (commutative) monoid objec
 unitor, associator or commutator, and proving a tautology simply amounts to undoing those moves as
 prescribed by the presence of unitors, associators and commutators in its expression.
 
-This simp set is opiniated about its normal form, which is why it cannot be used concurrently with
+This simp set is opinionated about its normal form, which is why it cannot be used concurrently with
 some of the simp lemmas in the standard simp set:
 * It eliminates all mentions of whiskers by rewriting them to tensored homs,
   which goes against `whiskerLeft_id` and `id_whiskerRight`:

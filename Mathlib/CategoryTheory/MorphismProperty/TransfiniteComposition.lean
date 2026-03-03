@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.Order.Interval.Set.SuccOrder
-import Mathlib.Order.Shrink
+module
+
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.TransfiniteCompositionOfShape
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.Order.Interval.Set.SuccOrder
+public import Mathlib.Order.Shrink
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
@@ -26,6 +28,8 @@ which says that `W.IsStableUnderTransfiniteCompositionOfShape J`
 holds for any well-ordered type `J` in a certain universe `w`.
 
 -/
+
+@[expose] public section
 
 universe w w' v v' u u'
 
@@ -259,6 +263,7 @@ lemma mem_map_bot_le {j : J} (g : ⊥ ⟶ j) : W (hf.F.map g) := by
     exact MorphismProperty.colimitsOfShape_le _
       (.of_isColimit (hf.F.isColimitOfIsWellOrderContinuous j hj) (fun k ↦ hj' _ k.2))
 
+set_option backward.isDefEq.respectTransparency false in
 include hf hJ in
 lemma mem [W.RespectsIso] : W f :=
   (MorphismProperty.arrow_mk_iso_iff _ (Arrow.isoMk hf.isoBot.symm (Iso.refl _))).2

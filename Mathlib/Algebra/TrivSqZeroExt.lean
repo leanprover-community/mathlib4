@@ -3,10 +3,13 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Trivial Square-Zero Extension
@@ -50,6 +53,8 @@ Many of the later results in this file are only stated for the commutative `R'` 
   which the product of any two elements in the range is zero.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -855,7 +860,6 @@ variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 
 instance algebra' : Algebra S (tsze R M) where
   algebraMap := (TrivSqZeroExt.inlHom R M).comp (algebraMap S R)
-  smul := (· • ·)
   commutes' := fun s x =>
     ext (Algebra.commutes _ _) <|
       show algebraMap S R s •> x.snd + (0 : M) <• x.fst
@@ -891,6 +895,18 @@ def fstHom : tsze R M →ₐ[S] R where
   map_add' := fst_add
   commutes' _r := fst_inl M _
 
+/-- `R'` as an algebra over `TrivSqZeroExt R' M`. Not an instance since it creates a different
+`Algebra (TrivSqZeroExt R' M) (TrivSqZeroExt R' M)` instance from `TrivSqZeroExt.algebra'`. -/
+abbrev algebraBase : Algebra (tsze R' M) R' where
+  algebraMap := (fstHom R' R' M).toRingHom
+  smul x r := x.fst * r
+  commutes' _ _ := mul_comm ..
+  smul_def' _ _ := rfl
+
+attribute [local instance] algebraBase in
+instance : IsScalarTower R' (tsze R' M) R' where
+  smul_assoc _ _ _ := mul_assoc ..
+
 /-- The canonical `S`-algebra inclusion `R → TrivSqZeroExt R M`. -/
 @[simps]
 def inlAlgHom : R →ₐ[S] tsze R M where
@@ -918,6 +934,7 @@ theorem algHom_ext' {A} [Semiring A] [Algebra S A] ⦃f g : tsze R M →ₐ[S] A
 
 variable {A : Type*} [Semiring A] [Algebra S A] [Algebra R' A]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Assemble an algebra morphism `TrivSqZeroExt R M →ₐ[S] A` from separate morphisms on `R` and `M`.
 
@@ -944,7 +961,7 @@ def lift (f : R →ₐ[S] A) (g : M →ₗ[S] A)
       TrivSqZeroExt.ind fun r₂ m₂ => by
         dsimp
         simp only [add_zero, zero_add, add_mul, mul_add, hg]
-        rw [← map_mul, LinearMap.map_add, add_comm (g _), add_assoc, hfg, hgf])
+        rw [← map_mul, map_add, add_comm (g _), add_assoc, hfg, hgf])
 
 theorem lift_def (f : R →ₐ[S] A) (g : M →ₗ[S] A)
     (hg : ∀ x y, g x * g y = 0)
@@ -1066,14 +1083,17 @@ def map (f : M →ₗ[R'] N) : TrivSqZeroExt R' M →ₐ[R'] TrivSqZeroExt R' N 
 theorem map_inl (f : M →ₗ[R'] N) (r : R') : map f (inl r) = inl r := by
   rw [map, liftEquivOfComm_apply, lift_apply_inl, Algebra.ofId_apply, algebraMap_eq_inl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_inr (f : M →ₗ[R'] N) (x : M) : map f (inr x) = inr (f x) := by
   rw [map, liftEquivOfComm_apply, lift_apply_inr, LinearMap.comp_apply, inrHom_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem fst_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : fst (map f x) = fst x := by
   simp [map, lift_def, Algebra.ofId_apply, algebraMap_eq_inl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem snd_map (f : M →ₗ[R'] N) (x : TrivSqZeroExt R' M) : snd (map f x) = f (snd x) := by
   simp [map, lift_def, Algebra.ofId_apply, algebraMap_eq_inl]

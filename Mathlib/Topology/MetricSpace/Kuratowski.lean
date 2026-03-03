@@ -3,8 +3,10 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Lp.lpSpace
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.Analysis.Normed.Lp.lpSpace
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # The Kuratowski embedding
@@ -13,6 +15,8 @@ Any separable metric space can be embedded isometrically in `ℓ^∞(ℕ, ℝ)`.
 Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole space.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -43,9 +47,11 @@ def embeddingOfSubset : ℓ^∞(ℕ) :=
 theorem embeddingOfSubset_coe : embeddingOfSubset x a n = dist a (x n) - dist (x 0) (x n) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The embedding map is always a semi-contraction. -/
 theorem embeddingOfSubset_dist_le (a b : α) :
     dist (embeddingOfSubset x a) (embeddingOfSubset x b) ≤ dist a b := by
+  rw [dist_eq_norm]
   refine lp.norm_le_of_forall_le dist_nonneg fun n => ?_
   simp only [lp.coeFn_sub, Pi.sub_apply, embeddingOfSubset_coe]
   convert abs_dist_sub_le a b (x n) using 2

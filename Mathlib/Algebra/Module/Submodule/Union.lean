@@ -3,10 +3,15 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.SetTheory.Cardinal.Finite
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
+
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Unions of `Submodule`s
@@ -18,6 +23,8 @@ This file is a home for results about unions of submodules.
 a proper subset, provided the coefficients are a sufficiently large field.
 
 -/
+
+public section
 
 open Function Set
 
@@ -33,7 +40,7 @@ lemma Submodule.iUnion_ssubset_of_forall_ne_top_of_card_lt (s : Finset ι) (p : 
   | insert j s hj hj' =>
     simp only [ssubset_univ_iff] at hj' ⊢
     rcases s.eq_empty_or_nonempty with rfl | hs
-    · simpa [← SetLike.coe_ne_coe] using h₁ j
+    · simpa using h₁ j
     replace h₂ : s.card + 1 < ENat.card K := by simpa [Finset.card_insert_of_notMem hj] using h₂
     specialize hj' (lt_trans ENat.natCast_lt_succ h₂)
     contrapose! hj'
@@ -103,3 +110,10 @@ lemma Module.Dual.exists_forall_mem_ne_zero_of_forall_exists (p : Submodule K M)
   replace h (i : ι) : ∃ x : p, f' i x ≠ 0 := by obtain ⟨x, hxp, hx₀⟩ := h i; exact ⟨⟨x, hxp⟩, hx₀⟩
   obtain ⟨⟨x, hxp⟩, hx₀⟩ := exists_forall_ne_zero_of_forall_exists f' h
   exact ⟨x, hxp, hx₀⟩
+
+lemma Module.exists_dual_forall_apply_ne_zero (v : ι → M) (hv : ∀ i, v i ≠ 0) :
+    ∃ f : Dual K M, ∀ i, f (v i) ≠ 0 := by
+  refine Dual.exists_forall_ne_zero_of_forall_exists (fun i ↦ Dual.eval K M (v i)) fun i ↦ ?_
+  by_contra! contra
+  simp_rw [Dual.eval_apply, forall_dual_apply_eq_zero_iff] at contra
+  exact hv i contra

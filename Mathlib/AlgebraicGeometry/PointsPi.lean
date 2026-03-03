@@ -3,16 +3,20 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Immersion
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
 
 # `Π Rᵢ`-Points of Schemes
 
 We show that the canonical map `X(Π Rᵢ) ⟶ Π X(Rᵢ)` (`AlgebraicGeometry.pointsPi`)
-is injective and surjective under various assumptions
+is injective and surjective under various assumptions.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits PrimeSpectrum
 
@@ -34,6 +38,7 @@ lemma Ideal.span_eq_top_of_span_image_evalRingHom
   ext i
   simpa [Finsupp.sum_fintype] using hf i
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_of_sigmaSpec_subset_of_isCompact
     (U : (Spec <| .of <| Π i, R i).Opens) (V : Set (Spec <| .of <| Π i, R i))
     (hV : ↑(sigmaSpec R).opensRange ⊆ V)
@@ -75,8 +80,8 @@ lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
     (hU' : f ≫ g = sigmaSpec R) : IsIso g := by
   have : g.coborderRange = ⊤ := by
     apply eq_top_of_sigmaSpec_subset_of_isCompact (hVU := subset_coborder)
-    · simpa only [← hU'] using Set.range_comp_subset_range f.base g.base
-    · exact isCompact_range g.base.hom.2
+    · simpa only [← hU'] using Set.range_comp_subset_range f g
+    · exact isCompact_range g.continuous
   have : IsClosedImmersion g := by
     have : IsIso g.coborderRange.ι := by rw [this, ← Scheme.topIso_hom]; infer_instance
     rw [← g.liftCoborder_ι]
@@ -95,6 +100,7 @@ noncomputable
 def pointsPi : (Spec (.of <| Π i, R i) ⟶ X) → Π i, Spec (R i) ⟶ X :=
   fun f i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i)) ≫ f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi R X) := by
   rintro f g e
   have := isIso_of_comp_eq_sigmaSpec R (V := equalizer f g)
@@ -114,10 +120,10 @@ lemma pointsPi_surjective [CompactSpace X] [∀ i, IsLocalRing (R i)] :
     Function.Surjective (pointsPi R X) := by
   intro f
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
-  have (i : _) : ∃ j, Set.range (f i).base ⊆ (𝒰.f j).opensRange := by
-    refine ⟨𝒰.idx ((f i).base (IsLocalRing.closedPoint (R i))), ?_⟩
+  have (i : _) : ∃ j, Set.range (f i) ⊆ (𝒰.f j).opensRange := by
+    refine ⟨𝒰.idx ((f i) (IsLocalRing.closedPoint (R i))), ?_⟩
     rintro _ ⟨x, rfl⟩
-    exact ((IsLocalRing.specializes_closedPoint x).map (f i).base.hom.2).mem_open
+    exact ((IsLocalRing.specializes_closedPoint x).map (f i).continuous).mem_open
       (𝒰.f _).opensRange.2 (𝒰.covers _)
   choose j hj using this
   have (j₀ : _) := pointsPi_surjective_of_isAffine (ι := { i // j i = j₀ }) (R ·) (𝒰.X j₀)

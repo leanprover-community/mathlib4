@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Basic
+module
+
+public import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
 # Principles of Isolated Zeros and Identity Principles for Meromorphic Functions
@@ -16,6 +18,8 @@ Compared to the results for analytic functions, the principles established here 
 complicated to state. This is because meromorphic functions can be modified at will along discrete
 subsets and still remain meromorphic.
 -/
+
+public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]

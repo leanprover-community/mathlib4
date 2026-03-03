@@ -3,13 +3,16 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.RingTheory.Bezout
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.RingTheory.Bezout
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.Valuation.Integers
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.Ring.Hom.InjSurj
 
 /-!
 # Valuation Rings
@@ -41,6 +44,8 @@ is defined in further generality that can be used in places where the ring canno
 The `ValuationRing` class is kept to be in sync with the literature.
 
 -/
+
+@[expose] public section
 
 assert_not_exists IsDiscreteValuationRing
 
@@ -133,12 +138,12 @@ protected theorem le_total (a b : ValueGroup A K) : a ≤ b ∨ b ≤ a := by
     use c
     rw [Algebra.smul_def]
     field_simp
-    simp only [← RingHom.map_mul]; congr 1; linear_combination h
+    simp only [← map_mul]; congr 1; linear_combination h
   · left
     use c
     rw [Algebra.smul_def]
     field_simp
-    simp only [← RingHom.map_mul]; congr 1; linear_combination h
+    simp only [← map_mul]; congr 1; linear_combination h
 
 noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_refl := by rintro ⟨⟩; use 1; rw [one_smul]
@@ -175,19 +180,23 @@ instance commGroupWithZero :
       simp only [one_smul]
       apply (mul_inv_cancel₀ _).symm
       contrapose ha
-      simp only [Classical.not_not] at ha ⊢
       rw [ha]
       rfl }
 
 noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
-  { linearOrder .., commGroupWithZero .. with
-    mul_le_mul_left := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
-      use c; simp only [Algebra.smul_def]; ring
-    zero_le_one := ⟨0, by rw [zero_smul]⟩
-    bot := 0
-    bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩ }
+    LinearOrderedCommGroupWithZero (ValueGroup A K) where
+  bot := 0
+  bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
+  zero_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
+  mul_lt_mul_of_pos_left := by
+    simp_rw [← not_le]
+    rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ hbc
+    contrapose! hbc
+    obtain ⟨d, hd⟩ := hbc
+    simp only [Algebra.smul_def, mul_left_comm, mul_eq_mul_left_iff] at hd
+    obtain rfl | rfl := hd
+    · exact ⟨d, by simp [Algebra.smul_def]⟩
+    · cases ha le_rfl
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 noncomputable def valuation : Valuation K (ValueGroup A K) where
@@ -206,13 +215,13 @@ noncomputable def valuation : Valuation K (ValueGroup A K) where
       use c + 1
       rw [Algebra.smul_def]
       field_simp
-      simp only [← RingHom.map_mul, ← RingHom.map_add]
+      simp only [← map_mul, ← map_add]
       congr 1; linear_combination h
     · apply le_trans _ (le_max_right _ _)
       use c + 1
       rw [Algebra.smul_def]
       field_simp
-      simp only [← RingHom.map_mul, ← RingHom.map_add]
+      simp only [← map_mul, ← map_add]
       congr 1; linear_combination h
 
 theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, algebraMap A K a = x := by
@@ -255,22 +264,19 @@ section
 variable (A : Type u) [CommRing A] [Nontrivial A] [PreValuationRing A]
 
 instance (priority := 100) isLocalRing : IsLocalRing A :=
-  IsLocalRing.of_isUnit_or_isUnit_one_sub_self
-    (by
-      intro a
-      obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
-      · left
-        apply isUnit_of_mul_eq_one _ (c + 1)
-        simp [mul_add, h]
-      · right
-        apply isUnit_of_mul_eq_one _ (c + 1)
-        simp [mul_add, h])
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a ↦ by
+    obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
+    · left
+      refine .of_mul_eq_one (c + 1) ?_
+      simp [mul_add, h]
+    · right
+      refine .of_mul_eq_one (c + 1) ?_
+      simp [mul_add, h]
 
-instance le_total_ideal : IsTotal (Ideal A) LE.le := by
+instance le_total_ideal : @Std.Total (Ideal A) (· ≤ ·) := by
   constructor; intro α β
-  by_cases h : α ≤ β; · exact Or.inl h
-  rw [SetLike.le_def, not_forall] at h
-  push_neg at h
+  by_cases! h : ∀ x : A, x ∈ α → x ∈ β
+  · exact Or.inl h
   obtain ⟨a, h₁, h₂⟩ := h
   right
   intro b hb
@@ -280,9 +286,12 @@ instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
-  have := decidableEqOfDecidableLE (α := Ideal A)
-  have := decidableLTOfDecidableLE (α := Ideal A)
+open Classical in
+/- Todo: get rid of the `DecidableLE` argument.
+Currently, this argument causes this instance to not be called often,
+which hides a loop in simp-lemmas. See
+https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/conflicting.20simp-normal.20form.3A.20bot.20vs.200/with/566807522 -/
+noncomputable instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
   Lattice.toLinearOrder (Ideal A)
 
 end
@@ -294,35 +303,35 @@ section dvd
 variable {R : Type*}
 
 theorem _root_.PreValuationRing.iff_dvd_total [Semigroup R] :
-    PreValuationRing R ↔ IsTotal R (· ∣ ·) := by
+    PreValuationRing R ↔ @Std.Total R (· ∣ ·) := by
   classical
   refine ⟨fun H => ⟨fun a b => ?_⟩, fun H => ⟨fun a b => ?_⟩⟩
   · obtain ⟨c, rfl | rfl⟩ := PreValuationRing.cond a b <;> simp
-  · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := @IsTotal.total _ _ H a b <;> use c <;> simp
+  · obtain ⟨c, rfl⟩ | ⟨c, rfl⟩ := H.total a b <;> use c <;> simp
 
 theorem _root_.PreValuationRing.iff_ideal_total [CommRing R] :
-    PreValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) := by
+    PreValuationRing R ↔ @Std.Total (Ideal R) (· ≤ ·) := by
   classical
   refine ⟨fun _ => ⟨le_total⟩, fun H => PreValuationRing.iff_dvd_total.mpr ⟨fun a b => ?_⟩⟩
-  have := @IsTotal.total _ _ H (Ideal.span {a}) (Ideal.span {b})
+  have := H.total (Ideal.span {a}) (Ideal.span {b})
   simp_rw [Ideal.span_singleton_le_span_singleton] at this
   exact this.symm
 
 variable (K)
 
 theorem dvd_total [Semigroup R] [h : PreValuationRing R] (x y : R) : x ∣ y ∨ y ∣ x :=
-  @IsTotal.total _ _ (PreValuationRing.iff_dvd_total.mp h) x y
+  (PreValuationRing.iff_dvd_total.mp h).total x y
 
 end dvd
 
 variable {R : Type*} [CommRing R] [IsDomain R] (K : Type*)
 variable [Field K] [Algebra R K] [IsFractionRing R K]
 
-theorem iff_dvd_total : ValuationRing R ↔ IsTotal R (· ∣ ·) :=
+theorem iff_dvd_total : ValuationRing R ↔ @Std.Total R (· ∣ ·) :=
   Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
     PreValuationRing.iff_dvd_total
 
-theorem iff_ideal_total : ValuationRing R ↔ IsTotal (Ideal R) (· ≤ ·) :=
+theorem iff_ideal_total : ValuationRing R ↔ @Std.Total (Ideal R) (· ≤ ·) :=
   Iff.trans (⟨fun inst ↦ inst.toPreValuationRing, fun _ ↦ .mk⟩)
     PreValuationRing.iff_ideal_total
 
@@ -400,7 +409,7 @@ protected theorem TFAE (R : Type u) [CommRing R] [IsDomain R] :
     List.TFAE
       [ValuationRing R,
         ∀ x : FractionRing R, IsLocalization.IsInteger R x ∨ IsLocalization.IsInteger R x⁻¹,
-        IsTotal R (· ∣ ·), IsTotal (Ideal R) (· ≤ ·), IsLocalRing R ∧ IsBezout R] := by
+        @Std.Total R (· ∣ ·), @Std.Total (Ideal R) (· ≤ ·), IsLocalRing R ∧ IsBezout R] := by
   tfae_have 1 ↔ 2 := iff_isInteger_or_isInteger R _
   tfae_have 1 ↔ 3 := iff_dvd_total
   tfae_have 1 ↔ 4 := iff_ideal_total
@@ -433,20 +442,18 @@ lemma _root_.isFractionRing_of_exists_eq_algebraMap_or_inv_eq_algebraMap_of_inje
     (hinj : Function.Injective (algebraMap 𝒪 K)) :
     IsFractionRing 𝒪 K := by
   have : IsDomain 𝒪 := hinj.isDomain
-  constructor
-  · intro a
-    simpa using hinj.ne_iff.mpr (nonZeroDivisors.ne_zero a.2)
-  · intro x
-    obtain ⟨a, ha⟩ := h x
-    by_cases h0 : a = 0
-    · refine ⟨⟨0, 1⟩, by simpa [h0, eq_comm] using ha⟩
-    · have : algebraMap 𝒪 K a ≠ 0 := by simpa using hinj.ne_iff.mpr h0
-      rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
-      cases ha with
-      | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
-      | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
-  · intro _ _ hab
-    exact ⟨1, by simp only [OneMemClass.coe_one, hinj hab, one_mul]⟩
+  have := (faithfulSMul_iff_algebraMap_injective ..).2 hinj
+  have := IsDomain.of_faithfulSMul 𝒪 K
+  refine ⟨by simp, ?_, fun hab ↦ ⟨1, by simpa using hab⟩⟩
+  intro x
+  obtain ⟨a, ha⟩ := h x
+  by_cases h0 : a = 0
+  · refine ⟨⟨0, 1⟩, by simpa [h0, eq_comm] using ha⟩
+  · have : algebraMap 𝒪 K a ≠ 0 := by simpa using h0
+    rw [inv_eq_iff_eq_inv, ← one_div, eq_div_iff this] at ha
+    cases ha with
+    | inl ha => exact ⟨⟨a, 1⟩, by simpa⟩
+    | inr ha => exact ⟨⟨1, ⟨a, mem_nonZeroDivisors_of_ne_zero h0⟩⟩, by simpa using ha⟩
 
 lemma _root_.Valuation.Integers.isFractionRing {v : Valuation K Γ} (hv : v.Integers 𝒪) :
     IsFractionRing 𝒪 K :=

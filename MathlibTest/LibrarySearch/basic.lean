@@ -22,21 +22,21 @@ noncomputable section
 
 /--
 info: Try this:
-  exact Nat.lt_add_one x
+  [apply] exact Nat.lt_add_one x
 -/
 #guard_msgs in
 example (x : Nat) : x ≠ x.succ := ne_of_lt (by apply?)
 
 /--
 info: Try this:
-  exact Nat.zero_lt_succ 1
+  [apply] exact Nat.zero_lt_succ 1
 -/
 #guard_msgs in
 example : 0 ≠ 1 + 1 := ne_of_lt (by apply?)
 
 /--
 info: Try this:
-  exact Nat.add_comm x y
+  [apply] exact Nat.add_comm x y
 -/
 #guard_msgs in
 example (x y : Nat) : x + y = y + x := by apply?
@@ -55,33 +55,43 @@ example : Int := by apply?
 
 /--
 info: Try this:
-  lt_add_one x
+  [apply] lt_add_one x
 -/
 #guard_msgs in
 example : x < x + 1 := exact?%
 
+-- Note, for the next four examples, `apply?` no longer calls `solve_by_elim` as an initial step.
+-- So we use `try?` instead.
 /--
-info: Try this:
-  exact p
+info: Try these:
+  [apply] assumption
+  [apply] simp [*]
+  [apply] simp only [p]
+  [apply] grind
+  [apply] grind only
+  [apply] simp_all
 -/
 #guard_msgs in
-example (P : Prop) (p : P) : P := by apply?
+example (P : Prop) (p : P) : P := by try?
 /--
-info: Try this:
-  exact False.elim (np p)
+info: Try these:
+  [apply] solve_by_elim
+  [apply] grind
+  [apply] grind only
+  [apply] simp_all
 -/
 #guard_msgs in
-example (P : Prop) (p : P) (np : ¬P) : false := by apply?
+example (P : Prop) (p : P) (np : ¬P) : false := by try?
 /--
 info: Try this:
-  exact h x rfl
+  [apply] solve_by_elim
 -/
 #guard_msgs in
-example (X : Type) (P : Prop) (x : X) (h : ∀ x : X, x = x → P) : P := by apply?
+example (X : Type) (P : Prop) (x : X) (h : ∀ x : X, x = x → P) : P := by try?
 
 -- Could be any number of results (`fun x ↦ x`, `id`, etc)
 #guard_msgs (drop info) in
-example (α : Prop) : α → α := by apply?
+example (α : Prop) : α → α := by try?
 
 -- Note: these examples no longer work after we turned off lemmas with discrimination key `#[*]`.
 -- example (p : Prop) : (¬¬p) → p := by apply? -- says: `exact not_not.mp`
@@ -90,7 +100,7 @@ example (α : Prop) : α → α := by apply?
 
 /--
 info: Try this:
-  exact Nat.add_comm a b
+  [apply] exact Nat.add_comm a b
 -/
 #guard_msgs in
 example (a b : ℕ) : a + b = b + a := by
@@ -98,7 +108,7 @@ example (a b : ℕ) : a + b = b + a := by
 
 /--
 info: Try this:
-  exact Nat.mul_sub_left_distrib n m k
+  [apply] exact Nat.mul_sub_left_distrib n m k
 -/
 #guard_msgs in
 example (n m k : ℕ) : n * (m - k) = n * m - n * k := by
@@ -106,7 +116,7 @@ example (n m k : ℕ) : n * (m - k) = n * m - n * k := by
 
 /--
 info: Try this:
-  exact Eq.symm (Nat.mul_sub_left_distrib n m k)
+  [apply] exact Eq.symm (Nat.mul_sub_left_distrib n m k)
 -/
 #guard_msgs in
 example (n m k : ℕ) : n * m - n * k = n * (m - k) := by
@@ -134,7 +144,7 @@ example (a b : ℕ) (_ha : a > 0) (_hb : 0 < b) : 0 < a + b := by apply?
 
 /--
 info: Try this:
-  exact Nat.le_of_dvd w h
+  [apply] exact Nat.le_of_dvd w h
 -/
 #guard_msgs in
 example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b := by
@@ -142,7 +152,7 @@ example (a b : ℕ) (h : a ∣ b) (w : b > 0) : a ≤ b := by
 
 /--
 info: Try this:
-  exact Nat.le_of_dvd w h
+  [apply] exact Nat.le_of_dvd w h
 -/
 #guard_msgs in
 example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by apply?
@@ -150,13 +160,13 @@ example (a b : ℕ) (h : a ∣ b) (w : b > 0) : b ≥ a := by apply?
 -- TODO: A lemma with head symbol `¬` can be used to prove `¬ p` or `⊥`
 /--
 info: Try this:
-  exact Nat.not_lt_zero a
+  [apply] exact Nat.not_lt_zero a
 -/
 #guard_msgs in
 example (a : ℕ) : ¬ (a < 0) := by apply?
 /--
 info: Try this:
-  exact Nat.not_succ_le_zero a h
+  [apply] exact Nat.not_succ_le_zero a h
 -/
 #guard_msgs in
 example (a : ℕ) (h : a < 0) : False := by apply?
@@ -175,20 +185,20 @@ theorem lemma_with_false_in_head (a b : ℕ) (_h1 : a < b) (h2 : P a) : False :=
 
 /--
 info: Try this:
-  exact lemma_with_gt_in_head a h
+  [apply] exact lemma_with_gt_in_head a h
 -/
 #guard_msgs in
 example (a : ℕ) (h : P a) : 0 > a := by apply?
 /--
 info: Try this:
-  exact lemma_with_gt_in_head a h
+  [apply] exact lemma_with_gt_in_head a h
 -/
 #guard_msgs in
 example (a : ℕ) (h : P a) : a < 0 := by apply?
 
 /--
 info: Try this:
-  exact lemma_with_false_in_head a b h1 h2
+  [apply] exact lemma_with_false_in_head a b h1 h2
 -/
 #guard_msgs in
 example (a b : ℕ) (h1 : a < b) (h2 : P a) : False := by apply?
@@ -201,7 +211,7 @@ end synonym
 
 /--
 info: Try this:
-  exact fun P ↦ iff_not_self
+  [apply] exact fun P ↦ iff_not_self
 -/
 #guard_msgs in
 example : ∀ P : Prop, ¬(P ↔ ¬P) := by apply?
@@ -221,14 +231,14 @@ axiom F (a b : ℕ) : f a ≤ f b ↔ a ≤ b
 
 /--
 info: Try this:
-  exact (F a b).mpr h
+  [apply] exact (F a b).mpr h
 -/
 #guard_msgs in
 example (a b : ℕ) (h : a ≤ b) : f a ≤ f b := by apply?
 
 /--
 info: Try this:
-  exact L.flatten
+  [apply] exact L.flatten
 -/
 #guard_msgs in
 example (L _M : List (List ℕ)) : List ℕ := by apply? using L
@@ -258,7 +268,7 @@ theorem Bool_eq_iff {A B : Bool} : (A = B) = (A ↔ B) := by
 
 /--
 info: Try this:
-  exact Bool_eq_iff
+  [apply] exact Bool_eq_iff
 -/
 #guard_msgs in
 theorem Bool_eq_iff2 {A B : Bool} : (A = B) = (A ↔ B) := by
@@ -269,7 +279,7 @@ assert_no_sorry Bool_eq_iff2
 -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/library_search.20regression/near/354025788
 /--
 info: Try this:
-  exact Quot.mk_surjective
+  [apply] exact Quot.mk_surjective
 -/
 #guard_msgs in
 example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
@@ -277,7 +287,7 @@ example {r : α → α → Prop} : Function.Surjective (Quot.mk r) := by exact?
 -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/library_search.20failing.20to.20apply.20symm
 /--
 info: Try this:
-  exact Iff.symm Nat.prime_iff
+  [apply] exact Iff.symm Nat.prime_iff
 -/
 #guard_msgs in
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
@@ -285,7 +295,7 @@ lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/apply.3F.20failure/near/402534407
 example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
-  exact? says exact fun a ↦ h' (h a)
+  exact? says exact Not.imp h' h
 
 -- Removed until we come up with a way of handling nonspecific lemmas
 -- that does not pollute the output or cause too much slow-down.
@@ -302,7 +312,7 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60exact.3F.60.20failure.3A.20.22maximum.20recursion.20depth.20has.20been.20reached.22/near/417649319
 /--
 info: Try this:
-  exact Nat.add_comm n m
+  [apply] exact Nat.add_comm n m
 -/
 #guard_msgs in
 example (_h : List.range 10000 = List.range 10000) (n m : Nat) : n + m = m + n := by

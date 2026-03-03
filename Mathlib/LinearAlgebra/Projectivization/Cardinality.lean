@@ -3,11 +3,13 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.LinearAlgebra.Projectivization.Basic
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 # Cardinality of projective spaces
@@ -15,6 +17,8 @@ import Mathlib.LinearAlgebra.Projectivization.Basic
 We compute the cardinality of `ℙ k V` if `k` is a finite field.
 
 -/
+
+@[expose] public section
 
 namespace Projectivization
 
@@ -28,6 +32,7 @@ variable (k V : Type*) [DivisionRing k] [AddCommGroup V] [Module k V]
 def equivQuotientOrbitRel : ℙ k V ≃ Quotient (MulAction.orbitRel kˣ { v : V // v ≠ 0 }) :=
   Quotient.congr (Equiv.refl _) (fun x y ↦ (Units.orbitRel_nonZero_iff k V x y).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The non-zero elements of `V` are equivalent to the product of `ℙ k V` with the units of `k`. -/
 noncomputable def nonZeroEquivProjectivizationProdUnits : { v : V // v ≠ 0 } ≃ ℙ k V × kˣ :=
   let e := MulAction.selfEquivOrbitsQuotientProd <| fun b ↦ by
@@ -84,7 +89,7 @@ natural subtraction. -/
 lemma card' [Finite V] : Nat.card V = Nat.card (ℙ k V) * (Nat.card k - 1) + 1 := by
   rw [← card k V]
   have : Nat.card V > 0 := Nat.card_pos
-  cutsat
+  lia
 
 end
 
@@ -95,7 +100,7 @@ as a fraction. -/
 lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 1) := by
   have : 1 < Nat.card k := Finite.one_lt_card
   rw [card k, Nat.mul_div_cancel]
-  cutsat
+  lia
 
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
@@ -110,7 +115,7 @@ lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
       simpa using Module.finite_of_finite k
     simp [this]
   have : 1 < Nat.card k := Finite.one_lt_card
-  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by cutsat) ?_
+  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by lia) ?_
   let e : V ≃ₗ[k] (Fin n → k) := LinearEquiv.ofFinrankEq _ _ (by simpa)
   have hc : Nat.card V = Nat.card k ^ n := by simp [Nat.card_congr e.toEquiv, Nat.card_fun]
   zify

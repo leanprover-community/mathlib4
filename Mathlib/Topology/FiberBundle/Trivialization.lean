@@ -3,11 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Bundle
-import Mathlib.Data.Set.Image
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.OpenPartialHomeomorph
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Data.Bundle
+public import Mathlib.Data.Set.Image
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.OpenPartialHomeomorph.Constructions
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Trivializations
@@ -16,17 +18,17 @@ import Mathlib.Topology.Order.Basic
 
 ### Basic definitions
 
-* `Trivialization F p` : structure extending open partial homeomorphisms, defining a local
+* `Bundle.Trivialization F p` : structure extending open partial homeomorphisms, defining a local
   trivialization of a topological space `Z` with projection `p` and fiber `F`.
 
-* `Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
+* `Bundle.Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
   topology on the total space has not yet been defined.
 
 ### Operations on bundles
 
 We provide the following operations on `Trivialization`s.
 
-* `Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
+* `Bundle.Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
   `p : Z → B` and a homeomorphism `h : Z' ≃ₜ Z`, returns a local trivialization of the fiber bundle
   `p ∘ h`.
 
@@ -34,8 +36,8 @@ We provide the following operations on `Trivialization`s.
 
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fiber_bundle.trivialization` by a linearity hypothesis. As
-of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single structure
-`Trivialization` (no namespace), together with a mixin class `Trivialization.IsLinear`.
+of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single
+structure `Bundle.Trivialization`, together with a mixin class `Bundle.Trivialization.IsLinear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fiber bundles, so that the
 same trivializations can underlie an object's structure as (say) a vector bundle over `ℂ` and as a
@@ -48,6 +50,8 @@ Indeed, since trivializations only have meaning on their base sets (taking junk 
 type of linear trivializations is not even particularly well-behaved.
 -/
 
+@[expose] public section
+
 open TopologicalSpace Filter Set Bundle Function
 open scoped Topology
 
@@ -59,15 +63,17 @@ below as `Trivialization F proj`) if the total space has not been given a topolo
 have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
 `Pretrivialization F proj` to a `Trivialization F proj`. -/
-structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
+structure Bundle.Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
   open_target : IsOpen target
+  /-- The domain of the local trivialisation (i.e., a subset of the bundle `Z`'s base):
+  outside of it, the pretrivialisation returns a junk value -/
   baseSet : Set B
   open_baseSet : IsOpen baseSet
   source_eq : source = proj ⁻¹' baseSet
   target_eq : target = baseSet ×ˢ univ
   proj_toFun : ∀ p ∈ source, (toFun p).1 = proj p
 
-namespace Pretrivialization
+namespace Bundle.Pretrivialization
 
 variable {F}
 variable (e : Pretrivialization F proj) {x : Z}
@@ -85,7 +91,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 
--- TODO: move `ext` here?
+-- TODO: tag this lemma with the `ext` attribute instead?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -116,9 +122,11 @@ theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
 
 protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _ hx => e.coe_fst hx
 
+@[simp]
 theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst ex).symm rfl
 
+@[simp]
 theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst' ex).symm rfl
 
@@ -142,17 +150,19 @@ theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   ⟨e.toPartialEquiv.symm (b, y), e.toPartialEquiv.map_target <| e.mem_target.2 hb,
     e.proj_symm_apply' hb⟩
 
+@[simp, mfld_simps]
 theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toPartialEquiv.symm x) = x :=
   e.toPartialEquiv.right_inv hx
 
+@[simp, mfld_simps]
 theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toPartialEquiv.symm (b, x)) = (b, x) :=
   e.apply_symm_apply (e.mem_target.2 hx)
 
+@[simp, mfld_simps]
 theorem symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toPartialEquiv.symm (e x) = x :=
   e.toPartialEquiv.left_inv hx
 
-@[simp, mfld_simps]
 theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
     e.toPartialEquiv.symm (proj x, (e x).2) = x := by
   rw [← e.coe_fst ex, ← e.coe_coe, e.left_inv ex]
@@ -208,6 +218,7 @@ theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b := by
 theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSet :=
   e'.mem_target
 
+@[simp, mfld_simps]
 theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x ∈ e'.baseSet) :
     (e'.toPartialEquiv.symm (x, y)).1 = x :=
   e'.proj_symm_apply' h
@@ -232,31 +243,118 @@ theorem symm_apply_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b 
     (y : F) : e.symm b y = 0 :=
   dif_neg hb
 
-@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
-
 theorem coe_symm_of_notMem (e : Pretrivialization F (π F E)) {b : B} (hb : b ∉ e.baseSet) :
     (e.symm b : F → E b) = 0 :=
   funext fun _ => dif_neg hb
-
-@[deprecated (since := "2025-05-23")] alias coe_symm_of_not_mem := coe_symm_of_notMem
 
 theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toPartialEquiv.symm (b, y) := by
   simp only [e.symm_apply hb, TotalSpace.mk_cast (e.proj_symm_apply' hb), TotalSpace.eta]
 
+@[simp, mfld_simps]
 theorem symm_proj_apply (e : Pretrivialization F (π F E)) (z : TotalSpace F E)
     (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 := by
   rw [e.symm_apply hz, cast_eq_iff_heq, e.mk_proj_snd' hz, e.symm_apply_apply (e.mem_source.mpr hz)]
 
+@[simp, mfld_simps]
 theorem symm_apply_apply_mk (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet)
     (y : E b) : e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
 
+@[simp, mfld_simps]
 theorem apply_mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e ⟨b, e.symm b y⟩ = (b, y) := by
   rw [e.mk_symm hb, e.apply_symm_apply (e.mk_mem_target.mpr hb)]
 
 end Zero
+
+/-- The restriction of a pretrivialization to a subset of the base. -/
+@[simps toFun source target baseSet]
+noncomputable def restrictPreimage' (e : Pretrivialization F proj) (s : Set B)
+    [Nonempty (s → F → proj ⁻¹' s)] : Pretrivialization F (s.restrictPreimage proj) where
+  toFun z := (⟨proj z, z.2⟩, (e z).2)
+  invFun x := by classical exact if h : (x.1.1, x.2) ∈ e.target then ⟨e.invFun (x.1, x.2), by
+      simpa only [mem_preimage, ← e.proj_toFun _ (e.map_target' h), e.right_inv' h] using x.1.2⟩
+    else Classical.arbitrary (s → F → _) x.1 x.2
+  source := Subtype.val ⁻¹' e.source
+  target := (Prod.map Subtype.val id) ⁻¹' e.target
+  map_source' z hz := by
+    simpa only [Prod.map_apply, ← e.proj_toFun _ hz] using e.map_source' hz
+  map_target' x hx := by
+    simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
+    rw [dif_pos hx]; exact e.map_target' hx
+  left_inv' z hz := by
+    dsimp only; rw [dif_pos] <;> all_goals simp_rw [← e.proj_toFun _ hz]
+    exacts [Subtype.ext (e.left_inv' hz), e.map_source' hz]
+  right_inv' x hx := Subtype.val_injective.prodMap injective_id <| by
+    simp only [mem_preimage, (Prod.map_apply), id_eq] at hx
+    simp_rw [Prod.map_apply]; rw [dif_pos hx]
+    convert ← e.right_inv' hx; exact e.proj_toFun _ (e.map_target' hx)
+  open_target := e.open_target.preimage <| by fun_prop
+  baseSet := Subtype.val ⁻¹' e.baseSet
+  open_baseSet := e.open_baseSet.preimage continuous_subtype_val
+  source_eq := Set.ext fun _ ↦ Set.ext_iff.mp e.source_eq _
+  target_eq := Set.ext fun _ ↦ Set.ext_iff.mp e.target_eq _
+  proj_toFun _ _ := rfl
+
+/-- The restriction of a pretrivialization to a set with nonempty intersection with the base set. -/
+@[simps! toFun source target baseSet]
+noncomputable def restrictPreimage (e : Pretrivialization F proj) {s : Set B}
+    (hs : (s ∩ e.baseSet).Nonempty) : Pretrivialization F (s.restrictPreimage proj) :=
+  have : Nonempty (F → proj ⁻¹' s) := .intro fun f ↦ Nonempty.some <| have ⟨z, hzs, hzb⟩ := hs
+    ⟨⟨e.invFun ⟨z, f⟩, Set.mem_preimage.mpr <| (e.proj_symm_apply' hzb).symm ▸ hzs⟩⟩
+  e.restrictPreimage' s
+
+/-- Extend the total space of a pretrivialization from the preimage of a set to the whole space. -/
+@[simps invFun source target baseSet]
+noncomputable def domExtend {s : Set B} (e : Pretrivialization F fun z : proj ⁻¹' s ↦ proj z)
+    [Nonempty (Z → F)] : Pretrivialization F proj where
+  toFun z := by classical exact if h : proj z ∈ s then e ⟨z, h⟩
+    else (proj z, Classical.arbitrary (Z → F) z)
+  invFun x := e.invFun x
+  source := Subtype.val '' e.source
+  target := e.target
+  map_source' _ := by
+    rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩
+    simpa [hzp, e.coe_fst hze] using e.map_source hze
+  map_target' x hx := by simpa using ⟨(e.invFun x).2, e.map_target hx⟩
+  left_inv' _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.symm_apply_apply hze]
+  right_inv' x hx := (dif_pos (e.invFun x).2).trans (e.right_inv hx)
+  open_target := e.open_target
+  baseSet := e.baseSet
+  open_baseSet := e.open_baseSet
+  source_eq := by ext z; simpa [e.source_eq] using
+    (e.proj_symm_apply' · ▸ (e.invFun (proj z, Classical.arbitrary (Z → F) z)).2)
+  target_eq := by ext; simp [e.target_eq]
+  proj_toFun _ := by rintro ⟨⟨z, hzp : proj z ∈ s⟩, hze, rfl⟩; simp [hzp, e.coe_fst hze]
+
+/-- Extend the base of a pretrivialization from a set to the whole space. -/
+@[simps toFun source target baseSet]
+noncomputable def codExtend' {s : Set B} (hs : IsOpen s) {proj : Z → s}
+    (e : Pretrivialization F proj) [Nonempty (B → F → Z)] :
+    Pretrivialization F (Subtype.val ∘ proj) where
+  toFun z := ⟨(e z).1, (e z).2⟩
+  invFun x := by classical exact if h : x.1 ∈ s then e.invFun (⟨x.1, h⟩, x.2)
+    else Classical.arbitrary (B → F → Z) x.1 x.2
+  source := e.source
+  target := (Prod.map Subtype.val id) '' e.target
+  map_source' z hz := by simpa using e.map_source hz
+  map_target' _ := by rintro ⟨x, hx, rfl⟩; simpa using e.map_target hx
+  left_inv' z hz := by simpa using e.left_inv hz
+  right_inv' _ := by rintro ⟨x, hx, rfl⟩; ext <;> simp [e.apply_symm_apply hx]
+  open_target := hs.isOpenMap_subtype_val.prodMap .id _ e.open_target
+  baseSet := Subtype.val '' e.baseSet
+  open_baseSet := hs.isOpenMap_subtype_val _ e.open_baseSet
+  source_eq := by ext; simp [e.source_eq]
+  target_eq := by rw [e.target_eq, prodMap_image_prod, image_id]
+  proj_toFun _ h := by simp [e.coe_fst h]
+
+/-- Extend the base of a pretrivialization from a nonempty set to the whole space. -/
+@[simps! toFun source target baseSet]
+noncomputable def codExtend {s : Set B} (hs : IsOpen s) (nonempty : s.Nonempty) {proj : Z → s}
+    (e : Pretrivialization F proj) : Pretrivialization F (Subtype.val ∘ proj) :=
+  have : Nonempty (F → Z) := .intro fun f ↦ e.invFun (⟨_, nonempty.some_mem⟩, f)
+  e.codExtend' hs
 
 end Pretrivialization
 
@@ -268,6 +366,8 @@ defined between two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, a
 first coordinate.
 -/
 structure Trivialization (proj : Z → B) extends OpenPartialHomeomorph Z (B × F) where
+  /-- The domain of the local trivialisation (i.e., a subset of the bundle `Z`'s base):
+  outside of it, the pretrivialisation returns a junk value -/
   baseSet : Set B
   open_baseSet : IsOpen baseSet
   source_eq : source = proj ⁻¹' baseSet
@@ -327,6 +427,7 @@ protected theorem eqOn : EqOn (Prod.fst ∘ e) proj e.source := fun _x hx => e.c
 
 theorem mem_source : x ∈ e.source ↔ proj x ∈ e.baseSet := by rw [e.source_eq, mem_preimage]
 
+@[simp, mfld_simps]
 theorem coe_fst' (ex : proj x ∈ e.baseSet) : (e x).1 = proj x :=
   e.coe_fst (e.mem_source.2 ex)
 
@@ -362,10 +463,12 @@ theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
 theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   e.toPretrivialization.proj_surjOn_baseSet
 
+@[simp, mfld_simps]
 theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) :
     e (e.toOpenPartialHomeomorph.symm x) = x :=
   e.toOpenPartialHomeomorph.right_inv hx
 
+@[simp, mfld_simps]
 theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
     e (e.toOpenPartialHomeomorph.symm (b, x)) = (b, x) :=
   e.toPretrivialization.apply_symm_apply' hx
@@ -436,7 +539,7 @@ theorem preimageHomeomorph_apply {s : Set B} (hb : s ⊆ e.baseSet) (p : proj �
   Prod.ext (Subtype.ext (e.proj_toFun p (e.mem_source.mpr (hb p.2)))) rfl
 
 /-- Auxiliary definition to avoid looping in `dsimp`
-with `Trivialization.preimageHomeomorph_symm_apply`. -/
+with `Bundle.Trivialization.preimageHomeomorph_symm_apply`. -/
 protected def preimageHomeomorph_symm_apply.aux {s : Set B} (hb : s ⊆ e.baseSet) :=
   (e.preimageHomeomorph hb).symm
 
@@ -456,7 +559,7 @@ theorem sourceHomeomorphBaseSetProd_apply (p : e.source) :
   e.preimageHomeomorph_apply subset_rfl ⟨p, e.mem_source.mp p.2⟩
 
 /-- Auxiliary definition to avoid looping in `dsimp`
-with `Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
+with `Bundle.Trivialization.sourceHomeomorphBaseSetProd_symm_apply`. -/
 protected def sourceHomeomorphBaseSetProd_symm_apply.aux := e.sourceHomeomorphBaseSetProd.symm
 
 @[simp]
@@ -489,10 +592,10 @@ theorem continuousAt_proj (ex : x ∈ e.source) : ContinuousAt proj x :=
 theorem continuousOn_proj : ContinuousOn proj e.source :=
   continuousOn_of_forall_continuousAt fun _ ↦ e.continuousAt_proj
 
-/-- Composition of a `Trivialization` and a `Homeomorph`. -/
+/-- Pre-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
 protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z) :
     Trivialization F (proj ∘ h) where
-  toOpenPartialHomeomorph := h.toOpenPartialHomeomorph.trans e.toOpenPartialHomeomorph
+  toOpenPartialHomeomorph := h.transOpenPartialHomeomorph e.toOpenPartialHomeomorph
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
   source_eq := by simp [source_eq, preimage_preimage, Function.comp_def]
@@ -500,6 +603,16 @@ protected def compHomeomorph {Z' : Type*} [TopologicalSpace Z'] (h : Z' ≃ₜ Z
   proj_toFun p hp := by
     have hp : h p ∈ e.source := by simpa using hp
     simp [hp]
+
+/-- Post-composition of a `Bundle.Trivialization` and a `Homeomorph`. -/
+protected def homeomorphComp {B' : Type*} [TopologicalSpace B'] (h : B ≃ₜ B') :
+    Trivialization F (h ∘ proj) where
+  toOpenPartialHomeomorph := e.toOpenPartialHomeomorph.transHomeomorph (h.prodCongr <| .refl _)
+  baseSet := h.symm ⁻¹' e.baseSet
+  open_baseSet := e.open_baseSet.preimage h.continuous_symm
+  source_eq := by ext; simp [e.mem_source]
+  target_eq := by ext; simp [Prod.map, e.mem_target]
+  proj_toFun p hp := by simpa using e.proj_toFun p hp
 
 /-- Read off the continuity of a function `f : Z → X` at `z : Z` by transferring via a
 trivialization of `Z` containing `z`. -/
@@ -530,13 +643,13 @@ protected theorem continuousOn : ContinuousOn e' e'.source :=
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
   e'.mem_source
 
-@[simp, mfld_simps]
 theorem coe_coe_fst (hb : b ∈ e'.baseSet) : (e' y).1 = b :=
   e'.coe_fst (e'.mem_source.2 hb)
 
 theorem mk_mem_target {y : F} : (b, y) ∈ e'.target ↔ b ∈ e'.baseSet :=
   e'.toPretrivialization.mem_target
 
+@[simp, mfld_simps]
 theorem symm_apply_apply {x : TotalSpace F E} (hx : x ∈ e'.source) :
     e'.toOpenPartialHomeomorph.symm (e' x) = x :=
   e'.toPartialEquiv.left_inv hx
@@ -564,20 +677,21 @@ theorem symm_apply_of_notMem (e : Trivialization F (π F E)) {b : B} (hb : b ∉
     e.symm b y = 0 :=
   dif_neg hb
 
-@[deprecated (since := "2025-05-23")] alias symm_apply_of_not_mem := symm_apply_of_notMem
-
 theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     TotalSpace.mk b (e.symm b y) = e.toOpenPartialHomeomorph.symm (b, y) :=
   e.toPretrivialization.mk_symm hb y
 
+@[simp, mfld_simps]
 theorem symm_proj_apply (e : Trivialization F (π F E)) (z : TotalSpace F E)
     (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 :=
   e.toPretrivialization.symm_proj_apply z hz
 
+@[simp, mfld_simps]
 theorem symm_apply_apply_mk (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : E b) :
     e.symm b (e ⟨b, y⟩).2 = y :=
   e.symm_proj_apply ⟨b, y⟩ hb
 
+@[simp, mfld_simps]
 theorem apply_mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e ⟨b, e.symm b y⟩ = (b, y) :=
   e.toPretrivialization.apply_mk_symm hb y
@@ -613,7 +727,7 @@ theorem transFiberHomeomorph_apply {F' : Type*} [TopologicalSpace F'] (e : Trivi
   rfl
 
 /-- Coordinate transformation in the fiber induced by a pair of bundle trivializations. See also
-`Trivialization.coordChangeHomeomorph` for a version bundled as `F ≃ₜ F`. -/
+`Bundle.Trivialization.coordChangeHomeomorph` for a version bundled as `F ≃ₜ F`. -/
 def coordChange (e₁ e₂ : Trivialization F proj) (b : B) (x : F) : F :=
   (e₂ <| e₁.toOpenPartialHomeomorph.symm (b, x)).2
 
@@ -629,6 +743,7 @@ theorem coordChange_apply_snd (e₁ e₂ : Trivialization F proj) {p : Z} (h : p
     e₁.coordChange e₂ (proj p) (e₁ p).snd = (e₂ p).snd := by
   rw [coordChange, e₁.symm_apply_mk_proj (e₁.mem_source.2 h)]
 
+@[simp, mfld_simps]
 theorem coordChange_same_apply (e : Trivialization F proj) {b : B} (h : b ∈ e.baseSet) (x : F) :
     e.coordChange e b x = x := by rw [coordChange, e.apply_symm_apply' h]
 
@@ -680,6 +795,59 @@ protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) 
   source_eq := by simp [source_eq]
   target_eq := by simp [target_eq, prod_univ]
   proj_toFun p hp := e.proj_toFun p hp.1
+
+/-- The restriction of a trivialization to a subset of the base. -/
+@[simps! apply source target baseSet]
+noncomputable def restrictPreimage' (e : Trivialization F proj) (s : Set B)
+    [Nonempty (s → F → proj ⁻¹' s)] : Trivialization F (s.restrictPreimage proj) where
+  __ := e.toPretrivialization.restrictPreimage' s
+  open_source := e.open_source.preimage <| by fun_prop
+  continuousOn_toFun := (Topology.IsInducing.subtypeVal.prodMap .id).continuousOn_iff.mpr <|
+    (e.continuousOn_toFun.comp continuous_subtype_val.continuousOn fun _ ↦ id).congr
+      fun z hz ↦ by ext; exacts [(e.proj_toFun _ hz).symm, rfl]
+  continuousOn_invFun := Topology.IsInducing.subtypeVal.continuousOn_iff.mpr <|
+    (e.continuousOn_invFun.comp (continuous_subtype_val.prodMap continuous_id).continuousOn
+      fun _ ↦ id).congr fun x hx ↦ congr_arg Subtype.val (dif_pos hx)
+
+/-- The restriction of a trivialization to a set with nonempty intersection with the base set. -/
+@[simps! apply source target baseSet]
+noncomputable def restrictPreimage (e : Trivialization F proj) {s : Set B}
+    (hs : (s ∩ e.baseSet).Nonempty) : Trivialization F (s.restrictPreimage proj) :=
+  have : Nonempty (F → proj ⁻¹' s) := .intro fun f ↦ Nonempty.some <| have ⟨z, hzs, hzb⟩ := hs
+    ⟨⟨e.invFun ⟨z, f⟩, Set.mem_preimage.mpr <| (e.proj_symm_apply' hzb).symm ▸ hzs⟩⟩
+  e.restrictPreimage' s
+
+/-- Extend the total space of a trivialization from the preimage of a set to the whole space. -/
+@[simps! symm_apply source target baseSet]
+noncomputable def domExtend {s : Set B} (hps : IsOpen (proj ⁻¹' s))
+    (e : Trivialization F fun z : proj ⁻¹' s ↦ proj z) [Nonempty (Z → F)] :
+    Trivialization F proj where
+  __ := e.toPretrivialization.domExtend
+  open_source := hps.isOpenMap_subtype_val _ e.open_source
+  continuousOn_toFun := Topology.IsInducing.subtypeVal.continuousOn_image_iff.mpr <| by
+    convert e.continuousOn_toFun
+    ext1 ⟨x, (hx : proj x ∈ s)⟩
+    simpa [Pretrivialization.domExtend] using dif_pos hx
+  continuousOn_invFun := continuous_subtype_val.comp_continuousOn <| by
+    convert e.continuousOn_invFun
+
+/-- Extend the base of a trivialization from a set to the whole space. -/
+@[simps! apply source target baseSet]
+noncomputable def codExtend' {s : Set B} (hs : IsOpen s) {proj : Z → s} (e : Trivialization F proj)
+    [Nonempty (B → F → Z)] : Trivialization F (Subtype.val ∘ proj) where
+  __ := e.toPretrivialization.codExtend' hs
+  open_source := e.open_source
+  continuousOn_toFun :=
+    (continuous_subtype_val.prodMap continuous_id).comp_continuousOn e.continuousOn_toFun
+  continuousOn_invFun := (Topology.IsInducing.subtypeVal.prodMap .id).continuousOn_image_iff.2 <| by
+    convert e.continuousOn_invFun; ext; simp [Pretrivialization.codExtend']; rfl
+
+/-- Extend the base of a pretrivialization from a nonempty set to the whole space. -/
+@[simps! apply source target baseSet]
+noncomputable def codExtend {s : Set B} (hs : IsOpen s) (nonempty : s.Nonempty) {proj : Z → s}
+    (e : Trivialization F proj) : Trivialization F (Subtype.val ∘ proj) :=
+  have : Nonempty (F → Z) := .intro fun f ↦ e.invFun (⟨_, nonempty.some_mem⟩, f)
+  e.codExtend' hs
 
 section Piecewise
 
@@ -733,7 +901,7 @@ noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Triviali
   e.piecewiseLeOfEq (e'.transFiberHomeomorph (e'.coordChangeHomeomorph e He' He)) a He He' <| by
     rintro p rfl
     ext1
-    · simp [e.coe_fst', e'.coe_fst', *]
+    · simp [*]
     · simp [coordChange_apply_snd, *]
 
 open Classical in
@@ -812,4 +980,4 @@ theorem proj_clift : proj (T.clift (e, γ) i) = γ i := by
 
 end Lift
 
-end Trivialization
+end Bundle.Trivialization

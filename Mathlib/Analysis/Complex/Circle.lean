@@ -3,13 +3,15 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.Normed.Field.UnitBall
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.Normed.Field.UnitBall
 
 /-!
 # The circle
 
-This file defines `circle` to be the metric sphere (`Metric.sphere`) in `ℂ` centred at `0` of
+This file defines `Circle` to be the metric sphere (`Metric.sphere`) in `ℂ` centred at `0` of
 radius `1`.  We equip it with the following structure:
 
 * a submonoid of `ℂ`
@@ -17,7 +19,7 @@ radius `1`.  We equip it with the following structure:
 * a topological group
 
 We furthermore define `Circle.exp` to be the natural map `fun t ↦ exp (t * I)` from `ℝ` to
-`circle`, and show that this map is a group homomorphism.
+`Circle`, and show that this map is a group homomorphism.
 
 We define two additive characters onto the circle:
 * `Real.fourierChar`: The character `fun x ↦ exp ((2 * π * x) * I)` (for which we introduce the
@@ -36,6 +38,8 @@ considered as a homomorphism from `ℂ` to `ℝ`, nor is it defeq to `{z : ℂ |
 is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -76,6 +80,8 @@ lemma coe_inv_eq_conj (z : Circle) : ↑z⁻¹ = conj (z : ℂ) := by
   rw [coe_inv, inv_def, normSq_coe, inv_one, ofReal_one, mul_one]
 
 @[simp, norm_cast] lemma coe_div (z w : Circle) : ↑(z / w) = (z : ℂ) / w := rfl
+@[simp, norm_cast] lemma coe_pow (z : Circle) (n : ℕ) : ↑(z ^ n) = (z : ℂ) ^ n := rfl
+@[simp, norm_cast] lemma coe_zpow (z : Circle) (n : ℤ) : ↑(z ^ n) = (z : ℂ) ^ n := rfl
 
 /-- The coercion `Circle → ℂ` as a monoid homomorphism. -/
 @[simps]
@@ -130,6 +136,12 @@ def expHom : ℝ →+ Additive Circle where
 
 @[simp] lemma exp_sub (x y : ℝ) : exp (x - y) = exp x / exp y := expHom.map_sub x y
 @[simp] lemma exp_neg (x : ℝ) : exp (-x) = (exp x)⁻¹ := expHom.map_neg x
+lemma exp_nsmul (x : ℝ) (n : ℕ) : exp (n • x) = exp x ^ n := expHom.map_nsmul x n
+lemma exp_zsmul (x : ℝ) (z : ℤ) : exp (z • x) = exp x ^ z := expHom.map_zsmul x z
+@[simp] lemma exp_natCast_mul (x : ℝ) (n : ℕ) : exp (n * x) = exp x ^ n := by
+  rw [← nsmul_eq_mul, exp_nsmul]
+@[simp] lemma exp_intCast_mul (x : ℝ) (z : ℤ) : exp (z * x) = exp x ^ z := by
+  rw [← zsmul_eq_mul, exp_zsmul]
 
 lemma exp_pi_ne_one : Circle.exp Real.pi ≠ 1 := by
   intro h
@@ -171,6 +183,7 @@ lemma smul_def [SMul ℂ α] (z : Circle) (a : α) : z • a = (z : ℂ) • a :
 instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [ContinuousSMul ℂ α] :
     ContinuousSMul Circle α := Submonoid.continuousSMul
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :
@@ -197,8 +210,8 @@ theorem fourierChar_apply' (x : ℝ) : 𝐞 x = Circle.exp (2 * π * x) := rfl
 
 theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) := rfl
 
-@[continuity]
-theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_mul_left _)
+@[continuity, fun_prop]
+theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_const_mul _)
 
 theorem fourierChar_ne_one : fourierChar ≠ 1 := by
   rw [DFunLike.ne_iff]
@@ -218,8 +231,8 @@ theorem probChar_apply' (x : ℝ) : probChar x = Circle.exp x := rfl
 
 theorem probChar_apply (x : ℝ) : probChar x = Complex.exp (x * Complex.I) := rfl
 
-@[continuity]
-theorem continuous_probChar : Continuous probChar := Circle.exp.continuous
+@[continuity, fun_prop]
+theorem continuous_probChar : Continuous probChar := map_continuous Circle.exp
 
 theorem probChar_ne_one : probChar ≠ 1 := by
   rw [DFunLike.ne_iff]

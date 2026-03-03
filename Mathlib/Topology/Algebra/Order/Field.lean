@@ -3,10 +3,12 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.Order.Group
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Order.Filter.AtTopBot.Field
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Topologies on linear ordered fields
@@ -16,6 +18,8 @@ and division (apart from zero in the denominator). We also prove theorems like
 `Filter.Tendsto.mul_atTop`: if `f` tends to a positive number and `g` tends to positive infinity,
 then `f * g` tends to positive infinity.
 -/
+
+@[expose] public section
 
 
 open Set Filter TopologicalSpace Function
@@ -39,17 +43,11 @@ theorem Filter.Tendsto.atTop_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l a
 -- TODO: after removing this deprecated alias,
 -- rename `Filter.Tendsto.atTop_mul'` to `Filter.Tendsto.atTop_mul`.
 -- Same for the other 3 similar aliases below.
-@[deprecated (since := "2025-03-18")]
-alias Filter.Tendsto.atTop_mul := Filter.Tendsto.atTop_mul_pos
-
 /-- In a linearly ordered semifield with the order topology, if `f` tends to a positive constant `C`
 and `g` tends to `Filter.atTop` then `f * g` tends to `Filter.atTop`. -/
 theorem Filter.Tendsto.pos_mul_atTop {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
     (hg : Tendsto g l atTop) : Tendsto (fun x => f x * g x) l atTop := by
   simpa only [mul_comm] using hg.atTop_mul_pos hC hf
-
-@[deprecated (since := "2025-03-18")]
-alias Filter.Tendsto.mul_atTop := Filter.Tendsto.pos_mul_atTop
 
 @[simp]
 lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
@@ -67,6 +65,12 @@ theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 :
 theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
   inv_atTop₀.le
 
+theorem tendsto_nhdsGT_zero_of_comp_inv_tendsto_atTop {f : 𝕜 → α}
+    (h : Tendsto (fun x ↦ f x⁻¹) atTop l) :
+    Tendsto f (𝓝[>] 0) l := by
+  convert h.comp tendsto_inv_nhdsGT_zero
+  grind [inv_inv]
+
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
   tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
 
@@ -82,6 +86,7 @@ theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
     Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
   simpa only [zpow_neg, zpow_natCast] using (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
     Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
   lift -n to ℕ using le_of_lt (neg_pos.mpr hn) with N h
@@ -163,9 +168,6 @@ theorem Filter.Tendsto.atBot_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l a
   have := (tendsto_neg_atBot_atTop.comp hf).atTop_mul_pos hC hg
   simpa [Function.comp_def] using tendsto_neg_atTop_atBot.comp this
 
-@[deprecated (since := "2025-03-18")]
-alias Filter.Tendsto.atBot_mul := Filter.Tendsto.atBot_mul_pos
-
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atBot` and `g`
 tends to a negative constant `C` then `f * g` tends to `Filter.atTop`. -/
 theorem Filter.Tendsto.atBot_mul_neg {C : 𝕜} (hC : C < 0) (hf : Tendsto f l atBot)
@@ -178,9 +180,6 @@ theorem Filter.Tendsto.atBot_mul_neg {C : 𝕜} (hC : C < 0) (hf : Tendsto f l a
 theorem Filter.Tendsto.pos_mul_atBot {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
     (hg : Tendsto g l atBot) : Tendsto (fun x => f x * g x) l atBot := by
   simpa only [mul_comm] using hg.atBot_mul_pos hC hf
-
-@[deprecated (since := "2025-03-18")]
-alias Filter.Tendsto.mul_atBot := Filter.Tendsto.pos_mul_atBot
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a negative constant `C` and
 `g` tends to `Filter.atBot` then `f * g` tends to `Filter.atTop`. -/
@@ -201,15 +200,15 @@ lemma inv_nhdsLT_zero : (𝓝[<] (0 : 𝕜))⁻¹ = atBot := by
 theorem tendsto_inv_nhdsLT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[<] (0 : 𝕜)) atBot :=
   inv_nhdsLT_zero.le
 
-@[deprecated (since := "2025-04-23")]
-alias tendsto_inv_zero_atBot := tendsto_inv_nhdsLT_zero
+theorem tendsto_nhdsLT_zero_of_comp_inv_tendsto_atBot {f : 𝕜 → α}
+    (h : Tendsto (fun x ↦ f x⁻¹) atBot l) :
+    Tendsto f (𝓝[<] 0) l := by
+  convert h.comp tendsto_inv_nhdsLT_zero
+  grind
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the left as `r → -∞`. -/
 theorem tendsto_inv_atBot_nhdsLT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝[<] (0 : 𝕜)) :=
   inv_atBot₀.le
-
-@[deprecated (since := "2025-04-23")]
-alias tendsto_inv_atBot_zero' := tendsto_inv_atBot_nhdsLT_zero
 
 theorem tendsto_inv_atBot_zero : Tendsto (fun r : 𝕜 => r⁻¹) atBot (𝓝 0) :=
   tendsto_inv_atBot_nhdsLT_zero.mono_right inf_le_left
@@ -309,12 +308,9 @@ theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠
 instance (priority := 100) IsStrictOrderedRing.toIsTopologicalDivisionRing :
     IsTopologicalDivisionRing 𝕜 := ⟨⟩
 
-@[deprecated (since := "2025-03-25")] alias LinearOrderedField.toTopologicalDivisionRing :=
-  IsStrictOrderedRing.toIsTopologicalDivisionRing
-
 -- TODO: generalize to a `GroupWithZero`
 theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
-  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
+  rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi₀ _ hx, zero_div]
   congr 1
   refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
   simp

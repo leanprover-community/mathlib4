@@ -3,7 +3,9 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.Monoid
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
 
 /-!
 # Lie groups
@@ -12,9 +14,9 @@ A Lie group is a group that is also a `C^n` manifold, in which the group operati
 multiplication and inversion are `C^n` maps. Regularity of the group multiplication means that
 multiplication is a `C^n` mapping of the product manifold `G` × `G` into `G`.
 
-Note that, since a manifold here is not second-countable and Hausdorff a Lie group here is not
-guaranteed to be second-countable (even though it can be proved it is Hausdorff). Note also that Lie
-groups here are not necessarily finite dimensional.
+Note that, since a manifold here is not second-countable and Hausdorff, a Lie group here is not
+guaranteed to be second-countable (even though it can be proved that it is Hausdorff). Note also
+that Lie groups here are not necessarily finite dimensional.
 
 ## Main definitions
 
@@ -46,6 +48,8 @@ the model space is `ModelProd E E'` and the model vector space is `E × E'`, whi
 so the definition does not apply. Hence the definition should be more general, allowing
 `I : ModelWithCorners 𝕜 E H`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

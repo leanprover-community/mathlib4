@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Attaching cells
@@ -25,6 +27,8 @@ See the file `Mathlib/AlgebraicTopology/RelativeCellComplex/Basic.lean` for tran
 of morphisms `f` with `AttachCells g f` structures.
 
 -/
+
+@[expose] public section
 
 universe w' w t t' v u
 
@@ -92,6 +96,7 @@ lemma hom_ext {Z : C} {φ φ' : X₂ ⟶ Z}
   apply Cofan.IsColimit.hom_ext c.isColimit₂
   simpa [cell_def] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `f'` are isomorphic morphisms and the target of `f`
 is obtained by attaching cells to the source of `f`,
 then the same holds for `f'`. -/
@@ -133,6 +138,7 @@ section
 variable {α' : Type t'} {A' B' : α' → C} (g' : ∀ i', A' i' ⟶ B' i')
   (a : α → α') (ha : ∀ (i : α), Arrow.mk (g i) ≅ Arrow.mk (g' (a i)))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a family of maps `g` is contained in another family `g'` (up to isomorphisms),
 if `f : X₁ ⟶ X₂` is a morphism, and `X₂` is obtained from `X₁` by attaching cells
 of the form `g`, then it is also obtained by attaching cells of the form `g'`. -/
@@ -166,6 +172,7 @@ end
 
 end AttachCells
 
+set_option backward.isDefEq.respectTransparency false in
 open MorphismProperty in
 lemma nonempty_attachCells_iff :
     Nonempty (AttachCells.{w} g f) ↔ (coproducts.{w} (ofHoms g)).pushouts f := by

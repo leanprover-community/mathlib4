@@ -59,7 +59,7 @@ def side (c : Cube n) (j : Fin n) : Set ℝ :=
   Ico (c.b j) (c.b j + c.w)
 
 @[simp]
-theorem b_mem_side (c : Cube n) (j : Fin n) : c.b j ∈ c.side j := by simp [side, Cube.hw, le_refl]
+theorem b_mem_side (c : Cube n) (j : Fin n) : c.b j ∈ c.side j := by simp [side, Cube.hw]
 
 def toSet (c : Cube n) : Set (Fin n → ℝ) :=
   {x | ∀ j, x j ∈ side c j}
@@ -89,7 +89,7 @@ def bottom (c : Cube (n + 1)) : Set (Fin (n + 1) → ℝ) :=
   {x | x 0 = c.b 0 ∧ tail x ∈ c.tail.toSet}
 
 theorem b_mem_bottom (c : Cube (n + 1)) : c.b ∈ c.bottom := by
-  simp [bottom, toSet, side, Cube.hw, le_refl, Cube.tail]
+  simp [bottom, toSet, side, Cube.hw, Cube.tail]
 
 def xm (c : Cube (n + 1)) : ℝ :=
   c.b 0 + c.w
@@ -166,11 +166,11 @@ theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   have hp : p ∈ (cs i').toSet := (cs i').b_mem_toSet
   have h2p : p ∈ (cs i).toSet := by
     intro j; constructor
-    trans (0 : ℝ)
-    · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h
-      · rw [hi]
-      · rw [zero_add]
-    · apply zero_le_b h
+    · trans (0 : ℝ)
+      · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h
+        · rw [hi]
+        · rw [zero_add]
+      · apply zero_le_b h
     · apply lt_of_lt_of_le (side_subset h <| (cs i').b_mem_side j).2
       simp [hi, zero_le_b h]
   exact (h.PairwiseDisjoint hi').le_bot ⟨hp, h2p⟩
@@ -349,7 +349,7 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
     intro i' hi' i'_i h2i'; constructor
     · apply le_trans h2i'.1
       simp [i, hw']
-    apply lt_of_lt_of_le (add_lt_add_left (mi_strict_minimal i'_i.symm hi') _)
+    apply lt_of_lt_of_le (add_lt_add_right (mi_strict_minimal i'_i.symm hi') _)
     simp [i, bi.symm, b_le_b hi']
   let s := bcubes cs c \ {i}
   have hs : s.Nonempty := by

@@ -3,8 +3,10 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Perm.Centralizer
-import Mathlib.GroupTheory.SpecificGroups.Alternating
+module
+
+public import Mathlib.GroupTheory.Perm.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Centralizer of an element in the alternating group
 
@@ -32,6 +34,8 @@ TODO :
 Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
+
+public section
 
 open Equiv Finset Function MulAction
 
@@ -134,7 +138,7 @@ open Basis OnCycleFactors
 theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     Fintype.card α ≤ g.cycleType.sum + 1 := by
   by_contra! hm
-  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by omega
+  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by lia
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
     suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 from
@@ -150,8 +154,7 @@ theorem count_le_one_of_centralizer_le_alternating
   rw [← Multiset.nodup_iff_count_le_one, Equiv.Perm.cycleType_def]
   rw [Multiset.nodup_map_iff_inj_on g.cycleFactorsFinset.nodup]
   simp only [Function.comp_apply, ← Finset.mem_def]
-  by_contra! hm
-  obtain ⟨c, hc, d, hd, hm, hm'⟩ := hm
+  by_contra! ⟨c, hc, d, hd, hm, hm'⟩
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
   have hτ : τ ∈ range_toPermHom' g := fun x ↦ by
@@ -239,7 +242,7 @@ theorem centralizer_le_alternating_iff :
         exact hc.left
     · suffices y = 1 by simp [this]
       have := card_fixedPoints g
-      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by cutsat)
+      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by lia)
 
 namespace IsThreeCycle
 

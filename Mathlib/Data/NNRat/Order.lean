@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Algebra.Order.Nonneg.Ring
+module
+
+public import Mathlib.Data.NNRat.Defs
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Algebra.Order.Nonneg.Ring
 
 /-!
 # Bundled ordered algebra structures on `ℚ≥0`
 
 -/
+
+@[expose] public section
 
 instance : IsStrictOrderedRing ℚ≥0 := Nonneg.isStrictOrderedRing
 

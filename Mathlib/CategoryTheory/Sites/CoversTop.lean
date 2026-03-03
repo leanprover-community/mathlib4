@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-! Objects which cover the terminal object
 
@@ -16,10 +18,12 @@ holds iff `Sieve.ofObjects Y X` is covering for `J`.
 We introduce a notion of compatible family of elements on objects `Y`
 and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.existsUnique_section`
 which asserts that if a presheaf of types is a sheaf, then any compatible
-family of elements on objects `Y` which cover the final object extends as
+family of elements on objects `Y` which cover the final object extends to
 a section of this presheaf.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -57,6 +61,7 @@ include hY
 `J.CoversTop Y` -/
 abbrev cover (W : C) : Cover J W := ⟨Sieve.ofObjects Y W, hY W⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c.pt}
     (h : ∀ (i : I), f ≫ c.π.app (Opposite.op (Y i)) =
       g ≫ c.π.app (Opposite.op (Y i))) :

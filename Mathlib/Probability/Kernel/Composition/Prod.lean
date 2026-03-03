@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.CompMap
-import Mathlib.Probability.Kernel.Composition.ParallelComp
+module
+
+public import Mathlib.Probability.Kernel.Composition.CompMap
+public import Mathlib.Probability.Kernel.Composition.ParallelComp
 
 /-!
 # Product and composition of kernels
@@ -28,6 +30,8 @@ a kernel from `α` to `β × γ`.
 * `κ ×ₖ η = ProbabilityTheory.Kernel.prod κ η`
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory
