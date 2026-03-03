@@ -37,6 +37,7 @@ namespace ObjectProperty
 
 /-- The property that a full subcategory of a pretriangulated category
 equipped with a t-structure can be endowed with an induced t-structure. -/
+@[mk_iff]
 class HasInducedTStructure [P.IsTriangulated] : Prop where
   exists_triangle_zero_one (A : C) (hA : P A) :
     ∃ (X Y : C) (_ : t.IsLE X 0) (_ : t.IsGE Y 1)
