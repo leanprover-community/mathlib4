@@ -34,20 +34,22 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 -- TODO: where is a good namespace for this?
 /-- The torsion of a covariant derivative on the tangent bundle `TM` -/
 noncomputable def Bundle.torsion
-    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)) :
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)) :
     (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) :=
-  fun X Y ↦ f X Y - f Y X - VectorField.mlieBracket I X Y
+  fun X Y x ↦ f X x (Y x) - f Y x (X x) - VectorField.mlieBracket I X Y x
 
 variable
-  {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+  {f g : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
   {X X' Y : Π x : M, TangentSpace I x}
 
 variable (f X) in
 lemma torsion_self : torsion f X X = 0 := by
+  ext
   simp [torsion]
 
 variable (X Y) in
 lemma torsion_antisymm : torsion f X Y = - torsion f Y X := by
+  ext
   simp only [torsion]
   rw [VectorField.mlieBracket_swap]
   module
@@ -76,7 +78,7 @@ lemma torsion_add_right_apply [CompleteSpace E] (hf : IsCovariantDerivativeOn E 
 
 variable (Y) in
 lemma torsion_smul_left_apply [CompleteSpace E]
-    {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
+    {F : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[ℝ] TangentSpace I x}
     (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
     -- TODO: making hx an auto-param := by trivial doesn't fire at the application sites below
     {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) :
@@ -88,7 +90,7 @@ lemma torsion_smul_left_apply [CompleteSpace E]
 
 variable (X) in
 lemma torsion_smul_right_apply [CompleteSpace E]
-    {F : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x}
+    {F : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[ℝ] TangentSpace I x}
     (hF : IsCovariantDerivativeOn E F U) (hx : x ∈ U)
     {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% Y) x) :
     torsion F X (f • Y) x = f x • torsion F X Y x := by
@@ -99,7 +101,7 @@ end IsCovariantDerivativeOn
 
 /-- `f` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
 noncomputable def IsTorsionFreeOn
-    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x))
+    (f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x))
     (U : Set M) : Prop :=
   ∀ x ∈ U, ∀ X Y : Π x : M, TangentSpace I x, torsion f X Y x = 0
 
@@ -126,7 +128,7 @@ section
 
 -- unused?
 lemma congr {s : Set M} (h : IsTorsionFreeOn f s)
-    (hfg : ∀ {X Y : Π x : M, TangentSpace I x}, ∀ {x}, x ∈ s → f X Y x = g X Y x) :
+    (hfg : ∀ {X Y : Π x : M, TangentSpace I x}, ∀ {x}, x ∈ s → f X x (Y x) = g X x (Y x)) :
     IsTorsionFreeOn g s := by
   intro x hx X Y
   specialize h x hx X Y
@@ -230,7 +232,7 @@ lemma isTorsionFree_def : IsTorsionFree cov ↔ torsion cov = 0 := by simp [IsTo
 
 -- This should be obvious; am I doing something wrong?
 lemma isTorsionFree_iff : IsTorsionFree cov ↔
-    ∀ X Y, cov X Y - cov Y X = VectorField.mlieBracket I X Y := by
+    ∀ X Y x, cov X x (Y x) - cov Y x (X x) = VectorField.mlieBracket I X Y x := by
   simp only [IsTorsionFree]
   constructor
   · intro h X Y
@@ -245,7 +247,7 @@ lemma isTorsionFree_iff : IsTorsionFree cov ↔
 
 variable {n} in
 lemma aux1 {ι : Type*} [Fintype ι]
-    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
     {U : Set M} {s : ι → (x : M) → TangentSpace I x} (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
     (X Y : (x : M) → TangentSpace I x) :
     torsion f X Y x = ∑ i, (hs.coeff i) X x • torsion f (s i) Y x :=
@@ -261,7 +263,7 @@ lemma aux1 {ι : Type*} [Fintype ι]
 -- Weaker hypotheses possible, e.g. local frame on U ∈ 𝓝 x, while a cov. derivative on s ∋ x
 variable {n} in
 lemma aux2 {ι : Type*} [Fintype ι] [CompleteSpace E]
-    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
     {U : Set M} {s : ι → (x : M) → TangentSpace I x}
     (hf : IsCovariantDerivativeOn E f U) (hs : IsLocalFrameOn I E n s U) (hx : x ∈ U)
     (X Y : (x : M) → TangentSpace I x) :
@@ -284,7 +286,7 @@ lemma aux2 {ι : Type*} [Fintype ι] [CompleteSpace E]
 /-- We can test torsion-freeness on a set using a local frame. -/
 lemma _root_.IsCovariantDerivativeOn.isTorsionFreeOn_iff_localFrame
     {ι : Type*} [Fintype ι] [CompleteSpace E]
-    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x)}
+    {f : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x)}
     {U : Set M} {s : ι → (x : M) → TangentSpace I x}
     (hf: IsCovariantDerivativeOn E f U) (hs : IsLocalFrameOn I E n s U) :
     IsTorsionFreeOn f U ↔ ∀ i j, ∀ x ∈ U, torsion f (s i) (s j) x = 0 := by
