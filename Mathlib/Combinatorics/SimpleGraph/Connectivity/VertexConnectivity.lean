@@ -5,12 +5,14 @@ Authors: Youheng Luo
 -/
 module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-public import Mathlib.Data.Set.Card
 public import Mathlib.Combinatorics.SimpleGraph.IsolateVerts
+public import Mathlib.Data.Set.Card
+public import Mathlib.Tactic.GRewrite
+
 /-!
 # Vertex Connectivity
 
-This file defines k-vertex connectivity for simple graphs.
+This file defines `k`-vertex connectivity for simple graphs.
 
 ## Main definitions
 
@@ -18,8 +20,8 @@ This file defines k-vertex connectivity for simple graphs.
   after removing strictly fewer than `k` other vertices.
 * `SimpleGraph.IsVertexPreconnected`: A graph is `k`-vertex-preconnected if any two vertices
   are `k`-vertex-reachable.
-* `SimpleGraph.IsVertexConnected`: A graph is `k`-vertex-connected if its order is at least
-  `k + 1` and any two vertices are `k`-vertex-reachable.
+* `SimpleGraph.IsVertexConnected`: A graph is `k`-vertex-connected if it is `k`-vertex-preconnected
+  and it has more than `k` vertices.
 -/
 
 @[expose] public section
@@ -93,8 +95,7 @@ lemma isVertexPreconnected_one : G.IsVertexPreconnected 1 ↔ G.Preconnected := 
   simp [IsVertexPreconnected, isVertexReachable_one_iff, Preconnected]
 
 /-- A preconnected graph is 1-vertex-preconnected. -/
-lemma Preconnected.isVertexPreconnected_one (h : G.Preconnected) : G.IsVertexPreconnected 1 :=
-  SimpleGraph.isVertexPreconnected_one.mpr h
+alias ⟨_, Preconnected.isVertexPreconnected_one⟩ := isVertexPreconnected_one
 
 /-- Vertex preconnectivity is antitonic in `k`. -/
 @[gcongr]
@@ -116,34 +117,39 @@ lemma isVertexPreconnected_top [Fintype V] :
   exacts [h ▸ .refl _, .of_adj _ h]
 
 variable (G k) in
-/-- A graph is `k`-vertex-connected if its order is at least `k + 1` and any two vertices
-are `k`-vertex-reachable. -/
+/-- A graph is `k`-vertex-connected if it is `k`-vertex-preconnected and it has more than `k`
+vertices. -/
 def IsVertexConnected : Prop :=
   k + 1 ≤ ENat.card V ∧ G.IsVertexPreconnected k
 
-/-- A 0-vertex-connected graph is just a nonempty graph. -/
+/-- A graph is 0-vertex-connected iff it is nonempty. -/
 @[simp]
 lemma isVertexConnected_zero : G.IsVertexConnected 0 ↔ Nonempty V := by
   simp [IsVertexConnected, ENat.one_le_card_iff_nonempty]
 
-/-- 1-vertex-connectivity is equivalent to preconnectedness and having at least two vertices. -/
+lemma IsVertexConnected.zero [Nonempty V] : G.IsVertexConnected 0 :=
+  isVertexConnected_zero.mpr ‹_›
+
+/-- 1-vertex-connectivity is equivalent to preconnectedness and `V` being nontrivial. -/
 @[simp]
-lemma isVertexConnected_one : G.IsVertexConnected 1 ↔ 2 ≤ ENat.card V ∧ G.Preconnected := by
-  rw [IsVertexConnected, isVertexPreconnected_one, show (1 : ℕ∞) + 1 = 2 from rfl]
+lemma isVertexConnected_one : G.IsVertexConnected 1 ↔ Nontrivial V ∧ G.Preconnected := by
+  rw [IsVertexConnected, isVertexPreconnected_one, ← ENat.one_lt_card_iff_nontrivial]
+  exact and_congr_left' <| ENat.add_one_le_iff ENat.one_ne_top
+
+lemma Preconnected.isVertexConnected_one [Nontrivial V] (h : G.Preconnected) :
+    G.IsVertexConnected 1 :=
+  SimpleGraph.isVertexConnected_one.mpr ⟨‹_›, h⟩
 
 /-- Vertex connectivity is antitonic in `k`. -/
 @[gcongr]
 lemma IsVertexConnected.anti (hkl : l ≤ k) (hc : G.IsVertexConnected k) :
     G.IsVertexConnected l := by
-  constructor
-  · rw [add_comm]
-    exact (add_le_add_right hkl 1).trans (by rw [add_comm]; exact hc.1)
-  · exact hc.2.anti hkl
+  constructor <;> grw [hkl]
+  exacts [hc.left, hc.right]
 
 /-- Vertex connectivity is monotonic in the graph. -/
 @[gcongr]
-lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) :
-    H.IsVertexConnected k :=
-  ⟨hc.1, hc.2.mono hGH⟩
+lemma IsVertexConnected.mono (hGH : G ≤ H) (hc : G.IsVertexConnected k) : H.IsVertexConnected k :=
+  ⟨hc.left, hc.right.mono hGH⟩
 
 end SimpleGraph
