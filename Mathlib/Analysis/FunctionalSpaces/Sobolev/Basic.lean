@@ -71,13 +71,13 @@ instance [hμ : IsLocallyFiniteMeasure μ] : IsLocallyFiniteMeasure (μ.restrict
 
 /- to do: the Norm instance on PiLp also induces a non-defeq ENorm on PiLp,
 we should disable the Norm → ENorm instance if we want to make this an instance. -/
-/-- to remove, unused -/
-@[reducible, simps -isSimp]
-def PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} [Fintype ι] (β : ι → Type*) [(i : ι) → ENorm (β i)] :
-    ENorm (PiLp p β) where
-  enorm f :=
-    if p = 0 then {i | ‖f i‖ₑ ≠ 0}.encard
-    else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑ i, ‖f i‖ₑ ^ p.toReal) ^ p.toReal⁻¹
+-- /-- to remove, unused -/
+-- @[reducible, simps -isSimp]
+-- def PiLp.instENorm (p : ℝ≥0∞) {ι : Type*} [Fintype ι] (β : ι → Type*) [(i : ι) → ENorm (β i)] :
+--     ENorm (PiLp p β) where
+--   enorm f :=
+--     if p = 0 then {i | ‖f i‖ₑ ≠ 0}.encard
+--     else if p = ∞ then ⨆ i, ‖f i‖ₑ else (∑ i, ‖f i‖ₑ ^ p.toReal) ^ p.toReal⁻¹
 
 attribute [fun_prop] TestFunction.contDiff
 attribute [gcongr] ae_mono
@@ -202,6 +202,12 @@ lemma Subsingleton.count_eq_dirac {ι : Type*} [MeasurableSpace ι] [Subsingleto
 lemma Unique.count_eq_dirac {ι : Type*} [MeasurableSpace ι] [Unique ι] :
     count = dirac (default : ι) :=
   Subsingleton.count_eq_dirac _
+
+variable {X ε : Type*} [MeasurableSpace X] [TopologicalSpace X]
+  [TopologicalSpace ε] [ContinuousENorm ε] {f : X → ε} {μ ν : Measure X} {s : Set X} in
+lemma LocallyIntegableOn.mono_measure (hf : LocallyIntegrableOn f s μ) (h : ν ≤ μ) :
+    LocallyIntegrableOn f s ν := by
+  sorry
 
 section count
 variable {ι α : Type*} [MeasurableSpace ι] [MeasurableSingletonClass ι]
@@ -397,9 +403,8 @@ variable (Ω) in
 /-- `f` has weak derivative represented by `g`. -/
 @[mk_iff]
 structure HasWeakDeriv (f : E → F) (g : E → E →L[ℝ] F) (μ : Measure E) : Prop where
-  isRepresentedBy : IsRepresentedBy (weakDeriv Ω f μ) g μ
   locallyIntegrableOn : LocallyIntegrableOn f Ω μ
-  -- note(F): should we add `LocallyIntegrableOn f Ω μ` as condition here?
+  isRepresentedBy : IsRepresentedBy (weakDeriv Ω f μ) g μ
 
 lemma hasWeakDeriv_congr (hf : f =ᵐ[μ.restrict Ω] f') (hg : g =ᵐ[μ.restrict Ω] g') :
     HasWeakDeriv Ω f g μ ↔ HasWeakDeriv Ω f' g' μ := by
@@ -411,12 +416,12 @@ alias ⟨HasWeakDeriv.congr, _⟩ := hasWeakDeriv_congr
 @[simp]
 lemma hasWeakderiv_const [μ.IsAddHaarMeasure] [CompleteSpace F] {a : F} :
     HasWeakDeriv Ω (fun _ : E ↦ a) 0 μ := by
-  simp_rw [hasWeakDeriv_iff, weakDeriv_const, isRepresentedBy_zero, true_and,
+  simp_rw [hasWeakDeriv_iff, weakDeriv_const, isRepresentedBy_zero, and_true,
     locallyIntegrableOn_const]
 
 @[simp]
 lemma hasWeakDeriv_zero : HasWeakDeriv Ω (0 : E → F) 0 μ := by
-  simp_rw [hasWeakDeriv_iff, weakDeriv_zero, isRepresentedBy_zero, true_and]
+  simp_rw [hasWeakDeriv_iff, weakDeriv_zero, isRepresentedBy_zero, and_true]
   apply locallyIntegrableOn_zero
 
 namespace HasWeakDeriv
@@ -427,7 +432,11 @@ lemma locallyIntegrableOn_right (h : HasWeakDeriv Ω f g μ) : LocallyIntegrable
 nonrec lemma unique_right (h : HasWeakDeriv Ω f g μ) (h' : HasWeakDeriv Ω f' g' μ)
     (hf : f =ᵐ[μ.restrict Ω] f') : g =ᵐ[μ.restrict Ω] g' := by
   rw [hasWeakDeriv_iff, weakDeriv_congr hf] at h
-  exact h.1.unique_right h'.1
+  exact h.2.unique_right h'.2
+
+lemma mono_measure (hf : HasWeakDeriv Ω f g μ) (hν : ν.restrict Ω ≤ μ.restrict Ω) :
+    HasWeakDeriv Ω f g ν :=
+  sorry
 
 lemma add (hf : HasWeakDeriv Ω f g μ) (hf' : HasWeakDeriv Ω f' g' μ)
     (hfint : LocallyIntegrableOn f Ω μ) (hfint' : LocallyIntegrableOn f' Ω μ) :
@@ -447,7 +456,7 @@ lemma sub (hf : HasWeakDeriv Ω f g μ) (hg : HasWeakDeriv Ω f' g' μ)
   simpa [sub_eq_add_neg] using hf.add hg.neg hfint hfint'.neg
 
 lemma smul (hf : HasWeakDeriv Ω f g μ) : HasWeakDeriv Ω (c • f) (c • g) μ := by
-  simp [hasWeakDeriv_iff, weakDeriv_smul, hf.1.smul, hf.2]
+  simp [hasWeakDeriv_iff, weakDeriv_smul, hf.2.smul, hf.1]
 
 end HasWeakDeriv
 
@@ -482,6 +491,47 @@ lemma HasFDerivAt.hasWeakDeriv [μ.IsAddHaarMeasure] (hf : ∀ x ∈ Ω, HasFDer
     }
 
 variable (Ω) in
+open Classical in
+/-- A choice of a weak derivative of `f` as a function, if it exists. 0 otherwise. -/
+def wderiv (f : E → F) (μ : Measure E) : E → E →L[ℝ] F :=
+  if h : ∃ g, HasWeakDeriv Ω f g μ then h.choose else 0
+
+protected lemma HasWeakDeriv.wderiv (h : HasWeakDeriv Ω f g μ) :
+    HasWeakDeriv Ω f (wderiv Ω f μ) μ := by
+  rw [_root_.wderiv, dif_pos ⟨g, h⟩]
+  generalize_proofs h2
+  exact h2.choose_spec
+
+lemma HasWeakDeriv.aeEq_wderiv (h : HasWeakDeriv Ω f g μ) (h2 : f =ᵐ[μ.restrict Ω] f') :
+    g =ᵐ[μ.restrict Ω] wderiv Ω f' μ :=
+  h.unique_right (h.congr h2 .rfl).wderiv h2
+
+lemma wderiv_congr (h : f =ᵐ[μ.restrict Ω] f') : wderiv Ω f μ =ᵐ[μ.restrict Ω] wderiv Ω f' μ := by
+  by_cases h2 : ∃ g, HasWeakDeriv Ω f g μ
+  · obtain ⟨g, hg⟩ := h2
+    exact hg.wderiv.aeEq_wderiv h
+  · simp_rw [wderiv, dif_neg h2]
+    rw [dif_neg]
+    exact mt (fun ⟨g, hg⟩ ↦ ⟨g, hg.congr h.symm .rfl⟩) h2
+
+variable (Ω) in
+/-- A choice of a iterated weak derivative of `f`, if it exists. 0 otherwise.
+  This is bundled in a `FormalMultilinearSeries`. -/
+def iteratedWDeriv (f : E → F) (μ : Measure E) : E → FormalMultilinearSeries ℝ E F :=
+  Function.swap <| Nat.rec (fun x ↦ .uncurry0 ℝ E (f x)) fun _ rec x ↦
+    (wderiv Ω rec μ x).uncurryLeft
+
+@[simp]
+lemma iteratedWDeriv_zero {x : E} :
+    iteratedWDeriv Ω f μ x 0 = .uncurry0 ℝ E (f x) :=
+  rfl
+
+@[simp]
+lemma iteratedWDeriv_succ {x : E} {n : ℕ} :
+    iteratedWDeriv Ω f μ x (n + 1) = (wderiv Ω (iteratedWDeriv Ω f μ · n) μ x).uncurryLeft :=
+  rfl
+
+variable (Ω) in
 /-- `f` has "weak taylor series" g, which are all L^p
 k currently can be `∞`. Do we want that? -/
 structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries ℝ E F)
@@ -493,6 +543,10 @@ structure HasWTaylorSeriesUpTo (f : E → F) (g : E → FormalMultilinearSeries 
 namespace HasWTaylorSeriesUpTo
 
 variable {g g' : E → FormalMultilinearSeries ℝ E F} {c : ℝ}
+
+lemma zero_aeEq_uncurry0 (h : HasWTaylorSeriesUpTo Ω f g k p μ) :
+    (g · 0) =ᵐ[μ.restrict Ω] (ContinuousMultilinearMap.uncurry0 ℝ E <| f ·) := by
+  filter_upwards [h.zero_aeEq] with x hx using by simp [← hx]
 
 lemma congr (hf : f =ᵐ[μ.restrict Ω] f')
     (hg : g =ᵐ[μ.restrict Ω] g') (k : ℕ∞) (h : HasWTaylorSeriesUpTo Ω f g k p μ) :
@@ -556,19 +610,18 @@ lemma _root_.HasFTaylorSeriesUpTo.hasWTaylorSeriesUpTo [μ.IsAddHaarMeasure] (f 
     apply f.hasCompactSupport.mono'
     exact (subset_tsupport _).trans (hf.tsupport_subset hm)
 
--- TODO: add doc-string!
-def shrink_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {ν : Measure E}
-    (hν : ν.restrict Ω ≤ μ.restrict Ω) : E → FormalMultilinearSeries ℝ E F := by
-  intro x k
-  have aux := g x k
-  sorry -- define a new power series, which are the weak derivatives w.r.t. ν instead
+-- -- TODO: add doc-string!
+-- def shrink_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ) {ν : Measure E}
+--     (hν : ν.restrict Ω ≤ μ.restrict Ω) : E → FormalMultilinearSeries ℝ E F := by
+--   intro x k
+--   have aux := g x k
+--   sorry -- define a new power series, which are the weak derivatives w.r.t. ν instead
 
-lemma mono_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ)
-    {ν : Measure E} (hν : ν.restrict Ω ≤ μ.restrict Ω) :
-    HasWTaylorSeriesUpTo Ω f (hf.shrink_measure hν) k p ν where
-  zero_aeEq := sorry -- hf.zero_aeEq
-  hasWeakDeriv m hm := by sorry -- should follow by construction
-  memLp m hm := sorry -- should follow by MemLp.mono_measure and the construction
+lemma mono_measure (hf : HasWTaylorSeriesUpTo Ω f g k p μ) (hν : ν.restrict Ω ≤ μ.restrict Ω) :
+    HasWTaylorSeriesUpTo Ω f g k p ν where
+  zero_aeEq := hf.zero_aeEq.filter_mono (by gcongr)
+  hasWeakDeriv m hm := by sorry
+  memLp m hm := sorry
 
 lemma mono_exponent [IsFiniteMeasure μ] (hf : HasWTaylorSeriesUpTo Ω f g k p μ)
     {p' : ℝ≥0∞} (hp' : p' ≤ p) : HasWTaylorSeriesUpTo Ω f g k p' μ where
@@ -618,6 +671,21 @@ lemma zero : HasWTaylorSeriesUpTo Ω 0 (0 : E → FormalMultilinearSeries ℝ E 
   hasWeakDeriv m hm := by simpa using hasWeakDeriv_zero
   memLp m hm := by simp
 
+protected lemma iteratedWDeriv (hf : HasWTaylorSeriesUpTo Ω f g k p μ) :
+    HasWTaylorSeriesUpTo Ω f (iteratedWDeriv Ω f μ) k p μ :=
+  -- we don't make this a lemma, since this can be obtained from `h.unique h.iteratedWDeriv`
+  have h : ∀ m : ℕ, m ≤ k → (g · m) =ᵐ[μ.restrict Ω] (iteratedWDeriv Ω f μ · m) := by
+    intro m hm
+    induction m with
+    | zero => simp [hf.zero_aeEq_uncurry0]
+    | succ n ih =>
+      have : n < k := lt_of_lt_of_le (mod_cast lt_add_one n) hm
+      filter_upwards [(hf.hasWeakDeriv n this).aeEq_wderiv (ih this.le)] with x hx
+      simp [← hx]
+  { zero_aeEq := by simp [iteratedWDeriv_zero]
+    hasWeakDeriv m hm := (hf.hasWeakDeriv m hm).wderiv.congr (h m hm.le) (wderiv_congr (h m hm.le))
+    memLp m hm := (hf.memLp m hm).ae_eq (h m hm) }
+
 end HasWTaylorSeriesUpTo
 
 variable (Ω) in
@@ -639,10 +707,6 @@ lemma memLp (hf : MemSobolev Ω f n p μ) : MemLp f p (μ.restrict Ω) := by
   exact hg.memLp 0 (zero_le _) |>.continuousLinearMap_comp
     (L := (continuousMultilinearCurryFin0 ℝ E F).toContinuousLinearEquiv.toContinuousLinearMap)
 
-lemma memSobolev_zero : MemSobolev Ω f 0 p μ ↔ MemLp f p (μ.restrict Ω) := by
-  refine ⟨(·.memLp), fun hf ↦ ?_⟩
-
-
 -- check whether this is true. Do we need `n : ℕ`?
 lemma memSobolev_succ : MemSobolev Ω f (n + 1) p μ ↔
     MemLp f p (μ.restrict Ω) ∧
@@ -653,11 +717,10 @@ lemma aestronglyMeasurable (hf : MemSobolev Ω f k p μ) :
     AEStronglyMeasurable f (μ.restrict Ω) :=
   hf.memLp.aestronglyMeasurable
 
-section monotonicity
-
+@[simp]
 lemma _root_.memSobolev_zero_order :
     MemSobolev Ω f 0 p μ ↔ MemLp f p (μ.restrict Ω) := by
-  refine ⟨fun hf ↦ hf.memLp, fun hf ↦ ?_⟩
+  refine ⟨(·.memLp), fun hf ↦ ?_⟩
   use fun x ↦ Nat.rec (ContinuousMultilinearMap.uncurry0 _ _ (f x)) 0
   refine {
     zero_aeEq := by simp
@@ -677,10 +740,10 @@ lemma mono_order {k' : ℕ∞} (hf : MemSobolev Ω f k p μ) (hk' : k' ≤ k) : 
 
 /-- `MemSobolev Ω f k p μ` is monotone in the measure `μ`:
 if `ν ≤ μ` on `Ω`, then `MemSobolev Ω f k p μ` implies `MemSobolev Ω f k p ν`. -/
-lemma mono_measure (hf : MemSobolev Ω f k p μ)
-    {ν : Measure E} (hν : (ν.restrict Ω) ≤ (μ.restrict Ω)) : MemSobolev Ω f k p ν := by
+lemma mono_measure (hf : MemSobolev Ω f k p μ) (hν : ν.restrict Ω ≤ μ.restrict Ω) :
+    MemSobolev Ω f k p ν := by
   obtain ⟨g, hg⟩ := hf
-  exact ⟨hg.shrink_measure hν, hg.mono_measure hν⟩
+  exact ⟨_, hg.mono_measure hν⟩
 
 /-- If `Ω` is bounded, `MemSobolev Ω f k p μ` is monotone in `p`:
 `f ∈ W^{k,p}(Ω)` and `q ≤ p`, then also `f ∈ W^{k,q}(Ω)`. -/
@@ -688,8 +751,6 @@ lemma mono_exponent [IsFiniteMeasure μ] (hf : MemSobolev Ω f k p μ)
     {p' : ℝ≥0∞} (hp' : p' ≤ p) : MemSobolev Ω f k p' μ := by
   obtain ⟨g, hg⟩ := hf
   exact ⟨g, hg.mono_exponent hp'⟩
-
-end monotonicity
 
 lemma add [IsLocallyFiniteMeasure (μ.restrict Ω)] [hp : Fact (1 ≤ p)]
     (hf : MemSobolev Ω f k p μ) (hf' : MemSobolev Ω f' k p μ) :
@@ -759,7 +820,6 @@ section sobolevNorm
 variable {g g' : E → FormalMultilinearSeries ℝ E F} {k : ℕ}
 
 variable (Ω) in
-attribute [local instance] PiLp.instENorm in
 open Finset in
 /-- The seminorm of a `FormalMultiLinearSeries`. -/
 def sobolevNormAux (g : E → FormalMultilinearSeries ℝ E F) (k : ℕ) (p : ℝ≥0∞) (μ : Measure E) :
@@ -1220,7 +1280,7 @@ To do:
 2'. relate MemSobolev and finite Sobolev norm                   done
 3. [Adams, Th 3.3] prove Banach space                           needs completeness
 4. monotonicity in `k` and (if `Ω` is bounded) in `p`.          basically done
-4'. relate W^{0,p} and L^p                                      TODO!
+4'. relate W^{0,p} and L^p                                      done
 5. [Adams, Cor 3.4] C^k functions are contained in W^{k, p}     done(?)
   -- we have it for test functions, and `MemSobolev.toSobolev` gives a way to show the inclusion.
   -- the precise statement where we close C^k functions w.r.t. the Sobolev norm is probably
