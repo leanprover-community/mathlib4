@@ -708,7 +708,6 @@ theorem LipschitzWith.integrable_comp_iff_of_antilipschitz {K K'} {f : α → β
     Integrable (g ∘ f) μ ↔ Integrable f μ := by
   simp [← memLp_one_iff_integrable, hg.memLp_comp_iff_of_antilipschitz hg' g0]
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem Integrable.real_toNNReal {f : α → ℝ} (hf : Integrable f μ) :
     Integrable (fun x => ((f x).toNNReal : ℝ)) μ := by

@@ -375,11 +375,17 @@ abbrev mkIso {G H : Grp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X
 @[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom
 
 instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
-  Equiv.unique (show _ ≃ (Mon.trivial C ⟶ A.toMon) from
-    InducedCategory.homEquiv)
+  (show _ ≃ (Mon.trivial C ⟶ A.toMon) from InducedCategory.homEquiv).unique
 
-instance : HasInitial (Grp C) :=
-  hasInitial_of_unique (trivial C)
+instance uniqueHomToTrivial (A : Grp C) : Unique (A ⟶ trivial C) :=
+  (show _ ≃ (A.toMon ⟶ Mon.trivial C) from InducedCategory.homEquiv).unique
+
+instance : HasZeroObject (Grp C) where
+  zero := ⟨Grp.trivial C,
+    fun A ↦ nonempty_unique (Grp.trivial C ⟶ A),
+    fun A ↦ nonempty_unique (A ⟶ Grp.trivial C)⟩
+
+noncomputable instance : HasZeroMorphisms (Grp C) := HasZeroObject.zeroMorphismsOfZeroObject
 
 /-! ### `Grp C` is cartesian-monoidal -/
 
