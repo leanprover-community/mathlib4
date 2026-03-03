@@ -69,6 +69,12 @@ theorem eventually_countable_ball {ι : Type*} {S : Set ι} (hS : S.Countable)
   simpa only [Filter.Eventually, setOf_forall] using
     @countable_bInter_mem _ l _ _ _ hS fun i hi => { x | p x i hi }
 
+theorem eventually_finset_ball {ι : Type*} {S : Finset ι}
+    {p : α → ∀ i ∈ S, Prop} :
+    (∀ᶠ x in l, ∀ i hi, p x i hi) ↔ ∀ i hi, ∀ᶠ x in l, p x i hi := by
+  simpa only [Filter.Eventually, setOf_forall] using
+    @countable_bInter_mem _ l _ _ _ S.countable_toSet fun i hi => { x | p x i hi }
+
 theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
     ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
