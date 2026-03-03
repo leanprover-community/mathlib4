@@ -798,13 +798,25 @@ noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
 
 lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcCandidateAux I (M := M)) where
-  addσ {Y Y'} x hY hY' _ := by
+  addσ {Y Y'} x hY hY' _hx := by
     unfold lcCandidateAux
     rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
     unfold lcCandidateAux₁
     dsimp
     rw [← ContinuousLinearMap.comp_add]
     congr! 1
+    simp only [lcCandidateAux₀]
+    rw [← mk2TensorAt_add]
+    congr 1
+    ext1 X --Z --_x
+    ext1 Z
+    by_cases hX : MDiffAt (T% X) x; swap
+    · simp [hX]
+    by_cases hZ : MDiffAt (T% Z) x; swap
+    · simp [hZ]
+    simp only [hX, hZ, ↓reduceDIte, dite_eq_ite, Pi.add_apply]
+    simp only [↓reduceIte]
+    refine leviCivitaRhs_addY_apply I ?_ ?_ ?_ ?_
     sorry
   leibniz := sorry
 
