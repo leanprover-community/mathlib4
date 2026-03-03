@@ -10,6 +10,8 @@ public import Mathlib.Algebra.Order.Nonneg.Module
 public import Mathlib.Data.Real.Archimedean
 public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
+import Mathlib.Tactic.InferInstanceAsPercent
+
 /-!
 # Nonnegative real numbers
 
@@ -54,23 +56,36 @@ assert_not_exists TrivialStar
 
 open Function
 
--- to ensure these instances are computable
-/-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
-def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
-  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
-  Nontrivial, Inhabited
+def SGNNReal := { r : ℝ // 0 ≤ r }
 
-namespace NNReal
+#synth AddCancelCommMonoid { r : ℝ // 0 ≤ r }
 
-@[inherit_doc] scoped notation "ℝ≥0" => NNReal
+#check Nonneg.addCancelCommMonoid
 
-/-- Coercion `ℝ≥0 → ℝ`. -/
-@[coe] def toReal : ℝ≥0 → ℝ := Subtype.val
+instance : AddMonoid SGNNReal :=
+  inferInstanceAs% (AddMonoid { r : ℝ // 0 ≤ r })
+instance : AddCancelCommMonoid SGNNReal :=
+  inferInstanceAs% (AddCancelCommMonoid { r : ℝ // 0 ≤ r })
 
-instance : Coe ℝ≥0 ℝ := ⟨toReal⟩
 
-instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
+instance : CanonicallyOrderedAdd ℝ≥0 :=
+  inferInstanceAs% (CanonicallyOrderedAdd { r : ℝ // 0 ≤ r })
+instance : CanonicallyOrderedAdd ℝ≥0 :=
+  inferInstanceAs% (CanonicallyOrderedAdd { r : ℝ // 0 ≤ r })
+instance : CanonicallyOrderedAdd ℝ≥0 :=
+  inferInstanceAs% (CanonicallyOrderedAdd { r : ℝ // 0 ≤ r })
+instance : CanonicallyOrderedAdd ℝ≥0 :=
+  inferInstanceAs% (CanonicallyOrderedAdd { r : ℝ // 0 ≤ r })
+instance : CanonicallyOrderedAdd ℝ≥0 :=
+  inferInstanceAs% (CanonicallyOrderedAdd { r : ℝ // 0 ≤ r })
+instance : CanonicallyOrderedAdd ℝ≥0 :=
+  inferInstanceAs% (CanonicallyOrderedAdd { r : ℝ // 0 ≤ r })
+
+
+#exit
+
+instance : CanonicallyOrderedAdd ℝ≥0 :=
+  inferInstanceAs% (CanonicallyOrderedAdd { r : ℝ // 0 ≤ r })
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := Nonneg.orderBot
@@ -164,7 +179,9 @@ example : Zero ℝ≥0 := by infer_instance
 
 example : One ℝ≥0 := by infer_instance
 
-example : Add ℝ≥0 := by infer_instance
+def glou : Add ℝ≥0 := by infer_instance
+
+#exit
 
 example : Sub ℝ≥0 := by infer_instance
 
