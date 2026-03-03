@@ -286,7 +286,7 @@ noncomputable def bifibrantResolutionMap {X₁ X₂ : CofibrantObject C} (f : X�
 
 @[reassoc (attr := simp)]
 lemma bifibrantResolutionMap_fac {X₁ X₂ : CofibrantObject C} (f : X₁ ⟶ X₂) :
-    iBifibrantResolutionObj X₁ ≫ homMk (bifibrantResolutionMap f).hom  =
+    iBifibrantResolutionObj X₁ ≫ homMk (bifibrantResolutionMap f).hom =
       f ≫ iBifibrantResolutionObj X₂ :=
   (exists_bifibrant_map f).choose_spec
 
@@ -390,7 +390,7 @@ noncomputable def HoCat.adjCounit' :
           (bifibrantResolutionMap_fac (CofibrantObject.homMk f.hom)).symm
         ext : 1
         dsimp
-        exact this ) }
+        exact this) }
 
 lemma HoCat.adjCounit'_app (X : BifibrantObject C) :
     HoCat.adjCounit'.app (BifibrantObject.toHoCat.obj X) =
