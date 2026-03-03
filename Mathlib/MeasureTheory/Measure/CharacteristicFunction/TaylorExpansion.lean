@@ -19,7 +19,7 @@ This file provides the Taylor expansion of the characteristic function of a meas
 ## Main statements
 
 * `taylorWithinEval_charFun_zero`: If a finite measure `μ` over `ℝ` admits a moment of order `n`,
-  then its Taylor expansion at `0` at order `n` is given by
+  then the Taylor expansion of its characteristic function at `0` at order `n` is given by
   `t ↦ ∑ k ∈ Finset.range (n + 1), (k ! : ℂ)⁻¹ * (t * I) ^ k * ∫ x, x ^ k ∂μ`.
 
 ## Tags
