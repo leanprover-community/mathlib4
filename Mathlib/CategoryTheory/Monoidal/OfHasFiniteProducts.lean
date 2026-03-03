@@ -145,7 +145,7 @@ open MonoidalCategory
 set_option linter.deprecated false in
 /-- The monoidal structure coming from finite products is symmetric.
 -/
-@[deprecated CartesianMonoidalCategory.toSymmetricCategory (since := "2025-10-19"), simps!]
+@[implicit_reducible, deprecated CartesianMonoidalCategory.toSymmetricCategory (since := "2025-10-19"), simps!]
 def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C :=
   have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
   let : CartesianMonoidalCategory C := .ofHasFiniteProducts
@@ -246,7 +246,7 @@ open MonoidalCategory
 set_option backward.isDefEq.respectTransparency false in
 /-- The monoidal structure coming from finite coproducts is symmetric.
 -/
-@[simps]
+@[implicit_reducible, simps]
 def symmetricOfHasFiniteCoproducts [HasInitial C] [HasBinaryCoproducts C] :
     SymmetricCategory C where
   braiding := Limits.coprod.braiding
