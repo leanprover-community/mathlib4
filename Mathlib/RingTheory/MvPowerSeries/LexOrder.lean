@@ -34,7 +34,7 @@ noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ 
   classical
   exact if h : φ = 0 then ⊤ else by
     have ne : Set.Nonempty (toLex '' φ.support) := by
-      simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, h, not_false_eq_true]
+      simpa only [Set.image_nonempty, Function.support_nonempty_iff]
     apply WithTop.some
     apply WellFounded.min _ (toLex '' φ.support) ne
     · exact Finsupp.instLTLex.lt
@@ -48,7 +48,7 @@ theorem lexOrder_def_of_ne_zero {φ : MvPowerSeries σ R} (hφ : φ ≠ 0) :
     use ne
     unfold lexOrder
     simp only [dif_neg hφ]
-  simp only [Set.image_nonempty, Function.support_nonempty_iff, ne_eq, hφ, not_false_eq_true]
+  simpa only [Set.image_nonempty, Function.support_nonempty_iff]
 
 @[simp]
 theorem lexOrder_eq_top_iff_eq_zero (φ : MvPowerSeries σ R) :

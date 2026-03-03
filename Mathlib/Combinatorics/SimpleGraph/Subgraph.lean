@@ -1322,8 +1322,13 @@ def coeDeleteVertsIso (s : Set V) :
     (G'.deleteVerts s).coe ≃g G'.coe.induce {v : G'.verts | ↑v ∉ s} where
   toEquiv := .symm <| Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ G'.verts) (· ∉ s)
   map_rel_iff' := by
-    rintro ⟨a, ha⟩ ⟨b, hb⟩
-    simp
+    intro a b
+    simp only [SimpleGraph.induce_adj, coe_adj, deleteVerts_adj, deleteVerts_verts,
+      a.2.1, a.2.2, b.2.1, b.2.2, not_false_iff, true_and]
+    #adaptation_note /-- Lean fails to rewrite using
+    `Equiv.subtypeSubtypeEquivSubtypeInter_symm_apply_coe_coe`, probably because of a mismatch
+    in type at some reducibility level. -/
+    rfl
 
 end DeleteVerts
 

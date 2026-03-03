@@ -141,6 +141,7 @@ theorem partitionable_iff_colorable {n : ℕ} : G.Partitionable n ↔ G.Colorabl
   · rintro ⟨C⟩
     refine ⟨C.toPartition, C.colorClasses_finite, le_trans ?_ (Fintype.card_fin n).le⟩
     generalize_proofs h
+    simp only [Coloring.toPartition_parts]
     change Set.Finite (Coloring.colorClasses C) at h
     have : Fintype C.colorClasses := C.colorClasses_finite.fintype
     rw [h.card_toFinset]

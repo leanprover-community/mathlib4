@@ -106,8 +106,8 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
     exact ⟨⟨hta.1.1, ht⟩, hta.2.2.1⟩
   · simp_rw [not_le]
     exact (ContinuousOn.congr ((q e).continuousOn_invFun.comp f.2.continuousOn
-      fun _ h ↦ huv ?_)
-      fun _ h ↦ if_pos <| huv ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩).mono
+      fun _ h ↦ huv ⟨hu ⟨h.out.2, h.out.1.1.2⟩, h.out.1.2.1⟩)
+      fun _ h ↦ if_pos <| huv ⟨hu ⟨h.out.2, h.out.1.1.2⟩, h.out.1.2.1⟩).mono
         (Set.inter_subset_inter_right _ <| closure_lt_subset_le continuous_const continuous_fst)
     -- ⟨hu ⟨h.2, h.1.1.2⟩, h.1.2.1⟩
   · ext ta; rw [Function.comp_apply]; split_ifs with _ hv
