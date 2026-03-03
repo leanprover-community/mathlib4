@@ -39,6 +39,7 @@ universe u v
 
 /-- A constructor for topologies by specifying the closed sets,
 and showing that they satisfy the appropriate conditions. -/
+@[implicit_reducible]
 def TopologicalSpace.ofClosed {X : Type u} (T : Set (Set X)) (empty_mem : ∅ ∈ T)
     (sInter_mem : ∀ A, A ⊆ T → ⋂₀ A ∈ T)
     (union_mem : ∀ A, A ∈ T → ∀ B, B ∈ T → A ∪ B ∈ T) : TopologicalSpace X where

@@ -375,6 +375,7 @@ variable [CommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
 open scoped Classical in
 /-- Noncomputably defines a `normalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/
+@[implicit_reducible]
 protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
   normalizationMonoidOfMonoidHomRightInverse
     { toFun := fun a : Associates α =>
