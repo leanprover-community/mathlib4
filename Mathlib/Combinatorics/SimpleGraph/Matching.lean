@@ -26,8 +26,9 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 ## Main definitions
 
-* `SimpleGraph.Subgraph.IsMatching`: `M.IsMatching` means that `M` is a matching of its
-  underlying graph.
+* `SimpleGraph.IsMatching`: `M.IsMatching` means that `M` is a matching.
+
+* `SimpleGraph.Subgraph.IsMatching`: same definition specialized to subgraphs.
 
 * `SimpleGraph.Subgraph.IsPerfectMatching` defines when a subgraph `M` of a simple graph is a
   perfect matching, denoted `M.IsPerfectMatching`.
@@ -57,6 +58,11 @@ open Function
 
 namespace SimpleGraph
 variable {V W : Type*} {G G' : SimpleGraph V} {M M' : Subgraph G} {u v w : V}
+
+/--
+A simple graph `M` is a matching if every vertex is incident to exactly one edge.
+-/
+def IsMatching (M : SimpleGraph V) : Prop := ∀ v, ∃! w, M.Adj v w
 
 namespace Subgraph
 
