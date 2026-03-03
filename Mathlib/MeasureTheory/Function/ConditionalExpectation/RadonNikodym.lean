@@ -27,7 +27,7 @@ In all statements, `μ` and `ν` are measures with `μ ≪ ν`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace MeasureTheory
 
