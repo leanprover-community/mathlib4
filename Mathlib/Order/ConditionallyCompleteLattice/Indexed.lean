@@ -182,6 +182,29 @@ lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf
     ⨅ i, f i ≤ ⨆ i, f i :=
   (ciInf_le hf (Classical.arbitrary _)).trans <| le_ciSup hf' (Classical.arbitrary _)
 
+lemma ciSup_prod {α ι ι' : Type*} [Nonempty ι] [Nonempty ι'] [ConditionallyCompleteLattice α]
+    {f : ι × ι' → α} (hf : BddAbove (Set.range f)) :
+    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') := by
+  have h₂ : BddAbove (Set.range fun i ↦ ⨆ i', f (i, i')) := by
+    rw [bddAbove_def] at hf ⊢
+    obtain ⟨B, hB⟩ := hf
+    refine ⟨B, fun y hy ↦ ?_⟩
+    obtain ⟨z, rfl⟩ := Set.mem_range.mp hy
+    exact ciSup_le fun i' ↦ by grind
+  have h₃ i : BddAbove (Set.range fun i' ↦ f (i, i')) := by
+    rw [bddAbove_def] at hf ⊢
+    obtain ⟨B, hB⟩ := hf
+    exact ⟨B, by grind⟩
+  refine eq_of_forall_ge_iff fun c ↦ ?_
+  rw [ciSup_le_iff (bddAbove_iff_subset_Iic.mpr hf), ciSup_le_iff h₂]
+  conv_rhs => enter [i]; rw [ciSup_le_iff (h₃ i)]
+  simp [Prod.forall]
+
+lemma ciInf_prod {α ι ι' : Type*} [Nonempty ι] [Nonempty ι'] [ConditionallyCompleteLattice α]
+    {f : ι × ι' → α} (hf : BddBelow (Set.range f)) :
+    ⨅ a, f a = ⨅ i, ⨅ i', f (i, i') :=
+  ciSup_prod (α := αᵒᵈ) hf
+
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.
 See `iSup_eq_of_forall_le_of_forall_lt_exists_gt` for a version in complete lattices. -/
