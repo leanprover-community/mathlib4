@@ -701,15 +701,11 @@ jobs:
           fetch-depth: 1
           path: ci-tools
 
-      - name: Set up CI scripts paths
-        uses: ./ci-tools/.github/actions/setup-ci-scripts
-
       - name: Azure CLI OIDC login and mint storage bearer token
-        shell: bash
-        run: |
-          python3 "${CI_SCRIPTS_DIR}/cache/mint_azure_storage_bearer_token.py" \
-            --client-id "${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}" \
-            --tenant-id "${{ secrets.MATHLIB_CI_TENANT_ID }}"
+        uses: ./ci-tools/.github/actions/azure-create-cache-token
+        with:
+          azure-client-id: ${{ vars.CACHE_MASTER_WRITER_AZURE_CLIENT_ID }}
+          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
 
       - name: Upload staged cache to Azure
         shell: bash
