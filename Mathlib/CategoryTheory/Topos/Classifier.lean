@@ -23,7 +23,7 @@ https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
 
 Let `C` refer to a category with a terminal object.
 
-* `CategoryTheory.Classifier C` is the data of a subobject classifier in `C`.
+* `CategoryTheory.Subobject.Classifier C` is the data of a subobject classifier in `C`.
 
 * `CategoryTheory.HasClassifier C` says that there is at least one subobject classifier.
   `Ω C` denotes a choice of subobject classifier.
@@ -36,14 +36,15 @@ Let `C` refer to a category with a terminal object.
 * An instance of `IsRegularMonoCategory C` is exhibited for any category with a subobject
   classifier.
 
-* `CategoryTheory.Classifier.representableBy`: any subobject classifier `Ω` in `C` represents the
-  subobjects functor `CategoryTheory.Subobject.presheaf C`.
+* `CategoryTheory.Subobject.Classifier.representableBy`: any subobject classifier `Ω` in `C`
+  represents the subobjects functor `CategoryTheory.Subobject.presheaf C`, assuming `C` has
+  pullbacks.
 
-* `CategoryTheory.Classifier.SubobjectRepresentableBy.classifier`: any representation `Ω` of
-  `CategoryTheory.Subobject.presheaf C` is a subobject classifier in `C`.
+* `CategoryTheory.Subobject.Classifier.SubobjectRepresentableBy.classifier`: any representation `Ω`
+  of `CategoryTheory.Subobject.presheaf C` is a subobject classifier in `C`.
 
 * `CategoryTheory.hasClassifier_isRepresentable_iff`: from the two above mappings, we get that a
-  category `C` has a subobject classifier if and only if the subobjects presheaf
+  category `C` with pullbacks has a subobject classifier if and only if the subobjects presheaf
   `CategoryTheory.Subobject.presheaf C` is representable (Proposition 1 in Section I.3 of [MM92]).
 
 ## References
@@ -61,6 +62,8 @@ namespace CategoryTheory
 open Category Limits Functor IsPullback
 
 variable (C : Type u) [Category.{v} C]
+
+namespace Subobject
 
 /-- A monomorphism `truth : Ω₀ ⟶ Ω` is a subobject classifier if, for every monomorphism
 `m : U ⟶ X` in `C`, there is a unique map `χ : X ⟶ Ω` such that for some (necessarily unique)
@@ -136,8 +139,9 @@ def isTerminalΩ₀ {c : Classifier C} : IsTerminal c.Ω₀ := IsTerminal.ofUniq
 @[simp]
 lemma isTerminalFrom_eq_χ₀ (c : Classifier C) : c.isTerminalΩ₀.from = c.χ₀ := rfl
 
-end Classifier
+end Subobject.Classifier
 
+open Subobject
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
 class HasClassifier (C : Type u) [Category.{v} C] : Prop where
   /-- There is some classifier. -/
@@ -145,7 +149,7 @@ class HasClassifier (C : Type u) [Category.{v} C] : Prop where
 
 namespace HasClassifier
 
-variable (C) [HasClassifier C]
+variable [HasClassifier C]
 
 noncomputable section
 
@@ -248,9 +252,7 @@ end HasClassifier
 
 section Representability
 
-namespace Classifier
-
-open Subobject
+namespace Subobject.Classifier
 
 /-! #### From classifiers to representations -/
 
@@ -433,7 +435,7 @@ noncomputable def classifier : Classifier C where
 
 end SubobjectRepresentableBy
 end FromRepresentation
-end Classifier
+end Subobject.Classifier
 
 variable [HasTerminal C]
 
