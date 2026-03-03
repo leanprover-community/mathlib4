@@ -34,7 +34,10 @@ variable
   {v : (x : M) → TangentSpace I x}
 
 omit [T2Space M] in
-lemma exist_uniform_time (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
+/-- $C^1$ vector fields on compact manifolds satisfy the hypothesis of the uniform time lemma for
+the existence of global integral curves. -/
+lemma exist_uniform_time_of_compactSpace
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     ∃ ε > 0, ∀ x, ∃ γ : ℝ → M, γ 0 = x ∧ IsMIntegralCurveOn γ v (Ioo (-ε) ε) := by
   have (x : M) := exists_mem_nhds_isMIntegralCurveOn_Ioo_of_contMDiffAt 0 (hv.contMDiffAt (x := x))
     BoundarylessManifold.isInteriorPoint
@@ -51,14 +54,17 @@ lemma exist_uniform_time (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ 
   exact ⟨fun s ↦ γ ⟨x, s⟩, hγ0,
     hγ.mono (Ioo_subset_Ioo (by linarith [hle x₁ hx₁]) (by linarith [hle x₁ hx₁]))⟩
 
-theorem exist_isIntegralCurve
+/-- Given a $C^1$ vector field on a compact manifold and a point `x` on the manifold, there exists
+an integral curve starting at `x` that exists for all time. -/
+theorem exist_isMIntegralCurve_of_compactSpace
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
     ∃ γ : ℝ → M, γ 0 = x ∧ IsMIntegralCurve γ v := by
-  have ⟨ε, hε, h⟩ := exist_uniform_time hv
+  have ⟨ε, hε, h⟩ := exist_uniform_time_of_compactSpace hv
   exact exists_isMIntegralCurve_of_isMIntegralCurveOn hv hε h x
 
-theorem exist_global_flow
+/-- $C^1$ vector fields on compact manifolds admit global flows. -/
+theorem exist_global_flow_of_compactSpace
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     ∃ γ : ℝ → M → M, ∀ x, γ 0 x = x ∧ IsMIntegralCurve (γ · x) v := by
-  choose γ hγ using exist_isIntegralCurve hv
+  choose γ hγ using exist_isMIntegralCurve_of_compactSpace hv
   refine ⟨fun t x ↦ γ x t, fun x ↦ hγ x⟩
