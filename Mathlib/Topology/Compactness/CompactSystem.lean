@@ -20,11 +20,10 @@ This file defines compact systems of sets.
 
 ## Main results
 
-* `IsCompactSystem.iff_isCompactSystem_of_or_univ`: A set system is a compact
-system iff inserting `univ` gives a compact system.
-* `IsClosedCompact.isCompactSystem`: The set of closed and compact sets is a compact system.
-* `IsClosedCompact.isCompactSystem_of_T2Space`: In a `T2Space α`, the set of compact sets
-  is a compact system in a `T2Space`.
+* `isCompactSystem_insert_univ_iff`: A set system is a compact system iff inserting `univ`
+  gives a compact system.
+* `isCompactSystem_isCompact_isClosed`: The set of closed and compact sets is a compact system.
+* `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
 -/
 
 @[expose] public section
@@ -43,20 +42,6 @@ def IsCompactSystem (S : Set (Set α)) : Prop :=
 end definition
 
 namespace IsCompactSystem
-
-open Classical in
-/-- In a compact system, given a countable family with `⋂ i, C i = ∅`, we choose the smallest `n`
-with `⋂ (i ≤ n), C i = ∅`. -/
-noncomputable
-def finite_of_empty (hp : IsCompactSystem S) (hC : ∀ i, C i ∈ S)
-    (hC_empty : ⋂ i, C i = ∅) : ℕ :=
-  Nat.find (hp C hC hC_empty)
-
-open Classical in
-lemma dissipate_eq_empty (hp : IsCompactSystem S) (hC : ∀ i, C i ∈ S)
-    (hC_empty : ⋂ i, C i = ∅) :
-    dissipate C (hp.finite_of_empty hC hC_empty) = ∅ := by
-  apply Nat.find_spec (hp C hC hC_empty)
 
 lemma of_nonempty_iInter
     (h : ∀ C : ℕ → Set α, (∀ i, C i ∈ S) → (∀ n, (dissipate C n).Nonempty) → (⋂ i, C i).Nonempty) :
@@ -85,23 +70,9 @@ lemma of_IsEmpty [IsEmpty α] (S : Set (Set α)) : IsCompactSystem S :=
 theorem mono {C D : Set (Set α)} (hD : IsCompactSystem D) (hCD : ∀ s, s ∈ C → s ∈ D) :
   IsCompactSystem C := fun s hC hs ↦ hD s (fun i ↦ hCD (s i) (hC i)) hs
 
-/-- In this equivalent formulation for a compact system,
-note that we use `⋂ k < n, C k` rather than `⋂ k ≤ n, C k`. -/
-lemma iff_nonempty_iInter_of_lt (S : Set (Set α)) :
-    IsCompactSystem S ↔
-      ∀ C : ℕ → Set α, (∀ i, C i ∈ S) → (∀ n, (⋂ k < n, C k).Nonempty) → (⋂ i, C i).Nonempty := by
-  simp_rw [iff_nonempty_iInter]
-  refine ⟨fun h C hi h'↦ h C hi (fun n ↦ dissipate_eq_iInter_lt ▸ (h' (n + 1))),
-    fun h C hi h' ↦ h C hi ?_⟩
-  simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
-  refine fun n g ↦ h' n ?_
-  simp_rw [← subset_empty_iff, dissipate] at g ⊢
-  exact le_trans (fun x ↦ by simp; grind) g
-
-/-- A set system is a compact system iff adding `∅` gives a compact system. -/
-lemma iff_isCompactSystem_of_or_empty :
-    IsCompactSystem S ↔ IsCompactSystem (insert ∅ S) := by
-  refine ⟨fun h s h' hd ↦ ?_, fun h ↦ mono h (fun s hs ↦ Set.mem_insert_of_mem ∅ hs)⟩
+/-- Inserting `∅` into a compact system gives a compact system. -/
+lemma insert_empty (h : IsCompactSystem S) : IsCompactSystem (insert ∅ S) := by
+  intro s h' hd
   by_cases g : ∃ n, s n = ∅
   · use g.choose
     rw [← subset_empty_iff] at hd ⊢
@@ -113,13 +84,11 @@ lemma iff_isCompactSystem_of_or_empty :
     rw [Set.nonempty_iff_ne_empty] at g
     simpa [g] using h'
 
-/-- A set system is a compact system iff adding `univ` gives a compact system. -/
-lemma iff_isCompactSystem_of_or_univ :
-    IsCompactSystem S ↔ IsCompactSystem (insert univ S) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ mono h (fun s hs ↦ Set.mem_insert_of_mem univ hs)⟩
+/-- Inserting `univ` into a compact system gives a compact system. -/
+lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := by
   rcases isEmpty_or_nonempty α with hα | _
   · simp
-  rw [iff_nonempty_iInter] at h ⊢
+  rw [IsCompactSystem.iff_nonempty_iInter] at h ⊢
   intro s h' hd
   by_cases h₀ : ∀ n, s n ∉ S
   · simp only [mem_insert_iff, h₀, or_false] at h'
@@ -141,11 +110,35 @@ lemma iff_isCompactSystem_of_or_univ :
   specialize hd (max j n)
   simp [h₃, h₇] at hd
 
-theorem iff_directed (hpi : IsPiSystem S) :
+end IsCompactSystem
+
+/-- In this equivalent formulation for a compact system,
+note that we use `⋂ k < n, C k` rather than `⋂ k ≤ n, C k`. -/
+lemma isCompactSystem_iff_nonempty_iInter_of_lt (S : Set (Set α)) :
+    IsCompactSystem S ↔
+      ∀ C : ℕ → Set α, (∀ i, C i ∈ S) → (∀ n, (⋂ k < n, C k).Nonempty) → (⋂ i, C i).Nonempty := by
+  simp_rw [IsCompactSystem.iff_nonempty_iInter]
+  refine ⟨fun h C hi h'↦ h C hi (fun n ↦ dissipate_eq_iInter_lt ▸ (h' (n + 1))),
+    fun h C hi h' ↦ h C hi ?_⟩
+  simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
+  refine fun n g ↦ h' n ?_
+  simp_rw [← subset_empty_iff, dissipate] at g ⊢
+  exact le_trans (fun x ↦ by simp; grind) g
+
+/-- A set system is a compact system iff adding `∅` gives a compact system. -/
+lemma isCompactSystem_insert_empty_iff :
+    IsCompactSystem (insert ∅ S) ↔ IsCompactSystem S :=
+  ⟨fun h ↦ h.mono (fun _ hs ↦ Set.mem_insert_of_mem ∅ hs), fun h ↦ h.insert_empty⟩
+
+/-- A set system is a compact system iff adding `univ` gives a compact system. -/
+lemma isCompactSystem_insert_univ_iff : IsCompactSystem (insert univ S) ↔ IsCompactSystem S :=
+  ⟨fun h ↦ h.mono (fun _ hs ↦ Set.mem_insert_of_mem univ hs), fun h ↦ h.insert_univ⟩
+
+theorem isCompactSystem_iff_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
     ∀ (C : ℕ → Set α), (Directed (fun x1 x2 ↦ x1 ⊇ x2) C) → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ →
       ∃ n, C n = ∅ := by
-  rw [iff_isCompactSystem_of_or_empty]
+  rw [← isCompactSystem_insert_empty_iff]
   refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
   · rw [exists_dissipate_eq_empty_iff_of_directed C hdi]
     exact h C (by simp [hi])
@@ -166,32 +159,26 @@ theorem iff_directed (hpi : IsPiSystem S) :
       · exact .inr (Set.not_nonempty_iff_eq_empty.mp g)
     apply h₀ h₁ h2
 
-theorem iff_directed' (hpi : IsPiSystem S) :
+theorem isCompactSystem_iff_directed' (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
     ∀ (C : ℕ → Set α), (Directed (fun x1 x2 ↦ x1 ⊇ x2) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
       (⋂ i, C i).Nonempty := by
-  rw [IsCompactSystem.iff_directed hpi]
+  rw [isCompactSystem_iff_directed hpi]
   refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 s ↦ ?_⟩ <;> rw [← not_imp_not] <;> push_neg
   · exact h1 C h3 h4
   · exact h1 C h3 s
 
 section IsCompactIsClosed
 
-variable (α : Type*) [TopologicalSpace α]
-
 /-- The set of compact and closed sets is a compact system. -/
-theorem of_isCompact_isClosed :
+theorem isCompactSystem_isCompact_isClosed (α : Type*) [TopologicalSpace α] :
     IsCompactSystem {s : Set α | IsCompact s ∧ IsClosed s} := by
-  intro C hC_cc hC_inter
-  by_contra! h_nonempty
-  refine absurd hC_inter ?_
-  rw [← ne_eq, ← Set.nonempty_iff_ne_empty, ← Set.iInter_dissipate]
+  refine IsCompactSystem.of_nonempty_iInter fun C hC_cc h_nonempty ↦ ?_
+  rw [← Set.iInter_dissipate]
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (Set.dissipate C)
-    (fun n ↦ ?_) (fun n ↦ ?_) ?_ (fun n ↦ ?_)
+    (fun n ↦ ?_) h_nonempty ?_ (fun n ↦ ?_)
   · exact Set.antitone_dissipate (by lia)
-  · exact h_nonempty _
-  · simp only [Set.dissipate_zero_nat]
-    exact (hC_cc 0).1
+  · simpa using (hC_cc 0).1
   · induction n with
     | zero => simp only [Set.dissipate_zero_nat]; exact (hC_cc 0).2
     | succ n hn =>
@@ -199,17 +186,14 @@ theorem of_isCompact_isClosed :
       exact hn.inter (hC_cc (n + 1)).2
 
 /-- In a `T2Space` the set of compact sets is a compact system. -/
-theorem of_isCompact [T2Space α] :
+theorem isCompactSystem_isCompact (α : Type*) [TopologicalSpace α] [T2Space α] :
     IsCompactSystem {s : Set α | IsCompact s} := by
-  convert of_isCompact_isClosed α with s
+  convert isCompactSystem_isCompact_isClosed α with s
   exact ⟨fun hs ↦ ⟨hs, hs.isClosed⟩, fun hs ↦ hs.1⟩
 
 /-- The set of sets which are either compact and closed, or `univ`, is a compact system. -/
-theorem of_isCompact_isClosed_or_univ :
-    IsCompactSystem (insert univ {s : Set α | IsCompact s ∧ IsClosed s}) := by
-  rw [← iff_isCompactSystem_of_or_univ]
-  apply of_isCompact_isClosed
+theorem isCompactSystem_insert_univ_isCompact_isClosed (α : Type*) [TopologicalSpace α] :
+    IsCompactSystem (insert univ {s : Set α | IsCompact s ∧ IsClosed s}) :=
+  (isCompactSystem_isCompact_isClosed α).insert_univ
 
 end IsCompactIsClosed
-
-end IsCompactSystem
