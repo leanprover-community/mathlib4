@@ -98,8 +98,6 @@ def Lp {α} (E : Type*) {m : MeasurableSpace α} [NormedAddCommGroup E] (p : ℝ
 scoped notation:25 α' " →₁[" μ "] " E => MeasureTheory.Lp (α := α') E 1 μ
 /-- `α →₂[μ] E` is the type of `L²` or square-integrable functions from `α` to `E`. -/
 scoped notation:25 α' " →₂[" μ "] " E => MeasureTheory.Lp (α := α') E 2 μ
-/-- `α →∞[μ] E` is the type of `L∞` or essentially boudned functions from `α` to `E`. -/
-scoped notation:25 α' " →∞[" μ "] " E => MeasureTheory.Lp (α := α') E ∞ μ
 
 namespace MemLp
 
