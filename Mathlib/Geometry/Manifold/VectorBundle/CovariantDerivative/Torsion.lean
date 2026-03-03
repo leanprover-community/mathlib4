@@ -105,6 +105,15 @@ lemma torsion_smul_right_apply [CompleteSpace E]
 
 end IsCovariantDerivativeOn
 
+variable [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M]
+
+noncomputable def torsionTensorRight (hcov : IsCovariantDerivativeOn E cov univ)
+    (X : (x : M) → TangentSpace I x) :
+    TangentSpace I x →L[ℝ] TangentSpace I x :=
+  mkTensor I E E (Bundle.torsion cov X)
+    (fun _x _f _Y hf hY ↦ hcov.torsion_smul_right_apply hf hY)
+    (fun _x _f _σ hf hσ ↦ hcov.torsion_add_right_apply hf hσ) ..
+
 /-- `∇` is torsion-free on `U` if its torsion vanishes at each `x ∈ U` -/
 noncomputable def IsTorsionFreeOn
     (cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[ℝ] TangentSpace I x))
