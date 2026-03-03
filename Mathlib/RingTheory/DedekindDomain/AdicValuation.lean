@@ -499,7 +499,6 @@ theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionI
   rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
   simpa using v.valuation_le_one _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Algebra R (v.adicCompletionIntegers K) where
   smul r x :=
     ⟨r • (x : v.adicCompletion K), by
@@ -530,7 +529,6 @@ lemma algebraMap_adicCompletionIntegers_apply (r : R) :
     algebraMap R (v.adicCompletionIntegers K) r = (algebraMap R K r : v.adicCompletion K) := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance [FaithfulSMul R K] : FaithfulSMul R (v.adicCompletionIntegers K) := by
   rw [faithfulSMul_iff_algebraMap_injective]
   intro x y

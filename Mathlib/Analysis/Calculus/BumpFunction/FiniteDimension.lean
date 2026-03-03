@@ -337,7 +337,6 @@ theorem y_neg (D : ℝ) (x : E) : y D (-x) = y D x := by
   · filter_upwards with x
     simp only [φ, indicator, mem_closedBall, dist_zero_right, norm_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem y_eq_one_of_mem_closedBall {D : ℝ} {x : E} (Dpos : 0 < D)
     (hx : x ∈ closedBall (0 : E) (1 - D)) : y D x = 1 := by
   change (w D ⋆[lsmul ℝ ℝ, μ] φ) x = 1

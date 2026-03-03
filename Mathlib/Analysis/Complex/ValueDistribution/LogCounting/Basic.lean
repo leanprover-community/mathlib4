@@ -192,7 +192,6 @@ lemma logCounting_mono [ProperSpace E] {D : locallyFinsupp E ℤ} (hD : 0 ≤ D)
         linarith
   · exact Int.cast_nonneg (hD 0)
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The logarithmic counting function of a positive function with locally finite support is
 asymptotically strictly monotone.
@@ -230,7 +229,6 @@ theorem logCounting_nonneg {E : Type*} [NormedAddCommGroup E] [ProperSpace E]
     · simpa [mul_comm r, one_le_inv_mul₀ (norm_pos_iff.mpr h₁a), abs_of_pos h₃r] using h₂a
   · simp [apply_eq_zero_of_notMem ((toClosedBall r) _) h₂a]
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 For `1 ≤ r`, the logarithmic counting function respects the `≤` relation.
 -/

@@ -611,7 +611,6 @@ protected theorem seminorm_eq_bot_of_gt {i : ℕ} (hin : n < i) :
   simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.ext_iff,
     structureMapCLM_apply_withOrder, this]
 
-set_option backward.isDefEq.respectTransparency false in
 protected theorem seminorm_le_iff_withOrder {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
     N[𝕜]_{K, n, i} f ≤ C ↔ (i ≤ n → ∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C) := by
   have : (∀ x, ‖iteratedFDeriv ℝ i f x‖ ≤ C) ↔ (∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C) := by

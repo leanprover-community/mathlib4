@@ -107,6 +107,7 @@ lemma shiftMap_homologyFunctor_map_Qh
         (homologyFunctorFactorsh C a').inv.app _ :=
   Functor.ShiftSequence.induced_shiftMap ..
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma shiftMap_homologyFunctor_map_Q
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧)
