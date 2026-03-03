@@ -104,8 +104,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   have hf0 : f 0 = 1 := by symm; simpa using h 0
   simp only [gt_iff_lt, dist_eq_norm_sub', zero_sub, norm_neg, hf0] at hf_tendsto
   simp only [ge_iff_le, neg_mul, dist_zero_right, norm_mul, norm_inv,
-    Real.norm_ofNat, Real.norm_eq_abs]
-  simp_rw [abs_of_nonneg (norm_nonneg _)]
+    Real.norm_ofNat, Real.norm_eq_abs, abs_of_nonneg (norm_nonneg _)]
   obtain ⟨δ, hδ, hδ_lt⟩ : ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ < δ → ‖1 - f x‖ < ε / 4 :=
     hf_tendsto (ε / 4) (by positivity)
   refine ⟨4 * δ⁻¹, fun r hrδ ↦ ?_⟩
