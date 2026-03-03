@@ -119,6 +119,9 @@ theorem surjective_frobenius : Surjective (frobenius R p) := (bijective_frobeniu
 noncomputable def frobeniusEquiv : R ≃+* R :=
   RingEquiv.ofBijective (frobenius R p) PerfectRing.bijective_frobenius
 
+@[simp] theorem powMulEquiv_eq_toMulEquiv_frobeniusEquiv :
+    powMulEquiv R p = (frobeniusEquiv R p).toMulEquiv := rfl
+
 @[simp]
 theorem coe_frobeniusEquiv : ⇑(frobeniusEquiv R p) = frobenius R p := rfl
 
