@@ -51,15 +51,12 @@ That is, `T - μ • 1` is bounded below as an operator.
 This is a useful step in the proof of the Fredholm alternative for compact operators. -/
 theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ ≠ 0)
     (h : ¬ HasEigenvalue (T : End 𝕜 X) μ) :
-    ∃ K > 0, AntilipschitzWith K (T - μ • 1 : X →L[𝕜] X) := by
-  -- Suppose not, then for every K > 0, there is some x such that ‖(T - μ • 1) x‖ < K * ‖x‖.
-  by_contra! hK
-  replace hK : ∀ K > 0, ∃ x, ‖(T - μ • 1) x‖ < K * ‖x‖ := by
-    contrapose! hK
-    obtain ⟨K, hK₀, hK⟩ := hK
-    refine ⟨K.toNNReal⁻¹, by positivity, ?_⟩
-    apply AddMonoidHomClass.antilipschitz_of_bound
-    simpa [NNReal.coe_inv, le_inv_mul_iff₀, hK₀, hK₀.le] using hK
+    ∃ K, AntilipschitzWith K (T - μ • 1 : X →L[𝕜] X) := by
+  -- Suppose not, and attempt to find an eigenvector with eigenvalue μ.
+  rw [antilipschitzWith_iff_exists_mul_le_norm]
+  contrapose! h
+  -- then for every K > 0, there is some x such that ‖(T - μ • 1) x‖ < K * ‖x‖.
+  replace hK : ∀ K > 0, ∃ x, ‖(T - μ • 1) x‖ < K * ‖x‖ := h
   -- In fact, there is a lower bound `c` such that for every ε > 0, there is an `x` with norm
   -- in the interval `[c, 1]` such that `‖(T - μ • 1) x‖ < ε`.
   -- (In the case of an RCLike field, where we can rescale, we could even get `‖x‖ = 1`, but we
@@ -114,7 +111,7 @@ theorem antilipschitz_of_not_hasEigenvalue (hT : IsCompactOperator T) (hμ : μ 
   have : HasEigenvector (T : End 𝕜 X) μ y := by
     simpa [hasEigenvector_iff, mem_genEigenspace_one, hy_ne, sub_eq_zero] using hy_eigen'
   -- which is a contradiction.
-  exact h (hasEigenvalue_of_hasEigenvector this)
+  exact hasEigenvalue_of_hasEigenvector this
 
 /--
 Given an endomorphism `S` of a normed space that's a closed embedding but not surjective, we can
@@ -165,7 +162,7 @@ theorem fredholm_alternative (hT : IsCompactOperator T) (hμ : μ ≠ 0) :
   obtain ⟨h₁, h₂⟩ := this
   -- Defining S := T - μ • 1, we deduce that S is antilipschitz and not surjective.
   let S := T - μ • 1
-  obtain ⟨K, -, hK : AntilipschitzWith K S⟩ := antilipschitz_of_not_hasEigenvalue hT hμ h₁
+  obtain ⟨K, hK : AntilipschitzWith K S⟩ := antilipschitz_of_not_hasEigenvalue hT hμ h₁
   replace h₂ : ¬ (S : X → X).Bijective := by
     rw [spectrum.mem_resolventSet_iff, ← IsUnit.neg_iff,
       ContinuousLinearMap.isUnit_iff_bijective] at h₂
