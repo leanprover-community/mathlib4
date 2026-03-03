@@ -115,11 +115,7 @@ namespace Topology.IsOpenEmbedding
 
 open TopCat Sheaf
 
-variable (A : Type*) [Category.{w} A] {FA : A → A → Type*} {CA : A → Type w}
-variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
-variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
-variable [PreservesFilteredColimits (CategoryTheory.forget A)]
-variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
+variable (A : Type*) [Category.{w} A]
 variable {f : X ⟶ Y} (hf : IsOpenEmbedding f)
 
 /--
@@ -129,6 +125,12 @@ composition by the functor `IsOpenMap.functor f` (sending an open `U` to `f '' U
 def sheafPullback : Y.Sheaf A ⥤ X.Sheaf A :=
   haveI := Topology.IsOpenEmbedding.functor_isContinuous hf
   hf.isOpenMap.functor.sheafPushforwardContinuous _ _ _
+
+variable {FA : A → A → Type*} {CA : A → Type w}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
+variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
+variable [PreservesFilteredColimits (CategoryTheory.forget A)]
+variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -149,7 +151,7 @@ def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
       isoSheafify_inv, Category.assoc]
     rw [Sheaf.comp_val, Sheaf.comp_val, Sheaf.comp_val, Sheaf.comp_val]
     dsimp [sheafPullback, Functor.sheafPushforwardContinuous, Sheaf.forget]
-    simp only [sheafifyMap_sheafifyLift, sheafifyMap_sheafifyLift_assoc]
+    simp only [sheafifyMap_sheafifyLift, Category.comp_id, sheafifyMap_sheafifyLift_assoc]
     rw [CategoryTheory.sheafifyLift_comp]
 
 end Topology.IsOpenEmbedding
