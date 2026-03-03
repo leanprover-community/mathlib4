@@ -6,7 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.FiniteType
-public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -246,6 +246,27 @@ lemma EssFiniteType.algHom_ext [EssFiniteType R S]
   · exact adjoin_mem_finset R S
   · rintro ⟨x, hx⟩ hx'; exact H x hx'
 
+universe u
+
+/-- A structure that indexes all essentially of finite type algebras over `R`.
+The algebra it represents is `SmallRepr.Ring`. -/
+structure EssFiniteType.SmallRepr (R : Type u) [CommRing R] : Type u where
+  n : ℕ
+  I : Ideal (MvPolynomial (Fin n) R)
+  S : Submonoid (MvPolynomial (Fin n) R ⧸ I)
+
+/-- The algebra that a `SmallRepr` represents. -/
+abbrev EssFiniteType.SmallRepr.Ring {R : Type u} [CommRing R] (S : SmallRepr R) : Type u :=
+  Localization S.S
+
+lemma EssFiniteType.exists_smallRepr [Algebra.EssFiniteType R S] :
+    ∃ T : SmallRepr R, Nonempty (S ≃ₐ[R] T.Ring) := by
+  obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp
+    (inferInstanceAs (Algebra.FiniteType R (Algebra.EssFiniteType.subalgebra R S)))
+  let g := Ideal.quotientKerAlgEquivOfSurjective hf
+  exact ⟨⟨_, _, _⟩, ⟨IsLocalization.algEquivOfAlgEquiv (M := Algebra.EssFiniteType.submonoid R S)
+    S (Localization ((Algebra.EssFiniteType.submonoid R S).map g.symm)) g.symm rfl⟩⟩
+
 end Algebra
 
 namespace RingHom
@@ -282,5 +303,12 @@ lemma EssFiniteType.ext (hf : f.EssFiniteType) {g₁ g₂ : S →+* T}
   ext x
   exact DFunLike.congr_fun (Algebra.EssFiniteType.algHom_ext T
     ⟨g₁, fun _ ↦ rfl⟩ ⟨g₂, DFunLike.congr_fun h₁.symm⟩ h₂) x
+
+lemma EssFiniteType.exists_smallRepr {f : R →+* S} (hf : f.EssFiniteType) :
+    ∃ (T : Algebra.EssFiniteType.SmallRepr R) (e : T.Ring ≃+* S),
+      f = e.toRingHom.comp (algebraMap _ _) := by
+  algebraize [f]
+  obtain ⟨T, ⟨e⟩⟩ := Algebra.EssFiniteType.exists_smallRepr R S
+  exact ⟨T, e.symm.toRingEquiv, e.symm.toAlgHom.comp_algebraMap.symm⟩
 
 end RingHom
