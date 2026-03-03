@@ -47,4 +47,3 @@ theorem mem_kerIdeal_iff_exists (x : TrivSqZeroExt R M) :
 end TrivSqZeroExt
 
 end
-
