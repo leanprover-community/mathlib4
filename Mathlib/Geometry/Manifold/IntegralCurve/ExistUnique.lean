@@ -46,7 +46,7 @@ integral curve, vector field, local existence, uniqueness
 
 public section
 
-open scoped Topology
+open scoped Manifold Topology
 
 open Function Set
 
@@ -107,7 +107,7 @@ theorem exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt [CompleteSpace E]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀)
     (hx : I.IsInteriorPoint x₀) :
     ∃ u ∈ 𝓝 x₀, ∃ ε > (0 : ℝ), ∃ γ : M × ℝ → M, ∀ x ∈ u, γ ⟨x, t₀⟩ = x ∧
-      IsIntegralCurveOn (γ ⟨x, ·⟩) v (Ioo (t₀ - ε) (t₀ + ε)) ∧
+      IsMIntegralCurveOn (γ ⟨x, ·⟩) v (Ioo (t₀ - ε) (t₀ + ε)) ∧
       ContinuousOn γ (u ×ˢ Ioo (t₀ - ε) (t₀ + ε)) := by
   -- express the differentiability of the vector field `v` in the local chart
   replace hv := contMDiffAt_iff.mp hv |>.2.contDiffAt (range_mem_nhds_isInteriorPoint hx)
@@ -179,10 +179,10 @@ manifold. -/
 theorem exists_isMIntegralCurveAt_of_contMDiffAt [CompleteSpace E]
     (hv : ContMDiffAt I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)) x₀)
     (hx : I.IsInteriorPoint x₀) :
-    ∃ γ : ℝ → M, γ t₀ = x₀ ∧ IsIntegralCurveAt γ v t₀ := by
+    ∃ γ : ℝ → M, γ t₀ = x₀ ∧ IsMIntegralCurveAt γ v t₀ := by
   have ⟨u, hu, ε, hε, γ, h⟩ := exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt t₀ hv hx
   refine ⟨fun t ↦ γ ⟨x₀, t⟩, h _ (mem_of_mem_nhds hu) |>.1, ?_⟩
-  rw [isIntegralCurveAt_iff]
+  rw [isMIntegralCurveAt_iff]
   exact ⟨Ioo (t₀ - ε) (t₀ + ε), Ioo_mem_nhds (by linarith) (by linarith),
     h _ (mem_of_mem_nhds hu) |>.2.1⟩
 
