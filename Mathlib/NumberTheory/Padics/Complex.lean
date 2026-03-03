@@ -124,6 +124,12 @@ abbrev PadicComplex := UniformSpace.Completion (PadicAlgCl p)
 /-- `ℂ_[p]` is the field of `p`-adic complex numbers. -/
 notation "ℂ_[" p "]" => PadicComplex p
 
+instance : Algebra ℚ_[p] ℂ_[p] := inferInstance
+
+instance : NormedField ℂ_[p] := inferInstance
+
+instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := inferInstance
+
 namespace PadicComplex
 
 set_option backward.isDefEq.respectTransparency false in
@@ -185,7 +191,7 @@ lemma rankOne_hom_eq :
 set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is a normed field, where the norm corresponds to the extension of the `p`-adic
   valuation. -/
-instance : NormedField ℂ_[p] := Valued.toNormedField _ _
+instance : NormedField ℂ_[p] := inferInstance
 
 set_option backward.isDefEq.respectTransparency false in
 theorem norm_def : (Norm.norm : ℂ_[p] → ℝ) = Valued.norm := rfl
@@ -208,88 +214,8 @@ variable (p : ℕ) [Fact p.Prime]
 /--
 `ℂ_[p]` is algebraically closed.
 -/
-instance PadicComplex.isAlgClosed : IsAlgClosed ℂ_[p] := by
-  apply IsAlgClosed.of_exists_root
-  intro f fmon firr
-  have fnatdeg0 : f.natDegree ≠ 0 := (Irreducible.natDegree_pos firr).ne'
-  by_cases fnatdeg1 : f.natDegree = 1
-  · rw [fmon.eq_X_add_C fnatdeg1]
-    use - f.coeff 0
-    simp
-  let F := f.SplittingField
-  letI : NormedField F :=
-    spectralNorm.normedField (K := ℂ_[p]) IsUltrametricDist.isNonarchimedean_norm
-  letI : NormedAlgebra ℂ_[p] F := {
-    spectralNormToNormedSpace (K := ℂ_[p]) IsUltrametricDist.isNonarchimedean_norm with
-    ..}
-  let a := Polynomial.rootOfSplits _ (Polynomial.SplittingField.splits f)
-      (Polynomial.degree_ne_of_natDegree_ne fnatdeg0)
-  have fa0 : f.aeval a = 0 := Polynomial.map_rootOfSplits (algebraMap _ _) (Polynomial.SplittingField.splits f) (Polynomial.degree_ne_of_natDegree_ne fnatdeg0)
-  classical
-    let S : Finset F := {x ∈ (f.rootSet F).toFinset | x ≠ a}
-  have Snonempty : S.Nonempty := by
-    have : 1 < Fintype.card (f.rootSet F) := by
-      rw [Polynomial.card_rootSet_eq_natDegree firr.separable (Polynomial.SplittingField.splits f)]
-      omega
-    rw [Fintype.one_lt_card_iff_nontrivial] at this
-    let ⟨⟨a', h1⟩, h2⟩ := exists_ne (⟨a, Polynomial.mem_rootSet.mpr ⟨firr.ne_zero, fa0⟩⟩ : (f.rootSet F))
-    use a'
-    simp only [ne_eq, Finset.mem_filter, Set.mem_toFinset, S]
-    simp only [ne_eq, Subtype.mk.injEq] at h2
-    exact ⟨h1, h2⟩
-  let δ : ℝ := Finset.min' (S.image fun x => ‖a - x‖) (Finset.image_nonempty.mpr Snonempty)
-  have norm_sub_le : ∀ a' : F, IsConjRoot ℂ_[p] a a' → a ≠ a' → δ ≤ ‖a - a'‖ := by
-    intro a' conj ne
-    apply Finset.min'_le (S.image fun x => ‖a - x‖) (‖a - a'‖)
-    apply Finset.mem_image_of_mem
-    simp only [S, minpoly.eq_of_irreducible_of_monic firr fa0 fmon, Finset.mem_filter, Set.mem_toFinset]
-    rw [← (isConjRoot_iff_mem_minpoly_rootSet ⟨f, fmon, fa0⟩)]
-    exact ⟨conj, ne.symm⟩
-  have δpos : δ > 0 := by
-    simp only [gt_iff_lt, Finset.lt_min'_iff, Finset.mem_image, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂, δ]
-    rintro a' ha'
-    simp only [Finset.mem_filter, Set.mem_toFinset, S] at ha'
-    rw [norm_pos_iff, sub_ne_zero]
-    exact ha'.2.symm
-  have hε : (δ / (max ‖a‖ 1)) ^ f.natDegree / (f.natDegree + 1) > 0 := by positivity
-  let ⟨g, gmon, gdeg, gcoeff⟩ := Polynomial.exists_monic_norm_map_algebraMap_coeff_sub_lt fmon hε
-  let gCp := g.map (algebraMap _ ℂ_[p])
-  have gCpcoeff : ∀ i : ℕ, i ≤ f.natDegree → (‖gCp.coeff i - f.coeff i‖) < (δ / (max ‖a‖ 1)) ^ f.natDegree / (f.natDegree + 1) := by
-    simpa [gCp, PadicComplex.norm_eq_norm] using gcoeff
-  have gCpSplitsId : gCp.Splits (RingHom.id _) := by
-    simp only [Polynomial.splits_map_iff, RingHomCompTriple.comp_eq, gCp]
-    apply Polynomial.splits_of_isScalarTower (K := QPAlg p)
-    simp only [Algebra.id.map_eq_id]
-    exact IsAlgClosed.splits g
-  have gCpSplits : gCp.Splits (algebraMap ℂ_[p] F) :=
-    Polynomial.splits_of_isScalarTower _ gCpSplitsId
-  let ⟨b, hb, hab⟩ := exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt a hε fa0 fmon (gmon.map _) (gdeg ▸ (g.natDegree_map _)) gCpcoeff gCpSplits
-  have hab : ‖a - b‖ < δ := by
-    have : (max ‖a‖ 1) > 0 := by positivity
-    rw [← Real.rpow_natCast, ← mul_comm_div, div_self, one_mul, ← Real.rpow_mul (div_pos δpos this).le, mul_inv_cancel₀] at hab
-    · simpa [mul_assoc, div_mul_cancel₀ _ this.ne'] using hab
-    · simp [fnatdeg0]
-    · positivity
-  have bbot : b ∈ (⊥ : IntermediateField ℂ_[p] F) := by
-    rw [Polynomial.aroots_def, Polynomial.roots_map _ gCpSplitsId, Multiset.mem_map] at hb
-    let ⟨bCp, _, hbCp⟩ := hb
-    rw [IntermediateField.mem_bot]
-    exact ⟨bCp, hbCp⟩
-  simp only [Polynomial.mem_roots', ne_eq, Polynomial.map_eq_zero, Polynomial.IsRoot.def,
-    Polynomial.eval_map_algebraMap] at hb
-  have abot : a ∈ (⊥ : IntermediateField ℂ_[p] F) := by
-    have masp : (minpoly ℂ_[p] a).Splits (algebraMap ℂ_[p] F) := by
-      simpa [minpoly.eq_of_irreducible_of_monic firr fa0 fmon] using (Polynomial.SplittingField.splits f)
-    simpa [IntermediateField.adjoin_simple_eq_bot_iff.mpr bbot] using
-        IsKrasnerNormed.krasner_normed (minpoly.irreducible ⟨f, fmon, fa0⟩).separable
-          masp ⟨gCp, gmon.map _, hb.2⟩ fun a' h1 h2 ↦ lt_of_lt_of_le hab (norm_sub_le a' h1 h2)
-  let ⟨aCp, haCp⟩ := IntermediateField.mem_bot.mp abot
-  use aCp
-  apply_fun algebraMap ℂ_[p] F
-  · rw [← Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval, haCp, map_zero]
-    exact fa0
-  · exact RingHom.injective _
+instance PadicComplex.isAlgClosed : IsAlgClosed ℂ_[p] :=
+  .of_denseRange UniformSpace.Completion.denseRange_coe
 
 end PadicComplex
 
