@@ -376,6 +376,89 @@ theorem contDiff_extend
 
 end extend
 
+section tensoriality
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners ℝ E H)
+  {M : Type*} [TopologicalSpace M] [T2Space M] [ChartedSpace H M] [IsManifold I ∞ M]
+
+variable
+  (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [(x : M) → AddCommGroup (V x)] [(x : M) → Module ℝ (V x)] [(x : M) → TopologicalSpace (V x)]
+  -- TODO can probably remove the next two hypotheses, by transport
+  [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
+  [FiberBundle F V] [VectorBundle ℝ F V] [ContMDiffVectorBundle ∞ F V I]
+
+variable
+  (F' : Type*) [NormedAddCommGroup F'] [NormedSpace ℝ F']
+  {V' : M → Type*} [TopologicalSpace (TotalSpace F' V')] [(x : M) → AddCommGroup (V' x)]
+  [(x : M) → Module ℝ (V' x)] [(x : M) → TopologicalSpace (V' x)]
+  -- TODO can probably remove the next two hypotheses, by transport
+  [∀ x, IsTopologicalAddGroup (V' x)] [∀ x, ContinuousSMul ℝ (V' x)]
+  [FiberBundle F' V'] [VectorBundle ℝ F' V']
+
+noncomputable def mkTensorAt
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    (φ : (Π x : M, V x) → (Π x, V' x)) (x)
+    (φ_smul : ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') x = φ σ x + φ σ' x) :
+    V x →L[ℝ] V' x :=
+    let Ψ : V x ≃L[ℝ] F := (trivializationAt F V x).continuousLinearEquivAt ℝ x
+      (FiberBundle.mem_baseSet_trivializationAt' x)
+    have : T2Space (V x) := Ψ.symm.toHomeomorph.t2Space
+    have : FiniteDimensional ℝ (V x) := Ψ.symm.toLinearEquiv.finiteDimensional
+    LinearMap.toContinuousLinearMap {
+      toFun v := φ (_root_.extend I F v) x
+      map_add' v₁ v₂ := by
+        rw [← φ_add]
+        · apply tensoriality_criterion I F _ F' _ _ _ _ φ_smul φ_add
+          · exact mdifferentiable_extend ..
+          · apply mdifferentiableAt_add_section
+            · exact mdifferentiable_extend ..
+            · exact mdifferentiable_extend ..
+          · simp
+        · exact mdifferentiable_extend ..
+        · exact mdifferentiable_extend ..
+      map_smul' c v := by
+        dsimp
+        rw [← φ_smul (fun _ ↦ c)]
+        · apply tensoriality_criterion I F _ F' _ _ _ _ φ_smul φ_add
+          · exact mdifferentiable_extend ..
+          · apply MDifferentiableAt.smul_section
+            · exact mdifferentiableAt_const
+            · exact mdifferentiable_extend ..
+          · simp
+        · exact mdifferentiable_const ..
+        · exact mdifferentiable_extend .. }
+
+noncomputable def mkTensor
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    (φ : (Π x : M, V x) → (Π x, V' x))
+    -- TODO could weaken `φ_smul` and `φ_add` to require the property only globally, is it useful?
+    (φ_smul : ∀ x, ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x → φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ x, ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x → φ (σ + σ') x = φ σ x + φ σ' x)
+    (x : M) :
+    V x →L[ℝ] V' x :=
+  mkTensorAt I F F' φ x (φ_smul x) (φ_add x)
+
+theorem contMDiff_mkTensor
+    (φ : (Π x : M, V x) → (Π x, V' x))
+    (φ_smul : ∀ x, ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x → φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ x, ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x → φ (σ + σ') x = φ σ x + φ σ' x)
+    -- hopefully this is the correct smoothness criterion!
+    {k} (φ_contMDiff : ∀ (σ : Π x : M, V x), CMDiff k (T% σ) → CMDiff k (T% (φ σ))) :
+    -- elaborators not working here
+    let T (x : M) : TotalSpace (F →L[ℝ] F') (fun x ↦ V x →L[ℝ] V' x) :=
+      ⟨x, mkTensor I F F' φ φ_smul φ_add x⟩
+    ContMDiff I (I.prod 𝓘(ℝ, F →L[ℝ] F')) k T := by
+  sorry
+
+end tensoriality
+
 section trivilization_topology
 
 variable {B F Z : Type*} [TopologicalSpace B]
@@ -781,6 +864,3 @@ lemma LinearEquiv.comap_isCompl {R R₂ M M₂ : Type*}
     · simp
 
 end  linear_algebra_isCompl
-
-
-
