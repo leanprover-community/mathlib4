@@ -983,7 +983,6 @@ theorem Topology.IsInducing.polynormableSpace [PolynormableSpace 𝕜₂ F]
     PolynormableSpace 𝕜 E :=
   hf.withSeminorms (PolynormableSpace.withSeminorms 𝕜₂ F) |>.toPolynormableSpace
 
-set_option backward.isDefEq.respectTransparency false in
 instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
     PolynormableSpace 𝕜₂ S :=
   IsInducing.polynormableSpace (f := S.subtype) .subtypeVal
