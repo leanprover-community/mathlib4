@@ -1031,7 +1031,6 @@ lemma extendScalars_id_comp :
   rfl
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid a strange error. -/
-set_option backward.whnf.reducibleClassField false in
 @[reassoc]
 lemma extendScalars_comp_id :
     (extendScalarsComp f₁₂ (RingHom.id R₂)).hom ≫ Functor.whiskerLeft _ (extendScalarsId R₂).hom ≫
