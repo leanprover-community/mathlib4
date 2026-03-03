@@ -179,7 +179,7 @@ theorem StrictAnti.range_inj [WellFoundedGT β] {f g : β → γ}
 theorem StrictMono.id_le [WellFoundedLT β] {f : β → β} (hf : StrictMono f) : id ≤ f := by
   rw [Pi.le_def]
   by_contra! H
-  obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min _ H
+  obtain ⟨m, hm, hm'⟩ := wellFounded_lt.has_min {i | f i < i} H
   exact hm' _ (hf hm) hm
 
 theorem StrictMono.le_apply [WellFoundedLT β] {f : β → β} (hf : StrictMono f) {x} : x ≤ f x :=
@@ -250,15 +250,15 @@ theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
   not_lt.mp <| not_lt_argmin f a
 
 theorem isMinimalFor_argmin [Nonempty α] :
-    MinimalFor Set.univ f (argmin f) :=
-  ⟨Set.mem_univ (argmin f), fun a _ _ ↦ argmin_le f a⟩
+    MinimalFor (fun _ ↦ True) f (argmin f) :=
+  ⟨trivial, fun a _ _ ↦ argmin_le f a⟩
 
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f s ha hs
 
 theorem isMinimalFor_argminOn (s : Set α) (hs : s.Nonempty) :
-    MinimalFor s f (argminOn f s hs) :=
+    MinimalFor (· ∈ s) f (argminOn f s hs) :=
   ⟨argminOn_mem f s hs, fun _ h _ ↦ argminOn_le f s h hs⟩
 
 end LinearOrder
@@ -312,25 +312,13 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 end Induction
 
 /-- A nonempty linear order with well-founded `<` has a bottom element. -/
-@[instance_reducible]
-noncomputable def WellFoundedLT.toOrderBot {α} [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
+@[to_dual (attr := instance_reducible)
+/-- A nonempty linear order with well-founded `>` has a top element. -/]
+noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [h : WellFoundedLT α] :
     OrderBot α where
   bot := h.wf.min _ Set.univ_nonempty
   bot_le a := h.wf.min_le (Set.mem_univ a)
 
-/-- A nonempty linear order with well-founded `>` has a top element. -/
-@[instance_reducible]
-noncomputable def WellFoundedGT.toOrderTop {α} [LinearOrder α] [Nonempty α] [WellFoundedGT α] :
-    OrderTop α :=
-  have := WellFoundedLT.toOrderBot (α := αᵒᵈ)
-  inferInstanceAs (OrderTop αᵒᵈᵒᵈ)
-
-namespace ULift
-
+@[to_dual]
 instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) where
-  wf := InvImage.wf down h.wf
-
-instance [LT α] [WellFoundedGT α] : WellFoundedGT (ULift α) :=
-  inferInstanceAs (WellFoundedLT (ULift αᵒᵈ))
-
-end ULift
+  wf := InvImage.wf ULift.down h.wf

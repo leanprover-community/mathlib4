@@ -129,6 +129,10 @@ def toContinuousLinearEquiv (e : A ≃A[R] B) : A ≃L[R] B :=
 
 instance : Coe (A ≃A[R] B) (A ≃L[R] B) := ⟨toContinuousLinearEquiv⟩
 
+@[simp] theorem coeCLE_apply (e : A ≃A[R] B) (a : A) : (e : A ≃L[R] B) a = e a := rfl
+
+@[simp] theorem coe_coeCLE (e : A ≃A[R] B) : ⇑(e : A ≃L[R] B) = e := rfl
+
 @[simp]
 theorem toContinuousLinearEquiv_apply (e : A ≃A[R] B) (a : A) :
     e.toContinuousLinearEquiv a = e a := rfl
@@ -198,6 +202,9 @@ theorem refl_apply (a : A) : refl R A a = a := rfl
 
 @[simp]
 theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
+
+@[simp]
+theorem coeCLE_refl : (refl R A).toContinuousLinearEquiv = ContinuousLinearEquiv.refl R A := rfl
 
 @[simp]
 theorem coe_refl' : ⇑(refl R A) = id := rfl

@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 module
 
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
@@ -321,6 +322,21 @@ A matrix is positive definite if and only if it has the form `Bᴴ * B` for some
 lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜} :
     PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B :=
   isStrictlyPositive_iff_posDef.symm.trans CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
+
+section tracePositiveLinearMap
+variable (n α 𝕜 : Type*) [Fintype n] [Semiring α] [RCLike 𝕜] [Module α 𝕜]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `Matrix.trace` as a positive linear map. -/
+def tracePositiveLinearMap : Matrix n n 𝕜 →ₚ[α] 𝕜 :=
+  .mk₀ (traceLinearMap n α 𝕜) fun _ h ↦ h.posSemidef.trace_nonneg
+
+@[simp] lemma toLinearMap_tracePositiveLinearMap :
+    (tracePositiveLinearMap n α 𝕜).toLinearMap = traceLinearMap n α 𝕜 := rfl
+
+@[simp] lemma tracePositiveLinearMap_apply (x) : tracePositiveLinearMap n α 𝕜 x = trace x := rfl
+
+end tracePositiveLinearMap
 
 set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in

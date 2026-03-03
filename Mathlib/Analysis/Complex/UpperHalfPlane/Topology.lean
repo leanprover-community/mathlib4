@@ -26,6 +26,8 @@ noncomputable section
 
 open Complex Filter Function Set TopologicalSpace Topology
 
+open scoped ComplexConjugate
+
 namespace UpperHalfPlane
 
 instance : TopologicalSpace ℍ :=
@@ -184,6 +186,10 @@ lemma eventuallyEq_coe_comp_ofComplex {z : ℂ} (hz : 0 < z.im) :
     UpperHalfPlane.coe ∘ ofComplex =ᶠ[𝓝 z] id := by
   filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds hz] with x hx
   simp only [Function.comp_apply, ofComplex_apply_of_im_pos hx, id_eq]
+
+lemma J_smul (τ : ℍ) : J • τ = ofComplex (-(conj ↑τ)) := by
+  ext
+  rw [coe_J_smul, ofComplex_apply_of_im_pos (by simpa using τ.im_pos)]
 
 end ofComplex
 
