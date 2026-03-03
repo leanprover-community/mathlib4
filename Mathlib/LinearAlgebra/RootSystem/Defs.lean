@@ -553,6 +553,7 @@ alias _root_.RootSystem.reflectionPerm_eq_reflectionPerm_iff := reflectionPerm_e
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
+@[implicit_reducible]
 def coxeterWeight : R := pairing P i j * pairing P j i
 
 @[simp] lemma coxeterWeight_flip :
