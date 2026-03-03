@@ -527,57 +527,58 @@ in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 
 @[gcongr, bound]
-theorem rpow_lt_rpow (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
+theorem rpow_lt_rpow_left (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y ^ z := by
   rw [le_iff_eq_or_lt] at hx; rcases hx with hx | hx
   · rw [← hx, zero_rpow (ne_of_gt hz)]
     exact rpow_pos_of_pos (by rwa [← hx] at hxy) _
   · rw [rpow_def_of_pos hx, rpow_def_of_pos (lt_trans hx hxy), exp_lt_exp]
     exact mul_lt_mul_of_pos_right (log_lt_log hx hxy) hz
 
-theorem strictMonoOn_rpow_Ici_of_exponent_pos {r : ℝ} (hr : 0 < r) :
+theorem rpow_left_strictMonoOn {r : ℝ} (hr : 0 < r) :
     StrictMonoOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
-  fun _ ha _ _ hab => rpow_lt_rpow ha hab hr
+  fun _ ha _ _ hab => rpow_lt_rpow_left ha hab hr
 
 @[gcongr, bound]
-theorem rpow_le_rpow {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z := by
+theorem rpow_le_rpow_left {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z := by
   rcases eq_or_lt_of_le h₁ with (rfl | h₁'); · rfl
   rcases eq_or_lt_of_le h₂ with (rfl | h₂'); · simp
-  exact le_of_lt (rpow_lt_rpow h h₁' h₂')
+  exact le_of_lt (rpow_lt_rpow_left h h₁' h₂')
 
-theorem monotoneOn_rpow_Ici_of_exponent_nonneg {r : ℝ} (hr : 0 ≤ r) :
+theorem rpow_left_monotoneOn {r : ℝ} (hr : 0 ≤ r) :
     MonotoneOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
-  fun _ ha _ _ hab => rpow_le_rpow ha hab hr
+  fun _ ha _ _ hab => rpow_le_rpow_left ha hab hr
 
-lemma rpow_lt_rpow_of_neg (hx : 0 < x) (hxy : x < y) (hz : z < 0) : y ^ z < x ^ z := by
+lemma rpow_lt_rpow_left_of_neg (hx : 0 < x) (hxy : x < y) (hz : z < 0) : y ^ z < x ^ z := by
   have := hx.trans hxy
   rw [← inv_lt_inv₀, ← rpow_neg, ← rpow_neg]
-  on_goal 1 => refine rpow_lt_rpow ?_ hxy (neg_pos.2 hz)
+  on_goal 1 => refine rpow_lt_rpow_left ?_ hxy (neg_pos.2 hz)
   all_goals positivity
 
-lemma rpow_le_rpow_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z ≤ x ^ z := by
+lemma rpow_le_rpow_left_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : y ^ z ≤ x ^ z := by
   have := hx.trans_le hxy
   rw [← inv_le_inv₀, ← rpow_neg, ← rpow_neg]
-  on_goal 1 => refine rpow_le_rpow ?_ hxy (neg_nonneg.2 hz)
+  on_goal 1 => refine rpow_le_rpow_left ?_ hxy (neg_nonneg.2 hz)
   all_goals positivity
 
-theorem rpow_lt_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
-  ⟨lt_imp_lt_of_le_imp_le fun h => rpow_le_rpow hy h (le_of_lt hz), fun h => rpow_lt_rpow hx h hz⟩
+theorem rpow_lt_rpow_iff_left (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
+  ⟨lt_imp_lt_of_le_imp_le (fun h => rpow_le_rpow_left hy h (le_of_lt hz)),
+    fun h => rpow_lt_rpow_left hx h hz⟩
 
-theorem rpow_le_rpow_iff (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z ≤ y ^ z ↔ x ≤ y :=
-  le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff hy hx hz
+theorem rpow_le_rpow_iff_left (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z ≤ y ^ z ↔ x ≤ y :=
+  le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff_left hy hx hz
 
-lemma rpow_lt_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z < y ^ z ↔ y < x :=
-  ⟨lt_imp_lt_of_le_imp_le fun h ↦ rpow_le_rpow_of_nonpos hx h hz.le,
-    fun h ↦ rpow_lt_rpow_of_neg hy h hz⟩
+lemma rpow_lt_rpow_iff_left_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z < y ^ z ↔ y < x :=
+  ⟨lt_imp_lt_of_le_imp_le fun h ↦ rpow_le_rpow_left_of_nonpos hx h hz.le,
+    fun h ↦ rpow_lt_rpow_left_of_neg hy h hz⟩
 
-lemma rpow_le_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z ≤ y ^ z ↔ y ≤ x :=
-  le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff_of_neg hy hx hz
+lemma rpow_le_rpow_iff_left_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z ≤ y ^ z ↔ y ≤ x :=
+  le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff_left_of_neg hy hx hz
 
 lemma le_rpow_inv_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y := by
-  rw [← rpow_le_rpow_iff hx _ hz, rpow_inv_rpow] <;> positivity
+  rw [← rpow_le_rpow_iff_left hx _ hz, rpow_inv_rpow] <;> positivity
 
 lemma rpow_inv_le_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
-  rw [← rpow_le_rpow_iff _ hy hz, rpow_inv_rpow] <;> positivity
+  rw [← rpow_le_rpow_iff_left _ hy hz, rpow_inv_rpow] <;> positivity
 
 lemma lt_rpow_inv_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^ z < y :=
   lt_iff_lt_of_le_iff_le <| rpow_inv_le_iff_of_pos hy hx hz
@@ -587,104 +588,104 @@ lemma rpow_inv_lt_iff_of_pos (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z�
 
 theorem le_rpow_inv_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) :
     x ≤ y ^ z⁻¹ ↔ y ≤ x ^ z := by
-  rw [← rpow_le_rpow_iff_of_neg _ hx hz, rpow_inv_rpow _ hz.ne] <;> positivity
+  rw [← rpow_le_rpow_iff_left_of_neg _ hx hz, rpow_inv_rpow _ hz.ne] <;> positivity
 
 theorem lt_rpow_inv_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) :
     x < y ^ z⁻¹ ↔ y < x ^ z := by
-  rw [← rpow_lt_rpow_iff_of_neg _ hx hz, rpow_inv_rpow _ hz.ne] <;> positivity
+  rw [← rpow_lt_rpow_iff_left_of_neg _ hx hz, rpow_inv_rpow _ hz.ne] <;> positivity
 
 theorem rpow_inv_lt_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) :
     x ^ z⁻¹ < y ↔ y ^ z < x := by
-  rw [← rpow_lt_rpow_iff_of_neg hy _ hz, rpow_inv_rpow _ hz.ne] <;> positivity
+  rw [← rpow_lt_rpow_iff_left_of_neg hy _ hz, rpow_inv_rpow _ hz.ne] <;> positivity
 
 theorem rpow_inv_le_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) :
     x ^ z⁻¹ ≤ y ↔ y ^ z ≤ x := by
-  rw [← rpow_le_rpow_iff_of_neg hy _ hz, rpow_inv_rpow _ hz.ne] <;> positivity
+  rw [← rpow_le_rpow_iff_left_of_neg hy _ hz, rpow_inv_rpow _ hz.ne] <;> positivity
 
-theorem rpow_lt_rpow_of_exponent_lt (hx : 1 < x) (hyz : y < z) : x ^ y < x ^ z := by
+theorem rpow_lt_rpow_right (hx : 1 < x) (hyz : y < z) : x ^ y < x ^ z := by
   repeat' rw [rpow_def_of_pos (lt_trans zero_lt_one hx)]
   rw [exp_lt_exp]; exact mul_lt_mul_of_pos_left hyz (log_pos hx)
 
 @[gcongr]
-theorem rpow_le_rpow_of_exponent_le (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x ^ z := by
+theorem rpow_le_rpow_right (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x ^ z := by
   repeat' rw [rpow_def_of_pos (lt_of_lt_of_le zero_lt_one hx)]
   rw [exp_le_exp]; exact mul_le_mul_of_nonneg_left hyz (log_nonneg hx)
 
 @[deprecated (since := "2025-10-28")] alias rpow_lt_rpow_of_exponent_neg :=
-  rpow_lt_rpow_of_neg
+  rpow_lt_rpow_left_of_neg
 
-theorem strictAntiOn_rpow_Ioi_of_exponent_neg {r : ℝ} (hr : r < 0) :
+theorem rpow_left_strictAntiOn {r : ℝ} (hr : r < 0) :
     StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
-  fun _ ha _ _ hab => rpow_lt_rpow_of_neg ha hab hr
+  fun _ ha _ _ hab => rpow_lt_rpow_left_of_neg ha hab hr
 
 @[deprecated (since := "2025-10-28")] alias rpow_le_rpow_of_exponent_nonpos :=
-  rpow_le_rpow_of_nonpos
+  rpow_le_rpow_left_of_nonpos
 
-theorem antitoneOn_rpow_Ioi_of_exponent_nonpos {r : ℝ} (hr : r ≤ 0) :
+theorem rpow_left_antitoneOn {r : ℝ} (hr : r ≤ 0) :
     AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
-  fun _ ha _ _ hab => rpow_le_rpow_of_nonpos ha hab hr
+  fun _ ha _ _ hab => rpow_le_rpow_left_of_nonpos ha hab hr
 
 @[simp]
-theorem rpow_le_rpow_left_iff (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
+theorem rpow_le_rpow_iff_right (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
   have x_pos : 0 < x := lt_trans zero_lt_one hx
   rw [← log_le_log_iff (rpow_pos_of_pos x_pos y) (rpow_pos_of_pos x_pos z), log_rpow x_pos,
     log_rpow x_pos, mul_le_mul_iff_left₀ (log_pos hx)]
 
 @[simp]
-theorem rpow_lt_rpow_left_iff (hx : 1 < x) : x ^ y < x ^ z ↔ y < z := by
-  rw [lt_iff_not_ge, rpow_le_rpow_left_iff hx, lt_iff_not_ge]
+theorem rpow_lt_rpow_iff_right (hx : 1 < x) : x ^ y < x ^ z ↔ y < z := by
+  rw [lt_iff_not_ge, rpow_le_rpow_iff_right hx, lt_iff_not_ge]
 
-theorem rpow_lt_rpow_of_exponent_gt (hx0 : 0 < x) (hx1 : x < 1) (hyz : z < y) : x ^ y < x ^ z := by
+theorem rpow_lt_rpow_right_of_lt_one (hx0 : 0 < x) (hx1 : x < 1) (hyz : z < y) : x ^ y < x ^ z := by
   repeat' rw [rpow_def_of_pos hx0]
   rw [exp_lt_exp]; exact mul_lt_mul_of_neg_left hyz (log_neg hx0 hx1)
 
-theorem rpow_le_rpow_of_exponent_ge (hx0 : 0 < x) (hx1 : x ≤ 1) (hyz : z ≤ y) : x ^ y ≤ x ^ z := by
+theorem rpow_le_rpow_right_of_le_one (hx0 : 0 < x) (hx1 : x ≤ 1) (hyz : z ≤ y) : x ^ y ≤ x ^ z := by
   repeat' rw [rpow_def_of_pos hx0]
   rw [exp_le_exp]; exact mul_le_mul_of_nonpos_left hyz (log_nonpos (le_of_lt hx0) hx1)
 
 @[simp]
-theorem rpow_le_rpow_left_iff_of_base_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
+theorem rpow_le_rpow_iff_right_of_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
     x ^ y ≤ x ^ z ↔ z ≤ y := by
   rw [← log_le_log_iff (rpow_pos_of_pos hx0 y) (rpow_pos_of_pos hx0 z), log_rpow hx0, log_rpow hx0,
     mul_le_mul_right_of_neg (log_neg hx0 hx1)]
 
 @[simp]
-theorem rpow_lt_rpow_left_iff_of_base_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
+theorem rpow_lt_rpow_iff_right_of_lt_one (hx0 : 0 < x) (hx1 : x < 1) :
     x ^ y < x ^ z ↔ z < y := by
-  rw [lt_iff_not_ge, rpow_le_rpow_left_iff_of_base_lt_one hx0 hx1, lt_iff_not_ge]
+  rw [lt_iff_not_ge, rpow_le_rpow_iff_right_of_lt_one hx0 hx1, lt_iff_not_ge]
 
 theorem rpow_lt_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x < 1) (hz : 0 < z) : x ^ z < 1 := by
   rw [← one_rpow z]
-  exact rpow_lt_rpow hx1 hx2 hz
+  exact rpow_lt_rpow_left hx1 hx2 hz
 
 theorem rpow_le_one {x z : ℝ} (hx1 : 0 ≤ x) (hx2 : x ≤ 1) (hz : 0 ≤ z) : x ^ z ≤ 1 := by
   rw [← one_rpow z]
-  exact rpow_le_rpow hx1 hx2 hz
+  exact rpow_le_rpow_left hx1 hx2 hz
 
 theorem rpow_lt_one_of_one_lt_of_neg {x z : ℝ} (hx : 1 < x) (hz : z < 0) : x ^ z < 1 := by
-  convert rpow_lt_rpow_of_exponent_lt hx hz
+  convert rpow_lt_rpow_right hx hz
   exact (rpow_zero x).symm
 
 theorem rpow_le_one_of_one_le_of_nonpos {x z : ℝ} (hx : 1 ≤ x) (hz : z ≤ 0) : x ^ z ≤ 1 := by
-  convert rpow_le_rpow_of_exponent_le hx hz
+  convert rpow_le_rpow_right hx hz
   exact (rpow_zero x).symm
 
 theorem one_lt_rpow {x z : ℝ} (hx : 1 < x) (hz : 0 < z) : 1 < x ^ z := by
   rw [← one_rpow z]
-  exact rpow_lt_rpow zero_le_one hx hz
+  exact rpow_lt_rpow_left zero_le_one hx hz
 
 theorem one_le_rpow {x z : ℝ} (hx : 1 ≤ x) (hz : 0 ≤ z) : 1 ≤ x ^ z := by
   rw [← one_rpow z]
-  exact rpow_le_rpow zero_le_one hx hz
+  exact rpow_le_rpow_left zero_le_one hx hz
 
 theorem one_lt_rpow_of_pos_of_lt_one_of_neg (hx1 : 0 < x) (hx2 : x < 1) (hz : z < 0) :
     1 < x ^ z := by
-  convert rpow_lt_rpow_of_exponent_gt hx1 hx2 hz
+  convert rpow_lt_rpow_right_of_lt_one hx1 hx2 hz
   exact (rpow_zero x).symm
 
 theorem one_le_rpow_of_pos_of_le_one_of_nonpos (hx1 : 0 < x) (hx2 : x ≤ 1) (hz : z ≤ 0) :
     1 ≤ x ^ z := by
-  convert rpow_le_rpow_of_exponent_ge hx1 hx2 hz
+  convert rpow_le_rpow_right_of_le_one hx1 hx2 hz
   exact (rpow_zero x).symm
 
 theorem rpow_lt_one_iff_of_pos (hx : 0 < x) : x ^ y < 1 ↔ 1 < x ∧ y < 0 ∨ x < 1 ∧ 0 < y := by
@@ -698,7 +699,7 @@ theorem rpow_lt_one_iff (hx : 0 ≤ x) :
 
 theorem rpow_lt_one_iff' {x y : ℝ} (hx : 0 ≤ x) (hy : 0 < y) :
     x ^ y < 1 ↔ x < 1 := by
-  rw [← Real.rpow_lt_rpow_iff hx zero_le_one hy, Real.one_rpow]
+  rw [← Real.rpow_lt_rpow_iff_left hx zero_le_one hy, Real.one_rpow]
 
 theorem one_lt_rpow_iff_of_pos (hx : 0 < x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ x < 1 ∧ y < 0 := by
   rw [rpow_def_of_pos hx, one_lt_exp_iff, mul_pos_iff, log_pos_iff hx.le, log_neg_iff hx]
@@ -708,9 +709,9 @@ theorem one_lt_rpow_iff (hx : 0 ≤ x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 0 < x
   · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, (zero_lt_one' ℝ).not_gt]
   · simp [one_lt_rpow_iff_of_pos hx, hx]
 
-/-- This is a more general but less convenient version of `rpow_le_rpow_of_exponent_ge`.
+/-- This is a more general but less convenient version of `rpow_le_rpow_right_of_le_one`.
 This version allows `x = 0`, so it explicitly forbids `x = y = 0`, `z ≠ 0`. -/
-theorem rpow_le_rpow_of_exponent_ge_of_imp (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hyz : z ≤ y)
+theorem rpow_le_rpow_right_of_le_one_of_imp (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hyz : z ≤ y)
     (h : x = 0 → y = 0 → z = 0) :
     x ^ y ≤ x ^ z := by
   rcases eq_or_lt_of_le hx0 with (rfl | hx0')
@@ -718,45 +719,99 @@ theorem rpow_le_rpow_of_exponent_ge_of_imp (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hyz 
     · rw [h rfl rfl]
     · rw [zero_rpow hy0]
       apply zero_rpow_nonneg
-  · exact rpow_le_rpow_of_exponent_ge hx0' hx1 hyz
+  · exact rpow_le_rpow_right_of_le_one hx0' hx1 hyz
 
-/-- This version of `rpow_le_rpow_of_exponent_ge` allows `x = 0` but requires `0 ≤ z`.
-See also `rpow_le_rpow_of_exponent_ge_of_imp` for the most general version. -/
-theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
+/-- This version of `rpow_le_rpow_right_of_le_one` allows `x = 0` but requires `0 ≤ z`.
+See also `rpow_le_rpow_right_of_le_one_of_imp` for the most general version. -/
+theorem rpow_le_rpow_right_of_le_one' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
     x ^ y ≤ x ^ z :=
-  rpow_le_rpow_of_exponent_ge_of_imp hx0 hx1 hyz fun _ hy ↦ le_antisymm (hyz.trans_eq hy) hz
+  rpow_le_rpow_right_of_le_one_of_imp hx0 hx1 hyz fun _ hy ↦ le_antisymm (hyz.trans_eq hy) hz
+
+@[deprecated (since := "2026-03-03")] alias strictMonoOn_rpow_Ici_of_exponent_pos :=
+  rpow_left_strictMonoOn
+
+@[deprecated (since := "2026-03-03")] alias monotoneOn_rpow_Ici_of_exponent_nonneg :=
+  rpow_left_monotoneOn
+
+@[deprecated (since := "2026-03-03")] alias rpow_lt_rpow := rpow_lt_rpow_left
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow := rpow_le_rpow_left
+
+@[deprecated (since := "2026-03-03")] alias rpow_lt_rpow_of_neg := rpow_lt_rpow_left_of_neg
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_of_nonpos := rpow_le_rpow_left_of_nonpos
+
+@[deprecated (since := "2026-03-03")] alias rpow_lt_rpow_iff := rpow_lt_rpow_iff_left
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_iff := rpow_le_rpow_iff_left
+
+@[deprecated (since := "2026-03-03")] alias rpow_lt_rpow_iff_of_neg := rpow_lt_rpow_iff_left_of_neg
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_iff_of_neg := rpow_le_rpow_iff_left_of_neg
+
+@[deprecated (since := "2026-03-03")] alias strictAntiOn_rpow_Ioi_of_exponent_neg :=
+  rpow_left_strictAntiOn
+
+@[deprecated (since := "2026-03-03")] alias antitoneOn_rpow_Ioi_of_exponent_nonpos :=
+  rpow_left_antitoneOn
+
+@[deprecated (since := "2026-03-03")] alias rpow_lt_rpow_of_exponent_lt := rpow_lt_rpow_right
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_of_exponent_le := rpow_le_rpow_right
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_left_iff := rpow_le_rpow_iff_right
+
+@[deprecated (since := "2026-03-03")] alias rpow_lt_rpow_left_iff := rpow_lt_rpow_iff_right
+
+@[deprecated (since := "2026-03-03")] alias rpow_lt_rpow_of_exponent_gt :=
+  rpow_lt_rpow_right_of_lt_one
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_of_exponent_ge :=
+  rpow_le_rpow_right_of_le_one
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_left_iff_of_base_lt_one :=
+  rpow_le_rpow_iff_right_of_lt_one
+
+@[deprecated (since := "2026-03-03")] alias rpow_lt_rpow_left_iff_of_base_lt_one :=
+  rpow_lt_rpow_iff_right_of_lt_one
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_of_exponent_ge_of_imp :=
+  rpow_le_rpow_right_of_le_one_of_imp
+
+@[deprecated (since := "2026-03-03")] alias rpow_le_rpow_of_exponent_ge' :=
+  rpow_le_rpow_right_of_le_one'
 
 lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :
     (max x y) ^ p = max (x ^ p) (y ^ p) := by
   rcases le_total x y with hxy | hxy
-  · rw [max_eq_right hxy, max_eq_right (rpow_le_rpow hx hxy hp)]
-  · rw [max_eq_left hxy, max_eq_left (rpow_le_rpow hy hxy hp)]
+  · rw [max_eq_right hxy, max_eq_right (rpow_le_rpow_left hx hxy hp)]
+  · rw [max_eq_left hxy, max_eq_left (rpow_le_rpow_left hy hxy hp)]
 
 theorem self_le_rpow_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : y ≤ 1) : x ≤ x ^ y := by
   simpa only [rpow_one]
-    using rpow_le_rpow_of_exponent_ge_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · one_ne_zero)
+    using rpow_le_rpow_right_of_le_one_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · one_ne_zero)
 
 theorem self_le_rpow_of_one_le (h₁ : 1 ≤ x) (h₂ : 1 ≤ y) : x ≤ x ^ y := by
-  simpa only [rpow_one] using rpow_le_rpow_of_exponent_le h₁ h₂
+  simpa only [rpow_one] using rpow_le_rpow_right h₁ h₂
 
 theorem rpow_le_self_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : 1 ≤ y) : x ^ y ≤ x := by
   simpa only [rpow_one]
-    using rpow_le_rpow_of_exponent_ge_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · (one_pos.trans_le h₃).ne')
+    using rpow_le_rpow_right_of_le_one_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · (one_pos.trans_le h₃).ne')
 
 theorem rpow_le_self_of_one_le (h₁ : 1 ≤ x) (h₂ : y ≤ 1) : x ^ y ≤ x := by
-  simpa only [rpow_one] using rpow_le_rpow_of_exponent_le h₁ h₂
+  simpa only [rpow_one] using rpow_le_rpow_right h₁ h₂
 
 theorem self_lt_rpow_of_lt_one (h₁ : 0 < x) (h₂ : x < 1) (h₃ : y < 1) : x < x ^ y := by
-  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_gt h₁ h₂ h₃
+  simpa only [rpow_one] using rpow_lt_rpow_right_of_lt_one h₁ h₂ h₃
 
 theorem self_lt_rpow_of_one_lt (h₁ : 1 < x) (h₂ : 1 < y) : x < x ^ y := by
-  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_lt h₁ h₂
+  simpa only [rpow_one] using rpow_lt_rpow_right h₁ h₂
 
 theorem rpow_lt_self_of_lt_one (h₁ : 0 < x) (h₂ : x < 1) (h₃ : 1 < y) : x ^ y < x := by
-  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_gt h₁ h₂ h₃
+  simpa only [rpow_one] using rpow_lt_rpow_right_of_lt_one h₁ h₂ h₃
 
 theorem rpow_lt_self_of_one_lt (h₁ : 1 < x) (h₂ : y < 1) : x ^ y < x := by
-  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_lt h₁ h₂
+  simpa only [rpow_one] using rpow_lt_rpow_right h₁ h₂
 
 theorem rpow_left_injOn {x : ℝ} (hx : x ≠ 0) : InjOn (fun y : ℝ => y ^ x) { y : ℝ | 0 ≤ y } := by
   rintro y hy z hz (hyz : y ^ x = z ^ x)
@@ -926,8 +981,8 @@ lemma rpow_right_inj (hx₀ : 0 < x) (hx₁ : x ≠ 1) : x ^ y = x ^ z ↔ y = z
 @[bound] lemma rpow_le_rpow_of_exponent_le_or_ge {x y z : ℝ}
     (h : 1 ≤ x ∧ y ≤ z ∨ 0 < x ∧ x ≤ 1 ∧ z ≤ y) : x ^ y ≤ x ^ z := by
   rcases h with ⟨x1, yz⟩ | ⟨x0, x1, zy⟩
-  · exact Real.rpow_le_rpow_of_exponent_le x1 yz
-  · exact Real.rpow_le_rpow_of_exponent_ge x0 x1 zy
+  · exact Real.rpow_le_rpow_right x1 yz
+  · exact Real.rpow_le_rpow_right_of_le_one x0 x1 zy
 
 end Real
 
@@ -936,10 +991,10 @@ namespace Complex
 lemma norm_prime_cpow_le_one_half (p : Nat.Primes) {s : ℂ} (hs : 1 < s.re) :
     ‖(p : ℂ) ^ (-s)‖ ≤ 1 / 2 := by
   rw [norm_natCast_cpow_of_re_ne_zero p <| by rw [neg_re]; linarith only [hs]]
-  refine (Real.rpow_le_rpow_of_nonpos zero_lt_two (Nat.cast_le.mpr p.prop.two_le) <|
+  refine (Real.rpow_le_rpow_left_of_nonpos zero_lt_two (Nat.cast_le.mpr p.prop.two_le) <|
     by rw [neg_re]; linarith only [hs]).trans ?_
   rw [one_div, ← Real.rpow_neg_one]
-  exact Real.rpow_le_rpow_of_exponent_le one_le_two <| (neg_lt_neg hs).le
+  exact Real.rpow_le_rpow_right one_le_two <| (neg_lt_neg hs).le
 
 lemma one_sub_prime_cpow_ne_zero {p : ℕ} (hp : p.Prime) {s : ℂ} (hs : 1 < s.re) :
     1 - (p : ℂ) ^ (-s) ≠ 0 := by
@@ -953,12 +1008,12 @@ lemma norm_natCast_cpow_le_norm_natCast_cpow_of_pos {n : ℕ} (hn : 0 < n) {w z 
     (h : w.re ≤ z.re) :
     ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ := by
   simp_rw [norm_natCast_cpow_of_pos hn]
-  exact Real.rpow_le_rpow_of_exponent_le (by exact_mod_cast hn) h
+  exact Real.rpow_le_rpow_right (by exact_mod_cast hn) h
 
 lemma norm_natCast_cpow_le_norm_natCast_cpow_iff {n : ℕ} (hn : 1 < n) {w z : ℂ} :
     ‖(n : ℂ) ^ w‖ ≤ ‖(n : ℂ) ^ z‖ ↔ w.re ≤ z.re := by
   simp_rw [norm_natCast_cpow_of_pos (Nat.zero_lt_of_lt hn),
-    Real.rpow_le_rpow_left_iff (Nat.one_lt_cast.mpr hn)]
+    Real.rpow_le_rpow_iff_right (Nat.one_lt_cast.mpr hn)]
 
 lemma norm_log_natCast_le_rpow_div (n : ℕ) {ε : ℝ} (hε : 0 < ε) : ‖log n‖ ≤ n ^ ε / ε := by
   rcases n.eq_zero_or_pos with rfl | h
