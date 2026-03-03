@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.CategoryTheory.Limits.Shapes.DisjointCoproduct
 /-!
 
 # Subcanonical Grothendieck topologies
@@ -22,7 +23,7 @@ universe v' v u
 
 namespace CategoryTheory.GrothendieckTopology
 
-open Opposite
+open Opposite Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [Subcanonical J]
 
@@ -106,6 +107,17 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
     using congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
+
+/-- The Yoneda lemma for sheaves. -/
+@[simps! hom_app_app_down inv_app_app]
+def yonedaOpCompCoyoneda :
+    J.yoneda.op ⋙ coyoneda ≅
+      evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
+      (whiskeringLeft _ _ _).obj (sheafToPresheaf _ _) :=
+  ((isoWhiskerLeft _ sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.symm).trans
+    (isoWhiskerRight (NatIso.op J.yonedaCompSheafToPresheaf.symm)
+    (_ ⋙ (whiskeringLeft _ _ _).obj _))).trans
+    (isoWhiskerRight CategoryTheory.largeCurriedYonedaLemma ((whiskeringLeft _ _ _).obj _))
 
 /-- A version of `yonedaEquiv` for `uliftYoneda`. -/
 def uliftYonedaEquiv {X : C} {F : Sheaf J (Type (max v v'))} :
@@ -222,5 +234,96 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
     using congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
 
 @[deprecated (since := "2025-11-10")] alias hom_ext_yonedaULift := hom_ext_uliftYoneda
+
+/-- A variant of the Yoneda lemma for sheaves with a raise in the universe level. -/
+@[simps! -isSimp]
+def uliftYonedaOpCompCoyoneda :
+    J.uliftYoneda.op ⋙ coyoneda ≅
+      evaluation Cᵒᵖ (Type max v v') ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
+      (whiskeringLeft _ _ _).obj (sheafToPresheaf _ _) :=
+  ((isoWhiskerLeft (J.yoneda.op ⋙ (sheafCompose J _).op)
+    sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.symm).trans
+    (isoWhiskerRight (NatIso.op (J.uliftYonedaCompSheafToPresheaf.symm))
+    (_ ⋙ (whiskeringLeft _ _ _).obj _))).trans
+    (isoWhiskerRight CategoryTheory.uliftYonedaOpCompCoyoneda
+    ((whiskeringLeft _ _ _).obj _))
+
+attribute [simp] uliftYonedaOpCompCoyoneda_hom_app_app_down
+
+@[simp]
+lemma uliftYonedaOpCompCoyoneda_inv_app_app (X : Cᵒᵖ) (F : Sheaf J (Type max v v'))
+    (s : ULift.{u} (F.val.obj X)) :
+    (J.uliftYonedaOpCompCoyoneda.inv.app X).app F s = J.uliftYonedaEquiv.symm s.down :=
+  rfl
+
+lemma uliftYonedaOpCompCoyoneda_app_app (X : Cᵒᵖ) (F : Sheaf J (Type (max v v'))) :
+    (J.uliftYonedaOpCompCoyoneda.app X).app F = (J.uliftYonedaEquiv.trans Equiv.ulift.symm).toIso :=
+  rfl
+
+open Limits
+
+instance preservesLimitsOfSize_yoneda : PreservesLimitsOfSize J.yoneda := by
+  refine ⟨fun {I} _ ↦ ?_⟩
+  have : PreservesLimitsOfShape I (J.yoneda ⋙ sheafToPresheaf J _) :=
+    inferInstanceAs <| PreservesLimitsOfShape I CategoryTheory.yoneda
+  exact preservesLimitsOfShape_of_reflects_of_preserves _ (sheafToPresheaf J _)
+
+/--
+Let `{ Xᵢ ⟶ Y }` be a family of pairwise disjoint maps that form a cover in `J`. Then its
+image under the yoneda embedding to `J`-sheaves is a coproduct.
+-/
+noncomputable def isColimitCofanMkYoneda {ι : Type*} (X : ι → C) {c : Cofan X}
+    (H : (Sieve.ofArrows _ c.inj) ∈ J c.pt) [∀ (i : ι), Mono (c.inj i)]
+    (hempty : (Y : C) → IsInitial Y → ⊥ ∈ J Y)
+    (hdisj : ∀ {i j : ι} (_ : i ≠ j) {Y : C} (a : Y ⟶ X i)
+      (b : Y ⟶ X j), a ≫ c.inj i = b ≫ c.inj j → Nonempty (IsInitial Y)) :
+    IsColimit (Cofan.mk _ fun i ↦ J.yoneda.map (c.inj i)) := by
+  have heq (s : Cofan fun i ↦ J.yoneda.obj (X i))
+      {Y : C} {i j : ι} (a : Y ⟶ X i) (b : Y ⟶ X j) (hab : a ≫ c.inj i = b ≫ c.inj j) :
+      (s.inj i).val.app (op Y) a = (s.inj j).val.app (op Y) b := by
+    by_cases h : i = j
+    · subst h
+      rw [(cancel_mono _).mp hab]
+    · obtain ⟨h⟩ := hdisj h a b hab
+      have := Types.isTerminalEquivUnique _ (Sheaf.isTerminalOfBotCover s.pt _ (hempty Y h))
+      exact Subsingleton.elim _ _
+  refine mkCofanColimit _ (fun s ↦ ⟨?_⟩) (fun s j ↦ ?_) fun s m hm ↦ ?_
+  · refine (s.pt.2.isSheafFor _ H).extend ?_
+    refine ⟨fun Y g ↦ ((s.inj (Sieve.ofArrows.i g.2)).val.app Y) (Sieve.ofArrows.h g.2), ?_⟩
+    intro ⟨Y⟩ ⟨Z⟩ ⟨(g : Z ⟶ Y)⟩
+    ext u
+    dsimp
+    rw [← heq s (g ≫ Sieve.ofArrows.h u.2)
+      (Sieve.ofArrows.h <| Sieve.downward_closed _ u.2 g) (by simp)]
+    exact congrFun ((s.inj _).val.naturality g.op) _
+  · ext : 1
+    let u (j : ι) : CategoryTheory.yoneda.obj (X j) ⟶ (Sieve.ofArrows _ c.inj).functor :=
+      (Sieve.ofArrows _ c.inj).toFunctor (c.inj j) (Sieve.ofArrows_mk _ _ j)
+    have (j : ι) : u j ≫ (Sieve.ofArrows _ c.inj).functorInclusion =
+      CategoryTheory.yoneda.map (c.inj j) := rfl
+    dsimp
+    simp only [← this, Category.assoc, Presieve.IsSheafFor.functorInclusion_comp_extend]
+    ext Z (g : Z.unop ⟶ X j)
+    have h : Sieve.ofArrows X c.inj (g ≫ c.inj j) :=
+      Sieve.downward_closed _ (Sieve.ofArrows_mk _ _ j) _
+    exact heq s (Sieve.ofArrows.h h) g (by simp)
+  · ext : 1
+    dsimp
+    apply Presieve.IsSheafFor.unique_extend
+    ext Y ⟨g, hg⟩
+    simp [← hm (Sieve.ofArrows.i hg)]
+
+/-- If the coproduct inclusions form a covering of `J` and coproducts are disjoint,
+the yoneda embedding to `J`-sheaves preserves coproducts. -/
+lemma preservesColimitsOfShape_yoneda_of_ofArrows_inj_mem {ι : Type*}
+    [CoproductsOfShapeDisjoint C ι] [HasPullbacks C] [HasStrictInitialObjects C]
+    (hcov : ∀ {X : ι → C} {c : Cofan X} (_ : IsColimit c), Sieve.ofArrows X c.inj ∈ J c.pt)
+    (htriv : ∀ (Y : C), IsInitial Y → ⊥ ∈ J Y) :
+    PreservesColimitsOfShape (Discrete ι) J.yoneda := by
+  apply (config := { allowSynthFailures := true }) preservesColimitsOfShape_of_discrete
+  refine fun X ↦ ⟨fun {c : Cofan X} hc ↦ ⟨(Limits.Cofan.isColimitMapCoconeEquiv _ _ _).symm ?_⟩⟩
+  have (i : ι) : Mono (c.inj i) := .of_coproductDisjoint hc _
+  refine isColimitCofanMkYoneda _ _ (hcov hc) htriv fun hij Y a b hab ↦ ⟨?_⟩
+  exact .ofCoproductDisjointOfCommSq hij hc _ _ hab
 
 end CategoryTheory.GrothendieckTopology

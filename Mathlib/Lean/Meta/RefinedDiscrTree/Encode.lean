@@ -9,6 +9,7 @@ public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 public import Lean.Meta.DiscrTree
 public import Lean.Meta.LazyDiscrTree
 import all Lean.Meta.DiscrTree
+public import Lean.Meta
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s
@@ -241,7 +242,7 @@ where
 
 /--
 If `entry.previous.isSome`, then replace it with `none`, and add the required entries
-to entry.stack`.
+to `entry.stack`.
 -/
 private def processPrevious (entry : LazyEntry) : MetaM LazyEntry := do
   let some { expr, bvars, lctx, localInsts, cfg } := entry.previous | return entry

@@ -27,12 +27,13 @@ measure. The fact that the filters are disjoint means that two mutually exclusiv
 Liouville number, Lebesgue measure, residual, generic property
 -/
 
-@[expose] public section
+public section
 
 open scoped Filter ENNReal Topology NNReal
 
 open Filter Set Metric MeasureTheory Real
 
+set_option backward.isDefEq.respectTransparency false in
 theorem setOf_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆
       ⋃ m : ℤ, (· + (m : ℝ)) ⁻¹' ⋃ n > (0 : ℕ),

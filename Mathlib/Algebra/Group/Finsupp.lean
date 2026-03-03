@@ -75,15 +75,12 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
   __ := Finsupp.equivFunOnFinite
   map_add' _ _ := rfl
 
-/-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
-noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
-    (ι →₀ M) ≃+ M where
-  __ := Equiv.finsuppUnique
+/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
+is isomorphic to `M`. -/
+@[simps!]
+noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
+  toEquiv := .finsuppUnique
   map_add' _ _ := rfl
-
-@[simp]
-lemma _root_.AddEquiv.finsuppUnique_apply {ι : Type*} [Unique ι] (v : ι →₀ M) :
-    AddEquiv.finsuppUnique v = Equiv.finsuppUnique v := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
@@ -156,8 +153,8 @@ lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M
     (H : f₁ ≠ f₂) (hg₁ : g₁ ≠ 0) (hg₂ : g₂ ≠ 0) :
     (single f₁ g₁ + single f₂ g₂).support = {f₁, f₂} := by
   rw [support_add_eq, support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂]
-  · simp [pair_comm f₂ f₁]
-  · simp [support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂, H.symm]
+  · simp
+  · simp [support_single_ne_zero, *]
 
 lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M} :
     (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by
@@ -165,9 +162,7 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   exact subset_trans Finsupp.support_single_subset (by simp)
 
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
-    AddEquiv.finsuppUnique.symm d = single () d := by
-  rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
-  simp [AddEquiv.finsuppUnique]
+    AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
 theorem addCommute_iff_inter [DecidableEq ι] {f g : ι →₀ M} :
     AddCommute f g ↔ ∀ x ∈ f.support ∩ g.support, AddCommute (f x) (g x) where
@@ -272,15 +267,15 @@ lemma induction_linear {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero
 
 section LinearOrder
 
-variable [LinearOrder ι] {p : (ι →₀ M) → Prop}
+variable [LinearOrder ι] {motive : (ι →₀ M) → Prop}
 
 /-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
 
 The lemma `induction_on_max₂` swaps the argument order in the sum. -/
-lemma induction_on_max (f : ι →₀ M) (zero : p 0)
-    (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
-    p f := by
-  suffices ∀ (s) (f : ι →₀ M), f.support = s → p f from this _ _ rfl
+lemma induction_on_max (f : ι →₀ M) (zero : motive 0)
+    (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 →
+      motive f → motive (single a b + f)) : motive f := by
+  suffices ∀ (s) (f : ι →₀ M), f.support = s → motive f from this _ _ rfl
   refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by
@@ -293,17 +288,17 @@ lemma induction_on_max (f : ι →₀ M) (zero : p 0)
 /-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
 
 The lemma `induction_on_min₂` swaps the argument order in the sum. -/
-lemma induction_on_min (f : ι →₀ M) (zero : p 0)
-    (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (single a b + f)) :
-    p f :=
+lemma induction_on_min (f : ι →₀ M) (zero : motive 0)
+    (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 →
+      motive f → motive (single a b + f)) : motive f :=
   induction_on_max (ι := ιᵒᵈ) f zero single_add
 
 /-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
 
 The lemma `induction_on_max` swaps the argument order in the sum. -/
-lemma induction_on_max₂ (f : ι →₀ M) (zero : p 0)
-    (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
-    p f := by
+lemma induction_on_max₂ (f : ι →₀ M) (zero : motive 0)
+    (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 →
+      motive f → motive (f + single a b)) : motive f := by
   classical
   refine f.induction_on_max zero ?_
   convert add_single using 7 with _ _ _ H
@@ -314,10 +309,10 @@ lemma induction_on_max₂ (f : ι →₀ M) (zero : p 0)
 /-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
 
 The lemma `induction_on_min` swaps the argument order in the sum. -/
-lemma induction_on_min₂ (f : ι →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : ι →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (f + single a b)) :
-    p f :=
-  induction_on_max₂ (ι := ιᵒᵈ) f h0 ha
+lemma induction_on_min₂ (f : ι →₀ M) (zero : motive 0)
+    (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 →
+      motive f → motive (f + single a b)) : motive f :=
+  induction_on_max₂ (ι := ιᵒᵈ) f zero add_single
 
 end LinearOrder
 
@@ -454,8 +449,7 @@ lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
   Finset.Subset.antisymm support_mapRange
     (calc
       support f = support (- -f) := congr_arg support (neg_neg _).symm
-      _ ⊆ support (-f) := support_mapRange
-      )
+      _ ⊆ support (-f) := support_mapRange)
 
 lemma support_sub [DecidableEq ι] {f g : ι →₀ G} : support (f - g) ⊆ support f ∪ support g := by
   rw [sub_eq_add_neg, ← support_neg g]

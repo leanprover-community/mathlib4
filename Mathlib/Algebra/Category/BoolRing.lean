@@ -52,6 +52,7 @@ instance : Inhabited BoolRing :=
   ⟨of PUnit⟩
 
 variable {R} in
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BoolRing`. -/
 @[ext]
 structure Hom (R S : BoolRing) where
@@ -59,11 +60,15 @@ structure Hom (R S : BoolRing) where
   /-- The underlying ring hom. -/
   hom' : R →+* S
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category BoolRing where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BoolRing (· →+* ·) where
   hom f := f.hom'
   ofHom f := ⟨f⟩
@@ -85,6 +90,8 @@ instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
     { obj := fun R ↦ CommRingCat.of R
       map := fun f ↦ CommRingCat.ofHom f.hom }
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : BoolRing.{u}} (e : α ≃+* β) : α ≅ β where

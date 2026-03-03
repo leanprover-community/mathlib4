@@ -13,7 +13,7 @@ public import Mathlib.RingTheory.FractionalIdeal.Operations
 This file defines the notation `I⁻¹` where `I` is a not necessarily invertible fractional ideal.
 Note that this is somewhat misleading notation in case `I` is not invertible.
 The theorem that all nonzero fractional ideals are invertible in a Dedekind domain can be found in
-`Mathlib/DedekindDomain/Ideal/Basic.lean`.
+`Mathlib/RingTheory/DedekindDomain/Ideal/Basic.lean`.
 
 ## Main definitions
 
@@ -30,7 +30,7 @@ The theorem that all nonzero fractional ideals are invertible in a Dedekind doma
 fractional ideal, invertible ideal
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists IsDedekindDomain
 
@@ -65,10 +65,8 @@ theorem mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y
   mem_div_iff_of_ne_zero hI
 
 theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
-  -- Porting note: in Lean3, introducing `x` would just give `x ∈ J⁻¹ → x ∈ I⁻¹`, but
-  --  in Lean4, it goes all the way down to the subtypes
   intro x
-  simp only [val_eq_coe, mem_coe, mem_inv_iff hJ, mem_inv_iff hI]
+  simp only [mem_inv_iff hJ, mem_inv_iff hI]
   exact fun h y hy => h y (hIJ hy)
 
 theorem le_self_mul_inv {I : FractionalIdeal R₁⁰ K} (hI : I ≤ (1 : FractionalIdeal R₁⁰ K)) :

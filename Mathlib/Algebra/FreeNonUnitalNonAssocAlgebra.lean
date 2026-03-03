@@ -37,14 +37,11 @@ free algebra, non-unital, non-associative, free magma, magma algebra, universal 
 forgetful functor, adjoint functor
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
 
+open scoped MonoidAlgebra
 
-universe u v w
-
-noncomputable section
-
-variable (R : Type u) (X : Type v) [Semiring R]
+variable (R X A : Type*) [Semiring R]
 
 /--
 If `α` is a type, and `R` is a semiring, then `FreeNonUnitalNonAssocAlgebra R α` is the free
@@ -62,19 +59,17 @@ For example if `x` and `y` are terms of type `α` and
 `a`, `b` are terms of type `R` then `(3 * a * a) • (x * (y * x)) + (2 * b + 1) • (y * x)` is a
 "typical" element of `FreeNonUnitalNonAssocAlgebra R α`.
 -/
-abbrev FreeNonUnitalNonAssocAlgebra :=
-  MonoidAlgebra R (FreeMagma X)
+abbrev FreeNonUnitalNonAssocAlgebra := R[FreeMagma X]
 
 namespace FreeNonUnitalNonAssocAlgebra
 
-variable {X}
+variable {X A}
 
 /-- The embedding of `X` into the free algebra with coefficients in `R`. -/
 def of : X → FreeNonUnitalNonAssocAlgebra R X :=
   MonoidAlgebra.ofMagma R _ ∘ FreeMagma.of
 
-variable {A : Type w} [NonUnitalNonAssocSemiring A]
-variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The functor `X ↦ FreeNonUnitalNonAssocAlgebra R X` from the category of types to the
 category of non-unital, non-associative algebras over `R` is adjoint to the forgetful functor in the

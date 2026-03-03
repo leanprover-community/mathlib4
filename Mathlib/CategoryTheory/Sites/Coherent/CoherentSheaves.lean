@@ -16,7 +16,7 @@ This file characterises sheaves for the coherent topology
 
 ## Main result
 
-* `isSheaf_coherent`: a presheaf of types for the is a sheaf for the coherent topology if and only
+* `isSheaf_coherent`: a presheaf of types is a sheaf for the coherent topology if and only
   if it satisfies the sheaf condition with respect to every presieve consisting of a finite
   effective epimorphic family.
 -/
@@ -25,7 +25,7 @@ This file characterises sheaves for the coherent topology
 
 namespace CategoryTheory
 
-variable {C : Type*} [Category C] [Precoherent C]
+variable {C : Type*} [Category* C] [Precoherent C]
 
 universe w in
 lemma isSheaf_coherent (P : Cᵒᵖ ⥤ Type w) :

@@ -39,7 +39,7 @@ To check the concentration property of the middle factor and the fact that it ha
 rely on the explicit computation of the Fourier transform of Gaussians.
 -/
 
-@[expose] public section
+public section
 
 open Filter MeasureTheory Complex Module Metric Real Bornology
 
@@ -52,11 +52,11 @@ variable {V E : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 namespace Real
 
 lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
-    Tendsto (fun (c : ℝ) ↦ (∫ v : V, cexp (- c⁻¹ * ‖v‖^2) • f v))
+    Tendsto (fun (c : ℝ) ↦ (∫ v : V, cexp (- c⁻¹ * ‖v‖ ^ 2) • f v))
       atTop (𝓝 (∫ v : V, f v)) := by
   apply tendsto_integral_filter_of_dominated_convergence _ _ _ hf.norm
   · filter_upwards with v
-    nth_rewrite 2 [show f v = cexp (- (0 : ℝ) * ‖v‖^2) • f v by simp]
+    nth_rewrite 2 [show f v = cexp (- (0 : ℝ) * ‖v‖ ^ 2) • f v by simp]
     apply (Tendsto.cexp _).smul_const
     exact tendsto_inv_atTop_zero.ofReal.neg.mul_const _
   · filter_upwards with c using
@@ -72,11 +72,12 @@ lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
 
 variable [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕 f)) (v : V) :
     Tendsto (fun (c : ℝ) ↦
       ∫ w : V, ((π * c) ^ (finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * c * ‖v - w‖ ^ 2)) • f w)
     atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
-  have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)
+  have A : Tendsto (fun (c : ℝ) ↦ (∫ w : V, cexp (- c⁻¹ * ‖w‖ ^ 2 + 2 * π * I * ⟪v, w⟫)
        • (𝓕 f) w)) atTop (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     have : Integrable (fun w ↦ 𝐞 ⟪w, v⟫ • (𝓕 f) w) := by
       have B : Continuous fun p : V × V => (- innerₗ V) p.1 p.2 := continuous_inner.neg
@@ -89,11 +90,11 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
       ring
     · simp [fourierInv_eq]
   have B : Tendsto (fun (c : ℝ) ↦ (∫ w : V,
-        𝓕 (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)) w • f w)) atTop
+        𝓕 (fun w ↦ cexp (- c⁻¹ * ‖w‖ ^ 2 + 2 * π * I * ⟪v, w⟫)) w • f w)) atTop
       (𝓝 (𝓕⁻ (𝓕 f) v)) := by
     apply A.congr'
     filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
-    have J : Integrable (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)) :=
+    have J : Integrable (fun w ↦ cexp (- c⁻¹ * ‖w‖ ^ 2 + 2 * π * I * ⟪v, w⟫)) :=
       GaussianFourier.integrable_cexp_neg_mul_sq_norm_add (by simpa) _ _
     simpa using (VectorFourier.integral_fourierIntegral_smul_eq_flip (L := innerₗ V)
       Real.continuous_fourierChar continuous_inner J hf).symm
@@ -109,7 +110,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
     Tendsto (fun (c : ℝ) ↦
       ∫ w : V, ((π * c : ℂ) ^ (finrank ℝ V / 2 : ℂ) * cexp (-π ^ 2 * c * ‖v - w‖ ^ 2)) • f w)
     atTop (𝓝 (f v)) := by
-  let φ : V → ℝ := fun w ↦ π ^ (finrank ℝ V / 2 : ℝ) * Real.exp (-π^2 * ‖w‖^2)
+  let φ : V → ℝ := fun w ↦ π ^ (finrank ℝ V / 2 : ℝ) * Real.exp (-π ^ 2 * ‖w‖ ^ 2)
   have A : Tendsto (fun (c : ℝ) ↦ ∫ w : V, (c ^ finrank ℝ V * φ (c • (v - w))) • f w)
       atTop (𝓝 (f v)) := by
     apply tendsto_integral_comp_smul_smul_of_integrable'
@@ -120,7 +121,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
         ← rpow_add pi_pos]
       ring_nf
       exact rpow_zero _
-    · have A : Tendsto (fun (w : V) ↦ π^2 * ‖w‖^2) (cobounded V) atTop := by
+    · have A : Tendsto (fun (w : V) ↦ π ^ 2 * ‖w‖ ^ 2) (cobounded V) atTop := by
         rw [tendsto_const_mul_atTop_of_pos (by positivity)]
         apply (tendsto_pow_atTop two_ne_zero).comp tendsto_norm_cobounded_atTop
       have B := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (finrank ℝ V / 2) 1
@@ -135,7 +136,8 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
     · exact hf
     · exact h'f
   have B : Tendsto
-      (fun (c : ℝ) ↦ ∫ w : V, ((c^(1/2 : ℝ)) ^ finrank ℝ V * φ ((c^(1/2 : ℝ)) • (v - w))) • f w)
+      (fun (c : ℝ) ↦
+        ∫ w : V, ((c ^ (1 / 2 : ℝ)) ^ finrank ℝ V * φ ((c ^ (1 / 2 : ℝ)) • (v - w))) • f w)
       atTop (𝓝 (f v)) :=
     A.comp (tendsto_rpow_atTop (by simp))
   apply B.congr'

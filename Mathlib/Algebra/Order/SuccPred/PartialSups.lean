@@ -16,7 +16,7 @@ Basic results concerning `PartialSups` which follow with minimal assumptions bey
 the `PartialSup` is defined over a `SuccAddOrder`.
 -/
 
-@[expose] public section
+public section
 
 open Finset
 

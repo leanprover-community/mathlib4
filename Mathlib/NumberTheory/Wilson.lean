@@ -26,7 +26,7 @@ This could be generalized to similar results about finite abelian groups.
 * Give `wilsons_lemma` a descriptive name.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists legendreSym.quadratic_reciprocity
 

@@ -40,6 +40,7 @@ instance : CoeSort PartOrd (Type _) :=
 
 attribute [coe] PartOrd.carrier
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `PartOrd R`. -/
 @[ext]
 structure Hom (X Y : PartOrd.{u}) where
@@ -47,11 +48,15 @@ structure Hom (X Y : PartOrd.{u}) where
   /-- The underlying `OrderHom`. -/
   hom' : X →o Y
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : Category PartOrd.{u} where
   Hom X Y := Hom X Y
   id _ := ⟨OrderHom.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory PartOrd (· →o ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -83,7 +88,7 @@ lemma coe_comp {X Y Z : PartOrd} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → 
 
 @[simp]
 lemma forget_map {X Y : PartOrd} (f : X ⟶ Y) :
-    (forget PartOrd).map f = f := rfl
+    (forget PartOrd).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : PartOrd} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=

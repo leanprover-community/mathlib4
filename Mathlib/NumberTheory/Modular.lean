@@ -5,12 +5,13 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
 module
 
-public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Instances.ZMultiples
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane
@@ -107,6 +108,7 @@ open Filter ContinuousLinearMap
 
 attribute [local simp] ContinuousLinearMap.coe_smul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The function `(c,d) → |cz+d|^2` is proper, that is, preimages of bounded-above sets are finite.
 -/
 theorem tendsto_normSq_coprime_pair :
@@ -145,7 +147,7 @@ theorem tendsto_normSq_coprime_pair :
       rw [f_def, add_im, im_ofReal_mul, ofReal_im, add_zero, mul_left_comm, inv_mul_cancel₀ hz,
         mul_one]
     · change (z : ℂ).im⁻¹ * ((z : ℂ) * conj (f c)).im = c 1
-      rw [f_def, RingHom.map_add, RingHom.map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
+      rw [f_def, map_add, map_mul, mul_add, mul_left_comm, mul_conj, conj_ofReal,
         conj_ofReal, ← ofReal_mul, add_im, ofReal_im, zero_add, inv_mul_eq_iff_eq_mul₀ hz]
       simp only [ofReal_im, ofReal_re, mul_im, zero_add, mul_zero]
   have hf' : IsClosedEmbedding f := f.isClosedEmbedding_of_injective hf
@@ -182,6 +184,7 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
@@ -243,6 +246,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   simp [field]
   linear_combination -((z : ℂ) * (g 1 1 : ℂ) - g 1 0) * H
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_abs_re_smul {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) :
     Tendsto
       (fun g : { g : SL(2, ℤ) // g 1 = p } => |((g : SL(2, ℤ)) • z).re|) cofinite atTop := by
@@ -326,7 +330,7 @@ variable {z}
 theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
     ∃ n : ℤ, ∀ z : ℍ, g • z = T ^ n • z := by
   have had := g.det_coe
-  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; omega
+  replace had : g 0 0 * g 1 1 = 1 := by rw [det_fin_two, hc] at had; lia
   rcases Int.eq_one_or_neg_one_of_mul_eq_one' had with (⟨ha, hd⟩ | ⟨ha, hd⟩)
   · use g 0 1
     suffices g = T ^ g 0 1 by intro z; conv_lhs => rw [this]
@@ -340,7 +344,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : g 1 0 = 0) :
 -- If `c = 1`, then `g` factorises into a product terms involving only `T` and `S`.
 theorem g_eq_of_c_eq_one (hc : g 1 0 = 1) : g = T ^ g 0 0 * S * T ^ g 1 1 := by
   have hg := g.det_coe.symm
-  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; omega
+  replace hg : g 0 1 = g 0 0 * g 1 1 - 1 := by rw [det_fin_two, hc] at hg; lia
   refine Subtype.ext ?_
   conv_lhs => rw [(g : Matrix _ _ ℤ).eta_fin_two]
   simp only [hg, sub_eq_add_neg, hc, coe_mul, coe_T_zpow, coe_S, mul_fin_two, mul_zero, mul_one,
@@ -451,7 +455,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
   let c := (c' : ℝ)
   suffices 3 * c ^ 2 < 4 by
     rw [← Int.cast_pow, ← Int.cast_three, ← Int.cast_four, ← Int.cast_mul, Int.cast_lt] at this
-    replace this : c' ^ 2 ≤ 1 ^ 2 := by omega
+    replace this : c' ^ 2 ≤ 1 ^ 2 := by lia
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
@@ -506,6 +510,53 @@ theorem eq_smul_self_of_mem_fdo_mem_fdo (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ �
   simp [eq_zero_of_mem_fdo_of_T_zpow_mem_fdo hz hg, one_smul]
 
 end UniqueRepresentative
+
+section Truncated
+
+/-- The standard fundamental domain truncated at height `y`. -/
+def truncatedFundamentalDomain (y : ℝ) : Set ℍ := { τ | τ ∈ 𝒟 ∧ τ.im ≤ y }
+
+/-- Explicit description of the truncated fundamental domain as a subset of `ℂ`, given by
+obviously closed conditions. -/
+lemma coe_truncatedFundamentalDomain (y : ℝ) :
+    UpperHalfPlane.coe '' truncatedFundamentalDomain y =
+    {z | 0 ≤ z.im ∧ z.im ≤ y ∧ |z.re| ≤ 1 / 2 ∧ 1 ≤ ‖z‖} := by
+  ext z
+  constructor
+  · rintro ⟨⟨z, hz⟩, h, rfl⟩
+    exact ⟨hz.le, h.2, h.1.2, by simpa [Complex.normSq_eq_norm_sq] using h.1.1⟩
+  · rintro ⟨hz, h1, h2, h3⟩
+    have hz' : 0 < z.im := by
+      apply hz.lt_of_ne
+      contrapose! h3
+      simpa [← sq_lt_one_iff₀ (norm_nonneg _), ← Complex.normSq_eq_norm_sq, Complex.normSq,
+        ← h3, ← sq] using h2.trans_lt (by norm_num)
+    exact ⟨⟨z, hz'⟩, ⟨⟨by simpa [Complex.normSq_eq_norm_sq], h2⟩, h1⟩, rfl⟩
+
+/-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
+lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
+    IsCompact (truncatedFundamentalDomain y) := by
+  rw [isEmbedding_coe.isCompact_iff, coe_truncatedFundamentalDomain,
+    Metric.isCompact_iff_isClosed_bounded]
+  constructor
+  · -- show closed
+    apply (isClosed_le continuous_const Complex.continuous_im).inter
+    apply (isClosed_le Complex.continuous_im continuous_const).inter
+    apply (isClosed_le (continuous_abs.comp Complex.continuous_re) continuous_const).inter
+    exact isClosed_le continuous_const continuous_norm
+  · -- show bounded
+    refine (Metric.isBounded_iff_subset_closedBall 0).mpr ⟨√((1 / 2) ^ 2 + y ^ 2), fun z hz ↦ ?_⟩
+    simp only [mem_closedBall_zero_iff]
+    refine le_of_sq_le_sq ?_ (by positivity)
+    rw [Real.sq_sqrt (by positivity), Complex.norm_eq_sqrt_sq_add_sq, Real.sq_sqrt (by positivity)]
+    apply add_le_add
+    · rw [sq_le_sq, abs_of_pos <| one_half_pos (α := ℝ)]
+      exact hz.2.2.1
+    · rw [sq_le_sq₀ hz.1 (hz.1.trans hz.2.1)]
+      exact hz.2.1
+
+
+end Truncated
 
 end FundamentalDomain
 

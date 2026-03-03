@@ -48,6 +48,7 @@ abbrev of (α : Type*) [Lattice α] [BoundedOrder α] : BddLat where
 theorem coe_of (α : Type*) [Lattice α] [BoundedOrder α] : ↥(of α) = α :=
   rfl
 
+set_option backward.privateInPublic true in
 /-- The type of morphisms in `BddLat`. -/
 @[ext]
 structure Hom (X Y : BddLat.{u}) where
@@ -58,11 +59,15 @@ structure Hom (X Y : BddLat.{u}) where
 instance : Inhabited BddLat :=
   ⟨of PUnit⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : LargeCategory.{u} BddLat where
   Hom := Hom
   id X := ⟨BoundedLatticeHom.id X⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance : ConcreteCategory BddLat (BoundedLatticeHom · ·) where
   hom := Hom.hom'
   ofHom := Hom.mk
@@ -155,6 +160,7 @@ theorem forget_semilatInf_partOrd_eq_forget_bddOrd_partOrd :
       forget₂ BddLat BddOrd ⋙ forget₂ BddOrd PartOrd :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an equivalence between bounded lattices from an order isomorphism
 between them. -/
 @[simps]

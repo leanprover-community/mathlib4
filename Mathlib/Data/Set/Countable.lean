@@ -162,6 +162,14 @@ theorem Countable.image {s : Set α} (hs : s.Countable) (f : α → β) : (f '' 
   have := hs.to_subtype
   apply countable_range
 
+theorem Infinite.exists_subset_countable_infinite {α : Type u} {s : Set α} (hs : s.Infinite) :
+    ∃ t ⊆ s, t.Countable ∧ t.Infinite := by
+  obtain ⟨f, hf⟩ := Infinite.natEmbedding s hs
+  refine ⟨range (Subtype.val ∘ f), ?_, ?_, ?_⟩
+  · exact fun _ ⟨y, hy⟩ ↦ hy ▸ Subtype.coe_prop (f y)
+  · exact countable_range (Subtype.val ∘ f)
+  · exact infinite_range_of_injective <| Injective.comp Subtype.val_injective hf
+
 theorem MapsTo.countable_of_injOn {s : Set α} {t : Set β} {f : α → β} (hf : MapsTo f s t)
     (hf' : InjOn f s) (ht : t.Countable) : s.Countable :=
   have := ht.to_subtype
@@ -271,6 +279,13 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
 /-- The set of finite sets in a countable type is countable. -/
 theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
   simpa using countable_setOf_finite_subset countable_univ
+
+/-- If the codomain of a map is countable and the fibres are countable, the domain
+is countable. -/
+theorem Countable.of_preimage_singleton {f : α → β} [Countable β]
+    (h : ∀ (b : β), (f ⁻¹' {b}).Countable) : Countable α := by
+  simp_rw [← Set.countable_univ_iff, ← Set.preimage_univ (f := f), ← Set.iUnion_of_singleton,
+    Set.preimage_iUnion, Set.countable_iUnion h]
 
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=

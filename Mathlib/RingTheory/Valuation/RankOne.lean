@@ -10,6 +10,10 @@ public import Mathlib.Algebra.Order.GroupWithZero.WithZero
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Real.Embedding
 public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Tactic.NormNum.GCD
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Rank one valuations
@@ -46,6 +50,7 @@ class RankOne (v : Valuation R Γ₀) extends Valuation.IsNontrivial v where
 
 open WithZero
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nonempty_rankOne_iff_mulArchimedean {v : Valuation R Γ₀} [v.IsNontrivial] :
     Nonempty v.RankOne ↔ MulArchimedean Γ₀ := by
   constructor
@@ -94,7 +99,7 @@ theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
   rw [map_zero, hx] at hs
   exact hs.false
 
-/-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `RankOne.hom v` if and
+/-- If `v` is a rank one valuation, then `x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
 theorem hom_eq_zero_iff {x : Γ₀} : RankOne.hom v x = 0 ↔ x = 0 :=
   ⟨fun h ↦ zero_of_hom_zero v h, fun h ↦ by rw [h, map_zero]⟩
@@ -108,7 +113,7 @@ theorem unit_ne_one : unit v ≠ 1 := by
   rw [Ne, ← Units.val_inj, Units.val_one]
   exact ((nontrivial v).choose_spec).2
 
-instance [RankOne v] : IsNontrivial v where
+instance : IsNontrivial v where
   exists_val_nontrivial := RankOne.nontrivial v
 
 end RankOne

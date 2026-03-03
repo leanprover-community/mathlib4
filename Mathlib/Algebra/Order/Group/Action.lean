@@ -17,7 +17,7 @@ When working with group actions rather than modules, we drop the `0 < c` conditi
 Notably these are relevant for pointwise actions on set-like objects.
 -/
 
-@[expose] public section
+public section
 
 variable {ι : Sort*} {M α : Type*}
 

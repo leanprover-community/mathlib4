@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.LinearAlgebra.Matrix.Symmetric
 public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
+
+import Mathlib.Algebra.GroupWithZero.Idempotent
 
 /-!
 # Adjacency Matrices
@@ -78,7 +81,7 @@ theorem apply_ne_zero_iff [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix 
 def toGraph [MulZeroOneClass α] [Nontrivial α] (h : IsAdjMatrix A) : SimpleGraph V where
   Adj i j := A i j = 1
   symm i j hij := by simp only; rwa [h.symm.apply i j]
-  loopless i := by simp [h]
+  loopless := ⟨fun i ↦ by simp [h]⟩
 
 instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix A) :
     DecidableRel h.toGraph.Adj := by
@@ -86,6 +89,13 @@ instance [MulZeroOneClass α] [Nontrivial α] [DecidableEq α] (h : IsAdjMatrix 
   infer_instance
 
 end IsAdjMatrix
+
+theorem isAdjMatrix_iff_hadamard [DecidableEq V] [MonoidWithZero α]
+    [IsLeftCancelMulZero α] {A : Matrix V V α} :
+    A.IsAdjMatrix ↔ (A ⊙ A = A ∧ A.IsSymm ∧ 1 ⊙ A = 0) := by
+  simp only [hadamard_self_eq_self_iff, IsIdempotentElem.iff_eq_zero_or_one,
+    one_hadamard_eq_zero_iff, funext_iff, diag]
+  exact ⟨fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩, fun ⟨h1, h2, h3⟩ ↦ ⟨h1, h2, h3⟩⟩
 
 /-- For `A : Matrix V V α`, `A.compl` is supposed to be the adjacency matrix of
 the complement graph of the graph induced by `A.adjMatrix`. -/

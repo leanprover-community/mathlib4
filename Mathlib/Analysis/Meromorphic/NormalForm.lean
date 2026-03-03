@@ -122,9 +122,6 @@ theorem MeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt (hf : Meromorph
   · rw [h₂f.meromorphicOrderAt_eq]
     simp
 
-@[deprecated (since := "2025-05-22")] alias MeromorphicNFAt.order_nonneg_iff_analyticAt :=
-  MeromorphicNFAt.meromorphicOrderAt_nonneg_iff_analyticAt
-
 /-- Analytic functions are meromorphic in normal form. -/
 theorem AnalyticAt.meromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
     MeromorphicNFAt f x := by
@@ -168,8 +165,6 @@ theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x
       simp only [zpow_zero]
       exact h₃g.filter_mono nhdsWithin_le_nhds
 
-@[deprecated (since := "2025-05-22")] alias MeromorphicNFAt.order_eq_zero_iff :=
-  MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff
 /-!
 ### Local nature of the definition and local identity theorem
 -/
@@ -199,10 +194,6 @@ theorem MeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds {g : 𝕜 → 
       simp only [not_not] at *
       rw [h₁f, h₁g]
   · exact (Filter.EventuallyEq.filter_mono · nhdsWithin_le_nhds)
-
-@[deprecated (since := "2025-05-22")]
-alias MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd :=
-  MeromorphicNFAt.eventuallyEq_nhdsNE_iff_eventuallyEq_nhds
 
 /-- Meromorphicity in normal form is a local property. -/
 theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
@@ -292,10 +283,6 @@ lemma MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt (hf : MeromorphicAt f
     Set.EqOn f (toMeromorphicNFAt f x) {x}ᶜ :=
   fun _ _ ↦ by simp_all [toMeromorphicNFAt]
 
-@[deprecated (since := "2025-07-27")]
-alias MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt :=
-  MeromorphicAt.eqOn_compl_singleton_toMeromorphicNFAt
-
 /-- If `f` is not meromorphic, conversion to normal form at `x` maps the function to `0`. -/
 @[simp] lemma toMeromorphicNFAt_of_not_meromorphicAt (hf : ¬MeromorphicAt f x) :
     toMeromorphicNFAt f x = 0 := by
@@ -305,9 +292,6 @@ alias MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt :=
 lemma MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMeromorphicNFAt hz)
-
-@[deprecated (since := "2025-05-22")]
-alias MeromorphicAt.eq_nhdNE_toMeromorphicNFAt := MeromorphicAt.eq_nhdsNE_toMeromorphicNFAt
 
 /-- After conversion to normal form at `x`, the function has normal form. -/
 theorem meromorphicNFAt_toMeromorphicNFAt :
@@ -468,7 +452,7 @@ then its zero set equals the support of the associated divisor.
 -/
 theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U)
     (h₂f : ∀ u : U, meromorphicOrderAt f u ≠ ⊤) :
-    U ∩ f⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
+    U ∩ f ⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
   ext u
   constructor <;> intro hu
   · simp_all only [ne_eq, Subtype.forall, Set.mem_inter_iff, Set.mem_preimage,
@@ -573,8 +557,7 @@ of `U`.
 -/
 theorem toMeromorphicNFOn_eqOn_codiscrete (hf : MeromorphicOn f U) :
     f =ᶠ[Filter.codiscreteWithin U] toMeromorphicNFOn f U := by
-  have : U ∈ Filter.codiscreteWithin U := by
-    simp [mem_codiscreteWithin.2]
+  have : U ∈ Filter.codiscreteWithin U := by simp
   filter_upwards [hf.analyticAt_mem_codiscreteWithin, this] with a h₁a h₂a
   simp [toMeromorphicNFOn, hf, ← (toMeromorphicNFAt_eq_self.2 h₁a.meromorphicNFAt).symm]
 
@@ -591,9 +574,6 @@ theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdsNE
   · simp only [Set.mem_compl_iff] at ha
     simp [toMeromorphicNFOn, ha, hf]
 
-@[deprecated (since := "2025-05-22")] alias MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdNE :=
-  MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdsNE
-
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
 and conversion to normal form on `U` agree in a neighborhood of `x`.
@@ -604,10 +584,6 @@ theorem toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds (hf : MeromorphicOn f U)
   apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
   · exact (hf.toMeromorphicNFOn_eq_self_on_nhdsNE hx).trans (hf x hx).eq_nhdsNE_toMeromorphicNFAt
   · simp [toMeromorphicNFOn, hf, hx]
-
-@[deprecated (since := "2025-05-22")]
-alias toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhd :=
-  toMeromorphicNFOn_eq_toMeromorphicNFAt_on_nhds
 
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
@@ -652,9 +628,6 @@ Conversion of normal form does not affect orders.
     meromorphicOrderAt (toMeromorphicNFOn f U) x = meromorphicOrderAt f x := by
   apply meromorphicOrderAt_congr
   exact hf.toMeromorphicNFOn_eq_self_on_nhdsNE hx
-
-@[deprecated (since := "2025-05-22")]
-alias order_toMeromorphicNFOn := meromorphicOrderAt_toMeromorphicNFOn
 
 /--
 Conversion of normal form does not affect divisors.

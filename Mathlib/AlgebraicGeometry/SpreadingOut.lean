@@ -128,6 +128,7 @@ lemma Scheme.IsGermInjective.of_openCover
   rw [← (𝒰.covers x).choose_spec]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 protected
 lemma Scheme.IsGermInjective.Spec
     (H : ∀ I : Ideal R, I.IsPrime →
@@ -143,11 +144,11 @@ lemma Scheme.IsGermInjective.Spec
   obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq
     (S := ((Spec.structureSheaf R).val.obj (.op <| PrimeSpectrum.basicOpen f))) (.powers f) x
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
-    RingHom.mem_ker, RingHom.algebraMap_toAlgebra] at hx
+    RingHom.mem_ker] at hx
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
   -- There is an `Opposite.unop (Opposite.op _)` in `hx` which doesn't seem removable using
   -- `simp`/`rw`.
-  erw [StructureSheaf.germ_toOpen] at hx
+  erw [elementwise_of% StructureSheaf.algebraMap_germ] at hx
   obtain ⟨⟨y, hy⟩, hy'⟩ := (IsLocalization.map_eq_zero_iff p.asIdeal.primeCompl
     ((Spec.structureSheaf R).presheaf.stalk p) _).mp hx
   obtain ⟨n, hn⟩ := H x y hy' hy
@@ -166,8 +167,8 @@ instance (priority := 100) [IsIntegral X] : X.IsGermInjective := by
 instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   suffices ∀ (R : CommRingCat.{u}) (_ : IsNoetherianRing R), (Spec R).IsGermInjective by
     refine @Scheme.IsGermInjective.of_openCover _ (X.affineOpenCover.openCover) (fun i ↦ this _ ?_)
-    have := isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i)
-    infer_instance
+    exact isLocallyNoetherian_Spec.mp
+      (isLocallyNoetherian_of_isOpenImmersion (X.affineOpenCover.f i))
   refine fun R hR ↦ Scheme.IsGermInjective.Spec fun I hI ↦ ?_
   let J := RingHom.ker <| algebraMap R (Localization.AtPrime I)
   have hJ (x) : x ∈ J ↔ ∃ y : I.primeCompl, y * x = 0 :=
@@ -345,7 +346,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
   obtain ⟨W, hxW, φ', i, hW, h₁, h₂⟩ :=
     exists_lift_of_germInjective (R := Γ(S, U)) (A := Γ(Y, V)) (U := sX ⁻¹ᵁ U) (x := x) hxU
     (Y.presheaf.germ _ y hyV ≫ φ) (sY.appLE U V iVU) (sX.app U)
-    (LocallyOfFiniteType.finiteType_of_affine_subset ⟨_, hU⟩ ⟨_, hV⟩ _) this
+    (sY.finiteType_appLE hU hV _) this
   refine ⟨W, hxW, W.toSpecΓ ≫ Spec.map φ' ≫ hV.fromSpec, ?_, ?_⟩
   · rw [W.fromSpecStalkOfMem_toSpecΓ_assoc x hxW, ← Spec.map_comp_assoc, ← h₁,
       Spec.map_comp, Category.assoc, ← IsAffineOpen.fromSpecStalk,
@@ -356,7 +357,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
       ← Iso.eq_inv_comp, IsAffineOpen.isoSpec_inv_ι_assoc]
 
 /--
-Given `S`-schemes `X Y`, a point `x : X`, and a `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
+Given `S`-schemes `X Y`, a point `x : X`, and an `S`-morphism `φ : Spec 𝒪_{X, x} ⟶ Y`,
 we may spread it out to an `S`-morphism `f : U ⟶ Y`
 provided that `Y` is locally of finite type over `S` and
 `X` is "germ-injective" at `x` (e.g. when it's integral or locally Noetherian).

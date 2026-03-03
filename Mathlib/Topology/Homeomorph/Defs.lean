@@ -150,6 +150,9 @@ theorem apply_symm_apply (h : X ≃ₜ Y) (y : Y) : h (h.symm y) = y :=
 theorem symm_apply_apply (h : X ≃ₜ Y) (x : X) : h.symm (h x) = x :=
   h.toEquiv.symm_apply_apply x
 
+theorem symm_apply_eq (h : X ≃ₜ Y) {x : X} {y : Y} : h.symm y = x ↔ y = h x :=
+  Equiv.symm_apply_eq _
+
 @[simp]
 theorem self_trans_symm (h : X ≃ₜ Y) : h.trans h.symm = Homeomorph.refl X := by
   ext
@@ -228,6 +231,20 @@ protected theorem discreteTopology [DiscreteTopology X] (h : X ≃ₜ Y) : Discr
 
 theorem discreteTopology_iff (h : X ≃ₜ Y) : DiscreteTopology X ↔ DiscreteTopology Y :=
   ⟨fun _ ↦ h.discreteTopology, fun _ ↦ h.symm.discreteTopology⟩
+
+protected theorem indiscreteTopology [IndiscreteTopology X] (h : X ≃ₜ Y) :
+    IndiscreteTopology Y :=
+  h.symm.isInducing.indiscreteTopology
+
+theorem indiscreteTopology_iff (h : X ≃ₜ Y) : IndiscreteTopology X ↔ IndiscreteTopology Y :=
+  ⟨fun _ ↦ h.indiscreteTopology, fun _ ↦ h.symm.indiscreteTopology⟩
+
+protected theorem nontrivialTopology [NontrivialTopology X] (h : X ≃ₜ Y) :
+    NontrivialTopology Y :=
+  h.isInducing.nontrivialTopology
+
+theorem nontrivialTopology_iff (h : X ≃ₜ Y) : NontrivialTopology X ↔ NontrivialTopology Y :=
+  ⟨fun _ ↦ h.nontrivialTopology, fun _ ↦ h.symm.nontrivialTopology⟩
 
 @[simp]
 theorem isOpen_preimage (h : X ≃ₜ Y) {s : Set Y} : IsOpen (h ⁻¹' s) ↔ IsOpen s :=
@@ -328,6 +345,11 @@ theorem nhds_eq_comap (h : X ≃ₜ Y) (x : X) : 𝓝 x = comap h (𝓝 (h x)) :
 theorem comap_nhds_eq (h : X ≃ₜ Y) (y : Y) : comap h (𝓝 y) = 𝓝 (h.symm y) := by
   rw [h.nhds_eq_comap, h.apply_symm_apply]
 
+theorem isClosed_setOf_iff {p : X → Prop} {q : Y → Prop} (f : X ≃ₜ Y) (hs : IsClopen {x | p x})
+    (ht : IsClopen {y | q y}) : IsClosed { x : X | p x ↔ q (f x) } := by
+  simpa [iff_def] using (isClosed_imp hs.2 (f.isClosed_preimage.2 ht.1)).inter
+    (isClosed_imp (f.isOpen_preimage.2 ht.2) hs.1)
+
 end Homeomorph
 
 namespace Equiv
@@ -338,7 +360,7 @@ variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace
 def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
   toEquiv := e
   continuous_toFun := continuous_def.2 fun _ ↦ (he _).2
-  continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
+  continuous_invFun := continuous_def.2 fun s ↦ by simpa using (he (e.symm ⁻¹' s)).1
 
 @[deprecated (since := "2025-10-09")] alias toHomeomorph_toEquiv := toEquiv_toHomeomorph
 
@@ -403,9 +425,7 @@ theorem toHomeomorphOfContinuousClosed_symm_apply
     ⇑(e.toHomeomorphOfContinuousClosed h₁ h₂).symm = e.symm := rfl
 
 /-- Any bijection between discrete spaces is a homeomorphism. -/
-def toHomeomorphOfDiscrete
-    [TopologicalSpace X] [DiscreteTopology X]
-    [TopologicalSpace Y] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
+def toHomeomorphOfDiscrete [DiscreteTopology X] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
   e.toHomeomorph (by simp)
 
 end Equiv
@@ -438,7 +458,7 @@ theorem toHomeomorph_injective [HomeomorphClass F α β] : Function.Injective ((
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃ₜ β ↦ e.toFun a) e
 
 instance [HomeomorphClass F α β] : ContinuousMapClass F α β where
-  map_continuous  f := map_continuous f
+  map_continuous f := map_continuous f
 
 instance : HomeomorphClass (α ≃ₜ β) α β where
   map_continuous e := e.continuous_toFun

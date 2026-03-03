@@ -60,6 +60,7 @@ def asLimitAux : IsLimit S.asLimitConeAux :=
     S.toLightDiagram.isLimit.ofIsoLimit S.isoMapCone.symm
   isLimitOfReflects lightToProfinite hc
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A cone over `S.diagram` whose cone point is `S`. -/
 def asLimitCone : Cone S.diagram where
   pt := S
@@ -68,6 +69,7 @@ def asLimitCone : Cone S.diagram where
       (Cones.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
     naturality := fun _ _ _ ↦ by simp only [Category.assoc, S.asLimitConeAux.w]; rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `S.asLimitCone` is indeed a limit cone. -/
 def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|
   Cones.ext (lightToProfiniteFullyFaithful.preimageIso <|
@@ -95,7 +97,7 @@ lemma proj_surjective (n : ℕ) : Function.Surjective (S.proj n) := by
 abbrev component (n : ℕ) : LightProfinite := S.diagram.obj ⟨n⟩
 
 /-- The transition map from `S_{n+1}` to `S_n` in `S.diagram`. -/
-abbrev transitionMap (n : ℕ) :  S.component (n + 1) ⟶ S.component n :=
+abbrev transitionMap (n : ℕ) : S.component (n + 1) ⟶ S.component n :=
   S.diagram.map ⟨homOfLE (Nat.le_succ _)⟩
 
 /-- The transition map from `S_m` to `S_n` in `S.diagram`, when `m ≤ n`. -/
@@ -115,7 +117,7 @@ lemma proj_comp_transitionMapLE {n m : ℕ} (h : n ≤ m) :
   S.asLimitCone.w (homOfLE h).op
 
 lemma proj_comp_transitionMapLE' {n m : ℕ} (h : n ≤ m) :
-    S.transitionMapLE h ∘ S.proj m  = S.proj n := by
+    S.transitionMapLE h ∘ S.proj m = S.proj n := by
   rw [← S.proj_comp_transitionMapLE h]
   rfl
 

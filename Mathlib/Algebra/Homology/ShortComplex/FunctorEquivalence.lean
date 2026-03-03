@@ -22,7 +22,7 @@ namespace CategoryTheory
 
 open Limits Functor
 
-variable (J C : Type*) [Category J] [Category C] [HasZeroMorphisms C]
+variable (J C : Type*) [Category* J] [Category* C] [HasZeroMorphisms C]
 
 namespace ShortComplex
 

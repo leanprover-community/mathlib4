@@ -36,7 +36,7 @@ instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGrpCat.
     f := ⟨@ModuleCat.ofHom _ _ _ _ _ A.isModule _ B.isModule <|
             @LinearMap.mk _ _ _ _ _ _ _ _ _ A.isModule B.isModule
             { toFun := f,
-              map_add' := AddMonoidHom.map_add f.hom }
+              map_add' := map_add f.hom }
             (fun n x => by
               convert AddMonoidHom.map_zsmul f.hom x n <;>
                 ext <;> apply int_smul_eq_zsmul), rfl⟩

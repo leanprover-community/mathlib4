@@ -24,10 +24,10 @@ by the commutators `hkh⁻¹k⁻¹`. Recall also Lean's conventions that `⊤` d
 subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 
 * `upperCentralSeries G : ℕ → Subgroup G` : the upper central series of a group `G`.
-     This is an increasing sequence of normal subgroups `H n` of `G` with `H 0 = ⊥` and
+     This is an increasing sequence of characteristic subgroups `H n` of `G` with `H 0 = ⊥` and
      `H (n + 1) / H n` is the centre of `G / H n`.
 * `lowerCentralSeries G : ℕ → Subgroup G` : the lower central series of a group `G`.
-     This is a decreasing sequence of normal subgroups `H n` of `G` with `H 0 = ⊤` and
+     This is a decreasing sequence of characteristic subgroups `H n` of `G` with `H 0 = ⊤` and
      `H (n + 1) = ⁅H n, G⁆`.
 * `IsNilpotent` : A group G is nilpotent if its upper central series reaches `⊤`, or
     equivalently if its lower central series reaches `⊥`.
@@ -111,24 +111,22 @@ theorem upperCentralSeriesStep_eq_comap_center :
     upperCentralSeriesStep H = Subgroup.comap (mk' H) (center (G ⧸ H)) := by
   ext
   rw [mem_comap, mem_center_iff, forall_mk]
-  apply forall_congr'
-  intro y
+  refine forall_congr' fun y => ?_
   rw [coe_mk', ← QuotientGroup.mk_mul, ← QuotientGroup.mk_mul, eq_comm, eq_iff_div_mem,
     div_eq_mul_inv, mul_inv_rev, mul_assoc]
 
-instance : Normal (upperCentralSeriesStep H) := by
-  rw [upperCentralSeriesStep_eq_comap_center]
-  infer_instance
+instance [H.Characteristic] : Characteristic (upperCentralSeriesStep H) :=
+  (upperCentralSeriesStep_eq_comap_center H) ▸ Characteristic.comap_quotient_mk centerCharacteristic
 
 variable (G)
 
 /-- An auxiliary type-theoretic definition defining both the upper central series of
-a group, and a proof that it is normal, all in one go. -/
-def upperCentralSeriesAux : ℕ → Σ' H : Subgroup G, Normal H
+a group, and a proof that it is characteristic, all in one go. -/
+def upperCentralSeriesAux : ℕ → Σ' H : Subgroup G, Characteristic H
   | 0 => ⟨⊥, inferInstance⟩
   | n + 1 =>
     let un := upperCentralSeriesAux n
-    let _un_normal := un.2
+    let _un_characteristic := un.2
     ⟨upperCentralSeriesStep un.1, inferInstance⟩
 
 /-- `upperCentralSeries G n` is the `n`th term in the upper central series of `G`.
@@ -147,7 +145,7 @@ hold.
 def upperCentralSeries (n : ℕ) : Subgroup G :=
   (upperCentralSeriesAux G n).1
 
-instance upperCentralSeries_normal (n : ℕ) : Normal (upperCentralSeries G n) :=
+instance (n : ℕ) : Characteristic (upperCentralSeries G n) :=
   (upperCentralSeriesAux G n).2
 
 @[simp]
@@ -239,7 +237,7 @@ theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
   refine monotone_nat_of_le_succ ?_
   intro n x hx y
   rw [mul_assoc, mul_assoc, ← mul_assoc y x⁻¹ y⁻¹]
-  exact mul_mem hx (Normal.conj_mem (upperCentralSeries_normal G n) x⁻¹ (inv_mem hx) y)
+  exact mul_mem hx (Normal.conj_mem inferInstance x⁻¹ (inv_mem hx) y)
 
 /-- A group `G` is nilpotent iff there exists an ascending central series which reaches `G` in
   finitely many steps. -/
@@ -320,10 +318,10 @@ theorem lowerCentralSeries_succ (n : ℕ) :
       closure { x | ∃ p ∈ lowerCentralSeries G n, ∃ q ∈ (⊤ : Subgroup G), p * q * p⁻¹ * q⁻¹ = x } :=
   rfl
 
-instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) := by
+instance (n : ℕ) : Characteristic (lowerCentralSeries G n) := by
   induction n with
-  | zero => exact (⊤ : Subgroup G).normal_of_characteristic
-  | succ d hd => exact @Subgroup.commutator_normal _ _ (lowerCentralSeries G d) ⊤ hd _
+  | zero => simp [topCharacteristic]
+  | succ d hd => unfold lowerCentralSeries; infer_instance
 
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   refine antitone_nat_of_succ_le fun n x hx => ?_
@@ -333,8 +331,7 @@ theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
     closure_induction ?_ (Subgroup.one_mem _) (fun _ _ _ _ ↦ mul_mem) (fun _ _ ↦ inv_mem) hx
   rintro y ⟨z, hz, a, ha⟩
   rw [← ha, mul_assoc, mul_assoc, ← mul_assoc a z⁻¹ a⁻¹]
-  exact mul_mem hz (Normal.conj_mem (lowerCentralSeries_normal n) z⁻¹ (inv_mem hz) a)
-
+  exact mul_mem hz (Normal.conj_mem inferInstance z⁻¹ (inv_mem hz) a)
 
 /-- The lower central series of a group is a descending central series. -/
 theorem lowerCentralSeries_isDescendingCentralSeries :
@@ -500,7 +497,7 @@ theorem lowerCentralSeries.map {H : Type*} [Group H] (f : G →* H) (n : ℕ) :
   | succ d hd =>
     rintro a ⟨x, hx : x ∈ lowerCentralSeries G d.succ, rfl⟩
     refine closure_induction (hx := hx) ?_ (by simp [f.map_one, Subgroup.one_mem _])
-      (fun y z _ _ hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
+      (fun y z _ _ hy hz => by simp [map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
         rw [f.map_inv]; exact Subgroup.inv_mem _ hy)
     rintro a ⟨y, hy, z, ⟨-, rfl⟩⟩
     apply mem_closure.mpr
@@ -681,6 +678,53 @@ def commGroupOfNilpotencyClass [IsNilpotent G] (h : Group.nilpotencyClass G ≤ 
     rw [← upperCentralSeries_one]
     exact upperCentralSeries_eq_top_iff_nilpotencyClass_le.mpr h
 
+lemma upperCentralSeries.eq_ge_of_eq_succ {a b : ℕ} (ab : a ≤ b)
+    (hn : upperCentralSeries G a = upperCentralSeries G (a + 1)) :
+    upperCentralSeries G a = upperCentralSeries G b := by
+  refine Nat.le_induction rfl ?_ b ab
+  grind only [eq_def, upperCentralSeriesAux.eq_def]
+
+/-- If two different elements of the `upperCentralSeries` of a group `G` are equal, then
+they are all equal, starting from the smaller index. -/
+lemma upperCentralSeries.eq_ge_of_eq_gt {a b c : ℕ} (ab : a < b) (ac : a ≤ c)
+    (hn : upperCentralSeries G a = upperCentralSeries G b) :
+    upperCentralSeries G a = upperCentralSeries G c := by
+  refine eq_ge_of_eq_succ ac (le_antisymm ?_ ?_)
+  · exact upperCentralSeries_mono _ <| Nat.le_succ ..
+  · rw [hn]
+    exact upperCentralSeries_mono _ (by grind)
+
+lemma upperCentralSeries.eq_top [IsNilpotent G] {a b : ℕ} (ab : a < b)
+    (hn : upperCentralSeries G a = upperCentralSeries G b) :
+    upperCentralSeries G a = ⊤ := by
+  grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent,
+    upperCentralSeries_eq_top_iff_nilpotencyClass_le, eq_ge_of_eq_gt]
+
+lemma nilpotencyClass_le_of_upperCentralSeries_eq [IsNilpotent G] {a b : ℕ} (ab : a < b)
+    (hn : upperCentralSeries G a = upperCentralSeries G b) :
+    nilpotencyClass G ≤ a := by
+  grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, upperCentralSeries.eq_top,
+    upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+
+variable (G) in
+lemma upperCentralSeries.StrictMonoOn [IsNilpotent G] :
+    StrictMonoOn (upperCentralSeries G) (Set.Iic (nilpotencyClass G)) := by
+  intros a ha b hb ab
+  simp only [Set.mem_Iic] at ha hb
+  apply lt_of_le_of_ne
+  · exact upperCentralSeries_mono _ ab.le
+  · grind only [IsNilpotent.nilpotent', IsNilpotent.nilpotent, eq_top,
+      upperCentralSeries_eq_top_iff_nilpotencyClass_le]
+
+lemma upperCentralSeries.card_image_eq_of_le_nilpotencyClass [IsNilpotent G] {a : ℕ}
+    (h2 : a ≤ nilpotencyClass G) :
+    (upperCentralSeries G '' (Set.Iic a)).ncard = a + 1 := by
+  refine Set.ncard_eq_of_bijective (fun _ => upperCentralSeries G ·) ?_ ?_ ?_
+  · grind
+  · grind
+  · intros i j hi hj
+    refine (upperCentralSeries.StrictMonoOn G).injOn ?_ ?_ <;> grind
+
 section Prod
 
 variable {G₁ G₂ : Type*} [Group G₁] [Group G₂]
@@ -794,6 +838,16 @@ instance (priority := 100) IsNilpotent.to_isSolvable [h : IsNilpotent G] : IsSol
   use n
   rw [eq_bot_iff, ← hn]
   exact derived_le_lower_central n
+
+instance [IsSimpleGroup G] [IsNilpotent G] : CommGroup G :=
+  ⟨IsSimpleGroup.comm_iff_isSolvable.mpr inferInstance⟩
+
+instance [IsSimpleGroup G] [IsNilpotent G] : IsCyclic G :=
+  inferInstance
+
+lemma nilpotencyClass_le_one_of_isSimple_of_isNilpotent [IsSimpleGroup G] [IsNilpotent G] :
+    nilpotencyClass G ≤ 1 :=
+  CommGroup.nilpotencyClass_le_one
 
 theorem normalizerCondition_of_isNilpotent [h : IsNilpotent G] : NormalizerCondition G := by
   -- roughly based on https://groupprops.subwiki.org/wiki/Nilpotent_implies_normalizer_condition

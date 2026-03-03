@@ -6,7 +6,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 module
 
 public import Mathlib.GroupTheory.QuotientGroup.Finite
-public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Congruence.Basic
 public import Mathlib.RingTheory.Ideal.Basic
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
@@ -48,12 +48,14 @@ theorem zero_eq_one_iff : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
 theorem zero_ne_one_iff : (0 : R ⧸ I) ≠ 1 ↔ I ≠ ⊤ :=
   not_congr zero_eq_one_iff
 
-protected theorem nontrivial (hI : I ≠ ⊤) : Nontrivial (R ⧸ I) :=
-  ⟨⟨0, 1, zero_ne_one_iff.2 hI⟩⟩
+protected lemma subsingleton_iff : Subsingleton (R ⧸ I) ↔ I = ⊤ :=
+  Submodule.Quotient.subsingleton_iff
 
-theorem subsingleton_iff : Subsingleton (R ⧸ I) ↔ I = ⊤ := by
-  rw [Submodule.Quotient.subsingleton_iff, eq_top_iff, SetLike.le_def]
-  simp_rw [Submodule.mem_top, true_implies]
+protected lemma nontrivial_iff : Nontrivial (R ⧸ I) ↔ I ≠ ⊤ :=
+  Submodule.Quotient.nontrivial_iff
+
+@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
+protected theorem nontrivial (hI : I ≠ ⊤) : Nontrivial (R ⧸ I) := Quotient.nontrivial_iff.2 hI
 
 instance : Unique (R ⧸ (⊤ : Ideal R)) :=
   ⟨⟨0⟩, by rintro ⟨x⟩; exact Quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
@@ -88,10 +90,12 @@ instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
         (Or.inr ∘ eq_zero_iff_mem.2)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
-  let _ := Quotient.nontrivial hI.1
+  let _ := Quotient.nontrivial_iff.mpr hI.1
   NoZeroDivisors.to_isDomain _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
@@ -100,6 +104,7 @@ theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
     haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 theorem exists_inv [hI : I.IsMaximal] :
     ∀ {a : R ⧸ I}, a ≠ 0 → ∃ b : R ⧸ I, a * b = 1 := by
@@ -122,7 +127,7 @@ protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl
-    __ := Quotient.nontrivial hI.out.1 }
+    __ := Quotient.nontrivial_iff.mpr hI.out.1 }
 
 /-- The quotient by a two-sided ideal that is maximal as a left ideal is a division ring.
 This is a `def` rather than `instance`, since users

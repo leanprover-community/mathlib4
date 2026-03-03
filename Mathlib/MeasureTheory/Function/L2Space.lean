@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 /-! # `L^2` space
 
 If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
-(defined in `Mathlib/MeasureTheory/Function/LpSpace.lean`)
+(defined in `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 is also an inner product space, with inner product defined as `inner f g := ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -164,8 +164,6 @@ private theorem norm_sq_eq_re_inner (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike
     rw [← h_two, ← eLpNorm_eq_eLpNorm' two_ne_zero ENNReal.ofNat_ne_top]
     finiteness
 
-@[deprecated (since := "2025-04-22")] alias norm_sq_eq_inner' := norm_sq_eq_re_inner
-
 theorem mem_L1_inner (f g : α →₂[μ] E) :
     AEEqFun.mk (fun x => ⟪f x, g x⟫)
         ((Lp.aestronglyMeasurable f).inner (Lp.aestronglyMeasurable g)) ∈
@@ -191,10 +189,10 @@ private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫
   rw [smul_eq_mul, ← inner_smul_left, hx, Pi.smul_apply]
 
 instance innerProductSpace : InnerProductSpace 𝕜 (α →₂[μ] E) where
-  norm_sq_eq_re_inner := norm_sq_eq_re_inner
+  norm_sq_eq_re_inner := private norm_sq_eq_re_inner
   conj_inner_symm _ _ := by simp_rw [inner_def, ← integral_conj, inner_conj_symm]
-  add_left := add_left'
-  smul_left := smul_left'
+  add_left := private add_left'
+  smul_left := private smul_left'
 
 end InnerProductSpace
 

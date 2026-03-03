@@ -47,6 +47,7 @@ expression of the fact that `L` acts by linear endomorphisms. It simplifies the 
 def hasBracketAux (x : L) : Module.End R (M ⊗[R] N) :=
   (toEnd R L M x).rTensor N + (toEnd R L N x).lTensor M
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The tensor product of two Lie modules is a Lie ring module. -/
 instance lieRingModule : LieRingModule L (M ⊗[R] N) where
   bracket x := hasBracketAux x
@@ -54,7 +55,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
     simp only [hasBracketAux, LinearMap.lTensor_add, LinearMap.rTensor_add, map_add,
       LinearMap.add_apply]
     abel
-  lie_add _ := LinearMap.map_add _
+  lie_add _ := map_add _
   leibniz_lie x y t := by
     suffices (hasBracketAux x).comp (hasBracketAux y) =
         hasBracketAux ⁅x, y⁆ + (hasBracketAux y).comp (hasBracketAux x) by
@@ -63,7 +64,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
     simp only [hasBracketAux, AlgebraTensorModule.curry_apply, curry_apply, sub_tmul, tmul_sub,
       LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, LieHom.map_lie, toEnd_apply_apply, LinearMap.add_apply,
-      LinearMap.map_add, LieHom.lie_apply, Module.End.lie_apply, LinearMap.lTensor_tmul]
+      map_add, LieHom.lie_apply, Module.End.lie_apply, LinearMap.lTensor_tmul]
     abel
 
 /-- The tensor product of two Lie modules is a Lie module. -/
@@ -72,7 +73,7 @@ instance lieModule : LieModule R L (M ⊗[R] N) where
     change hasBracketAux (c • x) _ = c • hasBracketAux _ _
     simp only [hasBracketAux, smul_add, LinearMap.rTensor_smul, LinearMap.smul_apply,
       LinearMap.lTensor_smul, map_smul, LinearMap.add_apply]
-  lie_smul c _ := LinearMap.map_smul _ c
+  lie_smul c _ := map_smul _ c
 
 @[simp]
 theorem lie_tmul_right (x : L) (m : M) (n : N) : ⁅x, m ⊗ₜ[R] n⁆ = ⁅x, m⁆ ⊗ₜ n + m ⊗ₜ ⁅x, n⁆ :=
@@ -123,11 +124,11 @@ nonrec def map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) : M ⊗[R] N 
     map_lie' := fun {x t} => by
       simp only [LinearMap.toFun_eq_coe]
       refine t.induction_on ?_ ?_ ?_
-      · simp only [LinearMap.map_zero, lie_zero]
+      · simp only [map_zero, lie_zero]
       · intro m n
         simp only [LieModuleHom.coe_toLinearMap, lie_tmul_right, LieModuleHom.map_lie, map_tmul,
-          LinearMap.map_add]
-      · intro t₁ t₂ ht₁ ht₂; simp only [ht₁, ht₂, lie_add, LinearMap.map_add] }
+          map_add]
+      · intro t₁ t₂ ht₁ ht₂; simp only [ht₁, ht₂, lie_add, map_add] }
 
 @[simp]
 theorem toLinearMap_map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) :
@@ -186,6 +187,7 @@ variable [LieRing L] [LieAlgebra R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable (I : LieIdeal R L) (N : LieSubmodule R L M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A useful alternative characterisation of Lie ideal operations on Lie submodules.
 
 Given a Lie ideal `I ⊆ L` and a Lie submodule `N ⊆ M`, by tensoring the inclusion maps and then

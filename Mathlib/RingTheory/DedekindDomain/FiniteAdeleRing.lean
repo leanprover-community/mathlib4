@@ -89,8 +89,19 @@ the ring of finite adeles of `K`, defined as the restricted product of the compl
 and the restricted product is the subring of `∏_v K_v` consisting of elements which
 are in `R_v` for all but finitely many `v`.
 -/
-abbrev FiniteAdeleRing : Type _ :=
+def FiniteAdeleRing : Type _ :=
   Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+
+instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
+  CommRing <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+
+instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
+  TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
+
+instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K) :=
+  inferInstanceAs <|
+  DFunLike (Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K])
+    (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K)
 
 namespace FiniteAdeleRing
 
@@ -107,10 +118,10 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
   map_mul' x y := Subtype.ext <| funext (fun v ↦
-    UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) y)
+    UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) _)
   map_zero' := rfl
   map_add' x y := Subtype.ext <| funext (fun v ↦
-    UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
+    UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) _)
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
 

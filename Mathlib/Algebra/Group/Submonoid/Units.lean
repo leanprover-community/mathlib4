@@ -52,7 +52,7 @@ def Submonoid.units (S : Submonoid M) : Subgroup Mˣ where
 
 /-- A subgroup of units represented as a submonoid of `M`. -/
 @[to_additive
-/-- A additive subgroup of additive units represented as a additive submonoid of `M`. -/]
+/-- An additive subgroup of additive units represented as an additive submonoid of `M`. -/]
 def Subgroup.ofUnits (S : Subgroup Mˣ) : Submonoid M := S.toSubmonoid.map (coeHom M)
 
 @[to_additive]
@@ -61,7 +61,7 @@ lemma Submonoid.units_mono : Monotone (Submonoid.units (M := M)) :=
 
 @[to_additive (attr := simp)]
 lemma Submonoid.ofUnits_units_le (S : Submonoid M) : S.units.ofUnits ≤ S :=
-  fun  _ ⟨_, hm, he⟩ => he ▸ hm.1
+  fun _ ⟨_, hm, he⟩ => he ▸ hm.1
 
 @[to_additive]
 lemma Subgroup.ofUnits_mono : Monotone (Subgroup.ofUnits (M := M)) :=
@@ -74,8 +74,8 @@ lemma Subgroup.units_ofUnits_eq (S : Subgroup Mˣ) : S.ofUnits.units = S :=
 
 /-- A Galois coinsertion exists between the coercion from a subgroup of units to a submonoid and
 the reduction from a submonoid to its unit group. -/
-@[to_additive /-- A Galois coinsertion exists between the coercion from a additive subgroup of
-additive units to a additive submonoid and the reduction from a additive submonoid to its unit
+@[to_additive /-- A Galois coinsertion exists between the coercion from an additive subgroup of
+additive units to an additive submonoid and the reduction from an additive submonoid to its unit
 group. -/]
 def ofUnits_units_gci : GaloisCoinsertion (Subgroup.ofUnits (M := M)) (Submonoid.units) :=
   GaloisCoinsertion.monotoneIntro Submonoid.units_mono Subgroup.ofUnits_mono
@@ -182,6 +182,9 @@ noncomputable def unitsEquivIsUnitSubmonoid (S : Submonoid M) : S.units ≃* IsU
 S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
 
 end Units
+
+instance instSubsingletonUnits [Subsingleton Mˣ] {S : Submonoid M} : Subsingleton Sˣ :=
+   .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
 
 end Submonoid
 

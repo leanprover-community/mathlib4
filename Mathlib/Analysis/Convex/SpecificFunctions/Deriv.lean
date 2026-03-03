@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Analysis.Convex.Deriv
 
@@ -31,7 +32,7 @@ of these could also be switched to elementary proofs, like in
 
 -/
 
-@[expose] public section
+public section
 
 
 open Real Set
