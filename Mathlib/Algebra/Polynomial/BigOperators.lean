@@ -303,6 +303,8 @@ lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f :
     intro H
     exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
 
+-- Note: Proof duplicated from the `degree` version, since the statements don't
+-- trivially follow from each other.
 lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f : ι → R[X]}
     {v : ι → A} (h : LinearIndepOn R v s) :
     (∑ i ∈ s, v i • (f i).map (algebraMap R A)).natDegree = s.sup (fun i ↦ (f i).natDegree) := by
