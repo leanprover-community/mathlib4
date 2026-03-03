@@ -280,6 +280,7 @@ protected theorem LocallyFinite.countable_univ {f : ι → Set X} (hf : LocallyF
 
 /-- If `f : ι → Set X` is a locally finite covering of a σ-compact topological space by nonempty
 sets, then the index type `ι` is encodable. -/
+@[implicit_reducible]
 protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set X}
     (hf : LocallyFinite f) (hne : ∀ i, (f i).Nonempty) : Encodable ι :=
   @Encodable.ofEquiv _ _ (hf.countable_univ hne).toEncodable (Equiv.Set.univ _).symm
