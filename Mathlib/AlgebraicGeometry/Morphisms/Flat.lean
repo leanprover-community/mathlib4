@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
-public import Mathlib.Topology.Category.TopCat.EffectiveEpi
 
 /-!
 # Flat morphisms
@@ -155,13 +154,6 @@ lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f :=
     @Module.FaithfullyFlat.of_flat_of_isLocalHom _ _ _ _ _ _ _
       (Flat.stalkMap f x) (f.toLRSHom.prop x)
   exact ‹RingHom.FaithfullyFlat _›.injective
-
-/-- The underlying continuous map of a flat, surjective and quasi-compact morphism of schemes is an
-effective epimorphism in the category of topological spaces. -/
-instance effectiveEpi_base_of_flat {X Y : Scheme.{u}} {f : X ⟶ Y} [Flat f] [Surjective f]
-    [QuasiCompact f] : EffectiveEpi f.base := by
-  rw [TopCat.effectiveEpi_iff_isQuotientMap]
-  exact Flat.isQuotientMap_of_surjective _
 
 lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine Y] :
     Flat f ∧ Surjective f ↔ f.appTop.hom.FaithfullyFlat := by

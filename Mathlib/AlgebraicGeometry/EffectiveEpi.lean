@@ -41,6 +41,13 @@ open Scheme
 
 section Scheme
 
+/-- The underlying continuous map of a flat, surjective and quasi-compact morphism of schemes is an
+effective epimorphism in the category of topological spaces. -/
+instance effectiveEpi_base_of_flat {X Y : Scheme.{u}} {f : X ⟶ Y} [Flat f] [Surjective f]
+    [QuasiCompact f] : EffectiveEpi f.base := by
+  rw [TopCat.effectiveEpi_iff_isQuotientMap]
+  exact Flat.isQuotientMap_of_surjective ?_
+
 namespace EffectiveEpiConstruction
 
 /-- If `π : X ⟶ Y` is a surjective morphism of schemes, then any morphism `f : X ⟶ S` of schemes
