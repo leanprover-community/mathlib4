@@ -112,8 +112,7 @@ theorem eval₂_X (n) : (X n).eval₂ f g = g n := by
   simp [eval₂_monomial, f.map_one, X, prod_single_index, pow_one]
 
 theorem eval₂_X_pow {s : σ} {n : ℕ} : ((X s) ^ n).eval₂ f g = (g s) ^ n := by
-  rw [X_pow_eq_monomial, eval₂_monomial f g]
-  simp
+  simp [X_pow_eq_monomial, eval₂_monomial f g]
 
 theorem eval₂_mul_monomial :
     ∀ {s a}, (p * monomial s a).eval₂ f g = p.eval₂ f g * f a * s.prod fun n e => g n ^ e := by
