@@ -42,6 +42,9 @@ structure Profunctor (C : Type*) [Category* C] (D : Type*) [Category* D] where
     (e : obj X Y) :
     map (f' ≫ f) (g ≫ g') e = map f' g' (map f g e)
 
+attribute [simp] Profunctor.map_id Profunctor.map_comp
+attribute [grind =] Profunctor.map_id
+attribute [grind _=_] Profunctor.map_comp
 
 variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
