@@ -10,7 +10,6 @@ public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Isometry
 public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # The completion of a metric space
@@ -222,4 +221,4 @@ def Isometry.mapRingHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] 
 theorem Isometry.mapRingHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
     (h : Isometry f) (x : α) : h.mapRingHom x = f x :=
-  Completion.mapRingHom_coe h.uniformContinuous _
+  Completion.mapRingHom_coe h.uniformContinuous.continuous _

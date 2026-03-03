@@ -12,6 +12,7 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.MetricSpace.Completion
+public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # WithAbs for fields
@@ -204,20 +205,14 @@ variable {K L : Type*} [Field K] [Field L] {w : AbsoluteValue L ℝ} {σ : WithA
 /-- If `L/K` and `w` is an absolute value on `L` factors through `K` via an embedding `σ : K →+* L`
 to give the absolute value `v` on `K`, then `mapOfComp` is natural ring homomorphism
 `v.Completion →+* w.Completion` lifting `σ`. -/
-abbrev mapOfComp (h : Isometry σ) :
-    v.Completion →+* w.Completion :=
-  h.mapRingHom
+abbrev mapOfComp (h : Isometry σ) : v.Completion →+* w.Completion := h.mapRingHom
 
-theorem mapOfComp_coe (h : Isometry σ) (x : WithAbs v) :
-    mapOfComp h x = σ x :=
-  h.mapRingHom_coe _
+theorem mapOfComp_coe (h : Isometry σ) (x : WithAbs v) : mapOfComp h x = σ x := h.mapRingHom_coe _
 
 theorem mapOfComp_dist_eq (h : Isometry σ) (x y : v.Completion) :
-    dist (mapOfComp h x) (mapOfComp h y) = dist x y :=
-  h.completion_map.dist_eq _ _
+    dist (mapOfComp h x) (mapOfComp h y) = dist x y := h.completion_map.dist_eq _ _
 
-theorem isometry_mapOfComp (h : Isometry σ) :
-    Isometry (mapOfComp h) := h.completion_map
+theorem isometry_mapOfComp (h : Isometry σ) : Isometry (mapOfComp h) := h.completion_map
 
 end RingHomLift
 
