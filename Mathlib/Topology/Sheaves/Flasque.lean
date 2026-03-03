@@ -114,6 +114,8 @@ lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
 
 set_option backward.isDefEq.respectTransparency false
 
+#check isLocallySurjective_iff_epi
+
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
 `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`. -/
 theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.ShortExact)
@@ -124,10 +126,7 @@ theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.Sho
   obtain ⟨t, ht⟩ := exists_maximal_of_chains_bounded (R.chains_bounded S.g s) (R.trans S.g s)
   have : U ≤ t.V := by
     intro x hx
-    have : TopCat.Presheaf.IsLocallySurjective S.g.val := by
-      change CategoryTheory.Sheaf.IsLocallySurjective S.g
-      rw [CategoryTheory.Sheaf.isLocallySurjective_iff_epi']
-      exact hS.epi_g
+    have := (isLocallySurjective_iff_epi S.g).mpr hS.epi_g
     -- We use local surjectivity to find a section of `S.X₂` on a neighborhood `W` of `x` that maps
     -- to `s |_ W`
     obtain ⟨W, Wle, ⟨t₁, ht₁⟩, hW⟩ := (isLocallySurjective_iff S.g.val).mp this U s x hx

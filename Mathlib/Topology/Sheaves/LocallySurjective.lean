@@ -133,3 +133,16 @@ theorem isLocallySurjective_iff' {F G : Sheaf C X} (φ : F ⟶ G) :
 end LocallySurjective
 
 end TopCat.Presheaf
+
+theorem TopCat.Sheaf.isLocallySurjective_iff_epi {X : TopCat.{v}} {C : Type u} [Category.{v} C]
+    {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+    [ConcreteCategory C FC] [Balanced (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C)]
+    [(Opens.grothendieckTopology X).HasSheafCompose (CategoryTheory.forget C)]
+    [HasSheafify (Opens.grothendieckTopology X) C]
+    [(Opens.grothendieckTopology X).WEqualsLocallyBijective C]
+    [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization C]
+    {F G : Sheaf C X} (φ : F ⟶ G) :
+    TopCat.Presheaf.IsLocallySurjective φ.val ↔ Epi φ := by
+  change CategoryTheory.Sheaf.IsLocallySurjective φ ↔ Epi φ
+  rw [CategoryTheory.Sheaf.isLocallySurjective_iff_epi']
+  rfl
