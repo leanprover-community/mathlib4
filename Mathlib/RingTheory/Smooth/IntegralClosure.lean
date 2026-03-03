@@ -273,7 +273,7 @@ lemma exists_derivative_mul_eq_and_isIntegral_coeff
         (by simp [coeff_C, apply_ite, isIntegral_zero, hm' b (Multiset.mem_of_mem_erase hbm)])
     · simpa [isIntegral_iff_isIntegral_coeff, coeff_C, apply_ite, isIntegral_zero] using H' a ham
   refine ⟨_, ?_, Polynomial.isIntegral_iff_isIntegral_coeff.mp H''⟩
-  rw [modByMonic_eq_sub_mul_div _ hf, map_sub, map_mul, map_mul,
+  rw [modByMonic_eq_sub_mul_div, map_sub, map_mul, map_mul,
     show φ f = 0 from hfx.ge (Ideal.mem_span_singleton_self _), zero_mul, sub_zero]
 
 open TensorProduct
@@ -394,4 +394,4 @@ theorem TensorProduct.toIntegralClosure_bijective_of_smooth [Algebra.Smooth R S]
     (s := Set.range f) (B := B) ?_ (Localization.Away ·.1) (Set.forall_subtype_range_iff.mpr hf)
   by_contra H
   obtain ⟨m, hm, e⟩ := Ideal.exists_le_maximal _ H
-  exact hfm ⟨m, inferInstance⟩ (e (Ideal.subset_span (Set.mem_range_self ⟨m, inferInstance⟩)):)
+  exact hfm ⟨m, inferInstance⟩ (e (Ideal.subset_span (Set.mem_range_self ⟨m, inferInstance⟩)) :)

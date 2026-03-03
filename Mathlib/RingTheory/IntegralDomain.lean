@@ -114,7 +114,6 @@ end Ring
 
 variable [CommRing R] [IsDomain R] [Group G]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
     #{g | g ^ n = g₀} ≤ Multiset.card (nthRoots n (f g₀)) := by
@@ -165,7 +164,7 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
   · have hg' : algebraMap R[X] K g ≠ 0 :=
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
     field_simp
-    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
+    rw [add_comm, ← map_mul, ← map_add, modByMonic_add_div]
 
 end Polynomial
 

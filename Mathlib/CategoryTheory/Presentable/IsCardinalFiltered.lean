@@ -279,7 +279,8 @@ variable (J κ) in
 /-- A category is `κ`-filtered iff
 1) any family of objects of cardinality `< κ` admits a map towards a common object, and
 2) any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
-`j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`. -/
+   `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`.
+-/
 lemma isCardinalFiltered_iff :
     IsCardinalFiltered J κ ↔
       (∀ ⦃ι : Type w⦄ (j : ι → J) (_ : HasCardinalLT ι κ),

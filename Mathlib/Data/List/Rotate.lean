@@ -35,6 +35,7 @@ open Nat Function
 
 namespace List
 
+@[simp]
 theorem rotate_mod (l : List α) (n : ℕ) : l.rotate (n % l.length) = l.rotate n := by simp [rotate]
 
 @[simp]
@@ -68,6 +69,7 @@ theorem rotate'_eq_drop_append_take :
     rw [rotate'_cons_succ, rotate'_eq_drop_append_take hnl', drop, take,
         drop_append_of_le_length hnl, take_append_of_le_length hnl]; simp
 
+@[simp]
 theorem rotate'_rotate' : ∀ (l : List α) (n m : ℕ), (l.rotate' n).rotate' m = l.rotate' (n + m)
   | a :: l, 0, m => by simp
   | [], n, m => by simp
@@ -89,6 +91,7 @@ theorem rotate'_length_mul (l : List α) : ∀ n : ℕ, l.rotate' (l.length * n)
         simp [-rotate'_length, Nat.mul_succ, rotate'_rotate']
       _ = l := by rw [rotate'_length, rotate'_length_mul l n]
 
+@[simp]
 theorem rotate'_mod (l : List α) (n : ℕ) : l.rotate' (n % l.length) = l.rotate' n :=
   calc l.rotate' (n % l.length)
     _ = (l.rotate' (n % l.length)).rotate'
@@ -138,6 +141,7 @@ theorem rotate_append_length_eq (l l' : List α) : (l ++ l').rotate l.length = l
   · simp
   · simp_all [rotate']
 
+@[simp]
 theorem rotate_rotate (l : List α) (n m : ℕ) : (l.rotate n).rotate m = l.rotate (n + m) := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate_eq_rotate', rotate'_rotate']
 
@@ -210,6 +214,7 @@ theorem getElem?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
       lia
     · rwa [Nat.sub_lt_iff_lt_add' hm, length_drop, Nat.sub_add_cancel hlt.le]
 
+@[simp]
 theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).length) :
     (l.rotate n)[k] =
       l[(k + n) % l.length]'(mod_lt _ (length_rotate l n ▸ k.zero_le.trans_lt h)) := by
@@ -220,6 +225,7 @@ theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]
 
+@[simp]
 theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l[n]? := by
   rw [head?_eq_getElem?, getElem?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h]
 
@@ -319,6 +325,7 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
       · exact Nat.sub_le _ _
       · exact Nat.sub_lt (by simp) (by simp_all! [k])
 
+@[simp]
 theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :
     map f (l.rotate n) = (map f l).rotate n := by
   induction n generalizing l with
