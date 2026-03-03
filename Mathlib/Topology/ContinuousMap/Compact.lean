@@ -171,8 +171,8 @@ open BoundedContinuousFunction
 instance : SeminormedAddCommGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
   __ := ContinuousMap.instAddCommGroupContinuousMap
-  dist_eq x y := by
-    rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
+  dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
+    mkOfCompact_add, mkOfCompact_neg]
   dist := dist
   norm := norm
 
@@ -404,6 +404,7 @@ open TopologicalSpace
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X]
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
   classical

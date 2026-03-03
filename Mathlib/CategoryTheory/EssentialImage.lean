@@ -167,6 +167,7 @@ end EssSurj
 variable {J C D : Type*} [Category* J] [Category* C] [Category* D]
   (G : J ⥤ D) (F : C ⥤ D) [F.Full] [F.Faithful] (hG : ∀ j, F.essImage (G.obj j))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift a functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` to a
 functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorCompIso`. -/
 @[simps] def essImage.liftFunctor : J ⥤ C where
@@ -178,6 +179,7 @@ functor `G' : J ⥤ C` such that `G' ⋙ F ≅ G`. See `essImage.liftFunctorComp
   map_id _ := F.map_injective (by simp)
   map_comp _ _ := F.map_injective (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor `G : J ⥤ D` to the essential image of a fully faithful functor `F : C ⥤ D` does
 factor through `essImage.liftFunctor G F hG`. -/
 @[simps!] def essImage.liftFunctorCompIso : essImage.liftFunctor G F hG ⋙ F ≅ G :=

@@ -133,6 +133,7 @@ open MeasureTheory
 
 variable [∀ (x : M), ENormSMulClass ℝ (TangentSpace I x)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under a monotone reparametrization. -/
 lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : MonotoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f a) (f b))) :
@@ -166,6 +167,7 @@ lemma pathELength_comp_of_monotoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : Monot
   have : 0 ≤ derivWithin f (Icc a b) t := hf.derivWithin_nonneg
   simp only [map_smul, enorm_smul, ← Real.enorm_of_nonneg this, f_im]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The length of a path in a manifold is invariant under an antitone reparametrization. -/
 lemma pathELength_comp_of_antitoneOn {f : ℝ → ℝ} (h : a ≤ b) (hf : AntitoneOn f (Icc a b))
     (h'f : DifferentiableOn ℝ f (Icc a b)) (hγ : MDifferentiableOn 𝓘(ℝ) I γ (Icc (f b) (f a))) :
@@ -337,6 +339,7 @@ lemma riemannianEDist_comm : riemannianEDist I x y = riemannianEDist I y x := by
   ext t
   simp [η]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma riemannianEDist_triangle :
     riemannianEDist I x z ≤ riemannianEDist I x y + riemannianEDist I y z := by
   apply le_of_forall_gt (fun r hr ↦ ?_)

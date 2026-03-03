@@ -40,6 +40,7 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
@@ -65,6 +66,7 @@ instance MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
     mul_zero := fun x => show μ[A] _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
+set_option backward.isDefEq.respectTransparency false in
 instance Algebra_of_Mon_ (A : ModuleCat.{u} R) [MonObj A] : Algebra R A where
   algebraMap :=
   { η[A].hom with
@@ -99,9 +101,10 @@ def functor : Mon (ModuleCat.{u} R) ⥤ AlgCat R where
       commutes' := fun r =>
         LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp (IsMonHom.one_hom f.hom)) r }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Converting a bundled algebra to a monoid object in `ModuleCat R`.
 -/
-@[simps]
+@[instance_reducible, simps]
 def inverseObj (A : AlgCat.{u} R) : MonObj (ModuleCat.of R A) where
   one := ofHom <| Algebra.linearMap R A
   mul := ofHom <| LinearMap.mul' R A
