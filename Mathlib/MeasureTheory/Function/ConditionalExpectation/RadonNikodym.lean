@@ -6,7 +6,9 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
-public import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+
+import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 
 /-!
 # Radon-Nikodym derivatives and conditional expectations
