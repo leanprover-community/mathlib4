@@ -70,8 +70,7 @@ lemma isStableUnderBaseChange : IsStableUnderBaseChange Flat := by
 
 lemma holdsForLocalizationAway : HoldsForLocalizationAway Flat := by
   introv R h
-  suffices Module.Flat _ _ from flat_algebraMap_iff.mpr this
-  exact IsLocalization.flat _ (Submonoid.powers r)
+  exact flat_algebraMap_iff.mpr (IsLocalization.flat _ (Submonoid.powers r))
 
 lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
   introv R hsp h

@@ -53,7 +53,7 @@ theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType
   · exact finiteType_respectsIso
   · introv h
     rw [finiteType_algebraMap] at h
-    suffices Algebra.FiniteType S (S ⊗[R] T) from finiteType_algebraMap.mpr this
+    apply finiteType_algebraMap.mpr
     infer_instance
 
 /-- If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a finite type `R' = M⁻¹R`-algebra. -/
