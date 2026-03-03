@@ -303,13 +303,12 @@ noncomputable instance : CreatesLimitsOfShape J (Grp.forget₂Mon C) :=
   ⟨fun {F} ↦
     letI G : Grp C :=
     { X := (limit (F ⋙ Grp.forget₂Mon C)).X
-      grp := GrpObj.ofInvertible (limit (F ⋙ Grp.forget₂Mon C)).X fun X f ↦ by
+      grp := GrpObj.ofInvertible (limit (F ⋙ Grp.forget₂Mon C)).X fun X f ↦
         let e := preservesLimitIso (yonedaMon ⋙ (evaluation _ _).obj (.op X))
           (F ⋙ Grp.forget₂Mon C) ≪≫ (preservesLimitIso (forget₂ GrpCat MonCat)
             (F ⋙ yonedaGrp ⋙ (evaluation Cᵒᵖ GrpCat).obj (Opposite.op X))).symm
-        rw [← e.hom_inv_id_apply f, ← e.symm_hom]
-        suffices hf : Invertible (e.hom.hom f) from hf.map e.symm.hom.hom
-        exact @invertibleOfGroup  _ ?_ (e.hom.hom f) }
+        ((show Invertible (e.hom.hom f) by exact @invertibleOfGroup  _ ?_ _).map
+          e.symm.hom.hom).copy f (by rw [e.symm_hom, e.hom_inv_id_apply f])}
     createsLimitOfFullyFaithfulOfIso G (Iso.refl G.toMon)⟩
 
 noncomputable instance : CreatesLimitsOfShape J (Grp.forget C) :=
