@@ -410,6 +410,7 @@ lemma Hom.mapMultiforkOfIsLimit_id (d : Multifork (E.multicospanIndex P)) :
   apply Multifork.IsLimit.hom_ext hc
   simp
 
+@[reassoc]
 lemma Hom.mapMultiforkOfIsLimit_comp (g : F.Hom G) (t : Multifork (G.multicospanIndex P))
     (hd : IsLimit d) :
     (f.comp g).mapMultiforkOfIsLimit P hc t =
