@@ -548,13 +548,20 @@ theorem mk2TensorAt_add
     mk2TensorAt I F F' (φ + ψ)
       (fun {_ _ τ} hf hσ ↦
       (congr($(φ_σ_smul hf hσ (τ := τ)) + $(ψ_σ_smul hf hσ (τ := τ)))).trans (smul_add _ _ _).symm)
-      sorry
+      (fun {σ₁ σ₂} τ hσ₁ hσ₂ ↦
+        (congr($(φ_σ_add hσ₁ hσ₂ (τ := τ)) + $(ψ_σ_add hσ₁ hσ₂ (τ := τ)))).trans <| by
+        dsimp
+        abel)
       (fun {_ σ _} hf hτ ↦
       (congr($(φ_τ_smul hf hτ (σ := σ)) + $(ψ_τ_smul hf hτ (σ := σ)))).trans (smul_add _ _ _).symm)
-      sorry
+      (fun σ {τ₁ τ₂} hτ₁ hτ₂ ↦
+        (congr($(φ_τ_add hτ₁ hτ₂ (σ := σ)) + $(ψ_τ_add hτ₁ hτ₂ (σ := σ)))).trans <| by
+        dsimp
+        abel)
     = mk2TensorAt I F F' φ φ_σ_smul φ_σ_add φ_τ_smul φ_τ_add
       + mk2TensorAt I F F' ψ ψ_σ_smul ψ_σ_add ψ_τ_smul ψ_τ_add := by
-  sorry
+  ext
+  simp [mk2TensorAt, IsBilinearMap.toContinuousLinearMap, IsBilinearMap.toLinearMap]
 
 end tensoriality
 
