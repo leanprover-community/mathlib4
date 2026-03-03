@@ -705,10 +705,34 @@ jobs:
           path: ci-tools
 
       - name: Azure CLI OIDC login and mint storage bearer token
+        id: mint_cache_bearer
+        continue-on-error: true
         uses: ./ci-tools/.github/actions/azure-create-cache-token
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
           azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+
+      - name: Fallback to SAS token if bearer mint fails (for ease of migration)
+        if: ${{ steps.mint_cache_bearer.outcome != 'success' }}
+        shell: bash
+        env:
+          MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
+        run: |
+          if [ -z "$MATHLIB_CACHE_SAS_RAW" ]; then
+            echo "Azure bearer mint failed and secrets.MATHLIB_CACHE_SAS is not set"
+            exit 1
+          fi
+
+          MATHLIB_CACHE_SAS="${MATHLIB_CACHE_SAS_RAW%"${MATHLIB_CACHE_SAS_RAW##*[![:space:]]}"}"
+          if [ -z "$MATHLIB_CACHE_SAS" ]; then
+            echo "Azure bearer mint failed and secrets.MATHLIB_CACHE_SAS is empty after trimming"
+            exit 1
+          fi
+
+          echo "::add-mask::$MATHLIB_CACHE_SAS"
+          echo "MATHLIB_CACHE_AZURE_BEARER_TOKEN=" >> "$GITHUB_ENV"
+          echo "MATHLIB_CACHE_SAS=$MATHLIB_CACHE_SAS" >> "$GITHUB_ENV"
+          echo "Using SAS fallback because bearer mint step failed."
 
       - name: Upload staged cache to Azure
         shell: bash

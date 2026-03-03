@@ -264,9 +264,13 @@ def getUploadAuth : IO UploadAuth := do
     return .cloudflareS3 token
   else
     if let some token ← IO.getEnv "MATHLIB_CACHE_AZURE_BEARER_TOKEN" then
-      return .azureBearer token.trimAscii.copy
+      let token := token.trimAscii.copy
+      if !token.isEmpty then
+        return .azureBearer token
     if let some token ← IO.getEnv "MATHLIB_CACHE_SAS" then
-      return .azureSas token.trimAscii.copy
+      let token := token.trimAscii.copy
+      if !token.isEmpty then
+        return .azureSas token
     throw <| IO.userError
       "environment variable MATHLIB_CACHE_AZURE_BEARER_TOKEN or MATHLIB_CACHE_SAS must be set to upload caches"
 
