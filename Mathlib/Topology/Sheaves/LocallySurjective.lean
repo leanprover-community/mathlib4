@@ -9,6 +9,7 @@ public import Mathlib.Topology.Sheaves.Presheaf
 public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Sites.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
 
 /-!
 
@@ -116,6 +117,18 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     simp only [← ConcreteCategory.comp_apply, T.naturality]
 
 end SurjectiveOnStalks
+
+variable [Balanced (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C)]
+  [(Opens.grothendieckTopology X).HasSheafCompose (forget C)]
+  [HasSheafify (Opens.grothendieckTopology X) C]
+  [(Opens.grothendieckTopology X).WEqualsLocallyBijective C]
+  [ConcreteCategory.HasFunctorialSurjectiveInjectiveFactorization C]
+
+theorem isLocallySurjective_iff' {F G : Sheaf C X} (φ : F ⟶ G) :
+    IsLocallySurjective φ.val ↔ Epi φ := by
+  change CategoryTheory.Sheaf.IsLocallySurjective φ ↔ Epi φ
+  rw [CategoryTheory.Sheaf.isLocallySurjective_iff_epi']
+  rfl
 
 end LocallySurjective
 
