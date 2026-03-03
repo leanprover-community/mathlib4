@@ -35,10 +35,11 @@ lattice.
 
 namespace Submonoid
 
-/-- A saturated submonoid is `s` that satisfies `x * y ∈ s → x ∈ s ∧ y ∈ s`.
+/-- Given a submonoid `s` of `M`, we say that `s` is **saturated** if it satisfies
+`x * y ∈ s → x ∈ s ∧ y ∈ s`.
 
-Not to be confused with `Submonoid.PowSaturated` or `AddSubmonoid.NSMulSaturated`, which is also
-called "saturated" in the literature. -/
+It is called `MulSaturated` here to be distinguished from `Submonoid.PowSaturated` or
+`AddSubmonoid.NSMulSaturated`, which is also called "saturated" in the literature. -/
 def MulSaturated {M : Type*} [MulOneClass M] (s : Submonoid M) : Prop :=
   ∀ ⦃x y⦄, x * y ∈ s → x ∈ s ∧ y ∈ s
 
