@@ -52,7 +52,7 @@ abbrev ι : Plus C ⥤ CochainComplex C ℤ := ObjectProperty.ι _
 def fullyFaithfulι : (ι C).FullyFaithful :=
   ObjectProperty.fullyFaithfulι _
 
-instance (J : Type) [Category J] [FinCategory J] [HasLimitsOfShape J C] :
+instance (J : Type*) [SmallCategory J] [FinCategory J] [HasLimitsOfShape J C] :
     (CochainComplex.plus C).IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := by
     rintro K ⟨p⟩
