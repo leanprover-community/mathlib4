@@ -502,11 +502,15 @@ theorem le_condLProb_diff (hs₂ : MeasurableSet[mΩ₀] s₂) :
   simp only [Pi.add_apply] at h'
   simp [h, h']
 
-theorem condLProb_diff (h : s₂ ⊆ s₁) (hs₁ : MeasurableSet[mΩ₀] s₁) (hs₂ : MeasurableSet[mΩ₀] s₂) :
+theorem condLProb_diff (h : s₂ ⊆ s₁) (hs₂ : MeasurableSet[mΩ₀] s₂) :
     P⁻⸨s₁ \ s₂| mΩ⸩ =ᵐ[P] P⁻⸨s₁| mΩ⸩ - P⁻⸨s₂| mΩ⸩ := by
-  sorry
-
-
+  have h' : P⁻⸨s₁ \ s₂| mΩ⸩ + P⁻⸨s₂| mΩ⸩ =ᵐ[P] P⁻⸨s₁ ∪ s₂| mΩ⸩ := by
+    grw [← condLProb_union (by grind) hs₂]
+    simp
+  filter_upwards [h', condLProb_le_one P s₁] with ω h1 h2
+  apply ENNReal.eq_sub_of_add_eq'
+  · exact ne_top_of_le_ne_top (by simp) h2
+  simpa [union_eq_left.mpr h] using h1
 
 -- theorem measure_diff (h : s₂ ⊆ s₁) (h₂ : NullMeasurableSet s₂ μ) (h_fin : μ s₂ ≠ ∞) :
 --     μ (s₁ \ s₂) = μ s₁ - μ s₂ := by rw [measure_diff' _ h₂ h_fin, union_eq_self_of_subset_right h]
