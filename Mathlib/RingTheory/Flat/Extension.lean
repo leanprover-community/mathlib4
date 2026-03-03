@@ -224,20 +224,36 @@ lemma adjoinTranscendentalToK_ker (x : K) (nint : ¬ IsIntegral (ResidueField S)
     [Algebra S K] [IsScalarTower S (ResidueField S) K] :
     RingHom.ker (adjoinTranscendentalToK K S x nint) =
     maximalIdeal (adjoinTranscendental S) := by
-  --IsLocalization.lift_eq
-  sorry
+  apply le_antisymm (le_maximalIdeal (RingHom.ker_ne_top _))
+  rw [← Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap, RingHom.comap_ker,
+    IsLocalization.lift_comp]
+  exact le_of_eq (adjoinTranscendental_aeval_ker K S x nint).symm
+
+noncomputable abbrev adjoinTranscendentalAlgebraK (x : K) (nint : ¬ IsIntegral (ResidueField S) x)
+    [Algebra S K] [IsScalarTower S (ResidueField S) K] :
+    Algebra (ResidueField (adjoinTranscendental S)) K :=
+  (Ideal.Quotient.lift _ (adjoinTranscendentalToK K S x nint) (fun _ h ↦
+    le_of_eq (adjoinTranscendentalToK_ker K S x nint).symm h)).toAlgebra
+
+lemma adjoinTranscendentalAlgebraK_apply_residue (x : K) (nint : ¬ IsIntegral (ResidueField S) x)
+    (y : adjoinTranscendental S) [Algebra S K] [IsScalarTower S (ResidueField S) K] :
+    letI := adjoinTranscendentalAlgebraK K S x nint
+    algebraMap (ResidueField (adjoinTranscendental S)) K (residue _ y) =
+    adjoinTranscendentalToK K S x nint y := rfl
+
+abbrev adjoinTranscendentalIsScalarTower (x : K) (nint : ¬ IsIntegral (ResidueField S) x)
+    [Algebra S K] [IsScalarTower S (ResidueField S) K] :
+    letI := adjoinTranscendentalAlgebraK K S x nint
+    IsScalarTower (ResidueField S) (ResidueField (adjoinTranscendental S)) K := by
+  let _ := adjoinTranscendentalAlgebraK K S x nint
+  refine IsScalarTower.of_algebraMap_eq (fun z ↦ ?_)
+  rcases residue_surjective z with ⟨y, hy⟩
+  simp only [← hy, ResidueField.algebraMap_residue, adjoinTranscendentalAlgebraK_apply_residue]
+  rw [IsScalarTower.algebraMap_eq S S[X], RingHom.comp_apply, IsLocalization.lift_eq]
+  simpa using (IsScalarTower.algebraMap_apply S (ResidueField S) K y).symm
 
 --letI := ((algebraMap (ResidueField S) K).comp (algebraMap S (ResidueField S))).toAlgebra
 --letI : IsScalarTower S (ResidueField S) K := IsScalarTower.of_algebraMap_eq' rfl
-
-abbrev adjoinTranscendentalAlgebraK (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
-    Algebra (ResidueField (adjoinTranscendental S)) K :=
-  sorry
-
-abbrev adjoinTranscendentalIsScalarTower (x : K) (nint : ¬ IsIntegral (ResidueField S) x) :
-    letI := adjoinTranscendentalAlgebraK K S x nint
-    IsScalarTower (ResidueField S) (ResidueField (adjoinTranscendental S)) K :=
-  sorry
 
 end monogenic
 
