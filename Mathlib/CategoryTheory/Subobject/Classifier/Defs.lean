@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Subobject.Presheaf
 # Subobject Classifier
 
 We define what it means for a morphism in a category to be a subobject classifier as
-`CategoryTheory.HasClassifier`.
+`CategoryTheory.HasSubobjectClassifier`.
 
 c.f. the following Lean 3 code, where similar work was done:
 https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
@@ -25,7 +25,7 @@ Let `C` refer to a category with a terminal object.
 
 * `CategoryTheory.Subobject.Classifier C` is the data of a subobject classifier in `C`.
 
-* `CategoryTheory.HasClassifier C` says that there is at least one subobject classifier.
+* `CategoryTheory.HasSubobjectClassifier C` says that there is at least one subobject classifier.
   `Ω C` denotes a choice of subobject classifier.
 
 ## Main results
@@ -143,29 +143,29 @@ end Subobject.Classifier
 
 open Subobject
 /-- A category `C` has a subobject classifier if there is at least one subobject classifier. -/
-class HasClassifier (C : Type u) [Category.{v} C] : Prop where
+class HasSubobjectClassifier (C : Type u) [Category.{v} C] : Prop where
   /-- There is some classifier. -/
   exists_classifier : Nonempty (Classifier C)
 
-namespace HasClassifier
+namespace HasSubobjectClassifier
 
-variable [HasClassifier C]
+variable [HasSubobjectClassifier C]
 
 noncomputable section
 
 /-- Notation for the `Ω₀` in an arbitrary choice of a subobject classifier -/
-abbrev Ω₀ : C := HasClassifier.exists_classifier.some.Ω₀
+abbrev Ω₀ : C := HasSubobjectClassifier.exists_classifier.some.Ω₀
 /-- Notation for the `Ω` in an arbitrary choice of a subobject classifier -/
-abbrev Ω : C := HasClassifier.exists_classifier.some.Ω
+abbrev Ω : C := HasSubobjectClassifier.exists_classifier.some.Ω
 
 /-- Notation for the "truth arrow" in an arbitrary choice of a subobject classifier -/
-abbrev truth : Ω₀ C ⟶ Ω C := HasClassifier.exists_classifier.some.truth
+abbrev truth : Ω₀ C ⟶ Ω C := HasSubobjectClassifier.exists_classifier.some.truth
 
 variable {C} {U X : C} (m : U ⟶ X) [Mono m]
 
 /-- returns the characteristic morphism of the subobject `(m : U ⟶ X) [Mono m]` -/
 def χ : X ⟶ Ω C :=
-  HasClassifier.exists_classifier.some.χ m
+  HasSubobjectClassifier.exists_classifier.some.χ m
 
 /-- The diagram
 ```
@@ -246,7 +246,7 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
 end
-end HasClassifier
+end HasSubobjectClassifier
 
 /-! ### The representability theorem of subobject classifiers -/
 
@@ -441,7 +441,7 @@ variable [HasTerminal C]
 
 /-- A category has a subobject classifier if and only if the subobjects functor is representable. -/
 theorem isRepresentable_hasClassifier_iff [HasPullbacks C] :
-    HasClassifier C ↔ (Subobject.presheaf C).IsRepresentable := by
+    HasSubobjectClassifier C ↔ (Subobject.presheaf C).IsRepresentable := by
   constructor <;> intro h
   · obtain ⟨⟨𝒞⟩⟩ := h
     apply RepresentableBy.isRepresentable
