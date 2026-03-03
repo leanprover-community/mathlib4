@@ -103,6 +103,10 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq {z : ℂ
     simp [HasDerivAt.deriv (hF.2 y hy), g]
   all_goals simp_all
 
+@[deprecated (since := "2026-03-03")]
+alias harmonic_is_realOfHolomorphic :=
+  InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_ball_re_eq
+
 set_option backward.isDefEq.respectTransparency false in
 /--
 If a function `f : ℂ → ℝ` is harmonic, then `f` is the real part of a holomorphic function.
@@ -132,6 +136,10 @@ theorem InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq {f : ℂ
       simp [(h₁F y).hasFDerivAt.restrictScalars ℝ |>.fderiv, g]
     · simp
   all_goals simp_all
+
+@[deprecated (since := "2026-03-03")]
+alias InnerProductSpace.harmonic_is_realOfHolomorphic_univ :=
+  InnerProductSpace.HarmonicOnNhd.exists_analyticOnNhd_univ_re_eq
 
 set_option backward.isDefEq.respectTransparency false in
 /-
