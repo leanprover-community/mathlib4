@@ -45,14 +45,13 @@ open Lean Meta Elab Term
 
 /-- Compute the chain of delta-unfoldings starting from `e` at default transparency.
     Returns all intermediate forms including `e` itself (unless `skipHead` is true). -/
-private def unfoldChain (e : Expr) (fuel : Nat := 100) (skipHead : Bool := false) :
+private def unfoldChain (e : Expr) (skipHead : Bool := false) :
     MetaM (Array Expr) := do
   let mut out : Array Expr := #[]
   let mut cur := e
   if !skipHead then out := out.push cur
-  for _ in [:fuel] do
+  repeat do
     let some nxt ← withDefault <| unfoldDefinition? cur | break
-    if out.any (· == nxt) then break
     out := out.push nxt
     cur := nxt
   return out
@@ -76,9 +75,7 @@ private def buildReplacements (sourceType expectedType : Expr) :
   let sourceArgs := sourceType.getAppArgs
   let expectedArgs := expectedType.getAppArgs
   let mut replacements : Array (Expr × Expr) := #[]
-  for i in [:sourceArgs.size.min expectedArgs.size] do
-    let sArg := sourceArgs[i]!
-    let eArg := expectedArgs[i]!
+  for sArg in sourceArgs, eArg in expectedArgs do
     if sArg != eArg then
       -- Unfoldings of the expected (target) carrier, skipping the target itself
       replacements ← addUnfoldings replacements eArg eArg (skipHead := true)
@@ -135,13 +132,12 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (args : Array Expr)
     (fuel : Nat) : MetaM (Array Expr) := do
   let mut args := args
   -- Replace carrier type in constructor parameters
-  for i in [:ci.numParams] do
+  for i in *...ci.numParams do
     if let some r ← matchesAnyDefeq args[i]! replacements then
       args := args.set! i r
   -- Process each field
-  for i in [ci.numParams:args.size] do
-    if h : i < fieldInfo.size then
-      let (isInst, isProof) := fieldInfo[i]
+  for i in ci.numParams...args.size do
+    if let some (isInst, isProof) := fieldInfo[i]? then
       if isProof then
         pure ()
       else if isInst then
