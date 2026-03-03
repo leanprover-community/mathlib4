@@ -251,6 +251,7 @@ instance (P : Cᵒᵖ ⥤ A) [HasWeakSheafify J A] :
     IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J P)) :=
   W_isInvertedBy_presheafFiber _ _ (W_toSheafify J P)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
 by localization with respect to the class of morphisms `J.W`. -/
@@ -260,6 +261,7 @@ noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A] :
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
       (by simp [← Functor.map_comp])).symm
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasWeakSheafify J A] :
     PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
   preservesColimitsOfShape {K _} := ⟨fun {F} ↦
