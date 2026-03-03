@@ -99,14 +99,13 @@ lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
     refine Sheaf.existsUnique_gluing F _ _ (fun i j ↦ ?_)
     by_cases hij : i = j
     · subst hij; rfl
-    dsimp
     obtain h1 | h1 := h i.property j.property (by grind)
     · rw [← h1.restricts]
       have := h1.le
       change (j.1.sec |_ i.1.V) |_ ((f i) ⊓ (f j)) = j.1.sec |_ ((f i) ⊓ (f j))
       rw [restrict_restrict]
     · rw [← h1.restricts]
-      have := h1.1
+      have := h1.le
       change i.1.sec |_ ((f i) ⊓ (f j)) = (i.1.sec |_ j.1.V) |_ ((f i) ⊓ (f j))
       rw [restrict_restrict]
   use ⟨iSup f, iSup_le <| fun j => j.1.le, t, eq_app_of_forall_eq ht _ (fun i => i.val.app_s)⟩
