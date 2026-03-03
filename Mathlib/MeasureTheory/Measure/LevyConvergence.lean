@@ -47,10 +47,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     have hr' : -(2 * r⁻¹) ≤ 2 * r⁻¹ := by rw [neg_le_self_iff]; positivity
     calc 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun (μ n) (t • z)‖
     _ ≤ 2⁻¹ * r * ∫ t in -(2 * r⁻¹)..2 * r⁻¹, ‖1 - charFun (μ n) (t • z)‖ := by
-      simp only [neg_mul]
-      gcongr
-      rw [intervalIntegral.integral_of_le hr', intervalIntegral.integral_of_le hr']
-      exact norm_integral_le_integral_norm _
+      grw [neg_mul, intervalIntegral.norm_integral_le_integral_norm hr']
     _ ≤ 2⁻¹ * r * ∫ t in -(2 * r⁻¹)..2 * r⁻¹, 2 := by
       gcongr
       rw [intervalIntegral.integral_of_le hr', intervalIntegral.integral_of_le hr']
