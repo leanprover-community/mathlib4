@@ -681,8 +681,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.1 <|
       hx ▸ MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.1 h
     set u := Units.mk0 (Valued.v.restrict x) this with hu_def
-    rw [← hx]
-    rw [← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
+    rw [← hx, ← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
     simp_rw [ ← Valued.v.restrict_lt_iff_lt_embedding]
     convert (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto)
     swap
@@ -1099,7 +1098,6 @@ theorem valuation_LaurentSeries_equal_extension :
     rfl
   · exact Valued.continuous_valuation_of_surjective (valuation_surjective K)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     Tendsto (Valued.v : RatFunc K → ℤᵐ⁰) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤᵐ⁰)) := by
   have := Valued.is_topological_valuation (R := (idealX K).adicCompletion (RatFunc K))
@@ -1123,7 +1121,8 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     use Units.mk0 (Valued.v.restrict a) (by simp [ha])
     simp only [Units.val_mk0, v_def, Set.setOf_subset_setOf]
     rintro y val_y b rfl
-    rw [← Valuation.map_eq_of_sub_lt _ val_y, valuedAdicCompletion_eq_valuation']
+    rw [← valuedAdicCompletion_eq_valuation']
+    exact (Valuation.restrict_inj _).mp <| Valuation.map_eq_of_sub_lt Valued.v.restrict val_y
 
 set_option backward.isDefEq.respectTransparency false in
 /- The extension of the `X`-adic valuation from `RatFunc K` up to its abstract completion coincides,
