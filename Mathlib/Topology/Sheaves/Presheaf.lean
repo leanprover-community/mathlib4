@@ -320,7 +320,7 @@ theorem pullbackObjObjOfImageOpen_hom_naturality {X Y : TopCat.{v}} (f : X ⟶ Y
       (op V)).ι.app j ≫ ((pullback C f).obj ℱ).map (homOfLE le).op  =
       ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
       ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
-      (op U)).ι.app ((CostructuredArrow.map (homOfLE le).op).obj j) := by aesop_cat
+      (op U)).ι.app ((CostructuredArrow.map (homOfLE le).op).obj j) := by cat_disch
   rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, reassoc_of% eq,
     Limits.IsColimit.comp_coconePointUniqueUpToIso_hom,
     Limits.coconeOfDiagramTerminal_ι_app,Limits.coconeOfDiagramTerminal_ι_app]
