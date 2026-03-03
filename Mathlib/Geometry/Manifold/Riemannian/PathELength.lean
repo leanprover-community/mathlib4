@@ -259,7 +259,6 @@ lemma exists_lt_of_riemannianEDist_lt (hr : riemannianEDist I x y < r) :
     contMDiffOn_comp_projIcc_iff.2 γ_smooth, ?_⟩
   rwa [← lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If some `r` is strictly larger than the Riemannian edistance between two points, there exists
 a path between these two points of length `< r`. Here, we get such a path on an arbitrary interval
 `[a, b]` with `a < b`, and moreover we ensure that the path is locally constant around `a` and `b`,

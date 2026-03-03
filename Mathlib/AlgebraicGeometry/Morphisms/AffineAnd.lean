@@ -239,7 +239,7 @@ lemma HasAffineProperty.affineAnd_iff (P : MorphismProperty Scheme.{u})
   simp_rw [isAffineHom_iff]
   refine ⟨fun h X Y f ↦ ?_, fun h ↦ ⟨affineAnd_isLocal hQi hQl hQs, ?_⟩⟩
   · rw [eq_targetAffineLocally P, targetAffineLocally_affineAnd_iff hQi]
-    aesop
+    lia
   · ext X Y f
     rw [targetAffineLocally_affineAnd_iff hQi, h f]
     aesop
