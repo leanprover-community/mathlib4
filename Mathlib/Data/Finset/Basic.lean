@@ -623,7 +623,7 @@ theorem Finset.disjUnionEquiv_symm_left (h : Disjoint s t) {i : α} (hi : i ∈ 
   simp [Equiv.symm_apply_eq]
 
 @[simp]
-theorem Finset.disjUnion_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
+theorem Finset.disjUnionEquiv_symm_right (h : Disjoint s t) {i : α} (hi : i ∈ t)
     (hi' : i ∈ s.disjUnion t h) :
     (Equiv.Finset.disjUnionEquiv s t h).symm ⟨i, hi'⟩ = Sum.inr ⟨i, hi⟩ := by
   simp [Equiv.symm_apply_eq]
