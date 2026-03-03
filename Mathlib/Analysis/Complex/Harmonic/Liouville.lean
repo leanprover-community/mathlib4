@@ -44,7 +44,7 @@ private theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant_
   grind
 
 set_option backward.isDefEq.respectTransparency false in
-/-
+/--
 **Liouville's theorem for harmonic functions on the complex plane** A real-valued, bounded harmonic
 function on the complex plane is constant.
 -/
@@ -55,6 +55,6 @@ theorem InnerProductSpace.bounded_harmonic_on_complex_plane_is_constant (f : ℂ
   obtain ⟨ℓ, h₁ℓ, h₂ℓ⟩ := exists_dual_vector'' ℝ (f z - f w)
   rw [map_sub, RCLike.ofReal_real_eq_id, id_eq] at h₂ℓ
   have η₁ : Bornology.IsBounded (range (ℓ ∘ f)) := by
-    simpa [(by aesop : range (ℓ ∘ f) = ℓ '' range f)] using IsBounded.image ℓ h_bound
+    simpa [range_comp] using IsBounded.image ℓ h_bound
   rw [← sub_eq_zero, ← norm_eq_zero, ← h₂ℓ]
   grind [bounded_harmonic_on_complex_plane_is_constant_aux (ℓ ∘ f) (h_harm.comp_CLM ℓ) η₁]
