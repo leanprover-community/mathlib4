@@ -844,12 +844,14 @@ theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G 
     isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
       (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Connecting two unreachable vertices by an edge creates a bridge. -/
 theorem IsBridge.sup_fromEdgeSet_of_not_reachable {u v : V} (h : ¬G.Reachable u v) :
     (G ⊔ fromEdgeSet {s(u, v)}).IsBridge s(u, v) := by
   refine isBridge_iff.mpr ⟨.inr ⟨Set.mem_singleton _, mt (· ▸ .rfl) h⟩, ?_⟩
   exact fun h' ↦ h <| .mono (sdiff_le_iff'.mpr <| refl _) h'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Connecting two unreachable vertices by an edge preserves existing bridges. -/
 theorem IsBridge.sup_fromEdgeSet_of_not_reachable_of_isBridge {u v : V} {e : Sym2 V}
     (h : ¬G.Reachable u v) (h' : G.IsBridge e) : (G ⊔ fromEdgeSet {s(u, v)}).IsBridge e := by

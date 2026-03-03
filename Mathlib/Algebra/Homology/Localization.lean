@@ -191,6 +191,7 @@ noncomputable def homologyFunctorFactorsh (i : ι) :
     Functor.isoWhiskerRight (quotientCompQhIso C c) _ ≪≫
     homologyFunctorFactors C c i ≪≫ (HomotopyCategory.homologyFunctorFactors C c i).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyFunctorFactorsh_hom_app_quotient_obj
     (K : HomologicalComplex C c) (i : ι) :
@@ -200,6 +201,7 @@ lemma homologyFunctorFactorsh_hom_app_quotient_obj
         (HomotopyCategory.homologyFunctorFactors C c i).inv.app K :=
   (Quotient.natTransLift_app ..).trans (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyFunctorFactorsh_inv_app_quotient_obj
     (K : HomologicalComplex C c) (i : ι) :

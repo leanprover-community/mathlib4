@@ -840,7 +840,6 @@ instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
   abv_add' := norm_add_le
   abv_mul' := by simp [Norm.norm, map_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rat_dense (q : ℚ_[p]) {ε : ℝ} (hε : 0 < ε) : ∃ r : ℚ, ‖q - r‖ < ε :=
   let ⟨ε', hε'l, hε'r⟩ := exists_rat_btwn hε
   let ⟨r, hr⟩ := rat_dense' q (ε := ε') (by simpa using hε'l)

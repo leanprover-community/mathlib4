@@ -102,6 +102,7 @@ theorem harmonic_is_realOfHolomorphic {z : ℂ} {R : ℝ} (hf : HarmonicOnNhd f 
     simp [HasDerivAt.deriv (hF.2 y hy), g]
   all_goals simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If a function `f : ℂ → ℝ` is harmonic, then `f` is the real part of a holomorphic function.
 -/
