@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Analysis.Convex.Gauge
+public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
@@ -28,11 +29,6 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_point_closed`, `geometric_hahn_banach_closed_point`: One set is closed, the
   other one is a singleton. Strict separation.
 * `geometric_hahn_banach_point_point`: Both sets are singletons. Strict separation.
-
-## TODO
-
-* Eidelheit's theorem
-* `Convex ℝ s → interior (closure s) ⊆ s`
 -/
 
 @[expose] public section
@@ -143,6 +139,28 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   rintro rfl
   simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
   exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
+
+theorem geometric_hahn_banach_of_interior_nonempty
+    {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint A B)
+    (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
+    ∃ (f : E →L[ℝ] ℝ) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, f a ≤ u) ∧ ∀ b ∈ B, u ≤ f b := by
+  obtain ⟨f, u, hfA, hfB⟩ :=
+    geometric_hahn_banach_open hA.interior isOpen_interior hB (hAB.mono_left interior_subset)
+  refine ⟨f, u, ?_, ?_, hfB⟩
+  · rcases hAint with ⟨a, ha⟩
+    rcases hBne with ⟨b, hb⟩
+    intro hzero
+    have ha' : (0 : ℝ) < u := by
+      simpa [hzero] using hfA a ha
+    have hb' : u ≤ (0 : ℝ) := by
+      simpa [hzero] using hfB b hb
+    linarith
+  · intro a ha
+    have hmem : a ∈ closure (interior A) := by
+      rw [hA.closure_interior_eq_closure_of_nonempty_interior hAint]
+      exact subset_closure ha
+    have hclosed : IsClosed {x : E | f x ≤ u} := isClosed_Iic.preimage f.continuous
+    exact closure_minimal (fun x hx => le_of_lt (hfA x hx)) hclosed hmem
 
 variable [LocallyConvexSpace ℝ E]
 
