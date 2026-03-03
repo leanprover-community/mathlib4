@@ -90,20 +90,3 @@ theorem exist_global_flow
     ∃ γ : ℝ → M → M, ∀ x, γ 0 x = x ∧ IsMIntegralCurve (γ · x) v := by
   choose γ hγ using exist_isIntegralCurve hv
   refine ⟨fun t x ↦ γ x t, fun x ↦ hγ x⟩
-
--- continuity of flow in ℝ × M
-
-noncomputable def VectorField.flow
-    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) : Flow ℝ M where
-  toFun := Classical.choose <| exist_global_flow hv
-  cont' := by
-    have := Classical.choose_spec <| exist_global_flow hv
-    sorry
-    -- need continuity in ℝ × M
-  map_add' := sorry
-    -- separate lemmas in IntegralCurve.Basic probably
-  map_zero' :=
-    have := Classical.choose_spec <| exist_global_flow hv
-    fun x ↦ (this x).1
-
--- uniqueness of flow (don't need compact?)
