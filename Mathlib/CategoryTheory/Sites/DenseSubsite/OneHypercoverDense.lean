@@ -106,7 +106,7 @@ def multicospanMap {P Q : C₀ᵒᵖ ⥤ A} (f : P ⟶ Q) :
     | WalkingMulticospan.left i => f.app _
     | WalkingMulticospan.right j => f.app _
   naturality := by
-    rintro (i₁|j₁) (i₂|j₂) (_|_)
+    rintro (i₁ | j₁) (i₂ | j₂) (_ | _)
     all_goals simp
 
 /-- The natural isomorphism between the diagrams attached to `data : F.PreOneHypercoverDenseData X`
@@ -403,7 +403,7 @@ end
 /-- Auxiliary definition for the lemma `OneHypercoverDenseData.isSheaf_iff`. -/
 noncomputable def isLimit : IsLimit (S.multifork G) :=
   Multifork.IsLimit.mk _
-    (lift hG₀ hG ) (fac hG₀ hG) (fun s _ hm ↦
+    (lift hG₀ hG) (fac hG₀ hG) (fun s _ hm ↦
       hom_ext hG₀ hG (fun a ↦ (hm a).trans (fac hG₀ hG s a).symm))
 
 end isSheaf_iff

@@ -399,6 +399,218 @@ lemma Hom.mapMultiforkOfIsLimit_ι {E F : PreOneHypercover.{w} S}
     f.mapMultiforkOfIsLimit P hc d ≫ c.ι a = d.ι (f.s₀ a) ≫ P.map (f.h₀ a).op := by
   simp [mapMultiforkOfIsLimit]
 
+section
+
+variable {S : C} {E : PreOneHypercover.{w} S} {F : PreOneHypercover.{w'} S}
+  {i i' j j' : E.I₀} (hii' : i = i') (hjj' : j = j')
+
+/-- If `i = i'` and `j = j'` this is an equivalence betweeen the `1`-index type at `i`, `j` and
+the one at `i'`, `j'`. -/
+def congrIndexOneOfEq {E : PreOneHypercover.{w} S} {i i' j j' : E.I₀}
+    (hii' : i = i') (hjj' : j = j') :
+    E.I₁ i j ≃ E.I₁ i' j' :=
+  hii' ▸ hjj' ▸ Equiv.refl _
+
+@[simp]
+lemma congrIndexOneOfEq_refl (i j : E.I₀) :
+    E.congrIndexOneOfEq rfl rfl = Equiv.refl (E.I₁ i j) := by
+  simp [congrIndexOneOfEq]
+
+lemma congrIndexOneOfEq_naturality (u₀ : E.I₀ → F.I₀) (u₁ : ∀ ⦃i j⦄, E.I₁ i j → F.I₁ (u₀ i) (u₀ j))
+    (k : E.I₁ i j) :
+    u₁ (E.congrIndexOneOfEq hii' hjj' k) =
+      F.congrIndexOneOfEq (congrArg u₀ hii') (congrArg u₀ hjj') (u₁ k) := by
+  subst hii' hjj'
+  simp
+
+lemma congrIndexOneOfEq_congrFun
+    {u₀ v₀ : E.I₀ → F.I₀}
+    {u₁ : ∀ ⦃i j⦄, E.I₁ i j → F.I₁ (u₀ i) (u₀ j)}
+    {v₁ : ∀ ⦃i j⦄, E.I₁ i j → F.I₁ (v₀ i) (v₀ j)}
+    (h₀ : u₀ = v₀)
+    (h₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
+      u₁ k = F.congrIndexOneOfEq (by simp [h₀]) (by simp [h₀]) (v₁ k))
+    {i j : E.I₀} (k : E.I₁ i j) :
+    F.congrIndexOneOfEq (congrFun h₀.symm _) (congrFun h₀.symm _) (v₁ k) = u₁ k := by
+  subst h₀
+  simp [h₁]
+
+/--
+If `i = i'` and `j = j'` this is the isomorphism betweeen the `1`-component at
+`congrIndexOneOfEq k : E.I₁ i' j'` and the `1``-compontent at `k : E.I₁ i j`.
+
+Note: This isomorphism could also be constructed inline from `eqToIso`. We only
+use `eqToIso` directly to construct isomorphisms `E.Y k ≅ E.Y k'` where `k k' : E.I₁ i j`
+and whenever `k : E.I₁ i j` and `k' : E.I₁ i' j'` have to be related we use `congrIndexOneOfEqIso`,
+possibly combined with an additional `eqToIso` instead. The reason for this is
+that the lemmas around `eqToHom_naturality` are hard to apply in the case where there is a
+mismatch in the type of the index.
+-/
+def congrIndexOneOfEqIso {E : PreOneHypercover S} {i i' j j' : E.I₀}
+    (hii' : i = i') (hjj' : j = j') (k : E.I₁ i j) :
+    E.Y (E.congrIndexOneOfEq hii' hjj' k) ≅ E.Y k :=
+  eqToIso (by subst hii' hjj'; simp)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma congrIndexOneOfEqIso_refl {i j : E.I₀} (k : E.I₁ i j) :
+    E.congrIndexOneOfEqIso rfl rfl k = Iso.refl _ := by
+  simp [congrIndexOneOfEqIso]
+
+@[reassoc (attr := simp)]
+lemma congrIndexOneOfEqIso_hom_p₁ (k : E.I₁ i j) :
+    (E.congrIndexOneOfEqIso hii' hjj' k).hom ≫ E.p₁ _ = E.p₁ _ ≫ eqToHom (by rw [hii']) := by
+  subst hii' hjj'
+  simp [congrIndexOneOfEqIso, congrIndexOneOfEq]
+
+@[reassoc (attr := simp)]
+lemma congrIndexOneOfEqIso_inv_p₁ (k : E.I₁ i j) :
+    (E.congrIndexOneOfEqIso hii' hjj' k).inv ≫ E.p₁ _ = E.p₁ k ≫ eqToHom (by rw [hii']) := by
+  subst hii' hjj'
+  simp [congrIndexOneOfEqIso, congrIndexOneOfEq]
+
+@[reassoc (attr := simp)]
+lemma congrIndexOneOfEqIso_inv_p₂ (k : E.I₁ i j) :
+    (E.congrIndexOneOfEqIso hii' hjj' k).inv ≫ E.p₂ _ = E.p₂ k ≫ eqToHom (by rw [hjj']) := by
+  subst hii' hjj'
+  simp [congrIndexOneOfEqIso, congrIndexOneOfEq]
+
+variable {i i' j j' : E.I₀} (u₀ : E.I₀ → F.I₀)
+  (u₁ : ∀ i j : E.I₀, ∀ _ : E.I₁ i j, F.I₁ (u₀ i) (u₀ j))
+  (z : ∀ i j (k : E.I₁ i j), E.Y k ⟶ F.Y (u₁ i j k))
+  (hii' : i = i') (hjj' : j = j') (k : E.I₁ i j)
+
+@[reassoc]
+lemma congrIndexOneOfEqIso_hom_naturality :
+    (E.congrIndexOneOfEqIso hii' hjj' k).hom ≫
+      z i j k =
+      z i' j' _ ≫ eqToHom (by subst hii' hjj'; simp [congrIndexOneOfEq]) ≫
+      (F.congrIndexOneOfEqIso (congrArg u₀ hii') (congrArg u₀ hjj') _).hom := by
+  subst hii' hjj'
+  simp [congrIndexOneOfEqIso, congrIndexOneOfEq]
+
+@[reassoc]
+lemma congrIndexOneOfEqIso_inv_naturality :
+    (E.congrIndexOneOfEqIso hii' hjj' k).inv ≫
+      z i' j' _ ≫
+      eqToHom (by subst hii' hjj'; simp [congrIndexOneOfEq]) =
+      z i j k ≫
+        (F.congrIndexOneOfEqIso (congrArg u₀ hii') (congrArg u₀ hjj') (u₁ _ _ k)).inv := by
+  subst hii' hjj'
+  simp [congrIndexOneOfEqIso, congrIndexOneOfEq]
+
+end
+
+set_option backward.isDefEq.respectTransparency false in
+lemma Hom.ext' {E F : PreOneHypercover S} {f g : E.Hom F}
+    (hs₀ : f.s₀ = g.s₀) (hh₀ : ∀ i, f.h₀ i = g.h₀ i ≫ eqToHom (by simp [hs₀]))
+    (hs₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
+      f.s₁ k = F.congrIndexOneOfEq (by simp [hs₀]) (by simp [hs₀]) (g.s₁ k))
+    (hh₁ : ∀ (i j : E.I₀) (k : E.I₁ i j),
+      f.h₁ k = g.h₁ k ≫
+        (F.congrIndexOneOfEqIso (congrFun hs₀.symm i) (congrFun hs₀.symm j) (g.s₁ k)).inv ≫
+        eqToHom (by rw [PreOneHypercover.congrIndexOneOfEq_congrFun hs₀ hs₁])) :
+    f = g := by
+  obtain ⟨toHomf, fs₁, fh₁⟩ := f
+  obtain ⟨toHomg, gs₁, gh₁⟩ := g
+  obtain rfl : toHomf = toHomg := PreZeroHypercover.Hom.ext' hs₀ hh₀
+  obtain rfl : @fs₁ = @gs₁ := by
+    ext i j k
+    simpa using hs₁ i j k
+  simp_all only [eqToHom_refl, Category.comp_id, implies_true, congrIndexOneOfEqIso_refl,
+    Iso.refl_inv, mk.injEq, heq_eq_eq, true_and]
+  ext i j k
+  rw [hh₁ i j k]
+  exact Category.comp_id _
+
+section
+
+variable (s₀ : E.I₀ ≃ F.I₀) (s₁ : ∀ ⦃i j : E.I₀⦄, E.I₁ i j ≃ F.I₁ (s₀ i) (s₀ j))
+  {i j : E.I₀} (k : E.I₁ i j)
+
+lemma congrIndexOneOfEq_equiv :
+    (congrIndexOneOfEq (s₀.symm_apply_apply i).symm (s₀.symm_apply_apply j).symm) k =
+      s₁.symm ((congrIndexOneOfEq (by simp) (by simp)) (s₁ k)) := by
+  apply Equiv.injective (s₁ (i := s₀.symm (s₀ i)) (j := s₀.symm (s₀ j)))
+  simp [PreOneHypercover.congrIndexOneOfEq_naturality (u₁ := fun i j k ↦ s₁ k)]
+
+/-- (Implementation): Auxiliary lemma for `CategoryTheory.PreOneHypercover.isoMk`. -/
+@[reassoc]
+lemma isoMk_aux (h₁ : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), E.Y k ≅ F.Y (s₁ k)) (k : E.I₁ i j) :
+    (h₁ k).hom ≫ (congrIndexOneOfEqIso
+        (congrArg s₀ (s₀.symm_apply_apply i).symm)
+        (congrArg s₀ (s₀.symm_apply_apply j).symm) (s₁ k)).inv ≫
+      eqToHom (by simp) ≫
+      (h₁ (s₁.symm ((congrIndexOneOfEq
+        (congrArg s₀ (s₀.symm_apply_apply i).symm)
+        (congrArg s₀ (s₀.symm_apply_apply j).symm)) (s₁ k)))).inv =
+      (congrIndexOneOfEqIso (s₀.symm_apply_apply i).symm (s₀.symm_apply_apply j).symm k).inv ≫
+      eqToHom (by congr 1; apply E.congrIndexOneOfEq_equiv s₀ s₁ _) := by
+  rw [← PreOneHypercover.congrIndexOneOfEqIso_inv_naturality_assoc
+      (z := fun i j k ↦ (h₁ k).hom) (hii' := by simp) (hjj' := by simp),
+      eqToHom_trans_assoc, eqToHom_iso_hom_naturality_assoc]
+  · simp
+  · apply PreOneHypercover.congrIndexOneOfEq_equiv
+
+end
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Construct an isomorphism of `1`-hypercovers by giving the compatibility conditions only
+in the forward direction. -/
+@[simps!]
+def isoMk {S : C} {E F : PreOneHypercover S}
+    (s₀ : E.I₀ ≃ F.I₀) (h₀ : (i : E.I₀) → E.X i ≅ F.X (s₀ i))
+    (s₁ : ∀ ⦃i j : E.I₀⦄, E.I₁ i j ≃ F.I₁ (s₀ i) (s₀ j))
+    (h₁ : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j), E.Y k ≅ F.Y (s₁ k))
+    (w₀ : ∀ (i : E.I₀), (h₀ i).hom ≫ F.f (s₀ i) = E.f i := by cat_disch)
+    (w₁₁ : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j),
+      (h₁ k).hom ≫ F.p₁ _ = E.p₁ _ ≫ (h₀ i).hom := by cat_disch)
+    (w₁₂ : ∀ ⦃i j : E.I₀⦄ (k : E.I₁ i j),
+      (h₁ k).hom ≫ F.p₂ _ = E.p₂ _ ≫ (h₀ j).hom := by cat_disch) :
+    E ≅ F where
+  hom.toHom := (PreZeroHypercover.isoMk s₀ h₀ w₀).hom
+  hom.s₁ k := s₁ k
+  hom.h₁ k := (h₁ k).hom
+  inv.toHom := (PreZeroHypercover.isoMk s₀ h₀ w₀).inv
+  inv.s₁ {i j} k := s₁.symm (F.congrIndexOneOfEq (by simp) (by simp) k)
+  inv.h₁ {i j} k :=
+    (F.congrIndexOneOfEqIso (s₀.apply_symm_apply i).symm (s₀.apply_symm_apply j).symm k).inv ≫
+      eqToHom (by simp) ≫ (h₁ _).inv
+  inv.w₁₁ {i j} k := by
+    obtain ⟨i, rfl⟩ := s₀.surjective i
+    obtain ⟨j, rfl⟩ := s₀.surjective j
+    obtain ⟨k, rfl⟩ := s₁.surjective k
+    rw [← cancel_epi (h₁ k).hom, reassoc_of% w₁₁ k]
+    simp only [PreZeroHypercover.isoMk_inv_s₀, Category.assoc, PreZeroHypercover.isoMk_inv_h₀,
+      Equiv.symm_apply_apply, eqToHom_iso_hom_naturality_assoc, Iso.hom_inv_id,
+      Category.comp_id]
+    rw [PreOneHypercover.isoMk_aux_assoc, ← eqToHom_naturality, eqToHom_refl, Category.comp_id,
+      congrIndexOneOfEqIso_inv_p₁]
+    apply PreOneHypercover.congrIndexOneOfEq_equiv
+  inv.w₁₂ {i j} k := by
+    obtain ⟨i, rfl⟩ := s₀.surjective i
+    obtain ⟨j, rfl⟩ := s₀.surjective j
+    obtain ⟨k, rfl⟩ := s₁.surjective k
+    rw [← cancel_epi (h₁ k).hom, reassoc_of% w₁₂ k]
+    simp only [PreZeroHypercover.isoMk_inv_s₀, Category.assoc, PreZeroHypercover.isoMk_inv_h₀,
+      Equiv.symm_apply_apply, eqToHom_iso_hom_naturality_assoc, Iso.hom_inv_id,
+      Category.comp_id]
+    rw [PreOneHypercover.isoMk_aux_assoc, ← eqToHom_naturality, eqToHom_refl, Category.comp_id,
+      congrIndexOneOfEqIso_inv_p₂]
+    apply PreOneHypercover.congrIndexOneOfEq_equiv
+  inv_hom_id := by
+    refine PreOneHypercover.Hom.ext' (by ext; simp) (by intro i; simp)
+      (by simp) fun i j k ↦ ?_
+    dsimp
+    simp only [Category.assoc, Iso.inv_hom_id, Category.comp_id]
+    -- If this step is replaced by `simp only [Category.id_comp]` it takes 5 seconds
+    exact (Category.id_comp _).symm
+  hom_inv_id := by
+    refine PreOneHypercover.Hom.ext' (by ext; simp) (by intro i; simp)
+      (fun i j k ↦ (E.congrIndexOneOfEq_equiv s₀ s₁ _).symm) ?_
+    intro i j k
+    simpa using E.isoMk_aux s₀ s₁ h₁ k
+
 end Category
 
 section

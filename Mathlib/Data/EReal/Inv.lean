@@ -94,13 +94,11 @@ theorem sign_coe (x : ℝ) : sign (x : EReal) = sign x := by
 @[simp, norm_cast]
 theorem coe_coe_sign (x : SignType) : ((x : ℝ) : EReal) = x := by cases x <;> rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem sign_neg : ∀ x : EReal, sign (-x) = -sign x
   | ⊤ => rfl
   | ⊥ => rfl
   | (x : ℝ) => by rw [← coe_neg, sign_coe, sign_coe, Left.sign_neg]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
   induction x, y using induction₂_symm_neg with
@@ -112,7 +110,6 @@ theorem sign_mul (x y : EReal) : sign (x * y) = sign x * sign y := by
     rw [top_mul_coe_of_pos h, sign_top, one_mul, sign_pos (EReal.coe_pos.2 h)]
   | neg_left h => rw [neg_mul, sign_neg, sign_neg, h, neg_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] protected theorem sign_mul_abs : ∀ x : EReal, (sign x * x.abs : EReal) = x
   | ⊥ => by simp
   | ⊤ => by simp
@@ -247,7 +244,6 @@ lemma mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 
 /-! #### Inversion and Absolute Value -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ := by
   induction a with
   | bot | top => simp

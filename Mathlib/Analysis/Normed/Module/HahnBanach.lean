@@ -126,7 +126,6 @@ lemma ContinuousLinearMap.exist_extension_of_finiteDimensional_range {p : Submod
   ext x
   simp [fi, e, hgf]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A finite-dimensional submodule over `ℝ` or `ℂ` is `Submodule.ClosedComplemented`. -/
 lemma Submodule.ClosedComplemented.of_finiteDimensional (p : Submodule 𝕜 F)
     [FiniteDimensional 𝕜 p] : p.ClosedComplemented :=
@@ -164,7 +163,6 @@ theorem exists_dual_vector (x : E) (h : ‖x‖ ≠ 0) : ∃ g : StrongDual 𝕜
     simp only [hval, norm_algebraMap', norm_norm] at hle
     exact one_le_of_le_mul_right₀ (by positivity) hle
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of Hahn-Banach, eliminating the hypothesis that `x` be nonzero, but only ensuring that
 the dual element has norm at most `1` (this cannot be improved for the trivial
 vector space). -/

@@ -335,7 +335,6 @@ lemma withDensity_rnDeriv_of_subset_mutuallySingularSetSlice [IsFiniteKernel κ]
     withDensity η (rnDeriv κ η) a s = 0 :=
   measure_mono_null hs (withDensity_rnDeriv_mutuallySingularSetSlice κ η a)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma withDensity_rnDeriv_of_subset_compl_mutuallySingularSetSlice
     [IsFiniteKernel κ] [IsFiniteKernel η] {a : α} {s : Set γ} (hsm : MeasurableSet s)
     (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :

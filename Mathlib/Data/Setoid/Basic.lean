@@ -204,7 +204,6 @@ set_option backward.whnf.reducibleClassField false in
 @[simp] lemma mk_eq_bot {r : α → α → Prop} (iseqv) : mk r iseqv = ⊥ ↔ r = (· = ·) := by
   simp [eq_iff_rel_eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_iff {s : Setoid α} : s = (⊤ : Setoid α) ↔ ∀ x y : α, s x y := by
   rw [_root_.eq_top_iff, Setoid.le_def, Setoid.top_def]
   simp only [Pi.top_apply, Prop.top_eq_true, forall_true_left]
@@ -305,7 +304,6 @@ end EqvGen
 
 open Function
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A function from α to β is injective iff its kernel is the bottom element of the complete lattice
 of equivalence relations on α. -/
 theorem injective_iff_ker_bot (f : α → β) : Injective f ↔ ker f = ⊥ :=
@@ -473,7 +471,6 @@ def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
 
 end Setoid
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply]
