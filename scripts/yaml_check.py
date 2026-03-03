@@ -69,7 +69,7 @@ class HundredTheorem:
 # These field names match the names in the data files of the 1000+ theorems project upstream.
 # See https://github.com/1000-plus/1000-plus.github.io/blob/main/README.md#file-format
 # for the specification. Compared to the README,
-# - this |wikidata| field concatenates the upstream fielcs |wikidata| and |id_suffix|
+# - this |wikidata| field concatenates the upstream fields |wikidata| and |id_suffix|
 # - we omit some fields (for now), e.g. the msc classification, and only care about Lean formalisations
 @dataclass
 class ThousandPlusTheorem:

@@ -51,7 +51,6 @@ theorem one_lt_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : 1 < x) :
   rw [← cosh_arcosh (le_of_lt hx), T_real_cosh, one_lt_cosh, mul_ne_zero_iff]
   exact ⟨by norm_cast, by assumption⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
     1 ≤ n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
@@ -59,7 +58,6 @@ theorem one_le_negOnePow_mul_eval_T_real (n : ℤ) {x : ℝ} (hx : x ≤ -1) :
   rw [Int.cast_negOnePow, ← mul_assoc, ← mul_zpow]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem one_lt_negOnePow_mul_eval_T_real {n : ℤ} (hn : n ≠ 0) {x : ℝ} (hx : x < -1) :
     1 < n.negOnePow * (T ℝ n).eval x := by
   rw [← neg_neg x, T_eval_neg]
