@@ -19,7 +19,7 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 @[expose] public section
 
-section Ideal
+namespace TrivSqZeroExt
 
 open Ideal
 
@@ -39,11 +39,12 @@ theorem mem_kerIdeal_iff_exists (x : TrivSqZeroExt R M) :
   rw [mem_kerIdeal_iff_inr]
   exact ⟨fun h => ⟨x.snd, h⟩, fun ⟨m, hm⟩ => by rw [hm]; rfl⟩
 
-@[simp] theorem kerIdeal_sq : kerIdeal R M ^ 2 = ⊥ := by
+@[simp] theorem kerIdeal_sq : kerIdeal R M ^ 2 = ⊥ := by
   simp only [pow_two, eq_bot_iff, mul_le, mem_kerIdeal_iff_inr]
   rintro x hx y hy
   rw [hx, hy, mem_bot, inr_mul_inr]
 
-end Ideal
+end TrivSqZeroExt
 
+end
 
