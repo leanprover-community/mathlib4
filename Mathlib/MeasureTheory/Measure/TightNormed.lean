@@ -8,7 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Measure.Tight
-public import Mathlib.Order.CompletePartialOrder
+
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Tight sets of measures in normed spaces
@@ -207,7 +209,6 @@ lemma isTightMeasureSet_iff_inner_tendsto :
   exact le_iSup_of_le (i := μ) <| by simp [hμS, h_le]
 
 variable [BorelSpace E] {μ : ℕ → Measure E} [∀ i, IsFiniteMeasure (μ i)]
-    [MeasurableSpace 𝕜] [BorelSpace 𝕜]
 
 lemma isTightMeasureSet_range_of_tendsto_limsup_inner
     (h : ∀ y, Tendsto (fun r : ℝ ↦ limsup (fun n ↦ μ n {x | r < ‖⟪y, x⟫_𝕜‖}) atTop) atTop (𝓝 0)) :
