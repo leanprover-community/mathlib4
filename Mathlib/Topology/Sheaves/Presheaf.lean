@@ -328,6 +328,9 @@ theorem pullbackObjObjOfImageOpen_hom_naturality {X Y : TopCat.{v}} (f : X ⟶ Y
   rw [← Functor.map_comp]
   cat_disch
 
+theorem truc {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
+    (H : IsOpen (f '' U)) :
+
 end
 
 end TopCat.Presheaf
