@@ -697,8 +697,8 @@ theorem iSup_le_iSup_of_subset {f : β → α} {s t : Set β} : s ⊆ t → ⨆ 
 
 @[to_dual]
 theorem iSup_insert {f : β → α} {s : Set β} {b : β} :
-    ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x :=
-  Eq.trans iSup_union <| congr_arg (fun x => x ⊔ ⨆ x ∈ s, f x) iSup_iSup_eq_left
+    ⨆ x ∈ insert b s, f x = f b ⊔ ⨆ x ∈ s, f x := by
+  simp [iSup_or, iSup_sup_eq]
 
 @[to_dual]
 theorem iSup_singleton {f : β → α} {b : β} : ⨆ x ∈ (singleton b : Set β), f x = f b := by simp

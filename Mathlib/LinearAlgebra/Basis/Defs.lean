@@ -374,6 +374,7 @@ variable {R' : Type*} [Semiring R'] [Module R' M] (f : R ≃+* R')
 
 attribute [local instance] SMul.comp.isScalarTower
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` and `R'` are isomorphic rings that act identically on a module `M`,
 then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module.
 

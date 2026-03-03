@@ -79,6 +79,7 @@ lemma braidingNatIso_hom_app_naturality_μ_right (X Y Z : C) :
   (NatTrans.congr_app ((braidingNatIso L W ε).hom.naturality
     ((Functor.LaxMonoidal.μ (L') X Y))) ((L').obj Z)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_hexagon_forward (X Y Z : C) :
     (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).hom ≫
@@ -96,6 +97,7 @@ lemma map_hexagon_forward (X Y Z : C) :
     rw [braidingNatIso_hom_app_naturality_μ_left, braidingNatIso_hom_app]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_hexagon_reverse (X Y Z : C) :
     (α_ ((L').obj X) ((L').obj Y) ((L').obj Z)).inv ≫

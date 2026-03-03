@@ -164,6 +164,7 @@ theorem mem_box_iff_index {x : ι → ℝ} {ν : ι → ℤ} :
 theorem index_tag (ν : ι → ℤ) :
     index n (tag n ν) = ν := mem_box_iff_index.mp (tag_mem n ν)
 
+set_option backward.isDefEq.respectTransparency false in
 variable {n} in
 theorem disjoint {ν ν' : ι → ℤ} :
     ν ≠ ν' ↔ Disjoint (box n ν).toSet (box n ν').toSet := by

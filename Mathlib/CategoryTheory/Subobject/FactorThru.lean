@@ -39,6 +39,7 @@ Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
 def Factors {X Y : C} (P : MonoOver Y) (f : X ⟶ Y) : Prop :=
   ∃ g : X ⟶ (P : C), g ≫ P.arrow = f
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factors_congr {X : C} {f g : MonoOver X} {Y : C} (h : Y ⟶ X) (e : f ≅ g) :
     f.Factors h ↔ g.Factors h :=
   ⟨fun ⟨u, hu⟩ => ⟨u ≫ ((MonoOver.forget _).map e.hom).left, by simp [hu]⟩, fun ⟨u, hu⟩ =>
@@ -53,6 +54,7 @@ end MonoOver
 
 namespace Subobject
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `f : X ⟶ Y` and `P : Subobject Y`,
 `P.Factors f` expresses that there exists a factorisation of `f` through `P`.
 Given `h : P.Factors f`, you can recover the morphism as `P.factorThru f h`.
@@ -92,6 +94,7 @@ theorem factors_of_factors_right {X Y Z : C} {P : Subobject Z} (f : X ⟶ Y) {g 
   obtain ⟨g, rfl⟩ := h
   exact ⟨f ≫ g, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem factors_zero [HasZeroMorphisms C] {X Y : C} {P : Subobject Y} : P.Factors (0 : X ⟶ Y) :=
   (factors_iff _ _).mpr ⟨0, by simp⟩
 

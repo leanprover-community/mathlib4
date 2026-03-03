@@ -183,6 +183,7 @@ lemma smul_def [SMul ℂ α] (z : Circle) (a : α) : z • a = (z : ℂ) • a :
 instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [ContinuousSMul ℂ α] :
     ContinuousSMul Circle α := Submonoid.continuousSMul
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
     (u : Circle) (v : E) :
@@ -210,7 +211,7 @@ theorem fourierChar_apply' (x : ℝ) : 𝐞 x = Circle.exp (2 * π * x) := rfl
 theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) := rfl
 
 @[continuity, fun_prop]
-theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_mul_left _)
+theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_const_mul _)
 
 theorem fourierChar_ne_one : fourierChar ≠ 1 := by
   rw [DFunLike.ne_iff]

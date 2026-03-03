@@ -76,6 +76,7 @@ lemma Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
 instance : HasRingHomProperty @SurjectiveOnStalks RingHom.SurjectiveOnStalks :=
   eq_stalkwise ▸ .stalkwise RingHom.surjective_respectsIso
 
+set_option backward.isDefEq.respectTransparency false in
 variable {f} in
 lemma iff_of_isAffine [IsAffine X] [IsAffine Y] :
     SurjectiveOnStalks f ↔ RingHom.SurjectiveOnStalks (f.app ⊤).hom := by
@@ -103,6 +104,7 @@ lemma mono_of_injective [SurjectiveOnStalks f] (hf : Function.Injective f) : Mon
   · exact hf
   · exact fun x ↦ ConcreteCategory.epi_of_surjective _ (f.stalkMap_surjective x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
 `X × Y` (Cartesian product as topological spaces) with the induced topology. -/
 lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [SurjectiveOnStalks g] :

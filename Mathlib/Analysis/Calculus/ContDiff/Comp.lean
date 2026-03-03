@@ -505,6 +505,7 @@ end SpecificBilinearMaps
 
 section ClmApplyConst
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDerivWithin`. -/
 theorem iteratedFDerivWithin_clm_apply_const_apply
     {s : Set E} (hs : UniqueDiffOn 𝕜 s) {c : E → F →L[𝕜] G}
@@ -580,6 +581,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem_nhdsWithin_image x₀
       (contDiffWithinAt_id.prodMk hg) hst
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The most general lemma stating that `x ↦ fderivWithin 𝕜 (f x) t (g x)` is `C^n`
 at a point within a set.
 To show that `x ↦ D_yf(x,y)g(x)` (taken within `t`) is `C^m` at `x₀` within `s`, we require that
@@ -658,6 +660,7 @@ theorem ContDiffWithinAt.fderivWithin_right_apply
     (ContDiffWithinAt.comp (x₀, x₀) hf contDiffWithinAt_snd <| prod_subset_preimage_snd s s)
     contDiffWithinAt_id hk hs hmn hx₀s (by rw [preimage_id'])
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
 theorem ContDiffWithinAt.iteratedFDerivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
     (hs : UniqueDiffOn 𝕜 s) (hmn : m + i ≤ n) (hx₀s : x₀ ∈ s) :
