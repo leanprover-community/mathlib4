@@ -243,7 +243,7 @@ namespace Finite
 
 section CCL
 
-variable {α ι : Type*} [Finite ι] [ConditionallyCompleteLattice α]
+variable {α ι ι' : Type*} [Finite ι] [Finite ι'] [ConditionallyCompleteLattice α]
 
 lemma le_ciSup_of_le {a : α} {f : ι → α} (c : ι) (h : a ≤ f c) : a ≤ iSup f :=
   _root_.le_ciSup_of_le (bddAbove_range f) c h
@@ -273,13 +273,11 @@ lemma ciInf_inf [Nonempty ι] {f : ι → α} {a : α} :
     (⨅ i, f i) ⊓ a = ⨅ i, f i ⊓ a :=
   ciSup_sup (α := αᵒᵈ) ..
 
-lemma ciSup_prod {α ι ι' : Type*} [Finite ι] [Finite ι'] [Nonempty ι] [Nonempty ι']
-    [ConditionallyCompleteLattice α] (f : ι × ι' → α) :
+lemma ciSup_prod [Nonempty ι] [Nonempty ι'] (f : ι × ι' → α) :
     ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') :=
   _root_.ciSup_prod (bddAbove_range f)
 
-lemma ciInf_prod {α ι ι' : Type*} [Finite ι] [Finite ι'] [Nonempty ι] [Nonempty ι']
-    [ConditionallyCompleteLattice α] (f : ι × ι' → α) :
+lemma ciInf_prod [Nonempty ι] [Nonempty ι'] (f : ι × ι' → α) :
     ⨅ a, f a = ⨅ i, ⨅ i', f (i, i') :=
   ciSup_prod (α := αᵒᵈ) f
 
