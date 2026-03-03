@@ -17,14 +17,11 @@ We collect results about effective epimorphisms in the category of schemes.
 
 ## Main results
 
-* `AffineScheme.effectiveEpi_of_flat_of_surjective`: A flat surjective morphism between affine
-schemes is an effective epimorphism in the category of affine schemes.
-
 For a surjective and flat morphism `π : X ⟶ Y` between affine schemes, we prove the following.
 * `exists_comp_eq_of_flat_of_isAffine`: Any morphism `f : X ⟶ S` of schemes whose two pullbacks to
   `X ×[Y] X` agree descends to a morphism `u : Y ⟶ S` with `π ≫ u = f`.
-* `effectiveEpi_of_flat_of_surjective_of_isAffine`: The map `π : X ⟶ Y` is an effective epimorphism
-  in the category of schemes.
+* `isRegularEpi_of_flat_of_surjective_of_isAffine`: The map `π : X ⟶ Y` is a regular epimorphism
+  in the category of schemes. This implies `EffectiveEpi π` by `inferInstance`.
 
 ## Reference
 
@@ -86,7 +83,7 @@ open pullback in
 schemes whose two pullbacks to `X ×[Y] X` agree descends Zariski locally on `Y`: there exists an
 open cover `𝒰` of `Y` such that for each `i` there is `u : 𝒰.X i ⟶ S` with
 `pullback.fst π (𝒰.f i) ≫ f = pullback.snd π (𝒰.f i) ≫ u`. -/
-lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
+private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y)
     [Surjective π] [Flat π]
     (f : X ⟶ S) (hg : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
     ∃ (𝒰 : OpenCover.{u} Y),
@@ -117,14 +114,17 @@ lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y] (π
   refine ⟨u ≫ Scheme.Opens.ι _, ?_⟩
   simp [reassoc_of% hu, f']
 
-/-- If `π : X ⟶ Y` is a surjective and flat morphism between affine schemes, then any morphism
-`f : X ⟶ S` of schemes whose two pullbacks to `X ×[Y] X` agree descends to a morphism `u : Y ⟶ S`
-with `π ≫ u = f`. -/
-lemma exists_comp_eq_of_flat_of_isAffine {X Y S : Scheme.{u}} [IsAffine X] [IsAffine Y]
-    (π : X ⟶ Y) [Surjective π] [Flat π]
-    (f : X ⟶ S) (hf : pullback.fst π π ≫ f = pullback.snd π π ≫ f) :
-    ∃ (u : Y ⟶ S), π ≫ u = f := by
-  obtain ⟨𝒰, h⟩ := exists_openCover_exists π f hf
+end EffectiveEpiConstruction
+
+/-- If `π : X ⟶ Y` is a flat and surjective morphism between affine schemes, then `π` is a
+regular epimorphism in the category of schemes. -/
+@[stacks 023Q]
+lemma isRegularEpi_of_flat_of_surjective_of_isAffine
+    {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y) [Surjective π] [Flat π] :
+    IsRegularEpi π := by
+  have : Epi π := Flat.epi_of_flat_of_surjective _
+  refine .of_epi_of_exists fun Z f hf ↦ ?_
+  obtain ⟨𝒰, h⟩ := EffectiveEpiConstruction.exists_openCover_exists π f hf
   choose u hfac using h
   refine ⟨𝒰.glueMorphisms u ?_, ?_⟩
   · intro i j
@@ -141,33 +141,6 @@ lemma exists_comp_eq_of_flat_of_isAffine {X Y S : Scheme.{u}} [IsAffine X] [IsAf
   · apply Cover.hom_ext (𝒰.pullback₁ π)
     intro i
     simp [pullback.condition_assoc, hfac]
-
-end EffectiveEpiConstruction
-
-open EffectiveEpiConstruction in
-/-- If `π : X ⟶ Y` is a flat and surjective morphism between affine schemes, the cofork formed by
-the two projections `X ×[Y] X ⟶ X` followed by `X ⟶ Y` is a colimit. -/
-noncomputable def isColimitCoforkSpecPullbackOfFlatOfSurjective
-    {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y) [Surjective π] [Flat π] :
-    IsColimit (Cofork.ofπ π pullback.condition) := by
-  apply Cofork.IsColimit.mk'
-  intro s
-  refine ⟨(exists_comp_eq_of_flat_of_isAffine _ _ s.condition).choose,
-    ⟨by simp [(exists_comp_eq_of_flat_of_isAffine _ _ s.condition).choose_spec], ?_⟩⟩
-  intro _ h
-  haveI : Epi π := Flat.epi_of_flat_of_surjective π
-  apply (cancel_epi π).mp
-  trans s.ι.app WalkingParallelPair.one
-  · simpa using h
-  · simpa using (exists_comp_eq_of_flat_of_isAffine _ _ s.condition).choose_spec.symm
-
-/-- If `π : X ⟶ Y` is a flat and surjective morphism between affine schemes, then `π` is an
-effective epimorphism in the category of schemes. -/
-@[stacks 023Q]
-lemma effectiveEpi_of_flat_of_surjective_of_isAffine
-    {X Y : Scheme.{u}} [IsAffine X] [IsAffine Y] (π : X ⟶ Y) [Surjective π] [Flat π] :
-    EffectiveEpi π :=
-  effectiveEpi_of_kernelPair _ (isColimitCoforkSpecPullbackOfFlatOfSurjective π)
 
 end Scheme
 
