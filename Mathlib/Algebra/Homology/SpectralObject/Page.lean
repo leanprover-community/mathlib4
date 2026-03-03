@@ -201,7 +201,7 @@ noncomputable def leftHomologyDataShortComplexE
       refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).2
         (cokernelIsCokernel (X.δToCycles f₁ f₂ f₃ n₀ n₁))
       · exact parallelPair.ext (Iso.refl _) (Iso.refl _) (by simpa) (by simp)
-      · exact Cofork.ext (Iso.refl _)}
+      · exact Cofork.ext (Iso.refl _) }
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
