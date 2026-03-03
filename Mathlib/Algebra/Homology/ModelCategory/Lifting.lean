@@ -118,7 +118,6 @@ lemma comp_coe_cocycle₁_comp :
   ext n m hnm
   simp [cocycle₁]
 
-
 /--
 Consider a commutative square in the category `CochainComplex C ℤ`
 where `C` is an abelian category.
