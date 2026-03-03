@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 public import Mathlib.Probability.ProbabilityMassFunction.Basic
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+public import Mathlib.Probability.ProbabilityMassFunction.Integrals
 
 /-! # Poisson distributions over ℕ
 
@@ -81,5 +82,45 @@ def poissonMeasure (r : ℝ≥0) : Measure ℕ := (poissonPMF r).toMeasure
 
 instance isProbabilityMeasurePoisson (r : ℝ≥0) :
     IsProbabilityMeasure (poissonMeasure r) := PMF.toMeasure.isProbabilityMeasure (poissonPMF r)
+
+section MeanVariance
+
+theorem poissonMeasure_mean (r : ℝ≥0) :
+    ∫ n : ℕ, (n : ℝ) ∂poissonMeasure r = r := by
+  have key : HasSum (fun a : ℕ => rexp (-↑r) * ↑r ^ a / ↑a ! * ↑a) ↑r := by
+    have h := (poissonPMFRealSum r).mul_left (↑r : ℝ)
+    simp_rw [poissonPMFReal, mul_one] at h
+    set f := fun a : ℕ => rexp (-↑r) * ↑r ^ a / ↑a ! * ↑a
+    have hf0 : f 0 = 0 := by simp [f]
+    have hshift : HasSum (fun n => f (n + 1)) ↑r :=
+      h.congr_fun fun n => by
+        simp only [f, Nat.factorial_succ, Nat.cast_mul, pow_succ]
+        field_simp
+    rw [hasSum_nat_add_iff 1] at hshift
+    simp only [Finset.sum_range_one, hf0, add_zero] at hshift
+    exact hshift
+  have hint : Integrable (Nat.cast : ℕ → ℝ) (poissonPMF r).toMeasure := by
+    constructor
+    · fun_prop
+    · rw [hasFiniteIntegral_iff_enorm, lintegral_countable']
+      simp_rw [PMF.toMeasure_apply_singleton _ _ (measurableSet_singleton _), enorm_natCast]
+      have : ∀ a : ℕ, (a : ℝ≥0∞) * (poissonPMF r) a =
+          ENNReal.ofReal (rexp (-↑r) * ↑r ^ a / ↑a ! * ↑a) := fun a => by
+        change (a : ℝ≥0∞) * ENNReal.ofReal (poissonPMFReal r a) =
+          ENNReal.ofReal (rexp (-↑r) * ↑r ^ a / ↑a ! * ↑a)
+        rw [show (a : ℝ≥0∞) = ENNReal.ofReal (a : ℝ) from (ENNReal.ofReal_natCast a).symm,
+          ← ENNReal.ofReal_mul (Nat.cast_nonneg a)]
+        congr 1; simp [poissonPMFReal]; ring
+      simp_rw [this, ← ENNReal.ofReal_tsum_of_nonneg (fun a => by positivity) key.summable]
+      exact ENNReal.ofReal_lt_top
+  rw [poissonMeasure, PMF.integral_eq_tsum _ _ hint]
+  simp_rw [show ∀ a : ℕ, ((poissonPMF r) a).toReal • (a : ℝ) =
+      rexp (-↑r) * ↑r ^ a / ↑a ! * ↑a from fun a => by
+    change (ENNReal.ofReal (poissonPMFReal r a)).toReal • (a : ℝ) = _
+    rw [ENNReal.toReal_ofReal poissonPMFReal_nonneg, smul_eq_mul]
+    simp [poissonPMFReal]]
+  exact key.tsum_eq
+
+end MeanVariance
 
 end ProbabilityTheory
