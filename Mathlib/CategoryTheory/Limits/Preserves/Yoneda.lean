@@ -71,7 +71,7 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
     whiskerLeft_app, uliftFunctor_map, Functor.comp_map, evaluation_obj_map, yoneda_map_app]
   ext η Y f
   dsimp [largeCurriedYonedaLemma, yonedaOpCompYonedaObj, yonedaEquiv]
-  simp only [comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.as_apply, Function.comp_apply,
+  simp only [comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply, Function.comp_apply,
     Equiv.symm_trans_apply, Equiv.symm_symm, Equiv.ulift_apply, Equiv.coe_fn_symm_mk]
   simp only [← comp_apply, Category.assoc, colimitObjIsoColimitCompEvaluation_ι_inv,
     ← NatTrans.naturality, ← NatTrans.naturality_assoc, yoneda_obj_obj, yoneda_obj_map,

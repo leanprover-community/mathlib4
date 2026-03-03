@@ -226,7 +226,7 @@ theorem jointly_surjective_of_isColimit {F : J ⥤ TypeCat.{u}} {t : Cocone F} (
   · refine h.hom_ext fun j ↦ ?_
     ext y
     simp only [Functor.const_obj_obj, TypeCat.hom_as_apply, comp_apply, hom_ofHom,
-      TypeCat.Fun.as_apply, ne_eq, true_iff]
+      TypeCat.Fun.mk_apply, ne_eq, true_iff]
     exact hx j y
   · intro he
     have := ConcreteCategory.congr_hom he x

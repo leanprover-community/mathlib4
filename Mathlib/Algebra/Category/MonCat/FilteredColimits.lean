@@ -131,7 +131,7 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
   obtain ⟨j₁, y⟩ := y; obtain ⟨j₂, x⟩ := x; obtain ⟨j₃, y'⟩ := y'
   obtain ⟨l, f, g, hfg⟩ := hyy'
   simp only [Functor.comp_obj, Functor.comp_map, ConcreteCategory.hom_ofHom,
-    TypeCat.Fun.as_apply] at hfg
+    TypeCat.Fun.mk_apply] at hfg
   obtain ⟨s, α, β, γ, h₁, h₂, h₃⟩ :=
     IsFiltered.tulip (IsFiltered.rightToMax j₂ j₁) (IsFiltered.leftToMax j₂ j₁)
       (IsFiltered.leftToMax j₂ j₃) (IsFiltered.rightToMax j₂ j₃) f g

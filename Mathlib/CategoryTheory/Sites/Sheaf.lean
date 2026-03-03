@@ -427,7 +427,7 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ TypeCat.{w}) :
       apply ConcreteCategory.hom_ext
       intro x
       simp only [Functor.comp_obj, Functor.flip_obj_obj, yoneda_obj_obj, Functor.comp_map,
-        Functor.flip_obj_map, yoneda_map_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.as_apply,
+        Functor.flip_obj_map, yoneda_map_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.mk_apply,
         comp_apply]
       apply Presieve.IsSheafFor.valid_glue
     · intro y hy

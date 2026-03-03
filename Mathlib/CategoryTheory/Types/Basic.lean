@@ -67,10 +67,24 @@ instance : Inhabited TypeCat.{u} := ⟨of <| PUnit⟩
 
 @[ext]
 structure Fun (X Y : Type*) where
-  as : X → Y
+  protected as : X → Y
+
+instance instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
+  coe f := f.as
+  coe_injective' _ := by aesop
+
+def Fun.Simps.coe (X Y : Type*) (f : Fun X Y) := (f : _ → _)
+
+initialize_simps_projections Fun (as → coe)
+
+def Fun.id (X : Type*) : Fun X X where
+  as x := x
+
+def Fun.comp {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) : Fun X Z where
+  as x := f (g x)
 
 def Fun.homEquiv (X Y : Type*) : (Fun X Y) ≃ (X → Y) where
-  toFun f := f.as
+  toFun f := f
   invFun f := ⟨f⟩
   left_inv := by intro; rfl
   right_inv := by intro; rfl
@@ -81,7 +95,7 @@ set_option backward.privateInPublic true in
 structure Hom (X Y : TypeCat.{u}) where
   private mk ::
   /-- The underlying function -/
-  hom' : Fun X.carrier Y.carrier
+  hom' : Fun X Y
 
 end TypeCat
 
@@ -92,25 +106,33 @@ set_option backward.privateInPublic.warn false in
 @[to_additive_do_translate] -- Expressions involving this instance can still be additivized.
 instance CategoryTheory.types : Category.{u} TypeCat.{u} where
   Hom := Hom
-  id X := .mk <| .mk (fun x => x)
-  comp f g := .mk <| .mk fun x => g.hom'.as <| f.hom'.as x
-
-instance TypeCat.instFunLikeFun {X Y : Type*} : FunLike (Fun X Y) X Y where
-  coe f := f.as
-  coe_injective' _ := by aesop
+  id X := .mk <| .id X
+  comp f g := .mk <| g.hom'.comp f.hom'
 
 -- @[simp]
 -- lemma TypeCat.Fun.coe_eq_as {X Y : Type*} (f : Fun X Y) (x : X) :
 --     f.as x = @DFunLike.coe (Fun X Y) X (fun _ ↦ Y) inferInstance f x := by
 --   with_reducible rfl
 
+-- @[simp]
+-- lemma TypeCat.Fun.apply {X Y : Type*} (f : Fun X Y) (x : X) : f x = f.as x := rfl
+
 @[simp]
-lemma TypeCat.Fun.as_apply {X Y : Type*} (f : X → Y) (x : X) : (⟨f⟩ : Fun X Y) x = f x :=
+lemma TypeCat.Fun.mk_apply {X Y : Type*} (f : X → Y) (x : X) : (Fun.mk f) x = f x :=
   rfl
 
-def TypeCat.Fun.Simps.coe (X Y : Type*) (f : Fun X Y) := (f : _ → _)
+@[simp]
+lemma TypeCat.Fun.id_apply {X : Type*} (x : X) : Fun.id X x = x :=
+  rfl
 
-initialize_simps_projections TypeCat.Fun (as → coe)
+@[simp]
+lemma TypeCat.Fun.comp_apply {X Y Z : Type*} (f : Fun Y Z) (g : Fun X Y) (x : X) :
+    f.comp g x = f (g x) :=
+  rfl
+
+-- @[simp]
+-- lemma TypeCat.hom_as_apply {X Y : Type*} (f : Fun X Y) (x : X) : f.as x = f x :=
+--   rfl
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -126,6 +148,15 @@ example (X : Type u) : (of X : Type u) = X := by with_reducible rfl
 example (X : TypeCat.{u}) : of X = X := by with_reducible rfl
 
 example (X Y : TypeCat.{u}) (f : X ⟶ Y) : (f : X → Y) = (ConcreteCategory.hom f : X → Y) := by
+  with_reducible rfl
+
+example (X Y : TypeCat.{u}) (f : X ⟶ Y) (x : X) : f x = (f : X → Y) x := by
+  with_reducible rfl
+
+example (X Y : Type*) (f : Fun X Y) : (f : X → Y) = f := by
+  with_reducible rfl
+
+example (X Y : Type*) (f : Fun X Y) (x : X) : f x = (f : X → Y) x := by
   with_reducible rfl
 
 namespace TypeCat
@@ -157,8 +188,8 @@ lemma ofHom_eq {X Y : TypeCat.{u}} (f : X ⟶ Y) : ofHom ⟨f⟩ = f :=
   rfl
 
 @[simp]
-lemma ofHom_apply {X Y : Type u} (f : X → Y) (x : X) :
-    ConcreteCategory.ofHom (C := TypeCat) ⟨f⟩ x = f x :=
+lemma ofHom_apply {X Y : Type u} (f : Fun X Y) (x : X) :
+    TypeCat.ofHom f x = f x :=
   rfl
 
 @[simp]
@@ -356,7 +387,7 @@ theorem mono_iff_injective {X Y : TypeCat.{u}} (f : X ⟶ Y) : Mono f ↔ Functi
 theorem injective_of_mono {X Y : TypeCat.{u}} (f : X ⟶ Y) [hf : Mono f] : Function.Injective f :=
   (mono_iff_injective f).1 hf
 
-/-- A morphism in `Type` is an epimorphism if and only if it is surjective. -/
+/-- A morphism in `TypeCat` is an epimorphism if and only if it is surjective. -/
 @[stacks 003C]
 theorem ofHom_epi_iff_surjective {X Y : Type u} (f : X → Y) :
     Epi (ofHom ⟨f⟩) ↔ Function.Surjective f := by
@@ -415,15 +446,15 @@ end CategoryTheory
 -- Isomorphisms in Type and equivalences.
 namespace Equiv
 
-variable {X Y : Type u}
+variable {X Y : TypeCat.{u}}
 
 /-- Any equivalence between types in the same universe gives
 a categorical isomorphism between those types.
 -/
 @[simps]
 def toIso (e : X ≃ Y) : of X ≅ of Y where
-  hom := ofHom ⟨(e : _ → _)⟩
-  inv := ofHom ⟨(e.symm : _ → _)⟩
+  hom := ofHom ⟨fun x ↦ e x⟩
+  inv := ofHom ⟨fun x ↦ e.symm x⟩
 
 end Equiv
 

@@ -80,7 +80,7 @@ def firstObjEqFamily : FirstObj P R ≅ TypeCat.of (R.FamilyOfElements P) where
   inv_hom_id := by -- was automatic
     ext
     simp only [limit.cone_x, TypeCat.hom_as_apply, comp_apply, ConcreteCategory.hom_ofHom,
-      TypeCat.Fun.as_apply, id_apply]
+      TypeCat.Fun.mk_apply, id_apply]
     simp [← comp_apply]
 
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=

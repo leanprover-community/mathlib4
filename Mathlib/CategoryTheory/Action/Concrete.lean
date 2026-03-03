@@ -28,6 +28,8 @@ open CategoryTheory Limits
 
 namespace TypeCat
 
+instance (X : TypeCat.{u}) : CoeFun (End X) (fun _ ↦ X → X) := inferInstanceAs <| CoeFun (X ⟶ X) _
+
 @[simps apply symm_apply]
 def endEquiv (X : TypeCat.{u}) : Function.End X ≃* End X where
   toFun f := TypeCat.ofHom ⟨f⟩

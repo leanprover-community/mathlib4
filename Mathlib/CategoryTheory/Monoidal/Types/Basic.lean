@@ -24,6 +24,11 @@ namespace CategoryTheory
 instance typesCartesianMonoidalCategory : CartesianMonoidalCategory (TypeCat.{u}) :=
   .ofChosenFiniteProducts Types.terminalLimitCone Types.binaryProductLimitCone
 
+unif_hint tensor_eq_prod {X X' Y Y' : TypeCat.{u}} where
+  X ≟ X'
+  Y ≟ Y' ⊢
+  X ⊗ Y ≟ X × Y
+
 instance : BraidedCategory (TypeCat.{u}) := .ofCartesianMonoidalCategory
 
 theorem types_tensorObj_def {X Y : TypeCat.{u}} : X ⊗ Y = (X × Y) := rfl
