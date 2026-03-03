@@ -241,7 +241,7 @@ theorem logb_nonpos_iff (hx : 0 < x) : logb b x ≤ 0 ↔ x ≤ 1 := by
 
 theorem logb_nonpos_iff' (hx : 0 ≤ x) : logb b x ≤ 0 ↔ x ≤ 1 := by
   rcases hx.eq_or_lt with (rfl | hx)
-  · simp [le_refl, zero_le_one]
+  · simp [zero_le_one]
   exact logb_nonpos_iff hb hx
 
 theorem logb_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : logb b x ≤ 0 :=

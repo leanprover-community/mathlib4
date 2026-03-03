@@ -92,6 +92,7 @@ lemma algebraMap_mem_map_algebraMap_iff (I : Ideal R) (x : R) :
       ∃ m ∈ M, m * x ∈ I := by
   rw [← IsLocalization.mk'_one (M := M), mk'_mem_map_algebraMap_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
     I.map (algebraMap R S) ≠ ⊤ ↔ Disjoint (M : Set R) (I : Set R) := by
   simp only [ne_eq, Ideal.eq_top_iff_one, ← map_one (algebraMap R S), not_iff_comm,
@@ -134,6 +135,7 @@ theorem map_comap (J : Ideal S) :
           (show (algebraMap R S) r ∈ J from
             mk'_spec S r s ▸ J.mul_mem_right ((algebraMap R S) s) hJ))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comap_map_of_isPrimary_disjoint
     {I : Ideal R} (hI : I.IsPrimary) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
@@ -207,6 +209,7 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S hp hd]
   exact ⟨hp, hd⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem disjoint_comap_iff (J : Ideal S) :
     Disjoint (M : Set R) (J.comap (algebraMap R S)) ↔ J ≠ ⊤ := by
   rw [← iff_not_comm, Set.not_disjoint_iff]
@@ -267,6 +270,14 @@ theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     rw [pow_add, mul_assoc, ← mul_comm x, e]
     exact I.mul_mem_left _ y.2
 
+lemma map_eq_top_of_not_subset {I : Ideal R} (hle : ¬ (I : Set R) ⊆ Mᶜ) :
+    Ideal.map (algebraMap R S) I = ⊤ := by
+  simp only [Set.not_subset_iff_exists_mem_notMem, Set.mem_compl_iff, not_not] at hle
+  obtain ⟨y, hy, hny⟩ := hle
+  apply Ideal.eq_top_of_isUnit_mem
+  · exact Ideal.mem_map_of_mem (algebraMap R _) hy
+  · exact IsLocalization.map_units _ (⟨y, hny⟩ : M)
+
 end CommSemiring
 
 section CommRing
@@ -274,6 +285,7 @@ section CommRing
 variable {R : Type*} [CommRing R] (M : Submonoid R) (S : Type*) [CommRing S]
 variable [Algebra R S] [IsLocalization M S]
 
+set_option backward.isDefEq.respectTransparency false in
 include M in
 /-- `quotientMap` applied to maximal ideals of a localization is `surjective`.
   The quotient by a maximal ideal is a field, so inverses to elements already exist,
