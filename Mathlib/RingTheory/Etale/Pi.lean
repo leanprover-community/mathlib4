@@ -8,7 +8,7 @@ module
 public import Mathlib.RingTheory.Smooth.Pi
 public import Mathlib.RingTheory.Unramified.Pi
 public import Mathlib.RingTheory.Etale.Basic
-public import Mathlib.RingTheory.RingHom.FinitePresentation
+public import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
 
 /-!
 
