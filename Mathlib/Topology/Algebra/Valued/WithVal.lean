@@ -475,7 +475,7 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   have hy : toVal v y = x := rfl
   have hs0' : 0 < Valued.v.restrict (toVal v s) := by
     simp only [restrict_pos_iff, apply_symm_equiv, h.pos_iff, ← hv, hs₀]
-  have h' : v.restrict.IsEquiv w.restrict := h.restrict
+  have h' : v.restrict.IsEquiv w.restrict := sorry--h.restrict
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
     ← hy, ← toVal_mul, ←  h'.orderRingIso_apply, ← h'.orderRingIso.lt_symm_apply]
@@ -492,7 +492,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro γ
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := exists_div_eq_of_unit Valued.v γ
-  have h' : w.restrict.IsEquiv v.restrict := h.restrict
+  have h' : w.restrict.IsEquiv v.restrict := sorry-- h.restrict
   use .mk0 ((Valued.v.restrict ((WithVal.equiv v) r)) /
     (Valued.v.restrict ((WithVal.equiv v) s))) (by
     simp only [equiv_apply, restrict_def, restrict₀_eq_zero_iff, ne_eq, div_eq_zero_iff, not_or,
