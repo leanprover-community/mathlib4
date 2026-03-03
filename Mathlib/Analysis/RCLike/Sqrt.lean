@@ -6,7 +6,6 @@ Authors: Monica Omar
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
-public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
@@ -36,6 +35,10 @@ theorem Complex.sqrt_eq_real_add_ite {a : ℂ} :
   · simp [← cpow_inv_two_im_eq_sqrt h, h]
   simp only [re_add_im, ↓reduceIte, h.not_ge, neg_one_mul, ← ofReal_neg,
     ← cpow_inv_two_im_eq_neg_sqrt h]
+
+open Complex in
+lemma sqrt_eq_exp {z : ℂ} (hz : z ≠ 0) : sqrt z = exp (log z / 2) := by
+  simp [sqrt, cpow_def, hz, div_eq_mul_inv]
 
 /-- The square root on `RCLike`. -/
 noncomputable def RCLike.sqrt (a : 𝕜) : 𝕜 := map ℂ 𝕜 (map 𝕜 ℂ a).sqrt
@@ -147,20 +150,3 @@ theorem RCLike.sqrt_neg_I : sqrt (-I : 𝕜) = √2⁻¹ * (1 + I) * -I := by
     simp [h, mul_assoc, add_comm, Complex.sqrt_neg_I, neg_mul, mul_add, add_mul, mul_sub,
       mul_comm Complex.I, ← sub_eq_add_neg]
   grind [I_eq_zero_or_im_I_eq_one]
-
-section differentiable
-
-namespace Complex
-
-lemma sqrt_eq_exp {z : ℂ} (hz : z ≠ 0) : sqrt z = exp (log z / 2) := by
-  simp [sqrt, cpow_def, hz, div_eq_mul_inv]
-
-lemma deriv_sqrt {z : ℂ} (hz : z ∈ slitPlane) :
-    deriv sqrt z = z ^ (-1 / 2 : ℂ) / 2 := by
-  unfold sqrt
-  grind [deriv_cpow_const (c := 1 / 2) hz]
-
-lemma differentiableAt_sqrt {z : ℂ} (hz : z ∈ slitPlane) : DifferentiableAt ℂ sqrt z :=
-  DifferentiableAt.cpow_const (by fun_prop) hz
-
-end Complex
