@@ -67,7 +67,7 @@ instance (J : Type*) [SmallCategory J] [FinCategory J] [HasLimitsOfShape J C] :
     exact (isLimitOfPreserves (HomologicalComplex.eval _ _ i) p.isLimit).hom_ext
       (fun j ↦ (isZero_of_isStrictlyGE (p.diag.obj j) n i).eq_of_tgt _ _)
 
-instance (J : Type) [Category J] [FinCategory J] [HasColimitsOfShape J C] :
+instance (J : Type*) [SmallCategory J] [FinCategory J] [HasColimitsOfShape J C] :
     (CochainComplex.plus C).IsClosedUnderColimitsOfShape J where
   colimitsOfShape_le := by
     rintro K ⟨p⟩
