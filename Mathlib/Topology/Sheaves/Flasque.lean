@@ -44,12 +44,12 @@ namespace Presheaf
 
 /-- A sheaf is flasque if all of the restriction morphisms are epimorphisms. -/
 class IsFlasque {C : Type v} [Category.{w} C] (F : Presheaf C X) : Prop where
-  epi : ∀{U V : Opens X} (i : U ⟶ V), Epi (F.map i.op)
+  epi : ∀{U V : (Opens X)ᵒᵖ} (i : U ⟶ V), Epi (F.map i)
 
 namespace IsFlasque
 
 instance (priority := low) {C : Type v} [Category.{w} C] (F : Presheaf C X) [h : IsFlasque F]
-    {U V : Opens X} (i : U ⟶ V) : Epi (F.map i.op) := h.epi i
+    {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) : Epi (F.map i) := h.epi i
 
 end IsFlasque
 
@@ -180,9 +180,9 @@ then `𝓗` is flasque. -/
 theorem X₃_shortExact_isFlasque_X₁_isFlasque_X₂ {S : ShortComplex (Sheaf AddCommGrpCat X)}
     (hS : S.ShortExact) [IsFlasque S.X₁] [IsFlasque S.X₂] : IsFlasque S.X₃ where
   epi {U V} := fun i => by
-    have : Epi (S.g.1.app (op V) ≫ S.X₃.val.map i.op) := by
-      rw [← S.g.val.naturality i.op]
+    have : Epi (S.g.1.app U ≫ S.X₃.val.map i) := by
+      rw [← S.g.val.naturality i]
       exact CategoryTheory.epi_comp' inferInstance (epi_of_shortExact hS)
-    exact CategoryTheory.epi_of_epi (S.g.1.app (op V)) (S.X₃.val.map i.op)
+    exact CategoryTheory.epi_of_epi (S.g.1.app U) (S.X₃.val.map i)
 
 end TopCat.Sheaf.IsFlasque
