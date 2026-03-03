@@ -59,7 +59,6 @@ lemma baseOf_pairwise_pairing_le_zero [CharZero R] [IsDomain R] [P.IsCrystallogr
   contrapose! this
   exact P.root_sub_root_mem_of_pairingIn_pos this hne
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This lemma is usually established for root systems with coefficients `R` equal to `ℚ` or `ℝ`, in
 which case one may take `S = R`. However our statement allows for more general coefficients such as
 `R = ℂ` and `S = ℚ`.
@@ -114,7 +113,6 @@ section Field
 variable [Field R] [CharZero R] [Module R M] [Module R N] (P : RootPairing ι R M N)
   [P.IsRootSystem] [P.IsCrystallographic]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma linearIndepOn_root_baseOf (f : M →+ ℚ) (hf : ∀ i, f (P.root i) ≠ 0) :
     LinearIndepOn R P.root (baseOf P.root f) := by
   let _i : Module ℚ M := Module.compHom M (algebraMap ℚ R)

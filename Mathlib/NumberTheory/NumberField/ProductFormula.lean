@@ -39,7 +39,6 @@ variable {K : Type*} [Field K] [NumberField K]
 
 open Algebra
 
-set_option backward.isDefEq.respectTransparency false in
 open Function Ideal IsDedekindDomain HeightOneSpectrum in
 /-- For any non-zero `x` in `𝓞 K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℤ x`. -/
