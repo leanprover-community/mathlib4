@@ -1970,6 +1970,7 @@ public import Mathlib.Analysis.Normed.Algebra.Unitization
 public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
 public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Field.Instances
+public import Mathlib.Analysis.Normed.Field.Krasner
 public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.Analysis.Normed.Field.ProperSpace
 public import Mathlib.Analysis.Normed.Field.TransferInstance
@@ -7087,7 +7088,6 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 public import Mathlib.Topology.Algebra.IsUniformGroup.Order
-public import Mathlib.Topology.Algebra.Krasner
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 public import Mathlib.Topology.Algebra.LinearTopology
 public import Mathlib.Topology.Algebra.Localization
