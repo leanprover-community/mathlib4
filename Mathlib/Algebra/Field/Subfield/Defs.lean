@@ -141,6 +141,7 @@ add_decl_doc Subfield.toSubring
 namespace Subfield
 
 /-- The underlying `AddSubgroup` of a subfield. -/
+@[reducible]
 def toAddSubgroup (s : Subfield K) : AddSubgroup K :=
   { s.toSubring.toAddSubgroup with }
 

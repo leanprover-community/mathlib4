@@ -121,6 +121,7 @@ add_decl_doc NonUnitalSubring.toAddSubgroup
 namespace NonUnitalSubring
 
 /-- The underlying submonoid of a `NonUnitalSubring`. -/
+@[reducible]
 def toSubsemigroup (s : NonUnitalSubring R) : Subsemigroup R :=
   { s.toNonUnitalSubsemiring.toSubsemigroup with carrier := s.carrier }
 

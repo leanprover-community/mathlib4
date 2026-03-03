@@ -192,6 +192,7 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
   prod_mem h
 
 /-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A where
   __ := S
   smul_mem' r _x hx := S.smul_mem hx r
@@ -234,7 +235,7 @@ protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [A
   intCast_mem S n
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
-@[simps coe]
+@[simps coe, reducible]
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
     (S : Subalgebra R A) : AddSubmonoid A :=
   S.toSubsemiring.toAddSubmonoid

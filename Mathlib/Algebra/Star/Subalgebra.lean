@@ -104,6 +104,7 @@ instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
 
 /-- Turn a `StarSubalgebra` into a `NonUnitalStarSubalgebra` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalStarSubalgebra (S : StarSubalgebra R A) : NonUnitalStarSubalgebra R A where
   __ := S
   smul_mem' r _x hx := S.smul_mem hx r

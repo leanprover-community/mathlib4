@@ -168,6 +168,7 @@ instance : SubsemiringClass (Subsemiring R) R where
   mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
 
 /-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
+@[reducible]
 def toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R where __ := S
 
 @[simp]
