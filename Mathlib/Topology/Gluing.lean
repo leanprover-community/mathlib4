@@ -250,7 +250,7 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   · change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
     rw [𝖣.t_inv_assoc]
-  rw [← isIso_iff_bijective]
+  rw [bijective_iff_isIso_ofHom]
   apply (forget TopCat).map_isIso
 
 theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' U) := by

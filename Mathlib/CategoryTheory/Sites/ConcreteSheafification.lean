@@ -402,9 +402,7 @@ theorem isSheaf_of_sep (P : Cᵒᵖ ⥤ D)
     apply_fun Meq.equiv (J.plusObj P) S at h
     apply_fun fun e => e I at h
     dsimp only [ConcreteCategory.forget_map_eq_coe] at h
-    convert h <;> erw [Meq.equiv_apply] <;>
-      rw [← ConcreteCategory.comp_apply, Multiequalizer.lift_ι] <;>
-      rfl
+    simpa [Meq.equiv_apply, ← comp_apply] using h
   · rintro (x : ToType (multiequalizer (S.index _)))
     obtain ⟨t, ht⟩ := exists_of_sep P hsep X S (Meq.equiv _ _ x)
     use t

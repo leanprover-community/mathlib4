@@ -447,7 +447,7 @@ end CategoryTheory
 -- Isomorphisms in Type and equivalences.
 namespace Equiv
 
-variable {X Y : TypeCat.{u}}
+variable {X Y : Type u}
 
 /-- Any equivalence between types in the same universe gives
 a categorical isomorphism between those types.

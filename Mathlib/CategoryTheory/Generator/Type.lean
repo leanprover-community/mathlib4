@@ -20,9 +20,10 @@ universe u
 
 namespace CategoryTheory
 
-lemma Types.isSeparator_punit : IsSeparator (PUnit.{u + 1}) := by
+lemma Types.isSeparator_punit : IsSeparator (TypeCat.of PUnit.{u + 1}) := by
   intro X Y f g h
   ext x
-  exact congr_fun (h PUnit (by simp) (fun _ ↦ x)) .unit
+  exact ConcreteCategory.congr_hom (h (TypeCat.of PUnit) (by simp) (TypeCat.ofHom ⟨fun _ ↦ x⟩))
+    .unit
 
 end CategoryTheory

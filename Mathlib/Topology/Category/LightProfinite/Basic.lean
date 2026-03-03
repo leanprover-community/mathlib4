@@ -99,7 +99,7 @@ def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
-  preimage f := InducedCategory.homMk (f.hom.hom.1)
+  preimage f := InducedCategory.homMk (TypeCat.ofHom ⟨f.hom.hom.1⟩)
   map_preimage _ := rfl
   preimage_map _ := rfl
 
@@ -230,7 +230,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
       dsimp [g, LocallyConstant.ofIsClopen] at H
       rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
-  · rw [← CategoryTheory.epi_iff_surjective]
+  · rw [← CategoryTheory.ofHom_epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
 
 instance : lightToProfinite.PreservesEpimorphisms where

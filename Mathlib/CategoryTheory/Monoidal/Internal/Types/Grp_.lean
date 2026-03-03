@@ -28,22 +28,22 @@ open CategoryTheory MonObj
 
 namespace GrpTypeEquivalenceGrp
 
-instance grpGroup (A : Type u) [GrpObj A] : Group A :=
+instance grpGroup (A : TypeCat.{u}) [GrpObj A] : Group A.carrier :=
   { MonTypeEquivalenceMon.monMonoid A with
     inv := ι[A]
-    inv_mul_cancel a := congr_fun (GrpObj.left_inv A) a }
+    inv_mul_cancel a := ConcreteCategory.congr_hom (GrpObj.left_inv A) a }
 
 /-- Converting a group object in `Type u` into a group. -/
-noncomputable def functor : Grp (Type u) ⥤ GrpCat.{u} where
+noncomputable def functor : Grp (TypeCat.{u}) ⥤ GrpCat.{u} where
   obj A := GrpCat.of A.X
   map f := GrpCat.ofHom (MonTypeEquivalenceMon.functor.map f.hom).hom
 
 /-- Converting a group into a group object in `Type u`. -/
-noncomputable def inverse : GrpCat.{u} ⥤ Grp (Type u) where
+noncomputable def inverse : GrpCat.{u} ⥤ Grp (TypeCat.{u}) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ GrpCat MonCat).obj A) with
       grp :=
-        { inv := ((·⁻¹) : A → A)
+        { inv := TypeCat.ofHom ⟨((·⁻¹) : A → A)⟩
           left_inv := by
             ext x
             exact inv_mul_cancel (G := A) x
@@ -55,7 +55,7 @@ noncomputable def inverse : GrpCat.{u} ⥤ Grp (Type u) where
 end GrpTypeEquivalenceGrp
 
 /-- The category of group objects in `Type u` is equivalent to the category of groups. -/
-noncomputable def grpTypeEquivalenceGrp : Grp (Type u) ≌ GrpCat.{u} where
+noncomputable def grpTypeEquivalenceGrp : Grp (TypeCat.{u}) ≌ GrpCat.{u} where
   functor := GrpTypeEquivalenceGrp.functor
   inverse := GrpTypeEquivalenceGrp.inverse
   unitIso := Iso.refl _
@@ -68,5 +68,5 @@ are naturally compatible with the forgetful functors to `MonCat` and `Mon (Type 
 -/
 noncomputable def grpTypeEquivalenceGrpForget :
     GrpTypeEquivalenceGrp.functor ⋙ forget₂ GrpCat MonCat ≅
-      Grp.forget₂Mon (Type u) ⋙ MonTypeEquivalenceMon.functor :=
+      Grp.forget₂Mon (TypeCat.{u}) ⋙ MonTypeEquivalenceMon.functor :=
   Iso.refl _
