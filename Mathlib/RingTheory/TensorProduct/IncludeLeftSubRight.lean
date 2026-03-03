@@ -6,7 +6,7 @@ Authors: Yong-Gyu Choi
 module
 
 public import Mathlib.Algebra.Category.Ring.Constructions
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 
 /-!
 # Exactness properties of the difference map on tensor products
@@ -147,5 +147,43 @@ lemma of_faithfullyFlat [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S] :
 end FaithfullyFlat
 
 end IsEffective
+
+section CodRestrictEqLocusPushoutCocone
+
+universe u
+
+variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The canonical ring map from `R` to the explicit equalizer of
+`includeLeft : S ⟶ S ⊗[R] S` and `includeRight : S ⟶ S ⊗[R] S`. -/
+def codRestrictEqLocusPushoutCocone :
+    R →+* (CommRingCat.equalizerFork
+      (CommRingCat.pushoutCocone R S S).inl (CommRingCat.pushoutCocone R S S).inr).pt :=
+  RingHom.codRestrict (algebraMap R S)
+    ((CommRingCat.pushoutCocone R S S).inl.hom.eqLocus (CommRingCat.pushoutCocone R S S).inr.hom)
+    (by simp)
+
+/-- Injectivity of `algebraMap R S` implies injectivity of `codRestrictEqLocusPushoutCocone`. -/
+lemma codRestrictEqLocusPushoutCocone.injective_of_faithfulSMul [FaithfulSMul R S] :
+    Function.Injective (codRestrictEqLocusPushoutCocone R S) :=
+  RingHom.injective_codRestrict.mpr (FaithfulSMul.algebraMap_injective _ _)
+
+/-- `Algebra.IsEffective R S` implies surjectivity of `codRestrictEqLocusPushoutCocone`. -/
+lemma codRestrictEqLocusPushoutCocone.surjective_of_isEffective (hf : Algebra.IsEffective R S) :
+    Function.Surjective (codRestrictEqLocusPushoutCocone R S) := by
+  intro ⟨s, hs⟩
+  obtain ⟨t, rfl⟩ := Set.mem_range.mp <|
+    Algebra.IsEffective.eqLocus_includeLeft_includeRight hf ▸ SetLike.mem_coe.mpr hs
+  exact ⟨t, rfl⟩
+
+/-- If `S` is a faithfully flat `R`-algebra, `codRestrictEqLocusPushoutCocone` is bijective. -/
+lemma codRestrictEqLocusPushoutCocone.bijective_of_faithfullyFlat [Module.FaithfullyFlat R S] :
+    Function.Bijective (codRestrictEqLocusPushoutCocone R S) := by
+  constructor
+  · exact codRestrictEqLocusPushoutCocone.injective_of_faithfulSMul _ _
+  · exact codRestrictEqLocusPushoutCocone.surjective_of_isEffective _ _ (.of_faithfullyFlat R S)
+
+end CodRestrictEqLocusPushoutCocone
 
 end Algebra

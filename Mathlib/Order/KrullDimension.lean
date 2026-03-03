@@ -620,6 +620,7 @@ lemma krullDim_nonpos_iff_forall_isMin : krullDim α ≤ 0 ↔ ∀ x : α, IsMin
   simp only [krullDim_nonpos_iff_forall_isMax, IsMax, IsMin]
   exact forall_swap
 
+set_option backward.isDefEq.respectTransparency false in
 lemma krullDim_le_one_iff : krullDim α ≤ 1 ↔ ∀ x : α, IsMin x ∨ IsMax x := by
   simp_rw [isMax_iff_forall_not_lt, isMin_iff_forall_not_lt, krullDim, iSup_le_iff]
   contrapose!
@@ -718,6 +719,7 @@ lemma krullDim_eq_top_iff : krullDim α = ⊤ ↔ InfiniteDimensionalOrder α :=
     cases h
   · infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_krullDim_iff {n : ℕ} : n ≤ krullDim α ↔ ∃ l : LTSeries α, l.length = n := by
   cases isEmpty_or_nonempty α
   · simp [krullDim_eq_bot]
@@ -919,6 +921,7 @@ section typeclass
 class KrullDimLE (n : ℕ) (α : Type*) [Preorder α] : Prop where
   krullDim_le : krullDim α ≤ n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [KrullDimLE n α] :
     KrullDimLE m α :=
   ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩

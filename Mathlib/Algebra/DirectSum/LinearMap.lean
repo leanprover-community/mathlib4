@@ -97,7 +97,6 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
     diag_toMatrix_directSum_collectedBasis_eq_zero_of_mapsTo_ne h b σ hσ hf (by simp [s]),
     Pi.zero_apply, Finset.sum_const_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` and `g` are commuting endomorphisms of a finite, free `R`-module `M`, such that `f`
 is triangularizable, then to prove that the trace of `g ∘ f` vanishes, it is sufficient to prove
 that the trace of `g` vanishes on each generalized eigenspace of `f`. -/
@@ -138,7 +137,6 @@ lemma mapsTo_biSup_of_mapsTo {ι : Type*} {N : ι → Submodule R M}
 
 end IsInternal
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The trace of an endomorphism of a direct sum is the sum of the traces on each component.
 
 Note that it is important the statement gives the user definitional control over `p` since the

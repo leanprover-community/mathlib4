@@ -209,6 +209,7 @@ lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
     rw [ENat.some_eq_coe, Nat.cast_lt]
     exact (lt_add_one k).trans_le s_card
 
+set_option backward.isDefEq.respectTransparency false in
 lemma netMaxcard_le_coverMincard (T : X → X) (F : Set X) (n : ℕ) :
     netMaxcard T F U n ≤ coverMincard T F U n := by
   rcases eq_top_or_lt_top (coverMincard T F U n) with h | h

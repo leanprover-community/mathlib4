@@ -675,7 +675,6 @@ variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [S
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 variable [NonUnitalContinuousFunctionalCalculus R A p] [NonnegSpectrumClass R A]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma cfcₙHom_le_iff {a : A} (ha : p a) {f g : C(σₙ R a, R)₀} :
     cfcₙHom ha f ≤ cfcₙHom ha g ↔ f ≤ g := by
   rw [← sub_nonneg, ← map_sub, cfcₙHom_nonneg_iff, sub_nonneg]

@@ -196,7 +196,6 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι]
   rw [Int.mul_eq_one_iff_eq_one_or_neg_one] at this
   tauto
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pos_or_neg_of_sum_smul_root_mem (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
     0 < f ∨ f < 0 := by
@@ -241,7 +240,6 @@ lemma not_nonpos_iff_pos_of_sum_mem_range_root (f : ι → ℤ)
       exact h (le_of_lt h')
   · contrapose! h; exact h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma not_nonneg_iff_neg_of_sum_mem_range_root (f : ι → ℤ)
     (hf : ∑ j ∈ b.support, f j • P.root j ∈ range P.root) (hf₀ : f.support ⊆ b.support) :
     (¬ 0 ≤ f) ↔ f < 0 := by

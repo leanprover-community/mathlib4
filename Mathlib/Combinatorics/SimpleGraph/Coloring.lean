@@ -323,9 +323,6 @@ theorem Colorable.chromaticNumber_le {n : ℕ} (hc : G.Colorable n) : G.chromati
 
 theorem chromaticNumber_ne_top_iff_exists : G.chromaticNumber ≠ ⊤ ↔ ∃ n, G.Colorable n := by
   rw [chromaticNumber]
-  convert_to ⨅ n : {m | G.Colorable m}, (n : ℕ∞) ≠ ⊤ ↔ _
-  · rw [iInf_subtype]
-  rw [← lt_top_iff_ne_top, ENat.iInf_coe_lt_top]
   simp
 
 set_option backward.isDefEq.respectTransparency false in
@@ -475,7 +472,6 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_top_of_chromaticNumber_eq_card [Fintype V]
     (h : G.chromaticNumber = Fintype.card V) : G = ⊤ := by
   classical
@@ -516,6 +512,7 @@ theorem chromaticNumber_eq_one_iff : G.chromaticNumber = 1 ↔ G = ⊥ ∧ Nonem
     have := G.colorable_zero_iff.mpr h |>.chromaticNumber_le
     simp_all
 
+set_option backward.isDefEq.respectTransparency false in
 theorem two_le_chromaticNumber_iff_ne_bot : 2 ≤ G.chromaticNumber ↔ G ≠ ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h

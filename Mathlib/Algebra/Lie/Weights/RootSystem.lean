@@ -74,7 +74,6 @@ def chainLength (α β : Weight K H L) : ℕ :=
 
 lemma chainLength_of_isZero (hα : α.IsZero) : chainLength α β = 0 := dif_pos hα
 
-set_option backward.isDefEq.respectTransparency false in
 lemma chainLength_nsmul {x} (hx : x ∈ rootSpace H (chainTop α β)) :
     chainLength α β • x = ⁅coroot α, x⁆ := by
   by_cases hα : α.IsZero

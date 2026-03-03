@@ -766,12 +766,10 @@ theorem closedBall_comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E
 
 variable (p : Seminorm 𝕜 E)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_metric_ball {r : ℝ} : p ⁻¹' Metric.ball 0 r = { x | p x < r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_ball_zero_iff, Real.norm_of_nonneg (apply_nonneg p _)]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem preimage_metric_closedBall {r : ℝ} : p ⁻¹' Metric.closedBall 0 r = { x | p x ≤ r } := by
   ext x
   simp only [mem_setOf, mem_preimage, mem_closedBall_zero_iff,
