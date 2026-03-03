@@ -61,6 +61,7 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
     exact continuous_subtype_val.comp_continuousOn <|
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
     [IsTopologicalRing A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
@@ -89,6 +90,7 @@ noncomputable instance instPartialOrder : PartialOrder A⁺¹ :=
 instance instStarOrderedRing : StarOrderedRing A⁺¹ :=
     CStarAlgebra.spectralOrderedRing _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inr_le_iff (a b : A) (ha : IsSelfAdjoint a := by cfc_tac)
     (hb : IsSelfAdjoint b := by cfc_tac) :
     (a : A⁺¹) ≤ (b : A⁺¹) ↔ a ≤ b := by
@@ -108,6 +110,7 @@ lemma inr_nonneg_iff {a : A} : 0 ≤ (a : A⁺¹) ↔ 0 ≤ a := by
 
 alias ⟨_root_.LE.le.of_inr, _root_.LE.le.inr⟩ := Unitization.inr_nonneg_iff
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnreal_cfcₙ_eq_cfc_inr (a : A) (f : ℝ≥0 → ℝ≥0)
     (hf₀ : f 0 = 0 := by cfc_zero_tac) : cfcₙ f a = cfc f (a : A⁺¹) :=
   cfcₙ_eq_cfc_inr inr_nonneg_iff ..
@@ -179,12 +182,14 @@ lemma CStarAlgebra.star_mul_le_algebraMap_norm_sq {a : A} :
 
 end StarOrderedRing
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsSelfAdjoint.toReal_spectralRadius_eq_norm {a : A} (ha : IsSelfAdjoint a) :
     (spectralRadius ℝ a).toReal = ‖a‖ := by
   simp [ha.spectrumRestricts.spectralRadius_eq, ha.spectralRadius_eq_nnnorm]
 
 namespace CStarAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
     (ha : IsSelfAdjoint a := by cfc_tac) : ‖a‖ ∈ spectrum ℝ a ∨ -‖a‖ ∈ spectrum ℝ a := by
   have ha' : SpectrumRestricts a Complex.reCLM := ha.spectrumRestricts
@@ -193,6 +198,7 @@ lemma norm_or_neg_norm_mem_spectrum [Nontrivial A] {a : A}
 
 variable [PartialOrder A] [StarOrderedRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma nnnorm_mem_spectrum_of_nonneg [Nontrivial A] {a : A} (ha : 0 ≤ a := by cfc_tac) :
     ‖a‖₊ ∈ spectrum ℝ≥0 a := by
   have : IsSelfAdjoint a := .of_nonneg ha
@@ -288,6 +294,7 @@ lemma CStarAlgebra.isUnit_of_le (a : A) {b : A} (hab : a ≤ b)
   peel h₀ with r hr _
   exact this.trans hab
 
+set_option backward.isDefEq.respectTransparency false in
 lemma le_iff_norm_sqrt_mul_rpow (a b : A) (ha : 0 ≤ a := by cfc_tac)
     (hb : IsStrictlyPositive b := by cfc_tac) :
     a ≤ b ↔ ‖sqrt a * (b : A) ^ (-(1 / 2) : ℝ)‖ ≤ 1 := by
@@ -407,12 +414,14 @@ variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 namespace CStarAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder in
 instance instNonnegSpectrumClassComplexNonUnital : NonnegSpectrumClass ℂ A where
   quasispectrum_nonneg_of_nonneg a ha x hx := by
     rw [Unitization.quasispectrum_eq_spectrum_inr' ℂ ℂ a] at hx
     exact spectrum_nonneg_of_nonneg (Unitization.inr_nonneg_iff.mpr ha) hx
 
+set_option backward.isDefEq.respectTransparency false in
 lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab : a ≤ b) :
     ‖a‖ ≤ ‖b‖ := by
   suffices ∀ a b : A⁺¹, 0 ≤ a → a ≤ b → ‖a‖ ≤ ‖b‖ by
@@ -438,6 +447,7 @@ theorem nnnorm_le_nnnorm_of_nonneg_of_le {a : A} {b : A} (ha : 0 ≤ a := by cfc
     ‖a‖₊ ≤ ‖b‖₊ :=
   norm_le_norm_of_nonneg_of_le ha hab
 
+set_option backward.isDefEq.respectTransparency false in
 lemma star_left_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
     star a * b * a ≤ ‖b‖ • (star a * a) := by
   suffices ∀ a b : A⁺¹, IsSelfAdjoint b → star a * b * a ≤ ‖b‖ • (star a * a) by
@@ -459,6 +469,7 @@ lemma star_right_conjugate_le_norm_smul {a b : A} (hb : IsSelfAdjoint b := by cf
 @[deprecated (since := "2025-10-20")] alias conjugate_le_norm_smul' :=
   star_right_conjugate_le_norm_smul
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : A⁺¹ | 0 ≤ a} by
@@ -480,6 +491,7 @@ section Icc
 
 open Unitization Set Metric
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inr_mem_Icc_iff_norm_le {x : A} :
     (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
   simp only [mem_Icc, inr_nonneg_iff, and_congr_right_iff]

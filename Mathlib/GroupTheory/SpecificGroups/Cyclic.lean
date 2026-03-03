@@ -235,7 +235,6 @@ theorem orderOf_eq_card_of_zpowers_eq_top {g : G} (h : Subgroup.zpowers g = ⊤)
     orderOf g = Nat.card G :=
   orderOf_eq_card_of_forall_mem_zpowers fun _ ↦ h.ge (Subgroup.mem_top _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem exists_pow_ne_one_of_isCyclic [G_cyclic : IsCyclic G]
     {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Nat.card G) : ∃ a : G, a ^ k ≠ 1 := by
@@ -605,7 +604,6 @@ section CommSimpleGroup
 
 variable [CommGroup α] [IsSimpleGroup α]
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 instance (priority := 100) isCyclic : IsCyclic α := by
   nontriviality α
@@ -614,7 +612,6 @@ instance (priority := 100) isCyclic : IsCyclic α := by
     (eq_bot_or_eq_top (Subgroup.zpowers g)).resolve_left (Subgroup.zpowers_ne_bot.2 hg)
   exact ⟨⟨g, (Subgroup.eq_top_iff' _).1 this⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem prime_card : (Nat.card α).Prime := by
   have hα : Nontrivial α := IsSimpleGroup.toNontrivial

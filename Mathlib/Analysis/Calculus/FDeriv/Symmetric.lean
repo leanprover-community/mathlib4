@@ -508,7 +508,6 @@ noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
     minSmoothness 𝕜 n = n := by
   simp [minSmoothness, h]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
   simp only [minSmoothness]
   split_ifs <;> simp
@@ -541,7 +540,6 @@ lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSm
   · simp only [h, ↓reduceIte] at hm
     refine ⟨ω, le_rfl, by simp [hm], by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. Over a field
 different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
 theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
