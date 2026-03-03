@@ -199,9 +199,12 @@ theorem right_bot_eq_right_quot (H : Subgroup G) :
   simp_rw [← rel_bot_eq_right_group_rel H]
 
 theorem finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
-    (∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoubleCoset H K i = .univ) ↔
-    Finite (Quotient (H : Set G) K) := by
+    Finite (Quotient (H : Set G) K) ↔
+    ∃ I : Finset (Quotient (H : Set G) K), ⋃ i ∈ I, quotToDoubleCoset H K i = .univ := by
   constructor
+  · intro _
+    cases nonempty_fintype (Quotient (H : Set G) K)
+    exact ⟨Finset.univ, by simpa using iUnion_quotToDoubleCoset _ _⟩
   · rintro ⟨I, hI⟩
     suffices (I : Set (Quotient (H : Set G) K)) = Set.univ by
       simp_rw [← Set.finite_univ_iff, ← this, I.finite_toSet]
@@ -209,9 +212,6 @@ theorem finite_quotient_iff_exists_finset_iUnion_eq_univ (H K : Subgroup G) :
     rintro ⟨g⟩
     obtain ⟨_, ⟨i, _, rfl⟩, T, ⟨hi, rfl⟩, hT : g ∈ quotToDoubleCoset H K i⟩ := hI g
     simpa [← (mem_quotToDoubleCoset_iff _ _).mp hT] using hi
-  · intro _
-    cases nonempty_fintype (Quotient (H : Set G) K)
-    exact ⟨Finset.univ, by simpa using iUnion_quotToDoubleCoset _ _⟩
 
 private theorem iUnion_image_mk {H K : Subgroup G} :
     ⋃ q : Quotient H K, Quot.mk (leftRel K) '' doubleCoset (out q : G) H K = Set.univ ∧
