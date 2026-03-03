@@ -481,6 +481,7 @@ def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀
         le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
       simpa using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
 
+-- ToDo: this should not be a simp lemma!
 @[simp]
 lemma restrict_def (x : R) : v.restrict x = restrict₀ v x := rfl
 
