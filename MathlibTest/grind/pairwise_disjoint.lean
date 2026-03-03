@@ -6,7 +6,7 @@ abbrev S1 : Fin 3 → Finset (Fin 4)
   | 2 => {2, 3}
 
 -- #adaptation_note 2025-10-27
--- This theorem was deprecated, but the replacement theorm has `Singleton` as an implicit argument,
+-- This theorem was deprecated, but the replacement theorem has `Singleton` as an implicit argument,
 -- and this seems to confuse `grind`.
 theorem LawfulSingleton.insert_empty_eq' [EmptyCollection β] [Insert α β] [Singleton α β]
     [LawfulSingleton α β] (x : α) : (insert x ∅ : β) = singleton x :=
