@@ -83,6 +83,7 @@ theorem irreducibleComponentOpen_eq_top [IrreducibleSpace X] :
   rw [irreducibleComponents_eq_singleton, Set.mem_singleton_iff] at hZ
   simp [irreducibleComponentOpen, irreducibleComponents_eq_singleton, hZ]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IrreducibleSpace X] : CategoryTheory.IsIso (X.irreducibleComponentι Z hZ) := by
   have : CategoryTheory.IsIso (irreducibleComponentOpen X Z).ι := by
     rw [irreducibleComponentOpen_eq_top X Z hZ]
