@@ -138,8 +138,8 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   _ = ε / 2 := by
     simp only [intervalIntegral.integral_div, intervalIntegral.integral_const, sub_neg_eq_add,
       smul_eq_mul]
-    ring_nf
-    rw [mul_inv_cancel₀ hr.ne', one_mul]
+    field_simp
+    grind
   _ < ε := by simp [hε]
 
 end MeasureTheory
