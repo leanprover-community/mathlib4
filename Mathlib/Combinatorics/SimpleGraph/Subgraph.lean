@@ -264,7 +264,7 @@ lemma image_coe_edgeSet_coe (G' : G.Subgraph) : Sym2.map (↑) '' G'.coe.edgeSet
   exact ⟨s(⟨a, edge_vert _ he⟩, ⟨b, edge_vert _ he.symm⟩), Sym2.map_pair_eq ..⟩
 
 @[simp]
-lemma edgeSet_spanningCoe_eq_edgeSet (G' : G.Subgraph) : G'.spanningCoe.edgeSet = G'.edgeSet := by
+lemma edgeSet_spanningCoe (G' : G.Subgraph) : G'.spanningCoe.edgeSet = G'.edgeSet := by
   rfl
 
 theorem mem_verts_of_mem_edge {G' : Subgraph G} {e : Sym2 V} {v : V} (he : e ∈ G'.edgeSet)
