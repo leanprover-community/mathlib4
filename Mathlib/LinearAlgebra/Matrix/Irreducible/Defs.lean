@@ -73,6 +73,7 @@ variable {n R : Type*} [Ring R] [LinearOrder R]
 
 /-- The directed graph (quiver) associated with a matrix `A`,
 with an edge `i ⟶ j` iff `0 < A i j`. -/
+@[implicit_reducible]
 def toQuiver (A : Matrix n n R) : Quiver n :=
   ⟨fun i j => PLift (0 < A i j)⟩
 
