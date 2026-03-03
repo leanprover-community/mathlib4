@@ -544,7 +544,6 @@ def fixedPointsMulLeftCosetsEquivQuotient (H : Subgroup G) [Finite (H : Set G)] 
     (fun _ => (@mem_fixedPoints_mul_left_cosets_iff_mem_normalizer _ _ _ ‹_› _).symm)
     (by
       intros
-      unfold_projs
       rw [leftRel_apply (α := normalizer H), leftRel_apply]
       rfl)
 
