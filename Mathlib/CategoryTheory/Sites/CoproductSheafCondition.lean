@@ -29,6 +29,7 @@ open Limits Opposite
 
 variable {C : Type*} [Category* C] {A : Type*} [Category* A] {S : C}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `E` be a pre-`0`-hypercover with pairwise pullbacks. If `∐ᵢ Eᵢ` is a universal coproduct
 and the presheaf `F` preserves products, then the multifork associated to the single object
@@ -70,6 +71,7 @@ def PreZeroHypercover.isLimitSigmaOfIsColimitEquiv (E : PreZeroHypercover.{w} S)
   · intro ⟨⟩ ⟨⟩ k
     exact Cofan.IsColimit.hom_ext hc' _ _ fun a ↦ by simp; simp [c']
 
+set_option backward.isDefEq.respectTransparency false in
 open PreZeroHypercover in
 /--
 Let `{ fᵢ : Xᵢ ⟶ S }` be a family of morphisms. If `∐ᵢ Xᵢ` is a universal coproduct
