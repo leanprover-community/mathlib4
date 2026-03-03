@@ -138,6 +138,7 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
   have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
   exact PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mp (isJacobsonRing_of_finiteType (A := R))
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The category of affine schemes locally of finite type over a fixed base scheme is essentially small.
 TODO: extend this to (relatively) quasi-compact schemes.
