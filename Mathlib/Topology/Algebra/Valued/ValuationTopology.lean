@@ -39,7 +39,6 @@ namespace Valuation
 
 variable (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r : Γ₀} (hr : r ≠ 0)
     (h : ∀ x : K, v x ≠ 0 → r < v x) (x : K) (hx : v x ≠ 0) : v x = 1 := by
   lift r to Γ₀ˣ using IsUnit.mk0 _ hr

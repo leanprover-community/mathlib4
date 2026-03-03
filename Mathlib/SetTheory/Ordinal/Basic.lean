@@ -225,7 +225,7 @@ instance nontrivial : Nontrivial Ordinal.{u} :=
 
 /-- `Quotient.inductionOn` specialized to ordinals.
 
-Not to be confused with well-founded recursion `Ordinal.induction`. -/
+Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
@@ -233,7 +233,7 @@ theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
 
 /-- `Quotient.inductionOn₂` specialized to ordinals.
 
-Not to be confused with well-founded recursion `Ordinal.induction`. -/
+Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
@@ -241,7 +241,7 @@ theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
 
 /-- `Quotient.inductionOn₃` specialized to ordinals.
 
-Not to be confused with well-founded recursion `Ordinal.induction`. -/
+Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
@@ -586,18 +586,16 @@ instance wellFoundedLT : WellFoundedLT Ordinal :=
 instance : ConditionallyCompleteLinearOrderBot Ordinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
-/-- Reformulation of well-founded induction on ordinals as a lemma that works with the
-`induction` tactic, as in `induction i using Ordinal.induction with | h i IH => ?_`. -/
+@[deprecated WellFoundedLT.induction (since := "2026-02-27")]
 theorem induction {p : Ordinal.{u} → Prop} (i : Ordinal.{u}) (h : ∀ j, (∀ k, k < j → p k) → p j) :
     p i :=
-  lt_wf.induction i h
+  WellFoundedLT.induction i h
 
 theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s]
     (f : r ≼i s) (a : α) : typein s (f a) = typein r a := by
   rw [← f.transPrincipal_apply _ a, (f.transPrincipal _).eq]
 
 /-! ### Cardinality of ordinals -/
-
 
 /-- The cardinal of an ordinal is the cardinality of any type on which a relation with that order
 type is defined. -/

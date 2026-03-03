@@ -43,7 +43,7 @@ noncomputable def homologyFunctorFactors (n : ℤ) : Q ⋙ homologyFunctor C n �
 variable {C} in
 @[reassoc (attr := simp)]
 lemma homologyFunctorFactors_hom_naturality
-    (n : ℤ) {K L : CochainComplex C ℤ} (f : K ⟶ L) :
+    {K L : CochainComplex C ℤ} (f : K ⟶ L) (n : ℤ) :
     (homologyFunctor C n).map (Q.map f) ≫ (homologyFunctorFactors C n).hom.app L =
     (homologyFunctorFactors C n).hom.app K ≫ HomologicalComplex.homologyMap f n :=
   (homologyFunctorFactors C n).hom.naturality f
@@ -57,17 +57,17 @@ noncomputable def homologyFunctorFactorsh (n : ℤ) : Qh ⋙ homologyFunctor C n
 @[reassoc]
 lemma homologyFunctorFactorsh_hom_app_quotient_obj (K : CochainComplex C ℤ) (n : ℤ) :
     (homologyFunctorFactorsh C n).hom.app ((HomotopyCategory.quotient _ _).obj K) =
-      (homologyFunctor C n).map ((quotientCompQhIso C).hom.app K) ≫
-        (homologyFunctorFactors C n).hom.app K ≫
-          (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).inv.app _ :=
+    (homologyFunctor C n).map ((quotientCompQhIso C).hom.app K) ≫
+      (homologyFunctorFactors C n).hom.app K ≫
+        (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).inv.app _ :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh_hom_app_quotient_obj ..
 
 @[reassoc]
 lemma homologyFunctorFactorsh_inv_app_quotient_obj (K : CochainComplex C ℤ) (n : ℤ) :
     (homologyFunctorFactorsh C n).inv.app ((HomotopyCategory.quotient _ _).obj K) =
-      (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).hom.app _ ≫
-        (homologyFunctorFactors C n).inv.app K ≫
-          (homologyFunctor C n).map ((quotientCompQhIso C).inv.app K) :=
+    (HomotopyCategory.homologyFunctorFactors C (.up ℤ) n).hom.app _ ≫
+      (homologyFunctorFactors C n).inv.app K ≫
+        (homologyFunctor C n).map ((quotientCompQhIso C).inv.app K) :=
   HomologicalComplexUpToQuasiIso.homologyFunctorFactorsh_inv_app_quotient_obj ..
 
 variable {C} in
@@ -102,9 +102,9 @@ lemma shiftMap_homologyFunctor_map_Qh
     {K L : HomotopyCategory C (.up ℤ)} {n : ℤ} (f : K ⟶ L⟦n⟧)
     (a a' : ℤ) (h : n + a = a') :
     (homologyFunctor C 0).shiftMap (ShiftedHom.map f Qh) a a' h =
-      (homologyFunctorFactorsh C a).hom.app _ ≫
-        (HomotopyCategory.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
-          (homologyFunctorFactorsh C a').inv.app _ :=
+    (homologyFunctorFactorsh C a).hom.app _ ≫
+      (HomotopyCategory.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
+        (homologyFunctorFactorsh C a').inv.app _ :=
   Functor.ShiftSequence.induced_shiftMap ..
 
 @[reassoc]
@@ -112,9 +112,9 @@ lemma shiftMap_homologyFunctor_map_Q
     {K L : CochainComplex C ℤ} {n : ℤ} (f : K ⟶ L⟦n⟧)
     (a a' : ℤ) (h : n + a = a') :
     (homologyFunctor C 0).shiftMap (ShiftedHom.map f Q) a a' h =
-      (homologyFunctorFactors C a).hom.app _ ≫
-        (HomologicalComplex.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
-          (homologyFunctorFactors C a').inv.app _ := by
+    (homologyFunctorFactors C a).hom.app _ ≫
+      (HomologicalComplex.homologyFunctor C (.up ℤ) 0).shiftMap f a a' h ≫
+        (homologyFunctorFactors C a').inv.app _ := by
   rw [← ShiftedHom.map_naturality_1 f (quotientCompQhIso C),
     ShiftedHom.mk₀_comp, ShiftedHom.comp_mk₀,
     Functor.shiftMap_comp', Functor.shiftMap_comp,
