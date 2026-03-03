@@ -72,16 +72,6 @@ lemma generate_mem_toGrothendieck {X : C} {R : Presieve X} (hR : R ∈ J X) :
     Sieve.generate R ∈ J.toGrothendieck X :=
   .of _ _ hR
 
-@[gcongr]
-lemma toGrothendieck_mono {J K : Precoverage C} (h : J ≤ K) :
-    J.toGrothendieck ≤ K.toGrothendieck := by
-  intro X S hS
-  induction hS with
-  | of X S hS => exact generate_mem_toGrothendieck (h _ hS)
-  | top X => simp
-  | pullback X S _ Y f _ => grind
-  | transitive X S R _ _ _ _ => grind
-
 set_option backward.isDefEq.respectTransparency false in
 /--
 An alternative characterization of the Grothendieck topology associated to a precoverage `J`:
@@ -280,6 +270,10 @@ def toPrecoverage (J : GrothendieckTopology C) : Precoverage C where
 lemma mem_toPrecoverage_iff (J : GrothendieckTopology C) {S : C} (R : Presieve S) :
     R ∈ toPrecoverage J S ↔ Sieve.generate R ∈ J S := .rfl
 
+lemma arrows_mem_toPrecoverage_iff (J : GrothendieckTopology C) {S : C} (R : Sieve S) :
+    R.arrows ∈ toPrecoverage J S ↔ R ∈ J S := by
+  rw [mem_toPrecoverage_iff, Sieve.generate_sieve]
+
 instance (J : GrothendieckTopology C) : (toPrecoverage J).HasIsos where
   mem_coverings_of_isIso f hf := by simp [mem_toPrecoverage_iff]
 
@@ -316,10 +310,33 @@ lemma galoisConnection_toGrothendieck_toPrecoverage :
     GaloisConnection (toGrothendieck (C := C)) GrothendieckTopology.toPrecoverage :=
   fun _ _ ↦ toGrothendieck_le_iff_le_toPrecoverage
 
+end Precoverage
+
 @[simp, grind =]
-lemma toGrothendieck_bot : toGrothendieck (⊥ : Precoverage C) = ⊥ :=
+lemma Precoverage.toGrothendieck_bot : toGrothendieck (⊥ : Precoverage C) = ⊥ :=
   (galoisConnection_toGrothendieck_toPrecoverage C).l_bot
 
-end Precoverage
+@[simp, grind =]
+lemma GrothendieckTopology.toPrecoverage_top : toPrecoverage (⊤ : GrothendieckTopology C) = ⊤ :=
+  (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).u_top
+
+lemma Precoverage.toGrothendieck_monotone : Monotone (toGrothendieck (C := C)) :=
+  (galoisConnection_toGrothendieck_toPrecoverage C).monotone_l
+
+@[gcongr]
+lemma Precoverage.toGrothendieck_mono {J K : Precoverage C} (h : J ≤ K) :
+    J.toGrothendieck ≤ K.toGrothendieck :=
+  toGrothendieck_monotone h
+
+lemma GrothendieckTopology.toPrecoverage_monotone : Monotone (toPrecoverage (C := C)) :=
+  (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).monotone_u
+
+lemma Precoverage.le_toPrecoverage_toGrothendieck (J : Precoverage C) :
+    J ≤ J.toGrothendieck.toPrecoverage :=
+  (galoisConnection_toGrothendieck_toPrecoverage C).le_u_l _
+
+lemma GrothendieckTopology.toGrothendieck_toPrecoverage_le (J : GrothendieckTopology C) :
+    J.toPrecoverage.toGrothendieck ≤ J :=
+  (Precoverage.galoisConnection_toGrothendieck_toPrecoverage C).l_u_le _
 
 end CategoryTheory
