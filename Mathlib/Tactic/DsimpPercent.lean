@@ -49,4 +49,3 @@ elab (name := dsimpPercentElaborator) "dsimp%" t:term:min : term => do
     else return ← mkExpectedTypeHint e e'.1) (← elabTerm t none)
 
 end Mathlib.Tactic.dsimpPercent
-
