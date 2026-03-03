@@ -14,14 +14,24 @@ import Mathlib.Probability.Notation
 /-!
 # Taylor expansion of the characteristic function
 
-This file provides the Taylor expansion of the characteristic function of a measure.
+This file provides the Taylor expansion of the characteristic function of a measure at `0`.
+
+## Main statements
+
+* `taylorWithinEval_charFun_zero`: If a finite measure `μ` over `ℝ` admits a moment of order `n`,
+  then its Taylor expansion at `0` at order `n` is given by
+  `t ↦ ∑ k ∈ Finset.range (n + 1), (k ! : ℂ)⁻¹ * (t * I) ^ k * ∫ x, x ^ k ∂μ`.
+
+## Tags
+
+characteristic function, Taylor expansion
 -/
 
 public section
 
 
-open MeasureTheory ProbabilityTheory Complex Set VectorFourier
-open scoped Nat Real NNReal ENNReal Topology RealInnerProductSpace
+open ProbabilityTheory Complex Set VectorFourier
+open scoped Nat RealInnerProductSpace
 
 namespace MeasureTheory
 
