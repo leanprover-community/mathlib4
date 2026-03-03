@@ -328,11 +328,11 @@ There are four types of theorems that are used a bit differently.
     even though `fun_prop` can already prove `continuous_neg` from `differentiable_continuous` and
     `differentiable_neg`. Doing this will have a considerable impact on `fun_prop` speed.
 
-    By default, `fun_prop` will not apply more then one transitions theorems consecutivelly. For
+    By default, `fun_prop` will not apply more than one transition theorem consecutively. For
     example, it won't prove `AEMeasurable f` from `Continuous f` by using transition theorems
     `Measurable.aemeasurable` and `Continuous.measurable`. You can enable this by running
     `fun_prop (maxTransitionDepth :=2)`.
-    Ideally `fun_prop` theorems should be transitivelly closed i.e. if `Measurable.aemeasurable` and
+    Ideally `fun_prop` theorems should be transitively closed i.e. if `Measurable.aemeasurable` and
     `Continuous.measurable` are `fun_prop` theorems then `Continuous.aemeasurable` should be too.
 
     Transition theorems do not have to be between two completely different properties. They can be

@@ -49,6 +49,9 @@ abbrev CC (r : R) : R[X][Y] := C (C r)
 lemma evalEval_C (x y : R) (p : R[X]) : (C p).evalEval x y = p.eval x := by
   rw [evalEval, eval_C]
 
+lemma evalEval_map_C (x y : R) (p : R[X]) : (p.map C).evalEval x y = p.eval y := by
+  rw [evalEval, eval_map_apply, eval_C]
+
 @[simp]
 lemma evalEval_CC (x y : R) (p : R) : (CC p).evalEval x y = p := by
   rw [evalEval_C, eval_C]
@@ -209,14 +212,29 @@ noncomputable section
 
 variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
 
-/-- `aevalAeval x y` is the `R`-algebra evaluation morphism sending a two-variable polynomial
-  `p : R[X][Y]` to `p(x,y)`. -/
+variable (R A) in
+/-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, the bijection induced by
+the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
+@[simps! apply_apply symm_apply symm_apply_fst symm_apply_snd]
+def aevalAevalEquiv : A × A ≃ (R[X][Y] →ₐ[R] A) where
+  toFun xy := aeval xy.fst |>.restrictScalars R |>.comp <|
+    let := Polynomial.algebra; aeval (R := R[X]) (C xy.snd) |>.restrictScalars R
+  invFun f := ⟨f <| C X, f Y⟩
+  left_inv f := by simp
+  right_inv f := algHom_ext' (by ext; simp) (by simp)
+
+/-- Given valuations `x` and `y` of the variables in an `R`-algebra `A`, `aevalAeval x y` is
+the unique `R`-algebra homomorphism from `R[X][Y]` to `A` sending `X` to `x` and `Y` to `y`. -/
 abbrev aevalAeval (x y : A) : R[X][Y] →ₐ[R] A :=
-  ((aeval x).restrictScalars R).comp
-    (letI := Polynomial.algebra; (aeval (R := R[X]) (C y)).restrictScalars R)
+  aevalAevalEquiv R A ⟨x, y⟩
+
+@[simp]
+lemma aevalAevalEquiv_apply (xy : A × A) : aevalAevalEquiv R A xy = aevalAeval xy.1 xy.2 :=
+  rfl
 
 theorem coe_aevalAeval_eq_evalEval (x y : A) : ⇑(aevalAeval x y) = evalEval x y := by
-  ext p; simp [aevalAeval, evalEval, aeval, Algebra.ofId]
+  ext
+  simp [aeval]
 
 @[simp]
 lemma aevalAeval_C (x y : A) (p : R[X]) : (C p).aevalAeval x y = aeval x p := by simp
@@ -225,15 +243,6 @@ lemma aevalAeval_X (x y : A) : (C X : R[X][Y]).aevalAeval x y = x := by rw [aeva
 
 @[simp]
 lemma aevalAeval_Y (x y : A) : (Y : R[X][Y]).aevalAeval x y = y := by simp
-
-variable (R A) in
-/-- The bijection `(R[X][Y] →ₐ[R] A) ≃ A × A` induced by `Polynomial.aevalAeval`. -/
-@[simps]
-noncomputable def Bivariate.algHomEquiv : (R[X][Y] →ₐ[R] A) ≃ A × A where
-  toFun f := ⟨f <| C X, f Y⟩
-  invFun xy := aevalAeval xy.fst xy.snd
-  left_inv _ := algHom_ext' (algHom_ext <| aevalAeval_X ..) <| aevalAeval_Y ..
-  right_inv _ := by simp_rw [aevalAeval_X, aevalAeval_Y]
 
 /-- The R-algebra automorphism given by `X ↦ Y` and `Y ↦ X`. -/
 def Bivariate.swap : R[X][Y] ≃ₐ[R] R[X][Y] := by
@@ -246,6 +255,17 @@ theorem Bivariate.swap_apply (p : R[X][Y]) : swap p = p.aevalAeval (A := R[X][Y]
 theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
 
 theorem Bivariate.swap_Y : swap (R := R) Y = (C X) := by simp
+
+theorem Bivariate.swap_C_C (r : R) : swap (C (C r)) = C (C r) := by simp
+
+theorem Bivariate.swap_C (f : R[X]) : swap (C f) = f.map C := by
+  simpa [← algebraMap_eq] using aeval_X_left_eq_map f
+
+theorem Bivariate.swap_map_C (f : R[X]) : swap (f.map C) = C f := by
+  induction f using Polynomial.induction_on' with
+  | add => aesop
+  | monomial n a => rw [map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
+    map_mul, map_pow, swap_Y, C_mul, C_pow, Bivariate.swap_C_C]
 
 theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
     swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by
@@ -359,5 +379,12 @@ from `AdjoinRoot p` to `R`. -/
 
 lemma evalEval_mk (g : R[X][Y]) : evalEval h (mk p g) = g.evalEval x y := by
   rw [evalEval, lift_mk, eval₂_evalRingHom]
+
+/-- The bijection between elements `(x, y) : A × A` with `p(x, y) = 0` for some polynomial
+`p : R[X, Y]` and algebra homomorphisms `R[X, Y]/p →ₐ[R] A`. -/
+noncomputable def equivAevalAeval {A : Type*} [CommRing A] [Algebra R A] (p : R[X][Y]) :
+    (AdjoinRoot p →ₐ[R] A) ≃ {xy : A × A // p.aevalAeval xy.fst xy.snd = 0} :=
+  equivAlgHom p |>.trans <| Equiv.subtypeEquiv (aevalAevalEquiv ..).symm fun f ↦ by
+    rw [← aevalAevalEquiv_apply, Equiv.apply_symm_apply]
 
 end AdjoinRoot

@@ -239,12 +239,26 @@ variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
 variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
+variable (R A) in
+/-- Given a valuation `x` of the variable in an `R`-algebra `A`, the bijection induced by the unique
+`R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`. -/
+@[simps! symm_apply]
+def aevalEquiv : A ≃ (R[X] →ₐ[R] A) where
+  toFun x := eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
+  invFun f := f X
+  left_inv := eval₂_X _
+  right_inv _ := algHom_ext' (Subsingleton.elim ..) <| eval₂_X ..
+
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
 This is a stronger variant of the linear map `Polynomial.leval`. -/
 def aeval : R[X] →ₐ[R] A :=
-  eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
+  aevalEquiv R A x
+
+@[simp]
+lemma aevalEquiv_apply (x : A) : aevalEquiv R A x = aeval x :=
+  rfl
 
 /-- The map `R[X] → S[X]` as an algebra homomorphism. -/
 def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S] :
@@ -254,7 +268,7 @@ def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S]
 @[ext 1200]
 theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
     f = g :=
-  algHom_ext' (Subsingleton.elim _ _) hX
+  algHom_ext' (Subsingleton.elim ..) hX
 
 theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
   rfl
@@ -424,15 +438,6 @@ theorem aeval_prod (x : A × B) : aeval (R := R) x = (aeval x.1).prod (aeval x.2
 /-- Polynomial evaluation on a pair is a pair of evaluations. -/
 theorem aeval_prod_apply (x : A × B) (p : Polynomial R) :
     p.aeval x = (p.aeval x.1, p.aeval x.2) := by simp [aeval_prod]
-
-variable (R A) in
-/-- The bijection `(R[X] →ₐ[R] A) ≃ A` induced by `Polynomial.aeval`. -/
-@[simps]
-noncomputable def algHomEquiv : (R[X] →ₐ[R] A) ≃ A where
-  toFun f := f X
-  invFun := aeval
-  left_inv _ := algHom_ext <| aeval_X _
-  right_inv := aeval_X
 
 section Pi
 

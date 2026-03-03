@@ -461,6 +461,7 @@ lemma addVal_eq_zero_of_unit (u : Rˣ) :
   rw [addVal_def (u : R) u hϖ 0] <;>
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 lemma addVal_eq_zero_iff {x : R} :
     addVal R x = 0 ↔ IsUnit x := by
   rcases eq_or_ne x 0 with rfl | hx
@@ -471,6 +472,7 @@ lemma addVal_eq_zero_iff {x : R} :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     IsHausdorff (maximalIdeal R) R where
   haus' x hx := by
