@@ -30,6 +30,9 @@ variable (C : Type*) [Category* C]
 protected def plus [HasZeroMorphisms C] : ObjectProperty (CochainComplex C ℤ) :=
   fun K ↦ ∃ (n : ℤ), K.IsStrictlyGE n
 
+lemma plus_iff [HasZeroMorphisms C] (K : CochainComplex C ℤ) :
+    CochainComplex.plus C K ↔ ∃ (n : ℤ), K.IsStrictlyGE n := Iff.rfl
+
 instance [HasZeroMorphisms C] : (CochainComplex.plus C).IsClosedUnderIsomorphisms where
   of_iso := by
     rintro _ _ e ⟨n, _⟩
