@@ -12,14 +12,14 @@ public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-! # Saturation of a submonoid
 
-We define a submonoid `s` to be saturated if `x * y ∈ s → x ∈ s ∧ y ∈ s`. The type of all the
+We define a submonoid `s` to be saturated if `x * y ∈ s → x ∈ s ∧ y ∈ s`. The type of all
 saturated submonoids forms a complete lattice. For a given submonoid `s` we construct the saturation
 of `s` as the smallest saturated submonoid containing `s`, which when the underlying type is a
 commutative monoid, is given by the formula `{x : M | ∃ y : M, x * y ∈ s}`.
 
-It is used in the context of localisations.
+Saturated submonoids are used in the context of localisations.
 
-We also define the type of saturated submonoids, and endows on it the structure of a complete
+We also define the type of saturated submonoids, and endow on it the structure of a complete
 lattice.
 
 ## Main Definitions
