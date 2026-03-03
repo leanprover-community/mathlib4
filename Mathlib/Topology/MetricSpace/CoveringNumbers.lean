@@ -404,13 +404,9 @@ lemma _root_.Isometry.coveringNumber_image' {f : X → Y} (hf : Isometry f) (hf_
       choose g hg_mem hg using this
       refine ⟨Set.range g, ?_, ?_⟩
       · rwa [Set.range_subset_iff]
-      · ext x
-        simp only [mem_image, mem_range, Subtype.exists, ↓existsAndEq, true_and]
-        refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-        · refine ⟨x, h, ?_⟩
-          rw [hg]
-        · obtain ⟨x, hx, rfl⟩ := h
-          simp [hg, hx]
+      · ext
+        simp
+        grind
     refine (iInf_le _ C').trans <| (iInf_le _ hC'_subset).trans ?_
     simp only [hf.isCover_image_iff] at hC_cover
     refine (iInf_le _ hC_cover).trans ?_
