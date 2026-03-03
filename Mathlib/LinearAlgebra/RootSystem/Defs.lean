@@ -400,7 +400,7 @@ lemma pairing_reflectionPerm_self_right (i j : ι) :
 
 /-- The indexing set of a root pairing carries an involutive negation, corresponding to the negation
 of a root / coroot. -/
-@[simps] def indexNeg : InvolutiveNeg ι where
+@[implicit_reducible, simps] def indexNeg : InvolutiveNeg ι where
   neg i := P.reflectionPerm i i
   neg_neg i := by
     apply P.root.injective
@@ -553,7 +553,6 @@ alias _root_.RootSystem.reflectionPerm_eq_reflectionPerm_iff := reflectionPerm_e
 
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
-@[implicit_reducible, implicit_reducible]
 def coxeterWeight : R := pairing P i j * pairing P j i
 
 @[simp] lemma coxeterWeight_flip :
