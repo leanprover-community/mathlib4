@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.BigOperators.Ring.Nat
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Ring.Nat
 
@@ -87,6 +88,22 @@ theorem prod_prod_bipartiteAbove_eq_prod_prod_bipartiteBelow
 theorem sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow [∀ a b, Decidable (r a b)] :
     (∑ a ∈ s, #(t.bipartiteAbove r a)) = ∑ b ∈ t, #(s.bipartiteBelow r b) := by
   simp_rw [card_eq_sum_ones, sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow]
+
+/-- In a finite bipartite graph, the number of left vertices of odd degree is odd iff the number
+of right vertices of odd degree is odd. -/
+theorem odd_card_filter_odd_bipartiteAbove_iff_odd_card_filter_odd_bipartiteBelow
+    [∀ a b, Decidable (r a b)] :
+    Odd #{a ∈ s | Odd (#(t.bipartiteAbove r a))} ↔
+      Odd #{b ∈ t | Odd (#(s.bipartiteBelow r b))} := by
+  calc
+    Odd #{a ∈ s | Odd (#(t.bipartiteAbove r a))} ↔ Odd (∑ a ∈ s, #(t.bipartiteAbove r a)) := by
+      simpa using
+        (odd_sum_iff_odd_card_odd (s := s) (f := fun a ↦ #(t.bipartiteAbove r a))).symm
+    _ ↔ Odd (∑ b ∈ t, #(s.bipartiteBelow r b)) := by
+      simp [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow (s := s) (t := t) (r := r)]
+    _ ↔ Odd #{b ∈ t | Odd (#(s.bipartiteBelow r b))} := by
+      simpa using
+        (odd_sum_iff_odd_card_odd (s := t) (f := fun b ↦ #(s.bipartiteBelow r b)))
 
 section OrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {m n : R}
