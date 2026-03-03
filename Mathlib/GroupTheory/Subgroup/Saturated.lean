@@ -26,7 +26,7 @@ variable {G : Type*} [Monoid G]
 `n = 0` or `g ∈ H`. We use the name `PowSaturated` to distinguish from `Submonoid.MulSaturated`. -/
 @[to_additive
 /-- An additive submonoid `H` of `G` is *saturated* if for all `n : ℕ` and `g : G` with
-`n•g ∈ H` we have `n = 0` or `g ∈ H`. We use the name `NSmulSaturated` to distinguish from
+`n•g ∈ H` we have `n = 0` or `g ∈ H`. We use the name `NSMulSaturated` to distinguish from
 `Submonoid.MulSaturated`. -/]
 def PowSaturated (H : Submonoid G) : Prop :=
   ∀ ⦃n g⦄, g ^ n ∈ H → n = 0 ∨ g ∈ H

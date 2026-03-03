@@ -214,6 +214,7 @@ variable {a : Submonoid M} {b : SaturatedSubmonoid M}
 
 @[to_additive]
 theorem saturation_le_iff_le : a.saturation ≤ b ↔ a ≤ b.toSubmonoid := gc_saturation ..
+
 @[to_additive]
 alias ⟨_, saturation_le_of_le⟩ := saturation_le_iff_le
 
