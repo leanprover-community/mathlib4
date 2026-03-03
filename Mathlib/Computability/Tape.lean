@@ -115,6 +115,7 @@ theorem BlankRel.equivalence (Γ) [Inhabited Γ] : Equivalence (@BlankRel Γ _) 
   ⟨BlankRel.refl, @BlankRel.symm _ _, @BlankRel.trans _ _⟩
 
 /-- Construct a setoid instance for `BlankRel`. -/
+@[implicit_reducible]
 def BlankRel.setoid (Γ) [Inhabited Γ] : Setoid (List Γ) :=
   ⟨_, BlankRel.equivalence _⟩
 

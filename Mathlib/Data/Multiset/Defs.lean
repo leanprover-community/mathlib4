@@ -333,6 +333,7 @@ end Decidable
 
 /-- `Pairwise r m` states that there exists a list of the elements s.t. `r` holds pairwise on this
 list. -/
+@[implicit_reducible, implicit_reducible]
 def Pairwise (r : α → α → Prop) (m : Multiset α) : Prop :=
   ∃ l : List α, m = l ∧ l.Pairwise r
 

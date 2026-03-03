@@ -332,6 +332,7 @@ theorem Prime.minFac_eq {p : ℕ} (hp : Prime p) : minFac p = p :=
 This definition is faster in the virtual machine than `decidablePrime`,
 but slower in the kernel.
 -/
+@[implicit_reducible]
 def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_minFac
 
