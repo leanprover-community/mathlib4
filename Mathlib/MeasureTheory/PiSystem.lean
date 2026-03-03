@@ -108,6 +108,17 @@ theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : �
   rw [← Set.preimage_inter] at hst ⊢
   exact ⟨s ∩ t, h_pi s hs_mem t ht_mem (nonempty_of_nonempty_preimage hst), rfl⟩
 
+/-- For a ∩-stable set of sets `C` on `α` and a sequence of sets `s` with this attribute,
+`dissipate s n` belongs to `C`. -/
+lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {C : Set (Set α)}
+    (hC : IsPiSystem C) (h : ∀ n, s n ∈ C) (n : ℕ) (h' : (dissipate s n).Nonempty) :
+    dissipate s n ∈ C := by
+  induction n with
+  | zero => simpa using h 0
+  | succ n hn =>
+    rw [dissipate_succ] at h' ⊢
+    exact hC (dissipate s n) (hn h'.left) (s (n + 1)) (h (n + 1)) h'
+
 theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
     (hp_pi : ∀ n, IsPiSystem (p n)) (hp_directed : Directed (· ≤ ·) p) :
     IsPiSystem (⋃ n, p n) := by
@@ -696,16 +707,3 @@ theorem induction_on_inter {m : MeasurableSpace α} {C : ∀ s : Set α, Measura
   | @iUnion f hfd hf ihf => exact iUnion f hfd (eq ▸ hf) ihf
 
 end MeasurableSpace
-
-/-- For a ∩-stable set of sets `p` on `α` and a sequence of sets `s` with this attribute,
-`dissipate s n` belongs to `p`. -/
-lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {p : Set (Set α)}
-    (hp : IsPiSystem p) (h : ∀ n, s n ∈ p) (n : ℕ) (h' : (dissipate s n).Nonempty) :
-      (dissipate s n) ∈ p := by
-  induction n with
-  | zero =>
-    simp only [dissipate_def, Nat.le_zero_eq, iInter_iInter_eq_left]
-    exact h 0
-  | succ n hn =>
-    rw [dissipate_succ] at *
-    apply hp (dissipate s n) (hn (Nonempty.left h')) (s (n+1)) (h (n+1)) h'
