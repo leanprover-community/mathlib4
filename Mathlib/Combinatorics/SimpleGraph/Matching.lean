@@ -10,6 +10,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card.Arithmetic
 public import Mathlib.Data.Set.Functor
 
@@ -260,6 +261,26 @@ lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
   simp only [isPerfectMatching_iff, toSubgraph_adj, spanningCoe_adj]
 
 end Subgraph
+
+/--
+The matching number of a simple graph `G`, defined as the largest (possibly infinite) cardinality
+of the edge set of a matching subgraph of `G`.
+-/
+noncomputable def matchingNumber (G : SimpleGraph V) : ℕ∞ :=
+  ⨆ (M : Subgraph G) (_ : M.IsMatching), M.edgeSet.encard
+
+lemma le_matchingNumber (hM : M.IsMatching) : M.edgeSet.encard ≤ G.matchingNumber :=
+  le_iSup_of_le M <| le_iSup_of_le hM le_rfl
+
+@[gcongr]
+lemma matchingNumber_mono {G G' : SimpleGraph V} (hGG' : G ≤ G') :
+    G.matchingNumber ≤ G'.matchingNumber := by
+  refine iSup_le ?_
+  intro M
+  refine iSup_le ?_
+  intro hM
+  simpa [Subgraph.edgeSet_map, Hom.coe_ofLE, Set.image_id']
+    using (G'.le_matchingNumber (M := M.map (Hom.ofLE hGG')) (hM.map_ofLE hGG'))
 
 lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
     (hu : u.Finite) : Even u.ncard ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
