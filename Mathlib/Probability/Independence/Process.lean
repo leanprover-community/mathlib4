@@ -189,11 +189,25 @@ lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) �
     iIndepFun (fun i ω j ↦ X' i j ω) κ P := by
   intro s f hf
   choose! g mg hg using hf
-  have := h1 s (fun i hi ↦ ⟨g i, mg i hi, rfl⟩)
+  have h3 : ⋂ i ∈ s, f i = ⋂ i ∈ s, (fun i ω j ↦ X' i j ω) i ⁻¹' g i := (biInf_congr hg).symm
+  have h3' a : ∏ i ∈ s, κ a (f i) = ∏ i ∈ s, κ a ((fun i ω j ↦ X' i j ω) i ⁻¹' g i) := by
+    refine Finset.prod_congr rfl fun i hi ↦ ?_
+    rw [hg i hi]
+  simp_rw [h3, h3']
   choose! I u hI hu using fun i hi ↦ (mg i hi).eq_preimage_restrict_countable
-  have aux i (f : (j : T i) → Ω → 𝓧 i j) : (fun ω j ↦ f j ω) ⁻¹' ((I i).restrict ⁻¹' (u i)) =
+  have h4 (f : (i : S) → (j : T i) → Ω → 𝓧 i j) : ⋂ i ∈ s, (fun i ω j ↦ f i j ω) i ⁻¹' g i =
+      ⋂ i ∈ s, (fun i ω j ↦ f i j ω) i ⁻¹' ((I i).restrict ⁻¹' u i) :=
+      (biInf_congr (fun i hi ↦ by rw [hu i hi])).symm
+  have h4' a (f : (i : S) → (j : T i) → Ω → 𝓧 i j) :
+      ∏ i ∈ s, κ a ((fun i ω j ↦ f i j ω) i ⁻¹' g i) =
+      ∏ i ∈ s, κ a ((fun i ω j ↦ f i j ω) i ⁻¹' ((I i).restrict ⁻¹' u i)) := by
+    refine Finset.prod_congr rfl fun i hi ↦ ?_
+    rw [hu i hi]
+  have h5 := h1 s (fun i hi ↦ ⟨g i, mg i hi, rfl⟩)
+  simp_rw [h4, h4'] at h5 ⊢
+  have h6 i (f : (j : T i) → Ω → 𝓧 i j) : (fun ω j ↦ f j ω) ⁻¹' ((I i).restrict ⁻¹' (u i)) =
       (fun ω (j : I i) ↦ f j ω) ⁻¹' (u i) := rfl
-  simp_rw [aux] at *
+  simp_rw [h6] at h5 ⊢
   -- have _ i hi : Countable (I i) := (hI i hi).to_subtype
   have h :
       ∀ᵐ a ∂P, ∀ i ∈ s, (fun ω (j : I i) ↦ X i j ω) =ᵐ[κ a] (fun ω (j : I i) ↦ X' i j ω) := by
@@ -203,10 +217,11 @@ lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) �
     filter_upwards [ae_all_iff.2 fun (j : I i) ↦ h2 i j] with
       a (ha : ∀ (j : I i), ∀ᵐ ω ∂κ a, X i j ω = X' i j ω)
     filter_upwards [ae_all_iff.2 ha] with ω hω using by simp [hω]
-  filter_upwards [this, h] with a ha1 ha2
-  refine .trans (measure_congr (ae_eq_set_inter (ha2.symm.preimage _) .rfl)) (ha1.trans ?_)
-  congr 1
-  exact measure_congr (ha2.preimage _)
+  filter_upwards [h5, h] with a ha1 ha2
+  refine .trans (measure_congr (ae_eq_set_biInter s.countable_toSet
+    (fun i hi ↦ ((ha2 i hi).preimage _).symm))) (ha1.trans ?_)
+  refine Finset.prod_congr rfl fun i hi ↦ ?_
+  rw [measure_congr ((ha2 i hi).preimage _)]
 
 /-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
 for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
@@ -249,6 +264,20 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
   rw [this, ← hη, hω, ← I.prod_coe_sort]
   congrm ∏ _, κ ω ?_
   ext; simp
+
+/-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
+for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
+$(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
+(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
+lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
+    [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
+    (hX : ∀ i j, AEMeasurable (X i j) (κ ∘ₘ P))
+    (h : ∀ (I : Finset S) (J : (i : I) → Finset (T i)),
+      iIndepFun (fun i ω (j : J i) ↦ X i j ω) κ P) :
+    iIndepFun (fun i ω j ↦ X i j ω) κ P := by
+  refine process_congr ?_ (fun i j ↦ Measure.ae_ae_of_ae_comp (hX i j).ae_eq_mk.symm)
+  refine iIndepFun_process (fun i j ↦ (hX i j).measurable_mk) fun I J ↦ ?_
+  exact (h I J).process_congr (fun i j ↦ Measure.ae_ae_of_ae_comp (hX i j).ae_eq_mk)
 
 end Kernel
 
