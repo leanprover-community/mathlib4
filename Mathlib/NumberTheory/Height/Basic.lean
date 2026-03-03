@@ -541,6 +541,28 @@ namespace AbsoluteValue
 
 variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
 
+section many
+
+universe u v
+
+variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
+
+lemma iSup_prod_abv_eq_prod_iSup_abv (v : AbsoluteValue R ℝ) {x : (a : α) → ι a → R} :
+    ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) := by
+  rcases isEmpty_or_nonempty ((a : α) → ι a) with h | h
+  · rw [Real.iSup_of_isEmpty, eq_comm, Finset.prod_eq_zero_iff]
+    obtain ⟨a, ha⟩ := isEmpty_pi.mp h
+    exact ⟨a, by simp⟩
+  refine le_antisymm ?_ ?_
+  · exact ciSup_le fun i ↦ Finset.prod_le_prod (by simp) fun a ha ↦ Finite.le_ciSup_of_le _ le_rfl
+  · rw [Classical.nonempty_pi] at h
+    have H a : ∃ i : ι a, v (x a i) = ⨆ i, v (x a i) := exists_eq_ciSup_of_finite
+    choose i hi using H
+    simp only [← hi]
+    exact Finite.le_ciSup_of_le i le_rfl
+
+end many
+
 lemma iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue R ℝ) (x : ι → R) (y : ι' → R) :
     ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
   rcases isEmpty_or_nonempty ι
@@ -565,6 +587,40 @@ namespace Height
 open Height.AdmissibleAbsValues Function
 
 variable {K : Type*} [Field K] [AdmissibleAbsValues K]
+
+section many
+
+universe u v
+
+variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
+
+open Finset in
+/-- Consider a finite family `x : (a : α) → ι a → K` of tuples. Then the multiplicative height
+of the "multiplication table" `fun (I : (a : α) → ι a ↦ ∏ a, x a (I a))` is the product
+of the multiplicative heights of all the `x a`. -/
+lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0) :
+    mulHeight (fun I : (a : α) → ι a ↦ ∏ a, x a (I a)) = ∏ a, mulHeight (x a) := by
+  rw [mulHeight_eq ?h₁]
+  case h₁ =>
+    simp_rw [ne_iff, Pi.zero_def] at hx ⊢
+    choose f hf using hx
+    exact ⟨f, prod_ne_zero_iff.mpr fun a _ ↦ hf a⟩
+  simp_rw [map_prod, AbsoluteValue.iSup_prod_abv_eq_prod_iSup_abv]
+  rw [Multiset.prod_map_prod,
+    finprod_prod_comm _ _ fun b _ ↦ mulSupport_iSup_nonarchAbsVal_finite (hx b), ← prod_mul_distrib]
+  exact prod_congr rfl fun a _ ↦ by rw [mulHeight_eq (hx a)]
+
+open Real in
+/-- Consider a finite family `x : (a : α) → ι a → K` of tuples. Then the logarithmic height
+of the "multiplication table" `fun (I : (a : α) → ι a ↦ ∏ a, x a (I a))` is the sum
+of the logarithmic heights of all the `x a`. -/
+lemma logHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0) :
+    logHeight (fun I : (a : α) → ι a ↦ ∏ a, x a (I a)) = ∑ a, logHeight (x a) := by
+  simp only [logHeight_eq_log_mulHeight]
+  rw [← log_prod fun a _ ↦ mulHeight_ne_zero _]
+  exact congrArg log <| mulHeight_fun_prod_eq hx
+
+end many
 
 section two
 
@@ -595,60 +651,6 @@ lemma logHeight_fun_mul_eq {x : ι → K} (hx : x ≠ 0) {y : ι' → K} (hy : y
   rw [mulHeight_fun_mul_eq hx hy]
 
 end two
-
-section many
-
-universe u v
-
-variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
-
-open Finset in
-/-- Consider a finite family `x : (a : α) → ι a → K` of tuples. Then the multiplicative height
-of the "multiplication table" `fun (I : (a : α) → ι a ↦ ∏ a, x a (I a))` is the product
-of the multiplicative heights of all the `x a`. -/
-lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0) :
-    mulHeight (fun I : (a : α) → ι a ↦ ∏ a, x a (I a)) = ∏ a, mulHeight (x a) := by
-  revert x ι
-  refine @Fintype.induction_empty_option
-    (fun α _ ↦ ∀ (ι : α → Type v) [∀ a, Finite (ι a)] {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0),
-      mulHeight (fun I : (a : α) → ι a ↦ ∏ a, x a (I a)) = ∏ a, mulHeight (x a))
-    (fun β β' _ e H ι _ x hx ↦ ?equiv) ?empty (fun β hβ ih ι _ x hx ↦ ?option) α inferInstance
-  case empty => simp
-  case equiv =>
-    have (a : β) : Finite ((ι ∘ ⇑e) a) := inferInstanceAs <| Finite (ι (e a))
-    specialize H (ι ∘ ⇑e) (x := fun b ↦ x (e b)) (fun b ↦ hx _)
-    set_option backward.isDefEq.respectTransparency false in -- temporary measure
-    rw [prod_equiv e (t := .univ) (by simp) (g := fun b ↦ mulHeight (x b)) (fun _ _ ↦ rfl)] at H
-    rw [← H, ← mulHeight_comp_equiv (e.piCongrLeft ι).symm]
-    refine congrArg mulHeight <| funext fun I ↦ ?_
-    simp only [comp_apply]
-    let : Fintype β := .ofEquiv β' e.symm
-    refine prod_equiv e.symm (s := .univ) (t := .univ) (by simp) fun b _ ↦ ?_
-    rw [e.piCongrLeft_symm_apply, e.apply_symm_apply]
-  case option =>
-    simp only [Fintype.prod_option]
-    have (b : β) : Finite ((ι ∘ some) b) := by grind
-    set_option backward.isDefEq.respectTransparency false in -- temporary measure
-    rw [← ih (ι ∘ Option.some) (x := fun b i ↦ x (some b) i) (by grind),
-      ← mulHeight_fun_mul_eq (hx none) ?hprod]
-    case hprod =>
-      choose J hJ using fun b ↦ ne_iff.mp (hx (some b))
-      exact ne_iff.mpr ⟨J, prod_ne_zero_iff.mpr fun b _ ↦ hJ b⟩
-    rw [← mulHeight_comp_equiv <| Equiv.piOptionEquivProd (α := β) (β := ι), comp_def]
-    -- `rfl` also works here, but smells of defeq abuse.
-    simp only [comp_apply, Equiv.piOptionEquivProd_apply]
-
-open Real in
-/-- Consider a finite family `x : (a : α) → ι a → K` of tuples. Then the logarithmic height
-of the "multiplication table" `fun (I : (a : α) → ι a ↦ ∏ a, x a (I a))` is the sum
-of the logarithmic heights of all the `x a`. -/
-lemma logHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0) :
-    logHeight (fun I : (a : α) → ι a ↦ ∏ a, x a (I a)) = ∑ a, logHeight (x a) := by
-  simp only [logHeight_eq_log_mulHeight]
-  rw [← log_prod fun a _ ↦ mulHeight_ne_zero _]
-  exact congrArg log <| mulHeight_fun_prod_eq hx
-
-end many
 
 end Height
 
