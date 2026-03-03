@@ -21,8 +21,7 @@ This file defines intersecting families and proves their basic properties.
   `a` and `aᶜ` cannot simultaneously be in it.
 * `Set.Intersecting.is_max_iff_card_eq`: Any maximal intersecting family takes up half the elements.
 * `Set.IsIntersectingOf`: Predicate stating that a family `𝒜` of finsets is `L`-intersecting, i.e.,
-  meaning the intersection size of every pair of distinct members of `𝒜` satisfies some predicate
-  `L`.
+  meaning the intersection size of every pair of distinct members of `𝒜` belongs to `L ⊆ ℕ`.
 
 ## References
 
@@ -204,33 +203,31 @@ end
 This section defines `L`-intersecting families and establishes their basic properties.
 -/
 
-variable {L L' : ℕ → Prop}
+variable {L L' : Set ℕ}
 variable {α : Type*} [DecidableEq α]
 variable {𝒜 ℬ : Set (Finset α)}
 
 /--
 A family `𝒜` of finite subsets of `α` is `L`-intersecting if the intersection size of every pair of
-distinct members of `𝒜` satisfies some predicate `L`.
+distinct members of `𝒜` belongs to `L ⊆ ℕ`.
 
-That is, for all `s, t ∈ 𝒜` with `s ≠ t`, we have `L #(s ∩ t)`.
+That is, for all `s, t ∈ 𝒜` with `s ≠ t`, we have `|(s ∩ t)| ∈ L`.
 -/
-def IsIntersectingOf (L : ℕ → Prop) (𝒜 : Set (Finset α)) : Prop := 𝒜.Pairwise fun s t ↦ L #(s ∩ t)
+def IsIntersectingOf (L : Set ℕ) (𝒜 : Set (Finset α)) : Prop := 𝒜.Pairwise fun s t ↦ #(s ∩ t) ∈ L
 
 namespace IsIntersectingOf
 
 /--
-An `L`-intersecting family is also `L'`-intersecting whenever `L` implies `L'`.
+An `L`-intersecting family is also `L'`-intersecting whenever `L ⊆ L'`.
 -/
 @[gcongr]
-protected theorem mono (h : ∀ n, L n → L' n) (hL : IsIntersectingOf L 𝒜) :
-    IsIntersectingOf L' 𝒜 := by tauto
+theorem mono (h : L ⊆ L') (hL : IsIntersectingOf L 𝒜) : IsIntersectingOf L' 𝒜 := by tauto
 
 /--
 An `L`-intersecting family remains `L`-intersecting under restriction to any subfamily.
 -/
 @[gcongr]
-protected theorem anti (h : ℬ ⊆ 𝒜) (h𝒜 : IsIntersectingOf L 𝒜) : IsIntersectingOf L ℬ :=
-  Pairwise.mono h h𝒜
+theorem anti (h : ℬ ⊆ 𝒜) (h𝒜 : IsIntersectingOf L 𝒜) : IsIntersectingOf L ℬ := Pairwise.mono h h𝒜
 
 /--
 The empty family of finite sets is `L`-intersecting, vacuously, because it contains no pairs of
@@ -240,10 +237,10 @@ sets.
 protected theorem empty : IsIntersectingOf L (∅ : Set (Finset α)) := by tauto
 
 /--
-Every family of finite sets is `True`-intersecting.
+Every family of finite sets is `univ`-intersecting.
 -/
 @[simp]
-protected theorem true : IsIntersectingOf (fun _ : ℕ ↦ True) 𝒜 := by tauto
+protected theorem univ : IsIntersectingOf univ 𝒜 := 𝒜.pairwise_of_forall _ fun _ _ ↦ trivial
 
 end IsIntersectingOf
 
