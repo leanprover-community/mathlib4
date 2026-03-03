@@ -103,7 +103,6 @@ lemma HasTemperateGrowth.of_fderiv {f : E → F}
     refine ⟨k', C', ?_⟩
     simpa [iteratedFDeriv_succ_eq_comp_right] using h'
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 lemma HasTemperateGrowth.zero :
     Function.HasTemperateGrowth (fun _ : E ↦ (0 : F)) := by

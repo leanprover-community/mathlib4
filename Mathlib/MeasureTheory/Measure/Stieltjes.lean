@@ -450,7 +450,6 @@ theorem outer_Ioc [DenselyOrdered R] (a b : R) : f.outer (Ioc a b) = ofReal (f b
     _ ≤ ∑' i, f.length (s i) + δ + δ := add_le_add (add_le_add le_rfl hε.le) le_rfl
     _ = ∑' i : ℕ, f.length (s i) + ε := by simp [δ, add_assoc, ENNReal.add_halves]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [OrderTopology R] [CompactIccSpace R] in
 theorem measurableSet_Ioi {c : R} : MeasurableSet[f.outer.caratheodory] (Ioi c) := by
   refine OuterMeasure.ofFunction_caratheodory fun t => ?_
@@ -757,7 +756,6 @@ instance instIsLocallyFiniteMeasure : IsLocallyFiniteMeasure f.measure := by
     exists_Icc_mem_subset_of_mem_nhds (by simp)
   exact ⟨Icc b c, h, by simp⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction R) {l : ℝ}
     (hfg : f.measure = g.measure) (hfl : Tendsto f atBot (𝓝 l)) (hgl : Tendsto g atBot (𝓝 l)) :
     f = g := by
@@ -770,7 +768,6 @@ lemma eq_of_measure_of_tendsto_atBot (g : StieltjesFunction R) {l : ℝ}
   · rw [sub_nonneg]
     exact Monotone.le_of_tendsto f.mono hfl x
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_of_measure_of_eq (g : StieltjesFunction R) {y : R}
     (hfg : f.measure = g.measure) (hy : f y = g y) :
     f = g := by
