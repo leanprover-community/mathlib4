@@ -380,8 +380,7 @@ lemma mulHeight_comp_le (f : ι → ι') (x : ι' → K) :
 open Real in
 lemma logHeight_comp_le (f : ι → ι') (x : ι' → K) :
     logHeight (x ∘ f) ≤ logHeight x := by
-  simp only [logHeight_eq_log_mulHeight]
-  exact log_le_log (mulHeight_pos _) <| mulHeight_comp_le ..
+  simpa [logHeight_eq_log_mulHeight] using log_le_log (mulHeight_pos _) <| mulHeight_comp_le ..
 
 end Height
 
