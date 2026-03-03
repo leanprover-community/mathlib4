@@ -53,7 +53,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       rw [intervalIntegral.integral_of_le hr', intervalIntegral.integral_of_le hr']
       refine integral_mono_of_nonneg ?_ (by fun_prop) ?_
       · exact ae_of_all _ fun _ ↦ by positivity
-      · refine ae_of_all _ fun x ↦ norm_one_sub_charFun_le_two
+      · exact ae_of_all _ fun x ↦ norm_one_sub_charFun_le_two
     _ ≤ 4 := by
       simp only [intervalIntegral.integral_const, sub_neg_eq_add, smul_eq_mul]
       field_simp
