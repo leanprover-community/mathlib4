@@ -39,11 +39,13 @@ variable {E : Type v} [Field E] {L : Type w} [Field L]
 
 variable (A B C : Subfield E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Subfield.relrank A B` is defined to be `[B : A ⊓ B]` as a `Cardinal`, in particular,
 when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
 This is similar to `Subgroup.relIndex` but it is `Cardinal` valued. -/
 noncomputable def relrank := Module.rank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The `Nat` version of `Subfield.relrank`.
 If `B / A ⊓ B` is an infinite extension, then it is zero. -/
 noncomputable def relfinrank := finrank ↥(A ⊓ B) (extendScalars (inf_le_right : A ⊓ B ≤ B))
@@ -59,12 +61,14 @@ theorem relrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relrank A C = relrank B C
 theorem relfinrank_eq_of_inf_eq (h : A ⊓ C = B ⊓ C) : relfinrank A C = relfinrank B C :=
   congr(toNat $(relrank_eq_of_inf_eq h))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A ≤ B`, then `Subfield.relrank A B` is `[B : A]`. -/
 theorem relrank_eq_rank_of_le (h : A ≤ B) : relrank A B = Module.rank A (extendScalars h) := by
   rw [relrank]
   have := inf_of_le_left h
   congr!
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A ≤ B`, then `Subfield.relfinrank A B` is `[B : A]`. -/
 theorem relfinrank_eq_finrank_of_le (h : A ≤ B) : relfinrank A B = finrank A (extendScalars h) :=
   congr(toNat $(relrank_eq_rank_of_le h))
@@ -83,6 +87,7 @@ theorem inf_relrank_left : relrank (A ⊓ B) A = relrank B A := by
 theorem inf_relfinrank_left : relfinrank (A ⊓ B) A = relfinrank B A :=
   congr(toNat $(inf_relrank_left A B))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_self : relrank A A = 1 := by
   rw [relrank_eq_rank_of_le (le_refl A), extendScalars_self, IntermediateField.rank_bot]
@@ -93,6 +98,7 @@ theorem relfinrank_self : relfinrank A A = 1 := by
 
 variable {A B}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem relrank_eq_one_iff : relrank A B = 1 ↔ B ≤ A := by
   rw [relrank, IntermediateField.rank_eq_one_iff, ← IntermediateField.toSubfield_inj,
     extendScalars_toSubfield, IntermediateField.bot_toSubfield, algebraMap_ofSubfield,
@@ -116,12 +122,15 @@ theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E 
 
 variable (A B)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_top_left : relrank ⊤ A = 1 := relrank_eq_one_of_le le_top
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relfinrank_top_left : relfinrank ⊤ A = 1 := relfinrank_eq_one_of_le le_top
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
   let _ : AddCommMonoid (⊤ : IntermediateField A E) := inferInstance
@@ -132,6 +141,7 @@ theorem relrank_top_right : relrank A ⊤ = Module.rank A E := by
 theorem relfinrank_top_right : relfinrank A ⊤ = finrank A E := by
   simp [relfinrank_eq_toNat_relrank, finrank]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lift_relrank_map_map (f : E →+* L) :
     lift.{v} (relrank (A.map f) (B.map f)) = lift.{w} (relrank A B) :=
   -- typeclass inference is slow
@@ -433,6 +443,7 @@ variable {A B} in
 theorem relfinrank_mul_finrank_top (h : A ≤ B) : relfinrank A B * finrank B E = finrank A E := by
   simpa using congr(toNat $(relrank_mul_rank_top h))
 
+set_option backward.isDefEq.respectTransparency false in
 variable {A B} in
 theorem rank_bot_mul_relrank (h : A ≤ B) : Module.rank F A * relrank A B = Module.rank F B := by
   rw [relrank_eq_rank_of_le h]
