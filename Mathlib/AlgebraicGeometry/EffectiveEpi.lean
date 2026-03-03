@@ -97,7 +97,7 @@ private lemma exists_openCover_exists {X Y S : Scheme.{u}} [IsAffine X] [IsAffin
       ∀ i : 𝒰.I₀, ∃ (u : 𝒰.X i ⟶ S), pullback.fst π (𝒰.f i) ≫ f = pullback.snd _ _ ≫ u := by
   obtain ⟨b, hfac⟩ : ∃ (u : Y.carrier ⟶ S.carrier), π.base ≫ u = f.base := by
     apply IsRegularEpi.exists_of_isKernelPair _ (IsPullback.of_hasPullback _ _)
-    have := congr(Scheme.forgetToTop.map $hg)
+    have := congr(Scheme.forgetToTop.map $hf)
     rwa [Functor.map_comp, Functor.map_comp, ← pullbackComparison_comp_fst_assoc,
       ← pullbackComparison_comp_snd_assoc, cancel_epi] at this
   let 𝒰 := Y.openCoverOfIsOpenCover _ <| Y.isBasis_affineOpens.isOpenCover_mem_and_le
