@@ -143,6 +143,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
     · contrapose! hr; rw [hr]; ring
   · exact intervalIntegrable_cpow' h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]]) :
     ∫ x in a..b, x ^ r = (b ^ (r + 1) - a ^ (r + 1)) / (r + 1) := by
   have h' : -1 < (r : ℂ).re ∨ (r : ℂ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]] := by
@@ -324,8 +325,7 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
     (∫ x in a..b, Complex.cos (z * x)) = Complex.sin (z * b) / z - Complex.sin (z * a) / z := by
   apply integral_eq_sub_of_hasDerivAt
   swap
-  · apply Continuous.intervalIntegrable
-    exact Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)
+  · apply Continuous.intervalIntegrable <| by fun_prop
   intro x _
   have a := Complex.hasDerivAt_sin (↑x * z)
   have b : HasDerivAt (fun y => y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
@@ -395,12 +395,10 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     · exact mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
   · apply Continuous.intervalIntegrable
     refine continuous_ofReal.mul ?_
-    apply Continuous.cpow
-    · exact continuous_const.add (continuous_ofReal.pow 2)
-    · exact continuous_const
-    · intro a
-      norm_cast
-      exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
+    apply Continuous.cpow (by fun_prop) continuous_const
+    intro a
+    norm_cast
+    exact ofReal_mem_slitPlane.2 <| add_pos_of_pos_of_nonneg one_pos <| sq_nonneg a
 
 theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
     (∫ x : ℝ in a..b, x * (↑1 + x ^ 2) ^ t) =
@@ -602,6 +600,7 @@ theorem integral_sin_pow_three :
   have := @integral_sin_pow_odd_mul_cos_pow a b 1 0
   norm_num at this; exact this
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` and `n` are both even. -/
 theorem integral_sin_pow_even_mul_cos_pow_even (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m) * cos x ^ (2 * n)) =

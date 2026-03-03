@@ -376,7 +376,7 @@ lemma sUnion_union_sUnion_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
     hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion hs hI]
 
 lemma sUnion_union_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) [DecidableEq (Set α)] :
+    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) :
     ⋃₀ ↑(I ∪ hC.disjointOfDiffUnion hs hI) = s := by
   conv_rhs => rw [← sUnion_union_sUnion_disjointOfDiffUnion_of_subset hC hs hI hI_ss]
   simp_rw [coe_union]
@@ -512,6 +512,37 @@ lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
 
 end disjointOfUnion
+
+private lemma _root_.Set.Ioc_mem_setOf_Ioc_le [LinearOrder α] (u v : α) :
+    Set.Ioc u v ∈ {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} :=
+  ⟨u, max u v, by grind, by grind⟩
+
+/-- The set of open-closed intervals is a semi-ring of sets. -/
+protected lemma Ioc [LinearOrder α] [Nonempty α] :
+    IsSetSemiring {s : Set α | ∃ u v, u ≤ v ∧ s = Set.Ioc u v} where
+  empty_mem := by
+    inhabit α
+    exact ⟨default, default, le_rfl, by simp⟩
+  inter_mem := by
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rw [Set.Ioc_inter_Ioc]
+    apply Ioc_mem_setOf_Ioc_le
+  diff_eq_sUnion' := by
+    classical
+    rintro s ⟨u, v, huv, rfl⟩ t ⟨u', v', hu'v', rfl⟩
+    rcases le_or_gt u' u with hu | hu
+    · rcases Ioc_mem_setOf_Ioc_le (max u v') v with ⟨u'', v'', h'', heq⟩
+      exists {Set.Ioc u'' v''}
+      grind [coe_singleton, pairwiseDisjoint_singleton]
+    rcases le_or_gt v v' with hv | hv
+    · rcases Ioc_mem_setOf_Ioc_le u (min u' v) with ⟨u'', v'', h'', heq⟩
+      exists {Set.Ioc u'' v''}
+      grind [coe_singleton, pairwiseDisjoint_singleton]
+    rw [show Set.Ioc u v \ Set.Ioc u' v' = Set.Ioc u u' ∪ Set.Ioc v' v by grind]
+    refine ⟨{Set.Ioc u u', Set.Ioc v' v}, by grind, ?_, by simp⟩
+    intro a ha b hb hab
+    simp [Function.onFun]
+    grind
 
 end IsSetSemiring
 

@@ -116,6 +116,7 @@ theorem exists_algEquiv_matrix_divisionRing :
   have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_algEquiv_matrix_end_mulOpposite R₀ R
   classical exact ⟨n, hn, _, _, _, ⟨e⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**, algebra form, finite case: a finite Artinian simple algebra is
 isomorphic to a matrix algebra over a finite division algebra. -/
 theorem exists_algEquiv_matrix_divisionRing_finite [Module.Finite R₀ R] :
@@ -170,6 +171,7 @@ theorem exists_end_ringEquiv_pi_matrix_divisionRing :
   have ⟨n, D, d, _, _, hd, ⟨e⟩⟩ := exists_end_algEquiv_pi_matrix_divisionRing ℕ R M
   ⟨n, D, d, _, hd, ⟨e⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem _root_.IsSemisimpleRing.moduleEnd : IsSemisimpleRing (Module.End R M) :=
   have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_end_ringEquiv_pi_matrix_divisionRing R M
   e.symm.isSemisimpleRing
@@ -229,6 +231,7 @@ theorem exists_ringEquiv_pi_matrix_divisionRing :
   have ⟨n, D, d, _, _, hd, ⟨e⟩⟩ := exists_algEquiv_pi_matrix_divisionRing ℕ R
   ⟨n, D, d, _, hd, ⟨e⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n) [Fintype n] [DecidableEq n] : IsSemisimpleRing (Matrix n n R) :=
   (isEmpty_or_nonempty n).elim (fun _ ↦ inferInstance) fun _ ↦
     have ⟨_, _, _, _, _, ⟨e⟩⟩ := exists_ringEquiv_pi_matrix_divisionRing R

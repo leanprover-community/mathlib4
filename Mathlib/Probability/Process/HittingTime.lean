@@ -25,9 +25,9 @@ we have only proved it for the discrete case so far).
 
 ## Main results
 
-* `MeasureTheory.hittingBtwn_isStoppingTime`: a discrete hitting time of a strongly adapted process
+* `MeasureTheory.Adapted.isStoppingTime_hittingBtwn`: a discrete hitting time of an adapted process
   is a stopping time
-* `MeasureTheory.hittingAfter_isStoppingTime`: a discrete hitting time of a strongly adapted process
+* `MeasureTheory.Adapted.isStoppingTime_hittingAfter`: a discrete hitting time of a adapted process
   is a stopping time
 
 -/
@@ -435,6 +435,8 @@ theorem Adapted.isStoppingTime_hittingBtwn [ConditionallyCompleteLinearOrder ι]
 
 @[deprecated (since := "2025-10-25")] alias hitting_isStoppingTime :=
   Adapted.isStoppingTime_hittingBtwn
+@[deprecated (since := "2026-01-25")]
+alias hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn
 
 theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι]
     [WellFoundedLT ι] [Countable ι] {_ : MeasurableSpace β} {f : Filtration ι m} {u : ι → Ω → β}
@@ -445,6 +447,9 @@ theorem Adapted.isStoppingTime_hittingAfter [ConditionallyCompleteLinearOrder ι
     ext; simp [hittingAfter_le_iff]
   simpa [h_set_eq_Union] using MeasurableSet.iUnion fun j =>
     MeasurableSet.iUnion fun hj => f.mono hj.2 _ ((hu j) hs)
+
+@[deprecated (since := "2026-01-25")]
+alias hittingAfter_isStoppingTime := Adapted.isStoppingTime_hittingAfter
 
 theorem stoppedValue_hittingBtwn_mem [ConditionallyCompleteLinearOrder ι] [WellFoundedLT ι]
     {u : ι → Ω → β} {s : Set β} {n m : ι} {ω : Ω} (h : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
@@ -493,6 +498,8 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
 
 @[deprecated (since := "2025-10-25")] alias isStoppingTime_hitting_isStoppingTime :=
   Adapted.isStoppingTime_hittingBtwn_isStoppingTime
+@[deprecated (since := "2026-01-25")]
+alias isStoppingTime_hittingBtwn_isStoppingTime := Adapted.isStoppingTime_hittingBtwn_isStoppingTime
 
 section CompleteLattice
 
