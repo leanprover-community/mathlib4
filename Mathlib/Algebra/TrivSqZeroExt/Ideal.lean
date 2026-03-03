@@ -5,7 +5,7 @@ Authors: Antoine Chambert-Loir, María-Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Algebra.TrivZeroExt.Basic
+public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
