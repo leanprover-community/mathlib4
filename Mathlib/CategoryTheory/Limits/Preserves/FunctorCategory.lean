@@ -136,6 +136,15 @@ instance {C : Type*} [Category* C] {D : Type*}
     ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
   reflectsLimitsOfShape_of_reflectsIsomorphisms
 
+instance {C : Type*} [Category* C] {D : Type*}
+    [Category* D] {E : Type*} [Category* E] {J : Type*} [Category* J]
+    [HasLimitsOfShape J E] (F : D ⥤ E) [ReflectsLimitsOfShape J F] :
+    ReflectsLimitsOfShape J ((whiskeringRight C D E).obj F) :=
+  ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨by
+    apply evaluationJointlyReflectsLimits _ (fun k ↦ ?_)
+    apply isLimitOfReflects F
+    exact isLimitOfPreserves ((evaluation C E).obj k) hc⟩⟩⟩
+
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
 functor. -/
 def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category* C] {D : Type*}
