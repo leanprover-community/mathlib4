@@ -134,13 +134,16 @@ protected theorem Set.Finite.multipliable {s : Set β} (hs : s.Finite) (f : β �
   rwa [hs.coe_toFinset] at this
 
 @[to_additive]
-theorem multipliable_of_finite_mulSupport [L.HasSupport] (h : HasFiniteMulSupport f) :
+theorem multipliable_of_hasFiniteMulSupport [L.HasSupport] (h : HasFiniteMulSupport f) :
     Multipliable f L := by
   apply multipliable_of_ne_finset_one (s := h.toFinset); simp
 
+@[deprecated (since := "2026-03-03")] alias
+  multipliable_of_finite_mulSupport := multipliable_of_hasFiniteMulSupport
+
 @[to_additive]
 lemma Multipliable.of_finite [Finite β] [L.HasSupport] {f : β → α} : Multipliable f L :=
-  multipliable_of_finite_mulSupport <| Set.finite_univ.subset (Set.subset_univ _)
+  multipliable_of_hasFiniteMulSupport <| Set.finite_univ.subset (Set.subset_univ _)
 
 @[to_additive]
 theorem hasProd_single {f : β → α} (b : β) (hf : ∀ (b') (_ : b' ≠ b), f b' = 1)
@@ -420,7 +423,7 @@ theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x 
 @[to_additive]
 theorem tprod_eq_finprod [L.LeAtTop] (hf : HasFiniteMulSupport f) :
     ∏'[L] b, f b = ∏ᶠ b, f b := by
-  simp [tprod_def, multipliable_of_finite_mulSupport hf, show Set.Finite _ from hf,
+  simp [tprod_def, multipliable_of_hasFiniteMulSupport hf, show Set.Finite _ from hf,
     show L.HasSupport by infer_instance]
 
 @[to_additive]

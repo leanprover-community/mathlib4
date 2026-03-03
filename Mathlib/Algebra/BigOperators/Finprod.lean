@@ -398,6 +398,11 @@ theorem finprod_of_infinite_mulSupport {f : α → M} (hf : (mulSupport f).Infin
   rw [dif_neg hf]
 
 @[to_additive]
+theorem finprod_of_not_hasFiniteMulSupport {f : α → M} (hf : ¬ f.HasFiniteMulSupport) :
+    ∏ᶠ i, f i = 1 :=
+  finprod_of_infinite_mulSupport <| Set.not_finite.mp hf
+
+@[to_additive]
 theorem finite_mulSupport_of_finprod_ne_one {f : α → M} (h : ∏ᶠ i, f i ≠ 1) :
     HasFiniteMulSupport f :=
   not_infinite.mp <| (finprod_of_infinite_mulSupport ·).mt h
@@ -619,8 +624,7 @@ equals the product of `f i` divided by the product of `g i`. -/
       equals the sum of `f i` minus the sum of `g i`. -/]
 theorem finprod_div_distrib [DivisionCommMonoid G] {f g : α → G} (hf : HasFiniteMulSupport f)
     (hg : HasFiniteMulSupport g) : ∏ᶠ i, f i / g i = (∏ᶠ i, f i) / ∏ᶠ i, g i := by
-  simp only [div_eq_mul_inv, finprod_mul_distrib hf <| HasFiniteMulSupport.inv g hg,
-    finprod_inv_distrib]
+  simp only [div_eq_mul_inv, finprod_mul_distrib hf <| hg.inv _, finprod_inv_distrib]
 
 /-- A more general version of `finprod_mem_mul_distrib` that only requires `s ∩ mulSupport f` and
 `s ∩ mulSupport g` rather than `s` to be finite. -/
