@@ -6,8 +6,11 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 public import Mathlib.CategoryTheory.Monoidal.Grp_
+public import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 
 /-!
 # Yoneda embedding of `Grp C`
@@ -285,5 +288,36 @@ lemma isCommMonObj_iff_commutator_eq_toUnit_η :
   · simpa [one_eq_one, mul_inv_eq_iff_eq_mul] using congr(lift f g ≫ $heq)
 
 end
+
+section Limits
+
+variable {J : Type*} [Category J] [Small.{v} J] [HasLimitsOfShape J C]
+
+open Functor in
+instance : PreservesLimitsOfShape J (yonedaMon (C := C)) :=
+  have : PreservesLimitsOfShape J (yonedaMon ⋙ (whiskeringRight _ _ _).obj (forget MonCat)) :=
+    inferInstanceAs (PreservesLimitsOfShape J (Mon.forget C ⋙ yoneda))
+  preservesLimitsOfShape_of_reflects_of_preserves _ ((whiskeringRight _ _ _).obj (forget MonCat))
+
+noncomputable instance : CreatesLimitsOfShape J (Grp.forget₂Mon C) :=
+  ⟨fun {F} ↦
+    letI G : Grp C :=
+    { X := (limit (F ⋙ Grp.forget₂Mon C)).X
+      grp := GrpObj.ofInvertible (limit (F ⋙ Grp.forget₂Mon C)).X fun X f ↦ by
+        let e := preservesLimitIso (yonedaMon ⋙ (evaluation _ _).obj (.op X))
+          (F ⋙ Grp.forget₂Mon C) ≪≫ (preservesLimitIso (forget₂ GrpCat MonCat)
+            (F ⋙ yonedaGrp ⋙ (evaluation Cᵒᵖ GrpCat).obj (Opposite.op X))).symm
+        rw [← e.hom_inv_id_apply f, ← e.symm_hom]
+        suffices hf : Invertible (e.hom.hom f) from hf.map e.symm.hom.hom
+        exact @invertibleOfGroup  _ ?_ (e.hom.hom f) }
+    createsLimitOfFullyFaithfulOfIso G (Iso.refl G.toMon)⟩
+
+noncomputable instance : CreatesLimitsOfShape J (Grp.forget C) :=
+  inferInstanceAs (CreatesLimitsOfShape J (Grp.forget₂Mon C ⋙ Mon.forget C))
+
+instance [HasLimitsOfShape WalkingParallelPair C] : HasKernels (Grp C) :=
+  ⟨fun _ ↦ (hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Grp.forget C)).has_limit _⟩
+
+end Limits
 
 end CategoryTheory
