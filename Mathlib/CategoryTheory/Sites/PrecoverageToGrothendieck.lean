@@ -59,7 +59,7 @@ It is defined *inductively* as follows:
 4. Add all sieves required by the *local character* axiom of a Grothendieck topology.
 -/
 def toGrothendieck (J : Precoverage C) : GrothendieckTopology C where
-  sieves := J.Saturate
+  sieves X := setOf (J.Saturate X)
   top_mem' := .top
   pullback_stable' _ _ _ _ hS := .pullback _ _ hS _ _
   transitive' _ _ hS _ hR := .transitive _ _ _ hS hR
