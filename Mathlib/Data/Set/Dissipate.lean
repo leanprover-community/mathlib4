@@ -28,7 +28,7 @@ def dissipate [LE α] (s : α → Set β) (x : α) : Set β :=
 
 theorem dissipate_def [LE α] {x : α} : dissipate s x = ⋂ y ≤ x, s y := rfl
 
-theorem dissipate_eq {s : ℕ → Set β} {n : ℕ} : dissipate s n = ⋂ k < n + 1, s k := by
+theorem dissipate_eq_iInter_lt {s : ℕ → Set β} {n : ℕ} : dissipate s n = ⋂ k < n + 1, s k := by
   simp_rw [Nat.lt_add_one_iff, dissipate]
 
 @[simp]
@@ -91,26 +91,19 @@ lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
   | zero => use 0; simp [dissipate_def]
   | succ n hn =>
     obtain ⟨m, hm⟩ := hn
-    simp_rw [dissipate_succ]
     obtain ⟨k, hk⟩ := hd m (n+1)
-    simp only at hk
-    use k
-    simp only [subset_inter_iff]
-    exact ⟨le_trans hk.1 hm, hk.2⟩
+    exact ⟨k, by simp; grind⟩
 
-lemma directed_dissipate {s : ℕ → Set α} :
-    Directed (fun (x y : Set α) => y ⊆ x) (dissipate s) :=
+lemma directed_dissipate {s : ℕ → Set α} : Directed (fun x y ↦ y ⊆ x) (dissipate s) :=
   antitone_dissipate.directed_ge
 
 lemma exists_dissipate_eq_empty_iff_of_directed (C : ℕ → Set α)
-    (hd : Directed (fun (x y : Set α) => y ⊆ x) C) :
+    (hd : Directed (fun x y ↦ y ⊆ x) C) :
     (∃ n, C n = ∅) ↔ (∃ n, dissipate C n = ∅) := by
-  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n, ?_⟩ , ?_⟩
-  · exact subset_eq_empty (dissipate_subset (Nat.le_refl n)) hn
-  · rw [← not_imp_not]
-    push_neg
-    intro h n
-    obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n
-    exact Set.Nonempty.mono hm (h m)
+  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n, subset_eq_empty (dissipate_subset le_rfl) hn⟩ , ?_⟩
+  contrapose!
+  intro h n
+  obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n
+  exact (h m).mono hm
 
 end Set

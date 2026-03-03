@@ -5,7 +5,6 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.Data.Set.Dissipate
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Topology.Separation.Hausdorff
 
@@ -21,7 +20,7 @@ This file defines compact systems of sets.
 
 ## Main results
 
-* `IsCompactSystemiff_isCompactSystem_of_or_univ`: A set system is a compact
+* `IsCompactSystem.iff_isCompactSystem_of_or_univ`: A set system is a compact
 system iff inserting `univ` gives a compact system.
 * `IsClosedCompact.isCompactSystem`: The set of closed and compact sets is a compact system.
 * `IsClosedCompact.isCompactSystem_of_T2Space`: In a `T2Space α`, the set of compact sets
