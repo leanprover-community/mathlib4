@@ -11,6 +11,7 @@ public import Batteries.Logic
 public import Batteries.Util.LibraryNote
 
 import Mathlib.Tactic.Attr.Register
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Basic logic properties

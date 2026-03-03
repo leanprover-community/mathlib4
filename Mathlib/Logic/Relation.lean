@@ -13,6 +13,7 @@ public import Mathlib.Order.Defs.Unbundled
 public import Batteries.Logic
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Basic
+public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Relation closures

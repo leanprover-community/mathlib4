@@ -6,7 +6,7 @@ Authors: Damiano Testa
 module
 
 public import Mathlib.Init
-public import Lean.Elab.Import
+meta import Lean.Elab.Import
 
 /-!
 # The `#clear_deprecations` command

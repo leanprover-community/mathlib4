@@ -10,6 +10,7 @@ public import Mathlib.Data.Matrix.Basis
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Algebra isomorphisms between tensor products and matrices

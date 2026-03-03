@@ -12,6 +12,7 @@ public meta import Mathlib.Tactic.Basic
 public import Mathlib.Util.AddRelatedDecl
 public import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Simps.NotationClass
+public import Lean
 
 /-!
 # Simps attribute
