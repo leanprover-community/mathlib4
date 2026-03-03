@@ -102,8 +102,8 @@ public instance instConvexSpace : ConvexSpace R P where
 
 /-- `ConvexSpace.convexCombination` in an affine space is the affine combination. -/
 public theorem convexCombination_eq_affineCombination (s : StdSimplex R P) :
-    @ConvexSpace.convexCombination R P _ _ _ instConvexSpace s =
-      s.weights.support.affineCombination R id s.weights := by
+    letI : ConvexSpace R P := instConvexSpace
+    ConvexSpace.convexCombination s = s.weights.support.affineCombination R id s.weights := by
   rfl
 
 /-- `convexComboPair` in an affine space is the affine line map. -/
