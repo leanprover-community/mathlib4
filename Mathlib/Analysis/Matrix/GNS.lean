@@ -24,6 +24,7 @@ open scoped MatrixOrder ComplexOrder
 
 namespace Matrix
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toMatrixSeminormedAddCommGroup`, `Matrix.toMatrixNormedAddCommGroup`,
@@ -38,6 +39,7 @@ private abbrev PosSemidef.matrixPreInnerProductSpace {M : Matrix n n 𝕜} (hM :
   add_left := by simp [mul_add]
   smul_left := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
@@ -46,6 +48,7 @@ noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.P
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
@@ -58,13 +61,14 @@ noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDe
       classical
       obtain ⟨y, hy, rfl⟩ := CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self.mp
         hM.isStrictlyPositive
-      simp only at hx
+      simp +instances only at hx
       rw [← mul_assoc, ← conjTranspose_conjTranspose x, star_eq_conjTranspose, ← conjTranspose_mul,
         conjTranspose_conjTranspose, mul_assoc, trace_conjTranspose_mul_self_eq_zero_iff] at hx
       lift y to (Matrix n n 𝕜)ˣ using hy
       simpa [← mul_assoc] using congr(y⁻¹ * $hx) }
   this.toNormedAddCommGroup
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A positive semi-definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
 def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :
