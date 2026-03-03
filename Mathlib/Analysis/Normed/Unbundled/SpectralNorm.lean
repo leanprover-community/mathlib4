@@ -899,6 +899,12 @@ def normedSpace : @NormedSpace K L _ (seminormedAddCommGroup K L) :=
       change spectralAlgNorm K L (r • x) ≤ ‖r‖ * spectralAlgNorm K L x
       exact le_of_eq (map_smul_eq_mul _ _ _) }
 
+/-- `L` with the spectral norm is a normed algebra over `K`. -/
+def normedAlgebra :
+    @NormedAlgebra K L _ (normedField K L).toNormedCommRing.toSeminormedRing :=
+  letI _ := normedField K L
+  { normedSpace K L, (inferInstance : Algebra K L) with }
+
 /-- The metric space structure on `L` induced by the spectral norm. -/
 def metricSpace : MetricSpace L := (normedField K L).toMetricSpace
 

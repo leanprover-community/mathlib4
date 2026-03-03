@@ -5,6 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.Analysis.Normed.Algebra.Ultra
+public import Mathlib.Analysis.Normed.Field.Instances
 public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
@@ -54,7 +56,7 @@ abbrev PadicAlgCl := AlgebraicClosure ℚ_[p]
 namespace PadicAlgCl
 
 /-- `PadicAlgCl p` is an algebraic extension of `ℚ_[p]`. -/
-theorem isAlgebraic : Algebra.IsAlgebraic ℚ_[p] (PadicAlgCl p) := AlgebraicClosure.isAlgebraic _
+instance isAlgebraic : Algebra.IsAlgebraic ℚ_[p] (PadicAlgCl p) := AlgebraicClosure.isAlgebraic _
 
 instance : Coe ℚ_[p] (PadicAlgCl p) := ⟨algebraMap ℚ_[p] (PadicAlgCl p)⟩
 
@@ -68,6 +70,9 @@ instance normedField : NormedField (PadicAlgCl p) := spectralNorm.normedField �
 theorem isNonarchimedean : IsNonarchimedean (norm : PadicAlgCl p → ℝ) :=
   isNonarchimedean_spectralNorm (K := ℚ_[p]) (L := PadicAlgCl p)
 
+/-- `PadicAlgCl p` is a normed algebra over `ℚ_[p]`. -/
+instance normedAlgebra : NormedAlgebra ℚ_[p] (PadicAlgCl p) := spectralNorm.normedAlgebra _ _
+
 /-- The norm on `PadicAlgCl p` is the spectral norm induced by the `p`-adic norm on `ℚ_[p]`. -/
 @[simp]
 theorem spectralNorm_eq (x : PadicAlgCl p) : spectralNorm ℚ_[p] (PadicAlgCl p) x = ‖x‖ := rfl
@@ -76,7 +81,8 @@ theorem spectralNorm_eq (x : PadicAlgCl p) : spectralNorm ℚ_[p] (PadicAlgCl p)
 @[simp] theorem norm_extends (x : ℚ_[p]) : ‖(x : PadicAlgCl p)‖ = ‖x‖ :=
   spectralAlgNorm_extends (K := ℚ_[p]) (L := PadicAlgCl p) _
 
-instance : IsUltrametricDist (PadicAlgCl p) :=
+/-- The underlying metric space of `PadicAlgCl p` is ultrametic. -/
+instance isUltrametricDist : IsUltrametricDist (PadicAlgCl p) :=
   IsUltrametricDist.isUltrametricDist_of_forall_norm_add_le_max_norm (PadicAlgCl.isNonarchimedean p)
 
 /-- `PadicAlgCl p` is a valued field, with the valuation corresponding to the `p`-adic norm. -/
@@ -126,7 +132,7 @@ namespace PadicComplex
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is a valued field, where the valuation is the one extending that on `PadicAlgCl p`. -/
-instance valued : Valued ℂ_[p] ℝ≥0 := inferInstance
+instance valued : Valued ℂ_[p] ℝ≥0 := Valued.valuedCompletion
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The valuation on `ℂ_[p]` extends the valuation on `PadicAlgCl p`. -/
@@ -140,7 +146,8 @@ theorem coe_eq (x : PadicAlgCl p) : (x : ℂ_[p]) = algebraMap (PadicAlgCl p) �
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `ℂ_[p]` is an algebra over `ℚ_[p]`. -/
-instance : Algebra ℚ_[p] ℂ_[p] where
+instance : Algebra ℚ_[p] ℂ_[p] := inferInstance
+where
   smul := (UniformSpace.Completion.instSMul ℚ_[p] (PadicAlgCl p)).smul
   algebraMap := (UniformSpace.Completion.coeRingHom).comp (algebraMap ℚ_[p] (PadicAlgCl p))
   commutes' r x := by rw [mul_comm]
