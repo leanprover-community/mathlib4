@@ -95,7 +95,7 @@ lemma i₃_le (r r' : ℤ) (pq : κ) (hrr' : r + 1 = r' := by lia) (hr : r₀ �
     data.i₃ r pq ≤ data.i₃ r' pq :=
   data.monotone_i₃ r r' pq
 
-lemma le₀'₀ {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
+lemma i₀_le' {r r' : ℤ} (hrr' : r + 1 = r') (hr : r₀ ≤ r) (pq' : κ)
     {i₀' i₀ : ι} (hi₀' : i₀' = data.i₀ r' pq') (hi₀ : i₀ = data.i₀ r pq') :
     i₀' ≤ i₀ := by
   rw [hi₀', hi₀]
