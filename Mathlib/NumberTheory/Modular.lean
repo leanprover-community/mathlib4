@@ -567,45 +567,39 @@ lemma isClosed_coe_fd : IsClosed ((↑) '' 𝒟 : Set ℂ) := by
 The points on the fundamental domain that aren't on the bottom "arc"
 are in the closure of the open fundamental domain.
 -/
-private lemma mem_closure_of_one_lt_norm {x : ℍ}
-    (hxnorm : 1 < ‖(x : ℂ)‖) (hxre : |x.re| ≤ 1 / 2) :
+private lemma mem_closure_of_one_lt_norm {x : ℍ} (hxnorm : 1 < ‖(x : ℂ)‖) (hxre : |x.re| ≤ 1 / 2) :
     x ∈ closure 𝒟ᵒ := by
   -- Need to show that any `x` in this set is a limit of points in `𝒟ᵒ`.
-  -- Idea is to use a line segment through the origin, and show that points
-  -- a little "higher" than `x` are in `𝒟ᵒ`. There are some annoyances due
+  -- Idea is to use a line segment through the origin and `x`, and show that points
+  -- a little below `x` are in `𝒟ᵒ`. There are some annoyances due
   -- to subtypes, etc.
   apply mem_closure_of_frequently_of_tendsto (α := ℝ)
-      (b := 𝓝[<] 1) (f := fun t ↦ UpperHalfPlane.ofComplex (t * x))
+      (b := 𝓝[<] 1) (f := fun t ↦ ofComplex (t * x))
   · apply Filter.Eventually.frequently
     simp only [fdo, Set.mem_setOf, Filter.eventually_and]
     refine ⟨?_, ?_⟩
     · simp only [one_lt_normSq_iff]
       refine Filter.Tendsto.eventually_const_lt hxnorm (.mono_left ?_ nhdsWithin_le_nhds)
       apply Filter.Tendsto.norm
-      have : ContinuousAt (fun a : ℝ ↦ (UpperHalfPlane.ofComplex (a * x : ℂ) : ℂ)) 1 := by
-        apply ContinuousAt.comp (by fun_prop)
-        apply ContinuousAt.comp _ (by fun_prop)
-        apply OpenPartialHomeomorph.continuousAt
-        simpa [UpperHalfPlane.ofComplex] using x.coe_im_pos
-      simpa [UpperHalfPlane.ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] using
+      have : ContinuousAt (fun a : ℝ ↦ (ofComplex (a * x : ℂ) : ℂ)) 1 := by
+        refine .comp (by fun_prop) ((OpenPartialHomeomorph.continuousAt _ ?_).comp (by fun_prop))
+        simpa [ofComplex] using x.coe_im_pos
+      simpa [ofComplex_apply_of_im_pos (by simpa using x.coe_im_pos)] using
         this.tendsto
     · simp only [eventually_nhdsWithin_iff]
       filter_upwards [eventually_gt_nhds zero_lt_one] with a ha ha'
-      rw [← UpperHalfPlane.coe_re, UpperHalfPlane.ofComplex_apply_of_im_pos]
-      · simp only [mul_re, ofReal_re, UpperHalfPlane.coe_re, ofReal_im, UpperHalfPlane.coe_im,
-          zero_mul, sub_zero, abs_mul]
+      rw [← coe_re, ofComplex_apply_of_im_pos]
+      · simp only [mul_re, ofReal_re, coe_re, ofReal_im, coe_im, zero_mul, sub_zero, abs_mul]
         nlinarith [abs_of_nonneg ha.le, Set.mem_Iio.mp ha']
       · simpa using mul_pos ha x.coe_im_pos
   · refine .mono_left ?_ nhdsWithin_le_nhds
-    rw [UpperHalfPlane.isOpenEmbedding_coe.tendsto_nhds_iff, Function.comp_def]
+    rw [isOpenEmbedding_coe.tendsto_nhds_iff, Function.comp_def]
     have : Filter.Tendsto (fun t : ℝ ↦ t * (x : ℂ)) (𝓝 1) (𝓝 (x : ℂ)) := by
       rw [show 𝓝 (x : ℂ) = 𝓝 ((1 : ℝ) * (x : ℂ)) by simp]
-      apply Continuous.tendsto
-      fun_prop
+      exact Continuous.tendsto (by fun_prop) _
     refine this.congr' ?_
     filter_upwards [eventually_gt_nhds zero_lt_one] with a ha
-    rw [UpperHalfPlane.ofComplex_apply_of_im_pos]
-    simpa using mul_pos ha x.coe_im_pos
+    rw [ofComplex_apply_of_im_pos (by simpa using mul_pos ha x.coe_im_pos)]
 
 open scoped NNReal in
 /-- The points on the bottom "arc" of the fundamental domain are in the closure
@@ -613,7 +607,7 @@ of the open fundamental domain. -/
 private lemma mem_closure_of_arc {x : ℍ}
     (hxnorm : ‖(x : ℂ)‖ = 1) (hxre : |x.re| ≤ 1 / 2) :
     x ∈ closure 𝒟ᵒ := by
-  -- We that `x` is a limit of points known to be in the closure.
+  -- We show that `x` is a limit of points known to be in the closure.
   rw [← closure_closure]
   -- Consider a vertical line going upwards from `x` (parametrized by `ℝ≥0`)
   apply mem_closure_of_frequently_of_tendsto (b := 𝓝[>] 0)
@@ -628,12 +622,10 @@ private lemma mem_closure_of_arc {x : ℍ}
       simp [← normSq_eq_norm_sq, normSq_apply]
       ring
     rw [hxnorm, one_pow, add_assoc, lt_add_iff_pos_right]
-    rw [← NNReal.coe_pos] at ha
     positivity
   · refine .mono_left ?_ nhdsWithin_le_nhds
     simpa [show 𝓝 (x : ℂ) = 𝓝 (x + (((0 : ℝ≥0) : ℝ) : ℂ) * Complex.I) by simp,
-      UpperHalfPlane.isOpenEmbedding_coe.tendsto_nhds_iff] using Continuous.tendsto (by fun_prop) _
-
+      isOpenEmbedding_coe.tendsto_nhds_iff] using Continuous.tendsto (by fun_prop) _
 
 lemma fd_eq_closure_fdo : 𝒟 = closure 𝒟ᵒ := by
   refine subset_antisymm ?_ (isClosed_fd.closure_subset_iff.mpr fdo_subset_fd)
@@ -645,8 +637,8 @@ lemma fd_eq_closure_fdo : 𝒟 = closure 𝒟ᵒ := by
 
 lemma fdo_eq_interior_fd : 𝒟ᵒ = interior 𝒟 := by
   refine subset_antisymm (isOpen_fdo.subset_interior_iff.mpr fdo_subset_fd) ?_
-  have ho1 := UpperHalfPlane.isOpenMap_re.image_interior_subset 𝒟
-  have ho2 := UpperHalfPlane.isOpenMap_norm.image_interior_subset 𝒟
+  have ho1 := isOpenMap_re.image_interior_subset 𝒟
+  have ho2 := isOpenMap_norm.image_interior_subset 𝒟
   intro x hx
   rw [Set.image_subset_iff] at *
   constructor
@@ -662,7 +654,6 @@ lemma fdo_eq_interior_fd : 𝒟ᵒ = interior 𝒟 := by
     simpa [Set.mem_preimage, Set.mem_Icc, abs_le] using hξ.2
 
 end Topology
-
 
 section Truncated
 
