@@ -668,7 +668,6 @@ lemma baseChange_mul (f g : Module.End R M) :
 
 variable (R A M N)
 
-<<<<<<< HEAD
 /-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
 def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
   AlgebraTensorModule.congr (.refl _ _) e
@@ -681,8 +680,6 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
     (e.baseChange R A).symm (a ⊗ₜ n) = a ⊗ₜ e.symm n :=
   rfl
 
-=======
->>>>>>> origin/master
 /-- `baseChange` as a linear map.
 
 When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/

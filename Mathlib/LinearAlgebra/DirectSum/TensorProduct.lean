@@ -65,7 +65,6 @@ protected def directSum :
 
 /-- Tensor products distribute over a direct sum on the left . -/
 def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[S] ⨁ i, M₁ i ⊗[R] M₂' :=
-<<<<<<< HEAD
   TensorProduct.AlgebraTensorModule.congr 1 (DirectSum.lid _ _).symm ≪≫ₗ
   TensorProduct.directSum R S M₁ (fun _ : Unit ↦ M₂') ≪≫ₗ
   DirectSum.lequivCongrLeft S (Equiv.prodUnique _ _)
@@ -75,20 +74,6 @@ def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[S] ⨁ i, M₁' ⊗[R] 
   TensorProduct.AlgebraTensorModule.congr (DirectSum.lid _ _).symm 1 ≪≫ₗ
   TensorProduct.directSum R S (fun _ : Unit ↦ M₁') M₂ ≪≫ₗ
   DirectSum.lequivCongrLeft S (Equiv.uniqueProd _ _)
-=======
-  LinearEquiv.ofLinear
-    (AlgebraTensorModule.lift <|
-      DirectSum.toModule S _ _ fun _ =>
-        (AlgebraTensorModule.mk _ S _ _).compr₂ <| DirectSum.lof _ ι₁ (fun i => M₁ i ⊗[R] M₂') _)
-    (DirectSum.toModule _ _ _ fun i => AlgebraTensorModule.map (DirectSum.lof _ ι₁ M₁ i) .id)
-    (by ext; simp)
-    (by ext; simp)
-
-/-- Tensor products distribute over a direct sum on the right. -/
-def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[R] ⨁ i, M₁' ⊗[R] M₂ i :=
-  TensorProduct.comm R _ _ ≪≫ₗ directSumLeft R R M₂ M₁' ≪≫ₗ
-    DFinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
->>>>>>> origin/master
 
 variable {M₁ M₁' M₂ M₂'}
 
@@ -109,11 +94,7 @@ theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂)
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :
     directSumLeft R S M₁ M₂' (DirectSum.lof S _ _ i x ⊗ₜ[R] y) =
     DirectSum.lof S _ _ i (x ⊗ₜ[R] y) := by
-<<<<<<< HEAD
   simpa [directSumLeft] using lequivCongrLeft_lof S (by simp) _ _ rfl
-=======
-  simp [directSumLeft]
->>>>>>> origin/master
 
 @[simp]
 theorem directSumLeft_symm_lof_tmul (i : ι₁) (x : M₁ i) (y : M₂') :
