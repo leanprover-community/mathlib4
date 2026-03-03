@@ -134,10 +134,12 @@ should prefer the generic API, especially because it will make rewriting easier.
 protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
   conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ f ∘ hA.eigenvalues))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cfcHom_eq_cfcAux : cfcHom hA.isSelfAdjoint = hA.cfcAux :=
   cfcHom_eq_of_continuous_of_map_id hA hA.cfcAux
     hA.isClosedEmbedding_cfcAux.continuous hA.cfcAux_id
 
+set_option backward.isDefEq.respectTransparency false in
 instance instContinuousFunctionalCalculusIsClosedEmbedding :
     ClosedEmbeddingContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   isClosedEmbedding _ hA := cfcHom_eq_cfcAux hA ▸ hA.isHermitian.isClosedEmbedding_cfcAux
