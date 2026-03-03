@@ -353,13 +353,11 @@ theorem nullMeasurableSet_toMeasurable : NullMeasurableSet (toMeasurable μ s) �
 
 variable [MeasurableSingletonClass α] {mβ : MeasurableSpace β} [MeasurableSingletonClass β]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma measure_preimage_fst_singleton_eq_tsum [Countable β] (μ : Measure (α × β)) (x : α) :
     μ (Prod.fst ⁻¹' {x}) = ∑' y, μ {(x, y)} := by
   rw [← measure_iUnion (by simp [Pairwise]) fun _ ↦ .singleton _, iUnion_singleton_eq_range,
     preimage_fst_singleton_eq_range]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma measure_preimage_snd_singleton_eq_tsum [Countable α] (μ : Measure (α × β)) (y : β) :
     μ (Prod.snd ⁻¹' {y}) = ∑' x, μ {(x, y)} := by
   have : Prod.snd ⁻¹' {y} = ⋃ x : α, {(x, y)} := by ext y; simp [Prod.ext_iff, eq_comm]

@@ -312,7 +312,6 @@ lemma exists_preimage_pullback (x : X) (y : Y) (h : f x = g y) :
     ∃ z : ↑(pullback f g), pullback.fst f g z = x ∧ pullback.snd f g z = y :=
   (Pullback.Triplet.mk' x y h).exists_preimage
 
-set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AlgebraicGeometry.Scheme.isEmpty_pullback_iff {f : X ⟶ S} {g : Y ⟶ S} :
     IsEmpty ↑(Limits.pullback f g) ↔ Disjoint (Set.range f) (Set.range g) := by
   refine ⟨?_, Scheme.isEmpty_pullback f g⟩
@@ -401,6 +400,14 @@ lemma pullbackComparison_forget_surjective {X Y S : Scheme.{u}} (f : X ⟶ S) (g
 
 @[deprecated (since := "2025-10-06")]
 alias Pullback.forget_comparison_surjective := pullbackComparison_forget_surjective
+
+instance {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) :
+    Epi (pullbackComparison Scheme.forgetToTop f g) := by
+  refine (CategoryTheory.forget TopCat).epi_of_epi_map ?_
+  rw [← CategoryTheory.epi_comp_iff_of_isIso _
+    (pullbackComparison (CategoryTheory.forget TopCat) (forgetToTop.map f) (forgetToTop.map g)),
+    ← _root_.CategoryTheory.Limits.pullbackComparison_comp, epi_iff_surjective]
+  apply Scheme.pullbackComparison_forget_surjective _ _
 
 lemma exists_preimage_of_isPullback {P X Y Z : Scheme.{u}} {fst : P ⟶ X} {snd : P ⟶ Y}
     {f : X ⟶ Z} {g : Y ⟶ Z} (h : IsPullback fst snd f g) (x : X) (y : Y)
