@@ -11,24 +11,11 @@ jobs:
     if: github.repository == 'leanprover-community/mathlib4'
     permissions:
       id-token: write
-      contents: read
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          fetch-depth: 1
-
-      - name: Checkout mathlib-ci
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          repository: leanprover-community/mathlib-ci
-          ref: marcelo/2026/02/GHAppTokens
-          fetch-depth: 1
-          path: ci-tools
-
       - name: Generate app token
         id: app-token
-        uses: ./ci-tools/.github/actions/azure-create-github-app-token
+        # TODO: Replace this testing branch ref with a pinned mathlib-ci commit SHA.
+        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@marcelo/2026/02/GHAppTokens
         with:
           app-id: ${{ secrets.MATHLIB_MERGE_CONFLICTS_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
