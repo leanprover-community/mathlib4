@@ -42,7 +42,7 @@ namespace Abelian
 
 namespace SpectralObject
 
-variable {C ι κ : Type*} [Category C] [Abelian C] [Preorder ι]
+variable {C ι κ : Type*} [Category* C] [Abelian C] [Preorder ι]
   {c : ℤ → ComplexShape κ} {r₀ : ℤ}
 
 variable (ι c r₀) in
