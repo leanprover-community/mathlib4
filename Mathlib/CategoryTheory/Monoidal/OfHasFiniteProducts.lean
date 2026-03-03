@@ -143,9 +143,9 @@ attribute [local instance] monoidalOfHasFiniteProducts
 open MonoidalCategory
 
 set_option linter.deprecated false in
-/-- The monoidal structure coming from finite products is symmetric.
--/
-@[implicit_reducible, deprecated CartesianMonoidalCategory.toSymmetricCategory (since := "2025-10-19"), simps!]
+/-- The monoidal structure coming from finite products is symmetric. -/
+@[implicit_reducible,
+deprecated CartesianMonoidalCategory.toSymmetricCategory (since := "2025-10-19"), simps!]
 def symmetricOfHasFiniteProducts [HasTerminal C] [HasBinaryProducts C] : SymmetricCategory C :=
   have : HasFiniteProducts C := hasFiniteProducts_of_has_binary_and_terminal
   let : CartesianMonoidalCategory C := .ofHasFiniteProducts

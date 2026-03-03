@@ -119,9 +119,9 @@ theorem pow_left_surj_of_rootableBy [RootableBy A α] {n : α} (hn : n ≠ 0) :
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
 -/
-@[to_additive divisibleByOfSMulRightSurj /-- An `AddMonoid A` is `α`-divisible iff `n • _` is a
+@[to_additive (attr := implicit_reducible) divisibleByOfSMulRightSurj
+/-- An `AddMonoid A` is `α`-divisible iff `n • _` is a
 surjective function, i.e. the constructive version implies the textbook approach. -/]
-@[implicit_reducible]
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
@@ -204,9 +204,9 @@ namespace Group
 variable (A : Type*) [Group A]
 
 open Int in
-/-- A group is `ℤ`-rootable if it is `ℕ`-rootable.
--/
-@[to_additive (attr := implicit_reducible) /-- An additive group is `ℤ`-divisible if it is `ℕ`-divisible. -/]
+/-- A group is `ℤ`-rootable if it is `ℕ`-rootable. -/
+@[to_additive (attr := implicit_reducible)
+/-- An additive group is `ℤ`-divisible if it is `ℕ`-divisible. -/]
 def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root a z :=
     match z with
@@ -219,9 +219,9 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
       simp [RootableBy.root_cancel _ hn]
     · simp [RootableBy.root_cancel _ (Nat.add_one_ne_zero _)]
 
-/-- A group is `ℕ`-rootable if it is `ℤ`-rootable
--/
-@[to_additive (attr := implicit_reducible) /-- An additive group is `ℕ`-divisible if it `ℤ`-divisible. -/]
+/-- A group is `ℕ`-rootable if it is `ℤ`-rootable -/
+@[to_additive (attr := implicit_reducible)
+/-- An additive group is `ℕ`-divisible if it `ℤ`-divisible. -/]
 def rootableByNatOfRootableByInt [RootableBy A ℤ] : RootableBy A ℕ where
   root a n := RootableBy.root a (n : ℤ)
   root_zero a := RootableBy.root_zero a
@@ -241,10 +241,9 @@ variable (f : A → B)
 /--
 If `f : A → B` is a surjective homomorphism and `A` is `α`-rootable, then `B` is also `α`-rootable.
 -/
-@[to_additive
+@[to_additive (attr := implicit_reducible)
       /-- If `f : A → B` is a surjective homomorphism and `A` is `α`-divisible, then `B` is also
       `α`-divisible. -/]
-@[implicit_reducible]
 noncomputable def Function.Surjective.rootableBy (hf : Function.Surjective f)
     (hpow : ∀ (a : A) (n : α), f (a ^ n) = f a ^ n) : RootableBy B α :=
   rootableByOfPowLeftSurj _ _ fun {n} hn x =>
