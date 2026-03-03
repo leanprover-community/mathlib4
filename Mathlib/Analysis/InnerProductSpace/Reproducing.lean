@@ -60,7 +60,7 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
 variable [RKHS 𝕜 H X V]
 
 /--
-Each element of a reproducing kernel Hilbert space may be coerced into a function
+Each element of a reproducing kernel Hilbert space may be coerced into a function.
 -/
 instance instFunLike : FunLike H X V where
   coe f := coeCLM 𝕜 f
