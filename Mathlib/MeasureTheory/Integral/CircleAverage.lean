@@ -200,12 +200,12 @@ of the radius.
 -/
 theorem ContinuousOn.circleAverage {f : ℂ → E} {s : Set ℝ} {c : ℂ}
     (hf : ContinuousOn f {z : ℂ | ‖z - c‖ ∈ s})
-    (hs : ∀ r : s, 0 ≤ r.1) :
+    (hs : ∀ r ∈ s, 0 ≤ r) :
     ContinuousOn (circleAverage f c) s := by
   rw [continuousOn_iff_continuous_restrict] at *
   apply (intervalIntegral.continuous_parametric_intervalIntegral_of_continuous' _ _ _).const_smul
-  have : ∀ x : s × ℝ, circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} :=
-    fun x ↦ by simp [abs_of_nonneg (hs x.1)]
+  have (x : s × ℝ) : circleMap c x.1 x.2 ∈ {z | ‖z - c‖ ∈ s} :=
+    by simp [abs_of_nonneg (hs x.1)]
   apply hf.comp (f := (fun x ↦ ⟨circleMap c x.1 x.2, this x⟩))
   fun_prop
 
