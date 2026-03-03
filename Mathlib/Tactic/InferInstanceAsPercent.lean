@@ -98,10 +98,7 @@ private partial def replaceLamDomains (e : Expr) (replacements : Array (Expr × 
     MetaM Expr := do
   match e with
   | .lam name ty body bi =>
-    let ty' ← do
-      match ← matchesAnyDefeq ty replacements with
-      | some r => pure r
-      | none => pure ty
+    let ty' := (← matchesAnyDefeq ty replacements).getD ty
     return .lam name ty' (← replaceLamDomains body replacements) bi
   | _ => return e
 
@@ -127,9 +124,9 @@ mutual
 
 /-- Process each constructor argument: replace carrier type parameters, recursively
     normalize instance-implicit fields, and patch lambda binder domains in other fields. -/
-private partial def normalizeCtorArgs (ci : ConstructorVal) (args : Array Expr)
-    (fieldInfo : Array (Bool × Bool)) (replacements : Array (Expr × Expr))
-    (fuel : Nat) : MetaM (Array Expr) := do
+private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
+    (args : Array Expr) (fieldInfo : Array (Bool × Bool))
+    (replacements : Array (Expr × Expr)) (fuel : Nat) : MetaM Expr := do
   let mut args := args
   -- Replace carrier type in constructor parameters
   for i in *...ci.numParams do
@@ -144,7 +141,7 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (args : Array Expr)
         args := args.set! i (← normalizeInstance args[i]! replacements (fuel - 1))
       else
         args := args.set! i (← replaceLamDomains args[i]! replacements)
-  return args
+  return mkAppN (.const ci.name us) args
 
 /-- Recursively normalize a class instance expression:
     1. WHNF at `default` transparency to expose the constructor.
@@ -156,11 +153,10 @@ private partial def normalizeInstance (e : Expr) (replacements : Array (Expr × 
   if fuel == 0 then return e
   let ty ← inferType e
   let some _className ← isClass? ty | return e
-  if ← withDefault <| Meta.isProp ty then return e
+  if ← Meta.isProp ty then return e
   let some (ci, us, args) ← getCtorApp? e | return e
   let fieldInfo ← getFieldInfo ci
-  let args ← normalizeCtorArgs ci args fieldInfo replacements fuel
-  return mkAppN (.const ci.name us) args
+  normalizeCtorArgs ci us args fieldInfo replacements fuel
 
 end
 
