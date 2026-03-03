@@ -248,6 +248,22 @@ theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
   (concat_isPath_iff h).mpr ⟨hp, hw⟩
 
+lemma IsPath.take_of_take {n k} {p : G.Walk u v} (h : (p.take k).IsPath) (hle : n ≤ k) :
+    (p.take n).IsPath :=
+  isPath_of_isSubwalk (p.take_isSubwalk_take hle) h
+
+lemma IsPath.drop_of_drop {n k} {p : G.Walk u v} (h : (p.drop k).IsPath) (hle : k ≤ n) :
+    (p.drop n).IsPath :=
+  isPath_of_isSubwalk (p.drop_isSubwalk_drop hle) h
+
+lemma IsPath.take {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
+    (p.take n).IsPath :=
+  isPath_of_isSubwalk (p.isSubwalk_take n) h
+
+lemma IsPath.drop {p : G.Walk u v} (h : p.IsPath) (n : ℕ) :
+    (p.drop n).IsPath :=
+  isPath_of_isSubwalk (p.isSubwalk_drop n) h
+
 lemma IsPath.mem_support_iff_exists_append {p : G.Walk u v} (hp : p.IsPath) :
     w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), q.IsPath ∧ r.IsPath ∧ p = q.append r := by
   refine ⟨fun hw ↦ ?_, fun ⟨q, r, hq, hr, hqr⟩ ↦ p.mem_support_iff_exists_append.mpr ⟨q, r, hqr⟩⟩

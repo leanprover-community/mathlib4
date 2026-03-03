@@ -153,6 +153,7 @@ instance : CompleteLattice my_T where
   __ := completeLatticeOfInf my_T _
 ```
 -/
+@[implicit_reducible]
 def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
     (isGLB_sInf : ∀ s : Set α, IsGLB s (sInf s)) : CompleteLattice α where
   __ := H1; __ := H2
@@ -181,6 +182,7 @@ def completeLatticeOfInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
 Note that this construction has bad definitional properties:
 see the doc-string on `completeLatticeOfInf`.
 -/
+@[implicit_reducible]
 def completeLatticeOfCompleteSemilatticeInf (α : Type*) [CompleteSemilatticeInf α] :
     CompleteLattice α :=
   completeLatticeOfInf α fun s => isGLB_sInf s
@@ -200,6 +202,7 @@ instance : CompleteLattice my_T where
   __ := completeLatticeOfSup my_T _
 ```
 -/
+@[implicit_reducible]
 def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (isLUB_sSup : ∀ s : Set α, IsLUB s (sSup s)) : CompleteLattice α where
   __ := H1; __ := H2
@@ -226,6 +229,7 @@ def completeLatticeOfSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
 Note that this construction has bad definitional properties:
 see the doc-string on `completeLatticeOfSup`.
 -/
+@[implicit_reducible]
 def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup α] :
     CompleteLattice α :=
   completeLatticeOfSup α fun s => isLUB_sSup s
@@ -316,7 +320,8 @@ theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
         let ⟨_, ha, h⟩ := h _ h'
         (h.trans_le <| le_sSup ha).false⟩
 
--- TODO: `to_dual existing` fails here: invalid projection on OrderTop→OrderBot instance chain
+-- `to_dual existing` fails here: the `>` in the statement causes `to_dual` to try to project
+-- through the `OrderTop → OrderBot` instance chain, producing a type-incorrect term.
 theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b > ⊥, ∃ a ∈ s, a < b :=
   @sSup_eq_top αᵒᵈ _ _
 

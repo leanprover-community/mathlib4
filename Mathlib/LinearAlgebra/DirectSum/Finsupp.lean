@@ -126,10 +126,7 @@ lemma finsuppRight_symm_apply_single (i : ι) (m : M) (n : N) :
 
 lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
     finsuppLeft R S M N ι (s • t) = s • finsuppLeft R S M N ι t := by
-  induction t with
-  | zero => simp
-  | add x y hx hy => simp [hx, hy]
-  | tmul p n => ext; simp [smul_tmul', finsuppLeft_apply_tmul_apply]
+  simp
 
 @[deprecated (since := "2026-01-01")] alias finsuppLeft' := finsuppLeft
 

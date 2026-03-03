@@ -38,6 +38,7 @@ lemma mem_multisetInfinitePlace {v : AbsoluteValue K ℝ} :
     v ∈ multisetInfinitePlace K ↔ IsInfinitePlace v := by
   simp [multisetInfinitePlace, Multiset.mem_replicate, isInfinitePlace_iff, eq_comm (a := v)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma count_multisetInfinitePlace_eq_mult [DecidableEq (AbsoluteValue K ℝ)] (v : InfinitePlace K) :
     (multisetInfinitePlace K).count v.val = v.mult := by
   have : DecidableEq (InfinitePlace K) := Subtype.instDecidableEq
@@ -71,12 +72,36 @@ lemma prod_nonarchAbsVal_eq {M : Type*} [CommMonoid M] (f : AbsoluteValue K ℝ 
     (∏ᶠ v : nonarchAbsVal, f v.val) = ∏ᶠ v : FinitePlace K, f v.val :=
   rfl
 
+open Finset Multiset in
+lemma sum_archAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ → M) :
+    (archAbsVal.map f).sum = ∑ v : InfinitePlace K, v.mult • f v.val := by
+  classical
+  rw [sum_multiset_map_count]
+  exact sum_bij' (⟨·, mem_multisetInfinitePlace.mp <| mem_dedup.mp ·⟩)
+    _ (by simp) (by simp [InfinitePlace.isInfinitePlace, archAbsVal]) (by simp) (fun _ _ ↦ rfl)
+    fun w hw ↦ by
+      simp only [archAbsVal, mem_toFinset, mem_multisetInfinitePlace] at hw ⊢
+      simp [count_multisetInfinitePlace_eq_mult ⟨w, hw⟩]
+
+lemma sum_nonarchAbsVal_eq {M : Type*} [AddCommMonoid M] (f : AbsoluteValue K ℝ → M) :
+    (∑ᶠ v : nonarchAbsVal, f v.val) = ∑ᶠ v : FinitePlace K, f v.val :=
+  rfl
+
+
 /-- This is the familiar definition of the multiplicative height on a number field. -/
 lemma mulHeight₁_eq (x : K) :
     mulHeight₁ x =
       (∏ v : InfinitePlace K, max (v x) 1 ^ v.mult) * ∏ᶠ v : FinitePlace K, max (v x) 1 := by
   simp only [FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.mulHeight₁_eq,
     prod_archAbsVal_eq, prod_nonarchAbsVal_eq fun v ↦ max (v x) 1]
+
+open Real in
+/-- This is the familiar definition of the logarithmic height on a number field. -/
+lemma logHeight₁_eq (x : K) :
+    logHeight₁ x =
+      (∑ v : InfinitePlace K, v.mult * log⁺ (v x)) + ∑ᶠ v : FinitePlace K, log⁺ (v x) := by
+  simp only [← nsmul_eq_mul, FinitePlace.coe_apply, InfinitePlace.coe_apply, Height.logHeight₁_eq,
+    sum_archAbsVal_eq, sum_nonarchAbsVal_eq fun v ↦ log⁺ (v x)]
 
 /-- This is the familiar definition of the multiplicative height on (nonzero) tuples
 of number field elements. -/

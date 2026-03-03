@@ -687,6 +687,7 @@ Two Haar measures give the same measure to open sets (or more generally to sets 
 positive), up to the scalar `haarScalarFactor μ' μ `.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive measure_isAddHaarMeasure_eq_smul_of_isEverywherePos]
 theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
     (μ' μ : Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']
@@ -872,10 +873,7 @@ lemma isMulLeftInvariant_eq_smul_of_regular [LocallyCompactSpace G]
     congr! 4 with K _KU K_comp
     exact measure_isMulLeftInvariant_eq_smul_of_ne_top μ' μ K_comp.measure_lt_top.ne
       K_comp.measure_lt_top.ne
-  ext s _hs
-  rw [s.measure_eq_iInf_isOpen, s.measure_eq_iInf_isOpen]
-  congr! 4 with U _sU U_open
-  exact A U U_open
+  exact OuterRegular.ext_isOpen A
 
 /-- **Uniqueness of left-invariant measures**:
 Two Haar measures coincide up to a multiplicative constant in a second countable group. -/
@@ -901,6 +899,7 @@ theorem absolutelyContinuous_isHaarMeasure [LocallyCompactSpace G]
   rw [haarMeasure_unique μ K, h, smul_smul]
   exact smul_absolutelyContinuous
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A continuous surjective monoid homomorphism of topological groups with compact codomain
 is measure preserving, provided that the Haar measures on the domain and on the codomain
 have the same total mass.

@@ -518,10 +518,7 @@ theorem algebraMap_dvd_iff {r : R} {z : QuadraticAlgebra R a b} :
 theorem algebraMap_dvd_iff_dvd {z w : R} :
     algebraMap R (QuadraticAlgebra R a b) z ∣ algebraMap R (QuadraticAlgebra R a b) w ↔ z ∣ w := by
   rw [algebraMap_dvd_iff]
-  constructor
-  · rintro ⟨hx, -⟩
-    simpa using hx
-  · simp [← C_eq_algebraMap]
+  simp
 
 @[deprecated (since := "2025-12-15")] alias coe_dvd_iff_dvd := algebraMap_dvd_iff_dvd
 

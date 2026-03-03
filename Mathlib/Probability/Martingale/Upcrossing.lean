@@ -312,6 +312,7 @@ theorem upperCrossingTime_eq_of_bound_le (hab : a < b) (hn : N ≤ n) :
 
 variable {ℱ : Filtration ℕ m0}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.isStoppingTime_crossing (hf : StronglyAdapted ℱ f) :
     IsStoppingTime ℱ (fun ω ↦ (upperCrossingTime a b f N n ω : ℕ)) ∧
       IsStoppingTime ℱ (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) := by
@@ -367,6 +368,7 @@ theorem upcrossingStrat_le_one : upcrossingStrat a b f N n ω ≤ 1 := by
     refine le_trans upperCrossingTime_le_lowerCrossingTime
       (lowerCrossingTime_mono (Nat.succ_le_of_lt hij'))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
     StronglyAdapted ℱ (upcrossingStrat a b f N) := by
   intro n
@@ -745,6 +747,7 @@ theorem upcrossingsBefore_eq_sum (hab : a < b) : upcrossingsBefore a b f N ω =
     smul_eq_mul, mul_one, smul_eq_mul, mul_zero, Nat.card_Ico, Nat.add_succ_sub_one,
     add_zero, add_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem StronglyAdapted.measurable_upcrossingsBefore (hf : StronglyAdapted ℱ f) (hab : a < b) :
     Measurable (upcrossingsBefore a b f N) := by
   have : upcrossingsBefore a b f N = fun ω =>

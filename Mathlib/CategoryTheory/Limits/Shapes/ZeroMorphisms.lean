@@ -53,7 +53,7 @@ class HasZeroMorphisms where
   /-- `0` composed with `f` is `0` -/
   zero_comp : ∀ (X : C) {Y Z : C} (f : Y ⟶ Z), (0 : X ⟶ Y) ≫ f = (0 : X ⟶ Z) := by cat_disch
 
-attribute [instance] HasZeroMorphisms.zero
+attribute [instance_reducible, instance] HasZeroMorphisms.zero
 
 variable {C}
 
@@ -560,31 +560,37 @@ theorem image.ι_zero' [HasEqualizers C] {X Y : C} {f : X ⟶ Y} (h : f = 0) [Ha
 
 end Image
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_sigma_ι {β : Type u'} [HasZeroMorphisms C] (f : β → C)
     [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) := by
   classical exact IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_pi_π {β : Type u'} [HasZeroMorphisms C] (f : β → C)
     [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) := by
   classical exact IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_coprod_inl [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
     IsSplitMono (coprod.inl : X ⟶ X ⨿ Y) :=
   IsSplitMono.mk' { retraction := coprod.desc (𝟙 X) 0 }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_coprod_inr [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
     IsSplitMono (coprod.inr : Y ⟶ X ⨿ Y) :=
   IsSplitMono.mk' { retraction := coprod.desc 0 (𝟙 Y) }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_prod_fst [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.fst : X ⨯ Y ⟶ X) :=
   IsSplitEpi.mk' { section_ := prod.lift (𝟙 X) 0 }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_prod_snd [HasZeroMorphisms C] {X Y : C} [HasLimit (pair X Y)] :
     IsSplitEpi (prod.snd : X ⨯ Y ⟶ Y) :=
@@ -639,10 +645,12 @@ variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [Has
 def Pi.ι (b : β) : f b ⟶ ∏ᶜ f :=
   Pi.lift (Function.update (fun _ ↦ 0) b (𝟙 _))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), grind =]
 lemma Pi.ι_π_eq_id (b : β) : Pi.ι f b ≫ Pi.π f b = 𝟙 _ := by
   simp [Pi.ι]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, grind =]
 lemma Pi.ι_π_of_ne {b c : β} (h : b ≠ c) : Pi.ι f b ≫ Pi.π f c = 0 := by
   simp [Pi.ι, Function.update_of_ne h.symm]
@@ -665,10 +673,12 @@ variable [HasZeroMorphisms C] {β : Type w} [DecidableEq β] (f : β → C) [Has
 def Sigma.π (b : β) : ∐ f ⟶ f b :=
   Limits.Sigma.desc (Function.update (fun _ ↦ 0) b (𝟙 _))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), grind =]
 lemma Sigma.ι_π_eq_id (b : β) : Sigma.ι f b ≫ Sigma.π f b = 𝟙 _ := by
   simp [Sigma.π]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc, grind =]
 lemma Sigma.ι_π_of_ne {b c : β} (h : b ≠ c) : Sigma.ι f b ≫ Sigma.π f c = 0 := by
   simp [Sigma.π, Function.update_of_ne h]
@@ -697,18 +707,22 @@ into any product of objects `X ⨯ Y`. -/
 def prod.inr : Y ⟶ X ⨯ Y :=
   prod.lift 0 (𝟙 _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prod.inl_fst : prod.inl X Y ≫ prod.fst = 𝟙 X := by
   simp [prod.inl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prod.inl_snd : prod.inl X Y ≫ prod.snd = 0 := by
   simp [prod.inl]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prod.inr_fst : prod.inr X Y ≫ prod.fst = 0 := by
   simp [prod.inr]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma prod.inr_snd : prod.inr X Y ≫ prod.snd = 𝟙 Y := by
   simp [prod.inr]
@@ -735,18 +749,22 @@ its second component `Y`. -/
 def coprod.snd : X ⨿ Y ⟶ Y :=
   coprod.desc 0 (𝟙 _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coprod.inl_fst : coprod.inl ≫ coprod.fst X Y = 𝟙 X := by
   simp [coprod.fst]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coprod.inr_fst : coprod.inr ≫ coprod.fst X Y = 0 := by
   simp [coprod.fst]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coprod.inl_snd : coprod.inl ≫ coprod.snd X Y = 0 := by
   simp [coprod.snd]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma coprod.inr_snd : coprod.inr ≫ coprod.snd X Y = 𝟙 Y := by
   simp [coprod.snd]

@@ -117,6 +117,7 @@ theorem center_eq_iInf {s : Set G} (hs : closure s = ⊤) :
     center G = ⨅ g ∈ s, centralizer {g} := by
   rw [← centralizer_univ, ← coe_top, ← hs, centralizer_closure, centralizer_eq_iInf]
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem center_eq_infi' {s : Set G} (hs : closure s = ⊤) :
     center G = ⨅ g : s, centralizer {(g : G)} := by
