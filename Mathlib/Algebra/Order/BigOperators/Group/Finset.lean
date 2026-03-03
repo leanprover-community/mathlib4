@@ -226,6 +226,30 @@ theorem card_biUnion_le_card_mul [DecidableEq β] (s : Finset ι) (f : ι → Fi
     (h : ∀ a ∈ s, #(f a) ≤ n) : #(s.biUnion f) ≤ #s * n :=
   card_biUnion_le.trans <| sum_le_card_nsmul _ _ _ h
 
+/-- Weighted cover inequality with elementwise multiplicity.
+
+If each `x ∈ s` is related to at least `m x` elements of `t`, then the weighted double-count
+`∑ y∈t, ∑ x∈s.filter (R x y), w x` is at least
+`∑ x∈s, m x * w x`. -/
+theorem sum_mul_le_sum_sum_filter_of_le_card_filter [DecidableEq ι] [DecidableEq β]
+    (s : Finset ι) (t : Finset β) (R : ι → β → Prop) [DecidableRel R] (w m : ι → ℕ)
+    (hcover : ∀ x ∈ s, m x ≤ #(t.filter (fun y => R x y))) :
+    (∑ x ∈ s, m x * w x) ≤ ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := by
+  have hswap :
+      (∑ x ∈ s, ∑ y ∈ t.filter (fun y => R x y), w x) =
+        (∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x) := by
+    simp_rw [sum_filter]
+    rw [sum_comm]
+  calc
+    _ ≤ ∑ x ∈ s, ∑ y ∈ t.filter (fun y => R x y), w x := by
+          refine sum_le_sum ?_
+          intro x hx
+          have hmul :
+              m x * w x ≤ #(t.filter fun y => R x y) * w x := by
+            exact Nat.mul_le_mul_right (w x) (hcover x hx)
+          simpa [sum_const, Nat.mul_comm] using hmul
+    _ = ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := hswap
+
 /-- Weighted cover inequality over finite sets:
 if every `x ∈ s` is related to some `y ∈ t`, then
 `∑ x∈s, w x ≤ ∑ y∈t, ∑ x∈s.filter (R x y), w x`. -/
@@ -233,27 +257,14 @@ theorem sum_le_sum_sum_filter_of_forall_exists [DecidableEq ι] [DecidableEq β]
     (s : Finset ι) (t : Finset β) (R : ι → β → Prop) [DecidableRel R] (w : ι → ℕ)
     (hcover : ∀ x ∈ s, ∃ y ∈ t, R x y) :
     (∑ x ∈ s, w x) ≤ ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := by
-  have hswap :
-      (∑ x ∈ s, ∑ y ∈ t.filter (fun y => R x y), w x) =
-        (∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x) := by
-    simp_rw [sum_filter]
-    rw [sum_comm]
+  have hcover' : ∀ x ∈ s, 1 ≤ #(t.filter (fun y => R x y)) := by
+    intro x hx
+    rcases hcover x hx with ⟨y, hy, hxy⟩
+    exact card_pos.mpr ⟨y, mem_filter.2 ⟨hy, hxy⟩⟩
   calc
-    (∑ x ∈ s, w x)
-        ≤ ∑ x ∈ s, ∑ y ∈ t.filter (fun y => R x y), w x := by
-            refine sum_le_sum ?_
-            intro x hx
-            rcases hcover x hx with ⟨y, hy, hxy⟩
-            have hyf : y ∈ t.filter (fun y => R x y) := mem_filter.2 ⟨hy, hxy⟩
-            have hcard_pos : 0 < #(t.filter fun y => R x y) := card_pos.mpr ⟨y, hyf⟩
-            have hmul :
-                w x ≤ #(t.filter fun y => R x y) * w x := by
-              calc
-                w x = 1 * w x := by simp
-                _ ≤ #(t.filter fun y => R x y) * w x := by
-                  exact Nat.mul_le_mul_right (w x) (Nat.succ_le_of_lt hcard_pos)
-            simpa [sum_const, Nat.mul_comm] using hmul
-    _ = ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := hswap
+    (∑ x ∈ s, w x) = ∑ x ∈ s, (fun _ ↦ 1) x * w x := by simp
+    _ ≤ ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x :=
+      sum_mul_le_sum_sum_filter_of_le_card_filter s t R w (fun _ ↦ 1) hcover'
 
 variable {ι' : Type*} [DecidableEq ι']
 
