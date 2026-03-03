@@ -42,8 +42,8 @@ Use `exists_isIntegralCurve_of_isIntegralCurveOn`
 
 omit [T2Space M] in
 lemma exist_uniform_time (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
-    ∃ ε > 0, ∀ x, ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurveOn γ v (Ioo (-ε) ε) := by
-  have (x : M) := exists_mem_nhds_isIntegralCurveOn_Ioo_of_contMDiffAt 0 (hv.contMDiffAt (x := x))
+    ∃ ε > 0, ∀ x, ∃ γ : ℝ → M, γ 0 = x ∧ IsMIntegralCurveOn γ v (Ioo (-ε) ε) := by
+  have (x : M) := exists_mem_nhds_isMIntegralCurveOn_Ioo_of_contMDiffAt 0 (hv.contMDiffAt (x := x))
     BoundarylessManifold.isInteriorPoint
   choose u hu ε hε h using this
   have ⟨t, ht⟩ := CompactSpace.elim_nhds_subcover u hu
@@ -72,22 +72,22 @@ lemma exist_uniform_time (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ 
   simp only [mem_iUnion, exists_prop] at hx
   replace ⟨x₀, hx₀, hx⟩ := hx
   have ⟨γ, hγ⟩ := h x₀
-  replace ⟨hγ0, hγ⟩ := hγ x hx
+  replace ⟨hγ0, hγ, _⟩ := hγ x hx
   refine ⟨fun t ↦ γ ⟨x, t⟩, hγ0, ?_⟩
-  apply IsIntegralCurveOn.mono hγ
+  apply IsMIntegralCurveOn.mono hγ
   replace hle := hle x₀ hx₀
   exact Ioo_subset_Ioo (by linarith) (by linarith)
 
 theorem exist_isIntegralCurve
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) (x : M) :
-    ∃ γ : ℝ → M, γ 0 = x ∧ IsIntegralCurve γ v := by
+    ∃ γ : ℝ → M, γ 0 = x ∧ IsMIntegralCurve γ v := by
   have ⟨ε, hε, h⟩ := exist_uniform_time hv
-  exact exists_isIntegralCurve_of_isIntegralCurveOn hv hε h x
+  exact exists_isMIntegralCurve_of_isMIntegralCurveOn hv hε h x
 
 -- swap t x arguments in γ?
 theorem exist_global_flow
     (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
-    ∃ γ : ℝ → M → M, ∀ x, γ 0 x = x ∧ IsIntegralCurve (γ · x) v := by
+    ∃ γ : ℝ → M → M, ∀ x, γ 0 x = x ∧ IsMIntegralCurve (γ · x) v := by
   choose γ hγ using exist_isIntegralCurve hv
   refine ⟨fun t x ↦ γ x t, fun x ↦ hγ x⟩
 
