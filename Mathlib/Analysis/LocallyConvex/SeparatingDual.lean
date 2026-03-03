@@ -163,7 +163,6 @@ instance _root_.Algebra.IsCentral.instContinuousLinearMap [Algebra.IsCentral S R
     have (y : V) := by simpa [hg] using congr($(Subalgebra.mem_center_iff.mp hf (g.smulRight y)) x)
     exact ⟨g (f x), by simp [this, ContinuousLinearMap.ext_iff]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 open ContinuousLinearMap ContinuousLinearEquiv in
 theorem _root_.ContinuousLinearEquiv.conjContinuousAlgEquiv_ext_iff
     {R V W : Type*} [NormedField R] [AddCommGroup V] [AddCommGroup W] [TopologicalSpace R]

@@ -427,13 +427,11 @@ section PosPart
 
 /-! Lemmas used for defining the positive part of an `L¹` function -/
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem HasFiniteIntegral.max_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => max (f a) 0) μ :=
   hf.mono <| Eventually.of_forall fun x => by simp [abs_le, le_abs_self]
 
-set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
 theorem HasFiniteIntegral.min_zero {f : α → ℝ} (hf : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => min (f a) 0) μ :=

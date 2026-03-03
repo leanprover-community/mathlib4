@@ -736,7 +736,6 @@ theorem norm_sq_re_add_conj (x : K) : ‖x + conj x‖ ^ 2 = re (x + conj x) ^ 2
 theorem norm_sq_re_conj_add (x : K) : ‖conj x + x‖ ^ 2 = re (conj x + x) ^ 2 := by
   rw [add_comm, norm_sq_re_add_conj]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : NormSMulClass ℤ K where
   norm_smul r x := by
     rw [zsmul_eq_mul, norm_mul, ← ofReal_intCast, norm_ofReal, Int.norm_eq_abs]
@@ -943,7 +942,6 @@ lemma toPosMulReflectLT : PosMulReflectLT K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.toPosMulReflectLT
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toIsStrictOrderedModule : IsStrictOrderedModule ℝ K where
   smul_lt_smul_of_pos_left r hr a b hab := by
     simpa [RCLike.lt_iff_re_im (K := K), smul_re, smul_im, hr, hr.ne'] using hab
@@ -953,7 +951,6 @@ theorem toIsStrictOrderedModule : IsStrictOrderedModule ℝ K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.toIsStrictOrderedModule
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ofReal_mul_pos_iff (x : ℝ) (z : K) :
     0 < x * z ↔ (x < 0 ∧ z < 0) ∨ (0 < x ∧ 0 < z) := by
   simp only [pos_iff (K := K), neg_iff (K := K), re_ofReal_mul, im_ofReal_mul]

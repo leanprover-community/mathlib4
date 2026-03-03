@@ -330,7 +330,6 @@ noncomputable def strictWidthInfty : ℝ :=
       <| AddSubgroup.discrete_iff_addCyclic.mpr h|
   else 0
 
-set_option backward.isDefEq.respectTransparency false in
 lemma strictWidthInfty_nonneg : 0 ≤ 𝒢.strictWidthInfty := by
   unfold strictWidthInfty; aesop
 
@@ -382,7 +381,6 @@ lemma two_mul_withInfty_mem_strictPeriods : 2 * 𝒢.widthInfty ∈ 𝒢.strictP
   rcases this with (h | h) <;>
     simpa [-upperRightHom_apply, ← AddChar.map_nsmul_eq_pow] using Subgroup.pow_mem _ h 2
 
-set_option backward.isDefEq.respectTransparency false in
 variable {𝒢} in
 lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDetPlusMinusOne] :
     0 < 𝒢.strictWidthInfty ↔ IsCusp ∞ 𝒢 := by
