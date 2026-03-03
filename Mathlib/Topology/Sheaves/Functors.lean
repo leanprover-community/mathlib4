@@ -138,7 +138,7 @@ The pullback of a sheaf by an open embedding `f` is isomorphic to its naive pull
 Also, this is an isomorphism of functors.
 -/
 def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
-  refine Sheaf.pullbackIso A f ≪≫ (NatIso.ofComponents (fun F ↦ ?_) (fun u ↦ ?_))
+  refine Sheaf.pullbackIso A f ≪≫ NatIso.ofComponents (fun F ↦ ?_) (fun u ↦ ?_)
   · exact (presheafToSheaf (Opens.grothendieckTopology ↑X) A).mapIso
       (hf.isOpenMap.pullbackIso.app _) ≪≫
       (fullyFaithfulSheafToPresheaf (Opens.grothendieckTopology X) A).preimageIso
