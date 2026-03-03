@@ -65,14 +65,6 @@ structure IsCovariantDerivativeOn [IsManifold I 1 M]
       + ContinuousLinearMap.toSpanSingleton 𝕜 (σ x) ∘L
         (((bar (g x)).toContinuousLinearMap ∘L (mfderiv I 𝓘(𝕜) g x)))
 
-theorem IsCovariantDerivativeOn.smul_const_σ [IsManifold I 1 M]
-    {f : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[𝕜] V x)}
-    (s : Set M) (hf : IsCovariantDerivativeOn F f s)
-    {σ : Π x : M, V x} {x} (a : 𝕜)
-    (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
-    f (a • σ) x = a • f σ x := by
-  simpa using hf.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
-
 /--
 A covariant derivative ∇ is called of class `C^k` iff,
 whenever `X` is a `C^k` section and `σ` a `C^{k+1}` section, the result `∇ X σ` is a `C^k` section.
@@ -156,6 +148,12 @@ lemma zeroσ [VectorBundle 𝕜 F V] (hf : IsCovariantDerivativeOn F f s)
     f 0 x = 0 := by
   simpa using (hf.addσ (mdifferentiableAt_zeroSection ..)
     (mdifferentiableAt_zeroSection ..) : f (0 + 0) x = _)
+
+theorem smul_const_σ (hf : IsCovariantDerivativeOn F f s)
+    {σ : Π x : M, V x} {x} (a : 𝕜)
+    (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
+    f (a • σ) x = a • f σ x := by
+  simpa using hf.leibniz (g := fun _ ↦ a) hσ mdifferentiableAt_const
 
 end computational_properties
 
