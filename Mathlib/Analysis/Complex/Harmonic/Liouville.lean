@@ -20,6 +20,7 @@ public section
 
 open Complex Real Set
 
+set_option backward.isDefEq.respectTransparency false in
 /-
 **Liouville's theorem for harmonic functions on the complex plane** A real-valued, bounded harmonic
 function on the complex plane is constant.
