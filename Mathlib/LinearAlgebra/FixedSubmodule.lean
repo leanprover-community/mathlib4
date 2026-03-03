@@ -107,12 +107,14 @@ theorem mem_stabilizer_fixedSubmodule (e : V ≃ₗ[R] V) :
     e ∈ stabilizer _ e.fixedSubmodule :=
   mem_stabilizer_submodule_of_le_fixedSubmodule (le_refl _)
 
+/-
 theorem fixingSubgroup_le_stabilizer (W : Submodule R V) :
     fixingSubgroup (V ≃ₗ[R] V) (W : Set V) ≤ stabilizer _ W := by
   intro u
   rw [mem_stabilizer_iff, SetLike.ext'_iff, coe_pointwise_smul,
     ← mem_stabilizer_iff]
   apply MulAction.fixingSubgroup_le_stabilizer
+-/
 
 theorem map_eq_of_mem_fixingSubgroup (W : Submodule R V)
     (he : e ∈ fixingSubgroup _ W.carrier) :
@@ -129,7 +131,7 @@ open Pointwise MulAction
 variable {R V : Type*} [Ring R] [AddCommGroup V] [Module R V]
 
 /-- When `u : V ≃ₗ[R] V` maps a submodule `W` into itself,
-this is the induced linear equivalence of `V ⧸ W`, as a group morphism. -/
+this is the induced linear equivalence of `V ⧸ W`, as a group homomorphism. -/
 def reduce (W : Submodule R V) : stabilizer (V ≃ₗ[R] V) W →* (V ⧸ W) ≃ₗ[R] (V ⧸ W) where
   toFun u := Quotient.equiv W W u.val u.prop
   map_mul' u v := by
