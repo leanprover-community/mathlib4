@@ -171,8 +171,7 @@ instance : (cofibrations (Plus C)).HasFactorization (trivialFibrations (Plus C))
       Z := ⟨K', d, inferInstance⟩
       i := ObjectProperty.homMk i
       p := ObjectProperty.homMk p
-      hi := by
-        rwa [← HomotopicalAlgebra.cofibration_iff, cofibration_iff, Plus.mono_iff]
+      hi := by rwa [← HomotopicalAlgebra.cofibration_iff, cofibration_iff, Plus.mono_iff]
       hp := ⟨hp, by assumption⟩ }⟩
 
 scoped instance : ModelCategory (CochainComplex.Plus C) where
