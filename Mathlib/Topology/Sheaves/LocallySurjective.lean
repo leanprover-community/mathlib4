@@ -62,13 +62,18 @@ def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
     IsLocallySurjective T ↔
-      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (ι : V ⟶ U), (∃ s, (T.app _) s = t |_ₕ ι) ∧ x ∈ V :=
-  ⟨fun h _ => h.imageSieve_mem, fun h => ⟨h _⟩⟩
+      ∀ (U t), ∀ x ∈ U, ∃ (V : _) (_ : V ≤ U), (∃ s, (T.app _) s = t |_ V ) ∧ x ∈ V := by
+  refine ⟨fun h _ t x hx ↦ ?_, fun h => ⟨fun s x hx ↦ ?_⟩⟩
+  · obtain ⟨V, i, hi⟩ := h.imageSieve_mem t x hx
+    exact ⟨V, leOfHom i, hi⟩
+  · obtain ⟨V, Vle, hV⟩ := h _ s x hx
+    exact ⟨V, homOfLE Vle, hV⟩
 
 section SurjectiveOnStalks
 
 variable [Limits.HasColimits C] [Limits.PreservesFilteredColimits (forget C)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalent condition for a map of presheaves to be locally surjective
 is for all the induced maps on stalks to be surjective. -/
 theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :

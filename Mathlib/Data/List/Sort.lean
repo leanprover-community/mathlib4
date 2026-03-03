@@ -172,20 +172,7 @@ theorem erase_orderedInsert_of_notMem [DecidableEq α]
 theorem orderedInsert_erase [DecidableEq α] [Std.Antisymm r] (x : α) (xs : List α) (hx : x ∈ xs)
     (hxs : Pairwise r xs) :
     (xs.erase x).orderedInsert r x = xs := by
-  induction xs generalizing x with
-  | nil => cases hx
-  | cons y ys ih =>
-    rw [pairwise_cons] at hxs
-    obtain rfl | hxy := Decidable.eq_or_ne x y
-    · rw [erase_cons_head]
-      cases ys with
-      | nil => rfl
-      | cons z zs => grind
-    · rw [mem_cons] at hx
-      replace hx := hx.resolve_left hxy
-      rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert_cons, ih _ hx hxs.2, if_neg]
-      refine mt (fun hrxy => ?_) hxy
-      exact antisymm hrxy (hxs.1 _ hx)
+  induction xs with grind +splitIndPred
 
 theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r x := by
   induction xs <;> grind
@@ -218,7 +205,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
 
 section TotalAndTransitive
 
-variable [IsTotal α r] [IsTrans α r]
+variable [Std.Total r] [IsTrans α r]
 
 theorem Pairwise.orderedInsert (a : α) : ∀ l, Pairwise r l → Pairwise r (orderedInsert r a l)
   | [], _ => pairwise_singleton _ a
@@ -272,12 +259,12 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
     [a, b] <+ insertionSort r l :=
   sublist_insertionSort (pairwise_pair.mpr hab) h
 
-variable [Std.Antisymm r] [IsTotal α r] [IsTrans α r]
+variable [Std.Antisymm r] [Std.Total r] [IsTrans α r]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
-additionally requires `Std.Antisymm r`, `IsTotal α r` and `IsTrans α r`.
+additionally requires `Std.Antisymm r`, `Std.Total r` and `IsTrans α r`.
 -/
 theorem sublist_insertionSort' {l c : List α} (hs : c.Pairwise r) (hc : c <+~ l) :
     c <+ insertionSort r l := by
@@ -358,13 +345,13 @@ end Antisymm
 
 section TotalAndTransitive
 
-variable {r} [IsTotal α r] [IsTrans α r]
+variable {r} [Std.Total r] [IsTrans α r]
 
 theorem Pairwise.merge {l l' : List α} (h : Pairwise r l) (h' : Pairwise r l') :
     Pairwise r (merge l l' (r · ·)) := by
   simpa using pairwise_merge (le := (r · ·))
     (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using IsTotal.total a b)
+    (fun a b => by simpa using Std.Total.total a b)
     l l' (by simpa using h) (by simpa using h')
 
 @[deprecated (since := "2025-11-27")] alias Sorted.merge := Pairwise.merge

@@ -496,6 +496,7 @@ lemma mk_eq_zero_of_den (f : NumDenSameDeg 𝒜 x) (h : f.den = 0) : mk f = 0 :=
   have := subsingleton 𝒜 (h ▸ f.den_mem)
   exact Subsingleton.elim _ _
 
+set_option backward.isDefEq.respectTransparency false in
 variable (𝒜 x) in
 /-- The map from `𝒜 0` to the degree `0` part of `𝒜ₓ` sending `f ↦ f/1`. -/
 def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
@@ -743,7 +744,7 @@ lemma awayMap_fromZeroRingHom (a) :
     awayMap 𝒜 hg hx (fromZeroRingHom 𝒜 _ a) = fromZeroRingHom 𝒜 _ a := by
   ext
   simp only [fromZeroRingHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    val_awayMap, val_mk, SetLike.GradeZero.coe_one]
+    val_awayMap, val_mk]
   convert IsLocalization.lift_eq _ _
 
 lemma val_awayMap_mk (n a i hi) : (awayMap 𝒜 hg hx (mk ⟨n, a, ⟨f ^ i, hi⟩, ⟨i, rfl⟩⟩)).val =
@@ -853,6 +854,7 @@ end isLocalization
 
 section span
 
+set_option backward.isDefEq.respectTransparency false in
 variable [AddSubgroupClass σ A] [AddCommMonoid ι] [DecidableEq ι] {𝒜 : ι → σ} [GradedRing 𝒜] in
 /--
 Let `𝒜` be a graded ring, finitely generated (as an algebra) over `𝒜₀` by `{ vᵢ }`,

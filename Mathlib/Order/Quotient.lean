@@ -51,7 +51,7 @@ instance : IsTrans (Quotient s) (· ≤ ·) where
     induction z using Quotient.inductionOn with | h z
     exact Relation.TransGen.trans h₁ h₂
 
-instance [IsTotal α (· ≤ ·)] : IsTotal (Quotient s) (· ≤ ·) where
+instance [@Std.Total α (· ≤ ·)] : @Std.Total (Quotient s) (· ≤ ·) where
   total x y := by
     induction x using Quotient.inductionOn with | h x
     induction y using Quotient.inductionOn with | h y

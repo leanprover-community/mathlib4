@@ -359,6 +359,7 @@ variable [Monoid α] [MulDistribMulAction α G]
 /-- The action on a subgroup corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
+@[instance_reducible]
 protected def pointwiseMulAction : MulAction α (Subgroup G) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ _ a)
   one_smul S := by
@@ -407,19 +408,6 @@ instance pointwise_isCentralScalar [MulDistribMulAction αᵐᵒᵖ G] [IsCentra
     IsCentralScalar α (Subgroup G) :=
   ⟨fun _ S => (congr_arg fun f => S.map f) <| MonoidHom.ext <| op_smul_eq_smul _⟩
 
-theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
-    MulAut.conj (h : G) • P ≤ H := by
-  rintro - ⟨g, hg, rfl⟩
-  exact H.mul_mem (H.mul_mem h.2 (hP hg)) (H.inv_mem h.2)
-
-theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
-    MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H := by
-  refine le_antisymm ?_ ?_
-  · rintro - ⟨g, hg, rfl⟩
-    exact ⟨g, hg, rfl⟩
-  · rintro p ⟨g, hg, hp⟩
-    exact ⟨⟨g, hP hg⟩, hg, Subtype.ext hp⟩
-
 end Monoid
 
 section Group
@@ -446,6 +434,26 @@ theorem pointwise_smul_subset_iff {a : α} {S T : Subgroup G} : a • S ≤ T �
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
+
+theorem conj_smul_le_of_le {P H : Subgroup G} (hP : P ≤ H) (h : H) :
+    MulAut.conj (h : G) • P ≤ H := by
+  rintro - ⟨g, hg, rfl⟩
+  exact H.mul_mem (H.mul_mem h.2 (hP hg)) (H.inv_mem h.2)
+
+theorem conj_smul_eq_self_of_mem {H : Subgroup G} {h : G} (hh : h ∈ H) :
+    MulAut.conj h • H = H := by
+  refine le_antisymm ?_ ?_
+  · exact (conj_smul_le_of_le (le_refl H) ⟨h, hh⟩)
+  · rw [subset_pointwise_smul_iff, ← map_inv]
+    exact conj_smul_le_of_le (le_refl H) ⟨h⁻¹, H.inv_mem hh⟩
+
+theorem conj_smul_subgroupOf {P H : Subgroup G} (hP : P ≤ H) (h : H) :
+    MulAut.conj h • P.subgroupOf H = (MulAut.conj (h : G) • P).subgroupOf H := by
+  refine le_antisymm ?_ ?_
+  · rintro - ⟨g, hg, rfl⟩
+    exact ⟨g, hg, rfl⟩
+  · rintro p ⟨g, hg, hp⟩
+    exact ⟨⟨g, hP hg⟩, hg, Subtype.ext hp⟩
 
 @[simp]
 theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a • T := by

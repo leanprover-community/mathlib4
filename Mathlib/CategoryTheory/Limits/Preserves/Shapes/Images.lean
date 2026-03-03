@@ -57,6 +57,7 @@ theorem factorThruImage_comp_hom {X Y : A} (f : X ⟶ Y) :
 theorem hom_comp_map_image_ι {X Y : A} (f : X ⟶ Y) :
     (iso L f).hom ≫ L.map (image.ι f) = image.ι (L.map f) := by rw [iso_hom, image.lift_fac]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem inv_comp_image_ι_map {X Y : A} (f : X ⟶ Y) :
     (iso L f).inv ≫ image.ι (L.map f) = L.map (image.ι f) := by simp

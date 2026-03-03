@@ -401,6 +401,9 @@ noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 
+@[deprecated (since := "2025-12-15")]
+alias derivativeFinsupp_apply_toFun := derivativeFinsupp_apply_apply
+
 @[simp]
 theorem support_derivativeFinsupp_subset_range {p : R[X]} {n : ℕ} (h : p.natDegree < n) :
     (derivativeFinsupp p).support ⊆ range n := by
@@ -528,7 +531,7 @@ theorem iterate_derivative_mul_X_pow (n m : ℕ) (p : R[X]) :
     norm_cast
     ring
   rw [hsum]
-  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by aesop) (by simp)
+  refine sum_congr_of_eq_on_inter (fun k hk hk' ↦ ?_) (by simp_all) (by simp)
   rcases le_or_gt k m with hkm | hkm
   · replace hk' : n < k := by simpa [hkm] using hk'
     simp [Nat.choose_eq_zero_of_lt hk']

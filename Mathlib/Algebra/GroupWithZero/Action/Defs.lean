@@ -377,7 +377,7 @@ protected abbrev Function.Surjective.distribMulAction [AddMonoid B] [SMul M B] (
 variable (A)
 
 /-- Each element of the monoid defines an additive monoid homomorphism. -/
-@[simps!]
+@[simps!, deprecated DistribSMul.toAddMonoidHom (since := "2026-01-07")]
 def DistribMulAction.toAddMonoidHom (x : M) : A →+ A :=
   DistribSMul.toAddMonoidHom A x
 
@@ -387,7 +387,7 @@ variable (M)
 @[simps]
 def DistribMulAction.toAddMonoidEnd :
     M →* AddMonoid.End A where
-  toFun := DistribMulAction.toAddMonoidHom A
+  toFun := DistribSMul.toAddMonoidHom A
   map_one' := AddMonoidHom.ext <| one_smul M
   map_mul' x y := AddMonoidHom.ext <| mul_smul x y
 

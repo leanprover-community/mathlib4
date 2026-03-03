@@ -156,7 +156,7 @@ theorem mean_union_eq_add_of_disjoint (hfoel : IsFoelner G μ u F)
     (s t : Set X) (ht : MeasurableSet t) (hdisj : Disjoint s t) :
     mean μ u F (s ∪ t) = mean μ u F s + mean μ u F t := by
   refine tendsto_nhds_unique_of_eventuallyEq
-    (hfoel.tendsto_nhds_mean _) (hfoel.tendsto_nhds_mean _|>.add <| hfoel.tendsto_nhds_mean _) ?_
+    (hfoel.tendsto_nhds_mean _) (hfoel.tendsto_nhds_mean _ |>.add <| hfoel.tendsto_nhds_mean _) ?_
   filter_upwards [hfoel.eventually_measurableSet] with i hi
   rw [union_inter_distrib_right,
     measure_union (hdisj.inter_left _ |>.inter_right _) (ht.inter hi), ENNReal.add_div]
@@ -215,7 +215,7 @@ variable (G μ) in
 /-- The maximal Følner filter with respect to some additive group `G` acting
     on a measure space `X` is the pullback of `𝓝 0` along the map `s ↦ μ (g +ᵥ s) / μ s`
     on measurable sets of finite non-zero measure. -/]
-def maxFoelner : Filter (Set X) :=
+noncomputable def maxFoelner : Filter (Set X) :=
   𝓟 {s : Set X | MeasurableSet s ∧ μ s ≠ 0 ∧ μ s ≠ ∞} ⊓
   ⨅ (g : G), comap (fun s ↦ μ ((g • s) ∆ s) / μ s) (𝓝 0)
 
@@ -227,7 +227,7 @@ theorem isFoelner_iff_tendsto : IsFoelner G μ l F ↔ Tendsto F l (maxFoelner G
 variable (G μ) in
 @[to_additive isAddFoelner_maxAddFoelner]
 theorem isFoelner_maxFoelner : IsFoelner G μ (maxFoelner G μ) id :=
-  isFoelner_iff_tendsto _ _|>.2 <| @tendsto_id _ (maxFoelner G μ)
+  isFoelner_iff_tendsto _ _ |>.2 <| @tendsto_id _ (maxFoelner G μ)
 
 @[to_additive amenable_of_maxAddFoelner_neBot]
 theorem amenable_of_maxFoelner_neBot [SMulInvariantMeasure G X μ] [NeBot (maxFoelner G μ)] :

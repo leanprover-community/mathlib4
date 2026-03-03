@@ -80,13 +80,13 @@ lemma coe_inf (G₁ G₂ : G.Finsubgraph) : ↑(G₁ ⊓ G₂) = (G₁ ⊓ G₂ 
 lemma coe_sdiff (G₁ G₂ : G.Finsubgraph) : ↑(G₁ \ G₂) = (G₁ \ G₂ : G.Subgraph) := rfl
 
 instance instGeneralizedCoheytingAlgebra : GeneralizedCoheytingAlgebra G.Finsubgraph :=
-  Subtype.coe_injective.generalizedCoheytingAlgebra _ coe_sup coe_inf coe_bot coe_sdiff
+  Subtype.coe_injective.generalizedCoheytingAlgebra _ .rfl .rfl coe_sup coe_inf coe_bot coe_sdiff
 
 section Finite
 variable [Finite V]
 
 instance instTop : Top G.Finsubgraph where top := ⟨⊤, finite_univ⟩
-instance instHasCompl : HasCompl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
+instance instCompl : Compl G.Finsubgraph where compl G' := ⟨G'ᶜ, Set.toFinite _⟩
 instance instHNot : HNot G.Finsubgraph where hnot G' := ⟨￢G', Set.toFinite _⟩
 instance instHImp : HImp G.Finsubgraph where himp G₁ G₂ := ⟨G₁ ⇨ G₂, Set.toFinite _⟩
 instance instSupSet : SupSet G.Finsubgraph where sSup s := ⟨⨆ G ∈ s, ↑G, Set.toFinite _⟩
@@ -105,17 +105,19 @@ lemma coe_sSup (s : Set G.Finsubgraph) : sSup s = (⨆ G ∈ s, G : G.Subgraph) 
 @[simp, norm_cast]
 lemma coe_sInf (s : Set G.Finsubgraph) : sInf s = (⨅ G ∈ s, G : G.Subgraph) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_iSup {ι : Sort*} (f : ι → G.Finsubgraph) : ⨆ i, f i = (⨆ i, f i : G.Subgraph) := by
   rw [iSup, coe_sSup, iSup_range]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_iInf {ι : Sort*} (f : ι → G.Finsubgraph) : ⨅ i, f i = (⨅ i, f i : G.Subgraph) := by
   rw [iInf, coe_sInf, iInf_range]
 
 instance instCompletelyDistribLattice : CompletelyDistribLattice G.Finsubgraph :=
-  Subtype.coe_injective.completelyDistribLattice _ coe_sup coe_inf coe_sSup coe_sInf coe_top coe_bot
-    coe_compl coe_himp coe_hnot coe_sdiff
+  Subtype.coe_injective.completelyDistribLattice _ .rfl .rfl coe_sup coe_inf coe_sSup coe_sInf
+    coe_top coe_bot coe_compl coe_himp coe_hnot coe_sdiff
 
 end Finite
 end Finsubgraph

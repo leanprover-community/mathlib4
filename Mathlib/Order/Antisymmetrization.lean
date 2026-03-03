@@ -290,6 +290,7 @@ theorem wellFoundedLT_antisymmetrization_iff :
     WellFoundedLT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedLT α := by
   simp_rw [isWellFounded_iff, wellFounded_antisymmetrization_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem wellFoundedGT_antisymmetrization_iff :
     WellFoundedGT (Antisymmetrization α (· ≤ ·)) ↔ WellFoundedGT α := by
   simp_rw [isWellFounded_iff]
@@ -303,7 +304,7 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
   wellFoundedGT_antisymmetrization_iff.mpr ‹_›
 
-instance [DecidableLE α] [DecidableLT α] [IsTotal α (· ≤ ·)] :
+instance [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
@@ -334,30 +335,23 @@ theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrizati
 theorem toAntisymmetrization_mono : Monotone (toAntisymmetrization (α := α) (· ≤ ·)) :=
   fun _ _ => id
 
-set_option backward.privateInPublic true in
 open scoped Relator in
-private theorem liftFun_antisymmRel (f : α →o β) :
+theorem liftFun_antisymmRel (f : α →o β) :
     ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- Turns an order homomorphism from `α` to `β` into one from `Antisymmetrization α` to
 `Antisymmetrization β`. `Antisymmetrization` is actually a functor. See `Preorder_to_PartialOrder`.
 -/
 protected def OrderHom.antisymmetrization (f : α →o β) :
     Antisymmetrization α (· ≤ ·) →o Antisymmetrization β (· ≤ ·) :=
-  ⟨Quotient.map' f <| liftFun_antisymmRel f, fun a b => Quotient.inductionOn₂' a b <| f.mono⟩
+  ⟨Quotient.map' f <| liftFun_antisymmRel f, fun a b => Quotient.inductionOn₂' a b f.mono⟩
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 @[simp]
 theorem OrderHom.coe_antisymmetrization (f : α →o β) :
     ⇑f.antisymmetrization = Quotient.map' f (liftFun_antisymmRel f) :=
   rfl
 
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 theorem OrderHom.antisymmetrization_apply (f : α →o β) (a : Antisymmetrization α (· ≤ ·)) :
     f.antisymmetrization a = Quotient.map' f (liftFun_antisymmRel f) a :=
   rfl
@@ -374,6 +368,7 @@ variable (α)
 noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α :=
   { Quotient.outRelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o Antisymmetrization αᵒᵈ (· ≤ ·) where
@@ -396,6 +391,60 @@ theorem OrderIso.dualAntisymmetrization_symm_apply (a : α) :
   rfl
 
 end Preorder
+
+section SymmGen
+
+open Relation
+
+variable {r : α → α → Prop}
+
+theorem AntisymmRel.symmGen (h : AntisymmRel r a b) : SymmGen r a b :=
+  Or.inl h.1
+
+variable [Preorder α]
+
+theorem Relation.SymmGen.of_lt (h : a < b) : SymmGen (· ≤ ·) a b := h.le.symmGen
+theorem Relation.SymmGen.of_gt (h : b < a) : SymmGen (· ≤ ·) a b := h.le.symmGen_symm
+
+alias _root_.LT.lt.symmGen := SymmGen.of_lt
+alias _root_.LT.lt.symmGen_symm := SymmGen.of_gt
+
+@[trans]
+theorem Relation.SymmGen.of_symmGen_of_antisymmRel
+    (h₁ : SymmGen (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) b c) : SymmGen (· ≤ ·) a c := by
+  obtain (h | h) := h₁
+  · exact (h.trans h₂.le).symmGen
+  · exact (h₂.ge.trans h).symmGen_symm
+
+alias Relation.SymmGen.trans_antisymmRel := SymmGen.of_symmGen_of_antisymmRel
+
+instance : @Trans α α α (SymmGen (· ≤ ·)) (AntisymmRel (· ≤ ·)) (SymmGen (· ≤ ·)) where
+  trans := SymmGen.of_symmGen_of_antisymmRel
+
+@[trans]
+theorem Relation.SymmGen.of_antisymmRel_of_symmGen
+    (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : SymmGen (· ≤ ·) b c) : SymmGen (· ≤ ·) a c :=
+  (h₂.symm.trans_antisymmRel h₁.symm).symm
+
+alias AntisymmRel.trans_symmGen := SymmGen.of_antisymmRel_of_symmGen
+
+instance : @Trans α α α (AntisymmRel (· ≤ ·)) (SymmGen (· ≤ ·)) (SymmGen (· ≤ ·)) where
+  trans := SymmGen.of_antisymmRel_of_symmGen
+
+theorem AntisymmRel.symmGen_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
+    SymmGen (· ≤ ·) a c ↔ SymmGen (· ≤ ·) b d where
+  mp h := (h₁.symm.trans_symmGen h).trans_antisymmRel h₂
+  mpr h := (h₁.trans_symmGen h).trans_antisymmRel h₂.symm
+
+theorem AntisymmRel.symmGen_congr_left (h : AntisymmRel (· ≤ ·) a b) :
+    SymmGen (· ≤ ·) a c ↔ SymmGen (· ≤ ·) b c :=
+  h.symmGen_congr .rfl
+
+theorem AntisymmRel.symmGen_congr_right (h : AntisymmRel (· ≤ ·) b c) :
+    SymmGen (· ≤ ·) a b ↔ SymmGen (· ≤ ·) a c :=
+  AntisymmRel.rfl.symmGen_congr h
+
+end SymmGen
 
 section Prod
 

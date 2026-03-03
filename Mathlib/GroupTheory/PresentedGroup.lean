@@ -72,6 +72,7 @@ lemma mk_eq_mk_of_inv_mul_mem {rels : Set (FreeGroup α)} {x y : FreeGroup α}
     (hx : x⁻¹ * y ∈ rels) : mk rels x = mk rels y :=
   eq_of_inv_mul_eq_one <| one_of_mem hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The generators of a presented group generate the presented group. That is, the subgroup closure
 of the set of generators equals `⊤`. -/
 @[simp]
