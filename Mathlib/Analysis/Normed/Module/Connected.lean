@@ -31,7 +31,8 @@ public section
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal
 
-open Convex Set Metric
+open Set Metric
+open scoped Convex ENNReal
 
 section TopologicalVectorSpace
 
@@ -135,38 +136,69 @@ section Ball
 
 namespace Metric
 
-theorem ball_contractible {x : E} {r : ℝ} (hr : 0 < r) :
+theorem contractibleSpace_ball {x : E} {r : ℝ} (hr : 0 < r) :
     ContractibleSpace (ball x r) :=
-  Convex.contractibleSpace (convex_ball _ _) (by simpa)
+  (convex_ball _ _).contractibleSpace (by simpa)
 
-theorem eball_contractible {x : E} {r : ENNReal} (hr : 0 < r) :
-    ContractibleSpace (Metric.eball x r) := by
-  cases r with
-  | top =>
-    rw [eball_top_eq_univ, (Homeomorph.Set.univ E).contractibleSpace_iff]
-    exact RealTopologicalVectorSpace.contractibleSpace
-  | coe r =>
-    rw [Metric.eball_coe]
-    apply ball_contractible
-    simpa using hr
+@[deprecated (since := "2026-02-02")]
+alias ball_contractible := contractibleSpace_ball
+
+theorem contractibleSpace_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    ContractibleSpace (eball x r) :=
+  (convex_eball _ _).contractibleSpace ⟨x, by simpa⟩
+
+@[deprecated (since := "2026-02-02")]
+alias eball_contractible := contractibleSpace_eball
+
+theorem contractibleSpace_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
+    ContractibleSpace (closedBall x r) :=
+  (convex_closedBall _ _).contractibleSpace (by simpa)
+
+instance contractibleSpace_closedEBall {x : E} {r : ℝ≥0∞} :
+    ContractibleSpace (closedEBall x r) :=
+  (convex_closedEBall _ _).contractibleSpace ⟨x, by simp⟩
 
 theorem isPathConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
-    IsPathConnected (ball x r) := by
-  rw [isPathConnected_iff_pathConnectedSpace]
-  exact @ContractibleSpace.instPathConnectedSpace _ _ (ball_contractible hr)
+    IsPathConnected (ball x r) :=
+  convex_ball _ _ |>.isPathConnected <| by simpa
 
-theorem isPathConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsPathConnected (Metric.eball x r) := by
-  rw [isPathConnected_iff_pathConnectedSpace]
-  exact @ContractibleSpace.instPathConnectedSpace _ _ (eball_contractible hr)
+theorem isPathConnected_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    IsPathConnected (eball x r) :=
+  convex_eball _ _ |>.isPathConnected ⟨x, by simpa⟩
+
+theorem isPathConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) :
+    IsPathConnected (closedBall x r) :=
+  convex_closedBall _ _ |>.isPathConnected ⟨x, by simpa⟩
+
+theorem isPathConnected_closedEBall {x : E} {r : ℝ≥0∞} :
+    IsPathConnected (closedEBall x r) :=
+  isPathConnected_iff_pathConnectedSpace.mpr inferInstance
+
+theorem isPreconnected_ball {x : E} {r : ℝ} : IsPreconnected (ball x r) :=
+  (convex_ball _ _).isPreconnected
+
+theorem isPreconnected_eball {x : E} {r : ℝ≥0∞} : IsPreconnected (eball x r) :=
+  (convex_eball _ _).isPreconnected
+
+theorem isPreconnected_closedBall {x : E} {r : ℝ} : IsPreconnected (closedBall x r) :=
+  (convex_closedBall _ _).isPreconnected
+
+theorem isPreconnected_closedEBall {x : E} {r : ℝ≥0∞} : IsPreconnected (closedEBall x r) :=
+  (convex_closedEBall _ _).isPreconnected
 
 theorem isConnected_ball {x : E} {r : ℝ} (hr : 0 < r) :
     IsConnected (ball x r) :=
   (isPathConnected_ball hr).isConnected
 
-theorem isConnected_eball {x : E} {r : ENNReal} (hr : 0 < r) :
-    IsConnected (Metric.eball x r) :=
+theorem isConnected_eball {x : E} {r : ℝ≥0∞} (hr : 0 < r) :
+    IsConnected (eball x r) :=
   (isPathConnected_eball hr).isConnected
+
+theorem isConnected_closedBall {x : E} {r : ℝ} (hr : 0 ≤ r) : IsConnected (closedBall x r) :=
+  ⟨⟨x, by simpa⟩, isPreconnected_closedBall⟩
+
+theorem isConnected_closedEBall {x : E} {r : ℝ≥0∞} : IsConnected (closedEBall x r) :=
+  ⟨⟨x, mem_closedEBall_self⟩, isPreconnected_closedEBall⟩
 
 end Metric
 

@@ -32,8 +32,9 @@ open CategoryTheory Simplicial Limits
 
 namespace SSet
 
+set_option backward.isDefEq.respectTransparency false in
 -- Note: this could be obtained as `inferInstanceAs (Balanced (_ ⥤ _))`
--- by importing `Mathlib.CategoryTheory.Adhesive`, but we give a
+-- by importing `Mathlib.CategoryTheory.Adhesive.Basic`, but we give a
 -- different proof so as to reduce imports
 instance : Balanced SSet.{u} where
   isIso_of_mono_of_epi f _ _ := by
@@ -192,6 +193,7 @@ instance [Mono f] : Mono (toRange f) :=
 instance [Mono f] : IsIso (toRange f) :=
   isIso_of_mono_of_epi _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma range_eq_top_iff : Subcomplex.range f = ⊤ ↔ Epi f := by
   rw [NatTrans.epi_iff_epi_app, Subfunctor.ext_iff, funext_iff]
   simp only [epi_iff_surjective, Subfunctor.range_obj, Subfunctor.top_obj,
