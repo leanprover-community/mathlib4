@@ -295,8 +295,7 @@ to presheaves when we don't want to suppose that `f` is an open map.
 -/
 @[simps!]
 def IsOpenMap.functorMap {X Y : TopCat.{u}} {f : X ⟶ Y} {U V : Opens X}
-     (HU : IsOpen (⇑(CategoryTheory.ConcreteCategory.hom f) '' ↑U))
-     (HV : IsOpen (⇑(CategoryTheory.ConcreteCategory.hom f) '' ↑V)) (le : U ≤ V) :
+     (HU : IsOpen (f '' U)) (HV : IsOpen (f '' V)) (le : U ≤ V) :
      (⟨_, HU⟩ : Opens Y) ⟶ ⟨_, HV⟩ := ⟨⟨Set.image_mono le⟩⟩
 
 /-- An open map `f : X ⟶ Y` induces a functor `Opens X ⥤ Opens Y`.
