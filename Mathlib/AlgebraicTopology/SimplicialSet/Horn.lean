@@ -52,7 +52,6 @@ lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
   rw [horn_eq_iSup]
   exact le_iSup (fun (k : ({j}ᶜ : Set (Fin (n + 1)))) ↦ stdSimplex.face.{u} {k.1}ᶜ) ⟨i, h⟩
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     (horn.{u} (n + 2) i).obj (op (.mk 0)) = ⊤ := by
@@ -83,7 +82,6 @@ section
 
 variable (n : ℕ) (i k : Fin (n + 3))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The (degenerate) subsimplex of `Λ[n+2, i]` concentrated in vertex `k`. -/
 def const (m : SimplexCategoryᵒᵖ) : Λ[n + 2, i].obj m :=
   SSet.yonedaEquiv (X := Λ[n + 2, i])
