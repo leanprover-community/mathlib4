@@ -208,7 +208,7 @@ namespace IsDedekindDomain
 
 variable [IsDedekindDomain S]
 
-theorem ramificationIdx_eq_normalizedFactors_count [DecidableEq (Ideal S)]
+theorem ramificationIdx_eq_normalizedFactors_count
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime)
     (hP0 : P ≠ ⊥) : ramificationIdx f p P = (normalizedFactors (map f p)).count P := by
   have hPirr := (Ideal.prime_of_isPrime hP0 hP).irreducible
@@ -229,7 +229,7 @@ theorem ramificationIdx_eq_multiplicity (hp : map f p ≠ ⊥) (hP : P.IsPrime) 
     ← UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors _ hp, normalize_eq]
   exact irreducible_iff_prime.mpr <| prime_of_isPrime hP₂ hP
 
-theorem ramificationIdx_eq_factors_count [DecidableEq (Ideal S)]
+theorem ramificationIdx_eq_factors_count
     (hp0 : map f p ≠ ⊥) (hP : P.IsPrime) (hP0 : P ≠ ⊥) :
     ramificationIdx f p P = (factors (map f p)).count P := by
   rw [IsDedekindDomain.ramificationIdx_eq_normalizedFactors_count hp0 hP hP0,
@@ -619,7 +619,6 @@ noncomputable def powQuotSuccInclusion (i : ℕ) :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem powQuotSuccInclusion_injective (i : ℕ) :
     Function.Injective (powQuotSuccInclusion p P i) := by
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
@@ -627,7 +626,6 @@ theorem powQuotSuccInclusion_injective (i : ℕ) :
   rw [Subtype.ext_iff] at hx0 ⊢
   rwa [powQuotSuccInclusion_apply_coe] at hx0
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`.
 See `quotientToQuotientRangePowQuotSucc` for this as a linear map,
 and `quotientRangePowQuotSuccInclusionEquiv` for this as a linear equivalence.
@@ -644,7 +642,6 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
       Subtype.coe_mk, map_mul, map_sub, mul_sub]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux p P a_mem (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ := by
@@ -653,7 +650,6 @@ theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a �
 section
 variable [hfp : NeZero (ramificationIdx (algebraMap R S) p P)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`. -/
 noncomputable def quotientToQuotientRangePowQuotSucc
     {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) :
@@ -674,13 +670,11 @@ noncomputable def quotientToQuotientRangePowQuotSucc
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSucc p P a_mem (Submodule.Quotient.mk x) =
       Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
   quotientToQuotientRangePowQuotSuccAux_mk p P a_mem x
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsPrime]
     {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i) (a_notMem : a ∉ P ^ (i + 1)) :
     Function.Injective (quotientToQuotientRangePowQuotSucc p P a_mem) := fun x =>
@@ -700,7 +694,6 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
               ((Submodule.sub_mem_iff_right _ hz).mp (Pe_le_Pi1 h))).resolve_left
           a_notMem
 
-set_option backward.isDefEq.respectTransparency false in
 theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     (hP0 : P ≠ ⊥) [hP : P.IsPrime] {i : ℕ} (hi : i < e) {a : S} (a_mem : a ∈ P ^ i)
     (a_notMem : a ∉ P ^ (i + 1)) :
@@ -730,7 +723,6 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
     have := (P ^ (i + 1)).zero_mem
     contradiction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Quotienting `P^i / P^e` by its subspace `P^(i+1) ⧸ P^e` is
 `R ⧸ p`-linearly isomorphic to `S ⧸ P`. -/
 noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
@@ -745,7 +737,6 @@ noncomputable def quotientRangePowQuotSuccInclusionEquiv [IsDedekindDomain S]
   · exact quotientToQuotientRangePowQuotSucc_injective p P hi a_mem a_notMem
   · exact quotientToQuotientRangePowQuotSucc_surjective p P hP hi a_mem a_notMem
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Since the inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)` has a kernel isomorphic to `P / S`,
 `[P^i / P^e : R / p] = [P^(i+1) / P^e : R / p] + [P / S : R / p]` -/
 theorem rank_pow_quot_aux [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)

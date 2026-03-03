@@ -223,7 +223,6 @@ section disjointOfDiffUnion
 
 variable {I : Finset (Set α)}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a semiring of sets `C`, for all set `s ∈ C` and finite set of sets `I ⊆ C`, there is a
 finite set of sets in `C` whose union is `s \ ⋃₀ I`.
 See `IsSetSemiring.disjointOfDiffUnion` for a definition that gives such a set. -/
@@ -379,7 +378,7 @@ lemma sUnion_union_sUnion_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C)
     hC.diff_sUnion_eq_sUnion_disjointOfDiffUnion hs hI]
 
 lemma sUnion_union_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C) (hs : s ∈ C)
-    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) [DecidableEq (Set α)] :
+    (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s) :
     ⋃₀ ↑(I ∪ hC.disjointOfDiffUnion hs hI) = s := by
   conv_rhs => rw [← sUnion_union_sUnion_disjointOfDiffUnion_of_subset hC hs hI hI_ss]
   simp_rw [coe_union]
