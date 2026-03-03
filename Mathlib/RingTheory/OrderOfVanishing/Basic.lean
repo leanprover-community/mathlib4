@@ -69,6 +69,7 @@ lemma Ideal.mulQuot_injective {a : R} (I : Ideal R) (ha : a ∈ nonZeroDivisors 
       ext b
       exact (Submodule.mul_mem_smul_iff ha).symm
     simp [← m, ker_comp]
+
 /--
 The quotient map `(R ⧸ a • I) →ₗ[R] (R ⧸ Ideal.span {a})`.
 -/
@@ -107,7 +108,7 @@ The order of vanishing of `a * b` is the order of vanishing of `a` plus the orde
 of vanishing of `b`.
 -/
 theorem ord_mul {a b : R} (hb : b ∈ nonZeroDivisors R) :
-    Ring.ord R (a * b) = Ring.ord R a + Ring.ord R b := by
+    ord R (a * b) = ord R a + ord R b := by
   have := Module.length_eq_add_of_exact (Ideal.mulQuot b (Ideal.span {a}))
           (Ideal.quotOfMul b (Ideal.span {a})) (Ideal.mulQuot_injective (Ideal.span {a}) hb)
           (Ideal.quotOfMul_surjective (Ideal.span {a}))
@@ -128,6 +129,106 @@ lemma ord_mul' {a b : R} (ha : a ∈ nonZeroDivisors R) :
     ord R (a * b) = ord R a + ord R b := by
   rw [mul_comm, ord_mul R ha, add_comm]
 
+/--
+The order of zero is `Module.length R R`. Use this when it is necessary to unfold the definition
+of `ord` to avoid annoyances of working with `R ⧸ Ideal.span {0}` instead of `R`.
+-/
+lemma ord_zero : ord R 0 = Module.length R R := by
+  simp only [ord]
+  let m := (Submodule.quotEquivOfEqBot (Ideal.span {0} : Submodule R R) (span_singleton_zero))
+  exact le_antisymm (Module.length_le_of_injective m m.injective)
+      (Module.length_le_of_surjective m m.surjective)
+
+variable {R}
+/--
+For `x : R` a non zero divisor, `ord R (x^n) = n • ord R x`.
+-/
+@[simp]
+theorem ord_pow (x : R) (hx : x ∈ nonZeroDivisors R) (n : ℕ) : ord R (x ^ n) = n • ord R x := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ, ord_mul, ih, succ_nsmul]
+    exact hx
+
+/--
+For `x : R` a non zero divisor, `ord R (-x) = ord R x`.
+-/
+@[simp]
+lemma ord_neg (x : R) : ord R (-x) = ord R x:= by
+  simp only [ord]
+  congr 2
+  all_goals exact Ideal.span_singleton_neg x
+
+@[simp]
+lemma ord_mul_of_isUnit_left (a : R) (h : IsUnit a) (x : R) : ord R (a * x) = ord R x := by
+  rw [ord, ord, Ideal.span_singleton_mul_left_unit h x]
+
+@[simp]
+lemma ord_mul_of_isUnit_right (a : R) (h : IsUnit a) (x : R) : ord R (x * a) = ord R x := by
+  rw [ord, ord, Ideal.span_singleton_mul_right_unit h x]
+
+lemma ord_mul_of_associated (x y : R) (h : Associated x y) : ord R x = ord R y := by
+  obtain ⟨a, rfl⟩ := h
+  simp
+
+/--
+In an `S` algebra `R`, the order of vanishing of `x : R` is equal to the order of vanishing
+of `a • x` for `a` a unit in `S`.
+-/
+@[simp]
+lemma ord_smul_of_isUnit {S : Type*} [CommRing S] [Algebra S R]
+    (a : S) (h : IsUnit a) (x : R) : ord R (a • x) = ord R x := by
+  rw [Algebra.smul_def a x]
+  exact ord_mul_of_isUnit_left ((algebraMap S R) a) (RingHom.isUnit_map (algebraMap S R) h) x
+
+/-
+Simple lemma saying `ord (x) ≤ ord (a * x)`. One should note that the order here
+is the order on `ℕ∞` where `∞` is a top element.
+-/
+lemma ord_le_ord_mul (a : R) (x : R) : ord R x ≤ ord R (a * x) := by
+  simp only [ord]
+  suffices Ideal.span {a * x} ≤ Ideal.span {x} by
+    let g : (R ⧸ Ideal.span {a * x}) →ₗ[R] (R ⧸ Ideal.span {x}) := Submodule.factor this
+    refine Module.length_le_of_surjective (Submodule.factor this) (Submodule.factor_surjective this)
+  rw [@Ideal.span_singleton_le_span_singleton]
+  exact Dvd.intro_left (Algebra.algebraMap a) rfl
+
+/--
+In an `S` algebra `R`, the order of vanishing of `x : R` is less than or equal
+to the order of vanishing of `a • x` for any `a : S`. One should note that the order here
+is the order on `ℕ∞` where `∞` is a top element.
+-/
+lemma ord_le_smul {S : Type*} [CommRing S] [Algebra S R] (a : S) (x : R) :
+    ord R x ≤ ord R (a • x) := by simp [Algebra.smul_def, ord_le_ord_mul]
+
+/--
+The order of vanishing of a unit is `0`.
+-/
+@[simp]
+lemma ord_of_isUnit (x : R) (hx : IsUnit x) : ord R x = 0 := by
+  simpa using ord_smul_of_isUnit x hx (1 : R)
+
+section IsPrincipalIdealRing
+
+variable [IsPrincipalIdealRing R]
+
+/--
+In a principal ideal ring, the order of vanishing of an irreducible element is `1`.
+-/
+theorem ord_of_irreducible (ϖ : R) (hϖ : Irreducible ϖ) : ord R ϖ = 1 := by
+  rw [Ring.ord, Module.length_eq_one_iff]
+  have : (Ideal.span {ϖ}).IsMaximal :=
+    PrincipalIdealRing.isMaximal_of_irreducible hϖ
+  rw [isSimpleModule_iff_isSimpleModule_of_algebraMap_surjective (S := R ⧸ Ideal.span {ϖ})
+    Ideal.Quotient.mk_surjective]
+  letI := Ideal.Quotient.field (Ideal.span {ϖ})
+  infer_instance
+
+end IsPrincipalIdealRing
+
+variable (R)
+
 open Classical in
 /--
 Zero-preserving monoid homomorphism from a nontrivial commutative ring `R` to `ℕᵐ⁰`.
@@ -145,7 +246,7 @@ def ordMonoidWithZeroHom [Nontrivial R] : R →*₀ ℤᵐ⁰ where
   map_zero' := by
     simp [nonZeroDivisors, exists_ne]
   map_one' := by
-    simp [nonZeroDivisors, Ring.ord_one]
+    simp [nonZeroDivisors]
     rfl
   map_mul' := by
     intro x y
@@ -224,5 +325,6 @@ lemma ordFrac_eq_div (a : nonZeroDivisors R) (b : nonZeroDivisors R) :
     ordFrac R (IsLocalization.mk' K a.1 b) =
       ordMonoidWithZeroHom R a / ordMonoidWithZeroHom R b := by
   simp [ordFrac_eq_ord]
+
 
 end Ring

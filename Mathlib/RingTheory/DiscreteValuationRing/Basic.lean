@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 public import Mathlib.RingTheory.Valuation.ValuationRing
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.DedekindDomain.Basic
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # Discrete valuation rings
@@ -69,6 +72,17 @@ theorem not_a_field : maximalIdeal R ≠ ⊥ :=
 /-- A discrete valuation ring `R` is not a field. -/
 theorem not_isField : ¬IsField R :=
   IsLocalRing.isField_iff_maximalIdeal_eq.not.mpr (not_a_field R)
+
+open Ring in
+lemma ringKrullDim_eq_one : ringKrullDim R = 1 := by
+  refine eq_of_le_of_not_lt (krullDimLE_iff (n := 1).mp ?_) fun h ↦ ?_
+  · exact krullDimLE_one_iff_of_isPrime_bot.mpr fun I hI hI' ↦ hI'.isMaximal hI
+  · have : KrullDimLE 0 R := krullDimLE_iff.mpr (WithBot.lt_add_one_iff.mp h)
+    exact IsDiscreteValuationRing.not_isField R KrullDimLE.isField_of_isDomain
+
+open Ring in
+lemma not_krullDimLE_zero : ¬ KrullDimLE 0 R := by
+  simp [krullDimLE_iff, ringKrullDim_eq_one R]
 
 variable {R}
 
@@ -484,6 +498,31 @@ lemma addVal_eq_zero_iff {x : R} :
   obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
   obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
   simp [isUnit_pow_iff_of_not_isUnit hϖ.not_isUnit, hϖ]
+
+lemma addVal_eq_iff_associated (x y : R) :
+    addVal R x = addVal R y ↔ Associated x y := by
+  constructor
+  · intro h
+    by_cases hx : x = 0
+    · simp_all only [AddValuation.map_zero]
+      have : y = 0 := addVal_eq_top_iff.mp h.symm
+      rw [this]
+    by_cases hy : y = 0
+    · simp_all only [AddValuation.map_zero, associated_zero_iff_eq_zero]
+      have : x = 0 := addVal_eq_top_iff.mp h
+      exact hx this
+    obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+    obtain ⟨m, α, hx'⟩ := eq_unit_mul_pow_irreducible hx hϖ
+    obtain ⟨n, β, hy'⟩ := eq_unit_mul_pow_irreducible hy hϖ
+    simp only [hx', AddValuation.map_mul, addVal_eq_zero_of_unit, AddValuation.map_pow,
+      nsmul_eq_mul, zero_add, hy', associated_unit_mul_right_iff,
+      associated_unit_mul_left_iff] at h ⊢
+    simp only [addVal_uniformizer hϖ, mul_one, Nat.cast_inj] at h
+    rw [h]
+    exact Associates.mk_eq_mk_iff_associated.mp rfl
+  · intro h
+    obtain ⟨u, rfl⟩ := h
+    simp_all
 
 end
 

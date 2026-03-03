@@ -355,6 +355,10 @@ lemma map'_mono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : Monoton
 lemma map'_strictMono [MulOneClass α] [MulOneClass β] {f : α →* β} (hf : StrictMono f) :
     StrictMono (map' f) := by simpa [StrictMono, WithZero.forall]
 
+lemma map'_apply {α β : Type*} [MulOneClass α] [MulOneClass β] (f : α →* β) (x) :
+    WithZero.map' f x = x.map f := by
+  cases x <;> simp only [map'_coe, map_coe, map_zero, map_bot]
+
 theorem exists_ne_zero_and_lt [NoMinOrder α] (hx : x ≠ 0) :
     ∃ y, y ≠ 0 ∧ y < x := by
   obtain ⟨z, hlt⟩ := exists_lt (WithZero.unzero hx)

@@ -506,4 +506,17 @@ noncomputable def equivValuationSubring :
     (IsFractionRing.injective A _))).trans
       (RingEquiv.subringCongr map_algebraMap_eq_valuationSubring)
 
+lemma intValuation_maximalIdeal
+    {R : Type*} [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] (x) :
+    (maximalIdeal R).intValuation x =
+      (WithZero.map (.ofAdd ∘ (↑)) (addVal R x))⁻¹ := by
+  by_cases hx : x = 0
+  · simp [hx]; rfl
+  obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+  obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
+  have : (maximalIdeal R).intValuation ↑u = 1 := by simp [maximalIdeal]
+  simp [(maximalIdeal R).intValuation_singleton hϖ.ne_zero
+    hϖ.maximalIdeal_eq, hϖ, this]
+  rfl
+
 end IsDiscreteValuationRing
