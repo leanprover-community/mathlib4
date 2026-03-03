@@ -684,9 +684,9 @@ section Decidable
 
 variable [DecidableEq α]
 
-/-- Auxiliary decidability algorithm for lists that contain at least two unique elements.
--/
-@[implicit_reducible, implicit_reducible]
+section
+set_option linter.classReturningDef false
+/-- Auxiliary decidability algorithm for lists that contain at least two unique elements. -/
 def decidableNontrivialCoe : ∀ l : List α, Decidable (Nontrivial (l : Cycle α))
   | [] => isFalse (by simp [Nontrivial])
   | [x] => isFalse (by simp [Nontrivial])
@@ -695,6 +695,8 @@ def decidableNontrivialCoe : ∀ l : List α, Decidable (Nontrivial (l : Cycle �
       @decidable_of_iff' _ (Nontrivial (x :: l : Cycle α)) (by simp [h, Nontrivial])
         (decidableNontrivialCoe (x :: l))
     else isTrue ⟨x, y, h, by simp, by simp⟩
+
+end
 
 instance {s : Cycle α} : Decidable (Nontrivial s) :=
   Quot.recOnSubsingleton s decidableNontrivialCoe

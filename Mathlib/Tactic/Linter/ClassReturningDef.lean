@@ -20,6 +20,11 @@ meta section
 
 namespace Mathlib.Linter
 
+public register_option linter.classReturningDef : Bool := {
+  defValue := true
+  descr := "enable the classReturningDef linter"
+}
+
 /-- Returns `true` if the type (after removing binders) is a class. -/
 private def returnsClass (type : Expr) : MetaM Bool := do
   forallTelescopeReducing type fun _ body => do
@@ -32,11 +37,12 @@ private def returnsClass (type : Expr) : MetaM Bool := do
 
 /-- A linter warning if a definition outputs a class
     (possibly after parameters) but is not marked reducible. -/
-def classReturningDef : Linter where
+def classReturningDefLinter : Linter where
   name := `classReturningDef
   run stx := do
+    unless Linter.getLinterValue linter.classReturningDef (← getLinterOptions) do
+      return
     let declName ← getDeclName stx
-
     -- Skip if reducible / implicit_reducible / abbrev
     if (← Lean.isReducible declName) ||
         (← Lean.isImplicitReducible declName) then
@@ -51,11 +57,13 @@ def classReturningDef : Linter where
           let type ← inferType defInfo.value
           if (← returnsClass type) then
             log m!"definition `{declName}` returns a class \
-                  but is not marked @[reducible] or @[implicit_reducible]. \
-                  Consider marking it @[implicit_reducible]."
+                  but is not marked @[reducible] or @[implicit_reducible].\n\
+                  Consider marking it @[implicit_reducible]. \n\
+                  Otherwise,use `set_option linter.classReturningDef false` inside a section \
+                  enclosing the definition to disable the linter."
     | _ => return
 
-initialize addLinter classReturningDef
+initialize addLinter classReturningDefLinter
 
 end Mathlib.Linter
 

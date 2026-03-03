@@ -4,16 +4,34 @@ class Foo where
   x : Nat
 
 /--
-error: definition `bad` returns a class but is not marked @[reducible] or @[implicit_reducible]. Consider marking it @[implicit_reducible].
+error: definition `bad` returns a class but is not marked @[reducible] or @[implicit_reducible].
+Consider marking it @[implicit_reducible]. ⏎
+Otherwise,use `set_option linter.classReturningDef false` inside a section enclosing the definition to disable the linter.
 -/
 #guard_msgs in
 def bad : Foo := { x := 1 }   -- should warn
 
 /--
-error: definition `bad2` returns a class but is not marked @[reducible] or @[implicit_reducible]. Consider marking it @[implicit_reducible].
+error: definition `bad2` returns a class but is not marked @[reducible] or @[implicit_reducible].
+Consider marking it @[implicit_reducible]. ⏎
+Otherwise,use `set_option linter.classReturningDef false` inside a section enclosing the definition to disable the linter.
 -/
 #guard_msgs in
 def bad2 (n : Nat) : Foo := { x := n } -- should warn
+
+section
+set_option linter.classReturningDef false
+def bad3 (n : Nat) : Foo := { x := n } -- should not warn as the linter is disabled
+end
+
+/--
+error: definition `bad4` returns a class but is not marked @[reducible] or @[implicit_reducible].
+Consider marking it @[implicit_reducible]. ⏎
+Otherwise,use `set_option linter.classReturningDef false` inside a section enclosing the definition to disable the linter.
+-/
+#guard_msgs in
+def bad4 (n : Nat) : Foo := { x := n } -- should warn
+
 
 @[reducible]
 def ok1 : Foo := { x := 2 }  -- no warning
