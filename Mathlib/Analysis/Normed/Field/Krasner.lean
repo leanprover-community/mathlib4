@@ -71,7 +71,6 @@ variable [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
     [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
 
 set_option backward.isDefEq.respectTransparency false in
-set_option trace.Meta.synthInstance.instances true in
 /-- Krasner's lemma assuming `Normal K L`. -/
 theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
