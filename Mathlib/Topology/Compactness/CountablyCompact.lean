@@ -91,13 +91,6 @@ theorem isCountablyCompact_iff_clusterPt_countably_generated_filter :
   · intro h x hx
     exact h (map x atTop) (tendsto_principal.mpr (Eventually.of_forall hx))
 
--- TODO move to Mathlib.Topology.Defs.Sequences or Mathlib.Topology.Basic
-/-- A point `a` is a cluster point of the sequence `x` if and only if `a` belongs to the closure
-of every tail `x '' {n | i ≤ n}`. -/
-theorem mapClusterPt_atTop_iff_forall_mem_closure {ι : Type*} [Preorder ι] [IsDirectedOrder ι]
-    [Nonempty ι] {x : ι → E} {a : E} : MapClusterPt a atTop x ↔ ∀ i, a ∈ closure (x '' Ici i) := by
-  simp only [MapClusterPt, (atTop_basis.map x).clusterPt_iff_forall_mem_closure, true_implies]
-
 /-- A countably compact set has a finite subcover for any countable open cover. -/
 theorem IsCountablyCompact.elim_finite_subcover (hA : IsCountablyCompact A) [Countable ι]
     {U : ι → Set E} (hUo : ∀ i, IsOpen (U i)) (hAU : A ⊆ ⋃ i, U i) :
