@@ -260,8 +260,8 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
   app X := haveI := CompHausLike.preregular hs
     ⟨counitApp X.obj⟩
   naturality X Y g := by
-    sorry /-
-    have := CompHausLike.preregular hs
+    sorry
+    /-have := CompHausLike.preregular hs
     apply Sheaf.Hom.ext
     simp only [functor, Functor.comp_obj, Functor.flip_obj_obj,
       sheafToPresheaf, Functor.id_obj, Functor.comp_map, Functor.flip_obj_map,
@@ -319,13 +319,12 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
     (X := ((functor P hs).obj X).obj) (Y := ((functor.{u, w} P hs).obj X).obj)
       (f.map ((unit P hs).app X))
   intro a
-  sorry /-
   erw [incl_of_counitAppApp]
-  simp only [functor_obj_val, functorToPresheaves_obj_obj, Functor.id_obj,
+  simp only [functor_obj_obj, functorToPresheaves_obj_obj, Functor.id_obj,
     counitAppAppImage, functorToPresheaves_obj_map, Quiver.Hom.unop_op]
   ext x
   erw [← map_eq_image _ a x]
-  rfl-/
+  rfl
 
 /--
 `CompHausLike.LocallyConstant.functor` is left adjoint to the forgetful functor.
@@ -336,13 +335,9 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
   unit := unit P hs
   counit := counit P hs
   left_triangle_components := by
-    sorry /-
     intro X
-    simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
-      functor_obj_val, functorToPresheaves_obj_obj]
-    apply Sheaf.hom_ext
-    rw [Sheaf.comp_val, Sheaf.id_val]
-    exact adjunction_left_triangle P hs X-/
+    ext : 1
+    exact adjunction_left_triangle P hs X
   right_triangle_components := by
     sorry /-
     intro X

@@ -176,9 +176,12 @@ lemma sheafComposeNatTrans_fac (P : Cᵒᵖ ⥤ A) :
     adj₂.unit.app (P ⋙ F) ≫
       (sheafToPresheaf J B).map ((sheafComposeNatTrans J F adj₁ adj₂).app P) =
         whiskerRight (adj₁.unit.app P) F := by
-  sorry
-  --simp [sheafComposeNatTrans, -sheafToPresheaf_obj, -sheafToPresheaf_map,
-  --  Adjunction.homEquiv_counit]
+  dsimp [sheafComposeNatTrans]
+  rw [Adjunction.homEquiv]
+  have h₁ := adj₂.unit.naturality (whiskerRight (adj₁.unit.app P) F)
+  have h₂ := adj₂.right_triangle_components ((sheafCompose J F).obj (G₁.obj P))
+  dsimp at h₁ h₂ ⊢
+  simp [← reassoc_of% h₁, h₂]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafComposeNatTrans_app_uniq (P : Cᵒᵖ ⥤ A)

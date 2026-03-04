@@ -68,7 +68,7 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
         f.1.app _ (M.1.map (homOfLE hrU).op _) = N.1.map (homOfLE hrU).op (f.1.app _ x) :=
       congr($(f.1.naturality (homOfLE hrU).op).hom x)
     rw [← this, ← this, M.val.map_smul]
-    generalize (Spec R).ringCatSheaf.val.map (homOfLE hrU).op t = t
+    generalize (Spec R).ringCatSheaf.obj.map (homOfLE hrU).op t = t
     letI := Module.compHom (R := Γ(Spec R, basicOpen r)) Γ(M, basicOpen r)
       (algebraMap R Γ(Spec R, basicOpen r))
     haveI : IsScalarTower R Γ(Spec R, basicOpen r) Γ(M, basicOpen r) :=
@@ -78,7 +78,7 @@ def SpecModulesToSheafFullyFaithful : (modulesSpecToSheaf (R := R)).FullyFaithfu
       .of_algebraMap_smul fun _ _ ↦ rfl
     exact (IsLocalization.linearMap_compatibleSMul (.powers (M := R) r)
       Γ(Spec R, basicOpen r) Γ(M, basicOpen r) Γ(N, basicOpen r)).map_smul
-      (f.val.app _).hom _ _⟩, fun i ↦ by ext x; exact congr($(f.1.naturality i).hom x)⟩
+      (f.hom.app _).hom _ _⟩, fun i ↦ by ext x; exact congr($(f.1.naturality i).hom x)⟩
   map_preimage f := rfl
   preimage_map f := rfl
 
@@ -101,8 +101,8 @@ def modulesSpecToSheafIso :
   NatIso.ofComponents (fun U ↦ LinearEquiv.toModuleIso
     (X₁ := (modulesSpecToSheaf.obj (tilde M)).presheaf.obj _)
     { __ := AddEquiv.refl _,
-      map_smul' r m := IsScalarTower.algebraMap_smul (M := ((structureSheafInType R M).val.obj U))
-        ((structureSheafInType R R).val.obj U) r m }) fun _ ↦ rfl
+      map_smul' r m := IsScalarTower.algebraMap_smul (M := ((structureSheafInType R M).obj.obj U))
+        ((structureSheafInType R R).obj.obj U) r m }) fun _ ↦ rfl
 
 /-- The map from `M` to `Γ(M, U)`. This is a localiation map when `U = D(f)`. -/
 def toOpen (U : (Spec R).Opens) : M ⟶ (modulesSpecToSheaf.obj (tilde M)).presheaf.obj (.op U) :=
@@ -200,7 +200,7 @@ noncomputable def Scheme.Modules.fromTildeΓ (M : (Spec (.of R)).Modules) :
     { app (f : Rᵒᵖ) := by
         refine (ModuleCat.ofHom (IsLocalizedModule.lift (.powers (M := R) f.unop)
           (tilde.toOpen _ (PrimeSpectrum.basicOpen f.unop)).hom
-          ((modulesSpecToSheaf.obj M).val.map (homOfLE le_top).op).hom ?_):)
+          ((modulesSpecToSheaf.obj M).obj.map (homOfLE le_top).op).hom ?_):)
         rw [Subtype.forall]
         change Submonoid.powers _ ≤ (IsUnit.submonoid _).comap _
         simp only [inducedFunctor_obj, Submonoid.powers_le, Submonoid.mem_comap]
@@ -242,7 +242,7 @@ lemma Scheme.Modules.toOpen_fromTildeΓ_app (M : (Spec (.of R)).Modules) (U) :
   ext x
   refine (IsLocalizedModule.lift_apply (.powers (M := R) 1)
     (tilde.toOpen _ (PrimeSpectrum.basicOpen (R := R) 1)).hom
-    ((modulesSpecToSheaf.obj M).val.map (homOfLE le_top).op).hom (by simp) x)
+    ((modulesSpecToSheaf.obj M).obj.map (homOfLE le_top).op).hom (by simp) x)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- This is the counit of the tilde-Gamma adjunction. -/
@@ -251,7 +251,7 @@ noncomputable def Scheme.Modules.fromTildeΓNatTrans :
   app := fromTildeΓ
   naturality {M N} f := by
     apply SpecModulesToSheafFullyFaithful.map_injective
-    apply CategoryTheory.Sheaf.hom_ext
+    apply CategoryTheory.Sheaf.Hom.ext
     apply (TopCat.Sheaf.restrictHomEquivHom _ _ PrimeSpectrum.isBasis_basic_opens).symm.injective
     ext r : 3
     apply IsLocalizedModule.ext (.powers (M := R) r.unop)
@@ -264,12 +264,10 @@ noncomputable def Scheme.Modules.fromTildeΓNatTrans :
     dsimp [TopCat.Sheaf.restrictHomEquivHom, Functor.IsCoverDense.restrictHomEquivHom,
       moduleSpecΓFunctor, Sheaf.forget]
     simp only [← ModuleCat.hom_comp, Functor.map_comp]
-    rw [CategoryTheory.Sheaf.comp_val, CategoryTheory.Sheaf.comp_val]
     congr 1
-    simp only [NatTrans.comp_app]
-    rw [tilde.toOpen_map_app_assoc, toOpen_fromTildeΓ_app N (PrimeSpectrum.basicOpen r.unop),
+    erw [tilde.toOpen_map_app_assoc, toOpen_fromTildeΓ_app N (PrimeSpectrum.basicOpen r.unop),
       toOpen_fromTildeΓ_app_assoc M (PrimeSpectrum.basicOpen r.unop),
-      ← (modulesSpecToSheaf.map f).val.naturality]
+      ← (modulesSpecToSheaf.map f).hom.naturality]
 
 /-- `tilde.isoTop` bundled as a natural isomorphism.
 This is the unit of the tilde-Gamma adjunction. -/
@@ -284,7 +282,7 @@ def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
   counit := fromTildeΓNatTrans
   left_triangle_components M := by
     apply SpecModulesToSheafFullyFaithful.map_injective
-    apply CategoryTheory.Sheaf.hom_ext
+    apply CategoryTheory.Sheaf.Hom.ext
     apply (TopCat.Sheaf.restrictHomEquivHom _ _ PrimeSpectrum.isBasis_basic_opens).symm.injective
     ext r : 3
     apply IsLocalizedModule.ext (.powers (M := R) r.unop)
@@ -298,14 +296,14 @@ def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
       fromTildeΓNatTrans, moduleSpecΓFunctor, Sheaf.forget, sheafToPresheaf]
     simp only [← ModuleCat.hom_comp, Functor.map_comp]
     congr 1
-    rw [CategoryTheory.Sheaf.comp_val]
+    rw [ObjectProperty.FullSubcategory.comp_hom]
     dsimp
     rw [toOpen_map_app_assoc, toOpen_fromTildeΓ_app]
     rfl
   right_triangle_components M := by
     dsimp [toTildeΓNatIso, fromTildeΓNatTrans, tilde.isoTop, moduleSpecΓFunctor, Sheaf.forget]
     rw [toOpen_fromTildeΓ_app]
-    exact (modulesSpecToSheaf.obj M).val.map_id _
+    exact (modulesSpecToSheaf.obj M).obj.map_id _
 
 instance : IsIso (tilde.adjunction (R := R)).unit := by
   dsimp [tilde.adjunction]; infer_instance

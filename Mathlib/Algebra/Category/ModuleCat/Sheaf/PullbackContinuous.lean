@@ -72,13 +72,12 @@ variable [(PresheafOfModules.pushforward.{v} φ.hom).IsRightAdjoint]
 
 namespace PullbackConstruction
 
---set_option trace.Meta.synthInstance true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a left adjoint to the functor `pushforward.{v} φ` by using the
 pullback of presheaves of modules and the sheafification. -/
 noncomputable def adjunction :
-    (forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙ 𝟭 _ ⋙
-      PresheafOfModules.sheafification (𝟙 R.obj)) ⊣ pushforward.{v} φ :=
+    (forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙
+      PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj)) ⊣ pushforward.{v} φ :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G ↦
         ((PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)).homEquiv _ _).trans
@@ -105,8 +104,8 @@ of the forget functor to presheaves, the pullback on presheaves of modules, and
 the sheafification functor. -/
 noncomputable def pullbackIso :
     pullback.{v} φ ≅
-      forget S ⋙ PresheafOfModules.pullback.{v} φ.val ⋙
-        PresheafOfModules.sheafification (𝟙 R.val) :=
+      forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙
+        PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj) :=
   Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction φ)
     (PullbackConstruction.adjunction φ)
 
@@ -116,14 +115,14 @@ variable [HasWeakSheafify J AddCommGrpCat.{v}] [J.WEqualsLocallyBijective AddCom
 
 /-- The pullback of (pre)sheaves of modules commutes with the sheafification. -/
 noncomputable def sheafificationCompPullback :
-    PresheafOfModules.sheafification (𝟙 S.val) ⋙ pullback.{v} φ ≅
-      PresheafOfModules.pullback.{v} φ.val ⋙
-        PresheafOfModules.sheafification (𝟙 R.val) :=
+    PresheafOfModules.sheafification (𝟙 S.obj) ⋙ pullback.{v} φ ≅
+      PresheafOfModules.pullback.{v} φ.hom ⋙
+        PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj) :=
   Adjunction.leftAdjointUniq
-    ((PresheafOfModules.sheafificationAdjunction (𝟙 S.val)).comp
+    ((PresheafOfModules.sheafificationAdjunction (𝟙 S.obj)).comp
       (pullbackPushforwardAdjunction φ))
-    ((PresheafOfModules.pullbackPushforwardAdjunction φ.val).comp
-      (PresheafOfModules.sheafificationAdjunction (𝟙 R.val)))
+    ((PresheafOfModules.pullbackPushforwardAdjunction φ.hom).comp
+      (PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)))
 
 end
 

@@ -46,7 +46,7 @@ class GrothendieckTopology.HasSheafCompose : Prop where
 variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 
 /-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
-@[simps!]
+@[simps! obj_obj map_hom]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B :=
   ObjectProperty.lift _
     (sheafToPresheaf _ _ ⋙ (Functor.whiskeringRight _ _ _).obj F)

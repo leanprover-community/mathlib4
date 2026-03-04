@@ -65,16 +65,17 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).hom =
-      sheafifyLift J (((adj.whiskerRight Cᵒᵖ).counit.app Y.obj)) Y.property := by
-  /-change ((𝟭 (Sheaf _ _)).map ((adjunction J adj).counit.app Y)).hom = _
-  simp only [Functor.comp_obj, sheafToPresheaf_obj, sheafCompose_obj_val, whiskeringRight_obj_obj,
-    adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
-    Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
-    comp_val, sheafificationAdjunction_counit_app_val,
-    sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id',
-    Category.comp_id, Category.id_comp]-/
-  sorry
-
+      sheafifyLift J (((adj.whiskerRight Cᵒᵖ).counit.app Y.obj)) Y.property :=
+  ((sheafToPresheaf _ _).congr_map
+    (Adjunction.map_restrictFullyFaithful_counit_app _ _ (Functor.FullyFaithful.id _)
+      (L := composeAndSheafify J G) (R := sheafCompose J F) _ _ Y)).trans (by
+        dsimp
+        simp only [Adjunction.comp_counit_app, ObjectProperty.ι_obj, comp_obj,
+          whiskeringRight_obj_obj, id_obj, ObjectProperty.FullSubcategory.comp_hom,
+          sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, Category.comp_id,
+          Category.id_comp]
+        congr 1
+        cat_disch)
 
 instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
   (adjunction J (Adjunction.ofIsRightAdjoint F)).isRightAdjoint
