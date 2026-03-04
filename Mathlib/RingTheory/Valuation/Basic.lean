@@ -536,6 +536,12 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
   rw [← WithZero.coe_unzero (Units.ne_zero γ)]
   rfl -- Why rfl?
 
+lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
+    {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
+  simp only [IsEquiv] at h ⊢
+  intro r s
+  simp only [restrict_le_iff, h]
+
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
   carrier := { x | v x < γ }
