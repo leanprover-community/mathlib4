@@ -6,7 +6,7 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Independence.Basic
-public import Mathlib.Probability.Independence.Conditional
+public import Mathlib.Probability.Independence.Conditional.CondIndepFun
 
 /-!
 # Kolmogorov's 0-1 law
@@ -67,8 +67,7 @@ theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω
     using Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep
 
 theorem condExp_eq_zero_or_one_of_condIndepSet_self
-    [StandardBorelSpace Ω]
-    (hm : m ≤ m0) [hμ : IsFiniteMeasure μ] {t : Set Ω} (ht : MeasurableSet t)
+    (hm : m ≤ m0) [hμ : IsSigmaFinite (P.trim hm)] {t : Set Ω} (ht : MeasurableSet t)
     (h_indep : CondIndepSet m hm t t μ) :
     ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 := by
   -- TODO: Why is not inferred?

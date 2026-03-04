@@ -285,7 +285,7 @@ theorem CondIndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSp
     [MeasurableNeg β'] (hfg : CondIndepFun P mΩ f g) :
     CondIndepFun P mΩ f (-g) := hfg.comp measurable_id measurable_neg
 
-theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
+theorem CondIndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
     [MeasurableNeg β] (hfg : CondIndepFun P mΩ f g) :
     CondIndepFun P mΩ (-f) g := hfg.comp measurable_neg measurable_id
 
