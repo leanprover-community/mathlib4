@@ -121,7 +121,7 @@ instance of_completeSpace : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
     -- Reduce to the case `L = algebraic closure of K` to apply the previous lemma.
     let C := AlgebraicClosure K
-    let : NontriviallyNormedField C := spectralNorm.nontriviallyNormedField (K := K) C
+    let : NontriviallyNormedField C := spectralNorm.nontriviallyNormedField K C
     let : NormedAlgebra K C := spectralNorm.normedAlgebra K C
     let iL : L →ₐ[K] C := IsAlgClosed.lift
     algebraize [iL.toRingHom]
