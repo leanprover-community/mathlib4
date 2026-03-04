@@ -75,8 +75,11 @@ theorem ofDual_inj {a b : αᵒᵈ} : ofDual a = ofDual b ↔ a = b := by simp
 
 @[ext] lemma ext {a b : αᵒᵈ} (h : ofDual a = ofDual b) : a = b := h
 
-@[simp]
+@[to_dual self, simp]
 theorem toDual_le_toDual [LE α] {a b : α} : toDual a ≤ toDual b ↔ b ≤ a := .rfl
+
+@[to_dual self, simp]
+theorem toDual_lt_toDual [LT α] {a b : α} : toDual a < toDual b ↔ b < a := .rfl
 
 @[to_dual self, simp]
 theorem ofDual_le_ofDual [LE α] {a b : αᵒᵈ} : ofDual a ≤ ofDual b ↔ b ≤ a := .rfl
