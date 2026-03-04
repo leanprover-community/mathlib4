@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Nat.BinaryRec
 public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Basic
-public import Std.Tactic.BVDecide.Normalize
 
 /-!
 # Additional properties of binary recursion on `Nat`
