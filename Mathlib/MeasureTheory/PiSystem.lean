@@ -108,7 +108,7 @@ theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : �
   rw [← Set.preimage_inter] at hst ⊢
   exact ⟨s ∩ t, h_pi s hs_mem t ht_mem (nonempty_of_nonempty_preimage hst), rfl⟩
 
-/-- For a ∩-stable set of sets `C` on `α` and a sequence of sets `s` with this attribute,
+/-- For a `π`-system `C` over `α` and a sequence of sets `s` belonging to `C`,
 `dissipate s n` belongs to `C`. -/
 lemma IsPiSystem.dissipate_mem {s : ℕ → Set α} {C : Set (Set α)}
     (hC : IsPiSystem C) (h : ∀ n, s n ∈ C) (n : ℕ) (h' : (dissipate s n).Nonempty) :
