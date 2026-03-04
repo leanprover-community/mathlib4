@@ -1278,6 +1278,7 @@ This is the `Finsupp` version of `Equiv.Pi_curry`. -/
 noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σ j, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
   toFun := split
   invFun f :=
+    haveI := Classical.decEq α
     onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun _ hg =>
       Finset.mem_sigma.mpr ⟨Finset.mem_univ _, mem_support_iff.mpr hg⟩
   left_inv f := by

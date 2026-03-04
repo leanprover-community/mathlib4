@@ -65,6 +65,7 @@ then it is also `E`-linearly independent. -/
 theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyInseparable F E]
     {ι : Type*} {v : ι → K} (hsep : ∀ i : ι, IsSeparable F (v i))
     (h : LinearIndependent F v) : LinearIndependent E v := by
+  classical
   obtain ⟨q, _⟩ := ExpChar.exists F
   haveI := expChar_of_injective_algebraMap (algebraMap F K).injective q
   refine linearIndependent_iff.mpr fun l hl ↦ Finsupp.ext fun i ↦ ?_

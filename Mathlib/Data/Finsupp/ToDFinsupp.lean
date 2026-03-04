@@ -258,6 +258,7 @@ def sigmaFinsuppEquivDFinsupp [Zero N] : ((Σ i, η i) →₀ N) ≃ Π₀ i, η
           exact (em _).symm⟩⟩
   invFun f := by
     haveI := Classical.decEq ι
+    haveI := Classical.decEq N
     haveI := fun i => Classical.decEq (η i →₀ N)
     refine
       onFinset (Finset.sigma f.support fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>

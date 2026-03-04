@@ -34,9 +34,12 @@ lemma mem_sym2_support_of_mul_ne_zero (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
 
 /-- The composition of a `Finsupp` with `Sym2.mul` as a `Finsupp`. -/
 noncomputable def sym2Mul (f : α →₀ M₀) : Sym2 α →₀ M₀ :=
+  haveI := Classical.decEq M₀
   .onFinset f.support.sym2 (fun p ↦ mul (p.map f)) mem_sym2_support_of_mul_ne_zero
 
-lemma support_sym2Mul_subset : f.sym2Mul.support ⊆ f.support.sym2 := support_onFinset_subset
+lemma support_sym2Mul_subset : f.sym2Mul.support ⊆ f.support.sym2 := by
+  classical
+  exact support_onFinset_subset
 
 @[simp, norm_cast] lemma coe_sym2Mul (f : α →₀ M₀) : f.sym2Mul = mul ∘ map f := rfl
 
