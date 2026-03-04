@@ -27,6 +27,7 @@ on:
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
   contents: read
+  id-token: write
   # By default let's remove this permission (which is present in the other build pipelines)
   # from the CI experimentation runs to avoid unwitting side effects
   # pull-requests: write

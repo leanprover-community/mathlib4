@@ -20,7 +20,7 @@ jobs:
           app-id: ${{ secrets.MATHLIB_MERGE_CONFLICTS_APP_ID }}
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
           key-name: mathlib-merge-conflicts-app-pk
-          azure-client-id: ${{ vars.LABEL_BOTS_AZURE_APP_ID }}
+          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_LABEL_BOTS }}
           azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
 
       - name: check if prs are dirty
