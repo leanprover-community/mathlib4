@@ -248,6 +248,13 @@ theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [SMul S M] [IsScalarTow
     (x : M) : Q (a • x) = (a * a) • Q x := by
   rw [← IsScalarTower.algebraMap_smul R a x, Q.map_smul, ← map_mul, algebraMap_smul]
 
+/-- Restrict the domain of a quadratic map -/
+@[simps] def restrict (Q : QuadraticMap R M N) (V : Submodule R M) : QuadraticMap R V N where
+  toFun v := Q v
+  toFun_smul a v := Q.toFun_smul a v.val
+  exists_companion' := match Q.exists_companion with
+    | ⟨b, hb⟩ => ⟨b.domRestrict₁₂ V V, fun x y ↦ hb x.val y.val⟩
+
 end CommSemiring
 
 section CommRing
@@ -849,7 +856,6 @@ section
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `2` is invertible in `R`, then it is also invertible in `End R M`. -/
 instance [Invertible (2 : R)] : Invertible (2 : Module.End R M) where
   invOf := (⟨⅟2, Set.invOf_mem_center (Set.ofNat_mem_center _ _)⟩ : Submonoid.center R) •
@@ -900,7 +906,6 @@ theorem associated_apply (x y : M) :
     associatedHom S Q x y = ⅟(2 : Module.End R N) • (Q (x + y) - Q x - Q y) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Twice the associated bilinear map of `Q` is the same as the polar of `Q`. -/
 @[simp] theorem two_nsmul_associated : 2 • associatedHom S Q = Q.polarBilin := by
   ext
@@ -935,20 +940,17 @@ theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     Module.End.smul_def, map_sub]
   abel_nf
 
-set_option backward.isDefEq.respectTransparency false in
 theorem associated_left_inverse {B₁ : BilinMap R M N} (h : ∀ x y, B₁ x y = B₁ y x) :
     associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y ↦ by
     rw [associated_toQuadraticMap, ← h x y, ← two_smul R, invOf_smul_eq_iff, two_smul, two_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A version of `QuadraticMap.associated_left_inverse` for general targets. -/
 lemma associated_left_inverse' {B₁ : BilinMap R M N} (hB₁ : B₁.flip = B₁) :
     associatedHom S B₁.toQuadraticMap = B₁ := by
   ext _ y
   rw [associated_toQuadraticMap, ← LinearMap.flip_apply _ y, hB₁, invOf_smul_eq_iff, two_smul]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem associated_eq_self_apply (x : M) : associatedHom S Q x x = Q x := by
   rw [associated_apply, map_add_self, ← three_add_one_eq_four, ← two_add_one_eq_three, add_smul,
     add_smul, one_smul, add_sub_cancel_right, add_sub_cancel_right, two_smul, ← two_smul R,
@@ -1010,7 +1012,6 @@ theorem coe_associatedHom :
     ⇑(associatedHom S : QuadraticMap R M N →ₗ[S] BilinMap R M N) = associated :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 open LinearMap in
 @[simp]
 theorem associated_linMulLin [Invertible (2 : R)] (f g : M →ₗ[R] R) :
@@ -1081,7 +1082,6 @@ theorem isOrtho_polarBilin {x y : M} : Q.polarBilin.IsOrtho x y ↔ IsOrtho Q x 
 theorem IsOrtho.polar_eq_zero {x y : M} (h : IsOrtho Q x y) : polar Q x y = 0 :=
   isOrtho_polarBilin.mpr h
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem associated_isOrtho [Invertible (2 : R)] {x y : M} :
     Q.associated.IsOrtho x y ↔ Q.IsOrtho x y := by
@@ -1288,7 +1288,6 @@ open Module
 variable {V : Type u} {K : Type v} [Field K] [AddCommGroup V] [Module K V]
 variable [FiniteDimensional K V]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a symmetric bilinear form `B` on some vector space `V` over a field `K`
 in which `2` is invertible, there exists an orthogonal basis with respect to `B`. -/
 theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinForm K V}
