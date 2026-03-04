@@ -137,7 +137,7 @@ lemma isIso_map
     (h₁ : IsIso ((X.H n₁).map ((functorArrows ι 1 2 3).map α)))
     (h₂ : IsIso ((X.H n₂).map ((functorArrows ι 0 1 3).map α)))
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
-    IsIso (X.map f₁ f₂ f₃ f₁' f₂' f₃' α n₀ n₁ n₂ hn₁ hn₂ ) := by
+    IsIso (X.map f₁ f₂ f₃ f₁' f₂' f₃' α n₀ n₁ n₂ hn₁ hn₂) := by
   have : IsIso (shortComplexMap X f₁ f₂ f₃ f₁' f₂' f₃' α n₀ n₁ n₂) := by
     apply +allowSynthFailures ShortComplex.isIso_of_isIso <;> assumption
   dsimp [map]
