@@ -61,7 +61,6 @@ theorem orthogonalProjection_apply' (s : AffineSubspace 𝕜 P) [Nonempty s]
       (Classical.arbitrary s : P) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem orthogonalProjection_apply_mem (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] {p x} (hx : x ∈ s) :
     orthogonalProjection s p = (s.direction.orthogonalProjection (p -ᵥ x) : V) +ᵥ x := by
@@ -84,7 +83,6 @@ theorem orthogonalProjection_congr {s₁ s₂ : AffineSubspace 𝕜 P} {p₁ p�
   subst h hp
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear map corresponding to `orthogonalProjection`. -/
 @[simp]
 theorem orthogonalProjection_linear {s : AffineSubspace 𝕜 P} [Nonempty s]
@@ -430,7 +428,6 @@ theorem reflection_apply_of_mem (s : AffineSubspace 𝕜 P) [Nonempty s]
     vsub_sub_vsub_cancel_left, s.direction.reflection_eq_self_iff]
   exact s.vsub_mem_direction (SetLike.coe_mem _) hx
 
-set_option backward.isDefEq.respectTransparency false in
 theorem reflection_apply' (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
     reflection s p = (↑(orthogonalProjection s p) -ᵥ p) +ᵥ (orthogonalProjection s p : P) := by
@@ -552,7 +549,6 @@ variable [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
     LinearIsometry.inner_map_map, Submodule.inner_right_of_mem_orthogonal hv
       (vsub_orthogonalProjection_mem_direction_orthogonal _ _)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma orthogonalProjection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' : AffineSubspace 𝕜 s)
     [Nonempty s'] [s'.direction.HasOrthogonalProjection]
     [(s'.map s.subtype).direction.HasOrthogonalProjection] (p : s) :
@@ -569,7 +565,6 @@ lemma orthogonalProjection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' 
     reflection (s.map f.toAffineMap) (f p) = f (reflection s p) := by
   simp [reflection_apply']
 
-set_option backward.isDefEq.respectTransparency false in
 lemma reflection_subtype (s : AffineSubspace 𝕜 P) [Nonempty s] (s' : AffineSubspace 𝕜 s)
     [Nonempty s'] [s'.direction.HasOrthogonalProjection]
     [(s'.map s.subtype).direction.HasOrthogonalProjection] (p : s) :
