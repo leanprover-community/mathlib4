@@ -173,7 +173,6 @@ noncomputable def _root_.NumberField.Units.unitLattice :
     Submodule ℤ (logSpace K) :=
   Submodule.map (logEmbedding K).toIntLinearMap ⊤
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem unitLattice_inter_ball_finite (r : ℝ) :
     ((unitLattice K : Set (logSpace K)) ∩ Metric.closedBall 0 r).Finite := by
@@ -379,7 +378,6 @@ protected theorem finrank_eq_rank :
   simp only [finrank_fintype_fun_eq_card, Fintype.card_subtype_compl,
     Fintype.card_ofSubsingleton, rank]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
@@ -409,7 +407,6 @@ theorem logEmbeddingQuot_injective :
     Function.comp_apply, EmbeddingLike.apply_eq_iff_eq] at h
   exact (EmbeddingLike.apply_eq_iff_eq _).mp <| (QuotientGroup.kerLift_injective _).eq_iff.mp h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear equivalence between `(𝓞 K)ˣ ⧸ (torsion K)` as an additive `ℤ`-module and
 `unitLattice` . -/
 def logEmbeddingEquiv :
@@ -476,7 +473,6 @@ theorem fundSystem_mk (i : Fin (rank K)) :
     Additive.ofMul (QuotientGroup.mk (fundSystem K i)) = (basisModTorsion K i) := by
   simp_rw [fundSystem, Equiv.apply_eq_iff_eq_symm_apply, Additive.ofMul_symm_eq, Quotient.out_eq']
 
-set_option backward.isDefEq.respectTransparency false in
 theorem logEmbedding_fundSystem (i : Fin (rank K)) :
     logEmbedding K (Additive.ofMul (fundSystem K i)) = basisUnitLattice K i := by
   rw [basisUnitLattice, Basis.map_apply, ← fundSystem_mk, logEmbeddingEquiv_apply]

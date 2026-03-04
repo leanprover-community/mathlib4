@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 public import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 /-!
 # Integrals of characteristic functions
@@ -88,7 +88,7 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     field_simp
   _ = 2 * r * ∫ x, sinc (r * x) ∂μ := by
     norm_cast
-    rw [integral_complex_ofReal, ← integral_const_mul]
+    rw [← integral_const_mul]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |x|}` in terms of the integral of

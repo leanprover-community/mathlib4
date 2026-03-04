@@ -272,7 +272,6 @@ lemma integrable_fun_norm_addHaar {f : ℝ → F} :
   · measurability
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
     ∫ x, f (‖x‖) ∂μ = dim E • μ.real (ball 0 1) • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
   calc

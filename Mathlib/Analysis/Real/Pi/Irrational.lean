@@ -160,7 +160,6 @@ private def cosPoly : ℕ → ℤ[X]
   | 1 => monomial 1 (-4)
   | n + 2 => ((2 : ℤ) * (2 * n + 3)) • cosPoly (n + 1) + monomial 2 (-4) * cosPoly n
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Auxiliary for the proof that `π` is irrational.
 Prove a degree bound for `sinPoly n` by induction. Note this is where we find the value in an

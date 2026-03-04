@@ -236,7 +236,6 @@ lemma shiftFunctorAdd'_zero_add (a : A) :
     eqToHom_map, Category.id_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma shiftFunctorAdd'_add_zero (a : A) :
     shiftFunctorAdd' C a 0 a (add_zero a) = (rightUnitor _).symm ≪≫
     isoWhiskerLeft (shiftFunctor C a) (shiftFunctorZero C A).symm := by
@@ -437,6 +436,12 @@ abbrev shiftNegShift (i : A) : X⟦-i⟧⟦i⟧ ≅ X :=
   (shiftEquiv C i).counitIso.app X
 
 variable {X Y}
+
+@[reassoc (attr := simp)]
+lemma shiftFunctorCompIsoId_naturality_1 (i j : A) (hij : i + j = 0) :
+    (shiftFunctorCompIsoId C i j hij).inv.app X ≫ f⟦i⟧'⟦j⟧' ≫
+    (shiftFunctorCompIsoId C i j hij).hom.app Y = f :=
+  NatIso.naturality_1 (shiftFunctorCompIsoId C i j hij) f
 
 theorem shift_shift_neg' (i : A) :
     f⟦i⟧'⟦-i⟧' = (shiftFunctorCompIsoId C i (-i) (add_neg_cancel i)).hom.app X ≫

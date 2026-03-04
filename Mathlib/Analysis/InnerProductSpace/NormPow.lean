@@ -107,7 +107,6 @@ lemma enorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
   simpa [enorm, ← ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.2 <| NNReal.one_le_coe.2 hp.le),
     ← ENNReal.coe_mul] using nnnorm_fderiv_norm_rpow_le hf hp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
   rw [contDiff_one_iff_fderiv]
   refine ⟨fun x ↦ hasFDerivAt_norm_rpow x hp |>.differentiableAt, ?_⟩
