@@ -34,11 +34,6 @@ theorem mem_kerIdeal_iff_inr (x : TrivSqZeroExt R M) : x ∈ kerIdeal R M ↔ x 
   simp only [kerIdeal, RingHom.mem_ker, fstHom_apply, fst_mk]
   exact ⟨fun hr => by rw [hr]; rfl, fun hrm => by rw [← fst_mk r m, hrm, fst_inr]⟩
 
-theorem mem_kerIdeal_iff_exists (x : TrivSqZeroExt R M) :
-    x ∈ kerIdeal R M ↔ ∃ m : M, x = inr m := by
-  rw [mem_kerIdeal_iff_inr]
-  exact ⟨fun h => ⟨x.snd, h⟩, fun ⟨m, hm⟩ => by rw [hm]; rfl⟩
-
 @[simp] theorem kerIdeal_sq : kerIdeal R M ^ 2 = ⊥ := by
   simp only [pow_two, eq_bot_iff, mul_le, mem_kerIdeal_iff_inr]
   rintro x hx y hy
