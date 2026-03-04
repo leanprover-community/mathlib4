@@ -186,6 +186,7 @@ variable [ExpChar k p]
 
 include hp H
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Suppose `k` has chararcteristic `p` and `a₁,...,aₙ` is a transcendental basis of `K/k`.
 Suppose furthermore that if `{ sᵢ } ⊆ K` is an arbitrary `k`-linearly independent set,
@@ -235,6 +236,7 @@ lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow
     (by simpa using hF₂irr.ne_zero), zero_mul, eq_comm,
     Polynomial.coeff_map, map_eq_zero_iff _ (FaithfulSMul.algebraMap_injective ..)] at eq
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow'
     (s : Set ι) (n : ι) (ha : IsTranscendenceBasis k fun i : s ↦ a i) (hn : n ∉ s) :
     ∃ i : ι, IsTranscendenceBasis k (fun j : ↥(insert n s \ {i}) ↦ a j) ∧

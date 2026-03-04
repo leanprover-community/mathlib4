@@ -948,6 +948,9 @@ protected theorem EventuallyEq.rfl {l : Filter α} {f : α → β} : f =ᶠ[l] f
 theorem EventuallyEqSet.refl (l : Filter α) (s : Set α) : s =ᶠˢ[l] s :=
   EventuallyEq.rfl
 
+theorem EventuallyEqSet.rfl {l : Filter α} {s : Set α} : s =ᶠˢ[l] s :=
+  EventuallyEq.rfl
+
 theorem EventuallyEq.of_eq {l : Filter α} {f g : α → β} (h : f = g) : f =ᶠ[l] g := h ▸ .rfl
 alias _root_.Eq.eventuallyEq := EventuallyEq.of_eq
 

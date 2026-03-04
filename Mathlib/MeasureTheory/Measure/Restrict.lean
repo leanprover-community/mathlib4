@@ -75,7 +75,7 @@ theorem restrict_apply (ht : MeasurableSet t) : μ.restrict s t = μ (t ∩ s) :
   restrict_apply₀ ht.nullMeasurableSet
 
 /-- Restriction of a measure to a subset is monotone both in set and in measure. -/
-theorem restrict_mono' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ ⦃μ ν : Measure α⦄ (hs : s ≤ᵐ[μ] s')
+theorem restrict_mono' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ ⦃μ ν : Measure α⦄ (hs : s ⊆ᵐ[μ] s')
     (hμν : μ ≤ ν) : μ.restrict s ≤ ν.restrict s' :=
   Measure.le_iff.2 fun t ht => calc
     μ.restrict s t = μ (t ∩ s) := restrict_apply ht
@@ -97,10 +97,10 @@ theorem restrict_mono_set {_ : MeasurableSpace α} (μ : Measure α) {s t : Set 
     μ.restrict s ≤ μ.restrict t :=
   restrict_mono h le_rfl
 
-theorem restrict_mono_ae (h : s ≤ᵐ[μ] t) : μ.restrict s ≤ μ.restrict t :=
+theorem restrict_mono_ae (h : s ⊆ᵐ[μ] t) : μ.restrict s ≤ μ.restrict t :=
   restrict_mono' h (le_refl μ)
 
-theorem restrict_congr_set (h : s =ᵐ[μ] t) : μ.restrict s = μ.restrict t :=
+theorem restrict_congr_set (h : s =ᵐˢ[μ] t) : μ.restrict s = μ.restrict t :=
   le_antisymm (restrict_mono_ae h.le) (restrict_mono_ae h.symm.le)
 
 /-- If `s` is a measurable set, then the outer measure of `t` with respect to the restriction of
@@ -115,7 +115,7 @@ theorem restrict_apply' (hs : MeasurableSet s) : μ.restrict s t = μ (t ∩ s) 
 theorem restrict_apply₀' (hs : NullMeasurableSet s μ) : μ.restrict s t = μ (t ∩ s) := by
   rw [← restrict_congr_set hs.toMeasurable_ae_eq,
     restrict_apply' (measurableSet_toMeasurable _ _),
-    measure_congr ((ae_eq_refl t).inter hs.toMeasurable_ae_eq)]
+    measure_congr (.inter .rfl hs.toMeasurable_ae_eq)]
 
 theorem restrict_le_self : μ.restrict s ≤ μ :=
   Measure.le_iff.2 fun t ht => calc
@@ -314,7 +314,7 @@ theorem restrict_toMeasurable (h : μ s ≠ ∞) : μ.restrict (toMeasurable μ 
 theorem restrict_eq_self_of_ae_mem {_m0 : MeasurableSpace α} ⦃s : Set α⦄ ⦃μ : Measure α⦄
     (hs : ∀ᵐ x ∂μ, x ∈ s) : μ.restrict s = μ :=
   calc
-    μ.restrict s = μ.restrict univ := restrict_congr_set (eventuallyEq_univ.mpr hs)
+    μ.restrict s = μ.restrict univ := restrict_congr_set (eventuallyEqSet_univ.mpr hs)
     _ = μ := restrict_univ
 
 theorem restrict_congr_meas (hs : MeasurableSet s) :
@@ -705,12 +705,12 @@ theorem self_mem_ae_restrict {s} (hs : MeasurableSet s) : s ∈ ae (μ.restrict 
 
 /-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
-theorem ae_restrict_of_ae_eq_of_ae_restrict {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
+theorem ae_restrict_of_ae_eq_of_ae_restrict {s t} (hst : s =ᵐˢ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) → ∀ᵐ x ∂μ.restrict t, p x := by simp [Measure.restrict_congr_set hst]
 
 /-- If two measurable sets are ae_eq then any proposition that is almost everywhere true on one
 is almost everywhere true on the other -/
-theorem ae_restrict_congr_set {s t} (hst : s =ᵐ[μ] t) {p : α → Prop} :
+theorem ae_restrict_congr_set {s t} (hst : s =ᵐˢ[μ] t) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ x ∂μ.restrict t, p x :=
   ⟨ae_restrict_of_ae_eq_of_ae_restrict hst, ae_restrict_of_ae_eq_of_ae_restrict hst.symm⟩
 
@@ -737,17 +737,14 @@ lemma NullMeasurable.measure_preimage_eq_measure_restrict_preimage_of_ae_compl_e
 lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
     NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet (t ∩ s) μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
+  · obtain ⟨t', -, ht', t't⟩ : ∃ t' ⊇ t, MeasurableSet t' ∧ t' =ᵐˢ[μ.restrict s] t :=
       h.exists_measurable_superset_ae_eq
-    have A : (t' ∩ s : Set α) =ᵐ[μ] (t ∩ s : Set α) := by
-      have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t') = (x ∈ t) :=
-        (ae_restrict_iff'₀ hs).1 t't
-      filter_upwards [this] with y hy
-      change (y ∈ t' ∩ s) = (y ∈ t ∩ s)
-      simpa only [eq_iff_iff, mem_inter_iff, and_congr_left_iff] using hy
-    obtain ⟨s', -, hs', s's⟩ : ∃ s' ⊇ s, MeasurableSet s' ∧ s' =ᵐ[μ] s :=
+    have A : (t' ∩ s : Set α) =ᵐˢ[μ] (t ∩ s : Set α) := by
+      filter_upwards [ae_imp_of_ae_restrict t't]
+      grind
+    obtain ⟨s', -, hs', s's⟩ : ∃ s' ⊇ s, MeasurableSet s' ∧ s' =ᵐˢ[μ] s :=
       hs.exists_measurable_superset_ae_eq
-    have B : (t' ∩ s' : Set α) =ᵐ[μ] (t' ∩ s : Set α) :=
+    have B : (t' ∩ s' : Set α) =ᵐˢ[μ] (t' ∩ s : Set α) :=
       ae_eq_set_inter (EventuallyEq.refl _ _) s's
     exact (ht'.inter hs').nullMeasurableSet.congr (B.trans A)
   · have A : NullMeasurableSet (t \ s) (μ.restrict s) := by
@@ -761,17 +758,11 @@ lemma nullMeasurableSet_restrict (hs : NullMeasurableSet s μ) {t : Set α} :
 lemma nullMeasurableSet_restrict_of_subset {t : Set α} (ht : t ⊆ s) :
     NullMeasurableSet t (μ.restrict s) ↔ NullMeasurableSet t μ := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.mono_ac absolutelyContinuous_restrict⟩
-  obtain ⟨t', t'_subs, ht', t't⟩ : ∃ t' ⊆ t, MeasurableSet t' ∧ t' =ᵐ[μ.restrict s] t :=
+  obtain ⟨t', t'_subs, ht', t't⟩ : ∃ t' ⊆ t, MeasurableSet t' ∧ t' =ᵐˢ[μ.restrict s] t :=
     h.exists_measurable_subset_ae_eq
-  have : ∀ᵐ x ∂μ, x ∈ s → (x ∈ t' ↔ x ∈ t) := by
-    apply ae_imp_of_ae_restrict
-    filter_upwards [t't] with x hx using by simpa using hx
-  have : t' =ᵐ[μ] t := by
-    filter_upwards [this] with x hx
-    change (x ∈ t') = (x ∈ t)
-    simp only [eq_iff_iff]
-    tauto
-  exact ht'.nullMeasurableSet.congr this
+  use t', ht'
+  filter_upwards [ae_imp_of_ae_restrict t't] with x hx
+  grind
 
 namespace Measure
 
@@ -983,7 +974,7 @@ theorem piecewise_ae_eq_restrict_compl [DecidablePred (· ∈ s)] (hs : Measurab
   exact (piecewise_eqOn_compl s f g).eventuallyEq.filter_mono inf_le_right
 
 theorem piecewise_ae_eq_of_ae_eq_set [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)]
-    (hst : s =ᵐ[μ] t) : s.piecewise f g =ᵐ[μ] t.piecewise f g :=
+    (hst : s =ᵐˢ[μ] t) : s.piecewise f g =ᵐ[μ] t.piecewise f g :=
   hst.mem_iff.mono fun x hx => by simp [piecewise, hx]
 
 end Piecewise
@@ -1045,7 +1036,7 @@ theorem indicator_ae_eq_zero_of_restrict_ae_eq_zero (hs : MeasurableSet s)
   · simp only [hxs, hx hxs, Set.indicator_of_mem]
   · simp [hxs]
 
-theorem indicator_ae_eq_of_ae_eq_set (hst : s =ᵐ[μ] t) : s.indicator f =ᵐ[μ] t.indicator f := by
+theorem indicator_ae_eq_of_ae_eq_set (hst : s =ᵐˢ[μ] t) : s.indicator f =ᵐ[μ] t.indicator f := by
   classical exact piecewise_ae_eq_of_ae_eq_set hst
 
 theorem indicator_meas_zero (hs : μ s = 0) : indicator s f =ᵐ[μ] 0 :=
@@ -1119,11 +1110,11 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
     _ = ∑ C ∈ Cs, {a ∈ F | a ∈ C}.card • μ.restrict (P C) t := by simp [indicator]; rfl
     _ ≤ ∑ C ∈ Cs, M • μ.restrict (P C) t := by
       refine sum_le_sum fun C hC ↦ ?_
-      by_cases hPC : P C = ∅
+      rcases eq_empty_or_nonempty (P C) with hPC | ⟨x, hx⟩
       · simp [hPC]
       have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
-        (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
+        (encard_le_encard (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm

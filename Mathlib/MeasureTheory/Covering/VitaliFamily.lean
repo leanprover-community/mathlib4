@@ -117,7 +117,7 @@ theorem exists_disjoint_covering_ae :
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.index` is a set parametrizing a disjoint
 covering of almost every `s`. -/
-protected def index : Set (X × Set X) :=
+protected noncomputable def index : Set (X × Set X) :=
   h.exists_disjoint_covering_ae.choose
 
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.covering p` is a set in the family,

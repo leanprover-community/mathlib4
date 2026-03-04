@@ -295,29 +295,30 @@ theorem manyOneReducible_toNat_toNat {p : Set α} {q : Set β} :
     toNat_manyOneReducible.trans (h.trans manyOneReducible_toNat)⟩
 
 @[simp]
-theorem toNat_manyOneEquiv {p : Set α} : ManyOneEquiv (toNat p) p := by simp [ManyOneEquiv]
+theorem toNat_manyOneEquiv {p : Set α} : ManyOneEquiv (· ∈ toNat p) (· ∈ p) := by
+  simp [ManyOneEquiv]
 
 @[simp]
 theorem manyOneEquiv_toNat (p : Set α) (q : Set β) :
-    ManyOneEquiv (toNat p) (toNat q) ↔ ManyOneEquiv p q := by simp [ManyOneEquiv]
+    ManyOneEquiv (· ∈ toNat p) (· ∈ toNat q) ↔ ManyOneEquiv p q := by simp [ManyOneEquiv]
 
 /-- A many-one degree is an equivalence class of sets up to many-one equivalence. -/
 def ManyOneDegree : Type :=
-  Quotient (⟨ManyOneEquiv, equivalence_of_manyOneEquiv⟩ : Setoid (Set ℕ))
+  Quotient (⟨ManyOneEquiv, equivalence_of_manyOneEquiv⟩ : Setoid (ℕ → Prop))
 
 namespace ManyOneDegree
 
 /-- The many-one degree of a set on a primcodable type. -/
 def of (p : α → Prop) : ManyOneDegree :=
-  Quotient.mk'' (toNat p)
+  Quotient.mk'' (toNat {x | p x})
 
 @[elab_as_elim]
 protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
-    (h : ∀ p : Set ℕ, C (of p)) : C d :=
+    (h : ∀ p : ℕ → Prop, C (of p)) : C d :=
   Quotient.inductionOn' d h
 
 /-- Lifts a function on sets of natural numbers to many-one degrees. -/
-protected abbrev liftOn {φ} (d : ManyOneDegree) (f : Set ℕ → φ)
+protected abbrev liftOn {φ} (d : ManyOneDegree) (f : (ℕ → Prop) → φ)
     (h : ∀ p q, ManyOneEquiv p q → f p = f q) : φ :=
   Quotient.liftOn' d f h
 

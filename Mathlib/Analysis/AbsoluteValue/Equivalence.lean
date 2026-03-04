@@ -369,8 +369,10 @@ theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
     IsEmbedding (WithAbs.congr v w (.refl F)) := by
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
-  · exact ⟨WithAbs.congr v w (.refl F)'' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
+  · refine ⟨WithAbs.congr v w (.refl F)'' U, h.equivWithAbs_image_mem_nhds_zero hU, ?_⟩
+    #adaptation_note /-- was  by grind [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩ -/
+    rw [RingEquiv.image_eq_preimage_symm]
+    simp [Set.preimage_preimage]
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
     rw [← RingEquiv.coe_toEquiv_symm, WithAbs.congr_symm] at hss
