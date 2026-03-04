@@ -182,31 +182,29 @@ lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf
     ⨅ i, f i ≤ ⨆ i, f i :=
   (ciInf_le hf (Classical.arbitrary _)).trans <| le_ciSup hf' (Classical.arbitrary _)
 
-lemma ciSup_prod {α ι ι' : Type*} [ConditionallyCompleteLattice α] {f : ι × ι' → α}
-    (hf : BddAbove (Set.range f)) :
-    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') := by
-  rcases isEmpty_or_nonempty ι
+lemma ciSup_prod {f : β × γ → α} (hf : BddAbove (Set.range f)) :
+    ⨆ p, f p = ⨆ b, ⨆ c, f (b, c) := by
+  rcases isEmpty_or_nonempty β
   · simp [iSup_of_empty']
-  rcases isEmpty_or_nonempty ι'
+  rcases isEmpty_or_nonempty γ
   · simp [iSup_of_empty']
-  have h₂ : BddAbove (Set.range fun i ↦ ⨆ i', f (i, i')) := by
+  have h₁ : BddAbove (Set.range fun b ↦ ⨆ c, f (b, c)) := by
     rw [bddAbove_def] at hf ⊢
     obtain ⟨B, hB⟩ := hf
     refine ⟨B, fun y hy ↦ ?_⟩
     obtain ⟨z, rfl⟩ := Set.mem_range.mp hy
-    exact ciSup_le fun i' ↦ by grind
-  have h₃ i : BddAbove (Set.range fun i' ↦ f (i, i')) := by
+    exact ciSup_le fun c ↦ by grind
+  have h₂ b : BddAbove (Set.range fun c ↦ f (b, c)) := by
     rw [bddAbove_def] at hf ⊢
     obtain ⟨B, hB⟩ := hf
     exact ⟨B, by grind⟩
   refine eq_of_forall_ge_iff fun c ↦ ?_
-  rw [ciSup_le_iff (bddAbove_iff_subset_Iic.mpr hf), ciSup_le_iff h₂]
-  conv_rhs => enter [i]; rw [ciSup_le_iff (h₃ i)]
+  rw [ciSup_le_iff (bddAbove_iff_subset_Iic.mpr hf), ciSup_le_iff h₁]
+  conv_rhs => enter [b]; rw [ciSup_le_iff (h₂ b)]
   simp [Prod.forall]
 
-lemma ciInf_prod {α ι ι' : Type*} [ConditionallyCompleteLattice α] {f : ι × ι' → α}
-    (hf : BddBelow (Set.range f)) :
-    ⨅ a, f a = ⨅ i, ⨅ i', f (i, i') :=
+lemma ciInf_prod {f : β × γ → α} (hf : BddBelow (Set.range f)) :
+    ⨅ p, f p = ⨅ b, ⨅ c, f (b, c) :=
   ciSup_prod (α := αᵒᵈ) hf
 
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
