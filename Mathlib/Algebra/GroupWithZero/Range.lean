@@ -252,6 +252,10 @@ theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     · apply mem_valueGroup
       use x
 
+theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
+    y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f x ≠ 0 ∧ f a * y = f x := by
+  rw [mem_valueGroup_iff_of_comm]
+  exact ⟨fun ⟨a, ha, x, hax⟩ ↦ ⟨a, ha, x, by aesop, hax⟩, fun ⟨a, ha, x, hx, hax⟩ ↦ ⟨a, ha, x, hax⟩⟩
 
 instance : CommGroupWithZero (ValueGroup₀ f) where
 
