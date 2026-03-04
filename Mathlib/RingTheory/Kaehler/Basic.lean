@@ -157,20 +157,17 @@ deriving AddCommGroup, Module (S ⊗[R] S), IsScalarTower S (S ⊗[R] S), Inhabi
 @[inherit_doc KaehlerDifferential]
 notation "Ω[" S "⁄" R "]" => KaehlerDifferential R S
 
-set_option backward.isDefEq.respectTransparency false in
 instance KaehlerDifferential.module' {R' : Type*} [CommRing R'] [Algebra R' S]
     [SMulCommClass R R' S] :
     Module R' Ω[S⁄R] :=
   Submodule.Quotient.module' _
 
-set_option backward.isDefEq.respectTransparency false in
 instance KaehlerDifferential.isScalarTower_of_tower {R₁ R₂ : Type*} [CommRing R₁] [CommRing R₂]
     [Algebra R₁ S] [Algebra R₂ S] [SMul R₁ R₂]
     [SMulCommClass R R₁ S] [SMulCommClass R R₂ S] [IsScalarTower R₁ R₂ S] :
     IsScalarTower R₁ R₂ Ω[S⁄R] :=
   Submodule.Quotient.isScalarTower _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance KaehlerDifferential.isScalarTower' : IsScalarTower R (S ⊗[R] S) Ω[S⁄R] :=
   Submodule.Quotient.isScalarTower _ _
 
@@ -250,7 +247,6 @@ lemma KaehlerDifferential.subsingleton_of_surjective (h : Function.Surjective (a
 
 variable {R S}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The linear map from `Ω[S⁄R]`, associated with a derivation. -/
 def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ[S] M := by
   refine LinearMap.comp ((((KaehlerDifferential.ideal R S) •
@@ -329,7 +325,6 @@ def KaehlerDifferential.linearMapEquivDerivation : (Ω[S⁄R] →ₗ[S] M) ≃�
       Derivation.liftKaehlerDifferential_unique _ _ (Derivation.liftKaehlerDifferential_comp _)
     right_inv := Derivation.liftKaehlerDifferential_comp }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient ring of `S ⊗ S ⧸ J ^ 2` by `Ω[S⁄R]` is isomorphic to `S`. -/
 def KaehlerDifferential.quotientCotangentIdealRingEquiv :
     (S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸ (KaehlerDifferential.ideal R S).cotangentIdeal ≃+*
@@ -469,6 +464,7 @@ the relations:
 1. `dx + dy = d(x + y)`
 2. `x dy + y dx = d(x * y)`
 3. `dr = 0` for `r ∈ R`
+
 where `db` is the unit in the copy of `S` with index `b`.
 
 This is the kernel of the surjection
@@ -775,7 +771,6 @@ def KaehlerDifferential.kerToTensor :
     algebraMap_eq_smul_one, RingHom.mem_ker.mp x.prop, TensorProduct.zero_tmul, add_zero,
     RingHom.id_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `I/I² → B ⊗[A] Ω[A⁄R]` where `I = ker(A → B)`. -/
 noncomputable
 def KaehlerDifferential.kerCotangentToTensor :
