@@ -510,8 +510,40 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   · rw [restrict_pos_iff, hv, h.pos_iff]
     exact hs₀
 
+-- open Pointwise
+-- #synth SemilatticeSup (Set Γ₀)
+-- #check sSup (Set.univ : (Set Γ₀))
+-- #check LinearOrderedCommMonoidWithZero.toLinearOrder.toMin
+-- lemma temp (γ : Γ₀) : γ = WellFounded.sup _ (Set.univ : (Set Γ₀)) _ := sorry
 
---def bar (h : v.IsEquiv w) : valueGroup v ≃* valueGroup w := by apply?
+def bar (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
+  rintro ⟨g, hg_mem⟩
+  have := (mem_valueGroup_iff_of_comm' (f := v.toMonoidWithZeroHom) (y := g)).mp hg_mem
+  let ⟨ha, ha'⟩ := this.choose_spec
+  let H := ha'.choose_spec
+  set b := ha'.choose with hb_def
+  set a := this.choose with rfl
+  set g₀' := (w a)⁻¹ * (w b) with hg'_def
+  have hwa : w a ≠ 0 := by
+    rwa [ne_eq, ← h.eq_zero, ← ne_eq]
+  have hwb : w b ≠ 0 := by
+    replace H : v a * g = v b := H
+    simpa [← h.eq_zero, ← H]
+  have hg₀' : w a * g₀' = w b := by
+    rwa [hg'_def, ← mul_assoc, mul_inv_cancel₀, one_mul]
+  have hg₀'_ne_zero : g₀' ≠ 0 := by
+    apply ((ne_zero_and_ne_zero_of_mul (a := w a) (b := g₀')) _).2
+    rwa [hg₀']
+  let g' := Units.mk0 g₀' hg₀'_ne_zero
+  use g'
+  apply (mem_valueGroup_iff_of_comm' (f := w.toMonoidWithZeroHom) (y := g')).mpr
+  refine ⟨a, hwa, b, ?_⟩
+  exact hg₀'
+
+def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueGroup w := by sorry
+
+def IsEquiv.ValueGroup₀_MulOrderIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w := by sorry
+
 
 lemma foo (h : v.IsEquiv w) :
     @UniformContinuous R R (Valued.mk' w).toUniformSpace (Valued.mk' v).toUniformSpace
@@ -522,7 +554,15 @@ lemma foo (h : v.IsEquiv w) :
     (Valued.hasBasis_nhds_zero _ _), true_and, forall_const]
   intro x
   let u := WithZero.unzero (Units.ne_zero x)
-  obtain ⟨a, ha, x, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
+  obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
+  simp
+  let z := (IsEquiv.ValueGroup₀_MulOrderIso h) x.1
+  have hz_ne_zero : z ≠ 0 := sorry
+  let u := Units.mk0 z hz_ne_zero
+  use u
+  intro a ha
+
+
   --let γ : valueGroup (Valued.mk' w).v := ⟨u.1, by sorry⟩
 
   sorry
