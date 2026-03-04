@@ -24,7 +24,7 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_open_point`, `geometric_hahn_banach_point_open`: One set is open, the
   other is a singleton. Weak separation.
 * `geometric_hahn_banach_open_open`: Both sets are open. Semistrict separation.
-* `geometric_hahn_banach_of_interior_nonempty`: One set has nonempty interior, the other one is
+* `geometric_hahn_banach_of_nonempty_interior`: One set has nonempty interior, the other one is
   nonempty. Nonstrict separation.
 * `geometric_hahn_banach_compact_closed`, `geometric_hahn_banach_closed_compact`: One set is closed,
   the other one is compact. Strict separation.
