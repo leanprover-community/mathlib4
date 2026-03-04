@@ -27,43 +27,48 @@ section Monoid
 variable [Monoid α] [Monoid β]
 
 /-- We say that `a` is conjugate to `b` if for some unit `c` we have `c * a * c⁻¹ = b`. -/
+@[to_additive
+/-- We say that `a` is conjugate to `b` if for some additive unit `c` we have `c + a - c = b`. -/]
 def IsConj (a b : α) :=
   ∃ c : αˣ, SemiconjBy (↑c) a b
 
-@[refl]
+@[to_additive (attr := refl)]
 theorem IsConj.refl (a : α) : IsConj a a :=
   ⟨1, SemiconjBy.one_left a⟩
 
-@[symm]
+@[to_additive (attr := symm)]
 theorem IsConj.symm {a b : α} : IsConj a b → IsConj b a
   | ⟨c, hc⟩ => ⟨c⁻¹, hc.units_inv_symm_left⟩
 
+@[to_additive]
 theorem isConj_comm {g h : α} : IsConj g h ↔ IsConj h g :=
   ⟨IsConj.symm, IsConj.symm⟩
 
-@[trans]
+@[to_additive (attr := trans)]
 theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
   | ⟨c₁, hc₁⟩, ⟨c₂, hc₂⟩ => ⟨c₂ * c₁, hc₂.mul_left hc₁⟩
 
+@[to_additive]
 theorem IsConj.pow {a b : α} (n : ℕ) : IsConj a b → IsConj (a ^ n) (b ^ n)
   | ⟨c, hc⟩ => ⟨c, hc.pow_right n⟩
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
   ⟨fun ⟨c, hc⟩ => by
     rw [SemiconjBy, mul_comm, ← Units.mul_inv_eq_iff_eq_mul, mul_assoc, c.mul_inv, mul_one] at hc
     exact hc, fun h => by rw [h]⟩
 
+@[to_additive]
 protected theorem MonoidHom.map_isConj (f : α →* β) {a b : α} : IsConj a b → IsConj (f a) (f b)
   | ⟨c, hc⟩ => ⟨Units.map f c, by rw [Units.coe_map, SemiconjBy, ← f.map_mul, hc.eq, f.map_mul]⟩
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem isConj_one_right {a : α} : IsConj 1 a ↔ a = 1 := by
   refine ⟨fun ⟨c, h⟩ => ?_, fun h => by rw [h]⟩
   rw [SemiconjBy, mul_one] at h
   exact c.isUnit.mul_eq_right.mp h.symm
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem isConj_one_left {a : α} : IsConj a 1 ↔ a = 1 :=
   calc
     IsConj a 1 ↔ IsConj 1 a := ⟨IsConj.symm, IsConj.symm⟩
@@ -75,7 +80,7 @@ section Group
 
 variable [Group α]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
   ⟨fun ⟨c, hc⟩ => ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ =>
     ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩

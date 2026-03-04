@@ -313,6 +313,7 @@ def nameDict : Std.HashMap String (List String) := .ofList [
   ("grp", ["Add", "Grp"]),
   ("commute", ["Add", "Commute"]),
   ("semiconj", ["Add", "Semiconj"]),
+  ("conj", ["Add", "Conj"]),
   ("rootable", ["Divisible"]),
   ("zpowers", ["ZMultiples"]),
   ("powers", ["Multiples"]),

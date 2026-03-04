@@ -634,7 +634,7 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[to_additive /-- The group of additive automorphisms. -/]
+@[to_additive /-- The group of additive automorphisms. -/, to_additive_dont_translate]
 abbrev MulAut (M : Type*) [Mul M] :=
   M ≃* M
 
@@ -643,8 +643,12 @@ namespace MulAut
 variable (M) [Mul M]
 
 /-- The group operation on multiplicative automorphisms is defined by `g h => MulEquiv.trans h g`.
-This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
+This means that multiplication agrees with composition, `(g * h)(x) = g (h x)`.
 -/
+@[to_additive instGroup
+/-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
+This means that multiplication agrees with composition, `(g * h)(x) = g (h x)`.
+-/]
 instance : Group (MulAut M) where
   mul g h := MulEquiv.trans h g
   one := MulEquiv.refl _
@@ -654,50 +658,56 @@ instance : Group (MulAut M) where
   mul_one _ := rfl
   inv_mul_cancel := MulEquiv.self_trans_symm
 
+@[to_additive]
 instance : Inhabited (MulAut M) :=
   ⟨1⟩
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_mul (e₁ e₂ : MulAut M) : ⇑(e₁ * e₂) = e₁ ∘ e₂ :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_one : ⇑(1 : MulAut M) = id :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem coe_inv (e : MulAut M) : ⇑e⁻¹ = e.symm := rfl
 
+@[to_additive]
 theorem mul_def (e₁ e₂ : MulAut M) : e₁ * e₂ = e₂.trans e₁ :=
   rfl
 
+@[to_additive]
 theorem one_def : (1 : MulAut M) = MulEquiv.refl _ :=
   rfl
 
+@[to_additive]
 theorem inv_def (e₁ : MulAut M) : e₁⁻¹ = e₁.symm :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem inv_symm (e : MulAut M) : e⁻¹.symm = e := rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem symm_inv (e : MulAut M) : (e.symm)⁻¹ = e := rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem inv_apply (e : MulAut M) (m : M) : e⁻¹ m = e.symm m := by
   rw [inv_def]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem mul_apply (e₁ e₂ : MulAut M) (m : M) : (e₁ * e₂) m = e₁ (e₂ m) :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem one_apply (m : M) : (1 : MulAut M) m = m :=
   rfl
 
+@[to_additive]
 theorem apply_inv_self (e : MulAut M) (m : M) : e (e⁻¹ m) = m :=
   MulEquiv.apply_symm_apply _ _
 
+@[to_additive]
 theorem inv_apply_self (e : MulAut M) (m : M) : e⁻¹ (e m) = m :=
   MulEquiv.apply_symm_apply _ _
 
@@ -711,6 +721,11 @@ def toPerm : MulAut M →* Equiv.Perm M where
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance
 where `conj G` acts on `G` by conjugation. -/
+@[to_additive
+/-- Group conjugation, `AddAut.conj g h = g + h - g`, as a monoid homomorphism
+mapping addition in `G` into addition in the automorphism group `AddAut G`.
+See also the type `AddConjAct G` for any group `G`, which has a `AddAction (AddConjAct G) G`
+instance where `addConj G` acts on `G` by conjugation. -/]
 def conj [Group G] : G →* MulAut G where
   toFun g :=
     { toFun := fun h => g * h * g⁻¹
@@ -724,19 +739,21 @@ def conj [Group G] : G →* MulAut G where
     simp only [mul_assoc, mul_inv_rev]
   map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=
   rfl
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :=
   rfl
 
+@[to_additive]
 theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 
 /-- Isomorphic groups have isomorphic automorphism groups. -/
-@[simps]
+@[to_additive (attr := simps)
+/-- Isomorphic groups have isomorphic automorphism groups. -/]
 def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
     MulAut G ≃* MulAut H where
   toFun f := ϕ.symm.trans (f.trans ϕ)
