@@ -84,7 +84,7 @@ lemma torsionFun_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivative
     simp only [bar, ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
       ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, ContinuousLinearEquiv.coe_mk,
       LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
-      ContinuousLinearMap.toSpanSingleton_apply, Pi.smul_apply', map_smul, neg_smul, smul_sub]
+      ContinuousLinearMap.toSpanSingleton_apply, Pi.smul_apply', map_smul, smul_sub]
   set A := f x • (cov X x) (Y x)
   set B := f x • (cov Y x) (X x)
   set C := f x • VectorField.mlieBracket I X Y x
@@ -98,9 +98,9 @@ lemma torsionFun_smul_right_apply [CompleteSpace E]
     (hF : IsCovariantDerivativeOn E F U)
     {f : M → ℝ} (hf : MDiffAt f x) (hX : MDiffAt (T% Y) x) (hx : x ∈ U := by trivial) :
     torsionFun F X (f • Y) x = f x • torsionFun F X Y x := by
-  rw [torsionFun_antisymm, Pi.neg_apply, hF.torsionFun_smul_left_apply X hf hX, torsionFun_antisymm X]
+  rw [torsionFun_antisymm, Pi.neg_apply, hF.torsionFun_smul_left_apply X hf hX,
+    torsionFun_antisymm X]
   simp
-
 
 section
 

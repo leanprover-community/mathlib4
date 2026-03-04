@@ -178,7 +178,6 @@ lemma CovariantDerivative.mfderiv_proj_lift_vec {v : TotalSpace F V} (u : Tangen
   unfold CovariantDerivative.lift_vec
   simp [FiberBundle.mem_baseSet_trivializationAt' v.proj]
 
-
 lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace I v.proj)
     (w : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
     cov.lift_vec v u = w  ↔

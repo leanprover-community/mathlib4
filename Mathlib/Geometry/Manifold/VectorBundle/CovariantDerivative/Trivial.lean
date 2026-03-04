@@ -88,7 +88,8 @@ variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
 -- regularity and use ∞ from `open scoped ContDiff` instead.
 
 /-- The trivial connection on the trivial bundle is smooth -/
-lemma trivial_isSmooth : ContMDiffCovariantDerivative (𝕜 := 𝕜) (trivial 𝓘(𝕜, E) E E') (⊤ : ℕ∞) where
+lemma trivial_isSmooth :
+    ContMDiffCovariantDerivative (𝕜 := 𝕜) (trivial 𝓘(𝕜, E) E E') (⊤ : ℕ∞) where
   contMDiff := by -- {X σ} hX hσ
     sorry /-
     -- except for local trivialisations, contDiff_infty_iff_fderiv covers this well

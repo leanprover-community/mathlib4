@@ -173,11 +173,13 @@ lemma pushCovDer_isCovariantDerivativeOn
     IsCovariantDerivativeOn F (e.pushCovDer cov) u where
   addσ {σ σ' x} hσ hσ' hx := by
     set s := (fun x' ↦ e.symm x' (σ x'))
-    have hs : MDiffAt (T% s) x :=
-      sorry -- e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ
+    have hs : MDiffAt (T% s) x := by
+      sorry -- e.mdifferentiableAt_section_of_function (hu hx) <|
+        --mdifferentiableAt_section_trivial_iff.1 hσ
     set s' := (fun x' ↦ e.symm x' (σ' x'))
     have hs' : MDiffAt (T% s') x :=
-      sorry -- e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ'
+      sorry -- e.mdifferentiableAt_section_of_function (hu hx) <|
+        --mdifferentiableAt_section_trivial_iff.1 hσ'
     unfold Trivialization.pushCovDer
     stop
     rw [← ContinuousLinearMap.comp_add, ← hcov.addσ hs hs' hx]
@@ -187,7 +189,8 @@ lemma pushCovDer_isCovariantDerivativeOn
   leibniz {σ g x} hσ hg hx := by
     set s := (fun x' ↦ e.symm x' (σ x'))
     have hs : MDiffAt (T% s) x :=
-      sorry -- e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ
+      sorry -- e.mdifferentiableAt_section_of_function (hu hx) <|
+        --mdifferentiableAt_section_trivial_iff.1 hσ
     unfold Trivialization.pushCovDer
     have : (fun x' ↦ e.symm x' ((g • σ) x')) = g • s := by
       ext y
@@ -223,8 +226,7 @@ lemma coordChangeL_pushCovDer
     ↓reduceIte, Function.comp_apply, hx.2]
   refold_let σ
   have : e.symm x (e ⟨x, cov σ x X₀⟩).2 = cov σ x X₀ := by
-    -- TODO fix `simp [hx.1]` not working
-    exact symm_apply_apply_mk e hx.1 (cov σ x X₀)
+    simp [hx.1]
   stop
   rw [this]
   -- TODO: extract lemma?
@@ -368,8 +370,6 @@ lemma isCovariantDerivativeOn_pushCovDer
   e.pushCovDer_isCovariantDerivativeOn subset_rfl
       (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
 
-
-
 lemma snd_triv_proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) (u : TangentSpace (I.prod
   𝓘(ℝ, F)) v) :
     letI t := trivializationAt F V v.proj
@@ -378,7 +378,6 @@ lemma snd_triv_proj (cov : CovariantDerivative I F V) (v : TotalSpace F V) (u : 
     letI Tvt := t.deriv I v
     (t <| cov.proj v u).2 = tproj (Tvt u) := by
   simp [CovariantDerivative.proj, (mem_baseSet_trivializationAt F V v.proj)]
-
 
 noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
@@ -403,7 +402,6 @@ lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalS
   ext u
   change t'.symm (tproj (Tvt u)) = 0 ↔ tproj (Tvt u) = 0
   simp
-
 
 omit [ContMDiffVectorBundle 1 F V I] in
 lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
