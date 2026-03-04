@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
+public import Mathlib.Data.Set.Constructions
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Topology.Separation.Hausdorff
 
@@ -282,96 +283,78 @@ Compact Systems of Sets. Springer, 1966, Lemma 1.4. -/
 
 namespace IsCompactSystem
 
+variable {L : ℕ → Finset (Set α)} {n : ℕ} {K : (k : Fin n) → Set α}
+
 /-- `q n K` is the joint property that `∀ (k : Fin n), K k ∈ L k` and
 `∀ N, (⋂ (j : Fin n), K j) ∩ (⋂ (k < N), ⋃₀ ↑(L (n + k))) ≠ ∅`.` holds. -/
-def q (L : ℕ → Finset (Set α))
-  : ∀ n, (K : (k : Fin n) → (L k)) → Prop := fun n K ↦
-  (∀ N, ((⋂ j, K j) ∩ (⋂ (k < N), ⋃₀ SetLike.coe (L (n + k)))).Nonempty)
+def q (L : ℕ → Finset (Set α)) (n : ℕ) (K : (k : Fin n) → Set α) : Prop :=
+  (∀ k : Fin n, K k ∈ L k) ∧ ∀ N, ((⋂ j, K j) ∩ ⋂ k < N, ⋃₀ SetLike.coe (L (n + k))).Nonempty
 
-lemma q_iff_iInter (L : ℕ → Finset (Set α)) (n : ℕ) (K : (k : Fin n) → (L k)) :
-    q L n K ↔ (∀ (N : ℕ), ((⋂ (j : ℕ) (hj : j < n), K ⟨j, hj⟩) ∩ (⋂ (k < N),
-    ⋃₀ SetLike.coe (L (n + k)))).Nonempty) := by
-  simp only [q]
-  refine ⟨fun h N ↦ ?_, fun h N ↦ ?_⟩ <;>
-  specialize h N <;>
-  rw [Set.inter_nonempty_iff_exists_left] at h ⊢ <;>
-  obtain ⟨x, ⟨hx1, hx2⟩⟩ := h <;>
-  refine ⟨x, ⟨?_, hx2⟩⟩ <;>
-  simp only [mem_iInter] at hx1 ⊢
-  · exact fun i hi ↦ hx1 ⟨i, hi⟩
-  · exact fun i ↦ hx1 i.val i.prop
+lemma q_iff_iInter (hK : ∀ k : Fin n, K k ∈ L k) :
+    q L n K ↔
+      ∀ N, ((⋂ (j : ℕ) (hj : j < n), K ⟨j, hj⟩) ∩
+        (⋂ k < N, ⋃₀ SetLike.coe (L (n + k)))).Nonempty := by
+  simp only [q, hK, implies_true, true_and]
+  congr! 2 with N
+  ext
+  simp
+  grind
 
-lemma q_iff_iInter' (L : ℕ → Finset (Set α)) (n : ℕ) (K : (k : Fin n) → (L k)) (y : L n) :
-    q L (n + 1) (Fin.snoc K y) ↔ (∀ (N : ℕ), ((⋂ (j : ℕ) (hj : j < n), K ⟨j, hj⟩) ∩ y.val ∩
-    (⋂ (k < N), ⋃₀ SetLike.coe (L (n + k)))).Nonempty) := by
+lemma q_iff_iInter' (hK : ∀ k : Fin n, K k ∈ L k) (y : Set α) :
+    q L (n + 1) (Fin.snoc K y) ↔ y ∈ L n ∧ (∀ N, ((⋂ (j : ℕ) (hj : j < n), K ⟨j, hj⟩) ∩ y ∩
+    (⋂ k < N, ⋃₀ SetLike.coe (L (n + k)))).Nonempty) := by
   simp only [q]
-  refine ⟨fun h N ↦ ?_, fun h N ↦ ?_⟩
-  · specialize h N
-    rw [Set.inter_nonempty_iff_exists_left] at h ⊢
-    obtain ⟨x, ⟨hx1, hx2⟩⟩ := h
+  have h_imp : q L (n + 1) (Fin.snoc K y) → y ∈ L n := by
+    intro ⟨h_mem, h⟩
+    specialize h_mem ⟨n, by grind⟩
+    simpa [Fin.snoc] using h_mem
+  refine ⟨fun h' ↦ ⟨h_imp h', fun N ↦ ?_⟩, fun ⟨hy, h⟩ ↦ ⟨fun k ↦ ?_, fun N ↦ ?_⟩⟩
+  · have ⟨h_mem, h⟩ := h'
+    obtain ⟨x, ⟨hx1, hx2⟩⟩ := h N
     use x
     simp only [mem_iInter, mem_sUnion, SetLike.mem_coe, mem_inter_iff] at hx1 hx2 ⊢
-    refine ⟨⟨?_, ?_⟩, ?_⟩
-    · intro i hi
-      specialize hx1 ⟨i, le_trans hi (le_succ n)⟩
-      simp only [Fin.snoc, hi, ↓reduceDIte, Fin.castLT_mk, Fin.castSucc_mk, cast_eq] at hx1
-      exact hx1
-    · specialize hx1 ⟨n, Nat.lt_add_one n⟩
-      simp only [Fin.snoc, lt_self_iff_false, ↓reduceDIte, Fin.val_last, cast_eq] at hx1
-      exact hx1
-    · intro i hi
-      by_cases h : i = 0
-      · specialize hx1 ⟨n, Nat.lt_add_one n⟩
-        simp only [Fin.snoc, lt_self_iff_false, ↓reduceDIte, Fin.val_last, cast_eq] at hx1
-        simp only [h, add_zero]
-        refine ⟨y, y.prop, hx1⟩
-      · obtain ⟨j, hj⟩ := exists_add_one_eq.mpr (zero_lt_of_ne_zero h)
-        have hj' : j < N := by
-          rw [← hj] at hi
-          exact lt_of_succ_lt hi
-        specialize hx2 j hj'
-        rw [add_comm] at hj
-        rw [add_assoc, hj] at hx2
-        exact hx2
+    refine ⟨⟨fun i hi ↦ ?_, ?_⟩, fun i hi ↦ ?_⟩
+    · simpa [Fin.snoc, hi] using hx1 ⟨i, hi.trans_le (le_succ n)⟩
+    · simpa [Fin.snoc] using hx1 ⟨n, Nat.lt_add_one n⟩
+    · have hy := h_imp h'
+      cases i with
+      | zero =>
+        specialize hx1 ⟨n, Nat.lt_add_one n⟩
+        simp only [Fin.snoc, lt_self_iff_false, ↓reduceDIte, cast_eq] at hx1
+        exact ⟨y, hy, hx1⟩
+      | succ n =>
+        have hj' : n < N := by grind
+        grind
+  · unfold Fin.snoc
+    by_cases hkn : k = n
+    · simpa [hkn]
+    · have hkn' : k < n := by grind
+      grind
   · specialize h (N + 1)
     rw [Set.inter_nonempty_iff_exists_left] at h ⊢
     obtain ⟨x, ⟨hx1, hx2⟩⟩ := h
     use x
     simp only [mem_inter_iff, mem_iInter, mem_sUnion, SetLike.mem_coe] at hx1 hx2 ⊢
-    refine ⟨?_, ?_⟩
-    · intro i
-      simp only [Fin.snoc, Fin.castSucc_castLT, cast_eq, Fin.val_last]
-      refine Fin.lastCases ?_ (fun i ↦ ?_) i
-      · simp only [Fin.val_last, lt_self_iff_false, ↓reduceDIte, cast_eq]
-        exact hx1.2
-      · simp only [Fin.val_castSucc, Fin.is_lt, ↓reduceDIte]
-        exact hx1.1 i.val i.prop
-    · intro i hi
-      specialize hx2 (i + 1) (Nat.add_lt_add_right hi 1)
-      rw [add_assoc, add_comm 1 i]
-      exact hx2
+    exact ⟨by simp [Fin.snoc]; grind, by grind⟩
 
-lemma step0 {L : ℕ → Finset (Set α)}
-    (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ SetLike.coe (L k)).Nonempty) :
-    q L 0 (Fin.elim0' (α := fun n ↦ {a : Set α // a ∈ L n})) := by
-  intro N
-  simp only [iInter_of_empty, zero_add, univ_inter]
-  exact hL N
+lemma step0 {L : ℕ → Finset (Set α)} (hL : ∀ N, (⋂ k < N, ⋃₀ SetLike.coe (L k)).Nonempty) :
+    q L 0 (Fin.elim0' (α := fun _ ↦ Set α)) :=
+  ⟨by simp, by simpa using hL⟩
 
 lemma inter_sUnion_eq_empty (s : Set α) (L : Set (Set α)) :
     (∀ a ∈ L, s ∩ a = ∅) ↔ s ∩ ⋃₀ L = ∅ := by
   simp_rw [← disjoint_iff_inter_eq_empty]
   exact Iff.symm disjoint_sUnion_right
 
-lemma step' {L : ℕ → Finset (Set α)}
-    : ∀ n (K : (k : Fin n) → L k), (q L n K) → ∃ a, q L (n + 1) (Fin.snoc K a) := by
-  intro n K hK
-  simp_rw [q_iff_iInter] at hK
-  simp_rw [q_iff_iInter'] at ⊢
+lemma step' {L : ℕ → Finset (Set α)} (n : ℕ) (K : (k : Fin n) → Set α) (hK : q L n K) :
+    ∃ a, q L (n + 1) (Fin.snoc K a) := by
+  have hK' := hK.1
+  simp_rw [q_iff_iInter hK'] at hK
+  simp_rw [q_iff_iInter' hK'] at ⊢
   by_contra! h
   choose b hb using h
   classical
-  let b' := fun x ↦ dite (x ∈ (L n)) (fun c ↦ b ⟨x, c⟩) (fun _ ↦ 0)
+  let b' := fun x ↦ dite (x ∈ (L n)) (fun c ↦ b x c) (fun _ ↦ 0)
   have hs : (SetLike.coe (L n)).Nonempty := by
     specialize hK 1
     rw [Set.nonempty_def] at hK ⊢
@@ -382,24 +365,21 @@ lemma step' {L : ℕ → Finset (Set α)}
   obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L (Fin.last n)) b' hs
   simp_rw [Set.nonempty_iff_ne_empty] at hK
   apply hK (b' K0Max + 1)
-  have h₂ (a : L n) : ⋂ k < b' K0Max, ⋃₀ (L (n + k)) ⊆ ⋂ k, ⋂ (_ : k < b a),
+  have h₂ (a : Set α) (ha : a ∈ L n) : ⋂ k < b' K0Max, ⋃₀ (L (n + k)) ⊆ ⋂ k, ⋂ (_ : k < b a ha),
       ⋃₀ SetLike.coe (L (n + k)) := by
     intro x hx
     simp only [mem_iInter, mem_sUnion, SetLike.mem_coe] at hx ⊢
-    have f : b' a = b a := by
-      simp [b']
-    exact fun i hi ↦ hx i (lt_of_lt_of_le hi (f ▸ hK0₂ a.val a.prop))
-  have h₃ : ∀ (a : { x // x ∈ L ↑(Fin.last n) }), (⋂ j, ⋂ (hj : j < n), ↑(K ⟨j, hj⟩)) ∩ ↑a ∩
-      ⋂ k, ⋂ (_ : k < b' K0Max), ⋃₀ SetLike.coe (L (n + k)) = ∅ := by
-    intro a
-    rw [← subset_empty_iff, ← hb a]
-    apply inter_subset_inter (fun ⦃a⦄ a ↦ a) (h₂ a)
+    have f : b' a = b a ha := by simp [b', ha]
+    exact fun i hi ↦ hx i (hi.trans_le (f ▸ hK0₂ a ha))
+  have h₃ (a : Set α) (ha : a ∈ L ↑(Fin.last n)) : (⋂ (j) (hj : j < n), K ⟨j, hj⟩) ∩ a ∩
+      ⋂ k < b' K0Max, ⋃₀ L (n + k) = ∅ := by
+    rw [← subset_empty_iff, ← hb a ha]
+    exact inter_subset_inter (fun ⦃a⦄ a ↦ a) (h₂ a ha)
   simp_rw [inter_comm, inter_assoc] at h₃
   simp_rw [← disjoint_iff_inter_eq_empty] at h₃ ⊢
-  simp only [Fin.val_last, Subtype.forall] at h₃
+  simp only [Fin.val_last] at h₃
   have h₃'' := disjoint_iff_inter_eq_empty.mp (disjoint_sUnion_left.mpr h₃)
-  rw [inter_comm] at h₃''
-  rw [inter_assoc, ← disjoint_iff_inter_eq_empty] at h₃''
+  rw [inter_comm, inter_assoc, ← disjoint_iff_inter_eq_empty] at h₃''
   apply disjoint_of_subset (fun ⦃a⦄ a ↦ a) _ h₃''
   simp only [subset_inter_iff, subset_iInter_iff]
   refine ⟨fun i hi x hx ↦ ?_, fun x hx ↦ ?_⟩
@@ -408,53 +388,46 @@ lemma step' {L : ℕ → Finset (Set α)}
     use t
   · simp only [mem_iInter, mem_sUnion, SetLike.mem_coe] at hx ⊢
     obtain ⟨t, ht⟩ := hx 0 (zero_lt_succ _)
-    simp only [add_zero] at ht
     use t
+    simpa
 
 /-- For `L : ℕ → Finset (Set α)` such that `L n ⊆ K` and
-`h : ∀ N, ⋂ k < N, ⋃₀ L k ≠ ∅`, `mem_of_union h n` is some `K : ℕ → Set α` such that `K n ∈ L n`
+`h : ∀ N, ⋂ k < N, ⋃₀ L k ≠ ∅`, `memOfUnion h n` is some `K : ℕ → Set α` such that `K n ∈ L n`
 for all `n` (this is `prop₀`) and `∀ N, ⋂ (j < n, K j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ≠ ∅`
 (this is `prop₁`.) -/
-noncomputable def mem_of_union (L : ℕ → Finset (Set α))
-  (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ SetLike.coe (L k)).Nonempty) : (k : ℕ) → L k :=
-  Nat.prefixInduction' (q L) (step0 hL) (step')
+noncomputable def memOfUnion (L : ℕ → Finset (Set α))
+  (hL : ∀ N, (⋂ k < N, ⋃₀ SetLike.coe (L k)).Nonempty) : (k : ℕ) → Set α :=
+  Nat.prefixInduction' (q L) (step0 hL) step'
 
-theorem mem_of_union.spec (L : ℕ → Finset (Set α))
-    (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ SetLike.coe (L k)).Nonempty) (n : ℕ) :
-    (∀ N, ((⋂ (j : Fin n),
-      (mem_of_union L hL) j) ∩ (⋂ (k < N), ⋃₀ SetLike.coe (L (n + k)))).Nonempty) :=
-  Nat.prefixInduction'_spec (β := fun n ↦ {a // a ∈ L n}) (q L) (step0 hL) (step') n
+theorem memOfUnion.spec (L : ℕ → Finset (Set α))
+    (hL : ∀ N, (⋂ k < N, ⋃₀ SetLike.coe (L k)).Nonempty) (n : ℕ) :
+    q L n (fun n ↦ memOfUnion L hL n) :=
+  Nat.prefixInduction'_spec (β := fun _ ↦ Set α) (q L) (step0 hL) step' n
 
 lemma sInter_memOfUnion_nonempty (L : ℕ → Finset (Set α))
     (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ SetLike.coe (L k)).Nonempty) (n : ℕ) :
-    (⋂ (j : Fin n), (mem_of_union L hL j).val).Nonempty := by
-  have h := mem_of_union.spec L hL n 0
-  simp only [not_lt_zero, iInter_of_empty, iInter_univ, inter_univ] at h
-  exact h
+    (⋂ (j : Fin n), memOfUnion L hL j).Nonempty := by
+  simpa using (memOfUnion.spec L hL n).2 0
 
 lemma sInter_memOfUnion_isSubset (L : ℕ → Finset (Set α))
     (hL : ∀ N, (⋂ k < N, ⋃₀ SetLike.coe (L k)).Nonempty) :
-    (⋂ j, (mem_of_union L hL j)) ⊆ ⋂ k, (⋃₀ SetLike.coe (L k)) := by
+    (⋂ j, memOfUnion L hL j) ⊆ ⋂ k, ⋃₀ SetLike.coe (L k) := by
   exact iInter_mono <| fun n ↦
-  subset_sUnion_of_subset (↑(L n)) (mem_of_union L hL n).val (fun ⦃a⦄ a ↦ a)
-    (mem_of_union L hL n).prop
+    subset_sUnion_of_subset (L n) (memOfUnion L hL n) (fun ⦃a⦄ a ↦ a)
+      ((memOfUnion.spec L hL (n + 1)).1 ⟨n, by grind⟩)
 
 /-- Finite unions of sets in a compact system. -/
 def union (S : Set (Set α)) : Set (Set α) :=
-  (sUnion '' ({ L : Set (Set α) | L.Finite ∧ (L ⊆ S)}))
+  sUnion '' { L : Set (Set α) | L.Finite ∧ L ⊆ S}
 
 lemma union.mem_iff (s : Set α) : s ∈ union S ↔ ∃ L : Finset (Set α), s = ⋃₀ L ∧ ↑L ⊆ S := by
   refine ⟨fun ⟨L, hL⟩ ↦ ?_, fun h ↦ ?_⟩
   · simp only [mem_setOf_eq] at hL
-    let L' := (hL.1.1).toFinset
-    use L'
-    rw [← hL.2, Finite.coe_toFinset]
-    refine ⟨rfl, fun K hK ↦ ?_⟩
-    apply hL.1.2 hK
+    use (hL.1.1).toFinset
+    simpa [← hL.2] using hL.1.2
   · obtain ⟨L, hL⟩ := h
     use L
-    simp only [mem_setOf_eq, Finset.finite_toSet, true_and]
-    refine ⟨hL.2, hL.1.symm⟩
+    simp [hL.1, hL.2]
 
 /- If `IsCompactSystem S`, the set of finite unions of sets in `S` is also a compact system. -/
 theorem union.isCompactSystem (S : Set (Set α)) (hS : IsCompactSystem S) :
@@ -464,9 +437,10 @@ theorem union.isCompactSystem (S : Set (Set α)) (hS : IsCompactSystem S) :
   choose L' hL' using hi
   simp_rw [hL']
   intro hL
-  exact Nonempty.mono (sInter_memOfUnion_isSubset L' hL)
-    <| (IsCompactSystem.iff_nonempty_iInter_of_lt' S).mp hS
-    (fun k ↦ (mem_of_union L' hL k).val) (fun i ↦ (hL' i).2 <| (mem_of_union L' hL i).prop)
+  refine Nonempty.mono (sInter_memOfUnion_isSubset L' hL) ?_
+  exact (IsCompactSystem.iff_nonempty_iInter_of_lt' S).mp hS
+    (fun k ↦ memOfUnion L' hL k)
+    (fun i ↦ (hL' i).2 <| (memOfUnion.spec L' hL (i + 1)).1 ⟨i, by grind⟩)
     (fun n ↦ sInter_memOfUnion_nonempty L' hL (n + 1))
 
 end IsCompactSystem
