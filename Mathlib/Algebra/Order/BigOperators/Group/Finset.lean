@@ -245,7 +245,7 @@ theorem sum_mul_le_sum_sum_filter_of_le_card_filter
           refine sum_le_sum ?_
           intro x hx
           have hmul :
-              m x * w x ≤ #(t.filter fun y => R x y) * w x := by
+              m x * w x ≤ #(t.filter fun y ↦ R x y) * w x := by
             exact Nat.mul_le_mul_right (w x) (hcover x hx)
           simpa [sum_const, Nat.mul_comm] using hmul
     _ = ∑ y ∈ t, ∑ x ∈ s.filter (fun x => R x y), w x := hswap
