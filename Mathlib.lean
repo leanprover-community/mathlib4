@@ -2505,6 +2505,9 @@ public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Elementwise
 public import Mathlib.CategoryTheory.Endofunctor.Algebra
+public import Mathlib.CategoryTheory.Endofunctor.Algebra.Adamek
+public import Mathlib.CategoryTheory.Endofunctor.Algebra.ChainShift
+public import Mathlib.CategoryTheory.Endofunctor.Algebra.InitialChain
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Enriched.Basic
 public import Mathlib.CategoryTheory.Enriched.EnrichedCat
