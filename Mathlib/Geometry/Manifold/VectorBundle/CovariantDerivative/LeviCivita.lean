@@ -742,7 +742,7 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   · exact (hcov'.eq_leviCivitaRhs I X σ Z ).symm
 
 open Classical in
-noncomputable def lcCandidateAux₀ [FiniteDimensional ℝ E]
+noncomputable def lcAux₀ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
   mk2TensorAt I E ℝ (fun (X Z : Π x : M, TangentSpace I x) ↦
@@ -780,15 +780,15 @@ noncomputable def lcCandidateAux₀ [FiniteDimensional ℝ E]
         · simp
       · exact mdifferentiableAt_add_section hZ₁ hZ₂)
 
-theorem lcCandidateAux₀_apply [FiniteDimensional ℝ E] {x : M}
+theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    lcCandidateAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
-  unfold lcCandidateAux₀
+    lcAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
+  unfold lcAux₀
   rw [mk2TensorAt_apply _ _ _ _ _ _ hX hZ, dif_pos hX, dif_pos hZ]
 
-noncomputable def lcCandidateAux₁ [FiniteDimensional ℝ E]
+noncomputable def lcAux₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
   -- use the musical isomorphism to produce a candidate ∇ Y as a (1,1)-tensor
@@ -796,40 +796,40 @@ noncomputable def lcCandidateAux₁ [FiniteDimensional ℝ E]
   have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
   have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
   (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L
-    (lcCandidateAux₀ I x hY)
+    (lcAux₀ I x hY)
 
-theorem lcCandidateAux₁_apply [FiniteDimensional ℝ E] {x : M}
+theorem lcAux₁_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    inner ℝ (lcCandidateAux₁ I x hY (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
-  simpa [lcCandidateAux₁] using lcCandidateAux₀_apply I hX hY hZ
+    inner ℝ (lcAux₁ I x hY (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
+  simpa [lcAux₁] using lcAux₀_apply I hX hY hZ
 
 open Classical in
-noncomputable def lcCandidateAux [FiniteDimensional ℝ E]
+noncomputable def lcAux [FiniteDimensional ℝ E]
     (Y : Π x : M, TangentSpace I x) (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x :=
-  if hY : MDiffAt (T% Y) x then lcCandidateAux₁ I x hY else 0
+  if hY : MDiffAt (T% Y) x then lcAux₁ I x hY else 0
 
-theorem lcCandidateAux_apply [FiniteDimensional ℝ E] {x : M}
+theorem lcAux_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
-    inner ℝ (lcCandidateAux I Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
-  unfold lcCandidateAux
+    inner ℝ (lcAux I Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x := by
+  unfold lcAux
   rw [dif_pos hY]
-  simpa [lcCandidateAux] using lcCandidateAux₁_apply I hX hY hZ
+  simpa [lcAux] using lcAux₁_apply I hX hY hZ
 
-lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E] :
-    IsCovariantDerivativeOn E (lcCandidateAux I (M := M)) where
+lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
+    IsCovariantDerivativeOn E (lcAux I (M := M)) where
   addσ {Y Y'} x hY hY' _ := by
-    unfold lcCandidateAux
+    unfold lcAux
     rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
-    unfold lcCandidateAux₁
+    unfold lcAux₁
     dsimp
     rw [← ContinuousLinearMap.comp_add]
     congr! 1
-    simp only [lcCandidateAux₀]
+    simp only [lcAux₀]
     ext X₀ Y₀
     simp only [mk2TensorAt, IsBilinearMap.toContinuousLinearMap, IsBilinearMap.toLinearMap,
       dite_eq_ite, LinearMap.coe_toContinuousLinearMap', IsLinearMap.mk'_apply, LinearMap.mk₂_apply,
@@ -847,10 +847,10 @@ lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E] :
     · exact mdifferentiable_extend ..
     · exact mdifferentiable_extend ..
   leibniz {Y f x} hY hf _ := by
-    unfold lcCandidateAux
+    unfold lcAux
     dsimp
     rw [dif_pos hY, dif_pos]
-    · unfold lcCandidateAux₁
+    · unfold lcAux₁
       dsimp
       rw [← ContinuousLinearMap.comp_smul]
       have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
@@ -864,7 +864,7 @@ lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E] :
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         ContinuousLinearMap.toSpanSingleton_apply, map_add, map_smul]
       ext Z₀
-      simp only [lcCandidateAux₀, mk2TensorAt, IsBilinearMap.toContinuousLinearMap,
+      simp only [lcAux₀, mk2TensorAt, IsBilinearMap.toContinuousLinearMap,
         IsBilinearMap.toLinearMap, dite_eq_ite, LinearMap.coe_toContinuousLinearMap',
         IsLinearMap.mk'_apply, LinearMap.mk₂_apply, ContinuousLinearMap.add_apply,
         ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
@@ -886,31 +886,17 @@ end
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
-variable (M) in
-/-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
-this is unique up to the value on non-differentiable vector fields.
-If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
-@[no_expose] noncomputable def LeviCivitaConnection_aux [FiniteDimensional ℝ E]
-    (o : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E)) :
-    CovariantDerivative I E (TangentSpace I : M → Type _) where
-  -- This is the existence part of the proof: take the formula derived above
-  -- and prove it satisfies all the conditions.
-  toFun := lcCandidate I M o
-  isCovariantDerivativeOn := by
-    rw [← iUnion_source_chartAt H M]
-    let t := fun x ↦ trivializationAt E (TangentSpace I : M → Type _) x
-    apply IsCovariantDerivativeOn.iUnion (s := fun i ↦ (t i).baseSet) fun i ↦ ?_
-    exact isCovariantDerivativeOn_lcCandidate I _
-
 -- TODO: make g part of the notation!
 variable (M) in
 /-- A choice of Levi-Civita connection on the tangent bundle `TM` of a Riemannian manifold `(M, g)`:
 this is unique up to the value on non-differentiable vector fields.
 If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead. -/
 noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
-    CovariantDerivative I E (TangentSpace I : M → Type _) :=
-  LeviCivitaConnection_aux I M (Classical.choose (exists_wellOrder _))
+    CovariantDerivative I E (TangentSpace I : M → Type _) where
+  toFun := lcAux I
+  isCovariantDerivativeOn := isCovariantDerivativeOn_lcAux I
 
+#exit
 -- TODO: move this section to `Torsion.lean`
 section
 
@@ -1089,7 +1075,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     intro x'' hx'' i j k
     simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
     unfold lcCandidate
-    simp only [lcCandidateAux, hE, ↓reduceDIte]
+    simp only [lcAux, hE, ↓reduceDIte]
 
     letI t := trivializationAt E (TangentSpace I) x;
     letI hs := (Basis.ofVectorSpace ℝ E).localFrame_isLocalFrameOn_baseSet I 1 t
@@ -1113,7 +1099,7 @@ theorem LeviCivitaConnection.christoffelSymbol_symm [FiniteDimensional ℝ E] (x
     simp only [LeviCivitaConnection, LeviCivitaConnection_aux]
     unfold lcCandidate
     rw [product_apply, product_apply]
-    simp only [lcCandidateAux, hE, ↓reduceDIte]
+    simp only [lcAux, hE, ↓reduceDIte]
     -- Choose a linear order on ι: which one really does not matter for our result.
     have : LinearOrder ι := by
       choose r wo using exists_wellOrder _
@@ -1181,7 +1167,7 @@ lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaCon
   refine ⟨?_, ?_⟩
   · intro X Y Z x
     unfold LeviCivitaConnection LeviCivitaConnection_aux lcCandidate
-    simp only [lcCandidateAux, hE, ↓reduceDIte]
+    simp only [lcAux, hE, ↓reduceDIte]
     --simp [product_apply]
     sorry -- compatible
   · let s : M → Set M := fun x ↦ (trivializationAt E (fun (x : M) ↦ TangentSpace I x) x).baseSet
