@@ -25,7 +25,7 @@ local notation "η" => ModularForm.eta
 
 --This proof was provided by Gauss to the sphere packing project.
 /-- The weight 2 Eisenstein series `E2` is MDifferentiable -/
-lemma E2_mdifferentiable : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) E2 := by
+lemma E2_mdifferentiable : MDiff E2 := by
   rw [UpperHalfPlane.mdifferentiable_iff]
   have hη : DifferentiableOn ℂ η _ :=
     fun z hz ↦ (differentiableAt_eta_of_mem_upperHalfPlaneSet hz).differentiableWithinAt
