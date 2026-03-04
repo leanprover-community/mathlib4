@@ -757,6 +757,8 @@ end MulAut
 
 namespace AddAut
 
+variable [AddGroup G] (g h : G)
+
 /-- Additive group conjugation, `AddAut.conj g h = g + h - g`, as an additive monoid
 homomorphism mapping addition in `G` into multiplication in the automorphism group `AddAut G`
 (written additively in order to define the map). -/
@@ -780,11 +782,11 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
     simp only [zero_add, neg_zero, add_zero, toMul_ofMul, toMul_zero, one_apply]
     rfl
 
-@[simp] theorem conj_apply [AddGroup G] (g h : G) : (conj g).toMul h = g + h + -g := rfl
-@[simp] theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).toMul.symm h = -g + h + g := rfl
+@[simp] theorem conj_apply : (conj g).toMul h = g + h + -g := rfl
+@[simp] theorem conj_symm_apply : (conj g).toMul.symm h = -g + h + g := rfl
 
-theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g := rfl
-theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g).toMul h = -g + h + g := by simp
+theorem conj_inv_apply : (conj g).toMul⁻¹ h = -g + h + g := rfl
+theorem neg_conj_apply : (-conj g).toMul h = -g + h + g := by simp
 
 end AddAut
 
