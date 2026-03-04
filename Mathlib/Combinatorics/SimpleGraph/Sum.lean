@@ -46,6 +46,12 @@ protected def sum (G : SimpleGraph V) (H : SimpleGraph W) : SimpleGraph (V ⊕ W
 
 @[inherit_doc] infixl:60 " ⊕g " => SimpleGraph.sum
 
+theorem sum_adj_inl : (G ⊕g H).Adj (.inl v) (.inl v') ↔ G.Adj v v' := by
+  simp
+
+theorem sum_adj_inr : (G ⊕g H).Adj (.inr w) (.inr w') ↔ H.Adj w w' := by
+  simp
+
 /-- The disjoint sum is commutative up to isomorphism. `Iso.sumComm` as a graph isomorphism. -/
 @[simps!]
 def Iso.sumComm : G ⊕g H ≃g H ⊕g G := ⟨Equiv.sumComm V W, by
@@ -70,6 +76,24 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
   map_rel_iff' := by simp
+
+/-- The edges of the disjoint sum of `G` and `H` are in bijection with
+the disjoint sum of the edges of `G` and the edges of `H` -/
+def edgeSetSumEquiv : (G ⊕g H).edgeSet ≃ G.edgeSet ⊕ H.edgeSet where
+  toFun :=
+    fun ⟨e, he⟩ ↦ e.fromRelNdrec (sym := symm _) he (fun
+      | Sum.inl u, Sum.inl v, h => .inl ⟨s(u, v), h⟩
+      | Sum.inr u, Sum.inr v, h => .inr ⟨s(u, v), h⟩
+      | Sum.inl u, Sum.inr v, h => by contradiction
+      | Sum.inr u, Sum.inl v, h => by contradiction
+    ) fun a b h ↦ by cases a <;> cases b <;> simp
+  invFun
+    | Sum.inl ⟨e, he⟩ =>
+      e.fromRelNdrec (sym := G.symm) he (fun u v h ↦ ⟨s(.inl u, .inl v), h⟩) <| by simp
+    | Sum.inr ⟨e, he⟩ =>
+      e.fromRelNdrec (sym := H.symm) he (fun u v h ↦ ⟨s(.inr u, .inr v), h⟩) <| by simp
+  left_inv := by rintro ⟨⟨u | u, v | v⟩, h⟩ <;> first | contradiction | rfl
+  right_inv := by rintro (⟨⟨u, v⟩, h⟩ | ⟨⟨u, v⟩, h⟩) <;> rfl
 
 lemma Reachable.sum_sup_edge (hv : G.Reachable v v') (hw : H.Reachable w w') :
     (G.sum H ⊔ edge (.inl v) (.inr w)).Reachable (.inl v') (.inr w') :=
