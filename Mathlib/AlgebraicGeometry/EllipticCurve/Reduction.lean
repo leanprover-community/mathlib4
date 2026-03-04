@@ -276,19 +276,24 @@ noncomputable def reduction (W : WeierstrassCurve K) [IsMinimal R W] :
 /-- A minimal Weierstrass equation has good reduction if and only if
 the valuation of its discriminant is 1. -/
 @[mk_iff]
-class IsGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
+class HasGoodReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   goodReduction : valuation K (maximalIdeal R) W.Δ = 1
 
-lemma isGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
-    IsGoodReduction R W ↔ (W.reduction R).IsElliptic := by
+@[deprecated (since := "2026-03-04")] alias IsGoodReduction := HasGoodReduction
+
+lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : IsMinimal R W] :
+    HasGoodReduction R W ↔ (W.reduction R).IsElliptic := by
   refine Iff.trans ?_ (W.reduction R).isElliptic_iff.symm
   simp only [reduction, map_Δ, isUnit_iff_ne_zero, ne_eq, residue_eq_zero_iff]
   have h :
       ¬(valuation K (maximalIdeal R) (algebraMap R K (integralModel R W).Δ) < 1)
       ↔ (integralModel R W).Δ ∉ IsLocalRing.maximalIdeal R :=
     not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
-  refine ((integralModel_Δ_eq R W ▸ isGoodReduction_iff _ _).trans ?_).trans h
+  refine ((integralModel_Δ_eq R W ▸ hasGoodReduction_iff _ _).trans ?_).trans h
   simpa [hW] using (valuation_le_one (R := R) (K := K) _ _).ge_iff_eq.symm
+
+@[deprecated (since := "2026-03-04")] alias isGoodReduction_iff_isElliptic_reduction :=
+  hasGoodReduction_iff_isElliptic_reduction
 
 /-- A minimal Weierstrass equation has multiplicative reduction if and only if
 the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
@@ -304,10 +309,10 @@ class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   additiveReduction : valuation K (maximalIdeal R) W.c₄ < 1
 
-theorem hasGoodReduction_or_hasMultiplicativeReduction_or_isAdditiveReduction
+theorem hasGoodReduction_or_hasMultiplicativeReduction_or_hasAdditiveReduction
     {W : WeierstrassCurve K} [IsMinimal R W] :
-    W.IsGoodReduction R ∨ W.HasMultiplicativeReduction R ∨ W.HasAdditiveReduction R := by
-  rw [isGoodReduction_iff, hasMultiplicativeReduction_iff, hasAdditiveReduction_iff,
+    W.HasGoodReduction R ∨ W.HasMultiplicativeReduction R ∨ W.HasAdditiveReduction R := by
+  rw [hasGoodReduction_iff, hasMultiplicativeReduction_iff, hasAdditiveReduction_iff,
     ← integralModel_Δ_eq R W, ← integralModel_c₄_eq R W]
   grind [valuation_le_one]
 
