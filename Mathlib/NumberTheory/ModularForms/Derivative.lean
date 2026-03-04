@@ -18,12 +18,11 @@ noncomputable def D (F : ℍ → ℂ) : ℍ → ℂ :=
 `MDifferentiableAt` on `ℍ` implies `DifferentiableAt` on `ℂ`.
 -/
 lemma MDifferentiableAt_DifferentiableAt {F : ℍ → ℂ} {z : ℍ}
-  (h : MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) F z) :
-  DifferentiableAt ℂ (F ∘ ofComplex) ↑z := by
+  (h : MDifferentiableAt 𝓘(ℂ) 𝓘(ℂ) F z) : DifferentiableAt ℂ (F ∘ ofComplex) ↑z := by
   have h₁ : DifferentiableWithinAt ℂ (F ∘ ofComplex) Set.univ ↑z :=
     by simpa [writtenInExtChartAt, extChartAt, Set.range_id] using
       MDifferentiableWithinAt.differentiableWithinAt_writtenInExtChartAt h
-  exact (differentiableWithinAt_univ.1 h₁)
+  exact differentiableWithinAt_univ.1 h₁
 
 /--
 `DifferentiableAt` on `ℂ` implies `MDifferentiableAt` on `ℍ`.
