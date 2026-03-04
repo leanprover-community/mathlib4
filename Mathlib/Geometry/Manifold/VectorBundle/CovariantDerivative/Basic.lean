@@ -653,6 +653,7 @@ lemma horiz_vert_direct_sum (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f 
     use u - (0, hcov.projection x f u), ?_, (0, hcov.projection x f u), ?_, ?_
     all_goals simp [horiz]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f : F}
     {u : TM x} {v : F} (hx : x ∈ s := by trivial) : (u, v) ∈ hcov.horiz x f ↔
     ∃ σ : M → F, MDiffAt (T% σ) x ∧
@@ -688,19 +689,21 @@ end projection_trivial_bundle
 
 end IsCovariantDerivativeOn
 
+namespace Bundle.Trivialization
+
 section to_trivialization
 
 variable (e : Trivialization F (π F V)) [VectorBundle ℝ F V] [MemTrivializationAtlas e]
   [IsManifold I 1 M]
 
-
 noncomputable
-def Trivialization.pushCovDer
+def pushCovDer
     (cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[ℝ] V x)) :
     (M → F) → (Π x : M, TangentSpace I x →L[ℝ] F) :=
   fun σ x ↦ e.continuousLinearMapAt ℝ x ∘L (cov (fun x' ↦ e.symm x' <| σ x') x)
 
-lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
+set_option backward.isDefEq.respectTransparency false in
+lemma pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
     [T2Space M] [IsManifold I ∞ M]
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
     [ContMDiffVectorBundle 1 F V I]
@@ -717,13 +720,13 @@ lemma Trivialization.pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensio
       exact hσ
   unfold pushCovDer
   rw [this]
-  simp [Trivialization.coe_linearMapAt, hx]
+  simp [coe_linearMapAt, hx]
 
 
 variable {cov : (Π x : M, V x) → (Π x : M, TangentSpace I x →L[ℝ] V x)}
     -- {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
 
-lemma Trivialization.pushCovDer_isCovariantDerivativeOn
+lemma pushCovDer_isCovariantDerivativeOn
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
     [ContMDiffVectorBundle 1 F V I]
     {u : Set M} (hu : u ⊆ e.baseSet)
@@ -737,7 +740,7 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     have hs' : MDiffAt (T% s') x :=
       e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1
       hσ'
-    unfold Trivialization.pushCovDer
+    unfold pushCovDer
     rw [← ContinuousLinearMap.comp_add, ← hcov.addσ hs hs' hx]
     congr
     ext y
@@ -746,7 +749,7 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     set s := (fun x' ↦ e.symm x' (σ x'))
     have hs : MDiffAt (T% s) x :=
       e.mdifferentiableAt_section_of_function (hu hx) <| mdifferentiableAt_section_trivial_iff.1 hσ
-    unfold Trivialization.pushCovDer
+    unfold pushCovDer
     have : (fun x' ↦ e.symm x' ((g • σ) x')) = g • s := by
       ext y
       simp [s, e.symm_map_smul]
@@ -761,7 +764,7 @@ lemma Trivialization.pushCovDer_isCovariantDerivativeOn
     exact e.linearMapAt_symmₗ (R := ℝ) (hu hx) (σ x)
 
 variable {e} in
-lemma Trivialization.coordChangeL_pushCovDer
+lemma coordChangeL_pushCovDer
     [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M]
     {e' : Trivialization F (π F V)} [MemTrivializationAtlas e']
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
@@ -773,7 +776,7 @@ lemma Trivialization.coordChangeL_pushCovDer
       e'.pushCovDer cov (fun x ↦ e.coordChangeL ℝ e' x (s x)) x := by
   ext1 X₀
   simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply]
-  unfold Trivialization.pushCovDer
+  unfold pushCovDer
   let σ := (fun x' ↦ e.symm x' (s x'))
   rw [coordChangeL_apply e e' hx]
   simp only [ContinuousLinearMap.coe_comp', continuousLinearMapAt_apply, coe_linearMapAt, hx.1,
@@ -805,7 +808,7 @@ lemma Trivialization.coordChangeL_pushCovDer
 
 
 variable {e} in
-lemma Trivialization.coordChangeL_mem_horiz
+lemma coordChangeL_mem_horiz
     [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ F]
     {e' : Trivialization F (π F V)} [MemTrivializationAtlas e']
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
@@ -837,7 +840,7 @@ lemma Trivialization.coordChangeL_mem_horiz
 
 -- This is PAIIIIINNNN
 variable {e} in
-lemma Trivialization.coordChangeL_coordChangeL
+lemma coordChangeL_coordChangeL
     {e' : Trivialization F (π F V)} [MemTrivializationAtlas e']
     {x : M} (hx : x ∈ e.baseSet ∩ e'.baseSet) (v : F) :
     e'.coordChangeL ℝ e x (e.coordChangeL ℝ e' x v) = v := by
@@ -866,7 +869,7 @@ lemma Trivialization.coordChangeL_coordChangeL
   simp
 
 variable {e} in
-lemma Trivialization.coordChangeL_mem_horiz_iff
+lemma coordChangeL_mem_horiz_iff
     [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ F]
     {e' : Trivialization F (π F V)} [MemTrivializationAtlas e']
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
@@ -892,6 +895,8 @@ lemma Trivialization.coordChangeL_mem_horiz_iff
     apply inter_comm
 
 end to_trivialization
+
+end Bundle.Trivialization
 
 section horiz
 namespace CovariantDerivative
@@ -938,8 +943,9 @@ noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
   (cov.proj v).ker
 
-lemma mem_horiz_iff_proj {cov : CovariantDerivative I F V} {v : TotalSpace F V} (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
-  u ∈ cov.horiz v ↔ cov.proj v u = 0 := by
+lemma mem_horiz_iff_proj {cov : CovariantDerivative I F V} {v : TotalSpace F V}
+    (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
+    u ∈ cov.horiz v ↔ cov.proj v u = 0 := by
   simp [horiz]
 
 lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
@@ -974,6 +980,7 @@ lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
 variable [IsManifold I 1 M]
 variable {cov : CovariantDerivative I F V}
 
+set_option backward.isDefEq.respectTransparency false in
 omit [ContMDiffVectorBundle 1 F V I] in
 lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
     {σ : Π x : M, V x} (x : M)
@@ -1001,7 +1008,6 @@ end CovariantDerivative
 end horiz
 
 end real
-
 
 -- variable (E E') in
 -- /-- The trivial connection on a trivial bundle, given by the directional derivative -/

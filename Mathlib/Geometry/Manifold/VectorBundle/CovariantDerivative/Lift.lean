@@ -63,7 +63,6 @@ def Bundle.pullback_diag (e : TotalSpace F E) : (TotalSpace.proj *ᵖ E) e :=
   e.2
 end
 
-
 section
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -377,4 +376,3 @@ lemma CovariantDerivative.orbit_geodVF {X : Π x : M, TangentSpace I x}
   rw [ht'.proj_acceleration cov ht]
 
 end geodesics
-
