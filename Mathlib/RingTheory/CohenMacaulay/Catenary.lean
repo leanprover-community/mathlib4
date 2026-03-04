@@ -30,9 +30,11 @@ lemma Ideal.ofList_spanFinrank_le_length (rs : List R) :
   rw [Set.ncard_coe_finset]
   apply List.toFinset_card_le
 
+--set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.ofList_height_le_length (rs : List R) (h : Ideal.ofList rs ≠ ⊤) :
     (Ideal.ofList rs).height ≤ rs.length := by
   apply le_trans (Ideal.height_le_spanFinrank _ h)
+  let : CharZero ℕ∞ := instCharZeroENat
   exact (Nat.cast_le.mpr (ofList_spanFinrank_le_length rs))
 
 lemma IsLocalRing.Ideal.ofList_height_le_length' [IsLocalRing R] (rs : List R)
@@ -91,6 +93,7 @@ lemma IsLocalRing.height_eq_height_maximalIdeal_of_maximalIdeal_mem_minimalPrime
     · simpa [Set.mem_singleton_iff.mp h] using mem
   simp [Ideal.height, this]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma maximalIdeal_mem_ofList_append_minimalPrimes_of_ofList_height_eq_length [IsLocalRing R]
     (rs : List R) (mem : ∀ r ∈ rs, r ∈ maximalIdeal R) (ht : (Ideal.ofList rs).height = rs.length) :
     ∃ rs' : List R, maximalIdeal R ∈ (Ideal.ofList (rs ++ rs')).minimalPrimes ∧
