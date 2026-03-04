@@ -98,8 +98,8 @@ lemma directed_dissipate {s : ℕ → Set α} : Directed (· ⊇ ·) (dissipate 
   antitone_dissipate.directed_ge
 
 lemma exists_dissipate_eq_empty_iff_of_directed {s : ℕ → Set α} (hd : Directed (· ⊇ ·) s) :
-    (∃ n, s n = ∅) ↔ (∃ n, dissipate s n = ∅) := by
-  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n, subset_eq_empty (dissipate_subset le_rfl) hn⟩ , ?_⟩
+    (∃ n, dissipate s n = ∅) ↔ (∃ n, s n = ∅) := by
+  refine ⟨?_, fun ⟨n, hn⟩ ↦ ⟨n, subset_eq_empty (dissipate_subset le_rfl) hn⟩⟩
   contrapose!
   intro h n
   obtain ⟨m, hm⟩ := exists_subset_dissipate_of_directed hd n

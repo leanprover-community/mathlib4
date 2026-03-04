@@ -135,7 +135,7 @@ theorem isCompactSystem_iff_of_directed (hpi : IsPiSystem S) :
       ∀ (C : ℕ → Set α), Directed (· ⊇ ·) C → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ → ∃ n, C n = ∅ := by
   rw [← isCompactSystem_insert_empty_iff]
   refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
-  · rw [exists_dissipate_eq_empty_iff_of_directed hdi]
+  · rw [← exists_dissipate_eq_empty_iff_of_directed hdi]
     exact h C (by simp [hi])
   rw [← biInter_le_eq_iInter] at h2
   suffices (∀ n, dissipate C n ∈ S ∨ dissipate C n = ∅) ∧ (⋂ n, dissipate C n = ∅) by
