@@ -37,6 +37,9 @@ including inference of the model with corners.
 | `mfderiv% f x`           | `mfderiv I J f x`                   |
 | `HasMFDerivAt[s] f x f'` | `HasMFDerivWithinAt I J f s x f'`   |
 | `HasMFDerivAt% f x f'`   | `HasMFDerivAt I J f x f'`           |
+| `TangentSpace% x`        | `TangentSpace I x`                  |
+| `tangentMap[s] f`        | `tangentMapWithin I J f s`          |
+| `tangentMap% f`          | `tangentMap I J f`                  |
 
 In each of these cases, the models with corners are inferred from the domain and codomain of `f`.
 The search for models with corners uses the local context and is (almost) only based on expression
@@ -940,6 +943,31 @@ scoped elab:max "HasMFDerivAt%" ppSpace
   let ef' ← Term.elabTerm f' none
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``HasMFDerivAt #[srcI, tgtI, ef, ex, ef']
+
+/-- `TangentSpace% x` elaborates to `TangentSpace I x`,
+trying to determine `I` from the local context. -/
+scoped elab:max "TangentSpace%" ppSpace x:term:arg : term => do
+  let ex ← Term.elabTerm x none
+  let extype ← whnf <| ← instantiateMVars <| ← inferType ex
+  let src ← findModel extype
+  mkAppM ``TangentSpace #[src, ex]
+
+/-- `tangentMap[s] f` elaborates to `tangentMapWithin I J f s`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "tangentMap[" s:term "]" ppSpace f:term:arg : term => do
+  let es ← Term.elabTerm s none
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``tangentMapWithin #[srcI, tgtI, ef, es]
+
+/-- `tangentMap% f` elaborates to `tangentMap I J f`,
+trying to determine `I` and `J` from the local context. -/
+scoped elab:max "tangentMap%" ppSpace f:term:arg : term => do
+  let ef ← ensureIsFunction <|← Term.elabTerm f none
+  let (srcI, tgtI) ← findModels ef none
+  mkAppM ``tangentMap #[srcI, tgtI, ef]
+
+-- TODO: add tests for the three elaborators above!
 
 end Manifold
 
