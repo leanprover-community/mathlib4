@@ -321,8 +321,7 @@ theorem lhopital_zero_atTop (hff' : ∀ᶠ x in atTop, HasDerivAt f (f' x) x)
   rw [mem_atTop_sets] at hs
   rcases hs with ⟨l, hl⟩
   have hl' : Ioi l ⊆ s₁ ∩ s₂ ∩ s₃ := fun x hx => hl x (le_of_lt hx)
-  refine lhopital_zero_atTop_on_Ioi ?_ ?_ (fun x hx => hg' x <| (hl' hx).2) hftop hgtop hdiv <;>
-    grind
+  refine lhopital_zero_atTop_on_Ioi ?_ ?_ (fun x hx ↦ hg' x ((hl' hx).2)) hftop hgtop hdiv <;> grind
 
 /-- L'Hôpital's rule for approaching -∞, `HasDerivAt` version -/
 theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
@@ -337,8 +336,7 @@ theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
   rw [mem_atBot_sets] at hs
   rcases hs with ⟨l, hl⟩
   have hl' : Iio l ⊆ s₁ ∩ s₂ ∩ s₃ := fun x hx => hl x (le_of_lt hx)
-  refine lhopital_zero_atBot_on_Iio ?_ ?_ (fun x hx => hg' x <| (hl' hx).2) hfbot hgbot hdiv <;>
-    grind
+  refine lhopital_zero_atBot_on_Iio ?_ ?_ (fun x hx ↦ hg' x ((hl' hx).2)) hfbot hgbot hdiv <;> grind
 
 end HasDerivAt
 
@@ -353,12 +351,12 @@ theorem lhopital_zero_nhdsWithin_convex {s : Set ℝ} (hs : Convex ℝ s)
       (𝓝[s \ {a}] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[s \ {a}] a) l := by
   have hdg : ∀ᶠ x in 𝓝[s \ {a}] a, DifferentiableWithinAt ℝ g (s \ {a}) x :=
-    hg'.mp (Eventually.of_forall fun _ hg' =>
-      by_contradiction fun h => hg' (derivWithin_zero_of_not_differentiableWithinAt h))
+    hg'.mp (.of_forall fun _ hg' => by_contradiction fun h =>
+      hg' (derivWithin_zero_of_not_differentiableWithinAt h))
   have hdf' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt f (derivWithin f (s \ {a}) x) (s \ {a}) x :=
-    hdf.mp (Eventually.of_forall fun _ h ↦ h.hasDerivWithinAt)
+    hdf.mp (.of_forall fun _ h ↦ h.hasDerivWithinAt)
   have hdg' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt g (derivWithin g (s \ {a}) x) (s \ {a}) x :=
-    hdg.mp (Eventually.of_forall fun _ h => h.hasDerivWithinAt)
+    hdg.mp (.of_forall fun _ h => h.hasDerivWithinAt)
   exact HasDerivWithinAt.lhopital_zero_nhdsWithin_convex hs hdf' hdg' hg' hfa hga hdiv
 
 end derivWithin
