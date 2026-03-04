@@ -597,7 +597,6 @@ theorem le_infDegree_add (f g : R[A]) :
     (f.infDegree D) ⊓ (g.infDegree D) ≤ (f + g).infDegree D :=
   le_inf_support_add D f g
 
-set_option backward.isDefEq.respectTransparency false in
 variable {D} in
 theorem infDegree_withTop_some_comp {s : AddMonoidAlgebra R A} (hs : s.support.Nonempty) :
     infDegree (WithTop.some ∘ D) s = infDegree D s := by

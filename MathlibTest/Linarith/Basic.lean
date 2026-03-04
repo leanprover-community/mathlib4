@@ -549,6 +549,11 @@ example (r : ℚ) (h' : 1 = r * 2) : 1 = 0 ∨ r = 1 / 2 := by
   by_contra! h''
   linarith +splitNe
 
+/-- https://github.com/leanprover-community/mathlib4/issues/29963 -/
+example {V : Type*} [AddCommGroup V] {x : V} (hx : x ≠ 0) {a b : ℚ} (hab : a ≠ b) (hab' : a = b) :
+    False := by
+  linarith +splitNe
+
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x * x := by nlinarith
 
 example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nlinarith

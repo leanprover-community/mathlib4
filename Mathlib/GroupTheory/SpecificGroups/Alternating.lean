@@ -232,7 +232,6 @@ theorem closure_cycleType_eq_2_2_eq_alternatingGroup (h5 : 5 ≤ Nat.card α) :
     · apply Subgroup.subset_closure
       exact cycleType_swap_mul_swap_of_nodup (by grind [Finset.mem_compl])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
   at least 5 elements is the entire alternating group if it contains a 3-cycle. -/
 theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f : Perm α}
@@ -295,7 +294,6 @@ instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
       rw [card_fin]
       exact le_add_left (le_refl 3))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normal closure of the 5-cycle `finRotate 5` within $A_5$ is the whole group. This will be
   used to show that the normal closure of any 5-cycle within $A_5$ is the whole group. -/
 theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
@@ -316,7 +314,6 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
 used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
 -/
@@ -367,7 +364,6 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
       decide
   · contradiction
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
   on its cycle type that its normal closure is all of $A_5$. -/
 instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
@@ -418,7 +414,6 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
       refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
     Subgroup.center (alternatingGroup α) = ⊥ := by
   rw [eq_bot_iff]
@@ -476,7 +471,6 @@ theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG :
   rw [← (isConj_iff.mp <| isConj_swap hxy hab).choose_spec]
   exact (normal_of_index_eq_two hG).conj_mem _ habG _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subgroup of the permutation group of index ≤ 2 contains the alternating group. -/
 theorem alternatingGroup_le_of_index_le_two
     {G : Subgroup (Equiv.Perm α)} (hG : G.index ≤ 2) :

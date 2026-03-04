@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.Algebra.Group.Invertible.Defs
 
 /-!
 # The category of groups in a Cartesian monoidal category
@@ -294,6 +295,17 @@ lemma toMonObj_injective {X : C} :
 lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h₁ = h₂ :=
   GrpObj.toMonObj_injective H
 
+set_option backward.isDefEq.respectTransparency false in
+/-- A monoid object with invertible homs is a group object. -/
+def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
+    (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
+  inv := Yoneda.fullyFaithful.preimage ⟨fun X f ↦ (h X.unop f).invOf, fun X Y f ↦ by
+    ext g
+    simp_rw [types_comp_apply, yoneda_obj_map, invOf_eq_iff_left]
+    rw [← comp_mul, invOf_mul_self, comp_one]⟩
+  left_inv := by rw [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, invOf_mul_self, Hom.one_def]
+  right_inv := by rw [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, mul_invOf_self, Hom.one_def]
+
 namespace tensorObj
 variable [BraidedCategory C] {G H : C} [GrpObj G] [GrpObj H]
 
@@ -380,11 +392,12 @@ instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
 instance uniqueHomToTrivial (A : Grp C) : Unique (A ⟶ trivial C) :=
   (show _ ≃ (A.toMon ⟶ Mon.trivial C) from InducedCategory.homEquiv).unique
 
-instance : HasInitial (Grp C) :=
-  hasInitial_of_unique (trivial C)
+instance : HasZeroObject (Grp C) where
+  zero := ⟨Grp.trivial C,
+    fun A ↦ nonempty_unique (Grp.trivial C ⟶ A),
+    fun A ↦ nonempty_unique (A ⟶ Grp.trivial C)⟩
 
-instance : HasTerminal (Grp C) :=
-  hasTerminal_of_unique (trivial C)
+noncomputable instance : HasZeroMorphisms (Grp C) := HasZeroObject.zeroMorphismsOfZeroObject
 
 /-! ### `Grp C` is cartesian-monoidal -/
 
