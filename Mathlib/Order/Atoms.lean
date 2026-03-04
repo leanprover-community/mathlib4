@@ -221,13 +221,13 @@ variable {A B : Type*} [PartialOrder A] [SetLike A B] [IsConcreteLE A B]
 
 theorem isAtom_iff [OrderBot A] {K : A} :
     IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
-  simp_rw [IsAtom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
-    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
+  simp_rw [IsAtom, lt_iff_le_not_ge, SetLike.not_le_iff_exists]
+  grind only
 
 theorem isCoatom_iff [OrderTop A] {K : A} :
     IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  simp_rw [IsCoatom, lt_iff_le_not_ge, SetLike.not_le_iff_exists,
-    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
+  simp_rw [IsCoatom, lt_iff_le_not_ge, SetLike.not_le_iff_exists]
+  grind only
 
 theorem covBy_iff {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
