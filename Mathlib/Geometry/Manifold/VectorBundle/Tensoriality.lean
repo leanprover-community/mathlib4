@@ -5,11 +5,10 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.BumpFunction
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
-public import Mathlib.Geometry.Manifold.Notation
-public import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
+public import Mathlib.Geometry.Manifold.VectorBundle.Misc
+public import Mathlib.Geometry.Manifold.VectorBundle.Extend
+import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
 
 /-!
 # The tensoriality criterion
@@ -267,3 +266,226 @@ lemma tensoriality_criterion'' [FiberBundle F V] [VectorBundle ℝ F V] [FiniteD
   apply b.localFrame_coeff_congr
   assumption
  -/
+
+
+section tensoriality
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {H : Type*} [TopologicalSpace H]
+  (I : ModelWithCorners ℝ E H)
+  {M : Type*} [TopologicalSpace M] [T2Space M] [ChartedSpace H M] [IsManifold I ∞ M]
+
+variable
+  (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
+  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
+  [(x : M) → AddCommGroup (V x)] [(x : M) → Module ℝ (V x)] [(x : M) → TopologicalSpace (V x)]
+  -- TODO can probably remove the next two hypotheses, by transport
+  [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
+  [FiberBundle F V] [VectorBundle ℝ F V] [ContMDiffVectorBundle ∞ F V I]
+
+variable
+  (F' : Type*) [NormedAddCommGroup F'] [NormedSpace ℝ F']
+  {V' : M → Type*} [TopologicalSpace (TotalSpace F' V')] [(x : M) → AddCommGroup (V' x)]
+  [(x : M) → Module ℝ (V' x)] [(x : M) → TopologicalSpace (V' x)]
+  -- TODO can probably remove the next two hypotheses, by transport
+  [∀ x, IsTopologicalAddGroup (V' x)] [∀ x, ContinuousSMul ℝ (V' x)]
+  [FiberBundle F' V'] [VectorBundle ℝ F' V']
+
+noncomputable def mkTensorAt
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    (φ : (Π x : M, V x) → (Π x, V' x)) (x)
+    (φ_smul : ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') x = φ σ x + φ σ' x) :
+    V x →L[ℝ] V' x :=
+    let Ψ : V x ≃L[ℝ] F := (trivializationAt F V x).continuousLinearEquivAt ℝ x
+      (FiberBundle.mem_baseSet_trivializationAt' x)
+    have : T2Space (V x) := Ψ.symm.toHomeomorph.t2Space
+    have : FiniteDimensional ℝ (V x) := Ψ.symm.toLinearEquiv.finiteDimensional
+    LinearMap.toContinuousLinearMap {
+      toFun v := φ (_root_.extend I F v) x
+      map_add' v₁ v₂ := by
+        rw [← φ_add]
+        · apply tensoriality_criterion I F _ F' _ _ _ _ φ_smul φ_add
+          · exact mdifferentiable_extend ..
+          · apply mdifferentiableAt_add_section
+            · exact mdifferentiable_extend ..
+            · exact mdifferentiable_extend ..
+          · simp
+        · exact mdifferentiable_extend ..
+        · exact mdifferentiable_extend ..
+      map_smul' c v := by
+        dsimp
+        rw [← φ_smul (fun _ ↦ c)]
+        · apply tensoriality_criterion I F _ F' _ _ _ _ φ_smul φ_add
+          · exact mdifferentiable_extend ..
+          · apply MDifferentiableAt.smul_section
+            · exact mdifferentiableAt_const
+            · exact mdifferentiable_extend ..
+          · simp
+        · exact mdifferentiable_const ..
+        · exact mdifferentiable_extend .. }
+
+variable {I} in
+theorem mkTensorAt_apply
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    {φ : (Π x : M, V x) → (Π x, V' x)} {x}
+    (φ_smul : ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') x = φ σ x + φ σ' x) {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) :
+    mkTensorAt I F F' φ x φ_smul φ_add (σ x) = φ σ x := by
+  apply tensoriality_criterion I F _ F' _ _ hσ _ φ_smul φ_add
+  · exact mdifferentiable_extend ..
+  · simp
+
+noncomputable def mkTensor
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    (φ : (Π x : M, V x) → (Π x, V' x))
+    -- TODO could weaken `φ_smul` and `φ_add` to require the property only globally, is it useful?
+    (φ_smul : ∀ x, ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x → φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ x, ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x → φ (σ + σ') x = φ σ x + φ σ' x)
+    (x : M) :
+    V x →L[ℝ] V' x :=
+  mkTensorAt I F F' φ x (φ_smul x) (φ_add x)
+
+theorem contMDiff_mkTensor
+    (φ : (Π x : M, V x) → (Π x, V' x))
+    (φ_smul : ∀ x, ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x → φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ x, ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x → φ (σ + σ') x = φ σ x + φ σ' x)
+    -- hopefully this is the correct smoothness criterion!
+    {k} (φ_contMDiff : ∀ (σ : Π x : M, V x), CMDiff k (T% σ) → CMDiff k (T% (φ σ))) :
+    -- elaborators not working here
+    let T (x : M) : TotalSpace (F →L[ℝ] F') (fun x ↦ V x →L[ℝ] V' x) :=
+      ⟨x, mkTensor I F F' φ φ_smul φ_add x⟩
+    ContMDiff I (I.prod 𝓘(ℝ, F →L[ℝ] F')) k T := by
+  sorry
+
+-- TODO allow the two input types to differ
+noncomputable def mk2TensorAt
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    (φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)) {x}
+    (σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) τ x = f x • φ σ τ x)
+    (σ_add : ∀ {σ σ' τ}, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
+    (τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
+        φ σ (f • τ) x = f x • φ σ τ x)
+    (τ_add : ∀ {σ τ τ'}, MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+        φ σ (τ + τ') x = φ σ τ x + φ σ τ' x) :
+    V x →L[ℝ] V x →L[ℝ] V' x :=
+    let Ψ : V x ≃L[ℝ] F := (trivializationAt F V x).continuousLinearEquivAt ℝ x
+      (FiberBundle.mem_baseSet_trivializationAt' x)
+    have : T2Space (V x) := Ψ.symm.toHomeomorph.t2Space
+    have : FiniteDimensional ℝ (V x) := Ψ.symm.toLinearEquiv.finiteDimensional
+    have H : IsBilinearMap ℝ
+      (fun (v w : V x) ↦ φ (_root_.extend I F v) (_root_.extend I F w) x) :=
+    { add_left v₁ v₂ w := by
+        rw [← σ_add]
+        · apply tensoriality_criterion₂ I F _ F' _ _ _ _ _ _ rfl σ_smul σ_add τ_smul τ_add
+          · exact mdifferentiable_extend ..
+          · apply mdifferentiableAt_add_section
+            · exact mdifferentiable_extend ..
+            · exact mdifferentiable_extend ..
+          · exact mdifferentiable_extend ..
+          · exact mdifferentiable_extend ..
+          · simp
+        · exact mdifferentiable_extend ..
+        · exact mdifferentiable_extend ..
+      smul_left c v w := by
+        rw [← σ_smul (f := fun _ ↦ c)]
+        · apply tensoriality_criterion₂ I F _ F' _ _ _ _ _ _ rfl σ_smul σ_add τ_smul τ_add
+          · exact mdifferentiable_extend ..
+          · apply MDifferentiableAt.smul_section
+            · exact mdifferentiableAt_const
+            · exact mdifferentiable_extend ..
+          · exact mdifferentiable_extend ..
+          · exact mdifferentiable_extend ..
+          · simp
+        · exact mdifferentiable_const ..
+        · exact mdifferentiable_extend ..
+      add_right v w₁ w₂ := by
+        rw [← τ_add]
+        · apply tensoriality_criterion₂ I F _ F' _ _ _ _ _ rfl _ σ_smul σ_add τ_smul τ_add
+          · exact mdifferentiable_extend ..
+          · exact mdifferentiable_extend ..
+          · exact mdifferentiable_extend ..
+          · apply mdifferentiableAt_add_section
+            · exact mdifferentiable_extend ..
+            · exact mdifferentiable_extend ..
+          · simp
+        · exact mdifferentiable_extend ..
+        · exact mdifferentiable_extend ..
+      smul_right c v w := by
+        rw [← τ_smul (f := fun _ ↦ c)]
+        · apply tensoriality_criterion₂ I F _ F' _ _ _ _ _ rfl _ σ_smul σ_add τ_smul τ_add
+          · exact mdifferentiable_extend ..
+          · exact mdifferentiable_extend ..
+          · exact mdifferentiable_extend ..
+          · apply MDifferentiableAt.smul_section
+            · exact mdifferentiableAt_const
+            · exact mdifferentiable_extend ..
+          · simp
+        · exact mdifferentiable_const ..
+        · exact mdifferentiable_extend .. }
+    H.toContinuousLinearMap
+
+variable {I} in
+theorem mk2TensorAt_apply
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
+    (σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) τ x = f x • φ σ τ x)
+    (σ_add : ∀ {σ σ' τ}, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
+    (τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
+        φ σ (f • τ) x = f x • φ σ τ x)
+    (τ_add : ∀ {σ τ τ'}, MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+        φ σ (τ + τ') x = φ σ τ x + φ σ τ' x)
+    {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) {τ : Π x : M, V x} (hτ : MDiffAt (T% τ) x) :
+    mk2TensorAt I F F' φ σ_smul σ_add τ_smul τ_add (σ x) (τ x) = φ σ τ x := by
+  apply tensoriality_criterion₂ I F _ F' _ _ hσ _ hτ _ _ σ_smul σ_add τ_smul τ_add
+  · exact mdifferentiable_extend ..
+  · exact mdifferentiable_extend ..
+  · simp
+  · simp
+
+theorem mk2TensorAt_add
+    (φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)) {x}
+    (φ_σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) τ x = f x • φ σ τ x)
+    (φ_σ_add : ∀ {σ σ' τ}, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
+    (φ_τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
+        φ σ (f • τ) x = f x • φ σ τ x)
+    (φ_τ_add : ∀ {σ τ τ'}, MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+        φ σ (τ + τ') x = φ σ τ x + φ σ τ' x)
+    (ψ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x))
+    (ψ_σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
+      ψ (f • σ) τ x = f x • ψ σ τ x)
+    (ψ_σ_add : ∀ {σ σ' τ}, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      ψ (σ + σ') τ x = ψ σ τ x + ψ σ' τ x)
+    (ψ_τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
+        ψ σ (f • τ) x = f x • ψ σ τ x)
+    (ψ_τ_add : ∀ {σ τ τ'}, MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+        ψ σ (τ + τ') x = ψ σ τ x + ψ σ τ' x) :
+    mk2TensorAt I F F' (φ + ψ)
+      (fun {_ _ τ} hf hσ ↦
+      (congr($(φ_σ_smul hf hσ (τ := τ)) + $(ψ_σ_smul hf hσ (τ := τ)))).trans (smul_add _ _ _).symm)
+      (fun {σ₁ σ₂} τ hσ₁ hσ₂ ↦
+        (congr($(φ_σ_add hσ₁ hσ₂ (τ := τ)) + $(ψ_σ_add hσ₁ hσ₂ (τ := τ)))).trans <| by
+        dsimp
+        abel)
+      (fun {_ σ _} hf hτ ↦
+      (congr($(φ_τ_smul hf hτ (σ := σ)) + $(ψ_τ_smul hf hτ (σ := σ)))).trans (smul_add _ _ _).symm)
+      (fun σ {τ₁ τ₂} hτ₁ hτ₂ ↦
+        (congr($(φ_τ_add hτ₁ hτ₂ (σ := σ)) + $(ψ_τ_add hτ₁ hτ₂ (σ := σ)))).trans <| by
+        dsimp
+        abel)
+    = mk2TensorAt I F F' φ φ_σ_smul φ_σ_add φ_τ_smul φ_τ_add
+      + mk2TensorAt I F F' ψ ψ_σ_smul ψ_σ_add ψ_τ_smul ψ_τ_add := by
+  ext
+  simp [mk2TensorAt, IsBilinearMap.toContinuousLinearMap, IsBilinearMap.toLinearMap]
+
+end tensoriality
