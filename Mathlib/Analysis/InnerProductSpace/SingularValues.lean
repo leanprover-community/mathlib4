@@ -248,7 +248,7 @@ theorem test₂ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
 
 theorem test₂₅ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
   : (T.singularValues.support.preimage (@Fin.val n) Fin.val_injective.injOn)
-    = ({i : Fin n | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) = 0} : Finset (Fin n))ᶜ := by
+    = ({i : Fin n | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) = (0 : 𝕜)} : Finset (Fin n))ᶜ := by
   ext i
   have : 0 ≤ T.isSymmetric_adjoint_comp_self.eigenvalues hn i :=
     T.isPositive_adjoint_comp_self.nonneg_eigenvalues hn i
@@ -256,13 +256,14 @@ theorem test₂₅ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
     T.isSymmetric_adjoint_comp_self.eigenvalues hn i ≤ 0 := by constructor <;> order
   simp [T.singularValues_fin hn, this]
 
-theorem test₃ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
-    : T.singularValues.support.card = Module.finrank 𝕜 T.range := by
+theorem test₃ : T.singularValues.support.card = Module.finrank 𝕜 T.range := by
   rw [← Module.finrank_range_adjoint, ← T.range_adjoint_comp_self']
-  rw [T.test hn]
-  rw [T.test₂₅ hn]
+  rw [T.test rfl]
+  rw [T.test₂₅ rfl]
   rw [Finset.card_compl]
-  rw [T.isSymmetric_adjoint_comp_self.card_filter_eigenvalues_eq_zero hn]
+  rw [T.isSymmetric_adjoint_comp_self.card_filter_eigenvalues_eq_zero rfl]
+  rw [← (T.adjoint ∘ₗ T).finrank_range_add_finrank_ker]
+  simp
 
 theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
@@ -279,7 +280,7 @@ theorem singularValues_lt_rank {n : ℕ}
       apply antitone
       exact hi₂
     calc
-      Module.finrank 𝕜 T.range = T.singularValues.support.card := by sorry
+      Module.finrank 𝕜 T.range = T.singularValues.support.card := T.test₃.symm
       _ ≤ Finset.card (Finset.range n) := Finset.card_le_card this
       _ = n := by simp
 
