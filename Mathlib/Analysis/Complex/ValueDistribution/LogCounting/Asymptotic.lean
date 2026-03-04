@@ -54,8 +54,7 @@ lemma one_isLittleO_logCounting_single [DecidableEq E] [ProperSpace E] {e : E} :
   intro b hb
   have h₁b : 1 ≤ b := by
     calc 1
-      _ ≤ exp (|log ‖e‖| + c⁻¹) :=
-        one_le_exp (add_nonneg (abs_nonneg (log ‖e‖)) (inv_pos.2 hc).le)
+      _ ≤ exp (|log ‖e‖| + c⁻¹) := one_le_exp (by positivity)
       _ ≤ b := hb
   have h₁c : ‖e‖ ≤ exp (|log ‖e‖| + c⁻¹) := by
     calc ‖e‖
@@ -98,10 +97,10 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
       (isLittleO_iff.1 (one_isLittleO_logCounting_single (e := e)) ha)
     let ℓ := 1 + max ‖e‖ (max |b| |c|)
     have h₁ℓ : b < ℓ := by grind
-    have h₂ℓ : c < ℓ := by grind
+    have h₂ℓ : c ≤ ℓ := by grind
     have h₃ℓ : 1 ≤ ℓ := by simp [ℓ]
     have h₄ℓ : ℓ > ‖e‖ := by grind
-    use 1 + ℓ, h₁ℓ.le.trans (lt_one_add ℓ).le
+    use 1 + ℓ, (show b ≤ 1 + ℓ by grind)
     calc 1
       _ ≤ (a * |logCounting (single e 1) ℓ|) := by simpa [h₂ℓ.le] using hc ℓ
       _ ≤ (a * |logCounting D ℓ|) := by
@@ -111,8 +110,8 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
       _ < a * |logCounting D (1 + ℓ)| := by
         gcongr 2
         rw [abs_of_nonneg (logCounting_nonneg h h₃ℓ),
-          abs_of_nonneg (logCounting_nonneg h (le_add_of_nonneg_right (zero_le_one.trans h₃ℓ)))]
-        apply logCounting_strictMono he h₄ℓ (h₄ℓ.trans (lt_one_add ℓ)) (lt_one_add ℓ)
+          abs_of_nonneg (logCounting_nonneg h (by grind))]
+        apply logCounting_strictMono he <;> grind
 
 end Function.locallyFinsuppWithin
 
