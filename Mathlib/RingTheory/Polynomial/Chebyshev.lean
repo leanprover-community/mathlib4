@@ -184,7 +184,6 @@ theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
       Int.negOnePow_sub]
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem T_eval_zero (n : ℤ) :
     (T R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -361,7 +360,6 @@ theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := 
     norm_num
     ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem U_eval_zero (n : ℤ) :
     (U R n).eval 0 = (if Even n then (n / 2).negOnePow else 0 : ℤ) := by
   induction n using Polynomial.Chebyshev.induct with

@@ -171,7 +171,6 @@ i.e., fractions `x/y` in lowest terms such that `|ξ - x/y| < 1/y^2`.
 
 open Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given any rational approximation `q` to the irrational real number `ξ`, there is
 a good rational approximation `q'` such that `|ξ - q'| < |ξ - q|`. -/
 theorem exists_rat_abs_sub_lt_and_lt_of_irrational {ξ : ℝ} (hξ : Irrational ξ) (q : ℚ) :
@@ -220,7 +219,6 @@ approximations.
 
 open Set
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ξ` is rational, then the good rational approximations to `ξ` have bounded
 numerator and denominator. -/
 theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
@@ -337,7 +335,6 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
     ξ.convergent (n + 1) = ⌊ξ⌋ + ((fract ξ)⁻¹.convergent n)⁻¹ :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- All convergents of `0` are zero. -/
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
@@ -346,7 +343,6 @@ theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
   | succ n ih =>
     simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
 theorem convergent_of_int {ξ : ℤ} (n : ℕ) : convergent ξ n = ξ := by
@@ -404,7 +400,6 @@ private theorem aux₁ : 0 < fract ξ := by
   norm_cast at H
   linarith only [hv, H]
 
-set_option backward.isDefEq.respectTransparency false in
 -- An auxiliary lemma for the inductive step.
 private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   obtain ⟨hcop, _, h⟩ := h
@@ -439,7 +434,6 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
       simp only [isCoprime_zero_left, isCoprime_self, isUnit_iff] at huv_cop
       rcases huv_cop with huv_cop | huv_cop <;> linarith only [hv, huv_cop]
 
-set_option backward.isDefEq.respectTransparency false in
 -- The key step: the relevant inequality persists in the inductive step.
 private theorem aux₃ :
     |(fract ξ)⁻¹ - v / (u - ⌊ξ⌋ * v)| < (((u : ℝ) - ⌊ξ⌋ * v) * (2 * (u - ⌊ξ⌋ * v) - 1))⁻¹ := by
