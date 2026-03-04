@@ -373,8 +373,8 @@ theorem StronglyAdapted.upcrossingStrat (hf : StronglyAdapted ℱ f) :
   change StronglyMeasurable[ℱ n] fun ω =>
     ∑ k ∈ Finset.range N, ({n | lowerCrossingTime a b f N k ω ≤ n} ∩
       {n | n < upperCrossingTime a b f N (k + 1) ω}).indicator 1 n
-  refine Finset.stronglyMeasurable_fun_sum _ fun i _ =>
-    stronglyMeasurable_const.indicator ?_
+  refine Finset.stronglyMeasurable_fun_sum _ fun i _ => ?_
+  refine stronglyMeasurable_const.indicator ?_
   have hl := hf.isStoppingTime_lowerCrossingTime (a := a) (b := b) (N := N) (n := i) n
   have hu := hf.isStoppingTime_upperCrossingTime (a := a) (b := b) (N := N) (n := i + 1) n
   simp only [ENat.some_eq_coe, Nat.cast_le] at hl hu
