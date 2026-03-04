@@ -1371,4 +1371,9 @@ lemma extremePoints_closedUnitBall_subset_unitSphere [Nontrivial H] :
     extremePoints 𝕜 (closedBall (0 : H) 1) ⊆ sphere 0 1 :=
   fun _ hx ↦ by simpa using norm_eq_one_of_mem_extremePoints_closedUnitBall hx
 
+theorem StrictConvexSpace.extremePoints_closedUnitBall_eq_unitSphere [Nontrivial H]
+    [NormedSpace ℝ H] [StrictConvexSpace ℝ H] :
+    extremePoints ℝ (closedBall (0 : H) 1) = sphere 0 1 :=
+  antisymm extremePoints_closedUnitBall_subset_unitSphere sphere_subset_extremePoints_closedBall'
+
 end extreme
