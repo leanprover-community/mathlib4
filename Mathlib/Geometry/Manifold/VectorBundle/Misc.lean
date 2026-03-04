@@ -99,6 +99,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [FiberBundle F V] [VectorBundle 𝕜 F V]
   -- `V` vector bundle
 
+set_option backward.isDefEq.respectTransparency false in
 def bar (a : 𝕜) : TangentSpace 𝓘(𝕜) a ≃L[𝕜] 𝕜 where
   toFun v := v
   invFun v := v
