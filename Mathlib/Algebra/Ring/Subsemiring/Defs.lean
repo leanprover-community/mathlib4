@@ -219,7 +219,6 @@ lemma toNonUnitalSubsemiring_injective :
   fun S₁ S₂ h => SetLike.ext'_iff.2
     (show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
 
-@[simp]
 lemma toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
     S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
   toNonUnitalSubsemiring_injective.eq_iff

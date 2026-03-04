@@ -346,7 +346,6 @@ theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈
 theorem coe_toSubmonoid : (s.toSubmonoid : Set K) = s :=
   rfl
 
-@[simp]
 theorem mem_toAddSubgroup {s : Subfield K} {x : K} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
