@@ -246,8 +246,13 @@ lemma W_isInvertedBy_presheafFiber'
 end
 
 /-- The fiber functor on the category of sheaves that is given a by a point of a site. -/
-noncomputable abbrev sheafFiber : Sheaf J A ⥤ A :=
+noncomputable def sheafFiber : Sheaf J A ⥤ A :=
   sheafToPresheaf J A ⋙ Φ.presheafFiber
+
+/-- The fiber functor on sheaves is induced by the fiber functor on presheaves. -/
+noncomputable def sheafToPresheafCompPresheafFiberIso :
+    sheafToPresheaf J A ⋙ Φ.presheafFiber ≅ Φ.sheafFiber :=
+  Iso.refl _
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=

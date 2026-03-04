@@ -259,7 +259,7 @@ noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A] :
     presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
   (NatIso.ofComponents
     (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
-      (by simp [← Functor.map_comp])).symm
+      (by simp [sheafFiber, ← Functor.map_comp])).symm
 
 noncomputable instance [HasWeakSheafify J A] :
     Localization.Lifting (presheafToSheaf J A) J.W
@@ -280,7 +280,7 @@ instance [HasWeakSheafify J A] :
               W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
             refine Cocones.ext (asIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J G)))
               (fun k ↦ ?_)
-            dsimp
+            dsimp [sheafFiber]
             rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
             dsimp))⟩
 
