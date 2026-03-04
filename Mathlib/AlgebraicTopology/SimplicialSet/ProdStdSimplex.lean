@@ -121,7 +121,6 @@ lemma strictMono_orderHomOfSimplex_iff {n : ℕ} (x : (Δ[p] ⊗ Δ[q] : SSet.{u
   simp only [Fin.strictMono_iff_lt_succ]
   exact forall_congr' (fun i ↦ (this _ _ ((objEquiv x).monotone i.castSucc_le_succ)).symm)
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (Δ[p] ⊗ Δ[q] : SSet.{u}).HasDimensionLE (p + q) where
   degenerate_eq_top n hn := by
     ext x

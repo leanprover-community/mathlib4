@@ -139,7 +139,7 @@ theorem exists_approx_preimage_norm_le (surj : Surjective f) :
         _ = ‖d⁻¹ • (f x - d • y)‖ := by rw [mul_smul, smul_sub]
         _ = ‖d‖⁻¹ * ‖f x - d • y‖ := by rw [norm_smul, norm_inv]
         _ ≤ ‖d‖⁻¹ * (2 * δ) := by gcongr
-        _ = 1 / 2 * ‖y‖ := by simpa [δ, field] using by norm_num
+        _ = 1 / 2 * ‖y‖ := by simp [δ, field]; norm_num
     rw [← dist_eq_norm] at J
     have K : ‖σ' d⁻¹ • x‖ ≤ (ε / 2)⁻¹ * ‖c‖ * 2 * ↑n * ‖y‖ :=
       calc
@@ -416,8 +416,7 @@ noncomputable def leftInverse_of_injective_of_isClosed_range
     simp only [dist_zero_right, map_zero] at aux
     convert aux
     exact f.rangeRestrict.leftInverse_apply_of_inj
-      (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x
-  )
+      (by rw [ker_codRestrict]; exact LinearMap.ker_eq_bot.mpr hf) x)
 
 end
 

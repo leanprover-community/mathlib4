@@ -110,7 +110,7 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
   `v^(val_v(I))` is not the unit ideal. -/
 theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => v.maxPowDividing I).Finite :=
+    HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ v.maxPowDividing I :=
   haveI h_subset : {v : HeightOneSpectrum R | v.maxPowDividing I ≠ 1} ⊆
       {v : HeightOneSpectrum R |
         ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) ≠ 0} := by
@@ -125,9 +125,9 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^(val_v(I))`, regarded as a fractional ideal, is not `(1)`. -/
 theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
-      ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)).Finite := by
-  rw [mulSupport]
+    HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
+      ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) := by
+  rw [HasFiniteMulSupport, mulSupport]
   simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
   exact finite_mulSupport hI
 
@@ -135,9 +135,9 @@ open scoped Classical in
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that
 `v^-(val_v(I))` is not the unit ideal. -/
 theorem finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
-    (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
-      (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ))).Finite := by
-  rw [mulSupport]
+    HasFiniteMulSupport fun v : HeightOneSpectrum R ↦ (v.asIdeal : FractionalIdeal R⁰ K) ^
+      (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)) := by
+  rw [HasFiniteMulSupport, mulSupport]
   simp_rw [zpow_neg, Ne, inv_eq_one]
   exact finite_mulSupport_coe hI
 
@@ -716,7 +716,6 @@ lemma divMod_zero_of_not_le {a b c : FractionalIdeal R⁰ K} (hac : ¬ a ≤ c) 
     c.divMod b a = 0 := by
   simp [divMod, hac]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 212000 in
 -- changed for new compiler
 /-- Let `I J I' J'` be nonzero fractional ideals in a Dedekind domain with `J ≤ I` and `J' ≤ I'`.

@@ -638,7 +638,6 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
   -- 4 - show that the composition gives the `compAlongComposition` application
   · assumption
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The auxiliary set corresponding to the composition of partial sums asymptotically contains
 all possible compositions. -/
 theorem compPartialSumTarget_tendsto_prod_atTop :

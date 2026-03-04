@@ -322,6 +322,7 @@ protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
 
 /-- Reinterpret a submodule as an additive subgroup. -/
+@[reducible]
 def toAddSubgroup : AddSubgroup M :=
   { p.toAddSubmonoid with neg_mem' := fun {_} => p.neg_mem }
 
@@ -329,14 +330,12 @@ def toAddSubgroup : AddSubgroup M :=
 theorem coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=
   rfl
 
-@[simp]
 theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 
 theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
   | _, _, h => SetLike.ext (SetLike.ext_iff.1 h :)
 
-@[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
   toAddSubgroup_injective.eq_iff
 
