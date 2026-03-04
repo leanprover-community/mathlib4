@@ -143,6 +143,18 @@ def updateLevelParams (c : ConstantInfo) (levelParams : List Name) :
     ConstantInfo :=
   c.updateConstantVal {c.toConstantVal with levelParams}
 
+/--
+Update the mutual-block `all` field of a `ConstantInfo`.
+
+This applies to declaration kinds where `ConstantInfo.all` is stored directly.
+-/
+def updateAll : ConstantInfo → List Name → ConstantInfo
+  | .defnInfo info, all => .defnInfo {info with all}
+  | .thmInfo info, all => .thmInfo {info with all}
+  | .opaqueInfo info, all => .opaqueInfo {info with all}
+  | .inductInfo info, all => .inductInfo {info with all}
+  | ci, _ => ci
+
 /-- Update the value of a `ConstantInfo`, if it has one. -/
 def updateValue : ConstantInfo → Expr → ConstantInfo
   | defnInfo   info, v => defnInfo   {info with value := v}
@@ -283,6 +295,17 @@ where
     | .letE _ _ _ body _ => go body current acc
     | _ => acc
 
+/--
+Returns `true` if `e` includes a `forallE` instance binder that satisfies `p`.
+
+Cleans up annotations before traversing nested `forallE`s, and sees through `let`s.
+-/
+partial def hasInstanceBinderOf (p : Expr → Bool) (e : Expr) : Bool :=
+  match e.cleanupAnnotations with
+  | .forallE _ type body bi => (bi.isInstImplicit && p type) || hasInstanceBinderOf p body
+  | .letE _ _ _ body _ => hasInstanceBinderOf p body
+  | _ => false
+
 /-- Counts the immediate depth of a nested `let` expression. -/
 def letDepth : Expr → Nat
   | .letE _ _ _ b _ => b.letDepth + 1
@@ -366,6 +389,15 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
     some (ty, lhs, ty, rhs)
   else
     ty.heq?
+
+/-- Returns `true` if the provided `Expr` is exactly of the form `sorryAx _ _`.
+This is the form produced by the `sorry` term/tactic.
+
+Contrast with `Lean.Expr.isSorry`, which additionally returns `true` for any function application of
+`sorry`/`sorryAx` (including e.g. `sorryAx α true x y z`). -/
+def isSorryAx : Expr → Bool
+  | .app (.app f _ ) _ => f.isConstOf ``sorryAx
+  | _ => false
 
 end recognizers
 

@@ -96,6 +96,15 @@ def toIsometry (g : Q₁.IsometryEquiv Q₂) : Q₁ →qᵢ Q₂ where
   toFun x := g x
   __ := g
 
+@[simp] lemma apply_symm_apply (f : Q₁.IsometryEquiv Q₂) (x : M₂) : f (f.symm x) = x :=
+  f.toEquiv.apply_symm_apply x
+
+@[simp] lemma symm_apply_apply (f : Q₁.IsometryEquiv Q₂) (x : M₁) : f.symm (f x) = x :=
+  f.toEquiv.symm_apply_apply x
+
+@[simp] lemma coe_symm_toLinearEquiv (f : Q₁.IsometryEquiv Q₂) : f.toLinearEquiv.symm = f.symm :=
+  rfl
+
 end IsometryEquiv
 
 namespace Equivalent
@@ -164,5 +173,34 @@ theorem equivalent_weightedSumSquares_units_of_nondegenerate' (Q : QuadraticForm
   have hv₂ := hv₁.not_isOrtho_basis_self_of_separatingLeft hQ
   simp_rw [LinearMap.IsOrtho, associated_eq_self_apply] at hv₂
   exact ⟨fun i => Units.mk0 _ (hv₂ i), ⟨Q.isometryEquivWeightedSumSquares v hv₁⟩⟩
+
+variable {ι S R : Type*}
+variable [Fintype ι] [CommSemiring R] [Monoid S] [DistribMulAction S R] [SMulCommClass S R R]
+variable [IsScalarTower S R R]
+variable {w : ι → S} {w' : ι → S}
+
+/-- The isometry between two weighted sum of squares of equal weights. -/
+def weightedSumSquaresCongr (h : w = w') :
+    IsometryEquiv (weightedSumSquares R w) (weightedSumSquares R w') where
+  __ := LinearEquiv.refl R (ι → R)
+  map_app' := by simp [h]
+
+/-- The isometry between two weighted sum of squares, give that each weight is scaled by the square
+of a unit. -/
+def isometryEquivWeightedSumSquaresWeightedSumSquares (u : ι → Sˣ) (h : ∀ i, w' i * u i ^ 2 = w i) :
+    IsometryEquiv (weightedSumSquares R w) (weightedSumSquares R w') where
+  toFun x := u • x
+  invFun x := u⁻¹ • x
+  left_inv x := by simp
+  right_inv x := by simp
+  map_add' x y := by simp
+  map_smul' v x := by
+    ext i
+    simp only [Pi.smul_apply', Pi.smul_apply, RingHom.id_apply, smul_comm]
+  map_app' x := by
+    simp only [weightedSumSquares_apply, Pi.smul_apply']
+    refine Finset.sum_congr rfl fun j hj => ?_
+    rw [smul_mul_smul, Units.smul_def, smul_smul, ← pow_two, ← h]
+    simp
 
 end QuadraticForm

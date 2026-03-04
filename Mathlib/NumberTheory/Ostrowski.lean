@@ -229,7 +229,6 @@ lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
 
 -- ## Non-archimedean case: end goal
 
-set_option backward.isDefEq.respectTransparency false in
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem equiv_padic_of_bounded :
