@@ -788,7 +788,7 @@ noncomputable def zmodAddEquivOfGenerator : ZMod n ≃+ G :=
     rw [zmultiplesHom_ker_eq, ← Nat.card_zmultiples, ← hn,
       Nat.card_congr (Equiv.subtypeUnivEquiv hg)]
   (Int.quotientZMultiplesNatEquivZMod n).symm.trans <|
-    QuotientAddGroup.liftEquiv _ (φ := zmultiplesHom G g) hg kereq
+    QuotientAddGroup.quotientEquivOfSurjective _ (φ := zmultiplesHom G g) hg kereq
 
 @[simp]
 theorem zmodAddEquivOfGenerator_apply_intCast (i : ℤ) :
@@ -817,21 +817,8 @@ end addGenerator
 See `zmodAddCyclicAddEquiv` for a version which doesn't require an explicit generator,
 and instead picks one out with the axiom of choice. -/
 noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
-<<<<<<< HEAD
-    ZMod (Nat.card G) ≃+ G := by
-  let n := Nat.card G
-  let ⟨g, surj⟩ := Classical.indefiniteDescription _ h.exists_generator
-  have kereq : zmultiples ↑(Nat.card G) = ((zmultiplesHom G) g).ker := by
-    rw [zmultiplesHom_ker_eq]
-    congr
-    rw [← Nat.card_zmultiples]
-    exact Nat.card_congr (Equiv.subtypeUnivEquiv surj).symm
-  exact Int.quotientZMultiplesNatEquivZMod n |>.symm.trans <|
-    QuotientAddGroup.quotientEquivOfSurjective _ (φ := zmultiplesHom G g) surj kereq
-=======
     ZMod (Nat.card G) ≃+ G :=
   zmodAddEquivOfGenerator h.exists_generator.choose_spec rfl
->>>>>>> Polynomial.algHomEquiv
 
 /-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
 theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
