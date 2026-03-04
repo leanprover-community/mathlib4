@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 public import Mathlib.Probability.Kernel.CondDistrib
 public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.Independence.CondIndep
 
 /-!
 # Kernel associated with a conditional expectation
@@ -44,6 +45,14 @@ namespace ProbabilityTheory
 section AuxLemmas
 
 variable {Ω F : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {f : Ω → F}
+
+-- Temporary
+
+-- Something is broken with my notation since this doesn't work!
+class HasRegularCondDist (mΩ : MeasurableSpace Ω) (μ : Measure Ω) (m : MeasurableSpace Ω) where
+  exists_condDist : ∃ κ : Kernel Ω Ω, ∀ (s : Set Ω) (_ : MeasurableSet s), (κ · s) =ᵐ[μ] μ⁻⸨s | m⸩
+
+--
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [TopologicalSpace F]
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
