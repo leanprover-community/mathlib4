@@ -78,14 +78,16 @@ root of `x`.
 @[trans] theorem trans {x y z : A} (h₁ : IsConjRoot R x y) (h₂ : IsConjRoot R y z) :
     IsConjRoot R x z := Eq.trans h₁ h₂
 
+section
+set_option linter.classReturningDef false
 variable (R A) in
 /--
 The setoid structure on `A` defined by the equivalence relation of `IsConjRoot R · ·`.
 -/
-@[implicit_reducible]
 def setoid : Setoid A where
   r := IsConjRoot R
   iseqv := ⟨fun _ => refl, symm, trans⟩
+end
 
 theorem comm {x y : A} : IsConjRoot R x y ↔ IsConjRoot R y x :=
   ⟨symm, symm⟩
