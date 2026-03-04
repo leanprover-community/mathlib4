@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
-import Mathlib.Analysis.Complex.CauchyIntegral
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+public import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # Removable singularity theorem
@@ -15,6 +17,8 @@ differentiable in a punctured neighborhood of a point `c` and is bounded in a pu
 of `c` (or, more generally, $f(z) - f(c)=o((z-c)^{-1})$), then it has a limit at `c` and the
 function `update f c (limUnder (𝓝[≠] c) f)` is complex differentiable in a neighborhood of `c`.
 -/
+
+public section
 
 
 open TopologicalSpace Metric Set Filter Asymptotics Function
@@ -148,6 +152,6 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
       zero_smul, sub_zero]
   · refine circleIntegral.integral_congr (pos_of_mem_ball hw₀).le fun z hz => ?_
     simp only [dslope_of_ne, Metric.sphere_disjoint_ball.ne_of_mem hz hw₀, slope, ← smul_assoc, sq,
-      mul_inv, Ne, not_false_iff, vsub_eq_sub, Algebra.id.smul_eq_mul]
+      mul_inv, Ne, not_false_iff, vsub_eq_sub, smul_eq_mul]
 
 end Complex

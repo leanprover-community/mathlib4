@@ -3,8 +3,11 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle Sönne, Adam Topaz
 -/
+module
 
-import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Algebra.Tower
+public meta import Mathlib.Tactic.Attr.Core
+public meta import Mathlib.Tactic.ToAdditive
 
 /-!
 
@@ -70,6 +73,8 @@ class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R �
 To avoid searching through the local context and adding corresponding `Algebra` properties, use
 `algebraize_only` which only adds `Algebra` and `IsScalarTower` instances.
 -/
+
+public meta section
 
 open Lean Elab Tactic Term Meta
 

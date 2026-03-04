@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.NumberTheory.Transcendental.Liouville.Residual
-import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
-import Mathlib.Analysis.PSeries
+module
+
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.NumberTheory.Transcendental.Liouville.Residual
+public import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
+public import Mathlib.Analysis.PSeries
 
 /-!
 # Volume of the set of Liouville numbers
@@ -25,10 +27,13 @@ measure. The fact that the filters are disjoint means that two mutually exclusiv
 Liouville number, Lebesgue measure, residual, generic property
 -/
 
+public section
+
 open scoped Filter ENNReal Topology NNReal
 
 open Filter Set Metric MeasureTheory Real
 
+set_option backward.isDefEq.respectTransparency false in
 theorem setOf_liouvilleWith_subset_aux :
     { x : ℝ | ∃ p > 2, LiouvilleWith p x } ⊆
       ⋃ m : ℤ, (· + (m : ℝ)) ⁻¹' ⋃ n > (0 : ℕ),

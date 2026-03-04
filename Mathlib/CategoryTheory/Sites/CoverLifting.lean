@@ -3,10 +3,12 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Restrict
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Sites.Continuous
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Restrict
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Sites.Continuous
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # Cocontinuous functors between sites.
@@ -40,6 +42,8 @@ small colimits.
 
 -/
 
+@[expose] public section
+
 
 universe w' w v v₁ v₂ v₃ u u₁ u₂ u₃
 
@@ -59,7 +63,7 @@ namespace CategoryTheory
 
 section IsCocontinuous
 
-variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E] (G : C ⥤ D)
+variable {C : Type*} [Category* C] {D : Type*} [Category* D] {E : Type*} [Category* E] (G : C ⥤ D)
   (G' : D ⥤ E)
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
@@ -92,14 +96,14 @@ to sheaves when `G : C ⥤ D` is a cocontinuous functor.
 
 We do not follow the proofs in SGA 4 III 2.2 or <https://stacks.math.columbia.edu/tag/00XK>.
 Instead, we verify as directly as possible that if `F : Cᵒᵖ ⥤ A` is a sheaf,
-then `G.op.ran.obj F` is a sheaf. in order to do this, we use the "multifork"
+then `G.op.ran.obj F` is a sheaf. In order to do this, we use the "multifork"
 characterization of sheaves which involves limits in the category `A`.
 As `G.op.ran.obj F` is the chosen right Kan extension of `F` along `G.op : Cᵒᵖ ⥤ Dᵒᵖ`,
 we actually verify that any pointwise right Kan extension of `F` along `G.op` is a sheaf.
 
 -/
 
-variable {C D : Type*} [Category C] [Category D] (G : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (G : C ⥤ D)
 variable {A : Type w} [Category.{w'} A]
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D} [G.IsCocontinuous J K]
 
@@ -111,6 +115,7 @@ variable {R : Dᵒᵖ ⥤ A} (α : G.op ⋙ R ⟶ F)
 variable (hR : (Functor.RightExtension.mk _ α).IsPointwiseRightKanExtension)
 variable {X : D} {S : K.Cover X} (s : Multifork (S.index R))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `lift`. -/
 def liftAux {Y : C} (f : G.obj Y ⟶ X) : s.pt ⟶ F.obj (op Y) :=
   Multifork.IsLimit.lift (hF.isLimitMultifork ⟨_, G.cover_lift J K (K.pullback_stable f S.2)⟩)
@@ -145,7 +150,7 @@ lemma liftAux_map {Y : C} (f : G.obj Y ⟶ X) {W : C} (g : W ⟶ Y) (i : S.Arrow
             r.g₂ := h
             r.w := by simpa using w.symm
             .. }
-        simpa [r] using s.condition r )
+        simpa [r] using s.condition r)
 
 lemma liftAux_map' {Y Y' : C} (f : G.obj Y ⟶ X) (f' : G.obj Y' ⟶ X) {W : C}
     (a : W ⟶ Y) (b : W ⟶ Y') (w : G.map a ≫ f = G.map b ≫ f') :
@@ -183,6 +188,7 @@ lemma fac (i : S.Arrow) : lift hF hR s ≫ R.map i.f.op = s.ι i := by
   rw [Category.assoc, eq]
   simpa using liftAux_map hF α s (j.hom.unop ≫ i.f) (𝟙 _) i j.hom.unop (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 include hR hF in
 variable (K) in
 lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
@@ -277,6 +283,7 @@ lemma sheafAdjunctionCocontinuous_unit_app_val (F : Sheaf K A) :
   change _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [Category.comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
     ((G.sheafAdjunctionCocontinuous A J K).counit.app F).val =
       (G.op.ranAdjunction A).counit.app F.val :=
@@ -286,6 +293,7 @@ lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans
       (by cat_disch)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :
     ((G.sheafAdjunctionCocontinuous A J K).homEquiv F H f).val =
@@ -308,6 +316,7 @@ def pushforwardContinuousSheafificationCompatibility [G.IsContinuous J K] :
   ((G.op.ranAdjunction A).comp (sheafificationAdjunction J A)).leftAdjointUniq
     ((sheafificationAdjunction K A).comp (G.sheafAdjunctionCocontinuous A J K))
 
+set_option backward.isDefEq.respectTransparency false in
 /- Implementation: This is primarily used to prove the lemma
 `pullbackSheafificationCompatibility_hom_app_val`. -/
 lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :

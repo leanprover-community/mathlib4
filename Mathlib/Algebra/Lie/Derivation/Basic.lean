@@ -3,11 +3,13 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
-import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.RingTheory.Nilpotent.Exp
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.RingTheory.Nilpotent.Exp
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -35,6 +37,8 @@ the `RingTheory.Derivation.Basic.lean` file.
 - Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
 as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
 -/
+
+@[expose] public section
 
 /-- A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an `R`-linear map
 that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`. -/
@@ -287,6 +291,7 @@ section
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The commutator of two Lie derivations on a Lie algebra is a Lie derivation. -/
 instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
   bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
@@ -327,6 +332,7 @@ section
 
 variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Lie algebra morphism from Lie derivations into linear endormophisms. -/
 def toLinearMapLieHom : LieDerivation R L L →ₗ⁅R⁆ L →ₗ[R] L where
   toFun := toLinearMap
@@ -349,6 +355,7 @@ section Inner
 variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
     [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map from a Lie module to the derivations taking values in it. -/
 @[simps!]
 def inner : M →ₗ[R] LieDerivation R L M where
@@ -388,6 +395,7 @@ section ExpNilpotent
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
   (D : LieDerivation R L L)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
 automorphism. -/
 noncomputable def exp (h : IsNilpotent D.toLinearMap) :

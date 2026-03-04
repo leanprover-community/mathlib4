@@ -3,9 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.GroupTheory.FreeGroup.Basic
+module
+
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Free abelian groups
@@ -62,6 +65,8 @@ functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_app
 are about `FreeAbelianGroup.map`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Multiset
 
@@ -127,20 +132,14 @@ theorem lift_apply_of (x : α) : lift f (of x) = f x := by
      (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
   exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
 
-@[deprecated (since := "2025-07-23")] protected alias lift.of := lift_apply_of
-
 theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :
     g x = lift f x :=
   DFunLike.congr_fun (lift.symm_apply_eq.mp (funext hg : g ∘ of = f)) _
-
-@[deprecated (since := "2025-07-23")] protected alias lift.unique := lift_unique
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem lift_ext (g h : FreeAbelianGroup α →+ β) (H : ∀ x, g (of x) = h (of x)) : g = h :=
   lift.symm.injective <| funext H
-
-@[deprecated (since := "2025-07-23")] protected alias lift.ext := lift_ext
 
 theorem lift_comp_apply {α β γ} [AddCommGroup β] [AddCommGroup γ]
     (a : FreeAbelianGroup α) (f : α → β) (g : β →+ γ) : lift (g ∘ f) a = g (lift f a) := by
@@ -149,11 +148,6 @@ theorem lift_comp_apply {α β γ} [AddCommGroup β] [AddCommGroup γ]
   intro a
   change g ((lift f) (of a)) = g (f a)
   simp only [lift_apply_of]
-
-@[deprecated lift_comp_apply (since := "2025-07-23")]
-theorem lift.map_hom {α β γ} [AddCommGroup β] [AddCommGroup γ] (a : FreeAbelianGroup α) (f : α → β)
-    (g : β →+ γ) : g (lift f a) = lift (g ∘ f) a :=
-  (lift_comp_apply a f g).symm
 
 end lift
 
@@ -205,8 +199,6 @@ theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup �
   · intro x y hx hy
     simp only [(lift _).map_add, hx, hy, add_add_add_comm]
 
-@[deprecated (since := "2025-07-13")] alias lift.add' := lift_add_apply
-
 @[simp] lemma lift_add [AddCommGroup G] (f g : α → G) : lift (f + g) = lift f + lift g :=
   AddMonoidHom.ext <| lift_add_apply _ _
 
@@ -225,8 +217,6 @@ def liftAddGroupHom {α} (β) [AddCommGroup β] (a : FreeAbelianGroup α) : (α 
 
 lemma lift_neg_apply [AddCommGroup G] (f : α → G) (a : FreeAbelianGroup α) :
     lift (-f) a = -lift f a := congr($(lift_neg f) a)
-
-@[deprecated (since := "2025-07-13")] alias lift_neg' := lift_neg
 
 section Monad
 
@@ -378,8 +368,8 @@ theorem lift_comp {α} {β} {γ} [AddCommGroup γ] (f : α → β) (g : β → �
   induction x using FreeAbelianGroup.induction_on with
   | C0 => simp only [map_zero]
   | C1 => simp only [lift_apply_of, map, Function.comp]
-  | Cn _ h => simp only [h, AddMonoidHom.map_neg]
-  | Cp _ _ h₁ h₂ => simp only [h₁, h₂, AddMonoidHom.map_add]
+  | Cn _ h => simp only [h, map_neg]
+  | Cp _ _ h₁ h₂ => simp only [h₁, h₂, map_add]
 
 theorem map_id : map id = AddMonoidHom.id (FreeAbelianGroup α) :=
   Eq.symm <|
@@ -579,17 +569,15 @@ def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
   toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)
   invFun n := n • of Inhabited.default
   left_inv z := FreeAbelianGroup.induction_on z
-    (by simp only [zero_smul, AddMonoidHom.map_zero])
+    (by simp only [zero_smul, map_zero])
     (Unique.forall_iff.2 <| by simp only [one_smul, lift_apply_of]) (Unique.forall_iff.2 <| by simp)
     fun x y hx hy ↦ by
-      simp only [AddMonoidHom.map_add, add_smul] at *
+      simp only [map_add, add_smul] at *
       rw [hx, hy]
   right_inv n := by
-    rw [AddMonoidHom.map_zsmul, lift_apply_of]
-    exact zsmul_int_one n
-  map_add' := AddMonoidHom.map_add _
-
-@[deprecated (since := "2025-06-16")] alias punitEquiv := uniqueEquiv
+    rw [map_zsmul, lift_apply_of]
+    exact zsmul_one n
+  map_add' := map_add _
 
 /-- Isomorphic types have isomorphic free abelian groups. -/
 def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where
@@ -597,6 +585,6 @@ def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ Free
   invFun := map f.symm
   left_inv x := by rw [← map_comp_apply, Equiv.symm_comp_self, map_id, AddMonoidHom.id_apply]
   right_inv x := by rw [← map_comp_apply, Equiv.self_comp_symm, map_id, AddMonoidHom.id_apply]
-  map_add' := AddMonoidHom.map_add _
+  map_add' := map_add _
 
 end FreeAbelianGroup

@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Composition
-import Mathlib.RingTheory.MatrixAlgebra
-import Mathlib.RingTheory.PolynomialAlgebra
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Composition
+public import Mathlib.RingTheory.MatrixAlgebra
+public import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
@@ -22,6 +24,8 @@ coeff (matPolyEquiv m) k i j = coeff (m i j) k
 
 We will use this algebra isomorphism to prove the Cayley-Hamilton theorem.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -39,6 +43,7 @@ open Matrix
 variable {R}
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The algebra isomorphism stating "matrices of polynomials are the same as polynomials of matrices".
 
@@ -50,12 +55,14 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
   ((matrixEquivTensor n R R[X]).trans (Algebra.TensorProduct.comm R _ _)).trans
     (polyEquivTensor R (Matrix n n R)).symm
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
   simp [matPolyEquiv]
 
 @[simp] theorem matPolyEquiv_map_C (M : Matrix n n R) : matPolyEquiv (M.map C) = C M := by
   rw [← matPolyEquiv_symm_C, AlgEquiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem matPolyEquiv_symm_X :
     matPolyEquiv.symm X = diagonal fun _ : n => (X : R[X]) := by
   simp [matPolyEquiv, Matrix.smul_one_eq_diagonal]
@@ -66,12 +73,13 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
 
 open Finset
 
+set_option backward.isDefEq.respectTransparency false in
 unseal Algebra.TensorProduct.mul in
 theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
     matPolyEquiv (single i j <| monomial k x) = monomial k (single i j x) := by
   simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_single]
   apply (polyEquivTensor R (Matrix n n R)).injective
-  simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
+  simp only [AlgEquiv.apply_symm_apply, Algebra.TensorProduct.comm_tmul,
     polyEquivTensor_apply, eval₂_monomial]
   simp only [one_pow,
     Algebra.TensorProduct.tmul_pow]
@@ -126,7 +134,7 @@ lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
 theorem matPolyEquiv_symm_map_eval (M : (Matrix n n R)[X]) (r : R) :
     (matPolyEquiv.symm M).map (eval r) = M.eval (scalar n r) := by
   suffices ((aeval r).mapMatrix.comp matPolyEquiv.symm.toAlgHom : (Matrix n n R)[X] →ₐ[R] _) =
-      (eval₂AlgHom' (AlgHom.id R _) (scalar n r)
+      (eval₂AlgHom (AlgHom.id R _) (scalar n r)
         fun x => (scalar_commute _ (Commute.all _) _).symm) from
     DFunLike.congr_fun this M
   ext : 1
@@ -171,7 +179,7 @@ variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)
 
 lemma evalRingHom_mapMatrix_comp_polyToMatrix :
     (evalRingHom 0).mapMatrix.comp f.polyToMatrix = f.comp (evalRingHom 0) := by
-  ext <;> simp [RingHom.polyToMatrix, - AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
+  ext <;> simp [RingHom.polyToMatrix, -AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
 
 lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
     (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =

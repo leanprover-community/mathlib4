@@ -26,12 +26,23 @@ jobs:
             : # Do nothing on failure, but suppress errors
         fi
 
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         ref: nightly-testing-green
 
+    - name: Checkout mathlib-ci
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        repository: leanprover-community/mathlib-ci
+        ref: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+        fetch-depth: 1
+        path: ci-tools
+
+    - name: Set up CI scripts paths
+      uses: ./ci-tools/.github/actions/setup-ci-scripts
+
     - name: Configure Lean
-      uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+      uses: leanprover/lean-action@c544e89643240c6b398f14a431bcdc6309e36b3e # v1.4.0
       with:
         auto-config: false
         use-github-cache: false
@@ -74,7 +85,7 @@ jobs:
         SHA=${{ github.sha }} \
         REPO=${{ github.repository }} \
         RUN_ID=${{ github.run_id }} \
-          ./scripts/zulip_build_report.sh "${lean_outfile}" > "${GITHUB_OUTPUT}"
+          "${CI_SCRIPTS_DIR}/reporting/zulip_build_report.sh" "${lean_outfile}" > "${GITHUB_OUTPUT}"
 
     - name: Remove GitHub problem matcher wrapper
       uses: leanprover-community/gh-problem-matcher-wrap@20007cb926a46aa324653a387363b52f07709845 # 2025-04-23

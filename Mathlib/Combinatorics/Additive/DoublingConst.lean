@@ -3,14 +3,18 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-import Mathlib.Data.Finset.Density
+module
+
+public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+public import Mathlib.Data.Finset.Density
 
 /-!
 # Doubling and difference constants
 
 This file defines the doubling and difference constants of two finsets in a group.
 -/
+
+@[expose] public section
 
 open Finset
 open scoped Pointwise
@@ -137,11 +141,13 @@ lemma divConst_le_card : δₘ[A, B] ≤ #B := by
 section Fintype
 variable [Fintype G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Dense sets have small doubling. -/
 @[to_additive addConst_le_inv_dens /-- Dense sets have small doubling. -/]
 lemma mulConst_le_inv_dens : σₘ[A, B] ≤ A.dens⁻¹ := by
   rw [dens, inv_div, mulConst]; gcongr; exact card_le_univ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Dense sets have small difference constant. -/
 @[to_additive subConst_le_inv_dens /-- Dense sets have small difference constant. -/]
 lemma divConst_le_inv_dens : δₘ[A, B] ≤ A.dens⁻¹ := by

@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.StrictConvexBetween
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.Normed.Affine.Convex
-import Mathlib.Geometry.Euclidean.Basic
+module
+
+public import Mathlib.Analysis.Convex.StrictConvexBetween
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.Convex
+public import Mathlib.Geometry.Euclidean.Basic
 
 /-!
 # Spheres
@@ -30,6 +32,8 @@ Euclidean affine spaces.
   coplanar.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -476,7 +480,7 @@ lemma isDiameter_iff_mem_and_mem_and_dist :
     rw [dist_comm, hr, two_mul]
 
 lemma isDiameter_iff_mem_and_mem_and_wbtw :
-    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ p₂ ∈ s ∧ Wbtw ℝ p₁ s.center p₂:= by
+    s.IsDiameter p₁ p₂ ↔ p₁ ∈ s ∧ p₂ ∈ s ∧ Wbtw ℝ p₁ s.center p₂ := by
   refine ⟨fun h ↦ ⟨h.left_mem, h.right_mem, h.wbtw⟩, fun ⟨h₁, h₂, hr⟩ ↦ ?_⟩
   have hd := hr.dist_add_dist
   rw [mem_sphere.1 h₁, mem_sphere'.1 h₂, ← two_mul, eq_comm] at hd

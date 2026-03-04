@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, David Loeffler
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
 
 /-!
 # Vertical line test for group homs
@@ -22,6 +24,8 @@ We also prove specialised versions when `f` is the inclusion of a subgroup of th
 (The version for general homomorphisms can easily be reduced to this special case, but the
 homomorphism version is more flexible in applications.)
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -55,9 +59,6 @@ lemma mem_mgraph {f : G →* H} {x : G × H} : x ∈ f.mgraph ↔ f x.1 = x.2 :=
 
 @[to_additive mgraph_eq_mrange_prod]
 lemma mgraph_eq_mrange_prod (f : G →* H) : f.mgraph = mrange ((id _).prod f) := by aesop
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.AddMonoidHom.mgraph_eq_mrange_sum := AddMonoidHom.mgraph_eq_mrange_prod
 
 /-- **Vertical line test** for monoid homomorphisms.
 
@@ -170,9 +171,6 @@ lemma mem_graph {f : G →* H} {x : G × H} : x ∈ f.graph ↔ f x.1 = x.2 := .
 
 @[to_additive graph_eq_range_prod]
 lemma graph_eq_range_prod (f : G →* H) : f.graph = range ((id _).prod f) := by aesop
-
-@[deprecated (since := "2025-03-11")]
-alias AddMonoidHom.graph_eq_range_sum := graph_eq_range_prod
 
 /-- **Vertical line test** for group homomorphisms.
 

@@ -3,12 +3,14 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
-import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
+public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
+public import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 
 # Categories of coherent sheaves
@@ -20,11 +22,14 @@ of coherent sheaves on `C` and `D` are equivalent (see
 `CategoryTheory.coherentTopology.equivalence`).
 
 The main application of this equivalence is the characterisation of condensed sets as coherent
-sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file `Condensed/Equivalence.lean`
+sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file
+`Mathlib/Condensed/Equivalence.lean`.
 
 We give the corresponding result for the regular topology as well (see
 `CategoryTheory.regularTopology.equivalence`).
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -33,13 +38,14 @@ namespace CategoryTheory
 
 open Limits Functor regularTopology
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+variable {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D)
 
 namespace coherentTopology
 
 variable [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [F.Full] [F.Faithful] [F.EffectivelyEnough] [Precoherent D]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
@@ -52,9 +58,10 @@ instance : F.IsCoverDense (coherentTopology _) := by
   · rw [← effectiveEpi_iff_effectiveEpiFamily]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (α : Type) (_ : Finite α) (Y : α → C) (π : (a : α) → (Y a ⟶ X)),
-      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a)) ) ↔
+      EffectiveEpiFamily Y π ∧ (∀ a : α, (S.arrows) (π a))) ↔
     (S ∈ F.inducedTopology (coherentTopology _) X) := by
   refine ⟨fun ⟨α, _, Y, π, ⟨H₁, H₂⟩⟩ ↦ ?_, fun hS ↦ ?_⟩
   · apply (mem_sieves_iff_hasEffectiveEpiFamily (Sieve.functorPushforward _ S)).mpr
@@ -110,7 +117,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end SheafEquiv
 
@@ -134,7 +141,7 @@ def equivalence' (A : Type u₃) [Category.{v₃} A]
     [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_precoherent
     Sheaf (coherentTopology C) A ≌ Sheaf (coherentTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end RegularExtensive
 
@@ -145,6 +152,7 @@ namespace regularTopology
 variable [F.PreservesEffectiveEpis] [F.ReflectsEffectiveEpis] [F.Full] [F.Faithful]
   [F.EffectivelyEnough] [Preregular D]
 
+set_option backward.isDefEq.respectTransparency false in
 instance : F.IsCoverDense (regularTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
@@ -154,6 +162,7 @@ instance : F.IsCoverDense (regularTopology _) := by
   rintro ⟨⟩
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X),
       EffectiveEpi π ∧ S.arrows π) ↔
@@ -208,7 +217,7 @@ noncomputable
 def equivalence (A : Type u₃) [Category.{v₃} A] [∀ X, HasLimitsOfShape (StructuredArrow X F.op) A] :
     haveI := F.reflects_preregular
     Sheaf (regularTopology C) A ≌ Sheaf (regularTopology D) A :=
-  Functor.IsDenseSubsite.sheafEquiv F _ _ _
+  Functor.IsDenseSubsite.sheafEquiv _ _ F _
 
 end SheafEquiv
 

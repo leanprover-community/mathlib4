@@ -3,9 +3,13 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Module.Defs
-import Mathlib.Analysis.CStarAlgebra.Module.Synonym
-import Mathlib.Topology.MetricSpace.Bilipschitz
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Module.Defs
+public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bilipschitz
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-! # Constructions of Hilbert C⋆-modules
 
@@ -55,6 +59,8 @@ the above cases, it is necessary to temporarily instantiate `C⋆ᵐᵒᵈ(A, E)
 and then replace the uniformity and bornology with the correct ones.
 
 -/
+
+@[expose] public section
 
 open CStarModule CStarRing
 
@@ -156,6 +162,7 @@ attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBorno
 /-- A normed additive commutative group structure on `C⋆ᵐᵒᵈ(A, E × F)` with the wrong topology,
 uniformity and bornology. This is only used to build the instance with the correct forgetful
 inheritance data. -/
+@[instance_reducible]
 noncomputable def normedAddCommGroupProdAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
@@ -175,10 +182,12 @@ private lemma lipschitzWith_one_equiv_prod_aux : LipschitzWith 1 (equiv A (E × 
   AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (E × F)) 1 <| by
     simpa using norm_equiv_le_norm_prod
 
+set_option backward.privateInPublic true in
 private lemma uniformity_prod_eq_aux :
     𝓤[(inferInstance : UniformSpace (E × F)).comap <| equiv _ _] = 𝓤 C⋆ᵐᵒᵈ(A, E × F) :=
   uniformity_eq_of_bilipschitz antilipschitzWith_two_equiv_prod_aux lipschitzWith_one_equiv_prod_aux
 
+set_option backward.privateInPublic true in
 private lemma isBounded_prod_iff_aux (s : Set C⋆ᵐᵒᵈ(A, E × F)) :
     @IsBounded _ (induced <| equiv A (E × F)) s ↔ IsBounded s :=
   isBounded_iff_of_bilipschitz antilipschitzWith_two_equiv_prod_aux
@@ -186,6 +195,8 @@ private lemma isBounded_prod_iff_aux (s : Set C⋆ᵐᵒᵈ(A, E × F)) :
 
 end Aux
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, E × F) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_prod_eq_aux isBounded_prod_iff_aux
 
@@ -281,6 +292,7 @@ attribute [-instance] WithCStarModule.instUniformSpace WithCStarModule.instBorno
 /-- A normed additive commutative group structure on `C⋆ᵐᵒᵈ(A, Π i, E i)` with the wrong topology,
 uniformity and bornology. This is only used to build the instance with the correct forgetful
 inheritance data. -/
+@[instance_reducible]
 noncomputable def normedAddCommGroupPiAux : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
   NormedAddCommGroup.ofCore (CStarModule.normedSpaceCore A)
 
@@ -300,16 +312,20 @@ private lemma lipschitzWith_one_equiv_pi_aux : LipschitzWith 1 (equiv A (Π i, E
   AddMonoidHomClass.lipschitz_of_bound_nnnorm (linearEquiv ℂ A (Π i, E i)) 1 <| by
     simpa using norm_equiv_le_norm_pi
 
+set_option backward.privateInPublic true in
 private lemma uniformity_pi_eq_aux :
     𝓤[(inferInstance : UniformSpace (Π i, E i)).comap <| equiv A _] = 𝓤 C⋆ᵐᵒᵈ(A, Π i, E i) :=
   uniformity_eq_of_bilipschitz antilipschitzWith_card_equiv_pi_aux lipschitzWith_one_equiv_pi_aux
 
+set_option backward.privateInPublic true in
 private lemma isBounded_pi_iff_aux (s : Set C⋆ᵐᵒᵈ(A, Π i, E i)) :
     @IsBounded _ (induced <| equiv A (Π i, E i)) s ↔ IsBounded s :=
   isBounded_iff_of_bilipschitz antilipschitzWith_card_equiv_pi_aux lipschitzWith_one_equiv_pi_aux s
 
 end Aux
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 noncomputable instance : NormedAddCommGroup C⋆ᵐᵒᵈ(A, Π i, E i) :=
   .ofCoreReplaceAll (normedSpaceCore A) uniformity_pi_eq_aux isBounded_pi_iff_aux
 
@@ -333,7 +349,7 @@ Note: this instance requires `SMul ℂᵐᵒᵖ E` and `IsCentralScalar ℂ E` i
 which is unlikely to occur in practice. However, in practice one could either add those instances
 to the type `E` in question, or else supply them to this instance manually, which is reason behind
 the naming of these two instance arguments. -/
-instance instCStarModuleComplex : CStarModule ℂ E where
+noncomputable instance instCStarModuleComplex : CStarModule ℂ E where
   inner x y := ⟪x, y⟫_ℂ
   inner_add_right := by simp [_root_.inner_add_right]
   inner_self_nonneg {x} := by
@@ -346,6 +362,7 @@ instance instCStarModuleComplex : CStarModule ℂ E where
   norm_eq_sqrt_norm_inner_self {x} := by
     simpa only [← inner_self_re_eq_norm] using norm_eq_sqrt_re_inner x
 
+set_option backward.isDefEq.respectTransparency false in
 -- Ensures that the two ways to obtain `CStarModule ℂᵐᵒᵖ ℂ` are definitionally equal.
 example : instCStarModule (A := ℂ) = instCStarModuleComplex := by with_reducible_and_instances rfl
 

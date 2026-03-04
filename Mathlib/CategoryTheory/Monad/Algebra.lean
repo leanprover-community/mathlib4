@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monad.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Monad.Basic
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Eilenberg-Moore (co)algebras for a (co)monad
@@ -20,6 +22,8 @@ cofree functors, respectively from and to the original category.
 ## References
 * [Riehl, *Category theory in context*, Section 5.2.4][riehl2017]
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -127,6 +131,7 @@ def forget : Algebra T ⥤ C where
   obj A := A.A
   map f := f.f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The free functor from the Eilenberg-Moore category, constructing an algebra for any object. -/
 @[simps]
 def free : C ⥤ Algebra T where
@@ -141,6 +146,7 @@ def free : C ⥤ Algebra T where
 instance [Inhabited C] : Inhabited (Algebra T) :=
   ⟨(free T).obj default⟩
 
+set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
 /-- The adjunction between the free and forgetful constructions for Eilenberg-Moore algebras for
@@ -181,9 +187,10 @@ theorem algebra_epi_of_epi {X Y : Algebra T} (f : X ⟶ Y) [h : Epi f.f] : Epi f
 theorem algebra_mono_of_mono {X Y : Algebra T} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget T).mono_of_mono_map h
 
-instance : T.forget.IsRightAdjoint  :=
+instance : T.forget.IsRightAdjoint :=
   ⟨T.free, ⟨T.adj⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a monad morphism from `T₂` to `T₁`, we get a functor from the algebras of `T₁` to algebras of
 `T₂`.
@@ -336,6 +343,7 @@ def forget : Coalgebra G ⥤ C where
   obj A := A.A
   map f := f.f
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The cofree functor from the Eilenberg-Moore category, constructing a coalgebra for any
 object. -/
 @[simps]
@@ -348,6 +356,7 @@ def cofree : C ⥤ Coalgebra G where
     { f := G.map f
       h := (G.δ.naturality _).symm }
 
+set_option backward.isDefEq.respectTransparency false in
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
 /-- The adjunction between the cofree and forgetful constructions for Eilenberg-Moore coalgebras
@@ -393,7 +402,7 @@ theorem algebra_epi_of_epi {X Y : Coalgebra G} (f : X ⟶ Y) [h : Epi f.f] : Epi
 theorem algebra_mono_of_mono {X Y : Coalgebra G} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget G).mono_of_mono_map h
 
-instance : G.forget.IsLeftAdjoint  :=
+instance : G.forget.IsLeftAdjoint :=
   ⟨_, ⟨G.adj⟩⟩
 
 end Comonad
