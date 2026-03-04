@@ -411,44 +411,44 @@ namespace HeightOneSpectrum
 --     ContinuousSMul (v.adicCompletion K) (w.adicCompletion L) where
 --   continuous_smul := (UniformSpace.Completion.continuous_map.comp (by fun_prop)).mul (by fun_prop)
 
-open WithZeroTopology UniformSpace.Completion IsDedekindDomain.HeightOneSpectrum in
-theorem valued_liesOver [IsFractionRing B L] [Module.IsTorsionFree A B]
-    [w.asIdeal.LiesOver v.asIdeal] [Algebra (v.adicCompletion K) (w.adicCompletion L)]
-    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
-    [i : IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L)]
-    (x : v.adicCompletion K) :
-    Valued.v x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
-      Valued.v (algebraMap _ (w.adicCompletion L) x) := by
-  induction x using induction_on with
-  | hp =>
-    exact isClosed_eq (Valued.continuous_valuation.pow _)
-      (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
-  | ih a =>
-    have := i.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
-    --rw [algebraMap_def] at this
-    --rw [algebraMap_def] at this
-    rw [Valued.valuedCompletion_apply]
-    erw? [← this]
-    --rw [adicValued_apply']
-    --rw [Algebra.algebraMap_self, RingHom.id_apply] at this
-    --rw [← this]
-    erw [Valued.valuedCompletion_apply]
-    erw [valuation_liesOver L]
-    rfl
-    --simp [WithVal.algebraMap_apply, WithVal.algebraMap_apply']
+-- open WithZeroTopology UniformSpace.Completion IsDedekindDomain.HeightOneSpectrum in
+-- theorem valued_liesOver [IsFractionRing B L] [Module.IsTorsionFree A B]
+--     [w.asIdeal.LiesOver v.asIdeal] [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+--     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
+--     [i : IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L)]
+--     (x : v.adicCompletion K) :
+--     Valued.v x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
+--       Valued.v (algebraMap _ (w.adicCompletion L) x) := by
+--   induction x using induction_on with
+--   | hp =>
+--     exact isClosed_eq (Valued.continuous_valuation.pow _)
+--       (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
+--   | ih a =>
+--     have := i.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
+--     --rw [algebraMap_def] at this
+--     --rw [algebraMap_def] at this
+--     rw [Valued.valuedCompletion_apply]
+--     erw? [← this]
+--     --rw [adicValued_apply']
+--     --rw [Algebra.algebraMap_self, RingHom.id_apply] at this
+--     --rw [← this]
+--     erw [Valued.valuedCompletion_apply]
+--     erw [valuation_liesOver L]
+--     rfl
+--     --simp [WithVal.algebraMap_apply, WithVal.algebraMap_apply']
 
-variable {B} in
-def under [Algebra.IsIntegral A B] : HeightOneSpectrum A where
-  asIdeal := w.asIdeal.under A
-  isPrime := .under A w.asIdeal
-  ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
+-- variable {B} in
+-- def under [Algebra.IsIntegral A B] : HeightOneSpectrum A where
+--   asIdeal := w.asIdeal.under A
+--   isPrime := .under A w.asIdeal
+--   ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
 
 --instance [Algebra.IsIntegral A B] : w.asIdeal.LiesOver (w.under A).asIdeal := ⟨rfl⟩
 
 variable [IsFractionRing B L] [Module.IsTorsionFree A B]
     [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
-    [IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
 
 instance [w.asIdeal.LiesOver v.asIdeal] :
     (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
@@ -495,7 +495,7 @@ variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Alge
   (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
-    [IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
 -- lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
 --     (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
 
@@ -680,7 +680,7 @@ instance compact_adicCompletionIntegers :
     rw [isCompact_iff_totallyBounded_isComplete]
     refine ⟨?_, completeSpace_iff_isComplete_univ.1 (isClosed_valuationSubring _).completeSpace_coe⟩
     erw [totallyBounded_iff_finite_residueField]
-    let 𝔭 := v.under (𝓞 ℚ)
+    let 𝔭 := v.under (A := 𝓞 ℚ)
     have h : Finite (ResidueField (𝔭.adicCompletionIntegers ℚ)) :=
       (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.1
         (adicCompletionIntegers.padicIntEquiv 𝔭).toHomeomorph.symm.compactSpace).2.2
