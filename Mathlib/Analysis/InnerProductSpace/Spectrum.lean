@@ -227,11 +227,11 @@ private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
   by_cases hμ : HasEigenvalue T μ
   · convert hT.direct_sum_isInternal.card_filter_subordinateOrthonormalBasisIndex_eq hn
       hT.orthogonalFamily_eigenspaces' ⟨μ, hμ⟩ with i
-    rw [unsortedEigenvalues]
-    set x := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+    unfold unsortedEigenvalues
+    let ⟨x, hx⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
       hT.orthogonalFamily_eigenspaces'
-    rw [RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self (μ := x.val) x.property)]
-    aesop
+    rw [Eigenvalues.val_mk, RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self hx)]
+    exact Subtype.mk_eq_mk.symm
   · rw [not_ne_iff.mp (Module.End.hasEigenvalue_iff.mpr.mt hμ), finrank_bot,
       Finset.card_filter_eq_zero_iff]
     intro i _ hi
