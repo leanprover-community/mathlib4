@@ -204,6 +204,7 @@ noncomputable def myfun (Y Z : Π x : M, TangentSpace I x) :
   letI b : TangentSpace I x →L[ℝ] ℝ := mfderiv% ⟪Y, Z⟫ x
   b - ((innerSL ℝ (Z x)) ∘L (cov Y x)) - ((innerSL ℝ (Y x)) ∘L (cov Z x))
 
+set_option maxHeartbeats 400000 in
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
 noncomputable example {x : M} [FiniteDimensional ℝ E] :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) := by
@@ -261,17 +262,23 @@ noncomputable example {x : M} [FiniteDimensional ℝ E] :
       cov.isCovariantDerivativeOn.addσ hτ hτ']
     dsimp
     rw [inner_add_right]
-    set A := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x
-    set A' := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ'⟫ x
-    set B := ((innerSL ℝ) (τ x)).comp (cov σ x)
-    set B' := ((innerSL ℝ) (τ' x)).comp (cov σ x)
-    set C := inner ℝ (σ x) ((cov τ x) X)
-    set C' := inner ℝ (σ x) ((cov τ' x) X)
-    set D := (cov σ x) X
-    erw [ContinuousLinearMap.add_apply, ContinuousLinearMap.sub_apply,
-      ContinuousLinearMap.sub_apply]
-    -- The goal is false now, what?
-    sorry -- module
+    erw [ContinuousLinearMap.sub_apply]
+    erw [ContinuousLinearMap.sub_apply]
+    erw [ContinuousLinearMap.add_apply]
+    erw [ContinuousLinearMap.comp_apply]
+    conv =>
+      enter [2, 2, 1, 2]
+      erw [ContinuousLinearMap.comp_apply]
+    erw [innerSL_apply_apply]
+    conv =>
+      enter [2, 2, 1, 2]
+      erw [innerSL_apply_apply]
+    -- set A := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x
+    -- set A' := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ'⟫ x
+    -- set C := inner ℝ (σ x) ((cov τ x) X)
+    -- set C' := inner ℝ (σ x) ((cov τ' x) X)
+    -- set D := (cov σ x) X
+    module
 
 -- old version of the definition. TODO: replace by the tensor ∇ g being zero!
 /-- Predicate saying for a connection `∇` on a Riemannian manifold `M`  to be compatible with the
