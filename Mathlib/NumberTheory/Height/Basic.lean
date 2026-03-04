@@ -424,7 +424,7 @@ lemma mulHeight_eq_mulHeight_restrict_support {ι : Type*} [Finite ι] (x : ι �
   rw [← mulHeight_comp_equiv e, hx]
   exact mulHeight_sumElim_zero_eq ..
 
-lemma logHeight_eq_mulHeight_restrict_support {ι : Type*} [Finite ι] (x : ι → K) :
+lemma logHeight_eq_logHeight_restrict_support {ι : Type*} [Finite ι] (x : ι → K) :
     logHeight x = logHeight fun i : x.support ↦ x i.val :=
   congrArg log <| mulHeight_eq_mulHeight_restrict_support x
 
