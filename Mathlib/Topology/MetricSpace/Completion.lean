@@ -9,7 +9,10 @@ public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Isometry
+<<<<<<< HEAD
 public import Mathlib.Topology.MetricSpace.Lipschitz
+=======
+>>>>>>> extensionEmbeddingAlgebraMap
 
 /-!
 # The completion of a metric space
