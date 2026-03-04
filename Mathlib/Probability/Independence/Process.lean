@@ -39,7 +39,7 @@ variable {α : Type*} {mα : MeasurableSpace α} {κ : Kernel α Ω} {P : Measur
 /-- If `X` is a process independent from `Y` and for all `i`, `X' i` is almost everywhere equal
 to `X i`, then `X'` is also independent from `Y`. This implies that independence results about
 measurable processes should generally also hold
-for processes whose marginals are only aemeasurable. -/
+for processes whose marginals are only a.e.-measurable. -/
 lemma IndepFun.process_congr_left {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X X' : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (h1 : IndepFun (fun ω i ↦ X i ω) Y κ P) (h2 : ∀ i, ∀ᵐ a ∂P, X i =ᵐ[κ a] X' i) :
@@ -66,7 +66,7 @@ lemma IndepFun.process_congr_left {𝓧 : S → Type*} {𝓨 : Type*}
 /-- If `X` is a process independent from `Y` and for all `i`, `X' i` is almost everywhere equal
 to `X i`, then `X'` is also independent from `Y`. This implies that independence results about
 measurable processes should generally also hold
-for processes whose marginals are only aemeasurable. -/
+for processes whose marginals are only a.e.-measurable. -/
 lemma IndepFun.process_congr_right {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X X' : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (h1 : IndepFun Y (fun ω i ↦ X i ω) κ P) (h2 : ∀ i, ∀ᵐ a ∂P, X i =ᵐ[κ a] X' i) :
@@ -77,7 +77,7 @@ lemma IndepFun.process_congr_right {𝓧 : S → Type*} {𝓨 : Type*}
 to `X i`, and for all `j`, `Y' j` is almost everywhere equal to `Y j`,
 then `X'` is independent from `Y'`. This implies that independence results about
 measurable processes should generally also hold
-for processes whose marginals are only aemeasurable. -/
+for processes whose marginals are only a.e.-measurable. -/
 lemma IndepFun.process_congr {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X X' : (i : S) → Ω → 𝓧 i}
     {Y Y' : (j : T) → Ω → (𝓨 j)} (hXY : IndepFun (fun ω i ↦ X i ω) (fun ω j ↦ Y j ω) κ P)
@@ -119,7 +119,7 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
 /-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
 for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$.
 
-This version only requires aemeasurability. -/
+This version only requires a.e.-measurability. -/
 lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (hX : ∀ i, AEMeasurable (X i) (κ ∘ₘ P)) (hY : AEMeasurable Y (κ ∘ₘ P))
@@ -148,7 +148,7 @@ lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$.
 
-This version only requires aemeasurability. -/
+This version only requires a.e.-measurability. -/
 lemma IndepFun.indepFun_process₀ {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
     {Y : (i : S) → Ω → 𝓨 i} (hX : AEMeasurable X (κ ∘ₘ P)) (hY : ∀ i, AEMeasurable (Y i) (κ ∘ₘ P))
@@ -173,7 +173,7 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
 $(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent.
 
-This version only requires aemeasurability. -/
+This version only requires a.e.-measurability. -/
 lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, AEMeasurable (X i) (κ ∘ₘ P))
@@ -192,7 +192,7 @@ lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {�
 for all `i j`, `X' i j` is almost everywhere equal to `X i j`,
 then `X'` are also independent. This implies that independence results about
 measurable processes should generally also hold
-for processes whose marginals are only aemeasurable. -/
+for processes whose marginals are only a.e.-measurable. -/
 lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X X' : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (h1 : iIndepFun (fun i ω j ↦ X i j ω) κ P) (h2 : ∀ i j, ∀ᵐ a ∂P, X i j =ᵐ[κ a] X' i j) :
@@ -278,7 +278,7 @@ for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
 $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
 (X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent.
 
-This version only requires aemeasurability. -/
+This version only requires a.e.-measurability. -/
 lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, AEMeasurable (X i j) (κ ∘ₘ P))
@@ -296,7 +296,7 @@ variable {P : Measure Ω}
 /-- If `X` is a process independent from `Y` and for all `i`, `X' i` is almost everywhere equal
 to `X i`, then `X'` is also independent from `Y`. This implies that independence results about
 measurable processes should generally also hold
-for processes whose marginals are only aemeasurable. -/
+for processes whose marginals are only a.e.-measurable. -/
 lemma IndepFun.process_congr_left {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X X' : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (h1 : (fun ω i ↦ X i ω) ⟂ᵢ[P] Y) (h2 : ∀ i, X i =ᵐ[P] X' i) :
@@ -306,7 +306,7 @@ lemma IndepFun.process_congr_left {𝓧 : S → Type*} {𝓨 : Type*}
 /-- If `X` is a process independent from `Y` and for all `i`, `X' i` is almost everywhere equal
 to `X i`, then `X'` is also independent from `Y`. This implies that independence results about
 measurable processes should generally also hold
-for processes whose marginals are only aemeasurable. -/
+for processes whose marginals are only a.e.-measurable. -/
 lemma IndepFun.process_congr_right {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X X' : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (h1 : Y ⟂ᵢ[P] (fun ω i ↦ X i ω)) (h2 : ∀ i, X i =ᵐ[P] X' i) :
@@ -317,7 +317,7 @@ lemma IndepFun.process_congr_right {𝓧 : S → Type*} {𝓨 : Type*}
 to `X i`, and for all `j`, `Y' j` is almost everywhere equal to `Y j`,
 then `X'` is independent from `Y'`. This implies that independence results about
 measurable processes should generally also hold
-for processes whose marginals are only aemeasurable. -/
+for processes whose marginals are only a.e.-measurable. -/
 lemma IndepFun.process_congr {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X X' : (i : S) → Ω → 𝓧 i}
     {Y Y' : (j : T) → Ω → (𝓨 j)} (hXY : (fun ω i ↦ X i ω) ⟂ᵢ[P] (fun ω j ↦ Y j ω))
@@ -337,7 +337,7 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
 /-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
 for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$.
 
-This version only requires aemeasurability. -/
+This version only requires a.e.-measurability. -/
 lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (hX : ∀ i, AEMeasurable (X i) P) (hY : AEMeasurable Y P)
@@ -359,7 +359,7 @@ lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
 $(X_{s_1}, ..., X_{s_p})$.
 
-This version only requires aemeasurability. -/
+This version only requires a.e.-measurability. -/
 lemma IndepFun.indepFun_process₀ {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
     {Y : (i : S) → Ω → 𝓨 i} (hX : AEMeasurable X P) (hY : ∀ i, AEMeasurable (Y i) P)
@@ -382,7 +382,7 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
 $(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent.
 
-This version only requires aemeasurability. -/
+This version only requires a.e.-measurability. -/
 lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, AEMeasurable (X i) P) (hY : ∀ j, AEMeasurable (Y j) P)
@@ -395,7 +395,7 @@ lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {�
 for all `i j`, `X' i j` is almost everywhere equal to `X i j`,
 then `X'` are also independent. This implies that independence results about
 measurable processes should generally also hold
-for processes whose marginals are only aemeasurable. -/
+for processes whose marginals are only a.e.-measurable. -/
 lemma iIndepFun.process_congr {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X X' : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (h1 : iIndepFun (fun i ω j ↦ X i j ω) P) (h2 : ∀ i j, X i j =ᵐ[P] X' i j) :
@@ -418,7 +418,7 @@ for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
 $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
 (X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent.
 
-This version only requires aemeasurability. -/
+This version only requires a.e.-measurability. -/
 lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, AEMeasurable (X i j) P)
