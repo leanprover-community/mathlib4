@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals as multisets
@@ -30,6 +32,8 @@ In a `LocallyFiniteOrderBot`,
 
 Do we really need this file at all? (March 2024)
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -140,19 +144,19 @@ theorem Ioo_eq_zero (h : ¬a < b) : Ioo a b = 0 :=
 
 @[simp]
 theorem Icc_eq_zero_of_lt (h : b < a) : Icc a b = 0 :=
-  Icc_eq_zero h.not_le
+  Icc_eq_zero h.not_ge
 
 @[simp]
 theorem Ico_eq_zero_of_le (h : b ≤ a) : Ico a b = 0 :=
-  Ico_eq_zero h.not_lt
+  Ico_eq_zero h.not_gt
 
 @[simp]
 theorem Ioc_eq_zero_of_le (h : b ≤ a) : Ioc a b = 0 :=
-  Ioc_eq_zero h.not_lt
+  Ioc_eq_zero h.not_gt
 
 @[simp]
 theorem Ioo_eq_zero_of_le (h : b ≤ a) : Ioo a b = 0 :=
-  Ioo_eq_zero h.not_lt
+  Ioo_eq_zero h.not_gt
 
 variable (a)
 
@@ -179,22 +183,14 @@ theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b :=
 theorem left_notMem_Ioc : a ∉ Ioc a b :=
   Finset.left_notMem_Ioc
 
-@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioc := left_notMem_Ioc
-
 theorem left_notMem_Ioo : a ∉ Ioo a b :=
   Finset.left_notMem_Ioo
-
-@[deprecated (since := "2025-05-23")] alias left_not_mem_Ioo := left_notMem_Ioo
 
 theorem right_notMem_Ico : b ∉ Ico a b :=
   Finset.right_notMem_Ico
 
-@[deprecated (since := "2025-05-23")] alias right_not_mem_Ico := right_notMem_Ico
-
 theorem right_notMem_Ioo : b ∉ Ioo a b :=
   Finset.right_notMem_Ioo
-
-@[deprecated (since := "2025-05-23")] alias right_not_mem_Ioo := right_notMem_Ioo
 
 theorem Ico_filter_lt_of_le_left [DecidablePred (· < c)] (hca : c ≤ a) :
     ((Ico a b).filter fun x => x < c) = ∅ := by
@@ -246,7 +242,7 @@ theorem Ioo_cons_left (h : a < b) : a ::ₘ Ioo a b = Ico a b := by
 theorem Ico_disjoint_Ico {a b c d : α} (h : b ≤ c) : Disjoint (Ico a b) (Ico c d) :=
   disjoint_left.mpr fun hab hbc => by
     rw [mem_Ico] at hab hbc
-    exact hab.2.not_le (h.trans hbc.1)
+    exact hab.2.not_ge (h.trans hbc.1)
 
 @[simp]
 theorem Ico_inter_Ico_of_le [DecidableEq α] {a b c d : α} (h : b ≤ c) : Ico a b ∩ Ico c d = 0 :=

@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Module.Pointwise
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Order.Module.Pointwise
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Pointwise operations on sets of reals
@@ -22,6 +24,8 @@ This is true more generally for conditionally complete linear order whose defaul
 don't have those yet.
 -/
 
+public section
+
 assert_not_exists Finset
 
 open Set
@@ -32,7 +36,7 @@ variable {ι : Sort*} {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedR
 
 section MulActionWithZero
 
-variable [MulActionWithZero α ℝ] [OrderedSMul α ℝ] {a : α}
+variable [MulActionWithZero α ℝ] [IsOrderedModule α ℝ] {a : α}
 
 theorem Real.sInf_smul_of_nonneg (ha : 0 ≤ a) (s : Set ℝ) : sInf (a • s) = a • sInf s := by
   obtain rfl | hs := s.eq_empty_or_nonempty
@@ -66,7 +70,7 @@ end MulActionWithZero
 
 section Module
 
-variable [Module α ℝ] [OrderedSMul α ℝ] {a : α}
+variable [Module α ℝ] [IsOrderedModule α ℝ] {a : α}
 
 theorem Real.sInf_smul_of_nonpos (ha : a ≤ 0) (s : Set ℝ) : sInf (a • s) = a • sSup s := by
   obtain rfl | hs := s.eq_empty_or_nonempty

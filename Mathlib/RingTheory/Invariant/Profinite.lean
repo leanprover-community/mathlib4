@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.Topology.Algebra.ClopenNhdofOne
-import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
-import Mathlib.CategoryTheory.CofilteredSystem
+module
+
+public import Mathlib.RingTheory.Invariant.Basic
+public import Mathlib.Topology.Algebra.ClopenNhdofOne
+public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
+public import Mathlib.CategoryTheory.CofilteredSystem
 
 /-!
 # Invariant Extensions of Rings
@@ -27,6 +29,8 @@ Let `G` be a profinite group acting continuously on a
 
 -/
 
+@[expose] public section
+
 open scoped Pointwise
 
 section ProfiniteGrp
@@ -39,6 +43,7 @@ variable [IsTopologicalGroup G] [TopologicalSpace B] [DiscreteTopology B] [Conti
 
 open Pointwise CategoryTheory
 
+set_option backward.isDefEq.respectTransparency false in
 include G in
 lemma Algebra.IsInvariant.isIntegral_of_profinite
     [Algebra.IsInvariant A B G] : Algebra.IsIntegral A B := by
@@ -50,6 +55,7 @@ lemma Algebra.IsInvariant.isIntegral_of_profinite
     ⟨x, fun g ↦ hN g.2⟩
   exact this.map (FixedPoints.subalgebra A B N.1.1).val
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `G` acts transitively on the prime ideals of `B` above a given prime ideal of `A`. -/
 lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
     [Algebra.IsInvariant A B G] (P Q : Ideal B) [P.IsPrime] [Q.IsPrime]
@@ -66,7 +72,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
         (F := RingEquiv _ _)] using congr(Ideal.comap (Subalgebra.inclusion h).toRingHom $hx)⟩
     map_id N := by ext ⟨⟨x⟩, hx⟩; rfl
     map_comp f g := by ext ⟨⟨x⟩, hx⟩; rfl }
-  have (N) : Nonempty (F.obj N) := by
+  have (N : _) : Nonempty (F.obj N) := by
     obtain ⟨g, hg⟩ := Algebra.IsInvariant.exists_smul_of_under_eq A
       (B' N.1.1) (G ⧸ N.1.1) (P.under _) (Q.under _) hPQ
     exact ⟨g, hg⟩
@@ -74,7 +80,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
   let a := (ProfiniteGrp.of G).isoLimittoFiniteQuotientFunctor.inv.hom
     ⟨fun N ↦ (s N).1, (fun {N N'} f ↦ congr_arg Subtype.val (hs f))⟩
   have (N : OpenNormalSubgroup G) : QuotientGroup.mk (s := N.1.1) a = s N := by
-    show ((ProfiniteGrp.of G).isoLimittoFiniteQuotientFunctor.hom.hom a).1 N = _
+    change ((ProfiniteGrp.of G).isoLimittoFiniteQuotientFunctor.hom.hom a).1 N = _
     simp only [a]
     rw [← ProfiniteGrp.comp_apply, Iso.inv_hom_id]
     simp
@@ -83,7 +89,7 @@ lemma Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite
   obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
     (stabilizer_isOpen G x) (one_mem _)
   lift x to B' N.1.1 using fun g ↦ hN g.2
-  show x ∈ Q.under (B' N.1.1) ↔ x ∈ Ideal.under (B' N.1.1) ((_ : G) • P)
+  change x ∈ Q.under (B' N.1.1) ↔ x ∈ Ideal.under (B' N.1.1) ((_ : G) • P)
   rw [(s N).2]
   simp only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, ← Ideal.comap_coe
         (F := RingEquiv _ _)]
@@ -108,7 +114,7 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
     (hx : x ∈ MulAction.stabilizer (G ⧸ N.1.1) (Q.under (FixedPoints.subalgebra A B N.1.1))) :
     QuotientGroup.map _ _ (.id _) e x ∈
       MulAction.stabilizer (G ⧸ N'.1.1) (Q.under (FixedPoints.subalgebra A B N'.1.1)) := by
-  show _ = _
+  change _ = _
   have h : FixedPoints.subalgebra A B N'.1.1 ≤ FixedPoints.subalgebra A B N.1.1 :=
     fun x hx n ↦ hx ⟨_, e n.2⟩
   obtain ⟨x, rfl⟩ := QuotientGroup.mk_surjective x
@@ -116,6 +122,7 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
   simpa only [Ideal.pointwise_smul_eq_comap,
     ← Ideal.comap_coe (F := RingEquiv _ _), Ideal.comap_comap] using hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation)
 The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ` in `G ⧸ N`.
 We will show that its inverse limit is nonempty to conclude that there exists a lift in `G`. -/
@@ -148,6 +155,7 @@ instance (P : Ideal A) (Q : Ideal B) [Q.LiesOver P]
   dsimp [stabilizerHomSurjectiveAuxFunctor]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 open Ideal.Quotient in
 instance (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
     [Algebra.IsInvariant A B G] (σ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q) (N : OpenNormalSubgroup G) :
@@ -164,6 +172,7 @@ instance (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   exact hσ' x
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/
 theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
@@ -177,13 +186,14 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     ⟨fun N ↦ (s N).1.1, (fun {N N'} f ↦ congr($(hs f).1.1))⟩
   have (N : OpenNormalSubgroup G) : QuotientGroup.mk (s := N.1.1) a = (s N).1 :=
     congr_fun (congr_arg Subtype.val (ConcreteCategory.congr_hom (ProfiniteGrp.of
-      G).isoLimittoFiniteQuotientFunctor.inv_hom_id (Subtype.mk (fun N ↦ (s N).1.1) _))) N
+      G).isoLimittoFiniteQuotientFunctor.inv_hom_id
+        _)) N
   refine ⟨⟨a, ?_⟩, ?_⟩
   · ext x
     obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
       (stabilizer_isOpen G x) (one_mem _)
     lift x to B' N.1.1 using fun g ↦ hN g.2
-    show x ∈ (a • Q).under (B' N.1.1) ↔ x ∈ Q.under (B' N.1.1)
+    change x ∈ (a • Q).under (B' N.1.1) ↔ x ∈ Q.under (B' N.1.1)
     rw [← (s N).1.2]
     simp only [Ideal.comap_comap, Ideal.pointwise_smul_eq_comap, ← Ideal.comap_coe
           (F := RingEquiv _ _)]
@@ -196,7 +206,7 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
       (stabilizer_isOpen G x) (one_mem _)
     lift x to B' N.1.1 using fun g ↦ hN g.2
-    show Ideal.Quotient.mk Q (QuotientGroup.mk (s := N) a • x).1 = _
+    change Ideal.Quotient.mk Q (QuotientGroup.mk (s := N) a • x).1 = _
     rw [this]
     exact DFunLike.congr_fun (s N).2 (Ideal.Quotient.mk _ x)
 

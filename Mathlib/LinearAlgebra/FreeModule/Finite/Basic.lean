@@ -3,9 +3,11 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Matrix.StdBasis
-import Mathlib.RingTheory.Finiteness.Cardinality
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Matrix.StdBasis
+public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 # Finite and free modules
@@ -17,6 +19,8 @@ We provide some instances for finite and free modules.
 * `Module.Free.ChooseBasisIndex.fintype` : If a free module is finite, then any basis is finite.
 * `Module.Finite.of_basis` : A free module with a basis indexed by a `Fintype` is finite.
 -/
+
+@[expose] public section
 
 universe u v w
 

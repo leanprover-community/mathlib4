@@ -50,6 +50,7 @@ theorem map_eq_zero : f x = 0 ↔ 2 ≤ x := by
 
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x < 2 := by simp [hf.map_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
   have hx' : 0 < 2 - x := tsub_pos_of_lt hx
   have hfx : f x ≠ 0 := hf.map_ne_zero_iff.2 hx
@@ -61,12 +62,13 @@ theorem map_of_lt_two (hx : x < 2) : f x = 2 / (2 - x) := by
     rw [hf.map_add_rev, hf.map_eq_zero, tsub_add_cancel_of_le hx.le]
 
 theorem map_eq (x : ℝ≥0) : f x = 2 / (2 - x) :=
-  match lt_or_le x 2 with
+  match lt_or_ge x 2 with
   | .inl hx => hf.map_of_lt_two hx
   | .inr hx => by rwa [tsub_eq_zero_of_le hx, div_zero, hf.map_eq_zero]
 
 end IsGood
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2 - x) := by
   refine ⟨fun hf ↦ funext hf.map_eq, ?_⟩
   rintro rfl
@@ -75,7 +77,7 @@ theorem isGood_iff {f : ℝ≥0 → ℝ≥0} : IsGood f ↔ f = fun x ↦ 2 / (2
   case map_ne_zero => intro x hx; simpa [tsub_eq_zero_iff_le]
   case map_add_rev =>
     intro x y
-    cases lt_or_le y 2 with
+    cases lt_or_ge y 2 with
     | inl hy =>
       have hy' : 2 - y ≠ 0 := (tsub_pos_of_lt hy).ne'
       rw [div_mul_div_comm, tsub_mul, mul_assoc, div_mul_cancel₀ _ hy', mul_comm x,

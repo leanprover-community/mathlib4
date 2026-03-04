@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.Degree.Domain
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Ring.NonZeroDivisors
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # The field of rational functions
@@ -47,6 +49,8 @@ the codomain is not a field or even an integral domain.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped nonZeroDivisors Polynomial
@@ -85,8 +89,6 @@ theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → Fr
 @[simp] lemma toFractionRing_inj {x y : RatFunc K} :
     toFractionRing x = toFractionRing y ↔ x = y :=
   toFractionRing_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toFractionRing_eq_iff := toFractionRing_inj
 
 /-- Non-dependent recursion principle for `RatFunc K`:
 To construct a term of `P : Sort*` out of `x : RatFunc K`,
@@ -140,7 +142,7 @@ theorem mk_eq_div' (p q : K[X]) :
     RatFunc.mk p q = ofFractionRing (algebraMap _ _ p / algebraMap _ _ q) := by rw [RatFunc.mk]
 
 theorem mk_zero (p : K[X]) : RatFunc.mk p 0 = ofFractionRing (0 : FractionRing K[X]) := by
-  rw [mk_eq_div', RingHom.map_zero, div_zero]
+  rw [mk_eq_div', map_zero, div_zero]
 
 theorem mk_coe_def (p : K[X]) (q : K[X]⁰) :
     RatFunc.mk p q = ofFractionRing (IsLocalization.mk' _ p q) := by
@@ -178,9 +180,9 @@ theorem liftOn_mk {P : Sort v} (p q : K[X]) (f : K[X] → K[X] → P) (f0 : ∀ 
     (RatFunc.mk p q).liftOn f @H = f p q := by
   by_cases hq : q = 0
   · subst hq
-    simp only [mk_zero, f0, ← Localization.mk_zero 1, Localization.liftOn_mk,
+    simp only [mk_zero, f0, ← Localization.mk_zero 1,
       liftOn_ofFractionRing_mk, Submonoid.coe_one]
-  · simp only [mk_eq_localization_mk _ hq, Localization.liftOn_mk, liftOn_ofFractionRing_mk]
+  · simp only [mk_eq_localization_mk _ hq, liftOn_ofFractionRing_mk]
 
 /-- Non-dependent recursion principle for `RatFunc K`: if `f p q : P` for all `p q`,
 such that `f (a * p) (a * q) = f p q`, then we can find a value of `P`

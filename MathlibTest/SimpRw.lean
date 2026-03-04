@@ -44,7 +44,7 @@ example : 1 = 2 := by
   exact test_sorry
 
 /--
-error: no goals to be solved
+error: No goals to be solved
 -/
 -- check that `simp_rw` does not "spill over" goals
 #guard_msgs in

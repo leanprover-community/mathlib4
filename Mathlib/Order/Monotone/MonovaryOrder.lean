@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Monotone.Monovary
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Order.Monotone.Monovary
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Interpreting monovarying functions as monotone functions
@@ -12,6 +14,8 @@ import Mathlib.SetTheory.Cardinal.Order
 This file proves that monovarying functions to linear orders can be made simultaneously monotone by
 setting the correct order on their shared indexing type.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -27,9 +31,9 @@ def MonovaryOrder (i j : ι) : Prop :=
   Prod.Lex (· < ·) (Prod.Lex (· < ·) WellOrderingRel) (f i, g i, i) (f j, g j, j)
 
 instance : IsStrictTotalOrder ι (MonovaryOrder f g) where
-  trichotomous i j := by
+  toTrichotomous := Std.trichotomous_of_rel_or_eq_or_rel_swap fun {a b} ↦ by
     convert trichotomous_of (Prod.Lex (· < ·) <| Prod.Lex (· < ·) WellOrderingRel) _ _
-    · simp only [Prod.ext_iff, ← and_assoc, imp_and, eq_iff_iff, iff_and_self]
+    · simp only [Prod.ext_iff, ← and_assoc, imp_and, iff_and_self]
       exact ⟨congr_arg _, congr_arg _⟩
     · infer_instance
   irrefl i := by rw [MonovaryOrder]; exact irrefl _

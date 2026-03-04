@@ -3,11 +3,13 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -56,6 +58,8 @@ order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous f
 See the Vitali-Carathéodory theorem,
 in the file `Mathlib/MeasureTheory/Integral/Bochner/VitaliCaratheodory.lean`.
 -/
+
+public section
 
 open scoped ENNReal NNReal Topology BoundedContinuousFunction
 
@@ -124,8 +128,7 @@ theorem exists_continuous_eLpNorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
         indicator_of_mem, CStarRing.norm_one]
     · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
-  refine
-    ⟨fun x => g x • c, g.continuous.smul continuous_const, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
+  refine ⟨fun x ↦ g x • c, by fun_prop, (eLpNorm_mono gc_bd).trans ?_, gc_bd0,
       gc_support.trans inter_subset_left, gc_mem⟩
   exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le)
 
@@ -183,9 +186,6 @@ theorem MemLp.exists_hasCompactSupport_eLpNorm_sub_le
   contrapose! hx
   exact interior_subset (f_support hx)
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_hasCompactSupport_eLpNorm_sub_le := MemLp.exists_hasCompactSupport_eLpNorm_sub_le
-
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported
 continuous functions when `0 < p < ∞`, version in terms of `∫`. -/
@@ -208,10 +208,6 @@ theorem MemLp.exists_hasCompactSupport_integral_rpow_sub_le
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
   positivity
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_hasCompactSupport_integral_rpow_sub_le :=
-  MemLp.exists_hasCompactSupport_integral_rpow_sub_le
-
 
 /-- In a locally compact space, any integrable function can be approximated by compactly supported
 continuous functions, version in terms of `∫⁻`. -/
@@ -230,7 +226,7 @@ theorem Integrable.exists_hasCompactSupport_integral_sub_le
     {f : α → E} (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α → E, HasCompactSupport g ∧ (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧
       Continuous g ∧ Integrable g μ := by
-  simp only [← memLp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm, ← ENNReal.ofReal_one]
+  simp only [← memLp_one_iff_integrable, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_hasCompactSupport_integral_rpow_sub_le zero_lt_one hε
 
@@ -285,9 +281,6 @@ theorem MemLp.exists_boundedContinuous_eLpNorm_sub_le [μ.WeaklyRegular] (hp : p
   refine ⟨f, I3, f_cont, f_mem, ?_⟩
   exact (BoundedContinuousFunction.ofNormedAddCommGroup f f_cont _ f_bound).isBounded_range
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_boundedContinuous_eLpNorm_sub_le := MemLp.exists_boundedContinuous_eLpNorm_sub_le
-
 /-- Any function in `ℒp` can be approximated by bounded continuous functions when `0 < p < ∞`,
 version in terms of `∫`. -/
 theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {p : ℝ} (hp : 0 < p)
@@ -305,10 +298,6 @@ theorem MemLp.exists_boundedContinuous_integral_rpow_sub_le [μ.WeaklyRegular] {
     Real.rpow_le_rpow_iff _ hε.le (inv_pos.2 hp)] at hg
   positivity
 
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.exists_boundedContinuous_integral_rpow_sub_le :=
-  MemLp.exists_boundedContinuous_integral_rpow_sub_le
-
 /-- Any integrable function can be approximated by bounded continuous functions,
 version in terms of `∫⁻`. -/
 theorem Integrable.exists_boundedContinuous_lintegral_sub_le [μ.WeaklyRegular] {f : α → E}
@@ -322,7 +311,7 @@ version in terms of `∫`. -/
 theorem Integrable.exists_boundedContinuous_integral_sub_le [μ.WeaklyRegular] {f : α → E}
     (hf : Integrable f μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ g : α →ᵇ E, (∫ x, ‖f x - g x‖ ∂μ) ≤ ε ∧ Integrable g μ := by
-  simp only [← memLp_one_iff_integrable, ← eLpNorm_one_eq_lintegral_enorm, ← ENNReal.ofReal_one]
+  simp only [← memLp_one_iff_integrable, ← ENNReal.ofReal_one]
     at hf ⊢
   simpa using hf.exists_boundedContinuous_integral_rpow_sub_le zero_lt_one hε
 
@@ -335,12 +324,12 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [Fa
     (hp : p ≠ ∞) [μ.WeaklyRegular] :
     Dense (boundedContinuousFunction E p μ : Set (Lp E p μ)) := by
   intro f
-  refine (mem_closure_iff_nhds_basis EMetric.nhds_basis_closed_eball).2 fun ε hε ↦ ?_
+  refine (mem_closure_iff_nhds_basis Metric.nhds_basis_closedEBall).2 fun ε hε ↦ ?_
   obtain ⟨g, hg, g_mem⟩ :
       ∃ g : α →ᵇ E, eLpNorm ((f : α → E) - (g : α → E)) p μ ≤ ε ∧ MemLp g p μ :=
     (Lp.memLp f).exists_boundedContinuous_eLpNorm_sub_le hp hε.ne'
   refine ⟨g_mem.toLp _, ⟨g, rfl⟩, ?_⟩
-  rwa [EMetric.mem_closedBall', ← Lp.toLp_coeFn f (Lp.memLp f), Lp.edist_toLp_toLp]
+  rwa [Metric.mem_closedEBall', ← Lp.toLp_coeFn f (Lp.memLp f), Lp.edist_toLp_toLp]
 
 /-- A function in `Lp` can be approximated in `Lp` by continuous functions. -/
 theorem boundedContinuousFunction_topologicalClosure [SecondCountableTopologyEither α E]

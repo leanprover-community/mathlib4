@@ -3,8 +3,10 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Block
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Block
 
 /-!
 # Symmetric matrices
@@ -19,6 +21,8 @@ This file contains the definition and basic results about symmetric matrices.
 
 symm, symmetric, matrix
 -/
+
+@[expose] public section
 
 
 variable {α β n m R : Type*}
@@ -111,7 +115,7 @@ theorem isSymm_diagonal [DecidableEq n] [Zero α] (v : n → α) : (diagonal v).
   diagonal_transpose _
 
 /-- A block matrix `A.fromBlocks B C D` is symmetric,
-    if `A` and `D` are symmetric and `Bᵀ = C`. -/
+if `A` and `D` are symmetric and `Bᵀ = C`. -/
 theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n m α}
     {D : Matrix n n α} (hA : A.IsSymm) (hBC : Bᵀ = C) (hD : D.IsSymm) :
     (A.fromBlocks B C D).IsSymm := by

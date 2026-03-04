@@ -3,12 +3,14 @@ Copyright (c) 2022 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Kevin H. Wilson, Heather Macbeth
 -/
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Product and coproduct filters
 
-In this file we define `Filter.prod f g` (notation: `f ×ˢ g`) and `Filter.coprod f g`. The product
+In this file we prove some basic properties of `f ×ˢ g` and `Filter.coprod f g`. The product
 of two filters is the largest filter `l` such that `Filter.Tendsto Prod.fst l f` and
 `Filter.Tendsto Prod.snd l g`.
 
@@ -28,11 +30,9 @@ s ∈ G  ↔  ∀ i:ℕ, ∃ n, [n..∞] × {i} ⊆ s
 Now `⋃ i, [i..∞] × {i}` is in `G` but not in `F`.
 As product filter we want to have `F` as result.
 
-## Notations
-
-* `f ×ˢ g` : `Filter.prod f g`, localized in `Filter`.
-
 -/
+
+@[expose] public section
 
 open Set
 
@@ -140,9 +140,6 @@ theorem Tendsto.prodMk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
     (h₁ : Tendsto m₁ f g) (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
   tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
-@[deprecated (since := "2025-03-10")]
-alias Tendsto.prod_mk := Tendsto.prodMk
-
 theorem tendsto_prod_swap : Tendsto (Prod.swap : α × β → β × α) (f ×ˢ g) (g ×ˢ f) :=
   tendsto_snd.prodMk tendsto_fst
 
@@ -163,16 +160,10 @@ theorem EventuallyEq.prodMap {δ} {la : Filter α} {fa ga : α → γ} (ha : fa 
     Prod.map fa fb =ᶠ[la ×ˢ lb] Prod.map ga gb :=
   (Eventually.prod_mk ha hb).mono fun _ h => Prod.ext h.1 h.2
 
-@[deprecated (since := "2025-03-10")]
-alias EventuallyEq.prod_map := EventuallyEq.prodMap
-
 theorem EventuallyLE.prodMap {δ} [LE γ] [LE δ] {la : Filter α} {fa ga : α → γ} (ha : fa ≤ᶠ[la] ga)
     {lb : Filter β} {fb gb : β → δ} (hb : fb ≤ᶠ[lb] gb) :
     Prod.map fa fb ≤ᶠ[la ×ˢ lb] Prod.map ga gb :=
   Eventually.prod_mk ha hb
-
-@[deprecated (since := "2025-03-10")]
-alias EventuallyLE.prod_map := EventuallyLE.prodMap
 
 theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Prop}
     (h : ∀ᶠ x in la ×ˢ lb, p x) : ∀ᶠ x in la, ∀ᶠ y in lb, p (x, y) := by
@@ -180,19 +171,24 @@ theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Pro
   exact ha.mono fun a ha => hb.mono fun b hb => h ha hb
 
 protected lemma Frequently.uncurry {la : Filter α} {lb : Filter β} {p : α → β → Prop}
-    (h : ∃ᶠ x in la, ∃ᶠ y in lb, p x y) : ∃ᶠ xy in la ×ˢ lb, p xy.1 xy.2 :=
-  mt (fun h ↦ by simpa only [not_frequently] using h.curry) h
+    (h : ∃ᶠ x in la, ∃ᶠ y in lb, p x y) : ∃ᶠ xy in la ×ˢ lb, p xy.1 xy.2 := by
+  contrapose! h
+  exact h.curry
 
 lemma Frequently.of_curry {la : Filter α} {lb : Filter β} {p : α × β → Prop}
     (h : ∃ᶠ x in la, ∃ᶠ y in lb, p (x, y)) : ∃ᶠ xy in la ×ˢ lb, p xy :=
   h.uncurry
 
+theorem Eventually.image_of_prod {y : α → β} {r : α → β → Prop}
+    (hy : Tendsto y f g) (hr : ∀ᶠ p in f ×ˢ g, r p.1 p.2) : ∀ᶠ x in f, r x (y x) := by
+  obtain ⟨p, hp, q, hq, hr⟩ := eventually_prod_iff.mp hr
+  filter_upwards [hp, hy.eventually hq] with _ hp hq using hr hp hq
+
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/
 theorem Eventually.diag_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
-    ∀ᶠ i in f, p (i, i) := by
-  obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  apply (ht.and hs).mono fun x hx => hst hx.1 hx.2
+    ∀ᶠ i in f, p (i, i) :=
+  h.image_of_prod (r := p.curry) tendsto_id
 
 theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α × α) × γ → Prop} :
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
@@ -222,11 +218,9 @@ theorem prod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤
     f₁ ×ˢ g₁ ≤ f₂ ×ˢ g₂ :=
   inf_le_inf (comap_mono hf) (comap_mono hg)
 
-@[gcongr]
 theorem prod_mono_left (g : Filter β) {f₁ f₂ : Filter α} (hf : f₁ ≤ f₂) : f₁ ×ˢ g ≤ f₂ ×ˢ g :=
   Filter.prod_mono hf rfl.le
 
-@[gcongr]
 theorem prod_mono_right (f : Filter α) {g₁ g₂ : Filter β} (hf : g₁ ≤ g₂) : f ×ˢ g₁ ≤ f ×ˢ g₂ :=
   Filter.prod_mono rfl.le hf
 
@@ -238,9 +232,8 @@ theorem prod_comap_comap_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β�
 theorem prod_comm' : f ×ˢ g = comap Prod.swap (g ×ˢ f) := by
   simp only [prod_eq_inf, comap_comap, Function.comp_def, inf_comm, Prod.swap, comap_inf]
 
-theorem prod_comm : f ×ˢ g = map (fun p : β × α => (p.2, p.1)) (g ×ˢ f) := by
+theorem prod_comm : f ×ˢ g = map Prod.swap (g ×ˢ f) := by
   rw [prod_comm', ← map_swap_eq_comap_swap]
-  rfl
 
 theorem mem_prod_iff_left {s : Set (α × β)} :
     s ∈ f ×ˢ g ↔ ∃ t ∈ f, ∀ᶠ y in g, ∀ x ∈ t, (x, y) ∈ s := by
@@ -280,6 +273,23 @@ theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [N
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ˢ g, p x) ↔ ∀ᶠ y : β × α in g ×ˢ f, p y.swap := by
   rw [prod_comm]; rfl
+
+/-- A technical lemma which is a generalization of `Filter.Eventually.trans_prod`. -/
+lemma Eventually.eventually_prod_of_eventually_swap {h : Filter γ}
+    [NeBot g] {p : α → β → Prop} {q : β → γ → Prop} {r : α → γ → Prop}
+    (hp : ∀ᶠ x in f, ∀ᶠ y in g, p x y) (hq : ∀ᶠ z in h, ∀ᶠ y in g, q y z)
+    (hpqr : ∀ x y z, p x y → q y z → r x z) :
+    ∀ᶠ xz in f ×ˢ h, r xz.1 xz.2 := by
+  refine eventually_prod_iff.mpr ⟨_, hp, _, hq, fun {x} hx {z} hz ↦ ?_⟩
+  rcases (hx.and hz).exists with ⟨y, hpy, hqy⟩
+  exact hpqr x y z hpy hqy
+
+lemma Eventually.trans_prod {h : Filter γ}
+    [NeBot g] {p : α → β → Prop} {q : β → γ → Prop} {r : α → γ → Prop}
+    (hp : ∀ᶠ xy in f ×ˢ g, p xy.1 xy.2) (hq : ∀ᶠ yz in g ×ˢ h, q yz.1 yz.2)
+    (hpqr : ∀ x y z, p x y → q y z → r x z) :
+    ∀ᶠ xz in f ×ˢ h, r xz.1 xz.2 :=
+  hp.curry.eventually_prod_of_eventually_swap (eventually_swap_iff.mp hq |>.curry) hpqr
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by
@@ -341,9 +351,6 @@ theorem Tendsto.prodMap {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter
     Tendsto (Prod.map f g) (a ×ˢ b) (c ×ˢ d) := by
   rw [Tendsto, Prod.map_def, ← prod_map_map_eq]
   exact Filter.prod_mono hf hg
-
-@[deprecated (since := "2025-03-10")]
-alias Tendsto.prod_map := Tendsto.prodMap
 
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :
     map m (f ×ˢ g) = (f.map fun a b => m (a, b)).seq g := by
@@ -414,7 +421,7 @@ theorem frequently_prod_and {p : α → Prop} {q : β → Prop} :
 
 theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {z : Filter γ} :
     Tendsto f (x ×ˢ y) z ↔ ∀ W ∈ z, ∃ U ∈ x, ∃ V ∈ y, ∀ x y, x ∈ U → y ∈ V → f (x, y) ∈ W := by
-  simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff, exists_prop]
+  simp only [tendsto_def, mem_prod_iff, prod_sub_preimage_iff]
 
 theorem tendsto_prod_iff' {g' : Filter γ} {s : α → β × γ} :
     Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n => (s n).1) f g ∧ Tendsto (fun n => (s n).2) f g' := by
@@ -471,6 +478,7 @@ theorem coprod_neBot_left [NeBot f] [Nonempty β] : (f.coprod g).NeBot :=
 theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
   coprod_neBot_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem coprod_inf_prod_le (f₁ f₂ : Filter α) (g₁ g₂ : Filter β) :
     f₁.coprod g₁ ⊓ f₂ ×ˢ g₂ ≤ f₁ ×ˢ g₂ ⊔ f₂ ×ˢ g₁ := calc
   f₁.coprod g₁ ⊓ f₂ ×ˢ g₂
@@ -495,9 +503,6 @@ theorem map_prodMap_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β
   rintro ⟨⟨u₁, hu₁, h₁⟩, u₂, hu₂, h₂⟩
   refine ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ ?_⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ ?_⟩⟩ <;> convert hx
 
-@[deprecated (since := "2025-03-10")]
-alias map_prod_map_coprod_le := map_prodMap_coprod_le
-
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity
 function. Together with the next lemma, `map_prodMap_const_id_principal_coprod_principal`, this
@@ -507,7 +512,7 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type*} (a : α) 
     (map (fun _ => b) (𝓟 {a})).coprod (map id (𝓟 {i})) =
       𝓟 ((({b} : Set β) ×ˢ univ) ∪ (univ ×ˢ ({i} : Set ι))) := by
   simp only [map_principal, Filter.coprod, comap_principal, sup_principal, image_singleton,
-    image_id, prod_univ, univ_prod, id]
+    prod_univ, univ_prod, id]
 
 /-- Characterization of the `Filter.map` of the coproduct of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, under the `Prod.map` of two functions, respectively the constant function `fun a => b` and
@@ -527,17 +532,24 @@ theorem map_prodMap_const_id_principal_coprod_principal {α β ι : Type*} (a : 
     use (a, i')
     simpa using h₁.symm
 
-@[deprecated (since := "2025-03-10")]
-alias map_prod_map_const_id_principal_coprod_principal :=
-  map_prodMap_const_id_principal_coprod_principal
-
 theorem Tendsto.prodMap_coprod {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
     {c : Filter γ} {d : Filter δ} (hf : Tendsto f a c) (hg : Tendsto g b d) :
     Tendsto (Prod.map f g) (a.coprod b) (c.coprod d) :=
   map_prodMap_coprod_le.trans (coprod_mono hf hg)
 
-@[deprecated (since := "2025-03-10")]
-alias Tendsto.prod_map_coprod := Tendsto.prodMap_coprod
+lemma Tendsto.coprod_of_prod_top_right {f : α × β → γ} {la : Filter α} {lb : Filter β}
+    {lc : Filter γ} (h₁ : ∀ s : Set α, s ∈ la → Tendsto f (𝓟 sᶜ ×ˢ lb) lc)
+    (h₂ : Tendsto f (la ×ˢ ⊤) lc) :
+    Tendsto f (la.coprod lb) lc := by
+  simp_all [tendsto_prod_iff, coprod_eq_prod_top_sup_top_prod]
+  grind
+
+lemma Tendsto.coprod_of_prod_top_left {f : α × β → γ} {la : Filter α} {lb : Filter β}
+    {lc : Filter γ} (h₁ : ∀ s : Set β, s ∈ lb → Tendsto f (la ×ˢ 𝓟 sᶜ) lc)
+    (h₂ : Tendsto f (⊤ ×ˢ lb) lc) :
+    Tendsto f (la.coprod lb) lc := by
+  simp_all [tendsto_prod_iff, coprod_eq_prod_top_sup_top_prod]
+  grind
 
 end Coprod
 

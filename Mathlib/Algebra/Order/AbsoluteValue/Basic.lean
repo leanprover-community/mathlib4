@@ -3,11 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Tactic.Bound.Attribute
+module
+
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Absolute values
@@ -23,6 +25,8 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 * `IsAbsoluteValue`: a type class stating that `f : β → α` satisfies the axioms of an absolute
   value
 -/
+
+@[expose] public section
 
 variable {ι α R S : Type*}
 
@@ -98,7 +102,7 @@ protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
 lemma listSum_le [AddLeftMono S] (l : List R) : abv l.sum ≤ (l.map abv).sum := by
   induction l with
   | nil => simp
-  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_left ih (abv head)
+  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_right ih (abv head)
 
 @[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
@@ -110,8 +114,12 @@ protected alias ⟨_, ne_zero⟩ := AbsoluteValue.ne_zero_iff
 
 @[simp]
 protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
-  (abv.nonneg x).gt_iff_ne.trans abv.ne_zero_iff
+  (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
+
+@[simp]
+protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ x = 0 := by
+  simp only [← abv.eq_zero, le_antisymm_iff, abv.nonneg, and_true]
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
@@ -140,13 +148,13 @@ section Semiring
 section IsDomain
 
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
--- `IsDomain`/`CancelMonoidWithZero` API
+-- `IsDomain`/`IsCancelMulZero` API
 variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
 @[simp]
 protected theorem map_one : abv 1 = 1 :=
-  abv.map_one_of_isLeftRegular (isRegular_of_ne_zero <| abv.ne_zero one_ne_zero).left
+  abv.map_one_of_isLeftRegular (IsRegular.of_ne_zero <| abv.ne_zero one_ne_zero).left
 
 instance monoidWithZeroHomClass : MonoidWithZeroHomClass (AbsoluteValue R S) R S :=
   { AbsoluteValue.mulHomClass with
@@ -180,12 +188,8 @@ lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   · simp [Subsingleton.eq_zero (n : R)]
   induction n with
   | zero => simp
-  | succ n hn =>
-    simp only [Nat.cast_succ]
-    calc
-      abv (n + 1) ≤ abv n + abv 1 := abv.add_le ..
-      _ = abv n + 1 := congrArg (abv n + ·) abv.map_one
-      _ ≤ n + 1 := add_le_add_right hn 1
+  | succ n ih =>
+  · grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
 
 end IsDomain
 
@@ -246,9 +250,9 @@ open Int in
 /-- Values of an absolute value coincide on the image of `ℕ` in `R`
 if and only if they coincide on the image of `ℤ` in `R`. -/
 lemma eq_on_nat_iff_eq_on_int {f g : AbsoluteValue R S} :
-    (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
+    (∀ n : ℕ, f n = g n) ↔ ∀ n : ℤ, f n = g n := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ mod_cast a n⟩
-  obtain ⟨n , rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
+  obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
 
 end OrderedCommRing
 
@@ -263,7 +267,7 @@ protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg
   eq_zero' _ := abs_eq_zero
-  add_le' := abs_add
+  add_le' := abs_add_le
   map_mul' := abs_mul
 
 instance : Inhabited (AbsoluteValue S S) :=
@@ -360,7 +364,7 @@ variable [Field R] [Semifield S] [LinearOrder S] [IsStrictOrderedRing S] [Exists
 
 lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h
-  rcases hx₁.lt_or_lt with h | h
+  rcases hx₁.lt_or_gt with h | h
   · refine ⟨x⁻¹, ?_⟩
     rw [map_inv₀]
     exact (one_lt_inv₀ <| v.pos hx₀).mpr h
@@ -404,10 +408,14 @@ variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
 
 open Lean Meta Mathlib Meta Positivity Qq in
-/-- The `positivity` extension which identifies expressions of the form `abv a`. -/
+/-- The `positivity` extension which identifies expressions of the form `abv a`.
+For performance reasons, we only attempt to apply this when `abv` is a variable.
+If it is an explicit function, e.g. `|_|` or `‖_‖`, another extension should apply. -/
 @[positivity _]
-def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
+meta def Mathlib.Meta.Positivity.evalAbv : PositivityExt where eval {_ _α} _zα _pα e := do
   let (.app f a) ← whnfR e | throwError "not abv ·"
+  if !f.getAppFn.isFVar then
+    throwError "abv: function is not a variable"
   let pa' ← mkAppM ``abv_nonneg #[f, a]
   pure (.nonnegative pa')
 
@@ -524,7 +532,7 @@ variable {R : Type*} [Semiring R] [Nontrivial R] (abv : R → S) [IsAbsoluteValu
 omit [IsOrderedRing S] in
 theorem abv_one' : abv 1 = 1 :=
   (toAbsoluteValue abv).map_one_of_isLeftRegular <|
-    (isRegular_of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
+    (IsRegular.of_ne_zero <| (toAbsoluteValue abv).ne_zero one_ne_zero).left
 
 /-- An absolute value as a monoid with zero homomorphism, assuming the target is a semifield. -/
 def abvHom' : R →*₀ S where

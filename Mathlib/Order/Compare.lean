@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Ordering.Basic
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Data.Ordering.Basic
+public import Mathlib.Order.Synonym
 
 /-!
 # Comparison
@@ -20,6 +22,8 @@ This file provides basic results about orderings and comparison in linear orders
   elements that are not one strictly less than the other either way are equal.
 -/
 
+@[expose] public section
+
 
 variable {α β : Type*}
 
@@ -28,14 +32,14 @@ three-way comparison result `Ordering`. -/
 def cmpLE {α} [LE α] [DecidableLE α] (x y : α) : Ordering :=
   if x ≤ y then if y ≤ x then Ordering.eq else Ordering.lt else Ordering.gt
 
-theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x y : α) :
+theorem cmpLE_swap {α} [LE α] [@Std.Total α (· ≤ ·)] [DecidableLE α] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
   cases not_or_intro xy yx (total_of _ _ _)
 
-theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
+theorem cmpLE_eq_cmp {α} [Preorder α] [@Std.Total α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
     (x y : α) : cmpLE x y = cmp x y := by
-  by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_le, *, cmp, cmpUsing]
+  by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_ge, *, cmp, cmpUsing]
   cases not_or_intro xy yx (total_of _ _ _)
 
 namespace Ordering
@@ -57,7 +61,7 @@ theorem Compares.eq_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o
   | gt, a, b, h => ⟨fun h => by injection h, fun h' => (lt_asymm h h').elim⟩
 
 theorem Compares.ne_lt [Preorder α] : ∀ {o} {a b : α}, Compares o a b → (o ≠ lt ↔ b ≤ a)
-  | lt, _, _, h => ⟨absurd rfl, fun h' => (not_le_of_lt h h').elim⟩
+  | lt, _, _, h => ⟨absurd rfl, fun h' => (not_le_of_gt h h').elim⟩
   | eq, _, _, h => ⟨fun _ => ge_of_eq h, fun _ h => by injection h⟩
   | gt, _, _, h => ⟨fun _ => le_of_lt h, fun _ h => by injection h⟩
 
@@ -78,9 +82,9 @@ theorem Compares.le_total [Preorder α] {a b : α} : ∀ {o}, Compares o a b →
   | gt, h => Or.inr (le_of_lt h)
 
 theorem Compares.le_antisymm [Preorder α] {a b : α} : ∀ {o}, Compares o a b → a ≤ b → b ≤ a → a = b
-  | lt, h, _, hba => (not_le_of_lt h hba).elim
+  | lt, h, _, hba => (not_le_of_gt h hba).elim
   | eq, h, _, _ => h
-  | gt, h, hab, _ => (not_le_of_lt h hab).elim
+  | gt, h, hab, _ => (not_le_of_gt h hab).elim
 
 theorem Compares.inj [Preorder α] {o₁} :
     ∀ {o₂} {a b : α}, Compares o₁ a b → Compares o₂ a b → o₁ = o₂
@@ -116,12 +120,14 @@ theorem ofDual_compares_ofDual [LT α] {a b : αᵒᵈ} {o : Ordering} :
   exacts [Iff.rfl, eq_comm, Iff.rfl]
 
 theorem cmp_compares [LinearOrder α] (a b : α) : (cmp a b).Compares a b := by
-  obtain h | h | h := lt_trichotomy a b <;> simp [cmp, cmpUsing, h, h.not_lt]
+  obtain h | h | h := lt_trichotomy a b <;> simp [cmp, cmpUsing, h, h.not_gt]
 
 theorem Ordering.Compares.cmp_eq [LinearOrder α] {a b : α} {o : Ordering} (h : o.Compares a b) :
     cmp a b = o :=
   (cmp_compares a b).inj h
 
+-- TODO: is there a nice way to avoid the non-terminal simp?
+set_option linter.flexible false in
 @[simp]
 theorem cmp_swap [Preorder α] [DecidableLT α] (a b : α) : (cmp a b).swap = cmp b a := by
   unfold cmp cmpUsing

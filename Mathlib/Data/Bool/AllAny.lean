@@ -3,8 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Tactic.Alias
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Boolean quantifiers
@@ -12,6 +13,8 @@ import Mathlib.Tactic.TypeStar
 This proves a few properties about `List.all` and `List.any`, which are the `Bool` universal and
 existential quantifiers. Their definitions are in core Lean.
 -/
+
+public section
 
 
 variable {α : Type*} {p : α → Prop} [DecidablePred p] {l : List α} {a : α}

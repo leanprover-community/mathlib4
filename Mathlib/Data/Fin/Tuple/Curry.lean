@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Brendan Murphy
 -/
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Logic.Function.OfArity
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Logic.Function.OfArity
 
 /-!
 # Currying and uncurrying of n-ary functions
@@ -25,12 +27,15 @@ n-ary generalizations of the binary `curry` and `uncurry`.
 
 -/
 
+@[expose] public section
+
 universe u v w w'
 
 namespace Function.FromTypes
 
 open Matrix (vecCons vecHead vecTail vecEmpty)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Uncurry all the arguments of `Function.FromTypes p τ` to get
 a function from a tuple.
 
@@ -40,6 +45,7 @@ def uncurry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
   | 0    , _, _, f => fun _    => f
   | _ + 1, _, _, f => fun args => (f (args 0)).uncurry (args ∘' Fin.succ)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Curry all the arguments of `Function.FromTypes p τ` to get a function from a tuple. -/
 def curry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
     (((i : Fin n) → p i) → τ) → Function.FromTypes p τ
@@ -54,8 +60,7 @@ theorem uncurry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}
 @[simp low]
 theorem uncurry_apply_succ {n : ℕ} {p : Fin (n + 1) → Type u} {τ : Type u}
     (f : Function.FromTypes p τ) (args : (i : Fin (n + 1)) → p i) :
-    uncurry f args = uncurry (f (args 0)) (Fin.tail args) :=
-  @uncurry_apply_cons n (p 0) (vecTail p) τ f (args 0) (Fin.tail args)
+    uncurry f args = uncurry (f (args 0)) (Fin.tail args) := rfl
 
 @[simp]
 theorem curry_apply_cons {n : ℕ} {α} {p : Fin n → Type u} {τ : Type u}

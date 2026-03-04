@@ -3,8 +3,9 @@ Copyright (c) 2023 Moritz Doll, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
-import Mathlib.Tactic.TermCongr
-import Mathlib.Tactic.WithoutCDot
+module
+
+public import Mathlib.Tactic.TermCongr
 
 /-!
 # The `congrm` tactic
@@ -15,13 +16,15 @@ Roughly, `congrm e` is `refine congr(e')`, where `e'` is `e` with every `?m` pla
 replaced by `$(?m)`.
 -/
 
+public meta section
+
 namespace Mathlib.Tactic
-open Lean Parser Tactic Elab Tactic Meta
+open Lean Parser Elab Tactic Meta
 
 initialize registerTraceClass `Tactic.congrm
 
 /--
-`congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `HEq lhs rhs`,
+`congrm e` is a tactic for proving goals of the form `lhs = rhs`, `lhs ↔ rhs`, `lhs ≍ rhs`,
 or `R lhs rhs` when `R` is a reflexive relation.
 The expression `e` is a pattern containing placeholders `?_`,
 and this pattern is matched against `lhs` and `rhs` simultaneously.
@@ -76,6 +79,6 @@ elab_rules : tactic
     withMainContext do
       let gStx ← Term.exprToSyntax (← getMainTarget)
       -- Gives the expected type to `refine` as a workaround for its elaboration order.
-      evalTactic <| ← `(tactic| refine without_cdot(congr($(⟨pattern⟩)) : $gStx))
+      evalTactic <| ← `(tactic| refine (congr($(⟨pattern⟩)) : $gStx))
 
 end Mathlib.Tactic

@@ -3,17 +3,19 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Module.LinearMap.Prod
-import Mathlib.Algebra.Order.Module.Synonym
-import Mathlib.Analysis.Convex.Segment
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Module.LinearMap.Prod
+public import Mathlib.Algebra.Order.Module.Synonym
+public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Module
 
 /-!
 # Star-convex sets
 
-This files defines star-convex sets (aka star domains, star-shaped set, radially convex set).
+This file defines star-convex sets (aka star domains, star-shaped set, radially convex set).
 
 A set is star-convex at `x` if every segment from `x` to a point in the set is contained in the set.
 
@@ -45,6 +47,8 @@ Star-convex sets are contractible.
 
 A nonempty open star-convex set in `ℝ^n` is diffeomorphic to the entire space.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -358,12 +362,12 @@ end AddCommGroup
 
 section OrderedAddCommGroup
 
-variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
-  {x y : E}
+variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
+  [IsStrictOrderedModule 𝕜 E] [PosSMulReflectLT 𝕜 E] {x y : E}
 
 /-- If `x < y`, then `(Set.Iic x)ᶜ` is star convex at `y`. -/
 lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
-  refine (starConvex_iff_forall_pos <| by simp [h.not_le]).mpr fun z hz a b ha hb hab ↦ ?_
+  refine (starConvex_iff_forall_pos <| by simp [h.not_ge]).mpr fun z hz a b ha hb hab ↦ ?_
   rw [mem_compl_iff, mem_Iic] at hz ⊢
   contrapose! hz
   refine (lt_of_smul_lt_smul_of_nonneg_left ?_ hb.le).le
@@ -373,6 +377,7 @@ lemma starConvex_compl_Iic (h : x < y) : StarConvex 𝕜 y (Iic x)ᶜ := by
       rw [add_smul, sub_lt_iff_lt_add']
       gcongr
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `x < y`, then `(Set.Ici y)ᶜ` is star convex at `x`. -/
 lemma starConvex_compl_Ici (h : x < y) : StarConvex 𝕜 x (Ici y)ᶜ :=
   starConvex_compl_Iic (E := Eᵒᵈ) h
@@ -422,10 +427,9 @@ section OrdConnected
 
 /-- If `s` is an order-connected set in an ordered module over an ordered semiring
 and all elements of `s` are comparable with `x ∈ s`, then `s` is `StarConvex` at `x`. -/
-theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜]
-    [AddCommMonoid E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E]
-    [OrderedSMul 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected) (hx : x ∈ s)
-    (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
+theorem Set.OrdConnected.starConvex [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [PartialOrder E]
+    [IsOrderedAddMonoid E] [Module 𝕜 E] [PosSMulMono 𝕜 E] {x : E} {s : Set E} (hs : s.OrdConnected)
+    (hx : x ∈ s) (h : ∀ y ∈ s, x ≤ y ∨ y ≤ x) : StarConvex 𝕜 x s := by
   intro y hy a b ha hb hab
   obtain hxy | hyx := h _ hy
   · refine hs.out hx hy (mem_Icc.2 ⟨?_, ?_⟩)

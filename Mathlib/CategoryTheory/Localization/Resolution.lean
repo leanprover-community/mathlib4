@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+module
+
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Resolutions for a morphism of localizers
@@ -11,21 +13,18 @@ import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 Given a morphism of localizers `Φ : LocalizerMorphism W₁ W₂` (i.e. `W₁` and `W₂` are
 morphism properties on categories `C₁` and `C₂`, and we have a functor
 `Φ.functor : C₁ ⥤ C₂` which sends morphisms in `W₁` to morphisms in `W₂`), we introduce
-the notion of right resolutions of objects in `C₂`: if `X₂ : C₂`.
+the notion of right resolutions of objects in `C₂`, for `X₂ : C₂`.
 A right resolution consists of an object `X₁ : C₁` and a morphism
 `w : X₂ ⟶ Φ.functor.obj X₁` that is in `W₂`. Then, the typeclass
 `Φ.HasRightResolutions` holds when any `X₂ : C₂` has a right resolution.
 
 The type of right resolutions `Φ.RightResolution X₂` is endowed with a category
-structure when the morphism property `W₁` is multiplicative.
+structure.
 
-Similar definitions are done from left resolutions.
+Similar definitions are done for left resolutions.
 
-## Future works
+## Future work
 
-* formalize right derivability structures as localizer morphisms admitting right resolutions
-  and forming a Guitart exact square, as it is defined in
-  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] (TODO @joelriou)
 * show that if `C` is an abelian category with enough injectives, there is a derivability
   structure associated to the inclusion of the full subcategory of complexes of injective
   objects into the bounded below homotopy category of `C` (TODO @joelriou)
@@ -36,13 +35,15 @@ Similar definitions are done from left resolutions.
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₂' u₁ u₂ u₂'
 
 namespace CategoryTheory
 
 open Category Localization
 
-variable {C₁ C₂ D₂ H : Type*} [Category C₁] [Category C₂] [Category D₂] [Category H]
+variable {C₁ C₂ D₂ H : Type*} [Category* C₁] [Category* C₂] [Category* D₂] [Category* H]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂}
 
 namespace LocalizerMorphism
@@ -80,30 +81,26 @@ lemma LeftResolution.mk_surjective (L : Φ.LeftResolution X₂) :
 /-- A localizer morphism has right resolutions when any object has a right resolution. -/
 abbrev HasRightResolutions := ∀ (X₂ : C₂), Nonempty (Φ.RightResolution X₂)
 
-/-- A localizer morphism has right resolutions when any object has a right resolution. -/
+/-- A localizer morphism has left resolutions when any object has a left resolution. -/
 abbrev HasLeftResolutions := ∀ (X₂ : C₂), Nonempty (Φ.LeftResolution X₂)
 
 namespace RightResolution
 
 variable {Φ} {X₂ : C₂}
 
-/-- The type of morphisms in the category `Φ.RightResolution X₂` (when `W₁` is multiplicative). -/
+/-- The type of morphisms in the category `Φ.RightResolution X₂`. -/
 @[ext]
 structure Hom (R R' : Φ.RightResolution X₂) where
   /-- a morphism in the source category -/
   f : R.X₁ ⟶ R'.X₁
-  hf : W₁ f
-  comm : R.w ≫ Φ.functor.map f = R'.w := by aesop_cat
+  comm : R.w ≫ Φ.functor.map f = R'.w := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.RightResolution X₂`. -/
+/-- The identity of an object in `Φ.RightResolution X₂`. -/
 @[simps]
-def Hom.id [W₁.ContainsIdentities] (R : Φ.RightResolution X₂) : Hom R R where
+def Hom.id (R : Φ.RightResolution X₂) : Hom R R where
   f := 𝟙 _
-  hf := W₁.id_mem _
-
-variable [W₁.IsMultiplicative]
 
 /-- The composition of morphisms in `Φ.RightResolution X₂`. -/
 @[simps]
@@ -111,7 +108,6 @@ def Hom.comp {R R' R'' : Φ.RightResolution X₂}
     (φ : Hom R R') (ψ : Hom R' R'') :
     Hom R R'' where
   f := φ.f ≫ ψ.f
-  hf := W₁.comp_mem _ _ φ.hf ψ.hf
 
 instance : Category (Φ.RightResolution X₂) where
   Hom := Hom
@@ -136,23 +132,19 @@ namespace LeftResolution
 
 variable {Φ} {X₂ : C₂}
 
-/-- The type of morphisms in the category `Φ.LeftResolution X₂` (when `W₁` is multiplicative). -/
+/-- The type of morphisms in the category `Φ.LeftResolution X₂`. -/
 @[ext]
 structure Hom (L L' : Φ.LeftResolution X₂) where
   /-- a morphism in the source category -/
   f : L.X₁ ⟶ L'.X₁
-  hf : W₁ f
-  comm : Φ.functor.map f ≫ L'.w = L.w := by aesop_cat
+  comm : Φ.functor.map f ≫ L'.w = L.w := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.LeftResolution X₂`. -/
+/-- The identity of an object in `Φ.LeftResolution X₂`. -/
 @[simps]
-def Hom.id [W₁.ContainsIdentities] (L : Φ.LeftResolution X₂) : Hom L L where
+def Hom.id (L : Φ.LeftResolution X₂) : Hom L L where
   f := 𝟙 _
-  hf := W₁.id_mem _
-
-variable [W₁.IsMultiplicative]
 
 /-- The composition of morphisms in `Φ.LeftResolution X₂`. -/
 @[simps]
@@ -160,7 +152,6 @@ def Hom.comp {L L' L'' : Φ.LeftResolution X₂}
     (φ : Hom L L') (ψ : Hom L' L'') :
     Hom L L'' where
   f := φ.f ≫ ψ.f
-  hf := W₁.comp_mem _ _ φ.hf ψ.hf
 
 instance : Category (Φ.LeftResolution X₂) where
   Hom := Hom
@@ -221,17 +212,13 @@ lemma nonempty_leftResolution_iff_op (X₂ : C₂) :
     Nonempty (Φ.LeftResolution X₂) ↔ Nonempty (Φ.op.RightResolution (Opposite.op X₂)) :=
   Equiv.nonempty_congr
     { toFun := fun L => L.op
-      invFun := fun R => R.unop
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
+      invFun := fun R => R.unop }
 
 lemma nonempty_rightResolution_iff_op (X₂ : C₂) :
     Nonempty (Φ.RightResolution X₂) ↔ Nonempty (Φ.op.LeftResolution (Opposite.op X₂)) :=
   Equiv.nonempty_congr
     { toFun := fun R => R.op
-      invFun := fun L => L.unop
-      left_inv := fun _ => rfl
-      right_inv := fun _ => rfl }
+      invFun := fun L => L.unop }
 
 lemma hasLeftResolutions_iff_op : Φ.HasLeftResolutions ↔ Φ.op.HasRightResolutions :=
   ⟨fun _ X₂ => ⟨(Classical.arbitrary (Φ.LeftResolution X₂.unop)).op⟩,
@@ -249,28 +236,26 @@ instance [Φ.HasLeftResolutions] : Φ.op.HasRightResolutions := by
 
 /-- The functor `(Φ.LeftResolution X₂)ᵒᵖ ⥤ Φ.op.RightResolution (Opposite.op X₂)`. -/
 @[simps]
-def LeftResolution.opFunctor (X₂ : C₂) [W₁.IsMultiplicative] :
+def LeftResolution.opFunctor (X₂ : C₂) :
     (Φ.LeftResolution X₂)ᵒᵖ ⥤ Φ.op.RightResolution (Opposite.op X₂) where
   obj L := L.unop.op
   map φ :=
     { f := φ.unop.f.op
-      hf := φ.unop.hf
       comm := Quiver.Hom.unop_inj φ.unop.comm }
 
 /-- The functor `(Φ.op.RightResolution X₂)ᵒᵖ ⥤ Φ.LeftResolution X₂.unop`. -/
 @[simps]
-def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) [W₁.IsMultiplicative] :
+def RightResolution.unopFunctor (X₂ : C₂ᵒᵖ) :
     (Φ.op.RightResolution X₂)ᵒᵖ ⥤ Φ.LeftResolution X₂.unop where
   obj R := R.unop.unop
   map φ :=
     { f := φ.unop.f.unop
-      hf := φ.unop.hf
       comm := Quiver.Hom.op_inj φ.unop.comm }
 
 /-- The equivalence of categories
 `(Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂)`. -/
 @[simps]
-def LeftResolution.opEquivalence (X₂ : C₂) [W₁.IsMultiplicative] :
+def LeftResolution.opEquivalence (X₂ : C₂) :
     (Φ.LeftResolution X₂)ᵒᵖ ≌ Φ.op.RightResolution (Opposite.op X₂) where
   functor := LeftResolution.opFunctor Φ X₂
   inverse := (RightResolution.unopFunctor Φ (Opposite.op X₂)).rightOp

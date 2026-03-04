@@ -3,9 +3,10 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Abelianization
-import Mathlib.GroupTheory.Perm.Centralizer
-import Mathlib.GroupTheory.SpecificGroups.Alternating
+module
+
+public import Mathlib.GroupTheory.Perm.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Centralizer of an element in the alternating group
 
@@ -33,6 +34,8 @@ TODO :
 Deduce the formula for the cardinality of the centralizers
 and conjugacy classes in `alternatingGroup α`.
 -/
+
+public section
 
 open Equiv Finset Function MulAction
 
@@ -67,16 +70,15 @@ theorem map_subtype_of_cycleType (m : Multiset ℕ) :
       if Even (m.sum + m.card) then ({g | g.cycleType = m} : Finset (Perm α)) else ∅ := by
   split_ifs with hm
   · ext g
-    simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
-      Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
-      exists_prop, exists_eq_right_right, and_iff_left_iff_imp]
+    simp_rw [Finset.mem_map, Finset.mem_filter_univ, Embedding.coe_subtype, Subtype.exists,
+      mem_alternatingGroup, exists_and_left, exists_prop, exists_eq_right_right,
+      and_iff_left_iff_imp]
     intro hg
     rw [sign_of_cycleType, hg, Even.neg_one_pow hm]
   · rw [Finset.eq_empty_iff_forall_notMem]
     intro g hg
-    simp only [Finset.mem_map, Finset.mem_filter, Finset.mem_univ, true_and,
-      Embedding.coe_subtype, Subtype.exists, mem_alternatingGroup, exists_and_left,
-      exists_prop, exists_eq_right_right] at hg
+    simp_rw [Finset.mem_map, Finset.mem_filter_univ, Embedding.coe_subtype, Subtype.exists,
+      mem_alternatingGroup, exists_and_left, exists_prop, exists_eq_right_right] at hg
     rcases hg with ⟨hg, hs⟩
     rw [g.sign_of_cycleType, hg, neg_one_pow_eq_one_iff_even (by simp)] at hs
     contradiction
@@ -136,7 +138,7 @@ open Basis OnCycleFactors
 theorem card_le_of_centralizer_le_alternating (h : Subgroup.centralizer {g} ≤ alternatingGroup α) :
     Fintype.card α ≤ g.cycleType.sum + 1 := by
   by_contra! hm
-  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by omega
+  replace hm : 2 + g.cycleType.sum ≤ Fintype.card α := by lia
   suffices 1 < Fintype.card (Function.fixedPoints g) by
     obtain ⟨a, b, hab⟩ := Fintype.exists_pair_of_one_lt_card this
     suffices sign (kerParam g ⟨swap a b, 1⟩) ≠ 1 from
@@ -152,8 +154,7 @@ theorem count_le_one_of_centralizer_le_alternating
   rw [← Multiset.nodup_iff_count_le_one, Equiv.Perm.cycleType_def]
   rw [Multiset.nodup_map_iff_inj_on g.cycleFactorsFinset.nodup]
   simp only [Function.comp_apply, ← Finset.mem_def]
-  by_contra! hm
-  obtain ⟨c, hc, d, hd, hm, hm'⟩ := hm
+  by_contra! ⟨c, hc, d, hd, hm, hm'⟩
   let τ : Equiv.Perm g.cycleFactorsFinset := Equiv.swap ⟨c, hc⟩ ⟨d, hd⟩
   obtain ⟨a⟩ := Equiv.Perm.Basis.nonempty g
   have hτ : τ ∈ range_toPermHom' g := fun x ↦ by
@@ -188,7 +189,7 @@ theorem count_le_one_of_centralizer_le_alternating
     rw [← sum_cycleType, hk_cT]
     simp
   have that : Multiset.card (k : Perm α).cycleType = (c : Perm α).support.card := by
-    rw [← Nat.mul_left_inj (a := 2) (by norm_num), this]
+    rw [← Nat.mul_left_inj (a := 2) (by simp), this]
     simp only [hk, toCentralizer, MonoidHom.coe_mk, OneHom.coe_mk, card_ofPermHom_support]
     have H : (⟨c, hc⟩ : g.cycleFactorsFinset) ≠ ⟨d, hd⟩ := Subtype.coe_ne_coe.mp hm'
     simp only [τ, support_swap H]
@@ -241,7 +242,7 @@ theorem centralizer_le_alternating_iff :
         exact hc.left
     · suffices y = 1 by simp [this]
       have := card_fixedPoints g
-      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by omega)
+      exact card_support_le_one.mp <| le_trans (Finset.card_le_univ _) (by lia)
 
 namespace IsThreeCycle
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
-import Mathlib.Order.Nucleus
-import Mathlib.Order.SupClosed
+module
+
+public import Mathlib.Order.Nucleus
+public import Mathlib.Order.SupClosed
 
 /-!
 # Sublocale
@@ -24,13 +26,16 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 * https://ncatlab.org/nlab/show/nucleus
 -/
 
+@[expose] public section
+
 variable {X : Type*} [Order.Frame X]
 open Set
 
-/--
-A sublocale is a subset S of a locale X, which is closed under all meets and for any
-s ∈ S and x ∈ X, we have x ⇨ s ∈ S [picado2012].
--/
+/-- A sublocale of a locale `X` is a set `S` which is closed under all meets and such that
+`x ⇨ s ∈ S` for all `x : X` and `s ∈ S`.
+
+Note that locales are the same thing as frames, but with reverse morphisms, which is why we assume
+`Frame X`. We only need to define locales categorically. See `Locale`. -/
 structure Sublocale (X : Type*) [Order.Frame X] where
   /-- The set corresponding to the sublocale. -/
   carrier : Set X
@@ -51,12 +56,15 @@ instance instSetLike : SetLike (Sublocale X) X where
   coe x := x.carrier
   coe_injective' s1 s2 h := by cases s1; congr
 
+instance : PartialOrder (Sublocale X) := .ofSetLike (Sublocale X) X
+
 @[simp] lemma mem_carrier : a ∈ S.carrier ↔ a ∈ S := .rfl
 
 @[simp] lemma mem_mk (carrier : Set X) (sInf_mem' himp_mem') :
     a ∈ mk carrier sInf_mem' himp_mem' ↔ a ∈ carrier := .rfl
 
-@[simp] lemma mk_le_mk (carrier₁ carrier₂ : Set X) (sInf_mem'₁ sInf_mem'₂ himp_mem'₁ himp_mem'₂) :
+@[simp, gcongr]
+lemma mk_le_mk (carrier₁ carrier₂ : Set X) (sInf_mem'₁ sInf_mem'₂ himp_mem'₁ himp_mem'₂) :
     mk carrier₁ sInf_mem'₁ himp_mem'₁ ≤ mk carrier₂ sInf_mem'₂ himp_mem'₂ ↔ carrier₁ ⊆ carrier₂ :=
   .rfl
 
@@ -100,18 +108,20 @@ instance carrier.instCompleteLattice : CompleteLattice S where
 
 instance carrier.instHeytingAlgebra : HeytingAlgebra S where
   le_himp_iff a b c := by simp [← Subtype.coe_le_coe, ← @Sublocale.coe_inf, himp]
-  compl a :=  a ⇨ ⊥
+  compl a := a ⇨ ⊥
   himp_bot _ := rfl
 
 instance carrier.instFrame : Order.Frame S where
   __ := carrier.instHeytingAlgebra
   __ := carrier.instCompleteLattice
 
+set_option backward.privateInPublic true in
 /-- See `Sublocale.restrict` for the public-facing version. -/
 private def restrictAux (S : Sublocale X) (a : X) : S := sInf {s : S | a ≤ s}
 
 private lemma le_restrictAux : a ≤ S.restrictAux a := by simp +contextual [restrictAux]
 
+set_option backward.privateInPublic true in
 /-- See `Sublocale.giRestrict` for the public-facing version. -/
 private def giAux (S : Sublocale X) : GaloisInsertion S.restrictAux Subtype.val where
   choice x hx := ⟨x, by
@@ -148,8 +158,10 @@ def restrict (S : Sublocale X) : FrameHom X S where
     rw [← Subtype.coe_le_coe, S.giAux.gc.u_top]
     simp [restrictAux, sInf]
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The restriction corresponding to a sublocale forms a Galois insertion with the forgetful map
-from the sublcoale to the original locale. -/
+from the sublocale to the original locale. -/
 def giRestrict (S : Sublocale X) : GaloisInsertion S.restrict Subtype.val := S.giAux
 
 @[simp] lemma restrict_of_mem (ha : a ∈ S) : S.restrict a = ⟨a, ha⟩ := S.giRestrict.l_u_eq ⟨a, ha⟩
@@ -191,7 +203,7 @@ def toSublocale (n : Nucleus X) : Sublocale X where
 @[simp]
 lemma mem_toSublocale {n : Nucleus X} {x : X} : x ∈ n.toSublocale ↔ ∃ y, n y = x := .rfl
 
-@[simp] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
+@[simp, gcongr] lemma toSublocale_le_toSublocale {m n : Nucleus X} :
     m.toSublocale ≤ n.toSublocale ↔ n ≤ m := by simp [← SetLike.coe_subset_coe]
 
 @[simp] lemma restrict_toSublocale (n : Nucleus X) (x : X) :
@@ -215,12 +227,10 @@ lemma nucleusIsoSublocale.eq_toSublocale : Nucleus.toSublocale = @nucleusIsoSubl
 lemma nucleusIsoSublocale.symm_eq_toNucleus :
   Sublocale.toNucleus = (@nucleusIsoSublocale X _).symm := rfl
 
-namespace Sublocale
-
-instance instCompleteLattice : CompleteLattice (Sublocale X) :=
+instance Sublocale.instCompleteLattice : CompleteLattice (Sublocale X) :=
   nucleusIsoSublocale.toGaloisInsertion.liftCompleteLattice
 
-instance instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
+instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublocale X) where
   iInf_sup_le_sup_sInf a s := by simp [← toNucleus_le_toNucleus,
     nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
     nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]

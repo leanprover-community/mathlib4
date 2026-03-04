@@ -3,10 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Order.Sublattice
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.Sublattice
 
 /-!
 # The lattice of invariant submodules
@@ -18,6 +20,8 @@ lattice structure of invariant submodules.
 See also `Mathlib/Algebra/Polynomial/Module/AEval.lean`.
 
 -/
+
+@[expose] public section
 
 open Submodule (span)
 
@@ -39,6 +43,25 @@ def invtSubmodule : Sublattice (Submodule R M) where
 lemma mem_invtSubmodule {p : Submodule R M} :
     p ∈ f.invtSubmodule ↔ p ≤ p.comap f :=
   Iff.rfl
+
+/-- `p` is `f` invariant if and only if `p.map f ≤ p`. -/
+theorem mem_invtSubmodule_iff_map_le {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ p.map f ≤ p := Submodule.map_le_iff_le_comap.symm
+
+/-- `p` is `f` invariant if and only if `Set.MapsTo f p p`. -/
+theorem mem_invtSubmodule_iff_mapsTo {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ Set.MapsTo f p p := Iff.rfl
+
+alias ⟨_, _root_.Set.Mapsto.mem_invtSubmodule⟩ := mem_invtSubmodule_iff_mapsTo
+
+theorem mem_invtSubmodule_iff_forall_mem_of_mem {p : Submodule R M} :
+    p ∈ f.invtSubmodule ↔ ∀ x ∈ p, f x ∈ p :=
+  Iff.rfl
+
+/-- `p` is `f.symm` invariant if and only if `p ≤ p.map f`. -/
+lemma mem_invtSubmodule_symm_iff_le_map {f : M ≃ₗ[R] M} {p : Submodule R M} :
+    p ∈ invtSubmodule f.symm ↔ p ≤ p.map (f : M →ₗ[R] M) :=
+  (mem_invtSubmodule_iff_map_le _).trans (f.toEquiv.symm.subset_symm_image _ _).symm
 
 namespace invtSubmodule
 
@@ -143,8 +166,7 @@ protected lemma comp {p : Submodule R M} {g : End R M}
 @[simp] lemma _root_.LinearEquiv.map_mem_invtSubmodule_conj_iff {R M N : Type*} [CommSemiring R]
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {f : End R M}
     {e : M ≃ₗ[R] N} {p : Submodule R M} :
-    p.map e ∈ (e.conj f).invtSubmodule ↔ p ∈ f.invtSubmodule := by
-  change p.map e.toLinearMap ∈ _ ↔ _
+    p.map (e : M →ₗ[R] N) ∈ (e.conj f).invtSubmodule ↔ p ∈ f.invtSubmodule := by
   have : e.symm.toLinearMap ∘ₗ ((e ∘ₗ f) ∘ₗ e.symm.toLinearMap) ∘ₗ e = f := by ext; simp
   rw [LinearEquiv.conj_apply, mem_invtSubmodule, mem_invtSubmodule, Submodule.map_le_iff_le_comap,
     Submodule.map_equiv_eq_comap_symm, ← Submodule.comap_comp, ← Submodule.comap_comp, this]
@@ -152,7 +174,7 @@ protected lemma comp {p : Submodule R M} {g : End R M}
 lemma _root_.LinearEquiv.map_mem_invtSubmodule_iff {R M N : Type*} [CommSemiring R]
     [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {f : End R N}
     {e : M ≃ₗ[R] N} {p : Submodule R M} :
-    p.map e ∈ f.invtSubmodule ↔ p ∈ (e.symm.conj f).invtSubmodule := by
+    p.map (e : M →ₗ[R] N) ∈ f.invtSubmodule ↔ p ∈ (e.symm.conj f).invtSubmodule := by
   simp [← e.map_mem_invtSubmodule_conj_iff]
 
 end invtSubmodule
@@ -160,10 +182,10 @@ end invtSubmodule
 variable (R) in
 lemma span_orbit_mem_invtSubmodule {G : Type*}
     [Monoid G] [DistribMulAction G M] [SMulCommClass G R M] (x : M) (g : G) :
-    span R (MulAction.orbit G x) ∈ invtSubmodule (DistribMulAction.toLinearMap R M g) := by
+    span R (MulAction.orbit G x) ∈ invtSubmodule (DistribSMul.toLinearMap R M g) := by
   rw [mem_invtSubmodule, Submodule.span_le, Submodule.comap_coe]
   intro y hy
-  simp only [Set.mem_preimage, DistribMulAction.toLinearMap_apply, SetLike.mem_coe]
+  simp only [Set.mem_preimage, DistribSMul.toLinearMap_apply, SetLike.mem_coe]
   exact Submodule.subset_span <| MulAction.mem_orbit_of_mem_orbit g hy
 
 end Module.End

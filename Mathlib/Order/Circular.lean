@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Order
+module
+
+public import Mathlib.Order.Lattice
+public import Mathlib.Tactic.Order
 
 /-!
 # Circular order hierarchy
@@ -84,6 +86,8 @@ and the circular order of months. Is `α →c β` a good notation?
 
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -343,6 +347,21 @@ See note [reducible non-instances]. -/
 abbrev LT.toSBtw (α : Type*) [LT α] : SBtw α where
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
 
+section
+
+variable {α : Type*} {a b c : α}
+
+attribute [local instance] LE.toBtw LT.toSBtw
+
+/-- The following lemmas are about the non-instances `LE.toBtw`, `LT.toSBtw` and
+`LinearOrder.toCircularOrder`. -/
+lemma btw_iff [LE α] : btw a b c ↔ a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b := .rfl
+/-- The following lemmas are about the non-instances `LE.toBtw`, `LT.toSBtw` and
+`LinearOrder.toCircularOrder`. -/
+lemma sbtw_iff [LT α] : sbtw a b c ↔ a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b := .rfl
+
+end
+
 /-- The circular preorder obtained from "looping around" a preorder.
 See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
@@ -357,18 +376,8 @@ abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder
       | refine .inr <| .inl ?_; constructor <;> order
       | refine .inr <| .inr ?_; constructor <;> order
   sbtw_iff_btw_not_btw {a b c} := by
-    simp_rw [lt_iff_le_not_le]
-    have h1 := le_trans a b c
-    have h2 := le_trans b c a
-    have h3 := le_trans c a b
-    -- `tauto` closes the goal from here, but is quite slow (`grind` is fast).
-    revert h1 h2 h3
-    generalize (a ≤ b) = p1
-    generalize (b ≤ a) = p2
-    generalize (a ≤ c) = p3
-    generalize (c ≤ a) = p4
-    generalize (b ≤ c) = p5
-    by_cases p1 <;> by_cases p2 <;> by_cases p3 <;> by_cases p4 <;> by_cases p5 <;> simp [*]
+    simp_rw [lt_iff_le_not_ge]
+    grind
 
 /-- The circular partial order obtained from "looping around" a partial order.
 See note [reducible non-instances]. -/

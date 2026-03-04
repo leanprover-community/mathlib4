@@ -3,7 +3,9 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-! # Continuous bilinear maps on `MeasureTheory.Lp` spaces
 
@@ -19,8 +21,10 @@ do so in order to minimize the necessary type class assumptions.
 When `p q : ℝ≥0∞` are Hölder conjugate (i.e., `HolderConjugate p q`), we also construct the
 natural map `ContinuousLinearMap.lpPairing : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G` given by
 `fun f g ↦ ∫ x, B (f x) (g x) ∂μ`. When `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, this
-is the natural map `Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)`.
+is the natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`.
 -/
+
+@[expose] public section
 
 open ENNReal MeasureTheory Lp
 open scoped NNReal
@@ -40,13 +44,27 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 namespace ContinuousLinearMap
 
 variable (r) in
-/-- The map between `MeasuryTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
+theorem memLp_of_bilin {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg : MemLp g q μ) :
+    MemLp (fun x ↦ B (f x) (g x)) r μ :=
+  MeasureTheory.MemLp.of_bilin (r := r) (B · ·) ‖B‖₊ hf hg
+    (B.aestronglyMeasurable_comp₂ hf.1 hg.1) (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
+
+theorem integrable_of_bilin_of_bdd_left {f : α → E} {g : α → F} (C : ℝ)
+    (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) (hg : Integrable g μ) :
+    Integrable (fun x ↦ B (f x) (g x)) μ :=
+  memLp_one_iff_integrable.1 <| B.memLp_of_bilin 1 (memLp_top_of_bound hf1 C hf2)
+    (memLp_one_iff_integrable.2 hg)
+
+theorem integrable_of_bilin_of_bdd_right {f : α → E} {g : α → F} (C : ℝ)
+    (hf : Integrable f μ) (hg1 : AEStronglyMeasurable g μ) (hg2 : ∀ᵐ a ∂μ, ‖g a‖ ≤ C) :
+    Integrable (fun x ↦ B (f x) (g x)) μ :=
+  B.flip.integrable_of_bilin_of_bdd_left C hg1 hg2 hf
+
+variable (r) in
+/-- The map between `MeasureTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
 def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
-  MemLp.toLp (fun x ↦ B (f x) (g x)) <| by
-    refine .of_bilin (B · ·) ‖B‖₊ (Lp.memLp f) (Lp.memLp g) ?_ <|
-      .of_forall fun _ ↦ B.le_opNorm₂ _ _
-    exact B.aestronglyMeasurable_comp₂ (Lp.memLp f).1 (Lp.memLp g).1
+  (B.memLp_of_bilin r (Lp.memLp f) (Lp.memLp g)).toLp
 
 lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) :
     B.holder r f g =ᵐ[μ] fun x ↦ B (f x) (g x) := by
@@ -120,15 +138,14 @@ This is given by `∫ x, B (f x) (g x) ∂μ`.
 
 In the special case when `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, which is
 definitionally the same as `B := ContinuousLinearMap.id 𝕜 (E →L[𝕜] 𝕜)`, this is the
-natural map `Lp (Dual 𝕜 E) p μ →L[𝕜] Dual 𝕜 (Lp E q μ)`. -/
+natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`. -/
 def lpPairing (B : E →L[𝕜] F →L[𝕜] G) : Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] G :=
   (L1.integralCLM' 𝕜 |>.postcomp <| Lp F q μ) ∘L (B.holderL μ p q 1)
 
 lemma lpPairing_eq_integral (f : Lp E p μ) (g : Lp F q μ) :
     B.lpPairing μ p q f g = ∫ x, B (f x) (g x) ∂μ := by
-  show L1.integralCLM _ = _
-  rw [← L1.integral_def, L1.integral_eq_integral]
-  exact integral_congr_ae <| B.coeFn_holder _ _
+  simpa [lpPairing, ← L1.integral_eq', L1.integral_eq_integral] using
+    integral_congr_ae <| B.coeFn_holder _ _
 
 end ContinuousLinearMap
 
@@ -170,7 +187,7 @@ lemma coeFn_lpSMul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
 
 protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     ‖f • g‖ ≤ ‖f‖ * ‖g‖ := by
-  simp only [Lp.norm_def, ← ENNReal.toReal_mul, coeFn_lpSMul]
+  simp only [Lp.norm_def, ← ENNReal.toReal_mul]
   refine ENNReal.toReal_mono (by finiteness) ?_
   rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
   exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
@@ -188,7 +205,7 @@ protected lemma smul_add (f₁ f₂ : Lp 𝕜 p μ) (g : Lp E q μ) :
   filter_upwards [AEEqFun.coeFn_add f₁.val f₂.val] with x hx
   simp [hx, add_smul]
 
-protected lemma add_smul (f : Lp 𝕜 p μ) (g₁ g₂  : Lp E q μ) :
+protected lemma add_smul (f : Lp 𝕜 p μ) (g₁ g₂ : Lp E q μ) :
     f • (g₁ + g₂) = f • g₁ + f • g₂ := by
   simp only [smul_def, ← MemLp.toLp_add]
   apply MemLp.toLp_congr _ _ ?_
@@ -237,7 +254,7 @@ protected lemma smul_assoc [IsScalarTower 𝕜' 𝕜 E]
   simp only [smul_def, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f] with x hx
-  simp [- smul_eq_mul, hx]
+  simp [-smul_eq_mul, hx]
 
 protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
     (c : 𝕜') (f : Lp 𝕜 p μ) (g : Lp E q μ) :
@@ -245,7 +262,7 @@ protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
   simp only [smul_def, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f, Lp.coeFn_smul c g] with x hfx hgx
-  simp [smul_comm, hfx, hgx]
+  simp [smul_comm, hgx]
 
 end Module
 

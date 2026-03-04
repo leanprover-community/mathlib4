@@ -3,8 +3,10 @@ Copyright (c) 2021 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, Daniel Weber
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 
 /-!
 # Big operators on a multiset in ordered groups with zeros
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups with zeros.
 -/
+
+public section
 
 namespace Multiset
 
@@ -40,12 +44,26 @@ theorem prod_map_le_pow_card {F L : Type*} [FunLike F L R] {f : F} {r : R} {t : 
   induction t using Quotient.inductionOn
   simp_all [List.prod_map_le_pow_length₀]
 
+variable {α : Type*}
+
+lemma prod_map_nonneg {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 0 ≤ f a) :
+    0 ≤ (s.map f).prod := by
+  refine prod_nonneg fun r hr ↦ ?_
+  obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
+  exact h a ha
+
+lemma one_le_prod_map {s : Multiset α} {f : α → R} (h : ∀ a ∈ s, 1 ≤ f a) :
+    1 ≤ (s.map f).prod := by
+  refine one_le_prod fun r hr ↦ ?_
+  obtain ⟨a, ha, rfl⟩ := mem_map.mp hr
+  exact h a ha
+
 omit [PosMulMono R]
 variable [PosMulStrictMono R] [NeZero (1 : R)]
 
 lemma prod_pos {s : Multiset R} (h : ∀ a ∈ s, 0 < a) : 0 < s.prod := by
   cases s using Quotient.ind
-  simp only [quot_mk_to_coe, mem_coe, map_coe, prod_coe] at *
+  simp only [quot_mk_to_coe, mem_coe, prod_coe] at *
   apply List.prod_pos h
 
 theorem prod_map_lt_prod_map {ι : Type*} {s : Multiset ι} (hs : s ≠ 0)

@@ -3,10 +3,12 @@ Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.Kernels
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.CategoryTheory.Subobject.Limits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Kernels
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Subobjects in the category of `R`-modules
@@ -15,6 +17,8 @@ We construct an explicit order isomorphism between the categorical subobjects of
 and its submodules. This immediately implies that the category of `R`-modules is well-powered.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -32,7 +36,7 @@ namespace ModuleCat
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
 /-- The categorical subobjects of a module `M` are in one-to-one correspondence with its
-    submodules. -/
+submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
     { invFun := fun S => LinearMap.range S.arrow.hom
@@ -43,8 +47,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           apply LinearEquiv.ofBijective (LinearMap.codRestrict
             (LinearMap.range S.arrow.hom) S.arrow.hom _)
           constructor
-          · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
-            rw [ker_eq_bot_of_mono]
+          · simp [← LinearMap.ker_eq_bot, ker_eq_bot_of_mono]
           · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
               Submodule.comap_subtype_self]
             exact LinearMap.mem_range_self _
@@ -80,8 +83,8 @@ noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f.hom) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): the whole proof was just `simp [toKernelSubobject]`.
-  simp [toKernelSubobject, -hom_comp, ← ConcreteCategory.comp_apply]
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10959): the whole proof was just `simp [toKernelSubobject]`.
+  simp [toKernelSubobject, -hom_comp, ← CategoryTheory.comp_apply]
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
 are equal if they differ by an element of the image.

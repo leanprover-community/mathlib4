@@ -3,10 +3,12 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
+module
+
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 
@@ -29,6 +31,8 @@ This file gathers some results about non-local rings.
   a non-local commutative ring onto a product of two fields.
 
 -/
+
+public section
 
 namespace IsLocalRing
 
@@ -59,9 +63,9 @@ theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁
   not_isLocalRing_def ha hb (by simp)
 
 /-- The following conditions are equivalent for a commutative (semi)ring `R`:
-    * `R` is not local,
-    * the maximal spectrum of `R` is nontrivial,
-    * `R` has two distinct maximal ideals.
+* `R` is not local,
+* the maximal spectrum of `R` is nontrivial,
+* `R` has two distinct maximal ideals.
 -/
 theorem not_isLocalRing_tfae {R : Type*} [CommSemiring R] [Nontrivial R] :
     List.TFAE [

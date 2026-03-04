@@ -3,11 +3,13 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Eval.SMul
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Eval.SMul
 
 /-!
 # Sum of iterated derivatives
@@ -26,7 +28,7 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
 * `Polynomial.sumIDeriv_map`: `Polynomial.sumIDeriv` commutes with `Polynomial.map`
 * `Polynomial.sumIDeriv_derivative`: `Polynomial.sumIDeriv` commutes with `Polynomial.derivative`
 * `Polynomial.sumIDeriv_eq_self_add`: `sumIDeriv p = p + derivative (sumIDeriv p)`
-* `Polynomial.exists_iterate_derivative_eq_factorial_smul`: the `k`'th iterated derivative of a
+* `Polynomial.exists_iterate_derivative_eq_factorial_smul`: the `k`-th iterated derivative of a
   polynomial has a common factor `k!`
 * `Polynomial.aeval_iterate_derivative_of_lt`, `Polynomial.aeval_iterate_derivative_self`,
   `Polynomial.aeval_iterate_derivative_of_ge`: applying `Polynomial.aeval` to iterated derivatives
@@ -34,6 +36,8 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
   `Polynomial.sumIDeriv`
 
 -/
+
+@[expose] public section
 
 open Finset
 open scoped Nat
@@ -71,7 +75,7 @@ theorem sumIDeriv_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
 theorem sumIDeriv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     sumIDeriv p = ∑ i ∈ range (n + 1), derivative^[i] p := by
   dsimp [sumIDeriv]
-  exact Finsupp.sum_of_support_subset _ (by simp [Nat.lt_succ, hn]) _ (by simp)
+  exact Finsupp.sum_of_support_subset _ (by simp [hn]) _ (by simp)
 
 @[simp]
 theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by
@@ -204,7 +208,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
     rw [Polynomial.map_zero] at hp
     replace hp := (mul_eq_zero.mp hp.symm).resolve_left ?_
     · rw [hp, eval_zero, smul_zero]
-    exact fun h => X_sub_C_ne_zero r (pow_eq_zero h)
+    exact fun h => X_sub_C_ne_zero r (eq_zero_of_pow_eq_zero h)
   let c k := if hk : q ≤ k then (aeval_iterate_derivative_of_ge A p q hk).choose else 0
   have c_le (k) : (c k).natDegree ≤ p.natDegree - k := by
     dsimp only [c]
@@ -246,7 +250,7 @@ theorem aeval_sumIDeriv_of_pos [Nontrivial A] [NoZeroDivisors A] (p : R[X]) {q :
   · rw [range_eq_Ico, disjoint_iff_inter_eq_empty, eq_empty_iff_forall_notMem]
     intro x hx
     rw [mem_inter, mem_Ico, mem_Ico] at hx
-    exact hx.1.2.not_le hx.2.1
+    exact hx.1.2.not_ge hx.2.1
 
 end CommSemiring
 

@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.Logic.Equiv.Multiset
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Logic.Equiv.Multiset
 
 /-!
 # `Encodable` and `Denumerable` instances for `Finset`
 -/
+
+@[expose] public section
 
 variable {α}
 
@@ -18,7 +22,8 @@ open Encodable
 instance Finset.encodable [Encodable α] : Encodable (Finset α) :=
   haveI := decidableEqOfEncodable α
   ofEquiv { s : Multiset α // s.Nodup }
-    ⟨fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨a, b⟩ => ⟨a, b⟩, fun ⟨_, _⟩ => rfl, fun ⟨_, _⟩ => rfl⟩
+    { toFun := fun ⟨a, b⟩ => ⟨a, b⟩
+      invFun := fun ⟨a, b⟩ => ⟨a, b⟩ }
 
 namespace Encodable
 
@@ -70,40 +75,49 @@ def raise' : List ℕ → ℕ → List ℕ
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
   | [], _ => rfl
-  | m :: l, n => by simp [raise', lower', Nat.add_sub_cancel_right, lower_raise']
+  | m :: l, n => by simp [raise', lower', lower_raise']
 
-theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
+theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.SortedLT l → raise' (lower' l n) n = l
   | [], _, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ List.mem_cons_self
     simp [raise', lower', Nat.sub_add_cancel this,
-      raise_lower' (List.rel_of_sorted_cons h₂ : ∀ a ∈ l, m < a) h₂.of_cons]
+      raise_lower' (fun _ => List.rel_of_pairwise_cons h₂.pairwise : ∀ a ∈ l, m < a)
+      h₂.pairwise.of_cons.sortedLT]
 
-theorem raise'_chain : ∀ (l) {m n}, m < n → List.Chain (· < ·) m (raise' l n)
-  | [], _, _, _ => List.Chain.nil
-  | _ :: _, _, _, h =>
-    List.Chain.cons (lt_of_lt_of_le h (Nat.le_add_left _ _)) (raise'_chain _ (Nat.lt_succ_self _))
+theorem isChain_raise' : ∀ (l) (n), List.IsChain (· < ·) (raise' l n)
+  | [], _ => .nil
+  | [_], _ => .singleton _
+  | _ :: _ :: _, _ => .cons_cons (by lia) (isChain_raise' (_ :: _) _)
+
+theorem isChain_cons_raise' (l m) : List.IsChain (· < ·) (m :: raise' l (m + 1)) :=
+  isChain_raise' (m :: l) 0
+
+theorem isChain_cons_raise'_of_lt (l) {m n} (h : m < n) :
+    List.IsChain (· < ·) (m :: raise' l n) := by
+  unfold raise'; cases l with grind [isChain_cons_raise']
+
+@[deprecated (since := "2025-09-19")]
+alias raise'_chain := isChain_cons_raise'_of_lt
 
 /-- `raise' l n` is a strictly increasing sequence. -/
-theorem raise'_sorted : ∀ l n, List.Sorted (· < ·) (raise' l n)
-  | [], _ => List.sorted_nil
-  | _ :: _, _ => List.chain_iff_pairwise.1 (raise'_chain _ (Nat.lt_succ_self _))
+theorem raise'_sorted (l n) : List.SortedLT (raise' l n) := (isChain_raise' _ _).sortedLT
 
 /-- Makes `raise' l n` into a finset. Elements are distinct thanks to `raise'_sorted`. -/
 def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=
-  ⟨raise' l n, (raise'_sorted _ _).imp (@ne_of_lt _ _)⟩
+  ⟨raise' l n, (raise'_sorted _ _).nodup⟩
 
 /-- If `α` is denumerable, then so is `Finset α`. Warning: this is *not* the same encoding as used
 in `Finset.encodable`. -/
 instance finset : Denumerable (Finset α) :=
   mk'
-    ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>
+    ⟨fun s : Finset α => encode <| lower' (s.map (eqv α).toEmbedding).sort 0, fun n =>
       Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s =>
       Finset.eq_of_veq <| by
         simp [-Multiset.map_coe, raise'Finset,
-          raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
+          raise_lower' (fun n _ => Nat.zero_le n) (Finset.sortedLT_sort _)],
       fun n => by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
-        List.mergeSort_eq_self _ (raise'_sorted _ _).le_of_lt, lower_raise']⟩
+        List.mergeSort_eq_self _ (raise'_sorted _ _).sortedLE.pairwise, lower_raise']⟩
 
 end Denumerable

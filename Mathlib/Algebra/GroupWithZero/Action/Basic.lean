@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.GroupWithZero.Prod
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.GroupWithZero.Prod
 
 /-!
 # Definitions of group actions
@@ -44,6 +46,8 @@ More sophisticated lemmas belong in `GroupTheory.GroupAction`.
 group action
 -/
 
+@[expose] public section
+
 assert_not_exists Ring
 
 open Function
@@ -73,7 +77,7 @@ variable (A)
 This is a stronger version of `MulAction.toPerm`. -/
 @[simps +simpRhs]
 def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
-  __ := toAddMonoidHom A x
+  __ := DistribSMul.toAddMonoidHom A x
   __ := MulAction.toPermHom G A x
 
 variable (G)
@@ -113,3 +117,7 @@ lemma IsUnit.smul_sub_iff_sub_inv_smul [Group G] [Monoid R] [AddGroup R] [Distri
     [IsScalarTower G R R] [SMulCommClass G R R] (r : G) (a : R) :
     IsUnit (r • (1 : R) - a) ↔ IsUnit (1 - r⁻¹ • a) := by
   rw [← isUnit_smul_iff r (1 - r⁻¹ • a), smul_sub, smul_inv_smul]
+
+@[simp] theorem smul_zpow₀' [Group G] [GroupWithZero G₀] [MulDistribMulAction G G₀]
+    (g : G) (x : G₀) (n : ℤ) : g • (x ^ n) = (g • x) ^ n := by
+  cases n <;> simp

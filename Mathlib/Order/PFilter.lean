@@ -3,7 +3,9 @@ Copyright (c) 2020 Mathieu Guay-Paquet. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mathieu Guay-Paquet
 -/
-import Mathlib.Order.Ideal
+module
+
+public import Mathlib.Order.Ideal
 
 /-!
 # Order filters
@@ -29,6 +31,8 @@ Note the relation between `Order/Filter` and `Order/PFilter`: for any type `α`,
 pfilter, filter, ideal, dual
 
 -/
+
+@[expose] public section
 
 open OrderDual
 
@@ -69,6 +73,8 @@ instance [Inhabited P] : Inhabited (PFilter P) := ⟨⟨default⟩⟩
 instance : SetLike (PFilter P) P where
   coe F := toDual ⁻¹' F.dual.carrier
   coe_injective' := fun ⟨_⟩ ⟨_⟩ h => congr_arg mk <| Ideal.ext h
+
+instance : PartialOrder (PFilter P) := .ofSetLike (PFilter P) P
 
 theorem isPFilter : IsPFilter (F : Set P) := F.dual.isIdeal
 

@@ -3,8 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Evaluating a polynomial
@@ -25,6 +28,8 @@ We also provide the following bundled versions:
 We include results on applying the definitions to `C`, `X` and ring operations.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -130,7 +135,7 @@ theorem eval₂_finset_sum (s : Finset ι) (g : ι → R[X]) (x : S) :
 
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
     eval₂ f x (⟨p⟩ : R[X]) = liftNC (↑f) (powersHom S x) p := by
-  simp only [eval₂_eq_sum, sum, toFinsupp_sum, support, coeff]
+  simp only [eval₂_eq_sum, sum, support, coeff]
   rfl
 
 theorem eval₂_mul_noncomm (hf : ∀ k, Commute (f <| q.coeff k) x) :
@@ -154,15 +159,16 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
   rw [eval₂_mul_noncomm, eval₂_C]
   intro k
   by_cases hk : k = 0
-  · simp only [hk, h, coeff_C_zero, coeff_C_ne_zero]
-  · simp only [coeff_C_ne_zero hk, RingHom.map_zero, Commute.zero_left]
+  · simp only [hk, h, coeff_C_zero]
+  · simp only [coeff_C_ne_zero hk, map_zero, Commute.zero_left]
 
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
     eval₂ f x ps.prod = (ps.map (Polynomial.eval₂ f x)).prod := by
-  induction' ps using List.reverseRecOn with ps p ihp
-  · simp
-  · simp only [List.forall_mem_append, List.forall_mem_singleton] at hf
+  induction ps using List.reverseRecOn with
+  | nil => simp
+  | append_singleton ps p ihp =>
+    simp only [List.forall_mem_append, List.forall_mem_singleton] at hf
     simp [eval₂_mul_noncomm _ _ hf.2, ihp hf.1]
 
 /-- `eval₂` as a `RingHom` for noncommutative rings -/
@@ -214,8 +220,9 @@ theorem coe_eval₂RingHom (f : R →+* S) (x) : ⇑(eval₂RingHom f x) = eval�
 theorem eval₂_pow (n : ℕ) : (p ^ n).eval₂ f x = p.eval₂ f x ^ n :=
   (eval₂RingHom _ _).map_pow _ _
 
+@[gcongr]
 theorem eval₂_dvd : p ∣ q → eval₂ f x p ∣ eval₂ f x q :=
-  (eval₂RingHom f x).map_dvd
+  map_dvd (eval₂RingHom f x)
 
 theorem eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (h : p ∣ q) (h0 : eval₂ f x p = 0) :
     eval₂ f x q = 0 :=
@@ -233,8 +240,11 @@ section Eval
 variable {x : R}
 
 /-- `eval x p` is the evaluation of the polynomial `p` at `x` -/
-def eval : R → R[X] → R :=
-  eval₂ (RingHom.id _)
+def eval (x : R) (p : R[X]) : R :=
+  eval₂ (RingHom.id _) x p
+
+@[simp]
+theorem eval₂_id : eval₂ (RingHom.id _) x p = p.eval x := rfl
 
 theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
   rw [eval, eval₂_eq_sum]
@@ -305,18 +315,21 @@ theorem eval_natCast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := b
   rw [← C_eq_natCast, eval_C_mul]
 
 @[simp]
-theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
-  induction p using Polynomial.induction_on' with
-  | add p q ph qh => simp only [add_mul, eval_add, ph, qh]
-  | monomial n a =>
-    simp only [← monomial_one_one_eq_X, monomial_mul_monomial, eval_monomial, mul_one, pow_succ,
-      mul_assoc]
+theorem eval_mul_X : (p * X).eval x = p.eval x * x := eval₂_mul_X ..
 
 @[simp]
 theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
   induction k with
   | zero => simp
   | succ k ih => simp [pow_succ, ← mul_assoc, ih]
+
+/-- Polynomial evaluation commutes with `List.sum`. -/
+theorem eval_listSum (l : List R[X]) (x : R) : eval x l.sum = (l.map (eval x)).sum :=
+  eval₂_list_sum ..
+
+/-- Polynomial evaluation commutes with `Multiset.sum`. -/
+theorem eval_multisetSum (s : Multiset R[X]) (x : R) : eval x s.sum = (s.map (eval x)).sum :=
+  eval₂_multiset_sum ..
 
 theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
     (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
@@ -368,7 +381,7 @@ theorem X_comp : X.comp p = p :=
   eval₂_X _ _
 
 @[simp]
-theorem comp_C : p.comp (C a) = C (p.eval a) := by simp [comp, map_sum (C : R →+* _)]
+theorem comp_C : p.comp (C a) = C (p.eval a) := by simp [comp]
 
 @[simp]
 theorem C_comp : (C a).comp p = C a :=
@@ -437,6 +450,11 @@ theorem mul_X_add_natCast_comp {n : ℕ} :
 theorem mul_comp {R : Type*} [CommSemiring R] (p q r : R[X]) :
     (p * q).comp r = p.comp r * q.comp r :=
   eval₂_mul _ _
+
+@[simp]
+theorem mul_comp_neg_X {R : Type*} [Ring R] (p q : R[X]) :
+    (p * q).comp (-X) = p.comp (-X) * q.comp (-X) :=
+  eval₂_mul_noncomm C (-X) fun _ ↦ Commute.symm (commute_X _).neg_left
 
 @[simp]
 theorem pow_comp {R : Type*} [CommSemiring R] (p q : R[X]) (n : ℕ) :
@@ -524,7 +542,10 @@ protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 --TODO rename to `map_dvd_map`
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=
-  (mapRingHom f).map_dvd
+  _root_.map_dvd (mapRingHom f)
+
+lemma associated_map_map (f : R →+* S) {x y : R[X]} :
+    Associated x y → Associated (x.map f) (y.map f) := .map (mapRingHom f)
 
 lemma mapRingHom_comp_C {R S : Type*} [Semiring R] [Semiring S] (f : R →+* S) :
     (mapRingHom f).comp C = C.comp f := by ext; simp
@@ -544,18 +565,24 @@ protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
 
+@[simp] lemma eval_map_apply (x : R) : (p.map f).eval (f x) = f (p.eval x) :=
+  eval_map f _ ▸ eval₂_at_apply ..
+
 protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∑ i ∈ s, g i).map f = ∑ i ∈ s, (g i).map f :=
   map_sum (mapRingHom f) _ _
 
 theorem map_comp (p q : R[X]) : map f (p.comp q) = (map f p).comp (map f q) :=
-  Polynomial.induction_on p (by simp only [map_C, forall_const, C_comp, eq_self_iff_true])
+  Polynomial.induction_on p (by simp only [map_C, forall_const, C_comp])
     (by
       simp +contextual only [Polynomial.map_add, add_comp, forall_const,
-        imp_true_iff, eq_self_iff_true])
+        imp_true_iff])
     (by
       simp +contextual only [pow_succ, ← mul_assoc, comp, forall_const,
-        eval₂_mul_X, imp_true_iff, eq_self_iff_true, map_X, Polynomial.map_mul])
+        eval₂_mul_X, imp_true_iff, map_X, Polynomial.map_mul])
+
+theorem eval_X_pow {x : R} (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
+  simp [eval]
 
 end Map
 
@@ -651,6 +678,7 @@ theorem isRoot_prod {R} [CommSemiring R] [IsDomain R] {ι : Type*} (s : Finset �
     (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
   simp only [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
 
+@[gcongr]
 theorem eval_dvd : p ∣ q → eval x p ∣ eval x q :=
   eval₂_dvd _ _
 

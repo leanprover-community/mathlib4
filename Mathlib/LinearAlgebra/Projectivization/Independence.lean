@@ -3,7 +3,9 @@ Copyright (c) 2022 Michael Blyth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Blyth
 -/
-import Mathlib.LinearAlgebra.Projectivization.Basic
+module
+
+public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 # Independence in Projective Space
@@ -21,12 +23,14 @@ ambient vector space. Similarly for the definition of dependence.
 - A family of elements is dependent if and only if it is not independent.
 - Two elements are dependent if and only if they are equal.
 
-# Future Work
+## Future Work
 
 - Define collinearity in projective space.
 - Prove the axioms of a projective geometry are satisfied by the dependence relation.
 - Define projective linear subspaces.
 -/
+
+@[expose] public section
 
 open scoped LinearAlgebra.Projectivization
 
@@ -65,9 +69,6 @@ theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i => (f i).s
     refine h.linearIndependent (Projectivization.submodule ∘ f) (fun i => ?_) fun i => ?_
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
     · exact rep_nonzero (f i)
-
-@[deprecated (since := "2024-11-24")]
-alias independent_iff_completeLattice_independent := independent_iff_iSupIndep
 
 /-- A linearly dependent family of nonzero vectors gives a dependent family of points
 in projective space. -/
@@ -110,8 +111,5 @@ theorem dependent_pair_iff_eq (u v : ℙ K V) : Dependent ![u, v] ↔ u = v := b
 @[simp]
 theorem independent_pair_iff_ne (u v : ℙ K V) : Independent ![u, v] ↔ u ≠ v := by
   rw [independent_iff_not_dependent, dependent_pair_iff_eq u v]
-
-@[deprecated (since := "2025-04-27")]
-alias independent_pair_iff_neq := independent_pair_iff_ne
 
 end Projectivization
