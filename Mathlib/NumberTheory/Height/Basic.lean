@@ -404,7 +404,7 @@ lemma mulHeight_sumElim_zero_eq {ι : Type*} (ι' : Type*) [Finite ι] [Finite �
     refine ciSup_le fun j ↦ ?_
     cases j with
     | inl i => exact Finite.le_ciSup_of_le i le_rfl
-    | inr _ => simpa using v.iSup_abv_nonneg
+    | inr _ => simpa using Real.iSup_nonneg_of_nonnegHomClass v _
   congr <;> ext1 v
   · exact H v
   · exact H v.val
