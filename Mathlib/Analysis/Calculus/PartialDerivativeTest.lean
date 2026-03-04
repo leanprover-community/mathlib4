@@ -93,16 +93,6 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap
   cont := continuous_clm_apply.mpr fun x => g.cont.comp'
     <| continuous_id'.matrixVecCons continuous_const}
 
-
-theorem iteratedFDeriv_two_mul {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    {f : V → ℝ} {x₀ : V} (u : V) (r : ℝ) :
-    (iteratedFDeriv ℝ 2 f x₀) ![u, u] * r = (iteratedFDeriv ℝ 2 f x₀) ![r • u, u] := by
-  rw [iteratedFDeriv_succ_apply_left, iteratedFDeriv_succ_apply_left, mul_comm]
-  simp only [Matrix.cons_val_zero, map_smul,
-    smul_apply, smul_eq_mul, mul_eq_mul_left_iff]
-  left
-  congr
-
 /-- Positive definiteness implies coercivity. -/
 lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V}
@@ -140,7 +130,10 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
       have h₂ := update₁ ▸ update₁ ▸
         (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
       simp only [MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at h₂
-      rw [iteratedFDeriv_two_mul, mul_comm, ← h₂]
+      have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
+           = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
+        simp [Matrix.vecCons, ← curryLeft_apply, mul_comm]
+      rw [this, mul_comm, ← h₂]
       exact hm.2 (‖u‖⁻¹ • u) (by
         rw [← h₁, norm_smul, mul_comm]
         congr
