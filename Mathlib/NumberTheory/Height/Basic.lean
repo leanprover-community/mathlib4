@@ -538,20 +538,6 @@ multiplicative heights of `x` and `y` (and the analogous statement for logarithm
 We also show the corresponding statements for product with arbitrarily many factors.
 -/
 
-
-section many
-
-universe u
-
-variable {α R : Type*} [Fintype α] {ι : α → Type u} [∀ a, Finite (ι a)]
-
-lemma Real.iSup_prod_eq_prod_iSup_of_nonnegHomClass {F : Type*} [FunLike F R ℝ]
-    [NonnegHomClass F R ℝ] (v : F) {x : (a : α) → ι a → R} :
-    ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) :=
-  Real.iSup_prod_eq_prod_iSup_of_nonneg (f := fun a i ↦ v (x a i)) (fun _ _ ↦ apply_nonneg v _)
-
-end many
-
 namespace Height
 
 open Height.AdmissibleAbsValues Function
