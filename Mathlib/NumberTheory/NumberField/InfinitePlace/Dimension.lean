@@ -19,8 +19,7 @@ noncomputable section
 
 namespace NumberField.InfinitePlace
 
-open NumberField.ComplexEmbedding ramifiedPlacesOver unmixedEmbeddingsOver
-  unramifiedPlacesOver mixedEmbeddingsOver Finset
+open NumberField.ComplexEmbedding unramifiedPlacesOver Finset
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 
@@ -67,7 +66,7 @@ theorem bijOn_sumElim_conjugate :
   · exact Set.MapsTo.sumElim embedding_mem_mixedEmbeddingsOver
       conjugate_embedding_mem_mixedEmbeddingsOver
   · exact (embedding_injective L).injOn.sumElim (star_injective.comp (embedding_injective L)).injOn
-      (fun _ _ _ h ↦ (isRamified h).ne_conjugate)
+      (fun _ _ _ h ↦ h.2.ne_conjugate)
   · cases embedding_mk_eq ψ with
     | inl hl => simpa [Set.disjSum] using .inl ⟨mk ψ, mk_mem_ramifiedPlacesOver h, hl⟩
     | inr hr => simpa [Set.disjSum] using .inr ⟨_, mk_mem_ramifiedPlacesOver h, by aesop⟩
@@ -127,7 +126,7 @@ theorem mapsTo_embeddingConjugateIte (v : InfinitePlace K) :
     Set.MapsTo (embeddingConjugateIte L v) (unramifiedPlacesOver L v)
       (unmixedEmbeddingsOver L v.embedding) := by
   intro w hw
-  obtain ⟨_, hw⟩ := mem_unramifiedPlacesOver.1 hw
+  obtain ⟨_, hw⟩ := hw
   by_cases h : LiesOver v.embedding w.embedding
   · simpa [embeddingConjugateIte_pos L h] using ⟨h, hw.isUnmixed⟩
   · simpa [embeddingConjugateIte_neg L h] using
@@ -237,8 +236,8 @@ theorem ncard_isUnramified_add_two_mul_ncard_isRamified [NumberField K] [NumberF
     (unramifiedPlacesOver L v).ncard + 2 * (ramifiedPlacesOver L v).ncard = Module.finrank K L := by
   letI : Algebra K ℂ := v.embedding.toAlgebra
   rw [← AlgHom.card K L ℂ, ramifiedPlacesOver_ncard, unramifiedPlacesOver_ncard,
-    ← Set.ncard_union_eq (disjoint_mixedEmbeddingsOver L v.embedding),
-    union_mixedEmbeddingsOver, Set.ncard_eq_toFinset_card]
+    ← Set.ncard_union_eq (disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver L v.embedding),
+    union_unmixedEmbeddingsOver_mixedEmbeddingsOver, Set.ncard_eq_toFinset_card]
   apply (card_nbij AlgHom.toRingHom (fun σ _ ↦ by simp; apply LiesOver.mk; simp [σ.commutes, RingHom.algebraMap_toAlgebra]) -- [LiesOver, RingHom.algebraMap_toAlgebra])
     AlgHom.coe_ringHom_injective.injOn (fun ψ hψ ↦ ?_)).symm
   simp only [Set.Finite.toFinset_setOf, coe_filter, mem_univ, true_and, Set.mem_setOf_eq] at hψ
@@ -290,24 +289,24 @@ theorem inertiaDeg_eq_finrank (v : InfinitePlace K) (w : InfinitePlace L) [w.1.L
 
 variable {L} in
 open Completion in
-theorem unramifiedPlacesOver.inertiaDeg_eq_one (w : InfinitePlace L)
+theorem inertiaDeg_eq_one (w : InfinitePlace L)
     (hw : w ∈ unramifiedPlacesOver L v) : v.inertiaDeg w = 1 := by
-  have := liesOver hw
-  exact finrank_eq_one_of_isUnramified v w (isUnramified hw) ▸ inertiaDeg_eq_finrank v w
+  have := hw.1
+  exact finrank_eq_one_of_isUnramified v w hw.2 ▸ inertiaDeg_eq_finrank v w
 
 variable {L} in
 open Completion in
-theorem ramifiedPlacesOver.inertiaDeg_eq_two (w : InfinitePlace L)
+theorem inertiaDeg_eq_two (w : InfinitePlace L)
     (hw : w ∈ ramifiedPlacesOver L v) : v.inertiaDeg w = 2 := by
-  have := liesOver hw
-  exact finrank_eq_two_of_isRamified v w (isRamified hw) ▸ inertiaDeg_eq_finrank v w
+  have := hw.1
+  exact finrank_eq_two_of_isRamified v w hw.2 ▸ inertiaDeg_eq_finrank v w
 
 open scoped Classical in
 open Completion Finset in
 theorem sum_inertiaDeg_eq_finrank [NumberField K] [NumberField L] :
     ∑ w ∈ v.placesOver L, v.inertiaDeg w = Module.finrank K L := by
-  simp [← placesOver_eq_union L v,
-    sum_union (Set.disjoint_toFinset.2 <| disjoint_unramifiedPlacesOver L v)]
+  simp [← union_ramifiedPlacesOver_unramifiedPlacesOver L v,
+    sum_union (Set.disjoint_toFinset.2 <| disjoint_ramifiedPlacesOver_unramifiedPlacesOver L v)]
   rw [sum_congr rfl (fun _ h ↦ inertiaDeg_eq_two v _ (by simpa using h))]
   rw [sum_congr rfl (fun _ h ↦ inertiaDeg_eq_one v _ (by simpa using h))]
   simp only [sum_const]

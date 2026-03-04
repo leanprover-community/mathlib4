@@ -364,31 +364,11 @@ noncomputable def mixedEmbeddingsOver : Set (L →+* ℂ) := { φ | LiesOver ψ 
 
 noncomputable def unmixedEmbeddingsOver : Set (L →+* ℂ) := { φ | LiesOver ψ φ ∧ IsUnmixed K φ }
 
-variable {L} {ψ}
-
-theorem mixedEmbeddingsOver.liesOver (φ : L →+* ℂ) (h : φ ∈ mixedEmbeddingsOver L ψ) :
-    LiesOver ψ φ := by
-  simpa [mixedEmbeddingsOver] using h.1
-
-theorem mixedEmbeddingsOver.isMixed (φ : L →+* ℂ) (h : φ ∈ mixedEmbeddingsOver L ψ) :
-    IsMixed K φ := by
-  simpa [mixedEmbeddingsOver] using h.2
-
-theorem unmixedEmbeddingsOver.liesOver (φ : L →+* ℂ) (h : φ ∈ unmixedEmbeddingsOver L ψ) :
-    LiesOver ψ φ := by
-  simpa [unmixedEmbeddingsOver] using h.1
-
-theorem unmixedEmbeddingsOver.isUnmixed (φ : L →+* ℂ) (h : φ ∈ unmixedEmbeddingsOver L ψ) :
-    IsUnmixed K φ := by
-  simpa [unmixedEmbeddingsOver] using h.2
-
-variable (L ψ)
-
-theorem unmixedEmbeddingsOver.disjoint_mixedEmbeddingsOver :
+theorem disjoint_unmixedEmbeddingsOver_mixedEmbeddingsOver :
     Disjoint (unmixedEmbeddingsOver L ψ) (mixedEmbeddingsOver L ψ) := by
   simpa [Set.disjoint_left, mixedEmbeddingsOver, unmixedEmbeddingsOver] using fun ψ _ h _ ↦ h
 
-theorem unmixedEmbeddingsOver.union_mixedEmbeddingsOver :
+theorem union_unmixedEmbeddingsOver_mixedEmbeddingsOver :
     (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) = { φ | LiesOver ψ φ } := by
   rw [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
   exact Set.setOf_inj.2 <| funext_iff.2 fun ψ ↦ by
