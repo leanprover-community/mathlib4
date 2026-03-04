@@ -513,7 +513,7 @@ lemma foo'_inj (h : v.IsEquiv w) (a b : Set.range v) (heq : foo' w a = foo' w b)
   rwa [← a.2.choose_spec, ← b.2.choose_spec]
 
 
-def bar' (h : v.IsEquiv w) : valueMonoid v ≃ valueMonoid w where
+def bar_monoid (h : v.IsEquiv w) : valueMonoid v ≃ valueMonoid w where
   toFun := by
     rintro ⟨g, hg_mem⟩
     rw [mem_valueMonoid_iff] at hg_mem
@@ -549,7 +549,7 @@ def bar' (h : v.IsEquiv w) : valueMonoid v ≃ valueMonoid w where
     simp_rw [ha']
     congr
     sorry
-  right_inv := _
+  right_inv := sorry
   -- toFun := by
   --   rintro ⟨g, hg_mem⟩
   --   rw [mem_valueMonoid_iff] at hg_mem
@@ -564,7 +564,8 @@ def bar' (h : v.IsEquiv w) : valueMonoid v ≃ valueMonoid w where
 
 
 def bar (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
-  apply Subgroup.map_clo
+  sorry
+  -- apply Subgroup.map_clo
   -- rintro ⟨g, hg_mem⟩
   -- have := (mem_valueGroup_iff_of_comm (f := v) (y := g)).mp hg_mem
   -- let ⟨ha, ha'⟩ := this.choose_spec
@@ -612,7 +613,19 @@ def bar' (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
 def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueGroup w where
   toFun := bar' h
   invFun :=  bar' h.symm
-  left_inv := sorry
+  left_inv := by
+    rintro ⟨g, hg_mem⟩
+    rw [bar', bar']
+    simp only [ne_eq, Units.mk0_mul, Units.val_mul, Units.val_mk0, Subtype.mk.injEq]
+    rw [mem_valueGroup_iff_of_comm] at hg_mem
+    obtain ⟨a, hva, b, hagb⟩ := hg_mem
+    apply_fun ((↑) : Γ₀ˣ → Γ₀) using Units.val_injective
+    rw [← eq_inv_mul_iff_mul_eq₀] at hagb
+    simp_rw [hagb]
+    simp
+    congr
+
+
   right_inv := sorry
   map_mul' x y := by
     have hx := (mem_valueGroup_iff_of_comm (f := v) (y := x)).mp x.prop
@@ -634,7 +647,8 @@ def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueG
       sorry
     · simp only [ne_eq, mul_eq_zero, inv_eq_zero, not_or]
       sorry
-  map_le_map_iff' := sorry
+  map_le_map_iff' {a b} := by sorry
+
 
 def IsEquiv.ValueGroup₀_MulOrderIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w := by
   sorry -- just the `WithZero` of the above -/
