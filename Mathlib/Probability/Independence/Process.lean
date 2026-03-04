@@ -45,8 +45,11 @@ lemma IndepFun.process_congr_left {𝓧 : S → Type*} {𝓨 : Type*}
     {Y : Ω → 𝓨} (h1 : IndepFun (fun ω i ↦ X i ω) Y κ P) (h2 : ∀ i, ∀ᵐ a ∂P, X i =ᵐ[κ a] X' i) :
     IndepFun (fun ω i ↦ X' i ω) Y κ P := by
   rintro - - ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-  have := h1 ((fun ω i ↦ X i ω) ⁻¹' s) (Y ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
-  obtain ⟨I, u, hI, rfl⟩ := hs.eq_preimage_restrict_countable
+  have : ∀ᵐ a ∂P, κ a (((fun ω i ↦ X i ω) ⁻¹' s) ∩ (Y ⁻¹' t)) =
+      κ a ((fun ω i ↦ X i ω) ⁻¹' s) * κ a (Y ⁻¹' t) :=
+    h1 ((fun ω i ↦ X i ω) ⁻¹' s) (Y ⁻¹' t) ⟨s, hs, rfl⟩ ⟨t, ht, rfl⟩
+  obtain ⟨I, u, hI, rfl⟩ : ∃ (I : Set S) (u : Set (Π i : I, 𝓧 i)),
+      I.Countable ∧ s = I.restrict ⁻¹' u := hs.eq_preimage_restrict_countable
   have aux (f : (i : S) → Ω → 𝓧 i) : (fun ω i ↦ f i ω) ⁻¹' (I.restrict ⁻¹' u) =
       (fun ω (i : I) ↦ f i ω) ⁻¹' u := rfl
   simp_rw [aux] at *
@@ -114,7 +117,9 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
   rw [this, hω]
 
 /-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
-for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
+for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$.
+
+This version only requires aemeasurability. -/
 lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (hX : ∀ i, AEMeasurable (X i) (κ ∘ₘ P)) (hY : AEMeasurable Y (κ ∘ₘ P))
@@ -141,7 +146,9 @@ lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
 
 /-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
-$(X_{s_1}, ..., X_{s_p})$. -/
+$(X_{s_1}, ..., X_{s_p})$.
+
+This version only requires aemeasurability. -/
 lemma IndepFun.indepFun_process₀ {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
     {Y : (i : S) → Ω → 𝓨 i} (hX : AEMeasurable X (κ ∘ₘ P)) (hY : ∀ i, AEMeasurable (Y i) (κ ∘ₘ P))
@@ -164,7 +171,9 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
 
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
-$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent. -/
+$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent.
+
+This version only requires aemeasurability. -/
 lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, AEMeasurable (X i) (κ ∘ₘ P))
@@ -267,7 +276,9 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
 /-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
 for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
 $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
-(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
+(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent.
+
+This version only requires aemeasurability. -/
 lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, AEMeasurable (X i j) (κ ∘ₘ P))
@@ -324,7 +335,9 @@ lemma IndepFun.process_indepFun {𝓧 : S → Type*} {𝓨 : Type*}
   Kernel.IndepFun.process_indepFun hX hY h
 
 /-- A stochastic process $(X_s)_{s \in S}$ is independent from a random variable $Y$ if
-for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$. -/
+for all $s_1, ..., s_p \in S$ the family $(X_{s_1}, ..., X_{s_p})$ is independent from $Y$.
+
+This version only requires aemeasurability. -/
 lemma IndepFun.process_indepFun₀ {𝓧 : S → Type*} {𝓨 : Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [MeasurableSpace 𝓨] {X : (i : S) → Ω → 𝓧 i}
     {Y : Ω → 𝓨} (hX : ∀ i, AEMeasurable (X i) P) (hY : AEMeasurable Y P)
@@ -344,7 +357,9 @@ lemma IndepFun.indepFun_process {𝓧 : Type*} {𝓨 : S → Type*}
 
 /-- A random variable $X$ is independent from a stochastic process $(Y_s)_{s \in S}$  if
 for all $s_1, ..., s_p \in S$ the variable $Y$ is independent from the family
-$(X_{s_1}, ..., X_{s_p})$. -/
+$(X_{s_1}, ..., X_{s_p})$.
+
+This version only requires aemeasurability. -/
 lemma IndepFun.indepFun_process₀ {𝓧 : Type*} {𝓨 : S → Type*}
     [MeasurableSpace 𝓧] [∀ i, MeasurableSpace (𝓨 i)] {X : Ω → 𝓧}
     {Y : (i : S) → Ω → 𝓨 i} (hX : AEMeasurable X P) (hY : ∀ i, AEMeasurable (Y i) P)
@@ -365,7 +380,9 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
 
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
-$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent. -/
+$(X_{s_1}, ..., X_{s_p})$ and $(Y_{t_1}, ..., Y_{t_q})$ are independent.
+
+This version only requires aemeasurability. -/
 lemma IndepFun.process_indepFun_process₀ {T : Type*} {𝓧 : S → Type*} {𝓨 : T → Type*}
     [∀ i, MeasurableSpace (𝓧 i)] [∀ j, MeasurableSpace (𝓨 j)] {X : (i : S) → Ω → 𝓧 i}
     {Y : (j : T) → Ω → 𝓨 j} (hX : ∀ i, AEMeasurable (X i) P) (hY : ∀ j, AEMeasurable (Y j) P)
@@ -399,7 +416,9 @@ lemma iIndepFun.iIndepFun_process {T : S → Type*} {𝓧 : (i : S) → (j : T i
 /-- Stochastic processes $((X^s_t)_{t \in T_s})_{s \in S}$ are mutually independent if
 for all $s_1, ..., s_n$ and all $t^{s_i}_1, ..., t^{s_i}_{p_i}$ the families
 $(X^{s_1}_{t^{s_1}_1}, ..., X^{s_1}_{t^{s_1}_{p_1}}), ...,
-(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent. -/
+(X^{s_n}_{t^{s_n}_1}, ..., X^{s_n}_{t^{s_n}_{p_n}})$ are mutually independent.
+
+This version only requires aemeasurability. -/
 lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : T i) → Type*}
     [∀ i j, MeasurableSpace (𝓧 i j)] {X : (i : S) → (j : T i) → Ω → 𝓧 i j}
     (hX : ∀ i j, AEMeasurable (X i j) P)
