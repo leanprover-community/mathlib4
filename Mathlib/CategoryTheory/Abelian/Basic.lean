@@ -864,6 +864,7 @@ attribute [reassoc (attr := simp)] ι_imageπ imageι_π fac
 
 end AbelianStruct
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructor for abelian categories. We assume that the category `C` is
 preadditive, has finite products, and that any morphism `f : X ⟶ Y` has
 a kernel `i : K ⟶ X`, a cokernel `p : Y ⟶ Q` such that `f` factors as `f = π ≫ ι`
