@@ -7,19 +7,16 @@ module
 
 public import Mathlib.Algebra.EuclideanDomain.Basic
 public import Mathlib.Algebra.Order.Group.Finset
-public import Mathlib.RingTheory.Coprime.Lemmas
-public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
-public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.Data.Nat.PrimeFin
 public import Mathlib.Algebra.Squarefree.Basic
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
 
-This file defines a radical of an element `a` of a unique factorization normalization
-monoid, which is defined as a product of normalized prime factors of `a` without duplication.
+This file defines the radical of an element `a` in a unique factorization normalization
+monoid as the product of normalized prime factors of `a` without duplication.
 This is different from the radical of an ideal.
+
+Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radical.NatInt`.
 
 ## Main declarations
 
@@ -27,15 +24,13 @@ This is different from the radical of an ideal.
   its prime factors.
 - `radical_eq_of_associated`: If `a` and `b` are associates, i.e. `a * u = b` for some unit `u`,
   then `radical a = radical b`.
-- `radical_unit_mul`: Multiplying unit does not change the radical.
+- `radical_mul_of_isUnit_left`: Multiplying by a unit does not change the radical.
 - `radical_dvd_self`: `radical a` divides `a`.
-- `radical_pow`: `radical (a ^ n) = radical a` for any `n ≥ 1`
-- `radical_of_prime`: Radical of a prime element is equal to its normalization
-- `radical_pow_of_prime`: Radical of a power of prime element is equal to its normalization
-- `radical_mul`: Radical is multiplicative for two relatively prime elements.
-- `radical_prod`: Radical is multiplicative for finitely many relatively prime elements.
-
-### For unique factorization domains
+- `radical_pow`: `radical (a ^ n) = radical a` for any `n ≥ 1`.
+- `radical_of_prime`: Radical of a prime element is equal to its normalization.
+- `radical_pow_of_prime`: Radical of a power of a prime element is equal to its normalization.
+- `radical_mul`, `radical_prod`: Radical is multiplicative for (pairwise) relatively prime elements.
+- `radical_mul_dvd`, `radical_prod_dvd`: Radical of a product divides the product of radicals.
 
 ### For Euclidean domains
 
@@ -43,22 +38,13 @@ This is different from the radical of an ideal.
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
-## For natural numbers
-
-- `UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors`: The prime factors of a natural number
-  are the same as the prime factors defined in `Nat.primeFactors`.
-- `Nat.radical_le_self`: The radical of a natural number is less than or equal to the number itself.
-- `Nat.two_le_radical`: If a natural number is at least 2, then its radical is at least 2.
-
 ## TODO
 
-- Make a comparison with `Ideal.radical`. Especially, for principal ideal,
+- Connect this notion with `Ideal.radical`. Particularly, for a principal ideal,
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
 
-@[expose] public section
-
-noncomputable section
+@[expose] public noncomputable section
 
 namespace UniqueFactorizationMonoid
 
@@ -151,10 +137,8 @@ theorem primeFactors_mul_eq_disjUnion (hc : IsRelPrime a b) :
   classical
   rw [Finset.disjUnion_eq_union, primeFactors_mul_eq_union ha hb]
 
-/--
-Radical of an element `a` in a unique factorization monoid is the product of
-the prime factors of `a`.
--/
+/-- The radical of an element `a` in a unique factorization monoid is the product of
+the prime factors of `a`. -/
 def radical (a : M) : M :=
   (primeFactors a).prod id
 
@@ -410,58 +394,3 @@ theorem _root_.IsCoprime.divRadical {a b : E} (h : IsCoprime a b) :
   exact h.of_mul_left_right.of_mul_right_right
 
 end EuclideanDomain
-
-section Nat
-
-lemma UniqueFactorizationMonoid.primeFactors_eq_natPrimeFactors :
-    primeFactors = Nat.primeFactors := by
-  ext n : 1
-  rw [primeFactors, Nat.factors_eq, Nat.primeFactors]
-  -- this convert is necessary because of the different DecidableEq instances
-  convert List.toFinset_coe _
-
-namespace Nat
-
-@[simp] theorem radical_le_self_iff {n : ℕ} : radical n ≤ n ↔ n ≠ 0 :=
-  ⟨by aesop, fun h ↦ Nat.le_of_dvd (by lia) radical_dvd_self⟩
-
-@[simp] theorem two_le_radical_iff {n : ℕ} : 2 ≤ radical n ↔ 2 ≤ n := by
-  refine ⟨?_, ?_⟩
-  · match n with | 0 | 1 | _ + 2 => simp
-  · intro hn
-    obtain ⟨p, hp, hpn⟩ := Nat.exists_prime_and_dvd (show n ≠ 1 by lia)
-    trans p
-    · apply hp.two_le
-    · apply Nat.le_of_dvd (Nat.pos_of_ne_zero radical_ne_zero)
-      rwa [dvd_radical_iff_of_irreducible hp.prime.irreducible (by lia)]
-
-@[simp] theorem one_lt_radical_iff {n : ℕ} : 1 < radical n ↔ 1 < n := two_le_radical_iff
-
-@[simp] theorem radical_le_one_iff {n : ℕ} : radical n ≤ 1 ↔ n ≤ 1 := by
-  simpa only [not_lt] using one_lt_radical_iff.not
-
-theorem radical_pos (n : ℕ) : 0 < radical n := pos_of_ne_zero radical_ne_zero
-
-open Qq Lean Mathlib.Meta Finset
-
-namespace Mathlib.Meta.Positivity
-open Positivity
-
-attribute [local instance] monadLiftOptionMetaM in
-/-- Positivity extension for radical. Proves radicals are nonzero. -/
-@[positivity UniqueFactorizationMonoid.radical _]
-meta def evalRadical : PositivityExt where eval {u α} _ _ e := do
-  match e with
-  | ~q(@radical _ $inst $inst' $inst'' $n) =>
-    have _ := ← synthInstanceQ q(Nontrivial $α)
-    assertInstancesCommute
-    return .nonzero q(radical_ne_zero)
-  | _ => throwError "not radical"
-
-example : 0 < radical 100 := by positivity
-
-end Mathlib.Meta.Positivity
-
-end Nat
-
-end Nat
