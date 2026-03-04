@@ -43,7 +43,6 @@ lemma degenerate_eq_top_of_hasDimensionLT (hn : d ≤ n) : X.degenerate n = ⊤ 
 lemma nonDegenerate_eq_bot_of_hasDimensionLT (hn : d ≤ n) : X.nonDegenerate n = ⊥ := by
   simp [nonDegenerate, X.degenerate_eq_top_of_hasDimensionLT d n hn]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma dim_lt_of_nonDegenerate {n : ℕ} (x : X.nonDegenerate n) (d : ℕ)
     [X.HasDimensionLT d] : n < d := by
   by_contra!
@@ -80,7 +79,6 @@ lemma le_iff_of_hasDimensionLT (A B : X.Subcomplex) (d : ℕ) [X.HasDimensionLT 
   rintro n x hx
   exact h _ (X.dim_lt_of_nonDegenerate x d) ⟨hx, x.prop⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma eq_top_iff_of_hasDimensionLT (A : X.Subcomplex) (d : ℕ) [X.HasDimensionLT d] :
     A = ⊤ ↔ ∀ i < d, X.nonDegenerate i ⊆ A.obj _ := by
   simp [← top_le_iff, le_iff_of_hasDimensionLT ⊤ A d]
@@ -128,7 +126,6 @@ lemma hasDimensionLT_subcomplex_top_iff (X : SSet.{u}) (d : ℕ) :
     HasDimensionLT (⊤ : X.Subcomplex) d ↔ X.HasDimensionLT d :=
   hasDimensionLT_iff_of_iso (Subcomplex.topIso X) _
 
-set_option backward.isDefEq.respectTransparency false in
 instance {X : SSet.{u}} (n : ℕ) : HasDimensionLT (⊥ : X.Subcomplex) n where
   degenerate_eq_top k hk := by
     ext ⟨x, hx⟩

@@ -698,7 +698,6 @@ theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
     · norm_num
   · exact add_nonneg two_pos.le (sqrtTwoAddSeries_zero_nonneg _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = √(2 - sqrtTwoAddSeries 0 n) / 2 := by
