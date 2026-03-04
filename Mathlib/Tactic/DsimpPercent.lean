@@ -23,7 +23,7 @@ public meta section
 
 namespace Mathlib.Tactic
 
-open  Lean Elab Term Meta Parser Tactic
+open Lean Elab Term Meta Parser Tactic
 
 /--
 `dsimp% […] t` runs `dsimp […]` on term `t`.
