@@ -101,7 +101,9 @@ theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   grind [SimpleGraph.Adj.ne]
 
 @[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
-  ext; dsimp [SimpleGraph.map, Relation.Map]; grind [SimpleGraph.Adj.ne]
+  ext
+  dsimp [SimpleGraph.map, Relation.Map]
+  grind [SimpleGraph.Adj.ne]
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
