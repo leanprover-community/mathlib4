@@ -70,9 +70,6 @@ structure VectorMeasure (α : Type*) [MeasurableSpace α] (M : Type*) [AddCommMo
   m_iUnion' ⦃f : ℕ → Set α⦄ : (∀ i, MeasurableSet (f i)) → Pairwise (Disjoint on f) →
     HasSum (fun i => measureOf' (f i)) (measureOf' (⋃ i, f i))
 
-scoped notation "VectorMeasure[" mα "] " α:arg E:arg =>
-  @VectorMeasure α mα E inferInstance inferInstance
-
 /-- A `SignedMeasure` is an `ℝ`-vector measure. -/
 abbrev SignedMeasure (α : Type*) [MeasurableSpace α] :=
   VectorMeasure α ℝ
