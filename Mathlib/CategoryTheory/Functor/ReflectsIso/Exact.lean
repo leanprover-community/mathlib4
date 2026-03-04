@@ -99,8 +99,8 @@ lemma shortComplexQuasiIso_iff {S₁ S₂ : ShortComplex C} (f : S₁ ⟶ S₂) 
 lemma quasiIsoAt_iff {α : Type*} {c : ComplexShape α} {K L : HomologicalComplex C c}
     (f : K ⟶ L) (a : α) :
     QuasiIsoAt f a ↔ ∀ (i : I), QuasiIsoAt (((F i).mapHomologicalComplex c).map f) a  := by
-  simp only [quasiIsoAt_iff' _ _ _ _ rfl rfl]
-  exact hP.shortComplexQuasiIso_iff _
+  simpa only [quasiIsoAt_iff' _ _ _ _ rfl rfl] using
+    hP.shortComplexQuasiIso_iff _
 
 lemma quasiIso_iff {α : Type*} {c : ComplexShape α} {K L : HomologicalComplex C c}
     (f : K ⟶ L) :
