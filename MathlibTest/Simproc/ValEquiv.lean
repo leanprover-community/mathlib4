@@ -8,6 +8,11 @@ variable {R : Type*} [Ring R]
   (h : v₁.IsEquiv v₂)
   {x x₁ x₂ y y₁ y₂ z w : R}
 
+example {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    (f : Γ₁ →*₀ Γ₀) (hf : Monotone f) (h : v₁.IsEquiv (v₁.map f hf)) :
+    {x | v₁.map f hf x < 1} = {x | v₁ x < 1} := by
+  valuation_equiv_tac h.symm
+
 include h
 
 example {x1 x2 x3 y1 y2 y3 : R}
@@ -16,14 +21,8 @@ example {x1 x2 x3 y1 y2 y3 : R}
   rw [h.symm.lt_auto]
   exact h'
 
-omit h in
-example {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
-    (f : Γ₁ →*₀ Γ₀) (hf : Monotone f) (h : v₁.IsEquiv (v₁.map f hf)) :
-    {x | v₁.map f hf x < 1} = {x | v₁ x < 1} := by
-  simp_val_equiv h.symm
-
 example (r : R) (h1 : v₁ r < 1) : v₂ r < 1 := by
-  simp_val_equiv h at h1
+  valuation_equiv_tac h at h1
   guard_hyp h1 :ₛ v₂ r < 1
   guard_target =ₛ v₂ r < 1
   exact h1
@@ -36,12 +35,12 @@ example (r : R) (h1 : v₁ r < 1) : v₂ r < 1 := by
 
 example (x y z : R) (h1 : v₁ x < 1) (h2 : 1 < v₂ y) (h3 : v₁ z < 1) :
     v₂ x < 1 ∧ 1 < v₁ y ∧ v₂ z < 1 := by
-  simp_val_equiv h at h1 h3 ⊢
+  valuation_equiv_tac h at h1 h3 ⊢
   exact ⟨h1, h2, h3⟩
 
 example (x y z : R) (h1 : v₁ x < 1) (h2 : 1 < v₂ y) (h3 : v₁ z < 1) :
     v₂ x < 1 ∧ 1 < v₁ y ∧ v₂ z < 1 := by
-  simp_val_equiv h.symm at h2 ⊢
+  valuation_equiv_tac h.symm at h2 ⊢
   exact ⟨h1, h2, h3⟩
 
 example (x : R) (h1 : v₁ x < 1) : v₂ x < 1 := by
@@ -81,6 +80,6 @@ omit h in
 example {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     (f : Γ₁ →*₀ Γ₀) (hf : Monotone f) (h : v₁.IsEquiv (v₁.map f hf)) :
     {x | v₁.map f hf x < 1} = {x | v₁ x < 1} := by
-  simp_val_equiv h.symm
+  valuation_equiv_tac h.symm
 
 end LinearOrderedCommGroupWithZero

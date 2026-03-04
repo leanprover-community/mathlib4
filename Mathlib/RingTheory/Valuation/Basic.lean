@@ -902,38 +902,26 @@ def core (eE : Expr) (tgt : MVarId) : MetaM Unit := do
 
 open Parser.Tactic Parser.Term
 
+-- TODO: add `←`
 /--
-A simproc-like tactic which takes `e : v₁.IsEquiv v₂` and proves a goal such as
-`v₁ x ≤ 1 ↔ v₂ x ≤ 1`.
+`valuation_equiv_tac e` takes `e : v₁.IsEquiv v₂` and proves a goal such as `v₁ x ≤ 1 ↔ v₂ x ≤ 1`.
 
-Usage:
-```lean
-example {R Γ₁ Γ₂ : Type*} [Ring R]
-    [LinearOrderedCommMonoidWithZero Γ₁] [LinearOrderedCommMonoidWithZero Γ₂]
-    {v₁ : Valuation R Γ₁} {v₂ : Valuation R Γ₂} {equiv : v₁.IsEquiv v₂} :
-    {x | v₁ x ≤ 1} = {x | v₂ x ≤ 1} := by
-  simp_val_equiv equiv
-```
--/
-elab "simp_val_equiv" eS:term loc:((location)?) : tactic => withMainContext do
-  let ref : IO.Ref Mathlib.Tactic.AtomM.State ← IO.mkRef <| .mk #[]
-  let eE ← elabTerm eS none
-  Mathlib.Tactic.transformAtLocation
-    (fun goal _ ↦ Mathlib.Tactic.AtomM.recurse ref default false
-        (fun e₁ _ _ ↦ simprocCore eE e₁ default) pure goal)
-    "valuation equiv tactic"
-    (expandOptLocation loc)
+You can also specify the hypotheses, such as `valuation_equiv_tac e at h₁ ⊢`.
 
-/--
-`val_equiv_tac e` takes `e : v₁.IsEquiv v₂` and proves a goal such as `v₁ x ≤ 1 ↔ v₂ x ≤ 1`.
-
-`val_equiv_tac` proves the general form of the above, which in this example would be
+`valuation_equiv_tac` proves the general form of the above, which in this example would be
 `v₁.IsEquiv v₂ → (v₁ x ≤ 1 ↔ v₂ x ≤ 1)`. This usecase is meant to only be used to generate the
 magic lemmas `le_auto` etc.
 -/
-elab "val_equiv_tac" eS:(term)? : tactic => do
+elab "valuation_equiv_tac" eS:(term)? loc:((location)?) : tactic => do
   match eS with
-  | some eS => liftMetaFinishingTactic <| core (← elabTerm eS none)
+  | some eS => withMainContext do
+    let ref : IO.Ref Mathlib.Tactic.AtomM.State ← IO.mkRef <| .mk #[]
+    let eE ← elabTerm eS none
+    Mathlib.Tactic.transformAtLocation
+      (fun goal _ ↦ Mathlib.Tactic.AtomM.recurse ref default false
+          (fun e₁ _ _ ↦ simprocCore eE e₁ default) pure goal)
+      "valuation equiv tactic"
+      (expandOptLocation loc)
   | none => withMainContext do
     let tgt ← getMainGoal
     let (bind, tgt) ← tgt.intro `equiv
@@ -950,6 +938,8 @@ variable {R : Type*} [Ring R]
   {Γ₁ Γ₂ : Type*} [LinearOrderedCommMonoidWithZero Γ₁] [LinearOrderedCommMonoidWithZero Γ₂]
   {v₁ : Valuation R Γ₁} {v₂ : Valuation R Γ₂} {a b : Γ₁} {P : Prop}
 
+-- TODO: support `rw [← h.le_auto]`
+
 /-- Magic lemmas to transform inequalities under valuation equivalence. Usage:
 ```lean
 example {R Γ₁ Γ₂ : Type*} [Ring R]
@@ -960,7 +950,7 @@ example {R Γ₁ Γ₂ : Type*} [Ring R]
 ```
 -/
 theorem le_auto (e : v₁.IsEquiv v₂)
-    (h : v₁.IsEquiv v₂ → (a ≤ b ↔ P) := by val_equiv_tac) : (a ≤ b) ↔ P := h e
+    (h : v₁.IsEquiv v₂ → (a ≤ b ↔ P) := by valuation_equiv_tac) : (a ≤ b) ↔ P := h e
 
 /-- Magic lemmas to transform inequalities under valuation equivalence. Usage:
 ```lean
@@ -972,7 +962,7 @@ example {R Γ₁ Γ₂ : Type*} [Ring R]
 ```
 -/
 theorem lt_auto (e : v₁.IsEquiv v₂)
-    (h : v₁.IsEquiv v₂ → (a < b ↔ P) := by val_equiv_tac) : (a < b) ↔ P := h e
+    (h : v₁.IsEquiv v₂ → (a < b ↔ P) := by valuation_equiv_tac) : (a < b) ↔ P := h e
 
 /-- Magic lemmas to transform equalities under valuation equivalence. Usage:
 ```lean
@@ -984,7 +974,7 @@ example {R Γ₁ Γ₂ : Type*} [Ring R]
 ```
 -/
 theorem eq_auto (e : v₁.IsEquiv v₂)
-    (h : v₁.IsEquiv v₂ → (a = b ↔ P) := by val_equiv_tac) : (a = b) ↔ P := h e
+    (h : v₁.IsEquiv v₂ → (a = b ↔ P) := by valuation_equiv_tac) : (a = b) ↔ P := h e
 
 /-- Magic lemmas to transform non-equalities under valuation equivalence. Usage:
 ```lean
@@ -996,11 +986,10 @@ example {R Γ₁ Γ₂ : Type*} [Ring R]
 ```
 -/
 theorem ne_auto (e : v₁.IsEquiv v₂)
-    (h : v₁.IsEquiv v₂ → (a ≠ b ↔ P) := by val_equiv_tac) : (a ≠ b) ↔ P := h e
+    (h : v₁.IsEquiv v₂ → (a ≠ b ↔ P) := by valuation_equiv_tac) : (a ≠ b) ↔ P := h e
 
-example {equiv : v₁.IsEquiv v₂} {x : R} : v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by val_equiv_tac equiv
+example {equiv : v₁.IsEquiv v₂} : {x | v₁ x ≤ 1} = {x | v₂ x ≤ 1 } := by valuation_equiv_tac equiv
 example {equiv : v₁.IsEquiv v₂} {x : R} : v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by rw [equiv.le_auto]
-example {equiv : v₁.IsEquiv v₂} : {x | v₁ x ≤ 1} = {x | v₂ x ≤ 1 } := by simp_val_equiv equiv
 
 end MagicLemmas
 
@@ -1044,7 +1033,7 @@ theorem isTrivialOn {A : Type*} [CommSemiring A] [Algebra A R]
 theorem isTrivialOn_iff {A : Type*} [CommSemiring A] [Algebra A R] :
     IsTrivialOn A v₁ ↔ IsTrivialOn A v₂ := by
   simp_rw [Valuation.isTrivialOn_iff]
-  simp_val_equiv h
+  valuation_equiv_tac h
 
 end LinearOrderedCommMonoidWithZero
 
