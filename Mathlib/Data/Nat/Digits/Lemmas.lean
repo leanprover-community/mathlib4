@@ -433,7 +433,8 @@ theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :
     fixedLengthDigits hb 0 = {[]} := by
   ext
-  simpa [eq_comm, fixedLengthDigits] using by grind
+  simp [fixedLengthDigits]
+  grind
 
 @[simp]
 theorem fixedLengthDigits_one {b : ℕ} (hb : 1 < b) :
