@@ -651,7 +651,6 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
   rw [inCoordinates_eq hm h'm]
   simp [hm]
 
-
 /-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.

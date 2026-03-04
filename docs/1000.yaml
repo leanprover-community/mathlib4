@@ -1875,7 +1875,7 @@ Q1816952:
 
 Q1841237:
   title: Fubini's theorem on differentiation
-  # XXX: does mathib have this already?
+  # XXX: does mathlib have this already?
 
 Q1855610:
   title: Theorem of de Moivre–Laplace
@@ -2282,7 +2282,7 @@ Q2993319:
   title: Mirsky–Newman theorem
 
 Q2995691:
-  title: Newlander–Niremberg theorem
+  title: Newlander–Nirenberg theorem
 
 Q3001796:
   title: Skolem–Noether theorem
