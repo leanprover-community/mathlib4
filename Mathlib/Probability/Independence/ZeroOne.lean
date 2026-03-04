@@ -45,6 +45,20 @@ theorem Kernel.measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
   rw [← one_mul (κ a (t ∩ t)), Set.inter_self, ENNReal.mul_left_inj h0 h_top] at ha
   exact Or.inr (Or.inl ha.symm)
 
+theorem condLProb_eq_zero_or_one_or_top_of_condIndepSet_self
+    {t : Set Ω} (h_indep : CondIndepSet μ m t t) :
+    ∀ᵐ ω ∂μ, (μ⁻⸨t | m⸩) ω = 0 ∨ (μ⁻⸨t | m⸩) ω = 1 ∨ (μ⁻⸨t | m⸩) ω = ∞ := by
+  specialize h_indep t t (measurableSet_generateFrom (Set.mem_singleton t))
+    (measurableSet_generateFrom (Set.mem_singleton t))
+  filter_upwards [h_indep] with ω hω
+  by_cases h0 : (μ⁻⸨t| m⸩) ω = 0
+  · exact Or.inl h0
+  by_cases h_top : (μ⁻⸨t| m⸩) ω = ∞
+  · exact Or.inr (Or.inr h_top)
+  rw [← one_mul (μ⁻⸨t ∩ t| m⸩), Set.inter_self, Pi.mul_apply, Pi.mul_apply,
+    ENNReal.mul_left_inj h0 h_top] at hω
+  simp [← hω]
+
 theorem measure_eq_zero_or_one_or_top_of_indepSet_self {t : Set Ω}
     (h_indep : IndepSet t t μ) : μ t = 0 ∨ μ t = 1 ∨ μ t = ∞ := by
   simpa only [ae_dirac_eq, Filter.eventually_pure]
@@ -66,16 +80,6 @@ theorem measure_eq_zero_or_one_of_indepSet_self [IsFiniteMeasure μ] {t : Set Ω
   simpa only [ae_dirac_eq, Filter.eventually_pure]
     using Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep
 
-theorem condExp_eq_zero_or_one_of_condIndepSet_self
-    (hm : m ≤ m0) [hμ : IsSigmaFinite (P.trim hm)] {t : Set Ω} (ht : MeasurableSet t)
-    (h_indep : CondIndepSet m hm t t μ) :
-    ∀ᵐ ω ∂μ, (μ⟦t | m⟧) ω = 0 ∨ (μ⟦t | m⟧) ω = 1 := by
-  -- TODO: Why is not inferred?
-  have (a : _) : IsFiniteMeasure (condExpKernel μ m a) := inferInstance
-  have h := ae_of_ae_trim hm (Kernel.measure_eq_zero_or_one_of_indepSet_self h_indep)
-  filter_upwards [condExpKernel_ae_eq_condExp hm ht, h] with ω hω_eq hω
-  rwa [← hω_eq, measureReal_eq_zero_iff, measureReal_def, ENNReal.toReal_eq_one_iff]
-
 open Filter
 
 theorem Kernel.indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα) (t : Set ι) :
@@ -86,10 +90,10 @@ theorem indep_biSup_compl (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s μ) (t 
     Indep (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) μ :=
   Kernel.indep_biSup_compl h_le h_indep t
 
-theorem condIndep_biSup_compl [StandardBorelSpace Ω]
-    (hm : m ≤ m0) [IsFiniteMeasure μ]
-    (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep m hm s μ) (t : Set ι) :
-    CondIndep m (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) hm μ :=
+theorem condIndep_biSup_compl
+    (hm : m ≤ m0) [SigmaFinite (μ.trim hm)]
+    (h_le : ∀ n, s n ≤ m0) (h_indep : iCondIndep μ m s) (t : Set ι) :
+    CondIndep μ m (⨆ n ∈ t, s n) (⨆ n ∈ tᶜ, s n) :=
   Kernel.indep_biSup_compl h_le h_indep t
 
 section Abstract
