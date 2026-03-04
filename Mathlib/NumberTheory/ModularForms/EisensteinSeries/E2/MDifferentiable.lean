@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Birkbeck, Gauss AI (Math.Inc).
+Authors: Chris Birkbeck, Gauss AI (Math Inc).
 -/
 
 module
@@ -21,7 +21,6 @@ the Dedekind eta function.
 open UpperHalfPlane hiding I
 open Real Complex EisensteinSeries ModularForm Manifold
 
-local notation "η" => ModularForm.eta
 
 --This proof was provided by Gauss to the sphere packing project.
 /-- The weight 2 Eisenstein series `E2` is MDifferentiable -/
