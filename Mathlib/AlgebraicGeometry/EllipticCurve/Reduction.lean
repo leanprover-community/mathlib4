@@ -293,21 +293,21 @@ lemma isGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : Is
 /-- A minimal Weierstrass equation has multiplicative reduction if and only if
 the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
 @[mk_iff]
-class IsMultiplicativeReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
+class HasMultiplicativeReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   multiplicativeReduction : valuation K (maximalIdeal R) W.c₄ = 1
 
 /-- A minimal Weierstrass equation has additive reduction if and only if
 the valuation of its discriminant is less than 1 and the valuation of `a₄` is less than 1. -/
 @[mk_iff]
-class IsAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
+class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   additiveReduction : valuation K (maximalIdeal R) W.c₄ < 1
 
-theorem isGoodReduction_or_isMultiplicativeReduction_or_isAdditiveReduction
+theorem hasGoodReduction_or_hasMultiplicativeReduction_or_isAdditiveReduction
     {W : WeierstrassCurve K} [IsMinimal R W] :
-    W.IsGoodReduction R ∨ W.IsMultiplicativeReduction R ∨ W.IsAdditiveReduction R := by
-  rw [isGoodReduction_iff, isMultiplicativeReduction_iff, isAdditiveReduction_iff,
+    W.IsGoodReduction R ∨ W.HasMultiplicativeReduction R ∨ W.HasAdditiveReduction R := by
+  rw [isGoodReduction_iff, hasMultiplicativeReduction_iff, hasAdditiveReduction_iff,
     ← integralModel_Δ_eq R W, ← integralModel_c₄_eq R W]
   grind [valuation_le_one]
 
