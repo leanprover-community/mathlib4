@@ -565,13 +565,11 @@ def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPair
     rw [← @comp_leftAdjointMate C, Category.comp_id, @leftAdjointMate_id]
     rfl
 
-set_option backward.whnf.reducibleClassField false in
 @[simp]
 theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Iso.refl Y := by
   ext
   simp only [rightDualIso, Iso.refl_hom, @rightAdjointMate_id]
 
-set_option backward.whnf.reducibleClassField false in
 @[simp]
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext

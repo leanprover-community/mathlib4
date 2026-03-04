@@ -76,7 +76,7 @@ theorem algebraMap_intertwiningMap_bijective_of_isAlgClosed :
     Bijective (algebraMap k (IntertwiningMap ρ ρ)) := by
   have : Bijective (algebraMap k (Module.End k[G] ρ.asModule)) :=
     IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k
-  exact (Bijective.of_comp_iff' (IntertwiningMap.equivAlgEnd (ρ:=ρ)).bijective _).1 this
+  exact (Bijective.of_comp_iff' (IntertwiningMap.equivAlgEnd (ρ := ρ)).bijective _).1 this
 
 variable (ρ) in
 @[simp] theorem finrank_intertwiningMap_self : Module.finrank k (IntertwiningMap ρ ρ) = 1 := by

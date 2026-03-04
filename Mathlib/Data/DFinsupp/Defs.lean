@@ -871,7 +871,6 @@ instance decidableZero [∀ (i) (x : β i), Decidable (x = 0)] (f : Π₀ i, β 
         case pos => exact hs₁ _ hs₂
         case neg => exact (s.prop i).resolve_left hs₂
 
-set_option backward.isDefEq.respectTransparency false in
 theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s ↔ ∀ i ∉ s, f i = 0 := by
   simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
