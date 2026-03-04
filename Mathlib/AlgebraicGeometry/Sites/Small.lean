@@ -83,7 +83,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology on `Over S` induced by `P` where coverings are given by `P`-covers
 of `S`-schemes. -/
 def overPretopology : Pretopology (Over S) where
-  coverings Y R := ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver
+  coverings Y := {R | ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S), R = 𝒰.toPresieveOver}
   has_isos {X Y} f _ := ⟨coverOfIsIso f.left, inferInstance, (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
     rintro Y X f _ ⟨𝒰, h, rfl⟩
@@ -179,9 +179,9 @@ are given by `P`-coverings in `S`-schemes satisfying `Q`.
 The most common case is `P = Q`. In this case, this is simply surjective families
 in `S`-schemes with `P`. -/
 def smallPretopology : Pretopology (Q.Over ⊤ S) where
-  coverings Y R :=
-    ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S) (h : ∀ j : 𝒰.I₀, Q (𝒰.X j ↘ S)),
-      R = 𝒰.toPresieveOverProp h
+  coverings Y :=
+    {R | ∃ (𝒰 : Cover.{u} (precoverage P) Y.left) (_ : 𝒰.Over S) (h : ∀ j : 𝒰.I₀, Q (𝒰.X j ↘ S)),
+      R = 𝒰.toPresieveOverProp h}
   has_isos {X Y} f := ⟨coverOfIsIso f.left, inferInstance, fun _ ↦ Y.prop,
     (Presieve.ofArrows_pUnit _).symm⟩
   pullbacks := by
