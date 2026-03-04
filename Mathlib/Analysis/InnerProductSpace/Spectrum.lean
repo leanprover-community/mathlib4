@@ -208,9 +208,9 @@ private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.
 private theorem hasEigenvalue_unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : HasEigenvalue T (hT.unsortedEigenvalues hn i) := by
   unfold unsortedEigenvalues
-  let ⟨_, h⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+  let ⟨x, hx⟩ := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces'
-  rwa [Eigenvalues.val_mk, RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self h)]
+  rwa [Eigenvalues.val_mk, RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self hx)]
 
 private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
