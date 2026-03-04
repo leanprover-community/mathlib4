@@ -33,11 +33,11 @@ namespace SpectralObject
 variable {C ι κ : Type*} [Category C] [Abelian C] [Preorder ι]
   (X : SpectralObject C ι)
   {c : ℤ → ComplexShape κ} {r₀ : ℤ}
-  (data : SpectralSequenceMkData ι c r₀)
+  (data : SpectralSequenceDataCore ι c r₀)
 
-namespace SpectralSequenceMkData
+namespace SpectralSequenceDataCore
 
-/-- Given `data : SpectralSequenceMkData ι c r₀`, this is the property
+/-- Given `data : SpectralSequenceDataCore ι c r₀`, this is the property
 that on the page `r₀`, indices `i₀` and `i₁` are equal,
 and indices `i₂` and `i₃` are equal. This condition allows
 to express the objects of the `r₀`th page of the spectral sequences
@@ -49,19 +49,19 @@ class HasFirstPageComputation : Prop where
 
 export HasFirstPageComputation (hi₀₁ hi₂₃)
 
-instance : mkDataE₂Cohomological.HasFirstPageComputation where
+instance : coreE₂Cohomological.HasFirstPageComputation where
   hi₀₁ pq := by dsimp; congr 1; lia
   hi₂₃ pq := by dsimp; congr 1; lia
 
-instance : mkDataE₂CohomologicalNat.HasFirstPageComputation where
+instance : coreE₂CohomologicalNat.HasFirstPageComputation where
   hi₀₁ pq := by dsimp; congr 1; lia
   hi₂₃ pq := by dsimp; congr 1; lia
 
-instance : mkDataE₂HomologicalNat.HasFirstPageComputation where
+instance : coreE₂HomologicalNat.HasFirstPageComputation where
   hi₀₁ pq := by dsimp; congr 1; lia
   hi₂₃ pq := by dsimp; congr 1; lia
 
-end SpectralSequenceMkData
+end SpectralSequenceDataCore
 
 variable [data.HasFirstPageComputation] [X.HasSpectralSequence data]
 

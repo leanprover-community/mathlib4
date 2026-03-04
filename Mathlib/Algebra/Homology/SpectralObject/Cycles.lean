@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Abelian.Exact
 /-!
 # Kernel and cokernel of the differential of a spectral object
 
-Let `X` be a spectral object index by the category `ι`
+Let `X` be a spectral object indexed by the category `ι`
 in the abelian category `C`. In this file, we introduce
 the kernel `X.cycles` and the cokernel `X.opcycles` of `X.δ`.
 These are defined when `f` and `g` are composable morphisms
@@ -30,20 +30,6 @@ We record that `Z^n(f, g)` is a kernel by the lemma
 a cokernel by the lemma `cokernelSequenceOpcycles_exact`.
 We also provide a constructor `X.liftCycles` for morphisms
 to cycles and `X.descOpcycles` for morphisms from opcycles.
-
-The fact that the morphisms `δ` are part of a long exact sequence allow
-to show that `X.cycles` also identify to a cokernel (`cokernelIsoCycles`)
-and `X.opcycles` to a kernel (`opcyclesIsoKernel`).
-More precisely, the exactness of `H^n(f) ⟶ H^n(f ≫ g) ⟶ Z^n(f, g) ⟶ 0`
-is `cokernelSequenceCycles_exact` and the exactness of
-`0 ⟶ opZ^n(f, g) ⟶ H^n(f ≫ g) ⟶ H^n(g)` is
-`kernelSequenceOpcycles_exact`. In particular, we also
-get constructors `descCycles` and `liftOpcycles` for morphisms
-from cycles and to opcycles.
-
-When `f₁`, `f₂` and `f₃` are composable morphisms, we introduce
-morphisms `δToCycles : H^n(f₃) ⟶ Z^{n+1}(f₁, f₂)` and .
-`δFromOpcycles : opZ^n(f₂, f₃) ⟶ H^{n+1}(f₁)`.
 
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
@@ -85,10 +71,12 @@ noncomputable def pOpcycles :
     (X.H n).obj (mk₁ f) ⟶ X.opcycles f g n :=
   cokernel.π _
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Mono (X.iCycles f g n) := by
   dsimp [iCycles]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Epi (X.pOpcycles f g n) := by
   dsimp [pOpcycles]
   infer_instance
@@ -109,12 +97,14 @@ section
 
 variable {i j k : ι} (f : i ⟶ j) (g : j ⟶ k) (n₀ n₁ : ℤ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma iCycles_δ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.iCycles f g n₀ ≫ X.δ f g n₀ n₁ hn₁ = 0 := by
   subst hn₁
   simp [iCycles]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma δ_pOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.δ f g n₀ n₁ hn₁ ≫ X.pOpcycles f g n₁ = 0 := by
@@ -386,6 +376,7 @@ instance (n : ℤ) : Mono (X.kernelSequenceOpcycles f g fg h n).f := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `Z^n(f, g)` identifies to a cokernel of the `H^n(f) ⟶ H^n(f ≫ g)`. -/
 lemma cokernelSequenceCycles_exact (n : ℤ) :
     (X.cokernelSequenceCycles f g fg h n).Exact := by
@@ -394,6 +385,7 @@ lemma cokernelSequenceCycles_exact (n : ℤ) :
     (Cofork.ext (X.cokernelIsoCycles f g fg h n) (by
       simp [← cancel_mono (X.iCycles f g n)]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `opZ^n(f, g)` identifies to the kernel of `H^n(f ≫ g) ⟶ H^n(g)`. -/
 lemma kernelSequenceOpcycles_exact (n : ℤ) :
     (X.kernelSequenceOpcycles f g fg h n).Exact := by

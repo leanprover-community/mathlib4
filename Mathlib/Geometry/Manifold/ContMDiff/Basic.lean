@@ -147,7 +147,6 @@ end Composition
 
 section id
 
-set_option backward.isDefEq.respectTransparency false in
 theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
     ((contDiffWithinAt_localInvariantProp ⊤).liftProp_id contDiffWithinAtProp_id) le_top

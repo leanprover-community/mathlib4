@@ -52,13 +52,14 @@ of the differential `E^{n-1}(f₃, f₄, f₅) ⟶ E^n(f₁, f₂, f₃)` -/
 noncomputable def dCokernelSequence
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     ShortComplex C :=
-  ShortComplex.mk _ _ (X.d_EMap_fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃)
+  ShortComplex.mk _ _ (X.d_map_fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃)
 
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) :
     Epi (X.dCokernelSequence f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).g := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dCokernelSequence_exact
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     (X.dCokernelSequence f₁ f₂ f₃ f₄ f₅ f₃₄ h₃₄ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := by
@@ -67,7 +68,7 @@ lemma dCokernelSequence_exact
   dsimp at x₂ hx₂ ⊢
   have hx₂' := hx₂ =≫ X.ιE _ _ _ _ _ _ _ _
   simp only [assoc, zero_comp] at hx₂'
-  rw [X.EMap_ιE f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)
+  rw [X.map_ιE f₁ f₂ f₃ f₁ f₂ f₃₄ (fourδ₄Toδ₃ f₁ f₂ f₃ f₄ f₃₄ h₃₄)
     (threeδ₃Toδ₂ f₂ f₃ f₄ f₃₄ h₃₄) n₁ n₂ n₃] at hx₂'
   obtain ⟨A₁, π₁, _, x₁, hx₁⟩ :=
     ((X.sequenceΨ_exact f₂ f₃ f₄ _ rfl f₃₄ h₃₄ n₁ n₂).exact 1).exact_up_to_refinements
@@ -85,13 +86,14 @@ of the differential `E^n(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` -/
 noncomputable def dKernelSequence
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     ShortComplex C :=
-  ShortComplex.mk _ _ (X.EMap_fourδ₁Toδ₀_d f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃)
+  ShortComplex.mk _ _ (X.map_fourδ₁Toδ₀_d f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃)
 
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) (hn₃ : n₂ + 1 = n₃) :
     Mono (X.dKernelSequence f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).f := by
   dsimp
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dKernelSequence_exact
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
     (X.dKernelSequence f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).Exact := by
@@ -108,7 +110,7 @@ lemma dKernelSequence_exact
   dsimp [sequenceΨ] at y₁ hy₁
   refine ⟨A₂, π₂ ≫ π₁, inferInstance, y₁ ≫ X.πE f₂₃ f₄ f₅ n₀ n₁ n₂, ?_⟩
   rw [assoc, assoc, hy₂, reassoc_of% hy₁,
-    X.πE_EMap f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
+    X.πE_map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃)
     (threeδ₁Toδ₀ f₂ f₃ f₄ f₂₃ h₂₃) n₀ n₁ n₂]
 
 end
@@ -128,17 +130,19 @@ noncomputable def dShortComplex
     ShortComplex C :=
   ShortComplex.mk _ _ (X.d_d f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
-lemma EMap_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃
+lemma map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃
     (hn₂ : n₁ + 1 = n₂ := by lia) (hn₃ : n₂ + 1 = n₃ := by lia) :
-    X.EMap f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) n₁ n₂ n₃ hn₂ hn₃ ≫
-      X.EMap f₃ f₄ f₅ f₃ f₄ f₅₆ (fourδ₄Toδ₃ f₃ f₄ f₅ f₆ f₅₆ h₅₆) n₁ n₂ n₃ hn₂ hn₃ =
-    X.EMap f₂₃ f₄ f₅ f₂₃ f₄ f₅₆ (fourδ₄Toδ₃ f₂₃ f₄ f₅ f₆ f₅₆ h₅₆) n₁ n₂ n₃ hn₂ hn₃ ≫
-      X.EMap f₂₃ f₄ f₅₆ f₃ f₄ f₅₆ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅₆ f₂₃ h₂₃) n₁ n₂ n₃ hn₂ hn₃ := by
-  simp only [← EMap_comp]
+    X.map f₂₃ f₄ f₅ f₃ f₄ f₅ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅ f₂₃ h₂₃) n₁ n₂ n₃ hn₂ hn₃ ≫
+      X.map f₃ f₄ f₅ f₃ f₄ f₅₆ (fourδ₄Toδ₃ f₃ f₄ f₅ f₆ f₅₆ h₅₆) n₁ n₂ n₃ hn₂ hn₃ =
+    X.map f₂₃ f₄ f₅ f₂₃ f₄ f₅₆ (fourδ₄Toδ₃ f₂₃ f₄ f₅ f₆ f₅₆ h₅₆) n₁ n₂ n₃ hn₂ hn₃ ≫
+      X.map f₂₃ f₄ f₅₆ f₃ f₄ f₅₆ (fourδ₁Toδ₀ f₂ f₃ f₄ f₅₆ f₂₃ h₂₃) n₁ n₂ n₃ hn₂ hn₃ := by
+  simp only [← map_comp]
   congr 1
   cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The homology data of the short complex
 `E^{n-1}(f₅, f₆, f₇) ⟶ E^{n}(f₃, f₄, f₅) ⟶ E^{n+1}(f₁, f₂, f₃)` for which
 * the cycles are `E^n(f₂ ≫ f₃, f₄, f₅)`;
@@ -153,7 +157,7 @@ noncomputable def dHomologyData
     (X.dShortComplex f₁ f₂ f₃ f₄ f₅ f₆ f₇ n₀ n₁ n₂ n₃ n₄ hn₁ hn₂ hn₃ hn₄)
     (X.dKernelSequence_exact f₁ f₂ f₃ f₄ f₅ f₂₃ h₂₃ n₁ n₂ n₃ n₄ hn₂ hn₃ hn₄).fIsKernel
     (X.dCokernelSequence_exact f₃ f₄ f₅ f₆ f₇ f₅₆ h₅₆ n₀ n₁ n₂ n₃ hn₁ hn₂ hn₃).gIsCokernel
-    (X.EMap_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ f₂ f₃ f₄ f₅ f₆ f₂₃ h₂₃ f₅₆ h₅₆ n₁ n₂ n₃ hn₂ hn₃)
+    (X.map_fourδ₁Toδ₀_EMap_fourδ₄Toδ₃ f₂ f₃ f₄ f₅ f₆ f₂₃ h₂₃ f₅₆ h₅₆ n₁ n₂ n₃ hn₂ hn₃)
 
 /-- The homology of the short complex
 `E^{n₁}(f₅, f₆, f₇) ⟶ E^{n₀}(f₃, f₄, f₅) ⟶ E^{n₂}(f₁, f₂, f₃)` identifies to

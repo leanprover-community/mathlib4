@@ -731,7 +731,6 @@ theorem extendScalars_self : extendScalars (le_refl F) = ⊥ := by
   rintro ⟨y, rfl⟩
   exact y.2
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=
   IntermediateField.toSubfield_injective (by simp)
@@ -739,12 +738,10 @@ theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=
 variable {F}
 variable {E E' : Subfield L} (h : F ≤ E) (h' : F ≤ E')
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendScalars_sup :
     extendScalars h ⊔ extendScalars h' = extendScalars (le_sup_of_le_left h : F ≤ E ⊔ E') :=
   ((extendScalars.orderIso F).map_sup ⟨_, h⟩ ⟨_, h'⟩).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem extendScalars_inf : extendScalars h ⊓ extendScalars h' = extendScalars (le_inf h h') :=
   ((extendScalars.orderIso F).map_inf ⟨_, h⟩ ⟨_, h'⟩).symm
 
