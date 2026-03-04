@@ -42,7 +42,7 @@ initialize_simps_projections SemiRingCat (-semiring)
 
 namespace SemiRingCat
 
-instance : CoeSort (SemiRingCat) (Type u) :=
+instance : CoeSort SemiRingCat (Type u) :=
   ⟨SemiRingCat.carrier⟩
 
 attribute [coe] SemiRingCat.carrier
@@ -200,7 +200,7 @@ initialize_simps_projections RingCat (-ring)
 
 namespace RingCat
 
-instance : CoeSort (RingCat) (Type u) :=
+instance : CoeSort RingCat (Type u) :=
   ⟨RingCat.carrier⟩
 
 attribute [coe] RingCat.carrier
@@ -532,7 +532,7 @@ initialize_simps_projections CommRingCat (-commRing)
 
 namespace CommRingCat
 
-instance : CoeSort (CommRingCat) (Type u) :=
+instance : CoeSort CommRingCat (Type u) :=
   ⟨CommRingCat.carrier⟩
 
 attribute [coe] CommRingCat.carrier
