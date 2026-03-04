@@ -254,6 +254,7 @@ lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
   rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
   exact coverMincard_eq_zero_iff T F U n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     coverMincard T F U 0 = 1 := by
   apply le_antisymm _ ((one_le_coverMincard_iff T F U 0).2 h)
@@ -263,6 +264,7 @@ lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
   apply this.coverMincard_le_card.trans_eq
   rw [Finset.card_singleton, Nat.cast_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : coverMincard T F univ n = 1 := by
   apply le_antisymm _ ((one_le_coverMincard_iff T F univ n).2 h)
   obtain ⟨x, _⟩ := h

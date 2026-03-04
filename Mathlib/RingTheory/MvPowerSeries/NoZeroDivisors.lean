@@ -147,6 +147,7 @@ instance : NoZeroDivisors (MvPowerSeries σ R) where
       exact IsWellOrder.toIsWellFounded
     simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
     (f * g).weightedOrder w = f.weightedOrder w + g.weightedOrder w := by
   apply le_antisymm _ (le_weightedOrder_mul w)

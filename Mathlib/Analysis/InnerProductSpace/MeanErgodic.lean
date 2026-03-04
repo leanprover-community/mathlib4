@@ -28,6 +28,7 @@ open scoped Topology
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Von Neumann Mean Ergodic Theorem**, a version for a normed space.
 
 Let `f : E → E` be a contracting linear self-map of a normed space.

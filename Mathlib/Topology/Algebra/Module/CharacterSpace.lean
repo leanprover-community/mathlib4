@@ -56,7 +56,7 @@ section NonUnitalNonAssocSemiring
 variable [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜]
   [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A]
 
-instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
+noncomputable instance instFunLike : FunLike (characterSpace 𝕜 A) A 𝕜 where
   coe φ := ((φ : WeakDual 𝕜 A) : A → 𝕜)
   coe_injective' φ ψ h := by ext1; apply DFunLike.ext; exact congr_fun h
 
@@ -92,7 +92,7 @@ instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A)
     map_mul := fun φ => φ.prop.2 }
 
 /-- An element of the character space, as a non-unital algebra homomorphism. -/
-def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 where
+noncomputable def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 where
   toFun := (φ : A → 𝕜)
   map_mul' := map_mul φ
   map_smul' := map_smul φ
@@ -150,7 +150,7 @@ instance instAlgHomClass : AlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
 
 /-- An element of the character space of a unital algebra, as an algebra homomorphism. -/
 @[simps]
-def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
+noncomputable def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
   { toNonUnitalAlgHom φ with
     map_one' := map_one φ
     commutes' := AlgHomClass.commutes φ }
@@ -217,7 +217,7 @@ variable (𝕜 A) [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] 
 `A` into the `𝕜`-algebra of continuous `𝕜`-valued functions on the `characterSpace 𝕜 A`.
 The character space itself consists of all algebra homomorphisms from `A` to `𝕜`. -/
 @[simps]
-def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
+noncomputable def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
   toFun a :=
     { toFun := fun φ => φ a
       continuous_toFun := (eval_continuous a).comp continuous_induced_dom }

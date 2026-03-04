@@ -280,6 +280,7 @@ theorem weightedOrder_add_of_weightedOrder_ne (h : f.weightedOrder w ≠ g.weigh
   simp only [le_inf_iff, weightedOrder_add_of_weightedOrder_lt.aux w H₁]
   exact ⟨le_rfl, le_of_lt H₁⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The weighted_order of the product of two formal power series
 is at least the sum of their orders. -/
 theorem le_weightedOrder_mul :

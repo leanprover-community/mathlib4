@@ -463,7 +463,7 @@ variable [NontriviallyNormedField 𝕜] [NormedRing A] [CompleteSpace A]
 variable [NormedAlgebra 𝕜 A]
 
 /-- The equivalence between characters and algebra homomorphisms into the base field. -/
-def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
+noncomputable def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   toFun := toAlgHom
   invFun f :=
     { val := f.toContinuousLinearMap

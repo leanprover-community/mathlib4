@@ -984,6 +984,7 @@ public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Module.Equiv
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Algebra.Order.Module.HahnEmbedding
+public import Mathlib.Algebra.Order.Module.OrderedSMul
 public import Mathlib.Algebra.Order.Module.Pointwise
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Algebra.Order.Module.Rat

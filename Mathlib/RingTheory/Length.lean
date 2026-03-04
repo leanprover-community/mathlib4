@@ -228,6 +228,7 @@ lemma Module.length_finsupp {ι : Type*} :
   rw [this]
   exact ENat.self_le_mul_right _ length_pos.ne'
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Module.length_pi {ι : Type*} :
     Module.length R (ι → M) = ENat.card ι * Module.length R M := by
