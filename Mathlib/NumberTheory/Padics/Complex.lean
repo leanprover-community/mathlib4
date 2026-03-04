@@ -163,18 +163,13 @@ theorem coe_eq (x : PadicAlgCl p) : (x : ℂ_[p]) = algebraMap (PadicAlgCl p) �
 
 @[simp] theorem coe_zero : ((0 : PadicAlgCl p) : ℂ_[p]) = 0 := rfl
 
-/-- `ℂ_[p]` is an algebra over `PadicAlgCl p`. -/
-instance : Algebra (PadicAlgCl p) ℂ_[p] := NormedAlgebra.toAlgebra
-
-/-- `ℂ_[p]` is an algebra over `ℚ_[p]`. -/
-instance : Algebra ℚ_[p] ℂ_[p] := inferInstance
-
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_natCast (n : ℕ) : ((n : PadicAlgCl p) : ℂ_[p]) = (n : ℂ_[p]) := by
   rw [← map_natCast (algebraMap (PadicAlgCl p) ℂ_[p]) n, coe_eq]
-  congr
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The valuation of `p : ℂ_[p]` is `1/p`. -/
