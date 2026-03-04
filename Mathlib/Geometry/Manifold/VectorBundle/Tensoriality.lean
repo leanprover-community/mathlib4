@@ -198,6 +198,17 @@ theorem mkTensorAt_apply
   · exact mdifferentiable_extend ..
   · simp
 
+variable {I} in
+theorem mkTensorAt_apply_eq_extend
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    {φ : (Π x : M, V x) → (Π x, V' x)} {x}
+    (φ_smul : ∀ f : M → ℝ, ∀ σ, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) x = f x • φ σ x)
+    (φ_add : ∀ σ σ', MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') x = φ σ x + φ σ' x) (σ : V x) :
+    mkTensorAt I F φ x φ_smul φ_add σ = φ (_root_.extend I F σ) x :=
+  rfl
+
 noncomputable def mkTensor
     -- `φ` explicit to make it easier to generate the side conditions at point of use
     (φ : (Π x : M, V x) → (Π x, V' x))
@@ -308,6 +319,23 @@ theorem mk2TensorAt_apply
   · exact mdifferentiable_extend ..
   · simp
   · simp
+
+variable {I} in
+theorem mk2TensorAt_apply_eq_extend
+    -- `φ` explicit to make it easier to generate the side conditions at point of use
+    {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
+    (σ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
+      φ (f • σ) τ x = f x • φ σ τ x)
+    (σ_add : ∀ {σ σ' τ}, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+      φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
+    (τ_smul : ∀ {f : M → ℝ}, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
+        φ σ (f • τ) x = f x • φ σ τ x)
+    (τ_add : ∀ {σ τ τ'}, MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+        φ σ (τ + τ') x = φ σ τ x + φ σ τ' x)
+    (σ τ : V x) :
+    mk2TensorAt I F φ σ_smul σ_add τ_smul τ_add σ τ
+    = φ (_root_.extend I F σ) (_root_.extend I F τ) x :=
+  rfl
 
 theorem mk2TensorAt_add
     (φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)) {x}
