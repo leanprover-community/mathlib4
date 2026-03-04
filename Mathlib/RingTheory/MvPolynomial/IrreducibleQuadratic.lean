@@ -65,7 +65,6 @@ section
 
 variable {n : Type*} {R : Type*} [CommRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Polynomial in
 attribute [local simp] MvPolynomial.optionEquivLeft_X_none in -- tag simp globally?
 lemma irreducible_mul_X_add {n : Type*} {R : Type*} [CommRing R] [IsDomain R]

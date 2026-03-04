@@ -405,7 +405,7 @@ class DayConvolutionUnit (F : C ⥤ V) where
   /-- A "canonical" structure map `𝟙_ V ⟶ F.obj (𝟙_ C)` that defines a natural transformation
   `fromPUnit (𝟙_ V) ⟶ fromPUnit (𝟙_ C) ⋙ F`. -/
   can : 𝟙_ V ⟶ F.obj (𝟙_ C)
-  /-- The canonical map `𝟙_ V ⟶ F.obj (𝟙_ C)` exhibits `F` as a pointwise left kan extension
+  /-- The canonical map `𝟙_ V ⟶ F.obj (𝟙_ C)` exhibits `F` as a pointwise left Kan extension
   of `fromPUnit.{0} 𝟙_ V` along `fromPUnit.{0} 𝟙_ C`. -/
   isPointwiseLeftKanExtensionCan : Functor.LeftExtension.mk F
     ({ app _ := can } : Functor.fromPUnit.{0} (𝟙_ V) ⟶
@@ -1163,7 +1163,6 @@ lemma tensorHom_id {x x' : D} (f : x ⟶ x') (y : D) :
     f ⊗ₘ (𝟙 y) = f ▷ y :=
   rfl
 
-set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 lemma ι_map_tensorHom_eq {d₁ d₁' d₂ d₂' : D} (f : d₁ ⟶ d₂) (f' : d₁' ⟶ d₂') :
     letI := mkMonoidalCategoryStruct C V D

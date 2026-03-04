@@ -311,6 +311,7 @@ theorem oangle_eq_oangle_of_dist_eq {p₁ p₂ p₃ : P} (h : dist p₁ p₂ = d
   rw [oangle, oangle, ← vsub_sub_vsub_cancel_left p₃ p₂ p₁, ← vsub_sub_vsub_cancel_left p₂ p₃ p₁,
     o.oangle_sub_eq_oangle_sub_rev_of_norm_eq h]
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- The angle at the apex of an isosceles triangle is `π` minus twice a base angle, oriented
 angle-at-point form. -/
 theorem oangle_eq_pi_sub_two_zsmul_oangle_of_dist_eq {p₁ p₂ p₃ : P} (hn : p₂ ≠ p₃)
@@ -612,6 +613,20 @@ theorem _root_.Sbtw.oangle_eq_left_right {p₁ p₁' p₂ p₃ p₃' : P} (h₁ 
   rw [h₁.oangle_eq_add_pi_left h₃.left_ne, h₃.oangle_eq_add_pi_right h₁.right_ne, add_assoc,
     Real.Angle.coe_pi_add_coe_pi, add_zero]
 
+lemma oangle_pointReflection_right {p₁ p₂ p₃ : P} (h₁₂ : p₁ ≠ p₂) (h₃₂ : p₃ ≠ p₂) :
+    ∡ p₁ p₂ (AffineEquiv.pointReflection ℝ p₂ p₃) = ∡ p₁ p₂ p₃ + π := by
+  have h₂₃' : (AffineEquiv.pointReflection ℝ p₂) p₃ ≠ p₂ := by
+    conv_rhs => rw [← AffineEquiv.pointReflection_self ℝ p₂]
+    rw [(AffineEquiv.pointReflection ℝ p₂).injective.ne_iff]
+    exact h₃₂
+  rw [← sub_eq_iff_eq_add', oangle_sub_left h₁₂ h₃₂ h₂₃']
+  exact Sbtw.oangle₁₂₃_eq_pi <| sbtw_pointReflection_of_ne ℝ h₃₂.symm
+
+lemma oangle_pointReflection_left {p₁ p₂ p₃ : P} (h₁₂ : p₁ ≠ p₂) (h₃₂ : p₃ ≠ p₂) :
+    ∡ (AffineEquiv.pointReflection ℝ p₂ p₁) p₂ p₃ = ∡ p₁ p₂ p₃ + π := by
+  rw [oangle_rev, oangle_pointReflection_right h₃₂ h₁₂, neg_add, ← oangle_rev]
+  simp
+
 /-- Replacing the first point by one on the same line does not change twice the oriented angle. -/
 theorem _root_.Collinear.two_zsmul_oangle_eq_left {p₁ p₁' p₂ p₃ : P}
     (h : Collinear ℝ ({p₁, p₂, p₁'} : Set P)) (hp₁p₂ : p₁ ≠ p₂) (hp₁'p₂ : p₁' ≠ p₂) :
@@ -846,5 +861,89 @@ lemma angle_eq_iff_oangle_eq_or_wbtw {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ≠
   · rcases h with h | h
     · exact h.sameRay_vsub_left
     · exact h.sameRay_vsub_left.symm
+
+/-- If `p₃` bisects the angle `∡ p₁ p₂ p₄`, and `p₃` and `p₄` lie on the same side of the line
+`p₁ p₂`, then the unoriented angle `∠ p₁ p₂ p₃` is half `∠ p₁ p₂ p₄`. -/
+lemma angle_eq_angle_div_two_of_oangle_eq_of_sSameSide {p₁ p₂ p₃ p₄ : P} (h₁₂ : p₁ ≠ p₂)
+    (ha : ∡ p₁ p₂ p₃ = ∡ p₃ p₂ p₄) (hs : line[ℝ, p₁, p₂].SSameSide p₃ p₄) :
+    ∠ p₁ p₂ p₃ = ∠ p₁ p₂ p₄ / 2 := by
+  have h₃₂ : p₃ ≠ p₂ := by
+    rintro rfl
+    exact hs.left_notMem (right_mem_affineSpan_pair _ _ _)
+  have h₄₂ : p₄ ≠ p₂ := by
+    rintro rfl
+    exact hs.right_notMem (right_mem_affineSpan_pair _ _ _)
+  suffices ((∡ p₁ p₂ p₃).toReal + (∡ p₃ p₂ p₄).toReal) / 2 = (∡ p₁ p₂ p₄).toReal / 2 by
+    rw [← ha, add_self_div_two] at this
+    rw [angle_eq_abs_oangle_toReal h₁₂ h₃₂, angle_eq_abs_oangle_toReal h₁₂ h₄₂, this, abs_div]
+    simp
+  have hadd := oangle_add h₁₂ h₃₂ h₄₂
+  rw [div_left_inj' (by norm_num), ← hadd]
+  have h : ∡ p₁ p₂ p₃ ≠ π := fun h ↦ hs.left_notMem ((oangle_eq_zero_or_eq_pi_iff_collinear.1
+    (.inr h)).mem_affineSpan_of_mem_of_ne (by grind) (by grind) (by grind) h₁₂)
+  refine (Real.Angle.toReal_add_eq_toReal_add_toReal h (ha ▸ h) (.inr ?_)).symm
+  rw [hadd, ← oangle_swap₂₃_sign p₁ p₃ p₂, ← oangle_swap₂₃_sign p₁ p₄ p₂, neg_inj, eq_comm]
+  exact hs.oangle_sign_eq (left_mem_affineSpan_pair _ _ _) (right_mem_affineSpan_pair _ _ _)
+
+/-- If `p₃` bisects the angle `∡ p₁ p₂ p₄`, and `p₃` and `p₄` lie on opposite sides of the line
+`p₁ p₂`, then the unoriented angle `∠ p₁ p₂ p₃` is `π` minus half `∠ p₁ p₂ p₄`. -/
+lemma angle_eq_pi_sub_angle_div_two_of_oangle_eq_of_sOppSide {p₁ p₂ p₃ p₄ : P} (h₁₂ : p₁ ≠ p₂)
+    (ha : ∡ p₁ p₂ p₃ = ∡ p₃ p₂ p₄) (hs : line[ℝ, p₁, p₂].SOppSide p₃ p₄) :
+    ∠ p₁ p₂ p₃ = π - ∠ p₁ p₂ p₄ / 2 := by
+  have h₃₂ : p₃ ≠ p₂ := by
+    rintro rfl
+    exact hs.left_notMem (right_mem_affineSpan_pair _ _ _)
+  have h₄₂ : p₄ ≠ p₂ := by
+    rintro rfl
+    exact hs.right_notMem (right_mem_affineSpan_pair _ _ _)
+  have ha' : ∡ p₁ p₂ (AffineEquiv.pointReflection ℝ p₂ p₃) =
+      ∡ (AffineEquiv.pointReflection ℝ p₂ p₃) p₂ p₄ := by
+    rw [oangle_pointReflection_left h₃₂ h₄₂, oangle_pointReflection_right h₁₂ h₃₂]
+    simpa using ha
+  have hs' : line[ℝ, p₁, p₂].SOppSide p₃ (AffineEquiv.pointReflection ℝ p₂ p₃) :=
+    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) (hs.left_notMem)
+  obtain h := angle_eq_angle_div_two_of_oangle_eq_of_sSameSide h₁₂ ha' (hs'.symm.trans hs)
+  rw [angle_pointReflection_right] at h
+  linear_combination -h
+
+/-- If `p₃` bisects the angle `∡ p₁ p₂ p₄` externally, and `p₃` and `p₄` lie on the same side of
+the line `p₁ p₂`, then the unoriented angle `∠ p₁ p₂ p₃` is half `∠ p₁ p₂ p₄` plus `π / 2`. -/
+lemma angle_eq_angle_add_pi_div_two_of_oangle_eq_add_pi_of_sSameSide {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (ha : ∡ p₁ p₂ p₃ = ∡ p₃ p₂ p₄ + π) (hs : line[ℝ, p₁, p₂].SSameSide p₃ p₄) :
+    ∠ p₁ p₂ p₃ = (∠ p₁ p₂ p₄ + π) / 2 := by
+  have h₃₂ : p₃ ≠ p₂ := by
+    rintro rfl
+    exact hs.left_notMem (right_mem_affineSpan_pair _ _ _)
+  have h₄₂ : p₄ ≠ p₂ := by
+    rintro rfl
+    exact hs.right_notMem (right_mem_affineSpan_pair _ _ _)
+  have ha' : ∡ p₁ p₂ p₃ = ∡ p₃ p₂ (AffineEquiv.pointReflection ℝ p₂ p₄) := by
+    rw [oangle_pointReflection_right h₃₂ h₄₂]
+    exact ha
+  have hs' : line[ℝ, p₁, p₂].SOppSide p₄ (AffineEquiv.pointReflection ℝ p₂ p₄) :=
+    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) (hs.right_notMem)
+  obtain h := angle_eq_pi_sub_angle_div_two_of_oangle_eq_of_sOppSide h₁₂ ha' (hs.trans_sOppSide hs')
+  rw [angle_pointReflection_right] at h
+  linear_combination h
+
+/-- If `p₃` bisects the angle `∡ p₁ p₂ p₄` externally, and `p₃` and `p₄` lie on opposite sides of
+the line `p₁ p₂`, then the unoriented angle `∠ p₁ p₂ p₃` is `π / 2` minus half `∠ p₁ p₂ p₄`. -/
+lemma angle_eq_pi_sub_angle_div_two_of_oangle_eq_add_pi_of_sOppSide {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (ha : ∡ p₁ p₂ p₃ = ∡ p₃ p₂ p₄ + π) (hs : line[ℝ, p₁, p₂].SOppSide p₃ p₄) :
+    ∠ p₁ p₂ p₃ = (π - ∠ p₁ p₂ p₄) / 2 := by
+  have h₃₂ : p₃ ≠ p₂ := by
+    rintro rfl
+    exact hs.left_notMem (right_mem_affineSpan_pair _ _ _)
+  have h₄₂ : p₄ ≠ p₂ := by
+    rintro rfl
+    exact hs.right_notMem (right_mem_affineSpan_pair _ _ _)
+  have ha' : ∡ p₁ p₂ p₃ = ∡ p₃ p₂ (AffineEquiv.pointReflection ℝ p₂ p₄) := by
+    rw [oangle_pointReflection_right h₃₂ h₄₂]
+    exact ha
+  have hs' : line[ℝ, p₁, p₂].SOppSide p₄ (AffineEquiv.pointReflection ℝ p₂ p₄) :=
+    AffineSubspace.sOppSide_pointReflection (right_mem_affineSpan_pair _ _ _) (hs.right_notMem)
+  obtain h := angle_eq_angle_div_two_of_oangle_eq_of_sSameSide h₁₂ ha' (hs.trans hs')
+  rw [angle_pointReflection_right] at h
+  exact h
 
 end EuclideanGeometry

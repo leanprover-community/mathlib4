@@ -86,8 +86,7 @@ theorem IsHausdorff.of_map [CommRing S] [Module S M] {J : Ideal S} [Algebra R S]
   apply SModEq.of_toAddSubgroup_le
       (U := (I ^ n • ⊤ : Submodule R M)) (V := (J ^ n • ⊤ : Submodule S M))
   · rw [← AddSubgroup.toAddSubmonoid_le]
-    simp only [Submodule.toAddSubgroup_toAddSubmonoid, Submodule.smul_toAddSubmonoid,
-      Submodule.top_toAddSubmonoid]
+    simp only [Submodule.smul_toAddSubmonoid, Submodule.top_toAddSubmonoid]
     rw [AddSubmonoid.smul_le]
     intro r hr m hm
     rw [← algebraMap_smul S r m]
