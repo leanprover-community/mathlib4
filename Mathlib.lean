@@ -4887,6 +4887,7 @@ public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Monoidal
 public import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat.Symmetric
 public import Mathlib.LinearAlgebra.QuadraticForm.Radical
 public import Mathlib.LinearAlgebra.QuadraticForm.Real
+public import Mathlib.LinearAlgebra.QuadraticForm.Signature
 public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct
 public import Mathlib.LinearAlgebra.QuadraticForm.TensorProduct.Isometries
 public import Mathlib.LinearAlgebra.Quotient.Basic
