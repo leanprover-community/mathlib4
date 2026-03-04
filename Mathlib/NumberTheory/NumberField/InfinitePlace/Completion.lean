@@ -231,6 +231,7 @@ attribute [local instance] WithAbs.algebraLeft
 variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) {v}
   [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algebraMap_coe (x : WithAbs v.1) :
     algebraMap v.Completion w.Completion x = algebraMap (WithAbs v.1) (WithAbs w.1) x := by
@@ -276,6 +277,7 @@ variable {L : Type*} [Field L] [Algebra K L] (w : InfinitePlace L) [w.1.LiesOver
 
 attribute [local instance] WithAbs.algebraLeft
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isometry_algebraMap : Isometry (algebraMap (WithAbs v.1) (WithAbs w.1)) :=
   AddMonoidHomClass.isometry_of_norm _ fun x ↦ by
     simpa [WithAbs.norm_eq_apply_ofAbs] using
