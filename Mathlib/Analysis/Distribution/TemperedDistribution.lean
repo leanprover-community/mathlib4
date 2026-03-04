@@ -108,26 +108,105 @@ end Function.HasTemperateGrowth
 
 namespace MeasureTheory.LocallyIntegrable
 
+#check PointwiseConvergenceCLM.continuous_of_continuous_eval
+
+open Asymptotics Filter
+
+#check integrable_pow_mul
+
+
+theorem exists_compact {f : E → F} (hf : ∃ k, f =O[cocompact E] (‖·‖ ^ k)) :
+    ∃ s k c, IsCompact s ∧ ∀ y ∈ sᶜ, ‖f y‖ ≤ c * ‖y‖ ^ k := by
+  obtain ⟨k, hk⟩ := hf
+  rw [isBigO_iff] at hk
+  obtain ⟨c, hc⟩ := hk
+  simp only [norm_pow, norm_norm] at hc
+  obtain ⟨s, hs, hc⟩ := hc.exists_mem
+  rw [Filter.mem_cocompact] at hs
+  obtain ⟨t, ht₁, ht₂⟩ := hs
+  use t, k, c, ht₁
+  intro x hx
+  exact hc x (ht₂ hx)
+
 variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
   (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
 
-#check PointwiseConvergenceCLM.continuous_of_continuous_eval
+set_option backward.privateInPublic true in
+theorem foo {f : E → F} (hf : LocallyIntegrable f μ)
+    (hf' : ∃ k, f =O[cocompact E] (‖·‖ ^ k)) (g : 𝓢(E, ℂ)) :
+    Integrable (fun x ↦ g x • f x) μ := by
+  obtain ⟨t, k, c, ht₁, ht₂⟩ := exists_compact hf'
+  have h₁ : IntegrableOn (fun x ↦ g x • f x) tᶜ μ := by
+    --apply IntegrableOn.mono_set ?_ ht₂
+    have := ((g.integrable_pow_mul μ k).integrableOn (s := tᶜ)).smul c
+    have hf' := hf.aestronglyMeasurable
+    apply Integrable.mono' this
+    · fun_prop
+    · rw [MeasureTheory.ae_restrict_iff₀]
+      · filter_upwards with x hx
+        rw [norm_smul]
+        simp only [Pi.smul_apply, smul_eq_mul]
+        grw [ht₂ x hx]
+        apply le_of_eq
+        ring
+      exact AEStronglyMeasurable.nullMeasurableSet_le (by fun_prop) (by fun_prop)
+  have h₂ : IntegrableOn (fun x ↦ g x • f x) t μ := by
+    apply (hf.integrableOn_isCompact ht₁).continuousOn_smul
+    · apply g.continuous.continuousOn
+    · exact ht₁
+  rw [← MeasureTheory.integrableOn_univ, ← Set.union_compl_self t]
+  exact h₂.union h₁
+
+variable [MeasurableSpace F] [BorelSpace F] --[MeasurableSMul₂ ℂ F]
 
 set_option backward.isDefEq.respectTransparency false in
---set_option backward.privateInPublic true in
-def toTemperedDistribution {f : E → F} (hf : LocallyIntegrable f μ)
-    (hf' : ∃ k, Asymptotics.IsBigO (Filter.cocompact E) f (‖·‖ ^ k)) : 𝓢'(E, F) where
-  toFun g := ∫ x, g x • f x ∂μ
-  map_add' g₁ g₂ := by
-    simp only [SchwartzMap.add_apply, add_smul]
-    apply integral_add
-    · sorry
-    · sorry
-  map_smul' c g := by
-    simp only [SchwartzMap.smul_apply, RingHom.id_apply, smul_assoc]
-    apply integral_smul
-  cont := by
+set_option backward.privateInPublic true in
+def toTemperedDistribution' {f : E → F} (hf : LocallyIntegrable f μ)
+    (hf' : ∃ k, f =O[Filter.cocompact E] (‖·‖ ^ k)) : 𝓢'(E, F) :=
+  toPointwiseConvergenceCLM _ _ _ _ <| SchwartzMap.mkCLMtoNormedSpace
+    (fun g ↦ ∫ x, g x • f x ∂μ) (by
+  intro g₁ g₂
+  simp only [SchwartzMap.add_apply, add_smul]
+  apply integral_add (foo μ hf hf' g₁) (foo μ hf hf' g₂))
+    (by
+  intro c g
+  simp only [SchwartzMap.smul_apply, smul_assoc, RingHom.id_apply]
+  apply integral_smul)
+    (by
+  obtain ⟨s, k, c, hs₁, hs₂⟩ := exists_compact hf'
+  set C : ℝ := 1
+  have hC : 0 ≤ C := by sorry
+  use {(0,0), (0, 1)}, 2 * C, by positivity
+  intro g
+  have hs : ‖∫ (x : E) in s, g x • f x ∂μ‖ ≤ C * (SchwartzMap.seminorm ℂ 0 0) g := by
+    grw [MeasureTheory.norm_integral_le_integral_norm]
     sorry
+    --sorry
+  have hsc : ‖∫ (x : E) in sᶜ, g x • f x ∂μ‖ ≤ C * (SchwartzMap.seminorm ℂ 0 1) g := by
+    sorry
+  calc
+    _ = ‖∫ (x : E), g x • f x ∂μ‖ := rfl
+    _ ≤ ‖∫ x in s, g x • f x ∂μ‖ + ‖∫ x in sᶜ, g x • f x ∂μ‖ := by
+      rw [← MeasureTheory.integral_add_compl₀ (s := s)]
+      · apply norm_add_le
+      · exact IsCompact.nullMeasurableSet hs₁
+      · exact foo μ hf hf' g
+    _ ≤ C * SchwartzMap.seminorm ℂ 0 0 g + C * SchwartzMap.seminorm ℂ 0 1 g := by
+      apply add_le_add
+      · apply hs
+      · apply hsc
+    _ = C * SchwartzMap.seminorm ℂ 0 0 g + C * SchwartzMap.seminorm ℂ 0 1 g := by ring
+    _ ≤ C * (max (SchwartzMap.seminorm ℂ 0 0 g) (SchwartzMap.seminorm ℂ 0 1 g)) +
+        C * (max (SchwartzMap.seminorm ℂ 0 0 g) (SchwartzMap.seminorm ℂ 0 1 g)) := by
+      gcongr <;> simp
+    _ = _ := by
+      simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
+        Seminorm.coe_sup, Pi.sup_apply]
+      ring)
+
+#check SchwartzMap.mkCLMtoNormedSpace
+
+#exit
 
 
 end MeasureTheory.LocallyIntegrable
