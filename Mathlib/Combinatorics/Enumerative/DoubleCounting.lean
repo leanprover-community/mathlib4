@@ -95,15 +95,13 @@ If each `a ∈ s` is related to at least `m a` elements of `t`, then the weighte
 theorem sum_mul_le_sum_sum_bipartiteBelow_of_le_card_bipartiteAbove
     [∀ a b, Decidable (r a b)] (w m : α → ℕ)
     (hm : ∀ a ∈ s, m a ≤ #(t.bipartiteAbove r a)) :
-    (∑ a ∈ s, m a * w a) ≤ ∑ b ∈ t, ∑ a ∈ s.bipartiteBelow r b, w a := by
+    (∑ a ∈ s, m a * w a) ≤ ∑ b ∈ t, ∑ a ∈ s.bipartiteBelow r b, w a :=
   calc
-    (∑ a ∈ s, m a * w a) ≤ ∑ a ∈ s, ∑ b ∈ t.bipartiteAbove r a, w a := by
-      refine sum_le_sum <| fun a ha => ?_
-      simpa [sum_const, Nat.mul_comm] using Nat.mul_le_mul_right (w a) (hm a ha)
-    _ = ∑ b ∈ t, ∑ a ∈ s.bipartiteBelow r b, w a := by
-      simpa using
-        (sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow
-          (r := r) (s := s) (t := t) (f := fun a _ => w a))
+    _ ≤ ∑ a ∈ s, ∑ b ∈ t.bipartiteAbove r a, w a :=
+      sum_le_sum fun a ha ↦ by
+        simpa using Nat.mul_le_mul_right (w a) (hm a ha)
+    _ = _ := by
+      simpa using sum_sum_bipartiteAbove_eq_sum_sum_bipartiteBelow (r := r) (f := fun a _ ↦ w a)
 
 section OrderedSemiring
 variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {m n : R}
