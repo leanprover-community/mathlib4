@@ -181,6 +181,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [IsTopologicalRing R] {J : Ideal R
 
 variable [TopologicalSpace R] [IsTopologicalRing R]
 
+-- TODO rename
 theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : IsAdic (J ^ n) := by
   rw [isAdic_iff] at h ⊢
   constructor
@@ -198,6 +199,7 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
     apply Ideal.pow_le_pow_right
     apply Nat.le_add_left
 
+-- TODO rename
 theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [IsTopologicalRing A] :
     IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A := by
   rw [isAdic_iff]
