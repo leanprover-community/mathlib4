@@ -2,6 +2,7 @@ module
 
 public import Mathlib.RepresentationTheory.Rep.Basic
 public import Mathlib.CategoryTheory.Action.Monoidal
+public import Mathlib.CategoryTheory.Action.Limits
 
 @[expose] public section
 
@@ -42,13 +43,11 @@ instance : (resFunctor (k := k) f).Faithful :=
 theorem full_res (hf : (⇑f).Surjective) : (resFunctor (k := k) f).Full :=
   Action.full_res _ _ hf
 
-instance : (resFunctor (k := k) f).Additive :=
-  inferInstanceAs <| (Action.res _ _).Additive
+instance : (resFunctor (k := k) f).Additive := Action.res_additive f
 
-instance : (resFunctor (k := k) f).Linear k :=
-  inferInstanceAs <| (Action.res _ _).Linear k
+instance : (resFunctor (k := k) f).Linear k := Action.res_linear f
 
-section
+noncomputable section
 
 variable {G : Type v} [Group G] (A : Rep k G) (S : Subgroup G)
   [S.Normal] [Representation.IsTrivial (A.ρ.comp S.subtype)]

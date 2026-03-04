@@ -301,8 +301,52 @@ def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ w
   toLinearMap := ρ g
   isIntertwining' x := LinearMap.ext <| (isIntertwiningMap_of_mem_center ρ g hg).isIntertwining x
 
-end IntertwiningMap
+variable {P : Type*} [AddCommMonoid P] [Module A P] {π : Representation A G P}
 
+variable {ρ σ τ}
+
+/-- The tensor product of intertwining maps induced from tensor product of LinearMaps. -/
+def tensor (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
+    (tprod ρ τ).IntertwiningMap (tprod σ π) where
+  toLinearMap := TensorProduct.map f.toLinearMap g.toLinearMap
+  isIntertwining' x := by
+    rw [tprod_apply, ← TensorProduct.map_comp, f.2, g.2, TensorProduct.map_comp, tprod_apply]
+
+@[simp]
+lemma tensor_toLinearMap (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) :
+    (f.tensor g).toLinearMap = TensorProduct.map f.toLinearMap g.toLinearMap := rfl
+
+@[simp]
+lemma tensor_apply (f : IntertwiningMap ρ σ) (g : IntertwiningMap τ π) (v : V) (w : U) :
+    f.tensor g (v ⊗ₜ w) = f v ⊗ₜ g w := rfl
+
+variable (ρ) in
+/-- the natural intertwining map induced from `f : σ → τ` to `ρ.tprod σ → ρ.tprod τ`. -/
+def lTensor (f : IntertwiningMap σ τ) :
+    (tprod ρ σ).IntertwiningMap (tprod ρ τ) := tensor (id ρ) f
+
+@[simp]
+lemma lTensor_toLinearMap (f : IntertwiningMap ρ σ) :
+    (f.lTensor ρ).toLinearMap = f.toLinearMap.lTensor _ := rfl
+
+@[simp]
+lemma lTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
+    f.lTensor ρ (v ⊗ₜ w) = v ⊗ₜ f w := rfl
+
+variable (ρ) in
+/-- the natural intertwining map induced from `f : σ → τ` to `σ.tprod ρ → τ.tprod ρ`. -/
+def rTensor (f : IntertwiningMap σ τ) :
+    (tprod σ ρ).IntertwiningMap (tprod τ ρ) := tensor f (id ρ)
+
+@[simp]
+lemma rTensor_toLinearMap (f : IntertwiningMap σ τ) :
+    (f.rTensor ρ).toLinearMap = f.toLinearMap.rTensor _ := rfl
+
+@[simp]
+lemma rTensor_apply (f : IntertwiningMap σ τ) (v : V) (w : W) :
+    f.rTensor ρ (w ⊗ₜ v) = f w ⊗ₜ v := rfl
+
+end IntertwiningMap
 
 /-- Equivalence between representations is a bijective intertwining map. -/
 @[ext]
