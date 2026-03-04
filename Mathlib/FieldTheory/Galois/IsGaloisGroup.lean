@@ -71,7 +71,7 @@ variable (R : Type*) [Semiring R] [Algebra A R] [FaithfulSMul A R] [MulSemiringA
   [hA : IsGaloisGroup G A R]
 
 /--
-If `R/A` is Galois with Galois group `G`, then `A` is isomorphic to the subring of elements of `B`
+If `R/A` is Galois with Galois group `G`, then `A` is isomorphic to the subring of elements of `R`
 fixed by `G`.
 -/
 @[simps apply_coe]
