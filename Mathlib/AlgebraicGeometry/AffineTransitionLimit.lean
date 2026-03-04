@@ -657,7 +657,7 @@ lemma Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
   simp only [Precoverage.ZeroHypercover.pullback₁_toPreZeroHypercover,
     PreZeroHypercover.pullback₁_X, PreZeroHypercover.pullback₁_f, Functor.map_comp, Category.assoc]
     at heq ⊢
-  simp_rw [← D.map_comp_assoc, reassoc_of% this o u, D.map_comp_assoc]
+  simp_rw [← D.map_comp_assoc, this o u, D.map_comp_assoc]
   rw [← reassoc_of% hF, ← reassoc_of% hF, heq]
 
 set_option backward.isDefEq.respectTransparency false in

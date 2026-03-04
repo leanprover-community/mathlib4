@@ -228,7 +228,9 @@ theorem isUniformInducing_closure : IsUniformInducing (closure (X := α)) := by
   · grw [subset_closure (s := t), hts, closure_subset_image hV s, ← hVU, SetRel.image_comp]
 
 theorem nhds_closure (s : Set α) : 𝓝 (closure s) = 𝓝 s := by
-  simp_rw +singlePass [isUniformInducing_closure.isInducing.nhds_eq_comap, closure_closure]
+  nth_rw 2 [isUniformInducing_closure.isInducing.nhds_eq_comap]
+  nth_rw 1 [isUniformInducing_closure.isInducing.nhds_eq_comap]
+  rw [closure_closure]
 
 instance [DiscreteUniformity α] : DiscreteUniformity (Set α) := by
   rw [discreteUniformity_iff_setRelId_mem_uniformity]
