@@ -202,8 +202,9 @@ theorem X₃_shortExact_isFlasque_X₁_isFlasque_X₂ {S : ShortComplex (Sheaf A
 
 /-- Injective sheaves are flasque. -/
 instance of_injective (I : Sheaf AddCommGrpCat.{u} X) [Injective I] : IsFlasque I where
-  epi := fun i => epi_map_of_injective I (leOfHom i)
+  epi := fun i => epi_map_of_injective I (leOfHom i.unop)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Flasque sheaves have no higher cohomology. For most applications, it is probably better to use
   `Subsingleton (H F (n + 1))` which can be proven by `infer_instance` -/
 theorem H_isZero (F : Sheaf AddCommGrpCat X) [IsFlasque F] (n : ℕ) :
