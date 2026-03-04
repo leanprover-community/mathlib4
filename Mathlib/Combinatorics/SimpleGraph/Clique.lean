@@ -653,11 +653,11 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : SimpleGraph α) (f : α ↪ β) :
 
 @[simp]
 theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
-    (G.map e.toEmbedding).cliqueSet n = map e.toEmbedding '' G.cliqueSet n := by
+    (G.map e).cliqueSet n = map e.toEmbedding '' G.cliqueSet n := by
   obtain rfl | hn := eq_or_ne n 1
   · ext
     simp [e.exists_congr_left]
-  · exact cliqueSet_map hn _ _
+  · simpa using cliqueSet_map hn G e.toEmbedding
 
 end CliqueSet
 
