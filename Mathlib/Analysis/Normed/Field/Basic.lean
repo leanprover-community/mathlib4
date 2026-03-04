@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Analysis.Normed.Ring.Basic
 
+import Mathlib.Data.Fintype.Order
+
 /-!
 # Normed division rings and fields
 
@@ -360,3 +362,26 @@ noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) 
   norm_mul := v.map_mul
 
 end AbsoluteValue
+
+namespace Real
+
+universe u v
+
+variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
+
+lemma iSup_prod_eq_prod_iSup_of_nonneg {f : (a : α) → ι a → ℝ} (hf₀ : ∀ a i, 0 ≤ f a i) :
+    ⨆ (i : (a : α) → ι a), ∏ a, f a (i a) = ∏ a, ⨆ i, f a i := by
+  rcases isEmpty_or_nonempty ((a : α) → ι a) with h | h
+  · rw [iSup_of_isEmpty, eq_comm, Finset.prod_eq_zero_iff]
+    obtain ⟨a, ha⟩ := isEmpty_pi.mp h
+    exact ⟨a, by simp⟩
+  refine le_antisymm ?_ ?_
+  · exact ciSup_le fun i ↦ Finset.prod_le_prod (by simp [hf₀])
+      fun a ha ↦ Finite.le_ciSup_of_le _ le_rfl
+  · rw [Classical.nonempty_pi] at h
+    have H a : ∃ i : ι a, f a i = ⨆ i, f a i := exists_eq_ciSup_of_finite
+    choose i hi using H
+    simp only [← hi]
+    exact Finite.le_ciSup_of_le i le_rfl
+
+end Real

@@ -560,25 +560,6 @@ lemma AbsoluteValue.iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue
 
 section many
 
-universe u v
-
-variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
-
-lemma Real.iSup_prod_eq_prod_iSup_of_nonneg {f : (a : α) → ι a → ℝ} (hf₀ : ∀ a i, 0 ≤ f a i) :
-    ⨆ (i : (a : α) → ι a), ∏ a, f a (i a) = ∏ a, ⨆ i, f a i := by
-  rcases isEmpty_or_nonempty ((a : α) → ι a) with h | h
-  · rw [Real.iSup_of_isEmpty, eq_comm, Finset.prod_eq_zero_iff]
-    obtain ⟨a, ha⟩ := isEmpty_pi.mp h
-    exact ⟨a, by simp⟩
-  refine le_antisymm ?_ ?_
-  · exact ciSup_le fun i ↦ Finset.prod_le_prod (by simp [hf₀])
-      fun a ha ↦ Finite.le_ciSup_of_le _ le_rfl
-  · rw [Classical.nonempty_pi] at h
-    have H a : ∃ i : ι a, f a i = ⨆ i, f a i := exists_eq_ciSup_of_finite
-    choose i hi using H
-    simp only [← hi]
-    exact Finite.le_ciSup_of_le i le_rfl
-
 lemma AbsoluteValue.iSup_prod_abv_eq_prod_iSup_abv (v : AbsoluteValue R ℝ) {x : (a : α) → ι a → R} :
     ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) :=
   Real.iSup_prod_eq_prod_iSup_of_nonneg (f := fun a i ↦ v (x a i)) (fun _ _ ↦ v.nonneg _)
