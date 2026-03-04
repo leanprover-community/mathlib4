@@ -711,7 +711,7 @@ jobs:
         uses: ./ci-tools/.github/actions/azure-create-cache-token
         with:
           azure-client-id: ${{ inputs.cache_application_id }}
-          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Fallback to SAS token if bearer mint fails (for ease of migration)
         if: ${{ steps.mint_cache_bearer.outcome != 'success' }}
