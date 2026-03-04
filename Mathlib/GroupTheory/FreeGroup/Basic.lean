@@ -814,7 +814,7 @@ theorem freeGroupCongr_trans {α β γ} (e : α ≃ β) (f : β ≃ γ) :
 /-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves surjectivity. -/
 @[to_additive /-- Composing an additive homomorphism with a reindexing `freeAddGroupCongr`
 preserves surjectivity. -/]
-lemma surjective_comp_freeGroupCongr {G : Type*} [Group G]
+lemma surjective_comp_freeGroupCongr {G : Type*} [MulOne G]
     (e : α ≃ β) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f) :
   Function.Surjective (f ∘ freeGroupCongr e.symm) := by
   let iso : FreeGroup β ≃* FreeGroup α := freeGroupCongr e.symm
@@ -823,7 +823,7 @@ lemma surjective_comp_freeGroupCongr {G : Type*} [Group G]
 /-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves injectivity. -/
 @[to_additive /-- Composing an additive homomorphism with a reindexing `freeAddGroupCongr`
 preserves injectivity. -/]
-lemma injective_comp_freeGroupCongr {G : Type*} [Group G]
+lemma injective_comp_freeGroupCongr {G : Type*} [MulOne G]
     (e : α ≃ β) (f : FreeGroup α →* G) (hfinj : Function.Injective f) :
   Function.Injective (f ∘ freeGroupCongr e.symm) := by
   let iso : FreeGroup β ≃* FreeGroup α := freeGroupCongr e.symm
@@ -832,7 +832,7 @@ lemma injective_comp_freeGroupCongr {G : Type*} [Group G]
 /-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves bijectivity. -/
 @[to_additive /-- Composing a homomorphism with a reindexing `freeAddGroupCongr`
 preserves bijectivity. -/]
-lemma bijective_comp_freeGroupCongr {G : Type*} [Group G]
+lemma bijective_comp_freeGroupCongr {G : Type*} [MulOne G]
     (e : α ≃ β) (f : FreeGroup α →* G) (hfbij : Function.Bijective f) :
   Function.Bijective (f ∘ freeGroupCongr e.symm) := by
   exact ⟨
