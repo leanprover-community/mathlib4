@@ -112,19 +112,15 @@ noncomputable def torsionTensor (hcov : IsCovariantDerivativeOn E cov univ) (x :
   mk2TensorAt I E (Bundle.torsion cov)
     (fun {_ _ τ} ↦ hcov.torsion_smul_left_apply τ)
     (fun {_ _ τ} ↦ hcov.torsion_add_left_apply τ)
-    (hcov.torsion_smul_right_apply)
-    (hcov.torsion_add_right_apply)
+    (fun {_ _} ↦ hcov.torsion_smul_right_apply)
+    (fun {_ _ _} ↦ hcov.torsion_add_right_apply)
 
 theorem torsionTensor_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x) :
     torsionTensor hcov x (X x) (Y x) = Bundle.torsion cov X Y x := by
   rw [torsionTensor]
-  refine mk2TensorAt_apply _ ?_ ?_ ?_ ?_ hX hY
-  · exact fun {_ _ τ} ↦ hcov.torsion_smul_left_apply τ
-  · exact fun {_ _ τ} ↦ hcov.torsion_add_left_apply τ
-  · exact hcov.torsion_smul_right_apply
-  · exact hcov.torsion_add_right_apply
+  exact mk2TensorAt_apply _ ?_ ?_ ?_ ?_ hX hY
 
 end
 
