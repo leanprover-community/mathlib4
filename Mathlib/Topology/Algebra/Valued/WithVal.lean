@@ -503,29 +503,81 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   · rw [restrict_pos_iff, hv, h.pos_iff]
     exact hs₀
 
+
+def bar' (h : v.IsEquiv w) : valueMonoid v ≃ valueMonoid w where
+  toFun := by
+    rintro ⟨g, hg_mem⟩
+    rw [mem_valueMonoid_iff] at hg_mem
+    simp at hg_mem
+    let hy := hg_mem.choose_spec
+    set y := hg_mem.choose with hy_def
+    have hy_ne_zero : w y ≠ 0 := by
+      simp [hy, ← h.eq_zero]
+    use Units.mk0 (w y) hy_ne_zero
+    rw [mem_valueMonoid_iff]
+    simp
+  invFun := by
+    rintro ⟨g, hg_mem⟩
+    rw [mem_valueMonoid_iff] at hg_mem
+    simp at hg_mem
+    let hy := hg_mem.choose_spec
+    set y := hg_mem.choose with hy_def
+    have hy_ne_zero : v y ≠ 0 := by
+      simp [hy, h.eq_zero]
+    use Units.mk0 (v y) hy_ne_zero
+    rw [mem_valueMonoid_iff]
+    simp
+  left_inv := by
+    rintro ⟨a, ha⟩
+    simp
+    rw [mem_valueMonoid_iff] at ha
+    obtain ⟨r, hr⟩ := ha
+    have hr₀ : v r ≠ 0 := by
+      rw [hr]
+      simp
+    have ha' : a = Units.mk0 (v r) hr₀ := by
+      simp [hr]
+    simp_rw [ha']
+    congr
+    sorry
+  right_inv := _
+  -- toFun := by
+  --   rintro ⟨g, hg_mem⟩
+  --   rw [mem_valueMonoid_iff] at hg_mem
+  --   simp at hg_mem
+  --   let hy := hg_mem.choose_spec
+  --   set y := hg_mem.choose with hy_def
+  --   have hy_ne_zero : w y ≠ 0 := by
+  --     simp [hy, ← h.eq_zero]
+  --   use Units.mk0 (w y) hy_ne_zero
+
+
+
+
 def bar (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
-  rintro ⟨g, hg_mem⟩
-  have := (mem_valueGroup_iff_of_comm (f := v) (y := g)).mp hg_mem
-  let ⟨ha, ha'⟩ := this.choose_spec
-  let H := ha'.choose_spec
-  set b := ha'.choose with hb_def
-  set a := this.choose with rfl
-  set g₀' := (w a)⁻¹ * (w b) with hg'_def
-  have hwa : w a ≠ 0 := by
-    rwa [ne_eq, ← h.eq_zero, ← ne_eq]
-  have hwb : w b ≠ 0 := by
-    replace H : v a * g = v b := H
-    simpa [← h.eq_zero, ← H]
-  have hg₀' : w a * g₀' = w b := by
-    rwa [hg'_def, ← mul_assoc, mul_inv_cancel₀, one_mul]
-  have hg₀'_ne_zero : g₀' ≠ 0 := by
-    apply ((ne_zero_and_ne_zero_of_mul (a := w a) (b := g₀')) _).2
-    rwa [hg₀']
-  let g' := Units.mk0 g₀' hg₀'_ne_zero
-  use g'
-  apply (mem_valueGroup_iff_of_comm (f := w) (y := g')).mpr
-  refine ⟨a, hwa, b, ?_⟩
-  exact hg₀'
+  apply Subgroup.map_clo
+  -- rintro ⟨g, hg_mem⟩
+  -- have := (mem_valueGroup_iff_of_comm (f := v) (y := g)).mp hg_mem
+  -- let ⟨ha, ha'⟩ := this.choose_spec
+  -- let H := ha'.choose_spec
+  -- set b := ha'.choose with hb_def
+  -- set a := this.choose with rfl
+  -- set g₀' := (w a)⁻¹ * (w b) with hg'_def
+  -- have hwa : w a ≠ 0 := by
+  --   rwa [ne_eq, ← h.eq_zero, ← ne_eq]
+  -- have hwb : w b ≠ 0 := by
+  --   replace H : v a * g = v b := H
+  --   simpa [← h.eq_zero, ← H]
+  -- have hg₀' : w a * g₀' = w b := by
+  --   rwa [hg'_def, ← mul_assoc, mul_inv_cancel₀, one_mul]
+  -- have hg₀'_ne_zero : g₀' ≠ 0 := by
+  --   apply ((ne_zero_and_ne_zero_of_mul (a := w a) (b := g₀')) _).2
+  --   rwa [hg₀']
+  -- let g' := Units.mk0 g₀' hg₀'_ne_zero
+  -- use g'
+  -- apply (mem_valueGroup_iff_of_comm (f := w) (y := g')).mpr
+  -- refine ⟨a, hwa, b, ?_⟩
+  -- exact hg₀'
 
 def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueGroup w := by sorry
 
@@ -553,7 +605,7 @@ lemma foo (h : v.IsEquiv w) :
   simp only [Set.mem_setOf_eq, RingHom.id_apply]
   set y₀ := ((h_val).ValueGroup₀_MulOrderIso x) with hy₀_def
   have hy₀_ne_zer0 : y₀ ≠ 0 := by
-
+    sorry
   set y := (Units.mk0 y₀ hy₀_ne_zer0) with hy_def
   use y
   intro a ha
