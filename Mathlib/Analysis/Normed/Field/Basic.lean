@@ -365,6 +365,11 @@ end AbsoluteValue
 
 namespace Real
 
+/-
+Note: We cannot easily generalize this to targets other than `ℝ`, because we need
+the fact that `⨆ i, f i = 0` when the indexing type is empty (`Real.iSup_of_isEmpty`).
+-/
+
 universe u v
 
 variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]

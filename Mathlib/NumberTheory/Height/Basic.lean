@@ -538,27 +538,16 @@ We also show the corresponding statements for product with arbitrarily many fact
 
 variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
 
-/-
-Note: We cannot easily generalize these to targets other than `ℝ`, because we need
-the fact that `⨆ i, f i = 0` when the indexing type is empty (`Real.iSup_of_isEmpty`).
--/
-
-lemma Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg {v : R → ℝ} (hv₀ : ∀ r, 0 ≤ v r)
-    (hv : ∀ r s, v (r * s) = v r * v s) (x : ι → R) (y : ι' → R) :
-    ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) := by
-  rcases isEmpty_or_nonempty ι
-  · simp
-  rcases isEmpty_or_nonempty ι'
-  · simp
-  simp [hv, Finite.ciSup_prod, ← Real.mul_iSup_of_nonneg (hv₀ _),
-    ← Real.iSup_mul_of_nonneg (iSup_nonneg fun i ↦ hv₀ (y i))]
-
 lemma AbsoluteValue.iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue R ℝ)
     (x : ι → R) (y : ι' → R) :
     ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) :=
-  Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg v.nonneg v.map_mul ..
+  Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg v x y
 
 section many
+
+universe u v
+
+variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
 
 lemma AbsoluteValue.iSup_prod_abv_eq_prod_iSup_abv (v : AbsoluteValue R ℝ) {x : (a : α) → ι a → R} :
     ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) :=
