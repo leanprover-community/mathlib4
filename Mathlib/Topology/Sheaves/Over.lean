@@ -17,11 +17,7 @@ In this file, given a topological space `X`, and `U : Opens X`,
 we show that the category `Over U` (whose objects are the
 `V : Opens X` equipped with a morphism `V ⟶ U`) is equivalent
 to the category `Opens U`.
-
-## TODO
-* show that both functors of the equivalence `overEquivalence U` are continuous and
-induce an equivalence between `Sheaf ((Opens.grothendieckTopology X).over U) A`
-and `Sheaf (Opens.grothendieckTopology U) A` for any category `A`.
+This equivalence is bi-continuous, and thus induces an equivalence of sheaf categories.
 
 -/
 
