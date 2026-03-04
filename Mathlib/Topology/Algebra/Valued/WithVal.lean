@@ -617,8 +617,8 @@ def IsEquiv.ValueGroup₀_MulOrderIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o 
   sorry -- just the `WithZero` of the above -/
 
 def IsEquiv.valueGroup_orderIso (h : v.IsEquiv w) : valueGroup v ≃o valueGroup w where
-  toFun := bar h
-  invFun := bar h.symm
+  toFun := bar' h
+  invFun := bar' h.symm
   left_inv := sorry
   right_inv := sorry
   map_rel_iff' := sorry
