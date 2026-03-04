@@ -437,6 +437,7 @@ open Topology
 
 open Filter
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The injection of a space in a disjoint union is an isometry -/
 theorem isometry_mk (i : ι) : Isometry (Sigma.mk i : E i → Σ k, E k) :=
   Isometry.of_dist_eq fun x y => by simp

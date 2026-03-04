@@ -754,6 +754,7 @@ end
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [Fintype.card_ofFinset]

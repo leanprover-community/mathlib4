@@ -150,6 +150,7 @@ theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
   simp_rw [UniformSpace.ball, ← preimage_comp, sub_eq_neg_add] at hV
   exact hV
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a locally convex space, every point `x` and closed convex set `s ∌ x` admit disjoint convex
 open neighborhoods. -/
 lemma exists_open_convex_of_notMem (hx : x ∉ s) (hsconv : Convex 𝕜 s) (hsclosed : IsClosed s) :

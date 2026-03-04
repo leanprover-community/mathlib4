@@ -111,6 +111,7 @@ theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf 
   simp only [logDeriv, Pi.div_apply, deriv_comp _ hf hg, comp_apply]
   ring
 
+set_option backward.isDefEq.respectTransparency false in
 lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : Set 𝕜}
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
     (hs2 : IsOpen s) (hsc : IsPreconnected s) (hgn : ∀ x ∈ s, g x ≠ 0) (hfn : ∀ x ∈ s, f x ≠ 0) :

@@ -440,6 +440,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
     {f : G → k → S} : b * s.sum f = s.sum fun a c ↦ b * f a c := by
   simp only [sum, Finsupp.sum, Finset.mul_sum]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Analogue of `Finsupp.sum_ite_eq'` for `SkewMonoidAlgebra`. -/
 @[simp]
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
@@ -814,7 +815,7 @@ variable {M α : Type*} [Monoid G] [AddCommMonoid M] [MulAction G α]
 This is not an instance as it would conflict with the action on the range.
 See the file `MathlibTest/instance_diamonds.lean` for examples of such conflicts. -/
 @[instance_reducible]
-def comapSMul [AddCommMonoid M] : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
+def comapSMul : SMul G (SkewMonoidAlgebra M α) where smul g := mapDomain (g • ·)
 
 attribute [local instance] comapSMul
 

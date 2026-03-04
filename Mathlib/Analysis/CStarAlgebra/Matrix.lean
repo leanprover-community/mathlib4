@@ -75,6 +75,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   rw [← sq_le_one_iff₀ (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
   exact norm_sum
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Matrix.Norms.Elementwise in
 /-- The entrywise sup norm of a unitary matrix is at most 1. -/
 theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) :
@@ -133,6 +134,7 @@ def l2OpNormedRingAux : NormedRing (Matrix n n 𝕜) :=
 open Bornology Filter
 open scoped Topology Uniformity
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The metric on `Matrix m n 𝕜` arising from the operator norm given by the identification with
 (continuous) linear maps of `EuclideanSpace`. -/
 @[instance_reducible]
@@ -230,6 +232,7 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
 lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
   Subtype.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 @[instance_reducible]
@@ -256,6 +259,7 @@ lemma cstar_norm_def (A : Matrix n n 𝕜) : ‖A‖ = ‖toEuclideanCLM (n := n
 matrices. -/
 lemma cstar_nnnorm_def (A : Matrix n n 𝕜) : ‖A‖₊ = ‖toEuclideanCLM (n := n) (𝕜 := 𝕜) A‖₊ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 @[instance_reducible]
@@ -264,6 +268,7 @@ def instL2OpNormedAlgebra : NormedAlgebra 𝕜 (Matrix n n 𝕜) where
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedAlgebra
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The operator norm on `Matrix n n 𝕜` given by the identification with (continuous) linear
 endmorphisms of `EuclideanSpace 𝕜 n` makes it into a `L2OpRing`. -/
 lemma instCStarRing : CStarRing (Matrix n n 𝕜) where

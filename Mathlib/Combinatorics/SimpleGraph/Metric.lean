@@ -70,6 +70,7 @@ theorem edist_le (p : G.Walk u v) :
   sInf_le ⟨p, rfl⟩
 protected alias Walk.edist_le := edist_le
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem edist_eq_zero_iff :
     G.edist u v = 0 ↔ u = v := by
@@ -95,6 +96,7 @@ lemma exists_walk_of_edist_ne_top (h : G.edist u v ≠ ⊤) :
     ∃ p : G.Walk u v, p.length = G.edist u v :=
   (reachable_of_edist_ne_top h).exists_walk_length_eq_edist
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem edist_triangle : G.edist u w ≤ G.edist u v + G.edist v w := by
   cases eq_or_ne (G.edist u v) ⊤ with
   | inl huv => simp [huv]
@@ -112,6 +114,7 @@ theorem edist_comm : G.edist u v = G.edist v u := by
     ← Set.image_comp, Set.image_univ, Function.comp_def]
   simp_rw [Walk.length_reverse, ← edist_eq_sInf]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
     ∃ p : G.Walk u v, p.length = k :=
   have : G.edist u v ≠ ⊤ := by rw [h]; exact ENat.coe_ne_top _
@@ -124,6 +127,7 @@ lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ G.Reachable u v := by
   simp only [edist, iInf_eq_top, ENat.coe_ne_top] at hx
   exact h.elim hx
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
 -/
@@ -243,6 +247,7 @@ protected theorem Connected.dist_triangle (hconn : G.Connected) :
   rw [← hp, ← hq, ← Walk.length_append]
   apply dist_le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w
@@ -250,6 +255,7 @@ lemma Reachable.dist_triangle_left (h : G.Reachable u v) (w) :
   rw [← ENat.coe_le_coe, ENat.coe_add]
   grind [SimpleGraph.edist_triangle, Reachable.trans, Reachable.symm]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Reachable.dist_triangle_right (h : G.Reachable v w) (u) :
     G.dist u w ≤ G.dist u v + G.dist v w := by
   by_cases! h' : ¬G.Reachable u w

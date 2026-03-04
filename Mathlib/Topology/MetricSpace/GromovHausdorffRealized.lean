@@ -504,6 +504,7 @@ def optimalGHInjr (y : Y) : OptimalGHCoupling X Y :=
 theorem isometry_optimalGHInjr : Isometry (optimalGHInjr X Y) :=
   Isometry.of_dist_eq fun _ _ => candidates_dist_inr (optimalGHDist_mem_candidatesB X Y) _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The optimal coupling between two compact spaces `X` and `Y` is still a compact space -/
 instance compactSpace_optimalGHCoupling : CompactSpace (OptimalGHCoupling X Y) := ⟨by
   rw [← range_quotient_mk']

@@ -186,6 +186,7 @@ section CokernelOfKernel
 
 variable {X Y : C} {f : X ⟶ Y}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a `NonPreadditiveAbelian` category, an epi is the cokernel of its kernel. More precisely:
 If `f` is an epimorphism and `s` is some limit kernel cone on `f`, then `f` is a cokernel
 of `Fork.ι s`. -/
@@ -196,6 +197,7 @@ def epiIsCokernelOfKernel [Epi f] (s : Fork f 0) (h : IsLimit s) :
       (ConeMorphism.w (Limits.IsLimit.uniqueUpToIso (limit.isLimit _) h).hom _))
     (asIso <| Abelian.factorThruCoimage f) (Abelian.coimage.fac f)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a `NonPreadditiveAbelian` category, a mono is the kernel of its cokernel. More precisely:
 If `f` is a monomorphism and `s` is some colimit cokernel cocone on `f`, then `f` is a kernel
 of `Cofork.π s`. -/
@@ -218,6 +220,7 @@ abbrev r (A : C) : A ⟶ cokernel (diag A) :=
 instance mono_Δ {A : C} : Mono (diag A) :=
   mono_of_mono_fac <| prod.lift_fst _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance mono_r {A : C} : Mono (r A) := by
   let hl : IsLimit (KernelFork.ofι (diag A) (cokernel.condition (diag A))) :=
     monoIsKernelOfCokernel _ (colimit.isColimit _)
@@ -234,6 +237,7 @@ instance mono_r {A : C} : Mono (r A) := by
   apply (cancel_mono (prod.lift (𝟙 A) (0 : A ⟶ A))).1
   rw [← hy, hyy, zero_comp, zero_comp]
 
+set_option backward.isDefEq.respectTransparency false in
 instance epi_r {A : C} : Epi (r A) := by
   have hlp : prod.lift (𝟙 A) (0 : A ⟶ A) ≫ Limits.prod.snd = 0 := prod.lift_snd _ _
   let hp1 : IsLimit (KernelFork.ofι (prod.lift (𝟙 A) (0 : A ⟶ A)) hlp) := by
@@ -285,6 +289,7 @@ theorem lift_map {X Y : C} (f : X ⟶ Y) :
 def isColimitσ {X : C} : IsColimit (CokernelCofork.ofπ (σ : X ⨯ X ⟶ X) diag_σ) :=
   cokernel.cokernelIso _ σ (asIso (r X)).symm (by rw [Iso.symm_hom, asIso_inv])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is the key identity satisfied by `σ`. -/
 theorem σ_comp {X Y : C} (f : X ⟶ Y) : σ ≫ f = Limits.prod.map f f ≫ σ := by
   obtain ⟨g, hg⟩ :=

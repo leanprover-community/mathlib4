@@ -270,6 +270,10 @@ instance Subtype.instBot : Bot (Subtype (MeasurableSet : Set α → Prop)) := �
 theorem coe_bot : ↑(⊥ : Subtype (MeasurableSet : Set α → Prop)) = (⊥ : Set α) :=
   rfl
 
+@[simp]
+theorem subtype_bot_eq : (⟨∅, .empty⟩ : Subtype (MeasurableSet : Set α → Prop)) = ⊥ :=
+  rfl
+
 instance Subtype.instTop : Top (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨⟨Set.univ, MeasurableSet.univ⟩⟩
 
@@ -279,8 +283,8 @@ theorem coe_top : ↑(⊤ : Subtype (MeasurableSet : Set α → Prop)) = (⊤ : 
 
 noncomputable instance Subtype.instBooleanAlgebra :
     BooleanAlgebra (Subtype (MeasurableSet : Set α → Prop)) :=
-  Subtype.coe_injective.booleanAlgebra _ coe_union coe_inter coe_top coe_bot coe_compl coe_sdiff
-    coe_himp
+  Subtype.coe_injective.booleanAlgebra _ .rfl .rfl coe_union coe_inter coe_top coe_bot coe_compl
+    coe_sdiff coe_himp
 
 @[measurability]
 theorem measurableSet_blimsup {s : ℕ → Set α} {p : ℕ → Prop} (h : ∀ n, p n → MeasurableSet (s n)) :

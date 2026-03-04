@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.List.Basic
 public import Mathlib.Algebra.Field.Power  -- shake: keep (Qq dependency)
 public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 public import Mathlib.Util.Qq
-public meta import Mathlib.Algebra.Group.Int.Even
 
 /-! # Lemmas for the field_simp tactic
 
@@ -467,7 +466,7 @@ def Sign.pow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℕ) :
   | .plus => pure ⟨.plus, q(rfl)⟩
   | .minus i =>
     assumeInstancesCommute
-    if Even s then
+    if 2 ∣ s then
       let pf_s ← mkDecideProofQ q(Even $s)
       pure ⟨.plus, q(Even.neg_pow $pf_s $y)⟩
     else
@@ -483,7 +482,7 @@ def Sign.zpow (iM : Q(CommGroupWithZero $M)) (y : Q($M)) (g : Sign M) (s : ℤ) 
   | .plus => pure ⟨.plus, q(rfl)⟩
   | .minus i =>
     assumeInstancesCommute
-    if Even s then
+    if 2 ∣ s then
       let pf_s ← mkDecideProofQ q(Even $s)
       pure ⟨.plus, q(Even.neg_zpow $pf_s $y)⟩
     else

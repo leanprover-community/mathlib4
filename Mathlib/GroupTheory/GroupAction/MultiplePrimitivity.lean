@@ -13,9 +13,9 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 Let `G` be a group acting on a type `α`.
 
 * `MulAction.IsMultiplyPreprimitive` :
-The action is said to be `n`-primitive if, for every subset `s :
-Set α` with `n` elements, the actions f `stabilizer G s` on the
-complement of `s` is primitive.
+  The action is said to be `n`-primitive if, for every subset `s :
+  Set α` with `n` elements, the actions f `stabilizer G s` on the
+  complement of `s` is primitive.
 
 * `MulAction.is_zero_preprimitive` : any action is 0-primitive
 
@@ -30,15 +30,15 @@ complement of `s` is primitive.
   ofFixingSubgroup.isMultiplyPreprimitive
 
 * `MulAction.ofFixingSubgroup.isMultiplyPreprimitive`:
-If an action is `s.ncard + m`-primitive, then
-the action of `FixingSubgroup G s` on the complement of `s`
-is `m`-primitive.
+  If an action is `s.ncard + m`-primitive, then
+  the action of `FixingSubgroup G s` on the complement of `s`
+  is `m`-primitive.
 
 -/
 
 @[expose] public section
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 namespace MulAction
 
@@ -114,12 +114,14 @@ instance (n : ℕ) [IsMultiplyPreprimitive M α n] :
     IsMultiplyPretransitive M α n :=
   IsMultiplyPreprimitive.isMultiplyPretransitive M α n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any action is `0`-preprimitive. -/
 @[to_additive /-- Any action is `0`-preprimitive. -/]
 theorem is_zero_preprimitive : IsMultiplyPreprimitive M α 0 where
   isMultiplyPretransitive := MulAction.is_zero_pretransitive
   isPreprimitive_ofFixingSubgroup hs := by simp at hs
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An action is preprimitive iff it is `1`-preprimitive. -/
 @[to_additive
 /-- An action is preprimitive iff it is `1`-preprimitive. -/]
@@ -133,16 +135,9 @@ theorem is_one_preprimitive_iff :
     rw [isMultiplyPreprimitive_iff]
     constructor
     · exact is_one_pretransitive_iff.mpr h.toIsPretransitive
-    · intro s hs
-      suffices s = ∅ by
-        rwa [this, isPreprimitive_of_fixingSubgroup_empty_iff]
-      rw [← Set.encard_eq_zero]
-      suffices s.encard ≠ (⊤ : ℕ∞) by
-        obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp this
-        rw [← hm, ← Nat.cast_one, ← ENat.coe_add, Nat.cast_inj, Nat.add_eq_right] at hs
-        simp [← hm, hs]
-      exact fun h ↦ by simp [h] at hs
+    · simpa using isPreprimitive_of_fixingSubgroup_empty_iff.mpr h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The action of `stabilizer M a` is one-less preprimitive. -/
 @[to_additive /-- The action of `stabilizer M a` is one-less preprimitive. -/]
 theorem isMultiplyPreprimitive_ofStabilizer
@@ -164,6 +159,7 @@ theorem isMultiplyPreprimitive_ofStabilizer
       aesop
     exact IsPreprimitive.of_surjective ofFixingSubgroup_insert_map_bijective.surjective
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pretransitive action is `n.succ-`preprimitive
 iff the action of stabilizers is `n`-preprimitive. -/
 @[to_additive /-- A pretransitive action is `n.succ-`preprimitive
@@ -213,6 +209,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
       rw [Set.encard_insert_of_notMem, Subtype.coe_injective.encard_image, ENat.coe_one]
       exact notMem_val_image M t
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The fixator of a subset of cardinal `d` in an `n`-primitive action
 acts `n-d`-primitively on the remaining (`d ≤ n`). -/
 @[to_additive
@@ -252,7 +249,7 @@ theorem isMultiplyPreprimitive_of_isMultiplyPretransitive_succ {n : ℕ}
     obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le hn
     apply isPreprimitive_of_is_two_pretransitive
     have hs' : s.encard = m := by
-      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1, Nat.cast_add, Nat.cast_one] at hs
+      simp only [hm, Nat.succ_eq_add_one, zero_add, add_comm 1] at hs
       exact ENat.add_left_injective_of_ne_top ENat.one_ne_top hs
     have : Finite s := Set.finite_of_encard_eq_coe hs'
     apply ofFixingSubgroup.isMultiplyPretransitive (G := M) s (n := n.succ)

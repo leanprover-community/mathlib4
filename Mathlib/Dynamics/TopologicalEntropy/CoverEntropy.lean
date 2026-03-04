@@ -218,6 +218,7 @@ lemma coverMincard_antitone (T : X → X) (F : Set X) (n : ℕ) :
     Antitone fun U : SetRel X X ↦ coverMincard T F U n :=
   fun _ _ U_V ↦ biInf_mono fun _ h ↦ h.of_entourage_subset U_V
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n < ⊤ ↔
     ∃ s : Finset X, IsDynCoverOf T F U n s ∧ s.card = coverMincard T F U n := by
@@ -238,10 +239,12 @@ lemma coverMincard_finite_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
   simp only [ENat.some_eq_coe, Nat.cast_inj, exists_prop] at key
   exact key
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma coverMincard_empty : coverMincard T ∅ U n = 0 :=
   (sInf_le (by simp [IsDynCoverOf])).antisymm (zero_le (coverMincard T ∅ U n))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : ℕ) :
     coverMincard T F U n = 0 ↔ F = ∅ := by
   simp [coverMincard, ENat.iInf_eq_zero]
@@ -251,6 +254,7 @@ lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : SetRel X X) (n : �
   rw [ENat.one_le_iff_ne_zero, nonempty_iff_ne_empty, not_iff_not]
   exact coverMincard_eq_zero_iff T F U n
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
     coverMincard T F U 0 = 1 := by
   apply le_antisymm _ ((one_le_coverMincard_iff T F U 0).2 h)
@@ -260,6 +264,7 @@ lemma coverMincard_zero (T : X → X) (h : F.Nonempty) (U : SetRel X X) :
   apply this.coverMincard_le_card.trans_eq
   rw [Finset.card_singleton, Nat.cast_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma coverMincard_univ (T : X → X) (h : F.Nonempty) (n : ℕ) : coverMincard T F univ n = 1 := by
   apply le_antisymm _ ((one_le_coverMincard_iff T F univ n).2 h)
   obtain ⟨x, _⟩ := h
@@ -298,6 +303,7 @@ lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] (F_comp : IsCo
   obtain ⟨s, s_cover⟩ := exists_isDynCoverOf_of_isCompact_invariant F_comp F_inv U_uni n
   exact s_cover.coverMincard_le_card.trans_lt (WithTop.coe_lt_top s.card)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- All dynamical balls of a minimal dynamical cover of `F` intersect `F`. This lemma is the key
   to relate Bowen-Dinaburg's definition of topological entropy with covers and their definition
   of topological entropy with nets. -/

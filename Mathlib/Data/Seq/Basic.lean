@@ -41,6 +41,7 @@ set_option linter.flexible false in -- simp followed by exact rfl
 @[simp]
 theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by
   simp -implicitDefEqProofs [length']
@@ -50,6 +51,7 @@ theorem length_cons {x : α} {s : Seq α} (h : s.Terminates) :
   apply Nat.find_comp_succ
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem length'_cons (x : α) (s : Seq α) :
     (cons x s).length' = s.length' + 1 := by
@@ -88,6 +90,7 @@ theorem length_le_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     s.length h ≤ n ↔ s.TerminatedAt n := by
   rw [← length_le_iff']; simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem length'_le_iff {s : Seq α} {n : ℕ} :
     s.length' ≤ n ↔ s.TerminatedAt n := by
   by_cases h : s.Terminates
@@ -112,6 +115,7 @@ theorem lt_length_iff {s : Seq α} {n : ℕ} {h : s.Terminates} :
     n < s.length h ↔ ∃ a, a ∈ s.get? n := by
   rw [← lt_length_iff']; simp [h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem lt_length'_iff {s : Seq α} {n : ℕ} :
     n < s.length' ↔ ∃ a, a ∈ s.get? n := by
   by_cases h : s.Terminates
@@ -306,6 +310,7 @@ theorem append_assoc (s t u : Seq α) : append (append s t) u = append s (append
         case cons _ s => exact ⟨s, t, u, rfl, rfl⟩
   · exact ⟨s, t, u, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂) : a ∈ s₁ ∨ a ∈ s₂ := by
   have := h; revert this
   generalize e : append s₁ s₂ = ss; intro h; revert s₁
@@ -457,7 +462,8 @@ theorem join_cons (a : α) (s S) : join (cons (a, s) S) = cons a (append s (join
     | _, _, Or.inr ⟨a, s, S, rfl, rfl⟩ => by
       cases s
       · simp [join_cons_nil]
-      · simpa [join_cons_cons, join_cons_nil] using Or.inr ⟨_, _, S, rfl, rfl⟩
+      · simpa only [BisimO, join_cons_cons, destruct_cons, cons_append, true_and] using
+          Or.inr ⟨_, _, S, rfl, rfl⟩
 
 set_option linter.flexible false in -- TODO: fix non-terminal simp
 @[simp]
@@ -524,6 +530,7 @@ theorem drop_nil {n : ℕ} : (@nil α).drop n = nil := by
   | zero => simp [drop]
   | succ m ih => simp [← dropn_tail, ih]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem drop_length' {n : ℕ} {s : Seq α} :
     (s.drop n).length' = s.length' - n := by
@@ -742,7 +749,7 @@ theorem all_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   simp only [mem_iff_exists_get?]
   grind
 
-private lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
+lemma all_coind_drop_motive {s : Seq α} (motive : Seq α → Prop) (base : motive s)
     (step : ∀ hd tl, motive (.cons hd tl) → motive tl) (n : ℕ) :
     motive (s.drop n) := by
   induction n with

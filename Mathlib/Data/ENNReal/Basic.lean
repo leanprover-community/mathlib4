@@ -104,16 +104,26 @@ def ENNReal := WithTop ℝ≥0
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
 
+-- note: using notation3 rather than notation means that `∞` pretty-prints
+-- as `∞` rather than `top`. Despite this, we still use `top` in the names of lemmas.
 /-- Notation for infinity as an `ENNReal` number. -/
-scoped[ENNReal] notation "∞" => (⊤ : ENNReal)
+scoped[ENNReal] notation3 "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
 
+set_option backward.isDefEq.respectTransparency false in
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
+
+set_option backward.isDefEq.respectTransparency false in
 instance : OrderTop ℝ≥0∞ := inferInstanceAs (OrderTop (WithTop ℝ≥0))
+
+set_option backward.isDefEq.respectTransparency false in
 instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
+
 instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
+
 instance : Min ℝ≥0∞ := SemilatticeInf.toMin
+
 instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
 noncomputable instance : CommSemiring ℝ≥0∞ :=
@@ -134,6 +144,7 @@ instance : NoZeroDivisors ℝ≥0∞ :=
 noncomputable instance : CompleteLinearOrder ℝ≥0∞ :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℝ≥0))
 
+set_option backward.isDefEq.respectTransparency false in
 instance : DenselyOrdered ℝ≥0∞ := inferInstanceAs (DenselyOrdered (WithTop ℝ≥0))
 
 instance : AddCommMonoid ℝ≥0∞ :=
@@ -146,6 +157,8 @@ instance : IsOrderedAddMonoid ℝ≥0∞ :=
   inferInstanceAs (IsOrderedAddMonoid (WithTop ℝ≥0))
 
 instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
+
+set_option backward.isDefEq.respectTransparency false in
 instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
@@ -300,6 +313,7 @@ theorem toNNReal_ne_zero : a.toNNReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
 theorem toReal_ne_zero : a.toReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
   a.toReal_eq_zero_iff.not.trans not_or
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
   WithTop.untopD_eq_iff.trans <| by simp
 

@@ -50,9 +50,11 @@ instance : CoeSort (FGModuleRepr R) (Type u) :=
 instance (x : FGModuleRepr R) : AddCommGroup x := by
   unfold repr; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (x : FGModuleRepr R) : Module R x := by
   unfold repr; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance (x : FGModuleRepr R) : Module.Finite R x := by
   unfold repr; infer_instance
 

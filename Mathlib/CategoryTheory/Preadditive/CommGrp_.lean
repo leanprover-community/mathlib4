@@ -59,6 +59,7 @@ private theorem monoidal_hom_ext {X Y Z : C} {f g : X ⊗ Y ⟶ Z}
   BinaryCofan.IsColimit.hom_ext
     (binaryBiconeIsBilimitOfLimitConeOfIsLimit (tensorProductIsBinaryProduct X Y)).isColimit h₁ h₂
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- Auxiliary definition for `commGrpEquivalence`. -/

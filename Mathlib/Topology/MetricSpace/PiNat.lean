@@ -275,6 +275,12 @@ protected theorem dist_nonneg (x y : ∀ n, E n) : 0 ≤ dist x y := by
   · simp [dist]
   · simp [dist, h]
 
+protected theorem dist_le_one (x y : ∀ n, E n) : dist x y ≤ 1 := by
+  rcases eq_or_ne x y with (rfl | h)
+  · simp [dist]
+  · simp only [dist, ne_eq, h, not_false_eq_true, ↓reduceIte, one_div, inv_pow]
+    bound
+
 theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y) (dist y z) := by
   rcases eq_or_ne x z with (rfl | hxz)
   · simp [PiNat.dist_self x, PiNat.dist_nonneg]
@@ -447,6 +453,11 @@ protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
   filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
 
+protected theorem boundedSpace : BoundedSpace (∀ n, E n) := by
+  rw [Metric.boundedSpace_iff]
+  use 1
+  apply PiNat.dist_le_one
+
 /-!
 ### Retractions inside product spaces
 
@@ -557,6 +568,7 @@ theorem cylinder_longestPrefix_eq_of_longestPrefix_lt_firstDiff {x y : ∀ n, E 
   rw [l_eq, ← mem_cylinder_iff_eq]
   exact cylinder_anti y H.le (mem_cylinder_firstDiff x y)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a closed nonempty subset `s` of `Π (n : ℕ), E n`, there exists a Lipschitz retraction
 onto this set, i.e., a Lipschitz map with range equal to `s`, equal to the identity on `s`. -/
 theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsClosed s)
@@ -680,6 +692,7 @@ end PiNat
 
 open PiNat
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any nonempty complete second countable metric space is the continuous image of the
 fundamental space `ℕ → ℕ`. For a version of this theorem in the context of Polish spaces, see
 `exists_nat_nat_continuous_surjective_of_polishSpace`. -/
@@ -815,6 +828,7 @@ attribute [scoped instance] PiCountable.edist
 section PseudoEMetricSpace
 variable [∀ i, PseudoEMetricSpace (F i)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a countable family of extended pseudometric spaces,
 one may put an extended distance on their product `Π i, E i`.
 

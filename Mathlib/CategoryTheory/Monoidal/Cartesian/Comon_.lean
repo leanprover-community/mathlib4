@@ -56,6 +56,7 @@ variable {C}
   · simpa using comul_counit A =≫ fst _ _
   · simpa using counit_comul A =≫ snd _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Every comonoid object in a Cartesian monoidal category is equivalent to
 the canonical comonoid structure on the underlying object.
@@ -66,6 +67,7 @@ the canonical comonoid structure on the underlying object.
 
 @[deprecated (since := "2025-09-15")] alias iso_cartesianComon_ := isoCartesianComon
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The category of comonoid objects in a Cartesian monoidal category is equivalent
 to the category itself, via the forgetful functor.

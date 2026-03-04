@@ -173,6 +173,7 @@ lemma iso_inv_app (a : A) (X : C) :
 
 end commShiftOfLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
 this functor commutes with the shift. -/
@@ -236,6 +237,7 @@ lemma commShiftOfLocalization_iso_inv_app (a : A) (X : C) :
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency false in
 instance NatTrans.commShift_iso_hom_of_localization :
     letI := Functor.commShiftOfLocalization L W A F F'
     NatTrans.CommShift (Lifting.iso L W F F').hom A := by
@@ -277,6 +279,7 @@ noncomputable def commShift : G.CommShift M := by
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   exact Functor.commShiftOfLocalization L₁ W₁ M (Φ.functor ⋙ L₂) G
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma commShift_iso_hom_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -287,6 +290,7 @@ lemma commShift_iso_hom_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_hom_app,
     Functor.commShiftIso_comp_hom_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma commShift_iso_inv_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -297,6 +301,7 @@ lemma commShift_iso_inv_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_inv_app,
     Functor.commShiftIso_comp_inv_app]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natTransCommShift_hom :
     letI := Φ.commShift M L₁ L₂ G e
     NatTrans.CommShift e.hom M := by

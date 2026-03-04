@@ -39,6 +39,7 @@ lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (
     simpa
   · use q
 
+set_option backward.isDefEq.respectTransparency false in
 theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     (h : x ∈ (annihilator R M).jacobson) : supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   nontriviality M
@@ -73,6 +74,7 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
   grw [le_tsub_add (b := p.length) (a := 1), Nat.cast_add_one, supportDim, Order.krullDim,
     ← le_iSup _ q']
 
+set_option backward.isDefEq.respectTransparency false in
 omit [IsNoetherianRing R] in
 /-- If `M` is a finite module over a commutative ring `R`, `x ∈ M` is not in any minimal prime of
   `M`, then `dim M/xM + 1 ≤ dim M`. -/

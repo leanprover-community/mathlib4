@@ -33,6 +33,7 @@ lemma ringKrullDim_quotient (I : Ideal R) :
     ringKrullDim (R ⧸ I) = Order.krullDim (PrimeSpectrum.zeroLocus (R := R) I) := by
   rw [ringKrullDim, Order.krullDim_eq_of_orderIso I.primeSpectrumQuotientOrderIsoZeroLocus]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
     {r : R} (hr : r ∈ R⁰) :
     ringKrullDim (R ⧸ Ideal.span {r}) + 1 ≤ ringKrullDim R := by
@@ -76,6 +77,7 @@ lemma ringKrullDim_mvPolynomial_of_isEmpty (σ : Type*) [IsEmpty σ] :
     ringKrullDim (MvPolynomial σ R) = ringKrullDim R :=
   ringKrullDim_eq_of_ringEquiv (isEmptyRingEquiv _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 open MvPolynomial in
 lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite σ] :
     ringKrullDim R + Nat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by
@@ -91,6 +93,7 @@ lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite
     grw [IH, ringKrullDim_succ_le_ringKrullDim_polynomial]
     exact (ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv).ge
 
+set_option backward.isDefEq.respectTransparency false in
 open MvPolynomial in
 lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     ringKrullDim R + ENat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by

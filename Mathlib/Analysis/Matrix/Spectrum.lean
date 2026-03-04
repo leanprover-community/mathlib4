@@ -46,9 +46,6 @@ theorem spectrum_toLpLin [DecidableEq n] (p : ENNReal) :
 theorem spectrum_toEuclideanLin [DecidableEq n] : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
   spectrum_toLpLin 2
 
-@[deprecated (since := "2025-08-13")] alias IsHermitian.spectrum_toEuclideanLin :=
-  spectrum_toEuclideanLin
-
 namespace IsHermitian
 
 section DecidableEq
@@ -217,9 +214,6 @@ theorem spectrum_real_eq_range_eigenvalues :
     spectrum ℝ A = Set.range hA.eigenvalues := Set.ext fun x => by
   conv_lhs => rw [hA.spectral_theorem, ← spectrum.algebraMap_mem_iff 𝕜]
   simp
-
-@[deprecated (since := "2025-08-14")]
-alias eigenvalues_eq_spectrum_real := spectrum_real_eq_range_eigenvalues
 
 /-- The eigenvalues of a Hermitian matrix `A` are all zero iff `A = 0`. -/
 theorem eigenvalues_eq_zero_iff :

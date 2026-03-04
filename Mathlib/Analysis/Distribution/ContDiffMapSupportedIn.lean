@@ -318,6 +318,7 @@ lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜
     postcompLM T f = T ∘ f :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 variable (n k) in
 /-- `iteratedFDerivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓^{k}_{K}(E, E [×i]→L[ℝ] F)`.
@@ -377,6 +378,7 @@ lemma iteratedFDerivWithOrderLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [Nontriv
       = iteratedFDerivWithOrderLM 𝕜' n k i :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `iteratedFDerivLM 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓_{K}(E, E [×i]→L[ℝ] F)`.
 
@@ -448,6 +450,7 @@ lemma structureMapLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormed
     (structureMapLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapLM 𝕜' n i :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma structureMapLM_zero_apply {f : 𝓓^{n}_{K}(E, F)} {x : E} :
     structureMapLM 𝕜 n 0 f x = ContinuousMultilinearMap.uncurry0 ℝ E (f x) := by
   ext
@@ -647,6 +650,7 @@ theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
   rw [← norm_iteratedFDeriv_zero (𝕜 := ℝ) (f := f) (x := x)]
   exact norm_iteratedFDeriv_apply_le_seminorm_withOrder 𝕜 (zero_le _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
   simp [BoundedContinuousFunction.norm_eq_iSup_norm,
@@ -678,6 +682,7 @@ instance : T3Space 𝓓^{n}_{K}(E, F) :=
     (toBoundedContinuousFunctionCLM ℝ).continuous
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 theorem seminorm_postcompLM_le [LinearMap.CompatibleSMul F F' ℝ 𝕜] {i : ℕ} (T : F →L[𝕜] F')
     (f : 𝓓^{n}_{K}(E, F)) :
     N[𝕜]_{K, n, i} (postcompLM T f) ≤ ‖T‖ * N[𝕜]_{K, n, i} f := by

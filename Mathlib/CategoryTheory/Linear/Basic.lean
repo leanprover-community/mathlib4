@@ -79,6 +79,7 @@ section End
 
 variable {R : Type w}
 
+set_option backward.isDefEq.respectTransparency false in
 instance [Semiring R] [Linear R C] (X : C) : Module R (End X) := by
   dsimp [End]
   infer_instance

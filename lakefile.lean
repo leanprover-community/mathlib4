@@ -9,14 +9,14 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "lean-pr-testing-12325"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
 require "leanprover-community" / "aesop" @ git "nightly-testing"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.86" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.90" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
     If this does not work, report your issue on the Lean Zulip."
-require "leanprover-community" / "importGraph" @ git "nightly-testing"
-require "leanprover-community" / "LeanSearchClient" @ git "nightly-testing"
-require "leanprover-community" / "plausible" @ git "nightly-testing"
+require "leanprover-community" / "importGraph" @ git "main"
+require "leanprover-community" / "LeanSearchClient" @ git "main"
+require "leanprover-community" / "plausible" @ git "main"
 
 
 /-!
@@ -43,7 +43,10 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
 abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
-    ⟨`maxSynthPendingDepth, .ofNat 3⟩
+    ⟨`maxSynthPendingDepth, .ofNat 3⟩,
+    -- This feature is broken, see
+    -- https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/backward.2EisDefEq.2ErespectTransparency/near/574421640.
+    -- We disable it here to avoid tripping over new contributors.
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 

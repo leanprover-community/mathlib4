@@ -28,6 +28,7 @@ open scoped Topology
 
 variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Von Neumann Mean Ergodic Theorem**, a version for a normed space.
 
 Let `f : E → E` be a contracting linear self-map of a normed space.
@@ -78,6 +79,7 @@ variable [InnerProductSpace 𝕜 E] [CompleteSpace E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Von Neumann Mean Ergodic Theorem** for an operator in a Hilbert space.
 For a contracting continuous linear self-map `f : E →L[𝕜] E` of a Hilbert space, `‖f‖ ≤ 1`,
 the Birkhoff averages

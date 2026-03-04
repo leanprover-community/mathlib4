@@ -104,12 +104,14 @@ theorem toNNReal_lt_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal < b.
 theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
   @toNNReal_coe p ▸ toNNReal_strict_mono coe_ne_top h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim
     (fun h => by simp only [h, ENNReal.toReal_mono hp h, max_eq_right]) fun h => by
     simp only [h, ENNReal.toReal_mono hr h, max_eq_left]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toReal_min {a b : ℝ≥0∞} (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (min a b) = min (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim (fun h => by simp only [h, ENNReal.toReal_mono hp h, min_eq_left])
@@ -268,6 +270,9 @@ theorem ofReal_lt_iff_lt_toReal {a : ℝ} {b : ℝ≥0∞} (ha : 0 ≤ a) (hb : 
     ENNReal.ofReal a < b ↔ a < ENNReal.toReal b := by
   lift b to ℝ≥0 using hb
   simpa [ENNReal.ofReal, ENNReal.toReal] using Real.toNNReal_lt_iff_lt_coe ha
+
+@[simp] lemma coe_lt_ofReal {a : ℝ≥0} {b : ℝ} : a < ENNReal.ofReal b ↔ a < b := by
+  simp [ENNReal.ofReal, Real.lt_toNNReal_iff_coe_lt]
 
 theorem ofReal_lt_coe_iff {a : ℝ} {b : ℝ≥0} (ha : 0 ≤ a) : ENNReal.ofReal a < b ↔ a < b :=
   (ofReal_lt_iff_lt_toReal ha coe_ne_top).trans <| by rw [coe_toReal]

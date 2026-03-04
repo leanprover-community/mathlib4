@@ -40,6 +40,7 @@ variable {k G : Type u} [CommRing k] [Group G]
 
 include hX
 
+set_option backward.isDefEq.respectTransparency false in
 lemma map_cochainsFunctor_shortExact :
     ShortExact (X.map (cochainsFunctor k G)) :=
   HomologicalComplex.shortExact_of_degreewise_shortExact _ fun i => {
@@ -124,6 +125,7 @@ theorem δ_apply {i j : ℕ} (hij : i + 1 = j)
   exact (map_cochainsFunctor_shortExact hX).δ_apply i j hij z hz y hy x
     (by simpa using hx) (j + 1) (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₀_apply`. -/
 theorem mem_cocycles₁_of_comp_eq_d₀₁
     {y : X.X₂} {x : G → X.X₁} (hx : X.f.hom ∘ x = d₀₁ X.X₂ y) :
@@ -132,6 +134,7 @@ theorem mem_cocycles₁_of_comp_eq_d₀₁
   have := congr($((mapShortComplexH1 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH1, LinearMap.compLeft]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem δ₀_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z : X₃ᴳ` and `y : X₂` be such that `g(y) = z`.
@@ -147,6 +150,7 @@ theorem δ₀_apply
       simpa [← hx] using congr_fun (congr($((CommSq.vert_inv
         ⟨cochainsMap_f_1_comp_cochainsIso₁ (MonoidHom.id G) X.f⟩).w) x)) g
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cocycles₂_of_comp_eq_d₁₂
     {y : G → X.X₂} {x : G × G → X.X₁} (hx : X.f.hom ∘ x = d₁₂ X.X₂ y) :
@@ -155,6 +159,7 @@ theorem mem_cocycles₂_of_comp_eq_d₁₂
   have := congr($((mapShortComplexH2 (MonoidHom.id G) X.f).comm₂₃.symm) x)
   simp_all [shortComplexH2, LinearMap.compLeft]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem δ₁_apply
     -- Let `0 ⟶ X₁ ⟶f X₂ ⟶g X₃ ⟶ 0` be a short exact sequence of `G`-representations.
     -- Let `z` be a 1-cocycle for `X₃` and `y` be a 1-cochain for `X₂` such that `g ∘ y = z`.

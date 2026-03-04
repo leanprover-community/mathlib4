@@ -150,12 +150,14 @@ theorem tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (X i)) :
     Measure.tprod (i :: l) μ = (μ i).prod (Measure.tprod l μ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (Measure.tprod l μ) := by
   induction l with
   | nil => rw [tprod_nil]; infer_instance
   | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (X i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
@@ -882,7 +884,7 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype �
       (Measure.dirac ()) := by
   set e := MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit
   refine ⟨e.measurable, ?_⟩
-  rw [Measure.pi_of_empty, Measure.map_dirac e.measurable]
+  rw [Measure.pi_of_empty, Measure.map_dirac' e.measurable]
 
 theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype ι] [IsEmpty ι]
     [∀ i, MeasureSpace (α i)] :

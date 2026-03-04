@@ -66,6 +66,7 @@ namespace Ring
 
 open ringFunc Language
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This instance does not get inferred without `instDecidableEqFunctions` in
 `ModelTheory/Basic`. -/
 example (n : ℕ) : DecidableEq (Language.ring.Functions n) := inferInstance
@@ -122,6 +123,7 @@ instance (α : Type*) : Neg (Language.ring.Term α) :=
 theorem neg_def (α : Type*) (t : Language.ring.Term α) :
     -t = negFunc.apply₁ t := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Fintype Language.ring.Symbols :=
   ⟨⟨Multiset.ofList
       [Sum.inl ⟨2, .add⟩,

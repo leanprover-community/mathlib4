@@ -201,6 +201,7 @@ theorem Equicontinuous.tendsto_uniformFun_iff_pi [CompactSpace X]
       rwa [tendsto_id', nhds_induced, ← map_le_iff_le_comap, h𝒢ℱ]
     rwa [ind.tendsto_nhds_iff, comp_id, ← tendsto_map'_iff, h𝒢ℱ] at H'
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Let `X` be a topological space, `𝔖` a family of compact subsets of `X`, `α` a uniform space,
 and `F : ι → (X → α)` a family which is equicontinuous on each `K ∈ 𝔖`. Then, the uniform
 structures of uniform convergence on `𝔖` and pointwise convergence on `⋃₀ 𝔖` induce the same

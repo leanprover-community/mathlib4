@@ -118,6 +118,7 @@ open Finset Nat
 
 variable {A : Type*} [CommRing A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
     rescale a (exp A) * rescale b (exp A) = rescale (a + b) (exp A) := by
@@ -149,6 +150,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
 theorem exp_mul_exp_neg_eq_one [Algebra ℚ A] : exp A * evalNegHom (exp A) = 1 := by
   convert exp_mul_exp_eq_exp_add (1 : A) (-1) <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Shows that $(e^{X})^k = e^{kX}$. -/
 theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (k : A) (exp A) := by
   induction k with

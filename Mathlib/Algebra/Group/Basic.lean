@@ -726,6 +726,14 @@ theorem div_mul_div_cancel (a b c : G) : a / b * (b / c) = a / c := by
   rw [← mul_div_assoc, div_mul_cancel]
 
 @[to_additive (attr := simp)]
+lemma mul_mul_inv_mul_cancel (a b c : G) : a * b * (b⁻¹ * c) = a * c := by
+  rw [mul_assoc, ← mul_assoc b, mul_inv_cancel, one_mul]
+
+@[to_additive (attr := simp)]
+lemma mul_inv_mul_mul_cancel (a b c : G) : a * b⁻¹ * (b * c) = a * c := by
+  rw [mul_assoc, ← mul_assoc b⁻¹, inv_mul_cancel, one_mul]
+
+@[to_additive (attr := simp)]
 theorem div_div_div_cancel_right (a b c : G) : a / c / (b / c) = a / b := by
   rw [← inv_div c b, div_inv_eq_mul, div_mul_div_cancel]
 
@@ -899,8 +907,7 @@ theorem div_eq_of_eq_mul' {a b c : G} (h : a = b * c) : a / b = c := by
 
 @[to_additive (attr := simp)]
 theorem mul_div_mul_left_eq_div (a b c : G) : c * a / (c * b) = a / b := by
-  rw [div_eq_mul_inv, mul_inv_rev, mul_comm b⁻¹ c⁻¹, mul_comm c a, mul_assoc, ← mul_assoc c,
-    mul_inv_cancel, one_mul, div_eq_mul_inv]
+  simp
 
 @[to_additive eq_sub_of_add_eq']
 theorem eq_div_of_mul_eq'' (h : c * a = b) : a = b / c := by simp [h.symm]

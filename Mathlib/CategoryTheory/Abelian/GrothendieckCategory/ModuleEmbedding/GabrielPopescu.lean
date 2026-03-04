@@ -67,6 +67,7 @@ noncomputable def d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ}
     (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) : ∐ (fun (_ : M) => G) ⟶ A :=
   Sigma.desc fun (m : M) => g m
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 theorem ι_d {G A : C} {M : ModuleCat (End G)ᵐᵒᵖ} (g : M ⟶ ModuleCat.of (End G)ᵐᵒᵖ (G ⟶ A)) (m : M) :
     Sigma.ι _ m ≫ d g = g.hom m := by
@@ -109,6 +110,7 @@ end GabrielPopescuAux
 
 open GabrielPopescuAux
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Faithfulness follows because `G` is a separator, see
 `isSeparator_iff_faithful_preadditiveCoyonedaObj`. -/
 theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaObj G).Full where
@@ -120,6 +122,7 @@ theorem GabrielPopescu.full (G : C) (hG : IsSeparator G) : (preadditiveCoyonedaO
     ext q
     simpa [-comp_epiDesc] using Sigma.ι _ q ≫= comp_epiDesc _ _ h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem GabrielPopescu.preservesInjectiveObjects (G : C) (hG : IsSeparator G) :
     (preadditiveCoyonedaObj G).PreservesInjectiveObjects where
   injective_obj {B} hB := by

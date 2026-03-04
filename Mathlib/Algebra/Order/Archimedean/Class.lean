@@ -202,6 +202,7 @@ variable (M) in
 @[to_additive (attr := simp)]
 theorem range_mk : Set.range (mk (M := M)) = Set.univ := Set.range_eq_univ.mpr (mk_surjective M)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem mk_eq_mk {a b : M} : mk a = mk b ↔ (∃ m, |b|ₘ ≤ |a|ₘ ^ m) ∧ (∃ n, |a|ₘ ≤ |b|ₘ ^ n) := by
   unfold mk toAntisymmetrization
@@ -643,6 +644,7 @@ theorem subgroup_strictAntiOn : StrictAntiOn (subgroup (M := M)) (Set.Iio ⊤) :
   apply le_of_eq
   simpa [mk_surjective, subsemigroup] using heq
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 theorem subgroup_antitone : Antitone (subgroup (M := M)) := by
   intro s t hst

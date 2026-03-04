@@ -67,6 +67,7 @@ def Lattice.copy (c : Lattice α)
   inf_le_right := by intros; simp [eq_le, eq_inf]
   le_inf := by intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a distributive lattice
 with possibly different definitional equalities. -/
 def DistribLattice.copy (c : DistribLattice α)
@@ -76,6 +77,7 @@ def DistribLattice.copy (c : DistribLattice α)
   toLattice := Lattice.copy (@DistribLattice.toLattice α c) le eq_le sup eq_sup inf eq_inf
   le_sup_inf := by intros; simp +instances [eq_le, eq_sup, eq_inf, le_sup_inf]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a generalised heyting algebra
 with possibly different definitional equalities. -/
 def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
@@ -91,6 +93,7 @@ def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
   himp := himp
   le_himp_iff _ _ _ := by simp +instances [eq_le, eq_himp, eq_inf]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a generalised co-Heyting algebra
 with possibly different definitional equalities. -/
 def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
@@ -106,6 +109,7 @@ def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
   sdiff := sdiff
   sdiff_le_iff := by simp +instances [eq_le, eq_sdiff, eq_sup]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a heyting algebra
 with possibly different definitional equalities. -/
 def HeytingAlgebra.copy (c : HeytingAlgebra α)
@@ -125,6 +129,7 @@ def HeytingAlgebra.copy (c : HeytingAlgebra α)
   compl := compl
   himp_bot := by simp +instances [eq_le, eq_himp, eq_bot, eq_compl]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a co-Heyting algebra
 with possibly different definitional equalities. -/
 def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
@@ -162,6 +167,7 @@ def BiheytingAlgebra.copy (c : BiheytingAlgebra α)
   __ := CoheytingAlgebra.copy (@BiheytingAlgebra.toCoheytingAlgebra α c) le eq_le top eq_top bot
     eq_bot sup eq_sup inf eq_inf sdiff eq_sdiff hnot eq_hnot
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A function to create a provable equal copy of a complete lattice
 with possibly different definitional equalities. -/
 def CompleteLattice.copy (c : CompleteLattice α)

@@ -68,16 +68,13 @@ end MonoidHomClass
 
 namespace Units
 
-variable {α : Type*} {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
+variable {M : Type u} {N : Type v} {P : Type w} [Monoid M] [Monoid N] [Monoid P]
 
 /-- The group homomorphism on units induced by a `MonoidHom`. -/
 @[to_additive /-- The additive homomorphism on `AddUnit`s induced by an `AddMonoidHom`. -/]
 def map (f : M →* N) : Mˣ →* Nˣ :=
-  MonoidHom.mk'
-    (fun u => ⟨f u.val, f u.inv,
-      by rw [← f.map_mul, u.val_inv, f.map_one],
-      by rw [← f.map_mul, u.inv_val, f.map_one]⟩)
-    fun x y => ext (f.map_mul x y)
+  MonoidHom.mk' (fun u => ⟨f u.val, f u.inv, by simp [← map_mul], by simp [← map_mul]⟩)
+    fun _ _ => ext <| by simp
 
 @[to_additive (attr := simp)]
 theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
@@ -86,16 +83,23 @@ theorem coe_map (f : M →* N) (x : Mˣ) : ↑(map f x) = f x := rfl
 theorem coe_map_inv (f : M →* N) (u : Mˣ) : ↑(map f u)⁻¹ = f ↑u⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-lemma map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
-    map f (mk val inv val_inv inv_val) = mk (f val) (f inv)
-      (by rw [← f.map_mul, val_inv, f.map_one]) (by rw [← f.map_mul, inv_val, f.map_one]) := rfl
+theorem map_mk (f : M →* N) (val inv : M) (val_inv inv_val) :
+    map f (mk val inv val_inv inv_val) =
+      mk (f val) (f inv) (by simp [← map_mul, val_inv]) (by simp [← map_mul, inv_val]) := rfl
 
 @[to_additive (attr := simp)]
 theorem map_comp (f : M →* N) (g : N →* P) : map (g.comp f) = (map g).comp (map f) := rfl
 
 @[to_additive]
-lemma map_injective {f : M →* N} (hf : Function.Injective f) :
+theorem map_injective {f : M →* N} (hf : Function.Injective f) :
     Function.Injective (map f) := fun _ _ e => ext (hf (congr_arg val e))
+
+@[to_additive]
+theorem map_bijective {f : M →* N} (hf : Function.Bijective f) : Function.Bijective <| map f := by
+  refine ⟨map_injective hf.injective, ?_⟩
+  rintro ⟨u, v, uv, vu⟩
+  rcases hf.surjective u, hf.surjective v with ⟨⟨u, rfl⟩, ⟨v, rfl⟩⟩
+  exact ⟨⟨u, v, hf.injective <| by simpa, hf.injective <| by simpa⟩, rfl⟩
 
 variable (M)
 
@@ -117,7 +121,7 @@ theorem coeHom_injective : Function.Injective (coeHom M) := Units.val_injective
 
 section DivisionMonoid
 
-variable [DivisionMonoid α]
+variable {α : Type*} [DivisionMonoid α]
 
 @[to_additive (attr := simp, norm_cast)]
 theorem val_zpow_eq_zpow_val : ∀ (u : αˣ) (n : ℤ), ((u ^ n : αˣ) : α) = (u : α) ^ n :=
@@ -203,6 +207,16 @@ variable [Monoid M] [Monoid N]
 @[to_additive]
 theorem map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) : IsUnit (f x) := by
   rcases h with ⟨y, rfl⟩; exact (Units.map (f : M →* N) y).isUnit
+
+@[to_additive]
+theorem unit_map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) :
+    (h.map f).unit = f h.unit :=
+  rfl
+
+@[to_additive]
+theorem unit_inv_map [MonoidHomClass F M N] (f : F) {x : M} (h : IsUnit x) :
+    (h.map f).unit⁻¹ = f ↑h.unit⁻¹ :=
+  Units.inv_eq_of_mul_eq_one_left <| by simp [← map_mul]
 
 @[to_additive]
 theorem of_leftInverse [MonoidHomClass G N M] {f : F} {x : M} (g : G)

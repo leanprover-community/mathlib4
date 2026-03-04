@@ -229,6 +229,7 @@ section center
 
 open Subgroup
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem center_eq_bot_of_subsingleton [Subsingleton n] :
     center (SpecialLinearGroup n R) = ⊥ :=
@@ -342,11 +343,13 @@ section Neg
 
 variable [Fact (Even (Fintype.card n))]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Formal operation of negation on special linear group on even cardinality `n` given by negating
 each element. -/
-instance instNeg : Neg (SpecialLinearGroup n R) :=
+instance instNeg [Fact (Even (Fintype.card n))] : Neg (SpecialLinearGroup n R) :=
   ⟨fun g => ⟨-g, by
-    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe] using det_smul (↑ₘg) (-1)⟩⟩
+    simpa [(@Fact.out <| Even <| Fintype.card n).neg_one_pow, g.det_coe]
+      using det_smul (↑ₘg) (-1)⟩⟩
 
 @[simp]
 theorem coe_neg (g : SpecialLinearGroup n R) : ↑(-g) = -(g : Matrix n n R) :=

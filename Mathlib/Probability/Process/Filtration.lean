@@ -289,6 +289,7 @@ noncomputable irreducible_def rightCont [PartialOrder ι] (𝓕 : Filtration ι 
 
 @[inherit_doc] scoped postfix:max "₊" => rightCont
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 lemma rightCont_apply [PartialOrder ι] [TopologicalSpace ι] [OrderTopology ι]
     (𝓕 : Filtration ι m) (i : ι) :

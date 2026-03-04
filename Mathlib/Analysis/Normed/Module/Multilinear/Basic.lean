@@ -5,11 +5,11 @@ Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Data.Fintype.CardEmbedding
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
 public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+public import Mathlib.Analysis.Normed.Operator.Bilinear
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -430,6 +430,8 @@ theorem opNorm_add_le (f g : ContinuousMultilinearMap 𝕜 E G) : ‖f + g‖ �
 theorem opNorm_zero : ‖(0 : ContinuousMultilinearMap 𝕜 E G)‖ = 0 :=
   (opNorm_nonneg _).antisymm' <| opNorm_le_bound le_rfl fun m => by simp
 
+theorem opNorm_neg (f : ContinuousMultilinearMap 𝕜 E G) : ‖-f‖ = ‖f‖ := by simp [norm_def]
+
 section
 
 variable {𝕜' : Type*} [SeminormedRing 𝕜'] [Module 𝕜' G] [IsBoundedSMul 𝕜' G] [SMulCommClass 𝕜 𝕜' G]
@@ -450,7 +452,10 @@ protected def seminorm : Seminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G) :=
 
 set_option backward.privateInPublic true in
 private lemma uniformity_eq_seminorm :
-    𝓤 (ContinuousMultilinearMap 𝕜 E G) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
+    𝓤 (ContinuousMultilinearMap 𝕜 E G) = ⨅ r > 0, 𝓟 {f | ‖-f.1 + f.2‖ < r} := by
+  have A (f : ContinuousMultilinearMap 𝕜 E G × ContinuousMultilinearMap 𝕜 E G) :
+      ‖-f.1 + f.2‖ = ‖f.1 - f.2‖ := by rw [← opNorm_neg, neg_add, neg_neg, sub_eq_add_neg]
+  simp only [A]
   refine (ContinuousMultilinearMap.seminorm 𝕜 E G).uniformity_eq_of_hasBasis
     (ContinuousMultilinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall)
     ?_ fun (s, r) ⟨hs, hr⟩ ↦ ?_
@@ -532,6 +537,7 @@ theorem isLeast_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) :
     IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using isLeast_Ici
 
+set_option backward.isDefEq.respectTransparency false in
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by
@@ -773,6 +779,7 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by

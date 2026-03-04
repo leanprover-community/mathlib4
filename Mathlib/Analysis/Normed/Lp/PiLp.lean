@@ -589,13 +589,13 @@ instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
     SeminormedAddCommGroup (PiLp p β) where
   dist_eq := fun x y => by
     rcases p.dichotomy with (rfl | h)
-    · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, sub_apply]
+    · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, add_apply, neg_apply, norm_neg_add]
     · have : p ≠ ∞ := by
         intro hp
         rw [hp, ENNReal.toReal_top] at h
         linarith
       simp only [dist_eq_sum (zero_lt_one.trans_le h), norm_eq_sum (zero_lt_one.trans_le h),
-        dist_eq_norm, sub_apply]
+        dist_eq_norm, add_apply, neg_apply, norm_neg_add]
 
 omit [Fintype ι] in
 lemma isUniformInducing_toLp [Finite ι] [∀ i, PseudoEMetricSpace (β i)] :
@@ -925,6 +925,7 @@ section Single
 variable (p)
 variable [DecidableEq ι]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem nnnorm_toLp_single (i : ι) (b : β i) :
     ‖toLp p (Pi.single i b)‖₊ = ‖b‖₊ := by
@@ -1130,7 +1131,7 @@ abbrev seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] :
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
 
 lemma norm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (x : Π i, α i) :
     @Norm.norm _ (seminormedAddCommGroupToPi p α).toNorm x = ‖toLp p x‖ := rfl
@@ -1177,7 +1178,7 @@ abbrev normedAddCommGroupToPi [∀ i, NormedAddCommGroup (α i)] :
   norm x := ‖toLp p x‖
   toPseudoMetricSpace := pseudoMetricSpaceToPi p α
   dist_eq x y := by
-    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_sub]
+    rw [dist_pseudoMetricSpaceToPi, SeminormedAddCommGroup.dist_eq, toLp_add, toLp_neg]
   eq_of_dist_eq_zero {x y} h := by
     rw [dist_pseudoMetricSpaceToPi] at h
     apply eq_of_dist_eq_zero at h
