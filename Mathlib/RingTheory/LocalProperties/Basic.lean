@@ -329,6 +329,7 @@ lemma RingHom.LocalizationAwayPreserves.respectsIso
     have : IsLocalization.Away (f 1) T :=
       IsLocalization.away_of_isUnit_of_bijective _ (by simp) (Equiv.refl _).bijective
     convert hP f 1 R T hf
+    have : RingHomInvPair (e : R →+* S) e.symm := RingHomInvPair.of_ringEquiv _
     have : (IsLocalization.Away.map R T f 1).comp e.symm.toRingHom = f :=
       IsLocalization.map_comp ..
     conv_lhs => rw [← this, RingHom.comp_assoc]

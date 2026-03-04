@@ -162,9 +162,6 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
   let ⟨p, hp, hpx⟩ := hx
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 
-local instance (f : R ≃+* S) : RingHomInvPair (f : R →+* S) f.symm :=
-  RingHomInvPair.of_ringEquiv f
-
 /- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
 a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
 over `T`. -/
@@ -178,6 +175,7 @@ theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [Ring S] [CommRing
       ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, ← h, mul_assoc]; rfl⟩
     exact IsIntegral.tower_top ha
   · have h' : (algebraMap T S) = (algebraMap R S).comp φ.symm.toRingHom := by
+      have : RingHomInvPair (φ : R →+* T) φ.symm := RingHomInvPair.of_ringEquiv _
       simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingHomCompTriple.comp_eq]
     letI : Algebra T R := φ.symm.toRingHom.toAlgebra
     letI : IsScalarTower T R S :=
