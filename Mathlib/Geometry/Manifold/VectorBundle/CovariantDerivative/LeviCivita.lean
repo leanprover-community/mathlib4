@@ -183,6 +183,97 @@ variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 
 local notation "∇" X "," Y => fun (x:M) ↦ cov X x (Y x)
 
+/-
+-- kept for archival purposes
+noncomputable example [FiniteDimensional ℝ E] (Y Z : Π x : M, TangentSpace I x) (x : M) :
+    TangentSpace I x →L[ℝ] ℝ :=
+  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
+  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
+  let Zflat : TangentSpace I x →L[ℝ] ℝ :=
+    (InnerProductSpace.toDual ℝ (TangentSpace I x)) (Z x)
+  let A : TangentSpace I x →L[ℝ] TangentSpace I x := cov Y x
+  Zflat ∘L A
+
+-- Given two vector fields `Y` and `Z`, compute the 1-form `g(∇. Y, Z)`.
+noncomputable def foo [FiniteDimensional ℝ E] (Y Z : Π x : M, TangentSpace I x) (x : M) :
+    TangentSpace I x →L[ℝ] ℝ :=
+  (innerSL ℝ (Z x)) ∘L (cov Y x) -/
+
+noncomputable def myfun (Y Z : Π x : M, TangentSpace I x) :
+    Π (x : M), TangentSpace I x →L[ℝ] ℝ := fun x ↦
+  letI b : TangentSpace I x →L[ℝ] ℝ := mfderiv% ⟪Y, Z⟫ x
+  b - ((innerSL ℝ (Z x)) ∘L (cov Y x)) - ((innerSL ℝ (Y x)) ∘L (cov Z x))
+
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
+noncomputable example {x : M} [FiniteDimensional ℝ E] :
+    TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) := by
+  apply mk2TensorAt I E (myfun I cov)
+  · intro f σ τ hf hσ
+    unfold myfun
+    rw [product_smul_left]
+    --simp only [smul_eq_mul]
+    --erw [mfderiv_smul]
+    rw [cov.isCovariantDerivativeOn.leibniz hσ hf]
+    ext X
+    simp
+    sorry
+  · intro σ σ' τ hσ hσ'
+    have hτ : MDiffAt (T% τ) x := sorry -- missing hypothesis?
+    simp only [myfun]
+    ext X
+    simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp', coe_innerSL_apply,
+      Pi.sub_apply, comp_apply, ContinuousLinearMap.add_apply]
+    rw [product_add_left,
+      mfderiv_add (hσ.inner_bundle' hτ) (hσ'.inner_bundle' hτ),
+      cov.isCovariantDerivativeOn.addσ hσ hσ',
+      ContinuousLinearMap.comp_add, ContinuousLinearMap.coe_sub', Pi.sub_apply,
+      ContinuousLinearMap.add_apply, Pi.add_apply, inner_add_left]
+    -- set A := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x
+    -- set A' := mfderiv I 𝓘(ℝ, ℝ) ⟪σ', τ⟫ x
+    -- set B := ((innerSL ℝ) (τ x)).comp (cov σ x)
+    -- set B' := ((innerSL ℝ) (τ x)).comp (cov σ' x)
+    -- set C := inner ℝ (σ x) ((cov τ x) X)
+    -- set C' := inner ℝ (σ' x) ((cov τ x) X)
+    erw [ContinuousLinearMap.add_apply, ContinuousLinearMap.sub_apply,
+      ContinuousLinearMap.sub_apply]
+    -- bug: abel fails, but module works
+    module
+  · intro f σ τ hf hτ
+    simp only [myfun]
+    ext X
+    dsimp
+    rw [map_smul (innerSL ℝ) (f x) (τ x), product_smul_right]
+    have hσ : MDiffAt (T% σ) x := sorry -- missing hypothesis?
+    have aux := mfderiv_smul (s := f) (f := ⟪σ, τ⟫) (I := I) (x := x) (hσ.inner_bundle' hτ) hf
+    set A := (f x • (innerSL ℝ) (τ x)).comp (cov σ x)
+    set B := mfderiv I 𝓘(ℝ, ℝ) (f • ⟪σ, τ⟫) x
+    -- issue: A and B live in different tangent spaces, so cannot simply expand and apply aux...
+    -- next steps: apply the Leibniz rule, collect the other terms and suffer some more
+    sorry
+  · intro σ τ τ' hτ hτ'
+    have hσ : MDiffAt (T% σ) x := sorry -- missing hypothesis!
+    unfold myfun
+    ext X
+    simp only [Pi.add_apply, map_add, ContinuousLinearMap.add_comp, ContinuousLinearMap.coe_sub',
+      ContinuousLinearMap.coe_comp', coe_innerSL_apply, Pi.sub_apply, comp_apply,
+      ContinuousLinearMap.add_apply]
+    rw [product_add_right, mfderiv_add (hσ.inner_bundle' hτ) (hσ.inner_bundle' hτ'),
+      cov.isCovariantDerivativeOn.addσ hτ hτ']
+    dsimp
+    rw [inner_add_right]
+    set A := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x
+    set A' := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ'⟫ x
+    set B := ((innerSL ℝ) (τ x)).comp (cov σ x)
+    set B' := ((innerSL ℝ) (τ' x)).comp (cov σ x)
+    set C := inner ℝ (σ x) ((cov τ x) X)
+    set C' := inner ℝ (σ x) ((cov τ' x) X)
+    set D := (cov σ x) X
+    erw [ContinuousLinearMap.add_apply, ContinuousLinearMap.sub_apply,
+      ContinuousLinearMap.sub_apply]
+    -- The goal is false now, what?
+    sorry -- module
+
+-- old version of the definition. TODO: replace by the tensor ∇ g being zero!
 /-- Predicate saying for a connection `∇` on a Riemannian manifold `M`  to be compatible with the
 ambient metric, i.e. for all smooth vector fields `X`, `Y` and `Z` on `M`, we have
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
