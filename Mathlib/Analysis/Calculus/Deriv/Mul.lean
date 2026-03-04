@@ -237,7 +237,7 @@ theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
 multiplication is by division ring elements. -/
 lemma deriv_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (fun y ↦ c • f y) x = c • deriv f x := by
-  simp only [← derivWithin_univ, derivWithin_fun_const_smul_field]
+  rw [← derivWithin_univ, derivWithin_fun_const_smul_field, derivWithin_univ]
 
 @[deprecated (since := "2026-01-11")] alias deriv_fun_const_smul' := deriv_fun_const_smul_field
 
@@ -245,7 +245,7 @@ lemma deriv_fun_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
 multiplication is by division ring elements. -/
 lemma deriv_const_smul_field (c : 𝕝) (f : 𝕜 → F) :
     deriv (c • f) x = c • deriv f x := by
-  simp only [← derivWithin_univ, derivWithin_const_smul_field]
+  rw [← derivWithin_univ, derivWithin_const_smul_field, derivWithin_univ]
 
 @[deprecated (since := "2026-01-11")] alias deriv_const_smul' := deriv_const_smul_field
 
@@ -299,8 +299,7 @@ theorem deriv_mul (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 𝕜 d
 
 theorem HasDerivWithinAt.mul_const (hc : HasDerivWithinAt c c' s x) (d : 𝔸) :
     HasDerivWithinAt (fun y => c y * d) (c' * d) s x := by
-  convert hc.mul (hasDerivWithinAt_const x s d) using 1
-  rw [mul_zero, add_zero]
+  simpa using hc.mul (hasDerivWithinAt_const x s d)
 
 theorem HasDerivAt.mul_const (hc : HasDerivAt c c' x) (d : 𝔸) :
     HasDerivAt (fun y => c y * d) (c' * d) x := by
@@ -308,12 +307,11 @@ theorem HasDerivAt.mul_const (hc : HasDerivAt c c' x) (d : 𝔸) :
   exact hc.mul_const d
 
 theorem hasDerivAt_mul_const (c : 𝕜) : HasDerivAt (fun x => x * c) c x := by
-  simpa only [one_mul] using (hasDerivAt_id' x).mul_const c
+  simpa using (hasDerivAt_id' x).mul_const c
 
 theorem HasStrictDerivAt.mul_const (hc : HasStrictDerivAt c c' x) (d : 𝔸) :
     HasStrictDerivAt (fun y => c y * d) (c' * d) x := by
-  convert hc.mul (hasStrictDerivAt_const x d) using 1
-  rw [mul_zero, add_zero]
+  simpa using hc.mul (hasStrictDerivAt_const x d)
 
 theorem derivWithin_mul_const (hc : DifferentiableWithinAt 𝕜 c s x) (d : 𝔸) :
     derivWithin (fun y => c y * d) s x = derivWithin c s x * d := by
@@ -341,9 +339,9 @@ theorem deriv_mul_const_field (v : 𝕜') : deriv (fun y => u y * v) x = deriv u
   · exact deriv_mul_const hu v
   · rw [deriv_zero_of_not_differentiableAt hu, zero_mul]
     rcases eq_or_ne v 0 with (rfl | hd)
-    · simp only [mul_zero, deriv_const]
+    · simp
     · refine deriv_zero_of_not_differentiableAt (mt (fun H => ?_) hu)
-      simpa only [mul_inv_cancel_right₀ hd] using H.mul_const v⁻¹
+      simpa [hd] using H.mul_const v⁻¹
 
 @[simp]
 theorem deriv_mul_const_field' (v : 𝕜') : (deriv fun x => u x * v) = fun x => deriv u x * v :=
@@ -351,8 +349,7 @@ theorem deriv_mul_const_field' (v : 𝕜') : (deriv fun x => u x * v) = fun x =>
 
 theorem HasDerivWithinAt.const_mul (c : 𝔸) (hd : HasDerivWithinAt d d' s x) :
     HasDerivWithinAt (fun y => c * d y) (c * d') s x := by
-  convert (hasDerivWithinAt_const x s c).mul hd using 1
-  rw [zero_mul, zero_add]
+  simpa using (hasDerivWithinAt_const x s c).mul hd
 
 theorem HasDerivAt.const_mul (c : 𝔸) (hd : HasDerivAt d d' x) :
     HasDerivAt (fun y => c * d y) (c * d') x := by
@@ -360,12 +357,11 @@ theorem HasDerivAt.const_mul (c : 𝔸) (hd : HasDerivAt d d' x) :
   exact hd.const_mul c
 
 theorem hasDerivAt_const_mul (c : 𝕜) : HasDerivAt (fun y => c * y) c x := by
-  simpa only [mul_one] using (hasDerivAt_id' x).const_mul c
+  simpa using (hasDerivAt_id' x).const_mul c
 
 theorem HasStrictDerivAt.const_mul (c : 𝔸) (hd : HasStrictDerivAt d d' x) :
     HasStrictDerivAt (fun y => c * d y) (c * d') x := by
-  convert (hasStrictDerivAt_const _ _).mul hd using 1
-  rw [zero_mul, zero_add]
+  simpa using (hasStrictDerivAt_const _ _).mul hd
 
 theorem derivWithin_const_mul (c : 𝔸) (hd : DifferentiableWithinAt 𝕜 d s x) :
     derivWithin (fun y => c * d y) s x = c * derivWithin d s x := by
@@ -386,7 +382,7 @@ theorem deriv_const_mul (c : 𝔸) (hd : DifferentiableAt 𝕜 d x) :
 /-- A variant of `deriv_const_mul` without differentiability assumption when the scalar
 multiplication is by division ring elements. -/
 theorem deriv_const_mul_field (u : 𝕜') : deriv (fun y => u * v y) x = u * deriv v x := by
-  simpa only [← derivWithin_univ] using derivWithin_const_mul_field u
+  simpa [← derivWithin_univ] using derivWithin_const_mul_field u
 
 @[simp]
 theorem deriv_const_mul_field' (u : 𝕜') : (deriv fun x => u * v x) = fun x => u * deriv v x :=
@@ -403,8 +399,7 @@ variable {ι : Type*} [DecidableEq ι] {𝔸' : Type*} [NormedCommRing 𝔸'] [N
 
 theorem HasDerivAt.fun_finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
-    (HasFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasFDerivAt)).hasDerivAt
+  simpa using (HasFDerivAt.finset_prod fun i hi ↦ (hf i hi).hasFDerivAt).hasDerivAt
 
 theorem HasDerivAt.finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
@@ -421,8 +416,8 @@ theorem HasDerivWithinAt.finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (
 
 theorem HasStrictDerivAt.fun_finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  simpa [ContinuousLinearMap.sum_apply, ContinuousLinearMap.smul_apply] using
-    (HasStrictFDerivAt.finset_prod (fun i hi ↦ (hf i hi).hasStrictFDerivAt)).hasStrictDerivAt
+  simpa using
+    (HasStrictFDerivAt.finset_prod fun i hi ↦ (hf i hi).hasStrictFDerivAt).hasStrictDerivAt
 
 theorem HasStrictDerivAt.finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
@@ -457,25 +452,24 @@ variable {ι : Type*} {𝔸' : Type*} [NormedCommRing 𝔸'] [NormedAlgebra 𝕜
 theorem DifferentiableAt.fun_finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     DifferentiableAt 𝕜 (∏ i ∈ u, f i ·) x := by
   classical
-  exact
-    (HasDerivAt.fun_finset_prod (fun i hi ↦ DifferentiableAt.hasDerivAt (hd i hi))).differentiableAt
+  exact (HasDerivAt.fun_finset_prod (fun i hi ↦ hasDerivAt (hd i hi))).differentiableAt
 
 @[fun_prop]
 theorem DifferentiableAt.finset_prod (hd : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     DifferentiableAt 𝕜 (∏ i ∈ u, f i) x := by
-  convert DifferentiableAt.fun_finset_prod hd; simp
+  convert fun_finset_prod hd; simp
 
 @[fun_prop]
 theorem DifferentiableWithinAt.fun_finset_prod (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i ·) s x := by
   classical
-  exact (HasDerivWithinAt.fun_finset_prod (fun i hi ↦
-    DifferentiableWithinAt.hasDerivWithinAt (hd i hi))).differentiableWithinAt
+  exact HasDerivWithinAt.fun_finset_prod (fun i hi ↦ hasDerivWithinAt (hd i hi))
+    |>.differentiableWithinAt
 
 @[fun_prop]
 theorem DifferentiableWithinAt.finset_prod (hd : ∀ i ∈ u, DifferentiableWithinAt 𝕜 (f i) s x) :
     DifferentiableWithinAt 𝕜 (∏ i ∈ u, f i) s x := by
-  convert DifferentiableWithinAt.fun_finset_prod hd; simp
+  convert fun_finset_prod hd; simp
 
 @[fun_prop]
 theorem DifferentiableOn.fun_finset_prod (hd : ∀ i ∈ u, DifferentiableOn 𝕜 (f i) s) :
@@ -539,7 +533,7 @@ theorem derivWithin_div_const (c : 𝕜 → 𝕜') (d : 𝕜') :
 
 @[simp]
 theorem deriv_div_const (d : 𝕜') : deriv (fun x => c x / d) x = deriv c x / d := by
-  simp only [div_eq_mul_inv, deriv_mul_const_field]
+  simp_rw [div_eq_mul_inv, deriv_mul_const_field]
 
 end Div
 
