@@ -286,17 +286,10 @@ Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of typ
 where `G` is locally-full and cover-dense, and `ℱ, ℱ'` are sheaves,
 we may obtain a natural isomorphism between sheaves.
 -/
-@[simps]
+@[simps! hom_val inv_val]
 noncomputable def sheafIso {ℱ ℱ' : Sheaf K (Type v)} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) :
-    ℱ ≅ ℱ' where
-  hom := ⟨(presheafIso i).hom⟩
-  inv := ⟨(presheafIso i).inv⟩
-  hom_inv_id := by
-    ext1
-    apply (presheafIso i).hom_inv_id
-  inv_hom_id := by
-    ext1
-    apply (presheafIso i).inv_hom_id
+    ℱ ≅ ℱ' :=
+  (fullyFaithfulSheafToPresheaf _ _).preimageIso (presheafIso i)
 
 end Types
 
@@ -377,16 +370,9 @@ Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arb
 where `G` is locally-full and cover-dense, and `ℱ', ℱ` are sheaves,
 we may obtain a natural isomorphism between presheaves.
 -/
-@[simps]
-noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) : ℱ ≅ ℱ' where
-  hom := ⟨(presheafIso i).hom⟩
-  inv := ⟨(presheafIso i).inv⟩
-  hom_inv_id := by
-    ext1
-    apply (presheafIso i).hom_inv_id
-  inv_hom_id := by
-    ext1
-    apply (presheafIso i).inv_hom_id
+@[simps! hom_val inv_val]
+noncomputable def sheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G.op ⋙ ℱ'.val) : ℱ ≅ ℱ' :=
+  (fullyFaithfulSheafToPresheaf _ _).preimageIso (presheafIso i)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The constructed `sheafHom α` is equal to `α` when restricted onto `C`. -/
@@ -745,6 +731,7 @@ lemma sheafifyHomEquivOfIsEquivalence_naturality_right
 
 variable (A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assuming that `(C, J)` is a dense subsite of `(D, K)` (via a functor `G : C ⥤ D`)
 and `sheafPushforwardContinuous G A J K` is an equivalence of categories, and
 that `HasWeakSheafify J A` holds, then this adjunction shows the existence

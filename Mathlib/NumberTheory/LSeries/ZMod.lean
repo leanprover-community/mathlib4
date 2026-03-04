@@ -89,7 +89,6 @@ lemma LFunction_modOne_eq (Φ : ZMod 1 → ℂ) (s : ℂ) :
   simp only [LFunction, Nat.cast_one, one_cpow, ← singleton_eq_univ (0 : ZMod 1), sum_singleton,
     map_zero, hurwitzZeta_zero, one_mul]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `1 < re s` the congruence L-function agrees with the sum of the Dirichlet series. -/
 lemma LFunction_eq_LSeries (Φ : ZMod N → ℂ) {s : ℂ} (hs : 1 < re s) :
     LFunction Φ s = LSeries (Φ ·) s := by
