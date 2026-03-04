@@ -91,14 +91,14 @@ theorem edgeSet_map (f : V ↪ W) (G : SimpleGraph V) :
 lemma map_adj_apply {G : SimpleGraph V} {f : V ↪ W} {a b : V} :
     (G.map f).Adj (f a) (f b) ↔ G.Adj a b := by simp
 
-theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
+theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   rintro G G' h z1 z2 ⟨huv, u, v, ha, rfl, rfl⟩
-  exact ⟨f.injective.ne ha.ne, _, _, h ha, rfl, rfl⟩
+  exact ⟨huv, _, _, h ha, rfl, rfl⟩
 
 @[simp] lemma map_id : G.map (Function.Embedding.refl _) = G := by
   ext; dsimp [SimpleGraph.map, Relation.Map]; grind [SimpleGraph.Adj.ne]
 
-@[simp] lemma map_map (f : V ↪ W) (g : W ↪ X) : (G.map f).map g = G.map (f.trans g) := by
+@[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
   ext; dsimp [SimpleGraph.map, Relation.Map]; grind [SimpleGraph.Adj.ne]
 
 theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
