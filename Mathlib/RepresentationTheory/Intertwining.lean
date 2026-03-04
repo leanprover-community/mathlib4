@@ -37,6 +37,7 @@ structure IntertwiningMap extends V →ₗ[A] W where
   /-- An underlying `A`-linear map of the underlying `A`-modules. -/
   isIntertwining' (g : G) : toLinearMap ∘ₗ ρ g = σ g ∘ₗ toLinearMap
 
+/-- An intertwining map constructed form the linear map and the fact that it is intertwining. -/
 def _root_.LinearMap.intertwiningMap_of_isIntertwiningMap
     (hf : ∀ (g : G), ∀ (v : V), f (ρ g v) = σ g (f v)) : IntertwiningMap ρ σ :=
   { f with isIntertwining' g := by ext v; exact hf g v}
