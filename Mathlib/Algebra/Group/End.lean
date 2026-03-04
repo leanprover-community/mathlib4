@@ -719,11 +719,24 @@ def toPerm : MulAut M →* Equiv.Perm M where
   map_one' := rfl
   map_mul' _ _ := rfl
 
+/-- Isomorphic groups have isomorphic automorphism groups. -/
+@[to_additive (attr := simps)
+/-- Isomorphic groups have isomorphic automorphism groups. -/]
+def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
+    MulAut G ≃* MulAut H where
+  toFun f := ϕ.symm.trans (f.trans ϕ)
+  invFun f := ϕ.trans (f.trans ϕ.symm)
+  left_inv _ := by simp [DFunLike.ext_iff]
+  right_inv _ := by simp [DFunLike.ext_iff]
+  map_mul' := by simp [DFunLike.ext_iff]
+
+variable [Group G] (g h : G)
+
 /-- Group conjugation, `MulAut.conj g h = g * h * g⁻¹`, as a monoid homomorphism
 mapping multiplication in `G` into multiplication in the automorphism group `MulAut G`.
 See also the type `ConjAct G` for any group `G`, which has a `MulAction (ConjAct G) G` instance
 where `conj G` acts on `G` by conjugation. -/
-def conj [Group G] : G →* MulAut G where
+def conj : G →* MulAut G where
   toFun g :=
     { toFun := fun h => g * h * g⁻¹
       invFun := fun h => g⁻¹ * h * g
@@ -736,28 +749,9 @@ def conj [Group G] : G →* MulAut G where
     simp only [mul_assoc, mul_inv_rev]
   map_one' := by ext; simp only [one_mul, inv_one, mul_one, one_apply]; rfl
 
-@[simp]
-theorem conj_apply [Group G] (g h : G) : conj g h = g * h * g⁻¹ :=
-  rfl
-
-@[simp]
-theorem conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :=
-  rfl
-
-@[simp]
-theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
-  rfl
-
-/-- Isomorphic groups have isomorphic automorphism groups. -/
-@[to_additive (attr := simps)
-/-- Isomorphic groups have isomorphic automorphism groups. -/]
-def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
-    MulAut G ≃* MulAut H where
-  toFun f := ϕ.symm.trans (f.trans ϕ)
-  invFun f := ϕ.trans (f.trans ϕ.symm)
-  left_inv _ := by simp [DFunLike.ext_iff]
-  right_inv _ := by simp [DFunLike.ext_iff]
-  map_mul' := by simp [DFunLike.ext_iff]
+@[simp] theorem conj_apply : conj g h = g * h * g⁻¹ := rfl
+@[simp] theorem conj_symm_apply : (conj g).symm h = g⁻¹ * h * g := rfl
+@[simp] theorem conj_inv_apply : (conj g)⁻¹ h = g⁻¹ * h * g := rfl
 
 end MulAut
 
@@ -786,19 +780,11 @@ def conj [AddGroup G] : G →+ Additive (AddAut G) where
     simp only [zero_add, neg_zero, add_zero, toMul_ofMul, toMul_zero, one_apply]
     rfl
 
-@[simp]
-theorem conj_apply [AddGroup G] (g h : G) : (conj g).toMul h = g + h + -g :=
-  rfl
+@[simp] theorem conj_apply [AddGroup G] (g h : G) : (conj g).toMul h = g + h + -g := rfl
+@[simp] theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).toMul.symm h = -g + h + g := rfl
 
-@[simp]
-theorem conj_symm_apply [AddGroup G] (g h : G) : (conj g).toMul.symm h = -g + h + g :=
-  rfl
-
-theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g :=
-  rfl
-
-theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g).toMul h = -g + h + g := by
-  simp
+theorem conj_inv_apply [AddGroup G] (g h : G) : (conj g).toMul⁻¹ h = -g + h + g := rfl
+theorem neg_conj_apply [AddGroup G] (g h : G) : (-conj g).toMul h = -g + h + g := by simp
 
 end AddAut
 
