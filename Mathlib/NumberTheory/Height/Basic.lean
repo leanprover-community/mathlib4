@@ -407,10 +407,26 @@ lemma mulHeight_sumElim_zero_eq {ι : Type*} (ι' : Type*) [Finite ι] [Finite �
   · exact H v
   · exact H v.val
 
-open Real in
 lemma logHeight_sumElim_zero_eq {ι : Type*} (ι' : Type*) [Finite ι] [Finite ι'] (x : ι → K) :
-    logHeight (Sum.elim x (0 : ι' → K)) = logHeight x := by
-  simp only [logHeight_eq_log_mulHeight, mulHeight_sumElim_zero_eq]
+    logHeight (Sum.elim x (0 : ι' → K)) = logHeight x :=
+  congrArg log <| mulHeight_sumElim_zero_eq ..
+
+lemma mulHeight_eq_mulHeight_restrict_support {ι : Type*} [Finite ι] (x : ι → K) :
+    mulHeight x = mulHeight fun i : x.support ↦ x i.val := by
+  classical
+  let e := Equiv.Set.sumCompl x.support
+  have hx : x ∘ e = Sum.elim (fun i : x.support ↦ x i.val) 0 := by
+    ext1 i
+    simp only [comp_apply]
+    cases i with
+    | inl val => simp [e]
+    | inr val => exact notMem_support.mp <| (Set.mem_compl_iff _ _ ).mp val.prop
+  rw [← mulHeight_comp_equiv e, hx]
+  exact mulHeight_sumElim_zero_eq ..
+
+lemma logHeight_eq_mulHeight_restrict_support {ι : Type*} [Finite ι] (x : ι → K) :
+    logHeight x = logHeight fun i : x.support ↦ x i.val :=
+  congrArg log <| mulHeight_eq_mulHeight_restrict_support x
 
 @[simp]
 lemma mulHeight_eq_one_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι → K) :
