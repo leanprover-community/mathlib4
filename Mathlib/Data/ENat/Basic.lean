@@ -630,6 +630,10 @@ lemma WithBot.add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + 
 lemma WithBot.add_one_cancel {a b : WithBot ℕ∞} : a + 1 = b + 1 ↔ a = b :=
   (IsAddRightRegular.all 1).withTop.withBot.eq_iff
 
+lemma WithBot.add_ofNat_cancel {a b : WithBot ℕ∞} {c : ℕ} [c.AtLeastTwo] :
+    a + ofNat(c) = b + ofNat(c) ↔ a = b :=
+  WithBot.add_natCast_cancel
+
 @[simp]
 lemma WithBot.natCast_add_cancel {a b : WithBot ℕ∞} {c : ℕ} : c + a = c + b ↔ a = b :=
   (IsAddLeftRegular.all c).withTop.withBot.eq_iff
@@ -637,6 +641,10 @@ lemma WithBot.natCast_add_cancel {a b : WithBot ℕ∞} {c : ℕ} : c + a = c + 
 @[simp]
 lemma WithBot.one_add_cancel {a b : WithBot ℕ∞} : 1 + a = 1 + b ↔ a = b :=
   (IsAddLeftRegular.all 1).withTop.withBot.eq_iff
+
+lemma WithBot.ofNat_add_cancel {a b : WithBot ℕ∞} {c : ℕ} [c.AtLeastTwo] :
+    ofNat(c) + a = ofNat(c) + b ↔ a = b :=
+  WithBot.natCast_add_cancel
 
 lemma WithBot.add_le_add_natCast_right_iff {a b : WithBot ℕ∞} {c : ℕ} : a + c ≤ b + c ↔ a ≤ b :=
   (Contravariant.AddLECancellable (a := c)).withTop.withBot.add_le_add_iff_right
