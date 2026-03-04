@@ -142,7 +142,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
   exact (hf₁ _ ha₀).not_ge (hf₂ _ hb₀)
 
-theorem geometric_hahn_banach_of_interior_nonempty
+theorem geometric_hahn_banach_of_nonempty_interior
     {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint A B)
     (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
     ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, f a ≤ u) ∧ ∀ b ∈ B, u ≤ f b := by
@@ -268,7 +268,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   use f.extendRCLikeₗ
   simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
 
-theorem geometric_hahn_banach_of_interior_nonempty
+theorem geometric_hahn_banach_of_nonempty_interior
     {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint A B)
     (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
     ∃ (f : StrongDual 𝕜 E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, re (f a) ≤ u) ∧ ∀ b ∈ B, u ≤ re (f b) := by
