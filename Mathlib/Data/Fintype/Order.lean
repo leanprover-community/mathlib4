@@ -273,11 +273,15 @@ lemma ciInf_inf [Nonempty ι] {f : ι → α} {a : α} :
     (⨅ i, f i) ⊓ a = ⨅ i, f i ⊓ a :=
   ciSup_sup (α := αᵒᵈ) ..
 
-lemma ciSup_prod [Nonempty ι] [Nonempty ι'] (f : ι × ι' → α) :
-    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') :=
-  _root_.ciSup_prod (bddAbove_range f)
+lemma ciSup_prod (f : ι × ι' → α) :
+    ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') := by
+  rcases isEmpty_or_nonempty ι
+  · simp [iSup_of_empty']
+  rcases isEmpty_or_nonempty ι'
+  · simp [iSup_of_empty']
+  exact _root_.ciSup_prod (bddAbove_range f)
 
-lemma ciInf_prod [Nonempty ι] [Nonempty ι'] (f : ι × ι' → α) :
+lemma ciInf_prod (f : ι × ι' → α) :
     ⨅ a, f a = ⨅ i, ⨅ i', f (i, i') :=
   ciSup_prod (α := αᵒᵈ) f
 
