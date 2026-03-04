@@ -85,28 +85,30 @@ theorem isConj_iff {a b : α} : IsConj a b ↔ ∃ c : α, c * a * c⁻¹ = b :=
   ⟨fun ⟨c, hc⟩ => ⟨c, mul_inv_eq_iff_eq_mul.2 hc⟩, fun ⟨c, hc⟩ =>
     ⟨⟨c, c⁻¹, mul_inv_cancel c, inv_mul_cancel c⟩, mul_inv_eq_iff_eq_mul.1 hc⟩⟩
 
-theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ :=
-  (map_inv (MulAut.conj b) a).symm
+@[to_additive]
+theorem conj_inv {a b : α} : (b * a * b⁻¹)⁻¹ = b * a⁻¹ * b⁻¹ := by
+  simp [mul_assoc]
 
-@[simp]
-theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) * b⁻¹ :=
-  (map_mul (MulAut.conj b) a c).symm
+@[to_additive (attr := simp)]
+theorem conj_mul {a b c : α} : b * a * b⁻¹ * (b * c * b⁻¹) = b * (a * c) * b⁻¹ := by
+  simp [mul_assoc]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
   induction i with
   | zero => simp
   | succ i hi => simp [pow_succ, hi]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
   cases i
   · simp
   · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]
     rw [mul_assoc]
 
-theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
-  (MulAut.conj x).injective
+@[to_additive]
+theorem conj_injective {x : α} : Function.Injective fun g ↦ x * g * x⁻¹ := by
+  intro; simp
 
 end Group
 
@@ -114,8 +116,11 @@ namespace IsConj
 
 /- This small quotient API is largely copied from the API of `Associates`;
 where possible, try to keep them in sync -/
+
 /-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
-@[instance_reducible]
+@[to_additive (attr := instance_reducible)
+/-- The setoid of the relation `IsAddConj` iff there is an additive unit `u` such that
+`u + x = y + u` -/]
 protected def setoid (α : Type*) [Monoid α] : Setoid α where
   r := IsConj
   iseqv := ⟨IsConj.refl, IsConj.symm, IsConj.trans⟩
@@ -125,6 +130,8 @@ end IsConj
 attribute [local instance] IsConj.setoid
 
 /-- The quotient type of conjugacy classes of a group. -/
+@[to_additive
+/-- The quotient type of additive conjugacy classes of a group. -/]
 def ConjClasses (α : Type*) [Monoid α] : Type _ :=
   Quotient (IsConj.setoid α)
 
@@ -134,39 +141,53 @@ section Monoid
 
 variable [Monoid α] [Monoid β]
 
-/-- The canonical quotient map from a monoid `α` into the `ConjClasses` of `α` -/
+/-- The canonical quotient map from a monoid `α` into the `ConjClasses` of `α`. -/
+@[to_additive
+/-- The canonical quotient map from an additive monoid `α` into the `AddConjClasses` of `α`. -/]
 protected def mk {α : Type*} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
 
+@[to_additive]
 instance : Inhabited (ConjClasses α) := ⟨⟦1⟧⟩
 
+@[to_additive]
 theorem mk_eq_mk_iff_isConj {a b : α} : ConjClasses.mk a = ConjClasses.mk b ↔ IsConj a b :=
   Iff.intro Quotient.exact Quot.sound
 
+@[to_additive]
 theorem quotient_mk_eq_mk (a : α) : ⟦a⟧ = ConjClasses.mk a :=
   rfl
 
+@[to_additive]
 theorem quot_mk_eq_mk (a : α) : Quot.mk Setoid.r a = ConjClasses.mk a :=
   rfl
 
+@[to_additive]
 theorem forall_isConj {p : ConjClasses α → Prop} : (∀ a, p a) ↔ ∀ a, p (ConjClasses.mk a) :=
   Iff.intro (fun h _ => h _) fun h a => Quotient.inductionOn a h
 
+@[to_additive]
 theorem mk_surjective : Function.Surjective (@ConjClasses.mk α _) :=
   forall_isConj.2 fun a => ⟨a, rfl⟩
 
+@[to_additive]
 instance : One (ConjClasses α) :=
   ⟨⟦1⟧⟩
 
+@[to_additive]
 theorem one_eq_mk_one : (1 : ConjClasses α) = ConjClasses.mk 1 :=
   rfl
 
+@[to_additive]
 theorem exists_rep (a : ConjClasses α) : ∃ a0 : α, ConjClasses.mk a0 = a :=
   Quot.exists_rep a
 
 /-- A `MonoidHom` maps conjugacy classes of one group to conjugacy classes of another. -/
+@[to_additive
+/-- An `AddMonoidHom` maps conjugacy classes of one group to conjugacy classes of another. -/]
 def map (f : α →* β) : ConjClasses α → ConjClasses β :=
   Quotient.lift (ConjClasses.mk ∘ f) fun _ _ ab => mk_eq_mk_iff_isConj.2 (f.map_isConj ab)
 
+@[to_additive]
 theorem map_surjective {f : α →* β} (hf : Function.Surjective f) :
     Function.Surjective (ConjClasses.map f) := by
   intro b
@@ -192,6 +213,7 @@ If the type involved is a free variable (rather than an instantiation of some ty
 the instance priority should be even lower, see Note [lower instance priority].
 -/
 
+@[to_additive]
 instance [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=
   inferInstanceAs <| DecidableEq <| Quotient (IsConj.setoid α)
 
@@ -201,13 +223,17 @@ section CommMonoid
 
 variable [CommMonoid α]
 
+@[to_additive]
 theorem mk_injective : Function.Injective (@ConjClasses.mk α _) := fun _ _ =>
   (mk_eq_mk_iff_isConj.trans isConj_iff_eq).1
 
+@[to_additive]
 theorem mk_bijective : Function.Bijective (@ConjClasses.mk α _) :=
   ⟨mk_injective, mk_surjective⟩
 
 /-- The bijection between a `CommGroup` and its `ConjClasses`. -/
+@[to_additive
+/-- The bijection between an `AddCommGroup` and its `AddConjClasses`. -/]
 def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (_ : α) _ => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
