@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Rémy Degenne
 -/
 module
 
@@ -11,16 +11,18 @@ public import Mathlib.Data.Set.Lattice
 /-!
 # Constructions involving sets of sets.
 
-## Finite Intersections
+## Finite Intersections and unions
 
 We define a structure `FiniteInter` which asserts that a set `S` of subsets of `α` is
-closed under finite intersections.
+closed under finite intersections. Similarly, we define `FiniteUnion` for finite unions.
 
 We define `finiteInterClosure` which, given a set `S` of subsets of `α`, is the smallest
 set of subsets of `α` which is closed under finite intersections.
 
 `finiteInterClosure S` is endowed with a term of type `FiniteInter` using
 `finiteInter_finiteInterClosure`.
+
+Similarly, we define `finiteUnionClosure` and `finiteUnion_finiteUnionClosure`.
 
 -/
 
