@@ -87,7 +87,6 @@ theorem exists_set_linearIndependent_of_isDomain [IsDomain R] :
     IsLocalization.rank_eq (FractionRing R) R⁰ le_rfl,
     IsLocalizedModule.lift_rank_eq R⁰ (LocalizedModule.mkLinearMap R⁰ M) le_rfl]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **rank-nullity theorem** for commutative domains. Also see `rank_quotient_add_rank`. -/
 theorem rank_quotient_add_rank_of_isDomain [IsDomain R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' = Module.rank R M := by

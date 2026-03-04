@@ -20,6 +20,27 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
+run_meta guard <| (← getConstInfo `Test.bar0).all == [`Test.bar0]
+
+/--
+error: `to_additive` does not support mutually recursive declarations.
+-/
+#guard_msgs (error) in
+mutual
+
+@[to_additive bar0a]
+theorem foo0a {α} [Monoid α] (n : ℕ) : True := by
+  cases n with
+  | zero => trivial
+  | succ n => exact foo0b (α := α) n
+
+theorem foo0b {α} [Monoid α] (n : ℕ) : True := by
+  cases n with
+  | zero => trivial
+  | succ n => exact foo0a (α := α) n
+
+end
+
 class my_has_pow (α : Type u) (β : Type v) where
   pow : α → β → α
 
@@ -138,6 +159,8 @@ example [Group α] (x : α) : foo17 x = x := by simp
 example [AddGroup α] (x : α) : bar17 x = 0 + x := by simp
 example [AddGroup α] (x : α) : bar17 x = x := by simp
 
+run_meta guard <| (← getConstInfo `Test.bar18).all == [`Test.bar18]
+
 /- Testing nested to_additive calls -/
 @[to_additive (attr := simp, to_additive baz19) bar19]
 def foo19 := 1
@@ -172,6 +195,7 @@ run_meta do
   -- some auxiliary definitions are also `abbrev` but not `reducible`
   guard <| (← getReducibilityStatus `Test.bar22.match_1) != .reducible
   guard <| (Compiler.getInlineAttribute? (← getEnv) `Test.bar22.match_1) == some .inline
+  guard <| (← getConstInfo `Test.bar22.match_1).all == [`Test.bar22.match_1]
 
 run_cmd do
   -- test that we cannot transport a declaration to itself

@@ -20,6 +20,10 @@ on:
       runs_on:
         type: string
         required: true
+      mathlib_ci_ref:
+        type: string
+        required: false
+        default: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
 
 env:
   # Disable Lake's automatic fetching of cloud builds.
@@ -90,6 +94,17 @@ jobs:
           # so that even when `nightly-testing` is broken, we can still build tools from a known good state.
           ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || (github.repository == 'leanprover-community/mathlib4-nightly-testing' && 'nightly-testing-green' || 'master') }}
           path: tools-branch
+
+      - name: Checkout mathlib-ci
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: ${{ inputs.mathlib_ci_ref }}
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
 
       # Checkout the PR branch into a subdirectory
       - name: Checkout PR branch
@@ -266,7 +281,7 @@ jobs:
             exit 1
           fi
 
-          echo "✅ ProofWidgets source URL is trusted: $proofwidgets_url"
+          echo "✅ ProofWidgets source URL is allowed: $proofwidgets_url"
 
       - name: verify ProofWidgets lean-toolchain matches on versioned releases
         # Only enforce this on the main mathlib4 repository, not on nightly-testing
@@ -633,8 +648,8 @@ jobs:
           TEST_OUTCOME: ${{ steps.test.outcome }}
           NIGHTLY_TESTING_REPO: leanprover-community/mathlib4-nightly-testing
         run: |
-          tools-branch/scripts/lean-pr-testing-comments.sh lean
-          tools-branch/scripts/lean-pr-testing-comments.sh batteries
+          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" lean
+          "${CI_SCRIPTS_DIR}/maintainer/lean-pr-testing-comments.sh" batteries
 
   upload_cache:
     name: Upload to cache

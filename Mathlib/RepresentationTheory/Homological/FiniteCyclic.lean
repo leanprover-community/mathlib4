@@ -77,7 +77,7 @@ lemma coinvariantsKer_leftRegular_eq_ker :
   refine le_antisymm (Submodule.span_le.2 ?_) fun x hx => ?_
   · rintro x ⟨⟨g, y⟩, rfl⟩
     simpa [linearCombination, sub_eq_zero, sum_fintype]
-      using Finset.sum_bijective _ (Group.mulLeft_bijective g⁻¹) (by aesop) (by aesop)
+      using Finset.sum_bijective _ (Group.mulLeft_bijective g⁻¹) (by aesop) (by lia)
   · have : x = x.sum (fun g r => single g r - single 1 r) := by
       ext g
       by_cases hg : g = 1

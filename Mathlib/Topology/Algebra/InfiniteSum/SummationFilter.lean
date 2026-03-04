@@ -133,11 +133,10 @@ for the intended applications, and this avoids requiring a `DecidableEq` instanc
 /-- If `L` has well-defined support, then so does its map along an embedding. -/
 instance (L : SummationFilter β) [HasSupport L] (f : β ↪ γ) : HasSupport (L.map f) := by
   constructor
-  by_cases h : L.NeBot
+  obtain (h | h) := L.neBot_or_eq_bot
   · simp only [map_filter, eventually_map, Finset.coe_map, image_subset_iff, support_map]
     filter_upwards [L.eventually_le_support] with a using by grind
-  · have : L.filter = ⊥ := by contrapose! h; exact ⟨⟨h⟩⟩
-    simp [this]
+  · simp [h]
 
 /-- Pullback of a summation filter along an embedding. -/
 @[simps] noncomputable def comap (L : SummationFilter β) (f : γ ↪ β) : SummationFilter γ where

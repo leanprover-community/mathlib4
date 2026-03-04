@@ -137,7 +137,6 @@ lemma isNilpotent_e :
     rw [root_add_nsmul_mem_range_iff_le_chainTopCoeff hij'] at hk₁
     lia
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isNilpotent_f :
     IsNilpotent (f i) := by
   obtain ⟨n, hn⟩ := isNilpotent_e i

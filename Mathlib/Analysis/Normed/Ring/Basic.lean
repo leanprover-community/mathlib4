@@ -914,7 +914,7 @@ noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : 
   dist_eq _ _ := rfl
   dist_self x := by simp
   dist_comm x y := by rw [add_comm (-x), add_comm (-y), ← sub_eq_add_neg, v.map_sub, sub_eq_add_neg]
-  dist_triangle x y z := by simpa [neg_add_eq_sub, add_comm ( v (y - x))] using v.sub_le z y x
+  dist_triangle x y z := by simpa [neg_add_eq_sub, add_comm (v (y - x))] using v.sub_le z y x
   edist_dist x y := rfl
   norm_mul_le x y := (v.map_mul x y).le
   eq_of_dist_eq_zero := by

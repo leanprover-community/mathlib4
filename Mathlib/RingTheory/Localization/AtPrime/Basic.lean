@@ -307,7 +307,7 @@ lemma localRingHom_bijective_of_saturated_inf_eq_top
   · suffices ∀ y, ∀ z ∉ P, ∃ y' ∈ s, ∃ z' ∉ P, z' ∈ s ∧ ∃ t ∉ P, t * (z * y') = t * (z' * y) by
       simpa [(IsLocalization.mk'_surjective p.primeCompl).exists,
         (IsLocalization.mk'_surjective P.primeCompl).forall, P.over_def p,
-        Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq, - map_mul,
+        Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq, -map_mul,
         IsLocalization.eq_iff_exists P.primeCompl, Function.Surjective] using this
     intro y z hzP
     obtain ⟨a, ⟨haP, has⟩, ha⟩ := H.ge (Set.mem_univ y)
