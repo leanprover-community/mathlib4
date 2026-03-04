@@ -46,11 +46,11 @@ variable {J : Type u₁} {K : Type u₂} [Category.{v₁} J] [Category.{v₂} K]
 
 /-- `(G ⋙ lim).obj j` = `limit (G.obj j)` definitionally, so this
 is just a variant of `limit_ext'`. -/
-@[ext] lemma comp_lim_obj_ext {j : J} {G : J ⥤ K ⥤ Type v} (x y : (G ⋙ lim).obj j)
+@[ext] lemma comp_lim_obj_ext {j : J} {G : J ⥤ K ⥤ TypeCat.{v}} (x y : (G ⋙ lim).obj j)
     (w : ∀ (k : K), limit.π (G.obj j) k x = limit.π (G.obj j) k y) : x = y :=
   limit_ext _ x y w
 
-variable (F : J × K ⥤ Type v)
+variable (F : J × K ⥤ TypeCat.{v})
 
 open Prod
 
@@ -81,7 +81,7 @@ theorem colimitLimitToLimitColimit_injective :
     dsimp at x y
     -- Since the images of `x` and `y` are equal in a limit, they are equal componentwise
     -- (indexed by `j : J`),
-    replace h := fun j => congr_arg (limit.π (curry.obj F ⋙ colim) j) h
+    replace h := fun j => ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
     -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
     simp? [colimit_eq_iff] at h says

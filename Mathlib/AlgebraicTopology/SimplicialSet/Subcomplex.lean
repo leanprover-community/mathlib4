@@ -133,13 +133,13 @@ end
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Subsingleton (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
-  allEq _ _ := by ext _ ⟨_, h⟩; simp at h
+  allEq _ _ := by ext _ ⟨_, h⟩; exfalso; aesop
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Unique (((⊥ : X.Subcomplex) : SSet.{u}) ⟶ Y) where
   default :=
-    { app := by rintro _ ⟨_, h⟩; simp at h
-      naturality _ _ _ := by ext ⟨_, h⟩; simp at h }
+    { app _ := TypeCat.ofHom ⟨fun ⟨_, h⟩ ↦ by exfalso; aesop⟩
+      naturality _ _ _ := by ext ⟨_, h⟩; exfalso; aesop }
   uniq := by subsingleton
 
 /-- If `X` is a simplicial set, then the empty subcomplex of `X` is an initial
@@ -230,9 +230,7 @@ section
 @[simps]
 def preimage (A : X.Subcomplex) (p : Y ⟶ X) : Y.Subcomplex where
   obj n := p.app n ⁻¹' (A.obj n)
-  map f := (Set.preimage_mono (A.map f)).trans (by
-    simp only [Set.preimage_preimage, FunctorToTypes.naturality _ _ p f]
-    rfl)
+  map f := (Set.preimage_mono (A.map f)).trans (by simp [Set.preimage_preimage])
 
 @[simp]
 lemma preimage_max (A B : X.Subcomplex) (p : Y ⟶ X) :
