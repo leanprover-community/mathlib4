@@ -199,12 +199,12 @@ namespace NormedAlgebra
 variable (K L : Type*) [NormedField K] [NormedField L] [NormedAlgebra K L]
 
 /-- Given a normed field extension `L / K`, the norm on `L` is a multiplicative `K`-algebra norm. -/
-def toMulAlgebraNorm : MulAlgebraNorm K L :=
-  { NormedField.toMulRingNorm L with
-    smul' r x := by
-      simp only [Algebra.smul_def, AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe,
-        map_mul, mul_eq_mul_right_iff, map_eq_zero]
-      exact Or.inl <| norm_algebraMap' L r }
+def toMulAlgebraNorm : MulAlgebraNorm K L where
+  __ := NormedField.toMulRingNorm L
+  smul' r x := by
+    simp only [Algebra.smul_def, AddGroupSeminorm.toFun_eq_coe, MulRingSeminorm.toFun_eq_coe,
+      map_mul, mul_eq_mul_right_iff, map_eq_zero]
+    exact Or.inl <| norm_algebraMap' L r
 
 @[simp]
 lemma toMulAlgebraNorm_apply (x : L) : toMulAlgebraNorm K L x = ‖x‖ := rfl

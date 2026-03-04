@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Algebra.Ultra
 public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 public import Mathlib.FieldTheory.SeparableDegree
+public import Mathlib.Analysis.Normed.Algebra.Basic
 
 /-!
 # Krasner's Lemma
@@ -70,18 +71,13 @@ variable [NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K]
     [NormedAlgebra K L] [Algebra.IsAlgebraic K L]
 
 set_option backward.isDefEq.respectTransparency false in
+set_option trace.Meta.synthInstance.instances true in
 /-- Krasner's lemma assuming `Normal K L`. -/
 theorem of_completeSpace_of_normal [Normal K L] : IsKrasner K L where
   krasner' {x} {y} xsep sp yint kr := by
     let z := x - y
     have := IntermediateField.adjoin.finiteDimensional yint
-    let : NontriviallyNormedField K⟮y⟯ := {
-      non_trivial := by
-        obtain ⟨k, hk⟩ :=  @NontriviallyNormedField.non_trivial K _
-        use algebraMap K K⟮y⟯ k
-        simp [hk] }
     have : IsUltrametricDist L := IsUltrametricDist.of_normedAlgebra K
-    have : Normal K⟮y⟯ L := Normal.tower_top_of_normal K K⟮y⟯ L
     let y' : K⟮y⟯ := IntermediateField.AdjoinSimple.gen K y
     have zsep : IsSeparable K⟮y⟯ z :=
       Field.isSeparable_sub (IsSeparable.tower_top K⟮y⟯ xsep) (isSeparable_algebraMap y')
@@ -129,15 +125,8 @@ instance of_completeSpace : IsKrasner K L where
     let : NontriviallyNormedField C := spectralNorm.nontriviallyNormedField (K := K) C
     let : NormedAlgebra K C := spectralNorm.normedAlgebra K C
     let iL : L →ₐ[K] C := IsAlgClosed.lift
-    let := iL.toAlgebra
-    let := IsScalarTower.of_algHom iL
-    let : NormedAlgebra L C := {
-      norm_smul_le _ _ := by
-        apply le_of_eq
-        simp only [Algebra.smul_def, norm_mul, mul_eq_mul_right_iff, _root_.norm_eq_zero]
-        simp only [NormedAlgebra.norm_eq_spectralNorm K]
-        exact Or.inl <| (spectralNorm.eq_of_tower _).symm
-    }
+    algebraize [iL.toRingHom]
+    let : NormedAlgebra L C := spectralNorm.normedAlgebra' K L C
     let := IsKrasner.of_completeSpace_of_normal K C
     -- The norm on `L` is compatible with the norm on the algebraic closure of `K`,
     -- this gives the result.
