@@ -439,7 +439,7 @@ def under [Algebra.IsIntegral A B] : HeightOneSpectrum A where
   isPrime := .under A w.asIdeal
   ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
 
-instance [Algebra.IsIntegral A B] : w.asIdeal.LiesOver (w.under A).asIdeal := ⟨rfl⟩
+--instance [Algebra.IsIntegral A B] : w.asIdeal.LiesOver (w.under A).asIdeal := ⟨rfl⟩
 
 variable [IsFractionRing B L] [Module.IsTorsionFree A B]
     [Algebra (v.adicCompletion K) (w.adicCompletion L)]
@@ -680,6 +680,7 @@ instance compact_adicCompletionIntegers :
     have h : Finite (ResidueField (𝔭.adicCompletionIntegers ℚ)) :=
       (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.1
         (adicCompletionIntegers.padicIntEquiv 𝔭).toHomeomorph.symm.compactSpace).2.2
+    have : LiesOver v.asIdeal 𝔭.asIdeal := ⟨rfl⟩
     let _ := instFiniteIntegers 𝔭 v
     exact ResidueField.finite_of_finite h (S := v.adicCompletionIntegers K)
 
