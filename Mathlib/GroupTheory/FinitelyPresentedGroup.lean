@@ -105,7 +105,7 @@ theorem exists_reindex_freeGroup_hom {G α β : Type*} [Group G]
   let iso : FreeGroup β ≃* FreeGroup α := FreeGroup.freeGroupCongr e.symm
   let f' : FreeGroup β →* G := f.comp iso
   refine ⟨f', ?_, ?_⟩
-  · simpa [f', iso] using surjective_comp_freeGroupCongr (G := G) e f hfsurj
+  · simpa [f', iso] using FreeGroup.surjective_comp_freeGroupCongr (G := G) e f hfsurj
   · simpa [f', iso] using isNormalClosureFG_ker_comp_freeGroupCongr (G := G) e f hfker
 
 /-- A group is finitely presented if and only if there exists a surjective homomorphism from
@@ -282,7 +282,7 @@ theorem iff_hom_surj_finset_G {G : Type*} [Group G] :
         := FreeGroup.freeGroupCongr e.symm
       let f' : FreeGroup S' →* G := f.comp iso
       let hf'surj :=
-        surjective_comp_freeGroupCongr (G := G) (e := e) f hfsurj
+        FreeGroup.surjective_comp_freeGroupCongr (G := G) (e := e) f hfsurj
       have hf'ker : IsNormalClosureFG f'.ker := by
         simpa [f', iso] using
           isNormalClosureFG_ker_comp_freeGroupCongr (G := G) (e := e) f hfker
@@ -308,15 +308,11 @@ theorem of_mulEquiv {G H : Type*} [Group G] [Group H]
     obtain ⟨α, hα, rels, hrels, ⟨iso'⟩⟩ := h
     exact ⟨α, hα, rels, hrels, ⟨ iso.symm.trans iso' ⟩⟩
 
-/-- Quotienting `FreeGroup α` by the normal closure of the empty set gives back `FreeGroup α`. -/
-def quotient_normalClosure_empty_mulEquiv (α : Type*) :
-    FreeGroup α ⧸ Subgroup.normalClosure (∅ : Set (FreeGroup α)) ≃* FreeGroup α := by
-  have hbot :
-      Subgroup.normalClosure (∅ : Set (FreeGroup α)) = (⊥ : Subgroup (FreeGroup α)) := by
-    simpa using (normalClosure_empty (G := FreeGroup α))
-  exact (QuotientGroup.quotientMulEquivOfEq hbot).trans
-    (QuotientGroup.quotientBot (G := FreeGroup α))
--- TODO I think this needs to work for any presented group.
+/-- Quotienting a group by the normal closure of the empty set gives back the group. -/
+def quotient_normalClosure_empty_mulEquiv (G : Type*) [Group G] :
+    G ⧸ Subgroup.normalClosure (∅ : Set G) ≃* G := by
+  exact (QuotientGroup.quotientMulEquivOfEq (normalClosure_empty (G := G))).trans
+    (QuotientGroup.quotientBot (G := G))
 
 /-- A group is finitely presented if it is isomorphic to `FreeGroup α` with `α` finite,
 using the empty set of relations. -/
@@ -329,7 +325,7 @@ theorem of_mulEquiv_freeGroup {G : Type*} {α : Type} [Group G] [Finite α]
   unfold PresentedGroup
   refine ⟨?_⟩
   have qiso : FreeGroup α ⧸ Subgroup.normalClosure rels ≃* FreeGroup α := by
-    simpa [rels] using quotient_normalClosure_empty_mulEquiv (α := α)
+    simpa [rels] using quotient_normalClosure_empty_mulEquiv (G := FreeGroup α)
   exact iso.symm.trans qiso.symm
 
 /-- Trivial group is finitely presented -/
