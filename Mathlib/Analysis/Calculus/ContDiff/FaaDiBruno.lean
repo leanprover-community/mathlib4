@@ -117,7 +117,6 @@ namespace OrderedFinpartition
 
 /-! ### Basic API for ordered finpartitions -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The ordered finpartition of `Fin n` into singletons. -/
 @[simps -fullyApplied]
 def atomic (n : ℕ) : OrderedFinpartition n where
@@ -519,7 +518,6 @@ def eraseLeft (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) = {0}) :
     · simp
     · simp [Fin.heq_ext_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an ordered finpartition of `n+1`, with a leftmost atom different from `{0}`, remove `{0}`
 from the atom that contains it, to form an ordered finpartition of `n`. -/
 def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0}) :
