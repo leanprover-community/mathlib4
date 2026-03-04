@@ -357,9 +357,7 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
     apply hb₂
     apply (trivializationAt F₂ E₂ (b₂ m₀)).open_baseSet.mem_nhds
     exact FiberBundle.mem_baseSet_trivializationAt' (b₂ m₀)
-  filter_upwards [A, A'] with m hm h'm
-  simp [inCoordinates_eq hm h'm,
-        Trivialization.symm_apply_apply_mk (trivializationAt F₁ E₁ (b₁ m₀)) hm (v m)]
+  filter_upwards [A, A'] with m hm h'm using by simp [inCoordinates_eq hm h'm, hm]
 
 
 /-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
