@@ -551,7 +551,7 @@ theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
 
 /-- If the identity operator of a Banach space over a nontrivially normed field is compact,
 then the space is finite dimensional. -/
-lemma IsCompactOperator.finiteDimensional (h : IsCompactOperator (id : E → E)) :
+lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E → E)) :
     FiniteDimensional 𝕜 E := by
   have := LocallyCompactSpace.of_isCompactOperator_id h
   exact FiniteDimensional.of_locallyCompactSpace 𝕜
