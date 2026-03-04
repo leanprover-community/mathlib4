@@ -340,7 +340,6 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The iterated derivative of a function multiplied by `(L v ⬝) ^ n` can be controlled in terms
 of the iterated derivatives of the initial function. -/
 lemma norm_iteratedFDeriv_fourierPowSMulRight
@@ -499,7 +498,6 @@ lemma hasFTaylorSeriesUpTo_fourierIntegral {N : WithTop ℕ∞}
     apply fourierIntegral_continuous Real.continuous_fourierChar (by apply L.continuous₂)
     exact integrable_fourierPowSMulRight L (hf n hn) h'f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Variant of `hasFTaylorSeriesUpTo_fourierIntegral` in which the smoothness index is restricted
 to `ℕ∞` (and so are the inequalities in the assumption `hf`). Avoids normcasting in some
 applications. -/
@@ -520,7 +518,6 @@ theorem contDiff_fourierIntegral {N : ℕ∞}
       ext w; simp [fourierIntegral, integral, h'f]
     simpa [this] using contDiff_const
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `‖v‖^n * ‖f v‖` is integrable for all `n ≤ N`, then the `n`-th derivative of the Fourier
 transform of `f` is the Fourier transform of `fourierPowSMulRight L f v n`,
 i.e., `(L v ⬝) ^ n • f v`. -/

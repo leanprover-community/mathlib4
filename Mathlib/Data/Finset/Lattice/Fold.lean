@@ -826,12 +826,10 @@ section Inf'
 
 variable [SemilatticeInf α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inf_of_mem {s : Finset β} (f : β → α) {b : β} (h : b ∈ s) :
     ∃ a : α, s.inf ((↑) ∘ f : β → WithTop α) = ↑a :=
   @sup_of_mem αᵒᵈ _ _ _ f _ h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given nonempty finset `s` then `s.inf' H f` is the infimum of its image under `f` in (possibly
 unbounded) meet-semilattice `α`, where `H` is a proof of nonemptiness. If `α` has a top element you
 may instead use `Finset.inf` which does not require `s` nonempty. -/
@@ -840,7 +838,6 @@ def inf' (s : Finset β) (H : s.Nonempty) (f : β → α) : α :=
 
 variable {s : Finset β} (H : s.Nonempty) (f : β → α)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem coe_inf' : ((s.inf' H f : α) : WithTop α) = s.inf ((↑) ∘ f) :=
   @coe_sup' αᵒᵈ _ _ _ H f
@@ -966,7 +963,6 @@ variable [SemilatticeInf α] [OrderTop α]
 theorem inf'_eq_inf {s : Finset β} (H : s.Nonempty) (f : β → α) : s.inf' H f = s.inf f :=
   sup'_eq_sup (α := αᵒᵈ) H f
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coe_inf_of_nonempty {s : Finset β} (h : s.Nonempty) (f : β → α) :
     (↑(s.inf f) : WithTop α) = s.inf ((↑) ∘ f) :=
   coe_sup_of_nonempty (α := αᵒᵈ) h f
