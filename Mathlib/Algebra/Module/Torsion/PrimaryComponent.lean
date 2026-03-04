@@ -129,3 +129,5 @@ theorem Module.primaryComponent_sup (N₁ N₂ : Submodule A M) (hD : Disjoint N
     · use y, hymem, z, hzmem
 
 end AddCommGroup
+
+end CommRing
