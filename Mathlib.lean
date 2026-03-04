@@ -639,6 +639,7 @@ public import Mathlib.Algebra.Homology.LeftResolution.Transport
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.LocalCohomology
 public import Mathlib.Algebra.Homology.Localization
+public import Mathlib.Algebra.Homology.ModelCategory.Lifting
 public import Mathlib.Algebra.Homology.Monoidal
 public import Mathlib.Algebra.Homology.Opposite
 public import Mathlib.Algebra.Homology.QuasiIso
@@ -1289,6 +1290,7 @@ public import Mathlib.AlgebraicGeometry.Cover.Open
 public import Mathlib.AlgebraicGeometry.Cover.Over
 public import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Cover.Sigma
+public import Mathlib.AlgebraicGeometry.EffectiveEpi
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
@@ -5211,6 +5213,7 @@ public import Mathlib.MeasureTheory.Measure.AEDisjoint
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.AddContent
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 public import Mathlib.MeasureTheory.Measure.Comap
