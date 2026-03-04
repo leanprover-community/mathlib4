@@ -8,6 +8,7 @@ module
 public import Mathlib.AlgebraicGeometry.Sites.Pretopology
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Preserves
+public import Mathlib.Topology.Category.TopCat.GrothendieckTopology
 
 /-!
 # The big Zariski site of schemes
@@ -71,8 +72,22 @@ instance subcanonical_zariskiTopology : zariskiTopology.Subcanonical := by
     rw [𝓤.ι_glueMorphisms]
     exact h (𝓤.f j) (.mk j)
 
+instance : Scheme.forgetToTop.{u}.IsContinuous zariskiTopology TopCat.grothendieckTopology := by
+  rw [zariskiTopology, grothendieckTopology]
+  have : (precoverage IsOpenImmersion).PullbacksPreservedBy forgetToTop := by
+    refine ⟨fun _ _ hR ↦ ⟨fun _ _ f _ hf _ ↦ ?_⟩⟩
+    have : IsOpenImmersion f := hR.2 hf
+    infer_instance
+  apply Functor.isContinuous_toGrothendieck_of_pullbacksPreservedBy
+  rw [TopCat.precoverage, Precoverage.comap_inf, precoverage]
+  gcongr
+  · rw [← Precoverage.comap_comp, forgetToTop_comp_forget]
+  · rw [MorphismProperty.comap_precoverage]
+    exact MorphismProperty.precoverage_monotone fun X Y f hf ↦ f.isOpenEmbedding
+
 end Scheme
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Zariski sheaves preserve products. -/
 lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}ᵒᵖ ⥤ Type v}
     {ι : Type*} [Small.{u} ι] [Small.{v} ι] (hF : Presieve.IsSheaf Scheme.zariskiTopology F) :
@@ -91,7 +106,7 @@ lemma preservesLimitsOfShape_discrete_of_isSheaf_zariskiTopology {F : Scheme.{u}
   · intro i j
     exact CoproductDisjoint.isPullback_of_isInitial
       (coproductIsCoproduct' <| Discrete.functor <| unop ∘ X) initialIsInitial
-  · exact hF.isSheafFor _ _ (sigmaOpenCover _).mem_grothendieckTopology
+  · exact hF.isSheafFor _ (sigmaOpenCover _).mem_grothendieckTopology
 
 /-- Let `F` be a locally directed diagram of open immersions, i.e., a diagram of schemes
 for which whenever `xᵢ ∈ Fᵢ` and `xⱼ ∈ Fⱼ` map to the same `xₖ ∈ Fₖ`, there exists
