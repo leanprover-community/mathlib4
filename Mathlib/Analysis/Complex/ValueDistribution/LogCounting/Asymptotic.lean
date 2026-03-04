@@ -17,8 +17,8 @@ discussion.
 
 ## Implementation Notes
 
-We establish the result first for the logarithmic counting function first for functions with locally
-finite support on `𝕜` and then specializes to the setting where the function with locally finite
+We establish the result first for the logarithmic counting function for functions with locally
+finite support on `𝕜` and then specialize to the setting where the function with locally finite
 support is the pole or zero-divisor of a meromorphic function.
 
 ## TODO
@@ -48,8 +48,7 @@ lemma one_isLittleO_logCounting_single [DecidableEq E] [ProperSpace E] {e : E} :
     (1 : ℝ → ℝ) =o[atTop] logCounting (single e 1) := by
   rw [isLittleO_iff]
   intro c hc
-  simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, norm_eq_abs, eventually_atTop,
-    ge_iff_le]
+  simp only [Pi.one_apply, norm_eq_abs, eventually_atTop, abs_one]
   use exp (|log ‖e‖| + c⁻¹)
   intro b hb
   have h₁b : 1 ≤ b := by
@@ -80,15 +79,14 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
   classical
   constructor
   · intro h₂
-    simp [isBigO_of_le' (c := 0), h₂]
+  refine ⟨fun h₂ ↦ by simp [isBigO_of_le' (c := 0), h₂], ?_⟩ 
   · contrapose
     intro h₁
     obtain ⟨e, he⟩ := exists_single_le_pos (lt_of_le_of_ne h (h₁ ·.symm))
     rw [isBigO_iff'']
     push_neg
     intro a ha
-    simp only [Pi.one_apply, one_mem, CStarRing.norm_of_mem_unitary, norm_eq_abs, frequently_atTop,
-      ge_iff_le]
+    simp only [Pi.one_apply, norm_eq_abs, frequently_atTop, abs_one]
     intro b
     obtain ⟨c, hc⟩ := eventually_atTop.1
       (isLittleO_iff.1 (one_isLittleO_logCounting_single (e := e)) ha)
@@ -125,7 +123,7 @@ A meromorphic function has only removable singularities if and only if the logar
 function for its pole divisor is asymptotically bounded.
 -/
 theorem logCounting_isBigO_one_iff_analyticOnNhd {f : 𝕜 → E} (h : Meromorphic f) :
-    logCounting f ⊤ =O[atTop] (1 : ℝ → ℝ) ↔ AnalyticOnNhd 𝕜 (toMeromorphicNFOn f ⊤) univ := by
+    logCounting f ⊤ =O[atTop] (1 : ℝ → ℝ) ↔ AnalyticOnNhd 𝕜 (toMeromorphicNFOn f univ) univ := by
   simp only [logCounting, reduceDIte]
   rw [← Function.locallyFinsuppWithin.zero_iff_logCounting_bounded (negPart_nonneg _)]
   constructor
