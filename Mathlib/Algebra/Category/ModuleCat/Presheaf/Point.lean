@@ -29,8 +29,7 @@ universe w v u
 open CategoryTheory Limits GrothendieckTopology MonoidalCategory
 
 attribute [local instance] hasColimitsOfShape_of_finallySmall
-  preservesColimitsOfShape_of_finallySmall_of_isFiltered
-  IsFiltered.isSifted
+  IsFiltered.isSifted FinallySmall.preservesColimitsOfShape_of_isFiltered
 
 namespace CategoryTheory.GrothendieckTopology.Point
 

@@ -26,17 +26,8 @@ universe w v u
 
 open CategoryTheory Limits MonoidalCategory
 
--- this should be moved
-lemma CategoryTheory.preservesColimitsOfShape_of_finallySmall_of_isFiltered
-    {J C D : Type*} [Category* J] [Category* C] [Category* D]
-    (F : C ⥤ D) [PreservesFilteredColimitsOfSize.{w, w} F]
-    [FinallySmall.{w} J] [LocallySmall.{w} J] [IsFiltered J] :
-    PreservesColimitsOfShape J F :=
-  Functor.Final.preservesColimitsOfShape_of_final
-    (FinallySmall.fromFilteredFinalModel.{w} J) _
-
 attribute [local instance] hasColimitsOfShape_of_finallySmall
-  IsFiltered.isSifted preservesColimitsOfShape_of_finallySmall_of_isFiltered
+  IsFiltered.isSifted FinallySmall.preservesColimitsOfShape_of_isFiltered
 
 namespace PresheafOfModules
 
