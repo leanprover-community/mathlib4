@@ -210,37 +210,31 @@ the next element. -/
 
 
 /- A version of `Fin.elim0` using dependent types. -/
-def Fin.elim0'.{u} {α : ℕ → Sort u} : (i : Fin 0) → (α i)
+def Fin.elim0'.{u} (α : ℕ → Sort u) : (i : Fin 0) → (α i)
   | ⟨_, h⟩ => absurd h (Nat.not_lt_zero _)
 
-variable {β : ℕ → Type*}
-variable (q : ∀ n, (k : (i : Fin n) → (β i)) → Prop)
-variable (step0 : q 0 Fin.elim0')
-variable (step :
-    ∀ n (k : (i : Fin n) → (β i)) (_ : q n k),
-    { a : β n // q (n+1) (Fin.snoc k a)})
+variable {β : ℕ → Type*} (q : ∀ n, (k : (i : Fin n) → β i) → Prop) (step0 : q 0 (Fin.elim0' _))
+  (step : ∀ n (k : (i : Fin n) → β i) (_ : q n k), { a : β n // q (n + 1) (Fin.snoc k a)})
 
-def Nat.prefixInduction.aux : ∀ (n : Nat), { k : (i : Fin n) → (β i) // q n k }
-    | 0 => ⟨Fin.elim0', step0⟩
-    | n+1 =>
+def Nat.prefixInduction.aux : ∀ (n : Nat), { k : (i : Fin n) → β i // q n k }
+    | 0 => ⟨Fin.elim0' _, step0⟩
+    | n + 1 =>
       let ⟨k, hk⟩ := aux n
       let ⟨a, ha⟩ := step n k hk
       ⟨Fin.snoc k a, ha⟩
 
-theorem Nat.prefixInduction.auxConsistent :
-  ∀ n (i : Fin n),
-    (Nat.prefixInduction.aux q step0 step (i+1)).1 (Fin.last i) =
+theorem Nat.prefixInduction.auxConsistent (n : ℕ) (i : Fin n) :
+    (Nat.prefixInduction.aux q step0 step (i + 1)).1 (Fin.last i) =
     (Nat.prefixInduction.aux q step0 step n).1 i := by
-  intro n
-  induction n
-  next => simp
-  next n ih =>
+  revert i
+  induction n with
+  | zero => simp
+  | succ n ih =>
     apply Fin.lastCases
     case last => simp
     case cast =>
       intro i
-      simp only [Fin.val_castSucc]
-      rw [ih, aux]
+      simp_rw [Fin.val_castSucc, ih, aux]
       simp
 
 /-- An induction principle showing that `q : (n : ℕ) → (k : (i : Fin n) → (β i)) → Prop` holds
@@ -248,28 +242,23 @@ for all `n`. `step0` is satisfied by construction since `Fin 0` is empty.
 In the induction `step`, we use that `q n k` holds for showing that `q (n + 1) (Fin.snoc k a)`
 holds for some `a : β n`. -/
 def Nat.prefixInduction (n : Nat) : β n :=
-  (Nat.prefixInduction.aux q step0 step (n+1)).1 (Fin.last n)
+  (Nat.prefixInduction.aux q step0 step (n + 1)).1 (Fin.last n)
 
 theorem Nat.prefixInduction_spec (n : Nat) : q n (Nat.prefixInduction q step0 step ·) := by
-  cases n
-  · convert step0
-  · next n =>
-    have hk := (Nat.prefixInduction.aux q step0 step (n+1)).2
+  cases n with
+  | zero => convert step0
+  | succ n =>
+    have hk := (Nat.prefixInduction.aux q step0 step (n + 1)).2
     convert hk with i
     apply Nat.prefixInduction.auxConsistent
 
 /- Often, `step` can only be proved by showing an `∃` statement. For this case, we use `step'`. -/
-variable (step' : ∀ n (k : (i : Fin n) → (β i)) (_ : q n k), ∃ a, q (n + 1) (Fin.snoc k a))
-
-/-- For `Nat.prefixIndution`, this transforms an exists-statement in the induction step to choosing
-an element. -/
-noncomputable def step_of : (n : ℕ) → (k : (i : Fin n) → (β i)) → (hn : q n k) →
-    { a : β n // q (n + 1) (Fin.snoc k a) } :=
-  fun n k hn ↦ ⟨(step' n k hn).choose, (step' n k hn).choose_spec⟩
+variable (step' : ∀ n (k : (i : Fin n) → β i) (_ : q n k), ∃ a, q (n + 1) (Fin.snoc k a))
 
 /-- This version is noncomputable since it relies on an `∃`-statement -/
 noncomputable def Nat.prefixInduction' (n : Nat) : β n :=
-  (Nat.prefixInduction.aux q step0 (fun n k hn ↦ step_of q step' n k hn) (n+1)).1 (Fin.last n)
+  (Nat.prefixInduction.aux q step0
+    (fun n k hn ↦ ⟨(step' n k hn).choose, (step' n k hn).choose_spec⟩) (n + 1)).1 (Fin.last n)
 
 theorem Nat.prefixInduction'_spec (n : Nat) : q n (Nat.prefixInduction' q step0 step' ·) := by
   apply prefixInduction_spec
@@ -288,21 +277,22 @@ variable {L : ℕ → Finset (Set α)} {n : ℕ} {K : (k : Fin n) → Set α}
 /-- `q n K` is the joint property that `∀ (k : Fin n), K k ∈ L k` and
 `∀ N, (⋂ (j : Fin n), K j) ∩ (⋂ (k < N), ⋃₀ ↑(L (n + k))) ≠ ∅`.` holds. -/
 def q (L : ℕ → Finset (Set α)) (n : ℕ) (K : (k : Fin n) → Set α) : Prop :=
-  (∀ k : Fin n, K k ∈ L k) ∧ ∀ N, ((⋂ j, K j) ∩ ⋂ k < N, ⋃₀ SetLike.coe (L (n + k))).Nonempty
+  (∀ k : Fin n, K k ∈ L k) ∧ ∀ N, ((⋂ j, K j) ∩ ⋂ k < N, ⋃₀ L (n + k)).Nonempty
 
 lemma q_iff_iInter (hK : ∀ k : Fin n, K k ∈ L k) :
     q L n K ↔
       ∀ N, ((⋂ (j : ℕ) (hj : j < n), K ⟨j, hj⟩) ∩
-        (⋂ k < N, ⋃₀ SetLike.coe (L (n + k)))).Nonempty := by
+        (⋂ k < N, ⋃₀ L (n + k))).Nonempty := by
   simp only [q, hK, implies_true, true_and]
   congr! 2 with N
   ext
   simp
   grind
 
-lemma q_iff_iInter' (hK : ∀ k : Fin n, K k ∈ L k) (y : Set α) :
-    q L (n + 1) (Fin.snoc K y) ↔ y ∈ L n ∧ (∀ N, ((⋂ (j : ℕ) (hj : j < n), K ⟨j, hj⟩) ∩ y ∩
-    (⋂ k < N, ⋃₀ SetLike.coe (L (n + k)))).Nonempty) := by
+lemma q_snoc_iff_iInter (hK : ∀ k : Fin n, K k ∈ L k) (y : Set α) :
+    q L (n + 1) (Fin.snoc K y) ↔
+      y ∈ L n ∧
+        (∀ N, ((⋂ (j : ℕ) (hj : j < n), K ⟨j, hj⟩) ∩ y ∩ (⋂ k < N, ⋃₀ L (n + k))).Nonempty) := by
   simp only [q]
   have h_imp : q L (n + 1) (Fin.snoc K y) → y ∈ L n := by
     intro ⟨h_mem, h⟩
@@ -337,8 +327,8 @@ lemma q_iff_iInter' (hK : ∀ k : Fin n, K k ∈ L k) (y : Set α) :
     simp only [mem_inter_iff, mem_iInter, mem_sUnion, SetLike.mem_coe] at hx1 hx2 ⊢
     exact ⟨by simp [Fin.snoc]; grind, by grind⟩
 
-lemma step0 {L : ℕ → Finset (Set α)} (hL : ∀ N, (⋂ k < N, ⋃₀ SetLike.coe (L k)).Nonempty) :
-    q L 0 (Fin.elim0' (α := fun _ ↦ Set α)) :=
+lemma step0 {L : ℕ → Finset (Set α)} (hL : ∀ N, (⋂ k < N, ⋃₀ (L k : Set (Set α))).Nonempty) :
+    q L 0 (Fin.elim0' (fun _ ↦ Set α)) :=
   ⟨by simp, by simpa using hL⟩
 
 lemma inter_sUnion_eq_empty (s : Set α) (L : Set (Set α)) :
@@ -350,12 +340,12 @@ lemma step' {L : ℕ → Finset (Set α)} (n : ℕ) (K : (k : Fin n) → Set α)
     ∃ a, q L (n + 1) (Fin.snoc K a) := by
   have hK' := hK.1
   simp_rw [q_iff_iInter hK'] at hK
-  simp_rw [q_iff_iInter' hK'] at ⊢
+  simp_rw [q_snoc_iff_iInter hK'] at ⊢
   by_contra! h
   choose b hb using h
   classical
   let b' := fun x ↦ dite (x ∈ (L n)) (fun c ↦ b x c) (fun _ ↦ 0)
-  have hs : (SetLike.coe (L n)).Nonempty := by
+  have hs : (L n : Set (Set α)).Nonempty := by
     specialize hK 1
     rw [Set.nonempty_def] at hK ⊢
     simp only [lt_one_iff, iInter_iInter_eq_left, add_zero, mem_inter_iff, mem_iInter, mem_sUnion,
@@ -365,13 +355,13 @@ lemma step' {L : ℕ → Finset (Set α)} (n : ℕ) (K : (k : Fin n) → Set α)
   obtain ⟨K0Max, ⟨hK0₁, hK0₂⟩⟩ := Finset.exists_max_image (L (Fin.last n)) b' hs
   simp_rw [Set.nonempty_iff_ne_empty] at hK
   apply hK (b' K0Max + 1)
-  have h₂ (a : Set α) (ha : a ∈ L n) : ⋂ k < b' K0Max, ⋃₀ (L (n + k)) ⊆ ⋂ k, ⋂ (_ : k < b a ha),
-      ⋃₀ SetLike.coe (L (n + k)) := by
+  have h₂ (a : Set α) (ha : a ∈ L n) :
+      ⋂ k < b' K0Max, ⋃₀ L (n + k) ⊆ ⋂ k < b a ha, ⋃₀ (L (n + k) : Set (Set α)) := by
     intro x hx
     simp only [mem_iInter, mem_sUnion, SetLike.mem_coe] at hx ⊢
     have f : b' a = b a ha := by simp [b', ha]
     exact fun i hi ↦ hx i (hi.trans_le (f ▸ hK0₂ a ha))
-  have h₃ (a : Set α) (ha : a ∈ L ↑(Fin.last n)) : (⋂ (j) (hj : j < n), K ⟨j, hj⟩) ∩ a ∩
+  have h₃ (a : Set α) (ha : a ∈ L (Fin.last n)) : (⋂ (j) (hj : j < n), K ⟨j, hj⟩) ∩ a ∩
       ⋂ k < b' K0Max, ⋃₀ L (n + k) = ∅ := by
     rw [← subset_empty_iff, ← hb a ha]
     exact inter_subset_inter (fun ⦃a⦄ a ↦ a) (h₂ a ha)
@@ -396,22 +386,23 @@ lemma step' {L : ℕ → Finset (Set α)} (n : ℕ) (K : (k : Fin n) → Set α)
 for all `n` (this is `prop₀`) and `∀ N, ⋂ (j < n, K j) ∩ ⋂ (k < N), (⋃₀ L (n + k)) ≠ ∅`
 (this is `prop₁`.) -/
 noncomputable def memOfUnion (L : ℕ → Finset (Set α))
-  (hL : ∀ N, (⋂ k < N, ⋃₀ SetLike.coe (L k)).Nonempty) : (k : ℕ) → Set α :=
+    (hL : ∀ N, (⋂ k < N, ⋃₀ (L k : Set (Set α))).Nonempty) :
+    ℕ → Set α :=
   Nat.prefixInduction' (q L) (step0 hL) step'
 
 theorem memOfUnion.spec (L : ℕ → Finset (Set α))
-    (hL : ∀ N, (⋂ k < N, ⋃₀ SetLike.coe (L k)).Nonempty) (n : ℕ) :
-    q L n (fun n ↦ memOfUnion L hL n) :=
+    (hL : ∀ N, (⋂ k < N, ⋃₀ (L k : Set (Set α))).Nonempty) (n : ℕ) :
+    q L n (fun k : Fin n ↦ memOfUnion L hL k) :=
   Nat.prefixInduction'_spec (β := fun _ ↦ Set α) (q L) (step0 hL) step' n
 
 lemma sInter_memOfUnion_nonempty (L : ℕ → Finset (Set α))
-    (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ SetLike.coe (L k)).Nonempty) (n : ℕ) :
+    (hL : ∀ N, (⋂ k, ⋂ (_ : k < N), ⋃₀ (L k : Set (Set α))).Nonempty) (n : ℕ) :
     (⋂ (j : Fin n), memOfUnion L hL j).Nonempty := by
   simpa using (memOfUnion.spec L hL n).2 0
 
 lemma sInter_memOfUnion_isSubset (L : ℕ → Finset (Set α))
-    (hL : ∀ N, (⋂ k < N, ⋃₀ SetLike.coe (L k)).Nonempty) :
-    (⋂ j, memOfUnion L hL j) ⊆ ⋂ k, ⋃₀ SetLike.coe (L k) := by
+    (hL : ∀ N, (⋂ k < N, ⋃₀ (L k : Set (Set α))).Nonempty) :
+    (⋂ j, memOfUnion L hL j) ⊆ ⋂ k, ⋃₀ L k := by
   exact iInter_mono <| fun n ↦
     subset_sUnion_of_subset (L n) (memOfUnion L hL n) (fun ⦃a⦄ a ↦ a)
       ((memOfUnion.spec L hL (n + 1)).1 ⟨n, by grind⟩)
