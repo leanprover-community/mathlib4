@@ -353,6 +353,32 @@ end FinitePlace
 
 end NumberField
 
+namespace IsDedekindDomain.HeightOneSpectrum
+
+variable {K : Type*} [Field K] [NumberField K]
+
+open NumberField.FinitePlace NumberField.RingOfIntegers
+  NumberField.RingOfIntegers.HeightOneSpectrum
+open scoped NumberField
+
+lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
+    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+open Ideal in
+lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
+    (h_x_nezero : x ≠ 0) : ‖embedding v x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
+  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, adicAbv_def,
+    WithZeroMulInt.toNNReal_neg_apply _
+      ((v.valuation K).ne_zero_iff.mpr (coe_ne_zero_iff.mpr h_x_nezero))]
+  push_cast
+  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnreal v)).ne']
+  norm_cast
+  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
+  simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
+
+end IsDedekindDomain.HeightOneSpectrum
+
 section LiesOver
 
 namespace NumberField.HeightOneSpectrum
@@ -387,19 +413,6 @@ instance : Module.Finite Kv Lw :=
   .of_surjective Φ (by
     rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
     exact h_dense.closure_range)
-
-set_option backward.isDefEq.respectTransparency false in
-open Ideal in
-lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
-    (h_x_nezero : x ≠ 0) : ‖embedding v x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
-  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, adicAbv_def,
-    WithZeroMulInt.toNNReal_neg_apply _
-      ((v.valuation K).ne_zero_iff.mpr (coe_ne_zero_iff.mpr h_x_nezero))]
-  push_cast
-  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnreal v)).ne']
-  norm_cast
-  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
-  simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
 
 theorem _root_.NNReal.zpow_pow_comm {x : ℝ≥0} {z : ℤ} {n : ℕ} : (x ^ z) ^ n = (x ^ n) ^ z := by
   simpa [← zpow_natCast] using zpow_comm _ _ _
