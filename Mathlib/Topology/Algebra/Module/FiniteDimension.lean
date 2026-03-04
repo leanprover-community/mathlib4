@@ -13,6 +13,8 @@ public import Mathlib.Topology.Algebra.Module.Determinant
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Topology.Algebra.Module.Simple
 public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -49,7 +51,7 @@ result follows as `continuous_equivFun_basis`.
 
 @[expose] public section
 
-open Filter Module Set TopologicalSpace Topology
+open Filter Module Set TopologicalSpace Topology ContinuousLinearMap
 
 universe u v w x
 
@@ -577,3 +579,74 @@ theorem LocallyCompactSpace.of_finiteDimensional_of_complete (K V : Type*)
   let ⟨_, ⟨b⟩⟩ := Basis.exists_basis K (SeparationQuotient V)
   have := FiniteDimensional.fintypeBasisIndex b
   b.equivFun.toContinuousLinearEquiv.toHomeomorph.isOpenEmbedding.locallyCompactSpace
+
+section Bilinear
+
+variable {G n : Type*} [T2Space E]
+  [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+  [Module 𝕜 G] [ContinuousSMul 𝕜 G] [FiniteDimensional 𝕜 F]
+  [Fintype n] [DecidableEq n]
+
+namespace LinearMap
+
+variable [FiniteDimensional 𝕜 E]
+
+def toCLM₂ : (E →ₗ[𝕜] F →ₗ[𝕜] G) ≃ₗ[𝕜] (E →L[𝕜] F →L[𝕜] G) where
+  toFun f :=
+    letI g x : F →L[𝕜] G := (f x).toContinuousLinearMap
+    letI h : E →ₗ[𝕜] F →L[𝕜] G :=
+      { toFun := g
+        map_add' x y := by ext z; simp [g]
+        map_smul' m x := by ext y; simp [g] }
+    h.toContinuousLinearMap
+  map_add' x y := by ext; simp
+  map_smul' m x := by ext; simp
+  invFun f := f.toLinearMap₁₂
+
+@[simp]
+lemma toCLM₂_apply (f : E →ₗ[𝕜] F →ₗ[𝕜] G) (x : E) (y : F) :
+    f.toCLM₂ x y = f x y := rfl
+
+@[simp]
+lemma toCLM₂_toBilinForm (f : E →L[𝕜] E →L[𝕜] 𝕜) : f.toBilinForm.toCLM₂ = f := rfl
+
+@[simp]
+lemma toBilinForm_toCLM₂ (f : E →ₗ[𝕜] E →ₗ[𝕜] 𝕜) : f.toCLM₂.toBilinForm = f := rfl
+
+end LinearMap
+
+namespace Matrix
+
+variable (M : Matrix n n 𝕜) (b : Basis n 𝕜 E) (f : E →L[𝕜] E →L[𝕜] 𝕜)
+
+noncomputable def toCLM₂ : Matrix n n 𝕜 ≃ₗ[𝕜] E →L[𝕜] E →L[𝕜] 𝕜 :=
+  haveI : FiniteDimensional 𝕜 E := Module.Basis.finiteDimensional_of_finite b
+  (Matrix.toBilin b).trans LinearMap.toCLM₂
+
+lemma toCLM₂_apply :
+    haveI : FiniteDimensional 𝕜 E := Module.Basis.finiteDimensional_of_finite b
+    M.toCLM₂ b = (M.toBilin b).toCLM₂ := rfl
+
+lemma toCLM₂_apply_apply' (x y : E) : M.toCLM₂ b x y = M.toBilin b x y := rfl
+
+open scoped Matrix in
+lemma toCLM₂_apply_apply (x y : E) :
+    M.toCLM₂ b x y = b.repr x ⬝ᵥ M *ᵥ b.repr y := by
+  simp [toCLM₂_apply_apply', Matrix.toBilin_apply, dotProduct, Matrix.mulVec, Finset.mul_sum,
+    mul_assoc]
+
+@[simp]
+lemma toCLM₂_basis (i j : n) : M.toCLM₂ b (b i) (b j) = M i j := by
+  simp [toCLM₂_apply_apply, Finsupp.single_eq_pi_single]
+
+@[simp]
+lemma _root_.ContinuousLinearMap.toMatrix_toCLM₂ : (f.toBilinForm.toMatrix b).toCLM₂ b = f := by
+  simp [toCLM₂_apply]
+
+lemma toCLM₂_toMatrix : (M.toCLM₂ b).toBilinForm.toMatrix b = M := by
+  ext i j
+  rw [LinearMap.BilinForm.toMatrix_apply, toBilinForm_apply, toCLM₂_basis]
+
+end Matrix
+
+end Bilinear

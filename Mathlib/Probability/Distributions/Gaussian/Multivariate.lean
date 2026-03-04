@@ -81,78 +81,78 @@ lemma LinearIsometryEquiv.coe_coe_eq_coe {𝕜 E F : Type*} [RCLike 𝕜] [Norme
 
 end InnerProductSpace
 
-section mkContinuous₂
+-- section mkContinuous₂
 
-namespace LinearMap
+-- namespace LinearMap
 
-variable {E F G 𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-  [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-  [Module 𝕜 E] [ContinuousSMul 𝕜 E] [T2Space E]
-  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
-  [Module 𝕜 F] [ContinuousSMul 𝕜 F] [T2Space F]
-  [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
-  [Module 𝕜 G] [ContinuousSMul 𝕜 G]
-  [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] (f : E →ₗ[𝕜] F →ₗ[𝕜] G)
+-- variable {E F G 𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+--   [AddCommGroup E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+--   [Module 𝕜 E] [ContinuousSMul 𝕜 E] [T2Space E]
+--   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
+--   [Module 𝕜 F] [ContinuousSMul 𝕜 F] [T2Space F]
+--   [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGroup G]
+--   [Module 𝕜 G] [ContinuousSMul 𝕜 G]
+--   [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] (f : E →ₗ[𝕜] F →ₗ[𝕜] G)
 
-/-- Given a bilinear map whose codomains are finite dimensional, outputs the continuous
-version. -/
-def mkContinuous₂OfFiniteDimensional : E →L[𝕜] F →L[𝕜] G :=
-  letI g x : F →L[𝕜] G := (f x).toContinuousLinearMap
-  letI h : E →ₗ[𝕜] F →L[𝕜] G :=
-    { toFun := g
-      map_add' x y := by ext z; simp [g]
-      map_smul' m x := by ext y; simp [g] }
-  h.toContinuousLinearMap
+-- /-- Given a bilinear map whose codomains are finite dimensional, outputs the continuous
+-- version. -/
+-- def mkContinuous₂OfFiniteDimensional : E →L[𝕜] F →L[𝕜] G :=
+--   letI g x : F →L[𝕜] G := (f x).toContinuousLinearMap
+--   letI h : E →ₗ[𝕜] F →L[𝕜] G :=
+--     { toFun := g
+--       map_add' x y := by ext z; simp [g]
+--       map_smul' m x := by ext y; simp [g] }
+--   h.toContinuousLinearMap
 
-@[simp]
-lemma mkContinuous₂OfFiniteDimensional_apply (x : E) (y : F) :
-    f.mkContinuous₂OfFiniteDimensional x y = f x y := rfl
+-- @[simp]
+-- lemma mkContinuous₂OfFiniteDimensional_apply (x : E) (y : F) :
+--     f.mkContinuous₂OfFiniteDimensional x y = f x y := rfl
 
-end LinearMap
+-- end LinearMap
 
-end mkContinuous₂
+-- end mkContinuous₂
 
-namespace ContinuousLinearMap
+-- namespace ContinuousLinearMap
 
 
 
-variable {𝕜 E n : Type*} [NontriviallyNormedField 𝕜] [TopologicalSpace E] [AddCommGroup E]
-  [IsTopologicalAddGroup E] [Module 𝕜 E] [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] [T2Space E]
+-- variable {𝕜 E n : Type*} [NontriviallyNormedField 𝕜] [TopologicalSpace E] [AddCommGroup E]
+--   [IsTopologicalAddGroup E] [Module 𝕜 E] [CompleteSpace 𝕜] [ContinuousSMul 𝕜 E] [T2Space E]
 
-variable [Fintype n] [DecidableEq n]
+-- variable [Fintype n] [DecidableEq n]
 
-variable (M : Matrix n n 𝕜) (b : Basis n 𝕜 E) (f : E →L[𝕜] E →L[𝕜] 𝕜)
+-- variable (M : Matrix n n 𝕜) (b : Basis n 𝕜 E) (f : E →L[𝕜] E →L[𝕜] 𝕜)
 
-noncomputable
-def ofMatrix : E →L[𝕜] E →L[𝕜] 𝕜 :=
-  haveI : FiniteDimensional 𝕜 E := Module.Basis.finiteDimensional_of_finite b
-  LinearMap.mkContinuous₂OfFiniteDimensional (M.toBilin b)
+-- noncomputable
+-- def ofMatrix : E →L[𝕜] E →L[𝕜] 𝕜 :=
+--   haveI : FiniteDimensional 𝕜 E := Module.Basis.finiteDimensional_of_finite b
+--   LinearMap.mkContinuous₂OfFiniteDimensional (M.toBilin b)
 
-lemma ofMatrix_apply' (x y : E) : ofMatrix M b x y = M.toBilin b x y := rfl
+-- lemma ofMatrix_apply' (x y : E) : ofMatrix M b x y = M.toBilin b x y := rfl
 
-open scoped Matrix in
-lemma ofMatrix_apply (x y : E) :
-    ofMatrix M b x y = b.repr x ⬝ᵥ M *ᵥ b.repr y := by
-  simp [ofMatrix_apply', Matrix.toBilin_apply, dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc]
+-- open scoped Matrix in
+-- lemma ofMatrix_apply (x y : E) :
+--     ofMatrix M b x y = b.repr x ⬝ᵥ M *ᵥ b.repr y := by
+--   simp [ofMatrix_apply', Matrix.toBilin_apply, dotProduct, Matrix.mulVec, Finset.mul_sum, mul_assoc]
 
-lemma ofMatrix_basis (i j : n) : ofMatrix M b (b i) (b j) = M i j := by
-  simp [ofMatrix_apply, Finsupp.single_eq_pi_single]
+-- lemma ofMatrix_basis (i j : n) : ofMatrix M b (b i) (b j) = M i j := by
+--   simp [ofMatrix_apply, Finsupp.single_eq_pi_single]
 
-lemma ofMatrix_orthonormalBasis {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
-    [InnerProductSpace 𝕜 E] (M : Matrix n n 𝕜) (b : OrthonormalBasis n 𝕜 E) (i j : n) :
-    ofMatrix M b.toBasis (b i) (b j) = M i j := by
-  rw [← b.coe_toBasis, ofMatrix_basis]
+-- lemma ofMatrix_orthonormalBasis {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
+--     [InnerProductSpace 𝕜 E] (M : Matrix n n 𝕜) (b : OrthonormalBasis n 𝕜 E) (i j : n) :
+--     ofMatrix M b.toBasis (b i) (b j) = M i j := by
+--   rw [← b.coe_toBasis, ofMatrix_basis]
 
-set_option backward.isDefEq.respectTransparency false in
-lemma toMatrix_ofMatrix : ofMatrix (f.toBilinForm.toMatrix b) b = f := by
-  ext x y
-  rw [ofMatrix_apply, ← f.toBilinForm.apply_eq_dotProduct_toMatrix_mulVec b, toBilinForm_apply]
+-- set_option backward.isDefEq.respectTransparency false in
+-- lemma toMatrix_ofMatrix : ofMatrix (f.toBilinForm.toMatrix b) b = f := by
+--   ext x y
+--   rw [ofMatrix_apply, ← f.toBilinForm.apply_eq_dotProduct_toMatrix_mulVec b, toBilinForm_apply]
 
-lemma ofMatrix_toMatrix : (ofMatrix M b).toBilinForm.toMatrix b = M := by
-  ext i j
-  rw [LinearMap.BilinForm.toMatrix_apply, toBilinForm_apply, ofMatrix_basis]
+-- lemma ofMatrix_toMatrix : (ofMatrix M b).toBilinForm.toMatrix b = M := by
+--   ext i j
+--   rw [LinearMap.BilinForm.toMatrix_apply, toBilinForm_apply, ofMatrix_basis]
 
-end ContinuousLinearMap
+-- end ContinuousLinearMap
 
 namespace ProbabilityTheory
 
@@ -344,34 +344,20 @@ lemma inner_toEuclideanCLM (x y : EuclideanSpace ℝ ι) :
 set_option backward.isDefEq.respectTransparency false in
 lemma covarianceBilin_multivariateGaussian (hS : S.PosSemidef) :
     covarianceBilin (multivariateGaussian μ S)
-      = ContinuousLinearMap.ofMatrix S (EuclideanSpace.basisFun ι ℝ).toBasis := by
+      = (S.toBilin (EuclideanSpace.basisFun ι ℝ).toBasis).toCLM₂ := by
   have h : (fun x ↦ μ + x) ∘ ((toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S))) =
     (fun x ↦ μ + (toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S)) x) := rfl
   simp only [multivariateGaussian]
-  rw [← h, ← Measure.map_map (measurable_const_add μ) (by fun_prop)]
-  rw [covarianceBilin_map_const_add]
+  rw [← h, ← Measure.map_map (measurable_const_add μ) (by fun_prop), covarianceBilin_map_const_add]
   ext x y
-  rw [covarianceBilin_map, covarianceBilin_stdGaussian]
-  swap; · exact IsGaussian.memLp_two_id
-  rw [innerSL_apply_apply, ContinuousLinearMap.ofMatrix_apply,
-    ContinuousLinearMap.adjoint_inner_left]
-  rw [IsSelfAdjoint.adjoint_eq]
-  swap
-  · unfold _root_.IsSelfAdjoint
-    rw [← map_star, EmbeddingLike.apply_eq_iff_eq]
+  rw [covarianceBilin_map, covarianceBilin_stdGaussian, innerSL_apply_apply, LinearMap.toCLM₂_apply,
+    ContinuousLinearMap.adjoint_inner_left, IsSelfAdjoint.adjoint_eq]
+  · rw [← ContinuousLinearMap.comp_apply, ← ContinuousLinearMap.mul_def, ← map_mul,
+      CFC.sqrt_mul_sqrt_self _ hS.nonneg, inner_toEuclideanCLM]
+    simp [dotProduct, mulVec, Finset.mul_sum, mul_assoc]
+  · rw [IsSelfAdjoint, ← map_star]
     simpa using (CFC.sqrt_nonneg S).isHermitian
-  calc ⟪x, (toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S)) (toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S) y)⟫
-  _ = ⟪x, toEuclideanCLM (𝕜 := ℝ) S y⟫ := by
-    congr 1
-    have : (toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S)).comp (toEuclideanCLM (𝕜 := ℝ) (CFC.sqrt S))
-        = toEuclideanCLM (𝕜 := ℝ) ((CFC.sqrt S) * (CFC.sqrt S)) := by
-      rw [map_mul]
-      rfl
-    rw [CFC.sqrt_mul_sqrt_self _ hS.nonneg, ContinuousLinearMap.ext_iff] at this
-    rw [← this y]
-    simp
-  _ = ((EuclideanSpace.basisFun ι ℝ).toBasis.repr x) ⬝ᵥ
-      S *ᵥ ((EuclideanSpace.basisFun ι ℝ).toBasis.repr y) := inner_toEuclideanCLM _ _
+  · exact IsGaussian.memLp_two_id
 
 set_option backward.isDefEq.respectTransparency false in
 lemma covariance_eval_multivariateGaussian (hS : S.PosSemidef) (i j : ι) :
