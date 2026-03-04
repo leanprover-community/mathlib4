@@ -146,40 +146,8 @@ theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := b
   exact tr <| Algebra.IsAlgebraic.trans _ _ _ (alg := f.isAlgebraic_adjoin_simple_X' hf)
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def algEquivAdjoin (hf : ¬∃ c, f = C c) : RatFunc K ≃ₐ[K] K⟮f⟯ :=
-  IsFractionRing.algEquivOfAlgEquiv (algEquivOfTranscendental K f (f.transcendental_of_ne_C hf))
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem algEquivAdjoin_algebraMap (hf : ¬∃ c, f = C c) (g : K[X]) :
-    f.algEquivAdjoin hf (algebraMap K[X] (RatFunc K) g) = aeval f g := by
-  simp [algEquivAdjoin]
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-theorem algEquivAdjoin_X (hf : ¬∃ c, f = C c) :
-    f.algEquivAdjoin hf (X : RatFunc K) = f := by
-  rw [← algebraMap_X, algEquivAdjoin_algebraMap, aeval_X]
-
-set_option backward.isDefEq.respectTransparency false in
-theorem algEquivAdjoin_apply (hf : ¬∃ c, f = C c) (u : RatFunc K) :
-    f.algEquivAdjoin hf u = aeval f u.num / aeval f u.denom := by
-  conv_lhs => rw [← num_div_denom u]
-  simp [-num_div_denom]
-
-set_option backward.isDefEq.respectTransparency false in
-theorem algEquivAdjoin_symm_aeval (hf : ¬∃ c, f = C c) (g : K[X]) :
-    (f.algEquivAdjoin hf).symm (aeval (AdjoinSimple.gen _ f) g) = algebraMap _ _ g := by
-  simp [algEquivAdjoin, ← algebraMap_eq_gen_self, aeval_algebraMap_apply]
-
-set_option backward.isDefEq.respectTransparency false in
-theorem algEquivAdjoin_symm_gen (hf : ¬∃ c, f = C c) :
-    (f.algEquivAdjoin hf).symm (AdjoinSimple.gen _ f) = (X : RatFunc K) := by
-  simp [algEquivAdjoin, ← algebraMap_eq_gen_self]
-
-set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K[f]) := by
-  let e := algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
+  let e := Polynomial.algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
   let φ : K[X][X] := f.num.map (algebraMap ..) -
     Polynomial.C Polynomial.X * f.denom.map (algebraMap ..)
   have φ_map : φ.mapEquiv e.toRingEquiv = (f.minpolyX K[f]) := by
