@@ -3148,6 +3148,7 @@ public import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 public import Mathlib.CategoryTheory.Sites.Continuous
+public import Mathlib.CategoryTheory.Sites.CoproductSheafCondition
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.CoverPreserving
 public import Mathlib.CategoryTheory.Sites.Coverage
