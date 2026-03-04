@@ -774,8 +774,7 @@ theorem cliqueFinset_map (f : α ↪ β) (hn : n ≠ 1) :
     simp_rw [coe_cliqueFinset, cliqueSet_map hn, coe_map, coe_cliqueFinset, Embedding.coeFn_mk]
 
 @[simp]
-theorem cliqueFinset_map_of_equiv (e : α ≃ β) [DecidableRel (G.map e).Adj] (n : ℕ) :
-    (G.map e).cliqueFinset n =
+theorem cliqueFinset_map_of_equiv (e : α ≃ β) (n : ℕ) : (G.map e).cliqueFinset n =
       (G.cliqueFinset n).map ⟨map e.toEmbedding, Finset.map_injective _⟩ :=
   coe_injective <| by push_cast; exact cliqueSet_map_of_equiv _ _ _
 
