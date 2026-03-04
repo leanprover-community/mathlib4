@@ -357,8 +357,18 @@ section LiesOver
 
 namespace NumberField.HeightOneSpectrum
 
+open FinitePlace RingOfIntegers HeightOneSpectrum
+open scoped Valued
+
 variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
 variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
+
+private lemma inertiaDeg_mul_ramificationIdx_ne_zero [w.asIdeal.LiesOver v.asIdeal] :
+    (v.asIdeal.inertiaDeg w.asIdeal *
+      v.asIdeal.ramificationIdx (algebraMap (𝓞 K) (𝓞 L)) w.asIdeal) ≠ 0 := by
+  simpa [-inertiaDeg_algebraMap] using
+    ⟨Ideal.inertiaDeg_ne_zero _ _, ramificationIdx_ne_zero_of_liesOver _ v.ne_bot⟩
+
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
     [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
@@ -378,127 +388,6 @@ instance : Module.Finite Kv Lw :=
     rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
     exact h_dense.closure_range)
 
-end NumberField.HeightOneSpectrum
-
-end LiesOver
-
--- open UniqueFactorizationMonoid in
--- theorem Ideal.IsDedekindDomain.emultiplicity_eq_zero_of_ne {R : Type*} [CommRing R]
---     [IsDedekindDomain R] {a b : Ideal R} (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b)
---     (h_bot : b ≠ ⊥) : emultiplicity a b = 0 := by
---   classical
---   rw [emultiplicity_eq_count_normalizedFactors ha hb.ne_zero, normalize_eq, Nat.cast_eq_zero,
---     Multiset.count_eq_zero, Ideal.mem_normalizedFactors_iff h_bot, not_and]
---   intro _ h_le
---   exact h ((((Ideal.prime_iff_isPrime hb.ne_zero).1 hb.prime).isMaximal hb.ne_zero).eq_of_le
---     IsPrime.ne_top' h_le).symm
-
-namespace IsDedekindDomain
-
-variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Field L]
-    [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsDedekindDomain A] [Algebra A L]
-    [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L] [IsScalarTower A K L]
-    (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
-
-namespace HeightOneSpectrum
-
--- noncomputable
--- instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal] :
---     Algebra (v.adicCompletion K) (w.adicCompletion L) :=
---   UniformSpace.Completion.mapRingHom _ uniformContinuous_algebraMap.continuous |>.toAlgebra
-
--- instance [IsFractionRing B L] [NoZeroSMulDivisors A B] [w.asIdeal.LiesOver v.asIdeal] :
---     ContinuousSMul (v.adicCompletion K) (w.adicCompletion L) where
---   continuous_smul := (UniformSpace.Completion.continuous_map.comp (by fun_prop)).mul (by fun_prop)
-
--- open WithZeroTopology UniformSpace.Completion IsDedekindDomain.HeightOneSpectrum in
--- theorem valued_liesOver [IsFractionRing B L] [Module.IsTorsionFree A B]
---     [w.asIdeal.LiesOver v.asIdeal] [Algebra (v.adicCompletion K) (w.adicCompletion L)]
---     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
---     [i : IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L)]
---     (x : v.adicCompletion K) :
---     Valued.v x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
---       Valued.v (algebraMap _ (w.adicCompletion L) x) := by
---   induction x using induction_on with
---   | hp =>
---     exact isClosed_eq (Valued.continuous_valuation.pow _)
---       (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
---   | ih a =>
---     have := i.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
---     --rw [algebraMap_def] at this
---     --rw [algebraMap_def] at this
---     rw [Valued.valuedCompletion_apply]
---     erw? [← this]
---     --rw [adicValued_apply']
---     --rw [Algebra.algebraMap_self, RingHom.id_apply] at this
---     --rw [← this]
---     erw [Valued.valuedCompletion_apply]
---     erw [valuation_liesOver L]
---     rfl
---     --simp [WithVal.algebraMap_apply, WithVal.algebraMap_apply']
-
--- variable {B} in
--- def under [Algebra.IsIntegral A B] : HeightOneSpectrum A where
---   asIdeal := w.asIdeal.under A
---   isPrime := .under A w.asIdeal
---   ne_bot := mt Ideal.eq_bot_of_comap_eq_bot w.ne_bot
-
---instance [Algebra.IsIntegral A B] : w.asIdeal.LiesOver (w.under A).asIdeal := ⟨rfl⟩
-
-variable [IsFractionRing B L] [Module.IsTorsionFree A B]
-    [Algebra (v.adicCompletion K) (w.adicCompletion L)]
-    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
-    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
-
-instance [w.asIdeal.LiesOver v.asIdeal] :
-    (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
-      (Valued.v : Valuation (w.adicCompletion L) _) where
-  val_isEquiv_comap := by
-    simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply, ← valued_liesOver]
-    intro x
-    exact ⟨by simp_all, fun h ↦ by
-      grind [pow_eq_one_iff, ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
-
-noncomputable
-instance instAlgebraLiesOver [w.asIdeal.LiesOver v.asIdeal] :
-    Algebra (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
-  Valuation.HasExtension.instAlgebra_valuationSubring _ _
-
-instance [w.asIdeal.LiesOver v.asIdeal] :
-   IsLocalHom (algebraMap (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)) :=
-  Valuation.HasExtension.instIsLocalHomValuationSubring _ _
-
--- noncomputable
--- instance [IsFractionRing B L] [NoZeroSMulDivisors A B]
---     [w.asIdeal.LiesOver v.asIdeal] :
---     Algebra (v.adicCompletionIntegers K) (w.adicCompletion L) :=
---   Algebra.compHom _ (algebraMap _ (w.adicCompletionIntegers L))
-
---attribute [local instance 1001] Algebra.toSMul in
-noncomputable
-instance [w.asIdeal.LiesOver v.asIdeal] :
-    IsScalarTower (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) (w.adicCompletion L) :=
-  Valuation.HasExtension.instIsScalarTower_valuationSubring' _ _
-
---attribute [local instance 1001] Algebra.toSMul in
-noncomputable
-instance [w.asIdeal.LiesOver v.asIdeal] :
-    IsScalarTower (v.adicCompletionIntegers K) (v.adicCompletion K) (w.adicCompletion L) :=
-  Valuation.HasExtension.instIsScalarTower_valuationSubring _
-
-open NumberField.FinitePlace NumberField.RingOfIntegers
-  NumberField.RingOfIntegers.HeightOneSpectrum
-open scoped NumberField Valued
-
---variable [NumberField K] [NumberField L]
-variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
-  (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
-variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
-    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
-    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
--- lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
---     (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := rfl
-
 set_option backward.isDefEq.respectTransparency false in
 open Ideal in
 lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
@@ -512,20 +401,8 @@ lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
   simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
 
-open NumberField
-
--- instance [w.asIdeal.LiesOver v.asIdeal] :
---     Algebra.IsSeparable (v.adicCompletion K) (w.adicCompletion L) :=
---   inferInstance
-
 theorem _root_.NNReal.zpow_pow_comm {x : ℝ≥0} {z : ℤ} {n : ℕ} : (x ^ z) ^ n = (x ^ n) ^ z := by
   simpa [← zpow_natCast] using zpow_comm _ _ _
-
-private lemma inertiaDeg_mul_ramificationIdx_ne_zero [w.asIdeal.LiesOver v.asIdeal] :
-    (v.asIdeal.inertiaDeg w.asIdeal *
-      v.asIdeal.ramificationIdx (algebraMap (𝓞 K) (𝓞 L)) w.asIdeal) ≠ 0 := by
-  simpa [-inertiaDeg_algebraMap] using
-    ⟨Ideal.inertiaDeg_ne_zero _ _, ramificationIdx_ne_zero_of_liesOver _ v.ne_bot⟩
 
 noncomputable
 def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
@@ -574,13 +451,6 @@ def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
     · rfl
     · simp [NNReal.zpow_pow_comm]
 
---instance : CharZero (v.adicCompletion K) := sorry
-
-variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
-    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
-    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
-
---#synth Algebra (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)
 instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
     Algebra.IsIntegral (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) where
   isIntegral x := by
@@ -603,7 +473,7 @@ instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
           simp [Real.rpow_pow_comm]
         simpa [f] using f.ext_iff.1 (spectralNorm_unique hf) x
       rw [← hnorm]
-      simp only [AddSubgroupClass.coe_norm, ge_iff_le]
+      simp only [ge_iff_le]
       apply Real.rpow_le_one (by simp) (Valued.toNormedField.norm_le_one_iff.mpr this)
         (by simp)
     set p : Polynomial (v.adicCompletionIntegers K) :=
@@ -623,7 +493,6 @@ instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
     apply Finset.sum_congr rfl fun e _ ↦ ?_
     simp only [ValuationSubring.subtype_apply, MulMemClass.coe_mul, SubmonoidClass.coe_pow,
       mul_eq_mul_right_iff, pow_eq_zero_iff', ZeroMemClass.coe_eq_zero, ne_eq]
-    --rw [← ValuationSubring.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
     left
     congr
 
@@ -666,7 +535,6 @@ scoped instance :
     IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L) := by
   refine IsScalarTower.of_algebraMap_eq fun x ↦ ?_
   rw [RingHom.algebraMap_toAlgebra]
-  --rw [algebraMap_def, algebraMap_def]
   erw [UniformSpace.Completion.mapRingHom_coe]
   rfl
 
@@ -688,4 +556,6 @@ instance compact_adicCompletionIntegers :
     let _ := instFiniteIntegers 𝔭 v
     exact ResidueField.finite_of_finite h (S := v.adicCompletionIntegers K)
 
-end IsDedekindDomain.HeightOneSpectrum
+end NumberField.HeightOneSpectrum
+
+end LiesOver
