@@ -179,13 +179,10 @@ theorem extends_norm' (f : MulAlgebraNorm R S) (a : R) : f (a • (1 : S)) = ‖
 theorem extends_norm (f : MulAlgebraNorm R S) (a : R) : f (algebraMap R S a) = ‖a‖ := by
   rw [Algebra.algebraMap_eq_smul_one]; exact extends_norm' _ _
 
-/--
-The algebra norm underlying an multiplicative algebra norm.
--/
-def toAlgebraNorm (f : MulAlgebraNorm R S) : AlgebraNorm R S := {
-  f with
+/-- The algebra norm underlying an multiplicative algebra norm. -/
+def toAlgebraNorm (f : MulAlgebraNorm R S) : AlgebraNorm R S where
+  __ := f
   mul_le' _ _ := (f.map_mul' _ _).le
-}
 
 instance instCoeAlgebraNorm : Coe (MulAlgebraNorm R S) (AlgebraNorm R S) := ⟨toAlgebraNorm⟩
 
