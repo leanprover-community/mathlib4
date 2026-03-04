@@ -83,6 +83,7 @@ theorem generatorsOfIsCokernelFree_π {M : SheafOfModules.{u} R}
     (H' : IsColimit (CokernelCofork.ofπ g H)) :
     (generatorsOfIsCokernelFree f g H H').π = g := M.freeHomEquiv.symm_apply_apply g
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given two morphisms of sheaves of `R`-modules `f : free ι ⟶ free σ` and `g : free σ ⟶ M`
 satisfying `H : f ≫ g = 0` and `IsColimit (CokernelCofork.ofπ g H)`, we obtain
 relations of `Presentation M`. -/
@@ -227,6 +228,7 @@ class IsFinitePresentation {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) 
 
 attribute [instance] IsFinitePresentation.isFinite_presentation
 
+set_option backward.isDefEq.respectTransparency false in
 instance {M : SheafOfModules.{u} R} (q : M.QuasicoherentData) [q.IsFinitePresentation] :
     q.localGeneratorsData.IsFiniteType where
   isFiniteType := by dsimp; infer_instance
@@ -317,6 +319,7 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X Y, HasSheafify ((J.over X).over Y) AddCommGrpCat.{u}]
   [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
+#adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 /-- Given an cover `X` and a quasicoherent data for `M` restricted onto each `Mᵢ`, we may glue them
 into a quasicoherent data of `M` itself. -/
 noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}

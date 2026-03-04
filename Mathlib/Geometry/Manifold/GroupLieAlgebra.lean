@@ -62,12 +62,14 @@ point `g`, it is given by the image of `v` under left-addition by `g`. -/]
 noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
   mfderiv I I (g * ·) (1 : G) v
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mulInvariantVectorField_add (v w : GroupLieAlgebra I G) :
     mulInvariantVectorField (v + w) = mulInvariantVectorField v + mulInvariantVectorField w := by
   ext g
   simp [mulInvariantVectorField]
 
+set_option backward.isDefEq.respectTransparency false in
 /- `to_additive` fails on the next lemma, as it tries to additivize `smul` while it shouldn't.
 Therefore, we state and prove by hand the additive version. -/
 lemma addInvariantVectorField_smul {G : Type*} [TopologicalSpace G] [ChartedSpace H G] [AddGroup G]
@@ -76,6 +78,7 @@ lemma addInvariantVectorField_smul {G : Type*} [TopologicalSpace G] [ChartedSpac
   ext g
   simp [addInvariantVectorField]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mulInvariantVectorField_smul (c : 𝕜) (v : GroupLieAlgebra I G) :
     mulInvariantVectorField (c • v) = c • mulInvariantVectorField v := by
   ext g
@@ -129,6 +132,7 @@ lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
   · exact contMDiff_mul_left.contMDiffAt.mdifferentiableAt M
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
     mulInvariantVectorField (V 1) g = mpullback I I (g⁻¹ * ·) V g := by
@@ -178,7 +182,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
   · simp [F₁, F₂, F₃, fg, fv]
   · simp only [comp_apply, tangentMap, F₃, F₂, F₁, fg, fv]
     rw [mfderiv_prod_eq_add_apply ((contMDiff_mul I (minSmoothness 𝕜 3)).mdifferentiableAt M)]
-    simp [mulInvariantVectorField]
+    simp +instances [mulInvariantVectorField]
 
 @[to_additive]
 theorem contMDiffAt_mulInvariantVectorField (v : GroupLieAlgebra I G) {g : G} :

@@ -104,6 +104,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
     · exact hx₀.trans hb₀
     · exact hb _ hx₀ hx
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma limsSup_of_not_isBounded {f : Filter ℝ≥0} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup, ← bot_eq_zero]
@@ -122,6 +123,7 @@ lemma limsup_of_not_isBoundedUnder (hf : ¬ f.IsBoundedUnder (· ≤ ·) u) : li
 lemma liminf_of_not_isCoboundedUnder (hf : ¬ f.IsCoboundedUnder (· ≥ ·) u) : liminf u f = 0 :=
   limsInf_of_not_isCobounded hf
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   by_cases hf : f.IsCoboundedUnder (· ≥ ·) u; swap
@@ -133,6 +135,7 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   refine forall₂_congr fun r hr ↦ ?_
   simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   obtain rfl | hf := f.eq_or_neBot

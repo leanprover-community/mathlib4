@@ -31,7 +31,7 @@ equivalent statements with `∂(μ ⊗ₘ κ)/∂(μ ⊗ₘ η)` replaced by `�
 -/
 
 
-@[expose] public section
+public section
 
 open MeasureTheory Set
 open scoped ENNReal
@@ -42,7 +42,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
   {μ ν : Measure α} {κ η : Kernel α β}
 
 /-- Auxiliary lemma for `rnDeriv_measure_compProd_left`. -/
-lemma rnDeriv_measure_compProd_left_of_ac (hμν : μ ≪ ν) (κ : Kernel α β)
+private lemma rnDeriv_measure_compProd_left_of_ac (hμν : μ ≪ ν) (κ : Kernel α β)
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteKernel κ] :
     (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ κ) =ᵐ[ν ⊗ₘ κ] fun p ↦ μ.rnDeriv ν p.1 := by
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (by fun_prop) (by fun_prop) fun s hs _ ↦ ?_

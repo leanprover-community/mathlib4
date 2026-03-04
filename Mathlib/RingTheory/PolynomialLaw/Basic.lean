@@ -531,6 +531,7 @@ variable
   (r a b : R) (f g : M →ₚₗ[R] N)
   {S : Type*} [CommSemiring S] [Algebra R S]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Extension of `PolynomialLaw.zero_def` -/
 @[simp]
 theorem toFun_zero : (0 : M →ₚₗ[R] N).toFun S = 0 := by

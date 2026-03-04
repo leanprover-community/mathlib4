@@ -60,6 +60,7 @@ theorem Functor.initial_of_isCofiltered_costructuredArrow
     [∀ d, IsCofiltered (CostructuredArrow F d)] : Initial F where
   out _ := IsCofiltered.isConnected _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isFiltered_structuredArrow_of_isFiltered_of_exists [IsFilteredOrEmpty C]
     (h₁ : ∀ d, ∃ c, Nonempty (d ⟶ F.obj c)) (h₂ : ∀ {d : D} {c : C} (s s' : d ⟶ F.obj c),
       ∃ (c' : C) (t : c ⟶ c'), s ≫ F.map t = s' ≫ F.map t) (d : D) :
@@ -367,6 +368,7 @@ instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
   rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
   exact (initial_comp (Over.forget X) T).out _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
 induces via `StructuredArrow.map₂` is final, if `T` and `S` are final and the domain of `T` is
 filtered. -/
@@ -378,6 +380,7 @@ instance StructuredArrow.final_map₂_id [IsFiltered C] {E : Type u₃} [Categor
     (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
   apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj d e u α).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `StructuredArrow.map` is final if the functor `T` is final and its domain is filtered. -/
 instance StructuredArrow.final_map [IsFiltered C] {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] :
     Final (map (T := T) f) := by

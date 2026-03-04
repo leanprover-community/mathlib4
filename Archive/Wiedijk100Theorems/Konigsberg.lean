@@ -52,9 +52,7 @@ def graph : SimpleGraph Verts where
   symm := by
     dsimp [Symmetric, adj]
     decide
-  loopless := by
-    dsimp [Irreflexive, adj]
-    decide
+  loopless := ⟨by decide⟩
 
 instance : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
 

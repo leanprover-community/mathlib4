@@ -47,6 +47,7 @@ variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 attribute [local ext high] ext LinearMap.prod_ext
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Let `M, N` be `R`-modules, `m ≤ M` and `n ≤ N` be an `R`-submodules. Then we have a linear
 isomorphism between tensor products of the quotients and the quotient of the tensor product:
@@ -180,6 +181,13 @@ lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
           Submodule.Quotient.mk_smul I r 1) <|
       smul_tmul r _ x
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma quotTensorEquivQuotSMul_mk_one_tmul (I : Ideal R) (x : M) :
+    quotTensorEquivQuotSMul M I (1 ⊗ₜ x) = Submodule.Quotient.mk x := by
+  rw [← RingHom.map_one (Ideal.Quotient.mk I), TensorProduct.quotTensorEquivQuotSMul_mk_tmul]
+  simp
+
 lemma quotTensorEquivQuotSMul_comp_mkQ_rTensor (I : Ideal R) :
     quotTensorEquivQuotSMul M I ∘ₗ I.mkQ.rTensor M =
       (I • ⊤ : Submodule R M).mkQ ∘ₗ TensorProduct.lid R M :=
@@ -253,3 +261,42 @@ noncomputable def tensorQuotMapSMulEquivTensorQuot (I : Ideal R) :
           (tensorQuotEquivQuotSMul M I).baseChange R S _ _
 
 end TensorProduct
+
+open TensorProduct
+
+namespace TensorProduct.AlgebraTensorModule
+
+variable {R : Type*} (A B : Type*) [CommRing R] [CommRing A] [Algebra R A]
+  [CommRing B] [Algebra R B]
+variable (M : Type*) [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
+variable {N : Type*} [AddCommGroup N] [Module R N] [Module B N] [IsScalarTower R B N]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- More linear version of `TensorProduct.tensorQuotientEquiv`. -/
+noncomputable def tensorQuotientEquiv (n : Submodule B N) :
+    M ⊗[R] (N ⧸ n) ≃ₗ[A]
+      (M ⊗[R] N) ⧸ LinearMap.range (lTensor A M (n.subtype.restrictScalars R)) where
+  __ := TensorProduct.tensorQuotientEquiv M (n.restrictScalars R)
+  map_smul' m x := by
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe]
+    induction x with
+    | zero => simp
+    | add x y hx hy => simp [hx, hy]
+    | tmul x y =>
+      obtain ⟨y, rfl⟩ := Submodule.Quotient.mk_surjective _ y
+      rw [smul_tmul']
+      rfl
+
+@[simp]
+lemma tensorQuotientEquiv_apply_tmul (n : Submodule B N) (x : M) (y : N) :
+    tensorQuotientEquiv A B M n (x ⊗ₜ[R] Submodule.Quotient.mk y) =
+      Submodule.Quotient.mk (x ⊗ₜ[R] y) :=
+  rfl
+
+@[simp]
+lemma tensorQuotientEquiv_symm_apply_mk_tmul (n : Submodule B N) (x : M) (y : N) :
+    (tensorQuotientEquiv A B M n).symm (Submodule.Quotient.mk (x ⊗ₜ[R] y)) =
+      x ⊗ₜ[R] Submodule.Quotient.mk y :=
+  rfl
+
+end TensorProduct.AlgebraTensorModule
