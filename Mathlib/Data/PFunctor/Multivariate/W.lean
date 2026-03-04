@@ -137,6 +137,7 @@ theorem wpRec_eq {α : TypeVec n} {C : Sort*}
     (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.wpRec g ⟨a, f⟩ f' = g a f f' fun i => P.wpRec g (f i) (P.wPathDestRight f' i) := rfl
 
+/-- Induction principle for an unfolded `W` -/
 @[elab_as_elim]
 def wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Sort w}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
@@ -184,6 +185,8 @@ def w_ind {α : TypeVec n} {C : P.W α → Sort w}
       (congr rfl <| Sigma.mk.inj_iff.mpr ⟨rfl, heq_of_eq <| wPathCasesOn_eta P f'⟩)
       <| ih head (P.wPathDestLeft f') (fun i => ⟨f i, P.wPathDestRight f' i⟩) ih') hd ch
 
+/-- Cases lemma for `W` types -/
+@[elab_as_elim]
 def w_cases {α : TypeVec n} {C : P.W α → Sort w}
     (ih : ∀ (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α), C (P.wMk a f' f)) :
     ∀ x, C x := P.w_ind fun a f' f _ih' => ih a f' f

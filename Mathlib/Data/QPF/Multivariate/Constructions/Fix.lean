@@ -69,8 +69,8 @@ theorem recF_eq {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (a
 set_option backward.isDefEq.respectTransparency false in
 theorem recF_eq' {α : TypeVec n} {β : Type u} (g : F (α.append1 β) → β) (x : q.P.W α) :
     recF g x = g (abs (appendFun id (recF g) <$$> q.P.wDest' x)) := by
-  apply q.P.w_cases _ x
-  intro a f' f
+  induction x using  q.P.w_cases
+  case ih a f' f =>
   rw [recF_eq, q.P.wDest'_wMk, MvPFunctor.map_eq, appendFun_comp_splitFun, TypeVec.id_comp]
 
 /-- Equivalence relation on W-types that represent the same `Fix F`
@@ -86,10 +86,11 @@ inductive WEquiv {α : TypeVec n} : q.P.W α → q.P.W α → Prop
 
 theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) → β) (x y : q.P.W α) :
     WEquiv x y → recF u x = recF u y := by
-  apply q.P.w_cases _ x
-  intro a₀ f'₀ f₀
-  apply q.P.w_cases _ y
-  intro a₁ f'₁ f₁ h
+  induction x using q.P.w_cases
+  case ih a₀ f'₀ f₀ =>
+  induction y using q.P.w_cases
+  case ih a₁ f'₁ f₁ =>
+  intro h
   -- Porting note: induction on h doesn't work.
   refine @WEquiv.recOn _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h ?_ ?_ ?_
   · intro a f' f₀ f₁ _h ih; simp only [recF_eq]
@@ -101,9 +102,9 @@ theorem wEquiv.abs' {α : TypeVec n} (x y : q.P.W α)
     (h : MvQPF.abs (q.P.wDest' x) = MvQPF.abs (q.P.wDest' y)) :
     WEquiv x y := by
   revert h
-  apply q.P.w_cases _ x
-  intro a₀ f'₀ f₀
-  apply q.P.w_cases _ y
+  induction x using q.P.w_cases
+  case ih a₀ f'₀ f₀ =>
+  induction y using q.P.w_cases
   apply WEquiv.abs
 
 theorem wEquiv.refl {α : TypeVec n} (x : q.P.W α) : WEquiv x x := abs' x x rfl
