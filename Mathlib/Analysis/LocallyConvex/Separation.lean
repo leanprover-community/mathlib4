@@ -274,7 +274,7 @@ theorem geometric_hahn_banach_of_nonempty_interior
     ∃ (f : StrongDual 𝕜 E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, re (f a) ≤ u) ∧ ∀ b ∈ B, u ≤ re (f b) := by
   have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
   obtain ⟨f, u, hfne, hA', hB'⟩ :=
-    _root_.geometric_hahn_banach_of_interior_nonempty hA hB hAB hAint hBne
+    _root_.geometric_hahn_banach_of_nonempty_interior hA hB hAB hAint hBne
   refine ⟨f.extendRCLikeₗ, u, ?_, ?_, ?_⟩
   · intro hzero
     apply hfne
