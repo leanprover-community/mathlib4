@@ -77,34 +77,32 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
     {D : locallyFinsuppWithin (univ : Set E) ℤ} (h : 0 ≤ D) :
     D = 0 ↔ logCounting D =O[atTop] (1 : ℝ → ℝ) := by
   classical
-  constructor
-  · intro h₂
-  refine ⟨fun h₂ ↦ by simp [isBigO_of_le' (c := 0), h₂], ?_⟩ 
-  · contrapose
-    intro h₁
-    obtain ⟨e, he⟩ := exists_single_le_pos (lt_of_le_of_ne h (h₁ ·.symm))
-    rw [isBigO_iff'']
-    push_neg
-    intro a ha
-    simp only [Pi.one_apply, norm_eq_abs, frequently_atTop, abs_one]
-    intro b
-    obtain ⟨c, hc⟩ := eventually_atTop.1
-      (isLittleO_iff.1 (one_isLittleO_logCounting_single (e := e)) ha)
-    let ℓ := 1 + max ‖e‖ (max |b| |c|)
-    have h₁ℓ : c ≤ ℓ := by grind
-    have h₂ℓ : 1 ≤ ℓ := by simp [ℓ]
-    use 1 + ℓ, (show b ≤ 1 + ℓ by grind)
-    calc 1
-      _ ≤ (a * |logCounting (single e 1) ℓ|) := by simpa [h₁ℓ] using hc ℓ
-      _ ≤ (a * |logCounting D ℓ|) := by
-        gcongr
-        · apply logCounting_nonneg (single_pos.2 Int.one_pos).le h₂ℓ
-        · apply logCounting_le he h₂ℓ
-      _ < a * |logCounting D (1 + ℓ)| := by
-        gcongr 2
-        rw [abs_of_nonneg (logCounting_nonneg h h₂ℓ),
-          abs_of_nonneg (logCounting_nonneg h (by grind))]
-        apply logCounting_strictMono he <;> grind
+  refine ⟨fun h₂ ↦ by simp [isBigO_of_le' (c := 0), h₂], ?_⟩
+  contrapose
+  intro h₁
+  obtain ⟨e, he⟩ := exists_single_le_pos (lt_of_le_of_ne h (h₁ ·.symm))
+  rw [isBigO_iff'']
+  push_neg
+  intro a ha
+  simp only [Pi.one_apply, norm_eq_abs, frequently_atTop, abs_one]
+  intro b
+  obtain ⟨c, hc⟩ := eventually_atTop.1
+    (isLittleO_iff.1 (one_isLittleO_logCounting_single (e := e)) ha)
+  let ℓ := 1 + max ‖e‖ (max |b| |c|)
+  have h₁ℓ : c ≤ ℓ := by grind
+  have h₂ℓ : 1 ≤ ℓ := by simp [ℓ]
+  use 1 + ℓ, (show b ≤ 1 + ℓ by grind)
+  calc 1
+    _ ≤ (a * |logCounting (single e 1) ℓ|) := by simpa [h₁ℓ] using hc ℓ
+    _ ≤ (a * |logCounting D ℓ|) := by
+      gcongr
+      · apply logCounting_nonneg (single_pos.2 Int.one_pos).le h₂ℓ
+      · apply logCounting_le he h₂ℓ
+    _ < a * |logCounting D (1 + ℓ)| := by
+      gcongr 2
+      rw [abs_of_nonneg (logCounting_nonneg h h₂ℓ),
+        abs_of_nonneg (logCounting_nonneg h (by grind))]
+      apply logCounting_strictMono he <;> grind
 
 end Function.locallyFinsuppWithin
 
