@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.FiniteSupport.Basic
@@ -84,14 +84,17 @@ class AdmissibleAbsValues (K : Type*) [Field K] where
   /-- The nonarchimedean absolute values are indeed nonarchimedean. -/
   isNonarchimedean : ∀ v ∈ nonarchAbsVal, IsNonarchimedean v
   /-- Only finitely many (nonarchimedean) absolute values are `≠ 1` for any nonzero `x : K`. -/
-  mulSupport_finite {x : K} (_ : x ≠ 0) : (fun v : nonarchAbsVal ↦ v.val x).HasFiniteMulSupport
+  hasFiniteMulSupport {x : K} (_ : x ≠ 0) : (fun v : nonarchAbsVal ↦ v.val x).HasFiniteMulSupport
   /-- The product formula. The archimedean absolute values are taken with their multiplicity. -/
   product_formula {x : K} (_ : x ≠ 0) :
       (archAbsVal.map (· x)).prod * ∏ᶠ v : nonarchAbsVal, v.val x = 1
 
 open AdmissibleAbsValues Real Function
 
-attribute [fun_prop] mulSupport_finite
+@[deprecated (since := "2026-03-03")] alias
+  AdmissibleAbsValues.mulSupport_finite := AdmissibleAbsValues.hasFiniteMulSupport
+
+attribute [fun_prop] hasFiniteMulSupport
 
 variable (K : Type*) [Field K] [AdmissibleAbsValues K]
 
@@ -156,6 +159,23 @@ lemma logHeight₁_one : logHeight₁ (1 : K) = 0 := by
 
 lemma zero_le_logHeight₁ (x : K) : 0 ≤ logHeight₁ x :=
   Real.log_nonneg <| one_le_mulHeight₁ x
+
+/-- The logarithmic height of a field element can be expressed as a sum over the positive parts
+of the logarithms of its various absolute values. -/
+lemma logHeight₁_eq (x : K) :
+    logHeight₁ x =
+      (archAbsVal.map fun v ↦ log⁺ (v x)).sum + ∑ᶠ v : nonarchAbsVal, log⁺ (v.val x) := by
+  simp only [logHeight₁_eq_log_mulHeight₁, mulHeight₁_eq]
+  have H : mulHeight₁ x ≠ 0 := mulHeight₁_ne_zero x
+  rw [mulHeight₁_eq] at H
+  have : ∀ a ∈ archAbsVal.map (fun v ↦ max (v x) 1), a ≠ 0 := by
+    intro a ha
+    contrapose! ha
+    rw [ha]
+    exact Multiset.prod_eq_zero_iff.not.mp <| left_ne_zero_of_mul H
+  rw [log_mul (left_ne_zero_of_mul H) (right_ne_zero_of_mul H), log_multiset_prod this,
+    Multiset.map_map, log_finprod (fun _ ↦ by positivity)]
+  congr 2 <;> simp [max_comm, posLog_eq_log_max_one]
 
 end Height
 
@@ -302,7 +322,7 @@ private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0)
     rcases eq_or_ne (x j) 0 with h | h
     · rw [h, v.val.map_zero]
       exact Real.iSup_nonneg' ⟨⟨i, hi⟩, v.val.nonneg ..⟩
-    · exact le_ciSup_of_le (Finite.bddAbove_range _) ⟨j, h⟩ le_rfl
+    · exact Finite.le_ciSup_of_le ⟨j, h⟩ le_rfl
   fun_prop (disch := grind)
 
 @[fun_prop]

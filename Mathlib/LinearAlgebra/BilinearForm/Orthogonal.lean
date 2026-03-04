@@ -260,7 +260,6 @@ open Module Submodule
 
 variable {B : BilinForm K V}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem finrank_add_finrank_orthogonal' (W : Submodule K V) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.ker : Subspace K V) := by
