@@ -403,6 +403,7 @@ lemma mfderiv_extChartAt_self :
   ext v
   simpa using (tangentBundleCore I M).coordChange_self (achart H x) x (mem_chart_source H x) v
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: should there be a version for `extChartAt`?
 /-- The manifold derivative within `range I` of `(extChartAt I x).symm` at the chart point is
 the identity. -/
@@ -414,6 +415,7 @@ lemma mfderivWithin_range_extChartAt_symm :
   rw [mfderiv_extChartAt_self, ContinuousLinearMap.comp_id] at hcomp
   simpa using hcomp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inverse of the derivative of `(extChartAt I x).symm` at the chart point,
 applied to a tangent vector, gives back the tangent vector. -/
 lemma mfderivWithin_extChartAt_symm_inverse_apply (v : TangentSpace I x) :

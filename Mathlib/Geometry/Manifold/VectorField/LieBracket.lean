@@ -10,7 +10,7 @@ public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
-public import Mathlib.Geometry.Manifold.Notation
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Lie brackets of vector fields on manifolds
@@ -315,6 +315,7 @@ lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_mpullbackWithin_vect
   exact (contMDiff_snd_tangentBundle_modelSpace E 𝓘(𝕜, E)).contMDiffAt.mdifferentiableAt one_ne_zero
     |>.comp_mdifferentiableWithinAt _ this
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mfderiv_extChartAt_inverse_comp_mfderivWithin_extChartAT_symm (Y : TangentSpace I x) :
     letI φ := extChartAt I x
     ((mfderiv% φ x).inverse.comp ((mfderiv[range I] φ.symm (φ x)).inverse) Y) = Y := by
@@ -332,6 +333,7 @@ private lemma mfderiv_extChart_inverse_comp_aux :
       ((mfderiv[range I] φ.symm (φ x)).inverse) (W (φ.symm (φ x))) = W x := by
   rw [mfderiv_extChartAt_inverse_comp_mfderivWithin_extChartAT_symm, extChartAt_to_inv]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pulling back through `extChartAt` the scalar multiplication of a vector field by
 the derivative of a scalar function equals the scalar multiplication by the manifold derivative. -/
 lemma mpullback_mfderivWithin_apply_smul {f : M → 𝕜}
@@ -350,6 +352,7 @@ lemma mpullback_mfderivWithin_apply_smul {f : M → 𝕜}
 
 variable [CompleteSpace E]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`. Version within a set.
@@ -380,18 +383,19 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDiffAt[s] f x)
   · simpa only [A] using mpullback_mfderivWithin_apply_smul hf
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`.
 -/
 lemma mlieBracket_smul_right {f : M → 𝕜} (hf : MDiffAt f x)
     (hW : MDiffAt (fun x ↦ (W x : TangentBundle I M)) x) :
-    mlieBracket I V (f • W) x =
-      (mfderiv% f x) (V x) • (W x) + (f x) • mlieBracket I V W x := by
+    mlieBracket I V (f • W) x = (mfderiv% f x) (V x) • (W x) + (f x) • mlieBracket I V W x := by
   rw [← mdifferentiableWithinAt_univ] at hf hW
   rw [← mlieBracketWithin_univ, ← mfderivWithin_univ]
   exact mlieBracketWithin_smul_right hf hW (uniqueMDiffWithinAt_univ I)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`. Version within a set.
@@ -405,6 +409,7 @@ lemma mlieBracketWithin_smul_left {f : M → 𝕜} (hf : MDiffAt[s] f x)
     mlieBracketWithin_swap]
   simp; abel
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[f • V, W] = -(df W) • V + f • [V, W]`.
@@ -782,7 +787,6 @@ lemma mpullbackWithin_mlieBracketWithin
       mlieBracketWithin I (mpullbackWithin I I' f V s) (mpullbackWithin I I' f W s) s x₀ :=
   mpullbackWithin_mlieBracketWithin' hV hW hu hu hf hx₀ hn hst h'x₀ Subset.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The pullback commutes with the Lie bracket of vector fields on manifolds. -/
 lemma mpullback_mlieBracketWithin
     {f : M → M'} {V W : Π (x : M'), TangentSpace I' x} {x₀ : M} {s : Set M} {t : Set M'}
@@ -919,7 +923,6 @@ section Leibniz
 
 variable [IsManifold I (minSmoothness 𝕜 3) M] [CompleteSpace E]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
 `[U, [V, W]] = [[U, V], W] + [V, [U, W]]` (also called Jacobi identity). -/
 theorem leibniz_identity_mlieBracketWithin_apply
