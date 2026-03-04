@@ -442,7 +442,7 @@ noncomputable def difference [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Spac
     (hcov' : IsCovariantDerivativeOn F cov' s)
     (x : M) : V x →L[ℝ] TangentSpace I x →L[ℝ] V x :=
   if hxs : x ∈ s then
-    mkTensorAt I F (E →L[ℝ] F) (differenceAux cov cov') x
+    mkTensorAt I F (differenceAux cov cov') x
       (fun f σ hf hσ ↦ by simp [differenceAux, hcov.leibniz hσ hf, hcov'.leibniz hσ hf]; module)
       (fun σ σ' hσ hσ' ↦ by simp [differenceAux, hcov.addσ hσ hσ', hcov'.addσ hσ hσ']; abel)
   else
@@ -475,7 +475,7 @@ lemma difference_apply [∀ x, FiniteDimensional ℝ (V x)] [∀ x, T2Space (V x
     difference hcov hcov' x (σ x) =
       cov σ x - cov' σ x := by
   simp only [difference, hx, reduceDIte]
-  rw [mkTensorAt_apply _ _ _ _ hσ]
+  rw [mkTensorAt_apply _ _ _ hσ]
   rfl
 
 end IsCovariantDerivativeOn

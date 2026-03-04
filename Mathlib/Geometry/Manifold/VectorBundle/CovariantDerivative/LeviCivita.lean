@@ -710,7 +710,7 @@ open Classical in
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] ℝ :=
-  mk2TensorAt I E ℝ (fun (X Z : Π x : M, TangentSpace I x) ↦
+  mk2TensorAt I E (fun (X Z : Π x : M, TangentSpace I x) ↦
       if hX : MDiffAt (T% X) x then if hZ : MDiffAt (T% Z) x then
         leviCivitaRhs I X Y Z
       else 0 else 0) (x := x)
@@ -751,7 +751,7 @@ theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
     lcAux₀ I x hY (X x) (Z x) = leviCivitaRhs I X Y Z x := by
   unfold lcAux₀
-  rw [mk2TensorAt_apply _ _ _ _ _ _ hX hZ, dif_pos hX, dif_pos hZ]
+  rw [mk2TensorAt_apply _ _ _ _ _ hX hZ, dif_pos hX, dif_pos hZ]
 
 noncomputable def lcAux₁ [FiniteDimensional ℝ E]
     {Y : Π x : M, TangentSpace I x} (x : M) (hY : MDiffAt (T% Y) x) :

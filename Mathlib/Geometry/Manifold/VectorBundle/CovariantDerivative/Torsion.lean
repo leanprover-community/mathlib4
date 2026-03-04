@@ -109,7 +109,7 @@ variable [FiniteDimensional ℝ E] [T2Space M] [IsManifold I ∞ M]
 
 noncomputable def torsionTensor (hcov : IsCovariantDerivativeOn E cov univ) (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] TangentSpace I x :=
-  mk2TensorAt I E E (Bundle.torsion cov)
+  mk2TensorAt I E (Bundle.torsion cov)
     (fun {_ _ τ} ↦ hcov.torsion_smul_left_apply τ)
     (fun {_ _ τ} ↦ hcov.torsion_add_left_apply τ)
     (hcov.torsion_smul_right_apply)
@@ -120,7 +120,7 @@ theorem torsionTensor_apply (hcov : IsCovariantDerivativeOn E cov univ) {x}
     {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x) :
     torsionTensor hcov x (X x) (Y x) = Bundle.torsion cov X Y x := by
   rw [torsionTensor]
-  refine mk2TensorAt_apply _ _ ?_ ?_ ?_ ?_ hX hY
+  refine mk2TensorAt_apply _ ?_ ?_ ?_ ?_ hX hY
   · exact fun {_ _ τ} ↦ hcov.torsion_smul_left_apply τ
   · exact fun {_ _ τ} ↦ hcov.torsion_add_left_apply τ
   · exact hcov.torsion_smul_right_apply
@@ -222,7 +222,7 @@ def torsion_tensorial [T2Space M] [IsManifold I ∞ M] [FiniteDimensional ℝ E]
     (hY : MDiffAt (T% Y) x₀) (hY' : MDiffAt (T% Y') x₀)
     (hXX' : X x₀ = X' x₀) (hYY' : Y x₀ = Y' x₀) :
     (torsion cov X Y) x₀ = (torsion cov X' Y') x₀ := by
-  apply tensoriality_criterion₂ I E (TangentSpace I) E (TangentSpace I) hX hX' hY hY' hXX' hYY'
+  apply tensoriality_criterion₂ I E (TangentSpace I) (TangentSpace I) hX hX' hY hY' hXX' hYY'
   · intro f σ τ hf hσ
     exact cov.isCovariantDerivativeOn.torsion_smul_left_apply _ hf hσ
   · intro σ σ' τ hσ hσ'
