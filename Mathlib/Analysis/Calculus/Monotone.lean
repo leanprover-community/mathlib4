@@ -55,14 +55,12 @@ theorem tendsto_apply_add_mul_sq_div_sub {f : ℝ → ℝ} {x a c d : ℝ} {l : 
       exact ((tendsto_id.sub_const x).const_mul c).const_add 1
     simp only [_root_.sub_self, add_zero, mul_zero] at this
     apply Tendsto.congr' (Eventually.filter_mono hl _) this
-    filter_upwards [self_mem_nhdsWithin] with y hy
-    grind
+    filter_upwards [self_mem_nhdsWithin] with y hy using by grind
   have Z := (hf.comp h').mul L
   rw [mul_one] at Z
   apply Tendsto.congr' _ Z
   have : ∀ᶠ y in l, y + c * (y - x) ^ 2 ≠ x := Tendsto.mono_right h' hl self_mem_nhdsWithin
-  filter_upwards [this] with y hy
-  simp [field, sub_ne_zero.2 hy]
+  filter_upwards [this] with y hy using by simp [field, sub_ne_zero.2 hy]
 
 /-- A Stieltjes function is almost everywhere differentiable, with derivative equal to the
 Radon-Nikodym derivative of the associated Stieltjes measure with respect to Lebesgue. -/
@@ -221,8 +219,7 @@ theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set �
   intro h'x
   apply hx.differentiableWithinAt.congr_of_eventuallyEq _ (gf ⟨h'x.1, h'x.2.1.le, h'x.2.2.le⟩)
   have : Ioo a b ∈ 𝓝[s] x := nhdsWithin_le_nhds (Ioo_mem_nhds h'x.2.1 h'x.2.2)
-  filter_upwards [self_mem_nhdsWithin, this] with y hy h'y
-  exact gf ⟨hy, h'y.1.le, h'y.2.le⟩
+  filter_upwards [self_mem_nhdsWithin, this] with y hy h'y using gf ⟨hy, h'y.1.le, h'y.2.le⟩
 
 /-- A real function which is monotone on a set is differentiable Lebesgue-almost everywhere on
 this set. This version assumes that `s` is measurable and uses `volume.restrict s`.
