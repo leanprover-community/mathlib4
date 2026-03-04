@@ -35,6 +35,7 @@ variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E]
 
 open TensorProduct LinearMap LinearIsometryEquiv Coalgebra
 
+set_option backward.isDefEq.respectTransparency false in
 open EuclideanSpace in
 /-- The comultiplication on `n → 𝕜` corresponds to the Euclidean space adjoint of the
 multiplication map. -/
@@ -61,6 +62,7 @@ namespace InnerProductSpace
 section coalgebraOfAlgebra
 variable {A : Type*} [Ring A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A finite-dimensional inner product space with an algebra structure induces
 a coalgebra, where comultiplication is given by the adjoint of multiplication
 and the counit is given by the adjoint of the algebra map.
@@ -92,6 +94,7 @@ end coalgebraOfAlgebra
 section algebraOfCoalgebra
 variable [Coalgebra 𝕜 E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The multiplication on a finite-dimensional inner product space with a coalgebra structure
 given by `x * y = (adjoint comul) (x ⊗ₜ y)`.
 
@@ -99,12 +102,14 @@ See note [reducible non-instances]. -/
 noncomputable abbrev mulOfCoalgebra :
     Mul E where mul x y := adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y)
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] InnerProductSpace.mulOfCoalgebra in
 lemma AlgebraOfCoalgebra.mul_def (x y : E) :
     x * y = adjoint (comul (R := 𝕜) (A := E)) (x ⊗ₜ y) := rfl
 
 attribute [local simp] AlgebraOfCoalgebra.mul_def
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] InnerProductSpace.mulOfCoalgebra in
 /-- A finite-dimensional inner product space with a coalgebra structure induces a ring structure,
 where multiplication is given by `x * y = (adjoint comul) (x ⊗ₜ y)` and
@@ -121,7 +126,8 @@ noncomputable abbrev ringOfCoalgebra :
     simp_rw [AlgebraOfCoalgebra.mul_def, ← rTensor_tmul, ← comp_apply, ← adjoint_rTensor,
       ← adjoint_comp, ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply,
       ← toLinearEquiv_assocIsometry, ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp only [symm_symm, toLinearEquiv_assocIsometry, LinearEquiv.coe_coe, assoc_tmul,
+      lTensor_tmul]
   one := adjoint (counit (R := 𝕜) (A := E)) 1
   one_mul x := by
     dsimp [OfNat.ofNat]
@@ -137,6 +143,7 @@ noncomputable abbrev ringOfCoalgebra :
       adjoint_toLinearMap_eq_symm]
     exact one_smul _ _
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] InnerProductSpace.ringOfCoalgebra in
 /-- A finite-dimensional inner product space with a coalgebra structure induces an algebra
 structure, where `x * y = (adjoint comul) (x ⊗ₜ y)`, `1 = (adjoint counit) 1` and
@@ -164,13 +171,13 @@ noncomputable abbrev algebraOfCoalgebra : Algebra 𝕜 E where
       ← toLinearMap_symm_rid, ← toLinearMap_symm_lid, ← comm_trans_lid,
       ← toLinearEquiv_commIsometry, ← toLinearEquiv_lidIsometry, ← toLinearEquiv_trans,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp
   smul_def' r x := by
     dsimp
     simp_rw [← rTensor_tmul, ← adjoint_rTensor, ← comp_apply, ← adjoint_comp,
       rTensor_counit_comp_comul, ← toLinearMap_symm_lid, ← toLinearEquiv_lidIsometry,
       ← toLinearEquiv_symm, adjoint_toLinearMap_eq_symm]
-    rfl
+    simp
 
 end algebraOfCoalgebra
 end InnerProductSpace

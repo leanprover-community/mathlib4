@@ -171,6 +171,7 @@ theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the scope `Manifold`, use the shortcut `𝓡∂ n`.
@@ -203,6 +204,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     exact ((PiLp.continuous_toLp 2 _).comp <| (PiLp.continuous_ofLp 2 _).update 0 <|
       (PiLp.continuous_apply 2 _ 0).max continuous_const).subtype_mk _
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanQuadrant n)`, used as a
 model for manifolds with corners -/
@@ -263,6 +265,7 @@ lemma frontier_range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       apply range_euclideanHalfSpace
     _ = { y | 0 = y 0 } := frontier_halfSpace 2 _ _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The left chart for the topological space `[x, y]`, defined on `[x,y)` and sending `x` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -297,19 +300,8 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ => ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuousOn_toFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have : Continuous fun (z : ℝ) (_ : Fin 1) => z - x :=
-      Continuous.sub (continuous_pi fun _ => continuous_id) continuous_const
-    exact (PiLp.continuous_toLp 2 _).comp <| this.comp continuous_subtype_val
-  continuousOn_invFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have A : Continuous fun z : ℝ => min (z + x) y :=
-      (continuous_id.add continuous_const).min continuous_const
-    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) ↦ z 0 := PiLp.continuous_apply 2 _ 0
-    exact (A.comp B).comp continuous_subtype_val
+  continuousOn_toFun := by fun_prop
+  continuousOn_invFun := by fun_prop
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
@@ -338,6 +330,7 @@ lemma IccLeftChart_extend_bot_mem_frontier :
   rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
 -/
@@ -374,19 +367,8 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@PiLp.continuous_apply 2 (Fin 1) (fun _ ↦ ℝ) _ 0)
     exact this.preimage continuous_subtype_val
-  continuousOn_toFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have : Continuous fun (z : ℝ) (_ : Fin 1) => y - z :=
-      continuous_const.sub (continuous_pi fun _ => continuous_id)
-    exact (PiLp.continuous_toLp 2 _).comp <| this.comp continuous_subtype_val
-  continuousOn_invFun := by
-    apply Continuous.continuousOn
-    apply Continuous.subtype_mk
-    have A : Continuous fun z : ℝ => max (y - z) x :=
-      (continuous_const.sub continuous_id).max continuous_const
-    have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := PiLp.continuous_apply 2 _ 0
-    exact (A.comp B).comp continuous_subtype_val
+  continuousOn_toFun := by fun_prop
+  continuousOn_invFun := by fun_prop
 
 lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by

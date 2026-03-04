@@ -96,7 +96,7 @@ lemma coe_comp {X Y Z : Lat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) =
 
 @[simp]
 lemma forget_map {X Y : Lat} (f : X ⟶ Y) :
-    (forget Lat).map f = f := rfl
+    (forget Lat).map f = (f : _ → _) := rfl
 
 @[ext]
 lemma ext {X Y : Lat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
@@ -154,6 +154,7 @@ instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
   forget₂.obj X := .of X
   forget₂.map f := PartOrd.ofHom f.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Constructs an isomorphism of lattices from an order isomorphism between them. -/
 @[simps]
 def Iso.mk {α β : Lat.{u}} (e : α ≃o β) : α ≅ β where

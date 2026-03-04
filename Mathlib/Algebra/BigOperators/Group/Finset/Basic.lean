@@ -62,9 +62,7 @@ the product over `s`, as long as `a` is in `s` or `f a = 1`. -/
 the sum over `s`, as long as `a` is in `s` or `f a = 0`. -/]
 theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 1) :
     ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x := by
-  by_cases hm : a ∈ s
-  · simp_rw [insert_eq_of_mem hm]
-  · rw [prod_insert hm, h hm, one_mul]
+  by_cases a ∈ s <;> grind
 
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `f a = 1`. -/
@@ -463,8 +461,7 @@ variable {f s}
 @[to_additive]
 theorem prod_subtype {p : ι → Prop} {F : Fintype (Subtype p)} (s : Finset ι) (h : ∀ x, x ∈ s ↔ p x)
     (f : ι → M) : ∏ a ∈ s, f a = ∏ a : Subtype p, f a := by
-  have : (· ∈ s) = p := Set.ext h
-  subst p
+  obtain rfl : p = (· ∈ s) := by simp [h]
   rw [← prod_coe_sort]
   congr!
 
@@ -799,7 +796,7 @@ theorem prod_biUnion_of_pairwise_eq_one [DecidableEq ι] {s : Finset κ} {t : κ
     ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   classical
   let t' k := (t k).filter (fun i ↦ f i ≠ 1)
-  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by ext; simp [t']; grind
+  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by grind
   rw [← prod_filter_ne_one, ← this, prod_biUnion]
   swap
   · intro i hi j hj hij a hai haj k hk
@@ -1073,6 +1070,14 @@ lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
 theorem _root_.Finset.mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
     (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := Multiset.mem_sum
 
+@[to_additive]
+lemma prod_map_prod {α : Type*} [CommMonoid M] {m : Multiset ι} {s : Finset α} {f : ι → α → M} :
+    (m.map fun i ↦ ∏ a ∈ s, f i a).prod = ∏ a ∈ s, (m.map fun i ↦ f i a).prod := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha ih => simp [Finset.prod_insert ha, prod_map_mul, ih]
+
 variable [DecidableEq ι]
 
 theorem toFinset_sum_count_eq (s : Multiset ι) : ∑ a ∈ s.toFinset, s.count a = card s := by
@@ -1116,6 +1121,9 @@ lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
 lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by simp
 
-theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
+theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with grind
+
+@[deprecated (since := "2026-02-14")]
+alias nat_abs_sum_le := Int.natAbs_sum_le

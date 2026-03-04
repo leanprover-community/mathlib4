@@ -70,7 +70,7 @@ protected def Theory.simpleGraph : Language.graph.Theory :=
 @[simp]
 theorem Theory.simpleGraph_model_iff [Language.graph.Structure V] :
     V ⊨ Theory.simpleGraph ↔
-      (Irreflexive fun x y : V => RelMap adj ![x, y]) ∧
+      (Std.Irrefl fun x y : V => RelMap adj ![x, y]) ∧
         Symmetric fun x y : V => RelMap adj ![x, y] := by
   simp [Theory.simpleGraph]
 

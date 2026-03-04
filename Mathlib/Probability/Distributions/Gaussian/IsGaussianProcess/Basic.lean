@@ -52,6 +52,7 @@ lemma aemeasurable (hX : IsGaussianProcess X P) (t : T) : AEMeasurable (X t) P :
   AEMeasurable.of_map_ne_zero
     (hX.hasGaussianLaw {t}).isGaussian_map.toIsProbabilityMeasure.ne_zero |>.eval ⟨t, by simp⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A modification of a Gaussian process is a Gaussian process. -/
 lemma congr (hX : IsGaussianProcess X P) (hXY : ∀ t, X t =ᵐ[P] Y t) :
     IsGaussianProcess Y P where
