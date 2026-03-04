@@ -235,7 +235,6 @@ theorem MonotoneOn.ae_differentiableWithinAt_of_mem {f : ℝ → ℝ} {s : Set �
   filter_upwards [self_mem_nhdsWithin, this] with y hy h'y
   exact gf ⟨hy, h'y.1.le, h'y.2.le⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A real function which is monotone on a set is differentiable Lebesgue-almost everywhere on
 this set. This version assumes that `s` is measurable and uses `volume.restrict s`.
 For a formulation without measurability assumption,

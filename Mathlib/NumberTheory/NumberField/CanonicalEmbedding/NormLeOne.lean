@@ -349,8 +349,8 @@ linearly independent, see `linearIndependent_completeFamily`.
 -/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
-  map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
-  map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← mul_sum] using by ring
+  map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
+  map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
@@ -389,7 +389,6 @@ theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
 
 variable (K)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem linearIndependent_completeFamily :
     LinearIndependent ℝ (completeFamily K) := by
   classical
@@ -528,7 +527,6 @@ theorem norm_expMapBasis_ne_zero (x : realSpace K) :
     mixedEmbedding.norm (mixedSpaceOfRealSpace (expMapBasis x)) ≠ 0 :=
   norm_expMapBasis x ▸ pow_ne_zero _ (Real.exp_ne_zero _)
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem logMap_expMapBasis (x : realSpace K) :
     logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
@@ -584,7 +582,6 @@ theorem hasFDerivAt_expMapBasis (x : realSpace K) :
   change HasFDerivAt (expMap ∘ (completeBasis K).equivFunL.symm) (fderiv_expMapBasis K x) x
   exact (hasFDerivAt_expMap _).comp x (completeBasis K).equivFunL.symm.hasFDerivAt
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical ContinuousLinearMap in
 theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
     |(fderiv_expMapBasis K x).det| =
@@ -699,7 +696,6 @@ theorem closure_paramSet_ae_interior : closure (paramSet K) =ᵐ[volume] interio
   · exact Iio_ae_eq_Iic.symm
   · exact Ioo_ae_eq_Icc.symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem setLIntegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
     ∫⁻ (x : realSpace K) in paramSet K, .ofReal (Real.exp (x w₀ * n)) = (n : ℝ≥0∞)⁻¹ := by
   classical

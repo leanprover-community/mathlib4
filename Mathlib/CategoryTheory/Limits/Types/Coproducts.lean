@@ -306,7 +306,6 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
         dsimp
         split_ifs <;> exact congr_arg _ (Equiv.apply_ofInjective_symm _ ⟨_, _⟩).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
     IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range f)ᶜ → Y)) := by

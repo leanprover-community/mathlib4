@@ -153,7 +153,6 @@ theorem le_of_mem_A {r ε : ℝ} {L : E →L[𝕜] F} {x : E} (hx : x ∈ A f L 
   apply le_of_lt
   exact hr' _ ((mem_closedBall.1 hy).trans_lt r'mem.1) _ ((mem_closedBall.1 hz).trans_lt r'mem.1)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : E} (hx : DifferentiableAt 𝕜 f x) :
     ∃ R > 0, ∀ r ∈ Ioo (0 : ℝ) R, x ∈ A f (fderiv 𝕜 f x) r ε := by
   let δ := (ε / 2) / 2
@@ -211,7 +210,6 @@ theorem differentiable_set_subset_D :
     · refine hR _ ⟨by positivity, lt_of_le_of_lt ?_ hn⟩
       exact pow_le_pow_of_le_one (by norm_num) (by norm_num) (by assumption)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Harder inclusion: at a point in `D f K`, the function `f` has a derivative, in `K`. -/
 theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete K) :
     D f K ⊆ { x | DifferentiableAt 𝕜 f x ∧ fderiv 𝕜 f x ∈ K } := by
@@ -510,7 +508,6 @@ theorem mem_A_of_differentiable {ε : ℝ} (hε : 0 < ε) {x : ℝ}
       · rw [Real.norm_of_nonneg] <;> linarith [hy.1, hy.2]
     _ = ε * r := by ring
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_sub_le_of_mem_A {r x : ℝ} (hr : 0 < r) (ε : ℝ) {L₁ L₂ : F} (h₁ : x ∈ A f L₁ r ε)
     (h₂ : x ∈ A f L₂ r ε) : ‖L₁ - L₂‖ ≤ 4 * ε := by
   suffices H : ‖(r / 2) • (L₁ - L₂)‖ ≤ r / 2 * (4 * ε) by
@@ -544,7 +541,6 @@ theorem differentiable_set_subset_D :
     · refine hR _ ⟨pow_pos (by norm_num) _, lt_of_le_of_lt ?_ hn⟩
       exact pow_le_pow_of_le_one (by norm_num) (by norm_num) (by assumption)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Harder inclusion: at a point in `D f K`, the function `f` has a derivative, in `K`. -/
 theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     D f K ⊆ { x | DifferentiableWithinAt ℝ f (Ici x) x ∧ derivWithin f (Ici x) x ∈ K } := by

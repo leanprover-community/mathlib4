@@ -18,6 +18,7 @@ oplax functors):
 * oplax natural transformations;
 * lax natural transformations;
 * strong natural transformations.
+
 These differ in the direction (and invertibility) of the 2-morphisms involved in the naturality
 condition.
 
