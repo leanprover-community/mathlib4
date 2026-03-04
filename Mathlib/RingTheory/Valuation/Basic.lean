@@ -530,9 +530,6 @@ lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
   simp only [restrict_def, restrict₀_apply]
   aesop
 
-@[simp]
-lemma restrict₀_val : restrict₀ v = restrict₀ (v : R →*₀ Γ₀) := rfl
-
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
@@ -545,7 +542,7 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
   have hx0 : v.restrict x ≠ 0 := by simp [hx.ne']
   have ha0 : v.restrict a ≠ 0 := by simp [ha]
   rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff]
-  simp only [restrict_def, map_mul, restrict₀_val]
+  simp only [restrict_def, map_mul]
   erw [embedding_restrict₀ (f := (v : R →*₀ Γ₀)) x, embedding_restrict₀ a, ]
   rw [MonoidWithZeroHom.coe_coe, ← hax]
   congr
