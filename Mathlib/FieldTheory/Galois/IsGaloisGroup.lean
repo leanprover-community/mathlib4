@@ -75,14 +75,13 @@ fixed by `G`.
 -/
 @[simps apply_coe]
 noncomputable def IsGaloisGroup.ringEquivFixedPoints :
-    A ≃+* FixedPoints.subsemiring B G :=
-  { toFun x := ⟨algebraMap A B x, fun _ ↦ by rw [smul_algebraMap]⟩
-    invFun x := (hA.isInvariant.isInvariant x x.prop).choose
-    map_mul' _ _ := by simp [Subtype.ext_iff]
-    map_add' _ _ := by simp [Subtype.ext_iff]
-    left_inv _ := by simp
-    right_inv x := by
-      simpa [Subtype.ext_iff] using (hA.isInvariant.isInvariant x x.prop).choose_spec }
+    A ≃+* FixedPoints.subsemiring B G where
+  toFun x := ⟨algebraMap A B x, fun _ ↦ by rw [smul_algebraMap]⟩
+  invFun x := (hA.isInvariant.isInvariant x x.prop).choose
+  map_mul' _ _ := by simp [Subtype.ext_iff]
+  map_add' _ _ := by simp [Subtype.ext_iff]
+  left_inv _ := by simp
+  right_inv x := by simpa [Subtype.ext_iff] using (hA.isInvariant.isInvariant x x.prop).choose_spec
 
 @[simp]
 theorem IsGaloisGroup.algebraMap_ringEquivFixedPoints_symm_apply (x : FixedPoints.subsemiring B G) :
