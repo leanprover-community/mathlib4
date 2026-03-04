@@ -684,7 +684,7 @@ theorem eq_adjoin_generator : E = K⟮(generator E : RatFunc K)⟯ := by
   rw [← Φ_natDegree_eq_ψ_natDegree h, Φ_natDegree_eq_θ_natDegree h]
   exact le_antisymm (θ_natDegree_le h) (swap_Φ_natDegree_eq_θ_natDegree h ▸ le_swap_Φ_natDegree h)
 
-noncomputable def algEquiv (h : E ≠ ⊥) : RatFunc K ≃ₐ[K] E := 
+noncomputable def algEquiv (h : E ≠ ⊥) : RatFunc K ≃ₐ[K] E :=
   (algEquivAdjoin (generator E) (generator_ne_C h)).trans <|
     IntermediateField.equivOfEq eq_adjoin_generator.symm
 
