@@ -538,11 +538,11 @@ def bar (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
 
 def bar' (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
   intro g
-  have hg := (mem_valueGroup_iff_of_comm (f := v) (y := g)).mp g.prop
+  have hg := (mem_valueGroup_iff_of_comm' (f := v) (y := g)).mp g.prop
   set a := hg.choose with rfl
   let ha := hg.choose_spec.1
   set b := hg.choose_spec.2.choose with rfl
-  let hb := hg.choose_spec.2.choose_spec
+  let hb := hg.choose_spec.2.choose_spec.2
   --set g₀' := (w a)⁻¹ * (w b) with hg'_def
   /- have hwa : w a ≠ 0 := by
     rwa [ne_eq, ← h.eq_zero, ← ne_eq]
@@ -563,25 +563,44 @@ def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueG
   left_inv := sorry
   right_inv := sorry
   map_mul' x y := by
-    have hx := (mem_valueGroup_iff_of_comm (f := v) (y := x)).mp x.prop
+    have hx := (mem_valueGroup_iff_of_comm' (f := v) (y := x)).mp x.prop
     set ax := hx.choose with hax_def
-    --let ha := hx.choose_spec.1
-    set b := hx.choose_spec.2.choose with hbx_def
-    --let hb := hx.choose_spec.2.choose_spec
-    have hy := (mem_valueGroup_iff_of_comm (f := v) (y := y)).mp y.prop
+    let hax : v ax ≠ 0 := hx.choose_spec.1
+    set bx := hx.choose_spec.2.choose with hbx_def
+    let hbx0 : v bx ≠ 0 := hx.choose_spec.2.choose_spec.1
+    let hbx : v ax * _ = v bx := hx.choose_spec.2.choose_spec.2
+    have hy := (mem_valueGroup_iff_of_comm' (f := v) (y := y)).mp y.prop
     set ay := hy.choose with hay_def
-    --let ha := hy.choose_spec.1
-    set by' := hy.choose_spec.2.choose with hbx_def
-    let hb := hx.choose_spec.2.choose_spec
+    let hay : v ay ≠ 0 := hy.choose_spec.1
+    set by' := hy.choose_spec.2.choose with hby_def
+    let hby : v ay * _ = v by' := hy.choose_spec.2.choose_spec.2
+    let hby0 : v by' ≠ 0 := hy.choose_spec.2.choose_spec.1
+    have hxy_mem : (x : Γ₀ˣ) * y ∈ valueGroup v := Subgroup.mul_mem _ x.2 y.2
+    have hxy := (mem_valueGroup_iff_of_comm' (f := v) (y := x * y)).mp hxy_mem
+    set axy := hxy.choose with haxy_def
+    let haxy : v axy ≠ 0 := hxy.choose_spec.1
+    set bxy := hxy.choose_spec.2.choose with hbxy_def
+    let hbxy : v axy * _ = v bxy := hxy.choose_spec.2.choose_spec.2
     simp only [bar', ne_eq, Subgroup.coe_mul, MulMemClass.mk_mul_mk,
       Subtype.mk.injEq]
-    simp only [Units.val_mul, Units.mk0_mul, ← hax_def, ← hay_def]
-    rw [← Units.mk0_mul]
-    · congr 1
-
-      sorry
-    · simp only [ne_eq, mul_eq_zero, inv_eq_zero, not_or]
-      sorry
+    simp only [Units.val_mul,  ← hax_def, ← hay_def, ← hbx_def, ← hby_def, ← haxy_def, ← hbxy_def]
+    rw [← Units.mk0_mul, Units.mk0_inj]
+    · suffices  (w ax) * (w ay) * w bxy = (w axy) * w bx * w by' by
+        field_simp
+        rw [div_eq_mul_inv, mul_comm, inv_mul_eq_iff_eq_mul₀, ← mul_div_assoc, eq_comm,
+          div_eq_mul_inv, mul_comm, inv_mul_eq_iff_eq_mul₀]
+        · simp only [← map_mul w, ← h.eq_iff]
+          simp only [map_mul, ← hbx, ← hby, ← hbxy, Subgroup.coe_mul, Units.val_mul]
+          grind
+        · simp [← h.eq_zero, hax, hay]
+        · simp [← h.eq_zero, haxy]
+      rw [← map_mul w, ← map_mul w, ← map_mul w, ← map_mul w, ← h.eq_iff]
+      simp only [map_mul]
+      nth_rw 2 [mul_assoc]
+      rw [← hbx, ← hby, ← hbxy]
+      simp only [Subgroup.coe_mul, Units.val_mul]
+      grind
+    · simp [← h.eq_zero, hay, hax, hbx0, hby0]
   map_le_map_iff' := sorry
 
 def IsEquiv.ValueGroup₀_MulOrderIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w := by
