@@ -57,7 +57,7 @@ namespace StarMemClass
 variable {S : Type w} [Star R] [SetLike S R] [hS : StarMemClass S R] (s : S)
 
 instance instStar : Star s where
-  star r := ⟨star (r : R), star_mem r.prop⟩
+  star r := ⟨star r, star_mem r.prop⟩
 
 @[simp] lemma coe_star (x : s) : star x = star (x : R) := rfl
 
@@ -161,8 +161,8 @@ theorem star_mul' [CommMagma R] [StarMul R] (x y : R) : star (x * y) = star x * 
 @[simps apply]
 def starMulEquiv [Mul R] [StarMul R] : R ≃* Rᵐᵒᵖ :=
   { (InvolutiveStar.star_involutive.toPerm star).trans opEquiv with
-    toFun := fun x => MulOpposite.op (star x)
-    map_mul' := fun x y => by simp only [star_mul, op_mul] }
+    toFun x := op (star x)
+    map_mul' x y := by rw [star_mul, op_mul] }
 
 /-- `star` as a `MulAut` for commutative `R`. -/
 @[simps apply]
@@ -198,7 +198,7 @@ theorem star_zpow [Group R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star 
 /-- When multiplication is commutative, `star` preserves division. -/
 @[simp]
 theorem star_div [CommGroup R] [StarMul R] (x y : R) : star (x / y) = star x / star y :=
-  map_div (starMulAut : R ≃* R) _ _
+  map_div starMulAut ..
 
 /-- Any commutative monoid admits the trivial `*`-structure.
 
@@ -251,7 +251,7 @@ theorem star_eq_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x = 0 ↔ x 
   starAddEquiv.map_eq_zero_iff (M := R)
 
 theorem star_ne_zero [AddMonoid R] [StarAddMonoid R] {x : R} : star x ≠ 0 ↔ x ≠ 0 := by
-  simp only [ne_eq, star_eq_zero]
+  rw [ne_eq, star_eq_zero]
 
 @[simp]
 theorem star_neg [AddGroup R] [StarAddMonoid R] (r : R) : star (-r) = -star r :=
@@ -278,17 +278,17 @@ class StarRing (R : Type u) [NonUnitalNonAssocSemiring R] extends StarMul R wher
 
 instance (priority := 100) StarRing.toStarAddMonoid [NonUnitalNonAssocSemiring R] [StarRing R] :
     StarAddMonoid R where
-  star_add := StarRing.star_add
+  star_add := star_add
 
 /-- `star` as a `RingEquiv` from `R` to `Rᵐᵒᵖ` -/
 @[simps apply]
 def starRingEquiv [NonUnitalNonAssocSemiring R] [StarRing R] : R ≃+* Rᵐᵒᵖ :=
-  { starAddEquiv.trans (MulOpposite.opAddEquiv : R ≃+ Rᵐᵒᵖ), starMulEquiv with
-    toFun := fun x => MulOpposite.op (star x) }
+  { starAddEquiv.trans opAddEquiv, starMulEquiv with
+    toFun x := op (star x) }
 
 @[simp, norm_cast]
 theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) = n :=
-  (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
+  (congr_arg unop (map_natCast starRingEquiv n)).trans (unop_natCast _)
 
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
@@ -299,7 +299,7 @@ section
 
 @[simp, norm_cast]
 theorem star_intCast [NonAssocRing R] [StarRing R] (z : ℤ) : star (z : R) = z :=
-  (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
+  (congr_arg unop <| map_intCast starRingEquiv z).trans (unop_intCast _)
 
 end
 
@@ -333,14 +333,11 @@ theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 theorem starRingEnd_self_apply (x : R) : starRingEnd R (starRingEnd R x) = x := star_star x
 
 instance RingHom.involutiveStar {S : Type*} [NonAssocSemiring S] : InvolutiveStar (S →+* R) where
-  toStar := { star := fun f => RingHom.comp (starRingEnd R) f }
-  star_involutive := by
-    intro
-    ext
-    simp only [RingHom.coe_comp, Function.comp_apply, starRingEnd_self_apply]
+  toStar := { star f := comp (starRingEnd R) f }
+  star_involutive f := ext (by simp [starRingEnd_self_apply])
 
 theorem RingHom.star_def {S : Type*} [NonAssocSemiring S] (f : S →+* R) :
-    Star.star f = RingHom.comp (starRingEnd R) f := rfl
+    star f = comp (starRingEnd R) f := rfl
 
 theorem RingHom.star_apply {S : Type*} [NonAssocSemiring S] (f : S →+* R) (s : S) :
     star f s = star (f s) := rfl
@@ -367,8 +364,7 @@ theorem star_zpow₀ [GroupWithZero R] [StarMul R] (x : R) (z : ℤ) : star (x ^
 /-- When multiplication is commutative, `star` preserves division. -/
 @[simp]
 theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) = star x / star y := by
-  apply op_injective
-  rw [division_def, op_div, mul_comm, star_mul, star_inv₀, op_mul, op_inv]
+  simp [division_def]
 
 /-- Any commutative semiring admits the trivial `*`-structure.
 
@@ -445,8 +441,8 @@ instance : StarMul Rˣ where
       inv := star ↑u⁻¹
       val_inv := (star_mul _ _).symm.trans <| (congr_arg star u.inv_val).trans <| star_one _
       inv_val := (star_mul _ _).symm.trans <| (congr_arg star u.val_inv).trans <| star_one _ }
-  star_involutive _ := Units.ext (star_involutive _)
-  star_mul _ _ := Units.ext (star_mul _ _)
+  star_involutive _ := ext (star_involutive _)
+  star_mul _ _ := ext (star_mul _ _)
 
 @[simp]
 theorem coe_star (u : Rˣ) : ↑(star u) = (star ↑u : R) :=
@@ -462,43 +458,40 @@ instance {A : Type*} [Star A] [SMul R A] [StarModule R A] : StarModule Rˣ A :=
 end Units
 
 protected theorem IsUnit.star [Monoid R] [StarMul R] {a : R} : IsUnit a → IsUnit (star a)
-  | ⟨u, hu⟩ => ⟨Star.star u, hu ▸ rfl⟩
+  | ⟨u, hu⟩ => ⟨star u, hu ▸ rfl⟩
 
 @[simp]
 theorem isUnit_star [Monoid R] [StarMul R] {a : R} : IsUnit (star a) ↔ IsUnit a :=
-  ⟨fun h => star_star a ▸ h.star, IsUnit.star⟩
+  ⟨fun h => star_star a ▸ h.star, .star⟩
 
 theorem Ring.inverse_star [Semiring R] [StarRing R] (a : R) :
     Ring.inverse (star a) = star (Ring.inverse a) := by
   by_cases ha : IsUnit a
   · obtain ⟨u, rfl⟩ := ha
-    rw [Ring.inverse_unit, ← Units.coe_star, Ring.inverse_unit, ← Units.coe_star_inv]
-  rw [Ring.inverse_non_unit _ ha, Ring.inverse_non_unit _ (mt isUnit_star.mp ha), star_zero]
+    rw [inverse_unit, ← Units.coe_star, inverse_unit, ← Units.coe_star_inv]
+  · rw [inverse_non_unit _ ha, inverse_non_unit _ (mt isUnit_star.mp ha), star_zero]
 
 protected instance Invertible.star {R : Type*} [MulOneClass R] [StarMul R] (r : R) [Invertible r] :
     Invertible (star r) where
-  invOf := Star.star (⅟r)
+  invOf := star (⅟r)
   invOf_mul_self := by rw [← star_mul, mul_invOf_self, star_one]
   mul_invOf_self := by rw [← star_mul, invOf_mul_self, star_one]
 
 theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
     [Invertible (star r)] : star (⅟r) = ⅟(star r) := by
-  have : star (⅟r) = star (⅟r) * ((star r) * ⅟(star r)) := by
-    simp only [mul_invOf_self, mul_one]
-  rw [this, ← mul_assoc]
-  have : (star (⅟r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
-  rw [this, star_one, one_mul]
+  rw [← mul_one (star (⅟r)), ← mul_invOf_self (star r), ← mul_assoc, ← star_mul, mul_invOf_self,
+    star_one, one_mul]
 
 
 section Regular
 
 protected theorem IsLeftRegular.star [Mul R] [StarMul R] {x : R} (hx : IsLeftRegular x) :
     IsRightRegular (star x) :=
-  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+  fun a b h => star_injective <| hx <| by simpa using congr_arg star h
 
 protected theorem IsRightRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRightRegular x) :
     IsLeftRegular (star x) :=
-  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+  fun a b h => star_injective <| hx <| by simpa using congr_arg star h
 
 protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) :
     IsRegular (star x) :=

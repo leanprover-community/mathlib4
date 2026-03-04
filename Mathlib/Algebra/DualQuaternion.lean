@@ -41,15 +41,12 @@ def dualNumberEquiv : Quaternion (DualNumber R) ≃ₐ[R] DualNumber (Quaternion
     (⟨q.re.fst, q.imI.fst, q.imJ.fst, q.imK.fst⟩, ⟨q.re.snd, q.imI.snd, q.imJ.snd, q.imK.snd⟩)
   invFun d :=
     ⟨(d.fst.re, d.snd.re), (d.fst.imI, d.snd.imI), (d.fst.imJ, d.snd.imJ), (d.fst.imK, d.snd.imK)⟩
-  map_mul' := by
-    intros
-    ext : 1
+  map_mul' _ _ := by
+    ext1
     · rfl
     · dsimp
       congr 1 <;> simp <;> ring
-  map_add' := by
-    intros
-    rfl
+  map_add' _ _ := rfl
   commutes' _ := rfl
 
 /-! Lemmas characterizing `Quaternion.dualNumberEquiv`. -/

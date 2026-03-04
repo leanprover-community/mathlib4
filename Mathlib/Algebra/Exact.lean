@@ -90,9 +90,7 @@ may not apply if the zero of `Set.range g` is not definitionally equal to `⟨0,
 lemma iff_rangeFactorization [One P] (hg : 1 ∈ Set.range g) :
     letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
     MulExact f g ↔ MulExact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
-  letI : One (Set.range g) := ⟨⟨1, hg⟩⟩
-  have : ((1 : Set.range g) : P) = 1 := rfl
-  simp [MulExact, Set.rangeFactorization, Subtype.ext_iff, this]
+  simpa [MulExact, Set.rangeFactorization, Subtype.ext_iff] using by rfl
 
 /-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
 `Set.range f → N → Set.range g` are exact.
@@ -164,20 +162,20 @@ lemma mulExact_iff_of_surjective_of_bijective_of_injective
     constructor
     · intro hx₂
       obtain ⟨x₁, rfl⟩ := (h x₂).1 (h₃ (by simpa only [map_one, comm₂₃] using hx₂))
-      exact ⟨τ₁ x₁, by simp only [comm₁₂]⟩
+      exact ⟨τ₁ x₁, by rw [comm₁₂]⟩
     · rintro ⟨y₁, hy₁⟩
       obtain ⟨x₁, rfl⟩ := h₁ y₁
       rw [comm₂₃, (h x₂).2 _, map_one]
-      exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
+      exact ⟨x₁, h₂.1 (by rwa [← comm₁₂])⟩
   · intro h x₂
     constructor
     · intro hx₂
-      obtain ⟨y₁, hy₁⟩ := (h (τ₂ x₂)).1 (by simp only [comm₂₃, hx₂, map_one])
+      obtain ⟨y₁, hy₁⟩ := (h (τ₂ x₂)).mp (by rw [comm₂₃, hx₂, map_one])
       obtain ⟨x₁, rfl⟩ := h₁ y₁
-      exact ⟨x₁, h₂.1 (by simpa only [comm₁₂] using hy₁)⟩
+      exact ⟨x₁, h₂.1 (by rwa [← comm₁₂])⟩
     · rintro ⟨x₁, rfl⟩
       apply h₃
-      simp only [← comm₁₂, ← comm₂₃, h.apply_apply_eq_one (τ₁ x₁), map_one]
+      rw [← comm₂₃, ← comm₁₂, h.apply_apply_eq_one, map_one]
 
 end MonoidHom
 
@@ -369,8 +367,8 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
     { l // g ∘ₗ l = .id } ≃
       { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
   refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (f ∘ₗ fst R M P + l.1 ∘ₗ snd R M P) ?_).symm, ?_⟩
-    invFun := fun e ↦ ⟨e.1.symm ∘ₗ inr R M P, ?_⟩
+  { toFun l := ⟨(LinearEquiv.ofBijective (f ∘ₗ fst R M P + l.1 ∘ₗ snd R M P) ?_).symm, ?_⟩
+    invFun e := ⟨e.1.symm ∘ₗ inr R M P, ?_⟩
     left_inv := ?_
     right_inv := ?_ }
   · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
@@ -381,7 +379,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
       simpa [h₁, h₂] using DFunLike.congr_arg g e
     · intro x
-      obtain ⟨y, hy⟩ := (h (x - l.1 (g x))).mp (by simp [h₁, g.map_sub])
+      obtain ⟨y, hy⟩ := (h (x - l.1 (g x))).mp (by simp [h₁])
       exact ⟨⟨y, g x⟩, by simp [hy]⟩
   · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
@@ -408,8 +406,8 @@ def Exact.splitInjectiveEquiv
     { l // l ∘ₗ f = .id } ≃
       { e : N ≃ₗ[R] M × P // f = e.symm ∘ₗ inl R M P ∧ g = snd R M P ∘ₗ e } := by
   refine
-  { toFun := fun l ↦ ⟨(LinearEquiv.ofBijective (l.1.prod g) ?_), ?_⟩
-    invFun := fun e ↦ ⟨fst R M P ∘ₗ e.1, ?_⟩
+  { toFun l := ⟨LinearEquiv.ofBijective (l.1.prod g) ?_, ?_⟩
+    invFun e := ⟨fst R M P ∘ₗ e, ?_⟩
     left_inv := ?_
     right_inv := ?_ }
   · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
@@ -418,8 +416,7 @@ def Exact.splitInjectiveEquiv
     · intro x y e
       simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
-      suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
-      rw [← h₁ z, hz, map_sub, e.1, sub_self]
+      rw [← sub_eq_zero, ← hz, ← h₁ z, hz, map_sub, e.1, sub_self, map_zero]
     · rintro ⟨x, y⟩
       obtain ⟨y, rfl⟩ := hg y
       refine ⟨f x + y - f (l.1 y), by ext <;> simp [h₁, h₂]⟩
@@ -476,13 +473,11 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R
 
 lemma Exact.inr_fst : Function.Exact (LinearMap.inr R M N) (LinearMap.fst R M N) := by
   rintro ⟨x, y⟩
-  simp only [LinearMap.fst_apply, @eq_comm _ x, LinearMap.coe_inr, Set.mem_range, Prod.mk.injEq,
-    exists_eq_right]
+  simp [eq_comm]
 
 lemma Exact.inl_snd : Function.Exact (LinearMap.inl R M N) (LinearMap.snd R M N) := by
   rintro ⟨x, y⟩
-  simp only [LinearMap.snd_apply, @eq_comm _ y, LinearMap.coe_inl, Set.mem_range, Prod.mk.injEq,
-    exists_eq_left]
+  simp [eq_comm]
 
 end Prod
 
@@ -503,12 +498,11 @@ set_option backward.isDefEq.respectTransparency false in
 lemma Exact.exact_mapQ_iff
     (hfg : Exact f g) {p q r} (hpq : p ≤ comap f q) (hqr : q ≤ comap g r) :
     Exact (mapQ p q f hpq) (mapQ q r g hqr) ↔ range g ⊓ r ≤ map g q := by
-  rw [exact_iff, ← (comap_injective_of_surjective (mkQ_surjective _)).eq_iff]
   dsimp only [mapQ]
-  rw [← ker_comp, range_liftQ, liftQ_mkQ, ker_comp, range_comp, comap_map_eq,
-    ker_mkQ, ker_mkQ, ← hfg.linearMap_ker_eq, sup_comm,
-    ← (sup_le hqr (ker_le_comap g)).ge_iff_eq',
-    ← comap_map_eq, ← map_le_iff_le_comap, map_comap_eq]
+  rw [exact_iff, ← (comap_injective_of_surjective (mkQ_surjective _)).eq_iff, ← ker_comp,
+    range_liftQ, liftQ_mkQ, ker_comp, range_comp, comap_map_eq, ker_mkQ, ker_mkQ,
+    ← hfg.linearMap_ker_eq, sup_comm, ← (sup_le hqr (ker_le_comap g)).ge_iff_eq', ← comap_map_eq,
+    ← map_le_iff_le_comap, map_comap_eq]
 
 end Function
 
@@ -553,7 +547,7 @@ lemma ker_eq_bot_range_liftQ_iff (h : range f ≤ ker g) :
 
 lemma injective_range_liftQ_of_exact (h : Function.Exact f g) :
     Function.Injective ((range f).liftQ g (h · |>.mpr)) := by
-  simpa only [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff] using h
+  rw [← LinearMap.ker_eq_bot, ker_eq_bot_range_liftQ_iff, exact_iff.mp h]
 
 end LinearMap
 

@@ -246,7 +246,7 @@ instance instAddCommMonoid : AddCommMonoid (FreeAlgebra R X) where
   nsmul_succ n := by
     rintro ⟨a⟩
     dsimp +instances only [HSMul.hSMul, instSMul, Quot.map]
-    rw [map_add, map_one, mk_mul, mk_mul, ← add_one_mul (_ : FreeAlgebra R X)]
+    rw [map_add, map_one, mk_mul, mk_mul, ← add_one_mul]
     congr 1
     exact Quot.sound Rel.add_scalar
 
@@ -255,7 +255,7 @@ instance : Semiring (FreeAlgebra R X) where
   __ := instAddCommMonoid R X
   __ := instDistrib R X
   natCast n := Quot.mk _ (n : R)
-  natCast_zero := by simp; rfl
+  natCast_zero := by simpa using by rfl
   natCast_succ n := by simpa using Quot.sound Rel.add_scalar
 
 instance : Inhabited (FreeAlgebra R X) :=
@@ -286,8 +286,8 @@ instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     change algebraMap S A (r • s) • x = algebraMap R A _ • (algebraMap S A _ • x)
     rw [← smul_assoc]
     congr
-    simp only [Algebra.algebraMap_eq_smul_one, smul_eq_mul]
-    rw [smul_assoc, ← smul_one_mul]
+    simp only [Algebra.algebraMap_eq_smul_one]
+    rw [smul_assoc, smul_one_smul]
 
 instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A] [Algebra R A] [Algebra S A] :
     SMulCommClass R S (FreeAlgebra A X) where
@@ -380,8 +380,8 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
       rcases t with ⟨x⟩
       induction x with
       | of =>
-        change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
-        simp only [Function.comp_apply, ι_def]
+        change (F ∘ ι R) _ = _
+        rw [Function.comp_apply, ι_def]
       | ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
@@ -481,7 +481,7 @@ def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
 
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
-  simp [algebraMapInv]
+  simp
 
 @[simp]
 theorem algebraMap_inj (x y : R) :
@@ -558,13 +558,12 @@ theorem induction {motive : FreeAlgebra R X → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
-    simp [of, Subtype.coind]
+    simp [of]
   -- finding a proof is finding an element of the subalgebra
   suffices a = lift R of a by
     rw [this]
     exact Subtype.prop (lift R of a)
-  simp only [AlgHom.ext_iff, AlgHom.coe_id, id_eq, AlgHom.coe_comp, Subalgebra.coe_val,
-    Function.comp_apply] at of_id
+  rw [AlgHom.ext_iff] at of_id
   exact of_id a
 
 @[simp]
@@ -582,8 +581,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 /-- Noncommutative version of `Algebra.adjoin_range_eq_range_aeval`. -/
 theorem _root_.Algebra.adjoin_range_eq_range_freeAlgebra_lift (f : X → A) :
     Algebra.adjoin R (Set.range f) = (FreeAlgebra.lift R f).range := by
-  simp only [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp,
-    Function.comp_def, lift_ι_apply]
+  simp [← Algebra.map_top, ← adjoin_range_ι, AlgHom.map_adjoin, ← Set.range_comp]
 
 /-- Noncommutative version of `Algebra.adjoin_range_eq_range`. -/
 theorem _root_.Algebra.adjoin_eq_range_freeAlgebra_lift (s : Set A) :
