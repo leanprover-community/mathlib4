@@ -5,8 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Topology.Sets.Opens
 public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Sites.Over
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
 /-!
 # Opens and Over categories
@@ -31,7 +33,7 @@ open CategoryTheory Topology
 
 namespace TopologicalSpace
 
-variable {X : Type u} [TopologicalSpace X] (U : Opens X)
+variable {X : Type u} [TopologicalSpace X] (U : Opens X) {A : Type*} [Category* A]
 
 namespace Opens
 
@@ -52,6 +54,53 @@ def overEquivalence : Over U ≌ Opens ↥U where
       Subtype.exists, exists_and_left, exists_prop, exists_eq_right_right, iff_self_and]
     apply leOfHom V.hom)))
   counitIso := NatIso.ofComponents (fun V ↦ eqToIso (by aesop))
+
+variable {U} in
+@[simp] lemma mem_overEquivalence_functor_obj {V : Over U} {x : U} :
+  x ∈ U.overEquivalence.functor.obj V ↔ x.1 ∈ V.left := .rfl
+
+section grothendieckTopology
+
+instance : U.overEquivalence.functor.IsDenseSubsite
+    ((Opens.grothendieckTopology X).over U) (Opens.grothendieckTopology U) where
+  functorPushforward_mem_iff {V S} := by
+    simp only [Opens.mem_grothendieckTopology, Sieve.mem_functorPushforward_functor]
+    constructor
+    · intro H x hxV
+      obtain ⟨W, f, hW, hxW⟩ := H ⟨x, V.hom.le hxV⟩ hxV
+      refine ⟨_, ((U.overEquivalence.symm.toAdjunction.homEquiv _ _ ).symm f).left,
+        ⟨_, _, 𝟙 _, hW, rfl⟩, _, hxW, rfl⟩
+    · intro H x hxV
+      obtain ⟨W, f, ⟨W', hW'V, hWW', hSW'V, rfl⟩, hxW⟩ := H x hxV
+      refine ⟨_, U.overEquivalence.functor.map hW'V,
+        S.downward_closed hSW'V (U.overEquivalence.unitInv.app W'), hWW'.le hxW⟩
+
+instance : U.overEquivalence.symm.inverse.IsDenseSubsite
+      ((Opens.grothendieckTopology X).over U) (Opens.grothendieckTopology U) :=
+  inferInstanceAs (U.overEquivalence.functor.IsDenseSubsite ..)
+
+instance : U.overEquivalence.inverse.IsDenseSubsite
+      (Opens.grothendieckTopology U) ((Opens.grothendieckTopology X).over U) :=
+  inferInstanceAs (U.overEquivalence.symm.functor.IsDenseSubsite ..)
+
+/-- Sheaves on the over category of `U` is equivalent to sheaves on `U` as a topological space. -/
+@[simps!] def sheafEquivOver :
+    Sheaf ((Opens.grothendieckTopology X).over U) A ≌ Sheaf (Opens.grothendieckTopology U) A :=
+  U.overEquivalence.sheafCongr
+    ((Opens.grothendieckTopology X).over U) (Opens.grothendieckTopology U) A
+
+/-- `overPullback` and `sheafRestrict` are isomorphic under `sheafEquivOver`. -/
+def overPullbackSheafEquivOver {X : TopCat} (U : Opens X) :
+    (Opens.grothendieckTopology X).overPullback A U ⋙ U.sheafEquivOver.functor ≅
+      U.sheafRestrict := .refl _
+
+/-- `overPullback` and `sheafRestrict` are isomorphic under `sheafEquivOver`. -/
+def sheafRestrictSheafEquivOver {X : TopCat} (U : Opens X) :
+    U.sheafRestrict ⋙ U.sheafEquivOver.inverse ≅
+      (Opens.grothendieckTopology X).overPullback A U :=
+      U.overPullbackSheafEquivOver.isoCompInverse.symm
+
+end grothendieckTopology
 
 end Opens
 

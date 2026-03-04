@@ -174,6 +174,14 @@ theorem TopCat.Presheaf.isSheaf_of_isOpenEmbedding (h : IsOpenEmbedding f) (hF :
   have := h.functor_isContinuous
   exact Functor.op_comp_isSheaf _ _ _ ⟨_, hF⟩
 
+/-- The restriction functor of a sheaf to an open subspace. -/
+@[simps!]
+def TopologicalSpace.Opens.sheafRestrict (U : Opens X) :
+    Sheaf (Opens.grothendieckTopology X) C ⥤ Sheaf (Opens.grothendieckTopology U) C :=
+  haveI : Functor.IsContinuous _ (Opens.grothendieckTopology U) (Opens.grothendieckTopology X) :=
+    U.isOpenEmbedding (X := .of X).functor_isContinuous
+  U.isOpenEmbedding (X := .of X).isOpenMap.functor.sheafPushforwardContinuous _ _ _
+
 variable (f)
 
 set_option backward.isDefEq.respectTransparency false in
