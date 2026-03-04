@@ -454,7 +454,7 @@ lemma jacobian_reindex (P : PreSubmersivePresentation R S ι σ)
     Matrix.reindex_apply, Equiv.symm_symm, Generators.algebraMap_apply, Generators.reindex_val]
   simp_rw [← MvPolynomial.aeval_rename,
     ← AlgHom.mapMatrix_apply, ← Matrix.det_submatrix_equiv_self f, AlgHom.map_det,
-    AlgHom.mapMatrix_apply, Matrix.map_map]
+    AlgHom.mapMatrix_apply, Matrix.map_map, Function.comp_assoc]
   simp [← AlgHom.coe_comp, rename_comp_rename, rename_id]
 
 section

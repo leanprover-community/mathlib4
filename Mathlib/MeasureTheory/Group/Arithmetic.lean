@@ -306,7 +306,8 @@ instance Pi.measurableDiv₂ {ι : Type*} {α : ι → Type*} [∀ i, Div (α i)
 instance {E} [MeasurableSpace E] [AddGroup E] [MeasurableSingletonClass E] [MeasurableSub₂ E] :
     MeasurableEq E := by
   constructor
-  simp_rw +singlePass [Set.diagonal, ← sub_eq_zero]
+  rw [Set.diagonal]
+  conv => enter [1, 1, p]; rw [← sub_eq_zero]
   measurability
 
 instance {β : Type*} [AddCommMonoid β] [PartialOrder β]

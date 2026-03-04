@@ -70,7 +70,8 @@ theorem _root_.IsClosed.powerset_vietoris {F : Set α} (h : IsClosed F) :
 
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {s | (s ∩ F).Nonempty} := by
-  simp_rw +singlePass [← compl_compl F, inter_compl_nonempty_iff, ← compl_setOf]
+  rw [← compl_compl F]
+  simp_rw [inter_compl_nonempty_iff, ← compl_setOf]
   exact h.isOpen_compl.powerset_vietoris.isClosed_compl
 
 theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
@@ -159,7 +160,8 @@ theorem isClosed_subsets_of_isClosed {F : Set α} (h : IsClosed F) :
 
 theorem isClosed_inter_nonempty_of_isClosed {F : Set α} (h : IsClosed F) :
     IsClosed {K : Compacts α | (↑K ∩ F).Nonempty} := by
-  simp_rw +singlePass [← compl_compl F, Set.inter_compl_nonempty_iff, ← Set.compl_setOf]
+  rw [← compl_compl F]
+  simp_rw [Set.inter_compl_nonempty_iff, ← Set.compl_setOf]
   exact (isOpen_subsets_of_isOpen h.isOpen_compl).isClosed_compl
 
 theorem isClopen_singleton_bot : IsClopen {(⊥ : Compacts α)} := by

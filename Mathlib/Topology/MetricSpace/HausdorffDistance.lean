@@ -246,8 +246,8 @@ theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : D
 
 theorem infEDist_prod (x : α × β) (s : Set α) (t : Set β) :
     infEDist x (s ×ˢ t) = max (infEDist x.1 s) (infEDist x.2 t) := by
-  simp_rw +singlePass [infEDist, Prod.edist_eq, iInf_prod, Set.mem_prod, iInf_and, iInf_sup_eq,
-    sup_iInf_eq, iInf_sup_eq, sup_iInf_eq]
+  simp_rw [infEDist, Prod.edist_eq, iInf_prod, Set.mem_prod, iInf_and, iInf_comm (ι := β),
+    iInf_sup_eq, sup_iInf_eq]
 
 end InfEDist
 

@@ -349,8 +349,7 @@ theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) :
     exact ⟨0, by simp_rw [← coe_iterateFrobenius, map_one]⟩
   | succ n ih =>
     rw [pow_succ, pow_succ, ih, mk_mul_mk, mk_eq_iff]
-    exact ⟨0, by simp_rw [iterate_frobenius, add_zero, mul_pow, ← pow_mul,
-      ← pow_add, mul_assoc, ← pow_add]⟩
+    exact ⟨0, by simp_rw [iterate_frobenius, add_zero, mul_pow, ← pow_mul, ← pow_add]⟩
 
 theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   induction n with

@@ -72,9 +72,9 @@ class CompletelyRegularSpace (X : Type u) [TopologicalSpace X] : Prop where
 lemma completelyRegularSpace_iff_isOpen : CompletelyRegularSpace X ↔
     ∀ (x : X), ∀ K : Set X, IsOpen K → x ∈ K →
       ∃ f : X → I, Continuous f ∧ f x = 0 ∧ EqOn f 1 Kᶜ := by
-  conv_lhs => tactic =>
-    simp_rw +singlePass [completelyRegularSpace_iff, compl_surjective.forall, isClosed_compl_iff,
-      mem_compl_iff, not_not]
+  rw [completelyRegularSpace_iff]
+  conv_lhs => enter [x]; rw [compl_surjective.forall]
+  simp
 
 lemma CompletelyRegularSpace.completely_regular_isOpen [CompletelyRegularSpace X] :
     ∀ (x : X), ∀ K : Set X, IsOpen K → x ∈ K →

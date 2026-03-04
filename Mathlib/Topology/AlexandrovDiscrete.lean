@@ -46,9 +46,8 @@ variable [TopologicalSpace α] [TopologicalSpace β]
 
 lemma alexandrovDiscrete_iff_isClosed :
     AlexandrovDiscrete α ↔ ∀ S : Set (Set α), (∀ s ∈ S, IsClosed s) → IsClosed (⋃₀ S) := by
-  conv_lhs => tactic =>
-    simp_rw +singlePass [alexandrovDiscrete_iff, compl_surjective.image_surjective.forall,
-      forall_mem_image, ← compl_sUnion, isOpen_compl_iff]
+  rw [alexandrovDiscrete_iff, compl_surjective.image_surjective.forall]
+  simp_rw [forall_mem_image, ← compl_sUnion, isOpen_compl_iff]
 
 instance DiscreteTopology.toAlexandrovDiscrete [DiscreteTopology α] : AlexandrovDiscrete α where
   isOpen_sInter _ _ := isOpen_discrete _

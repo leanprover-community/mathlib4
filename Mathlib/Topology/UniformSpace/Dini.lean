@@ -61,8 +61,9 @@ lemma tendstoLocallyUniformly_of_forall_tendsto
     exact hF_mono hnm x
   simp_rw [Metric.tendstoLocallyUniformly_iff, dist_eq_norm']
   intro ε ε_pos x
-  simp_rw +singlePass [tendsto_iff_norm_sub_tendsto_zero] at h_tendsto
-  obtain ⟨n, hn⟩ := (h_tendsto x).eventually (eventually_lt_nhds ε_pos) |>.exists
+  specialize h_tendsto x
+  rw [tendsto_iff_norm_sub_tendsto_zero] at h_tendsto
+  obtain ⟨n, hn⟩ := h_tendsto.eventually (eventually_lt_nhds ε_pos) |>.exists
   refine ⟨{y | ‖F n y - f y‖ < ε}, ⟨isOpen_lt (by fun_prop) continuous_const |>.mem_nhds hn, ?_⟩⟩
   filter_upwards [eventually_ge_atTop n] with m hnm z hz
   refine norm_le_norm_of_abs_le_abs ?_ |>.trans_lt hz

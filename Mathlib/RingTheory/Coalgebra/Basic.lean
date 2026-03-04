@@ -286,11 +286,11 @@ instance instCoalgebra : Coalgebra R (A × B) where
     dsimp +instances only [instCoalgebraStruct]
     ext x : 2 <;> dsimp only [comp_apply, LinearEquiv.coe_coe, coe_inl, coe_inr, coprod_apply]
     · simp only [map_zero, add_zero]
-      simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inl,
+      simp_rw [← comp_apply, rTensor_comp_map, lTensor_comp_map, coprod_inl,
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
     · simp only [map_zero, zero_add]
-      simp_rw [← comp_apply, ← comp_assoc, rTensor_comp_map, lTensor_comp_map, coprod_inr,
+      simp_rw [← comp_apply, rTensor_comp_map, lTensor_comp_map, coprod_inr,
         ← map_comp_rTensor, ← map_comp_lTensor, comp_assoc, ← coassoc, ← comp_assoc,
         TensorProduct.map_map_comp_assoc_eq, comp_apply, LinearEquiv.coe_coe]
 
