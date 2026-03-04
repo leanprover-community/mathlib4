@@ -30,6 +30,9 @@ open scoped Bundle Manifold ContDiff
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
 
+-- TODO: revisit and fix this once the dust has settled
+set_option backward.isDefEq.respectTransparency false
+
 -- Let M be a C^k real manifold modeled on (E, H), endowed with a Riemannian metric.
 variable {n : WithTop ℕ∞}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
