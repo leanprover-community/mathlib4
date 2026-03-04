@@ -238,7 +238,7 @@ variable [Nonempty (NormalizedGCDMonoid R)]
 
 lemma IsPrimitive.mul_map_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X]} :
     g * f.map (algebraMap R K) ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
-  obtain ⟨_⟩ := ‹Nonempty _›
+  let : NormalizedGCDMonoid R := Nonempty.some inferInstance
   refine ⟨?_, fun h ↦ Subsemiring.mul_mem _ h ⟨_, rfl⟩⟩
   intro ⟨k, (hk : Polynomial.map _ _ = _)⟩
   let g' := integerNormalization (nonZeroDivisors R) g
@@ -246,18 +246,15 @@ lemma IsPrimitive.mul_map_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X
     integerNormalization_spec (nonZeroDivisors R) g
   have g'_mul_f : g' * f = b • k := by
     apply Polynomial.map_injective (algebraMap R K) (FaithfulSMul.algebraMap_injective R K)
-    rw [Polynomial.map_smul, algebraMap_smul, hk]
-    rw [← smul_mul_assoc, ← hb₂, Polynomial.map_mul]
+    rw [Polynomial.map_smul, algebraMap_smul, hk, ← smul_mul_assoc, ← hb₂, Polynomial.map_mul]
   use C (normUnit b : R) * C k.content * g'.primPart
-  rw [coe_mapRingHom, Polynomial.map_mul, Polynomial.map_mul, map_C,
-    ← smul_right_inj (nonZeroDivisors.ne_zero hb₁), ← hb₂, Algebra.smul_def, algebraMap_apply,
-    Polynomial.map_C]
-  conv_rhs => rw [eq_C_content_mul_primPart g']
-  rw [Polynomial.map_mul, Polynomial.map_C, ← mul_assoc, ← C_mul, ← C_mul]
-  congr
-  conv_rhs => rw [← mul_one g'.content]
-  rw [← hf.content_eq_one, ← content_mul, g'_mul_f, smul_eq_C_mul, content_mul, content_C,
-    normalize_apply, map_mul, map_mul, mul_assoc]
+  have := congr($(g'_mul_f).content)
+  simp only [content_mul, hf.content_eq_one, mul_one, smul_eq_C_mul, content_C,
+    normalize_apply] at this
+  rw [← smul_right_inj (nonZeroDivisors.ne_zero hb₁), ← hb₂]
+  rw (occs := [2]) [eq_C_content_mul_primPart g']
+  simp [this, Polynomial.map_mul, map_C, Algebra.smul_def, algebraMap_apply,
+    mul_assoc]
 
 lemma IsPrimitive.map_mul_mem_lifts_iff {f : R[X]} (hf : IsPrimitive f) {g : K[X]} :
     f.map (algebraMap R K) * g ∈ lifts (algebraMap R K) ↔ g ∈ lifts (algebraMap R K) := by
