@@ -57,7 +57,7 @@ theorem circleTransformDeriv_periodic (f : ℂ → E) :
 theorem circleTransformDeriv_eq (f : ℂ → E) : circleTransformDeriv R z w f =
     fun θ => (circleMap z R θ - w)⁻¹ • circleTransform R z w f θ := by
   ext
-  simp_rw [circleTransformDeriv, circleTransform, ← mul_smul, ← mul_assoc]
+  simp_rw [circleTransformDeriv, circleTransform, ← mul_smul]
   ring_nf
   rw [inv_pow]
   congr

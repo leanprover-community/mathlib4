@@ -365,7 +365,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
   refine HasStrictFDerivAt.congr_of_eventuallyEq ?_ this.symm
   convert ((hasStrictFDerivAt_fst.log hp.ne).fun_mul hasStrictFDerivAt_snd).exp.fun_mul
     (hasStrictFDerivAt_snd.mul_const π).cos using 1
-  simp_rw [rpow_sub_one hp.ne, smul_add, ← add_assoc, smul_smul, ← add_smul, ← mul_assoc,
+  simp_rw [rpow_sub_one hp.ne, smul_add, ← add_assoc, smul_smul, ← add_smul,
     mul_comm (cos _), ← rpow_def_of_neg hp]
   rw [div_eq_mul_inv, add_comm]; congr 2 <;> ring
 

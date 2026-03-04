@@ -1046,8 +1046,9 @@ theorem iUnion_negAt_plusPart_union :
   rw [Set.mem_union, Set.mem_inter_iff, Set.mem_iUnion, Set.mem_iUnion]
   refine ⟨?_, fun h ↦ ?_⟩
   · rintro (⟨s, ⟨x, ⟨hx, _⟩, rfl⟩⟩ | h)
-    · simp_rw +singlePass [hA, negAt_apply_norm_isReal, negAt_apply_snd]
-      rwa [← hA]
+    · rw [hA]
+      simp_rw [negAt_apply_norm_isReal]
+      rwa [negAt_apply_snd, ← hA]
     · exact h.left
   · obtain hx | hx := exists_or_forall_not (fun w ↦ x.1 w = 0)
     · exact Or.inr ⟨h, hx⟩

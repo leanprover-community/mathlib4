@@ -197,9 +197,7 @@ lemma posterior_comp {η : Kernel 𝓧 𝓨} [IsFiniteKernel η] :
     rw [parallelProd_posterior_comp_copy_comp]
   _ = (Kernel.swap _ _) ∘ₘ (Kernel.id ∥ₖ η) ∘ₘ (Kernel.id ∥ₖ κ) ∘ₘ Kernel.copy Ω ∘ₘ μ := by
     simp_rw [Measure.comp_assoc]
-    conv_rhs => rw [← Kernel.comp_assoc]
-    rw [Kernel.swap_parallelComp, Kernel.comp_assoc, ← Kernel.comp_assoc (Kernel.swap Ω 𝓧),
-      Kernel.swap_parallelComp, Kernel.comp_assoc, Kernel.swap_copy]
+    grind [Kernel.comp_assoc, Kernel.swap_parallelComp, Kernel.swap_copy]
 
 end StandardBorelSpace
 
