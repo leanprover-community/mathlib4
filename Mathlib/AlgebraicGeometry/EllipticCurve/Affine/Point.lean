@@ -555,8 +555,7 @@ predicate and the set of pairs `⟨x, y⟩` satisfying `W.Equation x y` with zer
 def pointEquivSubtype {p : W'.Point → Prop} (p0 : p .zero) :
     {P : W'.Point // p P} ≃ WithZero {xy : R × R // ∃ h : W'.Equation xy.fst xy.snd, p <| .mk h} :=
   (nonsingularPointEquivSubtype p0).trans
-    (Equiv.subtypeEquivProp <| by
-      ext; simp [equation_iff_nonsingular, toAffine, Point.mk]).optionCongr
+    (Equiv.subtypeEquivProp <| by ext; simp [equation_iff_nonsingular, Point.mk]).optionCongr
 
 @[simp]
 lemma pointEquivSubtype_zero {p : W'.Point → Prop} (p0 : p .zero) :
