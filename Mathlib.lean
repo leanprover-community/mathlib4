@@ -1626,7 +1626,6 @@ public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Analysis.Calculus.Deriv.Slope
-public import Mathlib.Analysis.Complex.SqrtDeriv
 public import Mathlib.Analysis.Calculus.Deriv.Star
 public import Mathlib.Analysis.Calculus.Deriv.Support
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
@@ -1746,6 +1745,7 @@ public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.Complex.RemovableSingularity
 public import Mathlib.Analysis.Complex.Schwarz
 public import Mathlib.Analysis.Complex.Spectrum
+public import Mathlib.Analysis.Complex.SqrtDeriv
 public import Mathlib.Analysis.Complex.SummableUniformlyOn
 public import Mathlib.Analysis.Complex.TaylorSeries
 public import Mathlib.Analysis.Complex.Tietze
