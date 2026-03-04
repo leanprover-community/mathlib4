@@ -259,6 +259,7 @@ theorem coeff_seq_mem (k : ℕ) {i : ℕ} (hi : i ≥ (g.map (Ideal.Quotient.mk 
     rw [coeff_mk]
     exact hq (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_seq_succ_sub_seq_mem (k i : ℕ) :
     coeff i (H.seq f (k + 1) - H.seq f k) ∈ I ^ k := by
   rw [seq, add_sub_cancel_left]
@@ -494,7 +495,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
       obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
       refine ⟨f %ₘ g, Polynomial.degree_modByMonic_lt f H.monic, ?_⟩
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
-      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div _ H.monic]; ring⟩
+      exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
       convert H.degree_eq_coe_lift_order_map g 1
         (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one]) (by simp)

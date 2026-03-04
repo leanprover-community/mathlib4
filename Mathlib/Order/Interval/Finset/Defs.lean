@@ -905,7 +905,6 @@ theorem top_mem_insertTop {s : Finset α} : ⊤ ∈ insertTop s := by
 
 variable (α) [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α]
 
-set_option backward.isDefEq.respectTransparency false in
 instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
   finsetIcc a b :=
     match a, b with
