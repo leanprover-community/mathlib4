@@ -349,7 +349,7 @@ this function returns `f ∘ g` as a continuous multilinear map.
 With this order of arguments, the function is continuous in `g` (for each fixed `f`)
 and is continuous in `f` (as a function to the space of continuous linear maps).
 Note that for general topological vector spaces, it is not guaranteed to be continuous in `(g, f)`.
- -/
+-/
 def compContinuousMultilinearMapL :
     (F →L[𝕜] G) →L[𝕜] ContinuousMultilinearMap 𝕜 E F →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
   letI aux : (F →L[𝕜] G) →ₗ[𝕜]
