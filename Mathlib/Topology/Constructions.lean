@@ -926,6 +926,7 @@ theorem ContinuousAt.matrixVecCons
     ContinuousAt (fun a => Matrix.vecCons (f a) (g a)) x :=
   hf.finCons hg
 
+@[fun_prop]
 theorem Continuous.matrixVecCons
     {f : X → Z} {g : X → Fin n → Z} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun a => Matrix.vecCons (f a) (g a) :=

@@ -57,20 +57,22 @@ noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
 noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     [NormedSpace ℝ V] (f : V → ℝ) (x₀ : V) : QuadraticMap ℝ V ℝ := {
   toFun := fun y => iteratedFDeriv ℝ 2 f x₀ ![y,y]
-  exists_companion' := by
-    use hessianBilinearCompanion f x₀
-    intro x y
-    have had := (iteratedFDeriv ℝ 2 f x₀).map_update_add'
-    have had₀ := had ![x, x + y] 0 x y
-    have had₁ := had ![x,x] 1 x y
-    have had₂ := had ![y,x] 1 x y
-    repeat rw [update₀] at had₀; rw [update₁] at had₁ had₂
-    simp [hessianBilinearCompanion] at had₀ had₁ had₂ ⊢
-    linarith
+  exists_companion' := ⟨hessianBilinearCompanion f x₀, fun x y => by
+    have ha (u v b) := (iteratedFDeriv ℝ 2 f x₀).map_update_add' ![u,v] b x y
+    have ha₀ := ha x (x + y) 0
+    have ha₁ (u) := ha u x 1
+    simp only [update₀, MultilinearMap.toFun_eq_coe, coe_coe, update₁, hessianBilinearCompanion]
+        at ha₀ ha₁ ha ⊢
+    rw [ha₀, ha₁, ha₁, add_assoc, add_assoc]
+    apply add_left_cancel_iff.mpr
+    rw [← add_assoc, add_comm]
+    simp⟩
   toFun_smul := fun u v => by
-    have hsm₀ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![v, v] 0 u v
-    have hsm₁ := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![u • v,v] 1 u v
-    simp only [update₀, update₁, MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at hsm₀ hsm₁
+    have hsm (b c) := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![b,v] c u v
+    have hsm₀ := hsm v 0
+    have hsm₁ := hsm (u • v) 1
+    simp only [update₀, update₁, MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul]
+        at hsm₀ hsm₁ hsm
     rw [smul_eq_mul, mul_assoc, ← hsm₀, hsm₁]}
 
 
@@ -91,18 +93,6 @@ noncomputable def continuousBilinearMap_of_continuousMultilinearMap
   cont := continuous_clm_apply.mpr fun x => g.cont.comp'
     <| continuous_id'.matrixVecCons continuous_const}
 
-/-- The iterated Frechet derivative is continuous. -/
-theorem continuous_hessian' {k : ℕ} {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    (f : V → ℝ) (x₀ : V) : Continuous fun y => (iteratedFDeriv ℝ k f x₀) fun _ => y :=
-  (iteratedFDeriv ℝ k f x₀).coe_continuous.comp' (continuous_pi fun _ => continuous_id')
-
-/-- The Hessian is continuous. -/
-theorem continuous_hessian {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-    {f : V → ℝ} {x₀ : V} :
-    Continuous fun y => (iteratedFDeriv ℝ 2 f x₀) ![y, y] := by
-  convert continuous_hessian' (k := 2) f x₀ using 3
-  ext i
-  fin_cases i <;> simp
 
 theorem iteratedFDeriv_two_mul {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     {f : V → ℝ} {x₀ : V} (u : V) (r : ℝ) :
@@ -125,7 +115,7 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
       y.1 := by
     obtain ⟨x,hx⟩ := IsCompact.exists_isMinOn (f := (fun y => (iteratedFDeriv ℝ 2 f x₀) ![y, y]))
       (isCompact_sphere (0:V) 1) (NormedSpace.sphere_nonempty.mpr (by simp))
-      (Continuous.continuousOn <| @continuous_hessian V _ _ f x₀)
+      (Continuous.continuousOn <| by fun_prop)
     use ⟨x,hx.1⟩
     intro y
     simp only [mem_sphere_iff_norm, sub_zero, IsMinOn, IsMinFilter,
