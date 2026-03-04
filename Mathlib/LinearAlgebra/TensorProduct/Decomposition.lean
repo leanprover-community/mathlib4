@@ -3,8 +3,10 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+module
+
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
 /-! # Decomposition of tensor product
 
@@ -12,6 +14,8 @@ In this file we show that if `ℳ` is a decomposition of an `R`-module `M` index
 then the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChange S` indexed by the
 same `ι`.
 -/
+
+@[expose] public section
 
 open TensorProduct LinearMap
 

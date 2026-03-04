@@ -3,10 +3,11 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.LinearAlgebra.TensorProduct.Decomposition
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Decomposition
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Tensor product of graded algebra
 
@@ -18,6 +19,8 @@ In this file we show that if `𝒜` is a graded `R`-algebra, and `S` is any `R`-
 We need to provide the shortcut instances afterwards for the grade zero because it is expensive to
 deduce via unification the function `fun i ↦ (𝒜 i).baseChange S`.
 -/
+
+@[expose] public section
 
 open TensorProduct Submodule SetLike
 
