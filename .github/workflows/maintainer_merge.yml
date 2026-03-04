@@ -31,9 +31,9 @@ jobs:
     name: Ping maintainers on Zulip
     runs-on: ubuntu-latest
     if: >- # crude check to skip running this on most reviews / comments
-      github.repository == 'leanprover-community/mathlib4' && 
+      github.repository == 'leanprover-community/mathlib4' &&
       (
-        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer merge') || 
+        contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer merge') ||
         contains(format('{0}{1}', github.event.comment.body, github.event.review.body), 'maintainer delegate')
       )
     permissions:
@@ -49,7 +49,7 @@ jobs:
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
           key-name: mathlib-triage-app-pk
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_TRIAGE }}
-          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Find maintainer merge/delegate
         id: merge_or_delegate

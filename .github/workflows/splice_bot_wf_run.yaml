@@ -25,18 +25,7 @@ jobs:
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
           key-name: mathlib-splicebot-app-pk
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
-          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
-          owner: leanprover-community
-
-      - name: Mint authz token
-        id: authz-token
-        uses: leanprover-community/mathlib-ci/.github/actions/azure-create-github-app-token@marcelo/2026/02/GHAppTokens
-        with:
-          app-id: ${{ secrets.LPC_TEAM_CHECK_APP_ID }}
-          key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
-          key-name: lpc-team-check-app-pk
-          azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
-          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
           owner: leanprover-community
 
       - name: Mint branch token
@@ -47,7 +36,15 @@ jobs:
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
           key-name: mathlib-copy-splicebot-app-pk
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_SPLICEBOT }}
-          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
+          owner: leanprover-community
+
+      - name: Mint authz token
+        id: authz-token
+        uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        with:
+          app-id: ${{ secrets.LPC_TEAM_CHECK_APP_ID }}
+          private-key: ${{ secrets.LPC_TEAM_CHECK_PRIVATE_KEY }}
           owner: leanprover-community
 
   run-reusable:

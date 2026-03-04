@@ -40,7 +40,7 @@ jobs:
           key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
           key-name: mathlib-triage-app-pk
           azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_TRIAGE }}
-          azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+          azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
       - name: Find bors merge/delegate
         id: merge_or_delegate

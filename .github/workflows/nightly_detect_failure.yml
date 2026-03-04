@@ -49,7 +49,7 @@ jobs:
         key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
         key-name: mathlib-nightly-testing-app-pk
         azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
-        azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
 
     # This token is masked by the token minting action and will not be logged accidentally.
     - name: Checkout code
@@ -346,7 +346,7 @@ jobs:
         key-vault-name: ${{ vars.MATHLIB_AZ_KEY_VAULT_NAME }}
         key-name: mathlib-nightly-testing-app-pk
         azure-client-id: ${{ vars.GH_APP_AZURE_CLIENT_ID_NIGHTLY_TESTING }}
-        azure-tenant-id: ${{ secrets.MATHLIB_CI_TENANT_ID }}
+        azure-tenant-id: ${{ secrets.LPC_AZ_TENANT_ID }}
     - name: Checkout Mathlib4 repository
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       if: steps.check_branch.outputs.result == 'false'
