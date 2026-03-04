@@ -199,7 +199,8 @@ end IsNotG2
 namespace EmbeddedG2
 
 /-- A pair of roots which pair to `+3` are also sufficient to distinguish an embedded `𝔤₂`. -/
-@[simps] def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
+@[implicit_reducible, simps]
+def ofPairingInThree [CharZero R] [P.IsCrystallographic] [P.IsReduced] (long short : ι)
     (h : P.pairingIn ℤ long short = 3) : P.EmbeddedG2 where
   long := P.reflectionPerm long long
   short := short
@@ -218,7 +219,6 @@ lemma pairing_long_short : P.pairing (long P) (short P) = -3 := by
   simp
 
 /-- The index of the root `α + β` where `α` is the short root and `β` is the long root. -/
-@[implicit_reducible, implicit_reducible]
 def shortAddLong : ι := P.reflectionPerm (long P) (short P)
 
 /-- The index of the root `2α + β` where `α` is the short root and `β` is the long root. -/

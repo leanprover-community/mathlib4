@@ -87,9 +87,8 @@ theorem complete_completelyPseudoMetrizableMetric (X : Type*) [ht : TopologicalS
 
 /-- This definition endows a completely pseudometrizable space with a complete pseudometric.
 Use it as: `letI := upgradeIsCompletelyPseudoMetrizable X`. -/
-noncomputable
 @[implicit_reducible]
-def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
+noncomputable def upgradeIsCompletelyPseudoMetrizable (X : Type*) [TopologicalSpace X]
     [IsCompletelyPseudoMetrizableSpace X] :
     UpgradedIsCompletelyPseudoMetrizableSpace X :=
   letI := completelyPseudoMetrizableMetric X
@@ -206,9 +205,9 @@ theorem complete_completelyMetrizableMetric (X : Type*) [ht : TopologicalSpace X
 
 /-- This definition endows a completely metrizable space with a complete metric. Use it as:
 `letI := upgradeIsCompletelyMetrizable X`. -/
-noncomputable
 @[implicit_reducible]
-def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+noncomputable def upgradeIsCompletelyMetrizable
+    (X : Type*) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     UpgradedIsCompletelyMetrizableSpace X :=
   letI := completelyMetrizableMetric X
   { complete_completelyMetrizableMetric X with }
