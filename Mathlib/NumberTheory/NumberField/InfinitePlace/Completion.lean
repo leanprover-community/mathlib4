@@ -139,7 +139,7 @@ open UniformSpace.Completion in
 @[simp]
 theorem extensionEmbeddingOfIsReal_apply {v : InfinitePlace K} (hv : IsReal v) (x : v.Completion) :
     (extensionEmbeddingOfIsReal hv x : ℂ) = extensionEmbedding v x := by
-  refine UniformSpace.Completion.induction_on x ?_ (fun x => by simp)
+  refine UniformSpace.Completion.induction_on x ?_ (by simp)
   exact isClosed_eq (Continuous.comp' (by fun_prop) continuous_extension) continuous_extension
 
 /-- The embedding `v.Completion →+* ℂ` is an isometry. -/
@@ -240,7 +240,7 @@ theorem algebraMap_coe (x : WithAbs v.1) :
   simp [this, algebraMap_def, Algebra.algebraMap_self]
 
 /-- Assume that `w.Completion` forms an algebra over `v.Completion` with continuous scalar action,
-such that that `K`, `v.Completion` and `w.Completion` forms a scalar tower.
+such that `IsScalarTower K v.Completion w.Completion`.
 If `w.embedding : L →+* ℂ` extends `v.embedding : K →+* ℂ`, then the corresponding embeddings
 to completions are also extensions. -/
 theorem liesOver_extensionEmbedding [ContinuousSMul v.Completion w.Completion]
