@@ -40,7 +40,7 @@ variable {X : TopCat.{u}} {U : Opens X}
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
-    {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
+    (hS : S.Exact) {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) :
     ∃(t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
   dsimp [Presheaf] at S
   let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (op U)
@@ -54,52 +54,11 @@ lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V 
   delta Presheaf.restrictOpen Presheaf.restrict
   cat_disch
 
-namespace Sheaf
-
-lemma addCommGrpCat_shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)}
-    (s : S.X₂.val.obj (op U)) (h : S.g.val.app (op U) s = 0) (hS : S.Exact) (hf : Mono S.f) :
+lemma Sheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)}
+    (hS : S.Exact) (hf : Mono S.f) (s : S.X₂.val.obj (op U)) (h : S.g.val.app (op U) s = 0) :
     ∃(t : S.X₁.val.obj (op U)), S.f.val.app (op U) t = s := by
   have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
     (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
-  exact Presheaf.addCommGrpCat_shortExact_app_zero h (this S ⟨hS, hf⟩).left
+  exact Presheaf.addCommGrpCat_shortExact_app_zero (this S ⟨hS, hf⟩).left h
 
-noncomputable section
-
-/-- The documention for `HasExt` says to be very careful about making instances of it so we only
-make this instance for `AddCommGrpCat`. -/
-instance : HasExt.{u} (CategoryTheory.Sheaf (Opens.grothendieckTopology X) AddCommGrpCat.{u}) :=
-  hasExt_of_enoughInjectives _
-
-/-- The cohomology of a sheaf of abelian groups in degree `n`. -/
-def H (F : (Sheaf AddCommGrpCat.{u} X)) (n : ℕ) : Type u := CategoryTheory.Sheaf.H F n
-
-/-- Given a morphism `𝓕 ⟶ 𝓖`, we get an induced morphism on cohomology `H 𝓕 n ⟶ H 𝓖 n` -/
-def H.map {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (n : ℕ) : H F n → H G n :=
-    CategoryTheory.Sheaf.H.map f n
-
-instance {F : (Sheaf AddCommGrpCat X)} {n : ℕ} : AddCommGroup (H F n) :=
-  inferInstanceAs <| AddCommGroup <| CategoryTheory.Sheaf.H _ _
-
-set_option backward.isDefEq.respectTransparency false in
-instance (F : Sheaf AddCommGrpCat X) {n : ℕ} [Injective F] : Subsingleton (H F (n + 1)) :=
-  inferInstanceAs <| Subsingleton (CategoryTheory.Sheaf.H F (n + 1))
-
-set_option backward.isDefEq.respectTransparency false in
-/-- `H F 0` is equivalent to taking global sections. -/
-def H.equiv₀ (F : (Sheaf AddCommGrpCat X)) : H F 0 ≃+ F.val.obj (op ⊤) :=
-    CategoryTheory.Sheaf.H.equiv₀ F Limits.isTerminalTop
-
-set_option backward.isDefEq.respectTransparency false in
-/-- `H.equiv₀` is natural. -/
-theorem H.equiv₀_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : H F 0) :
-    f.val.app (op ⊤) ((H.equiv₀ F) x) = H.equiv₀ G (H.map f 0 x) :=
-  CategoryTheory.Sheaf.H.equiv₀_comp Limits.isTerminalTop f x
-
-set_option backward.isDefEq.respectTransparency false in
-theorem H.equiv₀_symm_comp {F G : Sheaf AddCommGrpCat X} (f : F ⟶ G) (x : F.val.obj (op ⊤)) :
-    H.map f 0 ((H.equiv₀ F).symm x) = (H.equiv₀ G).symm (f.val.app (op ⊤) x)
-  := CategoryTheory.Sheaf.H.equiv₀_symm_comp Limits.isTerminalTop f x
-
-end
-
-end TopCat.Sheaf
+end TopCat
