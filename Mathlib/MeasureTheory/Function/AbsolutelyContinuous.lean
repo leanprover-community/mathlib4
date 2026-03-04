@@ -156,7 +156,6 @@ def _root_.AbsolutelyContinuousOnInterval (f : ℝ → X) (a b : ℝ) :=
   Tendsto (fun E ↦ ∑ i ∈ Finset.range E.1, dist (f (E.2 i).1) (f (E.2 i).2))
     (totalLengthFilter ⊓ 𝓟 (disjWithin a b)) (𝓝 0)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The traditional `ε`-`δ` definition of absolutely continuous: A function `f` is
 *absolutely continuous* on `uIcc a b` if for any `ε > 0`, there is `δ > 0` such that for
 any finite disjoint collection of intervals `uIoc (a i) (b i)` for `i < n` where `a i`, `b i` are
@@ -292,7 +291,6 @@ theorem mul {f g : ℝ → ℝ}
     AbsolutelyContinuousOnInterval (f * g) a b :=
   hf.smul hg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is Lipschitz on `uIcc a b`, then `f` is absolutely continuous on `uIcc a b`. -/
 theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K : ℝ≥0}
     (hfK : LipschitzOnWith K f (uIcc a b)) : AbsolutelyContinuousOnInterval f a b := by
@@ -311,7 +309,6 @@ theorem _root_.LipschitzOnWith.absolutelyContinuousOnInterval {f : ℝ → X} {K
     _ < (K + 1) * (ε / (K + 1)) := by gcongr; linarith
     _ = ε := by field
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is absolutely continuous on `uIcc a b`, then `f` has bounded variation on `uIcc a b`. -/
 theorem boundedVariationOn (hf : AbsolutelyContinuousOnInterval f a b) :
     BoundedVariationOn f (uIcc a b) := by
@@ -404,7 +401,6 @@ theorem ae_differentiableAt {f : ℝ → ℝ} {a b : ℝ}
     ∀ᵐ (x : ℝ), x ∈ uIcc a b → DifferentiableAt ℝ f x :=
   hf.boundedVariationOn.ae_differentiableAt_of_mem_uIcc
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` is interval integrable on `a..b` and `c ∈ uIcc a b`, then `fun x ↦ ∫ v in c..x, f v` is
 absolutely continuous on `uIcc a b`. -/
 theorem _root_.IntervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral {f : ℝ → ℝ}

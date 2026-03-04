@@ -456,7 +456,6 @@ section Fintype
 
 variable [Fintype ι] [DecidableEq M]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `b.reindexFinsetRange` is a basis indexed by `Finset.univ.image b`,
 the finite set of basis vectors themselves. -/
 def reindexFinsetRange : Basis (Finset.univ.image b) R M :=

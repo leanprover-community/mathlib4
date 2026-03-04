@@ -209,7 +209,6 @@ lemma parabolicEigenvalue_ne_zero {g : GL (Fin 2) K} [NeZero (2 : K)] (hg : IsPa
     sq_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, g.det_ne_zero⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A non-zero power of a parabolic element is parabolic. -/
 lemma IsParabolic.pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]
     {n : ℕ} (hn : n ≠ 0) : IsParabolic (g ^ n) := by
