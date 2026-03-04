@@ -240,7 +240,7 @@ open Function in
 private lemma finite_mulSupport_iSup_max_iSup_one (h : Nonempty ι') (p : ι' → MvPolynomial ι K) :
     (fun v : nonarchAbsVal ↦
       ⨆ j, max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1).HasFiniteMulSupport := by
-  refine hasFiniteMulSupport_iSup _ fun j ↦ ?_
+  refine HasFiniteMulSupport.iSup fun j ↦ ?_
   rcases isEmpty_or_nonempty (p j).support with hs₀ | hs₀
   · simp [hasFiniteMulSupport_one]
   have H (s : (p j).support) : coeff s.val (p j) ≠ 0 := mem_support_iff.mp s.prop
