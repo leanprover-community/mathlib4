@@ -13,6 +13,11 @@ public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 /-!
 # The colimit module of a presheaf of module on a cofiltered category
 
+Given a colimit cocone `cR` for a presheaf of rings `R` on a cofiltered category `C`,
+`M` a presheaf of modules over `R`, and a colimit cocone `cM` for the underlying
+functor `Cᵒᵖ ⥤ AddCommGrpCat` of `M`, we define a structure of module over `cR.pt`
+on a type-synonym for `cM.pt`.
+
 -/
 
 @[expose] public section
@@ -45,9 +50,9 @@ section
 
 variable {M : PresheafOfModules.{w} R} {cM : Cocone M.presheaf} (hcM : IsColimit cM)
 
-/-- Given a colimit cocone for a presheaf of rings on a cofiltered category `R`,
-and a colimit cocone `cM` for the underlying presheaf of abelian groups of a
-presheaf of modules over `R`, this is the type `cM.pt` on which we define
+/-- Given a colimit cocone for a presheaf of rings `R` on a cofiltered category `C`,
+`M` a presheaf of modules over `R`, and a colimit cocone `cM` for the underlying
+functor `Cᵒᵖ ⥤ AddCommGrpCat` of `M`, this is the type `cM.pt` on which we define
 a module structure below. -/
 @[nolint unusedArguments]
 def ModuleColimit (_ : IsColimit cR) (_ : IsColimit cM) : Type w := cM.pt
@@ -55,15 +60,9 @@ def ModuleColimit (_ : IsColimit cR) (_ : IsColimit cM) : Type w := cM.pt
 
 namespace ModuleColimit
 
-variable (cR cM) in
-noncomputable def coconeTensorForget :
-    Cocone (R ⋙ forget _ ⊗ M.presheaf ⋙ forget _) :=
-  ((forget _).mapCocone  cR).tensor ((forget _).mapCocone cM)
-
-noncomputable def isColimitCoconeTensorForget :
-    IsColimit (coconeTensorForget cR cM) :=
-  (isColimitOfPreserves (forget _) hcR).tensor (isColimitOfPreserves (forget _) hcM)
-
+/-- The cocone `R ⋙ forget _ ⊗ M.presheaf ⋙ forget _` with point
+`ModuleColimit hcR hcM` which allows to define the scalar multiplication
+by `cR.pt` on `ModuleColimit hcR hcM`. -/
 @[simps]
 noncomputable def coconeSMul :
     Cocone (R ⋙ forget _ ⊗ M.presheaf ⋙ forget _) where
@@ -75,19 +74,24 @@ noncomputable def coconeSMul :
       (M.map_smul f r m).symm).trans (ConcreteCategory.congr_hom (cM.w f) _)
 
 noncomputable instance : SMul cR.pt (ModuleColimit hcR hcM) where
-  smul := ((isColimitCoconeTensorForget hcR hcM).desc (coconeSMul hcR hcM)).curry
+  smul :=
+    (((isColimitOfPreserves (forget _) hcR).tensor
+      (isColimitOfPreserves (forget _) hcM)).desc (coconeSMul hcR hcM)).curry
 
 variable (cR) in
+/-- The "inclusion" maps to the colimit ring. -/
 abbrev ιR {U : Cᵒᵖ} : R.obj U →+* cR.pt := (cR.ι.app U).hom
 
 variable {hcR hcM} in
+/-- The "inclusion" maps to the colimit module, as an additive map. -/
 noncomputable abbrev ιM {U : Cᵒᵖ} : M.obj U →+ ModuleColimit hcR hcM :=
   (cM.ι.app U).hom
 
 @[simp]
 lemma smul_eq {U : Cᵒᵖ} (r : R.obj U) (m : M.obj U) :
     ιR cR r • ιM (hcR := hcR) (hcM := hcM) m = ιM (r • m) :=
-  congr_fun ((isColimitCoconeTensorForget hcR hcM).fac (coconeSMul hcR hcM) U) ⟨r, m⟩
+  congr_fun (((isColimitOfPreserves (forget _) hcR).tensor
+    (isColimitOfPreserves (forget _) hcM)).fac (coconeSMul hcR hcM) U) ⟨r, m⟩
 
 variable {hcR hcM} in
 lemma ιM_jointly_surjective (m : ModuleColimit hcR hcM) :
