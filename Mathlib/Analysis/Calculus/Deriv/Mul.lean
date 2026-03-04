@@ -140,13 +140,11 @@ theorem deriv_smul (hc : DifferentiableAt 𝕜 c x) (hf : DifferentiableAt 𝕜 
 
 theorem HasStrictDerivAt.smul_const (hc : HasStrictDerivAt c c' x) (f : F) :
     HasStrictDerivAt (fun y => c y • f) (c' • f) x := by
-  have := hc.smul (hasStrictDerivAt_const x f)
-  rwa [smul_zero, zero_add] at this
+  simpa using hc.smul (hasStrictDerivAt_const x f)
 
 theorem HasDerivWithinAt.smul_const (hc : HasDerivWithinAt c c' s x) (f : F) :
     HasDerivWithinAt (fun y => c y • f) (c' • f) s x := by
-  have := hc.smul (hasDerivWithinAt_const x s f)
-  rwa [smul_zero, zero_add] at this
+  simpa using hc.smul (hasDerivWithinAt_const x s f)
 
 theorem HasDerivAt.smul_const (hc : HasDerivAt c c' x) (f : F) :
     HasDerivAt (fun y => c y • f) (c' • f) x := by
