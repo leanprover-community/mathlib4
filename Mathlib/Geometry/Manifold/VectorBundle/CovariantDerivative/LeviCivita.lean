@@ -700,8 +700,6 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   ext Z₀
   simpa [Φ, product] using congr($(h (_root_.extend I E Z₀)) x)
 
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
-
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
 -- (probably not everywhere, as addition rules apply only for differentiable vector fields?)
@@ -710,13 +708,20 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection) :
     -- almost, only agree on smooth functions
     cov = cov' := by
-  ext X σ x
-  apply congrFun
-  sorry
-  -- apply congr_of_forall_product fun Z ↦ ?_
-  -- trans leviCivitaRhs I X σ Z
-  -- · exact hcov.eq_leviCivitaRhs I X σ Z
-  -- · exact (hcov'.eq_leviCivitaRhs I X σ Z ).symm
+  ext X x Y₀
+  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
+  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
+  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
+  apply Φ.injective
+  ext Z₀
+  let Y := _root_.extend I E Y₀
+  let Z := _root_.extend I E Z₀
+  suffices inner ℝ (cov X x (Y x)) (Z x) = inner ℝ (cov' X x (Y x)) (Z x) by simpa [Φ, Y, Z]
+  trans leviCivitaRhs I X Y Z x
+  · exact congr($(hcov.eq_leviCivitaRhs I X Y Z) x)
+  · exact congr($((hcov'.eq_leviCivitaRhs I X Y Z).symm) x)
+
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 open Classical in
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
