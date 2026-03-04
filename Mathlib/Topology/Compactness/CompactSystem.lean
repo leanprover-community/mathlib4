@@ -128,7 +128,7 @@ lemma isCompactSystem_insert_empty_iff :
 lemma isCompactSystem_insert_univ_iff : IsCompactSystem (insert univ S) ↔ IsCompactSystem S :=
   ⟨fun h ↦ h.mono (subset_insert _ _), .insert_univ⟩
 
-theorem isCompactSystem_iff_directed (hpi : IsPiSystem S) :
+theorem isCompactSystem_iff_of_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
       ∀ (C : ℕ → Set α), Directed (· ⊇ ·) C → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ → ∃ n, C n = ∅ := by
   rw [← isCompactSystem_insert_empty_iff]
@@ -146,11 +146,11 @@ theorem isCompactSystem_iff_directed (hpi : IsPiSystem S) :
   · simpa [or_comm] using hpi.insert_empty.dissipate_mem h1 n g
   · exact .inr (Set.not_nonempty_iff_eq_empty.mp g)
 
-theorem isCompactSystem_iff_directed_of_nonempty (hpi : IsPiSystem S) :
+theorem isCompactSystem_iff_nonempty_iInter_of_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
-    ∀ (C : ℕ → Set α), (Directed (fun x1 x2 ↦ x1 ⊇ x2) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
+    ∀ (C : ℕ → Set α), (Directed (· ⊇ ·) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
       (⋂ i, C i).Nonempty := by
-  rw [isCompactSystem_iff_directed hpi]
+  rw [isCompactSystem_iff_of_directed hpi]
   refine ⟨fun h1 C h3 h4 ↦ ?_, fun h1 C h3 s ↦ ?_⟩ <;> rw [← not_imp_not] <;> push_neg
   · exact h1 C h3 h4
   · exact h1 C h3 s
