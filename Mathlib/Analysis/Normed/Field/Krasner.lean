@@ -296,6 +296,7 @@ end Polynomial
 
 open Polynomial
 -- TODO: A lot
+set_option backward.isDefEq.respectTransparency false in
 theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedField L]
     [CompleteSpace L] [CharZero L] [IsUltrametricDist L] {i : K →+* L}
     (hi : DenseRange i) [IsAlgClosed K] : IsAlgClosed L := by
