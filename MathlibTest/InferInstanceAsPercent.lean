@@ -96,11 +96,13 @@ instance testField_leaky : TestField TestNat := inferInstanceAs (TestField Nat)
 -- Fixed: inferInstanceAs% patches lambda domains to use TestNat
 -- (warns about leaky sub-instances that could be defined separately)
 /--
-warning: inferInstanceAs%: synthesized sub-instance for TestInv
-  TestNat is not defeq to the patched version at `reducibleAndInstances` transparency. Consider defining it separately with `inferInstanceAs%`.
+warning: inferInstanceAs%: the synthesized instance for TestInv
+  TestNat has carrier type leakage (it uses the source carrier type internally instead of the target). `inferInstanceAs%` will patch the sub-instance inline, but consider defining it separately with `inferInstanceAs%` for cleaner results.
+  To suppress this warning: `set_option inferInstanceAsPercent.leakySubInstWarning false`
 ---
-warning: inferInstanceAs%: synthesized sub-instance for TestDivInvMonoid
-  TestNat is not defeq to the patched version at `reducibleAndInstances` transparency. Consider defining it separately with `inferInstanceAs%`.
+warning: inferInstanceAs%: the synthesized instance for TestDivInvMonoid
+  TestNat has carrier type leakage (it uses the source carrier type internally instead of the target). `inferInstanceAs%` will patch the sub-instance inline, but consider defining it separately with `inferInstanceAs%` for cleaner results.
+  To suppress this warning: `set_option inferInstanceAsPercent.leakySubInstWarning false`
 -/
 #guard_msgs in
 instance testField_fixed : TestField TestNat := inferInstanceAs% (TestField Nat)
@@ -131,3 +133,28 @@ example : testField_leaky = testField_direct := by with_reducible_and_instances 
 
 -- The fixed instance IS defeq at `instances` transparency.
 example : testField_fixed = testField_direct := by with_reducible_and_instances rfl
+
+/-! ## Sub-instances already defined with `inferInstanceAs%`
+
+When a sub-instance has already been defined with `inferInstanceAs%`,
+defining a parent instance with `inferInstanceAs%` should NOT warn about
+leaky sub-instances — the sub-instance is already clean.
+
+This was reported by Sébastien Gouëzel: when `AddMonoid SGNNReal` is defined
+with `inferInstanceAs%`, defining `AddCancelCommMonoid SGNNReal` with
+`inferInstanceAs%` should not warn about `AddMonoid` being leaky.
+
+The warning only fires when `trySynthInstance` finds a pre-existing instance for
+the sub-class. So we test this by first defining a clean `TestInv` instance,
+then a leaky parent (so synthesis can find sub-instances through projection),
+and finally verifying that `inferInstanceAs%` suppresses the `TestInv` warning.
+-/
+
+-- Define a clean sub-instance for TestInv
+instance testInv_clean : TestInv TestNat := inferInstanceAs% (TestInv Nat)
+
+-- Now `testInv_clean` provides a clean `TestInv TestNat`, and
+-- `testField_direct`/`testField_fixed` provide clean `TestDivInvMonoid TestNat`
+-- through projection. So no warnings should fire:
+#guard_msgs in
+instance testField_with_clean_inv : TestField TestNat := inferInstanceAs% (TestField Nat)
