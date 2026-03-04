@@ -649,8 +649,8 @@ lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
   trans ⟪∇ X, Y, Z⟫ + ⟪Y, ∇ X, Z⟫
   · ext x
     exact h.1 X Y Z x
-  · sorry
-    -- simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
+  · ext x
+    simp [← isTorsionFree_iff.mp h.2 X Z, product, inner_sub_right]
 
 lemma isolate_aux {α : Type*} [AddCommGroup α]
     (A D E F X Y Z : α) (h : X + Y - Z = A + A + D + E - F) :
