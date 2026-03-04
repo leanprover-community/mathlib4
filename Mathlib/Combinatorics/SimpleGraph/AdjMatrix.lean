@@ -198,6 +198,7 @@ theorem toGraph_adjMatrix_eq [MulZeroOneClass α] [Nontrivial α] :
 theorem compl_adjMatrix_eq_adjMatrix_compl [DecidableEq V] [DecidableEq α] [Zero α] [One α] :
     (G.adjMatrix α).compl = Gᶜ.adjMatrix α := by aesop (add simp [Matrix.compl])
 
+set_option backward.isDefEq.respectTransparency false in
 variable {G} in
 theorem IsCompl.adjMatrix_add_adjMatrix_eq_adjMatrix_completeGraph [DecidableEq V] [AddZeroClass α]
     [One α] {H : SimpleGraph V} [DecidableRel H.Adj] (h : IsCompl G H) :
