@@ -227,6 +227,19 @@ theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
   (Matrix.toLinearMap₂_apply _ _ _ _ _).trans
     (by simp only [smul_eq_mul, mul_comm, mul_left_comm])
 
+@[simp]
+theorem Matrix.toBilin_apply_basis (M : Matrix n n R₁) (i j : n) :
+    Matrix.toBilin b M (b i) (b j) = M i j := by
+  rw [toBilin_apply, Finset.sum_eq_single_of_mem i (by simp),
+    Finset.sum_eq_single_of_mem j (by simp)]
+  · simp
+  · intros; simp_all
+  · intros; simp_all
+
+@[simp]
+theorem Matrix.toBilin_apply_basis' (M : Matrix n n R₁) (i j : n) :
+    Matrix.toBilin b M (b i) (b j) = M i j := by simp
+
 -- Not a `simp` lemma since `BilinForm.toMatrix` needs an extra argument
 theorem LinearMap.BilinForm.toMatrixAux_eq (B : BilinForm R₁ M₁) :
     BilinForm.toMatrixAux (R₁ := R₁) b B = BilinForm.toMatrix b B :=
