@@ -65,9 +65,9 @@ theorem bijective_or_eq_zero [IsIrreducible σ] : Bijective f ∨ f = 0 := by
   rw [← LinearEquiv.map_eq_zero_iff (equivLinearMapAsModule ρ σ)]
   exact LinearMap.bijective_or_eq_zero (equivLinearMapAsModule ρ σ f)
 
-theorem zero_of_empty_equiv [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : f = 0 :=
-  (bijective_or_eq_zero f).resolve_left fun hf ↦ isEmpty_iff.mp inferInstance <| f.ofBijective hf
-
+instance [IsIrreducible σ] [IsEmpty (Equiv ρ σ)] : Subsingleton (IntertwiningMap ρ σ) :=
+  ⟨fun f g ↦ sub_eq_zero.mp <| (bijective_or_eq_zero _).resolve_left
+    fun h ↦ isEmpty_iff.mp inferInstance <| (f - g).ofBijective h⟩
 variable [FiniteDimensional k V] [IsAlgClosed k]
 
 set_option backward.isDefEq.respectTransparency false in

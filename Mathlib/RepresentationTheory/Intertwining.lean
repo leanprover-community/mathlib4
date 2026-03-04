@@ -22,8 +22,8 @@ namespace Representation
 
 section Monoid
 
-variable {A G V W U : Type*} [CommRing A] [Monoid G] [AddCommMonoid V] [AddCommMonoid W]
-  [AddCommMonoid U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
+variable {A G V W U : Type*} [CommRing A] [Monoid G] [AddCommGroup V] [AddCommGroup W]
+  [AddCommGroup U] [Module A V] [Module A W] [Module A U] (ρ : Representation A G V)
   (σ : Representation A G W) (τ : Representation A G U) (f : V →ₗ[A] W)
 
 /-- An unbundled version of `IntertwiningMap`. -/
@@ -69,6 +69,18 @@ instance : Add (IntertwiningMap ρ σ) :=
 @[simp] lemma coe_add (f g : IntertwiningMap ρ σ) :
     ((f + g : IntertwiningMap ρ σ) : V → W) = f + g := rfl
 
+instance : Neg (IntertwiningMap ρ σ) :=
+  ⟨fun f ↦ ⟨-f.toLinearMap, by simp [f.isIntertwining]⟩⟩
+
+@[simp] lemma coe_neg (f : IntertwiningMap ρ σ) :
+  (( -f : IntertwiningMap ρ σ) : V → W) = -f := rfl
+
+instance : Sub (IntertwiningMap ρ σ) :=
+  ⟨fun f g ↦ ⟨f.toLinearMap - g.toLinearMap, by simp [f.isIntertwining, g.isIntertwining]⟩⟩
+
+@[simp] lemma coe_sub (f g : IntertwiningMap ρ σ) :
+    ((f - g : IntertwiningMap ρ σ) : V → W) = f - g := rfl
+
 instance : SMul A (IntertwiningMap ρ σ) :=
   ⟨fun a f ↦ ⟨a • f.toLinearMap, by simp [f.isIntertwining]⟩⟩
 
@@ -78,12 +90,19 @@ instance : SMul A (IntertwiningMap ρ σ) :=
 instance : SMul ℕ (IntertwiningMap ρ σ) :=
   ⟨fun n f ↦ ⟨n • f.toLinearMap, by simp [f.isIntertwining]⟩⟩
 
-@[simp] lemma coe_nsmul (n : ℕ) (f : IntertwiningMap ρ σ) :
+@[simp] lemma coe_nsmul (f : IntertwiningMap ρ σ) (n : ℕ) :
     ((n • f : IntertwiningMap ρ σ) : V → W) = n • f := rfl
 
-instance instAddCommMonoid : AddCommMonoid (IntertwiningMap ρ σ) :=
+instance : SMul ℤ (IntertwiningMap ρ σ) :=
+  ⟨fun n f ↦ ⟨n • f.toLinearMap, by simp [f.isIntertwining]⟩⟩
+
+@[simp] lemma coe_zsmul (f : IntertwiningMap ρ σ) (n : ℤ) :
+    ((n • f : IntertwiningMap ρ σ) : V → W) = n • f := rfl
+
+instance instAddCommGroup : AddCommGroup (IntertwiningMap ρ σ) :=
   fast_instance%
-  DFunLike.coe_injective.addCommMonoid _ (coe_zero ρ σ) (coe_add ρ σ) (by intro f n; rw [coe_nsmul])
+  DFunLike.coe_injective.addCommGroup _ (coe_zero ρ σ) (coe_add ρ σ) (coe_neg ρ σ) (coe_sub ρ σ)
+  (coe_nsmul ρ σ) (coe_zsmul ρ σ)
 
 /-- A coercion from intertwining maps to additive monoid homomorphisms. -/
 def coeFnAddMonoidHom : IntertwiningMap ρ σ →+ V → W where
@@ -95,9 +114,6 @@ instance : Module A (IntertwiningMap ρ σ) :=
   fast_instance%
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
-instance : AddCommGroup (IntertwiningMap ρ σ) := Module.addCommMonoidToAddCommGroup A
-
-set_option backward.isDefEq.respectTransparency false in
 /-- An intertwining map is the same thing as a linear map over the group ring. -/
 def equivLinearMapAsModule :
     IntertwiningMap ρ σ ≃ₗ[A] ρ.asModule →ₗ[A[G]] σ.asModule where
@@ -206,6 +222,16 @@ theorem isIntertwiningMap_of_mem_center (g : G) (hg : g ∈ Submonoid.center G) 
 def centralMul (g : G) (hg : g ∈ Submonoid.center G) : IntertwiningMap ρ ρ where
   toLinearMap := ρ g
   isIntertwining' := (isIntertwiningMap_of_mem_center ρ g hg).isIntertwining
+
+/-- `IntertwiningMap.toLinearMap` as a linear map. -/
+@[simps] def toLinearMapl : IntertwiningMap ρ σ →ₗ[A] V →ₗ[A] W where
+  toFun := toLinearMap
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+instance [Module.Finite A V] [IsNoetherian A W] :
+    Module.Finite A (IntertwiningMap ρ σ) :=
+  .of_injective (toLinearMapl (ρ := ρ) (σ := σ)) (toLinearMap_injective ρ σ)
 
 end IntertwiningMap
 
