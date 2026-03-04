@@ -432,7 +432,6 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
     quotientMapOfLE h (QuotientGroup.mk g) = QuotientGroup.mk g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) /-- The natural embedding
 `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`. -/]
@@ -452,7 +451,6 @@ theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgro
     quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i = QuotientGroup.mk g :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
 @[to_additive (attr := simps) /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/]
 def quotientiInfEmbedding {ι : Type*} (f : ι → Subgroup α) : (α ⧸ ⨅ i, f i) ↪ ∀ i, α ⧸ f i where

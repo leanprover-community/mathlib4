@@ -271,14 +271,15 @@ lemma XYIdeal_add_eq (x₁ x₂ y₁ ℓ : R) : XYIdeal W' (W'.addX x₁ x₂ �
       XIdeal W' (W'.addX x₁ x₂ ℓ) := by
   simp only [XYIdeal, XIdeal, XClass, YClass, addY, negAddY, negY, negPolynomial, linePolynomial]
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
-    ← span_insert, ← span_pair_add_mul_right <| mk W' <| C <| C <| W'.a₁ + ℓ, ← map_mul, ← map_add]
+    ← span_insert, ← span_pair_add_left_mul _ _ <| mk W' <| C <| C <| W'.a₁ + ℓ, ← map_mul,
+    ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring1
 
 lemma XYIdeal_eq₁ (x y ℓ : R) : XYIdeal W' x (C y) = XYIdeal W' x (linePolynomial x y ℓ) := by
   simp only [XYIdeal, XClass, YClass, linePolynomial]
-  rw [← span_pair_add_mul_right <| mk W' <| C <| C <| -ℓ, ← map_mul, ← map_add]
+  rw [← span_pair_add_left_mul _ _ <| mk W' <| C <| C <| -ℓ, ← map_mul, ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring1
@@ -299,7 +300,7 @@ lemma XYIdeal_eq₂ [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation
       ring1
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
-  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -W.slope x₁ x₂ y₁ y₂, ← map_mul, ← map_add]
+  rw [← span_pair_add_left_mul _ _ <| mk W <| C <| C <| -W.slope x₁ x₂ y₁ y₂, ← map_mul, ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   simp only [eval_C, eval_X, eval_add, eval_sub, eval_mul]
   C_simp
@@ -351,7 +352,7 @@ lemma XYIdeal_mul_XYIdeal [DecidableEq F] {x₁ x₂ y₁ y₂ : F}
     C_addPolynomial, map_mul, YClass]
   simp_rw [mul_comm <| XClass W x₁, mul_assoc, ← span_singleton_mul_span_singleton, ← Ideal.mul_sup]
   rw [span_singleton_mul_span_singleton, ← span_insert,
-    ← span_pair_add_mul_right <| -(XClass W <| W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂), mul_neg,
+    ← span_pair_add_left_mul _ _ <| -(XClass W <| W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂), mul_neg,
     ← sub_eq_add_neg, ← sub_mul, ← map_sub <| mk W, sub_sub_sub_cancel_right, span_insert,
     ← span_singleton_mul_span_singleton, ← sup_rw, ← Ideal.sup_mul, ← Ideal.sup_mul]
   apply congr_arg (_ ∘ _)
@@ -554,7 +555,7 @@ predicate and the set of pairs `⟨x, y⟩` satisfying `W.Equation x y` with zer
 def pointEquivSubtype {p : W'.Point → Prop} (p0 : p .zero) :
     {P : W'.Point // p P} ≃ WithZero {xy : R × R // ∃ h : W'.Equation xy.fst xy.snd, p <| .mk h} :=
   (nonsingularPointEquivSubtype p0).trans
-    (Equiv.setCongr <| by simpa only [equation_iff_nonsingular] using by rfl).optionCongr
+    (Equiv.setCongr <| by simp [equation_iff_nonsingular, Point.mk]).optionCongr
 
 @[simp]
 lemma pointEquivSubtype_zero {p : W'.Point → Prop} (p0 : p .zero) :
