@@ -114,42 +114,42 @@ theorem ne_of_im_ne {z w : ℂ} (h : (RCLike.im z = RCLike.im w) = False) :
   rintro rfl
   simp_all
 
--- theorem IsComplex.of_pow_negSucc {w : ℂ} {a b : ℝ} {n : ℕ} {k' : ℤ}
---     (hk : NormNum.IsInt k' (Int.negSucc n)) (hz : IsComplex (w ^ (n + 1))⁻¹ a b) :
---     IsComplex (w ^ (k' : ℤ)) a b := by
---   rwa [hk.out, Int.cast_id, zpow_negSucc]
+theorem of_pow_negSucc (w : ℂ) {n : ℕ} {k' : ℤ} (hk : NormNum.IsInt k' (Int.negSucc n)) :
+    (w ^ (k' : ℤ)) = (w ^ (n + 1))⁻¹ := by
+  rw [hk.out, Int.cast_id, zpow_negSucc]
 
--- theorem IsComplex.of_pow_ofNat {w : ℂ} {k : ℤ} {n : ℕ} {a b : ℝ}
---     (hkk' : NormNum.IsInt k n) (hw : IsComplex (w ^ n) a b) :
---     IsComplex (w ^ k) a b := by
---   obtain rfl : k = n := by simpa using hkk'.out
---   simpa only [zpow_natCast] using hw
+theorem of_pow_ofNat (w : ℂ) {k : ℤ} {n : ℕ} (hkk' : NormNum.IsInt k n) :
+    w ^ k = w ^ n := by
+  simp [hkk'.out]
 
--- theorem pow_bit_false (z : ℂ) (m : ℕ) : z ^ Nat.bit false m = z ^ m * z ^ m := by
---   rw [Nat.bit, cond, pow_mul', sq]
+theorem re_pow_zero (z : ℂ) : NormNum.IsNat (re (z ^ 0)) 1 := ⟨by simp⟩
+theorem im_pow_zero (z : ℂ) : NormNum.IsNat (im (z ^ 0)) 0 := ⟨by simp⟩
 
--- theorem pow_bit_true (z : ℂ) (m : ℕ) : z ^ Nat.bit true m = z ^ m * z ^ m * z := by
---   rw [Nat.bit, cond, pow_add, pow_mul', pow_one, sq]
+theorem pow_bit_false (z : ℂ) (m : ℕ) : z ^ Nat.bit false m = z ^ m * z ^ m := by
+  rw [Nat.bit, cond, pow_mul', sq]
 
--- /-- Using fast exponentiation to handle nat powers of complexes. -/
--- partial def parsePow (n' : ℕ) :
---     ⦃a b : Q(ℝ)⦄ → (z : Q(ℂ)) → (n : Q(ℕ)) → Q(NormNum.IsNat $n $n') →  Q(IsComplex $z $a $b) →
---     MetaM (Σ a b : Q(ℝ), Q(IsComplex ($z ^ $n) $a $b)) :=
---   n'.binaryRec'
---     (fun {_ _} z n _ _ => do
---       have : $n =Q 0 := ⟨⟩
---       return ⟨q(1), q(0), q(pow_zero $z ▸ .one)⟩)
---     (fun bit (m : ℕ) _ rec {_ _} z n _ hz => do
---       match bit with
---       | true =>
---         have : $n =Q Nat.bit true $m := ⟨⟩
---         let ⟨_, _, hzm⟩ ← rec q($z) q($m) q(⟨rfl⟩) hz
---         return ⟨_, _, q(have hzm' := $hzm; pow_bit_true $z $m ▸
---          (IsComplex.mul hzm' hzm').mul $hz)⟩
---       | false =>
---         have : $n =Q Nat.bit false $m := ⟨⟩
---         let ⟨_, _, hzm⟩ ← rec q($z) q($m) q(⟨rfl⟩) hz
---         return ⟨_, _, q(have hzm' := $hzm; pow_bit_false $z $m ▸ IsComplex.mul hzm' hzm')⟩)
+theorem pow_bit_true (z : ℂ) (m : ℕ) : z ^ Nat.bit true m = z ^ m * z ^ m * z := by
+  rw [Nat.bit, cond, pow_add, pow_mul', pow_one, sq]
+
+/-- Using fast exponentiation to handle nat powers of complexes. -/
+partial def ResultI.pow (n' : ℕ) :
+    (z : Q(ℂ)) → (n : Q(ℕ)) → Q(NormNum.IsNat $n $n') → (r : ResultI z) →
+    MetaM (ResultI q($z ^ $n)) :=
+  n'.binaryRec'
+    (fun z n _ _ => do
+      have : $n =Q 0 := ⟨⟩
+      return ⟨.isNat q(inferInstance) q(1) q(re_pow_zero $z),
+        .isNat q(inferInstance) q(0) q(im_pow_zero $z)⟩)
+    (fun bit (m : ℕ) _ rec z n _ hz => do
+      let rm ← rec q($z) q($m) q(⟨rfl⟩) hz
+      let rm2 ← rm.mul rm
+      match bit with
+      | true =>
+        have : $n =Q Nat.bit true $m := ⟨⟩
+        return (← rm2.mul hz).eqTrans q(pow_bit_true $z $m)
+      | false =>
+        have : $n =Q Nat.bit false $m := ⟨⟩
+        return rm2.eqTrans q(pow_bit_false $z $m))
 
 /-- Result of `norm_num` running on lift of natural numbers in real -/
 def NormNum.Resultn (n0 : ℕ) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℝ) $n0)) := do
@@ -206,21 +206,21 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   | ~q(conj $w) =>
     let r ← parse w
     return ((← r.conj).eqTrans q(rfl))
-  -- | ~q($w ^ ($n' : ℕ)) =>
-  --   let ⟨_, _, pf⟩ ← parse w
-  --   let ⟨_, _, pfp⟩ ← parsePow n.natLit! q($w) q($n') hn q($pf)
-  --   return ⟨_, _, q($pfp)⟩
-  -- | ~q($w ^ ($k : ℤ)) =>
-  --   let ⟨k', hm⟩ ← NormNum.deriveInt q($k) q(inferInstance)
-  --   match k'.intLit! with
-  --   | Int.ofNat n =>
-  --     let ⟨a, b, pf⟩ ← parse q($w ^ $n)
-  --     let _i : $k' =Q $n := ⟨⟩
-  --     return ⟨a, b, q(.of_pow_ofNat $hm $pf)⟩
-  --   | Int.negSucc n =>
-  --     let ⟨a, b, pf⟩ ← parse q(($w ^ ($n + 1))⁻¹)
-  --     let _i : $k' =Q Int.negSucc $n := ⟨⟩
-  --     return ⟨a, b, q(.of_pow_negSucc $hm $pf)⟩
+  | ~q($w ^ ($n' : ℕ)) =>
+    let rw ← parse w
+    let ⟨n, hn⟩ ← NormNum.deriveNat q($n') q(inferInstance)
+    return (← rw.pow n.natLit! _ _ hn).eqTrans q(rfl)
+  | ~q($w ^ ($k : ℤ)) =>
+    let ⟨k', hm⟩ ← NormNum.deriveInt q($k) q(inferInstance)
+    match k'.intLit! with
+    | Int.ofNat n =>
+      let r ← parse q($w ^ $n)
+      let _i : $k' =Q $n := ⟨⟩
+      return r.eqTrans q(of_pow_ofNat $w $hm)
+    | Int.negSucc n =>
+      let r ← parse q(($w ^ ($n + 1))⁻¹)
+      let _i : $k' =Q Int.negSucc $n := ⟨⟩
+      return r.eqTrans q(of_pow_negSucc $w $hm)
   | ~q(Complex.I) =>
   return ResultI.mk (← NormNum.Resultn 0) (← NormNum.Resultn 1)
   | ~q(0) =>
