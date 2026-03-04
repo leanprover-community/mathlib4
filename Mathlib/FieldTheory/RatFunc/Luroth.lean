@@ -5,10 +5,10 @@ Authors: Miriam Philipp, Justus Springer, Junyan Xu
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Basis
-import Mathlib.Algebra.Polynomial.Bivariate
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.FieldTheory.Relrank
+public import Mathlib.Algebra.Polynomial.Basis
+public import Mathlib.Algebra.Polynomial.Bivariate
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.FieldTheory.Relrank
 
 /-!
 # Lüroth's theorem
