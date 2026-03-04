@@ -56,7 +56,7 @@ instance (priority := low) [h : IsFlasque F]
 theorem pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
     IsFlasque (f _* F) where
   epi {U V} i := by
-    simp only [pushforward_obj_obj, pushforward_obj_map]
+    dsimp
     infer_instance
 
 end IsFlasque
