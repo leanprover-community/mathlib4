@@ -564,7 +564,6 @@ instance pemptyUnique : Unique (FreeAbelianGroup PEmpty) where
     rintro - - rfl rfl
     rfl)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The free abelian group on a type with one term is isomorphic to `ℤ`. -/
 def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
   toFun := FreeAbelianGroup.lift fun _ ↦ (1 : ℤ)

@@ -465,11 +465,11 @@ theorem IsPathConnected.exists_path_through_family {n : ℕ}
     Path.target_mem_range, and_true] at hp ⊢
   obtain ⟨hp, hx⟩ := hp
   induction p using snocInduction generalizing x with
-  | h0 =>
+  | elim0 =>
     simp only [snoc_zero]
     use Path.refl x
     simp [hx]
-  | @h n p y hp₂ =>
+  | @snoc n p y hp₂ =>
     simp only [forall_fin_succ', snoc_castSucc, snoc_last, snoc_apply_zero, Path.cast_coe] at hp ⊢
     obtain ⟨hp, hy⟩ := hp
     specialize hp₂ y hp hy
@@ -549,7 +549,6 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
     PathConnectedSpace (Quotient s) :=
   Quotient.mk'_surjective.pathConnectedSpace continuous_coinduced_rng
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `IsTopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where

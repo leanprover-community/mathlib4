@@ -275,7 +275,6 @@ def instCommMonoid : CommMonoid (RatFunc K) where
   mul_one := by frac_tac
   npow := npowRec
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `RatFunc K` is an additive commutative group.
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.
@@ -727,8 +726,9 @@ theorem ofFractionRing_mk' (x : K[X]) (y : K[X]⁰) :
   rw [IsFractionRing.mk'_eq_div, IsFractionRing.mk'_eq_div, ← mk_eq_div', ← mk_eq_div]
 
 theorem mk_eq_mk' (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
-    RatFunc.mk f g = IsLocalization.mk' (RatFunc K) f ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 hg⟩ :=
-  by simp only [mk_eq_div, IsFractionRing.mk'_eq_div]
+    RatFunc.mk f g = IsLocalization.mk' (RatFunc K) f
+      ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 hg⟩ := by
+  simp only [mk_eq_div, IsFractionRing.mk'_eq_div]
 
 @[simp]
 theorem ofFractionRing_eq :
