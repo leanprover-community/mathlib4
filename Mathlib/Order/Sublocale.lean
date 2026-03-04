@@ -235,14 +235,14 @@ instance Sublocale.instCoframeMinimalAxioms : Order.Coframe.MinimalAxioms (Sublo
     nucleusIsoSublocale.symm_eq_toNucleus, nucleusIsoSublocale.symm.map_sup,
     nucleusIsoSublocale.symm.map_sInf, sup_iInf_eq, nucleusIsoSublocale.symm.map_iInf]
 
-instance instCoframe : Order.Coframe (Sublocale X) :=
-  .ofMinimalAxioms instCoframeMinimalAxioms
+instance Sublocale.instCoframe : Order.Coframe (Sublocale X) :=
+  .ofMinimalAxioms Sublocale.instCoframeMinimalAxioms
 
-lemma univ_eq_top : (⟨univ, fun _ _ ↦ trivial, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ :=
+lemma Sublocale.univ_eq_top : (⟨univ, fun _ _ ↦ trivial, fun _ _ a ↦ a⟩ : Sublocale X) = ⊤ :=
   le_antisymm le_top (fun _ _ ↦ trivial)
 
-lemma singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ :=
-  le_antisymm (fun i h ↦ by simp_all [top_mem]) bot_le
+lemma Sublocale.singleton_top_eq_bot : (⟨{⊤}, by simp, by simp⟩ : Sublocale X) = ⊥ :=
+  le_antisymm (fun i h ↦ by simp_all [Sublocale.top_mem]) bot_le
 
 /--
 An open sublocale is defined by an element of the locale.
@@ -292,9 +292,10 @@ instance : Coe (Open X) (Nucleus X) where
 
 instance : CompleteLattice (Open X) := get_element.symm.toGaloisInsertion.liftCompleteLattice
 
-instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s ↦ by
-  simp_rw [Open.le_def]; simp [inf_sSup_eq, le_iSup_iff]⟩
+instance : Order.Frame (Open X) := .ofMinimalAxioms ⟨fun a s  ↦ by
+  simp [Open.le_def, OrderIso.map_inf, OrderIso.map_sSup, OrderIso.map_iSup, inf_iSup_eq]⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The map from open sublocales to their corresponding sublocale is a `FrameHom`. It preserves finite
 meets and arbitrary joins.
@@ -308,8 +309,8 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
     congr
     ext x
     change _ = (sInf (toNucleus '' s)) x
-    simp only [toNucleus, map_sSup, Nucleus.coe_mk, InfHom.coe_mk, ofDual_sSup, Nucleus.sInf_apply,
-      mem_preimage, mem_image, iInf_exists]
+    simp only [toNucleus, map_sSup, Nucleus.coe_mk, InfHom.coe_mk, Nucleus.sInf_apply, mem_image,
+      iInf_exists]
     apply le_antisymm
     · simp only [le_iInf_iff, and_imp, forall_apply_eq_imp_iff₂, Nucleus.coe_mk, InfHom.coe_mk]
       exact fun _ h ↦ himp_le_himp (le_sSup (by simp [h])) (le_refl _)
@@ -343,7 +344,6 @@ def toSublocale : FrameHom (Open X) (Sublocale X) where
         intro i
         rw [← inf_assoc]
         exact inf_le_of_left_le himp_inf_le
-  map_top' := by simp [Nucleus.toSublocale, Open.toNucleus, ← Sublocale.univ_eq_top]
+  map_top' := by simp [Nucleus.toSublocale, Open.toNucleus, Sublocale.univ_eq_top]
 
 end Open
-end Sublocale
