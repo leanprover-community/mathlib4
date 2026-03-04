@@ -874,7 +874,8 @@ algebra homomorphisms `R[X]/p →ₐ[R] S`. -/
 @[simps!]
 noncomputable def equivAeval [CommRing R] [CommRing S] [Algebra R S] (p : R[X]) :
     (AdjoinRoot p →ₐ[R] S) ≃ {x : S // p.aeval x = 0} :=
-  equivAlgHom p |>.trans <| Equiv.subtypeEquiv (aevalEquiv ..).symm fun _ ↦ by simp [aeval]
+  equivAlgHom p |>.trans <| Equiv.subtypeEquiv (aevalEquiv ..).symm fun _ ↦ by
+    simp [aeval, aevalEquiv]
 
 end Equiv
 
