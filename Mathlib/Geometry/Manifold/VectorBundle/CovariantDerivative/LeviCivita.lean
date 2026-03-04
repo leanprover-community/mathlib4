@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
-public import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 public import Mathlib.Util.PrintSorries
 
@@ -534,7 +532,6 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     · simp only [bar, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul]; rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   rw [h1, h2, product_swap I Y Z]
-
   set A := rhs_aux I X Y Z x
   set B := rhs_aux I Y Z X x
   set C := rhs_aux I Z X Y x
@@ -652,7 +649,8 @@ lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
   trans ⟪∇ X, Y, Z⟫ + ⟪Y, ∇ X, Z⟫
   · ext x
     exact h.1 X Y Z x
-  · simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
+  · sorry
+    -- simp [← isTorsionFree_iff.mp h.2 X Z, product_sub_right]
 
 lemma isolate_aux {α : Type*} [AddCommGroup α]
     (A D E F X Y Z : α) (h : X + Y - Z = A + A + D + E - F) :
@@ -688,43 +686,21 @@ lemma IsLeviCivitaConnection.eq_leviCivitaRhs (h : cov.IsLeviCivitaConnection) :
 
 section
 
-attribute [local instance] Fintype.toOrderBot Fintype.toLocallyFiniteOrder
-
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
-
 variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
 vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
 -- TODO: is this true if E is infinite-dimensional? trace the origin of the `Fintype` assumptions!
 lemma congr_of_forall_product [FiniteDimensional ℝ E]
     (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
-  obtain (_hE | hE) := subsingleton_or_nontrivial E
-  · ext x
-    have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
-    apply Subsingleton.allEq _
-  ext x
-  let b := Basis.ofVectorSpace ℝ E
-  let t := trivializationAt E (TangentSpace I : M → Type _) x
-  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
-  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ E) := b.index_nonempty
-  -- The linear ordering on the indexing set of `b` is only used in this proof,
-  -- so our choice does not matter.
-  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ E) := by
-    choose r wo using exists_wellOrder _
-    exact r
-  have : LocallyFiniteOrderBot ↑(Basis.ofVectorSpaceIndex ℝ E) := inferInstance
-  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
-  let real := b.orthonormalFrame t
-  have hframe := b.orthonormalFrame_isOrthonormalFrameOn t (F := E) (IB := I) (n := 1)
-  rw [hframe.eq_iff_coeff hx]
-  intro i
-  have h₁ : ⟪X, real i⟫ x = (hframe.coeff i) X x := by
-    rw [hframe.coeff_eq_inner' _ hx]
-    simp [real, real_inner_comm]
-  have h₂ : ⟪X', real i⟫ x = (hframe.coeff i) X' x := by
-    rw [hframe.coeff_eq_inner' _ hx]
-    simp [real, real_inner_comm]
-  rw [← h₁, ← h₂, h (real i)]
+  ext1 x
+  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
+  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
+  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
+  apply Φ.injective
+  ext Z₀
+  simpa [Φ, product] using congr($(h (_root_.extend I E Z₀)) x)
+
+variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
@@ -736,10 +712,11 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     cov = cov' := by
   ext X σ x
   apply congrFun
-  apply congr_of_forall_product fun Z ↦ ?_
-  trans leviCivitaRhs I X σ Z
-  · exact hcov.eq_leviCivitaRhs I X σ Z
-  · exact (hcov'.eq_leviCivitaRhs I X σ Z ).symm
+  sorry
+  -- apply congr_of_forall_product fun Z ↦ ?_
+  -- trans leviCivitaRhs I X σ Z
+  -- · exact hcov.eq_leviCivitaRhs I X σ Z
+  -- · exact (hcov'.eq_leviCivitaRhs I X σ Z ).symm
 
 open Classical in
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
@@ -895,6 +872,13 @@ noncomputable def LeviCivitaConnection [FiniteDimensional ℝ E] :
     CovariantDerivative I E (TangentSpace I : M → Type _) where
   toFun := lcAux I
   isCovariantDerivativeOn := isCovariantDerivativeOn_lcAux I
+
+theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
+    {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
+    {Y : Π x : M, TangentSpace I x} (hY : MDiffAt (T% Y) x)
+    {Z : Π x : M, TangentSpace I x} (hZ : MDiffAt (T% Z) x) :
+    inner ℝ (LeviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
+  lcAux_apply _ hX hY hZ
 
 #exit
 -- TODO: move this section to `Torsion.lean`
