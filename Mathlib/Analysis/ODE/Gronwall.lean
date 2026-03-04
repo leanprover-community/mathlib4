@@ -54,50 +54,34 @@ theorem hasDerivAt_gronwallBound (δ K ε x : ℝ) :
     HasDerivAt (gronwallBound δ K ε) (K * gronwallBound δ K ε x + ε) x := by
   by_cases hK : K = 0
   · subst K
-    simp only [gronwallBound_K0, zero_mul, zero_add]
-    convert ((hasDerivAt_id x).const_mul ε).const_add δ
-    rw [mul_one]
-  · simp only [gronwallBound_of_K_ne_0 hK]
+    simpa [gronwallBound_K0] using hasDerivAt_const_mul ε
+  · rw [gronwallBound_of_K_ne_0 hK]
     convert (((hasDerivAt_id x).const_mul K).exp.const_mul δ).add
       ((((hasDerivAt_id x).const_mul K).exp.sub_const 1).const_mul (ε / K)) using 1
-    simp only [id, mul_add, (mul_assoc _ _ _).symm, mul_comm _ K, mul_div_cancel₀ _ hK]
-    ring
+    grind
 
 theorem hasDerivAt_gronwallBound_shift (δ K ε x a : ℝ) :
     HasDerivAt (fun y => gronwallBound δ K ε (y - a)) (K * gronwallBound δ K ε (x - a) + ε) x := by
-  convert (hasDerivAt_gronwallBound δ K ε _).comp x ((hasDerivAt_id x).sub_const a) using 1
-  rw [id, mul_one]
+  simpa using (hasDerivAt_gronwallBound δ K ε _).comp x ((hasDerivAt_id x).sub_const a)
 
 theorem gronwallBound_x0 (δ K ε : ℝ) : gronwallBound δ K ε 0 = δ := by
-  by_cases hK : K = 0
-  · simp only [gronwallBound, if_pos hK, mul_zero, add_zero]
-  · simp only [gronwallBound, if_neg hK, mul_zero, exp_zero, sub_self, mul_one,
-      add_zero]
+  simp [gronwallBound]
 
 theorem gronwallBound_ε0 (δ K x : ℝ) : gronwallBound δ K 0 x = δ * exp (K * x) := by
-  by_cases hK : K = 0
-  · simp only [gronwallBound_K0, hK, zero_mul, exp_zero, add_zero, mul_one]
-  · simp only [gronwallBound_of_K_ne_0 hK, zero_div, zero_mul, add_zero]
+  by_cases hK : K = 0 <;> simp [gronwallBound_K0, gronwallBound_of_K_ne_0, hK]
 
 theorem gronwallBound_ε0_δ0 (K x : ℝ) : gronwallBound 0 K 0 x = 0 := by
-  simp only [gronwallBound_ε0, zero_mul]
+  rw [gronwallBound_ε0, zero_mul]
 
 theorem gronwallBound_continuous_ε (δ K x : ℝ) : Continuous fun ε => gronwallBound δ K ε x := by
-  by_cases hK : K = 0
-  · simp only [gronwallBound_K0, hK]
-    fun_prop
-  · simp only [gronwallBound_of_K_ne_0 hK]
-    fun_prop
+  by_cases hK : K = 0 <;> simpa [gronwallBound_K0, gronwallBound_of_K_ne_0, hK] using by fun_prop
 
 /-- The Gronwall bound is monotone with respect to the time variable `x`. -/
 lemma gronwallBound_mono {δ K ε : ℝ} (hδ : 0 ≤ δ) (hε : 0 ≤ ε) (hK : 0 ≤ K) :
     Monotone (gronwallBound δ K ε) := by
   intro x₁ x₂ hx
   unfold gronwallBound
-  split_ifs with hK₀
-  · gcongr
-  · have hK_pos : 0 < K := by positivity
-    gcongr
+  split_ifs with hK₀ <;> gcongr
 
 /-! ### Inequality and corollaries -/
 
@@ -118,14 +102,11 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     apply image_le_of_liminf_slope_right_lt_deriv_boundary hf hf'
     · rwa [sub_self, gronwallBound_x0]
     · exact fun x => hasDerivAt_gronwallBound_shift δ K ε' x a
-    · intro x hx hfB
-      grw [← hfB, bound x hx]
-      gcongr
+    · grind
     · exact hx
   intro x hx
-  change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
   convert continuousWithinAt_const.closure_le _ _ (H x hx)
-  · simp only [closure_Ioi, self_mem_Ici]
+  · simp [closure_Ioi]
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
 
 /-- A Grönwall-like inequality: if `f : ℝ → E` is continuous on `[a, b]`, has right derivative
@@ -177,11 +158,8 @@ theorem dist_le_of_approx_trajectories_ODE_of_mem
     fun t ht => (hf' t ht).sub (hg' t ht)
   apply norm_le_gronwallBound_of_norm_deriv_right_le (hf.sub hg) h_deriv ha
   intro t ht
-  have := dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))
-  have hv := (hv t ht).dist_le_mul _ (hfs t ht) _ (hgs t ht)
-  rw [← dist_eq_norm, ← dist_eq_norm]
-  refine this.trans ((add_le_add (add_le_add (f_bound t ht) (g_bound t ht)) hv).trans ?_)
-  rw [add_comm]
+  grind [(hv t ht).dist_le_mul _ (hfs t ht) _ (hgs t ht), dist_eq_norm,
+    dist_triangle4_right (f' t) (g' t) (v t (f t)) (v t (g t))]
 
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
@@ -200,7 +178,7 @@ theorem dist_le_of_approx_trajectories_ODE
     ∀ t ∈ Icc a b, dist (f t) (g t) ≤ gronwallBound δ K (εf + εg) (t - a) :=
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
   dist_le_of_approx_trajectories_ODE_of_mem (fun t _ => (hv t).lipschitzOnWith) hf hf'
-    f_bound hfs hg hg' g_bound (fun _ _ => trivial) ha
+    f_bound hfs hg hg' g_bound (by trivial) ha
 
 /-- If `f` and `g` are two exact solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some
@@ -275,8 +253,7 @@ theorem ODE_solution_unique_of_mem_Icc_left
     replace ht : -t ∈ Ioc a b := by
       push _ ∈ _ at ht ⊢
       constructor <;> linarith
-    rw [← one_mul K]
-    exact LipschitzWith.id.neg.comp_lipschitzOnWith (hv _ ht)
+    simpa using LipschitzWith.id.neg.comp_lipschitzOnWith (hv _ ht)
   have hmt1 : MapsTo Neg.neg (Icc (-b) (-a)) (Icc a b) :=
     fun _ ht ↦ ⟨le_neg.mp ht.2, neg_le.mp ht.1⟩
   have hmt2 : MapsTo Neg.neg (Ico (-b) (-a)) (Ioc a b) :=
@@ -284,20 +261,16 @@ theorem ODE_solution_unique_of_mem_Icc_left
   have hmt3 (t : ℝ) : MapsTo Neg.neg (Ici t) (Iic (-t)) :=
     fun _ ht' ↦ mem_Iic.mpr <| neg_le_neg ht'
   suffices EqOn (f ∘ Neg.neg) (g ∘ Neg.neg) (Icc (-b) (-a)) by
-    rw [eqOn_comp_right_iff] at this
-    convert this
-    simp
+    simpa [eqOn_comp_right_iff] using this
   apply ODE_solution_unique_of_mem_Icc_right hv'
     (hf.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hfs _ (hmt2 ht))
     (hg.comp continuousOn_neg hmt1) _ (fun _ ht ↦ hgs _ (hmt2 ht)) (by simp [hb])
   · intro t ht
-    convert HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
+    simpa using HasFDerivWithinAt.comp_hasDerivWithinAt t (hf' (-t) (hmt2 ht))
       (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
-    simp
   · intro t ht
-    convert HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
+    simpa using HasFDerivWithinAt.comp_hasDerivWithinAt t (hg' (-t) (hmt2 ht))
       (hasDerivAt_neg t).hasDerivWithinAt (hmt3 t)
-    simp
 
 /-- A version of `ODE_solution_unique_of_mem_Icc_right` for uniqueness in a closed interval whose
 interior contains the initial time. -/
@@ -367,11 +340,11 @@ theorem ODE_solution_unique_of_eventually
     (hg : ∀ᶠ t in 𝓝 t₀, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
     (heq : f t₀ = g t₀) : f =ᶠ[𝓝 t₀] g := by
   obtain ⟨ε, hε, h⟩ := eventually_nhds_iff_ball.mp (hv.and (hf.and hg))
-  rw [Filter.eventuallyEq_iff_exists_mem]
+  rw [eventuallyEq_iff_exists_mem]
   refine ⟨ball t₀ ε, ball_mem_nhds _ hε, ?_⟩
-  simp_rw [Real.ball_eq_Ioo] at *
-  apply ODE_solution_unique_of_mem_Ioo (fun _ ht ↦ (h _ ht).1)
-    (Real.ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
+  rw [ball_eq_Ioo] at *
+  exact ODE_solution_unique_of_mem_Ioo (fun _ ht ↦ (h _ ht).1)
+    (ball_eq_Ioo t₀ ε ▸ mem_ball_self hε)
     (fun _ ht ↦ (h _ ht).2.1) (fun _ ht ↦ (h _ ht).2.2) heq
 
 /-- There exists only one solution of an ODE $\dot x=v(t, x)$ with
@@ -398,11 +371,6 @@ theorem ODE_solution_unique_univ
   ext t
   obtain ⟨A, B, Ht, Ht₀⟩ : ∃ A B, t ∈ Set.Ioo A B ∧ t₀ ∈ Set.Ioo A B := by
     use (min (-|t|) (-|t₀|) - 1), (max |t| |t₀| + 1)
-    rw [Set.mem_Ioo, Set.mem_Ioo]
-    refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
-    · exact sub_one_lt _ |>.trans_le <| min_le_left _ _ |>.trans <| neg_abs_le t
-    · exact le_abs_self _ |>.trans_lt <| le_max_left _ _ |>.trans_lt <| lt_add_one _
-    · exact sub_one_lt _ |>.trans_le <| min_le_right _ _ |>.trans <| neg_abs_le t₀
-    · exact le_abs_self _ |>.trans_lt <| le_max_right _ _ |>.trans_lt <| lt_add_one _
+    grind
   exact ODE_solution_unique_of_mem_Ioo
     (fun t _ => hv t) Ht₀ (fun t _ => hf t) (fun t _ => hg t) heq Ht
