@@ -148,6 +148,22 @@ theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := b
   exact tr <| Algebra.IsAlgebraic.trans _ _ _ (alg := f.isAlgebraic_adjoin_simple_X' hf)
 
 set_option backward.isDefEq.respectTransparency false in
+noncomputable def algEquivAdjoin (hf : ¬∃ c, f = C c) : RatFunc K ≃ₐ[K] K⟮f⟯ :=
+  IsFractionRing.algEquivOfAlgEquiv (algEquivOfTranscendental K f (f.transcendental_of_ne_C hf))
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivAdjoin_algebraMap (hf : ¬∃ c, f = C c) (g : K[X]) :
+    f.algEquivAdjoin hf (algebraMap K[X] (RatFunc K) g) = aeval f g := by
+  simp [algEquivAdjoin]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivAdjoin_X (hf : ¬∃ c, f = C c) :
+    f.algEquivAdjoin hf (X : RatFunc K) = f := by
+  rw [← algebraMap_X, algEquivAdjoin_algebraMap, aeval_X]
+
+set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K[f]) := by
   let e := algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
   let φ : K[X][X] := f.num.map (algebraMap ..) -
@@ -651,6 +667,10 @@ theorem eq_adjoin_generator : E = K⟮(generator E : RatFunc K)⟯ := by
     exact generator_ne_C h ((eq_C_iff _).mpr (Nat.max_eq_zero_iff.mp H))
   rw [← Φ_natDegree_eq_ψ_natDegree h, Φ_natDegree_eq_θ_natDegree h]
   exact le_antisymm (θ_natDegree_le h) (swap_Φ_natDegree_eq_θ_natDegree h ▸ le_swap_Φ_natDegree h)
+
+noncomputable def algEquiv (h : E ≠ ⊥) : RatFunc K ≃ₐ[K] E := 
+  (algEquivAdjoin (generator E) (generator_ne_C h)).trans <|
+    IntermediateField.equivOfEq eq_adjoin_generator.symm
 
 end Luroth
 
