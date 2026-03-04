@@ -204,14 +204,6 @@ theorem finrank_ker_adjoint_comp_self {n : ℕ} (hn : Module.finrank 𝕜 E = n)
     rw [← hn, ← LinearMap.finrank_range_add_finrank_ker (adjoint T ∘ₗ T)]
     omega
 
-theorem card_support_singularValues {n : ℕ} (hn : Module.finrank 𝕜 E = n)
-    --(hμ : Module.End.HasEigenvalue (adjoint T ∘ₗ T) (0 : 𝕜)) :
-    : T.singularValues.support.card = Module.finrank 𝕜 (range T) := by
-  rw [← Module.finrank_range_adjoint]
-
-  rw [← T.card_zero_eigenvalues_eq_finrank_ker hn]
-
-
 
 omit [FiniteDimensional 𝕜 F] in
 theorem finrank_comp_self {n : ℕ} (hn : Module.finrank 𝕜 E = n) :
@@ -224,57 +216,25 @@ theorem finrank_range_adjoint_comp_self :
   Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) = Module.finrank 𝕜 (range T) := by
     rw [range_adjoint_comp_self', Module.finrank_range_adjoint]
 
--- 5. From 4. and the fact that singular values are antitone, the following two theroems follow
--- We have this: singularValues_antitone
--- singularValues_antitone : Antitone T.singularValues
-
--- Roadmap for next two theorems:
--- 1. μ appears in (T*T).eigenvalues a number of times equal to the dimension of the eigenspace of μ
--- 2. From 1., 0 appears in (T*T).eigenvalues a number of times equal to dim(ker(T))
--- 3. From 2., 0 appears as a singular value `dim(ker(T*T))` (= `n - rank(T*T)`) times
--- 4. From 3., the number of positive singular values is `rank(T*T) = rank(T)`
--- 5. From 4. and the fact that singular values are antitone, the following two theroems follow
 theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
     contrapose! hn
-    have : T.singularValues.support ⊆ Finset.range n := sorry
+    simp only [nonpos_iff_eq_zero] at hn
+    have antitone := singularValues_antitone T
+    have : T.singularValues.support ⊆ Finset.range n := by
+      intro i hi
+      rw [Finset.mem_range]
+      rw [Finsupp.mem_support_iff] at hi
+      have hi₂ : 0 < T.singularValues i := pos_of_ne_zero hi
+      contrapose! hi₂
+      rw [←hn]
+      apply antitone
+      exact hi₂
     calc
-      Module.finrank 𝕜 ↥T.range = T.singularValues.support.card := by sorry
-      _ ≤ Finset.card (Finset.range n) := by sorry
+      Module.finrank 𝕜 T.range = T.singularValues.support.card := by sorry
+      _ ≤ Finset.card (Finset.range n) := Finset.card_le_card this
       _ = n := by simp
 
-    -- rw [← Module.finrank_range_adjoint, ← range_adjoint_comp_self'] at hn
-    -- have hn' : n < Module.finrank 𝕜 E := by
-    --   calc n < Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) := hn
-    --   _ ≤ Module.finrank 𝕜 E := Submodule.finrank_le _
-    -- have hpos : 0 < T.isSymmetric_adjoint_comp_self.eigenvalues rfl ⟨n, hn'⟩ := by
-    --   refine lt_of_le_of_ne' (T.eigenvalues_adjoint_comp_self_nonneg rfl ⟨n, hn'⟩) ?_
-    --   intro hzero
-    --   by_cases h : Module.End.HasEigenvalue (adjoint T ∘ₗ T) (0 : 𝕜)
-    --   ·
-    --     have h2 := card_zero_eigenvalues_eq_finrank_ker T rfl h
-    --     have h3 := finrank_ker_adjoint_comp_self T rfl
-    --     have hkey : Module.finrank 𝕜 (ker (adjoint T ∘ₗ T)) = Module.finrank 𝕜 E - Module.finrank 𝕜 (range (adjoint T ∘ₗ T))  := by
-    --       simp [h3]
-    --     have hkey2 : Module.finrank 𝕜 (ker (adjoint T ∘ₗ T)) + Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) = Module.finrank 𝕜 E  := by
-    --       sorry
-
-    --     have antitone : Antitone T.singularValues := T.singularValues_antitone
-    --     have hL := card_zero_eigenvalues_eq_finrank_ker T rfl h
-    --     have h4 : T.singularValues (Module.finrank 𝕜 ↥(adjoint T ∘ₗ T).range) ≤ T.singularValues n := by
-    --       have needed : n ≤ Module.finrank 𝕜 ↥(adjoint T ∘ₗ T).range := Nat.le_of_lt hn
-    --       exact antitone needed
-
-
-
-    --     rw [h3] at h2
-
-
-    --   · apply h
-    --     simpa [hzero] using T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨n, hn'⟩
-    -- have hsq : 0 < (T.singularValues n : ℝ) ^ 2 := by
-    --   simpa [T.sq_singularValues_of_lt rfl hn'] using hpos
-    -- simpa using Real.sqrt_pos.mpr hsq
 
 -- It's unclear what the right way to state "The rank of T, as a natural number" is,
 -- I went with this approach simply because it appeared more times in Loogle, but maybe
