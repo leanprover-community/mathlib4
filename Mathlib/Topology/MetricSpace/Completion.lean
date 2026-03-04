@@ -213,6 +213,7 @@ theorem Isometry.extensionHom_coe [Ring α] [IsTopologicalRing α] [IsUniformAdd
     h.extensionHom x = f x :=
   UniformSpace.Completion.extensionHom_coe f h.continuous _
 
+/-- The lift of an isometry to completions. -/
 def Isometry.mapRingHom [Ring α] [IsTopologicalRing α] [IsUniformAddGroup α] [Ring β]
     [PseudoMetricSpace β] [IsUniformAddGroup β] [IsTopologicalRing β] {f : α →+* β}
     (h : Isometry f) : Completion α →+* Completion β :=
