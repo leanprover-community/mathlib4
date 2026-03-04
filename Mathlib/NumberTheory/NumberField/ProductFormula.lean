@@ -39,7 +39,6 @@ variable {K : Type*} [Field K] [NumberField K]
 
 open Algebra
 
-set_option backward.isDefEq.respectTransparency false in
 open Function Ideal IsDedekindDomain HeightOneSpectrum in
 /-- For any non-zero `x` in `𝓞 K`, the product of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℤ x`. -/
@@ -84,15 +83,16 @@ theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
   have ha : a ≠ 0 := by
     rintro rfl
     simp at h_x_nezero
-  simp_rw [map_div₀, Rat.cast_inv, Rat.cast_abs, finprod_div_distrib (mulSupport_finite_int ha)
-    (mulSupport_finite_int hb), prod_eq_inv_abs_norm_int ha, prod_eq_inv_abs_norm_int hb]
+  simp_rw [map_div₀, Rat.cast_inv, Rat.cast_abs,
+    finprod_div_distrib (hasFiniteMulSupport_int ha) (hasFiniteMulSupport_int hb),
+    prod_eq_inv_abs_norm_int ha, prod_eq_inv_abs_norm_int hb]
   rw [← inv_eq_iff_eq_inv, inv_inv_div_inv, ← abs_div]
   congr
   have hb₀ : ((Algebra.norm ℤ) b : ℝ) ≠ 0 := by simp [hb]
   refine (eq_div_of_mul_eq hb₀ ?_).symm
   norm_cast
-  rw [coe_norm_int a, coe_norm_int b, ← map_mul, div_mul_cancel₀ _
-    (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
+  rw [coe_norm_int a, coe_norm_int b, ← map_mul,
+    div_mul_cancel₀ _ (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
 
 open FinitePlace in
 /-- The Product Formula for the Number Field `K`. -/

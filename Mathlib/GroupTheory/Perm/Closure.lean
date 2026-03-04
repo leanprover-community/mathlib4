@@ -35,7 +35,6 @@ variable [Finite β]
 
 open Subgroup
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closure_isCycle : closure { σ : Perm β | IsCycle σ } = ⊤ := by
   classical
     cases nonempty_fintype β
@@ -44,7 +43,6 @@ theorem closure_isCycle : closure { σ : Perm β | IsCycle σ } = ⊤ := by
 
 variable [DecidableEq α] [Fintype α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.support = univ) (x : α) :
     closure ({σ, swap x (σ x)} : Set (Perm α)) = ⊤ := by
   let H := closure ({σ, swap x (σ x)} : Set (Perm α))
@@ -96,7 +94,6 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
   rw [h6]
   exact step4 y z
 
-set_option backward.isDefEq.respectTransparency false in
 theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n (Fintype.card α))
     (h1 : IsCycle σ) (h2 : σ.support = Finset.univ) (x : α) :
     closure ({σ, swap x ((σ ^ n) x)} : Set (Perm α)) = ⊤ := by

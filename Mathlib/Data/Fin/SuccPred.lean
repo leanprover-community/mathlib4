@@ -174,7 +174,7 @@ theorem castSucc_le_succ {n} (i : Fin n) : i.castSucc ≤ i.succ := Nat.le_succ 
 
 theorem le_of_castSucc_lt_of_succ_lt {a b : Fin (n + 1)} {i : Fin n}
     (hl : castSucc i < a) (hu : b < succ i) : b < a := by
-  simp [Fin.lt_def, -val_fin_lt] at *; lia
+  simp [Fin.lt_def, -val_fin_lt] at *; omega
 
 theorem castSucc_lt_or_lt_succ (p : Fin (n + 1)) (i : Fin n) : castSucc i < p ∨ p < i.succ := by
   simpa [Fin.lt_def, -val_fin_lt] using by omega

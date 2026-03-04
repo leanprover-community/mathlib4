@@ -145,9 +145,9 @@ Is analogy to `Finsupp.single`, this definition presents the indicator function
 of a single point as a function with locally finite support.
 -/
 noncomputable def single [DecidableEq X] [Zero Y] (x : X) (y : Y) : locallyFinsupp X Y where
-  toFun :=  Pi.single x y
+  toFun := Pi.single x y
   supportWithinDomain' z hz := by tauto
-  supportLocallyFiniteWithinDomain' _ _:=
+  supportLocallyFiniteWithinDomain' _ _ :=
     ⟨Set.univ, univ_mem, by simpa using (finite_singleton x).subset Pi.support_single_subset⟩
 
 /--

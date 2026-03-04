@@ -32,7 +32,6 @@ namespace Int
 
 open Metric
 
-set_option backward.isDefEq.respectTransparency false in
 /-- This is a special case of `NormedSpace.discreteTopology_zmultiples`. It exists only to simplify
 dependencies. -/
 instance {a : ℝ} : DiscreteTopology (AddSubgroup.zmultiples a) := by
