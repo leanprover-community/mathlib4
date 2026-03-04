@@ -37,6 +37,20 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare functions, sets, points and smoothness indices
   {s : Set M} {x : M} {n : WithTop ℕ∞}
 
+/-- Typeclass asserting that scalar multiplication by any constant is smooth. -/
+class SmoothConstSMul (I : ModelWithCorners 𝕜 E H) (Γ : Type*) (N : Type*)
+    [TopologicalSpace N] [ChartedSpace H N] [SMul Γ N] : Prop where
+  smooth_const_smul : ∀ c : Γ, ContMDiff I I ⊤ (fun x : N => c • x)
+
+/-- Typeclass asserting that scalar multiplication is smooth in both variables. -/
+class SmoothSMul (I : ModelWithCorners 𝕜 E H) {H' : Type*} [TopologicalSpace H']
+    (J : ModelWithCorners 𝕜 E' H') (Γ : Type*) (N : Type*) [TopologicalSpace Γ]
+    [ChartedSpace H Γ] [TopologicalSpace N] [ChartedSpace H' N] [SMul Γ N] : Prop where
+  smooth_smul : ContMDiff (I.prod J) J ⊤ (fun p : Γ × N => p.1 • p.2)
+
+export SmoothConstSMul (smooth_const_smul)
+export SmoothSMul (smooth_smul)
+
 section Module
 
 set_option backward.isDefEq.respectTransparency false in
@@ -268,6 +282,12 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 /-- On any vector space, multiplication by a scalar is a smooth operation. -/
 theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
   contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
+
+instance : SmoothSMul 𝓘(𝕜) 𝓘(𝕜, V) 𝕜 V where
+  smooth_smul := contMDiff_smul
+
+instance : SmoothConstSMul 𝓘(𝕜, V) 𝕜 V where
+  smooth_const_smul c := (contDiff_id.const_smul c).contMDiff
 
 theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
     (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
