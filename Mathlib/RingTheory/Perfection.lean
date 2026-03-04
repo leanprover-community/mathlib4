@@ -126,6 +126,16 @@ theorem coeffMonoidHom_pow_p_pow (f : Perfection M p) (m n : ℕ) :
     coeffMonoidHom M p (m + n) (f ^ p ^ n) = coeffMonoidHom M p m f :=
   n.recOn (by simp) fun n ih ↦ by rw [pow_succ, pow_mul, Nat.add_succ, coeffMonoidHom_pow_p, ih]
 
+@[simp]
+theorem coeffMonoidHom_pow_p_pow' (f : Perfection M p) (m n : ℕ) :
+    coeffMonoidHom M p (m + n) f ^ p ^ n = coeffMonoidHom M p m f := by
+  rw [← map_pow, coeffMonoidHom_pow_p_pow]
+
+@[simp]
+theorem coeffMonoidHom_pow_p_pow_self (f : Perfection M p) (n : ℕ) :
+    coeffMonoidHom M p n f ^ p ^ n = coeffMonoidHom M p 0 f := by
+  rw [← coeffMonoidHom_pow_p_pow' _ 0 n, zero_add]
+
 theorem coeffMonoidHom_powMonoidHom (f : Perfection M p) (n : ℕ) :
     coeffMonoidHom M p (n + 1) (powMonoidHom p f) = coeffMonoidHom M p n f :=
   coeffMonoidHom_pow_p f n
@@ -141,7 +151,7 @@ theorem coeffMonoidHom_iterate_powMonoidHom' (f : Perfection M p) (n m : ℕ) (h
 
 /-- Given monoids `M` and `N`, with `M` being perfect,
 any homomorphism `M →+* N` can be lifted uniquely to a homomorphism `M →* Perfection N p`. -/
-@[simps]
+@[simps! symm_apply]
 noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRing M p]
     (N : Type*) [CommMonoid N] : (M →* N) ≃* (M →* Perfection N p) where
   toFun f :=
@@ -158,6 +168,10 @@ noncomputable def liftMonoidHom (p : ℕ) (M : Type*) [CommMonoid M] [PerfectRin
       coeffMonoidHom_mk]
     rw [← coeffMonoidHom_pow_p_pow _ 0 n, ← map_pow, powMulEquiv_symm_pow_p, zero_add]
   map_mul' _ _ := by ext; simp
+
+@[simp] lemma coeffMonoidHom_zero_liftMonoidHom
+    (p : ℕ) {M N : Type*} [CommMonoid M] [PerfectRing M p] [CommMonoid N] (e : M →* N) (x : M) :
+    coeffMonoidHom N p 0 (liftMonoidHom p M N e x) = e x := by simp [liftMonoidHom]
 
 /-- A monoid homomorphism `M →* N` induces `Perfection M p →* Perfection N p`. -/
 @[simps!]
@@ -370,6 +384,14 @@ instance : CommRing (Perfection R p) :=
   (subring R p).toCommRing
 
 end CommRing
+
+section CommMonoid_CommRing
+
+@[simp] theorem coeff_mapMonoidHom {p : ℕ} [Fact p.Prime] {M N : Type*} [CommMonoid M] [CommRing N]
+    [CharP N p] (e : M →* N) (n : ℕ) (x : Perfection M p) :
+    coeff N p n (mapMonoidHom p e x) = e (coeffMonoidHom M p n x) := rfl
+
+end CommMonoid_CommRing
 
 end Perfection
 

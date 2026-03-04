@@ -100,7 +100,7 @@ limit of `p^n`-th powers of arbitrary lifts in `R` of the `n`-th component from 
 The simp NF is `teichmuller₀`. -/
 noncomputable def teichmuller : Perfection (R ⧸ I) p →* R where
   toFun := teichmullerFun
-  map_one' := teichmullerFun_spec fun _ ↦ ⟨1, by simp; rfl⟩
+  map_one' := teichmullerFun_spec fun _ ↦ ⟨1, by simp⟩
   map_mul' x y := by
     refine teichmullerFun_spec fun n ↦ ?_
     refine ⟨(coeff _ p n x).out * (coeff _ p n y).out, by simp, ?_⟩
@@ -125,7 +125,7 @@ theorem teichmuller_spec {x : Perfection (R ⧸ I) p} {y : R}
 
 theorem teichmuller_zero : teichmuller p I 0 = 0 :=
   have : p ≠ 0 := Nat.Prime.ne_zero Fact.out
-  teichmuller_spec fun n ↦ ⟨0, by simp [zero_pow (pow_ne_zero n this)]; rfl⟩
+  teichmuller_spec fun n ↦ ⟨0, by simp [zero_pow (pow_ne_zero n this)]⟩
 
 variable (p I) in
 /-- `teichmuller` as a `MonoidWithZeroHom`. This is the simp NF. -/
@@ -158,11 +158,18 @@ theorem teichmuller₀_spec {x : Perfection (R ⧸ I) p} {y : R}
     teichmuller₀ p I x = y :=
   teichmullerFun_spec h
 
+@[simp] theorem teichmuller₀_mapMonoidHom_idealQuotientMk {x : Perfection R p} :
+    teichmuller₀ p I (mapMonoidHom p (Ideal.Quotient.mk I) x) = coeffMonoidHom R p 0 x :=
+  teichmuller₀_spec fun n ↦ ⟨coeffMonoidHom R p n x, by simp⟩
+
 theorem mk_teichmuller (x : Perfection (R ⧸ I) p) :
     Ideal.Quotient.mk I (teichmuller p I x) = coeff _ p 0 x := by
   have := teichmuller_sModEq <| Ideal.Quotient.mk_out <| coeff _ p 0 x
   simp_rw [zero_add, pow_one] at this
   simpa [SModEq.idealQuotientMk] using this
+
+@[simp] theorem mk_teichmuller₀ (x : Perfection (R ⧸ I) p) :
+    Ideal.Quotient.mk I (teichmuller₀ p I x) = coeff _ p 0 x := mk_teichmuller _
 
 variable (p I) in
 theorem mk_comp_teichmuller :
@@ -180,5 +187,20 @@ variable (p I) in
 theorem mk_comp_teichmuller' :
     Ideal.Quotient.mk I ∘ (teichmuller p I) = coeff (R ⧸ I) p 0 :=
   funext mk_teichmuller
+
+set_option backward.isDefEq.respectTransparency false in
+noncomputable def quotientMulEquiv : Perfection R p ≃* Perfection (R ⧸ I) p := MonoidHom.toMulEquiv
+  (mapMonoidHom _ <| Ideal.Quotient.mk I)
+  (liftMonoidHom p _ _ <| teichmuller p I)
+  ((liftMonoidHom p _ _).symm.injective <| by ext; simp)
+  ((liftMonoidHom p _ _).symm.injective <| by ext; simp)
+
+@[simp] theorem coeff_quotientMulEquiv (x : Perfection R p) (n : ℕ) :
+    coeff (R ⧸ I) p n (quotientMulEquiv x) = Ideal.Quotient.mk I (coeffMonoidHom R p n x) := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp] theorem coeff_zero_symm_quotientMulEquiv (x : Perfection (R ⧸ I) p) :
+    coeffMonoidHom R p 0 (quotientMulEquiv.symm x) = teichmuller₀ p I x := by
+  simp [quotientMulEquiv]
 
 end Perfection
