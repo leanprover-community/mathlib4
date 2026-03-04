@@ -812,7 +812,7 @@ theorem freeGroupCongr_trans {α β γ} (e : α ≃ β) (f : β ≃ γ) :
   MulEquiv.ext <| map.comp _ _
 
 /-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves surjectivity. -/
-@[to_additive /-- Composing an additive homomorphism with a reindexing `freeGroupCongr`
+@[to_additive /-- Composing an additive homomorphism with a reindexing `freeAddGroupCongr`
 preserves surjectivity. -/]
 lemma surjective_comp_freeGroupCongr {G : Type*} [Group G]
     (e : α ≃ β) (f : FreeGroup α →* G) (hfsurj : Function.Surjective f) :
@@ -821,7 +821,7 @@ lemma surjective_comp_freeGroupCongr {G : Type*} [Group G]
   simpa [iso] using hfsurj.comp iso.surjective
 
 /-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves injectivity. -/
-@[to_additive /-- Composing an additive homomorphism with a reindexing `freeGroupCongr`
+@[to_additive /-- Composing an additive homomorphism with a reindexing `freeAddGroupCongr`
 preserves injectivity. -/]
 lemma injective_comp_freeGroupCongr {G : Type*} [Group G]
     (e : α ≃ β) (f : FreeGroup α →* G) (hfinj : Function.Injective f) :
@@ -830,7 +830,7 @@ lemma injective_comp_freeGroupCongr {G : Type*} [Group G]
   simpa [iso] using hfinj.comp iso.injective
 
 /-- Composing a homomorphism with a reindexing `freeGroupCongr` preserves bijectivity. -/
-@[to_additive /-- Composing a homomorphism with a reindexing `freeGroupCongr`
+@[to_additive /-- Composing a homomorphism with a reindexing `freeAddGroupCongr`
 preserves bijectivity. -/]
 lemma bijective_comp_freeGroupCongr {G : Type*} [Group G]
     (e : α ≃ β) (f : FreeGroup α →* G) (hfbij : Function.Bijective f) :
@@ -841,7 +841,7 @@ lemma bijective_comp_freeGroupCongr {G : Type*} [Group G]
   ⟩
 
 /-- Reindexing free-group generators via an equivalence preserves isomorphisms. -/
-@[to_additive /-- Reindexing additive `FreeGroup` generators via an equivalence preserves
+@[to_additive /-- Reindexing additive `FreeAddGroup` generators via an equivalence preserves
 isomorphisms. -/]
 def mulEquiv_comp_freeGroupCongr {G : Type*} [Group G]
     (e : α ≃ β) (f : FreeGroup α ≃* G) : FreeGroup β ≃* G :=
