@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.Valuation.Extension
 public import Mathlib.Topology.Algebra.Algebra
 
 /-!
@@ -37,6 +38,8 @@ variable [Field K] [Field L] [Algebra K L]
 variable [Algebra A K] [IsFractionRing A K] [Algebra A L] [IsScalarTower A K L]
 variable [Algebra B L] [IsFractionRing B L] [IsScalarTower A B L]
 variable (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) [w.asIdeal.LiesOver v.asIdeal]
+
+set_option trace.profiler true
 
 theorem intValuation_liesOver (x : A) :
     v.intValuation x ^ (v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal) =
@@ -76,13 +79,13 @@ theorem uniformContinuous_algebraMap_liesOver :
     exact Int.mul_lt_of_lt_ediv
       (mod_cast Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
 
-set_option backward.isDefEq.respectTransparency false in
-open WithZeroTopology UniformSpace.Completion in
-theorem valued_liesOver
-    [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
     [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
-    (x : v.adicCompletion K) :
+
+set_option backward.isDefEq.respectTransparency false in
+open WithZeroTopology UniformSpace.Completion in
+theorem valued_liesOver (x : v.adicCompletion K) :
     Valued.v x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
       Valued.v (algebraMap _ (w.adicCompletion L) x) := by
   induction x using induction_on with
@@ -96,6 +99,28 @@ theorem valued_liesOver
     simp only [Valued.valuedCompletion_apply, ← this, WithVal.valued_toVal,
       ← valuation_liesOver L v]
     rw [WithVal.valued_toVal]
+
+instance : (Valued.v : Valuation (v.adicCompletion K) _).HasExtension
+      (Valued.v : Valuation (w.adicCompletion L) _) where
+  val_isEquiv_comap := by
+    simp only [Valuation.isEquiv_iff_val_eq_one, Valuation.comap_apply, ← valued_liesOver]
+    intro x
+    exact ⟨by simp_all, fun h ↦ by
+      grind [pow_eq_one_iff, ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]⟩
+
+noncomputable instance : Algebra (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
+  Valuation.HasExtension.instAlgebra_valuationSubring _ _
+
+instance : IsLocalHom (algebraMap (v.adicCompletionIntegers K) (w.adicCompletionIntegers L)) :=
+  Valuation.HasExtension.instIsLocalHomValuationSubring _ _
+
+instance :
+    IsScalarTower (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) (w.adicCompletion L) :=
+  Valuation.HasExtension.instIsScalarTower_valuationSubring' _ _
+
+instance :
+    IsScalarTower (v.adicCompletionIntegers K) (v.adicCompletion K) (w.adicCompletion L) :=
+  Valuation.HasExtension.instIsScalarTower_valuationSubring _
 
 end AKLB
 
