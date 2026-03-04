@@ -46,12 +46,16 @@ class GrothendieckTopology.HasSheafCompose : Prop where
 variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 
 /-- Composing a functor which `HasSheafCompose`, yields a functor between sheaf categories. -/
-@[simps]
+@[simps obj]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B where
-  obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
-  map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
+  obj G := ⟨G.obj ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.obj G.property⟩
+  map η := ObjectProperty.homMk (whiskerRight η.hom _)
+  map_id _ := InducedCategory.hom_ext <| whiskerRight_id _
+  map_comp _ _ := InducedCategory.hom_ext <| whiskerRight_comp _ _ _
+
+@[simp]
+lemma sheafCompose_map_hom {X Y : Sheaf J A} (η : X ⟶ Y) :
+    ((sheafCompose J F).map η).hom = whiskerRight η.hom F := rfl
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
@@ -92,7 +96,7 @@ If `η : F ⟶ G` is a natural transformation then we obtain a morphism of funct
 `sheafCompose J F ⟶ sheafCompose J G` by whiskering with `η` on the level of presheaves.
 -/
 def sheafCompose_map : sheafCompose J F ⟶ sheafCompose J G where
-  app := fun _ => .mk <| whiskerLeft _ η
+  app := fun _ => ObjectProperty.homMk <| whiskerLeft _ η
 
 @[simp]
 lemma sheafCompose_id : sheafCompose_map (F := F) J (𝟙 _) = 𝟙 _ := rfl
@@ -160,10 +164,10 @@ variable {J}
 
 lemma Sheaf.isSeparated {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] [J.HasSheafCompose (forget A)]
-    (F : Sheaf J A) : Presheaf.IsSeparated J F.val := by
+    (F : Sheaf J A) : Presheaf.IsSeparated J F.obj := by
   rintro X S hS x y h
   exact (((isSheaf_iff_isSheaf_of_type _ _).1
-    ((sheafCompose J (forget A)).obj F).2).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
+    ((sheafCompose J (forget A)).obj F).property).isSeparated S hS).ext (fun _ _ hf => h _ _ hf)
 
 lemma Presheaf.IsSheaf.isSeparated {F : Cᵒᵖ ⥤ A} {FA : A → A → Type*} {CA : A → Type*}
     [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]

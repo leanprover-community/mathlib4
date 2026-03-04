@@ -249,9 +249,9 @@ sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U
 -/
 def skyscraperSheafFunctor : C ⥤ Sheaf C X where
   obj c := skyscraperSheaf p₀ c
-  map f := Sheaf.Hom.mk <| (skyscraperPresheafFunctor p₀).map f
-  map_id _ := Sheaf.Hom.ext <| (skyscraperPresheafFunctor p₀).map_id _
-  map_comp _ _ := Sheaf.Hom.ext <| (skyscraperPresheafFunctor p₀).map_comp _ _
+  map f := ObjectProperty.homMk <| (skyscraperPresheafFunctor p₀).map f
+  map_id _ := InducedCategory.hom_ext <| (skyscraperPresheafFunctor p₀).map_id _
+  map_comp _ _ := InducedCategory.hom_ext <| (skyscraperPresheafFunctor p₀).map_comp _ _
 
 namespace StalkSkyscraperPresheafAdjunctionAuxs
 
@@ -388,16 +388,17 @@ instance [HasColimits C] : (Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
 -/
 def stalkSkyscraperSheafAdjunction [HasColimits C] :
     Sheaf.forget C X ⋙ Presheaf.stalkFunctor _ p₀ ⊣ skyscraperSheafFunctor p₀ where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is changed to `Sheaf.Hom.ext`,
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is changed to `InducedCategory.hom_ext`,
   unit :=
-    { app := fun 𝓕 => ⟨(StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.1⟩
-      naturality := fun 𝓐 𝓑 f => Sheaf.Hom.ext <| by
+    { app := fun 𝓕 => ObjectProperty.homMk
+        ((StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.obj)
+      naturality := fun 𝓐 𝓑 f => InducedCategory.hom_ext <| by
         apply (StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).naturality }
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit p₀
   left_triangle_components X :=
-    ((skyscraperPresheafStalkAdjunction p₀).left_triangle_components X.val)
+    ((skyscraperPresheafStalkAdjunction p₀).left_triangle_components X.obj)
   right_triangle_components _ :=
-    Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
+    InducedCategory.hom_ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 
 instance [HasColimits C] : (Sheaf.forget C X ⋙ Presheaf.stalkFunctor C p₀).IsLeftAdjoint :=
   have : ∀ U : Opens X, Decidable (p₀ ∈ U) := fun _ ↦ Classical.dec _

@@ -40,7 +40,7 @@ lemma W_eq_isLocal_range_sheafToPresheaf_obj :
   · intro hP
     exact ⟨⟨P, hP⟩, rfl⟩
   · rintro ⟨F, rfl⟩
-    exact F.cond
+    exact F.property
 
 @[deprecated (since := "2025-11-20")] alias W_eq_W_range_sheafToPresheaf_obj :=
   W_eq_isLocal_range_sheafToPresheaf_obj

@@ -52,8 +52,8 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
-    (X : Sheaf J E) : ((adjunction J adj).unit.app X).val =
-      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F := by
+    (X : Sheaf J E) : ((adjunction J adj).unit.app X).hom =
+      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.obj ⋙ G)) F := by
   change (sheafToPresheaf _ _).map ((adjunction J adj).unit.app X) = _
   simp only [Functor.id_obj, Functor.comp_obj, whiskeringRight_obj_obj, adjunction,
     Adjunction.map_restrictFullyFaithful_unit_app, Adjunction.comp_unit_app,
@@ -64,14 +64,17 @@ lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
-    (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).val =
-      sheafifyLift J (((adj.whiskerRight Cᵒᵖ).counit.app Y.val)) Y.cond := by
-  change ((𝟭 (Sheaf _ _)).map ((adjunction J adj).counit.app Y)).val = _
-  simp only [Functor.comp_obj, sheafToPresheaf_obj, sheafCompose_obj_val, whiskeringRight_obj_obj,
+    (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).hom =
+      sheafifyLift J (((adj.whiskerRight Cᵒᵖ).counit.app Y.obj)) Y.property := by
+  change ((𝟭 (Sheaf _ _)).map ((adjunction J adj).counit.app Y)).hom = _
+  simp only [Functor.comp_obj, sheafToPresheaf_obj, whiskeringRight_obj_obj,
     adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
     Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
-    comp_val, sheafificationAdjunction_counit_app_val,
-    sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id', Category.comp_id, Category.id_comp]
+    Functor.id_obj, Category.id_comp,
+    ObjectProperty.FullSubcategory.comp_hom, sheafificationAdjunction_counit_app_val,
+    sheafifyMap_sheafifyLift]
+  congr 1
+  simp
 
 
 instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
@@ -90,7 +93,7 @@ lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
     intro R hR
     rw [← ((adj.whiskerRight Cᵒᵖ).homEquiv P R).comp_bijective]
     convert (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
-      (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).cond)).bijective
+      (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).property)).bijective
     ext g X
     -- The rest of this proof was
     -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` before https://github.com/leanprover-community/mathlib4/pull/16317.

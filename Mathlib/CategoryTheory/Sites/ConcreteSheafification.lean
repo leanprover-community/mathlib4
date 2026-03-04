@@ -568,9 +568,9 @@ variable (D)
 @[simps]
 noncomputable def plusPlusSheaf : (Cᵒᵖ ⥤ D) ⥤ Sheaf J D where
   obj P := ⟨J.sheafify P, J.sheafify_isSheaf P⟩
-  map η := ⟨J.sheafifyMap η⟩
-  map_id _ := Sheaf.Hom.ext <| J.sheafifyMap_id _
-  map_comp _ _ := Sheaf.Hom.ext <| J.sheafifyMap_comp _ _
+  map η := ObjectProperty.homMk (J.sheafifyMap η)
+  map_id _ := InducedCategory.hom_ext <| J.sheafifyMap_id _
+  map_comp _ _ := InducedCategory.hom_ext <| J.sheafifyMap_comp _ _
 
 set_option backward.isDefEq.respectTransparency false in
 instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
@@ -583,13 +583,14 @@ instance plusPlusSheaf_preservesZeroMorphisms [Preadditive D] :
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The sheafification functor is left adjoint to the forgetful functor. -/
-@[simps! unit_app counit_app_val]
+@[simps! unit_app counit_app_hom]
 noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q =>
-        { toFun := fun e => J.toSheafify P ≫ e.val
-          invFun := fun e => ⟨J.sheafifyLift e Q.2⟩
-          left_inv := fun _ => Sheaf.Hom.ext <| (J.sheafifyLift_unique _ _ _ rfl).symm
+        { toFun := fun e => J.toSheafify P ≫ e.hom
+          invFun := fun e => ObjectProperty.homMk (J.sheafifyLift e Q.property)
+          left_inv := fun _ => InducedCategory.hom_ext <|
+            (J.sheafifyLift_unique _ _ _ rfl).symm
           right_inv := fun _ => J.toSheafify_sheafifyLift _ _ }
       homEquiv_naturality_left_symm := by
         intro P Q R η γ; ext1; dsimp; symm
@@ -601,11 +602,11 @@ noncomputable def plusPlusAdjunction : plusPlusSheaf J D ⊣ sheafToPresheaf J D
 instance sheafToPresheaf_isRightAdjoint : (sheafToPresheaf J D).IsRightAdjoint :=
   (plusPlusAdjunction J D).isRightAdjoint
 
-instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.1 :=
+instance presheaf_mono_of_mono {F G : Sheaf J D} (f : F ⟶ G) [Mono f] : Mono f.hom :=
   (sheafToPresheaf J D).map_mono _
 
 include instCC in
-theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.1 :=
+theorem Sheaf.Hom.mono_iff_presheaf_mono {F G : Sheaf J D} (f : F ⟶ G) : Mono f ↔ Mono f.hom :=
   ⟨fun m => by infer_instance, fun m => by exact Sheaf.Hom.mono_of_presheaf_mono J D f⟩
 
 end CategoryTheory

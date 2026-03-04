@@ -18,10 +18,10 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 In this file, we construct a functor
 `PresheafOfModules.sheafification α : PresheafOfModules R₀ ⥤ SheafOfModules R`
-for a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
+for a locally bijective morphism `α : R₀ ⟶ R.obj` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings.
-In particular, if `α` is the identity of `R.val`, we obtain the
-sheafification functor `PresheafOfModules R.val ⥤ SheafOfModules R`.
+In particular, if `α` is the identity of `R.obj`, we obtain the
+sheafification functor `PresheafOfModules R.obj ⥤ SheafOfModules R`.
 
 -/
 
@@ -32,7 +32,7 @@ universe v v' u u'
 open CategoryTheory Category Limits
 
 variable {C : Type u'} [Category.{v'} C] {J : GrothendieckTopology C}
-  {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.val)
+  {R₀ : Cᵒᵖ ⥤ RingCat.{u}} {R : Sheaf J RingCat.{u}} (α : R₀ ⟶ R.obj)
   [Presheaf.IsLocallyInjective J α] [Presheaf.IsLocallySurjective J α]
   [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
@@ -47,7 +47,7 @@ section
 
 variable [HasWeakSheafify J AddCommGrpCat.{v}]
 
-/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
+/-- Given a locally bijective morphism `α : R₀ ⟶ R.obj` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings (i.e. `R` identifies to the sheafification of `R₀`), this is
 the associated sheaf of modules functor `PresheafOfModules.{v} R₀ ⥤ SheafOfModules.{v} R`. -/
 @[simps! -isSimp map]
@@ -93,7 +93,7 @@ lemma toPresheaf_map_sheafificationHomEquiv_def
     {P : PresheafOfModules.{v} R₀} {F : SheafOfModules.{v} R}
     (f : (sheafification α).obj P ⟶ F) :
     (toPresheaf R₀).map (sheafificationHomEquiv α f) =
-      CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.val).map f.val := rfl
+      CategoryTheory.toSheafify J P.presheaf ≫ (toPresheaf R.obj).map f.val := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 lemma toPresheaf_map_sheafificationHomEquiv
@@ -117,7 +117,7 @@ lemma toSheaf_map_sheafificationHomEquiv_symm
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a locally bijective morphism `α : R₀ ⟶ R.val` where `R₀` is a presheaf of rings
+/-- Given a locally bijective morphism `α : R₀ ⟶ R.obj` where `R₀` is a presheaf of rings
 and `R` a sheaf of rings, this is the adjunction
 `sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α`. -/
 noncomputable def sheafificationAdjunction :

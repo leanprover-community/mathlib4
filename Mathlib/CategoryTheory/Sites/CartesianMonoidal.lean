@@ -31,11 +31,11 @@ variable [CartesianMonoidalCategory A]
 namespace Sheaf
 variable (X Y : Sheaf J A)
 
-lemma tensorProd_isSheaf : Presheaf.IsSheaf J (X.val ⊗ Y.val) := by
+lemma tensorProd_isSheaf : Presheaf.IsSheaf J (X.obj ⊗ Y.obj) := by
   apply isSheaf_of_isLimit (E := (Cones.postcompose (pairComp X Y (sheafToPresheaf J A)).inv).obj
-    (BinaryFan.mk (fst X.val Y.val) (snd _ _)))
+    (BinaryFan.mk (fst X.obj Y.obj) (snd _ _)))
   exact (IsLimit.postcomposeInvEquiv _ _).invFun
-    (tensorProductIsBinaryProduct X.val Y.val)
+    (tensorProductIsBinaryProduct X.obj Y.obj)
 
 lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
   apply isSheaf_of_isLimit (E := (Cones.postcompose (Functor.uniqueFromEmpty _).inv).obj
@@ -47,37 +47,38 @@ lemma tensorUnit_isSheaf : Presheaf.IsSheaf J (𝟙_ (Cᵒᵖ ⥤ A)) := by
 `CartesianMonoidalCategory` structure on `A`-valued sheaves. -/
 noncomputable instance cartesianMonoidalCategory : CartesianMonoidalCategory (Sheaf J A) :=
   .ofChosenFiniteProducts
-    ({ cone := asEmptyCone { val := 𝟙_ (Cᵒᵖ ⥤ A), cond := tensorUnit_isSheaf _ }
-       isLimit.lift f := ⟨toUnit f.pt.val⟩
+    ({ cone := asEmptyCone ⟨𝟙_ (Cᵒᵖ ⥤ A), tensorUnit_isSheaf _⟩
+       isLimit.lift f := ObjectProperty.homMk (toUnit f.pt.obj)
        isLimit.fac := by rintro _ ⟨⟨⟩⟩
-       isLimit.uniq x f h := Sheaf.hom_ext _ _ (toUnit_unique f.val _) })
+       isLimit.uniq x f h := InducedCategory.hom_ext (toUnit_unique f.hom _) })
   fun X Y ↦ {
     cone := BinaryFan.mk
-        (P := { val := X.val ⊗ Y.val
-                cond := tensorProd_isSheaf J X Y })
-        ⟨(fst _ _)⟩ ⟨(snd _ _)⟩
-    isLimit.lift f := ⟨lift (BinaryFan.fst f).val (BinaryFan.snd f).val⟩
-    isLimit.fac := by rintro s ⟨⟨j⟩⟩ <;> apply Sheaf.hom_ext <;> simp
+        (P := ⟨X.obj ⊗ Y.obj, tensorProd_isSheaf J X Y⟩)
+        (ObjectProperty.homMk (fst _ _)) (ObjectProperty.homMk (snd _ _))
+    isLimit.lift f := ObjectProperty.homMk
+      (lift (BinaryFan.fst f).hom (BinaryFan.snd f).hom)
+    isLimit.fac := by
+      rintro s ⟨⟨j⟩⟩ <;> apply InducedCategory.hom_ext <;> simp
     isLimit.uniq x f h := by
-      apply Sheaf.hom_ext
+      apply InducedCategory.hom_ext
       apply CartesianMonoidalCategory.hom_ext
       · specialize h ⟨.left⟩
-        rw [Sheaf.hom_ext_iff] at h
+        rw [InducedCategory.Hom.ext_iff] at h
         simpa using h
       · specialize h ⟨.right⟩
-        rw [Sheaf.hom_ext_iff] at h
+        rw [InducedCategory.Hom.ext_iff] at h
         simpa using h
   }
 
-@[simp] lemma cartesianMonoidalCategoryFst_val : (fst X Y).val = fst X.val Y.val := rfl
-@[simp] lemma cartesianMonoidalCategorySnd_val : (snd X Y).val = snd X.val Y.val := rfl
+@[simp] lemma cartesianMonoidalCategoryFst_hom : (fst X Y).hom = fst X.obj Y.obj := rfl
+@[simp] lemma cartesianMonoidalCategorySnd_hom : (snd X Y).hom = snd X.obj Y.obj := rfl
 
 variable {X Y}
 variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
-@[simp] lemma cartesianMonoidalCategoryLift_val : (lift f g).val = lift f.val g.val := rfl
-@[simp] lemma cartesianMonoidalCategoryWhiskerLeft_val : (X ◁ f).val = X.val ◁ f.val := rfl
-@[simp] lemma cartesianMonoidalCategoryWhiskerRight_val : (f ▷ X).val = f.val ▷ X.val := rfl
+@[simp] lemma cartesianMonoidalCategoryLift_hom : (lift f g).hom = lift f.hom g.hom := rfl
+@[simp] lemma cartesianMonoidalCategoryWhiskerLeft_hom : (X ◁ f).hom = X.obj ◁ f.hom := rfl
+@[simp] lemma cartesianMonoidalCategoryWhiskerRight_hom : (f ▷ X).hom = f.hom ▷ X.obj := rfl
 
 end Sheaf
 

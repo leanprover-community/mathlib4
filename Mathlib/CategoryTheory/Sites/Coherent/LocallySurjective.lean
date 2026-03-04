@@ -105,8 +105,8 @@ lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C]
 lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
     {F G : Sheaf (extensiveTopology C) D} (f : F ⟶ G)
       [PreservesFiniteProducts (forget D)] : IsLocallySurjective f ↔
-        ∀ (X : C), Function.Surjective (f.val.app (op X)) :=
-  extensiveTopology.presheafIsLocallySurjective_iff _ f.val
+        ∀ (X : C), Function.Surjective (f.hom.app (op X)) :=
+  extensiveTopology.presheafIsLocallySurjective_iff _ f.hom
 
 set_option backward.isDefEq.respectTransparency false in
 lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [FinitaryPreExtensive C]
@@ -156,7 +156,7 @@ lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f 
 
 lemma coherentTopology.isLocallySurjective_iff [Preregular C] [FinitaryExtensive C]
     {F G : Sheaf (coherentTopology C) D} (f : F ⟶ G) [PreservesFiniteProducts (forget D)] :
-      IsLocallySurjective f ↔ Presheaf.IsLocallySurjective (regularTopology C) f.val :=
-  presheafIsLocallySurjective_iff _ f.val
+      IsLocallySurjective f ↔ Presheaf.IsLocallySurjective (regularTopology C) f.hom :=
+  presheafIsLocallySurjective_iff _ f.hom
 
 end CategoryTheory

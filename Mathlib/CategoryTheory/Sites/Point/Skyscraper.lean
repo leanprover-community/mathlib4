@@ -209,24 +209,24 @@ noncomputable def skyscraperSheafAdjunction :
         Φ.skyscraperPresheafHomEquiv.trans
           ((fullyFaithfulSheafToPresheaf J A).homEquiv (Y := Φ.skyscraperSheaf M)).symm
       homEquiv_naturality_left_symm f g :=
-        Φ.skyscraperPresheafHomEquiv_naturality_left_symm f.val g.val
+        Φ.skyscraperPresheafHomEquiv_naturality_left_symm f.hom g.hom
       homEquiv_naturality_right f g := by
         ext : 1
         exact Φ.skyscraperPresheafHomEquiv_naturality_right f g }
 
 @[simp]
 lemma skyscraperSheafAdjunction_homEquiv_apply_val {F : Sheaf J A} {M : A}
-    (f : Φ.presheafFiber.obj F.val ⟶ M) :
-    letI e : (Φ.presheafFiber.obj F.val ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
-    letI a : F.val ⟶ Φ.skyscraperPresheaf M := (e f).val
+    (f : Φ.presheafFiber.obj F.obj ⟶ M) :
+    letI e : (Φ.presheafFiber.obj F.obj ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
+    letI a : F.obj ⟶ Φ.skyscraperPresheaf M := (e f).hom
     a = Φ.skyscraperPresheafHomEquiv f := by
   simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
 
 @[simp]
 lemma skyscraperSheafAdjunction_homEquiv_symm_apply {F : Sheaf J A} {M : A}
     (f : F ⟶ Φ.skyscraperSheaf M) :
-    letI e : (Φ.presheafFiber.obj F.val ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
-    e.symm f = Φ.skyscraperPresheafHomEquiv.symm f.val := by
+    letI e : (Φ.presheafFiber.obj F.obj ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
+    e.symm f = Φ.skyscraperPresheafHomEquiv.symm f.hom := by
   simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
 
 end CategoryTheory.GrothendieckTopology.Point

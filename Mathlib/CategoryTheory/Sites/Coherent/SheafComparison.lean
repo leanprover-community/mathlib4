@@ -243,9 +243,9 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     (@equalizerCondition_iff_isSheaf _ _ _ _ F _ h).symm
 
 noncomputable instance [Preregular C] [FinitaryExtensive C]
-    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.val :=
-  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).1
-    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.val).mp F.cond).1
+    (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.obj :=
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.obj).1
+    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.obj).mp F.property).1
 
 theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X] :
@@ -266,11 +266,11 @@ preregular, finitary extensive, and every object is projective.
 def coherentExtensiveEquivalence [Preregular C] [FinitaryExtensive C] [∀ (X : C), Projective X] :
     Sheaf (coherentTopology C) A ≌ Sheaf (extensiveTopology C) A where
   functor := {
-    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mp F.cond⟩
-    map := fun f ↦ ⟨f.val⟩ }
+    obj := fun F ↦ ⟨F.obj, (isSheaf_iff_extensiveSheaf_of_projective F.obj).mp F.property⟩
+    map := fun f ↦ ObjectProperty.homMk f.hom }
   inverse := {
-    obj := fun F ↦ ⟨F.val, (isSheaf_iff_extensiveSheaf_of_projective F.val).mpr F.cond⟩
-    map := fun f ↦ ⟨f.val⟩ }
+    obj := fun F ↦ ⟨F.obj, (isSheaf_iff_extensiveSheaf_of_projective F.obj).mpr F.property⟩
+    map := fun f ↦ ObjectProperty.homMk f.hom }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

@@ -126,15 +126,16 @@ to sheaves. -/
 -- different universe levels. See Note [universe output parameters and typeclass caching].
 @[univ_out_params]
 class IsContinuous : Prop where
-  op_comp_isSheaf_of_types (G : Sheaf K (Type t)) : Presieve.IsSheaf J (F.op ⋙ G.val)
+  op_comp_isSheaf_of_types (G : Sheaf K (Type t)) : Presieve.IsSheaf J (F.op ⋙ G.obj)
 
 lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Type t)) :
-    Presieve.IsSheaf J (F.op ⋙ G.val) :=
+    Presieve.IsSheaf J (F.op ⋙ G.obj) :=
   Functor.IsContinuous.op_comp_isSheaf_of_types _
 
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
-    Presheaf.IsSheaf J (F.op ⋙ G.val) :=
-  fun T => F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.cond T)⟩
+    Presheaf.IsSheaf J (F.op ⋙ G.obj) :=
+  fun T => F.op_comp_isSheaf_of_types J K
+    ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.property T)⟩
 
 lemma op_comp_isSheaf_of_isSheaf [IsContinuous.{t} F J K] (P : Dᵒᵖ ⥤ A) (h : Presheaf.IsSheaf K P) :
     Presheaf.IsSheaf J (F.op ⋙ P) :=
@@ -148,7 +149,7 @@ lemma isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
       (F₁.op_comp_isSheaf_of_types J K G)
 
 instance isContinuous_id : Functor.IsContinuous.{w} (𝟭 C) J J where
-  op_comp_isSheaf_of_types G := (isSheaf_iff_isSheaf_of_type _ _).1 G.2
+  op_comp_isSheaf_of_types G := (isSheaf_iff_isSheaf_of_type _ _).1 G.property
 
 lemma isContinuous_comp (F₁ : C ⥤ D) (F₂ : D ⥤ E) (J : GrothendieckTopology C)
     (K : GrothendieckTopology D) (L : GrothendieckTopology E)
@@ -223,8 +224,8 @@ if `F` is a continuous functor.
 -/
 @[simps!]
 def sheafPushforwardContinuous : Sheaf K A ⥤ Sheaf J A where
-  obj ℱ := ⟨F.op ⋙ ℱ.val, F.op_comp_isSheaf J K ℱ⟩
-  map f := ⟨((whiskeringLeft _ _ _).obj F.op).map f.val⟩
+  obj ℱ := ⟨F.op ⋙ ℱ.obj, F.op_comp_isSheaf J K ℱ⟩
+  map f := ObjectProperty.homMk (((whiskeringLeft _ _ _).obj F.op).map f.hom)
 
 /-- The functor `F.sheafPushforwardContinuous A J K : Sheaf K A ⥤ Sheaf J A`
 is induced by the precomposition with `F.op`. -/
@@ -252,7 +253,7 @@ variable {F F'} in
 @[simps]
 def sheafPushforwardContinuousNatTrans [IsContinuous.{t} F' J K] :
     sheafPushforwardContinuous F' A J K ⟶ sheafPushforwardContinuous F A J K where
-  app M := ⟨whiskerRight (NatTrans.op τ) _⟩
+  app M := ObjectProperty.homMk (whiskerRight (NatTrans.op τ) _)
 
 variable {F F'} in
 /-- The action of a natural isomorphism on pushforward functors of sheaves. -/

@@ -126,14 +126,14 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
 
 /-- Define the sheaf hom on individual basic opens for the unit. -/
 def toΓSpecCApp :
-    (structureSheaf <| Γ.obj <| op X).val.obj (op <| basicOpen r) ⟶
+    (structureSheaf <| Γ.obj <| op X).obj.obj (op <| basicOpen r) ⟶
       X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r) :=
   -- note: the explicit type annotations were not needed before
   -- https://github.com/leanprover-community/mathlib4/pull/19757
   CommRingCat.ofHom <|
     IsLocalization.Away.lift
       (R := Γ.obj (op X))
-      (S := (structureSheaf ↑(Γ.obj (op X))).val.obj (op (basicOpen r)))
+      (S := (structureSheaf ↑(Γ.obj (op X))).obj.obj (op (basicOpen r)))
       r
       (isUnit_res_toΓSpecMapBasicOpen _ r)
 
@@ -142,7 +142,7 @@ set_option backward.isDefEq.respectTransparency false in
 direction ← (next lemma) is used at various places, but → is not used in this file. -/
 theorem toΓSpecCApp_iff
     (f :
-      (structureSheaf <| Γ.obj <| op X).val.obj (op <| basicOpen r) ⟶
+      (structureSheaf <| Γ.obj <| op X).obj.obj (op <| basicOpen r) ⟶
         X.presheaf.obj (op <| X.toΓSpecMapBasicOpen r)) :
     CommRingCat.ofHom (algebraMap (Γ.obj (op X)) _) ≫ f = X.toToΓSpecMapBasicOpen r ↔
       f = X.toΓSpecCApp r := by
@@ -164,14 +164,14 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The sheaf hom on all basic opens, commuting with restrictions. -/
 @[simps app]
 def toΓSpecCBasicOpens :
-    (inducedFunctor basicOpen).op ⋙ (structureSheaf (Γ.obj (op X))).1 ⟶
-      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪).1 where
+    (inducedFunctor basicOpen).op ⋙ (structureSheaf (Γ.obj (op X))).obj ⟶
+      (inducedFunctor basicOpen).op ⋙ ((TopCat.Sheaf.pushforward _ X.toΓSpecBase).obj X.𝒪).obj where
   app r := X.toΓSpecCApp r.unop
   naturality r s f := by
     apply (StructureSheaf.to_basicOpen_epi (Γ.obj (op X)) r.unop).1
     simp only [← Category.assoc]
-    rw [show algebraMap (Γ.obj (op X)) ((structureSheaf (Γ.obj (op X))).val.obj _) = algebraMap _
-      ((structureSheafInType (Γ.obj (op X)) (Γ.obj (op X))).val.obj _) from rfl,
+    rw [show algebraMap (Γ.obj (op X)) ((structureSheaf (Γ.obj (op X))).obj.obj _) = algebraMap _
+      ((structureSheafInType (Γ.obj (op X)) (Γ.obj (op X))).obj.obj _) from rfl,
       X.toΓSpecCApp_spec r.unop]
     convert X.toΓSpecCApp_spec s.unop
     symm
@@ -183,7 +183,7 @@ def toΓSpecSheafedSpace : X.toSheafedSpace ⟶ Spec.toSheafedSpace.obj (op (Γ.
   InducedCategory.homMk
     { base := X.toΓSpecBase
       c :=
-        TopCat.Sheaf.restrictHomEquivHom (structureSheaf (Γ.obj (op X))).1 _ isBasis_basic_opens
+        TopCat.Sheaf.restrictHomEquivHom (structureSheaf (Γ.obj (op X))).obj _ isBasis_basic_opens
           X.toΓSpecCBasicOpens }
 
 theorem toΓSpecSheafedSpace_app_eq :
@@ -204,7 +204,7 @@ theorem toStalk_stalkMap_toΓSpec (x : X) :
   rw [PresheafedSpace.Hom.stalkMap,
     ← algebraMap_germ (basicOpen (1 : Γ.obj (op X))) _ (by rw [basicOpen_one]; trivial),
     ← Category.assoc, Category.assoc (CommRingCat.ofHom _), stalkFunctor_map_germ, ← Category.assoc,
-    X.toΓSpecSheafedSpace_app_eq, X.toΓSpecCApp_spec, Γgerm]
+    LocallyRingedSpace.toΓSpecSheafedSpace_app_eq X, X.toΓSpecCApp_spec, Γgerm]
   erw [← stalkPushforward_germ _ _ X.presheaf ⊤]
   congr 1
   exact (X.toΓSpecBase _* X.presheaf).germ_res le_top.hom _ _

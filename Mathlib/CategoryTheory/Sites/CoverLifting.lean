@@ -221,20 +221,20 @@ This is SGA 4 III 2.2. -/
 @[stacks 00XK "Alternative reference. There, results are obtained under the additional assumption
 that `C` and `D` have pullbacks."]
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
-    Presheaf.IsSheaf K (G.op.ran.obj ℱ.val) := by
+    Presheaf.IsSheaf K (G.op.ran.obj ℱ.obj) := by
   rw [Presheaf.isSheaf_iff_multifork]
   intro X S
-  exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.2
-    (G.op.isPointwiseRightKanExtensionRanCounit ℱ.val) S⟩
+  exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.property
+    (G.op.isPointwiseRightKanExtensionRanCounit ℱ.obj) S⟩
 
 variable (A J)
 
 /-- A cocontinuous functor induces a pushforward functor on categories of sheaves. -/
 def Functor.sheafPushforwardCocontinuous : Sheaf J A ⥤ Sheaf K A where
-  obj ℱ := ⟨G.op.ran.obj ℱ.val, ran_isSheaf_of_isCocontinuous _ K ℱ⟩
-  map f := ⟨G.op.ran.map f.val⟩
-  map_id ℱ := Sheaf.Hom.ext <| (ran G.op).map_id ℱ.val
-  map_comp f g := Sheaf.Hom.ext <| (ran G.op).map_comp f.val g.val
+  obj ℱ := ⟨G.op.ran.obj ℱ.obj, ran_isSheaf_of_isCocontinuous _ K ℱ⟩
+  map f := ObjectProperty.homMk (G.op.ran.map f.hom)
+  map_id ℱ := InducedCategory.hom_ext <| (ran G.op).map_id ℱ.obj
+  map_comp f g := InducedCategory.hom_ext <| (ran G.op).map_comp f.hom g.hom
 
 /-- `G.sheafPushforwardCocontinuous A J K : Sheaf J A ⥤ Sheaf K A` is induced
 by the right Kan extension functor `G.op.ran` on presheaves. -/
@@ -272,8 +272,8 @@ noncomputable def sheafAdjunctionCocontinuous :
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm
 
 lemma sheafAdjunctionCocontinuous_unit_app_val (F : Sheaf K A) :
-    ((G.sheafAdjunctionCocontinuous A J K).unit.app F).val =
-      (G.op.ranAdjunction A).unit.app F.val := by
+    ((G.sheafAdjunctionCocontinuous A J K).unit.app F).hom =
+      (G.op.ranAdjunction A).unit.app F.obj := by
   apply ((G.op.ranAdjunction A).map_restrictFullyFaithful_unit_app
     (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
     (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
@@ -285,8 +285,8 @@ lemma sheafAdjunctionCocontinuous_unit_app_val (F : Sheaf K A) :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
-    ((G.sheafAdjunctionCocontinuous A J K).counit.app F).val =
-      (G.op.ranAdjunction A).counit.app F.val :=
+    ((G.sheafAdjunctionCocontinuous A J K).counit.app F).hom =
+      (G.op.ranAdjunction A).counit.app F.obj :=
   ((G.op.ranAdjunction A).map_restrictFullyFaithful_counit_app
     (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
     (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
@@ -296,8 +296,8 @@ lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
 set_option backward.isDefEq.respectTransparency false in
 lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :
-    ((G.sheafAdjunctionCocontinuous A J K).homEquiv F H f).val =
-      (G.op.ranAdjunction A).homEquiv F.val H.val f.val :=
+    ((G.sheafAdjunctionCocontinuous A J K).homEquiv F H f).hom =
+      (G.op.ranAdjunction A).homEquiv F.obj H.obj f.hom :=
   ((sheafToPresheaf K A).congr_map
     (((G.op.ranAdjunction A).restrictFullyFaithful_homEquiv_apply
       (fullyFaithfulSheafToPresheaf K A) (fullyFaithfulSheafToPresheaf J A)
@@ -321,7 +321,7 @@ set_option backward.isDefEq.respectTransparency false in
 `pullbackSheafificationCompatibility_hom_app_val`. -/
 lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
     toSheafify J (G.op ⋙ F) ≫
-    ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
+    ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).hom =
     whiskerLeft _ (toSheafify K _) := by
   let adj₁ := G.op.ranAdjunction A
   let adj₂ := sheafificationAdjunction J A
@@ -343,9 +343,9 @@ lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
 
 @[simp]
 lemma pushforwardContinuousSheafificationCompatibility_hom_app_val (F : Dᵒᵖ ⥤ A) :
-    ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).val =
+    ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).hom =
     sheafifyLift J (whiskerLeft G.op <| toSheafify K F)
-      ((presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K).obj F).cond := by
+      ((presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K).obj F).property := by
   apply sheafifyLift_unique
   apply toSheafify_pullbackSheafificationCompatibility
 

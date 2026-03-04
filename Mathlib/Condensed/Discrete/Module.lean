@@ -53,12 +53,12 @@ variable [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks.{u} P]
 def functor : haveI := CompHausLike.preregular hs
     ModuleCat R ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (ModuleCat R) where
   obj X := {
-    val := (functorToPresheaves.{w, u} R).obj X
-    cond := by
+    obj := (functorToPresheaves.{w, u} R).obj X
+    property := by
       have := CompHausLike.preregular hs
       apply Presheaf.isSheaf_coherent_of_hasPullbacks_of_comp
         (s := CategoryTheory.forget (ModuleCat R))
-      exact ((CompHausLike.LocallyConstant.functor P hs).obj _).cond }
+      exact ((CompHausLike.LocallyConstant.functor P hs).obj _).property }
   map f := ⟨(functorToPresheaves.{w, u} R).map f⟩
 
 end CompHausLike.LocallyConstantModule
@@ -131,7 +131,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
     simp only [← assoc]
     congr 1
     rw [← Iso.comp_inv_eq]
-    apply Sheaf.hom_ext
+    apply InducedCategory.hom_ext
     simp [functorIsoDiscreteAux₂, ← Functor.map_comp]
     rfl
 
@@ -247,7 +247,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
     simp only [← assoc]
     congr 1
     rw [← Iso.comp_inv_eq]
-    apply Sheaf.hom_ext
+    apply InducedCategory.hom_ext
     simp [functorIsoDiscreteAux₂, ← Functor.map_comp]
     rfl
 

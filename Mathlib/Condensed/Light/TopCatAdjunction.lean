@@ -33,9 +33,9 @@ variable (X : LightCondSet.{u})
 set_option backward.privateInPublic true in
 /-- Auxiliary definition to define the topology on `X(*)` for a light condensed set `X`. -/
 private def coinducingCoprod :
-    (Σ (i : (S : LightProfinite.{u}) × X.val.obj ⟨S⟩), i.fst) →
-      X.val.obj ⟨LightProfinite.of PUnit⟩ :=
-  fun ⟨⟨_, i⟩, s⟩ ↦ X.val.map ((of PUnit.{u + 1}).const s).op i
+    (Σ (i : (S : LightProfinite.{u}) × X.obj.obj ⟨S⟩), i.fst) →
+      X.obj.obj ⟨LightProfinite.of PUnit⟩ :=
+  fun ⟨⟨_, i⟩, s⟩ ↦ X.obj.map ((of PUnit.{u + 1}).const s).op i
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -43,18 +43,18 @@ set_option backward.privateInPublic.warn false in
 all the maps from light profinite sets `S` to `X(*)`, corresponding to elements of `X(S)`.
 In other words, the topology coinduced by the map `LightCondSet.coinducingCoprod` above. -/
 local instance underlyingTopologicalSpace :
-    TopologicalSpace (X.val.obj ⟨LightProfinite.of PUnit⟩) :=
+    TopologicalSpace (X.obj.obj ⟨LightProfinite.of PUnit⟩) :=
   TopologicalSpace.coinduced (coinducingCoprod X) inferInstance
 
 /-- The object part of the functor `LightCondSet ⥤ TopCat` -/
-abbrev toTopCat : TopCat.{u} := TopCat.of (X.val.obj ⟨LightProfinite.of PUnit⟩)
+abbrev toTopCat : TopCat.{u} := TopCat.of (X.obj.obj ⟨LightProfinite.of PUnit⟩)
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-lemma continuous_coinducingCoprod {S : LightProfinite.{u}} (x : X.val.obj ⟨S⟩) :
-    Continuous fun a ↦ (X.coinducingCoprod ⟨⟨S, x⟩, a⟩) := by
-  suffices ∀ (i : (T : LightProfinite.{u}) × X.val.obj ⟨T⟩),
-      Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
+lemma continuous_coinducingCoprod {S : LightProfinite.{u}} (x : X.obj.obj ⟨S⟩) :
+    Continuous fun a ↦ (LightCondSet.coinducingCoprod X ⟨⟨S, x⟩, a⟩) := by
+  suffices ∀ (i : (T : LightProfinite.{u}) × X.obj.obj ⟨T⟩),
+      Continuous (fun (a : i.fst) ↦ LightCondSet.coinducingCoprod X ⟨i, a⟩) from this ⟨_, _⟩
   rw [← continuous_sigma_iff]
   apply continuous_coinduced_rng
 
@@ -62,27 +62,28 @@ variable {X} {Y : LightCondSet} (f : X ⟶ Y)
 
 /-- The map part of the functor `LightCondSet ⥤ TopCat` -/
 @[simps!]
-def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
+def toTopCatMap : LightCondSet.toTopCat X ⟶ LightCondSet.toTopCat Y :=
   TopCat.ofHom
-  { toFun := f.val.app ⟨LightProfinite.of PUnit⟩
+  { toFun := f.hom.app ⟨LightProfinite.of PUnit⟩
     continuous_toFun := by
       rw [continuous_coinduced_dom]
       apply continuous_sigma
       intro ⟨S, x⟩
       simp only [Function.comp_apply, coinducingCoprod]
       rw
-        [show (fun (a : S) ↦ f.val.app ⟨of PUnit⟩ (X.val.map ((of PUnit.{u + 1}).const a).op x)) = _
-        from funext fun a ↦ NatTrans.naturality_apply f.val ((of PUnit.{u + 1}).const a).op x]
+        [show (fun (a : S) ↦ f.hom.app ⟨of PUnit⟩ (X.obj.map ((of PUnit.{u + 1}).const a).op x)) = _
+        from funext fun a ↦ NatTrans.naturality_apply f.hom ((of PUnit.{u + 1}).const a).op x]
       exact continuous_coinducingCoprod _ _ }
 
 /-- The functor `LightCondSet ⥤ TopCat` -/
 @[simps]
 def _root_.lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
-  obj X := X.toTopCat
+  obj X := LightCondSet.toTopCat X
   map f := toTopCatMap f
 
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
-noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X :=
+noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) :
+    LightCondSet.toTopCat X.toLightCondSet ⟶ X :=
   TopCat.ofHom
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
@@ -92,7 +93,8 @@ noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toT
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is sequential).
 -/
-noncomputable def topCatAdjunctionCounitEquiv (X : TopCat.{u}) : X.toLightCondSet.toTopCat ≃ X where
+noncomputable def topCatAdjunctionCounitEquiv (X : TopCat.{u}) :
+    LightCondSet.toTopCat X.toLightCondSet ≃ X where
   toFun := topCatAdjunctionCounit X
   invFun x := ContinuousMap.const _ x
 
@@ -101,30 +103,31 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
   (topCatAdjunctionCounitEquiv X).bijective
 
 /-- The unit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
-@[simps val_app val_app_apply]
-noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
-  val := {
+@[simps! hom_app hom_app_apply]
+noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) :
+    X ⟶ (LightCondSet.toTopCat X).toLightCondSet :=
+  ObjectProperty.homMk {
     app := fun S x ↦ {
-      toFun := fun s ↦ X.val.map ((of PUnit.{u + 1}).const s).op x
+      toFun := fun s ↦ X.obj.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
-        suffices ∀ (i : (T : LightProfinite.{u}) × X.val.obj ⟨T⟩),
-          Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
+        suffices ∀ (i : (T : LightProfinite.{u}) × X.obj.obj ⟨T⟩),
+          Continuous (fun (a : i.fst) ↦ LightCondSet.coinducingCoprod X ⟨i, a⟩) from this ⟨_, _⟩
         rw [← continuous_sigma_iff]
         apply continuous_coinduced_rng }
     naturality := fun _ _ _ ↦ by
       ext
-      simp only [TopCat.toSheafCompHausLike_val_obj, Opposite.op_unop, types_comp_apply,
-        TopCat.toSheafCompHausLike_val_map, ← FunctorToTypes.map_comp_apply]
+      simp only [TopCat.toSheafCompHausLike_obj_obj, Opposite.op_unop, types_comp_apply,
+        TopCat.toSheafCompHausLike_obj_map, ← FunctorToTypes.map_comp_apply]
       rfl }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightCondSet where
-  unit := { app := topCatAdjunctionUnit }
-  counit := { app := topCatAdjunctionCounit }
+  unit.app := topCatAdjunctionUnit
+  counit.app := topCatAdjunctionCounit
   left_triangle_components Y := by
     ext
-    change Y.val.map (𝟙 _) _ = _
+    change Y.obj.map (𝟙 _) _ = _
     simp
 
 instance (X : TopCat) : Epi (topCatAdjunction.counit.app X) := by
@@ -135,11 +138,11 @@ instance : topCatToLightCondSet.Faithful := topCatAdjunction.faithful_R_of_epi_c
 
 open Sequential
 
-instance (X : LightCondSet.{u}) : SequentialSpace X.toTopCat := by
+instance (X : LightCondSet.{u}) : SequentialSpace (LightCondSet.toTopCat X) := by
   apply SequentialSpace.coinduced
 
 instance (X : LightCondSet.{u}) : SequentialSpace (lightCondSetToTopCat.obj X) :=
-  inferInstanceAs (SequentialSpace X.toTopCat)
+  inferInstanceAs (SequentialSpace (LightCondSet.toTopCat X))
 
 /-- The functor from light condensed sets to topological spaces lands in sequential spaces. -/
 def lightCondSetToSequential : LightCondSet.{u} ⥤ Sequential.{u} where
@@ -171,7 +174,7 @@ Note: for now, we only have `ℕ∪{∞}` as a light profinite set at universe l
 can only prove this for `X : TopCat.{0}`.
 -/
 noncomputable def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X] :
-    X.toLightCondSet.toTopCat ≃ₜ X where
+    LightCondSet.toTopCat X.toLightCondSet ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
   continuous_invFun := by
     apply SeqContinuous.continuous
@@ -180,7 +183,7 @@ noncomputable def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X]
     let g := (topCatAdjunctionCounitEquiv X).invFun ∘ (OnePoint.continuousMapMkNat f p h)
     change Filter.Tendsto (fun n : ℕ ↦ g n) _ _
     erw [← OnePoint.continuous_iff_from_nat]
-    let x : X.toLightCondSet.val.obj ⟨(ℕ∪{∞})⟩ := OnePoint.continuousMapMkNat f p h
+    let x : X.toLightCondSet.obj.obj ⟨(ℕ∪{∞})⟩ := OnePoint.continuousMapMkNat f p h
     exact continuous_coinducingCoprod X.toLightCondSet x
 
 /--

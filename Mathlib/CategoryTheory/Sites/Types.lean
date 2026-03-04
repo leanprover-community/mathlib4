@@ -138,16 +138,16 @@ noncomputable def equivYoneda (S : Type uᵒᵖ ⥤ Type u)
 /-- Given a sheaf `S`, construct an isomorphism `S ≅ [-, S(*)]`. -/
 @[simps]
 noncomputable def equivYoneda' (S : Sheaf typesGrothendieckTopology (Type u)) :
-    S ≅ yoneda'.obj (S.1.obj (op PUnit)) where
-  hom := ⟨(equivYoneda S.1 S.2).hom⟩
-  inv := ⟨(equivYoneda S.1 S.2).inv⟩
-  hom_inv_id := by ext1; apply (equivYoneda S.1 S.2).hom_inv_id
-  inv_hom_id := by ext1; apply (equivYoneda S.1 S.2).inv_hom_id
+    S ≅ yoneda'.obj (S.obj.obj (op PUnit)) where
+  hom := ObjectProperty.homMk (equivYoneda S.obj S.property).hom
+  inv := ObjectProperty.homMk (equivYoneda S.obj S.property).inv
+  hom_inv_id := by ext1; apply (equivYoneda S.obj S.property).hom_inv_id
+  inv_hom_id := by ext1; apply (equivYoneda S.obj S.property).inv_hom_id
 
 theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S₁ ⟶ S₂) (α : Type u)
-    (s : S₁.1.obj (op α)) (x : α) :
-    eval S₂.1 α (f.val.app (op α) s) x = f.val.app (op PUnit) (eval S₁.1 α s x) :=
-  (congr_fun (f.val.naturality (↾fun _ : PUnit => x).op) s).symm
+    (s : S₁.obj.obj (op α)) (x : α) :
+    eval S₂.obj α (f.hom.app (op α) s) x = f.hom.app (op PUnit) (eval S₁.obj α s x) :=
+  (congr_fun (f.hom.naturality (↾fun _ : PUnit => x).op) s).symm
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `yoneda'` induces an equivalence of categories between `Type u` and
