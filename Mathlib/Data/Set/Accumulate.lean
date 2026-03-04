@@ -35,6 +35,9 @@ def accumulate [LE α] (s : α → Set β) (x : α) : Set β :=
 theorem accumulate_def [LE α] {x : α} : accumulate s x = ⋃ y ≤ x, s y :=
   rfl
 
+theorem accumulate_eq_biInter_lt {s : ℕ → Set β} {n : ℕ} : accumulate s n = ⋃ k < n + 1, s k := by
+  simp_rw [Nat.lt_add_one_iff, accumulate]
+
 @[simp]
 theorem mem_accumulate [LE α] {x : α} {z : β} : z ∈ accumulate s x ↔ ∃ y ≤ x, z ∈ s y := by
   simp_rw [accumulate_def, mem_iUnion₂, exists_prop]

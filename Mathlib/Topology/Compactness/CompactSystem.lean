@@ -128,6 +128,8 @@ lemma isCompactSystem_insert_empty_iff :
 lemma isCompactSystem_insert_univ_iff : IsCompactSystem (insert univ S) ↔ IsCompactSystem S :=
   ⟨fun h ↦ h.mono (subset_insert _ _), .insert_univ⟩
 
+/-- To prove that a set of sets is a compact system, it suffices to consider directed families of
+sets. -/
 theorem isCompactSystem_iff_of_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
       ∀ (C : ℕ → Set α), Directed (· ⊇ ·) C → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ → ∃ n, C n = ∅ := by
@@ -146,6 +148,8 @@ theorem isCompactSystem_iff_of_directed (hpi : IsPiSystem S) :
   · simpa [or_comm] using hpi.insert_empty.dissipate_mem h1 n g
   · exact .inr (Set.not_nonempty_iff_eq_empty.mp g)
 
+/-- To prove that a set of sets is a compact system, it suffices to consider directed families of
+sets. -/
 theorem isCompactSystem_iff_nonempty_iInter_of_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
     ∀ (C : ℕ → Set α), (Directed (· ⊇ ·) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
