@@ -8,8 +8,8 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.Tactic.Positivity.Core
 
+import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Data.Fintype.Order
 import Mathlib.RingTheory.Nilpotent.Defs
@@ -84,12 +84,17 @@ class AdmissibleAbsValues (K : Type*) [Field K] where
   /-- The nonarchimedean absolute values are indeed nonarchimedean. -/
   isNonarchimedean : ∀ v ∈ nonarchAbsVal, IsNonarchimedean v
   /-- Only finitely many (nonarchimedean) absolute values are `≠ 1` for any nonzero `x : K`. -/
-  mulSupport_finite {x : K} (_ : x ≠ 0) : (fun v : nonarchAbsVal ↦ v.val x).mulSupport.Finite
+  hasFiniteMulSupport {x : K} (_ : x ≠ 0) : (fun v : nonarchAbsVal ↦ v.val x).HasFiniteMulSupport
   /-- The product formula. The archimedean absolute values are taken with their multiplicity. -/
   product_formula {x : K} (_ : x ≠ 0) :
       (archAbsVal.map (· x)).prod * ∏ᶠ v : nonarchAbsVal, v.val x = 1
 
-open AdmissibleAbsValues Real
+open AdmissibleAbsValues Real Function
+
+@[deprecated (since := "2026-03-03")] alias
+  AdmissibleAbsValues.mulSupport_finite := AdmissibleAbsValues.hasFiniteMulSupport
+
+attribute [fun_prop] hasFiniteMulSupport
 
 variable (K : Type*) [Field K] [AdmissibleAbsValues K]
 
@@ -218,7 +223,7 @@ restricted to its support.
 
 namespace Height
 
-open AdmissibleAbsValues Real
+open AdmissibleAbsValues Real Function
 
 variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*}
 
@@ -253,9 +258,9 @@ lemma mulHeight_comp_equiv {ι' : Type*} (e : ι ≃ ι') (x : ι' → K) :
   rcases eq_or_ne x 0 with rfl | hx
   · simp
   · have hx' : x ∘ e ≠ 0 := by
-      obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx
-      exact Function.ne_iff.mpr ⟨e.symm i, by simp [hi]⟩
-    simp [mulHeight_eq hx, mulHeight_eq hx', Function.comp_apply, H]
+      obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := ne_iff.mp hx
+      exact ne_iff.mpr ⟨e.symm i, by simp [hi]⟩
+    simp [mulHeight_eq hx, mulHeight_eq hx', comp_apply, H]
 
 lemma mulHeight_swap (x y : K) : mulHeight ![x, y] = mulHeight ![y, x] := by
   let e : Fin 2 ≃ Fin 2 := Equiv.swap 0 1
@@ -297,10 +302,11 @@ private lemma max_eq_iSup {α : Type*} [ConditionallyCompleteLattice α] (a b : 
 
 variable [Finite ι]
 
+@[fun_prop]
 private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0) :
-    (fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).mulSupport.Finite := by
-  have : Nonempty {j // x j ≠ 0} := nonempty_subtype.mpr <| Function.ne_iff.mp hx
-  suffices (fun v : nonarchAbsVal ↦ ⨆ i : {j // x j ≠ 0}, v.val (x i)).mulSupport.Finite by
+    (fun v : nonarchAbsVal ↦ ⨆ i, v.val (x i)).HasFiniteMulSupport := by
+  have : Nonempty {j // x j ≠ 0} := nonempty_subtype.mpr <| ne_iff.mp hx
+  suffices (fun v : nonarchAbsVal ↦ ⨆ i : {j // x j ≠ 0}, v.val (x i)).HasFiniteMulSupport by
     convert this with v
     obtain ⟨i, hi⟩ : ∃ j, x j ≠ 0 := Function.ne_iff.mp hx
     have : Nonempty ι := .intro i
@@ -310,31 +316,31 @@ private lemma mulSupport_iSup_nonarchAbsVal_finite {x : ι → K} (hx : x ≠ 0)
     · rw [h, v.val.map_zero]
       exact Real.iSup_nonneg' ⟨⟨i, hi⟩, v.val.nonneg ..⟩
     · exact Finite.le_ciSup_of_le ⟨j, h⟩ le_rfl
-  exact (Set.finite_iUnion fun i : {j | x j ≠ 0} ↦ mulSupport_finite i.prop).subset <|
-    Function.mulSupport_iSup _
+  fun_prop (disch := grind)
 
+@[fun_prop]
 private lemma mulSupport_max_nonarchAbsVal_finite (x : K) :
-    (fun v : nonarchAbsVal ↦ max (v.val x) 1).mulSupport.Finite := by
-  simp_rw [max_eq_iSup]
-  convert mulSupport_iSup_nonarchAbsVal_finite (x := ![x, 1]) <| by simp with v i
-  fin_cases i <;> simp
+    (fun v : nonarchAbsVal ↦ v.val x ⊔ 1).HasFiniteMulSupport := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp [HasFiniteMulSupport]
+  fun_prop (disch := assumption)
 
 /-- The multiplicative height of a tuple does not change under scaling. -/
 lemma mulHeight_smul_eq_mulHeight (x : ι → K) {c : K} (hc : c ≠ 0) :
     mulHeight (c • x) = mulHeight x := by
   rcases eq_or_ne x 0 with rfl | hx
   · rw [smul_zero]
-  have : Nonempty ι := (Function.ne_iff.mp hx).nonempty
+  have : Nonempty ι := (ne_iff.mp hx).nonempty
   have hcx : c • x ≠ 0 := by simp [hc, hx]
   simp only [mulHeight_eq hx, mulHeight_eq hcx, Pi.smul_apply, smul_eq_mul, map_mul,
     ← mul_iSup_of_nonneg <| AbsoluteValue.nonneg .., Multiset.prod_map_mul]
-  rw [finprod_mul_distrib (mulSupport_finite hc) (mulSupport_iSup_nonarchAbsVal_finite hx),
+  rw [finprod_mul_distrib (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption)),
     mul_mul_mul_comm, product_formula hc, one_mul]
 
 lemma one_le_mulHeight (x : ι → K) : 1 ≤ mulHeight x := by
   rcases eq_or_ne x 0 with rfl | hx
   · simp
-  obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := Function.ne_iff.mp hx
+  obtain ⟨i, hi⟩ : ∃ i, x i ≠ 0 := ne_iff.mp hx
   have hx' : (x i)⁻¹ • x ≠ 0 := by simp [hi, hx]
   rw [← mulHeight_smul_eq_mulHeight _ <| inv_ne_zero hi, mulHeight_eq hx']
   refine one_le_mul_of_one_le_of_one_le (Multiset.one_le_prod_map fun v _ ↦ ?_) ?_
@@ -396,7 +402,7 @@ end Mathlib.Meta.Positivity
 
 namespace Height
 
-open AdmissibleAbsValues Real
+open AdmissibleAbsValues Real Function
 
 variable {K : Type*} [Field K] [AdmissibleAbsValues K] {ι : Type*} {α : Type*} [Finite ι]
 /-- The logarithmic height of a tuple does not change under scaling. -/
@@ -438,7 +444,7 @@ lemma mulHeight_pow (x : ι → K) (n : ℕ) :
     mulHeight (x ^ n) = mulHeight x ^ n := by
   rcases eq_or_ne x 0 with rfl | hx
   · cases n <;> simp
-  have : Nonempty ι := (Function.ne_iff.mp hx).nonempty
+  have : Nonempty ι := (ne_iff.mp hx).nonempty
   have H (v : AbsoluteValue K ℝ) : ⨆ i : ι, v ((x ^ n) i) = (⨆ i, v (x i)) ^ n := by
     simp only [Pi.pow_apply, map_pow]
     simp +singlePass only [← coe_toNNReal _ (v.nonneg _)]
@@ -549,18 +555,15 @@ heights, where `n` is the number of terms. -/
 lemma mulHeight₁_sum_le {α : Type*} {s : Finset α} (hs : s.Nonempty) (x : α → K) :
     mulHeight₁ (∑ a ∈ s, x a) ≤ #s ^ (totalWeight K) * ∏ a ∈ s, mulHeight₁ (x a) := by
   simp only [mulHeight₁_eq, totalWeight]
-  rw [prod_mul_distrib, ← prod_replicate, ← map_const,
-    ← finprod_prod_comm _ _ fun i _ ↦ mulSupport_max_nonarchAbsVal_finite (x i),
+  rw [prod_mul_distrib, ← prod_replicate, ← map_const, ← finprod_prod_comm _ _ (by fun_prop),
     ← prod_map_prod, ← mul_assoc, ← prod_map_mul]
   simp only [Function.const_apply]
   gcongr
   · exact finprod_nonneg fun _ ↦ by positivity
   · exact prod_map_nonneg fun _ h ↦ by positivity
   · exact prod_map_le_prod_map₀ _ _ (fun _ _ ↦ by positivity) fun _ _ ↦ max_abv_sum_one_le _ hs x
-  · refine finprod_le_finprod (mulSupport_max_nonarchAbsVal_finite _) (fun _ ↦ by grind) ?_ ?_
-    · exact (s.finite_toSet.biUnion fun _ _ ↦ mulSupport_max_nonarchAbsVal_finite _).subset <|
-        s.mulSupport_prod fun i (v : nonarchAbsVal) ↦ max (v.val (x i)) 1
-    · exact fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
+  · exact finprod_le_finprod (by fun_prop) (fun _ ↦ by grind) (by fun_prop) <|
+      fun v ↦ max_abv_sum_one_le_of_isNonarchimedean (isNonarchimedean _ v.prop) _ x
 
 open Finset in
 /-- The logarithmic height of a finite sum of field elements is at most

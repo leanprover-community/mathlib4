@@ -362,7 +362,8 @@ variable (hfx : aeval a f = 0)
 
 set_option linter.deprecated false in
 @[deprecated liftAlgHom_mk (since := "2025-10-10")]
-theorem liftHom_mk {g : R[X]} : liftAlgHom f _ a hfx (mk f g) = aeval a g := by simp [aeval]
+theorem liftHom_mk {g : R[X]} : liftAlgHom f _ a hfx (mk f g) = aeval a g :=
+  rfl
 
 set_option linter.deprecated false in
 @[deprecated liftAlgHom_root (since := "2025-10-10")]
