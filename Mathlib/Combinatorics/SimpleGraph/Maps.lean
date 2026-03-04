@@ -60,7 +60,7 @@ protected def map (f : V → W) (G : SimpleGraph V) : SimpleGraph W where
     rintro ⟨v, w, h, _⟩
     aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
 
-instance instDecidableMapAdj [DecidableEq W] {f : V ↪ W} {a b}
+instance instDecidableMapAdj [DecidableEq W] {f : V → W} {a b}
     [Decidable (Relation.Map G.Adj f f a b)] : Decidable ((G.map f).Adj a b) := by
   dsimp [SimpleGraph.map]; infer_instance
 
