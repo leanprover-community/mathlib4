@@ -212,7 +212,7 @@ lemma leftHomologyDataShortComplexE_f' (hn₁ : n₀ + 1 = n₁ := by lia) (hn�
 /-- The cycles of the short complex `shortComplexE` at `E^{n₁}(f₁, f₂, f₃)`
 identifies to `Z^{n₁}(f₁, f₂)`. -/
 noncomputable def cyclesIso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
-    (X.shortComplex f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ).cycles ≅ X.cycles f₁ f₂ n₁ :=
+    (X.shortComplex f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).cycles ≅ X.cycles f₁ f₂ n₁ :=
   (X.leftHomologyDataShortComplexE f₁ f₂ f₃ n₀ n₁ n₂).cyclesIso
 
 @[reassoc (attr := simp)]
