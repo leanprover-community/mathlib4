@@ -255,7 +255,6 @@ theorem cauchy_map_of_uniformCauchySeqOn_fderiv {s : Set E} (hs : IsOpen s) (h's
     apply Metric.ball_subset_ball'; rw [dist_comm]; linarith
   exact A y (ε / 2) yt (B.trans hε) (Metric.mem_ball.2 hxy)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f_n → g` pointwise and the derivatives `(f_n)' → h` _uniformly_ converge, then
 in fact for a fixed `y`, the difference quotients `‖z - y‖⁻¹ • (f_n z - f_n y)` converge
 _uniformly_ to `‖z - y‖⁻¹ • (g z - g y)` -/

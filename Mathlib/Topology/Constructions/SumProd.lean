@@ -520,6 +520,17 @@ theorem frontier_univ_prod_eq (s : Set Y) :
     frontier ((univ : Set X) ×ˢ s) = univ ×ˢ frontier s := by
   simp [frontier_prod_eq]
 
+/-- The hypotheses on `f` are slightly weaker here compared to `mem_map_closure₂`. That
+lemma requires `f` to be jointly continuous, whereas here we only require continuity in each
+variable separately. -/
+theorem map_mem_closure₂' {f : X → Y → Z} {x : X} {y : Y} {s : Set X} {t : Set Y} {u : Set Z}
+    (hf₁ : ∀ x, Continuous (f x)) (hf₂ : ∀ y, Continuous (f · y))
+    (hx : x ∈ closure s) (hy : y ∈ closure t) (h : ∀ a ∈ s, ∀ b ∈ t, f a b ∈ u) :
+    f x y ∈ closure u := by
+  rw [← isClosed_closure.closure_eq]
+  apply map_mem_closure (hf₁ x) hy fun b hb ↦ ?_
+  apply map_mem_closure (hf₂ b) hx fun a ha ↦ h a ha b hb
+
 theorem map_mem_closure₂ {f : X → Y → Z} {x : X} {y : Y} {s : Set X} {t : Set Y} {u : Set Z}
     (hf : Continuous (uncurry f)) (hx : x ∈ closure s) (hy : y ∈ closure t)
     (h : ∀ a ∈ s, ∀ b ∈ t, f a b ∈ u) : f x y ∈ closure u :=
