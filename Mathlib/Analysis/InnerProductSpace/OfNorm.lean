@@ -203,6 +203,7 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- **Fréchet–von Neumann–Jordan Theorem**. A normed space `E` whose norm satisfies the
 parallelogram identity can be given a compatible inner product. -/
+@[implicit_reducible]
 noncomputable def InnerProductSpace.ofNorm
     (h : ∀ x y : E, ‖x + y‖ * ‖x + y‖ + ‖x - y‖ * ‖x - y‖ = 2 * (‖x‖ * ‖x‖ + ‖y‖ * ‖y‖)) :
     InnerProductSpace 𝕜 E :=
