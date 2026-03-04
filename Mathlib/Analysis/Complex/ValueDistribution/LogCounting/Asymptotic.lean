@@ -58,10 +58,7 @@ lemma one_isLittleO_logCounting_single [DecidableEq E] [ProperSpace E] {e : E} :
       _ ≤ b := hb
   have h₁c : ‖e‖ ≤ exp (|log ‖e‖| + c⁻¹) := by
     calc ‖e‖
-      _ ≤ exp (log ‖e‖) := by
-        by_cases he : ‖e‖ = 0
-        · simp [he]
-        · simp_all [exp_log]
+      _ ≤ exp (log ‖e‖) := le_exp_log ‖e‖
       _ ≤ exp (|log ‖e‖| + c⁻¹) :=
         exp_monotone (le_add_of_le_of_nonneg (le_abs_self _) (inv_pos.2 hc).le)
   rw [← inv_mul_le_iff₀ hc, mul_one, abs_of_nonneg (logCounting_nonneg
