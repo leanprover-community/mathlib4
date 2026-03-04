@@ -171,33 +171,6 @@ theorem injective_theorem : Function.Injective T
       simp [hz, ←T.sq_singularValues_of_lt rfl (Finset.mem_range.mp h)]]
     exact T.isSymmetric_adjoint_comp_self.hasEigenvalue_eigenvalues rfl ⟨i, Finset.mem_range.mp h⟩
 
-
--- Step 1: Prove that any eigenvalue μ of T*T appears in the eigenvalues list
--- a number of times equal to the dimension of its eigenspace
-theorem card_eigenvalues_eq_finrank_eigenspace (μ : 𝕜)
-    (hμ : Module.End.HasEigenvalue (adjoint T ∘ₗ T) μ) {n : ℕ} (hn : Module.finrank 𝕜 E = n) :
-    Finset.card {i : Fin n | T.isSymmetric_adjoint_comp_self.eigenvalues hn i = μ}
-    = Module.finrank 𝕜 (Module.End.eigenspace (adjoint T ∘ₗ T) μ) := by
-  exact IsSymmetric.card_filter_eigenvalues_eq T.isSymmetric_adjoint_comp_self hn hμ
-
-
--- Step 2: From 1., 0 appears in (T*T).eigenvalues a number of times equal to dim(ker(T))
-theorem card_zero_eigenvalues_eq_finrank_ker {n : ℕ} (hn : Module.finrank 𝕜 E = n)
---(hμ : Module.End.HasEigenvalue (adjoint T ∘ₗ T) (0 : 𝕜)) :
-    : Finset.card {i : Fin n | T.isSymmetric_adjoint_comp_self.eigenvalues hn i = (0 : 𝕜)}
-    = Module.finrank 𝕜 (ker (adjoint T ∘ₗ T)) := by
-    rw [IsSymmetric.card_filter_eigenvalues_eq T.isSymmetric_adjoint_comp_self hn sorry,
-      Module.End.eigenspace_zero]
-  -- have h : Module.End.eigenspace (adjoint T ∘ₗ T) 0 = (adjoint T ∘ₗ T).ker := by
-  --   simp [Module.End.eigenspace_def]
-  -- have h2 : (adjoint T ∘ₗ T).ker = ker T := by
-  --   simp [ker_adjoint_comp_self]
-  -- have h3 : Finset.card {i : Fin n | T.isSymmetric_adjoint_comp_self.eigenvalues hn i = (0 : 𝕜)}
-  -- = Module.finrank 𝕜 (Module.End.eigenspace (adjoint T ∘ₗ T) (0 : 𝕜)) := by
-  --   exact IsSymmetric.card_filter_eigenvalues_eq T.isSymmetric_adjoint_comp_self hn hμ
-  -- rw [h, h2] at h3
-  -- exact h3
-
 -- 3. From 2., 0 appears as a singular value `dim(ker(T*T))` (= `n - rank(T*T)`) times
 theorem finrank_ker_adjoint_comp_self {n : ℕ} (hn : Module.finrank 𝕜 E = n) :
   Module.finrank 𝕜 (ker (adjoint T ∘ₗ T)) = n - Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) := by
@@ -238,13 +211,6 @@ theorem test {n : ℕ} (hn : Module.finrank 𝕜 E = n)
   push_neg at h
   rw [←hn] at h
   exact singularValues_of_finrank_le T h
-
-/-
-theorem test₂ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
-    : T.singularValues.support.card = Finset.card {i : Fin n | T.singularValues ↑i ≠ 0} := by
-  rw [T.test hn]
-  sorry
-  -/
 
 theorem test₂₅ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
   : (T.singularValues.support.preimage (@Fin.val n) Fin.val_injective.injOn)
