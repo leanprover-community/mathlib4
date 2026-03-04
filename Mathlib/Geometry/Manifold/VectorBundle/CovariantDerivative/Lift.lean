@@ -5,8 +5,9 @@ Authors: Patrick Massot, Michael Rothgang
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Ehresmann
 public import Mathlib.Geometry.Manifold.IntegralCurve.Basic
+
 /-!
 # Lifting vectors using covariant derivatives
 
@@ -16,7 +17,7 @@ TODO: add a more complete doc-string
 
 @[expose] public section
 
-@[expose] public section delaborators
+section delaborators
 
 -- TODO: decide whether we want this and move
 -- This delaborates `TotalSpace.mk x v` to `⟨x, v⟩`

@@ -6,7 +6,6 @@ Authors: Patrick Massot, Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.TrivPrelim
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
@@ -18,9 +17,7 @@ TODO: PR all this to appropriate places.
 -/
 
 open Bundle Filter Module Topology Set
-
 open scoped Bundle Manifold ContDiff
-
 
 @[expose] public section tangent_bundle_normedSpace
 
@@ -153,7 +150,6 @@ lemma map_of_spec (u : E) (u' : E') (h : u = 0 → u' = 0) : map_of 𝕜 u u' u 
   (exists_map_of 𝕜 u u').choose_spec h
 end linear_algebra
 
-
 section
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -163,7 +159,6 @@ variable
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-
 
 variable (𝕜) in
 noncomputable def map_of_loc_one_jet (e u : E) (e' u' : E') : E → E' :=
