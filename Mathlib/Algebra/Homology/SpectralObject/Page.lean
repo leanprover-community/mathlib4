@@ -204,7 +204,7 @@ noncomputable def leftHomologyDataShortComplexE
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma leftHomologyDataShortComplexE_f' (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
-    (X.leftHomologyDataShortComplexE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ).f' =
+    (X.leftHomologyDataShortComplexE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).f' =
       X.δToCycles f₁ f₂ f₃ n₀ n₁ hn₁ := by
   let hi := (X.kernelSequenceCycles_exact f₁ f₂ _ _ hn₂).fIsKernel
   exact Fork.IsLimit.hom_ext hi (by simpa using hi.fac _ .zero)
