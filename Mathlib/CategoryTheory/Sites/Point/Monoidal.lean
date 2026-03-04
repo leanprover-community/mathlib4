@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 public import Mathlib.CategoryTheory.Localization.Monoidal.Functor
-public import Mathlib.CategoryTheory.Sites.Point.Basic
+public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 public import Mathlib.CategoryTheory.Sites.Monoidal
+public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 
 /-!
 # Fiber functors are monoidal
@@ -36,6 +36,7 @@ open Limits MonoidalCategory Functor
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C} (Φ : Point.{w} J)
   {A : Type u'} [Category.{v'} A] [MonoidalCategory A] [HasColimitsOfSize.{w, w} A]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance :
     (Φ.presheafFiber (A := A)).OplaxMonoidal where
   η := Φ.presheafFiberDesc (fun _ _ ↦ 𝟙 _)
@@ -104,15 +105,11 @@ instance (P₁ P₂ : Cᵒᵖ ⥤ A) :
 noncomputable instance : (Φ.presheafFiber (A := A)).Monoidal :=
   .ofOplaxMonoidal _
 
+section
+
 attribute [local instance] Sheaf.monoidalCategory
 
-variable {FC : A → A → Type*} {CC : A → Type w'}
-  [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
-  [ConcreteCategory.{w'} A FC]
-  [PreservesFilteredColimitsOfSize.{w, w} (forget A)]
-  [(forget A).ReflectsIsomorphisms]
-  [HasWeakSheafify J A] [J.WEqualsLocallyBijective A]
-  [(J.W (A := A)).IsMonoidal]
+variable [(J.W (A := A)).IsMonoidal] [HasWeakSheafify J A] [HasProducts.{w} A]
 
 noncomputable instance : (Φ.sheafFiber (A := A)).Monoidal :=
   Localization.Monoidal.functorMonoidalOfComp (presheafToSheaf J A) J.W
@@ -121,5 +118,7 @@ noncomputable instance : (Φ.sheafFiber (A := A)).Monoidal :=
 instance : NatTrans.IsMonoidal (Φ.presheafToSheafCompSheafFiber A).hom :=
   Localization.Monoidal.lifting_isMonoidal (presheafToSheaf J A) J.W
     Φ.sheafFiber Φ.presheafFiber
+
+end
 
 end CategoryTheory.GrothendieckTopology.Point

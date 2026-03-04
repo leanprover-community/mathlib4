@@ -234,7 +234,6 @@ end
 
 end RingHom
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every finite subset of an algebraically independent set is algebraically independent. -/
 theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
     (li : AlgebraicIndependent R ((↑) : s → A)) (t : Finset s) :
