@@ -255,7 +255,7 @@ private noncomputable def generatorIndex (h : E ≠ ⊥) : ℕ :=
 
 variable (E) in
 open Classical in
-/-- A choice of a generator for Lüroth's theorem, see `eq_adjoin_generator`. -/
+/-- A choice of a generator for Lüroth's theorem, see `Luroth.eq_adjoin_generator`. -/
 @[no_expose] noncomputable def generator : RatFunc K :=
   if h : E = ⊥ then 0 else (ψ E).coeff (generatorIndex h)
 
@@ -286,14 +286,11 @@ lemma generator_ne_C (h : E ≠ ⊥) : ¬ ∃ c, generator E = C c :=
 lemma transcendental_generator (h : E ≠ ⊥) : Transcendental K (generator E) :=
   (generator E).transcendental_of_ne_C (generator_ne_C h)
 
-lemma generator_ne_zero (h : E ≠ ⊥) : (generator E : RatFunc K) ≠ 0 :=
+lemma generator_ne_zero (h : E ≠ ⊥) : generator E ≠ 0 :=
   fun H ↦ generator_ne_C h ⟨0, by simp [H]⟩
 
 lemma adjoin_generator_le : K⟮generator E⟯ ≤ E :=
   adjoin_simple_le_iff.mpr generator_mem
-
-@[no_expose] private noncomputable instance : Algebra K⟮generator E⟯ E :=
-  (IntermediateField.inclusion adjoin_generator_le).toAlgebra
 
 variable (E) in
 /-- The integer normalization of `ψ` as a bivariate polynomial. This is an
@@ -447,6 +444,9 @@ private lemma le_swap_Φ_natDegree (h : E ≠ ⊥) :
       Finset.le_sup (f := fun i ↦ ((Φ E).coeff i).natDegree) <|
       mem_support_iff.mpr (Φ_coeff_ψ_natDegree_ne_zero h)
 
+private noncomputable instance : Algebra K⟮generator E⟯ E :=
+  (IntermediateField.inclusion adjoin_generator_le).toAlgebra
+
 set_option backward.isDefEq.respectTransparency false in
 private lemma ψ_dvd_generator_minpolyX :
     ψ E ∣ ((generator E).minpolyX K⟮generator E⟯).map (algebraMap _ E) := by
@@ -457,8 +457,7 @@ private lemma ψ_dvd_generator_minpolyX :
 variable (E) in
 /-- A polynomial `q` that satisfies `ψ * q = generator`. This is an auxiliary
 definition for the proof of Lüroth's theorem. -/
-private noncomputable abbrev q : E[X] :=
-  (ψ_dvd_generator_minpolyX (E := E)).choose
+private noncomputable abbrev q : E[X] := (ψ_dvd_generator_minpolyX (E := E)).choose
 
 private lemma ψ_mul_q :
     ψ E * q E = ((generator E).minpolyX K⟮generator E⟯).map (algebraMap _ E) :=
@@ -530,8 +529,7 @@ private lemma Q₀_mem_lifts (h : E ≠ ⊥) : Q₀ E ∈ lifts (algebraMap K[X]
 
 /-- A bivariate polynomial `Q₁` that satisfies `Q₁ * Φ = θ`. This is an
 auxiliary definition for the proof of Lüroth's theorem. -/
-private noncomputable abbrev Q₁ (h : E ≠ ⊥) : K[X][Y] :=
-  (Q₀_mem_lifts h).choose
+private noncomputable abbrev Q₁ (h : E ≠ ⊥) : K[X][Y] := (Q₀_mem_lifts h).choose
 
 private lemma map_Q₁ (h : E ≠ ⊥) : (Q₁ h).map (algebraMap K[X] (RatFunc K)) = Q₀ E :=
   (Q₀_mem_lifts h).choose_spec
