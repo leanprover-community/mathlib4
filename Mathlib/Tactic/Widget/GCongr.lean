@@ -10,7 +10,6 @@ public meta import Mathlib.Tactic.Basic
 public import Mathlib.Tactic.Widget.SelectPanelUtils
 public import ProofWidgets.Component.Basic
 public import ProofWidgets.Component.OfRpcMethod
-public import Lean
 
 /-! # GCongr widget
 
