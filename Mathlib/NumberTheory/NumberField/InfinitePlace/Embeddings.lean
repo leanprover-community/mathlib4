@@ -366,25 +366,21 @@ noncomputable def unmixedEmbeddingsOver : Set (L →+* ℂ) := { φ | LiesOver �
 
 variable {L} {ψ}
 
-theorem mem_mixedEmbeddingsOver {φ : L →+* ℂ} :
-    φ ∈ mixedEmbeddingsOver L ψ ↔ LiesOver ψ φ ∧ IsMixed K φ := by
-  simp [mixedEmbeddingsOver]
+theorem mixedEmbeddingsOver.liesOver (φ : L →+* ℂ) (h : φ ∈ mixedEmbeddingsOver L ψ) :
+    LiesOver ψ φ := by
+  simpa [mixedEmbeddingsOver] using h.1
 
-theorem mixedEmbeddingsOver.isExtension (φ : L →+* ℂ) (h : φ ∈ mixedEmbeddingsOver L ψ) :
-    LiesOver ψ φ := (mem_mixedEmbeddingsOver.1 h).1
+theorem mixedEmbeddingsOver.isMixed (φ : L →+* ℂ) (h : φ ∈ mixedEmbeddingsOver L ψ) :
+    IsMixed K φ := by
+  simpa [mixedEmbeddingsOver] using h.2
 
-theorem mixedEmbeddingsOver.isMixed (φ : L →+* ℂ) (h : φ ∈ mixedEmbeddingsOver L ψ) : IsMixed K φ :=
-  (mem_mixedEmbeddingsOver.1 h).2
-
-theorem mem_unmixedEmbeddingsOver {φ : L →+* ℂ} :
-    φ ∈ unmixedEmbeddingsOver L ψ ↔ LiesOver ψ φ ∧ IsUnmixed K φ := by
-  simp [unmixedEmbeddingsOver]
-
-theorem unmixedEmbeddingsOver.isExtension (φ : L →+* ℂ) (h : φ ∈ unmixedEmbeddingsOver L ψ) :
-    LiesOver ψ φ := (mem_unmixedEmbeddingsOver.mp h).1
+theorem unmixedEmbeddingsOver.liesOver (φ : L →+* ℂ) (h : φ ∈ unmixedEmbeddingsOver L ψ) :
+    LiesOver ψ φ := by
+  simpa [unmixedEmbeddingsOver] using h.1
 
 theorem unmixedEmbeddingsOver.isUnmixed (φ : L →+* ℂ) (h : φ ∈ unmixedEmbeddingsOver L ψ) :
-    IsUnmixed K φ := (mem_unmixedEmbeddingsOver.mp h).2
+    IsUnmixed K φ := by
+  simpa [unmixedEmbeddingsOver] using h.2
 
 variable (L ψ)
 

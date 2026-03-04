@@ -129,8 +129,8 @@ theorem mapsTo_embeddingConjugateIte (v : InfinitePlace K) :
   intro w hw
   obtain ⟨_, hw⟩ := mem_unramifiedPlacesOver.1 hw
   by_cases h : LiesOver v.embedding w.embedding
-  · simpa [embeddingConjugateIte_pos L h] using mem_unmixedEmbeddingsOver.2 ⟨h, hw.isUnmixed⟩
-  · simpa [embeddingConjugateIte_neg L h] using mem_unmixedEmbeddingsOver.2
+  · simpa [embeddingConjugateIte_pos L h] using ⟨h, hw.isUnmixed⟩
+  · simpa [embeddingConjugateIte_neg L h] using
       ⟨⟨(LiesOver.embedding_comp_eq_or_conjugate_embedding_comp_eq w v).resolve_left (by
         simp [not_liesOver] at h
         exact h)⟩ ,
