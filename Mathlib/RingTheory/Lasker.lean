@@ -158,9 +158,12 @@ lemma mem_associatedPrimes {N : Submodule R M} {t : Finset (Submodule R M)}
   rw [← ht.image_radical_eq_associated_primes]
   exact Set.mem_image_of_mem _ hq
 
+section CommRing
+
+variable {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] {N : Submodule R M}
+
 open LocalizedModule in
-lemma comap_localized₀_eq_ite {R M : Type*} [CommRing R] [AddCommMonoid M]
-    [Module R M] {N : Submodule R M}
+lemma comap_localized₀_eq_ite
     (s₀ : Finset N.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set N.associatedPrimes))
     (q : Submodule R M) (hqp : q.IsPrimary)
     (p : N.associatedPrimes) (hq : (q.colon Set.univ).radical = p) :
@@ -197,7 +200,6 @@ lemma comap_localized₀_eq_ite {R M : Type*} [CommRing R] [AddCommMonoid M]
 open LocalizedModule IsLocalizedModule in
 /-- The second uniqueness theorem for primary decomposition, Theorem 4.10 in Atiyah-Macdonald. -/
 lemma comap_localized₀_eq_iInf
-    {R M : Type*} [CommRing R] [AddCommMonoid M] [Module R M] {N : Submodule R M}
     {t : Finset (Submodule R M)} (ht : N.IsMinimalPrimaryDecomposition t)
     (s₀ : Finset N.associatedPrimes) (hs₀ : IsLowerSet (s₀ : Set N.associatedPrimes))
     (s : Finset (Submodule R M)) (hs : s ⊆ t)
@@ -216,6 +218,8 @@ lemma comap_localized₀_eq_iInf
     (ht.primary hqt) ⟨(q.colon Set.univ).radical, ht.mem_associatedPrimes hqt⟩ rfl).trans
     (ite_cond_congr (Iff.trans ?_ (ht.injOn.mem_image_iff hs hqt)).eq)
   grind [Finset.mem_image_of_mem]
+
+end CommRing
 
 end Submodule.IsMinimalPrimaryDecomposition
 

@@ -59,8 +59,8 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (N : Subm
 
 /-- `I : Ideal R` is an associated prime of a submodule `N : Submodule R M` if `I` is prime
 and `I = (colon N {x}).radical` for some `x : M`. -/
-protected def IsAssociatedPrime : Prop :=
-  I.IsPrime ∧ ∃ x, I = (colon N {x}).radical
+protected structure IsAssociatedPrime : Prop extends I.IsPrime where
+  eq_radical_colon : ∃ x, I = (colon N {x}).radical
 
 /-- The set of associated primes of a submodule. -/
 protected def associatedPrimes : Set (Ideal R) :=
@@ -70,7 +70,7 @@ variable {N I}
 
 protected theorem isAssociatedPrime_def :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = (colon N {x}).radical :=
-  .rfl
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
     N.IsAssociatedPrime I ↔ I.IsPrime ∧ ∃ x, I = colon N {x} := by
@@ -81,8 +81,6 @@ protected theorem isAssociatedPrime_iff [IsNoetherianRing R] :
       Set.mem_singleton_iff]
   · rintro ⟨hx, x, rfl⟩
     exact ⟨hx, x, hx.radical.symm⟩
-
-protected theorem IsAssociatedPrime.isPrime (h : N.IsAssociatedPrime I) : I.IsPrime := h.1
 
 instance (I : N.associatedPrimes) : I.1.IsPrime := I.2.1
 
