@@ -79,7 +79,6 @@ lemma norm_jacobiTheta₂_term (n : ℤ) (z τ : ℂ) :
     add_re, mul_I_re, im_ofReal_mul, mul_I_re, im_ofReal_mul]
   ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A uniform upper bound for `jacobiTheta₂_term` on compact subsets. -/
 lemma norm_jacobiTheta₂_term_le {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
     (hz : |im z| ≤ S) (hτ : T ≤ im τ) (n : ℤ) :
@@ -178,7 +177,6 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
     apply mul_le_of_le_one_right (mul_nonneg pi_pos.le (pow_nonneg (abs_nonneg _) _))
     exact ContinuousLinearMap.norm_snd_le ..
 
-set_option backward.isDefEq.respectTransparency false in
 lemma norm_jacobiTheta₂_term_fderiv_ge (n : ℤ) (z τ : ℂ) :
     π * |n| ^ 2 * ‖jacobiTheta₂_term n z τ‖ ≤ ‖jacobiTheta₂_term_fderiv n z τ‖ := by
   have : ‖(jacobiTheta₂_term_fderiv n z τ) (0, 1)‖ ≤ ‖jacobiTheta₂_term_fderiv n z τ‖ := by
@@ -382,7 +380,6 @@ lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
 ## Periodicity and conjugation
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The two-variable Jacobi theta function is periodic in `τ` with period 2. -/
 lemma jacobiTheta₂_add_right (z τ : ℂ) : jacobiTheta₂ z (τ + 2) = jacobiTheta₂ z τ := by
   refine tsum_congr (fun n ↦ ?_)
@@ -419,7 +416,6 @@ lemma jacobiTheta₂_conj (z τ : ℂ) :
   simp only [jacobiTheta₂_term, mul_neg, ← exp_conj, map_add, map_neg, map_mul, map_ofNat,
     conj_ofReal, conj_I, map_intCast, neg_mul, neg_neg, map_pow]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jacobiTheta₂'_add_right (z τ : ℂ) : jacobiTheta₂' z (τ + 2) = jacobiTheta₂' z τ := by
   refine tsum_congr (fun n ↦ ?_)
   simp_rw [jacobiTheta₂'_term, jacobiTheta₂_term, Complex.exp_add]
@@ -433,7 +429,6 @@ lemma jacobiTheta₂'_add_left (z τ : ℂ) : jacobiTheta₂' (z + 1) τ = jacob
   simp only [mul_add, Complex.exp_add, mul_one, mul_comm _ (n : ℂ), exp_int_mul_two_pi_mul_I,
     mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jacobiTheta₂'_add_left' (z τ : ℂ) :
     jacobiTheta₂' (z + τ) τ =
       cexp (-π * I * (τ + 2 * z)) * (jacobiTheta₂' z τ - 2 * π * I * jacobiTheta₂ z τ) := by
