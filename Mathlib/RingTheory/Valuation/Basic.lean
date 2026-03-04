@@ -462,38 +462,26 @@ def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀
   map_add_le_max' x y := by
     by_cases H : v x ≠ 0 ∨ v y ≠ 0
     · rcases H with h | h <;>
-      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, h, ↓reduceDIte, le_sup_iff]
+      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, h, ↓reduceDIte] <;>
       · split_ifs with H _ hy
-        · simp
-        · simp
-        · simp only [WithZero.coe_le_coe, Subtype.mk_le_mk, ← Units.val_le_val, Units.val_mk0,
-            le_zero_iff, WithZero.coe_ne_zero, or_false, ]
-          exact map_add_le _ (by rfl) (by simp [hy])
-        · simp [← Units.val_le_val]
-      · split_ifs with H _ hy
-        · simp
-        · simp
-        · simp only [le_zero_iff, WithZero.coe_ne_zero, WithZero.coe_le_coe, Subtype.mk_le_mk,
-            ← Units.val_le_val, Units.val_mk0, false_or]
-          exact map_add_le _ (by simp [hy]) (by rfl)
-        · simp [← Units.val_le_val]
+        all_goals simp [← Units.val_le_val]
+        simpa using map_add_le _ (by simp_all) (by simp_all)
     · simp only [ne_eq, not_or, Decidable.not_not] at H
       simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, H, ↓reduceDIte, max_self,
         le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
       simpa using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
 
--- ToDo: this should not be a simp lemma!
-@[simp]
 lemma restrict_def (x : R) : v.restrict x = restrict₀ v x := rfl
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
-  split_ifs with h
-  · simp [h]
-  · simp [zero_lt_iff.mpr h]
+  split_ifs with h <;>
+  simp_all [zero_lt_iff.mpr]
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
@@ -511,37 +499,55 @@ lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ v} :
   rw [embedding_strictMono.le_iff_le, restrict_def]
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_lt_one_iff {x : R} : v.restrict x < 1 ↔ v x < 1 := by
   rw [restrict_lt_iff_lt_embedding, map_one]
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
   rw [restrict_le_iff_le_embedding, map_one]
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
+  rw [restrict_def,restrict₀_eq_zero_iff]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
+  rw [restrict_def,restrict₀_eq_one_iff]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [← Units.val_le_val]
 
 set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
   simp only [restrict_def, restrict₀_apply]
   aesop
 
+@[simp]
+lemma restrict₀_val : restrict₀ v = restrict₀ (v : R →*₀ Γ₀) := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  set u := WithZero.unzero (Units.ne_zero γ ) with hu_def
+  set u := WithZero.unzero (Units.ne_zero γ) with hu_def
   obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
   have hx : 0 < v x := by
     rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
     aesop
   use x, a, hx, zero_lt_iff.mpr ha
-  have hx0 : v.restrict x ≠ 0 := by simp [restrict₀_eq_zero_iff, hx.ne']
-  have ha0 : v.restrict a ≠ 0 := by simp [restrict₀_eq_zero_iff, ha]
+  have hx0 : v.restrict x ≠ 0 := by simp [hx.ne']
+  have ha0 : v.restrict a ≠ 0 := by simp [ha]
   rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff]
-  simp only [restrict_def, map_mul]
-  erw [embedding_restrict₀ x, embedding_restrict₀ a, ← hax]
+  simp only [restrict_def, map_mul, restrict₀_val]
+  erw [embedding_restrict₀ (f := (v : R →*₀ Γ₀)) x, embedding_restrict₀ a, ]
+  rw [MonoidWithZeroHom.coe_coe, ← hax]
   congr
   rw [← WithZero.coe_unzero (Units.ne_zero γ)]
   rfl
