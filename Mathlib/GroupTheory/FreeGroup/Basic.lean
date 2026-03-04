@@ -843,7 +843,7 @@ lemma bijective_comp_freeGroupCongr {G : Type*} [MulOne G]
 /-- Reindexing free-group generators via an equivalence preserves isomorphisms. -/
 @[to_additive /-- Reindexing additive `FreeAddGroup` generators via an equivalence preserves
 isomorphisms. -/]
-def mulEquiv_comp_freeGroupCongr {G : Type*} [Group G]
+def mulEquiv_comp_freeGroupCongr {G : Type*} [Mul G]
     (e : α ≃ β) (f : FreeGroup α ≃* G) : FreeGroup β ≃* G :=
   (freeGroupCongr e.symm).trans f
 
