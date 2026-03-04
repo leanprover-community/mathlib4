@@ -387,10 +387,12 @@ theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : Dire
   simp only [Function.mem_support, Finset.mem_coe, DFinsupp.mem_support_toFun, not_imp_not,
     ZeroMemClass.coe_eq_zero, imp_self]
 
-theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
-    (Function.support fun i => (x i : M)).Finite := by
+theorem hasFiniteSupport (A : ι → S) (x : DirectSum ι fun i => A i) :
+    (fun i => (x i : M)).HasFiniteSupport := by
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
+
+@[deprecated (since := "2026-03-03")] alias finite_support := hasFiniteSupport
 
 section map
 
