@@ -360,8 +360,8 @@ section NonUnitalNonAssocSemiring
 variable [NonUnitalNonAssocSemiring R]
 
 instance instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (QuadraticAlgebra R a b) where
-  left_distrib _ _ _ := by ext <;> simpa using by simp [mul_add]; abel
-  right_distrib _ _ _ := by ext <;> simpa using by simp [mul_add, add_mul]; abel
+  left_distrib _ _ _ := by ext <;> simp [mul_add] <;> abel
+  right_distrib _ _ _ := by ext <;> simp [mul_add, add_mul] <;> abel
   zero_mul _ := by ext <;> simp
   mul_zero _ := by ext <;> simp
 
@@ -449,8 +449,8 @@ section CommSemiring
 variable [CommSemiring R]
 
 instance instCommSemiring : CommSemiring (QuadraticAlgebra R a b) where
-  mul_assoc _ _ _ := by ext <;> simpa using by ring
-  mul_comm _ _ := by ext <;> simpa using by ring
+  mul_assoc _ _ _ := by ext <;> simp <;> ring
+  mul_comm _ _ := by ext <;> simp <;> ring
 
 instance [CommSemiring S] [Algebra S R] : Algebra S (QuadraticAlgebra R a b) where
   algebraMap.toFun s := .C (algebraMap S R s)
