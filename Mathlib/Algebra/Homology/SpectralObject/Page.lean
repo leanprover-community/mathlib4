@@ -305,7 +305,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rightHomologyDataShortComplexE_g'
     (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
-    (X.rightHomologyDataShortComplexE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ).g' =
+    (X.rightHomologyDataShortComplexE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).g' =
       X.δFromOpcycles f₁ f₂ f₃ n₁ n₂ hn₂ := by
   let hp := (X.cokernelSequenceOpcycles_exact f₂ f₃ _ _ hn₁).gIsCokernel
   exact Cofork.IsColimit.hom_ext hp (by simpa using hp.fac _ .one)
