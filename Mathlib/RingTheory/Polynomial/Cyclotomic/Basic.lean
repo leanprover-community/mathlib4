@@ -328,7 +328,6 @@ lemma natDegree_cyclotomic_le {R : Type*} [Ring R] {n : ℕ} :
   nontriviality R
   rw [natDegree_cyclotomic]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The degree of `cyclotomic n R` is positive. -/
 theorem degree_cyclotomic_pos (n : ℕ) (R : Type*) (hpos : 0 < n) [Ring R] [Nontrivial R] :
     0 < (cyclotomic n R).degree := by

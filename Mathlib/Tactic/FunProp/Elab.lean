@@ -122,7 +122,7 @@ def funPropTac : Tactic
 
 
 
-/-- Command that printins all function properties attached to a function.
+/-- Command that prints all function properties attached to a function.
 
 For example
 ```
@@ -132,8 +132,8 @@ might print out
 ```
 Continuous
   continuous_add, args: [4,5], priority: 1000
-  continuous_add_left, args: [5], priority: 1000
-  continuous_add_right, args [4], priority: 1000
+  continuous_const_add, args: [5], priority: 1000
+  continuous_add_const, args [4], priority: 1000
   ...
 Differentiable
   Differentiable.add, args: [4,5], priority: 1000

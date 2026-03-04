@@ -984,6 +984,9 @@ instance mono : Mono f :=
 instance : SheafedSpace.IsOpenImmersion (LocallyRingedSpace.forgetToSheafedSpace.map f) :=
   H
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/12564
+`infer_instance` needs more heartbeats after this change. -/
+set_option synthInstance.maxHeartbeats 40000 in -- see adaptation note
 set_option backward.isDefEq.respectTransparency false in
 /-- An explicit pullback cone over `cospan f g` if `f` is an open immersion. -/
 def pullbackConeOfLeft : PullbackCone f g := by
