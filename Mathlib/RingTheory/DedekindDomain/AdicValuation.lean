@@ -414,6 +414,7 @@ ring of integers, denoted `v.adicCompletionIntegers`. -/
 
 
 /-- `K` as a valued field with the `v`-adic valuation. -/
+@[implicit_reducible]
 def adicValued : Valued K ℤᵐ⁰ :=
   Valued.mk' (v.valuation K)
 

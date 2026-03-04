@@ -78,6 +78,7 @@ section IsG2
 
 /-- By making an arbitrary choice of roots pairing to `-3`, we can obtain an embedded `𝔤₂` root
 system just from the knowledge that such a pairs exists. -/
+@[implicit_reducible]
 def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
   long := (IsG2.exists_pairingIn_neg_three (P := P)).choose
   short := (IsG2.exists_pairingIn_neg_three (P := P)).choose_spec.choose
@@ -217,6 +218,7 @@ lemma pairing_long_short : P.pairing (long P) (short P) = -3 := by
   simp
 
 /-- The index of the root `α + β` where `α` is the short root and `β` is the long root. -/
+@[implicit_reducible]
 def shortAddLong : ι := P.reflectionPerm (long P) (short P)
 
 /-- The index of the root `2α + β` where `α` is the short root and `β` is the long root. -/

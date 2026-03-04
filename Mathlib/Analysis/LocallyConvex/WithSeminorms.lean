@@ -138,6 +138,7 @@ theorem basisSets_neg (U) (hU' : U ∈ p.basisSets) :
   exact ⟨U, hU', Eq.subset hU⟩
 
 /-- The `addGroupFilterBasis` induced by the filter basis `Seminorm.basisSets`. -/
+@[implicit_reducible]
 protected def addGroupFilterBasis : AddGroupFilterBasis E :=
   addGroupFilterBasisOfComm p.basisSets p.basisSets_nonempty p.basisSets_intersect p.basisSets_zero
     p.basisSets_add p.basisSets_neg
