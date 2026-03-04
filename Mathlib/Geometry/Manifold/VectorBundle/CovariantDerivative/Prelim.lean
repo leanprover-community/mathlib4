@@ -15,6 +15,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Misc
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.TrivPrelim
 
 /-!
 # Supporting lemmas for CovariantDerivative.Basic
@@ -27,38 +28,6 @@ open Bundle Filter Module Topology Set
 
 open scoped Bundle Manifold ContDiff
 
-@[expose] public section delaborators
-
--- TODO: decide whether we want this and move
--- This delaborates `TotalSpace.mk x v` to `⟨x, v⟩`
-open Lean PrettyPrinter Delaborator SubExpr
-
-@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
-  whenPPOption getPPNotation do
-  let #[_B, _F, _E, _b, _v] := (← getExpr).getAppArgs | failure
-  let bd : Term ← withNaryArg 3 <| delab
-  let vd : Term ← withNaryArg 4 <| delab
-  `(⟨$bd, $vd⟩)
-
-@[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
-  whenPPOption getPPNotation do
-  let args := (← getExpr).getAppArgs
-  if args.size < 22 then failure
-  let pt : Term ← withNaryArg 21 <| delab
-  let f := args[20]!
-  try
-    if let .lam _ _ b _ := f then
-      if b.isAppOf ``Bundle.TotalSpace.mk' then
-        let s := b.getAppArgs[4]!.getAppFn
-        if s matches .fvar .. then
-          let ss ← PrettyPrinter.delab s
-          return ← `(MDiffAt (T% $ss) $pt)
-    throwError "nope"
-  catch _ =>
-    let x : Term ← withNaryArg 20 <| delab
-    return ← `(MDiffAt $x $pt)
-
-end delaborators
 
 @[expose] public section tangent_bundle_normedSpace
 
@@ -67,7 +36,7 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
 instance (f : F) : CoeOut (TangentSpace 𝓘(ℝ, F) f) F :=
   ⟨fun x ↦ x⟩
 
-end  tangent_bundle_normedSpace
+end tangent_bundle_normedSpace
 
 @[expose] public section mfderiv
 
@@ -81,27 +50,27 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
 
--- Note: this lemma is no longer used, but still pretty nice
+-- unused; could move to `SpecificFunctions`
 lemma injective_mfderiv_of_eventually_leftInverse
     {f : M → M'} (x : M) {g : M' → M}
-    (hg : MDifferentiableAt I' I g (f x)) (hf : MDifferentiableAt I I' f x)
-    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Injective (mfderiv I I' f x) := by
+    (hg : MDiffAt g (f x)) (hf : MDiffAt f x)
+    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Injective (mfderiv% f x) := by
   have := mfderiv_comp x hg hf
   rw [hfg.mfderiv_eq] at this
-  have : LeftInverse (mfderiv I' I g (f x)) (mfderiv I I' f x) := by
+  have : LeftInverse (mfderiv% g (f x)) (mfderiv% f x) := by
     intro u
     simpa using congr($this u).symm
   exact LeftInverse.injective this
 
--- Note: this lemma is no longer used, but still pretty nice
+-- unused; could move to `SpecificFunctions`
 lemma surjective_mfderiv_of_eventually_rightInverse
     {f : M → M'} {x : M} {y : M'} (hxy : y = f x) {g : M' → M}
-    (hg : MDifferentiableAt I' I g y) (hf : MDifferentiableAt I I' f x)
-    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Surjective (mfderiv I' I g y) := by
+    (hg : MDiffAt g y) (hf : MDiffAt f x)
+    (hfg : g ∘ f =ᶠ[𝓝 x] id) : Surjective (mfderiv% g y) := by
   rw [hxy] at hg
   have := mfderiv_comp x hg hf
   rw [hfg.mfderiv_eq] at this
-  have : RightInverse (mfderiv I I' f x) (mfderiv I' I g (f x)) := by
+  have : RightInverse (mfderiv% f x) (mfderiv% g (f x)) := by
     intro u
     simpa using congr($this u).symm
   rw [← hxy] at this
@@ -110,8 +79,9 @@ lemma surjective_mfderiv_of_eventually_rightInverse
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 set_option backward.isDefEq.respectTransparency false in
+-- cleaned up and PRed in #34262
 lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x) :
-    mfderiv I 𝓘(𝕜, F) (a • s) x v = a • mfderiv I 𝓘(𝕜, F) s x v := by
+    mfderiv% (a • s) x v = a • mfderiv% s x v := by
   by_cases hs : MDiffAt s x
   · have hs' := hs.const_smul a
     suffices
@@ -126,18 +96,19 @@ lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x)
       rw [this, ha]
       change (mfderiv I 𝓘(𝕜, F) (fun _ ↦ 0) x) v = _
       simp
-    have hs' : ¬ MDifferentiableAt I 𝓘(𝕜, F) (a • s) x :=
+    have hs' : ¬ MDiffAt (a • s) x :=
       fun h ↦ hs (by simpa [ha] using h.const_smul a⁻¹)
     rw [mfderiv_zero_of_not_mdifferentiableAt hs, mfderiv_zero_of_not_mdifferentiableAt hs']
     simp
     rfl
 
+-- PRed and cleaned up in #34263
 set_option linter.flexible false in -- FIXME
 lemma mfderiv_smul [IsManifold I 1 M] {f : M → F} {s : M → 𝕜} {x : M} (hf : MDiffAt f x)
     (hs : MDiffAt s x) (v : TangentSpace I x) :
-    letI dsxv : 𝕜 := mfderiv I 𝓘(𝕜, 𝕜) s x v
-    letI dfxv : F := mfderiv I 𝓘(𝕜, F) f x v
-    mfderiv I 𝓘(𝕜, F) (s • f) x v = (s x) • dfxv + dsxv • f x := by
+    letI dsxv : 𝕜 := mfderiv% s x v
+    letI dfxv : F := mfderiv% f x v
+    mfderiv% (s • f) x v = (s x) • dfxv + dsxv • f x := by
   set φ := chartAt H x
   -- TODO: the next two have should be special cases of the same lemma
   have hs' : DifferentiableWithinAt 𝕜 (s ∘ φ.symm ∘ I.symm) (range I) (I (φ x)) := by
@@ -230,7 +201,7 @@ def map_of_one_jet {x : M} (u : TangentSpace I x) {x' : M'} (u' : TangentSpace I
   letI ψ := extChartAt I' x'
   letI φ := extChartAt I x
   ψ.symm ∘
-  (map_of_loc_one_jet 𝕜 (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')) ∘
+  (map_of_loc_one_jet 𝕜 (φ x) (mfderiv% φ x u) (ψ x') (mfderiv% ψ x' u')) ∘
   φ
 
 -- TODO: version assuming `x` and `x'` are in the interior, or maybe `x` is enough.
@@ -247,22 +218,19 @@ lemma map_of_one_jet_spec [IsManifold I 1 M] [IsManifold I' 1 M']
       (u' : TangentSpace I' x') (hu : u = 0 → u' = 0) :
     map_of_one_jet u u' x = x' ∧
     MDiffAt (map_of_one_jet u u') x ∧
-    mfderiv I I' (map_of_one_jet u u') x u = u' := by
+    mfderiv% (map_of_one_jet u u') x u = u' := by
   let ψ := extChartAt I' x'
   let φ := extChartAt I x
-  let g := map_of_loc_one_jet 𝕜 (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u')
-  let Ψ : M' → E' := ψ -- FIXME: this is working around a limitation of MDiffAt elaborator
-  have hψ : MDiffAt Ψ x' := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x')
-  let Φ : M → E := φ -- FIXME: this is working around a limitation of MDiffAt elaborator
-  have hφ : MDiffAt Φ x := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x)
-  replace hu : mfderiv I 𝓘(𝕜, E) φ x u = 0 → mfderiv I' 𝓘(𝕜, E') ψ x' u' = 0 := by
-    have : Function.Injective (mfderiv I 𝓘(𝕜, E) φ x) :=
+  let g := map_of_loc_one_jet 𝕜 (φ x) (mfderiv% φ x u) (ψ x') (mfderiv% ψ x' u')
+  have hψ : MDiffAt ψ x' := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x')
+  have hφ : MDiffAt φ x := mdifferentiableAt_extChartAt (ChartedSpace.mem_chart_source x)
+  replace hu : mfderiv% φ x u = 0 → mfderiv% ψ x' u' = 0 := by
+    have : Function.Injective (mfderiv% φ x) :=
       (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x)).injective
     rw [injective_iff_map_eq_zero] at this
-    have := map_zero (mfderiv I' 𝓘(𝕜, E') ψ x')
+    have := map_zero (mfderiv% ψ x')
     grind
-  rcases  map_of_loc_one_jet_spec (𝕜 := 𝕜)
-    (φ x) (mfderiv I 𝓘(𝕜, E) φ x u) (ψ x') (mfderiv I' 𝓘(𝕜, E') ψ x' u') hu with
+  rcases map_of_loc_one_jet_spec (𝕜 := 𝕜) (φ x) (mfderiv% φ x u) (ψ x') (mfderiv% ψ x' u') hu with
     ⟨h : g (φ x) = ψ x', h', h''⟩
   have hg : MDiffAt g (φ x) := mdifferentiableAt_iff_differentiableAt.mpr h'
   have hgφ : MDiffAt (g ∘ φ) x := h'.comp_mdifferentiableAt hφ
@@ -276,7 +244,7 @@ lemma map_of_one_jet_spec [IsManifold I 1 M] [IsManifold I' 1 M']
   refold_let g φ ψ at *
   refine ⟨by simp [h, ψ], hψi.comp x hgφ, ?_⟩
   rw [mfderiv_comp x hψi hgφ, mfderiv_comp x hg hφ, mfderiv_eq_fderiv]
-  change (mfderiv 𝓘(𝕜, E') I' Ψi (g (φ x))) (fderiv 𝕜 g (φ x) <| mfderiv I 𝓘(𝕜, E) φ x u) = u'
+  change (mfderiv% Ψi (g (φ x))) (fderiv 𝕜 g (φ x) <| mfderiv% φ x u) = u'
   rw [h] at hψi
   rw [h'', h, ← mfderiv_comp_apply x' hψi hψ]
   have : Ψi ∘ ψ =ᶠ[𝓝 x'] id := by
@@ -351,7 +319,7 @@ variable (I F)
 
 lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
     [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) :
-    ContMDiff I (I.prod 𝓘(ℝ, F)) ∞ (T% (extend I F σ₀)) := by
+    CMDiff ∞ (T% (extend I F σ₀)) := by
   letI t := trivializationAt F V x
   letI ht := t.open_baseSet.mem_nhds (FiberBundle.mem_baseSet_trivializationAt' x)
   have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
@@ -599,377 +567,6 @@ theorem mk2TensorAt_add
 
 end tensoriality
 
-namespace Bundle.Trivialization
-
-section trivilization_topology
-
-variable {B F Z : Type*} [TopologicalSpace B]
-  [TopologicalSpace F]
-
-section any_proj
-variable [TopologicalSpace Z] {proj : Z → B} (e : Trivialization F proj)
-lemma baseSet_mem_nhds {x : B} (hx : x ∈ e.baseSet) : e.baseSet ∈ 𝓝 x :=
-  e.open_baseSet.mem_nhds_iff.mpr hx
-
-lemma baseSet_prod_univ_mem_nhds {v : Z}
-    (hv : proj v ∈ e.baseSet) : e.baseSet ×ˢ univ ∈ 𝓝 (e v) := by
-  rw [← mk_proj_snd' e hv]
-  exact prod_mem_nhds (e.baseSet_mem_nhds hv) univ_mem
-
-lemma comp_invFun_eventuallyEq
-    {v : Z} (hv : proj v ∈ e.baseSet) : e ∘ e.invFun =ᶠ[𝓝 (e v)] id := by
-  filter_upwards [e.baseSet_prod_univ_mem_nhds hv] with p hp using
-    apply_symm_apply e <| (mem_target e).2 hp.1
-
-end any_proj
-
-section fiber_bundle
-variable {E : B → Type*} [TopologicalSpace (TotalSpace F E)]
-  (e : Trivialization F (π F E))
-
-lemma proj_invFun_eventuallyEq
-    {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
-  filter_upwards [e.baseSet_prod_univ_mem_nhds  hv] with ⟨x, f⟩ ⟨hx, hf⟩
-  exact symm_coe_proj e hx
-
-lemma injective_symm [(x : B) → Zero (E x)]
-  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    Function.Injective (e.symm v.proj) := by
-  intro f f' hff'
-  simpa [hv] using congr(e $hff')
-
-lemma surjective_symm [(x : B) → Zero (E x)]
-  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    Function.Surjective (e.symm v.proj) :=
-  fun u ↦ ⟨(e u).2, symm_apply_apply_mk e hv u⟩
-
-lemma bijective_symm [(x : B) → Zero (E x)]
-  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    Function.Bijective (e.symm v.proj) :=
-  ⟨e.injective_symm hv, e.surjective_symm hv⟩
-
-variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
-
-lemma preimage_baseSet_mem_nhds
-   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    TotalSpace.proj ⁻¹' e.baseSet ∈ 𝓝 v :=
-  FiberBundle.continuous_proj F E |>.continuousAt <| e.baseSet_mem_nhds  hv
-
-lemma fst_comp_eventuallyEq
-   {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-    Prod.fst ∘ e =ᶠ[𝓝 v] (π F E) := by
-  filter_upwards [preimage_baseSet_mem_nhds e hv] with y hy using coe_fst' e hy
-
-lemma invFun_comp_eventuallyEq
-  {v : TotalSpace F E} (hv : v.proj ∈ e.baseSet) :
-   e.invFun ∘ e =ᶠ[𝓝 v] id := by
-  filter_upwards [e.preimage_baseSet_mem_nhds hv] with w hw using
-    symm_apply_apply e <| (mem_source e).mpr hw
-
-end fiber_bundle
-
-section
-variable {B F : Type*} {E : B → Type*} [TopologicalSpace B]
-  [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)]
-  [(x : B) → Zero (E x)]
-  (e : Trivialization F (π F E))
-
-lemma eq_of {x : B} {v v' : E x}
-   (hx : x ∈ e.baseSet) (hvv' : (e v).2 = (e v').2) :
-    v = v' := by
-  have := e.symm_proj_apply v hx
-  rw [hvv'] at this
-  grind [e.symm_proj_apply v' hx]
-
-@[simp]
-lemma apply_symm_eventuallyEq {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
-  (fun x ↦ (e ⟨x, e.symm x (s x)⟩).2) =ᶠ[𝓝 x] s := by
-    filter_upwards [e.baseSet_mem_nhds hx] with y hy
-    rw [e.apply_mk_symm hy]
-
-variable [(b : B) → TopologicalSpace (E b)] [FiberBundle F E]
-
--- FIXME super weird elaborator bug: removing the
--- omitted assumption from the variable line breaks the lemma
-omit [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
-lemma symm_apply_apply_mk_eventuallyEq
-    {b : B} (hb : b ∈ e.baseSet) (σ : Π x, E x) :
-    (T% fun x' ↦ e.symm x' (e (T% σ x')).2) =ᶠ[𝓝 b] T% σ := by
-  filter_upwards [e.baseSet_mem_nhds hb] with y hy
-  simp [symm_apply_apply_mk e hy (σ y)]
-
--- FIXME super weird elaborator bug: removing the
--- omitted assumption from the variable line breaks the lemma
-omit [(x : B) → Zero (E x)] [(b : B) → TopologicalSpace (E b)] [FiberBundle F E] in
-lemma apply_section_eventuallyEq
-    {x : B} (hx : x ∈ e.baseSet) (σ : Π x, E x) :
-    e ∘ T%σ =ᶠ[𝓝 x] fun x ↦ ⟨x, (e (σ x)).2⟩ := by
-  filter_upwards [e.baseSet_mem_nhds hx] with y hy
-  ext
-  · exact coe_coe_fst e hy
-  · simp
-
-end
-
-end trivilization_topology
-
-section topological_vector_bundle
-
-section
-variable {R B F : Type*} {E : B → Type*} [Semiring R]
-  [TopologicalSpace F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
-  (e : Trivialization F (π F E))
-  [AddCommMonoid F] [Module R F] [(x : B) → AddCommMonoid (E x)] [(x : B) → Module R (E x)]
-
-lemma map_smul [Trivialization.IsLinear R e]
-    {b : B} (hb : b ∈ e.baseSet) (a : R) (v : E b) :
-    (e ⟨b, a • v⟩).2 = a • (e ⟨b, v⟩).2 :=
-  e.linear R hb |>.map_smul a v
-
-variable (R)
-
-lemma map_add [Trivialization.IsLinear R e]
-    {b : B} (hb : b ∈ e.baseSet) (v v' : E b) :
-    (e ⟨b, v + v'⟩).2 = (e ⟨b, v⟩).2 + (e ⟨b, v'⟩).2 :=
-  e.linear R hb |>.map_add v v'
-
-end
-
-section
-
-variable (R : Type*) {B F : Type*} {E : B → Type*}
-  [NontriviallyNormedField R] [(x : B) → AddCommMonoid (E x)]
-  [(x : B) → Module R (E x)] [NormedAddCommGroup F]
-  [NormedSpace R F] [TopologicalSpace B] [TopologicalSpace (TotalSpace F E)]
-  [(x : B) → TopologicalSpace (E x)]
-  [FiberBundle F E] (e : Trivialization F (π F E))
-
-lemma symm_map_add [Trivialization.IsLinear R e] {x : B}
-  (f f' : F) :
-    e.symm x (f + f') = e.symm x f + e.symm x f' :=
-  (symmL R e x).map_add f f'
-
-@[simp]
-lemma symm_map_zero [Trivialization.IsLinear R e] {x : B} :
-    e.symm x 0 = 0 :=
-  (symmL R e x).map_zero
-
-variable {R}
-
-lemma symm_map_smul [Trivialization.IsLinear R e] {x : B} (a : R) (f : F) :
-    e.symm x (a • f) = a • e.symm x f :=
-  (symmL R e x).map_smul a f
-
-end
-
-end topological_vector_bundle
-
-section to_trivialization
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  -- `F` model fiber
-  (n : WithTop ℕ∞)
-  {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
-  [∀ x : M, TopologicalSpace (V x)]
-  [FiberBundle F V]
-
-variable (e : Trivialization F (π F V)) [MemTrivializationAtlas e]
-
-lemma mdifferentiableAt
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {x : M} (hx : x ∈ e.baseSet) (v : V x) :
-MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v := by
-  have : ⟨x, v⟩ ∈ e.source := (coe_mem_source e).mpr hx
-  have foo := e.contMDiffOn (IB := I) (n := 1) v this
-  have := foo.contMDiffAt (e.open_source.mem_nhds this)
-  exact this.mdifferentiableAt zero_ne_one.symm
-
-lemma mdifferentiableAt_invFun
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {x : M} (hx : x ∈ e.baseSet) (f : F) :
-    MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (x, f) := by
-  have : ⟨x, f⟩ ∈ e.target := (mk_mem_target e).mpr hx
-  have foo := e.contMDiffOn_symm (IB := I) (n := 1) _ this
-  have := foo.contMDiffAt (e.open_target.mem_nhds this)
-  exact this.mdifferentiableAt zero_ne_one.symm
-
--- Note: The definition below (ab)uses definitional
--- equality of `TangentSpace (I.prod 𝓘(ℝ, F)) (↑t v)`
--- which is $T_{t(v)} (M × F)$ and `TM v.proj × F`
--- which is $T_{π(v)} M × F$.
-variable (I) in
-noncomputable
-def deriv (v : TotalSpace F V) :
-    TangentSpace (I.prod 𝓘(ℝ, F)) v →L[ℝ] TangentSpace I v.proj × F :=
-  mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v
-
-variable (I) in
-noncomputable
-def derivInv (v : TotalSpace F V) :
-    TangentSpace I v.proj × F →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, F)) v :=
-  mfderiv (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e.invFun (e v)
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma derivInv_deriv
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
-    (e.derivInv I v) ∘L (e.deriv I v) = .id ℝ _ := by
-  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
-  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
-  rw [mk_proj_snd' e hv] at D₁
-  have comp := mfderiv_comp v D₁ D₂
-  rw [(invFun_comp_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
-  simp [deriv, derivInv, comp]
-
-@[simp]
-lemma derivInv_deriv_apply
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
-    (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
-    (e.derivInv I v (e.deriv I v u)) = u :=
-  show ((e.derivInv I v) ∘L (e.deriv I v)) u = u by simp [hv]
-
-@[simp]
-lemma mfderiv_proj_fst_deriv
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
-    (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
-    mfderiv (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v u = (e.deriv I v u).1 := by
-  have := e.fst_comp_eventuallyEq hv
-  rw [← this.mfderiv_eq, mfderiv_comp v mdifferentiableAt_fst (e.mdifferentiableAt (I := I) hv v.2)]
-  simp
-  rfl -- TODO: understand why `simp` does not handle `ContinuousLinearMap.fst`
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma mfderiv_proj_derivInv_apply
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
-    (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
-    mfderiv (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v (e.derivInv I v u) = u.1 := by
-  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
-  rw [mk_proj_snd' e hv] at D₁
-  have diff : MDifferentiableAt (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v :=
-    mdifferentiableAt_proj _
-  have eq : e.invFun (e v) = v := by
-    simp [symm_apply_apply e ((mem_source e).mpr hv)]
-  rw [← eq] at diff
-  have := mfderiv_comp (e v) diff D₁
-  have C : (TotalSpace.proj ∘ e.invFun) =ᶠ[𝓝 (e v)] Prod.fst := by
-    filter_upwards [e.baseSet_prod_univ_mem_nhds  hv] with ⟨x, f⟩ ⟨hx, hf⟩
-    exact symm_coe_proj e hx
-  rw [C.mfderiv_eq, eq] at this
-  have := congr($this u).symm
-  change mfderiv (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v _ = _ at this
-  -- Why all this pain??
-  convert this
-  ext x
-  simp
-  rfl
-
-set_option backward.isDefEq.respectTransparency false in
-@[simp]
-lemma deriv_derivInv
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
-    (e.deriv I v) ∘L (e.derivInv I v) = .id ℝ _ := by
-  have D₁ := e.mdifferentiableAt_invFun (I := I) hv (e v).2
-  rw [mk_proj_snd' e hv] at D₁
-  have D₂ : MDifferentiableAt _ _ e v := e.mdifferentiableAt (I := I) hv v.2
-  have : e.invFun (e v) = v := by
-    simp [symm_apply_apply e ((mem_source e).mpr hv)]
-  rw [← this] at D₂
-  have comp := mfderiv_comp (e v) D₂ D₁
-  rw [(comp_invFun_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
-  symm
-  convert comp <;> rw [this]
-
-@[simp]
-lemma deriv_derivInv_apply
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet)
-    (u : TangentSpace I v.proj × F) :
-    e.deriv I v (e.derivInv I v u) = u :=
-  show ((e.deriv I v) ∘L (e.derivInv I v)) u = u by simp [hv]
-
-lemma bijective_deriv
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
-    Function.Bijective (e.deriv I v) := by
-   refine Function.bijective_iff_has_inverse.mpr ?_
-   use e.derivInv I v
-   constructor
-   all_goals { intro u; simp [hv] }
-
-lemma mdifferentiableAt_section_of_function
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {x : M} (hx : x ∈ e.baseSet) {s : M → F}
-    (hs : MDiffAt s x) :
-    MDiffAt ((fun x' ↦ (⟨x', e.symm x' (s x')⟩ : TotalSpace F V))) x := by
-  rw [e.mdifferentiableAt_section_iff (IB := I) _ hx]
-  have := e.apply_symm_eventuallyEq hx s
-  exact hs.congr_of_eventuallyEq this
-
-noncomputable def _root_.Bundle.vert (v : TotalSpace F V) :
-    Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
-  (mfderiv (I.prod 𝓘(ℝ, F)) I Bundle.TotalSpace.proj v).ker
-
-lemma comap_vert
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {v : TotalSpace F V} (hv : v.proj ∈ e.baseSet) :
-    Bundle.vert v = Submodule.comap (e.deriv I v).toLinearMap
-      (Submodule.prod ⊥ ⊤) := by
-  ext x
-  have : Prod.fst ∘ e =ᶠ[𝓝 v] TotalSpace.proj := e.fst_comp_eventuallyEq hv
-  unfold vert
-  rw [← this.mfderiv_eq]
-  have mdiffe : MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e v :=
-    e.mdifferentiableAt hv _
-  rw [mfderiv_comp v mdifferentiableAt_fst mdiffe]
-  simp
-  rfl
-
-lemma mfderiv_comp_section
-    [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
-    {σ : Π x : M, V x} {x : M} (hσ : MDiffAt T%σ x)
-    (u : TangentSpace I x) (hx : x ∈ e.baseSet) :
-    letI s := fun x ↦ (e (σ x)).2
-    (e.deriv I (σ x)).toLinearMap ((mfderiv% T%σ x) u) = (u, mfderiv I 𝓘(ℝ, F) s x u) := by
-  have mdiffe : MDifferentiableAt (I.prod 𝓘(ℝ, F)) (I.prod 𝓘(ℝ, F)) e (σ x) :=
-    e.mdifferentiableAt hx _
-  have : mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x =
-    (e.deriv I (σ x)) ∘L (mfderiv% T%σ x) :=
-    mfderiv_comp x mdiffe hσ
-  have : mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u =
-    e.deriv I (σ x) ((mfderiv% T%σ x) u) := by
-    rw [this]
-    rfl
-  erw [← this]
-  let s := fun x ↦ (e (σ x)).2
-  change mfderiv I (I.prod 𝓘(ℝ, F)) (e ∘ T%σ) x u = (u, mfderiv% s x u)
-  rw [(e.apply_section_eventuallyEq hx _).mfderiv_eq]
-  erw [mfderiv_prodMk, mfderiv_id]
-  · change (ContinuousLinearMap.id _ _).prod (mfderiv% s x) u = _
-    simp
-  · apply mdifferentiableAt_id
-  · exact (mdifferentiableAt_section_iff I e σ hx).mp hσ
-
-@[simp]
-lemma _root_.mdifferentiableAt_section_trivial_iff {s : M → F} {x : M} :
-    MDiffAt (T% s) x ↔ MDiffAt s x := by
-  rw [mdifferentiableAt_section I]
-  simp
-
-end to_trivialization
-
-end Bundle.Trivialization
-
 section linear_algebra_isCompl
 lemma LinearMap.comap_isCompl {R R₂ M M₂ : Type*}
     [Semiring R] [AddCommMonoid M] [Module R M] [Semiring R₂]
@@ -1006,4 +603,4 @@ lemma LinearEquiv.comap_isCompl {R R₂ M M₂ : Type*}
     · simp
     · simp
 
-end  linear_algebra_isCompl
+end linear_algebra_isCompl
