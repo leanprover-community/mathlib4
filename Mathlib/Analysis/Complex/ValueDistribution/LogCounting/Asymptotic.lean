@@ -79,7 +79,7 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
   classical
   constructor
   · intro h₂
-  refine ⟨fun h₂ ↦ by simp [isBigO_of_le' (c := 0), h₂], ?_⟩ 
+  refine ⟨fun h₂ ↦ by simp [isBigO_of_le' (c := 0), h₂], ?_⟩
   · contrapose
     intro h₁
     obtain ⟨e, he⟩ := exists_single_le_pos (lt_of_le_of_ne h (h₁ ·.symm))
