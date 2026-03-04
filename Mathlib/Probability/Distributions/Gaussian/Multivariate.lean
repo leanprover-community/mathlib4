@@ -355,8 +355,7 @@ lemma covarianceBilin_multivariateGaussian (hS : S.PosSemidef) :
   · rw [← ContinuousLinearMap.comp_apply, ← ContinuousLinearMap.mul_def, ← map_mul,
       CFC.sqrt_mul_sqrt_self _ hS.nonneg, inner_toEuclideanCLM]
     simp [dotProduct, mulVec, Finset.mul_sum, mul_assoc]
-  · rw [IsSelfAdjoint, ← map_star]
-    simpa using (CFC.sqrt_nonneg S).isHermitian
+  · exact (CFC.sqrt_nonneg S).isSelfAdjoint.map _
   · exact IsGaussian.memLp_two_id
 
 set_option backward.isDefEq.respectTransparency false in
@@ -365,7 +364,7 @@ lemma covariance_eval_multivariateGaussian (hS : S.PosSemidef) (i j : ι) :
   have (i : ι) : (fun x : EuclideanSpace ℝ ι ↦ x i) =
       fun x ↦ ⟪EuclideanSpace.basisFun ι ℝ i, x⟫ := by ext; simp [PiLp.inner_apply]
   rw [this, this, ← covarianceBilin_apply_eq_cov, covarianceBilin_multivariateGaussian hS,
-    ContinuousLinearMap.ofMatrix_orthonormalBasis]
+    LinearMap.toCLM₂_apply, ← OrthonormalBasis.coe_toBasis, Matrix.toBilin_]
   exact IsGaussian.memLp_two_id
 
 lemma variance_eval_multivariateGaussian (hS : S.PosSemidef) (i : ι) :
