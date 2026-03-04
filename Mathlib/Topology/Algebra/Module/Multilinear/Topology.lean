@@ -400,14 +400,14 @@ def continuousMultilinearMapCongrLeft (f : ∀ i, E i ≃L[𝕜] E₁ i) :
 theorem continuousMultilinearMapCongrLeft_symm
     (f : ∀ i, E i ≃L[𝕜] E₁ i) :
     (ContinuousLinearEquiv.continuousMultilinearMapCongrLeft F f).symm =
-      .continuousMultilinearMapCongrLeft F fun i : ι => (f i).symm :=
+      .continuousMultilinearMapCongrLeft F fun i : ι ↦ (f i).symm :=
   rfl
 
 @[simp]
 theorem continuousMultilinearMapCongrLeft_apply
     (g : ContinuousMultilinearMap 𝕜 E₁ F) (f : ∀ i, E i ≃L[𝕜] E₁ i) :
     ContinuousLinearEquiv.continuousMultilinearMapCongrLeft F f g =
-      g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i) :=
+      g.compContinuousLinearMap fun i ↦ (f i : E i →L[𝕜] E₁ i) :=
   rfl
 
 variable (E) in
