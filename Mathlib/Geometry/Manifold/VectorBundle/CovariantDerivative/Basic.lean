@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
-public import Mathlib.Geometry.Manifold.VectorField.LieBracket
-public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Prelim
 
 /-!
