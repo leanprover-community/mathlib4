@@ -122,7 +122,7 @@ lemma isCompactSystem_iff_nonempty_iInter_of_lt (S : Set (Set α)) :
 /-- A set system is a compact system iff adding `∅` gives a compact system. -/
 lemma isCompactSystem_insert_empty_iff :
     IsCompactSystem (insert ∅ S) ↔ IsCompactSystem S :=
-  ⟨fun h ↦ h.mono (subset_insert _ _), fun h ↦ h.insert_empty⟩
+  ⟨fun h ↦ h.mono (subset_insert _ _), .insert_empty⟩
 
 /-- A set system is a compact system iff adding `univ` gives a compact system. -/
 lemma isCompactSystem_insert_univ_iff : IsCompactSystem (insert univ S) ↔ IsCompactSystem S :=
@@ -130,8 +130,7 @@ lemma isCompactSystem_insert_univ_iff : IsCompactSystem (insert univ S) ↔ IsCo
 
 theorem isCompactSystem_iff_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
-    ∀ (C : ℕ → Set α), (Directed (fun x1 x2 ↦ x1 ⊇ x2) C) → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ →
-      ∃ n, C n = ∅ := by
+      ∀ (C : ℕ → Set α), Directed (· ⊇ ·) C → (∀ i, C i ∈ S) → ⋂ i, C i = ∅ → ∃ n, C n = ∅ := by
   rw [← isCompactSystem_insert_empty_iff]
   refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
   · rw [exists_dissipate_eq_empty_iff_of_directed hdi]
