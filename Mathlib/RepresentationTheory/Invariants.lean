@@ -108,16 +108,14 @@ lemma mem_linHom_invariants_iff_isIntertwining (f : V →ₗ[k] W) :
 /-- The invariants of the representation `linHom ρ σ` correspond to intertwining maps
  from `ρ` to `σ`. -/
 def invariantsEquivIntertwiningMap : (linHom ρ σ).invariants ≃ₗ[k] IntertwiningMap ρ σ where
-  toFun f :=
-    { f.val with
-      isIntertwining' :=
-        ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining }
+  toFun f := f.val.intertwiningMap_of_isIntertwiningMap ρ σ
+    ((mem_linHom_invariants_iff_isIntertwining f.val).mp f.property).isIntertwining
   map_add' _ _ := IntertwiningMap.ext_iff.mpr rfl
   map_smul' _ _ := IntertwiningMap.ext_iff.mpr rfl
   invFun g :=
     { val := g.toLinearMap
       property := (mem_linHom_invariants_iff_isIntertwining g.toLinearMap).mpr
-        {isIntertwining := g.isIntertwining'} }
+        {isIntertwining := g.isIntertwining} }
 
 section
 
