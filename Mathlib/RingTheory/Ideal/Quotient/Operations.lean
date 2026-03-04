@@ -1174,7 +1174,6 @@ def powQuotPowSuccLinearEquivMapMkPowSuccPow :
     refine ⟨Submodule.Quotient.mk ⟨y, hy⟩, ?_⟩
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `I ^ n ⧸ I ^ (n + 1)` can be viewed as a quotient module and as ideal of `R ⧸ I ^ (n + 1)`.
 This definition gives the equivalence between the two, instead of the `R`-linear equivalence,
 to bypass typeclass synthesis issues on complex `Module` goals. -/
