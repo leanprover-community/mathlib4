@@ -403,7 +403,7 @@ theorem HasDerivAt.fun_finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x)
 
 theorem HasDerivAt.finset_prod (hf : ∀ i ∈ u, HasDerivAt (f i) (f' i) x) :
     HasDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  convert HasDerivAt.fun_finset_prod hf; simp
+  convert fun_finset_prod hf; simp
 
 theorem HasDerivWithinAt.fun_finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
@@ -412,7 +412,7 @@ theorem HasDerivWithinAt.fun_finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f 
 
 theorem HasDerivWithinAt.finset_prod (hf : ∀ i ∈ u, HasDerivWithinAt (f i) (f' i) s x) :
     HasDerivWithinAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) s x := by
-  convert HasDerivWithinAt.fun_finset_prod hf; simp
+  convert fun_finset_prod hf; simp
 
 theorem HasStrictDerivAt.fun_finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
@@ -421,7 +421,7 @@ theorem HasStrictDerivAt.fun_finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f 
 
 theorem HasStrictDerivAt.finset_prod (hf : ∀ i ∈ u, HasStrictDerivAt (f i) (f' i) x) :
     HasStrictDerivAt (∏ i ∈ u, f i) (∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • f' i) x := by
-  convert HasStrictDerivAt.fun_finset_prod hf; simp
+  convert fun_finset_prod hf; simp
 
 theorem deriv_fun_finset_prod (hf : ∀ i ∈ u, DifferentiableAt 𝕜 (f i) x) :
     deriv (∏ i ∈ u, f i ·) x = ∑ i ∈ u, (∏ j ∈ u.erase i, f j x) • deriv (f i) x :=
