@@ -553,7 +553,7 @@ theorem isCompactOperator_id_iff_finiteDimensional [LocallyCompactSpace 𝕜] :
 then the space is finite dimensional. -/
 lemma IsCompactOperator.finiteDimensional (h : IsCompactOperator (id : E → E)) :
     FiniteDimensional 𝕜 E := by
-  have := h.locallyCompactSpace
+  have := LocallyCompactSpace.of_isCompactOperator_id h
   exact FiniteDimensional.of_locallyCompactSpace 𝕜
 
 end Riesz

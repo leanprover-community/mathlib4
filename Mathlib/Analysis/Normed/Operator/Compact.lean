@@ -272,11 +272,6 @@ theorem IsCompactOperator.comp_clm [AddCommMonoid M₂] [Module R₂ M₂] {f : 
   rcases hf with ⟨K, hK, hKf⟩
   exact ⟨K, hK, this hKf⟩
 
-/-- Any continuous linear map to a locally compact space is a compact operator. -/
-theorem isCompactOperator_of_locallyCompactSpace [AddCommGroup M₂] [Module R₂ M₂]
-    [IsTopologicalAddGroup M₂] [LocallyCompactSpace M₂] (T : M₁ →SL[σ₁₂] M₂) :
-    IsCompactOperator (T : M₁ → M₂) := (isCompactOperator_id.comp_clm T :)
-
 theorem IsCompactOperator.continuous_comp {f : M₁ → M₂} (hf : IsCompactOperator f) {g : M₂ → M₃}
     (hg : Continuous g) : IsCompactOperator (g ∘ f) := by
   rcases hf with ⟨K, hK, hKf⟩
@@ -288,6 +283,16 @@ theorem IsCompactOperator.clm_comp [AddCommMonoid M₂] [Module R₂ M₂] [AddC
     [Module R₃ M₃] {f : M₁ → M₂} (hf : IsCompactOperator f) (g : M₂ →SL[σ₂₃] M₃) :
     IsCompactOperator (g ∘ f) :=
   hf.continuous_comp g.continuous
+
+/-- Any continuous linear map to a locally compact space is a compact operator. -/
+theorem isCompactOperator_of_locallyCompactSpace' [AddCommGroup M₂] [Module R₂ M₂]
+    [IsTopologicalAddGroup M₂] [LocallyCompactSpace M₂] (T : M₁ →SL[σ₁₂] M₂) :
+    IsCompactOperator T := (isCompactOperator_id.comp_clm T :)
+
+/-- Any continuous linear map from a locally compact space is a compact operator. -/
+theorem isCompactOperator_of_locallyCompactSpace [AddCommGroup M₂] [Module R₂ M₂]
+    [IsTopologicalAddGroup M₂] [LocallyCompactSpace M₂] [AddCommMonoid M₃] [Module R₃ M₃]
+    (T : M₂ →SL[σ₂₃] M₃) : IsCompactOperator T := isCompactOperator_id.clm_comp T
 
 end Comp
 
