@@ -173,13 +173,31 @@ private partial def normalizeCtorArgs (ci : ConstructorVal) (us : List Level)
           if ← withReducibleAndInstances <| withNewMCtxDepth <| isDefEq synthInst patched then
             args := args.set! i synthInst
           else
-            -- Leaky: warn the user
-            warnings.modify (·.push
-              m!"inferInstanceAs%: synthesized sub-instance for \
-                {targetFieldType} is not defeq to the patched version at \
-                `reducibleAndInstances` transparency. Consider defining it \
-                separately with `inferInstanceAs%`.")
-            args := args.set! i patched
+            -- synthInst and patched differ. Check if synthInst is itself clean
+            -- (i.e. normalizing it doesn't change it). This handles the case where
+            -- the sub-instance was already defined with `inferInstanceAs%` — in that case
+            -- it's already clean, and the mismatch with `patched` is just because the
+            -- sub-instance inside the parent hierarchy was constructed differently.
+            let synthWarnings ← IO.mkRef #[]
+            let normalizedSynth ←
+              normalizeInstance synthInst replacements synthWarnings
+            if ← withReducibleAndInstances <| withNewMCtxDepth <|
+                isDefEq normalizedSynth synthInst then
+              -- synthInst is already clean (e.g. defined with inferInstanceAs%);
+              -- prefer it over patched to avoid diamonds with the canonical instance
+              args := args.set! i synthInst
+            else
+              -- synthInst is leaky: warn and use patched version
+              warnings.modify (·.push
+                m!"inferInstanceAs%: the synthesized instance for \
+                  {targetFieldType} has carrier type leakage \
+                  (it uses the source carrier type internally instead of the \
+                  target). `inferInstanceAs%` will patch the sub-instance \
+                  inline, but consider defining it separately with \
+                  `inferInstanceAs%` for cleaner results.{indentD
+                  "To suppress this warning: \
+                  `set_option inferInstanceAsPercent.leakySubInstWarning false`"}")
+              args := args.set! i patched
         | _ =>
           args := args.set! i patched
       else
