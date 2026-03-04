@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Ramification theory for valuations
@@ -29,13 +30,15 @@ open WithZero Ideal.IsDedekindDomain
 
 section AKLB
 
-variable {A K : Type*} (L : Type*) {B : Type*} [CommRing A] [CommRing B] [Field K] [Algebra A B]
-  [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L] [IsFractionRing B L]
-  [IsDedekindDomain A] [Algebra A L] [Algebra K L] [IsDedekindDomain B] [IsScalarTower A B L]
-  [IsScalarTower A K L] [Module.IsTorsionFree A B]
-  (v : HeightOneSpectrum A) (w : HeightOneSpectrum B)
+variable {A K : Type*} (L : Type*) {B : Type*}
+variable [CommRing A] [IsDedekindDomain A] [CommRing B] [IsDedekindDomain B] [Algebra A B]
+  [Module.IsTorsionFree A B]
+variable [Field K] [Field L] [Algebra K L]
+variable [Algebra A K] [IsFractionRing A K] [Algebra A L] [IsScalarTower A K L]
+variable [Algebra B L] [IsFractionRing B L] [IsScalarTower A B L]
+variable (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) [w.asIdeal.LiesOver v.asIdeal]
 
-theorem intValuation_liesOver (x : A) [w.asIdeal.LiesOver v.asIdeal] :
+theorem intValuation_liesOver (x : A) :
     v.intValuation x ^ (v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal) =
       w.intValuation (algebraMap A B x) := by
   rcases eq_or_ne x 0 with rfl | hx; · simp [ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot]
@@ -47,7 +50,7 @@ theorem intValuation_liesOver (x : A) [w.asIdeal.LiesOver v.asIdeal] :
   rw [emultiplicity_map_eq_ramificationIdx_mul hx v.irreducible w.irreducible w.ne_bot,
     Nat.cast_mul, (FiniteMultiplicity.of_prime_left v.prime hx).emultiplicity_eq_multiplicity]
 
-theorem valuation_liesOver [w.asIdeal.LiesOver v.asIdeal] (x : K) :
+theorem valuation_liesOver (x : K) :
     v.valuation K x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
       w.valuation L (algebraMap K L x) := by
   obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) x
@@ -55,7 +58,7 @@ theorem valuation_liesOver [w.asIdeal.LiesOver v.asIdeal] (x : K) :
     IsScalarTower.algebraMap_apply A B L, intValuation_liesOver v w]
 
 variable (K) in
-theorem uniformContinuous_algebraMap_liesOver [w.asIdeal.LiesOver v.asIdeal] :
+theorem uniformContinuous_algebraMap_liesOver :
     UniformContinuous (algebraMap (WithVal (v.valuation K)) (WithVal (w.valuation L))) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
   rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
@@ -72,6 +75,27 @@ theorem uniformContinuous_algebraMap_liesOver [w.asIdeal.LiesOver v.asIdeal] :
     rw [← log_lt_log (by simp_all) (by simp), log_pow, Int.nsmul_eq_mul, mul_comm]
     exact Int.mul_lt_of_lt_ediv
       (mod_cast Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
+
+set_option backward.isDefEq.respectTransparency false in
+open WithZeroTopology UniformSpace.Completion in
+theorem valued_liesOver
+    [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
+    (x : v.adicCompletion K) :
+    Valued.v x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
+      Valued.v (algebraMap _ (w.adicCompletion L) x) := by
+  induction x using induction_on with
+  | hp =>
+    exact isClosed_eq (Valued.continuous_valuation.pow _)
+      (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
+  | ih a =>
+    have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
+    simp only [algebraMap_def, WithVal.algebraMap_right_apply, WithVal.algebraMap_left_apply,
+      Algebra.algebraMap_self, RingHom.id_apply] at this
+    simp only [Valued.valuedCompletion_apply, ← this, WithVal.valued_toVal,
+      ← valuation_liesOver L v]
+    rw [WithVal.valued_toVal]
 
 end AKLB
 
