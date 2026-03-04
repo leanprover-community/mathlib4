@@ -349,6 +349,12 @@ fundamental groupoid of that space. -/
 abbrev fromPath {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
 
+/-- Two paths are equal in the fundamental groupoid if and only if they are homotopic. -/
+theorem fromPath_eq_iff_homotopic {x₀ x₁ : X} (f : Path x₀ x₁) (g : Path x₀ x₁) :
+    fromPath (Path.Homotopic.Quotient.mk f) = fromPath (Path.Homotopic.Quotient.mk g) ↔
+      f.Homotopic g :=
+  ⟨fun ih ↦ Quotient.exact ih, fun h ↦ Quotient.sound h⟩
+
 lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
     eqToHom (congr_arg mk h) = ⟦(Path.refl x₁).cast h rfl⟧ := by subst h; rfl
 

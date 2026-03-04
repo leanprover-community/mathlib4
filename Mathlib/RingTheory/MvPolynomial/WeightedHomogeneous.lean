@@ -651,6 +651,7 @@ def weightedDecomposition [DecidableEq M] :
     exact weightedHomogeneousComponent_directSum R w x m
 
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Given a weight, `MvPolynomial` as a graded algebra -/
 def weightedGradedAlgebra [DecidableEq M] :
     GradedAlgebra (weightedHomogeneousSubmodule R w) where

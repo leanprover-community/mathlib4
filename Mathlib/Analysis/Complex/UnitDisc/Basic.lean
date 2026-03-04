@@ -91,6 +91,9 @@ of `𝔻` instead of `↥Metric.ball (0 : ℂ) 1`. -/
 def mk (z : ℂ) (hz : ‖z‖ < 1) : 𝔻 :=
   ⟨z, mem_ball_zero_iff.2 hz⟩
 
+instance : CanLift ℂ 𝔻 (↑) (‖·‖ < 1) where
+  prf z hz := ⟨mk z hz, rfl⟩
+
 /-- A cases eliminator that makes `cases z` use `UnitDisc.mk` instead of `Subtype.mk`. -/
 @[elab_as_elim, cases_eliminator]
 protected def casesOn {motive : 𝔻 → Sort*} (mk : ∀ z hz, motive (.mk z hz)) (z : 𝔻) :
@@ -109,6 +112,16 @@ theorem coe_mk (z : ℂ) (hz : ‖z‖ < 1) : (mk z hz : ℂ) = z :=
 @[simp]
 theorem mk_coe (z : 𝔻) (hz : ‖(z : ℂ)‖ < 1 := z.norm_lt_one) : mk z hz = z :=
   Subtype.eta _ _
+
+@[simp]
+theorem mk_inj {z w : ℂ} (hz : ‖z‖ < 1) (hw : ‖w‖ < 1) : mk z hz = mk w hw ↔ z = w :=
+  Subtype.mk_eq_mk
+
+protected theorem «forall» {p : 𝔻 → Prop} : (∀ z, p z) ↔ ∀ z hz, p (mk z hz) :=
+  ⟨fun h z hz ↦ h (mk z hz), fun h z ↦ h z z.norm_lt_one⟩
+
+protected theorem «exists» {p : 𝔻 → Prop} : (∃ z, p z) ↔ ∃ z hz, p (mk z hz) :=
+  ⟨fun ⟨z, hz⟩ ↦ ⟨z, z.norm_lt_one, hz⟩, fun ⟨z, hz, h⟩ ↦ ⟨mk z hz, h⟩⟩
 
 @[simp]
 theorem mk_neg (z : ℂ) (hz : ‖-z‖ < 1) : mk (-z) hz = -mk z (norm_neg z ▸ hz) :=
@@ -228,6 +241,9 @@ theorem re_neg (z : 𝔻) : (-z).re = -z.re :=
 @[simp]
 theorem im_neg (z : 𝔻) : (-z).im = -z.im :=
   rfl
+
+@[simp] theorem re_zero : re 0 = 0 := rfl
+@[simp] theorem im_zero : im 0 = 0 := rfl
 
 /-- Conjugate point of the unit disc. -/
 instance : Star 𝔻 where

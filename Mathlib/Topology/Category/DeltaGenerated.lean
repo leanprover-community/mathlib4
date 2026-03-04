@@ -85,7 +85,7 @@ def coreflectorAdjunction : deltaGeneratedToTop ⊣ topToDeltaGenerated :=
         ⟨id, continuous_iff_coinduced_le.mpr (eq_deltaGenerated (X := X)).le⟩ }
     counit := {
       app X := ConcreteCategory.ofHom
-        ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ }}
+        ⟨DeltaGeneratedSpace.counit, DeltaGeneratedSpace.continuous_counit⟩ } }
 
 /-- The category of delta-generated spaces is coreflective in the category of topological spaces. -/
 instance deltaGeneratedToTop.coreflective : Coreflective deltaGeneratedToTop where

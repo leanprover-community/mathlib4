@@ -117,7 +117,7 @@ noncomputable def union : Lifts F E K :=
       rw [AlgHom.comp_apply, ← inclusion]
       dsimp only [coe_type_toSubalgebra]
       rw [← hji.snd (inclusion h x), inclusion_inclusion, inclusion_self, AlgHom.id_apply x])
-    _ rfl).comp
+    _ le_rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=

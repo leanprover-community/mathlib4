@@ -157,7 +157,6 @@ def latticeEquivProd : L.lattice ≃ₗ[ℤ] ℤ × ℤ :=
 lemma latticeEquiv_symm_apply (x : ℤ × ℤ) :
     (L.latticeEquivProd.symm x).1 = x.1 * L.ω₁ + x.2 * L.ω₂ := by
   simp [latticeEquivProd, Finsupp.linearCombination]
-  rfl
 
 lemma hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
     (u : ℝ → L.lattice → ℝ) (hu : ∀ r > 0, Summable (u r))
@@ -615,7 +614,7 @@ See `PeriodPair.coeff_weierstrassPExceptSeries`. -/
 def weierstrassPExceptSummand (l₀ x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
   if l.1 = l₀ then 0 else ((i + 1) * (l.1 - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.1 ^ (-2 : ℤ)) 0)
 
-/-- The power series exansion of `℘[L - l₀]` at `x`.
+/-- The power series expansion of `℘[L - l₀]` at `x`.
 See `PeriodPair.hasFPowerSeriesOnBall_weierstrassPExcept`. -/
 def weierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   letI := Classical.propDecidable
@@ -781,7 +780,7 @@ end AnalyticWeierstrassPExcept
 
 section AnalyticderivWeierstrassPExcept
 
-/-- The power series exansion of `℘'[L - l₀]` at `x`.
+/-- The power series expansion of `℘'[L - l₀]` at `x`.
 See `PeriodPair.hasFPowerSeriesOnBall_derivWeierstrassPExcept`. -/
 def derivWeierstrassPExceptSeries (l₀ x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   letI := Classical.propDecidable
@@ -843,7 +842,8 @@ This is the summand of this infinite sum. See `PeriodPair.coeff_weierstrassPSeri
 def weierstrassPSummand (x : ℂ) (i : ℕ) (l : L.lattice) : ℂ :=
   ((i + 1) * (l.1 - x) ^ (- ↑(i + 2) : ℤ) - i.casesOn (l.1 ^ (-2 : ℤ)) 0)
 
-/-- The power series exansion of `℘` at `x`. See `PeriodPair.hasFPowerSeriesOnBall_weierstrassP`. -/
+/-- The power series expansion of `℘` at `x`.
+See `PeriodPair.hasFPowerSeriesOnBall_weierstrassP`. -/
 def weierstrassPSeries (x : ℂ) : FormalMultilinearSeries ℂ ℂ ℂ :=
   .ofScalars _ fun i ↦ if i = 0 then (℘[L] x) else (i + 1) * L.sumInvPow x (i + 2)
 
@@ -1010,7 +1010,7 @@ private lemma analyticAt_relation_zero : AnalyticAt ℂ L.relation 0 := by
     ((natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero (by fun_prop)).mpr fun i hi₁ ↦ ?_)
   by_cases hi₂ : Odd i
   · simpa [← CharZero.eq_neg_self_iff, hi₂, (show Even 6 by decide).neg_pow] using
-      (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0:)
+      (iteratedDeriv_comp_neg i (L.relation * id ^ 6) 0 :)
   by_cases hi₃ : i = 0
   · simp [hi₃]
   by_cases hi₄ : i = 6

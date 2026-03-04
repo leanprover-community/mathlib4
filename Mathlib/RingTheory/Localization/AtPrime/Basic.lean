@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 public import Mathlib.RingTheory.Localization.Basic
@@ -117,7 +118,7 @@ theorem _root_.IsLocalization.AtPrime.faithfulSMul (R : Type*) [CommRing R] [NoZ
     [Algebra R S] (P : Ideal R) [hp : P.IsPrime] [IsLocalization.AtPrime S P] :
     FaithfulSMul R S := by
   rw [faithfulSMul_iff_algebraMap_injective, IsLocalization.injective_iff_isRegular P.primeCompl]
-  exact fun ⟨_, h⟩ ↦ isRegular_of_ne_zero <| by aesop
+  exact fun ⟨_, h⟩ ↦ .of_ne_zero <| by aesop
 
 instance {R : Type*} [CommRing R] [NoZeroDivisors R] (P : Ideal R) [hp : P.IsPrime] :
     FaithfulSMul R (Localization.AtPrime P) := IsLocalization.AtPrime.faithfulSMul _ _ P
@@ -170,7 +171,7 @@ theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
   Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
-theorem liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
+instance liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).LiesOver I :=
   (Ideal.liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
 
@@ -236,10 +237,12 @@ noncomputable def localRingHom (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : 
     Localization.AtPrime I →+* Localization.AtPrime J :=
   IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (ge_of_eq hIJ))
 
+@[simp]
 theorem localRingHom_to_map (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)
     (x : R) : localRingHom I J f hIJ (algebraMap _ _ x) = algebraMap _ _ (f x) :=
   map_eq _ _
 
+@[simp]
 theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) (x : R)
     (y : I.primeCompl) :
     localRingHom I J f hIJ (IsLocalization.mk' _ x y) =
@@ -272,6 +275,47 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
       (localRingHom J K g hJK).comp (localRingHom I J f hIJ) :=
   localRingHom_unique _ _ _ _ fun r => by
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
+
+variable {S} in
+/-- For an algebra hom `f : S →ₐ[R] P` and a prime ideal `J` in `P`, the induced ring hom from the
+localization of `R` at `J ∩ S` to the localization of `P` at `J`. -/
+noncomputable def localAlgHom [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
+    (f : S →ₐ[R] P) (hIJ : I = J.comap f) :
+    Localization.AtPrime I →ₐ[R] Localization.AtPrime J where
+  __ := localRingHom I J f.toRingHom hIJ
+  commutes' r := by
+    simp [IsScalarTower.algebraMap_apply R S (Localization.AtPrime I),
+      localRingHom_to_map, IsScalarTower.algebraMap_apply R P (Localization.AtPrime J)]
+
+variable {S} in
+@[simp] lemma localAlgHom_apply [Algebra R P] (I : Ideal S) [I.IsPrime] (J : Ideal P) [J.IsPrime]
+    (f : S →ₐ[R] P) (hIJ : I = J.comap f) (x) :
+    localAlgHom I J f hIJ x = localRingHom I J f.toRingHom hIJ x := rfl
+
+lemma localRingHom_bijective_of_saturated_inf_eq_top
+    {P : Ideal S} [P.IsPrime] {s : Subalgebra R S}
+    (H : s.saturation (P.primeCompl ⊓ s.toSubmonoid) (by simp) = ⊤) (p : Ideal s)
+    [p.IsPrime] [P.LiesOver p] :
+    Function.Bijective (Localization.localRingHom _ _ _ (P.over_def p)) := by
+  constructor
+  · suffices ∀ a ∈ s, ∀ b ∈ s, b ∉ P → ∀ c ∈ s, ∀ d ∈ s, d ∉ P → ∀ x ∉ P,
+        x * (a * d) = x * (c * b) → ∃ a_6 ∉ P, a_6 ∈ s ∧ a_6 * (a * d) = a_6 * (c * b) by
+      simpa [Function.Injective, (IsLocalization.mk'_surjective p.primeCompl).forall, P.over_def p,
+        Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq', Subtype.ext_iff, -map_mul,
+        IsLocalization.eq_iff_exists P.primeCompl, IsLocalization.eq_iff_exists p.primeCompl]
+    intro a _ b _ _ c _ d _ _ x hxP e
+    obtain ⟨t, ⟨htP, -⟩, ht⟩ := H.ge (Set.mem_univ x)
+    exact ⟨_, ‹P.IsPrime›.mul_notMem htP hxP, ht, by simp [mul_assoc, e]⟩
+  · suffices ∀ y, ∀ z ∉ P, ∃ y' ∈ s, ∃ z' ∉ P, z' ∈ s ∧ ∃ t ∉ P, t * (z * y') = t * (z' * y) by
+      simpa [(IsLocalization.mk'_surjective p.primeCompl).exists,
+        (IsLocalization.mk'_surjective P.primeCompl).forall, P.over_def p,
+        Localization.localRingHom_mk', IsLocalization.mk'_eq_iff_eq, - map_mul,
+        IsLocalization.eq_iff_exists P.primeCompl, Function.Surjective] using this
+    intro y z hzP
+    obtain ⟨a, ⟨haP, has⟩, ha⟩ := H.ge (Set.mem_univ y)
+    obtain ⟨b, ⟨hbP, hbs⟩, hb⟩ := H.ge (Set.mem_univ z)
+    exact ⟨_, mul_mem ha hbs, _, P.primeCompl.mul_mem (mul_mem hbP hzP) haP, mul_mem hb has, 1,
+      P.primeCompl.one_mem, by ring⟩
 
 namespace AtPrime
 
@@ -361,7 +405,7 @@ lemma IsLocalization.liesOver_of_isPrime_of_disjoint {R' S' : Type*}
     (disj : Disjoint (T : Set S) (P : Set S)) :
     (P.map (algebraMap S S')).LiesOver (p.map (algebraMap R R')) := by
   suffices h : Ideal.map (algebraMap R R') (under R (under R' (P.map (algebraMap S S')))) =
-      Ideal.map (algebraMap R R') p by exact ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
+      Ideal.map (algebraMap R R') p from ⟨by rw [← h, IsLocalization.map_comap (M := M)]⟩
   rw [under_under, ← under_under (B := S), under_def, under_def,
     IsLocalization.comap_map_of_isPrime_disjoint _ _ ‹_› disj,
     LiesOver.over (P := P) (p := p)]

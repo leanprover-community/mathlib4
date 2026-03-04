@@ -6,7 +6,6 @@ Authors: Justin Curry, Adam Topaz
 module
 
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
-public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 

@@ -464,7 +464,7 @@ for a version that assumes `n ≤ #R`. -/
 lemma eq_zero_of_forall_eval_eq_zero [Infinite R] {F : MvPolynomial σ R} {n : ℕ}
     (hF : F.IsHomogeneous n) (h : ∀ r : σ → R, eval r F = 0) : F = 0 := by
   apply eq_zero_of_forall_eval_eq_zero_of_le_card hF h
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+  exact Cardinal.natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 /-- See `MvPolynomial.IsHomogeneous.funext_of_le_card`
 for a version that assumes `n ≤ #R`. -/
@@ -472,7 +472,7 @@ lemma funext [Infinite R] {F G : MvPolynomial σ R} {n : ℕ}
     (hF : F.IsHomogeneous n) (hG : G.IsHomogeneous n)
     (h : ∀ r : σ → R, eval r F = eval r G) : F = G := by
   apply funext_of_le_card hF hG h
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+  exact Cardinal.natCast_le_aleph0.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end IsDomain
 
@@ -491,7 +491,7 @@ open Finset
 /-- `homogeneousComponent n φ` is the part of `φ` that is homogeneous of degree `n`.
 See `sum_homogeneousComponent` for the statement that `φ` is equal to the sum
 of all its homogeneous components. -/
-def homogeneousComponent [CommSemiring R] (n : ℕ) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
+def homogeneousComponent (n : ℕ) : MvPolynomial σ R →ₗ[R] MvPolynomial σ R :=
   weightedHomogeneousComponent 1 n
 
 section HomogeneousComponent

@@ -53,6 +53,8 @@ instance : SetLike (ClosedSubmodule R M) M where
   coe s := s.1
   coe_injective' _ _ h := toSubmodule_injective <| SetLike.coe_injective h
 
+instance : PartialOrder (ClosedSubmodule R M) := .ofSetLike (ClosedSubmodule R M) M
+
 lemma toCloseds_injective : Injective (toCloseds : ClosedSubmodule R M → Closeds M) :=
   fun _s _t h ↦ SetLike.coe_injective congr(($h : Set M))
 
@@ -72,6 +74,10 @@ instance : Coe (ClosedSubmodule R M) (Submodule R M) where
 
 @[simp, norm_cast]
 lemma coe_toSubmodule (s : ClosedSubmodule R M) : (s.toSubmodule : Set M) = s := rfl
+
+@[simp]
+lemma mem_toSubmodule_iff (x : M) (s : ClosedSubmodule R M) : x ∈ s.toSubmodule ↔ x ∈ s := by
+  rfl
 
 @[simp]
 lemma coe_toCloseds (s : ClosedSubmodule R M) : (s.toCloseds : Set M) = s := rfl
@@ -144,11 +150,9 @@ lemma toSubmodule_inf (s t : ClosedSubmodule R M) :
 
 instance : CompleteSemilatticeInf (ClosedSubmodule R M) where
   sInf_le s a ha _ := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun h ↦ h a ha
+    simpa using fun h ↦ h a ha
   le_sInf s a ha b := by
-    simp only [toSubmodule_sInf, Submodule.mem_iInf]
-    exact fun a i hi ↦ ha i hi a
+    simpa using fun a i hi ↦ ha i hi a
 
 instance : OrderTop (ClosedSubmodule R M) where
   top := ⟨⊤, isClosed_univ⟩
@@ -192,16 +196,25 @@ protected def closure (s : Submodule R M) : ClosedSubmodule R M where
 lemma mem_closure_iff {x : M} {s : Submodule R M} : x ∈ s.closure ↔ x ∈ s.topologicalClosure :=
   Iff.rfl
 
+@[simp]
+lemma closure_eq {s : ClosedSubmodule R M} : s.closure = s := by
+  ext
+  simp only [carrier_eq_coe, ClosedSubmodule.coe_toSubmodule, coe_closure, SetLike.mem_coe]
+  rw [closure_eq_iff_isClosed.mpr]
+  · rfl
+  · exact s.isClosed'
+
+lemma closure_eq' {s : Submodule R M} (hs : IsClosed s.carrier) : s.closure = ⟨s, hs⟩ := by
+  ext; simp
+
 end Submodule
 
 namespace ClosedSubmodule
 
 variable [ContinuousAdd N] [ContinuousConstSMul R N] {f : M →L[R] N}
 
-@[simp]
 lemma closure_toSubmodule_eq {s : ClosedSubmodule R N} : s.toSubmodule.closure = s := by
-  ext x
-  simp [closure_eq_iff_isClosed.mpr (ClosedSubmodule.isClosed s)]
+  ext x; simp
 
 /-- The closure of the image of a closed submodule under a continuous linear map is a closed
 submodule.
@@ -292,3 +305,13 @@ instance : Lattice (ClosedSubmodule R N) where
 instance [T1Space N] : CompleteLattice (ClosedSubmodule R N) where
 
 end ClosedSubmodule
+
+section CompleteSpace
+
+instance {𝕜 H : Type*} [Semiring 𝕜] [AddCommMonoid H] [UniformSpace H] [Module 𝕜 H]
+    [CompleteSpace H] (K : ClosedSubmodule 𝕜 H) : CompleteSpace K := by
+  apply IsComplete.completeSpace_coe
+  rw [← ClosedSubmodule.carrier_eq_coe]
+  exact K.isClosed'.isComplete
+
+end CompleteSpace

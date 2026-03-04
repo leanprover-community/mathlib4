@@ -134,7 +134,7 @@ lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
   have tensor (X Y) : η.hom.hom.app (X ⊗ Y) = (η.hom.hom.app X ⊗ₘ η.hom.hom.app Y) :=
     η.hom.isMonoidal.tensor X Y
   rw [tensor] at nat
-  exact congr_fun ((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
+  exact ConcreteCategory.congr_hom ((CategoryTheory.forget _).congr_map nat) (f ⊗ₜ[k] g)
 
 /-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
 an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/

@@ -157,12 +157,6 @@ end Diag
 
 open Matrix
 
-section AddCommMonoid
-
-variable [AddCommMonoid α] [Mul α]
-
-end AddCommMonoid
-
 section NonAssocSemiring
 
 variable [NonAssocSemiring α]
@@ -660,8 +654,8 @@ def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (M
 end RingEquiv
 
 instance (α) [MulOne α] [AddCommMonoid α] [IsStablyFiniteRing α] : IsStablyFiniteRing αᵐᵒᵖ where
-  isDedekindFiniteMonoid n := let f := MonoidHom.mk ⟨RingEquiv.mopMatrix, by simp⟩ (map_mul _)
-    .of_injective f RingEquiv.mopMatrix.injective
+  isDedekindFiniteMonoid n := .of_injective (MonoidHom.mk
+    ⟨RingEquiv.mopMatrix, by simp⟩ RingEquiv.mopMatrix.map_mul) (RingEquiv.injective _)
 
 open MulOpposite in
 theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
@@ -933,8 +927,6 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
     toFun := fun M => MulOpposite.op Mᵀ
     commutes' := fun r => by
       simp only [algebraMap_eq_diagonal, diagonal_transpose, MulOpposite.algebraMap_apply] }
-
-variable {R m α}
 
 end Transpose
 

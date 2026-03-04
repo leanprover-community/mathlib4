@@ -283,6 +283,21 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
       finsum (fun d ↦ coeff d f • (constantCoeff (d.prod fun s e => (a s) ^ e))) := by
   simp only [← coeff_zero_eq_constantCoeff_apply, coeff_subst ha f 0]
 
+theorem constantCoeff_subst_eq_zero (ha : HasSubst a) (ha' : ∀ i, (a i).constantCoeff = 0)
+    {f : MvPowerSeries σ R} (hf : f.constantCoeff = 0) :
+    MvPowerSeries.constantCoeff (subst a f) = 0 := by
+  rw [constantCoeff_subst ha, finsum_eq_zero_of_forall_eq_zero]
+  intro d
+  by_cases hd : d = 0
+  · simp [hd, hf]
+  · have : constantCoeff (d.prod fun s e ↦ a s ^ e) = 0 := by
+      obtain ⟨i, hi⟩ : ∃ i : σ, d i ≠ 0 := by
+        by_contra! hc
+        exact hd <| Finsupp.ext hc
+      simpa [map_finsuppProd, ha'] using
+        Finset.prod_eq_zero (i := i) (by simp [hi]) (by simp [zero_pow hi])
+    rw [this, smul_zero]
+
 theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
     map (algebraMap R S) f = subst X f := by
   ext e

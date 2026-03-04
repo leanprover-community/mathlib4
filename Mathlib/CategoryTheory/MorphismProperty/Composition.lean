@@ -361,6 +361,32 @@ instance [W.HasOfPrecompProperty W'] : W.op.HasOfPostcompProperty W'.op where
 
 instance [W.HasTwoOutOfThreeProperty] : W.op.HasTwoOutOfThreeProperty where
 
+instance : (⊤ : MorphismProperty C).HasOfPostcompProperty W where
+  of_postcomp _ _ _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).HasOfPrecompProperty W where
+  of_precomp _ _ _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).HasTwoOutOfThreeProperty where
+
+variable (P Q : MorphismProperty C)
+
+instance [P.HasOfPostcompProperty W] [Q.HasOfPostcompProperty W] :
+    (P ⊓ Q).HasOfPostcompProperty W where
+  of_postcomp f g hg hfg := ⟨P.of_postcomp f g hg hfg.1, Q.of_postcomp f g hg hfg.2⟩
+
+instance [P.HasOfPrecompProperty W] [Q.HasOfPrecompProperty W] :
+    (P ⊓ Q).HasOfPrecompProperty W where
+  of_precomp f g hg hfg := ⟨P.of_precomp f g hg hfg.1, Q.of_precomp f g hg hfg.2⟩
+
+instance [P.HasTwoOutOfThreeProperty] [Q.HasTwoOutOfThreeProperty] :
+    (P ⊓ Q).HasTwoOutOfThreeProperty := by
+  have : P.HasOfPostcompProperty (P ⊓ Q) := .of_le _ _ inf_le_left
+  have : P.HasOfPrecompProperty (P ⊓ Q) := .of_le _ _ inf_le_left
+  have : Q.HasOfPostcompProperty (P ⊓ Q) := .of_le _ _ inf_le_right
+  have : Q.HasOfPrecompProperty (P ⊓ Q) := .of_le _ _ inf_le_right
+  constructor
+
 end
 
 section

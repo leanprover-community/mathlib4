@@ -757,7 +757,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       use ∅, 0, bot_le, this.some
       exact fun hp' => (hp hp').elim
     · rcases hcov _ (Set.not_notMem.1 hp) n with ⟨s, ⟨scard, scover⟩⟩
-      rcases Cardinal.lt_aleph0.1 (lt_of_le_of_lt scard (Cardinal.nat_lt_aleph0 _)) with ⟨N, hN⟩
+      rcases Cardinal.lt_aleph0.1 (scard.trans_lt Cardinal.natCast_lt_aleph0) with ⟨N, hN⟩
       rw [hN, Nat.cast_le] at scard
       have : #s = #(Fin N) := by rw [hN, Cardinal.mk_fin]
       obtain ⟨E⟩ := Quotient.exact this

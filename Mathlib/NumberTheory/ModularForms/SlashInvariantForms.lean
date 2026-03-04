@@ -262,6 +262,25 @@ theorem coe_mul [Γ.HasDetPlusMinusOne] {k₁ k₂ : ℤ} (f : SlashInvariantFor
     (g : SlashInvariantForm Γ k₂) : ⇑(f.mul g) = ⇑f * ⇑g :=
   rfl
 
+/-- Given `SlashInvariantForm`'s `f i` of weight `k i` for `i : ι`, define the form which as a
+function is a product of those indexed by `s : Finset ι` with weight `m = ∑ i ∈ s, k i`. -/
+@[simps -fullyApplied]
+def prod {ι : Type} {s : Finset ι} {k : ι → ℤ} (m : ℤ)
+    (hm : m = ∑ i ∈ s, k i) {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (f : (i : ι) → SlashInvariantForm Γ (k i)) : SlashInvariantForm Γ m where
+  toFun := ∏ i ∈ s, (f i)
+  slash_action_eq' A hA := by
+    simp [hm, prod_slash_sum_weights, -Matrix.GeneralLinearGroup.val_det_apply,
+       Subgroup.HasDetPlusMinusOne.abs_det hA, SlashInvariantForm.slash_action_eqn (f _) A hA]
+
+/-- Given `SlashInvariantForm`'s `f i` of weight `k`, define the form which as a
+function is a product of those indexed by `s : Finset ι` with weight `#s * k`. -/
+@[simps! -fullyApplied]
+def prodEqualWeights {ι : Type} {s : Finset ι} {k : ℤ}
+    {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetPlusMinusOne]
+    (f : (i : ι) → SlashInvariantForm Γ k) : SlashInvariantForm Γ (s.card * k) :=
+  prod (k := fun i ↦ k) (s := s) (s.card * k) (by simp) f
+
 instance [Γ.HasDetPlusMinusOne] : NatCast (SlashInvariantForm Γ 0) where
   natCast n := constℝ n
 

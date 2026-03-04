@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Algebra.Order.Sub.Defs
-public import Mathlib.Util.AssertExists
 
 /-!
 # Ordered groups

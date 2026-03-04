@@ -114,8 +114,14 @@ def ιColimitType (j : J) (x : F.obj j) : F.ColimitType :=
 
 lemma ιColimitType_eq_iff {j j' : J} (x : F.obj j) (y : F.obj j') :
     F.ιColimitType j x = F.ιColimitType j' y ↔
-      Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨ j', y⟩ :=
+      Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨j', y⟩ :=
   Quot.eq
+
+lemma ιColimitType_eq_of_map_eq_map {j j' : J} (x : F.obj j) (y : F.obj j')
+    {k : J} (f : j ⟶ k) (f' : j' ⟶ k) (H : F.map f x = F.map f' y) :
+    F.ιColimitType j x = F.ιColimitType j' y :=
+  (ιColimitType_eq_iff ..).mpr (.trans _ _ _ (.rel _ ⟨k, F.map f x⟩ ⟨f, rfl⟩)
+    (.symm _ _ (.rel _ _ ⟨f', H⟩)))
 
 lemma ιColimitType_jointly_surjective (t : F.ColimitType) :
     ∃ j x, F.ιColimitType j x = t := by

@@ -67,6 +67,10 @@ protected lemma map_smul {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (m : M.obj 
 lemma congr_map_apply {X Y : Cᵒᵖ} {f g : X ⟶ Y} (h : f = g) (m : M.obj X) :
     M.map f m = M.map g m := by rw [h]
 
+lemma map_comp_apply {U V W : Cᵒᵖ} (i : U ⟶ V) (j : V ⟶ W) (x) :
+    M.map (i ≫ j) x = M.map j (M.map i x) := by
+  rw [M.map_comp]; rfl
+
 /-- A morphism of presheaves of modules consists of a family of linear maps which
 satisfy the naturality condition. -/
 @[ext]
@@ -114,7 +118,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
     { app := fun X ↦ (app X).inv
       naturality := fun {X Y} f ↦ by
         rw [← cancel_epi (app X).hom, ← reassoc_of% (naturality f), Iso.map_hom_inv_id,
-          Category.comp_id, Iso.hom_inv_id_assoc]}
+          Category.comp_id, Iso.hom_inv_id_assoc] }
 
 /-- The underlying presheaf of abelian groups of a presheaf of modules. -/
 noncomputable def presheaf : Cᵒᵖ ⥤ Ab where
@@ -153,7 +157,7 @@ lemma toPresheaf_map_app_apply (f : M₁ ⟶ M₂) (X : Cᵒᵖ) (x : M₁.obj X
 instance : (toPresheaf R).Faithful where
   map_injective {_ _ f g} h := by
     ext X x
-    exact congr_fun (((evaluation _ _).obj X ⋙ forget _).congr_map h) x
+    exact congr_fun (((evaluation _ _).obj X ⋙ forget Ab).congr_map h) x
 
 section
 

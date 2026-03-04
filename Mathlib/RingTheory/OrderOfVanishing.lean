@@ -8,6 +8,8 @@ module
 public import Mathlib.RingTheory.KrullDimension.NonZeroDivisors
 public import Mathlib.RingTheory.Length
 public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
 
 /-!
 # Order of vanishing

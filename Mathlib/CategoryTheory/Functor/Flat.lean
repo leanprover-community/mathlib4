@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.CategoryTheory.Filtered.Connected
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.Limits.ConeCategory
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
@@ -310,7 +311,8 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
         ι_colimMap, Functor.whiskerLeft_app]
       rfl)
 
-variable [HasForget.{u₁} E] [HasLimits E] [HasColimits E]
+variable {FE : E → E → Type*} {CE : E → Type u₁} [∀ X Y, FunLike (FE X Y) (CE X) (CE Y)]
+    [ConcreteCategory E FE] [HasLimits E] [HasColimits E]
 variable [ReflectsLimits (forget E)] [PreservesFilteredColimits (forget E)]
 variable [PreservesLimits (forget E)]
 
@@ -357,5 +359,61 @@ lemma preservesFiniteLimits_iff_lan_preservesFiniteLimits (F : C ⥤ D) :
       (fun _ _ _ ↦ preservesLimit_of_lan_preservesLimit _ _)⟩
 
 end SmallCategory
+
+section
+
+variable {C D E : Type*} [Category* C] [Category* D] [Category* E] (F : C ⥤ D) (G : D ⥤ E)
+
+attribute [local instance] IsCofiltered.isConnected IsFiltered.isConnected
+
+instance (X : E) [RepresentablyFlat F] : (StructuredArrow.pre X F G).Final :=
+  ⟨fun _ ↦ isConnected_of_equivalent (StructuredArrow.preEquivalence _ _).symm⟩
+
+instance (X : E) [RepresentablyCoflat F] : (CostructuredArrow.pre F G X).Initial :=
+  ⟨fun _ ↦ isConnected_of_equivalent (CostructuredArrow.preEquivalence _ _).symm⟩
+
+instance (X : E) [RepresentablyFlat F] [IsCofiltered (StructuredArrow X G)] :
+    IsCofiltered (StructuredArrow X (F ⋙ G)) := by
+  let T := StructuredArrow.pre X F G
+  obtain ⟨Y⟩ := IsCofiltered.nonempty (C := StructuredArrow X G)
+  obtain ⟨A⟩ := IsCofiltered.nonempty (C := StructuredArrow Y.right F)
+  have : Nonempty (StructuredArrow X (F ⋙ G)) := ⟨.mk (Y.hom ≫ G.map A.hom)⟩
+  suffices IsCofilteredOrEmpty (StructuredArrow X (F ⋙ G)) by constructor
+  refine ⟨fun A B ↦ ?_, fun A B f g ↦ ?_⟩
+  · let U := IsCofiltered.min (T.obj A) (T.obj B)
+    let A' : StructuredArrow U.right F := .mk (IsCofiltered.minToLeft (T.obj A) (T.obj B)).right
+    let B' : StructuredArrow U.right F := .mk (IsCofiltered.minToRight (T.obj A) (T.obj B)).right
+    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.min A' B').hom, ?_, ?_, trivial⟩
+    · refine StructuredArrow.homMk (IsCofiltered.minToLeft A' B').right ?_
+      simpa [← Functor.map_comp] using StructuredArrow.w _
+    · refine StructuredArrow.homMk (IsCofiltered.minToRight A' B').right ?_
+      simpa [← Functor.map_comp] using StructuredArrow.w _
+  · let U := IsCofiltered.eq (T.map f) (T.map g)
+    let A' : StructuredArrow _ F := .mk (IsCofiltered.eqHom (T.map f) (T.map g)).right
+    let B' : StructuredArrow _ F := .mk (IsCofiltered.eqHom (T.map f) (T.map g) ≫ T.map f).right
+    let f' : A' ⟶ B' := StructuredArrow.homMk f.right rfl
+    let g' : A' ⟶ B' := StructuredArrow.homMk g.right
+      congr($(IsCofiltered.eq_condition (T.map f) (T.map g)).right).symm
+    refine ⟨.mk <| U.hom ≫ G.map (IsCofiltered.eq f' g').hom, ?_, ?_⟩
+    · refine StructuredArrow.homMk (IsCofiltered.eqHom f' g').right ?_
+      simpa [← Functor.map_comp] using StructuredArrow.w _
+    · ext
+      exact congr($(IsCofiltered.eq_condition f' g').right)
+
+instance (X : E) [RepresentablyCoflat F] [h : IsFiltered (CostructuredArrow G X)] :
+    IsFiltered (CostructuredArrow (F ⋙ G) X) := by
+  rw [← isCofiltered_op_iff_isFiltered, IsCofiltered.iff_of_equivalence
+    (costructuredArrowOpEquivalence _ _)] at h ⊢
+  exact inferInstanceAs <| IsCofiltered (StructuredArrow (op X) (F.op ⋙ G.op))
+
+instance (G : D ⥤ Type*) [RepresentablyFlat F] [IsCofiltered G.Elements] :
+    IsCofiltered (F ⋙ G).Elements := by
+  suffices h : IsCofiltered (StructuredArrow PUnit (F ⋙ G)) from
+    .of_equivalence (CategoryOfElements.structuredArrowEquivalence _).symm
+  have : IsCofiltered (StructuredArrow PUnit G) :=
+    .of_equivalence (CategoryOfElements.structuredArrowEquivalence _)
+  infer_instance
+
+end
 
 end CategoryTheory

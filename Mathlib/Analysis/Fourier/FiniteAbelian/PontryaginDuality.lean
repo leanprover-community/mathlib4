@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.Topology.Instances.AddCircle.Real
+import Mathlib.Algebra.Field.ModEq
 
 /-!
 # Pontryagin duality for finite abelian groups
@@ -76,11 +77,11 @@ def zmodHom : AddChar (ZMod n) (AddChar (ZMod n) Circle) where
   map_add_eq_mul' := by simp
 
 /-- Character on a product of `ZMod`s given by `x ↦ ∏ i, e ^ (2 * π * I * x i * y / n)`. -/
-private def mkZModAux {ι : Type} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
+private def mkZModAux {ι : Type*} [DecidableEq ι] (n : ι → ℕ) [∀ i, NeZero (n i)]
     (u : ∀ i, ZMod (n i)) : AddChar (⨁ i, ZMod (n i)) Circle :=
   AddChar.directSum fun i ↦ zmod (n i) (u i)
 
-private lemma mkZModAux_injective {ι : Type} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
+private lemma mkZModAux_injective {ι : Type*} [DecidableEq ι] {n : ι → ℕ} [∀ i, NeZero (n i)] :
     Injective (mkZModAux n) :=
   AddChar.directSum_injective.comp fun f g h ↦ by simpa [funext_iff] using h
 

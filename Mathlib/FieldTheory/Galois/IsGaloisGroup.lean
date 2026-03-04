@@ -38,6 +38,8 @@ extensions of rings `B/A` seems to outweigh these terminological issues.
 
 @[expose] public section
 
+open Module
+
 section CommRing
 
 variable (G A B : Type*) [Group G] [CommSemiring A] [Semiring B] [Algebra A B]
@@ -124,7 +126,7 @@ Assume that `IsGaloisGroup G A B` with `A` and `B` domains, then `G` has a `MulS
 on `FractionRing B`. This cannot be an instance since Lean cannot figure out `A`.
 -/
 noncomputable def FractionRing.mulSemiringAction_of_isGaloisGroup [IsDomain A] [IsDomain B]
-    [NoZeroSMulDivisors A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
+    [IsTorsionFree A B] [IsGaloisGroup G A B] : MulSemiringAction G (FractionRing B) :=
   MulSemiringAction.compHom (FractionRing B)
     ((IsFractionRing.fieldEquivOfAlgEquivHom (FractionRing A) (FractionRing B)).comp
       (MulSemiringAction.toAlgAut G A B))
@@ -135,7 +137,7 @@ If `G` is finite and `IsGaloisGroup G A B` with `A` and `B` domains, then `G` is
 a Galois group for `FractionRing A / FractionRing B` for the action defined by
 `FractionRing.mulSemiringAction_of_isGaloisGroup`.
 -/
-theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [NoZeroSMulDivisors A B] [Finite G]
+theorem IsGaloisGroup.toFractionRing [IsDomain A] [IsDomain B] [IsTorsionFree A B] [Finite G]
     [IsGaloisGroup G A B] :
     letI := FractionRing.mulSemiringAction_of_isGaloisGroup G A B
     IsGaloisGroup G (FractionRing A) (FractionRing B) := by

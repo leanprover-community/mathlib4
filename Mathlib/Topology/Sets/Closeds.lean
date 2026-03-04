@@ -45,6 +45,8 @@ instance : SetLike (Closeds α) α where
   coe := Closeds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (Closeds α) := .ofSetLike (Closeds α) α
+
 instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
   prf s hs := ⟨⟨s, hs⟩, rfl⟩
 
@@ -302,6 +304,8 @@ instance : SetLike (Clopens α) α where
   coe s := s.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (Clopens α) := .ofSetLike (Clopens α) α
+
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
 
@@ -388,6 +392,8 @@ instance : SetLike (IrreducibleCloseds α) α where
   coe := IrreducibleCloseds.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+instance : PartialOrder (IrreducibleCloseds α) := .ofSetLike (IrreducibleCloseds α) α
+
 instance : CanLift (Set α) (IrreducibleCloseds α) (↑) (fun s ↦ IsIrreducible s ∧ IsClosed s) where
   prf s hs := ⟨⟨s, hs.1, hs.2⟩, rfl⟩
 
@@ -435,6 +441,7 @@ theorem singleton_injective [T1Space α] : Function.Injective ({·} : α → Irr
 theorem singleton_inj [T1Space α] {x y : α} : ({x} : IrreducibleCloseds α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducible x ∧ IsClosed x }`.
 -/
@@ -443,6 +450,7 @@ def equivSubtype : IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧
   toFun a  := ⟨a.1, a.2, a.3⟩
   invFun a := ⟨a.1, a.2.1, a.2.2⟩
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsClosed x ∧ IsIrreducible x }`.
 -/

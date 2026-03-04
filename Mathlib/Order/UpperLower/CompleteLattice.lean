@@ -249,6 +249,9 @@ instance completelyDistribLattice : CompletelyDistribLattice (LowerSet α) :=
 instance : Inhabited (LowerSet α) :=
   ⟨⊥⟩
 
+instance : IsConcreteLE (LowerSet α) α :=
+  ⟨.rfl⟩
+
 @[norm_cast] lemma coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t := Iff.rfl
 
 @[norm_cast] lemma coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t := Iff.rfl
@@ -486,9 +489,9 @@ end LE
 section LinearOrder
 variable [LinearOrder α]
 
-instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
+instance UpperSet.total_le : @Std.Total (UpperSet α) (· ≤ ·) := ⟨fun s t => t.upper.total s.upper⟩
 
-instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
+instance LowerSet.total_le : @Std.Total (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
 
 noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := by
   classical exact Lattice.toLinearOrder _

@@ -13,6 +13,8 @@ public import Mathlib.RingTheory.Polynomial.IntegralNormalization
 public import Mathlib.RingTheory.Polynomial.ScaleRoots
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
+import Mathlib.RingTheory.Polynomial.Subring
+
 /-!
 # # Integral closure as a characteristic predicate
 
@@ -361,13 +363,6 @@ lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsT
   refine
     Function.Injective.moduleIsTorsionFree _ (IsIntegralClosure.algebraMap_injective A R B)
       fun _ _ => ?_
-  simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
-
-theorem noZeroSMulDivisors [SMul R A] [IsScalarTower R A B] [NoZeroSMulDivisors R B] :
-    NoZeroSMulDivisors R A := by
-  refine
-    Function.Injective.noZeroSMulDivisors _ (IsIntegralClosure.algebraMap_injective A R B)
-      (map_zero _) fun _ _ => ?_
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
 variable {R} (A) {B}

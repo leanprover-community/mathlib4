@@ -408,7 +408,7 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
   rcases exists_continuous_zero_one_of_isCompact hs isOpen_interior.isClosed_compl
     (disjoint_compl_right_iff_subset.mpr sk) with ⟨⟨f, hf⟩, hfs, hft, h'f⟩
   have A : t ⊆ (interior k)ᶜ := subset_compl_comm.mpr (interior_subset.trans kt)
-  refine ⟨⟨fun x ↦ 1 - f x, continuous_const.sub hf⟩, fun x hx ↦ by simpa using hfs hx,
+  refine ⟨⟨fun x ↦ 1 - f x, by fun_prop⟩, fun x hx ↦ by simpa using hfs hx,
     fun x hx ↦ by simpa [sub_eq_zero] using (hft (A hx)).symm, ?_, fun x ↦ ?_⟩
   · apply HasCompactSupport.intro' k_comp k_closed (fun x hx ↦ ?_)
     simp only [ContinuousMap.coe_mk, sub_eq_zero]

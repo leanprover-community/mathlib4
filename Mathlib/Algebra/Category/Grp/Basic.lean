@@ -195,6 +195,9 @@ instance hasForgetToMonCat : HasForget₂ GrpCat MonCat where
     (f : X →* Y) :
     (forget₂ GrpCat MonCat).map (ofHom f) = MonCat.ofHom f := rfl
 
+@[to_additive (attr := simp)] lemma forget₂_map {R S : GrpCat} (f : R ⟶ S) (x) :
+    (forget₂ GrpCat MonCat).map f x = f x := rfl
+
 @[to_additive]
 instance : Coe GrpCat.{u} MonCat.{u} where coe := (forget₂ GrpCat MonCat).obj
 
@@ -412,6 +415,9 @@ instance hasForgetToGroup : HasForget₂ CommGrpCat GrpCat where
     (f : X →* Y) :
     (forget₂ CommGrpCat GrpCat).map (ofHom f) = GrpCat.ofHom f := rfl
 
+@[to_additive (attr := simp)] lemma forget₂_map {R S : CommGrpCat} (f : R ⟶ S) (x) :
+    (forget₂ CommGrpCat GrpCat).map f x = f x := rfl
+
 @[to_additive]
 instance : Coe CommGrpCat.{u} GrpCat.{u} where coe := (forget₂ CommGrpCat GrpCat).obj
 
@@ -591,7 +597,7 @@ instance GrpCat.forget_reflects_isos : (forget GrpCat.{u}).ReflectsIsomorphisms 
 instance CommGrpCat.forget_reflects_isos : (forget CommGrpCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGrpCat).map f)
-    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}
+    let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
     exact e.toCommGrpIso.isIso_hom
 
 -- note: in the following definitions, there is a problem with `@[to_additive]`

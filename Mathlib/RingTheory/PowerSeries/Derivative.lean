@@ -5,9 +5,10 @@ Authors: Richard M. Hill
 -/
 module
 
-public import Mathlib.RingTheory.PowerSeries.Trunc
-public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.Algebra.Polynomial.Derivation
 public import Mathlib.RingTheory.Derivation.Basic
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
 # Definitions
@@ -117,12 +118,8 @@ theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
 theorem derivative_coe (f : R[X]) : d⁄dX R f = Polynomial.derivative f := derivativeFun_coe f
 
 @[simp] theorem derivative_X : d⁄dX R (X : R⟦X⟧) = 1 := by
-  ext
-  rw [coeff_derivative, coeff_one, coeff_X, boole_mul]
-  simp_rw [add_eq_right]
-  split_ifs with h
-  · rw [h, cast_zero, zero_add]
-  · rfl
+  ext n; simp only [coeff_derivative, coeff_one, coeff_X, boole_mul, add_eq_right]
+  split_ifs <;> simp_all
 
 theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
     trunc n (d⁄dX R f) = Polynomial.derivative (trunc (n + 1) f) :=
@@ -130,11 +127,7 @@ theorem trunc_derivative (f : R⟦X⟧) (n : ℕ) :
 
 theorem trunc_derivative' (f : R⟦X⟧) (n : ℕ) :
     trunc (n - 1) (d⁄dX R f) = Polynomial.derivative (trunc n f) := by
-  cases n with
-  | zero =>
-    simp
-  | succ n =>
-    rw [succ_sub_one, trunc_derivative]
+  cases n <;> simp [trunc_derivative]
 
 end CommutativeSemiring
 
@@ -174,5 +167,40 @@ there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`
     rwa [MvPowerSeries.inv_eq_zero]
   apply Derivation.leibniz_of_mul_eq_one
   exact PowerSeries.inv_mul_cancel (h := h)
+
+variable (A : Type*) [CommRing A]
+
+/-- The derivative of g^n equals n * g^(n-1) * g'. -/
+theorem derivative_pow (g : A⟦X⟧) (n : ℕ) :
+    d⁄dX A (g ^ n) = n * g ^ (n - 1) * d⁄dX A g := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    simp only [pow_succ, (derivative A).leibniz, ih, smul_eq_mul, add_tsub_cancel_right]
+    rcases n with _ | m
+    · simp
+    · simp only [add_tsub_cancel_right, pow_succ]; push_cast; ring
+
+/-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
+private theorem derivative_subst_coe (p : Polynomial A) {g : A⟦X⟧} (hg : HasSubst g) :
+    d⁄dX A ((p : A⟦X⟧).subst g) = (d⁄dX A (p : A⟦X⟧)).subst g * d⁄dX A g := by
+  simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) (derivative A) p,
+    smul_eq_mul]
+
+theorem derivative_subst {f g : A⟦X⟧} (hg : HasSubst g) :
+    d⁄dX A (f.subst g) = (d⁄dX A f).subst g * d⁄dX A g := by
+  ext n
+  obtain ⟨m, hm⟩ := (hg.eventually_coeff_pow_eq_zero (n + 1)).exists_forall_of_atTop
+  have : coeff (n + 1) (f.subst g) = coeff (n + 1) ((↑(trunc (m + 1) f) : A⟦X⟧).subst g) := by
+    rw [coeff_subst' hg, coeff_subst' hg]
+    refine finsum_congr fun d ↦ ?_
+    obtain hd | hd := lt_or_ge d m
+    · rw [coeff_coe_trunc_of_lt (by lia)]
+    · simp [coeff_trunc, hd, hm]
+  rw [coeff_derivative, this, ← coeff_derivative, derivative_subst_coe A _ hg, coeff_mul, coeff_mul]
+  refine Finset.sum_congr rfl fun ⟨i, j⟩ hij ↦ ?_
+  congr 1
+  simp only [coeff_subst' hg, coeff_derivative, coeff_coe, coeff_trunc]
+  exact finsum_congr fun d ↦ by split_ifs <;> simp (disch := grind [Finset.mem_antidiagonal]) [hm]
 
 end PowerSeries

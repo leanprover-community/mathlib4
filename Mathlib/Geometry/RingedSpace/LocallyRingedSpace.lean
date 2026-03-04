@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Category.Ring.Constructions
 public import Mathlib.Geometry.RingedSpace.Basic
 public import Mathlib.Geometry.RingedSpace.Stalks
-public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # The category of locally ringed spaces
@@ -130,7 +129,7 @@ def comp {X Y Z : LocallyRingedSpace.{u}} (f : Hom X Y) (g : Hom Y Z) : Hom X Z 
   toHom := (f.toHom ≫ g.toHom : X.toPresheafedSpace ⟶ Z.toPresheafedSpace)
   prop x := by
     rw [PresheafedSpace.stalkMap.comp]
-    apply (config := { allowSynthFailures := true }) RingHom.isLocalHom_comp
+    apply +allowSynthFailures RingHom.isLocalHom_comp
     all_goals apply isLocalHomValStalkMap
 
 /-- The category of locally ringed spaces. -/

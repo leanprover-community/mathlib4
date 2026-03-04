@@ -571,15 +571,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     swap
     · rw [Function.update_of_ne h₁.symm, List.reverseAux_nil]
     refine TransGen.head' rfl ?_
-    rw [tr]; simp only [pop', TM2.stepAux]
-    revert e; rcases S k₁ with - | ⟨a, Sk⟩ <;> intro e
-    · cases e
-      rfl
-    simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
-    revert e; cases p a <;> intro e <;>
-      simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and, reduceCtorEq] at e ⊢
-    simp only [e]
-    rfl
+    simp only [tr_move, pop', TM2.stepAux]
+    grind [splitAtPred.eq_def]
   | cons a L₁ IH =>
     refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', Option.elim, TM2.stepAux, push']

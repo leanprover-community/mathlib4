@@ -261,6 +261,7 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPP
 theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := by
   rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_isUniform]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Any type function `F` that is (extensionally) equivalent to a QPF, is itself a QPF,
 assuming that the functorial map of `F` behaves similar to `MvFunctor.ofEquiv eqv` -/
 def ofEquiv {F F' : TypeVec.{u} n → Type*} [q : MvQPF F'] [MvFunctor F]

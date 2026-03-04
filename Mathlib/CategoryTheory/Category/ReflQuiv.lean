@@ -24,19 +24,19 @@ universe v u v₁ v₂ u₁ u₂
 /-- Category of refl quivers. -/
 @[nolint checkUnivs]
 def ReflQuiv :=
-  Bundled ReflQuiver.{v + 1, u}
+  Bundled ReflQuiver.{v, u}
 
 namespace ReflQuiv
 
 instance : CoeSort ReflQuiv (Type u) where coe := Bundled.α
 
-instance (C : ReflQuiv.{v, u}) : ReflQuiver.{v + 1, u} C := C.str
+instance (C : ReflQuiv.{v, u}) : ReflQuiver.{v, u} C := C.str
 
 /-- The underlying quiver of a reflexive quiver -/
 def toQuiv (C : ReflQuiv.{v, u}) : Quiv.{v, u} := Quiv.of C.α
 
 /-- Construct a bundled `ReflQuiv` from the underlying type and the typeclass. -/
-def of (C : Type u) [ReflQuiver.{v + 1} C] : ReflQuiv.{v, u} := Bundled.of C
+def of (C : Type u) [ReflQuiver.{v} C] : ReflQuiv.{v, u} := Bundled.of C
 
 instance : Inhabited ReflQuiv := ⟨ReflQuiv.of (Discrete default)⟩
 
@@ -348,7 +348,7 @@ lemma freeReflMap_map {v w : V} (f : v ⟶ w) :
     (freeReflMap F).map (FreeRefl.homMk f) = FreeRefl.homMk (F.map f) := rfl
 
 theorem freeReflMap_naturality
-    {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
+    {V W : Type*} [ReflQuiver.{v₁} V] [ReflQuiver.{v₂} W] (F : V ⥤rq W) :
     FreeRefl.quotientFunctor V ⋙ freeReflMap F =
     freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W :=
   Paths.ext_functor rfl (by cat_disch)
@@ -417,12 +417,12 @@ lemma adj_counit_app (D : Type u) [Category.{max u v} D] :
 variable {V : Type*} [ReflQuiver V]
   {C : Type*} [Category* C]
 
-lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v + 1} V] (C : Type u) [Category.{max u v} C] :
+lemma adj_homEquiv (V : Type u) [ReflQuiver.{max u v} V] (C : Type u) [Category.{max u v} C] :
     (adj).homEquiv (.of V) (.of C) = (Cat.Hom.equivFunctor _ _).trans adj.homEquiv := by
   ext F
   apply Adjunction.homEquiv_unit
 
-lemma adj.unit.map_app_eq (V : Type u) [ReflQuiver.{max u v + 1} V] :
+lemma adj.unit.map_app_eq (V : Type u) [ReflQuiver.{max u v} V] :
     (adj.unit.app (.of V)).toPrefunctor = Quiv.adj.unit.app (.of V) ⋙q
       (Cat.FreeRefl.quotientFunctor V).toPrefunctor := rfl
 

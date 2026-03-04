@@ -7,7 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Limits
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Adhesive
+public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 /-!
@@ -116,7 +116,8 @@ instance preservesLimits_diagramFunctor (X : C) [HasLimitsOfSize.{max t u v, max
   apply preservesLimitsOfShape_diagramFunctor.{max t u v}
 
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-variable [HasForget.{t} D]
+variable {FD : D → D → Type*} {CD : D → Type t} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory D FD]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 variable [∀ X : C, Small.{t, max u v} (J.Cover X)ᵒᵖ]
 
@@ -296,7 +297,6 @@ instance [PreservesLimits (forget D)] [HasFiniteLimits D]
     HasSheafify J D :=
   HasSheafify.mk' J D (plusPlusAdjunction J D)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance : HasSheafify J (Type max u v) := by
   infer_instance
 

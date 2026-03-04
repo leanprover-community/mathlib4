@@ -139,6 +139,8 @@ instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective' := SetLike.coe_injective.comp toSubsemigroup_injective
 
+@[to_additive] instance : PartialOrder (Submonoid M) := .ofSetLike (Submonoid M) M
+
 initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 
@@ -225,7 +227,7 @@ instance : Bot (Submonoid M) :=
   ⟨{  carrier := {1}
       one_mem' := Set.mem_singleton 1
       mul_mem' := fun ha hb => by
-        simp only [Set.mem_singleton_iff] at *
+        push _ ∈ _ at *
         rw [ha, hb, mul_one] }⟩
 
 @[to_additive]
@@ -269,7 +271,7 @@ instance : Min (Submonoid M) :=
 theorem coe_inf (p p' : Submonoid M) : ((p ⊓ p' : Submonoid M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mem_inf {p p' : Submonoid M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x ∈ p' :=
   Iff.rfl
 

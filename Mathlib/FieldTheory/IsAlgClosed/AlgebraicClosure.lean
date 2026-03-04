@@ -200,7 +200,7 @@ instance [CharZero k] : CharZero (AlgebraicClosure k) :=
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
 
-instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
+instance {L : Type*} [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
     IsAlgClosure k (AlgebraicClosure L) where
   isAlgebraic := .trans k L _
   isAlgClosed := inferInstance

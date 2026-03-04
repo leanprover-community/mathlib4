@@ -127,10 +127,8 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
   -- Prove that it satisfies all requirements.
   rcases cauchySeq_tendsto_of_isComplete h₁ (fun n => Subtype.mem _) seq_is_cauchy with
     ⟨v, hv, w_tendsto⟩
-  use v
-  use hv
-  have h_cont : Continuous fun v => ‖u - v‖ :=
-    Continuous.comp continuous_norm (Continuous.sub continuous_const continuous_id)
+  use v, hv
+  have h_cont : Continuous fun v => ‖u - v‖ := by fun_prop
   have : Tendsto (fun n => ‖u - w n‖) atTop (𝓝 ‖u - v‖) := by
     convert Tendsto.comp h_cont.continuousAt w_tendsto
   exact tendsto_nhds_unique this norm_tendsto

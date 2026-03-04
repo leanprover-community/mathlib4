@@ -81,7 +81,7 @@ variable [IsCancelMulZero R]
 
 /-- A characteristic zero domain is torsion-free. -/
 instance (priority := 100) IsAddTorsionFree.of_isCancelMulZero_charZero : IsAddTorsionFree R where
-  nsmul_right_injective n hn a b hab := by let : CancelMonoidWithZero R := {}; simpa [hn] using hab
+  nsmul_right_injective n hn a b hab := by simpa [hn] using hab
 
 end Semiring
 

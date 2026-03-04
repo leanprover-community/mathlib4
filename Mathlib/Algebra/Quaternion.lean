@@ -9,6 +9,8 @@ public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+import Mathlib.Algebra.Module.Torsion.Prod
+
 /-!
 # Quaternions
 
@@ -532,11 +534,8 @@ theorem algebraMap_eq (r : R) : algebraMap R ℍ[R,c₁,c₂,c₃] r = ⟨r, 0, 
 theorem algebraMap_injective : (algebraMap R ℍ[R,c₁,c₂,c₃] : _ → _).Injective :=
   fun _ _ ↦ by simp [algebraMap_eq]
 
-instance [NoZeroDivisors R] : NoZeroSMulDivisors R ℍ[R,c₁,c₂,c₃] := ⟨by
-  rintro t ⟨a, b, c, d⟩ h
-  rw [or_iff_not_imp_left]
-  intro ht
-  simpa [QuaternionAlgebra.ext_iff, ht] using h⟩
+instance : IsTorsionFree R ℍ[R,c₁,c₂,c₃] :=
+ (addEquivProd ..).injective.moduleIsTorsionFree _ fun _ _ ↦ rfl
 
 section
 

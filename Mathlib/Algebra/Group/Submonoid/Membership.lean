@@ -42,12 +42,6 @@ assert_not_exists MonoidWithZero
 
 variable {M A B : Type*}
 
-section Assoc
-
-variable [Monoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
-
-end Assoc
-
 section NonAssoc
 
 variable [MulOneClass M]
@@ -557,3 +551,10 @@ theorem ofAdd_image_multiples_eq_powers_ofAdd [AddMonoid A] {x : A} :
   exact ofMul_image_powers_eq_multiples_ofMul
 
 end mul_add
+
+@[simp] theorem Nat.addSubmonoidClosure_one : AddSubmonoid.closure ({1} : Set ℕ) = ⊤ := by
+  ext
+  simp [AddSubmonoid.mem_closure_singleton]
+
+@[deprecated (since := "2025-08-14")]
+alias Nat.addSubmonoid_closure_one := Nat.addSubmonoidClosure_one

@@ -80,7 +80,7 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
   have hf : Function.Surjective f := fun x ↦ by
     obtain ⟨y, hy⟩ := H.ge x.2; exact ⟨y, Subtype.ext hy⟩
   have : Function.Surjective
-      (f.lTensor (R ⧸ I) ∘ₗ (finsuppScalarRight R (R ⧸ I) s).symm.toLinearMap) :=
+      (f.lTensor (R ⧸ I) ∘ₗ (finsuppScalarRight R R (R ⧸ I) s).symm.toLinearMap) :=
     (LinearMap.lTensor_surjective (R ⧸ I) hf).comp (LinearEquiv.surjective _)
   refine (Nat.card_le_card_of_surjective _ this).trans ?_
   simp only [Nat.card_eq_fintype_card, Fintype.card_finsupp, Fintype.card_coe, le_rfl]

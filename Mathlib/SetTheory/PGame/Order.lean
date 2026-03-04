@@ -3,7 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-module
+module -- shake: keep-all
 
 public import Mathlib.Logic.Small.Defs
 public import Mathlib.Order.GameAdd
@@ -153,6 +153,7 @@ private theorem le_trans_aux {x y z : PGame}
   le_of_forall_lf (fun i => PGame.not_le.1 fun h => (h₁ hyz h).not_gf <| hxy.moveLeft_lf i)
     fun j => PGame.not_le.1 fun h => (h₂ h hxy).not_gf <| hyz.lf_moveRight j
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance : Preorder PGame :=
   { PGame.le with
     le_refl := fun x => by

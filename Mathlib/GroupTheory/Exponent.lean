@@ -498,7 +498,6 @@ section CancelCommMonoid
 
 variable [CancelCommMonoid G]
 
-set_option backward.proofsInPublic true in
 @[to_additive]
 theorem exponent_eq_max'_orderOf [Fintype G] :
     exponent G = ((@Finset.univ G _).image orderOf).max' ⟨1, by simp⟩ := by

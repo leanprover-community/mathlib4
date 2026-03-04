@@ -15,8 +15,13 @@ public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 # Étale morphisms
 
-A morphism of schemes `f : X ⟶ Y` is étale if it is smooth of relative dimension zero. We
-also define the category of schemes étale over `X`.
+A morphism of schemes `f : X ⟶ Y` is étale if for each affine `U ⊆ Y`
+and `V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is étale.
+
+## Main results
+
+- `AlgebraicGeometry.Etale.iff_smoothOfRelativeDimension_zero`: Etale is equivalent to
+  smooth of relative dimension `0`.
 
 -/
 
@@ -30,66 +35,118 @@ open CategoryTheory MorphismProperty Limits
 
 namespace AlgebraicGeometry
 
-/-- A morphism of schemes is étale if it is smooth of relative dimension zero. -/
-abbrev IsEtale {X Y : Scheme.{u}} (f : X ⟶ Y) := IsSmoothOfRelativeDimension 0 f
+/-- A morphism of schemes `f : X ⟶ Y` is étale if for each affine `U ⊆ Y` and
+`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is étale. -/
+@[mk_iff]
+class Etale {X Y : Scheme.{u}} (f : X ⟶ Y) : Prop where
+  etale_appLE (f) :
+    ∀ {U : Y.Opens} (_ : IsAffineOpen U) {V : X.Opens} (_ : IsAffineOpen V) (e : V ≤ f ⁻¹ᵁ U),
+      (f.appLE U V e).hom.Etale
 
-namespace IsEtale
+alias Scheme.Hom.etale_appLE := Etale.etale_appLE
+
+@[deprecated (since := "2026-02-09")] alias IsEtale := Etale
+
+namespace Etale
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-instance [IsEtale f] : IsSmooth f :=
-  IsSmoothOfRelativeDimension.isSmooth 0 f
+/-- The property of scheme morphisms `Etale` is associated with the ring
+homomorphism property `Etale`. -/
+instance : HasRingHomProperty @Etale RingHom.Etale where
+  isLocal_ringHomProperty := RingHom.Etale.propertyIsLocal
+  eq_affineLocally' := by
+    ext X Y f
+    rw [etale_iff, affineLocally_iff_forall_isAffineOpen]
 
-instance : IsStableUnderBaseChange @IsEtale :=
-  isSmoothOfRelativeDimension_isStableUnderBaseChange 0
+/-- Being étale is multiplicative. -/
+instance : MorphismProperty.IsMultiplicative @Etale :=
+  HasRingHomProperty.isMultiplicative RingHom.Etale.stableUnderComposition
+    RingHom.Etale.containsIdentities
+
+/-- The composition of étale morphisms is étale. -/
+instance etale_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Etale f] [Etale g] :
+    Etale (f ≫ g) :=
+  MorphismProperty.comp_mem _ f g ‹Etale f› ‹Etale g›
+
+/-- Etale is stable under base change. -/
+instance etale_isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Etale :=
+  HasRingHomProperty.isStableUnderBaseChange RingHom.Etale.isStableUnderBaseChange
+
+/-- Open immersions are étale. -/
+instance (priority := 900) [IsOpenImmersion f] : Etale f :=
+  HasRingHomProperty.of_isOpenImmersion RingHom.Etale.containsIdentities
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Etale g] :
+    Etale (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [Etale f] :
+    Etale (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [Etale f] : Etale (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [Etale f] :
+    Etale (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
+
+lemma eq_smoothOfRelativeDimension_zero : @Etale = @SmoothOfRelativeDimension 0 := by
+  apply HasRingHomProperty.ext
+  introv
+  have : @RingHom.Etale = @RingHom.IsStandardSmoothOfRelativeDimension 0 := by
+    ext; apply RingHom.etale_iff_isStandardSmoothOfRelativeDimension_zero
+  rw [← this, RingHom.locally_iff_of_localizationSpanTarget]
+  · exact RingHom.Etale.respectsIso
+  · exact RingHom.Etale.ofLocalizationSpanTarget
+
+lemma iff_smoothOfRelativeDimension_zero : Etale f ↔ SmoothOfRelativeDimension 0 f := by
+  rw [eq_smoothOfRelativeDimension_zero]
+
+instance [Etale f] : SmoothOfRelativeDimension 0 f := by
+  rwa [← iff_smoothOfRelativeDimension_zero]
+
+instance (priority := low) [Etale f] : Smooth f :=
+  SmoothOfRelativeDimension.smooth 0 f
 
 open RingHom in
-instance (priority := 900) [IsEtale f] : FormallyUnramified f where
-  formallyUnramified_of_affine_subset U V e := by
-    have : Locally (IsStandardSmoothOfRelativeDimension 0) (f.appLE (↑U) (↑V) e).hom :=
-      HasRingHomProperty.appLE (P := @IsSmoothOfRelativeDimension 0) _ inferInstance ..
-    have : Locally RingHom.FormallyUnramified (f.appLE U V e).hom := by
-      apply locally_of_locally _ this
-      intro R S _ _ f hf
-      algebraize [f]
-      rw [RingHom.FormallyUnramified]
-      have : Algebra.IsStandardSmoothOfRelativeDimension 0 R S := hf
-      infer_instance
-    rwa [← RingHom.locally_iff_of_localizationSpanTarget
-      FormallyUnramified.respectsIso FormallyUnramified.ofLocalizationSpanTarget]
+instance (priority := 900) [Etale f] : FormallyUnramified f where
+  formallyUnramified_appLE {_} hU {_} hV e :=
+    (f.etale_appLE hU hV e).formallyUnramified
 
 instance : MorphismProperty.HasOfPostcompProperty
-    @IsEtale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
+    @Etale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
   rw [MorphismProperty.hasOfPostcompProperty_iff_le_diagonal]
   intro X Y f ⟨hft, hfu⟩
-  exact inferInstanceAs <| IsEtale (pullback.diagonal f)
+  exact inferInstanceAs <| Etale (pullback.diagonal f)
 
 /-- If `f ≫ g` is étale and `g` unramified, then `f` is étale. -/
-lemma of_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [IsEtale (f ≫ g)] [LocallyOfFiniteType g]
-    [FormallyUnramified g] : IsEtale f :=
+lemma of_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Etale (f ≫ g)] [LocallyOfFiniteType g]
+    [FormallyUnramified g] : Etale f :=
   of_postcomp _ (W' := @LocallyOfFiniteType ⊓ @FormallyUnramified) f g ⟨‹_›, ‹_›⟩ ‹_›
 
-instance : MorphismProperty.HasOfPostcompProperty @IsEtale @IsEtale := by
-  apply MorphismProperty.HasOfPostcompProperty.of_le (W := @IsEtale)
+instance : MorphismProperty.HasOfPostcompProperty @Etale @Etale := by
+  apply MorphismProperty.HasOfPostcompProperty.of_le (W := @Etale)
     (Q := (@LocallyOfFiniteType ⊓ @FormallyUnramified))
   intro X Y f hf
   constructor <;> infer_instance
 
-end IsEtale
+end Etale
 
 namespace Scheme
 
 /-- The category `Etale X` is the category of schemes étale over `X`. -/
-def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @IsEtale ⊤ X
+protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale ⊤ X
 
 variable (X : Scheme.{u})
 
 instance : Category X.Etale :=
-  inferInstanceAs <| Category (MorphismProperty.Over @IsEtale ⊤ X)
+  inferInstanceAs <| Category (MorphismProperty.Over @Etale ⊤ X)
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
-  MorphismProperty.Over.forget @IsEtale ⊤ X
+  MorphismProperty.Over.forget @Etale ⊤ X
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X` is fully faithful. -/
 def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
@@ -101,7 +158,7 @@ instance : (Etale.forget X).Faithful :=
   inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
 
 instance : HasPullbacks X.Etale := by
-  unfold Etale
+  unfold Scheme.Etale
   infer_instance
 
 end Scheme

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+public import Mathlib.Tactic.CategoryTheory.CancelIso
 
 /-!
 # Monoidal opposites
@@ -314,6 +315,7 @@ end MonoidalOppositeLemmas
 
 variable (C)
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The (identity) equivalence between `C` and its monoidal opposite. -/
 @[simps] def MonoidalOpposite.mopEquiv : C ≌ Cᴹᵒᵖ where
   functor   := mopFunctor C

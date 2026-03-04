@@ -126,28 +126,10 @@ instance CofixA.instSubsingleton : Subsingleton (CofixA F 0) :=
 theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x) :
     head' (x (succ n)) = head' (x (succ m)) := by
   suffices ∀ n, head' (x (succ n)) = head' (x 1) by simp [this]
-  clear m n
   intro n
-  rcases h₀ : x (succ n) with - | ⟨_, f₀⟩
-  cases h₁ : x 1
-  dsimp only [head']
   induction n with
-  | zero =>
-    rw [h₁] at h₀
-    cases h₀
-    trivial
-  | succ n n_ih =>
-    have H := Hconsistent (succ n)
-    cases h₂ : x (succ n)
-    rw [h₀, h₂] at H
-    apply n_ih (truncate ∘ f₀)
-    rw [h₂]
-    obtain - | ⟨_, _, hagree⟩ := H
-    congr
-    funext j
-    dsimp only [comp_apply]
-    rw [truncate_eq_of_agree]
-    apply hagree
+  | zero => grind
+  | succ n n_ih => grind +splitIndPred [Hconsistent (succ n), head']
 
 end Approx
 

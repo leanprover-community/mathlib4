@@ -39,11 +39,20 @@ lemma of_surjective {f : R →+* S} (hf : Function.Surjective f) : f.FormallyUnr
   algebraize [f]
   exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) hf
 
-lemma stableUnderComposition :
-    StableUnderComposition FormallyUnramified := by
-  intro R S T _ _ _ f g _ _
+lemma of_comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
+    (h : (g.comp f).FormallyUnramified) :
+    g.FormallyUnramified := by
   algebraize [f, g, g.comp f]
-  exact .comp R S T
+  exact Algebra.FormallyUnramified.of_restrictScalars R _ _
+
+lemma comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T} (hf : f.FormallyUnramified)
+    (hg : g.FormallyUnramified) :
+    (g.comp f).FormallyUnramified := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.FormallyUnramified.comp R S T
+
+lemma stableUnderComposition : StableUnderComposition FormallyUnramified :=
+  fun _ _ _ _ _ _ _ _ hf hg ↦ .comp hf hg
 
 lemma respectsIso :
     RespectsIso FormallyUnramified := by
@@ -58,11 +67,15 @@ lemma isStableUnderBaseChange :
   rw [formallyUnramified_algebraMap] at H ⊢
   infer_instance
 
-lemma holdsForLocalizationAway :
-    HoldsForLocalizationAway FormallyUnramified := by
-  intro R S _ _ _ r _
+lemma holdsForLocalization :
+    HoldsForLocalization FormallyUnramified := by
+  intro R S _ _ _ M _
   rw [formallyUnramified_algebraMap]
-  exact .of_isLocalization (.powers r)
+  exact .of_isLocalization M
+
+lemma holdsForLocalizationAway :
+    HoldsForLocalizationAway FormallyUnramified :=
+  holdsForLocalization.holdsForLocalizationAway
 
 lemma ofLocalizationPrime :
     OfLocalizationPrime FormallyUnramified := by
@@ -96,14 +109,7 @@ lemma ofLocalizationSpanTarget :
 lemma propertyIsLocal :
     PropertyIsLocal FormallyUnramified := by
   constructor
-  · intro R S _ _ f r R' S' _ _ _ _ _ _ H
-    algebraize [f, (algebraMap S S').comp f, IsLocalization.Away.map R' S' f r]
-    have := Algebra.FormallyUnramified.of_isLocalization (Rₘ := S') (.powers (f r))
-    have := Algebra.FormallyUnramified.comp R S S'
-    have H : Submonoid.powers r ≤ (Submonoid.powers (f r)).comap f := by
-      rintro x ⟨n, rfl⟩; exact ⟨n, by simp⟩
-    have : IsScalarTower R R' S' := .of_algebraMap_eq' (IsLocalization.map_comp H).symm
-    exact Algebra.FormallyUnramified.of_restrictScalars R R' S'
+  · exact isStableUnderBaseChange.localizationPreserves.away
   · exact ofLocalizationSpanTarget
   · exact ofLocalizationSpanTarget.ofLocalizationSpan
       (stableUnderComposition.stableUnderCompositionWithLocalizationAway
@@ -111,4 +117,12 @@ lemma propertyIsLocal :
   · exact (stableUnderComposition.stableUnderCompositionWithLocalizationAway
         holdsForLocalizationAway).2
 
-end RingHom.FormallyUnramified
+end FormallyUnramified
+
+lemma FormallyEtale.of_comp {T : Type*} [CommRing T] {f : R →+* S} {g : S →+* T}
+    (hf : f.FormallyUnramified) (h : (g.comp f).FormallyEtale) :
+    g.FormallyEtale := by
+  algebraize [f, g, g.comp f]
+  exact Algebra.FormallyEtale.of_restrictScalars (R := R)
+
+end RingHom

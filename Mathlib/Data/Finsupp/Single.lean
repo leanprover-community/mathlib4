@@ -63,8 +63,15 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
 
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
-  ext
-  simp [single_apply, Set.indicator, @eq_comm _ a]
+  ext x
+  simp only [single_apply, Set.indicator, Set.mem_singleton_iff, @eq_comm _ a]
+
+theorem Set.indicator_singleton_eq (a : α) (f : α → M) :
+    Set.indicator {a} f = ⇑(single a (f a)) := by
+  classical
+  ext x
+  simp only [Set.indicator, Set.mem_singleton_iff, single_apply, @eq_comm _ a]
+  split_ifs with h <;> simp [h]
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by

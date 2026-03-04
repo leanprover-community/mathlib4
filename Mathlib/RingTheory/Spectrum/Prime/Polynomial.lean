@@ -173,7 +173,7 @@ lemma comap_C_surjective : Function.Surjective (comap (R := R) C) := by
 
 lemma exists_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     ∃ t : Finset R, comap C '' (zeroLocus {g} \ zeroLocus {f}) = (zeroLocus t)ᶜ := by
-  apply (config := { allowSynthFailures := true }) exists_image_comap_of_finite_of_free
+  apply +allowSynthFailures exists_image_comap_of_finite_of_free
   · exact .of_basis (AdjoinRoot.powerBasis' hg).basis
   · exact .of_basis (AdjoinRoot.powerBasis' hg).basis
 

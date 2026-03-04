@@ -591,7 +591,7 @@ theorem card_isPrincipal_dvd_norm_le (s : ℝ) :
         (p := fun I : (Ideal (𝓞 K))⁰ ↦ J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 ≤ ⌊s⌋₊)
         (q := fun I ↦ absNorm I.1 = i))
       _ ≃ {I : (Ideal (𝓞 K))⁰ // J.1 ∣ I.1 ∧ IsPrincipal I.1 ∧ absNorm I.1 = i}
-            × torsion K := Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by aesop
+            × torsion K := Equiv.prodCongrLeft fun _ ↦ Equiv.subtypeEquivRight fun _ ↦ by grind
       _ ≃ {a : idealSet K J // mixedEmbedding.norm (a : mixedSpace K) = i} :=
             (idealSetEquivNorm K J i).symm
       _ ≃ {a : idealSet K J // intNorm (idealSetEquiv K J a).1 = i} := by

@@ -148,11 +148,30 @@ Note that the binary products assumption is necessary: the existence of a right 
 -/
 def forgetAdjStar : forget X ⊣ star X := (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
 
+@[simp]
+lemma forgetAdjStar_counit_app (X Y : C) : (Over.forgetAdjStar X).counit.app Y = prod.snd := by
+  simp [Over.forgetAdjStar, CategoryTheory.coalgebraEquivOver]
+
+@[simp]
+lemma forgetAdjStar_unit_app_left (X : C) (Y : Over X) :
+    ((Over.forgetAdjStar X).unit.app Y).left = prod.lift Y.hom (𝟙 _) := by
+  simp [Over.forgetAdjStar, CategoryTheory.coalgebraEquivOver]
+
 instance : (star X).IsRightAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
 
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`. -/
 instance : (forget X).IsLeftAdjoint := ⟨_, ⟨forgetAdjStar X⟩⟩
+
+/-- Lifting to over `Y` and pulling back along `X ⟶ Y` is the same as lifting to over `X`. -/
+@[simps!]
+noncomputable def starPullbackIsoStar [HasPullbacks C] {X Y : C} (f : X ⟶ Y) :
+    star Y ⋙ pullback f ≅ star X :=
+  NatIso.ofComponents
+    (fun Z ↦
+      Over.isoMk
+      (pullback.congrHom (by simp) rfl ≪≫ pullbackSymmetry _ _ ≪≫ pullbackProdFstIsoProd _ _)
+    (by simp))
 
 end HasBinaryProducts
 end Over

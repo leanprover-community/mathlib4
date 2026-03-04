@@ -359,7 +359,7 @@ instance instIsIrreducible [Nonempty ι] :
     LieModule.IsIrreducible K (lieAlgebra b) (b.support ⊕ ι → K) := by
   refine LieModule.IsIrreducible.mk fun U hU ↦ ?_
   suffices ∃ i, v b i ∈ U by obtain ⟨i, hi⟩ := this; exact instIsIrreducible_aux₂ hi
-  let U' : LieSubmodule K H (b.support ⊕ ι → K) := {U with lie_mem := U.lie_mem}
+  let U' : LieSubmodule K H (b.support ⊕ ι → K) := { U with lie_mem := U.lie_mem }
   apply instIsIrreducible_aux₁ U'
   contrapose! hU
   replace hU : U ≤ span K (range (u (b := b))) := by rwa [← coe_genWeightSpace_zero_eq_span_range_u]

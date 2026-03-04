@@ -318,7 +318,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable {M₀ : Type*} [CancelCommMonoidWithZero M₀]
+variable {M₀ : Type*} [CommMonoidWithZero M₀] [IsCancelMulZero M₀]
 
 lemma injOn_pow_mul {n : ℕ} {ζ : M₀} (hζ : IsPrimitiveRoot ζ n) {α : M₀} (hα : α ≠ 0) :
     Set.InjOn (ζ ^ · * α) (Finset.range n) :=

@@ -225,8 +225,6 @@ def directLimitDiagram : ι ⥤ ModuleCat R where
     symm
     apply Module.DirectedSystem.map_map f
 
-variable [DecidableEq ι]
-
 /-- The `Cocone` on `directLimitDiagram` corresponding to
 the unbundled `directLimit` of modules.
 

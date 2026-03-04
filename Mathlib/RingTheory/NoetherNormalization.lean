@@ -52,7 +52,7 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 -/
 
 public section
-open Polynomial MvPolynomial Ideal BigOperators Nat RingHom List
+open Polynomial MvPolynomial Ideal Nat RingHom List
 
 variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)
 variable (v w : Fin (n + 1) →₀ ℕ)

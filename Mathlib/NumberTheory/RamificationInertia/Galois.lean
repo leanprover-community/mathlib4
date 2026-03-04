@@ -295,30 +295,26 @@ open scoped Pointwise
 
 open Algebra
 
-attribute [local instance 1001] Ideal.Quotient.field Module.Free.of_divisionRing in
-lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
+attribute [local instance] Ideal.Quotient.field in
+theorem card_stabilizer_eq_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
-    (p.primesOver S).ncard * Nat.card (P.toAddSubgroup.inertia G) *
-      Module.finrank (R ⧸ p) (S ⧸ P) = Nat.card G := by
-  trans (p.primesOver S).ncard * Nat.card (MulAction.stabilizer G P); swap
-  · rw [← IsInvariant.orbit_eq_primesOver R S G p P]
-    simpa using Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup G P)
-  rw [mul_assoc]
+    Nat.card (MulAction.stabilizer G P) = Nat.card (inertia G P) *
+      Module.finrank (R ⧸ p) (S ⧸ P) := by
   have : IsGalois (R ⧸ p) (S ⧸ P) := { __ := Ideal.Quotient.normal (A := R) G p P }
   have := Ideal.Quotient.finite_of_isInvariant G p P
-  congr 1
   have : Subgroup.index _ = _ := Nat.card_congr
-    (QuotientGroup.quotientKerEquivOfSurjective (Ideal.Quotient.stabilizerHom P p G)
-      (Ideal.Quotient.stabilizerHom_surjective G p P)).toEquiv
-  rw [← IsGalois.card_aut_eq_finrank, ← this]
-  convert (Ideal.Quotient.stabilizerHom P p G).ker.card_mul_index using 2
-  rw [Ideal.Quotient.ker_stabilizerHom]
-  refine Nat.card_congr (Subgroup.subgroupOfEquivOfLe ?_).toEquiv.symm
-  intro σ hσ
-  ext x
-  rw [Ideal.pointwise_smul_eq_comap, Ideal.mem_comap]
-  convert P.add_mem_iff_right (inv_mem hσ x) (b := x) using 2
-  simp
+    (Quotient.stabilizerQuotientInertiaEquiv G p P).toEquiv
+  rw [← IsGalois.card_aut_eq_finrank, ← this,
+    ← ((inertia G P).subgroupOf (MulAction.stabilizer G P)).card_mul_index,
+    Nat.card_congr (Subgroup.subgroupOfEquivOfLe (inertia_le_stabilizer (M := G) P)).toEquiv]
+
+lemma ncard_primesOver_mul_card_inertia_mul_finrank (p : Ideal R) [p.IsMaximal]
+    (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
+    (p.primesOver S).ncard * Nat.card (P.inertia G) *
+      Module.finrank (R ⧸ p) (S ⧸ P) = Nat.card G := by
+  rw [mul_assoc, ← card_stabilizer_eq_card_inertia_mul_finrank,
+    ← IsInvariant.orbit_eq_primesOver R S G p P]
+  simpa using Nat.card_congr (MulAction.orbitProdStabilizerEquivGroup G P)
 
 /-- The cardinality of the inertia group is equal to the ramification index. -/
 lemma card_inertia_eq_ramificationIdxIn
@@ -326,16 +322,25 @@ lemma card_inertia_eq_ramificationIdxIn
     [IsTorsionFree R S]
     (p : Ideal R) (hp : p ≠ ⊥)
     (P : Ideal S) [P.LiesOver p] [P.IsMaximal] [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
-    Nat.card (P.toAddSubgroup.inertia G) = Ideal.ramificationIdxIn p S := by
+    Nat.card (P.inertia G) = Ideal.ramificationIdxIn p S := by
   have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
   have H := ncard_primesOver_mul_card_inertia_mul_finrank (G := G) p P
   refine mul_right_injective₀ (primesOver_ncard_ne_zero p S) ?_
   refine mul_left_injective₀ (b := Module.finrank (R ⧸ p) (S ⧸ P)) ?_ ?_
   · intro e; simp [e, eq_comm, Nat.card_eq_zero, ‹Finite G›.not_infinite] at H
   dsimp only
-  rw [H, mul_assoc, ← Ideal.inertiaDeg_algebraMap,
-    ← Ideal.inertiaDegIn_eq_inertiaDeg p P G,
-    Ideal.ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G]
+  rw [H, mul_assoc, ← inertiaDeg_algebraMap, ← inertiaDegIn_eq_inertiaDeg p P G,
+    ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn hp S G]
+
+/-- The cardinality of the decomposition group is equal to the ramification index times the
+inertia degree. -/
+lemma card_stabilizer_eq [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S]
+    [IsTorsionFree R S] (p : Ideal R) (hp : p ≠ ⊥) (P : Ideal S) [P.LiesOver p] [P.IsMaximal]
+    [Algebra.IsSeparable (R ⧸ p) (S ⧸ P)] :
+    Nat.card (MulAction.stabilizer G P) = p.ramificationIdxIn S * p.inertiaDegIn S := by
+  have := (show p.IsPrime from P.over_def p ▸ inferInstance).isMaximal hp
+  rw [card_stabilizer_eq_card_inertia_mul_finrank p P, card_inertia_eq_ramificationIdxIn p hp,
+    inertiaDegIn_eq_inertiaDeg p P G, inertiaDeg_algebraMap]
 
 end inertia
 

@@ -10,6 +10,7 @@ public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Finiteness.Lattice
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Finite-dimensional vector spaces
@@ -154,8 +155,6 @@ variable (K V)
 
 instance finiteDimensional_bot : FiniteDimensional K (⊥ : Submodule K V) :=
   .of_rank_eq_zero <| by simp
-
-variable {K V}
 
 end ZeroRank
 

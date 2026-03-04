@@ -11,9 +11,9 @@ public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.Algebra.Order.Field
-public import Mathlib.Topology.Order.T5
-import Mathlib.Algebra.Order.Interval.Set.Group
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
+import Mathlib.Algebra.Order.Interval.Set.Group
+import Mathlib.GroupTheory.QuotientGroup.ModEq
 
 /-!
 # The additive circle

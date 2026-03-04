@@ -206,13 +206,6 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (Closeds α) := by
     ((tendsto_order.1 this).2 ε εpos).exists_forall_of_atTop
   exact ⟨N, fun n hn => lt_of_le_of_lt (main n) (hN n hn)⟩
 
-/-- In a compact space, the type of closed subsets is compact. -/
-instance instCompactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
-  ⟨by
-    have := Closeds.totallyBounded_subsets_of_totallyBounded (α := α) isCompact_univ.totallyBounded
-    simp_rw [subset_univ, setOf_true] at this
-    exact this.isCompact_of_isClosed isClosed_univ⟩
-
 theorem isometry_singleton : Isometry ({·} : α → Closeds α) :=
   fun _ _ => hausdorffEDist_singleton
 
@@ -221,18 +214,56 @@ theorem lipschitz_sup : LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 
 
 end Closeds
 
+namespace Compacts
+
+/-- In an emetric space, the type of compact subsets is an emetric space,
+where the edistance is the Hausdorff edistance -/
+instance instEMetricSpace : EMetricSpace (Compacts α) where
+  /- Since the topology on `Compacts` is not defeq to the one induced by
+  `UniformSpace.hausdorff`, we replace the uniformity by `Compacts.uniformSpace`, which has
+  the right topology. -/
+  __ := (PseudoEMetricSpace.hausdorff.induced SetLike.coe).replaceUniformity <| by rfl
+  eq_of_edist_eq_zero {s t} h := Compacts.ext <| by
+    have : closure (s : Set α) = closure t := hausdorffEDist_zero_iff_closure_eq_closure.1 h
+    rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
+
+theorem edist_eq {s t : Compacts α} : edist s t = hausdorffEDist (s : Set α) t :=
+  rfl
+
+theorem isometry_toCloseds : Isometry (Compacts.toCloseds (α := α)) :=
+  fun _ _ => rfl
+
+theorem isometry_singleton : Isometry ({·} : α → Compacts α) :=
+  fun _ _ => hausdorffEDist_singleton
+
+theorem lipschitz_sup :
+    LipschitzWith 1 fun p : Compacts α × Compacts α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEDist_union_le
+
+theorem lipschitz_prod :
+    LipschitzWith 1 fun p : Compacts α × Compacts β => p.1 ×ˢ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEDist_prod_le
+
+end Compacts
+
 namespace NonemptyCompacts
 
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
 instance instEMetricSpace : EMetricSpace (NonemptyCompacts α) where
-  __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
+  /- Since the topology on `NonemptyCompacts` is not defeq to the one induced by
+  `UniformSpace.hausdorff`, we replace the uniformity by `NonemptyCompacts.uniformSpace`, which has
+  the right topology. -/
+  __ := (PseudoEMetricSpace.hausdorff.induced SetLike.coe).replaceUniformity <| by rfl
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEDist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
 /-- `NonemptyCompacts.toCloseds` is an isometry -/
 theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
+  fun _ _ => rfl
+
+theorem isometry_toCompacts : Isometry (NonemptyCompacts.toCompacts (α := α)) :=
   fun _ _ => rfl
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
@@ -279,13 +310,6 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts 
         isometry_toCloseds.isUniformInducing).2 <|
     isClosed_in_closeds.isComplete
 
-/-- In a compact space, the type of nonempty compact subsets is compact. This follows from
-the same statement for closed subsets -/
-instance instCompactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
-  ⟨by
-    rw [isometry_toCloseds.isEmbedding.isCompact_iff, image_univ]
-    exact isClosed_in_closeds.isCompact⟩
-
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
 instance instSecondCountableTopology [SecondCountableTopology α] :
     SecondCountableTopology (NonemptyCompacts α) :=
@@ -315,7 +339,7 @@ instance instSecondCountableTopology [SecondCountableTopology α] :
       have Fspec : ∀ x, F x ∈ s ∧ edist x (F x) < δ / 2 := fun x => (Exy x).choose_spec
       -- cover `t` with finitely many balls. Their centers form a set `a`
       have : TotallyBounded (t : Set α) := t.isCompact.totallyBounded
-      obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, EMetric.ball y (δ / 2)⟩ :=
+      obtain ⟨a : Set α, af : Set.Finite a, ta : (t : Set α) ⊆ ⋃ y ∈ a, Metric.eball y (δ / 2)⟩ :=
         EMetric.totallyBounded_iff.1 this (δ / 2) δpos'
       -- replace each center by a nearby approximation in `s`, giving a new set `b`
       let b := F '' a
