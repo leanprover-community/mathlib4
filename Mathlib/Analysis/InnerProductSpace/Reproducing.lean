@@ -155,8 +155,7 @@ theorem posSemidef_kernel : (kernel H).PosSemidef := by
     simp [← mul_assoc, (isHermitian_kernel H).apply]
   · simp [Finsupp.sum_apply'', Finsupp.sum_inner, star, adjoint_inner_left,
       kernel_inner, -inner_kerFun, -kerFun_inner]
-    simp only [← Finsupp.sum_inner, ← Finsupp.inner_sum,
-      inner_self_eq_norm_sq_to_K, RCLike.ofReal_nonneg, norm_nonneg, pow_succ_nonneg]
+    simp [← Finsupp.sum_inner, ← Finsupp.inner_sum, -kerFun_inner, -inner_kerFun]
 
 /-!
 ## Construction of RKHS from kernel
