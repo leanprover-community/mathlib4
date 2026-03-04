@@ -39,8 +39,6 @@ variable [Algebra A K] [IsFractionRing A K] [Algebra A L] [IsScalarTower A K L]
 variable [Algebra B L] [IsFractionRing B L] [IsScalarTower A B L]
 variable (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) [w.asIdeal.LiesOver v.asIdeal]
 
-set_option trace.profiler true
-
 theorem intValuation_liesOver (x : A) :
     v.intValuation x ^ (v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal) =
       w.intValuation (algebraMap A B x) := by
