@@ -72,7 +72,7 @@ theorem eq_of_not_disjoint {H K : Subgroup G} {a b : G}
   apply doubleCoset_eq_of_mem ha
 
 section
-set_option linter.classReturningDef false
+-- set_option linter.classReturningDef false
 /-- The setoid defined by the double_coset relation -/
 def setoid (H K : Set G) : Setoid G :=
   Setoid.ker fun x => doubleCoset x H K

@@ -96,7 +96,7 @@ open DirectedSystem
 variable [IsDirectedOrder ι]
 
 section
-set_option linter.classReturningDef false
+-- set_option linter.classReturningDef false
 /-- The setoid on the sigma type defining the direct limit. -/
 def setoid : Setoid (Σ i, F i) where
   r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2

@@ -70,7 +70,7 @@ theorem const_eventuallyEq [NeBot l] {a b : β} : ((fun _ => a) =ᶠ[l] fun _ =>
   @const_eventuallyEq' _ _ _ _ a b
 
 section
-set_option linter.classReturningDef false
+-- set_option linter.classReturningDef false
 
 /-- Setoid used to define the space of germs. -/
 def germSetoid (l : Filter α) (β : Type*) : Setoid (α → β) where

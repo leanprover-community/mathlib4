@@ -79,7 +79,7 @@ root of `x`.
     IsConjRoot R x z := Eq.trans h₁ h₂
 
 section
-set_option linter.classReturningDef false
+-- set_option linter.classReturningDef false
 variable (R A) in
 /--
 The setoid structure on `A` defined by the equivalence relation of `IsConjRoot R · ·`.

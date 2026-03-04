@@ -9,7 +9,6 @@ This file is ignored by `shake`:
 -/
 module
 
-public import Mathlib.Tactic.Linter.ClassReturningDef
 public import Mathlib.Tactic.Linter.DeprecatedModule
 public import Mathlib.Tactic.Linter.HaveLetLinter
 public import Mathlib.Tactic.Linter.MinImports

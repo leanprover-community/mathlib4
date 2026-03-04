@@ -39,7 +39,7 @@ We have three ways to construct terms of `ℙ K V`:
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 
 section
-set_option linter.classReturningDef false
+-- set_option linter.classReturningDef false
 /-- The setoid whose quotient is the projectivization of `V`. -/
 def projectivizationSetoid : Setoid { v : V // v ≠ 0 } :=
   (MulAction.orbitRel Kˣ V).comap (↑)

@@ -59,7 +59,7 @@ namespace QuotientGroup
 variable [Group α] (s : Subgroup α)
 
 section
-set_option linter.classReturningDef false
+-- set_option linter.classReturningDef false
 /-- The equivalence relation corresponding to the partition of a group by left cosets
 of a subgroup. -/
 @[to_additive

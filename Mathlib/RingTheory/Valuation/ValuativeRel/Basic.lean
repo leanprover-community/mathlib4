@@ -313,7 +313,7 @@ lemma val_posSubmonoid_ne_zero (x : posSubmonoid R) : (x : R) ≠ 0 := by
   simp [this]
 
 section
-set_option linter.classReturningDef false
+-- set_option linter.classReturningDef false
 variable (R) in
 /-- The setoid used to construct `ValueGroupWithZero R`. -/
 def valueSetoid : Setoid (R × posSubmonoid R) where
