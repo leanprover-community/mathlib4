@@ -193,23 +193,24 @@ instance : Module A (IntertwiningMap ρ σ) :=
   fast_instance%
   Function.Injective.module A (coeFnAddMonoidHom ρ σ) DFunLike.coe_injective (coe_smul ρ σ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An intertwining map is the same thing as a linear map over the group ring. -/
 def equivLinearMapAsModule :
     IntertwiningMap ρ σ ≃ₗ[A] ρ.asModule →ₗ[A[G]] σ.asModule where
   toFun f :=
     { toFun := f.toLinearMap
       map_add' := f.toLinearMap.map_add'
-      map_smul' m v := by sorry
-        /- induction m using MonoidAlgebra.induction_linear with
-          | zero => simp [f.toLinearMap.map_zero]; exact map_zero f
+      map_smul' m v := by
+        induction m using MonoidAlgebra.induction_linear with
+          | zero => simp [f.toLinearMap.map_zero]
           | add x y hx hy => simp at hx hy; simp [add_smul, map_add, hx, hy];
-          | single g a => simp [f.isIntertwining]; rfl -/}
+          | single g a => simp [f.isIntertwining]; rfl}
   invFun f :=
     { toLinearMap := { f with
-        map_smul' a v := by sorry }
+        map_smul' a v := by simp }
       isIntertwining' g := by ext v; simpa using f.map_smul' (MonoidAlgebra.single g 1) v }
-  map_add' g₁ g₂ := by sorry
-  map_smul' t g := by sorry
+  map_add' g₁ g₂ := by ext; simp
+  map_smul' t g := by ext; simp
   left_inv f := rfl
   right_inv f := rfl
 
