@@ -165,6 +165,7 @@ section CommSemiring
 
 variable [CommSemiring R] (v : AbsoluteValue R S)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CommSemiring (WithAbs v) := fast_instance% (equiv v).commSemiring
 
 end CommSemiring
@@ -173,8 +174,10 @@ section Ring
 
 variable [Ring R]
 
+set_option backward.isDefEq.respectTransparency false in
 instance (v : AbsoluteValue R S) : Ring (WithAbs v) := fast_instance% (equiv v).ring
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance normedRing (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
   letI := v.toNormedRing
   fast_instance% (equiv v).normedRing
@@ -199,6 +202,7 @@ section CommRing
 
 variable [CommRing R] (v : AbsoluteValue R S)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : CommRing (WithAbs v) := fast_instance% (equiv v).commRing
 
 end CommRing

@@ -100,7 +100,6 @@ lemma WithAbs.ratCast_equiv (v : InfinitePlace ℚ) (x : WithAbs v.1) :
   (eq_ratCast (UniformSpace.Completion.coeRingHom.comp
     (WithAbs.equiv v.1).symm.toRingHom) _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Rat.norm_infinitePlace_completion (v : InfinitePlace ℚ) (x : ℚ) :
     ‖(x : v.Completion)‖ = |x| := by
   rw [← (WithAbs.equiv v.1).apply_symm_apply x, WithAbs.ratCast_equiv,
