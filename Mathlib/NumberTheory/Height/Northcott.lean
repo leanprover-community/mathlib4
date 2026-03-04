@@ -21,6 +21,10 @@ In number theory, the height function `h` satisfies the *Northcott property* tha
 
 * `Northcott.exists_min_image h s hs`: If `h` is Northcott to a linear order, then `h` has an
   absolute minimum on every nonempty set `s`.
+
+## References
+
+* [D. Northcott, *An inequality in the theory of arithmetic on algebraic varieties*](northcott1949)
 -/
 
 @[expose] public noncomputable section
