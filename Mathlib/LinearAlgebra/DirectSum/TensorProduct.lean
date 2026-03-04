@@ -75,6 +75,8 @@ def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[S] ⨁ i, M₁' ⊗[R] 
   TensorProduct.directSum R S (fun _ : Unit ↦ M₁') M₂ ≪≫ₗ
   DirectSum.lequivCongrLeft S (Equiv.uniqueProd _ _)
 
+@[deprecated (since := "2026-03-04")] alias directSumRight' := directSumRight
+
 variable {M₁ M₁' M₂ M₂'}
 
 @[simp]
@@ -133,46 +135,32 @@ lemma directSumRight_comp_rTensor (f : M₁' →ₗ[R] M₂') :
 
 @[simp]
 lemma directSumRight_tmul (m : M₁') (n : ⨁ i, M₂ i) (i : ι₂) :
-    directSumRight R M₁' M₂ (m ⊗ₜ[R] n) i = m ⊗ₜ[R] (n i) := by
-  suffices (DirectSum.component R ι₂ _ i) ∘ₗ (directSumRight R M₁' M₂).toLinearMap ∘ₗ
-      (TensorProduct.mk R M₁' (⨁ i, M₂ i) m) =
-        (TensorProduct.mk R M₁' (M₂ i) m) ∘ₗ (DirectSum.component R ι₂ M₂ i) by
+    directSumRight R S M₁' M₂ (m ⊗ₜ[R] n) i = m ⊗ₜ[R] (n i) := by
+  suffices (DirectSum.component S ι₂ _ i).restrictScalars R ∘ₗ
+      (directSumRight R S M₁' M₂).toLinearMap.restrictScalars R ∘ₗ
+        (TensorProduct.mk R M₁' (⨁ i, M₂ i) m) =
+          (TensorProduct.mk R M₁' (M₂ i) m) ∘ₗ (DirectSum.component R ι₂ M₂ i) by
     simpa using LinearMap.congr_fun this n
   ext j n
   by_cases hj : j = i
   · subst hj; simp
   · simp [DirectSum.component.of, hj]
 
-variable [Module S M₁'] [IsScalarTower R S M₁']
+variable (S₀ : Type*) [CommSemiring S₀] [Algebra R S₀] [Algebra S₀ S]
+  [Module S₀ M₁'] [IsScalarTower R S₀ M₁'] [IsScalarTower S₀ S M₁']
 
--- NB. Why not giving `TensorProduct.directSumRight` the adequate linearity?
-variable (M₁' M₂) in
-/-- Tensor products distribute over a direct sum on the right.
+lemma restrictScalar_directSumRight :
+    (directSumRight R S M₁' M₂).restrictScalars S₀ = directSumRight R S₀ M₁' M₂ :=
+  LinearEquiv.restrictScalars_injective R <| LinearEquiv.toLinearMap_injective <| by ext; simp [lof]
 
-This version has more linearity than `TensorProduct.directSumRight`. -/
-def directSumRight' : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[S] ⨁ i, M₁' ⊗[R] M₂ i where
-  toAddEquiv := (directSumRight ..).toAddEquiv
-  map_smul' s t := by
-    induction t using TensorProduct.induction_on with
-    | zero => simp
-    | add x y hx hy =>
-      simp only [AddHom.toFun_eq_coe, coe_toAddHom,
-        LinearEquiv.coe_coe, RingHom.id_apply] at hx hy ⊢
-      simp only [smul_add, map_add, hx, hy]
-    | tmul m n =>
-      simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply]
-      rw [TensorProduct.smul_tmul']
-      ext i
-      rw [DirectSum.smul_apply, directSumRight_tmul,
-        directSumRight_tmul, TensorProduct.smul_tmul']
+@[deprecated (since := "2026-03-04")]
+alias directSumRight'_restrict := restrictScalar_directSumRight
 
-lemma directSumRight'_restrict :
-    (directSumRight' R S M₁' M₂).restrictScalars R = directSumRight R M₁' M₂ :=
-  rfl
+lemma coe_directSumRight :
+    ⇑(directSumRight R S M₁' M₂) = directSumRight R R M₁' M₂ :=
+  congr($(restrictScalar_directSumRight ..))
 
-lemma coe_directSumRight' :
-    ⇑(directSumRight' R S M₁' M₂) = directSumRight R M₁' M₂ :=
-  rfl
+@[deprecated (since := "2026-03-04")] alias coe_directSumRight' := coe_directSumRight
 
 end TensorProduct
 
