@@ -455,6 +455,7 @@ lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup 
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀)) where
   __ := restrict₀ v
@@ -485,40 +486,49 @@ def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀
 @[simp]
 lemma restrict_def (x : R) : v.restrict x = restrict₀ v x := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with h
   · simp [h]
   · simp [zero_lt_iff.mpr h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ v} :
     v.restrict x < g ↔ v x < embedding g := by
   conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
   rw [embedding_strictMono.lt_iff_lt, restrict_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ v} :
     v.restrict x ≤ g ↔ v x ≤ embedding g := by
   conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
   rw [embedding_strictMono.le_iff_le, restrict_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_lt_one_iff {x : R} : v.restrict x < 1 ↔ v x < 1 := by
   rw [restrict_lt_iff_lt_embedding, map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
   rw [restrict_le_iff_le_embedding, map_one]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [← Units.val_le_val]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
   simp only [restrict_def, restrict₀_apply]
   aesop
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
   set u := WithZero.unzero (Units.ne_zero γ ) with hu_def
@@ -531,10 +541,10 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
   have ha0 : v.restrict a ≠ 0 := by simp [restrict₀_eq_zero_iff, ha]
   rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff]
   simp only [restrict_def, map_mul]
-  erw [embedding_restrict₀ x, embedding_restrict₀ a, ← hax] -- Why erw?
+  erw [embedding_restrict₀ x, embedding_restrict₀ a, ← hax]
   congr
   rw [← WithZero.coe_unzero (Units.ne_zero γ)]
-  rfl -- Why rfl?
+  rfl
 
 lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
     {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
