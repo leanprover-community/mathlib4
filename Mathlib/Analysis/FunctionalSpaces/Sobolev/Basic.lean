@@ -38,7 +38,8 @@ lemma Fin.cons_vecEmpty {α : Type*} (x : α) : Fin.cons x ![] = ![x] := by rfl
 
 @[simp]
 lemma Fin.snoc_vecEmpty {α : Type*} (x : α) : Fin.snoc ![] x = ![x] := List.ofFn_inj.mp rfl
-
+-- #find_home Fin.snoc_vecEmpty
+-- #check Fin.snoc
 lemma Finset.fin_univ_image {n : ℕ} :
     (Finset.univ (α := Fin n)).image Fin.val = Finset.range n := by
   ext
@@ -48,7 +49,6 @@ lemma Finset.fin_univ_image {n : ℕ} :
 lemma Finset.sup_fin_univ {α : Type*} [SemilatticeSup α] [OrderBot α] {n : ℕ} (f : ℕ → α) :
     (Finset.univ (α := Fin n)).sup (fun n ↦ f n) = (Finset.range n).sup f := by
   rw [← fin_univ_image, sup_image, Function.comp_def]
-
 
 @[simp]
 lemma ENNReal.rpow_rpow_inv_iff {x : ℝ≥0∞} {y : ℝ} : (x ^ y) ^ y⁻¹ = x ↔ y ≠ 0 ∨ x = 1 := by
@@ -61,6 +61,24 @@ lemma ENNReal.rpow_rpow_inv_iff {x : ℝ≥0∞} {y : ℝ} : (x ^ y) ^ y⁻¹ = 
     simp
 
 end Basic
+
+section CLM
+
+variable {𝕜 G G' : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup G]
+  [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G'] (x : G') in
+@[simp]
+theorem continuousMultilinearCurryFin0_symm_apply' (x : G') :
+    (continuousMultilinearCurryFin0 𝕜 G G').symm x = ContinuousMultilinearMap.uncurry0 𝕜 G x :=
+  rfl
+
+@[simp]
+theorem ContinuousMultilinearMap.fin0_apply_enorm {𝕜 G G' : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
+    (f : ContinuousMultilinearMap 𝕜 (fun _ => G) G') {x : Fin 0 → G} :
+    ‖f x‖ₑ = ‖f‖ₑ := by
+  simp_rw [← ofReal_norm, fin0_apply_norm]
+
+end CLM
 
 section Taylor
 
@@ -113,34 +131,10 @@ lemma ContinuousOn.exists_bound_of_mulTSupport_inter_subset
   · exact (hC x (subset_closure ⟨h2x, hx⟩)).trans <| le_max_left _ _
   · simp [image_eq_one_of_notMem_mulTSupport h2x]
 
-section CLM
-
-variable {𝕜 G G' : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup G]
-  [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G'] (x : G') in
-@[simp]
-theorem continuousMultilinearCurryFin0_symm_apply' (x : G') :
-    (continuousMultilinearCurryFin0 𝕜 G G').symm x = ContinuousMultilinearMap.uncurry0 𝕜 G x :=
-  rfl
-
-@[simp]
-theorem ContinuousMultilinearMap.fin0_apply_enorm {𝕜 G G' : Type*} [NontriviallyNormedField 𝕜]
-    [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-    (f : ContinuousMultilinearMap 𝕜 (fun _ => G) G') {x : Fin 0 → G} :
-    ‖f x‖ₑ = ‖f‖ₑ := by
-  simp_rw [← ofReal_norm, fin0_apply_norm]
-
-variable {α E H 𝕜 𝕜' : Type*} {m : MeasurableSpace α} {μ : Measure α}
-  [NormedAddCommGroup E] [NormedAddCommGroup H]
-  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' E] [NormedSpace 𝕜 H]
-  {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} {s : Set α} in
-theorem ContinuousLinearMap.integrableOn_comp (L : H →SL[σ] E) (hf : IntegrableOn f s μ) :
-    IntegrableOn (L ∘ f) s μ :=
-  L.integrable_comp hf
-
-end CLM
 
 namespace MeasureTheory
 
+section
 attribute [gcongr] ae_mono
 
 lemma aeEq_iff {α β : Type*} [MeasurableSpace α] {μ : Measure α} {f g : α → β} :
@@ -160,7 +154,6 @@ instance [hμ : IsLocallyFiniteMeasure μ] : IsLocallyFiniteMeasure (μ.restrict
     obtain ⟨s, hs, hmus⟩ := hμ.finiteAtNhds x
     exact ⟨s, hs, lt_of_le_of_lt (Measure.restrict_apply_le Ω s) hmus⟩
 
-
 variable {α ε : Type*} [MeasurableSpace α] [TopologicalSpace ε] [ContinuousENorm ε]
   {f : α → ε} {μ ν : Measure α} {l : Filter α} in
 lemma IntegrableAtFilter.mono_measure (hf : IntegrableAtFilter f l μ) (h : ν ≤ μ) :
@@ -172,6 +165,14 @@ variable {α ε : Type*} [MeasurableSpace α] [TopologicalSpace ε] [ContinuousE
 theorem IntegrableOn.mono_measure' (h : IntegrableOn f s ν) (hμ : μ.restrict s ≤ ν.restrict s) :
     IntegrableOn f s μ :=
   Integrable.mono_measure h hμ
+
+variable {α E H 𝕜 𝕜' : Type*} {m : MeasurableSpace α} {μ : Measure α}
+  [NormedAddCommGroup E] [NormedAddCommGroup H]
+  [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜'] [NormedSpace 𝕜' E] [NormedSpace 𝕜 H]
+  {σ : 𝕜 →+* 𝕜'} [RingHomIsometric σ] {f : α → H} {s : Set α} in
+theorem _root_.ContinuousLinearMap.integrableOn_comp (L : H →SL[σ] E) (hf : IntegrableOn f s μ) :
+    IntegrableOn (L ∘ f) s μ :=
+  L.integrable_comp hf
 
 variable {α E H 𝕜 𝕜' : Type*} {m : MeasurableSpace α} {μ : Measure α}
   [NormedAddCommGroup E] [NormedAddCommGroup H]
@@ -225,6 +226,8 @@ variable {α E H 𝕜 𝕜' : Type*} {m : MeasurableSpace α} {μ : Measure α}
 theorem _root_.ContinuousLinearMap.locallyIntegrableOn_comp (L : H →SL[σ] E)
     (hf : LocallyIntegrableOn f s μ) : LocallyIntegrableOn (L ∘ f) s μ :=
   (L.integrableAtFilter_comp <| hf · ·)
+
+end
 
 section count
 
@@ -294,8 +297,6 @@ end count
 
 end MeasureTheory
 
-
-#exit
 section TestFunction
 
 attribute [fun_prop] TestFunction.contDiff
