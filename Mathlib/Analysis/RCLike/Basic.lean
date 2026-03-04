@@ -10,6 +10,7 @@ public import Mathlib.Algebra.BigOperators.Balance
 public import Mathlib.Algebra.Order.BigOperators.Expect
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Analysis.Convex.StrictConvex.Extreme
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 public import Mathlib.Analysis.Normed.Ring.Finite

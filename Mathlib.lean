@@ -1816,6 +1816,7 @@ public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.Analysis.Convex.StoneSeparation
 public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Analysis.Convex.StrictCombination
+public import Mathlib.Analysis.Convex.StrictConvex.Extreme
 public import Mathlib.Analysis.Convex.StrictConvexBetween
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Convex.Strong
