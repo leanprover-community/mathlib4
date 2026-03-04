@@ -107,19 +107,19 @@ alias ⟨IsClique.subsingleton, _⟩ := isClique_bot_iff
 
 protected theorem IsClique.map (h : G.IsClique s) {f : α ↪ β} : (G.map f).IsClique (f '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ hab
-  exact ⟨a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
+  exact ⟨hab, a, b, h ha hb <| ne_of_apply_ne _ hab, rfl, rfl⟩
 
 theorem isClique_map_iff_of_nontrivial {f : α ↪ β} {t : Set β} (ht : t.Nontrivial) :
     (G.map f).IsClique t ↔ ∃ (s : Set α), G.IsClique s ∧ f '' s = t := by
   refine ⟨fun h ↦ ⟨f ⁻¹' t, ?_, ?_⟩, by rintro ⟨x, hs, rfl⟩; exact hs.map⟩
   · rintro x (hx : f x ∈ t) y (hy : f y ∈ t) hne
-    obtain ⟨u, v, huv, hux, hvy⟩ := h hx hy (by simpa)
+    obtain ⟨-, u, v, huv, hux, hvy⟩ := h hx hy (by simpa)
     rw [EmbeddingLike.apply_eq_iff_eq] at hux hvy
     rwa [← hux, ← hvy]
   rw [Set.image_preimage_eq_iff]
   intro x hxt
   obtain ⟨y, hyt, hyne⟩ := ht.exists_ne x
-  obtain ⟨u, v, -, rfl, rfl⟩ := h hyt hxt hyne
+  obtain ⟨-, u, v, -, rfl, rfl⟩ := h hyt hxt hyne
   exact Set.mem_range_self _
 
 theorem isClique_map_iff {f : α ↪ β} {t : Set β} :
@@ -643,7 +643,7 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : SimpleGraph α) (f : α ↪ β) :
       rw [map_eq_image, image_preimage, filter_true_of_mem]
       rintro a ha
       obtain ⟨b, hb, hba⟩ := exists_mem_ne (hn.lt_of_le' <| Finset.card_pos.2 ⟨a, ha⟩) a
-      obtain ⟨c, _, _, hc, _⟩ := hs ha hb hba.symm
+      obtain ⟨-, c, _, _, hc, _⟩ := hs ha hb hba.symm
       exact ⟨c, hc⟩
     refine ⟨s.preimage f f.injective.injOn, ⟨?_, by rw [← card_map f, hs']⟩, hs'⟩
     rw [coe_preimage]
