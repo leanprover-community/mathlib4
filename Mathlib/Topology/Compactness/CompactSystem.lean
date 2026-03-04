@@ -86,9 +86,8 @@ lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := b
   · simp
   rw [IsCompactSystem.iff_nonempty_iInter] at h ⊢
   intro s h' hd
-  by_cases h₀ : ∀ n, s n ∉ S
+  by_cases! h₀ : ∀ n, s n ∉ S
   · simp_all
-  push_neg at h₀
   classical
   let n := Nat.find h₀
   let s' := fun i ↦ if s i ∈ S then s i else s n
