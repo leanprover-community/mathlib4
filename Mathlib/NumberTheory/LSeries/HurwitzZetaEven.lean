@@ -637,7 +637,7 @@ lemma differentiableAt_hurwitzZetaEven_sub_one_div (a : UnitAddCircle) :
     rw [hurwitzZetaEven, Function.update_of_ne hx]
   simp_rw [← sub_div, div_eq_mul_inv _ (Gammaℝ _)]
   refine DifferentiableAt.mul ?_ differentiable_Gammaℝ_inv.differentiableAt
-  simp_rw [completedHurwitzZetaEven_eq, sub_sub, add_assoc]
+  simp_rw [completedHurwitzZetaEven_eq, sub_sub]
   conv => enter [2, s, 2]; rw [← neg_sub, div_neg, neg_add_cancel, add_zero]
   exact (differentiable_completedHurwitzZetaEven₀ a _).sub
     <| (differentiableAt_const _).div differentiableAt_id one_ne_zero
