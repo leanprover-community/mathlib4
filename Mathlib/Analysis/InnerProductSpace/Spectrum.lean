@@ -232,12 +232,9 @@ private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
       hT.orthogonalFamily_eigenspaces'
     rw [Eigenvalues.val_mk, RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self hx)]
     exact Subtype.mk_eq_mk.symm
-  · rw [not_ne_iff.mp (Module.End.hasEigenvalue_iff.mpr.mt hμ), finrank_bot,
-      Finset.card_filter_eq_zero_iff]
-    intro i _ hi
-    apply hμ
-    rw [←hi]
-    exact hasEigenvalue_unsortedEigenvalues hT hn i
+  · rw [Module.End.hasEigenvalue_iff.not_left.mp hμ, finrank_bot, Finset.card_filter_eq_zero_iff]
+    intro i _ rfl
+    exact hμ (hasEigenvalue_unsortedEigenvalues hT hn i)
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
