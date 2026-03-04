@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.W.Basic
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.Data.W.Basic
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of W-types
@@ -21,6 +23,8 @@ this surjection can be used to put an upper bound on the cardinality of `MvPolyn
 
 W, W type, cardinal, first order
 -/
+
+public section
 
 
 universe u v
@@ -42,7 +46,7 @@ theorem cardinalMk_eq_sum_lift : #(WType β) = sum fun a ↦ #(WType β) ^ lift.
 theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
     (hκ : (sum fun a : α => κ ^ lift.{u} #(β a)) ≤ κ) :
     #(WType β) ≤ κ := by
-  induction' κ using Cardinal.inductionOn with γ
+  induction κ using Cardinal.inductionOn with | _ γ
   simp_rw [← lift_umax.{v, u}] at hκ
   nth_rewrite 1 [← lift_id'.{v, u} #γ] at hκ
   simp_rw [← mk_arrow, ← mk_sigma, le_def] at hκ
@@ -63,7 +67,7 @@ theorem cardinalMk_le_max_aleph0_of_finite' [∀ a, Finite (β a)] :
     cardinalMk_le_of_le' <|
       calc
         (Cardinal.sum fun a => m ^ lift.{u} #(β a)) ≤ lift.{v} #α * ⨆ a, m ^ lift.{u} #(β a) :=
-          Cardinal.sum_le_iSup_lift _
+          Cardinal.sum_le_lift_mk_mul_iSup _
         _ ≤ m * ⨆ a, m ^ lift.{u} #(β a) := mul_le_mul' (le_max_left _ _) le_rfl
         _ = m :=
           mul_eq_left (le_max_right _ _)

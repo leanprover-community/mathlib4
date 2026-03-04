@@ -3,10 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
-import Mathlib.CategoryTheory.Sites.Spaces
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
+public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
+public import Mathlib.CategoryTheory.Sites.Spaces
 
 /-!
 # Mayer-Vietoris squares
@@ -22,6 +22,8 @@ U ⊓ V --->   U
 
 -/
 
+@[expose] public section
+
 universe u
 
 namespace Opens
@@ -30,8 +32,7 @@ open CategoryTheory Limits TopologicalSpace
 
 variable {T : Type u} [TopologicalSpace T]
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
-
+set_option backward.isDefEq.respectTransparency false in
 /-- A square consisting of opens `X₂ ⊓ X₃`, `X₂`, `X₃` and `X₂ ⊔ X₃` is
 a Mayer-Vietoris square. -/
 @[simps! toSquare]

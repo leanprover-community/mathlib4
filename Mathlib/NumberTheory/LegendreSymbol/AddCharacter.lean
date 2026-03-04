@@ -3,11 +3,13 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.FieldTheory.Finite.Trace
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Data.ZMod.Units
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.FieldTheory.Finite.Trace
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Additive characters of finite rings and fields
@@ -36,6 +38,8 @@ is nontrivial (and the target is a domain); see `AddChar.sum_eq_zero_of_isNontri
 additive character
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -56,7 +60,7 @@ lemma val_mem_rootsOfUnity (φ : AddChar R R') (a : R) (h : 0 < ringChar R) :
 elements are nontrivial. -/
 def IsPrimitive (ψ : AddChar R R') : Prop := ∀ ⦃a : R⦄, a ≠ 0 → mulShift ψ a ≠ 1
 
-/-- The composition of a primitive additive character with an injective mooid homomorphism
+/-- The composition of a primitive additive character with an injective monoid homomorphism
 is also primitive. -/
 lemma IsPrimitive.compMulHom_of_isPrimitive {R'' : Type*} [CommMonoid R''] {φ : AddChar R R'}
     {f : R' →* R''} (hφ : φ.IsPrimitive) (hf : Function.Injective f) :
@@ -184,6 +188,7 @@ theorem zmodChar_primitive_of_primitive_root (n : ℕ) [NeZero n] {ζ : C} (h : 
   rw [zmodChar_apply, ← pow_zero ζ] at ha
   exact (ZMod.val_eq_zero a).mp (IsPrimitiveRoot.pow_inj h (ZMod.val_lt a) (NeZero.pos _) ha)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- There is a primitive additive character on `ZMod n` if the characteristic of the target
 does not divide `n` -/
 noncomputable def primitiveZModChar (n : ℕ+) (F' : Type v) [Field F'] (h : (n : F') ≠ 0) :
@@ -294,12 +299,14 @@ variable (F : Type*) [Field F] [Finite F]
 private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
-  letI ch := primitiveChar F ℂ <| ringChar_ne F
+  letI ch := primitiveChar F ℂ <| by exact ringChar_ne F
   refine MonoidHom.compAddChar ?_ ch.char
   exact (IsCyclotomicExtension.algEquiv {(ch.n : ℕ)} ℂ (CyclotomicField ch.n ℂ) ℂ).toMonoidHom
 
+set_option backward.isDefEq.respectTransparency false in
 lemma FiniteField.primitiveChar_to_Complex_isPrimitive :
     (primitiveChar_to_Complex F).IsPrimitive := by
   refine IsPrimitive.compMulHom_of_isPrimitive (PrimitiveAddChar.prim _) ?_

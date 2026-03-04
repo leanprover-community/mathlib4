@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Grothendieck
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Limits.Lattice
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Limits.Lattice
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Grothendieck topology on a topological space
@@ -31,6 +33,8 @@ We define the two separately, rather than defining the Grothendieck topology as 
 by the pretopology for the purpose of having nice definitional properties for the sieves.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -53,6 +57,7 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
     rcases hR hf _ hU with ⟨V, g, hg, hV⟩
     exact ⟨_, g ≫ f, hg, hV⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
   coverings X R := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U
@@ -68,25 +73,30 @@ def pretopology : Pretopology (Opens T) where
     rcases hTi f hf x hU with ⟨V, g, hg, hV⟩
     exact ⟨_, _, ⟨_, g, f, hf, hg, rfl⟩, hV⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space is the largest pretopology that
 generates the Grothendieck topology associated to the space. -/
 @[simp]
-theorem pretopology_ofGrothendieck :
-    Pretopology.ofGrothendieck _ (Opens.grothendieckTopology T) = Opens.pretopology T := by
+theorem toPretopology_grothendieckTopology :
+    (Opens.grothendieckTopology T).toPretopology = Opens.pretopology T := by
   apply le_antisymm
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, ⟨V, g₁, g₂, hg₂, _⟩, hU⟩
     exact ⟨V, g₂, hg₂, g₁.le hU⟩
   · intro X R hR x hx
     rcases hR x hx with ⟨U, f, hf, hU⟩
-    exact ⟨U, f, Sieve.le_generate R U hf, hU⟩
+    exact ⟨U, f, Sieve.le_generate R U _ hf, hU⟩
 
+@[deprecated (since := "2025-09-19")]
+alias pretopology_ofGrothendieck := toPretopology_grothendieckTopology
+
+set_option backward.isDefEq.respectTransparency false in
 /-- The pretopology associated to a space induces the Grothendieck topology associated to the space.
 -/
 @[simp]
 theorem pretopology_toGrothendieck :
-    Pretopology.toGrothendieck _ (Opens.pretopology T) = Opens.grothendieckTopology T := by
-  rw [← pretopology_ofGrothendieck]
+    (Opens.pretopology T).toGrothendieck = Opens.grothendieckTopology T := by
+  rw [← toPretopology_grothendieckTopology]
   apply (Pretopology.gi (Opens T)).l_u_eq
 
 end Opens

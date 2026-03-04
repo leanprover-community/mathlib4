@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.LeftRight
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Topology.Order.LeftRight
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Order-closed topologies
@@ -26,8 +28,8 @@ We prove many basic properties of such topologies.
 
 This file contains the proofs of the following facts.
 For exact requirements
-(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology,
-`Preorder` vs `PartialOrder` vs `LinearOrder` etc)
+(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology`,
+`Preorder` vs `PartialOrder` vs `LinearOrder`, etc.)
 see their statements.
 
 ### Open / closed sets
@@ -55,7 +57,9 @@ see their statements.
   `min`/`max` tend to `min a b` and `max a b`, respectively.
 -/
 
-open Set Filter
+@[expose] public section
+
+open Set Filter TopologicalSpace
 open OrderDual (toDual)
 open scoped Topology
 
@@ -84,6 +88,7 @@ class OrderClosedTopology (α : Type*) [TopologicalSpace α] [Preorder α] : Pro
 
 instance [TopologicalSpace α] [h : FirstCountableTopology α] : FirstCountableTopology αᵒᵈ := h
 instance [TopologicalSpace α] [h : SecondCountableTopology α] : SecondCountableTopology αᵒᵈ := h
+instance [TopologicalSpace α] [h : SeparableSpace α] : SeparableSpace αᵒᵈ := h
 
 theorem Dense.orderDual [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     Dense (OrderDual.ofDual ⁻¹' s) :=

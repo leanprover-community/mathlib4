@@ -3,13 +3,15 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Nicolò Cavalleri
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # Algebraic structures over continuous functions
@@ -26,6 +28,8 @@ Note that, rather than using the derived algebraic structures on these subobject
 (for example, when `β` is a group, the derived group structure on `continuousSubgroup α β`),
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
+
+@[expose] public section
 
 assert_not_exists StoneCech
 
@@ -133,8 +137,8 @@ theorem pow_apply [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) (x : 
     (f ^ n) x = f x ^ n :=
   rfl
 
--- don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
--- redundant WRT `coe_smul`
+-- Don't make auto-generated `coe_nsmul` and `nsmul_apply` simp, as the linter complains they're
+-- redundant w.r.t. `coe_smul`
 attribute [simp] coe_pow pow_apply
 
 @[to_additive]
@@ -142,7 +146,7 @@ theorem pow_comp [Monoid γ] [ContinuousMul γ] (f : C(β, γ)) (n : ℕ) (g : C
     (f ^ n).comp g = f.comp g ^ n :=
   rfl
 
--- don't make `nsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
+-- Don't make `nsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] pow_comp
 
 /-! ### `inv` and `neg` -/
@@ -200,8 +204,8 @@ theorem zpow_apply [Group β] [IsTopologicalGroup β] (f : C(α, β)) (z : ℤ) 
     (f ^ z) x = f x ^ z :=
   rfl
 
--- don't make auto-generated `coe_zsmul` and `zsmul_apply` simp as the linter complains they're
--- redundant WRT `coe_smul`
+-- Don't make auto-generated `coe_zsmul` and `zsmul_apply` simp as the linter complains they're
+-- redundant w.r.t. `coe_smul`
 attribute [simp] coe_zpow zpow_apply
 
 @[to_additive]
@@ -209,7 +213,7 @@ theorem zpow_comp [Group γ] [IsTopologicalGroup γ] (f : C(β, γ)) (z : ℤ) (
     (f ^ z).comp g = f.comp g ^ z :=
   rfl
 
--- don't make `zsmul_comp` simp as the linter complains it's redundant WRT `smul_comp`
+-- Don't make `zsmul_comp` simp as the linter complains it's redundant w.r.t. `smul_comp`
 attribute [simp] zpow_comp
 
 end ContinuousMap
@@ -338,7 +342,7 @@ instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : Com
 @[to_additive]
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
-    letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
+    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
@@ -348,7 +352,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
         ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
-    letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
+    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f
@@ -363,20 +367,20 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
   /-- If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
 then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
 theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
-    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasProd f g) (x : α) :
-    HasProd (fun i : γ => f i x) (g x) := by
+    {f : γ → C(α, β)} {g : C(α, β)} {L : SummationFilter γ} (hf : HasProd f g L) (x : α) :
+    HasProd (fun i : γ => f i x) (g x) L := by
   let ev : C(α, β) →* β := (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
   exact hf.map ev (continuous_eval_const x)
 
 @[to_additive]
 theorem multipliable_apply [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) : Multipliable fun i : γ => f i x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) (x : α) : Multipliable (fun i : γ ↦ f i x) L :=
   (hasProd_apply hf.hasProd x).multipliable
 
 @[to_additive]
 theorem tprod_apply [T2Space β] [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) :
-    ∏' i : γ, f i x = (∏' i : γ, f i) x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) [L.NeBot] (x : α) :
+    ∏'[L] i : γ, f i x = (∏'[L] i : γ, f i) x :=
   (hasProd_apply hf.hasProd x).tprod_eq
 
 end ContinuousMap
@@ -688,7 +692,7 @@ def ContinuousMap.compRightAlgHom {α β : Type*} [TopologicalSpace α] [Topolog
     (f : C(α, β)) : C(β, A) →ₐ[R] C(α, A) where
   toFun g := g.comp f
   map_zero' := ext fun _ ↦ rfl
-  map_add'  _ _ := ext fun _ ↦ rfl
+  map_add' _ _ := ext fun _ ↦ rfl
   map_one' := ext fun _ ↦ rfl
   map_mul' _ _ := ext fun _ ↦ rfl
   commutes' _ := ext fun _ ↦ rfl
@@ -744,6 +748,7 @@ def Set.SeparatesPointsStrongly (s : Set C(α, 𝕜)) : Prop :=
 
 variable [Field 𝕜] [IsTopologicalRing 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Working in continuous functions into a topological field,
 a subalgebra of functions that separates points also separates points strongly.
 
@@ -778,7 +783,7 @@ instance ContinuousMap.subsingleton_subalgebra (α : Type*) [TopologicalSpace α
       ext f
       have h : f = algebraMap R C(α, R) (f default) := by
         ext x'
-        simp only [mul_one, Algebra.id.smul_eq_mul, algebraMap_apply]
+        simp only [mul_one, smul_eq_mul, algebraMap_apply]
         congr
         simp [eq_iff_true_of_subsingleton]
       rw [h]
@@ -819,7 +824,6 @@ lemma smul_apply' (f : C(α, R)) (g : C(α, M)) (x : α) :
 
 instance module' [IsTopologicalSemiring R] [ContinuousAdd M] :
     Module C(α, R) C(α, M) where
-  smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)

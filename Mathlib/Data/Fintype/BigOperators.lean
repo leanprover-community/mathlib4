@@ -3,14 +3,16 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.BigOperators.Option
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Vector
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Algebra.BigOperators.Option
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Vector
 
 /-!
 Results about "big operations" over a `Fintype`, and consequent
@@ -24,6 +26,8 @@ dependency of `Fintype`.
 However many of the results here really belong in `Algebra.BigOperators.Group.Finset`
 and should be moved at some point.
 -/
+
+public section
 
 assert_not_exists MulAction
 
@@ -201,6 +205,22 @@ theorem card_vector [Fintype α] (n : ℕ) :
     Fintype.card (List.Vector α n) = Fintype.card α ^ n := by
   rw [Fintype.ofEquiv_card]; simp
 
+/-- The number of strings of length `s` in any finite set is at most `D^s`. -/
+lemma Finset.card_filter_length_eq_le [Fintype α] {T : Finset (List α)} {s : ℕ} :
+    (T.filter (fun x => x.length = s)).card ≤ (Fintype.card α) ^ s := by
+  classical
+  calc
+    _ ≤ (Finset.univ.image List.ofFn).card := by
+          apply Finset.card_le_card
+          intro a ha
+          let hlen := Finset.mem_filter.mp ha
+          exact Finset.mem_image.mpr ⟨
+              (fun j : Fin s => a.get ⟨j.val, by simp [hlen]⟩),
+              by simp,
+              List.ext_get (by simp [hlen]) (by simp)⟩
+    _ = Fintype.card α ^ s := by
+          simp [card_image_of_injective univ List.ofFn_injective]
+
 /-- It is equivalent to compute the product of a function over `Fin n` or `Finset.range n`. -/
 @[to_additive /-- It is equivalent to sum a function over `fin n` or `finset.range n`. -/]
 theorem Fin.prod_univ_eq_prod_range [CommMonoid α] (f : ℕ → α) (n : ℕ) :
@@ -240,9 +260,6 @@ variable {α₁ : Type*} {α₂ : Type*} {M : Type*} [Fintype α₁] [Fintype α
 theorem Fintype.prod_sumElim (f : α₁ → M) (g : α₂ → M) :
     ∏ x, Sum.elim f g x = (∏ a₁, f a₁) * ∏ a₂, g a₂ :=
   prod_disjSum _ _ _
-
-@[deprecated (since := "2025-02-20")] alias prod_sum_elim := prod_sumElim
-@[deprecated (since := "2025-02-20")] alias sum_sum_elim := sum_sumElim
 
 @[to_additive (attr := simp)]
 theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :

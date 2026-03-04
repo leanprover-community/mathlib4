@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Reflective functors
@@ -15,6 +17,8 @@ Basic properties of reflective functors, especially those relating to their esse
 Note properties of reflective functors relating to limits and colimits are included in
 `Mathlib/CategoryTheory/Monad/Limits.lean`.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -53,6 +57,7 @@ instance [Reflective i] : (reflector i).IsLeftAdjoint := ⟨_, ⟨reflectorAdjun
 def Functor.fullyFaithfulOfReflective [Reflective i] : i.FullyFaithful :=
   (reflectorAdjunction i).fullyFaithfulROfIsIsoCounit
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
 /-- For a reflective functor `i` (with left adjoint `L`), with unit `η`, we have `η_iL = iL η`.
 -/
@@ -84,6 +89,7 @@ theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : i.essImage A) :
     IsIso ((reflectorAdjunction i).unit.app A) := by
   rwa [isIso_unit_app_iff_mem_essImage]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `η_A` is a split monomorphism, then `A` is in the reflective subcategory. -/
 theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     [IsSplitMono ((reflectorAdjunction i).unit.app A)] : i.essImage A := by
@@ -147,12 +153,13 @@ theorem unitCompPartialBijective_symm_natural [Reflective i] (A : C) {B B' : C} 
 theorem unitCompPartialBijective_natural [Reflective i] (A : C) {B B' : C} (h : B ⟶ B')
     (hB : i.essImage B) (hB' : i.essImage B') (f : A ⟶ B) :
     (unitCompPartialBijective A hB') (f ≫ h) = unitCompPartialBijective A hB f ≫ h := by
-  rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h, Equiv.symm_apply_apply]
+  rw [← Equiv.eq_symm_apply, unitCompPartialBijective_symm_natural A h hB, Equiv.symm_apply_apply]
 
 instance [Reflective i] (X : Functor.EssImageSubcategory i) :
     IsIso (NatTrans.app (reflectorAdjunction i).unit X.obj) :=
   Functor.essImage.unit_isIso X.property
 
+set_option backward.isDefEq.respectTransparency false in
 -- These attributes are necessary to make automation work in `equivEssImageOfReflective`.
 -- Making them global doesn't break anything elsewhere, but this is enough for now.
 -- TODO: investigate further.
@@ -194,6 +201,7 @@ instance [Coreflective j] : (coreflector j).IsRightAdjoint := ⟨_, ⟨coreflect
 def Functor.fullyFaithfulOfCoreflective [Coreflective j] : j.FullyFaithful :=
   (coreflectorAdjunction j).fullyFaithfulLOfIsIsoUnit
 
+set_option backward.isDefEq.respectTransparency false in
 lemma counit_obj_eq_map_counit [Coreflective j] (X : D) :
     (coreflectorAdjunction j).counit.app (j.obj ((coreflector j).obj X)) =
       j.map ((coreflector j).map ((coreflectorAdjunction j).counit.app X)) := by
@@ -210,9 +218,10 @@ lemma Functor.essImage.counit_isIso [Coreflective j] {A : D} (h : j.essImage A) 
     IsIso ((coreflectorAdjunction j).counit.app A) := by
   rwa [isIso_counit_app_iff_mem_essImage]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_essImage_of_counit_isSplitEpi [Coreflective j] {A : D}
     [IsSplitEpi ((coreflectorAdjunction j).counit.app A)] : j.essImage A := by
-  let ε : coreflector j ⋙ j ⟶ 𝟭 D  := (coreflectorAdjunction j).counit
+  let ε : coreflector j ⋙ j ⟶ 𝟭 D := (coreflectorAdjunction j).counit
   haveI : IsIso (ε.app (j.obj ((coreflector j).obj A))) :=
     Functor.essImage.counit_isIso ((j.obj_mem_essImage _))
   have : Mono (ε.app A) := by

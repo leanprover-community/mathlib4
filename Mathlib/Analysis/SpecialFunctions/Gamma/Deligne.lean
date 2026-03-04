@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # Deligne's archimedean Gamma-factors
@@ -28,8 +29,10 @@ This file defines these functions, and proves some elementary properties, includ
 formula which is an important input in functional equations of (un-completed) Dirichlet L-functions.
 -/
 
+@[expose] public section
+
 open Filter Topology Asymptotics Real Set MeasureTheory
-open Complex hiding abs_of_nonneg
+open Complex
 
 namespace Complex
 
@@ -53,13 +56,11 @@ lemma Gammaℝ_add_two {s : ℂ} (hs : s ≠ 0) : Gammaℝ (s + 2) = Gammaℝ s 
   rw [Gammaℝ_def, Gammaℝ_def, neg_div, add_div, neg_add, div_self two_ne_zero,
     Gamma_add_one _ (div_ne_zero hs two_ne_zero),
     cpow_add _ _ (ofReal_ne_zero.mpr pi_ne_zero), cpow_neg_one]
-  field_simp [pi_ne_zero]
-  ring
+  field_simp
 
 lemma Gammaℂ_add_one {s : ℂ} (hs : s ≠ 0) : Gammaℂ (s + 1) = Gammaℂ s * s / 2 / π := by
   rw [Gammaℂ_def, Gammaℂ_def, Gamma_add_one _ hs, neg_add,
     cpow_add _ _ (mul_ne_zero two_ne_zero (ofReal_ne_zero.mpr pi_ne_zero)), cpow_neg_one]
-  field_simp [pi_ne_zero]
   ring
 
 lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 := by
@@ -80,7 +81,7 @@ lemma Gammaℝ_one : Gammaℝ 1 = 1 := by
 @[simp]
 lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by
   rw [Gammaℂ_def, cpow_neg_one, Complex.Gamma_one]
-  field_simp [pi_ne_zero]
+  ring
 
 section analyticity
 
@@ -91,6 +92,7 @@ lemma differentiable_Gammaℝ_inv : Differentiable ℂ (fun s ↦ (Gammaℝ s)�
     exact Or.inl (ofReal_ne_zero.mpr pi_ne_zero)
   · exact differentiable_one_div_Gamma.comp (differentiable_id.div_const _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (𝓝 2) := by
   have h : Tendsto (fun z : ℂ ↦ z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
     refine tendsto_self_mul_Gamma_nhds_zero.comp ?_
@@ -101,7 +103,7 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
     rw [(by simp : 𝓝 2 = 𝓝 (2 * (π : ℂ) ^ (-(0 : ℂ) / 2)))]
     refine Tendsto.mono_left (ContinuousAt.tendsto ?_) nhdsWithin_le_nhds
     exact continuousAt_const.mul ((continuousAt_const_cpow (ofReal_ne_zero.mpr pi_ne_zero)).comp
-      (continuousAt_id.neg.div_const _))
+      (by fun_prop))
   convert mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z
   rw [Gammaℝ]
   ring_nf
@@ -110,6 +112,7 @@ end analyticity
 
 section reflection
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reformulation of the doubling formula in terms of `Gammaℝ`. -/
 lemma Gammaℝ_mul_Gammaℝ_add_one (s : ℂ) : Gammaℝ s * Gammaℝ (s + 1) = Gammaℂ s := by
   simp only [Gammaℝ_def, Gammaℂ_def]
@@ -195,8 +198,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
       Complex.cos_sub_pi_div_two]
   simp_rw [mul_div_assoc, mul_inv]
   generalize (Gammaℝ (s - 1))⁻¹ = A
-  field_simp [pi_ne_zero]
-  ring
+  field
 
 end reflection
 

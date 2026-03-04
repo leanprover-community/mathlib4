@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Limits.Preserves.Limits
+module
+
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
 /-!
 # (Co)limits in functor categories.
@@ -20,10 +22,12 @@ We also show that `F : D ⥤ K ⥤ C` preserves (co)limits if it does so for eac
 `CategoryTheory.Limits.preservesColimits_of_evaluation`).
 -/
 
+@[expose] public section
+
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Functor
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe w' w v₁ v₂ u₁ u₂ v v' u u'
 
 namespace CategoryTheory.Limits
@@ -41,6 +45,7 @@ theorem colimit.ι_desc_app (H : J ⥤ K ⥤ C) [HasColimit H] (c : Cocone H) (j
     (colimit.ι H j).app k ≫ (colimit.desc H c).app k = (c.ι.app j).app k :=
   congr_app (colimit.ι_desc c j) k
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evaluation functors jointly reflect limits: that is, to show a cone is a limit of `F`
 it suffices to show that each evaluation cone is a limit. In other words, to prove a cone is
 limiting you can show it's pointwise limiting.
@@ -61,6 +66,7 @@ def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
       (congr_app (w j) x).trans
         ((t x).fac ⟨s.pt.obj _, whiskerRight s.π ((evaluation K C).obj _)⟩ j).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a functor `F` and a collection of limit cones for each diagram `X ↦ F X k`, we can stitch
 them together to give a cone for the diagram `F`.
 `combinedIsLimit` shows that the new cone is limiting, and `evalCombined` shows it is
@@ -89,6 +95,7 @@ def combinedIsLimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)
   evaluationJointlyReflectsLimits _ fun k =>
     (c k).isLimit.ofIsoLimit (evaluateCombinedCones F c k).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The evaluation functors jointly reflect colimits: that is, to show a cocone is a colimit of `F`
 it suffices to show that each evaluation cocone is a colimit. In other words, to prove a cocone is
 colimiting you can show it's pointwise colimiting.
@@ -110,6 +117,7 @@ def evaluationJointlyReflectsColimits {F : J ⥤ K ⥤ C} (c : Cocone F)
       (congr_app (w j) x).trans
         ((t x).fac ⟨s.pt.obj _, whiskerRight s.ι ((evaluation K C).obj _)⟩ j).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given a functor `F` and a collection of colimit cocones for each diagram `X ↦ F X k`, we can stitch
 them together to give a cocone for the diagram `F`.
@@ -139,6 +147,7 @@ def combinedIsColimit (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.
   evaluationJointlyReflectsColimits _ fun k =>
     (c k).isColimit.ofIsoColimit (evaluateCombinedCocones F c k).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 An alternative colimit cocone in the functor category `K ⥤ C` in the case where `C` has
 `J`-shaped colimits, with cocone point `F.flip ⋙ colim`.
@@ -182,15 +191,13 @@ instance functorCategoryHasColimitsOfShape [HasColimitsOfShape J C] :
     HasColimitsOfShape J (K ⥤ C) where
   has_colimit _ := inferInstance
 
--- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasLimitsOfSize [HasLimitsOfSize.{v₁, u₁} C] :
     HasLimitsOfSize.{v₁, u₁} (K ⥤ C) where
-  has_limits_of_shape := fun _ _ => inferInstance
+  has_limits_of_shape := inferInstance
 
--- Porting note: previously Lean could see through the binders and infer_instance sufficed
 instance functorCategoryHasColimitsOfSize [HasColimitsOfSize.{v₁, u₁} C] :
     HasColimitsOfSize.{v₁, u₁} (K ⥤ C) where
-  has_colimits_of_shape := fun _ _ => inferInstance
+  has_colimits_of_shape := inferInstance
 
 instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.obj k)] :
     HasLimit (F ⋙ (evaluation _ _).obj k) :=
@@ -198,7 +205,7 @@ instance hasLimitCompEvaluation (F : J ⥤ K ⥤ C) (k : K) [HasLimit (F.flip.ob
 
 instance evaluation_preservesLimit (F : J ⥤ K ⥤ C) [∀ k, HasLimit (F.flip.obj k)] (k : K) :
     PreservesLimit F ((evaluation K C).obj k) :=
-    -- Porting note: added a let because X was not inferred
+  -- Porting note: added a let because X was not inferred
   let X : (k : K) → LimitCone (F.flip.obj k) := fun k => getLimitCone (F.flip.obj k)
   preservesLimit_of_preserves_limit_cone (combinedIsLimit _ X) <|
     IsLimit.ofIsoLimit (limit.isLimit _) (evaluateCombinedCones F X k).symm
@@ -214,6 +221,7 @@ def limitObjIsoLimitCompEvaluation [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) (k
     (limit F).obj k ≅ limit (F ⋙ (evaluation K C).obj k) :=
   preservesLimitIso ((evaluation K C).obj k) F
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitObjIsoLimitCompEvaluation_hom_π [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) (j : J)
     (k : K) :
@@ -222,6 +230,7 @@ theorem limitObjIsoLimitCompEvaluation_hom_π [HasLimitsOfShape J C] (F : J ⥤ 
   dsimp [limitObjIsoLimitCompEvaluation]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitObjIsoLimitCompEvaluation_inv_π_app [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) (j : J)
     (k : K) :
@@ -231,6 +240,7 @@ theorem limitObjIsoLimitCompEvaluation_inv_π_app [HasLimitsOfShape J C] (F : J 
   rw [Iso.inv_comp_eq]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limit_map_limitObjIsoLimitCompEvaluation_hom [HasLimitsOfShape J C] {i j : K}
     (F : J ⥤ K ⥤ C) (f : i ⟶ j) : (limit F).map f ≫ (limitObjIsoLimitCompEvaluation _ _).hom =
@@ -245,6 +255,7 @@ theorem limitObjIsoLimitCompEvaluation_inv_limit_map [HasLimitsOfShape J C] {i j
   rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv,
     limit_map_limitObjIsoLimitCompEvaluation_hom]
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
     {f g : W ⟶ (limit H).obj k}
@@ -253,6 +264,7 @@ theorem limit_obj_ext {H : J ⥤ K ⥤ C} [HasLimitsOfShape J C] {k : K} {W : C}
   ext j
   simpa using w j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking a limit after whiskering by `G` is the same as using `G` and then taking a limit. -/
 def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLimitsOfShape J C] :
     limit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ limit F :=
@@ -261,6 +273,7 @@ def limitCompWhiskeringLeftIsoCompLimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasLi
       HasLimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
       (limitObjIsoLimitCompEvaluation F (G.obj j)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limitCompWhiskeringLeftIsoCompLimit_hom_whiskerLeft_π (F : J ⥤ K ⥤ C) (G : D ⥤ K)
     [HasLimitsOfShape J C] (j : J) :
@@ -298,6 +311,7 @@ def colimitObjIsoColimitCompEvaluation [HasColimitsOfShape J C] (F : J ⥤ K ⥤
     (colimit F).obj k ≅ colimit (F ⋙ (evaluation K C).obj k) :=
   preservesColimitIso ((evaluation K C).obj k) F
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimitObjIsoColimitCompEvaluation_ι_inv [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) (j : J)
     (k : K) :
@@ -306,6 +320,7 @@ theorem colimitObjIsoColimitCompEvaluation_ι_inv [HasColimitsOfShape J C] (F : 
   dsimp [colimitObjIsoColimitCompEvaluation]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimitObjIsoColimitCompEvaluation_ι_app_hom [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C)
     (j : J) (k : K) :
@@ -315,6 +330,7 @@ theorem colimitObjIsoColimitCompEvaluation_ι_app_hom [HasColimitsOfShape J C] (
   rw [← Iso.eq_comp_inv]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem colimitObjIsoColimitCompEvaluation_inv_colimit_map [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C)
     {i j : K} (f : i ⟶ j) :
@@ -333,6 +349,7 @@ theorem colimit_map_colimitObjIsoColimitCompEvaluation_hom [HasColimitsOfShape J
   rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv,
     colimitObjIsoColimitCompEvaluation_inv_colimit_map]
 
+set_option backward.isDefEq.respectTransparency false in
 @[ext]
 theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W : C}
     {f g : (colimit H).obj k ⟶ W} (w : ∀ j, (colimit.ι H j).app k ≫ f = (colimit.ι H j).app k ≫ g) :
@@ -341,6 +358,7 @@ theorem colimit_obj_ext {H : J ⥤ K ⥤ C} [HasColimitsOfShape J C] {k : K} {W 
   ext j
   simpa using w j
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking a colimit after whiskering by `G` is the same as using `G` and then taking a colimit. -/
 def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [HasColimitsOfShape J C] :
     colimit (F ⋙ (whiskeringLeft _ _ _).obj G) ≅ G ⋙ colimit F :=
@@ -349,6 +367,7 @@ def colimitCompWhiskeringLeftIsoCompColimit (F : J ⥤ K ⥤ C) (G : D ⥤ K) [H
       HasColimit.isoOfNatIso (isoWhiskerLeft F (whiskeringLeftCompEvaluation G j)) ≪≫
       (colimitObjIsoColimitCompEvaluation F (G.obj j)).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_colimitCompWhiskeringLeftIsoCompColimit_hom (F : J ⥤ K ⥤ C) (G : D ⥤ K)
     [HasColimitsOfShape J C] (j : J) :
@@ -357,6 +376,7 @@ theorem ι_colimitCompWhiskeringLeftIsoCompColimit_hom (F : J ⥤ K ⥤ C) (G : 
   ext d
   simp [colimitCompWhiskeringLeftIsoCompColimit]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerLeft_ι_colimitCompWhiskeringLeftIsoCompColimit_inv (F : J ⥤ K ⥤ C) (G : D ⥤ K)
     [HasColimitsOfShape J C] (j : J) :
@@ -379,7 +399,7 @@ lemma preservesLimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     exact isLimitOfPreserves _ hc⟩⟩
 
 /-- `F : D ⥤ K ⥤ C` preserves limits of shape `J` if it does for each `k : K`. -/
-lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
+lemma preservesLimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category* J]
     (_ : ∀ k : K, PreservesLimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesLimitsOfShape J F :=
   ⟨fun {G} => preservesLimit_of_evaluation F G fun _ => PreservesLimitsOfShape.preservesLimit⟩
@@ -411,7 +431,7 @@ lemma preservesColimit_of_evaluation (F : D ⥤ K ⥤ C) (G : J ⥤ D)
     exact isColimitOfPreserves _ hc⟩⟩
 
 /-- `F : D ⥤ K ⥤ C` preserves all colimits of shape `J` if it does for each `k : K`. -/
-lemma preservesColimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category J]
+lemma preservesColimitsOfShape_of_evaluation (F : D ⥤ K ⥤ C) (J : Type*) [Category* J]
     (_ : ∀ k : K, PreservesColimitsOfShape J (F ⋙ (evaluation K C).obj k)) :
     PreservesColimitsOfShape J F :=
   ⟨fun {G} => preservesColimit_of_evaluation F G fun _ => PreservesColimitsOfShape.preservesColimit⟩
@@ -431,18 +451,42 @@ instance preservesColimits_const : PreservesColimitsOfSize.{w', w} (const D : C 
 
 open CategoryTheory.prod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The limit of a diagram `F : J ⥤ K ⥤ C` is isomorphic to the functor given by
 the individual limits on objects. -/
 @[simps!]
 def limitIsoFlipCompLim [HasLimitsOfShape J C] (F : J ⥤ K ⥤ C) : limit F ≅ F.flip ⋙ lim :=
   NatIso.ofComponents (limitObjIsoLimitCompEvaluation F)
 
+set_option backward.isDefEq.respectTransparency false in
+/-- `limitIsoFlipCompLim` is natural with respect to diagrams. -/
+@[simps!]
+def limIsoFlipCompWhiskerLim [HasLimitsOfShape J C] :
+    lim ≅ flipFunctor J K C ⋙ (whiskeringRight _ _ _).obj lim :=
+  (NatIso.ofComponents (limitIsoFlipCompLim · |>.symm) fun {F G} η ↦ by
+    ext k
+    apply limit_obj_ext
+    intro j
+    simp [comp_evaluation, ← NatTrans.comp_app (limMap η)]).symm
+
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `limitIsoFlipCompLim` where the arguments of `F` are flipped. -/
 @[simps!]
 def limitFlipIsoCompLim [HasLimitsOfShape J C] (F : K ⥤ J ⥤ C) : limit F.flip ≅ F ⋙ lim :=
   let f := fun k =>
     limitObjIsoLimitCompEvaluation F.flip k ≪≫ HasLimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `limitFlipIsoCompLim` is natural with respect to diagrams. -/
+@[simps!]
+def limCompFlipIsoWhiskerLim [HasLimitsOfShape J C] :
+    flipFunctor K J C ⋙ lim ≅ (whiskeringRight _ _ _).obj lim :=
+  (NatIso.ofComponents (limitFlipIsoCompLim · |>.symm) fun {F G} η ↦ by
+    ext k
+    apply limit_obj_ext
+    intro j
+    simp [comp_evaluation, ← NatTrans.comp_app (limMap _)]).symm
 
 /-- For a functor `G : J ⥤ K ⥤ C`, its limit `K ⥤ C` is given by `(G' : K ⥤ J ⥤ C) ⋙ lim`.
 Note that this does not require `K` to be small.
@@ -452,18 +496,42 @@ def limitIsoSwapCompLim [HasLimitsOfShape J C] (G : J ⥤ K ⥤ C) :
     limit G ≅ curry.obj (Prod.swap K J ⋙ uncurry.obj G) ⋙ lim :=
   limitIsoFlipCompLim G ≪≫ isoWhiskerRight (flipIsoCurrySwapUncurry _) _
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The colimit of a diagram `F : J ⥤ K ⥤ C` is isomorphic to the functor given by
 the individual colimits on objects. -/
 @[simps!]
 def colimitIsoFlipCompColim [HasColimitsOfShape J C] (F : J ⥤ K ⥤ C) : colimit F ≅ F.flip ⋙ colim :=
   NatIso.ofComponents (colimitObjIsoColimitCompEvaluation F)
 
-/-- A variant of `colimit_iso_flip_comp_colim` where the arguments of `F` are flipped. -/
+set_option backward.isDefEq.respectTransparency false in
+/-- `colimitIsoFlipCompColim` is natural with respect to diagrams. -/
+@[simps!]
+def colimIsoFlipCompWhiskerColim [HasColimitsOfShape J C] :
+    colim ≅ flipFunctor J K C ⋙ (whiskeringRight _ _ _).obj colim :=
+  NatIso.ofComponents colimitIsoFlipCompColim fun {F G} η ↦ by
+    ext k
+    apply colimit_obj_ext
+    intro j
+    simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap η)]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- A variant of `colimitIsoFlipCompColim` where the arguments of `F` are flipped. -/
 @[simps!]
 def colimitFlipIsoCompColim [HasColimitsOfShape J C] (F : K ⥤ J ⥤ C) : colimit F.flip ≅ F ⋙ colim :=
   let f := fun _ =>
       colimitObjIsoColimitCompEvaluation _ _ ≪≫ HasColimit.isoOfNatIso (flipCompEvaluation _ _)
   NatIso.ofComponents f
+
+set_option backward.isDefEq.respectTransparency false in
+/-- `colimitFlipIsoCompColim` is natural with respect to diagrams. -/
+@[simps!]
+def colimCompFlipIsoWhiskerColim [HasColimitsOfShape J C] :
+    flipFunctor K J C ⋙ colim ≅ (whiskeringRight _ _ _).obj colim :=
+  NatIso.ofComponents colimitFlipIsoCompColim fun {F G} η ↦ by
+    ext k
+    apply colimit_obj_ext
+    intro j
+    simp [comp_evaluation, ← NatTrans.comp_app_assoc _ (colimMap _)]
 
 /-- For a functor `G : J ⥤ K ⥤ C`, its colimit `K ⥤ C` is given by `(G' : K ⥤ J ⥤ C) ⋙ colim`.
 Note that this does not require `K` to be small.

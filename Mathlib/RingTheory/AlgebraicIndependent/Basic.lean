@@ -3,13 +3,15 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.AlgebraicIndependent.Defs
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Algebraic Independence
@@ -24,6 +26,8 @@ This file contains basic results on algebraic independence of a family of elemen
 transcendence basis, transcendence degree, transcendence
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -107,6 +111,7 @@ theorem aeval_of_algebraicIndependent
   intro p hp
   exact hf _ (hx _ (by rwa [← aeval_comp_bind₁, AlgHom.comp_apply] at hp))
 
+set_option backward.isDefEq.respectTransparency false in
 omit hx in
 /-- If `{f_i(x) | i : ι}` is algebraically independent over `R`, then
 `{f_i : MvPolynomial ι R | i : ι}` is also algebraically independent over `R`.
@@ -129,6 +134,7 @@ theorem trdeg_eq_zero_of_not_injective (h : ¬ Injective (algebraMap R A)) : trd
   have := isEmpty_algebraicIndependent h
   rw [trdeg, ciSup_of_empty, bot_eq_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem MvPolynomial.algebraicIndependent_X (σ R : Type*) [CommRing R] :
     AlgebraicIndependent R (X (R := R) (σ := σ)) := by
   rw [AlgebraicIndependent, aeval_X_left]
@@ -144,15 +150,12 @@ theorem AlgHom.algebraicIndependent_iff (f : A →ₐ[R] A') (hf : Injective f) 
 theorem AlgebraicIndependent.of_subsingleton [Subsingleton R] : AlgebraicIndependent R x :=
   algebraicIndependent_iff.2 fun _ _ => Subsingleton.elim _ _
 
-@[deprecated (since := "2025-02-07")] alias algebraicIndependent_of_subsingleton :=
-  AlgebraicIndependent.of_subsingleton
-
 theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A) :
     IsTranscendenceBasis R x ↔ Nonempty ι := by
   have := Module.subsingleton R A
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨.of_subsingleton, fun s hs hx ↦
     hx.antisymm fun a _ ↦ ⟨Classical.arbitrary _, Subsingleton.elim ..⟩⟩⟩
-  by_contra hι; rw [not_nonempty_iff] at hι
+  by_contra! hι
   have := h.2 {0} .of_subsingleton
   simp [range_eq_empty, eq_comm (a := ∅)] at this
 
@@ -165,6 +168,7 @@ theorem isTranscendenceBasis_iff_of_subsingleton [Subsingleton R] (x : ι → A)
   (ciSup_le' fun s ↦ by simpa using Set.subsingleton_of_subsingleton).antisymm <| le_ciSup_of_le
     (Cardinal.bddAbove_range _) ⟨{0}, .of_subsingleton⟩ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem algebraicIndependent_adjoin (hs : AlgebraicIndependent R x) :
     @AlgebraicIndependent ι R (adjoin R (range x))
       (fun i : ι => ⟨x i, subset_adjoin (mem_range_self i)⟩) _ _ _ :=
@@ -247,6 +251,7 @@ theorem algebraicIndependent_finset_map_embedding_subtype (s : Set A)
   obtain ⟨b, _, rfl⟩ := hy
   simp only [f, imp_self, Subtype.mk_eq_mk]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If every finite set of algebraically independent element has cardinality at most `n`,
 then the same is true for arbitrary sets of algebraically independent elements. -/
 theorem algebraicIndependent_bounded_of_finset_algebraicIndependent_bounded {n : ℕ}
@@ -307,7 +312,7 @@ lemma IsTranscendenceBasis.of_comp_algebraMap [Algebra A A'] [IsScalarTower R A 
   .of_comp (IsScalarTower.toAlgHom R A A') (FaithfulSMul.algebraMap_injective A A') H
 
 /-- Also see `IsTranscendenceBasis.algebraMap_comp`
-for the composition with a algebraic extension. -/
+for the composition with an algebraic extension. -/
 theorem AlgEquiv.isTranscendenceBasis (e : A ≃ₐ[R] A') (hx : IsTranscendenceBasis R x) :
     IsTranscendenceBasis R (e ∘ x) :=
   .of_comp e.symm.toAlgHom e.symm.injective (by convert hx; ext; simp)
@@ -493,8 +498,6 @@ section Field
 
 variable {K : Type*} [Field K] [Algebra K A]
 
-/- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
-simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]
   exact RingHom.injective _

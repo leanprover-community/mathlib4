@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-import Mathlib.CategoryTheory.ObjectProperty.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
-import Mathlib.Order.OrderIsoNat
-import Mathlib.CategoryTheory.Simple
+module
+
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
+public import Mathlib.Order.OrderIsoNat
+public import Mathlib.CategoryTheory.Simple
 
 /-!
 # Artinian objects
@@ -19,12 +21,14 @@ satisfies the descending chain condition. The corresponding property of
 objects `isArtinianObject : ObjectProperty C` is always
 closed under subobjects.
 
-## Future works
+## Future work
 
 * when `C` is an abelian category, relate `IsArtinianObject` in `C`
-with `IsNoetherianObject` in `Cᵒᵖ`.
+  with `IsNoetherianObject` in `Cᵒᵖ`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -73,7 +77,7 @@ lemma isArtinianObject_iff_not_strictAnti :
   refine ⟨fun _ ↦ not_strictAnti_of_wellFoundedLT, fun h ↦ ?_⟩
   dsimp only [IsArtinianObject]
   rw [ObjectProperty.is_iff, isArtinianObject, WellFoundedLT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
+    isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
 variable {X} in
@@ -136,7 +140,7 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 
 theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     ∃ Y : Subobject X, Simple (Y : C) := by
-  haveI : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
+  have : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
   obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : Subobject X)).resolve_left top_ne_bot
   exact ⟨Y, (subobject_simple_iff_isAtom _).mpr s.1⟩
 
@@ -144,11 +148,12 @@ theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
 noncomputable def simpleSubobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) : C :=
   (exists_simple_subobject h).choose
 
-/-- The monomorphism from the arbitrary simple subobject of a non-zero artinian object. -/
+/-- The monomorphism from the arbitrary simple subobject of a non-zero Artinian object. -/
 noncomputable def simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     simpleSubobject h ⟶ X :=
   (exists_simple_subobject h).choose.arrow
 
+set_option backward.isDefEq.respectTransparency false in
 instance mono_simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     Mono (simpleSubobjectArrow h) := by
   dsimp only [simpleSubobjectArrow]

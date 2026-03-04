@@ -3,13 +3,16 @@ Copyright (c) 2024 Fangming Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Order.Interval.Set.Infinite
-import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.RingTheory.PowerSeries.WellKnown
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Order.Interval.Set.Infinite
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
 # Hilbert polynomials
@@ -36,6 +39,8 @@ if `d! = 0` in `F`, then the polynomial `(X + 1)···(X + d)/d!` no longer work
 
 * Hilbert polynomials of finitely generated graded modules over Noetherian rings.
 -/
+
+@[expose] public section
 
 open Nat PowerSeries
 
@@ -89,7 +94,7 @@ lemma preHilbertPoly_eq_choose_sub_add [CharZero F] (d : ℕ) {k n : ℕ} (hkn :
   _ = (↑d !)⁻¹ * eval (↑(n - k + 1)) (ascPochhammer F d) := by simp [cast_sub hkn, preHilbertPoly]
   _ = (n - k + d).choose d := by
     rw [ascPochhammer_nat_eq_natCast_ascFactorial];
-    field_simp [ascFactorial_eq_factorial_mul_choose]
+    simp [field, ascFactorial_eq_factorial_mul_choose]
 
 variable {F}
 
@@ -153,6 +158,7 @@ noncomputable def hilbertPoly_linearMap (d : ℕ) : F[X] →ₗ[F] F[X] where
 
 variable [CharZero F]
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The key property of Hilbert polynomials. If `F` is a field with characteristic `0`, `p : F[X]` and
 `d : ℕ`, then for any large enough `n : ℕ`, `(Polynomial.hilbertPoly p d).eval (n : F)` equals the
@@ -160,7 +166,7 @@ coefficient of `Xⁿ` in the power series expansion of `p/(1 - X)ᵈ`.
 -/
 theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
     {p : F[X]} (d : ℕ) {n : ℕ} (hn : p.natDegree < n) :
-    PowerSeries.coeff F n (p * invOneSubPow F d) = (hilbertPoly p d).eval (n : F) := by
+    (p * invOneSubPow F d : F⟦X⟧).coeff n = (hilbertPoly p d).eval (n : F) := by
   delta hilbertPoly; induction d with
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
             exact coeff_eq_zero_of_natDegree_lt hn
@@ -189,7 +195,7 @@ The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is un
 -/
 theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     ∃! h : F[X], ∃ N : ℕ, ∀ n > N,
-      PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
+      (p * invOneSubPow F d : F⟦X⟧).coeff n = h.eval (n : F) := by
   use hilbertPoly p d; constructor
   · use p.natDegree
     exact fun n => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d
@@ -207,11 +213,12 @@ we have `PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)`, then `h
 -/
 theorem eq_hilbertPoly_of_forall_coeff_eq_eval
     {p h : F[X]} {d : ℕ} (N : ℕ) (hhN : ∀ n > N,
-    PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)) :
+    PowerSeries.coeff (R := F) n (p * invOneSubPow F d) = h.eval (n : F)) :
     h = hilbertPoly p d :=
   ExistsUnique.unique (existsUnique_hilbertPoly p d) ⟨N, hhN⟩
     ⟨p.natDegree, fun _ x => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
     hilbertPoly (p * (1 - X)) (d + 1) = hilbertPoly p d := by
   apply eq_hilbertPoly_of_forall_coeff_eq_eval (p * (1 - X)).natDegree

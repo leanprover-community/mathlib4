@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Functors from a category to a category with a shift
@@ -25,9 +27,11 @@ which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory Category ZeroObject Limits Functor
 
-variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
+variable (C D E E' : Type*) [Category* C] [Category* D] [Category* E] [Category* E']
   (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A] [HasShift E' A]
 
 namespace CategoryTheory
@@ -194,6 +198,7 @@ instance (f : F ⟶ G) [IsIso f] (n : A) : IsIso (f.hom n) :=
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `F : SingleFunctors C D A`, and a functor `G : D ⥤ E` which commutes
 with the shift by `A`, this is the "composition" of `F` and `G` in `SingleFunctors C E A`. -/
 @[simps! functor shiftIso_hom_app shiftIso_inv_app]
@@ -207,7 +212,7 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
     ext X
     dsimp
     simp only [Functor.commShiftIso_zero, Functor.CommShift.isoZero_inv_app,
-      SingleFunctors.shiftIso_zero_hom_app,id_comp, assoc, ← G.map_comp, Iso.inv_hom_id_app,
+      SingleFunctors.shiftIso_zero_hom_app, id_comp, assoc, ← G.map_comp, Iso.inv_hom_id_app,
       Functor.map_id, Functor.id_obj, comp_id]
   shiftIso_add n m a a' a'' ha' ha'' := by
     ext X
@@ -219,8 +224,10 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
 
 variable (C A)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
 by a functor `G : D ⥤ E` which commutes with the shift. -/
+@[simps]
 def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
     SingleFunctors C D A ⥤ SingleFunctors C E A where
   obj F := F.postcomp G
@@ -240,6 +247,7 @@ def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommSh
     ext X
     simp [Functor.commShiftIso_comp_inv_app])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism `F.postcomp G ≅ F.postcomp G'` induced by an isomorphism `e : G ≅ G'`
 which commutes with the shift. -/
 @[simps!]

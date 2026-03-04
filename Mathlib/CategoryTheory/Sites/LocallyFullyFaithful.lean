@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # Locally fully faithful functors into sites
@@ -11,19 +13,21 @@ import Mathlib.CategoryTheory.Sites.LocallySurjective
 ## Main results
 
 - `CategoryTheory.Functor.IsLocallyFull`:
-  A functor `G : C ⥤ D` is locally full wrt a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
-  the set of `G.map fᵢ : G.obj Wᵢ ⟶ G.obj U` such that `G.map fᵢ ≫ f` is
+  A functor `G : C ⥤ D` is locally full w.r.t. a topology on `D` if for every
+  `f : G.obj U ⟶ G.obj V`, the set of `G.map fᵢ : G.obj Wᵢ ⟶ G.obj U` such that `G.map fᵢ ≫ f` is
   in the image of `G` is a coverage of the topology on `D`.
 - `CategoryTheory.Functor.IsLocallyFaithful`:
-  A functor `G : C ⥤ D` is locally faithful wrt a topology on `D` if for every `f₁ f₂ : U ⟶ V` whose
-  image in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that `gᵢ ≫ f₁ = gᵢ ≫ f₂`
-  is a coverage of the topology on `D`.
+  A functor `G : C ⥤ D` is locally faithful w.r.t. a topology on `D` if for every `f₁ f₂ : U ⟶ V`
+  whose images in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that
+  `gᵢ ≫ f₁ = gᵢ ≫ f₂` is a coverage of the topology on `D`.
 
 ## References
 
 * [caramello2020]: Olivia Caramello, *Denseness conditions, morphisms and equivalences of toposes*
 
 -/
+
+@[expose] public section
 
 universe w vC vD uC uD
 
@@ -61,11 +65,9 @@ def Sieve.equalizer {U V : C} (f₁ f₂ : U ⟶ V) : Sieve U where
 @[simp]
 lemma Sieve.equalizer_self {U V : C} (f : U ⟶ V) : equalizer f f = ⊤ := by ext; simp
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma Sieve.equalizer_eq_equalizerSieve {U V : C} (f₁ f₂ : U ⟶ V) :
     Sieve.equalizer f₁ f₂ = Presheaf.equalizerSieve (F := yoneda.obj _) f₁ f₂ := rfl
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma Functor.imageSieve_eq_imageSieve {D : Type uD} [Category.{vC} D] (G : C ⥤ D) {U V : C}
     (f : G.obj U ⟶ G.obj V) :
     G.imageSieve f = Presheaf.imageSieve (yonedaMap G V) f := rfl
@@ -75,7 +77,7 @@ open Presieve Opposite
 namespace Functor
 
 /--
-A functor `G : C ⥤ D` is locally full wrt a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
+A functor `G : C ⥤ D` is locally full w.r.t. a topology on `D` if for every `f : G.obj U ⟶ G.obj V`,
 the set of `G.map fᵢ : G.obj Wᵢ ⟶ G.obj U` such that `G.map fᵢ ≫ f` is
 in the image of `G` is a coverage of the topology on `D`.
 -/
@@ -84,9 +86,9 @@ class IsLocallyFull : Prop where
     (G.imageSieve f).functorPushforward G ∈ K _
 
 /--
-A functor `G : C ⥤ D` is locally faithful wrt a topology on `D` if for every `f₁ f₂ : U ⟶ V` whose
-image in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that `gᵢ ≫ f₁ = gᵢ ≫ f₂`
-is a coverage of the topology on `D`.
+A functor `G : C ⥤ D` is locally faithful w.r.t. a topology on `D` if for every `f₁ f₂ : U ⟶ V`
+whose images in `D` are equal, the set of `G.map gᵢ : G.obj Wᵢ ⟶ G.obj U` such that
+`gᵢ ≫ f₁ = gᵢ ≫ f₂` is a coverage of the topology on `D`.
 -/
 class IsLocallyFaithful : Prop where
   functorPushforward_equalizer_mem : ∀ {U V : C} (f₁ f₂ : U ⟶ V), G.map f₁ = G.map f₂ →
@@ -102,7 +104,7 @@ lemma functorPushforward_equalizer_mem
   Functor.IsLocallyFaithful.functorPushforward_equalizer_mem _ _ e
 
 variable {K}
-variable {A : Type*} [Category A] (G : C ⥤ D)
+variable {A : Type*} [Category* A] (G : C ⥤ D)
 
 theorem IsLocallyFull.ext [G.IsLocallyFull K]
     (ℱ : Sheaf K (Type _)) {X Y : C} (i : G.obj X ⟶ G.obj Y)

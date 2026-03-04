@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Function.SpecialFunctions.Sinc
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 /-!
 # Integrals of characteristic functions
@@ -29,6 +31,8 @@ relating the measure of some sets to integrals of characteristic functions.
 
 -/
 
+public section
+
 open RealInnerProductSpace Real Complex NormedSpace
 
 namespace MeasureTheory
@@ -37,6 +41,7 @@ section Real
 
 variable {μ : Measure ℝ} {r : ℝ}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     ∫ t in -r..r, charFun μ t = 2 * r * ∫ x, sinc (r * x) ∂μ := by
   have h_int : Integrable (Function.uncurry fun (x y : ℝ) ↦ cexp (x * y * I))
@@ -81,11 +86,11 @@ lemma integral_charFun_Icc [IsFiniteMeasure μ] (hr : 0 < r) :
     have hy : y ≠ 0 := fun hy ↦ hry (by simp [hy])
     norm_cast
     field_simp
-    ring_nf
   _ = 2 * r * ∫ x, sinc (r * x) ∂μ := by
     norm_cast
-    rw [integral_complex_ofReal, ← integral_const_mul]
+    rw [← integral_const_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |x|}` in terms of the integral of
 the characteristic function, for a probability measure on `ℝ`. -/
 lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 < r) :
@@ -95,7 +100,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
       integrable_sinc
   calc μ.real {x | r < |x|}
   _ = μ.real {x | 2 < |2 * r⁻¹ * x|} := by
-    congr with x
+    congr 1 with x
     simp only [Set.mem_setOf_eq, abs_mul, Nat.abs_ofNat]
     rw [abs_of_nonneg (a := r⁻¹) (by positivity), mul_assoc, ← inv_mul_lt_iff₀ (by positivity),
       inv_mul_cancel₀ (by positivity), lt_inv_mul_iff₀ (by positivity), mul_one]
@@ -120,9 +125,7 @@ lemma measureReal_abs_gt_le_integral_charFun [IsProbabilityMeasure μ] (hr : 0 <
       refine (sinc_le_inv_abs hx_ne).trans ?_
       exact (inv_le_inv₀ (by positivity) (by positivity)).mpr (le_of_lt hx)
   _ ≤ 2 * ∫ x, 1 - sinc (2 * r⁻¹ * x) ∂μ := by
-    gcongr
-    refine setIntegral_le_integral ((integrable_const _).sub (integrable_sinc_const_mul _))
-      <| ae_of_all _ fun x ↦ ?_
+    grw [setIntegral_le_integral (by fun_prop) <| ae_of_all _ fun x ↦ ?_]
     simp only [Pi.zero_apply, sub_nonneg]
     exact sinc_le_one (2 * r⁻¹ * x)
   _ ≤ 2 * ‖∫ x, 1 - sinc (2 * r⁻¹ * x) ∂μ‖ := by
@@ -151,20 +154,22 @@ lemma measureReal_abs_dual_gt_le_integral_charFunDual {E : Type*} [NormedAddComm
     [NormedSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] (L : StrongDual ℝ E) {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |L x|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFunDual μ (t • L)‖ := by
-  have : IsProbabilityMeasure (μ.map L) := isProbabilityMeasure_map (by fun_prop)
+  have : IsProbabilityMeasure (μ.map L) := Measure.isProbabilityMeasure_map (by fun_prop)
   convert measureReal_abs_gt_le_integral_charFun (μ := μ.map L) hr with x
   · rw [map_measureReal_apply (by fun_prop)]
     · simp
     · exact MeasurableSet.preimage measurableSet_Ioi (by fun_prop)
   · rw [charFun_map_eq_charFunDual_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A bound on the measure of the set `{x | r < |⟪a, x⟫|}` in terms of the integral of
 the characteristic function, for a probability measure on an inner product space. -/
 lemma measureReal_abs_inner_gt_le_integral_charFun {E : Type*} [SeminormedAddCommGroup E]
     [InnerProductSpace ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E]
     {μ : Measure E} [IsProbabilityMeasure μ] {a : E} {r : ℝ} (hr : 0 < r) :
     μ.real {x | r < |⟪a, x⟫|} ≤ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun μ (t • a)‖ := by
-  have : IsProbabilityMeasure (μ.map (fun x ↦ ⟪a, x⟫)) := isProbabilityMeasure_map (by fun_prop)
+  have : IsProbabilityMeasure (μ.map (fun x ↦ ⟪a, x⟫)) :=
+    Measure.isProbabilityMeasure_map (by fun_prop)
   convert measureReal_abs_gt_le_integral_charFun (μ := μ.map (fun x ↦ ⟪a, x⟫)) hr with x
   · rw [map_measureReal_apply (by fun_prop)]
     · simp

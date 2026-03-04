@@ -3,12 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
-# Sets are a complete atomic boolean algebra.
+# Sets are a complete atomic Boolean algebra.
 
-This file contains only the definition of the complete atomic boolean algebra structure on `Set`.
+This file contains only the definition of the complete atomic Boolean algebra structure on `Set`.
 Indexed union/intersection are defined in `Mathlib.Order.SetNotation`; lemmas are available in
 `Mathlib/Data/Set/Lattice.lean`.
 
@@ -18,6 +20,8 @@ Indexed union/intersection are defined in `Mathlib.Order.SetNotation`; lemmas ar
   `< = ⊂`, `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference.
   See `Set.instBooleanAlgebra`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

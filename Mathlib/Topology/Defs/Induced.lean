@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
 
@@ -41,6 +43,8 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   if it is surjective
   and the topology on the codomain is equal to the coinduced topology.
 -/
+
+@[expose] public section
 
 open Set
 open scoped Topology
@@ -96,38 +100,36 @@ if either of the following equivalent conditions hold:
 structure IsCoherentWith (S : Set (Set X)) : Prop where
   isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
 
-@[deprecated (since := "2025-04-08")] alias RestrictGenTopology := Topology.IsCoherentWith
-
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage
 under `f` of some open set `t : Set Y`. -/
-@[mk_iff]
+@[fun_prop, mk_iff]
 structure IsInducing (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   eq_induced : tX = tY.induced f
 
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
-@[mk_iff]
+@[fun_prop, mk_iff]
 structure IsEmbedding (f : X → Y) : Prop extends IsInducing f where
   /-- A topological embedding is injective. -/
   injective : Function.Injective f
 
 /-- An open embedding is an embedding with open range. -/
-@[mk_iff]
+@[fun_prop, mk_iff]
 structure IsOpenEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of an open embedding is an open set. -/
   isOpen_range : IsOpen <| range f
 
 /-- A closed embedding is an embedding with closed image. -/
-@[mk_iff]
+@[fun_prop, mk_iff]
 structure IsClosedEmbedding (f : X → Y) : Prop extends IsEmbedding f where
   /-- The range of a closed embedding is a closed set. -/
   isClosed_range : IsClosed <| range f
 
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
-@[mk_iff isQuotientMap_iff']
+@[fun_prop, mk_iff isQuotientMap_iff']
 structure IsQuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     (f : X → Y) : Prop where
   surjective : Function.Surjective f

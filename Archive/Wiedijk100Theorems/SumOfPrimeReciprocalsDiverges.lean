@@ -25,8 +25,8 @@ The formalization follows Erdős's proof by upper and lower estimates.
     * `U x k`, the subset of those `e` for which there is a prime `p > k` that divides `e + 1`.
 4. Then `|U x k|` is bounded by the sum over the primes `p > k` of the number of multiples of `p`
    in `(k, x]`, which is at most `x / p`. It follows that `|U x k|` is at most `x` times the sum of
-  the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
-  `|U x k| < x / 2` (`card_le_mul_sum`).
+   the reciprocals of the primes between `k` and `x + 1`, which is less than 1/2 as noted in (2), so
+   `|U x k| < x / 2` (`card_le_mul_sum`).
 5. By factoring `e + 1 = (m + 1)² * (r + 1)`, `r + 1` squarefree and `m + 1 ≤ √x`, and noting that
    squarefree numbers correspond to subsets of `[1, k]`, we find that `|M x k| ≤ 2 ^ k * √x`
    (`card_le_two_pow_mul_sqrt`).
@@ -96,7 +96,7 @@ of `p`.
 -/
 theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   ext e
-  simp only [mem_biUnion, not_and, mem_sdiff, mem_filter, mem_range, U, M, P]
+  simp only [mem_biUnion, not_and, Finset.mem_sdiff, mem_filter, mem_range, U, M, P]
   push_neg
   constructor
   · rintro ⟨hex, hexh⟩
@@ -224,7 +224,7 @@ theorem Real.tendsto_sum_one_div_prime_atTop :
     calc
       (#M' : ℝ) ≤ 2 ^ k * x.sqrt := by exact mod_cast card_le_two_pow_mul_sqrt
       _ = 2 ^ k * (2 ^ (k + 1) : ℕ) := by rw [Nat.sqrt_eq]
-      _ = x / 2 := by field_simp [x, mul_right_comm, ← pow_succ]
+      _ = x / 2 := by simp [field, x, ← pow_succ]
   refine lt_irrefl (x : ℝ) ?_
   calc
     (x : ℝ) = (#U' : ℝ) + (#M' : ℝ) := by assumption_mod_cast

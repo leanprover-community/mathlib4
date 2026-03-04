@@ -3,12 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Some facts about finite rings
 -/
+
+public section
 
 
 open Finset ZMod
@@ -31,13 +35,11 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
   rcases lt_or_eq_of_le h with h | h
   · apply card_le_card
     rw [Finset.univ_of_card_le_two (Nat.lt_succ_iff.1 h)]
-    intro a ha
-    simp only [mem_insert, mem_singleton] at ha
-    rcases ha with rfl | rfl <;> simp
+    simp
   · have : Nontrivial R := by
       refine Fintype.one_lt_card_iff_nontrivial.1 ?_
       rw [h]
-      norm_num
+      simp
     rw [card_univ, h, card_insert_of_notMem, card_insert_of_notMem, card_singleton]
     · rw [mem_singleton]
       intro H
@@ -47,11 +49,7 @@ lemma Finset.univ_of_card_le_three (h : Fintype.card R ≤ 3) :
       replace H : ((2 : ℕ) : ZMod 3) = 0 := H
       rw [natCast_eq_zero_iff] at H
       norm_num at H
-    · intro h
-      simp only [mem_insert, mem_singleton, zero_eq_neg] at h
-      rcases h with (h | h)
-      · exact zero_ne_one h
-      · exact zero_ne_one h.symm
+    · simp
 
 end Ring
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 
 /-!
 # Cospan & Span
@@ -18,6 +20,8 @@ and `span f g` construct functors from the walking (co)span, hitting the given m
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open CategoryTheory
@@ -26,7 +30,8 @@ universe w v₁ v₂ v u u₂
 
 namespace CategoryTheory.Limits
 
--- attribute [local tidy] tactic.case_bash Porting note: no tidy, no local
+-- Porting note: `aesop cases` does not work on type synonyms like `WidePullbackShape`
+-- attribute [local aesop safe cases] WidePullbackShape WalkingPair
 
 /-- The type of objects for the diagram indexing a pullback, defined as a special case of
 `WidePullbackShape`. -/
@@ -117,7 +122,7 @@ abbrev Hom.id (X : WalkingSpan) : X ⟶ X :=
   WidePushoutShape.Hom.id X
 
 instance (X Y : WalkingSpan) : Subsingleton (X ⟶ Y) := by
-  constructor; intros a b; simp [eq_iff_true_of_subsingleton]
+  constructor; intro a b; simp [eq_iff_true_of_subsingleton]
 
 end WalkingSpan
 
@@ -143,6 +148,7 @@ def WalkingCospan.ext {F : WalkingCospan ⥤ C} {s t : Cone F} (i : s.pt ≅ t.p
   · exact w₁
   · exact w₂
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To construct an isomorphism of cocones over the walking span,
 it suffices to construct an isomorphism
 of the cocone points and check it commutes with the legs from `left` and `right`. -/
@@ -217,17 +223,17 @@ theorem cospan_map_id {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) (w : WalkingCospan
 theorem span_map_id {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) (w : WalkingSpan) :
     (span f g).map (WalkingSpan.Hom.id w) = 𝟙 _ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every diagram indexing a pullback is naturally isomorphic (actually, equal) to a `cospan` -/
--- @[simps (rhsMd := semireducible)]  Porting note: no semireducible
-@[simps!]
+@[simps (rhsMd := default)]
 def diagramIsoCospan (F : WalkingCospan ⥤ C) : F ≅ cospan (F.map inl) (F.map inr) :=
   NatIso.ofComponents
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
   (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Every diagram indexing a pushout is naturally isomorphic (actually, equal) to a `span` -/
--- @[simps (rhsMd := semireducible)]  Porting note: no semireducible
-@[simps!]
+@[simps (rhsMd := default)]
 def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) :=
   NatIso.ofComponents
   (fun j => eqToIso (by rcases j with (⟨⟩ | ⟨⟨⟩⟩) <;> rfl))
@@ -235,6 +241,7 @@ def diagramIsoSpan (F : WalkingSpan ⥤ C) : F ≅ span (F.map fst) (F.map snd) 
 
 variable {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor applied to a cospan is a cospan. -/
 def cospanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) :
     cospan f g ⋙ F ≅ cospan (F.map f) (F.map g) :=
@@ -279,6 +286,7 @@ theorem cospanCompIso_inv_app_one : (cospanCompIso F f g).inv.app WalkingCospan.
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A functor applied to a span is a span. -/
 def spanCompIso (F : C ⥤ D) {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
     span f g ⋙ F ≅ span (F.map f) (F.map g) :=
@@ -324,14 +332,34 @@ variable {X Y Z X' Y' Z' : C} (iX : X ≅ X') (iY : Y ≅ Y') (iZ : Z ≅ Z')
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
+/-- Constructor for natural transformations between cospans. -/
+@[simps]
+def cospanHomMk {F G : WalkingCospan ⥤ C}
+    (z : F.obj .one ⟶ G.obj .one) (l : F.obj .left ⟶ G.obj .left)
+    (r : F.obj .right ⟶ G.obj .right)
+    (hl : F.map inl ≫ z = l ≫ G.map inl := by cat_disch)
+    (hr : F.map inr ≫ z = r ≫ G.map inr := by cat_disch) : F ⟶ G where
+  app := by rintro (_ | _ | _); exacts [z, l, r]
+  naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Constructor for natural isomorphisms between cospans. -/
+@[simps!]
+def cospanIsoMk {F G : WalkingCospan ⥤ C}
+    (z : F.obj .one ≅ G.obj .one) (l : F.obj .left ≅ G.obj .left)
+    (r : F.obj .right ≅ G.obj .right)
+    (hl : F.map inl ≫ z.hom = l.hom ≫ G.map inl := by cat_disch)
+    (hr : F.map inr ≫ z.hom = r.hom ≫ G.map inr := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (by rintro (_ | _ | _); exacts [z, l, r])
+    (by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch)
+
 variable {f : X ⟶ Z} {g : Y ⟶ Z} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
 
 /-- Construct an isomorphism of cospans from components. -/
 def cospanExt (wf : iX.hom ≫ f' = f ≫ iZ.hom) (wg : iY.hom ≫ g' = g ≫ iZ.hom) :
     cospan f g ≅ cospan f' g' :=
-  NatIso.ofComponents
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts [iZ, iX, iY])
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp [wf, wg])
+  cospanIsoMk iZ iX iY
 
 variable (wf : iX.hom ≫ f' = f ≫ iZ.hom) (wg : iY.hom ≫ g' = g ≫ iZ.hom)
 
@@ -372,13 +400,34 @@ end
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
+/-- Constructor for natural transformations between spans. -/
+@[simps]
+def spanHomMk {F G : WalkingSpan ⥤ C}
+    (z : F.obj .zero ⟶ G.obj .zero) (l : F.obj .left ⟶ G.obj .left)
+    (r : F.obj .right ⟶ G.obj .right)
+    (hl : F.map fst ≫ l = z ≫ G.map fst := by cat_disch)
+    (hr : F.map snd ≫ r = z ≫ G.map snd := by cat_disch) : F ⟶ G where
+  app := by rintro (_ | _ | _); exacts [z, l, r]
+  naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Constructor for natural isomorphisms between spans. -/
+@[simps!]
+def spanIsoMk {F G : WalkingSpan ⥤ C}
+    (z : F.obj .zero ≅ G.obj .zero) (l : F.obj .left ≅ G.obj .left)
+    (r : F.obj .right ≅ G.obj .right)
+    (hl : F.map fst ≫ l.hom = z.hom ≫ G.map fst := by cat_disch)
+    (hr : F.map snd ≫ r.hom = z.hom ≫ G.map snd := by cat_disch) : F ≅ G :=
+  NatIso.ofComponents (by rintro (_ | _ | _); exacts [z, l, r])
+    (by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch)
+
 variable {f : X ⟶ Y} {g : X ⟶ Z} {f' : X' ⟶ Y'} {g' : X' ⟶ Z'}
 
 /-- Construct an isomorphism of spans from components. -/
 def spanExt (wf : iX.hom ≫ f' = f ≫ iY.hom) (wg : iX.hom ≫ g' = g ≫ iZ.hom) :
     span f g ≅ span f' g' :=
-  NatIso.ofComponents (by rintro (⟨⟩ | ⟨⟨⟩⟩); exacts [iX, iY, iZ])
-    (by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) f <;> cases f <;> simp [wf, wg])
+  spanIsoMk iX iY iZ
 
 variable (wf : iX.hom ≫ f' = f ≫ iY.hom) (wg : iX.hom ≫ g' = g ≫ iZ.hom)
 

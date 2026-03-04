@@ -3,11 +3,13 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, David Loeffler
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.MetricSpace.Ultra.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Order.LiminfLimsup
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -31,6 +33,8 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 
 ultrametric, nonarchimedean
 -/
+
+@[expose] public section
 open Metric NNReal
 
 namespace IsUltrametricDist
@@ -42,14 +46,13 @@ variable {S S' ι : Type*} [SeminormedGroup S] [SeminormedGroup S'] [IsUltrametr
 @[to_additive]
 lemma norm_mul_le_max (x y : S) :
     ‖x * y‖ ≤ max ‖x‖ ‖y‖ := by
-  simpa only [le_max_iff, dist_eq_norm_div, div_inv_eq_mul, div_one, one_mul] using
-    dist_triangle_max x 1 y⁻¹
+  simpa [le_max_iff, dist_eq_norm_inv_mul] using dist_triangle_max x⁻¹ 1 y
 
 @[to_additive]
 lemma isUltrametricDist_of_forall_norm_mul_le_max_norm
     (h : ∀ x y : S', ‖x * y‖ ≤ max ‖x‖ ‖y‖) : IsUltrametricDist S' where
   dist_triangle_max x y z := by
-    simpa only [dist_eq_norm_div, le_max_iff, div_mul_div_cancel] using h (x / y) (y / z)
+    simpa [dist_eq_norm_inv_mul] using h (x⁻¹ * y) (y⁻¹ * z)
 
 lemma isUltrametricDist_of_isNonarchimedean_norm {S' : Type*} [SeminormedAddGroup S']
     (h : IsNonarchimedean (norm : S' → ℝ)) : IsUltrametricDist S' :=
@@ -82,10 +85,7 @@ lemma isUltrametricDist_of_isNonarchimedean_nnnorm {S' : Type*} [SeminormedAddGr
 
 lemma isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] [IsUltrametricDist R] :
     IsNonarchimedean (‖·‖₊ : R → ℝ) := by
-  intro x y
-  convert dist_triangle_max 0 x (x + y) using 1
-  · simp
-  · congr <;> simp [SeminormedAddGroup.dist_eq]
+  simpa using isNonarchimedean_norm
 
 lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup R] :
     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖₊ : R → ℝ) :=
@@ -95,7 +95,7 @@ lemma isUltrametricDist_iff_isNonarchimedean_nnnorm {R} [SeminormedAddCommGroup 
 @[to_additive /-- All triangles are isosceles in an ultrametric normed additive group. -/]
 lemma norm_mul_eq_max_of_norm_ne_norm
     {x y : S} (h : ‖x‖ ≠ ‖y‖) : ‖x * y‖ = max ‖x‖ ‖y‖ := by
-  rw [← div_inv_eq_mul, ← dist_eq_norm_div, dist_eq_max_of_dist_ne_dist _ 1 _ (by simp [h])]
+  rw [← inv_inv x, ← dist_eq_norm_inv_mul, dist_eq_max_of_dist_ne_dist _ 1 _ (by simp [h])]
   simp only [dist_one_right, dist_one_left, norm_inv']
 
 @[to_additive]
@@ -128,6 +128,7 @@ lemma nnnorm_div_eq_max_of_nnnorm_div_ne_nnnorm_div (x y z : S) (h : ‖x / y‖
   simpa only [← NNReal.coe_inj, NNReal.coe_max] using
     norm_div_eq_max_of_norm_div_ne_norm_div _ _ _ (NNReal.coe_injective.ne h)
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 lemma nnnorm_pow_le (x : S) (n : ℕ) :
     ‖x ^ n‖₊ ≤ ‖x‖₊ := by
@@ -162,7 +163,7 @@ positive radius are open subgroups. -/]
 def ball_openSubgroup {r : ℝ} (hr : 0 < r) : OpenSubgroup S where
   carrier := Metric.ball (1 : S) r
   mul_mem' {x} {y} hx hy := by
-    simp only [Metric.mem_ball, dist_eq_norm_div, div_one] at hx hy ⊢
+    simp only [Metric.mem_ball, dist_eq_norm_inv_mul', inv_one, one_mul] at hx hy ⊢
     exact (norm_mul_le_max x y).trans_lt (max_lt hx hy)
   one_mem' := Metric.mem_ball_self hr
   inv_mem' := by simp only [Metric.mem_ball, dist_one_right, norm_inv', imp_self, implies_true]
@@ -176,7 +177,7 @@ radius are open subgroups. -/]
 def closedBall_openSubgroup {r : ℝ} (hr : 0 < r) : OpenSubgroup S where
   carrier := Metric.closedBall (1 : S) r
   mul_mem' {x} {y} hx hy := by
-    simp only [Metric.mem_closedBall, dist_eq_norm_div, div_one] at hx hy ⊢
+    simp only [Metric.mem_closedBall, dist_eq_norm_inv_mul', inv_one, one_mul] at hx hy ⊢
     exact (norm_mul_le_max x y).trans (max_le hx hy)
   one_mem' := Metric.mem_closedBall_self hr.le
   inv_mem' := by simp only [mem_closedBall, dist_one_right, norm_inv', imp_self, implies_true]
@@ -216,6 +217,7 @@ lemma _root_.Finset.Nonempty.norm_prod_le_sup'_norm {s : Finset ι} (hs : s.None
       · exact ⟨_, IH.choose_spec.left, (norm_mul_le_max _ _).trans <|
           ((max_eq_right h).le.trans IH.choose_spec.right)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Nonarchimedean norm of a product is less than or equal to the largest norm of a term in the
 product. -/
 @[to_additive /-- Nonarchimedean norm of a sum is less than or equal to the largest norm of a term
@@ -267,7 +269,7 @@ Given a function `f : ι → M` and a nonempty finite set `t ⊆ ι`, we can alw
 theorem exists_norm_finset_prod_le_of_nonempty {t : Finset ι} (ht : t.Nonempty) (f : ι → M) :
     ∃ i ∈ t, ‖∏ j ∈ t, f j‖ ≤ ‖f i‖ :=
   match t.exists_mem_eq_sup' ht (‖f ·‖) with
-  |⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
+  | ⟨j, hj, hj'⟩ => ⟨j, hj, (ht.norm_prod_le_sup'_norm f).trans (le_of_eq hj')⟩
 
 /--
 Given a function `f : ι → M` and a finite set `t ⊆ ι`, we can always find `i : ι`, belonging to `t`
@@ -294,12 +296,11 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
   | empty => simp
   | cons a t hM =>
       obtain ⟨M, hMs, hM⟩ := hM
-      by_cases hMa : ‖f M‖ ≤ ‖f a‖
+      by_cases! hMa : ‖f M‖ ≤ ‖f a‖
       · refine ⟨a, by simp, ?_⟩
         · rw [Multiset.map_cons, Multiset.prod_cons]
           exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
-      · rw [not_le] at hMa
-        rcases eq_or_ne t 0 with rfl | ht
+      · rcases eq_or_ne t 0 with rfl | ht
         · exact ⟨a, by simp, by simp⟩
         · refine ⟨M, ?_, ?_⟩
           · simp [hMs ht]
@@ -343,6 +344,30 @@ lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ 
 @[to_additive]
 lemma nnnorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
   (nnnorm_tprod_le f).trans (ciSup_le' h)
+
+@[to_additive]
+lemma nnnorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
+    (hs : Set.Pairwise s (fun i j ↦ ‖f i‖₊ ≠ ‖f j‖₊)) :
+    ‖∏ i ∈ s, f i‖₊ = s.sup (fun i ↦ ‖f i‖₊) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl | hs'
+    · simp
+    specialize IH (hs.mono (by simp))
+    obtain ⟨j, hj, hj'⟩ : ∃ j ∈ s, ‖∏ i ∈ s, f i‖₊ = ‖f j‖₊ := by
+      simpa [IH] using s.exists_mem_eq_sup hs' _
+    suffices ‖f a‖₊ ≠ ‖∏ x ∈ s, f x‖₊ by simp [← IH, nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm this]
+    rw [hj']
+    apply hs <;> grind
+
+@[to_additive]
+lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.Nonempty)
+    (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
+    ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
+  rw [← coe_nnnorm', nnnorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
+  · exact s.comp_sup'_eq_sup'_comp hs' _ (by tauto)
+  · simpa [← NNReal.coe_inj] using hs
 
 end CommGroup
 

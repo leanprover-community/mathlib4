@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.Ergodic
-import Mathlib.MeasureTheory.Function.AEEqFun
+module
+
+public import Mathlib.Dynamics.Ergodic.Ergodic
+public import Mathlib.MeasureTheory.Function.AEEqFun
 
 /-!
 # Functions invariant under (quasi)ergodic map
@@ -15,6 +17,8 @@ We prove several versions of this statement with slightly different measurabilit
 We also formulate a version for `MeasureTheory.AEEqFun` functions
 with all a.e. equalities replaced with equalities in the quotient space.
 -/
+
+public section
 
 open Function Set Filter MeasureTheory Topology TopologicalSpace
 
@@ -48,7 +52,7 @@ theorem PreErgodic.ae_eq_const_of_ae_eq_comp (h : PreErgodic f μ) (hgm : Measur
   exists_eventuallyEq_const_of_forall_separating MeasurableSet fun U hU ↦
     h.ae_mem_or_ae_notMem (s := g ⁻¹' U) (hgm hU) <| by rw [← preimage_comp, hg_eq]
 
-/-- Let `f : α → α` be a quasi ergodic map.
+/-- Let `f : α → α` be a quasi-ergodic map.
 Let `g : α → X` be a null-measurable function from `α` to a nonempty measurable space
 with a countable family of measurable sets separating the points of `X`.
 If `g` is a.e.-invariant under `f`, then `g` is a.e. constant. -/
@@ -70,7 +74,7 @@ variable [TopologicalSpace X] [MetrizableSpace X] [Nonempty X] {f : α → α}
 
 namespace QuasiErgodic
 
-/-- Let `f : α → α` be a quasi ergodic map.
+/-- Let `f : α → α` be a quasi-ergodic map.
 Let `g : α → X` be an a.e. strongly measurable function
 from `α` to a nonempty metrizable topological space.
 If `g` is a.e.-invariant under `f`, then `g` is a.e. constant. -/

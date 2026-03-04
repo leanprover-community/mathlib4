@@ -3,9 +3,11 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 
 /-!
 # Pseudoelements in abelian categories
@@ -19,15 +21,15 @@ This is done using some "diagram-chasing metatheorems" proved in this file. In m
 in the category of abelian groups can more or less directly be converted into a proof using
 pseudoelements.
 
-A classic application of pseudoelements are diagram lemmas like the four lemma or the snake lemma.
+A classic application of pseudoelements is diagram lemmas like the four lemma or the snake lemma.
 
 Pseudoelements are in some ways weaker than actual elements in a concrete category. The most
 important limitation is that there is no extensionality principle: If `f g : X ⟶ Y`, then
 `∀ x ∈ X, f x = g x` does not necessarily imply that `f = g` (however, if `f = 0` or `g = 0`,
-it does). A corollary of this is that we can not define arrows in abelian categories by dictating
+it does). A corollary of this is that we cannot define arrows in abelian categories by dictating
 their action on pseudoelements. Thus, a usual style of proofs in abelian categories is this:
 First, we construct some morphism using universal properties, and then we use diagram chasing
-of pseudoelements to verify that is has some desirable property such as exactness.
+of pseudoelements to verify that it has some desirable property such as exactness.
 
 It should be noted that the Freyd-Mitchell embedding theorem
 (see `CategoryTheory.Abelian.FreydMitchell`) gives a vastly stronger notion of
@@ -53,7 +55,7 @@ Here are the metatheorems we provide:
   `g a' = 0 → g a = g a''`. We can think of `a''` as `a - a'`, but don't get too carried away
   by that: pseudoelements of an object do not form an abelian group.
 
-## Notations
+## Notation
 
 We introduce coercions from an object of an abelian category to the set of its pseudoelements
 and from a morphism to the function it induces on pseudoelements.
@@ -71,6 +73,8 @@ writing `g a` raises a "function expected" error. This error can be fixed by wri
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -112,6 +116,7 @@ variable [Abelian.{v} C]
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Pseudoequality is transitive: Just take the pullback. The pullback morphisms will
 be epimorphisms since in an abelian category, pullbacks of epimorphisms are epimorphisms. -/
 theorem pseudoEqual_trans {P : C} : Transitive (PseudoEqual P) := by
@@ -124,6 +129,7 @@ theorem pseudoEqual_trans {P : C} : Transitive (PseudoEqual P) := by
 end
 
 /-- The arrows with codomain `P` equipped with the equivalence relation of being pseudo-equal. -/
+@[instance_reducible]
 def Pseudoelement.setoid (P : C) : Setoid (Over P) :=
   ⟨_, ⟨pseudoEqual_refl, @pseudoEqual_symm _ _ _, @pseudoEqual_trans _ _ _ _⟩⟩
 
@@ -137,6 +143,7 @@ def Pseudoelement (P : C) : Type max u v :=
 namespace Pseudoelement
 
 /-- A coercion from an object of an abelian category to its pseudoelements. -/
+@[instance_reducible]
 def objectToSort : CoeSort C (Type max u v) :=
   ⟨fun P => Pseudoelement P⟩
 
@@ -145,6 +152,7 @@ attribute [local instance] objectToSort
 scoped[Pseudoelement] attribute [instance] CategoryTheory.Abelian.Pseudoelement.objectToSort
 
 /-- A coercion from an arrow with codomain `P` to its associated pseudoelement. -/
+@[instance_reducible]
 def overToSort {P : C} : Coe (Over P) (Pseudoelement P) :=
   ⟨Quot.mk (PseudoEqual P)⟩
 
@@ -152,6 +160,7 @@ attribute [local instance] overToSort
 
 theorem over_coe_def {P Q : C} (a : Q ⟶ P) : (a : Pseudoelement P) = ⟦↑a⟧ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two elements are pseudo-equal, then their composition with a morphism is, too. -/
 theorem pseudoApply_aux {P Q : C} (f : P ⟶ Q) (a b : Over P) : a ≈ b → app f a ≈ app f b :=
   fun ⟨R, p, q, ep, Eq, comm⟩ =>
@@ -162,6 +171,7 @@ def pseudoApply {P Q : C} (f : P ⟶ Q) : P → Q :=
   Quotient.map (fun g : Over P => app f g) (pseudoApply_aux f)
 
 /-- A coercion from morphisms to functions on pseudoelements. -/
+@[instance_reducible]
 def homToFun {P Q : C} : CoeFun (P ⟶ Q) fun _ => P → Q :=
   ⟨pseudoApply⟩
 
@@ -171,6 +181,7 @@ scoped[Pseudoelement] attribute [instance] CategoryTheory.Abelian.Pseudoelement.
 
 theorem pseudoApply_mk' {P Q : C} (f : P ⟶ Q) (a : Over P) : f ⟦a⟧ = ⟦↑(a.hom ≫ f)⟧ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Applying a pseudoelement to a composition of morphisms is the same as composing
 with each morphism. Sadly, this is not a definitional equality, but at least it is true. -/
 theorem comp_apply {P Q R : C} (f : P ⟶ Q) (g : Q ⟶ R) (a : P) : (f ≫ g) a = g (f a) :=
@@ -196,6 +207,7 @@ section
 
 attribute [local instance] HasBinaryBiproducts.of_hasBinaryProducts
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The arrows pseudo-equal to a zero morphism are precisely the zero morphisms. -/
 theorem pseudoZero_aux {P : C} (Q : C) (f : Over P) : f ≈ (0 : Q ⟶ P) ↔ f.hom = 0 :=
   ⟨fun ⟨R, p, q, _, _, comm⟩ => zero_of_epi_comp p (by simp [comm]), fun hf =>
@@ -212,10 +224,6 @@ theorem zero_eq_zero' {P Q R : C} :
 def pseudoZero {P : C} : P :=
   ⟦(0 : P ⟶ P)⟧
 
--- Porting note: in mathlib3, we couldn't make this an instance
--- as it would have fired on `coe_sort`.
--- However now that coercions are treated differently, this is a structural instance triggered by
--- the appearance of `Pseudoelement`.
 instance hasZero {P : C} : Zero P :=
   ⟨pseudoZero⟩
 
@@ -261,6 +269,7 @@ theorem zero_morphism_ext' {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0) → 0 = f 
 theorem eq_zero_iff {P Q : C} (f : P ⟶ Q) : f = 0 ↔ ∀ a, f a = 0 :=
   ⟨fun h a => by simp [h], zero_morphism_ext _⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A monomorphism is injective on pseudoelements. -/
 theorem pseudo_injective_of_mono {P Q : C} (f : P ⟶ Q) [Mono f] : Function.Injective f := by
   intro abar abar'
@@ -286,6 +295,7 @@ theorem mono_of_zero_of_map_zero {P Q : C} (f : P ⟶ Q) : (∀ a, f a = 0 → a
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An epimorphism is surjective on pseudoelements. -/
 theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surjective f :=
   fun qbar =>
@@ -297,6 +307,7 @@ theorem pseudo_surjective_of_epi {P Q : C} (f : P ⟶ Q) [Epi f] : Function.Surj
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A morphism that is surjective on pseudoelements is an epimorphism. -/
 theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f → Epi f := by
   intro h
@@ -313,6 +324,7 @@ theorem epi_of_pseudo_surjective {P Q : C} (f : P ⟶ Q) : Function.Surjective f
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms in an exact sequence are exact on pseudoelements. -/
 theorem pseudo_exact_of_exact {S : ShortComplex C} (hS : S.Exact) :
     ∀ b, S.g b = 0 → ∃ a, S.f a = b :=
@@ -348,6 +360,7 @@ theorem apply_eq_zero_of_comp_eq_zero {P Q R : C} (f : Q ⟶ R) (a : P ⟶ Q) : 
 
 section
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two morphisms are exact on pseudoelements, they are exact. -/
 theorem exact_of_pseudo_exact (S : ShortComplex C)
     (hS : ∀ b, S.g b = 0 → ∃ a, S.f a = b) : S.Exact :=
@@ -381,6 +394,7 @@ theorem exact_of_pseudo_exact (S : ShortComplex C)
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If two pseudoelements `x` and `y` have the same image under some morphism `f`, then we can form
 their "difference" `z`. This pseudoelement has the properties that `f z = 0` and for all
 morphisms `g`, if `g y = 0` then `g z = g x`. -/
@@ -406,6 +420,7 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
 
 variable [Limits.HasPullbacks C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `f : P ⟶ R` and `g : Q ⟶ R` are morphisms and `p : P` and `q : Q` are pseudoelements such
 that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
 
@@ -424,7 +439,8 @@ theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} 
 
 section Module
 
-/-- In the category `Module R`, if `x` and `y` are pseudoequal, then the range of the associated
+set_option backward.isDefEq.respectTransparency false in
+/-- In the category `ModuleCat R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
 theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [Ring R] {G : ModuleCat R} {x y : Over G}
     (h : PseudoEqual G x y) : LinearMap.range x.hom.hom = LinearMap.range y.hom.hom := by

@@ -3,11 +3,12 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.BigOperators.Ring.Nat
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Nat
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Counting walks of a given length
@@ -21,6 +22,8 @@ can also be useful as a recursive description of this set when `V` is finite.
 
 TODO: should this be extended further?
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -37,7 +40,6 @@ variable {V : Type u} (G : SimpleGraph V)
 section WalkCounting
 
 theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {Walk.nil} := by
-  ext p
   simp
 
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
@@ -95,15 +97,9 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
   | succ n ih =>
     simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
-      Finset.mem_univ, Set.iUnion_true]
-    ext p
-    simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.iUnion_coe_set,
-      Set.mem_iUnion, Set.mem_image, Finset.mem_coe, Set.mem_setOf_eq]
+      Finset.mem_univ, Set.iUnion_true, Finset.coe_map, Set.iUnion_coe_set]
     congr!
-    rename_i w _ q
-    have := Set.ext_iff.mp (ih w v) q
-    simp only [Finset.mem_coe, Set.mem_setOf_eq] at this
-    rw [← this]
+    grind
 
 variable {G} in
 theorem mem_finsetWalkLength_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
@@ -124,7 +120,7 @@ open Finset in
 theorem coe_finsetWalkLengthLT_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLengthLT n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length < n} := by
   ext p
-  simp [finsetWalkLengthLT, mem_coe, mem_finsetWalkLength_iff]
+  simp [finsetWalkLengthLT, mem_finsetWalkLength_iff]
 
 variable {G} in
 theorem mem_finsetWalkLengthLT_iff {n : ℕ} {u v : V} {p : G.Walk u v} :
@@ -140,7 +136,6 @@ instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v 
 
 theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
-  ext p
   simp [← coe_finsetWalkLength_eq]
 
 /- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
@@ -177,7 +172,9 @@ instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
 
 end LocallyFinite
 
-instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
+theorem ConnectedComponent.card_le_card_of_le [Finite V] {G G' : SimpleGraph V} (h : G ≤ G') :
+    Nat.card G'.ConnectedComponent ≤ Nat.card G.ConnectedComponent :=
+  Nat.card_le_card_of_surjective _ <| ConnectedComponent.surjective_map_ofLE h
 
 section Fintype
 
@@ -233,6 +230,7 @@ end Fintype
 infinite components. -/
 abbrev oddComponents : Set G.ConnectedComponent := {c : G.ConnectedComponent | Odd c.supp.ncard}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ConnectedComponent.odd_oddComponents_ncard_subset_supp [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
     Odd {c ∈ G.oddComponents | c.supp ⊆ c'.supp}.ncard ↔ Odd c'.supp.ncard := by
@@ -267,7 +265,7 @@ lemma ncard_oddComponents_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
       using (c.odd_oddComponents_ncard_subset_supp _ h).2 hc
   let f : G'.oddComponents → G.oddComponents :=
     fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.1⟩
-  refine Finite.card_le_of_injective f fun c c' fcc' ↦ ?_
+  refine Nat.card_le_card_of_injective f fun c c' fcc' ↦ ?_
   simp only [Subtype.mk.injEq, f] at fcc'
   exact Subtype.val_injective (ConnectedComponent.eq_of_common_vertex
     ((fcc' ▸ (aux c.1 c.2).choose_spec.2) (ConnectedComponent.nonempty_supp _).some_mem)

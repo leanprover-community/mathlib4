@@ -3,14 +3,18 @@ Copyright (c) 2023 Yaël Dillies, Zichen Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Zichen Wang
 -/
-import Mathlib.Analysis.Normed.Affine.Convex
+module
+
+public import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Convex functions are continuous
 
-This file proves that a convex function from a finite dimensional real normed space to `ℝ` is
+This file proves that a convex function from a finite-dimensional real normed space to `ℝ` is
 continuous.
 -/
+
+public section
 
 open FiniteDimensional Metric Set List Bornology
 open scoped Topology
@@ -41,7 +45,7 @@ lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (h�
         _ = r := by simp
     let a := ε / (ε + ‖x - y‖)
     let b := ‖x - y‖ / (ε + ‖x - y‖)
-    have hab : a + b = 1 := by field_simp [a, b]
+    have hab : a + b = 1 := by simp [field, a, b]
     have hxyz : x = a • y + b • z := by
       calc
         x = a • x + b • x := by rw [Convex.combo_self hab]
@@ -49,11 +53,10 @@ lemma ConvexOn.lipschitzOnWith_of_abs_le (hf : ConvexOn ℝ (ball x₀ r) f) (h�
     rw [hK, mul_comm, ← mul_div_assoc, le_div_iff₀' hε]
     calc
       ε * (f x - f y) ≤ ‖x - y‖ * (f z - f x) := by
-        rw [mul_sub, mul_sub, sub_le_sub_iff, ← add_mul]
         have h := hf.2 hy' hz (by positivity) (by positivity) hab
-        rw [← hxyz] at h
-        field_simp [a, b, ← mul_div_right_comm] at h
-        rwa [← le_div_iff₀' (by positivity), add_comm (_ * _)]
+        simp only [← hxyz, smul_eq_mul, a, b] at h
+        field_simp at h
+        linear_combination h
       _ ≤ _ := by
         rw [sub_eq_add_neg (f _), two_mul]
         gcongr
@@ -82,6 +85,7 @@ lemma ConcaveOn.exists_lipschitzOnWith_of_isBounded (hf : ConcaveOn ℝ (ball x�
   replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert hf'.neg; ext; simp [neg_eq_iff_eq_neg]
   simpa using hf.neg.exists_lipschitzOnWith_of_isBounded hr hf'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈ 𝓝 x₀) :
     (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f| ↔ (𝓝 x₀).IsBoundedUnder (· ≤ ·) f := by
   refine ⟨fun h ↦ h.mono_le <| .of_forall fun x ↦ le_abs_self _, ?_⟩

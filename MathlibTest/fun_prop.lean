@@ -78,7 +78,7 @@ to see what is going on
 set_option trace.Meta.Tactic.fun_prop true in
 -/
 example {α} [MeasurableSpace α] (f : α → α → α) (hf : Measurable fun (x, y) ↦ f x y) (a : α) :
-    Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by
+    Measurable (fun x ↦ (f x a, f (f x x) (f (f x x) x))) := by
   -- This now takes longer than 200,000 heartbeats to fail, so I've commented it out.
   -- fail_if_success measurability
   fun_prop
@@ -130,7 +130,7 @@ theorem by turning on the option `trace.Meta.Tactic.fun_prop.attr`.
 /-!
 Transition theorems prove one function property from another. We already mentioned
 that continuity implies measurability but there are many more. For example differentiability
-implies continuity, linear map between finitely dimensional spaces is continuous etc.
+implies continuity, linear map between finitely-dimensional spaces is continuous etc.
 
 The theorem proving measurability from continuity is `Continuous.measurable` so let's
 mark it with `@[fun_prop]`
@@ -163,7 +163,7 @@ measurable.
 -/
 
 example (f : ℝ → ℝ → ℝ) (hf : Continuous fun (x, y) ↦ f x y) (a : ℝ) :
-    Measurable (fun x => (f x a, f (f x x) (f (f x x) x))) := by fun_prop
+    Measurable (fun x ↦ (f x a, f (f x x) (f (f x x) x))) := by fun_prop
 
 
 /-!
@@ -201,7 +201,7 @@ A silly example that everything together works as expected
 -/
 
 example (f : ℝ → ℝ → (ℝ →L[ℝ] ℝ)) (hf : Continuous (fun (x, y) ↦ f x y)) :
-    Measurable fun x => (f (x / x) (x * x) 1 + x) := by fun_prop
+    Measurable fun x ↦ (f (x / x) (x * x) 1 + x) := by fun_prop
 
 set_option linter.style.longLine false in
 /-!
@@ -220,3 +220,17 @@ If possible, `fun_prop` theorem about `DFunLike.coe` should be state in this way
 
 That should be all about `fun_prop`, I hope you will enjoy using it :)
 -/
+
+
+
+/-! Test that `fun_prop` should work on `→` and `∀` -/
+
+attribute [fun_prop] Measurable.imp Measurable.forall
+
+example {α : Type*} [MeasurableSpace α] {p q : α → Prop} (hp : Measurable p) (hq : Measurable q) :
+    Measurable fun x => p x → q x := by
+  fun_prop
+
+example {α ι : Type*} [MeasurableSpace α] [Countable ι] {p : ι → α → Prop}
+    (hp : ∀ i, Measurable (p i)) : Measurable fun x => ∀ i, p i x := by
+  fun_prop

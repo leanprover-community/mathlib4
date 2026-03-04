@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.Algebra.Group.TypeTags.Basic
+module
+
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Operations on `Subsemigroup`s
@@ -54,13 +56,15 @@ In this file we define various operations on `Subsemigroup`s and `MulHom`s.
 
 ### Implementation notes
 
-This file follows closely `GroupTheory/Submonoid/Operations.lean`, omitting only that which is
-necessary.
+This file follows closely `Mathlib/Algebra/Group/Submonoid/Operations.lean`, omitting only that
+which is necessary.
 
 ## Tags
 
 subsemigroup, range, product, map, comap
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -454,7 +458,7 @@ def prod (s : Subsemigroup M) (t : Subsemigroup N) : Subsemigroup (M × N) where
   carrier := s ×ˢ t
   mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 
-@[to_additive coe_prod]
+@[to_additive (attr := norm_cast) coe_prod]
 theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) :
     (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
@@ -502,7 +506,7 @@ theorem mem_map_equiv {f : M ≃* N} {K : Subsemigroup M} {x : N} :
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Subsemigroup M) :
     K.map (f : M →ₙ* N) = K.comap (f.symm : N →ₙ* M) :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Subsemigroup M) :
@@ -547,12 +551,15 @@ theorem coe_srange (f : M →ₙ* N) : (f.srange : Set N) = Set.range f :=
 theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y :=
   Iff.rfl
 
+set_option backward.privateInPublic true in
 @[to_additive]
 private theorem srange_mk_aux_mul {f : M → N} (hf : ∀ (x y : M), f (x * y) = f x * f y)
     {x y : N} (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
     x * y ∈ Set.range f :=
   (srange ⟨f, hf⟩).mul_mem hx hy
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 @[to_additive (attr := simp)] theorem srange_mk (f : M → N) (hf) :
     srange ⟨f, hf⟩ = ⟨Set.range f, srange_mk_aux_mul hf⟩ := rfl
 
@@ -605,7 +612,7 @@ theorem restrict_apply {N : Type*} [Mul N] [SetLike σ M] [MulMemClass σ M] (f 
 def codRestrict [SetLike σ N] [MulMemClass σ N] (f : M →ₙ* N) (S : σ) (h : ∀ x, f x ∈ S) :
     M →ₙ* S where
   toFun n := ⟨f n, h n⟩
-  map_mul' x y := Subtype.eq (map_mul f x y)
+  map_mul' x y := Subtype.ext (map_mul f x y)
 
 /-- Restriction of a semigroup hom to its range interpreted as a subsemigroup. -/
 @[to_additive
@@ -633,7 +640,7 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [Mul M'] [Mul N'] (f : M 
 def subsemigroupComap (f : M →ₙ* N) (N' : Subsemigroup N) :
     N'.comap f →ₙ* N' where
   toFun x := ⟨f x, x.prop⟩
-  map_mul' x y := Subtype.eq <| map_mul (M := M) (N := N) f x y
+  map_mul' x y := Subtype.ext <| map_mul (M := M) (N := N) f x y
 
 /-- The `MulHom` from a subsemigroup to its image.
 See `MulEquiv.subsemigroupMap` for a variant for `MulEquiv`s. -/
@@ -643,7 +650,7 @@ See `MulEquiv.subsemigroupMap` for a variant for `MulEquiv`s. -/
 def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
     M' →ₙ* M'.map f where
   toFun x := ⟨f x, ⟨x, x.prop, rfl⟩⟩
-  map_mul' x y := Subtype.eq <| map_mul (M := M) (N := N) f x y
+  map_mul' x y := Subtype.ext <| map_mul (M := M) (N := N) f x y
 
 @[to_additive]
 theorem subsemigroupMap_surjective (f : M →ₙ* N) (M' : Subsemigroup M) :

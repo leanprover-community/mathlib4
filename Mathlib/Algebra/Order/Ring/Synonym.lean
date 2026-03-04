@@ -3,14 +3,18 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Ring structure on the order type synonyms
 
 Transfer algebraic instances from `R` to `Rᵒᵈ` and `Lex R`.
 -/
+
+@[expose] public section
 
 
 variable {R : Type*}

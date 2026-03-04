@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Closure operators between preorders
@@ -43,6 +45,8 @@ place when using concrete closure operators such as `ConvexHull`.
 
 * https://en.wikipedia.org/wiki/Closure_operator#Closure_operators_on_partially_ordered_sets
 -/
+
+@[expose] public section
 
 open Set
 
@@ -195,15 +199,14 @@ lemma closure_isGLB (x : α) : IsGLB { y | x ≤ y ∧ c.IsClosed y } (c x) wher
 
 theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
     (h : ∀ x, c₁.IsClosed x ↔ c₂.IsClosed x) : c₁ = c₂ :=
-  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <|
-    (Set.ext (and_congr_right' <| h ·)).substr (c₂.closure_isGLB x)
+  ext c₁ c₂ <| fun x => IsGLB.unique (c₁.closure_isGLB x) <| by simpa [h] using c₂.closure_isGLB x
 
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
 theorem eq_ofPred_closed (c : ClosureOperator α) :
     c = ofPred c c.IsClosed c.le_closure c.isClosed_closure fun _ _ ↦ closure_min := by
   ext
-  rfl
+  simp
 
 end PartialOrder
 
@@ -233,9 +236,9 @@ theorem closure_sup_closure_le (x y : α) : c x ⊔ c y ≤ c (x ⊔ y) :=
   c.monotone.le_map_sup _ _
 
 theorem closure_sup_closure_left (x y : α) : c (c x ⊔ y) = c (x ⊔ y) :=
-  (le_closure_iff.1
-        (sup_le (c.monotone le_sup_left) (le_sup_right.trans (c.le_closure _)))).antisymm
-    (c.monotone (sup_le_sup_right (c.le_closure _) _))
+  le_antisymm
+    (le_closure_iff.1 (sup_le (c.monotone le_sup_left) (le_sup_right.trans (c.le_closure _))))
+    (by grw [← c.le_closure x])
 
 theorem closure_sup_closure_right (x y : α) : c (x ⊔ c y) = c (x ⊔ y) := by
   rw [sup_comm, closure_sup_closure_left, sup_comm (a := x)]
@@ -277,6 +280,7 @@ end CompleteLattice
 
 end ClosureOperator
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- Conjugating `ClosureOperators` on `α` and on `β` by a fixed isomorphism
 `e : α ≃o β` gives an equivalence `ClosureOperator α ≃ ClosureOperator β`. -/
 @[simps apply symm_apply]
@@ -399,7 +403,7 @@ def toClosed (x : α) : l.closed :=
   ⟨u (l x), l.closure_is_closed x⟩
 
 @[simp]
-theorem closure_le_closed_iff_le (x : α) {y : α} (hy : l.closed y) : u (l x) ≤ y ↔ x ≤ y :=
+theorem closure_le_closed_iff_le (x : α) {y : α} (hy : y ∈ l.closed) : u (l x) ≤ y ↔ x ≤ y :=
   (show l.closureOperator.IsClosed y from hy).closure_le_iff
 
 end PartialOrder
@@ -446,7 +450,11 @@ end CompleteLattice
 -- Lemmas for `LowerAdjoint ((↑) : α → Set β)`, where `SetLike α β`
 section CoeToSet
 
-variable [SetLike α β] (l : LowerAdjoint ((↑) : α → Set β))
+variable [SetLike α β]
+
+section Preorder
+
+variable [Preorder α] (l : LowerAdjoint ((↑) : α → Set β))
 
 theorem subset_closure (s : Set β) : s ⊆ l s :=
   l.le_closure s
@@ -454,17 +462,12 @@ theorem subset_closure (s : Set β) : s ⊆ l s :=
 theorem notMem_of_notMem_closure {s : Set β} {P : β} (hP : P ∉ l s) : P ∉ s := fun h =>
   hP (subset_closure _ s h)
 
-@[deprecated (since := "2025-05-23")] alias not_mem_of_not_mem_closure := notMem_of_notMem_closure
-
 theorem le_iff_subset (s : Set β) (S : α) : l s ≤ S ↔ s ⊆ S :=
   l.gc s S
 
 theorem mem_iff (s : Set β) (x : β) : x ∈ l s ↔ ∀ S : α, s ⊆ S → x ∈ S := by
   simp_rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← l.le_iff_subset]
   exact ⟨fun h S => h.trans, fun h => h _ le_rfl⟩
-
-theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
-  ((l.le_iff_subset _ _).2 h₁).antisymm h₂
 
 theorem closure_union_closure_subset (x y : α) : (l x : Set β) ∪ l y ⊆ l (x ∪ y) :=
   l.closure_sup_closure_le x y
@@ -488,6 +491,17 @@ theorem closure_iUnion_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, 
 theorem closure_iUnion₂_closure (f : ∀ i, κ i → α) :
     l (⋃ (i) (j), l (f i j)) = l (⋃ (i) (j), f i j) :=
   SetLike.coe_injective <| l.closure_iSup₂_closure _
+
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder α] (l : LowerAdjoint ((↑) : α → Set β))
+
+theorem eq_of_le {s : Set β} {S : α} (h₁ : s ⊆ S) (h₂ : S ≤ l s) : l s = S :=
+  ((l.le_iff_subset _ _).2 h₁).antisymm h₂
+
+end PartialOrder
 
 end CoeToSet
 

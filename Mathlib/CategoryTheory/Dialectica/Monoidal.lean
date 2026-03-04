@@ -3,15 +3,19 @@ Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Dialectica.Basic
+module
+
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Dialectica.Basic
 
 /-!
 # The Dialectica category is symmetric monoidal
 
 We show that the category `Dial` has a symmetric monoidal category structure.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -36,6 +40,7 @@ local notation "π(" a ", " b ")" => prod.lift a b
     (Subobject.pullback (prod.map π₁ π₁)).obj X.rel ⊓
     (Subobject.pullback (prod.map π₂ π₂)).obj Y.rel
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functorial action of `X ⊗ Y` in `Dial C`. -/
 @[simps] def tensorHomImpl {X₁ X₂ Y₁ Y₂ : Dial C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
     tensorObjImpl X₁ Y₁ ⟶ tensorObjImpl X₂ Y₂ where
@@ -56,14 +61,17 @@ local notation "π(" a ", " b ")" => prod.lift a b
 /-- The unit for the tensor `X ⊗ Y` in `Dial C`. -/
 @[simps] def tensorUnitImpl : Dial C := { src := ⊤_ _, tgt := ⊤_ _, rel := ⊤ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Left unit cancellation `1 ⊗ X ≅ X` in `Dial C`. -/
 @[simps!] def leftUnitorImpl (X : Dial C) : tensorObjImpl tensorUnitImpl X ≅ X :=
   isoMk (Limits.prod.leftUnitor _) (Limits.prod.leftUnitor _) <| by simp [Subobject.pullback_top]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Right unit cancellation `X ⊗ 1 ≅ X` in `Dial C`. -/
 @[simps!] def rightUnitorImpl (X : Dial C) : tensorObjImpl X tensorUnitImpl ≅ X :=
   isoMk (Limits.prod.rightUnitor _) (Limits.prod.rightUnitor _) <| by simp [Subobject.pullback_top]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The associator for tensor, `(X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)` in `Dial C`. -/
 @[simps!]
 def associatorImpl (X Y Z : Dial C) :
@@ -82,35 +90,46 @@ instance : MonoidalCategoryStruct (Dial C) where
   rightUnitor := rightUnitorImpl
   associator := associatorImpl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem id_tensorHom_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by
   cat_disch
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
-theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
+set_option backward.isDefEq.respectTransparency false in
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
+theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂) :
-    tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
+    (f₁ ⊗ₘ f₂) ≫ (g₁ ⊗ₘ g₂) = (f₁ ≫ g₁) ⊗ₘ (f₂ ≫ g₂) := by
   ext <;> simp; ext <;> simp <;> (rw [← Category.assoc]; congr 1; simp)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃ : Dial C}
     (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (f₃ : X₃ ⟶ Y₃) :
     tensorHom (tensorHom f₁ f₂) f₃ ≫ (associator Y₁ Y₂ Y₃).hom =
     (associator X₁ X₂ X₃).hom ≫ tensorHom f₁ (tensorHom f₂ f₃) := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
 theorem leftUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (𝟙 (𝟙_ (Dial C)) ⊗ₘ f) ≫ (λ_ Y).hom = (λ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
+-- TODO: fix the non-terminal simp
+set_option linter.flexible false in
 theorem rightUnitor_naturality {X Y : Dial C} (f : X ⟶ Y) :
     (f ⊗ₘ 𝟙 (𝟙_ (Dial C))) ≫ (ρ_ Y).hom = (ρ_ X).hom ≫ f := by
   ext <;> simp; ext; simp; congr 1; ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pentagon (W X Y Z : Dial C) :
     (tensorHom (associator W X Y).hom (𝟙 Z)) ≫ (associator W (tensorObj X Y) Z).hom ≫
       (tensorHom (𝟙 W) (associator X Y Z).hom) =
     (associator (tensorObj W X) Y Z).hom ≫ (associator W X (tensorObj Y Z)).hom := by
   ext <;> simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem triangle (X Y : Dial C) :
     (associator X (𝟙_ (Dial C)) Y).hom ≫ tensorHom (𝟙 X) (leftUnitor Y).hom =
     tensorHom (rightUnitor X).hom (𝟙 Y) := by cat_disch
@@ -118,32 +137,38 @@ theorem triangle (X Y : Dial C) :
 instance : MonoidalCategory (Dial C) :=
   .ofTensorHom
     (id_tensorHom_id := id_tensorHom_id)
-    (tensor_comp := tensor_comp)
+    (tensorHom_comp_tensorHom := tensorHom_comp_tensorHom)
     (associator_naturality := associator_naturality)
     (leftUnitor_naturality := leftUnitor_naturality)
     (rightUnitor_naturality := rightUnitor_naturality)
     (pentagon := pentagon)
     (triangle := triangle)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The braiding isomorphism `X ⊗ Y ≅ Y ⊗ X` in `Dial C`. -/
 @[simps!] def braiding (X Y : Dial C) : tensorObj X Y ≅ tensorObj Y X :=
   isoMk (prod.braiding ..) (prod.braiding ..) <| by
     simp [Subobject.inf_pullback, ← Subobject.pullback_comp, inf_comm]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem symmetry (X Y : Dial C) :
     (braiding X Y).hom ≫ (braiding Y X).hom = 𝟙 (tensorObj X Y) := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 theorem braiding_naturality_right (X : Dial C) {Y Z : Dial C} (f : Y ⟶ Z) :
     tensorHom (𝟙 X) f ≫ (braiding X Z).hom = (braiding X Y).hom ≫ tensorHom f (𝟙 X) := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 theorem braiding_naturality_left {X Y : Dial C} (f : X ⟶ Y) (Z : Dial C) :
     tensorHom f (𝟙 Z) ≫ (braiding Y Z).hom = (braiding X Z).hom ≫ tensorHom (𝟙 Z) f := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hexagon_forward (X Y Z : Dial C) :
     (associator X Y Z).hom ≫ (braiding X (Y ⊗ Z)).hom ≫ (associator Y Z X).hom =
       tensorHom (braiding X Y).hom (𝟙 Z) ≫ (associator Y X Z).hom ≫
       tensorHom (𝟙 Y) (braiding X Z).hom := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hexagon_reverse (X Y Z : Dial C) :
     (associator X Y Z).inv ≫ (braiding (X ⊗ Y) Z).hom ≫ (associator Z X Y).inv =
       tensorHom (𝟙 X) (braiding Y Z).hom ≫ (associator X Z Y).inv ≫

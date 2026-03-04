@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
-import Mathlib.CategoryTheory.Monad.Coequalizer
-import Mathlib.CategoryTheory.Monad.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Reflexive
+public import Mathlib.CategoryTheory.Monad.Coequalizer
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Monadicity theorems
@@ -36,6 +38,8 @@ Beck, monadicity, descent
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
@@ -53,6 +57,7 @@ variable {C : Type u₁} {D : Type u₂}
 variable [Category.{v₁} C] [Category.{v₁} D]
 variable {G : D ⥤ C} {F : C ⥤ D} (adj : F ⊣ G)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The "main pair" for an algebra `(A, α)` is the pair of morphisms `(F α, ε_FA)`. It is always a
 reflexive pair, and will be used to construct the left adjoint to the comparison functor and show it
 is an equivalence.
@@ -79,6 +84,7 @@ def comparisonLeftAdjointObj (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app _)] : D :=
   coequalizer (F.map A.a) (adj.counit.app _)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 We have a bijection of homsets which will be used to construct the left adjoint to the comparison
 functor.
@@ -105,6 +111,7 @@ def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
             h := g.prop }
         invFun := fun f => ⟨f.f, f.h⟩ }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Construct the adjunction to the comparison functor.
 -/
 def leftAdjointComparison
@@ -117,10 +124,6 @@ def leftAdjointComparison
   · apply comparisonLeftAdjointHomEquiv
   · intro A B B' g h
     ext1
-    -- Porting note: the goal was previously closed by the following, which succeeds until
-    -- `Category.assoc`.
-    -- dsimp [comparisonLeftAdjointHomEquiv]
-    -- rw [← adj.homEquiv_naturality_right, Category.assoc]
     simp [Cofork.IsColimit.homIso, Adjunction.homEquiv_unit]
 
 /-- Provided we have the appropriate coequalizers, we have an adjunction to the comparison functor.
@@ -159,6 +162,7 @@ theorem unitCofork_π (A : adj.toMonad.Algebra)
     (unitCofork A).π = G.map (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comparisonAdjunction_unit_f
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a)
       (adj.counit.app (F.obj A.A))]
@@ -197,7 +201,6 @@ def counitCoequalizerOfReflectsCoequalizer (B : D)
     IsColimit (counitCofork (adj := adj) B) :=
   isColimitOfIsColimitCoforkMap G _ (beckCoequalizer ((comparison adj).obj B))
 
--- Porting note: Lean 3 didn't seem to need this
 instance
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))]
     (B : D) : HasColimit (parallelPair
@@ -207,6 +210,7 @@ instance
     (F.map ((comparison adj).obj B).a)
     (adj.counit.app (F.obj ((comparison adj).obj B).A))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem comparisonAdjunction_counit_app
     [∀ A : adj.toMonad.Algebra, HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] (B : D) :
     (comparisonAdjunction adj).counit.app B = colimit.desc _ (counitCofork adj B) := by
@@ -231,8 +235,8 @@ monadicity theorem, the converse is given in `monadicOfCreatesGSplitCoequalizers
 -/
 def createsGSplitCoequalizersOfMonadic [MonadicRightAdjoint G] ⦃A B⦄ (f g : A ⟶ B)
     [G.IsSplitPair f g] : CreatesColimit (parallelPair f g) G := by
-  apply (config := {allowSynthFailures := true}) monadicCreatesColimitOfPreservesColimit
-    -- Porting note: oddly (config := {allowSynthFailures := true}) had no effect here and below
+  apply +allowSynthFailures monadicCreatesColimitOfPreservesColimit
+    -- Porting note: oddly +allowSynthFailures had no effect here and below
   all_goals
     apply @preservesColimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoParallelPair.{v₁} _).symm ?_
     dsimp
@@ -309,7 +313,7 @@ def monadicOfHasPreservesReflectsGSplitCoequalizers [HasCoequalizerOfIsSplitPair
       rw [comparisonAdjunction_counit_app]
       -- Porting note: passing instances through
       change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
-      infer_instance
+      · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
       letI _ :
@@ -404,7 +408,7 @@ def monadicOfHasPreservesReflexiveCoequalizersOfReflectsIsomorphisms : MonadicRi
       rw [comparisonAdjunction_counit_app]
       -- Porting note: passing instances through
       change IsIso (IsColimit.coconePointUniqueUpToIso _ ?_).hom
-      infer_instance
+      · infer_instance
       -- Porting note: passing instances through
       apply @counitCoequalizerOfReflectsCoequalizer _ _ _ _ _ _ _ _ ?_
       apply reflectsColimit_of_reflectsIsomorphisms

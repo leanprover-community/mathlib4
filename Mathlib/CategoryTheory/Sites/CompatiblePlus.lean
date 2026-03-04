@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.Plus
+module
+
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.CategoryTheory.Sites.Plus
 
 /-!
 
@@ -15,6 +17,8 @@ See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -33,6 +37,7 @@ variable [∀ (J : MulticospanShape.{max v u, max v u}), HasLimitsOfShape (Walki
 variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
 variable (P : Cᵒᵖ ⥤ D)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The diagram used to define `P⁺`, composed with `F`, is isomorphic
 to the diagram used to define `P ⋙ F`. -/
 def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
@@ -47,6 +52,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
       ext g
       simp [← F.map_comp])
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
     (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
@@ -58,6 +64,7 @@ variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`. -/
 def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
   NatIso.ofComponents
@@ -98,6 +105,7 @@ def plusCompIso : J.plusObj P ⋙ F ≅ J.plusObj (P ⋙ F) :=
       rw [Multiequalizer.lift_ι, diagramCompIso_hom_ι, diagramCompIso_hom_ι, ← F.map_comp,
         Multiequalizer.lift_ι])
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem ι_plusCompIso_hom (X) (W) :
     F.map (colimit.ι _ W) ≫ (J.plusCompIso F P).hom.app X =
@@ -108,6 +116,7 @@ theorem ι_plusCompIso_hom (X) (W) :
   erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P (unop X)))).fac]
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ D)
     [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
@@ -135,6 +144,7 @@ def plusFunctorWhiskerLeftIso (P : Cᵒᵖ ⥤ D)
     (whiskeringLeft _ _ E).obj (J.plusObj P) ≅ (whiskeringLeft _ _ _).obj P ⋙ J.plusFunctor E :=
   NatIso.ofComponents (fun _ => plusCompIso _ _ _) @fun _ _ _ => plusCompIso_whiskerLeft _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
     whiskerRight (J.plusMap η) F ≫ (J.plusCompIso F Q).hom =
@@ -152,9 +162,8 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): this used to work with `ext`
-  apply Multiequalizer.hom_ext
-  intro a
+  dsimp only [diagram] -- Need to unfold `diagram` before `ext` applies.
+  ext a
   dsimp
   simp only [diagramCompIso_hom_ι_assoc, Multiequalizer.lift_ι, diagramCompIso_hom_ι,
     Category.assoc]
@@ -167,6 +176,7 @@ def plusFunctorWhiskerRightIso :
       (whiskeringRight _ _ _).obj F ⋙ J.plusFunctor E :=
   NatIso.ofComponents (fun _ => J.plusCompIso _ _) @fun _ _ _ => plusCompIso_whiskerRight _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem whiskerRight_toPlus_comp_plusCompIso_hom :
     whiskerRight (J.toPlus _) _ ≫ (J.plusCompIso F P).hom = J.toPlus _ := by
@@ -175,8 +185,8 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [ι_plusCompIso_hom, Functor.map_comp, Category.assoc]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was ext
-  apply Multiequalizer.hom_ext; intro a
+  dsimp only [diagram] -- Need to unfold `diagram` before `ext` applies.
+  ext a
   rw [Category.assoc, diagramCompIso_hom_ι, ← F.map_comp]
   simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]
 

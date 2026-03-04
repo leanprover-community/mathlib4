@@ -3,8 +3,10 @@ Copyright (c) 2022 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Rfl
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Rfl
 
 /-!
 # `Lean.MVarId.liftReflToEq`
@@ -13,6 +15,8 @@ Convert a goal of the form `x ~ y` into the form `x = y`, where `~` is a reflexi
 relation, that is, a relation which has a reflexive lemma tagged with the attribute `[refl]`.
 If this can't be done, returns the original `MVarId`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

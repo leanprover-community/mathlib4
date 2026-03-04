@@ -3,16 +3,22 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.NNRat.Order
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.Nat
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Nat
 
 /-!
 # Topology on the rational numbers
 
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
+
+@[expose] public section
 
 open Filter Metric Set Topology
 
@@ -76,7 +82,9 @@ theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.
 
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
+    ⟨_, ε0, fun _ _ h => by
+      #adaptation_note /-- We can remove `_root_.` after https://github.com/leanprover/lean4/pull/12504 -/
+      simpa only [_root_.abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
 instance : IsUniformAddGroup ℚ :=
   IsUniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
@@ -104,11 +112,11 @@ namespace NNRat
 instance : MetricSpace ℚ≥0 :=
   Subtype.metricSpace
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 @[simp ←, push_cast]
 lemma dist_eq (p q : ℚ≥0) : dist p q = dist (p : ℚ) (q : ℚ) := rfl
 
-set_option linter.style.commandStart false in
+set_option linter.style.whitespace false in
 @[simp ←, push_cast]
 lemma nndist_eq (p q : ℚ≥0) : nndist p q = nndist (p : ℚ) (q : ℚ) := rfl
 
@@ -116,11 +124,22 @@ instance : IsTopologicalSemiring ℚ≥0 where
   toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
   toContinuousMul := continuousMul_induced Nonneg.coeRingHom
 
-instance : ContinuousSub ℚ≥0 :=
-  ⟨((continuous_subtype_val.fst'.sub continuous_subtype_val.snd').max
-      continuous_const).subtype_mk _⟩
+instance : ContinuousSub ℚ≥0 := ⟨Continuous.subtype_mk (by fun_prop) _⟩
 
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
-instance : HasContinuousInv₀ ℚ≥0 := inferInstance
+instance : ContinuousInv₀ ℚ≥0 := inferInstance
+
+-- Special case of `IsBoundedSMul.continuousSMul` but this shortcut instance reduces dependencies
+instance : ContinuousSMul ℚ ℝ where
+  continuous_smul := continuous_induced_dom.fst'.smul (M := ℝ) (X := ℝ) continuous_snd
+
+instance {R : Type*} [TopologicalSpace R] [MulAction ℚ R] [MulAction ℚ≥0 R] [IsScalarTower ℚ≥0 ℚ R]
+    [ContinuousSMul ℚ R] : ContinuousSMul ℚ≥0 R where
+  continuous_smul := by
+    conv in _ • _ => rw [← NNRat.cast_smul_eq_nnqsmul ℚ]
+    fun_prop
+
+instance : ContinuousSMul ℚ≥0 NNReal where
+  continuous_smul := Continuous.subtype_mk (by fun_prop) _
 
 end NNRat

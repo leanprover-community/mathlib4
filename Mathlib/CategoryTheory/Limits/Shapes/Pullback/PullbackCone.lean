@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 
 /-!
 # PullbackCone
@@ -11,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 This file provides API for interacting with cones (resp. cocones) in the case of pullbacks
 (resp. pushouts).
 
-# Main definitions
+## Main definitions
 
 * `PullbackCone f g`: Given morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, a term `t : PullbackCone f g`
   provides the data of a cone pictured as follows
@@ -41,7 +43,7 @@ This file provides API for interacting with cones (resp. cocones) in the case of
 
 ## API
 We summarize the most important parts of the API for pullback cones here. The dual notions for
-pushout cones is also available in this file.
+pushout cones are also available in this file.
 
 Various ways of constructing pullback cones:
 * `PullbackCone.mk` constructs a term of `PullbackCone f g` given morphisms `fst` and `snd` such
@@ -58,10 +60,16 @@ Interaction with `IsLimit`:
 * `PullbackCone.IsLimit.hom_ext` provides a convenient way to show that two morphisms to the point
   of a limit `PullbackCone` are equal.
 
+Interaction with `CommSq`:
+* `CommSq.cone` and `CommSq.cocone` provide the implicit (non-limiting) pullback cone and pushout
+  cocone associated with a commuting square
+
 ## References
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -101,10 +109,12 @@ theorem condition_one (t : PullbackCone f g) : t.π.app WalkingCospan.one = t.fs
   have w := t.π.naturality WalkingCospan.Hom.inl
   dsimp at w; simpa using w
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pullback cone on `f` and `g` is determined by morphisms `fst : W ⟶ X` and `snd : W ⟶ Y`
 such that `fst ≫ f = snd ≫ g`. -/
 @[simps]
-def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g) : PullbackCone f g where
+def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g := by cat_disch) :
+    PullbackCone f g where
   pt := W
   π := { app := fun j => Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd
          naturality := by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) j <;> cases j <;> simp [eq] }
@@ -133,6 +143,7 @@ theorem mk_snd {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫
 theorem condition (t : PullbackCone f g) : fst t ≫ f = snd t ≫ g :=
   (t.w inl).trans (t.w inr).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check whether two morphisms are equalized by the maps of a pullback cone, it suffices to
 check it for `fst t` and `snd t` -/
 theorem equalizer_ext (t : PullbackCone f g) {W : C} {k l : W ⟶ t.pt} (h₀ : k ≫ fst t = l ≫ fst t)
@@ -153,6 +164,7 @@ reconstructed using `PullbackCone.mk`. -/
 def eta (t : PullbackCone f g) : t ≅ mk t.fst t.snd t.condition :=
   PullbackCone.ext (Iso.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This is a slightly more convenient method to verify that a pullback cone is a limit cone. It
 only asks for a proof of facts that carry any mathematical content -/
 def isLimitAux (t : PullbackCone f g) (lift : ∀ s : PullbackCone f g, s.pt ⟶ t.pt)
@@ -200,7 +212,6 @@ theorem IsLimit.hom_ext {t : PullbackCone f g} (ht : IsLimit t) {W : C} {k l : W
     (h₀ : k ≫ fst t = l ≫ fst t) (h₁ : k ≫ snd t = l ≫ snd t) : k = l :=
   ht.hom_ext <| equalizer_ext _ h₀ h₁
 
--- Porting note: `IsLimit.lift` and the two following simp lemmas were introduced to ease the port
 /-- If `t` is a limit pullback cone over `f` and `g` and `h : W ⟶ X` and `k : W ⟶ Y` are such that
 `h ≫ f = k ≫ g`, then we get `l : W ⟶ t.pt`, which satisfies `l ≫ fst t = h`
 and `l ≫ snd t = k`, see `IsLimit.lift_fst` and `IsLimit.lift_snd`. -/
@@ -244,6 +255,7 @@ def flipFlipIso : t.flip.flip ≅ t := PullbackCone.ext (Iso.refl _) (by simp) (
 
 variable {t}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flip of a pullback square is a pullback square. -/
 def flipIsLimit (ht : IsLimit t) : IsLimit t.flip :=
   IsLimit.mk _ (fun s => ht.lift s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
@@ -278,6 +290,7 @@ def PullbackCone.ofCone {F : WalkingCospan ⥤ C} (t : Cone F) :
   pt := t.pt
   π := t.π ≫ (diagramIsoCospan F).hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A diagram `WalkingCospan ⥤ C` is isomorphic to some `PullbackCone.mk` after
 composing with `diagramIsoCospan`. -/
 @[simps!]
@@ -305,10 +318,10 @@ abbrev inl (t : PushoutCocone f g) : Y ⟶ t.pt :=
 abbrev inr (t : PushoutCocone f g) : Z ⟶ t.pt :=
   t.ι.app WalkingSpan.right
 
-@[simp]
+-- This cannot be `@[simp]` because `c.inl` is reducibly defeq to the LHS.
 theorem ι_app_left (c : PushoutCocone f g) : c.ι.app WalkingSpan.left = c.inl := rfl
 
-@[simp]
+-- This cannot be `@[simp]` because `c.inr` is reducibly defeq to the LHS.
 theorem ι_app_right (c : PushoutCocone f g) : c.ι.app WalkingSpan.right = c.inr := rfl
 
 @[simp]
@@ -316,6 +329,7 @@ theorem condition_zero (t : PushoutCocone f g) : t.ι.app WalkingSpan.zero = f �
   have w := t.ι.naturality WalkingSpan.Hom.fst
   dsimp at w; simpa using w.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A pushout cocone on `f` and `g` is determined by morphisms `inl : Y ⟶ W` and `inr : Z ⟶ W` such
 that `f ≫ inl = g ↠ inr`. -/
 @[simps]
@@ -323,7 +337,7 @@ def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : Pu
   pt := W
   ι := { app := fun j => Option.casesOn j (f ≫ inl) fun j' => WalkingPair.casesOn j' inl inr
          naturality := by
-          rintro (⟨⟩|⟨⟨⟩⟩) (⟨⟩|⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
+          rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
 
 @[simp]
 theorem mk_ι_app_left {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) :
@@ -349,6 +363,7 @@ theorem mk_inr {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ i
 theorem condition (t : PushoutCocone f g) : f ≫ inl t = g ≫ inr t :=
   (t.w fst).trans (t.w snd).symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- To check whether a morphism is coequalized by the maps of a pushout cocone, it suffices to check
   it for `inl t` and `inr t` -/
 theorem coequalizer_ext (t : PushoutCocone f g) {W : C} {k l : t.pt ⟶ W}
@@ -401,7 +416,6 @@ theorem IsColimit.hom_ext {t : PushoutCocone f g} (ht : IsColimit t) {W : C} {k 
     (h₀ : inl t ≫ k = inl t ≫ l) (h₁ : inr t ≫ k = inr t ≫ l) : k = l :=
   ht.hom_ext <| coequalizer_ext _ h₀ h₁
 
--- Porting note: `IsColimit.desc` and the two following simp lemmas were introduced to ease the port
 /-- If `t` is a colimit pushout cocone over `f` and `g` and `h : Y ⟶ W` and `k : Z ⟶ W` are
 morphisms satisfying `f ≫ h = g ≫ k`, then we have a factorization `l : t.pt ⟶ W` such that
 `inl t ≫ l = h` and `inr t ≫ l = k`, see `IsColimit.inl_desc` and `IsColimit.inr_desc`. -/
@@ -462,6 +476,7 @@ def flipFlipIso : t.flip.flip ≅ t := PushoutCocone.ext (Iso.refl _) (by simp) 
 
 variable {t}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The flip of a pushout square is a pushout square. -/
 def flipIsColimit (ht : IsColimit t) : IsColimit t.flip :=
   IsColimit.mk _ (fun s => ht.desc s.flip) (by simp) (by simp) (fun s m h₁ h₂ => by
@@ -495,6 +510,7 @@ def PushoutCocone.ofCocone {F : WalkingSpan ⥤ C} (t : Cocone F) :
   pt := t.pt
   ι := (diagramIsoSpan F).inv ≫ t.ι
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A diagram `WalkingSpan ⥤ C` is isomorphic to some `PushoutCocone.mk` after composing with
 `diagramIsoSpan`. -/
 @[simps!]
@@ -505,4 +521,42 @@ def PushoutCocone.isoMk {F : WalkingSpan ⥤ C} (t : Cocone F) :
   Cocones.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;> simp
 
-end CategoryTheory.Limits
+end Limits
+
+namespace CommSq
+open Limits
+variable {C : Type*} [Category* C]
+
+variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
+
+/-- The (not necessarily limiting) `PullbackCone h i` implicit in the statement
+that we have `CommSq f g h i`.
+-/
+def cone (s : CommSq f g h i) : PullbackCone h i :=
+  PullbackCone.mk _ _ s.w
+
+/-- The (not necessarily limiting) `PushoutCocone f g` implicit in the statement
+that we have `CommSq f g h i`.
+-/
+def cocone (s : CommSq f g h i) : PushoutCocone f g :=
+  PushoutCocone.mk _ _ s.w
+
+@[simp]
+theorem cone_fst (s : CommSq f g h i) : s.cone.fst = f :=
+  rfl
+
+@[simp]
+theorem cone_snd (s : CommSq f g h i) : s.cone.snd = g :=
+  rfl
+
+@[simp]
+theorem cocone_inl (s : CommSq f g h i) : s.cocone.inl = h :=
+  rfl
+
+@[simp]
+theorem cocone_inr (s : CommSq f g h i) : s.cocone.inr = i :=
+  rfl
+
+end CommSq
+
+end CategoryTheory

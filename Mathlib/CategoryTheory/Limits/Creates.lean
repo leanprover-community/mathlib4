@@ -3,16 +3,20 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Creating (co)limits
 
 We say that `F` creates limits of `K` if, given any limit cone `c` for `K ⋙ F`
-(i.e. below) we can lift it to a cone "above", and further that `F` reflects
+(i.e. below), we can lift it to a cone "above", and further that `F` reflects
 limits for `K`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Functor
@@ -78,7 +82,11 @@ class CreatesLimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
 
 -- This should be used with explicit universe variables.
 /-- `F` creates limits if it creates limits of shape `J` for any `J`. -/
-@[nolint checkUnivs, pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes in
+-- `CreatesLimitsOfSize` and `CreatesColimitsOfSize` would default to universe output parameters.
+-- See Note [universe output parameters and typeclass caching].
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class CreatesLimitsOfSize (F : C ⥤ D) where
   CreatesLimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesLimitsOfShape J F := by
     infer_instance
@@ -107,7 +115,7 @@ class CreatesColimitsOfShape (J : Type w) [Category.{w'} J] (F : C ⥤ D) where
 
 -- This should be used with explicit universe variables.
 /-- `F` creates colimits if it creates colimits of shape `J` for any small `J`. -/
-@[nolint checkUnivs, pp_with_univ]
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class CreatesColimitsOfSize (F : C ⥤ D) where
   CreatesColimitsOfShape : ∀ {J : Type w} [Category.{w'} J], CreatesColimitsOfShape J F := by
     infer_instance
@@ -117,7 +125,8 @@ abbrev CreatesColimits (F : C ⥤ D) :=
   CreatesColimitsOfSize.{v₂, v₂} F
 
 -- see Note [lower instance priority]
-attribute [instance 100] CreatesLimitsOfShape.CreatesLimit CreatesLimitsOfSize.CreatesLimitsOfShape
+attribute [instance_reducible, instance 100]
+  CreatesLimitsOfShape.CreatesLimit CreatesLimitsOfSize.CreatesLimitsOfShape
   CreatesColimitsOfShape.CreatesColimit CreatesColimitsOfSize.CreatesColimitsOfShape
 
 -- see Note [lower instance priority]
@@ -132,12 +141,21 @@ def liftedLimitMapsToOriginal {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c 
     (t : IsLimit c) : F.mapCone (liftLimit t) ≅ c :=
   (CreatesLimit.lifts c t).validLift
 
+set_option backward.isDefEq.respectTransparency false in
 lemma liftedLimitMapsToOriginal_inv_map_π
     {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
       (liftedLimitMapsToOriginal t).inv.hom ≫ F.map ((liftLimit t).π.app j) = c.π.app j := by
   rw [show F.map ((liftLimit t).π.app j) = (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j
     from (by simp), ← Category.assoc, ← Cone.category_comp_hom]
   simp
+
+set_option backward.isDefEq.respectTransparency false in
+lemma liftedLimitMapsToOriginal_hom_π
+    {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)} (t : IsLimit c) (j : J) :
+      (liftedLimitMapsToOriginal t).hom.hom ≫ c.π.app j = F.map ((liftLimit t).π.app j) := by
+  rw [← liftedLimitMapsToOriginal_inv_map_π (t := t)]
+  simp only [Functor.mapCone_pt, Functor.comp_obj, ← Category.assoc, ← Cone.category_comp_hom,
+    Iso.hom_inv_id, Cone.category_id_hom, Category.id_comp, Functor.const_obj_obj]
 
 /-- The lifted cone is a limit. -/
 def liftedLimitIsLimit {K : J ⥤ C} {F : C ⥤ D} [CreatesLimit K F] {c : Cone (K ⋙ F)}
@@ -294,6 +312,7 @@ def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
     CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (limit.isLimit _) c i
 
+set_option backward.isDefEq.respectTransparency false in
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.
@@ -384,10 +403,6 @@ def createsColimitOfReflectsIsomorphismsOfPreserves {K : J ⥤ C} {F : C ⥤ D}
     [F.ReflectsIsomorphisms] [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
   createsColimitOfReflectsIso' (isColimitOfPreserves F (colimit.isColimit _))
     ⟨⟨_, Iso.refl _⟩, colimit.isColimit _⟩
-
-@[deprecated (since := "2025-02-01")]
-noncomputable alias createsColimitOfFullyFaithfulOfPreserves :=
-  createsColimitOfReflectsIsomorphismsOfPreserves
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
@@ -637,6 +652,12 @@ instance compCreatesLimitsOfShape [CreatesLimitsOfShape J F] [CreatesLimitsOfSha
 instance compCreatesLimits [CreatesLimitsOfSize.{w, w'} F] [CreatesLimitsOfSize.{w, w'} G] :
     CreatesLimitsOfSize.{w, w'} (F ⋙ G) where CreatesLimitsOfShape := inferInstance
 
+instance preservesLimit_comp_of_createsLimit [CreatesLimit K F] [PreservesLimit K (F ⋙ G)] :
+    PreservesLimit (K ⋙ F) G where
+  preserves hc := ⟨IsLimit.ofIsoLimit (isLimitOfPreserves (F ⋙ G) (liftedLimitIsLimit hc))
+    ((Functor.mapConeMapCone (liftLimit hc)).symm ≪≫
+      (Cones.functoriality _ _).mapIso (liftedLimitMapsToOriginal hc))⟩
+
 instance compCreatesColimit [CreatesColimit K F] [CreatesColimit (K ⋙ F) G] :
     CreatesColimit K (F ⋙ G) where
   lifts c t :=
@@ -653,6 +674,12 @@ instance compCreatesColimitsOfShape [CreatesColimitsOfShape J F] [CreatesColimit
 
 instance compCreatesColimits [CreatesColimitsOfSize.{w, w'} F] [CreatesColimitsOfSize.{w, w'} G] :
     CreatesColimitsOfSize.{w, w'} (F ⋙ G) where CreatesColimitsOfShape := inferInstance
+
+instance preservesColimit_comp_of_createsColimit [CreatesColimit K F] [PreservesColimit K (F ⋙ G)] :
+    PreservesColimit (K ⋙ F) G where
+  preserves hc := ⟨IsColimit.ofIsoColimit (isColimitOfPreserves (F ⋙ G) (liftedColimitIsColimit hc))
+    ((Functor.mapCoconeMapCocone (liftColimit hc)).symm ≪≫
+      (Cocones.functoriality _ _).mapIso (liftedColimitMapsToOriginal hc))⟩
 
 end Comp
 
