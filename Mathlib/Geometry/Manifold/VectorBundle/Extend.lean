@@ -92,6 +92,7 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
   exact ContMDiffOn.smul_section_of_tsupport ψ.contMDiff.contMDiffOn t.open_baseSet hψ.1
     (contMDiffOn_localExtensionOn _ hx _)
 
+-- TODO weaken regularity condition on `IsManifold` and `ContMDiffVectorBundle` hypotheses
 lemma mdifferentiable_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
     [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) :
     MDiff (T% (extend I F σ₀)) :=
