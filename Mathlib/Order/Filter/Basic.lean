@@ -964,22 +964,39 @@ theorem EventuallyEqSet.symm {s t : Set α} {l : Filter α} (h : s =ᶠˢ[l] t) 
 
 lemma eventuallyEq_comm {f g : α → β} {l : Filter α} : f =ᶠ[l] g ↔ g =ᶠ[l] f := ⟨.symm, .symm⟩
 
+lemma eventuallyEqSet_comm {s t : Set α} {l : Filter α} : s =ᶠˢ[l] t ↔ t =ᶠˢ[l] s := ⟨.symm, .symm⟩
+
 @[trans]
 theorem EventuallyEq.trans {l : Filter α} {f g h : α → β} (H₁ : f =ᶠ[l] g) (H₂ : g =ᶠ[l] h) :
     f =ᶠ[l] h :=
   H₂.rw (fun x y => f x = y) H₁
 
+@[trans]
+theorem EventuallyEqSet.trans {l : Filter α} {s t u : Set α} (hst : s =ᶠˢ[l] t) (htu : t =ᶠˢ[l] u) :
+    s =ᶠˢ[l] u :=
+  EventuallyEq.trans hst htu
+
 theorem EventuallyEq.congr_left {l : Filter α} {f g h : α → β} (H : f =ᶠ[l] g) :
     f =ᶠ[l] h ↔ g =ᶠ[l] h :=
   ⟨H.symm.trans, H.trans⟩
+
+theorem EventuallyEqSet.congr_left {l : Filter α} {s t u : Set α} (h : s =ᶠˢ[l] t) :
+    s =ᶠˢ[l] u ↔ t =ᶠˢ[l] u :=
+  EventuallyEq.congr_left h
 
 theorem EventuallyEq.congr_right {l : Filter α} {f g h : α → β} (H : g =ᶠ[l] h) :
     f =ᶠ[l] g ↔ f =ᶠ[l] h :=
   ⟨(·.trans H), (·.trans H.symm)⟩
 
-instance {l : Filter α} :
-    Trans ((· =ᶠ[l] ·) : (α → β) → (α → β) → Prop) (· =ᶠ[l] ·) (· =ᶠ[l] ·) where
-  trans := EventuallyEq.trans
+theorem EventuallyEqSet.congr_right {l : Filter α} {s t u : Set α} (H : t =ᶠˢ[l] u) :
+    s =ᶠˢ[l] t ↔ s =ᶠˢ[l] u :=
+  EventuallyEq.congr_right H
+
+instance {l : Filter α} : IsTrans (α → β) (· =ᶠ[l] ·) where
+  trans _ _ _ := EventuallyEq.trans
+
+instance {l : Filter α} : IsTrans (Set α) (· =ᶠˢ[l] ·) where
+  trans _ _ _ := EventuallyEqSet.trans
 
 theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : α → γ} (hg : g =ᶠ[l] g') :
     (fun x => (f x, g x)) =ᶠ[l] fun x => (f' x, g' x) :=

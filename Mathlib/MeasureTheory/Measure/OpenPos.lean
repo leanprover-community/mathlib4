@@ -79,7 +79,7 @@ theorem _root_.IsOpen.measure_zero_iff_eq_empty (hU : IsOpen U) :
   ⟨fun h ↦ (hU.measure_eq_zero_iff μ).mp h, fun h ↦ by simp [h]⟩
 
 theorem _root_.IsOpen.ae_eq_empty_iff_eq (hU : IsOpen U) :
-    U =ᵐ[μ] (∅ : Set X) ↔ U = ∅ := by
+    U =ᵐˢ[μ] (∅ : Set X) ↔ U = ∅ := by
   rw [ae_eq_empty, hU.measure_zero_iff_eq_empty]
 
 /-- An open null set w.r.t. an `IsOpenPosMeasure` is empty. -/
@@ -87,7 +87,7 @@ theorem _root_.IsOpen.eq_empty_of_measure_zero (hU : IsOpen U) (h₀ : μ U = 0)
   (hU.measure_eq_zero_iff μ).mp h₀
 
 theorem _root_.IsClosed.ae_eq_univ_iff_eq (hF : IsClosed F) :
-    F =ᵐ[μ] univ ↔ F = univ := by
+    F =ᵐˢ[μ] univ ↔ F = univ := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [h]⟩
   rwa [ae_eq_univ, hF.isOpen_compl.measure_eq_zero_iff μ, compl_empty_iff] at h
 

@@ -602,7 +602,6 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
     intro y hy
     apply fderivWithin_fderivWithin_eq_of_eventuallyEq
     filter_upwards [u_open.mem_nhds hy.2] with z hz
-    change (z ∈ s) = (z ∈ s ∩ u)
     simp_all
   have B : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k)) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x)) := by

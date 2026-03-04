@@ -167,8 +167,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       fun x hx y hy ↦ hx.2.trans <| infEDist_le_edist_of_mem hy⟩
   have Ssep' : ∀ n, Metric.AreSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl inter_subset_right
-  have S_sub : ∀ n, S n ⊆ s \ t := fun n =>
-    subset_inter inter_subset_left (Ssep n).subset_compl_right
+  have S_sub (n : ℕ) : S n ⊆ s \ t := subset_diff.mpr ⟨sep_subset _ _, (Ssep n).disjoint⟩
   have hSs : ∀ n, μ (s ∩ t) + μ (S n) ≤ μ s := fun n =>
     calc
       μ (s ∩ t) + μ (S n) = μ (s ∩ t ∪ S n) := Eq.symm <| hm _ _ <| (Ssep' n).symm
@@ -211,8 +210,8 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   · exact μ.mono (iUnion_subset fun i => iUnion_subset fun _ x hx => mem_iUnion.2 ⟨_, hx.1⟩)
   suffices ∀ i j, i < j → Metric.AreSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
     fun i _ j _ hij => hij.lt_or_gt.elim
-      (fun h => (this i j h).mono inter_subset_left fun x hx => by exact ⟨hx.1.1, hx.2⟩)
-      fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
+      (fun h => (this i j h).mono diff_subset fun x hx => by exact ⟨hx.1.1, hx.2⟩)
+      fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) diff_subset
   intro i j hj
   have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
     rw [ENNReal.inv_lt_inv, Nat.cast_lt]; lia

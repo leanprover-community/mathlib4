@@ -134,17 +134,11 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
     exact fun x _ ↦ partition_aux (mem_range_self x)
   · -- The sets `E n` are pairwise disjoint.
-    intro m _ n _ hmn
-    apply Disjoint.preimage
-    simp_rw [mem_preimage, mem_Ioc, disjoint_left]
-    intro x hx
-    rw [mem_setOf_eq, and_assoc] at hx
-    simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
-    rcases (by lia : m < n ∨ n < m) with hc | hc
-    · left
-      exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
-    · right; left
-      exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
+    contrapose! hy
+    rcases exists_lt_mem_inter_of_not_pairwiseDisjoint hy with ⟨m, -, n, -, hmn, x, hxm, hxn⟩
+    use m, n, hmn
+    rw [← sub_lt_iff_lt_add]
+    exact hxn.1.1.trans_le hxm.1.2
   · -- Upper and lower bound on `f x` follow from the definition of `E n` .
     intro _ _ hx
     simp only [mem_inter_iff, mem_preimage, mem_Ioc, E, y] at hx

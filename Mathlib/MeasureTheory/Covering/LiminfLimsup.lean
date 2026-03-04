@@ -44,7 +44,7 @@ https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s : ℕ → Set α}
     (hs : ∀ i, IsClosed (s i)) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0)) (hrp : 0 ≤ r₁)
     {M : ℝ} (hM : 0 < M) (hM' : M < 1) (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
-    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ≤ᵐ[μ]
+    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ⊆ᵐ[μ]
       (blimsup (fun i => cthickening (r₂ i) (s i)) atTop p : Set α) := by
   /- Sketch of proof:
 
@@ -157,7 +157,7 @@ https://github.com/leanprover-community/mathlib/issues/16932. -/
 theorem blimsup_cthickening_ae_le_of_eventually_mul_le (p : ℕ → Prop) {s : ℕ → Set α} {M : ℝ}
     (hM : 0 < M) {r₁ r₂ : ℕ → ℝ} (hr : Tendsto r₁ atTop (𝓝[>] 0))
     (hMr : ∀ᶠ i in atTop, M * r₁ i ≤ r₂ i) :
-    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ≤ᵐ[μ]
+    (blimsup (fun i => cthickening (r₁ i) (s i)) atTop p : Set α) ⊆ᵐ[μ]
       (blimsup (fun i => cthickening (r₂ i) (s i)) atTop p : Set α) := by
   let R₁ i := max 0 (r₁ i)
   let R₂ i := max 0 (r₂ i)

@@ -1112,9 +1112,10 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine sum_le_sum fun C hC ↦ ?_
       rcases eq_empty_or_nonempty (P C) with hPC | ⟨x, hx⟩
       · simp [hPC]
-      have hCM : (C : Set ι).encard ≤ M :=
-        have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
-        (encard_le_encard (mem_iInter₂.mp hx.1)).trans (hs x)
+      have hCM : (C : Set ι).encard ≤ M := calc
+        (C : Set ι).encard ≤ {i | x ∈ s i}.encard :=
+          encard_le_encard (mem_iInter₂.mp hx.1)
+        _ ≤ _ := hs x
       exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
         _ = (C : Set ι).ncard := (ncard_coe_finset C).symm

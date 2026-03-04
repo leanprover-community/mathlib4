@@ -266,7 +266,7 @@ theorem isStoppingTime_of_measurableSet_eq [Preorder ι] [Countable ι] {f : Fil
     | top => simp
     | coe a => norm_cast; simp
   rw [h_eq_iUnion]
-  refine MeasurableSet.biUnion (Set.to_countable _) fun k hk => ?_
+  refine .iUnion fun k ↦ .iUnion fun hk ↦ ?_
   exact f.mono hk _ (hτ k)
 
 end Countable

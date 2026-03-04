@@ -176,9 +176,7 @@ protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : 
   filter_upwards [h_left] with i h_ae_eq
   refine measure_congr ?_
   filter_upwards [h_ae_eq, h_right] with x hxf hxg
-  rw [eq_iff_iff]
-  change ε ≤ edist (f' i x) (g' x) ↔ ε ≤ edist (f i x) (g x)
-  rw [hxg, hxf]
+  simp [*]
 
 protected theorem congr (h_left : ∀ i, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
     (h_tendsto : TendstoInMeasure μ f l g) : TendstoInMeasure μ f' l g' :=

@@ -67,11 +67,11 @@ end Countable
 
 variable [Fintype ι]
 
-theorem coe_ae_eq_Icc : (I : Set (ι → ℝ)) =ᵐ[volume] Box.Icc I := by
+theorem coe_ae_eq_Icc : (I : Set (ι → ℝ)) =ᵐˢ[volume] Box.Icc I := by
   rw [coe_eq_pi]
   exact Measure.univ_pi_Ioc_ae_eq_Icc
 
-theorem Ioo_ae_eq_Icc : Box.Ioo I =ᵐ[volume] Box.Icc I :=
+theorem Ioo_ae_eq_Icc : Box.Ioo I =ᵐˢ[volume] Box.Icc I :=
   Measure.univ_pi_Ioo_ae_eq_Icc
 
 end Box

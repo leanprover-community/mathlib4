@@ -205,7 +205,7 @@ protected theorem _root_.DiffeologicalSpace.ext {X : Type*} {d₁ d₂ : Diffeol
     (h : @IsPlot _ d₁ = @IsPlot _ d₂) : d₁ = d₂ := by
   obtain ⟨p₁, _, _, _, t₁, h₁⟩ := d₁
   obtain ⟨p₂, _, _, _, t₂, h₂⟩ := d₂
-  obtain rfl : p₁ = p₂ := by ext1; exact Set.mem_injective h
+  obtain rfl : p₁ = p₂ := by ext n s; exact congr($h s)
   congr 1; ext s
   exact (@h₁ s).trans (@h₂ s).symm
 

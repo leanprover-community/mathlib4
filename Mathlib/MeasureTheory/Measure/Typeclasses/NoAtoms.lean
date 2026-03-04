@@ -80,7 +80,7 @@ theorem _root_.Set.Finite.measure_zero (h : s.Finite) (μ : Measure α) [NoAtoms
 theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ] : μ s = 0 :=
   s.finite_toSet.measure_zero μ
 
-theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
+theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐˢ[μ] s :=
   union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
 
 /-
@@ -97,28 +97,28 @@ section
 
 variable [PartialOrder α] {a b : α}
 
-theorem Iio_ae_eq_Iic : Iio a =ᵐ[μ] Iic a :=
+theorem Iio_ae_eq_Iic : Iio a =ᵐˢ[μ] Iic a :=
   Iio_ae_eq_Iic' (measure_singleton a)
 
-theorem Ioi_ae_eq_Ici : Ioi a =ᵐ[μ] Ici a :=
+theorem Ioi_ae_eq_Ici : Ioi a =ᵐˢ[μ] Ici a :=
   Ioi_ae_eq_Ici' (measure_singleton a)
 
-theorem Ioo_ae_eq_Ioc : Ioo a b =ᵐ[μ] Ioc a b :=
+theorem Ioo_ae_eq_Ioc : Ioo a b =ᵐˢ[μ] Ioc a b :=
   Ioo_ae_eq_Ioc' (measure_singleton b)
 
-theorem Ioc_ae_eq_Icc : Ioc a b =ᵐ[μ] Icc a b :=
+theorem Ioc_ae_eq_Icc : Ioc a b =ᵐˢ[μ] Icc a b :=
   Ioc_ae_eq_Icc' (measure_singleton a)
 
-theorem Ioo_ae_eq_Ico : Ioo a b =ᵐ[μ] Ico a b :=
+theorem Ioo_ae_eq_Ico : Ioo a b =ᵐˢ[μ] Ico a b :=
   Ioo_ae_eq_Ico' (measure_singleton a)
 
-theorem Ioo_ae_eq_Icc : Ioo a b =ᵐ[μ] Icc a b :=
+theorem Ioo_ae_eq_Icc : Ioo a b =ᵐˢ[μ] Icc a b :=
   Ioo_ae_eq_Icc' (measure_singleton a) (measure_singleton b)
 
-theorem Ico_ae_eq_Icc : Ico a b =ᵐ[μ] Icc a b :=
+theorem Ico_ae_eq_Icc : Ico a b =ᵐˢ[μ] Icc a b :=
   Ico_ae_eq_Icc' (measure_singleton b)
 
-theorem Ico_ae_eq_Ioc : Ico a b =ᵐ[μ] Ioc a b :=
+theorem Ico_ae_eq_Ioc : Ico a b =ᵐˢ[μ] Ioc a b :=
   Ico_ae_eq_Ioc' (measure_singleton a) (measure_singleton b)
 
 theorem restrict_Iio_eq_restrict_Iic : μ.restrict (Iio a) = μ.restrict (Iic a) :=
@@ -150,7 +150,7 @@ end
 open Interval
 
 open scoped Interval in
-theorem uIoc_ae_eq_interval [LinearOrder α] {a b : α} : Ι a b =ᵐ[μ] [[a, b]] :=
+theorem uIoc_ae_eq_interval [LinearOrder α] {a b : α} : Ι a b =ᵐˢ[μ] [[a, b]] :=
   Ioc_ae_eq_Icc
 
 end MeasureTheory

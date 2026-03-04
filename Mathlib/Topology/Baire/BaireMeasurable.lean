@@ -38,6 +38,8 @@ the filter of residual sets.
 In lemma names, this is called `residualEq`. -/
 scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
 
+scoped[Topology] notation:50 s " =ᵇ " t:50 => Filter.EventuallyEqSet (residual _) s t
+
 /-- Notation to say that a property of points in a topological space holds
 almost everywhere in the sense of Baire category. That is, on a residual set. -/
 scoped[Topology] notation3 "∀ᵇ " (...) ", " r:(scoped p => Filter.Eventually p <| residual _) => r
@@ -51,7 +53,7 @@ theorem coborder_mem_residual {s : Set α} (hs : IsLocallyClosed s) : coborder s
   residual_of_dense_open hs.isOpen_coborder dense_coborder
 
 theorem closure_residualEq {s : Set α} (hs : IsLocallyClosed s) : closure s =ᵇ s := by
-  rw [Filter.eventuallyEq_set]
+  rw [Filter.eventuallyEqSet_iff]
   filter_upwards [coborder_mem_residual hs] with x hx
   nth_rewrite 2 [← closure_inter_coborder (s := s)]
   simp [hx]
@@ -141,7 +143,7 @@ theorem MeasurableSet.residualEq_isOpen [MeasurableSpace α] [BorelSpace α] (h 
     exact .compl <| hsU.trans <| .symm <| closure_residualEq Uo.isLocallyClosed
   | iUnion f _ _ ihf =>
     choose u uo su using ihf
-    exact ⟨⋃ i, u i, isOpen_iUnion uo, EventuallyEq.countable_iUnion su⟩
+    exact ⟨⋃ i, u i, isOpen_iUnion uo, .countable_iUnion su⟩
 
 /-- Any `BaireMeasurableSet` differs from some open set by a meager set. -/
 theorem BaireMeasurableSet.residualEq_isOpen (h : BaireMeasurableSet s) :

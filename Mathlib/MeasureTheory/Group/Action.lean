@@ -87,7 +87,7 @@ theorem measure_preimage_smul_of_nullMeasurableSet (hs : NullMeasurableSet s μ)
     μ ((c • ·) ⁻¹' s) = μ s := by
   rw [← measure_toMeasurable s,
     ← SMulInvariantMeasure.measure_preimage_smul c (measurableSet_toMeasurable μ s)]
-  exact measure_congr (tendsto_smul_ae μ c hs.toMeasurable_ae_eq) |>.symm
+  exact measure_congr <| (tendsto_smul_ae μ c).eventually hs.toMeasurable_ae_eq.symm
 
 end AE_smul
 
@@ -158,16 +158,16 @@ theorem smul_ae (c : G) : c • ae μ = ae μ := by
 
 @[to_additive (attr := simp)]
 theorem eventuallyConst_smul_set_ae (c : G) {s : Set α} :
-    EventuallyConst (c • s : Set α) (ae μ) ↔ EventuallyConst s (ae μ) := by
+    EventuallyConst (· ∈ c • s) (ae μ) ↔ EventuallyConst (· ∈ s) (ae μ) := by
   rw [← preimage_smul_inv, eventuallyConst_preimage, Filter.map_smul, smul_ae]
 
 @[to_additive (attr := simp)]
-theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ≤ᵐ[μ] c • t ↔ s ≤ᵐ[μ] t := by
+theorem smul_set_ae_le (c : G) {s t : Set α} : c • s ⊆ᵐ[μ] c • t ↔ s ⊆ᵐ[μ] t := by
   simp only [ae_le_set, ← smul_set_sdiff, measure_smul_eq_zero_iff]
 
 @[to_additive (attr := simp)]
-theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐ[μ] c • t ↔ s =ᵐ[μ] t := by
-  simp only [Filter.eventuallyLE_antisymm_iff, smul_set_ae_le]
+theorem smul_set_ae_eq (c : G) {s t : Set α} : c • s =ᵐˢ[μ] c • t ↔ s =ᵐˢ[μ] t := by
+  simp only [Filter.eventuallySubset_antisymm_iff, smul_set_ae_le]
 
 end AE
 
