@@ -158,6 +158,13 @@ theorem toSubMulAction_inj : p.toSubMulAction = q.toSubMulAction ↔ p = q :=
 theorem coe_toSubMulAction (p : Submodule R M) : (p.toSubMulAction : Set M) = p :=
   rfl
 
+/-- `Submodule R M` almost never has decidable equality.
+Given an element `m ≠ 0` in `M`, `Submodule R M` has decidable equality iff
+all propositions are decidable. We add a global instance that `Submodule R M` has decidable
+equality, coming from the choice axiom, so that we don't have to provide
+`[DecidableEq (Submodule R M)]` arguments in lemma statements. -/
+noncomputable instance decidableEq : DecidableEq (Submodule R M) := Classical.typeDecidableEq _
+
 end Submodule
 
 namespace SMulMemClass

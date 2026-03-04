@@ -139,9 +139,14 @@ theorem derivFamily_zero (f : ι → Ordinal → Ordinal) :
   limitRecOn_zero ..
 
 @[simp]
+theorem derivFamily_add_one (f : ι → Ordinal → Ordinal) (o) :
+    derivFamily f (o + 1) = nfpFamily f (derivFamily f o + 1) :=
+  limitRecOn_succ ..
+
+-- TODO: deprecate
 theorem derivFamily_succ (f : ι → Ordinal → Ordinal) (o) :
     derivFamily f (succ o) = nfpFamily f (succ (derivFamily f o)) :=
-  limitRecOn_succ ..
+  derivFamily_add_one f o
 
 theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
     IsSuccLimit o → derivFamily f o = ⨆ b : Set.Iio o, derivFamily f b :=
@@ -340,8 +345,12 @@ theorem deriv_zero_right (f) : deriv f 0 = nfp f 0 :=
   derivFamily_zero _
 
 @[simp]
-theorem deriv_succ (f o) : deriv f (succ o) = nfp f (succ (deriv f o)) :=
+theorem deriv_add_one (f o) : deriv f (o + 1) = nfp f (deriv f o + 1) :=
   derivFamily_succ _ _
+
+-- TODO: deprecate
+theorem deriv_succ (f o) : deriv f (succ o) = nfp f (succ (deriv f o)) :=
+  deriv_add_one ..
 
 theorem deriv_limit (f) {o} : IsSuccLimit o → deriv f o = ⨆ a : {a // a < o}, deriv f a :=
   derivFamily_limit _

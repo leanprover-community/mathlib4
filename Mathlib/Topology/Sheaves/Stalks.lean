@@ -38,6 +38,10 @@ isomorphisms.
 See also the definition of "algebraic structures" in the stacks project:
 https://stacks.math.columbia.edu/tag/007L
 
+TODO(@joelriou): refactor the definitions in this file so as to make them
+particular cases of general constructions for points of sites from
+`Mathlib/CategoryTheory/Sites/Point/Basic.lean`.
+
 -/
 
 @[expose] public section

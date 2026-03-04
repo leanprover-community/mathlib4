@@ -121,9 +121,9 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
   transitive' := by
     rintro X S ⟨R', hR', RS⟩ R t
     choose t₁ t₂ t₃ using t
-    refine ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ hf), ?_⟩
+    refine ⟨_, K.transitive _ _ hR' fun _ f hf => t₂ (RS _ _ hf), ?_⟩
     rintro Y _ ⟨Z, g, f, hg, hf, rfl⟩
-    apply t₃ (RS _ hg) _ hf
+    apply t₃ (RS _ _ hg) _ _ hf
 
 theorem mem_toGrothendieck (K : Pretopology C) (X S) :
     S ∈ toGrothendieck K X ↔ ∃ R ∈ K X, R ≤ (S : Presieve X) :=

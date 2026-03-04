@@ -203,7 +203,7 @@ private lemma hasDerivAt_wedgeIntegral_re_aux :
   let s : Set ℝ := Ioo (z.re - r₁) (z.re + r₁)
   have zRe_mem_s : z.re ∈ s := by simp [s, r₁_pos]
   have f_contOn : ContinuousOn (fun (x : ℝ) ↦ f (x + z.im * I)) s :=
-    f_cont.comp ((continuous_add_right _).comp continuous_ofReal).continuousOn <|
+    f_cont.comp ((continuous_add_const _).comp continuous_ofReal).continuousOn <|
       fun _ ↦ mem_ball_re_aux
   have int1 : IntervalIntegrable (fun (x : ℝ) ↦ f (x + z.im * I)) volume z.re z.re :=
     ContinuousOn.intervalIntegrable <| f_contOn.mono <| by simpa

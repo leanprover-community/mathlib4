@@ -7,6 +7,7 @@ module
 
 public import Mathlib.GroupTheory.Complement
 public import Mathlib.GroupTheory.Sylow
+public import Mathlib.Data.ZMod.QuotientGroup
 
 /-!
 # The Transfer Homomorphism
@@ -199,9 +200,7 @@ theorem transfer_eq_pow_aux (g : G)
     have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out
     replace key :=
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
-    simpa only [f, minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,
-      Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)), index_eq_card,
-      Nat.card_eq_fintype_card] using key
+    simpa only [f, Finset.prod_pow_eq_pow_sum, index_eq_sum_minimalPeriod H g] using key
 
 set_option backward.isDefEq.respectTransparency false in
 theorem transfer_eq_pow [FiniteIndex H] (g : G)
@@ -214,10 +213,9 @@ theorem transfer_eq_pow [FiniteIndex H] (g : G)
       ← Function.comp_def ϕ, List.prod_map_hom]
     refine congrArg ϕ (Subtype.coe_injective ?_)
     dsimp only
-    rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow, index_eq_card,
-      Nat.card_eq_fintype_card, Fintype.card_congr (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)),
-      Fintype.card_sigma, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
-    simp only [Subgroup.val_list_prod, List.map_map, ← minimalPeriod_eq_card]
+    rw [H.coe_mk, ← (zpowers g).coe_mk g (mem_zpowers g), ← (zpowers g).coe_pow,
+      index_eq_sum_minimalPeriod H g, ← Finset.prod_pow_eq_pow_sum, ← Finset.prod_map_toList]
+    simp only [Subgroup.val_list_prod, List.map_map]
     congr 2
     funext
     apply key

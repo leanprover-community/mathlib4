@@ -140,6 +140,25 @@ theorem IsSuccLimit.ne_bot [OrderBot α] (h : IsSuccLimit a) : a ≠ ⊥ := by
 theorem not_isSuccLimit_iff : ¬ IsSuccLimit a ↔ IsMin a ∨ ¬ IsSuccPrelimit a := by
   rw [IsSuccLimit, not_and_or, not_not]
 
+@[to_dual]
+theorem IsSuccPrelimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
+    (ha : IsSuccPrelimit a) : IsSuccPrelimit a.1 := by
+  intro b hb
+  have := ha ⟨b, hs hb.le a.2⟩
+  rw [not_covBy_iff] at this
+  · obtain ⟨c, hc, hc'⟩ := this
+    exact hb.2 hc hc'
+  · exact hb.lt
+
+@[to_dual]
+theorem IsSuccLimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
+    (ha : IsSuccLimit a) : IsSuccLimit a.1 := by
+  refine ⟨?_, ha.isSuccPrelimit.subtypeVal hs⟩
+  have := ha.1
+  rw [not_isMin_iff] at ⊢ this
+  obtain ⟨b, hb⟩ := this
+  exact ⟨b, hb⟩
+
 variable [SuccOrder α]
 
 @[to_dual]

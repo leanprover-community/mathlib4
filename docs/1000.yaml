@@ -3155,6 +3155,9 @@ Q5456213:
 
 Q5463860:
   title: Focal subgroup theorem
+  decl: Subgroup.commutator_inf_eq_focalSubgroup
+  authors: Boyang Hu
+  date: 2026
 
 Q5473576:
   title: Foster's theorem

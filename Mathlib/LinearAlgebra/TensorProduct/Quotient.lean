@@ -181,6 +181,12 @@ lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
           Submodule.Quotient.mk_smul I r 1) <|
       smul_tmul r _ x
 
+@[simp]
+lemma quotTensorEquivQuotSMul_mk_one_tmul (I : Ideal R) (x : M) :
+    quotTensorEquivQuotSMul M I (1 ⊗ₜ x) = Submodule.Quotient.mk x := by
+  rw [← RingHom.map_one (Ideal.Quotient.mk I), TensorProduct.quotTensorEquivQuotSMul_mk_tmul]
+  simp
+
 lemma quotTensorEquivQuotSMul_comp_mkQ_rTensor (I : Ideal R) :
     quotTensorEquivQuotSMul M I ∘ₗ I.mkQ.rTensor M =
       (I • ⊤ : Submodule R M).mkQ ∘ₗ TensorProduct.lid R M :=
