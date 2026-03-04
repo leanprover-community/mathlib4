@@ -613,8 +613,19 @@ def bar' (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
 def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueGroup w where
   toFun := bar' h
   invFun :=  bar' h.symm
-  left_inv := by
-    rintro ⟨g, hg_mem⟩
+  left_inv x := by
+    have hx := (mem_valueGroup_iff_of_comm' (f := v) (y := x)).mp x.prop
+    set ax := hx.choose with hax_def
+    let hax : v ax ≠ 0 := hx.choose_spec.1
+    set bx := hx.choose_spec.2.choose with hbx_def
+    let hbx0 : v bx ≠ 0 := hx.choose_spec.2.choose_spec.1
+    let hbx : v ax * _ = v bx := hx.choose_spec.2.choose_spec.2
+    simp only [bar']
+    simp only [← hax_def, ← hbx_def]
+    ext
+    simp only [Units.val_mul, Units.val_mk0]
+    --rw [← hax_def]
+    /- rintro ⟨g, hg_mem⟩
     rw [bar', bar']
     simp only [ne_eq, Units.mk0_mul, Units.val_mul, Units.val_mk0, Subtype.mk.injEq]
     rw [mem_valueGroup_iff_of_comm] at hg_mem
@@ -622,9 +633,10 @@ def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueG
     apply_fun ((↑) : Γ₀ˣ → Γ₀) using Units.val_injective
     rw [← eq_inv_mul_iff_mul_eq₀] at hagb
     simp_rw [hagb]
-    simp
-    congr
-
+    simp -/
+    --congr
+    sorry
+    --sorry
 
   right_inv := sorry
   map_mul' x y := by
