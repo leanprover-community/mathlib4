@@ -473,7 +473,6 @@ theorem listProd_apply_eq_zero' {l : List ((⨁ i, A i) × ι)}
       List.prod_cons] at hl hn ⊢
     exact mul_apply_eq_zero hl.1 (ih hl.2) hn
 
-set_option backward.isDefEq.respectTransparency false in
 theorem listProd_apply_eq_zero {l : List (⨁ i, A i)} {m : ι}
     (hl : ∀ x ∈ l, ∀ k < m, x k = 0) ⦃n : ι⦄ (hn : n < l.length • m) :
     l.prod n = 0 := by
