@@ -221,24 +221,35 @@ protected theorem zsmul_mem {x : L} (hx : x ∈ S) (n : ℤ) : n • x ∈ S :=
 protected theorem intCast_mem (n : ℤ) : (n : L) ∈ S :=
   intCast_mem S n
 
+@[simp, norm_cast]
 protected theorem coe_add (x y : S) : (↑(x + y) : L) = ↑x + ↑y :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_neg (x : S) : (↑(-x) : L) = -↑x :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_mul (x y : S) : (↑(x * y) : L) = ↑x * ↑y :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_inv (x : S) : (↑x⁻¹ : L) = (↑x)⁻¹ :=
   rfl
 
+@[simp, norm_cast]
+protected theorem coe_div (x y : S) : (↑(x / y) : L) = ↑x / ↑y :=
+  rfl
+
+@[simp, norm_cast]
 protected theorem coe_zero : ((0 : S) : L) = 0 :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_one : ((1 : S) : L) = 1 :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n :=
   SubmonoidClass.coe_pow x n
 
