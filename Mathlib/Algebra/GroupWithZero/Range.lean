@@ -257,6 +257,126 @@ theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
   rw [mem_valueGroup_iff_of_comm]
   exact ⟨fun ⟨a, ha, x, hax⟩ ↦ ⟨a, ha, x, by aesop, hax⟩, fun ⟨a, ha, x, hx, hax⟩ ↦ ⟨a, ha, x, hax⟩⟩
 
+namespace ValueGroup₀
+
+def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : ValueGroup₀ f :=
+  some ⟨.mk0 _ hr * (.mk0 _ hs)⁻¹, mul_mem (mem_valueGroup _ (by simp))
+    (inv_mem (mem_valueGroup _ (by simp)))⟩
+
+theorem zero_or_exists_mk (x : ValueGroup₀ f) :
+    x = 0 ∨ ∃ r s hr hs, x = .mk f r s hr hs := by
+  obtain _ | ⟨x, hx⟩ := x
+  · left; rfl
+  · rw [mem_valueGroup_iff_of_comm] at hx
+    obtain ⟨s, hs, r, hrs⟩ := hx
+    by_cases hr : f r = 0
+    · simp_all
+    exact .inr ⟨r, s, hr, hs, Option.some_inj.mpr <| by
+      simp only [Subtype.mk.injEq]
+      rw [eq_mul_inv_iff_mul_eq]
+      simp [← hrs, mul_comm]⟩
+
+theorem zero_or_exists_mk' (x : ValueGroup₀ f) :
+    x = 0 ∨ ∃ d : {xy : A × A // f xy.1 ≠ 0 ∧ f xy.2 ≠ 0}, x = .mk f d.1.1 d.1.2 d.2.1 d.2.2 :=
+  x.zero_or_exists_mk.imp _root_.id fun ⟨r, s, hr, hs, hx⟩ ↦ ⟨⟨(r, s), ⟨hr, hs⟩⟩, hx⟩
+
+@[simp] theorem mk_ne_zero {r s hr hs} : mk f r s hr hs ≠ 0 := by simp [mk]
+
+@[simp] theorem mk_inj {r₁ s₁ hr₁ hs₁ r₂ s₂ hr₂ hs₂} :
+    mk f r₁ s₁ hr₁ hs₁ = mk f r₂ s₂ hr₂ hs₂ ↔ f (r₁ * s₂) = f (r₂ * s₁) := by
+  refine Option.some_inj.trans ?_
+  rw [Subtype.mk.injEq, mul_inv_eq_mul_inv_iff_mul_eq_mul]
+  simp [Units.ext_iff]
+
+@[simp] theorem mk_mul {r₁ s₁ hr₁ hs₁ r₂ s₂ hr₂ hs₂} :
+    mk f r₁ s₁ hr₁ hs₁ * mk f r₂ s₂ hr₂ hs₂ =
+      mk f (r₁ * r₂) (s₁ * s₂) (by simp_all) (by simp_all) := by
+  refine Option.some_inj.mpr <| ?_
+  simp only [MulMemClass.mk_mul_mk, map_mul, Units.mk0_mul, Subtype.mk.injEq]
+  rw [mul_mul_mul_comm, mul_inv]
+
+end ValueGroup₀
+-- noncomputable
+-- def lift {C : Type*} [CommGroupWithZero C] (g : A →*₀ C)
+--  (h_eq : ∀ a b : A, f a = f b → g a = g b)
+--     (h_map_zero : ∀ (a : A), g a = 0 → f a = 0) : (valueGroup f) →* C where
+--   toFun := by
+--     rintro ⟨y, hy⟩
+--     rw [mem_valueGroup_iff_of_comm'] at hy
+--     have ha := hy.choose_spec.1
+--     have hb := hy.choose_spec.2.choose_spec.2
+--     set b := hy.choose_spec.2.choose with rfl'
+--     set a := hy.choose with rfl
+--     use (g a) * (g b)⁻¹
+--   map_one' := by
+--     simp only [ne_eq, OneMemClass.coe_one, Units.val_one, mul_one]
+--     generalize_proofs H1 H2
+--     have h1 := H1.choose_spec
+--     have h2 := H2.choose_spec
+--     set a2 := H2.choose with rfl'
+--     set a1 := H1.choose with rfl
+--     have := h_eq _ _ h2.2
+--     simp only [this]
+--     rw [mul_inv_cancel₀]
+--     intro hh
+--     have := h_map_zero a2 hh
+--     exact h2.1 this
+--   map_mul' x y := by
+--     have hx := (mem_valueGroup_iff_of_comm' (f := f) (y := x)).mp x.prop
+--     set ax := hx.choose with hax_def
+--     let hax : f ax ≠ 0 := hx.choose_spec.1
+--     set bx := hx.choose_spec.2.choose with hbx_def
+--     let hbx0 : f bx ≠ 0 := hx.choose_spec.2.choose_spec.1
+--     let hbx : f ax * _ = f bx := hx.choose_spec.2.choose_spec.2
+--     have hy := (mem_valueGroup_iff_of_comm' (f := f) (y := y)).mp y.prop
+--     set ay := hy.choose with hay_def
+--     let hay : f ay ≠ 0 := hy.choose_spec.1
+--     set by' := hy.choose_spec.2.choose with hby_def
+--     let hby : f ay * _ = f by' := hy.choose_spec.2.choose_spec.2
+--     let hby0 : f by' ≠ 0 := hy.choose_spec.2.choose_spec.1
+--     have hxy_mem : (x : Bˣ) * y ∈ valueGroup f := Subgroup.mul_mem _ x.2 y.2
+--     have hxy := (mem_valueGroup_iff_of_comm' (f := f) (y := x * y)).mp hxy_mem
+--     set axy := hxy.choose with haxy_def
+--     let haxy : f axy ≠ 0 := hxy.choose_spec.1
+--     set bxy := hxy.choose_spec.2.choose with hbxy_def
+--     let hbxy : f axy * _ = f bxy := hxy.choose_spec.2.choose_spec.2
+--     sorry
+    -- simp only [ne_eq, Subgroup.coe_mul, MulMemClass.mk_mul_mk,
+    --   Subtype.mk.injEq]
+    -- simp only [Units.val_mul,  ← hax_def, ← hay_def, ← hbx_def, ← hby_def, ← haxy_def,
+          -- ← hbxy_def]
+    -- rw [← Units.mk0_mul, Units.mk0_inj]
+    -- · suffices  (g ax) * (g ay) * g bxy = (g axy) * g bx * g by' by
+    --     -- field_simp
+    --     rw [div_eq_mul_inv, mul_comm, inv_mul_eq_iff_eq_mul₀, ← mul_div_assoc, eq_comm,
+    --       div_eq_mul_inv, mul_comm, inv_mul_eq_iff_eq_mul₀]
+    --     · simp only [← map_mul w, ← h.eq_iff]
+    --       simp only [map_mul, ← hbx, ← hby, ← hbxy, Subgroup.coe_mul, Units.val_mul]
+    --       grind
+    --     · simp [← h.eq_zero, hax, hay]
+    --     · simp [← h.eq_zero, haxy]
+    --   rw [← map_mul w, ← map_mul w, ← map_mul w, ← map_mul w, ← h.eq_iff]
+    --   simp only [map_mul]
+    --   nth_rw 2 [mul_assoc]
+    --   rw [← hbx, ← hby, ← hbxy]
+    --   simp only [Subgroup.coe_mul, Units.val_mul]
+    --   grind
+    -- · simp [← h.eq_zero, hay, hax, hbx0, hby0]
+    -- simp
+    -- rcases z1 with ⟨y1, hy1⟩
+    -- rcases z2 with ⟨y2, hy2⟩
+    -- rw [mem_valueGroup_iff_of_comm'] at hy1
+    -- rw [mem_valueGroup_iff_of_comm'] at hy2
+    -- generalize_proofs H1 H2
+    -- set a2 := H2.choose with rfl'
+    -- set a1 := H1.choose with rfl
+
+
+
+-- lemma lift_unique {C : Type*} [CommGroupWithZero C] (g₁ g₂ : (ValueGroup₀ f) →*₀ C)
+--     (h : g₁.comp (ValueGroup₀.restrict₀ f) = g₂.comp (ValueGroup₀.restrict₀ f)) : g₁ = g₂ :=
+  -- sorry
+
 instance : CommGroupWithZero (ValueGroup₀ f) where
 
 end CommGroupWithZero

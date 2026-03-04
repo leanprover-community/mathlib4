@@ -777,12 +777,59 @@ theorem IsEquiv.isNontrivial_iff (h : v.IsEquiv v') :
     v.IsNontrivial ↔ v'.IsNontrivial :=
   ⟨fun hv ↦ isNontrivial_of_isEquiv h hv, fun hv ↦ isNontrivial_of_isEquiv h.symm hv⟩
 
+
 end LinearOrderedCommMonoidWithZero
 
 section LinearOrderedCommGroupWithZero
 
 variable [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
-  {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
+section Ring
+
+variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀}
+
+open MonoidWithZeroHom
+
+noncomputable def equivFun (h : v.IsEquiv w) (x : ValueGroup₀ v) : ValueGroup₀ w :=
+  if hx : x = 0 then 0 else
+    have c := (x.zero_or_exists_mk'.resolve_left hx).choose
+    .mk w c.1.1 c.1.2 ((h.eq_zero).ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
+
+theorem equivFun_spec (h : v.IsEquiv w) (r s hr hs) :
+    equivFun h (.mk v r s hr hs) = .mk w r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs) := by
+  rw [equivFun, dif_neg (by simp)]
+  generalize_proofs _ _ _ H _
+  have c_spec := H.choose_spec
+  set c := H.choose
+  simp only [ne_eq, ValueGroup₀.mk_inj, map_mul] at c_spec ⊢
+  -- simp only [mk_inj] at c_spec ⊢
+  rwa [h.val_eq, eq_comm]
+
+theorem equivFun_zero : equivFun e 0 = 0 := by simp [equivFun]
+
+include e in
+noncomputable def equiv : ValueGroup₀ v ≃* ValueGroup₀ w where
+  toFun := equivFun e
+  invFun := equivFun e.symm
+  map_mul' x y := by
+    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
+    · simp_all [equivFun_zero]
+    obtain _ | ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := y.zero_or_exists_mk
+    · simp_all [equivFun_zero]
+    simp [mk_mul, equivFun_spec]
+  left_inv x := by
+    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
+    · simp_all [equivFun_zero]
+    simp [equivFun_spec]
+  right_inv x := by
+    obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
+    · simp_all [equivFun_zero]
+    simp [equivFun_spec]
+
+end Ring
+
+section DivisionRing
+
+variable {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
 
 theorem isEquiv_of_val_le_one (h : ∀ x, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
   intro x y
@@ -872,6 +919,8 @@ theorem isEquiv_tfae :
   tfae_have 1 ↔ 5 := isEquiv_iff_val_lt_one
   tfae_have 1 ↔ 6 := isEquiv_iff_val_sub_one_lt_one
   tfae_finish
+
+end DivisionRing
 
 end LinearOrderedCommGroupWithZero
 

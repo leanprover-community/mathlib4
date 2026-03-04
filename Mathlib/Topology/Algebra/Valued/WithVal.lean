@@ -610,6 +610,12 @@ def bar' (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
     (mem_valueGroup_iff_of_comm (f := w) (y := Units.mk0 ((w a)⁻¹ * (w b)) h_ne_zero)).mpr
       ⟨a, sorry, b, sorry⟩⟩
 
+def bar₀ (h : v.IsEquiv w) : ValueGroup₀ v → ValueGroup₀ w := WithZero.map (bar h)
+--
+-- lemma spec (h : v.IsEquiv w) (g : ValueGroup₀ ↑v) (x y : R)
+--     (H : (v.restrict x) * g = (v.restrict y)) : (bar₀ h g)⁻¹ = (w.restrict x) * (w.restrict y)⁻¹ := by
+--   sorry
+
 def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueGroup w where
   toFun := bar' h
   invFun :=  bar' h.symm
