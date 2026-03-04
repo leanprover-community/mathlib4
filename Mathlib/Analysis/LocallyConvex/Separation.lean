@@ -24,6 +24,8 @@ We provide many variations to stricten the result under more assumptions on the 
 * `geometric_hahn_banach_open_point`, `geometric_hahn_banach_point_open`: One set is open, the
   other is a singleton. Weak separation.
 * `geometric_hahn_banach_open_open`: Both sets are open. Semistrict separation.
+* `geometric_hahn_banach_of_interior_nonempty`: One set has nonempty interior, the other one is
+  nonempty. Nonstrict separation.
 * `geometric_hahn_banach_compact_closed`, `geometric_hahn_banach_closed_compact`: One set is closed,
   the other one is compact. Strict separation.
 * `geometric_hahn_banach_point_closed`, `geometric_hahn_banach_closed_point`: One set is closed, the
@@ -143,7 +145,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
 theorem geometric_hahn_banach_of_interior_nonempty
     {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint A B)
     (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
-    ∃ (f : E →L[ℝ] ℝ) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, f a ≤ u) ∧ ∀ b ∈ B, u ≤ f b := by
+    ∃ (f : StrongDual ℝ E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, f a ≤ u) ∧ ∀ b ∈ B, u ≤ f b := by
   obtain ⟨f, u, hfA, hfB⟩ :=
     geometric_hahn_banach_open hA.interior isOpen_interior hB (hAB.mono_left interior_subset)
   refine ⟨f, u, ?_, ?_, hfB⟩
@@ -265,6 +267,20 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   obtain ⟨f, u, h⟩ := _root_.geometric_hahn_banach_open_open hs₁ hs₂ ht₁ ht₃ disj
   use f.extendRCLikeₗ
   simpa [f.extendRCLikeₗ_apply] using Exists.intro u h
+
+theorem geometric_hahn_banach_of_interior_nonempty
+    {A B : Set E} (hA : Convex ℝ A) (hB : Convex ℝ B) (hAB : Disjoint A B)
+    (hAint : (interior A).Nonempty) (hBne : B.Nonempty) :
+    ∃ (f : StrongDual 𝕜 E) (u : ℝ), f ≠ 0 ∧ (∀ a ∈ A, re (f a) ≤ u) ∧ ∀ b ∈ B, u ≤ re (f b) := by
+  have := IsScalarTower.continuousSMul (M := ℝ) (α := E) 𝕜
+  obtain ⟨f, u, hfne, hA', hB'⟩ :=
+    _root_.geometric_hahn_banach_of_interior_nonempty hA hB hAB hAint hBne
+  refine ⟨f.extendRCLikeₗ, u, ?_, ?_, ?_⟩
+  · intro hzero
+    apply hfne
+    exact (StrongDual.extendRCLikeₗ (𝕜 := 𝕜) (F := E)).injective (by simpa using hzero)
+  · simpa [f.extendRCLikeₗ_apply] using hA'
+  · simpa [f.extendRCLikeₗ_apply] using hB'
 
 variable [LocallyConvexSpace ℝ E]
 
