@@ -32,9 +32,8 @@ There is also a term elaborator `to_app_of% t` for use within proofs.
 public meta section
 
 open Lean Meta Elab Tactic
-open Mathlib.Tactic
-
-namespace CategoryTheory
+open CategoryTheory
+namespace Mathlib.Tactic.CategoryTheory.ToApp
 
 /-- Simplify an expression in `Cat` using basic properties of `NatTrans.app`. -/
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
@@ -161,4 +160,4 @@ it suitably using basic lemmas about `NatTrans.app`.
 elab "to_app_of% " t:term : term => do
   toAppExpr (← elabTerm t none)
 
-end CategoryTheory
+end Mathlib.Tactic.CategoryTheory.ToApp

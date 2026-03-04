@@ -86,8 +86,8 @@ theorem padicNorm_p_of_prime [Fact p.Prime] : padicNorm p p = (p : ℚ)⁻¹ :=
 
 /-- The `p`-adic norm of `q` is `1` if `q` is prime and not equal to `p`. -/
 theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : Fact q.Prime]
-    (neq : p ≠ q) : padicNorm p q = 1 := by
-  have p : padicValRat p q = 0 := mod_cast padicValNat_primes neq
+    (ne : p ≠ q) : padicNorm p q = 1 := by
+  have p : padicValRat p q = 0 := mod_cast padicValNat_primes ne
   rw [padicNorm, p]
   simp [q_prime.1.ne_zero]
 

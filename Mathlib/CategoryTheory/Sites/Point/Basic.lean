@@ -105,6 +105,7 @@ lemma presheafFiber_hom_ext
       Φ.toPresheafFiber X x P ≫ g) : f = g :=
   colimit.hom_ext (by rintro ⟨⟨X, x⟩⟩; exact h X x)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`,
 this is the map `P.obj (op X) ⟶ Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`
 as a natural transformation. -/
@@ -238,6 +239,7 @@ instance (P : Cᵒᵖ ⥤ A) [HasWeakSheafify J A]
     IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J P)) :=
   W_isInvertedBy_presheafFiber _ _ (W_toSheafify J P)
 
+set_option backward.isDefEq.respectTransparency false in
 variable (A) in
 /-- The fiber functor on sheaves is obtained from the fiber functor on presheaves
 by localization with respect to the class of morphisms `J.W`. -/
@@ -262,6 +264,7 @@ instance : PreservesColimitsOfSize.{w, w} (Φ.presheafFiber (A := A)) where
     dsimp [presheafFiber]
     infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
     [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
     PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
@@ -280,13 +283,18 @@ instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIso
             rw [← Functor.map_comp, Sheaf.sheafifyCocone_ι_app_val]
             dsimp))⟩
 
+instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
+    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
+    PreservesFiniteColimits (Φ.sheafFiber (A := A)) :=
+  PreservesColimitsOfSize.preservesFiniteColimits _
+
 variable (F : A ⥤ B) [LocallySmall.{w} C] [PreservesFilteredColimitsOfSize.{w, w} F]
 
 /-- If `Φ` is a point of a site and `F : A ⥤ B` is a functor which preserves
 filtered colimits, then taking fibers of presheaves at `Φ` commutes with `F`. -/
 noncomputable def presheafFiberCompIso :
-  (Functor.whiskeringRight _ _ _).obj F ⋙ Φ.presheafFiber ≅
-    Φ.presheafFiber ⋙ F :=
+    (Functor.whiskeringRight _ _ _).obj F ⋙ Φ.presheafFiber ≅
+      Φ.presheafFiber ⋙ F :=
   haveI := Functor.Final.preservesColimitsOfShape_of_final
     (FinallySmall.fromFilteredFinalModel.{w} (Φ.fiber.Elementsᵒᵖ)) F
   Functor.isoWhiskerLeft

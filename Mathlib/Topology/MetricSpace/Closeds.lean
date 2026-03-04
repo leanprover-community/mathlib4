@@ -34,6 +34,7 @@ namespace Metric
 
 variable {α : Type*} [PseudoEMetricSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0∞}
     (h : hausdorffEDist s t < δ) : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 < δ} := by
   rw [hausdorffEDist, max_lt_iff] at h
@@ -45,6 +46,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEDist_lt {s t : Set α} {δ : ℝ≥0
     simpa only [infEDist, iInf_lt_iff, exists_prop] using (le_iSup₂ x hx).trans_lt h
   exact ⟨this h.1, this h.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem hausdorffEDist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
     (h : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 ≤ δ}) : hausdorffEDist s t ≤ δ := by
   rw [hausdorffEDist, max_le_iff]

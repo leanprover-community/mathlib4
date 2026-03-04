@@ -227,12 +227,8 @@ theorem laplacianCLM_eq [RCLike 𝕜] [NormedSpace 𝕜 F] (f : 𝓢(E, F)) :
 
 theorem laplacian_apply (f : 𝓢(E, F)) (x : E) : Δ f x = Δ (f : E → F) x := by
   rw [laplacian_eq_sum (stdOrthonormalBasis ℝ E)]
-  simp only [InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis f
-    (stdOrthonormalBasis ℝ E), sum_apply]
-  congr 1
-  ext i
-  rw [← iteratedLineDerivOp_eq_iteratedFDeriv]
-  rfl
+  simp [InnerProductSpace.laplacian_eq_iteratedFDeriv_orthonormalBasis f (stdOrthonormalBasis ℝ E),
+    sum_apply, ← iteratedLineDerivOp_eq_iteratedFDeriv, iteratedLineDerivOp_succ_left]
 
 end Laplacian
 
@@ -253,7 +249,7 @@ theorem integral_bilinear_deriv_right_eq_neg_left (f : 𝓢(ℝ, E)) (g : 𝓢(�
     (L : E →L[ℝ] F →L[ℝ] V) :
     ∫ (x : ℝ), L (f x) (deriv g x) = -∫ (x : ℝ), L (deriv f x) (g x) :=
   MeasureTheory.integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable
-    f.hasDerivAt g.hasDerivAt (pairing L f (derivCLM ℝ F g)).integrable
+    (fun x _ ↦ f.hasDerivAt x) (fun x _ ↦ g.hasDerivAt x) (pairing L f (derivCLM ℝ F g)).integrable
     (pairing L (derivCLM ℝ E f) g).integrable (pairing L f g).integrable
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
@@ -299,9 +295,7 @@ theorem integral_bilinear_lineDerivOp_right_eq_neg_left (f : 𝓢(D, E)) (g : �
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
     (bilinLeftCLM L (∂_{v} g).hasTemperateGrowth _).integrable
     (bilinLeftCLM L g.hasTemperateGrowth _).integrable
-  all_goals
-  intro x
-  exact (hasFDerivAt _ x).hasLineDerivAt v
+  all_goals exact fun x _ ↦ (hasFDerivAt _ x).hasLineDerivAt v
 
 variable [NormedRing 𝕜] [NormedSpace ℝ 𝕜] [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] in
 /-- Integration by parts of Schwartz functions for directional derivatives.

@@ -49,6 +49,9 @@ abbrev CC (r : R) : R[X][Y] := C (C r)
 lemma evalEval_C (x y : R) (p : R[X]) : (C p).evalEval x y = p.eval x := by
   rw [evalEval, eval_C]
 
+lemma evalEval_map_C (x y : R) (p : R[X]) : (p.map C).evalEval x y = p.eval y := by
+  rw [evalEval, eval_map_apply, eval_C]
+
 @[simp]
 lemma evalEval_CC (x y : R) (p : R) : (CC p).evalEval x y = p := by
   rw [evalEval_C, eval_C]
@@ -126,11 +129,12 @@ lemma evalEval_prod {ι : Type*} (s : Finset ι) (x y : R) (p : ι → R[X][Y]) 
 
 lemma evalEval_list_prod (x y : R) (l : List R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
-  simpa only [evalEval, eval_list_prod, List.map_map] using by rfl
+  simp only [evalEval, eval_list_prod, List.map_map]
+  rfl -- todo: add the missing lemma
 
 lemma evalEval_multiset_prod (x y : R) (l : Multiset R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
-  simpa only [evalEval, eval_multiset_prod, Multiset.map_map] using by rfl
+  simp [evalEval, eval_multiset_prod, Multiset.map_map]
 
 @[simp]
 lemma evalEval_pow (x y : R) (p : R[X][Y]) (n : ℕ) : (p ^ n).evalEval x y = p.evalEval x y ^ n := by
@@ -229,6 +233,17 @@ theorem Bivariate.swap_apply (p : R[X][Y]) : swap p = p.aevalAeval (A := R[X][Y]
 theorem Bivariate.swap_X : swap (R := R) (C X) = Y := by simp
 
 theorem Bivariate.swap_Y : swap (R := R) Y = (C X) := by simp
+
+theorem Bivariate.swap_C_C (r : R) : swap (C (C r)) = C (C r) := by simp
+
+theorem Bivariate.swap_C (f : R[X]) : swap (C f) = f.map C := by
+  simpa [← algebraMap_eq] using aeval_X_left_eq_map f
+
+theorem Bivariate.swap_map_C (f : R[X]) : swap (f.map C) = C f := by
+  induction f using Polynomial.induction_on' with
+  | add => aesop
+  | monomial n a => rw [map_monomial, ← C_mul_X_pow_eq_monomial, ← C_mul_X_pow_eq_monomial,
+    map_mul, map_pow, swap_Y, C_mul, C_pow, Bivariate.swap_C_C]
 
 theorem Bivariate.swap_monomial_monomial (n m : ℕ) (r : R) :
     swap (monomial n (monomial m r)) = (monomial m (monomial n r)) := by

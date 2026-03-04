@@ -81,10 +81,7 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · cases m
     · cases hm rfl
     · simp
-  · cases m
-    · cases hm rfl
-    simp only [zero_add, digits_one, List.getLast_replicate_succ]
-    exact Nat.one_ne_zero
+  · simp
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
@@ -356,7 +353,7 @@ theorem mapsTo_digitsAppend {b : ℕ} (hb : 1 < b) (l : ℕ) :
 
 theorem injOn_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InjOn (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b} :=
-  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by aesop) (by aesop) (by aesop) h
+  fun _ _ _ _ h ↦ ofDigits_inj_of_len_eq hb (by simp_all) (by simp_all) (by simp_all) h
 
 theorem setInvOn_digitsAppend_ofDigits {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.InvOn (digitsAppend b l) (ofDigits b) {L : List ℕ | L.length = l ∧ ∀ x ∈ L, x < b}
@@ -436,7 +433,8 @@ theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :
     fixedLengthDigits hb 0 = {[]} := by
   ext
-  simpa [eq_comm, fixedLengthDigits] using by grind
+  simp [fixedLengthDigits]
+  grind
 
 @[simp]
 theorem fixedLengthDigits_one {b : ℕ} (hb : 1 < b) :

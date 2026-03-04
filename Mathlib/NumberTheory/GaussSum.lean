@@ -278,6 +278,7 @@ in this way, the result is reduced to `card_pow_char_pow`.
 
 open ZMod
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For every finite field `F` of odd characteristic, we have `2^(#F/2) = χ₈ #F` in `F`. -/
 theorem FiniteField.two_pow_card {F : Type*} [Fintype F] [Field F] (hF : ringChar F ≠ 2) :
     (2 : F) ^ (Fintype.card F / 2) = χ₈ (Fintype.card F) := by

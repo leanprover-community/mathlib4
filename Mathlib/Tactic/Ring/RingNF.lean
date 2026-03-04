@@ -5,14 +5,10 @@ Authors: Mario Carneiro, Anne Baanen
 -/
 module
 
-public meta import Mathlib.Tactic.Ring.Basic
-public meta import Mathlib.Tactic.Conv
-public meta import Mathlib.Util.AtLocation
-public meta import Mathlib.Util.AtomM.Recurse
-public meta import Mathlib.Util.Qq
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.TryThis
 public import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.AtomM.Recurse
 
 /-!
 # `ring_nf` tactic
@@ -27,8 +23,7 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 public meta section
 
 namespace Mathlib.Tactic
-open Lean
-open Qq Meta
+open Lean Meta Qq
 
 namespace Ring
 
