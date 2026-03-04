@@ -6,6 +6,8 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.Analysis.Normed.Group.Indicator
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # ℒp seminorms and indicator functions
@@ -40,7 +42,7 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : M
   by_cases hp_top : p = ∞
   · simp_rw [hp_top, eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm,
        enorm_indicator_eq_indicator_enorm, ENNReal.essSup_indicator_eq_essSup_restrict hs]
-  simp_rw [eLpNorm_eq_lintegral_rpow_enorm hp_zero hp_top]
+  simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp_top]
   rw [← lintegral_indicator hs]
   congr
   simp_rw [enorm_indicator_eq_indicator_enorm]
@@ -90,7 +92,7 @@ lemma eLpNorm_indicator_const₀ (hs : NullMeasurableSet s μ) (hp : p ≠ 0) (h
   calc
     eLpNorm (s.indicator fun _ => c) p μ
       = (∫⁻ x, (‖(s.indicator fun _ ↦ c) x‖ₑ ^ p.toReal) ∂μ) ^ (1 / p.toReal) :=
-          eLpNorm_eq_lintegral_rpow_enorm hp hp_top
+          eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp_top
     _ = (∫⁻ x, (s.indicator fun _ ↦ ‖c‖ₑ ^ p.toReal) x ∂μ) ^ (1 / p.toReal) := by
       congr 2
       refine (Set.comp_indicator_const c (fun x ↦ (‖x‖ₑ) ^ p.toReal) ?_)
@@ -221,7 +223,7 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
       · simp [*]
     refine ⟨s, hsm, hs, ?_⟩
     rwa [eLpNorm_indicator_eq_eLpNorm_restrict hsm.compl,
-      eLpNorm_eq_lintegral_rpow_enorm hp₀ hp_top, one_div, ENNReal.rpow_inv_lt_iff]
+      eLpNorm_eq_lintegral_rpow_enorm_toReal hp₀ hp_top, one_div, ENNReal.rpow_inv_lt_iff]
     simp [ENNReal.toReal_pos, *]
 
 end UnifTight

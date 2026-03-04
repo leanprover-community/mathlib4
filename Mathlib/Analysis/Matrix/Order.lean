@@ -5,6 +5,7 @@ Authors: Monica Omar
 -/
 module
 
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.Analysis.Matrix.PosDef
@@ -21,9 +22,9 @@ This allows us to use more general results from C⋆-algebras, like `CFC.sqrt`.
 
 * `Matrix.instPartialOrder`: the partial order on matrices given by `x ≤ y := (y - x).PosSemidef`.
 * `Matrix.PosSemidef.dotProduct_mulVec_zero_iff`: for a positive semi-definite matrix `A`,
-we have `x⋆ A x = 0` iff `A x = 0`.
+  we have `x⋆ A x = 0` iff `A x = 0`.
 * `Matrix.toMatrixInnerProductSpace`: the inner product on matrices induced by a
-positive semi-definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
+  positive semi-definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
 
 ## Implementation notes
 
@@ -87,6 +88,7 @@ scoped[MatrixOrder] attribute [instance] Matrix.instIsOrderedAddMonoid
 
 variable [Fintype n]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
   quasispectrum_nonneg_of_nonneg A hA := by
     classical
@@ -99,6 +101,7 @@ lemma instNonnegSpectrumClass : NonnegSpectrumClass ℝ (Matrix n n 𝕜) where
 
 scoped[MatrixOrder] attribute [instance] instNonnegSpectrumClass
 
+set_option backward.isDefEq.respectTransparency false in
 lemma instStarOrderedRing : StarOrderedRing (Matrix n n 𝕜) :=
   .of_nonneg_iff' add_le_add_right fun A ↦
     ⟨fun hA ↦ by
@@ -129,49 +132,64 @@ noncomputable def sqrt : Matrix n n 𝕜 :=
   hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ (√·) ∘ hA.1.eigenvalues) *
   (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
+set_option linter.unusedDecidableInType false in
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_nonneg (since := "2025-09-22")]
 lemma posSemidef_sqrt : PosSemidef (CFC.sqrt A) := CFC.sqrt_nonneg A |>.posSemidef
 
 include hA
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sq_sqrt (since := "2025-09-22")]
 lemma sq_sqrt : (CFC.sqrt A) ^ 2 = A := CFC.sq_sqrt A
 
+set_option linter.unusedDecidableInType false in
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_mul_sqrt_self (since := "2025-09-22")]
 lemma sqrt_mul_self : CFC.sqrt A * CFC.sqrt A = A := CFC.sqrt_mul_sqrt_self A
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sq_eq_sq_iff (since := "2025-09-24")]
 lemma sq_eq_sq_iff {B : Matrix n n 𝕜} (hB : PosSemidef B) : A ^ 2 = B ^ 2 ↔ A = B :=
   CFC.sq_eq_sq_iff A B
 
 @[deprecated (since := "2025-09-24")] alias ⟨eq_of_sq_eq_sq, _⟩ := CFC.sq_eq_sq_iff
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_sq (since := "2025-09-22")]
 lemma sqrt_sq : CFC.sqrt (A ^ 2) = A := CFC.sqrt_sq A
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_eq_iff (since := "2025-09-23")]
 lemma eq_sqrt_iff_sq_eq {B : Matrix n n 𝕜} (hB : PosSemidef B) : A = CFC.sqrt B ↔ A ^ 2 = B := by
   rw [eq_comm, CFC.sqrt_eq_iff B A hB.nonneg hA.nonneg, sq]
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_eq_iff (since := "2025-09-23")]
 lemma sqrt_eq_iff_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) : CFC.sqrt A = B ↔ A = B ^ 2 := by
   simpa [eq_comm, sq] using CFC.sqrt_eq_iff A B hA.nonneg hB.nonneg
 
+set_option linter.unusedDecidableInType false in
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_eq_zero_iff (since := "2025-09-22")]
 lemma sqrt_eq_zero_iff : CFC.sqrt A = 0 ↔ A = 0 := CFC.sqrt_eq_zero_iff A
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.sqrt_eq_one_iff (since := "2025-09-23")]
 lemma sqrt_eq_one_iff : CFC.sqrt A = 1 ↔ A = 1 := CFC.sqrt_eq_one_iff A
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated CFC.isUnit_sqrt_iff (since := "2025-09-22")]
 lemma isUnit_sqrt_iff : IsUnit (CFC.sqrt A) ↔ IsUnit A := CFC.isUnit_sqrt_iff A
 
+set_option backward.isDefEq.respectTransparency false in
 lemma inv_sqrt : (CFC.sqrt A)⁻¹ = CFC.sqrt A⁻¹ := by
   rw [eq_comm, CFC.sqrt_eq_iff _ _ hA.inv.nonneg (CFC.sqrt_nonneg A).posSemidef.inv.nonneg, ← sq,
     inv_pow', CFC.sq_sqrt A]
 
 end sqrtDeprecated
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem dotProduct_mulVec_zero_iff {A : Matrix n n 𝕜} (hA : PosSemidef A) (x : n → 𝕜) :
     star x ⬝ᵥ A *ᵥ x = 0 ↔ A *ᵥ x = 0 := by
@@ -188,6 +206,7 @@ theorem toLinearMap₂'_zero_iff [DecidableEq n]
     Matrix.toLinearMap₂' 𝕜 A (star x) x = 0 ↔ A *ᵥ x = 0 := by
   simpa only [toLinearMap₂'_apply'] using hA.dotProduct_mulVec_zero_iff x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
     (CFC.sqrt A).det = RCLike.sqrt A.det := by
   rw [CFC.sqrt_eq_cfc, cfc_nnreal_eq_real _ A, hA.1.cfc_eq, RCLike.sqrt_of_nonneg hA.det_nonneg]
@@ -198,11 +217,13 @@ theorem det_sqrt [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.PosSemidef) :
 
 end PosSemidef
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsHermitian.det_abs [DecidableEq n] {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
     det (CFC.abs A) = ‖det A‖ := by
   rw [CFC.abs_eq_cfc_norm A, hA.cfc_eq]
   simp [IsHermitian.cfc, -Unitary.conjStarAlgAut_apply, hA.det_eq_prod_eigenvalues]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A matrix is positive semidefinite if and only if it has the form `Bᴴ * B` for some `B`. -/
 @[deprecated CStarAlgebra.nonneg_iff_eq_star_mul_self (since := "2025-09-22")]
 lemma posSemidef_iff_eq_conjTranspose_mul_self {A : Matrix n n 𝕜} :
@@ -221,12 +242,14 @@ theorem posSemidef_iff_isHermitian_and_spectrum_nonneg [DecidableEq n] {A : Matr
     intro i
     simpa [h1.spectrum_eq_image_range] using @h2 (h1.eigenvalues i)
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated commute_iff_mul_nonneg (since := "2025-09-23")]
 theorem PosSemidef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
     Commute A B ↔ (A * B).PosSemidef := by
   classical
   exact nonneg_iff_posSemidef (A := A * B).eq ▸ commute_iff_mul_nonneg hA.nonneg hB.nonneg
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A positive semi-definite matrix is positive definite if and only if it is invertible. -/
 @[grind =]
 theorem PosSemidef.posDef_iff_isUnit [DecidableEq n] {x : Matrix n n 𝕜}
@@ -248,12 +271,15 @@ alias ⟨IsStrictlyPositive.posDef, PosDef.isStrictlyPositive⟩ := isStrictlyPo
 
 attribute [aesop safe forward (rule_sets := [CStarAlgebra])] PosDef.isStrictlyPositive
 
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated IsStrictlyPositive.commute_iff (since := "2025-09-26")]
 theorem PosDef.commute_iff {A B : Matrix n n 𝕜} (hA : A.PosDef) (hB : B.PosDef) :
     Commute A B ↔ (A * B).PosDef := by
   classical
   rw [hA.isStrictlyPositive.commute_iff hB.isStrictlyPositive, isStrictlyPositive_iff_posDef]
 
+set_option linter.unusedDecidableInType false in
+set_option backward.isDefEq.respectTransparency false in
 @[deprecated IsStrictlyPositive.sqrt (since := "2025-09-26")]
 lemma PosDef.posDef_sqrt [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosDef) :
     PosDef (CFC.sqrt M) := hM.isStrictlyPositive.sqrt.posDef
@@ -266,6 +292,7 @@ variable [Finite n] {m : Type*} [Finite m]
 
 open scoped Kronecker
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The kronecker product of two positive semi-definite matrices is positive semi-definite. -/
 theorem PosSemidef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
     (hx : x.PosSemidef) (hy : y.PosSemidef) : (x ⊗ₖ y).PosSemidef := by
@@ -287,6 +314,7 @@ theorem PosDef.kronecker {x : Matrix n n 𝕜} {y : Matrix m m 𝕜}
 
 end kronecker
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 A matrix is positive definite if and only if it has the form `Bᴴ * B` for some invertible `B`.
 -/
@@ -295,9 +323,22 @@ lemma posDef_iff_eq_conjTranspose_mul_self [DecidableEq n] {A : Matrix n n 𝕜}
     PosDef A ↔ ∃ B : Matrix n n 𝕜, IsUnit B ∧ A = Bᴴ * B :=
   isStrictlyPositive_iff_posDef.symm.trans CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
 
-@[deprecated (since := "2025-08-07")] alias PosDef.posDef_iff_eq_conjTranspose_mul_self :=
-  CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self
+section tracePositiveLinearMap
+variable (n α 𝕜 : Type*) [Fintype n] [Semiring α] [RCLike 𝕜] [Module α 𝕜]
 
+set_option backward.isDefEq.respectTransparency false in
+/-- `Matrix.trace` as a positive linear map. -/
+def tracePositiveLinearMap : Matrix n n 𝕜 →ₚ[α] 𝕜 :=
+  .mk₀ (traceLinearMap n α 𝕜) fun _ h ↦ h.posSemidef.trace_nonneg
+
+@[simp] lemma toLinearMap_tracePositiveLinearMap :
+    (tracePositiveLinearMap n α 𝕜).toLinearMap = traceLinearMap n α 𝕜 := rfl
+
+@[simp] lemma tracePositiveLinearMap_apply (x) : tracePositiveLinearMap n α 𝕜 x = trace x := rfl
+
+end tracePositiveLinearMap
+
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 /-- The pre-inner product space structure implementation. Only an auxiliary for
 `Matrix.toMatrixSeminormedAddCommGroup`, `Matrix.toMatrixNormedAddCommGroup`,
@@ -312,6 +353,7 @@ private abbrev PosSemidef.matrixPreInnerProductSpace {M : Matrix n n 𝕜} (hM :
   add_left := by simp [mul_add]
   smul_left := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`
@@ -320,6 +362,7 @@ noncomputable def toMatrixSeminormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.P
     SeminormedAddCommGroup (Matrix n n 𝕜) :=
   @InnerProductSpace.Core.toSeminormedAddCommGroup _ _ _ _ _ hM.matrixPreInnerProductSpace
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- A positive definite matrix `M` induces a norm on `Matrix n n 𝕜`:
@@ -332,13 +375,14 @@ noncomputable def toMatrixNormedAddCommGroup (M : Matrix n n 𝕜) (hM : M.PosDe
       classical
       obtain ⟨y, hy, rfl⟩ := CStarAlgebra.isStrictlyPositive_iff_eq_star_mul_self.mp
         hM.isStrictlyPositive
-      simp only at hx
+      simp +instances only at hx
       rw [← mul_assoc, ← conjTranspose_conjTranspose x, star_eq_conjTranspose, ← conjTranspose_mul,
         conjTranspose_conjTranspose, mul_assoc, trace_conjTranspose_mul_self_eq_zero_iff] at hx
       lift y to (Matrix n n 𝕜)ˣ using hy
       simpa [← mul_assoc] using congr(y⁻¹ * $hx) }
   this.toNormedAddCommGroup
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A positive semi-definite matrix `M` induces an inner product on `Matrix n n 𝕜`:
 `⟪x, y⟫ = (y * M * xᴴ).trace`. -/
 def toMatrixInnerProductSpace (M : Matrix n n 𝕜) (hM : M.PosSemidef) :

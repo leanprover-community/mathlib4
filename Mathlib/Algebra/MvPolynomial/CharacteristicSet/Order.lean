@@ -199,7 +199,8 @@ theorem order_apply' {i : ℕ} (h : S.length ≤ i) : S.order i = ⊤ := if_neg 
 theorem order_lt_iff : S.order < T.order ↔ (∃ k < S.length, S k < T k ∧ ∀ i < k, S i ≈ T i) ∨
     (T.length < S.length ∧ ∀ i < T.length, S i ≈ T i) where
   mp h := by
-    simp only [Pi.instLTLexForall, Pi.Lex, order] at h
+    rewrite [order_def, order_def, Pi.instLTLexForall] at h
+    simp only [Pi.Lex] at h
     rcases h with ⟨k, hk1, hk2⟩
     have klts : k < S.length := Decidable.byContradiction fun h ↦ not_top_lt <| if_neg h ▸ hk2
     rewrite [if_pos klts] at hk2
@@ -216,7 +217,8 @@ theorem order_lt_iff : S.order < T.order ↔ (∃ k < S.length, S k < T k ∧ �
     rewrite [if_pos (lt_trans hi tlts), if_pos hi, WithTop.coe_eq_coe] at this
     exact MvPolynomial.equiv_def'.mpr this
   mpr h := by
-    simp only [Pi.instLTLexForall, Pi.Lex, order]
+    rewrite [order_def, order_def, Pi.instLTLexForall]
+    simp only [Pi.Lex]
     rcases h with (⟨k, hk, hk1, hk2⟩ | ⟨hlen, heq⟩)
     · use k ⊓ T.length
       constructor
@@ -235,7 +237,8 @@ theorem order_lt_iff : S.order < T.order ↔ (∃ k < S.length, S k < T k ∧ �
 
 theorem order_eq_iff : S.order = T.order ↔ S.length = T.length ∧ ∀ k, S k ≈ T k where
   mp h := by
-    rewrite [order_def, order_def, funext_iff] at h
+    rewrite [order_def, order_def] at h
+    have h := funext_iff.mp h
     have tles := h S.length
     have slet := h T.length
     simp only [lt_self_iff_false, reduceIte, right_eq_ite_iff, WithTop.top_ne_coe, imp_false,
@@ -260,7 +263,7 @@ theorem order_eq_iff : S.order = T.order ↔ S.length = T.length ∧ ∀ k, S k 
 open scoped Classical in
 theorem order_le_iff : S.order ≤ T.order ↔ (∃ k < S.length, S k < T k ∧ ∀ i < k, S i ≈ T i) ∨
     (T.length ≤ S.length ∧ ∀ k < T.length, S k ≤ T k) := by
-  rewrite [le_iff_lt_or_eq, order_lt_iff, order_eq_iff, or_assoc]
+  rewrite [Iff.trans le_iff_lt_or_eq (or_congr order_lt_iff order_eq_iff), or_assoc]
   refine ⟨fun h ↦ Or.elim h Or.inl (fun h ↦ Or.inr <| Or.elim h
       (fun h ↦ ⟨le_of_lt h.1, fun k hk ↦ (MvPolynomial.equiv_def''.mp <| h.2 k hk).1⟩)
       (fun h ↦ ⟨ge_of_eq h.1, fun k hk ↦ (MvPolynomial.equiv_def''.mp <| h.2 k).1⟩)),
@@ -300,8 +303,8 @@ theorem le_def : S ≤ T ↔ (∃ k < S.length, S k < T k ∧ ∀ i < k, S i ≈
     (T.length ≤ S.length ∧ ∀ k < T.length, S k ≤ T k) := order_le_iff
 
 theorem lt_def' : S < T ↔ S.order < T.order := Iff.trans lt_iff_le_not_ge (by
-  rewrite [le_def', le_def', not_le, and_iff_right_iff_imp]
-  exact le_of_lt)
+  rewrite [le_def', le_def', not_le]
+  exact and_iff_right_iff_imp.mpr le_of_lt)
 
 theorem lt_def : S < T ↔ (∃ k < S.length, S k < T k ∧ ∀ i < k, S i ≈ T i) ∨
     (T.length < S.length ∧ ∀ i < T.length, S i ≈ T i) := Iff.trans lt_def' order_lt_iff
@@ -313,9 +316,9 @@ theorem lt_empty : S ≠ ∅ → S < ∅ := fun h ↦ lt_def.mpr <| Or.inr
 theorem le_empty (S : TriangulatedSet σ R) : S ≤ ∅ :=
   Or.elim (eq_or_ne S ∅) le_of_eq <| le_of_lt ∘ lt_empty
 
-@[simp] theorem not_lt_iff_ge : ¬(S < T) ↔ T ≤ S := by rw [le_def', lt_def', not_lt]
+@[simp] theorem not_lt_iff_ge : ¬(S < T) ↔ T ≤ S := by rewrite [le_def', lt_def']; exact not_lt
 
-@[simp] theorem not_le_iff_gt : ¬(S ≤ T) ↔ T < S := by rw [le_def', lt_def', not_le]
+@[simp] theorem not_le_iff_gt : ¬(S ≤ T) ↔ T < S := by rewrite [le_def', lt_def']; exact not_le
 
 theorem ge_of_forall_equiv : (∀ n < S.length, ∃ i < T.length, T i ≈ S n) → T ≤ S := fun h ↦ by
   contrapose! h
@@ -466,16 +469,22 @@ theorem length_le [Fintype σ] : S.length ≤ Fintype.card σ + 1 := by
 private noncomputable def _order [Fintype σ] (S : TriangulatedSet σ R) :
   Lex (Fin (Fintype.card σ + 1) → WithTop (WithBot σ ×ₗ ℕ)) := fun i ↦ S.order i.1
 
+private theorem _order_def [Fintype σ] : S._order = fun i ↦ S.order i.1 := rfl
+
 private theorem _order_lt_iff [Fintype σ] : S._order < T._order ↔ S.order < T.order where
   mp h := by
-    simp only [Pi.instLTLexForall, Pi.Lex, _order] at h ⊢
+    rewrite [Pi.instLTLexForall] at h ⊢
+    rewrite [_order_def, _order_def] at h
+    simp only [Pi.Lex] at h
     rcases h with ⟨k, hk1, hk2⟩
     have kn : k < Fintype.card σ + 1 := Decidable.byContradiction fun con ↦ by
       simp only [order_apply' <| le_trans length_le <| Nat.le_of_not_lt con] at hk2
       exact (lt_self_iff_false ⊤).mp hk2
     exact Exists.intro k.1 ⟨fun i hi ↦ hk1 ⟨i, lt_trans hi kn⟩ hi, hk2⟩
   mpr h := by
-    simp only [Pi.instLTLexForall, Pi.Lex, _order] at h ⊢
+    rewrite [Pi.instLTLexForall] at h ⊢
+    rewrite [_order_def, _order_def] at ⊢
+    simp only [Pi.Lex] at h
     rcases h with ⟨k, hk1, hk2⟩
     have kn : k < Fintype.card σ + 1 := Decidable.byContradiction fun con ↦ by
       simp only [order_apply' <| le_trans length_le <| Nat.le_of_not_lt con] at hk2

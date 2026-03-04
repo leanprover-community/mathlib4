@@ -43,7 +43,7 @@ class AscendingSetTheory (σ R : Type*) [CommSemiring R] [DecidableEq R] [Linear
     (∀ ⦃i j⦄, i < j → j < S.length → reducedTo' (S j) (S i)) →
     (S i).mainVariable ≠ ⊥ → (S i).initial.reducedToSet S
 
-attribute [instance 900] AscendingSetTheory.decidableReducedTo
+attribute [instance_reducible, instance 900] AscendingSetTheory.decidableReducedTo
 
 variable {R σ : Type*} [CommSemiring R] [DecidableEq R] [LinearOrder σ]
 

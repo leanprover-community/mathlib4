@@ -35,6 +35,7 @@ local notation "ℂ_ℤ" => integerComplement
 
 local notation "ℍₒ" => UpperHalfPlane.upperHalfPlaneSet
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Complex.cot_eq_exp_ratio (z : ℂ) :
     cot z = (Complex.exp (2 * I * z) + 1) / (I * (1 - Complex.exp (2 * I * z))) := by
   rw [Complex.cot, Complex.sin, Complex.cos]
@@ -70,7 +71,7 @@ section MittagLeffler
 
 open Filter Function
 
-open scoped Topology BigOperators Nat Complex
+open scoped Topology Nat Complex
 
 variable {x : ℂ} {Z : Set ℂ}
 
@@ -150,7 +151,7 @@ lemma cot_pi_mul_contDiffWithinAt (k : ℕ∞) (hx : x ∈ ℂ_ℤ) :
 lemma tendsto_logDeriv_euler_sin_div (hx : x ∈ ℂ_ℤ) :
     Tendsto (fun n : ℕ ↦ logDeriv (fun z ↦ ∏ j ∈ Finset.range n, (1 + sineTerm z j)) x)
         atTop (𝓝 <| logDeriv (fun t ↦ (Complex.sin (π * t) / (π * t))) x) := by
-  refine logDeriv_tendsto (isOpen_compl_range_intCast) ⟨x, hx⟩
+  refine logDeriv_tendsto isOpen_compl_range_intCast hx
       HasProdLocallyUniformlyOn_euler_sin_prod.tendstoLocallyUniformlyOn_finsetRange ?_ ?_
   · filter_upwards with n using by fun_prop
   · simp only [ne_eq, div_eq_zero_iff, mul_eq_zero, ofReal_eq_zero, not_or]
