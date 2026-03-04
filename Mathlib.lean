@@ -2989,6 +2989,7 @@ public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.CategoryTheory.MorphismProperty.CommaSites
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.MorphismProperty.Concrete
 public import Mathlib.CategoryTheory.MorphismProperty.Descent
