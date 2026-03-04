@@ -42,14 +42,22 @@ namespace TopCat
 
 namespace Presheaf
 
+variable {C : Type v} [Category.{w} C] (F : Presheaf C X)
+
 /-- A sheaf is flasque if all of the restriction morphisms are epimorphisms. -/
-class IsFlasque {C : Type v} [Category.{w} C] (F : Presheaf C X) : Prop where
+class IsFlasque : Prop where
   epi : ∀{U V : (Opens X)ᵒᵖ} (i : U ⟶ V), Epi (F.map i)
 
 namespace IsFlasque
 
-instance (priority := low) {C : Type v} [Category.{w} C] (F : Presheaf C X) [h : IsFlasque F]
+instance (priority := low) [h : IsFlasque F]
     {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) : Epi (F.map i) := h.epi i
+
+theorem pushforward_isFlasque {Y : TopCat.{u}} [IsFlasque F] (f : X ⟶ Y) :
+    IsFlasque (f _* F) where
+  epi {U V} i := by
+    simp only [pushforward_obj_obj, pushforward_obj_map]
+    infer_instance
 
 end IsFlasque
 
@@ -61,6 +69,10 @@ namespace Sheaf
 abbrev IsFlasque {C : Type v} [Category.{w} C] (F : Sheaf C X) := Presheaf.IsFlasque F.val
 
 namespace IsFlasque
+
+theorem pushforward_isFlasque {C : Type v} [Category.{w} C] {Y : TopCat.{u}} (F : Sheaf C X)
+    [IsFlasque F] (f : X ⟶ Y) : IsFlasque ((pushforward C f).obj F) :=
+  Presheaf.IsFlasque.pushforward_isFlasque F.1 f
 
 variable {U : Opens X} {F G : Sheaf AddCommGrpCat X} (g : F ⟶ G) (s : G.val.obj (op U))
 
