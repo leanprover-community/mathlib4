@@ -176,10 +176,7 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ ⦃i⦄, α i → α i → Prop) (x 
     exact (f i j).property
   rintro ⟨a, f₀, f₁, xeq, yeq, h⟩
   use ⟨a, fun i j => ⟨(f₀ i j, f₁ i j), h i j⟩⟩
-  dsimp; constructor
-  · rw [xeq]
-    rfl
-  rw [yeq]; rfl
+  exact ⟨xeq.symm, yeq.symm⟩
 
 open Set
 
