@@ -377,11 +377,13 @@ lemma mulHeight_comp_le (f : ι → ι') (x : ι' → K) :
   have H (v : AbsoluteValue K ℝ) : ⨆ i, v ((x ∘ f) i) ≤ ⨆ i, v (x i) :=
     ciSup_le fun i ↦ Finite.le_ciSup_of_le (f i) le_rfl
   gcongr
-  · exact finprod_nonneg fun v ↦ v.val.iSup_abv_nonneg
-  · exact Multiset.prod_map_nonneg fun v _ ↦ v.iSup_abv_nonneg
-  · exact Multiset.prod_map_le_prod_map₀ _ _ (fun v _ ↦ v.iSup_abv_nonneg) fun v _ ↦ H v
+  · exact finprod_nonneg fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _
+  · exact Multiset.prod_map_nonneg fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _
+  · exact Multiset.prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _)
+      fun v _ ↦ H v
   · exact finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h₀)
-      (fun v ↦ v.val.iSup_abv_nonneg) (mulSupport_iSup_nonarchAbsVal_finite hx) fun v ↦ H v.val
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) (mulSupport_iSup_nonarchAbsVal_finite hx)
+      fun v ↦ H v.val
 
 open Real in
 lemma logHeight_comp_le (f : ι → ι') (x : ι' → K) :
@@ -599,25 +601,6 @@ multiplicative heights of `x` and `y` (and the analogous statement for logarithm
 We also show the corresponding statements for product with arbitrarily many factors.
 -/
 
-variable {R ι ι' : Type*} [Semiring R] [Finite ι] [Finite ι']
-
-lemma AbsoluteValue.iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv (v : AbsoluteValue R ℝ)
-    (x : ι → R) (y : ι' → R) :
-    ⨆ a : ι × ι', v (x a.1 * y a.2) = (⨆ i, v (x i)) * ⨆ j, v (y j) :=
-  Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg v x y
-
-section many
-
-universe u v
-
-variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
-
-lemma AbsoluteValue.iSup_prod_abv_eq_prod_iSup_abv (v : AbsoluteValue R ℝ) {x : (a : α) → ι a → R} :
-    ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) :=
-  Real.iSup_prod_eq_prod_iSup_of_nonneg (f := fun a i ↦ v (x a i)) (fun _ _ ↦ v.nonneg _)
-
-end many
-
 namespace Height
 
 open Height.AdmissibleAbsValues Function
@@ -641,7 +624,7 @@ lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
     simp_rw [ne_iff, Pi.zero_def] at hx ⊢
     choose f hf using hx
     exact ⟨f, prod_ne_zero_iff.mpr fun a _ ↦ hf a⟩
-  simp_rw [map_prod, AbsoluteValue.iSup_prod_abv_eq_prod_iSup_abv]
+  simp_rw [map_prod, Real.iSup_prod_eq_prod_iSup_of_nonnegHomClass]
   rw [Multiset.prod_map_prod,
     finprod_prod_comm _ _ fun b _ ↦ mulSupport_iSup_nonarchAbsVal_finite (hx b), ← prod_mul_distrib]
   exact prod_congr rfl fun a _ ↦ by rw [mulHeight_eq (hx a)]
@@ -680,8 +663,8 @@ lemma mulHeight_fun_mul_eq {x : ι → K} (hx : x ≠ 0) {y : ι' → K} (hy : y
     ← finprod_mul_distrib
         (mulSupport_iSup_nonarchAbsVal_finite hx) (mulSupport_iSup_nonarchAbsVal_finite hy)]
   congr <;> ext1 v
-  · exact v.iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv ..
-  · exact v.val.iSup_abv_fun_mul_eq_iSup_abv_mul_iSup_abv ..
+  · exact Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg v x y
+  · exact Real.iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg v.val x y
 
 open Real in
 /-- The logarithmic height of the "multiplication table" `fun (i, j) ↦ x i * y j`
