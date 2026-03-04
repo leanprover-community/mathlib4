@@ -168,7 +168,6 @@ instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotie
 instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
   norm_smul_le _ x := norm_smul_le _ x.unop
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
     [SeminormedAddCommGroup E] [NormedSpace 𝕜 E] [Module R E] [IsScalarTower 𝕜 R E]

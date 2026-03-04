@@ -356,7 +356,6 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
   | empty => simp
   | cons a s ha IH => simp [IH]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive /-- The non-commutative version of `Finset.sum_union` -/]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
