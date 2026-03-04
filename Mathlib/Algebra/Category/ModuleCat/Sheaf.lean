@@ -88,7 +88,7 @@ def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.obj.obj
 @[simps]
 noncomputable def toSheaf : SheafOfModules.{v} R ⥤ Sheaf J AddCommGrpCat.{v} where
   obj M := ⟨_, M.isSheaf⟩
-  map f := ObjectProperty.homMk ((forget R ⋙ PresheafOfModules.toPresheaf R.obj).map f)
+  map f := ⟨(forget R ⋙ PresheafOfModules.toPresheaf R.obj).map f⟩
 
 /--
 The forgetful functor from sheaves of modules over sheaf of ring `R` to sheaves of `R(X)`-module

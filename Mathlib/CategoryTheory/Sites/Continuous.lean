@@ -253,7 +253,7 @@ variable {F F'} in
 @[simps]
 def sheafPushforwardContinuousNatTrans [IsContinuous.{t} F' J K] :
     sheafPushforwardContinuous F' A J K ⟶ sheafPushforwardContinuous F A J K where
-  app M := ObjectProperty.homMk (whiskerRight (NatTrans.op τ) _)
+  app M := ⟨whiskerRight (NatTrans.op τ) _⟩
 
 variable {F F'} in
 /-- The action of a natural isomorphism on pushforward functors of sheaves. -/
