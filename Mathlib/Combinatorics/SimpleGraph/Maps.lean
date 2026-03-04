@@ -50,10 +50,10 @@ variable {V W X : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
 /-! ## Map and comap -/
 
 
-/-- Given an injective function, there is a covariant induced map on graphs by pushing forward
+/-- Given a function, there is a covariant induced map on graphs by pushing forward
 the adjacency relation.
 
-This is injective (see `SimpleGraph.map_injective`). -/
+This is injective when the function is (see `SimpleGraph.map_injective`). -/
 protected def map (f : V → W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Ne ⊓ Relation.Map G.Adj f f
   symm a b := by
@@ -583,7 +583,8 @@ protected def comap (f : V ≃ W) (G : SimpleGraph W) : G.comap f.toEmbedding �
 lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) :
     SimpleGraph.Iso.comap f G v = f v := rfl
 
-@[simp]
+-- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
+-- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.@[simp]
 lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
     (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
 
