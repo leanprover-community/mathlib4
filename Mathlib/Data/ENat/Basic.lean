@@ -42,7 +42,6 @@ open Function
 
 assert_not_exists Field
 
-set_option backward.isDefEq.respectTransparency false in
 deriving instance Zero, Nontrivial,
   LinearOrder, Bot, Sub,
   LinearOrderedAddCommMonoidWithTop,
@@ -406,11 +405,9 @@ lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inj
   simp_rw [add_comm n _]
   exact add_left_injective_of_ne_top hn
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) :=
   WithTop.mul_right_strictMono (pos_iff_ne_zero.2 ha) h_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) :=
   WithTop.mul_left_strictMono (pos_iff_ne_zero.2 ha) h_top
 
@@ -475,12 +472,10 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
-set_option backward.isDefEq.respectTransparency false in
 lemma one_le_iff_ne_zero_withTop {n : WithTop ℕ∞} : 1 ≤ n ↔ n ≠ 0 :=
   ⟨fun h ↦ (zero_lt_one.trans_le h).ne',
     fun h ↦ add_one_natCast_le_withTop_of_lt (pos_iff_ne_zero.mpr h)⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma natCast_le_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞) ≤ N) (n : ℕ) : n ≤ N :=
   le_trans (mod_cast le_top) hN
 
@@ -526,7 +521,6 @@ theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) 
 section AddMonoidWithOne
 variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma map_natCast_nonneg : 0 ≤ n.map (Nat.cast : ℕ → α) := by cases n <;> simp
 
 variable [CharZero α]

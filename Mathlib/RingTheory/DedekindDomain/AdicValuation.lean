@@ -372,7 +372,6 @@ theorem valuation_uniformizer_ne_zero : Classical.choose (v.valuation_exists_uni
   haveI hu := Classical.choose_spec (v.valuation_exists_uniformizer K)
   (Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hu WithZero.coe_ne_zero)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mem_integers_of_valuation_le_one (x : K)
     (h : ∀ v : HeightOneSpectrum R, v.valuation K x ≤ 1) : x ∈ (algebraMap R K).range := by
   obtain ⟨⟨n, d, hd⟩, hx⟩ := IsLocalization.surj (nonZeroDivisors R) x

@@ -328,7 +328,6 @@ theorem divisor_restrict {f : 𝕜 → E} {V : Set 𝕜} (hf : MeromorphicOn f U
     simp [hf, hx, hf.mono_set hV, hV hx]
   · simp [hx]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Adding an analytic function to a meromorphic one does not change the pole divisor. -/
 theorem negPart_divisor_add_of_analyticNhdOn_right {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
     (hf₂ : AnalyticOnNhd 𝕜 f₂ U) :
