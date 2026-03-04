@@ -67,7 +67,7 @@ theorem IsGaloisGroup.of_mulEquiv [hG : IsGaloisGroup G A B] {H : Type*} [Group 
 
 attribute [instance low] IsGaloisGroup.commutes IsGaloisGroup.isInvariant
 
-variable (R : Type*) [Ring R] [Algebra A R] [FaithfulSMul A R] [MulSemiringAction G R]
+variable (R : Type*) [Semiring R] [Algebra A R] [FaithfulSMul A R] [MulSemiringAction G R]
   [hA : IsGaloisGroup G A R]
 
 /--
@@ -76,17 +76,17 @@ fixed by `G`.
 -/
 @[simps apply_coe]
 noncomputable def IsGaloisGroup.ringEquivFixedPoints :
-    A ≃+* FixedPoints.subring R G :=
-  { toFun := fun x ↦ ⟨algebraMap A R x, fun _ ↦ by rw [smul_algebraMap]⟩
-    invFun := fun x ↦ (hA.isInvariant.isInvariant x x.prop).choose
+    A ≃+* FixedPoints.subsemiring R G :=
+  { toFun x := ⟨algebraMap A R x, fun _ ↦ by rw [smul_algebraMap]⟩
+    invFun x := (hA.isInvariant.isInvariant x x.prop).choose
     map_mul' _ _ := by simp [Subtype.ext_iff]
-    map_add' := by simp [Subtype.ext_iff]
+    map_add' _ _ := by simp [Subtype.ext_iff]
     left_inv _ := by simp
     right_inv x := by
       simpa [Subtype.ext_iff] using (hA.isInvariant.isInvariant x x.prop).choose_spec }
 
 @[simp]
-theorem IsGaloisGroup.ringEquivFixedPoints_map_symm_apply (x : FixedPoints.subring R G) :
+theorem IsGaloisGroup.ringEquivFixedPoints_map_symm_apply (x : FixedPoints.subsemiring R G) :
     algebraMap A R ((ringEquivFixedPoints G A R).symm x) = x :=
  (hA.isInvariant.isInvariant x x.prop).choose_spec
 
