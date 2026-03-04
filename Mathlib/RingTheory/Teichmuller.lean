@@ -189,18 +189,20 @@ theorem mk_comp_teichmuller' :
   funext mk_teichmuller
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def quotientMulEquiv : Perfection R p ≃* Perfection (R ⧸ I) p := MonoidHom.toMulEquiv
+noncomputable def quotientMulEquiv (p : ℕ) [Fact (Nat.Prime p)]
+    {R : Type*} [CommRing R] (I : Ideal R) [CharP (R ⧸ I) p] [IsAdicComplete I R] :
+    Perfection R p ≃* Perfection (R ⧸ I) p := MonoidHom.toMulEquiv
   (mapMonoidHom _ <| Ideal.Quotient.mk I)
   (liftMonoidHom p _ _ <| teichmuller p I)
   ((liftMonoidHom p _ _).symm.injective <| by ext; simp)
   ((liftMonoidHom p _ _).symm.injective <| by ext; simp)
 
 @[simp] theorem coeff_quotientMulEquiv (x : Perfection R p) (n : ℕ) :
-    coeff (R ⧸ I) p n (quotientMulEquiv x) = Ideal.Quotient.mk I (coeffMonoidHom R p n x) := rfl
+    coeff (R ⧸ I) p n (quotientMulEquiv p I x) = Ideal.Quotient.mk I (coeffMonoidHom R p n x) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem coeff_zero_symm_quotientMulEquiv (x : Perfection (R ⧸ I) p) :
-    coeffMonoidHom R p 0 (quotientMulEquiv.symm x) = teichmuller₀ p I x := by
+    coeffMonoidHom R p 0 (quotientMulEquiv p I |>.symm x) = teichmuller₀ p I x := by
   simp [quotientMulEquiv]
 
 end Perfection
