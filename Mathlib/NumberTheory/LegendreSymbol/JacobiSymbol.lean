@@ -195,7 +195,6 @@ theorem pow_left (a : ℤ) (e b : ℕ) : J(a ^ e | b) = J(a | b) ^ e :=
   Nat.recOn e (by rw [_root_.pow_zero, _root_.pow_zero, one_left]) fun _ ih => by
     rw [_root_.pow_succ, _root_.pow_succ, mul_left, ih]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We have that `J(a | b^e) = J(a | b)^e`. -/
 theorem pow_right (a : ℤ) (b e : ℕ) : J(a | b ^ e) = J(a | b) ^ e := by
   induction e with
@@ -358,7 +357,6 @@ def qrSign (m n : ℕ) : ℤ :=
 
 namespace qrSign
 
-set_option backward.isDefEq.respectTransparency false in
 /-- We can express `qrSign m n` as a power of `-1` when `m` and `n` are odd. -/
 theorem neg_one_pow {m n : ℕ} (hm : Odd m) (hn : Odd n) :
     qrSign m n = (-1) ^ (m / 2 * (n / 2)) := by
@@ -422,7 +420,6 @@ theorem quadratic_reciprocity {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = (-1) ^ (a / 2 * (b / 2)) * J(b | a) := by
   rw [← qrSign.neg_one_pow ha hb, qrSign.symm ha hb, quadratic_reciprocity' ha hb]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Law of Quadratic Reciprocity for the Jacobi symbol: if `a` and `b` are natural numbers
 with `a % 4 = 1` and `b` odd, then `J(a | b) = J(b | a)`. -/
 theorem quadratic_reciprocity_one_mod_four {a b : ℕ} (ha : a % 4 = 1) (hb : Odd b) :
