@@ -46,7 +46,7 @@ lemma apply_sum_le {v : AbsoluteValue R ℝ} (hv : IsNonarchimedean v) {l : α �
     refine max_le ?_ ?_
     · exact Finite.le_ciSup_of_le ⟨_, s.mem_insert_self a⟩ le_rfl
     · rcases isEmpty_or_nonempty s with hs | hs
-      · simpa using v.iSup_abv_nonneg
+      · simpa using Real.iSup_nonneg_of_nonnegHomClass v _
       exact ciSup_le fun i ↦ Finite.le_ciSup_of_le (⟨i.val, Finset.mem_insert_of_mem i.prop⟩) le_rfl
 
 end IsNonarchimedean
@@ -71,7 +71,7 @@ lemma linearMap_apply_bound [Nonempty ι'] (v : AbsoluteValue K ℝ) (A : ι' ×
   case h =>
     simp only
     gcongr
-    · exact v.iSup_abv_nonneg
+    · exact Real.iSup_nonneg_of_nonnegHomClass v _
     · exact Finite.le_ciSup_of_le (j, i) le_rfl
     · exact Finite.le_ciSup_of_le i le_rfl
   rw [Finset.sum_const, nsmul_eq_mul, mul_assoc, Finset.card_univ, Nat.card_eq_fintype_card]
@@ -88,7 +88,7 @@ lemma linearMap_apply_bound_of_isNonarchimedean [Nonempty ι] [Nonempty ι'] {v 
   rw [this fun i ↦ v (A (j, i)) * v (x i)]
   refine ciSup_le fun i ↦ ?_
   gcongr
-  · exact v.iSup_abv_nonneg
+  · exact Real.iSup_nonneg_of_nonnegHomClass v _
   · exact Finite.le_ciSup_of_le (j, i) le_rfl
   · exact Finite.le_ciSup_of_le i le_rfl
 
@@ -122,19 +122,19 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
   rw [mulHeight_eq h, mulHeight_eq hA, mulHeight_eq hx, mul_mul_mul_comm, ← mul_assoc, ← mul_assoc,
     mul_assoc (_ * _ * _)]
   gcongr
-  · exact finprod_nonneg fun v ↦ v.val.iSup_abv_nonneg
+  · exact finprod_nonneg fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _
   · refine mul_nonneg (mul_nonneg (by simp) ?_) ?_ <;>
-      exact prod_map_nonneg fun v _ ↦ v.iSup_abv_nonneg
+      exact prod_map_nonneg fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _
   · -- archimedean part: reduce to "local" statement `linearMap_apply_bound`
     rw [mul_assoc, ← prod_map_mul, ← prod_replicate, totalWeight, ← map_const', ← prod_map_mul]
-    refine prod_map_le_prod_map₀ _ _ (fun v _ ↦ v.iSup_abv_nonneg) fun v _ ↦ ?_
+    refine prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _) fun v _ ↦ ?_
     rw [mul_comm (iSup _), ← mul_assoc]
     exact linearMap_apply_bound v A x
   · -- nonarchimedean part: reduce to "local" statement `linearMap_apply_bound_of_isNonarchimedean`
     rw [← finprod_mul_distrib (mulSupport_iSup_nonarchAbsVal_finite hA)
       (mulSupport_iSup_nonarchAbsVal_finite hx)]
     refine finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h)
-      (fun v ↦ v.val.iSup_abv_nonneg) ?_ fun v ↦ ?_
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) ?_ fun v ↦ ?_
     · exact ((mulSupport_iSup_nonarchAbsVal_finite hA).union
         (mulSupport_iSup_nonarchAbsVal_finite hx)).subset <| Function.mulSupport_mul ..
     · exact linearMap_apply_bound_of_isNonarchimedean (isNonarchimedean _ v.prop) A x
