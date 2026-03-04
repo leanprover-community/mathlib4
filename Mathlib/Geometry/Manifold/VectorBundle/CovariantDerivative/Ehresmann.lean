@@ -15,7 +15,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Misc
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
-public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Trivial
 
 /-!
 # Covariant derivatives

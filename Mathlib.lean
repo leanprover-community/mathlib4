@@ -4414,6 +4414,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Prelim
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion2
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.TrivPrelim
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Trivial
 public import Mathlib.Geometry.Manifold.VectorBundle.Extend
 public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
 public import Mathlib.Geometry.Manifold.VectorBundle.GramSchmidtOrtho
