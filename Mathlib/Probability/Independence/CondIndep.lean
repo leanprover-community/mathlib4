@@ -1,4 +1,8 @@
-import Mathlib
+module
+
+public import Mathlib.MeasureTheory.Function.ConditionalLExpectation
+
+@[expose] public section
 
 open Set MeasureTheory MeasurableSpace
 
@@ -10,41 +14,45 @@ variable {Ω ι ι' : Type*}
 
 section Definitions
 
-variable {mΩ₀ : MeasurableSpace Ω} (P : Measure[mΩ₀] Ω := by volume_tac) (mΩ : MeasurableSpace Ω)
+variable {mΩ₀ : MeasurableSpace Ω}
 
 /-- A family of sets of sets `π : ι → Set (Set Ω)` is independent with respect to a kernel `κ` and
 a measure `μ` if for any finite set of indices `s = {i_1, ..., i_n}`, for any sets
 `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then `∀ᵐ a ∂μ, κ a (⋂ i in s, f i) = ∏ i ∈ s, κ a (f i)`.
 It will be used for families of pi_systems. -/
-def iCondIndepSets' (π : ι → Set (Set Ω)) : Prop :=
+def iCondIndepSets' (P : Measure[mΩ₀] Ω := by volume_tac) (mΩ : MeasurableSpace Ω)
+  (π : ι → Set (Set Ω)) : Prop :=
   ∀ (s : Finset ι) {f : ι → Set Ω} (_H : ∀ i, i ∈ s → f i ∈ π i),
   P⁻⸨⋂ i ∈ s, f i| mΩ⸩ =ᵐ[P] ∏ i ∈ s, P⁻⸨f i | mΩ⸩
 
 /-- Two sets of sets `s₁, s₂` are independent with respect to a kernel `κ` and a measure `μ` if for
 any sets `t₁ ∈ s₁, t₂ ∈ s₂`, then `∀ᵐ a ∂μ, κ a (t₁ ∩ t₂) = κ a (t₁) * κ a (t₂)` -/
-def CondIndepSets' (s1 s2 : Set (Set Ω)) : Prop :=
+def CondIndepSets' (P : Measure[mΩ₀] Ω := by volume_tac) (mΩ : MeasurableSpace Ω)
+    (s1 s2 : Set (Set Ω)) : Prop :=
   ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → P⁻⸨t1 ∩ t2| mΩ⸩ =ᵐ[P] P⁻⸨t1| mΩ⸩ * P⁻⸨t2| mΩ⸩
 
 /-- A family of measurable space structures (i.e. of σ-algebras) is independent with respect to a
 kernel `κ` and a measure `μ` if the family of sets of measurable sets they define is independent. -/
-def iCondIndep' (m : ι → MeasurableSpace Ω) : Prop :=
+def iCondIndep' (P : Measure[mΩ₀] Ω := by volume_tac) (mΩ : MeasurableSpace Ω)
+    (m : ι → MeasurableSpace Ω) : Prop :=
   iCondIndepSets' P mΩ (fun x ↦ {s | MeasurableSet[m x] s})
 
 /-- Two measurable space structures (or σ-algebras) `m₁, m₂` are independent with respect to a
 kernel `κ` and a measure `μ` if for any sets `t₁ ∈ m₁, t₂ ∈ m₂`,
 `∀ᵐ a ∂μ, κ a (t₁ ∩ t₂) = κ a (t₁) * κ a (t₂)` -/
-def CondIndep' (m₁ m₂ : MeasurableSpace Ω) : Prop :=
+def CondIndep' (P : Measure[mΩ₀] Ω := by volume_tac) (mΩ : MeasurableSpace Ω)
+    (m₁ m₂ : MeasurableSpace Ω) : Prop :=
   CondIndepSets' P mΩ {s | MeasurableSet[m₁] s} {s | MeasurableSet[m₂] s}
 
 /-- A family of sets is independent if the family of measurable space structures they generate is
 independent. For a set `s`, the generated measurable space has measurable sets `∅, s, sᶜ, univ`. -/
-def iCondIndepSet' (s : ι → Set Ω) : Prop :=
-  iCondIndep' P mΩ (m := fun i ↦ generateFrom {s i})
+def iCondIndepSet' (P : Measure[mΩ₀] Ω := by volume_tac) (mΩ : MeasurableSpace Ω)
+    (s : ι → Set Ω) : Prop := iCondIndep' P mΩ (m := fun i ↦ generateFrom {s i})
 
 /-- Two sets are independent if the two measurable space structures they generate are independent.
 For a set `s`, the generated measurable space structure has measurable sets `∅, s, sᶜ, univ`. -/
-def CondIndepSet' (s t : Set Ω) : Prop :=
-  CondIndep' P mΩ (generateFrom {s}) (generateFrom {t})
+def CondIndepSet' (P : Measure[mΩ₀] Ω := by volume_tac) (mΩ : MeasurableSpace Ω) (s t : Set Ω) :
+    Prop := CondIndep' P mΩ (generateFrom {s}) (generateFrom {t})
 
 end Definitions
 
@@ -354,8 +362,8 @@ theorem CondIndepSets'.condIndep' (hm : mΩ ≤ mΩ₀) [SigmaFinite (P.trim hm)
   | compl t ht iht =>
     have : tᶜ ∩ t2 = t2 \ (t ∩ t2) := by
       rw [inter_comm t, Set.diff_self_inter, Set.diff_eq_compl_inter]
-    grw [this, inter_comm t t2, condLProb_diff (by simp) (by measurability) (by measurability),
-      inter_comm, condLProb_compl hm (h1 _ ht)]
+    grw [this, inter_comm t t2, condLProb_diff (by simp) (by measurability), inter_comm,
+      condLProb_compl hm (h1 _ ht)]
     filter_upwards [iht, condLProb_le_one P t2] with ω hω ht2
     rw [Pi.mul_apply, Pi.sub_apply, Pi.sub_apply, hω, ENNReal.sub_mul]
     · simp
@@ -646,3 +654,5 @@ theorem condIndep'_iff_forall_condIndepSet' (m₁ m₂ : MeasurableSpace Ω) :
 end IndepSet
 
 end ProbabilityTheory
+
+end
