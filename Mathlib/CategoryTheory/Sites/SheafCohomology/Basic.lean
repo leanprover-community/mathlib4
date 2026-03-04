@@ -144,6 +144,7 @@ theorem H.equiv₀_symm_comp (x : F.val.obj (op T)) :
 
 variable (n : ℕ)
 
+/-- `H` as a functor. -/
 noncomputable def Hfunctor (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} :=
     (extFunctor n).obj
       (op ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of.{w} (ULift ℤ))))
