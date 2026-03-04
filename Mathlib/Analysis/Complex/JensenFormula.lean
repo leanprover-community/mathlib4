@@ -85,7 +85,7 @@ function of Value Distribution Theory, as discussed in
 `Mathlib/Analysis/Complex/ValueDistribution/CountingFunction.lean`.
 -/
 lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
-    (hD : D.support.Finite) :
+    (hD : D.HasFiniteSupport) :
     ∑ᶠ u, D u * (log R - log ‖c - u‖) = ∑ᶠ u, D u * log (R * ‖c - u‖⁻¹) + D c * log R := by
   by_cases h : c ∈ D.support
   · have {g : ℂ → ℝ} : (fun u ↦ D u * g u).support ⊆ hD.toFinset :=
@@ -117,7 +117,6 @@ See `Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_cons
 reformulation in terms of the logarithmic counting function of Value Distribution Theory.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MeromorphicOn.circleAverage_log_norm {c : ℂ} {R : ℝ} {f : ℂ → ℂ} (hR : R ≠ 0)
     (h₁f : MeromorphicOn f (closedBall c |R|)) :
     circleAverage (log ‖f ·‖) c R

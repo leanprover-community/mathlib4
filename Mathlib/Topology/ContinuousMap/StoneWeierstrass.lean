@@ -161,14 +161,10 @@ theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
     (f g : A) : (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A := by
   convert sup_mem_subalgebra_closure A f g
   apply SetLike.ext'
-  symm
-  dsimp
-  rw [closure_eq_iff_isClosed]
-  exact h
+  simp
 
 open scoped Topology
 
-set_option backward.isDefEq.respectTransparency false in
 -- Here's the fun part of Stone-Weierstrass!
 theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
     (inf_mem : ∀ᵉ (f ∈ L) (g ∈ L), f ⊓ g ∈ L)
