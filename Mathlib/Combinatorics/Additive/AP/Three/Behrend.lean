@@ -183,7 +183,6 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
 
-set_option backward.isDefEq.respectTransparency false in
 theorem threeAPFree_image_sphere :
     ThreeAPFree ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
@@ -202,7 +201,6 @@ theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n
     Nat.pow_le_pow_left (Nat.le_sub_one_of_lt (hx i)) _
   exact (sum_le_card_nsmul univ _ _ fun i _ => this i).trans (by rw [Finset.card_fin, smul_eq_mul])
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sum_eq : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) = ((2 * d + 1) ^ n - 1) / 2 := by
   refine (Nat.div_eq_of_eq_mul_left zero_lt_two ?_).symm
   rw [← sum_range fun i => d * (2 * d + 1) ^ (i : ℕ), ← mul_sum, mul_right_comm, mul_comm d, ←
@@ -211,7 +209,6 @@ theorem sum_eq : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) = ((2 * d + 1) ^ n
 theorem sum_lt : (∑ i : Fin n, d * (2 * d + 1) ^ (i : ℕ)) < (2 * d + 1) ^ n :=
   sum_eq.trans_lt <| (Nat.div_le_self _ 2).trans_lt <| pred_lt (pow_pos (succ_pos _) _).ne'
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
     #(sphere n d k) ≤ rothNumberNat ((2 * d - 1) ^ n) := by
   cases n
@@ -292,7 +289,6 @@ theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   · linarith [exp_one_gt_d9]
   rw [sub_pos, div_lt_one] <;> exact exp_one_gt_d9.trans' (by norm_num)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ √(log ↑N) := by
   calc
     _ ≤ log (2 ^ 3) * (69 / 50) := by
@@ -320,7 +316,6 @@ theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x
     sub_neg_eq_add, two_mul, sub_add_add_cancel, add_comm _ x]
   exact le_trans (le_add_of_nonneg_right zero_le_one) (add_one_le_exp _)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem div_lt_floor {x : ℝ} (hx : 2 / (1 - 2 / exp 1) ≤ x) : x / exp 1 < (⌊x / 2⌋₊ : ℝ) := by
   apply lt_of_le_of_lt _ (sub_one_lt_floor _)
   have : 0 < 1 - 2 / exp 1 := by
@@ -362,7 +357,6 @@ theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   · exact log_two_gt_d9.trans_le' (by norm_num1)
   · norm_num1
 
-set_option backward.isDefEq.respectTransparency false in
 theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
   have hN₀ : 0 < (N : ℝ) := cast_pos.2 (succ_pos'.trans_le hN₃)
   rw [dValue, floor_pos, ← log_le_log_iff zero_lt_one, log_one, log_div _ two_ne_zero, log_rpow hN₀,
@@ -398,7 +392,6 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
   · exact floor_le (div_nonneg (rpow_nonneg (cast_nonneg _) _) zero_le_two)
   apply zero_lt_two
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv, nValue]
