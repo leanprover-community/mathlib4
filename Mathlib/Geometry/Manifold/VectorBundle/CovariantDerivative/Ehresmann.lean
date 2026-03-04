@@ -10,6 +10,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Prelim
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.Misc
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
