@@ -7,6 +7,7 @@ module
 
 public import Mathlib.NumberTheory.RamificationInertia.Basic
 public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Ramification theory for valuations
@@ -74,6 +75,27 @@ theorem uniformContinuous_algebraMap_liesOver :
     rw [← log_lt_log (by simp_all) (by simp), log_pow, Int.nsmul_eq_mul, mul_comm]
     exact Int.mul_lt_of_lt_ediv
       (mod_cast Nat.pos_of_ne_zero (ramificationIdx_ne_zero_of_liesOver w.asIdeal v.ne_bot)) hx
+
+set_option backward.isDefEq.respectTransparency false in
+open WithZeroTopology UniformSpace.Completion in
+theorem valued_liesOver
+    [Algebra (v.adicCompletion K) (w.adicCompletion L)]
+    [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
+    [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
+    (x : v.adicCompletion K) :
+    Valued.v x ^ v.asIdeal.ramificationIdx (algebraMap A B) w.asIdeal =
+      Valued.v (algebraMap _ (w.adicCompletion L) x) := by
+  induction x using induction_on with
+  | hp =>
+    exact isClosed_eq (Valued.continuous_valuation.pow _)
+      (Valued.continuous_valuation.comp <| continuous_algebraMap _ _)
+  | ih a =>
+    have := IsScalarTower.algebraMap_apply _ (v.adicCompletion K) (w.adicCompletion L) a
+    simp only [algebraMap_def, WithVal.algebraMap_right_apply, WithVal.algebraMap_left_apply,
+      Algebra.algebraMap_self, RingHom.id_apply] at this
+    simp only [Valued.valuedCompletion_apply, ← this, WithVal.valued_toVal,
+      ← valuation_liesOver L v]
+    rw [WithVal.valued_toVal]
 
 end AKLB
 
