@@ -99,6 +99,7 @@ lemma ιR_jointly_surjective (r : cR.pt) :
   Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (forget RingCat) hcR) r
 
+set_option backward.isDefEq.respectTransparency false in
 variable {hcR hcM} in
 lemma jointly_surjective₂ (r : cR.pt) (m : ModuleColimit hcR hcM) :
     ∃ (U : Cᵒᵖ) (a : R.obj U) (x : M.obj U),
@@ -110,6 +111,7 @@ lemma jointly_surjective₂ (r : cR.pt) (m : ModuleColimit hcR hcM) :
   obtain ⟨rfl, rfl⟩ := h
   exact ⟨U, a, x, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable {hcR hcM} in
 lemma jointly_surjective₃ (r₁ r₂ : cR.pt) (m : ModuleColimit hcR hcM) :
     ∃ (U : Cᵒᵖ) (a₁ a₂ : R.obj U) (x : M.obj U),
@@ -122,6 +124,7 @@ lemma jointly_surjective₃ (r₁ r₂ : cR.pt) (m : ModuleColimit hcR hcM) :
   obtain ⟨rfl, rfl, rfl⟩ := h
   exact ⟨U, a₁, a₂, x, rfl, rfl, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 variable {hcR hcM} in
 lemma jointly_surjective₃' (r : cR.pt) (m₁ m₂ : ModuleColimit hcR hcM) :
     ∃ (U : Cᵒᵖ) (a : R.obj U) (x₁ x₂ : M.obj U),
@@ -158,6 +161,7 @@ end ModuleColimit
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat cR.pt where
   obj M := ModuleCat.of _ (ModuleColimit hcR (colimit.isColimit M.presheaf))
   map {M₁ M₂} f := ModuleCat.ofHom
