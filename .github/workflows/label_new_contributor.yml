@@ -108,6 +108,8 @@ jobs:
 
             We use a [review queue](https://leanprover-community.github.io/queueboard/review_dashboard.html) to manage reviews. If your PR does not appear there, it is probably because it is not successfully building (i.e., it doesn't have a green checkmark), has the `awaiting-author` tag, or another reason described in the [Lifecycle of a PR](https://leanprover-community.github.io/contribute/index.html#lifecycle-of-a-pr). The review dashboard has [a dedicated webpage](https://leanprover-community.github.io/queueboard/on_the_queue.html?search=${{ github.event.pull_request.number }}) which shows whether your PR is on the review queue, and (if not), why.
 
+            We also kindly remind contributors that we have [guidelines](https://leanprover-community.github.io/contribute/index.html#use-of-ai) regarding use of AI when making pull requests.
+
             If you haven't already done so, please come to [https://leanprover.zulipchat.com/](https://leanprover.zulipchat.com/), introduce yourself, and mention your new PR.
 
             Thank you again for joining our community.
