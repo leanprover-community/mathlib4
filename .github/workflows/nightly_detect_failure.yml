@@ -7,7 +7,7 @@ on:
       - completed
 
 env:
-  MATHLIB_CI_REF: 7c2dcf950607e48029aec2a614e840f2a14ae7e1
+  MATHLIB_CI_REF: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
 
 jobs:
   handle_failure:
