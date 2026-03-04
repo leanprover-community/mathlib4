@@ -194,22 +194,25 @@ lemma isFinitePlace_iff (v : AbsoluteValue K ℝ) :
 
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
-theorem FinitePlace.norm_def (x : K) :
+theorem FinitePlace.norm_embedding (x : K) :
     ‖embedding v x‖ = adicAbv v x := by
   simp +instances [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
     Valued.norm, Valuation.RankOne.hom, embedding_apply, adicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
-theorem FinitePlace.norm_def' (x : K) :
+theorem FinitePlace.norm_embedding' (x : K) :
     ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.valuation K x) := by
-  rw [norm_def, adicAbv_def]
+  rw [norm_embedding, adicAbv_def]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation for integers. -/
-theorem FinitePlace.norm_def_int (x : 𝓞 K) :
+theorem FinitePlace.norm_embedding_int (x : 𝓞 K) :
     ‖embedding v x‖ = toNNReal (absNorm_ne_zero v) (v.intValuation x) := by
-  simp [norm_def, adicAbv_def, valuation_of_algebraMap]
+  simp [norm_embedding, adicAbv_def, valuation_of_algebraMap]
+
+theorem FinitePlace.norm_def {x : v.adicCompletion K} :
+    ‖x‖ = toNNReal (absNorm_ne_zero v) (Valued.v x) := rfl
 
 /-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
 theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
@@ -227,19 +230,19 @@ open FinitePlace
 
 /-- The `v`-adic norm of an integer is at most 1. -/
 theorem FinitePlace.norm_le_one (x : 𝓞 K) : ‖embedding v x‖ ≤ 1 := by
-  rw [norm_def]
+  rw [norm_embedding]
   exact v.adicAbv_coe_le_one (one_lt_absNorm_nnreal v) x
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem FinitePlace.norm_eq_one_iff_notMem (x : 𝓞 K) :
     ‖embedding v x‖ = 1 ↔ x ∉ v.asIdeal := by
-  rw [norm_def]
+  rw [norm_embedding]
   exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnreal v) x
 
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 K) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
-  rw [norm_def]
+  rw [norm_embedding]
   exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
 
 end FinitePlace
@@ -343,7 +346,7 @@ lemma add_le (v : FinitePlace K) (x y : K) :
   obtain ⟨w, hw⟩ := v.prop
   have H x : v x = RingOfIntegers.HeightOneSpectrum.adicAbv w x := by
     rw [show v x = v.val x from rfl]
-    grind only [place_apply, norm_def]
+    grind only [place_apply, norm_embedding]
   simpa only [H] using RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max w x y
 
 instance : NonarchimedeanHomClass (FinitePlace K) K ℝ where
@@ -368,7 +371,7 @@ set_option backward.isDefEq.respectTransparency false in
 open Ideal in
 lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K}
     (h_x_nezero : x ≠ 0) : ‖embedding v x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
-  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, adicAbv_def,
+  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_embedding, adicAbv_def,
     WithZeroMulInt.toNNReal_neg_apply _
       ((v.valuation K).ne_zero_iff.mpr (coe_ne_zero_iff.mpr h_x_nezero))]
   push_cast
@@ -389,18 +392,25 @@ open scoped Valued
 variable {K L : Type*} [Field K] [NumberField K] [Field L] [NumberField L] [Algebra K L]
 variable (v : HeightOneSpectrum (𝓞 K)) (w : HeightOneSpectrum (𝓞 L))
 
-private lemma inertiaDeg_mul_ramificationIdx_ne_zero [w.asIdeal.LiesOver v.asIdeal] :
-    (v.asIdeal.inertiaDeg w.asIdeal *
-      v.asIdeal.ramificationIdx (algebraMap (𝓞 K) (𝓞 L)) w.asIdeal) ≠ 0 := by
-  simpa [-inertiaDeg_algebraMap] using
-    ⟨Ideal.inertiaDeg_ne_zero _ _, ramificationIdx_ne_zero_of_liesOver _ v.ne_bot⟩
+local notation "Kv" => v.adicCompletion K
+local notation "Lw" => w.adicCompletion L
+local notation "e" => v.asIdeal.ramificationIdx (algebraMap (𝓞 K) (𝓞 L)) w.asIdeal
+local notation "f" => v.asIdeal.inertiaDeg w.asIdeal
+
+private lemma mul_ne_zero [w.asIdeal.LiesOver v.asIdeal] :
+    e * f ≠ 0 := by simpa [-inertiaDeg_algebraMap] using
+  ⟨ramificationIdx_ne_zero_of_liesOver _ v.ne_bot, Ideal.inertiaDeg_ne_zero _ _⟩
+
+theorem toNNReal_liesOver [w.asIdeal.LiesOver v.asIdeal] (γ : ℤᵐ⁰) :
+    toNNReal (absNorm_ne_zero v) γ ^ f = toNNReal (absNorm_ne_zero w) γ := by
+  simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
+  rcases eq_or_ne γ 0 with (rfl | hx) <;> simp [inertiaDeg_ne_zero, -inertiaDeg_algebraMap]
+  simp only [hx, absNorm_eq_pow_inertiaDeg_of_liesOver w.asIdeal v.asIdeal v.isPrime v.ne_bot]
+  simp [← zpow_natCast, zpow_comm]
 
 variable [Algebra (v.adicCompletion K) (w.adicCompletion L)]
     [ContinuousSMul (v.adicCompletion K) (w.adicCompletion L)]
     [IsScalarTower K (v.adicCompletion K) (w.adicCompletion L)]
-
-local notation "Kv" => v.adicCompletion K
-local notation "Lw" => w.adicCompletion L
 
 open scoped TensorProduct Valued in
 instance : Module.Finite Kv Lw :=
@@ -414,55 +424,29 @@ instance : Module.Finite Kv Lw :=
     rw [← Set.range_eq_univ, ← Φ.coe_range, ← Φ.range.closed_of_finiteDimensional.closure_eq]
     exact h_dense.closure_range)
 
-theorem _root_.NNReal.zpow_pow_comm {x : ℝ≥0} {z : ℤ} {n : ℕ} : (x ^ z) ^ n = (x ^ n) ^ z := by
-  simpa [← zpow_natCast] using zpow_comm _ _ _
+theorem norm_liesOver [w.asIdeal.LiesOver v.asIdeal] (x : Kv) :
+    ‖x‖ ^ (e * f) = ‖algebraMap Kv Lw x‖ := by simp [norm_def, -inertiaDeg_algebraMap,
+  ← NNReal.coe_pow, ← valued_liesOver, pow_mul', toNNReal_liesOver]
 
-noncomputable
-def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
+open Real in
+noncomputable def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
     AlgebraNorm (v.adicCompletion K) (w.adicCompletion L) where
-  toFun x :=
-    let e := v.asIdeal.ramificationIdx (algebraMap (𝓞 K) (𝓞 L)) w.asIdeal *
-      v.asIdeal.inertiaDeg w.asIdeal
-    ‖x‖ ^ (e : ℝ)⁻¹
-  map_zero' := by
-    simp only [norm_zero, Nat.cast_mul, mul_inv_rev]
-    rw [← mul_inv, Real.rpow_inv_eq le_rfl le_rfl
-      (by rw [← Nat.cast_mul, Nat.cast_ne_zero]; exact inertiaDeg_mul_ramificationIdx_ne_zero v w),
-      ← Nat.cast_mul, Real.rpow_natCast, zero_pow]
-    exact inertiaDeg_mul_ramificationIdx_ne_zero v w
+  toFun x := ‖x‖ ^ (e * f : ℝ)⁻¹
+  map_zero' := by rw [norm_zero, rpow_inv_eq le_rfl le_rfl (mod_cast mul_ne_zero v w),
+    ← Nat.cast_mul, rpow_natCast, zero_pow (mul_ne_zero v w)]
   add_le' r s := by
-    apply (Real.rpow_le_rpow (norm_nonneg _) (norm_add_le r s)
-      (by simp only [inv_nonneg, Nat.cast_nonneg])).trans
-    apply NNReal.rpow_add_le_add_rpow _ _ (by simp only [inv_nonneg, Nat.cast_nonneg])
-    rw [inv_le_one₀]
-    · simp only [Nat.one_le_cast]
-      linarith [Nat.pos_of_ne_zero <| inertiaDeg_mul_ramificationIdx_ne_zero v w]
-    · simp only [Nat.cast_pos, mul_comm]
-      exact Nat.pos_of_ne_zero <| inertiaDeg_mul_ramificationIdx_ne_zero v w
+    apply (rpow_le_rpow (norm_nonneg _) (norm_add_le r s) (by simp [← Nat.cast_mul])).trans
+     (NNReal.rpow_add_le_add_rpow _ _ (by simp [← Nat.cast_mul]) ?_)
+    rw [inv_le_one₀ <| mod_cast (mul_ne_zero v w).pos, ← Nat.cast_mul, Nat.one_le_cast]
+    exact Nat.one_le_of_lt (mul_ne_zero v w).pos
   neg' := by simp [norm_neg]
-  mul_le' := by simp [Real.mul_rpow]
-  eq_zero_of_map_eq_zero' := fun _ h => by
-    rwa [Real.rpow_eq_zero (norm_nonneg _), norm_eq_zero] at h
-    simpa using inertiaDeg_mul_ramificationIdx_ne_zero v w
+  mul_le' := by simp [mul_rpow]
+  eq_zero_of_map_eq_zero' _ h := by
+    rwa [rpow_eq_zero (norm_nonneg _) (inv_ne_zero (mod_cast mul_ne_zero v w)), norm_eq_zero] at h
   smul' a x := by
-    rw [Algebra.smul_def]
-    simp only [norm_mul,
-      Nat.cast_mul, mul_inv_rev, norm_nonneg, Real.mul_rpow, mul_eq_mul_right_iff]
-    left
-    rw [← mul_inv, Real.rpow_inv_eq (norm_nonneg _) (norm_nonneg _)
-      (by rw [← Nat.cast_mul, Nat.cast_ne_zero]; exact inertiaDeg_mul_ramificationIdx_ne_zero v w)]
-    --simp only [NumberField.instNormedFieldValuedAdicCompletion]
-    change _ = (toNNReal (absNorm_ne_zero v) (Valued.v a) : ℝ) ^ _
-    change (toNNReal (absNorm_ne_zero w) (Valued.v (algebraMap _ (w.adicCompletion L) a)) : ℝ) = _
-    rw [← Nat.cast_mul, Real.rpow_natCast, ← NNReal.coe_pow, NNReal.coe_inj, mul_comm, pow_mul,
-      ← map_pow, ← valued_liesOver]
-    simp only [toNNReal, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, pow_eq_zero_iff', map_eq_zero,
-      ne_eq, dite_pow]
-    rw [absNorm_eq_pow_inertiaDeg_of_liesOver w.asIdeal v.asIdeal v.isPrime v.ne_bot,
-      zero_pow <| Ideal.inertiaDeg_ne_zero _ _]
-    split_ifs
-    · rfl
-    · simp [NNReal.zpow_pow_comm]
+    rw [Algebra.smul_def, norm_mul, ← norm_liesOver, mul_rpow (by simp [← norm_pow]) (by simp)]
+    apply mul_eq_mul_right_iff.2 ∘ .inl ∘ (rpow_inv_eq (by simp [← norm_pow]) (by simp)
+      (mod_cast mul_ne_zero v w)).2; norm_cast
 
 instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
     Algebra.IsIntegral (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) where
@@ -474,21 +458,19 @@ instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
         (minpoly.monic <| IsAlgebraic.isIntegral <| Algebra.IsAlgebraic.isAlgebraic _)]
       have := x.2
       rw [mem_adicCompletionIntegers] at this
-      let e := v.asIdeal.ramificationIdx (algebraMap (𝓞 K) (𝓞 L)) w.asIdeal *
-        v.asIdeal.inertiaDeg w.asIdeal
-      have hnorm : ‖x‖ ^ (e : ℝ)⁻¹ = spectralValue q := by
-        let f : AlgebraNorm (v.adicCompletion K) (w.adicCompletion L) :=
+      have hnorm : ‖x‖ ^ (e  * f : ℝ)⁻¹ = spectralValue q := by
+        let g : AlgebraNorm (v.adicCompletion K) (w.adicCompletion L) :=
           algebraNorm_of_liesOver v w
-        have hf : IsPowMul f := by
-          simp only [IsPowMul, f]
+        have hg : IsPowMul g := by
+          simp only [IsPowMul, g]
           intro a n hn
           change ‖a ^ n‖ ^ (_ : ℝ)⁻¹ = (‖a‖ ^ (_ : ℝ)⁻¹) ^ n
           simp [Real.rpow_pow_comm]
-        simpa [f] using f.ext_iff.1 (spectralNorm_unique hf) x
+        simpa only [g] using g.ext_iff.1 (spectralNorm_unique hg) x
       rw [← hnorm]
       simp only [ge_iff_le]
       apply Real.rpow_le_one (by simp) (Valued.toNormedField.norm_le_one_iff.mpr this)
-        (by simp)
+        (by simp [← Nat.cast_mul])
     set p : Polynomial (v.adicCompletionIntegers K) :=
       q.int (v.adicCompletionIntegers K).toSubring (by simpa using hq)
     use p
@@ -503,7 +485,7 @@ instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
     simp only [ValuationSubring.algebraMap_apply, ZeroMemClass.coe_zero]
     simp only [← this, ← ValuationSubring.subtype_apply, Polynomial.eval₂_def, Polynomial.sum_def,
       map_sum]
-    apply Finset.sum_congr rfl fun e _ ↦ ?_
+    apply Finset.sum_congr rfl fun i _ ↦ ?_
     simp only [ValuationSubring.subtype_apply, MulMemClass.coe_mul, SubmonoidClass.coe_pow,
       mul_eq_mul_right_iff, pow_eq_zero_iff', ZeroMemClass.coe_eq_zero, ne_eq]
     left
@@ -536,27 +518,21 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Algebra A B] [Fi
     (v : HeightOneSpectrum A) (w : HeightOneSpectrum B) [w.asIdeal.LiesOver v.asIdeal]
 
 noncomputable scoped instance : Algebra (v.adicCompletion K) (w.adicCompletion L) :=
-  UniformSpace.Completion.mapRingHom _ (uniformContinuous_algebraMap_liesOver K L v w).continuous
-    |>.toAlgebra
+  mapRingHom _ (uniformContinuous_algebraMap_liesOver K L v w).continuous |>.toAlgebra
 
 scoped instance : ContinuousSMul (v.adicCompletion K) (w.adicCompletion L) where
-  continuous_smul :=
-    (UniformSpace.Completion.continuous_map.comp continuous_fst).mul
-      (continuous_id.comp continuous_snd)
+  continuous_smul := (continuous_map.comp continuous_fst).mul (continuous_id.comp continuous_snd)
 
-scoped instance :
-    IsScalarTower (WithVal (v.valuation K)) (v.adicCompletion K) (w.adicCompletion L) := by
-  refine IsScalarTower.of_algebraMap_eq fun x ↦ ?_
-  rw [RingHom.algebraMap_toAlgebra]
-  erw [UniformSpace.Completion.mapRingHom_coe]
-  rfl
+scoped instance : IsScalarTower K (v.adicCompletion K) (w.adicCompletion L) :=
+  .of_algebraMap_eq fun x ↦ by simp [RingHom.algebraMap_toAlgebra, algebraMap_def,
+    -UniformSpace.Completion.mapRingHom_apply, mapRingHom_coe, WithVal.algebraMap_left_apply,
+    WithVal.algebraMap_right_apply]
 
 end LiesOver
 
 open scoped LiesOver in
 open Valued integer Rat.HeightOneSpectrum IsLocalRing in
-instance compact_adicCompletionIntegers :
-    CompactSpace (v.adicCompletionIntegers K) where
+instance compact_adicCompletionIntegers : CompactSpace (v.adicCompletionIntegers K) where
   isCompact_univ := by
     rw [isCompact_iff_totallyBounded_isComplete]
     refine ⟨?_, completeSpace_iff_isComplete_univ.1 (isClosed_valuationSubring _).completeSpace_coe⟩

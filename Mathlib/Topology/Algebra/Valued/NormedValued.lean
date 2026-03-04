@@ -174,6 +174,8 @@ instance : IsUltrametricDist L :=
 
 lemma coe_valuation_eq_rankOne_hom_comp_valuation : ⇑NormedField.valuation = hv.hom ∘ val.v := rfl
 
+theorem norm_def' {x : L} : ‖x‖ = hv.hom (Valued.v x) := rfl
+
 end NormedField
 
 variable {L} {Γ₀}
