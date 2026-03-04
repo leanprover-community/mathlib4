@@ -9,6 +9,7 @@ public import Mathlib.Lean.Meta.Simp
 
 /-!
 `dsimp% […] t` runs `dsimp […]` on term `t`.
+If `t` is a proof, then it runs `dsimp […]` on the type of `t` instead.
 
 For instance, instead of
 ```
@@ -27,6 +28,7 @@ open Lean Elab Term Meta Parser Tactic
 
 /--
 `dsimp% […] t` runs `dsimp […]` on term `t`.
+If `t` is a proof, then it runs `dsimp […]` on the type of `t` instead.
 
 For instance, instead of
 ```
@@ -37,13 +39,14 @@ rw [foo]
 one can write `rw [dsimp% foo]`.
 -/
 syntax (name := dsimpPercent) "dsimp%" optConfig (discharger)? (&" only")?
-  (" [" withoutPosition((simpErase <|> simpLemma),*,?) "]")? term : term
+  (" [" withoutPosition((simpErase <|> simpLemma),*,?) "]")? ppSpace term : term
 
 @[term_elab dsimpPercent, inherit_doc dsimpPercent]
 def dsimpPercentElaborator : TermElab := fun stx expectedType => do
   let fresh ← mkFreshExprMVar default
   let go : TacticM Expr := do
     let e ← Term.elabTerm stx[5] expectedType
+    -- `stx` has the same shape as a normal `dsimp` call, so we can pass it to `mkSimpContext`.
     let { ctx, simprocs, .. } ← mkSimpContext stx (eraseLocal := false) (kind := .dsimp)
     if (← isProof e) then
       let (dsimpResult, _) ← Meta.dsimp (← inferType e) ctx simprocs
