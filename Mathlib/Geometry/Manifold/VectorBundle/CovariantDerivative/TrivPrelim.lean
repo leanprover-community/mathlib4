@@ -378,7 +378,6 @@ def derivInv (v : TotalSpace F V) :
     TangentSpace I v.proj × F →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) v :=
   mfderiv (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) e.invFun (e v)
 
-
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma derivInv_deriv

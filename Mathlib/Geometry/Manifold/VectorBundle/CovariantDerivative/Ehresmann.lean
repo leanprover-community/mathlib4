@@ -139,7 +139,6 @@ def pushCovDer
     (M → F) → (Π x : M, TangentSpace I x →L[ℝ] F) :=
   fun σ x ↦ e.continuousLinearMapAt ℝ x ∘L (cov (e.funToSec σ) x)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pushCovDer_ofSect [FiniteDimensional ℝ E] [FiniteDimensional ℝ F]
     [T2Space M] [IsManifold I ∞ M]
     [∀ x, IsTopologicalAddGroup (V x)] [∀ x, ContinuousSMul ℝ (V x)]
