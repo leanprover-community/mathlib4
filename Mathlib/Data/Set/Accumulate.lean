@@ -85,6 +85,7 @@ theorem disjoint_accumulate [Preorder α] (hs : Pairwise (Disjoint on s)) {i j :
   rcases hx with ⟨k, hk, hx⟩
   exact disjoint_left.1 (hs (hk.trans_lt hij).ne) hx
 
+@[simp]
 theorem accumulate_succ (u : ℕ → Set α) (n : ℕ) :
     accumulate u (n + 1) = accumulate u n ∪ u (n + 1) := biUnion_le_succ u n
 
@@ -92,5 +93,20 @@ lemma partialSups_eq_accumulate (f : ℕ → Set α) :
     partialSups f = accumulate f := by
   ext n
   simp [partialSups_eq_sup_range, accumulate, Nat.lt_succ_iff]
+
+/-- For a directed set of sets `s : ℕ → Set α` and `n : ℕ`, there exists `m : ℕ` (maybe
+larger than `n`) such that `accumulate s n ⊆ s m`. -/
+lemma exists_subset_accumulate_of_directed {s : ℕ → Set α}
+  (hd : Directed (· ⊆ ·) s) (n : ℕ) : ∃ m, accumulate s n ⊆ s m := by
+  induction n with
+  | zero => use 0; simp [accumulate_def]
+  | succ n hn =>
+    obtain ⟨m, hm⟩ := hn
+    obtain ⟨k, hk⟩ := hd m (n + 1)
+    simp at hk
+    exact ⟨k, by simp; grind⟩
+
+lemma directed_accumulate {s : ℕ → Set α} : Directed (· ⊆ ·) (accumulate s) :=
+  monotone_accumulate.directed_le
 
 end Set
