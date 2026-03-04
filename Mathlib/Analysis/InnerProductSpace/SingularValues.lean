@@ -216,6 +216,29 @@ theorem finrank_range_adjoint_comp_self :
   Module.finrank 𝕜 (range (adjoint T ∘ₗ T)) = Module.finrank 𝕜 (range T) := by
     rw [range_adjoint_comp_self', Module.finrank_range_adjoint]
 
+-- TODO: Move to Mathlib.Analysis.InnerProductSpace.Spectrum
+theorem LinearMap.IsSymmetric.card_filter_eigenvalues_eq_zero
+  {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} (hn : Module.finrank 𝕜 E = n)
+  : Finset.card {i : Fin n | ↑(hT.eigenvalues hn i) = (0 : 𝕜)} = Module.finrank 𝕜 (ker T) := by
+  rw [hT.card_filter_eigenvalues_eq hn (μ := 0) sorry]
+  rw [Module.End.eigenspace_zero]
+
+
+theorem test {n : ℕ} (hn : Module.finrank 𝕜 E = n)
+    : T.singularValues.support.card
+      = (T.singularValues.support.preimage (@Fin.val n) Fin.val_injective.injOn).card := by
+  rw [Finset.card_preimage]
+  congr
+  ext i
+  simp only [Finsupp.mem_support_iff, ne_eq, Fin.range_val, Set.mem_Iio, Finset.mem_filter,
+    iff_self_and]
+  intro h
+  push_neg at h
+  contrapose h
+  push_neg at h
+  rw [←hn] at h
+  exact singularValues_of_finrank_le T h
+
 theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
     contrapose! hn
