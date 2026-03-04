@@ -512,83 +512,6 @@ lemma foo'_inj (h : v.IsEquiv w) (a b : Set.range v) (heq : foo' w a = foo' w b)
   ext
   rwa [← a.2.choose_spec, ← b.2.choose_spec]
 
-
-def bar_monoid (h : v.IsEquiv w) : valueMonoid v ≃ valueMonoid w where
-  toFun := by
-    rintro ⟨g, hg_mem⟩
-    rw [mem_valueMonoid_iff] at hg_mem
-    simp at hg_mem
-    let hy := hg_mem.choose_spec
-    set y := hg_mem.choose with hy_def
-    have hy_ne_zero : w y ≠ 0 := by
-      simp [hy, ← h.eq_zero]
-    use Units.mk0 (w y) hy_ne_zero
-    rw [mem_valueMonoid_iff]
-    simp
-  invFun := by
-    rintro ⟨g, hg_mem⟩
-    rw [mem_valueMonoid_iff] at hg_mem
-    simp at hg_mem
-    let hy := hg_mem.choose_spec
-    set y := hg_mem.choose with hy_def
-    have hy_ne_zero : v y ≠ 0 := by
-      simp [hy, h.eq_zero]
-    use Units.mk0 (v y) hy_ne_zero
-    rw [mem_valueMonoid_iff]
-    simp
-  left_inv := by
-    rintro ⟨a, ha⟩
-    simp
-    rw [mem_valueMonoid_iff] at ha
-    obtain ⟨r, hr⟩ := ha
-    have hr₀ : v r ≠ 0 := by
-      rw [hr]
-      simp
-    have ha' : a = Units.mk0 (v r) hr₀ := by
-      simp [hr]
-    simp_rw [ha']
-    congr
-    sorry
-  right_inv := sorry
-  -- toFun := by
-  --   rintro ⟨g, hg_mem⟩
-  --   rw [mem_valueMonoid_iff] at hg_mem
-  --   simp at hg_mem
-  --   let hy := hg_mem.choose_spec
-  --   set y := hg_mem.choose with hy_def
-  --   have hy_ne_zero : w y ≠ 0 := by
-  --     simp [hy, ← h.eq_zero]
-  --   use Units.mk0 (w y) hy_ne_zero
-
-
-
-
-def bar (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
-  sorry
-  -- apply Subgroup.map_clo
-  -- rintro ⟨g, hg_mem⟩
-  -- have := (mem_valueGroup_iff_of_comm (f := v) (y := g)).mp hg_mem
-  -- let ⟨ha, ha'⟩ := this.choose_spec
-  -- let H := ha'.choose_spec
-  -- set b := ha'.choose with hb_def
-  -- set a := this.choose with rfl
-  -- set g₀' := (w a)⁻¹ * (w b) with hg'_def
-  -- have hwa : w a ≠ 0 := by
-  --   rwa [ne_eq, ← h.eq_zero, ← ne_eq]
-  -- have hwb : w b ≠ 0 := by
-  --   replace H : v a * g = v b := H
-  --   simpa [← h.eq_zero, ← H]
-  -- have hg₀' : w a * g₀' = w b := by
-  --   rwa [hg'_def, ← mul_assoc, mul_inv_cancel₀, one_mul]
-  -- have hg₀'_ne_zero : g₀' ≠ 0 := by
-  --   apply ((ne_zero_and_ne_zero_of_mul (a := w a) (b := g₀')) _).2
-  --   rwa [hg₀']
-  -- let g' := Units.mk0 g₀' hg₀'_ne_zero
-  -- use g'
-  -- apply (mem_valueGroup_iff_of_comm (f := w) (y := g')).mpr
-  -- refine ⟨a, hwa, b, ?_⟩
-  -- exact hg₀'
-
 def bar' (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
   intro g
   have hg := (mem_valueGroup_iff_of_comm' (f := v) (y := g)).mp g.prop
@@ -596,19 +519,17 @@ def bar' (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
   let ha := hg.choose_spec.1
   set b := hg.choose_spec.2.choose with rfl
   let hb := hg.choose_spec.2.choose_spec.2
-  --set g₀' := (w a)⁻¹ * (w b) with hg'_def
-  /- have hwa : w a ≠ 0 := by
+  have hwa : w a ≠ 0 := by
     rwa [ne_eq, ← h.eq_zero, ← ne_eq]
   have hwb : w b ≠ 0 := by
     replace H : v a * g.1 = v b := hb
     simpa [← h.eq_zero, ← H]
-  have hg₀' : w a * g₀' = w b := by
-    rwa [hg'_def, ← mul_assoc, mul_inv_cancel₀, one_mul] -/
-  have h_ne_zero : (w a)⁻¹ * (w b) ≠ 0 := by
-    sorry
+  have hab : w a * ((w a)⁻¹ * (w b)) = w b := by
+    rwa [← mul_assoc, mul_inv_cancel₀, one_mul]
+  have h_ne_zero : (w a)⁻¹ * (w b) ≠ 0 := by simp [hwa, hwb]
   exact ⟨Units.mk0 ((w a)⁻¹ * (w b)) h_ne_zero,
-    (mem_valueGroup_iff_of_comm (f := w) (y := Units.mk0 ((w a)⁻¹ * (w b)) h_ne_zero)).mpr
-      ⟨a, sorry, b, sorry⟩⟩
+    (mem_valueGroup_iff_of_comm' (f := w) (y := Units.mk0 ((w a)⁻¹ * (w b)) h_ne_zero)).mpr
+      ⟨a, hwa, b, hwb, hab⟩⟩
 
 def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueGroup w where
   toFun := bar' h
@@ -620,10 +541,23 @@ def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueG
     set bx := hx.choose_spec.2.choose with hbx_def
     let hbx0 : v bx ≠ 0 := hx.choose_spec.2.choose_spec.1
     let hbx : v ax * _ = v bx := hx.choose_spec.2.choose_spec.2
-    simp only [bar']
-    simp only [← hax_def, ← hbx_def]
+    rw [eq_comm, ← inv_mul_eq_iff_eq_mul₀ hax] at hbx
     ext
-    simp only [Units.val_mul, Units.val_mk0]
+    rw [← hbx]
+    simp only [bar']
+    simp only [hax_def, hbx_def]
+    simp only [ne_eq, Units.mk0_mul, Units.val_mul, Units.val_mk0]
+    congr
+    · ext a
+      simp only [← h.eq_zero, and_congr_right_iff]
+      intro ha
+      rw [← hbx_def]
+      refine ⟨fun ⟨b, hb0, hab⟩ ↦ ?_, fun ⟨b, hb0, hab⟩ ↦ ?_⟩
+      · use b, hb0
+        sorry
+      · sorry
+    · ext a
+      sorry
     --rw [← hax_def]
     /- rintro ⟨g, hg_mem⟩
     rw [bar', bar']
@@ -635,7 +569,6 @@ def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueG
     simp_rw [hagb]
     simp -/
     --congr
-    sorry
     --sorry
 
   right_inv := sorry
