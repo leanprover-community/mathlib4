@@ -385,13 +385,15 @@ lemma ιMulti_family_mul_of_disjoint {m n : ℕ} {I : Type*} [LinearOrder I] (v 
   rw [← AlternatingMap.map_perm, permOfDisjoint]
   congr
   ext i
+  let e := powersetCard.orderIsoOfFin (powersetCard.disjUnion h)
+  change _ = v (e (e.symm _))
   by_cases! hi : i < m
-  · rw [← Fin.castAdd_castLT n i hi, Fin.append_left, ← OrderIso.symm_symm (OrderIso.sumCongr _ _)]
-    simp [- Fin.castAdd_castLT, ofFinEmbEquiv_symm_apply, powersetCard.orderIsoOfFin,
-      finSumFinEquiv_symm_apply_castAdd, ← Finset.coe_orderIsoOfFin_apply]
-  · rw [← Fin.natAdd_subNat_cast hi, Fin.append_right, ← OrderIso.symm_symm (OrderIso.sumCongr _ _)]
-    simp [- Fin.natAdd_subNat_cast, ofFinEmbEquiv_symm_apply, powersetCard.orderIsoOfFin,
-      finSumFinEquiv_symm_apply_natAdd, ← Finset.coe_orderIsoOfFin_apply]
+  · rw [← Fin.castAdd_castLT n i hi, Fin.append_left, OrderIso.apply_symm_apply,
+      finSumFinEquiv_symm_apply_castAdd]
+    aesop
+  · rw [← Fin.natAdd_subNat_cast hi, Fin.append_right, OrderIso.apply_symm_apply,
+      finSumFinEquiv_symm_apply_natAdd]
+    aesop
 
 variable {R}
 
