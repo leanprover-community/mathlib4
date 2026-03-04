@@ -758,8 +758,8 @@ lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
   have eq1 := aux I Y cov h hX hZ
   have eq2 := aux I Z cov h hY hX
   have eq3 := aux I X cov h hZ hY
-  rw [product_swap] at eq1 eq2 eq3 ⊢
-  sorry -- linear_combination (norm := module) -(2:ℝ)⁻¹ • (eq1 + eq2 - eq3)
+  simp [real_inner_comm, smul_eq_mul] at *
+  linear_combination - (eq1 + eq2 - eq3) / 2
 
 section
 
