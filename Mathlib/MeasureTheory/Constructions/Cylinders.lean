@@ -60,10 +60,36 @@ def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = (s : Set ι).pi t}
 
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
-    squareCylinders C = ⋃ s : Finset ι, (fun t ↦ (s : Set ι).pi t) '' univ.pi C := by
+    squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi '' univ.pi C := by
   ext1 f
   simp only [squareCylinders, mem_iUnion, mem_image, mem_univ_pi, mem_setOf_eq,
     eq_comm (a := f)]
+
+theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀ i, Nonempty (C i)) :
+    squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi '' (s : Set ι).pi C := by
+  classical
+  ext1 f
+  simp only [squareCylinders, mem_iUnion, mem_image, mem_setOf_eq, eq_comm (a := f)]
+  have h (s : Set ι): s.pi '' s.pi C = s.pi '' univ.pi C := by
+    refine pi_image_eq_of_subset hC (subset_univ s)
+  simp_rw [← mem_image, h]
+
+def squareCylinders_subset_of_or_univ (C : ∀ i, Set (Set (α i))) :
+    squareCylinders C ⊆ (univ.pi '' univ.pi (fun i ↦ insert univ (C i))) := by
+  classical
+  intro x hx
+  simp only [squareCylinders, mem_pi, mem_univ, forall_const, mem_setOf_eq] at hx
+  obtain ⟨s, t, ⟨ht, hx⟩⟩ := hx
+  simp only [mem_image, mem_pi, mem_univ, mem_insert_iff, forall_const]
+  use fun i ↦ (if (i ∈ s) then (t i) else univ)
+  refine ⟨?_, ?_⟩
+  · intro i
+    by_cases h : i ∈ s
+    · right
+      simp [h, ht]
+    · left
+      simp [h]
+  · exact hx ▸ univ_pi_ite s t
 
 theorem isPiSystem_squareCylinders {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsPiSystem (C i))
     (hC_univ : ∀ i, univ ∈ C i) :

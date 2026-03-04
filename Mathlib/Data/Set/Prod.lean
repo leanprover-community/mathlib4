@@ -689,6 +689,24 @@ theorem uniqueElim_preimage [Unique ι] (t : ∀ i, Set (α i)) :
 
 section Nonempty
 
+lemma pi_image_eq_of_subset {C : (i : ι) → Set (Set (α i))} (hC : ∀ i, Nonempty (C i))
+    {s₁ s₂ : Set ι} (hst : s₁ ⊆ s₂) : s₁.pi '' s₁.pi C = s₁.pi '' s₂.pi C := by
+  classical
+  let C_mem (i : ι) : Set (α i) := ((Set.exists_mem_of_nonempty (C i)).choose : Set (α i))
+  have h_mem (i : ι) : C_mem i ∈ C i := by
+    simp [C_mem]
+  ext f
+  refine ⟨fun ⟨x, ⟨hx1, hx2⟩⟩ ↦ ?_, fun ⟨w, ⟨hw1, hw2⟩⟩ ↦ ?_⟩
+  · use fun i ↦ if i ∈ s₁ then x i else C_mem i
+    refine ⟨fun i hi ↦ ?_, ?_⟩
+    · by_cases h1 : i ∈ s₁ <;> simp only [h1, ↓reduceIte]
+      · exact hx1 i h1
+      · exact h_mem i
+    · rw [← hx2]
+      exact pi_congr rfl (fun i hi ↦ by simp only [hi, ↓reduceIte])
+  · have hw3 := pi_mono' (fun _ _ _ hx ↦ hx) hst hw1
+    use w
+
 variable [∀ i, Nonempty (α i)]
 
 theorem pi_eq_empty_iff' : s.pi t = ∅ ↔ ∃ i ∈ s, t i = ∅ := by simp [pi_eq_empty_iff]
