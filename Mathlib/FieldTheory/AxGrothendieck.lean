@@ -143,7 +143,6 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
             (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
   Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Finite ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
@@ -239,7 +238,6 @@ theorem ax_grothendieck_zeroLocus
   obtain ⟨s, rfl⟩ : I.FG := IsNoetherian.noetherian I
   exact ax_grothendieck_of_definable S (mvPolynomial_zeroLocus_definable s) p
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A special case of the **Ax-Grothendieck** theorem
 
 Any injective polynomial map `K^n → K^n` is also surjective if `K` is an

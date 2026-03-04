@@ -61,6 +61,7 @@ lemma exists_egirth_eq_length :
       ← exists_prop, Subtype.exists', Sigma.exists', eq_comm] at h ⊢
     exact ciInf_mem _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma three_le_egirth : 3 ≤ G.egirth := by
   simpa using fun _ _ a ↦ Walk.IsCycle.three_le_length a
 

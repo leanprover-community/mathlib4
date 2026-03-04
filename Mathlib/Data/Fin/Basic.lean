@@ -323,7 +323,8 @@ lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
     haveI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
-  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by lia
+  simp [coe_sub_iff_le.mpr (Fin.le_of_lt hij)]
+  lia
 
 lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
     haveI := k.neZero
