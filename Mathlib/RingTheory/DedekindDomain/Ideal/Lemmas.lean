@@ -672,7 +672,7 @@ theorem Ideal.IsPrime.mul_mem_pow (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : 
   have : I.IsMaximal := hI.isMaximal hI0
   exact IsMaximal.mul_mem_pow I h
 
-/-- See also `Ideal.IsMaximal.mem_pow_mul for maximal ideal. -/
+/-- See also `Ideal.IsMaximal.mem_pow_mul` for maximal ideal. -/
 theorem Ideal.IsPrime.mem_pow_mul (I : Ideal R) [hI : I.IsPrime] {a b : R} {n : ℕ}
     (h : a * b ∈ I ^ n) : a ∈ I ^ n ∨ b ∈ I := by
   rw [mul_comm] at h
