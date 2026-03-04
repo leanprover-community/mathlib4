@@ -217,7 +217,7 @@ theorem finrank_range_adjoint_comp_self :
     rw [range_adjoint_comp_self', Module.finrank_range_adjoint]
 
 -- TODO: Move to Mathlib.Analysis.InnerProductSpace.Spectrum
-theorem LinearMap.IsSymmetric.card_filter_eigenvalues_eq_zero
+theorem IsSymmetric.card_filter_eigenvalues_eq_zero
   {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {n : ℕ} (hn : Module.finrank 𝕜 E = n)
   : Finset.card {i : Fin n | ↑(hT.eigenvalues hn i) = (0 : 𝕜)} = Module.finrank 𝕜 (ker T) := by
   rw [hT.card_filter_eigenvalues_eq hn (μ := 0) sorry]
@@ -238,6 +238,31 @@ theorem test {n : ℕ} (hn : Module.finrank 𝕜 E = n)
   push_neg at h
   rw [←hn] at h
   exact singularValues_of_finrank_le T h
+
+/-
+theorem test₂ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
+    : T.singularValues.support.card = Finset.card {i : Fin n | T.singularValues ↑i ≠ 0} := by
+  rw [T.test hn]
+  sorry
+  -/
+
+theorem test₂₅ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
+  : (T.singularValues.support.preimage (@Fin.val n) Fin.val_injective.injOn)
+    = ({i : Fin n | ↑(T.isSymmetric_adjoint_comp_self.eigenvalues hn i) = 0} : Finset (Fin n))ᶜ := by
+  ext i
+  have : 0 ≤ T.isSymmetric_adjoint_comp_self.eigenvalues hn i :=
+    T.isPositive_adjoint_comp_self.nonneg_eigenvalues hn i
+  have : T.isSymmetric_adjoint_comp_self.eigenvalues hn i = 0 ↔
+    T.isSymmetric_adjoint_comp_self.eigenvalues hn i ≤ 0 := by constructor <;> order
+  simp [T.singularValues_fin hn, this]
+
+theorem test₃ {n : ℕ} (hn : Module.finrank 𝕜 E = n)
+    : T.singularValues.support.card = Module.finrank 𝕜 T.range := by
+  rw [← Module.finrank_range_adjoint, ← T.range_adjoint_comp_self']
+  rw [T.test hn]
+  rw [T.test₂₅ hn]
+  rw [Finset.card_compl]
+  rw [T.isSymmetric_adjoint_comp_self.card_filter_eigenvalues_eq_zero hn]
 
 theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
