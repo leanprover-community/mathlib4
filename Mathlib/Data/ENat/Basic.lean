@@ -622,15 +622,19 @@ lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n 
   · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
       ← WithBot.coe_lt_coe, WithBot.coe_natCast]
 
+@[simp]
 lemma WithBot.add_natCast_cancel {a b : WithBot ℕ∞} {c : ℕ} : a + c = b + c ↔ a = b :=
   (IsAddRightRegular.all c).withTop.withBot.eq_iff
 
+@[simp]
 lemma WithBot.add_one_cancel {a b : WithBot ℕ∞} : a + 1 = b + 1 ↔ a = b :=
   (IsAddRightRegular.all 1).withTop.withBot.eq_iff
 
+@[simp]
 lemma WithBot.natCast_add_cancel {a b : WithBot ℕ∞} {c : ℕ} : c + a = c + b ↔ a = b :=
   (IsAddLeftRegular.all c).withTop.withBot.eq_iff
 
+@[simp]
 lemma WithBot.one_add_cancel {a b : WithBot ℕ∞} : 1 + a = 1 + b ↔ a = b :=
   (IsAddLeftRegular.all 1).withTop.withBot.eq_iff
 
