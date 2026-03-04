@@ -822,7 +822,7 @@ theorem lcCandidateAux_apply [FiniteDimensional ℝ E] {x : M}
 
 lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E] :
     IsCovariantDerivativeOn E (lcCandidateAux I (M := M)) where
-  addσ {Y Y'} x hY hY' _hx := by
+  addσ {Y Y'} x hY hY' _ := by
     unfold lcCandidateAux
     rw [dif_pos hY, dif_pos hY', dif_pos (mdifferentiableAt_add_section hY hY')]
     unfold lcCandidateAux₁
@@ -830,19 +830,57 @@ lemma isCovariantDerivativeOn_lcCandidateAux [FiniteDimensional ℝ E] :
     rw [← ContinuousLinearMap.comp_add]
     congr! 1
     simp only [lcCandidateAux₀]
-    rw [← mk2TensorAt_add]
-    congr 1
-    ext1 X --Z --_x
-    ext1 Z
-    by_cases hX : MDiffAt (T% X) x; swap
-    · simp [hX]
-    by_cases hZ : MDiffAt (T% Z) x; swap
-    · simp [hZ]
-    simp only [hX, hZ, ↓reduceDIte, dite_eq_ite, Pi.add_apply]
-    simp only [↓reduceIte]
-    refine leviCivitaRhs_addY_apply I ?_ ?_ ?_ ?_
-    sorry
-  leibniz := sorry
+    ext X₀ Y₀
+    simp only [mk2TensorAt, IsBilinearMap.toContinuousLinearMap, IsBilinearMap.toLinearMap,
+      dite_eq_ite, LinearMap.coe_toContinuousLinearMap', IsLinearMap.mk'_apply, LinearMap.mk₂_apply,
+      ContinuousLinearMap.add_apply]
+    rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
+    · apply leviCivitaRhs_addY_apply
+      · exact mdifferentiable_extend ..
+      · exact hY
+      · exact hY'
+      · exact mdifferentiable_extend ..
+    · exact mdifferentiable_extend ..
+    · exact mdifferentiable_extend ..
+    · exact mdifferentiable_extend ..
+    · exact mdifferentiable_extend ..
+    · exact mdifferentiable_extend ..
+    · exact mdifferentiable_extend ..
+  leibniz {Y f x} hY hf _ := by
+    unfold lcCandidateAux
+    dsimp
+    rw [dif_pos hY, dif_pos]
+    · unfold lcCandidateAux₁
+      dsimp
+      rw [← ContinuousLinearMap.comp_smul]
+      have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
+      have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
+      set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
+      ext X₀
+      apply Φ.injective
+      simp only [ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe,
+        LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv, comp_apply,
+        LinearIsometryEquiv.apply_symm_apply, ContinuousLinearMap.comp_smulₛₗ, RingHom.id_apply,
+        ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
+        ContinuousLinearMap.toSpanSingleton_apply, map_add, map_smul]
+      ext Z₀
+      simp only [lcCandidateAux₀, mk2TensorAt, IsBilinearMap.toContinuousLinearMap,
+        IsBilinearMap.toLinearMap, dite_eq_ite, LinearMap.coe_toContinuousLinearMap',
+        IsLinearMap.mk'_apply, LinearMap.mk₂_apply, ContinuousLinearMap.add_apply,
+        ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
+      rw [if_pos, if_pos, if_pos, if_pos]
+      · have key := leviCivitaRhs_smulY_apply I (X := _root_.extend I E X₀) (Y := Y)
+          (Z := _root_.extend I E Z₀) (x := x) (f := f)
+        convert key hf ?_ hY ?_
+        · simp
+        · simp [Φ, product]
+        · exact mdifferentiable_extend ..
+        · exact mdifferentiable_extend ..
+      · exact mdifferentiable_extend ..
+      · exact mdifferentiable_extend ..
+      · exact mdifferentiable_extend ..
+      · exact mdifferentiable_extend ..
+    exact MDifferentiableAt.smul_section hf hY
 
 end
 
