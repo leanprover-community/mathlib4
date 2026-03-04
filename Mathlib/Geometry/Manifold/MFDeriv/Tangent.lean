@@ -35,7 +35,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
 the identification between the tangent bundle of the model space and the product space. -/
 theorem tangentMap_chart {p q : TangentBundle I M} (h : q.1 ∈ (chartAt H p.1).source) :
-    tangentMap I I (chartAt H p.1) q =
+    tangentMap% (chartAt H p.1) q =
       (TotalSpace.toProd _ _).symm
         ((chartAt (ModelProd H E) p : TangentBundle I M → ModelProd H E) q) := by
   dsimp [tangentMap]
@@ -48,7 +48,7 @@ tangent bundle, composed with the identification between the tangent bundle of t
 the product space. -/
 theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
     (h : q.1 ∈ (chartAt H p.1).target) :
-    tangentMap I I (chartAt H p.1).symm q =
+    tangentMap% (chartAt H p.1).symm q =
       (chartAt (ModelProd H E) p).symm (TotalSpace.toProd H E q) := by
   dsimp only [tangentMap]
   rw [MDifferentiableAt.mfderiv (mdifferentiableAt_atlas_symm (chart_mem_atlas _ _) h)]

@@ -53,13 +53,13 @@ variable (I G) in
 `GroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/
 @[to_additive /-- The Lie algebra of an additive Lie group, i.e., its tangent space at zero. We use
 the word `AddGroupLieAlgebra` instead of `LieAlgebra` as the latter is taken as a generic class. -/]
-abbrev GroupLieAlgebra : Type _ := TangentSpace I (1 : G)
+abbrev GroupLieAlgebra : Type _ := TangentSpace% (1 : G)
 
 /-- The invariant vector field associated to a vector `v` in the Lie algebra. At a point `g`, it
 is given by the image of `v` under left-multiplication by `g`. -/
 @[to_additive /-- The invariant vector field associated to a vector `v` in the Lie algebra. At a
 point `g`, it is given by the image of `v` under left-addition by `g`. -/]
-noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace I g :=
+noncomputable def mulInvariantVectorField (v : GroupLieAlgebra I G) (g : G) : TangentSpace% g :=
   mfderiv% (g * ·) (1 : G) v
 
 set_option backward.isDefEq.respectTransparency false in
@@ -134,7 +134,7 @@ lemma mpullback_mulInvariantVectorField (g : G) (v : GroupLieAlgebra I G) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
-lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace I g) :
+lemma mulInvariantVectorField_eq_mpullback (g : G) (V : Π (g : G), TangentSpace% g) :
     mulInvariantVectorField (V 1) g = mpullback I I (g⁻¹ * ·) V g := by
   have A : 1 = g⁻¹ * g := by simp
   simp only [mulInvariantVectorField, mpullback, inverse_mfderiv_mul_left]
@@ -170,7 +170,7 @@ theorem contMDiff_mulInvariantVectorField (v : GroupLieAlgebra I G) :
     (equivTangentBundleProd I G I G).symm
   have S₂ : CMDiff (minSmoothness 𝕜 2) F₂ := contMDiff_equivTangentBundleProd_symm
   let F₃ : TangentBundle (I.prod I) (G × G) → TangentBundle I G :=
-    tangentMap (I.prod I) I (fun (p : G × G) ↦ p.1 * p.2)
+    tangentMap% (fun (p : G × G) ↦ p.1 * p.2)
   have S₃ : CMDiff (minSmoothness 𝕜 2) F₃ := by
     apply ContMDiff.contMDiff_tangentMap _ (m := minSmoothness 𝕜 2) le_rfl
     rw [A]
