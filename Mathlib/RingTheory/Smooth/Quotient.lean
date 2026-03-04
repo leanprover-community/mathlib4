@@ -5,10 +5,6 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.RingTheory.AdicCompletion.Noetherian
-public import Mathlib.RingTheory.AdicCompletion.RingHom
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.Kaehler.TensorProduct
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RingHom.Flat
@@ -35,23 +31,6 @@ section
 
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
-set_option backward.isDefEq.respectTransparency false in
-variable (M) in
-lemma Ideal.subtype_rTensor_range (I : Ideal R) :
-    ((TensorProduct.lid R M).comp (I.subtype.rTensor M)).range = I • (⊤ : Submodule R M) := by
-  rw [← Submodule.ker_mkQ (I • (⊤ : Submodule R M)), LinearMap.range_comp,
-    ← Submodule.map_symm_eq_iff, ← Submodule.comap_equiv_eq_map_symm, ← LinearMap.ker_comp,
-    ← TensorProduct.quotTensorEquivQuotSMul_comp_mkQ_rTensor, LinearEquiv.ker_comp]
-  exact LinearMap.exact_iff.mp (rTensor_exact M (LinearMap.exact_subtype_mkQ I) I.mkQ_surjective)
-
-lemma IsBaseChange.eq_rTensor_comp {M : Type*} [AddCommGroup M] [Module R M]
-    {R' M' : Type*} [CommRing R'] [Algebra R R'] [AddCommGroup M'] [Module R' M']
-    [Module R M'] [IsScalarTower R R' M'] (f : M →ₗ[R] M') (isb : IsBaseChange R' f) :
-    f = ((isb.equiv.restrictScalars R).comp ((Algebra.linearMap R R').rTensor M)).comp
-    (TensorProduct.lid R M).symm.toLinearMap := by
-  ext
-  simp
-
 lemma IsBaseChange.surjective_of_surjective {M : Type*} [AddCommGroup M] [Module R M]
     {R' M' : Type*} [CommRing R'] [Algebra R R'] [AddCommGroup M'] [Module R' M']
     [Module R M'] [IsScalarTower R R' M'] {f : M →ₗ[R] M'} (isb : IsBaseChange R' f)
@@ -71,7 +50,6 @@ lemma IsBaseChange.ker_of_surjective {M : Type*} [AddCommGroup M] [Module R M]
   rw [LinearMap.exact_iff.mp (rTensor_exact M exac surj), ← Submodule.map_equiv_eq_comap_symm,
     ← LinearMap.range_comp, Ideal.subtype_rTensor_range]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat (I : Ideal R) (f : M →ₗ[R] N)
     (surj : Function.Surjective f) [Module.Flat R N] :
     f.ker ⊓ (I • (⊤ : Submodule R M)) = I • f.ker := by
