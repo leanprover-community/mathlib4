@@ -1063,7 +1063,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
       rw [← inv_lt_inv₀ (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx),
         ← rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow_left (le_of_lt hx) hxy (neg_pos.mpr h)
-    exact StrictMonoOn.injOn fun x hx y _ hxy => rpow_lt_rpow_left (mem_Ioi.mp hx).le hxy h
+    exact StrictMonoOn.injOn fun x hx y _ hxy ↦ rpow_lt_rpow_left (mem_Ioi.mp hx).le hxy h
   have a3 : (fun t : ℝ => t ^ p) '' S = S := by
     ext1 x; rw [mem_image]; constructor
     · rintro ⟨y, hy, rfl⟩; exact rpow_pos_of_pos hy p
@@ -1117,7 +1117,7 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
       rw [← inv_lt_inv₀ (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx), ←
         rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow_left (le_of_lt hx) hxy (neg_pos.mpr h)
-    exact StrictMonoOn.injOn fun x hx y _hy hxy => rpow_lt_rpow_left (mem_Ioi.mp hx).le hxy h
+    exact StrictMonoOn.injOn fun x hx y _hy hxy ↦ rpow_lt_rpow_left (mem_Ioi.mp hx).le hxy h
   have a3 : (fun t : ℝ => t ^ p) '' S = S := by
     ext1 x; rw [mem_image]; constructor
     · rintro ⟨y, hy, rfl⟩; exact rpow_pos_of_pos hy p

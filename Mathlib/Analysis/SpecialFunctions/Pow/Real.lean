@@ -536,7 +536,7 @@ theorem rpow_lt_rpow_left (hx : 0 ≤ x) (hxy : x < y) (hz : 0 < z) : x ^ z < y 
 
 theorem rpow_left_strictMonoOn {r : ℝ} (hr : 0 < r) :
     StrictMonoOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
-  fun _ ha _ _ hab => rpow_lt_rpow_left ha hab hr
+  fun _ ha _ _ hab ↦ rpow_lt_rpow_left ha hab hr
 
 @[gcongr, bound]
 theorem rpow_le_rpow_left {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0 ≤ z) : x ^ z ≤ y ^ z := by
@@ -546,7 +546,7 @@ theorem rpow_le_rpow_left {x y z : ℝ} (h : 0 ≤ x) (h₁ : x ≤ y) (h₂ : 0
 
 theorem rpow_left_monotoneOn {r : ℝ} (hr : 0 ≤ r) :
     MonotoneOn (fun (x : ℝ) => x ^ r) (Set.Ici 0) :=
-  fun _ ha _ _ hab => rpow_le_rpow_left ha hab hr
+  fun _ ha _ _ hab ↦ rpow_le_rpow_left ha hab hr
 
 lemma rpow_lt_rpow_left_of_neg (hx : 0 < x) (hxy : x < y) (hz : z < 0) : y ^ z < x ^ z := by
   have := hx.trans hxy
@@ -561,8 +561,8 @@ lemma rpow_le_rpow_left_of_nonpos (hx : 0 < x) (hxy : x ≤ y) (hz : z ≤ 0) : 
   all_goals positivity
 
 theorem rpow_lt_rpow_iff_left (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z < y ^ z ↔ x < y :=
-  ⟨lt_imp_lt_of_le_imp_le (fun h => rpow_le_rpow_left hy h (le_of_lt hz)),
-    fun h => rpow_lt_rpow_left hx h hz⟩
+  ⟨lt_imp_lt_of_le_imp_le (fun h ↦ rpow_le_rpow_left hy h (le_of_lt hz)),
+    fun h ↦ rpow_lt_rpow_left hx h hz⟩
 
 theorem rpow_le_rpow_iff_left (hx : 0 ≤ x) (hy : 0 ≤ y) (hz : 0 < z) : x ^ z ≤ y ^ z ↔ x ≤ y :=
   le_iff_le_iff_lt_iff_lt.2 <| rpow_lt_rpow_iff_left hy hx hz
@@ -616,14 +616,14 @@ theorem rpow_le_rpow_right (hx : 1 ≤ x) (hyz : y ≤ z) : x ^ y ≤ x ^ z := b
 
 theorem rpow_left_strictAntiOn {r : ℝ} (hr : r < 0) :
     StrictAntiOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
-  fun _ ha _ _ hab => rpow_lt_rpow_left_of_neg ha hab hr
+  fun _ ha _ _ hab ↦ rpow_lt_rpow_left_of_neg ha hab hr
 
 @[deprecated (since := "2025-10-28")] alias rpow_le_rpow_of_exponent_nonpos :=
   rpow_le_rpow_left_of_nonpos
 
 theorem rpow_left_antitoneOn {r : ℝ} (hr : r ≤ 0) :
     AntitoneOn (fun (x : ℝ) => x ^ r) (Set.Ioi 0) :=
-  fun _ ha _ _ hab => rpow_le_rpow_left_of_nonpos ha hab hr
+  fun _ ha _ _ hab ↦ rpow_le_rpow_left_of_nonpos ha hab hr
 
 @[simp]
 theorem rpow_le_rpow_iff_right (hx : 1 < x) : x ^ y ≤ x ^ z ↔ y ≤ z := by
