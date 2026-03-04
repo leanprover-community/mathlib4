@@ -672,8 +672,8 @@ theorem iSup_and {p q : Prop} {s : p ∧ q → α} : iSup s = ⨆ (h₁) (h₂),
   le_antisymm (iSup_le fun ⟨i, h⟩ => @le_iSup₂ _ _ _ _ (fun _ _ => _) i h)
     (iSup₂_le fun _ _ => le_iSup _ _)
 
-@[to_dual /-- The symmetric case of `iSup_and`,
-useful for rewriting into a supremum over a conjunction -/]
+@[to_dual /-- The symmetric case of `iInf_and`,
+useful for rewriting into an infimum over a conjunction -/]
 theorem iSup_and' {p q : Prop} {s : p → q → α} :
     ⨆ (h₁ : p) (h₂ : q), s h₁ h₂ = ⨆ h : p ∧ q, s h.1 h.2 :=
   Eq.symm iSup_and
@@ -874,7 +874,7 @@ theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) �
 theorem iSup_option (f : Option β → α) : ⨆ o, f o = f none ⊔ ⨆ b, f (Option.some b) :=
   eq_of_forall_ge_iff fun c => by simp only [iSup_le_iff, sup_le_iff, Option.forall]
 
-@[to_dual /-- A version of `iSup_option` useful for rewriting right-to-left. -/]
+@[to_dual /-- A version of `iInf_option` useful for rewriting right-to-left. -/]
 theorem iSup_option_elim (a : α) (f : β → α) : ⨆ o : Option β, o.elim a f = a ⊔ ⨆ b, f b := by
   simp [iSup_option]
 
