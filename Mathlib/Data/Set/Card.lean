@@ -136,7 +136,6 @@ theorem encard_ne_add_one (a : α) :
   have aux : {x | x ≠ a} ∪ {a} = univ := by ext x; simp [eq_or_ne x a]
   rwa [encard_singleton, aux, encard_univ] at this
 
-set_option backward.isDefEq.respectTransparency false in
 theorem encard_insert_of_notMem {a : α} (has : a ∉ s) : (insert a s).encard = s.encard + 1 := by
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
@@ -982,7 +981,6 @@ theorem ncard_union_eq (h : Disjoint s t) (hs : s.Finite := by toFinite_tac)
   to_encard_tac
   rw [hs.cast_ncard_eq, ht.cast_ncard_eq, (hs.union ht).cast_ncard_eq, encard_union_eq h]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem ncard_union_eq_iff (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : (s ∪ t).ncard = s.ncard + t.ncard ↔ Disjoint s t := by
   rw [← ncard_union_add_ncard_inter s t hs ht, left_eq_add,
