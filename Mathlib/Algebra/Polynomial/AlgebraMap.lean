@@ -155,7 +155,7 @@ theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] �
 
 This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
 @[simps!]
-def eval₂AlgHom' (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
+def eval₂AlgHom (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
   toRingHom := eval₂RingHom' f b hf
   commutes' _ := (eval₂_C _ _).trans (f.commutes _)
 
@@ -186,7 +186,7 @@ theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C
     (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
   ext <;> simp
 
-theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
+theorem mapAlgHom_eq_eval₂AlgHom_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom
     (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
   rfl
 
@@ -244,7 +244,7 @@ variable (R A) in
 `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`. -/
 @[simps! symm_apply]
 def aevalEquiv : A ≃ (R[X] →ₐ[R] A) where
-  toFun x := eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
+  toFun x := eval₂AlgHom (Algebra.ofId _ _) x (Algebra.commutes · _)
   invFun f := f X
   left_inv := eval₂_X _
   right_inv _ := algHom_ext' (Subsingleton.elim ..) <| eval₂_X ..
@@ -256,7 +256,6 @@ This is a stronger variant of the linear map `Polynomial.leval`. -/
 def aeval : R[X] →ₐ[R] A :=
   aevalEquiv R A x
 
-@[simp]
 lemma aevalEquiv_apply (x : A) : aevalEquiv R A x = aeval x :=
   rfl
 
@@ -534,7 +533,7 @@ variable [CommSemiring S] [Algebra S R] [Algebra S A'] [Algebra S B]
 /-- Version of `aeval` for defining algebra homs out of `R[X]` over a smaller base ring
   than `R`. -/
 def aevalTower (f : R →ₐ[S] A') (x : A') : R[X] →ₐ[S] A' :=
-  eval₂AlgHom' f x fun _ => Commute.all _ _
+  eval₂AlgHom f x fun _ => Commute.all _ _
 
 variable (g : R →ₐ[S] A') (y : A')
 
