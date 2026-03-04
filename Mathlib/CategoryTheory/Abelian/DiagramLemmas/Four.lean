@@ -228,6 +228,51 @@ theorem epi_of_epi_of_epi_of_epi (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1
   rw [ShortComplex.exact_iff_epi _ (by simp)]
   exact hR₁'
 
+open ZeroObject
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isIso_of_epi_of_isIso (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (hR₁' : Epi (R₁.map' 1 2))
+    (hR₂' : Epi (R₂.map' 1 2)) (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1)) :
+    IsIso (app' φ 2) := by
+  let ψ : mk₄ (R₁.map' 0 1) (R₁.map' 1 2) (0 : _ ⟶ (0 : C)) (0 : _ ⟶ (0 : C)) ⟶
+      mk₄ (R₂.map' 0 1) (R₂.map' 1 2) (0 : _ ⟶ (0 : C)) (0 : _ ⟶ (0 : C)) :=
+    homMk₄ (app' φ 0) (app' φ 1) (app' φ 2) 0 0 (naturality' φ 0 1)
+      (naturality' φ 1 2) (by simp) (by simp)
+  refine isIso_of_epi_of_isIso_of_isIso_of_mono ?_ ?_ ψ h₀ h₁ inferInstance inferInstance
+  · refine exact_of_δ₀ (hR₁.exact 0).exact_toComposableArrows (exact_of_δ₀ ?_ ?_)
+    · refine exact₂_mk _ (by simp) ?_
+      rwa [ShortComplex.exact_iff_epi _ (by simp)]
+    · refine exact₂_mk _ (by simp) ?_
+      rw [ShortComplex.exact_iff_epi _ (by simp)]
+      infer_instance
+  · refine exact_of_δ₀ (hR₂.exact 0).exact_toComposableArrows (exact_of_δ₀ ?_ ?_)
+    · refine exact₂_mk _ (by simp) ?_
+      rwa [ShortComplex.exact_iff_epi _ (by simp)]
+    · refine exact₂_mk _ (by simp) ?_
+      rw [ShortComplex.exact_iff_epi _ (by simp)]
+      infer_instance
+
+set_option backward.isDefEq.respectTransparency false in
+lemma isIso_of_isIso_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (hR₁' : Mono (R₁.map' 0 1))
+    (hR₂' : Mono (R₂.map' 0 1)) (h₁ : IsIso (app' φ 1)) (h₂ : Mono (app' φ 2)) :
+    IsIso (app' φ 0) := by
+  let ψ : mk₄ (0 : (0 : C) ⟶ (0 : C)) (0 : _ ⟶ _) (R₁.map' 0 1) (R₁.map' 1 2) ⟶
+      mk₄ (0 : (0 : C) ⟶ (0 : C)) (0 : _ ⟶ _) (R₂.map' 0 1) (R₂.map' 1 2) :=
+    homMk₄ 0 0 (app' φ 0) (app' φ 1) (app' φ 2) (by simp) (by simp) (naturality' φ 0 1)
+      (naturality' φ 1 2)
+  refine isIso_of_epi_of_isIso_of_isIso_of_mono ?_ ?_ ψ inferInstance inferInstance h₁ h₂
+  · refine exact_of_δ₀ (exact₂_mk _ (by simp) ?_) (exact_of_δ₀ ?_ (exact₂_mk _ _ (hR₁.exact 0)))
+    · rw [ShortComplex.exact_iff_mono _ (by simp)]
+      infer_instance
+    · refine exact₂_mk _ (by simp) ?_
+      rwa [ShortComplex.exact_iff_mono _ (by simp)]
+  · refine exact_of_δ₀ ?_ (exact_of_δ₀ ?_ (exact₂_mk _ _ (hR₂.exact 0)))
+    · refine exact₂_mk _ (by simp) ?_
+      rw [ShortComplex.exact_iff_mono _ (by simp)]
+      infer_instance
+    · refine exact₂_mk _ (by simp) ?_
+      rwa [ShortComplex.exact_iff_mono _ (by simp)]
+
 end Three
 
 end Abelian
