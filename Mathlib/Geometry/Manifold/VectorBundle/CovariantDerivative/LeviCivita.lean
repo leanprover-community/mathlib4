@@ -35,7 +35,7 @@ set_option backward.isDefEq.respectTransparency false
 
 -- Let M be a C^k real manifold modeled on (E, H), endowed with a Riemannian metric.
 variable {n : WithTop ℕ∞}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
@@ -196,7 +196,7 @@ iff it is torsion-free and compatible with `g`.
 Note that the bundle metric on `TM` is implicitly hidden in this definition. See `TODO` for a
 version depending on a choice of Riemannian metric on `M`.
 -/
-def IsLeviCivitaConnection : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
+def IsLeviCivitaConnection [FiniteDimensional ℝ E] : Prop := cov.IsCompatible ∧ cov.IsTorsionFree
 
 variable (X Y Z) in
 /-- The first term in the definition of the candidate Levi-Civita connection:
@@ -646,6 +646,7 @@ lemma leviCivitaRhs_smulZ_apply [CompleteSpace E] {f : M → ℝ}
 
 end leviCivitaRhs
 
+variable [FiniteDimensional ℝ E] in
 variable (Y) in
 lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     (hX : MDiffAt (T% X) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
@@ -658,7 +659,8 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
 variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
-lemma IsLeviCivitaConnection.eq_leviCivitaRhs (h : cov.IsLeviCivitaConnection)
+lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
+    (h : cov.IsLeviCivitaConnection)
     {x : M} (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     ⟪∇ X, Y, Z⟫ x = leviCivitaRhs I X Y Z x := by
   unfold leviCivitaRhs leviCivitaRhs'
