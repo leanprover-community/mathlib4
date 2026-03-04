@@ -529,15 +529,15 @@ section InsertIdx
 
 variable {a : α}
 
-/-- `v.insertIdx a i` inserts `a` into the vector `v` at position `i`
+/-- `v.insertIdx i a` inserts `a` into the vector `v` at position `i`
 (and shifting later components to the right). -/
-def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
+def insertIdx (v : Vector α n) (i : Fin (n + 1)) (a : α) : Vector α (n + 1) :=
   ⟨v.1.insertIdx i a, by
     rw [List.length_insertIdx, v.2]
     split <;> lia⟩
 
 theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
-    (v.insertIdx a i).val = v.val.insertIdx i.1 a :=
+    (v.insertIdx i a).val = v.val.insertIdx i.1 a :=
   rfl
 
 @[simp]
@@ -545,14 +545,14 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
   | _ => rfl
 
 theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
-    eraseIdx i (insertIdx a i v) = v :=
+    eraseIdx i (insertIdx v i a) = v :=
   Subtype.ext (List.eraseIdx_insertIdx_self ..)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
-      eraseIdx (j.succAbove i) (insertIdx a j v) = insertIdx a (i.predAbove j) (eraseIdx i v)
+      eraseIdx (j.succAbove i) (insertIdx v j a) = insertIdx (eraseIdx i v) (i.predAbove j) a
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
     dsimp [insertIdx, eraseIdx, Fin.succAbove, Fin.predAbove]
     rw [Subtype.mk_eq_mk]
@@ -572,7 +572,7 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
 
 theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
-      (v.insertIdx a i).insertIdx b j.succ = (v.insertIdx b j).insertIdx a (Fin.castSucc i)
+      (v.insertIdx i a).insertIdx j.succ b = (v.insertIdx j b).insertIdx (Fin.castSucc i) a
   | ⟨l, hl⟩ => by
     refine Subtype.ext ?_
     simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.val_castAdd]

@@ -184,8 +184,8 @@ theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
 set_option backward.isDefEq.respectTransparency false in
 theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
     ∀ {l : Vector α n},
-      Tendsto (fun p : α × Vector α n => insertIdx p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
-        (𝓝 (insertIdx a i l))
+      Tendsto (fun p : α × Vector α n => insertIdx p.2 i p.1) (𝓝 a ×ˢ 𝓝 l)
+        (𝓝 (insertIdx l i a))
   | ⟨l, hl⟩ => by
     rw [insertIdx, tendsto_subtype_rng]
     simp only [insertIdx_val]
@@ -193,12 +193,12 @@ theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
 
 /-- Continuity of `Vector.insertIdx`. -/
 theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
-    Continuous fun p : α × Vector α n => Vector.insertIdx p.1 i p.2 :=
+    Continuous fun p : α × Vector α n => Vector.insertIdx p.2 i p.1 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
     rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertIdx
 
 theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → Vector α n}
-    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
+    (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (g b) i (f b) :=
   continuous_insertIdx'.comp (hf.prodMk hg)
 
 set_option backward.isDefEq.respectTransparency false in
