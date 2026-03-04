@@ -39,7 +39,7 @@ lemma hasProjectiveDimensionLE_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
   · simp only [HasProjectiveDimensionLE, zero_add,
       ← projective_iff_hasProjectiveDimensionLT_one] at h ⊢
     rw [← IsProjective.iff_projective] at h ⊢
-    exact Projective.of_ringEquiv e e'
+    exact Projective.of_equiv e'
   · rename_i n ih
     let b : Basis M R (M →₀ Shrink.{v} R) :=
       ⟨Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)⟩
