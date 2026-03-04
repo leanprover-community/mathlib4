@@ -13,8 +13,6 @@ import Mathlib.Data.Finset.Max
 
 import Mathlib.Data.Fintype.Order
 
-import Mathlib.Data.Fintype.Order
-
 /-!
 # The monotone sequence of partial supremums of a sequence
 
