@@ -209,8 +209,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- If `L/K` and `w` is an absolute value on `L` factors through `K` via an embedding `σ : K →+* L`
 to give the absolute value `v` on `K`, then `mapOfComp` is natural ring homomorphism
 `v.Completion →+* w.Completion` lifting `σ`. -/
-noncomputable abbrev mapOfComp (h : Isometry σ) : v.Completion →+* w.Completion :=
-  h.mapRingHom
+noncomputable abbrev mapOfComp (h : Isometry σ) : v.Completion →+* w.Completion := h.mapRingHom
 
 set_option backward.isDefEq.respectTransparency false in
 theorem mapOfComp_coe (h : Isometry σ) (x : WithAbs v) : mapOfComp h x = σ x := h.mapRingHom_coe _
