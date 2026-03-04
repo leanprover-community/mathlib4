@@ -200,7 +200,7 @@ private lemma mvPolynomial_bound_of_IsNonarchimedean [Finite ι] {v : AbsoluteVa
   grw [hs₂]
   simp_rw [v.map_mul, v.map_prod, v.map_pow]
   gcongr
-  · exact v.iSup_abv_nonneg
+  · exact Real.iSup_nonneg_of_nonnegHomClass v _
   · exact Finite.le_ciSup_of_le (⟨s, hs₁⟩ : p.support) le_rfl
   · rw [hp.degree_eq_sum_deg_support hs₁, ← Finset.prod_pow_eq_pow_sum]
     gcongr with i
@@ -252,13 +252,14 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
     mulHeight (fun j ↦ constantCoeff (p j)) ≤ mulHeightBound p := by
   simp only [mulHeight_eq h, mulHeightBound_eq]
   gcongr
-  · exact finprod_nonneg fun v ↦ v.val.iSup_abv_nonneg
+  · exact finprod_nonneg fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..
   · exact prod_map_nonneg fun v _ ↦ iSup_nonneg fun _ ↦ sum_nonneg fun _ _ ↦ by positivity
   · have H (v : AbsoluteValue K ℝ) (j : ι') : v (constantCoeff (p j)) ≤ sum (p j) fun _ c ↦ v c :=
       single_eval_le_sum _ v.map_zero (fun _ ↦ by positivity) _
-    exact prod_map_le_prod_map₀ _ _ (fun v _ ↦ v.iSup_abv_nonneg) fun v _ ↦ Finite.ciSup_mono (H v)
+    exact prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
+      fun v _ ↦ Finite.ciSup_mono (H v)
   · refine finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h)
-      (fun v ↦ v.val.iSup_abv_nonneg) ?_ ?_
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..) ?_ ?_
     · exact finite_mulSupport_iSup_max_iSup_one (Function.ne_iff.mp h).nonempty p
     · refine fun v ↦ Finite.ciSup_mono fun j ↦ ?_
       rw [show constantCoeff (p j) = coeff 0 (p j) from rfl]
@@ -294,13 +295,14 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   have H₁ : 0 ≤ (archAbsVal.map (fun v ↦ ⨆ j, Finsupp.sum (p j) fun _ c ↦ v c)).prod :=
     prod_map_nonneg fun v _ ↦ H₀ v
   have H₂ : 0 ≤ (archAbsVal.map (fun v ↦ ⨆ i, v (x i))).prod :=
-    prod_map_nonneg fun v _ ↦ v.iSup_abv_nonneg
+    prod_map_nonneg fun _ _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
   have H₃ : 0 ≤ ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val ((eval x) (p i)) :=
-    finprod_nonneg fun v ↦ v.val.iSup_abv_nonneg
+    finprod_nonneg fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
   have H₄ : 0 ≤ ∏ᶠ v : nonarchAbsVal, ⨆ i, v.val (x i) :=
-    finprod_nonneg fun v ↦ v.val.iSup_abv_nonneg
+    finprod_nonneg fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..
   -- The following two statements are helpful for discharging the goals left by `gcongr`.
-  have HH₁ (v : AbsoluteValue K ℝ) : 0 ≤ (⨆ i, v (x i)) ^ N := pow_nonneg v.iSup_abv_nonneg N
+  have HH₁ (v : AbsoluteValue K ℝ) : 0 ≤ (⨆ i, v (x i)) ^ N :=
+    pow_nonneg (Real.iSup_nonneg_of_nonnegHomClass v _) N
   have HH₂ (f : ι' → ℝ) (j : ι') : f j ≤ ⨆ j, f j := Finite.le_ciSup ..
   simp only [mulHeight_eq hx, mulHeight_eq h₀, mulHeightBound_eq]
   grw [← le_max_left]
@@ -308,7 +310,7 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   gcongr
   · -- archimedean part: reduce to "local" statement `mvPolynomial_bound`
     rw [← prod_map_pow, ← prod_map_mul]
-    refine prod_map_le_prod_map₀ _ _ (fun v _ ↦ v.iSup_abv_nonneg)
+    refine prod_map_le_prod_map₀ _ _ (fun _ _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Real.iSup_le (fun j ↦ ?_) <| mul_nonneg (H₀ v) (HH₁ v)
     grw [mvPolynomial_bound v (hp j) x]
     gcongr
@@ -317,7 +319,8 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   · -- nonarchimedean part: reduce to "local" statement `mvPolynomial_bound_nonarch`
     rw [finprod_pow (by fun_prop), ← finprod_mul_distrib F₁ (by fun_prop)]
     refine finprod_le_finprod (by fun_prop (disch := assumption))
-      (fun v ↦ v.val.iSup_abv_nonneg) (by fun_prop) fun v ↦ Real.iSup_le (fun j ↦ ?_) ?_
+      (fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) fun v ↦ Real.iSup_le
+      (fun j ↦ ?_) ?_
     · grw [mvPolynomial_bound_of_IsNonarchimedean (isNonarchimedean _ v.prop) (hp j) x]
       gcongr
       · exact HH₁ v.val
