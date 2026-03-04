@@ -297,7 +297,7 @@ theorem refl_symm : (AlgEquiv.refl : A₁ ≃ₐ[R] A₁).symm = AlgEquiv.refl :
   rfl
 
 --this should be a simp lemma but causes a lint timeout
-theorem toRingEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm = f.symm :=
+theorem toRingEquiv_symm (f : A₁ ≃ₐ[R] A₂) : (f : A₁ ≃+* A₂).symm = f.symm :=
   rfl
 
 @[simp]
