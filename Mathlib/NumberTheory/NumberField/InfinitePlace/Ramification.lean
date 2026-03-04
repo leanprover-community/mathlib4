@@ -655,14 +655,14 @@ theorem mk_mem_unramifiedPlacesOver
 
 theorem liesOver_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L} {v : InfinitePlace K}
     (hw : w ∈ ramifiedPlacesOver L v) :
-    LiesOver w.embedding v.embedding where
+    ComplexEmbedding.LiesOver w.embedding v.embedding where
   over := by
     have := hw.1
     exact hw.2.comap_embedding ▸ congrArg embedding (LiesOver.comap_eq w v)
 
 theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L}
     {v : InfinitePlace K} (hw : w ∈ ramifiedPlacesOver L v) :
-    LiesOver (conjugate w.embedding) v.embedding where
+    ComplexEmbedding.LiesOver (conjugate w.embedding) v.embedding where
   over := by
     have := hw.1
     exact hw.2.comap_embedding_conjugate ▸ congrArg embedding (LiesOver.comap_eq w v)
