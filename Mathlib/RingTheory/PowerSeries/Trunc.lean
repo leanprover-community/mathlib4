@@ -185,6 +185,7 @@ theorem trunc_trunc_of_le {n m} (f : R⟦X⟧) (hnm : n ≤ m := by rfl) :
     rw [coeff_coe, coeff_trunc, if_pos ha]
   · rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (f * (trunc n g) : R⟦X⟧) = trunc n (f * g) := by
   rw [mul_comm, trunc_trunc_mul, mul_comm]
@@ -193,6 +194,7 @@ theorem trunc_trunc_mul_trunc {n} (f g : R⟦X⟧) :
     trunc n (trunc n f * trunc n g : R⟦X⟧) = trunc n (f * g) := by
   rw [trunc_trunc_mul, trunc_mul_trunc]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] theorem trunc_trunc_pow (f : R⟦X⟧) (n a : ℕ) :
     trunc n ((trunc n f : R⟦X⟧) ^ a) = trunc n (f ^ a) := by
   induction a with

@@ -177,6 +177,7 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
 
 variable (rr : β → β → Prop)
 
+set_option backward.isDefEq.respectTransparency false in
 private def f' :
     ∀ n α,
       (fun i : Fin2 (n + 1) =>
@@ -186,6 +187,7 @@ private def f' :
     ⟨x.val, cast (by simp only [RelLast]; erw [repeatEq_iff_eq]) x.property⟩
   | _, _, Fin2.fz, x => ⟨x.val, x.property⟩
 
+set_option backward.isDefEq.respectTransparency false in
 private def g' :
     ∀ n α,
       (fun i : Fin2 (n + 1) => { p_1 : (α ::: β) i × _ // RelLast α rr p_1.fst p_1.snd }) ⟹

@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.TopCat.Opens
 public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 public import Mathlib.Topology.Sheaves.Init
-public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Presheaves on a topological space
@@ -28,7 +27,7 @@ and for `ℱ : X.Presheaf C` provide the natural isomorphisms
 
 We also define the functors `pullback C f : Y.Presheaf C ⥤ X.Presheaf c`,
 and provide their adjunction at
-`TopCat.Presheaf.pushforwardPullbackAdjunction`.
+`TopCat.Presheaf.pullbackPushforwardAdjunction`.
 -/
 
 @[expose] public section
@@ -274,27 +273,30 @@ def pullback {X Y : TopCat.{v}} (f : X ⟶ Y) : Y.Presheaf C ⥤ X.Presheaf C :=
   (Opens.map f).op.lan
 
 /-- The pullback and pushforward along a continuous map are adjoint to each other. -/
-def pushforwardPullbackAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
+def pullbackPushforwardAdjunction {X Y : TopCat.{v}} (f : X ⟶ Y) :
     pullback C f ⊣ pushforward C f :=
   Functor.lanAdjunction _ _
+
+@[deprecated (since := "2026-03-03")]
+alias pushforwardPullbackAdjunction := pullbackPushforwardAdjunction
 
 /-- Pulling back along a homeomorphism is the same as pushing forward along its inverse. -/
 def pullbackHomIsoPushforwardInv {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.hom ≅ pushforward C H.inv :=
-  Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.hom)
+  Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.hom)
     (presheafEquivOfIso C H.symm).toAdjunction
 
 /-- Pulling back along the inverse of a homeomorphism is the same as pushing forward along it. -/
 def pullbackInvIsoPushforwardHom {X Y : TopCat.{v}} (H : X ≅ Y) :
     pullback C H.inv ≅ pushforward C H.hom :=
-  Adjunction.leftAdjointUniq (pushforwardPullbackAdjunction C H.inv)
+  Adjunction.leftAdjointUniq (pullbackPushforwardAdjunction C H.inv)
     (presheafEquivOfIso C H).toAdjunction
 
 variable {C}
 
 /-- If `f '' U` is open, then `f⁻¹ℱ U ≅ ℱ (f '' U)`. -/
 def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C) (U : Opens X)
-    (H : IsOpen (f '' SetLike.coe U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
+    (H : IsOpen (f '' U)) : ((pullback C f).obj ℱ).obj (op U) ≅ ℱ.obj (op ⟨_, H⟩) := by
   let x : CostructuredArrow (Opens.map f).op (op U) := CostructuredArrow.mk
     (@homOfLE _ _ _ ((Opens.map f).obj ⟨_, H⟩) (Set.image_preimage.le_u_l _)).op
   have hx : IsTerminal x :=
@@ -309,8 +311,95 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
     ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U))
     (colimitOfDiagramTerminal hx _)
 
+set_option backward.isDefEq.respectTransparency false in
+/-- If `U ⊆ V` and `f '' U`, `f '' V` are open, then the isomorphisms `f⁻¹ℱ U ≅ ℱ (f '' U)`,
+`f⁻¹ℱ V ≅ ℱ (f '' V)` given by `pullbackObjObjOfImageOpen` are compatible with the restriction
+maps. -/
+theorem pullbackObjObjOfImageOpen_hom_naturality {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf C)
+    {U V : Opens X} (HU : IsOpen (f '' U)) (HV : IsOpen (f '' V)) (le : U ≤ V) :
+    ((pullback C f).obj ℱ).map (homOfLE le).op ≫ (pullbackObjObjOfImageOpen f ℱ U HU).hom =
+    (pullbackObjObjOfImageOpen f ℱ V HV).hom ≫ ℱ.map (IsOpenMap.functorMap HU HV le).op := by
+  dsimp [pullbackObjObjOfImageOpen]
+  refine ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op V)).hom_ext
+    (fun j ↦ ?_)
+  have eq : ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
+      ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
+      (op V)).ι.app j ≫ ((pullback C f).obj ℱ).map (homOfLE le).op  =
+      ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
+      ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt
+      (op U)).ι.app ((CostructuredArrow.map (homOfLE le).op).obj j) := by cat_disch
+  rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, reassoc_of% eq,
+    Limits.IsColimit.comp_coconePointUniqueUpToIso_hom,
+    Limits.coconeOfDiagramTerminal_ι_app,Limits.coconeOfDiagramTerminal_ι_app]
+  dsimp
+  rw [← Functor.map_comp]
+  cat_disch
+
 end
 
-end Presheaf
+end TopCat.Presheaf
 
-end TopCat
+namespace IsOpenMap
+
+noncomputable section
+
+variable {C} [Limits.HasColimits C]
+
+open TopCat.Presheaf
+
+/--
+If `f : X ⟶ Y` is an open map and `ℱ` is a presheaf on `Y`, then the pullback of `ℱ` by `f` is
+isomorphic to the composition of `ℱ` and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
+-/
+@[simps!]
+def pullbackObjIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) (ℱ : Y.Presheaf C) :
+    (pullback C f).obj ℱ ≅ hf.functor.op ⋙ ℱ :=
+  NatIso.ofComponents
+    (fun U ↦ pullbackObjObjOfImageOpen f ℱ U.1 (hf (unop U).1 (unop U).2))
+    (fun {U V} i ↦ (pullbackObjObjOfImageOpen_hom_naturality f ℱ (hf (unop V).1 (unop V).2)
+      (hf (unop U).1 (unop U).2) (leOfHom i.unop)))
+
+set_option backward.isDefEq.respectTransparency false in
+/--
+If `f : X ⟶ Y` is an open map, this expresses the naturality of the isomorphism
+`IsOpenMap.pullbackObjIso` between the pullback by `f` of a presheaf and the composition
+of that presheaf and of the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ` induced by `f`.
+-/
+lemma pullbackObjIso_hom_naturality {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f)
+   {ℱ 𝒢 : Y.Presheaf C} (u : ℱ ⟶ 𝒢) :
+   (pullback C f).map u ≫ (hf.pullbackObjIso 𝒢).hom =
+   (hf.pullbackObjIso ℱ).hom ≫ Functor.whiskerLeft hf.functor.op u := by
+  ext U
+  dsimp [pullbackObjIso, pullbackObjObjOfImageOpen]
+  refine ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U)).hom_ext
+    (fun j ↦ ?_)
+  have eq : ((LeftExtension.mk ((Opens.map f).op.leftKanExtension ℱ)
+      ((Opens.map f).op.leftKanExtensionUnit ℱ)).coconeAt (op U)).ι.app j
+      ≫ ((pullback C f).map u).app (op U) = NatTrans.app (Functor.whiskerLeft _ u) j ≫
+      ((LeftExtension.mk ((Opens.map f).op.leftKanExtension 𝒢)
+      ((Opens.map f).op.leftKanExtensionUnit 𝒢)).coconeAt (op U)).ι.app j := by
+    dsimp [pullback]
+    simp only [Category.assoc, NatTrans.naturality]
+    have := NatTrans.congr_app ((Opens.map f).op.lanUnit.naturality u) j.left
+    dsimp [lanUnit] at this
+    rw [reassoc_of% this]
+    rfl
+  rw [Limits.IsColimit.comp_coconePointUniqueUpToIso_hom_assoc, reassoc_of% eq,
+    Limits.IsColimit.comp_coconePointUniqueUpToIso_hom]
+  dsimp
+  rw [← u.naturality]
+  rfl
+
+/--
+If `f : X ⟶ Y`, this is the isomorphism between the pullback functor by `f` and the
+"naive" pullback given by composing presheaves with the functor `(Open X)ᵒᵖ ⥤ (Open Y)ᵒᵖ`
+induced by `f`.
+-/
+@[simps!]
+def pullbackIso {X Y : TopCat.{v}} {f : X ⟶ Y} (hf : IsOpenMap f) :
+    pullback C f ≅ (Functor.whiskeringLeft _ _ _).obj hf.functor.op :=
+  NatIso.ofComponents hf.pullbackObjIso hf.pullbackObjIso_hom_naturality
+
+end
+
+end IsOpenMap

@@ -57,11 +57,13 @@ end AlgebraicClosure
 
 namespace SeparableClosure
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity (SeparableClosure F) n :=
   have : NeZero (n : SeparableClosure F) :=
     ‹NeZero (n : F)›.of_injective (algebraMap F (SeparableClosure F)).injective
   inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity (SeparableClosure F) (n ^ k) :=
   have : NeZero (n : SeparableClosure F) :=
     ‹NeZero (n : F)›.of_injective (algebraMap F (SeparableClosure F)).injective

@@ -54,6 +54,7 @@ section Jordan
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In a 2-transitive action, the normal closure of stabilizers is the full group. -/
 theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     (hG' : IsMultiplyPretransitive G α 2) {a : α} :
@@ -102,6 +103,7 @@ open MulAction.IsPreprimitive
 
 open scoped Pointwise
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Simultaneously prove `MulAction.IsPreprimitive.is_two_pretransitive`
 and `MulAction.IsPreprimitive.is_two_preprimitive`. -/
 theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
@@ -378,6 +380,7 @@ theorem isPretransitive_of_isCycle_mem {g : Perm α}
   obtain ⟨i, hi⟩ := hgc ((hs x).mpr hx)
   exact ⟨g' ^ i, hi.symm⟩
 
+set_option backward.isDefEq.respectTransparency false in
 omit [Fintype α] in variable [Finite α] in
 /-- A primitive subgroup of `Equiv.Perm α` that contains a swap
 is the full permutation group (Jordan). -/

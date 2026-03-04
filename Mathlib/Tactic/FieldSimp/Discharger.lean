@@ -50,7 +50,20 @@ private def dischargerTraceMessage {ε : Type*} (prop : Expr) :
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
-/-- Discharge strategy for the `field_simp` tactic. -/
+/-- Default discharge strategy for `field` and `field_simp`: try to solve the (in)equality `prop`,
+of the form `t = 0` or `t > 0`, by one of the following strategies:
+
+* Use an assumption from the context.
+* Use the `norm_num` tactic.
+* Use the `positivity` tactic.
+* Use the `simp` tactic with `discharge` as discharger and lemmas stating:
+  * `2 ≠ 0`, `3 ≠ 0`, `4 ≠ 0`
+  * `x ≠ 0 → y ≠ 0 → x * y ≠ 0`
+  * `a ≠ 0 → a ^ n ≠ 0` (for `n : ℕ` and `n : ℤ`)
+  * `↑n + 1 ≠ 0`, if `n : ℕ` and the field has characteristic 0.
+
+If none of the strategies finds a proof for `prop`, the result is `none`.
+-/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
     -- Discharge strategy 1: Use assumptions

@@ -27,7 +27,7 @@ an idempotent, i.e. an `m` such that `m * m = m`. -/
       contains an idempotent, i.e. an `m` such that `m + m = m` -/]
 theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] [Semigroup M]
     [TopologicalSpace M] [CompactSpace M] [T2Space M]
-    (continuous_mul_left : ∀ r : M, Continuous (· * r)) : ∃ m : M, m * m = m := by
+    (continuous_const_mul : ∀ r : M, Continuous (· * r)) : ∃ m : M, m * m = m := by
   /- We apply Zorn's lemma to the poset of nonempty closed subsemigroups of `M`.
      It will turn out that any minimal element is `{m}` for an idempotent `m : M`. -/
   let S : Set (Set M) :=
@@ -39,7 +39,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     We first show that every element of `N` is of the form `m' + m`. -/
     have scaling_eq_self : (· * m) '' N = N := by
       apply hN.eq_of_subset
-      · refine ⟨(continuous_mul_left m).isClosedMap _ N_closed, ⟨_, ⟨m, hm, rfl⟩⟩, ?_⟩
+      · refine ⟨(continuous_const_mul m).isClosedMap _ N_closed, ⟨_, ⟨m, hm, rfl⟩⟩, ?_⟩
         rintro _ ⟨m'', hm'', rfl⟩ _ ⟨m', hm', rfl⟩
         exact ⟨m'' * m * m', N_mul _ (N_mul _ hm'' _ hm) _ hm', mul_assoc _ _ _⟩
       · rintro _ ⟨m', hm', rfl⟩
@@ -48,7 +48,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
        to show that this holds for all `m' ∈ N`. -/
     have absorbing_eq_self : N ∩ { m' | m' * m = m } = N := by
       apply hN.eq_of_subset
-      · refine ⟨N_closed.inter ((T1Space.t1 m).preimage (continuous_mul_left m)), ?_, ?_⟩
+      · refine ⟨N_closed.inter ((T1Space.t1 m).preimage (continuous_const_mul m)), ?_, ?_⟩
         · rwa [← scaling_eq_self] at hm
         · rintro m'' ⟨mem'', eq'' : _ = m⟩ m' ⟨mem', eq' : _ = m⟩
           refine ⟨N_mul _ mem'' _ mem', ?_⟩
@@ -79,7 +79,7 @@ in some specified nonempty compact subsemigroup. -/
       `exists_idempotent_of_compact_t2_of_continuous_add_left` where the idempotent lies in
       some specified nonempty compact additive subsemigroup. -/]
 theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [TopologicalSpace M] [T2Space M]
-    (continuous_mul_left : ∀ r : M, Continuous (· * r)) (s : Set M) (snemp : s.Nonempty)
+    (continuous_const_mul : ∀ r : M, Continuous (· * r)) (s : Set M) (snemp : s.Nonempty)
     (s_compact : IsCompact s) (s_add : ∀ᵉ (x ∈ s) (y ∈ s), x * y ∈ s) :
     ∃ m ∈ s, m * m = m := by
   let M' := { m // m ∈ s }
@@ -89,6 +89,6 @@ theorem exists_idempotent_in_compact_subsemigroup {M} [Semigroup M] [Topological
   haveI : CompactSpace M' := isCompact_iff_compactSpace.mp s_compact
   haveI : Nonempty M' := nonempty_subtype.mpr snemp
   have : ∀ p : M', Continuous (· * p) := fun p =>
-    ((continuous_mul_left p.1).comp continuous_subtype_val).subtype_mk _
+    ((continuous_const_mul p.1).comp continuous_subtype_val).subtype_mk _
   obtain ⟨⟨m, hm⟩, idem⟩ := exists_idempotent_of_compact_t2_of_continuous_mul_left this
   exact ⟨m, hm, Subtype.ext_iff.mp idem⟩
