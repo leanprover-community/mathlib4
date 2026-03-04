@@ -62,8 +62,6 @@ instance [Algebra T R] [Algebra.IsSeparable T R] :
     Algebra.IsSeparable T (WithAbs v) :=
   AlgEquiv.Algebra.isSeparable (algEquiv T v).symm
 
-variable (v : AbsoluteValue R ℝ)
-#synth IsTopologicalRing (WithAbs v)
 @[simp] lemma toAbs_div (x y : R) : toAbs v (x / y) = toAbs v x / toAbs v y := rfl
 @[simp] lemma ofAbs_div (x y : WithAbs v) : ofAbs (x / y) = ofAbs x / ofAbs y := rfl
 
