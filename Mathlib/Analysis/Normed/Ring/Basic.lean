@@ -944,8 +944,8 @@ lemma iSup_fun_mul_eq_iSup_mul_iSup_of_nonneg {F : Type*} [FunLike F R ℝ]
   · simp
   rcases isEmpty_or_nonempty ι'
   · simp
-  simp [map_mul, Finite.ciSup_prod, ← Real.mul_iSup_of_nonneg (apply_nonneg v _),
-    ← Real.iSup_mul_of_nonneg (iSup_nonneg fun i ↦ apply_nonneg v (y i))]
+  simp_rw [Real.iSup_mul_of_nonneg (iSup_nonneg fun i ↦ apply_nonneg v (y i)),
+    Real.mul_iSup_of_nonneg (apply_nonneg v _), map_mul, Finite.ciSup_prod]
 
 end mul
 
@@ -958,7 +958,7 @@ section prod
 
 universe u v
 
-variable {α : Type u} [Fintype α] {ι : α → Type v} [∀ a, Finite (ι a)]
+variable {α R : Type*} [Fintype α] {ι : α → Type u} [∀ a, Finite (ι a)]
 
 lemma iSup_prod_eq_prod_iSup_of_nonneg {f : (a : α) → ι a → ℝ} (hf₀ : ∀ a i, 0 ≤ f a i) :
     ⨆ (i : (a : α) → ι a), ∏ a, f a (i a) = ∏ a, ⨆ i, f a i := by
@@ -974,6 +974,11 @@ lemma iSup_prod_eq_prod_iSup_of_nonneg {f : (a : α) → ι a → ℝ} (hf₀ : 
     choose i hi using H
     simp only [← hi]
     exact Finite.le_ciSup_of_le i le_rfl
+
+lemma iSup_prod_eq_prod_iSup_of_nonnegHomClass {F : Type*} [FunLike F R ℝ]
+    [NonnegHomClass F R ℝ] (v : F) {x : (a : α) → ι a → R} :
+    ⨆ (i : (a : α) → ι a), ∏ a, v (x a (i a)) = ∏ a, ⨆ i, v (x a i) :=
+  Real.iSup_prod_eq_prod_iSup_of_nonneg (f := fun a i ↦ v (x a i)) (fun _ _ ↦ apply_nonneg v _)
 
 end prod
 
