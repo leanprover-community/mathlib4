@@ -15,7 +15,8 @@ import Mathlib.Topology.Semicontinuity.Lindelof
 # Approximation to convex functions
 
 In this file we show that a convex lower-semicontinuous function is the upper envelope of a family
-of continuous affine linear functions. We follow the proof in [Bou87].
+of continuous affine linear functions. We follow the proof in
+[N. Bourbaki, *Topological vector spaces*, Chapter II, §5][bourbaki1987].
 
 ## Main Statement
 
