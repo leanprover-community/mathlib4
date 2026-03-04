@@ -95,7 +95,7 @@ theorem map_monotone (f : V → W) : Monotone (SimpleGraph.map f) := by
   rintro G G' h z1 z2 ⟨huv, u, v, ha, rfl, rfl⟩
   exact ⟨huv, _, _, h ha, rfl, rfl⟩
 
-@[simp] lemma map_id : G.map (Function.Embedding.refl _) = G := by
+@[simp] lemma map_id : G.map id = G := by
   ext; dsimp [SimpleGraph.map, Relation.Map]; grind [SimpleGraph.Adj.ne]
 
 @[simp] lemma map_map (f : V → W) (g : W → X) : (G.map f).map g = G.map (g ∘ f) := by
