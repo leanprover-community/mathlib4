@@ -9,7 +9,6 @@ public import Mathlib.Analysis.Normed.Algebra.Ultra
 public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
-public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 
