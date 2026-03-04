@@ -18,32 +18,36 @@ This file contains the conditional Jensen's inequality. We follow the proof in
 
 ## Main Statement
 
-* `conditional_jensen`: in a Banach space `E` with finite measure `μ`, if `φ : E → ℝ` is a convex
-  lower-semicontinuous function, then for any `f : α → E` such that `f` and `φ ∘ f` are integrable,
-  we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]`.
+* `conditional_jensen`: in a Banach space `E` with a sigma finite measure `μ`, if `φ : E → ℝ` is a
+  convex lower-semicontinuous function, then for any `f : α → E` such that `f` and `φ ∘ f` are
+  integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]` a.e.
 
 -/
 
 @[expose] public section
 
-open MeasureTheory Function Set
+open MeasureTheory Function Set Filter
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
-  {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α}
+  {α : Type*} {f : α → E} {φ : E → ℝ} {m mα : MeasurableSpace α} {μ : Measure α} {s : Set E}
 
 /-- Conditional Jensen's inequality for hereditarily Lindelof Spaces. -/
 private lemma conditional_jensen_of_hereditarilyLindelofSpace [IsFiniteMeasure μ]
-    [HereditarilyLindelofSpace E] (hm : m ≤ mα) (hφ_cvx : ConvexOn ℝ Set.univ φ)
-    (hφ_cont : LowerSemicontinuous φ) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
+    [HereditarilyLindelofSpace E] (hm : m ≤ mα) (hφ_cvx : ConvexOn ℝ s φ)
+    (hφ_cont : LowerSemicontinuousOn φ s) (hf : range f ⊆ s) (hs : IsClosed s)
+    (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
     ∀ᵐ a ∂μ, φ (μ[f | m] a) ≤ μ[φ ∘ f | m] a := by
-  obtain ⟨L, c, hLc⟩ := hφ_cvx.real_univ_sSup_of_nat_affine_eq hφ_cont
+  obtain ⟨L, c, hLc⟩ := hφ_cvx.real_sSup_of_nat_affine_eq hs hφ_cont
   have hp := ae_all_iff.2 fun i => (L i).comp_condExp_add_const_comm hm hf_int (c i)
   have hw : ∀ᵐ a ∂μ, ∀ i : ℕ, μ[(L i) ∘ f + const α (c i) | m] a ≤ μ[φ ∘ f | m] a := by
     refine ae_all_iff.2 fun i => condExp_mono ?_ hφ_int ?_
     · exact ((L i).integrable_comp hf_int).add (integrable_const (c i))
     · filter_upwards with a
-      simp only [Pi.add_apply, comp_apply, const_apply, ← congrFun hLc.2 (f a), iSup_apply]
-      exact le_ciSup (α := ℝ) (bddAbove_def.2 ⟨φ (f a), fun r ⟨z, hz⟩ => hz ▸ hLc.1 z (f a)⟩) i
+      have := congrFun hLc.2 ⟨f a, hf (mem_range_self a)⟩
+      simp_all only [iSup_apply, Pi.add_apply, restrict_apply, const_apply, comp_apply, ge_iff_le]
+      rw [← this]
+      exact le_ciSup (bddAbove_def.2 ⟨φ (f a), fun r ⟨z, hz⟩ => hz ▸ hLc.1 z
+        ⟨f a, hf (mem_range_self a)⟩⟩) i
   filter_upwards [hp, hw] with a hp hw
   simpa [← hLc.2, iSup_congr hp] using ciSup_le hw
 
@@ -70,10 +74,10 @@ private theorem conditional_jensen_of_finite [IsFiniteMeasure μ] (hm : m ≤ m�
     have hs : MeasurableSet (Y : Set E) := (Submodule.isClosed_topologicalClosure _).measurableSet
     have h_nonempty : (Y : Set E).Nonempty := Set.Nonempty.of_subtype
     obtain ⟨g, hg1, hg2, hg3⟩ := hf_int.1.exists_stronglyMeasurable_range_subset hs h_nonempty aeinY
-    refine ⟨Set.codRestrict g Y hg2, (hg1.measurable.codRestrict hg2).stronglyMeasurable, ?_⟩
+    refine ⟨codRestrict g Y hg2, (hg1.measurable.codRestrict hg2).stronglyMeasurable, ?_⟩
     filter_upwards [hg3] with a ha1
     have : g a ∈ Y := hg2 a
-    simp_all [fY, Set.codRestrict]
+    simp_all [fY, codRestrict]
   have lem2 : μ[f | m] =ᵐ[μ] Y.subtypeL ∘ μ[fY | m] := calc
     _ =ᵐ[μ] μ[fX | m] := condExp_congr_ae lem1
     _ =ᵐ[μ] _ := (Y.subtypeL.comp_condExp_comm hfY_int).symm
@@ -85,14 +89,43 @@ private theorem conditional_jensen_of_finite [IsFiniteMeasure μ] (hm : m ≤ m�
       (hφ_cvx.comp_linearMap Y.subtype) (hφ_cont.comp Y.subtypeL.cont) hfY_int (hφ_int.congr lem3)
     _ =ᵐ[μ] μ[φ ∘ f | m] := condExp_congr_ae lem3.symm
 
+theorem forall_measure_restrict_spanningSets_eq_zero [SigmaFinite μ] (s : Set α) :
+    (∀ n, μ.restrict (spanningSets μ n) s = 0) ↔ μ s = 0 := by
+  rw [← Measure.forall_measure_inter_spanningSets_eq_zero]
+  simp [fun n => μ.restrict_apply' (t := s) (measurableSet_spanningSets μ n)]
+
+theorem ae_iff_ae_restrict [SigmaFinite μ] {p : α → Prop} :
+    (∀ n, ∀ᵐ a ∂(μ.restrict (spanningSets μ n)), p a) ↔ ∀ᵐ a ∂μ, p a := by
+  simp [ae_iff, forall_measure_restrict_spanningSets_eq_zero]
+
 /-- **Conditional Jensen's inequality**: in a Banach space `X` with a measure `μ` that is σ-finite
 on a sub-σ-algebra `m`, if `φ : X → ℝ` is a convex lower-semicontinuous function, then for any
 `f : α → X` such that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]`. -/
 theorem conditional_jensen (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ Set.univ φ) (hφ_cont : LowerSemicontinuous φ)
     (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
-    φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] := by
-  sorry
+    φ ∘ μ[f | m] ≤ᵐ[μ.trim hm] μ[φ ∘ f | m] := by
+  rw [EventuallyLE, ← ae_iff_ae_restrict]
+  intro n
+  let t := spanningSets (μ.trim hm) n
+  have ht := measurableSet_spanningSets (μ.trim hm) n
+  have ht' := measure_spanningSets_lt_top (μ.trim hm) n
+  have h1 := stronglyMeasurable_condExp.ae_eq_trim_of_stronglyMeasurable hm
+    stronglyMeasurable_condExp (condExp_restrict_ae_eq_restrict hm ht hf_int)
+  have h2 := stronglyMeasurable_condExp.ae_eq_trim_of_stronglyMeasurable hm
+    stronglyMeasurable_condExp (condExp_restrict_ae_eq_restrict hm ht hφ_int)
+  have : Fact (μ t < ⊤) := fact_iff.2 <| (le_trim hm).trans_lt ht'
+  have h3 := conditional_jensen_of_finite (μ := μ.restrict t) hm hφ_cvx hφ_cont hf_int.restrict
+    hφ_int.restrict
+  borelize E
+  have : StronglyMeasurable[m] (φ ∘ (μ.restrict t)[f | m]) := by
+    refine hφ_cont.measurable.stronglyMeasurable.comp_measurable ?_
+    have : StronglyMeasurable[m] (μ.restrict t)[f | m] := stronglyMeasurable_condExp
+    exact this.measurable
+  have h4 := this.ae_le_trim_of_stronglyMeasurable hm stronglyMeasurable_condExp h3
+  rw [restrict_trim _ _ ht]
+  filter_upwards [h1, h2, h4] with a ha hb hc
+  simpa [← ha, ← hb]
 
 variable [FiniteDimensional ℝ E]
 
@@ -101,6 +134,6 @@ that is σ-finite on a sub-σ-algebra `m`, if `φ : X → ℝ` is a convex funct
 `f : α → X` such that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ 𝔼[φ ∘ f | m]`. -/
 theorem conditional_jensen_finite_dim (hm : m ≤ mα) [SigmaFinite (μ.trim hm)]
     (hφ_cvx : ConvexOn ℝ Set.univ φ) (hf_int : Integrable f μ) (hφ_int : Integrable (φ ∘ f) μ) :
-    φ ∘ μ[f | m] ≤ᵐ[μ] μ[φ ∘ f | m] :=
+    φ ∘ μ[f | m] ≤ᵐ[μ.trim hm] μ[φ ∘ f | m] :=
   conditional_jensen hm hφ_cvx
     (continuousOn_univ.1 (hφ_cvx.continuousOn isOpen_univ)).lowerSemicontinuous hf_int hφ_int
