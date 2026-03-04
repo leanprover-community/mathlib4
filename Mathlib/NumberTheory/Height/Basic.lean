@@ -84,14 +84,17 @@ class AdmissibleAbsValues (K : Type*) [Field K] where
   /-- The nonarchimedean absolute values are indeed nonarchimedean. -/
   isNonarchimedean : ∀ v ∈ nonarchAbsVal, IsNonarchimedean v
   /-- Only finitely many (nonarchimedean) absolute values are `≠ 1` for any nonzero `x : K`. -/
-  mulSupport_finite {x : K} (_ : x ≠ 0) : (fun v : nonarchAbsVal ↦ v.val x).HasFiniteMulSupport
+  hasFiniteMulSupport {x : K} (_ : x ≠ 0) : (fun v : nonarchAbsVal ↦ v.val x).HasFiniteMulSupport
   /-- The product formula. The archimedean absolute values are taken with their multiplicity. -/
   product_formula {x : K} (_ : x ≠ 0) :
       (archAbsVal.map (· x)).prod * ∏ᶠ v : nonarchAbsVal, v.val x = 1
 
 open AdmissibleAbsValues Real Function
 
-attribute [fun_prop] mulSupport_finite
+@[deprecated (since := "2026-03-03")] alias
+  AdmissibleAbsValues.mulSupport_finite := AdmissibleAbsValues.hasFiniteMulSupport
+
+attribute [fun_prop] hasFiniteMulSupport
 
 variable (K : Type*) [Field K] [AdmissibleAbsValues K]
 
