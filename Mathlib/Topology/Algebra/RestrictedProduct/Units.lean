@@ -58,7 +58,7 @@ theorem eventualy_isUnit_of_isUnit {x : Πʳ i, [R i, B i]_[𝓕]} (hx : IsUnit 
     fun i hx hb ↦ ⟨hx, ⟨b i, hb⟩, by simp_all [← SetLike.coe_eq_coe]⟩⟩
 
 theorem isUnit_iff {x : Πʳ i, [R i, B i]_[𝓕]} :
-    IsUnit x ↔ (∀ i, IsUnit (x i)) ∧ ∀ᶠ i in 𝓕, ∃ (h : x i ∈ B i), IsUnit (⟨x i, h⟩ : B i)  :=
+    IsUnit x ↔ (∀ i, IsUnit (x i)) ∧ ∀ᶠ i in 𝓕, ∃ (h : x i ∈ B i), IsUnit (⟨x i, h⟩ : B i) :=
   ⟨eventualy_isUnit_of_isUnit, fun h ↦ isUnit_of_eventually_isUnit h.1 h.2⟩
 
 /-- The homomorphism from the units of a restricted product to the regular product of unit. -/

@@ -186,7 +186,6 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
     ext a
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem definable_iff_finitely_definable :
     A.Definable L s ↔ ∃ (A0 : Finset M), (A0 : Set M) ⊆ A ∧
       (A0 : Set M).Definable L s := by

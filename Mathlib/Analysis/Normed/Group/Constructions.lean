@@ -135,12 +135,12 @@ instance Multiplicative.toNNNorm : NNNorm (Multiplicative E) := ‹NNNorm E›
 end NNNorm
 
 instance Additive.seminormedAddGroup [SeminormedGroup E] : SeminormedAddGroup (Additive E) where
-  dist_eq x y := dist_eq_norm_div x.toMul y.toMul
+  dist_eq x y := dist_eq_norm_inv_mul x.toMul y.toMul
 
 
 instance Multiplicative.seminormedGroup [SeminormedAddGroup E] :
     SeminormedGroup (Multiplicative E) where
-  dist_eq x y := dist_eq_norm_sub x.toAdd y.toAdd
+  dist_eq x y := dist_eq_norm_neg_add x.toAdd y.toAdd
 
 instance Additive.seminormedCommGroup [SeminormedCommGroup E] :
     SeminormedAddCommGroup (Additive E) :=
@@ -249,8 +249,7 @@ variable [SeminormedGroup E] [SeminormedGroup F]
 /-- Product of seminormed groups, using the sup norm. -/
 @[to_additive /-- Product of seminormed groups, using the sup norm. -/]
 instance Prod.seminormedGroup : SeminormedGroup (E × F) where
-  dist_eq x y := by
-    simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
+  dist_eq x y := by simp [Prod.norm_def, Prod.dist_eq, dist_eq_norm_inv_mul]
 
 /-- Multiplicative version of `Prod.nnnorm_def`.
 Earlier, this name was used for the additive version. -/
@@ -302,8 +301,8 @@ instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
   norm f := ↑(Finset.univ.sup fun b => ‖f b‖₊)
   dist_eq x y :=
     congr_arg (toReal : ℝ≥0 → ℝ) <|
-      congr_arg (Finset.sup Finset.univ) <|
-        funext fun a => show nndist (x a) (y a) = ‖x a / y a‖₊ from nndist_eq_nnnorm_div (x a) (y a)
+      congr_arg (Finset.sup Finset.univ) <| funext fun a =>
+        show nndist (x a) (y a) = ‖(x a)⁻¹ * y a‖₊ from nndist_eq_nnnorm_inv_mul (x a) (y a)
 
 @[to_additive Pi.norm_def]
 lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
@@ -431,7 +430,7 @@ but that case would likely never be used.
 instance instSeminormedAddGroup [SeminormedAddGroup E] : SeminormedAddGroup Eᵐᵒᵖ where
   __ := instPseudoMetricSpace
   norm x := ‖x.unop‖
-  dist_eq _ _ := dist_eq_norm _ _
+  dist_eq _ _ := dist_eq_norm_neg_add _ _
 
 lemma norm_op [SeminormedAddGroup E] (a : E) : ‖MulOpposite.op a‖ = ‖a‖ := rfl
 
@@ -446,7 +445,7 @@ instance instNormedAddGroup [NormedAddGroup E] : NormedAddGroup Eᵐᵒᵖ where
   __ := instSeminormedAddGroup
 
 instance instSeminormedAddCommGroup [SeminormedAddCommGroup E] : SeminormedAddCommGroup Eᵐᵒᵖ where
-  dist_eq _ _ := dist_eq_norm _ _
+  dist_eq _ _ := dist_eq_norm_neg_add _ _
 
 instance instNormedAddCommGroup [NormedAddCommGroup E] : NormedAddCommGroup Eᵐᵒᵖ where
   __ := instSeminormedAddCommGroup
