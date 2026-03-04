@@ -49,7 +49,7 @@ def dsimpPercentElaborator : TermElab := fun stx expectedType => do
       let (dsimpResult, _) ← Meta.dsimp (← inferType e) ctx simprocs
       mkExpectedTypeHint e dsimpResult
     else
-      let (dsimpResult, _) ← Meta.dsimp (← Term.elabTerm stx[5] expectedType) ctx simprocs
+      let (dsimpResult, _) ← Meta.dsimp e ctx simprocs
       return dsimpResult
   go { elaborator := .anonymous } |>.run' { goals := [fresh.mvarId!] }
 
