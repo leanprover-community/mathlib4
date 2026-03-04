@@ -195,16 +195,16 @@ end IsTopologicalGroup
 
 section IsUniformGroup
 
-variable [CommGroup α] [UniformSpace α]
+variable [UniformSpace α]
 
 /-- The **Cauchy criterion** for infinite products, also known as the **Cauchy convergence test** -/
 @[to_additive /-- The **Cauchy criterion** for infinite sums, also known as the
 **Cauchy convergence test** -/]
-theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
+theorem multipliable_iff_cauchySeq_finset [CommMonoid α] [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 
-variable [IsUniformGroup α] {f g : β → α}
+variable [CommGroup α] [IsUniformGroup α] {f g : β → α}
 
 @[to_additive]
 theorem cauchySeq_finset_iff_prod_vanishing :
