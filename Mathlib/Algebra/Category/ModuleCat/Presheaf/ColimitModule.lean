@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 
 /-!
-#
+# The colimit module of a presheaf of module on a cofiltered category
 
 -/
 
@@ -20,10 +20,6 @@ public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 universe w v u
 
 open CategoryTheory Limits MonoidalCategory
-
-attribute [local instance] hasColimitsOfShape_of_finallySmall
-
-attribute [local instance] IsFiltered.isSifted
 
 -- this should be moved
 lemma CategoryTheory.preservesColimitsOfShape_of_finallySmall_of_isFiltered
@@ -34,7 +30,8 @@ lemma CategoryTheory.preservesColimitsOfShape_of_finallySmall_of_isFiltered
   Functor.Final.preservesColimitsOfShape_of_final
     (FinallySmall.fromFilteredFinalModel.{w} J) _
 
-attribute [local instance] preservesColimitsOfShape_of_finallySmall_of_isFiltered
+attribute [local instance] hasColimitsOfShape_of_finallySmall
+  IsFiltered.isSifted preservesColimitsOfShape_of_finallySmall_of_isFiltered
 
 namespace PresheafOfModules
 
@@ -48,6 +45,11 @@ section
 
 variable {M : PresheafOfModules.{w} R} {cM : Cocone M.presheaf} (hcM : IsColimit cM)
 
+/-- Given a colimit cocone for a presheaf of rings on a cofiltered category `R`,
+and a colimit cocone `cM` for the underlying presheaf of abelian groups of a
+presheaf of modules over `R`, this is the type `cM.pt` on which we define
+a module structure below. -/
+@[nolint unusedArguments]
 def ModuleColimit (_ : IsColimit cR) (_ : IsColimit cM) : Type w := cM.pt
   deriving AddCommGroup
 
@@ -162,6 +164,7 @@ end ModuleColimit
 end
 
 set_option backward.isDefEq.respectTransparency false in
+/-- The colimit module of a presheaf of modules over a cofiltered category. -/
 noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat cR.pt where
   obj M := ModuleCat.of _ (ModuleColimit hcR (colimit.isColimit M.presheaf))
   map {M₁ M₂} f := ModuleCat.ofHom
@@ -175,8 +178,7 @@ noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat cR.pt w
           (ι_colimMap ((toPresheaf _).map f) U) x
         dsimp at h₁ h₂ ⊢
         rw [ModuleColimit.smul_eq]
-        erw [h₁, h₂, ModuleColimit.smul_eq]
-        erw [(f.app U).hom.map_smul]
+        erw [h₁, h₂, ModuleColimit.smul_eq, (f.app U).hom.map_smul]
         rfl }
   map_id M :=
     (forget₂ _ AddCommGrpCat).map_injective (by
@@ -189,5 +191,5 @@ noncomputable def colimitFunctor : PresheafOfModules.{w} R ⥤ ModuleCat cR.pt w
       exact colimit.hom_ext (by simp))
 
 end
-#min_imports
+
 end PresheafOfModules

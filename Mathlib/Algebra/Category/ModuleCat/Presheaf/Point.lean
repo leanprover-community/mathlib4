@@ -5,12 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ColimitModule
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
-public import Mathlib.Algebra.Category.ModuleCat.Stalk
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
-public import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.CategoryTheory.Sites.Point.Basic
 
 /-!
 #
