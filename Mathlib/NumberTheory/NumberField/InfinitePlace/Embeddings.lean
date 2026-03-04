@@ -360,28 +360,28 @@ theorem IsUnmixed.isReal_iff_isReal {φ : L →+* ℂ} (h : IsUnmixed K φ) :
 
 variable {K} (L) (ψ)
 
-noncomputable def mixedEmbeddingsOver : Set (L →+* ℂ) := { φ | IsExtension ψ φ ∧ IsMixed K φ }
+noncomputable def mixedEmbeddingsOver : Set (L →+* ℂ) := { φ | LiesOver ψ φ ∧ IsMixed K φ }
 
-noncomputable def unmixedEmbeddingsOver : Set (L →+* ℂ) := { φ | IsExtension ψ φ ∧ IsUnmixed K φ }
+noncomputable def unmixedEmbeddingsOver : Set (L →+* ℂ) := { φ | LiesOver ψ φ ∧ IsUnmixed K φ }
 
 variable {L} {ψ}
 
 theorem mem_mixedEmbeddingsOver {φ : L →+* ℂ} :
-    φ ∈ mixedEmbeddingsOver L ψ ↔ IsExtension ψ φ ∧ IsMixed K φ := by
+    φ ∈ mixedEmbeddingsOver L ψ ↔ LiesOver ψ φ ∧ IsMixed K φ := by
   simp [mixedEmbeddingsOver]
 
 theorem mixedEmbeddingsOver.isExtension (φ : L →+* ℂ) (h : φ ∈ mixedEmbeddingsOver L ψ) :
-    IsExtension ψ φ := (mem_mixedEmbeddingsOver.1 h).1
+    LiesOver ψ φ := (mem_mixedEmbeddingsOver.1 h).1
 
 theorem mixedEmbeddingsOver.isMixed (φ : L →+* ℂ) (h : φ ∈ mixedEmbeddingsOver L ψ) : IsMixed K φ :=
   (mem_mixedEmbeddingsOver.1 h).2
 
 theorem mem_unmixedEmbeddingsOver {φ : L →+* ℂ} :
-    φ ∈ unmixedEmbeddingsOver L ψ ↔ IsExtension ψ φ ∧ IsUnmixed K φ := by
+    φ ∈ unmixedEmbeddingsOver L ψ ↔ LiesOver ψ φ ∧ IsUnmixed K φ := by
   simp [unmixedEmbeddingsOver]
 
 theorem unmixedEmbeddingsOver.isExtension (φ : L →+* ℂ) (h : φ ∈ unmixedEmbeddingsOver L ψ) :
-    IsExtension ψ φ := (mem_unmixedEmbeddingsOver.mp h).1
+    LiesOver ψ φ := (mem_unmixedEmbeddingsOver.mp h).1
 
 theorem unmixedEmbeddingsOver.isUnmixed (φ : L →+* ℂ) (h : φ ∈ unmixedEmbeddingsOver L ψ) :
     IsUnmixed K φ := (mem_unmixedEmbeddingsOver.mp h).2
@@ -393,7 +393,7 @@ theorem unmixedEmbeddingsOver.disjoint_mixedEmbeddingsOver :
   simpa [Set.disjoint_left, mixedEmbeddingsOver, unmixedEmbeddingsOver] using fun ψ _ h _ ↦ h
 
 theorem unmixedEmbeddingsOver.union_mixedEmbeddingsOver :
-    (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) = { φ | IsExtension ψ φ } := by
+    (unmixedEmbeddingsOver L ψ) ∪ (mixedEmbeddingsOver L ψ) = { φ | LiesOver ψ φ } := by
   rw [unmixedEmbeddingsOver, mixedEmbeddingsOver, ← Set.setOf_or]
   exact Set.setOf_inj.2 <| funext_iff.2 fun ψ ↦ by
     simp [isUnmixed_iff_not_isMixed, -not_and, and_or_left.symm, em']

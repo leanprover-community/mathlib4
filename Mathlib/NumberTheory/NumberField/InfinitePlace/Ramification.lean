@@ -680,7 +680,7 @@ theorem unramifiedPlacesOver.mk_mem_unramifiedPlacesOver
     (h : φ ∈ unmixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ unramifiedPlacesOver L v := by
   simp_all only [mem_unramifiedPlacesOver, mem_unmixedEmbeddingsOver]
-  refine ⟨by simpa using congrArg InfinitePlace.mk h.1, h.2.mk_isUnramified⟩
+  refine ⟨by simpa using congrArg InfinitePlace.mk h.1.over, h.2.mk_isUnramified⟩
 
 variable (L) in
 open scoped Classical in
@@ -702,17 +702,17 @@ theorem ramifiedPlacesOver.isRamified {w : InfinitePlace L} {v : InfinitePlace K
 
 theorem ramifiedPlacesOver.isExtension {w : InfinitePlace L} {v : InfinitePlace K}
     (hw : w ∈ ramifiedPlacesOver L v) :
-    IsExtension v.embedding w.embedding := by
-  rw [IsExtension]
-  have := liesOver hw
-  exact (isRamified hw).comap_embedding ▸ congrArg embedding (LiesOver.comap_eq w v)
+    LiesOver v.embedding w.embedding where
+  over := by
+    have := liesOver hw
+    exact (isRamified hw).comap_embedding ▸ congrArg embedding (LiesOver.comap_eq w v)
 
 theorem ramifiedPlacesOver.isExtension_conjugate {w : InfinitePlace L}
     {v : InfinitePlace K} (hw : w ∈ ramifiedPlacesOver L v) :
-    IsExtension v.embedding (conjugate w.embedding) := by
-  rw [IsExtension]
-  have := liesOver hw
-  exact (isRamified hw).comap_embedding_conjugate ▸ congrArg embedding (LiesOver.comap_eq w v)
+    LiesOver v.embedding (conjugate w.embedding) where
+  over := by
+    have := liesOver hw
+    exact (isRamified hw).comap_embedding_conjugate ▸ congrArg embedding (LiesOver.comap_eq w v)
 
 theorem ramifiedPlacesOver.isMixed {w : InfinitePlace L} {v : InfinitePlace K}
     (hw : w ∈ ramifiedPlacesOver L v) : IsMixed K w.embedding :=
@@ -726,7 +726,7 @@ theorem ramifiedPlacesOver.isMixed_conjugate {w : InfinitePlace L} {v : Infinite
 theorem ramifiedPlacesOver.mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} {v : InfinitePlace K}
     (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ ramifiedPlacesOver L v := by
-  simp_all [mem_ramifiedPlacesOver, mem_mixedEmbeddingsOver]
+  simp_all [mem_ramifiedPlacesOver, mem_mixedEmbeddingsOver, h.1.over]
   exact h.2.mk_isRamified
 
 theorem ramifiedPlacesOver.embedding_mem_mixedEmbeddingsOver
