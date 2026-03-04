@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Tactic.CategoryTheory.Elementwise
 public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Products and coproducts in the category of topological spaces
@@ -36,7 +37,7 @@ abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (�
 /-- The explicit fan of a family of topological spaces given by the pi type. -/
 @[simps! pt π_app]
 def piFan {ι : Type v} (α : ι → TopCat.{max v u}) : Fan α :=
-  Fan.mk (TopCat.of (∀ i, α i)) (piπ.{v,u} α)
+  Fan.mk (TopCat.of (∀ i, α i)) (piπ.{v, u} α)
 
 /-- The constructed fan is indeed a limit -/
 def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where

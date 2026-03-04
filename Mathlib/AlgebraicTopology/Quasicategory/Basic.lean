@@ -37,9 +37,9 @@ every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `
 -/
 @[kerodon 003A]
 class Quasicategory (S : SSet) : Prop where
-  hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : (Λ[n+2, i] : SSet) ⟶ S)
-    (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
-      ∃ σ : Δ[n+2] ⟶ S, σ₀ = Λ[n + 2, i].ι ≫ σ
+  hornFilling' : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n + 3)⦄ (σ₀ : (Λ[n + 2, i] : SSet) ⟶ S)
+    (_h0 : 0 < i) (_hn : i < Fin.last (n + 2)),
+      ∃ σ : Δ[n + 2] ⟶ S, σ₀ = Λ[n + 2, i].ι ≫ σ
 
 lemma Quasicategory.hornFilling {S : SSet} [Quasicategory S] ⦃n : ℕ⦄ ⦃i : Fin (n + 1)⦄
     (h0 : 0 < i) (hn : i < Fin.last n)

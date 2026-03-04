@@ -35,7 +35,7 @@ eigenvalue.
 * `σ a` : `spectrum R a` of `a : A`
 -/
 
-@[expose] public section
+public section
 
 namespace spectrum
 

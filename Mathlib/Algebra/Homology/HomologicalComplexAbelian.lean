@@ -19,7 +19,7 @@ is exact (resp. short exact) iff degreewise it is so.
 
 -/
 
-@[expose] public section
+public section
 
 open CategoryTheory Category Limits
 

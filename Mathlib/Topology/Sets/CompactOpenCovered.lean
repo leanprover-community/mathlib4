@@ -85,20 +85,48 @@ lemma iff_isCompactOpenCovered_sigmaMk :
     refine ⟨s, hs, fun i hi ↦ ⟨t i, this i hi⟩, fun i _ ↦ hc i, ?_⟩
     simp_rw [coe_mk, ← heq, ← heq', Set.image_sigma_eq_iUnion, Function.comp_apply]
 
-lemma of_iUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : s.Finite)
-    (H : ∀ t ∈ s, IsCompactOpenCovered f t) : IsCompactOpenCovered f U := by
+lemma of_iUnion_eq_of_finite {κ : Type*} [Finite κ] (s : κ → Set S) (hs : ⋃ i, s i = U)
+    (H : ∀ i, IsCompactOpenCovered f (s i)) : IsCompactOpenCovered f U := by
   rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
-  have (t) (h : t ∈ s) : ∃ (V : Opens (Σ i, X i)),
-      IsCompact V.1 ∧ (fun p ↦ f p.fst p.snd) '' V.carrier = t := by
-    have := H t h
-    rwa [iff_isCompactOpenCovered_sigmaMk, iff_of_unique] at this
+  have (i : κ) : ∃ (V : Opens (Σ i, X i)), IsCompact V.1 ∧ (f _ ·.snd) '' V.1 = s i := by
+    convert H i; rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
   choose V hVeq hVc using this
-  refine ⟨⨆ (t : s), V t t.2, ?_, ?_⟩
-  · simp only [Opens.iSup_mk, Opens.carrier_eq_coe, Opens.coe_mk]
-    have : Finite s := hf
-    exact isCompact_iUnion (fun _ ↦ hVeq _ _)
-  · simp [Set.image_iUnion, ← hs]
-    simp_all
+  exact ⟨⨆ i, V i, by simpa using isCompact_iUnion hVeq, by simp_all [Set.image_iUnion, ← hs]⟩
+
+lemma of_biUnion_eq_of_finite (s : Set (Set S)) (hs : ⋃ t ∈ s, t = U) (hf : s.Finite)
+    (H : ∀ t ∈ s, IsCompactOpenCovered f t) : IsCompactOpenCovered f U := by
+  have := hf.to_subtype
+  exact of_iUnion_eq_of_finite (fun i : s ↦ i.1) (by simpa) (by simpa)
+
+lemma of_biUnion_eq_of_isCompact [TopologicalSpace S] {U : Set S} (hU : IsCompact U)
+    (s : Set (Opens S)) (hs : ⋃ t ∈ s, t = U) (H : ∀ t ∈ s, IsCompactOpenCovered f t) :
+    IsCompactOpenCovered f U := by
+  classical
+  obtain ⟨t, ht⟩ := hU.elim_finite_subcover (fun V : s ↦ V.1) (fun V ↦ V.1.2) (by simp [← hs])
+  refine of_biUnion_eq_of_finite (SetLike.coe '' (t.image Subtype.val : Set (Opens S))) ?_ ?_ ?_
+  · exact subset_antisymm (fun x h ↦ by aesop) (subset_trans ht <| by simp)
+  · exact Set.toFinite _
+  · grind
+
+lemma of_isCompact_of_forall_exists_isCompactOpenCovered [TopologicalSpace S] {U : Set S}
+    (hU : IsCompact U) (H : ∀ x ∈ U, ∃ t ⊆ U, x ∈ t ∧ IsOpen t ∧ IsCompactOpenCovered f t) :
+    IsCompactOpenCovered f U := by
+  choose Us hU' hUx hUo hU'' using H
+  refine of_biUnion_eq_of_isCompact hU { Us x h | (x : S) (h : x ∈ U) } ?_ ?_
+  · refine subset_antisymm (fun x ↦ ?_) fun x hx ↦ ?_
+    · simp [Opens.forall]
+      aesop
+    · simpa using ⟨⟨Us x hx, hUo _ _⟩, ⟨x, by simpa⟩, hUx _ _⟩
+  · grind
+
+lemma image {i : ι} (V : Opens (X i)) (hV : IsCompact (X := X i) V) :
+    IsCompactOpenCovered f (f i '' V) := by
+  refine ⟨{i}, Set.finite_singleton i, fun j hj ↦ hj ▸ V, by rintro i rfl; simpa, by simp⟩
+
+lemma of_finite {U : Set S} {κ : Type*} [Finite κ] (a : κ → ι) (V : ∀ k, Opens (X (a k)))
+    (hV : ∀ k, IsCompact (V k).1) (hU : ⋃ k, f (a k) '' V k = U) :
+    IsCompactOpenCovered f U :=
+  of_iUnion_eq_of_finite _ hU (fun _ ↦ .image _ (hV _))
 
 /-- If `U` is compact-open covered and the `X i` have a basis of compact opens,
 `U` can be written as the union of images of elements of the basis. -/
@@ -129,13 +157,44 @@ lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis 
   simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop] at ha
   use ⟨⟨i, hi⟩, ⟨a, ha.1⟩⟩, h, ha.2, heq
 
+lemma of_finite_of_isSpectralMap [Finite ι] [TopologicalSpace S]
+    (hf : ∀ i, IsSpectralMap (f i)) {U : Set S} (hs : ∀ x ∈ U, ∃ i, x ∈ Set.range (f i))
+    (hU : IsOpen U) (hc : IsCompact U) :
+    IsCompactOpenCovered f U := by
+  refine ⟨.univ, Set.finite_univ, fun i _ ↦ ⟨f i ⁻¹' U, hU.preimage (hf i).1⟩,
+    fun i _ ↦ hc.preimage_of_isOpen (hf i) hU, subset_antisymm (by simp) fun x hx ↦ ?_⟩
+  obtain ⟨i, y, rfl⟩ := hs x hx
+  simpa using ⟨i, y, hx, rfl⟩
+
 lemma of_isOpenMap [TopologicalSpace S] [∀ i, PrespectralSpace (X i)]
     (hfc : ∀ i, Continuous (f i)) (h : ∀ i, IsOpenMap (f i))
-    {U : Set S} (hs : ∀ x ∈ U, ∃ i y, f i y = x) (hU : IsOpen U) (hc : IsCompact U) :
+    {U : Set S} (hs : ∀ x ∈ U, ∃ i, x ∈ Set.range (f i)) (hU : IsOpen U) (hc : IsCompact U) :
     IsCompactOpenCovered f U := by
   rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique]
   refine (isOpenMap_sigma.mpr h).exists_opens_image_eq_of_prespectralSpace
       (continuous_sigma_iff.mpr hfc) (fun x hx ↦ ?_) hU hc
   simpa using hs x hx
+
+/-- Being compact open covered descends along refinements if the spaces are prespectral. -/
+lemma of_comp [∀ i, PrespectralSpace (X i)] [TopologicalSpace S]
+    {σ : Type*} {Y : σ → Type*} [∀ i, TopologicalSpace (Y i)]
+    (g : ∀ i, Y i → S) {a : σ → ι} (t : ∀ i, Y i → X (a i)) (ht : ∀ i, Continuous (t i))
+    (hge : ∀ i, g i = f (a i) ∘ t i)
+    (hf : ∀ i, Continuous (f i)) {U : Set S} (ho : IsOpen U) (hU : IsCompactOpenCovered g U) :
+    IsCompactOpenCovered f U := by
+  rw [iff_isCompactOpenCovered_sigmaMk, iff_of_unique] at hU ⊢
+  let p : (Σ i, Y i) → (Σ i, X i) := Sigma.map a t
+  have hcomp : (fun x ↦ f x.1 x.2) ∘ p = fun x ↦ g x.1 x.2 := by
+    ext
+    simp [hge, p, Sigma.map]
+  have hp : Continuous p := Continuous.sigma_map ht
+  have hf : Continuous (fun p : Σ i, X i ↦ f p.1 p.2) := by simp [hf]
+  obtain ⟨V, hV, heq⟩ := hU
+  obtain ⟨K, hK, ho, hVK, hKU⟩ := PrespectralSpace.exists_isCompact_and_isOpen_between
+      (hV.image hp) (ho.preimage hf) <| by
+    simp [← heq, ← Set.preimage_comp, hcomp, Set.subset_preimage_image]
+  refine ⟨⟨K, ho⟩, hK, subset_antisymm (by simpa) ?_⟩
+  rw [← heq, ← hcomp, Set.image_comp]
+  exact subset_trans (Set.image_mono hVK) (by simp)
 
 end IsCompactOpenCovered

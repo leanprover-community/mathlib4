@@ -162,7 +162,7 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
   obj X :=
     { obj := fun Y => X × Y
-      map := fun { _ Y₂} f => (binaryProductLimit X Y₂).lift
+      map := fun {_ Y₂} f => (binaryProductLimit X Y₂).lift
         (BinaryFan.mk _root_.Prod.fst (_root_.Prod.snd ≫ f)) }
   map {X₁ X₂} f :=
     { app := fun Y =>

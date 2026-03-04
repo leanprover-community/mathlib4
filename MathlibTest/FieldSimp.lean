@@ -837,7 +837,7 @@ example (n : ℕ) (h : n ≠ 0) : 1 / (n : K) * n = 1 := by
 example (n : ℕ) (h : n ≠ 0) : 1 / (n : ℝ) * n = 1 := by
   field_simp
 
--- Minimised from Fourier/AddCircle.lean
+-- Minimised from `Mathlib/Analysis/Fourier/AddCircle.lean`
 example (n : ℕ) (T : ℝ) {hT : T ≠ 0} (hn : n ≠ 0) {a : ℝ} :
     (2 * a / T * (n * (T / 2 / n))) = a := by
   field_simp
@@ -956,7 +956,7 @@ example {K : Type} [CommGroupWithZero K] {x y : K} : y / x * x ^ 3 * y ^ 3 = x ^
 example {K : Type} [Semifield K] {x y : K} (h : x + y ≠ 0) : x / (x + y) + y / (x + y) = 1 := by
   field_simp
 
--- Extracted from `Analysis/SpecificLimits/Basic.lean`
+-- Extracted from `Mathlib/Analysis/SpecificLimits/Basic.lean`
 
 -- `field_simp` assumes commutativity: in its absence, it does nothing.
 /-- error: field_simp made no progress on goal -/

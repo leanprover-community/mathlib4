@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.Abelianization.Defs
 public import Mathlib.GroupTheory.FreeGroup.Basic
+public import Mathlib.Control.Basic
 
 /-!
 # Free abelian groups
@@ -22,7 +23,7 @@ under pointwise addition. In this file, it is defined as the abelianisation
 of the free group on `α`. All the constructions and theorems required to show
 the adjointness of the construction and the forgetful functor are proved in this
 file, but the category-theoretic adjunction statement is in
-`Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
+`Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -209,8 +210,6 @@ theorem lift_add_apply [AddCommGroup G] (f g : α → G) (a : FreeAbelianGroup �
   · intro x y hx hy
     simp only [(lift _).map_add, hx, hy, add_add_add_comm]
 
-@[deprecated (since := "2025-07-13")] alias lift.add' := lift_add_apply
-
 @[simp] lemma lift_add [AddCommGroup G] (f g : α → G) : lift (f + g) = lift f + lift g :=
   AddMonoidHom.ext <| lift_add_apply _ _
 
@@ -229,8 +228,6 @@ def liftAddGroupHom {α} (β) [AddCommGroup β] (a : FreeAbelianGroup α) : (α 
 
 lemma lift_neg_apply [AddCommGroup G] (f : α → G) (a : FreeAbelianGroup α) :
     lift (-f) a = -lift f a := congr($(lift_neg f) a)
-
-@[deprecated (since := "2025-07-13")] alias lift_neg' := lift_neg
 
 section Monad
 
@@ -590,10 +587,8 @@ def uniqueEquiv (T : Type*) [Unique T] : FreeAbelianGroup T ≃+ ℤ where
       rw [hx, hy]
   right_inv n := by
     rw [map_zsmul, lift_apply_of]
-    exact zsmul_int_one n
+    exact zsmul_one n
   map_add' := map_add _
-
-@[deprecated (since := "2025-06-16")] alias punitEquiv := uniqueEquiv
 
 /-- Isomorphic types have isomorphic free abelian groups. -/
 def equivOfEquiv {α β : Type*} (f : α ≃ β) : FreeAbelianGroup α ≃+ FreeAbelianGroup β where

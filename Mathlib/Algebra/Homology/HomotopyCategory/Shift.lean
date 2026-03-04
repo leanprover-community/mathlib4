@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.Shift.Quotient
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.Tactic.Linarith
 
 /-!
 # The shift on cochain complexes and on the homotopy category
@@ -311,7 +310,7 @@ noncomputable instance commShiftQuotient :
 instance (n : ℤ) : (shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Additive := by
   have : ((quotient C (ComplexShape.up ℤ) ⋙ shiftFunctor _ n)).Additive :=
     Functor.additive_of_iso ((quotient C (ComplexShape.up ℤ)).commShiftIso n)
-  apply Functor.additive_of_full_essSurj_comp (quotient _ _ )
+  apply Functor.additive_of_full_essSurj_comp (quotient _ _)
 
 instance {R : Type*} [Ring R] [CategoryTheory.Linear R C] (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomotopyCategory C (ComplexShape.up ℤ)) n).Linear R where

@@ -45,35 +45,27 @@ instance : Unique 𝒰.sigma.I₀ := inferInstanceAs <| Unique PUnit.{v + 1}
 /-- `𝒰` refines the single object cover defined by `𝒰`. -/
 @[simps]
 noncomputable def toSigma (𝒰 : Cover.{v} (precoverage P) S) : 𝒰 ⟶ 𝒰.sigma where
-  idx _ := default
-  app i := Sigma.ι _ i
-  app_prop _ := IsZariskiLocalAtSource.of_isOpenImmersion _
+  s₀ _ := default
+  h₀ i := Sigma.ι _ i
 
 /-- A refinement of coverings induces a refinement on the single object coverings. -/
 @[simps]
 noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma where
-  idx _ := default
-  app _ := Sigma.desc fun j ↦ f.app j ≫ Sigma.ι _ (f.idx j)
-  w _ := Sigma.hom_ext _ _ (by simp)
-  app_prop _ := by
-    simp only [sigma_X, sigma_I₀, PUnit.default_eq_unit,
-      IsZariskiLocalAtSource.iff_of_openCover (Scheme.IsLocallyDirected.openCover _),
-      Discrete.functor_obj_eq_as, IsLocallyDirected.openCover_I₀, IsLocallyDirected.openCover_X,
-      IsLocallyDirected.openCover_f, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-    intro i
-    exact P.comp_mem _ _ (f.app_prop i.1) (IsZariskiLocalAtSource.of_isOpenImmersion _)
+  s₀ _ := default
+  h₀ _ := Sigma.desc fun j ↦ f.h₀ j ≫ Sigma.ι _ (f.s₀ j)
+  w₀ _ := Sigma.hom_ext _ _ (by simp)
 
 /-- Collapsing a cover to a single object cover is functorial. -/
 @[simps]
 noncomputable def sigmaFunctor : S.Cover (precoverage P) ⥤ S.Cover (precoverage P) where
   obj 𝒰 := 𝒰.sigma
-  map f := f.sigma
-  map_id 𝒰 := Scheme.Cover.Hom.ext rfl <| by
-    simp only [sigma_I₀, sigma_X, Hom.sigma_idx, PUnit.default_eq_unit, id_idx_apply, heq_eq_eq]
+  map f := Scheme.Cover.Hom.sigma f
+  map_id 𝒰 := PreZeroHypercover.Hom.ext rfl <| by
+    simp only [sigma_I₀, sigma_X, heq_eq_eq]
     ext j : 1
     exact Sigma.hom_ext _ _ (by simp)
-  map_comp f g := Scheme.Cover.Hom.ext rfl <| by
-    simp only [sigma_I₀, sigma_X, Hom.sigma_idx, PUnit.default_eq_unit, comp_idx_apply, heq_eq_eq]
+  map_comp f g := PreZeroHypercover.Hom.ext rfl <| by
+    simp only [sigma_I₀, sigma_X, heq_eq_eq]
     ext j : 1
     exact Sigma.hom_ext _ _ (by simp)
 

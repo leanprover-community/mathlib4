@@ -25,7 +25,7 @@ the class of isomorphisms by `G`.
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

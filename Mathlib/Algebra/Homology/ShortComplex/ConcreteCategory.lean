@@ -173,7 +173,7 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj D.L₀.X₃)
   have e : forget₂ C Ab ⋙ forget Ab ≅ forget C := eqToIso (HasForget₂.forget_comp)
   apply (mono_iff_injective (e.hom.app _)).1 inferInstance
   refine (congr_hom (e.hom.naturality D.δ) x₃).trans
-    ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_ ).trans
+    ((D.δ_apply (e.hom.app _ x₃) (e.hom.app _ x₂) (e.hom.app _ x₁) ?_ ?_).trans
     (congr_hom (e.hom.naturality D.v₂₃.τ₁).symm x₁))
   · refine ((congr_fun (e.hom.naturality D.L₁.g) x₂).symm.trans ?_).trans
       (congr_fun (e.hom.naturality D.v₀₁.τ₃) x₃)

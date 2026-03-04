@@ -67,7 +67,7 @@ variable [AddCommMonoid N] [Module R N]
   linearly equivalent to a Finsupp of a tensor product -/
 noncomputable def rTensor :
     MvPolynomial σ S ⊗[R] N ≃ₗ[S] (σ →₀ ℕ) →₀ (S ⊗[R] N) :=
-  TensorProduct.finsuppLeft' _ _ _ _ _
+  TensorProduct.finsuppLeft _ _ _ _ _
 
 lemma rTensor_apply_tmul (p : MvPolynomial σ S) (n : N) :
     rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
@@ -268,7 +268,7 @@ variable (S σ ι) in
 def tensorEquivSum :
     MvPolynomial σ S ⊗[R] MvPolynomial ι R ≃ₐ[S] MvPolynomial (σ ⊕ ι) S :=
   ((algebraTensorAlgEquiv _ _).restrictScalars _).trans
-    ((sumAlgEquiv _ _ _).symm.trans  (renameEquiv _ (.sumComm ι σ)))
+    ((sumAlgEquiv _ _ _).symm.trans (renameEquiv _ (.sumComm ι σ)))
 
 variable {R}
 

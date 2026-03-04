@@ -41,6 +41,8 @@ to for performance concerns.
 normed group
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 
 
@@ -419,7 +421,7 @@ abbrev GroupNorm.toNormedCommGroup [CommGroup E] (f : GroupNorm E) : NormedCommG
 section SeminormedGroup
 
 variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E}
-  {a a₁ a₂ b c : E} {r r₁ r₂ : ℝ}
+  {a a₁ a₂ b c d : E} {r r₁ r₂ : ℝ}
 
 @[to_additive]
 theorem dist_eq_norm_div (a b : E) : dist a b = ‖a / b‖ :=
@@ -494,6 +496,11 @@ theorem norm_mul_le_of_le' (h₁ : ‖a₁‖ ≤ r₁) (h₂ : ‖a₂‖ ≤ r
 /-- **Triangle inequality** for the norm. -/
 @[to_additive norm_add₃_le /-- **Triangle inequality** for the norm. -/]
 lemma norm_mul₃_le' : ‖a * b * c‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ := norm_mul_le_of_le' (norm_mul_le' _ _) le_rfl
+
+/-- **Triangle inequality** for the norm. -/
+@[to_additive norm_add₄_le /-- **Triangle inequality** for the norm. -/]
+lemma norm_mul₄_le' : ‖a * b * c * d‖ ≤ ‖a‖ + ‖b‖ + ‖c‖ + ‖d‖ :=
+  norm_mul_le_of_le' norm_mul₃_le' le_rfl
 
 @[to_additive]
 lemma norm_div_le_norm_div_add_norm_div (a b c : E) : ‖a / c‖ ≤ ‖a / b‖ + ‖b / c‖ := by
@@ -662,7 +669,7 @@ theorem norm_div_sub_norm_div_le_norm_div (u v w : E) : ‖u / w‖ - ‖v / w�
 @[to_additive norm_add_sub_norm_sub_le_two_mul]
 lemma norm_mul_sub_norm_div_le_two_mul {E : Type*} [SeminormedGroup E] (u v : E) :
     ‖u * v‖ - ‖u / v‖ ≤ 2 * ‖v‖ := by
-  simpa [- tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
+  simpa [-tsub_le_iff_right, tsub_le_iff_left, two_mul, add_assoc]
     using norm_mul₃_le' (a := (u / v)) (b := v) (c := v)
 
 @[to_additive norm_add_sub_norm_sub_le_two_mul_min]
@@ -902,6 +909,74 @@ theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
   rw [edist_nndist, nndist_mulIndicator]
 
+@[to_additive nontrivialTopology_iff_exists_nnnorm_ne_zero]
+theorem nontrivialTopology_iff_exists_nnnorm_ne_zero' :
+    NontrivialTopology E ↔ ∃ x : E, ‖x‖₊ ≠ 0 := by
+  simp_rw [TopologicalSpace.nontrivial_iff_exists_not_inseparable, Metric.inseparable_iff_nndist,
+    nndist_eq_nnnorm_div]
+  exact ⟨fun ⟨x, y, hxy⟩ => ⟨_, hxy⟩, fun ⟨x, hx⟩ => ⟨x, 1, by simpa using hx⟩⟩
+
+@[to_additive indiscreteTopology_iff_forall_nnnorm_eq_zero]
+theorem indiscreteTopology_iff_forall_nnnorm_eq_zero' :
+    IndiscreteTopology E ↔ ∀ x : E, ‖x‖₊ = 0 := by
+  simpa using nontrivialTopology_iff_exists_nnnorm_ne_zero' (E := E).not
+
+variable (E) in
+@[to_additive exists_nnnorm_ne_zero]
+theorem exists_nnnorm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖₊ ≠ 0 :=
+  nontrivialTopology_iff_exists_nnnorm_ne_zero'.1 ‹_›
+
+@[to_additive (attr := nontriviality) nnnorm_eq_zero]
+theorem IndiscreteTopology.nnnorm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖₊ = 0 :=
+  indiscreteTopology_iff_forall_nnnorm_eq_zero'.1 ‹_›
+
+alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero'⟩ :=
+  nontrivialTopology_iff_exists_nnnorm_ne_zero'
+alias ⟨_, NontrivialTopology.of_exists_nnnorm_ne_zero⟩ :=
+  nontrivialTopology_iff_exists_nnnorm_ne_zero
+attribute [to_additive existing NontrivialTopology.of_exists_nnnorm_ne_zero]
+  NontrivialTopology.of_exists_nnnorm_ne_zero'
+
+alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero'⟩ :=
+  indiscreteTopology_iff_forall_nnnorm_eq_zero'
+alias ⟨_, IndiscreteTopology.of_forall_nnnorm_eq_zero⟩ :=
+  indiscreteTopology_iff_forall_nnnorm_eq_zero
+attribute [to_additive existing IndiscreteTopology.of_forall_nnnorm_eq_zero]
+  IndiscreteTopology.of_forall_nnnorm_eq_zero'
+
+@[to_additive nontrivialTopology_iff_exists_norm_ne_zero]
+theorem nontrivialTopology_iff_exists_norm_ne_zero' :
+    NontrivialTopology E ↔ ∃ x : E, ‖x‖ ≠ 0 := by
+  simp [nontrivialTopology_iff_exists_nnnorm_ne_zero', ← NNReal.ne_iff]
+
+@[to_additive indiscreteTopology_iff_forall_norm_eq_zero]
+theorem indiscreteTopology_iff_forall_norm_eq_zero' :
+    IndiscreteTopology E ↔ ∀ x : E, ‖x‖ = 0 := by
+  simpa using nontrivialTopology_iff_exists_norm_ne_zero' (E := E).not
+
+variable (E) in
+@[to_additive exists_norm_ne_zero]
+theorem exists_norm_ne_zero' [NontrivialTopology E] : ∃ x : E, ‖x‖ ≠ 0 :=
+  nontrivialTopology_iff_exists_norm_ne_zero'.1 ‹_›
+
+@[to_additive (attr := nontriviality) IndiscreteTopology.norm_eq_zero]
+theorem IndiscreteTopology.norm_eq_zero' [IndiscreteTopology E] : ∀ x : E, ‖x‖ = 0 :=
+  indiscreteTopology_iff_forall_norm_eq_zero'.1 ‹_›
+
+alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero'⟩ :=
+  nontrivialTopology_iff_exists_norm_ne_zero'
+alias ⟨_, NontrivialTopology.of_exists_norm_ne_zero⟩ :=
+  nontrivialTopology_iff_exists_norm_ne_zero
+attribute [to_additive existing NontrivialTopology.of_exists_norm_ne_zero]
+  NontrivialTopology.of_exists_norm_ne_zero'
+
+alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero'⟩ :=
+  indiscreteTopology_iff_forall_norm_eq_zero'
+alias ⟨_, IndiscreteTopology.of_forall_norm_eq_zero⟩ :=
+  indiscreteTopology_iff_forall_norm_eq_zero
+attribute [to_additive existing IndiscreteTopology.of_forall_norm_eq_zero]
+  IndiscreteTopology.of_forall_norm_eq_zero'
+
 end NNNorm
 
 section ENorm
@@ -940,8 +1015,14 @@ lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ =
   rw [← edist_eq_enorm_div, edist_comm, edist_eq_enorm_div]
 
 @[to_additive]
-theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ ‖a‖ₑ < r := by
-  rw [EMetric.mem_ball, edist_one_eq_enorm]
+theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
+  rw [Metric.mem_eball, edist_one_eq_enorm]
+
+@[deprecated (since := "2026-01-24")]
+alias mem_emetric_ball_zero_iff := mem_eball_zero_iff
+
+@[to_additive existing, deprecated (since := "2026-01-24")]
+alias mem_emetric_ball_one_iff := mem_eball_one_iff
 
 end ENorm
 
@@ -978,6 +1059,19 @@ variable {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E]
 
 @[to_additive enorm_add_le]
 lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.enorm_mul_le a b
+
+@[to_additive enorm_add_le_of_le]
+theorem enorm_mul_le_of_le' {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
+    (h₁ : ‖a₁‖ₑ ≤ r₁) (h₂ : ‖a₂‖ₑ ≤ r₂) : ‖a₁ * a₂‖ₑ ≤ r₁ + r₂ :=
+  (enorm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
+
+@[to_additive enorm_add₃_le]
+lemma enorm_mul₃_le' {a b c : E} : ‖a * b * c‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ :=
+  enorm_mul_le_of_le' (enorm_mul_le' _ _) le_rfl
+
+@[to_additive enorm_add₄_le]
+lemma enorm_mul₄_le' {a b c d : E} : ‖a * b * c * d‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ + ‖d‖ₑ :=
+  enorm_mul_le_of_le' enorm_mul₃_le' le_rfl
 
 end ESeminormedMonoid
 
@@ -1115,7 +1209,7 @@ theorem nnnorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = ⟨r, hr⟩ :=
 lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
   simp [enorm, nnnorm_of_nonneg hr, ENNReal.ofReal, toNNReal, hr]
 
-lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ:= by
+lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ := by
   simp [Real.enorm_of_nonneg, ha]
 
 @[simp] lemma nnnorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnnorm]

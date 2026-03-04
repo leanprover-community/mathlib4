@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Fintype.Pigeonhole
 public import Mathlib.Order.Atoms.Finite
 public import Mathlib.Order.Grade
-public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Kőnig's infinity lemma
@@ -52,7 +51,7 @@ Formulate the lemma as a statement about graphs.
 
 -/
 
-@[expose] public section
+public section
 
 open Set
 section Sequence

@@ -412,7 +412,7 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   · rw [← nnnorm_eq_zero] at h
     rw [nnnorm_smul, nnnorm_inv, nnnorm_norm, mul_inv_cancel₀ h]
 
-private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ)  := by
+private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ) := by
   simp only [unitOf, coe_nnnorm]
   split_ifs with h
   · simp [h]

@@ -50,6 +50,9 @@ def prod [Zero M] [CommMonoid N] (f : α →₀ M) (g : α → M → N) : N :=
 
 variable [Zero M] [Zero M'] [CommMonoid N]
 
+@[to_additive (attr := simp)]
+lemma prod_fun_one (f : α →₀ M) : f.prod (fun _ _ ↦ (1 : N)) = 1 := by simp [prod]
+
 @[to_additive]
 theorem prod_of_support_subset (f : α →₀ M) {s : Finset α} (hs : f.support ⊆ s) (g : α → M → N)
     (h : ∀ i ∈ s, g i 0 = 1) : f.prod g = ∏ x ∈ s, g x (f x) := by
@@ -187,6 +190,11 @@ theorem prod_eq_single {f : α →₀ M} (a : α) {g : α → M → N}
     rw [h]
     exact h₁ h
 
+@[to_additive]
+lemma prod_unique [Unique α] {f : α →₀ M} {g : α → M → N} (h₁ : f default = 0 → g default 0 = 1) :
+    f.prod g = g default (f default) :=
+  prod_eq_single _ (fun a ↦ by simp [Subsingleton.elim a default]) h₁
+
 end SumProd
 
 section CommMonoidWithZero
@@ -272,7 +280,7 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
     rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
 
-@[simp]
+@[deprecated sum_fun_zero (since := "2025-12-19")]
 theorem sum_zero [Zero M] [AddCommMonoid N] {f : α →₀ M} : (f.sum fun _ _ => (0 : N)) = 0 :=
   Finset.sum_const_zero
 
@@ -619,22 +627,14 @@ theorem prod_pow_pos_of_zero_notMem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.
   Nat.pos_iff_ne_zero.mpr <| Finset.prod_ne_zero_iff.mpr fun _ hf =>
     pow_ne_zero _ fun H => by subst H; exact nhf hf
 
-@[deprecated (since := "2025-05-23")]
-alias prod_pow_pos_of_zero_not_mem_support := prod_pow_pos_of_zero_notMem_support
-
 end Nat
 
 namespace MulOpposite
 variable {ι M N : Type*} [AddCommMonoid M] [Zero N]
 
--- We additivise the following lemmas to themselves to avoid `to_additive` getting confused.
--- TODO(Jovan): Remove the annotations once unnecessary again.
-
-@[to_additive self (dont_translate := M), simp]
 lemma op_finsuppSum (f : ι →₀ N) (g : ι → N → M) :
     op (f.sum g) = f.sum fun i n ↦ op (g i n) := op_sum ..
 
-@[to_additive self (dont_translate := M), simp]
 lemma unop_finsuppSum (f : ι →₀ N) (g : ι → N → Mᵐᵒᵖ) :
     unop (f.sum g) = f.sum fun i n ↦ unop (g i n) := unop_sum ..
 

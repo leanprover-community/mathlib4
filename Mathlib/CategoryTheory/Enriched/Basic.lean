@@ -27,7 +27,7 @@ We don't yet define the `V`-object of natural transformations
 between a pair of `V`-functors (this requires limits in `V`),
 but we do provide a presheaf isomorphic to the Yoneda embedding of this object.
 
-We verify that when `V = Type v`, all these notion reduce to the usual ones.
+We verify that when `V = Type v`, all these notions reduce to the usual ones.
 
 ## References
 
@@ -386,7 +386,7 @@ variable {D : Type u₂} [EnrichedCategory V D]
 /-!
 We now turn to natural transformations between `V`-functors.
 
-The mostly commonly encountered definition of an enriched natural transformation
+The most commonly encountered definition of an enriched natural transformation
 is a collection of morphisms
 ```
 (𝟙_ W) ⟶ (F.obj X ⟶[V] G.obj X)

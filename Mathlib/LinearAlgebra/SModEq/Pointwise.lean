@@ -15,7 +15,7 @@ In this file, we record more lemmas about `SModEq` on elements
 of modules or rings.
 -/
 
-@[expose] public section
+public section
 
 open Submodule
 

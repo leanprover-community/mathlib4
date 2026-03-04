@@ -14,7 +14,7 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 This file shows that `ContinuousLinearMap.extendTo𝕜` preserves the norm of the functional.
 -/
 
-@[expose] public section
+public section
 
 open RCLike
 open scoped ComplexConjugate

@@ -426,6 +426,12 @@ theorem of_surjective (f : A →+* B) (hf : Surjective f) (hker : (RingHom.ker f
   rw [← f.comp_id]
   exact (id A).comp_surjective hf hker
 
+lemma of_bijective {f : A →+* B} (hf : Function.Bijective f) : f.FinitePresentation :=
+  .of_surjective f hf.2 <| by
+    have : ker f = ⊥ := by rw [← RingHom.injective_iff_ker_eq_bot]; exact hf.1
+    rw [this]
+    exact Submodule.fg_bot
+
 theorem of_finiteType [IsNoetherianRing A] {f : A →+* B} : f.FiniteType ↔ f.FinitePresentation :=
   @Algebra.FinitePresentation.of_finiteType A B _ _ f.toAlgebra _
 

@@ -52,7 +52,7 @@ of the field. This lemma is useful as a probabilistic polynomial identity test.
 * [zippel_1979]
 -/
 
-@[expose] public section
+public section
 
 open Fin Finset Fintype
 

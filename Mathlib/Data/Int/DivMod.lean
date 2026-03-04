@@ -13,7 +13,7 @@ public import Mathlib.Init
 
 -/
 
-@[expose] public section
+public section
 
 namespace Int
 

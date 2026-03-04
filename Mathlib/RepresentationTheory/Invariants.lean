@@ -248,7 +248,7 @@ noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFuncto
   unit := { app _ := ModuleCat.ofHom <| LinearMap.id.codRestrict _ <| by simp [trivialFunctor] }
   counit := { app X := {
     hom := ModuleCat.ofHom <| Submodule.subtype _
-    comm g := by ext x; exact (x.2 g).symm }}
+    comm g := by ext x; exact (x.2 g).symm } }
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_apply_hom

@@ -95,7 +95,7 @@ theorem proof₂ (M : ℝ)
       |a * b * (a ^ 2 - b ^ 2) + b * c * (b ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| ≤
         M * (a ^ 2 + b ^ 2 + c ^ 2) ^ 2) :
     9 * sqrt 2 / 32 ≤ M := by
-  set α := sqrt (2:ℝ)
+  set α := sqrt (2 : ℝ)
   have hα : α ^ 2 = 2 := sq_sqrt (by simp)
   let a := 2 - 3 * α
   let c := 2 + 3 * α

@@ -18,7 +18,7 @@ In this file we introduce typeclasses and definitions for lattice operations.
 
 ## Main definitions
 
-* `HasCompl`: type class for the `ᶜ` notation
+* `Compl`: type class for the `ᶜ` notation
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
 
@@ -41,11 +41,19 @@ Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` 
 
 /-- Set / lattice complement -/
 @[notation_class]
+class Compl (α : Type*) where
+  /-- Set / lattice complement -/
+  compl : α → α
+
+export Compl (compl)
+
+/-- Set / lattice complement -/
+@[deprecated Compl (since := "2026-01-04")]
 class HasCompl (α : Type*) where
   /-- Set / lattice complement -/
   compl : α → α
 
-export HasCompl (compl)
+attribute [deprecated Compl.compl (since := "2026-01-04")] HasCompl.compl
 
 @[inherit_doc]
 postfix:1024 "ᶜ" => compl
@@ -137,7 +145,7 @@ class HImp (α : Type*) where
 
 /-- Syntax typeclass for Heyting negation `￢`.
 
-The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
+The difference between `Compl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
 underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.
@@ -181,3 +189,19 @@ instance (priority := 100) top_nonempty (α : Type*) [Top α] : Nonempty α :=
   ⟨⊤⟩
 
 attribute [match_pattern] Bot.bot Top.top
+
+recommended_spelling "compl" for "ᶜ" in [Compl.compl, «term_ᶜ»]
+recommended_spelling "himp" for "⇨" in [HImp.himp, «term_⇨_»]
+recommended_spelling "hnot" for "￢" in [HNot.hnot, «term￢_»]
+recommended_spelling "top" for "⊤" in [Top.top, «term⊤»]
+recommended_spelling "bot" for "⊥" in [Bot.bot, «term⊥»]
+
+recommended_spelling "sup" for "⊔" in [«term_⊔_»]
+recommended_spelling "inf" for "⊓" in [«term_⊓_»]
+
+recommended_spelling "max" for "max" in [Max.max]
+recommended_spelling "min" for "min" in [Min.min]
+/-- `⊔` is the preferred notation for `max` when the type is not linearly ordered. -/
+recommended_spelling "sup" for "⊔" in [Max.max]
+/-- `⊓` is the preferred notation for `min` when the type is not linearly ordered. -/
+recommended_spelling "inf" for "⊓" in [Min.min]

@@ -90,11 +90,8 @@ end LE_β
 
 section Composition
 
-variable {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
-  [AddCommMonoid E] [SMul 𝕜 E]
-
+variable {𝕜 E : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SMul 𝕜 E]
 variable {β γ : Type*} [LinearOrder β] [Preorder γ]
-
 variable {s : Set E} {f : E → β} {g : β → γ}
 
 theorem QuasiconvexOn.monotone_comp

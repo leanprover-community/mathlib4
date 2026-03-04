@@ -24,7 +24,7 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
-@[expose] public section
+public section
 
 open Module
 

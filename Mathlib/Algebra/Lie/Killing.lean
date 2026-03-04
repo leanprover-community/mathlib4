@@ -66,7 +66,8 @@ variable [IsKilling R L]
 
 lemma killingForm_nondegenerate :
     (killingForm R L).Nondegenerate := by
-  simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
+  refine (LieModule.traceForm_isSymm R L L).isRefl.nondegenerate_iff_separatingLeft.mpr ?_
+  simp [LinearMap.separatingLeft_iff_ker_eq_bot]
 
 variable {R L} in
 lemma ideal_eq_bot_of_isLieAbelian

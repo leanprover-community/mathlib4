@@ -67,7 +67,8 @@ noncomputable def ofFiniteEquiv : ofFinite R M ≃ₗ[R] M :=
   Classical.choice (Module.Finite.exists_fin_quot_equiv R M).choose_spec.choose_spec
 
 instance : Category (FGModuleRepr R) :=
-  InducedCategory.category fun x : FGModuleRepr R ↦ FGModuleCat.of R x
+  inferInstanceAs (Category (InducedCategory _
+    (fun x : FGModuleRepr R ↦ FGModuleCat.of R x)))
 
 instance : SmallCategory (FGModuleRepr R) where
 

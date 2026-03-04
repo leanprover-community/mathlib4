@@ -213,11 +213,8 @@ theorem log_eq_iff {b m n : ℕ} (h : m ≠ 0 ∨ 1 < b ∧ n ≠ 0) :
   have hm : m ≠ 0 := h.resolve_right hbn
   rw [not_and_or, not_lt, Ne, not_not] at hbn
   rcases hbn with (hb | rfl)
-  · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb
-    any_goals
-      simp only [ne_eq, lt_self_iff_false, not_lt_zero, false_and, or_false]
-        at h
-      simp [h, eq_comm (a := 0), Nat.zero_pow (Nat.pos_iff_ne_zero.2 _)] <;> lia
+  · obtain rfl | rfl := le_one_iff_eq_zero_or_eq_one.1 hb <;>
+      simp only [log_zero_left, log_one_left] <;> lia
   · simp [@eq_comm _ 0, hm]
 
 theorem log_eq_of_pow_le_of_lt_pow {b m n : ℕ} (h₁ : b ^ m ≤ n) (h₂ : n < b ^ (m + 1)) :

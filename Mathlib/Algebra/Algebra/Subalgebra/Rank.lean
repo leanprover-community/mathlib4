@@ -20,7 +20,7 @@ satisfies the strong rank condition, we put them into a separate file.
 
 -/
 
-@[expose] public section
+public section
 
 open Module
 

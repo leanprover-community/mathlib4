@@ -281,8 +281,6 @@ instance [IsScott α univ] : ClosedIicTopology α where
   isClosed_Iic _ :=
     isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩
 
-@[deprecated (since := "2025-07-02")] protected alias isClosed_Iic := isClosed_Iic
-
 /--
 The closure of a singleton `{a}` in the Scott topology is the right-closed left-infinite interval
 `(-∞,a]`.
@@ -318,9 +316,6 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
     simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       mem_setOf] at hb
     exact hfcb <| hb _ hcd
-
-@[deprecated (since := "2025-07-02")]
-alias scottContinuous_iff_continuous := scottContinuousOn_iff_continuous
 
 end Preorder
 

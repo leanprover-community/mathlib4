@@ -617,7 +617,7 @@ theorem mk'_eq_iff_eq_mul {x} {y : S} {z} : f.mk' x y = z ↔ f x = z * f y := b
 theorem mk'_eq_iff_eq {x₁ x₂} {y₁ y₂ : S} :
     f.mk' x₁ y₁ = f.mk' x₂ y₂ ↔ f (y₂ * x₁) = f (y₁ * x₂) where
   mp H := by
-    rw [map_mul f, map_mul f, f.mk'_eq_iff_eq_mul.1 H,← mul_assoc, mk'_spec', mul_comm (f x₂)]
+    rw [map_mul f, map_mul f, f.mk'_eq_iff_eq_mul.1 H, ← mul_assoc, mk'_spec', mul_comm (f x₂)]
   mpr H := by
     rw [mk'_eq_iff_eq_mul, mk', mul_assoc, mul_comm _ (f y₁), ← mul_assoc, ← map_mul f, mul_comm x₂,
       ← H, ← mul_comm x₁, map_mul f, mul_inv_right f.map_units, toMonoidHom_apply]

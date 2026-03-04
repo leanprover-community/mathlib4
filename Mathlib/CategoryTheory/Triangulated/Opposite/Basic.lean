@@ -48,6 +48,7 @@ variable [HasShift C ℤ]
 
 namespace Opposite
 
+set_option backward.privateInPublic true in
 /-- As it is unclear whether the opposite category `Cᵒᵖ` should always be equipped
 with the shift by `ℤ` such that shifting by `n` on `Cᵒᵖ` corresponds to shifting
 by `-n` on `C`, the user shall have to do `open CategoryTheory.Pretriangulated.Opposite`
@@ -56,11 +57,15 @@ private abbrev OppositeShiftAux :=
   PullbackShift (OppositeShift C ℤ)
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; lia))
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The category `Cᵒᵖ` is equipped with the shift such that the shift by `n` on `Cᵒᵖ`
 corresponds to the shift by `-n` on `C`. -/
 scoped instance : HasShift Cᵒᵖ ℤ :=
   (inferInstance : HasShift (OppositeShiftAux C) ℤ)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) :
     (shiftFunctor Cᵒᵖ n).Additive :=
   (inferInstance : (shiftFunctor (OppositeShiftAux C) n).Additive)
@@ -69,6 +74,8 @@ end Opposite
 
 open Opposite
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The shift functor on the opposite category identifies to the opposite functor
 of a shift functor on the original category. -/
 def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
@@ -78,6 +85,8 @@ def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
 
 variable {C}
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 lemma shiftFunctorZero_op_hom_app (X : Cᵒᵖ) :
     (shiftFunctorZero Cᵒᵖ ℤ).hom.app X = (shiftFunctorOpIso C 0 0 (zero_add 0)).hom.app X ≫
       ((shiftFunctorZero C ℤ).inv.app X.unop).op := rfl

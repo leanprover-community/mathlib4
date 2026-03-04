@@ -1066,6 +1066,28 @@ theorem denom_add_dvd (x y : RatFunc K) : denom (x + y) ∣ denom x * denom y :=
   · exact algebraMap_ne_zero (denom_ne_zero x)
   · exact algebraMap_ne_zero (denom_ne_zero y)
 
+theorem num_inv_dvd {x : RatFunc K} (hx : x ≠ 0) : num x⁻¹ ∣ denom x := by
+  rw [num_dvd x.denom_ne_zero]
+  refine ⟨x.num, num_ne_zero hx, ?_⟩
+  nth_rw 1 [← x.num_div_denom]
+  rw [inv_div]
+
+theorem denom_inv_dvd {x : RatFunc K} (hx : x ≠ 0) : denom x⁻¹ ∣ num x := by
+  rw [denom_dvd (num_ne_zero hx)]
+  refine ⟨x.denom, ?_⟩
+  nth_rw 1 [← x.num_div_denom]
+  rw [inv_div]
+
+theorem associated_num_inv {x : RatFunc K} (hx : x ≠ 0) : Associated (num x⁻¹) (denom x) := by
+  apply associated_of_dvd_dvd (num_inv_dvd hx)
+  convert denom_inv_dvd (inv_ne_zero hx)
+  rw [inv_inv]
+
+theorem associated_denom_inv {x : RatFunc K} (hx : x ≠ 0) : Associated (denom x⁻¹) (num x) := by
+  apply Associated.symm
+  convert associated_num_inv (inv_ne_zero hx)
+  rw [inv_inv]
+
 theorem map_denom_ne_zero {L F : Type*} [Zero L] [FunLike F K[X] L] [ZeroHomClass F K[X] L]
     (φ : F) (hφ : Function.Injective φ) (f : RatFunc K) : φ f.denom ≠ 0 := fun H =>
   (denom_ne_zero f) ((map_eq_zero_iff φ hφ).mp H)

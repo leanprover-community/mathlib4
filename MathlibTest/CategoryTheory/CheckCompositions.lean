@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
+import Mathlib.Tactic.CategoryTheory.CheckCompositions
 import Mathlib.Tactic.Recall
 
 universe v₁ v₂ v₃ v u₁ u₂ u₃ u

@@ -14,7 +14,7 @@ public import Mathlib.Logic.Pairwise
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
 
-@[expose] public section
+public section
 
 
 variable {α : Type*}

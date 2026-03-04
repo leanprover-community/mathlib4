@@ -89,8 +89,6 @@ instance : MonoidalCategoryStruct (Dial C) where
 theorem id_tensorHom_id (X₁ X₂ : Dial C) : (𝟙 X₁ ⊗ₘ 𝟙 X₂ : _ ⟶ _) = 𝟙 (X₁ ⊗ X₂ : Dial C) := by
   cat_disch
 
-@[deprecated (since := "2025-07-14")] alias tensor_id := id_tensorHom_id
-
 -- TODO: fix the non-terminal simp
 set_option linter.flexible false in
 theorem tensorHom_comp_tensorHom {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : Dial C}

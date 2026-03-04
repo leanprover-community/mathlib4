@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Category.Semigrp.Basic
 public import Mathlib.Algebra.FreeMonoid.Basic
 public import Mathlib.Algebra.Group.WithOne.Basic
+public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.CategoryTheory.Adjunction.Basic

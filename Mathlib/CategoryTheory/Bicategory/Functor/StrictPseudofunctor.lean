@@ -16,10 +16,10 @@ that `mapId` and `mapComp` are given by `eqToIso _`.
 To a strict pseudofunctor between strict bicategories we can associate a functor between the
 underlying categories, see `StrictPseudofunctor.toFunctor`.
 
-# TODO
+## TODO
 
-Once the deprecated `Functor/Strict.lean` is removed we should rename this file to
-`Functor/Strict.lean`.
+Once the deprecated `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean` is removed we should
+rename this file to `Mathlib/CategoryTheory/Bicategory/Functor/Strict.lean`.
 
 -/
 

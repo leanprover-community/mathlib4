@@ -335,7 +335,7 @@ def cospanHomMk {F G : WalkingCospan ⥤ C}
     (hl : F.map inl ≫ z = l ≫ G.map inl := by cat_disch)
     (hr : F.map inr ≫ z = r ≫ G.map inr := by cat_disch) : F ⟶ G where
   app := by rintro (_ | _ | _); exacts [z, l, r]
-  naturality := by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch
+  naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
 
 /-- Constructor for natural isomorphisms between cospans. -/
 @[simps!]
@@ -345,7 +345,7 @@ def cospanIsoMk {F G : WalkingCospan ⥤ C}
     (hl : F.map inl ≫ z.hom = l.hom ≫ G.map inl := by cat_disch)
     (hr : F.map inr ≫ z.hom = r.hom ≫ G.map inr := by cat_disch) : F ≅ G :=
   NatIso.ofComponents (by rintro (_ | _ | _); exacts [z, l, r])
-    (by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch)
+    (by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch)
 
 variable {f : X ⟶ Z} {g : Y ⟶ Z} {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
 
@@ -401,7 +401,7 @@ def spanHomMk {F G : WalkingSpan ⥤ C}
     (hl : F.map fst ≫ l = z ≫ G.map fst := by cat_disch)
     (hr : F.map snd ≫ r = z ≫ G.map snd := by cat_disch) : F ⟶ G where
   app := by rintro (_ | _ | _); exacts [z, l, r]
-  naturality := by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch
+  naturality := by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch
 
 /-- Constructor for natural isomorphisms between spans. -/
 @[simps!]
@@ -411,7 +411,7 @@ def spanIsoMk {F G : WalkingSpan ⥤ C}
     (hl : F.map fst ≫ l.hom = z.hom ≫ G.map fst := by cat_disch)
     (hr : F.map snd ≫ r.hom = z.hom ≫ G.map snd := by cat_disch) : F ≅ G :=
   NatIso.ofComponents (by rintro (_ | _ | _); exacts [z, l, r])
-    (by rintro (_ | _ | _ ) (_ | _ | _) (_ | _); all_goals cat_disch)
+    (by rintro (_ | _ | _) (_ | _ | _) (_ | _); all_goals cat_disch)
 
 variable {f : X ⟶ Y} {g : X ⟶ Z} {f' : X' ⟶ Y'} {g' : X' ⟶ Z'}
 

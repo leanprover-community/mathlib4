@@ -13,7 +13,7 @@ public import Mathlib.Order.Filter.AtTopBot.Tendsto
 # Convergence to ±infinity in ordered commutative monoids
 -/
 
-@[expose] public section
+public section
 
 variable {α M : Type*}
 
@@ -170,12 +170,5 @@ theorem Tendsto.atBot_of_mul_const_le (hg : ∃ C, ∀ x, C ≤ g x)
   Tendsto.atTop_of_mul_le_const (M := Mᵒᵈ) hg hfg
 
 end OrderedCancelCommMonoid
-
-section OrderedCancelAddCommMonoid
-
-variable [AddCommMonoid M] [PartialOrder M] [IsOrderedCancelAddMonoid M]
-  {l : Filter α} {f g : α → M}
-
-end OrderedCancelAddCommMonoid
 
 end Filter

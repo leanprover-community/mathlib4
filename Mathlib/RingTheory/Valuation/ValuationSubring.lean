@@ -52,6 +52,8 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
+instance : PartialOrder (ValuationSubring K) := .ofSetLike (ValuationSubring K) K
+
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]
@@ -89,10 +91,28 @@ instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 instance : Top (ValuationSubring K) :=
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
 
+@[simp]
+theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
+
+@[simp]
 theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
   trivial
 
 theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
+
+/-- If `K` is a field, then so is `K` viewed as a valuation subring
+of itself. (That is, `⊤ : ValuationSubring K`.) -/
+instance : Field (⊤ : ValuationSubring K) := inferInstanceAs (Field (⊤ : Subfield K))
+
+@[simp, norm_cast]
+theorem top_coe_div (x y : (⊤ : ValuationSubring K)) :
+    ((x / y : (⊤ : ValuationSubring K)) : K) = (x : K) / (y : K) :=
+  rfl
+
+@[simp, norm_cast]
+theorem top_coe_inv (x : (⊤ : ValuationSubring K)) :
+    ((x⁻¹ : (⊤ : ValuationSubring K)) : K) = (x : K)⁻¹ :=
+  rfl
 
 instance : OrderTop (ValuationSubring K) where
   le_top := le_top
@@ -158,6 +178,7 @@ theorem mem_of_valuation_le_one (x : K) (h : A.valuation x ≤ 1) : x ∈ A :=
   let ⟨a, ha⟩ := (ValuationRing.mem_integer_iff A K x).1 h
   ha ▸ a.2
 
+@[simp]
 theorem valuation_le_one_iff (x : K) : A.valuation x ≤ 1 ↔ x ∈ A :=
   ⟨mem_of_valuation_le_one _ _, fun ha => A.valuation_le_one ⟨x, ha⟩⟩
 
@@ -169,6 +190,7 @@ theorem valuation_le_iff (x y : K) : A.valuation x ≤ A.valuation y ↔ ∃ a :
 
 theorem valuation_surjective : Function.Surjective A.valuation := Quot.mk_surjective
 
+@[simp]
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp
 
@@ -183,6 +205,9 @@ theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 where
     refine .of_mul_eq_one ⟨a⁻¹, ha'⟩ ?_
     ext
     simp [field]
+
+theorem eq_top_iff : A = ⊤ ↔ ¬ A.valuation.IsNontrivial := by
+  simp [Valuation.IsNontrivial_iff_exists_one_lt, SetLike.ext_iff]
 
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
@@ -352,10 +377,10 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance le_total_ideal : IsTotal {S // A ≤ S} LE.le := by
+instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
   classical
-  let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-  exact ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+  let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.total.total x y⟩
+  exact (primeSpectrumOrderEquiv A).symm.toRelEmbedding.total
 
 open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
@@ -399,8 +424,17 @@ theorem isEquiv_valuation_valuationSubring : v.IsEquiv v.valuationSubring.valuat
   intro x
   rw [ValuationSubring.valuation_le_one_iff, mem_valuationSubring_iff]
 
+@[simp]
+theorem isNontrivial_valuation_valuationSubring_iff :
+    v.valuationSubring.valuation.IsNontrivial ↔ v.IsNontrivial :=
+  (isEquiv_valuation_valuationSubring v).isNontrivial_iff.symm
+
 lemma valuationSubring.integers : v.Integers v.valuationSubring :=
   Valuation.integer.integers _
+
+@[simp]
+theorem valuationSubring_eq_top_iff : v.valuationSubring = ⊤ ↔ ¬ v.IsNontrivial := by
+  simp [ValuationSubring.eq_top_iff]
 
 end Valuation
 
@@ -709,7 +743,7 @@ variable {G : Type*} [Group G] [MulSemiringAction G K]
 
 This is available as an instance in the `Pointwise` locale. -/
 def pointwiseHasSMul : SMul G (ValuationSubring K) where
-  smul g S :=-- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
+  smul g S := -- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
     { g • S.toSubring with
       mem_or_inv_mem' := fun x =>
         (mem_or_inv_mem S (g⁻¹ • x)).imp Subring.mem_pointwise_smul_iff_inv_smul_mem.mpr fun h =>

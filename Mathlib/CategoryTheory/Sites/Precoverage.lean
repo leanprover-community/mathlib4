@@ -6,9 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 public import Mathlib.CategoryTheory.Sites.Sieves
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 
@@ -229,6 +229,12 @@ lemma comap_inf : (J ⊓ K).comap F = J.comap F ⊓ K.comap F := rfl
 @[simp]
 lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
   ext
+  simp
+
+lemma comap_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : Precoverage E) :
+    J.comap (F ⋙ G) = (J.comap G).comap F := by
+  ext X R
+  obtain ⟨ι, Y, f, rfl⟩ := R.exists_eq_ofArrows
   simp
 
 instance [HasIsos J] : HasIsos (J.comap F) where

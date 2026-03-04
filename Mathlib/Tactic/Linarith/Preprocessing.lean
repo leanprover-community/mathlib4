@@ -7,10 +7,11 @@ module
 
 public meta import Mathlib.Control.Basic
 public meta import Mathlib.Lean.Meta.Tactic.Rewrite
-public meta import Mathlib.Tactic.CancelDenoms.Core
 public meta import Mathlib.Tactic.Linarith.Datatypes
-public meta import Mathlib.Tactic.Zify
 public meta import Mathlib.Util.AtomM
+public import Mathlib.Tactic.CancelDenoms.Core
+public import Mathlib.Tactic.Linarith.Datatypes
+public import Mathlib.Tactic.Zify
 
 /-!
 # Linarith preprocessing

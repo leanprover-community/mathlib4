@@ -172,7 +172,7 @@ the action preserves multiplication. -/
 @[to_additive /-- The image of a left invariant measure under a left additive action is left
 invariant, assuming that the action preserves addition. -/]
 theorem isMulLeftInvariant_map_smul
-    {α} [SMul α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
+    {α} [SMul α G] [SMulCommClass α G G] [MeasurableConstSMul α G]
     [IsMulLeftInvariant μ] (a : α) :
     IsMulLeftInvariant (map (a • · : G → G) μ) :=
   (forall_measure_preimage_mul_iff _).1 fun x _ hs =>
@@ -183,7 +183,7 @@ the action preserves multiplication. -/
 @[to_additive /-- The image of a right invariant measure under a left additive action is right
 invariant, assuming that the action preserves addition. -/]
 theorem isMulRightInvariant_map_smul
-    {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableSpace α] [MeasurableSMul α G]
+    {α} [SMul α G] [SMulCommClass α Gᵐᵒᵖ G] [MeasurableConstSMul α G]
     [IsMulRightInvariant μ] (a : α) :
     IsMulRightInvariant (map (a • · : G → G) μ) :=
   (forall_measure_preimage_mul_right_iff _).1 fun x _ hs =>
@@ -843,8 +843,8 @@ theorem isHaarMeasure_map_of_isFiniteMeasure
 @[to_additive
 /-- The image of a Haar measure under map of a left additive action is again a Haar measure -/]
 instance isHaarMeasure_map_smul {α} [BorelSpace G] [IsTopologicalGroup G]
-    [Group α] [MulAction α G] [SMulCommClass α G G] [MeasurableSpace α] [MeasurableSMul α G]
-    [ContinuousConstSMul α G] (a : α) : IsHaarMeasure (Measure.map (a • · : G → G) μ) where
+    [Group α] [MulAction α G] [SMulCommClass α G G] [ContinuousConstSMul α G] (a : α) :
+    IsHaarMeasure (Measure.map (a • · : G → G) μ) where
   toIsMulLeftInvariant := isMulLeftInvariant_map_smul _
   lt_top_of_isCompact K hK := by
     let F := (Homeomorph.smul a (α := G)).toMeasurableEquiv

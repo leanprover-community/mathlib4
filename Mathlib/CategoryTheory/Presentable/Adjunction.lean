@@ -22,7 +22,7 @@ In particular, if `e : C ≌ D` is an equivalence of categories and
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 

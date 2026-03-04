@@ -48,8 +48,8 @@ calculus of a Hermitian matrix. This is an auxiliary definition and is not inten
 for use outside of this file. -/
 @[simps]
 noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n 𝕜) where
-  toFun := fun g => conjStarAlgAut ℝ _ hA.eigenvectorUnitary <|
-    diagonal (RCLike.ofReal ∘ g ∘ (fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩))
+  toFun g := conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary <|
+    diagonal (RCLike.ofReal ∘ g ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩)
   map_zero' := by simp [Pi.zero_def, Function.comp_def]
   map_one' := by simp [Pi.one_def, Function.comp_def]
   map_mul' f g := by
@@ -129,7 +129,7 @@ continuous on the spectrum of a matrix, since the spectrum is finite. This is sh
 the generic continuous functional calculus API in `Matrix.IsHermitian.cfc_eq`. In general, users
 should prefer the generic API, especially because it will make rewriting easier. -/
 protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
-  conjStarAlgAut ℝ _ hA.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ f ∘ hA.eigenvalues))
+  conjStarAlgAut 𝕜 _ hA.eigenvectorUnitary (diagonal (RCLike.ofReal ∘ f ∘ hA.eigenvalues))
 
 lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   have hA' : IsSelfAdjoint A := hA

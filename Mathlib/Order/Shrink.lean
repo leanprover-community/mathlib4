@@ -22,10 +22,8 @@ universe u v
 
 variable (α : Type v) [Small.{u} α]
 
-instance [Preorder α] : Preorder (Shrink.{u} α) where
-  le a b := (equivShrink α).symm a ≤ (equivShrink _).symm b
-  le_refl a := le_refl _
-  le_trans _ _ _ h₁ h₂ := h₁.trans h₂
+instance [Preorder α] : Preorder (Shrink.{u} α) :=
+  Preorder.lift (equivShrink α).symm
 
 /-- The order isomorphism `α ≃o Shrink.{u} α`. -/
 noncomputable def orderIsoShrink [Preorder α] : α ≃o Shrink.{u} α where
@@ -53,51 +51,34 @@ noncomputable instance [LinearOrder α] : LinearOrder (Shrink.{u} α) where
   le_total _ _ := le_total _ _
   toDecidableLE _ _ := LinearOrder.toDecidableLE _ _
 
+@[to_dual]
 noncomputable instance [Bot α] : Bot (Shrink.{u} α) where
   bot := equivShrink _ ⊥
 
-@[simp]
+@[to_dual (attr := simp)]
 lemma equivShrink_bot [Bot α] : equivShrink.{u} α ⊥ = ⊥ := rfl
 
-@[simp]
+@[to_dual (attr := simp)]
 lemma equivShrink_symm_bot [Bot α] : (equivShrink.{u} α).symm ⊥ = ⊥ :=
-  (equivShrink.{u} α).injective (by simp)
-
-noncomputable instance [Top α] : Top (Shrink.{u} α) where
-  top := equivShrink _ ⊤
-
-@[simp]
-lemma equivShrink_top [Top α] : equivShrink.{u} α ⊤ = ⊤ := rfl
-
-@[simp]
-lemma equivShrink_symm_top [Top α] : (equivShrink.{u} α).symm ⊤ = ⊤ :=
   (equivShrink.{u} α).injective (by simp)
 
 section Preorder
 
 variable [Preorder α]
 
-noncomputable instance [OrderBot α] :
-    OrderBot (Shrink.{u} α) where
-  bot_le a := by
-    simp only [← (orderIsoShrink.{u} α).symm.le_iff_le,
-      orderIsoShrink_symm_apply, equivShrink_symm_bot, bot_le]
+@[to_dual]
+noncomputable instance [OrderBot α] : OrderBot (Shrink.{u} α) where
+  bot_le a := by simp [← (orderIsoShrink.{u} α).symm.le_iff_le]
 
-noncomputable instance [OrderTop α] :
-    OrderTop (Shrink.{u} α) where
-  le_top a := by
-    simp only [← (orderIsoShrink.{u} α).symm.le_iff_le,
-      orderIsoShrink_symm_apply, equivShrink_symm_top, le_top]
-
-noncomputable instance [SuccOrder α] :
-    SuccOrder (Shrink.{u} α) :=
+@[to_dual]
+noncomputable instance [SuccOrder α] : SuccOrder (Shrink.{u} α) :=
   SuccOrder.ofOrderIso (orderIsoShrink.{u} α)
-
-noncomputable instance [PredOrder α] :
-    PredOrder (Shrink.{u} α) :=
-  PredOrder.ofOrderIso (orderIsoShrink.{u} α)
 
 instance [WellFoundedLT α] : WellFoundedLT (Shrink.{u} α) where
   wf := (orderIsoShrink.{u} α).symm.toRelIsoLT.toRelEmbedding.isWellFounded.wf
+
+@[to_dual existing]
+instance [WellFoundedGT α] : WellFoundedGT (Shrink.{u} α) where
+  wf := (orderIsoShrink.{u} α).symm.dual.toRelIsoLT.toRelEmbedding.isWellFounded.wf
 
 end Preorder

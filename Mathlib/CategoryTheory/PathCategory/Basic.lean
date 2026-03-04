@@ -37,7 +37,7 @@ instance (V : Type u₁) [Inhabited V] : Inhabited (Paths V) := ⟨(default : V)
 instance (V : Type u₁) [Unique V] : Unique (Paths V) where
   uniq _ := Subsingleton.elim (α := V) _ _
 
-variable (V : Type u₁) [Quiver.{v₁ + 1} V]
+variable (V : Type u₁) [Quiver.{v₁} V]
 
 namespace Paths
 
@@ -185,7 +185,7 @@ theorem ext_functor {C} [Category* C] {F G : Paths V ⥤ C} (h_obj : F.obj = G.o
 
 end Paths
 
-variable (W : Type u₂) [Quiver.{v₂ + 1} W]
+variable (W : Type u₂) [Quiver.{v₂} W]
 
 -- A restatement of `Prefunctor.mapPath_comp` using `f ≫ g` instead of `f.comp g`.
 @[simp]
@@ -256,8 +256,8 @@ def pathsHomRel : HomRel (Paths C) := fun _ _ p q =>
 def toQuotientPaths : C ⥤ Quotient (pathsHomRel C) where
   obj X := Quotient.mk X
   map f := Quot.mk _ f.toPath
-  map_id X := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
-  map_comp f g := Quot.sound (Quotient.CompClosure.of _ _ _ (by simp))
+  map_id X := Quot.sound (HomRel.CompClosure.of (by simp))
+  map_comp f g := Quot.sound (HomRel.CompClosure.of (by simp))
 
 /-- The functor from the canonical quotient of a path category of a category
 to the original category. -/
@@ -273,10 +273,7 @@ def quotientPathsEquiv : Quotient (pathsHomRel C) ≌ C where
   unitIso :=
     NatIso.ofComponents
       (fun X => by cases X; rfl)
-      (Quot.ind fun f => by
-        apply Quot.sound
-        apply Quotient.CompClosure.of
-        simp [Category.comp_id, Category.id_comp, pathsHomRel])
+      (Quot.ind fun f => by exact Quot.sound (HomRel.CompClosure.of (by simp)))
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp)
   functor_unitIso_comp X := by
     cases X

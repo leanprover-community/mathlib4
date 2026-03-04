@@ -46,7 +46,7 @@ theorem forall₂_same : ∀ {l : List α}, Forall₂ Rₐ l l ↔ ∀ x ∈ l, 
   | [] => by simp
   | a :: l => by simp [@forall₂_same l]
 
-theorem forall₂_refl [IsRefl α Rₐ] (l : List α) : Forall₂ Rₐ l l :=
+theorem forall₂_refl [Std.Refl Rₐ] (l : List α) : Forall₂ Rₐ l l :=
   forall₂_same.2 fun _ _ => refl _
 
 @[simp]
@@ -295,7 +295,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
       obtain - | ⟨hr, hl⟩ := hl1
       exact SublistForall₂.cons hr (ih hl)
 
-instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
+instance SublistForall₂.is_refl [Std.Refl Rₐ] : Std.Refl (SublistForall₂ Rₐ) :=
   ⟨fun l => sublistForall₂_iff.2 ⟨l, forall₂_refl l, Sublist.refl l⟩⟩
 
 instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (SublistForall₂ Rₐ) :=
@@ -317,11 +317,11 @@ instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (Sublis
         · exact SublistForall₂.cons_right (ih _ _ atb tbc)
       · exact SublistForall₂.cons_right (ih _ _ h1 btc)⟩
 
-theorem Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [IsRefl α Rₐ] :
+theorem Sublist.sublistForall₂ {l₁ l₂ : List α} (h : l₁ <+ l₂) [Std.Refl Rₐ] :
     SublistForall₂ Rₐ l₁ l₂ :=
   sublistForall₂_iff.2 ⟨l₁, forall₂_refl l₁, h⟩
 
-theorem tail_sublistForall₂_self [IsRefl α Rₐ] (l : List α) : SublistForall₂ Rₐ l.tail l :=
+theorem tail_sublistForall₂_self [Std.Refl Rₐ] (l : List α) : SublistForall₂ Rₐ l.tail l :=
   l.tail_sublist.sublistForall₂
 
 @[simp]

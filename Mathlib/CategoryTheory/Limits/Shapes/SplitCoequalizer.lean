@@ -147,7 +147,7 @@ noncomputable def HasSplitCoequalizer.coequalizerπ [HasSplitCoequalizer f g] :
     Y ⟶ HasSplitCoequalizer.coequalizerOfSplit f g :=
   (splittable (f := f) (g := g)).choose_spec.choose
 
-/-- The coequalizer morphism `coequalizeπ` gives a split coequalizer on `f,g`. -/
+/-- The coequalizer morphism `coequalizerπ` gives a split coequalizer on `f,g`. -/
 noncomputable def HasSplitCoequalizer.isSplitCoequalizer [HasSplitCoequalizer f g] :
     IsSplitCoequalizer f g (HasSplitCoequalizer.coequalizerπ f g) :=
   Classical.choice (splittable (f := f) (g := g)).choose_spec.choose_spec

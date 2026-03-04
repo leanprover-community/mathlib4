@@ -57,9 +57,6 @@ theorem contentIdeal_def : p.contentIdeal = span (p.coeffs : Set R) := rfl
 theorem contentIdeal_zero : (0 : R[X]).contentIdeal = ⊥ := by
   simp [contentIdeal_def]
 
-@[deprecated (since := "2025-07-01")]
-alias contenIdeal_zero := contentIdeal_zero
-
 @[simp]
 theorem contentIdeal_eq_bot_iff : p.contentIdeal = ⊥ ↔ p = 0 := by
   simp only [contentIdeal_def, span_eq_bot]
@@ -192,7 +189,7 @@ theorem contentIdeal_mul_eq_top_of_contentIdeal_eq_top (hp : p.contentIdeal = �
 end Ring
 section NormalizedGCDMonoid
 
-variable {R : Type*} [CommRing R] [IsDomain R] [NormalizedGCDMonoid R] {p : R[X]}
+variable {R : Type*} [CommRing R] [NormalizedGCDMonoid R] {p : R[X]}
 
 theorem contentIdeal_le_span_content : p.contentIdeal ≤ span {p.content} := by
   rw [contentIdeal_def, span_le]

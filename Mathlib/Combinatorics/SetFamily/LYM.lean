@@ -129,8 +129,7 @@ def falling : Finset (Finset α) :=
 variable {𝒜 k} {s : Finset α}
 
 theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ #s = k := by
-  simp_rw [falling, mem_sup, mem_powersetCard]
-  aesop
+  grind [falling, mem_sup]
 
 variable (𝒜 k)
 
@@ -223,7 +222,7 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose
   calc
     _ = ∑ r ∈ range (Fintype.card α + 1),
         ∑ s ∈ 𝒜 with #s = r, ((Fintype.card α).choose r : 𝕜)⁻¹ := by
-      rw [sum_fiberwise_of_maps_to']; simp [Nat.lt_succ_iff, card_le_univ]
+      rw [sum_fiberwise_of_maps_to']; simp [card_le_univ]
     _ = ∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) / (Fintype.card α).choose r : 𝕜) := by
       simp [slice, div_eq_mul_inv]
     _ ≤ 1 := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose h𝒜

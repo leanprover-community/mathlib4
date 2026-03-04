@@ -5,7 +5,6 @@ Authors: Aviv Bar Natan
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Algebra.Order.Monoid.Defs
@@ -13,6 +12,8 @@ public import Mathlib.Data.Finset.Powerset
 
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.Max
 
 /-!
 # Subset sums
@@ -83,7 +84,7 @@ lemma card_add_card_subsetSum_lt_card_subsetSum_insert_max (hA : ∀ x ∈ A, 0 
   have vadd_subset : a +ᵥ A.subsetSum ⊆ (insert a A).subsetSum :=
     vadd_finset_subsetSum_subset_subsetSum_insert fun ha => (hAa a ha).false
   -- Count the sizes.
-  calc  #A + #A.subsetSum
+  calc #A + #A.subsetSum
     _ < #A + 1 + #A.subsetSum := by gcongr; exact Nat.lt_add_one _
     _ = #(insert 0 A) + #A.subsetSum := by rw [card_insert_of_notMem fun h => (hA 0 h).false]
     _ = #(insert 0 A) + #(a +ᵥ A.subsetSum) := by simp [vadd_finset_def, card_image_of_injOn]

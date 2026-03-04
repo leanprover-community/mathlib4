@@ -11,8 +11,6 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Logic.Embedding.Basic
 
-import Mathlib.Data.Int.Cast.Lemmas
-
 /-!
 # Diagonal matrices
 
@@ -80,6 +78,9 @@ theorem diagonal_injective [Zero α] : Function.Injective (diagonal : (n → α)
 theorem diagonal_zero [Zero α] : (diagonal fun _ => 0 : Matrix n n α) = 0 := by
   ext
   simp [diagonal]
+
+@[simp]
+theorem diagonal_zero' [Zero α] : (diagonal 0 : Matrix n n α) = 0 := diagonal_zero
 
 @[simp]
 theorem diagonal_transpose [Zero α] (v : n → α) : (diagonal v)ᵀ = diagonal v := by

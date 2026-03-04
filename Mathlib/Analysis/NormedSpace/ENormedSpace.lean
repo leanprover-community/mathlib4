@@ -1,5 +1,5 @@
 module
 
-public import Mathlib.Analysis.Normed.Module.ENormedSpace
+public import Mathlib.Analysis.Normed.Group.Basic
 
 deprecated_module (since := "2025-11-21")

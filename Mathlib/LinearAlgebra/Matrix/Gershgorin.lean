@@ -20,7 +20,7 @@ of matrices and some applications.
 * https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
 -/
 
-@[expose] public section
+public section
 
 variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n n K}
 

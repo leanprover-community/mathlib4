@@ -238,17 +238,11 @@ end field_field
 
 section image
 
-variable {F R : Type*} [Fintype F] [Field F] [CommRing R] [IsDomain R]
+variable {F R : Type*} [Field F] [CommRing R] [IsDomain R]
 
-/-- If `χ` and `φ` are multiplicative characters on a finite field `F` satisfying `χ^n = φ^n = 1`
-and with values in an integral domain `R`, and `μ` is a primitive `n`th root of unity in `R`,
-then the Jacobi sum `J(χ,φ)` is in `ℤ[μ] ⊆ R`. -/
-lemma jacobiSum_mem_algebraAdjoin_of_pow_eq_one {n : ℕ} [NeZero n] {χ φ : MulChar F R}
-    (hχ : χ ^ n = 1) (hφ : φ ^ n = 1) {μ : R} (hμ : IsPrimitiveRoot μ n) :
-    jacobiSum χ φ ∈ Algebra.adjoin ℤ {μ} :=
-  Subalgebra.sum_mem _ fun _ _ ↦ Subalgebra.mul_mem _
-    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hχ hμ _)
-    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hφ hμ _)
+section finite
+
+variable [Finite F]
 
 open Algebra in
 private
@@ -272,6 +266,20 @@ lemma MulChar.exists_apply_sub_one_mul_apply_sub_one {n : ℕ} [NeZero n] {χ ψ
     MulChar.exists_apply_sub_one_eq_mul_sub_one hψ hμ (sub_ne_zero_of_ne hx₁.symm)
   rewrite [Hz₁, Hz₂, sq]
   exact ⟨z₁ * z₂, Subalgebra.mul_mem _ hz₁ hz₂, mul_mul_mul_comm ..⟩
+
+end finite
+
+variable [Fintype F]
+
+/-- If `χ` and `φ` are multiplicative characters on a finite field `F` satisfying `χ^n = φ^n = 1`
+and with values in an integral domain `R`, and `μ` is a primitive `n`th root of unity in `R`,
+then the Jacobi sum `J(χ,φ)` is in `ℤ[μ] ⊆ R`. -/
+lemma jacobiSum_mem_algebraAdjoin_of_pow_eq_one {n : ℕ} [NeZero n] {χ φ : MulChar F R}
+    (hχ : χ ^ n = 1) (hφ : φ ^ n = 1) {μ : R} (hμ : IsPrimitiveRoot μ n) :
+    jacobiSum χ φ ∈ Algebra.adjoin ℤ {μ} :=
+  Subalgebra.sum_mem _ fun _ _ ↦ Subalgebra.mul_mem _
+    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hχ hμ _)
+    (MulChar.apply_mem_algebraAdjoin_of_pow_eq_one hφ hμ _)
 
 /-- If `χ` and `ψ` are multiplicative characters of order dividing `n` on a finite field `F`
 with values in an integral domain `R` and `μ` is a primitive `n`th root of unity in `R`,

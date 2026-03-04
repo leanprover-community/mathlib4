@@ -12,7 +12,7 @@ public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 Define the interior and boundary of a manifold.
 
 ## Main definitions
-- **IsInteriorPoint x**: `x ∈ M` is an interior point if, for `φ` being the preferred chart at `x`,
+- **IsInteriorPoint x**: `x ∈ M` is an interior point if, with `φ` being the preferred chart at `x`,
   `φ x` is an interior point of `φ.target`.
 - **IsBoundaryPoint x**: `x ∈ M` is a boundary point if `(extChartAt I x) x ∈ frontier (range I)`.
 - **interior I M** is the **interior** of `M`, the set of its interior points.
@@ -127,12 +127,12 @@ lemma isInteriorPoint_iff_not_isBoundaryPoint (x : M) :
   exact h
 
 /-- The boundary is the complement of the interior. -/
-lemma compl_interior : (I.interior M)ᶜ = I.boundary M:= by
+lemma compl_interior : (I.interior M)ᶜ = I.boundary M := by
   apply compl_unique ?_ I.interior_union_boundary_eq_univ
   exact disjoint_iff_inter_eq_empty.mp I.disjoint_interior_boundary
 
 /-- The interior is the complement of the boundary. -/
-lemma compl_boundary : (I.boundary M)ᶜ = I.interior M:= by
+lemma compl_boundary : (I.boundary M)ᶜ = I.interior M := by
   rw [← compl_interior, compl_compl]
 
 lemma _root_.range_mem_nhds_isInteriorPoint {x : M} (h : I.IsInteriorPoint x) :
@@ -300,14 +300,14 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 open Topology
 
 lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
-    I.IsInteriorPoint (.inl x: M ⊕ M') := by
+    I.IsInteriorPoint (.inl x : M ⊕ M') := by
   rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
   dsimp
   rw [Sum.inl_injective.extend_apply (chartAt H x)]
   simpa [I.isInteriorPoint_iff, extChartAt] using hx
 
 lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
-    I.IsBoundaryPoint (.inl x: M ⊕ M') := by
+    I.IsBoundaryPoint (.inl x : M ⊕ M') := by
   rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
   dsimp
   rw [Sum.inl_injective.extend_apply (chartAt H x)]
@@ -354,33 +354,8 @@ lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.interior (I := I) M)
       ∪ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
-  ext p
-  constructor
-  · intro hp
-    by_cases h : Sum.isLeft p
-    · left
-      exact ⟨Sum.getLeft p h, isInteriorPoint_disjointUnion_left hp h, Sum.inl_getLeft p h⟩
-    · replace h := Sum.not_isLeft.mp h
-      right
-      exact ⟨Sum.getRight p h, isInteriorPoint_disjointUnion_right hp h, Sum.inr_getRight p h⟩
-  · intro hp
-    by_cases h : Sum.isLeft p
-    · set x := Sum.getLeft p h with x_eq
-      rw [Sum.eq_left_getLeft_of_isLeft h]
-      apply interiorPoint_inl x
-      have hp : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
-        obtain (good | ⟨y, hy, hxy⟩) := hp
-        exacts [good, (not_isLeft_and_isRight ⟨h, by rw [← hxy]; exact rfl⟩).elim]
-      obtain ⟨x', hx', hx'p⟩ := hp
-      simpa [x_eq, ← hx'p, Sum.getLeft_inl]
-    · set x := Sum.getRight p (Sum.not_isLeft.mp h) with x_eq
-      rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
-      apply interiorPoint_inr x
-      have hp : p ∈ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
-        obtain (⟨y, hy, hxy⟩ | good) := hp
-        exacts [(not_isLeft_and_isRight ⟨by rw [← hxy]; exact rfl, Sum.not_isLeft.mp h⟩).elim, good]
-      obtain ⟨x', hx', hx'p⟩ := hp
-      simpa [x_eq, ← hx'p, Sum.getRight_inr]
+  grind [boundaryPoint_inl, boundaryPoint_inr, interior.eq_def, interiorPoint_inl,
+    interiorPoint_inr, isInteriorPoint_iff_not_isBoundaryPoint]
 
 lemma boundary_disjointUnion : ModelWithCorners.boundary (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.boundary (I := I) M)

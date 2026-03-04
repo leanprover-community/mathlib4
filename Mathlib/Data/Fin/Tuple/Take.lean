@@ -12,8 +12,8 @@ public import Mathlib.Data.Fin.Tuple.Basic
 
 We define the `take` operation on `n`-tuples, which restricts a tuple to its first `m` elements.
 
-* `Fin.take`: Given `h : m ≤ n`, `Fin.take m h v` for a `n`-tuple `v = (v 0, ..., v (n - 1))` is the
-  `m`-tuple `(v 0, ..., v (m - 1))`.
+* `Fin.take`: Given `h : m ≤ n`, `Fin.take m h v` for an `n`-tuple `v = (v 0, ..., v (n - 1))` is
+  the `m`-tuple `(v 0, ..., v (m - 1))`.
 -/
 
 @[expose] public section
@@ -102,8 +102,8 @@ theorem take_update_of_ge (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) (i 
     exact Nat.ne_of_lt (lt_of_lt_of_le j.isLt hi)
   simp only [take, update_of_ne this]
 
-/-- Taking the first `m ≤ n` elements of an `addCases u v`, where `u` is a `n`-tuple, is the same as
-taking the first `m` elements of `u`. -/
+/-- Taking the first `m ≤ n` elements of an `addCases u v`, where `u` is an `n`-tuple, is the same
+as taking the first `m` elements of `u`. -/
 theorem take_addCases_left {n' : ℕ} {motive : Fin (n + n') → Sort*} (m : ℕ) (h : m ≤ n)
     (u : (i : Fin n) → motive (castAdd n' i)) (v : (i : Fin n') → motive (natAdd n i)) :
       take m (Nat.le_add_right_of_le h) (addCases u v) = take m h u := by

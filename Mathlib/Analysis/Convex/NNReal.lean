@@ -6,7 +6,9 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Analysis.Convex.Basic
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Data.NNReal.Defs
 
 /-!
 # Specific lemmas about convexity over `ℝ≥0`
@@ -15,7 +17,7 @@ This file collects some specific results about convexity over the ring `ℝ≥0`
 Expand as needed.
 -/
 
-@[expose] public section
+public section
 
 open Set
 open scoped NNReal

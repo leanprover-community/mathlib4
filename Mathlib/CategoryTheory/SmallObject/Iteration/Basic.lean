@@ -44,10 +44,10 @@ we introduce a structure `Φ.Iteration j` for any `j : J`. This
 structure contains all the expected data and properties for
 all the indices that are `≤ j`. In this file, we show that
 `Φ.Iteration j` is a subsingleton. The existence shall be
-obtained in the file `SmallObject.Iteration.Nonempty`, and
+obtained in the file `Mathlib/CategoryTheory/SmallObject/Iteration/Nonempty.lean`, and
 the construction of the functor `Φ.iterationFunctor J : J ⥤ C`
-and of its colimit `Φ.iteration J : C` will done in the
-file `SmallObject.TransfiniteIteration`.
+and of its colimit `Φ.iteration J : C` will be done in the
+file `Mathlib/CategoryTheory/SmallObject/TransfiniteIteration.lean`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
 (and it is not in certain applications). Then, two isomorphic
@@ -119,7 +119,7 @@ end
 
 variable (C) in
 /-- A successor structure on a category consists of the
-data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ toSucc X`
+data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ succ X`
 (which does not need to be natural), and a zeroth object `X₀`.
 -/
 structure SuccStruct where

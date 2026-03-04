@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.Algebra.Category.AlgCat.Basic
 public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # `Mon (ModuleCat R) ≌ AlgCat R`
@@ -151,7 +152,7 @@ attribute [local instance] inverseObj
 -/
 @[simps]
 def inverse : AlgCat.{u} R ⥤ Mon (ModuleCat.{u} R) where
-  obj A := { X := ModuleCat.of R A, mon := inverseObj A}
+  obj A := { X := ModuleCat.of R A, mon := inverseObj A }
   map f :=
     { hom := ofHom <| f.hom.toLinearMap
       isMonHom_hom.one_hom := hom_ext <| LinearMap.ext f.hom.commutes

@@ -16,7 +16,7 @@ public import Mathlib.Topology.Algebra.Polynomial
 # Analytic part of the Lindemann-Weierstrass theorem
 -/
 
-@[expose] public section
+public section
 
 namespace LindemannWeierstrass
 

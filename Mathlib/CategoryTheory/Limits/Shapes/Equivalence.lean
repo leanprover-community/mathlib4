@@ -15,7 +15,7 @@ For now, we only treat the case of initial and terminal objects, but other speci
 added in the future.
 -/
 
-@[expose] public section
+public section
 
 
 open CategoryTheory CategoryTheory.Limits

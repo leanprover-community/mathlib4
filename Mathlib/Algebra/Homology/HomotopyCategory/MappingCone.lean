@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 public import Mathlib.Algebra.Homology.HomotopyCofiber
+public import Mathlib.Tactic.Linarith
 
 /-! # The mapping cone of a morphism of cochain complexes
 
@@ -110,7 +111,7 @@ lemma inr_f_snd_v (p : ℤ) :
 lemma inl_fst :
     (inl φ).comp (fst φ).1 (neg_add_cancel 1) = Cochain.ofHom (𝟙 F) := by
   ext p
-  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p-1) p rfl (by lia)]
+  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p - 1) p rfl (by lia)]
 
 @[simp]
 lemma inl_snd :
@@ -475,7 +476,7 @@ noncomputable def liftCocycle {K : CochainComplex C ℤ} {n m : ℤ}
     (eq : δ n m β + α.1.comp (Cochain.ofHom φ) (add_zero m) = 0) :
     Cocycle K (mappingCone φ) n :=
   Cocycle.mk (liftCochain φ α β h) m h (by
-    simp only [δ_liftCochain φ α β h (m+1) rfl, eq,
+    simp only [δ_liftCochain φ α β h (m + 1) rfl, eq,
       Cocycle.δ_eq_zero, Cochain.zero_comp, neg_zero, add_zero])
 
 section
@@ -597,7 +598,7 @@ noncomputable def mapHomologicalComplexXIso' (n m : ℤ) (hnm : n + 1 = m) :
       inl_v_snd_v_assoc, inr_f_snd_v_assoc, zero_add, ← Functor.map_comp, ← Functor.map_add]
     rw [← H.map_id]
     congr 1
-    simp [ext_from_iff  _ _ _ hnm]
+    simp [ext_from_iff _ _ _ hnm]
   inv_hom_id := by
     simp only [Functor.mapHomologicalComplex_obj_X, comp_add, add_comp, assoc,
       ← H.map_comp_assoc, inl_v_fst_v, CategoryTheory.Functor.map_id, id_comp, inr_f_fst_v,

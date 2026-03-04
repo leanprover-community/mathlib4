@@ -22,7 +22,7 @@ functions, depending on the degrees and leading coefficients of the considered
 polynomials.
 -/
 
-@[expose] public section
+public section
 
 
 open Filter Finset Asymptotics

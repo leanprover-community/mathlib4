@@ -385,7 +385,7 @@ namespace LatticeHom
 variable [Lattice α] [Lattice β] [Lattice γ]
 
 /-- Adjoins a `⊤` to the domain and codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 protected def withTop (f : LatticeHom α β) : LatticeHom (WithTop α) (WithTop β) :=
   { f.toInfHom.withTop with toSupHom := f.toSupHom.withTop }
 
@@ -425,7 +425,7 @@ theorem withBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
   DFunLike.coe_injective <| Eq.symm <| WithBot.map_comp_map _ _
 
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 def withTopWithBot (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) (WithTop <| WithBot β) :=
   ⟨f.withBot.withTop, rfl, rfl⟩
@@ -450,17 +450,17 @@ theorem withTopWithBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
   ext; simp
 
 /-- Adjoins a `⊥` to the codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 def withTop' [OrderTop β] (f : LatticeHom α β) : LatticeHom (WithTop α) β :=
   { f.toSupHom.withTop', f.toInfHom.withTop' with }
 
 /-- Adjoins a `⊥` to the domain and codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 def withBot' [OrderBot β] (f : LatticeHom α β) : LatticeHom (WithBot α) β :=
   { f.toSupHom.withBot', f.toInfHom.withBot' with }
 
 /-- Adjoins a `⊤` and `⊥` to the codomain of a `LatticeHom`. -/
-@[simps]
+@[simps!]
 def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
     BoundedLatticeHom (WithTop <| WithBot α) β where
   toLatticeHom := f.withBot'.withTop'

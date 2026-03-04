@@ -224,7 +224,7 @@ def id : OplaxTrans F F where
   app a := 𝟙 (F.obj a)
   naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
 
-instance : Inhabited (OplaxTrans F F ) :=
+instance : Inhabited (OplaxTrans F F) :=
   ⟨id F⟩
 
 /-- Auxiliary definition for `vComp`. -/

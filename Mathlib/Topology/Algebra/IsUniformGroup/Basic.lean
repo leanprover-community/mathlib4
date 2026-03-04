@@ -78,6 +78,30 @@ end IsUniformGroup
 
 end Cauchy
 
+namespace IsRightUniformGroup
+
+variable {G : Type*} [Group G] [UniformSpace G] [IsRightUniformGroup G]
+
+/-- A locally compact right-uniform group is complete. -/
+@[to_additive
+/-- A locally compact right-uniform additive group is complete. -/]
+theorem completeSpace_of_weaklyLocallyCompactSpace
+    [WeaklyLocallyCompactSpace G] : CompleteSpace G where
+  complete {f} hf := by
+    open scoped RightActions in
+    have : f.NeBot := hf.1
+    obtain ⟨K, K_compact, K_mem⟩ := WeaklyLocallyCompactSpace.exists_compact_mem_nhds (1 : G)
+    obtain ⟨x, hx⟩ : ∃ x, ∀ᶠ y in f, y / x ∈ K := by
+      rw [cauchy_iff_le, uniformity_eq_comap_nhds_one, ← tendsto_iff_comap] at hf
+      exact hf.eventually_mem K_mem |>.curry.exists
+    simp_rw [div_eq_mul_inv, ← op_smul_eq_mul, MulOpposite.op_inv,
+      ← mem_smul_set_iff_inv_smul_mem] at hx
+    have Kx_complete : IsComplete (K <• x) := K_compact.smul _ |>.isComplete
+    obtain ⟨l, -, hl⟩ := Kx_complete f hf (by simpa using hx)
+    exact ⟨l, hl⟩
+
+end IsRightUniformGroup
+
 namespace Subgroup
 
 @[to_additive]
@@ -163,6 +187,60 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
   simpa using (uniformContinuous_div.comp_uniformCauchySeqOn (hf.prod' hf')) u hu
 
 end UniformConvergence
+
+section LocalUniformConvergence
+
+variable {ι X : Type*} [TopologicalSpace X] {F G : ι → X → α} {f g : X → α} {s : Set X}
+  {l : Filter ι}
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformlyOn.mul
+    (hf : TendstoLocallyUniformlyOn F f l s) (hg : TendstoLocallyUniformlyOn G g l s) :
+    TendstoLocallyUniformlyOn (F * G) (f * g) l s :=
+  uniformContinuous_mul.comp_tendstoLocallyUniformlyOn (hf.prodMk hg)
+
+attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_mul
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformlyOn.div
+    (hf : TendstoLocallyUniformlyOn F f l s) (hg : TendstoLocallyUniformlyOn G g l s) :
+    TendstoLocallyUniformlyOn (F / G) (f / g) l s :=
+  uniformContinuous_div.comp_tendstoLocallyUniformlyOn (hf.prodMk hg)
+
+attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_div
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformlyOn.inv (hf : TendstoLocallyUniformlyOn F f l s) :
+    TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s :=
+  uniformContinuous_inv.comp_tendstoLocallyUniformlyOn hf
+
+attribute [to_additive existing] TendstoLocallyUniformlyOn.fun_inv
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformly.mul
+    (hf : TendstoLocallyUniformly F f l) (hg : TendstoLocallyUniformly G g l) :
+    TendstoLocallyUniformly (F * G) (f * g) l :=
+  uniformContinuous_mul.comp_tendstoLocallyUniformly (hf.prodMk hg)
+
+attribute [to_additive existing] TendstoLocallyUniformly.fun_mul
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformly.div
+    (hf : TendstoLocallyUniformly F f l) (hg : TendstoLocallyUniformly G g l) :
+    TendstoLocallyUniformly (F / G) (f / g) l :=
+  uniformContinuous_div.comp_tendstoLocallyUniformly (hf.prodMk hg)
+
+attribute [to_additive existing] TendstoLocallyUniformly.fun_div
+
+@[to_additive (attr := to_fun)]
+theorem TendstoLocallyUniformly.inv (hf : TendstoLocallyUniformly F f l) :
+    TendstoLocallyUniformly F⁻¹ f⁻¹ l :=
+  uniformContinuous_inv.comp_tendstoLocallyUniformly hf
+
+attribute [to_additive existing] TendstoLocallyUniformly.fun_inv
+
+end LocalUniformConvergence
+
 
 @[to_additive]
 instance (priority := 100) IsUniformGroup.of_compactSpace [UniformSpace β] [Group β]

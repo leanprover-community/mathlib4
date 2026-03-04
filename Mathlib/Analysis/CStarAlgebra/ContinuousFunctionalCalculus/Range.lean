@@ -23,7 +23,7 @@ consequences thereof.
 
 -/
 
-@[expose] public section
+public section
 
 open Topology
 

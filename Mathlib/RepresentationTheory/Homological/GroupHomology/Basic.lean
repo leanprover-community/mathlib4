@@ -112,12 +112,6 @@ lemma isZero_Tor_succ_of_projective (X Y : Rep k G) [Projective Y] (n : ℕ) :
     IsZero (((Tor k G (n + 1)).obj X).obj Y) :=
   Functor.isZero_leftDerived_obj_projective_succ ..
 
-/-- Given a `k`-linear `G`-representation `A`, this is the chain complex `(A ⊗[k] P)_G`, where
-`P` is the bar resolution of `k` as a trivial representation. -/
-@[deprecated "Use `(barComplex k G).coinvariantsTensorObj A` instead." (since := "2025-06-17")]
-abbrev coinvariantsTensorBarResolution [DecidableEq G] :=
-  (((coinvariantsTensor k G).obj A).mapHomologicalComplex _).obj (barComplex k G)
-
 end Rep
 end Tor
 

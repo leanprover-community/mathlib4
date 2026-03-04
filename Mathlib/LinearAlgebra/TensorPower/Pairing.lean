@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.GroupTheory.MonoidLocalization.Basic
 public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.TensorPower.Basic
 
@@ -48,7 +47,7 @@ noncomputable def multilinearMapToDual :
       dsimp
       simp only [lift.tprod, MultilinearMap.compLinearMap_apply, this,
         LinearMap.add_apply, MultilinearMap.map_update_add]
-    map_update_smul' := fun f i a φ ↦  by
+    map_update_smul' := fun f i a φ ↦ by
       ext v
       dsimp
       simp only [lift.tprod, MultilinearMap.compLinearMap_apply, this,

@@ -195,7 +195,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
   | empty =>
     simp at hp
   | insert i₀ s hi₀ ih =>
-    rcases eq_or_ne (p i₀) 1 with h2i₀|h2i₀
+    rcases eq_or_ne (p i₀) 1 with h2i₀ | h2i₀
     · simp only [hi₀, not_false_eq_true, prod_insert]
       have h2p : ∀ i ∈ s, p i = 0 := by
         simpa [hi₀, h2i₀, sum_eq_zero_iff_of_nonneg (fun i hi ↦ h2p i <| mem_insert_of_mem hi)]

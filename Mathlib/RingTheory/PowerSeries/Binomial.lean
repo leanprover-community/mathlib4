@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RingTheory.Binomial
 public import Mathlib.RingTheory.PowerSeries.WellKnown
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Binomial Power Series

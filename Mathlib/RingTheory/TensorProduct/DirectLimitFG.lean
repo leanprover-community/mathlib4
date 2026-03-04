@@ -53,6 +53,7 @@ section Semiring
 universe u v
 variable {R : Type u} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The directed system of finitely generated submodules of `M` -/
 instance Submodule.FG.directedSystem :
     DirectedSystem (ι := {P : Submodule R M // P.FG}) (F := fun P ↦ P.val)

@@ -40,6 +40,7 @@ variable {K : Type*} [hK : NormedField K] [IsUltrametricDist K]
 
 namespace NormedField
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 /-- The valuation on a nonarchimedean normed field `K` defined as `nnnorm`. -/
 def valuation : Valuation K ℝ≥0 where
   toFun           := nnnorm

@@ -111,12 +111,6 @@ lemma mulTSupport_comp_eq_preimage {Y : Type*} [TopologicalSpace Y] (g : Y → �
 theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
   mulSupport_subset_iff'.mp (subset_mulTSupport f) x hx
 
-@[deprecated (since := "2025-05-24")]
-alias image_eq_zero_of_nmem_tsupport := image_eq_zero_of_notMem_tsupport
-
-@[to_additive existing, deprecated (since := "2025-05-24")]
-alias image_eq_one_of_nmem_mulTSupport := image_eq_one_of_notMem_mulTSupport
-
 @[to_additive]
 theorem range_subset_insert_image_mulTSupport (f : X → α) :
     range f ⊆ insert 1 (f '' mulTSupport f) := by
@@ -192,12 +186,6 @@ theorem notMem_mulTSupport_iff_eventuallyEq : x ∉ mulTSupport f ↔ f =ᶠ[�
   simp_rw [mulTSupport, mem_closure_iff_nhds, not_forall, not_nonempty_iff_eq_empty, exists_prop,
     ← disjoint_iff_inter_eq_empty, disjoint_mulSupport_iff, eventuallyEq_iff_exists_mem]
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_tsupport_iff_eventuallyEq := notMem_tsupport_iff_eventuallyEq
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias not_mem_mulTSupport_iff_eventuallyEq := notMem_mulTSupport_iff_eventuallyEq
-
 @[to_additive]
 theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
@@ -252,7 +240,7 @@ theorem intro' (hK : IsCompact K) (h'K : IsClosed K) (hfK : ∀ x, x ∉ K → f
   have : mulTSupport f ⊆ K := by
     rw [← h'K.closure_eq]
     apply closure_mono (mulSupport_subset_iff'.2 hfK)
-  exact IsCompact.of_isClosed_subset hK ( isClosed_mulTSupport f) this
+  exact IsCompact.of_isClosed_subset hK (isClosed_mulTSupport f) this
 
 @[to_additive]
 theorem of_mulSupport_subset_isCompact [R1Space α] (hK : IsCompact K) (h : mulSupport f ⊆ K) :
@@ -515,14 +503,6 @@ theorem LocallyFinite.exists_finset_nhds_mulSupport_subset {U : ι → Set X} [O
       intro i hi
       simp only [Finite.coe_toFinset, mem_setOf_eq]
       exact ⟨z, ⟨hi, hzn⟩⟩
-
-@[deprecated (since := "2025-05-22")]
-alias LocallyFinite.exists_finset_nhd_mulSupport_subset :=
-  LocallyFinite.exists_finset_nhds_mulSupport_subset
-
-@[deprecated (since := "2025-05-22")]
-alias LocallyFinite.exists_finset_nhd_support_subset :=
-  LocallyFinite.exists_finset_nhds_support_subset
 
 @[to_additive]
 theorem locallyFinite_mulSupport_iff [One M] {f : ι → X → M} :

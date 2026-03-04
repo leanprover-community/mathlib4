@@ -68,7 +68,6 @@ lemma Pi.map_eq_prod_map [∀ i, Decidable (P i)] : Pi.map f =
         ((Pi.binaryFanOfPropIsLimit Y P).conePointUniqueUpToIso (prodIsProd _ _)).inv := by
   rw [← Category.assoc, Iso.eq_comp_inv]
   dsimp only [IsLimit.conePointUniqueUpToIso, binaryFanOfProp, prodIsProd]
-  apply prod.hom_ext
-  all_goals cat_disch
+  cat_disch
 
 end CategoryTheory.Limits

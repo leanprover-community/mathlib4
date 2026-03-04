@@ -17,11 +17,11 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 /-!
 # Big operators on a finset in ordered groups
 
-This file contains the results concerning the interaction of multiset big operators with ordered
+This file contains the results concerning the interaction of finset big operators with ordered
 groups/monoids.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists Ring
 
@@ -177,7 +177,7 @@ lemma one_lt_prod_iff_of_one_le [MulLeftMono N] (hf : ∀ x ∈ s, 1 ≤ f x) :
     1 < ∏ x ∈ s, f x ↔ ∃ x ∈ s, 1 < f x := by
   have hsum : 1 ≤ ∏ x ∈ s, f x := one_le_prod' hf
   rw [hsum.lt_iff_ne', Ne, prod_eq_one_iff_of_one_le' hf, not_forall]
-  simp +contextual [← exists_prop, - exists_const_iff, hf _ _ |>.lt_iff_ne']
+  simp +contextual [← exists_prop, -exists_const_iff, hf _ _ |>.lt_iff_ne']
 
 @[to_additive sum_eq_zero_iff_of_nonpos]
 theorem prod_eq_one_iff_of_le_one' [MulLeftMono N] :
@@ -582,6 +582,18 @@ theorem apply_union_le_sum [AddCommMonoid β] [PartialOrder β] [AddLeftMono β]
     f (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, f (s i) :=
   Finset.sup_set_eq_biUnion t s ▸ t.apply_sup_le_sum zero (by simpa)
 
+theorem sum_le_one_iff {s : Finset α} {f : α → ℕ} :
+    ∑ x ∈ s, f x ≤ 1 ↔ ∀ x y, x ∈ s → y ∈ s → f x ≠ 0 → f y ≠ 0 → x = y ∧ f x = 1 := by
+  classical
+  refine ⟨fun h x y hsx hsy hfx hfy ↦ ?_, fun h ↦ ?_⟩
+  · replace h := (sum_mono_set f (show {x, y} ⊆ s by grind)).trans h
+    grind
+  · by_cases! hx : ∃ x ∈ s, f x ≠ 0
+    · obtain ⟨x, hsx, hfx⟩ := hx
+      have hs : ∀ y ∈ s \ {x}, f y = 0 := by grind
+      simp [← sum_sdiff (singleton_subset_iff.2 hsx), sum_congr rfl hs, (h x x hsx hsx hfx hfx).2]
+    · simp [sum_congr rfl hx]
+
 end Finset
 
 namespace Fintype
@@ -659,5 +671,14 @@ theorem sup_powerset_len [DecidableEq α] (x : Multiset α) :
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]
   exact
     Eq.symm (finset_sum_eq_sup_iff_disjoint.mpr fun _ _ _ _ h => pairwise_disjoint_powersetCard x h)
+
+theorem card_le_card_toFinset_add_one_iff [DecidableEq α] {m : Multiset α} :
+    m.card ≤ m.toFinset.card + 1 ↔
+      ∀ x y, 1 < m.count x → 1 < m.count y → x = y ∧ m.count x = 2 := by
+  rw [← m.toFinset_sum_count_eq, m.toFinset.card_eq_sum_ones, ← tsub_le_iff_left,
+    ← Finset.sum_tsub_distrib _ (by simp [one_le_count_iff_mem]), Finset.sum_le_one_iff]
+  simp only [← pos_iff_ne_zero, Nat.sub_pos_iff_lt, mem_toFinset, Nat.pred_eq_succ_iff]
+  exact ⟨fun h x y hx hy ↦ h x y (one_le_count_iff_mem.mp hx.le)
+    (one_le_count_iff_mem.mp hy.le) hx hy, fun h x y _ _ hx hy ↦ h x y hx hy⟩
 
 end Multiset

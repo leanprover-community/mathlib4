@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Data.ENat.Basic
 public import Mathlib.Logic.Equiv.PartialEquiv
-public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 # CW complexes
@@ -571,6 +570,8 @@ instance : SetLike (Subcomplex C) X where
     apply eq_of_eq_union_iUnion
     rw [hE, hF]
     simpa using h
+
+instance : PartialOrder (Subcomplex C) := .ofSetLike (Subcomplex C) X
 
 initialize_simps_projections Subcomplex (carrier → coe, as_prefix coe)
 

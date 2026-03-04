@@ -21,7 +21,7 @@ computed.
 sin, cos, tan, angle
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -735,7 +735,7 @@ theorem Complex.logDeriv_cos : logDeriv (Complex.cos) = -Complex.tan := by
 @[simp]
 theorem Real.logDeriv_cos : logDeriv (Real.cos) = -Real.tan := by
   ext
-  rw [logDeriv, Real.deriv_cos', Pi.div_apply, Pi.neg_apply, neg_div, Real.tan_eq_sin_div_cos ]
+  rw [logDeriv, Real.deriv_cos', Pi.div_apply, Pi.neg_apply, neg_div, Real.tan_eq_sin_div_cos]
 
 @[simp]
 theorem Complex.LogDeriv_exp : logDeriv (Complex.exp) = 1 := by

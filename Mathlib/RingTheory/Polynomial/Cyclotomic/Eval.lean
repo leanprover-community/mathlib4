@@ -20,7 +20,7 @@ This file states some results about evaluating cyclotomic polynomials in various
 * `Polynomial.cyclotomic_pos` : `∀ x, 0 < eval x (cyclotomic n R)` if `2 < n`.
 -/
 
-@[expose] public section
+public section
 
 
 namespace Polynomial

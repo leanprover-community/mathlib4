@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Rat
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Topology.MetricSpace.DilationEquiv
+import Mathlib.Analysis.Normed.MulAction
 
 /-!
 # Normed fields
@@ -28,8 +29,8 @@ assert_not_exists RestrictScalars
 
 variable {α β ι : Type*}
 
-open Filter Bornology
-open scoped Topology NNReal Pointwise
+open Filter Bornology Metric
+open scoped Topology NNReal Pointwise Uniformity
 
 section NormedDivisionRing
 
@@ -99,26 +100,107 @@ alias tendsto_inv₀_nhdsWithin_ne_zero := tendsto_inv₀_nhdsNE_zero
 
 end Filter
 
+/-- If `s` is a set disjoint from `𝓝 0`, then `fun x ↦ x⁻¹` is uniformly continuous on `s`. -/
+theorem uniformContinuousOn_inv₀ {s : Set α} (hs : sᶜ ∈ 𝓝 0) :
+    UniformContinuousOn Inv.inv s := by
+  rw [Metric.uniformContinuousOn_iff_le]
+  intro ε hε
+  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp hs with ⟨r, hr₀, hr⟩
+  simp only [Set.subset_compl_comm (t := s), Set.compl_setOf, not_lt] at hr
+  have hs₀ : ∀ x ∈ s, x ≠ 0 := fun x hx ↦ norm_pos_iff.mp <| hr₀.trans_le (hr hx)
+  refine ⟨ε * r ^ 2, by positivity, fun x hx y hy hxy ↦ ?_⟩
+  calc
+    dist x⁻¹ y⁻¹ = ‖x‖⁻¹ * dist y x * ‖y‖⁻¹ := by
+      simp [dist_eq_norm, inv_sub_inv' (hs₀ x hx) (hs₀ y hy)]
+    _ ≤ r⁻¹ * (ε * r ^ 2) * r⁻¹ := by
+      rw [dist_comm]
+      gcongr <;> exact hr ‹_›
+    _ = ε := by field_simp
+
+@[to_fun]
+theorem UniformContinuousOn.inv₀ {X : Type*} [UniformSpace X] {f : X → α} {s : Set X}
+    (hf : UniformContinuousOn f s) (hf₀ : (f '' s)ᶜ ∈ 𝓝 0) :
+    UniformContinuousOn f⁻¹ s :=
+  uniformContinuousOn_inv₀ hf₀ |>.comp hf (Set.mapsTo_image f s)
+
+@[to_fun]
+theorem UniformContinuous.inv₀ {X : Type*} [UniformSpace X] {f : X → α}
+    (hf : UniformContinuous f) (hf₀ : (Set.range f)ᶜ ∈ 𝓝 0) :
+    UniformContinuous f⁻¹ := by
+  simp only [← uniformContinuousOn_univ, ← Set.image_univ] at *
+  exact hf.inv₀ hf₀
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hf : ∀ x ∈ s, Disjoint (map f (𝓝[s] x)) (𝓝 0)) :
+    TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s := by
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at *
+  intro x hx
+  rcases basis_sets _ |>.map _ |>.disjoint_iff nhds_basis_ball
+    |>.mp (hf x hx) with ⟨U, hUx, r, hr₀, hr⟩
+  refine Tendsto.comp (uniformContinuousOn_inv₀ (s := (closedBall (0 : α) (r / 2))ᶜ)
+    (by simp [closedBall_mem_nhds, hr₀])) <| tendsto_inf.mpr ⟨hF x hx, tendsto_principal.mpr ?_⟩
+  filter_upwards [hF x hx (dist_mem_uniformity (half_pos hr₀)), tendsto_snd hUx] with y hy₁ hy₂
+  have : r ≤ ‖f y.2‖ := by simp_all [Set.disjoint_left]
+  have : r / 2 < ‖F y.1 y.2‖ := by
+    simp [dist_eq_norm_sub] at hy₁
+    linarith [hy₁, norm_sub_norm_le (f y.2) (F y.1 y.2)]
+  simp_all [(half_lt_self hr₀).trans_le]
+
+@[to_fun]
+theorem TendstoLocallyUniformly.inv₀_of_disjoint {X ι : Type*} [TopologicalSpace X]
+    {F : ι → X → α} {f : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hf : ∀ x, Disjoint (map f (𝓝 x)) (𝓝 0)) :
+    TendstoLocallyUniformly F⁻¹ f⁻¹ l := by
+  rw [← tendstoLocallyUniformlyOn_univ] at *
+  apply hF.inv₀_of_disjoint
+  simpa
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.inv₀ {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F : ι → X → α} {f : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hf : ContinuousOn f s) (hf₀ : ∀ x ∈ s, f x ≠ 0) :
+    TendstoLocallyUniformlyOn F⁻¹ f⁻¹ l s :=
+  hF.inv₀_of_disjoint fun x hx ↦ disjoint_nhds_nhds.2 (hf₀ x hx) |>.mono_left (hf x hx)
+
+@[to_fun]
+theorem TendstoLocallyUniformly.inv₀ {X ι : Type*} [TopologicalSpace X]
+    {F : ι → X → α} {f : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hf : Continuous f) (hf₀ : ∀ x, f x ≠ 0) :
+    TendstoLocallyUniformly F⁻¹ f⁻¹ l :=
+  hF.inv₀_of_disjoint fun x ↦ disjoint_nhds_nhds.2 (hf₀ x) |>.mono_left (hf.tendsto x)
+
 -- see Note [lower instance priority]
-instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousInv₀ α := by
-  refine ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 ?_⟩
-  have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
-  rcases exists_between r0' with ⟨ε, ε0, εr⟩
-  have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by
-    filter_upwards [(isOpen_lt continuous_const continuous_norm).eventually_mem εr] with e he
-    have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
-    calc
-      ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
-        rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
-          mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by ring
-      _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
-  refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
-  refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_
-  simp
+instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousInv₀ α where
+  continuousAt_inv₀ x hx := by
+    refine uniformContinuousOn_inv₀ (s := (Metric.closedBall x (‖x‖ / 2))) ?_
+      |>.continuousOn |>.continuousAt ?_
+    · refine Metric.isClosed_closedBall.isOpen_compl.mem_nhds ?_
+      simpa
+    · apply Metric.closedBall_mem_nhds
+      simpa
 
 @[deprecated (since := "2025-09-01")] alias NormedDivisionRing.to_hasContinuousInv₀ :=
   NormedDivisionRing.to_continuousInv₀
+
+@[to_fun]
+theorem TendstoLocallyUniformlyOn.div₀ {X ι : Type*} [TopologicalSpace X]
+    {s : Set X} {F G : ι → X → α} {f g : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformlyOn F f l s) (hG : TendstoLocallyUniformlyOn G g l s)
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) (hg₀ : ∀ x ∈ s, g x ≠ 0) :
+    TendstoLocallyUniformlyOn (F / G) (f / g) l s := by
+  simp only [div_eq_mul_inv]
+  exact hF.mul₀ (hG.inv₀ hg hg₀) hf <| hg.inv₀ hg₀
+
+@[to_fun]
+theorem TendstoLocallyUniformly.div₀ {X ι : Type*} [TopologicalSpace X]
+    {F G : ι → X → α} {f g : X → α} {l : Filter ι}
+    (hF : TendstoLocallyUniformly F f l) (hG : TendstoLocallyUniformly G g l)
+    (hf : Continuous f) (hg : Continuous g) (hg₀ : ∀ x, g x ≠ 0) :
+    TendstoLocallyUniformly (F / G) (f / g) l := by
+  simp only [div_eq_mul_inv]
+  exact hF.mul₀ (hG.inv₀ hg hg₀) hf <| hg.inv₀ hg₀
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/

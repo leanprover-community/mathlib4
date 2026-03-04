@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.PiSystem
 This file talks about the measurability of operations on binary functions.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MeasureTheory.Measure
 

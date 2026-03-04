@@ -21,7 +21,7 @@ This file contains results about the continuous functional calculus on (indexed)
   `cfc f (a, b) = (cfc f a, cfc f b)` (and likewise for the non-unital version)
 -/
 
-@[expose] public section
+public section
 
 section nonunital_pi
 

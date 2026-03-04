@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Integral.CircleAverage
 # The Mean Value Property of Complex Differentiable Functions
 -/
 
-@[expose] public section
+public section
 
 open Complex Metric Real
 

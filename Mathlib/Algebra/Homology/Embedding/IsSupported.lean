@@ -36,7 +36,7 @@ namespace HomologicalComplex
 section
 
 variable {C : Type*} [Category* C] [HasZeroMorphisms C]
-  (K L : HomologicalComplex C c') (e' : K ≅ L) (e : c.Embedding c')
+  (K L : HomologicalComplex C c') (e' : K ≅ L) (φ : K ⟶ L) (e : c.Embedding c')
 
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupported e` holds for
 an embedding `e : c.Embedding c'` of complex shapes if `K.X i'` is zero
@@ -68,6 +68,7 @@ instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op := by
 /-- If `K : HomologicalComplex C c'`, then `K.IsStrictlySupported e` holds for
 an embedding `e : c.Embedding c'` of complex shapes if `K` is exact at `i'`
 whenever `i'` is not of the form `e.f i` for some `i`. -/
+@[mk_iff]
 class IsSupported : Prop where
   exactAt (i' : ι') (hi' : ∀ i, e.f i ≠ i') : K.ExactAt i'
 
@@ -80,6 +81,12 @@ variable {K L} in
 lemma isSupported_of_iso [K.IsSupported e] : L.IsSupported e where
   exactAt i' hi' :=
     (K.exactAt_of_isSupported e i' hi').of_iso e'
+
+variable {K L} in
+lemma isSupported_iff_of_quasiIso [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+    [QuasiIso φ] :
+    K.IsSupported e ↔ L.IsSupported e := by
+  simp [isSupported_iff, exactAt_iff_of_quasiIsoAt φ]
 
 instance [K.IsStrictlySupported e] : K.IsSupported e where
   exactAt i' hi' := by

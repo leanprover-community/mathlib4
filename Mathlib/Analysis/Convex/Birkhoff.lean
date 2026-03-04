@@ -35,7 +35,7 @@ public import Mathlib.Tactic.Linarith
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
 
-@[expose] public section
+public section
 
 open Finset Function Matrix
 

@@ -19,7 +19,7 @@ We show the following properties of ring homomorphisms descend under faithfully 
 - bijective
 -/
 
-@[expose] public section
+public section
 
 open TensorProduct
 

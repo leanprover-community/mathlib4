@@ -7,13 +7,15 @@ module
 
 public import Mathlib.RingTheory.Extension.Presentation.Core
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.RingTheory.Smooth.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
 
 /-!
 # Smooth algebras have Noetherian models
 
 In this file, we show if `S` is a smooth `R`-algebra, there exists a `ℤ`-subalgebra of finite type
 `R₀` and a smooth `R₀`-algebra `S₀` such that `S ≃ₐ R ⊗[R₀] S₀`.
+
+The analogous result for etale algebras is also provided.
 -/
 
 universe u
@@ -48,7 +50,7 @@ variable (D : DescentAux A B)
 
 variable (R)
 
-/-- (Implementation detail): The finite type `ℤ`-algebra. -/
+/-- (Implementation detail): The finite type `R`-algebra. -/
 def subalgebra (D : DescentAux A B) : Subalgebra R A :=
   Algebra.adjoin R
     (D.P.coeffs ∪
@@ -64,9 +66,8 @@ instance : IsScalarTower (D.subalgebra R) A B :=
   inferInstanceAs <| IsScalarTower (Algebra.adjoin _ _) _ _
 instance : FaithfulSMul (D.subalgebra R) A := inferInstanceAs <| FaithfulSMul (Algebra.adjoin _ _) _
 
-instance [Finite D.vars] [Finite D.rels] : Algebra.FiniteType R (D.subalgebra R) := by
-  dsimp only [subalgebra]
-  refine Algebra.FiniteType.trans (S := R) inferInstance <| .adjoin_of_finite ?_
+lemma fg_subalgebra [Finite D.vars] [Finite D.rels] : (D.subalgebra R).FG := by
+  refine Subalgebra.fg_def.mpr ⟨_, ?_, rfl⟩
   refine .union ?_ (.union (.union ?_ ?_) ?_)
   · exact Presentation.finite_coeffs
   · refine Set.finite_iUnion fun i ↦ Finset.finite_toSet _
@@ -160,9 +161,9 @@ Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `B ≃ₐ A ⊗[A₀] B₀`.
 See `Algebra.Smooth.exists_finiteType` for a version in terms of `Function.Injective`.
 -/
-public theorem exists_subalgebra_finiteType [Smooth A B] :
+public theorem exists_subalgebra_fg [Smooth A B] :
     ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
-      FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+      A₀.FG ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
   let P := Presentation.ofFinitePresentation A B
   let f : P.Ring →ₐ[A] B := IsScalarTower.toAlgHom _ _ _
   have hkerf : RingHom.ker f = Ideal.span (.range P.relation) :=
@@ -197,14 +198,21 @@ public theorem exists_subalgebra_finiteType [Smooth A B] :
   have : P.HasCoeffs (D.subalgebra R) := D.hasCoeffs R
   obtain ⟨σ₀, hσ₀⟩ := D.exists_kerSquareLift_comp_eq_id R
   exact ⟨D.subalgebra R, P.ModelOfHasCoeffs (D.subalgebra R), inferInstance, inferInstance,
-    inferInstance, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
+    D.fg_subalgebra R, ⟨.of_split _ σ₀ hσ₀, inferInstance⟩,
     ⟨(P.tensorModelOfHasCoeffsEquiv (D.subalgebra R)).symm⟩⟩
+
+@[deprecated exists_subalgebra_fg (since := "2026-01-07")]
+public theorem exists_subalgebra_finiteType [Smooth A B] :
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+      FiniteType R A₀ ∧ Smooth A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+  obtain ⟨A₀, B₀, _, _, h0, h1, h2⟩ := exists_subalgebra_fg R A B
+  exact ⟨A₀, B₀, inferInstance, inferInstance, (Subalgebra.fg_iff_finiteType A₀).mp h0, h1, h2⟩
 
 /--
 Let `A` be an `R`-algebra. If `B` is a smooth `A`-algebra, there exists an
 `R`-algebra of finite type `A₀` and a smooth `A₀`-algebra `B₀` such that `B ≃ₐ A ⊗[A₀] B₀`
 with `A₀ → A` injective.
-See `Algebra.Smooth.exists_subalgebra_finiteType` for a version in terms of `Subalgebra`.
+See `Algebra.Smooth.exists_subalgebra_fg` for a version in terms of `Subalgebra`.
 -/
 @[stacks 00TP]
 public theorem exists_finiteType [Smooth A B] :
@@ -212,8 +220,31 @@ public theorem exists_finiteType [Smooth A B] :
       (_ : Algebra R A₀) (_ : Algebra A₀ A) (_ : Algebra A₀ B₀),
       Function.Injective (algebraMap A₀ A) ∧ FiniteType R A₀ ∧ Smooth A₀ B₀ ∧
       Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
-  obtain ⟨A₀, B₀, _, _, _, _, _⟩ := exists_subalgebra_finiteType R A B
+  obtain ⟨A₀, B₀, _, _, hA₀, _, _⟩ := exists_subalgebra_fg R A B
   use A₀, B₀, inferInstance, inferInstance, inferInstance, inferInstance, inferInstance,
-    Subtype.val_injective, inferInstance, inferInstance
+    Subtype.val_injective, ⟨A₀.fg_top.mpr hA₀⟩, inferInstance
+
+public theorem _root_.Algebra.IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg
+    (n : ℕ) [IsStandardSmoothOfRelativeDimension n A B] :
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+      A₀.FG ∧ IsStandardSmoothOfRelativeDimension n A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+  obtain ⟨ι, σ, _, _, P, hP⟩ := IsStandardSmoothOfRelativeDimension.out (n := n) (R := A) (S := B)
+  let A₀ := Algebra.adjoin R P.coeffs
+  have : P.HasCoeffs A₀ := ⟨by simp [A₀]⟩
+  exact ⟨A₀, (P.ModelOfHasCoeffs A₀:), inferInstance, inferInstance,
+    ⟨P.finite_coeffs.toFinset, by simp [A₀]⟩, ⟨_, _, _, inferInstance,
+      P.ofHasCoeffs A₀, hP⟩, ⟨(P.tensorModelOfHasCoeffsEquiv A₀).symm⟩⟩
+
+/--
+Let `A` be an `R`-algebra. If `B` is an etale `A`-algebra, there exists an
+`R`-subalgebra of finite type `A₀` of `A` and an etale `A₀`-algebra `B₀` such that
+`B ≃ₐ A ⊗[A₀] B₀`.
+-/
+@[stacks 00U2 "(8)"]
+public theorem _root_.Algebra.Etale.exists_subalgebra_fg [Etale A B] :
+    ∃ (A₀ : Subalgebra R A) (B₀ : Type u) (_ : CommRing B₀) (_ : Algebra A₀ B₀),
+      A₀.FG ∧ Etale A₀ B₀ ∧ Nonempty (B ≃ₐ[A] A ⊗[A₀] B₀) := by
+  simp only [Etale.iff_isStandardSmoothOfRelativeDimension_zero] at *
+  exact IsStandardSmoothOfRelativeDimension.exists_subalgebra_fg ..
 
 end Algebra.Smooth

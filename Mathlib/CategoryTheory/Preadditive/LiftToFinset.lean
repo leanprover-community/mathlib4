@@ -18,7 +18,7 @@ is preadditive, then we can describe the legs of this cocone as finite sums of p
 by inclusions.
 -/
 
-@[expose] public section
+public section
 
 universe w v u
 

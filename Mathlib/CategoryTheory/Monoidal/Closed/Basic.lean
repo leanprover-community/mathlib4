@@ -17,7 +17,7 @@ public import Mathlib.CategoryTheory.Adjunction.Parametrized
 Define (right) closed objects and (right) closed monoidal categories.
 
 ## TODO
-Some of the theorems proved about Cartesian closed categories
+Some theorems about Cartesian closed categories
 should be generalised and moved to this file.
 -/
 
@@ -79,7 +79,7 @@ namespace ihom
 def adjunction : tensorLeft A ⊣ ihom A :=
   Closed.adj
 
-instance : (tensorLeft A).IsLeftAdjoint  :=
+instance : (tensorLeft A).IsLeftAdjoint :=
   (ihom.adjunction A).isLeftAdjoint
 
 /-- The evaluation natural transformation. -/
@@ -216,6 +216,12 @@ theorem uncurry_ihom_map (g : Y ⟶ Y') :
 def unitNatIso [Closed (𝟙_ C)] : 𝟭 C ≅ ihom (𝟙_ C) :=
   conjugateIsoEquiv (Adjunction.id (C := C)) (ihom.adjunction (𝟙_ C))
     (leftUnitorNatIso C)
+
+/-- The internal hom object from the unit to any object is isomorphic to that object.
+The typeclass argument is explicit: any instance can be used. -/
+def unitIsoSelf [Closed (𝟙_ C)] : ((𝟙_ C) ⟶[C] X) ≅ X :=
+  (unitNatIso.app X).symm
+
 section Pre
 
 variable {A B}
@@ -389,7 +395,7 @@ The proofs of associativity and unitality use the following outline:
 /-- Left unitality of the enriched structure -/
 @[reassoc (attr := simp)]
 lemma id_comp (x y : C) [Closed x] :
-    (λ_ ((ihom x).obj y)).inv ≫ id x ▷ _ ≫ comp x x y = 𝟙 _:= by
+    (λ_ ((ihom x).obj y)).inv ≫ id x ▷ _ ≫ comp x x y = 𝟙 _ := by
   apply uncurry_injective
   rw [uncurry_natural_left, uncurry_natural_left, comp_eq, uncurry_curry, id_eq, compTranspose_eq,
       associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc, ← uncurry_eq,
@@ -432,13 +438,13 @@ def curry' {X Y : C} [Closed X] (f : X ⟶ Y) : 𝟙_ C ⟶ (ihom X).obj Y :=
 def uncurry' {X Y : C} [Closed X] (g : 𝟙_ C ⟶ (ihom X).obj Y) : X ⟶ Y :=
   (ρ_ _).inv ≫ uncurry g
 
-/-- `curry'` and `uncurry`' are inverse bijections. -/
+/-- `curry'` and `uncurry'` are inverse bijections. -/
 @[simp]
 lemma curry'_uncurry' {X Y : C} [Closed X] (g : 𝟙_ C ⟶ (ihom X).obj Y) :
     curry' (uncurry' g) = g := by
   simp [curry', uncurry']
 
-/-- `curry'` and `uncurry`' are inverse bijections. -/
+/-- `curry'` and `uncurry'` are inverse bijections. -/
 @[simp]
 lemma uncurry'_curry' {X Y : C} [Closed X] (f : X ⟶ Y) :
     uncurry' (curry' f) = f := by
@@ -493,7 +499,7 @@ lemma whiskerLeft_curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : Y ⟶ Z) :
   dsimp
   rw [whiskerLeft_curry'_ihom_ev_app, whiskerLeft_rightUnitor_inv,
     MonoidalCategory.whiskerRight_id_assoc, Category.assoc,
-    Iso.inv_hom_id_assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc,]
+    Iso.inv_hom_id_assoc, Iso.hom_inv_id_assoc, Iso.inv_hom_id_assoc]
 
 lemma curry'_ihom_map {X Y Z : C} [Closed X] (f : X ⟶ Y) (g : Y ⟶ Z) :
     curry' f ≫ (ihom X).map g = curry' (f ≫ g) := by

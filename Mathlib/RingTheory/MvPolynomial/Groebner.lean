@@ -146,7 +146,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
         simp only [hj, hb0, Finsupp.single_eq_same, zero_add]
         apply le_of_eq
         simp only [EmbeddingLike.apply_eq_iff_eq]
-        apply degree_smul (Units.isRegular _)
+        apply degree_smul_of_isRegular (Units.isRegular _)
       · simp only [Finsupp.single_eq_of_ne hj, mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp
@@ -187,10 +187,10 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
     · exact H'.2.2
   · suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
         (m.subLTerm f = Finsupp.linearCombination (MvPolynomial σ R) b g' + r') ∧
-        (∀ i, m.degree ((b  i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
+        (∀ i, m.degree ((b i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
         (∀ c ∈ r'.support, ∀ i, ¬ m.degree (b i) ≤ c) by
       obtain ⟨g', r', H'⟩ := this
-      use g', r' +  monomial (m.degree f) (m.leadingCoeff f)
+      use g', r' + monomial (m.degree f) (m.leadingCoeff f)
       constructor
       · simp [← add_assoc, ← H'.1, subLTerm]
       constructor

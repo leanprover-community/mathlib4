@@ -100,12 +100,12 @@ structure ContDiffMapSupportedIn (n : ℕ∞) (K : Compacts E) : Type _ where
 
 /-- Notation for the space of bundled `n`-times continuously differentiable
 functions with support in a compact set `K`. -/
-scoped[Distributions] notation "𝓓^{" n "}_{"K"}(" E ", " F ")" =>
+scoped[Distributions] notation "𝓓^{" n "}_{" K "}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F n K
 
 /-- Notation for the space of bundled smooth (infinitely differentiable)
 functions with support in a compact set `K`. -/
-scoped[Distributions] notation "𝓓_{"K"}(" E ", " F ")" =>
+scoped[Distributions] notation "𝓓_{" K "}(" E ", " F ")" =>
   ContDiffMapSupportedIn E F ⊤ K
 
 open Distributions
@@ -571,19 +571,19 @@ protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F
 -- Note: If these end up conflicting with other seminorms (e.g `SchwartzMap.seminorm`),
 -- we may want to put them in a more specific scope.
 @[inherit_doc ContDiffMapSupportedIn.seminorm]
-scoped[Distributions] notation "N["𝕜"]_{"K","n","i"}" =>
+scoped[Distributions] notation "N[" 𝕜 "]_{" K ", " n ", " i "}" =>
   ContDiffMapSupportedIn.seminorm 𝕜 _ _ n K i
 
 @[inherit_doc ContDiffMapSupportedIn.seminorm]
-scoped[Distributions] notation "N["𝕜"]_{"K","i"}" =>
+scoped[Distributions] notation "N[" 𝕜 "]_{" K ", " i "}" =>
   ContDiffMapSupportedIn.seminorm 𝕜 _ _ ⊤ K i
 
 @[inherit_doc ContDiffMapSupportedIn.seminorm]
-scoped[Distributions] notation "N["𝕜";"F"]_{"K","n","i"}" =>
+scoped[Distributions] notation "N[" 𝕜 "; " F "]_{" K ", " n ", " i "}" =>
   ContDiffMapSupportedIn.seminorm 𝕜 _ F n K i
 
 @[inherit_doc ContDiffMapSupportedIn.seminorm]
-scoped[Distributions] notation "N["𝕜";"F"]_{"K","i"}" =>
+scoped[Distributions] notation "N[" 𝕜 "; " F "]_{" K ", " i "}" =>
   ContDiffMapSupportedIn.seminorm 𝕜 _ F ⊤ K i
 
 /-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup of the

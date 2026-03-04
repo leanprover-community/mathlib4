@@ -35,7 +35,7 @@ Hermann Minkowski.
 * [Pete L. Clark, *Geometry of Numbers with Applications to Number Theory*][clark_gon] p.28
 -/
 
-@[expose] public section
+public section
 
 
 namespace MeasureTheory

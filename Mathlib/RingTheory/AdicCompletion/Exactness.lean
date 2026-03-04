@@ -28,7 +28,7 @@ All results are proven directly without using Mittag-Leffler systems.
 
 -/
 
-@[expose] public section
+public section
 
 universe u v w t
 

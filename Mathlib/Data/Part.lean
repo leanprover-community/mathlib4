@@ -118,8 +118,6 @@ instance : Inhabited (Part α) :=
 @[simp]
 theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
 
-@[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
-
 /-- The `some a` value in `Part` has a `True` domain and the
   function returns `a`. -/
 def some (a : α) : Part α :=
@@ -504,7 +502,7 @@ instance : LawfulMonad
     (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])
     (fun _ _ => rfl)
   bind_map x y := ext'
-    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)] )
+    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, (· <$> ·)])
     (fun _ _ => rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by

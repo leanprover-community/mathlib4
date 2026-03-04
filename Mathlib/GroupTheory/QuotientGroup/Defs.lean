@@ -49,7 +49,7 @@ variable {G H I M : Type*} [Group G] [Group H] [Monoid M] {N : Subgroup G}
     using ⟨fun h ↦ by ext; simpa using h _ 1, fun h ↦ by simp [h]⟩
 
 @[to_additive (attr := simp)] protected lemma subsingleton_iff : Subsingleton (G ⧸ N) ↔ N = ⊤ := by
-  simp [HasQuotient.Quotient, instHasQuotientSubgroup]
+  simp [HasQuotient.Quotient]
 
 @[to_additive (attr := simp)] protected lemma nontrivial_iff : Nontrivial (G ⧸ N) ↔ N ≠ ⊤ := by
   simp [← not_subsingleton_iff_nontrivial]
@@ -154,7 +154,7 @@ instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGro
   { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
     mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
 
-local notation " Q " => G ⧸ N
+local notation " Q" => G ⧸ N
 
 @[to_additive (attr := simp)]
 theorem mk_one : ((1 : G) : Q) = 1 :=
@@ -382,7 +382,7 @@ def congr (e : G ≃* H) (he : G'.map e = H') : G ⧸ G' ≃* H ⧸ H' :=
         MulEquiv.coe_monoidHom_refl, map_id_apply]
     right_inv := fun x => by
       rw [map_map H' G' H' e.symm e (he ▸ (G'.map_equiv_eq_comap_symm e).le)
-        (he ▸ G'.le_comap_map (e : G →* H)) ]
+        (he ▸ G'.le_comap_map (e : G →* H))]
       simp only [← MulEquiv.coe_monoidHom_trans, MulEquiv.symm_trans_self,
         MulEquiv.coe_monoidHom_refl, map_id_apply] }
 

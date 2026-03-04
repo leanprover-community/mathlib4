@@ -26,7 +26,7 @@ We then show in `summable_one_div_rpow_max` that the sum of `max (|c|, |d|) ^ (-
 `Finset.box` lemmas.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 

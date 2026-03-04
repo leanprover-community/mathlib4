@@ -16,7 +16,7 @@ then `↑m : J` is not maximal in `J`.
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

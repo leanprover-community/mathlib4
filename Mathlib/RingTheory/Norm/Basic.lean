@@ -37,7 +37,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 -/
 
-@[expose] public section
+public section
 
 
 universe u v w
@@ -126,6 +126,11 @@ theorem norm_eq_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {
 theorem norm_ne_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {x : S} :
     Algebra.norm R x ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr (norm_eq_zero_iff_of_basis b)
+
+theorem norm_inv [Module.Finite K L] (x : L) : Algebra.norm K x⁻¹ = (Algebra.norm K x)⁻¹ := by
+  by_cases hx : x = 0
+  · simp [hx]
+  exact mul_left_injective₀ (norm_ne_zero_iff.mpr hx) (by simp [hx, ← map_mul])
 
 end EqZeroIff
 

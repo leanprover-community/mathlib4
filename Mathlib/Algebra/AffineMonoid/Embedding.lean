@@ -14,6 +14,7 @@ import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.GroupTheory.MonoidLocalization.Finite
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Affine monoids embed into `ℤⁿ`

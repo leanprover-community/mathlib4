@@ -65,13 +65,14 @@ lemma isOpenImmersion_SpecMap_iff_of_surjective {R S : CommRingCat}
 
 variable {X Y : Scheme.{u}}
 
-theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
-    IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) := IsOpenImmersion.iff_isIso_stalkMap f
+@[deprecated (since := "2026-01-20")]
+alias isOpenImmersion_iff_stalk := IsOpenImmersion.iff_isIso_stalkMap
 
 theorem IsOpenImmersion.of_openCover_source (f : X ⟶ Y)
     (𝒰 : X.OpenCover) (hf : Function.Injective f) (h𝒰 : ∀ i, IsOpenImmersion (𝒰.f i ≫ f)) :
     IsOpenImmersion f := by
-  refine isOpenImmersion_iff_stalk.mpr ⟨.of_continuous_injective_isOpenMap f.continuous hf ?_, ?_⟩
+  refine IsOpenImmersion.iff_isIso_stalkMap.mpr
+    ⟨.of_continuous_injective_isOpenMap f.continuous hf ?_, ?_⟩
   · intro U hU
     convert (⨆ i, ((𝒰.f i ≫ f) ''ᵁ (𝒰.f i ⁻¹ᵁ ⟨U, hU⟩))).2
     ext x
@@ -92,13 +93,12 @@ lemma IsOpenImmersion.of_forall_source_exists (f : X ⟶ Y)
   exact IsOpenImmersion.of_openCover_source f 𝒰 hf hi
 
 theorem isOpenImmersion_eq_inf :
-    @IsOpenImmersion = (topologically IsOpenEmbedding) ⊓
-      stalkwise (fun f ↦ Function.Bijective f) := by
+    @IsOpenImmersion = (topologically IsOpenEmbedding) ⊓ stalkwise (Function.Bijective ·) := by
   ext
-  exact isOpenImmersion_iff_stalk.trans
+  exact IsOpenImmersion.iff_isIso_stalkMap.trans
     (and_congr Iff.rfl (forall_congr' fun x ↦ ConcreteCategory.isIso_iff_bijective _))
 
-instance : IsZariskiLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
+instance : IsZariskiLocalAtTarget (stalkwise (Function.Bijective ·)) := by
   apply stalkwiseIsZariskiLocalAtTarget_of_respectsIso
   rw [RingHom.toMorphismProperty_respectsIso_iff]
   convert (inferInstanceAs (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
@@ -107,5 +107,10 @@ instance : IsZariskiLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) :
 
 instance isOpenImmersion_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
+
+instance {X Y X' Y' : Scheme.{u}}
+    (f : X ⟶ X') (g : Y ⟶ Y') [IsOpenImmersion f] [IsOpenImmersion g] :
+    IsOpenImmersion (coprod.map f g) :=
+  IsZariskiLocalAtTarget.coprodMap f g ‹_› ‹_›
 
 end AlgebraicGeometry

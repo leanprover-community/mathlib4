@@ -16,7 +16,7 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 `log`, and `cpow` are analytic, since they are differentiable.
 -/
 
-@[expose] public section
+public section
 
 open Complex Set
 open scoped Topology

@@ -12,7 +12,7 @@ public import Mathlib.Tactic.NormNum
 # Some facts about finite rings
 -/
 
-@[expose] public section
+public section
 
 
 open Finset ZMod
