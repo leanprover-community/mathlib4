@@ -116,7 +116,7 @@ theorem wideSubcategoryInclusion.map {X Y} {f : X ⟶ Y} :
 
 /-- The inclusion of a wide subcategory is faithful. -/
 instance wideSubcategory.faithful : (wideSubcategoryInclusion P).Faithful :=
-  inferInstanceAs (wideInducedFunctor WideSubcategory.obj P).Faithful
+  inferInstanceAs% (wideInducedFunctor WideSubcategory.obj P).Faithful
 
 end WideSubcategory
 

@@ -112,7 +112,7 @@ variable {Q : CompHausLike.{u} P} {Z : Type max u w} (r : LocallyConstant Q Z) (
 def fiber : CompHausLike.{u} P := CompHausLike.of P a.val
 
 set_option backward.isDefEq.respectTransparency false in
-instance : HasProp P (fiber r a) := inferInstanceAs (HasProp P (Subtype _))
+instance : HasProp P (fiber r a) := inferInstanceAs% (HasProp P (Subtype _))
 
 /-- The inclusion map from a component of the coproduct induced by `f` into `S`. -/
 def sigmaIncl : fiber r a ⟶ Q := ofHom _ (TopologicalSpace.Fiber.sigmaIncl _ a)
@@ -348,7 +348,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
       Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val]
     have := CompHausLike.preregular hs
     letI : PreservesFiniteProducts ((sheafToPresheaf (coherentTopology _) _).obj X) :=
-      inferInstanceAs (PreservesFiniteProducts (Sheaf.val _))
+      inferInstanceAs% (PreservesFiniteProducts (Sheaf.val _))
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
     erw [incl_of_counitAppApp]
@@ -357,7 +357,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     rfl
 
 instance [HasExplicitFiniteCoproducts.{u} P] : IsIso (adjunction P hs).unit :=
-  inferInstanceAs (IsIso (unitIso P hs).hom)
+  inferInstanceAs% (IsIso (unitIso P hs).hom)
 
 end Adjunction
 

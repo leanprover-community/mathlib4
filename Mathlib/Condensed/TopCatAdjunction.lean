@@ -154,7 +154,7 @@ instance (X : CondensedSet.{u}) : UCompactlyGeneratedSpace.{u, u + 1} X.toTopCat
 
 instance (X : CondensedSet.{u}) :
     UCompactlyGeneratedSpace.{u, u + 1} (condensedSetToTopCat.obj X) :=
-  inferInstanceAs (UCompactlyGeneratedSpace.{u, u + 1} X.toTopCat)
+  inferInstanceAs% (UCompactlyGeneratedSpace.{u, u + 1} X.toTopCat)
 
 /-- The functor from condensed sets to topological spaces lands in compactly generated spaces. -/
 def condensedSetToCompactlyGenerated : CondensedSet.{u} ⥤ CompactlyGenerated.{u, u + 1} where
@@ -202,7 +202,7 @@ noncomputable def compactlyGeneratedAdjunctionCounitIso (X : CompactlyGenerated.
 instance : IsIso compactlyGeneratedAdjunction.counit := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
-  exact inferInstanceAs (IsIso (compactlyGeneratedAdjunctionCounitIso X).hom)
+  exact inferInstanceAs% (IsIso (compactlyGeneratedAdjunctionCounitIso X).hom)
 
 /--
 The functor from topological spaces to condensed sets restricted to compactly generated spaces

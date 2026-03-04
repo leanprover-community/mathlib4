@@ -415,7 +415,7 @@ instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
 -- Redeclare for refined keys
 -- `Nonempty (@Subtype _ (@Membership.mem _ (Set _) _ (@Top.top (Set _) _)))`
 instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
-  inferInstanceAs (Nonempty (univ : Set α))
+  inferInstanceAs% (Nonempty (univ : Set α))
 
 theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.mp ‹_›
 
@@ -1039,23 +1039,23 @@ namespace Set
 variable {α : Type u} (s t : Set α) (a b : α)
 
 instance decidableSdiff [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s \ t) :=
-  inferInstanceAs (Decidable (a ∈ s ∧ a ∉ t))
+  inferInstanceAs% (Decidable (a ∈ s ∧ a ∉ t))
 
 instance decidableInter [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∩ t) :=
-  inferInstanceAs (Decidable (a ∈ s ∧ a ∈ t))
+  inferInstanceAs% (Decidable (a ∈ s ∧ a ∈ t))
 
 instance decidableUnion [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∪ t) :=
-  inferInstanceAs (Decidable (a ∈ s ∨ a ∈ t))
+  inferInstanceAs% (Decidable (a ∈ s ∨ a ∈ t))
 
 instance decidableCompl [Decidable (a ∈ s)] : Decidable (a ∈ sᶜ) :=
-  inferInstanceAs (Decidable (a ∉ s))
+  inferInstanceAs% (Decidable (a ∉ s))
 
 instance decidableEmptyset : Decidable (a ∈ (∅ : Set α)) := Decidable.isFalse (by simp)
 
 instance decidableUniv : Decidable (a ∈ univ) := Decidable.isTrue (by simp)
 
 instance decidableInsert [Decidable (a = b)] [Decidable (a ∈ s)] : Decidable (a ∈ insert b s) :=
-  inferInstanceAs (Decidable (_ ∨ _))
+  inferInstanceAs% (Decidable (_ ∨ _))
 
 instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption

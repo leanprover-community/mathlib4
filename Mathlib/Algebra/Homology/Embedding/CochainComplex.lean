@@ -318,10 +318,10 @@ section Preadditive
 variable [Preadditive C]
 
 instance [HasZeroObject C] (A : C) (n : ℤ) : ((singleFunctor C n).obj A).IsStrictlyGE n :=
-  inferInstanceAs (IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n)
+  inferInstanceAs% (IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n)
 
 instance [HasZeroObject C] (A : C) (n : ℤ) : ((singleFunctor C n).obj A).IsStrictlyLE n :=
-  inferInstanceAs (IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n)
+  inferInstanceAs% (IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n)
 
 variable (K : CochainComplex C ℤ)
 

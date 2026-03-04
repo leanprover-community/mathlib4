@@ -273,7 +273,7 @@ def _root_.Matrix.IsSimplyLaced {ι : Type*} (A : Matrix ι ι ℤ) : Prop :=
   Pairwise fun i j ↦ A i j = 0 ∨ A i j = -1
 
 instance {ι : Type*} [Fintype ι] [DecidableEq ι] : DecidablePred (Matrix.IsSimplyLaced (ι := ι)) :=
-  inferInstanceAs <|
+  inferInstanceAs% <|
     DecidablePred fun A : Matrix ι ι ℤ ↦ ∀ ⦃i j : ι⦄, i ≠ j → (fun i j ↦ A i j = 0 ∨ A i j = -1) i j
 
 lemma _root_.Matrix.isSimplyLaced_iff_of_linearOrder

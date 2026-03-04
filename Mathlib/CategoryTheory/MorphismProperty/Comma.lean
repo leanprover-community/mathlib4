@@ -78,7 +78,7 @@ def costructuredArrowObj (W : MorphismProperty T) : ObjectProperty (Costructured
     W.costructuredArrowObj L Y ↔ W Y.hom := .rfl
 
 instance [W.RespectsIso] : (W.costructuredArrowObj L (X := X)).IsClosedUnderIsomorphisms :=
-  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+  inferInstanceAs% <| (W.commaObj _ _).IsClosedUnderIsomorphisms
 
 /-- The object property on `StructuredArrow X R` induced by a morphism property. -/
 def structuredArrowObj (W : MorphismProperty T) : ObjectProperty (StructuredArrow X R) :=
@@ -88,7 +88,7 @@ def structuredArrowObj (W : MorphismProperty T) : ObjectProperty (StructuredArro
     W.structuredArrowObj R Y ↔ W Y.hom := .rfl
 
 instance [W.RespectsIso] : (W.structuredArrowObj L (X := X)).IsClosedUnderIsomorphisms :=
-  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+  inferInstanceAs% <| (W.commaObj _ _).IsClosedUnderIsomorphisms
 
 /-- The morphism property on `Over X` induced by a morphism property on `C`. -/
 def over (W : MorphismProperty T) {X : T} : MorphismProperty (Over X) := fun _ _ f ↦ W f.left
@@ -112,7 +112,7 @@ def overObj (W : MorphismProperty T) {X : T} : ObjectProperty (Over X) := fun f 
 @[simp] lemma overObj_iff (Y : Over X) : W.overObj Y ↔ W Y.hom := .rfl
 
 instance [W.RespectsIso] : (W.overObj (X := X)).IsClosedUnderIsomorphisms :=
-  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+  inferInstanceAs% <| (W.commaObj _ _).IsClosedUnderIsomorphisms
 
 /-- The object property on `Under X` induced by a morphism property. -/
 def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun f ↦ W f.hom
@@ -120,7 +120,7 @@ def underObj (W : MorphismProperty T) {X : T} : ObjectProperty (Under X) := fun 
 @[simp] lemma underObj_iff (Y : Under X) : W.underObj Y ↔ W Y.hom := .rfl
 
 instance [W.RespectsIso] : (W.underObj (X := X)).IsClosedUnderIsomorphisms :=
-  inferInstanceAs <| (W.commaObj _ _).IsClosedUnderIsomorphisms
+  inferInstanceAs% <| (W.commaObj _ _).IsClosedUnderIsomorphisms
 
 end
 
@@ -384,8 +384,8 @@ protected abbrev Over : Type _ :=
 protected abbrev Over.forget : P.Over Q X ⥤ Over X :=
   Comma.forget (Functor.id T) (Functor.fromPUnit.{0} X) P Q ⊤
 
-instance : (Over.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
-instance : (Over.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+instance : (Over.forget P ⊤ X).Faithful := inferInstanceAs% <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Over.forget P ⊤ X).Full := inferInstanceAs% <| (Comma.forget _ _ _ _ _).Full
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
 lemma Over.forget_comp_forget_map {A B : P.Over Q X} (f : A ⟶ B) :
@@ -450,8 +450,8 @@ protected abbrev Under : Type _ :=
 protected abbrev Under.forget : P.Under Q X ⥤ Under X :=
   Comma.forget (Functor.fromPUnit.{0} X) (Functor.id T) P ⊤ Q
 
-instance : (Under.forget P ⊤ X).Faithful := inferInstanceAs <| (Comma.forget _ _ _ _ _).Faithful
-instance : (Under.forget P ⊤ X).Full := inferInstanceAs <| (Comma.forget _ _ _ _ _).Full
+instance : (Under.forget P ⊤ X).Faithful := inferInstanceAs% <| (Comma.forget _ _ _ _ _).Faithful
+instance : (Under.forget P ⊤ X).Full := inferInstanceAs% <| (Comma.forget _ _ _ _ _).Full
 
 /-- Occasionally useful for rewriting in the backwards direction. -/
 lemma Under.forget_comp_forget_map {A B : P.Under Q X} (f : A ⟶ B) :

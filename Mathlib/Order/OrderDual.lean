@@ -73,20 +73,20 @@ instance instPreorder (α : Type*) [Preorder α] : Preorder αᵒᵈ where
   lt_iff_le_not_ge := fun _ _ ↦ lt_iff_le_not_ge
 
 instance instPartialOrder (α : Type*) [PartialOrder α] : PartialOrder αᵒᵈ where
-  __ := inferInstanceAs (Preorder αᵒᵈ)
+  __ := inferInstanceAs% (Preorder αᵒᵈ)
   le_antisymm := fun a b hab hba ↦ @le_antisymm α _ a b hba hab
 
 instance (α : Type*) [DecidableEq α] : DecidableEq (αᵒᵈ) := ‹DecidableEq α›
 
 instance (α : Type*) [LT α] [DecidableLT α] : DecidableLT (αᵒᵈ) :=
-  inferInstanceAs <| DecidableRel (fun a b : α ↦ b < a)
+  inferInstanceAs% <| DecidableRel (fun a b : α ↦ b < a)
 
 instance (α : Type*) [LE α] [DecidableLE α] : DecidableLE (αᵒᵈ) :=
-  inferInstanceAs <| DecidableRel (fun a b : α ↦ b ≤ a)
+  inferInstanceAs% <| DecidableRel (fun a b : α ↦ b ≤ a)
 
 instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ where
-  __ := inferInstanceAs (PartialOrder αᵒᵈ)
-  __ := inferInstanceAs (Ord αᵒᵈ)
+  __ := inferInstanceAs% (PartialOrder αᵒᵈ)
+  __ := inferInstanceAs% (Ord αᵒᵈ)
   le_total := fun a b : α ↦ le_total b a
   max := fun a b ↦ (min a b : α)
   min := fun a b ↦ (max a b : α)
@@ -101,7 +101,7 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
 
 /-- The opposite linear order to a given linear order -/
 def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
-  inferInstanceAs <| LinearOrder (OrderDual α)
+  inferInstanceAs% <| LinearOrder (OrderDual α)
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 

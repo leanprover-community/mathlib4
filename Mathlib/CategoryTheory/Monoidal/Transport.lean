@@ -199,13 +199,13 @@ instance : (equivalenceTransported e).inverse.Monoidal := by
   infer_instance
 
 instance : (equivalenceTransported e).symm.functor.Monoidal :=
-  inferInstanceAs (equivalenceTransported e).inverse.Monoidal
+  inferInstanceAs% (equivalenceTransported e).inverse.Monoidal
 
 noncomputable instance : (equivalenceTransported e).functor.Monoidal :=
   (equivalenceTransported e).symm.inverseMonoidal
 
 noncomputable instance : (equivalenceTransported e).symm.inverse.Monoidal :=
-  inferInstanceAs (equivalenceTransported e).functor.Monoidal
+  inferInstanceAs% (equivalenceTransported e).functor.Monoidal
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (equivalenceTransported e).symm.IsMonoidal := by
@@ -213,11 +213,11 @@ instance : (equivalenceTransported e).symm.IsMonoidal := by
 
 /-- The unit isomorphism upgrades to a monoidal isomorphism. -/
 instance : NatTrans.IsMonoidal (equivalenceTransported e).unit :=
-  inferInstanceAs (NatTrans.IsMonoidal (equivalenceTransported e).symm.counitIso.inv)
+  inferInstanceAs% (NatTrans.IsMonoidal (equivalenceTransported e).symm.counitIso.inv)
 
 /-- The counit isomorphism upgrades to a monoidal isomorphism. -/
 instance : NatTrans.IsMonoidal (equivalenceTransported e).counit :=
-  inferInstanceAs (NatTrans.IsMonoidal (equivalenceTransported e).symm.unitIso.inv)
+  inferInstanceAs% (NatTrans.IsMonoidal (equivalenceTransported e).symm.unitIso.inv)
 
 end
 

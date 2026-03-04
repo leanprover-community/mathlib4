@@ -26,6 +26,6 @@ open CategoryTheory
 variable {C : Type u} [SmallCategory C]
 
 instance : CartesianMonoidalCategory (LightCondSet.{u}) :=
-  inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
+  inferInstanceAs% (CartesianMonoidalCategory (Sheaf _ _))
 
-instance : MonoidalClosed (LightCondSet.{u}) := inferInstanceAs (MonoidalClosed (Sheaf _ _))
+instance : MonoidalClosed (LightCondSet.{u}) := inferInstanceAs% (MonoidalClosed (Sheaf _ _))

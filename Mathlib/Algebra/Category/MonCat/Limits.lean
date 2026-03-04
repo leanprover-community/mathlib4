@@ -38,7 +38,7 @@ variable {J : Type v} [Category.{w} J] (F : J ⥤ MonCat.{u})
 
 @[to_additive]
 instance monoidObj (j) : Monoid ((F ⋙ forget MonCat).obj j) :=
-  inferInstanceAs <| Monoid (F.obj j)
+  inferInstanceAs% <| Monoid (F.obj j)
 
 /-- The flat sections of a functor into `MonCat` form a submonoid of all sections. -/
 @[to_additive
@@ -60,7 +60,7 @@ variable [Small.{u} (Functor.sections (F ⋙ forget MonCat))]
 @[to_additive]
 noncomputable instance limitMonoid :
     Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=
-  inferInstanceAs <| Monoid (Shrink (F ⋙ forget MonCat.{u}).sections)
+  inferInstanceAs% <| Monoid (Shrink (F ⋙ forget MonCat.{u}).sections)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
@@ -210,7 +210,7 @@ variable {J : Type v} [Category.{w} J] (F : J ⥤ CommMonCat.{u})
 
 @[to_additive]
 instance commMonoidObj (j) : CommMonoid ((F ⋙ forget CommMonCat.{u}).obj j) :=
-  inferInstanceAs <| CommMonoid (F.obj j)
+  inferInstanceAs% <| CommMonoid (F.obj j)
 
 variable [Small.{u} (Functor.sections (F ⋙ forget CommMonCat))]
 
@@ -220,11 +220,11 @@ noncomputable instance limitCommMonoid :
   letI : CommMonoid (F ⋙ forget CommMonCat.{u}).sections :=
     @Submonoid.toCommMonoid (∀ j, F.obj j) _
       (MonCat.sectionsSubmonoid (F ⋙ forget₂ CommMonCat.{u} MonCat.{u}))
-  inferInstanceAs <| CommMonoid (Shrink (F ⋙ forget CommMonCat.{u}).sections)
+  inferInstanceAs% <| CommMonoid (Shrink (F ⋙ forget CommMonCat.{u}).sections)
 
 @[to_additive]
 instance : Small.{u} (Functor.sections ((F ⋙ forget₂ CommMonCat MonCat) ⋙ forget MonCat)) :=
-  inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget CommMonCat))
+  inferInstanceAs% <| Small.{u} (Functor.sections (F ⋙ forget CommMonCat))
 
 /-- We show that the forgetful functor `CommMonCat ⥤ MonCat` creates limits.
 

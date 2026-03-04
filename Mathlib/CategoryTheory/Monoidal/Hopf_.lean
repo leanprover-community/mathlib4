@@ -80,7 +80,7 @@ Morphisms of Hopf monoids are just morphisms of the underlying bimonoids.
 In fact they automatically intertwine the antipodes, proved below.
 -/
 instance : Category (Hopf C) :=
-  inferInstanceAs <| Category (InducedCategory (Bimon C) Hopf.toBimon)
+  inferInstanceAs% <| Category (InducedCategory (Bimon C) Hopf.toBimon)
 
 end Hopf
 

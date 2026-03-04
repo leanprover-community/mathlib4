@@ -101,7 +101,7 @@ instance : CoeSort (DiscreteQuotient X) (Type _) :=
   ⟨fun S => Quotient S.toSetoid⟩
 
 instance : TopologicalSpace S :=
-  inferInstanceAs (TopologicalSpace (Quotient S.toSetoid))
+  inferInstanceAs% (TopologicalSpace (Quotient S.toSetoid))
 
 /-- The projection from `X` to the given discrete quotient. -/
 def proj : X → S := Quotient.mk''

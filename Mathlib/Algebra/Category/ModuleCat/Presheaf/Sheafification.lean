@@ -40,7 +40,7 @@ namespace PresheafOfModules
 
 instance : (SheafOfModules.toSheaf.{v} R).ReflectsIsomorphisms :=
   have : (SheafOfModules.toSheaf.{v} R ⋙ sheafToPresheaf _ _).ReflectsIsomorphisms :=
-    inferInstanceAs (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
+    inferInstanceAs% (SheafOfModules.forget.{v} R ⋙ toPresheaf _).ReflectsIsomorphisms
   reflectsIsomorphisms_of_comp _ (sheafToPresheaf _ _)
 
 section

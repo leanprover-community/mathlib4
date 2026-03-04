@@ -312,7 +312,7 @@ instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
   | node _ l m r =>
     have : Decidable (All P l) := All.decidable l
     have : Decidable (All P r) := All.decidable r
-    inferInstanceAs <| Decidable (All P l ∧ P m ∧ All P r)
+    inferInstanceAs% <| Decidable (All P l ∧ P m ∧ All P r)
 
 /-- O(n). Does any element of the map satisfy property `P`?
 
@@ -327,7 +327,7 @@ instance Any.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
   | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l
     have : Decidable (Any P r) := Any.decidable r
-    inferInstanceAs <| Decidable (Any P l ∨ P m ∨ Any P r)
+    inferInstanceAs% <| Decidable (Any P l ∨ P m ∨ Any P r)
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
 correctness properties; use `∈` for a version that actually uses the BST property
@@ -591,7 +591,7 @@ def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
 
 instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
-  inferInstanceAs (Decidable (x.size = y.size ∧ x.toList = y.toList))
+  inferInstanceAs% (Decidable (x.size = y.size ∧ x.toList = y.toList))
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 

@@ -234,9 +234,9 @@ namespace X
 
 variable {q : ℕ}
 
-instance : Inhabited (X q) := inferInstanceAs (Inhabited (ZMod q × ZMod q))
-instance : DecidableEq (X q) := inferInstanceAs (DecidableEq (ZMod q × ZMod q))
-instance : AddCommGroup (X q) := inferInstanceAs (AddCommGroup (ZMod q × ZMod q))
+instance : Inhabited (X q) := inferInstanceAs% (Inhabited (ZMod q × ZMod q))
+instance : DecidableEq (X q) := inferInstanceAs% (DecidableEq (ZMod q × ZMod q))
+instance : AddCommGroup (X q) := inferInstanceAs% (AddCommGroup (ZMod q × ZMod q))
 
 @[ext]
 theorem ext {x y : X q} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y := by
@@ -282,7 +282,7 @@ theorem one_snd : (1 : X q).2 = 0 :=
   rfl
 
 instance : Monoid (X q) :=
-  { inferInstanceAs (Mul (X q)), inferInstanceAs (One (X q)) with
+  { inferInstanceAs% (Mul (X q)), inferInstanceAs% (One (X q)) with
     mul_assoc := fun x y z => by ext <;> dsimp <;> ring
     one_mul := fun x => by ext <;> simp
     mul_one := fun x => by ext <;> simp }
@@ -303,8 +303,8 @@ instance : NatCast (X q) where
   rfl
 
 instance : AddGroupWithOne (X q) :=
-  { inferInstanceAs (Monoid (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (NatCast (X q)) with
+  { inferInstanceAs% (Monoid (X q)), inferInstanceAs% (AddCommGroup (X q)),
+      inferInstanceAs% (NatCast (X q)) with
     natCast_zero := by ext <;> simp
     natCast_succ := fun _ ↦ by ext <;> simp
     intCast := fun n => ⟨n, 0⟩
@@ -318,15 +318,15 @@ theorem right_distrib (x y z : X q) : (x + y) * z = x * z + y * z := by
   ext <;> dsimp <;> ring
 
 instance : Ring (X q) :=
-  { inferInstanceAs (AddGroupWithOne (X q)), inferInstanceAs (AddCommGroup (X q)),
-      inferInstanceAs (Monoid (X q)) with
+  { inferInstanceAs% (AddGroupWithOne (X q)), inferInstanceAs% (AddCommGroup (X q)),
+      inferInstanceAs% (Monoid (X q)) with
     left_distrib := left_distrib
     right_distrib := right_distrib
     mul_zero := fun _ ↦ by ext <;> simp
     zero_mul := fun _ ↦ by ext <;> simp }
 
 instance : CommRing (X q) :=
-  { inferInstanceAs (Ring (X q)) with
+  { inferInstanceAs% (Ring (X q)) with
     mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
 
 instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
@@ -462,7 +462,7 @@ lemma ω_pow_trace [Fact q.Prime] (odd : Odd q)
 
 variable [NeZero q]
 
-instance : Fintype (X q) := inferInstanceAs (Fintype (ZMod q × ZMod q))
+instance : Fintype (X q) := inferInstanceAs% (Fintype (ZMod q × ZMod q))
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by

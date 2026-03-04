@@ -121,7 +121,7 @@ noncomputable section
 /-- Upgrading the functor `Action V G ⥤ (SingleObj G ⥤ V)` to a monoidal functor. -/
 instance FunctorCategoryEquivalence.functorMonoidal :
     (FunctorCategoryEquivalence.functor (V := V) (G := G)).Monoidal :=
-  inferInstanceAs (Monoidal.equivalenceTransported
+  inferInstanceAs% (Monoidal.equivalenceTransported
     (Action.functorCategoryEquivalence V G).symm).inverse.Monoidal
 
 instance functorCategoryEquivalenceFunctorMonoidal :
@@ -131,7 +131,7 @@ instance functorCategoryEquivalenceFunctorMonoidal :
 /-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
 instance FunctorCategoryEquivalence.inverseMonoidal :
     (FunctorCategoryEquivalence.inverse (V := V) (G := G)).Monoidal :=
-  inferInstanceAs (Monoidal.equivalenceTransported
+  inferInstanceAs% (Monoidal.equivalenceTransported
     (Action.functorCategoryEquivalence V G).symm).functor.Monoidal
 
 instance functorCategoryEquivalenceInverseMonoidal :

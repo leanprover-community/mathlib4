@@ -431,7 +431,7 @@ noncomputable def derivedAbelianOfIdeal (I : LieIdeal R L) : LieIdeal R L :=
   | k + 1 => derivedSeriesOfIdeal R L k I
 
 instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
-  inferInstanceAs <| Unique {x // x ∈ (⊥ : Submodule R L)}
+  inferInstanceAs% <| Unique {x // x ∈ (⊥ : Submodule R L)}
 
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by

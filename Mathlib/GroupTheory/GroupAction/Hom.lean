@@ -470,8 +470,8 @@ instance [AddZeroClass Y] [SMul M X] [DistribSMul N Y] [DistribSMul R Y] [SMulCo
 instance [AddMonoid Y] [Monoid R] [SMul M X] [DistribSMul N Y]
     [DistribMulAction R Y] [SMulCommClass N R Y] :
     DistribMulAction R (X →ₑ[σ] Y) where
-  __ := inferInstanceAs (MulAction _ _)
-  __ := inferInstanceAs (DistribSMul _ _)
+  __ := inferInstanceAs% (MulAction _ _)
+  __ := inferInstanceAs% (DistribSMul _ _)
 
 instance [AddCommMonoid Y] [Semiring R] [SMul M X] [DistribSMul N Y]
     [Module R Y] [SMulCommClass N R Y] :
@@ -521,8 +521,8 @@ instance [SMul M X] [Monoid N] [CommMonoid Y] [MulDistribMulAction N Y] :
 
 instance [SMul M X] [Monoid N] [Semiring Y] [MulSemiringAction N Y] :
     Semiring (X →ₑ[σ] Y) where
-  __ := inferInstanceAs (Monoid _)
-  __ := inferInstanceAs (AddCommMonoid _)
+  __ := inferInstanceAs% (Monoid _)
+  __ := inferInstanceAs% (AddCommMonoid _)
   zero_mul _ := ext fun x ↦ zero_mul _
   mul_zero _ := ext fun x ↦ mul_zero _
   left_distrib _ _ _ := ext fun x ↦ left_distrib _ _ _

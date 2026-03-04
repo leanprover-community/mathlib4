@@ -39,66 +39,66 @@ instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) where
 /-- Product of two `NonUnitalNonAssocSemiring`s is a `NonUnitalNonAssocSemiring`. -/
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :
     NonUnitalNonAssocSemiring (R × S) :=
-  { inferInstanceAs (AddCommMonoid (R × S)),
-    inferInstanceAs (Distrib (R × S)),
-    inferInstanceAs (MulZeroClass (R × S)) with }
+  { inferInstanceAs% (AddCommMonoid (R × S)),
+    inferInstanceAs% (Distrib (R × S)),
+    inferInstanceAs% (MulZeroClass (R × S)) with }
 
 /-- Product of two `NonUnitalSemiring`s is a `NonUnitalSemiring`. -/
 instance instNonUnitalSemiring [NonUnitalSemiring R] [NonUnitalSemiring S] :
     NonUnitalSemiring (R × S) :=
-  { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)),
-    inferInstanceAs (SemigroupWithZero (R × S)) with }
+  { inferInstanceAs% (NonUnitalNonAssocSemiring (R × S)),
+    inferInstanceAs% (SemigroupWithZero (R × S)) with }
 
 /-- Product of two `NonAssocSemiring`s is a `NonAssocSemiring`. -/
 instance instNonAssocSemiring [NonAssocSemiring R] [NonAssocSemiring S] :
     NonAssocSemiring (R × S) :=
-  { inferInstanceAs (NonUnitalNonAssocSemiring (R × S)),
-    inferInstanceAs (MulZeroOneClass (R × S)),
-    inferInstanceAs (AddMonoidWithOne (R × S)) with }
+  { inferInstanceAs% (NonUnitalNonAssocSemiring (R × S)),
+    inferInstanceAs% (MulZeroOneClass (R × S)),
+    inferInstanceAs% (AddMonoidWithOne (R × S)) with }
 
 /-- Product of two semirings is a semiring. -/
 instance instSemiring [Semiring R] [Semiring S] : Semiring (R × S) :=
-  { inferInstanceAs (NonUnitalSemiring (R × S)),
-    inferInstanceAs (NonAssocSemiring (R × S)),
-    inferInstanceAs (MonoidWithZero (R × S)) with }
+  { inferInstanceAs% (NonUnitalSemiring (R × S)),
+    inferInstanceAs% (NonAssocSemiring (R × S)),
+    inferInstanceAs% (MonoidWithZero (R × S)) with }
 
 /-- Product of two `NonUnitalCommSemiring`s is a `NonUnitalCommSemiring`. -/
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring R] [NonUnitalCommSemiring S] :
     NonUnitalCommSemiring (R × S) :=
-  { inferInstanceAs (NonUnitalSemiring (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
+  { inferInstanceAs% (NonUnitalSemiring (R × S)), inferInstanceAs% (CommSemigroup (R × S)) with }
 
 /-- Product of two commutative semirings is a commutative semiring. -/
 instance instCommSemiring [CommSemiring R] [CommSemiring S] : CommSemiring (R × S) :=
-  { inferInstanceAs (Semiring (R × S)), inferInstanceAs (CommMonoid (R × S)) with }
+  { inferInstanceAs% (Semiring (R × S)), inferInstanceAs% (CommMonoid (R × S)) with }
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing R] [NonUnitalNonAssocRing S] :
     NonUnitalNonAssocRing (R × S) :=
-  { inferInstanceAs (AddCommGroup (R × S)),
-    inferInstanceAs (NonUnitalNonAssocSemiring (R × S)) with }
+  { inferInstanceAs% (AddCommGroup (R × S)),
+    inferInstanceAs% (NonUnitalNonAssocSemiring (R × S)) with }
 
 instance instNonUnitalRing [NonUnitalRing R] [NonUnitalRing S] : NonUnitalRing (R × S) :=
-  { inferInstanceAs (NonUnitalNonAssocRing (R × S)),
-    inferInstanceAs (NonUnitalSemiring (R × S)) with }
+  { inferInstanceAs% (NonUnitalNonAssocRing (R × S)),
+    inferInstanceAs% (NonUnitalSemiring (R × S)) with }
 
 instance instNonAssocRing [NonAssocRing R] [NonAssocRing S] : NonAssocRing (R × S) :=
-  { inferInstanceAs (NonUnitalNonAssocRing (R × S)),
-    inferInstanceAs (NonAssocSemiring (R × S)),
-    inferInstanceAs (AddGroupWithOne (R × S)) with }
+  { inferInstanceAs% (NonUnitalNonAssocRing (R × S)),
+    inferInstanceAs% (NonAssocSemiring (R × S)),
+    inferInstanceAs% (AddGroupWithOne (R × S)) with }
 
 /-- Product of two rings is a ring. -/
 instance instRing [Ring R] [Ring S] : Ring (R × S) :=
-  { inferInstanceAs (Semiring (R × S)),
-    inferInstanceAs (AddCommGroup (R × S)),
-    inferInstanceAs (AddGroupWithOne (R × S)) with }
+  { inferInstanceAs% (Semiring (R × S)),
+    inferInstanceAs% (AddCommGroup (R × S)),
+    inferInstanceAs% (AddGroupWithOne (R × S)) with }
 
 /-- Product of two `NonUnitalCommRing`s is a `NonUnitalCommRing`. -/
 instance instNonUnitalCommRing [NonUnitalCommRing R] [NonUnitalCommRing S] :
     NonUnitalCommRing (R × S) :=
-  { inferInstanceAs (NonUnitalRing (R × S)), inferInstanceAs (CommSemigroup (R × S)) with }
+  { inferInstanceAs% (NonUnitalRing (R × S)), inferInstanceAs% (CommSemigroup (R × S)) with }
 
 /-- Product of two commutative rings is a commutative ring. -/
 instance instCommRing [CommRing R] [CommRing S] : CommRing (R × S) :=
-  { inferInstanceAs (Ring (R × S)), inferInstanceAs (CommMonoid (R × S)) with }
+  { inferInstanceAs% (Ring (R × S)), inferInstanceAs% (CommMonoid (R × S)) with }
 
 end Prod
 

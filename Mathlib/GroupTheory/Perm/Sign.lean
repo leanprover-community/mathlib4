@@ -54,7 +54,7 @@ def modSwap (i j : α) : Setoid (Perm α) :=
 
 noncomputable instance {α : Type*} [Fintype α] [DecidableEq α] (i j : α) :
     DecidableRel (modSwap i j).r :=
-  fun _ _ => inferInstanceAs (Decidable (_ ∨ _))
+  fun _ _ => inferInstanceAs% (Decidable (_ ∨ _))
 
 /-- Given a list `l : List α` and a permutation `f : Perm α` such that the nonfixed points of `f`
   are in `l`, recursively factors `f` as a product of transpositions. -/

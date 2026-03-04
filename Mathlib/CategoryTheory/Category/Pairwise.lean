@@ -105,7 +105,7 @@ instance : Category (Pairwise ι) where
 end
 
 instance {i j : Pairwise ι} [DecidableEq ι] : DecidableEq (i ⟶ j) :=
-  inferInstanceAs (DecidableEq (Pairwise.Hom i j))
+  inferInstanceAs% (DecidableEq (Pairwise.Hom i j))
 
 instance [Fintype ι] [DecidableEq ι] : FinCategory (Pairwise ι) where
   fintypeHom

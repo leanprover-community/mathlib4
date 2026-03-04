@@ -45,7 +45,7 @@ namespace OpenNhds
 variable {x : X} {U V W : OpenNhds x}
 
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) :=
-  inferInstanceAs (PartialOrder { U : Opens X // x ∈ U })
+  inferInstanceAs% (PartialOrder { U : Opens X // x ∈ U })
 
 instance (x : X) : Lattice (OpenNhds x) :=
   { inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩

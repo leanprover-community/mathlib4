@@ -160,7 +160,7 @@ def encodingNatΓ' : Encoding ℕ where
 
 /-- A binary `FinEncoding` of `ℕ` in `Γ'`. -/
 def finEncodingNatΓ' : FinEncoding ℕ :=
-  ⟨encodingNatΓ', inferInstanceAs (Fintype Γ')⟩
+  ⟨encodingNatΓ', inferInstanceAs% (Fintype Γ')⟩
 
 /-- A unary encoding function of `ℕ` in `Bool`. -/
 def unaryEncodeNat : Nat → List Bool

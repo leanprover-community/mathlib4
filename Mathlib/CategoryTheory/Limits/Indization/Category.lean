@@ -71,7 +71,7 @@ def Ind : Type (max u (v + 1)) :=
   ShrinkHoms (ObjectProperty.FullSubcategory (IsIndObject (C := C)))
 
 noncomputable instance : Category.{v} (Ind C) :=
-  inferInstanceAs <| Category.{v}
+  inferInstanceAs% <| Category.{v}
     (ShrinkHoms (ObjectProperty.FullSubcategory (IsIndObject (C := C))))
 
 variable (C) in
@@ -87,10 +87,10 @@ protected noncomputable def Ind.inclusion : Ind C ⥤ Cᵒᵖ ⥤ Type v :=
   (Ind.equivalence C).functor ⋙ ObjectProperty.ι _
 
 instance : (Ind.inclusion C).Full :=
-  inferInstanceAs <| ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _).Full
+  inferInstanceAs% <| ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _).Full
 
 instance : (Ind.inclusion C).Faithful :=
-  inferInstanceAs <| ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _).Faithful
+  inferInstanceAs% <| ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _).Faithful
 
 /-- The functor `Ind C ⥤ Cᵒᵖ ⥤ Type v` is fully faithful. -/
 protected noncomputable def Ind.inclusion.fullyFaithful : (Ind.inclusion C).FullyFaithful :=
@@ -101,11 +101,11 @@ protected noncomputable def Ind.yoneda : C ⥤ Ind C :=
   ObjectProperty.lift _ CategoryTheory.yoneda isIndObject_yoneda ⋙ (Ind.equivalence C).inverse
 
 instance : (Ind.yoneda (C := C)).Full :=
-  inferInstanceAs <| Functor.Full <|
+  inferInstanceAs% <| Functor.Full <|
     ObjectProperty.lift _ CategoryTheory.yoneda isIndObject_yoneda ⋙ (Ind.equivalence C).inverse
 
 instance : (Ind.yoneda (C := C)).Faithful :=
-  inferInstanceAs <| Functor.Faithful <|
+  inferInstanceAs% <| Functor.Faithful <|
     ObjectProperty.lift _ CategoryTheory.yoneda isIndObject_yoneda ⋙ (Ind.equivalence C).inverse
 
 /-- The functor `C ⥤ Ind C` is fully faithful. -/
@@ -125,7 +125,7 @@ noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
 
 noncomputable instance {J : Type v} [SmallCategory J] [IsFiltered J] :
     CreatesColimitsOfShape J (Ind.inclusion C) :=
-  inferInstanceAs <|
+  inferInstanceAs% <|
     CreatesColimitsOfShape J ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)
 
 instance : HasFilteredColimits (Ind C) where
@@ -140,7 +140,7 @@ noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
 
 noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
     CreatesLimitsOfShape (Discrete J) (Ind.inclusion C) :=
-  inferInstanceAs <|
+  inferInstanceAs% <|
     CreatesLimitsOfShape (Discrete J) ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)
 
 instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
@@ -149,7 +149,7 @@ instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
 
 noncomputable instance [HasLimitsOfShape WalkingParallelPair C] :
     CreatesLimitsOfShape WalkingParallelPair (Ind.inclusion C) :=
-  inferInstanceAs <|
+  inferInstanceAs% <|
     CreatesLimitsOfShape WalkingParallelPair
       ((Ind.equivalence C).functor ⋙ ObjectProperty.ι _)
 
@@ -236,7 +236,7 @@ instance {α : Type w} [SmallCategory α] [FinCategory α] [HasLimitsOfShape α 
 instance {α : Type w} [SmallCategory α] [FinCategory α] [HasColimitsOfShape α C] {I : Type v}
     [SmallCategory I] [IsFiltered I] :
     PreservesColimitsOfShape α (Ind.lim I : (I ⥤ C) ⥤ _) :=
-  inferInstanceAs (PreservesColimitsOfShape α (_ ⋙ colim))
+  inferInstanceAs% (PreservesColimitsOfShape α (_ ⋙ colim))
 
 instance {α : Type v} [Finite α] [HasColimitsOfShape (Discrete α) C] :
     HasColimitsOfShape (Discrete α) (Ind C) := by

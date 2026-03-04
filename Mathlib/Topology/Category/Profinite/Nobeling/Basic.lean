@@ -309,7 +309,7 @@ def Products (I : Type*) [LinearOrder I] := {l : List I // l.IsChain (· > ·)}
 namespace Products
 
 instance : LinearOrder (Products I) :=
-  inferInstanceAs (LinearOrder {l : List I // l.IsChain (· > ·)})
+  inferInstanceAs% (LinearOrder {l : List I // l.IsChain (· > ·)})
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

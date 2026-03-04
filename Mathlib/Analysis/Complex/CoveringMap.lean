@@ -107,7 +107,7 @@ theorem isQuotientCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0)
     · exact (e.left_inv _).symm
     · ext; simp [NeZero.ne]; rfl
   refine this.isQuotientCoveringMap_of_subgroup _
-    (Set.Finite.isDiscrete <| inferInstanceAs (Finite (rootsOfUnity ..))) ?_
+    (Set.Finite.isDiscrete <| inferInstanceAs% (Finite (rootsOfUnity ..))) ?_
   simp [mul_pow, mul_inv_eq_one, eq_comm]
 
 protected theorem Complex.isQuotientCoveringMap_npow (n : ℕ) [NeZero n] :

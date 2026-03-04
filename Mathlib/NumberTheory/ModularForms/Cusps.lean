@@ -299,7 +299,7 @@ instance instDiscreteTopStrictPeriods [hG : DiscreteTopology 𝒢] :
 /-- If `𝒢` is discrete, so is its period subgroup. -/
 instance instDiscreteTopPeriods [T2Space R] [hG : DiscreteTopology 𝒢] :
     DiscreteTopology 𝒢.periods :=
-  inferInstanceAs (DiscreteTopology 𝒢.adjoinNegOne.strictPeriods)
+  inferInstanceAs% (DiscreteTopology 𝒢.adjoinNegOne.strictPeriods)
 
 end Ring
 

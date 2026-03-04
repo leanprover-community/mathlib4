@@ -147,7 +147,7 @@ theorem points_vsub_eulerPoint {n : ℕ} (s : Simplex ℝ P n) (i : Fin (n + 1))
   rw [eulerPoint, vsub_vadd_eq_vsub_sub]
   by_cases hn : n = 0
   · obtain rfl := hn
-    have : Subsingleton (Fin (0 + 1)) := inferInstanceAs (Subsingleton (Fin 1))
+    have : Subsingleton (Fin (0 + 1)) := inferInstanceAs% (Subsingleton (Fin 1))
     have hi : i = 0 := Subsingleton.eq_zero i
     have hrange : Set.range s.points = {s.points i} := by simp [hi]
     obtain hmonge := s.mongePoint_mem_affineSpan

@@ -256,7 +256,7 @@ section LocalizationAway
 variable (r : R) [IsLocalization.Away r S]
 
 instance : Module.Free S (Generators.localizationAway S r).toExtension.Cotangent :=
-  inferInstanceAs <|
+  inferInstanceAs% <|
     Module.Free S ((SubmersivePresentation.localizationAway S r).toExtension.Cotangent)
 
 variable (S) in

@@ -92,14 +92,14 @@ are in `R_v` for all but finitely many `v`.
 def FiniteAdeleRing : Type _ :=
   Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
-instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs <|
+instance : CommRing (FiniteAdeleRing R K) := inferInstanceAs% <|
   CommRing <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
-instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs <|
+instance : TopologicalSpace (FiniteAdeleRing R K) := inferInstanceAs% <|
   TopologicalSpace <| Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K]
 
 instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K) :=
-  inferInstanceAs <|
+  inferInstanceAs% <|
   DFunLike (Πʳ v : HeightOneSpectrum R, [v.adicCompletion K, v.adicCompletionIntegers K])
     (HeightOneSpectrum R) (fun v ↦ v.adicCompletion K)
 

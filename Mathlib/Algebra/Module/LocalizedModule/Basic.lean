@@ -172,7 +172,7 @@ protected def mul {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R}
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Monoid (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (One (LocalizedModule S A))
+  { __ := inferInstanceAs% (One (LocalizedModule S A))
     mul := LocalizedModule.mul
     one_mul := by
       rintro ⟨a, s⟩
@@ -203,8 +203,8 @@ theorem mk_mul_mk {A : Type*} [Semiring A] [Algebra R A] {a₁ a₂ : A} {s₁ s
 instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
     Semiring (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (AddCommMonoid (LocalizedModule S A))
-    __ := inferInstanceAs (Monoid (LocalizedModule S A))
+  { __ := inferInstanceAs% (AddCommMonoid (LocalizedModule S A))
+    __ := inferInstanceAs% (Monoid (LocalizedModule S A))
     left_distrib := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
       change a₁ /ₒ s₁ * (a₂ /ₒ s₂ + a₃ /ₒ s₃) = a₁ /ₒ s₁ * (a₂ /ₒ s₂) + a₁ /ₒ s₁ * (a₃ /ₒ s₃)
@@ -232,7 +232,7 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
 instance (priority := 900) {A : Type*} [CommSemiring A] [Algebra R A] {S : Submonoid R} :
     CommSemiring (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (Semiring (LocalizedModule S A))
+  { __ := inferInstanceAs% (Semiring (LocalizedModule S A))
     mul_comm := by
       rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩
       exact mk_eq.mpr ⟨1, by simp only [one_smul, mul_comm]⟩ }
@@ -242,16 +242,16 @@ instance (priority := 900) {A : Type*} [CommSemiring A] [Algebra R A] {S : Submo
 instance (priority := 900) {A : Type*} [Ring A] [Algebra R A] {S : Submonoid R} :
     Ring (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (AddCommGroup (LocalizedModule S A))
-    __ := inferInstanceAs (Semiring (LocalizedModule S A)) }
+  { __ := inferInstanceAs% (AddCommGroup (LocalizedModule S A))
+    __ := inferInstanceAs% (Semiring (LocalizedModule S A)) }
 
 -- For the instance on `Localization S`, we prefer `OreLocalization.instCommRing`.
 -- They are defeq but Lean needs to unfold a bunch to verify it.
 instance (priority := 900) {A : Type*} [CommRing A] [Algebra R A] {S : Submonoid R} :
     CommRing (LocalizedModule S A) :=
   fast_instance%
-  { __ := inferInstanceAs (Ring (LocalizedModule S A))
-    __ := inferInstanceAs (CommSemiring (LocalizedModule S A)) }
+  { __ := inferInstanceAs% (Ring (LocalizedModule S A))
+    __ := inferInstanceAs% (CommSemiring (LocalizedModule S A)) }
 
 set_option backward.isDefEq.respectTransparency false in
 private lemma example_oreLocalizationInstCommRing_eq_localizedModuleInstCommRing

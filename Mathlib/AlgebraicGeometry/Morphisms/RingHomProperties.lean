@@ -116,7 +116,7 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso P) :
   apply AffineTargetMorphismProperty.respectsIso_mk
   · introv H U
     have : IsIso (e.hom.appLE (e.hom ''ᵁ U) U.1 (e.hom.preimage_image_eq _).ge) :=
-      inferInstanceAs (IsIso (e.hom.app _ ≫
+      inferInstanceAs% (IsIso (e.hom.app _ ≫
         X.presheaf.map (eqToHom (e.hom.preimage_image_eq _).symm).op))
     rw [← Scheme.Hom.appLE_comp_appLE _ _ ⊤ (e.hom ''ᵁ U) U.1 le_top (e.hom.preimage_image_eq _).ge,
       CommRingCat.hom_comp, h₁.cancel_right_isIso]
@@ -303,7 +303,7 @@ theorem comp_of_isOpenImmersion [IsOpenImmersion f] (H : P g) :
   rw [eq_affineLocally P, affineLocally_iff_affineOpens_le] at H ⊢
   intro U V e
   have : IsIso (f.appLE (f ''ᵁ V) V.1 (f.preimage_image_eq _).ge) :=
-    inferInstanceAs (IsIso (f.app _ ≫
+    inferInstanceAs% (IsIso (f.app _ ≫
       X.presheaf.map (eqToHom (f.preimage_image_eq _).symm).op))
   rw [← Scheme.Hom.appLE_comp_appLE _ _ _ (f ''ᵁ V) V.1
     (Set.image_subset_iff.mpr e) (f.preimage_image_eq _).ge,
@@ -401,7 +401,7 @@ lemma isLocal_ringHomProperty_of_isZariskiLocalAtSource_of_isZariskiLocalAtTarge
     RingHom.PropertyIsLocal fun f ↦ P (Spec.map (CommRingCat.ofHom f)) := by
   have hP : RingHom.RespectsIso (fun f ↦ P (Spec.map (CommRingCat.ofHom f))) :=
     RingHom.toMorphismProperty_respectsIso_iff.mpr
-      (inferInstanceAs (P.inverseImage Scheme.Spec).unop.RespectsIso)
+      (inferInstanceAs% (P.inverseImage Scheme.Spec).unop.RespectsIso)
   constructor
   · intro R S _ _ f r R' S' _ _ _ _ _ _ H
     refine (RingHom.RespectsIso.isLocalization_away_iff hP ..).mp ?_

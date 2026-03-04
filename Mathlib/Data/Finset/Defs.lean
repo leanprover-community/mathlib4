@@ -201,22 +201,22 @@ instance partialOrder : PartialOrder (Finset α) := inferInstance
 theorem subset_of_le : s ≤ t → s ⊆ t := id
 
 instance : @Std.Refl (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| Std.Refl (· ≤ ·)
+  inferInstanceAs% <| Std.Refl (· ≤ ·)
 
 instance : IsTrans (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| IsTrans (Finset α) (· ≤ ·)
+  inferInstanceAs% <| IsTrans (Finset α) (· ≤ ·)
 
 instance : @Std.Antisymm (Finset α) (· ⊆ ·) :=
-  inferInstanceAs <| Std.Antisymm (· ≤ ·)
+  inferInstanceAs% <| Std.Antisymm (· ≤ ·)
 
 instance : @Std.Irrefl (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| Std.Irrefl (· < ·)
+  inferInstanceAs% <| Std.Irrefl (· < ·)
 
 instance : IsTrans (Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| IsTrans (Finset α) (· < ·)
+  inferInstanceAs% <| IsTrans (Finset α) (· < ·)
 
 instance : Std.Asymm (α := Finset α) (· ⊂ ·) :=
-  inferInstanceAs <| Std.Asymm (· < ·)
+  inferInstanceAs% <| Std.Asymm (· < ·)
 
 instance : IsNonstrictStrictOrder (Finset α) (· ⊆ ·) (· ⊂ ·) :=
   ⟨fun _ _ => Iff.rfl⟩
@@ -388,10 +388,10 @@ namespace List
 variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
-  inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))
+  inferInstanceAs% (Decidable (∀ x ∈ s, f x ∈ t))
 
 instance [DecidableEq β] : Decidable (Set.SurjOn f s t') :=
-  inferInstanceAs (Decidable (∀ x ∈ t', ∃ y ∈ s, f y = x))
+  inferInstanceAs% (Decidable (∀ x ∈ t', ∃ y ∈ s, f y = x))
 
 end List
 

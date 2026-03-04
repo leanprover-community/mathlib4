@@ -32,13 +32,13 @@ namespace Hyperreal
 @[inherit_doc] notation "ℝ*" => Hyperreal
 
 instance : Field ℝ* :=
-  inferInstanceAs (Field (Germ _ _))
+  inferInstanceAs% (Field (Germ _ _))
 
 instance : LinearOrder ℝ* :=
-  inferInstanceAs (LinearOrder (Germ _ _))
+  inferInstanceAs% (LinearOrder (Germ _ _))
 
 instance : IsStrictOrderedRing ℝ* :=
-  inferInstanceAs (IsStrictOrderedRing (Germ _ _))
+  inferInstanceAs% (IsStrictOrderedRing (Germ _ _))
 
 /-- Natural embedding `ℝ → ℝ*`. -/
 @[coe] def ofReal : ℝ → ℝ* := const

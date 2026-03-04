@@ -90,10 +90,10 @@ protected lemma «exists» {p : OnePoint X → Prop} :
   Option.exists
 
 instance [Fintype X] : Fintype (OnePoint X) :=
-  inferInstanceAs (Fintype (Option X))
+  inferInstanceAs% (Fintype (Option X))
 
 instance infinite [Infinite X] : Infinite (OnePoint X) :=
-  inferInstanceAs (Infinite (Option X))
+  inferInstanceAs% (Infinite (Option X))
 
 theorem coe_injective : Function.Injective ((↑) : X → OnePoint X) :=
   Option.some_injective X

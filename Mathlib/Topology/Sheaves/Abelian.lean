@@ -36,18 +36,18 @@ section
 
 variable {C : Type v₁} [Category.{v₂} C] [HasSheafify (Opens.grothendieckTopology X) C] [Abelian C]
 
-noncomputable instance : Abelian (Presheaf C X) := inferInstanceAs (Abelian (_ ⥤ _))
+noncomputable instance : Abelian (Presheaf C X) := inferInstanceAs% (Abelian (_ ⥤ _))
 
 namespace Sheaf
 
 noncomputable instance : Abelian (Sheaf C X) :=
-  inferInstanceAs (Abelian (CategoryTheory.Sheaf _ _))
+  inferInstanceAs% (Abelian (CategoryTheory.Sheaf _ _))
 
 instance : (Sheaf.forget C X).Additive where
 
 instance {D : Type*} [Category.{u} D] [Abelian D] [IsGrothendieckAbelian.{u} D]
     [HasSheafify (Opens.grothendieckTopology X) D] : IsGrothendieckAbelian.{u} (Sheaf D X) :=
-  inferInstanceAs (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
+  inferInstanceAs% (IsGrothendieckAbelian (CategoryTheory.Sheaf _ _))
 
 end Sheaf
 
@@ -76,7 +76,7 @@ instance : Limits.PreservesFiniteLimits (forget C X ⋙ stalkFunctor C p₀) :=
     simp only [(forget C X ⋙ stalkFunctor C p₀).exact_tfae.out 2 0]
     intro S h
     have := ((forget C X ⋙ stalkFunctor C p₀).preservesFiniteColimits_tfae.out 3 0).mp
-      (inferInstanceAs (PreservesFiniteColimits _))
+      (inferInstanceAs% (PreservesFiniteColimits _))
     refine ShortComplex.ShortExact.mk' (this S h).left ?_ (this S h).right
     have := h.2
     exact Functor.map_mono (forget C X ⋙ stalkFunctor C p₀) _

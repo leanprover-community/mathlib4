@@ -306,7 +306,7 @@ instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
 
 instance [Preorder ι] [∀ i, LT (β i)] [∀ i, DenselyOrdered (β i)] :
     DenselyOrdered (Colex (∀ i, β i)) :=
-  inferInstanceAs (DenselyOrdered (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
+  inferInstanceAs% (DenselyOrdered (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
 
 theorem Lex.noMaxOrder' [Preorder ι] [∀ i, LT (β i)] (i : ι) [NoMaxOrder (β i)] :
     NoMaxOrder (Lex (∀ i, β i)) :=
@@ -328,7 +328,7 @@ instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder 
 
 instance [LinearOrder ι] [WellFoundedGT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMaxOrder (β i)] : NoMaxOrder (Colex (∀ i, β i)) :=
-  inferInstanceAs (NoMaxOrder (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
+  inferInstanceAs% (NoMaxOrder (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
 
 instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Lex (∀ i, β i)) :=
@@ -338,7 +338,7 @@ instance [LinearOrder ι] [WellFoundedLT ι] [Nonempty ι] [∀ i, PartialOrder 
 
 instance [LinearOrder ι] [WellFoundedGT ι] [Nonempty ι] [∀ i, PartialOrder (β i)]
     [∀ i, NoMinOrder (β i)] : NoMinOrder (Colex (∀ i, β i)) :=
-  inferInstanceAs (NoMinOrder (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
+  inferInstanceAs% (NoMinOrder (Lex (∀ i : ιᵒᵈ, β (OrderDual.toDual i))))
 
 /-- If we swap two strictly decreasing values in a function, then the result is lexicographically
 smaller than the original function. -/

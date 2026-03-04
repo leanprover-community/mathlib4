@@ -71,7 +71,7 @@ namespace Nat
 variable {m n a b c d : ℕ}
 
 -- Since `ModEq` is semi-reducible, we need to provide the decidable instance manually
-instance : Decidable (ModEq n a b) := inferInstanceAs <| Decidable (a % n = b % n)
+instance : Decidable (ModEq n a b) := inferInstanceAs% <| Decidable (a % n = b % n)
 
 namespace ModEq
 

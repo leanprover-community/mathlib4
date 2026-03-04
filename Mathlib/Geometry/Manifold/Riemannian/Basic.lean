@@ -225,7 +225,7 @@ structure for inner product spaces, but can be activated locally. -/
 @[instance_reducible]
 def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
     NormedAddCommGroup (TangentSpace 𝓘(ℝ, E) x) :=
-  inferInstanceAs (NormedAddCommGroup E)
+  inferInstanceAs% (NormedAddCommGroup E)
 
 attribute [local instance] normedAddCommGroupTangentSpaceVectorSpace
 
@@ -236,7 +236,7 @@ Should not be a global instance, as it does not coincide definitionally with the
 structure for inner product spaces, but can be activated locally. -/
 @[instance_reducible]
 def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace 𝓘(ℝ, E) x) :=
-  inferInstanceAs (NormedSpace ℝ E)
+  inferInstanceAs% (NormedSpace ℝ E)
 
 attribute [local instance] normedSpaceTangentSpaceVectorSpace
 

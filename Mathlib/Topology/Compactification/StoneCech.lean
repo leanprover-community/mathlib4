@@ -233,13 +233,13 @@ def PreStoneCech : Type u :=
 variable {α}
 
 instance : TopologicalSpace (PreStoneCech α) :=
-  inferInstanceAs (TopologicalSpace <| Quot _)
+  inferInstanceAs% (TopologicalSpace <| Quot _)
 
 instance : CompactSpace (PreStoneCech α) :=
   Quot.compactSpace
 
 instance [Inhabited α] : Inhabited (PreStoneCech α) :=
-  inferInstanceAs (Inhabited <| Quot _)
+  inferInstanceAs% (Inhabited <| Quot _)
 
 /-- The natural map from α to its pre-Stone-Čech compactification. -/
 def preStoneCechUnit (x : α) : PreStoneCech α :=
@@ -325,16 +325,16 @@ def StoneCech : Type u :=
 variable {α}
 
 instance : TopologicalSpace (StoneCech α) :=
-  inferInstanceAs <| TopologicalSpace <| T2Quotient _
+  inferInstanceAs% <| TopologicalSpace <| T2Quotient _
 
 instance : T2Space (StoneCech α) :=
-  inferInstanceAs <| T2Space <| T2Quotient _
+  inferInstanceAs% <| T2Space <| T2Quotient _
 
 instance : CompactSpace (StoneCech α) :=
   Quot.compactSpace
 
 instance [Inhabited α] : Inhabited (StoneCech α) :=
-  inferInstanceAs <| Inhabited <| Quotient _
+  inferInstanceAs% <| Inhabited <| Quotient _
 
 /-- The natural map from α to its Stone-Čech compactification. -/
 def stoneCechUnit (x : α) : StoneCech α :=

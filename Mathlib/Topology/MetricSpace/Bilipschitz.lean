@@ -50,7 +50,7 @@ pattern when creating type synonyms.
 Important Note: if `α` is some synonym of a type `β` (at default transparency), and `f : α ≃ β` is
 some bilipschitz equivalence, then instead of writing:
 ```
-instance : UniformSpace α := inferInstanceAs (UniformSpace β)
+instance : UniformSpace α := inferInstanceAs% (UniformSpace β)
 ```
 Users should instead write something like:
 ```
@@ -87,7 +87,7 @@ pattern when creating type synonyms.
 Important Note: if `α` is some synonym of a type `β` (at default transparency), and `f : α ≃ β` is
 some bilipschitz equivalence, then instead of writing:
 ```
-instance : Bornology α := inferInstanceAs (Bornology β)
+instance : Bornology α := inferInstanceAs% (Bornology β)
 ```
 Users should instead write something like:
 ```

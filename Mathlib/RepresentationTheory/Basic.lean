@@ -485,7 +485,7 @@ theorem ofMulAction_apply {H : Type*} [MulAction G H] (g : G) (f : H →₀ k) (
 -- Noncomputable since `MonoidAlgebra.instMul` is now noncomputable
 noncomputable instance :
     HMul k[G] (ofMulAction k G G).asModule k[G] :=
-  inferInstanceAs <| HMul k[G] k[G] k[G]
+  inferInstanceAs% <| HMul k[G] k[G] k[G]
 end
 
 variable {k G V : Type*} [CommSemiring k] [Group G] [AddCommMonoid V] [Module k V]

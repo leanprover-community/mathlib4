@@ -182,13 +182,13 @@ theorem coe_bracket (x : L) (m : N) :
 
 -- Copying instances from `Submodule` for correct discrimination keys
 instance [IsNoetherian R M] (N : LieSubmodule R L M) : IsNoetherian R N :=
-  inferInstanceAs <| IsNoetherian R N.toSubmodule
+  inferInstanceAs% <| IsNoetherian R N.toSubmodule
 
 instance [IsArtinian R M] (N : LieSubmodule R L M) : IsArtinian R N :=
-  inferInstanceAs <| IsArtinian R N.toSubmodule
+  inferInstanceAs% <| IsArtinian R N.toSubmodule
 
 instance [Module.IsTorsionFree R M] : Module.IsTorsionFree R N :=
-  inferInstanceAs <| Module.IsTorsionFree R N.toSubmodule
+  inferInstanceAs% <| Module.IsTorsionFree R N.toSubmodule
 
 variable [LieAlgebra R L]
 
@@ -272,7 +272,7 @@ instance : Bot (LieSubmodule R L M) :=
   ⟨0⟩
 
 instance instUniqueBot : Unique (⊥ : LieSubmodule R L M) :=
-  inferInstanceAs <| Unique (⊥ : Submodule R M)
+  inferInstanceAs% <| Unique (⊥ : Submodule R M)
 
 @[simp]
 theorem bot_coe : ((⊥ : LieSubmodule R L M) : Set M) = {0} :=

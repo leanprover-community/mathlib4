@@ -119,7 +119,7 @@ instance : MorphismProperty.HasOfPostcompProperty
     @Etale (@LocallyOfFiniteType ⊓ @FormallyUnramified) := by
   rw [MorphismProperty.hasOfPostcompProperty_iff_le_diagonal]
   intro X Y f ⟨hft, hfu⟩
-  exact inferInstanceAs <| Etale (pullback.diagonal f)
+  exact inferInstanceAs% <| Etale (pullback.diagonal f)
 
 /-- If `f ≫ g` is étale and `g` unramified, then `f` is étale. -/
 lemma of_comp {Z : Scheme.{u}} (g : Y ⟶ Z) [Etale (f ≫ g)] [LocallyOfFiniteType g]
@@ -153,7 +153,7 @@ protected def Etale (X : Scheme.{u}) : Type _ := MorphismProperty.Over @Etale �
 variable (X : Scheme.{u})
 
 instance : Category X.Etale :=
-  inferInstanceAs <| Category (MorphismProperty.Over @Etale ⊤ X)
+  inferInstanceAs% <| Category (MorphismProperty.Over @Etale ⊤ X)
 
 /-- The forgetful functor from schemes étale over `X` to schemes over `X`. -/
 def Etale.forget : X.Etale ⥤ Over X :=
@@ -164,9 +164,9 @@ def Etale.forgetFullyFaithful : (Etale.forget X).FullyFaithful :=
   MorphismProperty.Comma.forgetFullyFaithful _ _ _
 
 instance : (Etale.forget X).Full :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Full
+  inferInstanceAs% <| (MorphismProperty.Comma.forget _ _ _ _ _).Full
 instance : (Etale.forget X).Faithful :=
-  inferInstanceAs <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
+  inferInstanceAs% <| (MorphismProperty.Comma.forget _ _ _ _ _).Faithful
 
 instance : HasPullbacks X.Etale := by
   unfold Scheme.Etale

@@ -135,7 +135,7 @@ instance (priority := 900) (f : X ⟶ Y) [IsClosedImmersion f] : IsFinite f :=
 
 instance : MorphismProperty.HasOfPostcompProperty @IsFinite @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
-    fun _ _ _ _ ↦ inferInstanceAs (IsFinite _)
+    fun _ _ _ _ ↦ inferInstanceAs% (IsFinite _)
 
 lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsFinite (f ≫ g)] [IsSeparated g] :
     IsFinite f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›

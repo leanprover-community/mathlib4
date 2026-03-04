@@ -62,7 +62,7 @@ have been modified using `t`. -/
 @[nolint unusedArguments]
 protected def Category (_ : TwistShiftData C A) : Type u := C
 
-instance : Category t.Category := inferInstanceAs (Category C)
+instance : Category t.Category := inferInstanceAs% (Category C)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given `t : TwistShiftData C A`, the shift on the category `TwistShift t` has

@@ -56,7 +56,7 @@ scoped[DirectSum] notation3 "⨁ "(...)", "r:(scoped f => DirectSum _ f) => r
 
 instance [DecidableEq ι] [∀ i, AddCommMonoid (β i)] [∀ i, DecidableEq (β i)] :
     DecidableEq (DirectSum ι β) :=
-  inferInstanceAs <| DecidableEq (Π₀ i, β i)
+  inferInstanceAs% <| DecidableEq (Π₀ i, β i)
 
 namespace DirectSum
 
@@ -77,7 +77,7 @@ section AddCommGroup
 variable [∀ i, AddCommGroup (β i)]
 
 instance : AddCommGroup (DirectSum ι β) :=
-  inferInstanceAs (AddCommGroup (Π₀ i, β i))
+  inferInstanceAs% (AddCommGroup (Π₀ i, β i))
 variable {β}
 
 @[simp]

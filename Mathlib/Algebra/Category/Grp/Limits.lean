@@ -37,7 +37,7 @@ variable (F : J ⥤ GrpCat.{u})
 
 @[to_additive]
 instance groupObj (j) : Group ((F ⋙ forget GrpCat).obj j) :=
-  inferInstanceAs <| Group (F.obj j)
+  inferInstanceAs% <| Group (F.obj j)
 
 /-- The flat sections of a functor into `GrpCat` form a subgroup of all sections. -/
 @[to_additive
@@ -68,11 +68,11 @@ variable [Small.{u} (Functor.sections (F ⋙ forget GrpCat))]
 @[to_additive]
 noncomputable instance limitGroup :
     Group (Types.Small.limitCone.{v, u} (F ⋙ forget GrpCat.{u})).pt :=
-  inferInstanceAs <| Group (Shrink (F ⋙ forget GrpCat.{u}).sections)
+  inferInstanceAs% <| Group (Shrink (F ⋙ forget GrpCat.{u}).sections)
 
 @[to_additive]
 instance : Small.{u} (Functor.sections ((F ⋙ forget₂ GrpCat MonCat) ⋙ forget MonCat)) :=
-  inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget GrpCat))
+  inferInstanceAs% <| Small.{u} (Functor.sections (F ⋙ forget GrpCat))
 
 /-- We show that the forgetful functor `GrpCat ⥤ MonCat` creates limits.
 
@@ -92,7 +92,7 @@ noncomputable instance Forget₂.createsLimit :
       have : Small.{u} (Functor.sections ((F ⋙ forget₂ GrpCat MonCat) ⋙ forget MonCat)) := by
         have : HasLimit (F ⋙ forget₂ GrpCat MonCat) := ⟨_, t⟩
         apply Concrete.small_sections_of_hasLimit (F ⋙ forget₂ GrpCat MonCat)
-      have : Small.{u} (Functor.sections (F ⋙ forget GrpCat)) := inferInstanceAs <| Small.{u}
+      have : Small.{u} (Functor.sections (F ⋙ forget GrpCat)) := inferInstanceAs% <| Small.{u}
         (Functor.sections ((F ⋙ forget₂ GrpCat MonCat) ⋙ forget MonCat))
       { liftedCone :=
           { pt := GrpCat.of (Types.Small.limitCone (F ⋙ forget GrpCat)).pt
@@ -220,7 +220,7 @@ variable (F : J ⥤ CommGrpCat.{u})
 
 @[to_additive]
 instance commGroupObj (j) : CommGroup ((F ⋙ forget CommGrpCat).obj j) :=
-  inferInstanceAs <| CommGroup (F.obj j)
+  inferInstanceAs% <| CommGroup (F.obj j)
 
 @[to_additive]
 noncomputable instance limitCommGroup
@@ -229,7 +229,7 @@ noncomputable instance limitCommGroup
   letI : CommGroup (F ⋙ forget CommGrpCat.{u}).sections :=
     @Subgroup.toCommGroup (∀ j, F.obj j) _
       (GrpCat.sectionsSubgroup (F ⋙ forget₂ CommGrpCat.{u} GrpCat.{u}))
-  inferInstanceAs <| CommGroup (Shrink (F ⋙ forget CommGrpCat.{u}).sections)
+  inferInstanceAs% <| CommGroup (Shrink (F ⋙ forget CommGrpCat.{u}).sections)
 
 @[to_additive]
 instance : (forget₂ CommGrpCat.{u} GrpCat.{u}).ReflectsIsomorphisms :=
@@ -277,7 +277,7 @@ variable [Small.{u} (Functor.sections (F ⋙ forget CommGrpCat))]
 (Generally, you'll just want to use `limit F`.) -/]
 noncomputable def limitCone : Cone F :=
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommGrpCat GrpCat) ⋙ forget GrpCat)) :=
-    inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGrpCat))
+    inferInstanceAs% <| Small (Functor.sections (F ⋙ forget CommGrpCat))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommGrpCat.{u} GrpCat.{u}))
 
 /-- The chosen cone is a limit cone.
@@ -362,7 +362,7 @@ noncomputable def forget₂CommMon_preservesLimitsAux
     [Small.{u} (F ⋙ forget CommGrpCat).sections] :
     IsLimit ((forget₂ CommGrpCat.{u} CommMonCat.{u}).mapCone (limitCone.{v, u} F)) :=
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ CommMonCat) ⋙ forget CommMonCat)) :=
-    inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGrpCat))
+    inferInstanceAs% <| Small (Functor.sections (F ⋙ forget CommGrpCat))
   CommMonCat.limitConeIsLimit.{v, u} (F ⋙ forget₂ CommGrpCat.{u} CommMonCat.{u})
 
 /-- If `J` is `u`-small, the forgetful functor from `CommGrpCat.{u}` to `CommMonCat.{u}`

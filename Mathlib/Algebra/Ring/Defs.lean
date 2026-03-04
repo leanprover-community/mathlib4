@@ -235,12 +235,12 @@ instance (priority := 100) CommSemiring.toNonAssocCommSemiring [CommSemiring α]
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α] :
     NonUnitalCommSemiring α :=
-  { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
+  { inferInstanceAs% (CommMonoid α), inferInstanceAs% (CommSemiring α) with }
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
     CommMonoidWithZero α :=
-  { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
+  { inferInstanceAs% (CommMonoid α), inferInstanceAs% (CommSemiring α) with }
 
 section CommSemiring
 
@@ -316,7 +316,7 @@ section MulZeroClass
 variable [MulZeroClass α] [HasDistribNeg α]
 
 instance (priority := 100) MulZeroClass.negZeroClass : NegZeroClass α where
-  __ := inferInstanceAs (Zero α); __ := inferInstanceAs (InvolutiveNeg α)
+  __ := inferInstanceAs% (Zero α); __ := inferInstanceAs% (InvolutiveNeg α)
   neg_zero := by rw [← zero_mul (0 : α), ← neg_mul, mul_zero, mul_zero]
 
 end MulZeroClass

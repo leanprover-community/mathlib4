@@ -425,7 +425,7 @@ instance isIso_toLRSHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toLRSHo
   forgetToLocallyRingedSpace.map_isIso f
 
 instance isIso_toPshHom {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsIso f.toPshHom :=
-  inferInstanceAs (IsIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙
+  inferInstanceAs% (IsIso ((LocallyRingedSpace.forgetToSheafedSpace ⋙
     SheafedSpace.forgetToPresheafedSpace).map f.toLRSHom))
 
 instance isIso_base {X Y : Scheme.{u}} (f : X ⟶ Y) [IsIso f] : IsIso f.base :=
@@ -550,7 +550,7 @@ lemma Spec.map_eqToHom {R S : CommRingCat} (e : R = S) :
   subst e; exact Spec.map_id _
 
 instance {R S : CommRingCat} (f : R ⟶ S) [IsIso f] : IsIso (Spec.map f) :=
-  inferInstanceAs (IsIso <| Scheme.Spec.map f.op)
+  inferInstanceAs% (IsIso <| Scheme.Spec.map f.op)
 
 @[simp]
 lemma Spec.map_inv {R S : CommRingCat} (f : R ⟶ S) [IsIso f] :
@@ -579,7 +579,7 @@ lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = CommRingCat.ofHom (StructureSheaf.comap f.hom V U e) := rfl
 
 instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
-  inferInstanceAs <| Nonempty (PrimeSpectrum A)
+  inferInstanceAs% <| Nonempty (PrimeSpectrum A)
 
 end
 
@@ -659,7 +659,7 @@ lemma toOpen_eq (U) :
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
 
 instance {K} [Field K] : Unique <| Spec <| .of K :=
-  inferInstanceAs <| Unique (PrimeSpectrum K)
+  inferInstanceAs% <| Unique (PrimeSpectrum K)
 
 @[simp]
 lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl

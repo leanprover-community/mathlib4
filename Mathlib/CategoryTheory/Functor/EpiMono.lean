@@ -199,10 +199,10 @@ instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faith
       F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 
 instance {F G : C ⥤ D} (f : F ⟶ G) [IsSplitEpi f] (X : C) : IsSplitEpi (f.app X) :=
-  inferInstanceAs (IsSplitEpi (((evaluation C D).obj X).map f))
+  inferInstanceAs% (IsSplitEpi (((evaluation C D).obj X).map f))
 
 instance {F G : C ⥤ D} (f : F ⟶ G) [IsSplitMono f] (X : C) : IsSplitMono (f.app X) :=
-  inferInstanceAs (IsSplitMono (((evaluation C D).obj X).map f))
+  inferInstanceAs% (IsSplitMono (((evaluation C D).obj X).map f))
 
 lemma preservesEpimorphisms.ofRetract {F G : C ⥤ D} (r : Retract G F) [F.PreservesEpimorphisms] :
     G.PreservesEpimorphisms where

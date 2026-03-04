@@ -56,8 +56,8 @@ variable [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
 
 instance [P.ContainsIdentities] [P.RespectsIso] {X Y : Scheme.{u}} (f : X ⟶ Y) [X.Over S] [Y.Over S]
     [f.IsOver S] [IsIso f] : (coverOfIsIso (P := P) f).Over S where
-  over _ := inferInstanceAs <| X.Over S
-  isOver_map _ := inferInstanceAs <| f.IsOver S
+  over _ := inferInstanceAs% <| X.Over S
+  isOver_map _ := inferInstanceAs% <| f.IsOver S
 
 section
 
@@ -196,11 +196,11 @@ variable {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.
   [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S]
 
 instance (j : (𝒰.bind 𝒱).I₀) : ((𝒰.bind 𝒱).X j).Over S :=
-  inferInstanceAs <| ((𝒱 j.1).X j.2).Over S
+  inferInstanceAs% <| ((𝒱 j.1).X j.2).Over S
 
 instance {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
     [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S] : Cover.Over S (𝒰.bind 𝒱) where
-  over := fun ⟨i, j⟩ ↦ inferInstanceAs <| ((𝒱 i).X j).Over S
+  over := fun ⟨i, j⟩ ↦ inferInstanceAs% <| ((𝒱 i).X j).Over S
   isOver_map := fun ⟨i, j⟩ ↦ { comp_over := by simp }
 
 end AlgebraicGeometry.Scheme

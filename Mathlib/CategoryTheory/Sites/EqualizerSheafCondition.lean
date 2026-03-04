@@ -78,7 +78,7 @@ instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
 
 instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
-  inferInstanceAs <| Inhabited (FirstObj P (⊥ : Presieve X))
+  inferInstanceAs% <| Inhabited (FirstObj P (⊥ : Presieve X))
 
 /--
 The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram

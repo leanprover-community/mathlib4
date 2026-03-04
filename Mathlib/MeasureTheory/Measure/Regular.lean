@@ -967,7 +967,7 @@ instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularC
 
 instance smul_nnreal [InnerRegularCompactLTTop μ] (c : ℝ≥0) :
     InnerRegularCompactLTTop (c • μ) :=
-  inferInstanceAs (InnerRegularCompactLTTop ((c : ℝ≥0∞) • μ))
+  inferInstanceAs% (InnerRegularCompactLTTop ((c : ℝ≥0∞) • μ))
 
 instance (priority := 80) [InnerRegularCompactLTTop μ] [SigmaFinite μ] : InnerRegular μ :=
   ⟨InnerRegularCompactLTTop.innerRegular.trans InnerRegularWRT.of_sigmaFinite⟩

@@ -62,7 +62,7 @@ instance (α : Type u) : Inhabited (FreeRing α) := by
   infer_instance
 
 instance (α : Type u) : Nontrivial (FreeRing α) :=
-  inferInstanceAs <| Nontrivial (FreeAbelianGroup _)
+  inferInstanceAs% <| Nontrivial (FreeAbelianGroup _)
 
 namespace FreeRing
 

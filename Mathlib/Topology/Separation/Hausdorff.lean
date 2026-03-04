@@ -414,7 +414,7 @@ namespace T2Quotient
 variable {X}
 
 instance : TopologicalSpace (T2Quotient X) :=
-  inferInstanceAs <| TopologicalSpace (Quotient _)
+  inferInstanceAs% <| TopologicalSpace (Quotient _)
 
 /-- The map from a topological space to its largest T2 quotient. -/
 def mk : X → T2Quotient X := Quotient.mk (t2Setoid X)

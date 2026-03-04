@@ -74,7 +74,7 @@ lemma Path.le {J : Type*} [LinearOrder J] {i j : J} (f : Path i j) : i ≤ j :=
   f.left_le _ f.right
 
 instance {J : Type*} [LinearOrder J] (i j : J) : Category (Path i j) :=
-  inferInstanceAs (Category (InducedCategory _ (fun f : Path i j ↦ f.I)))
+  inferInstanceAs% (Category (InducedCategory _ (fun f : Path i j ↦ f.I)))
 
 @[simps]
 instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) where
@@ -92,7 +92,7 @@ instance (J : Type*) [LinearOrder J] : CategoryStruct (SimplicialThickening J) w
       exacts [(f.le_right _ h).trans (Path.le g), (g.le_right l h)] }
 
 instance {J : Type*} [LinearOrder J] (i j : SimplicialThickening J) : Category (i ⟶ j) :=
-  inferInstanceAs (Category (Path i.as j.as))
+  inferInstanceAs% (Category (Path i.as j.as))
 
 @[ext]
 lemma hom_ext {J : Type*} [LinearOrder J]

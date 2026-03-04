@@ -156,11 +156,11 @@ theorem _root_.Ord.lex_eq [oα : Ord α] [oβ : Ord β] : Ord.lex oα oβ = inst
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Ord α] [Ord β] [Std.OrientedOrd α] [Std.OrientedOrd β] : Std.OrientedOrd (α ×ₗ β) :=
-  inferInstanceAs (Std.OrientedCmp (compareLex _ _))
+  inferInstanceAs% (Std.OrientedCmp (compareLex _ _))
 
 set_option backward.isDefEq.respectTransparency false in
 instance [Ord α] [Ord β] [Std.TransOrd α] [Std.TransOrd β] : Std.TransOrd (α ×ₗ β) :=
-  inferInstanceAs (Std.TransCmp (compareLex _ _))
+  inferInstanceAs% (Std.TransCmp (compareLex _ _))
 
 /-- Dictionary / lexicographic linear order for pairs. -/
 instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearOrder (α ×ₗ β) :=

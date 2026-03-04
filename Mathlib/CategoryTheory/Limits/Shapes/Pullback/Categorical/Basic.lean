@@ -168,10 +168,10 @@ section
 variable {x y : F ⊡ G} (f : x ⟶ y) [IsIso f]
 
 instance : IsIso f.fst :=
-  inferInstanceAs (IsIso ((π₁ _ _).mapIso (asIso f)).hom)
+  inferInstanceAs% (IsIso ((π₁ _ _).mapIso (asIso f)).hom)
 
 instance : IsIso f.snd :=
-  inferInstanceAs (IsIso ((π₂ _ _).mapIso (asIso f)).hom)
+  inferInstanceAs% (IsIso ((π₂ _ _).mapIso (asIso f)).hom)
 
 @[simp, push ←]
 lemma inv_fst : (inv f).fst = inv f.fst := by

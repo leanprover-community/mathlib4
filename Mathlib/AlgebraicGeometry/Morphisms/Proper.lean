@@ -99,7 +99,7 @@ instance (priority := 100) [IsFinite f] : IsProper f :=
 
 instance : MorphismProperty.HasOfPostcompProperty @UniversallyClosed @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
-    fun _ _ _ _ ↦ inferInstanceAs (UniversallyClosed _)
+    fun _ _ _ _ ↦ inferInstanceAs% (UniversallyClosed _)
 
 @[stacks 01W6 "(1)"]
 lemma UniversallyClosed.of_comp_of_isSeparated [UniversallyClosed (f ≫ g)] [IsSeparated g] :
@@ -108,7 +108,7 @@ lemma UniversallyClosed.of_comp_of_isSeparated [UniversallyClosed (f ≫ g)] [Is
 
 instance : MorphismProperty.HasOfPostcompProperty @IsProper @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
-    fun _ _ _ _ ↦ inferInstanceAs (IsProper _)
+    fun _ _ _ _ ↦ inferInstanceAs% (IsProper _)
 
 instance [UniversallyClosed f] : UniversallyClosed f.toImage :=
   have : UniversallyClosed (f.toImage ≫ f.imageι) := by simpa

@@ -226,11 +226,11 @@ variable (R : Type*) [CommRing R] [IsLocalRing R]
 abbrev CotangentSpace : Type _ := (maximalIdeal R).Cotangent
 
 instance : Module (ResidueField R) (CotangentSpace R) :=
-  inferInstanceAs <| Module (R ⧸ maximalIdeal R) _
+  inferInstanceAs% <| Module (R ⧸ maximalIdeal R) _
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower R (ResidueField R) (CotangentSpace R) :=
-  inferInstanceAs <| IsScalarTower R (R ⧸ maximalIdeal R) _
+  inferInstanceAs% <| IsScalarTower R (R ⧸ maximalIdeal R) _
 
 instance [IsNoetherianRing R] : FiniteDimensional (ResidueField R) (CotangentSpace R) :=
   Module.Finite.of_restrictScalars_finite R _ _

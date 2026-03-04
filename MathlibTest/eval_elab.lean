@@ -32,11 +32,11 @@ class HasInstance (α : Type u) where
 
 -- this obviously doesn't scale, which is why this is only in the test file
 instance : HasInstance (DecidableEq ℕ) :=
-  ⟨q(inferInstanceAs <| DecidableEq ℕ)⟩
+  ⟨q(inferInstanceAs% <| DecidableEq ℕ)⟩
 instance : HasInstance (DecidableEq (Finset ℕ)) :=
-  ⟨q(inferInstanceAs <| DecidableEq (Finset ℕ))⟩
+  ⟨q(inferInstanceAs% <| DecidableEq (Finset ℕ))⟩
 instance : HasInstance (DecidableEq (Finset (Finset ℕ))) :=
-  ⟨q(inferInstanceAs <| DecidableEq (Finset (Finset ℕ)))⟩
+  ⟨q(inferInstanceAs% <| DecidableEq (Finset (Finset ℕ)))⟩
 
 open Qq Lean
 /-- `Finset α` can be converted to an expr only if there is some way to find `DecidableEq α`. -/

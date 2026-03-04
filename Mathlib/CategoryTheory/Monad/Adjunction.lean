@@ -105,7 +105,7 @@ def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R
     exact (adj.toMonad.transport i).right_unit X
 
 lemma isIso_unit_of_iso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
-  (inferInstanceAs (IsIso (unitAsIsoOfIso adj i).hom))
+  (inferInstanceAs% (IsIso (unitAsIsoOfIso adj i).hom))
 
 /--
 Given an adjunction `L ⊣ R`, if `L ⋙ R` is isomorphic to the identity functor, then `L` is
@@ -134,7 +134,7 @@ def counitAsIsoOfIso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R ⋙ L ≅ 𝟭
     exact (adj.toComonad.transport j).right_counit X
 
 lemma isIso_counit_of_iso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : IsIso adj.counit :=
-  inferInstanceAs (IsIso (counitAsIsoOfIso adj j).hom)
+  inferInstanceAs% (IsIso (counitAsIsoOfIso adj j).hom)
 
 /--
 Given an adjunction `L ⊣ R`, if `R ⋙ L` is isomorphic to the identity functor, then `R` is

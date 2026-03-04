@@ -403,18 +403,18 @@ instance {X : C} (f : Over X) :
 
 instance {X : C} (f : Over X) :
     f.iteratedSliceForward.IsContinuous ((J.over _).over _) (J.over _) :=
-  inferInstanceAs (f.iteratedSliceEquiv.functor.IsContinuous _ _)
+  inferInstanceAs% (f.iteratedSliceEquiv.functor.IsContinuous _ _)
 
 instance {X : C} (f : Over X) :
     f.iteratedSliceForward.IsCocontinuous ((J.over _).over _) (J.over _) :=
-  inferInstanceAs (f.iteratedSliceEquiv.functor.IsCocontinuous _ _)
+  inferInstanceAs% (f.iteratedSliceEquiv.functor.IsCocontinuous _ _)
 
 instance {X : C} (f : Over X) :
     f.iteratedSliceBackward.IsContinuous (J.over _) ((J.over _).over _) :=
-  inferInstanceAs (f.iteratedSliceEquiv.inverse.IsContinuous _ _)
+  inferInstanceAs% (f.iteratedSliceEquiv.inverse.IsContinuous _ _)
 
 instance {X : C} (f : Over X) :
     f.iteratedSliceBackward.IsCocontinuous (J.over _) ((J.over _).over _) :=
-  inferInstanceAs (f.iteratedSliceEquiv.inverse.IsCocontinuous _ _)
+  inferInstanceAs% (f.iteratedSliceEquiv.inverse.IsCocontinuous _ _)
 
 end CategoryTheory

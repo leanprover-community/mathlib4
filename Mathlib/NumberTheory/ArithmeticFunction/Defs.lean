@@ -49,9 +49,9 @@ def ArithmeticFunction [Zero R] :=
   ZeroHom ℕ R
 
 instance ArithmeticFunction.zero [Zero R] : Zero (ArithmeticFunction R) :=
-  inferInstanceAs (Zero (ZeroHom ℕ R))
+  inferInstanceAs% (Zero (ZeroHom ℕ R))
 
-instance [Zero R] : Inhabited (ArithmeticFunction R) := inferInstanceAs (Inhabited (ZeroHom ℕ R))
+instance [Zero R] : Inhabited (ArithmeticFunction R) := inferInstanceAs% (Inhabited (ZeroHom ℕ R))
 
 variable {R}
 
@@ -62,7 +62,7 @@ section Zero
 variable [Zero R]
 
 instance : FunLike (ArithmeticFunction R) ℕ R :=
-  inferInstanceAs (FunLike (ZeroHom ℕ R) ℕ R)
+  inferInstanceAs% (FunLike (ZeroHom ℕ R) ℕ R)
 
 @[simp]
 theorem toFun_eq (f : ArithmeticFunction R) : f.toFun = f := rfl

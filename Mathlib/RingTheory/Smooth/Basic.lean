@@ -258,7 +258,7 @@ noncomputable
 def equivH1CotangentOfFormallySmooth (P : Extension R A) [FormallySmooth R P.Ring] :
     P.H1Cotangent ≃ₗ[A] H1Cotangent R A :=
   haveI : FormallySmooth R (Generators.self R A).toExtension.Ring :=
-    inferInstanceAs (FormallySmooth R (MvPolynomial _ _))
+    inferInstanceAs% (FormallySmooth R (MvPolynomial _ _))
   H1Cotangent.equivOfFormallySmooth _ _
 
 lemma cotangentComplex_injective_iff

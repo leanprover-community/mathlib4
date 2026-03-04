@@ -155,7 +155,7 @@ def SmallFilteredIntermediate : Type (max u₁ v) :=
   SmallModel.{max u₁ v} (filteredClosure F.obj).FullSubcategory
 
 noncomputable instance : SmallCategory (SmallFilteredIntermediate F) :=
-  inferInstanceAs (SmallCategory (SmallModel (filteredClosure F.obj).FullSubcategory))
+  inferInstanceAs% (SmallCategory (SmallModel (filteredClosure F.obj).FullSubcategory))
 
 namespace SmallFilteredIntermediate
 
@@ -170,10 +170,10 @@ noncomputable def inclusion : SmallFilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ ObjectProperty.ι _
 
 instance : (inclusion F).Faithful :=
-  inferInstanceAs ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Faithful
+  inferInstanceAs% ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Faithful
 
 noncomputable instance : (inclusion F).Full :=
-  inferInstanceAs ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Full
+  inferInstanceAs% ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Full
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
 isomorphism. -/
@@ -308,7 +308,7 @@ def SmallCofilteredIntermediate : Type (max u₁ v) :=
   SmallModel.{max u₁ v} (cofilteredClosure F.obj).FullSubcategory
 
 noncomputable instance : SmallCategory (SmallCofilteredIntermediate F) :=
-  inferInstanceAs (SmallCategory (SmallModel (cofilteredClosure F.obj).FullSubcategory))
+  inferInstanceAs% (SmallCategory (SmallModel (cofilteredClosure F.obj).FullSubcategory))
 
 namespace SmallCofilteredIntermediate
 
@@ -323,10 +323,10 @@ noncomputable def inclusion : SmallCofilteredIntermediate F ⥤ C :=
   (equivSmallModel _).inverse ⋙ ObjectProperty.ι _
 
 instance : (inclusion F).Faithful :=
-  inferInstanceAs ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Faithful
+  inferInstanceAs% ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Faithful
 
 noncomputable instance : (inclusion F).Full :=
-  inferInstanceAs ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Full
+  inferInstanceAs% ((equivSmallModel _).inverse ⋙ ObjectProperty.ι _).Full
 
 /-- The factorization through a small filtered category is in fact a factorization, up to natural
 isomorphism. -/

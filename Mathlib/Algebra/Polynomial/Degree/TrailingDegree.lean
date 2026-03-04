@@ -68,7 +68,7 @@ theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
 
 instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
-  inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))
+  inferInstanceAs% <| Decidable (trailingCoeff p = (1 : R))
 
 @[simp]
 theorem TrailingMonic.trailingCoeff {p : R[X]} (hp : p.TrailingMonic) : trailingCoeff p = 1 :=

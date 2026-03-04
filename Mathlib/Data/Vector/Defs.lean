@@ -39,7 +39,7 @@ namespace List.Vector
 variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
-  inferInstanceAs (DecidableEq {l : List α // l.length = n})
+  inferInstanceAs% (DecidableEq {l : List α // l.length = n})
 
 /-- The empty vector with elements of type `α` -/
 @[match_pattern]

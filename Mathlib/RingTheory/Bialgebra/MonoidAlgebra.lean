@@ -93,7 +93,7 @@ open AddMonoidAlgebra
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Bialgebra R A]
 
 instance instBialgebra : Bialgebra R A[T;T⁻¹] :=
-  inferInstanceAs <| Bialgebra R A[ℤ]
+  inferInstanceAs% <| Bialgebra R A[ℤ]
 
 @[simp]
 theorem comul_T (n : ℤ) :

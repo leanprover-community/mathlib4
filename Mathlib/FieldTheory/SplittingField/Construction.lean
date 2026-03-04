@@ -242,7 +242,7 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where
-  __ := inferInstanceAs <| CommRing (SplittingField f)
+  __ := inferInstanceAs% <| CommRing (SplittingField f)
   __ := instGroupWithZero f
   nnratCast q := algebraMap K _ q
   ratCast q := algebraMap K _ q

@@ -23,6 +23,6 @@ noncomputable section
 open CategoryTheory
 
 instance : CartesianMonoidalCategory (CondensedSet.{u}) :=
-  inferInstanceAs (CartesianMonoidalCategory (Sheaf _ _))
+  inferInstanceAs% (CartesianMonoidalCategory (Sheaf _ _))
 
-instance : MonoidalClosed (CondensedSet.{u}) := inferInstanceAs (MonoidalClosed (Sheaf _ _))
+instance : MonoidalClosed (CondensedSet.{u}) := inferInstanceAs% (MonoidalClosed (Sheaf _ _))

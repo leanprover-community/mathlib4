@@ -536,7 +536,7 @@ theorem Pi.le_def [∀ i, LE (π i)] {x y : ∀ i, π i} :
   Iff.rfl
 
 instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
-  __ := inferInstanceAs (LE (∀ i, π i))
+  __ := inferInstanceAs% (LE (∀ i, π i))
   le_refl := fun a i ↦ le_refl (a i)
   le_trans := fun _ _ _ h₁ h₂ i ↦ le_trans (h₁ i) (h₂ i)
 
@@ -864,7 +864,7 @@ instance : LE (α × β) where le p q := p.1 ≤ q.1 ∧ p.2 ≤ q.2
 
 @[to_dual self]
 instance instDecidableLE [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
-  inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
+  inferInstanceAs% (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
 
 @[to_dual self] lemma le_def : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 := .rfl
 
@@ -885,7 +885,7 @@ section Preorder
 variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
 
 instance : Preorder (α × β) where
-  __ := inferInstanceAs (LE (α × β))
+  __ := inferInstanceAs% (LE (α × β))
   le_refl := fun ⟨a, b⟩ ↦ ⟨le_refl a, le_refl b⟩
   le_trans := fun ⟨_, _⟩ ⟨_, _⟩ ⟨_, _⟩ ⟨hac, hbd⟩ ⟨hce, hdf⟩ ↦ ⟨le_trans hac hce, le_trans hbd hdf⟩
 
@@ -947,7 +947,7 @@ end Preorder
 available via the type synonym `α ×ₗ β = α × β`.) -/
 instance instPartialOrder (α β : Type*) [PartialOrder α] [PartialOrder β] :
     PartialOrder (α × β) where
-  __ := inferInstanceAs (Preorder (α × β))
+  __ := inferInstanceAs% (Preorder (α × β))
   le_antisymm := fun _ _ ⟨hac, hbd⟩ ⟨hca, hdb⟩ ↦ Prod.ext (hac.antisymm hca) (hbd.antisymm hdb)
 
 end Prod
@@ -1108,6 +1108,6 @@ set_option linter.deprecated false in
 @[deprecated "`AsLinearOrder` is deprecated" (since := "2025-10-28")]
 noncomputable instance AsLinearOrder.linearOrder [PartialOrder α] [IsTotal α (· ≤ ·)] :
     LinearOrder (AsLinearOrder α) where
-  __ := inferInstanceAs (PartialOrder α)
+  __ := inferInstanceAs% (PartialOrder α)
   le_total := @total_of α (· ≤ ·) _
   toDecidableLE := Classical.decRel _

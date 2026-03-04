@@ -132,7 +132,7 @@ namespace Submodule
 
 instance topologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [TopologicalSpace M] [IsTopologicalAddGroup M] (S : Submodule R M) : IsTopologicalAddGroup S :=
-  inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
+  inferInstanceAs% (IsTopologicalAddGroup S.toAddSubgroup)
 
 end Submodule
 
@@ -314,7 +314,7 @@ variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] [TopologicalSpace 
   (S : Submodule R M)
 
 instance _root_.QuotientModule.Quotient.topologicalSpace : TopologicalSpace (M ⧸ S) :=
-  inferInstanceAs (TopologicalSpace (Quotient S.quotientRel))
+  inferInstanceAs% (TopologicalSpace (Quotient S.quotientRel))
 
 theorem isOpenMap_mkQ [ContinuousAdd M] : IsOpenMap S.mkQ :=
   QuotientAddGroup.isOpenMap_coe
@@ -323,7 +323,7 @@ theorem isOpenQuotientMap_mkQ [ContinuousAdd M] : IsOpenQuotientMap S.mkQ :=
   QuotientAddGroup.isOpenQuotientMap_mk
 
 instance topologicalAddGroup_quotient [IsTopologicalAddGroup M] : IsTopologicalAddGroup (M ⧸ S) :=
-  inferInstanceAs <| IsTopologicalAddGroup (M ⧸ S.toAddSubgroup)
+  inferInstanceAs% <| IsTopologicalAddGroup (M ⧸ S.toAddSubgroup)
 
 instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M]
     [ContinuousSMul R M] : ContinuousSMul R (M ⧸ S) where

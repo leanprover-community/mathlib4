@@ -30,7 +30,7 @@ deriving instance CompleteLinearOrder for ℕ∞
 end
 
 noncomputable instance : CompleteLinearOrder (WithBot ENat) :=
-  inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℕ)))
+  inferInstanceAs% (CompleteLinearOrder (WithBot (WithTop ℕ)))
 
 namespace ENat
 variable {ι : Sort*} {f : ι → ℕ} {s : Set ℕ}

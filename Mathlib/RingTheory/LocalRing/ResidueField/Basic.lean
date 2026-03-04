@@ -66,7 +66,7 @@ instance : IsLocalHom (IsLocalRing.residue R) :=
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
 instance {R₀} [CommRing R₀] [Algebra R₀ R] : Module R₀ (ResidueField R) :=
-  inferInstanceAs <| Module R₀ (R ⧸ maximalIdeal R)
+  inferInstanceAs% <| Module R₀ (R ⧸ maximalIdeal R)
 
 instance {R₀} [CommRing R₀] [Algebra R₀ R] [Module.Finite R₀ R] :
     Module.Finite R₀ (ResidueField R) :=
@@ -203,7 +203,7 @@ instance {R₀ : Type*} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsSca
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
 instance : Module (ResidueField R) (ResidueField S) :=
-  inferInstanceAs <| Module (R ⧸ maximalIdeal R) (S ⧸ maximalIdeal S)
+  inferInstanceAs% <| Module (R ⧸ maximalIdeal R) (S ⧸ maximalIdeal S)
 
 instance finite_of_module_finite [Module.Finite R S] :
     Module.Finite (ResidueField R) (ResidueField S) :=

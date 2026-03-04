@@ -51,7 +51,7 @@ instance : Inhabited FinPartOrd :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinPartOrd :=
-  inferInstanceAs (Category (InducedCategory _ FinPartOrd.toPartOrd))
+  inferInstanceAs% (Category (InducedCategory _ FinPartOrd.toPartOrd))
 
 instance concreteCategory : ConcreteCategory FinPartOrd (· →o ·) :=
   InducedCategory.concreteCategory FinPartOrd.toPartOrd

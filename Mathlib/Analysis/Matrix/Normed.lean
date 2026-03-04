@@ -256,7 +256,7 @@ protected theorem linftyOpIsBoundedSMul
     IsBoundedSMul R (Matrix m n α) :=
   letI := PiLp.pseudoMetricSpaceToPi 1 (fun _ : n ↦ α)
   letI := PiLp.isBoundedSMulSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
-  inferInstanceAs (IsBoundedSMul R (m → n → α))
+  inferInstanceAs% (IsBoundedSMul R (m → n → α))
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
@@ -265,7 +265,7 @@ protected theorem linftyOpNormSMulClass
     NormSMulClass R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
   letI := PiLp.normSMulClassSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
-  inferInstanceAs (NormSMulClass R (m → n → α))
+  inferInstanceAs% (NormSMulClass R (m → n → α))
 
 /-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -275,7 +275,7 @@ protected def linftyOpNormedSpace [NormedField R] [SeminormedAddCommGroup α] [N
     NormedSpace R (Matrix m n α) :=
   letI := PiLp.seminormedAddCommGroupToPi 1 (fun _ : n ↦ α)
   letI := PiLp.normedSpaceSeminormedAddCommGroupToPi (R := R) 1 (fun _ : n ↦ α)
-  inferInstanceAs (NormedSpace R (m → n → α))
+  inferInstanceAs% (NormedSpace R (m → n → α))
 
 section SeminormedAddCommGroup
 

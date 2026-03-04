@@ -74,7 +74,7 @@ initialize_simps_projections CanonicallyOverClass (hom → over)
 @[simps]
 instance : OverClass X X := ⟨𝟙 _⟩
 
-instance : IsIso (S ↘ S) := inferInstanceAs (IsIso (𝟙 S))
+instance : IsIso (S ↘ S) := inferInstanceAs% (IsIso (𝟙 S))
 
 namespace CanonicallyOverClass
 -- This cannot be a simp lemma because it loops with `comp_over`.

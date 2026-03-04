@@ -33,7 +33,7 @@ instance (priority := low) {α : Type*}
 instance (priority := low) {α : Type*}
     [TopologicalSpace α] [LinearOrder α] [Topology.IsLowerSet α] :
     CompletelyNormalSpace α :=
-  inferInstanceAs (CompletelyNormalSpace αᵒᵈ)
+  inferInstanceAs% (CompletelyNormalSpace αᵒᵈ)
 
 instance : CompletelyNormalSpace Prop :=
   inferInstance

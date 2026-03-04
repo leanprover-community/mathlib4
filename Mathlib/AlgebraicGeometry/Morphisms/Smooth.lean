@@ -86,7 +86,7 @@ lemma Smooth.iff_forall_exists_isStandardSmooth (f : X ⟶ Y) :
       ∀ (x : X), ∃ (U : Y.Opens) (_ : IsAffineOpen U) (V : X.Opens) (_ : IsAffineOpen V) (_ : x ∈ V)
         (e : V ≤ f ⁻¹ᵁ U), (f.appLE U V e).hom.IsStandardSmooth := by
   have : HasRingHomProperty @Smooth.{u} (Locally IsStandardSmooth) := by
-    convert (inferInstanceAs <| HasRingHomProperty @Smooth.{u} RingHom.Smooth)
+    convert (inferInstanceAs% <| HasRingHomProperty @Smooth.{u} RingHom.Smooth)
     ext f
     rw [RingHom.smooth_iff_locally_isStandardSmooth]
   rw [HasRingHomProperty.iff_exists_appLE_locally (P := @Smooth)]
@@ -227,7 +227,7 @@ instance smoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
 instance {Z : Scheme.{u}} (g : Y ⟶ Z) [SmoothOfRelativeDimension 0 f]
     [SmoothOfRelativeDimension 0 g] :
     SmoothOfRelativeDimension 0 (f ≫ g) :=
-  inferInstanceAs <| SmoothOfRelativeDimension (0 + 0) (f ≫ g)
+  inferInstanceAs% <| SmoothOfRelativeDimension (0 + 0) (f ≫ g)
 
 /-- Smooth of relative dimension `0` is multiplicative. -/
 instance : MorphismProperty.IsMultiplicative (@SmoothOfRelativeDimension 0) where
@@ -293,7 +293,7 @@ lemma Scheme.Hom.isOpen_smoothLocus [LocallyOfFinitePresentation f] :
   obtain ⟨U, hU, V, hV, hVU, hxV, H⟩ := exists_smooth_of_formallySmooth_stalk f x hx
   algebraize [(f.appLE U V hVU).hom]
   exact ⟨V, fun y hy ↦ (formallySmooth_stalkMap_iff U hU V hV hVU hy).mpr
-    (inferInstanceAs (Algebra.IsSmoothAt _ _)), V.2, hxV⟩
+    (inferInstanceAs% (Algebra.IsSmoothAt _ _)), V.2, hxV⟩
 
 /-- The set of points smooth over a base, as a `Scheme.Opens`. -/
 def Scheme.Hom.smoothLocus (f : X ⟶ Y) [LocallyOfFinitePresentation f] : X.Opens :=
@@ -314,7 +314,7 @@ lemma Scheme.Hom.smoothLocus_eq_top (f : X ⟶ Y) [Smooth f] :
   have := f.smooth_appLE hU hV hVU
   algebraize [(f.appLE U V hVU).hom]
   rw [Scheme.Hom.mem_smoothLocus, formallySmooth_stalkMap_iff U hU V hV hVU hxV]
-  exact inferInstanceAs (Algebra.IsSmoothAt _ _)
+  exact inferInstanceAs% (Algebra.IsSmoothAt _ _)
 
 lemma Scheme.Hom.smoothLocus_eq_top_iff {f : X ⟶ Y} [LocallyOfFinitePresentation f] :
     f.smoothLocus = ⊤ ↔ Smooth f := by

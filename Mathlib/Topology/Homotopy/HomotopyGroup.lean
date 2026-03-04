@@ -439,7 +439,7 @@ def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 
 instance : Inhabited (HomotopyGroup N X x) :=
-  inferInstanceAs <| Inhabited <| Quotient (GenLoop.Homotopic.setoid N x)
+  inferInstanceAs% <| Inhabited <| Quotient (GenLoop.Homotopic.setoid N x)
 
 variable [DecidableEq N]
 

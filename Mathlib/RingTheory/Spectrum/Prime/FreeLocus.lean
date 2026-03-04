@@ -138,7 +138,7 @@ lemma freeLocus_localization (S : Submonoid R) :
     (Localization S)
   have : IsLocalizedModule p.asIdeal.primeCompl l := by
     have : IsLocalizedModule p'.primeCompl (l.restrictScalars R) :=
-      inferInstanceAs (IsLocalizedModule p'.primeCompl
+      inferInstanceAs% (IsLocalizedModule p'.primeCompl
         (IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap S M)
         (LocalizedModule.mkLinearMap p'.primeCompl M)))
     have : IsLocalizedModule (Algebra.algebraMapSubmonoid (Localization S) p'.primeCompl) l :=
@@ -216,7 +216,7 @@ lemma isLocallyConstant_rankAtStalk_freeLocus [Module.FinitePresentation R M] :
   have : IsLocalization p' Rₚ :=
     IsLocalization.isLocalization_of_submonoid_le (Localization.Away f) Rₚ _ _ hp'
   have : IsLocalizedModule p.asIdeal.primeCompl (l.restrictScalars R) :=
-    inferInstanceAs (IsLocalizedModule p.asIdeal.primeCompl
+    inferInstanceAs% (IsLocalizedModule p.asIdeal.primeCompl
     ((IsLocalizedModule.liftOfLE _ _ hp' (LocalizedModule.mkLinearMap (.powers f) M)
       (LocalizedModule.mkLinearMap p.asIdeal.primeCompl M))))
   have : IsLocalizedModule (Algebra.algebraMapSubmonoid _ p.asIdeal.primeCompl) l :=

@@ -78,13 +78,13 @@ variable (C) in
 /-- The trivial group object. -/
 @[simps!]
 def trivial : Grp C :=
-  { Mon.trivial C with grp := inferInstanceAs (GrpObj (𝟙_ C)) }
+  { Mon.trivial C with grp := inferInstanceAs% (GrpObj (𝟙_ C)) }
 
 instance : Inhabited (Grp C) where
   default := trivial C
 
 instance : Category (Grp C) :=
-  inferInstanceAs (Category (InducedCategory _ Grp.toMon))
+  inferInstanceAs% (Category (InducedCategory _ Grp.toMon))
 
 @[simp]
 theorem id_hom_hom (A : Grp C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
@@ -353,7 +353,7 @@ instance : (forget C).Faithful where
 theorem forget₂Mon_comp_forget : forget₂Mon C ⋙ Mon.forget C = forget C := rfl
 
 instance {G H : Grp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom.hom :=
-  inferInstanceAs <| IsIso <| (forget C).map f
+  inferInstanceAs% <| IsIso <| (forget C).map f
 
 end
 

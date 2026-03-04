@@ -34,7 +34,7 @@ instance : CartesianMonoidalCategory SSet.{u} :=
   (inferInstance : CartesianMonoidalCategory (SimplexCategoryᵒᵖ ⥤ Type u))
 
 instance : MonoidalClosed (SSet.{u}) :=
-  inferInstanceAs (MonoidalClosed (SimplexCategoryᵒᵖ ⥤ Type u))
+  inferInstanceAs% (MonoidalClosed (SimplexCategoryᵒᵖ ⥤ Type u))
 
 @[simp]
 lemma leftUnitor_hom_app_apply (K : SSet.{u}) {Δ : SimplexCategoryᵒᵖ} (x : (𝟙_ _ ⊗ K).obj Δ) :
@@ -108,7 +108,7 @@ lemma stdSimplex.ext₀ {X : SSet.{u}} {f g : X ⟶ Δ[0]} : f = g :=
 instance (X Y : SSet.{u}) (n : SimplexCategoryᵒᵖ)
     [Finite (X.obj n)] [Finite (Y.obj n)] :
     Finite ((X ⊗ Y).obj n) :=
-  inferInstanceAs (Finite (X.obj n × Y.obj n))
+  inferInstanceAs% (Finite (X.obj n × Y.obj n))
 
 instance : (𝟙_ SSet.{u}).Finite :=
   finite_of_iso (stdSimplex.isTerminalObj₀.{u}.uniqueUpToIso
@@ -188,11 +188,11 @@ instance : CartesianMonoidalCategory (Truncated.{u} n) :=
   (inferInstance : CartesianMonoidalCategory (_ ⥤ Type u))
 
 instance : MonoidalClosed (Truncated.{u} n) :=
-  inferInstanceAs (MonoidalClosed (_ ⥤ Type u))
+  inferInstanceAs% (MonoidalClosed (_ ⥤ Type u))
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (truncation.{u} n).Monoidal :=
-  inferInstanceAs ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
+  inferInstanceAs% ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
 
 variable {n} {X Y : Truncated.{u} n}
 

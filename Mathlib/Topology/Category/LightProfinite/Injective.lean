@@ -145,7 +145,7 @@ instance injective_of_light (S : LightProfinite.{u}) [Nonempty S] :
   factors {X Y} g f h := by
     -- help the instance inference a bit
     have (n : ℕ) : Finite <| lightToProfinite.obj (S.component n) :=
-      inferInstanceAs (Finite (FintypeCat.toLightProfinite.obj _))
+      inferInstanceAs% (Finite (FintypeCat.toLightProfinite.obj _))
     have : Nonempty <| lightToProfinite.obj (S.component 0) :=
       Nonempty.map (S.proj 0) inferInstance
     have (n : ℕ) : Epi (S.transitionMap n) := (LightProfinite.epi_iff_surjective _).mpr

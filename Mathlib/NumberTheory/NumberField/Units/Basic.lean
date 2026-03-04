@@ -171,7 +171,7 @@ instance : IsCyclic (torsion K) := subgroup_units_cyclic _
 def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
 
 instance [NumberField K] : NeZero (torsionOrder K) :=
-  inferInstanceAs (NeZero (Fintype.card (torsion K)))
+  inferInstanceAs% (NeZero (Fintype.card (torsion K)))
 
 theorem torsionOrder_ne_zero :
     torsionOrder K ≠ 0 := NeZero.ne (torsionOrder K)

@@ -395,7 +395,7 @@ end
 variable {α : Type u} (s t : Set α) (a b : α)
 
 instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
-  inferInstanceAs (Decidable (a = b))
+  inferInstanceAs% (Decidable (a = b))
 
 end Set
 

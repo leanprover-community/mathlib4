@@ -41,10 +41,10 @@ lemma mono_of_injective (hf : ∀ ⦃X : Cᵒᵖ⦄, Function.Injective (f.app X
 variable (f)
 
 instance [Epi f] (X : Cᵒᵖ) : Epi (f.app X) :=
-  inferInstanceAs (Epi ((evaluation R X).map f))
+  inferInstanceAs% (Epi ((evaluation R X).map f))
 
 instance [Mono f] (X : Cᵒᵖ) : Mono (f.app X) :=
-  inferInstanceAs (Mono ((evaluation R X).map f))
+  inferInstanceAs% (Mono ((evaluation R X).map f))
 
 lemma surjective_of_epi [Epi f] (X : Cᵒᵖ) :
     Function.Surjective (f.app X) := by

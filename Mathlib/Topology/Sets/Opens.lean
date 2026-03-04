@@ -78,7 +78,7 @@ instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
 
 instance instSecondCountableOpens [SecondCountableTopology α] (U : Opens α) :
-    SecondCountableTopology U := inferInstanceAs (SecondCountableTopology U.1)
+    SecondCountableTopology U := inferInstanceAs% (SecondCountableTopology U.1)
 
 theorem «forall» {p : Opens α → Prop} : (∀ U, p U) ↔ ∀ (U : Set α) (hU : IsOpen U), p ⟨U, hU⟩ :=
   ⟨fun h _ _ => h _, fun h _ => h _ _⟩

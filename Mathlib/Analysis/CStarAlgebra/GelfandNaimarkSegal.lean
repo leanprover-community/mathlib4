@@ -52,8 +52,8 @@ This space is only a pre-inner product space. Its Hilbert space completion is
 @[nolint unusedArguments]
 def PreGNS (f : A →ₚ[ℂ] ℂ) := A
 
-instance : AddCommGroup f.PreGNS := inferInstanceAs (AddCommGroup A)
-instance : Module ℂ f.PreGNS := inferInstanceAs (Module ℂ A)
+instance : AddCommGroup f.PreGNS := inferInstanceAs% (AddCommGroup A)
+instance : Module ℂ f.PreGNS := inferInstanceAs% (Module ℂ A)
 
 /-- The map from the C⋆-algebra to the GNS space, as a linear equivalence. -/
 def toPreGNS : A ≃ₗ[ℂ] f.PreGNS := LinearEquiv.refl ℂ _

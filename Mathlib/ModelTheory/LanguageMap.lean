@@ -336,7 +336,7 @@ instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) := by
   infer_instance
 
 instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
-  inferInstanceAs (IsEmpty PEmpty)
+  inferInstanceAs% (IsEmpty PEmpty)
 
 instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) :=
   fun n => Nat.casesOn n _ie inferInstance

@@ -64,7 +64,7 @@ noncomputable def inverseAux : (C ⥤ₗ Type v) ⥤ C ⥤ AddCommGrpCat.{v} :=
 instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
   preservesFiniteLimits J _ _ :=
     have : PreservesLimitsOfShape J (inverseAux.obj F ⋙ forget AddCommGrpCat) :=
-      inferInstanceAs (PreservesLimitsOfShape J F.1)
+      inferInstanceAs% (PreservesLimitsOfShape J F.1)
     preservesLimitsOfShape_of_reflects_of_preserves _ (forget AddCommGrpCat)
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/

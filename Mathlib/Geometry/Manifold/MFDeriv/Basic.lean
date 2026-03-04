@@ -562,7 +562,7 @@ lemma mdifferentiableWithinAt_of_mfderivWithin_injective
     (hf : Injective (mfderivWithin I I' f s x)) :
     MDifferentiableWithinAt I I' f s x := by
   nontriviality E
-  have : Nontrivial (TangentSpace I x) := inferInstanceAs (Nontrivial E)
+  have : Nontrivial (TangentSpace I x) := inferInstanceAs% (Nontrivial E)
   contrapose! hf
   rw [mfderivWithin_zero_of_not_mdifferentiableWithinAt hf]
   exact not_injective_const

@@ -87,7 +87,7 @@ instance (priority := 100) isPredArchimedean_of_isSuccArchimedean [IsSuccArchime
         exact hn_lt_ne _ (Nat.lt_succ_self n)
 
 instance isSuccArchimedean_of_isPredArchimedean [IsPredArchimedean ι] : IsSuccArchimedean ι :=
-  inferInstanceAs (IsSuccArchimedean ιᵒᵈᵒᵈ)
+  inferInstanceAs% (IsSuccArchimedean ιᵒᵈᵒᵈ)
 
 /-- In a linear `SuccOrder` that's also a `PredOrder`, `IsSuccArchimedean` and `IsPredArchimedean`
 are equivalent. -/
@@ -161,7 +161,7 @@ This is not an instance, because its `succ` field conflicts with computable `Pre
 on `ℕ` and `ℤ`. -/
 noncomputable def predOrder [LocallyFiniteOrder ι] : PredOrder ι :=
   letI := succOrder (ι := ιᵒᵈ)
-  inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)
+  inferInstanceAs% (PredOrder ιᵒᵈᵒᵈ)
 
 instance (priority := 100) [LocallyFiniteOrder ι] [SuccOrder ι] : IsSuccArchimedean ι where
   exists_succ_iterate_of_le := by
@@ -193,7 +193,7 @@ instance (priority := 100) [LocallyFiniteOrder ι] [SuccOrder ι] : IsSuccArchim
     exact not_le.mpr (h_lt n) (h_max (h_lt n).le)
 
 instance (priority := 100) [LocallyFiniteOrder ι] [PredOrder ι] : IsPredArchimedean ι :=
-  inferInstanceAs (IsPredArchimedean ιᵒᵈᵒᵈ)
+  inferInstanceAs% (IsPredArchimedean ιᵒᵈᵒᵈ)
 
 end LinearLocallyFiniteOrder
 

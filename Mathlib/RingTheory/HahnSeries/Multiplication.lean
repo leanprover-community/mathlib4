@@ -149,14 +149,14 @@ section SMul
 variable [PartialOrder Γ] [SMul R V]
 
 instance instZero [Zero V] : Zero (HahnModule Γ R V) :=
-  inferInstanceAs <| Zero V⟦Γ⟧
+  inferInstanceAs% <| Zero V⟦Γ⟧
 instance instAddCommMonoid [AddCommMonoid V] : AddCommMonoid (HahnModule Γ R V) :=
-  inferInstanceAs <| AddCommMonoid V⟦Γ⟧
+  inferInstanceAs% <| AddCommMonoid V⟦Γ⟧
 instance instAddCommGroup [AddCommGroup V] : AddCommGroup (HahnModule Γ R V) :=
-  inferInstanceAs <| AddCommGroup V⟦Γ⟧
+  inferInstanceAs% <| AddCommGroup V⟦Γ⟧
 instance instBaseSMul {V} [Monoid R] [AddMonoid V] [DistribMulAction R V] :
     SMul R (HahnModule Γ R V) :=
-  inferInstanceAs <| SMul R V⟦Γ⟧
+  inferInstanceAs% <| SMul R V⟦Γ⟧
 
 @[simp] theorem of_zero [Zero V] : of R (0 : V⟦Γ⟧) = 0 := rfl
 @[simp] theorem of_add [AddCommMonoid V] (x y : V⟦Γ⟧) :
@@ -205,7 +205,7 @@ variable [PartialOrder Γ] [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd
 
 instance instBaseSMulZeroClass [SMulZeroClass R V] :
     SMulZeroClass R (HahnModule Γ R V) :=
-  inferInstanceAs <| SMulZeroClass R V⟦Γ⟧
+  inferInstanceAs% <| SMulZeroClass R V⟦Γ⟧
 
 @[simp] theorem of_smul [SMulZeroClass R V] (r : R) (x : V⟦Γ⟧) :
     (of R) (r • x) = r • (of R) x := rfl
@@ -728,13 +728,13 @@ private theorem mul_smul' [Semiring R] [Module R V] (x y : R⟦Γ⟧)
     aesop (add safe [Set.vadd_mem_vadd, Set.add_mem_add]) (add simp [add_vadd, mul_smul])
 
 instance instBaseModule [Semiring R] [Module R V] : Module R (HahnModule Γ' R V) :=
-  inferInstanceAs <| Module R V⟦Γ'⟧
+  inferInstanceAs% <| Module R V⟦Γ'⟧
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
-  inferInstanceAs (DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
+  inferInstanceAs% (DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
   mul_smul := mul_smul'
   one_smul := fun _ => one_smul'
   add_smul := fun _ _ _ => add_smul Module.add_smul

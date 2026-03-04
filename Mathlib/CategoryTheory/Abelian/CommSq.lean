@@ -41,10 +41,10 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 namespace Abelian
 
 instance : (MorphismProperty.monomorphisms C).IsStableUnderCobaseChange :=
-  .mk' (fun _ _ _ _ _ _ (_ : Mono _) ↦ inferInstanceAs (Mono _))
+  .mk' (fun _ _ _ _ _ _ (_ : Mono _) ↦ inferInstanceAs% (Mono _))
 
 instance : (MorphismProperty.epimorphisms C).IsStableUnderBaseChange :=
-  .mk' (fun _ _ _ _ _ _ (_ : Epi _) ↦ inferInstanceAs (Epi _))
+  .mk' (fun _ _ _ _ _ _ (_ : Epi _) ↦ inferInstanceAs% (Epi _))
 
 end Abelian
 

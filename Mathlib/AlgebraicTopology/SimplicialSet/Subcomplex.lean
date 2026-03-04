@@ -33,7 +33,7 @@ open CategoryTheory Simplicial Limits
 namespace SSet
 
 set_option backward.isDefEq.respectTransparency false in
--- Note: this could be obtained as `inferInstanceAs (Balanced (_ ⥤ _))`
+-- Note: this could be obtained as `inferInstanceAs% (Balanced (_ ⥤ _))`
 -- by importing `Mathlib.CategoryTheory.Adhesive.Basic`, but we give a
 -- different proof so as to reduce imports
 instance : Balanced SSet.{u} where
@@ -65,13 +65,13 @@ instance : CoeOut X.Subcomplex SSet.{u} where
 instance {X : SSet.{u}} (n : SimplexCategoryᵒᵖ) (A : X.Subcomplex)
     [DecidableEq (X.obj n)] :
     DecidableEq ((A : SSet).obj n) :=
-  inferInstanceAs (DecidableEq (A.obj n))
+  inferInstanceAs% (DecidableEq (A.obj n))
 
 /-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` in the category `SSet`. -/
 abbrev ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subfunctor.ι A
 
 instance (A : X.Subcomplex) : Mono A.ι :=
-  inferInstanceAs (Mono (Subfunctor.ι A))
+  inferInstanceAs% (Mono (Subfunctor.ι A))
 
 section
 
@@ -187,7 +187,7 @@ lemma toRange_app_val {Δ : SimplexCategoryᵒᵖ} (x : X.obj Δ) :
     ((toRange f).app Δ x).val = f.app Δ x := rfl
 
 instance : Epi (toRange f) :=
-  inferInstanceAs (Epi (Subfunctor.toRange f))
+  inferInstanceAs% (Epi (Subfunctor.toRange f))
 
 instance [Mono f] : Mono (toRange f) :=
   mono_of_mono_fac (toRange_ι f)

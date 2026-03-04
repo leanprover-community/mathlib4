@@ -98,7 +98,7 @@ theorem val_of (a : M) : val (of a) = a := rfl
 
 @[to_additive]
 instance [Nonempty M] : Nonempty (MulArchimedeanOrder M) :=
-  inferInstanceAs (Nonempty M)
+  inferInstanceAs% (Nonempty M)
 
 @[to_additive]
 instance [Inhabited M] : Inhabited (MulArchimedeanOrder M) :=
@@ -106,7 +106,7 @@ instance [Inhabited M] : Inhabited (MulArchimedeanOrder M) :=
 
 @[to_additive]
 instance [Subsingleton M] : Subsingleton (MulArchimedeanOrder M) :=
-  inferInstanceAs (Subsingleton M)
+  inferInstanceAs% (Subsingleton M)
 
 variable [Group M] [Lattice M]
 
@@ -257,7 +257,7 @@ theorem mk_mabs (a : M) : mk |a|ₘ = mk a :=
 
 @[to_additive]
 instance [Subsingleton M] : Subsingleton (MulArchimedeanClass M) :=
-  inferInstanceAs (Subsingleton (Antisymmetrization ..))
+  inferInstanceAs% (Subsingleton (Antisymmetrization ..))
 
 @[to_additive]
 noncomputable

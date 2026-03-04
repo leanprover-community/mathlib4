@@ -239,7 +239,7 @@ theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
 
 theorem compClosure.congruence :
     Congruence fun X Y => Relation.EqvGen (@HomRel.CompClosure C _ r X Y) := by
-  convert inferInstanceAs (Congruence (functor r).homRel)
+  convert inferInstanceAs% (Congruence (functor r).homRel)
   ext
   rw [functor_homRel_eq_compClosure_eqvGen]
 

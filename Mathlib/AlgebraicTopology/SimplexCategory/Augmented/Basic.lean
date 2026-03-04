@@ -41,11 +41,11 @@ variable {C : Type*} [Category* C]
 @[simps!]
 def inclusion : SimplexCategory ⥤ AugmentedSimplexCategory := WithInitial.incl
 
-instance : inclusion.Full := inferInstanceAs WithInitial.incl.Full
-instance : inclusion.Faithful := inferInstanceAs WithInitial.incl.Faithful
+instance : inclusion.Full := inferInstanceAs% WithInitial.incl.Full
+instance : inclusion.Faithful := inferInstanceAs% WithInitial.incl.Faithful
 
 instance : Limits.HasInitial AugmentedSimplexCategory :=
-  inferInstanceAs <| Limits.HasInitial <| WithInitial _
+  inferInstanceAs% <| Limits.HasInitial <| WithInitial _
 
 /-- The equivalence between functors out of `AugmentedSimplexCategory` and augmented
 cosimplicial objects. -/

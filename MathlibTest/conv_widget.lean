@@ -182,7 +182,7 @@ trace: inst : Decidable (True ∧ False)
 -/
 #guard_msgs in
 example (inst : Decidable (True ∧ False)) :
-    (clear% inst; inferInstanceAs (Decidable (True ∧ False))) = inst := by
+    (clear% inst; inferInstanceAs% (Decidable (True ∧ False))) = inst := by
   -- go to `instDecidableFalse`
   test "/0/1/1/1"
   exact test_sorry

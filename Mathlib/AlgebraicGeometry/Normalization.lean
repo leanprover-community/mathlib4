@@ -295,7 +295,7 @@ instance [IsIntegralHom f] : IsIso f.toNormalization := by
     rw [integralClosure_eq_top_iff, ← algebraMap_isIntegral_iff, RingHom.algebraMap_toAlgebra]
     exact IsIntegralHom.isIntegral_app _ _ U.2
   rw [this]
-  exact inferInstanceAs (IsIso (Scheme.Spec.mapIso (Subalgebra.topEquiv
+  exact inferInstanceAs% (IsIso (Scheme.Spec.mapIso (Subalgebra.topEquiv
     (R := Γ(Y, U.1)) (A := ↑Γ(X, f ⁻¹ᵁ U.1))).toCommRingCatIso.op).hom)
 
 instance [IsAffineHom f] : IsAffineHom f.toNormalization := by

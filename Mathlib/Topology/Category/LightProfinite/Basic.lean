@@ -110,9 +110,9 @@ instance : FintypeCat.toLightProfinite.Full :=
   FintypeCat.toLightProfiniteFullyFaithful.full
 
 instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
-  inferInstanceAs (Fintype X)
+  inferInstanceAs% (Fintype X)
 
-instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) := inferInstanceAs (Fintype X)
+instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) := inferInstanceAs% (Fintype X)
 
 end DiscreteTopology
 
@@ -172,7 +172,7 @@ instance : HasCountableLimits LightProfinite where
 
 instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
   have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSize_shrink _
-  inferInstanceAs (PreservesLimitsOfShape ℕᵒᵖ (lightToProfinite ⋙ forget Profinite))
+  inferInstanceAs% (PreservesLimitsOfShape ℕᵒᵖ (lightToProfinite ⋙ forget Profinite))
 
 variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
 
@@ -254,7 +254,7 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 
 @[simps!]
 instance : Category LightDiagram :=
-  inferInstanceAs (Category (InducedCategory _ toProfinite))
+  inferInstanceAs% (Category (InducedCategory _ toProfinite))
 
 instance hasForget : ConcreteCategory LightDiagram (fun X Y => C(X.toProfinite, Y.toProfinite)) :=
   InducedCategory.concreteCategory toProfinite
@@ -362,7 +362,7 @@ def LightDiagram'.toProfinite (S : LightDiagram') : Profinite :=
   limit (S.diagram ⋙ FintypeCat.Skeleton.equivalence.functor ⋙ FintypeCat.toProfinite.{u})
 
 instance : Category LightDiagram' :=
-  inferInstanceAs (Category (InducedCategory _ LightDiagram'.toProfinite))
+  inferInstanceAs% (Category (InducedCategory _ LightDiagram'.toProfinite))
 
 /-- The functor part of the equivalence of categories `LightDiagram' ≌ LightDiagram`. -/
 def LightDiagram'.toLightFunctor : LightDiagram'.{u} ⥤ LightDiagram.{u} where

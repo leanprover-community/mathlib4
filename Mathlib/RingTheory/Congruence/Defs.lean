@@ -188,7 +188,7 @@ instance : CoeTC R c.Quotient :=
 -- Lower the priority since it unifies with any quotient type.
 /-- The quotient by a decidable congruence relation has decidable equality. -/
 instance (priority := 500) [_d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quotient :=
-  inferInstanceAs (DecidableEq (Quotient c.toSetoid))
+  inferInstanceAs% (DecidableEq (Quotient c.toSetoid))
 
 @[simp]
 theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
@@ -214,13 +214,13 @@ section add_mul
 
 variable [Add R] [Mul R] (c : RingCon R)
 
-instance : Add c.Quotient := inferInstanceAs (Add c.toAddCon.Quotient)
+instance : Add c.Quotient := inferInstanceAs% (Add c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_add (x y : R) : (↑(x + y) : c.Quotient) = ↑x + ↑y :=
   rfl
 
-instance : Mul c.Quotient := inferInstanceAs (Mul c.toCon.Quotient)
+instance : Mul c.Quotient := inferInstanceAs% (Mul c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_mul (x y : R) : (↑(x * y) : c.Quotient) = ↑x * ↑y :=
@@ -232,7 +232,7 @@ section Zero
 
 variable [AddZeroClass R] [Mul R] (c : RingCon R)
 
-instance : Zero c.Quotient := inferInstanceAs (Zero c.toAddCon.Quotient)
+instance : Zero c.Quotient := inferInstanceAs% (Zero c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_zero : (↑(0 : R) : c.Quotient) = 0 :=
@@ -244,7 +244,7 @@ section One
 
 variable [Add R] [MulOneClass R] (c : RingCon R)
 
-instance : One c.Quotient := inferInstanceAs (One c.toCon.Quotient)
+instance : One c.Quotient := inferInstanceAs% (One c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_one : (↑(1 : R) : c.Quotient) = 1 :=
@@ -256,19 +256,19 @@ section NegSubZSMul
 
 variable [AddGroup R] [Mul R] (c : RingCon R)
 
-instance : Neg c.Quotient := inferInstanceAs (Neg c.toAddCon.Quotient)
+instance : Neg c.Quotient := inferInstanceAs% (Neg c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_neg (x : R) : (↑(-x) : c.Quotient) = -x :=
   rfl
 
-instance : Sub c.Quotient := inferInstanceAs (Sub c.toAddCon.Quotient)
+instance : Sub c.Quotient := inferInstanceAs% (Sub c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_sub (x y : R) : (↑(x - y) : c.Quotient) = x - y :=
   rfl
 
-instance hasZSMul : SMul ℤ c.Quotient := inferInstanceAs (SMul ℤ c.toAddCon.Quotient)
+instance hasZSMul : SMul ℤ c.Quotient := inferInstanceAs% (SMul ℤ c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_zsmul (z : ℤ) (x : R) : (↑(z • x) : c.Quotient) = z • (x : c.Quotient) :=
@@ -280,7 +280,7 @@ section NSMul
 
 variable [AddMonoid R] [Mul R] (c : RingCon R)
 
-instance hasNSMul : SMul ℕ c.Quotient := inferInstanceAs (SMul ℕ c.toAddCon.Quotient)
+instance hasNSMul : SMul ℕ c.Quotient := inferInstanceAs% (SMul ℕ c.toAddCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_nsmul (n : ℕ) (x : R) : (↑(n • x) : c.Quotient) = n • (x : c.Quotient) :=
@@ -292,7 +292,7 @@ section Pow
 
 variable [Add R] [Monoid R] (c : RingCon R)
 
-instance : Pow c.Quotient ℕ := inferInstanceAs (Pow c.toCon.Quotient ℕ)
+instance : Pow c.Quotient ℕ := inferInstanceAs% (Pow c.toCon.Quotient ℕ)
 
 @[simp, norm_cast]
 theorem coe_pow (x : R) (n : ℕ) : (↑(x ^ n) : c.Quotient) = (x : c.Quotient) ^ n :=

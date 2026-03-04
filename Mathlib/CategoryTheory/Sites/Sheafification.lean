@@ -81,7 +81,7 @@ instance [HasWeakSheafify J A] : Reflective (sheafToPresheaf J A) where
   adj := sheafificationAdjunction _ _
 
 instance [HasSheafify J A] : PreservesFiniteLimits (reflector (sheafToPresheaf J A)) :=
-  inferInstanceAs (PreservesFiniteLimits (presheafToSheaf _ _))
+  inferInstanceAs% (PreservesFiniteLimits (presheafToSheaf _ _))
 
 end
 
@@ -231,7 +231,7 @@ instance isIso_sheafificationAdjunction_counit (P : Sheaf J D) :
 
 instance (P : Sheaf J D) :
     IsIso ((sheafificationAdjunction J D).counit.app P).val :=
-  inferInstanceAs (IsIso ((sheafToPresheaf J D).map _))
+  inferInstanceAs% (IsIso ((sheafToPresheaf J D).map _))
 
 instance sheafification_reflective : IsIso (sheafificationAdjunction J D).counit :=
   NatIso.isIso_of_isIso_app _

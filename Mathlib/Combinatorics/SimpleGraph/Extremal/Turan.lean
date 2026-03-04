@@ -66,7 +66,7 @@ lemma turanGraph_adj {v w} : (turanGraph n r).Adj v w ↔ v % r ≠ w % r :=
   .rfl
 
 instance : DecidableRel (turanGraph n r).Adj :=
-  inferInstanceAs (DecidableRel fun v w : Fin n ↦ v % r ≠ w % r)
+  inferInstanceAs% (DecidableRel fun v w : Fin n ↦ v % r ≠ w % r)
 
 @[simp]
 lemma turanGraph_zero : turanGraph n 0 = ⊤ := by simp [turanGraph, Fin.val_inj, Top.top]
@@ -168,7 +168,7 @@ induced by `equivalence_not_adj`. -/
 def setoid : Setoid V := ⟨_, h.equivalence_not_adj⟩
 
 instance : DecidableRel h.setoid.r :=
-  inferInstanceAs <| DecidableRel (¬G.Adj · ·)
+  inferInstanceAs% <| DecidableRel (¬G.Adj · ·)
 
 /-- The finpartition derived from `h.setoid`. -/
 def finpartition [DecidableEq V] : Finpartition (univ : Finset V) := Finpartition.ofSetoid h.setoid

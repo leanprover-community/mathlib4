@@ -13,6 +13,7 @@ public import Mathlib.Order.Defs.Unbundled
 public import Batteries.Logic
 public import Batteries.Tactic.Trans
 public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.InferInstanceAsPercent
 
 /-!
 # Relation closures
@@ -373,7 +374,7 @@ instance : Std.Symm (SymmGen r) where
   symm _ _ := SymmGen.symm
 
 instance decidableRel [DecidableRel r] : DecidableRel (SymmGen r) :=
-  fun _ _ ↦ inferInstanceAs (Decidable (_ ∨ _))
+  fun _ _ ↦ inferInstanceAs% (Decidable (_ ∨ _))
 
 theorem of_le {α : Type*} [LE α] {a b : α} (h : a ≤ b) : SymmGen (· ≤ ·) a b := .of_rel h
 theorem of_ge {α : Type*} [LE α] {a b : α} (h : b ≤ a) : SymmGen (· ≤ ·) a b := .of_rel_symm h

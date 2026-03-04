@@ -414,7 +414,7 @@ def subalgebra : Subalgebra S R where
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
 /-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
-instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
+instance instAlgebra : Algebra S (A 0) := inferInstanceAs% <| Algebra S (subalgebra A)
 
 @[simp, norm_cast] theorem coe_algebraMap (s : S) :
     ↑(algebraMap _ (A 0) s) = algebraMap _ R s := rfl

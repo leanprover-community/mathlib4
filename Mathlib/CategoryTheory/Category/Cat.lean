@@ -365,7 +365,7 @@ def objects : Cat.{v, u} ⥤ Type u where
   map F := F.toFunctor.obj
 
 /-- See through the defeq `objects.obj X = X`. -/
-instance (X : Cat.{v, u}) : Category (objects.obj X) := inferInstanceAs <| Category X
+instance (X : Cat.{v, u}) : Category (objects.obj X) := inferInstanceAs% <| Category X
 
 section
 

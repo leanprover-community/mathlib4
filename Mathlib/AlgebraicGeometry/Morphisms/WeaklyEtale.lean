@@ -103,7 +103,7 @@ instance (f : X ⟶ Y) [WeaklyEtale f] : WeaklyEtale (pullback.diagonal f) where
 instance : MorphismProperty.HasOfPostcompProperty @WeaklyEtale @WeaklyEtale := by
   rw [MorphismProperty.hasOfPostcompProperty_iff_le_diagonal]
   intro X Y f hf
-  exact inferInstanceAs <| WeaklyEtale (pullback.diagonal f)
+  exact inferInstanceAs% <| WeaklyEtale (pullback.diagonal f)
 
 lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [WeaklyEtale (f ≫ g)] [WeaklyEtale g] : WeaklyEtale f :=
   MorphismProperty.of_postcomp _ _ g ‹_› ‹_›

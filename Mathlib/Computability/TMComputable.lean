@@ -87,7 +87,7 @@ def Stmt : Type :=
   Turing.TM2.Stmt tm.Γ tm.Λ tm.σ
 
 instance inhabitedStmt : Inhabited (Stmt tm) :=
-  inferInstanceAs (Inhabited (Turing.TM2.Stmt tm.Γ tm.Λ tm.σ))
+  inferInstanceAs% (Inhabited (Turing.TM2.Stmt tm.Γ tm.Λ tm.σ))
 
 /-- The type of configurations (functions) corresponding to this TM. -/
 def Cfg : Type :=

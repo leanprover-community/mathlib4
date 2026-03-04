@@ -70,13 +70,13 @@ def stoneanToCondensed : Stonean.{u} ⥤ CondensedSet.{u} :=
 abbrev Stonean.toCondensed (S : Stonean.{u}) : CondensedSet.{u} := stoneanToCondensed.obj S
 
 instance : compHausToCondensed'.Full :=
-  inferInstanceAs ((coherentTopology CompHaus).yoneda).Full
+  inferInstanceAs% ((coherentTopology CompHaus).yoneda).Full
 
 instance : compHausToCondensed'.Faithful :=
-  inferInstanceAs ((coherentTopology CompHaus).yoneda).Faithful
+  inferInstanceAs% ((coherentTopology CompHaus).yoneda).Faithful
 
-instance : compHausToCondensed.Full := inferInstanceAs (_ ⋙ _).Full
+instance : compHausToCondensed.Full := inferInstanceAs% (_ ⋙ _).Full
 
-instance : compHausToCondensed.Faithful := inferInstanceAs (_ ⋙ _).Faithful
+instance : compHausToCondensed.Faithful := inferInstanceAs% (_ ⋙ _).Faithful
 
 end Topology

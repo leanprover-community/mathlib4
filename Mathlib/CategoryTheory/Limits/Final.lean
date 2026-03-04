@@ -937,16 +937,16 @@ section
 variable {C D : Type*} [Category* C] [Category* D]
 
 instance (F : C ⥤ Dᵒᵖ) [Initial F] : F.leftOp.Final :=
-  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Final
+  inferInstanceAs% (F.op ⋙ (opOpEquivalence D).functor).Final
 
 instance (F : C ⥤ Dᵒᵖ) [Final F] : F.leftOp.Initial :=
-  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Initial
+  inferInstanceAs% (F.op ⋙ (opOpEquivalence D).functor).Initial
 
 instance (F : Cᵒᵖ ⥤ D) [Initial F] : F.rightOp.Final :=
-  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Final
+  inferInstanceAs% ((opOpEquivalence C).inverse ⋙ F.op).Final
 
 instance (F : Cᵒᵖ ⥤ D) [Final F] : F.rightOp.Initial :=
-  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Initial
+  inferInstanceAs% ((opOpEquivalence C).inverse ⋙ F.op).Initial
 
 end
 
@@ -1139,7 +1139,7 @@ lemma Grothendieck.final_map {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G)
   let G' : AsSmall C ⥤ Cat := sC.inverse ⋙ G ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
   let α' : F' ⟶ G' := whiskerLeft _ (whiskerRight α _)
   have : ∀ X, Final (α'.app X).toFunctor := fun X =>
-    inferInstanceAs (AsSmall.equiv.inverse ⋙ _ ⋙ AsSmall.equiv.functor).Final
+    inferInstanceAs% (AsSmall.equiv.inverse ⋙ _ ⋙ AsSmall.equiv.functor).Final
   have hα' : (map α').Final := final_map_small _
   dsimp only [α', ← Equivalence.symm_functor] at hα'
   have i := mapWhiskerLeftIsoConjPreMap sC.symm (whiskerRight α Cat.asSmallFunctor)

@@ -76,7 +76,7 @@ theorem univ_unique [Unique α] : (univ : Finset α) = {default} :=
   Finset.ext fun x => iff_of_true (mem_univ _) <| mem_singleton.2 <| Subsingleton.elim x default
 
 instance boundedOrder : BoundedOrder (Finset α) :=
-  { inferInstanceAs (OrderBot (Finset α)) with
+  { inferInstanceAs% (OrderBot (Finset α)) with
     top := univ
     le_top := subset_univ }
 

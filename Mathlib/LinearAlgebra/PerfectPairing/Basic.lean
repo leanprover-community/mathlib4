@@ -102,7 +102,7 @@ lemma IsPerfPair.congr (eM : M' ≃ₗ[R] M) (eN : N' ≃ₗ[R] N) (q : M' →�
 
 lemma IsPerfPair.of_bijective (p : M →ₗ[R] N →ₗ[R] R) [IsReflexive R N] (h : Bijective p) :
     IsPerfPair p :=
-  inferInstanceAs ((LinearMap.id (R := R) (M := Dual R N)).compl₁₂
+  inferInstanceAs% ((LinearMap.id (R := R) (M := Dual R N)).compl₁₂
     (LinearEquiv.ofBijective p h : M →ₗ[R] N →ₗ[R] R)
     (LinearEquiv.refl R N : N →ₗ[R] N)).IsPerfPair
 

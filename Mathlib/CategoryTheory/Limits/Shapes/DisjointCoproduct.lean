@@ -81,7 +81,7 @@ lemma CoproductDisjoint.of_hasCoproduct [HasCoproduct X] [∀ i, Mono (Sigma.ι 
     (hs : ∀ {i j : ι} (hij : i ≠ j), IsLimit (s hij))
     (H : ∀ {i j : ι} (hij : i ≠ j), IsInitial (s hij).pt) :
     CoproductDisjoint X :=
-  have (i : ι) : Mono ((Cofan.mk (∐ X) (Sigma.ι X)).inj i) := inferInstanceAs <| Mono (Sigma.ι X i)
+  have (i : ι) : Mono ((Cofan.mk (∐ X) (Sigma.ι X)).inj i) := inferInstanceAs% <| Mono (Sigma.ι X i)
   .of_cofan (coproductIsCoproduct X) s hs H
 
 variable [CoproductDisjoint X]
@@ -159,8 +159,8 @@ lemma BinaryCoproductDisjoint.of_binaryCofan {c : BinaryCofan X Y} (hc : IsColim
     BinaryCoproductDisjoint X Y := by
   have (i : WalkingPair) : Mono (Cofan.inj c i) := by
     cases i
-    · exact inferInstanceAs <| Mono c.inl
-    · exact inferInstanceAs <| Mono c.inr
+    · exact inferInstanceAs% <| Mono c.inl
+    · exact inferInstanceAs% <| Mono c.inr
   refine .of_cofan hc (fun {i j} hij ↦ ?_) (fun {i j} hij ↦ ?_) (fun {i j} hij ↦ ?_)
   · match i, j with
     | .left, .right => exact s

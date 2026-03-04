@@ -64,25 +64,25 @@ def NormalClosure : Type _ := integralClosure S E
 
 local notation3 "T" => NormalClosure R S
 
-instance : CommRing T := inferInstanceAs (CommRing (integralClosure S E))
+instance : CommRing T := inferInstanceAs% (CommRing (integralClosure S E))
 
-instance : IsDomain T := inferInstanceAs (IsDomain (integralClosure S E))
+instance : IsDomain T := inferInstanceAs% (IsDomain (integralClosure S E))
 
-instance : Nontrivial T := inferInstanceAs (Nontrivial (integralClosure S E))
+instance : Nontrivial T := inferInstanceAs% (Nontrivial (integralClosure S E))
 
-instance : Algebra S T := inferInstanceAs (Algebra S (integralClosure S E))
+instance : Algebra S T := inferInstanceAs% (Algebra S (integralClosure S E))
 
 set_option backward.isDefEq.respectTransparency false in
 /--
 This is a local instance since it is only used in this file to construct `Ring.NormalClosure`.
 -/
-local instance : Algebra T E := inferInstanceAs (Algebra (integralClosure S E) E)
+local instance : Algebra T E := inferInstanceAs% (Algebra (integralClosure S E) E)
 
 instance : Algebra R T := ((algebraMap S T).comp (algebraMap R S)).toAlgebra
 
 set_option backward.isDefEq.respectTransparency false in
 local instance : IsScalarTower S T E :=
-  inferInstanceAs (IsScalarTower S (integralClosure S E) E)
+  inferInstanceAs% (IsScalarTower S (integralClosure S E) E)
 
 local instance : IsIntegralClosure T S E := integralClosure.isIntegralClosure S E
 

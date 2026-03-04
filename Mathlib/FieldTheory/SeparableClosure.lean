@@ -214,7 +214,7 @@ or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSep
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
 instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
-  (inferInstanceAs (IsSepClosure F (SeparableClosure F))).sep_closed
+  (inferInstanceAs% (IsSepClosure F (SeparableClosure F))).sep_closed
 
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
@@ -405,7 +405,7 @@ lemma exists_finset_maximalFor_isTranscendenceBasis_separableClosure
     · exact .of_comp F _ _
     · convert hs.isAlgebraic_field <;> simp [s]
   have : Module.Finite ((separableClosure (adjoin F (s : Set E)) E).restrictScalars F) E :=
-    inferInstanceAs <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
+    inferInstanceAs% <| Module.Finite (separableClosure (adjoin F (s : Set E)) E) E
   exact d.not_lt_argminOn _ ht Hexists (by apply finrank_lt_of_gt H)
 
 @[deprecated (since := "2025-12-08")]

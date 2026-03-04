@@ -208,7 +208,7 @@ end ShrinkHoms
 namespace Shrink
 
 noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
-  inferInstanceAs (Category (InducedCategory _ (equivShrink C).symm))
+  inferInstanceAs% (Category (InducedCategory _ (equivShrink C).symm))
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
 noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=

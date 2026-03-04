@@ -133,7 +133,7 @@ instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
 
 /-- A finite Z-group has cyclic abelianization. -/
 instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Abelianization G) :=
-  let _ : IsZGroup (Abelianization G) := inferInstanceAs (IsZGroup (G ⧸ commutator G))
+  let _ : IsZGroup (Abelianization G) := inferInstanceAs% (IsZGroup (G ⧸ commutator G))
   inferInstance
 
 end Nilpotent

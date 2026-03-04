@@ -92,7 +92,7 @@ variable [W.IsMonoidal] [L.IsLocalization W] {unit : D} (ε : L.obj (𝟙_ C) �
 namespace Localization
 
 instance : Category (LocalizedMonoidal L W ε) :=
-  inferInstanceAs (Category D)
+  inferInstanceAs% (Category D)
 
 namespace Monoidal
 
@@ -106,7 +106,7 @@ abbrev ε' : (toMonoidalCategory L W ε).obj (𝟙_ C) ≅ unit := ε
 
 local notation "L'" => toMonoidalCategory L W ε
 
-instance : (L').IsLocalization W := inferInstanceAs (L.IsLocalization W)
+instance : (L').IsLocalization W := inferInstanceAs% (L.IsLocalization W)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isInvertedBy₂ :
@@ -126,7 +126,7 @@ noncomputable def tensorBifunctor :
 
 noncomputable instance : Lifting₂ L' L' W W (curriedTensor C ⋙ (Functor.whiskeringRight C C
     (LocalizedMonoidal L W ε)).obj L') (tensorBifunctor L W ε) :=
-  inferInstanceAs (Lifting₂ L L W W (curriedTensor C ⋙ (Functor.whiskeringRight C C D).obj L')
+  inferInstanceAs% (Lifting₂ L L W W (curriedTensor C ⋙ (Functor.whiskeringRight C C D).obj L')
     (Localization.lift₂ _ (isInvertedBy₂ L W ε) L L))
 
 /-- The bifunctor `tensorBifunctor` on `LocalizedMonoidal L W ε` is induced by

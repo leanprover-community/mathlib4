@@ -51,24 +51,24 @@ lemma quasiIsoAt_truncLE'ToRestriction (j : ι) (hj : ¬ e.BoundaryLE j)
     QuasiIsoAt (K.truncLE'ToRestriction e) j := by
   dsimp only [truncLE'ToRestriction]
   have : (K.op.restriction e.op).HasHomology j :=
-    inferInstanceAs ((K.restriction e).op.HasHomology j)
+    inferInstanceAs% ((K.restriction e).op.HasHomology j)
   rw [quasiIsoAt_unopFunctor_map_iff]
   exact truncGE'.quasiIsoAt_restrictionToTruncGE' K.op e.op j (by simpa)
 
 instance truncLE'_hasHomology (i : ι) : (K.truncLE' e).HasHomology i :=
-  inferInstanceAs ((K.op.truncGE' e.op).unop.HasHomology i)
+  inferInstanceAs% ((K.op.truncGE' e.op).unop.HasHomology i)
 
 end truncLE'
 
 variable [HasZeroObject C]
 
 instance (i' : ι') : (K.truncLE e).HasHomology i' :=
-  inferInstanceAs ((K.op.truncGE e.op).unop.HasHomology i')
+  inferInstanceAs% ((K.op.truncGE e.op).unop.HasHomology i')
 
 lemma quasiIsoAt_ιTruncLE {j : ι} {j' : ι'} (hj' : e.f j = j') :
     QuasiIsoAt (K.ιTruncLE e) j' := by
   have := K.op.quasiIsoAt_πTruncGE e.op hj'
-  exact inferInstanceAs (QuasiIsoAt ((unopFunctor _ _).map (K.op.πTruncGE e.op).op) j')
+  exact inferInstanceAs% (QuasiIsoAt ((unopFunctor _ _).map (K.op.πTruncGE e.op).op) j')
 
 instance (i : ι) : QuasiIsoAt (K.ιTruncLE e) (e.f i) := K.quasiIsoAt_ιTruncLE e rfl
 

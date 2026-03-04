@@ -88,9 +88,9 @@ theorem Presieve.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ Type w) :
   · rw [extensiveTopology, isSheaf_coverage] at hF
     let Z : Fin n → C := fun i ↦ unop (K.obj ⟨i⟩)
     have : (ofArrows Z (Cofan.mk (∐ Z) (Sigma.ι Z)).inj).HasPairwisePullbacks :=
-      inferInstanceAs (ofArrows Z (Sigma.ι Z)).HasPairwisePullbacks
+      inferInstanceAs% (ofArrows Z (Sigma.ι Z)).HasPairwisePullbacks
     have : ∀ (i : Fin n), Mono (Cofan.inj (Cofan.mk (∐ Z) (Sigma.ι Z)) i) :=
-      inferInstanceAs <| ∀ (i : Fin n), Mono (Sigma.ι Z i)
+      inferInstanceAs% <| ∀ (i : Fin n), Mono (Sigma.ι Z i)
     let i : K ≅ Discrete.functor (fun i ↦ op (Z i)) := Discrete.natIsoFunctor
     let _ : PreservesLimit (Discrete.functor (fun i ↦ op (Z i))) F :=
         Presieve.preservesProduct_of_isSheafFor F ?_ initialIsInitial _ (coproductIsCoproduct Z)

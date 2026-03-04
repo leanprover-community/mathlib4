@@ -80,7 +80,7 @@ instance (f : X ⟶ Y) (V : Y.Opens) [IsIntegralHom f] : IsIntegralHom (f ∣_ V
 
 instance : MorphismProperty.HasOfPostcompProperty @IsIntegralHom @IsSeparated :=
   MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
-    fun _ _ _ _ ↦ inferInstanceAs (IsIntegralHom _)
+    fun _ _ _ _ ↦ inferInstanceAs% (IsIntegralHom _)
 
 lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsIntegralHom (f ≫ g)] [IsSeparated g] :
     IsIntegralHom f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›

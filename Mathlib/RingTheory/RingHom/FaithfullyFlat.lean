@@ -36,7 +36,7 @@ namespace FaithfullyFlat
 
 lemma flat (hf : f.FaithfullyFlat) : f.Flat := by
   algebraize [f]
-  exact inferInstanceAs <| Module.Flat R S
+  exact inferInstanceAs% <| Module.Flat R S
 
 lemma iff_flat_and_comap_surjective :
     f.FaithfullyFlat ↔ f.Flat ∧ Function.Surjective (PrimeSpectrum.comap f) := by

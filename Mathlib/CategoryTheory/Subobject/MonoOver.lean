@@ -148,7 +148,7 @@ def mkArrowIso {X : C} (f : MonoOver X) : mk f.arrow ≅ f :=
 @[deprecated (since := "2025-12-18")] alias mk'ArrowIso := mkArrowIso
 
 instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.hom.left :=
-  inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
+  inferInstanceAs% (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
 
 lemma isIso_iff_isIso_hom_left {A B : MonoOver X} (f : A ⟶ B) :
     IsIso f ↔ IsIso f.hom.left :=

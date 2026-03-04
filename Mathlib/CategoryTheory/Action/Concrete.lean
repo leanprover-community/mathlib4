@@ -95,7 +95,7 @@ namespace FintypeCat
 `FintypeCat.of X`. -/
 instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
     MulAction G (FintypeCat.of X) :=
-  inferInstanceAs <| MulAction G X
+  inferInstanceAs% <| MulAction G X
 
 /-- Bundles a finite type `H` with a multiplicative action of `G` as an `Action`. -/
 def ofMulAction (G : Type*) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :

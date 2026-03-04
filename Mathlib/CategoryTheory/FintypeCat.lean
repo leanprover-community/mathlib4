@@ -49,7 +49,7 @@ instance {X : FintypeCat} : Fintype X :=
   X.2
 
 instance : Category FintypeCat :=
-  inferInstanceAs (Category (InducedCategory _ carrier))
+  inferInstanceAs% (Category (InducedCategory _ carrier))
 
 /-- The fully faithful embedding of `FintypeCat` into the category of types. -/
 @[simps!]
@@ -68,7 +68,7 @@ instance concreteCategoryFintype : ConcreteCategory FintypeCat (· ⟶ ·) where
   ofHom f := f
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
-instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
+instance : (forget FintypeCat).Full := inferInstanceAs% <| FintypeCat.incl.Full
 
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
@@ -151,7 +151,7 @@ instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
   Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
 
 instance (X : FintypeCat) : Finite (Aut X) :=
-  inferInstanceAs <| Finite (X ≅ X)
+  inferInstanceAs% <| Finite (X ≅ X)
 
 universe u
 

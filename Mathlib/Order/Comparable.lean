@@ -268,7 +268,7 @@ theorem incompRel_comm {a b : α} : IncompRel r a b ↔ IncompRel r b a :=
   comm
 
 instance IncompRel.decidableRel [DecidableRel r] : DecidableRel (IncompRel r) :=
-  fun _ _ ↦ inferInstanceAs (Decidable (¬ _ ∧ ¬ _))
+  fun _ _ ↦ inferInstanceAs% (Decidable (¬ _ ∧ ¬ _))
 
 theorem IncompRel.not_antisymmRel (h : IncompRel r a b) : ¬ AntisymmRel r a b :=
   fun h' ↦ h.1 h'.1

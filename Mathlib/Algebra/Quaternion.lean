@@ -501,7 +501,7 @@ end AddCommGroupWithOne
 variable [CommRing R]
 
 instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
-  __ := inferInstanceAs (AddCommGroupWithOne ℍ[R,c₁,c₂,c₃])
+  __ := inferInstanceAs% (AddCommGroupWithOne ℍ[R,c₁,c₂,c₃])
   left_distrib _ _ _ := by ext <;> simp <;> ring
   right_distrib _ _ _ := by ext <;> simp <;> ring
   zero_mul _ := by ext <;> simp
@@ -774,9 +774,9 @@ theorem Quaternion.equivTuple_apply (R : Type*) [Zero R] [One R] [Neg R] (x : �
   rfl
 
 instance {R : Type*} [Zero R] [One R] [Neg R] [Subsingleton R] : Subsingleton ℍ[R] :=
-  inferInstanceAs (Subsingleton <| ℍ[R,-1,0,-1])
+  inferInstanceAs% (Subsingleton <| ℍ[R,-1,0,-1])
 instance {R : Type*} [Zero R] [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
-  inferInstanceAs (Nontrivial <| ℍ[R,-1,0,-1])
+  inferInstanceAs% (Nontrivial <| ℍ[R,-1,0,-1])
 
 namespace Quaternion
 
@@ -789,31 +789,31 @@ instance : CoeTC R ℍ[R] := ⟨coe⟩
 
 instance instRing : Ring ℍ[R] := QuaternionAlgebra.instRing
 
-instance : Inhabited ℍ[R] := inferInstanceAs <| Inhabited ℍ[R,-1,0,-1]
+instance : Inhabited ℍ[R] := inferInstanceAs% <| Inhabited ℍ[R,-1,0,-1]
 
-instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs <| SMul S ℍ[R,-1,0,-1]
+instance [SMul S R] : SMul S ℍ[R] := inferInstanceAs% <| SMul S ℍ[R,-1,0,-1]
 
 instance [SMul S T] [SMul S R] [SMul T R] [IsScalarTower S T R] : IsScalarTower S T ℍ[R] :=
-  inferInstanceAs <| IsScalarTower S T ℍ[R,-1,0,-1]
+  inferInstanceAs% <| IsScalarTower S T ℍ[R,-1,0,-1]
 
 instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] :=
-  inferInstanceAs <| SMulCommClass S T ℍ[R,-1,0,-1]
+  inferInstanceAs% <| SMulCommClass S T ℍ[R,-1,0,-1]
 
 instance [Monoid S] [MulAction S R] : MulAction S ℍ[R] :=
-  inferInstanceAs <| MulAction S ℍ[R,-1,0,-1]
+  inferInstanceAs% <| MulAction S ℍ[R,-1,0,-1]
 
 instance [Semiring S] [DistribMulAction S R] : DistribMulAction S ℍ[R] :=
-  inferInstanceAs <| DistribMulAction S ℍ[R,-1,0,-1]
+  inferInstanceAs% <| DistribMulAction S ℍ[R,-1,0,-1]
 
 instance [Semiring S] [Module S R] : Module S ℍ[R] :=
-  inferInstanceAs <| Module S ℍ[R,-1,0,-1]
+  inferInstanceAs% <| Module S ℍ[R,-1,0,-1]
 
 protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
-  inferInstanceAs <| Algebra S ℍ[R,-1,0,-1]
+  inferInstanceAs% <| Algebra S ℍ[R,-1,0,-1]
 
 instance : Star ℍ[R] := QuaternionAlgebra.instStarQuaternionAlgebra
 instance : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
-instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
+instance : IsStarNormal a := inferInstanceAs% <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
 
 @[ext]
 theorem ext : a.re = b.re → a.imI = b.imI → a.imJ = b.imJ → a.imK = b.imK → a = b :=
@@ -1137,8 +1137,8 @@ theorem algebraMap_injective : (algebraMap R ℍ[R] : _ → _).Injective :=
 theorem smul_coe : x • (y : ℍ[R]) = ↑(x * y) :=
   QuaternionAlgebra.smul_coe x y
 
-instance : Module.Finite R ℍ[R] := inferInstanceAs <| Module.Finite R ℍ[R,-1,0,-1]
-instance : Module.Free R ℍ[R] := inferInstanceAs <| Module.Free R ℍ[R,-1,0,-1]
+instance : Module.Finite R ℍ[R] := inferInstanceAs% <| Module.Finite R ℍ[R,-1,0,-1]
+instance : Module.Free R ℍ[R] := inferInstanceAs% <| Module.Free R ℍ[R,-1,0,-1]
 
 theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R] = 4 :=
   QuaternionAlgebra.rank_eq_four _ _ _

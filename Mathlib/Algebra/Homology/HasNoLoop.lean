@@ -60,7 +60,7 @@ lemma hasNoLoop_down' {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLe
     (a : α) (ha : a ≠ 0) :
     (down' a).HasNoLoop := by
   have := hasNoLoop_up' a ha
-  exact inferInstanceAs (up' a).symm.HasNoLoop
+  exact inferInstanceAs% (up' a).symm.HasNoLoop
 
 lemma hasNoLoop_up {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
     [One α] (ha : (1 : α) ≠ 0) :

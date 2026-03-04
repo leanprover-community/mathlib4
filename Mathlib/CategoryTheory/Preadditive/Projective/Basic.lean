@@ -178,7 +178,7 @@ an arbitrarily chosen projective object over `kernel f`.
 -/
 def syzygies : C := over (kernel f)
 
-instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
+instance : Projective (syzygies f) := inferInstanceAs% (Projective (over _))
 
 /-- When `C` has enough projectives,
 `Projective.d f : Projective.syzygies f ⟶ X` is the composition

@@ -448,7 +448,7 @@ instance instLattice [Lattice α] : Lattice (WithZero α) :=
 end Lattice
 
 instance decidableEq [DecidableEq α] : DecidableEq (WithZero α) :=
-  inferInstanceAs <| DecidableEq (Option α)
+  inferInstanceAs% <| DecidableEq (Option α)
 
 instance decidableLE [Preorder α] [DecidableLE α] : DecidableLE (WithZero α)
   | 0, _ => isTrue <| by simp

@@ -48,7 +48,7 @@ def CatEnriched (C : Type*) := C
 
 namespace CatEnriched
 
-instance : EnrichedCategory Cat (CatEnriched C) := inferInstanceAs (EnrichedCategory Cat C)
+instance : EnrichedCategory Cat (CatEnriched C) := inferInstanceAs% (EnrichedCategory Cat C)
 
 /-- Any enriched category has an underlying category structure defined by `ForgetEnrichment`.
 This is equivalent but not definitionally equal to the category structure constructed here, which is
@@ -63,7 +63,7 @@ theorem id_eq (X : CatEnriched C) : 𝟙 X = (eId Cat X).toFunctor.obj ⟨⟨()�
 theorem comp_eq {X Y Z : CatEnriched C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ≫ g = (eComp Cat X Y Z).toFunctor.obj (f, g) := rfl
 
-instance {X Y : CatEnriched C} : Category (X ⟶ Y) := inferInstanceAs (Category (X ⟶[Cat] Y).α)
+instance {X Y : CatEnriched C} : Category (X ⟶ Y) := inferInstanceAs% (Category (X ⟶[Cat] Y).α)
 
 /-- The horizontal composition on 2-morphisms is defined using the action on arrows of the
 composition bifunctor from the enriched category structure. -/
@@ -169,12 +169,12 @@ def CatEnrichedOrdinary (C : Type*) := C
 
 namespace CatEnrichedOrdinary
 
-instance : Category (CatEnrichedOrdinary C) := inferInstanceAs (Category C)
+instance : Category (CatEnrichedOrdinary C) := inferInstanceAs% (Category C)
 
-instance : EnrichedCategory Cat (CatEnrichedOrdinary C) := inferInstanceAs (EnrichedCategory Cat C)
+instance : EnrichedCategory Cat (CatEnrichedOrdinary C) := inferInstanceAs% (EnrichedCategory Cat C)
 
 instance : EnrichedOrdinaryCategory Cat (CatEnrichedOrdinary C) :=
-  inferInstanceAs (EnrichedOrdinaryCategory Cat C)
+  inferInstanceAs% (EnrichedOrdinaryCategory Cat C)
 
 /-- The forgetful map from the type alias associated to `EnrichedOrdinaryCategory Cat C` and the
 type alias associated to `EnrichedCategory Cat C` is the identity on underlying types. -/

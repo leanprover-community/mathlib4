@@ -45,7 +45,7 @@ noncomputable def localizedModule [Small.{v} R] (M : ModuleCat.{v} R) (S : Submo
 `R` module structure on `Shrink.{v} (LocalizedModule S M)` -/
 noncomputable instance [Small.{v} R] (M : ModuleCat.{v} R) (S : Submonoid R) :
     Module R (M.localizedModule S) :=
-  inferInstanceAs (Module R (Shrink.{v} (LocalizedModule S M)))
+  inferInstanceAs% (Module R (Shrink.{v} (LocalizedModule S M)))
 
 instance [Small.{v} R] (M : ModuleCat.{v} R) (S : Submonoid R) :
     IsScalarTower R (Localization S) (M.localizedModule S) :=

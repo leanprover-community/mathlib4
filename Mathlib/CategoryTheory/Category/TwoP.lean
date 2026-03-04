@@ -63,7 +63,7 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
   rfl
 
 noncomputable instance largeCategory : LargeCategory TwoP :=
-  inferInstanceAs (Category (InducedCategory _ toBipointed))
+  inferInstanceAs% (Category (InducedCategory _ toBipointed))
 
 noncomputable instance concreteCategory : ConcreteCategory TwoP
     (fun X Y => Bipointed.HomSubtype X.toBipointed Y.toBipointed) :=

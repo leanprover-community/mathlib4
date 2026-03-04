@@ -37,7 +37,7 @@ def heawoodGraph : SimpleGraph (Fin 14) where
   symm i j := by grind
 
 instance : DecidableRel heawoodGraph.Adj :=
-  inferInstanceAs <| DecidableRel fun (i j : Fin 14) ↦
+  inferInstanceAs% <| DecidableRel fun (i j : Fin 14) ↦
     (i - j).1 = 1 ∨ (j - i).1 = 1 ∨ (i - j).1 = 5 ∧ Even j.1 ∨ (j - i).1 = 5 ∧ Even i.1
 
 lemma heawoodGraph_edgeFinset :

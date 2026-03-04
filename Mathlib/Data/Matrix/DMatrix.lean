@@ -72,43 +72,43 @@ def row {α : n → Type v} (v : ∀ j, α j) : DMatrix Unit n fun _i j => α j
   | _x, y => v y
 
 instance [∀ i j, Inhabited (α i j)] : Inhabited (DMatrix m n α) :=
-  inferInstanceAs <| Inhabited <| ∀ i j, α i j
+  inferInstanceAs% <| Inhabited <| ∀ i j, α i j
 
 instance [∀ i j, Add (α i j)] : Add (DMatrix m n α) :=
-  inferInstanceAs <| Add <| ∀ i j, α i j
+  inferInstanceAs% <| Add <| ∀ i j, α i j
 
 instance [∀ i j, AddSemigroup (α i j)] : AddSemigroup (DMatrix m n α) :=
-  inferInstanceAs <| AddSemigroup <| ∀ i j, α i j
+  inferInstanceAs% <| AddSemigroup <| ∀ i j, α i j
 
 instance [∀ i j, AddCommSemigroup (α i j)] : AddCommSemigroup (DMatrix m n α) :=
-  inferInstanceAs <| AddCommSemigroup <| ∀ i j, α i j
+  inferInstanceAs% <| AddCommSemigroup <| ∀ i j, α i j
 
 instance [∀ i j, Zero (α i j)] : Zero (DMatrix m n α) :=
-  inferInstanceAs <| Zero <| ∀ i j, α i j
+  inferInstanceAs% <| Zero <| ∀ i j, α i j
 
 instance [∀ i j, AddMonoid (α i j)] : AddMonoid (DMatrix m n α) :=
-  inferInstanceAs <| AddMonoid <| ∀ i j, α i j
+  inferInstanceAs% <| AddMonoid <| ∀ i j, α i j
 
 instance [∀ i j, AddCommMonoid (α i j)] : AddCommMonoid (DMatrix m n α) :=
-  inferInstanceAs <| AddCommMonoid <| ∀ i j, α i j
+  inferInstanceAs% <| AddCommMonoid <| ∀ i j, α i j
 
 instance [∀ i j, Neg (α i j)] : Neg (DMatrix m n α) :=
-  inferInstanceAs <| Neg <| ∀ i j, α i j
+  inferInstanceAs% <| Neg <| ∀ i j, α i j
 
 instance [∀ i j, Sub (α i j)] : Sub (DMatrix m n α) :=
-  inferInstanceAs <| Sub <| ∀ i j, α i j
+  inferInstanceAs% <| Sub <| ∀ i j, α i j
 
 instance [∀ i j, AddGroup (α i j)] : AddGroup (DMatrix m n α) :=
-  inferInstanceAs <| AddGroup <| ∀ i j, α i j
+  inferInstanceAs% <| AddGroup <| ∀ i j, α i j
 
 instance [∀ i j, AddCommGroup (α i j)] : AddCommGroup (DMatrix m n α) :=
-  inferInstanceAs <| AddCommGroup <| ∀ i j, α i j
+  inferInstanceAs% <| AddCommGroup <| ∀ i j, α i j
 
 instance [∀ i j, Unique (α i j)] : Unique (DMatrix m n α) :=
-  inferInstanceAs <| Unique <| ∀ i j, α i j
+  inferInstanceAs% <| Unique <| ∀ i j, α i j
 
 instance [∀ i j, Subsingleton (α i j)] : Subsingleton (DMatrix m n α) :=
-  inferInstanceAs <| Subsingleton <| ∀ i j, α i j
+  inferInstanceAs% <| Subsingleton <| ∀ i j, α i j
 
 @[simp]
 theorem zero_apply [∀ i j, Zero (α i j)] (i j) : (0 : DMatrix m n α) i j = 0 := rfl

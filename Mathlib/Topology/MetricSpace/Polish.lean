@@ -174,10 +174,10 @@ theorem dist_eq (x y : CompleteCopy s) :
 theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   le_add_of_nonneg_right (abs_nonneg _)
 
-instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
+instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs% (TopologicalSpace s)
 instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s) :=
-  inferInstanceAs (SecondCountableTopology s)
-instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
+  inferInstanceAs% (SecondCountableTopology s)
+instance : T0Space (CompleteCopy s) := inferInstanceAs% (T0Space s)
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -251,7 +251,7 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradeIsCompletelyMetrizable α
   lift s to Opens α using hs
-  exact inferInstanceAs (PolishSpace s.CompleteCopy)
+  exact inferInstanceAs% (PolishSpace s.CompleteCopy)
 
 end CompleteCopy
 

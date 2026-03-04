@@ -111,7 +111,7 @@ instance isAlgebraic : Algebra.IsAlgebraic F (algebraicClosure F E) :=
 
 /-- The algebraic closure of `F` in `E` is the integral closure of `F` in `E`. -/
 instance isIntegralClosure : IsIntegralClosure (algebraicClosure F E) F E :=
-  inferInstanceAs (IsIntegralClosure (integralClosure F E) F E)
+  inferInstanceAs% (IsIntegralClosure (integralClosure F E) F E)
 
 end algebraicClosure
 

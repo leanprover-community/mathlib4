@@ -75,7 +75,7 @@ lemma jointlyReflectIsomorphisms :
     exact fun Φ ↦ ((MorphismProperty.isomorphisms _).arrow_mk_iso_iff
       (((Functor.mapArrowFunctor _ _).mapIso
         (Φ.obj.sheafFiberCompIso (forget A))).app (Arrow.mk f))).2
-          (inferInstanceAs (IsIso ((forget A).map (Φ.obj.sheafFiber.map f))))
+          (inferInstanceAs% (IsIso ((forget A).map (Φ.obj.sheafFiber.map f))))
 
 @[stacks 00YL "(1)"]
 lemma jointlyReflectMonomorphisms [AB5OfSize.{w, w} A] [HasFiniteLimits A] :

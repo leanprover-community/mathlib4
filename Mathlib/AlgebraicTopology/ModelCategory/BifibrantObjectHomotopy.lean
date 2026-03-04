@@ -99,7 +99,7 @@ lemma inverts_iff_factors (F : BifibrantObject C ⥤ D) :
     have := isCofibrant_of_cofibration P.ι
     have : IsIso (F.map (homMk P.ι)) := H _ (by
       rw [← weakEquivalence_iff, weakEquivalence_iff_of_objectProperty]
-      exact inferInstanceAs (WeakEquivalence P.ι))
+      exact inferInstanceAs% (WeakEquivalence P.ι))
     simp only [show f = homMk h.h ≫ homMk P.p₀ by cat_disch,
       show g = homMk h.h ≫ homMk P.p₁ by cat_disch, Functor.map_comp]
     congr 1
@@ -239,8 +239,8 @@ lemma exists_bifibrant (X : CofibrantObject C) :
   have : IsFibrant h.Z := by
     rw [isFibrant_iff_of_isTerminal h.p terminalIsTerminal]
     infer_instance
-  exact ⟨BifibrantObject.mk h.Z, homMk h.i, inferInstanceAs (Cofibration h.i),
-    inferInstanceAs (WeakEquivalence h.i)⟩
+  exact ⟨BifibrantObject.mk h.Z, homMk h.i, inferInstanceAs% (Cofibration h.i),
+    inferInstanceAs% (WeakEquivalence h.i)⟩
 
 /-- Given `X : CofibrantObject C`, this is a choice of bifibrant resolution of `X`. -/
 noncomputable def bifibrantResolutionObj (X : CofibrantObject C) :
@@ -516,28 +516,28 @@ instance : (ιCofibrantObjectLocalizerMorphism C).IsLocalizedEquivalence :=
 instance {D : Type*} [Category D] (L : CofibrantObject C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
     (ιCofibrantObject ⋙ L).IsLocalization (weakEquivalences _) :=
-  inferInstanceAs (((ιCofibrantObjectLocalizerMorphism C).functor ⋙ L).IsLocalization _)
+  inferInstanceAs% (((ιCofibrantObjectLocalizerMorphism C).functor ⋙ L).IsLocalization _)
 
 instance : (localizerMorphism C).IsLocalizedEquivalence :=
-  inferInstanceAs ((ιCofibrantObjectLocalizerMorphism C).comp
+  inferInstanceAs% ((ιCofibrantObjectLocalizerMorphism C).comp
     (CofibrantObject.localizerMorphism C)).IsLocalizedEquivalence
 
 instance {D : Type*} [Category* D] (L : C ⥤ D)
     [L.IsLocalization (weakEquivalences C)] :
     (ι ⋙ L).IsLocalization (weakEquivalences (BifibrantObject C)) :=
-  inferInstanceAs (((localizerMorphism C).functor ⋙ L).IsLocalization _)
+  inferInstanceAs% (((localizerMorphism C).functor ⋙ L).IsLocalization _)
 
 instance : (ιFibrantObjectLocalizerMorphism C).IsLocalizedEquivalence :=
   let L := FibrantObject.ι ⋙ (weakEquivalences C).Q
   have : ((ιFibrantObjectLocalizerMorphism C).functor ⋙ L).IsLocalization
     (weakEquivalences _) :=
-    inferInstanceAs ((ι ⋙ (weakEquivalences C).Q).IsLocalization (weakEquivalences _))
+    inferInstanceAs% ((ι ⋙ (weakEquivalences C).Q).IsLocalization (weakEquivalences _))
   LocalizerMorphism.IsLocalizedEquivalence.of_isLocalization_of_isLocalization _ L
 
 instance {D : Type*} [Category D] (L : FibrantObject C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
     (ιFibrantObject ⋙ L).IsLocalization (weakEquivalences _) :=
-  inferInstanceAs (((ιFibrantObjectLocalizerMorphism C).functor ⋙ L).IsLocalization _)
+  inferInstanceAs% (((ιFibrantObjectLocalizerMorphism C).functor ⋙ L).IsLocalization _)
 
 end BifibrantObject
 

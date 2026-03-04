@@ -395,7 +395,7 @@ abbrev Pi.mapIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ≅ 
 
 instance Pi.map_isIso {f g : β → C} [HasProductsOfShape β C] (p : ∀ b, f b ⟶ g b)
     [∀ b, IsIso <| p b] : IsIso <| Pi.map p :=
-  inferInstanceAs (IsIso (Pi.mapIso (fun b ↦ asIso (p b))).hom)
+  inferInstanceAs% (IsIso (Pi.mapIso (fun b ↦ asIso (p b))).hom)
 
 section
 
@@ -519,7 +519,7 @@ abbrev Sigma.mapIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b
 
 instance Sigma.map_isIso {f g : β → C} [HasCoproductsOfShape β C] (p : ∀ b, f b ⟶ g b)
     [∀ b, IsIso <| p b] : IsIso (Sigma.map p) :=
-  inferInstanceAs (IsIso (Sigma.mapIso (fun b ↦ asIso (p b))).hom)
+  inferInstanceAs% (IsIso (Sigma.mapIso (fun b ↦ asIso (p b))).hom)
 
 section
 

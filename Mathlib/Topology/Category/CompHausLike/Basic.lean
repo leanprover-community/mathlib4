@@ -90,7 +90,7 @@ instance : CoeSort (CompHausLike P) (Type u) :=
   ⟨fun X => X.toTop⟩
 
 instance category : Category (CompHausLike P) :=
-  inferInstanceAs (Category (InducedCategory _ toTop))
+  inferInstanceAs% (Category (InducedCategory _ toTop))
 
 instance concreteCategory : ConcreteCategory (CompHausLike P) (C(·, ·)) :=
   InducedCategory.concreteCategory toTop
@@ -188,16 +188,16 @@ def fullyFaithfulCompHausLikeToTop : (compHausLikeToTop P).FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
 instance : (compHausLikeToTop P).Full :=
-  inferInstanceAs (inducedFunctor _).Full
+  inferInstanceAs% (inducedFunctor _).Full
 
 instance : (compHausLikeToTop P).Faithful :=
-  inferInstanceAs (inducedFunctor _).Faithful
+  inferInstanceAs% (inducedFunctor _).Faithful
 
 instance (X : CompHausLike P) : CompactSpace ((compHausLikeToTop P).obj X) :=
-  inferInstanceAs (CompactSpace X.toTop)
+  inferInstanceAs% (CompactSpace X.toTop)
 
 instance (X : CompHausLike P) : T2Space ((compHausLikeToTop P).obj X) :=
-  inferInstanceAs (T2Space X.toTop)
+  inferInstanceAs% (T2Space X.toTop)
 
 variable {P}
 

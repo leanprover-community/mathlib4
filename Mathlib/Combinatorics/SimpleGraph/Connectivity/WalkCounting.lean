@@ -197,7 +197,7 @@ instance : Fintype G.ConnectedComponent :=
   @Quotient.fintype _ _ G.reachableSetoid (inferInstance : DecidableRel G.Reachable)
 
 instance : Decidable G.Preconnected :=
-  inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)
+  inferInstanceAs% <| Decidable (∀ u v, G.Reachable u v)
 
 instance : Decidable G.Connected :=
   decidable_of_iff (G.Preconnected ∧ (Finset.univ : Finset V).Nonempty) <| by

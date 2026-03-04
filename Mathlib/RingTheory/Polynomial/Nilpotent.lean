@@ -193,7 +193,7 @@ instance : IsLocalHom (C : _ →+* Polynomial R) where
   map_nonunit := by classical simp +contextual [isUnit_iff_coeff_isUnit_isNilpotent, coeff_C]
 
 instance : IsLocalHom (algebraMap R (Polynomial R)) :=
-  inferInstanceAs (IsLocalHom C)
+  inferInstanceAs% (IsLocalHom C)
 
 end CommRing
 

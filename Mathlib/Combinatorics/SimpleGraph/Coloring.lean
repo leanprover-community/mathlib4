@@ -131,7 +131,7 @@ noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
 
 instance [DecidableEq α] {c : α} :
     DecidablePred (· ∈ C.colorClass c) :=
-  inferInstanceAs <| DecidablePred (· ∈ { v | C v = c })
+  inferInstanceAs% <| DecidablePred (· ∈ { v | C v = c })
 
 instance [Nonempty <| G.Coloring α] [Nontrivial α] [Nonempty V] : Nontrivial <| G.Coloring α := by
   classical

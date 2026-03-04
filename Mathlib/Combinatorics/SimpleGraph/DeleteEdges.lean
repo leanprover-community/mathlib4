@@ -49,7 +49,7 @@ variable {G} {H : SimpleGraph V} {s s₁ s₂ : Set (Sym2 V)}
 
 instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidableEq V] :
     DecidableRel (G.deleteEdges s).Adj :=
-  inferInstanceAs <| DecidableRel (G \ fromEdgeSet s).Adj
+  inferInstanceAs% <| DecidableRel (G \ fromEdgeSet s).Adj
 
 @[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ s(v, w) ∉ s :=
   and_congr_right fun h ↦ (and_iff_left h.ne).not
@@ -149,7 +149,7 @@ variable [Fintype V] [DecidableEq V]
 
 instance {G : SimpleGraph V} [DecidableRel G.Adj] {x : V} :
     DecidableRel (G.deleteIncidenceSet x).Adj :=
-  inferInstanceAs <| DecidableRel (G.deleteEdges (G.incidenceSet x)).Adj
+  inferInstanceAs% <| DecidableRel (G.deleteEdges (G.incidenceSet x)).Adj
 
 /-- Deleting the incidence set of the vertex `x` retains the same number of edges as in the induced
 subgraph of the vertices `{x}ᶜ`. -/

@@ -340,7 +340,7 @@ instance : LawfulSingleton PSet PSet :=
   ⟨fun _ => rfl⟩
 
 instance (x y : PSet) : Inhabited (insert x y).Type :=
-  inferInstanceAs (Inhabited <| Option y.Type)
+  inferInstanceAs% (Inhabited <| Option y.Type)
 
 @[simp]
 theorem mem_insert_iff : ∀ {x y z : PSet.{u}}, x ∈ insert y z ↔ Equiv x y ∨ x ∈ z

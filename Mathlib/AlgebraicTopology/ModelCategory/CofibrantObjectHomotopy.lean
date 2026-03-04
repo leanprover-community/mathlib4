@@ -121,7 +121,7 @@ instance : (toHoCatLocalizerMorphism C).IsLocalizedEquivalence := by
 instance {D : Type*} [Category* D] (L : CofibrantObject.HoCat C ⥤ D)
     [L.IsLocalization (weakEquivalences _)] :
     (toHoCat ⋙ L).IsLocalization (weakEquivalences _) :=
-  inferInstanceAs (((toHoCatLocalizerMorphism C).functor ⋙ L).IsLocalization _)
+  inferInstanceAs% (((toHoCatLocalizerMorphism C).functor ⋙ L).IsLocalization _)
 
 lemma HoCat.exists_resolution (X : C) :
     ∃ (X' : C) (_ : IsCofibrant X') (p : X' ⟶ X), Fibration p ∧ WeakEquivalence p := by
@@ -321,7 +321,7 @@ instance (X : CofibrantObject C) :
 instance {D : Type*} [Category* D] (L : C ⥤ D)
     [L.IsLocalization (weakEquivalences C)] :
     (ι ⋙ L).IsLocalization (weakEquivalences (CofibrantObject C)) :=
-  inferInstanceAs (((localizerMorphism C).functor ⋙ L).IsLocalization _)
+  inferInstanceAs% (((localizerMorphism C).functor ⋙ L).IsLocalization _)
 
 end CofibrantObject
 

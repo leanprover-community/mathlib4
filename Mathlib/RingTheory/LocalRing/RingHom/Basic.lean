@@ -112,7 +112,7 @@ lemma _root_.IsLocalHom.of_surjective [CommRing R] [CommRing S] [Nontrivial S] [
   have := IsLocalRing.of_surjective' f ‹_›
   refine ((local_hom_TFAE f).out 3 0).mp ?_
   have := Ideal.comap_isMaximal_of_surjective f hf (K := maximalIdeal S)
-  exact ((maximal_ideal_unique R).unique (inferInstanceAs (maximalIdeal R).IsMaximal) this).le
+  exact ((maximal_ideal_unique R).unique (inferInstanceAs% (maximalIdeal R).IsMaximal) this).le
 
 alias _root_.Function.Surjective.isLocalHom := _root_.IsLocalHom.of_surjective
 

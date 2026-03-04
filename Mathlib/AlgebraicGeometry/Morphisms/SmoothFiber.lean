@@ -47,7 +47,7 @@ lemma Smooth.of_smooth_fiberToSpecResidueField [LocallyOfFinitePresentation f] [
   · rw [IsZariskiLocalAtSource.iff_of_openCover (P := @Smooth) X.affineCover]
     intro i
     have _ (y) : Smooth (pullback.snd f ((Spec R).fromSpecResidueField y)) :=
-      inferInstanceAs <| Smooth (f.fiberToSpecResidueField y)
+      inferInstanceAs% <| Smooth (f.fiberToSpecResidueField y)
     refine this _ (fun y ↦ ?_) ⟨_, rfl⟩
     rw [Scheme.Hom.fiberToSpecResidueField, ← pullbackRightPullbackFstIso_inv_snd_snd]
     infer_instance

@@ -389,7 +389,7 @@ instance [Finite n] : LocallyOfFinitePresentation (𝔸(n; S) ↘ S) :=
   rw [← terminal.comp_from (Spec.map (CommRingCat.ofHom C)),
     MorphismProperty.cancel_right_of_respectsIso (P := @LocallyOfFinitePresentation),
     HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation), RingHom.FinitePresentation]
-  convert (inferInstanceAs (Algebra.FinitePresentation (ULift ℤ) ℤ[n]))
+  convert (inferInstanceAs% (Algebra.FinitePresentation (ULift ℤ) ℤ[n]))
   exact Algebra.algebra_ext _ _ fun _ ↦ rfl
 
 lemma isOpenMap_over : IsOpenMap (𝔸(n; S) ↘ S) := by
@@ -430,7 +430,7 @@ lemma isIntegralHom_over_iff_isEmpty : IsIntegralHom (𝔸(n; S) ↘ S) ↔ IsEm
         (isPullback_map (S.affineCover.f _)) h) ⟨y⟩ ⟨_, rfl⟩
     obtain ⟨R, rfl⟩ := hS
     have : Nontrivial R := (subsingleton_or_nontrivial R).resolve_left fun H ↦
-        not_isEmpty_of_nonempty (Spec R) (inferInstanceAs (IsEmpty (PrimeSpectrum R)))
+        not_isEmpty_of_nonempty (Spec R) (inferInstanceAs% (IsEmpty (PrimeSpectrum R)))
     constructor
     intro i
     have := RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.isIntegral_respectsIso.{max u v}

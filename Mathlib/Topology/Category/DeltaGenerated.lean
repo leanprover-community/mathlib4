@@ -43,7 +43,7 @@ instance : CoeSort DeltaGenerated Type* :=
 attribute [instance] deltaGenerated
 
 instance : LargeCategory.{u} DeltaGenerated.{u} :=
-  inferInstanceAs (Category (InducedCategory _ toTop))
+  inferInstanceAs% (Category (InducedCategory _ toTop))
 
 instance : ConcreteCategory.{u} DeltaGenerated.{u} (C(·, ·)) :=
   InducedCategory.concreteCategory toTop

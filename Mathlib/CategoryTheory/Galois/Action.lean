@@ -48,7 +48,7 @@ lemma functorToAction_map {X Y : C} (f : X ⟶ Y) : ((functorToAction F).map f).
   rfl
 
 instance (X : C) : MulAction (Aut X) ((functorToAction F).obj X).V :=
-  inferInstanceAs <| MulAction (Aut X) (F.obj X)
+  inferInstanceAs% <| MulAction (Aut X) (F.obj X)
 
 variable [GaloisCategory C] [FiberFunctor F]
 
@@ -57,12 +57,12 @@ instance (X : C) [IsGalois X] : MulAction.IsPretransitive (Aut X) ((functorToAct
 
 instance : Functor.Faithful (functorToAction F) :=
   have : Functor.Faithful (functorToAction F ⋙ forget₂ _ FintypeCat) :=
-    inferInstanceAs <| Functor.Faithful F
+    inferInstanceAs% <| Functor.Faithful F
   Functor.Faithful.of_comp (functorToAction F) (forget₂ _ FintypeCat)
 
 instance : PreservesMonomorphisms (functorToAction F) :=
   have : PreservesMonomorphisms (functorToAction F ⋙ forget₂ _ FintypeCat) :=
-    inferInstanceAs <| PreservesMonomorphisms F
+    inferInstanceAs% <| PreservesMonomorphisms F
   preservesMonomorphisms_of_preserves_of_reflects (functorToAction F) (forget₂ _ FintypeCat)
 
 instance : ReflectsMonomorphisms (functorToAction F) := reflectsMonomorphisms_of_faithful _
@@ -74,16 +74,16 @@ instance : Functor.ReflectsIsomorphisms (functorToAction F) where
 
 noncomputable instance : PreservesFiniteCoproducts (functorToAction F) :=
   ⟨fun _ ↦ Action.preservesColimitsOfShape_of_preserves (functorToAction F)
-    (inferInstanceAs <| PreservesColimitsOfShape (Discrete _) F)⟩
+    (inferInstanceAs% <| PreservesColimitsOfShape (Discrete _) F)⟩
 
 noncomputable instance : PreservesFiniteProducts (functorToAction F) :=
   ⟨fun _ ↦ Action.preservesLimitsOfShape_of_preserves (functorToAction F)
-    (inferInstanceAs <| PreservesLimitsOfShape (Discrete _) F)⟩
+    (inferInstanceAs% <| PreservesLimitsOfShape (Discrete _) F)⟩
 
 noncomputable instance (G : Type*) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) (functorToAction F) :=
   Action.preservesColimitsOfShape_of_preserves _ <|
-    inferInstanceAs <| PreservesColimitsOfShape (SingleObj G) F
+    inferInstanceAs% <| PreservesColimitsOfShape (SingleObj G) F
 
 instance : PreservesIsConnected (functorToAction F) :=
   ⟨fun {X} _ ↦ FintypeCat.Action.isConnected_of_transitive (Aut F) (F.obj X)⟩

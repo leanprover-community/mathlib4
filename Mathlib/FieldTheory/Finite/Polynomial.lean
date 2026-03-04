@@ -158,13 +158,13 @@ def R [CommRing K] : Type u :=
 -- The `AddCommGroup, Module K, Inhabited` instances should be constructed by a deriving handler.
 
 noncomputable instance [CommRing K] : AddCommGroup (R σ K) :=
-  inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
+  inferInstanceAs% (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))
 
 noncomputable instance [CommRing K] : Module K (R σ K) :=
-  inferInstanceAs (Module K (restrictDegree σ K (Fintype.card K - 1)))
+  inferInstanceAs% (Module K (restrictDegree σ K (Fintype.card K - 1)))
 
 noncomputable instance [CommRing K] : Inhabited (R σ K) :=
-  inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
+  inferInstanceAs% (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
 /-- Evaluation in the `MvPolynomial.R` subtype. -/
 noncomputable def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=

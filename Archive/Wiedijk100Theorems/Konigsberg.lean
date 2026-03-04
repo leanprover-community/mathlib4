@@ -54,7 +54,7 @@ def graph : SimpleGraph Verts where
     decide
   loopless := ⟨by decide⟩
 
-instance : DecidableRel graph.Adj := fun a b => inferInstanceAs <| Decidable (adj a b)
+instance : DecidableRel graph.Adj := fun a b => inferInstanceAs% <| Decidable (adj a b)
 
 /-- To speed up the proof, this is a cache of all the degrees of each vertex,
 proved in `Konigsberg.degree_eq_degree`. -/

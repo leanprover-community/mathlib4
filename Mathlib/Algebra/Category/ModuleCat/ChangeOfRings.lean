@@ -100,7 +100,7 @@ instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
 instance {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
     (restrictScalars f).ReflectsIsomorphisms :=
   have : (restrictScalars f ⋙ CategoryTheory.forget (ModuleCat R)).ReflectsIsomorphisms :=
-    inferInstanceAs (CategoryTheory.forget (ModuleCat S)).ReflectsIsomorphisms
+    inferInstanceAs% (CategoryTheory.forget (ModuleCat S)).ReflectsIsomorphisms
   reflectsIsomorphisms_of_comp _ (CategoryTheory.forget _)
 
 -- Porting note: this should be automatic
@@ -109,7 +109,7 @@ instance {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
 -- `(restrictScalars f).obj M`.
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] {f : R →+* S}
     {M : ModuleCat.{v} S} : Module S <| (restrictScalars f).obj M :=
-  inferInstanceAs <| Module S M
+  inferInstanceAs% <| Module S M
 
 @[simp]
 theorem restrictScalars.map_apply {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
@@ -316,7 +316,7 @@ instance {R₀ R S} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Alge
 instance restrictScalarsEquivalenceOfRingEquiv_linear
     {R₀ R S} [CommSemiring R₀] [Ring R] [Ring S] [Algebra R₀ R] [Algebra R₀ S] (e : R ≃ₐ[R₀] S) :
     (restrictScalarsEquivalenceOfRingEquiv e.toRingEquiv).functor.Linear R₀ :=
-  inferInstanceAs ((restrictScalars e.toAlgHom.toRingHom).Linear R₀)
+  inferInstanceAs% ((restrictScalars e.toAlgHom.toRingHom).Linear R₀)
 
 end Algebra
 
@@ -471,7 +471,7 @@ def obj' : ModuleCat S :=
   of _ ((restrictScalars f).obj (of _ S) →ₗ[R] M)
 
 instance : CoeFun (obj' f M) fun _ => S → M :=
-  inferInstanceAs <| CoeFun ((restrictScalars f).obj (of _ S) →ₗ[R] M) _
+  inferInstanceAs% <| CoeFun ((restrictScalars f).obj (of _ S) →ₗ[R] M) _
 
 /-- If `M, M'` are `R`-modules, then any `R`-linear map `g : M ⟶ M'` induces an `S`-linear map
 `(S →ₗ[R] M) ⟶ (S →ₗ[R] M')` defined by `h ↦ g ∘ h` -/
@@ -501,7 +501,7 @@ namespace CoextendScalars
 variable {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S)
 
 instance (M : ModuleCat R) : CoeFun ((coextendScalars f).obj M) fun _ => S → M :=
-  inferInstanceAs <| CoeFun (CoextendScalars.obj' f M) _
+  inferInstanceAs% <| CoeFun (CoextendScalars.obj' f M) _
 
 theorem smul_apply (M : ModuleCat R) (g : (coextendScalars f).obj M) (s s' : S) :
     (s • g) s' = g (s' * s) :=
@@ -921,7 +921,7 @@ instance preservesColimit_restrictScalars {R S : Type*} [Ring R] [Ring S]
     [HasColimit (F ⋙ forget₂ _ AddCommGrpCat)] :
     PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
   have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGrpCat) :=
-    inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGrpCat))
+    inferInstanceAs% (HasColimit (F ⋙ forget₂ _ AddCommGrpCat))
   apply preservesColimit_of_preserves_colimit_cocone (HasColimit.isColimitColimitCocone F)
   apply isColimitOfReflects (forget₂ (ModuleCat.{v} R) AddCommGrpCat)
   apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrpCat.{v})

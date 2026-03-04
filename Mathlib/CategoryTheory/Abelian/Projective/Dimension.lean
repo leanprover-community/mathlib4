@@ -125,7 +125,7 @@ instance [HasProjectiveDimensionLT X n] (k : ℕ) :
 
 instance [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X n.succ :=
-  inferInstanceAs (HasProjectiveDimensionLT X (n + 1))
+  inferInstanceAs% (HasProjectiveDimensionLT X (n + 1))
 
 instance [Projective X] : HasProjectiveDimensionLT X 1 := by
   letI := HasExt.standard C

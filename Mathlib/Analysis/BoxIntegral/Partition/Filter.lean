@@ -224,7 +224,7 @@ instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
 instance : DecidableLE (IntegrationParams) :=
-  fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
+  fun _ _ => inferInstanceAs% (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=
   fun _ _ => decidable_of_iff _ IntegrationParams.ext_iff.symm

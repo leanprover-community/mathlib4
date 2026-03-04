@@ -96,12 +96,12 @@ instance : CompactSpace 𝒪[K] := isCompact_iff_compactSpace.mp (isCompact_clos
 
 instance (K : Type*) [Field K] [ValuativeRel K] [UniformSpace K] [IsUniformAddGroup K]
     [IsValuativeTopology K] : (Valued.v (R := K) (Γ₀ := ValueGroupWithZero K)).Compatible :=
-  inferInstanceAs (valuation K).Compatible
+  inferInstanceAs% (valuation K).Compatible
 
 instance : IsDiscreteValuationRing 𝒪[K] :=
   letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  haveI : CompactSpace (Valued.integer K) := inferInstanceAs (CompactSpace 𝒪[K])
+  haveI : CompactSpace (Valued.integer K) := inferInstanceAs% (CompactSpace 𝒪[K])
   Valued.integer.isDiscreteValuationRing_of_compactSpace
 
 set_option backward.isDefEq.respectTransparency false in
@@ -112,7 +112,7 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
-    (isCompact_iff_compactSpace.mpr (inferInstanceAs (CompactSpace 𝒪[K])))
+    (isCompact_iff_compactSpace.mpr (inferInstanceAs% (CompactSpace 𝒪[K])))
   let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=
     ⟨.ofBijective (MonoidHom.mrange (valuation K)).subtype ⟨Subtype.val_injective, fun x ↦
       ⟨⟨x, ValuativeRel.valuation_surjective x⟩, rfl⟩⟩, .rfl⟩
@@ -134,7 +134,7 @@ instance : Finite 𝓀[K] :=
   letI : (Valued.v (R := K)).RankOne :=
     ⟨IsRankLeOne.nonempty.some.emb, IsRankLeOne.nonempty.some.strictMono⟩
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
-    (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
+    (inferInstanceAs% (CompactSpace 𝒪[K]))).2.2
 
 proof_wanted isAdicComplete : IsAdicComplete 𝓂[K] 𝒪[K]
 
@@ -157,7 +157,7 @@ instance : CompleteSpace 𝒪[K] :=
   letI : (Valued.v (R := K)).RankOne :=
     ⟨IsRankLeOne.nonempty.some.emb, IsRankLeOne.nonempty.some.strictMono⟩
   (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
-    (inferInstanceAs (CompactSpace 𝒪[K]))).1
+    (inferInstanceAs% (CompactSpace 𝒪[K]))).1
 
 end UniformSpace
 

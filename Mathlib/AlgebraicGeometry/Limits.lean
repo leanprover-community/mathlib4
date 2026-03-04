@@ -102,7 +102,7 @@ instance : IsEmpty (∅ : Scheme.{u}) :=
   show IsEmpty PEmpty by infer_instance
 
 instance spec_punit_isEmpty : IsEmpty (Spec <| .of PUnit.{u + 1}) :=
-  inferInstanceAs <| IsEmpty (PrimeSpectrum PUnit)
+  inferInstanceAs% <| IsEmpty (PrimeSpectrum PUnit)
 
 instance (priority := 100) isOpenImmersion_of_isEmpty {X Y : Scheme} (f : X ⟶ Y)
     [IsEmpty X] : IsOpenImmersion f := by
@@ -142,7 +142,7 @@ instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
   ⟨fun x => ((initial.to Scheme.empty :) x).elim⟩
 
 theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
-  @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
+  @isAffine_of_isEmpty _ (inferInstanceAs% (IsEmpty (∅ : Set X)))
 
 instance : HasStrictInitialObjects Scheme :=
   hasStrictInitialObjects_of_initial_is_strict fun A f => by infer_instance
@@ -166,7 +166,7 @@ instance (priority := low) {X : Scheme.{u}} [Subsingleton X] : IsAffine X := by
 theorem IsAffineOpen.of_subsingleton {X : Scheme} {U : X.Opens}
     (hU : Set.Subsingleton (U : Set X)) : IsAffineOpen U :=
   have : Subsingleton U := hU.coe_sort
-  inferInstanceAs (IsAffine _)
+  inferInstanceAs% (IsAffine _)
 
 end Initial
 
@@ -181,7 +181,7 @@ instance [Small.{u} σ] :
     CreatesColimitsOfShape (Discrete σ) Scheme.forgetToLocallyRingedSpace.{u} where
 
 instance [Small.{u} σ] : PreservesColimitsOfShape (Discrete σ) Scheme.forgetToTop.{u} :=
-  inferInstanceAs (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
+  inferInstanceAs% (PreservesColimitsOfShape (Discrete σ) (Scheme.forgetToLocallyRingedSpace ⋙
       LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget CommRingCat))
 
 instance [Small.{u} σ] : HasColimitsOfShape (Discrete σ) Scheme.{u} :=
@@ -233,7 +233,7 @@ instance : HasFiniteCoproducts Scheme.{u} where
   out := inferInstance
 
 instance : MonoCoprod Scheme.{u} :=
-  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs <| Mono coprod.inl⟩
+  .mk' fun X Y ↦ ⟨.mk coprod.inl coprod.inr, coprodIsCoprod X Y, inferInstanceAs% <| Mono coprod.inl⟩
 
 /-- The cover of `∐ X` by the `Xᵢ`. -/
 @[simps!]

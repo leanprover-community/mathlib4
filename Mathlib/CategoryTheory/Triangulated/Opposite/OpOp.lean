@@ -170,10 +170,10 @@ lemma commShiftIso_unopUnop_inv_app (X : Cᵒᵖᵒᵖ) (n m : ℤ) (hnm : n + m
   UnopUnopCommShift.iso_inv_app ..
 
 instance : (opOpEquivalence C).functor.CommShift ℤ :=
-  inferInstanceAs ((unopUnop C).CommShift ℤ)
+  inferInstanceAs% ((unopUnop C).CommShift ℤ)
 
 instance : (opOpEquivalence C).inverse.CommShift ℤ :=
-  inferInstanceAs ((opOp C).CommShift ℤ)
+  inferInstanceAs% ((opOp C).CommShift ℤ)
 
 set_option backward.isDefEq.respectTransparency false in
 instance : (opOpEquivalence C).CommShift ℤ :=
@@ -208,7 +208,7 @@ instance : (opOpEquivalence C).IsTriangulated :=
   .mk'' _ (by dsimp; infer_instance)
 
 instance : (unopUnop C).IsTriangulated :=
-  inferInstanceAs ((opOpEquivalence C).functor.IsTriangulated)
+  inferInstanceAs% ((opOpEquivalence C).functor.IsTriangulated)
 
 end Pretriangulated
 

@@ -164,7 +164,7 @@ variable {M}
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizerSubmonoid M a) :=
-  fun _ => inferInstanceAs <| Decidable (_ = _)
+  fun _ => inferInstanceAs% <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]
 theorem mem_stabilizerSubmonoid_iff {a : α} {m : M} : m ∈ stabilizerSubmonoid M a ↔ m • a = a :=
@@ -244,7 +244,7 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
 
 @[to_additive]
 instance instMulAction (H : Subgroup G) : MulAction H α :=
-  inferInstanceAs (MulAction H.toSubmonoid α)
+  inferInstanceAs% (MulAction H.toSubmonoid α)
 
 @[to_additive]
 lemma subgroup_smul_def {H : Subgroup G} (a : H) (b : α) : a • b = (a : G) • b := rfl
@@ -510,7 +510,7 @@ def stabilizer (a : α) : Subgroup G :=
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=
-  fun _ => inferInstanceAs <| Decidable (_ = _)
+  fun _ => inferInstanceAs% <| Decidable (_ = _)
 
 @[to_additive (attr := simp)]
 theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a = a :=

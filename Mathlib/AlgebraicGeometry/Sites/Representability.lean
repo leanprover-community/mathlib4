@@ -88,7 +88,7 @@ noncomputable def toGlued (i : ι) : X i ⟶ (glueData hf).glued :=
   (glueData hf).ι i
 
 instance : IsOpenImmersion (toGlued hf i) :=
-  inferInstanceAs (IsOpenImmersion ((glueData hf).ι i))
+  inferInstanceAs% (IsOpenImmersion ((glueData hf).ι i))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The map from the glued scheme `(glueData hf).glued`, treated as a sheaf, to `F`. -/

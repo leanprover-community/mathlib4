@@ -9,6 +9,7 @@ public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.Basic
 public import Batteries.Logic
 public import Batteries.Util.LibraryNote
+public import Mathlib.Tactic.InferInstanceAsPercent
 
 import Mathlib.Tactic.Attr.Register
 
@@ -235,7 +236,7 @@ def Xor' (a b : Prop) := (a ∧ ¬b) ∨ (b ∧ ¬a)
 
 @[grind =] theorem xor_def {a b : Prop} : Xor' a b ↔ (a ∧ ¬b) ∨ (b ∧ ¬a) := Iff.rfl
 
-instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs (Decidable (Or ..))
+instance [Decidable a] [Decidable b] : Decidable (Xor' a b) := inferInstanceAs% (Decidable (Or ..))
 
 @[simp] theorem xor_true : Xor' True = Not := by grind
 

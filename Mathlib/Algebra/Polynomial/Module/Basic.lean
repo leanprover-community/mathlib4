@@ -89,7 +89,7 @@ theorem induction_linear {motive : PolynomialModule R M → Prop} (f : Polynomia
   Finsupp.induction_linear f zero add single
 
 noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
-  inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
+  inferInstanceAs% (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 
 lemma smul_def (f : R[X]) (m : PolynomialModule R M) :
     f • m = aeval (Finsupp.lmapDomain M R Nat.succ) f m := by
@@ -102,7 +102,7 @@ instance (M : Type u) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower 
 instance isScalarTower' (M : Type u) [AddCommGroup M] [Module R M] [Module S M]
     [IsScalarTower S R M] : IsScalarTower S R[X] (PolynomialModule R M) := by
   haveI : IsScalarTower R R[X] (PolynomialModule R M) :=
-    inferInstanceAs <| IsScalarTower R R[X] <| Module.AEval' <| Finsupp.lmapDomain M R Nat.succ
+    inferInstanceAs% <| IsScalarTower R R[X] <| Module.AEval' <| Finsupp.lmapDomain M R Nat.succ
   constructor
   intro x y z
   rw [← @IsScalarTower.algebraMap_smul S R, ← @IsScalarTower.algebraMap_smul S R, smul_assoc]

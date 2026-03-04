@@ -307,7 +307,7 @@ lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing
   rw [← e, CommRingCat.ofHom_comp, Spec.map_comp]
   have H : IsIso (CommRingCat.ofHom (IsLocalization.algEquiv
     (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) := by
-    exact inferInstanceAs (IsIso <| (IsLocalization.algEquiv
+    exact inferInstanceAs% (IsIso <| (IsLocalization.algEquiv
       (Submonoid.powers f) S (Localization.Away f)).toRingEquiv.toCommRingCatIso.inv)
   simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe, AlgEquiv.toAlgHom_toRingHom] at H ⊢
   infer_instance
@@ -444,14 +444,14 @@ theorem isIso {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] [Epi f.base] 
 
 theorem of_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) (hf : IsOpenEmbedding f)
     [∀ x, IsIso (f.stalkMap x)] : IsOpenImmersion f :=
-  have (x : X) : IsIso (f.toShHom.hom.stalkMap x) := inferInstanceAs (IsIso (f.stalkMap x))
+  have (x : X) : IsIso (f.toShHom.hom.stalkMap x) := inferInstanceAs% (IsIso (f.stalkMap x))
   SheafedSpace.IsOpenImmersion.of_stalk_iso f.toShHom hf
 
 @[deprecated (since := "2025-10-07")] alias of_stalk_iso := of_isIso_stalkMap
 
 instance {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
     IsIso (f.stalkMap x) :=
-  inferInstanceAs <| IsIso (f.toLRSHom.stalkMap x)
+  inferInstanceAs% <| IsIso (f.toLRSHom.stalkMap x)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion g]
@@ -469,7 +469,7 @@ instance : MorphismProperty.HasOfPostcompProperty @IsOpenImmersion @IsOpenImmers
 
 theorem iff_isIso_stalkMap {X Y : Scheme.{u}} {f : X ⟶ Y} :
     IsOpenImmersion f ↔ IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) :=
-  ⟨fun H ↦ ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toPshHom.stalkMap x)⟩,
+  ⟨fun H ↦ ⟨H.1, fun x ↦ inferInstanceAs% <| IsIso (f.toPshHom.stalkMap x)⟩,
     fun ⟨h, _⟩ ↦ .of_isIso_stalkMap f h⟩
 
 @[deprecated (since := "2025-10-07")] alias iff_stalk_iso := iff_isIso_stalkMap
@@ -508,7 +508,7 @@ def isoRestrict : X ≅ Z.restrict f.isOpenEmbedding :=
 local notation "forget" => Scheme.forgetToLocallyRingedSpace
 
 instance mono : Mono f :=
-  (forget).mono_of_mono_map (inferInstanceAs (Mono f.toLRSHom))
+  (forget).mono_of_mono_map (inferInstanceAs% (Mono f.toLRSHom))
 
 lemma le_monomorphisms :
     IsOpenImmersion ≤ MorphismProperty.monomorphisms Scheme.{u} := fun _ _ _ _ ↦
@@ -520,7 +520,7 @@ instance : LocallyRingedSpace.IsOpenImmersion ((forget).map f) :=
 instance hasLimit_cospan_forget_of_left :
     HasLimit (cospan f g ⋙ forget) := by
   rw [hasLimit_iff_of_iso (diagramIsoCospan _)]
-  exact inferInstanceAs (HasLimit (cospan ((forget).map f) ((forget).map g)))
+  exact inferInstanceAs% (HasLimit (cospan ((forget).map f) ((forget).map g)))
 
 open CategoryTheory.Limits.WalkingCospan
 
@@ -530,7 +530,7 @@ instance hasLimit_cospan_forget_of_left' :
 
 instance hasLimit_cospan_forget_of_right : HasLimit (cospan g f ⋙ forget) := by
   rw [hasLimit_iff_of_iso (diagramIsoCospan _)]
-  exact inferInstanceAs (HasLimit (cospan ((forget).map g) ((forget).map f)))
+  exact inferInstanceAs% (HasLimit (cospan ((forget).map g) ((forget).map f)))
 
 instance hasLimit_cospan_forget_of_right' :
     HasLimit (cospan ((cospan g f ⋙ forget).map Hom.inl) ((cospan g f ⋙ forget).map Hom.inr)) :=

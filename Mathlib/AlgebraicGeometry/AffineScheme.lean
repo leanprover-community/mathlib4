@@ -200,10 +200,10 @@ def forgetToScheme : AffineScheme ⥤ Scheme :=
 /-! We copy over instances from `Scheme.Spec.essImageInclusion`. -/
 
 instance forgetToScheme_full : forgetToScheme.Full :=
-  inferInstanceAs Scheme.Spec.essImage.ι.Full
+  inferInstanceAs% Scheme.Spec.essImage.ι.Full
 
 instance forgetToScheme_faithful : forgetToScheme.Faithful :=
-  inferInstanceAs Scheme.Spec.essImage.ι.Faithful
+  inferInstanceAs% Scheme.Spec.essImage.ι.Faithful
 
 /-- The global section functor of an affine scheme. -/
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
@@ -218,7 +218,7 @@ instance : Γ.{u}.rightOp.IsEquivalence := equivCommRingCat.isEquivalence_functo
 instance : Γ.{u}.rightOp.op.IsEquivalence := equivCommRingCat.op.isEquivalence_functor
 
 instance ΓIsEquiv : Γ.{u}.IsEquivalence :=
-  inferInstanceAs (Γ.{u}.rightOp.op ⋙ (opOpEquivalence _).functor).IsEquivalence
+  inferInstanceAs% (Γ.{u}.rightOp.op ⋙ (opOpEquivalence _).functor).IsEquivalence
 
 instance hasColimits : HasColimits AffineScheme.{u} :=
   haveI := Adjunction.has_limits_of_equivalence.{u} Γ.{u}
@@ -280,11 +280,11 @@ instance Scheme.isAffine_affineBasisCover (X : Scheme) (i : X.affineBasisCover.I
 
 instance Scheme.isAffine_affineOpenCover (X : Scheme) (𝒰 : X.AffineOpenCover) (i : 𝒰.I₀) :
     IsAffine (𝒰.openCover.X i) :=
-  inferInstanceAs (IsAffine (Spec (𝒰.X i)))
+  inferInstanceAs% (IsAffine (Spec (𝒰.X i)))
 
 instance (X : Scheme) [CompactSpace X] (𝒰 : X.OpenCover) [∀ i, IsAffine (𝒰.X i)] (i) :
     IsAffine (𝒰.finiteSubcover.X i) :=
-  inferInstanceAs (IsAffine (𝒰.X _))
+  inferInstanceAs% (IsAffine (𝒰.X _))
 
 instance {X} [IsAffine X] (i) :
     IsAffine ((Scheme.coverOfIsIso (P := @IsOpenImmersion) (𝟙 X)).X i) := by
@@ -635,7 +635,7 @@ theorem exists_basicOpen_le {V : X.Opens} (x : V) (h : ↑x ∈ U) :
 
 noncomputable
 instance {R : CommRingCat} {U} : Algebra R Γ(Spec R, U) :=
-  inferInstanceAs (Algebra R ((Spec.structureSheaf R).presheaf.obj _))
+  inferInstanceAs% (Algebra R ((Spec.structureSheaf R).presheaf.obj _))
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -644,7 +644,7 @@ lemma algebraMap_Spec_obj {R : CommRingCat} {U} : algebraMap R Γ(Spec R, U) =
 
 instance {R : CommRingCat} {f : R} :
     IsLocalization.Away f Γ(Spec R, PrimeSpectrum.basicOpen f) :=
-  inferInstanceAs (IsLocalization.Away f
+  inferInstanceAs% (IsLocalization.Away f
     ((Spec.structureSheaf R).val.obj (op <| PrimeSpectrum.basicOpen f)))
 
 /-- Given an affine open U and some `f : U`,

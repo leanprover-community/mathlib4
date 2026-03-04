@@ -559,7 +559,7 @@ theorem rank_polynomial_polynomial : Module.rank R[X] S[X] = Module.rank R S :=
 
 #adaptation_note /-- Needed after leanprover/lean4#12564 -/
 noncomputable instance (σ : Type u) [Algebra R S] : Module R (MvPolynomial σ S) :=
-  inferInstanceAs <| Module R (AddMonoidAlgebra S (σ →₀ ℕ))
+  inferInstanceAs% <| Module R (AddMonoidAlgebra S (σ →₀ ℕ))
 
 set_option backward.isDefEq.respectTransparency false in
 theorem rank_mvPolynomial_mvPolynomial (σ : Type u) :

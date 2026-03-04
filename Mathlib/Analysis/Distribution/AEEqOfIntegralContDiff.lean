@@ -118,7 +118,7 @@ theorem ae_eq_zero_of_integral_contMDiff_smul_eq_zero [SigmaCompactSpace M]
 alias ae_eq_zero_of_integral_smooth_smul_eq_zero := ae_eq_zero_of_integral_contMDiff_smul_eq_zero
 
 -- An instance with keys containing `Opens`
-instance (U : Opens M) : BorelSpace U := inferInstanceAs (BorelSpace (U : Set M))
+instance (U : Opens M) : BorelSpace U := inferInstanceAs% (BorelSpace (U : Set M))
 
 /-- If a function `f` locally integrable on an open subset `U` of a finite-dimensional real
   manifold has zero integral when multiplied by any smooth function compactly supported

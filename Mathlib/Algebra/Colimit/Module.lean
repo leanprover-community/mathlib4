@@ -66,19 +66,19 @@ namespace DirectLimit
 section Basic
 
 instance addCommMonoid : AddCommMonoid (DirectLimit G f) :=
-  inferInstanceAs (AddCommMonoid (moduleCon f).Quotient)
+  inferInstanceAs% (AddCommMonoid (moduleCon f).Quotient)
 
-instance module : Module R (DirectLimit G f) := inferInstanceAs (Module R (moduleCon f).Quotient)
+instance module : Module R (DirectLimit G f) := inferInstanceAs% (Module R (moduleCon f).Quotient)
 
 instance addCommGroup (G : ι → Type*) [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
     (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) : AddCommGroup (DirectLimit G f) :=
-  inferInstanceAs (AddCommGroup (moduleCon f).Quotient)
+  inferInstanceAs% (AddCommGroup (moduleCon f).Quotient)
 
 instance inhabited : Inhabited (DirectLimit G f) :=
   ⟨0⟩
 
 instance unique [IsEmpty ι] : Unique (DirectLimit G f) :=
-  inferInstanceAs <| Unique (Quotient _)
+  inferInstanceAs% <| Unique (Quotient _)
 
 variable (R ι)
 

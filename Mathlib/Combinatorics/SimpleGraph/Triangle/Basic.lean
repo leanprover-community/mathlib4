@@ -141,7 +141,7 @@ instance EdgeDisjointTriangles.instDecidable : Decidable G.EdgeDisjointTriangles
     simp only [coe_cliqueFinset, EdgeDisjointTriangles, Finset.card_le_one, ← coe_inter]; rfl
 
 instance LocallyLinear.instDecidable : Decidable G.LocallyLinear :=
-  inferInstanceAs (Decidable (_ ∧ _))
+  inferInstanceAs% (Decidable (_ ∧ _))
 
 lemma EdgeDisjointTriangles.card_edgeFinset_le (hG : G.EdgeDisjointTriangles) :
     3 * #(G.cliqueFinset 3) ≤ #G.edgeFinset := by

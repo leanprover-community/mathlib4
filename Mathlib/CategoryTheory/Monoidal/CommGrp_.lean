@@ -63,7 +63,7 @@ instance : Inhabited (CommGrp C) where
   default := trivial C
 
 instance : Category (CommGrp C) :=
-  inferInstanceAs (Category (InducedCategory _ CommGrp.toGrp))
+  inferInstanceAs% (Category (InducedCategory _ CommGrp.toGrp))
 
 @[simp]
 theorem id_hom (A : CommGrp C) : (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.toGrp :=
@@ -156,10 +156,10 @@ theorem forget₂Grp_comp_forget : forget₂Grp C ⋙ Grp.forget C = forget C :=
 theorem forget₂CommMon_comp_forget : forget₂CommMon C ⋙ CommMon.forget C = forget C := rfl
 
 instance {G H : CommGrp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom :=
-  inferInstanceAs (IsIso ((forget₂Grp C).map f))
+  inferInstanceAs% (IsIso ((forget₂Grp C).map f))
 
 instance {G H : CommGrp C} {f : G ⟶ H} [IsIso f] : IsIso f.hom.hom :=
-  inferInstanceAs (IsIso ((forget₂Grp C ⋙ Grp.forget₂Mon C).map f))
+  inferInstanceAs% (IsIso ((forget₂Grp C ⋙ Grp.forget₂Mon C).map f))
 
 end
 

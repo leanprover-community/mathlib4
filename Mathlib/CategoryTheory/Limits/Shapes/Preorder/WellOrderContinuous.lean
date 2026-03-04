@@ -81,7 +81,7 @@ instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (f : J' ≤i J)
 instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
     [F.IsWellOrderContinuous] :
     (e.equivalence.functor ⋙ F).IsWellOrderContinuous :=
-  inferInstanceAs (e.toInitialSeg.monotone.functor ⋙ F).IsWellOrderContinuous
+  inferInstanceAs% (e.toInitialSeg.monotone.functor ⋙ F).IsWellOrderContinuous
 
 instance IsWellOrderContinuous.restriction_setIci
     {J : Type w} [LinearOrder J]

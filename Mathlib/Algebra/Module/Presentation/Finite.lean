@@ -47,7 +47,7 @@ lemma finitePresentation_iff_exists_presentation :
   · intro
     obtain ⟨G : Type w₀, _, var, hG⟩ :=
       Submodule.fg_iff_exists_finite_generating_family.1
-        (finite_def.1 (inferInstanceAs (Module.Finite A M)))
+        (finite_def.1 (inferInstanceAs% (Module.Finite A M)))
     obtain ⟨R : Type w₁, _, relation, hR⟩ :=
       Submodule.fg_iff_exists_finite_generating_family.1
         (Module.FinitePresentation.fg_ker (Finsupp.linearCombination A var) (by

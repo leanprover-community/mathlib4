@@ -214,7 +214,7 @@ instance (priority := 10) : CoeTC M c.Quotient :=
 @[to_additive
 /-- The quotient by a decidable additive congruence relation has decidable equality. -/]
 instance (priority := 500) [∀ a b, Decidable (c a b)] : DecidableEq c.Quotient :=
-  inferInstanceAs (DecidableEq (Quotient c.toSetoid))
+  inferInstanceAs% (DecidableEq (Quotient c.toSetoid))
 
 @[to_additive (attr := simp)]
 theorem quot_mk_eq_coe {M : Type*} [Mul M] (c : Con M) (x : M) : Quot.mk c x = (x : c.Quotient) :=

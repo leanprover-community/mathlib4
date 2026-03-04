@@ -39,7 +39,7 @@ lemma span_range_mulNumerator_eq_top {s : Set R}
   rw [← Ideal.radical_eq_top, eq_top_iff, ← hsone, Ideal.span_le]
   intro a ha
   haveI : IsLocalization (Submonoid.powers a) (Rₜ ⟨a, ha⟩) :=
-    inferInstanceAs <| IsLocalization.Away (⟨a, ha⟩ : s).val (Rₜ ⟨a, ha⟩)
+    inferInstanceAs% <| IsLocalization.Away (⟨a, ha⟩ : s).val (Rₜ ⟨a, ha⟩)
   have h₁ : Ideal.span (p ⟨a, ha⟩) ≤ Ideal.span
       (algebraMap R (Rₜ ⟨a, ha⟩) '' Set.range (IsLocalization.Away.mulNumerator s p)) := by
     rw [Ideal.span_le]

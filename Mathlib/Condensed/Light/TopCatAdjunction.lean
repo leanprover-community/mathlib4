@@ -139,7 +139,7 @@ instance (X : LightCondSet.{u}) : SequentialSpace X.toTopCat := by
   apply SequentialSpace.coinduced
 
 instance (X : LightCondSet.{u}) : SequentialSpace (lightCondSetToTopCat.obj X) :=
-  inferInstanceAs (SequentialSpace X.toTopCat)
+  inferInstanceAs% (SequentialSpace X.toTopCat)
 
 /-- The functor from light condensed sets to topological spaces lands in sequential spaces. -/
 def lightCondSetToSequential : LightCondSet.{u} ⥤ Sequential.{u} where
@@ -197,7 +197,7 @@ noncomputable def sequentialAdjunctionCounitIso (X : Sequential.{0}) :
 instance : IsIso sequentialAdjunction.{0}.counit := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
-  exact inferInstanceAs (IsIso (sequentialAdjunctionCounitIso X).hom)
+  exact inferInstanceAs% (IsIso (sequentialAdjunctionCounitIso X).hom)
 
 /--
 The functor from topological spaces to light condensed sets restricted to sequential spaces

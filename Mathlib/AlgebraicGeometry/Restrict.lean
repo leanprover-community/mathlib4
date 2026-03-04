@@ -56,7 +56,7 @@ lemma ι_apply (x : U) : U.ι x = x.val := rfl
 
 @[deprecated (since := "2025-10-07")] alias ι_base_apply := ι_apply
 
-instance : IsOpenImmersion U.ι := inferInstanceAs (IsOpenImmersion (X.ofRestrict _))
+instance : IsOpenImmersion U.ι := inferInstanceAs% (IsOpenImmersion (X.ofRestrict _))
 
 @[simps! over] instance : U.toScheme.CanonicallyOver X where
   hom := U.ι

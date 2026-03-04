@@ -77,7 +77,7 @@ noncomputable instance : F.mapDerivedCategory.CommShift ℤ :=
     F.mapDerivedCategory
 
 instance : NatTrans.CommShift F.mapDerivedCategoryFactorsh.hom ℤ :=
-  inferInstanceAs (NatTrans.CommShift (Localization.Lifting.iso
+  inferInstanceAs% (NatTrans.CommShift (Localization.Lifting.iso
       DerivedCategory.Qh (HomotopyCategory.quasiIso C₁ (ComplexShape.up ℤ))
         (F.mapHomotopyCategory _ ⋙ DerivedCategory.Qh)
           F.mapDerivedCategory).hom ℤ)
@@ -98,7 +98,7 @@ instance : F.mapDerivedCategory.IsTriangulated :=
 
 instance : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
     (ComplexShape.up ℤ)).functor.CommShift ℤ :=
-  inferInstanceAs ((F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ)
+  inferInstanceAs% ((F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ)
 
 /-- `DerivedCategory.singleFunctor` commutes with `F` and `F.mapDerivedCategory`. -/
 noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :

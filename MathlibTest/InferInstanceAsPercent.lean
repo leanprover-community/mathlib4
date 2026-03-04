@@ -23,7 +23,7 @@ def MyNat : Type := Nat
 
 -- `inferInstanceAs` leaks the source type `Nat` as the carrier
 instance myNatInv_leaky : MyInv MyNat :=
-  inferInstanceAs (MyInv Nat)
+  inferInstanceAs% (MyInv Nat)
 
 -- `inferInstanceAs%` fixes this — the carrier and lambda domain are `MyNat`
 instance myNatInv_fixed : MyInv MyNat :=
@@ -55,7 +55,7 @@ example : myNatInv_leaky.myInv (α := MyNat) (5 : Nat) = myNatInv_fixed.myInv (5
 /-! ## Deeper hierarchy: reproducing the grind failure pattern
 
 The original failure involved `Field (FiniteResidueField K)` defined via
-`inferInstanceAs (Field (IsLocalRing.ResidueField _))`. Deeply nested sub-instances
+`inferInstanceAs% (Field (IsLocalRing.ResidueField _))`. Deeply nested sub-instances
 (e.g. `DivisionMonoid.toDivInvOneMonoid.toInvOneClass.toInv`) had lambda domains
 referring to `IsLocalRing.ResidueField _` instead of `FiniteResidueField K`.
 This caused `isDefEq` failures at `instances` transparency — the level used by
@@ -91,7 +91,7 @@ instance testField_direct : TestField TestNat where
   neg n := n
 
 -- Leaky: internal lambda domains use Nat instead of TestNat
-instance testField_leaky : TestField TestNat := inferInstanceAs (TestField Nat)
+instance testField_leaky : TestField TestNat := inferInstanceAs% (TestField Nat)
 
 -- Fixed: inferInstanceAs% patches lambda domains to use TestNat
 -- (warns about leaky sub-instances that could be defined separately)

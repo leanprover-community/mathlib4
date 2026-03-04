@@ -109,7 +109,7 @@ def ZerothHomotopy :=
 
 /-- The quotient topology on path components. -/
 instance : TopologicalSpace <| ZerothHomotopy X :=
-  inferInstanceAs <| TopologicalSpace <| Quotient _
+  inferInstanceAs% <| TopologicalSpace <| Quotient _
 
 instance ZerothHomotopy.inhabited : Inhabited (ZerothHomotopy ℝ) :=
   ⟨@Quotient.mk' ℝ (pathSetoid ℝ) 0⟩

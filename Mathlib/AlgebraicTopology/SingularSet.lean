@@ -83,7 +83,7 @@ noncomputable def SSet.toTopSimplex :
   Presheaf.isExtensionAlongULiftYoneda _
 
 instance : SSet.toTop.{u}.IsLeftKanExtension SSet.toTopSimplex.inv :=
-  inferInstanceAs (Functor.IsLeftKanExtension _
+  inferInstanceAs% (Functor.IsLeftKanExtension _
     (SSet.stdSimplex.{u}.leftKanExtensionUnit SimplexCategory.toTop.{u}))
 
 /-- The singular simplicial set of a totally disconnected space is the constant simplicial set. -/

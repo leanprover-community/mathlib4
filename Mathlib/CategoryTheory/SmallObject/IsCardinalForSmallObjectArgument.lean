@@ -214,7 +214,7 @@ instance (f : Arrow C) : IsIso ((ιIteration I κ).app f).right :=
 
 instance {j₁ j₂ : κ.ord.ToType} (φ : j₁ ⟶ j₂) (f : Arrow C) :
     IsIso (((iterationFunctor I κ).map φ).app f).right :=
-  inferInstanceAs (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
+  inferInstanceAs% (IsIso ((transfiniteCompositionOfShapeιIterationAppRight I κ f).F.map φ))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For any `f : Arrow C`, the object `((iteration I κ).obj f).right`

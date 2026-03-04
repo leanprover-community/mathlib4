@@ -113,17 +113,17 @@ instance instInvolutiveStar [InvolutiveStar A] : InvolutiveStar (CStarMatrix n n
   star_involutive := star_involutive (R := Matrix n n A)
 
 instance instInhabited [Inhabited A] : Inhabited (CStarMatrix m n A) :=
-  inferInstanceAs <| Inhabited <| m → n → A
+  inferInstanceAs% <| Inhabited <| m → n → A
 
 instance instDecidableEq [DecidableEq A] [Fintype m] [Fintype n] :
     DecidableEq (CStarMatrix m n A) :=
   Fintype.decidablePiFintype
 
 instance {n m} [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] (α) [Fintype α] :
-    Fintype (CStarMatrix m n α) := inferInstanceAs (Fintype (m → n → α))
+    Fintype (CStarMatrix m n α) := inferInstanceAs% (Fintype (m → n → α))
 
 instance {n m} [Finite m] [Finite n] (α) [Finite α] :
-    Finite (CStarMatrix m n α) := inferInstanceAs (Finite (m → n → α))
+    Finite (CStarMatrix m n α) := inferInstanceAs% (Finite (m → n → α))
 
 instance instAdd [Add A] : Add (CStarMatrix m n A) :=
   Pi.instAdd
@@ -162,7 +162,7 @@ instance instUnique [Unique A] : Unique (CStarMatrix m n A) :=
   Pi.unique
 
 instance instSubsingleton [Subsingleton A] : Subsingleton (CStarMatrix m n A) :=
-  inferInstanceAs <| Subsingleton <| m → n → A
+  inferInstanceAs% <| Subsingleton <| m → n → A
 
 instance instNontrivial [Nonempty m] [Nonempty n] [Nontrivial A] : Nontrivial (CStarMatrix m n A) :=
   Function.nontrivial
@@ -263,7 +263,7 @@ section zero_one
 
 variable [Zero A] [One A]
 
-instance instOne : One (CStarMatrix n n A) := inferInstanceAs <| One (Matrix n n A)
+instance instOne : One (CStarMatrix n n A) := inferInstanceAs% <| One (Matrix n n A)
 
 theorem one_apply {i j} : (1 : CStarMatrix n n A) i j = if i = j then 1 else 0 := rfl
 
@@ -336,34 +336,34 @@ protected theorem add_mul {l : Type*} [Fintype m] [NonUnitalNonAssocSemiring A]
 
 instance instNonUnitalNonAssocSemiring [Fintype n] [NonUnitalNonAssocSemiring A] :
     NonUnitalNonAssocSemiring (CStarMatrix n n A) :=
-  inferInstanceAs <| NonUnitalNonAssocSemiring (Matrix n n A)
+  inferInstanceAs% <| NonUnitalNonAssocSemiring (Matrix n n A)
 
 instance instNonUnitalNonAssocRing [Fintype n] [NonUnitalNonAssocRing A] :
     NonUnitalNonAssocRing (CStarMatrix n n A) :=
-  inferInstanceAs <| NonUnitalNonAssocRing (Matrix n n A)
+  inferInstanceAs% <| NonUnitalNonAssocRing (Matrix n n A)
 
 instance instNonUnitalSemiring [Fintype n] [NonUnitalSemiring A] :
     NonUnitalSemiring (CStarMatrix n n A) :=
-  inferInstanceAs <| NonUnitalSemiring (Matrix n n A)
+  inferInstanceAs% <| NonUnitalSemiring (Matrix n n A)
 
 instance instNonAssocSemiring [Fintype n] [DecidableEq n] [NonAssocSemiring A] :
     NonAssocSemiring (CStarMatrix n n A) :=
-  inferInstanceAs <| NonAssocSemiring (Matrix n n A)
+  inferInstanceAs% <| NonAssocSemiring (Matrix n n A)
 
 instance instNonUnitalRing [Fintype n] [NonUnitalRing A] :
     NonUnitalRing (CStarMatrix n n A) :=
-  inferInstanceAs <| NonUnitalRing (Matrix n n A)
+  inferInstanceAs% <| NonUnitalRing (Matrix n n A)
 
 instance instNonAssocRing [Fintype n] [DecidableEq n] [NonAssocRing A] :
     NonAssocRing (CStarMatrix n n A) :=
-  inferInstanceAs <| NonAssocRing (Matrix n n A)
+  inferInstanceAs% <| NonAssocRing (Matrix n n A)
 
 instance instSemiring [Fintype n] [DecidableEq n] [Semiring A] :
     Semiring (CStarMatrix n n A) :=
-  inferInstanceAs <| Semiring (Matrix n n A)
+  inferInstanceAs% <| Semiring (Matrix n n A)
 
 instance instRing [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A) :=
-  inferInstanceAs <| Ring (Matrix n n A)
+  inferInstanceAs% <| Ring (Matrix n n A)
 
 /-- `ofMatrix` bundled as a ring equivalence. -/
 def ofMatrixRingEquiv [Fintype n] [Semiring A] :
@@ -373,10 +373,10 @@ def ofMatrixRingEquiv [Fintype n] [Semiring A] :
     map_add' := fun _ _ => rfl }
 
 instance instStarRing [Fintype n] [NonUnitalSemiring A] [StarRing A] :
-    StarRing (CStarMatrix n n A) := inferInstanceAs <| StarRing (Matrix n n A)
+    StarRing (CStarMatrix n n A) := inferInstanceAs% <| StarRing (Matrix n n A)
 
 instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [Algebra R A] :
-    Algebra R (CStarMatrix n n A) := inferInstanceAs <| Algebra R (Matrix n n A)
+    Algebra R (CStarMatrix n n A) := inferInstanceAs% <| Algebra R (Matrix n n A)
 
 /-- `ofMatrix` bundled as a star algebra equivalence. -/
 def ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :

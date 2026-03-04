@@ -157,7 +157,7 @@ instance : Inhabited CpltSepUniformSpace :=
 
 /-- The category instance on `CpltSepUniformSpace`. -/
 instance category : LargeCategory CpltSepUniformSpace :=
-  inferInstanceAs (Category (InducedCategory _ toUniformSpace))
+  inferInstanceAs% (Category (InducedCategory _ toUniformSpace))
 
 instance instFunLike (X Y : CpltSepUniformSpace) :
     FunLike { f : X → Y // UniformContinuous f } X Y where

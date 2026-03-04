@@ -290,9 +290,9 @@ section
 
 def RealCopy := ℝ
 
-noncomputable instance : NormedField RealCopy := inferInstanceAs (NormedField ℝ)
+noncomputable instance : NormedField RealCopy := inferInstanceAs% (NormedField ℝ)
 
-noncomputable instance : NontriviallyNormedField RealCopy := inferInstanceAs (NontriviallyNormedField ℝ)
+noncomputable instance : NontriviallyNormedField RealCopy := inferInstanceAs% (NontriviallyNormedField ℝ)
 
 variable {E'' E''' : Type*} [NormedAddCommGroup E''] [NormedAddCommGroup E''']
   [NormedSpace ℝ E''] [NormedSpace RealCopy E''']
@@ -603,8 +603,8 @@ variable (h : x ≤ y) in
 -- so inferring a model with corners in this case should fail.
 def RealCopy' := ℝ
 
-instance : Preorder RealCopy' := inferInstanceAs (Preorder ℝ)
-instance : TopologicalSpace RealCopy' := inferInstanceAs (TopologicalSpace ℝ)
+instance : Preorder RealCopy' := inferInstanceAs% (Preorder ℝ)
+instance : TopologicalSpace RealCopy' := inferInstanceAs% (TopologicalSpace ℝ)
 
 -- Repeat the same test for an interval in RealCopy.
 variable {x y : RealCopy'} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}

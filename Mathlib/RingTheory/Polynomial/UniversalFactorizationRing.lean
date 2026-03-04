@@ -503,7 +503,7 @@ instance : Module.Finite R 𝓡 :=
   letI := (MvPolynomial.universalFactorizationMap R n m k hn).toAlgebra
   letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   letI : Module.Finite _ _ := MvPolynomial.finite_universalFactorizationMap R n m k hn
-  inferInstanceAs (Module.Finite R (R ⊗[_] _))
+  inferInstanceAs% (Module.Finite R (R ⊗[_] _))
 
 set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] leftModule in
@@ -512,7 +512,7 @@ instance : Algebra.FinitePresentation R 𝓡 :=
   letI := ((MvPolynomial.mapEquivMonic R _ n).symm p).toAlgebra
   letI : Algebra.FinitePresentation _ _ :=
     MvPolynomial.finitePresentation_universalFactorizationMap R n m k hn
-  inferInstanceAs (Algebra.FinitePresentation R (R ⊗[_] _))
+  inferInstanceAs% (Algebra.FinitePresentation R (R ⊗[_] _))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The presentation of `UniversalFactorizationRing`.

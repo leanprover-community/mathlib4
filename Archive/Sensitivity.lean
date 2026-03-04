@@ -57,9 +57,9 @@ Notations:
 def Q (n : ℕ) :=
   Fin n → Bool
 
-instance (n) : Inhabited (Q n) := inferInstanceAs (Inhabited (Fin n → Bool))
+instance (n) : Inhabited (Q n) := inferInstanceAs% (Inhabited (Fin n → Bool))
 
-instance (n) : Fintype (Q n) := inferInstanceAs (Fintype (Fin n → Bool))
+instance (n) : Fintype (Q n) := inferInstanceAs% (Fintype (Fin n → Bool))
 
 /-- The projection from `Q n.succ` to `Q n` forgetting the first value
 (i.e. the image of zero). -/

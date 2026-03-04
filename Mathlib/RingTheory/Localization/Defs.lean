@@ -781,7 +781,7 @@ theorem of_ringEquiv_left {S : Type*} [CommSemiring S] {K : Type*} [CommSemiring
     (hM : M₂.map e = M₁) (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsLocalization M₁ K] :
     IsLocalization M₂ K := by
   rw [IsLocalization.isLocalization_iff_of_base_ringEquiv _ _ e, hM]
-  convert inferInstanceAs (IsLocalization M₁ K)
+  convert inferInstanceAs% (IsLocalization M₁ K)
   exact Algebra.algebra_ext _ _ (by simp [RingHom.algebraMap_toAlgebra, h])
 
 end

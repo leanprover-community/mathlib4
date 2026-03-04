@@ -642,7 +642,7 @@ attribute [instance] faithful full essSurj
     `F ⋙ G` and `G ⋙ F` are naturally isomorphic to identity functors. -/
 protected lemma mk' {F : C ⥤ D} (G : D ⥤ C) (η : 𝟭 C ≅ F ⋙ G) (ε : G ⋙ F ≅ 𝟭 D) :
     IsEquivalence F :=
-  inferInstanceAs (IsEquivalence (Equivalence.mk F G η ε).functor)
+  inferInstanceAs% (IsEquivalence (Equivalence.mk F G η ε).functor)
 
 end IsEquivalence
 

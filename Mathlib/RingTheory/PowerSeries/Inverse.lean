@@ -190,7 +190,7 @@ protected theorem mul_inv_rev (φ ψ : k⟦X⟧) : (φ * ψ)⁻¹ = ψ⁻¹ * φ
   MvPowerSeries.mul_inv_rev _ _
 
 instance : InvOneClass k⟦X⟧ :=
-  { inferInstanceAs <| InvOneClass <| MvPowerSeries Unit k with }
+  { inferInstanceAs% <| InvOneClass <| MvPowerSeries Unit k with }
 
 @[simp]
 theorem C_inv (r : k) : (C r)⁻¹ = C r⁻¹ :=
@@ -276,7 +276,7 @@ variable [IsLocalRing R]
 
 set_option backward.isDefEq.respectTransparency false in
 instance : IsLocalRing R⟦X⟧ :=
-  { inferInstanceAs <| IsLocalRing <| MvPowerSeries Unit R with }
+  { inferInstanceAs% <| IsLocalRing <| MvPowerSeries Unit R with }
 
 
 end IsLocalRing

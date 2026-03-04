@@ -97,9 +97,9 @@ instance (M : ModuleCat R) : IsIso ((forget R).map
   rw [← constantSheafAdj_counit_w]
   refine IsIso.comp_isIso' inferInstance ?_
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
-    inferInstanceAs (discrete _).Faithful
+    inferInstanceAs% (discrete _).Faithful
   have : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
-    inferInstanceAs (discrete _).Full
+    inferInstanceAs% (discrete _).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
   change (discrete _).essImage _
@@ -111,7 +111,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     (discrete _).obj M ≅ (functor R).obj M :=
   have : (Condensed.forget R).ReflectsIsomorphisms :=
-    inferInstanceAs (sheafCompose _ _).ReflectsIsomorphisms
+    inferInstanceAs% (sheafCompose _ _).ReflectsIsomorphisms
   have : IsIso ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M)) :=
     isIso_of_reflects_iso _ (Condensed.forget R)
   functorIsoDiscreteAux₂ R M ≪≫ asIso ((discreteUnderlyingAdj _).counit.app ((functor R).obj M))
@@ -157,19 +157,19 @@ instance : (discrete (ModuleCat R)).Faithful :=
   Functor.Faithful.of_iso (functorIsoDiscrete R)
 
 instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Faithful :=
-  inferInstanceAs (discrete (ModuleCat R)).Faithful
+  inferInstanceAs% (discrete (ModuleCat R)).Faithful
 
 instance : (discrete (ModuleCat R)).Full :=
   Functor.Full.of_iso (functorIsoDiscrete R)
 
 instance : (constantSheaf (coherentTopology CompHaus) (ModuleCat R)).Full :=
-  inferInstanceAs (discrete (ModuleCat R)).Full
+  inferInstanceAs% (discrete (ModuleCat R)).Full
 
 instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Faithful :=
-  inferInstanceAs (discrete (Type (u + 1))).Faithful
+  inferInstanceAs% (discrete (Type (u + 1))).Faithful
 
 instance : (constantSheaf (coherentTopology CompHaus) (Type (u + 1))).Full :=
-  inferInstanceAs (discrete (Type (u + 1))).Full
+  inferInstanceAs% (discrete (Type (u + 1))).Full
 
 end CondensedMod.LocallyConstant
 
@@ -213,9 +213,9 @@ instance (M : ModuleCat R) :
   rw [← constantSheafAdj_counit_w]
   refine IsIso.comp_isIso' inferInstance ?_
   have : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Faithful :=
-    inferInstanceAs (discrete _).Faithful
+    inferInstanceAs% (discrete _).Faithful
   have : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Full :=
-    inferInstanceAs (discrete (Type u)).Full
+    inferInstanceAs% (discrete (Type u)).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
   change (discrete _).essImage _
@@ -227,7 +227,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def functorIsoDiscreteComponents (M : ModuleCat R) :
     (discrete _).obj M ≅ (functor R).obj M :=
   have : (LightCondensed.forget R).ReflectsIsomorphisms :=
-    inferInstanceAs (sheafCompose _ _).ReflectsIsomorphisms
+    inferInstanceAs% (sheafCompose _ _).ReflectsIsomorphisms
   have : IsIso ((discreteUnderlyingAdj (ModuleCat R)).counit.app ((functor R).obj M)) :=
     isIso_of_reflects_iso _ (LightCondensed.forget R)
   functorIsoDiscreteAux₂ R M ≪≫ asIso ((discreteUnderlyingAdj _).counit.app ((functor R).obj M))
@@ -272,18 +272,18 @@ instance : (functor R).Full := (fullyFaithfulFunctor R).full
 instance : (discrete.{u} (ModuleCat R)).Faithful := Functor.Faithful.of_iso (functorIsoDiscrete R)
 
 instance : (constantSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Faithful :=
-  inferInstanceAs (discrete.{u} (ModuleCat R)).Faithful
+  inferInstanceAs% (discrete.{u} (ModuleCat R)).Faithful
 
 instance : (discrete (ModuleCat.{u} R)).Full :=
   Functor.Full.of_iso (functorIsoDiscrete R)
 
 instance : (constantSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Full :=
-  inferInstanceAs (discrete.{u} (ModuleCat.{u} R)).Full
+  inferInstanceAs% (discrete.{u} (ModuleCat.{u} R)).Full
 
 instance : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Faithful :=
-  inferInstanceAs (discrete (Type u)).Faithful
+  inferInstanceAs% (discrete (Type u)).Faithful
 
 instance : (constantSheaf (coherentTopology LightProfinite.{u}) (Type u)).Full :=
-  inferInstanceAs (discrete (Type u)).Full
+  inferInstanceAs% (discrete (Type u)).Full
 
 end LightCondMod.LocallyConstant

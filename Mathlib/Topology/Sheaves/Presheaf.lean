@@ -46,7 +46,7 @@ def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 
 instance (X : TopCat.{w}) : Category (Presheaf.{w, v, u} C X) :=
-  inferInstanceAs (Category ((Opens X)ᵒᵖ ⥤ C : Type max u v w))
+  inferInstanceAs% (Category ((Opens X)ᵒᵖ ⥤ C : Type max u v w))
 
 variable {C}
 

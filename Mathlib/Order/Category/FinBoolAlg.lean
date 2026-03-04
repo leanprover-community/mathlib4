@@ -57,7 +57,7 @@ instance : Inhabited FinBoolAlg :=
   ⟨of PUnit⟩
 
 instance largeCategory : LargeCategory FinBoolAlg :=
-  inferInstanceAs (Category (InducedCategory _ FinBoolAlg.toBoolAlg))
+  inferInstanceAs% (Category (InducedCategory _ FinBoolAlg.toBoolAlg))
 
 instance concreteCategory : ConcreteCategory FinBoolAlg (BoundedLatticeHom · ·) :=
   InducedCategory.concreteCategory FinBoolAlg.toBoolAlg

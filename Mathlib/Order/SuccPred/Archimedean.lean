@@ -141,7 +141,7 @@ abbrev IsPredArchimedean.linearOrder [PredOrder α] [IsPredArchimedean α]
      [DecidableEq α] [DecidableLE α] [DecidableLT α]
      [IsDirectedOrder α] : LinearOrder α :=
   letI : LinearOrder αᵒᵈ := IsSuccArchimedean.linearOrder
-  inferInstanceAs (LinearOrder αᵒᵈᵒᵈ)
+  inferInstanceAs% (LinearOrder αᵒᵈᵒᵈ)
 
 end PartialOrder
 
@@ -348,8 +348,8 @@ instance Set.OrdConnected.isPredArchimedean [PredOrder α] [IsPredArchimedean α
 
 instance Set.OrdConnected.isSuccArchimedean [SuccOrder α] [IsSuccArchimedean α]
     (s : Set α) [s.OrdConnected] : IsSuccArchimedean s :=
-  letI : IsPredArchimedean sᵒᵈ := inferInstanceAs (IsPredArchimedean (OrderDual.ofDual ⁻¹' s))
-  inferInstanceAs (IsSuccArchimedean sᵒᵈᵒᵈ)
+  letI : IsPredArchimedean sᵒᵈ := inferInstanceAs% (IsPredArchimedean (OrderDual.ofDual ⁻¹' s))
+  inferInstanceAs% (IsSuccArchimedean sᵒᵈᵒᵈ)
 
 end OrdConnected
 

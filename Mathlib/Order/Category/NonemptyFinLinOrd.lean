@@ -42,7 +42,7 @@ instance : CoeSort NonemptyFinLinOrd (Type _) where
   coe X := X.carrier
 
 instance : LargeCategory NonemptyFinLinOrd :=
-  inferInstanceAs (Category (InducedCategory _ NonemptyFinLinOrd.toLinOrd))
+  inferInstanceAs% (Category (InducedCategory _ NonemptyFinLinOrd.toLinOrd))
 
 instance : ConcreteCategory NonemptyFinLinOrd (· →o ·) :=
   InducedCategory.concreteCategory NonemptyFinLinOrd.toLinOrd

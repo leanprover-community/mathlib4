@@ -164,7 +164,7 @@ def IProp.cmp (p q : IProp) : Ordering := by
 
 instance : LT IProp := ⟨fun p q => p.cmp q = .lt⟩
 
-instance : DecidableLT IProp := fun _ _ => inferInstanceAs (Decidable (_ = _))
+instance : DecidableLT IProp := fun _ _ => inferInstanceAs% (Decidable (_ = _))
 
 open Lean (Name)
 

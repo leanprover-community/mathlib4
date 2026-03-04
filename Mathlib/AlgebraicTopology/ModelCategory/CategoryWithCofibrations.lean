@@ -261,11 +261,11 @@ instance : CategoryWithWeakEquivalences P.FullSubcategory where
 
 instance [(weakEquivalences C).HasTwoOutOfThreeProperty] :
     (weakEquivalences P.FullSubcategory).HasTwoOutOfThreeProperty :=
-  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).HasTwoOutOfThreeProperty
+  inferInstanceAs% ((weakEquivalences C).inverseImage P.ι).HasTwoOutOfThreeProperty
 
 instance [(weakEquivalences C).IsMultiplicative] :
     (weakEquivalences P.FullSubcategory).IsMultiplicative :=
-  inferInstanceAs ((weakEquivalences C).inverseImage P.ι).IsMultiplicative
+  inferInstanceAs% ((weakEquivalences C).inverseImage P.ι).IsMultiplicative
 
 lemma weakEquivalence_iff_of_objectProperty
     {X Y : P.FullSubcategory} (f : X ⟶ Y) :

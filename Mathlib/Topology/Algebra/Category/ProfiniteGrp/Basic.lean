@@ -321,11 +321,11 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
 
 @[to_additive]
 instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
-  inferInstanceAs (Group (limitConePtAux F))
+  inferInstanceAs% (Group (limitConePtAux F))
 
 @[to_additive]
 instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
-  inferInstanceAs (IsTopologicalGroup (limitConePtAux F))
+  inferInstanceAs% (IsTopologicalGroup (limitConePtAux F))
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
@@ -376,7 +376,7 @@ instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
 
 @[to_additive]
 instance : CompactSpace (limitConePtAux F) :=
-  inferInstanceAs (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)
+  inferInstanceAs% (CompactSpace (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt)
 
 /-- The abbreviation for the limit of `ProfiniteGrp`s. -/
 @[to_additive /-- The abbreviation for the limit of `ProfiniteAddGrp`s. -/]

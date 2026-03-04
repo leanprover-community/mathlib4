@@ -101,7 +101,7 @@ instance : Category.{max v₁ v₂} (C ⋆ D) where
 @[aesop safe destruct (rule_sets := [CategoryTheory])]
 lemma false_of_right_to_left {X : D} {Y : C} (f : right X ⟶ left Y) : False := (f : PEmpty).elim
 
-instance {X : C} {Y : D} : Unique (left X ⟶ right Y) := inferInstanceAs (Unique PUnit)
+instance {X : C} {Y : D} : Unique (left X ⟶ right Y) := inferInstanceAs% (Unique PUnit)
 
 /-- Join.edge c d is the unique morphism from c to d. -/
 def edge (c : C) (d : D) : left c ⟶ right d := default
@@ -594,7 +594,7 @@ def mapPairEquiv (e : C ≌ C') (e' : D ≌ D') : C ⋆ D ≌ C' ⋆ D' where
 
 instance isEquivalenceMapPair {F : C ⥤ C'} {F' : D ⥤ D'} [F.IsEquivalence] [F'.IsEquivalence] :
     (mapPair F F').IsEquivalence :=
-  inferInstanceAs (mapPairEquiv F.asEquivalence F'.asEquivalence).functor.IsEquivalence
+  inferInstanceAs% (mapPairEquiv F.asEquivalence F'.asEquivalence).functor.IsEquivalence
 
 end mapPairEquiv
 

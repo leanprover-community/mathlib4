@@ -46,7 +46,7 @@ def residueField (x : X) : CommRingCat :=
   CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
 
 instance (x : X) : Field (X.residueField x) :=
-  inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
+  inferInstanceAs% <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections

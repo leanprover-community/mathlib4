@@ -92,7 +92,7 @@ open IdealFilter
 
 variable {A : Type*} [Ring A] {F : IdealFilter A}
 
-instance instRing : Ring (WithIdealFilter F) := inferInstanceAs (Ring A)
+instance instRing : Ring (WithIdealFilter F) := inferInstanceAs% (Ring A)
 
 /-- View an ideal of `A` as a subset of `WithIdealFilter F`. -/
 abbrev idealSet (I : Ideal A) : Set (WithIdealFilter F) := (I : Set A)

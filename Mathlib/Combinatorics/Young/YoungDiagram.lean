@@ -87,7 +87,7 @@ theorem mem_mk (c : ℕ × ℕ) (cells) (isLowerSet) :
   Iff.rfl
 
 instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
-  inferInstanceAs (DecidablePred (· ∈ μ.cells))
+  inferInstanceAs% (DecidablePred (· ∈ μ.cells))
 
 /-- In "English notation", a Young diagram is drawn so that (i1, j1) ≤ (i2, j2)
 means (i1, j1) is weakly up-and-left of (i2, j2). -/

@@ -262,11 +262,11 @@ instance : (whiskeringLeftFunctor' L W E).Faithful := by
 
 lemma full_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
     ((whiskeringLeft C D E).obj L).Full :=
-  inferInstanceAs (whiskeringLeftFunctor' L W E).Full
+  inferInstanceAs% (whiskeringLeftFunctor' L W E).Full
 
 lemma faithful_whiskeringLeft (L : C ⥤ D) (W) [L.IsLocalization W] (E : Type*) [Category* E] :
     ((whiskeringLeft C D E).obj L).Faithful :=
-  inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
+  inferInstanceAs% (whiskeringLeftFunctor' L W E).Faithful
 
 variable {E}
 

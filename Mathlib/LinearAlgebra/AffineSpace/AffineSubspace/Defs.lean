@@ -695,7 +695,7 @@ theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
 
 set_option backward.isDefEq.respectTransparency false in
 -- An instance with better keys for the context
-instance : Nonempty (⊤ : AffineSubspace k P) := inferInstanceAs (Nonempty (⊤ : Set P))
+instance : Nonempty (⊤ : AffineSubspace k P) := inferInstanceAs% (Nonempty (⊤ : Set P))
 
 variable {P}
 

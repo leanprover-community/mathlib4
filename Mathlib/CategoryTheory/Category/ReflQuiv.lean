@@ -151,7 +151,7 @@ namespace FreeRefl
 variable {V}
 
 instance : Category (FreeRefl V) :=
-  inferInstanceAs (Category (Quotient _))
+  inferInstanceAs% (Category (Quotient _))
 
 /-- Constructor for objects in the free category on a reflexive quiver. -/
 def mk (v : V) : FreeRefl V := (Quotient.functor _).obj v
@@ -296,7 +296,7 @@ lemma quotientFunctor_map_id (V) [ReflQuiver V] (X : V) :
   Quotient.sound _ .mk
 
 instance (V : Type*) [ReflQuiver V] [Unique V] : Unique (FreeRefl V) :=
-  inferInstanceAs (Unique (Quotient _))
+  inferInstanceAs% (Unique (Quotient _))
 
 instance (V : Type*) [ReflQuiver V] [Unique V]
     [∀ (x y : V), Unique (x ⟶ y)] (x y : FreeRefl V) :

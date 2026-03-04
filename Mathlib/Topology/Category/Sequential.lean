@@ -42,7 +42,7 @@ instance : CoeSort Sequential Type* :=
 attribute [instance] is_sequential
 
 instance : Category.{u, u + 1} Sequential.{u} :=
-  inferInstanceAs (Category (InducedCategory _ toTop))
+  inferInstanceAs% (Category (InducedCategory _ toTop))
 
 instance : ConcreteCategory.{u} Sequential.{u} (C(·, ·)) :=
   InducedCategory.concreteCategory toTop
@@ -64,10 +64,10 @@ def fullyFaithfulSequentialToTop : sequentialToTop.FullyFaithful :=
   fullyFaithfulInducedFunctor _
 
 instance : sequentialToTop.{u}.Full :=
-  inferInstanceAs (inducedFunctor _).Full
+  inferInstanceAs% (inducedFunctor _).Full
 
 instance : sequentialToTop.{u}.Faithful :=
-  inferInstanceAs (inducedFunctor _).Faithful
+  inferInstanceAs% (inducedFunctor _).Faithful
 
 /-- Construct an isomorphism from a homeomorphism. -/
 @[simps hom inv]

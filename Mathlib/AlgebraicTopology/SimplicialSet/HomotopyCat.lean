@@ -467,13 +467,13 @@ instance (X : Truncated.{u} 2) [Subsingleton (X _⦋0⦌₂)] :
 instance subsingleton_hom (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] [Subsingleton (X _⦋1⦌₂)]
     (x y : X.HomotopyCategory) :
     Subsingleton (x ⟶ y) :=
-  letI : Unique (OneTruncation₂ X) := inferInstanceAs (Unique (X _⦋0⦌₂))
+  letI : Unique (OneTruncation₂ X) := inferInstanceAs% (Unique (X _⦋0⦌₂))
   letI (x y : (OneTruncation₂ X)) : Subsingleton (x ⟶ y) :=
-    inferInstanceAs (Subsingleton <| X.Edge _ _)
+    inferInstanceAs% (Subsingleton <| X.Edge _ _)
   CategoryTheory.Quotient.instSubsingletonHom _ _ _
 
 instance (X : Truncated.{u} 2) [Unique (X _⦋0⦌₂)] : Unique X.HomotopyCategory :=
-  letI : Unique (OneTruncation₂ X) := inferInstanceAs (Unique (X _⦋0⦌₂))
+  letI : Unique (OneTruncation₂ X) := inferInstanceAs% (Unique (X _⦋0⦌₂))
   CategoryTheory.Quotient.instUnique _
 
 /-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
@@ -542,7 +542,7 @@ def hoFunctor.obj.equiv (X : SSet) : hoFunctor.obj X ≃ X _⦋0⦌ :=
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
 `OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
 instance instUniqueOneTruncation₂DeltaZero : Unique (OneTruncation₂ ((truncation 2).obj Δ[0])) :=
-  inferInstanceAs (Unique (ULift.{_, 0} (⦋0⦌ ⟶ ⦋0⦌)))
+  inferInstanceAs% (Unique (ULift.{_, 0} (⦋0⦌ ⟶ ⦋0⦌)))
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique edge and thus the homs of
 `OneTruncation₂ ((truncation 2).obj Δ[0])` have unique inhabitants. -/
@@ -553,16 +553,16 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     exact 𝟙rq instUniqueOneTruncation₂DeltaZero.default
   uniq _ := by
     letI : Subsingleton (((truncation 2).obj Δ[0]).obj (.op ⦋1⦌₂)) :=
-      inferInstanceAs (Subsingleton (ULift.{_, 0} (⦋1⦌ ⟶ ⦋0⦌)))
+      inferInstanceAs% (Subsingleton (ULift.{_, 0} (⦋1⦌ ⟶ ⦋0⦌)))
     ext
     exact this.allEq _ _
 
 instance : Unique ((truncation.{u} 2).obj Δ[0]).HomotopyCategory :=
-  inferInstanceAs (Unique <| CategoryTheory.Quotient _)
+  inferInstanceAs% (Unique <| CategoryTheory.Quotient _)
 
 instance : IsDiscrete ((truncation.{u} 2).obj Δ[0]).HomotopyCategory where
   subsingleton x y :=
-    inferInstanceAs (Subsingleton ((_ : CategoryTheory.Quotient _) ⟶ _))
+    inferInstanceAs% (Subsingleton ((_ : CategoryTheory.Quotient _) ⟶ _))
   eq_of_hom _ := by subsingleton
 
 /-- The category `hoFunctor.obj (Δ[0])` is terminal. -/

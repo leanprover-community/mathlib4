@@ -84,9 +84,9 @@ instance : SubringClass (ValuationSubring K) K where
 theorem toSubring_injective : Function.Injective (toSubring : ValuationSubring K → Subring K) :=
   fun x y h => by cases x; cases y; congr
 
-instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
+instance : CommRing A := inferInstanceAs% <| CommRing A.toSubring
 
-instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
+instance : IsDomain A := inferInstanceAs% <| IsDomain A.toSubring
 
 instance : Top (ValuationSubring K) :=
   Top.mk <| { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
@@ -102,7 +102,7 @@ theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 
 /-- If `K` is a field, then so is `K` viewed as a valuation subring
 of itself. (That is, `⊤ : ValuationSubring K`.) -/
-instance : Field (⊤ : ValuationSubring K) := inferInstanceAs (Field (⊤ : Subfield K))
+instance : Field (⊤ : ValuationSubring K) := inferInstanceAs% (Field (⊤ : Subfield K))
 
 @[simp, norm_cast]
 theorem top_coe_div (x y : (⊤ : ValuationSubring K)) :
@@ -702,7 +702,7 @@ theorem ker_unitGroupToResidueFieldUnits :
 theorem surjective_unitGroupToResidueFieldUnits :
     Function.Surjective A.unitGroupToResidueFieldUnits :=
   IsLocalRing.surjective_units_map_of_local_ringHom _ Ideal.Quotient.mk_surjective
-    (inferInstanceAs (IsLocalHom (IsLocalRing.residue A))) |>.comp (MulEquiv.surjective _)
+    (inferInstanceAs% (IsLocalHom (IsLocalRing.residue A))) |>.comp (MulEquiv.surjective _)
 
 /-- The quotient of the unit group of `A` by the principal unit group of `A` agrees with
 the units of the residue field of `A`. -/

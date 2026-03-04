@@ -78,7 +78,7 @@ instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
   decidable_of_iff ((Multiset.map f s.val).Nodup) Finset.nodup_map_iff_injOn
 
 instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+  inferInstanceAs% (Decidable (_ ∧ _ ∧ _))
 
 end List
 

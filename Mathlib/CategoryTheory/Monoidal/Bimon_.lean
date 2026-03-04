@@ -73,7 +73,7 @@ def Bimon := Comon (Mon C)
 
 namespace Bimon
 
-instance : Category (Bimon C) := inferInstanceAs (Category (Comon (Mon C)))
+instance : Category (Bimon C) := inferInstanceAs% (Category (Comon (Mon C)))
 
 @[ext] lemma ext {X Y : Bimon C} {f g : X ⟶ Y} (w : f.hom.hom = g.hom.hom) : f = g :=
   Comon.Hom.ext (Mon.Hom.ext w)

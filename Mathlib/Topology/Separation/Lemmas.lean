@@ -33,7 +33,7 @@ instance [Countable X] : TotallySeparatedSpace X :=
 protected lemma _root_.Set.Countable.totallySeparatedSpace {s : Set X} (h : s.Countable) :
     TotallySeparatedSpace s :=
   have : _root_.Countable s := h
-  inferInstanceAs (TotallySeparatedSpace s)
+  inferInstanceAs% (TotallySeparatedSpace s)
 
 end CompletelyRegularSpace
 

@@ -45,7 +45,7 @@ def Booleanisation (α : Type*) := α ⊕ α
 namespace Booleanisation
 
 instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) :=
-  inferInstanceAs <| DecidableEq (α ⊕ α)
+  inferInstanceAs% <| DecidableEq (α ⊕ α)
 
 /-- The natural inclusion `a ↦ a` from a generalized Boolean algebra to its generated Boolean
 algebra. -/

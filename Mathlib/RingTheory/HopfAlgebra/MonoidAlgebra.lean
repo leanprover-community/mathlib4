@@ -68,7 +68,7 @@ open Finsupp
 variable (R A : Type*) [CommSemiring R] [Semiring A] [HopfAlgebra R A]
 
 instance instHopfAlgebra : HopfAlgebra R A[T;T⁻¹] :=
-  inferInstanceAs (HopfAlgebra R <| AddMonoidAlgebra A ℤ)
+  inferInstanceAs% (HopfAlgebra R <| AddMonoidAlgebra A ℤ)
 
 variable {R A}
 

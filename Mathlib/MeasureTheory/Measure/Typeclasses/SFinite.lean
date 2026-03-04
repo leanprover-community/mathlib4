@@ -72,7 +72,7 @@ instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite
 
 instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
   have : ∀ b : Bool, SFinite (cond b μ ν) := by simp [*]
-  simpa using inferInstanceAs (SFinite (.sum (cond · μ ν)))
+  simpa using inferInstanceAs% (SFinite (.sum (cond · μ ν)))
 
 instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
   ⟨fun n ↦ (sfiniteSeq μ n).restrict s, fun n ↦ inferInstance,

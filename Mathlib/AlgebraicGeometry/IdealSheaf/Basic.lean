@@ -167,10 +167,10 @@ instance : SemilatticeInf (IdealSheafData X) where
   le_inf I J K hIJ hIK U := le_inf (hIJ U) (hIK U)
 
 instance : CompleteLattice (IdealSheafData X) where
-  __ := inferInstanceAs (OrderTop (IdealSheafData X))
-  __ := inferInstanceAs (OrderBot (IdealSheafData X))
-  __ := inferInstanceAs (SemilatticeInf (IdealSheafData X))
-  __ := inferInstanceAs (CompleteSemilatticeSup (IdealSheafData X))
+  __ := inferInstanceAs% (OrderTop (IdealSheafData X))
+  __ := inferInstanceAs% (OrderBot (IdealSheafData X))
+  __ := inferInstanceAs% (SemilatticeInf (IdealSheafData X))
+  __ := inferInstanceAs% (CompleteSemilatticeSup (IdealSheafData X))
   __ := IdealSheafData.gci.liftCompleteLattice
 
 @[simp]

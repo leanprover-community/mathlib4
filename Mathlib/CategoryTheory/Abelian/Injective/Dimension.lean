@@ -125,7 +125,7 @@ instance [HasInjectiveDimensionLT X n] (k : ℕ) :
 
 instance [HasInjectiveDimensionLT X n] :
     HasInjectiveDimensionLT X n.succ :=
-  inferInstanceAs (HasInjectiveDimensionLT X (n + 1))
+  inferInstanceAs% (HasInjectiveDimensionLT X (n + 1))
 
 instance [Injective X] : HasInjectiveDimensionLT X 1 := by
   letI := HasExt.standard C

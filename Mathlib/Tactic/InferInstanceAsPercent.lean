@@ -22,7 +22,7 @@ For example, defining
 
 ```
 def B := A
-instance : SomeClass B := inferInstanceAs (SomeClass A)
+instance : SomeClass B := inferInstanceAs% (SomeClass A)
 ```
 
 may produce an instance whose internal lambdas have domain `A` (or even deeper
@@ -224,7 +224,7 @@ end
 (e.g. lambda binder domains) to use the expected carrier type instead of
 intermediate unfoldings that leaked during instance synthesis.
 
-When `inferInstanceAs (SomeClass A)` is used to define `SomeClass B` (where
+When `inferInstanceAs% (SomeClass A)` is used to define `SomeClass B` (where
 `B` is a non-reducible alias for `A`), the synthesized instance may contain
 sub-expressions referring to `A` or its unfoldings instead of `B`. This
 causes `isDefEq` failures at `reducibleAndInstances` transparency.

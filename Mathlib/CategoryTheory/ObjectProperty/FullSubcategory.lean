@@ -43,7 +43,7 @@ structure FullSubcategory where
   property : P obj
 
 instance FullSubcategory.category : Category.{v} P.FullSubcategory :=
-  inferInstanceAs (Category (InducedCategory _ FullSubcategory.obj))
+  inferInstanceAs% (Category (InducedCategory _ FullSubcategory.obj))
 
 @[ext]
 lemma hom_ext {X Y : P.FullSubcategory} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=

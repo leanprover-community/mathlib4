@@ -502,7 +502,7 @@ instance [Inhabited α] : Inhabited (ConnectedComponents α) :=
   ⟨mk default⟩
 
 instance : TopologicalSpace (ConnectedComponents α) :=
-  inferInstanceAs (TopologicalSpace (Quotient _))
+  inferInstanceAs% (TopologicalSpace (Quotient _))
 
 theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
   Quot.mk_surjective

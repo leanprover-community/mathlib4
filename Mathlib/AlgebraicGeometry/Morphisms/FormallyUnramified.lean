@@ -39,7 +39,7 @@ instance Algebra.FormallyUnramified.isOpenImmersion_SpecMap_lmul {R S : Type u} 
   rw [isOpenImmersion_SpecMap_iff_of_surjective _ (fun x ↦ ⟨1 ⊗ₜ x, by simp⟩)]
   apply (Ideal.isIdempotentElem_iff_of_fg _ (KaehlerDifferential.ideal_fg R S)).mp
   apply (Ideal.cotangent_subsingleton_iff _).mp
-  exact inferInstanceAs <| Subsingleton Ω[S⁄R]
+  exact inferInstanceAs% <| Subsingleton Ω[S⁄R]
 
 namespace AlgebraicGeometry
 
@@ -88,7 +88,7 @@ instance (priority := 900) [IsOpenImmersion (pullback.diagonal f)] : FormallyUnr
     intro i
     have inst : IsOpenImmersion (pullback.diagonal (X.affineCover.f i ≫ f)) :=
       MorphismProperty.comp_mem (.diagonal @IsOpenImmersion) _ _
-        (inferInstanceAs (IsOpenImmersion _)) ‹_›
+        (inferInstanceAs% (IsOpenImmersion _)) ‹_›
     exact this (_ ≫ _) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f
@@ -160,7 +160,7 @@ instance [FormallyUnramified f] [LocallyOfFiniteType f] (x : X) :
     Algebra.IsSeparable (Y.residueField (f.base x)) (X.residueField x) := by
   algebraize [(f.stalkMap x).hom]
   have : IsLocalHom (algebraMap (Y.presheaf.stalk (f x)) (X.presheaf.stalk x)) :=
-    inferInstanceAs <| IsLocalHom (f.stalkMap x).hom
+    inferInstanceAs% <| IsLocalHom (f.stalkMap x).hom
   suffices h : Algebra.IsSeparable
       (IsLocalRing.ResidueField <| Y.presheaf.stalk (f x))
       (IsLocalRing.ResidueField <| X.presheaf.stalk x) by

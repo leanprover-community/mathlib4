@@ -154,7 +154,7 @@ section BaseChange
 variable [P.IsStableUnderBaseChange] (𝒰 : X.Cover (precoverage P))
     [Category* 𝒰.I₀] [𝒰.LocallyDirected] {Y : Scheme.{u}} (f : Y ⟶ X)
 
-instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs <| Category 𝒰.I₀
+instance : Category (𝒰.pullback₁ f).I₀ := inferInstanceAs% <| Category 𝒰.I₀
 
 set_option backward.isDefEq.respectTransparency false in
 set_option linter.flexible false in -- TODO: fix the non-terminal simp at the end
@@ -315,7 +315,7 @@ def directedAffineCover : X.OpenCover where
       (isBasis_iff_nbhd.mp X.isBasis_affineOpens (mem_top x)).choose_spec.1⟩
     simpa using (isBasis_iff_nbhd.mp X.isBasis_affineOpens (mem_top x)).choose_spec.2.1
 
-instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs <| Preorder X.affineOpens
+instance : Preorder X.directedAffineCover.I₀ := inferInstanceAs% <| Preorder X.affineOpens
 
 instance : Scheme.Cover.LocallyDirected X.directedAffineCover :=
   .ofIsBasisOpensRange (by simp) <| by

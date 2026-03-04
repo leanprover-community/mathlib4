@@ -54,7 +54,7 @@ instance : Inhabited (CommMon C) :=
 variable {M : CommMon C}
 
 instance : Category (CommMon C) :=
-  inferInstanceAs (Category (InducedCategory _ CommMon.toMon))
+  inferInstanceAs% (Category (InducedCategory _ CommMon.toMon))
 
 @[simp]
 theorem id_hom (A : CommMon C) : Mon.Hom.hom (InducedCategory.Hom.hom (𝟙 A)) = 𝟙 A.X :=
@@ -121,7 +121,7 @@ instance : (forget C).Faithful where
 theorem forget₂Mon_comp_forget : forget₂Mon C ⋙ Mon.forget C = forget C := rfl
 
 instance {M N : CommMon C} {f : M ⟶ N} [IsIso f] : IsIso f.hom.hom :=
-  inferInstanceAs <| IsIso <| (forget C).map f
+  inferInstanceAs% <| IsIso <| (forget C).map f
 
 end
 

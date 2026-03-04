@@ -125,7 +125,7 @@ instance : IsZLattice ℝ L.lattice := by
 
 lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
   @AddSubgroup.isClosed_of_discrete _ _ _ _ _ L.lattice.toAddSubgroup
-    (inferInstanceAs (DiscreteTopology L.lattice))
+    (inferInstanceAs% (DiscreteTopology L.lattice))
 
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
   convert L.isClosed_lattice.isClosedMap_subtype_val _

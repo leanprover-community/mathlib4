@@ -62,7 +62,7 @@ lemma hasRightCalculusOfFractions (adj : F ⊣ G) (W : MorphismProperty C₁)
     [W.IsMultiplicative] (hW : W.IsInvertedBy G) (hW' : (W.functorCategory _) adj.counit) :
     W.HasRightCalculusOfFractions :=
   have := hasLeftCalculusOfFractions adj.op W.op hW.op (fun _ ↦ hW' _)
-  inferInstanceAs W.op.unop.HasRightCalculusOfFractions
+  inferInstanceAs% W.op.unop.HasRightCalculusOfFractions
 
 section
 

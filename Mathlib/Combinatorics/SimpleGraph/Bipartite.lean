@@ -379,7 +379,7 @@ lemma between_comm : G.between s t = G.between t s := by simp [between, or_comm]
 
 instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
     DecidableRel (G.between s t).Adj :=
-  inferInstanceAs (DecidableRel fun v w ↦ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s))
+  inferInstanceAs% (DecidableRel fun v w ↦ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s))
 
 /-- `G.between s t` is bipartite if the sets `s` and `t` are disjoint. -/
 theorem between_isBipartiteWith (h : Disjoint s t) : (G.between s t).IsBipartiteWith s t where

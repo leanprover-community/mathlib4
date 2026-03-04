@@ -104,10 +104,10 @@ theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to better place
 -- (upstream to Batteries?)
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
-  inferInstanceAs (Decidable (l₁ ~ l₂))
+  inferInstanceAs% (Decidable (l₁ ~ l₂))
 
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (isSetoid α l₁ l₂) :=
-  inferInstanceAs (Decidable (l₁ ~ l₂))
+  inferInstanceAs% (Decidable (l₁ ~ l₂))
 
 instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
   | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq_iff_equiv
@@ -126,7 +126,7 @@ theorem mem_coe {a : α} {l : List α} : a ∈ (l : Multiset α) ↔ a ∈ l :=
   Iff.rfl
 
 instance decidableMem [DecidableEq α] (a : α) (s : Multiset α) : Decidable (a ∈ s) :=
-  Quot.recOnSubsingleton s fun l ↦ inferInstanceAs (Decidable (a ∈ l))
+  Quot.recOnSubsingleton s fun l ↦ inferInstanceAs% (Decidable (a ∈ l))
 
 end Mem
 

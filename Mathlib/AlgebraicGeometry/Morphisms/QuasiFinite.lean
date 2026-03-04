@@ -222,7 +222,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
       pullback.map _ _ _ _ (pullback.fst _ _) (Spec.map ((Y.affineCover.f i).residueFieldMap _))
         (Y.affineCover.f i) (by simp [pullback.condition]) (by simp)
     have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
-    convert (inferInstanceAs (LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _)) using 1
+    convert (inferInstanceAs% (LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _)) using 1
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨R, rfl⟩ := hY
   wlog hX : ∃ S, X = Spec S
@@ -233,7 +233,7 @@ nonrec lemma LocallyQuasiFinite.of_fiberToSpecResidueField
     let g : (X.affineCover.f i ≫ f).fiber x ⟶ f.fiber x :=
       pullback.map _ _ _ _ (X.affineCover.f i) (𝟙 _) (𝟙 _) (by simp) (by simp)
     have : IsClosedImmersion g := .of_isPreimmersion _ (isClosed_discrete _)
-    convert (inferInstanceAs (LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _)) using 1
+    convert (inferInstanceAs% (LocallyQuasiFinite <| g ≫ f.fiberToSpecResidueField _)) using 1
     simp [g, Hom.fiberToSpecResidueField]
   obtain ⟨S, rfl⟩ := hX
   obtain ⟨φ, rfl⟩ := Spec.map_surjective f

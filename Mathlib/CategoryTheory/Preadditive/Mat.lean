@@ -150,7 +150,7 @@ instance (M N : Mat_ C) : Inhabited (M ⟶ N) :=
 end
 
 instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) :=
-  inferInstanceAs <| AddCommGroup (DMatrix M.ι N.ι _)
+  inferInstanceAs% <| AddCommGroup (DMatrix M.ι N.ι _)
 
 @[simp]
 theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=

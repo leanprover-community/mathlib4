@@ -42,10 +42,10 @@ abbrev lightProfiniteToLightCondSetFullyFaithful :
   (coherentTopology LightProfinite).yonedaFullyFaithful
 
 instance : lightProfiniteToLightCondSet.Full :=
-  inferInstanceAs ((coherentTopology LightProfinite).yoneda).Full
+  inferInstanceAs% ((coherentTopology LightProfinite).yoneda).Full
 
 instance : lightProfiniteToLightCondSet.Faithful :=
-  inferInstanceAs ((coherentTopology LightProfinite).yoneda).Faithful
+  inferInstanceAs% ((coherentTopology LightProfinite).yoneda).Faithful
 
 /--
 The functor from `LightProfinite` to `LightCondSet` factors through `TopCat`.
@@ -66,7 +66,7 @@ instance {J : Type} [SmallCategory J] [CountableCategory J] : PreservesLimitsOfS
   haveI : Functor.IsRightAdjoint topCatToLightCondSet.{u} :=
     LightCondSet.topCatAdjunction.isRightAdjoint
   haveI : PreservesLimitsOfShape J LightProfinite.toTopCat.{u} :=
-    inferInstanceAs (PreservesLimitsOfShape J (lightToProfinite ⋙ Profinite.toTopCat))
+    inferInstanceAs% (PreservesLimitsOfShape J (lightToProfinite ⋙ Profinite.toTopCat))
   preservesLimitsOfShape_of_natIso lightProfiniteToLightCondSetIsoTopCatToLightCondSet.symm
 
 /--

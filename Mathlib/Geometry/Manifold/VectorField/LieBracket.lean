@@ -213,9 +213,9 @@ theorem _root_.Filter.EventuallyEq.mlieBracketWithin_vectorField_eq
   simp only [mlieBracketWithin_apply]
   congr 1
   let I1 : NormedAddCommGroup (TangentSpace 𝓘(𝕜, E) (extChartAt I x x)) :=
-    inferInstanceAs (NormedAddCommGroup E)
+    inferInstanceAs% (NormedAddCommGroup E)
   let _I2 : NormedSpace 𝕜 (TangentSpace 𝓘(𝕜, E) (extChartAt I x x)) :=
-    inferInstanceAs (NormedSpace 𝕜 E)
+    inferInstanceAs% (NormedSpace 𝕜 E)
   apply Filter.EventuallyEq.lieBracketWithin_vectorField_eq
   · apply nhdsWithin_mono _ inter_subset_left
     filter_upwards [(continuousAt_extChartAt_symm x).continuousWithinAt.preimage_mem_nhdsWithin''

@@ -144,7 +144,7 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
 /-- A linear order with well-founded greater-than relation is a `PredOrder`. -/
 @[to_dual existing]
 noncomputable def PredOrder.ofLinearWellFoundedGT (α) [LinearOrder α] [WellFoundedGT α] :
-    PredOrder α := letI := SuccOrder.ofLinearWellFoundedLT αᵒᵈ; inferInstanceAs (PredOrder αᵒᵈᵒᵈ)
+    PredOrder α := letI := SuccOrder.ofLinearWellFoundedLT αᵒᵈ; inferInstanceAs% (PredOrder αᵒᵈᵒᵈ)
 
 end LinearOrder
 
@@ -1200,8 +1200,8 @@ lemma pred_notMem_iff_isMin [PredOrder α] [NoMinOrder α] {a : s} :
 
 noncomputable instance Set.OrdConnected.succOrder [SuccOrder α] :
     SuccOrder s :=
-  letI : PredOrder sᵒᵈ := inferInstanceAs (PredOrder (OrderDual.ofDual ⁻¹' s))
-  inferInstanceAs (SuccOrder sᵒᵈᵒᵈ)
+  letI : PredOrder sᵒᵈ := inferInstanceAs% (PredOrder (OrderDual.ofDual ⁻¹' s))
+  inferInstanceAs% (SuccOrder sᵒᵈᵒᵈ)
 
 @[simp, norm_cast]
 lemma coe_succ_of_mem [SuccOrder α] {a : s} (h : succ ↑a ∈ s) :

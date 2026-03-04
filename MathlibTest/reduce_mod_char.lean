@@ -122,8 +122,8 @@ so we demonstrate a workaround using `inferInstance`. -/
 
 def ZMod' (n : ℕ) := ZMod n
 
-instance : CommRing (ZMod' n) := inferInstanceAs (CommRing (ZMod n))
-instance ZMod'.instCharP : CharP (ZMod' n) n := inferInstanceAs (CharP (ZMod n) n)
+instance : CommRing (ZMod' n) := inferInstanceAs% (CommRing (ZMod n))
+instance ZMod'.instCharP : CharP (ZMod' n) n := inferInstanceAs% (CharP (ZMod n) n)
 
 example : (2 : ZMod' 2) = 0 := by
   have : CharP (ZMod' 2) 2 := inferInstance

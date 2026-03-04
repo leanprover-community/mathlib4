@@ -105,7 +105,7 @@ namespace HomotopyCategory
 
 instance {n : ℕ} (d : (SimplexCategory.Truncated n)ᵒᵖ) :
     Unique ((𝟙_ (Truncated.{u} n)).obj d) :=
-  inferInstanceAs (Unique PUnit)
+  inferInstanceAs% (Unique PUnit)
 
 /-- If `X : Truncated 2` has a unique `0`-simplex and (at most) one `1`-simplex,
 this is the isomorphism `Cat.of X.HomotopyCategory ≅ Cat.chosenTerminal` in `Cat`. -/
@@ -404,7 +404,7 @@ instance : hoFunctor₂.{u}.Monoidal :=
 
 /-- The homotopy category functor `hoFunctor : SSet.{u} ⥤ Cat.{u, u}` is (cartesian) monoidal. -/
 instance hoFunctor.monoidal : hoFunctor.{u}.Monoidal :=
-  inferInstanceAs (truncation 2 ⋙ hoFunctor₂).Monoidal
+  inferInstanceAs% (truncation 2 ⋙ hoFunctor₂).Monoidal
 
 end Truncated
 

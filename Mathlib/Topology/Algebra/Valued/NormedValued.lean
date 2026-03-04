@@ -56,7 +56,7 @@ theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
-    inferInstanceAs (IsUniformAddGroup K) with
+    inferInstanceAs% (IsUniformAddGroup K) with
     v := valuation
     is_topological_valuation := fun U => by
       rw [Metric.mem_nhds_iff]

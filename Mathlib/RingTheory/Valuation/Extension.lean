@@ -181,14 +181,14 @@ lemma algebraMap_mem_valuationSubring (x : K₀) : algebraMap K L x ∈ L₀ := 
   exact x.2
 
 instance instAlgebra_valuationSubring : Algebra K₀ L₀ :=
-  inferInstanceAs (Algebra vK.integer vL.integer)
+  inferInstanceAs% (Algebra vK.integer vL.integer)
 
 @[simp]
 lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
     (algebraMap K₀ L₀ x : L) = algebraMap K L (x : K) := rfl
 
 instance instIsScalarTower_valuationSubring : IsScalarTower K₀ K L :=
-  inferInstanceAs (IsScalarTower vK.integer K L)
+  inferInstanceAs% (IsScalarTower vK.integer K L)
 
 instance instIsScalarTower_valuationSubring' : IsScalarTower K₀ L₀ L :=
   instIsScalarTowerInteger

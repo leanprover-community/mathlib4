@@ -35,11 +35,11 @@ variable {R : Type u} [CommRing R]
 variable {J : Type v} [Category.{t} J] (F : J ⥤ AlgCat.{w} R)
 
 instance semiringObj (j) : Semiring ((F ⋙ forget (AlgCat R)).obj j) :=
-  inferInstanceAs <| Semiring (F.obj j)
+  inferInstanceAs% <| Semiring (F.obj j)
 
 instance algebraObj (j) :
     Algebra R ((F ⋙ forget (AlgCat R)).obj j) :=
-  inferInstanceAs <| Algebra R (F.obj j)
+  inferInstanceAs% <| Algebra R (F.obj j)
 
 /-- The flat sections of a functor into `AlgCat R` form a submodule of all sections.
 -/
@@ -49,23 +49,23 @@ def sectionsSubalgebra : Subalgebra R (∀ j, F.obj j) :=
     algebraMap_mem' := fun r _ _ f => (F.map f).hom.commutes r }
 
 instance (F : J ⥤ AlgCat.{w} R) : Ring (F ⋙ forget _).sections :=
-  inferInstanceAs <| Ring (sectionsSubalgebra F)
+  inferInstanceAs% <| Ring (sectionsSubalgebra F)
 
 instance (F : J ⥤ AlgCat.{w} R) : Algebra R (F ⋙ forget _).sections :=
-  inferInstanceAs <| Algebra R (sectionsSubalgebra F)
+  inferInstanceAs% <| Algebra R (sectionsSubalgebra F)
 
 variable [Small.{w} (F ⋙ forget (AlgCat.{w} R)).sections]
 
 instance : Small.{w} (sectionsSubalgebra F) :=
-  inferInstanceAs <| Small.{w} (F ⋙ forget _).sections
+  inferInstanceAs% <| Small.{w} (F ⋙ forget _).sections
 
 instance limitSemiring :
     Ring.{w} (Types.Small.limitCone.{v, w} (F ⋙ forget (AlgCat.{w} R))).pt :=
-  inferInstanceAs <| Ring (Shrink (sectionsSubalgebra F))
+  inferInstanceAs% <| Ring (Shrink (sectionsSubalgebra F))
 
 instance limitAlgebra :
     Algebra R (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).pt :=
-  inferInstanceAs <| Algebra R (Shrink (sectionsSubalgebra F))
+  inferInstanceAs% <| Algebra R (Shrink (sectionsSubalgebra F))
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
 set_option backward.isDefEq.respectTransparency false in
@@ -75,7 +75,7 @@ def limitπAlgHom (j) :
       (F ⋙ forget (AlgCat.{w} R)).obj j :=
   letI : Small.{w}
       (Functor.sections ((F ⋙ forget₂ _ RingCat ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
-    inferInstanceAs <| Small.{w} (F ⋙ forget _).sections
+    inferInstanceAs% <| Small.{w} (F ⋙ forget _).sections
   { SemiRingCat.limitπRingHom
       (F ⋙ forget₂ (AlgCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).π.app j

@@ -42,7 +42,7 @@ def QuotientDiff :=
         fun h h' => by rw [← diff_mul_diff, h, h', one_mul]⟩)
 
 instance : Inhabited H.QuotientDiff :=
-  inferInstanceAs (Inhabited <| Quotient _)
+  inferInstanceAs% (Inhabited <| Quotient _)
 
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     diff (MonoidHom.id H) (g • α) (g • β) =

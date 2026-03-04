@@ -33,7 +33,7 @@ section
 variable [HasPullbacks C]
 
 instance [Mono f] (k : K) : Mono (f.app k) :=
-  inferInstanceAs (Mono (((evaluation K C).obj k).map f))
+  inferInstanceAs% (Mono (((evaluation K C).obj k).map f))
 
 lemma NatTrans.mono_iff_mono_app : Mono f ↔ ∀ (k : K), Mono (f.app k) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ mono_of_mono_app _⟩
@@ -50,7 +50,7 @@ section
 variable [HasPushouts C]
 
 instance [Epi f] (k : K) : Epi (f.app k) :=
-  inferInstanceAs (Epi (((evaluation K C).obj k).map f))
+  inferInstanceAs% (Epi (((evaluation K C).obj k).map f))
 
 lemma NatTrans.epi_iff_epi_app : Epi f ↔ ∀ (k : K), Epi (f.app k) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ epi_of_epi_app _⟩

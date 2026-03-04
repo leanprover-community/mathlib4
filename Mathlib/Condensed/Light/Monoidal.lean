@@ -43,7 +43,7 @@ instance : MonoidalCategory (LightCondMod.{u} R) :=
   monoidalCategory _ _
 
 instance : MonoidalCategory (Sheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)) :=
-  inferInstanceAs (MonoidalCategory (LightCondMod _))
+  inferInstanceAs% (MonoidalCategory (LightCondMod _))
 
 instance : SymmetricCategory (LightCondMod.{u} R) :=
   symmetricCategory _ _
@@ -55,12 +55,12 @@ instance : MonoidalClosed (Sheaf (coherentTopology LightProfinite.{u}) (ModuleCa
   Reflective.monoidalClosed (sheafificationAdjunction _ _)
 
 instance : MonoidalClosed (LightCondMod.{u} R) :=
-  inferInstanceAs (MonoidalClosed (Sheaf _ _))
+  inferInstanceAs% (MonoidalClosed (Sheaf _ _))
 
 instance : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal :=
   inferInstance
 
 set_option backward.isDefEq.respectTransparency false in
-instance : (free R).Monoidal := inferInstanceAs (composeAndSheafify _ _).Monoidal
+instance : (free R).Monoidal := inferInstanceAs% (composeAndSheafify _ _).Monoidal
 
 end LightCondensed

@@ -68,7 +68,7 @@ instance (F : C ⥤ D) [∀ a b : C, HasProductsOfShape (a ⟶ b) D] :
     hasColimitsOfShape_of_equivalence (Discrete.equivalence Quiver.Hom.opEquiv)
   let e : Over F.op ≌ (Under F)ᵒᵖ := (postEquiv _ (opUnopEquiv _ _)).symm.trans (opEquivOpUnder F)
   rw [isClosedUnderColimitsOfShape_iff_op, ← isClosedUnderLimitsOfShape_inverseImage_iff _ _ e]
-  convert (inferInstanceAs <| IsClosedUnderLimitsOfShape
+  convert (inferInstanceAs% <| IsClosedUnderLimitsOfShape
     (fun f : Over F.op ↦ f.hom.Equifibered) Jᵒᵖ) with f
   simp [e, MorphismProperty.cancel_left_of_respectsIso, ← coequifibered_unop_iff]
   rfl

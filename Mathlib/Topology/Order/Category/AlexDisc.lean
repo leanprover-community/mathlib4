@@ -30,7 +30,7 @@ instance : CoeSort AlexDisc (Type _) :=
   ⟨fun X => X.toTopCat⟩
 
 instance category : Category AlexDisc :=
-  inferInstanceAs (Category (InducedCategory _ toTopCat))
+  inferInstanceAs% (Category (InducedCategory _ toTopCat))
 
 instance concreteCategory : ConcreteCategory AlexDisc (C(·, ·)) :=
   InducedCategory.concreteCategory toTopCat

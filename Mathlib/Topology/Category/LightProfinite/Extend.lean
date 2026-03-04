@@ -77,7 +77,7 @@ If the projection maps in the cone are epimorphic and the cone is limiting, then
 theorem functor_initial (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Initial (functor c) := by
   rw [initial_iff_comp_equivalence _ (StructuredArrow.post _ _ lightToProfinite)]
   have : ∀ i, Epi ((lightToProfinite.mapCone c).π.app i) :=
-    fun i ↦ inferInstanceAs (Epi (lightToProfinite.map (c.π.app i)))
+    fun i ↦ inferInstanceAs% (Epi (lightToProfinite.map (c.π.app i)))
   exact Profinite.Extend.functor_initial _ (isLimitOfPreserves lightToProfinite hc)
 
 /--
@@ -89,7 +89,7 @@ theorem functorOp_final (hc : IsLimit c) [∀ i, Epi (c.π.app i)] : Final (func
   have : ((StructuredArrow.toCostructuredArrow toLightProfinite c.pt)).IsEquivalence :=
     (inferInstance : (structuredArrowOpEquivalence _ _).functor.IsEquivalence)
   have : (functor c).rightOp.Final :=
-    inferInstanceAs ((opOpEquivalence ℕ).inverse ⋙ (functor c).op).Final
+    inferInstanceAs% ((opOpEquivalence ℕ).inverse ⋙ (functor c).op).Final
   exact Functor.final_comp (functor c).rightOp _
 
 section Limit

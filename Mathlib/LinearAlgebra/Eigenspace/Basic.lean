@@ -184,7 +184,7 @@ instance UnifEigenvalues.instCoeOut {f : Module.End R M} (k : ℕ∞) :
 
 instance UnivEigenvalues.instDecidableEq [DecidableEq R] (f : Module.End R M) (k : ℕ∞) :
     DecidableEq (UnifEigenvalues f k) :=
-  inferInstanceAs (DecidableEq (Subtype (fun x : R ↦ f.HasUnifEigenvalue x k)))
+  inferInstanceAs% (DecidableEq (Subtype (fun x : R ↦ f.HasUnifEigenvalue x k)))
 
 lemma HasUnifEigenvector.hasUnifEigenvalue {f : End R M} {μ : R} {k : ℕ∞} {x : M}
     (h : f.HasUnifEigenvector μ k x) : f.HasUnifEigenvalue μ k := by

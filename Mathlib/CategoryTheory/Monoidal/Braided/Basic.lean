@@ -436,7 +436,7 @@ def toLaxMonoidalFunctor (F : LaxBraidedFunctor C D) : LaxMonoidalFunctor C D wh
   toFunctor := F.toFunctor
 
 instance : Category (LaxBraidedFunctor C D) :=
-  inferInstanceAs (Category (InducedCategory _ toLaxMonoidalFunctor))
+  inferInstanceAs% (Category (InducedCategory _ toLaxMonoidalFunctor))
 
 @[simp]
 lemma id_hom (F : LaxBraidedFunctor C D) :

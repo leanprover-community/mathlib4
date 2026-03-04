@@ -105,7 +105,7 @@ instance : (Q (C := C)).IsLocalization
 instance {K L : CochainComplex C ℤ} (f : K ⟶ L) [QuasiIso f] :
     IsIso (Q.map f) :=
   Localization.inverts Q (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)) _
-    (inferInstanceAs (QuasiIso f))
+    (inferInstanceAs% (QuasiIso f))
 
 /-- The localization functor `HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C`. -/
 def Qh : HomotopyCategory C (ComplexShape.up ℤ) ⥤ DerivedCategory C :=

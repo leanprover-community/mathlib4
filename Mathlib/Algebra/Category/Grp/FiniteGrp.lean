@@ -46,13 +46,13 @@ instance : CoeSort FiniteGrp.{u} (Type u) where
 
 @[to_additive]
 instance : Category FiniteGrp :=
-  inferInstanceAs (Category (InducedCategory _ FiniteGrp.toGrp))
+  inferInstanceAs% (Category (InducedCategory _ FiniteGrp.toGrp))
 
 @[to_additive]
 instance : ConcreteCategory FiniteGrp (· →* ·) := InducedCategory.concreteCategory FiniteGrp.toGrp
 
 @[to_additive]
-instance (G : FiniteGrp) : Group G := inferInstanceAs <| Group G.toGrp
+instance (G : FiniteGrp) : Group G := inferInstanceAs% <| Group G.toGrp
 
 @[to_additive]
 instance (G : FiniteGrp) : Finite G := G.isFinite

@@ -199,7 +199,7 @@ lemma of_forall_source_exists_preimage
     simp only [Opens.coe_iSup, Set.mem_iUnion, SetLike.mem_coe]
     exact ⟨x, h₁ x⟩
   · intro x
-    exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs <| IsOpenImmersion _) (by simp [h₂])
+    exact P.of_postcomp (f ∣_ U x) (U x).ι (inferInstanceAs% <| IsOpenImmersion _) (by simp [h₂])
 
 set_option backward.isDefEq.respectTransparency false in
 lemma coprodMap {X Y X' Y' : Scheme.{u}} (f : X ⟶ X') (g : Y ⟶ Y') (hf : P f) (hg : P g) :
@@ -680,7 +680,7 @@ lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismPro
 
 instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
     P.HasOfPostcompProperty @IsOpenImmersion :=
-  HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
+  HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs% (Mono f))
 
 section Deprecations
 

@@ -145,7 +145,7 @@ private def UsefulCompression (U V : Finset α) : Prop :=
 
 private instance UsefulCompression.instDecidableRel :
     DecidableRel (α := Finset α) UsefulCompression :=
-  fun _ _ ↦ inferInstanceAs (Decidable (_ ∧ _))
+  fun _ _ ↦ inferInstanceAs% (Decidable (_ ∧ _))
 
 /-- Applying a good compression will decrease measure, keep cardinality, keep sizes and decrease
 shadow. In particular, 'good' means it's useful, and every smaller compression won't make a

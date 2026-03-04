@@ -142,7 +142,7 @@ lemma presheaf_map_apply_coe {X Y : Cᵒᵖ} (f : X ⟶ Y) (x : M.obj X) :
 
 instance (M : PresheafOfModules R) (X : Cᵒᵖ) :
     Module (R.obj X) (M.presheaf.obj X) :=
-  inferInstanceAs (Module (R.obj X) (M.obj X))
+  inferInstanceAs% (Module (R.obj X) (M.obj X))
 
 variable (R) in
 /-- The forgetful functor `PresheafOfModules R ⥤ Cᵒᵖ ⥤ Ab`. -/
