@@ -216,7 +216,7 @@ end Eval
 
 section algEquivOfTranscendental
 
-open Polynomial IntermediateField algebraAdjoinAdjoin 
+open Polynomial IntermediateField algebraAdjoinAdjoin
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (f : L) (h : Transcendental K f)
 
