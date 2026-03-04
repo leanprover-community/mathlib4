@@ -452,13 +452,6 @@ def WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃*o ValueGrou
         · assumption
     · exact (WithVal.strictMono_valueGroup₀_equiv w).monotone h
 
--- TODO: move
-lemma _root_.Valuation.IsEquiv.restrict {v : Valuation R Γ₀} {w : Valuation R Γ₀'}
-    (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
-  simp only [IsEquiv] at h ⊢
-  intro r s
-  simp only [restrict_le_iff, h]
-
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
