@@ -273,7 +273,7 @@ lemma cokernelSequenceCyclesE_exact (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ :
     (ShortComplex.exact_of_g_is_cokernel _ (ShortComplex.homologyIsCokernel _))
 
 instance (hn₁ : n₀ + 1 = n₁) (hn₂ : n₁ + 1 = n₂) :
-    Epi (X.cokernelSequenceCyclesE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂ ).g := by
+    Epi (X.cokernelSequenceCyclesE f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).g := by
   dsimp; infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
