@@ -50,6 +50,7 @@ def uniqueHomsetOfInitialIsoUnit [HasInitial C] (i : ⊥_ C ≅ 𝟙_ C) (X Y : 
 open scoped ZeroObject
 
 /-- If a Cartesian closed category has a zero object, each homset has exactly one element. -/
+@[instance_reducible]
 def uniqueHomsetOfZero [HasZeroObject C] (X Y : C) : Unique (X ⟶ Y) := by
   haveI : HasInitial C := HasZeroObject.hasInitial
   apply uniqueHomsetOfInitialIsoUnit _ X Y

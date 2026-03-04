@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
 public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
+public import Mathlib.Algebra.Group.Invertible.Defs
 
 /-!
 # The category of groups in a Cartesian monoidal category
@@ -192,8 +193,8 @@ theorem inv_comp_inv (A : C) [GrpObj A] : ι ≫ ι = 𝟙 A := by
 abbrev ofIso (e : G ≅ X) : GrpObj X where
   toMonObj := .ofIso e
   inv := e.inv ≫ ι[G] ≫ e.hom
-  left_inv := by simp [MonObj.ofIso]
-  right_inv := by simp [MonObj.ofIso]
+  left_inv := by simp +instances [MonObj.ofIso]
+  right_inv := by simp +instances [MonObj.ofIso]
 
 instance (A : C) [GrpObj A] : IsIso ι[A] := ⟨ι, by simp, by simp⟩
 
@@ -294,6 +295,17 @@ lemma toMonObj_injective {X : C} :
 lemma ext {X : C} (h₁ h₂ : GrpObj X) (H : h₁.toMonObj = h₂.toMonObj) : h₁ = h₂ :=
   GrpObj.toMonObj_injective H
 
+set_option backward.isDefEq.respectTransparency false in
+/-- A monoid object with invertible homs is a group object. -/
+def ofInvertible (G : C) [CartesianMonoidalCategory C] [MonObj G]
+    (h : ∀ X (f : X ⟶ G), Invertible f) : GrpObj G where
+  inv := Yoneda.fullyFaithful.preimage ⟨fun X f ↦ (h X.unop f).invOf, fun X Y f ↦ by
+    ext g
+    simp_rw [types_comp_apply, yoneda_obj_map, invOf_eq_iff_left]
+    rw [← comp_mul, invOf_mul_self, comp_one]⟩
+  left_inv := by rw [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, invOf_mul_self, Hom.one_def]
+  right_inv := by rw [Yoneda.fullyFaithful_preimage, ← Hom.mul_def, mul_invOf_self, Hom.one_def]
+
 namespace tensorObj
 variable [BraidedCategory C] {G H : C} [GrpObj G] [GrpObj H]
 
@@ -375,11 +387,17 @@ abbrev mkIso {G H : Grp C} (e : G.X ≅ H.X) (one_f : η[G.X] ≫ e.hom = η[H.X
 @[deprecated (since := "2025-12-18")] alias mkIso_inv_hom := mkIso_inv_hom_hom
 
 instance uniqueHomFromTrivial (A : Grp C) : Unique (trivial C ⟶ A) :=
-  Equiv.unique (show _ ≃ (Mon.trivial C ⟶ A.toMon) from
-    InducedCategory.homEquiv)
+  (show _ ≃ (Mon.trivial C ⟶ A.toMon) from InducedCategory.homEquiv).unique
 
-instance : HasInitial (Grp C) :=
-  hasInitial_of_unique (trivial C)
+instance uniqueHomToTrivial (A : Grp C) : Unique (A ⟶ trivial C) :=
+  (show _ ≃ (A.toMon ⟶ Mon.trivial C) from InducedCategory.homEquiv).unique
+
+instance : HasZeroObject (Grp C) where
+  zero := ⟨Grp.trivial C,
+    fun A ↦ nonempty_unique (Grp.trivial C ⟶ A),
+    fun A ↦ nonempty_unique (A ⟶ Grp.trivial C)⟩
+
+noncomputable instance : HasZeroMorphisms (Grp C) := HasZeroObject.zeroMorphismsOfZeroObject
 
 /-! ### `Grp C` is cartesian-monoidal -/
 
@@ -452,6 +470,7 @@ instance instCartesianMonoidalCategory : CartesianMonoidalCategory (Grp C) where
 @[deprecated (since := "2025-12-18")] alias fst_hom := fst_hom_hom
 @[deprecated (since := "2025-12-18")] alias snd_hom := snd_hom_hom
 
+set_option backward.isDefEq.respectTransparency false in
 @[simps]
 instance : (forget₂Mon C).Monoidal where
   ε := 𝟙 _
@@ -540,11 +559,13 @@ theorem comp_mapGrp_mul (A : Grp C) :
     μ[((F ⋙ G).mapGrp.obj A).X] = LaxMonoidal.μ (F ⋙ G) _ _ ≫ (F ⋙ G).map μ[A.X] :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The identity functor is also the identity on group objects. -/
 @[simps!]
 def mapGrpIdIso : mapGrp (𝟭 C) ≅ 𝟭 (Grp C) :=
   NatIso.ofComponents fun X ↦ Grp.mkIso (.refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The composition functor is also the composition on group objects. -/
 @[simps!]
 def mapGrpCompIso : (F ⋙ G).mapGrp ≅ F.mapGrp ⋙ G.mapGrp :=
@@ -574,12 +595,13 @@ abbrev FullyFaithful.grpObj (hF : F.FullyFaithful) (X : C) [GrpObj (F.obj X)] :
   __ := hF.monObj X
   inv := hF.preimage ι[F.obj X]
   left_inv := hF.map_injective <| by
-    simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+    simp [OplaxMonoidal.η_of_cartesianMonoidalCategory]
   right_inv := hF.map_injective <| by
-    simp [FullyFaithful.monObj, OplaxMonoidal.η_of_cartesianMonoidalCategory]
+    simp [OplaxMonoidal.η_of_cartesianMonoidalCategory]
 
 @[deprecated (since := "2025-09-13")] alias FullyFaithful.grp_Class := FullyFaithful.grpObj
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] MonObj.ofIso_one MonObj.ofIso_mul in
 /-- The essential image of a full and faithful functor between cartesian-monoidal categories is the
 same on group objects as on objects. -/
@@ -626,6 +648,7 @@ open Functor
 namespace Adjunction
 variable {F : C ⥤ D} {G : D ⥤ C} (a : F ⊣ G) [F.Monoidal] [G.Monoidal]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An adjunction of monoidal functors lifts to an adjunction of their lifts to group objects. -/
 @[simps] def mapGrp : F.mapGrp ⊣ G.mapGrp where
   unit := mapGrpIdIso.inv ≫ mapGrpNatTrans a.unit ≫ mapGrpCompIso.hom
@@ -636,6 +659,7 @@ end Adjunction
 namespace Equivalence
 variable (e : C ≌ D) [e.functor.Monoidal] [e.inverse.Monoidal]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories lifts to an equivalence of their group objects. -/
 @[simps] def mapGrp : Grp C ≌ Grp D where
   functor := e.functor.mapGrp

@@ -90,6 +90,7 @@ instance [X.Finite] (A : X.Subcomplex) : SSet.Finite A := by
 
 variable {X}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_of_mono {Y : SSet.{u}} [Y.Finite] (f : X ⟶ Y) [hf : Mono f] : X.Finite := by
   obtain ⟨d, _⟩ := Y.hasDimensionLT_of_finite
   have := hasDimensionLT_of_mono f d
@@ -97,6 +98,7 @@ lemma finite_of_mono {Y : SSet.{u}} [Y.Finite] (f : X ⟶ Y) [hf : Mono f] : X.F
     (fun _ _ ↦ Finite.of_injective _
       ((injective_of_mono (f.app _)).comp Subtype.val_injective))
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_of_epi {Y : SSet.{u}} [X.Finite] (f : X ⟶ Y) [hf : Epi f] : Y.Finite := by
   obtain ⟨d, _⟩ := X.hasDimensionLT_of_finite
   have := hasDimensionLT_of_epi f d
@@ -122,6 +124,7 @@ instance finite_range {Y : SSet.{u}} (f : Y ⟶ X) [Y.Finite] :
     SSet.Finite (Subcomplex.range f) :=
   finite_of_epi (Subcomplex.toRange f)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma finite_iSup_iff {X : SSet.{u}} {ι : Type*} [Finite ι]
     (A : ι → X.Subcomplex) :
     SSet.Finite (⨆ i, A i :) ↔ ∀ i, SSet.Finite (A i) := by
