@@ -1156,10 +1156,10 @@ noncomputable def quotientIdealSubmoduleEquivMap (N : Submodule R M) (I : Ideal 
     (N ⧸ (I • ⊤ : Submodule R N)) ≃ₗ[R] (map (I • N).mkQ N) := by
   set f := (I • N).mkQ ∘ₗ N.subtype
   have hker : f.ker = I • ⊤ := by
-    ext x; simpa [f] using Iff.symm (Submodule.mem_smul_top_iff I N x)
+    ext x; rw [mem_smul_top_iff I N x]; exact Quotient.mk_eq_zero (I • N)
   have hrange : f.range = map (I • N).mkQ N := by
     simp only [LinearMap.range_comp, range_subtype, f]
-  exact (Submodule.quotEquivOfEq _ _ hker.symm).trans
+  exact (quotEquivOfEq _ _ hker.symm).trans
     (f.quotKerEquivRange.trans (LinearEquiv.ofEq _ _ hrange))
 
 end Submodule
