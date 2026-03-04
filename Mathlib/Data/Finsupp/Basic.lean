@@ -1323,8 +1323,7 @@ lemma embDomain_refl [Zero M] : embDomain (M := M) (Function.Embedding.refl α) 
 
 theorem embDomain_comp [AddCommMonoid M] {v : α →₀ M} {f : α ↪ β} {g : β ↪ γ} :
     embDomain (f.trans g) v = embDomain g (embDomain f v) := by
-  simp only [embDomain_eq_mapDomain, ← mapDomain_comp]
-  rfl
+  simp only [embDomain_eq_mapDomain, ← mapDomain_comp, Embedding.coe_trans]
 
 theorem mapDomain_support_of_subsingletonAddUnits [DecidableEq β] [AddCommMonoid M]
     (f : α → β) [Subsingleton (AddUnits M)] (x : α →₀ M) :

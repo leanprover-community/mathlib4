@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 This file establishes the `rename` operation on multivariate power series
 under a map with finite fibers, which modifies the set of variables.
 
-This file is patterned after `MvPolynomials/Rename.lean`
+This file is patterned after `Mathlib/Algebra/MvPolynomial/Rename.lean`.
 
 ## Main declarations
 
@@ -72,8 +72,8 @@ theorem Finsupp.mapDomain_tendstoCofinite (h : TendstoCofinite f) :
   simpa [← hy, mapDomain, sum, Finset.subset_iff, single_apply, s] using
     fun i hi ↦ ⟨i, by simp [hi]⟩
 
-private theorem antidiagonal_renameFunAux [DecidableEq σ] (h : TendstoCofinite f)
-    (x : τ →₀ ℕ) : {p : (σ →₀ ℕ) × (σ →₀ ℕ) × (σ →₀ ℕ) | (p.1).mapDomain f = x ∧
+private theorem antidiagonal_renameFunAux [DecidableEq σ] (h : TendstoCofinite f) (x : τ →₀ ℕ) :
+    {p : (σ →₀ ℕ) × (σ →₀ ℕ) × (σ →₀ ℕ) | (p.1).mapDomain f = x ∧
       p.2 ∈ Finset.antidiagonal p.1}.Finite := by
   apply Set.Finite.subset
     (s := ↑(((mapDomain_tendstoCofinite h).finite_preimage_singleton x).toFinset.sup
@@ -82,10 +82,11 @@ private theorem antidiagonal_renameFunAux [DecidableEq σ] (h : TendstoCofinite 
   · intro; simp
     grind
 
-private theorem antidiagonal_renameFunAux' [DecidableEq τ] (h : TendstoCofinite f)
-    (x : τ →₀ ℕ) : {p : ((τ →₀ ℕ) × (τ →₀ ℕ)) × (σ →₀ ℕ) × (σ →₀ ℕ) | p.1 ∈ Finset.antidiagonal x
-      ∧ p.2 ∈ ((mapDomain_tendstoCofinite h).finite_preimage_singleton p.1.1).toFinset ×ˢ
-    ((mapDomain_tendstoCofinite h).finite_preimage_singleton p.1.2).toFinset}.Finite := by
+private theorem antidiagonal_renameFunAux' [DecidableEq τ] (h : TendstoCofinite f) (x : τ →₀ ℕ) :
+    {p : ((τ →₀ ℕ) × (τ →₀ ℕ)) × (σ →₀ ℕ) × (σ →₀ ℕ) |
+      p.1 ∈ Finset.antidiagonal x ∧
+      p.2 ∈ ((mapDomain_tendstoCofinite h).finite_preimage_singleton p.1.1).toFinset ×ˢ
+        ((mapDomain_tendstoCofinite h).finite_preimage_singleton p.1.2).toFinset}.Finite := by
   classical
   apply Set.Finite.subset (s := ↑((Finset.antidiagonal x).sup (fun q ↦ Finset.product {q}
     (((mapDomain_tendstoCofinite h).finite_preimage_singleton q.1).toFinset ×ˢ
@@ -96,9 +97,9 @@ private theorem antidiagonal_renameFunAux' [DecidableEq τ] (h : TendstoCofinite
 
 private theorem antidiagonal_renameFunAuxImage [DecidableEq σ] [DecidableEq τ]
     (h : TendstoCofinite f) (x : τ →₀ ℕ) :
-      (antidiagonal_renameFunAux' h x).toFinset.image (fun (_, b) ↦ (b.1 + b.2, b)) =
-    (antidiagonal_renameFunAux h x).toFinset := by
-  ext ⟨_,_,_⟩
+    (antidiagonal_renameFunAux' h x).toFinset.image (fun (_, b) ↦ (b.1 + b.2, b)) =
+      (antidiagonal_renameFunAux h x).toFinset := by
+  ext ⟨_, _, _⟩
   simp; grind [mapDomain_add]
 
 namespace MvPowerSeries
@@ -233,7 +234,7 @@ def killComplFun (e : σ ↪ τ) (p : MvPowerSeries τ R) : MvPowerSeries σ R :
   fun x ↦ coeff (embDomain e x) p
 
 private theorem coeff_killComplFun (p : MvPowerSeries τ R) (x : σ →₀ ℕ) :
-  coeff x (killComplFun e p) = coeff (embDomain e x) p := by rfl
+    coeff x (killComplFun e p) = coeff (embDomain e x) p := by rfl
 
 private theorem killComplFun_monomial_embDomain (x : σ →₀ ℕ) (r : R) :
     killComplFun e (monomial (embDomain e x) r) = monomial x r := by

@@ -299,7 +299,8 @@ lemma Function.Injective.tendstoCofinite (h : f.Injective) : TendstoCofinite f :
   ⟨h.tendsto_cofinite⟩
 
 lemma TendstoCofinite.comp (h' : TendstoCofinite g) (h : TendstoCofinite f) :
-    TendstoCofinite (g ∘ f) := tendstoCofinite_iff_finite_preimage_singleton.mpr (fun r ↦ by
-  simpa using h.finite_preimage (h'.finite_preimage (by simp)))
+    TendstoCofinite (g ∘ f) :=
+  tendstoCofinite_iff_finite_preimage_singleton.mpr (fun r ↦ by
+    simpa using h.finite_preimage (h'.finite_preimage (by simp)))
 
 end TendstoCofinite
