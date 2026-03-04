@@ -13,13 +13,13 @@ public import Mathlib.FieldTheory.Relrank
 /-!
 # Lüroth's theorem
 
-The goal of this file is to prove Lüroth's theorem, which says that for every
-field `K`, every intermediate field between `K` and the rational function field
-`K(X)` is either `K` or isomorphic to `K(X)` as an K-algebra. The proof depends
-on the following lemma on degrees of rational functions:
+This file proves Lüroth's theorem, which says that for every field `K`, every
+intermediate field between `K` and the rational function field `K(X)` is either
+`K` or isomorphic to `K(X)` as an K-algebra, see `Luroth.algEquiv`. The proof
+depends on the following lemma on degrees of rational functions:
 
-Let `f` be a rational function, i.e. an element in the field `K(X)` (`RatFunc
-K`). Let `p` be its numerator and `q` its denominator. Then the degree of the
+Let `f` be a rational function, i.e. an element in the field `K(X)` (`RatFunc K`).
+Let `p` be its numerator and `q` its denominator. Then the degree of the
 field extension `K(X)/K(f)` equals the maximum of the degrees of `p` and `q`,
 see `finrank_eq_max_natDegree`. Since `finrank` is defined to be zero when the
 extension is infinite, this holds even when `f` is constant.
@@ -663,6 +663,8 @@ theorem eq_adjoin_generator : E = K⟮(generator E : RatFunc K)⟯ := by
   rw [← Φ_natDegree_eq_ψ_natDegree h, Φ_natDegree_eq_θ_natDegree h]
   exact le_antisymm (θ_natDegree_le h) (swap_Φ_natDegree_eq_θ_natDegree h ▸ le_swap_Φ_natDegree h)
 
+/-- The `K`-algebra equivalence between `RatFunc K` and an intermediate field `E` given
+by sending `X` to `generator E`. See also `Luroth.eq_adjoin_generator`. -/
 noncomputable def algEquiv (h : E ≠ ⊥) : RatFunc K ≃ₐ[K] E :=
   (algEquivOfTranscendental (generator E) (transcendental_of_ne_C _ (generator_ne_C h))).trans <|
     IntermediateField.equivOfEq eq_adjoin_generator.symm
