@@ -189,7 +189,7 @@ theorem mk_comp_teichmuller' :
   funext mk_teichmuller
 
 set_option backward.isDefEq.respectTransparency false in
-noncomputable def quotientMulEquiv (p : ℕ) [Fact (Nat.Prime p)]
+noncomputable def quotientMulEquiv (p : ℕ) [Fact p.Prime]
     {R : Type*} [CommRing R] (I : Ideal R) [CharP (R ⧸ I) p] [IsAdicComplete I R] :
     Perfection R p ≃* Perfection (R ⧸ I) p := MonoidHom.toMulEquiv
   (mapMonoidHom _ <| Ideal.Quotient.mk I)
