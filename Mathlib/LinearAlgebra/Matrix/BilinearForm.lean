@@ -222,7 +222,6 @@ lemma LinearMap.BilinForm.apply_eq_dotProduct_toMatrix_mulVec (B : BilinForm R�
 alias BilinForm.apply_eq_dotProduct_toMatrix_mulVec :=
   LinearMap.BilinForm.apply_eq_dotProduct_toMatrix_mulVec
 
-@[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j :=
   (Matrix.toLinearMap₂_apply _ _ _ _ _).trans
