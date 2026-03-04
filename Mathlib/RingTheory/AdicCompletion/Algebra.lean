@@ -69,6 +69,7 @@ def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
     R ⧸ (I ^ n • ⊤ : Ideal R) →ₐ[R] R ⧸ (I ^ m • ⊤ : Ideal R) :=
   AlgHom.ofLinearMap (transitionMap I R hmn) rfl (transitionMap_map_mul I hmn)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `AdicCompletion I R` is an `R`-subalgebra of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
 def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
   Submodule.toSubalgebra (submodule I R) (fun _ ↦ by simp [transitionMap_map_one I])
@@ -113,6 +114,9 @@ instance [Algebra S R] : Algebra S (AdicCompletion I R) where
     map_add' x y := Subtype.ext <| map_add _ x y }
   commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
   smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
+
+theorem algebraMap_apply [Algebra S R] (s : S) :
+    algebraMap S (AdicCompletion I R) s = of I R (algebraMap S R s) := rfl
 
 @[simp]
 theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
@@ -258,6 +262,7 @@ theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
     AdicCauchySequence.mk_eq_mk hmn, Ideal.mk_eq_mk I hmn, Module.Quotient.mk_smul_mk,
     Submodule.Quotient.mk_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Scalar multiplication of `R ⧸ (I • ⊤)` on `M ⧸ (I • ⊤)`. This is used in order to have
 good definitional behaviour for the module instance on adic completions -/
 instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
@@ -309,6 +314,7 @@ theorem smul_eval (n : ℕ) (r : AdicCompletion I R) (x : AdicCompletion I M) :
     (r • x).val n = r.val n • x.val n :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `AdicCompletion I M` is naturally an `AdicCompletion I R` module. -/
 instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
   one_smul b := by
@@ -327,6 +333,7 @@ instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
     ext n
     rw [smul_eval, val_smul_apply, val_smul_apply, smul_eval, smul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
 Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)

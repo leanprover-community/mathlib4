@@ -145,12 +145,13 @@ theorem cycleRange_of_gt (h : i < j) : cycleRange i j = j := by
   rw [cycleRange, Perm.extendDomain_apply_not_subtype]
   simpa using h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cycleRange_of_le [NeZero n] (h : i ≤ j) :
     cycleRange j i = if i = j then 0 else i + 1 := by
   have iin : i ∈ Set.range (castLEEmb (n := j + 1) (by lia)) := by
-    simpa using by lia
+    simp; lia
   have : (castLEEmb (by lia)).toEquivRange (castLT i (by lia)) = ⟨i, iin⟩ := by
-    simpa only [coe_castLEEmb] using by rfl
+    simp [coe_castLEEmb]; rfl
   rw [cycleRange,
     (finRotate (j + 1)).extendDomain_apply_subtype (castLEEmb (by lia)).toEquivRange iin,
     Function.Embedding.toEquivRange_apply]
@@ -161,7 +162,7 @@ theorem cycleRange_of_le [NeZero n] (h : i ≤ j) :
     rfl
   · have hj1 : (i + 1).1 = i.1 + 1 := val_add_one_of_lt' (by lia)
     have hj2 : (i.castLT (by lia) + 1 : Fin (j + 1)).1 =
-      (i.castLT (by lia) : Fin (j + 1)) + 1 := val_add_one_of_lt' (by simpa using by lia)
+      (i.castLT (by lia) : Fin (j + 1)) + 1 := val_add_one_of_lt' (by simp; lia)
     exact eq_of_val_eq (by simp [← this, hj1, hj2])
 
 theorem coe_cycleRange_of_le (h : i ≤ j) :
@@ -346,7 +347,7 @@ theorem cycleIcc_def_gt' (hij : ¬ j ≤ i) : cycleIcc j i = 1 := by
 theorem cycleIcc_of_lt (h : k < i) : (cycleIcc i j) k = k := by
   by_cases hij : i ≤ j
   · simpa [hij] using Perm.extendDomain_apply_not_subtype _ _ (by
-      simpa [range_natAdd_castLEEmb] using by lia)
+      simp [range_natAdd_castLEEmb]; lia)
   · simp [hij]
 
 lemma cycleIcc_to_cycleRange (hij : i ≤ j)
@@ -356,38 +357,40 @@ lemma cycleIcc_to_cycleRange (hij : i ≤ j)
   simp [hij, ((j - i).castLT (sub_val_lt_sub hij)).cycleRange.extendDomain_apply_subtype
     (natAdd_castLEEmb _).toEquivRange kin]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cycleIcc_of_gt (h : j < k) : (cycleIcc i j) k = k := by
   by_cases hij : i ≤ j
   · have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
-      simpa [range_natAdd_castLEEmb] using by lia
+      simp [range_natAdd_castLEEmb]; lia
     have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by lia)) (by simpa using by lia) := by
-      simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by lia)
+      = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
+      simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
     simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this,
       Function.Embedding.trans_apply, addNatEmb_apply, coe_toEmbedding, finCongr_apply]
     rw [cycleRange_of_gt]
-    · exact eq_of_val_eq (by simpa using by lia)
-    · exact lt_def.mpr (by simpa [sub_val_of_le hij] using by lia)
+    · exact eq_of_val_eq (by simp; lia)
+    · exact lt_def.mpr (by simp [sub_val_of_le hij]; lia)
   · simp [hij]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
     (cycleIcc i j) k = if k = j then i else k + 1 := by
   have hij : i ≤ j := le_trans hik hkj
   have kin : k ∈ Set.range (natAdd_castLEEmb (Nat.sub_le n i)) := by
-    simpa [range_natAdd_castLEEmb] using by lia
+    simp [range_natAdd_castLEEmb]; lia
   have : (((addNatEmb (n - (n - i.1))).trans (finCongr _).toEmbedding).toEquivRange.symm ⟨k, kin⟩)
-      = subNat i.1 (k.cast (by lia)) (by simpa using by lia) := by
-    simpa [symm_apply_eq] using eq_of_val_eq (by simpa using by lia)
+      = subNat i.1 (k.cast (by lia)) (by simp; lia) := by
+    simpa [symm_apply_eq] using eq_of_val_eq (by simp; lia)
   simp only [cycleIcc_to_cycleRange hij kin, natAdd_castLEEmb, this, Function.Embedding.trans_apply,
     addNatEmb_apply, coe_toEmbedding, finCongr_apply]
   refine eq_of_val_eq ?_
   split_ifs with ch
   · have : subNat i.1 (j.cast (by lia)) (by simp [hij]) = (j - i).castLT (sub_val_lt_sub hij) :=
       eq_of_val_eq (by simp [sub_val_of_le hij])
-    simpa [ch, cycleRange_of_eq this] using by lia
-  · have : subNat i.1 (k.cast (by lia)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
-      by simpa [lt_def, sub_val_of_le hij] using by lia
+    simp [ch, cycleRange_of_eq this]; lia
+  · have : subNat i.1 (k.cast (by lia)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) := by
+      simp [lt_def, sub_val_of_le hij]; lia
     rw [cycleRange_of_lt this, subNat]
     simp only [val_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
     rw [Nat.mod_eq_of_lt (by lia), Nat.mod_eq_of_lt (by lia)]

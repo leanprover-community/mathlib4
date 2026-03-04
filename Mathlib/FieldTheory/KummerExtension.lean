@@ -233,6 +233,7 @@ def AdjoinRootXPowSubCEquivToRootsOfUnity [NeZero n] (σ : K[n√a] ≃ₐ[K] K[
     rw [div_self]
     rwa [Ne, map_eq_zero_iff _ (algebraMap K _).injective]))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the roots of unity of `K` and `Gal(K[ⁿ√a]/K)`. -/
 noncomputable
 def autAdjoinRootXPowSubCEquiv [NeZero n] :

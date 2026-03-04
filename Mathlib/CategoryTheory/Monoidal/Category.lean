@@ -16,6 +16,7 @@ A monoidal category is a category equipped with a tensor product, unitors, and a
 In the definition, we provide the tensor product as a pair of functions
 * `tensorObj : C → C → C`
 * `tensorHom : (X₁ ⟶ Y₁) → (X₂ ⟶ Y₂) → ((X₁ ⊗ X₂) ⟶ (Y₁ ⊗ Y₂))`
+
 and allow use of the overloaded notation `⊗` for both.
 The unitors and associator are provided componentwise.
 
@@ -31,6 +32,7 @@ e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `CategoryTheory.Monoidal.Coh
 In the definition of monoidal categories, we also provide the whiskering operators:
 * `whiskerLeft (X : C) {Y₁ Y₂ : C} (f : Y₁ ⟶ Y₂) : X ⊗ Y₁ ⟶ X ⊗ Y₂`, denoted by `X ◁ f`,
 * `whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (Y : C) : X₁ ⊗ Y ⟶ X₂ ⊗ Y`, denoted by `f ▷ Y`.
+
 These are products of an object and a morphism (the terminology "whiskering"
 is borrowed from 2-category theory). The tensor product of morphisms `tensorHom` can be defined
 in terms of the whiskerings. There are two possible such definitions, which are related by
@@ -463,6 +465,12 @@ def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
 scoped infixr:70 " ⊗ᵢ " => tensorIso
 -- TODO: Try setting this notation to `⊗` if the elaborator is improved and performs
 -- better than currently on overloaded notations.
+
+@[inherit_doc whiskerLeftIso]
+scoped infixr:81 " ◁ᵢ " => whiskerLeftIso
+
+@[inherit_doc whiskerRightIso]
+scoped infixl:81 " ▷ᵢ " => whiskerRightIso
 
 theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
     f ⊗ᵢ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=

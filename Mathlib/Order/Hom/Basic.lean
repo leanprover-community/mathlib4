@@ -540,11 +540,6 @@ theorem uliftRightMap_uliftLeftMap_eq (f : α →o β) : f.uliftRightMap.uliftLe
 
 end OrderHom
 
--- See note [lower instance priority]
-instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
-    [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
-  map_rel f := map_rel f
-
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
 def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
@@ -860,6 +855,7 @@ theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
 theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
   RelIso.symm_trans_self e
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An order isomorphism between the domains and codomains of two prosets of
 order homomorphisms gives an order isomorphism between the two function prosets. -/
 @[simps apply symm_apply]
@@ -1033,29 +1029,20 @@ def ofCmpEqCmp {α β} [LinearOrder α] [LinearOrder β] (f : α → β) (g : β
 
 /-- To show that `f : α →o β` and `g : β →o α` make up an order isomorphism it is enough to show
 that `g` is the inverse of `f`. -/
-@[simps! apply]
-def ofHomInv {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
-    [OrderHomClass G β α] (f : F) (g : G)
-    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
-    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) :
+@[simps apply]
+def ofHomInv (f : α →o β) (g : β →o α) (h₁ : f.comp g = .id) (h₂ : g.comp f = .id) :
     α ≃o β where
   toFun := f
   invFun := g
   left_inv := DFunLike.congr_fun h₂
   right_inv := DFunLike.congr_fun h₁
-  map_rel_iff' := @fun a b =>
-    ⟨fun h => by
-      replace h := map_rel g h
-      rwa [Equiv.coe_fn_mk, show g (f a) = (g : β →o α).comp (f : α →o β) a from rfl,
-        show g (f b) = (g : β →o α).comp (f : α →o β) b from rfl, h₂] at h,
-      fun h => (f : α →o β).monotone h⟩
+  map_rel_iff' :=
+    { mp h := by simpa [h₂] using show g.comp f _ ≤ g.comp f _ from map_rel g h
+      mpr h := f.monotone h }
 
 @[simp]
-theorem ofHomInv_symm_apply {F G : Type*} [FunLike F α β] [OrderHomClass F α β] [FunLike G β α]
-    [OrderHomClass G β α] (f : F) (g : G)
-    (h₁ : (f : α →o β).comp (g : β →o α) = OrderHom.id)
-    (h₂ : (g : β →o α).comp (f : α →o β) = OrderHom.id) (a : β) :
-    (ofHomInv f g h₁ h₂).symm a = g a := rfl
+theorem ofHomInv_symm_apply (f : α →o β) (g : β →o α) (h₁ : f.comp g = .id) (h₂ : g.comp f = .id)
+    (a : β) : (ofHomInv f g h₁ h₂).symm a = g a := rfl
 
 /-- Order isomorphism between `α → β` and `β`, where `α` has a unique element. -/
 @[simps! toEquiv apply]
@@ -1210,11 +1197,6 @@ theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
 end BoundedOrder
 
 end LatticeIsos
-
--- See note [lower instance priority]
-instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
-    [EquivLike F α β] [OrderIsoClass F α β] : OrderIsoClass F αᵒᵈ βᵒᵈ where
-  map_le_map_iff f := map_le_map_iff f
 
 section DenselyOrdered
 

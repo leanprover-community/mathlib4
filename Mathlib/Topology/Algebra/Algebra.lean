@@ -591,6 +591,11 @@ theorem Subalgebra.topologicalClosure_minimal {s t : Subalgebra R A} (h : s ≤ 
     (ht : IsClosed (t : Set A)) : s.topologicalClosure ≤ t :=
   closure_minimal h ht
 
+@[gcongr]
+theorem Subalgebra.topologicalClosure_mono {s t : Subalgebra R A} (h : s ≤ t) :
+    s.topologicalClosure ≤ t.topologicalClosure :=
+  closure_mono h
+
 variable (R) in
 open Algebra in
 lemma Subalgebra.topologicalClosure_adjoin_le_centralizer_centralizer [T2Space A] (s : Set A) :
