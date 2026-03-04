@@ -151,4 +151,20 @@ lemma delta_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
 
 end
 
+
+open Filter in
+theorem tendsto_tprod_one_add_of_dominated_convergence
+    {α β R : Type*} {𝓕 : Filter α} [NormedCommRing R] [CompleteSpace R] [NormOneClass R]
+    {f : α → β → R} {g : β → R} {bound : β → ℝ} (h_sum : Summable bound)
+    (hab : ∀ k, Tendsto (f · k) 𝓕 (nhds (g k)))
+    (h_bound : ∀ᶠ n in 𝓕, ∀ k, ‖f n k‖ ≤ bound k) :
+    Tendsto (∏' k, (1 + f · k)) 𝓕 (nhds (∏' k, (1 + g k))) := by
+  --have h : Summable fun a =>  fun b => ‖f a b‖ := by sorry
+
+  --have hn := Summable.norm h
+  have := prod_vanishing_of_summable_norm h_sum.norm (ε := 1) (by sorry)
+
+  sorry
+
+
 end ModularForm
