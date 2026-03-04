@@ -214,6 +214,51 @@ end Field
 
 end Eval
 
+section algEquivOfTranscendental
+
+open Polynomial IntermediateField algebraAdjoinAdjoin
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (f : L) (h : Transcendental K f)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Given a transcendental `f : L`, the `K`-algebra isomorphism between `RatFunc K` and `L` given
+by sending `X` to `f`. -/
+noncomputable def algEquivOfTranscendental : RatFunc K ≃ₐ[K] K⟮f⟯ :=
+  IsFractionRing.algEquivOfAlgEquiv (Polynomial.algEquivOfTranscendental K f h)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_algebraMap (g : K[X]) :
+    algEquivOfTranscendental f h (algebraMap K[X] (RatFunc K) g) = aeval f g := by
+  simp [algEquivOfTranscendental]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_X :
+    algEquivOfTranscendental f h (X : RatFunc K) = f := by
+  rw [← algebraMap_X, algEquivOfTranscendental_algebraMap, aeval_X]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem algEquivOfTranscendental_apply (u : RatFunc K) :
+    algEquivOfTranscendental f h u = aeval f u.num / aeval f u.denom := by
+  conv_lhs => rw [← num_div_denom u]
+  simp [-num_div_denom]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_symm_aeval (g : K[X]) :
+    (algEquivOfTranscendental f h).symm (aeval (AdjoinSimple.gen _ f) g) = algebraMap _ _ g := by
+  simp [algEquivOfTranscendental, ← algebraMap_eq_gen_self, aeval_algebraMap_apply]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_symm_gen :
+    (algEquivOfTranscendental f h).symm (AdjoinSimple.gen _ f) = (X : RatFunc K) := by
+  simp [algEquivOfTranscendental, ← algebraMap_eq_gen_self]
+
+end algEquivOfTranscendental
+
+
 section Algebra
 
 variable [CommRing K] [IsDomain K]
