@@ -720,6 +720,11 @@ lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
     v₁ x < v₁ y ↔ v₂ x < v₂ y := by
   rw [← le_iff_le_iff_lt_iff_lt, h]
 
+lemma eq_iff (h : v₁.IsEquiv v₂) {x y : R} :
+    v₁ x = v₁ y ↔ v₂ x = v₂ y := by
+  simp only [IsEquiv] at h
+  simp [eq_iff_le_not_lt, h]
+
 lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
   rw [← v₁.map_one, h, map_one]
