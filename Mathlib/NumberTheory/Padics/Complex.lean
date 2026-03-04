@@ -6,12 +6,12 @@ Authors: María Inés de Frutos-Fernández
 module
 
 public import Mathlib.Analysis.Normed.Algebra.Ultra
+public import Mathlib.Analysis.Normed.Field.Krasner
 public import Mathlib.Analysis.Normed.Module.Completion
 public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
-public import Mathlib.Topology.Algebra.Krasner
 
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
@@ -247,6 +247,11 @@ instance nontriviallyNormedField : NontriviallyNormedField ℂ_[p] where
 /-- `ℂ_[p]` has characteristic zero. -/
 instance charZero : CharZero ℂ_[p] :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] ℂ_[p]).injective).mp inferInstance
+
+set_option backward.isDefEq.respectTransparency false in
+instance isAlgClosed : IsAlgClosed ℂ_[p] :=
+  IsAlgClosed.of_denseRange (i := algebraMap (PadicAlgCl p) ℂ_[p])
+    UniformSpace.Completion.denseRange_coe
 
 end PadicComplex
 
