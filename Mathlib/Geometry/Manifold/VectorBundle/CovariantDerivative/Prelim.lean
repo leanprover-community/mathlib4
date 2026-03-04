@@ -109,6 +109,7 @@ lemma surjective_mfderiv_of_eventually_rightInverse
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
+set_option backward.isDefEq.respectTransparency false in
 -- cleaned up and PRed in #34262
 lemma mfderiv_const_smul (s : M → F) {x : M} (a : 𝕜) (v : TangentSpace I x) :
     mfderiv% (a • s) x v = a • mfderiv% s x v := by
@@ -356,7 +357,7 @@ lemma contMDiff_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M
   let ψ := Classical.choose <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
   let hψ :=
     Classical.choose_spec <| (SmoothBumpFunction.nhds_basis_support (I := I) ht).mem_iff.1 ht
-  exact .smul_section_of_tsupport ψ.contMDiff.contMDiffOn t.open_baseSet hψ.1
+  exact ContMDiffOn.smul_section_of_tsupport ψ.contMDiff.contMDiffOn t.open_baseSet hψ.1
     (contMDiffOn_localExtensionOn _ hx _)
 
 lemma mdifferentiable_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
@@ -602,6 +603,7 @@ lemma derivInv_deriv
   have comp := mfderiv_comp v D₁ D₂
   rw [(invFun_comp_eventuallyEq e hv).mfderiv_eq, mfderiv_id] at comp
   simp [deriv, derivInv, comp]
+  rfl
 
 @[simp]
 lemma derivInv_deriv_apply
@@ -622,6 +624,7 @@ lemma mfderiv_proj_fst_deriv
   simp
   rfl -- TODO: understand why `simp` does not handle `ContinuousLinearMap.fst`
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma mfderiv_proj_derivInv_apply
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]
@@ -647,6 +650,7 @@ lemma mfderiv_proj_derivInv_apply
   simp
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma deriv_derivInv
     [VectorBundle ℝ F V] [ContMDiffVectorBundle 1 F V I]

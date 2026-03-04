@@ -327,6 +327,7 @@ end operations
 
 section trivial_bundle
 
+set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
 noncomputable def trivial [IsManifold I 1 M] :
@@ -480,6 +481,7 @@ end operations
 
 section trivial_bundle
 
+set_option backward.isDefEq.respectTransparency false in
 variable (I M F) in
 @[simps]
 noncomputable def trivial [IsManifold I 1 M] : CovariantDerivative I F (Trivial M F) where
@@ -858,6 +860,7 @@ lemma horiz_vert_direct_sum (hcov : IsCovariantDerivativeOn F cov s) (x : M) (f 
     use u - (0, hcov.projection x f u), ?_, (0, hcov.projection x f u), ?_, ?_
     all_goals simp [horiz]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma mem_horiz_iff_exists (hcov : IsCovariantDerivativeOn F cov s) {x : M} {f : F}
     {u : TM x} {v : F} (hx : x ∈ s := by trivial) : (u, v) ∈ hcov.horiz x f ↔
     ∃ σ : M → F, MDiffAt (T% σ) x ∧
@@ -1148,8 +1151,9 @@ noncomputable def horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
     Submodule ℝ (TangentSpace (I.prod 𝓘(ℝ, F)) v) :=
   (cov.proj v).ker
 
-lemma mem_horiz_iff_proj {cov : CovariantDerivative I F V} {v : TotalSpace F V} (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
-  u ∈ cov.horiz v ↔ cov.proj v u = 0 := by
+lemma mem_horiz_iff_proj {cov : CovariantDerivative I F V} {v : TotalSpace F V}
+    (u : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
+    u ∈ cov.horiz v ↔ cov.proj v u = 0 := by
   simp [horiz]
 
 lemma comap_trivializationAt_horiz (cov : CovariantDerivative I F V) (v : TotalSpace F V) :
@@ -1184,6 +1188,7 @@ lemma horiz_vert_direct_sum [ContMDiffVectorBundle 1 F V I]
 variable [IsManifold I 1 M]
 variable {cov : CovariantDerivative I F V}
 
+set_option backward.isDefEq.respectTransparency false in
 omit [ContMDiffVectorBundle 1 F V I] in
 lemma proj_mderiv [ContMDiffVectorBundle 1 F V I]
     {X : Π x : M, TangentSpace I x} {σ : Π x : M, V x} (x : M)
@@ -1210,7 +1215,6 @@ end CovariantDerivative
 end horiz
 
 end real
-
 
 -- variable (E E') in
 -- /-- The trivial connection on a trivial bundle, given by the directional derivative -/

@@ -231,6 +231,7 @@ lemma IsMIntegralCurveAt.mdifferentiableAt (h : IsMIntegralCurveAt γ v t₀) :
   filter_upwards [h] with t ht
   exact ht.mdifferentiableAt
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma IsMIntegralCurveAt.mfderiv (hγ : IsMIntegralCurveAt γ v t₀) :
     ∀ᶠ t in 𝓝 t₀, mfderiv% γ t (1 : ℝ) = v (γ t) := by
   filter_upwards [hγ] with t ht
@@ -339,6 +340,7 @@ Remember: `IsMIntegralCurveAt` is local, not pointwise. -/
 def CovariantDerivative.isGeodAt (γ : ℝ → M) (t : ℝ) :=
   IsMIntegralCurveAt (velocity I γ) cov.geodVF t
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CovariantDerivative.isGeodAt_iff_horiz {γ : ℝ → M} {t₀ : ℝ}
     (hγ : ∀ᶠ (t : ℝ) in 𝓝 t₀, MDiffAt (velocity I γ) t) :
     cov.isGeodAt γ t₀ ↔
@@ -366,6 +368,7 @@ lemma CovariantDerivative.isGeodAt_iff_proj {γ : ℝ → M} {t₀ : ℝ}
 
 def CovariantDerivative.isGeod (γ : ℝ → M) := ∀ t, cov.isGeodAt γ t
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CovariantDerivative.orbit_geodVF {X : Π x : M, TangentSpace I x}
     {γ : ℝ → M} {t₀ : ℝ} (hX : ∀ᶠ t in 𝓝 t₀, MDiffAt (T% X) (γ t))
     (hγ : ∀ᶠ (t : ℝ) in 𝓝 t₀, MDiffAt (velocity I γ) t)
