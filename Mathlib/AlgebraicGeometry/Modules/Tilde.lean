@@ -398,6 +398,19 @@ set_option backward.isDefEq.respectTransparency false in
 instance : (tilde M).IsQuasicoherent :=
   (presentationTilde.{u} _ .univ (by simp) _ (Submodule.span_eq _)).isQuasicoherent
 
+set_option backward.isDefEq.respectTransparency false in
+lemma isIso_fromTildeΓ_of_presentation (M : (Spec R).Modules) (P : M.Presentation) :
+    IsIso M.fromTildeΓ := by
+  rw [isIso_fromTildeΓ_iff]
+  let g := (tilde.functor _).preimage <| (tildeFinsupp _).hom ≫ P.relations.π ≫ kernel.ι _ ≫
+    (tildeFinsupp _).inv
+  let iso : cokernel ((tilde.functor R).map g) ≅ cokernel (P.relations.π ≫ kernel.ι _) := by
+    refine cokernel.mapIso _ _ (tildeFinsupp _) (tildeFinsupp _) ?_
+    simp only [g, (tilde.functor R).map_preimage]
+    simp
+  exact ⟨cokernel g, ⟨PreservesCokernel.iso (tilde.functor R) g ≪≫ iso ≪≫
+    IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) P.isColimit⟩⟩
+
 end IsQuasicoherent
 
 end AlgebraicGeometry
