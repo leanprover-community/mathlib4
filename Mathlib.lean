@@ -6764,6 +6764,7 @@ public import Mathlib.Tactic.Contrapose
 public import Mathlib.Tactic.Conv
 public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.Core
+public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.DeclarationNames
 public import Mathlib.Tactic.DefEqAbuse
 public import Mathlib.Tactic.DefEqTransformations
@@ -6773,7 +6774,6 @@ public import Mathlib.Tactic.DeriveCountable
 public import Mathlib.Tactic.DeriveEncodable
 public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Tactic.DeriveTraversable
-public import Mathlib.Tactic.DSimpPercent
 public import Mathlib.Tactic.ENatToNat
 public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.ErwQuestion
