@@ -386,7 +386,8 @@ lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven :
     padicValNat 2 n + 2 ≤ padicValNat 2 (x ^ n - 1) := by
   have : padicValNat 2 ((x + 1) * (x - 1)) ≥ 3 := by
     refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
-    simpa [← Nat.pow_two_sub_pow_two x 1] using by grind [Nat.eight_dvd_sq_sub_one_of_odd]
+    simp [← Nat.pow_two_sub_pow_two x 1]
+    grind [Nat.eight_dvd_sq_sub_one_of_odd]
   have := pow_two_sub_one h1x hx hn hneven
   grind [← padicValNat.mul]
 
