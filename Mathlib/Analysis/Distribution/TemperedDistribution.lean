@@ -106,6 +106,32 @@ theorem toTemperedDistribution_apply {f : E → F} (hf : f.HasTemperateGrowth) (
 
 end Function.HasTemperateGrowth
 
+namespace MeasureTheory.LocallyIntegrable
+
+variable [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth]
+
+#check PointwiseConvergenceCLM.continuous_of_continuous_eval
+
+set_option backward.isDefEq.respectTransparency false in
+--set_option backward.privateInPublic true in
+def toTemperedDistribution {f : E → F} (hf : LocallyIntegrable f μ)
+    (hf' : ∃ k, Asymptotics.IsBigO (Filter.cocompact E) f (‖·‖ ^ k)) : 𝓢'(E, F) where
+  toFun g := ∫ x, g x • f x ∂μ
+  map_add' g₁ g₂ := by
+    simp only [SchwartzMap.add_apply, add_smul]
+    apply integral_add
+    · sorry
+    · sorry
+  map_smul' c g := by
+    simp only [SchwartzMap.smul_apply, RingHom.id_apply, smul_assoc]
+    apply integral_smul
+  cont := by
+    sorry
+
+
+end MeasureTheory.LocallyIntegrable
+
 namespace SchwartzMap
 
 section MeasurableSpace
