@@ -154,6 +154,92 @@ instance [P.IsTriangulated] : P.IsTriangulatedClosed₃ where
 
 instance [P.IsTriangulated] : P.isoClosure.IsTriangulated where
 
+
+section
+
+variable (Q R : ObjectProperty C)
+
+/-- An object `X` satisfies `extensionProduct P Q` if there exists a distinguished triangle
+`Y ⟶ X ⟶ Z ⟶ Y⟦1⟧` such that `Y` satisfies `P` and `Z` satisfies `Q`. -/
+def extensionProduct : ObjectProperty C :=
+  fun X => ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
+    Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z
+
+lemma extensionProduct_iff (X : C) : extensionProduct P Q X ↔
+  ∃ (Y Z : C) (f : Y ⟶ X) (g : X ⟶ Z) (h : Z ⟶ Y⟦(1 : ℤ)⟧),
+    Triangle.mk f g h ∈ distTriang C ∧ P Y ∧ Q Z := Iff.rfl
+
+variable {P} in
+lemma monotone_extensionProduct_left {P' : ObjectProperty C} (h : P ≤ P') :
+    extensionProduct P Q ≤ extensionProduct P' Q := by
+  intro X ⟨Y, Z, f, g, k, hT, hP, hQ⟩
+  exact ⟨Y, Z, f, g, k, hT, h Y hP, hQ⟩
+
+variable {Q} in
+lemma monotone_extensionProduct_right {Q' : ObjectProperty C} (h : Q ≤ Q') :
+    extensionProduct P Q ≤ extensionProduct P Q' := by
+  intro X ⟨Y, Z, f, g, k, hT, hP, hQ⟩
+  exact ⟨Y, Z, f, g, k, hT, hP, h Z hQ⟩
+
+instance : (extensionProduct P Q).IsClosedUnderIsomorphisms where
+  of_iso := by
+    intro X X' i ⟨Y, Z, f, g, h, hT, hP, hQ⟩
+    refine ⟨Y, Z, f ≫ i.hom, i.inv ≫ g, h, ?_, hP, hQ⟩
+    exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ (Iso.refl _) i.symm (Iso.refl _)
+
+lemma extensionProduct_isoClosure_left :
+    extensionProduct P.isoClosure Q = extensionProduct P Q := by
+  refine le_antisymm ?_ (monotone_extensionProduct_left Q P.le_isoClosure)
+  intro X ⟨Y, Z, f, g, h, hT, ⟨Y', hP, ⟨i⟩⟩, hQ⟩
+  refine ⟨Y', Z, i.inv ≫ f, g, h ≫ i.hom⟦1⟧', ?_, hP, hQ⟩
+  exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ i.symm (Iso.refl _) (Iso.refl _)
+
+lemma extensionProduct_isoClosure_right :
+    extensionProduct P Q.isoClosure = extensionProduct P Q := by
+  refine le_antisymm ?_ (monotone_extensionProduct_right _ Q.le_isoClosure)
+  intro X ⟨Y, Z, f, g, h, hT, hP, ⟨Z', hQ, ⟨i⟩⟩⟩
+  refine ⟨Y, Z', f, g ≫ i.hom, i.inv ≫ h, ?_, hP, hQ⟩
+  exact isomorphic_distinguished _ hT _ <| Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) i.symm
+
+variable {P} in
+lemma le_extensionProduct_left [Q.ContainsZero] : P ≤ extensionProduct P Q := by
+  intro X hX
+  rw [← extensionProduct_isoClosure_right]
+  obtain ⟨Z, hZ, hQ⟩ := Q.exists_prop_of_containsZero
+  refine ⟨_, _, _, _, _, contractible_distinguished X, hX, ?_⟩
+  exact ⟨Z, hQ, ⟨IsZero.iso (isZero_zero C) hZ⟩⟩
+
+variable {Q} in
+lemma le_extensionProduct_right [P.ContainsZero] : Q ≤ extensionProduct P Q := by
+  intro X hX
+  rw [← extensionProduct_isoClosure_left]
+  obtain ⟨Z, hZ, hP⟩ := P.exists_prop_of_containsZero
+  refine ⟨_, _, _, _, _, inv_rot_of_distTriang _ (contractible_distinguished X), ?_, hX⟩
+  exact ⟨Z, hP, ⟨IsZero.iso (Functor.map_isZero _ (isZero_zero C)) hZ⟩⟩
+
+instance [P.IsStableUnderShift ℤ] [Q.IsStableUnderShift ℤ] :
+    (extensionProduct P Q).IsStableUnderShift ℤ where
+  isStableUnderShiftBy a := IsStableUnderShiftBy.mk <| by
+    intro X ⟨Y, Z, f, g, h, hT, hP, hQ⟩
+    refine ⟨_, _, _, _, _, Triangle.shift_distinguished _ hT a, ?_, ?_⟩
+    all_goals apply IsStableUnderShiftBy.le_shift; assumption
+
+@[stacks 0FX1]
+lemma extensionProduct_assoc [IsTriangulated C] :
+    extensionProduct (extensionProduct P Q) R = extensionProduct P (extensionProduct Q R) := by
+  ext X
+  constructor
+  · intro ⟨Y, C, f, g, h, hT, ⟨A, B, f', g', h', hT', hP, hQ⟩, hR⟩
+    obtain ⟨Y, g'', h'', hT''⟩ := distinguished_cocone_triangle (f' ≫ f)
+    let o := someOctahedron rfl hT' hT hT''
+    exact ⟨_, _, _, _, _, hT'', hP, ⟨_, _, _, _, _, o.mem, hQ, hR⟩⟩
+  · intro ⟨A, Z, f, g, h, hT, hP, ⟨B, C, f', g', h', hT', hQ, hR⟩⟩
+    obtain ⟨Y, f'', h'', hT''⟩ := distinguished_cocone_triangle₁ (g ≫ g')
+    let o := someOctahedron' rfl hT hT' hT''
+    exact ⟨_, _, _, _, _, hT'', ⟨_, _, _, _, _, o.mem, hP, hQ⟩, hR⟩
+
+end
+
 /-- Given `P : ObjectProperty C` with `C` a pretriangulated category, this is the class
 of morphisms whose cone satisfies `P`. (The name `trW` contains the prefix `tr`
 for "triangulated", and `W` is a letter that is often used to refer to classes of
@@ -193,6 +279,7 @@ lemma trW_isoClosure : P.isoClosure.trW = P.trW := by
   · rintro ⟨Z, g, h, mem, hZ⟩
     exact ⟨Z, g, h, mem, ObjectProperty.le_isoClosure _ _ hZ⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : P.trW.RespectsIso where
   precomp {X' X Y} e (he : IsIso e) := by
     rintro f ⟨Z, g, h, mem, mem'⟩
@@ -209,10 +296,12 @@ instance [P.ContainsZero] : P.trW.ContainsIdentities := by
   rw [← trW_isoClosure]
   exact ⟨fun X => ⟨_, _, _, contractible_distinguished X, prop_zero _⟩⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma trW_of_isIso [P.ContainsZero] {X Y : C} (f : X ⟶ Y) [IsIso f] : P.trW f := by
   refine (P.trW.arrow_mk_iso_iff ?_).1 (MorphismProperty.id_mem _ X)
   exact Arrow.isoMk (Iso.refl _) (asIso f)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smul_mem_trW_iff {X Y : C} (f : X ⟶ Y) (n : ℤˣ) :
     P.trW (n • f) ↔ P.trW f :=
   P.trW.arrow_mk_iso_iff (Arrow.isoMk (n • (Iso.refl _)) (Iso.refl _))
@@ -283,6 +372,7 @@ lemma inverseImage_trW_isInverted {E : Type*} [Category E]
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFractions where
   exists_leftFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -301,6 +391,7 @@ instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasLeftCalculusOfFraction
       dsimp at eq
       rw [← sub_eq_zero, ← sub_comp, hq, assoc, eq, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsTriangulated C] [P.IsTriangulated] : P.trW.HasRightCalculusOfFractions where
   exists_rightFraction X Y φ := by
     obtain ⟨Z, f, g, H, mem⟩ := φ.hs
@@ -367,8 +458,9 @@ section
 
 variable [P.IsTriangulated]
 
+set_option backward.isDefEq.respectTransparency false in
 noncomputable instance : Pretriangulated P.FullSubcategory where
-  distinguishedTriangles T := P.ι.mapTriangle.obj T ∈ distTriang C
+  distinguishedTriangles := P.ι.mapTriangle.obj ⁻¹' (distTriang C)
   isomorphic_distinguished T₁ hT₁ T₂ e :=
     isomorphic_distinguished _ hT₁ _ (P.ι.mapTriangle.mapIso e)
   contractible_distinguished X :=
@@ -399,6 +491,7 @@ instance : P.ι.IsTriangulated where
 instance [IsTriangulated C] : IsTriangulated P.FullSubcategory :=
   IsTriangulated.of_fully_faithful_triangulated_functor P.ι
 
+set_option backward.isDefEq.respectTransparency false in
 instance (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] [F.Full] :
     F.essImage.IsTriangulated where
   isStableUnderShiftBy n :=
@@ -432,38 +525,5 @@ instance {D : Type*} [Category D] [HasZeroObject D] [Preadditive D]
 end
 
 end ObjectProperty
-
-namespace Triangulated
-
-@[deprecated (since := "2025-07-21")]
-alias Subcategory := ObjectProperty.IsTriangulated
-
-namespace Subcategory
-
-open ObjectProperty
-
-@[deprecated (since := "2025-07-21")] alias mk' := IsTriangulatedClosed₂.mk'
-@[deprecated (since := "2025-07-21")] alias ext₁ := ext_of_isTriangulatedClosed₁
-@[deprecated (since := "2025-07-21")] alias ext₁' := ext_of_isTriangulatedClosed₁'
-@[deprecated (since := "2025-07-21")] alias ext₂ := ext_of_isTriangulatedClosed₂
-@[deprecated (since := "2025-07-21")] alias ext₂' := ext_of_isTriangulatedClosed₂'
-@[deprecated (since := "2025-07-21")] alias ext₃ := ext_of_isTriangulatedClosed₃
-@[deprecated (since := "2025-07-21")] alias ext₃' := ext_of_isTriangulatedClosed₃'
-@[deprecated (since := "2025-07-21")] alias W := trW
-@[deprecated (since := "2025-07-21")] alias W_iff := trW_iff
-@[deprecated (since := "2025-07-21")] alias W_iff' := trW_iff'
-@[deprecated (since := "2025-07-21")] alias W.mk := trW.mk
-@[deprecated (since := "2025-07-21")] alias W.mk' := trW.mk'
-@[deprecated (since := "2025-07-21")] alias isoClosure_W := trW_isoClosure
-@[deprecated (since := "2025-07-21")] alias W_of_isIso := trW_of_isIso
-@[deprecated (since := "2025-07-21")] alias smul_mem_W_iff := smul_mem_trW_iff
-@[deprecated (since := "2025-07-21")] alias W.shift := trW.shift
-@[deprecated (since := "2025-07-21")] alias W.unshift := trW.unshift
-@[deprecated (since := "2025-07-21")]
-alias mem_W_iff_of_distinguished := trW_iff_of_distinguished
-
-end Subcategory
-
-end Triangulated
 
 end CategoryTheory

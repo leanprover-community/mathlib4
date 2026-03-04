@@ -390,6 +390,42 @@ theorem comap_comap_center {H₁ : Subgroup G} [H₁.Normal] {H₂ : Subgroup (G
   simp only [mk'_apply, Subgroup.mem_comap, Subgroup.mem_center_iff, forall_mk, ← mk_mul,
     eq_iff_div_mem, mk_div]
 
+open Subgroup in
+@[to_additive]
+theorem _root_.Subgroup.Characteristic.comap_quotient_mk {H : Subgroup G} [hH : H.Characteristic]
+    {K : Subgroup (G ⧸ H)} (hK : K.Characteristic) :
+    Characteristic (K.comap (mk' H)) :=
+  characteristic_iff_comap_eq.mpr fun φ ↦ congr_arg (comap (mk' H))
+    (characteristic_iff_comap_eq.mp hK (congr H H φ (characteristic_iff_map_eq.mp hH φ)))
+
+/--
+The `MulEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
+of type `G →* A` and the group of homomorphisms `G ⧸ H →* A`.
+-/
+@[to_additive
+/--
+The `AddEquiv` between the kernel of the restriction map to a normal subgroup `H` of homomorphisms
+of type `G →+ A` and the group of homomorphisms `G ⧸ H →+ A`.
+-/]
+def _root_.MonoidHom.restrictHomKerEquiv (A : Type*) [CommGroup A] (H : Subgroup G) [H.Normal] :
+    (MonoidHom.restrictHom H A).ker ≃* (G ⧸ H →* A) where
+  toFun := fun ⟨f, hf⟩ ↦ QuotientGroup.lift _ f
+    (by simpa [mem_ker, restrictHom_apply, restrict_eq_one_iff] using hf)
+  invFun f := ⟨f.comp (QuotientGroup.mk' H), restrict_eq_one_iff.mpr <| le_comap_mk' H f.ker⟩
+  map_mul' _ _ := by ext; simp
+  left_inv _ := by simp
+  right_inv _ := by ext; simp
+
+@[simp]
+theorem _root_.MonoidHom.restrictHomKerEquiv_apply_coe (A : Type*) [CommGroup A] (H : Subgroup G)
+    [H.Normal] (f : (MonoidHom.restrictHom H A).ker) (g : G) :
+    restrictHomKerEquiv A H f g = f.val g := rfl
+
+@[simp]
+theorem _root_.MonoidHom.restrictHomKerEquiv_symm_coe_apply (A : Type*) [CommGroup A]
+    (H : Subgroup G) [H.Normal] (f : G ⧸ H →* A) (g : G) :
+    ((restrictHomKerEquiv A H).symm f).val g = f g := rfl
+
 end QuotientGroup
 
 namespace QuotientAddGroup

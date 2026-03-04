@@ -55,6 +55,17 @@ lemma prod_le_one (h0 : ∀ i ∈ s, 0 ≤ f i) (h1 : ∀ i ∈ s, f i ≤ 1) : 
 lemma one_le_prod (hf : ∀ i ∈ s, 1 ≤ f i) : 1 ≤ ∏ i ∈ s, f i := by
   simpa using prod_le_prod (by simp) hf
 
+lemma le_prod_max_one {M : Type*} [CommMonoidWithZero M] [LinearOrder M] [ZeroLEOneClass M]
+    [PosMulMono M] {i : ι} (hi : i ∈ s) (f : ι → M) :
+    f i ≤ ∏ i ∈ s, max (f i) 1 := by
+  classical
+  rcases lt_or_ge (f i) 0 with hf | hf
+  · exact (hf.trans_le <| prod_nonneg fun _ _ ↦ le_sup_of_le_right zero_le_one).le
+  have : f i = ∏ j ∈ s, if i = j then f i else 1 := by
+    rw [prod_eq_single_of_mem i hi fun _ _ _ ↦ by grind]
+    simp
+  exact this ▸ prod_le_prod (fun _ _ ↦ by grind [zero_le_one]) fun _ _ ↦ by grind
+
 @[gcongr]
 theorem prod_le_prod_of_subset_of_one_le (h : s ⊆ t)
     (hf0 : ∀ i ∈ s, 0 ≤ f i)

@@ -114,6 +114,7 @@ theorem trace_algebraMap [StrongRankCondition R] [Module.Free R S] (x : R) :
   · rw [trace_algebraMap_of_basis H.choose_spec.some, finrank_eq_card_basis H.choose_spec.some]
   · simp [trace_eq_zero_of_not_exists_basis R H, finrank_eq_zero_of_not_exists_basis_finset H]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
     [Finite κ] (b : Basis ι R S) (c : Basis κ S T) (x : T) :
     trace R S (trace S T x) = trace R T x := by
