@@ -132,6 +132,8 @@ theorem isUniformInducing_of_comp (h : ∀ x, ‖f x‖ = v x.ofAbs) : IsUniform
 
 end WithAbs
 
+section Completion
+
 namespace AbsoluteValue
 
 open WithAbs
@@ -140,12 +142,6 @@ variable {K : Type*} [Field K] (v : AbsoluteValue K ℝ)
 
 /-- The completion of a field with respect to a real absolute value. -/
 abbrev Completion := UniformSpace.Completion (WithAbs v)
-
-variable {R : Type*} [NormedField R]
-#synth NormedRing R
-
-example : (normedField v).toNormedCommRing.toNormedRing = (normedRing v) := by
-  with_reducible_and_instances rfl
 
 namespace Completion
 
@@ -205,23 +201,25 @@ theorem locallyCompactSpace [LocallyCompactSpace L] (h : Isometry f) :
     LocallyCompactSpace (v.Completion) :=
   h.completion_extension.isClosedEmbedding.locallyCompactSpace
 
-variable {w : AbsoluteValue L ℝ} {σ : WithAbs v →+* WithAbs w}
+section LiesOver
 
-#synth IsTopologicalRing (WithAbs v)
-#synth IsUniformAddGroup (WithAbs v)
+variable {L : Type*} [NormedField L] {w : AbsoluteValue L ℝ} {σ : WithAbs v →+* WithAbs w}
+
+set_option backward.isDefEq.respectTransparency false in
 /-- If `L/K` and `w` is an absolute value on `L` factors through `K` via an embedding `σ : K →+* L`
 to give the absolute value `v` on `K`, then `mapOfComp` is natural ring homomorphism
 `v.Completion →+* w.Completion` lifting `σ`. -/
 noncomputable abbrev mapOfComp (h : Isometry σ) : v.Completion →+* w.Completion :=
-  @Isometry.mapRingHom (WithAbs v) (WithAbs w) _ _
-    NormedDivisionRing.to_isTopologicalDivisionRing.toIsTopologicalRing _ _ _ _
-    NormedDivisionRing.to_isTopologicalDivisionRing.toIsTopologicalRing σ h
+  h.mapRingHom
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mapOfComp_coe (h : Isometry σ) (x : WithAbs v) : mapOfComp h x = σ x := h.mapRingHom_coe _
 
 theorem mapOfComp_dist_eq (h : Isometry σ) (x y : v.Completion) :
     dist (mapOfComp h x) (mapOfComp h y) = dist x y := h.completion_map.dist_eq _ _
 
 theorem isometry_mapOfComp (h : Isometry σ) : Isometry (mapOfComp h) := h.completion_map
+
+end LiesOver
 
 end AbsoluteValue.Completion
