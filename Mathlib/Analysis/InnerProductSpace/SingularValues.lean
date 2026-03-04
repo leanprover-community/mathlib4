@@ -234,16 +234,13 @@ theorem test₃ : T.singularValues.support.card = Module.finrank 𝕜 T.range :=
 theorem singularValues_lt_rank {n : ℕ}
   (hn : n < Module.finrank 𝕜 (range T)) : 0 < T.singularValues n := by
     contrapose! hn
-    simp only [nonpos_iff_eq_zero] at hn
-    have antitone := singularValues_antitone T
     have : T.singularValues.support ⊆ Finset.range n := by
       intro i hi
       rw [Finset.mem_range]
-      rw [Finsupp.mem_support_iff] at hi
-      have hi₂ : 0 < T.singularValues i := pos_of_ne_zero hi
+      have hi₂ : 0 < T.singularValues i := pos_of_ne_zero (Finsupp.mem_support_iff.mp hi)
       contrapose! hi₂
-      rw [←hn]
-      apply antitone
+      rw [←nonpos_iff_eq_zero.mp hn]
+      apply singularValues_antitone T
       exact hi₂
     calc
       Module.finrank 𝕜 T.range = T.singularValues.support.card := T.test₃.symm
