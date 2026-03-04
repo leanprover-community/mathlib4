@@ -98,6 +98,11 @@ lemma mdifferentiable_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2S
     MDiff (T% (extend I F σ₀)) :=
   contMDiff_extend I F σ₀ |>.mdifferentiable (by simp)
 
+lemma mdifferentiableAt_extend [IsManifold I ∞ M] [FiniteDimensional ℝ F] [T2Space M]
+    [ContMDiffVectorBundle ∞ F V I] {x : M} (σ₀ : V x) (x' : M) :
+    MDiffAt (T% (extend I F σ₀)) x' :=
+  mdifferentiable_extend I F σ₀ |>.mdifferentiableAt
+
 theorem contDiff_extend
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
     {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [FiniteDimensional ℝ E']

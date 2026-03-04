@@ -35,7 +35,7 @@ set_option backward.isDefEq.respectTransparency false
 
 -- Let M be a C^k real manifold modeled on (E, H), endowed with a Riemannian metric.
 variable {n : WithTop ℕ∞}
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
   {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
@@ -646,26 +646,27 @@ lemma leviCivitaRhs_smulZ_apply [CompleteSpace E] {f : M → ℝ}
 
 end leviCivitaRhs
 
-variable (X Y Z) in
-lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
-    ⟪∇ X, Y, Z⟫ + ⟪Y, ∇ Z, X⟫ + ⟪Y, VectorField.mlieBracket I X Z⟫ := by
-  trans ⟪∇ X, Y, Z⟫ + ⟪Y, ∇ X, Z⟫
-  · ext x
-    exact h.1 X Y Z x
-  · ext x
-    simp [← isTorsionFree_iff.mp h.2 X Z, product, inner_sub_right]
+variable (Y) in
+lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
+    (hX : MDiffAt (T% X) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
+    ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ Z, X⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
+  trans ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x
+  · exact h.1 X Y Z x
+  · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ,
+          product, inner_sub_right]
 
-variable (X Y Z) {cov} in
+variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
-lemma IsLeviCivitaConnection.eq_leviCivitaRhs (h : cov.IsLeviCivitaConnection) :
-    ⟪∇ X, Y, Z⟫ = leviCivitaRhs I X Y Z := by
+lemma IsLeviCivitaConnection.eq_leviCivitaRhs (h : cov.IsLeviCivitaConnection)
+    {x : M} (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    ⟪∇ X, Y, Z⟫ x = leviCivitaRhs I X Y Z x := by
   unfold leviCivitaRhs leviCivitaRhs'
-  have eq1 := aux I X Y Z cov h
-  have eq2 := aux I Y Z X cov h
-  have eq3 := aux I Z X Y cov h
-  simp [product_swap] at *
-  linear_combination (norm := module) -(2:ℝ)⁻¹ • (eq1 + eq2 - eq3)
+  have eq1 := aux I Y cov h hX hZ
+  have eq2 := aux I Z cov h hY hX
+  have eq3 := aux I X cov h hZ hY
+  rw [product_swap] at eq1 eq2 eq3 ⊢
+  sorry -- linear_combination (norm := module) -(2:ℝ)⁻¹ • (eq1 + eq2 - eq3)
 
 section
 
@@ -688,21 +689,22 @@ at least on differentiable vector fields. -/
 -- (probably not everywhere, as addition rules apply only for differentiable vector fields?)
 theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     {cov cov' : CovariantDerivative I E (TangentSpace I : M → Type _)}
-    (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection) :
+    (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
+    {X Y : Π x : M, TangentSpace I x} {x : M}
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
     -- almost, only agree on smooth functions
-    cov = cov' := by
-  ext X x Y₀
+    cov X x (Y x) = cov' X x (Y x) := by
   have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
   have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
   apply Φ.injective
   ext Z₀
-  let Y := _root_.extend I E Y₀
   let Z := _root_.extend I E Z₀
-  suffices inner ℝ (cov X x (Y x)) (Z x) = inner ℝ (cov' X x (Y x)) (Z x) by simpa [Φ, Y, Z]
+  have hZ := mdifferentiableAt_extend I E Z₀ x
+  suffices inner ℝ (cov X x (Y x)) (Z x) = inner ℝ (cov' X x (Y x)) (Z x) by simpa [Φ, Z]
   trans leviCivitaRhs I X Y Z x
-  · exact congr($(hcov.eq_leviCivitaRhs I X Y Z) x)
-  · exact congr($((hcov'.eq_leviCivitaRhs I X Y Z).symm) x)
+  · rw [← hcov.eq_leviCivitaRhs I hX hY hZ]
+  · rw [← hcov'.eq_leviCivitaRhs I hX hY hZ]
 
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
