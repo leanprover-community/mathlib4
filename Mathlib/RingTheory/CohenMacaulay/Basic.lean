@@ -92,8 +92,8 @@ lemma depth_eq_dim_quotient_associated_prime_of_isCohenMacaulay (M : ModuleCat.{
   rw [← M.depth_eq_supportDim_unbot_of_cohenMacaulay]
   rw [← WithBot.coe_le_coe, WithBot.coe_unbot, WithBot.coe_unbot,
     Module.supportDim_eq_ringKrullDim_quotient_annihilator]
-  exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective
-    (le_of_eq_of_le Submodule.annihilator_top.symm (AssociatePrimes.mem_iff.mp mem).annihilator_le))
+  exact ringKrullDim_le_of_surjective _ (Ideal.Quotient.factor_surjective (le_of_eq_of_le
+    Submodule.annihilator_top.symm (AssociatedPrimes.mem_iff.mp mem).annihilator_le))
 
 lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
     [M.IsCohenMacaulay] [Module.Finite R M] [Nontrivial M]
@@ -104,7 +104,7 @@ lemma associated_prime_minimal_of_isCohenMacaulay (M : ModuleCat.{v} R)
     Module.supportDim_eq_ringKrullDim_quotient_annihilator, ringKrullDim_quotient] at eq
   have : p.IsPrime := mem.1
   have ann_le : Module.annihilator R M ≤ p := (le_of_eq_of_le Submodule.annihilator_top.symm
-    (AssociatePrimes.mem_iff.mp mem).annihilator_le)
+    (AssociatedPrimes.mem_iff.mp mem).annihilator_le)
   rcases Ideal.exists_minimalPrimes_le ann_le with ⟨p', hp', le⟩
   rcases lt_or_eq_of_le le with lt|eq
   · classical
