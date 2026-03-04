@@ -213,6 +213,7 @@ section Limits
 
 variable {J : Type u₃} [Category.{v₃} J] (X : C)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (Over.isMono X).IsClosedUnderLimitsOfShape J where
   limitsOfShape_le := fun F ⟨p, hp⟩ ↦ ⟨fun g h e ↦ by
     refine (WithTerminal.isLimitEquiv.invFun p.isLimit).hom_ext (fun j ↦ ?_)
@@ -244,6 +245,7 @@ def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
     StrongEpiMonoFactorisation (Sigma.desc fun i ↦ (F.obj i).arrow) :=
   Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
 `F : J ⥤ MonoOver Y`, there is a cocone under F. -/
 def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
@@ -252,6 +254,7 @@ def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
   ι.app j := homMk (Sigma.ι (fun i ↦ (F.obj i : C)) j ≫
     (strongEpiMonoFactorisationSigmaDesc F).e)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
     CommSq (Sigma.desc fun i ↦ (c.ι.app i).hom.left) (strongEpiMonoFactorisationSigmaDesc F).e
       c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
@@ -379,6 +382,7 @@ section
 
 variable (X)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- An equivalence of categories `e` between `C` and `D` induces an equivalence between
 `MonoOver X` and `MonoOver (e.functor.obj X)` whenever `X` is an object of `C`. -/
 @[simps]
@@ -433,6 +437,7 @@ section Image
 
 variable [HasImages C]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Taking the image of a morphism gives a functor `Over X ⥤ MonoOver X`.
 -/
 @[simps]
@@ -448,6 +453,7 @@ def image : Over X ⥤ MonoOver X where
             e := k.left ≫ factorThruImage g.hom }
     · apply image.lift_fac
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `MonoOver.image : Over X ⥤ MonoOver X` is left adjoint to
 `MonoOver.forget : MonoOver X ⥤ Over X`
 -/
@@ -496,6 +502,7 @@ def «exists» (f : X ⟶ Y) : MonoOver X ⥤ MonoOver Y :=
 
 instance faithful_exists (f : X ⟶ Y) : Functor.Faithful («exists» f) where
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `f : X ⟶ Y` is a monomorphism, `exists f` agrees with `map f`.
 -/
 def existsIsoMap (f : X ⟶ Y) [Mono f] : «exists» f ≅ map f :=

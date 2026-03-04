@@ -34,6 +34,8 @@ commutes with shifts by `ℤ`.
 
 assert_not_exists TwoSidedIdeal
 
+set_option backward.isDefEq.respectTransparency false
+
 open CategoryTheory Category Limits HomologicalComplex
 
 variable {C₁ C₂ D : Type*} [Category* C₁] [Category* C₂] [Category* D]

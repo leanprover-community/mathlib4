@@ -46,6 +46,7 @@ instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] :
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
   zero_smul _ := ext fun _ => zero_smul _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance instDomMulActModule
     {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :
     Module Sᵈᵐᵃ (M →+ M₂) where

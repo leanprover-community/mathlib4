@@ -569,6 +569,7 @@ def reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} (i₁ i₂ : Fin (n 
   | pointIndex i => if i = i₁ ∨ i = i₂ then 1 else 0
   | circumcenterIndex => -1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `reflectionCircumcenterWeightsWithCircumcenter` sums to 1. -/
 @[simp]
 theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ : Fin (n + 1)}
@@ -579,6 +580,7 @@ theorem sum_reflectionCircumcenterWeightsWithCircumcenter {n : ℕ} {i₁ i₂ :
   · norm_num
   · simpa only [if_true, mem_univ, disjoint_singleton] using h
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The reflection of the circumcenter of a simplex in an edge, in
 terms of `pointsWithCircumcenter`. -/
 theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}

@@ -369,6 +369,7 @@ theorem zero_of_num_eq_bot [IsDomain R] [Module.IsTorsionFree R P] (hS : 0 ∉ S
   have h_eq : I.den • (I : Submodule R P) = ⊥ := by rw [den_mul_self_eq_num, hI, Submodule.map_bot]
   exact (Submodule.eq_bot_iff _).mp h_eq (den I • x) ⟨x, hx, rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem num_zero_eq (h_inj : Function.Injective (algebraMap R P)) :
     num (0 : FractionalIdeal S P) = 0 := by
   simpa [num, LinearMap.ker_eq_bot] using h_inj

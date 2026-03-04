@@ -158,6 +158,7 @@ theorem map_le_iff_le_comap (f : V ↪ W) (G : SimpleGraph V) (G' : SimpleGraph 
     rintro h _ _ ⟨u, v, ha, rfl, rfl⟩
     exact h ha⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem map_comap_le (f : V ↪ W) (G : SimpleGraph W) : (G.comap f).map f ≤ G := by
   rw [map_le_iff_le_comap]
 
@@ -208,6 +209,7 @@ lemma induce_adj {s : Set V} {u v : s} : (G.induce s).Adj u v ↔ G.Adj u v := .
 @[simp] lemma induce_top (s : Set V) : (completeGraph V).induce s = completeGraph s :=
   comap_top Subtype.val_injective
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma induce_singleton_eq_top (v : V) : G.induce {v} = ⊤ := by
   rw [eq_top_iff]; apply le_comap_of_subsingleton
 

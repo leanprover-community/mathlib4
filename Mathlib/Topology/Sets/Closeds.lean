@@ -264,22 +264,26 @@ def Opens.complOrderIso : Opens α ≃o (Closeds α)ᵒᵈ where
 
 variable {α}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Closeds.coe_eq_singleton_of_isAtom [T0Space α] {s : Closeds α} (hs : IsAtom s) :
     ∃ a, (s : Set α) = {a} := by
   refine minimal_nonempty_closed_eq_singleton s.2 (coe_nonempty.2 hs.1) fun t hts ht ht' ↦ ?_
   lift t to Closeds α using ht'
   exact SetLike.coe_injective.eq_iff.2 <| (hs.le_iff_eq <| coe_nonempty.1 ht).1 hts
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast] lemma Closeds.isAtom_coe [T1Space α] {s : Closeds α} :
     IsAtom (s : Set α) ↔ IsAtom s :=
   Closeds.gi.isAtom_iff' rfl
     (fun t ht ↦ by obtain ⟨x, rfl⟩ := Set.isAtom_iff.1 ht; exact closure_singleton) s
 
+set_option backward.isDefEq.respectTransparency false in
 /-- in a `T1Space`, atoms of `TopologicalSpace.Closeds α` are precisely the singletons. -/
 theorem Closeds.isAtom_iff [T1Space α] {s : Closeds α} :
     IsAtom s ↔ ∃ x, s = {x} := by
   simp [← Closeds.isAtom_coe, Set.isAtom_iff, SetLike.ext_iff, Set.ext_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- in a `T1Space`, coatoms of `TopologicalSpace.Opens α` are precisely complements of singletons:
 `({x} : Closeds α).compl`. -/
 theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :

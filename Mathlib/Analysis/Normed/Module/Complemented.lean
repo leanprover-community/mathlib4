@@ -79,6 +79,7 @@ namespace Submodule
 
 variable [CompleteSpace E] (p q : Subspace 𝕜 E)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `q` is a closed complement of a closed subspace `p`, then `p × q` is continuously
 isomorphic to `E`. -/
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
