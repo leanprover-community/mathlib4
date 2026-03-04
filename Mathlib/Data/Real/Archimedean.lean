@@ -299,9 +299,10 @@ lemma sSup_nonneg (hs : ∀ x ∈ s, 0 ≤ x) : 0 ≤ sSup s := by
 it suffices to show that all values of `f` are nonnegative to show that `0 ≤ ⨆ i, f i`. -/
 lemma iSup_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i := sSup_nonneg <| Set.forall_mem_range.2 hf
 
-lemma iSup_nonneg_of_nonnegHomClass {ι F : Type*} [FunLike F ι ℝ] [NonnegHomClass F ι ℝ] (f : F) :
-    0 ≤ ⨆ i, f i :=
-  iSup_nonneg (apply_nonneg f)
+lemma iSup_nonneg_of_nonnegHomClass {ι F α : Type*} [FunLike F α ℝ] [NonnegHomClass F α ℝ] (f : F)
+    (g : ι → α) :
+    0 ≤ ⨆ i, f (g i) :=
+  iSup_nonneg (fun i ↦ apply_nonneg f (g i))
 
 /-- As `sInf s = 0` when `s` is a set of reals that's either empty or unbounded below,
 it suffices to show that all elements of `s` are nonpositive to show that `sInf s ≤ 0`. -/
@@ -412,12 +413,3 @@ lemma exists_nat_pos_inv_lt {b : ℝ} (hb : 0 < b) :
   rwa [inv_lt_comm₀ this hb]
 
 end Real
-
-namespace AbsoluteValue
-
-variable {R : Type*} [Semiring R]
-
-lemma iSup_abv_nonneg {ι : Type*} (v : AbsoluteValue R ℝ) {x : ι → R} : 0 ≤ ⨆ i, v (x i) :=
-  Real.iSup_nonneg fun j ↦ by positivity
-
-end AbsoluteValue
