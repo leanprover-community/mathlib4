@@ -27,13 +27,12 @@ local notation "η" => ModularForm.eta
 /-- The weight 2 Eisenstein series `E2` is MDifferentiable -/
 lemma E2_mdifferentiable : MDiff E2 := by
   rw [UpperHalfPlane.mdifferentiable_iff]
-  have hη : DifferentiableOn ℂ η _ :=
-    fun z hz ↦ (differentiableAt_eta_of_mem_upperHalfPlaneSet hz).differentiableWithinAt
+  have hη : DifferentiableOn ℂ η _ := fun z hz ↦
+    (differentiableAt_eta_of_mem_upperHalfPlaneSet hz).differentiableWithinAt
   have hlog : DifferentiableOn ℂ (logDeriv η) _ :=
-    (hη.deriv isOpen_upperHalfPlaneSet).div hη fun _ hz ↦ by simpa using eta_ne_zero hz
-  exact (hlog.const_mul (π * I / 12)⁻¹).congr fun z hz => by
-    simp [ofComplex_apply_of_im_pos hz,
-      show logDeriv η z = (π * I / 12) * E2 ⟨z, hz⟩ by simpa using logDeriv_eta_eq_E2 ⟨z, hz⟩]
-    field_simp
+    (hη.deriv isOpen_upperHalfPlaneSet).div hη (fun _ hz ↦ eta_ne_zero hz)
+  refine (hlog.const_mul (π * I / 12)⁻¹).congr (fun z hz ↦ ?_)
+  simp [ofComplex_apply_of_im_pos hz, logDeriv_eta_eq_E2 ⟨z, hz⟩]
+  field_simp
 
 end
