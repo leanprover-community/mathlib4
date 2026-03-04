@@ -274,7 +274,6 @@ noncomputable def logCounting : ℝ → ℝ := by
   · exact (divisor f univ)⁻.logCounting
   · exact (divisor (f · - a.untop₀) univ)⁺.logCounting
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Relation between `ValueDistribution.logCounting` and `locallyFinsuppWithin.logCounting`.
 -/
@@ -578,7 +577,6 @@ For `𝕜 = ℂ`, the theorems below describe the logarithmic counting function 
 averages.
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 Over the complex numbers, present the logarithmic counting function attached to the divisor of a
 meromorphic function `f` as a circle average over `log ‖f ·‖`.
