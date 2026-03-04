@@ -83,8 +83,8 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
   set s := { x | f x ≤ B x } ∩ Icc a b
   have A : ContinuousOn (fun x => (f x, B x)) (Icc a b) := hf.prodMk hB
   have : IsClosed s := by
-    simp only [s, inter_comm]
-    exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
+    simpa [s, inter_comm] using
+      A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
   apply this.Icc_subset_of_forall_exists_gt ha
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
   rcases hxB.lt_or_eq with hxB | hxB
@@ -146,9 +146,7 @@ theorem image_le_of_liminf_slope_right_le_deriv_boundary {f : ℝ → ℝ} {a b 
     · exact hB.add (continuousOn_const.mul (continuousOn_id.sub continuousOn_const))
     · intro x hx
       exact (hB' x hx).add (((hasDerivWithinAt_id x (Ici x)).sub_const a).const_mul r)
-    · intro x _ _
-      rw [mul_one]
-      exact (lt_add_iff_pos_right _).2 hr
+    · simpa using by tauto
     exact hx
   intro x hx
   have : ContinuousWithinAt (fun r => B x + r * (x - a)) (Ioi 0) 0 := by fun_prop
@@ -311,14 +309,12 @@ theorem norm_image_sub_le_of_norm_deriv_right_le_segment {f' : ℝ → E} {C : �
   let g x := f x - f a
   have hg : ContinuousOn g (Icc a b) := hf.sub continuousOn_const
   have hg' : ∀ x ∈ Ico a b, HasDerivWithinAt g (f' x) (Ici x) x := by
-    intro x hx
-    simp [g, hf' x hx]
+    simpa [g, hf'] using by tauto
   let B x := C * (x - a)
   have hB : ∀ x, HasDerivAt B C x := by
     intro x
     simpa using (hasDerivAt_const x C).mul ((hasDerivAt_id x).sub (hasDerivAt_const x a))
-  convert image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' _ hB bound
-  simp only [g, B]; rw [sub_self, norm_zero, sub_self, mul_zero]
+  simpa [g, B] using image_norm_le_of_norm_deriv_right_le_deriv_boundary hg hg' (by aesop) hB bound
 
 /-- A function on `[a, b]` with the norm of the derivative within `[a, b]`
 bounded by `C` satisfies `‖f x - f a‖ ≤ C * (x - a)`, `HasDerivWithinAt`
@@ -336,9 +332,8 @@ bounded by `C` satisfies `‖f x - f a‖ ≤ C * (x - a)`, `derivWithin`
 version. -/
 theorem norm_image_sub_le_of_norm_deriv_le_segment {C : ℝ} (hf : DifferentiableOn ℝ f (Icc a b))
     (bound : ∀ x ∈ Ico a b, ‖derivWithin f (Icc a b) x‖ ≤ C) :
-    ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ C * (x - a) := by
-  refine norm_image_sub_le_of_norm_deriv_le_segment' ?_ bound
-  exact fun x hx => (hf x hx).hasDerivWithinAt
+    ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ C * (x - a) :=
+  norm_image_sub_le_of_norm_deriv_le_segment' (fun x hx ↦ (hf x hx).hasDerivWithinAt) bound
 
 /-- A function on `[0, 1]` with the norm of the derivative within `[0, 1]`
 bounded by `C` satisfies `‖f 1 - f 0‖ ≤ C`, `HasDerivWithinAt`
@@ -346,29 +341,26 @@ version. -/
 theorem norm_image_sub_le_of_norm_deriv_le_segment_01' {f' : ℝ → E} {C : ℝ}
     (hf : ∀ x ∈ Icc (0 : ℝ) 1, HasDerivWithinAt f (f' x) (Icc (0 : ℝ) 1) x)
     (bound : ∀ x ∈ Ico (0 : ℝ) 1, ‖f' x‖ ≤ C) : ‖f 1 - f 0‖ ≤ C := by
-  simpa only [sub_zero, mul_one] using
-    norm_image_sub_le_of_norm_deriv_le_segment' hf bound 1 (right_mem_Icc.2 zero_le_one)
+  simpa using norm_image_sub_le_of_norm_deriv_le_segment' hf bound 1 (by norm_num)
 
 /-- A function on `[0, 1]` with the norm of the derivative within `[0, 1]`
 bounded by `C` satisfies `‖f 1 - f 0‖ ≤ C`, `derivWithin` version. -/
 theorem norm_image_sub_le_of_norm_deriv_le_segment_01 {C : ℝ}
     (hf : DifferentiableOn ℝ f (Icc (0 : ℝ) 1))
     (bound : ∀ x ∈ Ico (0 : ℝ) 1, ‖derivWithin f (Icc (0 : ℝ) 1) x‖ ≤ C) : ‖f 1 - f 0‖ ≤ C := by
-  simpa only [sub_zero, mul_one] using
-    norm_image_sub_le_of_norm_deriv_le_segment hf bound 1 (right_mem_Icc.2 zero_le_one)
+  simpa using norm_image_sub_le_of_norm_deriv_le_segment hf bound 1 (by norm_num)
 
 theorem constant_of_has_deriv_right_zero (hcont : ContinuousOn f (Icc a b))
     (hderiv : ∀ x ∈ Ico a b, HasDerivWithinAt f 0 (Ici x) x) : ∀ x ∈ Icc a b, f x = f a := by
   have : ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ 0 * (x - a) := fun x hx =>
     norm_image_sub_le_of_norm_deriv_right_le_segment hcont hderiv (fun _ _ => norm_zero.le) x hx
-  simpa only [zero_mul, norm_le_zero_iff, sub_eq_zero] using this
+  simpa [sub_eq_zero] using this
 
 theorem constant_of_derivWithin_zero (hdiff : DifferentiableOn ℝ f (Icc a b))
     (hderiv : ∀ x ∈ Ico a b, derivWithin f (Icc a b) x = 0) : ∀ x ∈ Icc a b, f x = f a := by
   have H : ∀ x ∈ Ico a b, ‖derivWithin f (Icc a b) x‖ ≤ 0 := by
-    simpa only [norm_le_zero_iff] using fun x hx => hderiv x hx
-  simpa only [zero_mul, norm_le_zero_iff, sub_eq_zero] using fun x hx =>
-    norm_image_sub_le_of_norm_deriv_le_segment hdiff H x hx
+    simpa using fun x hx => hderiv x hx
+  simpa [sub_eq_zero] using fun x hx => norm_image_sub_le_of_norm_deriv_le_segment hdiff H x hx
 
 variable {f' g : ℝ → E}
 
@@ -388,11 +380,9 @@ theorem eq_of_derivWithin_eq (fdiff : DifferentiableOn ℝ f (Icc a b))
     (hderiv : EqOn (derivWithin f (Icc a b)) (derivWithin g (Icc a b)) (Ico a b)) (hi : f a = g a) :
     ∀ y ∈ Icc a b, f y = g y := by
   have A : ∀ y ∈ Ico a b, HasDerivWithinAt f (derivWithin f (Icc a b) y) (Ici y) y := fun y hy =>
-    (fdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem_nhdsWithin
-    (Icc_mem_nhdsGE_of_mem hy)
+    (fdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem_nhdsWithin (Icc_mem_nhdsGE_of_mem hy)
   have B : ∀ y ∈ Ico a b, HasDerivWithinAt g (derivWithin g (Icc a b) y) (Ici y) y := fun y hy =>
-    (gdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem_nhdsWithin
-    (Icc_mem_nhdsGE_of_mem hy)
+    (gdiff y (mem_Icc_of_Ico hy)).hasDerivWithinAt.mono_of_mem_nhdsWithin (Icc_mem_nhdsGE_of_mem hy)
   exact eq_of_has_deriv_right_eq A (fun y hy => (hderiv hy).symm ▸ B y hy) fdiff.continuousOn
     gdiff.continuousOn hi
 
@@ -539,7 +529,6 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le'
   calc
     ‖f y - f x - φ (y - x)‖ = ‖f y - f x - (φ y - φ x)‖ := by simp
     _ = ‖f y - φ y - (f x - φ x)‖ := by congr 1; abel
-    _ = ‖g y - g x‖ := by simp [g]
     _ ≤ C * ‖y - x‖ := Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le hg bound hs xs ys
 
 /-- Variant of the mean value inequality on a convex set. Version with `fderivWithin`. -/
@@ -590,13 +579,13 @@ theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 
 theorem _root_.IsOpen.isOpen_inter_preimage_of_fderiv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (fderiv 𝕜 f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) := by
-  refine Metric.isOpen_iff.mpr fun y ⟨hy, hy'⟩ ↦ ?_
-  obtain ⟨r, hr, h⟩ := Metric.isOpen_iff.mp hs y hy
-  refine ⟨r, hr, Set.subset_inter h fun x hx ↦ ?_⟩
+  refine isOpen_iff.mpr fun y ⟨hy, hy'⟩ ↦ ?_
+  obtain ⟨r, hr, h⟩ := isOpen_iff.mp hs y hy
+  refine ⟨r, hr, subset_inter h fun x hx ↦ ?_⟩
   have := (convex_ball y r).is_const_of_fderivWithin_eq_zero (hf.mono h) ?_ hx (mem_ball_self hr)
   · simpa [this]
   · intro z hz
-    simpa only [fderivWithin_of_isOpen Metric.isOpen_ball hz] using hf' (h hz)
+    simpa only [fderivWithin_of_isOpen isOpen_ball hz] using hf' (h hz)
 
 theorem _root_.isLocallyConstant_of_fderiv_eq_zero (h₁ : Differentiable 𝕜 f)
     (h₂ : ∀ x, fderiv 𝕜 f x = 0) : IsLocallyConstant f := by
@@ -627,7 +616,7 @@ theorem _root_.IsOpen.is_const_of_fderiv_eq_zero
 theorem _root_.IsOpen.exists_eq_add_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
     (hf' : s.EqOn (fderiv 𝕜 f) (fderiv 𝕜 g)) : ∃ a, s.EqOn f (g · + a) := by
-  simp_rw [Set.EqOn, ← sub_eq_iff_eq_add']
+  simp_rw [EqOn, ← sub_eq_iff_eq_add']
   refine hs.exists_is_const_of_fderiv_eq_zero hs' (hf.sub hg) fun x hx ↦ ?_
   rw [fderiv_fun_sub (hf.differentiableAt (hs.mem_nhds hx)) (hg.differentiableAt (hs.mem_nhds hx)),
     hf' hx, sub_self, Pi.zero_apply]
@@ -656,10 +645,8 @@ theorem _root_.eq_of_fderiv_eq
 lemma isLittleO_pow_succ {x₀ : E} {n : ℕ} (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
     (hff' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ n) :
     (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ ‖x - x₀‖ ^ (n + 1) := by
-  rw [Asymptotics.isLittleO_iff] at hf' ⊢
+  simp_rw [isLittleO_iff, norm_pow, pow_succ, ← mul_assoc, norm_norm] at hf' ⊢
   intro c hc
-  simp_rw [norm_pow, pow_succ, ← mul_assoc, norm_norm]
-  simp_rw [norm_pow, norm_norm] at hf'
   have : ∀ᶠ x in 𝓝[s] x₀, segment ℝ x₀ x ⊆ s ∧ ∀ y ∈ segment ℝ x₀ x, ‖f' y‖ ≤ c * ‖x - x₀‖ ^ n := by
     have h1 : ∀ᶠ x in 𝓝[s] x₀, x ∈ s := eventually_mem_nhdsWithin
     filter_upwards [h1, hs.eventually_nhdsWithin_segment hx₀s (hf' hc)] with x hxs h
@@ -668,22 +655,17 @@ lemma isLittleO_pow_succ {x₀ : E} {n : ℕ} (hs : Convex ℝ s) (hx₀s : x₀
     exact norm_sub_le_of_mem_segment hy
   filter_upwards [this] with x ⟨h_segment, h⟩
   convert (convex_segment x₀ x).norm_image_sub_le_of_norm_hasFDerivWithin_le
-    (f := fun x ↦ f x - f x₀) (y := x) (x := x₀) (s := segment ℝ x₀ x) ?_ h
-    (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
+    (f := fun x ↦ f x - f x₀) ?_ h (left_mem_segment ℝ x₀ x) (right_mem_segment ℝ x₀ x) using 1
   · simp
-  · simp only [hasFDerivWithinAt_sub_const_iff]
-    exact fun x hx ↦ (hff' x (h_segment hx)).mono h_segment
+  · simpa using fun x hx ↦ (hff' x (h_segment hx)).mono h_segment
 
 theorem isLittleO_pow_succ_real {f f' : ℝ → E} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
     (hs : Convex ℝ s) (hx₀s : x₀ ∈ s)
     (hff' : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (hf' : f' =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ n) :
     (fun x ↦ f x - f x₀) =o[𝓝[s] x₀] fun x ↦ (x - x₀) ^ (n + 1) := by
   have h := hs.isLittleO_pow_succ hx₀s hff' ?_ (n := n)
-  · rw [Asymptotics.isLittleO_iff] at h ⊢
-    simpa using h
-  · rw [Asymptotics.isLittleO_iff] at hf' ⊢
-    convert hf' using 4 with c hc x
-    simp
+  · simpa [isLittleO_iff] using h
+  · simpa [isLittleO_iff] using hf'
 
 end Convex
 
@@ -697,8 +679,7 @@ bounded by `C`, then the function is `C`-Lipschitz. Version with `HasDerivWithin
 theorem norm_image_sub_le_of_norm_hasDerivWithin_le {C : ℝ}
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (bound : ∀ x ∈ s, ‖f' x‖ ≤ C) (hs : Convex ℝ s)
     (xs : x ∈ s) (ys : y ∈ s) : ‖f y - f x‖ ≤ C * ‖y - x‖ :=
-  Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le (fun x hx => (hf x hx).hasFDerivWithinAt)
-    (fun x hx => le_trans (by simp) (bound x hx)) hs xs ys
+  norm_image_sub_le_of_norm_hasFDerivWithin_le (by trivial) (by simp_all) hs xs ys
 
 /-- The mean value theorem on a convex set in dimension 1: if the derivative of a function is
 bounded by `C` on `s`, then the function is `C`-Lipschitz on `s`.
@@ -706,8 +687,7 @@ Version with `HasDerivWithinAt` and `LipschitzOnWith`. -/
 theorem lipschitzOnWith_of_nnnorm_hasDerivWithin_le {C : ℝ≥0} (hs : Convex ℝ s)
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) (bound : ∀ x ∈ s, ‖f' x‖₊ ≤ C) :
     LipschitzOnWith C f s :=
-  Convex.lipschitzOnWith_of_nnnorm_hasFDerivWithin_le (fun x hx => (hf x hx).hasFDerivWithinAt)
-    (fun x hx => le_trans (by simp) (bound x hx)) hs
+  lipschitzOnWith_of_nnnorm_hasFDerivWithin_le (by trivial) (by simp_all) hs
 
 /-- The mean value theorem on a convex set in dimension 1: if the derivative of a function within
 this set is bounded by `C`, then the function is `C`-Lipschitz. Version with `derivWithin` -/
@@ -752,25 +732,24 @@ theorem _root_.lipschitzWith_of_nnnorm_deriv_le {C : ℝ≥0} (hf : Differentiab
 then it is a constant function. -/
 theorem _root_.is_const_of_deriv_eq_zero (hf : Differentiable 𝕜 f) (hf' : ∀ x, deriv f x = 0)
     (x y : 𝕜) : f x = f y :=
-  is_const_of_fderiv_eq_zero hf (fun z => by ext; simp [← toSpanSingleton_deriv, hf']) _ _
+  is_const_of_fderiv_eq_zero hf (by simp [← toSpanSingleton_deriv, hf']) _ _
 
 theorem _root_.IsOpen.isOpen_inter_preimage_of_deriv_eq_zero
     (hs : IsOpen s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) (t : Set G) : IsOpen (s ∩ f ⁻¹' t) :=
   hs.isOpen_inter_preimage_of_fderiv_eq_zero hf
-    (fun x hx ↦ by ext; simp [← toSpanSingleton_deriv, hf' hx]) t
+    (fun x hx ↦ by simp [← toSpanSingleton_deriv, hf' hx]) t
 
 theorem _root_.IsOpen.exists_is_const_of_deriv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) : ∃ a, ∀ x ∈ s, f x = a :=
   hs.exists_is_const_of_fderiv_eq_zero hs' hf (fun {x} hx ↦ by
-    ext; simp [← toSpanSingleton_deriv, hf' hx])
+    simp [← toSpanSingleton_deriv, hf' hx])
 
 theorem _root_.IsOpen.is_const_of_deriv_eq_zero
     (hs : IsOpen s) (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s)
     (hf' : s.EqOn (deriv f) 0) {x y : 𝕜} (hx : x ∈ s) (hy : y ∈ s) : f x = f y :=
-  hs.is_const_of_fderiv_eq_zero hs' hf (fun a ha ↦ by
-    ext; simp [← toSpanSingleton_deriv, hf' ha]) hx hy
+  hs.is_const_of_fderiv_eq_zero hs' hf (fun a ha ↦ by simp [← toSpanSingleton_deriv, hf' ha]) hx hy
 
 theorem _root_.IsOpen.exists_eq_add_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
     (hs' : IsPreconnected s)
@@ -782,7 +761,7 @@ theorem _root_.IsOpen.eqOn_of_deriv_eq {f g : 𝕜 → G} (hs : IsOpen s)
     (hs' : IsPreconnected s) (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
     (hf' : s.EqOn (deriv f) (deriv g)) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g :=
-  hs.eqOn_of_fderiv_eq hs' hf hg (fun _ hx ↦ ContinuousLinearMap.ext_ring (hf' hx)) hx hfgx
+  hs.eqOn_of_fderiv_eq hs' hf hg (fun _ hx ↦ ext_ring (hf' hx)) hx hfgx
 
 end Convex
 
