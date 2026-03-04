@@ -482,9 +482,8 @@ theorem map_aeval_eq_aeval_map {S T U : Type*} [Semiring S] [CommSemiring T] [Se
 
 theorem aeval_eq_aeval_map {S T : Type*} [Semiring S] [CommSemiring T] [Algebra R S]
     [Algebra T S] {φ : R →+* T} (h : (algebraMap T S).comp φ = (algebraMap R S))
-    (p : R[X]) (a : S) : aeval a p = aeval a (p.map φ) := by
-  conv_rhs => rw [← eval_map_algebraMap]
-  rw [map_map, h, eval_map, aeval_def]
+    (p : R[X]) (a : S) : aeval a p = aeval a (p.map φ) :=
+  map_aeval_eq_aeval_map (by rwa [RingHom.id_comp]) p a
 
 theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Algebra S T]
     {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
