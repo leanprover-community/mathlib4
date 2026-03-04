@@ -482,6 +482,18 @@ theorem toSubfield_map (f : L →ₐ[K] L') : (S.map f).toSubfield = S.toSubfiel
 theorem map_id : S.map (AlgHom.id K L) = S :=
   SetLike.coe_injective <| Set.image_id _
 
+@[simp]
+lemma mem_map {f : L →ₐ[K] L'} {y : L'} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
+  Set.mem_image f S y
+
+-- Higher priority to apply before `mem_map`.
+@[simp 1100]
+theorem map_mem_map (f : L →ₐ[K] L') {x : L} :
+    f x ∈ map f S ↔ x ∈ S :=
+  calc
+    _ ↔ f x ∈ (map f S : Set L') := Iff.rfl
+    _ ↔ _ := by simp [Function.Injective.mem_set_image (f := f) f.injective]
+
 theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L₁] [Field L₂] [Algebra K L₂]
     [Field L₃] [Algebra K L₃] (E : IntermediateField K L₁) (f : L₁ →ₐ[K] L₂) (g : L₂ →ₐ[K] L₃) :
     (E.map f).map g = E.map (g.comp f) :=
