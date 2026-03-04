@@ -59,6 +59,7 @@ namespace InfiniteGalois
 open Pointwise FiniteGaloisIntermediateField AlgEquiv
 --Note: The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
 
+@[deprecated IntermediateField.fixingSubgroup_isClosed (since := "2026-03-03")]
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set Gal(K/k)) where
   isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by

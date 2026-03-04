@@ -178,12 +178,20 @@ theorem IntermediateField.fixingSubgroup_isOpen {K L : Type*} [Field K] [Field L
   have h_nhds := GroupFilterBasis.mem_nhds_one (galGroupBasis K L) h_basis
   exact Subgroup.isOpen_of_mem_nhds _ h_nhds
 
-/-- Given a tower of fields `L/E/K`, with `E/K` finite, the subgroup `Gal(L/E) ≤ Gal(L/K)` is
+/-- Given a tower of fields `L/E/K`, with `E/K` algebraic, the subgroup `Gal(L/E) ≤ Gal(L/K)` is
   closed. -/
 theorem IntermediateField.fixingSubgroup_isClosed {K L : Type*} [Field K] [Field L] [Algebra K L]
-    (E : IntermediateField K L) [FiniteDimensional K E] :
-    IsClosed (E.fixingSubgroup : Set Gal(L/K)) :=
-  OpenSubgroup.isClosed ⟨E.fixingSubgroup, E.fixingSubgroup_isOpen⟩
+    (E : IntermediateField K L) [Algebra.IsIntegral K E] :
+    IsClosed (E.fixingSubgroup : Set Gal(L/K)) := by
+  have hx (x : E) : IsClosed ((adjoin K {(x : L)}).fixingSubgroup : Set Gal(L/K)) :=
+    have : FiniteDimensional K (adjoin K {(x : L)}) := IntermediateField.adjoin.finiteDimensional
+      (coe_isIntegral_iff.2 (Algebra.IsIntegral.isIntegral x))
+    Subgroup.isClosed_of_isOpen _ (fixingSubgroup_isOpen _)
+  convert isClosed_iInter hx
+  ext g
+  simp only [SetLike.mem_coe, mem_fixingSubgroup_iff, Set.mem_iInter, Subtype.forall]
+  exact ⟨fun h a ha x hx => h x (adjoin_simple_le_iff.2 ha hx),
+    fun h x hx => h x hx x (mem_adjoin_simple_self K x)⟩
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `L/K` is an algebraic extension, then the Krull topology on `Gal(L/K)` is Hausdorff. -/
