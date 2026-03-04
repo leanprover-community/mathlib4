@@ -139,6 +139,12 @@ lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = 
 lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
   simp
 
+/-- Morphisms in `TopCat` are equivalent to continuous maps. -/
+@[simps]
+def Hom.equivContinuousMap (X Y : TopCat.{u}) : (X ⟶ Y) ≃ C(X, Y) where
+  toFun f := f.hom
+  invFun f := ofHom f
+
 /--
 Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
 equal function coercion for a continuous map `C(X, Y)`.
