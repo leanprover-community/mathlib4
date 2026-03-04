@@ -46,7 +46,9 @@ def isLimitOfIsPullbackOfIsConnected
     rw [this _ j]
     simp [f]
   uniq s g hg := (hf (Classical.arbitrary _)).hom_ext (by simp [hg])
-    (hcG.hom_ext <| by simp [reassoc_of% hg])
+    (hcG.hom_ext <| by
+      rw [IsPullback.lift_snd]
+      simp [reassoc_of% hg])
 
 set_option backward.isDefEq.respectTransparency false in
 /--

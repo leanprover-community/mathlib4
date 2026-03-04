@@ -301,8 +301,8 @@ lemma sieve₁_inter [HasPullbacks C] {i j : E.I₀ × F.I₀} {W : C}
   · refine ⟨pullback p ((E.inter F).toPullback k), pullback.lift f a ?_,
         pullback.fst _ _, ?_, ?_, ?_⟩
     · apply pullback.hom_ext
-      · apply pullback.hom_ext <;> simp [p, h₁, toPullback]
-      · apply pullback.hom_ext <;> simp [p, h₂, toPullback]
+      · apply pullback.hom_ext <;> simp [p, reassoc_of% h₁, toPullback]
+      · apply pullback.hom_ext <;> simp [p, reassoc_of% h₂, toPullback]
     · refine ⟨k.1, pullback.snd _ _ ≫ pullback.fst _ _, ?_, ?_⟩
       · have : p₁ ≫ pullback.fst (E.f i.1) (F.f i.2) = p ≫ pullback.fst _ _ ≫ pullback.fst _ _ := by
           simp [p]

@@ -49,7 +49,7 @@ theorem PreservesImage.iso_hom_ι :
 theorem PreservesImage.factorThruImage_iso_hom :
     F.map (Abelian.factorThruImage f) ≫ (PreservesImage.iso F f).hom =
       Abelian.factorThruImage (F.map f) := by
-  ext; simp [iso]
+  ext; simp [iso, ← Functor.map_comp]
 
 @[reassoc (attr := simp)]
 theorem PreservesImage.iso_inv_ι :

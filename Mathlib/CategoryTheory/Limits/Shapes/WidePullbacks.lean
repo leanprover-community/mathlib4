@@ -546,8 +546,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem hom_eq_desc (g : widePushout _ _ arrows ⟶ X) :
     g =
       desc (head arrows ≫ g) (fun j => ι arrows j ≫ g) fun j => by
-        rw [← Category.assoc]
-        simp := by
+        rw [← Category.assoc, arrow_ι] := by
   cat_disch
 
 @[ext 1100]

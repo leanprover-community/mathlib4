@@ -113,6 +113,9 @@ lemma map_hexagon_reverse (X Y Z : C) :
       Functor.Monoidal.whiskerLeft_δ_μ, comp_id]
   slice_lhs 6 7 =>
     rw [braidingNatIso_hom_app_naturality_μ_right, braidingNatIso_hom_app]
+  simp only [Category.assoc, ← comp_whiskerRight_assoc, Functor.Monoidal.δ_μ, id_whiskerRight,
+    Category.id_comp, Functor.Monoidal.δ_μ_assoc]
+  simp only [← whiskerLeft_comp_assoc, Functor.Monoidal.δ_μ]
   simp
 
 noncomputable instance : BraidedCategory (LocalizedMonoidal L W ε) := by

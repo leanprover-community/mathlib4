@@ -68,8 +68,8 @@ instance [∀ (Y : C), HasBinaryProduct X Y] [∀ (Y : C), PreservesLimit (pair 
         dsimp
         rw [← cancel_mono (prodComparison F X _)]
         ext
-        · simpa [← Functor.map_comp, P] using Over.w Q.hom.left
-        · simpa [← Functor.map_comp, P] using CostructuredArrow.w Q.hom)
+        · simpa [← Functor.map_comp, P, this, inv_prodComparison_map_fst] using  Over.w Q.hom.left
+        · simpa [← Functor.map_comp, P, inv_prodComparison_map_snd] using CostructuredArrow.w Q.hom)
     exact zigzag_isConnected (fun Q₁ Q₂ ↦ (Zigzag.of_hom (φ Q₁)).trans (Zigzag.of_inv (φ Q₂)))
 
 end CategoryTheory

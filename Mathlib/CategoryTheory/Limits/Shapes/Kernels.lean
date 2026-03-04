@@ -820,7 +820,7 @@ lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category* C]
     [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
     colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
   rw [(colimit.w (parallelPair f 0) WalkingParallelPairHom.left).symm]
-  simp
+  simpa
 
 @[simp]
 theorem cokernel.desc_zero {W : C} {h} : cokernel.desc f (0 : Y ⟶ W) h = 0 := by
@@ -1002,7 +1002,7 @@ def cokernelEpiComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Epi f] [HasCokernel
   inv :=
     cokernel.desc _ (cokernel.π (f ≫ g))
       (by
-        rw [← cancel_epi f, ← Category.assoc]
+        rw [← cancel_epi f, ← Category.assoc, cokernel.condition]
         simp)
 
 /-- Equal maps have isomorphic cokernels. -/

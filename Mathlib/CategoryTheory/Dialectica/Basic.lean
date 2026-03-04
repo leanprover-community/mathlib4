@@ -106,7 +106,12 @@ instance : Category (Dial C) where
   assoc f g h := by
     simp only [Category.assoc, Hom.mk.injEq, true_and]
     rw [← Category.assoc, ← Category.assoc]; congr 1
-    ext <;> simp
+    ext
+    · simp
+    · simp only [↓Category.assoc, limit.lift_π, BinaryFan.mk_pt, BinaryFan.mk_snd,
+        prod.lift_map_assoc, Category.comp_id]
+      rw [← Category.assoc]; congr 1
+      ext <;> simp
 
 @[ext] theorem hom_ext {X Y : Dial C} {x y : X ⟶ Y} (hf : x.f = y.f) (hF : x.F = y.F) : x = y :=
   Hom.ext hf hF

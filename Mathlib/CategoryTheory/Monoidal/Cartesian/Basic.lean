@@ -903,7 +903,11 @@ set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 @[reassoc]
 lemma μ_comp [(F ⋙ G).Monoidal] (X Y : C) : μ (F ⋙ G) X Y = μ G _ _ ≫ G.map (μ F X Y) := by
-  rw [← cancel_mono (μIso _ _ _).inv]; ext <;> simp [← Functor.comp_obj, ← Functor.map_comp]
+  rw [← cancel_mono (μIso _ _ _).inv]; ext
+  · simp only [↓Category.assoc, μIso_inv, δ_fst, comp_map, ← map_comp, μ_fst, ← comp_obj]
+    simp [← Functor.comp_map]
+  · simp only [↓Category.assoc, μIso_inv, δ_snd, comp_map, ← map_comp, μ_snd, ← comp_obj]
+    simp [← Functor.comp_map]
 
 variable [PreservesFiniteProducts F]
 

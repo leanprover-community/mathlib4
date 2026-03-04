@@ -100,7 +100,7 @@ def pasteHorizIsPullback (H : IsLimit t₂) (H' : IsLimit t₁) : IsLimit (t₂.
   apply PullbackCone.IsLimit.hom_ext H
   · dsimp at hm₁
     rw [Category.assoc, ← hi₂, ← t₁.condition, reassoc_of% hm₁, hl₁', hi₂, hl₂]
-  · simpa [hl₁', hl₂'] using hm₂
+  · simpa [hm₂, reassoc_of% hl₁', hl₂'] using hm₂
 
 variable (t₁)
 
