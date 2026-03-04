@@ -67,8 +67,8 @@ lemma of_IsEmpty [IsEmpty α] (S : Set (Set α)) : IsCompactSystem S :=
   fun s _ _ ↦ ⟨0, Set.eq_empty_of_isEmpty (dissipate s 0)⟩
 
 /-- Any subset of a compact system is a compact system. -/
-theorem mono {C D : Set (Set α)} (hD : IsCompactSystem D) (hCD : ∀ s, s ∈ C → s ∈ D) :
-  IsCompactSystem C := fun s hC hs ↦ hD s (fun i ↦ hCD (s i) (hC i)) hs
+theorem mono {T : Set (Set α)} (hT : IsCompactSystem T) (hST : S ⊆ T) :
+    IsCompactSystem S := fun C hC1 hC2 ↦ hT C (fun i ↦ hST (hC1 i)) hC2
 
 /-- Inserting `∅` into a compact system gives a compact system. -/
 lemma insert_empty (h : IsCompactSystem S) : IsCompactSystem (insert ∅ S) := by
@@ -78,11 +78,7 @@ lemma insert_empty (h : IsCompactSystem S) : IsCompactSystem (insert ∅ S) := b
     rw [← subset_empty_iff] at hd ⊢
     exact (dissipate_subset le_rfl).trans g.choose_spec.le
   · push_neg at g
-    refine h s (fun i ↦ ?_) hd
-    specialize g i
-    specialize h' i
-    rw [Set.nonempty_iff_ne_empty] at g
-    simpa [g] using h'
+    exact h s (fun i ↦ (mem_of_mem_insert_of_ne (h' i) (g i).ne_empty)) hd
 
 /-- Inserting `univ` into a compact system gives a compact system. -/
 lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := by
@@ -91,8 +87,7 @@ lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := b
   rw [IsCompactSystem.iff_nonempty_iInter] at h ⊢
   intro s h' hd
   by_cases h₀ : ∀ n, s n ∉ S
-  · simp only [mem_insert_iff, h₀, or_false] at h'
-    simp [h']
+  · simp_all
   push_neg at h₀
   classical
   let n := Nat.find h₀
@@ -100,9 +95,8 @@ lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := b
   have h₁ : ∀ i, s' i ∈ S := by simp [s']; grind
   have h₂ : ⋂ i, s i = ⋂ i, s' i := by ext; simp; grind
   apply h₂ ▸ h s' h₁
-  by_contra! h_exists_empty
-  obtain ⟨j, hj⟩ := h_exists_empty
-  have h₃ (v : ℕ) (hv : n ≤ v) : dissipate s v = dissipate s' v:= by ext; simp; grind
+  by_contra! ⟨j, hj⟩
+  have h₃ (v : ℕ) (hv : n ≤ v) : dissipate s v = dissipate s' v := by ext; simp; grind
   have h₇ : dissipate s' (max j n) = ∅ := by
     rw [← subset_empty_iff] at hj ⊢
     exact (antitone_dissipate (Nat.le_max_left j n)).trans hj
@@ -128,11 +122,11 @@ lemma isCompactSystem_iff_nonempty_iInter_of_lt (S : Set (Set α)) :
 /-- A set system is a compact system iff adding `∅` gives a compact system. -/
 lemma isCompactSystem_insert_empty_iff :
     IsCompactSystem (insert ∅ S) ↔ IsCompactSystem S :=
-  ⟨fun h ↦ h.mono (fun _ hs ↦ Set.mem_insert_of_mem ∅ hs), fun h ↦ h.insert_empty⟩
+  ⟨fun h ↦ h.mono (subset_insert _ _), fun h ↦ h.insert_empty⟩
 
 /-- A set system is a compact system iff adding `univ` gives a compact system. -/
 lemma isCompactSystem_insert_univ_iff : IsCompactSystem (insert univ S) ↔ IsCompactSystem S :=
-  ⟨fun h ↦ h.mono (fun _ hs ↦ Set.mem_insert_of_mem univ hs), fun h ↦ h.insert_univ⟩
+  ⟨fun h ↦ h.mono (subset_insert _ _), .insert_univ⟩
 
 theorem isCompactSystem_iff_directed (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
@@ -142,24 +136,18 @@ theorem isCompactSystem_iff_directed (hpi : IsPiSystem S) :
   refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
   · rw [exists_dissipate_eq_empty_iff_of_directed C hdi]
     exact h C (by simp [hi])
-  · have hpi' : IsPiSystem (insert ∅ S) := hpi.insert_empty
-    rw [← biInter_le_eq_iInter] at h2
-    obtain h' := h (dissipate C) directed_dissipate
-    have h₀ (h₀ : ∀ n, dissipate C n ∈ S ∨ dissipate C n = ∅) (h₁ : ⋂ n, dissipate C n = ∅) :
-        ∃ n, dissipate C n = ∅ := by
-      by_cases! f : ∀ n, dissipate C n ∈ S
-      · apply h' f h₁
-      · obtain ⟨n, hn⟩ := f
-        exact ⟨n, by simpa [hn] using h₀ n⟩
-    obtain h'' := IsPiSystem.dissipate_mem hpi' h1
-    have h₁ : ∀ n, dissipate C n ∈ S ∨ dissipate C n = ∅ := by
-      intro n
-      by_cases g : (dissipate C n).Nonempty
-      · simpa [or_comm] using h'' n g
-      · exact .inr (Set.not_nonempty_iff_eq_empty.mp g)
-    apply h₀ h₁ h2
+  rw [← biInter_le_eq_iInter] at h2
+  suffices (∀ n, dissipate C n ∈ S ∨ dissipate C n = ∅) ∧ (⋂ n, dissipate C n = ∅) by
+    by_cases! f : ∀ n, dissipate C n ∈ S
+    · exact h (dissipate C) directed_dissipate f this.2
+    · obtain ⟨n, hn⟩ := f
+      exact ⟨n, by simpa [hn] using this.1 n⟩
+  refine ⟨fun n ↦ ?_, h2⟩
+  by_cases g : (dissipate C n).Nonempty
+  · simpa [or_comm] using hpi.insert_empty.dissipate_mem h1 n g
+  · exact .inr (Set.not_nonempty_iff_eq_empty.mp g)
 
-theorem isCompactSystem_iff_directed' (hpi : IsPiSystem S) :
+theorem isCompactSystem_iff_directed_of_nonempty (hpi : IsPiSystem S) :
     IsCompactSystem S ↔
     ∀ (C : ℕ → Set α), (Directed (fun x1 x2 ↦ x1 ⊇ x2) C) → (∀ i, C i ∈ S) → (∀ n, (C n).Nonempty) →
       (⋂ i, C i).Nonempty := by
@@ -174,22 +162,17 @@ section IsCompactIsClosed
 theorem isCompactSystem_isCompact_isClosed (α : Type*) [TopologicalSpace α] :
     IsCompactSystem {s : Set α | IsCompact s ∧ IsClosed s} := by
   refine IsCompactSystem.of_nonempty_iInter fun C hC_cc h_nonempty ↦ ?_
-  rw [← Set.iInter_dissipate]
+  rw [← iInter_dissipate]
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (Set.dissipate C)
-    (fun n ↦ ?_) h_nonempty ?_ (fun n ↦ ?_)
+    (fun n ↦ ?_) h_nonempty ?_ (fun n ↦ isClosed_biInter (fun i _ ↦ (hC_cc i).2))
   · exact Set.antitone_dissipate (by lia)
   · simpa using (hC_cc 0).1
-  · induction n with
-    | zero => simp only [Set.dissipate_zero_nat]; exact (hC_cc 0).2
-    | succ n hn =>
-      rw [Set.dissipate_succ]
-      exact hn.inter (hC_cc (n + 1)).2
 
 /-- In a `T2Space` the set of compact sets is a compact system. -/
 theorem isCompactSystem_isCompact (α : Type*) [TopologicalSpace α] [T2Space α] :
     IsCompactSystem {s : Set α | IsCompact s} := by
   convert isCompactSystem_isCompact_isClosed α with s
-  exact ⟨fun hs ↦ ⟨hs, hs.isClosed⟩, fun hs ↦ hs.1⟩
+  simpa using IsCompact.isClosed
 
 /-- The set of sets which are either compact and closed, or `univ`, is a compact system. -/
 theorem isCompactSystem_insert_univ_isCompact_isClosed (α : Type*) [TopologicalSpace α] :
