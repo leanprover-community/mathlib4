@@ -145,7 +145,7 @@ instance : Algebra ℚ_[p] ℂ_[p] where
   algebraMap := (UniformSpace.Completion.coeRingHom).comp (algebraMap ℚ_[p] (PadicAlgCl p))
   commutes' r x := by rw [mul_comm]
   smul_def' r x := by
-    apply UniformSpace.Completion.ext' (continuous_const_smul r) (continuous_mul_left _)
+    apply UniformSpace.Completion.ext' (continuous_const_smul r) (continuous_const_mul _)
     intro a
     rw [RingHom.coe_comp, Function.comp_apply, Algebra.smul_def]
     rfl
