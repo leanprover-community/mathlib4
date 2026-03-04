@@ -249,7 +249,7 @@ sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U
 -/
 def skyscraperSheafFunctor : C ⥤ Sheaf C X where
   obj c := skyscraperSheaf p₀ c
-  map f := Sheaf.Hom.mk <| (skyscraperPresheafFunctor p₀).map f
+  map f := ObjectProperty.homMk <| (skyscraperPresheafFunctor p₀).map f
   map_id _ := Sheaf.Hom.ext <| (skyscraperPresheafFunctor p₀).map_id _
   map_comp _ _ := Sheaf.Hom.ext <| (skyscraperPresheafFunctor p₀).map_comp _ _
 
@@ -395,7 +395,7 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
         apply (StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).naturality }
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit p₀
   left_triangle_components X :=
-    ((skyscraperPresheafStalkAdjunction p₀).left_triangle_components X.val)
+    ((skyscraperPresheafStalkAdjunction p₀).left_triangle_components X.obj)
   right_triangle_components _ :=
     Sheaf.Hom.ext ((skyscraperPresheafStalkAdjunction p₀).right_triangle_components _)
 

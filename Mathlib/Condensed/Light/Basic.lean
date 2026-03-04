@@ -43,17 +43,17 @@ namespace LightCondensed
 variable {C : Type w} [Category.{v} C]
 
 @[simp]
-lemma id_val (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).val = 𝟙 _ := rfl
+lemma id_val (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
 
 @[simp]
 lemma comp_val {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).val = f.val ≫ g.val :=
+    (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 
 @[ext]
-lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.val.app S = g.val.app S) :
+lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
     f = g := by
-  apply Sheaf.hom_ext
+  apply Sheaf.Hom.ext
   ext
   exact h _
 
@@ -65,7 +65,7 @@ namespace LightCondSet
 -- However, it doesn't seem to see through the abbreviation `LightCondSet`
 @[simp]
 lemma hom_naturality_apply {X Y : LightCondSet.{u}} (f : X ⟶ Y) {S T : LightProfiniteᵒᵖ}
-    (g : S ⟶ T) (x : X.val.obj S) : f.val.app T (X.val.map g x) = Y.val.map g (f.val.app S x) :=
-  NatTrans.naturality_apply f.val g x
+    (g : S ⟶ T) (x : X.obj.obj S) : f.hom.app T (X.obj.map g x) = Y.obj.map g (f.hom.app S x) :=
+  NatTrans.naturality_apply f.hom g x
 
 end LightCondSet

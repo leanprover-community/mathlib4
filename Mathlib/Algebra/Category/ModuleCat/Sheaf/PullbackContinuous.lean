@@ -67,21 +67,22 @@ end
 
 section
 
-variable [(PresheafOfModules.pushforward.{v} φ.val).IsRightAdjoint]
+variable [(PresheafOfModules.pushforward.{v} φ.hom).IsRightAdjoint]
   [HasWeakSheafify K AddCommGrpCat.{v}] [K.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 namespace PullbackConstruction
 
+--set_option trace.Meta.synthInstance true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a left adjoint to the functor `pushforward.{v} φ` by using the
 pullback of presheaves of modules and the sheafification. -/
 noncomputable def adjunction :
-    (forget S ⋙ PresheafOfModules.pullback.{v} φ.val ⋙
-      PresheafOfModules.sheafification (𝟙 R.val)) ⊣ pushforward.{v} φ :=
+    (forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙ 𝟭 _ ⋙
+      PresheafOfModules.sheafification (𝟙 R.obj)) ⊣ pushforward.{v} φ :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G ↦
-        ((PresheafOfModules.sheafificationAdjunction (𝟙 R.val)).homEquiv _ _).trans
-            (((PresheafOfModules.pullbackPushforwardAdjunction φ.val).homEquiv F.val G.val).trans
+        ((PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)).homEquiv _ _).trans
+            (((PresheafOfModules.pullbackPushforwardAdjunction φ.hom).homEquiv F.val G.val).trans
               ((fullyFaithfulForget S).homEquiv (Y := (pushforward φ).obj G)).symm)
       homEquiv_naturality_left_symm := by
         intros

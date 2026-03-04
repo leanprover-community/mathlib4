@@ -71,7 +71,8 @@ lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj
     adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
     Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
     comp_val, sheafificationAdjunction_counit_app_val,
-    sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id', Category.comp_id, Category.id_comp]-/
+    sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id',
+    Category.comp_id, Category.id_comp]-/
   sorry
 
 
@@ -91,7 +92,7 @@ lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
     intro R hR
     rw [← ((adj.whiskerRight Cᵒᵖ).homEquiv P R).comp_bijective]
     convert (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
-      (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).cond)).bijective
+      (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).property)).bijective
     ext g X
     -- The rest of this proof was
     -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` before https://github.com/leanprover-community/mathlib4/pull/16317.
