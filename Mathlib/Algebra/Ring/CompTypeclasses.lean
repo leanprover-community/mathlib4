@@ -120,10 +120,8 @@ def toRingEquiv : R₁ ≃+* R₂ := .ofRingHom σ σ' comp_eq₂ comp_eq
 
 This is not an instance, as for equivalences that are involutions, a better instance
 would be `RingHomInvPair e e`.
-
-Note that for equivalences that are involutions, a better instance would be `RingHomInvPair e e`.
 -/
-instance of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
+lemma of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
 
 /-- Construct a `RingHomInvPair` from both directions of a ring equiv.
