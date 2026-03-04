@@ -86,6 +86,9 @@ def setoid : Setoid A where
   r := IsConjRoot R
   iseqv := ⟨fun _ => refl, symm, trans⟩
 
+theorem comm {x y : A} : IsConjRoot R x y ↔ IsConjRoot R y x :=
+  ⟨symm, symm⟩
+
 /--
 Let `p` be the minimal polynomial of `x`. If `y` is a conjugate root of `x`, then `p y = 0`.
 -/
@@ -239,9 +242,9 @@ instance decidable [Normal K L] [DecidableEq L] [Fintype Gal(L/K)] (x y : L) :
     Decidable (IsConjRoot K x y) :=
   decidable_of_iff _ isConjRoot_iff_exists_algEquiv.symm
 
-instance : IsEquiv L (IsConjRoot K) :=
-  letI := IsConjRoot.setoid K L
-  inferInstanceAs <| IsEquiv L (· ≈ ·)
+instance : IsEquiv A (IsConjRoot R) :=
+  letI := IsConjRoot.setoid R A
+  inferInstanceAs <| IsEquiv A (· ≈ ·)
 
 /--
 If `y` is a conjugate root of an integral element `x` over `R`, then `y` is also integral
@@ -250,6 +253,9 @@ over `R`.
 theorem isIntegral {x y : A} (hx : IsIntegral R x) (h : IsConjRoot R x y) :
     IsIntegral R y :=
   ⟨minpoly R x, minpoly.monic hx, h ▸ minpoly.aeval R y⟩
+
+theorem isIntegral_iff {x y : A} (h : IsConjRoot R x y) : IsIntegral R x ↔ IsIntegral R y :=
+  ⟨fun hx ↦ isIntegral hx h, fun hy ↦ isIntegral hy h.symm⟩
 
 /--
 A variant of `IsConjRoot.eq_of_isConjRoot_algebraMap`, only assuming `IsDomain R`,

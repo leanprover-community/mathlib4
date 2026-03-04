@@ -606,8 +606,7 @@ variable {P : C → Prop}
 @[to_additive, simp high]
 lemma forall_mem_sup :
     (∀ x ∈ s ⊔ t, P x) ↔ (∀ x₁ ∈ s, ∀ x₂ ∈ t, P (x₁ * x₂)) := by
-  simp [mem_sup]
-  aesop
+  grind [mem_sup]
 
 @[to_additive, simp high]
 lemma exists_mem_sup :

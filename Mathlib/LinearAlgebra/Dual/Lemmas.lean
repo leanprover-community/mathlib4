@@ -395,6 +395,7 @@ open Submodule LinearMap
 -- We work in vector spaces because `exists_isCompl` only hold for vector spaces
 variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem dualAnnihilator_dualCoannihilator_eq {W : Subspace K V} :
     W.dualAnnihilator.dualCoannihilator = W := by
@@ -825,6 +826,7 @@ theorem dualPairing_nondegenerate (W : Subspace K V₁) : W.dualPairing.Nondegen
     simpa only [Submodule.dualPairing_apply, dualLift_of_subtype] using
       h (Submodule.Quotient.mk (W.dualLift φ))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem dualCopairing_nondegenerate (W : Subspace K V₁) : W.dualCopairing.Nondegenerate := by
   constructor
   · rw [LinearMap.separatingLeft_iff_ker_eq_bot, dualCopairing_eq]
@@ -1028,6 +1030,19 @@ theorem span_flip_eq_top_iff_linearIndependent {ι α F} [Finite ι] [Field F] {
   rw [SetLike.ext'_iff, map_span, Submodule.coe_dualCoannihilator_span, ← Set.range_comp]
   ext
   simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply, flip]
+
+lemma Module.exists_dual_forall_apply_eq_one {ι K V : Type*} [Field K] [AddCommGroup V] [Module K V]
+    {s : Set ι} {v : ι → V} (hli : LinearIndepOn K v s) :
+    ∃ f : Dual K V, ∀ i ∈ s, f (v i) = 1 := by
+  replace hli : LinearIndepOn K id (v '' s) := LinearIndepOn.id_image hli
+  let b : Basis _ K V := .mk (hli.linearIndepOn_extend (Set.subset_univ _)) <| by
+    simpa using hli.span_extend_eq_span <| Set.subset_univ _
+  refine ⟨b.constr K 1, fun i hi ↦ ?_⟩
+  replace hi : v i ∈ hli.extend (Set.subset_univ _) :=
+    hli.subset_extend _ <| Set.mem_image_of_mem v hi
+  let ri : hli.extend (Set.subset_univ _) := ⟨v i, hi⟩
+  have : b ri = v i := by simp [b, ri]
+  simp [← this]
 
 namespace TensorProduct
 

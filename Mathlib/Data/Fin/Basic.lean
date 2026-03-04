@@ -323,7 +323,8 @@ lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
     haveI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
-  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by lia
+  simp [coe_sub_iff_le.mpr (Fin.le_of_lt hij)]
+  lia
 
 lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
     haveI := k.neZero
@@ -372,6 +373,9 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
 
 @[simp] lemma natCast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
   simp [Fin.ext_iff, Nat.dvd_iff_mod_eq_zero]
+
+@[simp] lemma natCast_zero {n : ℕ} [NeZero n] : ((0 : ℕ) : Fin n) = 0 := by
+  simp
 
 @[simp]
 theorem natCast_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp

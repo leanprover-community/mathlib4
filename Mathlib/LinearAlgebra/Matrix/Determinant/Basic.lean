@@ -9,7 +9,6 @@ public import Mathlib.Data.Matrix.Basic
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.RowCol
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.GroupTheory.Perm.Fin
 public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
@@ -281,9 +280,11 @@ theorem det_smul_of_tower {α} [Monoid α] [MulAction α R] [IsScalarTower α R 
     det (c • A) = c ^ Fintype.card n • det A := by
   rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem det_neg (A : Matrix n n R) : det (-A) = (-1) ^ Fintype.card n * det A := by
   rw [← det_smul, neg_one_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A variant of `Matrix.det_neg` with scalar multiplication by `Units ℤ` instead of multiplication
 by `R`. -/
 theorem det_neg_eq_smul (A : Matrix n n R) :
@@ -779,11 +780,7 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
   rw [← det_permute, det_succ_row_zero]
   refine Finset.sum_congr rfl fun j _ => ?_
   rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id]
-  congr 3
-  · rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_zero]
-  · ext i' j'
-    rw [Equiv.Perm.inv_def, Matrix.submatrix_apply, Matrix.submatrix_apply,
-      Fin.cycleRange_symm_succ]
+  simp
 
 /-- Laplacian expansion of the determinant of an `n+1 × n+1` matrix along column `j`. -/
 theorem det_succ_column {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (j : Fin n.succ) :

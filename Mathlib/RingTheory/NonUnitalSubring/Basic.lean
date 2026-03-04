@@ -376,6 +376,7 @@ end NonUnitalNonAssocRing
 section NonUnitalRing
 variable [NonUnitalRing R]
 
+set_option backward.isDefEq.respectTransparency false in
 -- no instance diamond, unlike the unital version
 example : (center.instNonUnitalCommRing _).toNonUnitalRing =
       NonUnitalSubringClass.toNonUnitalRing (center R) := by

@@ -93,9 +93,7 @@ theorem continuous_proj :
   dsimp +unfoldPartialApp [Proj]
   apply continuous_pi
   intro i
-  split
-  · apply continuous_apply
-  · apply continuous_const
+  split <;> fun_prop
 
 /-- The image of `Proj π J` -/
 def π : Set (I → Bool) := (Proj J) '' C
@@ -313,6 +311,7 @@ namespace Products
 instance : LinearOrder (Products I) :=
   inferInstanceAs (LinearOrder {l : List I // l.IsChain (· > ·)})
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (· < ·) l.val m.val := by
   simp

@@ -70,6 +70,7 @@ theorem edist_le (p : G.Walk u v) :
   sInf_le ⟨p, rfl⟩
 protected alias Walk.edist_le := edist_le
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem edist_eq_zero_iff :
     G.edist u v = 0 ↔ u = v := by
@@ -112,6 +113,7 @@ theorem edist_comm : G.edist u v = G.edist v u := by
     ← Set.image_comp, Set.image_univ, Function.comp_def]
   simp_rw [Walk.length_reverse, ← edist_eq_sInf]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_walk_of_edist_eq_coe {k : ℕ} (h : G.edist u v = k) :
     ∃ p : G.Walk u v, p.length = k :=
   have : G.edist u v ≠ ⊤ := by rw [h]; exact ENat.coe_ne_top _
@@ -124,6 +126,7 @@ lemma edist_ne_top_iff_reachable : G.edist u v ≠ ⊤ ↔ G.Reachable u v := by
   simp only [edist, iInf_eq_top, ENat.coe_ne_top] at hx
   exact h.elim hx
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The extended distance between vertices is equal to `1` if and only if these vertices are adjacent.
 -/
@@ -133,6 +136,14 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
   · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
+
+lemma edist_le_one_iff_adj_or_eq : G.edist u v ≤ 1 ↔ G.Adj u v ∨ u = v := by
+  by_cases huv : u = v
+  · simp [huv]
+  · simp only [huv, or_false]
+    have h : 0 < G.edist u v := edist_pos_of_ne huv
+    rw [(Order.one_le_iff_pos.mpr h).ge_iff_eq']
+    exact edist_eq_one_iff_adj
 
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
@@ -279,6 +290,11 @@ theorem Adj.diff_dist_adj (hadj : G.Adj v w) :
   have : G.dist u w ≤ G.dist u v + G.dist v w := hadj.reachable.dist_triangle_right u
   have : G.dist u v ≤ G.dist u w + G.dist w v := huw.dist_triangle_left v
   lia
+
+@[deprecated Adj.diff_dist_adj (since := "2025-12-11"), nolint unusedArguments]
+theorem Connected.diff_dist_adj (_ : G.Connected) (hadj : G.Adj v w) :
+    G.dist u w = G.dist u v ∨ G.dist u w = G.dist u v + 1 ∨ G.dist u w = G.dist u v - 1 := by
+  apply Adj.diff_dist_adj hadj
 
 theorem Walk.isPath_of_length_eq_dist (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by

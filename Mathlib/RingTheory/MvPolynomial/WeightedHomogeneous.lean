@@ -149,6 +149,7 @@ theorem mem_weightedHomogeneousSubmodule (w : σ → M) (m : M) (p : MvPolynomia
     p ∈ weightedHomogeneousSubmodule R w m ↔ p.IsWeightedHomogeneous w m :=
   Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The submodule `weightedHomogeneousSubmodule R w m` of homogeneous `MvPolynomial`s of
   degree `n` is equal to the `R`-submodule of all `p : (σ →₀ ℕ) →₀ R` such that
   `p.support ⊆ {d | weight w d = m}`. While equal, the former has a
@@ -295,6 +296,7 @@ theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeighte
     replace hd := Finsupp.mem_support_iff.mpr hd
     apply Finset.le_sup hd
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Induction principle for weighted homogeneous polynomials. -/
 lemma induction_on {w : σ → M} {m : M}
     {motive : (p : MvPolynomial σ R) → p.IsWeightedHomogeneous w m → Prop}
@@ -350,6 +352,7 @@ theorem coeff_weightedHomogeneousComponent [DecidableEq M] (d : σ →₀ ℕ) :
   letI := Classical.decEq M
   Finsupp.filter_apply (fun d : σ →₀ ℕ => weight w d = n) φ d |>.trans <| by convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem weightedHomogeneousComponent_apply [DecidableEq M] :
     weightedHomogeneousComponent w n φ =
       ∑ d ∈ φ.support with weight w d = n, monomial d (coeff d φ) :=
@@ -395,7 +398,7 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
   exact lt_of_le_of_lt (le_weightedTotalDegree w hd.1) h
 
 theorem weightedHomogeneousComponent_finsupp :
-    (Function.support fun m => weightedHomogeneousComponent w m φ).Finite := by
+    (fun m => weightedHomogeneousComponent w m φ).HasFiniteSupport := by
   apply ((fun d : σ →₀ ℕ => (weight w) d) '' (φ.support : Set (σ →₀ ℕ))).toFinite.subset
   intro m hm
   by_contra hm'

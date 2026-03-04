@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Algebra.Order.Ring.Nat
-public import Mathlib.Logic.Encodable.Pi
 public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Denumerable
 
 /-!
 # The primitive recursive functions
@@ -45,7 +45,6 @@ other design choices in this formalization, see [carneiro2019].
 
 @[expose] public section
 
-open List (Vector)
 open Denumerable Encodable Function
 
 namespace Nat
@@ -852,6 +851,7 @@ namespace Primrec
 variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem subtype_val {p : α → Prop} [DecidablePred p] {hp : PrimrecPred p} :
     haveI := Primcodable.subtype hp
     Primrec (@Subtype.val α p) := by
