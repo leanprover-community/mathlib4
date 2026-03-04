@@ -320,7 +320,7 @@ noncomputable def opcyclesIso (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ 
 lemma p_opcyclesIso_hom (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
     (X.shortComplex f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).pOpcycles ≫
       (X.opcyclesIso f₁ f₂ f₃ n₀ n₁ n₂ hn₁ hn₂).hom =
-      X.pOpcycles f₂ f₃ n₁ :=
+    X.pOpcycles f₂ f₃ n₁ :=
   ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom _
 
 @[reassoc (attr := simp)]
