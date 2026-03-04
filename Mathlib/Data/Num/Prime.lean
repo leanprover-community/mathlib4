@@ -62,7 +62,6 @@ def minFac : PosNum → PosNum
   | bit0 _ => 2
   | bit1 n => minFacAux (bit1 n) n 1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   obtain - | n := n

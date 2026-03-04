@@ -19,6 +19,17 @@ jobs:
         with:
           fetch-depth: 2  # Need previous commit for diff
 
+      - name: Checkout mathlib-ci
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -27,7 +38,7 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          output="$(./scripts/parse_lake_manifest_changes.py)"
+          output="$("${CI_SCRIPTS_DIR}/zulip/parse_lake_manifest_changes.py")"
           echo "Dependency changes:"
           echo "$output"
           delimiter="EOF"
@@ -93,6 +104,17 @@ jobs:
         with:
           fetch-depth: 2  # Need previous commit for diff
 
+      - name: Checkout mathlib-ci
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
+
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -101,7 +123,7 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          output="$(./scripts/parse_lake_manifest_changes.py)"
+          output="$("${CI_SCRIPTS_DIR}/zulip/parse_lake_manifest_changes.py")"
           echo "Dependency changes:"
           echo "$output"
           delimiter="EOF"

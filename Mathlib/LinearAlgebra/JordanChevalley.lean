@@ -29,8 +29,8 @@ The proof given here uses Newton's method and is taken from Chambert-Loir's note
   Moreover these nilpotent and semisimple components are polynomial expressions in the original
   endomorphism.
 * `Module.End.isNilpotent_isSemisimple_unique`: the Jordan-Chevalley-Dunford decomposition is
-  unique: if `f = n₁ + s₁ = n₂ + s₂` with `nᵢ` nilpotent, `sᵢ` semisimple, and `nᵢ`, `sᵢ`
-  commuting, then `n₁ = n₂` and `s₁ = s₂`.
+  unique: if `n₁ + s₁ = n₂ + s₂` with `nᵢ` nilpotent, `sᵢ` semisimple, and `nᵢ`, `sᵢ` commuting,
+  then `n₁ = n₂` and `s₁ = s₂`.
 
 -/
 
@@ -80,20 +80,20 @@ theorem exists_isNilpotent_isSemisimple [PerfectField K] :
   rw [← PerfectField.separable_iff_squarefree] at sep
   exact exists_isNilpotent_isSemisimple_of_separable_of_dvd_pow sep nil
 
-/-- **Uniqueness of Jordan-Chevalley-Dunford decomposition**: if `f = n₁ + s₁ = n₂ + s₂` with
-`nᵢ` nilpotent, `sᵢ` semisimple, and `nᵢ`, `sᵢ` commuting, then `n₁ = n₂` and `s₁ = s₂`. -/
+/-- **Uniqueness of Jordan-Chevalley-Dunford decomposition**: if `n₁ + s₁ = n₂ + s₂` with `nᵢ`
+nilpotent, `sᵢ` semisimple, and `nᵢ`, `sᵢ` commuting, then `n₁ = n₂` and `s₁ = s₂`. -/
 theorem isNilpotent_isSemisimple_unique [PerfectField K]
     {n₁ s₁ n₂ s₂ : End K V}
     (hn₁ : IsNilpotent n₁) (hs₁ : s₁.IsSemisimple)
     (hn₂ : IsNilpotent n₂) (hs₂ : s₂.IsSemisimple)
     (hc₁ : Commute n₁ s₁) (hc₂ : Commute n₂ s₂)
-    (h₁ : f = n₁ + s₁) (h₂ : f = n₂ + s₂) :
+    (h : n₁ + s₁ = n₂ + s₂) :
     n₁ = n₂ ∧ s₁ = s₂ := by
-  obtain ⟨n₀, hn₀, s₀, hs₀, hn₀_nil, hs₀_ss, h₀⟩ := f.exists_isNilpotent_isSemisimple
-  suffices ∀ {n s}, IsNilpotent n → s.IsSemisimple → Commute n s → f = n + s → s = s₀ by grind
+  obtain ⟨n₀, hn₀, s₀, hs₀, hn₀_nil, hs₀_ss, h₀⟩ := (n₁ + s₁).exists_isNilpotent_isSemisimple
+  suffices ∀ {n s}, IsNilpotent n → s.IsSemisimple → Commute n s → n₁ + s₁ = n + s → s = s₀ by grind
   intro n s hn hs hc heq
-  have hsf : Commute s f := heq ▸ hc.symm.add_right (Commute.refl s)
-  have hnf : Commute n f := heq ▸ (Commute.refl n).add_right hc
+  have hsf : Commute s (n₁ + s₁) := heq ▸ hc.symm.add_right (Commute.refl s)
+  have hnf : Commute n (n₁ + s₁) := heq ▸ (Commute.refl n).add_right hc
   have hnil : IsNilpotent (s - s₀) := by
     rw [show s - s₀ = n₀ - n from by grind]
     exact (commute_of_mem_adjoin_singleton_of_commute hn₀ hnf).symm.isNilpotent_sub hn₀_nil hn

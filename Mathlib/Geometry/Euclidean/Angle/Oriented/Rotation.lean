@@ -90,7 +90,6 @@ theorem rotation_symm_apply (θ : Real.Angle) (x : V) :
     (o.rotation θ).symm x = Real.Angle.cos θ • x - Real.Angle.sin θ • J x :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem rotation_eq_matrix_toLin (θ : Real.Angle) {x : V} (hx : x ≠ 0) :
     (o.rotation θ).toLinearMap =
       Matrix.toLin (o.basisRightAngleRotation x hx) (o.basisRightAngleRotation x hx)
@@ -422,7 +421,6 @@ theorem inner_smul_rotation_pi_div_two_smul_right (x : V) (r₁ r₂ : ℝ) :
     ⟪r₂ • x, r₁ • o.rotation (π / 2 : ℝ) x⟫ = 0 := by
   rw [real_inner_comm, inner_smul_rotation_pi_div_two_smul_left]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The inner product between two vectors is zero if and only if the first vector is zero or
 the second is a multiple of a `π / 2` rotation of that vector. -/
 theorem inner_eq_zero_iff_eq_zero_or_eq_smul_rotation_pi_div_two {x y : V} :
