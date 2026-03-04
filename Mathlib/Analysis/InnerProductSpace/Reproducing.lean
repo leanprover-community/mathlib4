@@ -254,8 +254,10 @@ private abbrev kerFunAux (x : X) : V →ₗ[𝕜] UniformSpace.Completion (H₀ 
     simp [inner_smul_left, inner_H₀_def, Finsupp.mul_sum, ← mul_assoc, mul_comm]
 
 variable (K) in
-/-- Explicit formula for the kernel functions of `OfKernel` which is used for `OfKernel.instRKHS`.
-While `OfKernel.kerFun` and `RKHS.kerFun` are equal, `RKHS.kerFun` should be used in practice. -/
+/-- Explicit description of the kernel functions of `OfKernel K`.
+This is marked as private because it equals `RKHS.kerFun`. However, it must be defined separately
+since the `RKHS.kerFun` spelling depends on the `RKHS (OfKernel K)` instance, which itself
+depends on `OfKernel.kerFun`. -/
 private abbrev kerFun (x : X) :
     V →L[𝕜] UniformSpace.Completion (H₀ K) := (kerFunAux x).mkContinuous √‖K x x‖ fun v ↦ by
   refine (sq_le_sq₀ (by simp) (by simp [mul_nonneg])).mp ?_
