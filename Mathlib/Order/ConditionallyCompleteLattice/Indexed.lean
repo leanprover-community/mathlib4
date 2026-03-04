@@ -182,9 +182,13 @@ lemma ciInf_le_ciSup [Nonempty ι] {f : ι → α} (hf : BddBelow (range f)) (hf
     ⨅ i, f i ≤ ⨆ i, f i :=
   (ciInf_le hf (Classical.arbitrary _)).trans <| le_ciSup hf' (Classical.arbitrary _)
 
-lemma ciSup_prod {α ι ι' : Type*} [Nonempty ι] [Nonempty ι'] [ConditionallyCompleteLattice α]
-    {f : ι × ι' → α} (hf : BddAbove (Set.range f)) :
+lemma ciSup_prod {α ι ι' : Type*} [ConditionallyCompleteLattice α] {f : ι × ι' → α}
+    (hf : BddAbove (Set.range f)) :
     ⨆ a, f a = ⨆ i, ⨆ i', f (i, i') := by
+  rcases isEmpty_or_nonempty ι
+  · simp [iSup_of_empty']
+  rcases isEmpty_or_nonempty ι'
+  · simp [iSup_of_empty']
   have h₂ : BddAbove (Set.range fun i ↦ ⨆ i', f (i, i')) := by
     rw [bddAbove_def] at hf ⊢
     obtain ⟨B, hB⟩ := hf
@@ -200,8 +204,8 @@ lemma ciSup_prod {α ι ι' : Type*} [Nonempty ι] [Nonempty ι'] [Conditionally
   conv_rhs => enter [i]; rw [ciSup_le_iff (h₃ i)]
   simp [Prod.forall]
 
-lemma ciInf_prod {α ι ι' : Type*} [Nonempty ι] [Nonempty ι'] [ConditionallyCompleteLattice α]
-    {f : ι × ι' → α} (hf : BddBelow (Set.range f)) :
+lemma ciInf_prod {α ι ι' : Type*} [ConditionallyCompleteLattice α] {f : ι × ι' → α}
+    (hf : BddBelow (Set.range f)) :
     ⨅ a, f a = ⨅ i, ⨅ i', f (i, i') :=
   ciSup_prod (α := αᵒᵈ) hf
 
