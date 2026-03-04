@@ -70,18 +70,18 @@ variable
   [ChartedSpace H M] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   [FiniteDimensional ℝ E]
   [FiniteDimensional ℝ F] [T2Space M] [IsManifold I ∞ M]
-  {cov : ((x : M) → TangentSpace I x) → (M → F) → M → F}
+  {cov : (M → F) → (Π x : M, TangentSpace I x →L[ℝ] F)}
   {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
 
 
 noncomputable
 def IsCovariantDerivativeOn.lift_vec (x : M) (f : F) :
     TangentSpace I x →L[ℝ] TangentSpace I x × F :=
-  .prod (.id ℝ _) (-evalL ℝ F F f ∘L hcov.one_form x)
+  .prod (.id ℝ _) (-hcov.one_form x f)
 
 @[simp]
 lemma IsCovariantDerivativeOn.lift_vec_apply (x : M) (f : F) (u : TangentSpace I x) :
-    hcov.lift_vec x f u = (u , -hcov.one_form x u f) :=
+    hcov.lift_vec x f u = (u , -hcov.one_form x f u) :=
   rfl
 
 @[simp]
@@ -116,6 +116,7 @@ variable
   [ChartedSpace H M] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {V : M → Type*}
   [TopologicalSpace (TotalSpace F V)] [(x : M) → AddCommGroup (V x)] [(x : M) → Module ℝ (V x)]
   [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] [FiniteDimensional ℝ E]
+  [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
   [FiniteDimensional ℝ F] [T2Space M]
   [IsManifold I ∞ M] [VectorBundle ℝ F V] {cov : CovariantDerivative I F V}
   [ContMDiffVectorBundle 1 F V I]
@@ -230,6 +231,7 @@ lemma IsMIntegralCurveAt.mdifferentiableAt (h : IsMIntegralCurveAt γ v t₀) :
   filter_upwards [h] with t ht
   exact ht.mdifferentiableAt
 
+set_option backward.isDefEq.respectTransparency false in
 protected lemma IsMIntegralCurveAt.mfderiv (hγ : IsMIntegralCurveAt γ v t₀) :
     ∀ᶠ t in 𝓝 t₀, mfderiv% γ t (1 : ℝ) = v (γ t) := by
   filter_upwards [hγ] with t ht
@@ -315,8 +317,9 @@ I γ t).2 := by
 lemma IsMIntegralCurveAt.proj_acceleration {X : Π x : M, TangentSpace I x}
     {γ : ℝ → M} {t₀ : ℝ} (hX : MDiffAt (T% X) (γ t₀))
     (hγX : IsMIntegralCurveAt γ X t₀) :
-    cov.proj _ (velocity I.tangent (velocity I γ) t₀).2 = cov X X (γ t₀) := by
-  rw [hγX.acceleration hX, cov.proj_mderiv _ hX hX]
+    cov.proj _ (velocity I.tangent (velocity I γ) t₀).2 = cov X (γ t₀) (X (γ t₀)) := by
+  rw [hγX.acceleration hX, cov.proj_mderiv _ hX]
+  simp
 
 noncomputable
 def CovariantDerivative.geodVF (v : TotalSpace E (TangentSpace I : M → Type _)) :
@@ -338,6 +341,7 @@ Remember: `IsMIntegralCurveAt` is local, not pointwise. -/
 def CovariantDerivative.isGeodAt (γ : ℝ → M) (t : ℝ) :=
   IsMIntegralCurveAt (velocity I γ) cov.geodVF t
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CovariantDerivative.isGeodAt_iff_horiz {γ : ℝ → M} {t₀ : ℝ}
     (hγ : ∀ᶠ (t : ℝ) in 𝓝 t₀, MDiffAt (velocity I γ) t) :
     cov.isGeodAt γ t₀ ↔
@@ -365,11 +369,12 @@ lemma CovariantDerivative.isGeodAt_iff_proj {γ : ℝ → M} {t₀ : ℝ}
 
 def CovariantDerivative.isGeod (γ : ℝ → M) := ∀ t, cov.isGeodAt γ t
 
+set_option backward.isDefEq.respectTransparency false in
 lemma CovariantDerivative.orbit_geodVF {X : Π x : M, TangentSpace I x}
     {γ : ℝ → M} {t₀ : ℝ} (hX : ∀ᶠ t in 𝓝 t₀, MDiffAt (T% X) (γ t))
     (hγ : ∀ᶠ (t : ℝ) in 𝓝 t₀, MDiffAt (velocity I γ) t)
     (hγX : IsMIntegralCurveAt γ X t₀) :
-    cov.isGeodAt γ t₀ ↔ ∀ᶠ t in 𝓝 t₀, cov X X (γ t) = 0 := by
+    cov.isGeodAt γ t₀ ↔ ∀ᶠ t in 𝓝 t₀, cov X (γ t) (X (γ t)) = 0 := by
   rw [cov.isGeodAt_iff_proj hγ]
   refine eventually_congr ?_
   filter_upwards [hX, hγX.eventually_isMIntegralCurveAt] with t ht ht'
