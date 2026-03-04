@@ -652,11 +652,6 @@ lemma aux (h : cov.IsLeviCivitaConnection) : rhs_aux I X Y Z =
   · ext x
     simp [← isTorsionFree_iff.mp h.2 X Z, product, inner_sub_right]
 
-lemma isolate_aux {α : Type*} [AddCommGroup α]
-    (A D E F X Y Z : α) (h : X + Y - Z = A + A + D + E - F) :
-    A + A = X + Y - Z - D - E + F := by
-  rw [h]; abel
-
 variable (X Y Z) {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
@@ -665,6 +660,7 @@ lemma IsLeviCivitaConnection.eq_leviCivitaRhs (h : cov.IsLeviCivitaConnection) :
   set A := ⟪∇ X, Y, Z⟫
   set B := ⟪∇ Z, X, Y⟫
   set C := ⟪∇ Y, Z, X⟫
+  unfold leviCivitaRhs leviCivitaRhs'
   set D := ⟪Y, VectorField.mlieBracket I X Z⟫ with D_eq
   set E := ⟪Z, VectorField.mlieBracket I Y X⟫ with E_eq
   set F := ⟪X, VectorField.mlieBracket I Z Y⟫ with F_eq
@@ -674,15 +670,7 @@ lemma IsLeviCivitaConnection.eq_leviCivitaRhs (h : cov.IsLeviCivitaConnection) :
     simp only [aux I Y Z X cov h, A, C, E, product_swap _ (∇ X, Y) Z]
   have eq3 : rhs_aux I Z X Y = B + C + F := by
     simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (∇ Y, Z)]
-  -- Add eq1 and eq2 and subtract eq3.
-  have : rhs_aux I X Y Z + rhs_aux I Y Z X - rhs_aux I Z X Y = A + A + D + E - F := by
-    rw [eq1, eq2, eq3]; abel
-  -- Solve for ⟪∇ X, Y, Z⟫ and obtain the claim.
-  have almost := isolate_aux A D E F (rhs_aux I X Y Z) (rhs_aux I Y Z X) (rhs_aux I Z X Y)
-    (by simp [this])
-  have almoster : A + A = leviCivitaRhs' I X Y Z := by simp only [leviCivitaRhs', *]
-  simp only [leviCivitaRhs, ← almoster, smul_add]
-  ext; simp; ring
+  linear_combination (norm := module) -(2:ℝ)⁻¹ • (eq1 + eq2 - eq3)
 
 section
 
