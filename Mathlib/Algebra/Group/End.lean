@@ -634,7 +634,7 @@ end Group
 end Equiv
 
 /-- The group of multiplicative automorphisms. -/
-@[to_additive /-- The group of additive automorphisms. -/, to_additive_dont_translate]
+@[to_additive_dont_translate, to_additive /-- The group of additive automorphisms. -/]
 abbrev MulAut (M : Type*) [Mul M] :=
   M ≃* M
 
