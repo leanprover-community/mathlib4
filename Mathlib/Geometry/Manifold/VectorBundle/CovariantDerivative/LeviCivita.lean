@@ -204,7 +204,7 @@ noncomputable def myfun (Y Z : Π x : M, TangentSpace I x) :
   letI b : TangentSpace I x →L[ℝ] ℝ := mfderiv% ⟪Y, Z⟫ x
   b - ((innerSL ℝ (Z x)) ∘L (cov Y x)) - ((innerSL ℝ (Y x)) ∘L (cov Z x))
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 800000 in
 variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)] {I} in
 noncomputable example {x : M} [FiniteDimensional ℝ E] :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) := by
@@ -216,8 +216,37 @@ noncomputable example {x : M} [FiniteDimensional ℝ E] :
     --erw [mfderiv_smul]
     rw [cov.isCovariantDerivativeOn.leibniz hσ hf]
     ext X
-    simp
-    sorry
+    simp only [ContinuousLinearMap.comp_add, ContinuousLinearMap.comp_smulₛₗ,
+      RingHom.id_apply, Pi.smul_apply', map_smul, ContinuousLinearMap.smul_comp,
+      ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp',
+      coe_innerSL_apply, Pi.sub_apply, Pi.smul_apply, comp_apply]
+    erw [ContinuousLinearMap.sub_apply]
+    erw [ContinuousLinearMap.sub_apply]
+    erw [ContinuousLinearMap.comp_apply]
+    conv =>
+      enter [1, 1, 2]
+      erw [ContinuousLinearMap.add_apply]
+    conv =>
+      enter [1, 1, 2, 1]
+      erw [ContinuousLinearMap.smul_apply]
+    rw [ContinuousLinearMap.comp_apply]
+    rw [ContinuousLinearMap.comp_apply]
+    rw [ContinuousLinearMap.comp_apply]
+    rw [ContinuousLinearMap.comp_apply]
+    rw [innerSL_apply_apply]
+    rw [innerSL_apply_apply]
+    rw [ContinuousLinearMap.toSpanSingleton_apply]
+    rw [inner_smul_right]
+    rw [mfderiv_smul _ hf]
+    · simp only [smul_eq_mul, Pi.mul_apply, bar, ContinuousLinearEquiv.coe_coe,
+        ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
+      conv =>
+        enter [1, 1, 1, 2, 2]
+        dsimp [product]
+        rw [real_inner_comm]
+      rw [← sub_eq_zero]
+      ring
+    sorry -- missing hypothesis needed for this differentiability goal?
   · intro σ σ' τ hσ hσ'
     have hτ : MDiffAt (T% τ) x := sorry -- missing hypothesis?
     simp only [myfun]
