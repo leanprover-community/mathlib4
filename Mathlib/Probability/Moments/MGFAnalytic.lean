@@ -237,7 +237,6 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     convert (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X μ)) :
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v) ^ 2 * exp (v * X ω)] / mgf X μ v := by
