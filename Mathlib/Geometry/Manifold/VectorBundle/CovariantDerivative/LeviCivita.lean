@@ -657,19 +657,11 @@ variable (X Y Z) {cov} in
 ⟨∇ X Y, Z⟩ for all differentiable vector fields X, Y and Z, without reference to ∇. -/
 lemma IsLeviCivitaConnection.eq_leviCivitaRhs (h : cov.IsLeviCivitaConnection) :
     ⟪∇ X, Y, Z⟫ = leviCivitaRhs I X Y Z := by
-  set A := ⟪∇ X, Y, Z⟫
-  set B := ⟪∇ Z, X, Y⟫
-  set C := ⟪∇ Y, Z, X⟫
   unfold leviCivitaRhs leviCivitaRhs'
-  set D := ⟪Y, VectorField.mlieBracket I X Z⟫ with D_eq
-  set E := ⟪Z, VectorField.mlieBracket I Y X⟫ with E_eq
-  set F := ⟪X, VectorField.mlieBracket I Z Y⟫ with F_eq
-  have eq1 : rhs_aux I X Y Z = A + B + D := by
-    simp only [aux I X Y Z cov h, A, B, D, product_swap _ Y (∇ Z, X)]
-  have eq2 : rhs_aux I Y Z X = C + A + E := by
-    simp only [aux I Y Z X cov h, A, C, E, product_swap _ (∇ X, Y) Z]
-  have eq3 : rhs_aux I Z X Y = B + C + F := by
-    simp only [aux I Z X Y cov h, B, C, F, product_swap _ X (∇ Y, Z)]
+  have eq1 := aux I X Y Z cov h
+  have eq2 := aux I Y Z X cov h
+  have eq3 := aux I Z X Y cov h
+  simp [product_swap] at *
   linear_combination (norm := module) -(2:ℝ)⁻¹ • (eq1 + eq2 - eq3)
 
 section
