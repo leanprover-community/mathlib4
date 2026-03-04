@@ -253,19 +253,19 @@ noncomputable def functorIso :
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit is natural in both `S : CompHausLike P` and
 `Y : Sheaf (coherentTopology (CompHausLike P)) (Type (max u w))` -/
-@[simps]
+@[simps!]
 noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHausLike.preregular hs
     (sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩ ⋙ functor.{u, w} P hs ⟶
         𝟭 (Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w))) where
   app X := haveI := CompHausLike.preregular hs
-    ⟨counitApp X.obj⟩
+    (ObjectProperty.homMk) (counitApp X.obj)
   naturality X Y g := by
-    sorry
-    /-have := CompHausLike.preregular hs
-    apply Sheaf.Hom.ext
+    have := CompHausLike.preregular hs
+    apply InducedCategory.hom_ext
     simp only [functor, Functor.comp_obj, Functor.flip_obj_obj,
-      sheafToPresheaf, Functor.id_obj, Functor.comp_map, Functor.flip_obj_map,
-      ObjectProperty.FullSubcategory.comp_hom, Functor.id_map]
+      Functor.id_obj, Functor.comp_map, Functor.flip_obj_map,
+      ObjectProperty.FullSubcategory.comp_hom, Functor.id_map,
+      ObjectProperty.homMk_hom, ObjectProperty.ι_obj, ObjectProperty.ι_map]
     ext S (f : LocallyConstant _ _)
     simp only [FunctorToTypes.comp, counitApp_app]
     apply presheaf_ext (f.map (g.hom.app (op (CompHausLike.of P PUnit.{u + 1}))))
@@ -284,15 +284,15 @@ noncomputable def counit [HasExplicitFiniteCoproducts.{u} P] : haveI := CompHaus
     simp only [counitAppAppImage, ← FunctorToTypes.map_comp_apply, ← op_comp]
     rw [mk_image]
     change (X.obj.map _ ≫ _) _ = (X.obj.map _ ≫ _) _
-    simp only [g.val.naturality]
+    simp only [g.hom.naturality]
     simp only [types_comp_apply]
-    have := map_preimage_eq_image (f := g.val.app _ ∘ f) (a := a)
+    have := map_preimage_eq_image (f := g.hom.app _ ∘ f) (a := a)
     simp only [Function.comp_apply] at this
     rw [this]
     apply congrArg
     symm
     convert (b.preimage).prop
-    exact (mem_iff_eq_image (g.val.app _ ∘ f) _ _).symm-/
+    exact (mem_iff_eq_image (g.hom.app _ ∘ f) _ _).symm
 
 /--
 The unit of the adjunction is given by mapping each element to the corresponding constant map.
@@ -313,7 +313,7 @@ lemma adjunction_left_triangle [HasExplicitFiniteCoproducts.{u} P]
   ext ⟨S⟩ (f : LocallyConstant _ X)
   simp only [Functor.id_obj, Functor.comp_obj, FunctorToTypes.comp, NatTrans.id_app,
     functorToPresheaves_obj_obj, types_id_apply]
-  simp only [counit, counitApp_app]
+  simp only [counit]
   have := CompHausLike.preregular hs
   apply presheaf_ext
     (X := ((functor P hs).obj X).obj) (Y := ((functor.{u, w} P hs).obj X).obj)
@@ -338,22 +338,22 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     intro X
     ext : 1
     exact adjunction_left_triangle P hs X
-  right_triangle_components := by
-    sorry /-
-    intro X
-    ext (x : X.val.obj _)
-    simp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj, sheafToPresheaf_obj,
-      functor_obj_val, functorToPresheaves_obj_obj, types_id_apply,
-      Functor.flip_obj_map, sheafToPresheaf_map, counit_app_val]
+  right_triangle_components X := by
+    ext (x : X.obj.obj _)
+    dsimp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj,
+      functorToPresheaves_obj_obj, types_id_apply,
+      Functor.flip_obj_map, ObjectProperty.ι_obj, functor_obj_obj,
+      functorToPresheaves_obj_obj, ObjectProperty.ι_map, types_comp_apply, unit_app,
+      counit_app_hom_app]
     have := CompHausLike.preregular hs
     letI : PreservesFiniteProducts ((sheafToPresheaf (coherentTopology _) _).obj X) :=
-      inferInstanceAs (PreservesFiniteProducts (Sheaf.val _))
+      inferInstanceAs (PreservesFiniteProducts X.obj)
     apply presheaf_ext ((unit P hs).app _ x)
     intro a
     erw [incl_of_counitAppApp]
     simp only [unit_app, counitAppAppImage, coe_const]
     erw [← map_eq_image _ a ⟨PUnit.unit, by simp [mem_iff_eq_image, ← map_preimage_eq_image]⟩]
-    rfl-/
+    rfl
 
 instance [HasExplicitFiniteCoproducts.{u} P] : IsIso (adjunction P hs).unit :=
   inferInstanceAs (IsIso (unitIso P hs).hom)
