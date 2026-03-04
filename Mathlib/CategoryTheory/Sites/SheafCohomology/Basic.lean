@@ -142,6 +142,18 @@ theorem H.equiv₀_symm_comp (x : F.val.obj (op T)) :
   apply (H.equiv₀ G hT).injective
   simp [← H.equiv₀_comp]
 
+variable (n : ℕ)
+
+noncomputable def Hfunctor (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} :=
+    (extFunctor n).obj
+      (op ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of.{w} (ULift ℤ))))
+
+theorem Hfunctor_obj (n : ℕ) : (Hfunctor n).obj F = of (H F n) := rfl
+
+theorem Hfunctor_map (n : ℕ) :
+    eqToHom (F.Hfunctor_obj n) ≫ ofHom (H.map f n) ≫ eqToHom (G.Hfunctor_obj n).symm =
+    (Hfunctor n).map f := rfl
+
 end
 
 end Sheaf
