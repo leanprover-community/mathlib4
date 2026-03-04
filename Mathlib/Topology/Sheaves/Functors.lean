@@ -146,10 +146,12 @@ def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
       (isoSheafify (Opens.grothendieckTopology X)
       (TopCat.Presheaf.isSheaf_of_isOpenEmbedding hf F.2)).symm
   · dsimp
-    rw [← Functor.map_comp_assoc, hf.isOpenMap.pullbackIso.hom.naturality, Sheaf.hom_ext_iff]
+    rw [← Functor.map_comp_assoc, hf.isOpenMap.pullbackIso.hom.naturality]
+    apply InducedCategory.hom_ext
     simp only [Functor.whiskeringLeft_obj_obj, Functor.whiskeringLeft_obj_map, Functor.map_comp,
       isoSheafify_inv, Category.assoc]
-    rw [Sheaf.comp_val, Sheaf.comp_val, Sheaf.comp_val, Sheaf.comp_val]
+    rw [InducedCategory.comp_hom, InducedCategory.comp_hom,
+      InducedCategory.comp_hom, InducedCategory.comp_hom]
     dsimp [sheafPullback, Functor.sheafPushforwardContinuous, Sheaf.forget]
     simp only [sheafifyMap_sheafifyLift, Category.comp_id, sheafifyMap_sheafifyLift_assoc]
     rw [CategoryTheory.sheafifyLift_comp]
