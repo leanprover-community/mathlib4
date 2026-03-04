@@ -208,8 +208,8 @@ open Manifold
 
 /-- Two `OpenPartialHomeomorph`s with equal underlying `PartialEquiv`s are `EqOnSource`. -/
 private lemma eqOnSource_of_eq_toPartialEquiv
-    {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
-    (a b : OpenPartialHomeomorph α β) (h : a.toPartialEquiv = b.toPartialEquiv) :
+    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (a b : OpenPartialHomeomorph X Y) (h : a.toPartialEquiv = b.toPartialEquiv) :
     a.EqOnSource b :=
   ⟨congr_arg PartialEquiv.source h, fun _ _ ↦ congr_fun (congr_arg PartialEquiv.toFun h) _⟩
 
