@@ -329,7 +329,6 @@ lemma ker_stabilizerHom :
   ext σ
   simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_ker_stabilizer_subtype :
     (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.inertia G := by
   simp [ker_stabilizerHom, Ideal.inertia_le_stabilizer]
