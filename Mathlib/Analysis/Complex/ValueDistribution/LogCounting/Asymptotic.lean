@@ -96,20 +96,18 @@ lemma zero_iff_logCounting_bounded [ProperSpace E]
     obtain ⟨c, hc⟩ := eventually_atTop.1
       (isLittleO_iff.1 (one_isLittleO_logCounting_single (e := e)) ha)
     let ℓ := 1 + max ‖e‖ (max |b| |c|)
-    have h₁ℓ : b < ℓ := by grind
-    have h₂ℓ : c ≤ ℓ := by grind
-    have h₃ℓ : 1 ≤ ℓ := by simp [ℓ]
-    have h₄ℓ : ℓ > ‖e‖ := by grind
+    have h₁ℓ : c ≤ ℓ := by grind
+    have h₂ℓ : 1 ≤ ℓ := by simp [ℓ]
     use 1 + ℓ, (show b ≤ 1 + ℓ by grind)
     calc 1
-      _ ≤ (a * |logCounting (single e 1) ℓ|) := by simpa [h₂ℓ.le] using hc ℓ
+      _ ≤ (a * |logCounting (single e 1) ℓ|) := by simpa [h₁ℓ] using hc ℓ
       _ ≤ (a * |logCounting D ℓ|) := by
         gcongr
-        · apply logCounting_nonneg (single_pos.2 Int.one_pos).le h₃ℓ
-        · apply logCounting_le he h₃ℓ
+        · apply logCounting_nonneg (single_pos.2 Int.one_pos).le h₂ℓ
+        · apply logCounting_le he h₂ℓ
       _ < a * |logCounting D (1 + ℓ)| := by
         gcongr 2
-        rw [abs_of_nonneg (logCounting_nonneg h h₃ℓ),
+        rw [abs_of_nonneg (logCounting_nonneg h h₂ℓ),
           abs_of_nonneg (logCounting_nonneg h (by grind))]
         apply logCounting_strictMono he <;> grind
 
