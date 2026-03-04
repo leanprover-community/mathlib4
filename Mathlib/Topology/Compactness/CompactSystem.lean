@@ -112,7 +112,7 @@ lemma isCompactSystem_iff_nonempty_iInter_of_lt (S : Set (Set α)) :
     IsCompactSystem S ↔
       ∀ C : ℕ → Set α, (∀ i, C i ∈ S) → (∀ n, (⋂ k < n, C k).Nonempty) → (⋂ i, C i).Nonempty := by
   simp_rw [IsCompactSystem.iff_nonempty_iInter]
-  refine ⟨fun h C hi h'↦ h C hi (fun n ↦ dissipate_eq_iInter_lt ▸ (h' (n + 1))),
+  refine ⟨fun h C hi h'↦ h C hi (fun n ↦ dissipate_eq_biInter_lt ▸ (h' (n + 1))),
     fun h C hi h' ↦ h C hi ?_⟩
   simp_rw [Set.nonempty_iff_ne_empty] at h' ⊢
   refine fun n g ↦ h' n ?_
@@ -134,7 +134,7 @@ theorem isCompactSystem_iff_directed (hpi : IsPiSystem S) :
       ∃ n, C n = ∅ := by
   rw [← isCompactSystem_insert_empty_iff]
   refine ⟨fun h ↦ fun C hdi hi ↦ ?_, fun h C h1 h2 ↦ ?_⟩
-  · rw [exists_dissipate_eq_empty_iff_of_directed C hdi]
+  · rw [exists_dissipate_eq_empty_iff_of_directed hdi]
     exact h C (by simp [hi])
   rw [← biInter_le_eq_iInter] at h2
   suffices (∀ n, dissipate C n ∈ S ∨ dissipate C n = ∅) ∧ (⋂ n, dissipate C n = ∅) by

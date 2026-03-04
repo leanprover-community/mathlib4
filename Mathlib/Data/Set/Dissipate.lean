@@ -86,7 +86,7 @@ theorem dissipate_succ (s : ℕ → Set α) (n : ℕ) :
 /-- For a directed set of sets `s : ℕ → Set α` and `n : ℕ`, there exists `m : ℕ` (maybe
 larger than `n`) such that `s m ⊆ dissipate s n`. -/
 lemma exists_subset_dissipate_of_directed {s : ℕ → Set α}
-  (hd : Directed (fun (x y : Set α) => y ⊆ x) s) (n : ℕ) : ∃ m, s m ⊆ dissipate s n := by
+  (hd : Directed (· ⊇ ·) s) (n : ℕ) : ∃ m, s m ⊆ dissipate s n := by
   induction n with
   | zero => use 0; simp [dissipate_def]
   | succ n hn =>
