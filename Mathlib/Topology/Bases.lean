@@ -98,7 +98,7 @@ theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : 
   refine le_antisymm (fun t ht ↦ ⟨{t}, by simpa using ht⟩) ?_
   rintro _ ⟨g, ⟨hg, hgs⟩, rfl⟩
   lift g to Finset (Set α) using hg
-  exact hsi.finiteInter_mem g hgs
+  exact hsi.sInter_finset_mem g hgs
 
 theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = generateFrom r)
     (hsi : ∀ ⦃s⦄, s ∈ r → ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) : IsTopologicalBasis (insert univ r) :=
