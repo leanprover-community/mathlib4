@@ -588,7 +588,8 @@ lemma comap_apply (f : V ≃ W) (G : SimpleGraph W) (v : V) :
     SimpleGraph.Iso.comap f G v = f v := rfl
 
 -- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
--- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.@[simp]
+-- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
+@[simp]
 lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
     (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
 
