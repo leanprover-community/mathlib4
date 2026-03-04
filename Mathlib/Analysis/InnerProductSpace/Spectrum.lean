@@ -234,7 +234,7 @@ private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
     exact Subtype.mk_eq_mk.symm
   · rw [Module.End.hasEigenvalue_iff.not_left.mp hμ, finrank_bot, Finset.card_filter_eq_zero_iff]
     intro i _ rfl
-    exact hμ (hasEigenvalue_unsortedEigenvalues hT hn i)
+    exact hμ (hT.hasEigenvalue_unsortedEigenvalues hn i)
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
