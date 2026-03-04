@@ -26,10 +26,9 @@ namespace TopCat
 
 variable {X : TopCat.{u}} {U : Opens X}
 
-set_option backward.isDefEq.respectTransparency false
-
+set_option backward.isDefEq.respectTransparency false in
 theorem Presheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Presheaf AddCommGrpCat.{u} X)}
-    {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) (hS : S.Exact) :
+    (hS : S.Exact) {s : S.X₂.obj (op U)} (h : S.g.app (op U) s = 0) :
     ∃(t : S.X₁.obj (op U)), S.f.app (op U) t = s := by
   dsimp [Presheaf] at S
   let F := (evaluation (Opens X)ᵒᵖ AddCommGrpCat.{u}).obj (op U)
@@ -44,10 +43,10 @@ lemma Presheaf.restrict_sum {V : Opens X} {F : Presheaf AddCommGrpCat X} (h : V 
   cat_disch
 
 lemma Sheaf.addCommGrpCat_shortExact_app_zero {S : ShortComplex (Sheaf AddCommGrpCat X)}
-    (s : S.X₂.val.obj (op U)) (h : S.g.val.app (op U) s = 0) (hS : S.Exact) (hf : Mono S.f) :
+    (hS : S.Exact) (s : S.X₂.val.obj (op U)) (h : S.g.val.app (op U) s = 0) (hf : Mono S.f) :
     ∃(t : S.X₁.val.obj (op U)), S.f.val.app (op U) t = s := by
   have := ((Functor.preservesFiniteLimits_tfae (forget AddCommGrpCat X)).out 1 3).mpr
     (inferInstanceAs (Limits.PreservesFiniteLimits (forget AddCommGrpCat X)))
-  exact Presheaf.addCommGrpCat_shortExact_app_zero h (this S ⟨hS, hf⟩).left
+  exact Presheaf.addCommGrpCat_shortExact_app_zero (this S ⟨hS, hf⟩).left h
 
 end TopCat

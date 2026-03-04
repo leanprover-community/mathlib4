@@ -112,8 +112,7 @@ lemma Under.R.chains_bounded (c : Set (Under g s)) (h : IsChain (R g s) c) :
   use ⟨iSup f, iSup_le <| fun j => j.1.le, t, eq_app_of_forall_eq ht _ (fun i => i.val.app_s)⟩
   exact fun a ha => ⟨_, ht ⟨a, ha⟩⟩
 
-set_option backward.isDefEq.respectTransparency false
-
+set_option backward.isDefEq.respectTransparency false in
 /-- Given a short exact sequence of sheaves, `0 ⟶ 𝓕 ⟶ 𝓖 ⟶ 𝓗 ⟶ 0`, if `𝓕` is flasque then
 `𝓖(U) ⟶ 𝓗(U)` is surjective, for any open `U`. -/
 theorem epi_of_shortExact {S : ShortComplex (Sheaf AddCommGrpCat X)} (hS : S.ShortExact)
