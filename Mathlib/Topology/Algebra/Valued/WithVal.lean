@@ -503,15 +503,9 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   · rw [restrict_pos_iff, hv, h.pos_iff]
     exact hs₀
 
--- open Pointwise
--- #synth SemilatticeSup (Set Γ₀)
--- #check sSup (Set.univ : (Set Γ₀))
--- #check LinearOrderedCommMonoidWithZero.toLinearOrder.toMin
--- lemma temp (γ : Γ₀) : γ = WellFounded.sup _ (Set.univ : (Set Γ₀)) _ := sorry
-
 def bar (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
   rintro ⟨g, hg_mem⟩
-  have := (mem_valueGroup_iff_of_comm' (f := v.toMonoidWithZeroHom) (y := g)).mp hg_mem
+  have := (mem_valueGroup_iff_of_comm (f := v) (y := g)).mp hg_mem
   let ⟨ha, ha'⟩ := this.choose_spec
   let H := ha'.choose_spec
   set b := ha'.choose with hb_def
@@ -529,18 +523,26 @@ def bar (h : v.IsEquiv w) : valueGroup v → valueGroup w := by
     rwa [hg₀']
   let g' := Units.mk0 g₀' hg₀'_ne_zero
   use g'
-  apply (mem_valueGroup_iff_of_comm' (f := w.toMonoidWithZeroHom) (y := g')).mpr
+  apply (mem_valueGroup_iff_of_comm (f := w) (y := g')).mpr
   refine ⟨a, hwa, b, ?_⟩
   exact hg₀'
 
 def IsEquiv.valueGroup_MulOrderIso (h : v.IsEquiv w) : valueGroup v ≃*o valueGroup w := by sorry
 
-def IsEquiv.ValueGroup₀_MulOrderIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w := by sorry
+def IsEquiv.ValueGroup₀_MulOrderIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w := by
+  sorry -- just the `WithZero` of the above
 
+lemma IsEquiv.ValueGroup₀_MulOrderIso_spec (h : v.IsEquiv w) (a : R) :
+    w.restrict a = h.ValueGroup₀_MulOrderIso (v.restrict a) := sorry
+
+lemma IsEquiv.ValueGroup₀_MulOrderIso_symm (h : v.IsEquiv w) (x : (ValueGroup₀ w)) :
+    h.ValueGroup₀_MulOrderIso.symm x = h.symm.ValueGroup₀_MulOrderIso x := sorry
 
 lemma foo (h : v.IsEquiv w) :
     @UniformContinuous R R (Valued.mk' w).toUniformSpace (Valued.mk' v).toUniformSpace
       (RingHom.id R) := by
+  have h_res : v.restrict.IsEquiv w.restrict := h.restrict
+  have h_val : ((Valued.mk' v).v).IsEquiv (Valued.mk' w).v := h
   refine @uniformContinuous_of_continuousAt_zero _ _ (Valued.mk' w).toUniformSpace _ _
     _ (Valued.mk' v).toUniformSpace _ _ _ _ (RingHom.id R) ?_
   simp_rw [ContinuousAt, map_zero, (Valued.hasBasis_nhds_zero _ _).tendsto_iff
@@ -548,17 +550,19 @@ lemma foo (h : v.IsEquiv w) :
   intro x
   let u := WithZero.unzero (Units.ne_zero x)
   obtain ⟨a, ha, y, hu⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
-  simp
-  let z := (IsEquiv.ValueGroup₀_MulOrderIso h) x.1
-  have hz_ne_zero : z ≠ 0 := sorry
-  let u := Units.mk0 z hz_ne_zero
-  use u
+  simp only [Set.mem_setOf_eq, RingHom.id_apply]
+  set y₀ := ((h_val).ValueGroup₀_MulOrderIso x) with hy₀_def
+  have hy₀_ne_zer0 : y₀ ≠ 0 := by
+
+  set y := (Units.mk0 y₀ hy₀_ne_zer0) with hy_def
+  use y
   intro a ha
-
-
-  --let γ : valueGroup (Valued.mk' w).v := ⟨u.1, by sorry⟩
-
-  sorry
+  rw [(h_val.symm).ValueGroup₀_MulOrderIso_spec a]
+  erw [← (h_val.symm.ValueGroup₀_MulOrderIso).toOrderIso.lt_symm_apply]
+  convert ha
+  rw [hy_def]
+  erw [IsEquiv.ValueGroup₀_MulOrderIso_symm]
+  rfl
 
 -- **FAE** instance : Valued (WithVal v) Γ₀ := Valued.mk' (valuation v)
 theorem IsEquiv.uniformContinuous_congr (h : v.IsEquiv w) :

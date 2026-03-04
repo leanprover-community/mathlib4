@@ -251,10 +251,10 @@ theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
       use a
     · apply mem_valueGroup
       use x
-
-theorem mem_valueGroup_iff_of_comm' {y : Bˣ} (f : A →*₀ B) :
-    y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
-  apply mem_valueGroup_iff_of_comm
+--
+-- theorem mem_valueGroup_iff_of_comm' {y : Bˣ} (f : A →*₀ B) :
+--     y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
+--   apply mem_valueGroup_iff_of_comm
 
 instance : CommGroupWithZero (ValueGroup₀ f) where
 
