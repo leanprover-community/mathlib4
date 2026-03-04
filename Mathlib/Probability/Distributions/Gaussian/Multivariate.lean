@@ -186,8 +186,13 @@ instance isProbabilityMeasure_stdGaussian : IsProbabilityMeasure (stdGaussian E)
 
 @[simp]
 lemma integral_id_stdGaussian : ∫ x, x ∂(stdGaussian E) = 0 := by
-  rw [stdGaussian, integral_map _ (by fun_prop)]
-  swap; · exact (Finset.measurable_sum _ (by fun_prop)).aemeasurable
+  rw [stdGaussian, integral_map _ (by fun_prop), integral_finset_sum]
+  rotate_left
+  · refine fun i _ ↦ Integrable.smul_const ?_ _
+    convert integrable_comp_eval (i := i) (f := id) ?_
+    · infer_instance
+    · exact IsGaussian.integrable_id
+  · exact (Finset.measurable_sum _ (by fun_prop)).aemeasurable
   rw [integral_finset_sum]
   swap
   · refine fun i _ ↦ Integrable.smul_const ?_ _
@@ -354,7 +359,7 @@ lemma covarianceBilin_multivariateGaussian (hS : S.PosSemidef) :
     ContinuousLinearMap.adjoint_inner_left, IsSelfAdjoint.adjoint_eq]
   · rw [← ContinuousLinearMap.comp_apply, ← ContinuousLinearMap.mul_def, ← map_mul,
       CFC.sqrt_mul_sqrt_self _ hS.nonneg, inner_toEuclideanCLM]
-    simp [dotProduct, mulVec, Finset.mul_sum, mul_assoc]
+    simp [Matrix.toBilin_apply, dotProduct, mulVec, Finset.mul_sum, mul_assoc]
   · exact (CFC.sqrt_nonneg S).isSelfAdjoint.map _
   · exact IsGaussian.memLp_two_id
 
@@ -364,7 +369,7 @@ lemma covariance_eval_multivariateGaussian (hS : S.PosSemidef) (i j : ι) :
   have (i : ι) : (fun x : EuclideanSpace ℝ ι ↦ x i) =
       fun x ↦ ⟪EuclideanSpace.basisFun ι ℝ i, x⟫ := by ext; simp [PiLp.inner_apply]
   rw [this, this, ← covarianceBilin_apply_eq_cov, covarianceBilin_multivariateGaussian hS,
-    LinearMap.toCLM₂_apply, ← OrthonormalBasis.coe_toBasis, Matrix.toBilin_]
+    LinearMap.toCLM₂_apply, ← OrthonormalBasis.coe_toBasis, Matrix.toBilin_apply_basis]
   exact IsGaussian.memLp_two_id
 
 lemma variance_eval_multivariateGaussian (hS : S.PosSemidef) (i : ι) :
@@ -383,12 +388,12 @@ lemma hasLaw_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
 
 lemma charFun_multivariateGaussian (hS : S.PosSemidef) (x : EuclideanSpace ℝ ι) :
     charFun (multivariateGaussian μ S) x =
-      Complex.exp (⟪x, μ⟫ * Complex.I
-        - ContinuousLinearMap.ofMatrix S (EuclideanSpace.basisFun ι ℝ).toBasis x x / 2) := by
+      Complex.exp (⟪x, μ⟫ * Complex.I - x ⬝ᵥ S *ᵥ x / 2) := by
   rw [IsGaussian.charFun_eq']
   congr
   · exact integral_id_multivariateGaussian
-  · exact covarianceBilin_multivariateGaussian hS
+  · rw [covarianceBilin_multivariateGaussian hS, LinearMap.toCLM₂_apply]
+    simp [toBilin_apply, dotProduct, mulVec, Finset.mul_sum, mul_assoc]
 
 /-- `Finset.restrict₂` as a continuous linear map. -/
 def _root_.Finset.restrict₂CLM {ι : Type*} (R : Type*) {M : ι → Type*} [Semiring R]
@@ -452,7 +457,7 @@ lemma measurePreserving_restrict_multivariateGaussian (hS : S.PosSemidef) (hJI :
           EuclideanSpace.restrict₂ hJI = fun u ↦ u ⟨i.1, hJI i.2⟩ := by ext; simp [PiLp.inner_apply]
       simp_rw [this, covariance_eval_multivariateGaussian hS,
         covarianceBilin_multivariateGaussian (hS.submatrix _),
-        ContinuousLinearMap.ofMatrix_basis, S.submatrix_apply]
+        LinearMap.toCLM₂_apply, Matrix.toBilin_apply_basis, S.submatrix_apply]
     any_goals exact Measurable.aestronglyMeasurable (by fun_prop)
     · fun_prop
     · exact IsGaussian.memLp_two_id
