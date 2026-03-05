@@ -11,7 +11,7 @@ public import Mathlib.Topology.Algebra.Module.StrongTopology
 /-!
 # Building continuous bilinear maps in finite dimensions over complete fields
 
-Given a complete nontrivially normed field `𝕜` and finite dimension T₂ topological vector spaces
+Given a complete nontrivially normed field `𝕜` and finite dimensional T₂ topological vector spaces
 over `𝕜`, this file builds a continuous bilinear map from any bilinear function.
 
 This applies in particular to evaluation of linear maps between such spaces.
@@ -47,7 +47,7 @@ lemma LinearMap.toContinuousBilinearMap_apply (f : E →ₗ[𝕜] F →ₗ[𝕜]
   vector spaces over a complete field. -/
 def IsBilinearMap.toContinuousBilinearMap
     {f : E → F → G} (h : IsBilinearMap 𝕜 f) : E →L[𝕜] F →L[𝕜] G :=
-  h.toLinearMap |>.toContinuousBilinearMap
+  h.toLinearMap.toContinuousBilinearMap
 
 @[simp]
 lemma IsBilinearMap.toContinuousBilinearMap_apply {f : E → F → G} (h : IsBilinearMap 𝕜 f)
@@ -60,7 +60,7 @@ case of finite dimensional topological vector spaces over a complete field.
 See also `ContinuousLinearMap.apply` for the case of normed spaces.
 
 TODO: generalize the two constructions in the setting of maps from a bornological space to a locally
-convex one, or define a `NormableSpace` class to deduce this case from the normed case:
+convex one, or define a `NormableSpace` class to deduce this case from the normed case.
 -/
 def ContinuousLinearMap.evalL : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F :=
   LinearMap.toContinuousLinearMap.symm.toLinearMap |>.flip |>.toContinuousBilinearMap
