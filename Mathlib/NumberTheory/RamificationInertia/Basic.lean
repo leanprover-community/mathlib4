@@ -280,7 +280,7 @@ theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S]
   rw [Ideal.dvd_iff_le, Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at h
   exact ((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le (isPrime_of_prime hv.prime).ne_top h
 
-theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [Algebra R S]
+private theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [Algebra R S]
     [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {p : Ideal R}
     (hv : Irreducible v) (hp : Prime p) (hw : Irreducible w) (hw_bot : w ≠ ⊥)
     [w.LiesOver v] : emultiplicity w (p.map (algebraMap R S)) =
@@ -290,7 +290,7 @@ theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [
   · simp [hvp, (FiniteMultiplicity.of_prime_left hp hp.ne_zero).emultiplicity_self,
       ramificationIdx_eq_normalizedFactors_count hp_bot (isPrime_of_prime hw.prime) hw_bot,
       emultiplicity_eq_count_normalizedFactors hw hp_bot]
-  · rw [emultiplicity_eq_zero_of_ne hv hp.irreducible hvp hp.ne_zero, mul_zero,
+  · rw [emultiplicity_eq_zero_of_ne hv hp.irreducible hvp, mul_zero,
       emultiplicity_map_eq_zero_of_ne hv hp hvp]
 
 /-- If `v` is an irreducible ideal of `R`, `w` is an irreducible ideal of `S` lying over `v`, and
