@@ -490,7 +490,7 @@ lemma isContinuous [G.IsLocallyFaithful K] (Hp : CoverPreserving J K G) : G.IsCo
 
 instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
-  map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.Hom.ext <| sheafHom_restrict_eq α.hom⟩
+  map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.hom_ext <| sheafHom_restrict_eq α.hom⟩
 
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where

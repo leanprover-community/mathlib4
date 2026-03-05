@@ -237,7 +237,7 @@ def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
     CreatesColimit F (sheafToPresheaf J D) :=
   createsColimitOfReflectsIso fun E hE =>
     { liftedCocone := ⟨⟨E.pt, h _ hE⟩,
-        ⟨fun _ => ⟨E.ι.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.ι.naturality _⟩⟩
+        ⟨fun _ => ⟨E.ι.app _⟩, fun _ _ _ => Sheaf.hom_ext <| E.ι.naturality _⟩⟩
       validLift := Cocones.ext (eqToIso rfl) fun j => by simp
       makesColimit :=
         { desc := fun S => ⟨hE.desc ((sheafToPresheaf J D).mapCocone S)⟩

@@ -53,7 +53,7 @@ lemma comp_val {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[ext]
 lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
     f = g := by
-  apply Sheaf.Hom.ext
+  apply Sheaf.hom_ext
   ext
   exact h _
 

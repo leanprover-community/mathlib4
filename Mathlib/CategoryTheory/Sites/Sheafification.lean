@@ -190,7 +190,7 @@ theorem sheafifyLift_unique {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (hQ : Presheaf.
   rw [sheafifyLift]
   let γ' : (presheafToSheaf J D).obj P ⟶ ⟨Q, hQ⟩ := ⟨γ⟩
   change γ'.hom = _
-  rw [← Sheaf.Hom.ext_iff, ← Adjunction.homEquiv_apply_eq, Adjunction.homEquiv_unit]
+  rw [← Sheaf.hom_ext_iff, ← Adjunction.homEquiv_apply_eq, Adjunction.homEquiv_unit]
   exact h
 
 @[simp]

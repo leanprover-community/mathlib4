@@ -251,7 +251,7 @@ noncomputable def Scheme.Modules.fromTildeΓNatTrans :
   app := fromTildeΓ
   naturality {M N} f := by
     apply SpecModulesToSheafFullyFaithful.map_injective
-    apply CategoryTheory.Sheaf.Hom.ext
+    apply CategoryTheory.Sheaf.hom_ext
     apply (TopCat.Sheaf.restrictHomEquivHom _ _ PrimeSpectrum.isBasis_basic_opens).symm.injective
     ext r : 3
     apply IsLocalizedModule.ext (.powers (M := R) r.unop)
@@ -282,7 +282,7 @@ def tilde.adjunction : tilde.functor R ⊣ moduleSpecΓFunctor where
   counit := fromTildeΓNatTrans
   left_triangle_components M := by
     apply SpecModulesToSheafFullyFaithful.map_injective
-    apply CategoryTheory.Sheaf.Hom.ext
+    apply CategoryTheory.Sheaf.hom_ext
     apply (TopCat.Sheaf.restrictHomEquivHom _ _ PrimeSpectrum.isBasis_basic_opens).symm.injective
     ext r : 3
     apply IsLocalizedModule.ext (.powers (M := R) r.unop)

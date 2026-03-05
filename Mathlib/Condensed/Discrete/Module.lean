@@ -128,7 +128,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
     simp only [← assoc]
     congr 1
     rw [← Iso.comp_inv_eq]
-    apply Sheaf.Hom.ext
+    apply Sheaf.hom_ext
     simp [functorIsoDiscreteAux₂, ← Functor.map_comp]
     rfl
 
@@ -244,7 +244,7 @@ noncomputable def functorIsoDiscrete : functor R ≅ discrete _ :=
     simp only [← assoc]
     congr 1
     rw [← Iso.comp_inv_eq]
-    apply Sheaf.Hom.ext
+    apply Sheaf.hom_ext
     simp [functorIsoDiscreteAux₂, ← Functor.map_comp]
     rfl
 

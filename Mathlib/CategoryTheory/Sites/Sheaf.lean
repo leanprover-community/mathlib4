@@ -312,11 +312,11 @@ lemma Sheaf.cond (F : Sheaf J A) : Presheaf.IsSheaf J F.obj := F.property
 @[deprecated (since := "2026-03-03")]
 alias Sheaf.Hom.mk := ObjectProperty.homMk
 
-lemma Sheaf.Hom.ext_iff {F G : Sheaf J A} {f g : F ⟶ G} :
+lemma Sheaf.hom_ext_iff {F G : Sheaf J A} {f g : F ⟶ G} :
     f = g ↔ f.hom = g.hom := by
   cat_disch
 
-lemma Sheaf.Hom.ext {F G : Sheaf J A} {f g : F ⟶ G} (h : f.hom = g.hom) :
+lemma Sheaf.hom_ext {F G : Sheaf J A} {f g : F ⟶ G} (h : f.hom = g.hom) :
     f = g := by
   cat_disch
 

@@ -68,7 +68,7 @@ lemma comp_val {X Y Z : Condensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g)
 @[ext]
 lemma hom_ext {X Y : Condensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :
     f = g := by
-  apply Sheaf.Hom.ext
+  apply Sheaf.hom_ext
   ext
   exact h _
 
