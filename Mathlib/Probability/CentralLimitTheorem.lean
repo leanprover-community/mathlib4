@@ -8,6 +8,7 @@ module
 public import Mathlib.Probability.Distributions.Gaussian.Real
 public import Mathlib.Probability.IdentDistrib
 public import Mathlib.MeasureTheory.Function.ConvergenceInDistribution
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
 public import Mathlib.MeasureTheory.Measure.LevyConvergence
 public import Mathlib.Probability.Independence.CharacteristicFunction
 
@@ -27,14 +28,13 @@ set_option backward.isDefEq.respectTransparency false
 lemma tendsto_pow_exp_of_isLittleO {f : ℕ → ℂ} (t : ℂ)
     (hf : (fun n ↦ f n - (1 + t / n)) =o[atTop] fun n ↦ 1 / (n : ℝ)) :
     Tendsto (fun n ↦ f n ^ n) atTop (𝓝 (exp t)) := by
-  let g n := f n - 1
-  have fg n : f n = 1 + g n := by ring
-  simp_rw [fg, add_sub_add_left_eq_sub] at hf ⊢
-  apply tendsto_one_add_pow_exp_of_tendsto
-  rw [← tendsto_sub_nhds_zero_iff]
-  apply hf.tendsto_inv_smul_nhds_zero.congr'
+  rw [show (fun n ↦ f n ^ n) = (fun n ↦ (1 + (f n - 1)) ^ n) by ext; simp]
+  refine tendsto_one_add_pow_exp_of_tendsto (tendsto_sub_nhds_zero_iff.1 ?_)
+  convert hf.tendsto_inv_smul_nhds_zero.congr' ?_
   filter_upwards [eventually_ne_atTop 0] with n h0
-  simpa [mul_sub] using mul_div_cancel₀ t (mod_cast h0)
+  simp
+  field_simp [n.cast_ne_zero.2 h0]
+  ring
 
 lemma tendsto_sqrt_atTop : Tendsto (√·) atTop atTop := by
   simp_rw [Real.sqrt_eq_rpow]
@@ -77,8 +77,7 @@ lemma charFun_sqrt_inv_mul_sum (hindep : iIndepFun X P)
   · simp [fun i ↦ (hident i).map_eq]
   · exact Finset.aemeasurable_fun_sum _ fun _ _ ↦ mX _
 
-lemma taylor_charFun_two {X : Ω → ℝ} (hX : Measurable X) {P : Measure Ω} [IsProbabilityMeasure P]
-    (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) :
+lemma taylor_charFun_two {X : Ω → ℝ} (hX : AEMeasurable X P) (h0 : P[X] = 0) (h1 : P[X ^ 2] = 1) :
     (fun t ↦ charFun (P.map X) t - (1 - t ^ 2 / 2)) =o[𝓝 0] fun t ↦ t ^ 2 := by
   simp_rw [← taylorWithinEval_charFun_two_zero' (by fun_prop) h0 h1]
   convert taylor_isLittleO_univ ?_
@@ -96,46 +95,23 @@ theorem central_limit {Y : Ω → ℝ} (hY : HasLaw Y (gaussianReal 0 1) P) (h0 
   forall_aemeasurable n :=
     .const_mul (Finset.aemeasurable_fun_sum _ fun _ _ ↦ (hident _).aemeasurable_fst) _
   tendsto := by
-    refine ProbabilityMeasure.tendsto_iff_tendsto_charFun.mpr fun t ↦ ?_
-    rw! [hY.map_eq, ProbabilityMeasure.coe_mk, charFun_gaussianReal]
-    simp only [Real.sqrt_inv, ProbabilityMeasure.coe_mk, ofReal_zero, mul_zero, zero_mul,
-      NNReal.coe_one, ofReal_one, one_mul, zero_sub]
-    -- `⊢ Tendsto (fun n ↦ charFun (P.map (invSqrtMulSum X n)) t) atTop (𝓝 (cexp (-(t ^ 2 / 2))))`
-
-    -- use existing results to rewrite the charFun
-    simp_rw [charFun_sqrt_inv_mul_sum hindep hident]
+    refine ProbabilityMeasure.tendsto_iff_tendsto_charFun.2 fun t ↦ ?_
+    rw! [hY.map_eq]
+    simp only [Real.sqrt_inv, ProbabilityMeasure.coe_mk, charFun_sqrt_inv_mul_sum hindep hident,
+      charFun_gaussianReal, ofReal_zero, mul_zero, zero_mul, NNReal.coe_one, ofReal_one, one_mul,
+      zero_sub]
     apply tendsto_pow_exp_of_isLittleO
-    rw [← tendsto_sub_nhds_zero_iff]
-
-    -- apply tendsto_pow_exp_of_isLittleO; suffices to show the base is (1 - t ^ 2 / 2n + o(1 / n))
-    norm_cast
-    rw [ofReal_exp]
-    apply tendsto_pow_exp_of_isLittleO
-
-    suffices (fun (n : ℕ) ↦
-          charFun (Measure.map (X 0) P) ((√n)⁻¹ * t) - (1 + (-(((√n)⁻¹ * t) ^ 2 / 2) : ℂ)))
-        =o[atTop] fun n ↦ ((√n)⁻¹ * t) ^ 2 by
-      simp_rw [mul_comm _ t] at this ⊢
-      simp_rw [mul_pow] at this
-      convert this.of_const_mul_right (c := t ^ 2) using 3 with n
-      · simp only [ofReal_neg, ofReal_div, ofReal_ofNat, ofReal_inv, inv_pow, ← ofReal_pow,
-          Nat.cast_nonneg, Real.sq_sqrt, ofReal_natCast, add_right_inj]
-        ring
-      · simp
-
-    have h_taylor : (fun t ↦ charFun (Measure.map (X 0) P) t - (1 - t ^ 2 / 2))
-        =o[𝓝 0] fun t ↦ t ^ 2 := taylor_charFun_two (hX 0) h0 h1
-
+    suffices (fun (n : ℕ) ↦ charFun (Measure.map (X 0) P) ((√n)⁻¹ * t) -
+        (1 + (-(((√n)⁻¹ * t) ^ 2 / 2) : ℂ))) =o[atTop] fun n ↦ ((√n)⁻¹ * t) ^ 2 by
+      refine .of_const_mul_right (c := t ^ 2) ?_
+      convert this using 4 with n <;> norm_cast <;> simp [field]
+    have := taylor_charFun_two (hident 0).aemeasurable_fst h0 h1
     have h_tendsto : Tendsto (fun (n : ℕ) ↦ (√n)⁻¹ * t) atTop (𝓝 0) := by
-      have t_mul_inv_sqrt := Tendsto.const_mul t <| tendsto_inv_atTop_zero.comp <|
-          tendsto_sqrt_atTop.comp <| tendsto_natCast_atTop_atTop
-      rw [mul_zero] at t_mul_inv_sqrt
-      convert t_mul_inv_sqrt using 2 with n
-      simp only [Function.comp_apply]
-      ring
-
-    convert h_taylor.comp_tendsto h_tendsto using 2 with n n
-    simp only [ofReal_inv, Function.comp_apply, ofReal_mul]
-    ring_nf
+      rw [← zero_mul t]
+      exact .mul_const t (tendsto_inv_atTop_zero.comp <| tendsto_sqrt_atTop.comp <|
+        tendsto_natCast_atTop_atTop)
+    convert (taylor_charFun_two (hident 0).aemeasurable_fst h0 h1).comp_tendsto h_tendsto using 2
+    simp
+    ring
 
 end ProbabilityTheory
