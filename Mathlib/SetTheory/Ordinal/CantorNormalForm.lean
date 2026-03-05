@@ -384,13 +384,6 @@ theorem eval_coeff (b o : Ordinal) : eval b (coeff b o) = o := by
   · exact (CNF.sortedGT b o).sortedGE.pairwise
   · exact (CNF.sortedGT b o).nodup
 
-theorem coeff_injective (b : Ordinal) : Function.Injective (coeff b) :=
-  Function.LeftInverse.injective (eval_coeff b)
-
-@[simp]
-theorem coeff_inj {b x y : Ordinal} : coeff b x = coeff b y ↔ x = y :=
-  (coeff_injective b).eq_iff
-
 theorem coeff_eval {b : Ordinal} {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e < b) :
     coeff b (eval b f) = f := by
   induction f using Finsupp.induction_on_max with
@@ -408,5 +401,12 @@ theorem coeff_eval {b : Ordinal} {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e <
       rw [add_apply, single_eq_same, notMem_support_iff.1, add_zero]
       exact fun h ↦ (hf' _ h).false
     · exact eval_lt IH' hf'
+
+theorem coeff_injective (b : Ordinal) : Function.Injective (coeff b) :=
+  Function.LeftInverse.injective (eval_coeff b)
+
+@[simp]
+theorem coeff_inj {b x y : Ordinal} : coeff b x = coeff b y ↔ x = y :=
+  (coeff_injective b).eq_iff
 
 end Ordinal.CNF
