@@ -276,7 +276,7 @@ def inducedOrderRingHom : α →+*o β :=
       refine fun x hx => csSup_eq_of_forall_le_of_forall_lt_exists_gt (cutMap_nonempty β _) ?_ ?_
       · exact le_inducedMap_mul_self_of_mem_cutMap hx
       · exact exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self hx)
-      (two_ne_zero) (inducedMap_one _ _) with
+          two_ne_zero (inducedMap_one _ _) with
     monotone' := inducedMap_mono _ _ }
 
 /-- The isomorphism of ordered rings between two conditionally complete linearly ordered fields. -/

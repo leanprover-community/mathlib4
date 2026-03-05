@@ -184,75 +184,74 @@ structure TM2ComputableAux (Γ₀ Γ₁ : Type) where
   outputAlphabet : tm.Γ tm.k₁ ≃ Γ₁
 
 /-- A Turing machine + a proof it outputs `f`. -/
-structure TM2Computable {α β : Type} (ea : FinEncoding α) (eb : FinEncoding β) (f : α → β) extends
-  TM2ComputableAux ea.Γ eb.Γ where
+structure TM2Computable {α β αΓ βΓ : Type} (ea : α → List αΓ) (eb : β → List βΓ) (f : α → β) extends
+  TM2ComputableAux αΓ βΓ where
   /-- a proof this machine outputs `f` -/
   outputsFun :
     ∀ a,
-      TM2Outputs tm (List.map inputAlphabet.invFun (ea.encode a))
-        (Option.some ((List.map outputAlphabet.invFun) (eb.encode (f a))))
+      TM2Outputs tm (List.map inputAlphabet.invFun (ea a))
+        (Option.some ((List.map outputAlphabet.invFun) (eb (f a))))
 
 /-- A Turing machine + a time function +
 a proof it outputs `f` in at most `time(input.length)` steps. -/
-structure TM2ComputableInTime {α β : Type} (ea : FinEncoding α) (eb : FinEncoding β)
-  (f : α → β) extends TM2ComputableAux ea.Γ eb.Γ where
+structure TM2ComputableInTime {α β αΓ βΓ : Type} (ea : α → List αΓ) (eb : β → List βΓ)
+  (f : α → β) extends TM2ComputableAux αΓ βΓ where
   /-- a time function -/
   time : ℕ → ℕ
   /-- proof this machine outputs `f` in at most `time(input.length)` steps -/
   outputsFun :
     ∀ a,
-      TM2OutputsInTime tm (List.map inputAlphabet.invFun (ea.encode a))
-        (Option.some ((List.map outputAlphabet.invFun) (eb.encode (f a))))
-        (time (ea.encode a).length)
+      TM2OutputsInTime tm (List.map inputAlphabet.invFun (ea a))
+        (Option.some ((List.map outputAlphabet.invFun) (eb (f a))))
+        (time (ea a).length)
 
 /-- A Turing machine + a polynomial time function +
 a proof it outputs `f` in at most `time(input.length)` steps. -/
-structure TM2ComputableInPolyTime {α β : Type} (ea : FinEncoding α) (eb : FinEncoding β)
-  (f : α → β) extends TM2ComputableAux ea.Γ eb.Γ where
+structure TM2ComputableInPolyTime {α β αΓ βΓ : Type} (ea : α → List αΓ) (eb : β → List βΓ)
+  (f : α → β) extends TM2ComputableAux αΓ βΓ where
   /-- a polynomial time function -/
   time : Polynomial ℕ
   /-- proof that this machine outputs `f` in at most `time(input.length)` steps -/
   outputsFun :
     ∀ a,
-      TM2OutputsInTime tm (List.map inputAlphabet.invFun (ea.encode a))
-        (Option.some ((List.map outputAlphabet.invFun) (eb.encode (f a))))
-        (time.eval (ea.encode a).length)
+      TM2OutputsInTime tm (List.map inputAlphabet.invFun (ea a))
+        (Option.some ((List.map outputAlphabet.invFun) (eb (f a))))
+        (time.eval (ea a).length)
 
 /-- A forgetful map, forgetting the time bound on the number of steps. -/
-def TM2ComputableInTime.toTM2Computable {α β : Type} {ea : FinEncoding α} {eb : FinEncoding β}
+def TM2ComputableInTime.toTM2Computable {α β αΓ βΓ : Type} {ea : α → List αΓ} {eb : β → List βΓ}
     {f : α → β} (h : TM2ComputableInTime ea eb f) : TM2Computable ea eb f :=
   ⟨h.toTM2ComputableAux, fun a => TM2OutputsInTime.toTM2Outputs (h.outputsFun a)⟩
 
 /-- A forgetful map, forgetting that the time function is polynomial. -/
-def TM2ComputableInPolyTime.toTM2ComputableInTime {α β : Type} {ea : FinEncoding α}
-    {eb : FinEncoding β} {f : α → β} (h : TM2ComputableInPolyTime ea eb f) :
+def TM2ComputableInPolyTime.toTM2ComputableInTime {α β αΓ βΓ : Type} {ea : α → List αΓ}
+    {eb : β → List βΓ} {f : α → β} (h : TM2ComputableInPolyTime ea eb f) :
     TM2ComputableInTime ea eb f :=
   ⟨h.toTM2ComputableAux, fun n => h.time.eval n, h.outputsFun⟩
 
 open Turing.TM2.Stmt
 
 /-- A Turing machine computing the identity on α. -/
-def idComputer {α : Type} (ea : FinEncoding α) : FinTM2 where
+def idComputer (αΓ : Type) [Fintype αΓ] : FinTM2 where
   K := Unit
   k₀ := ⟨⟩
   k₁ := ⟨⟩
-  Γ _ := ea.Γ
+  Γ _ := αΓ
   Λ := Unit
   main := ⟨⟩
   σ := Unit
   initialState := ⟨⟩
-  Γk₀Fin := ea.ΓFin
   m _ := halt
 
 instance inhabitedFinTM2 : Inhabited FinTM2 :=
-  ⟨idComputer Computability.inhabitedFinEncoding.default⟩
+  ⟨idComputer Bool⟩
 
 noncomputable section
 
 /-- A proof that the identity map on α is computable in polytime. -/
-def idComputableInPolyTime {α : Type} (ea : FinEncoding α) :
-    @TM2ComputableInPolyTime α α ea ea id where
-  tm := idComputer ea
+def idComputableInPolyTime {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
+    @TM2ComputableInPolyTime α α αΓ αΓ ea ea id where
+  tm := idComputer αΓ
   inputAlphabet := Equiv.cast rfl
   outputAlphabet := Equiv.cast rfl
   time := 1
@@ -262,18 +261,18 @@ def idComputableInPolyTime {α : Type} (ea : FinEncoding α) :
       steps_le_m := by simp only [Polynomial.eval_one, le_refl] }
 
 instance inhabitedTM2ComputableInPolyTime :
-    Inhabited (TM2ComputableInPolyTime (default : FinEncoding Bool) default id) :=
-  ⟨idComputableInPolyTime Computability.inhabitedFinEncoding.default⟩
+    Inhabited (TM2ComputableInPolyTime encodeBool encodeBool id) :=
+  ⟨idComputableInPolyTime encodeBool⟩
 
 instance inhabitedTM2OutputsInTime :
     Inhabited
-      (TM2OutputsInTime (idComputer finEncodingBoolBool) (List.map (Equiv.cast rfl).invFun [false])
+      (TM2OutputsInTime (idComputer Bool) (List.map (Equiv.cast rfl).invFun [false])
         (some (List.map (Equiv.cast rfl).invFun [false])) (Polynomial.eval 1 1)) :=
-  ⟨(idComputableInPolyTime finEncodingBoolBool).outputsFun false⟩
+  ⟨(idComputableInPolyTime encodeBool).outputsFun false⟩
 
 instance inhabitedTM2Outputs :
     Inhabited
-      (TM2Outputs (idComputer finEncodingBoolBool) (List.map (Equiv.cast rfl).invFun [false])
+      (TM2Outputs (idComputer Bool) (List.map (Equiv.cast rfl).invFun [false])
         (some (List.map (Equiv.cast rfl).invFun [false]))) :=
   ⟨TM2OutputsInTime.toTM2Outputs Turing.inhabitedTM2OutputsInTime.default⟩
 
@@ -285,23 +284,25 @@ instance inhabitedTM2EvalsTo : Inhabited (EvalsTo (fun _ : Unit => some ⟨⟩) 
   ⟨EvalsTo.refl _ _⟩
 
 /-- A proof that the identity map on α is computable in time. -/
-def idComputableInTime {α : Type} (ea : FinEncoding α) : @TM2ComputableInTime α α ea ea id :=
+def idComputableInTime {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
+    @TM2ComputableInTime α α αΓ αΓ ea ea id :=
   TM2ComputableInPolyTime.toTM2ComputableInTime <| idComputableInPolyTime ea
 
 instance inhabitedTM2ComputableInTime :
-    Inhabited (TM2ComputableInTime finEncodingBoolBool finEncodingBoolBool id) :=
-  ⟨idComputableInTime Computability.inhabitedFinEncoding.default⟩
+    Inhabited (TM2ComputableInTime encodeBool encodeBool id) :=
+  ⟨idComputableInTime encodeBool⟩
 
 /-- A proof that the identity map on α is computable. -/
-def idComputable {α : Type} (ea : FinEncoding α) : @TM2Computable α α ea ea id :=
+def idComputable {α αΓ : Type} [Fintype αΓ] (ea : α → List αΓ) :
+    @TM2Computable α α αΓ αΓ ea ea id :=
   TM2ComputableInTime.toTM2Computable <| idComputableInTime ea
 
 instance inhabitedTM2Computable :
-    Inhabited (TM2Computable finEncodingBoolBool finEncodingBoolBool id) :=
-  ⟨idComputable Computability.inhabitedFinEncoding.default⟩
+    Inhabited (TM2Computable encodeBool encodeBool id) :=
+  ⟨idComputable encodeBool⟩
 
 instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
-  ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
+  ⟨(default : TM2Computable encodeBool encodeBool id).toTM2ComputableAux⟩
 
 /--
 For any two polynomial time Multi-tape Turing Machines,
@@ -312,8 +313,8 @@ then copies the output tape of the first TM to the input tape of the second TM,
 then runs the second TM.
 -/
 proof_wanted TM2ComputableInPolyTime.comp
-    {α β γ : Type} {eα : FinEncoding α} {eβ : FinEncoding β}
-    {eγ : FinEncoding γ} {f : α → β} {g : β → γ} (h1 : TM2ComputableInPolyTime eα eβ f)
+    {α β γ αΓ βΓ γΓ : Type} {eα : α → List αΓ} {eβ : β → List βΓ}
+    {eγ : γ → List γΓ} {f : α → β} {g : β → γ} (h1 : TM2ComputableInPolyTime eα eβ f)
     (h2 : TM2ComputableInPolyTime eβ eγ g) :
   Nonempty (TM2ComputableInPolyTime eα eγ (g ∘ f))
 

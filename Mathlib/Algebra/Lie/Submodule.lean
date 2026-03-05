@@ -190,7 +190,24 @@ instance [IsArtinian R M] (N : LieSubmodule R L M) : IsArtinian R N :=
 instance [Module.IsTorsionFree R M] : Module.IsTorsionFree R N :=
   inferInstanceAs <| Module.IsTorsionFree R N.toSubmodule
 
-variable [LieAlgebra R L] [LieModule R L M]
+variable [LieAlgebra R L]
+
+/-- Given a Lie submodule `N` of a Lie module `M` over a Lie algebra `L`, and a Lie subalgebra
+`H ≤ L`, `N.restr H` is the same submodule but viewed as a Lie submodule over `H`. -/
+def restr (N : LieSubmodule R L M) (H : LieSubalgebra R L) : LieSubmodule R H M where
+  carrier := N
+  add_mem' := N.add_mem'
+  zero_mem' := N.zero_mem'
+  smul_mem' := SMulMemClass.smul_mem
+  lie_mem hm := N.lie_mem hm
+
+@[simp] lemma mem_restr {N : LieSubmodule R L M} {H : LieSubalgebra R L} {m : M} :
+    m ∈ N.restr H ↔ m ∈ N := Iff.rfl
+
+@[simp] lemma restr_toSubmodule (N : LieSubmodule R L M) (H : LieSubalgebra R L) :
+    (N.restr H).toSubmodule = N.toSubmodule := rfl
+
+variable [LieModule R L M]
 
 instance instLieModule : LieModule R L N where
   lie_smul := by intro t x y; apply SetCoe.ext; apply lie_smul
@@ -778,12 +795,10 @@ theorem mem_map_of_mem {m : M} (h : m ∈ N) : f m ∈ N.map f :=
 theorem mem_comap {m : M} : m ∈ comap f N' ↔ f m ∈ N' :=
   Iff.rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comap_incl_eq_top : N₂.comap N.incl = ⊤ ↔ N ≤ N₂ := by
   rw [← LieSubmodule.toSubmodule_inj, LieSubmodule.toSubmodule_comap, LieSubmodule.incl_coe,
     LieSubmodule.top_toSubmodule, Submodule.comap_subtype_eq_top, toSubmodule_le_toSubmodule]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
   simp only [← toSubmodule_inj, toSubmodule_comap, incl_coe, bot_toSubmodule,
     inf_toSubmodule]
@@ -932,19 +947,21 @@ variable (N : LieSubmodule R L M)
 @[simp]
 theorem ker_incl : N.incl.ker = ⊥ := (LieModuleHom.ker_eq_bot N.incl).mpr <| injective_incl N
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem range_incl : N.incl.range = N := by
   simp only [← toSubmodule_inj, LieModuleHom.toSubmodule_range, incl_coe]
   rw [Submodule.range_subtype]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem comap_incl_self : comap N.incl N = ⊤ := by
   simp only [← toSubmodule_inj, toSubmodule_comap, incl_coe, top_toSubmodule]
   rw [Submodule.comap_subtype_self]
 
 theorem map_incl_top : (⊤ : LieSubmodule R L N).map N.incl = N := by simp
+
+theorem map_restrictLie_incl_top [LieAlgebra R L] (H : LieSubalgebra R L) :
+    (⊤ : LieSubmodule R H N).map (N.incl.restrictLie H) = N.restr H := by
+  ext; simp
 
 variable {N}
 
