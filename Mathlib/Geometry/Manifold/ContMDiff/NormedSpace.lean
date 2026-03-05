@@ -39,29 +39,86 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {s : Set M} {x : M} {n : WithTop ℕ∞}
 
 /-- Typeclass asserting that scalar multiplication by any constant is smooth. -/
-class ContMDiffConstSMul (I : ModelWithCorners 𝕜 E H) (Γ : Type*) (N : Type*)
+class ContMDiffConstSMul (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (Γ : Type*) (N : Type*)
     [TopologicalSpace N] [ChartedSpace H N] [SMul Γ N] : Prop where
-  contMDiff_const_smul : ∀ c : Γ, ContMDiff I I ⊤ (fun x : N => c • x)
+  contMDiff_const_smul : ∀ c : Γ, ContMDiff I I n (fun x : N => c • x)
 
 /-- Typeclass asserting that scalar multiplication is smooth in both variables. -/
 class ContMDiffSMul (I : ModelWithCorners 𝕜 E H) {H' : Type*} [TopologicalSpace H']
-    (J : ModelWithCorners 𝕜 E' H') (Γ : Type*) (N : Type*) [TopologicalSpace Γ]
+    (J : ModelWithCorners 𝕜 E' H') (n : WithTop ℕ∞) (Γ : Type*) (N : Type*) [TopologicalSpace Γ]
     [ChartedSpace H Γ] [TopologicalSpace N] [ChartedSpace H' N] [SMul Γ N] : Prop where
-  contMDiff_smul_map : ContMDiff (I.prod J) J ⊤ (fun p : Γ × N => p.1 • p.2)
-
-export ContMDiffConstSMul (contMDiff_const_smul)
-export ContMDiffSMul (contMDiff_smul_map)
+  contMDiff_smul : ContMDiff (I.prod J) J n (fun p : Γ × N => p.1 • p.2)
 
 section ContMDiffSMul
 
+variable {n : WithTop ℕ∞}
 variable {Γ N : Type*} [TopologicalSpace Γ] [ChartedSpace H Γ]
     [TopologicalSpace N] [ChartedSpace H N] [SMul Γ N]
 
-instance (priority := 100) ContMDiffSMul.contMDiffConstSMul [ContMDiffSMul I I Γ N] :
-    ContMDiffConstSMul I Γ N where
+instance (priority := 100) ContMDiffSMul.contMDiffConstSMul [ContMDiffSMul I I n Γ N] :
+    ContMDiffConstSMul I n Γ N where
   contMDiff_const_smul c :=
-    (contMDiff_smul_map (I := I) (J := I) (Γ := Γ) (N := N)).comp
-      ((contMDiff_const : ContMDiff I I ⊤ fun _ : N => c).prodMk contMDiff_id)
+    (ContMDiffSMul.contMDiff_smul (I := I) (J := I) (n := n) (Γ := Γ) (N := N)).comp
+      ((contMDiff_const : ContMDiff I I n fun _ : N => c).prodMk
+        (contMDiff_id : ContMDiff I I n fun x : N => x))
+
+end ContMDiffSMul
+
+section ContMDiffConstSMul
+
+variable {Γ : Type*}
+  {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {J : ModelWithCorners 𝕜 E' H'} {N : Type*}
+  [TopologicalSpace N] [ChartedSpace H' N] [SMul Γ N]
+  [ContMDiffConstSMul J n Γ N] {f : M → N} {c : Γ}
+
+theorem ContMDiffWithinAt.const_smul (hf : ContMDiffWithinAt I J n f s x) :
+    ContMDiffWithinAt I J n (fun y => c • f y) s x := by
+  have hconst : ContMDiffAt J J n (fun y : N => c • y) (f x) :=
+    (ContMDiffConstSMul.contMDiff_const_smul (I := J) (n := n) (Γ := Γ) (N := N) c).contMDiffAt
+  simpa using hconst.comp_contMDiffWithinAt x hf
+
+nonrec theorem ContMDiffAt.const_smul (hf : ContMDiffAt I J n f x) :
+    ContMDiffAt I J n (fun y => c • f y) x :=
+  hf.const_smul
+
+theorem ContMDiffOn.const_smul (hf : ContMDiffOn I J n f s) :
+    ContMDiffOn I J n (fun y => c • f y) s := fun y hy => (hf y hy).const_smul
+
+theorem ContMDiff.const_smul (hf : ContMDiff I J n f) : ContMDiff I J n (fun y => c • f y) :=
+  fun y => (hf y).const_smul
+
+end ContMDiffConstSMul
+
+section ContMDiffSMul
+
+variable {HΓ : Type*} [TopologicalSpace HΓ]
+  {EΓ : Type*} [NormedAddCommGroup EΓ] [NormedSpace 𝕜 EΓ]
+  {IΓ : ModelWithCorners 𝕜 EΓ HΓ} {Γ : Type*}
+  [TopologicalSpace Γ] [ChartedSpace HΓ Γ]
+  {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {J : ModelWithCorners 𝕜 E' H'} {N : Type*}
+  [TopologicalSpace N] [ChartedSpace H' N] [SMul Γ N]
+  [ContMDiffSMul IΓ J n Γ N] {f : M → Γ} {g : M → N}
+
+theorem ContMDiffWithinAt.smul (hf : ContMDiffWithinAt I IΓ n f s x)
+    (hg : ContMDiffWithinAt I J n g s x) :
+    ContMDiffWithinAt I J n (fun y => f y • g y) s x := by
+  have hsmul : ContMDiffAt (IΓ.prod J) J n (fun p : Γ × N => p.1 • p.2) (f x, g x) :=
+    (ContMDiffSMul.contMDiff_smul (I := IΓ) (J := J) (n := n) (Γ := Γ) (N := N)).contMDiffAt
+  simpa [Prod.mk.eta] using hsmul.comp_contMDiffWithinAt x (hf.prodMk hg)
+
+nonrec theorem ContMDiffAt.smul (hf : ContMDiffAt I IΓ n f x) (hg : ContMDiffAt I J n g x) :
+    ContMDiffAt I J n (fun y => f y • g y) x :=
+  hf.smul hg
+
+theorem ContMDiffOn.smul (hf : ContMDiffOn I IΓ n f s) (hg : ContMDiffOn I J n g s) :
+    ContMDiffOn I J n (fun y => f y • g y) s := fun y hy => (hf y hy).smul (hg y hy)
+
+theorem ContMDiff.smul (hf : ContMDiff I IΓ n f) (hg : ContMDiff I J n g) :
+    ContMDiff I J n (fun y => f y • g y) := fun y => (hf y).smul (hg y)
 
 end ContMDiffSMul
 
@@ -296,25 +353,8 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
   contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
 
-instance : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, V) 𝕜 V where
-  contMDiff_smul_map := contMDiff_smul
+instance : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, V) n 𝕜 V where
+  contMDiff_smul := (_root_.contMDiff_smul (𝕜 := 𝕜) (V := V)).of_le le_top
 
-instance : ContMDiffConstSMul 𝓘(𝕜, V) 𝕜 V where
-  contMDiff_const_smul c := (contDiff_id.const_smul c).contMDiff
-
-theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
-    (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
-    ContMDiffWithinAt I 𝓘(𝕜, V) n (fun p => f p • g p) s x :=
-  (contMDiff_smul.of_le le_top).contMDiffAt.comp_contMDiffWithinAt x (hf.prodMk hg)
-
-nonrec theorem ContMDiffAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffAt I 𝓘(𝕜) n f x)
-    (hg : ContMDiffAt I 𝓘(𝕜, V) n g x) : ContMDiffAt I 𝓘(𝕜, V) n (fun p => f p • g p) x :=
-  hf.smul hg
-
-theorem ContMDiffOn.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffOn I 𝓘(𝕜) n f s)
-    (hg : ContMDiffOn I 𝓘(𝕜, V) n g s) : ContMDiffOn I 𝓘(𝕜, V) n (fun p => f p • g p) s :=
-  fun x hx => (hf x hx).smul (hg x hx)
-
-theorem ContMDiff.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiff I 𝓘(𝕜) n f)
-    (hg : ContMDiff I 𝓘(𝕜, V) n g) : ContMDiff I 𝓘(𝕜, V) n fun p => f p • g p := fun x =>
-  (hf x).smul (hg x)
+instance : ContMDiffConstSMul 𝓘(𝕜, V) n 𝕜 V where
+  contMDiff_const_smul c := ((contDiff_id.const_smul c).contMDiff).of_le le_top
