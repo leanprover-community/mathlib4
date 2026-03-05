@@ -317,4 +317,26 @@ theorem iInter_halfSpaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
   obtain ⟨y, hy, hxy⟩ := hx l
   exact ((hxy.trans_lt (hlA y hy)).trans hl).false
 
+theorem iInter_halfSpaces_eq' (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ⋂ (l : StrongDual 𝕜 E) (c : ℝ) (_ : ∀ y ∈ s, re (l y) ≤ c), { x | re (l x) ≤ c } = s := by
+  simp_rw [Set.iInter_setOf]
+  refine Set.Subset.antisymm (fun x hx => ?_) fun x hx l c hc => hc x hx
+  by_contra h
+  obtain ⟨l, c, hls, hl⟩ := geometric_hahn_banach_closed_point (𝕜 := 𝕜) hs₁ hs₂ h
+  exact (hl.trans_le (hx l c (fun y hy ↦ (hls y hy).le))).false
+
+theorem iInter_countable_halfSpaces_eq [HereditarilyLindelofSpace E]
+    (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
+    ∃ l : ℕ → StrongDual 𝕜 E, ∃ c : ℕ → ℝ, ⋂ n, { x | re (l n x) ≤ c n } = s := by
+  set ι := Σ (l : StrongDual 𝕜 E), { c : ℝ // ∀ y ∈ s, re (l y) ≤ c }
+  set l : ι → StrongDual 𝕜 E := fun lc ↦ lc.1
+  set c : ι → ℝ := fun lc ↦ lc.2.val
+  set hc : ∀ i, ∀ y ∈ s, re (l i y) ≤ c i := fun lc ↦ lc.2.prop
+  have : Nonempty ι := ⟨0, 0, fun _ _ ↦ by simp⟩
+  have : ⋂ i : ι, { x | re (l i x) ≤ c i } = s := by
+    simpa only [ι, iInter_sigma, iInter_subtype, l, c] using iInter_halfSpaces_eq' hs₁ hs₂
+  obtain ⟨k, hk⟩ := eq_closed_inter_nat (fun i : ι ↦ { x | re (l i x) ≤ c i })
+    (fun i ↦ isClosed_le (continuous_re.comp (l i).continuous) continuous_const)
+  exact ⟨l ∘ k, c ∘ k, hk.trans this⟩
+
 end RCLike
