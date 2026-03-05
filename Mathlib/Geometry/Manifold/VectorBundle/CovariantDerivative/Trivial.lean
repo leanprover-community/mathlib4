@@ -125,18 +125,18 @@ noncomputable def of_endomorphism (A : E → E' →L[𝕜] E →L[𝕜] E') :
 
 end CovariantDerivative
 
-section real
+section
 
 variable {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+  [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
 
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
   (n : WithTop ℕ∞)
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
-  [∀ x, AddCommGroup (V x)] [∀ x, Module ℝ (V x)]
+  [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V]
   -- `V` vector bundle
 
@@ -145,40 +145,40 @@ namespace IsCovariantDerivativeOn
 -- The classification of real connections over a trivial bundle
 section classification
 
-variable [FiniteDimensional ℝ E] [FiniteDimensional ℝ F] [T2Space M] [IsManifold I ∞ M]
+variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F] [IsManifold I 1 M]
 
 /-- Classification of covariant derivatives over a trivial vector bundle: every connection
 is of the form `D + A`, where `D` is the trivial covariant derivative, and `A` a zeroth-order term
 -/
-lemma exists_one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[ℝ] F)}
+lemma exists_one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
-    ∃ (A : (x : M) → F →L[ℝ] TangentSpace I x →L[ℝ] F),
+    ∃ (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F),
     ∀ σ : M → F, ∀ x ∈ s, MDiffAt (T% σ) x →
-    letI d : TangentSpace I x →L[ℝ] F := mfderiv I 𝓘(ℝ, F) σ x
+    letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
     cov σ x = d + A x (σ x) := by
   use hcov.difference (trivial I M F |>.mono <| subset_univ s)
   intro σ x hx hσ
   rw [hcov.difference_apply _ (by trivial) hσ]
   module
 
-noncomputable def one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[ℝ] F)}
+noncomputable def one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s) :
-    Π x : M, F →L[ℝ] TangentSpace I x →L[ℝ] F :=
+    Π x : M, F →L[𝕜] TangentSpace I x →L[𝕜] F :=
   hcov.exists_one_form.choose
 
-lemma eq_one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[ℝ] F)}
+lemma eq_one_form {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
     {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
     {σ : M → F}
     {x : M} (hσ : MDiffAt (T% σ) x) (hx : x ∈ s := by trivial) :
-    letI d : TangentSpace I x →L[ℝ] F := mfderiv I 𝓘(ℝ, F) σ x
+    letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
     cov σ x = d + hcov.one_form x (σ x) :=
   hcov.exists_one_form.choose_spec σ x hx hσ
 
 lemma _root_.CovariantDerivative.exists_one_form
     (cov : CovariantDerivative I F (Bundle.Trivial M F)) :
-    ∃ (A : (x : M) → F →L[ℝ] TangentSpace I x →L[ℝ] F),
+    ∃ (A : (x : M) → F →L[𝕜] TangentSpace I x →L[𝕜] F),
     ∀ σ : M → F, ∀ x, MDiffAt (T% σ) x →
-    letI d : TangentSpace I x →L[ℝ] F := mfderiv I 𝓘(ℝ, F) σ x
+    letI d : TangentSpace I x →L[𝕜] F := mfderiv I 𝓘(𝕜, F) σ x
     cov σ x = d + A x (σ x) := by
   simpa using cov.isCovariantDerivativeOn.exists_one_form
 

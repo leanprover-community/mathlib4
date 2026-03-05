@@ -37,7 +37,7 @@ set_option backward.isDefEq.respectTransparency false
 variable {n : WithTop ℕ∞}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H)
-  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I ∞ M]
+  {M : Type*} [EMetricSpace M] [ChartedSpace H M] [IsManifold I 2 M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
   -- don't need this assumption (yet?)
   -- [IsRiemannianManifold I M]
@@ -61,7 +61,7 @@ local notation "⟪" X ", " Y "⟫" => product I X Y
 -- Basic API for the product of two vector fields.
 section product
 
-omit [IsManifold I ∞ M]
+omit [IsManifold I 2 M]
 
 lemma product_apply (x) : ⟪X, Y⟫ x = inner ℝ (X x) (Y x) := rfl
 
@@ -140,19 +140,19 @@ end product
 
 -- These lemmas are necessary as my Lie bracket identities (assuming minimal differentiability)
 -- only hold point-wise. They abstract the expanding and unexpanding of `product`.
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 lemma product_congr_left {x} (h : X x = X' x) : product I X Y x = product I X' Y x := by
   rw [product_apply, h, ← product_apply]
 
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 lemma product_congr_left₂ {x} (h : X x = X' x + X'' x) :
     product I X Y x = product I X' Y x + product I X'' Y x := by
   rw [product_apply, h, inner_add_left, ← product_apply]
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 lemma product_congr_right {x} (h : Y x = Y' x) : product I X Y x = product I X Y' x := by
   rw [product_apply, h, ← product_apply]
 
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 lemma product_congr_right₂ {x} (h : Y x = Y' x + Y'' x) :
     product I X Y x = product I X Y' x + product I X Y'' x := by
   rw [product_apply, h, inner_add_right, ← product_apply]
@@ -388,14 +388,14 @@ noncomputable abbrev rhs_aux : M → ℝ := fun x ↦ (mfderiv% ⟪Y, Z⟫ x (X 
 section rhs_aux
 
 variable (Y Z) in
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 lemma rhs_aux_swap : rhs_aux I X Y Z = rhs_aux I X Z Y := by
   ext x
   simp only [rhs_aux]
   congr 2
   exact product_swap I Z Y
 
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 variable (X X' Y Z) in
 lemma rhs_aux_addX : rhs_aux I (X + X') Y Z = rhs_aux I X Y Z + rhs_aux I X' Y Z := by
   ext x
@@ -430,12 +430,12 @@ lemma rhs_aux_addZ (hY : MDiff (T% Y)) (hZ : MDiff (T% Z)) (hZ' : MDiff (T% Z'))
   ext x
   exact rhs_aux_addZ_apply I X (hY x) (hZ x) (hZ' x)
 
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 variable (X Y Z) in
 lemma rhs_aux_smulX_apply (f : M → ℝ) (x) : rhs_aux I (f • X) Y Z x = f x • rhs_aux I X Y Z x := by
   simp [rhs_aux]
 
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 variable (X Y Z) in
 lemma rhs_aux_smulX (f : M → ℝ) : rhs_aux I (f • X) Y Z = f • rhs_aux I X Y Z := by
   ext x
@@ -518,7 +518,7 @@ If `∇` is a Levi-Civita connection on `TM`, then
 `⟨∇ X Y, Z⟩ = leviCivitaRhs I X Y Z` for all smooth vector fields `X`, `Y` and `Z`. -/
 noncomputable def leviCivitaRhs : M → ℝ := (1 / 2 : ℝ) • leviCivitaRhs' I X Y Z
 
-omit [IsManifold I ∞ M] in
+omit [IsManifold I 2 M] in
 lemma leviCivitaRhs_apply : leviCivitaRhs I X Y Z x = (1 / 2 : ℝ) • leviCivitaRhs' I X Y Z x :=
   rfl
 
@@ -843,6 +843,7 @@ lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
 
 section
 
+omit [IsManifold I 2 M] [IsContMDiffRiemannianBundle I 1 E (TangentSpace I (M := M))] in
 variable {I} in
 lemma congr_of_forall_product_apply [FiniteDimensional ℝ E] {Y Y' : TangentSpace I x}
     (h : ∀ Z : TangentSpace I x, inner ℝ Y Z = inner ℝ Y' Z) : Y = Y' := by
@@ -853,6 +854,7 @@ lemma congr_of_forall_product_apply [FiniteDimensional ℝ E] {Y Y' : TangentSpa
   ext Z₀
   simpa [Φ, product] using h Z₀
 
+omit [IsContMDiffRiemannianBundle I 1 E (TangentSpace I (M := M))] in
 variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
 vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
@@ -862,7 +864,7 @@ lemma congr_of_forall_product [FiniteDimensional ℝ E]
   ext1 x
   apply congr_of_forall_product_apply
   intro Z₀
-  simpa [product] using congr($(h (_root_.extend I E Z₀)) x)
+  simpa [product] using congr($(h (_root_.extend E Z₀)) x)
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
@@ -878,14 +880,12 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
   apply Φ.injective
   ext Z₀
-  let Z := _root_.extend I E Z₀
-  have hZ := mdifferentiableAt_extend I E Z₀ x
+  let Z := _root_.extend E Z₀
+  have hZ := mdifferentiableAt_extend I E Z₀
   suffices inner ℝ (cov Y x (X x)) (Z x) = inner ℝ (cov' Y x (X x)) (Z x) by simpa [Φ, Z]
   trans leviCivitaRhs I X Y Z x
   · rw [← hcov.eq_leviCivitaRhs I hX hY hZ]
   · rw [← hcov'.eq_leviCivitaRhs I hX hY hZ]
-
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 open Classical in
 noncomputable def lcAux₀ [FiniteDimensional ℝ E]
@@ -976,14 +976,14 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
       dite_eq_ite, LinearMap.coe_toContinuousLinearMap', IsLinearMap.mk'_apply, LinearMap.mk₂_apply,
       ContinuousLinearMap.add_apply]
     rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
-    · apply leviCivitaRhs_addY_apply _ (mdifferentiable_extend ..) hY hY'
-      exact mdifferentiable_extend ..
-    · exact mdifferentiable_extend ..
-    · exact mdifferentiable_extend ..
-    · exact mdifferentiable_extend ..
-    · exact mdifferentiable_extend ..
-    · exact mdifferentiable_extend ..
-    · exact mdifferentiable_extend ..
+    · apply leviCivitaRhs_addY_apply _ (mdifferentiableAt_extend ..) hY hY'
+      exact mdifferentiableAt_extend ..
+    · exact mdifferentiableAt_extend ..
+    · exact mdifferentiableAt_extend ..
+    · exact mdifferentiableAt_extend ..
+    · exact mdifferentiableAt_extend ..
+    · exact mdifferentiableAt_extend ..
+    · exact mdifferentiableAt_extend ..
   leibniz {Y f x} hY hf _ := by
     unfold lcAux
     dsimp
@@ -1007,22 +1007,20 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
         IsLinearMap.mk'_apply, LinearMap.mk₂_apply, ContinuousLinearMap.add_apply,
         ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       rw [if_pos, if_pos, if_pos, if_pos]
-      · have key := leviCivitaRhs_smulY_apply I (X := _root_.extend I E X₀) (Y := Y)
-          (Z := _root_.extend I E Z₀) (x := x) (f := f)
+      · have key := leviCivitaRhs_smulY_apply I (X := _root_.extend E X₀) (Y := Y)
+          (Z := _root_.extend E Z₀) (x := x) (f := f)
         convert key hf ?_ hY ?_
         · simp
         · simp [Φ, product]
-        · exact mdifferentiable_extend ..
-        · exact mdifferentiable_extend ..
-      · exact mdifferentiable_extend ..
-      · exact mdifferentiable_extend ..
-      · exact mdifferentiable_extend ..
-      · exact mdifferentiable_extend ..
+        · exact mdifferentiableAt_extend ..
+        · exact mdifferentiableAt_extend ..
+      · exact mdifferentiableAt_extend ..
+      · exact mdifferentiableAt_extend ..
+      · exact mdifferentiableAt_extend ..
+      · exact mdifferentiableAt_extend ..
     exact MDifferentiableAt.smul_section hf hY
 
 end
-
-variable [IsContMDiffRiemannianBundle I 1 E (fun (x : M) ↦ TangentSpace I x)]
 
 -- TODO: make g part of the notation!
 variable (M) in
@@ -1055,17 +1053,17 @@ lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
   trans (inner ℝ (((LeviCivitaConnection I M) Y x) (X x)) Z) -
     (inner ℝ (((LeviCivitaConnection I M) X x) (Y x)) Z)
   · apply inner_sub_left
-  have hZ' : _root_.extend I E Z x = Z := extend_apply_self Z
+  have hZ' : _root_.extend E Z x = Z := extend_apply_self Z
   rw [← hZ']
-  rw [leviCivitaConnection_apply I hY hX (mdifferentiable_extend ..)]
-  rw [leviCivitaConnection_apply I hX hY (mdifferentiable_extend ..)]
+  rw [leviCivitaConnection_apply I hY hX (mdifferentiableAt_extend ..)]
+  rw [leviCivitaConnection_apply I hX hY (mdifferentiableAt_extend ..)]
   simp only [leviCivitaRhs_apply]
   -- XXX: should there be leviCivitaRhs'_apply?
   simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply, product_apply]
   simp only [VectorField.mlieBracket_swap (V := Y) (W := X)]
   simp only [Pi.neg_apply, inner_neg_right, sub_neg_eq_add]
   set C := inner ℝ Z (VectorField.mlieBracket I X Y x)
-  set Z' := _root_.extend I E Z
+  set Z' := _root_.extend E Z
   simp only [VectorField.mlieBracket_swap (V := Z') (W := X)]
   simp only [VectorField.mlieBracket_swap (V := Z') (W := Y)]
   simp only [Pi.neg_apply, inner_neg_right]

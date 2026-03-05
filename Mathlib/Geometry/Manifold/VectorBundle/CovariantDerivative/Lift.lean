@@ -31,19 +31,19 @@ end
 
 section
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
-  [ChartedSpace H M] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [FiniteDimensional ℝ E]
-  [FiniteDimensional ℝ F] [T2Space M] [IsManifold I ∞ M]
-  {cov : (M → F) → (Π x : M, TangentSpace I x →L[ℝ] F)}
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
+  [ChartedSpace H M] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [FiniteDimensional 𝕜 F] [IsManifold I 1 M]
+  {cov : (M → F) → (Π x : M, TangentSpace I x →L[𝕜] F)}
   {s : Set M} (hcov : IsCovariantDerivativeOn F cov s)
 
 
 noncomputable
 def IsCovariantDerivativeOn.lift_vec (x : M) (f : F) :
-    TangentSpace I x →L[ℝ] TangentSpace I x × F :=
-  .prod (.id ℝ _) (-hcov.one_form x f)
+    TangentSpace I x →L[𝕜] TangentSpace I x × F :=
+  .prod (.id 𝕜 _) (-hcov.one_form x f)
 
 @[simp]
 lemma IsCovariantDerivativeOn.lift_vec_apply (x : M) (f : F) (u : TangentSpace I x) :
@@ -52,7 +52,7 @@ lemma IsCovariantDerivativeOn.lift_vec_apply (x : M) (f : F) (u : TangentSpace I
 
 @[simp]
 lemma IsCovariantDerivativeOn.fst_comp_lift_vec (x : M) (f : F) :
-    .fst ℝ _ _ ∘L hcov.lift_vec x f = .id ℝ _ := by
+    .fst 𝕜 _ _ ∘L hcov.lift_vec x f = .id 𝕜 _ := by
   ext u
   simp
 
@@ -77,20 +77,21 @@ end
 
 section
 variable
-{E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
-  [ChartedSpace H M] {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] {V : M → Type*}
-  [TopologicalSpace (TotalSpace F V)] [(x : M) → AddCommGroup (V x)] [(x : M) → Module ℝ (V x)]
-  [(x : M) → TopologicalSpace (V x)] [FiberBundle F V] [FiniteDimensional ℝ E]
-  [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul ℝ (V x)]
-  [FiniteDimensional ℝ F] [T2Space M]
-  [IsManifold I ∞ M] [VectorBundle ℝ F V] {cov : CovariantDerivative I F V}
+  {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M]
+  [ChartedSpace H M] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {V : M → Type*}
+  [TopologicalSpace (TotalSpace F V)] [(x : M) → AddCommGroup (V x)] [(x : M) → Module 𝕜 (V x)]
+  [(x : M) → TopologicalSpace (V x)] [FiberBundle F V]
+  [∀ (x : M), IsTopologicalAddGroup (V x)] [∀ (x : M), ContinuousSMul 𝕜 (V x)]
+  [FiniteDimensional 𝕜 F]
+  [IsManifold I 1 M] [VectorBundle 𝕜 F V] {cov : CovariantDerivative I F V}
   [ContMDiffVectorBundle 1 F V I]
 
 /-- Horizontal lift of a vector tangent to the base at a point in the corresponding fiber. -/
 noncomputable
 def CovariantDerivative.lift_vec (v : TotalSpace F V) :
-    TangentSpace I v.proj →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, F)) v :=
+    TangentSpace I v.proj →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) v :=
   letI t := trivializationAt F V v.proj
   have hcov := cov.isCovariantDerivativeOn_pushCovDer t
   letI tlift := hcov.lift_vec v.proj (t v).2
@@ -129,7 +130,7 @@ lemma CovariantDerivative.lift_vec_horiz {v : TotalSpace F V} (u : TangentSpace 
              Trivialization.symmL_apply, Function.comp_apply]
   rw [t.deriv_derivInv_apply (FiberBundle.mem_baseSet_trivializationAt' v.proj)]
   suffices t.symm v.proj 0 = 0 by simpa
-  exact (t.symmL ℝ v.proj).map_zero
+  exact (t.symmL 𝕜 v.proj).map_zero
 
 @[simp]
 lemma CovariantDerivative.proj_lift_vec {v : TotalSpace F V} (u : TangentSpace I v.proj) :
@@ -139,15 +140,15 @@ lemma CovariantDerivative.proj_lift_vec {v : TotalSpace F V} (u : TangentSpace I
 
 @[simp]
 lemma CovariantDerivative.mfderiv_proj_lift_vec {v : TotalSpace F V} (u : TangentSpace I v.proj) :
-    mfderiv (I.prod 𝓘(ℝ, F)) I TotalSpace.proj v (cov.lift_vec v u) = u := by
+    mfderiv (I.prod 𝓘(𝕜, F)) I TotalSpace.proj v (cov.lift_vec v u) = u := by
   unfold CovariantDerivative.lift_vec
   simp [FiberBundle.mem_baseSet_trivializationAt' v.proj]
 
 lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace I v.proj)
-    (w : TangentSpace (I.prod 𝓘(ℝ, F)) v) :
+    (w : TangentSpace (I.prod 𝓘(𝕜, F)) v) :
     cov.lift_vec v u = w  ↔
       cov.proj v w = 0 ∧
-      mfderiv (I.prod 𝓘(ℝ, F)) I (TotalSpace.proj : TotalSpace F V → M) v w = u := by
+      mfderiv (I.prod 𝓘(𝕜, F)) I (TotalSpace.proj : TotalSpace F V → M) v w = u := by
   constructor
   · rintro rfl
     simp
@@ -164,13 +165,13 @@ lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace
     · change t.symm v.proj ((hcov.projection v.proj (t v).2) ((t.deriv I v) w)) = 0 at h
       apply t.injective_symm mem
       refold_let t
-      simp [h, t.symm_map_zero ℝ]
+      simp [h, t.symm_map_zero 𝕜]
     · rw [← h', t.mfderiv_proj_fst_deriv mem]
 
 -- noncomputable
 -- def CovariantDerivative.lift_vec'
 --   (p : TotalSpace E ((TotalSpace.proj : (TotalSpace F V → M)) *ᵖ (TangentSpace I))) :
---     TangentSpace (I.prod 𝓘(ℝ, F)) p.1 :=
+--     TangentSpace (I.prod 𝓘(𝕜, F)) p.1 :=
 --   letI t := trivializationAt F V p.1.proj
 --   haveI d_covDerOn := t.pushCovDer_isCovariantDerivativeOn
 --     (cov.isCovariantDerivativeOn.mono fun _ _ ↦ mem_univ _)
@@ -179,7 +180,8 @@ lemma CovariantDerivative.lift_vec_eq_iff {v : TotalSpace F V} (u : TangentSpace
 end
 
 section integralCurve
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*}
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*}
   [TopologicalSpace M] [ChartedSpace H M] (γ : ℝ → M)
   (v : (x : M) → TangentSpace I x) (t₀ : ℝ)
@@ -227,7 +229,7 @@ lemma IsMIntegralCurveAt.eventually_isMIntegralCurveAt
     ∀ᶠ t in 𝓝 t₀, IsMIntegralCurveAt γ X t :=
   eventually_eventually_nhds.2 hγX
 
-variable [IsManifold I ∞ M]
+variable [IsManifold I 1 M]
 
 set_option linter.flexible false in --FIXME
 lemma IsMIntegralCurveAt.acceleration {X : Π x : M, TangentSpace I x}
@@ -254,15 +256,14 @@ end integralCurve
 section geodesics
 
 variable
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
-  [ChartedSpace H M] [T2Space M]
-  [IsManifold I ∞ M]
+  [ChartedSpace H M]
+  [IsManifold I 2 M]
   (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 
 -- FIXME: bug in `mfderiv%`?
 -- FIXME: missing elaborator support to find I.tangent
-omit [FiniteDimensional ℝ E] [T2Space M] in
 variable (I) in
 @[simp]
 lemma proj_acceleration {γ : ℝ → M} {t : ℝ} (h : MDiffAt (velocity I γ) t) :
@@ -278,6 +279,8 @@ I γ t).2 := by
   have := mfderiv_comp t diff h
   rw [comp_eq] at this
   exact congr($this (1 : ℝ)).symm
+
+variable [FiniteDimensional ℝ E]
 
 lemma IsMIntegralCurveAt.proj_acceleration {X : Π x : M, TangentSpace I x}
     {γ : ℝ → M} {t₀ : ℝ} (hX : MDiffAt (T% X) (γ t₀))
