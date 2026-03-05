@@ -972,9 +972,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
     congr! 1
     simp only [lcAux₀]
     ext X₀ Y₀
-    simp only [mk2TensorAt, IsBilinearMap.toContinuousLinearMap, IsBilinearMap.toLinearMap,
-      dite_eq_ite, LinearMap.coe_toContinuousLinearMap', IsLinearMap.mk'_apply, LinearMap.mk₂_apply,
-      ContinuousLinearMap.add_apply]
+    simp only [mk2TensorAt_apply_eq_extend, dite_eq_ite, ContinuousLinearMap.add_apply]
     rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
     · apply leviCivitaRhs_addY_apply _ (mdifferentiableAt_extend ..) hY hY'
       exact mdifferentiableAt_extend ..
@@ -1002,9 +1000,7 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
         ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         ContinuousLinearMap.toSpanSingleton_apply, map_add, map_smul]
       ext Z₀
-      simp only [lcAux₀, mk2TensorAt, IsBilinearMap.toContinuousLinearMap,
-        IsBilinearMap.toLinearMap, dite_eq_ite, LinearMap.coe_toContinuousLinearMap',
-        IsLinearMap.mk'_apply, LinearMap.mk₂_apply, ContinuousLinearMap.add_apply,
+      simp only [lcAux₀, mk2TensorAt_apply_eq_extend, dite_eq_ite, ContinuousLinearMap.add_apply,
         ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
       rw [if_pos, if_pos, if_pos, if_pos]
       · have key := leviCivitaRhs_smulY_apply I (X := _root_.extend E X₀) (Y := Y)
