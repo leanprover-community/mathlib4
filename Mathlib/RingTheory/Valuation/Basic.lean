@@ -787,71 +787,74 @@ section Ring
 
 variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀}
 
+namespace IsEquiv
+
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
-noncomputable def equivFun (h : v.IsEquiv w) (x : ValueGroup₀ v) : ValueGroup₀ w :=
+/-- An equivalence of valuations `v.IsEquiv w` induces the following map from `ValueGroup₀ v` to
+`ValueGroup₀ w`: given `x : ValueGroup₀ v` and nonzero `a b : R` such that `(v a) * x = (v b)`,
+`valueGroup₀Fun x` is defined as `(w b) * (w a)⁻¹`. -/
+noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ v) : ValueGroup₀ w :=
   if hx : x = 0 then 0 else
     have c := (x.zero_or_exists_mk'.resolve_left hx).choose
     .mk w c.1.1 c.1.2 ((h.eq_zero).ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
 
-theorem equivFun_spec (h : v.IsEquiv w) (r s : R) (hr : v r ≠ 0) (hs : v s ≠ 0) :
-    equivFun h (.mk v r s hr hs) = .mk w r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs) := by
-  rw [equivFun, dif_neg (by simp)]
+theorem valueGroup₀Fun_spec (h : v.IsEquiv w) (r s : R) (hr : v r ≠ 0) (hs : v s ≠ 0) :
+    valueGroup₀Fun h (.mk v r s hr hs) =
+      .mk w r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs) := by
+  rw [valueGroup₀Fun, dif_neg (by simp)]
   generalize_proofs _ _ _ H _
   have c_spec := H.choose_spec
-  set c := H.choose
-  --simp only [ne_eq, ValueGroup₀.mk_inj, map_mul] at c_spec ⊢
   simp only [ne_eq, mk_inj] at c_spec ⊢
   rwa [← h.val_eq, eq_comm]
 
-theorem equivFun_zero (h : v.IsEquiv w) : equivFun h 0 = 0 := by simp [equivFun]
+theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
 
-noncomputable def equiv (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w where
-  toFun := equivFun h
-  invFun := equivFun h.symm
+/-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
+noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w where
+  toFun := valueGroup₀Fun h
+  invFun := valueGroup₀Fun h.symm
   map_mul' x y := by
     obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [equivFun_zero]
+    · simp_all [valueGroup₀Fun_zero]
     obtain _ | ⟨r₂, s₂, hr₂, hs₂, rfl⟩ := y.zero_or_exists_mk
-    · simp_all [equivFun_zero]
-    simp [mk_mul, equivFun_spec]
+    · simp_all [valueGroup₀Fun_zero]
+    simp [mk_mul, valueGroup₀Fun_spec]
   left_inv x := by
     obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [equivFun_zero]
-    simp [equivFun_spec]
+    · simp_all [valueGroup₀Fun_zero]
+    simp [valueGroup₀Fun_spec]
   right_inv x := by
     obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
-    · simp_all [equivFun_zero]
-    simp [equivFun_spec]
+    · simp_all [valueGroup₀Fun_zero]
+    simp [valueGroup₀Fun_spec]
   map_le_map_iff' {x} {y} := by
-    simp only [equivFun, ne_eq]
+    simp only [valueGroup₀Fun, ne_eq]
     split_ifs with hx0 hy0 hy0
     · simp [hx0, hy0]
     · simp [hx0]
     · simp [hx0, hy0]
     · generalize_proofs _ _ _ hx _ _ hy
-      have := hx.choose_spec
       conv_rhs => rw [hx.choose_spec, hy.choose_spec]
       simp only [ValueGroup₀.mk, WithZero.coe_le_coe, Subtype.mk_le_mk]
-      rw [le_mul_inv_iff_mul_le, mul_comm, ← mul_assoc]
-      rw [← le_mul_inv_iff_mul_le, inv_inv]
-      conv_rhs => rw [le_mul_inv_iff_mul_le, mul_comm, ← mul_assoc,
-        ← le_mul_inv_iff_mul_le, inv_inv]
-      rw [← Units.mk0_mul, ← Units.mk0_mul, ← Units.mk0_mul, ← Units.mk0_mul]
+      nth_rw 2 [mul_comm]
+      rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
+      nth_rw 4 [mul_comm]
+      conv_rhs =>
+        rw [le_mul_inv_iff_mul_le, mul_assoc, mul_comm, ← le_mul_inv_iff_mul_le, inv_inv]
+      generalize_proofs _ hx' hy' hx20 hy10 hx10 hy20
+      rw [← Units.mk0_mul _ _ (mul_ne_zero hx10 hy20), ← Units.mk0_mul _ _ (mul_ne_zero hx20 hy10),
+        ← Units.mk0_mul, ← Units.mk0_mul]
       · simp only [← Units.val_le_val]
-        rw [Units.val_mk0, Units.val_mk0]
-        rw [Units.val_mk0, Units.val_mk0]
+        repeat rw [Units.val_mk0]
         simp only [← map_mul w, ← h.le_iff_le]
         rw [map_mul v, map_mul v, mul_comm]
+      · rw [← map_mul w, ne_eq, ← h.eq_zero, map_mul v]
+        exact mul_ne_zero hx10 hy20
+      · rw [← map_mul w, ne_eq, ← h.eq_zero, map_mul v]
+        exact mul_ne_zero hx20 hy10
 
-      · generalize_proofs
-        rw [← map_mul v, h.eq_zero.ne]
-        --simp?
-        sorry
-      sorry
-      sorry
-      sorry
-
+end IsEquiv
 
 end Ring
 
@@ -1360,3 +1363,5 @@ instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Va
   inferInstanceAs (CommGroupWithZero (MonoidHom.mrange (v : K →*₀ Γ₀)))
 
 end Valuation
+
+#lint

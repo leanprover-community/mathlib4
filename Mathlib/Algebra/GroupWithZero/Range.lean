@@ -259,21 +259,26 @@ theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
 
 namespace ValueGroup₀
 
+/- /-- The map sending a pair of nonzero `r s : A` to the element -/
 def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : ValueGroup₀ f :=
     (⟨.mk0 _ hr * (.mk0 _ hs)⁻¹, mul_mem (mem_valueGroup _ (by simp))
-    (inv_mem (mem_valueGroup _ (by simp)))⟩ : valueGroup f)
+    (inv_mem (mem_valueGroup _ (by simp)))⟩ : valueGroup f) -/
+
+/-- The map sending a pair of nonzero `r s : A` to the element `(v r)⁻¹ * (v s)`
+of `ValueGroup₀ v`. -/
+def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : ValueGroup₀ f :=
+    (⟨(.mk0 _ hr)⁻¹ * (.mk0 _ hs), mul_mem (inv_mem (mem_valueGroup _ (by simp)))
+    (mem_valueGroup _ (by simp))⟩ : valueGroup f)
 
 theorem zero_or_exists_mk (x : ValueGroup₀ f) :
     x = 0 ∨ ∃ r s hr hs, x = .mk f r s hr hs := by
   obtain _ | ⟨x, hx⟩ := x
   · left; rfl
-  · rw [mem_valueGroup_iff_of_comm] at hx
-    obtain ⟨s, hs, r, hrs⟩ := hx
-    by_cases hr : f r = 0
-    · simp_all
+  · rw [mem_valueGroup_iff_of_comm'] at hx
+    obtain ⟨r, hr, s, hs, hrs⟩ := hx
     exact .inr ⟨r, s, hr, hs, Option.some_inj.mpr <| by
       simp only [Subtype.mk.injEq]
-      rw [eq_mul_inv_iff_mul_eq]
+      rw [eq_inv_mul_iff_mul_eq]
       simp [← hrs, mul_comm]⟩
 
 theorem zero_or_exists_mk' (x : ValueGroup₀ f) :
@@ -287,8 +292,8 @@ variable {r s r₁ s₁ r₂ s₂ : A}
 @[simp] theorem mk_inj {hr₁ : f r₁ ≠ 0} {hs₁ : f s₁ ≠ 0} {hr₂ : f r₂ ≠ 0} {hs₂ : f s₂ ≠ 0} :
     mk f r₁ s₁ hr₁ hs₁ = mk f r₂ s₂ hr₂ hs₂ ↔ f (r₁ * s₂) = f (r₂ * s₁) := by
   refine Option.some_inj.trans ?_
-  rw [Subtype.mk.injEq, mul_inv_eq_mul_inv_iff_mul_eq_mul]
-  simp [Units.ext_iff]
+  rw [Subtype.mk.injEq, inv_mul_eq_inv_mul_iff_mul_eq_mul, eq_comm]
+  simp [Units.ext_iff, mul_comm (f r₂), mul_comm (f s₂)]
 
 @[simp] theorem mk_mul {hr₁ : f r₁ ≠ 0} {hs₁ : f s₁ ≠ 0} {hr₂ : f r₂ ≠ 0} {hs₂ : f s₂ ≠ 0} :
     mk f r₁ s₁ hr₁ hs₁ * mk f r₂ s₂ hr₂ hs₂ =
