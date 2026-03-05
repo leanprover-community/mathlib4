@@ -38,7 +38,6 @@ open Set
 namespace Real
 variable {x : ℝ}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For 0 < x, we have sin x < x. -/
 theorem sin_lt (h : 0 < x) : sin x < x := by
   rcases lt_or_ge 1 x with h' | h'
@@ -127,7 +126,6 @@ lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
   case inl => simp
   case inr => exact (one_sub_sq_div_two_lt_cos hx).le
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Half of **Jordan's inequality** for `cos`. -/
 lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
   simpa [sin_pi_div_two_sub, mul_sub, div_mul_div_comm, mul_comm π, pi_pos.ne']
@@ -147,7 +145,6 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   ring_nf at this ⊢
   linarith
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 
 This is also true for x > 1, but it's nontrivial for x just above 1. This inequality is not
@@ -169,7 +166,6 @@ theorem deriv_tan_sub_id (x : ℝ) (h : cos x ≠ 0) :
     deriv (fun y : ℝ => tan y - y) x = 1 / cos x ^ 2 - 1 :=
   HasDerivAt.deriv <| by simpa using (hasDerivAt_tan h).add (hasDerivAt_id x).neg
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For all `0 < x < π/2` we have `x < tan x`.
 
 This is proved by checking that the function `tan x - x` vanishes
@@ -251,7 +247,6 @@ theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
 theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
   simpa [edist_dist] using lipschitzWith_cos x y
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
   rw [Complex.norm_exp_I_mul_ofReal_sub_one]
   calc

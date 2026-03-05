@@ -246,7 +246,7 @@ theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
 end InvolutiveInv
 
 @[to_additive (attr := simp)]
-lemma inv_atTop {G : Type*} [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] :
+lemma inv_atTop {G : Type*} [CommGroup G] [Preorder G] [IsOrderedMonoid G] :
     (atTop : Filter G)⁻¹ = atBot :=
   (OrderIso.inv G).map_atTop
 

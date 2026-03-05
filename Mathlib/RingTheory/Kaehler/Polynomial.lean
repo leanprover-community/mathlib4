@@ -62,11 +62,13 @@ def KaehlerDifferential.mvPolynomialBasis (σ) :
     Basis σ (MvPolynomial σ R) Ω[MvPolynomial σ R⁄R] :=
   ⟨mvPolynomialEquiv R σ⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma KaehlerDifferential.mvPolynomialBasis_repr_comp_D (σ) :
     (mvPolynomialBasis R σ).repr.toLinearMap.compDer (D _ _) =
       MvPolynomial.mkDerivation _ (Finsupp.single · 1) :=
   Derivation.liftKaehlerDifferential_comp _
 
+set_option backward.isDefEq.respectTransparency false in
 lemma KaehlerDifferential.mvPolynomialBasis_repr_D (σ) (x) :
     (mvPolynomialBasis R σ).repr (D _ _ x) =
       MvPolynomial.mkDerivation R (Finsupp.single · (1 : MvPolynomial σ R)) x :=

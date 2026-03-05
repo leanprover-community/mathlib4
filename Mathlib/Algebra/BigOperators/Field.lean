@@ -31,12 +31,15 @@ lemma Finset.sum_div (s : Finset ι) (f : ι → K) (a : K) :
 namespace Finset
 variable {α β : Type*} [Fintype β]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma dens_disjiUnion (s : Finset α) (t : α → Finset β) (h) :
-    (s.disjiUnion t h).dens = ∑ a ∈ s, (t a).dens := by simp [dens, sum_div]
+    (s.disjiUnion t h).dens = ∑ a ∈ s, (t a).dens := by
+  simp [dens, sum_div]
 
 variable {s : Finset α} {t : α → Finset β}
 
+set_option backward.isDefEq.respectTransparency false in
 lemma dens_biUnion [DecidableEq β] (h : (s : Set α).PairwiseDisjoint t) :
     (s.biUnion t).dens = ∑ u ∈ s, (t u).dens := by
   simp [dens, card_biUnion h, sum_div]
