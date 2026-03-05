@@ -5368,6 +5368,7 @@ public import Mathlib.NumberTheory.AbelSummation
 public import Mathlib.NumberTheory.ArithmeticFunction
 public import Mathlib.NumberTheory.ArithmeticFunction.Carmichael
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.ArithmeticFunction.LFunction
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 public import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 public import Mathlib.NumberTheory.ArithmeticFunction.VonMangoldt
