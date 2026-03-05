@@ -110,10 +110,10 @@ protected theorem mul [∀ i, Mul (β i)] [∀ i, ContinuousMul (β i)]
     (hu : StronglyAdapted f u) (hv : StronglyAdapted f v) :
     StronglyAdapted f (u * v) := fun i => (hu i).mul (hv i)
 
-@[to_additive]
-protected theorem div [∀ i, Div (β i)] [∀ i, ContinuousDiv (β i)]
+@[to_additive sub]
+protected theorem div' [∀ i, Div (β i)] [∀ i, ContinuousDiv (β i)]
     (hu : StronglyAdapted f u) (hv : StronglyAdapted f v) :
-    StronglyAdapted f (u / v) := fun i => (hu i).div (hv i)
+    StronglyAdapted f (u / v) := fun i => (hu i).div' (hv i)
 
 @[to_additive]
 protected theorem inv [∀ i, Group (β i)] [∀ i, ContinuousInv (β i)] (hu : StronglyAdapted f u) :
@@ -232,10 +232,10 @@ protected theorem finset_prod {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
 protected theorem inv [Group β] [ContinuousInv β] (hu : ProgMeasurable f u) :
     ProgMeasurable f fun i ω => (u i ω)⁻¹ := fun i => (hu i).inv
 
-@[to_additive]
-protected theorem div [Group β] [ContinuousDiv β] (hu : ProgMeasurable f u)
+@[to_additive sub]
+protected theorem div' [Group β] [ContinuousDiv β] (hu : ProgMeasurable f u)
     (hv : ProgMeasurable f v) : ProgMeasurable f fun i ω => u i ω / v i ω := fun i =>
-  (hu i).div (hv i)
+  (hu i).div' (hv i)
 
 end Arithmetic
 
