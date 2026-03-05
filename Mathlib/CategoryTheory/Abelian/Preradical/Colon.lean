@@ -150,29 +150,35 @@ via `Φ.ι : Φ.r X ⟶ 𝟭 C` and the zero morphism `Φ.r ⟶  Φ.quotient ⋙
 noncomputable def toColon : Φ ⟶ Φ.colon Ψ :=
   MonoOver.homMk ((isPullback_colon Φ Ψ).lift Φ.ι 0 (by simp))
 
+@[reassoc (attr := simp)]
+lemma toColon_hom_left_colonπ :
+    (toColon Φ Ψ).hom.left ≫ colonπ Φ Ψ = 0 := by
+  simp [toColon]
+
+@[reassoc (attr := simp)]
+lemma toColon_hom_left_app_colonπ_app (X : C) :
+    (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 :=
+  NatTrans.congr_app (toColon_hom_left_colonπ Φ Ψ) X
+
+@[reassoc (attr := simp)]
+lemma toColon_hom_left_app_colon_ι_app (X : C) :
+    (Φ.toColon Ψ).hom.left.app X ≫ (Φ.colon Ψ).ι.app X = Φ.ι.app X := by
+  rw [← NatTrans.comp_app, Over.w]
+
 /-- For `X : C`, the morphism `(toColon Φ Ψ)` is an isomorphism if and only if
 `(Ψ.r.obj (Φ.quotient.obj X))` is the zero object. -/
 theorem isIso_toColon_hom_left_app_iff {Φ Ψ : Preradical C} {X : C} :
     IsIso ((toColon Φ Ψ).hom.left.app X) ↔ IsZero (Ψ.r.obj (Φ.quotient.obj X)) := by
-  have hsnd : (toColon Φ Ψ).hom.left ≫ (colonπ Φ Ψ) = 0 :=
-    (isPullback_colon Φ Ψ).lift_snd Φ.ι 0 _
-  have hsnd_app : (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 := by
-    simpa [NatTrans.comp_app] using congrArg (fun τ => τ.app X) hsnd
   constructor <;> intro h
   · exact IsZero.of_epi_eq_zero ((colonπ Φ Ψ).app X)
-      (zero_of_epi_comp ((toColon Φ Ψ).hom.left.app X) hsnd_app)
-  · have hcolonπ_app : (colonπ Φ Ψ).app X = 0 := IsZero.eq_zero_of_tgt h _
-    have hw : (colon Φ Ψ).ι.app X ≫ Φ.π.app X = 0 := by
-      simpa [hcolonπ_app] using (colon_ι_app_π_app Φ Ψ X)
-    let s : KernelFork (Φ.π.app X) := (KernelFork.ofι ((colon Φ Ψ).ι.app X) hw)
-    let inv : (colon Φ Ψ).r.obj X ⟶ Φ.r.obj X := (Φ.isLimitKernelForkObj X).lift s
-    have hfac : inv ≫ Φ.ι.app X = (colon Φ Ψ).ι.app X := by
-      simpa using (Φ.isLimitKernelForkObj X).fac s WalkingParallelPair.zero
+      (zero_of_epi_comp ((toColon Φ Ψ).hom.left.app X) (by simp))
+  · obtain ⟨inv, hinv⟩ :=
+      KernelFork.IsLimit.lift' (Φ.isLimitKernelForkObj X) ((colon Φ Ψ).ι.app X) (by
+        rw [colon_ι_app_π_app, h.eq_zero_of_tgt ((colonπ Φ Ψ).app X), zero_comp])
+    dsimp at hinv
     refine ⟨inv, ?_, ?_⟩
-    · refine (cancel_mono (Φ.ι.app X)).mp ?_
-      simp [← NatTrans.comp_app, hfac]
-    · refine (cancel_mono ((Φ.colon Ψ).ι.app X)).mp ?_
-      simp [← NatTrans.comp_app, hfac]
+    · simp [← cancel_mono (Φ.ι.app X), hinv]
+    · simp [← cancel_mono ((Φ.colon Ψ).ι.app X), hinv]
 
 /-- The morphism `(toColon Φ Ψ)` is an isomorphism if and only if `Φ.quotient ⋙ Ψ.r` is the zero
 object. -/
