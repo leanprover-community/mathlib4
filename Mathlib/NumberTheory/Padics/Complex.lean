@@ -189,9 +189,6 @@ instance : RankOne (PadicComplex.valued p).v where
 @[simp]
 theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embedding := rfl
 
-/- lemma rankOne_hom_eq :
-    RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlgCl.valued p).v := rfl  -/
-
 /-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
 instance normedField : NormedField ℂ_[p] := inferInstance
 

@@ -31,9 +31,6 @@ image, as defined in
 
 valuation, rank one
 -/
-
-@[expose] public section
-
 @[expose] public section
 
 noncomputable section
@@ -134,16 +131,10 @@ instance : IsNontrivial v where
 section Restrict
 
 set_option backward.isDefEq.respectTransparency false in
-instance restrict_Nontrivial [v.IsNontrivial] : (v.restrict).IsNontrivial where
+instance isNontrivial_restrict [v.IsNontrivial] : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
-    use x
-    constructor
-    · simp [hx0]
-    · rw [restrict_def]
-      intro H
-      rw [restrict₀_eq_one_iff] at H
-      tauto
+    exact ⟨x, by simp [hx0], by grind [restrict_def, restrict₀_eq_one_iff]⟩
 
 variable (K : Type*) [Field K] (v : Valuation K Γ₀) [RankOne v]
 
@@ -155,25 +146,22 @@ instance restrict_RankOne : RankOne (v.restrict) where
 lemma restrict_RankOne_hom_eq :
   RankOne.hom v.restrict = (RankOne.hom v).comp embedding := rfl
 
+variable {K} in
 set_option backward.isDefEq.respectTransparency false in
-theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [hv : RankOne v]
-    {γ : ℝ≥0} (hγ : γ ≠ 0) :
-    (∃ (x : K), x ≠ 0 ∧ RankOne.hom v (v.restrict x) < γ) := by
+theorem exists_val_lt {γ : ℝ≥0} (hγ : γ ≠ 0) : ∃ x ≠ 0, RankOne.hom v (v.restrict x) < γ := by
   have hγ_pos : 0 < γ := pos_iff_ne_zero.mpr hγ
-  obtain ⟨x, h⟩ :=
-    NNReal.exists_lt_of_strictMono (RankOne.strictMono v.restrict) hγ_pos
+  obtain ⟨x, h⟩ := NNReal.exists_lt_of_strictMono (RankOne.strictMono v.restrict) hγ_pos
   obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
-  use k
-  refine ⟨?_, ?_⟩
+  refine ⟨k, ?_, ?_⟩
   · simp only [restrict₀_apply, restrict_def, map_eq_zero, dite_eq_left_iff, coe_ne_zero,
       imp_false, not_not] at hk
     by_contra h0
     rw [dif_pos (by  rw [dif_pos ((zero_iff v).mpr h0)]), eq_comm] at hk
     simp at hk
   · convert h
-    simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply]
-    erw [← hk, embedding_restrict₀]
-    rfl
+    simp only [restrict_RankOne_hom_eq, coe_comp, Function.comp_apply, ← hk]
+    congr 1
+    exact (embedding_restrict₀ k).symm
 
 end Restrict
 
@@ -181,44 +169,39 @@ end RankOne
 
 namespace RankLeOne
 
-variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [hv : RankLeOne v]
+variable {K : Type*} [DivisionRing K] (v : Valuation K Γ₀) [RankLeOne v]
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
-def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v :=
-  { hv with
-    exists_val_nontrivial := by
-      by_contra H'
-      push_neg at H'
-      obtain ⟨x, hx, hx'⟩ := H
-      exact hx' (H' x ((ne_zero_iff v).mpr hx)) }
+def rankOne_of_exists (H : ∃ x ≠ 0, v x ≠ 1) : RankOne v where
+  exists_val_nontrivial := by
+    by_contra H'
+    push_neg at H'
+    obtain ⟨x, hx, hx'⟩ := H
+    exact hx' (H' x ((ne_zero_iff v).mpr hx))
 
 /-- If a valuation has rank at most one and is non trivial,
 then it has rank one -/
-def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v :=
-  { hv with
-    exists_val_nontrivial := by
-      by_contra H'
-      push_neg at H'
-      rw [nontrivial_iff_exists_ne 1] at H
-      obtain ⟨x, hx⟩ := H
-      obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
-      have h0 : v k ≠ 0 := by
-        rw [ne_eq, ← restrict₀_eq_zero_iff, hk]
-        simp
-      have h1 : v k ≠ 1 := by
-        rw [ne_eq, ← restrict₀_eq_one_iff, hk]
-        simp [hx]
-      exact h1 (H' k h0) }
+def rankOne_of_nontrivial (H : Nontrivial (ValueGroup₀ v)ˣ) : RankOne v where
+  exists_val_nontrivial := by
+    by_contra H'
+    push_neg at H'
+    rw [nontrivial_iff_exists_ne 1] at H
+    obtain ⟨x, hx⟩ := H
+    obtain ⟨k, hk⟩ := ValueGroup₀.restrict₀_surjective _ x.val
+    have h0 : v k ≠ 0 := by
+      rw [ne_eq, ← restrict₀_eq_zero_iff, hk]
+      simp
+    have h1 : v k ≠ 1 := by
+      rw [ne_eq, ← restrict₀_eq_one_iff, hk]
+      simp [hx]
+    exact h1 (H' k h0)
 
 theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [RankLeOne v] :
     Subsingleton ((ValueGroup₀ v)ˣ) ∨
       ∀ {γ : ℝ≥0} (_ : γ ≠ 0), ∃ (x : K), x ≠ 0 ∧ (RankLeOne.hom' v) (v.restrict x) < γ := by
-  classical
   simp only [ne_eq, or_iff_not_imp_left, not_subsingleton_iff_nontrivial]
-  intro H
-  let hv : RankOne v := rankOne_of_nontrivial v H
-  apply RankOne.exists_val_lt
+  exact fun H ↦ (rankOne_of_nontrivial v H).exists_val_lt
 
 end RankLeOne
 
@@ -244,15 +227,11 @@ instance [IsNontrivial R] [IsRankLeOne R] :
 /-- Convert between the rank one statement on valuative relation's induced valuation. -/
 def Valuation.RankOne.rankLeOneStruct (e : Valuation.RankOne (valuation R)) :
     RankLeOneStruct R where
-  emb := e.hom.comp
-      (ValuativeRel.ValueGroupWithZero.embed (v := valuation R))
-  strictMono := by
-    apply e.strictMono.comp
-    exact ValueGroupWithZero.embed_strictMono (valuation R)
+  emb := e.hom.comp (ValuativeRel.ValueGroupWithZero.embed (v := valuation R))
+  strictMono := e.strictMono.comp (ValueGroupWithZero.embed_strictMono (valuation R))
 
 lemma ValuativeRel.isRankLeOne_of_rankOne [h : (valuation R).RankOne] :
-    IsRankLeOne R :=
-  ⟨⟨h.rankLeOneStruct⟩⟩
+    IsRankLeOne R := ⟨⟨h.rankLeOneStruct⟩⟩
 
 lemma ValuativeRel.isNontrivial_of_rankOne [h : (valuation R).RankOne] :
     ValuativeRel.IsNontrivial R :=

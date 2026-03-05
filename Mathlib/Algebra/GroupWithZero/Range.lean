@@ -24,7 +24,7 @@ elements in `range f` and `MonoidWithZeroHom.ValueGroup₀` adds a `0` to the pr
 
 When `B` is commutative, then both `MonoidWithZeroHom.valueGroup f` and
 `MonoidWithZeroHom.ValueGroup₀ f` are also commutative and the former can be described more
-explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm`).
+explicitly (see `MonoidWithZeroHom.mem_valueGroup_iff_of_comm` and `mem_valueGroup_iff_of_comm'`).
 
 ## Main declarations
 
@@ -224,6 +224,7 @@ section CommGroupWithZero
 --
 variable [MonoidWithZero A] [CommGroupWithZero B] [MonoidWithZeroHomClass F A B]
 
+/- See also `mem_valueGroup_iff_of_comm'` for a version proving that `f x ≠ 0`. -/
 theorem mem_valueGroup_iff_of_comm {y : Bˣ} :
     y ∈ valueGroup f ↔ ∃ a, f a ≠ 0 ∧ ∃ x, f a * y = f x := by
   refine ⟨fun hy ↦ ?_, fun ⟨a, ha, x, hy⟩ ↦ ?_⟩
@@ -262,27 +263,25 @@ theorem mem_valueGroup_iff_of_comm' {y : Bˣ} :
 
 namespace ValueGroup₀
 
-/- /-- The map sending a pair of nonzero `r s : A` to the element -/
-def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : ValueGroup₀ f :=
-    (⟨.mk0 _ hr * (.mk0 _ hs)⁻¹, mul_mem (mem_valueGroup _ (by simp))
-    (inv_mem (mem_valueGroup _ (by simp)))⟩ : valueGroup f) -/
-
 /-- The map sending a pair of nonzero `r s : A` to the element `(v r)⁻¹ * (v s)`
 of `ValueGroup₀ v`. -/
 def mk (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) : ValueGroup₀ f :=
     (⟨(.mk0 _ hr)⁻¹ * (.mk0 _ hs), mul_mem (inv_mem (mem_valueGroup _ (by simp)))
     (mem_valueGroup _ (by simp))⟩ : valueGroup f)
 
-theorem zero_or_exists_mk (x : ValueGroup₀ f) :
-    x = 0 ∨ ∃ r s hr hs, x = .mk f r s hr hs := by
+lemma mk_def (r s : A) (hr : f r ≠ 0) (hs : f s ≠ 0) :
+    ValueGroup₀.mk f r s hr hs =
+      (⟨(.mk0 _ hr)⁻¹ * (.mk0 _ hs), mul_mem (inv_mem (mem_valueGroup _ (by simp)))
+      (mem_valueGroup _ (by simp))⟩ : valueGroup f) := rfl
+
+theorem zero_or_exists_mk (x : ValueGroup₀ f) : x = 0 ∨ ∃ r s hr hs, x = .mk f r s hr hs := by
   obtain _ | ⟨x, hx⟩ := x
   · left; rfl
   · rw [mem_valueGroup_iff_of_comm'] at hx
     obtain ⟨r, hr, s, hs, hrs⟩ := hx
-    exact .inr ⟨r, s, hr, hs, Option.some_inj.mpr <| by
-      simp only [Subtype.mk.injEq]
-      rw [eq_inv_mul_iff_mul_eq]
-      simp [← hrs, mul_comm]⟩
+    right
+    refine ⟨r, s, hr, hs, Option.some_inj.mpr ?_⟩
+    simp [← hrs, mul_comm]
 
 theorem zero_or_exists_mk' (x : ValueGroup₀ f) :
     x = 0 ∨ ∃ d : {xy : A × A // f xy.1 ≠ 0 ∧ f xy.2 ≠ 0}, x = .mk f d.1.1 d.1.2 d.2.1 d.2.2 :=
@@ -301,7 +300,7 @@ variable {r s r₁ s₁ r₂ s₂ : A}
 @[simp] theorem mk_mul {hr₁ : f r₁ ≠ 0} {hs₁ : f s₁ ≠ 0} {hr₂ : f r₂ ≠ 0} {hs₂ : f s₂ ≠ 0} :
     mk f r₁ s₁ hr₁ hs₁ * mk f r₂ s₂ hr₂ hs₂ =
       mk f (r₁ * r₂) (s₁ * s₂) (by simp_all) (by simp_all) := by
-  refine Option.some_inj.mpr <| ?_
+  apply Option.some_inj.mpr
   simp only [MulMemClass.mk_mul_mk, map_mul, Units.mk0_mul, Subtype.mk.injEq]
   rw [mul_mul_mul_comm, mul_inv]
 

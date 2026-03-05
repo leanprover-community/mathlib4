@@ -353,9 +353,7 @@ instance : Valued (RatFunc K) ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 theorem v_def {x : RatFunc K} :
     Valued.v x = (idealX K).valuation _ x := rfl
 
-
-lemma valuation_surjective :
-    Function.Surjective (Valued.v (R := RatFunc K)) := by
+lemma valuation_surjective : Function.Surjective (Valued.v (R := RatFunc K)) := by
   intro n
   by_cases hn0 : n = 0
   · use 0; simp [hn0]
