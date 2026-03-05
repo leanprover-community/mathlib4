@@ -151,165 +151,18 @@ instance of_completeSpace : IsKrasner K L where
 
 end IsKrasner
 
-namespace Polynomial
-
-/-- **Continuity of Roots.** If the coefficients of two polynomials `f` and `g` are sufficiently
-close, then every root of `f` has a corresponding root of `g` nearby. -/
-theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt {K : Type*}
-    [NormedField K] {f g : Polynomial K}
-    (a : K) {ε : ℝ} (hε : 0 < ε) (ha : f.eval a = 0) (hfm : f.Monic)
-    (hgm : g.Monic) (hdeg : g.natDegree = f.natDegree)
-    (hcoeff : ∀ i : ℕ, ‖g.coeff i - f.coeff i‖ < ε) (hg : g.Splits) :
-    ∃ b ∈ g.roots, ‖a - b‖ < ((f.natDegree + 1) * ε) ^ (f.natDegree : ℝ)⁻¹ * max ‖a‖ 1 := by
-  --  Fix a root of It suffices to show that
-  suffices this : (g.roots.map fun x => ‖a - x‖).prod <
-      ((f.natDegree + 1) * ε) * (max ‖a‖ 1) ^ (f.natDegree : ℝ) by
-    by_contra! h
-    have := Multiset.prod_map_le_prod_map₀ (fun b ↦ ((f.natDegree + 1) * ε) ^ (f.natDegree : ℝ)⁻¹ *
-        (‖a‖ ⊔ 1)) (fun b ↦ ‖a - b‖) (by intros; positivity) h
-    simp only [Multiset.map_const', hg.natDegree_eq_card_roots.symm ▸ hdeg, Multiset.prod_replicate,
-      mul_pow, ← Real.rpow_natCast,
-      ← Real.rpow_mul (by positivity : ((f.natDegree + 1) * ε) > 0).le] at this
-    rw [inv_mul_cancel₀, Real.rpow_one] at this
-    · linarith
-    · simp only [ne_eq, Nat.cast_eq_zero, hfm, Monic.natDegree_eq_zero]
-      intro h
-      simp [h] at ha
-  calc
-  _ = (g.roots.map (fun x ↦ NormedField.toMulRingNorm K (a - x))).prod := rfl
-  _ = ‖(g.roots.map (fun x ↦ a - x)).prod‖ := by
-    rw [g.roots.prod_hom' (NormedField.toMulRingNorm K) (fun x : K ↦ a - x)]
-    rfl
-  _ = ‖g.eval a‖ := by
-    congr
-    rw [hg.eval_eq_prod_roots_of_monic hgm]
-  _ ≤ ‖g.eval a - f.eval a‖ + ‖f.eval a‖ := by
-    convert norm_add_le (g.eval a - f.eval a) (f.eval a)
-    simp
-  _ = ‖(∑ i ∈ Finset.range (g.natDegree + 1), C (g.coeff i - f.coeff i) * X ^ i).eval a‖ := by
-    rw [← eval_sub]
-    simp only [ha, norm_zero, add_zero]
-    rw [(g - f).as_sum_range' (g.natDegree + 1)]
-    · congr
-      simp [← C_mul_X_pow_eq_monomial]
-    · simpa [hdeg, Nat.lt_succ_iff] using g.natDegree_sub_le f
-  _ ≤ ∑ i ∈ Finset.range (g.natDegree + 1), ‖(g.coeff i - f.coeff i) * a ^ i‖ := by
-    have := norm_sum_le (Finset.range (g.natDegree + 1))
-        (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
-    simpa [eval_mul, eval_finset_sum] using this
-    -- The following tactic does not work here:
-    -- simpa [eval_mul, eval_finset_sum] using norm_sum_le (Finset.range (g.natDegree + 1))
-    --     (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
-  _ < _ := by
-    rw [hdeg]
-    convert Finset.sum_lt_sum_of_nonempty (g := fun i ↦ ε * (‖a‖ ⊔ 1) ^ ↑f.natDegree)
-        (Finset.nonempty_range_add_one) ?_
-    · simp [mul_assoc]
-    · simp only [Finset.mem_range, norm_mul, norm_pow]
-      intro i hi
-      apply mul_lt_mul_of_lt_of_le_of_nonneg_of_pos
-      · simpa [← map_sub] using hcoeff i
-      · refine (pow_le_pow_left₀ (norm_nonneg a) (le_max_left ‖a‖ 1) i).trans ?_
-        exact pow_le_pow_right₀ (le_max_right ‖a‖ 1) (Nat.le_of_lt_succ hi)
-      all_goals positivity
-
-theorem exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt {K L : Type*}
-    [NormedField K] [NormedField L] [NormedAlgebra K L] {f g : Polynomial K}
-    (a : L) {ε : ℝ} (hε : 0 < ε) (ha : f.aeval a = 0) (hfm : f.Monic)
-    (hgm : g.Monic) (hdeg : g.natDegree = f.natDegree)
-    (hcoeff : ∀ i : ℕ, ‖g.coeff i - f.coeff i‖ < ε)
-    (hg : (g.map (algebraMap K L)).Splits) :
-    ∃ b ∈ g.aroots L, ‖a - b‖ < ((f.natDegree + 1) * ε) ^ (f.natDegree : ℝ)⁻¹ * max ‖a‖ 1 := by
-  obtain ⟨b, h1, h2⟩ := exists_roots_norm_sub_lt_of_norm_coeff_sub_lt a hε
-      (f := f.map (algebraMap K L)) (by simpa using ha) (hfm.map _) (hgm.map _)
-      (by simpa using hdeg) (by simpa [← map_sub] using hcoeff) hg
-  use b, h1
-  simpa using h2
-
-theorem exists_monic_and_norm_map_algebraMap_coeff_sub_lt {K L : Type*} [Field K]
-    [NormedField L] {i : K →+* L} (hd : DenseRange i) {f : Polynomial L} (hf : f.Monic) {ε : ℝ}
-    (hε : ε > 0) : ∃ g : Polynomial K, g.Monic ∧ f.natDegree = g.natDegree ∧
-    ∀ n : ℕ, ‖(g.map i).coeff n - f.coeff n‖ < ε := by
-  by_cases h : f.natDegree = 0
-  · use 1
-    rw [hf.natDegree_eq_zero.mp]
-    · simp only [monic_one, natDegree_one, Polynomial.map_one, sub_self, norm_zero, hε,
-      implies_true, and_self]
-    · exact h
-  choose c hc using fun i ↦ Metric.denseRange_iff.mp hd (f.coeff i) ε hε
-  have hdeg : (C 1 * X ^ f.natDegree + ∑ i < f.natDegree, C (c i) * X ^ i).natDegree
-      = f.natDegree := by
-    calc
-      _ = (C (1 : K) * X ^ f.natDegree).natDegree := by
-        apply Polynomial.natDegree_add_eq_left_of_natDegree_lt
-        simp only [map_one, one_mul, natDegree_pow, natDegree_X, mul_one]
-        rw [← Nat.le_sub_one_iff_lt (Nat.pos_of_ne_zero h)]
-        apply Polynomial.natDegree_sum_le_of_forall_le
-        intro i hi
-        refine (Polynomial.natDegree_C_mul_X_pow_le _ _).trans ?_
-        simpa [Nat.le_sub_one_iff_lt (Nat.pos_of_ne_zero h)] using hi
-      _ = f.natDegree := by
-        simp
-  use C 1 * X ^ f.natDegree + ∑ i < f.natDegree, C (c i) * X ^ i
-  refine ⟨?_, ?_, fun n ↦ ?_⟩
-  · rw [Monic, leadingCoeff, hdeg]
-    simp
-  · exact hdeg.symm
-  · rcases lt_trichotomy n f.natDegree with h | h | h
-    · simpa [h, ne_of_lt h, ← dist_eq_norm_sub'] using hc n
-    · simp [h, hf, hε]
-    · simp [not_lt_of_gt h, ne_of_gt h, coeff_eq_zero_of_natDegree_lt h, hε]
-
--- theorem exists_monic_and_isSeparable_and_norm_coeff_sub_lt_of_irreducible {K : Type*}
---     [NormedField K] {f : Polynomial K} (hf : f.Monic) {ε : ℝ} (hε : ε > 0) :
---     ∃ g : Polynomial K, g.Monic ∧ Separable g ∧ f.natDegree = g.natDegree ∧
---     ∀ n : ℕ, ‖g.coeff n - f.coeff n‖ < ε := by
---   by_cases fsep : Separable f
---   · use f, hf, fsep, rfl, fun n ↦ by simp [hε]
---   · sorry
-
--- theorem exists_monic_and_isSeparable_norm_map_algebraMap_coeff_sub_lt {K L : Type*} [Field K]
---     [NormedField L] {i : K →+* L} (hd : DenseRange i) {f : Polynomial L} (hf : f.Monic) {ε : ℝ}
---     (hε : ε > 0) : ∃ g : Polynomial K, g.Monic ∧ Separable g ∧ f.natDegree = g.natDegree ∧
---     ∀ n : ℕ, ‖(g.map i).coeff n - f.coeff n‖ < ε := by
---   letI := NormedField.induced K L _ i.injective
---   obtain ⟨g, gmon, gdeg, gcoeff⟩ :=
---     exists_monic_and_norm_map_algebraMap_coeff_sub_lt hd hf (by positivity : ε/2 > 0)
---   obtain ⟨h, hmon, hsep, hdeg, hcoeff⟩ :=
---     exists_monic_and_isSeparable_and_norm_coeff_sub_lt_of_irreducible gmon (by positivity : ε/2 > 0)
---   refine ⟨h, hmon, hsep, gdeg.trans hdeg, fun n ↦ ?_⟩
---   calc
---   _ ≤ ‖(map i g).coeff n - f.coeff n‖ + ‖(map i h).coeff n - (map i g).coeff n‖ := by
---     repeat rw [sub_eq_neg_add, ← NormedField.dist_eq]
---     exact dist_triangle _ _ _
---   _ < ε/2 + ε/2 := by
---     gcongr
---     · exact gcoeff n
---     · simpa [← map_sub] using hcoeff n
---   _ = _ := by linarith
-
--- do we need this?? -- seems not
-theorem exists_monic_and_norm_map_algebraMap_coeff_sub_lt' {K : Type*} [NormedField K]
-    {f : Polynomial (UniformSpace.Completion K)} (hf : f.Monic) {ε : ℝ} (hε : ε > 0) :
-    ∃ g : Polynomial K, g.Monic ∧ f.natDegree = g.natDegree ∧
-    ∀ i : ℕ, ‖(g.map (algebraMap _ _)).coeff i - f.coeff i‖ < ε :=
-  exists_monic_and_norm_map_algebraMap_coeff_sub_lt UniformSpace.Completion.denseRange_coe hf hε
-
-end Polynomial
-
 open Polynomial
--- TODO: A lot
 set_option backward.isDefEq.respectTransparency false in
+/-- If `K` is an algebraically closed dense subfield of a complete nonarchimedean normed field `L`
+of characteristic zero, then `L` is also algebraically closed. -/
 theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedField L]
     [CompleteSpace L] [CharZero L] [IsUltrametricDist L] {i : K →+* L}
     (hi : DenseRange i) [IsAlgClosed K] : IsAlgClosed L := by
+  -- Fix any monic irreducible polynoial `f` in `L`.
+  -- Let `F` be the splitting field of `f`. Let `a` be a root of `f` in `F`.
   apply IsAlgClosed.of_exists_root
   intro f fmon firr
   have fnatdeg0 : f.natDegree ≠ 0 := (Irreducible.natDegree_pos firr).ne'
-  by_cases fnatdeg1 : f.natDegree = 1
-  · rw [fmon.eq_X_add_C fnatdeg1]
-    use - f.coeff 0
-    simp
   let F := f.SplittingField
   letI : NormedField F := spectralNorm.normedField L F
   letI : NormedAlgebra L F := spectralNorm.normedAlgebra L F
@@ -319,6 +172,8 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
     rw [← eval_map_algebraMap]
     exact eval_rootOfSplits (Polynomial.SplittingField.splits f)
       (by simpa using degree_ne_of_natDegree_ne fnatdeg0)
+  -- Let `δ` be a positive real number such that `δ ≤ ‖a - a'‖` for
+  -- every Galois conjugates `a'` of `a`
   classical
     let S : Finset F := {x ∈ (f.rootSet F).toFinset | x ≠ a}
   let δ : ℝ := if hS : S.Nonempty then Finset.min' (S.image fun x => ‖a - x‖)
@@ -347,7 +202,10 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
       exact ha'.2.symm
     · linarith
   have hε : (δ / (max ‖a‖ 1)) ^ f.natDegree / (f.natDegree + 1) > 0 := by positivity
-  obtain ⟨g, gmon, gdeg, gcoeff⟩ := exists_monic_and_norm_map_algebraMap_coeff_sub_lt hi fmon hε
+  -- We can find a `g ∈ K[X]` whose coefficients sufficiently close to coefficients of `f`.
+  -- By continuity of roots, there exists a root `b` of `g` in `K` such that `‖a - b‖ ≤ δ`.
+  obtain ⟨g, gmon, gdeg, gcoeff⟩ :=
+    exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt hi fmon hε
   let ⟨b, hb, hab⟩ := exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt
       a hε fa0 fmon (gmon.map _) (gdeg ▸ (g.natDegree_map _)) gcoeff
       (by simpa [Polynomial.map_map] using (IsAlgClosed.splits g).map ((algebraMap L F).comp i))
@@ -365,6 +223,7 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
     exact ⟨bCp, hbCp⟩
   simp only [Polynomial.mem_roots', ne_eq, Polynomial.map_eq_zero, Polynomial.IsRoot.def,
     Polynomial.eval_map_algebraMap] at hb
+  -- By Krasner's lemma, `a ∈ L(b) = L`. Thus `f` has a root in `L`.
   have abot : a ∈ (⊥ : IntermediateField L F) := by
     have masp : ((minpoly L a).map (algebraMap L F)).Splits := by
       simpa [minpoly.eq_of_irreducible_of_monic firr fa0 fmon] using
