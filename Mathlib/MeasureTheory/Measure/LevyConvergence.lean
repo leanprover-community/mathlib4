@@ -40,7 +40,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     IsTightMeasureSet (Set.range μ) := by
   -- it suffices to show that a limsup tends to 0
   refine isTightMeasureSet_range_of_tendsto_limsup_measureReal_inner_of_norm_eq_one ℝ
-    (fun z hz ↦ ?_) 1 (fun _ ↦ by simp)
+    (fun z hz ↦ ?_) 1 (.of_forall fun _ ↦ by simp)
   -- first, prove an auxiliary inequality that will be used to bound the limsup
   have h_le_4 n r (hr : 0 < r) :
       2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun (μ n) (t • z)‖ ≤ 4 := by
@@ -53,14 +53,14 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       rw [intervalIntegral.integral_of_le hr', intervalIntegral.integral_of_le hr']
       refine integral_mono_of_nonneg ?_ (by fun_prop) ?_
       · exact ae_of_all _ fun _ ↦ by positivity
-      · exact ae_of_all _ fun x ↦ norm_one_sub_charFun_le_two
+      · exact ae_of_all _ fun _ ↦ norm_one_sub_charFun_le_two
     _ ≤ 4 := by
       simp only [intervalIntegral.integral_const, sub_neg_eq_add, smul_eq_mul]
       field_simp
       norm_num
   have h_le n r (hr : 0 < r) : (μ n).real {x | r < |⟪z, x⟫|} ≤
       2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun (μ n) (t • z)‖ :=
-    measureReal_abs_inner_gt_le_integral_charFun (μ := μ n) (a := z) hr
+    measureReal_abs_inner_gt_le_integral_charFun hr
   -- We introduce an upper bound for the limsup.
   -- This is where we use that `charFun (μ n)` converges to `f`.
   have h_limsup_le r (hr : 0 < r) :
@@ -82,7 +82,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       refine tendsto_integral_of_dominated_convergence (fun _ ↦ 2) ?_ (by fun_prop) ?_ ?_
       · exact fun _ ↦ Measurable.aestronglyMeasurable <| by fun_prop
       · exact fun _ ↦ ae_of_all _ fun _ ↦ norm_one_sub_charFun_le_two
-      · exact ae_of_all _ fun x ↦ tendsto_const_nhds.sub (h _)
+      · exact ae_of_all _ fun _ ↦ tendsto_const_nhds.sub (h _)
   -- It suffices to show that the upper bound tends to 0.
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le' tendsto_const_nhds
     (h := fun r ↦ 2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - f (t • z)‖) ?_ ?_ ?_
@@ -114,10 +114,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     refine (hδ_lt ?_).le
     simp only [norm_smul, Real.norm_eq_abs, mul_one, hz]
     calc |x|
-    _ ≤ 2 * r⁻¹ := by
-      rw [abs_le]
-      rw [Set.mem_Ioc] at hx
-      exact ⟨hx.1.le, hx.2⟩
+    _ ≤ 2 * r⁻¹ := by simp at hx; grind
     _ < δ := by
       rw [← lt_div_iff₀' (by positivity), inv_lt_comm₀ hr (by positivity)]
       refine lt_of_lt_of_le ?_ hrδ
