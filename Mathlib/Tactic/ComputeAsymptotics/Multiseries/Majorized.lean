@@ -121,8 +121,8 @@ theorem mul_bounded {f g basis_hd : ℝ → ℝ} {exp : ℝ} (hf : Majorized f b
     Majorized (f * g) basis_hd exp := by
   intro exp h_exp
   convert IsLittleO.mul_isBigO (hf _ h_exp) hg using 1
+  ext
   simp
-  rfl
 
 end Majorized
 

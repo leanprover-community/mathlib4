@@ -68,7 +68,7 @@ lemma cauchyPDF_scale_zero (x₀ : ℝ) : cauchyPDF x₀ 0 = 0 := by
   simp [cauchyPDF]
 
 lemma cauchyPDF_def (x₀ : ℝ) (γ : ℝ≥0) (x : ℝ) :
-  cauchyPDF x₀ γ x = ENNReal.ofReal (cauchyPDFReal x₀ γ x) := by rfl
+    cauchyPDF x₀ γ x = ENNReal.ofReal (cauchyPDFReal x₀ γ x) := by rfl
 
 @[fun_prop]
 lemma measurable_cauchyPDFReal (x₀ : ℝ) (γ : ℝ≥0) : Measurable (cauchyPDFReal x₀ γ) := by

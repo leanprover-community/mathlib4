@@ -42,8 +42,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
   neg_add_cancel := Int.add_left_neg
   nsmul := (· * ·)
   nsmul_zero := Int.zero_mul
-  nsmul_succ n x :=
-    show (n + 1 : ℤ) * x = n * x + x by rw [Int.add_mul, Int.one_mul]
+  nsmul_succ n x := by rw [natCast_add, ofNat_one, Int.add_mul, Int.one_mul]
   zsmul := (· * ·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by

@@ -15,9 +15,9 @@ public import Mathlib.MeasureTheory.Measure.WithDensity
 /-!
 # Results about subtraction of finite measures
 
-The content of this file is not placed in `MeasureTheory.Measure.Sub` because it uses tools that are
-not imported in the other file: the Hahn decomposition of finite measures and measures built with
-`withDensity`.
+The content of this file is not placed in `Mathlib/MeasureTheory/Measure/Sub.lean` because it uses
+tools that are not imported in the other file: the Hahn decomposition of finite measures and
+measures built with `withDensity`.
 
 ## Main statements
 

@@ -14,6 +14,7 @@ public import Mathlib.Algebra.Order.Monoid.NatCast
 public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Tactic.Tauto
+import Mathlib.Tactic.ByContra
 
 /-!
 # Basic facts for ordered rings and semirings
@@ -727,17 +728,15 @@ theorem pos_of_right_mul_lt_le [ExistsAddOfLE R] [PosMulMono R]
     [AddRightMono R] [AddRightReflectLE R]
     (h : a * b < a * c) (hbc : b ≤ c) :
     0 < a := by
-  by_cases! ha : 0 < a
-  · exact ha
-  · grind [mul_le_mul_of_nonpos_left hbc ha]
+  by_contra! ha
+  grind [mul_le_mul_of_nonpos_left hbc ha]
 
 theorem pos_of_left_mul_lt_le [ExistsAddOfLE R] [MulPosMono R]
     [AddLeftMono R] [AddRightReflectLE R]
     (h : b * a < c * a) (hbc : b ≤ c) :
     0 < a := by
-  by_cases! ha : 0 < a
-  · exact ha
-  · grind [mul_le_mul_of_nonpos_right hbc ha]
+  by_contra! ha
+  grind [mul_le_mul_of_nonpos_right hbc ha]
 
 end LinearOrderedSemiring
 

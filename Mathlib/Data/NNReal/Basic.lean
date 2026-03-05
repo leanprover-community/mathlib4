@@ -121,8 +121,7 @@ section Set
 
 @[simp, norm_cast] lemma bddAbove_range_natCast_iff {ι : Sort*} (f : ι → ℕ) :
     BddAbove (Set.range (f ·) : Set NNReal) ↔ BddAbove (Set.range f) := by
-  rw [← bddAbove_natCast_image_iff, ← Set.range_comp]
-  rfl
+  rw [← bddAbove_natCast_image_iff, ← Set.range_comp, Function.comp_def]
 
 end Set
 

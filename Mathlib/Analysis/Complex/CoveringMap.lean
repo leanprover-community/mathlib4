@@ -62,17 +62,18 @@ theorem Polynomial.isCoveringMapOn_eval (p : 𝕜[X]) :
 
 theorem isCoveringMapOn_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMapOn (fun x : 𝕜 ↦ x ^ n) {0}ᶜ := by
-  convert (X ^ n).isCoveringMapOn_eval.mono fun x' h ↦ _ with x
+  convert (X ^ n : 𝕜[X]).isCoveringMapOn_eval.mono fun x' h ↦ _ with x
   · simp
-  · assumption
-  · simpa [derivative_X_pow, hn, show n ≠ 0 by aesop] using fun _ ↦ Ne.symm h
+  · simp only [Set.mem_compl_iff, Set.mem_singleton_iff, ← ne_eq] at h
+    simp [derivative_X_pow, hn, show n ≠ 0 by aesop, h.symm]
 
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0) :
     IsCoveringMap fun x : {x : 𝕜 // x ≠ 0} ↦ (⟨x ^ n, pow_ne_zero n x.2⟩ : {x : 𝕜 // x ≠ 0}) := by
-  convert (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph (.setCongr _)
-    using 1
-  ext; simp [show n ≠ 0 by aesop]; rfl
+  convert (isCoveringMapOn_npow n hn).isCoveringMap_restrictPreimage.comp_homeomorph
+    (.setCongr (s := {0}ᶜ) _)
+    using 0
+  ext; simp [show n ≠ 0 by aesop]
 
 /-- `(· ^ n) : 𝕜 \ {0} → 𝕜 \ {0}` is a covering map (if `n ≠ 0` in `𝕜`). -/
 theorem isCoveringMap_zpow (n : ℤ) (hn : (n : 𝕜) ≠ 0) :
@@ -103,9 +104,9 @@ theorem isQuotientCoveringMap_npow (n : ℕ) (hn : (n : 𝕜) ≠ 0)
     (by fun_prop) (.restrictPreimage _ surj)
   have : IsQuotientMap fun x : 𝕜ˣ ↦ x ^ n := by
     let e := unitsHomeomorphNeZero (G₀ := 𝕜)
-    convert (e.symm.isQuotientMap.comp this).comp (e.trans (.setCongr _)).isQuotientMap
+    convert (e.symm.isQuotientMap.comp this).comp (e.trans (.setCongr (s := {0}ᶜ) ?_)).isQuotientMap
     · exact (e.left_inv _).symm
-    · ext; simp [NeZero.ne]; rfl
+    · ext; simp [NeZero.ne]
   refine this.isQuotientCoveringMap_of_subgroup _
     (Set.Finite.isDiscrete <| inferInstanceAs (Finite (rootsOfUnity ..))) ?_
   simp [mul_pow, mul_inv_eq_one, eq_comm]

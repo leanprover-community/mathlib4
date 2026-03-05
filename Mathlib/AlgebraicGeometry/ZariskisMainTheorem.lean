@@ -43,7 +43,7 @@ variable {X Y S : Scheme.{u}} (f : X ⟶ S) [LocallyOfFiniteType f]
 
 set_option backward.isDefEq.respectTransparency false in
 open TensorProduct in
--- Note: This is weaker than stacks#02LN but is enough to proof Zariski's main.
+-- Note: This is weaker than stacks#02LN but is enough to prove Zariski's main.
 -- TODO: generalize this.
 theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     {x : X} {s : S} (h : f x = s) (hx : f.QuasiFiniteAt x) :

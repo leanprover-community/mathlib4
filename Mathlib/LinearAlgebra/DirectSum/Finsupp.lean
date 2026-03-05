@@ -190,8 +190,8 @@ lemma finsuppScalarRight_symm_apply_single (i : ι) (m : M) :
   simp [finsuppScalarRight, finsuppRight_symm_apply_single]
 
 theorem finsuppScalarRight_smul (s : S) (t) :
-    finsuppScalarRight R S M ι (s • t) = s • finsuppScalarRight R S M ι t := by
-  simp
+    finsuppScalarRight R S M ι (s • t) = s • finsuppScalarRight R S M ι t :=
+  map_smul _ _ _
 
 @[deprecated (since := "2026-01-01")] alias finsuppScalarRight' := finsuppScalarRight
 

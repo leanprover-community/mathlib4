@@ -34,7 +34,7 @@ not less than this function. It turns out that this function is a measure.
 
 variable {X : Type*} [MeasurableSpace X]
 
-open MeasureTheory BigOperators NNReal ENNReal Function
+open ENNReal
 
 namespace MeasureTheory.VectorMeasure
 

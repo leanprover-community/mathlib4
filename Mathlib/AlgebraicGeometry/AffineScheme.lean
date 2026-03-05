@@ -778,7 +778,7 @@ theorem primeIdealOf_eq_map_closedPoint (x : U) :
   hU.isoSpec_hom_apply _
 
 lemma comap_primeIdealOf_appLE {f : X ⟶ Y} {x : X} (U : Y.Opens)
-      (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U) (hx : x ∈ V) :
+    (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U) (hx : x ∈ V) :
     (hV.primeIdealOf ⟨x, hx⟩).comap (f.appLE U V hVU).hom = hU.primeIdealOf ⟨f x, hVU hx⟩ := by
   change Spec.map (f.appLE U V hVU) (hV.primeIdealOf ⟨x, hx⟩) = (hU.primeIdealOf ⟨f x, hVU hx⟩)
   simp only [IsAffineOpen.primeIdealOf, ← Scheme.Hom.comp_apply, IsAffineOpen.isoSpec_hom,
@@ -865,9 +865,8 @@ lemma ideal_ext_iff {I J : Ideal Γ(X, U)} :
 
 /-- Given affine opens `x ∈ V ⊆ f⁻¹(U)`, the stalk map of `f` at `x` is isomorphic to
 `Localization.localRingHom` of `f.appLE U V`. -/
-def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens)
-      (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U)
-      (hx : x ∈ V) :
+def arrowStalkMapIso (f : X ⟶ Y) {x : X} (U : Y.Opens) (hU : IsAffineOpen U)
+    (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U) (hx : x ∈ V) :
     Arrow.mk (f.stalkMap x) ≅ Arrow.mk (CommRingCat.ofHom <|
       Localization.localRingHom _ _ (f.appLE U V hVU).hom
         congr($(IsAffineOpen.comap_primeIdealOf_appLE U hU V hV hVU hx).1).symm) := by

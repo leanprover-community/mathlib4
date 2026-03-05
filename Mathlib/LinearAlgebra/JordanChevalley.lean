@@ -95,7 +95,7 @@ theorem isNilpotent_isSemisimple_unique [PerfectField K]
   have hsf : Commute s (n₁ + s₁) := heq ▸ hc.symm.add_right (Commute.refl s)
   have hnf : Commute n (n₁ + s₁) := heq ▸ (Commute.refl n).add_right hc
   have hnil : IsNilpotent (s - s₀) := by
-    rw [show s - s₀ = n₀ - n from by grind]
+    rw [show s - s₀ = n₀ - n by grind]
     exact (commute_of_mem_adjoin_singleton_of_commute hn₀ hnf).symm.isNilpotent_sub hn₀_nil hn
   have hss : (s - s₀).IsSemisimple :=
     hs.sub_of_commute (commute_of_mem_adjoin_singleton_of_commute hs₀ hsf) hs₀_ss

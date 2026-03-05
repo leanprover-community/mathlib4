@@ -255,7 +255,7 @@ lemma Algebra.exists_etale_isIdempotentElem_forall_liesOver_eq_aux
   let e : R' ⊗[R] S := aeval s' (c * a')
   let φ := Algebra.TensorProduct.map (.id R' R') (integralClosure R S).val
   have he₀e : φ e₀ = e := by
-    simp only [e₀, ← aeval_algHom_apply]; rfl
+    simp only [e₀, ← aeval_algHom_apply]; simp [e, s', φ, s₀]
   have he : IsIdempotentElem e := he₀e ▸ he₀.map _
   let P' := (Ideal.fiberIsoOfBijectiveResidueField hP).symm ⟨q, ‹_›, ‹_›⟩
   have hP'q : P'.1.comap Algebra.TensorProduct.includeRight.toRingHom = q :=

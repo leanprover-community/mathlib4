@@ -317,7 +317,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
     [FaithfulSMul R S] [IsIntegrallyClosed R] [IsDomain S]
     {x : S} (hx' : (aeval (R := R) x).Finite)
     (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :
-      ¬ IsStronglyTranscendental R x := by
+    ¬ IsStronglyTranscendental R x := by
   intro hx
   have : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain
   have hf' : Function.Injective (aeval (R := R) x) := (injective_iff_map_eq_zero _).mpr
@@ -401,7 +401,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_au
     (RingHom.surjectiveOnStalks_of_surjective hf₁) rfl
 
 set_option backward.isDefEq.respectTransparency false in
-nonrec lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt [IsReduced S]
+lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt [IsReduced S]
     {x : S} (hx' : (aeval (R := R) x).toRingHom.Finite)
     (P : Ideal S) [P.IsPrime] [Algebra.WeaklyQuasiFiniteAt R P] :
     ¬ IsStronglyTranscendental R x := by
@@ -445,7 +445,7 @@ nonrec lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt [IsReduced S]
   exact not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_aux K L f hf rfl hx' P
 
 @[stacks 00Q2]
-nonrec lemma not_isStronglyTranscendental_of_quasiFiniteAt [IsReduced S]
+lemma not_isStronglyTranscendental_of_quasiFiniteAt [IsReduced S]
     {x : S} (hx' : (aeval (R := R) x).toRingHom.Finite)
     (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P] :
     ¬ IsStronglyTranscendental R x :=

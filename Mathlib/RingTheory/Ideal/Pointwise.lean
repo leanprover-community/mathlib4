@@ -156,7 +156,7 @@ theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAct
     ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
 
 instance {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
-  ((inertia M P).subgroupOf (MulAction.stabilizer M P)).Normal := by
+    ((inertia M P).subgroupOf (MulAction.stabilizer M P)).Normal := by
   refine (Subgroup.normal_subgroupOf_iff (inertia_le_stabilizer P)).mpr fun g s hg hs x ↦ ?_
   rw [Submodule.mem_toAddSubgroup, ← Ideal.smul_mem_pointwise_smul_iff (a := s⁻¹), smul_sub,
     smul_smul, ← mul_assoc, inv_mul_cancel_left, mul_smul, Subgroup.inv_mem _ hs]

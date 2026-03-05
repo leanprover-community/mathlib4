@@ -113,11 +113,7 @@ theorem cbiSup_eq_of_forall {p : ι → Prop} {f : Subtype p → α} (hp : ∀ i
   simp only [hp, ciSup_unique]
   simp only [iSup]
   congr
-  apply Subset.antisymm
-  · rintro - ⟨i, rfl⟩
-    simp
-  · rintro - ⟨i, rfl⟩
-    simp
+  grind
 
 /-- Introduction rule to prove that `b` is the supremum of `f`: it suffices to check that `b`
 is larger than `f i` for all `i`, and that this is not the case of any `w<b`.

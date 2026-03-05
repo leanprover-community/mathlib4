@@ -34,8 +34,7 @@ namespace NormalizedGCDMonoid
 lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
     {J : Ideal R} (hJ : ∃ K : Ideal R, J * K ≠ 0 ∧ (J * K).IsPrincipal) :
     J.IsPrincipal := by
-  letI : NormalizedGCDMonoid R :=
-    Classical.choice (inferInstance : Nonempty (NormalizedGCDMonoid R))
+  letI : NormalizedGCDMonoid R := Nonempty.some inferInstance
   obtain ⟨K, hJK0, hK⟩ := hJ
   rcases hK.principal with ⟨x, hJK⟩
   have hxmemJK : x ∈ J * K := by simp [hJK, mem_span_singleton_self]
@@ -66,8 +65,8 @@ lemma isPrincipal_of_exists_mul_ne_zero_isPrincipal
       rw [hx0, mul_zero]
   -- Show `J * (g) ≤ (x)` by proving `x ∣ b * g` for all `b ∈ J`.
   refine le_antisymm
-      (mul_le.mpr fun b hb z hz ↦ ?_)
-      ((span_singleton_le_iff_mem _).mpr hxJg)
+    (mul_le.mpr fun b hb z hz ↦ ?_)
+    ((span_singleton_le_iff_mem _).mpr hxJg)
   obtain ⟨z, rfl⟩ := mem_span_singleton.mp hz
   rw [mem_span_singleton, ← mul_assoc]
   apply dvd_mul_of_dvd_left
@@ -86,20 +85,14 @@ private theorem isPrincipal_of_isUnit_fractionalIdeal (I : Ideal R)
     (hI : IsUnit (I : FractionalIdeal R⁰ (FractionRing R))) :
     I.IsPrincipal := by
   obtain ⟨a, K, ha0, h⟩ := exists_eq_spanSingleton_mul (I : FractionalIdeal R⁰ (FractionRing R))⁻¹
-  have hIK : I * K = Ideal.span ({a} : Set R) :=
-    (coeIdeal_inj (K := FractionRing R)).mp <| by
-      rw [coeIdeal_mul, coeIdeal_span_singleton]
-      rw [← mul_inv_cancel_iff_isUnit] at hI
-      have ha0' := spanSingleton_mul_inv (R₁ := R) (FractionRing R)
-        (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors
-          (mem_nonZeroDivisors_iff_ne_zero.mpr ha0))
-      replace h :=
-        congrArg
-          (fun t =>
-            spanSingleton R⁰ ((algebraMap R (FractionRing R)) a) * I * t)
-          h.symm
-      dsimp only at h
-      rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0', one_mul, mul_assoc, hI, mul_one] at h
+  have hIK : I * K = Ideal.span ({a} : Set R) := by
+    rw [← coeIdeal_inj (K := FractionRing R), coeIdeal_mul, coeIdeal_span_singleton]
+    rw [← mul_inv_cancel_iff_isUnit] at hI
+    have ha0' := spanSingleton_mul_inv (R₁ := R) (FractionRing R)
+      (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors
+        (mem_nonZeroDivisors_iff_ne_zero.mpr ha0))
+    replace h := congr(spanSingleton R⁰ ((algebraMap R (FractionRing R)) a) * I * $h.symm)
+    rwa [mul_mul_mul_comm, ← spanSingleton_inv, ha0', one_mul, mul_assoc, hI, mul_one] at h
   refine isPrincipal_of_exists_mul_ne_zero_isPrincipal (J := I) ?_
   refine ⟨K, ?_, ?_⟩
   · simp [hIK, ha0]

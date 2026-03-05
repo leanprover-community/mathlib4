@@ -37,7 +37,7 @@ theorem dissipate_subset [LE α] {x y : α} (hy : y ≤ x) : dissipate s x ⊆ s
 
 theorem iInter_subset_dissipate [LE α] (x : α) : ⋂ i, s i ⊆ dissipate s x := by
   simp only [dissipate, subset_iInter_iff]
-  exact fun x h ↦ iInter_subset_of_subset x fun ⦃a⦄ a ↦ a
+  exact fun x h ↦ iInter_subset_of_subset x .rfl
 
 theorem antitone_dissipate [Preorder α] : Antitone (dissipate s) :=
   fun _ _ hab ↦ biInter_subset_biInter_left fun _ hz => le_trans hz hab

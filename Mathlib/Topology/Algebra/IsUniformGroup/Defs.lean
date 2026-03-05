@@ -647,10 +647,10 @@ commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for co
 additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
 def IsTopologicalGroup.leftUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.1⁻¹ * p.2) (𝓝 1)
-  symm :=
+  symm := by
     have : Tendsto (fun p : G × G ↦ (p.1⁻¹ * p.2)⁻¹) (comap (fun p : G × G ↦ p.1⁻¹ * p.2) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
-    by simpa [tendsto_comap_iff]
+    simpa [tendsto_comap_iff]
   comp := Tendsto.le_comap fun U H ↦ by
     rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)

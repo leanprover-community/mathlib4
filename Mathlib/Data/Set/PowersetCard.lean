@@ -84,9 +84,7 @@ theorem exists_mem_notMem (hn : 1 ≤ n) (hα : n < ENat.card α) {a b : α} (ha
       by simpa using has, by simpa using has'⟩
 
 theorem exists_mem_notMem_iff_ne (s t : Set.powersetCard α n) : s ≠ t ↔ ∃ a ∈ s, a ∉ t := by
-  contrapose!
-  rw [eq_iff_subset]
-  rfl
+  simp [eq_iff_subset, Finset.subset_iff, mem_coe_iff]
 
 section map
 
@@ -94,12 +92,11 @@ variable (n) {β : Type*}
 
 /-- The map `powersetCard α n → powersetCard β n` induced by embedding `f : α ↪ β`. -/
 def map (f : α ↪ β) (s : powersetCard α n) : powersetCard β n :=
-    ⟨Finset.map f s, by rw [mem_iff, card_map, s.prop]⟩
+  ⟨Finset.map f s, by rw [mem_iff, card_map, s.prop]⟩
 
 lemma mem_map_iff_mem_range (f : α ↪ β) (s : powersetCard α n) (b : β) :
     b ∈ map n f s ↔ b ∈ f '' s := by
-  simp [map]
-  rfl
+  simp [map, mem_coe_iff]
 
 @[simp]
 lemma coe_map (f : α ↪ β) (s : powersetCard α n) : SetLike.coe (map n f s) = f '' s := by

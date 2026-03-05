@@ -267,8 +267,7 @@ lemma exists_primesOver_under_adjoin_eq_singleton_and_residueField_bijective
     have : Q'.LiesOver p := .trans _ (Q.under (adjoin R {t})) _
     exact htQ (SetLike.le_def.mp (Q'.over_def (Q.under (adjoin R {t}))).ge
       (x := ⟨t, self_mem_adjoin_singleton _ _⟩) (htQ' Q' ⟨‹_›, ‹_›⟩ H))
-  · change Function.Surjective (IsScalarTower.toAlgHom p.ResidueField _ _)
-    rw [← AlgHom.range_eq_top, ← top_le_iff, ← ht]
+  · rw [← IsScalarTower.coe_toAlgHom' p.ResidueField, ← AlgHom.range_eq_top, ← top_le_iff, ← ht]
     refine adjoin_singleton_le ?_
     use algebraMap (adjoin R {t}) _ ⟨t, self_mem_adjoin_singleton _ _⟩
     rw [AlgHom.toRingHom_eq_coe, IsScalarTower.coe_toAlgHom, ← IsScalarTower.algebraMap_apply]

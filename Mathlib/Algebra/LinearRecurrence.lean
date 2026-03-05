@@ -112,14 +112,12 @@ theorem eq_mk_of_is_sol_of_eq_init' {u : ℕ → R} {init : Fin E.order → R} (
     (heq : ∀ n : Fin E.order, u n = init n) : u = E.mkSol init :=
   funext (E.eq_mk_of_is_sol_of_eq_init h heq)
 
--- TODO: there's a non-terminal simp here
-set_option linter.flexible false in
 /-- The space of solutions of `E`, as a `Submodule` over `R` of the module `ℕ → R`. -/
 def solSpace : Submodule R (ℕ → R) where
   carrier := { u | E.IsSolution u }
   zero_mem' n := by simp
   add_mem' {u v} hu hv n := by simp [mul_add, sum_add_distrib, hu n, hv n]
-  smul_mem' a u hu n := by simp [hu n, mul_sum]; congr; ext; ac_rfl
+  smul_mem' a u hu n := by simp [hu n, mul_sum]; grind
 
 /-- Defining property of the solution space : `u` is a solution
   iff it belongs to the solution space. -/
@@ -137,7 +135,7 @@ def toInit : E.solSpace ≃ₗ[R] Fin E.order → R where
     ext
     simp
   invFun u := ⟨E.mkSol u, E.is_sol_mkSol u⟩
-  left_inv u := by ext n; symm; apply E.eq_mk_of_is_sol_of_eq_init u.2; intro k; rfl
+  left_inv u := by ext n; exact E.eq_mk_of_is_sol_of_eq_init u.2 (fun _ => rfl) _ |>.symm
   right_inv u := funext_iff.mpr fun n ↦ E.mkSol_eq_init u n
 
 /-- Two solutions are equal iff they are equal on `range E.order`. -/
@@ -148,7 +146,7 @@ theorem sol_eq_of_eq_init (u v : ℕ → R) (hu : E.IsSolution u) (hv : E.IsSolu
   set u' : ↥E.solSpace := ⟨u, hu⟩
   set v' : ↥E.solSpace := ⟨v, hv⟩
   change u'.val = v'.val
-  suffices h' : u' = v' from h' ▸ rfl
+  congr
   rw [← E.toInit.toEquiv.apply_eq_iff_eq, LinearEquiv.coe_toEquiv]
   ext x
   exact mod_cast h (mem_range.mpr x.2)

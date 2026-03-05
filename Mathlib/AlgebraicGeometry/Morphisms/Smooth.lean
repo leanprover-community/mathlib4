@@ -240,9 +240,8 @@ instance (priority := 100) [hf : Smooth f] : LocallyOfFinitePresentation f := by
   rw [HasRingHomProperty.eq_affineLocally @Smooth] at hf
   exact affineLocally_le (fun hf ↦ hf.finitePresentation) f hf
 
-lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens)
-      (hU : IsAffineOpen U) (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U)
-      (hx : x ∈ V) :
+lemma formallySmooth_stalkMap_iff {f : X ⟶ Y} {x : X} (U : Y.Opens) (hU : IsAffineOpen U)
+    (V : X.Opens) (hV : IsAffineOpen V) (hVU : V ≤ f ⁻¹ᵁ U) (hx : x ∈ V) :
     letI := (f.appLE U V hVU).hom.toAlgebra
     (f.stalkMap x).hom.FormallySmooth ↔
       hV.primeIdealOf ⟨x, hx⟩ ∈ Algebra.smoothLocus Γ(Y, U) Γ(X, V) := by
@@ -333,9 +332,8 @@ lemma Scheme.Hom.preimage_smoothLocus_eq {U : Scheme.{u}}
     (f : U ⟶ X) (g : X ⟶ Y) [IsOpenImmersion f] [LocallyOfFinitePresentation g] :
     f ⁻¹ᵁ g.smoothLocus = (f ≫ g).smoothLocus := by
   ext x
-  refine (RingHom.FormallySmooth.respectsIso.cancel_right_isIso _ (f.stalkMap x)).symm.trans ?_
-  rw [← CommRingCat.hom_comp, ← stalkMap_comp]
-  rfl
+  simp [smoothLocus, ← RingHom.FormallySmooth.respectsIso.cancel_right_isIso _ (f.stalkMap x),
+    ← CommRingCat.hom_comp, ← stalkMap_comp]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_perfectField

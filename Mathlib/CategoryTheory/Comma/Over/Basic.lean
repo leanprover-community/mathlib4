@@ -54,8 +54,8 @@ variable {X : T}
 
 @[ext]
 theorem OverMorphism.ext {X : T} {U V : Over X} {f g : U ⟶ V} (h : f.left = g.left) : f = g := by
-  let ⟨_,b,_⟩ := f
-  let ⟨_,e,_⟩ := g
+  let ⟨_, b, _⟩ := f
+  let ⟨_, e, _⟩ := g
   congr
   simp only [eq_iff_true_of_subsingleton]
 

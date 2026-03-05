@@ -326,7 +326,7 @@ theorem mem_adjoin_map_integralClosure_of_isStandardEtale [Algebra.IsStandardEta
       simp [StandardEtalePresentation.baseChange, 𝓟']
     rw [← e.eq_symm_apply]
     simp [e, StandardEtalePair.equivAwayAdjoinRoot, ← aeval_def, ← aeval_algHom_apply]
-    rfl
+    simp [𝓟', StandardEtalePresentation.baseChange]
   -- And `gᵏ • a` is still `R`-integral for `k` large enough.
   obtain ⟨k, hk⟩ : ∃ k, IsIntegral R (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k * a) := by
     have H : ∀ k, e (1 ⊗ₜ (aeval 𝓟.x 𝓟.g ^ k)) = algebraMap _ _ (AdjoinRoot.mk 𝓟'.f 𝓟'.g ^ k) := by

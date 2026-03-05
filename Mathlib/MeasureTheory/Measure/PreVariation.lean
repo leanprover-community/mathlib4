@@ -32,7 +32,7 @@ measure.
 
 variable {X : Type*} [MeasurableSpace X]
 
-open MeasureTheory BigOperators NNReal ENNReal Function
+open NNReal ENNReal Function
 
 namespace MeasureTheory
 
