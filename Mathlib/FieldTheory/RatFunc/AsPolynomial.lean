@@ -229,14 +229,16 @@ noncomputable def algEquivOfTranscendental : RatFunc K ≃ₐ[K] K⟮f⟯ :=
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algEquivOfTranscendental_algebraMap (g : K[X]) :
-    algEquivOfTranscendental f h (algebraMap K[X] (RatFunc K) g) = aeval f g := by
+    algEquivOfTranscendental f h (algebraMap K[X] (RatFunc K) g) =
+    aeval (AdjoinSimple.gen K f) g := by
+  ext
   simp [algEquivOfTranscendental]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem algEquivOfTranscendental_X :
     algEquivOfTranscendental f h (X : RatFunc K) = f := by
-  rw [← algebraMap_X, algEquivOfTranscendental_algebraMap, aeval_X]
+  simp [← algebraMap_X]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem algEquivOfTranscendental_apply (u : RatFunc K) :
@@ -257,7 +259,6 @@ theorem algEquivOfTranscendental_symm_gen :
   simp [algEquivOfTranscendental, ← algebraMap_eq_gen_self]
 
 end algEquivOfTranscendental
-
 
 section Algebra
 
