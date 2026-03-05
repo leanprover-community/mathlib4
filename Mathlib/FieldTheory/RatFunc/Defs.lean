@@ -69,6 +69,8 @@ structure RatFunc [CommRing K] : Type u where ofFractionRing ::
 /-- the coercion to the fraction ring of the polynomial ring -/
   toFractionRing : FractionRing K[X]
 
+@[inherit_doc] scoped[RatFunc] notation:9000 R "⟮X⟯" => RatFunc R
+
 namespace RatFunc
 
 section CommRing
