@@ -93,7 +93,7 @@ lemma LocallyIntegrableOn.mono_measure' [OpensMeasurableSpace X] (hf : LocallyIn
 @[gcongr]
 lemma LocallyIntegrableOn.mono_measure (hf : LocallyIntegrableOn f s μ) (h : ν ≤ μ) :
     LocallyIntegrableOn f s ν :=
-  fun x hx => (hf x hx).mono_measure h
+  fun x hx ↦ (hf x hx).mono_measure h
 
 @[gcongr]
 lemma LocallyIntegrableOn.congr (h : f =ᵐ[μ.restrict s] g) (hf : LocallyIntegrableOn f s μ) :
