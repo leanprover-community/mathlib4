@@ -40,7 +40,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     IsTightMeasureSet (Set.range μ) := by
   -- it suffices to show that a limsup tends to 0
   refine isTightMeasureSet_range_of_tendsto_limsup_measureReal_inner_of_norm_eq_one ℝ
-    (fun z hz ↦ ?_) (by simp : 1 ≠ ∞) (fun _ ↦ by simp)
+    (fun z hz ↦ ?_) 1 (fun _ ↦ by simp)
   -- first, prove an auxiliary inequality that will be used to bound the limsup
   have h_le_4 n r (hr : 0 < r) :
       2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun (μ n) (t • z)‖ ≤ 4 := by
@@ -57,7 +57,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
     _ ≤ 4 := by
       simp only [intervalIntegral.integral_const, sub_neg_eq_add, smul_eq_mul]
       field_simp
-      grind
+      norm_num
   have h_le n r (hr : 0 < r) : (μ n).real {x | r < |⟪z, x⟫|} ≤
       2⁻¹ * r * ‖∫ t in -2 * r⁻¹..2 * r⁻¹, 1 - charFun (μ n) (t • z)‖ :=
     measureReal_abs_inner_gt_le_integral_charFun (μ := μ n) (a := z) hr
@@ -122,7 +122,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       rw [← lt_div_iff₀' (by positivity), inv_lt_comm₀ hr (by positivity)]
       refine lt_of_lt_of_le ?_ hrδ
       field_simp
-      grind
+      norm_num
   rw [abs_of_nonneg hr.le]
   calc 2⁻¹ * r * ‖∫ t in -(2 * r⁻¹)..2 * r⁻¹, 1 - f (t • z)‖
   _ ≤ 2⁻¹ * r * ∫ t in -(2 * r⁻¹)..2 * r⁻¹, ‖1 - f (t • z)‖ := by
@@ -135,11 +135,7 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
       · exact Measurable.aestronglyMeasurable <| by fun_prop
       · simpa using ae_restrict_of_forall_mem measurableSet_Ioc h_le_Ioc
     · exact ae_restrict_of_forall_mem measurableSet_Ioc h_le_Ioc
-  _ = ε / 2 := by
-    simp only [intervalIntegral.integral_div, intervalIntegral.integral_const, sub_neg_eq_add,
-      smul_eq_mul]
-    field_simp
-    grind
+  _ = ε / 2 := by simp; field
   _ < ε := by simp [hε]
 
 end MeasureTheory
