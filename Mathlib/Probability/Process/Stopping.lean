@@ -275,63 +275,77 @@ section IsRightContinuous
 
 open Filtration
 
-variable [ConditionallyCompleteLinearOrderBot ι] [TopologicalSpace ι] [OrderTopology ι]
-    [DenselyOrdered ι] [FirstCountableTopology ι] {f : Filtration ι m}
+variable [ConditionallyCompleteLinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
+    [FirstCountableTopology ι] {f : Filtration ι m} {τ : Ω → WithTop ι}
 
 set_option backward.isDefEq.respectTransparency false in
-lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous'
-    {τ : Ω → WithTop ι} [hf : f.IsRightContinuous]
-    (hτ1 : ∀ i, ¬ IsMax i → MeasurableSet[f i] {ω | τ ω < i})
-    (hτ2 : ∀ i, IsMax i → MeasurableSet[f i] {ω | τ ω ≤ i}) :
+lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous' [hf : f.IsRightContinuous]
+    (hτ1 : ∀ i, MeasurableSet[f i] {ω | τ ω < i})
+    (hτ2 : ∀ i, 𝓝[>] i = ⊥ → MeasurableSet[f i] {ω | τ ω = i}) :
     IsStoppingTime f τ := by
-  intro i
-  by_cases hmax : IsMax i
-  · rw [← hf.eq, f.rightCont_eq_of_isMax hmax]
-    exact hτ2 i hmax
-  rw [← hf.eq, f.rightCont_eq_of_not_isMax hmax]
-  rw [not_isMax_iff] at hmax
-  obtain ⟨j, hj⟩ := hmax
-  obtain ⟨u, hu₁, hu₂, hu₃⟩ := exists_seq_strictAnti_tendsto' hj
-  refine MeasurableSet.of_compl ?_
-  rw [(_ : {ω | τ ω ≤ i}ᶜ = ⋃ n, {ω | u n ≤ τ ω})]
-  · simp_rw [MeasurableSpace.measurableSet_iInf]
-    intros j hj
-    obtain ⟨N, hN⟩ := (hu₃.eventually_le_const hj).exists
-    rw [(_ : ⋃ n, {ω | u n ≤ τ ω} = ⋃ n > N, {ω | u n ≤ τ ω})]
-    · refine MeasurableSet.iUnion <| fun n ↦ MeasurableSet.iUnion <| fun hn ↦
-        f.mono ((hu₁ hn).le.trans hN) _ <| MeasurableSet.of_compl ?_
-      rw [(by ext; simp : {ω | u n ≤ τ ω}ᶜ = {ω | τ ω < u n})]
-      refine hτ1 (u n) <| not_isMax_iff.2 ⟨u N, hu₁ hn⟩
-    · ext ω
-      simp only [Set.mem_iUnion, Set.mem_setOf_eq, gt_iff_lt, exists_prop]
-      constructor
-      · rintro ⟨i, hle⟩
-        refine ⟨i + N + 1, by linarith, le_trans ?_ hle⟩
-        norm_cast
-        exact hu₁.antitone (by linarith)
-      · rintro ⟨i, -, hi⟩
-        exact ⟨i, hi⟩
-  · ext ω
-    simp only [Set.mem_compl_iff, Set.mem_setOf_eq, not_le, Set.mem_iUnion]
-    constructor
-    · intro h
-      by_cases hτ : τ ω = ⊤
-      · exact ⟨0, hτ ▸ le_top⟩
-      · have hlt : i < (τ ω).untop hτ := by
-          rwa [WithTop.lt_untop_iff]
-        obtain ⟨N, hN⟩ := (hu₃.eventually_le_const hlt).exists
-        refine ⟨N, WithTop.coe_le_iff.2 <| fun n hn ↦ hN.trans ?_⟩
-        simp [hn, WithTop.untop_coe]
-    · rintro ⟨j, hj⟩
-      refine lt_of_lt_of_le ?_ hj
-      norm_cast
-      exact (hu₂ j).1
+  intro t
+  by_cases ht : 𝓝[>] t = ⊥
+  · have h_eq : {ω | τ ω ≤ t} = {ω | τ ω < t} ∪ {ω | τ ω = t} := by ext; simp; grind
+    rw [h_eq]
+    exact (hτ1 t).union (hτ2 t ht)
+  have : (𝓝[>] t).NeBot := ⟨ht⟩
+  -- now `t` is a limit point on the right
+  obtain ⟨s, hs_gt, hs_tendsto⟩ : ∃ s : ℕ → ι, (∀ n, t < s n) ∧ Tendsto s atTop (𝓝 t) := by
+    have h_freq : ∃ᶠ x in 𝓝[>] t, t < x :=
+      Eventually.frequently <| eventually_nhdsWithin_of_forall fun _ hx ↦ hx
+    have := exists_seq_forall_of_frequently h_freq
+    simp_rw [tendsto_nhdsWithin_iff] at this
+    obtain ⟨s, ⟨hs_tendsto, _⟩, hs_gt⟩ := this
+    exact ⟨s, hs_gt, hs_tendsto⟩
+  have h_exists_lt (u : ι) (hu : t < u) : ∃ i, s i < u :=
+    Eventually.exists (f := atTop) (hs_tendsto.eventually_lt_const hu)
+  have h_exists_lt' (u : WithTop ι) (hu : t < u) : ∃ i, s i < u := by
+    refine Eventually.exists (f := atTop) ?_
+    have hs_tendsto' : Tendsto (fun n ↦ (s n : WithTop ι)) atTop (𝓝 (t : WithTop ι)) :=
+      WithTop.continuous_coe.continuousAt.tendsto.comp hs_tendsto
+    exact hs_tendsto'.eventually_lt_const hu
+  -- we write `{τ ≤ t}` as a countable intersection of `{τ < s n}`
+  have h_eq_iInter : {ω | τ ω ≤ t} = ⋂ m, {ω | τ ω < s m} := by
+    ext ω
+    simp only [Set.mem_setOf_eq, Set.mem_iInter]
+    refine ⟨fun h_le m ↦ h_le.trans_lt (mod_cast (hs_gt m)), fun h_lt ↦ ?_⟩
+    refine le_of_forall_gt fun u hu ↦ ?_
+    obtain ⟨i, hi⟩ : ∃ i, s i < u := h_exists_lt' u hu
+    exact (h_lt i).trans hi
+  rw [h_eq_iInter]
+  have h_meas_lt m : MeasurableSet[f (s m)] {ω | τ ω < s m} := hτ1 (s m)
+  have h𝓕_eq_iInf : f t = ⨅ m, f (s m) := by
+    have ht_cont : f t = f.rightCont t := by
+      congr
+      exact hf.eq.symm
+    rw [ht_cont, Filtration.rightCont_eq_of_neBot_nhdsGT]
+    refine le_antisymm ?_ ?_
+    · simp only [gt_iff_lt, le_iInf_iff]
+      exact fun i ↦ iInf₂_le (s i) (hs_gt i)
+    · simp only [gt_iff_lt, le_iInf_iff]
+      intro i hti
+      obtain ⟨m, hm⟩ := h_exists_lt i hti
+      exact (iInf_le _ m).trans (f.mono hm.le)
+  rw [h𝓕_eq_iInf]
+  simp only [MeasurableSpace.measurableSet_sInf, Set.mem_range, forall_exists_index,
+    forall_apply_eq_imp_iff]
+  intro k
+  have h_eq_k : ⋂ m, {ω | τ ω < s m} = ⋂ (m) (hm : s m ≤ s k), {ω | τ ω < s m} := by
+    ext x
+    simp only [Set.mem_iInter, Set.mem_setOf_eq]
+    refine ⟨fun h m _ ↦ h m, fun h m ↦ ?_⟩
+    rcases le_total (s m) (s k) with hmk | hkm
+    · exact h m hmk
+    · exact (h k le_rfl).trans_le (mod_cast hkm)
+  rw [h_eq_k]
+  refine MeasurableSet.iInter fun m ↦ MeasurableSet.iInter fun hm ↦ ?_
+  exact f.mono hm _ (h_meas_lt m)
 
-lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous [NoMaxOrder ι]
+lemma isStoppingTime_of_measurableSet_lt_of_isRightContinuous [DenselyOrdered ι] [NoMaxOrder ι]
     {τ : Ω → WithTop ι} [f.IsRightContinuous] (hτ : ∀ i, MeasurableSet[f i] {ω | τ ω < i}) :
     IsStoppingTime f τ :=
-  isStoppingTime_of_measurableSet_lt_of_isRightContinuous' (fun i _ ↦ hτ i)
-    <| fun i hi ↦ False.elim <| (not_isMax i) hi
+  isStoppingTime_of_measurableSet_lt_of_isRightContinuous' hτ
+    <| fun _ hi ↦ absurd hi (NeBot.ne inferInstance)
 
 end IsRightContinuous
 
