@@ -26,13 +26,6 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
   `volume.map (f a) = κ a`.
 
-* `ProbabilityTheory.Kernel.exists_measurable_map_eq_not_countable`:
-  for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space
-  and `ι` a non-countable standard Borel space, there exists a jointly
-  measurable function `f : α → ι → β` such that for all `a : α`,
-  `volume.map (f a ∘ equiv) = κ a`, where `equiv : I ≃ᵐ ι` is a measurable equivalence
-  between `I` and `ι`.
-
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq`:
   for a probability measure `μ` on a standard Borel space `β`,
   there exists a measurable function `f : I → β` such that `volume.map f = μ`.
@@ -126,23 +119,6 @@ theorem exists_measurable_map_eq_unitInterval (κ : Kernel α β) [IsMarkovKerne
   refine ⟨fun a u ↦ hg.invFun (f' a u), by fun_prop, fun a ↦ ?_⟩
   rw [hg'κ, map_apply _ (by fun_prop), ← hf'κ, Measure.map_map (by fun_prop) (by fun_prop)]
   rfl
-
-theorem exists_measurable_map_eq_not_countable {ι : Type*}
-    [MeasurableSpace ι] [StandardBorelSpace ι]
-    (hι : ¬ Countable ι) (κ : Kernel α β) [IsMarkovKernel κ] :
-    ∃ (f : α → ι → β), Measurable (uncurry f) ∧ ∀ a, (volume.map <|
-      (f a) ∘ PolishSpace.measurableEquivOfNotCountable not_countable_unitInterval hι) = κ a := by
-  obtain ⟨f, hfm, hf⟩ := κ.exists_measurable_map_eq_unitInterval
-  set equiv_I_ι := PolishSpace.measurableEquivOfNotCountable not_countable_unitInterval hι
-  let f' : α → ι → β := fun a i ↦ f a (equiv_I_ι.symm i)
-  refine ⟨f', by fun_prop, ?_⟩
-  intro a
-  ext s hs
-  rw [volume.map_apply (by fun_prop) hs]
-  specialize hf a
-  replace hf : volume.map (f a) s = κ a s := DFunLike.congr_fun hf s
-  rw [volume.map_apply (by fun_prop) hs] at hf
-  simp_all [f', preimage]
 
 end ProbabilityTheory.Kernel
 
