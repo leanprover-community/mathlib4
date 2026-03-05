@@ -229,3 +229,45 @@ protected theorem Continuous.inversion (hc : Continuous c) (hR : Continuous R) (
     (hne : ∀ a, x a ≠ c a) : Continuous (fun a ↦ inversion (c a) (R a) (x a)) :=
   continuous_iff_continuousAt.2 fun _ ↦
     hc.continuousAt.inversion hR.continuousAt hx.continuousAt (hne _)
+
+namespace EuclideanGeometry
+
+theorem tendsto_inversion_nhdsNE_center_cobounded {c : P} {R : ℝ} (hR : R ≠ 0) :
+    Filter.Tendsto (inversion c R) (𝓝[≠] c) (Bornology.cobounded P) := by
+  refine (tendsto_dist_left_atTop_iff c).1 ?_
+  have hdist : Filter.Tendsto (fun x : P ↦ dist c x) (𝓝[≠] c) (𝓝[≠] (0 : ℝ)) := by
+    rw [nhdsWithin]
+    refine Filter.tendsto_inf.2 ⟨?_, ?_⟩
+    · have hdist_nhds :
+          Filter.Tendsto (fun x : P ↦ dist c x) (𝓝[≠] c) (𝓝 (dist c c)) :=
+        (continuousAt_const.dist (continuousAt_id : ContinuousAt (fun x : P ↦ x) c)).mono_left
+          inf_le_left
+      simpa using hdist_nhds
+    · refine Filter.tendsto_principal.2 ?_
+      filter_upwards [self_mem_nhdsWithin] with x hx
+      exact dist_ne_zero.2 (by simpa [eq_comm] using hx)
+  have hratio_cobounded :
+      Filter.Tendsto (fun x : P ↦ (R ^ 2) * (dist c x)⁻¹) (𝓝[≠] c)
+        (Bornology.cobounded ℝ) :=
+    (Filter.tendsto_mul_left_cobounded (a := R ^ 2) (pow_ne_zero 2 hR)).comp
+      (Filter.tendsto_inv₀_nhdsNE_zero.comp hdist)
+  have hratio_dist :
+      Filter.Tendsto (fun x : P ↦ dist ((R ^ 2) * (dist c x)⁻¹) 0) (𝓝[≠] c) Filter.atTop :=
+    (tendsto_dist_right_atTop_iff (c := (0 : ℝ))).2 hratio_cobounded
+  have hratio_nonneg :
+      (fun x : P ↦ dist ((R ^ 2) * (dist c x)⁻¹) 0) =ᶠ[𝓝[≠] c]
+        (fun x ↦ (R ^ 2) * (dist c x)⁻¹) := by
+    filter_upwards [self_mem_nhdsWithin] with x _
+    have hnonneg : 0 ≤ (R ^ 2) * (dist c x)⁻¹ := by
+      exact mul_nonneg (sq_nonneg R) (inv_nonneg.2 dist_nonneg)
+    simp [dist_eq_norm, Real.norm_eq_abs]
+  have hratio :
+      Filter.Tendsto (fun x : P ↦ (R ^ 2) * (dist c x)⁻¹) (𝓝[≠] c) Filter.atTop :=
+    Filter.Tendsto.congr' hratio_nonneg hratio_dist
+  have hdist_inv :
+      (fun x : P ↦ dist c (inversion c R x)) = fun x ↦ (R ^ 2) * (dist c x)⁻¹ := by
+    funext x
+    simpa [div_eq_mul_inv] using (dist_center_inversion c x R)
+  simpa [hdist_inv] using hratio
+
+end EuclideanGeometry
