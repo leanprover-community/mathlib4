@@ -868,32 +868,27 @@ noncomputable def lcAux₀ [FiniteDimensional ℝ E]
       dsimp
       rw [if_pos hX, if_pos]
       · split_ifs with hZ
-        · exact leviCivitaRhs_smulX_apply hf hX hY hZ
+        · exact leviCivitaRhs_smulX_apply hf hX hY
         · simp
       · exact hf.smul_section hX)
     (fun {X₁ X₂ Z} hX₁ hX₂ ↦ by
       dsimp
       rw [if_pos hX₁, if_pos hX₂, if_pos]
       · split_ifs with hZ
-        · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY hZ
+        · exact leviCivitaRhs_addX_apply I hX₁ hX₂ hY
         · simp
       · exact mdifferentiableAt_add_section hX₁ hX₂)
-    (fun {f X Z} hf hZ ↦ by
+    (fun {f X Z} hf hX hZ ↦ by
       dsimp
-      rw [if_pos hZ]
-      nth_rw 2 [if_pos]
-      · split_ifs with hX
-        · exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
-        · simp
+      rw [if_pos hX, if_pos hZ, if_pos, if_pos hX]
+      · exact leviCivitaRhs_smulZ_apply I hf hX hY hZ
       · exact hf.smul_section hZ)
-    (fun {X Z₁ Z₂} hZ₁ hZ₂ ↦ by
+    (fun {X Z₁ Z₂} hX hZ₁ hZ₂ ↦ by
       dsimp
-      rw [if_pos hZ₁, if_pos hZ₂]
-      nth_rw 2 [if_pos]
-      · split_ifs with hX
-        · exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
-        · simp
-      · exact mdifferentiableAt_add_section hZ₁ hZ₂)
+      rw [if_pos hZ₁, if_pos hZ₂, if_pos hX, if_pos, if_pos hX, if_pos hX]
+      · exact leviCivitaRhs_addZ_apply I hX hY hZ₁ hZ₂
+      · exact mdifferentiableAt_add_section hZ₁ hZ₂
+      )
 
 theorem lcAux₀_apply [FiniteDimensional ℝ E] {x : M}
     {X : Π x : M, TangentSpace I x} (hX : MDiffAt (T% X) x)
@@ -950,11 +945,8 @@ lemma isCovariantDerivativeOn_lcAux [FiniteDimensional ℝ E] :
       dite_eq_ite, LinearMap.coe_toContinuousLinearMap', IsLinearMap.mk'_apply, LinearMap.mk₂_apply,
       ContinuousLinearMap.add_apply]
     rw [if_pos, if_pos, if_pos, if_pos, if_pos, if_pos]
-    · apply leviCivitaRhs_addY_apply
-      · exact mdifferentiable_extend ..
-      · exact hY
-      · exact hY'
-      · exact mdifferentiable_extend ..
+    · apply leviCivitaRhs_addY_apply _ (mdifferentiable_extend ..) hY hY'
+      exact mdifferentiable_extend ..
     · exact mdifferentiable_extend ..
     · exact mdifferentiable_extend ..
     · exact mdifferentiable_extend ..
