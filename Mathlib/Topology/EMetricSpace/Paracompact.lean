@@ -65,16 +65,16 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     * `x` does not belong to any `D m j`, `m < n`;
     * `ball x (3 / 2 ^ n) ⊆ s i`;
 
-    We define this sequence using `Nat.strongRecOn'`, then restate it as `Dn` and `memD`.
+    We define this sequence using `Nat.strongRec`, then restate it as `Dn` and `memD`.
   -/
   set D : ℕ → ι → Set α := fun n =>
-    Nat.strongRecOn' n fun n D' i =>
+    Nat.strongRec (fun n D' i =>
       ⋃ (x : α) (hxs : ind x = i) (hb : eball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :
-        ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), eball x (2⁻¹ ^ n) with hD
+        ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), eball x (2⁻¹ ^ n)) n with hD
   have Dn (n i) : D n i = ⋃ (x : α) (hxs : ind x = i) (hb : eball x (3 * 2⁻¹ ^ n) ⊆ s i)
       (hlt : ∀ m < n, ∀ (j : ι), x ∉ D m j), eball x (2⁻¹ ^ n) := by
     simp only [hD]
-    rw [Nat.strongRecOn'_beta]
+    rw [Nat.strongRec_eq]
   have memD {n i y} :
       y ∈ D n i ↔ ∃ x : α, ind x = i ∧ eball x (3 * 2⁻¹ ^ n) ⊆ s i ∧
         (∀ m < n, ∀ (j : ι), x ∉ D m j) ∧ edist y x < 2⁻¹ ^ n := by

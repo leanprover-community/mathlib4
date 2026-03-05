@@ -741,11 +741,11 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
   haveI : Nonempty γ := (h ∅ finite_empty).nonempty
   choose! c hc using h
   set f : (n : ℕ) → (g : (m : ℕ) → m < n → γ) → γ := fun n g => c (range fun k : Iio n => g k.1 k.2)
-  set u : ℕ → γ := fun n => Nat.strongRecOn' n f
-  refine ⟨u, fun n => ?_⟩
+  set u : ℕ → γ := fun n ↦ Nat.strongRecOn n f
+  refine ⟨u, fun n ↦ ?_⟩
   convert hc (u '' Iio n) ((finite_lt_nat _).image _)
   rw [image_eq_range]
-  exact Nat.strongRecOn'_beta
+  exact Nat.strongRecOn_eq f n
 
 end
 

@@ -477,7 +477,7 @@ open Nat
 @[to_additive]
 private theorem card_orderOf_eq_totient_aux₁ {d : ℕ} (hd : d ∣ Fintype.card α)
     (hpos : 0 < #{a : α | orderOf a = d}) : #{a : α | orderOf a = d} = φ d := by
-  induction d using Nat.strongRec' with | _ d IH
+  induction d using Nat.strong_induction_on with | _ d IH
   rcases Decidable.eq_or_ne d 0 with (rfl | hd0)
   · cases Fintype.card_ne_zero (eq_zero_of_zero_dvd hd)
   rcases Finset.card_pos.1 hpos with ⟨a, ha'⟩
