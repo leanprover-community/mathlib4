@@ -837,18 +837,25 @@ lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
 section
 
 variable {I} in
+lemma congr_of_forall_product_apply [FiniteDimensional ℝ E] {Y Y' : TangentSpace I x}
+    (h : ∀ Z : TangentSpace I x, inner ℝ Y Z = inner ℝ Y' Z) : Y = Y' := by
+  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
+  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
+  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
+  apply Φ.injective
+  ext Z₀
+  simpa [Φ, product] using h Z₀
+
+variable {I} in
 /-- If two vector fields `X` and `X'` on `M` satisfy the relation `⟨X, Z⟩ = ⟨X', Z⟩` for all
 vector fields `Z`, then `X = X'`. XXX up to differentiability? -/
 -- TODO: is this true if E is infinite-dimensional? trace the origin of the `Fintype` assumptions!
 lemma congr_of_forall_product [FiniteDimensional ℝ E]
     (h : ∀ Z : Π x : M, TangentSpace I x, ⟪X, Z⟫ = ⟪X', Z⟫) : X = X' := by
   ext1 x
-  have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
-  have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
-  set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
-  apply Φ.injective
-  ext Z₀
-  simpa [Φ, product] using congr($(h (_root_.extend I E Z₀)) x)
+  apply congr_of_forall_product_apply
+  intro Z₀
+  simpa [product] using congr($(h (_root_.extend I E Z₀)) x)
 
 /-- The Levi-Civita connection on `(M, g)` is uniquely determined,
 at least on differentiable vector fields. -/
@@ -1028,7 +1035,67 @@ theorem leviCivitaConnection_apply [FiniteDimensional ℝ E] {x : M}
     inner ℝ (LeviCivitaConnection I M Y x (X x)) (Z x) = leviCivitaRhs I X Y Z x :=
   lcAux_apply _ hX hY hZ
 
+lemma leviCivitaConnection_isCompatible [FiniteDimensional ℝ E] :
+    (LeviCivitaConnection I M).IsCompatible := by
+  sorry
+
+lemma leviCivitaConnection_isTorsionFree [FiniteDimensional ℝ E] :
+    (LeviCivitaConnection I M).IsTorsionFree := by
+  have a := (LeviCivitaConnection I M).isCovariantDerivativeOn
+  rw [CovariantDerivative.isTorsionFree_iff]
+  intro X Y x hX hY
+  apply congr_of_forall_product_apply
+  intro Z
+  trans (inner ℝ (((LeviCivitaConnection I M) X x) (Y x)) Z) -
+    (inner ℝ (((LeviCivitaConnection I M) Y x) (X x)) Z)
+  · apply inner_sub_left
+  have hZ' : _root_.extend I E Z x = Z := extend_apply_self Z
+  rw [← hZ']
+  rw [leviCivitaConnection_apply I hY hX (mdifferentiable_extend ..)]
+  rw [leviCivitaConnection_apply I hX hY (mdifferentiable_extend ..)]
+  simp only [leviCivitaRhs_apply]
+  -- XXX: should there be leviCivitaRhs'_apply?
+  simp only [leviCivitaRhs', Pi.add_apply, Pi.sub_apply, product_apply]
+  simp only [VectorField.mlieBracket_swap (V := Y) (W := X)]
+  simp only [Pi.neg_apply, inner_neg_right, sub_neg_eq_add]
+  set C := inner ℝ Z (VectorField.mlieBracket I X Y x)
+  set Z' := _root_.extend I E Z
+  simp only [VectorField.mlieBracket_swap (V := Z') (W := X)]
+  simp only [VectorField.mlieBracket_swap (V := Z') (W := Y)]
+  simp only [Pi.neg_apply, inner_neg_right]
+  rw [rhs_aux_swap (Y := Z'), rhs_aux_swap (Y := Z'), rhs_aux_swap (X := Z')]
+  rw [real_inner_comm (Z' x) (VectorField.mlieBracket I X Y x)]
+  set A := inner ℝ (Z' x) (VectorField.mlieBracket I X Y x)
+  set B := inner ℝ (Y x) (VectorField.mlieBracket I X Z' x)
+  set C := inner ℝ (X x) (VectorField.mlieBracket I Y Z' x)
+  set D := rhs_aux I X Y Z' x
+  set E := rhs_aux I Y X Z' x
+  set F := rhs_aux I Z' X Y x
+  have aux : (E + D - F - C - A + -B) - (D + E - F - B + A + -C) = - A - A := by abel
+  rw [smul_eq_mul]
+  erw [← mul_sub]
+  abel_nf
+  simp -- just a sign error remaining...
+  -- trans (1 / 2) • (E + D - F - C - A + -B) - (1 / 2) • (D + E - F - B + A + -C)
+  -- · match_scalars
+  --   all_goals simp
+  stop
+  sorry
+  match_scalars
+  all_goals simp
+  trans A + B
+  · match_scalars
+    all_goals simp
+    sorry -- should be obvious!
+  --simp only [A, B, C]--set D := inner ℝ (VectorField.mlieBracket I X Y x) (Z' x)
+  -- is A = B?
+  sorry
+
 #exit
+
+lemma baz [FiniteDimensional ℝ E] : (LeviCivitaConnection I M).IsLeviCivitaConnection :=
+  ⟨leviCivitaConnection_isCompatible I, leviCivitaConnection_isTorsionFree I⟩
+
 -- TODO: move this section to `Torsion.lean`
 section
 
