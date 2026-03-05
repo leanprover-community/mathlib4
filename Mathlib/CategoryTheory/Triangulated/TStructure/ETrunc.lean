@@ -208,10 +208,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma eTruncGE_obj_map_eTruncGEπ_app (i : EInt) (X : C) :
     (t.eTruncGE.obj i).map ((t.eTruncGEπ i).app X) =
     (t.eTruncGEπ i).app ((t.eTruncGE.obj i).obj X) := by
-  induction i using WithBotTop.rec with
-  | bot => simp
-  | coe n => simp [truncGE_map_truncGEπ_app]
-  | top => simp
+  induction i using WithBotTop.rec with simp [truncGE_map_truncGEπ_app]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The (distinguished) triangles given by the natural transformations
