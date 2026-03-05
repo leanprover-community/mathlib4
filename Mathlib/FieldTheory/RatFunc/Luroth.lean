@@ -147,7 +147,7 @@ theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := b
 
 set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K[f]) := by
-  let e := algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
+  let e := Polynomial.algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
   let φ : K[X][X] := f.num.map (algebraMap ..) -
     Polynomial.C Polynomial.X * f.denom.map (algebraMap ..)
   have φ_map : φ.mapEquiv e.toRingEquiv = (f.minpolyX K[f]) := by
@@ -158,9 +158,10 @@ theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX 
   rw [← φ_map, MulEquiv.irreducible_iff]
   have : φ = Bivariate.swap
       (Polynomial.C f.num - Polynomial.X * Polynomial.C f.denom) := by
-    simp only [X_mul_C, Bivariate.swap_apply, AlgHom.coe_comp, AlgHom.coe_restrictScalars',
-      coe_aeval_eq_eval, Function.comp_apply, aeval_sub, aeval_C, algebraMap_def, coe_mapRingHom,
-      map_mul, aeval_X, eval_sub, eval_map_algebraMap, Polynomial.eval_mul, Polynomial.eval_C]
+    simp only [X_mul_C, Bivariate.swap_apply, aevalAeval, aevalAevalEquiv, Equiv.coe_fn_mk,
+      AlgHom.coe_comp, AlgHom.coe_restrictScalars', coe_aeval_eq_eval, Function.comp_apply,
+      aeval_sub, aeval_C, algebraMap_def, coe_mapRingHom, map_mul, aeval_X, eval_sub,
+      eval_map_algebraMap, Polynomial.eval_mul, Polynomial.eval_C]
     rw [mul_comm]
     rfl
   rw [this, MulEquiv.irreducible_iff]
