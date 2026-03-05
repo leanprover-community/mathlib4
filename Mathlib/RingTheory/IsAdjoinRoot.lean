@@ -630,23 +630,22 @@ variable [Module.Finite R S] [Module.Free R S] [Nontrivial R]
 the degree of the minimal polynomials is bounded by the rank of the module -/
 theorem _root_.minpoly.natDegree_le' (α : S) :
     (minpoly R α).natDegree ≤ Module.finrank R S := by
-  classical
-  let b := Module.Free.chooseBasis R S
+  have b := Module.Free.chooseBasis R S
   let M := LinearMap.toMatrixAlgEquiv b (Algebra.lmul R S α)
-  have haeval : aeval α M.charpoly = 0 := by
-    have h := Matrix.aeval_self_charpoly M
-    rwa [aeval_algHom_apply, _root_.map_eq_zero_iff _ (LinearMap.toMatrixAlgEquiv b).injective,
-      aeval_algHom_apply, _root_.map_eq_zero_iff _ Algebra.lmul_injective] at h
-  exact (natDegree_le_natDegree (minpoly.min R α M.charpoly_monic haeval)).trans
+  refine (natDegree_le_natDegree (minpoly.min R α M.charpoly_monic ?_)).trans
     (M.charpoly_natDegree_eq_dim.trans (Module.finrank_eq_card_chooseBasisIndex R S).symm).le
+  let h := Matrix.aeval_self_charpoly M
+  rwa [aeval_algHom_apply, _root_.map_eq_zero_iff _ (LinearMap.toMatrixAlgEquiv b).injective,
+    aeval_algHom_apply, _root_.map_eq_zero_iff _ Algebra.lmul_injective] at h
 
 /-- If `α` generates `S` as an algebra, then `S` is given by adjoining a root of `minpoly R α`. -/
-noncomputable def _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop'
+def _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop'
     {α : S} (hα : Algebra.adjoin R {α} = ⊤) :
     IsAdjoinRootMonic S (minpoly R α) := by
   set f := minpoly R α
   have hf : f.Monic := minpoly.monic (Algebra.IsIntegral.isIntegral α)
-  haveI := hf.free_adjoinRoot; haveI := hf.finite_adjoinRoot
+  letI : Module R (AdjoinRoot f) := Algebra.toModule
+  haveI := hf.free_adjoinRoot; haveI finite := hf.finite_adjoinRoot
   let φ : AdjoinRoot f →ₐ[R] S :=
     AdjoinRoot.liftAlgHom f (Algebra.ofId R S) α (minpoly.aeval R α)
   have hφ_surj : Function.Surjective φ := by
@@ -666,6 +665,13 @@ noncomputable def _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop'
   exact
     { IsAdjoinRoot.ofAdjoinRootEquiv
         (AlgEquiv.ofBijective φ ⟨hφ_inj, hφ_surj⟩) with monic := hf }
+
+@[simp]
+lemma _root_.IsAdjoinRootMonic.mkOfAdjoinEqTop'_map
+    {α : S} {hα : Algebra.adjoin R {α} = ⊤} :
+    (IsAdjoinRootMonic.mkOfAdjoinEqTop' hα).map = (aeval α) := by
+  unfold IsAdjoinRootMonic.mkOfAdjoinEqTop'
+  ext; simp
 
 end mkOfAdjoinEqTop'
 
