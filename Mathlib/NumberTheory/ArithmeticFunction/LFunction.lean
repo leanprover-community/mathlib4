@@ -64,8 +64,6 @@ local instance : CompleteSpace (ArithmeticFunction R) where
     simp_rw [Cauchy, nhds_eq_comap_uniformity, uniformity_eq, comap_iInf, comap_principal,
       le_iInf_iff, le_principal_iff, Set.preimage_setOf_eq] at hf ⊢
     obtain ⟨hf0, hf⟩ := hf
-    -- have hf' (i : ℕ) : _ := hf {i}
-    -- simp_rw [Finset.coe_singleton, Set.eqOn_singleton, mem_prod_self_iff] at hf'
     replace hf' : ∀ i, ∃ x : R, {a | x = a i} ∈ f := by
       intro i
       specialize hf {i}
