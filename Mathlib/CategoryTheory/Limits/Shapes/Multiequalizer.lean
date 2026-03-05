@@ -1103,7 +1103,7 @@ theorem multicofork_ι_app_right (b) :
     (Multicoequalizer.multicofork I).ι.app (WalkingMultispan.right b) = Multicoequalizer.π I b :=
   rfl
 
-/-- `@[simp]`-normal form of multicofork_ι_app_right. -/
+/-- `@[simp]`-normal form of `multicofork_ι_app_right`. -/
 @[simp]
 theorem multicofork_ι_app_right' (b) :
     colimit.ι (MultispanIndex.multispan I) (WalkingMultispan.right b) = π I b :=

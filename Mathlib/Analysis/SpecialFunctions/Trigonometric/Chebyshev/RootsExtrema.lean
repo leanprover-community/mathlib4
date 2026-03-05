@@ -21,7 +21,7 @@ import Mathlib.NumberTheory.Niven
 
 ## Main statements
 
-* T_n(x) ∈ [-1, 1] iff x ∈ [-1, 1]: `abs_eval_T_real_le_one_iff`
+* `T_n(x) ∈ [-1, 1]` iff `x ∈ [-1, 1]`: `abs_eval_T_real_le_one_iff`
 * Zeroes of T and U: `roots_T_real`, `roots_U_real`
 * Local extrema of T: `isLocalExtr_T_real_iff`, `isExtrOn_T_real_iff`
 * Irrationality of zeroes of T other than zero: `irrational_of_isRoot_T_real`

@@ -26,7 +26,7 @@ This file defines various mathlib linters which are based on reading the source 
 In practice, all such linters check for code style issues.
 
 Currently, this file contains linters checking
-- if the string "adaptation note" is used instead of the command #adaptation_note,
+- if the string "adaptation note" is used instead of the command `#adaptation_note`,
 - for lines with windows line endings,
 - for lines containing trailing whitespace,
 - for module names to be in upper camel case,
@@ -51,7 +51,7 @@ namespace Mathlib.Linter.TextBased
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
   /-- The bare string "Adaptation note" (or variants thereof):
-  instead, the #adaptation_note command should be used. -/
+  instead, the `#adaptation_note` command should be used. -/
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding

@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Basic
 /-!
 # Multiplicativity
 
-We define the arith_mult tactic using aesop
+We define the `arith_mult` tactic using aesop
 
 -/
 

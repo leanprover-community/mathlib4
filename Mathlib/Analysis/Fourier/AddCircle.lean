@@ -459,7 +459,7 @@ theorem tsum_sq_fourierCoeff (f : Lp ℂ 2 <| @haarAddCircle T hT) :
     ∑' i : ℤ, ‖fourierCoeff f i‖ ^ 2 = ∫ t : AddCircle T, ‖f t‖ ^ 2 ∂haarAddCircle :=
   (hasSum_sq_fourierCoeff _).tsum_eq
 
-/-- **Parseval's identity**: for a function `f` which is square integrable on (a,b],
+/-- **Parseval's identity**: for a function `f` which is square integrable on `(a,b]`,
 the sum of the squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_fourierCoeffOn
     {a b : ℝ} {f : ℝ → ℂ} (hab : a < b) (hL2 : MemLp f 2 (volume.restrict (Ioc a b))) :

@@ -241,7 +241,7 @@ def _root_.Mathlib.Meta.monadLiftOptionMetaM : MonadLift Option MetaM where
   | some e => pure e
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of adding two norm_num results. -/
+/-- The result of adding two `norm_num` results. -/
 def Result.add {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Add $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a + $b)) := do
@@ -330,7 +330,7 @@ theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d 
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of negating a norm_num result. -/
+/-- The result of negating a `norm_num` result. -/
 def Result.neg {u : Level} {α : Q(Type u)} {a : Q($α)} (ra : Result q($a))
     (rα : Q(Ring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q(-$a)) := do
@@ -382,7 +382,7 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   rw [show Int.mul (-nb) _ = _ from neg_mul ..]; exact h₁
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of subtracting two norm_num results. -/
+/-- The result of subtracting two `norm_num` results. -/
 def Result.sub {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Ring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a - $b)) := do
@@ -480,7 +480,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- The result of multiplying two norm_num results. -/
+/-- The result of multiplying two `norm_num` results. -/
 def Result.mul {u : Level} {α : Q(Type u)} {a b : Q($α)} (ra : Result q($a)) (rb : Result q($b))
     (inst : Q(Semiring $α) := by exact q(delta% inferInstance)) :
     MetaM (Result q($a * $b)) := do

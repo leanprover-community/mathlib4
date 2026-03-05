@@ -241,7 +241,7 @@ theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (
 instance _root_.OrderDual.instIsUpper : IsUpper αᵒᵈ where
   topology_eq_upperTopology := topology_eq_lowerTopology (α := α)
 
-/-- Left-closed right-infinite intervals [a, ∞) are closed in the lower topology. -/
+/-- Left-closed right-infinite intervals $[a, ∞)$ are closed in the lower topology. -/
 instance : ClosedIciTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
@@ -270,7 +270,7 @@ theorem tendsto_nhds_iff_not_le {β : Type*} {f : β → α} {l : Filter β} {x 
 
 /--
 The closure of a singleton `{a}` in the lower topology is the left-closed right-infinite interval
-[a, ∞).
+$[a, ∞)$.
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Ici a :=
@@ -403,7 +403,7 @@ theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (
 instance _root_.OrderDual.instIsLower : IsLower αᵒᵈ where
   topology_eq_lowerTopology := topology_eq_upperTopology (α := α)
 
-/-- Left-infinite right-closed intervals (-∞,a] are closed in the upper topology. -/
+/-- Left-infinite right-closed intervals $(-∞,a]$ are closed in the upper topology. -/
 instance : ClosedIicTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Iic_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
@@ -424,7 +424,7 @@ theorem tendsto_nhds_iff_not_le {β : Type*} {f : β → α} {l : Filter β} {x 
 
 /--
 The closure of a singleton `{a}` in the upper topology is the left-infinite right-closed interval
-(-∞,a].
+$(-∞,a]$.
 -/
 @[simp]
 theorem closure_singleton (a : α) : closure {a} = Iic a :=

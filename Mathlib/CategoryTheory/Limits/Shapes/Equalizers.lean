@@ -21,7 +21,7 @@ A coequalizer is the dual concept.
 
 ## Main definitions
 
-* `WalkingParallelPair` is the indexing category used for (co)equalizer_diagrams
+* `WalkingParallelPair` is the indexing category used for (co)equalizer diagrams
 * `parallelPair` is a functor from `WalkingParallelPair` to our category `C`.
 * a `fork` is a cone over a parallel pair.
   * there is really only one interesting morphism in a fork: the arrow from the vertex of the fork

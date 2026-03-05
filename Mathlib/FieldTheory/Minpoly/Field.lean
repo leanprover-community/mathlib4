@@ -218,7 +218,7 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
-/-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
+/-- Function from `Hom_K(E,L)` to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
     (x : range (Module.finBasis F E : _ → E)) :
     { l : K // l ∈ (minpoly F x.1).aroots K } :=

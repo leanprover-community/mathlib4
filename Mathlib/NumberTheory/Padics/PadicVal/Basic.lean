@@ -175,7 +175,7 @@ protected theorem zero : padicValRat p 0 = 0 := by simp [padicValRat]
 @[simp]
 protected theorem one : padicValRat p 1 = 0 := by simp [padicValRat]
 
-/-- The `p`-adic value of an integer `z ≠ 0` is its `p`-adic_value as a rational. -/
+/-- The `p`-adic value of an integer `z ≠ 0` is its `p`-adic value as a rational. -/
 @[simp]
 theorem of_int {z : ℤ} : padicValRat p z = padicValInt p z := by simp [padicValRat]
 

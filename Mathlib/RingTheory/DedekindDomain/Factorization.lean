@@ -296,7 +296,7 @@ def count (I : FractionalIdeal R⁰ K) : ℤ :=
     ((Associates.mk v.asIdeal).count (Associates.mk J).factors -
         (Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {a})).factors : ℤ)
 
-/-- val_v(0) = 0. -/
+/-- `val_v(0) = 0`. -/
 lemma count_zero : count K v (0 : FractionalIdeal R⁰ K) = 0 := by simp only [count, dif_pos]
 
 open Classical in
@@ -377,7 +377,7 @@ theorem count_mul' (I I' : FractionalIdeal R⁰ K) [Decidable (I ≠ 0 ∧ I' �
   · rw [← mul_ne_zero_iff, not_ne_iff] at h
     rw [h, count_zero]
 
-/-- val_v(1) = 0. -/
+/-- `val_v(1) = 0`. -/
 theorem count_one : count K v (1 : FractionalIdeal R⁰ K) = 0 := by
   have h1 : (1 : FractionalIdeal R⁰ K) =
       spanSingleton R⁰ ((algebraMap R K) 1)⁻¹ * ↑(1 : Ideal R) := by

@@ -18,7 +18,7 @@ Properties of regular sequences encode information about singularities of a
 ring and regularity of a sequence can be tested homologically.
 However the notion of a regular sequence is only really sensible for Noetherian local rings.
 
-TODO: Koszul regular sequences, H_1-regular sequences, quasi-regular sequences, depth.
+TODO: Koszul regular sequences, `H_1`-regular sequences, quasi-regular sequences, depth.
 
 ## Tags
 

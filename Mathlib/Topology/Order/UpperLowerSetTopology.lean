@@ -250,7 +250,7 @@ lemma closure_eq_lowerClosure {s : Set α} : closure s = lowerClosure s := by
 
 /--
 The closure of a singleton `{a}` in the upper set topology is the right-closed left-infinite
-interval (-∞,a].
+interval $(-∞,a]$.
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Iic a := by
   rw [closure_eq_lowerClosure, lowerClosure_singleton]
@@ -346,7 +346,7 @@ lemma closure_eq_upperClosure {s : Set α} : closure s = upperClosure s :=
 
 /--
 The closure of a singleton `{a}` in the lower set topology is the right-closed left-infinite
-interval (-∞,a].
+interval $(-∞,a]$.
 -/
 @[simp] lemma closure_singleton {a : α} : closure {a} = Ici a := by
   rw [closure_eq_upperClosure, upperClosure_singleton]

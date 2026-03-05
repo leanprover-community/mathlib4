@@ -147,7 +147,7 @@ lemma basis_repr {I : Type*} [LinearOrder I] (b : Basis I R M) (s : powersetCard
   ext t
   by_cases hst : s = t <;> simp [hst]
 
-/-! ### Freeness and dimension of `⋀[R]^n M. -/
+/-! ### Freeness and dimension of `⋀[R]^n M`. -/
 
 /-- If `M` is a free module, then so is its `n`th exterior power. -/
 instance instFree [Module.Free R M] : Module.Free R (⋀[R]^n M) :=

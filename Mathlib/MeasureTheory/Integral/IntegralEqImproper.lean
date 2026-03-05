@@ -1292,7 +1292,7 @@ theorem integral_Iic_deriv_mul_eq_sub
   simpa using integral_Iic_of_hasDerivAt_of_tendsto
     (continuousWithinAt_update_same.mpr h_zero) hderiv huv htendsto
 
-/-- **Integration by parts on (∞, a].**
+/-- **Integration by parts on $(∞, a]$.**
 For finite intervals, see: `intervalIntegral.integral_mul_deriv_eq_deriv_mul`. -/
 theorem integral_Iic_mul_deriv_eq_deriv_mul
     (hu : ∀ x ∈ Iio a, HasDerivAt u (u' x) x) (hv : ∀ x ∈ Iio a, HasDerivAt v (v' x) x)

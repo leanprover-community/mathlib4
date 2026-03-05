@@ -50,7 +50,7 @@ theorem mul_left_bijective_of_finite₀ [IsRightCancelMulZero M] {a : M} (ha : a
     Bijective fun b => b * a :=
   Finite.injective_iff_bijective.1 <| mul_left_injective₀ ha
 
-/-- Every finite nontrivial cancel_monoid_with_zero is a group_with_zero. -/
+/-- Every finite nontrivial cancellative monoid with zero is a group with zero. -/
 def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMulZero M]
     [DecidableEq M] [Fintype M] [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
