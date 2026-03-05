@@ -45,16 +45,26 @@ theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
     rw [iteratedFDerivWithin_succ_eq_comp_left, IH]
     simp only [Pi.zero_def, comp_def, fderivWithin_fun_const, map_zero]
 
-@[simp]
+@[to_fun (attr := simp)]
 theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
-    iteratedFDerivWithin 𝕜 i (fun _ : E ↦ (0 : F)) s = 0 := by
+    iteratedFDerivWithin 𝕜 i (0 : E → F) s = 0 := by
   cases i with
   | zero => ext; simp
   | succ i => apply iteratedFDerivWithin_succ_const
 
-@[simp]
-theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦ (0 : F)) = 0 :=
+@[to_fun (attr := simp)] lemma ftaylorSeriesWithin_zero_fun :
+    ftaylorSeriesWithin 𝕜 (0 : E → F) = 0 := by
+  ext
+  simp [ftaylorSeriesWithin]
+
+@[to_fun (attr := simp)]
+theorem iteratedFDeriv_zero_fun {n : ℕ} : iteratedFDeriv 𝕜 n (0 : E → F) = 0 :=
   funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero_fun]
+
+@[to_fun (attr := simp)] lemma ftaylorSeries_zero_fun :
+    ftaylorSeries 𝕜 (0 : E → F) = 0 := by
+  ext
+  simp [ftaylorSeries]
 
 theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
   analyticOnNhd_const.contDiff

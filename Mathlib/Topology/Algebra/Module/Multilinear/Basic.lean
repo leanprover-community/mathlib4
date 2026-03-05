@@ -120,6 +120,12 @@ theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 :=
 theorem map_zero [Nonempty ι] : f 0 = 0 :=
   f.toMultilinearMap.map_zero
 
+@[simp]
+theorem map_zero_of_pos {n : ℕ} (D : ContinuousMultilinearMap R (fun (_ : Fin n) ↦ M₂) M₃)
+    (hn : 0 < n) :
+    D 0 = 0 :=
+  D.map_coord_zero ⟨0, hn⟩ rfl
+
 instance : Zero (ContinuousMultilinearMap R M₁ M₂) :=
   ⟨{ (0 : MultilinearMap R M₁ M₂) with cont := continuous_const }⟩
 

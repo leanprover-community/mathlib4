@@ -388,10 +388,12 @@ theorem ContDiff.sum {ι : Type*} {f : ι → E → F} {s : Finset ι}
     (h : ∀ i ∈ s, ContDiff 𝕜 n fun x => f i x) : ContDiff 𝕜 n fun x => ∑ i ∈ s, f i x := by
   simp only [← contDiffOn_univ] at *; exact ContDiffOn.sum h
 
+@[to_fun]
 theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ} {x : E}
     (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffWithinAt 𝕜 i (f j) s x) :
-    iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j ·) s x =
+    iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j) s x =
       ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
+  rw [(by aesop : (∑ j ∈ u, f j) = (fun x ↦ ∑ j ∈ u, f j x))]
   induction u using Finset.cons_induction with
   | empty => simp
   | cons a u ha IH =>
@@ -399,11 +401,19 @@ theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Fi
     simp only [Finset.sum_cons]
     rw [fun_iteratedFDerivWithin_add_apply h.1 (ContDiffWithinAt.sum h.2) hs hx, IH h.2]
 
+@[to_fun]
+theorem iteratedFDeriv_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {n : ℕ} {x : E}
+    (h : ∀ j ∈ u, ContDiffAt 𝕜 n (f j) x) :
+    iteratedFDeriv 𝕜 n (∑ j ∈ u, f j) x = ∑ j ∈ u, iteratedFDeriv 𝕜 n (f j) x := by
+  simp only [← iteratedFDerivWithin_univ]
+  apply iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (Set.mem_univ x)
+    (h · · |>.contDiffWithinAt)
+
 theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
     (h : ∀ j ∈ u, ContDiff 𝕜 i (f j)) :
     iteratedFDeriv 𝕜 i (∑ j ∈ u, f j ·) = ∑ j ∈ u, iteratedFDeriv 𝕜 i (f j) :=
   funext fun x ↦ by simpa [iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x) (h · · |>.contDiffWithinAt)
+    fun_iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x) (h · · |>.contDiffWithinAt)
 
 /-! ### Product of two functions -/
 
