@@ -814,9 +814,9 @@ protected theorem forall₃_congr'
 @[simps (attr := grind =) apply]
 noncomputable def ofBijective (f : α → β) (hf : Bijective f) : α ≃ β where
   toFun := f
-  invFun := surjInv hf.surjective
-  left_inv := leftInverse_surjInv hf
-  right_inv := rightInverse_surjInv _
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
 
 lemma ofBijective_apply_symm_apply (f : α → β) (hf : Bijective f) (x : β) :
     f ((ofBijective f hf).symm x) = x :=
