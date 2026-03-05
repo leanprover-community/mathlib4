@@ -109,4 +109,11 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
   · simp [Submodule.mem_orthogonal_singleton_iff_inner_right.1 hy,
       Submodule.reflection_mem_subspace_eq_self hy, div_eq_mul_inv, mul_pow]
 
+/-- Inversion with nonzero radius is not continuous at its center. -/
+theorem not_continuousAt_inversion_center [Nontrivial F] (hR : R ≠ 0) :
+    ¬ ContinuousAt (inversion c R) c := by
+  exact not_continuousAt_of_tendsto
+    (tendsto_inversion_nhdsNE_center_cobounded (c := c) (R := R) hR)
+    nhdsWithin_le_nhds (Metric.disjoint_nhds_cobounded _)
+
 end EuclideanGeometry
