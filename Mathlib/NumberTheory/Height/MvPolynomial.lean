@@ -246,7 +246,8 @@ lemma mulHeightBound_zero_one : mulHeightBound ![(0 : MvPolynomial (Fin 2) K), 1
 variable [Finite ι']
 
 open Function in
-private lemma finite_mulSupport_iSup_max_iSup_one (h : Nonempty ι') (p : ι' → MvPolynomial ι K) :
+@[fun_prop]
+private lemma hasFiniteMulSupport_iSup_max_iSup_one (h : Nonempty ι') (p : ι' → MvPolynomial ι K) :
     (fun v : nonarchAbsVal ↦
       ⨆ j, max (⨆ s : (p j).support, v.val (coeff s.val (p j))) 1).HasFiniteMulSupport := by
   refine HasFiniteMulSupport.iSup fun j ↦ ?_
@@ -267,15 +268,14 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
       single_eval_le_sum _ v.map_zero (fun _ ↦ by positivity) _
     exact prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..)
       fun v _ ↦ Finite.ciSup_mono (H v)
-  · refine finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h)
-      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..) ?_ ?_
-    · exact finite_mulSupport_iSup_max_iSup_one (Function.ne_iff.mp h).nonempty p
-    · refine fun v ↦ Finite.ciSup_mono fun j ↦ ?_
-      rw [show constantCoeff (p j) = coeff 0 (p j) from rfl]
-      rcases eq_or_ne (coeff 0 (p j)) 0 with h₀ | h₀
-      · simp [h₀]
-      · set_option backward.isDefEq.respectTransparency false in -- temporary measure
-        exact le_sup_of_le_left <| Finite.le_ciSup_of_le ⟨0, by simp [h₀]⟩ le_rfl
+  · have := (Function.ne_iff.mp h).nonempty
+    refine finprod_le_finprod (by fun_prop (disch := assumption))
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) ?_
+    refine fun v ↦ Finite.ciSup_mono fun j ↦ ?_
+    rw [show constantCoeff (p j) = coeff 0 (p j) from rfl]
+    rcases eq_or_ne (coeff 0 (p j)) 0 with h₀ | h₀
+    · simp [h₀]
+    · exact le_sup_of_le_left <| Finite.le_ciSup_of_le ⟨0, by simp [h₀]⟩ le_rfl
 
 variable [Finite ι]
 
@@ -296,8 +296,6 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
   rcases eq_or_ne (fun j ↦ eval x (p j)) 0 with h₀ | h₀
   · grw [← le_max_right]
     simpa [h₀, mulHeight_zero] using one_le_pow₀ <| one_le_mulHeight x
-  have F₁ := finite_mulSupport_iSup_max_iSup_one (Function.ne_iff.mp h₀).nonempty p
-  have F₂ := mulSupport_iSup_nonarchAbsVal_finite hx
   have H₀ (v : AbsoluteValue K ℝ) : 0 ≤ ⨆ j, Finsupp.sum (p j) fun _ c ↦ v c :=
     iSup_nonneg (fun j ↦ sum_nonneg' <| fun s ↦ by positivity)
   -- The following four statements are used in the `gcongr`s below.
@@ -326,7 +324,9 @@ theorem mulHeight_eval_le {N : ℕ} {p : ι' → MvPolynomial ι K} (hp : ∀ i,
     · exact HH₁ v
     · exact HH₂ (fun j ↦ Finsupp.sum (p j) fun _ c ↦ v c) j
   · -- nonarchimedean part: reduce to "local" statement `mvPolynomial_bound_nonarch`
-    rw [finprod_pow (by fun_prop), ← finprod_mul_distrib F₁ (by fun_prop)]
+    have := (Function.ne_iff.mp h₀).nonempty
+    have F := hasFiniteMulSupport_iSup_nonarchAbsVal hx
+    rw [finprod_pow F, ← finprod_mul_distrib (by fun_prop) (by fun_prop)]
     refine finprod_le_finprod (by fun_prop (disch := assumption))
       (fun _ ↦ Real.iSup_nonneg_of_nonnegHomClass ..) (by fun_prop) fun v ↦ Real.iSup_le
       (fun j ↦ ?_) ?_
