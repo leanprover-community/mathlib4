@@ -151,8 +151,15 @@ lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
     restrict₀ f a = (⟨Units.mk0 (f a) h, mem_valueGroup _ ⟨a, rfl⟩⟩ : valueGroup f) := by
   simp [h, restrict₀_apply]
 
+@[simp]
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp [restrict₀_apply]
 
+lemma restrict₀_eq_one_iff {a : A} : restrict₀ f a = 1 ↔ f a = 1 := by
+  simp only [restrict₀_apply]
+  split_ifs with H <;>
+  simp [H, ← WithZero.coe_one, ← Units.mk0_one]
+
+@[simp]
 lemma restrict₀_eq_one_iff {a : A} : restrict₀ f a = 1 ↔ f a = 1 := by
   simp only [restrict₀_apply]
   split_ifs with H <;>
@@ -197,6 +204,7 @@ lemma valueGroup_eq_range : Units.val '' (valueGroup f) = (range f \ {0}) := by
     refine ⟨Units.mk0 x hx₀, ?_, rfl⟩
     simpa [Units.val_mk0, mem_range] using ⟨y, hy⟩
 
+@[simp]
 lemma ValueGroup₀.restrict₀_range_eq_top : range (ValueGroup₀.restrict₀ f) = ⊤ := by
   rw [top_eq_univ, range_eq_univ]
   intro x

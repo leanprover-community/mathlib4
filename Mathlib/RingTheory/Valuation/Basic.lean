@@ -455,27 +455,17 @@ lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup 
 
 open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
 def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀)) where
   __ := restrict₀ v
   map_add_le_max' x y := by
     by_cases H : v x ≠ 0 ∨ v y ≠ 0
     · rcases H with h | h <;>
-      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, h, ↓reduceDIte, le_sup_iff]
+      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, h, ↓reduceDIte] <;>
       · split_ifs with H _ hy
-        · simp
-        · simp
-        · simp only [WithZero.coe_le_coe, Subtype.mk_le_mk, ← Units.val_le_val, Units.val_mk0,
-            le_zero_iff, WithZero.coe_ne_zero, or_false, ]
-          exact map_add_le _ (by rfl) (by simp [hy])
-        · simp [← Units.val_le_val]
-      · split_ifs with H _ hy
-        · simp
-        · simp
-        · simp only [le_zero_iff, WithZero.coe_ne_zero, WithZero.coe_le_coe, Subtype.mk_le_mk,
-            ← Units.val_le_val, Units.val_mk0, false_or]
-          exact map_add_le _ (by simp [hy]) (by rfl)
-        · simp [← Units.val_le_val]
+        all_goals simp [← Units.val_le_val]
+        simpa using map_add_le _ (by simp_all) (by simp_all)
     · simp only [ne_eq, not_or, Decidable.not_not] at H
       simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, H, ↓reduceDIte, max_self,
         le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
@@ -500,52 +490,74 @@ lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := b
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_lt_iff_lt_embedding {x : R} {g : ValueGroup₀ v} :
     v.restrict x < g ↔ v x < embedding g := by
   conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
   rw [embedding_strictMono.lt_iff_lt, restrict_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_le_iff_le_embedding {x : R} {g : ValueGroup₀ v} :
     v.restrict x ≤ g ↔ v x ≤ embedding g := by
   conv_rhs => rw [← ValueGroup₀.embedding_restrict₀ x]
   rw [embedding_strictMono.le_iff_le, restrict_def]
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_lt_one_iff {x : R} : v.restrict x < 1 ↔ v x < 1 := by
   rw [restrict_lt_iff_lt_embedding, map_one]
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_le_one_iff {x : R} : v.restrict x ≤ 1 ↔ v x ≤ 1 := by
   rw [restrict_le_iff_le_embedding, map_one]
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_eq_zero_iff {x : R} : v.restrict x = 0 ↔ v x = 0 := by
+  rw [restrict_def,restrict₀_eq_zero_iff]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+lemma restrict_eq_one_iff {x : R} : v.restrict x = 1 ↔ v x = 1 := by
+  rw [restrict_def,restrict₀_eq_one_iff]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_le_iff {x y : R} : v.restrict x ≤ v.restrict y ↔ v x ≤ v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [← Units.val_le_val]
 
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
 lemma restrict_inj {x y : R} : v.restrict x = v.restrict y ↔ v x = v y := by
   simp only [restrict_def, restrict₀_apply]
   aesop
 
+@[simp]
+lemma embedding_restrict (x : R) : ValueGroup₀.embedding (v.restrict x) = v x :=
+  embedding_restrict₀ x
+
+set_option backward.isDefEq.respectTransparency false in
 lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
     ∃ r s, 0 < v r ∧ 0 < v s ∧ v.restrict r / v.restrict s = γ.1 := by
-  set u := WithZero.unzero (Units.ne_zero γ ) with hu_def
+  set u := WithZero.unzero (Units.ne_zero γ) with hu_def
   obtain ⟨a, ⟨ha, x, hax⟩⟩ := (mem_valueGroup_iff_of_comm _).mp u.2
   have hx : 0 < v x := by
     rw [← restrict_pos_iff, restrict_def, WithZero.pos_iff_ne_zero, ne_eq, restrict₀_eq_zero_iff]
     aesop
   use x, a, hx, zero_lt_iff.mpr ha
-  have hx0 : v.restrict x ≠ 0 := by simp [restrict₀_eq_zero_iff, hx.ne']
-  have ha0 : v.restrict a ≠ 0 := by simp [restrict₀_eq_zero_iff, ha]
-  rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff]
-  simp only [restrict_def, map_mul]
-  erw [embedding_restrict₀ x, embedding_restrict₀ a, ← hax] -- Why erw?
+  have ha0 : v.restrict a ≠ 0 := by simp [ha]
+  rw [div_eq_iff ha0, mul_comm, ← embedding_strictMono.injective.eq_iff, map_mul,
+    embedding_restrict, embedding_restrict, ← hax]
   congr
   rw [← WithZero.coe_unzero (Units.ne_zero γ)]
-  rfl -- Why rfl?
+  exact Eq.refl ..
 
 lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
     {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
   simp only [IsEquiv] at h ⊢
-  intro r s
-  simp only [restrict_le_iff, h]
+  simp [restrict_le_iff, h]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
