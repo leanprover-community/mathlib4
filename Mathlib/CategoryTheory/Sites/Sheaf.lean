@@ -93,7 +93,7 @@ variable (P : Cᵒᵖ ⥤ A) {X : C} (S : Sieve X) (R : Presieve X) (E : Aᵒᵖ
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a sieve `S` on `X : C`, a presheaf `P : Cᵒᵖ ⥤ A`, and an object `E` of `A`,
     the cones over the natural diagram `S.arrows.diagram.op ⋙ P` associated to `S` and `P`
-    with cone point `E` are in 1-1 correspondence with sieve_compatible family of elements
+    with cone point `E` are in 1-1 correspondence with `SieveCompatible` family of elements
     for the sieve `S` and the presheaf of types `Hom (E, P -)`. -/
 def conesEquivSieveCompatibleFamily :
     (S.arrows.diagram.op ⋙ P).cones.obj E ≃
@@ -115,14 +115,14 @@ def conesEquivSieveCompatibleFamily :
 variable {P S E}
 variable {x : FamilyOfElements (P ⋙ coyoneda.obj E) S.arrows} (hx : SieveCompatible x)
 
-/-- The cone corresponding to a sieve_compatible family of elements, dot notation enabled. -/
+/-- The cone corresponding to a `SieveCompatible` family of elements, dot notation enabled. -/
 @[simp]
 def _root_.CategoryTheory.Presieve.FamilyOfElements.SieveCompatible.cone :
     Cone (S.arrows.diagram.op ⋙ P) where
   pt := E.unop
   π := (conesEquivSieveCompatibleFamily P S E).invFun ⟨x, hx⟩
 
-/-- Cone morphisms from the cone corresponding to a sieve_compatible family to the natural
+/-- Cone morphisms from the cone corresponding to a `SieveCompatible` family to the natural
     cone associated to a sieve `S` and a presheaf `P` are in 1-1 correspondence with amalgamations
     of the family. -/
 def homEquivAmalgamation :
