@@ -475,7 +475,7 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
     (hM : Module.IsTorsionBySet R M (⨅ i ∈ S, p i : Ideal R)) :
     DirectSum.IsInternal fun i : S => torsionBySet R M <| p i :=
   DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-    (iSupIndep_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
+    (iSupIndep_comp_coe_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
     (by
       apply (iSup_subtype'' ↑S fun i => torsionBySet R M <| p i).trans
       -- Porting note: times out if we change apply below to <|
@@ -624,7 +624,6 @@ namespace Submodule
 
 variable [CommRing R] [AddCommGroup M] [Module R M]
 
-set_option backward.isDefEq.respectTransparency false in
 instance (I : Ideal R) : Module (R ⧸ I) (torsionBySet R M I) :=
   -- Porting note: times out without the (R := R)
   Module.IsTorsionBySet.module <| torsionBySet_isTorsionBySet (R := R) I
@@ -638,7 +637,6 @@ instance (I : Ideal R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M]
     [IsScalarTower S R R] : IsScalarTower S (R ⧸ I) (torsionBySet R M I) :=
   inferInstance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `a`-torsion submodule as an `(R ⧸ R ∙ a)`-module. -/
 instance instModuleQuotientTorsionBy (a : R) : Module (R ⧸ R ∙ a) (torsionBy R M a) :=
   Module.IsTorsionBySet.module <|

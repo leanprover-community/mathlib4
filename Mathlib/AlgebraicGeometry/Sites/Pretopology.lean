@@ -105,7 +105,7 @@ def jointlySurjectiveTopology : GrothendieckTopology Scheme.{u} :=
   jointlySurjectivePretopology.toGrothendieck.copy (fun X s ↦ jointlySurjectivePretopology X ↑s) <|
     funext fun _ ↦ Set.ext fun s ↦
       ⟨fun ⟨_, hp, hps⟩ x ↦ let ⟨Y, u, hu, hmem⟩ := hp x;
-        ⟨Y, u, Presieve.map_monotone hps _ hu, hmem⟩,
+        ⟨Y, u, Presieve.map_monotone hps _ _ hu, hmem⟩,
       fun hs ↦ ⟨s, hs, le_rfl⟩⟩
 
 theorem mem_jointlySurjectiveTopology_iff_jointlySurjectivePretopology

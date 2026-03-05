@@ -169,7 +169,6 @@ theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1
     obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)
     exact le_trans (norm_nonneg _) (h3 z hz))
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_le_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (i : ℕ) (h1 : p.Monic)
     (h2 : Splits (p.map f)) (h3 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) :
     ‖(map f p).coeff i‖ ≤ B ^ (p.natDegree - i) * p.natDegree.choose i := by

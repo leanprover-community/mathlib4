@@ -136,7 +136,6 @@ set_option backward.isDefEq.respectTransparency false in
 lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMatrix.det := by
   simp [jacobiMatrix, jacobian]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma jacobiMatrix_apply (i j : σ) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
   simp [jacobiMatrix, LinearMap.toMatrix, differential, basis]
@@ -181,8 +180,8 @@ section Constructions
 
 /-- Transport a pre-submersive presentation along an algebra isomorphism. -/
 @[simps toPresentation map]
-def ofAlgEquiv (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
-    (e : S ≃ₐ[R] T) :
+noncomputable def ofAlgEquiv
+    (P : PreSubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     PreSubmersivePresentation R T ι σ where
   __ := P.toPresentation.ofAlgEquiv e
   map := P.map
@@ -513,8 +512,8 @@ section Constructions
 variable {R S ι σ} in
 /-- Transport a submersive presentation along an algebra isomorphism. -/
 @[simps toPreSubmersivePresentation]
-def ofAlgEquiv (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
-    (e : S ≃ₐ[R] T) :
+noncomputable def ofAlgEquiv
+    (P : SubmersivePresentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T] (e : S ≃ₐ[R] T) :
     SubmersivePresentation R T ι σ where
   __ := P.toPreSubmersivePresentation.ofAlgEquiv e
   jacobian_isUnit := by simp [P.jacobian_isUnit]

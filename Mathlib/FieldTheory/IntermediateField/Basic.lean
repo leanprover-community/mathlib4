@@ -398,6 +398,7 @@ instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : Interm
     [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
   inferInstanceAs (Algebra R' S.toSubalgebra)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
   inferInstanceAs (IsScalarTower R K S.toSubalgebra)
@@ -429,9 +430,13 @@ section shortcut_instances
 set_option backward.isDefEq.respectTransparency false
 
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+
 instance : Algebra S T := T.algebra
+
 instance : Module S T := Algebra.toModule
+
 instance : SMul S T := Algebra.toSMul
+
 instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
 
 end shortcut_instances
