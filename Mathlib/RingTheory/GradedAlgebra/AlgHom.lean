@@ -218,7 +218,7 @@ lemma cancel_left {g₁ g₂ : 𝒜 →ₐᵍ[R] ℬ} {f : ℬ →ₐᵍ[R] 𝒞
   ⟨fun h ↦ coe_algHom_injective <| (AlgHom.cancel_left hf).1 congr($h), fun h ↦ h ▸ rfl⟩
 
 /-- We enrich the existing function `toAlgHom` with the structure of a `MonoidHom`, to produce a
-bundled fubction that we now call `toEnd`. -/
+bundled function that we now call `toEnd`. -/
 @[simps] def toEnd : (𝒜 →ₐᵍ[R] 𝒜) →* (A →ₐ[R] A) where
   toFun := toAlgHom
   map_one' := rfl
