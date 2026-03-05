@@ -381,8 +381,8 @@ lemma mulHeight_comp_le (f : ι → ι') (x : ι' → K) :
   · exact Multiset.prod_map_le_prod_map₀ _ _ (fun v _ ↦ Real.iSup_nonneg_of_nonnegHomClass v _)
       fun v _ ↦ H v
   · exact finprod_le_finprod (hasFiniteMulSupport_iSup_nonarchAbsVal h₀)
-      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) (hasFiniteMulSupport_iSup_nonarchAbsVal hx)
-      fun v ↦ H v.val
+      (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _)
+      (hasFiniteMulSupport_iSup_nonarchAbsVal hx) fun v ↦ H v.val
 
 open Real in
 lemma logHeight_comp_le (f : ι → ι') (x : ι' → K) :
@@ -626,7 +626,8 @@ lemma mulHeight_fun_prod_eq {x : (a : α) → ι a → K} (hx : ∀ a, x a ≠ 0
     exact ⟨f, prod_ne_zero_iff.mpr fun a _ ↦ hf a⟩
   simp_rw [map_prod, Real.iSup_prod_eq_prod_iSup_of_nonnegHomClass]
   rw [Multiset.prod_map_prod,
-    finprod_prod_comm _ _ fun b _ ↦ hasFiniteMulSupport_iSup_nonarchAbsVal (hx b), ← prod_mul_distrib]
+    finprod_prod_comm _ _ fun b _ ↦ hasFiniteMulSupport_iSup_nonarchAbsVal (hx b),
+    ← prod_mul_distrib]
   exact prod_congr rfl fun a _ ↦ by rw [mulHeight_eq (hx a)]
 
 open Real in
