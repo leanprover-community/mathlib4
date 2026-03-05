@@ -21,11 +21,13 @@ This file equips a smooth manifold with the structure of a locally ringed space.
 ## Main definitions
 
 * `IsManifold.locallyRingedSpace`: A smooth manifold can be considered as a locally ringed space.
+* `IsManifold.locallyRingedSpaceMap`: A smooth map between smooth manifolds induces a morphism
+  of locally ringed spaces.
 
 ## TODO
 
-Characterize morphisms-of-locally-ringed-spaces (`AlgebraicGeometry.LocallyRingedSpace.Hom`) between
-smooth manifolds.
+- Show that every morphism of locally ringed spaces between two smooth manifolds is induced
+  by a smooth map via `IsManifold.locallyRingedSpaceMap`.
 
 -/
 
