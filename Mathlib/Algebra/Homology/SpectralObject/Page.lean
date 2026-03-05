@@ -703,7 +703,7 @@ lemma EIsoH_hom_naturality
     subst hβ
     exact hom_ext₁ rfl rfl
   exact (ShortComplex.LeftHomologyMapData.ofZeros
-    (X.shortComplexMap _ _ _ _ _ _ β n₀ n₁ n₂ hn₁ hn₂) _ _ _ _).homologyMap_comm
+    (X.shortComplexMap _ _ _ _ _ _ β n₀ n₁ n₂ hn₁ hn₂) ..).homologyMap_comm
 
 end
 
@@ -786,7 +786,7 @@ lemma cyclesIsoH_hom_EIsoH_inv :
         (X.cyclesIso (𝟙 i) f (𝟙 j) n₀ n₁ n₂ hn₁ hn₂).inv := by
     rw [← cancel_mono (X.cyclesIso ..).hom,
       Category.assoc, Iso.inv_hom_id, Category.comp_id,
-      ← cancel_mono (X.iCycles ..), Category.assoc, cyclesIso_hom_i _ _ _ _ _ _ _,
+      ← cancel_mono (X.iCycles ..), Category.assoc, cyclesIso_hom_i ..,
       h.cyclesIso_inv_comp_iCycles, toCycles_i]
     dsimp [h]
     rw [← Functor.map_id]
@@ -817,7 +817,7 @@ lemma EIsoH_hom_opcyclesIsoH_inv :
     cat_disch
   obtain rfl : n₂ = n₁ + 1 := by lia
   rw [← cancel_mono (X.opcyclesIsoH f n₀ n₁ hn₁).hom, Category.assoc,
-    opcyclesIsoH_hom _ _ _ _, opcyclesIsoH_inv_hom_id _ _ _ _]
+    opcyclesIsoH_hom .., opcyclesIsoH_inv_hom_id ..]
   dsimp [EIsoH, ιE]
   rw [Category.assoc, ← this,
     h.left_homologyIso_eq_right_homologyIso_trans_iso_symm,
@@ -835,7 +835,7 @@ variable {i₀ i₁ i₂ i₃ : ι} (f₁ : i₀ ⟶ i₁) (f₂ : i₁ ⟶ i₂
 @[reassoc (attr := simp)]
 lemma opcyclesMap_threeδ₂Toδ₁_opcyclesToE
     (n₀ n₁ n₂ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) (hn₂ : n₁ + 1 = n₂ := by lia) :
-    X.opcyclesMap _ _ _ _ (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃) n₁  ≫
+    X.opcyclesMap _ _ _ _ (threeδ₂Toδ₁ f₁ f₂ f₃ f₁₂ f₂₃ h₁₂ h₂₃) n₁ ≫
       X.opcyclesToE f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ n₂ hn₁ hn₂ = 0 := by
   rw [← cancel_epi (X.pOpcycles ..), comp_zero,
     p_opcyclesMap_assoc _ _ _ _ _ _ (twoδ₂Toδ₁ f₁ f₂ f₁₂ h₁₂)]
@@ -902,7 +902,7 @@ lemma opcyclesToE_map (α : mk₃ f₁ f₂ f₃ ⟶ mk₃ f₁' f₂' f₃') (�
   rw [← cancel_mono (X.ιE ..), Category.assoc, Category.assoc, opcyclesToE_ιE ..,
     ← cancel_epi (X.pOpcycles ..), p_opcyclesToE_assoc ..,
     X.πE_map_assoc _ _ _ _ _ _ _
-    (homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2)) ..,
+      (homMk₂ (α.app 0) (α.app 1) (α.app 2) (naturality' α 0 1) (naturality' α 1 2)) ..,
     πE_ιE .., X.cyclesMap_i_assoc .., toCycles_i_assoc,
     X.p_opcyclesMap_assoc .., X.p_opcyclesMap ..,
     ← Functor.map_comp_assoc, ← Functor.map_comp_assoc]
