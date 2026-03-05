@@ -46,7 +46,8 @@ lemma of_injective (h : Injective f) : Adapted G f := by
 lemma id : Adapted G id :=
   of_injective injective_id
 
-noncomputable def lift_path (hf : Adapted G f) (p : Walk (G.map f) u v) :
+/-! Lift a walk from a contraction to the original graph. -/
+noncomputable def lift_walk (hf : Adapted G f) (p : Walk (G.map f) u v) :
     ∀ x y, f x = u → f y = v → { q : Walk G x y // ∀ z ∈ q.support, f z ∈ p.support } := by
   induction p with
   | nil =>
@@ -66,14 +67,15 @@ noncomputable def lift_path (hf : Adapted G f) (p : Walk (G.map f) u v) :
     simp only [Walk.mem_support_append_iff, Walk.support_cons, List.mem_cons] at hz
     obtain h | h | h := hz <;> simp_all
 
-noncomputable def lift_path' (hf : Adapted G f) (p : Walk (G.map f) (f x) (f y)) :
+/-! Variant of `lift_walk` where the endpoints are explicit images by the function. -/
+noncomputable def lift_walk' (hf : Adapted G f) (p : Walk (G.map f) (f x) (f y)) :
     { q : Walk G x y // ∀ z ∈ q.support, f z ∈ p.support } :=
-  lift_path hf p x y rfl rfl
+  lift_walk hf p x y rfl rfl
 
 theorem comp (hf : Adapted G f) (hg : Adapted (G.map f) g) : Adapted G (g ∘ f) := by
   intro x y hxy
   obtain ⟨p, hp⟩ := hg hxy
-  exact ⟨lift_path' hf p, by grind⟩
+  exact ⟨lift_walk' hf p, by grind⟩
 
 end Adapted
 
