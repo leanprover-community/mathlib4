@@ -86,7 +86,7 @@ initialize_simps_projections GradedAlgHom (toFun → apply)
 @[simp] theorem coe_ofClass {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ]
     [AlgHomClass F R A B] (f : F) : ⇑(.ofClass f : 𝒜 →ₐᵍ[R] ℬ) = f := rfl
 
-@[simp] theorem toFun_eq_coe (f : 𝒜 →ₐᵍ[R] ℬ) : f.toFun = f := rfl
+@[simp] theorem coe_toAlgHom (f : 𝒜 →ₐᵍ[R] ℬ) : ⇑f.toAlgHom = f := rfl
 
 @[simp] theorem coe_mk {f : A →ₐ[R] B} (h) : ((⟨f, h⟩ : 𝒜 →ₐᵍ[R] ℬ) : A → B) = f := rfl
 
