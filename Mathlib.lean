@@ -771,6 +771,7 @@ public import Mathlib.Algebra.Module.Prod
 public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Module.Rat
 public import Mathlib.Algebra.Module.RingHom
+public import Mathlib.Algebra.Module.SemilinearModuleProd
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Algebra.Module.SnakeLemma
 public import Mathlib.Algebra.Module.SpanRank
@@ -796,7 +797,6 @@ public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.Algebra.Module.Torsion.Pi
 public import Mathlib.Algebra.Module.Torsion.Prod
 public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.Algebra.Module.TwistedModuleProd
 public import Mathlib.Algebra.Module.ULift
 public import Mathlib.Algebra.Module.ZLattice.Basic
 public import Mathlib.Algebra.Module.ZLattice.Covolume
