@@ -98,6 +98,14 @@ theorem CancelMonoid.ext {M : Type*} ⦃m₁ m₂ : CancelMonoid M⦄
   CancelMonoid.toLeftCancelMonoid_injective <| LeftCancelMonoid.ext h_mul
 
 @[to_additive]
+theorem CancelMonoid.toRightCancelMonoid_injective {M : Type u} :
+    Function.Injective (@CancelMonoid.toRightCancelMonoid M) := by
+  intro m₁ m₂ h
+  apply CancelMonoid.ext
+  exact congrArg (fun m : Monoid M => (letI := m; HMul.hMul : M → M → M)) <|
+    congrArg (@RightCancelMonoid.toMonoid M) h
+
+@[to_additive]
 theorem CancelCommMonoid.toCommMonoid_injective {M : Type u} :
     Function.Injective (@CancelCommMonoid.toCommMonoid M) := by
   rintro @⟨@⟨@⟨⟩⟩⟩ @⟨@⟨@⟨⟩⟩⟩ h

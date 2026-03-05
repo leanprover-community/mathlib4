@@ -134,6 +134,45 @@ lemma of_isField (hR : IsField R) (f : R →+* S) : f.Flat := by
   rw [← f.algebraMap_toAlgebra, RingHom.flat_algebraMap_iff]
   infer_instance
 
+section
+
+variable [Algebra R S]
+variable (A : Type*) {B C D : Type*} [CommRing A] [Algebra R A] [Algebra S A]
+  [IsScalarTower R S A] [CommRing B] [Algebra R B] [CommRing C] [Algebra R C] [Algebra S C]
+  [IsScalarTower R S C] [CommRing D] [Algebra R D]
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra in
+lemma lTensor {f : B →ₐ[R] D} (hf : f.Flat) :
+    (Algebra.TensorProduct.lTensor (S := S) A f).Flat := by
+  algebraize [f.toRingHom, (Algebra.TensorProduct.lTensor (S := A) A f).toRingHom]
+  let e : A ⊗[R] D ≃ₐ[A ⊗[R] B] (A ⊗[R] B) ⊗[B] D :=
+    { __ := (Algebra.IsPushout.cancelBaseChangeAlg _ _ _ _ _).symm,
+      commutes' x := congr($(Algebra.IsPushout.cancelBaseChange_symm_comp_lTensor R B D A) x) }
+  exact .of_linearEquiv e.toLinearEquiv
+
+variable {A} in
+lemma tensorProductMap {f : A →ₐ[S] C} {g : B →ₐ[R] D} (hf : f.Flat) (hg : g.Flat) :
+    (Algebra.TensorProduct.map f g).Flat := by
+  have heq : Algebra.TensorProduct.map f g =
+      (Algebra.TensorProduct.map f (.id R D)).comp (Algebra.TensorProduct.map (.id _ _) g) := by
+    ext <;> simp
+  rw [heq]
+  refine RingHom.Flat.comp ?_ ?_
+  · exact hg.lTensor _
+  · have : (Algebra.TensorProduct.map f (AlgHom.id R D)).restrictScalars R =
+        (Algebra.TensorProduct.comm _ _ _).toAlgHom.comp
+          ((Algebra.TensorProduct.lTensor _ (f.restrictScalars R)).comp
+            (Algebra.TensorProduct.comm _ _ _).toAlgHom) := by
+      ext <;> simp
+    change ((Algebra.TensorProduct.map f (AlgHom.id R D)).restrictScalars R).Flat
+    rw [this]
+    refine RingHom.Flat.comp ?_ (.of_bijective <| AlgEquiv.bijective _)
+    change RingHom.Flat (RingHom.comp (Algebra.TensorProduct.lTensor D
+      (AlgHom.restrictScalars R f)).toRingHom _)
+    exact RingHom.Flat.comp (.of_bijective <| (TensorProduct.comm R A D).bijective) (lTensor D hf)
+
+end
+
 end RingHom.Flat
 
 section

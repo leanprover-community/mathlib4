@@ -850,7 +850,6 @@ lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
 
 end Subgraph
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem card_neighborSet_toSubgraph (G H : SimpleGraph V) (h : H ≤ G)
     (v : V) [Fintype ↑((toSubgraph H h).neighborSet v)] [Fintype ↑(H.neighborSet v)] :

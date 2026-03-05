@@ -252,7 +252,7 @@ variable (β)
 /-- `setToSet β S T h` is the natural homomorphism `⨁ (i : S), β i → ⨁ (i : T), β i`,
 where `h : S ⊆ T`. -/
 def setToSet (S T : Set ι) (H : S ⊆ T) : (⨁ i : S, β i) →+ ⨁ i : T, β i :=
-  toAddMonoid fun i => of (fun i : Subtype T => β i) ⟨↑i, H i.2⟩
+  toAddMonoid fun i => of (fun i : T => β i) ⟨↑i, H i.2⟩
 
 end DecidableEq
 
@@ -388,7 +388,7 @@ theorem support_subset [DecidableEq ι] [DecidableEq M] (A : ι → S) (x : Dire
     ZeroMemClass.coe_eq_zero, imp_self]
 
 theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
-    (Function.support fun i => (x i : M)).Finite := by
+    (fun i => (x i : M)).HasFiniteSupport := by
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 

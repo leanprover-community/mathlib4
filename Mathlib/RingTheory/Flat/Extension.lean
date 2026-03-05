@@ -12,6 +12,8 @@ public import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
@@ -124,7 +126,7 @@ lemma adjoinAlgebraic_maximalIdeal_map (x : K) (int : IsIntegral (ResidueField S
   rw [← adjoinAlgebraicToResidue_ker K S x int]
   exact RingHom.ker_isMaximal_of_surjective _ (adjoinAlgebraicToResidue_surjective K S x int)
 
-instance (x : K) (int : IsIntegral (ResidueField S) x) :
+instance adjoinAlgebraic_isLocalRing (x : K) (int : IsIntegral (ResidueField S) x) :
     IsLocalRing (adjoinAlgebraic K S x int) := by
   have := adjoinAlgebraic_maximalIdeal_map K S x int
   apply IsLocalRing.of_unique_max_ideal
@@ -273,12 +275,12 @@ structure FlatExtension where
   [isLocalHom : IsLocalHom (algebraMap R Ring)]
   [algebraK : Algebra (ResidueField Ring) K]
   [isScalarTower : IsScalarTower (ResidueField R) (ResidueField Ring) K]
-  flat : Module.Flat R Ring
+  [flat : Module.Flat R Ring]
   eqmap : maximalIdeal Ring = (maximalIdeal R).map (algebraMap R Ring)
 
 namespace FlatExtension
 
-attribute [instance] commRing algebra isLocalRing isLocalHom algebraK isScalarTower
+attribute [instance] commRing algebra isLocalRing isLocalHom algebraK isScalarTower flat
 
 noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
   let e : R ≃+* Shrink.{w} R := (Shrink.ringEquiv R).symm
@@ -290,7 +292,7 @@ noncomputable def trivial [Small.{w} R] : FlatExtension R K := by
     rcases residue_surjective x with ⟨y, hy⟩
     simp [RingHom.algebraMap_toAlgebra, ← hy, ResidueField.map_residue, Equiv.algebraMap_def,
       Shrink.ringEquiv]
-  refine ⟨Shrink.{w} R, Module.Flat.of_linearEquiv (Shrink.linearEquiv R R), ?_⟩
+  refine ⟨Shrink.{w} R, ?_⟩
   apply (IsLocalRing.eq_maximalIdeal _).symm
   exact (Ideal.isMaximal_map_iff_of_bijective _ e.bijective).2 inferInstance
 
@@ -308,6 +310,40 @@ instance : Category.{w} (FlatExtension.{w} R K) where
   id S := ⟨AlgHom.id R S.Ring, by simp⟩
   comp f g := ⟨g.hom.comp f.hom, by
     simp [← f.comm, ← g.comm, AlgHom.comp_toRingHom', ResidueField.map_comp, ← RingHom.comp_assoc]⟩
+
+variable {R K} in
+noncomputable def adjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
+    (int : IsIntegral (ResidueField S.Ring) x) : FlatExtension.{w} R K :=
+  let : IsLocalHom (algebraMap R (_root_.adjoinAlgebraic K S.Ring x int)) := by
+    rw [IsScalarTower.algebraMap_eq R S.Ring]
+    apply RingHom.isLocalHom_comp
+  let := adjoinAlgebraicAlgebraK K S.Ring x int
+  let := adjoinAlgebraicIsScalarTower K S.Ring x int
+  { Ring := _root_.adjoinAlgebraic K S.Ring x int
+    isLocalRing := adjoinAlgebraic_isLocalRing K S.Ring x int
+    isScalarTower := IsScalarTower.to₁₃₄ (ResidueField R) (ResidueField S.Ring) _ K
+    flat := Module.Flat.trans R S.Ring _
+    eqmap := by
+      rw [adjoinAlgebraic_maximalIdeal_eq_map K S.Ring x int, IsScalarTower.algebraMap_eq R S.Ring,
+        ← Ideal.map_map, S.eqmap] }
+
+variable {R K} in
+noncomputable def adjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
+    (nint : ¬ IsIntegral (ResidueField S.Ring) x) : FlatExtension.{w} R K :=
+  let : IsLocalHom (algebraMap R (_root_.adjoinTranscendental S.Ring)) := by
+    rw [IsScalarTower.algebraMap_eq R S.Ring]
+    apply RingHom.isLocalHom_comp
+  letI := ((algebraMap (ResidueField S.Ring) K).comp
+    (algebraMap S.Ring (ResidueField S.Ring))).toAlgebra
+  letI : IsScalarTower S.Ring (ResidueField S.Ring) K := IsScalarTower.of_algebraMap_eq' rfl
+  let := adjoinTranscendentalAlgebraK K S.Ring x nint
+  let := adjoinTranscendentalIsScalarTower K S.Ring x nint
+  { Ring := _root_.adjoinTranscendental S.Ring
+    isScalarTower := IsScalarTower.to₁₃₄ (ResidueField R) (ResidueField S.Ring) _ K
+    flat := Module.Flat.trans R S.Ring _
+    eqmap := by
+      rw [adjoinTranscendental_maximalIdeal_eq_map S.Ring, IsScalarTower.algebraMap_eq R S.Ring,
+        ← Ideal.map_map, ← S.eqmap] }
 
 noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
   X₀ := trivial R K
@@ -335,7 +371,7 @@ lemma exists_isLocalHom_flat : ∃ (R' : Type (max u v)) (_ : CommRing R') (_ : 
   let ⟨lin, wf⟩ := exists_wellOrder setK
   let : WellFoundedLT (WithTop setK) := WithTop.instWellFoundedLT
   let : SuccOrder (WithTop setK) := SuccOrder.ofLinearWellFoundedLT _
-  let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot
+  let : OrderBot (WithTop setK) := WellFoundedLT.toOrderBot _
   obtain ⟨φ⟩ : Nonempty ((FlatExtension.SuccStruct.{max u v} R K).Iteration (⊤ : WithTop setK)) :=
     inferInstance
   let fi : WithTop setK ≃o Set.Iic (⊤ : WithTop setK) := OrderIso.IicTop.symm

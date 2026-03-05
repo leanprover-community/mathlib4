@@ -54,7 +54,7 @@ namespace InfiniteAdeleRing
 
 variable (K : Type*) [Field K]
 
-instance : CommRing (InfiniteAdeleRing K) := Pi.commRing
+instance : CommRing (InfiniteAdeleRing K) := fast_instance% Pi.commRing
 
 instance : Inhabited (InfiniteAdeleRing K) := ⟨0⟩
 
@@ -65,7 +65,7 @@ instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
 
 instance : IsTopologicalRing (InfiniteAdeleRing K) := Pi.instIsTopologicalRing
 
-instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra _ _
+instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra (InfinitePlace K) InfinitePlace.Completion
 
 @[simp]
 theorem algebraMap_apply (x : K) (v : InfinitePlace K) :

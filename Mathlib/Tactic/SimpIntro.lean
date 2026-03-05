@@ -29,7 +29,7 @@ partial def simpIntroCore (g : MVarId) (ctx : Simp.Context) (simprocs : Simp.Sim
     TermElabM (Option MVarId) := do
   let done := return (← simpTargetCore g ctx simprocs discharge?).1
   let (transp, var, ids') ← match ids with
-    | [] => if more then pure (.reducible, mkHole (← getRef), []) else return ← done
+    | [] => if more then pure (.reducible, mkHole (← getRef) |>.raw, []) else return ← done
     | v::ids => pure (.default, v.raw[0], ids)
   let t ← withTransparency transp g.getType'
   let n := if var.isIdent then var.getId else `_

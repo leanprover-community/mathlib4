@@ -56,6 +56,10 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
 def LieIdeal.toLieSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 
+@[simp] lemma LieIdeal.mem_toLieSubalgebra (I : LieIdeal R L) (x : L) :
+    x ∈ I.toLieSubalgebra ↔ x ∈ I :=
+  Iff.rfl
+
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨LieIdeal.toLieSubalgebra R L⟩
 
