@@ -3,8 +3,11 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
-import Mathlib.RingTheory.GradedAlgebra.TensorProduct
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
+public import Mathlib.RingTheory.GradedAlgebra.TensorProduct
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-! # Homogeneous localization of tensor product of graded algebra
 
@@ -14,7 +17,9 @@ Let `𝒜` be a graded `R`-algebra, and `S` be an `R`-algebra. Then `S ⊗[R] �
 Let `W` be a homogeneous submonoid of `𝒜`. Then `(S⊗[R]𝒜)[(1⊗W)⁻¹]₀ ≅ S ⊗[R] (𝒜[W⁻¹]₀)`.
 -/
 
-local notation:max "at " W => Localization W
+@[expose] public section
+
+local notation:max "(at " W ")" => Localization W
 local notation:max 𝒜"["W"⁻¹]₀" => HomogeneousLocalization 𝒜 W
 
 open DirectSum SetLike
@@ -97,13 +102,15 @@ theorem Away.proj₀_mk {i : ι} {f : A} (hf : f ∈ 𝒜 i) (n : ℕ) (a : A) (
 
 end HomogeneousLocalization
 
+-- MOVE
+namespace AlgHom
 
-open TensorProduct in
-def AlgHom.liftBaseChange {R S A B : Type*}
+open TensorProduct
+
+def liftBaseChange {R S A B : Type*}
     [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
     [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
-    (f : A →ₐ[R] B) :
-    S ⊗[R] A →ₐ[S] B :=
+    (f : A →ₐ[R] B) : S ⊗[R] A →ₐ[S] B :=
   .ofLinearMap (.liftBaseChange S f) (by simp [Algebra.TensorProduct.one_def]) fun x y ↦ by
     induction x using TensorProduct.induction_on with
     | zero => simp
@@ -113,14 +120,17 @@ def AlgHom.liftBaseChange {R S A B : Type*}
       | add y₁ y₂ hy₁ hy₂ => simp [mul_add, hy₁, hy₂]
       | tmul s₂ a₂ => simp [Algebra.TensorProduct.tmul_mul_tmul, mul_smul, smul_comm s₁]
 
-@[simp] lemma AlgHom.liftBaseChange_tmul {R S A B : Type*}
+@[simp] lemma liftBaseChange_tmul {R S A B : Type*}
     [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
     [Algebra R S] [Algebra R A] [Algebra R B] [Algebra S B] [IsScalarTower R S B]
     (f : A →ₐ[R] B) (s : S) (a : A) :
     f.liftBaseChange (s ⊗ₜ a) = s • f a := rfl
 
+end AlgHom
+
+-- MOVE
 open TensorProduct in
-@[ext high] theorem Algebra.TensorProduct.ext_ring {R S A B : Type*}
+@[ext high + 1] theorem Algebra.TensorProduct.ext_ring {R S A B : Type*}
     [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
     [CommSemiring S] [Algebra R S] [Algebra S B] [IsScalarTower R S B]
     {f g : S ⊗[R] A →ₐ[S] B}
@@ -129,26 +139,7 @@ open TensorProduct in
     f = g :=
   ext (Subsingleton.elim _ _) h
 
--- #30173
--- This is not tagged with `@[ext]` because `A` and `W` cannot be inferred.
-theorem IsLocalization.algHom_ext {R A L B : Type*}
-    [CommSemiring R] [CommSemiring A] [CommSemiring L] [CommSemiring B]
-    (W : Submonoid A) [Algebra A L] [IsLocalization W L]
-    [Algebra R A] [Algebra R L] [IsScalarTower R A L] [Algebra R B]
-    {f g : L →ₐ[R] B} (h : f.comp (Algebra.algHom R A L) = g.comp (Algebra.algHom R A L)) :
-    f = g :=
-  AlgHom.coe_ringHom_injective <| IsLocalization.ringHom_ext W <| RingHom.ext <| AlgHom.ext_iff.mp h
-
--- #30173
-@[ext high] theorem Localization.algHom_ext {R A B : Type*}
-    [CommSemiring R] [CommSemiring A] [CommSemiring B] [Algebra R A] [Algebra R B] (W : Submonoid A)
-    {f g : Localization W →ₐ[R] B}
-    (h : f.comp (Algebra.algHom R A _) = g.comp (Algebra.algHom R A _)) :
-    f = g :=
-  IsLocalization.algHom_ext W h
-
-/-! # localization of tensor, to be moved -/
-
+-- MOVE
 open TensorProduct in
 /-- `(S ⊗[R] A)[(1 ⊗ₜ W)⁻¹] ≅ (S ⊗[R] A)[W⁻¹]`. -/
 noncomputable def IsLocalization.tensorEquiv (R S A A₁ SA₁ : Type*)
@@ -178,10 +169,10 @@ open TensorProduct in
 /-- `(S ⊗[R] A)[(1 ⊗ₜ W)⁻¹] ≅ S ⊗[R] A[W⁻¹]`. -/
 noncomputable def Localization.tensorEquiv (R S : Type*) {A : Type*}
     [CommSemiring R] [CommSemiring S] [CommSemiring A]
-    [Algebra R S] [Algebra R A] (W : Submonoid A) :
-    Localization (W.map (Algebra.TensorProduct.includeRight (R := R) (A := S))) ≃ₐ[S]
-    S ⊗[R] Localization W :=
-  IsLocalization.tensorEquiv R S A _ _ W _ rfl
+    [Algebra R S] [Algebra R A] (W₁ : Submonoid A) (W₂ : Submonoid (S ⊗[R] A))
+    (hw : W₁.map Algebra.TensorProduct.includeRight = W₂) :
+    Localization W₂ ≃ₐ[S] S ⊗[R] Localization W₁ :=
+  IsLocalization.tensorEquiv R S A _ _ W₁ W₂ hw
 
 open TensorProduct in
 /-- `(S ⊗[R] A)[(1 ⊗ₜ f)⁻¹] ≅ S ⊗[R] A[f⁻¹]`. -/
@@ -230,12 +221,33 @@ end HomogeneousLocalization
 
 -- # Main result
 
+namespace HomogeneousLocalization
+
 variable {R A S : Type*} [CommRing R] [CommRing A] [Algebra R A] [CommRing S] [Algebra R S]
   {ι : Type*} [DecidableEq ι] [AddCancelCommMonoid ι]
   (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜]
 
 open TensorProduct
 
+noncomputable def baseChange
+    (W₁ : Submonoid A) (W₂ : Submonoid (S ⊗[R] A))
+    (hw : W₁.map Algebra.TensorProduct.includeRight = W₂)
+    (homog : W₁ ≤ SetLike.homogeneousSubmonoid 𝒜)  :
+    (𝒜 · |>.baseChange S)[W₂⁻¹]₀ ≃ₐ[S] S ⊗[R] 𝒜[W₁⁻¹]₀ := by
+  let f₁ : (𝒜 · |>.baseChange S)[W₂⁻¹]₀ →ₐ[S] (at W₂) := Algebra.algHom _ _ _
+  let f₂ : (at W₂) ≃ₐ[S] S ⊗[R] (at W₁) := Localization.tensorEquiv _ _ _ _ hw
+  let f₃ : S ⊗[R] (at W₁) →ₗ[S] S ⊗[R] 𝒜[W₁⁻¹]₀ :=
+    ((proj₀ 𝒜 W₁ homog).restrictScalars R).baseChange S
+  let forwards : (𝒜 · |>.baseChange S)[W₂⁻¹]₀ →ₗ[S] S ⊗[R] 𝒜[W₁⁻¹]₀:=
+    f₃ ∘ₗ f₂.toLinearMap ∘ₗ f₁.toLinearMap
+  let backwards : S ⊗[R] 𝒜[W₁⁻¹]₀ →ₐ[S] (𝒜 · |>.baseChange S)[W₂⁻¹]₀ :=
+    AlgHom.liftBaseChange <| HomogeneousLocalization.mapₐ
+      (Algebra.TensorProduct.includeRight (R := R) (A := S))
+      (fun _ _ ↦ Submodule.tmul_mem_baseChange_of_mem _) rfl
+
+
+
+#exit
 noncomputable def HomogeneousLocalization.awayBaseChange {i : ι} {f : A} (hf : f ∈ 𝒜 i) :
     Away (fun n ↦ (𝒜 n).baseChange S) ((1 : S) ⊗ₜ[R] f) ≃ₐ[S] S ⊗[R] Away 𝒜 f := by
   let f₁ : HomogeneousLocalization.Away (fun n ↦ (𝒜 n).baseChange S) (1 ⊗ₜ[R] f) →ₐ[S]
