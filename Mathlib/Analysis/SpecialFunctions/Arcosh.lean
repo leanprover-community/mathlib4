@@ -11,32 +11,32 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 /-!
 # Inverse of the cosh function
 
-In this file we define an inverse of cosh as a function from `[0, ∞)` to `[1, ∞)`.
+In this file we define an inverse of cosh as a function from $[0, ∞)$ to $[1, ∞)$.
 
 ## Main definitions
 
-- `Real.arcosh`: An inverse function of `Real.cosh` as a function from `[0, ∞)` to `[1, ∞)`.
+- `Real.arcosh`: An inverse function of `Real.cosh` as a function from $[0, ∞)$ to $[1, ∞)$.
 
 - `Real.coshPartialEquiv`: `Real.cosh` and `Real.arcosh` bundled as a `PartialEquiv`
-  from `[0, ∞)` to `[1, ∞)`.
+  from $[0, ∞)$ to $[1, ∞)$.
 
-- `Real.coshOpenPartialHomeomorph`: `Real.cosh` as an `OpenPartialHomeomorph` from `(0, ∞)` to
-  `(1, ∞)`.
+- `Real.coshOpenPartialHomeomorph`: `Real.cosh` as an `OpenPartialHomeomorph` from $(0, ∞)$ to
+  $(1, ∞)$.
 
 ## Main Results
 
 - `Real.cosh_arcosh`, `Real.arcosh_cosh`: cosh and arcosh are inverse in the appropriate domains.
 
 - `Real.cosh_bijOn`, `Real.cosh_injOn`, `Real.cosh_surjOn`: `Real.cosh` is bijective, injective and
-  surjective as a function from `[0, ∞)` to `[1, ∞)`
+  surjective as a function from $[0, ∞)$ to $[1, ∞)$
 
 - `Real.arcosh_bijOn`, `Real.arcosh_injOn`, `Real.arcosh_surjOn`: `Real.arcosh` is bijective,
-  injective and surjective as a function from `[1, ∞)` to `[0, ∞)`
+  injective and surjective as a function from $[1, ∞)$ to $[0, ∞)$
 
-- `Real.continuousOn_arcosh`: arcosh is continuous on `[1, ∞)`
+- `Real.continuousOn_arcosh`: arcosh is continuous on $[1, ∞)$
 
 - `Real.differentiableOn_arcosh`, `Real.contDiffOn_arcosh`: `Real.arcosh` is
-  differentiable, and continuously differentiable on `(1, ∞)`
+  differentiable, and continuously differentiable on $(1, ∞)$
 
 ## Tags
 
