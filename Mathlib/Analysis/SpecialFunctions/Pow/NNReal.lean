@@ -946,6 +946,21 @@ theorem ofReal_rpow_of_nonneg {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp_nonneg : 0 �
 @[simp] lemma rpow_inv_rpow {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0∞) : (x ^ y⁻¹) ^ y = x := by
   rw [← rpow_mul, inv_mul_cancel₀ hy, rpow_one]
 
+@[simp]
+lemma rpow_rpow_inv_iff {x : ℝ≥0∞} {y : ℝ} : (x ^ y) ^ y⁻¹ = x ↔ y ≠ 0 ∨ x = 1 := by
+  constructor
+  · rw [or_iff_not_imp_left, ne_eq, not_not]
+    rintro h rfl
+    simpa using h.symm
+  · rintro (h|rfl)
+    · apply ENNReal.rpow_rpow_inv h
+    simp
+
+@[simp]
+lemma rpow_inv_rpow_iff {x : ℝ≥0∞} {y : ℝ} : (x ^ y⁻¹) ^ y = x ↔ y ≠ 0 ∨ x = 1 := by
+  nth_rw 2 [← inv_inv y]
+  rw [rpow_rpow_inv_iff, ne_eq, inv_eq_zero]
+
 lemma pow_rpow_inv_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
   rw [← rpow_natCast, ← rpow_mul, mul_inv_cancel₀ (by positivity), rpow_one]
 
