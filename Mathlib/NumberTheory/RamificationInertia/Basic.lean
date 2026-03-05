@@ -272,9 +272,8 @@ lemma ramificationIdx_eq_one_iff
   rw [← not_ne_iff, IsLocalization.map_algebraMap_ne_top_iff_disjoint P.primeCompl]
   simpa [primeCompl, Set.disjoint_compl_left_iff_subset]
 
-theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S]
-    [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {p : Ideal R}
-    (hv : Irreducible v) (hp : Prime p) (hvp : v ≠ p) [i : w.LiesOver v] :
+theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S] {v : Ideal R}
+    {w : Ideal S} {p : Ideal R} (hv : Irreducible v) (hp : Prime p) (hvp : v ≠ p) [w.LiesOver v] :
     emultiplicity w (p.map (algebraMap R S)) = 0 := by
   refine emultiplicity_eq_zero.2 fun h ↦ hvp.symm ?_
   rw [Ideal.dvd_iff_le, Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at h
