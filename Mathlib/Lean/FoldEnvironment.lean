@@ -24,39 +24,23 @@ open Lean Meta
 
 namespace Lean.Meta
 
-/-- Information about a failed import. -/
-public structure FoldDeclFailure where
-  /-- Module containing the constant whose import failed. -/
-  module : Name
-  /-- Constant whose import failed. -/
-  const : Name
-  /-- Exception that triggered the error. -/
-  exception : Exception
-
-/-- Log a warning for the given import failure. -/
-public def FoldDeclFailure.log (f : FoldDeclFailure) : CoreM Unit :=
-  logError m!"Processing failure with {f.const} in {f.module}:\n  {f.exception.toMessageData}"
-
-abbrev ImportErrorRef := IO.Ref (List FoldDeclFailure)
+public abbrev FoldDeclErrorRef := IO.Ref (List MessageData)
 
 /-- Run `act env name constInfo`, catching potential errors. -/
 @[inline]
-def visitConst (modName : Name) (errorRef : ImportErrorRef)
+def visitConst (modName : Name) (errorRef : FoldDeclErrorRef)
     (act : α → Name → ConstantInfo → MetaM α)
     (a : α) (name : Name) (constInfo : ConstantInfo) : MetaM α := do
   try
     act a name constInfo
   catch e =>
-    let i : FoldDeclFailure := {
-      module := modName,
-      const := name,
-      exception := e }
-    errorRef.modify (i :: ·)
+    let msg := m!"Processing failure with {name} in {modName}:\n  {e.toMessageData}"
+    errorRef.modify (msg :: ·)
     return a
 
 /-- Loop through all constants in modules with module index from `start` to `stop - 1`. -/
 @[specialize]
-def foldModules (ngen : NameGenerator) (errorRef : ImportErrorRef)
+def foldModules (ngen : NameGenerator) (errorRef : FoldDeclErrorRef)
     (env : Environment) (init : α) (act : α → Name → ConstantInfo → MetaM α)
     (mctx : Meta.Context) (cctx : Core.Context)
     (start stop : Nat) : EIO Exception α :=
@@ -80,7 +64,7 @@ The results can then be combined using `Array.foldl`. -/
 @[specialize]
 public def foldImportedDecls (init : α) (cfg : Config)
     (act : α → Name → ConstantInfo → MetaM α) (constantsPerTask : Nat := 5000) :
-    CoreM (Array (Task (Except Exception α)) × List FoldDeclFailure) := do
+    CoreM (Array (Task (Except Exception α)) × FoldDeclErrorRef) := do
   let env ← getEnv
   let numModules := env.header.moduleData.size
   let mctx := { keyedConfig := cfg.toConfigWithKey }
@@ -103,12 +87,12 @@ public def foldImportedDecls (init : α) (cfg : Config)
     setNGen parentNGen
     let t ← (foldModules childNGen errorRef env init act mctx cctx start numModules).asTask
     tasks := tasks.push t
-  return (tasks, ← errorRef.get)
+  return (tasks, errorRef)
 
 /-- Fold through all constants of the current file using `act`. -/
 @[specialize]
 public def foldCurrFileDecls (init : α) (cfg : Config)
-    (act : α → Name → ConstantInfo → MetaM α) : CoreM (α × List FoldDeclFailure) := do
+    (act : α → Name → ConstantInfo → MetaM α) : CoreM (α × FoldDeclErrorRef) := do
   let env ← getEnv
   let modName := env.header.mainModule
   let errorRef ← IO.mkRef {}
@@ -117,6 +101,6 @@ public def foldCurrFileDecls (init : α) (cfg : Config)
   let go : MetaM α := env.constants.map₂.foldlM (visitConst modName errorRef act) init
   let result ← go.run' { keyedConfig := cfg.toConfigWithKey } {}
     |>.run' { (← read) with maxHeartbeats := 0 } { env, ngen := childNGen }
-  return (result, ← errorRef.get)
+  return (result, errorRef)
 
 end Lean.Meta
