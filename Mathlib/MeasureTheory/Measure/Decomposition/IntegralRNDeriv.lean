@@ -111,30 +111,6 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
       ENNReal.toReal_inv, μ', measureReal_def]
   · simp [ENNReal.toReal_pos_iff, hν, measureReal_def]
 
-variable (ν) in
-lemma ae_rnDeriv_ne_zero_imp_of_ae_aux [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
-    (h : ∀ᵐ a ∂μ, p a) :
-    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
-  rw [ν.haveLebesgueDecomposition_add μ, ae_add_measure_iff]
-  constructor
-  · rw [← ν.haveLebesgueDecomposition_add μ]
-    have : ∀ᵐ x ∂(ν.singularPart μ), μ.rnDeriv ν x = 0 := μ.rnDeriv_eq_zero_ae_singularPart ν
-    filter_upwards [this] with x hx h_absurd using absurd hx h_absurd
-  · have h_ac : μ.withDensity (ν.rnDeriv μ) ≪ μ := withDensity_absolutelyContinuous _ _
-    rw [← ν.haveLebesgueDecomposition_add μ]
-    suffices ∀ᵐx ∂μ, μ.rnDeriv ν x ≠ 0 → p x from h_ac this
-    filter_upwards [h] with _ h _ using h
-
-lemma ae_rnDeriv_ne_zero_imp_of_ae [SigmaFinite μ] [SigmaFinite ν] {p : α → Prop}
-    (h : ∀ᵐ a ∂μ, p a) :
-    ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → p a := by
-  suffices ∀ᵐ a ∂ν, (ν.withDensity (μ.rnDeriv ν)).rnDeriv ν a ≠ 0 → p a by
-    have h := ν.rnDeriv_withDensity (μ.measurable_rnDeriv ν)
-    filter_upwards [this, h] with x hx1 hx2
-    rwa [hx2] at hx1
-  refine ae_rnDeriv_ne_zero_imp_of_ae_aux ν ?_
-  exact (Measure.absolutelyContinuous_of_le (μ.withDensity_rnDeriv_le ν)) h
-
 section Integrable
 
 variable {β : Type*} {mβ : MeasurableSpace β} {κ η : Kernel α β} {f g : ℝ → ℝ}
@@ -162,7 +138,7 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral [IsFiniteMeasure μ] [IsFinit
       by_cases h0 : μ.rnDeriv ν a = 0
       · simp [h0]
       · rw [ha h0, mul_one]
-    refine ae_rnDeriv_ne_zero_imp_of_ae ?_
+    refine Measure.ae_rnDeriv_ne_zero_imp_of_ae ?_
     refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (by fun_prop) measurable_const ?_
     intro s hs hsμ
     simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter, one_mul]
