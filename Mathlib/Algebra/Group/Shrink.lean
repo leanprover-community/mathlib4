@@ -3,17 +3,16 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.TransferInstance
-import Mathlib.Logic.Small.Defs
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Group.Action.TransferInstance
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # Transfer group structures from `α` to `Shrink α`
 -/
 
--- FIXME: `to_additive` is incompatible with `noncomputable section`.
--- See https://github.com/leanprover-community/mathlib4/issues/1074.
-suppress_compilation
+@[expose] public noncomputable section
 
 universe v
 variable {M α : Type*} [Small.{v} α]

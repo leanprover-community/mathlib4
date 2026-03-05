@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Naturals pairing function
@@ -22,6 +24,8 @@ This file defines a pairing function for the naturals as follows:
 It has the advantage of being monotone in both directions and sending `⟦0, n^2 - 1⟧` to
 `⟦0, n - 1⟧²`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -52,9 +56,6 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
 
 theorem pair_eq_of_unpair_eq {n a b} (H : unpair n = (a, b)) : pair a b = n := by
   simpa [H] using pair_unpair n
-
-@[deprecated (since := "2025-05-24")]
-alias pair_unpair' := pair_eq_of_unpair_eq
 
 @[simp]
 theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
@@ -134,7 +135,7 @@ theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pai
 
 theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
   simp only [pair, Nat.pow_two, Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul, Nat.add_assoc]
-  split_ifs <;> simp [Nat.le_of_lt, not_lt.1, *] <;> omega
+  split_ifs <;> simp [Nat.le_of_lt, not_lt.1, *] <;> lia
 
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
@@ -148,7 +149,7 @@ theorem add_le_pair (m n : ℕ) : m + n ≤ pair m n := by
   simp only [pair, Nat.add_assoc]
   split_ifs
   · have := le_mul_self n
-    cutsat
+    lia
   · exact Nat.le_add_left _ _
 
 theorem unpair_add_le (n : ℕ) : (unpair n).1 + (unpair n).2 ≤ n :=

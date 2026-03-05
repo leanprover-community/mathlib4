@@ -3,9 +3,11 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
+module
+
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
 # Order related properties of Lp spaces
@@ -20,6 +22,8 @@ import Mathlib.MeasureTheory.Function.LpSpace.Basic
   `PosPart.pos` and `NegPart.neg` given by the lattice structure.
 
 -/
+
+@[expose] public section
 
 
 
@@ -50,7 +54,7 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   · rwa [h2]
   · rwa [← h2]
 
-variable [OrderClosedTopology E] [IsOrderedAddMonoid E]
+variable [IsOrderedAddMonoid E]
 
 instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
@@ -62,7 +66,7 @@ instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid (Lp E p μ) :=
   { add_le_add_left := fun _ _ => add_le_add_left }
 
-instance [Fact (1 ≤ p)] : OrderClosedTopology (Lp E p μ) where
+instance [Fact (1 ≤ p)] [ClosedIciTopology E] : OrderClosedTopology (Lp E p μ) where
   isClosed_le' := isClosed_le_of_isClosed_nonneg <| IsSeqClosed.isClosed <|
       fun f f₀ (hf : ∀ n, 0 ≤ f n) h_tendsto ↦ by
     simp only [← coeFn_nonneg] at hf ⊢

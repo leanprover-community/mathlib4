@@ -3,7 +3,9 @@ Copyright (c) 2024 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 # LineGraph
@@ -17,6 +19,8 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 
 line graph
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 

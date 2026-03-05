@@ -3,15 +3,17 @@ Copyright (c) 2024 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.PolynomialAlgebra
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.FieldTheory.IntermediateField.Algebraic
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.RingTheory.Norm.Basic
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.PolynomialAlgebra
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -25,6 +27,8 @@ about the roots of the minimal polynomial of `s` over `R`.
 * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
 
 -/
+
+@[expose] public section
 
 variable {R S A n m : Type*} [CommRing R] [CommRing S]
 variable (M : Matrix m m S) [DecidableEq m] [DecidableEq n] (k : m)
@@ -206,6 +210,7 @@ open Module IntermediateField AdjoinSimple
 
 namespace Algebra
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L}
     (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   by_cases h : FiniteDimensional K L
@@ -216,12 +221,13 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] {x : L
     norm_algebraMap_of_basis (Module.Free.chooseBasis F L) (gen K x), map_pow]
   apply IsIntegral.pow
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure F)).injective,
-    norm_gen_eq_prod_roots _ (IsAlgClosed.splits_codomain _)]
+    norm_gen_eq_prod_roots _ (IsAlgClosed.splits _)]
   refine IsIntegral.multiset_prod (fun y hy ↦ ⟨minpoly R x, minpoly.monic hx, ?_⟩)
   suffices (aeval y) ((minpoly R x).map (algebraMap R K)) = 0 by simpa
   obtain ⟨P, hP⟩ := minpoly.dvd K x (show aeval x ((minpoly R x).map (algebraMap R K)) = 0 by simp)
   simp [hP, aeval_mul, (mem_aroots'.mp hy).2]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_eq_norm_adjoin (x : L) :
     norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
   by_cases h : FiniteDimensional K L
@@ -246,21 +252,22 @@ theorem norm_eq_norm_adjoin (x : L) :
 variable (F E : Type*) [Field F] [Algebra K F] [Field E] [Algebra K E]
 
 variable {K} in
-theorem norm_eq_prod_roots {x : L} (hF : (minpoly K x).Splits (algebraMap K F)) :
+theorem norm_eq_prod_roots {x : L} (hF : ((minpoly K x).map (algebraMap K F)).Splits) :
     algebraMap K F (norm K x) =
       ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
 
 variable [FiniteDimensional K L]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
 of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
 of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/
 theorem norm_eq_prod_embeddings [Algebra.IsSeparable K L] [IsAlgClosed E]
     (x : L) : algebraMap K E (norm K x) = ∏ σ : L →ₐ[K] E, σ x := by
   have hx := Algebra.IsSeparable.isIntegral K x
-  rw [norm_eq_norm_adjoin K x, RingHom.map_pow, ← adjoin.powerBasis_gen hx,
-    norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits_codomain _)]
+  rw [norm_eq_norm_adjoin K x, map_pow, ← adjoin.powerBasis_gen hx,
+    norm_eq_prod_embeddings_gen E (adjoin.powerBasis hx) (IsAlgClosed.splits _)]
   · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
   · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact Algebra.IsSeparable.isSeparable K _

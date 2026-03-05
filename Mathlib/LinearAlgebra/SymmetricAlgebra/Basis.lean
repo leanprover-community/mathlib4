@@ -3,9 +3,11 @@ Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
-import Mathlib.LinearAlgebra.Dimension.Basic
-import Mathlib.RingTheory.MvPolynomial
+module
+
+public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
+public import Mathlib.LinearAlgebra.Dimension.Basic
+public import Mathlib.RingTheory.MvPolynomial
 
 /-!
 # A basis for `SymmetricAlgebra R M`
@@ -27,6 +29,8 @@ import Mathlib.RingTheory.MvPolynomial
 
 This file closely mirrors the corresponding file for `TensorAlgebra`.
 -/
+
+@[expose] public section
 
 open Module
 
@@ -59,6 +63,10 @@ lemma equivMvPolynomial_symm_X (b : Basis κ R M) (i : κ) :
     (equivMvPolynomial b).symm (MvPolynomial.X i) = ι R M (b i) :=
   (equivMvPolynomial b).toEquiv.symm_apply_eq.mpr <| equivMvPolynomial_ι_apply b i |>.symm
 
+theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (b : Basis I R M) :
+    IsSymmetricAlgebra (Basis.constr b R (.X : I → MvPolynomial I R)) :=
+  (SymmetricAlgebra.equivMvPolynomial b).bijective
+
 /-- A basis on `M` can be lifted to a basis on `SymmetricAlgebra R M`. -/
 @[simps! repr_apply]
 noncomputable def _root_.Module.Basis.symmetricAlgebra (b : Basis κ R M) :
@@ -88,6 +96,7 @@ instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (SymmetricAlgebr
 
 attribute [pp_with_univ] Cardinal.lift
 
+set_option backward.isDefEq.respectTransparency false in
 open Cardinal in
 lemma rank_eq [Nontrivial M] [Module.Free R M] :
     Module.rank R (SymmetricAlgebra R M) = Cardinal.lift.{uR} (max (Module.rank R M) ℵ₀) := by

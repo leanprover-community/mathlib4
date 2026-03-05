@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Topology.LocallyConstant.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # Algebraic structure on locally constant functions
@@ -15,6 +17,8 @@ This file puts algebraic structure (`Group`, `AddGroup`, etc)
 on the type of locally constant functions.
 
 -/
+
+@[expose] public section
 
 namespace LocallyConstant
 

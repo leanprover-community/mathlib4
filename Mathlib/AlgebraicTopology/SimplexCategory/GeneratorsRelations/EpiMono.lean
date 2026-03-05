@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
 /-! # Epi-mono factorization in the simplex category presented by generators and relations
 
 This file aims to establish that there is a nice epi-mono factorization in `SimplexCategoryGenRel`.
@@ -14,6 +16,8 @@ The main result of this file is `exists_P_σ_P_δ_factorization`, which asserts 
 moprhism as a decomposition of a `P_σ` followed by a `P_δ`.
 
 -/
+
+@[expose] public section
 
 namespace SimplexCategoryGenRel
 open CategoryTheory
@@ -143,7 +147,7 @@ private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGen
   induction n generalizing x with
   | zero => cases hf with
     | of _ h => cases h; exact factor_δ_σ _ _
-    | id  => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
+    | id => exact ⟨_, _, _, P_σ.σ i, P_δ.id_mem _, by simp⟩
     | comp_of j f hf hg =>
       obtain ⟨k⟩ := hg
       obtain ⟨rfl, rfl⟩ | hf' := eq_or_len_le_of_P_δ hf

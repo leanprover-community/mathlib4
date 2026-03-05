@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Determinant
+module
+
+public import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # Norm for (finite) ring extensions
@@ -31,6 +33,8 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 * https://en.wikipedia.org/wiki/Field_norm
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -84,9 +88,7 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
     norm R (algebraMap R S x) = x ^ Fintype.card ι := by
   haveI := Classical.decEq ι
   rw [norm_apply, ← det_toMatrix b, lmul_algebraMap]
-  convert @det_diagonal _ _ _ _ _ fun _ : ι => x
-  · ext (i j); rw [toMatrix_lsmul]
-  · rw [Finset.prod_const, Finset.card_univ]
+  simp
 
 /-- If `x` is in the base field `K`, then the norm is `x ^ [L : K]`.
 

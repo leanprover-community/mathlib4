@@ -3,14 +3,18 @@ Copyright (c) 2025 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Emily Riehl, Wrenna Robson
 -/
-import Mathlib.Logic.Equiv.Basic
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Equivalences involving `Bool`
 
 This file shows that `not : Bool → Bool` is an equivalence and derives some consequences
 -/
+
+@[expose] public section
 
 /-- The boolean negation function `not : Bool → Bool` is an involution and thus an equivalence. -/
 @[simps!]

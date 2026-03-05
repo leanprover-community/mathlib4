@@ -3,10 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
-import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
+public import Mathlib.NumberTheory.LSeries.HurwitzZetaOdd
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # The Hurwitz zeta function
@@ -35,6 +36,8 @@ This file gives the definition and properties of the following two functions:
 * `hurwitzZeta_one_sub` and `expZeta_one_sub`: functional equations `s ↔ 1 - s`.
 -/
 
+@[expose] public section
+
 open Set Real Complex Filter Topology
 
 namespace HurwitzZeta
@@ -49,11 +52,13 @@ to the Dirichlet series in the convergence range. -/
 noncomputable def hurwitzZeta (a : UnitAddCircle) (s : ℂ) :=
   hurwitzZetaEven a s + hurwitzZetaOdd a s
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hurwitzZetaEven_eq (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaEven a s = (hurwitzZeta a s + hurwitzZeta (-a) s) / 2 := by
   simp only [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
   ring_nf
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hurwitzZetaOdd_eq (a : UnitAddCircle) (s : ℂ) :
     hurwitzZetaOdd a s = (hurwitzZeta a s - hurwitzZeta (-a) s) / 2 := by
   simp only [hurwitzZeta, hurwitzZetaEven_neg, hurwitzZetaOdd_neg]
@@ -111,6 +116,7 @@ lemma differentiable_hurwitzZeta_sub_hurwitzZeta (a b : UnitAddCircle) :
 noncomputable def expZeta (a : UnitAddCircle) (s : ℂ) :=
   cosZeta a s + I * sinZeta a s
 
+set_option backward.isDefEq.respectTransparency false in
 lemma cosZeta_eq (a : UnitAddCircle) (s : ℂ) :
     cosZeta a s = (expZeta a s + expZeta (-a) s) / 2 := by
   rw [expZeta, expZeta, cosZeta_neg, sinZeta_neg]
@@ -119,8 +125,7 @@ lemma cosZeta_eq (a : UnitAddCircle) (s : ℂ) :
 lemma sinZeta_eq (a : UnitAddCircle) (s : ℂ) :
     sinZeta a s = (expZeta a s - expZeta (-a) s) / (2 * I) := by
   rw [expZeta, expZeta, cosZeta_neg, sinZeta_neg]
-  field_simp
-  ring_nf
+  field
 
 lemma hasSum_expZeta_of_one_lt_re (a : ℝ) {s : ℂ} (hs : 1 < re s) :
     HasSum (fun n : ℕ ↦ cexp (2 * π * I * a * n) / n ^ s) (expZeta a s) := by
@@ -165,6 +170,7 @@ lemma hurwitzZeta_one_sub (a : UnitAddCircle) {s : ℂ}
   generalize (-(↑π * s / 2) * I).exp = z
   ring_nf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Functional equation for the exponential zeta function. -/
 lemma expZeta_one_sub (a : UnitAddCircle) {s : ℂ} (hs : ∀ (n : ℕ), s ≠ 1 - n) :
     expZeta a (1 - s) = (2 * π) ^ (-s) * Gamma s *

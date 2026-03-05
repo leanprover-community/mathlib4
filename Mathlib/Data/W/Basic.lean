@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Logic.Encodable.Pi
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Logic.Encodable.Pi
 
 /-!
 # W types
@@ -25,6 +27,8 @@ mathlib.
 While the name `WType` is somewhat verbose, it is preferable to putting a single character
 identifier `W` in the root namespace.
 -/
+
+@[expose] public section
 
 -- For "W_type"
 
@@ -116,6 +120,7 @@ theorem depth_pos (t : WType β) : 0 < t.depth := by
 theorem depth_lt_depth_mk (a : α) (f : β a → WType β) (i : β a) : depth (f i) < depth ⟨a, f⟩ :=
   Nat.lt_succ_of_le (Finset.le_sup (f := (depth <| f ·)) (Finset.mem_univ i))
 
+set_option backward.privateInPublic true in
 /-
 Show that W types are encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable.
@@ -130,6 +135,7 @@ private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β 
 
 variable [∀ a : α, Encodable (β a)]
 
+set_option backward.privateInPublic true in
 private def encodable_zero : Encodable (WType' β 0) :=
   let f : WType' β 0 → Empty := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
   let finv : Empty → WType' β 0 := by
@@ -153,12 +159,15 @@ private def finv (n : ℕ) : (Σ a : α, β a → WType' β n) → WType' β (n 
 
 variable [Encodable α]
 
+set_option backward.privateInPublic true in
 private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (WType' β (n + 1)) :=
   Encodable.ofLeftInverse (f n) (finv n)
     (by
       rintro ⟨⟨_, _⟩, _⟩
       rfl)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by

@@ -3,9 +3,11 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
-import Mathlib.NumberTheory.NumberField.Units.Regulator
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 /-!
 # Fundamental Cone: set of elements of norm ≤ 1
@@ -36,7 +38,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 
 4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
   see the description of `logSpace` below) the fundamental system of units given by
-  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector
+  `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ)`, that is the vector
   `(w (ηᵢ))_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
   subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
   get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
@@ -57,7 +59,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 7. Finally, we need to prove that the frontier of `normLeOne K` has zero-volume (we will prove
   in passing that `normLeOne K` is bounded.) For that we prove that
   `volume (interior (normLeOne K)) = volume (closure (normLeOne K))`, see
-  `volume_interior_eq_volume_closure`. Since we now that the volume of `interior (normLeOne K)` is
+  `volume_interior_eq_volume_closure`. Since we know that the volume of `interior (normLeOne K)` is
   finite since it is bounded by the volume of `normLeOne K`, the result follows, see
   `volume_frontier_normLeOne`. We proceed in several steps.
 
@@ -120,6 +122,8 @@ identify `realSpace K` with its image in `mixedSpace K`).
 
 -/
 
+@[expose] public section
+
 variable (K : Type*) [Field K]
 
 open Finset Module NumberField NumberField.InfinitePlace NumberField.mixedEmbedding
@@ -175,9 +179,6 @@ theorem normLeOne_eq_preimage_image :
   rw [mem_normLeOne, ← normAtAllPlaces_mem_fundamentalCone_iff, ← norm_normAtAllPlaces,
     ← mem_normLeOne] at hy₁ ⊢
   rwa [← hy₂]
-
-@[deprecated (since := "2025-07-27")]
-alias normLeOne_eq_primeage_image := normLeOne_eq_preimage_image
 
 open scoped Classical in
 theorem normAtAllPlaces_normLeOne :
@@ -256,7 +257,7 @@ theorem expMap_target :
 
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
-  Set.injective_iff_injOn_univ.mpr ((expMap_source K) ▸ expMap.injOn)
+  Set.injOn_univ.1 (expMap_source K ▸ expMap.injOn)
 
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=
@@ -323,6 +324,7 @@ variable [NumberField K]
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
@@ -347,8 +349,8 @@ linearly independent, see `linearIndependent_completeFamily`.
 -/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
-  map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
-  map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← mul_sum] using by ring
+  map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
+  map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
@@ -828,6 +830,7 @@ theorem isBounded_normLeOne :
   refine IsBounded.subset ?_ (Set.image_mono subset_closure)
   exact (isCompact_compactSet K).isBounded.subset (expMapBasis_closure_subset_compactSet K)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_normLeOne : volume (normLeOne K) =
     2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * .ofReal (regulator K) := by
@@ -844,6 +847,7 @@ theorem volume_normLeOne : volume (normLeOne K) =
     ← mul_assoc, ← mul_assoc, ENNReal.inv_mul_cancel_right (pow_ne_zero _ two_ne_zero)
     (pow_ne_top ENNReal.ofNat_ne_top)]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_interior_eq_volume_closure :
     volume (interior (normLeOne K)) = volume (closure (normLeOne K)) := by
@@ -865,6 +869,7 @@ theorem volume_interior_eq_volume_closure :
     setLIntegral_expMapBasis_image measurableSet_interior (by fun_prop),
     setLIntegral_congr (closure_paramSet_ae_interior K)]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_frontier_normLeOne :
      volume (frontier (normLeOne K)) = 0 := by

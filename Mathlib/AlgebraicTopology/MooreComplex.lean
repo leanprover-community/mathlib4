@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 ## Moore complex
@@ -28,6 +30,8 @@ This functor is one direction of the Dold-Kan equivalence, which we're still wor
 * https://ncatlab.org/nlab/show/Moore+complex
 -/
 
+@[expose] public section
+
 
 universe v u
 
@@ -41,7 +45,7 @@ open scoped Simplicial
 
 namespace AlgebraicTopology
 
-variable {C : Type*} [Category C] [Abelian C]
+variable {C : Type*} [Category* C] [Abelian C]
 
 attribute [local instance] Abelian.hasPullbacks
 
@@ -68,6 +72,7 @@ def objX : ∀ n : ℕ, Subobject (X.obj (op ⦋n⦌))
     objX X (n + 1) = Finset.univ.inf fun k : Fin (n + 1) => kernelSubobject (X.δ k.succ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The differentials in the normalized Moore complex.
 -/
 @[simp]
@@ -90,6 +95,7 @@ def objD : ∀ n : ℕ, (objX X (n + 1) : C) ⟶ (objX X n : C)
     rw [← factorThru_arrow _ _ (finset_inf_arrow_factors Finset.univ _ i.succ (by simp)),
       Category.assoc, kernelSubobject_arrow_comp_assoc, zero_comp, comp_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   -- It's a pity we need to do a case split here;
     -- after the first rw the proofs are almost identical

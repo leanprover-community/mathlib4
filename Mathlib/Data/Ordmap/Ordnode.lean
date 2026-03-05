@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.Compare
-import Mathlib.Data.Nat.PSub
-import Mathlib.Data.Option.Basic
+module
+
+public import Mathlib.Order.Compare
+public import Mathlib.Data.Nat.PSub
+public import Batteries.Data.List
 
 /-!
 # Ordered sets
@@ -59,6 +61,8 @@ Ported from Haskell's `Data.Set`.
 ordered map, ordered set, data structure
 
 -/
+
+@[expose] public section
 
 universe u
 

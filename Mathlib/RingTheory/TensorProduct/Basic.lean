@@ -3,9 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Star.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Star.TensorProduct
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # The tensor product of R-algebras
@@ -25,6 +28,8 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.cycleType
 
@@ -284,6 +289,9 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
+lemma algebraMap_def [SMulCommClass R S A] :
+    algebraMap S (A ⊗[R] B) = includeLeftRingHom.comp (algebraMap S A) := rfl
+
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
@@ -351,6 +359,16 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
 
 theorem ext' {g h : A ⊗[R] B →ₐ[S] C} (H : ∀ a b, g (a ⊗ₜ b) = h (a ⊗ₜ b)) : g = h :=
   ext (AlgHom.ext fun _ => H _ _) (AlgHom.ext fun _ => H _ _)
+
+@[ext high]
+lemma ringHom_ext {C : Type*} [Semiring C] {f g : A ⊗[R] B →+* C}
+    (h₁ : f.comp includeLeftRingHom = g.comp includeLeftRingHom)
+    (h₂ : f.comp includeRight.toRingHom = g.comp includeRight.toRingHom) : f = g := by
+  ext x
+  induction x with
+  | zero => simp
+  | add x y _ _ => simp_all
+  | tmul x y => simpa [← map_mul] using congr($h₁ x * $h₂ y)
 
 end ext
 
@@ -477,6 +495,10 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
 
 attribute [local instance] TensorProduct.rightAlgebra
 
+lemma algebraMap_eq_includeRight :
+    letI := rightAlgebra (R := R) (A := A) (B := B)
+    algebraMap B (A ⊗[R] B) = includeRight (R := R) (A := A) (B := B) := rfl
+
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm
 
@@ -517,6 +539,17 @@ lemma closure_range_union_range_eq_top [CommRing R] [Ring A] [Ring B]
     · exact mul_mem (Subring.subset_closure (.inl ⟨x, rfl⟩))
         (Subring.subset_closure (.inr ⟨_, rfl⟩))
   | add x y _ _ => exact add_mem ‹_› ‹_›
+
+/-- If `s` generates `T` as an `R`-algebra,
+then `{ 1 ⊗ x | x ∈ s }` generates `A ⊗[R] T` as an `A`-algebra. -/
+lemma adjoin_one_tmul_image_eq_top [CommSemiring R] [CommSemiring A]
+    [Semiring B] [Algebra R A] [Algebra R B]
+    (s : Set B) (hs : adjoin R s = ⊤) : adjoin A (((1 : A) ⊗ₜ[R] ·) '' s) = ⊤ := by
+  suffices h : adjoin A ((⊤ : Subalgebra R B).map (includeRight (A := A)) : Set (A ⊗[R] B)) = ⊤ by
+    simp [← h, ← hs, AlgHom.map_adjoin, -adjoin_toSubsemiring, adjoin_adjoin_of_tower]
+  rw [← Algebra.toSubmodule_eq_top, ← top_le_iff, Algebra.map_top, ← Submodule.baseChange_top,
+    Submodule.baseChange_eq_span, Submodule.map_top]
+  exact span_le_adjoin _ _
 
 variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
@@ -578,6 +611,7 @@ multiplication, and one from this would-be instance. Arguably we could live with
 case the real fix is to address the ambiguity in notation, probably along the lines outlined here:
 https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/.234773.20base.20change/near/240929258
 -/
+@[instance_reducible]
 protected def module : Module (A ⊗[R] B) M where
   smul x m := moduleAux x m
   zero_smul m := by simp only [(· • ·), map_zero, LinearMap.zero_apply]
@@ -604,16 +638,16 @@ protected def module : Module (A ⊗[R] B) M where
     · intro z w hz hw a b
       -- Porting note: was one `simp only`, but random stuff doesn't work
       simp only [(· • ·)] at hz hw ⊢
-      simp only [moduleAux_apply, mul_add, LinearMap.map_add,
+      simp only [moduleAux_apply, mul_add, map_add,
         LinearMap.add_apply, moduleAux_apply, hz, hw]
     · intro z w _ _
       simp only [(· • ·), mul_zero, map_zero, LinearMap.zero_apply]
     · intro a b z w hz hw
       simp only [(· • ·)] at hz hw ⊢
-      simp only [LinearMap.map_add, add_mul, LinearMap.add_apply, hz, hw]
+      simp only [map_add, add_mul, LinearMap.add_apply, hz, hw]
     · intro u v _ _ z w hz hw
       simp only [(· • ·)] at hz hw ⊢
-      simp only [add_mul, LinearMap.map_add, LinearMap.add_apply, hz, hw, add_add_add_comm]
+      simp only [add_mul, map_add, LinearMap.add_apply, hz, hw, add_add_add_comm]
 
 attribute [local instance] TensorProduct.Algebra.module
 
@@ -637,8 +671,8 @@ end TensorProduct.Algebra
 open LinearMap in
 lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMonoid Q]
     [Module R Q] {I : Submodule R R} :
-    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q) = I • ⊤ := by
-  rw [← map_top, ← map_coe_toLinearMap, ← Submodule.map_comp, map_top]
+    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q : R ⊗[R] Q →ₗ[R] Q) = I • ⊤ := by
+  rw [← map_top, ← Submodule.map_comp, map_top]
   refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
     (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
   rintro _ ⟨t, rfl⟩

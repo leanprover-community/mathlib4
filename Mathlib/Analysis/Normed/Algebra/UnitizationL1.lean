@@ -3,8 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Unitization
-import Mathlib.Analysis.Normed.Lp.ProdLp
+module
+
+public import Mathlib.Algebra.Algebra.TransferInstance
+public import Mathlib.Algebra.Algebra.Unitization
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-! # Unitization equipped with the $L^1$ norm
 
@@ -23,6 +26,8 @@ One application of this is a straightforward proof that the quasispectrum of an 
 non-unital Banach algebra is compact, which can be established by passing to the unitization.
 -/
 
+@[expose] public section
+
 variable (𝕜 A : Type*) [NormedField 𝕜] [NonUnitalNormedRing A]
 variable [NormedSpace 𝕜 A]
 
@@ -30,6 +35,7 @@ namespace WithLp
 
 open Unitization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural map between `Unitization 𝕜 A` and `𝕜 × A`, transferred to their `WithLp 1`
 synonyms. -/
 noncomputable def unitization_addEquiv_prod : WithLp 1 (Unitization 𝕜 A) ≃+ WithLp 1 (𝕜 × A) :=
@@ -51,7 +57,7 @@ noncomputable def uniformEquiv_unitization_addEquiv_prod :
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
     CompleteSpace (WithLp 1 (Unitization 𝕜 A)) :=
   completeSpace_congr (uniformEquiv_unitization_addEquiv_prod 𝕜 A).isUniformEmbedding |>.mpr
-    CompleteSpace.prod
+    inferInstance
 
 variable {𝕜 A}
 
@@ -61,7 +67,7 @@ lemma unitization_norm_def (x : WithLp 1 (Unitization 𝕜 A)) :
   ‖x‖ = (‖(ofLp x).fst‖ ^ (1 : ℝ≥0∞).toReal +
       ‖(ofLp x).snd‖ ^ (1 : ℝ≥0∞).toReal) ^ (1 / (1 : ℝ≥0∞).toReal) :=
     prod_norm_eq_add (by simp : 0 < (1 : ℝ≥0∞).toReal) _
-  _   = ‖(ofLp x).fst‖ + ‖(ofLp x).snd‖ := by simp
+  _ = ‖(ofLp x).fst‖ + ‖(ofLp x).snd‖ := by simp
 
 lemma unitization_nnnorm_def (x : WithLp 1 (Unitization 𝕜 A)) :
     ‖x‖₊ = ‖(ofLp x).fst‖₊ + ‖(ofLp x).snd‖₊ :=
@@ -73,6 +79,7 @@ lemma unitization_norm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖ = ‖
 lemma unitization_nnnorm_inr (x : A) : ‖toLp 1 (x : Unitization 𝕜 A)‖₊ = ‖x‖₊ := by
   simp [unitization_nnnorm_def]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm
     ((WithLp.linearEquiv 1 𝕜 (Unitization 𝕜 A)).symm.comp <| Unitization.inrHom 𝕜 A)
@@ -81,19 +88,20 @@ lemma unitization_isometry_inr : Isometry fun x : A ↦ toLp 1 (x : Unitization 
 variable [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
 
 instance instUnitizationRing : Ring (WithLp 1 (Unitization 𝕜 A)) :=
-  inferInstanceAs (Ring (Unitization 𝕜 A))
+  (WithLp.equiv 1 (Unitization 𝕜 A)).ring
 
 @[simp]
 lemma unitization_mul (x y : WithLp 1 (Unitization 𝕜 A)) : ofLp (x * y) = ofLp x * ofLp y := rfl
 
 instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [IsScalarTower R 𝕜 A] :
     Algebra R (WithLp 1 (Unitization 𝕜 A)) :=
-  inferInstanceAs (Algebra R (Unitization 𝕜 A))
+  (WithLp.equiv 1 (Unitization 𝕜 A)).algebra R
 
 @[simp]
 lemma unitization_algebraMap (r : 𝕜) :
     ofLp (algebraMap 𝕜 (WithLp 1 (Unitization 𝕜 A)) r) = algebraMap 𝕜 (Unitization 𝕜 A) r := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `equiv` bundled as an algebra isomorphism with `Unitization 𝕜 A`. -/
 @[simps!]
 def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A]
@@ -104,7 +112,7 @@ def unitizationAlgEquiv (R : Type*) [CommSemiring R] [Algebra R 𝕜] [DistribMu
   commutes' _ := rfl
 
 noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitization 𝕜 A)) where
-  dist_eq := dist_eq_norm
+  dist_eq := dist_eq_norm_neg_add
   norm_mul_le x y := by
     simp_rw [unitization_norm_def, add_mul, mul_add, unitization_mul, fst_mul, snd_mul]
     rw [add_assoc, add_assoc]

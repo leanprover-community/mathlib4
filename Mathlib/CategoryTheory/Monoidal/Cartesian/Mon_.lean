@@ -3,9 +3,12 @@ Copyright (c) 2025 Markus Himmel, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Andrew Yang
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # Yoneda embedding of `Mon C`
@@ -15,9 +18,31 @@ is a presheaf of monoids, by constructing the yoneda embedding `Mon C ⥤ Cᵒ�
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
 
+@[expose] public section
+
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 
 namespace CategoryTheory
+
+section SemiCartesianMonoidalCategory
+
+variable {D : Type*} [Category* D] [SemiCartesianMonoidalCategory D]
+
+@[simps]
+instance uniqueHomToTrivial (A : Mon D) : Unique (A ⟶ Mon.trivial D) where
+  default.hom := toUnit A.X
+  default.isMonHom_hom.mul_hom := toUnit_unique _ _
+  uniq f := Mon.Hom.ext (toUnit_unique _ _)
+
+instance : HasZeroObject (Mon D) where
+  zero := ⟨Mon.trivial D,
+    fun A ↦ nonempty_unique (Mon.trivial D ⟶ A),
+    fun A ↦ nonempty_unique (A ⟶ Mon.trivial D)⟩
+
+noncomputable instance : HasZeroMorphisms (Mon D) := HasZeroObject.zeroMorphismsOfZeroObject
+
+end SemiCartesianMonoidalCategory
+
 universe w v u
 variable {C D : Type*} [Category.{v} C] [CartesianMonoidalCategory C]
   [Category.{w} D] [CartesianMonoidalCategory D]
@@ -64,8 +89,8 @@ end MonObj
 namespace Mon
 variable [BraidedCategory C]
 
-attribute [local simp] tensorObj.one_def tensorObj.mul_def
-
+set_option backward.isDefEq.respectTransparency false in
+attribute [local simp] tensorObj.one_def tensorObj.mul_def in
 instance : CartesianMonoidalCategory (Mon C) where
   isTerminalTensorUnit := .ofUniqueHom (fun M ↦ ⟨toUnit _⟩) fun M f ↦ by ext; exact toUnit_unique ..
   fst M N := .mk (fst M.X N.X)
@@ -76,14 +101,28 @@ instance : CartesianMonoidalCategory (Mon C) where
   fst_def M N := by ext; simp [fst_def]; congr
   snd_def M N := by ext; simp [snd_def]; congr
 
-variable {M N₁ N₂ : Mon C}
+variable {M N N₁ N₂ : Mon C}
 
 @[simp] lemma lift_hom (f : M ⟶ N₁) (g : M ⟶ N₂) : (lift f g).hom = lift f.hom g.hom := rfl
 @[simp] lemma fst_hom (M N : Mon C) : (fst M N).hom = fst M.X N.X := rfl
 @[simp] lemma snd_hom (M N : Mon C) : (snd M N).hom = snd M.X N.X := rfl
 
+/-! ### Comm monoid objects are internal monoid objects -/
+
+/-- A commutative monoid object is a monoid object in the category of monoid objects. -/
+instance [IsCommMonObj M.X] : MonObj M where
+  one := .mk η[M.X]
+  mul := .mk μ[M.X]
+
+@[simp] lemma hom_one (M : Mon C) [IsCommMonObj M.X] : η[M].hom = η[M.X] := rfl
+@[simp] lemma hom_mul (M : Mon C) [IsCommMonObj M.X] : μ[M].hom = μ[M.X] := rfl
+
+/-- A commutative monoid object is a commutative monoid object in the category of monoid objects. -/
+instance [IsCommMonObj M.X] : IsCommMonObj M where
+
 end Mon
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
 @[simps]
@@ -159,10 +198,7 @@ variable (F : C ⥤ D) [F.Monoidal]
 open scoped Obj
 
 protected lemma map_mul (f g : X ⟶ M) : F.map (f * g) = F.map f * F.map g := by
-  simp only [Hom.mul_def, map_comp, obj.μ_def, ← Category.assoc]
-  congr 1
-  rw [← IsIso.comp_inv_eq]
-  ext <;> simp
+  simp [Hom.mul_def]
 
 @[simp] protected lemma map_one : F.map (1 : X ⟶ M) = 1 := by simp [Hom.one_def]
 
@@ -188,6 +224,16 @@ variable [BraidedCategory C]
 abbrev Hom.commMonoid [IsCommMonObj M] : CommMonoid (X ⟶ M) where
   mul_comm f g := by simpa [-IsCommMonObj.mul_comm] using lift g f ≫= IsCommMonObj.mul_comm M
 
+namespace Mon.Hom
+variable {M N : Mon C} [IsCommMonObj N.X]
+
+@[simp] lemma hom_one : (1 : M ⟶ N).hom = 1 := rfl
+@[simp] lemma hom_mul (f g : M ⟶ N) : (f * g).hom = f.hom * g.hom := rfl
+@[simp] lemma hom_pow (f : M ⟶ N) (n : ℕ) : (f ^ n).hom = f.hom ^ n := by
+  induction n <;> simp [pow_succ, *]
+
+end Mon.Hom
+
 scoped[CategoryTheory.MonObj] attribute [instance] Hom.commMonoid
 
 end BraidedCategory
@@ -209,6 +255,7 @@ def yonedaMonObj : Cᵒᵖ ⥤ MonCat.{v} where
   map_id _ := MonCat.hom_ext (MonoidHom.ext Category.id_comp)
   map_comp _ _ := MonCat.hom_ext (MonoidHom.ext (Category.assoc _ _))
 
+set_option backward.isDefEq.respectTransparency false in
 variable (X) in
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
@@ -264,6 +311,7 @@ alias Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy :=
 alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
   MonObj.ofRepresentableBy_yonedaMonObjRepresentableBy
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The yoneda embedding for `Mon_C` is fully faithful. -/
 def yonedaMonFullyFaithful : yonedaMon (C := C).FullyFaithful where
   preimage {M N} α :=
@@ -293,7 +341,7 @@ instance : yonedaMon (C := C).Full := yonedaMonFullyFaithful.full
 instance : yonedaMon (C := C).Faithful := yonedaMonFullyFaithful.faithful
 
 lemma essImage_yonedaMon :
-    yonedaMon (C := C).essImage = (· ⋙ forget _) ⁻¹' setOf Functor.IsRepresentable := by
+    yonedaMon (C := C).essImage = fun F ↦ (F ⋙ forget _).IsRepresentable := by
   ext F
   constructor
   · rintro ⟨M, ⟨α⟩⟩
@@ -359,4 +407,10 @@ def mulEquivCongrRight (e : M ≅ N) [IsMonHom e.hom] (X : C) : (X ⟶ M) ≃* (
   ((yonedaMon.mapIso <| Mon.mkIso' e).app <| .op X).monCatIsoToMulEquiv
 
 end Hom
+
+/-- A monoid object `M` is commutative if and only if `X ⟶ M` is commutative for all `X`. -/
+lemma isCommMonObj_iff_isMulCommutative (M : C) [MonObj M] [BraidedCategory C] :
+    IsCommMonObj M ↔ ∀ (X : C), IsMulCommutative (X ⟶ M) := by
+  exact ⟨fun h X ↦ ⟨⟨by simp [mul_comm]⟩⟩, fun h ↦ ⟨by simp [mul_eq_mul, comp_mul, mul_comm]⟩⟩
+
 end CategoryTheory

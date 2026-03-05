@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Set intervals in a successor-predecessor order
@@ -22,6 +24,8 @@ Please keep in sync with:
 
 Copy over `insert` lemmas from `Mathlib/Order/Interval/Finset/Nat.lean`.
 -/
+
+public section
 
 assert_not_exists MonoidWithZero
 
@@ -159,7 +163,7 @@ lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc
 
 lemma insert_Ico_left_eq_Ico_pred_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
     insert (pred a) (Ico a b) = Ico (pred a) b := by
-  ext x; simp +contextual [or_and_left, pred_le_iff_eq_or_le, pred_lt_of_not_isMin_of_le ha h]
+  ext x; simp +contextual [or_and_left, pred_le_iff_eq_or_le, pred_lt_of_le_of_not_isMin h ha]
 
 lemma insert_Ico_pred_right_eq_Ico (h : a < b) : insert (pred b) (Ico a (pred b)) = Ico a b := by
   rw [Ico_insert_right (le_pred_of_lt h), Icc_pred_right_of_not_isMin h.not_isMin]

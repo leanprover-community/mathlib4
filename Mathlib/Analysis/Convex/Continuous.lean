@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies, Zichen Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Zichen Wang
 -/
-import Mathlib.Analysis.Normed.Affine.Convex
+module
+
+public import Mathlib.Analysis.Normed.Affine.Convex
 
 /-!
 # Convex functions are continuous
@@ -11,6 +13,8 @@ import Mathlib.Analysis.Normed.Affine.Convex
 This file proves that a convex function from a finite-dimensional real normed space to `ℝ` is
 continuous.
 -/
+
+public section
 
 open FiniteDimensional Metric Set List Bornology
 open scoped Topology
@@ -81,6 +85,7 @@ lemma ConcaveOn.exists_lipschitzOnWith_of_isBounded (hf : ConcaveOn ℝ (ball x�
   replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert hf'.neg; ext; simp [neg_eq_iff_eq_neg]
   simpa using hf.neg.exists_lipschitzOnWith_of_isBounded hr hf'
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈ 𝓝 x₀) :
     (𝓝 x₀).IsBoundedUnder (· ≤ ·) |f| ↔ (𝓝 x₀).IsBoundedUnder (· ≤ ·) f := by
   refine ⟨fun h ↦ h.mono_le <| .of_forall fun x ↦ le_abs_self _, ?_⟩

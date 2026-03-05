@@ -3,8 +3,10 @@ Copyright (c) 2025 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Hill, Julian Berman, Austin Letson, Matej Penciak
 -/
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 
@@ -28,6 +30,8 @@ Generalize linear independence to:
   * just require coefficients are regular
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
+
+@[expose] public section
 
 open Module Submodule
 open scoped Function
@@ -124,15 +128,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
       ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
     -- and that this degree is also their `natDegree`
     have head_degree_eq_natDegree : head.degree = head.natDegree := degree_eq_natDegree <| by
-      by_cases n_eq_zero : n = 0
-      · dsimp [head]
-        rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
-        rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
-          smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
-          mul_one, C_eq_zero, leadingCoeff_eq_zero]
-      · apply head.ne_zero_of_degree_gt (n := 0)
-        rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by cutsat)
+      grind [degree_eq_bot]
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
       rw [degree_eq_natDegree p_ne_zero, head_degree_eq_natDegree] at head_degree_eq
@@ -146,9 +142,9 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
     have tail_degree_lt := P.degree_sub_lt head_degree_eq p_ne_zero hPhead
     rwa [degree_eq_natDegree p_ne_zero, hp] at tail_degree_lt
 
-section NoZeroDivisors
+section IsDomain
 
-variable [NoZeroDivisors R]
+variable [IsDomain R]
 
 /-- Polynomials in a polynomial sequence are linearly independent. -/
 lemma linearIndependent :
@@ -160,8 +156,8 @@ lemma linearIndependent :
     intro x ⟨_, hx⟩ y ⟨_, hy⟩ xney
     have zgx : g x ≠ 0 := (smul_ne_zero_iff.mp hx).1
     have zgy : g y ≠ 0 := (smul_ne_zero_iff.mp hy).1
-    have rx : IsRightRegular (S x).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
-    have ry : IsRightRegular (S y).leadingCoeff := isRegular_of_ne_zero (by simp) |>.right
+    have rx : IsRightRegular (S x).leadingCoeff := IsRegular.of_ne_zero (by simp) |>.right
+    have ry : IsRightRegular (S y).leadingCoeff := IsRegular.of_ne_zero (by simp) |>.right
     simp [degree_smul_of_isRightRegular_leadingCoeff, rx, ry, zgx, zgy, xney]
   obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
   refine degree_ne_bot.mp ?_ eqzero |>.elim
@@ -184,7 +180,7 @@ lemma basis_degree_strictMono : StrictMono <| degree ∘ (S.basis hCoeff) := fun
 /-- Basis elements have strictly monotone natural degree. -/
 lemma basis_natDegree_strictMono : StrictMono <| natDegree ∘ (S.basis hCoeff) := fun _ _ ↦ by simp
 
-end NoZeroDivisors
+end IsDomain
 
 end Ring
 

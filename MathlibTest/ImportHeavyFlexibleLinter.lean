@@ -39,11 +39,14 @@ example : (0 + 2 : Rat) + 1 = 3 := by
 /-! ## further flexible tactics -/
 
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
-info: … and 'rw [add_comm]' uses '⊢'!
+info: Try this:
+  [apply] simp only [zero_add]
+---
+info: 'rw [add_comm]' uses '⊢'!
 
 -/
 #guard_msgs in
@@ -72,11 +75,14 @@ example (h : False) : False ∧ True := by
 -- Currently, `positivity` is not marked as flexible (as it only applies to goals in a very
 -- particular shape). We use this test to record the current behaviour.
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
-info: … and 'positivity' uses '⊢'!
+info: Try this:
+  [apply] simp only [mul_zero, add_zero]
+---
+info: 'positivity' uses '⊢'!
 -/
 #guard_msgs in
 example {k l : ℤ} : 0 ≤ k ^ 2 + 4 * l * 0 := by
@@ -101,7 +107,7 @@ example {a b : Nat} : a + b = b + a + 0 := by
   abel!
 
 -- Test that `continuity` is also a flexible tactic: the goal must be solvable by continuity,
--- but require some simplication first.
+-- but require some simplification first.
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
     (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x ↦ (f ∘ g) x + 0) := by
@@ -112,11 +118,14 @@ example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}
 -- shape of the goal, and e.g. changing the goal to a defeq one could break the proof).
 -- This test documents this behaviour.
 /--
-warning: 'simp' is a flexible tactic modifying '⊢'…
+warning: 'simp' is a flexible tactic modifying '⊢'. Try 'simp?' and use the suggested 'simp only [...]'. Alternatively, use `suffices` to explicitly state the simplified form.
 
 Note: This linter can be disabled with `set_option linter.flexible false`
 ---
-info: … and 'fun_prop' uses '⊢'!
+info: Try this:
+  [apply] simp only [Function.comp_apply, add_zero]
+---
+info: 'fun_prop' uses '⊢'!
 -/
 #guard_msgs in
 example {X : Type*} [TopologicalSpace X] {f : X → ℕ} {g : ℕ → X}

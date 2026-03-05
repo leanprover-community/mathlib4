@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+module
+
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 
 /-!
 
@@ -24,6 +26,8 @@ of the underlying map of topological spaces, including
 - `DenseRange` (`IsDominant`)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Topology TopologicalSpace
 
@@ -59,6 +63,7 @@ class Surjective : Prop where
 lemma surjective_eq_topologically :
     @Surjective = topologically Function.Surjective := by ext; exact surjective_iff _
 
+@[grind .]
 lemma Scheme.Hom.surjective (f : X ⟶ Y) [Surjective f] : Function.Surjective f :=
   Surjective.surj
 
@@ -69,12 +74,23 @@ instance [Surjective f] [Surjective g] : Surjective (f ≫ g) := ⟨g.surjective
 lemma Surjective.of_comp [Surjective (f ≫ g)] : Surjective g where
   surj := Function.Surjective.of_comp (g := f) (f ≫ g).surjective
 
+instance (priority := low) [Nonempty X] [Subsingleton Y] (f : X ⟶ Y) :
+    Surjective f := ⟨Function.surjective_to_subsingleton _⟩
+
 lemma Surjective.comp_iff [Surjective f] : Surjective (f ≫ g) ↔ Surjective g :=
   ⟨fun _ ↦ of_comp f g, fun _ ↦ inferInstance⟩
+
+instance : MorphismProperty.IsMultiplicative @Surjective.{u} where
+  id_mem _ := inferInstance
+  comp_mem _ _ hf hg := ⟨hg.1.comp hf.1⟩
 
 instance : MorphismProperty.RespectsIso @Surjective :=
   surjective_eq_topologically ▸ topologically_respectsIso _ (fun e ↦ e.surjective)
     (fun _ _ hf hg ↦ hg.comp hf)
+
+instance (P : MorphismProperty Scheme.{u}) :
+    MorphismProperty.HasOfPrecompProperty @Surjective P where
+  of_precomp f g _ _ := .of_comp f g
 
 instance surjective_isZariskiLocalAtTarget : IsZariskiLocalAtTarget @Surjective := by
   have : MorphismProperty.RespectsIso @Surjective := inferInstance
@@ -110,6 +126,23 @@ lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
 instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover (Scheme.precoverage P)) :
     Surjective (Limits.Sigma.desc fun i ↦ 𝒰.f i) :=
   Surjective.sigmaDesc_of_union_range_eq_univ 𝒰.iUnion_range
+
+/-- The single object covering by one surjective morphism satisfying `P`. -/
+@[simps! I₀ X f]
+def Scheme.Hom.cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
+    [Surjective f] : Cover.{v} (precoverage P) S :=
+  .singleton f <| by
+    rw [singleton_mem_precoverage_iff]
+    exact ⟨f.surjective, hf⟩
+
+@[simp]
+lemma Scheme.Hom.presieve₀_cover {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S)
+    (hf : P f) [Surjective f] : (f.cover hf).presieve₀ = Presieve.singleton f := by
+  simp [cover]
+
+instance {P : MorphismProperty Scheme.{u}} {X S : Scheme.{u}} (f : X ⟶ S) (hf : P f)
+    [Surjective f] : Unique (Scheme.Hom.cover f hf).I₀ :=
+  inferInstanceAs <| Unique PUnit
 
 end Surjective
 

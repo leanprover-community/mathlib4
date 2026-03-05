@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.GroupTheory.Subsemigroup.Center
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
 # Centers of monoids
@@ -17,6 +19,8 @@ import Mathlib.GroupTheory.Subsemigroup.Center
 We provide `Subgroup.center`, `AddSubgroup.center`, `Subsemiring.center`, and `Subring.center` in
 other files.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Finset
@@ -45,11 +49,21 @@ theorem coe_center : ↑(center M) = Set.center M :=
 theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
 
+instance {M α : Type*} [Monoid M] [MulAction M α] :
+    SMulCommClass ↥(Submonoid.center M) M α where
+  smul_comm c r v := by
+    have := Semigroup.mem_center_iff.1 c.2
+    simp_rw [Submonoid.smul_def, smul_smul, this]
+
+instance {M α : Type*} [Monoid M] [MulAction M α] :
+    SMulCommClass M (Submonoid.center M) α :=
+  SMulCommClass.symm (Submonoid.center M) M α
+
 variable {M}
 
 /-- The center of a multiplication with unit is commutative and associative.
 
-This is not an instance as it forms an non-defeq diamond with `Submonoid.toMonoid` in the `npow`
+This is not an instance as it forms a non-defeq diamond with `Submonoid.toMonoid` in the `npow`
 field. -/
 @[to_additive /-- The center of an addition with zero is commutative and associative. -/]
 abbrev center.commMonoid' : CommMonoid (center M) :=

@@ -3,9 +3,11 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # Completion of topological fields
@@ -30,6 +32,8 @@ The main definition is `CompletableTopField` which packages the assumptions as a
 type class and the main results are the instances `UniformSpace.Completion.Field` and
 `UniformSpace.Completion.IsTopologicalDivisionRing`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -72,9 +76,8 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   rw [mem_compl_singleton_iff] at y_ne
   apply CompleteSpace.complete
   have : (fun (x : K) => (↑x⁻¹ : hat K)) =
-      ((fun (y : K) => (↑y : hat K))∘(fun (x : K) => (x⁻¹ : K))) := by
-    unfold Function.comp
-    simp
+      ((fun (y : K) => (↑y : hat K)) ∘ (fun (x : K) => (x⁻¹ : K))) := by
+    simp [Function.comp_def]
   rw [this, ← Filter.map_map]
   apply Cauchy.map _ (Completion.uniformContinuous_coe K)
   apply CompletableTopField.nice

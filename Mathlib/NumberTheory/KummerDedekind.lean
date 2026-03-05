@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
 -/
-import Mathlib.RingTheory.Conductor
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.IsAdjoinRoot
+module
+
+public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.IsAdjoinRoot
 
 /-!
 # Kummer-Dedekind theorem
@@ -53,6 +55,8 @@ with a formula).
 kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 -/
 
+@[expose] public section
+
 
 variable {R : Type*} {S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S} {I : Ideal R}
 
@@ -62,10 +66,11 @@ namespace KummerDedekind
 
 variable [IsDomain R] [IsIntegrallyClosed R]
 variable [IsDedekindDomain S]
-variable [NoZeroSMulDivisors R S]
+variable [Module.IsTorsionFree R S]
 
 attribute [local instance] Ideal.Quotient.field
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The isomorphism of rings between `S / I` and `(R / I)[X] / minpoly x` when `I`
 and `(conductor R x) ∩ R` are coprime.
@@ -78,6 +83,7 @@ noncomputable def quotMapEquivQuotQuotMap (hx : (conductor R x).comap (algebraMa
     ((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans <|
     quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])
 
+set_option backward.isDefEq.respectTransparency false in
 lemma quotMapEquivQuotQuotMap_symm_apply (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
     (quotMapEquivQuotQuotMap hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
@@ -123,6 +129,7 @@ theorem emultiplicity_factors_map_eq_emultiplicity
     emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_symm_eq_emultiplicity,
     normalizedFactorsEquivOfQuotEquiv_emultiplicity_eq_emultiplicity]
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- The **Kummer-Dedekind Theorem**. -/
 theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : IsMaximal I)
@@ -168,6 +175,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   · rwa [← bot_eq_zero, Ne,
       map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x)
     (hf : Irreducible (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))) :
@@ -197,6 +205,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   rw [Multiset.attach_map_val, Multiset.map_singleton, Subtype.coe_mk]
   exact normalizedFactors_irreducible hf
 
+set_option backward.isDefEq.respectTransparency false in
 open Set Classical in
 /-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
 `mod I`. Then (the reduction of) `Q` corresponds via

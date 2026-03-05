@@ -3,8 +3,11 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Lean.Elab.Tactic.ElabTerm
-import Mathlib.Lean.Meta.Basic
+module
+
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Mathlib.Lean.Meta.Basic
+public import Mathlib.Init
 
 /-!
 # Apply at
@@ -12,15 +15,17 @@ import Mathlib.Lean.Meta.Basic
 A tactic for applying functions at hypotheses.
 -/
 
+public meta section
+
 open Lean Meta Elab Tactic Term
 
 namespace Mathlib.Tactic
 
 /--
-`apply t at i` will use forward reasoning with `t` at the hypothesis `i`.
-Explicitly, if `t : α₁ → ⋯ → αᵢ → ⋯ → αₙ` and `i` has type `αᵢ`, then this tactic will add
+`apply t at i` uses forward reasoning with `t` at the hypothesis `i`.
+Explicitly, if `t : α₁ → ⋯ → αᵢ → ⋯ → αₙ` and `i` has type `αᵢ`, then this tactic adds
 metavariables/goals for any terms of `αⱼ` for `j = 1, …, i-1`,
-then replace the type of `i` with `αᵢ₊₁ → ⋯ → αₙ` by applying those metavariables and the
+then replaces the type of `i` with `αᵢ₊₁ → ⋯ → αₙ` by applying those metavariables and the
 original `i`.
 -/
 elab "apply " t:term " at " i:ident : tactic => withSynthesize <| withMainContext do

@@ -3,11 +3,13 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Heyting.Basic
-import Mathlib.Order.RelClasses
-import Mathlib.Order.Hom.Basic
-import Mathlib.Lean.Thunk
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Heyting.Basic
+public import Mathlib.Order.RelClasses
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Lean.Thunk
 
 /-!
 # Improvable lower bounds.
@@ -33,6 +35,8 @@ the point of this typeclass is to work with cheap-to-compute lower bounds for ex
 An appropriate well-foundedness condition would then ensure that repeated improvements reach
 the exact value.
 -/
+
+@[expose] public section
 
 variable {α ε : Type*}
 

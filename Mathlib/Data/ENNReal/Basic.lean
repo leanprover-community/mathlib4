@@ -3,11 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Tactic.Finiteness
+module
+
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.Sub.WithTop
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Extended non-negative reals
@@ -87,6 +88,8 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 -/
 
+@[expose] public section
+
 assert_not_exists Finset
 
 open Function Set NNReal
@@ -101,16 +104,23 @@ def ENNReal := WithTop ℝ≥0
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
 
+-- note: using notation3 rather than notation means that `∞` pretty-prints
+-- as `∞` rather than `top`. Despite this, we still use `top` in the names of lemmas.
 /-- Notation for infinity as an `ENNReal` number. -/
-scoped[ENNReal] notation "∞" => (⊤ : ENNReal)
+scoped[ENNReal] notation3 "∞" => (⊤ : ENNReal)
 
 namespace ENNReal
 
 instance : OrderBot ℝ≥0∞ := inferInstanceAs (OrderBot (WithTop ℝ≥0))
+
 instance : OrderTop ℝ≥0∞ := inferInstanceAs (OrderTop (WithTop ℝ≥0))
+
 instance : BoundedOrder ℝ≥0∞ := inferInstanceAs (BoundedOrder (WithTop ℝ≥0))
+
 instance : CharZero ℝ≥0∞ := inferInstanceAs (CharZero (WithTop ℝ≥0))
+
 instance : Min ℝ≥0∞ := SemilatticeInf.toMin
+
 instance : Max ℝ≥0∞ := SemilatticeSup.toMax
 
 noncomputable instance : CommSemiring ℝ≥0∞ :=
@@ -143,6 +153,7 @@ instance : IsOrderedAddMonoid ℝ≥0∞ :=
   inferInstanceAs (IsOrderedAddMonoid (WithTop ℝ≥0))
 
 instance instSub : Sub ℝ≥0∞ := inferInstanceAs (Sub (WithTop ℝ≥0))
+
 instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0))
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
@@ -155,17 +166,12 @@ noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0} {n : ℕ}
 
--- TODO: add a `WithTop` instance and use it here
-noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
-  { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
-      inferInstanceAs (CommSemiring ℝ≥0∞) with
-    bot_le _ := bot_le
-    mul_le_mul_left := fun _ _ => mul_le_mul_left'
-    zero_le_one := zero_le 1 }
+instance : IsOrderedMonoid ℝ≥0∞ where
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 instance : Unique (AddUnits ℝ≥0∞) where
   default := 0
-  uniq a := AddUnits.ext <| le_zero_iff.1 <| by rw [← a.add_neg]; exact le_self_add
+  uniq a := AddUnits.ext <| nonpos_iff_eq_zero.1 <| by rw [← a.add_neg]; exact le_self_add
 
 instance : Inhabited ℝ≥0∞ := ⟨0⟩
 
@@ -302,6 +308,7 @@ theorem toNNReal_ne_zero : a.toNNReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
 theorem toReal_ne_zero : a.toReal ≠ 0 ↔ a ≠ 0 ∧ a ≠ ∞ :=
   a.toReal_eq_zero_iff.not.trans not_or
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toNNReal_eq_one_iff (x : ℝ≥0∞) : x.toNNReal = 1 ↔ x = 1 :=
   WithTop.untopD_eq_iff.trans <| by simp
 
@@ -429,7 +436,7 @@ instance _root_.fact_one_le_top_ennreal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
 def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 where
   toFun x := ENNReal.toNNReal x
   invFun x := ⟨x, coe_ne_top⟩
-  left_inv := fun x => Subtype.eq <| coe_toNNReal x.2
+  left_inv := fun x => Subtype.ext <| coe_toNNReal x.2
   right_inv := toNNReal_coe
 
 theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : ⨅ x : { x // x ≠ ∞ }, f x = ⨅ x : ℝ≥0, f x :=
@@ -454,7 +461,7 @@ theorem iSup_ennreal {α : Type*} [CompleteLattice α] {f : ℝ≥0∞ → α} :
   @iInf_ennreal αᵒᵈ _ _
 
 /-- Coercion `ℝ≥0 → ℝ≥0∞` as a `RingHom`. -/
-def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
+noncomputable def ofNNRealHom : ℝ≥0 →+* ℝ≥0∞ where
   toFun := WithTop.some
   map_one' := coe_one
   map_mul' _ _ := coe_mul _ _
@@ -727,7 +734,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
     assertInstancesCommute
@@ -736,7 +743,7 @@ def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a
