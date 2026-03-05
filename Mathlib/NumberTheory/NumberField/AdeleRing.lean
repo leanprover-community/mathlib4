@@ -100,103 +100,46 @@ theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
   simpa [Function.mulSupport, Valued.toNormedField.norm_eq_one_iff] using
     FiniteAdeleRing.unitsEquiv_finite_valued_eq_one x
 
-lemma two_le_of_one_lt (v : HeightOneSpectrum (𝓞 K)) (x : v.adicCompletion K) (h : 1 < ‖x‖) :
-    2 ≤ ‖x‖ := by
-  change 2 ≤ Valued.norm x
-  rw [Valued.norm_def]
-  have hx₀ : x ≠ 0 := by
-    contrapose! h
-    simp [h]
-  rw [Valued.toNormedField.one_lt_norm_iff] at h
-  change 2 ≤ WithZeroMulInt.toNNReal (absNorm_ne_zero v) (Valued.v x)
-  rw [WithZeroMulInt.toNNReal_neg_apply (absNorm_ne_zero v) (by simpa)]
-  have : v.asIdeal.IsPrime := v.isPrime
-  have : NeZero v.asIdeal := ⟨v.ne_bot⟩
-  let p := Ideal.absNorm (Ideal.under ℤ v.asIdeal)
-  let hp := (Nat.absNorm_under_prime v.asIdeal)
-  rw [Ideal.absNorm_eq_pow_inertiaDeg' v.asIdeal (Nat.absNorm_under_prime v.asIdeal)]
-  have : (2 : NNReal) ≤ p := by simp [p, hp.two_le]
-  apply this.trans
-  have : (p : NNReal) ≤ p ^ (Ideal.span {(p : ℤ)}).inertiaDeg v.asIdeal := by
-    rw [← Nat.cast_pow, Nat.cast_le]
-    apply Nat.le_self_pow
-    have : Ideal.span {(p : ℤ)} |>.IsMaximal := by
-      apply Ideal.IsPrime.isMaximal
-      · rw [Ideal.span_singleton_prime (mod_cast hp.ne_zero)]
-        rw [← Nat.prime_iff_prime_int]
-        exact hp
-      · simp
-        exact hp.ne_zero
-    exact Ideal.inertiaDeg_ne_zero _ _
-  apply this.trans
-  rw [← zpow_one (p ^ _ : NNReal)]
-  rw [Nat.cast_pow]
-  apply zpow_le_zpow_right₀
-  · apply le_trans ?_ this
-    exact mod_cast hp.one_le
-  · simp [← Int.sub_one_lt_iff]
-    rw [← toAdd_one, Multiplicative.toAdd_lt]
-    rw [WithZero.lt_unzero_iff]
-    exact mod_cast h
-
 theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x) :
     HasProd (fun v ↦ ‖x.1 v‖) 0 := by
   by_cases hx₀ : ∃ v, x v = 0
   · have : ∃ v, ‖x v‖ = 0 := by simp [hx₀]
     exact hasProd_zero_of_exists_eq_zero this
-  rw [FiniteAdeleRing.isUnit_iff] at hx
-  simp at hx
-  have := x.2
-  simp only [SetLike.mem_coe, Filter.eventually_cofinite] at this
+  replace hx := FiniteAdeleRing.infinite_valued_ne_one_of_not_isUnit (by simpa using hx₀) hx
   let S := {v : HeightOneSpectrum (𝓞 K) | 1 < Valued.v (x v)}
   let S₁ := {v : HeightOneSpectrum (𝓞 K) | Valued.v (x v) = 1}
-  let hSf : S.Finite := by simpa [HeightOneSpectrum.mem_adicCompletionIntegers] using this
+  let hSf : S.Finite := by simpa [HeightOneSpectrum.mem_adicCompletionIntegers] using x.2
   have : Fintype S := Set.Finite.fintype hSf
   have hS : HasProd (fun v : S ↦ ‖x v‖) (∏ v : S, ‖x v‖) := hasProd_fintype _
   have hS₁ : HasProd (fun v : S₁ ↦ ‖x v‖) 1 := by
     have : (fun v : S₁ ↦ ‖x v‖) = 1 := by
       ext v
-      simp
-      rw [Valued.toNormedField.norm_eq_one_iff]
+      rw [Pi.one_apply, Valued.toNormedField.norm_eq_one_iff]
       exact v.2
     rw [this]
     exact hasProd_one
   let S' := S ∪ S₁
   have hSu : HasProd (fun (v : S') ↦ ‖x v‖) (∏ v : S, ‖x v‖) := by
-    have : Disjoint S S₁ := by
-      simp [S, S₁]
-      grind
+    have : Disjoint S S₁ := by grind
     have := HasProd.mul_disjoint (f := fun v ↦ ‖x v‖) this (a := ∏ v : S, ‖x v‖) (b := 1)
       hS hS₁
-    simp at this
-    exact this
+    simpa using this
   let T := S'ᶜ
   have hT' : T.Infinite := by
     push_neg at hx₀
-    specialize hx hx₀
-    have : {v | Valued.v (x v) ≠ 1} = S ∪ T := by
-      ext v
-      simp [S, T, S', S₁]
-      grind
-    rw [this] at hx
-    simp at hx
+    have : {v | Valued.v (x v) ≠ 1} = S ∪ T := by ext v; grind
+    rw [this, Set.infinite_union] at hx
     rcases hx with (hSi | hTi)
     · absurd hSi
       exact hSf
     · exact hTi
   have hT : HasProd (fun v : T ↦ ‖x v‖) 0 := by
-    delta HasProd
-    simp
     have : Filter.Tendsto (fun s : Finset T ↦ (∏ v ∈ s, ‖x v‖)⁻¹) Filter.atTop Filter.atTop := by
       have h : ∀ v ∈ T, 2 ≤ ‖x v‖⁻¹ := by
         intro v hv
-        simp [T, S', S, S₁] at hv
         rw [← norm_inv]
-        apply two_le_of_one_lt
-        rw [Valued.toNormedField.one_lt_norm_iff]
-        simp
-        rw [one_lt_inv_iff₀]
-        simp at hx₀
+        apply FinitePlace.two_le_norm_of_one_lt_norm
+        rw [Valued.toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv_iff₀]
         constructor
         · contrapose! hx₀
           use v
@@ -223,8 +166,7 @@ theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUn
         apply le_of_eq
         symm
         rw [Finset.card_filter_eq_iff.2 ht]
-    have := @tendsto_inv_atTop_zero ℝ _ _ _ _ _ |>.comp this
-    apply this.congr (by simp)
+    apply (tendsto_inv_atTop_zero.comp this).congr (by simp)
   simpa using hT.compl_mul hSu (f := fun v ↦ ‖x.1 v‖)
 
 theorem tprod_norm_of_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : IsUnit x) :
@@ -268,6 +210,7 @@ end FiniteAdeleRing
 
 namespace AdeleRing
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_iff {x : AdeleRing (𝓞 K) K} :
     IsUnit x ↔ (∀ v, x.1 v ≠ 0) ∧ (∀ v, x.2 v ≠ 0) ∧
       ∀ᶠ v in Filter.cofinite, Valued.v (x.2 v) = 1 := by

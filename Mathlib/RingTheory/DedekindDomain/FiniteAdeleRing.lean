@@ -156,6 +156,7 @@ end Topology
 
 variable {R K}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUnit_iff {a : FiniteAdeleRing R K} :
     IsUnit a ↔ (∀ v, a v ≠ 0) ∧ ∀ᶠ v in Filter.cofinite, Valued.v (a v) = 1 := by
   rw [RestrictedProduct.isUnit_iff]
@@ -167,6 +168,13 @@ theorem unitsEquiv_finite_valued_eq_one (a : (FiniteAdeleRing R K)ˣ) :
     ∀ᶠ v in Filter.cofinite, Valued.v ((RestrictedProduct.unitsEquiv _ a v)).1 = 1 := by
   filter_upwards [(RestrictedProduct.unitsEquiv _ a).2] using fun v h ↦
     adicCompletionIntegers.mem_units_iff_valued_eq_one.1 h
+
+theorem infinite_valued_ne_one_of_not_isUnit {a : FiniteAdeleRing R K} (ha₀ : ∀ v, a v ≠ 0)
+    (ha : ¬IsUnit a) :
+    {v | Valued.v (a v) ≠ 1}.Infinite := by
+  contrapose! ha
+  rw [isUnit_iff]
+  exact ⟨ha₀ , ha⟩
 
 variable (R K) in
 def unitEmbedding : Kˣ →* (FiniteAdeleRing R K)ˣ := Units.map (algebraMap K (FiniteAdeleRing R K))

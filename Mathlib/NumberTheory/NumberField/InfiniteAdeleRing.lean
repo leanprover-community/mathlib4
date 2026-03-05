@@ -126,6 +126,7 @@ variable {K}
 theorem norm_def [NumberField K] (x : InfiniteAdeleRing K) :
     ‖x‖ = ∏ v, ‖x v‖ ^ v.mult := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : InfiniteAdeleRing K} (hx : ¬IsUnit x) :
     ‖x‖ = 0 := by
   rw [Pi.isUnit_iff, not_forall] at hx
