@@ -35,7 +35,7 @@ To provide good API encapsulation and speed up unification problems,
 We need a couple of maps to set up the `Field` and `IsFractionRing` structure,
 namely `RatFunc.ofFractionRing`, `RatFunc.toFractionRing`, `RatFunc.mk` and
 `RatFunc.toFractionRingRingEquiv`.
-All these maps get `simp`ed to bundled morphisms like `algebraMap K[X] (K⟮X⟯)`
+All these maps get `simp`ed to bundled morphisms like `algebraMap K[X] K⟮X⟯`
 and `IsLocalization.algEquiv`.
 
 There are separate lifts and maps of homomorphisms, to provide routes of lifting even when
@@ -61,7 +61,7 @@ variable (K : Type u)
 
 /-- `RatFunc K` is `K(X)`, the field of rational functions over `K`.
 
-The inclusion of polynomials into `RatFunc` is `algebraMap K[X] (K⟮X⟯)`,
+The inclusion of polynomials into `RatFunc` is `algebraMap K[X] K⟮X⟯`,
 the maps between `K⟮X⟯` and another field of fractions of `K[X]`,
 especially `FractionRing K[X]`, are given by `IsLocalization.algEquiv`.
 -/

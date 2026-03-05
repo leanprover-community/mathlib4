@@ -51,15 +51,15 @@ variable [CommRing K] [IsDomain K]
 def C : K →+* K⟮X⟯ := algebraMap _ _
 
 @[simp]
-theorem algebraMap_eq_C : algebraMap K (K⟮X⟯) = C :=
+theorem algebraMap_eq_C : algebraMap K K⟮X⟯ = C :=
   rfl
 
 @[simp]
-theorem algebraMap_C (a : K) : algebraMap K[X] (K⟮X⟯) (Polynomial.C a) = C a :=
+theorem algebraMap_C (a : K) : algebraMap K[X] K⟮X⟯ (Polynomial.C a) = C a :=
   rfl
 
 @[simp]
-theorem algebraMap_comp_C : (algebraMap K[X] (K⟮X⟯)).comp Polynomial.C = C :=
+theorem algebraMap_comp_C : (algebraMap K[X] K⟮X⟯).comp Polynomial.C = C :=
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -72,21 +72,21 @@ theorem C_injective : Function.Injective (RatFunc.C (K := K)) := by
 
 /-- `RatFunc.X` is the polynomial variable (aka indeterminate). -/
 def X : K⟮X⟯ :=
-  algebraMap K[X] (K⟮X⟯) Polynomial.X
+  algebraMap K[X] K⟮X⟯ Polynomial.X
 
 @[simp]
-theorem algebraMap_X : algebraMap K[X] (K⟮X⟯) Polynomial.X = X :=
+theorem algebraMap_X : algebraMap K[X] K⟮X⟯ Polynomial.X = X :=
   rfl
 
 @[simp]
 theorem algebraMap_monomial (n : ℕ) (a : K) :
-    algebraMap K[X] (K⟮X⟯) (Polynomial.monomial n a) = C a * X ^ n := by
+    algebraMap K[X] K⟮X⟯ (Polynomial.monomial n a) = C a * X ^ n := by
   simp [← Polynomial.C_mul_X_pow_eq_monomial]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_X_left_eq_algebraMap (p : K[X]) :
-    p.aeval (X : K⟮X⟯) = algebraMap K[X] (K⟮X⟯) p := by
+    p.aeval (X : K⟮X⟯) = algebraMap K[X] K⟮X⟯ p := by
   induction p using Polynomial.induction_on' <;> simp_all
 
 @[simp]
@@ -169,7 +169,7 @@ theorem eval_one : eval f a 1 = 1 := by simp [eval]
 @[simp]
 theorem eval_algebraMap {S : Type*} [CommSemiring S] [Algebra S K[X]] (p : S) :
     eval f a (algebraMap _ _ p) = (algebraMap _ K[X] p).eval₂ f a := by
-  simp [eval, IsScalarTower.algebraMap_apply S K[X] (K⟮X⟯)]
+  simp [eval, IsScalarTower.algebraMap_apply S K[X] K⟮X⟯]
 
 /-- `eval` is an additive homomorphism except when a denominator evaluates to `0`.
 
@@ -222,7 +222,7 @@ lemma transcendental_X : Transcendental K (X : K⟮X⟯) := by
   rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
   exact Polynomial.transcendental_X K
 
-instance transcendental : Algebra.Transcendental K (K⟮X⟯) := ⟨X, transcendental_X⟩
+instance transcendental : Algebra.Transcendental K K⟮X⟯ := ⟨X, transcendental_X⟩
 
 end Algebra
 
@@ -253,7 +253,7 @@ theorem idealX_span : (idealX K).asIdeal = Ideal.span {X} := rfl
 
 @[simp]
 theorem valuation_X_eq_neg_one :
-    (idealX K).valuation (K⟮X⟯) RatFunc.X = exp (-1 : ℤ) := by
+    (idealX K).valuation K⟮X⟯ RatFunc.X = exp (-1 : ℤ) := by
   rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton
       _ (Polynomial.X_ne_zero) (idealX_span K)]
 
@@ -296,7 +296,7 @@ theorem valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (w : 
 
 end Algebra
 
-variable {v : Valuation (K⟮X⟯) Γ} (hv : ∀ a : K, a ≠ 0 → v (C a) = 1)
+variable {v : Valuation K⟮X⟯ Γ} (hv : ∀ a : K, a ≠ 0 → v (C a) = 1)
 
 open Valuation
 
@@ -314,11 +314,11 @@ lemma valuation_monomial_eq_valuation_X_pow (n : ℕ) {a : K} (ha : a ≠ 0) :
 Note: The condition `1 < v RatFunc.X` is typically satisfied by the valuation at infinity. -/
 theorem valuation_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X (hlt : 1 < v RatFunc.X)
     {p : K[X]} (hp : p ≠ 0) : v p = v RatFunc.X ^ p.natDegree := by
-  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X K (K⟮X⟯) hv
+  convert valuation_aeval_eq_valuation_X_pow_natDegree_of_one_lt_valuation_X K K⟮X⟯ hv
     RatFunc.X hlt hp
   ext p
   nth_rw 1 [RatFunc.X, ← aeval_X_left_apply p (R := K)]
-  exact (aeval_algebraMap_apply (K⟮X⟯) X p).symm
+  exact (aeval_algebraMap_apply K⟮X⟯ X p).symm
 
 
 /-- If a valuation `v` is trivial on constants and `v RatFunc.X ≤ 1` then for every polynomial `p`,
@@ -349,7 +349,7 @@ open scoped WithZero
 
 open Polynomial
 
-instance : Valued (K⟮X⟯) ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
+instance : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 
 @[simp]
 theorem v_def {x : K⟮X⟯} :

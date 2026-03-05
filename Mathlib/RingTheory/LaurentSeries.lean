@@ -370,8 +370,8 @@ instance : FaithfulSMul F[X] F⸨X⸩ := by
   refine (faithfulSMul_iff_algebraMap_injective F[X] F⸨X⸩).mpr ?_
   exact algebraMap_hahnSeries_injective ℤ
 
-instance coeToLaurentSeries : Coe (F⟮X⟯) F⸨X⸩ :=
-  ⟨algebraMap (F⟮X⟯) F⸨X⸩⟩
+instance coeToLaurentSeries : Coe F⟮X⟯ F⸨X⸩ :=
+  ⟨algebraMap F⟮X⟯ F⸨X⸩⟩
 
 theorem coe_coe (P : Polynomial F) : ((P : F⟦X⟧) : F⸨X⸩) = (P : F⟮X⟯) := by
   simp [coePolynomial, coe_def, ← IsScalarTower.algebraMap_apply]
@@ -380,7 +380,7 @@ theorem coe_coe (P : Polynomial F) : ((P : F⟦X⟧) : F⸨X⸩) = (P : F⟮X⟯
 -- even though `single 1 1` is a bundled function application, not a "real" coercion
 @[simp]
 theorem coe_X : ((X : F⟮X⟯) : F⸨X⸩) = single 1 1 := by
-  simp [← algebraMap_X, ← IsScalarTower.algebraMap_apply F[X] (F⟮X⟯) F⸨X⸩]
+  simp [← algebraMap_X, ← IsScalarTower.algebraMap_apply F[X] F⟮X⟯ F⸨X⸩]
 
 theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
@@ -402,9 +402,9 @@ theorem single_zpow (n : ℤ) :
       inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 theorem algebraMap_apply_div :
-    algebraMap (F⟮X⟯) F⸨X⸩ (algebraMap _ _ p / algebraMap _ _ q) =
+    algebraMap F⟮X⟯ F⸨X⸩ (algebraMap _ _ p / algebraMap _ _ q) =
       algebraMap F[X] F⸨X⸩ p / algebraMap _ _ q := by
-  simp only [map_div₀, IsScalarTower.algebraMap_apply F[X] (F⟮X⟯) F⸨X⸩]
+  simp only [map_div₀, IsScalarTower.algebraMap_apply F[X] F⟮X⟯ F⸨X⸩]
 
 end RatFunc
 
@@ -467,8 +467,8 @@ open IsDedekindDomain.HeightOneSpectrum PowerSeries
 open scoped LaurentSeries
 
 /-- `valuationX` is an abbrevation for the `X`-adic valuation given by
-`(Polynomial.idealX K).valuation (K⟮X⟯)`. -/
-abbrev polynomialValuationX : Valuation (K⟮X⟯) ℤᵐ⁰ :=
+`(Polynomial.idealX K).valuation K⟮X⟯`. -/
+abbrev polynomialValuationX : Valuation K⟮X⟯ ℤᵐ⁰ :=
   (Polynomial.idealX K).valuation _
 
 set_option backward.isDefEq.respectTransparency false in
@@ -479,7 +479,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
   convert @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
         ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 <| (by simp [h])⟩
-  · simp [← IsScalarTower.algebraMap_apply K[X] (K⟮X⟯) K⸨X⸩]
+  · simp [← IsScalarTower.algebraMap_apply K[X] K⟮X⟯ K⸨X⸩]
   exacts [intValuation_eq_of_coe _, intValuation_eq_of_coe _]
 
 end RatFunc
@@ -848,7 +848,7 @@ theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤᵐ⁰ˣ) :
     have F_mul := f.ofPowerSeries_powerSeriesPart
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (le_of_lt ord_nonpos)
     rw [← hF, hs, neg_neg, ← ofPowerSeries_X_pow s, ← inv_mul_eq_iff_eq_mul₀] at F_mul
-    · have : (algebraMap (K⟮X⟯) K⸨X⸩) 1 = 1 := by exact algebraMap.coe_one
+    · have : (algebraMap K⟮X⟯ K⸨X⸩) 1 = 1 := by exact algebraMap.coe_one
       rw [hs, ← F_mul, PowerSeries.coe_pow, PowerSeries.coe_X, map_mul, zpow_neg,
         zpow_natCast, inv_eq_one_div (RatFunc.X ^ s), map_div₀, map_pow,
         RatFunc.coe_X]
@@ -969,10 +969,10 @@ theorem LaurentSeries_coe (x : K⟮X⟯) :
 homomorphism -/
 abbrev extensionAsRingHom :=
   UniformSpace.Completion.extensionHom <|
-    (algebraMap (K⟮X⟯) K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
+    (algebraMap K⟮X⟯ K⸨X⸩).comp (WithVal.equiv (polynomialValuationX K)).toRingHom
 
 /-- An abbreviation for the `X`-adic completion of `K⟮X⟯` -/
-abbrev RatFuncAdicCompl := adicCompletion (K⟮X⟯) (idealX K)
+abbrev RatFuncAdicCompl := adicCompletion K⟮X⟯ (idealX K)
 
 /- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
@@ -1043,9 +1043,9 @@ theorem valuation_LaurentSeries_equal_extension :
     rfl
   · exact Valued.continuous_valuation (K := K⸨X⸩)
 
-theorem tendsto_valuation (a : (idealX K).adicCompletion (K⟮X⟯)) :
+theorem tendsto_valuation (a : (idealX K).adicCompletion K⟮X⟯) :
     Tendsto (Valued.v : K⟮X⟯ → ℤᵐ⁰) (comap (↑) (𝓝 a)) (𝓝 (Valued.v a : ℤᵐ⁰)) := by
-  have := Valued.is_topological_valuation (R := (idealX K).adicCompletion (K⟮X⟯))
+  have := Valued.is_topological_valuation (R := (idealX K).adicCompletion K⟮X⟯)
   by_cases ha : a = 0
   · rw [tendsto_def]
     intro S hS
@@ -1102,7 +1102,7 @@ lemma powerSeriesEquivSubring_coe_apply (f : K⟦X⟧) :
 /- Through the isomorphism `LaurentSeriesRingEquiv`, power series land in the unit ball inside the
 completion of `K⟮X⟯`. -/
 theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
-    (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers (K⟮X⟯) := by
+    (LaurentSeriesRingEquiv K) F ∈ (idealX K).adicCompletionIntegers K⟮X⟯ := by
   simp only [mem_adicCompletionIntegers, LaurentSeriesRingEquiv_def,
     valuation_compare, val_le_one_iff_eq_coe]
   exact ⟨F, rfl⟩
@@ -1110,7 +1110,7 @@ theorem mem_integers_of_powerSeries (F : K⟦X⟧) :
 /- Conversely, all elements in the unit ball inside the completion of `K⟮X⟯` come from a power
 series through the isomorphism `LaurentSeriesRingEquiv`. -/
 theorem exists_powerSeries_of_memIntegers {x : RatFuncAdicCompl K}
-    (hx : x ∈ (idealX K).adicCompletionIntegers (K⟮X⟯)) :
+    (hx : x ∈ (idealX K).adicCompletionIntegers K⟮X⟯) :
     ∃ F : K⟦X⟧, (LaurentSeriesRingEquiv K) F = x := by
   set f := (ratfuncAdicComplRingEquiv K) x with hf
   have H_x : (LaurentSeriesPkg K).compare ratfuncAdicComplPkg ((ratfuncAdicComplRingEquiv K) x) =
@@ -1121,7 +1121,7 @@ theorem exists_powerSeries_of_memIntegers {x : RatFuncAdicCompl K}
 
 theorem powerSeries_ext_subring :
     Subring.map (LaurentSeriesRingEquiv K).toRingHom (powerSeries_as_subring K) =
-      ((idealX K).adicCompletionIntegers (K⟮X⟯)).toSubring := by
+      ((idealX K).adicCompletionIntegers K⟮X⟯).toSubring := by
   ext x
   refine ⟨fun ⟨f, ⟨F, _, coe_F⟩, hF⟩ ↦ ?_, fun H ↦ ?_⟩
   · simp only [ValuationSubring.mem_toSubring, ← hF, ← coe_F]
@@ -1132,7 +1132,7 @@ theorem powerSeries_ext_subring :
 
 /-- The ring isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
-abbrev powerSeriesRingEquiv : K⟦X⟧ ≃+* (idealX K).adicCompletionIntegers (K⟮X⟯) :=
+abbrev powerSeriesRingEquiv : K⟦X⟧ ≃+* (idealX K).adicCompletionIntegers K⟮X⟯ :=
   ((powerSeriesEquivSubring K).trans (LaurentSeriesRingEquiv K).subringMap).trans
     <| RingEquiv.subringCongr (powerSeries_ext_subring K)
 
@@ -1148,13 +1148,13 @@ lemma LaurentSeriesRingEquiv_mem_valuationSubring (f : K⟦X⟧) :
 
 lemma algebraMap_C_mem_adicCompletionIntegers (x : K) :
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C) x ∈
-      adicCompletionIntegers (K⟮X⟯) (idealX K) := by
+      adicCompletionIntegers K⟮X⟯ (idealX K) := by
   have : HahnSeries.C x = ofPowerSeries ℤ K (PowerSeries.C x) := by
     simp [C_apply, ofPowerSeries_C]
   simp only [RingHom.comp_apply, RingEquiv.toRingHom_eq_coe, RingHom.coe_coe, this]
   apply LaurentSeriesRingEquiv_mem_valuationSubring
 
-instance : Algebra K ((idealX K).adicCompletionIntegers (K⟮X⟯)) :=
+instance : Algebra K ((idealX K).adicCompletionIntegers K⟮X⟯) :=
   RingHom.toAlgebra <|
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict _
       (algebraMap_C_mem_adicCompletionIntegers K)
@@ -1162,7 +1162,7 @@ instance : Algebra K ((idealX K).adicCompletionIntegers (K⟮X⟯)) :=
 set_option backward.isDefEq.respectTransparency false in
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `K⟮X⟯`. -/
-def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers (K⟮X⟯) := by
+def powerSeriesAlgEquiv : K⟦X⟧ ≃ₐ[K] (idealX K).adicCompletionIntegers K⟮X⟯ := by
   apply AlgEquiv.ofRingEquiv (f := powerSeriesRingEquiv K)
   intro a
   rw [PowerSeries.algebraMap_eq, RingHom.algebraMap_toAlgebra, ← Subtype.coe_inj,

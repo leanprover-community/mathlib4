@@ -44,14 +44,14 @@ theorem adjoin_X : K⟮(X : K⟮X⟯)⟯ = ⊤ :=
   eq_top_iff.mpr fun g _ ↦ (mem_adjoin_simple_iff _ _).mpr ⟨g.num, g.denom, by simp⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem IntermediateField.adjoin_X (E : IntermediateField K (K⟮X⟯)) :
+theorem IntermediateField.adjoin_X (E : IntermediateField K K⟮X⟯) :
     E⟮(X : K⟮X⟯)⟯ = ⊤ := by
   rw [← restrictScalars_eq_top_iff (K := K), restrictScalars_adjoin, eq_top_iff]
   exact le_trans (le_of_eq RatFunc.adjoin_X.symm) (IntermediateField.adjoin.mono _ _ _ (by simp))
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between `E⟮X⟯` and `K⟮X⟯` as `E`-algebras. -/
-noncomputable def IntermediateField.adjoinXEquiv (E : IntermediateField K (K⟮X⟯)) :
+noncomputable def IntermediateField.adjoinXEquiv (E : IntermediateField K K⟮X⟯) :
     E⟮(X : K⟮X⟯)⟯ ≃ₐ[E] K⟮X⟯ :=
   (IntermediateField.equivOfEq (IntermediateField.adjoin_X E)).trans IntermediateField.topEquiv
 
@@ -98,7 +98,7 @@ theorem isAlgebraic_adjoin_simple_X (hf : ¬∃ c, f = C c) : IsAlgebraic K⟮f�
 
 set_option backward.isDefEq.respectTransparency false in
 theorem isAlgebraic_adjoin_simple_X' (hf : ¬∃ c, f = C c) :
-    Algebra.IsAlgebraic K⟮f⟯ (K⟮X⟯) := by
+    Algebra.IsAlgebraic K⟮f⟯ K⟮X⟯ := by
   have : Algebra.IsAlgebraic K⟮f⟯ K⟮f⟯⟮(X : K⟮X⟯)⟯ :=
     isAlgebraic_adjoin_simple <| isAlgebraic_iff_isIntegral.mp <| f.isAlgebraic_adjoin_simple_X hf
   exact (IntermediateField.adjoinXEquiv K⟮f⟯).isAlgebraic
@@ -141,7 +141,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := by
   intro H
   have := IntermediateField.isAlgebraic_adjoin_simple H.isIntegral
-  have tr : Algebra.Transcendental K (K⟮X⟯) := by infer_instance
+  have tr : Algebra.Transcendental K K⟮X⟯ := by infer_instance
   rw [Algebra.transcendental_iff_not_isAlgebraic] at tr
   exact tr <| Algebra.IsAlgebraic.trans _ _ _ (alg := f.isAlgebraic_adjoin_simple_X' hf)
 
@@ -186,12 +186,12 @@ theorem irreducible_minpolyX (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K
 
 set_option backward.isDefEq.respectTransparency false in
 theorem finrank_eq_max_natDegree :
-    Module.finrank K⟮f⟯ (K⟮X⟯) = max f.num.natDegree f.denom.natDegree := by
+    Module.finrank K⟮f⟯ K⟮X⟯ = max f.num.natDegree f.denom.natDegree := by
   by_cases hf : ∃ c, f = C c
   · obtain ⟨c, rfl⟩ := hf
     rw [adjoin_simple_eq_bot_iff.mpr (show C c ∈ ⊥ from ⟨c, rfl⟩), finrank_bot',
       Module.finrank_of_not_finite fun H ↦  Algebra.transcendental_iff_not_isAlgebraic.mp
-      transcendental <| Algebra.IsAlgebraic.of_finite K (K⟮X⟯)]
+      transcendental <| Algebra.IsAlgebraic.of_finite K K⟮X⟯]
     simp
   rw [← (IntermediateField.adjoinXEquiv K⟮f⟯).toLinearEquiv.finrank_eq,
     adjoin.finrank (f.isAlgebraic_adjoin_simple_X hf).isIntegral,

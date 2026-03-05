@@ -62,7 +62,7 @@ theorem intDegree_X : intDegree (X : K⟮X⟯) = 1 := by
 
 @[simp]
 theorem intDegree_polynomial {p : K[X]} :
-    intDegree (algebraMap K[X] (K⟮X⟯) p) = natDegree p := by
+    intDegree (algebraMap K[X] K⟮X⟯ p) = natDegree p := by
   rw [intDegree, RatFunc.num_algebraMap, RatFunc.denom_algebraMap, Polynomial.natDegree_one,
     Int.ofNat_zero, sub_zero]
 
