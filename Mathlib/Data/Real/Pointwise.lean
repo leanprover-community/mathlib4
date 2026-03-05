@@ -3,9 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Order.Module.Pointwise
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Order.Module.Pointwise
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Pointwise operations on sets of reals
@@ -20,6 +23,8 @@ and provides lemmas about distributing `*` over `⨅` and `⨆`.
 This is true more generally for conditionally complete linear order whose default value is `0`. We
 don't have those yet.
 -/
+
+public section
 
 assert_not_exists Finset
 

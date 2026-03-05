@@ -3,14 +3,18 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Miscellaneous results about determinant
 
 In this file, we collect various formulas about determinant of matrices.
 -/
+
+public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -34,7 +38,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
       rw [Fin.val_succ, Nat.cast_add, Nat.cast_one, Int.negOnePow_succ, Units.neg_smul,
         ← neg_eq_iff_eq_neg, ← neg_one_smul R,
         ← det_updateRow_sum (M.submatrix i.succ.succAbove id) i (fun _ ↦ -1),
-        ← Fin.coe_castSucc i, ← h_ind]
+        ← Fin.val_castSucc i, ← h_ind]
       congr
       ext a b
       simp_rw [neg_one_smul, updateRow_apply, Finset.sum_neg_distrib, Pi.neg_apply,
@@ -43,7 +47,7 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det {n : ℕ}
       · replace hv := congr_fun hv b
         rw [Fin.sum_univ_succAbove _ i.succ, Pi.add_apply, Finset.sum_apply] at hv
         rwa [h, Fin.succAbove_castSucc_self, neg_eq_iff_add_eq_zero, add_comm]
-      · obtain h|h := ne_iff_lt_or_gt.mp h
+      · obtain h | h := ne_iff_lt_or_gt.mp h
         · rw [Fin.succAbove_castSucc_of_lt _ _ h,
             Fin.succAbove_of_succ_le _ _ (Fin.succ_lt_succ_iff.mpr h).le]
         · rw [Fin.succAbove_succ_of_lt _ _ h, Fin.succAbove_castSucc_of_le _ _ h.le]

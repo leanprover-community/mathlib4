@@ -3,12 +3,14 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.FieldTheory.MvRatFunc.Rank
-import Mathlib.RingTheory.Algebraic.Cardinality
-import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
-import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.FieldTheory.MvRatFunc.Rank
+public import Mathlib.RingTheory.Algebraic.Cardinality
+public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 
 /-!
 # Cardinality of a transcendence basis
@@ -28,6 +30,8 @@ transcendence basis, transcendence degree, transcendence
 
 -/
 
+public section
+
 noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
@@ -38,6 +42,7 @@ open AlgebraicIndependent
 
 open Cardinal
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsTranscendenceBasis.lift_cardinalMk_eq_max_lift
     {F : Type u} {E : Type v} [CommRing F] [Nontrivial F] [CommRing E] [IsDomain E] [Algebra F E]
     {ι : Type w} {x : ι → E} [Nonempty ι] (hx : IsTranscendenceBasis F x) :
@@ -49,6 +54,7 @@ theorem IsTranscendenceBasis.lift_cardinalMk_eq_max_lift
   haveI : Infinite K := hx.1.aevalEquiv.infinite_iff.1 inferInstance
   simpa only [sup_eq_left.2 (aleph0_le_mk K)] using Algebra.IsAlgebraic.cardinalMk_le_max K E
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsTranscendenceBasis.lift_rank_eq_max_lift
     {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E]
     {ι : Type w} {x : ι → E} [Nonempty ι] (hx : IsTranscendenceBasis F x) :
@@ -68,6 +74,7 @@ theorem Algebra.Transcendental.rank_eq_cardinalMk
   haveI := hx.nonempty_iff_transcendental.2 ‹_›
   simpa [← hx.lift_cardinalMk_eq_max_lift] using hx.lift_rank_eq_max_lift
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntermediateField.rank_sup_le
     {F : Type u} {E : Type v} [Field F] [Field E] [Algebra F E] (A B : IntermediateField F E) :
     Module.rank F ↥(A ⊔ B) ≤ Module.rank F A * Module.rank F B := by

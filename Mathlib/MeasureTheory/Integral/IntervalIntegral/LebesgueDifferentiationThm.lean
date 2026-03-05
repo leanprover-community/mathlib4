@@ -3,9 +3,11 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.Calculus.Deriv.Slope
-import Mathlib.MeasureTheory.Covering.OneDim
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Slope
+public import Mathlib.MeasureTheory.Covering.OneDim
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Lebesgue Differentiation Theorem (Interval Version)
@@ -14,13 +16,15 @@ This file proves the interval version of the Lebesgue Differentiation Theorem. T
 versions in this file.
 
 * `LocallyIntegrable.ae_hasDerivAt_integral` is the global version. It states that if `f : ℝ → ℝ`
-is locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
-`∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
+  is locally integrable, then for almost every `x`, for any `c : ℝ`, the derivative of
+  `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 
 * `IntervalIntegrable.ae_hasDerivAt_integral` is the local version. It states that if `f : ℝ → ℝ`
-is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`, the
-derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
+  is interval integrable on `a..b`, then for almost every `x ∈ uIcc a b`, for any `c ∈ uIcc a b`,
+  the derivative of `∫ (t : ℝ) in c..x, f t` at `x` is equal to `f x`.
 -/
+
+public section
 
 open MeasureTheory Set Filter Function IsUnifLocDoublingMeasure
 
@@ -70,7 +74,10 @@ theorem IntervalIntegrable.ae_hasDerivAt_integral {f : ℝ → ℝ} {a b : ℝ}
       |>.integrable_of_forall_notMem_eq_zero (by grind) |>.locallyIntegrable
   filter_upwards [LocallyIntegrable.ae_hasDerivAt_integral hg, h₁, h₂] with x hx _ _ _
   intro c hc
-  refine HasDerivWithinAt.hasDerivAt (s := Ioo a b) ?_ <| Ioo_mem_nhds (by grind) (by grind)
-  rw [show f x = g x by grind]
+  #adaptation_note /-- 2025-09-30 https://github.com/leanprover/lean4/issues/10622
+    `grind -order` calls used be `grind` -/
+  refine HasDerivWithinAt.hasDerivAt (s := Ioo a b) ?_ <|
+    Ioo_mem_nhds (by grind -order) (by grind -order)
+  rw [show f x = g x by grind -order]
   refine (hx c).hasDerivWithinAt.congr (fun y hy ↦ ?_) ?_
   all_goals apply intervalIntegral.integral_congr_ae' <;> filter_upwards <;> grind

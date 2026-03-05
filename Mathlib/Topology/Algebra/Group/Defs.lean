@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Definitions about topological groups
@@ -24,6 +26,8 @@ where subtraction is not given by `a - b = a + (-b)`.
 
 We also provide convenience dot notation lemmas like `ContinuousAt.neg`.
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -92,7 +96,7 @@ continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `IsUniformAddGroup` using
-`IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`. -/
+`IsTopologicalAddGroup.rightUniformSpace` and `isUniformAddGroup_of_addCommGroup`. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
@@ -101,7 +105,7 @@ continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `IsUniformGroup` using
-`IsTopologicalGroup.toUniformSpace` and `isUniformGroup_of_commGroup`. -/
+`IsTopologicalGroup.rightUniformSpace` and `isUniformGroup_of_commGroup`. -/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G

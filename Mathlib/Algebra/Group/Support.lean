@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Notation.Support
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Notation.Support
 
 /-!
 # Support of a function
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Notation.Support
 In this file we prove basic properties of `Function.support f = {x | f x ≠ 0}`, and similarly for
 `Function.mulSupport f = {x | f x ≠ 1}`.
 -/
+
+public section
 
 assert_not_exists CompleteLattice MonoidWithZero
 
@@ -45,9 +49,6 @@ theorem mulSupport_fun_inv : (mulSupport fun x => (f x)⁻¹) = mulSupport f :=
 @[to_additive (attr := simp)]
 theorem mulSupport_inv : mulSupport f⁻¹ = mulSupport f :=
   mulSupport_fun_inv f
-
-@[deprecated (since := "2025-07-31")] alias support_neg' := support_neg
-@[deprecated (since := "2025-07-31")] alias mulSupport_inv' := mulSupport_inv
 
 @[to_additive]
 theorem mulSupport_mul_inv : (mulSupport fun x => f x * (g x)⁻¹) ⊆ mulSupport f ∪ mulSupport g :=

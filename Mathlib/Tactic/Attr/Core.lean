@@ -3,6 +3,8 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
+
 import Mathlib.Tactic.Attr.Register
 
 /-!
@@ -13,7 +15,8 @@ declare all `simp` attributes used in `Mathlib` in `Mathlib/Tactic/Attr/Register
 from the core library and the `Batteries` library with these attributes in this file.
 -/
 
-attribute [simp] id_map'
+public meta section
+
 attribute [functor_norm, monad_norm] seq_assoc pure_seq pure_bind bind_assoc bind_pure map_pure
 attribute [monad_norm] seq_eq_bind_map
 

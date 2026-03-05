@@ -3,15 +3,24 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Filtered.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Preservation of filtered colimits and cofiltered limits.
 Typically forgetful functors from algebraic categories preserve filtered colimits
-(although not general colimits). See e.g. `Algebra/Category/MonCat/FilteredColimits`.
+(although not general colimits). See e.g. `Mathlib/Algebra/Category/MonCat/FilteredColimits.lean`.
+
+Note also that using the results in the file `Mathlib/CategoryTheory/Presentable/Directed.lean`,
+in order to show that a functor preserves filtered colimits, it would be
+sufficient to check that it preserves colimits indexed by nonempty directed
+types.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -34,7 +43,12 @@ section Preserves
 -- This should be used with explicit universe variables.
 /-- `PreservesFilteredColimitsOfSize.{w', w} F` means that `F` sends all colimit cocones over any
 filtered diagram `J ⥤ C` to colimit cocones, where `J : Type w` with `[Category.{w'} J]`. -/
-@[nolint checkUnivs, pp_with_univ]
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the shape universes in
+-- `PreservesFilteredColimitsOfSize`, `ReflectsFilteredColimitsOfSize`,
+-- `PreservesCofilteredLimitsOfSize`, and `ReflectsCofilteredLimitsOfSize` would default to
+-- universe output parameters. See Note [universe output parameters and typeclass caching].
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class PreservesFilteredColimitsOfSize (F : C ⥤ D) : Prop where
   preserves_filtered_colimits :
     ∀ (J : Type w) [Category.{w'} J] [IsFiltered J], PreservesColimitsOfShape J F
@@ -63,7 +77,7 @@ lemma preservesFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [PreservesFilteredColimitsOfSize.{w', w₂'} F] :
       PreservesFilteredColimitsOfSize.{w, w₂} F where
   preserves_filtered_colimits J _ _ := by
-    let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
     haveI := IsFiltered.of_equivalence e.symm
     exact preservesColimitsOfShape_of_equiv e F
 
@@ -90,7 +104,7 @@ section Reflects
 -- This should be used with explicit universe variables.
 /-- `ReflectsFilteredColimitsOfSize.{w', w} F` means that whenever the image of a filtered cocone
 under `F` is a colimit cocone, the original cocone was already a colimit. -/
-@[nolint checkUnivs, pp_with_univ]
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class ReflectsFilteredColimitsOfSize (F : C ⥤ D) : Prop where
   reflects_filtered_colimits :
     ∀ (J : Type w) [Category.{w'} J] [IsFiltered J], ReflectsColimitsOfShape J F
@@ -119,7 +133,7 @@ lemma reflectsFilteredColimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [ReflectsFilteredColimitsOfSize.{w', w₂'} F] :
       ReflectsFilteredColimitsOfSize.{w, w₂} F where
   reflects_filtered_colimits J _ _ := by
-    let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
     haveI := IsFiltered.of_equivalence e.symm
     exact reflectsColimitsOfShape_of_equiv e F
 
@@ -150,7 +164,7 @@ section Preserves
 -- This should be used with explicit universe variables.
 /-- `PreservesCofilteredLimitsOfSize.{w', w} F` means that `F` sends all limit cones over any
 cofiltered diagram `J ⥤ C` to limit cones, where `J : Type w` with `[Category.{w'} J]`. -/
-@[nolint checkUnivs, pp_with_univ]
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class PreservesCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
   preserves_cofiltered_limits :
     ∀ (J : Type w) [Category.{w'} J] [IsCofiltered J], PreservesLimitsOfShape J F
@@ -179,7 +193,7 @@ lemma preservesCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [PreservesCofilteredLimitsOfSize.{w', w₂'} F] :
       PreservesCofilteredLimitsOfSize.{w, w₂} F where
   preserves_cofiltered_limits J _ _ := by
-    let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
     haveI := IsCofiltered.of_equivalence e.symm
     exact preservesLimitsOfShape_of_equiv e F
 
@@ -206,7 +220,7 @@ section Reflects
 -- This should be used with explicit universe variables.
 /-- `ReflectsCofilteredLimitsOfSize.{w', w} F` means that whenever the image of a cofiltered cone
 under `F` is a limit cone, the original cone was already a limit. -/
-@[nolint checkUnivs, pp_with_univ]
+@[univ_out_params, nolint checkUnivs, pp_with_univ]
 class ReflectsCofilteredLimitsOfSize (F : C ⥤ D) : Prop where
   reflects_cofiltered_limits :
     ∀ (J : Type w) [Category.{w'} J] [IsCofiltered J], ReflectsLimitsOfShape J F
@@ -235,7 +249,7 @@ lemma reflectsCofilteredLimitsOfSize_of_univLE (F : C ⥤ D) [UnivLE.{w, w'}]
     [UnivLE.{w₂, w₂'}] [ReflectsCofilteredLimitsOfSize.{w', w₂'} F] :
       ReflectsCofilteredLimitsOfSize.{w, w₂} F where
   reflects_cofiltered_limits J _ _ := by
-    let e := ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    let e := ((ShrinkHoms.equivalence.{w'} J).trans <| Shrink.equivalence _).symm
     haveI := IsCofiltered.of_equivalence e.symm
     exact reflectsLimitsOfShape_of_equiv e F
 
