@@ -190,9 +190,7 @@ theorem principal_add_omega0 : Principal (· + ·) ω :=
 theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b := by
   refine le_antisymm ?_ le_add_self
   induction b using limitRecOn with
-  | zero =>
-    rw [opow_zero, ← succ_zero, lt_succ_iff, nonpos_iff_eq_zero] at h
-    rw [h, zero_add]
+  | zero => simpa using h
   | succ =>
     rw [opow_succ] at h
     rcases (lt_mul_iff_of_isSuccLimit isSuccLimit_omega0).1 h with ⟨x, xo, ax⟩
@@ -255,7 +253,7 @@ theorem principal_add_mul_of_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (
   · rcases eq_zero_or_pos b with (rfl | hb₁')
     · rw [mul_zero]
       exact principal_zero
-    · rw [← succ_le_iff, succ_zero] at hb₁'
+    · rw [← one_le_iff_pos] at hb₁'
       intro c d hc hd
       rw [lt_mul_iff_of_isSuccLimit
         (isSuccLimit_of_principal_add (lt_of_le_of_ne hb₁' hb₁.symm) hb)] at *
@@ -308,7 +306,7 @@ theorem principal_mul_iff_mul_left_eq : Principal (· * ·) o ↔ ∀ a, 0 < a �
       apply le_antisymm
       · rw [← lt_succ_iff, succ_one]
         exact hao.trans_le ho
-      · rwa [← succ_le_iff, succ_zero] at ha₀
+      · rwa [one_le_iff_pos]
     · exact op_eq_self_of_principal hao (isNormal_mul_right ha₀) h
         (isSuccLimit_of_principal_mul ho h)
   · rcases eq_or_ne a 0 with (rfl | ha)
@@ -397,7 +395,7 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : Principal (· * ·) b) (hb₂ 
     rw [mul_assoc, opow_succ]
     gcongr
     refine (hb (hbl.succ_lt ?_) hcb).le
-    rw [div_lt hbo₀, ← opow_succ]
+    rw [← lt_mul_iff_div_lt hbo₀, ← opow_succ]
     exact lt_opow_succ_log_self hb₁ _
   · grw [opow_succ, opow_log_le_self b ha]
 
