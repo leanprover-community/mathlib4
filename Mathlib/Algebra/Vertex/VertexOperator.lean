@@ -393,7 +393,9 @@ theorem isLocal_symm (n : ℕ) (h : IsLocalToOrderLeq A B n) : IsLocalToOrderLeq
   intro k l
   dsimp [IsLocalToOrderLeq, binomCompLeft, binomCompRight] at *
   rw [map_smul _ (Int.negOnePow n : R), Pi.smul_apply, h l k]
-  simp [smul_smul, ← Int.cast_mul]
+  simp [smul_smul, pow_mul_pow_eq_one (a := (-1 : R)) (b := (-1 : R)) n (by simp)]
+
+
 
 --show any vertex operator is local with identity.
 

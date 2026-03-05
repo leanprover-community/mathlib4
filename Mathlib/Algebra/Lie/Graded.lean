@@ -5,7 +5,6 @@ Authors: Scott Carnahan
 -/
 module
 
-public import Mathlib.Algebra.DirectSum.Decomposition
 public import Mathlib.Algebra.Lie.Derivation.Basic
 
 /-!
@@ -264,16 +263,62 @@ end DirectSum
 
 namespace LieDerivation
 
-/-
-def ofGrading [DecidableEq ι] [CommSemiring ι] [∀ i, AddCommGroup (A i)] [∀ i, Module ι (A i)]
-    [∀ i, Module R (A i)] [GLieAlgebra R A] [∀ i, SMulCommClass ι R (A i)] :
+@[simp]
+lemma lof_comp_DistribSMul_apply [DecidableEq ι] [CommSemiring ι] [∀ i, AddCommGroup (A i)]
+    [∀ i, Module ι (A i)] [∀ i, Module R (A i)] [∀ i, SMulCommClass ι R (A i)] (i : ι) (x : A i) :
+    (lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) x = of A i (i • x) := by
+  rfl
+
+@[simp]
+lemma toModule_lof_smul_of [DecidableEq ι] [CommSemiring ι] [∀ i, AddCommGroup (A i)]
+    [∀ i, Module ι (A i)] [∀ i, Module R (A i)] [∀ i, SMulCommClass ι R (A i)] (k : ι) (b : A k) :
+    (toModule R ι (⨁ (i : ι), A i)
+      fun i ↦ lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) (of A k b) = k • (of A k b) := by
+  rw [coe_toModule_eq_coe_toAddMonoid, toAddMonoid_of, LinearMap.toAddMonoidHom_coe,
+      lof_comp_DistribSMul_apply, of_smul]
+
+/-- The Lie derivation on a graded Lie algebra that scalar multiplies by the degree. -/
+def ofGrading [DecidableEq ι] [CommSemiring ι] [Algebra ι R] [∀ i, AddCommGroup (A i)]
+    [∀ i, Module ι (A i)] [∀ i, Module R (A i)] [GLieAlgebra R A] [∀ i, SMulCommClass ι R (A i)]
+    [IsScalarTower ι R (⨁ i, A i)] :
     LieDerivation R (⨁ i, A i) (⨁ i, A i) :=
   { __ := (DirectSum.toModule R ι (⨁ i, A i)
-    fun i ↦ (DirectSum.lof R ι A i).comp (DistribSMul.toLinearMap R _ i))
+      fun i ↦ (DirectSum.lof R ι A i).comp (DistribSMul.toLinearMap R _ i))
     leibniz' x y := by
-      ext i
-      simp
-      sorry }
--/
+      have hof (k : ι) (c : A k) : DFinsupp.single k c = of A k c := DFinsupp.ext (congrFun rfl)
+      have (i j : ι) (a : A i) (f : (⨁ i, A i)) :
+          ((toModule R ι (⨁ (i : ι), A i) fun i ↦
+            lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) ⁅of A i a, y⁆) j =
+          (⁅of A i a, (toModule R ι (⨁ (i : ι), A i) fun i ↦
+            lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) y⁆ -
+          ⁅y, (toModule R ι (⨁ (i : ι), A i) fun i ↦
+            lof R ι A i ∘ₗ DistribSMul.toLinearMap R (A i) i) (of A i a)⁆) j := by
+        induction y using DFinsupp.induction with
+        | h0 => simp
+        | ha k b f _ _ ih =>
+          simp only [DirectSum.sub_apply] at ih
+          simp only [hof, lie_add, map_add, DirectSum.add_apply, ih, add_lie, DirectSum.sub_apply]
+          rw [add_sub_add_comm, add_right_cancel_iff]
+          simp only [of_bracket_of, toModule_lof_smul_of A k b (R := R), toModule_lof_smul_of A i a,
+            toModule_lof_smul_of A (i + k)]
+          rw [← smul_one_smul R i, lie_smul, smul_one_smul, ← lie_skew (of A k b), smul_neg,
+            DFinsupp.neg_apply, sub_neg_eq_add, ← smul_one_smul R k, lie_smul, smul_one_smul,
+            of_bracket_of, add_smul, add_comm, DirectSum.add_apply]
+      ext j
+      induction x using DFinsupp.induction with
+      | h0 => simp
+      | ha i a f _ _ ih =>
+        simp only [DirectSum.sub_apply] at ih
+        simp only [add_lie, map_add, DirectSum.add_apply, ih, lie_add, DirectSum.sub_apply, hof]
+        rw [add_sub_add_comm, add_right_cancel_iff, ← DirectSum.sub_apply]
+        exact this i j a f }
+
+@[simp]
+lemma ofGrading_of [DecidableEq ι] [CommSemiring ι] [Algebra ι R] [∀ i, AddCommGroup (A i)]
+    [∀ i, Module ι (A i)] [∀ i, Module R (A i)] [GLieAlgebra R A] [∀ i, SMulCommClass ι R (A i)]
+    [IsScalarTower ι R (⨁ i, A i)] (i : ι) (a : A i) :
+    ofGrading A (of A i a) (R := R) = i • (of A i a) := by
+  ext j
+  simp [ofGrading]
 
 end LieDerivation
