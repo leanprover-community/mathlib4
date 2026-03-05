@@ -383,7 +383,8 @@ structure ContextFreeGrammar.Embedding (g₀ g : ContextFreeGrammar T) where
 namespace ContextFreeGrammar.Embedding
 variable {g₀ g : ContextFreeGrammar T} {G : g₀.Embedding g}
 
-/-- Production by `g₀` can be mirrored by production by `g`. -/
+/-- For context-free grammar `g₀` that embeds to `g`, every production in `g₀`
+    can be mirrored by a production by `g`. -/
 lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
     (hG : g₀.Produces w₁ w₂) :
     g.Produces (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -395,7 +396,8 @@ lemma produces_map {w₁ w₂ : List (Symbol T g₀.NT)}
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) bef
   · simpa only [List.map_append] using congr_arg (List.map (Symbol.map G.embedNT)) aft
 
-/-- Derivation by `g₀` can be mirrored by derivation by `g`. -/
+/-- For context-free grammar `g₀` that embeds to `g`, every derivation using `g₀`
+    can be mirrored by a derivation using `g`. -/
 lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
     (hG : g₀.Derives w₁ w₂) :
     g.Derives (w₁.map (Symbol.map G.embedNT)) (w₂.map (Symbol.map G.embedNT)) := by
@@ -403,14 +405,14 @@ lemma derives_map {w₁ w₂ : List (Symbol T g₀.NT)}
   | refl => rfl
   | tail _ orig ih => exact ih.trans_produces (produces_map orig)
 
-/-- A `Symbol` stems from the embedding or is a terminal iff it is one of those nonterminals that
-result from projecting or it is any terminal. -/
+/-- A `Symbol` stems from the embedding of context-free grammr `g₀` into `g` or is a terminal
+    iff it is one of those nonterminals that result from projecting or it is any terminal. -/
 inductive FromEmbeddingOrTerminal (G : g₀.Embedding g) : Symbol T g.NT → Prop
   | terminal (t : T) : FromEmbeddingOrTerminal G (.terminal t)
   | nonterminal (n₀ : g₀.NT) : FromEmbeddingOrTerminal G (.nonterminal (G.embedNT n₀))
 
 /-- Production by `g` can be mirrored by `g₀` production if the first word does not contain any
-nonterminals that `g₀` lacks. -/
+    nonterminals that `g₀` lacks. -/
 lemma produces_filterMap {w₁ w₂ : List (Symbol T g.NT)}
     (hG : g.Produces w₁ w₂) (hw₁ : List.Forall (FromEmbeddingOrTerminal G) w₁) :
     g₀.Produces
