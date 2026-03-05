@@ -51,7 +51,7 @@ theorem padicValNat_def [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
   padicValNat_def' hp.out.ne_one hn
 
 set_option backward.isDefEq.respectTransparency false in
-theorem padicValNat_eq_emultiplicity' (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
+theorem padicValNat_eq_emultiplicity_of_ne_one (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n = emultiplicity p n := by
   rw [padicValNat_def' hp hn,
     (finiteMultiplicity_iff.2 ⟨hp, Nat.pos_of_ne_zero hn⟩).emultiplicity_eq_multiplicity]
@@ -60,7 +60,7 @@ theorem padicValNat_eq_emultiplicity' (hp : p ≠ 1) {n : ℕ} (hn : n ≠ 0) :
 `padicValRat_def`. -/
 theorem padicValNat_eq_emultiplicity [hp : Fact p.Prime] {n : ℕ} (hn : n ≠ 0) :
     padicValNat p n = emultiplicity p n :=
-  padicValNat_eq_emultiplicity' hp.out.ne_one hn
+  padicValNat_eq_emultiplicity_of_ne_one hp.out.ne_one hn
 
 namespace padicValNat
 
