@@ -373,24 +373,29 @@ lemma spanFinrank_maximalIdeal_eq_finrank_cotangentSpace [IsNoetherianRing R] :
     (maximalIdeal R).spanFinrank = Module.finrank (ResidueField R) (CotangentSpace R) :=
   spanFinrank_maximalIdeal_eq_finrank_cotangentSpace_of_fg (maximalIdeal R).fg_of_isNoetherianRing
 
-lemma spanFinrank_le_of_surjective [IsNoetherianRing R] {R' : Type*} [CommRing R'] [IsLocalRing R']
-    (f : R →+* R') (surj : Function.Surjective f) :
+lemma spanFinrank_le_of_surjective (fg : (maximalIdeal R).FG) {R' : Type*} [CommRing R']
+    [IsLocalRing R'] (f : R →+* R') (surj : Function.Surjective f) :
     (maximalIdeal R').spanFinrank ≤ (maximalIdeal R).spanFinrank := by
-  let fin := Submodule.FG.finite_generators (maximalIdeal R).fg_of_isNoetherianRing
-  have hspan : Ideal.span (f '' (maximalIdeal R).generators) = maximalIdeal R' := by
-    have : Ideal.span (maximalIdeal R).generators = _ := (maximalIdeal R).span_generators
-    simpa [← Ideal.map_span, this, ((local_hom_TFAE f).out 0 4).mp (surj.isLocalHom f)] using
-      (Ideal.map_comap_of_surjective f surj (maximalIdeal R'))
-  have hle : (maximalIdeal R').spanFinrank ≤ (f '' (maximalIdeal R).generators).ncard := by
-    simpa [← hspan] using (Submodule.spanFinrank_span_le_ncard_of_finite (fin.image _))
-  apply le_trans hle (le_of_le_of_eq (Set.ncard_image_le fin)
-    (Submodule.FG.generators_ncard (maximalIdeal R).fg_of_isNoetherianRing))
+  have comapeq := ((local_hom_TFAE f).out 0 4).mp (surj.isLocalHom f)
+  rw [← Ideal.map_comap_of_surjective f surj (maximalIdeal R'), comapeq]
+  exact (maximalIdeal R).spanFinrank_map_le_of_fg f fg
 
-lemma spanFinrank_eq_of_ringEquiv [IsNoetherianRing R] {R' : Type*} [CommRing R'] [IsLocalRing R']
-    (e : R ≃+* R') : (maximalIdeal R).spanFinrank = (maximalIdeal R').spanFinrank :=
-  let _ := isNoetherianRing_of_ringEquiv R e
-  le_antisymm (spanFinrank_le_of_surjective e.symm.toRingHom e.symm.surjective)
-    (spanFinrank_le_of_surjective e.toRingHom e.surjective)
+lemma spanFinrank_eq_of_ringEquiv {R' : Type*} [CommRing R'] [IsLocalRing R'] (e : R ≃+* R') :
+    (maximalIdeal R).spanFinrank = (maximalIdeal R').spanFinrank := by
+  by_cases fgR : (maximalIdeal R).FG
+  · have eqmap : maximalIdeal R' = (maximalIdeal R).map e := by
+      rw [← Ideal.comap_symm, eq_comm]
+      exact (((local_hom_TFAE _).out 0 4).mp (e.symm.surjective.isLocalHom (e.symm : R' →+* R)))
+    refine le_antisymm (spanFinrank_le_of_surjective ?_ e.symm.toRingHom e.symm.surjective)
+      (spanFinrank_le_of_surjective fgR e.toRingHom e.surjective)
+    simpa only [eqmap] using fgR.map e.toRingHom
+  · by_cases fgR' : (maximalIdeal R').FG
+    · have eqmap' : maximalIdeal R = (maximalIdeal R').map e.symm := by
+        rw [Ideal.map_symm, eq_comm]
+        exact ((local_hom_TFAE _).out 0 4).mp (e.surjective.isLocalHom (e : R →+* R'))
+      absurd fgR
+      simpa only [eqmap'] using fgR'.map e.symm.toRingHom
+    · rw [Submodule.spanFinrank_of_not_fg fgR, Submodule.spanFinrank_of_not_fg fgR']
 
 end spanRank
 
