@@ -8,6 +8,11 @@ module
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
+/-!
+# Delaborators for the custom elaborators
+
+-/
+
 open Bundle Filter Module Topology Set
 
 open scoped Bundle Manifold ContDiff
@@ -22,73 +27,69 @@ open scoped Bundle Manifold ContDiff
 
 @[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
   whenPPOption getPPNotation do
-  let #[_B, _F, _E, _b, _v] := (← getExpr).getAppArgs | failure
-  let bd : Term ← withNaryArg 3 <| delab
-  let vd : Term ← withNaryArg 4 <| delab
+  withOverApp 5 do
+  let bd ← withNaryArg 3 <| delab
+  let vd ← withNaryArg 4 <| delab
   `(⟨$bd, $vd⟩)
 
 @[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpace_mk' : Delab := do
   whenPPOption getPPNotation do
-  let #[_B, _F, _E, _b, _v] := (← getExpr).getAppArgs | failure
-  let bd : Term ← withNaryArg 3 <| delab
-  let vd : Term ← withNaryArg 4 <| delab
+  withOverApp 5 do
+  let bd ← withNaryArg 3 <| delab
+  let vd ← withNaryArg 4 <| delab
   `(⟨$bd, $vd⟩)
 
 @[app_delab mfderiv] meta def delab_mfderiv : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
   try
-    let f := (← getExpr).appArg!
-    let .lam n _ b _ := f | failure
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
-    let s := b.getAppArgs[4]!.getAppFn
-    guard <| s.isFVar
-    let ss ← withAppArg do
-      let ss ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
-      annotateGoToSyntaxDef (← `(T% $ss))
-    let stx ← `(mfderiv% ($ss))
-    annotateGoToSyntaxDef stx
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `(T% $σs) >>= annotateGoToSyntaxDef
+    `(mfderiv% ($Tσs)) >>= annotateGoToSyntaxDef
   catch _ =>
-    let f ← withAppArg delab
-    annotateGoToSyntaxDef (← `(mfderiv% $f))
+    let fs ← withAppArg delab
+    `(mfderiv% $fs) >>= annotateGoToSyntaxDef
 
 @[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
   whenPPOption getPPNotation do
   withOverApp 21 do
   try
-    let f := (← getExpr).appArg!
+    let fe := (← getExpr).appArg!
+    let .lam n _ b _ := fe | failure
+    guard <| b.isAppOf ``Bundle.TotalSpace.mk'
+    let σe := b.getAppArgs[4]!.getAppFn
+    guard <| σe.isFVar
+    let Tσs ← withAppArg do
+      let σs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $σs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt $Tσs) >>= annotateGoToSyntaxDef
+  catch _ =>
+    let fs ← withAppArg delab
+    `(MDiffAt $fs) >>= annotateGoToSyntaxDef
+
+@[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
+  whenPPOption getPPNotation do
+  withOverApp 22 do
+  let ss ← withAppArg delab
+  try
+    let f := (← getExpr).getAppArgs[20]!
     let .lam n _ b _ := f | failure
     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
     let s := b.getAppArgs[4]!.getAppFn
     guard <| s.isFVar
-    let ss ← withAppArg do
-      let ss ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
-      annotateGoToSyntaxDef (← `(T% $ss))
-    let stx ← `(MDiffAt $ss)
-    annotateGoToSyntaxDef stx
+    let fs ← withNaryArg 20 do
+      let fs ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
+      `((T% $fs)) >>= annotateGoToSyntaxDef
+    `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
   catch _ =>
-    let f ← withAppArg delab
-    annotateGoToSyntaxDef (← `(MDiffAt $f))
-
--- @[app_delab MDifferentiableWithinAt] meta def delabMDifferentiableWithinAt : Delab := do
---   whenPPOption getPPNotation do
---   withOverApp 22 do
---   try
---     let f := (← getExpr).getAppArgs[20]!
---     let .lam n _ b _ := f | failure
---     guard <| b.isAppOf ``Bundle.TotalSpace.mk'
---     let s := b.getAppArgs[4]!.getAppFn
---     guard <| s.isFVar
---     let fs ← withNaryArg 20 <| delab
---     let ss ← withAppArg do
---       let ss ← withBindingBody n <| withNaryArg 4 <| withNaryFn delab
---       annotateGoToSyntaxDef (← `(T% $ss))
---     let stx ← `(MDiffAt $ss)
---     annotateGoToSyntaxDef stx
---   catch _ =>
---     let ss ← withAppArg delab
---     let fs ← withNaryArg 20 <| delab
---     annotateGoToSyntaxDef (← `(MDiffAt[$ss] $fs))
+    let fs ← withNaryArg 20 <| delab
+    `(MDiffAt[$ss] $fs) >>= annotateGoToSyntaxDef
 
 section
 
@@ -102,12 +103,36 @@ variable
   (f : M → M) (x : M) (s : Set M)
   (v : (x : M) → TangentSpace I x)
 
--- #check MDiffAt f x
--- #check MDiffAt[s] f x
--- #check mfderiv% f x
--- #check mfderiv I I.tangent (fun x ↦ Bundle.TotalSpace.mk' E x (v x)) x
--- #check mfderiv% (T% v) x
--- #check TotalSpace.mk' E x (v x)
+/-- info: MDiffAt f x : Prop -/
+#guard_msgs in
+#check MDiffAt f x
 
+/-- info: MDiffAt[s] f x : Prop -/
+#guard_msgs in
+#check MDiffAt[s] f x
+
+/-- info: MDiffAt (T% v) x : Prop -/
+#guard_msgs in
+#check MDiffAt (T% v) x
+
+/-- info: MDiffAt[s] (T% v) x : Prop -/
+#guard_msgs in
+#check MDiffAt[s] (T% v) x
+
+/-- info: mfderiv% f x : TangentSpace I x →L[ℝ] TangentSpace I (f x) -/
+#guard_msgs in
+#check mfderiv% f x
+
+/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, E)) ⟨x, v x⟩ -/
+#guard_msgs in
+#check mfderiv% (T% v) x
+
+/-- info: ⟨x, v x⟩ : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check TotalSpace.mk' E x (v x)
+
+/-- info: ⟨x, v x⟩ : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check TotalSpace.mk (F := E) x (v x)
 end
 end delaborators
