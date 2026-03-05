@@ -3,12 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.FieldTheory.Perfect
-import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.RingTheory.Artinian.Instances
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.LinearAlgebra.AnnihilatingPolynomial
+public import Mathlib.RingTheory.Artinian.Instances
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Semisimple linear endomorphisms
@@ -40,6 +42,8 @@ In finite dimensions over a field:
 
 -/
 
+@[expose] public section
+
 open Set Function Polynomial
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
@@ -50,6 +54,7 @@ section CommRing
 
 variable (f : End R M)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism of an `R`-module `M` is called *semisimple* if the induced `R[X]`-module
 structure on `M` is semisimple. This is equivalent to saying that every `f`-invariant `R`-submodule
 of `M` has an `f`-invariant complement: see `Module.End.isSemisimple_iff`. -/
@@ -62,6 +67,7 @@ def IsFinitelySemisimple : Prop :=
 
 variable {f}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A linear endomorphism is semisimple if every invariant submodule has in invariant complement.
 
 See also `Module.End.isSemisimple_iff`. -/
@@ -75,6 +81,7 @@ lemma isSemisimple_iff :
     f.IsSemisimple ↔ ∀ p ∈ invtSubmodule f, ∃ q ∈ invtSubmodule f, IsCompl p q := by
   simp [isSemisimple_iff']
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
     IsSemisimple (LinearMap.restrict f hp) ↔
     ∀ q ∈ f.invtSubmodule, q ≤ p → ∃ r ≤ p, r ∈ f.invtSubmodule ∧ Disjoint q r ∧ q ⊔ r = p := by
@@ -114,6 +121,7 @@ lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Mo
 @[simp] lemma isSemisimple_neg : (-f).IsSemisimple ↔ f.IsSemisimple := by
   simp [isSemisimple_iff, mem_invtSubmodule]
 
+set_option backward.isDefEq.respectTransparency false in
 variable (f) in
 protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup M₂] [Module R M₂]
     (g : End R M₂) (e : M ≃ₗ[R] M₂) (he : e ∘ₗ f = g ∘ₗ e) :
@@ -123,6 +131,7 @@ protected lemma _root_.LinearEquiv.isSemisimple_iff {M₂ : Type*} [AddCommGroup
   simp_rw [IsSemisimple, isSemisimpleModule_iff,
     (Submodule.orderIsoMapComap e).complementedLattice_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
   have ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
@@ -160,6 +169,7 @@ lemma isSemisimple_sub_algebraMap_iff {μ : R} :
   refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
   simpa using p.add_mem (h hx) (p.smul_mem μ hx)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsSemisimple.restrict {p : Submodule R M} (hp : p ∈ f.invtSubmodule) (hf : f.IsSemisimple) :
     IsSemisimple (f.restrict hp) := by
   rw [IsSemisimple] at hf ⊢
@@ -213,6 +223,7 @@ lemma IsSemisimple_smul (t : K) (h : f.IsSemisimple) :
   wlog ht : t ≠ 0; · simp [not_not.mp ht]
   rwa [IsSemisimple_smul_iff ht]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isSemisimple_of_squarefree_aeval_eq_zero {p : K[X]}
     (hp : Squarefree p) (hpf : aeval f p = 0) : f.IsSemisimple := by
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M), mem_annihilator,
@@ -235,11 +246,13 @@ section
 variable (hf : f.IsSemisimple)
 include hf
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The minimal polynomial of a semisimple endomorphism is square free -/
 theorem IsSemisimple.minpoly_squarefree : Squarefree (minpoly K f) :=
   IsRadical.squarefree (minpoly.ne_zero <| Algebra.IsIntegral.isIntegral _) <| by
     rw [isRadical_iff_span_singleton, span_minpoly_eq_annihilator]; exact hf.annihilator_isRadical
 
+set_option backward.isDefEq.respectTransparency false in
 protected theorem IsSemisimple.aeval (p : K[X]) : (aeval f p).IsSemisimple :=
   let R := K[X] ⧸ Ideal.span {minpoly K f}
   have : Module.Finite K R :=
@@ -266,6 +279,7 @@ section PerfectField
 variable [PerfectField K] (comm : Commute f g) (hf : f.IsSemisimple) (hg : g.IsSemisimple)
 include comm hf hg
 
+set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] Submodule.Quotient.quot_mk_eq_mk in
 theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin K {f, g}) :
     a.IsSemisimple := by
@@ -282,14 +296,14 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   have : IsReduced S := by
     simp_rw [S, AdjoinRoot, ← Ideal.isRadical_iff_quotient_reduced, ← isRadical_iff_span_singleton]
     exact (PerfectField.separable_iff_squarefree.mpr hg.minpoly_squarefree).map.squarefree.isRadical
-  let φ : S →ₐ[K] End K M := Ideal.Quotient.liftₐ _ (eval₂AlgHom' (Ideal.Quotient.liftₐ _ (aeval f)
+  let φ : S →ₐ[K] End K M := Ideal.Quotient.liftₐ _ (eval₂AlgHom (Ideal.Quotient.liftₐ _ (aeval f)
     fun a ↦ ?_) g ?_) ((Ideal.span_singleton_le_iff_mem _).mpr ?_ : _ ≤ RingHom.ker _)
   rotate_left 1
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, Algebra.commute_algebraMap_left])
       (fun p q hp hq ↦ by simpa [R] using hp.add_left hq)
       fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
-  · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
+  · simpa only [RingHom.mem_ker, eval₂AlgHom_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
       using minpoly.aeval K g
   have : Algebra.adjoin K {f, g} ≤ φ.range := Algebra.adjoin_le fun x ↦ by
     rintro (hx | hx) <;> rw [hx]

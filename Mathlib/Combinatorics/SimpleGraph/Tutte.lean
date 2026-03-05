@@ -3,12 +3,13 @@ Copyright (c) 2024 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
+module
 
-import Mathlib.Combinatorics.SimpleGraph.Matching
-import Mathlib.Combinatorics.SimpleGraph.Metric
-import Mathlib.Combinatorics.SimpleGraph.Operations
-import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
-import Mathlib.Data.Fintype.Card
+public import Mathlib.Combinatorics.SimpleGraph.Matching
+public import Mathlib.Combinatorics.SimpleGraph.Metric
+public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
+public import Mathlib.Data.Fintype.Card
 
 /-!
 # Tutte's theorem
@@ -24,6 +25,8 @@ import Mathlib.Data.Fintype.Card
 * `SimpleGraph.tutte` states Tutte's theorem: A graph has a perfect matching, if and
   only if no Tutte violators exist.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 
@@ -59,7 +62,7 @@ lemma IsTutteViolator.mono {u : Set V} (h : G ≤ G') (ht : G'.IsTutteViolator u
   simp only [IsTutteViolator, Subgraph.induce_verts, Subgraph.verts_top] at *
   have := ncard_oddComponents_mono _ (Subgraph.deleteVerts_mono' (G := G) (G' := G') u h)
   simp only [oddComponents] at *
-  cutsat
+  lia
 
 /-- Given a graph in which the universal vertices do not violate Tutte's condition,
 if the graph decomposes into cliques, there exists a matching that covers
@@ -147,6 +150,7 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
 
 open scoped symmDiff
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This lemma constructs a perfect matching on `G` from two near-matchings. -/
 private theorem tutte_exists_isPerfectMatching_of_near_matchings {x a b c : V}
     {M1 : Subgraph (G ⊔ edge x b)} {M2 : Subgraph (G ⊔ edge a c)} (hxa : G.Adj x a)
@@ -301,7 +305,7 @@ lemma exists_isTutteViolator (h : ∀ (M : G.Subgraph), ¬M.IsPerfectMatching)
       rwa [edge_le_iff (v := a.1.1) (w := c), adj_comm, not_or])
     have hcnex : c ≠ x.val.val := by rintro rfl; exact hc.2 hxa
     obtain ⟨Mcon, hMcon⟩ := tutte_exists_isPerfectMatching_of_near_matchings hxa
-      hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by aesop) hcnex.symm hc.1 hbnec hG1 hG2
+      hxb hnadjxb (fun hadj ↦ hc.2 hadj.symm) (by lia) hcnex.symm hc.1 hbnec hG1 hG2
     exact hMatchingFree Mcon hMcon
 
 /-- **Tutte's theorem**

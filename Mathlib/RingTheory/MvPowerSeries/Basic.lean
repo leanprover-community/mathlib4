@@ -3,12 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Order.Antidiag.Finsupp
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.Tactic.Linarith
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Algebra.Order.Antidiag.Finsupp
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Formal (multivariate) power series
@@ -40,7 +41,7 @@ the coefficients of a `MvPowerSeries`, its constant coefficient
 - `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
 of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
 
-- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom)
+- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
 
 - `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
 conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
@@ -72,6 +73,8 @@ that is needed to do this. Once I-adic completion (topological or algebraic) is 
 it should not be hard to fill in the details.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -146,12 +149,14 @@ theorem ext {φ ψ : MvPowerSeries σ R} (h : ∀ n : σ →₀ ℕ, coeff n φ 
 if and only if all their coefficients are equal. -/
 add_decl_doc MvPowerSeries.ext_iff
 
+set_option backward.isDefEq.respectTransparency false in
 theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
     monomial n = LinearMap.single R (fun _ ↦ R) n := by
   rw [monomial]
   -- unify the `Decidable` arguments
   convert rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff m (monomial n a) = if m = n then a else 0 := by
   dsimp only [coeff, MvPowerSeries]
@@ -273,11 +278,11 @@ protected theorem mul_one : φ * 1 = φ :=
 
 protected theorem mul_add (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * (φ₂ + φ₃) = φ₁ * φ₂ + φ₁ * φ₃ :=
   ext fun n => by
-    classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, LinearMap.map_add]
+    classical simp only [coeff_mul, mul_add, Finset.sum_add_distrib, map_add]
 
 protected theorem add_mul (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : (φ₁ + φ₂) * φ₃ = φ₁ * φ₃ + φ₂ * φ₃ :=
   ext fun n => by
-    classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, LinearMap.map_add]
+    classical simp only [coeff_mul, add_mul, Finset.sum_add_distrib, map_add]
 
 protected theorem mul_assoc (φ₁ φ₂ φ₃ : MvPowerSeries σ R) : φ₁ * φ₂ * φ₃ = φ₁ * (φ₂ * φ₃) := by
   ext1 n
@@ -422,7 +427,7 @@ def constantCoeff : MvPowerSeries σ R →+* R :=
     toFun := coeff (0 : σ →₀ ℕ)
     map_one' := coeff_zero_one
     map_mul' := fun φ ψ => by classical simp [coeff_mul]
-    map_zero' := LinearMap.map_zero _ }
+    map_zero' := map_zero _ }
 
 @[simp]
 theorem coeff_zero_eq_constantCoeff : ⇑(coeff (R := R) (0 : σ →₀ ℕ)) = constantCoeff :=
@@ -544,7 +549,34 @@ theorem map_C (a : R) : map (σ := σ) f (C a) = C (f a) :=
 @[simp]
 theorem map_X (s : σ) : map f (X s) = X s := by simp [MvPowerSeries.X]
 
+@[simp]
+theorem map_map {S₁ S₂ : Type*} [CommSemiring S₁] [CommSemiring S₂]
+    (f : R →+* S₁) (g : S₁ →+* S₂) (p : MvPowerSeries σ R) :
+    map g (map f p) = map (g.comp f) p := by
+  ext n
+  simp
+
 end Map
+
+section toSubring
+
+variable [Ring R] (p : MvPowerSeries σ R) (T : Subring R) (hp : ∀ n, p.coeff n ∈ T)
+
+/-- Given a multivariate formal power series `p` and a subring `T` that contains the
+ coefficients of `p`, return the corresponding multivariate formal power series
+ whose coefficients are in `T`. -/
+def toSubring : MvPowerSeries σ T := fun n => ⟨p.coeff n, hp n⟩
+
+@[simp]
+theorem coeff_toSubring {n : σ →₀ ℕ} : (p.toSubring T hp).coeff n = p.coeff n := rfl
+
+@[simp]
+theorem constantCoeff_toSubring : (p.toSubring T hp).constantCoeff = p.constantCoeff := rfl
+
+@[simp]
+theorem map_toSubring : (p.toSubring T hp).map T.subtype = p := rfl
+
+end toSubring
 
 @[simp]
 theorem map_eq_zero {S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S]
@@ -678,7 +710,7 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
 
-theorem monmial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
+theorem monomial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
     (monomial m a) ^ n = monomial (n • m) (a ^ n) := by
   rw [Finset.pow_eq_prod_const, prod_monomial, ← Finset.nsmul_eq_sum_const,
     ← Finset.pow_eq_prod_const]
@@ -715,7 +747,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
     ← sum_sdiff (hs), sum_eq_zero (s := s) hs'', add_zero]
   rw [← hs_def]
   convert Finset.card_nsmul_le_sum (range n \ s) (fun x ↦ degree (k x)) 1 _
-  · simp only [Algebra.id.smul_eq_mul, mul_one]
+  · simp only [smul_eq_mul, mul_one]
   · simp only [degree_eq_weight_one, map_sum]
   · simp only [hs_def, mem_filter, mem_sdiff, mem_range, not_and, and_imp]
     intro i hi hi'
@@ -880,6 +912,20 @@ theorem _root_.MvPowerSeries.monomial_one_eq
       e.prod fun s n ↦ (MvPowerSeries.X s) ^ n := by
   simp only [← coe_X, ← coe_pow, ← coe_monomial, monomial_eq, map_one, one_mul]
   simp only [← coeToMvPowerSeries.ringHom_apply, ← map_finsuppProd]
+
+theorem _root_.MvPowerSeries.monomial_eq' (e : σ →₀ ℕ) (r : R) :
+    MvPowerSeries.monomial e r
+      = MvPowerSeries.C r * e.prod fun s e => (MvPowerSeries.X s) ^ e := by
+  conv_lhs => rw [← mul_one r]
+  rw [← smul_eq_mul, ← MvPowerSeries.smul_eq_C_mul, LinearMap.CompatibleSMul.map_smul,
+    MvPowerSeries.monomial_one_eq]
+
+theorem _root_.MvPowerSeries.monomial_smul_eq (e : σ →₀ ℕ) (p : ℕ) (r : R) :
+    MvPowerSeries.monomial (p • e) r
+      = MvPowerSeries.C r * e.prod fun s e => ((MvPowerSeries.X s) ^ p) ^ e := by
+  rw [MvPowerSeries.monomial_eq', Finsupp.prod_of_support_subset _ Finsupp.support_smul _
+    (by simp), Finsupp.prod]
+  simp [pow_mul]
 
 section Algebra
 

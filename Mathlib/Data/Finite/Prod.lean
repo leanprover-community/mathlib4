@@ -3,18 +3,20 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Vector.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.ULift
-import Mathlib.Data.Set.NAry
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.ULift
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Finiteness of products
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 
@@ -37,6 +39,10 @@ theorem prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
   of_surjective (Prod.snd : α × β → β) Prod.snd_surjective
 
 end Finite
+
+lemma Prod.finite_iff [Nonempty α] [Nonempty β] : Finite (α × β) ↔ Finite α ∧ Finite β where
+  mp _ := ⟨.prod_left β, .prod_right α⟩
+  mpr | ⟨_, _⟩ => inferInstance
 
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
@@ -86,7 +92,7 @@ instance fintypeProd (s : Set α) (t : Set β) [Fintype s] [Fintype t] :
     Fintype (s ×ˢ t : Set (α × β)) :=
   Fintype.ofFinset (s.toFinset ×ˢ t.toFinset) <| by simp
 
-instance fintypeOffDiag [DecidableEq α] (s : Set α) [Fintype s] : Fintype s.offDiag :=
+instance fintypeOffDiag (s : Set α) [Fintype s] : Fintype s.offDiag :=
   Fintype.ofFinset s.toFinset.offDiag <| by simp
 
 /-- `image2 f s t` is `Fintype` if `s` and `t` are. -/
@@ -170,7 +176,7 @@ protected theorem infinite_prod :
     · exact h.1.prod_right h.2
 
 theorem finite_prod : (s ×ˢ t).Finite ↔ (s.Finite ∨ t = ∅) ∧ (t.Finite ∨ s = ∅) := by
-  simp only [← not_infinite, Set.infinite_prod, not_or, not_and_or, not_nonempty_iff_eq_empty]
+  contrapose! +distrib; exact Set.infinite_prod
 
 protected theorem Finite.offDiag {s : Set α} (hs : s.Finite) : s.offDiag.Finite :=
   (hs.prod hs).subset s.offDiag_subset_prod
@@ -191,7 +197,7 @@ theorem Finite.toFinset_prod {s : Set α} {t : Set β} (hs : s.Finite) (ht : t.F
     hs.toFinset ×ˢ ht.toFinset = (hs.prod ht).toFinset :=
   Finset.ext <| by simp
 
-theorem Finite.toFinset_offDiag {s : Set α} [DecidableEq α] (hs : s.Finite) :
+theorem Finite.toFinset_offDiag {s : Set α} (hs : s.Finite) :
     hs.offDiag.toFinset = hs.toFinset.offDiag :=
   Finset.ext <| by simp
 
@@ -227,9 +233,9 @@ theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀
 
 lemma finite_image2 (hfs : ∀ b ∈ t, InjOn (f · b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Finite ↔ s.Finite ∧ t.Finite ∨ s = ∅ ∨ t = ∅ := by
-  rw [← not_infinite, infinite_image2 hfs hft]
-  simp [not_or, -not_and, not_and_or, not_nonempty_iff_eq_empty]
-  aesop
+  contrapose! +distrib
+  rw [Set.infinite_image2 hfs hft]
+  grind only [Set.Infinite.nonempty]
 
 end Image2
 

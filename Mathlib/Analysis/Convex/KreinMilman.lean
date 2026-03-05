@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Exposed
-import Mathlib.Analysis.LocallyConvex.Separation
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.Analysis.Convex.Exposed
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # The Krein-Milman theorem
@@ -50,18 +52,20 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 -/
 
+public section
+
 open Set
 
 variable {E F : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [T2Space E]
   [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] {s : Set E}
   [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [T1Space F]
 
-/-- **Krein-Milman lemma**: In a LCTVS, any nonempty compact set has an extreme point. -/
+/-- **Krein-Milman lemma**: In an LCTVS, any nonempty compact set has an extreme point. -/
 theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.Nonempty) :
     (s.extremePoints ℝ).Nonempty := by
   let S : Set (Set E) := { t | t.Nonempty ∧ IsClosed t ∧ IsExtreme ℝ s t }
   rsuffices ⟨t, ht⟩ : ∃ t, Minimal (· ∈ S) t
-  · obtain ⟨⟨x,hxt⟩, htclos, hst⟩ := ht.prop
+  · obtain ⟨⟨x, hxt⟩, htclos, hst⟩ := ht.prop
     refine ⟨x, IsExtreme.mem_extremePoints ?_⟩
     rwa [← eq_singleton_iff_unique_mem.2 ⟨hxt, fun y hyB => ?_⟩]
     by_contra hyx
@@ -87,7 +91,7 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
   obtain htu | hut := hF.total t.mem u.mem
   exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
 
-/-- **Krein-Milman theorem**: In a LCTVS, any compact convex set is the closure of the convex hull
+/-- **Krein-Milman theorem**: In an LCTVS, any compact convex set is the closure of the convex hull
 of its extreme points. -/
 theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex ℝ s) :
     closure (convexHull ℝ <| s.extremePoints ℝ) = s := by

@@ -3,7 +3,9 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Riccardo Brasca
 -/
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Cyclotomic units.
@@ -29,6 +31,8 @@ Often, `Associated a b` is everything one needs, and it is more convenient to us
 other version for completeness.
 -/
 
+public section
+
 open Polynomial Finset Nat
 
 variable {n i j p : ℕ} {A K : Type*} {ζ : A}
@@ -47,7 +51,7 @@ theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (
   | 0 => simp_all
   | 1 => simp_all
   | n + 2 =>
-      obtain ⟨m, hm⟩ := exists_mul_emod_eq_one_of_coprime hj (by omega)
+      obtain ⟨m, -, hm⟩ := exists_mul_mod_eq_one_of_coprime hj (by lia)
       use ∑ i ∈ range m, (ζ ^ j) ^ i
       rw [mul_geom_sum, ← pow_mul, ← pow_mod_orderOf, ← hζ.eq_orderOf, hm, pow_one]
 
@@ -107,7 +111,7 @@ theorem pow_sub_one_eq_geom_sum_mul_geom_sum_inv_mul_pow_sub_one (hζ : IsPrimit
   unit. -/
 theorem associated_pow_add_sub_sub_one (hζ : IsPrimitiveRoot ζ n) (hn : 2 ≤ n) (i : ℕ)
     (hjn : j.Coprime n) : Associated (ζ - 1) (ζ ^ (i + j) - ζ ^ i) := by
-  use (hζ.isUnit (by omega)).unit ^ i * (hζ.geom_sum_isUnit hn hjn).unit
+  use (hζ.isUnit (by lia)).unit ^ i * (hζ.geom_sum_isUnit hn hjn).unit
   suffices (ζ - 1) * ζ ^ i * ∑ i ∈ range j, ζ ^ i = (ζ ^ (i + j) - ζ ^ i) by
     simp [← this, mul_assoc]
   grind [mul_geom_sum]
@@ -124,7 +128,7 @@ lemma ntRootsFinset_pairwise_associated_sub_one_sub_of_prime (hζ : IsPrimitiveR
   obtain ⟨j, hj, rfl⟩ :=
     hζ.eq_pow_of_pow_eq_one ((Polynomial.mem_nthRootsFinset hp.pos 1).1 hη₂)
   wlog hij : j ≤ i
-  · simpa using (this hζ ‹_› ‹_› _ hj ‹_› _ hi ‹_› e.symm (by omega)).neg_right
+  · simpa using (this hζ ‹_› ‹_› _ hj ‹_› _ hi ‹_› e.symm (by lia)).neg_right
   have H : (i - j).Coprime p := (coprime_of_lt_prime (by grind) (by grind) hp).symm
   obtain ⟨u, h⟩ := hζ.associated_pow_add_sub_sub_one hp.two_le j H
   simp only [hij, add_tsub_cancel_of_le] at h

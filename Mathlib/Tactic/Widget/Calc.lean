@@ -3,18 +3,27 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Lean.Elab.Tactic.Calc
-import Lean.Meta.Tactic.TryThis
+module
 
-import Mathlib.Data.String.Defs
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Batteries.CodeAction.Attr
+public meta import Lean.Elab.Tactic.Calc
+public meta import Lean.Meta.Tactic.TryThis
+
+public meta import Mathlib.Data.String.Defs
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Batteries.CodeAction.Attr
+public import Batteries.CodeAction.Attr
+public import Lean.Server.Rpc.RequestHandling
+public import Mathlib.Tactic.Widget.SelectPanelUtils
+public import ProofWidgets.Component.Basic
+public import ProofWidgets.Component.OfRpcMethod
 
 /-! # Calc widget
 
 This file redefines the `calc` tactic so that it displays a widget panel allowing to create
 new calc steps with holes specified by selected sub-expressions in the goal.
 -/
+
+public meta section
 
 section code_action
 open Batteries.CodeAction
@@ -108,7 +117,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
   | true, true => "Create two new steps"
   | true, false | false, true => "Create a new step"
   | false, false => "This should not happen"
-  let pos : String.Pos.Raw := insertedCode.find (fun c => c == '?')
+  let pos : String.Pos.Raw := insertedCode.find (fun c => c == '?') |>.offset
   return (stepInfo, insertedCode, some (pos, ⟨pos.byteIdx + 2⟩) )
 
 /-- Rpc function for the calc widget. -/

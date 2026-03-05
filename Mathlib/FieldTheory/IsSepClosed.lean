@@ -3,7 +3,9 @@ Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Separably Closed Field
@@ -47,6 +49,8 @@ separable closure, separably closed
 
 -/
 
+@[expose] public section
+
 universe u v w
 
 open Polynomial
@@ -59,17 +63,16 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  factors_of_separable : ∀ p : k[X], p.Separable → p.Factors
+  splits_of_separable : ∀ p : k[X], p.Separable → p.Splits
+
+@[deprecated (since := "2025-12-09")]
+alias IsSepClosed.factors_of_separable := IsSepClosed.splits_of_separable
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
-  ⟨fun p _ ↦ IsAlgClosed.factors p⟩
+  ⟨fun p _ ↦ IsAlgClosed.splits p⟩
 
 variable {k} {K}
-
-theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
-    p.Splits (RingHom.id k) :=
-  (factors_of_separable p hp).map (RingHom.id k)
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
 separably closed.
@@ -77,8 +80,8 @@ separably closed.
 See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : p.Splits f := by
-  convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
+    (p : k[X]) (h : p.Separable) : (p.map f).Splits :=
+  IsSepClosed.splits_of_separable (p.map f) (Separable.map h)
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `k` is
 separably closed.
@@ -86,14 +89,14 @@ separably closed.
 See also `IsSepClosed.splits_codomain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_domain [IsSepClosed k] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : p.Splits f :=
-  Polynomial.splits_of_splits_id _ <| IsSepClosed.splits_of_separable _ h
+    (p : k[X]) (h : p.Separable) : (p.map f).Splits :=
+  (IsSepClosed.splits_of_separable _ h).map f
 
 namespace IsSepClosed
 
 theorem exists_root [IsSepClosed k] (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :
     ∃ x, IsRoot p x :=
-  exists_root_of_splits _ (IsSepClosed.splits_of_separable p hsep) hp
+  (IsSepClosed.splits_of_separable p hsep).exists_eval_eq_zero hp
 
 /-- If `n ≥ 2` equals zero in a separably closed field `k`, `b ≠ 0`,
 then there exists `x` in `k` such that `a * x ^ n + b * x + c = 0`. -/
@@ -180,22 +183,23 @@ variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
-  intro q hq hdvd
-  have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
-    leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
-  have hsep' : Separable (q * C (leadingCoeff q)⁻¹) :=
-    Separable.mul (Separable.of_dvd hsep hdvd) ((separable_C _).2 hlc)
-    (by simpa only [← isCoprime_mul_unit_right_right (isUnit_C.2 hlc) q 1, one_mul]
-      using isCoprime_one_right (x := q))
-  have hirr' := hq
-  rw [← irreducible_mul_isUnit (isUnit_C.2 hlc)] at hirr'
-  obtain ⟨x, hx⟩ := H (q * C (leadingCoeff q)⁻¹) (monic_mul_leadingCoeff_inv hq.ne_zero) hirr' hsep'
-  exact degree_mul_leadingCoeff_inv q hq.ne_zero ▸ degree_eq_one_of_irreducible_of_root hirr' hx
+  replace H (p : k[X]) (hp : Irreducible p) (hs : Separable p) : ∃ x, p.eval x = 0 := by
+    obtain ⟨x, hx⟩ := H (p * C (leadingCoeff p)⁻¹) (monic_mul_leadingCoeff_inv hp.ne_zero)
+      (irreducible_mul_leadingCoeff_inv.mpr hp) (hs.mul_unit (by aesop))
+    exact ⟨x, by simpa [hp.ne_zero] using hx⟩
+  refine ⟨fun p hp ↦ ?_⟩
+  by_cases hp0 : p = 0
+  · simp [hp0]
+  obtain ⟨u, hu⟩ := UniqueFactorizationMonoid.factors_prod hp0
+  rw [← hu]
+  refine (Splits.multisetProd fun f hf ↦ ?_).mul u.isUnit.splits
+  let h := UniqueFactorizationMonoid.irreducible_of_factor f hf
+  obtain ⟨x, hx⟩ := H f h (hp.of_dvd (UniqueFactorizationMonoid.dvd_of_mem_factors hf))
+  exact Splits.of_degree_eq_one (degree_eq_one_of_irreducible_of_root h hx)
 
 theorem degree_eq_one_of_irreducible [IsSepClosed k] {p : k[X]}
     (hp : Irreducible p) (hsep : p.Separable) : p.degree = 1 :=
-  degree_eq_one_of_irreducible_of_splits hp (IsSepClosed.splits_codomain p hsep)
+  (IsSepClosed.splits_of_separable p hsep).degree_eq_one_of_irreducible hp
 
 variable (K)
 
@@ -210,7 +214,7 @@ theorem algebraMap_surjective
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x
   rw [eq_X_add_C_of_degree_eq_one h, hq, C_1, one_mul, aeval_add, aeval_X, aeval_C,
     add_eq_zero_iff_eq_neg] at this
-  exact (RingHom.map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
+  exact (map_neg (algebraMap k K) ((minpoly k x).coeff 0)).symm ▸ this.symm
 
 end IsSepClosed
 
@@ -266,7 +270,7 @@ instance isSeparable [Algebra k K] [IsSepClosure k K] : Algebra.IsSeparable k K 
 
 instance (priority := 100) isGalois [Algebra k K] [IsSepClosure k K] : IsGalois k K where
   to_isSeparable := IsSepClosure.separable
-  to_normal.toIsAlgebraic :=  inferInstance
+  to_normal.toIsAlgebraic := inferInstance
   to_normal.splits' x := (IsSepClosure.sep_closed k).splits_codomain _
     (Algebra.IsSeparable.isSeparable k x)
 

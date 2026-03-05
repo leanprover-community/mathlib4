@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Order
+module
+
+public import Mathlib.Analysis.Meromorphic.Order
 
 /-!
 # The Trailing Coefficient of a Meromorphic Function
@@ -15,6 +17,8 @@ point `x`, the trailing coefficient is defined as the (unique!) value `g x` for 
 The lemma `MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt` expresses the trailing coefficient
 as a limit.
 -/
+
+@[expose] public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -197,14 +201,13 @@ If `f₁` and `f₂` have unequal order at `x`, then the trailing coefficient of
 trailing coefficient of the function with the lowest order.
 -/
 theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_left_of_lt {f₁ f₂ : 𝕜 → E}
-  (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
+    (hf₂ : MeromorphicAt f₂ x) (h : meromorphicOrderAt f₁ x < meromorphicOrderAt f₂ x) :
     meromorphicTrailingCoeffAt (f₁ + f₂) x = meromorphicTrailingCoeffAt f₁ x := by
   -- Trivial case: f₁ not meromorphic at x
-  by_cases hf₁ : ¬MeromorphicAt f₁ x
+  by_cases! hf₁ : ¬MeromorphicAt f₁ x
   · have : ¬MeromorphicAt (f₁ + f₂) x := by
       rwa [add_comm, hf₂.meromorphicAt_add_iff_meromorphicAt₁]
     simp_all
-  rw [not_not] at hf₁
   -- Trivial case: f₂ vanishes locally around x
   by_cases h₁f₂ : meromorphicOrderAt f₂ x = ⊤
   · apply meromorphicTrailingCoeffAt_congr_nhdsNE
@@ -237,9 +240,9 @@ If `f₁` and `f₂` have equal order at `x` and if their trailing coefficients 
 trailing coefficient of `f₁ + f₂` at `x` is the sum of the trailing coefficients.
 -/
 theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add {f₁ f₂ : 𝕜 → E}
-  (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
-  (h₁ : meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x)
-  (h₂ : meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x ≠ 0) :
+    (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+    (h₁ : meromorphicOrderAt f₁ x = meromorphicOrderAt f₂ x)
+    (h₂ : meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x ≠ 0) :
     meromorphicTrailingCoeffAt (f₁ + f₂) x
       = meromorphicTrailingCoeffAt f₁ x + meromorphicTrailingCoeffAt f₂ x := by
   -- Trivial case: f₁ vanishes locally around x
@@ -249,9 +252,9 @@ theorem MeromorphicAt.meromorphicTrailingCoeffAt_add_eq_add {f₁ f₂ : 𝕜 �
     filter_upwards [meromorphicOrderAt_eq_top_iff.1 h₁f₁]
     simp
   -- General case
-  lift meromorphicOrderAt f₁ x to ℤ using (by aesop) with n₁ hn₁
+  lift meromorphicOrderAt f₁ x to ℤ using (by lia) with n₁ hn₁
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (meromorphicOrderAt_eq_int_iff hf₁).1 hn₁.symm
-  lift meromorphicOrderAt f₂ x to ℤ using (by aesop) with n₂ hn₂
+  lift meromorphicOrderAt f₂ x to ℤ using (by lia) with n₂ hn₂
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (meromorphicOrderAt_eq_int_iff hf₂).1 hn₂.symm
   rw [WithTop.coe_eq_coe, h₁g₁.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₁ h₃g₁,
     h₁g₂.meromorphicTrailingCoeffAt_of_ne_zero_of_eq_nhdsNE h₂g₂ h₃g₂] at *

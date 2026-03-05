@@ -3,12 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.PolynomialAlgebra
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.Localization.Ideal
+public import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 # Localization of algebra maps
@@ -22,6 +24,8 @@ The proof that localization commutes with taking kernels does not use the result
 as the translation is currently tedious and can be unified easily after the localization refactor.
 
 -/
+
+@[expose] public section
 
 variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemiring P]
   [CommSemiring Q]
@@ -108,7 +112,7 @@ noncomputable def mapₐ (f : A →ₐ[R] B) : Aₚ →ₐ[Rₚ] Bₚ :=
 
 @[simp]
 lemma mapₐ_coe (f : A →ₐ[R] B) :
-    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f)  :=
+    (mapₐ M Rₚ Aₚ Bₚ f : Aₚ → Bₚ) = map Bₚ f.toRingHom (algebraMapSubmonoid_le_comap M f) :=
   rfl
 
 lemma mapₐ_injective_of_injective (f : A →ₐ[R] B) (hf : Function.Injective f) :
@@ -180,15 +184,13 @@ end Algebra
 
 namespace Polynomial
 
+attribute [local instance] Polynomial.algebra in
 /-- If `A` is the localization of `R` at a submonoid `S`, then `A[X]` is the localization of
 `R[X]` at `S.map Polynomial.C`.
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
 lemma isLocalization {R} [CommSemiring R] (S : Submonoid R) (A) [CommSemiring A] [Algebra R A]
-    [IsLocalization S A] : letI := (mapRingHom (algebraMap R A)).toAlgebra
-    IsLocalization (S.map C) A[X] :=
-  letI := (mapRingHom (algebraMap R A)).toAlgebra
-  have : IsScalarTower R R[X] A[X] := .of_algebraMap_eq fun _ ↦ (map_C _).symm
+    [IsLocalization S A] : IsLocalization (S.map C) A[X] :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
     .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp
 

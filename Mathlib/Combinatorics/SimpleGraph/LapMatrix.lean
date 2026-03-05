@@ -3,8 +3,10 @@ Copyright (c) 2023 Adrian Wüthrich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adrian Wüthrich
 -/
-import Mathlib.Analysis.Matrix.Order
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+module
+
+public import Mathlib.Analysis.Matrix.Order
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 
 /-!
 # Laplacian Matrix
@@ -22,6 +24,8 @@ This module defines the Laplacian matrix of a graph, and proves some of its elem
   is the dimension of the nullspace of its Laplacian matrix.
 
 -/
+
+@[expose] public section
 
 open Finset Matrix Module
 
@@ -77,13 +81,13 @@ $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
 where $\sim$ denotes the adjacency relation -/
 theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
     toLinearMap₂' R (G.lapMatrix R) x x =
-    (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j)^2 else 0) / 2 := by
+    (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j) ^ 2 else 0) / 2 := by
   simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
     dotProduct_mulVec_adjMatrix, ← sum_sub_distrib, degree_eq_sum_if_adj, sum_mul, ite_mul, one_mul,
     zero_mul, ← sum_sub_distrib, ite_sub_ite, sub_zero]
   rw [← add_self_div_two (∑ x_1 : V, ∑ x_2 : V, _)]
-  conv_lhs => enter [1,2,2,i,2,j]; rw [if_congr (adj_comm G i j) rfl rfl]
-  conv_lhs => enter [1,2]; rw [Finset.sum_comm]
+  conv_lhs => enter [1, 2, 2, i, 2, j]; rw [if_congr (adj_comm G i j) rfl rfl]
+  conv_lhs => enter [1, 2]; rw [Finset.sum_comm]
   simp_rw [← sum_add_distrib, ite_add_ite]
   congr 2 with i
   congr 2 with j
@@ -92,10 +96,9 @@ theorem lapMatrix_toLinearMap₂' [Field R] [CharZero R] (x : V → R) :
 /-- The Laplacian matrix is positive semidefinite -/
 theorem posSemidef_lapMatrix [Field R] [LinearOrder R] [IsStrictOrderedRing R] [StarRing R]
     [TrivialStar R] : PosSemidef (G.lapMatrix R) := by
-  constructor
+  refine .of_dotProduct_mulVec_nonneg ?_ (fun x ↦ ?_)
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
-  · intro x
-    rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
+  · rw [star_trivial, ← toLinearMap₂'_apply', lapMatrix_toLinearMap₂']
     positivity
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj
@@ -108,11 +111,6 @@ theorem lapMatrix_mulVec_eq_zero_iff_forall_adj {x : V → ℝ} :
     G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
-
-@[deprecated lapMatrix_mulVec_eq_zero_iff_forall_adj (since := "2025-05-18")]
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j :=
-  G.lapMatrix_mulVec_eq_zero_iff_forall_adj
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
     Matrix.toLinearMap₂' ℝ (G.lapMatrix ℝ) x x = 0 ↔
@@ -128,11 +126,6 @@ theorem lapMatrix_mulVec_eq_zero_iff_forall_reachable {x : V → ℝ} :
     G.lapMatrix ℝ *ᵥ x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [← (posSemidef_lapMatrix ℝ G).toLinearMap₂'_zero_iff, star_trivial,
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable]
-
-@[deprecated lapMatrix_mulVec_eq_zero_iff_forall_reachable (since := "2025-05-18")]
-theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLin' (G.lapMatrix ℝ) x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j :=
-  G.lapMatrix_mulVec_eq_zero_iff_forall_reachable
 
 @[simp]
 theorem det_lapMatrix_eq_zero [h : Nonempty V] : (G.lapMatrix ℝ).det = 0 := by
@@ -214,9 +207,5 @@ theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
       Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
   classical
   rw [Module.finrank_eq_card_basis (lapMatrix_ker_basis G)]
-
-@[deprecated (since := "2025-04-29")]
-alias card_ConnectedComponent_eq_rank_ker_lapMatrix :=
-  card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix
 
 end SimpleGraph

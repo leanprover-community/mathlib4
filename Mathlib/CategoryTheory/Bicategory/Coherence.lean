@@ -3,10 +3,12 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Junyan Xu
 -/
-import Mathlib.CategoryTheory.PathCategory.Basic
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Bicategory.Free
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+module
+
+public import Mathlib.CategoryTheory.PathCategory.Basic
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.Bicategory.Free
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
 /-!
 # The coherence theorem for bicategories
@@ -34,6 +36,8 @@ theorem follows immediately from this fact.
   proof of normalization for monoids][beylin1996]
 -/
 
+@[expose] public section
+
 
 open Quiver (Path)
 
@@ -47,7 +51,7 @@ universe v u
 
 namespace FreeBicategory
 
-variable {B : Type u} [Quiver.{v + 1} B]
+variable {B : Type u} [Quiver.{v} B]
 
 /-- Auxiliary definition for `inclusionPath`. -/
 @[simp]
@@ -65,14 +69,14 @@ local instance homCategory' (a b : B) : Category (Hom a b) :=
 /-- The discrete category on the paths includes into the category of 1-morphisms in the free
 bicategory.
 -/
-def inclusionPath (a b : B) : Discrete (Path.{v + 1} a b) ⥤ Hom a b :=
+def inclusionPath (a b : B) : Discrete (Path.{v} a b) ⥤ Hom a b :=
   Discrete.functor inclusionPathAux
 
 /-- The inclusion from the locally discrete bicategory on the path category into the free bicategory
 as a prelax functor. This will be promoted to a pseudofunctor after proving the coherence theorem.
 See `inclusion`.
 -/
-def preinclusion (B : Type u) [Quiver.{v + 1} B] :
+def preinclusion (B : Type u) [Quiver.{v} B] :
     PrelaxFunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) where
   obj a := a.as
   map {a b} f := (@inclusionPath B _ a.as b.as).obj f
@@ -83,7 +87,7 @@ theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
   rfl
 
 @[simp]
-theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v + 1} a b)) (η : f ⟶ g) :
+theorem preinclusion_map₂ {a b : B} (f g : Discrete (Path.{v} a b)) (η : f ⟶ g) :
     (preinclusion B).map₂ η = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom η))) :=
   rfl
 
@@ -143,6 +147,7 @@ theorem normalizeAux_congr {a b c : B} (p : Path a b) {f g : Hom b c} (η : f �
   | whisker_right _ _ ih => funext; apply congr_arg₂ _ (congr_fun ih _) rfl
   | _ => funext; rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The 2-isomorphism `normalizeIso p f` is natural in `f`. -/
 theorem normalize_naturality {a b c : B} (p : Path a b) {f g : Hom b c} (η : f ⟶ g) :
     (preinclusion B).map ⟨p⟩ ◁ η ≫ (normalizeIso p g).hom =
@@ -177,7 +182,7 @@ theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
   | comp g _ ihf ihg => erw [ihg (f.comp g), ihf f, ihg g, comp_assoc]
 
 /-- The normalization pseudofunctor for the free bicategory on a quiver `B`. -/
-def normalize (B : Type u) [Quiver.{v + 1} B] :
+def normalize (B : Type u) [Quiver.{v} B] :
     FreeBicategory B ⥤ᵖ (LocallyDiscrete (Paths B)) where
   obj a := ⟨a⟩
   map f := ⟨normalizeAux nil f⟩
@@ -196,7 +201,7 @@ def normalizeUnitIso (a b : FreeBicategory B) :
       exact normalize_naturality nil η)
 
 /-- Normalization as an equivalence of categories. -/
-def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
+def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v} a b) :=
   Equivalence.mk ((normalize _).mapFunctor a b) (inclusionPath a b) (normalizeUnitIso a b)
     (Discrete.natIso fun f => eqToIso (by
       obtain ⟨f⟩ := f
@@ -223,7 +228,7 @@ def inclusionMapCompAux {a b : B} :
 /-- The inclusion pseudofunctor from the locally discrete bicategory on the path category into the
 free bicategory.
 -/
-def inclusion (B : Type u) [Quiver.{v + 1} B] :
+def inclusion (B : Type u) [Quiver.{v} B] :
     LocallyDiscrete (Paths B) ⥤ᵖ (FreeBicategory B) :=
   { -- All the conditions for 2-morphisms are trivial thanks to the coherence theorem!
     preinclusion B with

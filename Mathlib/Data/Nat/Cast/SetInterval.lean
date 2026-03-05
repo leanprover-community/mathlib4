@@ -3,11 +3,13 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Nat
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Nat
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Images of intervals under `Nat.cast : ℕ → ℤ`
@@ -15,6 +17,8 @@ import Mathlib.Order.UpperLower.Basic
 In this file we prove that the image of each `Set.Ixx` interval under `Nat.cast : ℕ → ℤ`
 is the corresponding interval in `ℤ`.
 -/
+
+public section
 
 open Set
 

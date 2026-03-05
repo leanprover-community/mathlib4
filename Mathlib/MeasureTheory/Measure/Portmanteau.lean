@@ -3,10 +3,12 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.MeasureTheory.Integral.Layercake
-import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
+module
+
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Integral.Layercake
+public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 
 /-!
 # Characterizations of weak convergence of finite measures and probability measures
@@ -79,6 +81,8 @@ weak convergence of measures, convergence in distribution, convergence in law, f
 probability measure
 
 -/
+
+public section
 
 
 noncomputable section
@@ -258,7 +262,7 @@ implies
   (C) For any closed set F, the limsup of the measures of F under μs is at most
       the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
 
-Combining with a earlier proven implications, we get that (T) implies also both
+Combining with earlier proven implications, we get that (T) implies also both
 
   (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G);
@@ -378,7 +382,7 @@ implies
   (C) For any closed set F, the limsup of the measures of F under μs is at most
       the measure of F under μ, i.e., limsupᵢ μsᵢ(F) ≤ μ(F).
 
-Combining with a earlier proven implications, we get that (B) implies also
+Combining with earlier proven implications, we get that (B) implies also
 
   (O) For any open set G, the liminf of the measures of G under μs is at least
       the measure of G under μ, i.e., μ(G) ≤ liminfᵢ μsᵢ(G).
@@ -400,9 +404,7 @@ theorem exists_null_frontier_thickening (μ : Measure Ω) [SFinite μ] (s : Set 
   have aux := measure_diff_null (s := Ioo a b) (Set.Countable.measure_zero key volume)
   have len_pos : 0 < ENNReal.ofReal (b - a) := by simp only [hab, ENNReal.ofReal_pos, sub_pos]
   rw [← Real.volume_Ioo, ← aux] at len_pos
-  rcases nonempty_of_measure_ne_zero len_pos.ne.symm with ⟨r, ⟨r_in_Ioo, hr⟩⟩
-  refine ⟨r, r_in_Ioo, ?_⟩
-  simpa only [mem_setOf_eq, not_lt, le_zero_iff] using hr
+  simpa [Set.Nonempty] using nonempty_of_measure_ne_zero len_pos.ne'
 
 theorem exists_null_frontiers_thickening (μ : Measure Ω) [SFinite μ] (s : Set Ω) :
     ∃ rs : ℕ → ℝ,
@@ -547,6 +549,7 @@ theorem tendsto_of_forall_isOpen_le_liminf_nat' {μ : ProbabilityMeasure Ω}
   refine tendsto_integral_of_forall_integral_le_liminf_integral fun f f_nn ↦ ?_
   exact integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure f_nn h_opens
 
+set_option backward.isDefEq.respectTransparency false in
 /-- One implication of the portmanteau theorem: if for all open sets `G` we have the liminf
 condition `μ(G) ≤ liminf μsₙ(G)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Superseded by `tendsto_of_forall_isOpen_le_liminf` which works for all countably
@@ -615,6 +618,7 @@ lemma tendsto_of_forall_isClosed_limsup_le'
   refine tendsto_of_forall_isOpen_le_liminf' ?_
   rwa [← limsup_measure_closed_le_iff_liminf_measure_open_ge]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure Ω}
     (h : ∀ F : Set Ω, IsClosed F → limsup (fun i ↦ μs i F) atTop ≤ μ F) :
     Tendsto μs atTop (𝓝 μ) := by
@@ -629,6 +633,7 @@ lemma tendsto_of_forall_isClosed_limsup_le_nat {μs : ℕ → ProbabilityMeasure
   convert obs
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- One implication of the portmanteau theorem: if for all closed sets `F` we have the limsup
 condition `limsup μsₙ(F) ≤ μ(F)`, then the measures `μsₙ` converge weakly to the measure `μ`.
 Formulated here for countably generated filters. -/
@@ -643,17 +648,7 @@ theorem tendsto_of_forall_isClosed_limsup_le
 lemma tendsto_of_forall_isClosed_limsup_real_le' {L : Filter ι} [L.IsCountablyGenerated]
     (h : ∀ F : Set Ω, IsClosed F →
       limsup (fun i ↦ (μs i : Measure Ω).real F) L ≤ (μ : Measure Ω).real F) :
-    Tendsto μs L (𝓝 μ) := by
-  refine tendsto_of_forall_isClosed_limsup_le' fun F hF ↦ ?_
-  rcases L.eq_or_neBot with rfl | hne
-  · simp
-  specialize h F hF
-  simp only [Measure.real_def] at h
-  rwa [ENNReal.limsup_toReal_eq (b := 1) (by simp) (.of_forall fun i ↦ prob_le_one),
-    ENNReal.toReal_le_toReal _ (by finiteness)] at h
-  refine ne_top_of_le_ne_top (b := 1) (by simp) ?_
-  refine limsup_le_of_le ?_ (.of_forall fun i ↦ prob_le_one)
-  exact isCoboundedUnder_le_of_le L (x := 0) (by simp)
+    Tendsto μs L (𝓝 μ) := tendsto_of_forall_isClosed_limsup_le (by simpa using h)
 
 end Closed
 
@@ -793,16 +788,16 @@ lemma ProbabilityMeasure.exists_lt_measure_biUnion_of_isOpen
     simp [← hT, hr]
   rcases T_count.exists_eq_range this with ⟨f, hf⟩
   have G_eq : G = ⋃ n, f n := by simp [← hT, hf]
-  have : Tendsto (fun i ↦ ν (Accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
+  have : Tendsto (fun i ↦ ν (accumulate f i)) atTop (𝓝 (ν (⋃ i, f i))) :=
     (ENNReal.tendsto_toNNReal_iff (by simp) (by simp)).2 tendsto_measure_iUnion_accumulate
   rw [← G_eq] at this
   rcases ((tendsto_order.1 this).1 r hr).exists with ⟨n, hn⟩
   refine ⟨(Finset.range (n + 1)).image f, by grind, ?_, ?_⟩
   · convert hn
     simp [accumulate_def]
-    grind
   · simpa [G_eq] using fun i _ ↦ subset_iUnion f i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Assume that, applied to all the elements of a π-system, a sequence of probability measures
 converges to a limiting probability measure. Assume also that the π-system contains arbitrarily
 small neighborhoods of any point. Then the sequence of probability measures converges for the

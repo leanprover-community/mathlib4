@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # More lemmas about group actions
@@ -14,6 +16,8 @@ import Mathlib.Logic.Embedding.Basic
 This file contains lemmas about group actions that require more imports than
 `Mathlib/Algebra/Group/Action/Defs.lean` offers.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero Equiv.Perm.permGroup
 
@@ -91,7 +95,7 @@ section Arrow
 variable {G A B : Type*} [DivisionMonoid G] [MulAction G A]
 
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g • F) a = F (g⁻¹ • a)`. -/
-@[to_additive (attr := simps) arrowAddAction
+@[to_additive (attr := instance_reducible) (attr := simps) arrowAddAction
 /-- If `G` acts on `A`, then it acts also on `A → B`, by `(g +ᵥ F) a = F (g⁻¹ +ᵥ a)` -/]
 def arrowAction : MulAction G (A → B) where
   smul g F a := F (g⁻¹ • a)
@@ -99,7 +103,7 @@ def arrowAction : MulAction G (A → B) where
     change (fun x => f ((1 : G)⁻¹ • x)) = f
     simp only [inv_one, one_smul]
   mul_smul x y f := by
-    change (fun a => f ((x*y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
+    change (fun a => f ((x * y)⁻¹ • a)) = (fun a => f (y⁻¹ • x⁻¹ • a))
     simp only [mul_smul, mul_inv_rev]
 
 attribute [local instance] arrowAction
@@ -107,6 +111,7 @@ attribute [local instance] arrowAction
 variable [Monoid M]
 
 /-- When `M` is a monoid, `ArrowAction` is additionally a `MulDistribMulAction`. -/
+@[instance_reducible]
 def arrowMulDistribMulAction : MulDistribMulAction G (A → M) where
   smul_one _ := rfl
   smul_mul _ _ _ := rfl

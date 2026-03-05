@@ -3,14 +3,18 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Nonunits
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Characteristic of quotient rings
 -/
+
+public section
 
 theorem CharP.ker_intAlgebraMap_eq_span
     {R : Type*} [Ring R] (p : ℕ) [CharP R p] :
@@ -60,10 +64,12 @@ theorem quotient_iff_le_ker_natCast (n : ℕ) [CharP R n] (I : Ideal R) :
 
 end CharP
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Ideal.natCast_mem_of_charP_quotient (p : ℕ) (I : Ideal R) [CharP (R ⧸ I) p] :
     (p : R) ∈ I :=
   Ideal.Quotient.eq_zero_iff_mem.mp <| by simp
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Ideal.Quotient.index_eq_zero (I : Ideal R) : (↑I.toAddSubgroup.index : R ⧸ I) = 0 := by
   rw [AddSubgroup.index, Nat.card_eq]
   split_ifs with hq; swap

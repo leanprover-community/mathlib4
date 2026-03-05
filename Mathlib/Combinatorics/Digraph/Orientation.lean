@@ -3,8 +3,10 @@ Copyright (c) 2024 Rida Hamadani. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
-import Mathlib.Combinatorics.Digraph.Basic
-import Mathlib.Combinatorics.SimpleGraph.Basic
+module
+
+public import Mathlib.Combinatorics.Digraph.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Basic
 
 /-!
 
@@ -32,6 +34,8 @@ the edge orientations of `Digraph`.
 digraph, simple graph, oriented graphs
 -/
 
+@[expose] public section
+
 variable {V : Type*}
 
 namespace Digraph
@@ -53,7 +57,7 @@ both orientations are present.
 def toSimpleGraphStrict (G : Digraph V) : SimpleGraph V where
   Adj v w := v ≠ w ∧ G.Adj v w ∧ G.Adj w v
   symm _ _ h := And.intro h.1.symm h.2.symm
-  loopless _ h := h.1 rfl
+  loopless := ⟨fun _ h ↦ h.1 rfl⟩
 
 lemma toSimpleGraphStrict_subgraph_toSimpleGraphInclusive (G : Digraph V) :
     G.toSimpleGraphStrict ≤ G.toSimpleGraphInclusive :=

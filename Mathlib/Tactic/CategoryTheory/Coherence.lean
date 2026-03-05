@@ -3,10 +3,14 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Coherence
-import Mathlib.Lean.Meta
-import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
-import Mathlib.Tactic.CategoryTheory.MonoidalComp
+module
+
+public meta import Mathlib.Lean.Meta
+public import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public meta import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public import Mathlib.Lean.Meta
+public import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+public import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 /-!
 # A `coherence` tactic for monoidal categories
@@ -22,6 +26,8 @@ in a monoidal category which are built out of associators and unitors
 are equal.
 
 -/
+
+public meta section
 
 universe v u
 
@@ -146,7 +152,7 @@ open Mathlib.Tactic.BicategoryCoherence
 `pure_coherence` uses the coherence theorem for monoidal categories to prove the goal.
 It can prove any equality made up only of associators, unitors, and identities.
 ```lean
-example {C : Type} [Category C] [MonoidalCategory C] :
+example {C : Type} [Category* C] [MonoidalCategory C] :
   (λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom := by
   pure_coherence
 ```
@@ -194,11 +200,11 @@ elab (name := liftable_prefixes) "liftable_prefixes" : tactic => do
     (simp -failIfUnchanged only
       [assoc_liftHom, Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂])))
 
-lemma insert_id_lhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
+lemma insert_id_lhs {C : Type*} [Category* C] {X Y : C} (f g : X ⟶ Y) (w : f ≫ 𝟙 _ = g) :
     f = g := by
   simpa using w
 
-lemma insert_id_rhs {C : Type*} [Category C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
+lemma insert_id_rhs {C : Type*} [Category* C] {X Y : C} (f g : X ⟶ Y) (w : f = g ≫ 𝟙 _) :
     f = g := by
   simpa using w
 

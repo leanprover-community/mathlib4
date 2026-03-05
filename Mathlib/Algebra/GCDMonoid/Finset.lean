@@ -3,8 +3,10 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Algebra.GCDMonoid.Multiset
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Algebra.GCDMonoid.Multiset
 
 /-!
 # GCD and LCM operations on finsets
@@ -26,13 +28,15 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 finset, gcd
 -/
 
+@[expose] public section
+
 variable {ι α β γ : Type*}
 
 namespace Finset
 
 open Multiset
 
-variable [CancelCommMonoidWithZero α] [NormalizedGCDMonoid α]
+variable [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
 /-! ### lcm -/
 
@@ -196,7 +200,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     s.gcd f = {x ∈ s | f x ≠ 0}.gcd f := by
   classical
     trans ({x ∈ s | f x = 0} ∪ {x ∈ s | f x ≠ 0}).gcd f
-    · rw [filter_union_filter_neg_eq]
+    · rw [filter_union_filter_not_eq]
     rw [gcd_union]
     refine Eq.trans (?_ : _ = GCDMonoid.gcd (0 : α) ?_) (?_ : GCDMonoid.gcd (0 : α) _ = _)
     · exact gcd {x ∈ s | f x ≠ 0} f
@@ -225,7 +229,7 @@ nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * no
 
 theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
     (hg : ∀ b ∈ s, f b = s.gcd f * g b) : s.gcd g = 1 :=
-  ((@mul_right_eq_self₀ _ _ (s.gcd f) _).1 <| by
+  ((mul_right_eq_self₀ (a := s.gcd f)).1 <| by
         conv_lhs => rw [← normalize_gcd, ← gcd_mul_left, ← gcd_congr rfl hg]).resolve_right <| by
     contrapose! hs
     exact gcd_eq_zero_iff.1 hs
@@ -263,7 +267,7 @@ namespace Finset
 
 section IsDomain
 
-variable [CommRing α] [IsDomain α] [NormalizedGCDMonoid α]
+variable [CommRing α] [NormalizedGCDMonoid α]
 
 theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     (h : ∀ x : β, x ∈ s → a ∣ f x - g x) :

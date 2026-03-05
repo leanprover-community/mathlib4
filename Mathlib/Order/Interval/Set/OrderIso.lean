@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Order.Hom.Set
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Lemmas about images of intervals under order isomorphisms.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -90,12 +94,12 @@ end Preorder
 
 /-- Order isomorphism between `Iic (⊤ : α)` and `α` when `α` has a top element -/
 def IicTop {α : Type*} [Preorder α] [OrderTop α] : Iic (⊤ : α) ≃o α :=
-  { @Equiv.subtypeUnivEquiv α (Iic (⊤ : α)) fun _ => le_top with
+  { @Equiv.subtypeUnivEquiv α (· ∈ Iic (⊤ : α)) fun _ => le_top with
     map_rel_iff' := @fun x y => by rfl }
 
 /-- Order isomorphism between `Ici (⊥ : α)` and `α` when `α` has a bottom element -/
 def IciBot {α : Type*} [Preorder α] [OrderBot α] : Ici (⊥ : α) ≃o α :=
-  { @Equiv.subtypeUnivEquiv α (Ici (⊥ : α)) fun _ => bot_le with
+  { @Equiv.subtypeUnivEquiv α (· ∈ Ici (⊥ : α)) fun _ => bot_le with
     map_rel_iff' := @fun x y => by rfl }
 
 end OrderIso

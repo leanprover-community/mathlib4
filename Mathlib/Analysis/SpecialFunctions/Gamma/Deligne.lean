@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # Deligne's archimedean Gamma-factors
@@ -27,6 +28,8 @@ functions both take a complex variable as input.)
 This file defines these functions, and proves some elementary properties, including a reflection
 formula which is an important input in functional equations of (un-completed) Dirichlet L-functions.
 -/
+
+@[expose] public section
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex
@@ -89,6 +92,7 @@ lemma differentiable_Gammaℝ_inv : Differentiable ℂ (fun s ↦ (Gammaℝ s)�
     exact Or.inl (ofReal_ne_zero.mpr pi_ne_zero)
   · exact differentiable_one_div_Gamma.comp (differentiable_id.div_const _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (𝓝 2) := by
   have h : Tendsto (fun z : ℂ ↦ z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
     refine tendsto_self_mul_Gamma_nhds_zero.comp ?_
@@ -99,7 +103,7 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
     rw [(by simp : 𝓝 2 = 𝓝 (2 * (π : ℂ) ^ (-(0 : ℂ) / 2)))]
     refine Tendsto.mono_left (ContinuousAt.tendsto ?_) nhdsWithin_le_nhds
     exact continuousAt_const.mul ((continuousAt_const_cpow (ofReal_ne_zero.mpr pi_ne_zero)).comp
-      (continuousAt_id.neg.div_const _))
+      (by fun_prop))
   convert mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z
   rw [Gammaℝ]
   ring_nf
@@ -108,6 +112,7 @@ end analyticity
 
 section reflection
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Reformulation of the doubling formula in terms of `Gammaℝ`. -/
 lemma Gammaℝ_mul_Gammaℝ_add_one (s : ℂ) : Gammaℝ s * Gammaℝ (s + 1) = Gammaℂ s := by
   simp only [Gammaℝ_def, Gammaℂ_def]

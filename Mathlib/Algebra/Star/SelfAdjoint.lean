@@ -3,9 +3,11 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Star.Rat
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Star.Rat
 
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
@@ -37,6 +39,8 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
   invariant under it.
 
 -/
+
+@[expose] public section
 
 open Function
 

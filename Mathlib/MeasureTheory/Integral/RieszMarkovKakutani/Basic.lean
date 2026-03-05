@@ -3,9 +3,11 @@ Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.Topology.ContinuousMap.CompactlySupported
-import Mathlib.Topology.PartitionOfUnity
+module
+
+public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.Topology.ContinuousMap.CompactlySupported
+public import Mathlib.Topology.PartitionOfUnity
 
 /-!
 # Riesz–Markov–Kakutani representation theorem
@@ -27,6 +29,8 @@ literature.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -46,12 +50,6 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   obtain ⟨g, hg⟩ := CompactlySupportedContinuousMap.exists_add_of_le h
   rw [← hg]
   simp
-
-/-- The positivity of a linear functional `Λ` implies that `Λ` is monotone. -/
-@[deprecated PositiveLinearMap.mk₀ (since := "2025-08-08")]
-lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ}
-    (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) : Monotone Λ :=
-  (PositiveLinearMap.mk₀ Λ hΛ).monotone
 
 end Monotone
 
@@ -89,6 +87,7 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
   rw [← Real.toNNReal_one, Real.toNNReal_eq_toNNReal_iff (zero_le_one' ℝ) (hfinicc x).1]
   exact hfeq1onK.symm hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Riesz content `λ` (associated with a positive linear functional `Λ`) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in `X`, then `λ(K₁) ≤ λ(K₂)`. -/
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :

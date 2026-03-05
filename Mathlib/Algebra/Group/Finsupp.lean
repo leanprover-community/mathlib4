@@ -3,15 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finsupp.Single
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finsupp.Single
 
 /-!
 # Additive monoid structure on `ι →₀ M`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -23,10 +26,23 @@ variable {ι F M N O G H : Type*}
 
 namespace Finsupp
 section Zero
-variable [Zero M] [Zero N]
+variable [Zero M] [Zero N] [Zero O]
 
 lemma apply_single [FunLike F M N] [ZeroHomClass F M N] (e : F) (i : ι) (m : M) (b : ι) :
     e (single i m b) = single i (e m) b := apply_single' e (map_zero e) i m b
+
+/-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
+on functions. -/
+@[simps]
+def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (ι →₀ M) (ι →₀ N) where
+  toFun := Finsupp.mapRange f f.map_zero
+  map_zero' := mapRange_zero
+
+@[simp] lemma mapRange.zeroHom_id : mapRange.zeroHom (.id M) = .id (ι →₀ M) := by ext; simp
+
+lemma mapRange.zeroHom_comp (f : ZeroHom N O) (f₂ : ZeroHom M N) :
+    mapRange.zeroHom (ι := ι) (f.comp f₂) = (mapRange.zeroHom f).comp (mapRange.zeroHom f₂) := by
+  ext; simp
 
 end Zero
 
@@ -59,15 +75,12 @@ noncomputable def addEquivFunOnFinite {ι : Type*} [Finite ι] :
   __ := Finsupp.equivFunOnFinite
   map_add' _ _ := rfl
 
-/-- AddEquiv between (ι →₀ M) and M, when ι has a unique element -/
-noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] :
-    (ι →₀ M) ≃+ M where
-  __ := Equiv.finsuppUnique
+/-- If `M` is the trivial monoid, then the monoid of finitely supported functions `ι →₀ M` is
+is isomorphic to `M`. -/
+@[simps!]
+noncomputable def _root_.AddEquiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃+ M where
+  toEquiv := .finsuppUnique
   map_add' _ _ := rfl
-
-@[simp]
-lemma _root_.AddEquiv.finsuppUnique_apply {ι : Type*} [Unique ι] (v : ι →₀ M) :
-    AddEquiv.finsuppUnique v = Equiv.finsuppUnique v := rfl
 
 instance instIsRightCancelAdd [IsRightCancelAdd M] : IsRightCancelAdd (ι →₀ M) where
   add_right_cancel _ _ _ h := ext fun x => add_right_cancel <| DFunLike.congr_fun h x
@@ -140,8 +153,8 @@ lemma support_single_add_single [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M
     (H : f₁ ≠ f₂) (hg₁ : g₁ ≠ 0) (hg₂ : g₂ ≠ 0) :
     (single f₁ g₁ + single f₂ g₂).support = {f₁, f₂} := by
   rw [support_add_eq, support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂]
-  · simp [pair_comm f₂ f₁]
-  · simp [support_single_ne_zero _ hg₁, support_single_ne_zero _ hg₂, H.symm]
+  · simp
+  · simp [support_single_ne_zero, *]
 
 lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g₂ : M} :
     (single f₁ g₁ + single f₂ g₂).support ⊆ {f₁, f₂} := by
@@ -149,9 +162,7 @@ lemma support_single_add_single_subset [DecidableEq ι] {f₁ f₂ : ι} {g₁ g
   exact subset_trans Finsupp.support_single_subset (by simp)
 
 lemma _root_.AddEquiv.finsuppUnique_symm {M : Type*} [AddZeroClass M] (d : M) :
-    AddEquiv.finsuppUnique.symm d = single () d := by
-  rw [Finsupp.unique_single (AddEquiv.finsuppUnique.symm d), Finsupp.unique_single_eq_iff]
-  simp [AddEquiv.finsuppUnique]
+    AddEquiv.finsuppUnique.symm d = single () d := by ext; simp [AddEquiv.finsuppUnique]
 
 theorem addCommute_iff_inter [DecidableEq ι] {f g : ι →₀ M} :
     AddCommute f g ↔ ∀ x ∈ f.support ∩ g.support, AddCommute (f x) (g x) where
@@ -256,15 +267,15 @@ lemma induction_linear {motive : (ι →₀ M) → Prop} (f : ι →₀ M) (zero
 
 section LinearOrder
 
-variable [LinearOrder ι] {p : (ι →₀ M) → Prop}
+variable [LinearOrder ι] {motive : (ι →₀ M) → Prop}
 
 /-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
 
 The lemma `induction_on_max₂` swaps the argument order in the sum. -/
-lemma induction_on_max (f : ι →₀ M) (zero : p 0)
-    (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (single a b + f)) :
-    p f := by
-  suffices ∀ (s) (f : ι →₀ M), f.support = s → p f from this _ _ rfl
+lemma induction_on_max (f : ι →₀ M) (zero : motive 0)
+    (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 →
+      motive f → motive (single a b + f)) : motive f := by
+  suffices ∀ (s) (f : ι →₀ M), f.support = s → motive f from this _ _ rfl
   refine fun s => s.induction_on_max (fun f h => ?_) (fun a s hm hf f hs => ?_)
   · rwa [support_eq_empty.1 h]
   · have hs' : (erase a f).support = s := by
@@ -277,17 +288,17 @@ lemma induction_on_max (f : ι →₀ M) (zero : p 0)
 /-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
 
 The lemma `induction_on_min₂` swaps the argument order in the sum. -/
-lemma induction_on_min (f : ι →₀ M) (zero : p 0)
-    (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (single a b + f)) :
-    p f :=
+lemma induction_on_min (f : ι →₀ M) (zero : motive 0)
+    (single_add : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 →
+      motive f → motive (single a b + f)) : motive f :=
   induction_on_max (ι := ιᵒᵈ) f zero single_add
 
 /-- A finitely supported function can be built by adding up `single a b` for increasing `a`.
 
 The lemma `induction_on_max` swaps the argument order in the sum. -/
-lemma induction_on_max₂ (f : ι →₀ M) (zero : p 0)
-    (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 → p f → p (f + single a b)) :
-    p f := by
+lemma induction_on_max₂ (f : ι →₀ M) (zero : motive 0)
+    (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, c < a) → b ≠ 0 →
+      motive f → motive (f + single a b)) : motive f := by
   classical
   refine f.induction_on_max zero ?_
   convert add_single using 7 with _ _ _ H
@@ -298,10 +309,10 @@ lemma induction_on_max₂ (f : ι →₀ M) (zero : p 0)
 /-- A finitely supported function can be built by adding up `single a b` for decreasing `a`.
 
 The lemma `induction_on_min` swaps the argument order in the sum. -/
-lemma induction_on_min₂ (f : ι →₀ M) (h0 : p 0)
-    (ha : ∀ (a b) (f : ι →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 → p f → p (f + single a b)) :
-    p f :=
-  induction_on_max₂ (ι := ιᵒᵈ) f h0 ha
+lemma induction_on_min₂ (f : ι →₀ M) (zero : motive 0)
+    (add_single : ∀ a b (f : ι →₀ M), (∀ c ∈ f.support, a < c) → b ≠ 0 →
+      motive f → motive (f + single a b)) : motive f :=
+  induction_on_max₂ (ι := ιᵒᵈ) f zero add_single
 
 end LinearOrder
 
@@ -327,7 +338,7 @@ instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀
 end AddMonoid
 
 section AddCommMonoid
-variable [AddCommMonoid M]
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid O]
 
 instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addCommMonoid
@@ -339,6 +350,52 @@ lemma single_add_single_eq_single_add_single {k l m n : ι} {u v : M} (hu : u �
   classical
     simp_rw [DFunLike.ext_iff, coe_add, single_eq_pi_single, ← funext_iff]
     exact Pi.single_add_single_eq_single_add_single hu hv
+
+/-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
+-/
+@[simps]
+def mapRange.addMonoidHom (f : M →+ N) : (ι →₀ M) →+ ι →₀ N where
+  toFun := mapRange f f.map_zero
+  map_zero' := mapRange_zero
+  map_add' := mapRange_add f.map_add
+
+@[simp]
+lemma mapRange.addMonoidHom_id :
+    mapRange.addMonoidHom (AddMonoidHom.id M) = AddMonoidHom.id (ι →₀ M) :=
+  AddMonoidHom.ext mapRange_id
+
+lemma mapRange.addMonoidHom_comp (f : N →+ O) (g : M →+ N) :
+    mapRange.addMonoidHom (ι := ι) (f.comp g) =
+      (mapRange.addMonoidHom f).comp (mapRange.addMonoidHom g) := by ext; simp
+
+@[simp]
+lemma mapRange.addMonoidHom_toZeroHom (f : M →+ N) :
+    (mapRange.addMonoidHom f).toZeroHom = mapRange.zeroHom (ι := ι) f.toZeroHom := rfl
+
+/-- `Finsupp.mapRange.AddMonoidHom` as an equiv. -/
+@[simps! apply]
+def mapRange.addEquiv (em' : M ≃+ N) : (ι →₀ M) ≃+ (ι →₀ N) where
+  toEquiv := mapRange.equiv em' em'.map_zero
+  __ := mapRange.addMonoidHom em'.toAddMonoidHom
+
+@[simp]
+lemma mapRange.addEquiv_refl : mapRange.addEquiv (.refl M) = .refl (ι →₀ M) := by ext; simp
+
+lemma mapRange.addEquiv_trans (e₁ : M ≃+ N) (e₂ : N ≃+ O) :
+    mapRange.addEquiv (ι := ι) (e₁.trans e₂) =
+      (mapRange.addEquiv e₁).trans (mapRange.addEquiv e₂) := by ext; simp
+
+@[simp]
+lemma mapRange.addEquiv_symm (e : M ≃+ N) :
+    (mapRange.addEquiv (ι := ι) e).symm = mapRange.addEquiv e.symm := rfl
+
+@[simp]
+lemma mapRange.addEquiv_toAddMonoidHom (e : M ≃+ N) :
+    mapRange.addEquiv (ι := ι) e = mapRange.addMonoidHom (ι := ι) e.toAddMonoidHom := rfl
+
+@[simp]
+lemma mapRange.addEquiv_toEquiv (e : M ≃+ N) :
+    mapRange.addEquiv (ι := ι) e = mapRange.equiv (ι := ι) (e : M ≃ N) e.map_zero := rfl
 
 end AddCommMonoid
 
@@ -392,8 +449,7 @@ lemma support_neg (f : ι →₀ G) : support (-f) = support f :=
   Finset.Subset.antisymm support_mapRange
     (calc
       support f = support (- -f) := congr_arg support (neg_neg _).symm
-      _ ⊆ support (-f) := support_mapRange
-      )
+      _ ⊆ support (-f) := support_mapRange)
 
 lemma support_sub [DecidableEq ι] {f g : ι →₀ G} : support (f - g) ⊆ support f ∪ support g := by
   rw [sub_eq_add_neg, ← support_neg g]

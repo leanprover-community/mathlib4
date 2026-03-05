@@ -3,10 +3,13 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.Analysis.Convex.Star
-import Mathlib.Tactic.Field
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+module
+
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.Analysis.Convex.Star
+public import Mathlib.Tactic.Field
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Convex sets
@@ -20,6 +23,8 @@ We provide various equivalent versions, and prove that some specific sets are co
 
 Generalize all this file to affine spaces.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 E F β : Type*}
@@ -116,6 +121,9 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
     (hc : ∀ ⦃A : Set E⦄, A ∈ c → Convex 𝕜 A) : Convex 𝕜 (⋃₀ c) := by
   rw [sUnion_eq_iUnion]
   exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
+
+theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
+  by_cases hP : P <;> simp [hP, hs, convex_univ]
 
 end SMul
 
@@ -327,15 +335,16 @@ variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
 theorem MonotoneOn.convex_le (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x ≤ r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
-    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1) (Convex.combo_le_max x y ha hb hab)).trans
-      (max_rec' { x | f x ≤ r } hx.2 hy.2)⟩
+    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' (· ∈ s) hx.1 hy.1)
+      (Convex.combo_le_max x y ha hb hab)).trans
+      (max_rec' (f · ≤ r) hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_lt (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | f x < r }) := fun x hx y hy _ _ ha hb hab =>
   ⟨hs hx.1 hy.1 ha hb hab,
-    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' s hx.1 hy.1)
+    (hf (hs hx.1 hy.1 ha hb hab) (max_rec' (· ∈ s) hx.1 hy.1)
           (Convex.combo_le_max x y ha hb hab)).trans_lt
-      (max_rec' { x | f x < r } hx.2 hy.2)⟩
+      (max_rec' (f · < r) hx.2 hy.2)⟩
 
 theorem MonotoneOn.convex_ge (hf : MonotoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r ≤ f x }) :=
@@ -359,7 +368,7 @@ theorem AntitoneOn.convex_ge (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β)
 
 theorem AntitoneOn.convex_gt (hf : AntitoneOn f s) (hs : Convex 𝕜 s) (r : β) :
     Convex 𝕜 ({ x ∈ s | r < f x }) :=
-  MonotoneOn.convex_lt (β := βᵒᵈ)  hf hs r
+  MonotoneOn.convex_lt (β := βᵒᵈ) hf hs r
 
 theorem Monotone.convex_le (hf : Monotone f) (r : β) : Convex 𝕜 { x | f x ≤ r } :=
   Set.sep_univ.subst ((hf.monotoneOn univ).convex_le convex_univ r)
@@ -502,7 +511,7 @@ theorem Convex.semilinear_image {s : Set E} (hs : Convex 𝕜 s) (hσ : ∀ {s t
   obtain ⟨t, rfl⟩ : ∃ t : 𝕜, σ t = b := RingHomSurjective.is_surjective ..
   refine ⟨r • x + t • y, hs hx hy (by simp_all [(@hσ 0 r).mp]) (by simp_all [(@hσ 0 t).mp])
     ?_, by simp⟩
-  apply_fun σ using injective_of_le_imp_le _ hσ.mp
+  apply_fun σ using Function.Injective.of_eq_imp_le (hσ.mp ·.le)
   simpa
 
 end SemilinearMap
@@ -610,8 +619,8 @@ protected theorem starConvex (K : Submodule 𝕜 E) : StarConvex 𝕜 (0 : E) K 
   K.convex K.zero_mem
 
 theorem Convex.semilinear_range {𝕜' : Type*} [Semiring 𝕜'] {σ : 𝕜' →+* 𝕜}
-  [RingHomSurjective σ] {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F']
-  (f : F' →ₛₗ[σ] E) : Convex 𝕜 (LinearMap.range f : Set E) := Submodule.convex ..
+    [RingHomSurjective σ] {F' : Type*} [AddCommMonoid F'] [Module 𝕜' F']
+    (f : F' →ₛₗ[σ] E) : Convex 𝕜 (LinearMap.range f : Set E) := Submodule.convex ..
 
 end Submodule
 

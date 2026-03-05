@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Bases of submodules
 -/
+
+@[expose] public section
 
 open Function Set Submodule Finsupp Module
 
@@ -51,7 +55,7 @@ variable [Module R M] [Module R₂ M]
 variable {x y : M}
 variable (b : Basis ι R M)
 
-theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
+theorem Basis.eq_bot_of_rank_eq_zero [IsDomain R] (b : Basis ι R M) (N : Submodule R M)
     (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
     N = ⊥ := by
   rw [Submodule.eq_bot_iff]
@@ -60,7 +64,6 @@ theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : 
   refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
   rw [Fintype.linearIndependent_iff]
   rintro g sum_eq i
-  obtain ⟨_, hi⟩ := i
   simp only [Fin.default_eq_zero, Finset.univ_unique,
     Finset.sum_singleton] at sum_eq
   convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
@@ -153,9 +156,9 @@ lemma mem_center_iff {A}
 
 section RestrictScalars
 
-variable {S : Type*} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
+variable {S : Type*} [CommRing R] [IsDomain R] [Ring S] [Nontrivial S] [AddCommGroup M]
 variable [Algebra R S] [Module S M] [Module R M]
-variable [IsScalarTower R S M] [NoZeroSMulDivisors R S] (b : Basis ι S M)
+variable [IsScalarTower R S M] [IsTorsionFree R S] (b : Basis ι S M)
 variable (R)
 
 open Submodule
@@ -203,8 +206,8 @@ variable {M R : Type*} [Ring R] [Nontrivial R] [IsAddTorsionFree R]
   [AddCommGroup M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
 
 /--
-Let `A` be an subgroup of an additive commutative group `M` that is also an `R`-module.
-Construct a basis of `A` as a `ℤ`-basis from a `R`-basis of `E` that generates `A`.
+Let `A` be a subgroup of an additive commutative group `M` that is also an `R`-module.
+Construct a basis of `A` as a `ℤ`-basis from an `R`-basis of `E` that generates `A`.
 -/
 noncomputable def addSubgroupOfClosure (h : A = .closure (Set.range b)) :
     Basis ι ℤ A.toIntSubmodule :=

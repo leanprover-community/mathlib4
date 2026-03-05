@@ -3,12 +3,15 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Covolume
-import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.NumberTheory.NumberField.Discriminant.Defs
-import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Covolume
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+public import Mathlib.NumberTheory.NumberField.EquivReindex
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Number field discriminant
@@ -26,6 +29,8 @@ This file defines the discriminant of a number field.
 number field, discriminant
 -/
 
+public section
+
 -- TODO. Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
 
@@ -40,6 +45,33 @@ variable (K : Type*) [Field K] [NumberField K]
 open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
 
+theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
+    discr K = (basisMatrix K).det ^ 2 := by
+  rw [← Rat.cast_intCast, coe_discr, basisMatrix_eq_embeddingsMatrixReindex,
+    ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
+    Algebra.discr_reindex, eq_ratCast]
+
+set_option backward.isDefEq.respectTransparency false in
+open scoped ComplexConjugate ComplexOrder in
+theorem sign_discr :
+    (discr K).sign = (-1) ^ nrComplexPlaces K := by
+  classical
+  have : 0 ≤ (discr K : ℂ) ↔ Even (nrComplexPlaces K) := by
+    rw [discr_eq_basisMatrix_det_sq, Complex.sq_nonneg_iff, ← conj_eq_iff_im, RingHom.map_det,
+      RingHom.mapMatrix_apply, conj_basisMatrix, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
+      Function.Involutive.toPerm_symm, det_permute', mul_eq_right₀,
+      ComplexEmbedding.conjugate_sign]
+    · simp only [Units.val_pow_eq_pow_val, Units.val_neg, Units.val_one, Int.reduceNeg,
+        Int.cast_pow, Int.cast_neg, Int.cast_one]
+      rw [neg_one_pow_eq_one_iff_even (by norm_num)]
+    · exact det_of_basisMatrix_non_zero K
+  obtain h | h | h := Int.lt_trichotomy 0 (discr K)
+  · rw [Int.sign_eq_one_of_pos h, Even.neg_one_pow (this.mp <| Int.cast_nonneg h.le)]
+  · grind [discr_ne_zero]
+  · rw [Int.sign_eq_neg_one_of_neg h, Odd.neg_one_pow]
+    rwa [← Nat.not_even_iff_odd, ← this, Int.cast_nonneg_iff, not_le]
+
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :
     volume (fundamentalDomain (latticeBasis K)) =
@@ -75,6 +107,7 @@ theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis 
     stdBasis_repr_eq_matrixToStdBasis_mul K _ (fun _ => rfl)]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ZLattice.covolume (mixedEmbedding.integerLattice K) =
@@ -85,6 +118,7 @@ theorem _root_.NumberField.mixedEmbedding.covolume_integerLattice :
     ENNReal.toReal_inv, toReal_ofNat, ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm,
     Int.norm_eq_abs]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ZLattice.covolume (mixedEmbedding.idealLattice K I) =
@@ -97,6 +131,7 @@ theorem _root_.NumberField.mixedEmbedding.covolume_idealLattice (I : (Fractional
     ENNReal.coe_toReal, Real.coe_sqrt, coe_nnnorm, Int.norm_eq_abs,
     ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.val)), mul_assoc]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
       |Algebra.norm ℚ (a : K)| ≤ FractionalIdeal.absNorm I.1 * (4 / π) ^ nrComplexPlaces K *
@@ -156,6 +191,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
   simp_rw [Units.val_one, FractionalIdeal.absNorm_one, Rat.cast_one, one_mul] at h_nm
   exact h_nm
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The Minkowski lower bound `n^{2n}/((4/pi)^{2r_2}*n!^2)` for the absolute value of the discriminant
 of a number field of degree n.
@@ -197,7 +233,7 @@ variable {K}
 theorem abs_discr_ge (h : 1 < finrank ℚ K) :
     (4 / 9 : ℝ) * (3 * π / 4) ^ finrank ℚ K ≤ |discr K| := by
   refine le_trans ?_ (abs_discr_ge' K)
-  -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
+  -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction a uniform
   -- lower bound for this sequence from which we deduce the result.
   rw [mul_comm 2 _]
   let a : ℕ → ℝ := fun n => (n : ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial : ℝ) ^ 2)
@@ -257,7 +293,7 @@ Thus it follows from `mixedEmbedding.exists_primitive_element_lt_of_isComplex` a
 `x` of `K` such that `K = ℚ(x)` and the conjugates of `x` are all bounded by some quantity
 depending only on `N`.
 
-Since the primitive element `x` is constructed differently depending on whether `K` has a infinite
+Since the primitive element `x` is constructed differently depending on whether `K` has an infinite
 real place or not, the theorem is proved in two parts.
 -/
 
@@ -347,6 +383,7 @@ theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
 
 variable (N)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isReal :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop
@@ -357,7 +394,7 @@ theorem finite_of_discr_bdd_of_isReal :
   -- The bound on the Minkowski bound
   let B := boundOfDiscBdd N
   -- The bound on the coefficients of the generating polynomials
-  let C := Nat.ceil ((max B 1) ^ D *  Nat.choose D (D / 2))
+  let C := Nat.ceil ((max B 1) ^ D * Nat.choose D (D / 2))
   refine finite_of_finite_generating_set A _ (bUnion_roots_finite (algebraMap ℤ A) D
       (Set.finite_Icc (-C : ℤ) C)) (fun ⟨K, hK₀⟩ ⟨hK₁, hK₂⟩ ↦ ?_)
   -- We now need to prove that each field is generated by an element of the union of the root set
@@ -395,6 +432,7 @@ theorem finite_of_discr_bdd_of_isReal :
     _ = 1 * B := by rw [one_mul]
     _ ≤ convexBodyLTFactor K * B := by gcongr; exact mod_cast one_le_convexBodyLTFactor K
 
+set_option backward.isDefEq.respectTransparency false in
 theorem finite_of_discr_bdd_of_isComplex :
     {K : { F : IntermediateField ℚ A // FiniteDimensional ℚ F} |
       haveI :  NumberField K := @NumberField.mk _ _ inferInstance K.prop

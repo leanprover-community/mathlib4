@@ -3,7 +3,10 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Defs
 
 /-!
 # Complete Partial Orders
@@ -29,6 +32,8 @@ These are partial orders for which every directed set has a least upper bound.
 
 complete partial order, directedly complete partial order
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {α β : Type*}
 
@@ -71,14 +76,20 @@ lemma CompletePartialOrder.scottContinuous {f : α → β} :
 open OmegaCompletePartialOrder
 
 /-- A complete partial order is an ω-complete partial order. -/
-instance CompletePartialOrder.toOmegaCompletePartialOrder : OmegaCompletePartialOrder α where
+instance (priority := 100) CompletePartialOrder.toOmegaCompletePartialOrder :
+    OmegaCompletePartialOrder α where
   ωSup c := ⨆ n, c n
   le_ωSup c := c.directed.le_iSup
   ωSup_le c _ := c.directed.iSup_le
 
+/-- A complete partial order is an conditionally complete partial order. -/
+instance (priority := 100) [CompletePartialOrder α] : ConditionallyCompletePartialOrderSup α where
+  isLUB_csSup_of_directed _ h_dir _ _ := h_dir.isLUB_sSup
+
 end CompletePartialOrder
 
 /-- A complete lattice is a complete partial order. -/
-instance CompleteLattice.toCompletePartialOrder [CompleteLattice α] : CompletePartialOrder α where
+instance (priority := 100) CompleteLattice.toCompletePartialOrder [CompleteLattice α] :
+    CompletePartialOrder α where
   sSup := sSup
   lubOfDirected _ _ := isLUB_sSup _

@@ -3,9 +3,12 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.GrindInstances
 
 /-!
 # Partial sums of geometric series in a ring
@@ -17,6 +20,8 @@ Several variants are recorded, generalising in particular to the case of a nonco
 which `x` and `y` commute. Even versions not using division or subtraction, valid in each semiring,
 are recorded.
 -/
+
+public section
 
 assert_not_exists Field IsOrderedRing
 
@@ -70,7 +75,7 @@ lemma geom_sum₂_with_one (x : R) (n : ℕ) :
 /-- $x^n-y^n = (x-y) \sum x^ky^{n-1-k}$ reformulated without `-` signs. -/
 protected lemma Commute.geom_sum₂_mul_add {x y : R} (h : Commute x y) (n : ℕ) :
     (∑ i ∈ range n, (x + y) ^ i * y ^ (n - 1 - i)) * x + y ^ n = (x + y) ^ n := by
-  let f :  ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
+  let f : ℕ → ℕ → R := fun m i : ℕ => (x + y) ^ i * y ^ (m - 1 - i)
   change (∑ i ∈ range n, (f n) i) * x + y ^ n = (x + y) ^ n
   induction n with
   | zero => rw [range_zero, sum_empty, zero_mul, zero_add, pow_zero, pow_zero]
@@ -151,7 +156,7 @@ lemma geom_sum₂_mul_of_le (hxy : x ≤ y) (n : ℕ) :
   simp_all only [Finset.mem_range]
   rw [mul_comm]
   congr
-  cutsat
+  lia
 
 lemma geom_sum_mul_of_one_le (hx : 1 ≤ x) (n : ℕ) :
     (∑ i ∈ range n, x ^ i) * (x - 1) = x ^ n - 1 := by simpa using geom_sum₂_mul_of_ge hx n
@@ -251,7 +256,7 @@ protected lemma Commute.mul_geom_sum₂_Ico (h : Commute x y) {m n : ℕ}
     rw [← pow_add]
     congr
     rw [mem_range] at j_in
-    omega
+    lia
   rw [this]
   simp_rw [pow_mul_comm y (n - m) _]
   simp_rw [← mul_assoc]
@@ -266,7 +271,7 @@ protected lemma Commute.geom_sum₂_succ_eq (h : Commute x y) {n : ℕ} :
   refine sum_congr rfl fun i hi => ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
   rw [Finset.mem_range] at hi
-  cutsat
+  lia
 
 protected lemma Commute.geom_sum₂_Ico_mul (h : Commute x y) {m n : ℕ}
     (hmn : m ≤ n) :
@@ -355,6 +360,6 @@ lemma _root_.Odd.nat_add_dvd_pow_add_pow {n : ℕ} (h : Odd n) : x + y ∣ x ^ n
 that avoids division and subtraction. -/
 lemma geomSum_eq (hm : 2 ≤ m) (n : ℕ) : ∑ k ∈ range n, m ^ k = (m ^ n - 1) / (m - 1) := by
   refine (Nat.div_eq_of_eq_mul_left (tsub_pos_iff_lt.2 hm) <| tsub_eq_of_eq_add ?_).symm
-  simpa only [tsub_add_cancel_of_le (by cutsat : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
+  simpa only [tsub_add_cancel_of_le (by lia : 1 ≤ m), eq_comm] using geom_sum_mul_add (m - 1) n
 
 end Nat

@@ -3,8 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Small
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Limits.Presentation
+
+import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
 # Objects that are limits of objects satisfying a certain property
@@ -29,11 +33,13 @@ By requiring `P.limitsOfShape J ≤ P`, we introduce a typeclass
 ## TODO
 
 * formalize the closure of `P` under finite limits (which require
-iterating over `ℕ`), and more generally the closure under limits
-indexed by a category whose type of arrows has a cardinality
-that is bounded by a certain regular cardinal (@joelriou)
+  iterating over `ℕ`), and more generally the closure under limits
+  indexed by a category whose type of arrows has a cardinality
+  that is bounded by a certain regular cardinal (@joelriou)
 
 -/
+
+@[expose] public section
 
 universe w v'' v' u'' u' v u
 
@@ -41,7 +47,7 @@ namespace CategoryTheory.ObjectProperty
 
 open Limits
 
-variable {C : Type*} [Category C] (P : ObjectProperty C)
+variable {C D : Type*} [Category* C] [Category* D] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
@@ -96,6 +102,16 @@ noncomputable def reindex {X : C} (h : P.LimitOfShape J X) (G : J' ⥤ J) [G.Ini
     P.LimitOfShape J' X where
   toLimitPresentation := h.toLimitPresentation.reindex G
   prop_diag_obj _ := h.prop_diag_obj _
+
+/-- Given `P : ObjectProperty C`, and a presentation `P.LimitOfShape J X`
+of an object `X : C`, this is the induced functor `J ⥤ StructuredArrow P.ι X`. -/
+@[simps]
+def toStructuredArrow
+    {X : C} (p : P.LimitOfShape J X) :
+    J ⥤ StructuredArrow X P.ι where
+  obj j := StructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.π.app j)
+  map f := StructuredArrow.homMk (ObjectProperty.homMk (by exact p.diag.map f))
+    (by simpa using (p.π.naturality f).symm)
 
 end LimitOfShape
 
@@ -192,6 +208,11 @@ lemma prop_limit (F : J ⥤ C) [HasLimit F] (hF : ∀ (j : J), P (F.obj j)) :
 
 end
 
+lemma prop_pi {J : Type*} [P.IsClosedUnderLimitsOfShape (Discrete J)] (X : J → C)
+    [HasProduct X] (hF : ∀ (j : J), P (X j)) :
+    P (∏ᶜ X) :=
+  P.prop_of_isLimit (productIsProduct X) (fun _ ↦ hF _)
+
 variable {J} in
 lemma limitsOfShape_le_of_initial (G : J ⥤ J') [G.Initial] :
     P.limitsOfShape J' ≤ P.limitsOfShape J :=
@@ -214,6 +235,20 @@ lemma IsClosedUnderLimitsOfShape.of_equivalence (e : J ≌ J')
     [P.IsClosedUnderLimitsOfShape J] :
     P.IsClosedUnderLimitsOfShape J' := by
   rwa [← P.isClosedUnderLimitsOfShape_iff_of_equivalence e]
+
+instance IsClosedUnderLimitsOfShape.inverseImage
+    (P : ObjectProperty D) (F : C ⥤ D) [P.IsClosedUnderLimitsOfShape J]
+    [PreservesLimitsOfShape J F] : (P.inverseImage F).IsClosedUnderLimitsOfShape J :=
+  ⟨fun _ ⟨c, H⟩ ↦ ObjectProperty.LimitOfShape.prop (P := P) ⟨c.map F, H⟩⟩
+
+lemma isClosedUnderLimitsOfShape_inverseImage_iff (P : ObjectProperty D)
+    [P.IsClosedUnderIsomorphisms] (e : C ≌ D) :
+    (P.inverseImage e.functor).IsClosedUnderLimitsOfShape J ↔ P.IsClosedUnderLimitsOfShape J := by
+  refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
+  convert inferInstanceAs
+    (((P.inverseImage e.functor).inverseImage e.inverse).IsClosedUnderLimitsOfShape J)
+  ext X
+  simpa using P.prop_iff_of_iso (e.counitIso.app X).symm
 
 end ObjectProperty
 

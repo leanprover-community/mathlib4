@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Final.Type
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Final.Type
 
 /-!
 # Pullbacks of free sheaves of modules
@@ -25,6 +27,8 @@ More generally, the functor `pullback φ` sends the free sheaf
 of modules `free I` to `free I`, see `pullbackObjFreeIso` and
 `freeFunctorCompPullbackIso`.
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u
 
@@ -57,7 +61,7 @@ variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
-def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
+noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
   val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.val.app X)) (fun r ↦ by
     ext m
     exact ((φ.val.app X).hom.map_mul _ _).symm)
@@ -68,6 +72,7 @@ def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) wher
 lemma unitToPushforwardObjUnit_val_app_apply {X : Cᵒᵖ} (a : S.val.obj X) :
     (unitToPushforwardObjUnit φ).val.app X a = φ.val.app X a := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma pushforwardSections_unitHomEquiv
     {M : SheafOfModules.{u} R} (f : unit R ⟶ M) :
     pushforwardSections φ (M.unitHomEquiv f) =
@@ -76,7 +81,7 @@ lemma pushforwardSections_unitHomEquiv
   ext X
   have := unitToPushforwardObjUnit_val_app_apply φ (X := X) 1
   dsimp at this ⊢
-  simp [this, map_one]
+  simp +instances [this, map_one]
   rfl
 
 variable [(pushforward.{u} φ).IsRightAdjoint]
@@ -120,6 +125,7 @@ noncomputable def pullbackObjFreeIso (I : Type u) :
   (asIso (sigmaComparison _ _)).symm ≪≫
     Sigma.mapIso (fun _ ↦ asIso (pullbackObjUnitToUnit φ))
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma pullback_map_ιFree_comp_pullbackObjFreeIso_hom {I : Type u} (i : I) :
     (pullback φ).map (ιFree i) ≫ (pullbackObjFreeIso φ I).hom =

@@ -3,10 +3,12 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Torsion
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups
@@ -45,6 +47,8 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset Ring
 
@@ -212,6 +216,7 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
 
 end Pi
 
+@[to_additive]
 instance instIsMulTorsionFree [IsMulTorsionFree G] : IsMulTorsionFree H where
   pow_left_injective n hn a b := by
     have := pow_left_injective hn (M := G) (a₁ := a) (a₂ := b)
@@ -259,6 +264,16 @@ instance (priority := 100) normal_of_characteristic [h : H.Characteristic] : H.N
 end AddSubgroup
 
 namespace Subgroup
+
+/-- The whole group `G` is normal. -/
+@[to_additive (attr := simp) /-- The whole group `G` is normal. -/]
+instance normal_top : (⊤ : Subgroup G).Normal where
+  conj_mem _ a _ := a
+
+/-- The trivial subgroup `{1}` is normal. -/
+@[to_additive (attr := simp) /-- The trivial subgroup `{0}` is normal. -/]
+instance normal_bot : (⊥ : Subgroup G).Normal where
+  conj_mem := by simp
 
 variable {H K : Subgroup G}
 
@@ -396,10 +411,8 @@ This may be easier to work with, as it avoids inequalities and negations. -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
   apply forall_congr'; intro H
-  simp only [lt_iff_le_and_ne, le_normalizer, le_top, Ne]
+  simp only [lt_iff_le_and_ne, le_normalizer, Ne]
   tauto
-
-variable (H)
 
 end Normalizer
 
@@ -510,6 +523,11 @@ theorem closure_le_normalClosure {s : Set G} : closure s ≤ normalClosure s := 
 theorem normalClosure_closure_eq_normalClosure {s : Set G} :
     normalClosure ↑(closure s) = normalClosure s :=
   le_antisymm (normalClosure_le_normal closure_le_normalClosure) (normalClosure_mono subset_closure)
+
+/-- The normal closure of an empty set is the trivial subgroup. -/
+@[simp]
+lemma normalClosure_empty : normalClosure (∅ : Set G) = (⊥ : Subgroup G) := by
+  rw [← normalClosure_closure_eq_normalClosure, closure_empty, normalClosure_eq_self]
 
 /-- The normal core of a subgroup `H` is the largest normal subgroup of `G` contained in `H`,
 as shown by `Subgroup.normalCore_eq_iSup`. -/
@@ -812,14 +830,14 @@ theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G)
     [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
   rw [inf_inf_inf_comm, inf_idem]
-  exact le_trans (inf_le_inf A.le_normalizer hN) (inf_normalizer_le_normalizer_inf)
+  exact le_trans (inf_le_inf A.le_normalizer hN) inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G)
     [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
   rw [inf_inf_inf_comm, inf_idem]
-  exact le_trans (inf_le_inf hN B.le_normalizer) (inf_normalizer_le_normalizer_inf)
+  exact le_trans (inf_le_inf hN B.le_normalizer) inf_normalizer_le_normalizer_inf
 
 @[to_additive]
 instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊓ K).Normal :=
@@ -923,3 +941,15 @@ def AddSubgroup.inertia {M : Type*} [AddGroup M] (I : AddSubgroup M) (G : Type*)
 
 @[simp] lemma AddSubgroup.mem_inertia {M : Type*} [AddGroup M] {I : AddSubgroup M} {G : Type*}
     [Group G] [MulAction G M] {σ : G} : σ ∈ I.inertia G ↔ ∀ x, σ • x - x ∈ I := .rfl
+
+@[simp]
+lemma AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M)
+    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    (I.inertia G).subgroupOf H = I.inertia H :=
+  rfl
+
+@[simp]
+lemma AddSubgroup.inertia_map_subtype {M : Type*} [AddGroup M] (I : AddSubgroup M)
+    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
+  rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]

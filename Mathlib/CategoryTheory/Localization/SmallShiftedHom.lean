@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.SmallHom
-import Mathlib.CategoryTheory.Shift.ShiftedHom
-import Mathlib.CategoryTheory.Shift.Localization
+module
+
+public import Mathlib.CategoryTheory.Localization.SmallHom
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
+public import Mathlib.CategoryTheory.Shift.Localization
 
 /-!
 # Shrinking morphisms in localized categories equipped with shifts
@@ -21,6 +23,8 @@ on the types `ShiftedHom (L.obj X) (L.obj Y) m` when `L : C ⥤ D` is
 any localization functor for `W`.
 
 -/
+
+@[expose] public section
 
 universe w'' w w' v₁ v₂ v₁' v₂' u₁ u₂ u₁' u₂'
 
@@ -158,6 +162,14 @@ noncomputable def mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     SmallShiftedHom.{w} W X Y m₀ :=
   SmallShiftedHom.mk _ (ShiftedHom.mk₀ _ hm₀ f)
 
+/-- The formal inverse in `SmallShiftedHom.{w} W Y X m₀` of a morphism `f : Y ⟶ X`
+such that `W f`. -/
+noncomputable def mk₀Inv [HasSmallLocalizedShiftedHom.{w} W M Y X] [W.RespectsIso]
+    (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (hf : W f) :
+    SmallShiftedHom.{w} W Y X m₀ :=
+  SmallHom.mkInv ((shiftFunctorZero' C m₀ hm₀).hom.app X ≫ f)
+    (MorphismProperty.RespectsIso.precomp _ _ _ hf)
+
 end
 
 section
@@ -181,6 +193,7 @@ lemma equiv_apply [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M}
 section
 variable [W.IsCompatibleWithShift M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
@@ -191,35 +204,39 @@ lemma equiv_shift' {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     L.commShiftIso_add' h, Functor.CommShift.isoAdd'_inv_app, Iso.inv_hom_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.comp_obj, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_shift {a : M} [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Y]
     (f : SmallShiftedHom.{w} W X Y a) (n a' : M) (h : a + n = a') :
     equiv W L (f.shift n a' h) = (L.commShiftIso n).hom.app X ≫ (equiv W L f)⟦n⟧' ≫
       (shiftFunctorAdd' D a n a' h).inv.app (L.obj Y) := by
   dsimp [equiv]
-  erw [Iso.homToEquiv_apply, Iso.homToEquiv_apply, equiv_shift']
-  simp only [Functor.comp_obj, Iso.app_hom, assoc, Iso.inv_hom_id_app, comp_id, Functor.map_comp]
+  erw [equiv_shift']
+  simp only [Functor.comp_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_comp [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w} W M Y Z] [HasSmallLocalizedShiftedHom.{w} W M X Z]
     [HasSmallLocalizedShiftedHom.{w} W M Z Z] {a b c : M}
     (f : SmallShiftedHom.{w} W X Y a) (g : SmallShiftedHom.{w} W Y Z b) (h : b + a = c) :
     equiv W L (f.comp g h) = (equiv W L f).comp (equiv W L g) h := by
   dsimp [comp, equiv, ShiftedHom.comp]
-  erw [Iso.homToEquiv_apply, Iso.homToEquiv_apply, Iso.homToEquiv_apply, SmallHom.equiv_comp]
-  simp only [equiv_shift', Functor.comp_obj, Iso.app_hom, assoc, Iso.inv_hom_id_app,
+  erw [SmallHom.equiv_comp]
+  simp only [equiv_shift', Functor.comp_obj, assoc, Iso.inv_hom_id_app,
     comp_id, Functor.map_comp]
   rfl
 
 end
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mk [HasSmallLocalizedShiftedHom.{w} W M X Y] {m : M} (f : ShiftedHom X Y m) :
     equiv W L (.mk _ f) = f.map L :=
   ((L.commShiftIso m).app Y).homToEquiv.symm.injective
     ((Equiv.symm_apply_apply ..).trans (by simp [ShiftedHom.map, mk]))
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
     (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) :
@@ -227,10 +244,21 @@ lemma equiv_mk₀ [HasSmallLocalizedShiftedHom.{w} W M X Y]
       ShiftedHom.mk₀ m₀ hm₀ (L.map f) := by
   subst hm₀
   dsimp [equiv, mk₀]
-  erw [SmallHom.equiv_mk, Iso.homToEquiv_apply, Functor.map_comp]
+  erw [SmallHom.equiv_mk, Functor.map_comp]
   dsimp [equiv, mk₀, ShiftedHom.mk₀, shiftFunctorZero']
   simp only [comp_id, L.commShiftIso_zero, Functor.CommShift.isoZero_hom_app, assoc,
     ← Functor.map_comp_assoc, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id, id_comp]
+
+@[simp]
+lemma equiv_mk₀Inv [HasSmallLocalizedShiftedHom.{w} W M Y X] [W.RespectsIso]
+    (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (hf : W f) :
+    equiv W L (mk₀Inv m₀ hm₀ f hf) =
+      ShiftedHom.mk₀ m₀ hm₀ ((isoOfHom L W f hf).inv) := by
+  have hf' : W ((shiftFunctorZero' C m₀ hm₀).hom.app X ≫ f) :=
+    MorphismProperty.RespectsIso.precomp _ _ _ hf
+  refine (SmallHom.equiv_mkInv L _ hf' =≫ _).trans ?_
+  rw [← cancel_epi (isoOfHom L W _ hf').hom, Iso.hom_inv_id_assoc]
+  simp [ShiftedHom.mk₀, Functor.commShiftIso_zero' _ _ m₀ hm₀]
 
 end
 
@@ -253,6 +281,84 @@ lemma comp_assoc {X Y Z T : C} {a₁ a₂ a₃ a₁₂ a₂₃ a : M}
 
 end
 
+variable {W} in
+@[simp]
+lemma mk₀_comp_mk₀Inv {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Y]
+    [HasSmallLocalizedShiftedHom.{w} W M Y X] [W.IsCompatibleWithShift M] [W.RespectsIso]
+    (m₀ : M) (hm₀ : m₀ = 0) (f : Y ⟶ X) (hf : W f) :
+    (mk₀ W m₀ hm₀ f).comp (mk₀Inv m₀ hm₀ f hf) (by subst hm₀; simp) =
+      mk₀ W m₀ hm₀ (𝟙 Y) :=
+  (equiv W W.Q).injective (by simp [equiv_comp])
+
+variable {W} in
+@[simp]
+lemma mk₀Inv_comp_mk₀ {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w} W M X X]
+    [HasSmallLocalizedShiftedHom.{w} W M Y X] [W.IsCompatibleWithShift M] [W.RespectsIso]
+    (m₀ : M) (hm₀ : m₀ = 0) (f : Y ⟶ X) (hf : W f) :
+    (mk₀Inv m₀ hm₀ f hf).comp (mk₀ W m₀ hm₀ f) (by subst hm₀; simp) =
+      mk₀ W m₀ hm₀ (𝟙 X) :=
+  (equiv W W.Q).injective (by simp [equiv_comp])
+
+variable {W} in
+@[simp]
+lemma comp_mk₀_id {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Y]
+    [W.IsCompatibleWithShift M] {m : M}
+    (α : SmallShiftedHom.{w} W X Y m) (m₀ : M) (hm₀ : m₀ = 0) :
+    α.comp (mk₀ W m₀ hm₀ (𝟙 Y)) (by simp_all) = α :=
+  (equiv W W.Q).injective (by simp [equiv_comp])
+
+variable {W} in
+@[simp]
+lemma mk₀_id_comp {X Y : C} [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w} W M X X]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Y]
+    [W.IsCompatibleWithShift M] {m : M}
+    (α : SmallShiftedHom.{w} W X Y m) (m₀ : M) (hm₀ : m₀ = 0) :
+    (mk₀ W m₀ hm₀ (𝟙 X)).comp α (by simp_all) = α :=
+  (equiv W W.Q).injective (by simp [equiv_comp])
+
+variable {W} in
+/-- The postcomposition on the types `SmallShiftedHom W` with a morphism
+which satisfies `W` is a bijection. -/
+@[simps!]
+noncomputable def postcompEquiv {X Y Z : C}
+    [W.RespectsIso] [W.IsCompatibleWithShift M]
+    [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Z]
+    [HasSmallLocalizedShiftedHom.{w} W M X Z]
+    [HasSmallLocalizedShiftedHom.{w} W M Z Y]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Y]
+    [HasSmallLocalizedShiftedHom.{w} W M Z Z]
+    (f : Y ⟶ Z) (hf : W f) {a : M} :
+    SmallShiftedHom.{w} W X Y a ≃ SmallShiftedHom.{w} W X Z a where
+  toFun α := α.comp (mk₀ _ _ rfl f) (zero_add _)
+  invFun β := β.comp (mk₀Inv _ rfl _ hf) (zero_add _)
+  left_inv α := by simp [comp_assoc]
+  right_inv β := by simp [comp_assoc]
+
+variable {W} in
+/-- The precomposition on the types `SmallShiftedHom W` with a morphism
+which satisfies `W` is a bijection. -/
+@[simps!]
+noncomputable def precompEquiv {X Y Z : C}
+    [W.RespectsIso] [W.IsCompatibleWithShift M]
+    [HasSmallLocalizedShiftedHom.{w} W M X X]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Y]
+    [HasSmallLocalizedShiftedHom.{w} W M X Y]
+    [HasSmallLocalizedShiftedHom.{w} W M Y X]
+    [HasSmallLocalizedShiftedHom.{w} W M Y Z]
+    [HasSmallLocalizedShiftedHom.{w} W M X Z]
+    [HasSmallLocalizedShiftedHom.{w} W M Z Z]
+    (f : X ⟶ Y) (hf : W f) {a : M} :
+    SmallShiftedHom.{w} W Y Z a ≃ SmallShiftedHom.{w} W X Z a where
+  toFun α := (mk₀ _ _ rfl f).comp α (add_zero _)
+  invFun β := (mk₀Inv _ rfl _ hf).comp β (add_zero _)
+  left_inv α := by simp [← comp_assoc]
+  right_inv β := by simp [← comp_assoc]
+
 section ChangeOfUniverse
 
 variable {W}
@@ -265,6 +371,7 @@ noncomputable def chgUniv {X Y : C} {m : M}
     SmallShiftedHom.{w} W X Y m ≃ SmallShiftedHom.{w''} W X Y m :=
   SmallHom.chgUniv
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_chgUniv (L : C ⥤ D) [L.IsLocalization W] [L.CommShift M] {X Y : C} {m : M}
     [HasSmallLocalizedShiftedHom.{w} W M X Y]
     [HasSmallLocalizedShiftedHom.{w''} W M X Y]
@@ -304,6 +411,7 @@ noncomputable def smallShiftedHomMap {m : M} (f : SmallShiftedHom.{w} W₁ X₁ 
   have := hasSmallLocalizedHom_of_hasSmallLocalizedShiftedHom₀.{w''} W₂ M X₂ X₂
   Φ.smallHomMap' eX ((Φ.functor.commShiftIso m).app Y₁ ≪≫ (shiftFunctor _ _).mapIso eY) f
 
+set_option backward.isDefEq.respectTransparency false in
 lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
     (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ G) [NatTrans.CommShift e.hom M]
     {m : M} (f : SmallShiftedHom.{w} W₁ X₁ Y₁ m) :
@@ -327,6 +435,7 @@ lemma equiv_smallShiftedHomMap (G : D₁ ⥤ D₂) [G.CommShift M]
 
 variable [W₁.IsCompatibleWithShift M] [W₂.IsCompatibleWithShift M]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma smallShiftedHomMap_mk {m : M} (f : ShiftedHom X₁ Y₁ m) :
     Φ.smallShiftedHomMap eX eY (.mk _ f) =
@@ -347,6 +456,7 @@ lemma smallShiftedHomMap_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X₁ ⟶ Y₁)
       .mk₀ _ _ hm₀ (eX.inv ≫ Φ.functor.map f ≫ eY.hom) := by
   simp [SmallShiftedHom.mk₀]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma smallShiftedHomMap_comp
     [HasSmallLocalizedShiftedHom.{w} W₁ M Y₁ Z₁] [HasSmallLocalizedShiftedHom.{w''} W₂ M Z₂ Z₂]
     [HasSmallLocalizedShiftedHom.{w''} W₂ M Y₂ Z₂] [HasSmallLocalizedShiftedHom.{w} W₁ M X₁ Z₁]

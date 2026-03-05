@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Prime.Lemmas
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Algebra.Prime.Lemmas
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Associated elements.
@@ -15,6 +17,8 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
+@[expose] public section
+
 assert_not_exists IsOrderedMonoid Multiset Ring
 
 variable {M : Type*}
@@ -24,7 +28,7 @@ multiplied by a unit on the right. -/
 def Associated [Monoid M] (x y : M) : Prop :=
   ∃ u : Mˣ, x * u = y
 
-/-- Notation for two elements of a monoid are associated, i.e.
+/-- Notation for two elements of a monoid being associated, i.e.
 if one of them is another one multiplied by a unit on the right. -/
 local infixl:50 " ~ᵤ " => Associated
 
@@ -34,17 +38,18 @@ namespace Associated
 protected theorem refl [Monoid M] (x : M) : x ~ᵤ x :=
   ⟨1, by simp⟩
 
+@[simp]
 protected theorem rfl [Monoid M] {x : M} : x ~ᵤ x :=
   .refl x
 
-instance [Monoid M] : IsRefl M Associated :=
+instance [Monoid M] : @Std.Refl M Associated :=
   ⟨Associated.refl⟩
 
 @[symm]
 protected theorem symm [Monoid M] : ∀ {x y : M}, x ~ᵤ y → y ~ᵤ x
   | x, _, ⟨u, rfl⟩ => ⟨u⁻¹, by rw [mul_assoc, Units.mul_inv, mul_one]⟩
 
-instance [Monoid M] : IsSymm M Associated :=
+instance [Monoid M] : Std.Symm (α := M) Associated :=
   ⟨fun _ _ => Associated.symm⟩
 
 protected theorem comm [Monoid M] {x y : M} : x ~ᵤ y ↔ y ~ᵤ x :=
@@ -58,6 +63,7 @@ instance [Monoid M] : IsTrans M Associated :=
   ⟨fun _ _ _ => Associated.trans⟩
 
 /-- The setoid of the relation `x ~ᵤ y` iff there is a unit `u` such that `x * u = y` -/
+@[instance_reducible]
 protected def setoid (M : Type*) [Monoid M] :
     Setoid M where
   r := Associated
@@ -178,8 +184,8 @@ protected theorem Associated.dvd' [Monoid M] {a b : M} (h : a ~ᵤ b) : b ∣ a 
 protected theorem Associated.dvd_dvd [Monoid M] {a b : M} (h : a ~ᵤ b) : a ∣ b ∧ b ∣ a :=
   ⟨h.dvd, h.symm.dvd⟩
 
-theorem associated_of_dvd_dvd [CancelMonoidWithZero M] {a b : M} (hab : a ∣ b) (hba : b ∣ a) :
-    a ~ᵤ b := by
+theorem associated_of_dvd_dvd [MonoidWithZero M] [IsLeftCancelMulZero M] {a b : M}
+    (hab : a ∣ b) (hba : b ∣ a) : a ~ᵤ b := by
   rcases hab with ⟨c, rfl⟩
   rcases hba with ⟨d, a_eq⟩
   by_cases ha0 : a = 0
@@ -194,10 +200,11 @@ theorem associated_of_dvd_dvd [CancelMonoidWithZero M] {a b : M} (hab : a ∣ b)
   have hdc : d * c = 1 := mul_left_cancel₀ hac0 this
   exact ⟨⟨c, d, hcd, hdc⟩, rfl⟩
 
-theorem dvd_dvd_iff_associated [CancelMonoidWithZero M] {a b : M} : a ∣ b ∧ b ∣ a ↔ a ~ᵤ b :=
+theorem dvd_dvd_iff_associated [MonoidWithZero M] [IsLeftCancelMulZero M] {a b : M} :
+    a ∣ b ∧ b ∣ a ↔ a ~ᵤ b :=
   ⟨fun ⟨h1, h2⟩ => associated_of_dvd_dvd h1 h2, Associated.dvd_dvd⟩
 
-instance [CancelMonoidWithZero M] [DecidableRel ((· ∣ ·) : M → M → Prop)] :
+instance [MonoidWithZero M] [IsLeftCancelMulZero M] [DecidableRel ((· ∣ ·) : M → M → Prop)] :
     DecidableRel ((· ~ᵤ ·) : M → M → Prop) := fun _ _ => decidable_of_iff _ dvd_dvd_iff_associated
 
 theorem Associated.dvd_iff_dvd_left [Monoid M] {a b c : M} (h : a ~ᵤ b) : a ∣ c ↔ b ∣ c :=
@@ -219,13 +226,13 @@ protected theorem Associated.prime [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ 
     Prime q :=
   ⟨h.ne_zero_iff.1 hp.ne_zero,
     let ⟨u, hu⟩ := h
-    ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩,
-      hu ▸ by
-        simp only [Units.isUnit, IsUnit.mul_right_dvd]
-        intro a b
-        exact hp.dvd_or_dvd⟩⟩
+    ⟨fun ⟨v, hv⟩ => hp.not_unit ⟨v * u⁻¹, by simp [hv, hu.symm]⟩, by
+      rw [← hu]
+      simp only [Units.isUnit, IsUnit.mul_right_dvd]
+      intro a b
+      exact hp.dvd_or_dvd⟩⟩
 
-theorem prime_mul_iff [CancelCommMonoidWithZero M] {x y : M} :
+theorem prime_mul_iff [CommMonoidWithZero M] [IsCancelMulZero M] {x y : M} :
     Prime (x * y) ↔ (Prime x ∧ IsUnit y) ∨ (IsUnit x ∧ Prime y) := by
   refine ⟨fun h ↦ ?_, ?_⟩
   · rcases of_irreducible_mul h.irreducible with hx | hy
@@ -236,20 +243,11 @@ theorem prime_mul_iff [CancelCommMonoidWithZero M] {x y : M} :
     · exact (associated_unit_mul_right y x hx).prime hy
 
 @[simp]
-lemma prime_pow_iff [CancelCommMonoidWithZero M] {p : M} {n : ℕ} :
+lemma prime_pow_iff [CommMonoidWithZero M] [IsCancelMulZero M] {p : M} {n : ℕ} :
     Prime (p ^ n) ↔ Prime p ∧ n = 1 := by
   refine ⟨fun hp ↦ ?_, fun ⟨hp, hn⟩ ↦ by simpa [hn]⟩
   suffices n = 1 by simp_all
-  rcases n with - | n
-  · simp at hp
-  · rw [Nat.succ.injEq]
-    rw [pow_succ', prime_mul_iff] at hp
-    rcases hp with ⟨hp, hpn⟩ | ⟨hp, hpn⟩
-    · by_contra contra
-      rw [isUnit_pow_iff contra] at hpn
-      exact hp.not_unit hpn
-    · exfalso
-      exact hpn.not_unit (hp.pow n)
+  grind [not_prime_pow, Nat.zero_eq_one_mod_iff]
 
 theorem Irreducible.dvd_iff [Monoid M] {x y : M} (hx : Irreducible x) :
     y ∣ x ↔ IsUnit y ∨ Associated x y := by
@@ -271,12 +269,12 @@ theorem Irreducible.dvd_irreducible_iff_associated [Monoid M] {p q : M}
     (pp : Irreducible p) (qp : Irreducible q) : p ∣ q ↔ Associated p q :=
   ⟨Irreducible.associated_of_dvd pp qp, Associated.dvd⟩
 
-theorem Prime.associated_of_dvd [CancelCommMonoidWithZero M] {p q : M} (p_prime : Prime p)
-    (q_prime : Prime q) (dvd : p ∣ q) : Associated p q :=
+theorem Prime.associated_of_dvd [CommMonoidWithZero M] [IsCancelMulZero M] {p q : M}
+    (p_prime : Prime p) (q_prime : Prime q) (dvd : p ∣ q) : Associated p q :=
   p_prime.irreducible.associated_of_dvd q_prime.irreducible dvd
 
-theorem Prime.dvd_prime_iff_associated [CancelCommMonoidWithZero M] {p q : M} (pp : Prime p)
-    (qp : Prime q) : p ∣ q ↔ Associated p q :=
+theorem Prime.dvd_prime_iff_associated [CommMonoidWithZero M] [IsCancelMulZero M] {p q : M}
+    (pp : Prime p) (qp : Prime q) : p ∣ q ↔ Associated p q :=
   pp.irreducible.dvd_irreducible_iff_associated qp.irreducible
 
 theorem Associated.prime_iff [CommMonoidWithZero M] {p q : M} (h : p ~ᵤ q) : Prime p ↔ Prime q :=
@@ -308,8 +306,8 @@ protected theorem Associated.irreducible_iff [Monoid M] {p q : M} (h : p ~ᵤ q)
     Irreducible p ↔ Irreducible q :=
   ⟨h.irreducible, h.symm.irreducible⟩
 
-theorem Associated.of_mul_left [CancelCommMonoidWithZero M] {a b c d : M} (h : a * b ~ᵤ c * d)
-    (h₁ : a ~ᵤ c) (ha : a ≠ 0) : b ~ᵤ d :=
+theorem Associated.of_mul_left [CommMonoidWithZero M] [IsCancelMulZero M] {a b c d : M}
+    (h : a * b ~ᵤ c * d) (h₁ : a ~ᵤ c) (ha : a ≠ 0) : b ~ᵤ d :=
   let ⟨u, hu⟩ := h
   let ⟨v, hv⟩ := Associated.symm h₁
   ⟨u * (v : Mˣ),
@@ -318,11 +316,12 @@ theorem Associated.of_mul_left [CancelCommMonoidWithZero M] {a b c d : M} (h : a
         rw [← hv, mul_assoc c (v : M) d, mul_left_comm c, ← hu]
         simp [hv.symm, mul_comm, mul_left_comm])⟩
 
-theorem Associated.of_mul_right [CancelCommMonoidWithZero M] {a b c d : M} :
+theorem Associated.of_mul_right [CommMonoidWithZero M] [IsCancelMulZero M] {a b c d : M} :
     a * b ~ᵤ c * d → b ~ᵤ d → b ≠ 0 → a ~ᵤ c := by
   rw [mul_comm a, mul_comm c]; exact Associated.of_mul_left
 
-theorem Associated.of_pow_associated_of_prime [CancelCommMonoidWithZero M] {p₁ p₂ : M} {k₁ k₂ : ℕ}
+theorem Associated.of_pow_associated_of_prime [CommMonoidWithZero M] [IsCancelMulZero M]
+    {p₁ p₂ : M} {k₁ k₂ : ℕ}
     (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₁) (h : p₁ ^ k₁ ~ᵤ p₂ ^ k₂) : p₁ ~ᵤ p₂ := by
   have : p₁ ∣ p₂ ^ k₂ := by
     rw [← h.dvd_iff_dvd_right]
@@ -330,7 +329,8 @@ theorem Associated.of_pow_associated_of_prime [CancelCommMonoidWithZero M] {p₁
   rw [← hp₁.dvd_prime_iff_associated hp₂]
   exact hp₁.dvd_of_dvd_pow this
 
-theorem Associated.of_pow_associated_of_prime' [CancelCommMonoidWithZero M] {p₁ p₂ : M} {k₁ k₂ : ℕ}
+theorem Associated.of_pow_associated_of_prime' [CommMonoidWithZero M] [IsCancelMulZero M]
+    {p₁ p₂ : M} {k₁ k₂ : ℕ}
     (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₂ : 0 < k₂) (h : p₁ ^ k₁ ~ᵤ p₂ ^ k₂) : p₁ ~ᵤ p₂ :=
   (h.symm.of_pow_associated_of_prime hp₂ hp₁ hk₂).symm
 
@@ -350,25 +350,22 @@ section UniqueUnits
 variable [Monoid M] [Subsingleton Mˣ]
 
 theorem associated_iff_eq {x y : M} : x ~ᵤ y ↔ x = y := by
-  constructor
-  · rintro ⟨c, rfl⟩
-    rw [units_eq_one c, Units.val_one, mul_one]
-  · rintro rfl
-    rfl
+  simp [Associated, Units.eq_one]
 
 theorem associated_eq_eq : (Associated : M → M → Prop) = Eq := by
   ext
   rw [associated_iff_eq]
 
-theorem prime_dvd_prime_iff_eq {M : Type*} [CancelCommMonoidWithZero M] [Subsingleton Mˣ] {p q : M}
-    (pp : Prime p) (qp : Prime q) : p ∣ q ↔ p = q := by
+theorem prime_dvd_prime_iff_eq {M : Type*} [CommMonoidWithZero M] [IsCancelMulZero M]
+    [Subsingleton Mˣ] {p q : M} (pp : Prime p) (qp : Prime q) : p ∣ q ↔ p = q := by
   rw [pp.dvd_prime_iff_associated qp, ← associated_eq_eq]
 
 end UniqueUnits
 
 section UniqueUnits₀
 
-variable {R : Type*} [CancelCommMonoidWithZero R] [Subsingleton Rˣ] {p₁ p₂ : R} {k₁ k₂ : ℕ}
+variable {R : Type*} [CommMonoidWithZero R] [IsCancelMulZero R] [Subsingleton Rˣ]
+variable {p₁ p₂ : R} {k₁ k₂ : ℕ}
 
 theorem eq_of_prime_pow_eq (hp₁ : Prime p₁) (hp₂ : Prime p₂) (hk₁ : 0 < k₁)
     (h : p₁ ^ k₁ = p₂ ^ k₂) : p₁ = p₂ := by
@@ -685,15 +682,15 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero M]
+variable [CommMonoidWithZero M] [IsCancelMulZero M]
 
 instance instPartialOrder : PartialOrder (Associates M) where
   le_antisymm := mk_surjective.forall₂.2 fun _a _b hab hba => mk_eq_mk_iff_associated.2 <|
     associated_of_dvd_dvd (dvd_of_mk_le_mk hab) (dvd_of_mk_le_mk hba)
 
-instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero (Associates M) :=
-  { (by infer_instance : CommMonoidWithZero (Associates M)) with
-    mul_left_cancel_of_ne_zero := by
+instance instIsCancelMulZero : IsCancelMulZero (Associates M) :=
+  @IsLeftCancelMulZero.to_isCancelMulZero _ _ _
+  { mul_left_cancel_of_ne_zero := by
       rintro ⟨a⟩ ha ⟨b⟩ ⟨c⟩ h
       rcases Quotient.exact' h with ⟨u, hu⟩
       have hu : a * (b * ↑u) = a * c := by rwa [← mul_assoc]
@@ -711,7 +708,7 @@ theorem one_or_eq_of_le_of_prime {p m : Associates M} (hp : Prime p) (hle : m �
     m = 1 ∨ m = p := by
   rcases mk_surjective p with ⟨p, rfl⟩
   rcases mk_surjective m with ⟨m, rfl⟩
-  simpa [mk_eq_mk_iff_associated, Associated.comm, -Quotient.eq]
+  simpa [mk_eq_mk_iff_associated, Associated.comm]
     using (prime_mk.1 hp).irreducible.dvd_iff.mp (mk_le_mk_iff_dvd.1 hle)
 
 theorem dvdNotUnit_iff_lt {a b : Associates M} : DvdNotUnit a b ↔ a < b :=
@@ -736,20 +733,20 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-theorem isUnit_of_associated_mul [CancelCommMonoidWithZero M] {p b : M} (h : Associated (p * b) p)
-    (hp : p ≠ 0) : IsUnit b := by
+theorem isUnit_of_associated_mul [CommMonoidWithZero M] [IsCancelMulZero M] {p b : M}
+    (h : Associated (p * b) p) (hp : p ≠ 0) : IsUnit b := by
   obtain ⟨a, ha⟩ := h
   refine .of_mul_eq_one a ((mul_right_inj' hp).mp ?_)
   rwa [← mul_assoc, mul_one]
 
-theorem DvdNotUnit.not_associated [CancelCommMonoidWithZero M] {p q : M} (h : DvdNotUnit p q) :
-    ¬Associated p q := by
+theorem DvdNotUnit.not_associated [CommMonoidWithZero M] [IsCancelMulZero M] {p q : M}
+    (h : DvdNotUnit p q) : ¬Associated p q := by
   rintro ⟨a, rfl⟩
   obtain ⟨hp, x, hx, hx'⟩ := h
   rcases (mul_right_inj' hp).mp hx' with rfl
   exact hx a.isUnit
 
-theorem dvd_prime_pow [CancelCommMonoidWithZero M] {p q : M} (hp : Prime p) (n : ℕ) :
+theorem dvd_prime_pow [CommMonoidWithZero M] [IsCancelMulZero M] {p q : M} (hp : Prime p) (n : ℕ) :
     q ∣ p ^ n ↔ ∃ i ≤ n, Associated q (p ^ i) := by
   induction n generalizing q with
   | zero =>

@@ -3,9 +3,11 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Alex Meiburg
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Polynomial.Degree.Monomial
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Degree.Monomial
 
 /-!
 # Erase the leading term of a univariate polynomial
@@ -18,6 +20,8 @@ import Mathlib.Algebra.Polynomial.Degree.Monomial
 The definition is set up so that it does not mention subtraction in the definition,
 and thus works for polynomials over semirings as well as rings.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -89,9 +93,6 @@ theorem ne_natDegree_of_mem_eraseLead_support {a : ℕ} (h : a ∈ (eraseLead f)
 
 theorem natDegree_notMem_eraseLead_support : f.natDegree ∉ (eraseLead f).support := fun h =>
   ne_natDegree_of_mem_eraseLead_support h rfl
-
-@[deprecated (since := "2025-05-23")]
-alias natDegree_not_mem_eraseLead_support := natDegree_notMem_eraseLead_support
 
 theorem eraseLead_support_card_lt (h : f ≠ 0) : #(eraseLead f).support < #f.support := by
   rw [eraseLead_support]
@@ -295,13 +296,13 @@ lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZ
     have hd₁ : n < ((X - C x) * P).eraseLead.natDegree := by
       linarith [natDegree_eraseLead_add_one h₂]
     rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg hd₁.ne']
-    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg (by omega)]
+    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial, if_neg (by lia)]
     rw [← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub,
       sub_zero, sub_zero, eq_sub_iff_add_eq, add_eq_left]
     rcases hn₂ : n
-    · simpa [coeff_monomial, hp] using fun _ ↦ by omega
-    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg (by omega),
-        if_neg (by omega), mul_zero, sub_zero]
+    · simpa [coeff_monomial, hp] using fun _ ↦ by lia
+    · rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg (by lia),
+        if_neg (by lia), mul_zero, sub_zero]
   · --n ≥ P.natDegree, so all the coefficients are zero.
     trans 0 <;> rw [coeff_eq_zero_of_natDegree_lt]
     · grw [eraseLead_natDegree_le, eraseLead_natDegree_le]

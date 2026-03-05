@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.Integral
+module
+
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Ideals over/under ideals in integral extensions
@@ -20,6 +22,8 @@ coefficients of a minimal polynomial.
 Once mathlib has more material on the localization at a prime ideal, the results
 can be proven using more general going-up/going-down theory.
 -/
+
+@[expose] public section
 
 open Polynomial Submodule
 
@@ -91,9 +95,8 @@ theorem quotient_mk_maps_eq (P : Ideal R[X]) :
       (Ideal.quotientMap (map (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)
             (mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) le_comap_map).comp
         ((Quotient.mk P).comp C) := by
-  refine RingHom.ext fun x => ?_
-  repeat' rw [RingHom.coe_comp, Function.comp_apply]
-  rw [quotientMap_mk, coe_mapRingHom, map_C]
+  ext
+  simp
 
 /-- This technical lemma asserts the existence of a polynomial `p` in an ideal `P ⊂ R[x]`
 that is non-zero in the quotient `R / (P ∩ R) [x]`.  The assumptions are equivalent to
@@ -124,6 +127,7 @@ theorem exists_coeff_ne_zero_mem_comap_of_root_mem [IsDomain S] {r : S} (r_ne_ze
   exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem
     (fun {_} h => Or.resolve_right (mul_eq_zero.mp h) r_ne_zero) hr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_coeff_mem_comap_sdiff_comap_of_root_mem_sdiff [IsPrime I] (hIJ : I ≤ J) {r : S}
     (hr : r ∈ (J : Set S) \ I) {p : R[X]} (p_ne_zero : p.map (Quotient.mk (I.comap f)) ≠ 0)
     (hpI : p.eval₂ f r ∈ I) : ∃ i, p.coeff i ∈ (J.comap f : Set R) \ I.comap f := by
@@ -241,11 +245,13 @@ theorem IsIntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal A} :
 
 end IsIntegralClosure
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntegralClosure.comap_lt_comap {I J : Ideal (integralClosure R S)} [I.IsPrime]
     (I_lt_J : I < J) :
     I.comap (algebraMap R (integralClosure R S)) < J.comap (algebraMap R (integralClosure R S)) :=
   IsIntegralClosure.comap_lt_comap S I_lt_J
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntegralClosure.isMaximal_of_isMaximal_comap (I : Ideal (integralClosure R S)) [I.IsPrime]
     (hI : IsMaximal (I.comap (algebraMap R (integralClosure R S)))) : IsMaximal I :=
   IsIntegralClosure.isMaximal_of_isMaximal_comap S I hI
@@ -254,10 +260,12 @@ section
 
 variable [IsDomain S]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntegralClosure.comap_ne_bot [Nontrivial R] {I : Ideal (integralClosure R S)}
     (I_ne_bot : I ≠ ⊥) : I.comap (algebraMap R (integralClosure R S)) ≠ ⊥ :=
   IsIntegralClosure.comap_ne_bot S I_ne_bot
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IntegralClosure.eq_bot_of_comap_eq_bot [Nontrivial R] {I : Ideal (integralClosure R S)} :
     I.comap (algebraMap R (integralClosure R S)) = ⊥ → I = ⊥ :=
   IsIntegralClosure.eq_bot_of_comap_eq_bot S
@@ -284,7 +292,7 @@ theorem exists_ideal_over_prime_of_isIntegral_of_isDomain [Algebra.IsIntegral R 
   rw [comap_comap, ← IsLocalRing.eq_maximalIdeal Qₚ_max,
     ← IsLocalization.map_comp (P := S) (Q := Sₚ) (g := algebraMap R S)
     (M := P.primeCompl) (T := Algebra.algebraMapSubmonoid S P.primeCompl) (S := Rₚ)
-    (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩) ]
+    (fun p hp => Algebra.mem_algebraMapSubmonoid_of_mem ⟨p, hp⟩)]
   rfl
 
 end
@@ -319,8 +327,8 @@ theorem exists_ideal_over_prime_of_isIntegral [Algebra.IsIntegral R S] (P : Idea
   obtain ⟨Q, hQ, hQ', hQ''⟩ := exists_ideal_over_prime_of_isIntegral_of_isPrime P P' hP''
   exact ⟨Q, hP.trans hQ, hQ', hQ''⟩
 
-instance nonempty_primesOver [Nontrivial S] [Algebra.IsIntegral R S] [NoZeroSMulDivisors R S]
-    (P : Ideal R) [P.IsPrime] :
+instance nonempty_primesOver [IsDomain R] [Nontrivial S] [Algebra.IsIntegral R S]
+    [Module.IsTorsionFree R S] (P : Ideal R) [P.IsPrime] :
     Nonempty (primesOver P S) := by
   obtain ⟨Q, _, hQ₁, hQ₂⟩ := exists_ideal_over_prime_of_isIntegral P (⊥ : Ideal S) (by simp)
   exact ⟨Q, ⟨hQ₁, (liesOver_iff _ _).mpr hQ₂.symm⟩⟩
@@ -359,6 +367,25 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
     I.map f = ⊤ ↔ I = ⊤ :=
   map_eq_top_iff_of_ker_le f (by simp [(RingHom.injective_iff_ker_eq_bot f).mp hf₁]) hf₂
 
+/-- If `S` is an integral `R`-algebra such that `q` is the unique prime of `S` lying over
+a prime `p` of `R`, then any `x ∉ q` divides some `r ∉ p`. -/
+lemma exists_notMem_dvd_algebraMap_of_primesOver_eq_singleton
+    {p : Ideal R} [p.IsPrime] {q : Ideal S} [q.IsPrime] (hq : p.primesOver S = {q})
+    [Algebra.IsIntegral R S] (x : S) (hx : x ∉ q) : ∃ r ∉ p, x ∣ algebraMap _ _ r := by
+  simp only [dvd_def, eq_comm, mul_comm x]
+  by_contra!
+  obtain ⟨Q, hQ, hxQ, hQp⟩ := Ideal.exists_le_prime_disjoint (.span {x})
+    (Algebra.algebraMapSubmonoid _ p.primeCompl)
+    (by simpa [Set.disjoint_iff_forall_ne, Ideal.mem_span_singleton',
+      Algebra.algebraMapSubmonoid, @forall_comm S])
+  have hQp' : Q.under _ ≤ p := by
+    intro x hxQ
+    by_contra hxp
+    exact Set.subset_compl_iff_disjoint_right.mpr hQp hxQ ⟨x, hxp, rfl⟩
+  obtain ⟨Q', hQ'Q, hQ', hQ'p⟩ := Ideal.exists_ideal_over_prime_of_isIntegral_of_isPrime _ _ hQp'
+  obtain rfl : Q' = q := hq.le ⟨hQ', ⟨hQ'p.symm⟩⟩
+  exact hx (hQ'Q (hxQ (Ideal.mem_span_singleton_self _)))
+
 end IsDomain
 
 section IsIntegral
@@ -389,7 +416,7 @@ variable (A) {P} in
 theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=
   fun h ↦ hP <| eq_bot_of_comap_eq_bot h
 
-/-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
+/-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is an integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
 
@@ -401,17 +428,21 @@ end IsIntegral
 section IsIntegral
 
 variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
-  [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
+  [Algebra A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
 
 instance primesOver.isMaximal : Q.1.IsMaximal :=
   Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
 
+theorem isMaximal_of_mem_primesOver {P : Ideal B} (hP : P ∈ primesOver p B) : P.IsMaximal :=
+  primesOver.isMaximal ⟨P, hP⟩
+
 variable (A B) in
-lemma primesOver_bot [Nontrivial A] [IsDomain B] : primesOver (⊥ : Ideal A) B = {⊥} := by
+lemma primesOver_bot [Module.IsTorsionFree A B] [IsDomain A] [IsDomain B] :
+    primesOver (⊥ : Ideal A) B = {⊥} := by
   ext p
   refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩
   rintro rfl
-  exact ⟨Ideal.bot_prime, Ideal.bot_liesOver_bot A B⟩
+  exact ⟨Ideal.isPrime_bot, Ideal.bot_liesOver_bot A B⟩
 
 end IsIntegral
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Results on discretized exponentials
@@ -17,6 +19,8 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
 * `sum_div_nat_floor_pow_sq_le_div_sq`: The sum of `1/⌊c^i⌋₊^2` above a threshold `j` is comparable
   to `1/j^2`, up to a multiplicative constant.
 -/
+
+public section
 
 open Filter Finset
 
@@ -64,7 +68,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by cutsat⟩
+      exact ⟨N, by lia⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -79,10 +83,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       have : N - 1 < N := Nat.pred_lt Npos.ne'
       simpa only [not_lt] using Nat.find_min exN this
     have IcN : (c N : ℝ) ≤ (1 + ε) * c (N - 1) := by
-      have A : a ≤ N - 1 := by
-        apply @Nat.le_of_add_le_add_right a 1 (N - 1)
-        rw [Nat.sub_add_cancel Npos]
-        exact aN
+      have A : a ≤ N - 1 := (Nat.le_sub_one_iff_lt Npos).mpr aN
       have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
       have := (ha _ A).1
       rwa [B] at this
@@ -118,7 +119,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [Ici_mem_atTop M] with n hn
     have exN : ∃ N, n < c N := by
       rcases (tendsto_atTop.1 ctop (n + 1)).exists with ⟨N, hN⟩
-      exact ⟨N, by cutsat⟩
+      exact ⟨N, by lia⟩
     let N := Nat.find exN
     have ncN : n < c N := Nat.find_spec exN
     have aN : a + 1 ≤ N := by
@@ -129,10 +130,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         exact mem_range.2 h
       exact lt_irrefl _ ((cNM.trans hn).trans_lt ncN)
     have Npos : 0 < N := lt_of_lt_of_le Nat.succ_pos' aN
-    have aN' : a ≤ N - 1 := by
-      apply @Nat.le_of_add_le_add_right a 1 (N - 1)
-      rw [Nat.sub_add_cancel Npos]
-      exact aN
+    have aN' : a ≤ N - 1 := (Nat.le_sub_one_iff_lt Npos).mpr aN
     have cNn : c (N - 1) ≤ n := by
       have : N - 1 < N := Nat.pred_lt Npos.ne'
       simpa only [not_lt] using Nat.find_min exN this

@@ -3,18 +3,23 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Order.DenselyOrdered
+module
+
+public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Discreteness of subgroups in archimedean ordered groups
 
-This file contains some supplements to the results in `Mathlib.Topology.Algebra.Order.Archimedean`,
-involving discreteness of subgroups, which require heavier imports.
+This file contains some supplements to the results in
+`Mathlib/Topology/Algebra/Order/Archimedean.lean`, involving discreteness of subgroups, which
+require heavier imports.
 -/
+
+@[expose] public section
 
 namespace Subgroup
 
@@ -39,7 +44,7 @@ instance instDiscreteTopologyZMultiples (g : G) : DiscreteTopology (zpowers g) :
   · simp only [Set.mem_preimage, Set.mem_Ioo, Set.mem_singleton_iff, and_imp]
     intro hn hn'
     rw [zpow_lt_zpow_iff_right ha] at hn hn'
-    simp only [Subtype.ext_iff, show n = 0 by omega, zpow_zero, coe_one]
+    simp only [Subtype.ext_iff, show n = 0 by lia, zpow_zero, coe_one]
   · simp_all
 
 variable [MulArchimedean G]
@@ -50,7 +55,7 @@ instance [DiscreteTopology G] : IsCyclic G := by
   exact LinearOrderedCommGroup.isCyclic_iff_not_denselyOrdered.mpr fun h ↦
     have := h.subsingleton_of_discreteTopology; false_of_nontrivial_of_subsingleton G
 
-/-- In an Archimedean densely linearly ordered group (with the order topology), a subgroup is
+/-- In an Archimedean linearly ordered group (with the order topology), a subgroup is
 discrete iff it is cyclic. -/
 @[to_additive /-- In an Archimedean linearly ordered additive group (with the order topology), a
 subgroup is discrete iff it is cyclic. -/]

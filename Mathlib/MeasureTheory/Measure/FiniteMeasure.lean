@@ -3,11 +3,14 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Topology.TietzeExtension
 
 /-!
 # Finite measures
@@ -80,11 +83,13 @@ weak convergence of measures, finite measure
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open BoundedContinuousFunction Filter MeasureTheory Set Topology
-open scoped ENNReal NNReal
+open scoped ENNReal NNReal Function
 
 namespace MeasureTheory
 
@@ -106,7 +111,7 @@ and using the associated weak topology (essentially the weak-star topology on th
 -/
 
 
-variable {Ω : Type*} [MeasurableSpace Ω]
+variable {Ω : Type*} [MeasurableSpace Ω] {s t : Set Ω}
 
 /-- Finite measures are defined as the subtype of measures that have the property of being finite
 measures (i.e., their total mass is finite). -/
@@ -142,6 +147,12 @@ lemma coeFn_mk (μ : Measure Ω) (hμ) :
 lemma mk_apply (μ : Measure Ω) (hμ) (s : Set Ω) :
     DFunLike.coe (F := FiniteMeasure Ω) ⟨μ, hμ⟩ s = (μ s).toNNReal := rfl
 
+@[simp] lemma toMeasure_mk (μ : Measure Ω) (h : IsFiniteMeasure μ) :
+    FiniteMeasure.toMeasure (⟨μ, h⟩ : FiniteMeasure Ω) = μ := rfl
+
+@[simp] lemma measureReal_eq_coe_coeFn {μ : FiniteMeasure Ω} {s : Set Ω} :
+    (μ : Measure Ω).real s = μ s := rfl
+
 @[simp]
 theorem ennreal_coeFn_eq_coeFn_toMeasure (ν : FiniteMeasure Ω) (s : Set Ω) :
     (ν s : ℝ≥0∞) = (ν : Measure Ω) s :=
@@ -153,6 +164,7 @@ theorem null_iff_toMeasure_null (ν : FiniteMeasure Ω) (s : Set Ω) :
   ⟨fun h ↦ by rw [← ennreal_coeFn_eq_coeFn_toMeasure, h, ENNReal.coe_zero],
    fun h ↦ congrArg ENNReal.toNNReal h⟩
 
+@[mono, gcongr]
 theorem apply_mono (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
   ENNReal.toNNReal_mono (measure_ne_top _ s₂) ((μ : Measure Ω).mono h)
 
@@ -161,11 +173,17 @@ theorem apply_union_le (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} : μ (s₁ �
   apply (ENNReal.toNNReal_mono (by finiteness) this).trans_eq
   rw [ENNReal.toNNReal_add (by finiteness) (by finiteness), coeFn_def]
 
+theorem mono_null (μ : FiniteMeasure Ω) (h : s ⊆ t) (ht : μ t = 0) : μ s = 0 :=
+  eq_bot_mono (apply_mono μ h) ht
+
+lemma pos_mono (μ : FiniteMeasure Ω) (h : s ⊆ t) (hs : 0 < μ s) :
+    0 < μ t := hs.trans_le <| μ.apply_mono h
+
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/
 protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
     [IsCountablyGenerated (atTop : Filter ι)] {μ : FiniteMeasure Ω} {f : ι → Set Ω} :
-    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+    Tendsto (fun i ↦ μ (accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
   simpa [← ennreal_coeFn_eq_coeFn_toMeasure]
     using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure) (ι := ι)
 
@@ -241,6 +259,7 @@ theorem coeFn_smul [IsScalarTower R ℝ≥0 ℝ≥0] (c : R) (μ : FiniteMeasure
     (⇑(c • μ) : Set Ω → ℝ≥0) = c • (⇑μ : Set Ω → ℝ≥0) := by
   funext; simp [← ENNReal.coe_inj, ENNReal.coe_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 instance instAddCommMonoid : AddCommMonoid (FiniteMeasure Ω) :=
   toMeasure_injective.addCommMonoid _ toMeasure_zero toMeasure_add fun _ _ ↦ toMeasure_smul _ _
 
@@ -250,6 +269,11 @@ def toMeasureAddMonoidHom : FiniteMeasure Ω →+ Measure Ω where
   toFun := (↑)
   map_zero' := toMeasure_zero
   map_add' := toMeasure_add
+
+@[simp, norm_cast]
+theorem toMeasure_sum {ι : Type*} {s : Finset ι} {ν : ι → FiniteMeasure Ω} :
+    ↑(∑ i ∈ s, ν i) = ∑ i ∈ s, (ν i : Measure Ω) :=
+  map_sum toMeasureAddMonoidHom _ _
 
 instance {Ω : Type*} [MeasurableSpace Ω] : Module ℝ≥0 (FiniteMeasure Ω) :=
   Function.Injective.module _ toMeasureAddMonoidHom toMeasure_injective toMeasure_smul
@@ -264,6 +288,7 @@ def restrict (μ : FiniteMeasure Ω) (A : Set Ω) : FiniteMeasure Ω where
   val := (μ : Measure Ω).restrict A
   property := MeasureTheory.isFiniteMeasureRestrict (μ : Measure Ω) A
 
+@[simp]
 theorem restrict_measure_eq (μ : FiniteMeasure Ω) (A : Set Ω) :
     (μ.restrict A : Measure Ω) = (μ : Measure Ω).restrict A := rfl
 
@@ -271,19 +296,39 @@ theorem restrict_apply_measure (μ : FiniteMeasure Ω) (A : Set Ω) {s : Set Ω}
     (s_mble : MeasurableSet s) : (μ.restrict A : Measure Ω) s = (μ : Measure Ω) (s ∩ A) :=
   Measure.restrict_apply s_mble
 
+@[simp]
 theorem restrict_apply (μ : FiniteMeasure Ω) (A : Set Ω) {s : Set Ω} (s_mble : MeasurableSet s) :
     (μ.restrict A) s = μ (s ∩ A) := by
   apply congr_arg ENNReal.toNNReal
   exact Measure.restrict_apply s_mble
 
+@[simp]
 theorem restrict_mass (μ : FiniteMeasure Ω) (A : Set Ω) : (μ.restrict A).mass = μ A := by
   simp only [mass, restrict_apply μ A MeasurableSet.univ, univ_inter]
 
+@[simp] lemma restrict_univ {μ : FiniteMeasure Ω} : μ.restrict univ = μ := by
+  ext; simp
+
+lemma restrict_union {μ : FiniteMeasure Ω} {s t : Set Ω} (h : Disjoint s t) (ht : MeasurableSet t) :
+    μ.restrict (s ∪ t) = μ.restrict s + μ.restrict t := by
+  ext u hu
+  simp [Measure.restrict_union h ht]
+
+lemma restrict_biUnion_finset {ι : Type*} {μ : FiniteMeasure Ω} {T : Finset ι}
+    {s : ι → Set Ω} (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
+    μ.restrict (⋃ i ∈ T, s i) = ∑ i ∈ T, μ.restrict (s i) := by
+  ext t ht
+  simp only [restrict_measure_eq, toMeasure_sum, Measure.coe_finset_sum, Finset.sum_apply]
+  rw [Measure.restrict_biUnion_finset hd hm]
+  simp only [Measure.sum_fintype, Finset.univ_eq_attach, Measure.coe_finset_sum, Finset.sum_apply]
+  conv_rhs => rw [← Finset.sum_attach]
+
+@[simp]
 theorem restrict_eq_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A = 0 ↔ μ A = 0 := by
   rw [← mass_zero_iff, restrict_mass]
 
 theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
-  rw [← mass_nonzero_iff, restrict_mass]
+  simp
 
 /-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
 instance : MeasurableSpace (FiniteMeasure Ω) := Subtype.instMeasurableSpace
@@ -473,7 +518,7 @@ theorem continuous_testAgainstNN_eval (f : Ω →ᵇ ℝ≥0) :
   exact WeakBilin.eval_continuous _ _
 
 /-- The total mass of a finite measure depends continuously on the measure. -/
-theorem continuous_mass : Continuous fun μ : FiniteMeasure Ω ↦ μ.mass := by
+@[fun_prop] theorem continuous_mass : Continuous fun μ : FiniteMeasure Ω ↦ μ.mass := by
   simp_rw [← testAgainstNN_one]; exact continuous_testAgainstNN_eval 1
 
 /-- Convergence of finite measures implies the convergence of their total masses. -/
@@ -533,6 +578,8 @@ theorem tendsto_iff_forall_lintegral_tendsto {γ : Type*} {F : Filter γ} {μs :
   rw [tendsto_iff_forall_toWeakDualBCNN_tendsto]
   simp_rw [toWeakDualBCNN_apply _ _, ← testAgainstNN_coe_eq, ENNReal.tendsto_coe,
     ENNReal.toNNReal_coe]
+
+instance : R1Space (FiniteMeasure Ω) := IsInducing.r1Space (f := toWeakDualBCNN) ⟨rfl⟩
 
 end weak_convergence -- section
 
@@ -717,15 +764,137 @@ theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [
       integral_ofReal] at h
     exact tendsto_ofReal_iff'.mp h
 
-lemma continuous_integral_boundedContinuousFunction
-    {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
-    Continuous fun μ : FiniteMeasure α ↦ ∫ x, f x ∂μ := by
-  rw [continuous_iff_continuousAt]
-  intro μ
-  exact continuousAt_of_tendsto_nhds
-    (FiniteMeasure.tendsto_iff_forall_integral_tendsto.mp tendsto_id f)
+instance : ContinuousAdd (FiniteMeasure Ω) := by
+  refine ⟨continuous_iff_continuousAt.2 (fun p ↦ ?_)⟩
+  apply tendsto_iff_forall_lintegral_tendsto.2 (fun g ↦ ?_)
+  have A : Tendsto (fun (i : FiniteMeasure Ω × FiniteMeasure Ω) ↦ ∫⁻ x, g x ∂i.1) (𝓝 p)
+      (𝓝 (∫⁻ x, g x ∂p.1)) := by
+    rw [nhds_prod_eq]
+    exact (tendsto_iff_forall_lintegral_tendsto.1 tendsto_id g).comp tendsto_fst
+  have B : Tendsto (fun (i : FiniteMeasure Ω × FiniteMeasure Ω) ↦ ∫⁻ x, g x ∂i.2) (𝓝 p)
+      (𝓝 (∫⁻ x, g x ∂p.2)) := by
+    rw [nhds_prod_eq]
+    exact (tendsto_iff_forall_lintegral_tendsto.1 tendsto_id g).comp tendsto_snd
+  convert A.add B with q <;> simp
+
+instance : ContinuousSMul ℝ≥0 (FiniteMeasure Ω) := by
+  refine ⟨continuous_iff_continuousAt.2 (fun p ↦ ?_)⟩
+  apply tendsto_iff_forall_integral_tendsto.2 (fun g ↦ ?_)
+  have A : Tendsto (fun (i : ℝ≥0 × FiniteMeasure Ω) ↦ i.1) (𝓝 p) (𝓝 (p.1)) := by
+    rw [nhds_prod_eq]
+    exact tendsto_fst
+  have B : Tendsto (fun (i : ℝ≥0 × FiniteMeasure Ω) ↦ ∫ x, g x ∂i.2) (𝓝 p)
+      (𝓝 (∫ x, g x ∂p.2)) := by
+    rw [nhds_prod_eq]
+    exact (tendsto_iff_forall_integral_tendsto.1 tendsto_id g).comp tendsto_snd
+  convert A.smul B with q <;> simp
+
+variable {X : Type*} [TopologicalSpace X] {μs : X → FiniteMeasure Ω}
+
+/-- The characterization of weak convergence of finite measures by the condition that the
+integrals of every continuous bounded nonnegative function are continuous. -/
+lemma continuous_iff_forall_continuous_lintegral :
+    Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
+  simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
+    forall_swap (α := X)]
+
+/-- The characterization of weak convergence of finite measures by the usual (defining)
+condition that the integrals of every continuous bounded function are continuous. -/
+lemma continuous_iff_forall_continuous_integral :
+    Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
+  simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
+    forall_swap (α := X)]
+
+@[fun_prop]
+lemma continuous_lintegral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
+    (f : X →ᵇ ℝ≥0) : Continuous fun μ : FiniteMeasure X ↦ ∫⁻ x, f x ∂μ :=
+  continuous_iff_forall_continuous_lintegral.1 continuous_id _
+
+@[fun_prop]
+lemma continuous_integral_boundedContinuousFunction [MeasurableSpace X] [OpensMeasurableSpace X]
+    (f : X →ᵇ ℝ) : Continuous fun μ : FiniteMeasure X ↦ ∫ x, f x ∂μ :=
+  continuous_iff_forall_continuous_integral.1 continuous_id _
+
+variable [CompactSpace Ω]
+
+/-- The characterization of weak convergence of finite measures by the condition that the
+integrals of every continuous bounded nonnegative function are continuous. -/
+lemma continuous_iff_forall_continuousMap_continuous_lintegral :
+    Continuous μs ↔ ∀ f : C(Ω, ℝ≥0), Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) :=
+  continuous_iff_forall_continuous_lintegral.trans
+    (ContinuousMap.equivBoundedOfCompact ..).symm.forall_congr_left
+
+/-- The characterization of weak convergence of finite measures by the usual (defining)
+condition that the integrals of every continuous bounded function are continuous. -/
+lemma continuous_iff_forall_continuousMap_continuous_integral :
+    Continuous μs ↔ ∀ f : C(Ω, ℝ), Continuous fun x ↦ ∫ ω, f ω ∂(μs x) :=
+  continuous_iff_forall_continuous_integral.trans
+    (ContinuousMap.equivBoundedOfCompact ..).symm.forall_congr_left
+
+variable [CompactSpace X] [MeasurableSpace X] [OpensMeasurableSpace X] {F : Type*}
+
+lemma continuous_lintegral_continuousMap [FunLike F X ℝ≥0] [ContinuousMapClass F X ℝ≥0] (f : F) :
+    Continuous fun μ : FiniteMeasure X ↦ ∫⁻ x, f x ∂μ :=
+  continuous_iff_forall_continuousMap_continuous_lintegral.1 continuous_id ⟨f, map_continuous f⟩
+
+lemma continuous_integral_continuousMap [FunLike F X ℝ] [ContinuousMapClass F X ℝ] (f : F) :
+    Continuous fun μ : FiniteMeasure X ↦ ∫ x, f x ∂μ :=
+  continuous_iff_forall_continuousMap_continuous_integral.1 continuous_id ⟨f, map_continuous f⟩
 
 end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
+
+
+section comap
+
+variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
+
+/-- The pullback of a finite measure under a map.
+If `f` is injective and sends each measurable set to a null-measurable set, then for each
+measurable set `s` we have `comap f μ s = μ (f '' s)`.
+Otherwise, the pullback is defined to be zero. -/
+noncomputable def comap
+    (f : Ω → Ω') (μ : FiniteMeasure Ω') : FiniteMeasure Ω :=
+  ⟨Measure.comap f μ, by infer_instance⟩
+
+@[simp] lemma toMeasure_comap (f : Ω → Ω') (μ : FiniteMeasure Ω') :
+    (μ.comap f).toMeasure = (μ : Measure Ω').comap f := rfl
+
+lemma mass_comap_le (f : Ω → Ω') (μ : FiniteMeasure Ω') :
+    (μ.comap f).mass ≤ μ.mass := by
+  simp only [mass, comap, mk_apply, coeFn_def, ne_eq, measure_ne_top, not_false_eq_true,
+    ENNReal.toNNReal_le_toNNReal]
+  apply (Measure.comap_apply_le _ _ nullMeasurableSet_univ).trans (measure_mono (subset_univ _))
+
+variable [TopologicalSpace Ω] [TopologicalSpace Ω'] [BorelSpace Ω] [BorelSpace Ω']
+
+lemma _root_.Topology.IsClosedEmbedding.continuousOn_comap_finiteMeasure [NormalSpace Ω']
+    {f : Ω → Ω'} (hf : IsClosedEmbedding f) :
+    ContinuousOn (fun (μ : FiniteMeasure Ω') ↦ μ.comap f) {μ | μ (range f)ᶜ = 0} := by
+  intro μ hμ
+  simp only [ContinuousWithinAt]
+  rw [tendsto_iff_forall_integral_tendsto]
+  intro g
+  obtain ⟨g', -, hg'⟩ : ∃ g' : Ω' →ᵇ ℝ, ‖g'‖ = ‖g‖ ∧ g' ∘ f = g :=
+    exists_extension_norm_eq_of_isClosedEmbedding g hf
+  have A x : g x = g' (f x) := by change (⇑g) x = (⇑g' ∘ f) x; simp only [hg']
+  simp only [comap, toMeasure_mk, A, ← MeasurableEmbedding.integral_map hf.measurableEmbedding,
+    MeasurableEmbedding.map_comap hf.measurableEmbedding]
+  have B {ν : FiniteMeasure Ω'} (hν : ν (range f)ᶜ = 0) :
+      ∫ y in range f, g' y ∂ν = ∫ y, g' y ∂ν := by
+    congr
+    simp only [null_iff_toMeasure_null] at hν
+    exact Measure.restrict_eq_self_of_ae_mem hν
+  rw [B hμ]
+  have : Tendsto (fun (ν : FiniteMeasure Ω') ↦ ∫ y, g' y ∂ν) (𝓝[{μ | μ (range f)ᶜ = 0}] μ)
+      (𝓝 (∫ (y : Ω'), g' y ∂μ)) := by
+    rw [nhdsWithin]
+    have A : Tendsto (fun (ν : FiniteMeasure Ω') ↦ ∫ y, g' y ∂ν) (𝓝 μ) (𝓝 (∫ (y : Ω'), g' y ∂μ)) :=
+      tendsto_iff_forall_integral_tendsto.1 tendsto_id _
+    exact Tendsto.mono_left A inf_le_left
+  apply Tendsto.congr' _ this
+  filter_upwards [self_mem_nhdsWithin] with ν hν using (B hν).symm
+
+end comap
 
 section map
 
@@ -771,6 +940,14 @@ noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
   map_add' := map_add f_mble
   map_smul' := map_smul
 
+lemma mass_map_le (f : Ω → Ω') (μ : FiniteMeasure Ω) : (μ.map f).mass ≤ μ.mass := by
+  simp only [mass, coeFn_def, toMeasure_map, ne_eq, measure_ne_top, not_false_eq_true,
+    ENNReal.toNNReal_le_toNNReal]
+  by_cases hf : AEMeasurable f μ
+  · rw [Measure.map_apply_of_aemeasurable hf MeasurableSet.univ]
+    exact measure_mono (subset_univ _)
+  · simp [Measure.map_of_not_aemeasurable hf]
+
 variable [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 variable [TopologicalSpace Ω'] [BorelSpace Ω']
 
@@ -791,6 +968,7 @@ lemma tendsto_map_of_tendsto_of_continuous {ι : Type*} {L : Filter ι}
 /-- If `f : X → Y` is continuous and `Y` is equipped with the Borel sigma algebra, then
 the push-forward of finite measures `f* : FiniteMeasure X → FiniteMeasure Y` is continuous
 (in the topologies of weak convergence of measures). -/
+@[fun_prop]
 lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
     Continuous (fun ν ↦ FiniteMeasure.map ν f) := by
   rw [continuous_iff_continuousAt]
@@ -804,6 +982,45 @@ noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
   map_add' := map_add f_cont.measurable
   map_smul' := map_smul
   cont := continuous_map f_cont
+
+lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [BorelSpace Ω] [NormalSpace Ω']
+    (f : Ω → Ω') (hf : IsClosedEmbedding f) :
+    IsEmbedding (fun (μ : FiniteMeasure Ω) ↦ μ.map f) := by
+  let M : Set (FiniteMeasure Ω') := {μ | μ (range f)ᶜ = 0}
+  have A : IsEmbedding (Subtype.val : M → FiniteMeasure Ω') := IsEmbedding.subtypeVal
+  let B : FiniteMeasure Ω ≃ₜ M :=
+  { toFun μ := by
+      refine ⟨μ.map f, ?_⟩
+      simp only [null_iff_toMeasure_null, mem_setOf_eq, toMeasure_map, M]
+      rw [Measure.map_apply hf.continuous.measurable hf.isClosed_range.isOpen_compl.measurableSet]
+      simp
+    invFun := M.restrict (fun μ ↦ μ.comap f)
+    continuous_toFun := by fun_prop
+    continuous_invFun := by
+      rw [← continuousOn_iff_continuous_restrict]
+      exact hf.continuousOn_comap_finiteMeasure
+    left_inv μ := by
+      ext s hs
+      simp only [Set.restrict_apply, toMeasure_comap, toMeasure_map]
+      rw [Measure.comap_apply, Measure.map_apply, preimage_image_eq]
+      · exact hf.injective
+      · exact hf.continuous.measurable
+      · exact hf.measurableEmbedding.measurableSet_image' hs
+      · exact hf.injective
+      · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
+      · exact hs
+    right_inv μ := by
+      ext s hs
+      simp only [Set.restrict_apply, toMeasure_map]
+      rw [Measure.map_apply hf.continuous.measurable hs]
+      simp only [toMeasure_comap]
+      rw [Measure.comap_apply _ hf.injective, image_preimage_eq_inter_range]
+      · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
+        exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (by exact μ.2)
+      · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
+      · exact hf.continuous.measurable hs }
+  exact A.comp B.isEmbedding
 
 end map -- section
 

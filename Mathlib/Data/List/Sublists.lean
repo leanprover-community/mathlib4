@@ -3,11 +3,15 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.FinRange
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Induction
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Lex
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Tactic.Finiteness.Attr
 
 /-! # sublists
 
@@ -15,6 +19,8 @@ import Mathlib.Data.List.Induction
 
 This file contains basic results on this function.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -341,7 +347,7 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
   | a::l => by simp [map_cons, sublists'_cons, sublists'_map f l, Function.comp]
 
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
-  rw [← finRange_map_get l, sublists_map, sublists'_map]
+  rw [← map_get_finRange l, sublists_map, sublists'_map]
   apply Perm.map
   apply (perm_ext_iff_of_nodup _ _).mpr
   · simp

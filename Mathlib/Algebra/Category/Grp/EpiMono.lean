@@ -3,17 +3,21 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Category.Grp.EquivalenceGroupAddGroup
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Monomorphisms and epimorphisms in `Group`
 In this file, we prove monomorphisms in the category of groups are injective homomorphisms and
 epimorphisms are surjective homomorphisms.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -286,7 +290,7 @@ end SurjectiveOfEpiAuxs
 
 theorem surjective_of_epi [Epi f] : Function.Surjective f := by
   dsimp [Function.Surjective]
-  by_contra! r; rcases r with ⟨b, hb⟩
+  by_contra! ⟨b, hb⟩
   exact
     SurjectiveOfEpiAuxs.g_ne_h f b (fun ⟨c, hc⟩ => hb _ hc)
       (congr_arg GrpCat.Hom.hom ((cancel_epi f).1 (SurjectiveOfEpiAuxs.comp_eq f)))
@@ -307,7 +311,6 @@ variable {A B : AddGrpCat.{u}} (f : A ⟶ B)
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
   have i1 : Epi f ↔ Epi (groupAddGroupEquivalence.inverse.map f) := by
     refine ⟨?_, groupAddGroupEquivalence.inverse.epi_of_epi_map⟩
-    intro e'
     apply groupAddGroupEquivalence.inverse.map_epi
   rwa [GrpCat.epi_iff_surjective] at i1
 

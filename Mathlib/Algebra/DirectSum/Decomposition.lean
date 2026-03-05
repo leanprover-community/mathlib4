@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.Submodule.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Decompositions of additive monoids, groups, and modules into direct sums
@@ -27,6 +29,8 @@ we choose to avoid heavily bundling `DirectSum.decompose`, instead making copies
 `AddEquiv`, `LinearEquiv`, etc. This means we have to repeat statements that follow from these
 bundled homs, but means we don't have to repeat statements for different types of decomposition.
 -/
+
+@[expose] public section
 
 
 variable {ι R M σ : Type*}
@@ -259,10 +263,10 @@ def decomposeLinearEquiv : M ≃ₗ[R] ⨁ i, ℳ i :=
   LinearEquiv.symm
     { (decomposeAddEquiv ℳ).symm with map_smul' := map_smul (DirectSum.coeLinearMap ℳ) }
 
-@[simp] theorem decomposeLinearEquiv_apply (m : M) :
+theorem decomposeLinearEquiv_apply (m : M) :
     decomposeLinearEquiv ℳ m = decompose ℳ m := rfl
 
-@[simp] theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
+theorem decomposeLinearEquiv_symm_apply (m : ⨁ i, ℳ i) :
     (decomposeLinearEquiv ℳ).symm m = (decompose ℳ).symm m := rfl
 
 @[simp]
@@ -272,6 +276,14 @@ theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompo
 @[simp] theorem decomposeLinearEquiv_symm_comp_lof (i : ι) :
     (decomposeLinearEquiv ℳ).symm ∘ₗ lof R ι (ℳ ·) i = (ℳ i).subtype :=
   LinearMap.ext <| decompose_symm_of _
+
+@[simp] lemma decomposeLinearEquiv_symm_lof (i : ι) (x : ℳ i) :
+    (decomposeLinearEquiv ℳ).symm (lof R _ _ i x) = x :=
+  congr($(decomposeLinearEquiv_symm_comp_lof ℳ i) x)
+
+@[simp] lemma decomposeLinearEquiv_apply_coe (i : ι) (x : ℳ i) :
+    decomposeLinearEquiv ℳ x = lof R _ _ i x :=
+  (LinearEquiv.eq_symm_apply _).mp (decomposeLinearEquiv_symm_lof ..).symm
 
 /-- Two linear maps from a module with a decomposition agree if they agree on every piece.
 

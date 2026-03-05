@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Algebras over commutative semirings
@@ -14,10 +16,10 @@ In this file we define associative unital `Algebra`s over commutative (semi)ring
 
 * algebra equivalences `AlgEquiv` are defined in `Mathlib/Algebra/Algebra/Equiv.lean`;
 
-* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra.lean`;
+* `Subalgebra`s are defined in `Mathlib/Algebra/Algebra/Subalgebra/Basic.lean`;
 
 * The category `AlgCat R` of `R`-algebras is defined in the file
-  `Mathlib/Algebra/Category/Algebra/Basic.lean`.
+  `Mathlib/Algebra/Category/AlgCat/Basic.lean`.
 
 See the implementation notes for remarks about non-associative and non-unital algebras.
 
@@ -79,6 +81,8 @@ You should always use the first approach when working with associative unital al
 the second approach only when you need to weaken a condition on either `R` or `A`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finset Module.End
 
@@ -307,7 +311,8 @@ theorem right_comm (x : A) (r : R) (y : A) :
     x * algebraMap R A r * y = x * y * algebraMap R A r := by
   rw [mul_assoc, commutes, ← mul_assoc]
 
-instance _root_.IsScalarTower.right : IsScalarTower R A A :=
+/-- This has high priority because it is almost always the right instance when it applies. -/
+instance (priority := high) _root_.IsScalarTower.right : IsScalarTower R A A :=
   ⟨fun x y z => by rw [smul_eq_mul, smul_eq_mul, smul_def, smul_def, mul_assoc]⟩
 
 @[simp]
@@ -344,7 +349,7 @@ Compose an `Algebra` with a `RingHom`, with action `f s • m`.
 This is the algebra version of `Module.compHom`.
 -/
 abbrev compHom : Algebra S A where
-  smul s a := f s • a
+  __ := Module.compHom A f
   algebraMap := (algebraMap R A).comp f
   commutes' _ _ := Algebra.commutes _ _
   smul_def' _ _ := Algebra.smul_def _ _
@@ -388,7 +393,7 @@ instance (priority := 1100) id : Algebra R R where
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
   toSMul := instSMulOfMul
-  __ := ({RingHom.id R with toFun x := x}).toAlgebra
+  __ := ({ RingHom.id R with toFun x := x }).toAlgebra
 
 @[simp] lemma linearMap_self : Algebra.linearMap R R = .id := rfl
 
@@ -399,15 +404,7 @@ lemma algebraMap_self_apply (x : R) : algebraMap R R x = x := rfl
 
 namespace id
 
-@[deprecated algebraMap_self (since := "2025-07-17")]
-theorem map_eq_id : algebraMap R R = RingHom.id _ :=
-  rfl
-
-@[deprecated algebraMap_self_apply (since := "2025-07-17")]
-theorem map_eq_self (x : R) : algebraMap R R x = x :=
-  rfl
-
-@[simp]
+@[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
 theorem smul_eq_mul (x y : R) : x • y = x * y :=
   rfl
 
@@ -430,5 +427,11 @@ theorem algebraMap.coe_smul [SMul A C] [IsScalarTower A B C] : (a • b : B) = a
 theorem algebraMap.coe_smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
     (a • b : B) = a • (b : C) := by
   simp [Algebra.algebraMap_eq_smul_one, smul_distrib_smul]
+
+theorem algebraMap.smul [SMul A C] [IsScalarTower A B C] :
+    algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul _ _ _
+
+theorem algebraMap.smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass A B C] :
+    algebraMap B C (a • b) = a • (algebraMap B C b) := coe_smul' _ _ _
 
 end algebraMap

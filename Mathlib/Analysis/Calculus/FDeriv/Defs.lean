@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.TVS
+module
+
+public import Mathlib.Analysis.Asymptotics.TVS
 
 /-!
 # The Fréchet derivative: definition
@@ -78,6 +80,8 @@ derivative, differentiable, Fréchet, calculus
 
 -/
 
+@[expose] public section
+
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -91,37 +95,39 @@ variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A function `f` has the continuous linear map `f'` as derivative along the filter `L` if
-`f x' = f x + f' (x' - x) + o (x' - x)` when `x'` converges along the filter `L`. This definition
-is designed to be specialized for `L = 𝓝 x` (in `HasFDerivAt`), giving rise to the usual notion
-of Fréchet derivative, and for `L = 𝓝[s] x` (in `HasFDerivWithinAt`), giving rise to
-the notion of Fréchet derivative along the set `s`. -/
+`f x₁ = f x₂ + f' (x₁ - x₂) + o (x₁ - x₂)` when `x = (x₁, x₂)` converges along the filter `L`.
+This definition is designed to be specialized
+
+- for `L = 𝓝 (x, x)` (in `HasStrictFDerivAt`),
+  giving rise to the derivative in the sense of strict differentiability;
+- for `L = 𝓝 x ×ˢ pure x` (in `HasFDerivAt`), giving rise to the usual notion of Fréchet derivative;
+- for `L = 𝓝[s] x ×ˢ pure x` (in `HasFDerivWithinAt`),
+  giving rise to the notion of Fréchet derivative along the set `s`.
+-/
 @[mk_iff hasFDerivAtFilter_iff_isLittleOTVS]
-structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) : Prop where
+structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (L : Filter (E × E)) : Prop where
   of_isLittleOTVS ::
-    isLittleOTVS : (fun x' => f x' - f x - f' (x' - x)) =o[𝕜; L] (fun x' => x' - x)
+    isLittleOTVS : (fun p ↦ f p.1 - f p.2 - f' (p.1 - p.2)) =o[𝕜; L] (fun p ↦ p.1 - p.2)
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x` inside `s`. -/
 @[fun_prop]
 def HasFDerivWithinAt (f : E → F) (f' : E →L[𝕜] F) (s : Set E) (x : E) :=
-  HasFDerivAtFilter f f' x (𝓝[s] x)
+  HasFDerivAtFilter f f' (𝓝[s] x ×ˢ pure x)
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x`. -/
 @[fun_prop]
 def HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
-  HasFDerivAtFilter f f' x (𝓝 x)
+  HasFDerivAtFilter f f' (𝓝 x ×ˢ pure x)
 
 /-- A function `f` has derivative `f'` at `a` in the sense of *strict differentiability*
 if `f x - f y - f' (x - y) = o(x - y)` as `x, y → a`. This form of differentiability is required,
 e.g., by the inverse function theorem. Any `C^1` function on a vector space over `ℝ` is strictly
 differentiable but this definition works, e.g., for vector spaces over `p`-adic numbers. -/
-@[fun_prop, mk_iff hasStrictFDerivAt_iff_isLittleOTVS]
-structure HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) where
-  of_isLittleOTVS ::
-    isLittleOTVS :
-      (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2))
-        =o[𝕜; 𝓝 (x, x)] (fun p : E × E => p.1 - p.2)
+@[fun_prop]
+def HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
+  HasFDerivAtFilter f f' (𝓝 (x, x))
 
 variable (𝕜)
 
@@ -166,8 +172,27 @@ variable {𝕜}
 variable {f f₀ f₁ g : E → F}
 variable {f' f₀' f₁' g' : E →L[𝕜] F}
 variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {s : Set E}
+variable {L : Filter E}
+
+theorem hasFDerivAt_iff_isLittleOTVS :
+    HasFDerivAt f f' x ↔ (fun x' ↦ f x' - f x - f' (x' - x)) =o[𝕜; 𝓝 x] (fun x' ↦ x' - x) := by
+  simp [HasFDerivAt, hasFDerivAtFilter_iff_isLittleOTVS, Function.comp_def]
+
+alias ⟨HasFDerivAt.isLittleOTVS, HasFDerivAt.of_isLittleOTVS⟩ := hasFDerivAt_iff_isLittleOTVS
+
+theorem hasFDerivWithinAt_iff_isLittleOTVS :
+    HasFDerivWithinAt f f' s x ↔
+      (fun x' ↦ f x' - f x - f' (x' - x)) =o[𝕜; 𝓝[s] x] (fun x' ↦ x' - x) := by
+  simp [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS, Function.comp_def]
+
+alias ⟨HasFDerivWithinAt.isLittleOTVS, HasFDerivWithinAt.of_isLittleOTVS⟩ :=
+  hasFDerivWithinAt_iff_isLittleOTVS
+
+theorem hasStrictFDerivAt_iff_isLittleOTVS :
+    HasStrictFDerivAt f f' x ↔
+      (fun p ↦ f p.1 - f p.2 - f' (p.1 - p.2)) =o[𝕜; 𝓝 (x, x)] (fun p ↦ p.1 - p.2) :=
+  hasFDerivAtFilter_iff_isLittleOTVS ..
 
 theorem fderivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 f s x = 0 := by
@@ -187,14 +212,28 @@ section Normed
 
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-variable {f : E → F} {f' : E →L[𝕜] F} {x : E}
+variable {f : E → F} {f' : E →L[𝕜] F} {s : Set E} {x : E}
 
-theorem hasFDerivAtFilter_iff_isLittleO {L : Filter E} :
-    HasFDerivAtFilter f f' x L ↔ (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x :=
+theorem hasFDerivAtFilter_iff_isLittleO {L : Filter (E × E)} :
+    HasFDerivAtFilter f f' L ↔ (fun p => f p.1 - f p.2 - f' (p.1 - p.2)) =o[L] fun p => p.1 - p.2 :=
   (hasFDerivAtFilter_iff_isLittleOTVS ..).trans isLittleOTVS_iff_isLittleO
 
 alias ⟨HasFDerivAtFilter.isLittleO, HasFDerivAtFilter.of_isLittleO⟩ :=
   hasFDerivAtFilter_iff_isLittleO
+
+theorem hasFDerivAt_iff_isLittleO :
+    HasFDerivAt f f' x ↔ (fun x' ↦ f x' - f x - f' (x' - x)) =o[𝓝 x] (fun x' ↦ x' - x) :=
+  hasFDerivAt_iff_isLittleOTVS.trans isLittleOTVS_iff_isLittleO
+
+alias ⟨HasFDerivAt.isLittleO, HasFDerivAt.of_isLittleO⟩ := hasFDerivAt_iff_isLittleO
+
+theorem hasFDerivWithinAt_iff_isLittleO :
+    HasFDerivWithinAt f f' s x ↔
+      (fun x' ↦ f x' - f x - f' (x' - x)) =o[𝓝[s] x] (fun x' ↦ x' - x) :=
+  hasFDerivWithinAt_iff_isLittleOTVS.trans isLittleOTVS_iff_isLittleO
+
+alias ⟨HasFDerivWithinAt.isLittleO, HasFDerivWithinAt.of_isLittleO⟩ :=
+  hasFDerivWithinAt_iff_isLittleO
 
 theorem hasStrictFDerivAt_iff_isLittleO :
     HasStrictFDerivAt f f' x ↔

@@ -3,10 +3,12 @@ Copyright (c) 2023 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Data.Set.Card
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Radon's theorem on convex sets
@@ -25,6 +27,8 @@ compactness of sets (see `helly_theorem_compact`).
 
 convex hull, affine independence, Radon, Helly
 -/
+
+public section
 
 open Fintype Finset Set
 
@@ -99,20 +103,20 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
     · exact fun i hi ↦ h_convex i (mem_of_mem_erase hi)
     · intro J hJ_ss hJ_card
       exact h_inter J (subset_trans hJ_ss (erase_subset i.val s)) hJ_card
-    · simp only [coe_mem, card_erase_of_mem]; cutsat
+    · simp only [coe_mem, card_erase_of_mem]; lia
   /- This family of vectors is not affine independent because the number of them exceeds the
   dimension of the space. -/
   have h_ind : ¬AffineIndependent 𝕜 a := by
     rw [← finrank_vectorSpan_le_iff_not_affineIndependent 𝕜 a (n := (k - 1))]
     · exact (Submodule.finrank_le (vectorSpan 𝕜 (range a))).trans (Nat.le_pred_of_lt h_card)
-    · simp only [card_coe]; cutsat
+    · simp only [card_coe]; lia
   /- Use `radon_partition` to conclude there is a subset `I` of `s` and a point `p : E` which
   lies in the convex hull of either `a '' I` or `a '' Iᶜ`. We claim that `p ∈ ⋂ i ∈ s, F i`. -/
   obtain ⟨I, p, hp_I, hp_Ic⟩ := radon_partition h_ind
   use p
   apply mem_biInter
   intro i hi
-  let i : s := ⟨i, hi⟩
+  lift i to s using hi
   /- It suffices to show that for any subcollection `J` of `s` containing `i`, the convex
   hull of `a '' (s \ J)` is contained in `F i`. -/
   suffices ∀ J : Set s, (i ∈ J) → (convexHull 𝕜) (a '' Jᶜ) ⊆ F i by
@@ -128,13 +132,8 @@ theorem helly_theorem' {F : ι → Set E} {s : Finset ι}
   /- Since `j ∈ Jᶜ` and `i ∈ J`, we conclude that `i ≠ j`, and hence by the definition of `a`:
   `a j ∈ ⋂ F '' (Set.univ \ {j}) ⊆ F i`. -/
   apply mem_of_subset_of_mem (s₁ := ⋂ k ∈ (s.erase j), F k)
-  · apply biInter_subset_of_mem
-    simp only [erase_val]
-    suffices h : i.val ∈ s.erase j by assumption
-    simp only [mem_erase]
-    constructor
-    · exact fun h' ↦ hj ((show i = j from SetCoe.ext h') ▸ hi)
-    · assumption
+  · apply iInter₂_subset
+    simp [mem_erase, ne_of_mem_of_not_mem hi hj]
   · apply Nonempty.some_mem
 
 /-- **Helly's theorem** for finite families of convex sets in its classical form.
@@ -182,7 +181,7 @@ theorem helly_theorem_set {F : Finset (Set E)}
   obtain ⟨J, _, hJ_ss, hJ_card⟩ := exists_subsuperset_card_eq hI_ss hI_card h_card
   have : ⋂₀ (J : Set (Set E)) ⊆ ⋂₀ I := sInter_mono (by simpa [hI_ss])
   apply Set.Nonempty.mono this
-  exact h_inter J hJ_ss (by cutsat)
+  exact h_inter J hJ_ss (by lia)
 
 /-- **Helly's theorem** for families of compact convex sets.
 
@@ -211,6 +210,7 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
   · intro I
     simpa using h_fin ({i0} ∪ I)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Helly's theorem** for families of compact convex sets in its classical form.
 
 If `F` is a (possibly infinite) family of more than `d + 1` compact convex sets in a vector space of
@@ -256,6 +256,7 @@ theorem helly_theorem_set_compact' [TopologicalSpace E] [T2Space E] {F : Set (Se
   · apply le_trans card_image_le
     assumption
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Helly's theorem** for sets of compact convex sets in its classical version.
 
 If `F` is a (possibly infinite) set of more than `d + 1` compact convex sets in a vector space of

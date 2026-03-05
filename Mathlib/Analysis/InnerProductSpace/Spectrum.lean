@@ -3,11 +3,13 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Rayleigh
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.Data.Fin.Tuple.Sort
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Rayleigh
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.Data.Fin.Tuple.Sort
 
 /-! # Spectral theory of self-adjoint operators
 
@@ -54,6 +56,8 @@ Spectral theory for compact self-adjoint operators, bounded self-adjoint operato
 self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
@@ -193,12 +197,33 @@ section Version2
 
 variable {n : ℕ}
 
+set_option backward.privateInPublic true in
 /-- Unsorted eigenvalues and eigenvectors.  These private definitions should not be used directly.
 Instead use the functions eigenvalues and eigenvectorBasis defined below. -/
 private noncomputable def unsortedEigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (i : Fin n) : ℝ :=
   @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
+
+private theorem exists_unsortedEigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
+    {μ : 𝕜} (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.unsortedEigenvalues hn i = μ := by
+  let (eq := hx) x : Eigenvalues T := ⟨μ, hμ⟩
+  obtain ⟨i, hi⟩ := hT.direct_sum_isInternal.exists_subordinateOrthonormalBasisIndex_eq hn
+    hT.orthogonalFamily_eigenspaces' (hasEigenvalue_iff.mp x.prop)
+  use i
+  rw [unsortedEigenvalues, hi, hx, Eigenvalues.val_mk, ← RCLike.conj_eq_iff_re,
+    hT.conj_eigenvalue_eq_self hμ]
+
+private theorem card_filter_unsortedEigenvalues_eq (hT : T.IsSymmetric)
+    (hn : Module.finrank 𝕜 E = n) {μ : 𝕜} (hμ : HasEigenvalue T μ) :
+    Finset.card {i | hT.unsortedEigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
+  convert hT.direct_sum_isInternal.card_filter_subordinateOrthonormalBasisIndex_eq hn
+    hT.orthogonalFamily_eigenspaces' ⟨μ, hμ⟩ with i
+  rw [unsortedEigenvalues]
+  set x := hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
+    hT.orthogonalFamily_eigenspaces'
+  rw [RCLike.conj_eq_iff_re.mp (hT.conj_eigenvalue_eq_self (μ := x.val) x.property)]
+  aesop
 
 private noncomputable def unsortedEigenvectorBasis (hT : T.IsSymmetric)
     (hn : Module.finrank 𝕜 E = n) : OrthonormalBasis (Fin n) 𝕜 E :=
@@ -226,12 +251,29 @@ private theorem hasEigenvector_eigenvectorBasis_helper (hT : T.IsSymmetric)
     exact hT.conj_eigenvalue_eq_self (hasEigenvalue_of_hasEigenvector key)
   simpa [re_μ] using key
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- The eigenvalues for a self-adjoint operator `T` on a
 finite-dimensional inner product space `E`, sorted in decreasing order -/
 noncomputable irreducible_def eigenvalues (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
     Fin n → ℝ :=
   (hT.unsortedEigenvalues hn) ∘ Tuple.sort (hT.unsortedEigenvalues hn) ∘ @Fin.revPerm n
 
+theorem exists_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
+    (hμ : HasEigenvalue T μ) : ∃ i : Fin n, hT.eigenvalues hn i = μ := by
+  obtain ⟨i, hi⟩ := hT.exists_unsortedEigenvalues_eq hn hμ
+  use ((Tuple.sort (hT.unsortedEigenvalues hn)).symm i).revPerm
+  simp [eigenvalues_def, hi]
+
+theorem card_filter_eigenvalues_eq (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) {μ : 𝕜}
+    (hμ : HasEigenvalue T μ) :
+    Finset.card {i | hT.eigenvalues hn i = μ} = Module.finrank 𝕜 (eigenspace T μ) := by
+  rw [← hT.card_filter_unsortedEigenvalues_eq hn hμ, eigenvalues_def]
+  apply Finset.card_equiv (Fin.revPerm.trans (Tuple.sort (hT.unsortedEigenvalues hn)))
+  simp
+
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- A choice of orthonormal basis of eigenvectors for self-adjoint operator `T` on a
 finite-dimensional inner product space `E`.  Eigenvectors are sorted in decreasing
 order of their eigenvalues. -/

@@ -3,12 +3,16 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # Dependent product and sum of QPFs are QPFs
 -/
+
+@[expose] public section
 
 
 universe u
@@ -58,6 +62,7 @@ protected def repr ⦃α⦄ : Sigma F α → Sigma.P F α
     let x := MvQPF.repr f
     ⟨⟨a, x.1⟩, x.2⟩
 
+set_option backward.isDefEq.respectTransparency false in
 instance : MvQPF (Sigma F) where
   P := Sigma.P F
   abs {α} := @Sigma.abs _ _ F _ α
@@ -90,7 +95,9 @@ instance : MvQPF (Pi F) where
   P := Pi.P F
   abs := @Pi.abs _ _ F _
   repr := @Pi.repr _ _ F _
-  abs_repr := by rintro α f; simp only [Pi.abs, Pi.repr, Sigma.eta, abs_repr]
+  abs_repr := by
+    rintro α f
+    simp +instances only [Pi.abs, Pi.repr, Sigma.eta, abs_repr]
   abs_map := by rintro α β f ⟨x, g⟩; simp only [Pi.abs, (· <$$> ·), ← abs_map]; rfl
 
 end Pi

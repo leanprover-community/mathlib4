@@ -3,7 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Compatibilities of properties of morphisms with respect to composition
@@ -14,6 +16,8 @@ which means that `P f → P g → P (f ≫ g)`. We also introduce the type class
 
 -/
 
+@[expose] public section
+
 
 universe w v v' u u'
 
@@ -23,7 +27,7 @@ namespace MorphismProperty
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-/-- Typeclass expressing that a morphism property contain identities. -/
+/-- Typeclass expressing that a morphism property contains identities. -/
 class ContainsIdentities (W : MorphismProperty C) : Prop where
   /-- for all `X : C`, the identity of `X` satisfies the morphism property -/
   id_mem : ∀ (X : C), W (𝟙 X)
@@ -61,7 +65,7 @@ instance inf {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdenti
 
 end ContainsIdentities
 
-instance Prod.containsIdentities {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+instance Prod.containsIdentities {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
     (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
     [W₁.ContainsIdentities] [W₂.ContainsIdentities] : (prod W₁ W₂).ContainsIdentities :=
   ⟨fun _ => ⟨W₁.id_mem _, W₂.id_mem _⟩⟩
@@ -128,8 +132,8 @@ instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsSta
   comp_mem f g hf hg := by simpa only [← F.map_comp] using P.comp_mem _ _ hf hg
 
 /-- Given `app : Π X, F₁.obj X ⟶ F₂.obj X` where `F₁` and `F₂` are two functors,
-this is the `morphism_property C` satisfied by the morphisms in `C` with respect
-to whom `app` is natural. -/
+this is the `MorphismProperty C` satisfied by the morphisms in `C` with respect
+to which `app` is natural. -/
 @[simp]
 def naturalityProperty {F₁ F₂ : C ⥤ D} (app : ∀ X, F₁.obj X ⟶ F₂.obj X) : MorphismProperty C :=
   fun X Y f => F₁.map f ≫ app Y = app X ≫ F₂.map f
@@ -295,6 +299,16 @@ lemma multiplicativeClosure_eq_multiplicativeClosure' :
       | id x => exact .id x
       | of_comp f g hf hg hr => exact W.multiplicativeClosure.comp_mem f g (.of f hf) hr
 
+lemma strictMap_multiplicativeClosure_le (F : C ⥤ D) :
+    W.multiplicativeClosure.strictMap F ≤ (W.strictMap F).multiplicativeClosure := by
+  intro _ _ f hf
+  induction hf with | map hf
+  induction hf with
+  | of f hf => exact le_multiplicativeClosure _ _ ⟨hf⟩
+  | id x => simpa using .id (F.obj x)
+  | comp_of _ _ hf hg h =>
+    simpa using multiplicativeClosure.comp_of _ _ h (strictMap.map hg)
+
 /-- A class of morphisms `W` has the of-postcomp property w.r.t. `W'` if whenever
 `g` is in `W'` and `f ≫ g` is in `W`, also `f` is in `W`. -/
 class HasOfPostcompProperty (W W' : MorphismProperty C) : Prop where
@@ -346,6 +360,32 @@ instance [W.HasOfPrecompProperty W'] : W.op.HasOfPostcompProperty W'.op where
   of_postcomp _ _ hg hfg := W.of_precomp _ _ hg hfg
 
 instance [W.HasTwoOutOfThreeProperty] : W.op.HasTwoOutOfThreeProperty where
+
+instance : (⊤ : MorphismProperty C).HasOfPostcompProperty W where
+  of_postcomp _ _ _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).HasOfPrecompProperty W where
+  of_precomp _ _ _ _ := trivial
+
+instance : (⊤ : MorphismProperty C).HasTwoOutOfThreeProperty where
+
+variable (P Q : MorphismProperty C)
+
+instance [P.HasOfPostcompProperty W] [Q.HasOfPostcompProperty W] :
+    (P ⊓ Q).HasOfPostcompProperty W where
+  of_postcomp f g hg hfg := ⟨P.of_postcomp f g hg hfg.1, Q.of_postcomp f g hg hfg.2⟩
+
+instance [P.HasOfPrecompProperty W] [Q.HasOfPrecompProperty W] :
+    (P ⊓ Q).HasOfPrecompProperty W where
+  of_precomp f g hg hfg := ⟨P.of_precomp f g hg hfg.1, Q.of_precomp f g hg hfg.2⟩
+
+instance [P.HasTwoOutOfThreeProperty] [Q.HasTwoOutOfThreeProperty] :
+    (P ⊓ Q).HasTwoOutOfThreeProperty := by
+  have : P.HasOfPostcompProperty (P ⊓ Q) := .of_le _ _ inf_le_left
+  have : P.HasOfPrecompProperty (P ⊓ Q) := .of_le _ _ inf_le_left
+  have : Q.HasOfPostcompProperty (P ⊓ Q) := .of_le _ _ inf_le_right
+  have : Q.HasOfPrecompProperty (P ⊓ Q) := .of_le _ _ inf_le_right
+  constructor
 
 end
 

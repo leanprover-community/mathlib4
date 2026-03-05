@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Fold
-import Mathlib.Data.Multiset.Sum
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Multiset.Sum
 
 /-!
 # Disjoint sum of finsets
@@ -19,6 +21,8 @@ the `Finset.sum` operation which computes the additive sum.
 * `Finset.toLeft`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `α`.
 * `Finset.toRight`: Given a finset of elements `α ⊕ β`, extracts all the elements of the form `β`.
 -/
+
+@[expose] public section
 
 
 open Function Multiset Sum
@@ -96,9 +100,6 @@ theorem disjSum_strictMono_left (t : Finset β) : StrictMono fun s : Finset α =
 theorem disjSum_strictMono_right (s : Finset α) :
     StrictMono (s.disjSum : Finset β → Finset (α ⊕ β)) := fun _ _ =>
   disjSum_ssubset_disjSum_of_subset_of_ssubset Subset.rfl
-
-@[deprecated (since := "2025-06-11")]
-alias disj_sum_strictMono_right := disjSum_strictMono_right
 
 @[simp] lemma disjSum_inj {α β : Type*} {s₁ s₂ : Finset α} {t₁ t₂ : Finset β} :
     s₁.disjSum t₁ = s₂.disjSum t₂ ↔ s₁ = s₂ ∧ t₁ = t₂ := by

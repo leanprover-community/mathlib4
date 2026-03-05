@@ -3,11 +3,13 @@ Copyright (c) 2023 Yaël Dillies, Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Closure
-import Mathlib.Order.ConditionallyCompleteLattice.Finset
+module
+
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Closure
+public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 /-!
 # Sets closed under join/meet
@@ -29,6 +31,8 @@ is automatically complete. All dually for `⊓`.
 * `SemilatticeInf.toCompleteSemilatticeInf`: A meet-semilattice where every inf-closed set has a
   greatest lower bound is automatically complete.
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {F α β : Type*}
 
@@ -481,10 +485,8 @@ lemma image_latticeClosure (s : Set α) (f : α → β)
 
 lemma ofDual_preimage_latticeClosure (s : Set α) :
     ofDual ⁻¹' latticeClosure s = latticeClosure (ofDual ⁻¹' s) := by
-  change ClosureOperator.ofCompletePred _ _ _ = ClosureOperator.ofCompletePred _ _ _
-  congr 2
   ext
-  exact ⟨fun h => ⟨h.2, h.1⟩, fun h => ⟨h.2, h.1⟩⟩
+  simp [latticeClosure, (Equiv.Set.congr toDual).surjective.forall, Equiv.image_eq_preimage_symm]
 
 lemma image_latticeClosure' (s : Set α) (f : α → β)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊓ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊔ f b) :

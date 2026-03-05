@@ -3,21 +3,25 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 
 /-!
 # Edges and "triangles" in truncated simplicial sets
 
 Given a `2`-truncated simplicial set `X`, we introduce two types:
 * Given `0`-simplices `x₀` and `x₁`, we define `Edge x₀ x₁`
-which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
+  which is the type of `1`-simplices with faces `x₁` and `x₀` respectively;
 * Given `0`-simplices `x₀`, `x₁`, `x₂`, edges `e₀₁ : Edge x₀ x₁`, `e₁₂ : Edge x₁ x₂`,
-`e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
-data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
-will allow to obtain relations in the homotopy category of `X`.
+  `e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
+  data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
+  will allow to obtain relations in the homotopy category of `X`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -73,12 +77,17 @@ lemma map_id (x : X _⦋0⦌₂) (f : X ⟶ Y) :
   ext
   simp [FunctorToTypes.naturality]
 
+instance [Subsingleton (X _⦋1⦌₂)] {x y : X _⦋0⦌₂} :
+    Subsingleton (X.Edge x y) where
+  allEq f g := by ext; subsingleton
+
 /-- Let `x₀`, `x₁`, `x₂` be `0`-simplices of a `2`-truncated simplicial set `X`,
 `e₀₁` an edge from `x₀` to `x₁`, `e₁₂` an edge from `x₁` to `x₂`,
 `e₀₂` an edge from `x₀` to `x₂`. This is the data of a `2`-simplex whose
 faces are respectively `e₀₂`, `e₁₂` and `e₀₁`. Such structures shall provide
 relations in the homotopy category of arbitrary (truncated) simplicial sets
 (and specialized constructions for quasicategories and Kan complexes.). -/
+@[ext]
 structure CompStruct {x₀ x₁ x₂ : X _⦋0⦌₂}
     (e₀₁ : Edge x₀ x₁) (e₁₂ : Edge x₁ x₂) (e₀₂ : Edge x₀ x₂) where
   /-- A `2`-simplex with prescribed `1`-dimensional faces -/
@@ -117,7 +126,7 @@ def idComp {x y : X _⦋0⦌₂} (e : Edge x y) :
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero]
     simp
 
-/-- `e : Edge x y` is a composition of `Edge.id y` with `e`. -/
+/-- `e : Edge x y` is a composition of `e` with `Edge.id y`. -/
 def compId {x y : X _⦋0⦌₂} (e : Edge x y) :
     CompStruct e (.id y) e where
   simplex := X.map (σ₂ 1).op e.edge
@@ -130,6 +139,12 @@ def compId {x y : X _⦋0⦌₂} (e : Edge x y) :
   d₁ := by
     rw [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_one]
     simp
+
+/-- `Edge.id x` is a composition of `Edge.id x` with `Edge.id x`. -/
+@[simps!]
+def idCompId (x : X _⦋0⦌₂) :
+    CompStruct (.id x) (.id x) (.id x) :=
+  idComp _
 
 attribute [local simp ←] FunctorToTypes.naturality in
 /-- The image of a `Edge.CompStruct` by a morphism of `2`-truncated

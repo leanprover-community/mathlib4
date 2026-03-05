@@ -3,8 +3,9 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
 
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 
@@ -20,11 +21,12 @@ A trivial valuative relation is equivalent to the value group being isomorphic t
 
 -/
 
+@[expose] public section
+
 namespace ValuativeRel
 
 variable {R Γ : Type} [CommRing R] [DecidableEq R] [IsDomain R]
   [LinearOrderedCommGroupWithZero Γ]
-
 
 open WithZero
 
@@ -32,19 +34,19 @@ open WithZero
 The domain condition is necessary so that the relation is closed when multiplying.
 -/
 def trivialRel : ValuativeRel R where
-  rel x y := if y = 0 then x = 0 else True
-  rel_total _ _ := by split_ifs <;> simp_all
-  rel_trans _ _ := by split_ifs; simp_all
-  rel_add _ _ := by split_ifs; simp_all
-  rel_mul_right _ := by split_ifs <;> simp_all
-  rel_mul_cancel _ := by split_ifs <;> simp_all
-  not_rel_one_zero := by split_ifs <;> simp_all
+  vle x y := if y = 0 then x = 0 else True
+  vle_total _ _ := by split_ifs <;> simp_all
+  vle_trans _ _ := by split_ifs; simp_all
+  vle_add _ _ := by split_ifs; simp_all
+  mul_vle_mul_left _ _ := by split_ifs at * <;> simp_all
+  vle_mul_cancel _ := by split_ifs <;> simp_all
+  not_vle_one_zero := by split_ifs <;> simp_all
 
 lemma eq_trivialRel_of_compatible_one [h : ValuativeRel R]
     [hv : Valuation.Compatible (1 : Valuation R Γ)] : h = trivialRel := by
   ext
   change _ ↔ if _ = 0 then _ else _
-  rw [hv.rel_iff_le]
+  rw [hv.vle_iff_le]
   split_ifs <;>
   simp_all [Valuation.one_apply_of_ne_zero, Valuation.one_apply_le_one]
 

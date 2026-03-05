@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Big operators on a finset in groups with zero
@@ -14,6 +16,8 @@ import Mathlib.Data.Set.Lattice
 This file contains the results concerning the interaction of finset big operators with groups with
 zero.
 -/
+
+public section
 
 open Function
 

@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # The topology on a valued ring
@@ -21,6 +23,8 @@ from `Mathlib.RingTheory.Valuation.ValuativeRel.Basic`. New developments on valu
 should take this into consideration.
 
 -/
+
+@[expose] public section
 
 open scoped Topology uniformity
 open Set Valuation
@@ -54,8 +58,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
   { inter := by
       rintro γ₀ γ₁
       use min γ₀ γ₁
-      simp only [ltAddSubgroup, Units.min_val, lt_inf_iff, le_inf_iff, AddSubgroup.mk_le_mk,
-        AddSubmonoid.mk_le_mk, AddSubsemigroup.mk_le_mk, setOf_subset_setOf]
+      simp only [ltAddSubgroup, Units.min_val, lt_inf_iff]
       tauto
     mul := by
       rintro γ
@@ -113,6 +116,7 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
 
 namespace Valued
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
@@ -137,10 +141,13 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toUniformSpace_eq :
-    toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ :=
-  UniformSpace.ext
-    ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
+    toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
+  ext : 1
+  apply (hasBasis_uniformity R Γ₀).eq_of_same_basis
+  simp only [sub_eq_add_neg]
+  exact v.subgroups_basis.hasBasis_nhds_zero.comap _
 
 variable {R Γ₀}
 
@@ -179,6 +186,7 @@ lemma discreteTopology_of_forall_lt [MulArchimedean Γ₀] [Valued K Γ₀] {r :
 
 end Discrete
 
+set_option backward.isDefEq.respectTransparency false in
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), (v (y - x) : Γ₀) < γ := by
   rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]
@@ -262,9 +270,6 @@ theorem isClosed_sphere (r : Γ₀) : IsClosed (X := R) {x | v x = r} := by
 theorem isOpen_integer : IsOpen (_i.v.integer : Set R) :=
   isOpen_closedBall _ one_ne_zero
 
-@[deprecated (since := "2025-04-25")]
-alias integer_isOpen := isOpen_integer
-
 /-- The closed unit ball of a valued ring is closed. -/
 theorem isClosed_integer : IsClosed (_i.v.integer : Set R) :=
   isClosed_closedBall _ _
@@ -277,9 +282,6 @@ theorem isClopen_integer : IsClopen (_i.v.integer : Set R) :=
 theorem isOpen_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :
     IsOpen (hv.v.valuationSubring : Set K) :=
   isOpen_integer K
-
-@[deprecated (since := "2025-04-25")]
-alias valuationSubring_isOpen := isOpen_valuationSubring
 
 /-- The valuation subring of a valued field is closed. -/
 theorem isClosed_valuationSubring (K : Type u) [Field K] [hv : Valued K Γ₀] :

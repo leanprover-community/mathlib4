@@ -3,7 +3,10 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Mathlib.Tactic.GRewrite.Core
+module
+
+public meta import Mathlib.Tactic.GRewrite.Core
+public import Mathlib.Tactic.GRewrite.Core
 
 /-!
 
@@ -17,6 +20,8 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 - `nth_grw`
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -73,7 +78,8 @@ syntax (name := grewriteSeq) "grewrite" optConfig rwRuleSeq (location)? : tactic
 /--
 `grw [e]` works just like `rw [e]`, but `e` can be a relation other than `=` or `↔`.
 
-For example,
+For example:
+
 ```lean
 variable {a b c d n : ℤ}
 
@@ -87,11 +93,24 @@ example (h₁ : a ∣ b) (h₂ : b ∣ a ^ 2 * c) : a ∣ b ^ 2 * c := by
   grw [h₁] at *
   exact h₂
 ```
+
+To replace the RHS with the LHS of the given relation, use the `←` notation (just like in `rw`):
+
+```
+example (h₁ : a < b) (h₂ : b ≤ c) : a + d ≤ c + d := by
+  grw [← h₂, ← h₁]
+```
+
+The strict inequality `a < b` is turned into the non-strict inequality `a ≤ b` to rewrite with it.
+A future version of `grw` may get special support for making better use of strict inequalities.
+
 To rewrite only in the `n`-th position, use `nth_grw n`.
 This is useful when `grw` tries to rewrite in a position that is not valid for the given relation.
 
 To be able to use `grw`, the relevant lemmas need to be tagged with `@[gcongr]`.
 To rewrite inside a transitive relation, you can also give it an `IsTrans` instance.
+
+To let `grw` unfold more aggressively, as in `erw`, use `grw (transparency := default)`.
 -/
 macro (name := grwSeq) "grw " c:optConfig s:rwRuleSeq l:(location)? : tactic =>
   match s with

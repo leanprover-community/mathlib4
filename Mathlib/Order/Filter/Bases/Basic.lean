@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Set.Sigma
-import Mathlib.Order.Filter.Defs
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Basic results on filter bases
@@ -67,6 +69,8 @@ machinery, e.g., `simp only [true_and_iff]` or `simp only [forall_const]` can he
 
 ## Main statements
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -375,6 +379,9 @@ theorem HasBasis.le_basis_iff (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s') :
     l ≤ l' ↔ ∀ i', p' i' → ∃ i, p i ∧ s i ⊆ s' i' := by
   simp only [hl'.ge_iff, hl.mem_iff]
 
+theorem HasBasis.eq_top_iff (h : l.HasBasis p s) : l = ⊤ ↔ ∀ i, p i → s i = univ := by
+  simp [← top_le_iff, h.ge_iff]
+
 theorem HasBasis.ext (hl : l.HasBasis p s) (hl' : l'.HasBasis p' s')
     (h : ∀ i, p i → ∃ i', p' i' ∧ s' i' ⊆ s i) (h' : ∀ i', p' i' → ∃ i, p i ∧ s i ⊆ s' i') :
     l = l' := by
@@ -531,9 +538,6 @@ theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f
 theorem notMem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∉ f ↔ NeBot (f ⊓ 𝓟 sᶜ) :=
   (not_congr mem_iff_inf_principal_compl).trans neBot_iff.symm
 
-@[deprecated (since := "2025-05-23")]
-alias not_mem_iff_inf_principal_compl := notMem_iff_inf_principal_compl
-
 @[simp]
 theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟 s) ↔ sᶜ ∈ f := by
   rw [mem_iff_inf_principal_compl, compl_compl, disjoint_iff]
@@ -652,7 +656,7 @@ protected theorem HasAntitoneBasis.comap {l : Filter α} {s : ι'' → Set α}
     (hf : HasAntitoneBasis l s) (m : β → α) : HasAntitoneBasis (comap m l) (m ⁻¹' s ·) :=
   ⟨hf.1.comap _, fun _ _ h ↦ preimage_mono (hf.2 h)⟩
 
-lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirected ι (· ≤ ·)]
+lemma HasAntitoneBasis.iInf_principal {ι : Type*} [Preorder ι] [Nonempty ι] [IsDirectedOrder ι]
     {s : ι → Set α} (hs : Antitone s) : (⨅ i, 𝓟 (s i)).HasAntitoneBasis s :=
   ⟨hasBasis_iInf_principal hs.directed_ge, hs⟩
 

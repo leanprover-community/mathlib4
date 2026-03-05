@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Induced
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+module
+
+public import Mathlib.CategoryTheory.Shift.Induced
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # The shift induced on a localized category
@@ -17,6 +19,8 @@ then the corresponding localized category can be equipped with
 a shift by `A`, and the localization functor is compatible with the shift.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ w
 
@@ -100,6 +104,9 @@ noncomputable instance MorphismProperty.commShift_Q :
     W.Q.CommShift A :=
   Functor.CommShift.localized W.Q W A
 
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12247
+this requires `allowUnsafeReducibility`. -/
+set_option allowUnsafeReducibility true in
 attribute [irreducible] HasShift.localization MorphismProperty.commShift_Q
 
 variable [W.HasLocalization]
@@ -114,6 +121,9 @@ noncomputable instance MorphismProperty.commShift_Q' :
     W.Q'.CommShift A :=
   Functor.CommShift.localized W.Q' W A
 
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12247
+this requires `allowUnsafeReducibility`. -/
+set_option allowUnsafeReducibility true in
 attribute [irreducible] HasShift.localization' MorphismProperty.commShift_Q'
 
 end
@@ -163,12 +173,13 @@ lemma iso_inv_app (a : A) (X : C) :
 
 end commShiftOfLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- In the context of localization of categories, if a functor
 is induced by a functor which commutes with the shift, then
 this functor commutes with the shift. -/
 noncomputable def commShiftOfLocalization : F'.CommShift A where
-  iso := commShiftOfLocalization.iso L W F F'
-  zero := by
+  commShiftIso := commShiftOfLocalization.iso L W F F'
+  commShiftIso_zero := by
     ext1
     apply natTrans_ext L W
     intro X
@@ -179,7 +190,7 @@ noncomputable def commShiftOfLocalization : F'.CommShift A where
     dsimp
     simp only [← Functor.map_comp_assoc, ← Functor.map_comp,
       Iso.inv_hom_id_app, id_obj, map_id, Category.id_comp, Iso.hom_inv_id_app_assoc]
-  add a b := by
+  commShiftIso_add a b := by
     ext1
     apply natTrans_ext L W
     intro X
@@ -226,6 +237,7 @@ lemma commShiftOfLocalization_iso_inv_app (a : A) (X : C) :
 
 end Functor
 
+set_option backward.isDefEq.respectTransparency false in
 instance NatTrans.commShift_iso_hom_of_localization :
     letI := Functor.commShiftOfLocalization L W A F F'
     NatTrans.CommShift (Lifting.iso L W F F').hom A := by
@@ -246,11 +258,11 @@ namespace LocalizerMorphism
 
 open Localization
 
-variable {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+variable {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
   {W₁ : MorphismProperty C₁} {W₂ : MorphismProperty C₂} (Φ : LocalizerMorphism W₁ W₂)
   {M : Type*} [AddMonoid M] [HasShift C₁ M] [HasShift C₂ M]
   [Φ.functor.CommShift M]
-  {D₁ D₂ : Type*} [Category D₁] [Category D₂]
+  {D₁ D₂ : Type*} [Category* D₁] [Category* D₂]
   (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁] (L₂ : C₂ ⥤ D₂)
   [HasShift D₁ M] [HasShift D₂ M] [L₁.CommShift M] [L₂.CommShift M]
 
@@ -267,6 +279,7 @@ noncomputable def commShift : G.CommShift M := by
   letI : Localization.Lifting L₁ W₁ (Φ.functor ⋙ L₂) G := ⟨e.symm⟩
   exact Functor.commShiftOfLocalization L₁ W₁ M (Φ.functor ⋙ L₂) G
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma commShift_iso_hom_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -277,6 +290,7 @@ lemma commShift_iso_hom_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_hom_app,
     Functor.commShiftIso_comp_hom_app]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma commShift_iso_inv_app (m : M) (X : C₁) :
     letI := Φ.commShift M L₁ L₂ G e
@@ -287,6 +301,7 @@ lemma commShift_iso_inv_app (m : M) (X : C₁) :
   simp [Functor.commShiftOfLocalization_iso_inv_app,
     Functor.commShiftIso_comp_inv_app]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma natTransCommShift_hom :
     letI := Φ.commShift M L₁ L₂ G e
     NatTrans.CommShift e.hom M := by

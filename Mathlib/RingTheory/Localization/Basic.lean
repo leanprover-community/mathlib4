@@ -3,13 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Data.Finite.Prod
-import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.OreLocalization.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings
@@ -68,6 +70,8 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+@[expose] public section
+
 assert_not_exists Ideal
 
 open Function
@@ -122,15 +126,26 @@ protected lemma finite [Finite R] : Finite S := by
     simpa using IsLocalization.exists_mk'_eq M x
   exact .of_surjective _ this
 
+section CompatibleSMul
+
+variable (N₁ N₂ : Type*) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+
 variable (M S) in
 include M in
-theorem linearMap_compatibleSMul (N₁ N₂) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁]
-    [Module S N₁] [Module R N₂] [Module S N₂] [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
+theorem linearMap_compatibleSMul [Module S N₁] [Module S N₂]
+    [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
     LinearMap.CompatibleSMul N₁ N₂ S R where
   map_smul f s s' := by
     obtain ⟨r, m, rfl⟩ := exists_mk'_eq M s
     rw [← (map_units S m).smul_left_cancel]
     simp_rw [algebraMap_smul, ← map_smul, ← smul_assoc, smul_mk'_self, algebraMap_smul, map_smul]
+
+instance [Module (Localization M) N₁] [Module (Localization M) N₂]
+    [IsScalarTower R (Localization M) N₁] [IsScalarTower R (Localization M) N₂] :
+    LinearMap.CompatibleSMul N₁ N₂ (Localization M) R :=
+  linearMap_compatibleSMul M ..
+
+end CompatibleSMul
 
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
@@ -275,7 +290,7 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
     obtain ⟨u, hu⟩ := H s.prop
     use x * u.inv
     dsimp [Algebra.ofId, RingHom.toFun_eq_coe, AlgHom.coe_mks]
-    rw [RingHom.map_mul, ← eq, ← hu, mul_assoc, ← RingHom.map_mul]
+    rw [map_mul, ← eq, ← hu, mul_assoc, ← map_mul]
     simp
 
 end at_units
@@ -288,7 +303,7 @@ variable (M N)
 
 theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃ₐ[R] P) :
     IsLocalization M P := by
-  constructor
+  constructor; constructor
   · intro y
     convert (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
     exact (h.commutes y).symm
@@ -447,6 +462,7 @@ end Localization
 
 open IsLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :
@@ -602,6 +618,17 @@ end IsLocalization
 
 theorem Localization.mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
+
+theorem Localization.r_iff_of_le_nonZeroDivisors (hM : M ≤ nonZeroDivisors R) (a c : R) (b d : M) :
+    Localization.r _ (a, b) (c, d) ↔ a * d = b * c  := by
+  simp only [Localization.r_eq_r', Localization.r', Subtype.exists, exists_prop, Con.rel_mk]
+  refine ⟨fun ⟨u, hu, h⟩ ↦ ?_,
+    fun h ↦ ⟨1, Submonoid.one_mem M, by simpa only [one_mul, mul_comm a] using h⟩⟩
+  have hu' : u ∈ nonZeroDivisors R := hM hu
+  simp only [mem_nonZeroDivisors_iff, mul_comm, and_self] at hu'
+  rw [← sub_eq_zero]
+  apply hu'
+  rwa [mul_sub, sub_eq_zero, mul_comm a]
 
 end CommRing
 
