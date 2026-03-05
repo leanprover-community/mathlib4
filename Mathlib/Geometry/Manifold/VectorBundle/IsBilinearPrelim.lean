@@ -74,4 +74,3 @@ def evalL
     [T2Space F] : E →L[𝕜] (E →L[𝕜] F) →L[𝕜] F :=
   (isBilinearMap_evalL 𝕜 E F).toContinuousLinearMap
 end
-
