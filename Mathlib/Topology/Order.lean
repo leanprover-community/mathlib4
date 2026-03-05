@@ -672,10 +672,10 @@ theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
     @nhds α (sInf s) a = ⨅ t ∈ s, @nhds α t a :=
   (gc_nhds a).u_sInf
 
--- Porting note: type error without `b₁ := t₁`
+-- Porting note: type error without `a₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
     @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
-  (gc_nhds a).u_inf (b₁ := t₁)
+  (gc_nhds a).u_inf (a₁ := t₁)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem nhds_top {a : α} : @nhds α ⊤ a = ⊤ :=
