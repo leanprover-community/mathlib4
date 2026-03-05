@@ -159,7 +159,7 @@ hint: you may be missing suitable typeclass assumptions
 #check (T% (T% X)) x
 
 -- Error message when missing typeclass assumptions for sections of a fiber bundle.
--- This used to silently do nothing; no there is a helpful error.
+-- This used to silently do nothing; now there is a helpful error.
 section
 
 variable {B F Z : Type*} [TopologicalSpace B] [TopologicalSpace F]
