@@ -115,6 +115,7 @@ lemma filtration_of_isSuccLimit [OrderBot ι] [SuccOrder ι]
     intro j hj
     exact f.filtration_monotone hj.le
 
+set_option backward.isDefEq.respectTransparency false in
 lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
     ⨆ (i : ι), f.filtration i = ⊤ := by
   let B := ⨆ (i : ι), f.filtration i
