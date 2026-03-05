@@ -13,7 +13,8 @@ public import Mathlib.Analysis.Normed.Operator.Prod
 * `contMDiff_iff_contDiff`: for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
 * `ContinuousLinearMap.contMDiff`: continuous linear maps between normed spaces are smooth
-* `smooth_smul`: multiplication by scalars is a smooth operation
+* `SmoothConstSMul`, `SmoothSMul`: typeclasses for smooth scalar multiplication
+* `contMDiff_smul`: multiplication by scalars is a smooth operation
 
 -/
 
@@ -50,6 +51,19 @@ class SmoothSMul (I : ModelWithCorners 𝕜 E H) {H' : Type*} [TopologicalSpace 
 
 export SmoothConstSMul (smooth_const_smul)
 export SmoothSMul (smooth_smul)
+
+section SmoothSMul
+
+variable {Γ N : Type*} [TopologicalSpace Γ] [ChartedSpace H Γ]
+    [TopologicalSpace N] [ChartedSpace H N] [SMul Γ N]
+
+instance (priority := 100) SmoothSMul.smoothConstSMul [SmoothSMul I I Γ N] :
+    SmoothConstSMul I Γ N where
+  smooth_const_smul c :=
+    (smooth_smul (I := I) (J := I) (Γ := Γ) (N := N)).comp
+      ((contMDiff_const : ContMDiff I I ⊤ fun _ : N => c).prodMk contMDiff_id)
+
+end SmoothSMul
 
 section Module
 
