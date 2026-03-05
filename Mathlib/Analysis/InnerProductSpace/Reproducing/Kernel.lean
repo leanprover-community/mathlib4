@@ -33,6 +33,7 @@ Kernels
 
 * Change from real-valued to complex-valued / vector-valuad kernels.
 * Mercer's theorem
+* Move Schur's product to either `Matrix.PosDef` or `Matrix.Hadamard`.
 -/
 
 @[expose] public section
@@ -481,8 +482,7 @@ theorem toMatrix_posSemiDef (K : Kernel X) (L : List X) : Matrix.PosSemidef (K.t
       _ ≥ 0 := by
         exact K'.posSemiDef c_pre
 
-/-- Schur's product: The hadamard product of two PSD matrices is PSD. Should perhaps be part of
-  `Matrix.PosDef` or mabye `Matrix.Hadamard`. -/
+/-- Schur's product: The hadamard product of two PSD matrices is PSD. -/
 theorem hadamard_mul {m : Type*} [Finite m] {A : Matrix m m ℝ} {B : Matrix m m ℝ}
   (hA : A.PosSemidef) (hB : B.PosSemidef) : (A.hadamard B).PosSemidef := by
     have := Fintype.ofFinite m
@@ -729,7 +729,7 @@ noncomputable def scaledKernel (f : X → ℝ) (K : Kernel X) : Kernel X := by
   exact mulKernel K K'
 
 /-- Any polynomial $x↦∑_{n=1}^∞ f_n x^n$ with at most finitely many non-zero coefficients, all
-  positive, yields the kernel $(x₁,x₂)↦∑_{n=1}^∞ f_n K(x₁,x₂)^n`. -/
+  positive, yields the kernel $(x₁,x₂)↦∑_{n=1}^∞ f_n K(x₁,x₂)^n$. -/
 def polyOfKernel (f : ℕ →₀ ℝ) (hf : ∀ (n : ℕ), f n ≥ 0) (K : Kernel X) : Kernel X := {
   kernel := fun x y => ∑ n ∈ f.support, f n * (natPowKernel K n).kernel x y
   symmetric := by
@@ -805,35 +805,12 @@ theorem zero_row_iff_zero_diag (K : Kernel X) (x : X) : K x x = 0 → ∀ y, K x
   simp only [zero_mul, sq_nonpos_iff] at h
   exact h
 
-/-- For two nonnegative reals `a,b` the inequality `√(a*b) ≤ max(a,b)` holds. Should maybe be part
-  of `NNReal`. -/
-lemma sqrt_mul_le_max (a b : ℝ) (ha : a ≥ 0) (hb : b ≥ 0) : √ (a*b) ≤ max a b := by
-  rw [le_max_iff]
-  by_cases hab : a ≥ b
-  · left
-    rw [sqrt_le_left ha]
-    rw [pow_two]
-    exact PosMulMono.mul_le_mul_of_nonneg_left ha hab
-  · right
-    rw [sqrt_le_left hb]
-    rw [pow_two]
-    simp only [ge_iff_le, not_le] at hab
-    rw [le_iff_eq_or_lt]
-    by_cases hb0 : b=0
-    · left
-      simp only [mul_eq_mul_right_iff]
-      right
-      exact hb0
-    · right
-      have : b>0 := by exact Std.lt_of_le_of_lt ha hab
-      exact mul_lt_mul_of_pos_right hab this
-
 /-- For any kernel `K` the estimate `|K(x,y)≤ max(K(x₁,x₁),K(x₂,x₂))` holds for all `x₁,x₂∈ X`. -/
 theorem abs_le_max (K : Kernel X) (x y : X) : |K x y| ≤ max (K x x) (K y y) := by
   classical
   apply le_trans
   · exact abs_le_sqrt (sq_le_ker_mul_ker K x y)
-  · exact sqrt_mul_le_max (K x x) (K y y) (K.nonneg x) (K.nonneg y)
+  · exact sqrt_mul_le_max (K.nonneg x)
 
 /-- For any kernel `K` the estimate `2*K(x,y)≤ K(x₁,x₁)+K(x₂,x₂)` holds for all `x₁,x₂∈ X`. -/
 theorem le_add (K : Kernel X) (x y : X) : 2 * K x y  ≤ (K x x) + (K y y) := by

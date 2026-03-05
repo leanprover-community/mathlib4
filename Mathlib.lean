@@ -1871,6 +1871,7 @@ public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Analytic
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
 public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
+public import Mathlib.Analysis.InnerProductSpace.Reproducing.Kernel
 public import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
 public import Mathlib.Analysis.InnerProductSpace.LaxMilgram
@@ -4564,7 +4565,6 @@ public import Mathlib.InformationTheory.Hamming
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import Mathlib.InformationTheory.KullbackLeibler.KLFun
 public import Mathlib.Init
-public import Mathlib.KernelTheory.Kernel
 public import Mathlib.Lean.ContextInfo
 public import Mathlib.Lean.CoreM
 public import Mathlib.Lean.Elab.InfoTree

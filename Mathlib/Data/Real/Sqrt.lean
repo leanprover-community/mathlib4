@@ -300,6 +300,26 @@ lemma sqrt_le_sqrt_iff' (hx : 0 < x) : √x ≤ √y ↔ x ≤ y := by
 @[simp] lemma isSquare_iff : IsSquare x ↔ 0 ≤ x :=
   ⟨(·.nonneg), (⟨√x, mul_self_sqrt · |>.symm⟩)⟩
 
+lemma sqrt_mul_le_max (hx : x ≥ 0) : sqrt (x * y) ≤ max x y := by
+  by_cases hy : y ≤ 0
+  · rw [sqrt_eq_zero_of_nonpos (mul_nonpos_of_nonneg_of_nonpos hx hy)]
+    exact le_sup_of_le_left hx
+  rw [not_le] at hy
+  rw [le_max_iff]
+  by_cases hxy : x ≥ y
+  · left
+    rw [sqrt_le_left hx, pow_two]
+    exact PosMulMono.mul_le_mul_of_nonneg_left hx hxy
+  · right
+    rw [sqrt_le_left (Std.le_of_lt hy), pow_two, mul_le_mul_iff_left₀ hy, le_iff_eq_or_lt]
+    simp only [ge_iff_le, not_le] at hxy
+    right
+    exact hxy
+
+lemma sqrt_mul_le_max' (hy : y ≥ 0) : sqrt (x * y) ≤ max x y := by
+  rw [max_comm, mul_comm]
+  exact sqrt_mul_le_max hy
+
 end Real
 
 namespace Mathlib.Meta.Positivity
