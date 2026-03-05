@@ -54,7 +54,7 @@ Let `C` refer to a category with a terminal object.
 
 @[expose] public section
 
-universe v v₂ v₃ u u₂ u₃
+universe v v₀ u u₀
 
 namespace CategoryTheory
 
@@ -229,14 +229,14 @@ instance isRegularMonoCategory : IsRegularMonoCategory C where
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects
   isomorphisms. This holds for any balanced category.
 -/
-instance reflectsIsomorphisms (D : Type u₂) [Category.{v₂} D] (F : C ⥤ D) [Functor.Faithful F] :
+instance reflectsIsomorphisms (D : Type u₀) [Category.{v₀} D] (F : C ⥤ D) [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
 
 /-- If the source of a faithful functor is the opposite category of one with a subobject classifier,
   the same holds -- the functor reflects isomorphisms.
 -/
-instance reflectsIsomorphismsOp (D : Type u₂) [Category.{v₂} D] (F : Cᵒᵖ ⥤ D)
+instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ ⥤ D)
     [Functor.Faithful F] :
     Functor.ReflectsIsomorphisms F :=
   reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms F
@@ -453,7 +453,7 @@ end Representability
 section Iso
 
 /-- The unique morphism between classifiers mapping each others characteristic maps -/
-def Classifier.hom (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ⟶ 𝒞₂.Ω := 𝒞₂.χ (𝒞₁.truth)
+def Classifier.hom (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ⟶ 𝒞₂.Ω := 𝒞₂.χ 𝒞₁.truth
 
 @[reassoc (attr := simp)]
 lemma Classifier.hom_comp_hom (𝒞₁ 𝒞₂ 𝒞₃ : Classifier C) : 𝒞₁.hom 𝒞₂ ≫ 𝒞₂.hom 𝒞₃ = 𝒞₁.hom 𝒞₃ :=
@@ -490,7 +490,7 @@ def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω)
   truth := t
   mono_truth := ht ▸ inferInstance
   χ₀ := from'
-  χ {F G} m _ := (𝒞.χ m) ≫ eΩ.hom
+  χ {F G} m _ := 𝒞.χ m ≫ eΩ.hom
   isPullback {F G} m _ := by
     rw [eΩ₀.comp_inv_eq.mp (Subsingleton.elim (from' F ≫ eΩ₀.inv) (𝒞.χ₀ F))]
     exact (𝒞.isPullback m).paste_vert (IsPullback.of_vert_isIso_mono (by simp [ht]))
@@ -507,9 +507,7 @@ end Iso
 
 section Equivalence
 
-variable {D : Type u₂} [Category.{v₂} D]
-  {E : Type u₃} [Category.{v₃} E]
-
+variable {D : Type*} [Category* D] {E : Type*} [Category* E]
 
 /--
 The image of a subobject classifier under an equivalence of categories is a subobject classifier.
@@ -521,7 +519,7 @@ def Classifier.ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier
   truth := e.functor.map 𝒞₁.truth
   mono_truth := inferInstance
   χ₀ Y := e.counitInv.app Y ≫ e.functor.map (𝒞₁.χ₀ (e.inverse.obj Y))
-  χ m := (e.counitInv.app _) ≫ e.functor.map (𝒞₁.χ (e.inverse.map m))
+  χ m := e.counitInv.app _ ≫ e.functor.map (𝒞₁.χ (e.inverse.map m))
   isPullback {F G} m _ := by
     apply ((𝒞₁.isPullback (e.inverse.map m)).map e.functor).of_iso (e.counitIso.app _)
       (e.counitIso.app _) (.refl _) (.refl _) <;> simp
