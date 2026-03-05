@@ -96,6 +96,10 @@ instance : IsDiscreteValuationRing (v.adicCompletionIntegers K) where
     simp [hπ, ← exp_zero, -exp_neg,
       ← (Valued.v : Valuation (v.adicCompletion K) ℤᵐ⁰).map_eq_zero_iff]
 
+open scoped Valued in
+instance : IsDiscreteValuationRing 𝒪[v.adicCompletion K] :=
+  inferInstanceAs (IsDiscreteValuationRing (v.adicCompletionIntegers K))
+
 end DVR
 
 namespace NumberField.RingOfIntegers.HeightOneSpectrum
@@ -448,64 +452,47 @@ noncomputable def algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
     apply mul_eq_mul_right_iff.2 ∘ .inl ∘ (rpow_inv_eq (by simp [← norm_pow]) (by simp)
       (mod_cast mul_ne_zero v w)).2; norm_cast
 
+@[simp]
+theorem algebraNorm_of_liesOver_apply [w.asIdeal.LiesOver v.asIdeal] {x : Lw} :
+    algebraNorm_of_liesOver v w x = ‖x‖ ^ (e * f : ℝ)⁻¹ := rfl
+
+theorem isPowMul_algebraNorm_of_liesOver [w.asIdeal.LiesOver v.asIdeal] :
+    IsPowMul (algebraNorm_of_liesOver v w) := by
+  intro a n hn
+  simp [Real.rpow_pow_comm]
+
+theorem algebraNorm_of_liesOver_eq_spectralValue [w.asIdeal.LiesOver v.asIdeal] {x : Lw} :
+    algebraNorm_of_liesOver v w x = spectralValue (minpoly (v.adicCompletion K) x) :=
+  (algebraNorm_of_liesOver v w).ext_iff.1
+    (spectralNorm_unique (isPowMul_algebraNorm_of_liesOver v w)) x
+
 instance instIsIntegral [w.asIdeal.LiesOver v.asIdeal] :
     Algebra.IsIntegral (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) where
   isIntegral x := by
-    simp only [IsIntegral, RingHom.IsIntegralElem]
     let q := minpoly (v.adicCompletion K) x.1
     have hq : ∀ n : ℕ, ‖q.coeff n‖ ≤ 1 := by
-      rw [← spectralValue_le_one_iff
-        (minpoly.monic <| IsAlgebraic.isIntegral <| Algebra.IsAlgebraic.isAlgebraic _)]
-      have := x.2
-      rw [mem_adicCompletionIntegers] at this
-      have hnorm : ‖x‖ ^ (e  * f : ℝ)⁻¹ = spectralValue q := by
-        let g : AlgebraNorm (v.adicCompletion K) (w.adicCompletion L) :=
-          algebraNorm_of_liesOver v w
-        have hg : IsPowMul g := by
-          simp only [IsPowMul, g]
-          intro a n hn
-          change ‖a ^ n‖ ^ (_ : ℝ)⁻¹ = (‖a‖ ^ (_ : ℝ)⁻¹) ^ n
-          simp [Real.rpow_pow_comm]
-        simpa only [g] using g.ext_iff.1 (spectralNorm_unique hg) x
-      rw [← hnorm]
-      simp only [ge_iff_le]
-      apply Real.rpow_le_one (by simp) (Valued.toNormedField.norm_le_one_iff.mpr this)
+      rw [← spectralValue_le_one_iff (minpoly.monic (Algebra.IsAlgebraic.isIntegral.isIntegral _)),
+        ← algebraNorm_of_liesOver_eq_spectralValue]
+      exact Real.rpow_le_one (by simp) (Valued.toNormedField.norm_le_one_iff.2 x.2)
         (by simp [← Nat.cast_mul])
-    set p : Polynomial (v.adicCompletionIntegers K) :=
-      q.int (v.adicCompletionIntegers K).toSubring (by simpa using hq)
-    use p
+    use q.int (v.adicCompletionIntegers K).toSubring (by simpa using hq)
     rw [Polynomial.int_monic_iff]
     refine ⟨minpoly.monic (Algebra.IsAlgebraic.isAlgebraic _).isIntegral, ?_⟩
-    simp only [p]
-    have := Polynomial.int_eval₂_eq (v.adicCompletionIntegers K).toSubring q
-      (by simpa using hq) x.1
+    have := Polynomial.int_eval₂_eq (v.adicCompletionIntegers K).toSubring q (by simpa using hq) x.1
     rw [minpoly.aeval] at this
-    apply_fun (algebraMap (w.adicCompletionIntegers L) (w.adicCompletion L)) using
-      IsFractionRing.injective _ _
-    simp only [ValuationSubring.algebraMap_apply, ZeroMemClass.coe_zero]
-    simp only [← this, ← ValuationSubring.subtype_apply, Polynomial.eval₂_def, Polynomial.sum_def,
-      map_sum]
-    apply Finset.sum_congr rfl fun i _ ↦ ?_
-    simp only [ValuationSubring.subtype_apply, MulMemClass.coe_mul, SubmonoidClass.coe_pow,
-      mul_eq_mul_right_iff, pow_eq_zero_iff', ZeroMemClass.coe_eq_zero, ne_eq]
-    left
-    congr
+    simp only [← Subtype.val_inj, Polynomial.eval₂_def, Polynomial.sum_def,
+      ← ValuationSubring.subtype_apply, map_sum, map_mul, map_pow, map_zero, ← this]
+    exact Finset.sum_congr rfl fun i _ ↦ mul_eq_mul_right_iff.2 (.inl rfl)
 
 instance [w.asIdeal.LiesOver v.asIdeal] :
     IsIntegralClosure (w.adicCompletionIntegers L) (v.adicCompletionIntegers K)
       (w.adicCompletion L) :=
-  -- takes too long to synthesize on its own
-  let _ : Algebra.IsIntegral (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
-    instIsIntegral _ _
-  IsIntegralClosure.of_isIntegrallyClosed (w.adicCompletionIntegers L)
+  let _ := instIsIntegral v w; .of_isIntegrallyClosed (w.adicCompletionIntegers L)
     (v.adicCompletionIntegers K) (w.adicCompletion L)
 
 instance instFiniteIntegers [w.asIdeal.LiesOver v.asIdeal] :
     Module.Finite (v.adicCompletionIntegers K) (w.adicCompletionIntegers L) :=
   IsIntegralClosure.finite _ (v.adicCompletion K) (w.adicCompletion L) _
-
-instance : IsDiscreteValuationRing (Valued.integer (v.adicCompletion K)) :=
-  inferInstanceAs (IsDiscreteValuationRing (v.adicCompletionIntegers K))
 
 namespace LiesOver
 
@@ -530,19 +517,19 @@ scoped instance : IsScalarTower K (v.adicCompletion K) (w.adicCompletion L) :=
 
 end LiesOver
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped LiesOver in
 open Valued integer Rat.HeightOneSpectrum IsLocalRing in
 instance compact_adicCompletionIntegers : CompactSpace (v.adicCompletionIntegers K) where
   isCompact_univ := by
-    rw [isCompact_iff_totallyBounded_isComplete]
+    rw [isCompact_iff_totallyBounded_isComplete, totallyBounded_iff_finite_residueField]
     refine ⟨?_, completeSpace_iff_isComplete_univ.1 (isClosed_valuationSubring _).completeSpace_coe⟩
-    erw [totallyBounded_iff_finite_residueField]
     let 𝔭 := v.under (A := 𝓞 ℚ)
     have h : Finite (ResidueField (𝔭.adicCompletionIntegers ℚ)) :=
       (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.1
         (adicCompletionIntegers.padicIntEquiv 𝔭).toHomeomorph.symm.compactSpace).2.2
     have : LiesOver v.asIdeal 𝔭.asIdeal := ⟨rfl⟩
-    let _ := instFiniteIntegers 𝔭 v
+    have := instFiniteIntegers 𝔭 v
     exact ResidueField.finite_of_finite h (S := v.adicCompletionIntegers K)
 
 end NumberField.HeightOneSpectrum
