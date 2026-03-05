@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.ParametricIntegral
 public import Mathlib.Analysis.Complex.CauchyIntegral
-public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.Moments.Basic
 public import Mathlib.Probability.Moments.IntegrableExpMul
 
@@ -69,7 +69,7 @@ variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {μ : Measure
 
 /-- Complex extension of the moment-generating function. -/
 noncomputable
-def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := μ[fun ω ↦ cexp (z * X ω)]
+def complexMGF (X : Ω → ℝ) (μ : Measure Ω) (z : ℂ) : ℂ := ∫ ω, cexp (z * X ω) ∂μ
 
 lemma complexMGF_undef (hX : AEMeasurable X μ) (h : ¬ Integrable (fun ω ↦ rexp (z.re * X ω)) μ) :
     complexMGF X μ z = 0 := by
@@ -95,8 +95,9 @@ lemma norm_complexMGF_le_mgf : ‖complexMGF X μ z‖ ≤ mgf X μ z.re := by
   _ ≤ ∫ ω, ‖cexp (z.re * X ω) * cexp (z.im * I * X ω)‖ ∂μ := norm_integral_le_integral_norm _
   _ = ∫ ω, rexp (z.re * X ω) ∂μ := by simp [Complex.norm_exp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma complexMGF_ofReal (x : ℝ) : complexMGF X μ x = mgf X μ x := by
-  rw [complexMGF, mgf, ← integral_complex_ofReal]
+  rw [complexMGF, mgf]
   norm_cast
 
 lemma re_complexMGF_ofReal (x : ℝ) : (complexMGF X μ x).re = mgf X μ x := by
@@ -119,7 +120,6 @@ lemma complexMGF_mul_I (hX : AEMeasurable X μ) (t : ℝ) :
 
 section Analytic
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For `z : ℂ` with `z.re ∈ interior (integrableExpSet X μ)`, the derivative of the function
 `z' ↦ μ[X ^ n * cexp (z' * X)]` at `z` is `μ[X ^ (n + 1) * cexp (z * X)]`. -/
 lemma hasDerivAt_integral_pow_mul_exp (hz : z.re ∈ interior (integrableExpSet X μ)) (n : ℕ) :

@@ -170,7 +170,6 @@ variable {f : ℕ → ℂ} {l : ℂ}
 
 section lemmas
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem lemma₁ (hlim : Tendsto (fun n : ℕ ↦ (∑ k ∈ Icc 1 n, f k) / n) atTop (𝓝 l))
     {s : ℝ} (hs : 1 < s) :
     IntegrableOn (fun t : ℝ ↦ (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * (t : ℂ) ^ (-(s : ℂ) - 1)) (Set.Ici 1) := by
@@ -223,7 +222,6 @@ private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₁
   rwa [dist_eq_norm, div_sub' (ne_zero_of_re_pos ht₁), norm_div, norm_real,
     Real.norm_of_nonneg ht₁.le, mul_comm, div_lt_iff₀ ht₁] at ht₂
 
-set_option backward.isDefEq.respectTransparency false in
 private theorem LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_aux₂ {s T ε : ℝ} {S : ℝ → ℂ}
     (hS : LocallyIntegrableOn (fun t ↦ S t - l * t) (Set.Ici 1)) (hε : 0 < ε)
     (hs : 1 < s) (hT₁ : 1 ≤ T) (hT : ∀ t ≥ T, ‖S t - l * t‖ ≤ ε * t) :

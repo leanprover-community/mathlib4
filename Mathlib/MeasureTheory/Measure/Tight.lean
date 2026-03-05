@@ -152,7 +152,6 @@ end Basic
 variable [PseudoMetricSpace 𝓧] [OpensMeasurableSpace 𝓧] [SecondCountableTopology 𝓧]
   {S : Set (ProbabilityMeasure 𝓧)}
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_measure_iUnion_gt_of_isCompact_closure
     (U : ℕ → Set 𝓧) (O : ∀ i, IsOpen (U i)) (Cov : ⋃ i, U i = univ) (hcomp : IsCompact (closure S))
     (ε : ℝ≥0∞) (hε : 0 < ε) (hεbound : ε ≤ 1) :
@@ -212,7 +211,6 @@ lemma exists_measure_iUnion_gt_of_isCompact_closure
 
 variable [CompleteSpace 𝓧]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In a second countable complete metric space, a set of probability measures with compact closure
 is tight. -/
 theorem isTightMeasureSet_of_isCompact_closure (hcomp : IsCompact (closure S)) :

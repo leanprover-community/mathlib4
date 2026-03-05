@@ -459,7 +459,6 @@ theorem algebraMap_apply [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring 
     [Algebra R A] {r : R} {i j : n} :
     (algebraMap R (CStarMatrix n n A) r) i j = if i = j then algebraMap R A r else 0 := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (n) (R) (A) in
 /-- The ⋆-algebra equivalence between `A` and 1×1 matrices with its entry in `A`. -/
 def toOneByOne [Unique n] [Semiring R] [AddCommMonoid A] [Mul A] [Star A] [Module R A] :
@@ -589,7 +588,6 @@ lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_eq_zero_iff := by
     simpa only [norm_def, norm_eq_zero, ← injective_iff_map_eq_zero'] using toCLM_injective
 
-set_option backward.isDefEq.respectTransparency false in
 open WithCStarModule in
 lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :
     ‖M i j‖ ≤ ‖M‖ := by
@@ -603,7 +601,6 @@ lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :
   apply (toCLM M).le_opNorm _ |>.trans
   simp [norm_def]
 
-set_option backward.isDefEq.respectTransparency false in
 open CStarModule in
 lemma norm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
     (h : ∀ v w, ‖⟪w, toCLM M v⟫_A‖ ≤ C * ‖v‖ * ‖w‖) : ‖M‖ ≤ C := by

@@ -104,7 +104,6 @@ lemma greatestFib_ne_zero : greatestFib n ≠ 0 ↔ n ≠ 0 := greatestFib_eq_ze
 
 @[simp] lemma greatestFib_pos : 0 < greatestFib n ↔ 0 < n := by simp [pos_iff_ne_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma greatestFib_sub_fib_greatestFib_le_greatestFib (hn : n ≠ 0) :
     greatestFib (n - fib (greatestFib n)) ≤ greatestFib n - 2 := by
   rw [← Nat.lt_succ_iff, greatestFib_lt, tsub_lt_iff_right n.fib_greatestFib_le, Nat.sub_succ,
@@ -152,7 +151,6 @@ lemma isZeckendorfRep_zeckendorf : ∀ n, (zeckendorf n).IsZeckendorfRep
     exact add_le_of_le_tsub_right_of_le (le_greatestFib.2 le_add_self)
       (greatestFib_sub_fib_greatestFib_le_greatestFib n.succ_ne_zero)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma zeckendorf_sum_fib : ∀ {l}, IsZeckendorfRep l → zeckendorf (l.map fib).sum = l
   | [], _ => by simp only [map_nil, List.sum_nil, zeckendorf_zero]
   | a :: l, hl => by

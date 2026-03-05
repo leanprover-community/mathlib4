@@ -490,7 +490,6 @@ lemma Unitization.cfcₙ_eq_cfc_inr {R : Type*} [Semifield R] [StarRing R] [Metr
     · rw [cfcₙ_apply_of_not_predicate a ha, inr_zero,
         cfc_apply_of_not_predicate _ (not_iff_not.mpr hp |>.mpr ha)]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma Unitization.complex_cfcₙ_eq_cfc_inr (a : A) (f : ℂ → ℂ) (hf₀ : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f (a : A⁺¹) :=
   Unitization.cfcₙ_eq_cfc_inr isStarNormal_inr ..

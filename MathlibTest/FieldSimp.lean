@@ -499,14 +499,12 @@ example {x y z : ℚ} (h : x * y = x * z) : True := by
   guard_hyp h : x * y = x * z
   exact trivial
 
-set_option backward.isDefEq.respectTransparency false in
 example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
     (a * x + b * y)⁻¹ ≤ a * x⁻¹ + b * y⁻¹ := by
   field_simp
   guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 -- vary `<` vs `≤`, `≥` vs `≤`
 example {x y a b : ℚ} (hx : x > 0) (hy : 0 < y) (ha : 0 ≤ a) (hb : 0 < b) :
     a * x⁻¹ + b * y⁻¹ ≥ (a * x + b * y)⁻¹ := by
@@ -514,35 +512,30 @@ example {x y a b : ℚ} (hx : x > 0) (hy : 0 < y) (ha : 0 ≤ a) (hb : 0 < b) :
   guard_target = x * y ≤ (a * x + b * y) * (a * y + x * b)
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 example {x y a b : ℚ} (hx : 0 < x) (hy : 0 < y) (ha : 0 < a) (hb : 0 < b) :
     (a * x + b * y)⁻¹ < a * x⁻¹ + b * y⁻¹ := by
   field_simp
   guard_target = x * y < (a * x + b * y) * (a * y + x * b)
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 ≤ 1 := by
   field_simp
   guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 ≤ (x ^ 2 + y ^ 2) ^ 2
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 ≤ 1 := by
   simp only [field]
   guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 ≤ (x ^ 2 + y ^ 2) ^ 2
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
   field_simp
   guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
   simp only [field]
@@ -576,14 +569,12 @@ example {x y z : ℚ} : x / y ^ 2 = z / y := by
   guard_target = x / y ^ 2 = z / y
   exact test_sorry
 
-set_option backward.isDefEq.respectTransparency false in
 -- why the first idea could work
 example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x * y = z * y ^ 2) := by
   obtain rfl | hy := eq_or_ne y 0
   · simp
   field_simp
 
-set_option backward.isDefEq.respectTransparency false in
 -- why the second idea could work
 example {x y z : ℚ} : (x / y ^ 2 = z / y) ↔ (x / y / y = z / y) := by
   obtain rfl | hy := eq_or_ne y 0

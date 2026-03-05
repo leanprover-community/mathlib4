@@ -235,6 +235,7 @@ theorem integralPowerBasisOfPrimePow_dim [hcycl : IsCyclotomicExtension {p ^ k} 
   simp [integralPowerBasisOfPrimePow, ← cyclotomic_eq_minpoly hζ (NeZero.pos _),
     natDegree_cyclotomic]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasisOfPrimePow [IsCyclotomicExtension {p ^ k} ℚ K]
@@ -732,7 +733,6 @@ theorem discr [hK : IsCyclotomicExtension {n} ℚ K] :
     simp_rw +contextual [← pow_mul, Nat.div_mul_right_comm (this _), Nat.totient_mul h]
     rw [mul_pow, mul_comm n₂.totient]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem natAbs_discr [hK : IsCyclotomicExtension {n} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
     (NumberField.discr K).natAbs = n ^ φ n / ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1)) := by
@@ -878,6 +878,7 @@ theorem integralPowerBasis_dim [IsCyclotomicExtension {n} ℚ K] (hζ : IsPrimit
     hζ.integralPowerBasis.dim = φ n := by
   simp [integralPowerBasis, ← cyclotomic_eq_minpoly hζ (NeZero.pos _), natDegree_cyclotomic]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {n} ℚ K]
