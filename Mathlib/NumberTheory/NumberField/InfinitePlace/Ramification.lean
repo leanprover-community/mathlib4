@@ -691,6 +691,7 @@ theorem disjoint_ramifiedPlacesOver_unramifiedPlacesOver (v : InfinitePlace K) :
 
 theorem union_ramifiedPlacesOver_unramifiedPlacesOver (v : InfinitePlace K) :
     (ramifiedPlacesOver L v) ∪ (unramifiedPlacesOver L v) = placesOver L v := by
-  simp only [placesOver, ramifiedPlacesOver, unramifiedPlacesOver, ← Set.setOf_or]; grind
+  rw [placesOver, ramifiedPlacesOver, unramifiedPlacesOver, ← Set.setOf_or]
+  grind
 
 end NumberField.InfinitePlace
