@@ -146,7 +146,8 @@ double dual lies in the range of that embedding, then `closure S` is compact in 
 This combines Banach–Alaoglu (compactness of bounded weak-star–closed sets) with the topological
 embedding `inclusionInDoubleDualWeak_isEmbedding` to transfer compactness back to the weak
 topology on `X`. -/
-theorem isCompact_closure_of_isBounded {S : Set (WeakSpace 𝕜 X)} (hb : IsBounded S)
+theorem isCompact_closure_of_isBounded {S : Set (WeakSpace 𝕜 X)}
+    (hb : IsBounded ((toWeakSpace 𝕜 X) ⁻¹' S))
     (hrange : closure (inclusionInDoubleDualWeak 𝕜 X '' S) ⊆
       Set.range (inclusionInDoubleDualWeak 𝕜 X)) :
     IsCompact (closure S) := by
