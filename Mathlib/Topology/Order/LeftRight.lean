@@ -44,11 +44,11 @@ theorem Filter.Eventually.exists_lt {a : α} [NeBot (𝓝[<] a)] {p : α → Pro
     (h : ∀ᶠ x in 𝓝 a, p x) : ∃ b < a, p b :=
   ((frequently_lt_nhds a).and_eventually h).exists
 
-@[to_dual nhdsWithin_Iic_neBot]
+@[to_dual]
 theorem nhdsWithin_Ici_neBot {a b : α} (H₂ : a ≤ b) : NeBot (𝓝[Ici a] b) :=
   nhdsWithin_neBot_of_mem H₂
 
-@[to_dual nhdsGE_neBot]
+@[to_dual]
 instance nhdsLE_neBot (a : α) : NeBot (𝓝[≤] a) := nhdsWithin_Iic_neBot (le_refl a)
 
 @[to_dual]
@@ -91,41 +91,41 @@ section TopologicalSpace
 
 variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [TopologicalSpace β] {s : Set α}
 
-@[to_dual]
+@[to_dual nhdsGE_sup_nhdsLE]
 theorem nhdsLE_sup_nhdsGE (a : α) : 𝓝[≤] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ici, nhdsWithin_univ]
 
-@[to_dual]
+@[to_dual nhdsWithinGE_sup_nhdsWithinLE]
 theorem nhdsWithinLE_sup_nhdsWithinGE (a : α) : 𝓝[s ∩ Iic a] a ⊔ 𝓝[s ∩ Ici a] a = 𝓝[s] a := by
   rw [← nhdsWithin_union, ← inter_union_distrib_left, Iic_union_Ici, inter_univ]
 
-@[to_dual]
+@[to_dual nhdsGT_sup_nhdsLE]
 theorem nhdsLT_sup_nhdsGE (a : α) : 𝓝[<] a ⊔ 𝓝[≥] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iio_union_Ici, nhdsWithin_univ]
 
-@[to_dual]
+@[to_dual nhdsWithinGT_sup_nhdsWithinLE]
 theorem nhdsWithinLT_sup_nhdsWithinGE (a : α) : 𝓝[s ∩ Iio a] a ⊔ 𝓝[s ∩ Ici a] a = 𝓝[s] a := by
   rw [← nhdsWithin_union, ← inter_union_distrib_left, Iio_union_Ici, inter_univ]
 
-@[to_dual]
+@[to_dual nhdsGE_sup_nhdsLT]
 theorem nhdsLE_sup_nhdsGT (a : α) : 𝓝[≤] a ⊔ 𝓝[>] a = 𝓝 a := by
   rw [← nhdsWithin_union, Iic_union_Ioi, nhdsWithin_univ]
 
-@[to_dual]
+@[to_dual nhdsWithinGE_sup_nhdsWithinLT]
 theorem nhdsWithinLE_sup_nhdsWithinGT (a : α) : 𝓝[s ∩ Iic a] a ⊔ 𝓝[s ∩ Ioi a] a = 𝓝[s] a := by
   rw [← nhdsWithin_union, ← inter_union_distrib_left, Iic_union_Ioi, inter_univ]
 
-@[to_dual]
+@[to_dual nhdsGT_sup_nhdsLT]
 theorem nhdsLT_sup_nhdsGT (a : α) : 𝓝[<] a ⊔ 𝓝[>] a = 𝓝[≠] a := by
   rw [← nhdsWithin_union, Iio_union_Ioi]
 
-@[to_dual]
+@[to_dual nhdsWithinGT_sup_nhdsWithinLT]
 theorem nhdsWithinLT_sup_nhdsWithinGT (a : α) :
     𝓝[s ∩ Iio a] a ⊔ 𝓝[s ∩ Ioi a] a = 𝓝[s \ {a}] a := by
   rw [← nhdsWithin_union, ← inter_union_distrib_left, Iio_union_Ioi, compl_eq_univ_diff,
     inter_sdiff_left_comm, univ_inter]
 
-@[to_dual]
+@[to_dual nhdsLT_sup_nhdsWithin_singleton]
 lemma nhdsGT_sup_nhdsWithin_singleton (a : α) :
     𝓝[>] a ⊔ 𝓝[{a}] a = 𝓝[≥] a := by
   simp only [union_singleton, Ioi_insert, ← nhdsWithin_union]

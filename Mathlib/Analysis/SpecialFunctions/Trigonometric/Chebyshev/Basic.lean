@@ -88,14 +88,12 @@ theorem U_complex_cos (n : ℤ) : (U ℂ n).eval (cos θ) * sin θ = sin ((n + 1
     push_cast
     ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th rescaled Chebyshev polynomial of the first kind (Vieta–Lucas polynomial) evaluates on
 `2 * cos θ` to the value `2 * cos (n * θ)`. -/
 @[simp]
 theorem C_two_mul_complex_cos (n : ℤ) : (C ℂ n).eval (2 * cos θ) = 2 * cos (n * θ) := by
   simp [C_eq_two_mul_T_comp_half_mul_X]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th rescaled Chebyshev polynomial of the second kind (Vieta–Fibonacci polynomial)
 evaluates on `2 * cos θ` to the value `sin ((n + 1) * θ) / sin θ`. -/
 @[simp]
@@ -125,14 +123,12 @@ theorem U_complex_cosh (n : ℤ) : (U ℂ n).eval (cosh θ) * sinh θ = sinh ((n
   _ = sinh ((n + 1) * θ)                                := by
     rw [sin_mul_I ((n + 1) * θ), mul_assoc, mul_neg, I_mul_I, neg_neg, mul_one]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th rescaled Chebyshev polynomial of the first kind (Vieta–Lucas polynomial) evaluates on
 `2 * cosh θ` to the value `2 * cosh (n * θ)`. -/
 @[simp]
 theorem C_two_mul_complex_cosh (n : ℤ) : (C ℂ n).eval (2 * cosh θ) = 2 * cosh (n * θ) := by
   simp [C_eq_two_mul_T_comp_half_mul_X]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The `n`-th rescaled Chebyshev polynomial of the second kind (Vieta–Fibonacci polynomial)
 evaluates on `2 * cosh θ` to the value `sinh ((n + 1) * θ) / sinh θ`. -/
 @[simp]

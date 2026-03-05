@@ -616,7 +616,6 @@ theorem mkContinuousLinear_norm_le (f : F →ₗ[𝕜] E [⋀^ι]→ₗ[𝕜] G)
 
 variable {ι' : Type*} [Fintype ι']
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a map `f : E [⋀^ι]→ₗ[𝕜] (F [⋀^ι']→ₗ[𝕜] G)` and an estimate
 `H : ∀ m m', ‖f m m'‖ ≤ C * ∏ i, ‖m i‖ * ∏ i, ‖m' i‖`, upgrade all `AlternatingMap`s in the type
 to `ContinuousAlternatingMap`s. -/

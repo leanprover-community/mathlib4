@@ -275,7 +275,6 @@ def instCommMonoid : CommMonoid (RatFunc K) where
   mul_one := by frac_tac
   npow := npowRec
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `RatFunc K` is an additive commutative group.
 
 This is an intermediate step on the way to the full instance `RatFunc.instCommRing`.

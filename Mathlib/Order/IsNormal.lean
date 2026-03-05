@@ -21,9 +21,9 @@ bound of `f b` with `b < a`.
 See `Order.isNormal_iff_strictMono_and_continuous` for a proof that these notions are equivalent.
 -/
 
-@[expose] public section
+public section
 
-open Order Set
+open Set
 
 variable {α β γ : Type*} {a b : α} {f : α → β} {g : β → γ}
 
@@ -107,6 +107,12 @@ theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
   simpa [hg.le_iff_forall_le (hf.map_isSuccLimit ha), hf.lt_iff_exists_lt ha] using
     fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
 
+theorem to_Iio (hf : IsNormal f) (a : α) :
+    IsNormal (β := Iio (f a)) fun x : Iio a ↦ ⟨f x.1, hf.strictMono x.2⟩ := by
+  rw [isNormal_iff]
+  refine ⟨fun x y h ↦ hf.strictMono h, fun b hb c hc ↦ hf.2 (hb.subtypeVal (isLowerSet_Iio _)) ?_⟩
+  simpa [upperBounds] using fun d hd ↦ hc ⟨d, hd.trans b.2⟩ hd
+
 section WellFoundedLT
 variable [WellFoundedLT α] [SuccOrder α]
 
@@ -170,6 +176,17 @@ theorem preimage_Iic (hf : IsNormal f) {x : β}
     apply (csSup_le_csSup bddAbove_Iic _ (image_preimage_subset ..)).trans
     · rw [csSup_Iic]
     · simpa
+
+theorem le_iff_le_sSup (hf : IsNormal f) {x : α} {y : β}
+    (h₁ : (f ⁻¹' Iic y).Nonempty) (h₂ : BddAbove (f ⁻¹' Iic y)) :
+    f x ≤ y ↔ x ≤ sSup (f ⁻¹' Iic y) :=
+  Set.ext_iff.1 (preimage_Iic hf h₁ h₂) x
+
+/-- If `f : α → α` in a well-order, we can infer one of the hypotheses in
+`Order.IsNormal.le_iff_le_sSup`. -/
+theorem le_iff_le_sSup' [WellFoundedLT α] {f : α → α} (hf : IsNormal f) {x y : α}
+    (h : (f ⁻¹' Iic y).Nonempty) : f x ≤ y ↔ x ≤ sSup (f ⁻¹' Iic y) :=
+  hf.le_iff_le_sSup h ⟨y, fun _ ↦ hf.strictMono.le_apply.trans⟩
 
 end ConditionallyCompleteLinearOrder
 

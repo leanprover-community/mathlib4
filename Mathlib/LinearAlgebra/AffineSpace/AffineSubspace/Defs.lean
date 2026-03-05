@@ -693,7 +693,6 @@ theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
   obtain ⟨-, ⟨i, -⟩⟩ := nonempty_of_affineSpan_eq_top k V P h
   exact Fintype.card_pos_iff.mpr ⟨i⟩
 
-set_option backward.isDefEq.respectTransparency false in
 -- An instance with better keys for the context
 instance : Nonempty (⊤ : AffineSubspace k P) := inferInstanceAs (Nonempty (⊤ : Set P))
 
@@ -959,7 +958,7 @@ preserved under certain affine combinations, then `p` holds for all elements of 
 theorem affineSpan_induction {x : P} {s : Set P} {p : P → Prop} (h : x ∈ affineSpan k s)
     (mem : ∀ x : P, x ∈ s → p x)
     (smul_vsub_vadd : ∀ (c : k) (u v w : P), p u → p v → p w → p (c • (u -ᵥ v) +ᵥ w)) : p x :=
-  (affineSpan_le (Q := ⟨p, smul_vsub_vadd⟩)).mpr mem h
+  (affineSpan_le (Q := ⟨{x | p x}, smul_vsub_vadd⟩)).mpr mem h
 
 /-- A dependent version of `affineSpan_induction`. -/
 @[elab_as_elim]
