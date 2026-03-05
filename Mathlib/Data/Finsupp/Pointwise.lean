@@ -100,36 +100,26 @@ section pointwiseModule
 
 lemma pointwise_smul_support_finite {ι R M : Type*} [Zero M] [SMulZeroClass R M] (f : ι → R)
     (g : ι →₀ M) : (fun x ↦ f x • g x).support.Finite :=
-  Set.Finite.subset g.finite_support (by intro; simp; grind [smul_zero])
+  Set.Finite.subset g.hasFiniteSupport (by intro; simp; grind [smul_zero])
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an
 -- def rather than an instance.
 /-- Pointwise scalar multiplication given by `(f • g) x = f x • g x`. -/
 -- see Note [reducible non-instances]
-abbrev pointwiseScalar {ι R M : Type*} [Zero M] [SMulZeroClass R M] : SMul (ι → R) (ι →₀ M) where
+abbrev pointwiseScalar {ι R M : Type*} [Zero M] [SMulZeroClass R M] :
+    SMul (ι → R) (ι →₀ M) where
   smul f g := Finsupp.ofSupportFinite (fun a ↦ f a • g a) (pointwise_smul_support_finite ..)
 
 instance pointwiseScalarModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     SMul (ι → R) (ι →₀ M) := pointwiseScalar
-abbrev pointwiseScalar {M : Type*} [Zero M] [SMulZeroClass β M] : SMul (α → β) (α →₀ M) where
-  smul f g :=
-    Finsupp.ofSupportFinite (fun a ↦ f a • g a) (by
-      apply Set.Finite.subset g.hasFiniteSupport
-      simp only [Function.support_subset_iff, Finsupp.mem_support_iff, Ne,
-        Finsupp.fun_support_eq, Finset.mem_coe]
-      intro x hx h
-      apply hx
-      rw [h, smul_zero])
-
-instance pointwiseScalarSemiring [Semiring β] : SMul (α → β) (α →₀ β) := pointwiseScalar
 
 @[simp]
 theorem coe_pointwise_smul {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := by rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
-instance pointwiseModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+instance pointwiseScalarModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ι → R) (ι →₀ M) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective (by intros; rfl)
 
