@@ -1,4 +1,3 @@
-module
 /-
 Copyright (c) 2024 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -236,7 +235,7 @@ lemma to prove that fact later: `no_infinite_antichain`.
 -/
 lemma no_infinite_antichain_level {n : ℕ} {A : Set Hollom} (hA : A ⊆ level n)
     (hA' : IsAntichain (· ≤ ·) A) : A.Finite :=
-  hA'.finite_of_partiallyWellOrderedOn ((level_isPWO).mono hA)
+  hA'.finite_of_partiallyWellOrderedOn (level_isPWO.mono hA)
 
 /--
 Each level is order-connected, i.e. for any `x ∈ level n` and `y ∈ level n` we have

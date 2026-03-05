@@ -58,8 +58,12 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
       allFiles := #["Std", "Batteries"] ++ allFiles
-    let fileContent := "module  -- shake: keep-all\n\n" ++
-      ("\n".intercalate (allFiles.map ("public import " ++ ·)).toList) ++
+    -- Use `module` format only for Mathlib libraries (whose files already use `module`).
+    -- Other libraries (Archive, Counterexamples, docs) don't use `module` in their files.
+    let useModule := d == "Mathlib" || d == ("Mathlib".push pathSeparator ++ "Tactic")
+    let fileContent := (if useModule then "module  -- shake: keep-all\n\n" else "") ++
+      ("\n".intercalate (allFiles.map
+        ((if useModule then "public import " else "import ") ++ ·)).toList) ++
       (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
       "\n"
     if !(← pathExists fileName) then

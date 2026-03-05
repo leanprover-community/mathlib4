@@ -1,86 +1,84 @@
-module  -- shake: keep-all
-
-public import Archive.Arithcc
-public import Archive.Examples.Eisenstein
-public import Archive.Examples.IfNormalization.Result
-public import Archive.Examples.IfNormalization.Statement
-public import Archive.Examples.IfNormalization.WithoutAesop
-public import Archive.Examples.Kuratowski
-public import Archive.Examples.MersennePrimes
-public import Archive.Examples.PropEncodable
-public import Archive.Hairer
-public import Archive.Imo.Imo1959Q1
-public import Archive.Imo.Imo1959Q2
-public import Archive.Imo.Imo1960Q1
-public import Archive.Imo.Imo1960Q2
-public import Archive.Imo.Imo1961Q3
-public import Archive.Imo.Imo1962Q1
-public import Archive.Imo.Imo1962Q4
-public import Archive.Imo.Imo1963Q5
-public import Archive.Imo.Imo1964Q1
-public import Archive.Imo.Imo1969Q1
-public import Archive.Imo.Imo1972Q5
-public import Archive.Imo.Imo1975Q1
-public import Archive.Imo.Imo1977Q6
-public import Archive.Imo.Imo1981Q3
-public import Archive.Imo.Imo1982Q1
-public import Archive.Imo.Imo1982Q3
-public import Archive.Imo.Imo1985Q2
-public import Archive.Imo.Imo1986Q5
-public import Archive.Imo.Imo1987Q1
-public import Archive.Imo.Imo1988Q6
-public import Archive.Imo.Imo1994Q1
-public import Archive.Imo.Imo1997Q3
-public import Archive.Imo.Imo1998Q2
-public import Archive.Imo.Imo2001Q2
-public import Archive.Imo.Imo2001Q3
-public import Archive.Imo.Imo2001Q4
-public import Archive.Imo.Imo2001Q5
-public import Archive.Imo.Imo2001Q6
-public import Archive.Imo.Imo2002Q3
-public import Archive.Imo.Imo2005Q3
-public import Archive.Imo.Imo2005Q4
-public import Archive.Imo.Imo2006Q3
-public import Archive.Imo.Imo2006Q5
-public import Archive.Imo.Imo2008Q2
-public import Archive.Imo.Imo2008Q3
-public import Archive.Imo.Imo2008Q4
-public import Archive.Imo.Imo2010Q5
-public import Archive.Imo.Imo2011Q3
-public import Archive.Imo.Imo2011Q5
-public import Archive.Imo.Imo2013Q1
-public import Archive.Imo.Imo2013Q5
-public import Archive.Imo.Imo2015Q6
-public import Archive.Imo.Imo2019Q1
-public import Archive.Imo.Imo2019Q2
-public import Archive.Imo.Imo2019Q4
-public import Archive.Imo.Imo2020Q2
-public import Archive.Imo.Imo2021Q1
-public import Archive.Imo.Imo2024Q1
-public import Archive.Imo.Imo2024Q2
-public import Archive.Imo.Imo2024Q3
-public import Archive.Imo.Imo2024Q5
-public import Archive.Imo.Imo2024Q6
-public import Archive.Imo.Imo2025Q3
-public import Archive.Kuratowski
-public import Archive.MinimalSheffer
-public import Archive.MiuLanguage.Basic
-public import Archive.MiuLanguage.DecisionNec
-public import Archive.MiuLanguage.DecisionSuf
-public import Archive.OxfordInvariants.Summer2021.Week3P1
-public import Archive.Sensitivity
-public import Archive.Wiedijk100Theorems.AbelRuffini
-public import Archive.Wiedijk100Theorems.AreaOfACircle
-public import Archive.Wiedijk100Theorems.AscendingDescendingSequences
-public import Archive.Wiedijk100Theorems.BallotProblem
-public import Archive.Wiedijk100Theorems.BirthdayProblem
-public import Archive.Wiedijk100Theorems.BuffonsNeedle
-public import Archive.Wiedijk100Theorems.CubingACube
-public import Archive.Wiedijk100Theorems.FriendshipGraphs
-public import Archive.Wiedijk100Theorems.HeronsFormula
-public import Archive.Wiedijk100Theorems.InverseTriangleSum
-public import Archive.Wiedijk100Theorems.Konigsberg
-public import Archive.Wiedijk100Theorems.PerfectNumbers
-public import Archive.Wiedijk100Theorems.SolutionOfCubicQuartic
-public import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
-public import Archive.ZagierTwoSquares
+import Archive.Arithcc
+import Archive.Examples.Eisenstein
+import Archive.Examples.IfNormalization.Result
+import Archive.Examples.IfNormalization.Statement
+import Archive.Examples.IfNormalization.WithoutAesop
+import Archive.Examples.Kuratowski
+import Archive.Examples.MersennePrimes
+import Archive.Examples.PropEncodable
+import Archive.Hairer
+import Archive.Imo.Imo1959Q1
+import Archive.Imo.Imo1959Q2
+import Archive.Imo.Imo1960Q1
+import Archive.Imo.Imo1960Q2
+import Archive.Imo.Imo1961Q3
+import Archive.Imo.Imo1962Q1
+import Archive.Imo.Imo1962Q4
+import Archive.Imo.Imo1963Q5
+import Archive.Imo.Imo1964Q1
+import Archive.Imo.Imo1969Q1
+import Archive.Imo.Imo1972Q5
+import Archive.Imo.Imo1975Q1
+import Archive.Imo.Imo1977Q6
+import Archive.Imo.Imo1981Q3
+import Archive.Imo.Imo1982Q1
+import Archive.Imo.Imo1982Q3
+import Archive.Imo.Imo1985Q2
+import Archive.Imo.Imo1986Q5
+import Archive.Imo.Imo1987Q1
+import Archive.Imo.Imo1988Q6
+import Archive.Imo.Imo1994Q1
+import Archive.Imo.Imo1997Q3
+import Archive.Imo.Imo1998Q2
+import Archive.Imo.Imo2001Q2
+import Archive.Imo.Imo2001Q3
+import Archive.Imo.Imo2001Q4
+import Archive.Imo.Imo2001Q5
+import Archive.Imo.Imo2001Q6
+import Archive.Imo.Imo2002Q3
+import Archive.Imo.Imo2005Q3
+import Archive.Imo.Imo2005Q4
+import Archive.Imo.Imo2006Q3
+import Archive.Imo.Imo2006Q5
+import Archive.Imo.Imo2008Q2
+import Archive.Imo.Imo2008Q3
+import Archive.Imo.Imo2008Q4
+import Archive.Imo.Imo2010Q5
+import Archive.Imo.Imo2011Q3
+import Archive.Imo.Imo2011Q5
+import Archive.Imo.Imo2013Q1
+import Archive.Imo.Imo2013Q5
+import Archive.Imo.Imo2015Q6
+import Archive.Imo.Imo2019Q1
+import Archive.Imo.Imo2019Q2
+import Archive.Imo.Imo2019Q4
+import Archive.Imo.Imo2020Q2
+import Archive.Imo.Imo2021Q1
+import Archive.Imo.Imo2024Q1
+import Archive.Imo.Imo2024Q2
+import Archive.Imo.Imo2024Q3
+import Archive.Imo.Imo2024Q5
+import Archive.Imo.Imo2024Q6
+import Archive.Imo.Imo2025Q3
+import Archive.Kuratowski
+import Archive.MinimalSheffer
+import Archive.MiuLanguage.Basic
+import Archive.MiuLanguage.DecisionNec
+import Archive.MiuLanguage.DecisionSuf
+import Archive.OxfordInvariants.Summer2021.Week3P1
+import Archive.Sensitivity
+import Archive.Wiedijk100Theorems.AbelRuffini
+import Archive.Wiedijk100Theorems.AreaOfACircle
+import Archive.Wiedijk100Theorems.AscendingDescendingSequences
+import Archive.Wiedijk100Theorems.BallotProblem
+import Archive.Wiedijk100Theorems.BirthdayProblem
+import Archive.Wiedijk100Theorems.BuffonsNeedle
+import Archive.Wiedijk100Theorems.CubingACube
+import Archive.Wiedijk100Theorems.FriendshipGraphs
+import Archive.Wiedijk100Theorems.HeronsFormula
+import Archive.Wiedijk100Theorems.InverseTriangleSum
+import Archive.Wiedijk100Theorems.Konigsberg
+import Archive.Wiedijk100Theorems.PerfectNumbers
+import Archive.Wiedijk100Theorems.SolutionOfCubicQuartic
+import Archive.Wiedijk100Theorems.SumOfPrimeReciprocalsDiverges
+import Archive.ZagierTwoSquares

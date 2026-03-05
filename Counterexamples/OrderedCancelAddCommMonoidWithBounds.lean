@@ -1,4 +1,3 @@
-module
 /-
 Copyright (c) 2023 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.

@@ -1,4 +1,3 @@
-module
 /-
 Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -373,7 +372,6 @@ theorem smallest_onBoundary {j} (bi : OnBoundary (mi_mem_bcubes : mi h v ∈ _) 
 
 variable (h v)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `mi` cannot lie on the boundary of the valley. Otherwise, the cube adjacent to it in the `j`-th
   direction will intersect one of the neighbouring cubes on the same boundary as `mi`. -/
 theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈ _) j := by

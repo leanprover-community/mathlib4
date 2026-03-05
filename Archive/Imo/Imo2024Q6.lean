@@ -1,4 +1,3 @@
-module
 /-
 Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -226,7 +225,6 @@ lemma floor_fExample (x : ℚ) :
     rw [Int.floor_eq_iff]
     simp [(Int.fract_nonneg x).lt_of_ne' h, (Int.fract_lt_one x).le]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) = 2 := by
   have h : Set.range (fun x ↦ fExample x + fExample (-x)) = {0, -2} := by
     ext x
@@ -250,7 +248,7 @@ lemma card_range_fExample : #(Set.range (fun x ↦ fExample x + fExample (-x))) 
             fExample_of_mem_Ico ⟨by simp, by norm_num⟩]
         norm_num
   rw [h]
-  simp
+  norm_num
 
 /-- The answer 2 is to be determined by the solver of the original problem. -/
 theorem _root_.imo2024q6 : (∀ f, Aquaesulian f → #(Set.range (fun x ↦ f x + f (-x))) ≤ (2 : ℕ)) ∧
