@@ -83,7 +83,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- (indexed by `j : J`),
     replace h := fun j => ConcreteCategory.congr_arg (limit.π (curry.obj F ⋙ colim) j) h
     -- and they are equations in a filtered colimit,
-    -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`
+    -- so for each `j` we have some place `k j` to the right of both `kx` and `ky`a9
     simp? [colimit_eq_iff] at h says
       simp only [comp_obj, colim_obj, ι_colimitLimitToLimitColimit_π_apply,
         colimit_eq_iff, curry_obj_obj_obj, curry_obj_obj_map] at h
