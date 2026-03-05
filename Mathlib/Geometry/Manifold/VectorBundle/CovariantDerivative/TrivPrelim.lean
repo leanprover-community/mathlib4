@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.VectorBundle.Delaborators
 
 /-!
 # Supporting lemmas for CovariantDerivative.Basic trivialization stuff
@@ -16,44 +17,11 @@ TODO: PR all this to appropriate places.
 
 -/
 
+@[expose] public section
+
 open Bundle Filter Module Topology Set
 
 open scoped Bundle Manifold ContDiff
-
-@[expose] public section
-
-section delaborators
-
--- TODO: decide whether we want this and move
--- This delaborates `TotalSpace.mk x v` to `⟨x, v⟩`
-open Lean PrettyPrinter Delaborator SubExpr
-
-@[app_delab TotalSpace.mk] meta def delabTotalSpace_mk : Delab := do
-  whenPPOption getPPNotation do
-  let #[_B, _F, _E, _b, _v] := (← getExpr).getAppArgs | failure
-  let bd : Term ← withNaryArg 3 <| delab
-  let vd : Term ← withNaryArg 4 <| delab
-  `(⟨$bd, $vd⟩)
-
-@[app_delab MDifferentiableAt] meta def delabMDifferentiableAt : Delab := do
-  whenPPOption getPPNotation do
-  let args := (← getExpr).getAppArgs
-  if args.size < 22 then failure
-  let pt : Term ← withNaryArg 21 <| delab
-  let f := args[20]!
-  try
-    if let .lam _ _ b _ := f then
-      if b.isAppOf ``Bundle.TotalSpace.mk' then
-        let s := b.getAppArgs[4]!.getAppFn
-        if s matches .fvar .. then
-          let ss ← PrettyPrinter.delab s
-          return ← `(MDiffAt (T% $ss) $pt)
-    throwError "nope"
-  catch _ =>
-    let x : Term ← withNaryArg 20 <| delab
-    return ← `(MDiffAt $x $pt)
-
-end delaborators
 
 namespace Bundle.Trivialization
 

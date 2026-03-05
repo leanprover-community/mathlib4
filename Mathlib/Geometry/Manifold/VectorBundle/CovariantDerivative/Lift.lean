@@ -17,41 +17,6 @@ TODO: add a more complete doc-string
 
 @[expose] public section
 
-section delaborators
-
--- TODO: decide whether we want this and move
--- This delaborates `TotalSpace.mk x v` to `⟨x, v⟩`
-open Lean PrettyPrinter Delaborator SubExpr
-
-@[app_delab mfderiv] meta def delab_mfderiv : Delab := do
-  whenPPOption getPPNotation do
-  let args := (← getExpr).getAppArgs
-  if args.size < 22 then failure
-  let pt : Term ← withNaryArg 21 <| delab
-  let f := args[20]!
-  let m := mkIdent (.mkSimple "mfderiv%")
-  let T := mkIdent (.mkSimple "T%")
-  try
-    if let .lam _ _ b _ := f then
-      if b.isAppOf ``Bundle.TotalSpace.mk' then
-        let s := b.getAppArgs[4]!.getAppFn
-        if s matches .fvar .. then
-          let ss ← PrettyPrinter.delab s
-          return ← `($m ($T $ss) $pt)
-    throwError "nope"
-  catch _ =>
-    let x : Term ← withNaryArg 20 <| delab
-    return ← `($m $x $pt)
-
-@[app_delab Bundle.TotalSpace.mk'] meta def delabTotalSpace_mk' : Delab := do
-  whenPPOption getPPNotation do
-  let #[_B, _F, _E, _b, _v] := (← getExpr).getAppArgs | failure
-  let bd : Term ← withNaryArg 3 <| delab
-  let vd : Term ← withNaryArg 4 <| delab
-  `(⟨$bd, $vd⟩)
-
-end delaborators
-
 open Bundle Filter Module Topology Set
 
 open scoped Bundle Manifold ContDiff

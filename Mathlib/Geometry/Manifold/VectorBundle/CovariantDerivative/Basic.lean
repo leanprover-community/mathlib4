@@ -8,6 +8,7 @@ module
 public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 public import Mathlib.Geometry.Manifold.VectorBundle.Tensoriality
 public import Mathlib.Geometry.Manifold.MfDerivSMul
+public import Mathlib.Geometry.Manifold.VectorBundle.Delaborators
 
 /-!
 # Covariant derivatives
