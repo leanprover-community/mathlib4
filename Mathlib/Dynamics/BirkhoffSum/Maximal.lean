@@ -200,7 +200,7 @@ theorem birkhoffAverage_iff_birkhoffSum {f : α → α} {x n g} {a : ℝ} (hn : 
   nth_rw 2 [←smul_lt_smul_iff_of_pos_left (a := (↑n : ℝ)⁻¹) (by positivity)]
   rw [smul_zero, ←birkhoffAverage, birkhoffAverage_sub]
   simp only [Pi.sub_apply, sub_pos]
-  nth_rw 2 [birkhoffAverage_of_comp_eq rfl hn.ne']
+  nth_rw 2 [birkhoffAverage_of_comp_eq _ rfl (by positivity)]
 
 theorem birkhoffAverageSupSet_eq_birkhoffSupSet {f : α → α} {g a} (ha : 0 < a) :
     birkhoffAverageSupSet f g a = birkhoffSupSet f (g - fun _ ↦ a) := by
