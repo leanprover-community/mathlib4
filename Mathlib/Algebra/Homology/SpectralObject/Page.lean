@@ -613,8 +613,7 @@ lemma cokernelSequenceOpcyclesE_exact
     ⟨y₁ ≫ biprod.fst, y₁ ≫ biprod.snd, by ext <;> simp⟩
   simp only [Preadditive.add_comp, Category.assoc, biprod.inl_desc, biprod.inr_desc] at hy₁
   refine ⟨A₂, π₂ ≫ π₁, inferInstance, a, ?_⟩
-  dsimp
-  simp only [Category.assoc, hy₂, reassoc_of% hy₁, Preadditive.add_comp, δ_pOpcycles,
+  simp [Category.assoc, hy₂, reassoc_of% hy₁, Preadditive.add_comp, δ_pOpcycles,
     comp_zero, add_zero]
 
 -- TODO: add dual statement to `cokernelSequenceOpcyclesE_exact`?
