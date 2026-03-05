@@ -83,7 +83,7 @@ structure Classifier where
   /-- The truth morphism of the subobject classifier -/
   truth : Ω₀ ⟶ Ω
   /-- The truth morphism is a monomorphism -/
-  mono_truth : Mono truth
+  mono_truth : Mono truth := by infer_instance
   /-- The top arrow in the pullback square -/
   χ₀ (U : C) : U ⟶ Ω₀
   /-- For any monomorphism `U ⟶ X`, there is an associated characteristic map `X ⟶ Ω`. -/
@@ -483,7 +483,7 @@ instance (𝒞₁ 𝒞₂ : Classifier C) : IsIso (𝒞₁.hom 𝒞₂) := (𝒞
 /-- Being a subobject classifier is preserved under isomorphism. -/
 @[simps]
 def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω) (eΩ₀ : 𝒞.Ω₀ ≅ Ω₀)
-    (from' : ∀ C, C ⟶ Ω₀) {t : Ω₀ ⟶ Ω} (ht : t = eΩ₀.inv ≫ 𝒞.truth ≫ eΩ.hom) :
+    (from' : ∀ C, C ⟶ Ω₀) {t : Ω₀ ⟶ Ω} (ht : t = eΩ₀.inv ≫ 𝒞.truth ≫ eΩ.hom := by cat_disch) :
     Classifier C where
   Ω₀ := Ω₀
   Ω := Ω
@@ -501,8 +501,6 @@ def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω)
       exact hχ'.paste_vert (IsPullback.of_vert_isIso_mono (by simp [ht]))
     simpa using this =≫ eΩ.hom
 
-alias Classifier.copy := Classifier.ofIso
-
 end Iso
 
 section Equivalence
@@ -517,7 +515,6 @@ def Classifier.ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier
   Ω₀ := e.functor.obj 𝒞₁.Ω₀
   Ω := e.functor.obj 𝒞₁.Ω
   truth := e.functor.map 𝒞₁.truth
-  mono_truth := inferInstance
   χ₀ Y := e.counitInv.app Y ≫ e.functor.map (𝒞₁.χ₀ (e.inverse.obj Y))
   χ m := e.counitInv.app _ ≫ e.functor.map (𝒞₁.χ (e.inverse.map m))
   isPullback {F G} m _ := by
