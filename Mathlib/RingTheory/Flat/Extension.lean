@@ -312,7 +312,7 @@ instance : Category.{w} (FlatExtension.{w} R K) where
     simp [← f.comm, ← g.comm, AlgHom.comp_toRingHom', ResidueField.map_comp, ← RingHom.comp_assoc]⟩
 
 variable {R K} in
-noncomputable def adjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
+noncomputable abbrev adjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
     (int : IsIntegral (ResidueField S.Ring) x) : FlatExtension.{w} R K :=
   let : IsLocalHom (algebraMap R (_root_.adjoinAlgebraic K S.Ring x int)) := by
     rw [IsScalarTower.algebraMap_eq R S.Ring]
@@ -328,14 +328,24 @@ noncomputable def adjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
         ← Ideal.map_map, S.eqmap] }
 
 variable {R K} in
-noncomputable def adjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
+noncomputable abbrev toAdjoinAlgebraic (S : FlatExtension.{w} R K) (x : K)
+    (int : IsIntegral (ResidueField S.Ring) x) : S ⟶ S.adjoinAlgebraic x int where
+  hom := IsScalarTower.toAlgHom R S.Ring _
+  isLocalHom := ⟨by simp⟩
+  comm :=
+    let := adjoinAlgebraicAlgebraK K S.Ring x int
+    let := adjoinAlgebraicIsScalarTower K S.Ring x int
+    (IsScalarTower.algebraMap_eq _ _ K).symm
+
+variable {R K} in
+noncomputable abbrev adjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
     (nint : ¬ IsIntegral (ResidueField S.Ring) x) : FlatExtension.{w} R K :=
   let : IsLocalHom (algebraMap R (_root_.adjoinTranscendental S.Ring)) := by
     rw [IsScalarTower.algebraMap_eq R S.Ring]
     apply RingHom.isLocalHom_comp
-  letI := ((algebraMap (ResidueField S.Ring) K).comp
+  let := ((algebraMap (ResidueField S.Ring) K).comp
     (algebraMap S.Ring (ResidueField S.Ring))).toAlgebra
-  letI : IsScalarTower S.Ring (ResidueField S.Ring) K := IsScalarTower.of_algebraMap_eq' rfl
+  let : IsScalarTower S.Ring (ResidueField S.Ring) K := IsScalarTower.of_algebraMap_eq' rfl
   let := adjoinTranscendentalAlgebraK K S.Ring x nint
   let := adjoinTranscendentalIsScalarTower K S.Ring x nint
   { Ring := _root_.adjoinTranscendental S.Ring
@@ -344,6 +354,19 @@ noncomputable def adjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
     eqmap := by
       rw [adjoinTranscendental_maximalIdeal_eq_map S.Ring, IsScalarTower.algebraMap_eq R S.Ring,
         ← Ideal.map_map, ← S.eqmap] }
+
+variable {R K} in
+noncomputable abbrev toAdjoinTranscendental (S : FlatExtension.{w} R K) (x : K)
+    (nint : ¬ IsIntegral (ResidueField S.Ring) x) : S ⟶ S.adjoinTranscendental x nint where
+  hom := IsScalarTower.toAlgHom R S.Ring _
+  isLocalHom := ⟨by simp⟩
+  comm :=
+    let := ((algebraMap (ResidueField S.Ring) K).comp
+    (algebraMap S.Ring (ResidueField S.Ring))).toAlgebra
+    let : IsScalarTower S.Ring (ResidueField S.Ring) K := IsScalarTower.of_algebraMap_eq' rfl
+    let := adjoinTranscendentalAlgebraK K S.Ring x nint
+    let := adjoinTranscendentalIsScalarTower K S.Ring x nint
+    (IsScalarTower.algebraMap_eq _ _ K).symm
 
 noncomputable def SuccStruct [Small.{w} R] : SuccStruct (FlatExtension.{w} R K) where
   X₀ := trivial R K
