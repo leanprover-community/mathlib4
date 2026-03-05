@@ -785,7 +785,7 @@ section LinearOrderedCommGroupWithZero
 variable [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
 section Ring
 
-variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀}
+variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ'₀}
 
 namespace IsEquiv
 
@@ -799,11 +799,11 @@ noncomputable def valueGroup₀Fun (h : v.IsEquiv w) (x : ValueGroup₀ v) : Val
     have c := (x.zero_or_exists_mk'.resolve_left hx).choose
     .mk w c.1.1 c.1.2 ((h.eq_zero).ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
 
-theorem valueGroup₀Fun_spec (h : v.IsEquiv w) (r s : R) (hr : v r ≠ 0) (hs : v s ≠ 0) :
+theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs : v s ≠ 0) :
     valueGroup₀Fun h (.mk v r s hr hs) =
       .mk w r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs) := by
   rw [valueGroup₀Fun, dif_neg (by simp)]
-  generalize_proofs _ _ _ H _
+  generalize_proofs _ _ _ _ H _
   have c_spec := H.choose_spec
   simp only [ne_eq, mk_inj] at c_spec ⊢
   rwa [← h.val_eq, eq_comm]
@@ -834,7 +834,7 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o Value
     · simp [hx0, hy0]
     · simp [hx0]
     · simp [hx0, hy0]
-    · generalize_proofs _ _ _ hx _ _ hy
+    · generalize_proofs _ _ _ _ hx _ _ hy
       conv_rhs => rw [hx.choose_spec, hy.choose_spec]
       simp only [ValueGroup₀.mk, WithZero.coe_le_coe, Subtype.mk_le_mk]
       nth_rw 2 [mul_comm]
