@@ -809,7 +809,7 @@ lemma EIsoH_hom_opcyclesIsoH_inv :
       (X.opcyclesIso (𝟙 i) f (𝟙 j) n₀ n₁ n₂ hn₁ hn₂).hom ≫
         X.fromOpcycles f (𝟙 j) f (by simp) n₁ := by
     rw [← cancel_epi (X.opcyclesIso ..).inv, Iso.inv_hom_id_assoc,
-      ← cancel_epi (X.pOpcycles ..), p_opcyclesIso_inv_assoc _ _ _ _ _ _ _,
+      ← cancel_epi (X.pOpcycles ..), p_opcyclesIso_inv_assoc ..,
       h.right.pOpcycles_comp_opcyclesIso_hom, p_fromOpcycles]
     dsimp [h]
     rw [← Functor.map_id]
