@@ -139,7 +139,7 @@ partial def findCancelFactor (e : Expr) : ℕ × Tree ℕ :=
     | none => (1, .node 1 .nil .nil)
   | _ => (1, .node 1 .nil .nil)
 
-def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
+private def synthesizeUsingNormNum (type : Q(Prop)) : MetaM Q($type) := do
   try
     synthesizeUsingTactic' type (← `(tactic| norm_num))
   catch e =>
@@ -327,18 +327,18 @@ syntax (name := cancelDenoms) "cancel_denoms" (location)? : tactic
 
 open Elab Tactic
 
-def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
+private def cancelDenominatorsAt (fvar : FVarId) : TacticM Unit := do
   let t ← instantiateMVars (← fvar.getDecl).type
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType t
   liftMetaTactic' fun g => do
     let res ← g.replaceLocalDecl fvar new eqPrf
     return res.mvarId
 
-def cancelDenominatorsTarget : TacticM Unit := do
+private def cancelDenominatorsTarget : TacticM Unit := do
   let (new, eqPrf) ← CancelDenoms.cancelDenominatorsInType (← getMainTarget)
   liftMetaTactic' fun g => g.replaceTargetEq new eqPrf
 
-def cancelDenominators (loc : Location) : TacticM Unit := do
+private def cancelDenominators (loc : Location) : TacticM Unit := do
   withLocation loc cancelDenominatorsAt cancelDenominatorsTarget
     (fun _ ↦ throwError "Failed to cancel any denominators")
 
