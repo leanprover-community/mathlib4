@@ -309,6 +309,7 @@ lemma isIso_eTruncLT_obj_map_truncLTπ_app (a b : EInt) (h : a ≤ b) (X : C) :
 instance (a : EInt) (X : C) : IsIso ((t.eTruncLT.obj a).map ((t.eTruncLTι a).app X)) :=
   isIso_eTruncLT_obj_map_truncLTπ_app t a a (by rfl) X
 
+set_option backward.isDefEq.respectTransparency false in
 instance (a : EInt) (X : C) : IsIso ((t.eTruncLTι a).app ((t.eTruncLT.obj a).obj X)) := by
   rw [← eTruncLT_obj_map_eTruncLTι_app]
   infer_instance
@@ -405,6 +406,7 @@ lemma eTruncLTLTIsoLT_inv_hom_id_app (X : C) :
     (t.eTruncLT.obj b).map ((t.eTruncLTι a).app X) = 𝟙 _ := by
   simpa using (t.eTruncLTLTIsoLT a b hab).inv_hom_id_app X
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLTLTIsoLT_inv_hom_id_app_eTruncLT_obj (X : C) :
     (t.eTruncLTLTIsoLT a b hab).inv.app ((t.eTruncLT.obj a).obj X) ≫
@@ -437,6 +439,7 @@ noncomputable def eTruncLTGELTSelfToGELT :
   (Functor.associator _ _ _).inv ≫ Functor.whiskerLeft _ (t.eTruncLTι b) ≫
     (Functor.rightUnitor _).hom
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
@@ -458,6 +461,7 @@ instance : IsIso (t.eTruncLTGELTSelfToLTGE a b) := by
 
 variable (b : EInt) (X : C)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (t.eTruncLTGELTSelfToGELT a b) := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro X
@@ -498,12 +502,14 @@ lemma eTruncLTGEIsoLEGT_hom_app_fac (a b : EInt) (X : C) :
     (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj ((t.eTruncLT.obj b).obj X)):= by
   simp [eTruncLTGEIsoLEGT]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLTGEIsoLEGT_hom_app_fac' (a b : EInt) (X : C) :
     (t.eTruncLTGEIsoLEGT a b).hom.app X ≫ (t.eTruncGE.obj a).map ((t.eTruncLTι b).app X) =
       (t.eTruncLTι b).app ((t.eTruncGE.obj a).obj X) := by
   simp [eTruncLTGEIsoLEGT]
 
+set_option backward.isDefEq.respectTransparency false in
 open ComposableArrows in
 @[reassoc]
 lemma eTruncLTGEIsoLEGT_naturality_app (a b : EInt) (hab : a ≤ b)
