@@ -51,7 +51,7 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
       proof. -/
     intro ε ε_pos
     obtain ⟨δ, δ_pos, hδ⟩ : ∃ δ > 0, ∀ y ∈ s, dist y x < δ → ‖fderiv ℝ f y - f'‖ < ε := by
-      simpa [dist_zero_right] using tendsto_nhdsWithin_nhds.1 h ε ε_pos
+      simpa [dist_eq_norm] using tendsto_nhdsWithin_nhds.1 h ε ε_pos
     set B := ball x δ
     suffices ∀ y ∈ B ∩ closure s, ‖f y - f x - (f' y - f' x)‖ ≤ ε * ‖y - x‖ from
       mem_nhdsWithin_iff.2 ⟨δ, δ_pos, fun y hy => by simpa using this y hy⟩

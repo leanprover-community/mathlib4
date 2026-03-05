@@ -94,7 +94,6 @@ lemma iSup_basicOpen_eq_top {ι : Type*} (f : ι → A)
   refine x.not_irrelevant_le (hf.trans ?_)
   rwa [Ideal.span_le, Set.range_subset_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `{ xᵢ }` are homogeneous and span `A` as an `A₀` algebra, then `D₊(xᵢ)` covers `Proj A`. -/
 lemma iSup_basicOpen_eq_top' {ι : Type*} (f : ι → A)
     (hfn : ∀ i, ∃ n, f i ∈ 𝒜 n)
@@ -151,7 +150,6 @@ lemma basicOpenToSpec_app_top :
   erw [Scheme.Hom.comp_app]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The structure map `Proj A ⟶ Spec A₀`. -/
 noncomputable
 def toSpecZero : Proj 𝒜 ⟶ Spec (.of <| 𝒜 0) :=

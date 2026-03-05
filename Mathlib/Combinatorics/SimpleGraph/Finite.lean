@@ -517,7 +517,6 @@ namespace Iso
 
 variable {G} {W : Type*} {G' : SimpleGraph W}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem card_edgeFinset_eq (f : G ≃g G') [Fintype G.edgeSet] [Fintype G'.edgeSet] :
     #G.edgeFinset = #G'.edgeFinset := by
   apply Finset.card_eq_of_equiv
