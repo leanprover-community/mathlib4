@@ -80,18 +80,17 @@ lemma torsionFun_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivative
     torsionFun cov (f • X) Y x = f x • torsionFun cov X Y x := by
   simp only [torsionFun]
   rw [hcov.leibniz hX hf, VectorField.mlieBracket_smul_left hf hX]
-  simp? [bar, smul_sub] says
-    simp only [bar, ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-      ContinuousLinearMap.coe_comp', ContinuousLinearEquiv.coe_coe, ContinuousLinearEquiv.coe_mk,
-      LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
-      ContinuousLinearMap.toSpanSingleton_apply, Pi.smul_apply', map_smul, smul_sub]
+  simp? [smul_sub] says
+    simp only [Pi.smul_apply', map_smul, ContinuousLinearMap.add_apply,
+      ContinuousLinearMap.coe_smul', Pi.smul_apply, ContinuousLinearMap.coe_comp',
+      ContinuousLinearEquiv.coe_coe, Function.comp_apply, ContinuousLinearMap.toSpanSingleton_apply,
+      smul_sub]
   set A := f x • (cov X x) (Y x)
   set B := f x • (cov Y x) (X x)
   set C := f x • VectorField.mlieBracket I X Y x
-  sorry /-simp only [torsionFun, Pi.sub_apply, hF.smulX (X := X) (σ := Y) (f := f)]
-  rw [hF.leibniz Y hX hf hx, VectorField.mlieBracket_smul_left hf hX]
-  simp [bar, smul_sub]
-  abel -/
+  set D := (mfderiv I 𝓘(ℝ, ℝ) f x) (Y x)
+  change B - (A + (bar _ D) • X x) - (-(bar _ D) • X x + C) = B - A - C
+  module
 
 lemma torsionFun_smul_right_apply [CompleteSpace E]
     {F : ((x : M) → TangentSpace I x) → (x : M) → TangentSpace I x →L[ℝ] TangentSpace I x}

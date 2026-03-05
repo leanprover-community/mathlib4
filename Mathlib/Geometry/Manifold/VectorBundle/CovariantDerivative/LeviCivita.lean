@@ -341,21 +341,18 @@ the ambient metric, i.e. for all differentiable` vector fields `X`, `Y` and `Z` 
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
 def IsCompatible [FiniteDimensional ℝ E] : Prop := MetricTensor cov = 0
 
+-- Auxiliary computation for `IsCompatible_apply`.
+-- TODO: inlining this lemma does not work
+private lemma isCompatible_apply_aux {A B C : ℝ} (h : A - B - C = 0) : A = B + C := by grind
+
 lemma IsCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x : M}
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x := by
+    mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x := by
   rw [IsCompatible] at hcov
   have : MetricTensor cov x (Y x) (Z x) (X x) = 0 := by simp [hcov]
   rw [metricTensor_apply cov x hY hZ] at this
-  simp [bar] at this
-  set A := (mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x)
-  have : A = ⟪fun x ↦ (cov Y x) (X x), Z⟫ x + ⟪Y, fun x ↦ (cov Z x) (X x)⟫ x := sorry -- use this
-  rw [this]
-
-  -- TODO: was there a mix-up in the definition of metric tensor above?
-  -- set B := ⟪fun x ↦ (cov X x) (Y x), Z⟫ x
-  -- set C := ⟪Y, fun x ↦ (cov X x) (Z x)⟫ x
-  sorry
+  change (bar _ ((mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x))) = _
+  exact isCompatible_apply_aux this
 
 /-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
 iff it is torsion-free and compatible with `g`.
@@ -811,14 +808,11 @@ lemma leviCivitaRhs_smulZ_apply [CompleteSpace E] {f : M → ℝ}
 end leviCivitaRhs
 
 variable [FiniteDimensional ℝ E] in
-variable (Y) in
 lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
-    (hX : MDiffAt (T% X) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
+    (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
     ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
-  · -- TODO: is something wrong,
-    -- or do we just need to thread through more differentiability assumptions?
-    sorry--apply cov.IsCompatible_apply I h.1 sorry hZ
+  · exact cov.IsCompatible_apply I h.1 hY hZ
   · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
@@ -829,9 +823,9 @@ lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
     {x : M} (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     ⟪∇ Y, X, Z⟫ x = leviCivitaRhs I X Y Z x := by
   unfold leviCivitaRhs leviCivitaRhs'
-  have eq1 := aux I Y cov h hX hZ
-  have eq2 := aux I Z cov h hY hX
-  have eq3 := aux I X cov h hZ hY
+  have eq1 := aux I cov h hX hY hZ
+  have eq2 := aux I cov h hY hZ hX
+  have eq3 := aux I cov h hZ hX hY
   simp [real_inner_comm, smul_eq_mul] at *
   linear_combination - (eq1 + eq2 - eq3) / 2
 
