@@ -26,41 +26,51 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
-  ⟨refl_of r⟩
+  inferInstance
 
 @[deprecated (since := "2026-01-09")] alias IsRefl.swap := Std.Refl.swap
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
-  ⟨irrefl_of r⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
-  ⟨fun _ _ _ h₁ h₂ => trans_of r h₂ h₁⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisymm (swap r) :=
-  ⟨fun _ _ h₁ h₂ => _root_.antisymm h₂ h₁⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
-  ⟨fun _ _ h₁ h₂ => asymm_of r h₂ h₁⟩
+  inferInstance
 
 @[deprecated (since := "2026-01-05")] alias IsAsymm.swap := Std.Asymm.swap
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
-  ⟨fun a b => (total_of r a b).symm⟩
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem Std.Trichotomous.swap (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (swap r) :=
-  ⟨fun a b hab hba ↦ trichotomous a b hba hab⟩
+  inferInstance
 
 @[deprecated (since := "2026-01-24")] alias IsTrichotomous.swap := Std.Trichotomous.swap
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
-  { Std.Refl.swap r, IsTrans.swap r with }
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
-  { Std.Irrefl.swap r, IsTrans.swap r with }
+  inferInstance
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
-  { IsPreorder.swap r, Std.Antisymm.swap r with }
+  inferInstance
 
 theorem eq_empty_relation (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
@@ -103,8 +113,9 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     toMax := maxOfLe,
     toDecidableLE := hD }
 
+@[deprecated inferInstance (since := "2026-03-05")]
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
-  { Std.Trichotomous.swap r, IsStrictOrder.swap r with }
+  inferInstance
 
 /-! ### Order connection -/
 
@@ -715,7 +726,7 @@ theorem transitive_lt [Preorder α] : Transitive (@LT.lt α _) :=
 
 @[to_dual total_ge]
 instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=
-  @Std.Total.swap α _ h
+  inferInstanceAs <| @Std.Total α <| swap (· ≤ ·)
 
 instance : WellFoundedLT ℕ :=
   ⟨Nat.lt_wfRel.wf⟩
