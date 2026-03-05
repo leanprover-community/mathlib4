@@ -59,10 +59,10 @@ namespace InfiniteGalois
 open Pointwise FiniteGaloisIntermediateField AlgEquiv
 --Note: The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
 
-@[deprecated IntermediateField.fixingSubgroup_isClosed (since := "2026-03-03")]
+@[deprecated IntermediateField.isClosed_fixingSubgroup (since := "2026-03-03")]
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set Gal(K/k)) :=
-  IntermediateField.fixingSubgroup_isClosed L
+  IntermediateField.isClosed_fixingSubgroup L
 
 set_option backward.isDefEq.respectTransparency false in
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
@@ -180,7 +180,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup Gal(K/k)) [IsGalois k K] :
 /-- The Galois correspondence from intermediate fields to closed subgroups. -/
 def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     IntermediateField k K ≃o (ClosedSubgroup Gal(K/k))ᵒᵈ where
-  toFun L := ⟨L.fixingSubgroup, IntermediateField.fixingSubgroup_isClosed L⟩
+  toFun L := ⟨L.fixingSubgroup, IntermediateField.isClosed_fixingSubgroup L⟩
   invFun H := IntermediateField.fixedField H.1
   left_inv L := fixedField_fixingSubgroup L
   right_inv H := by
@@ -193,7 +193,7 @@ def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
 /-- The Galois correspondence as a `GaloisInsertion` -/
 def GaloisInsertionIntermediateFieldClosedSubgroup [IsGalois k K] :
     GaloisInsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦
-      (⟨E.fixingSubgroup, IntermediateField.fixingSubgroup_isClosed E⟩ : ClosedSubgroup Gal(K/k)))
+      (⟨E.fixingSubgroup, IntermediateField.isClosed_fixingSubgroup E⟩ : ClosedSubgroup Gal(K/k)))
       ((fun (H : ClosedSubgroup Gal(K/k)) ↦ IntermediateField.fixedField H) ∘
         OrderDual.toDual) :=
   OrderIso.toGaloisInsertion IntermediateFieldEquivClosedSubgroup

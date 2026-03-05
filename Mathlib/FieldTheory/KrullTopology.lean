@@ -193,6 +193,9 @@ theorem IntermediateField.isClosed_fixingSubgroup {K L : Type*} [Field K] [Field
   exact ⟨fun h a ha x hx => h x (adjoin_simple_le_iff.2 ha hx),
     fun h x hx => h x hx x (mem_adjoin_simple_self K x)⟩
 
+@[deprecated (since := "2026-03-04")]
+alias IntermediateField.fixingSubgroup_isClosed := IntermediateField.isClosed_fixingSubgroup
+
 set_option backward.isDefEq.respectTransparency false in
 /-- If `L/K` is an algebraic extension, then the Krull topology on `Gal(L/K)` is Hausdorff. -/
 theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
@@ -243,7 +246,7 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
   haveI := IntermediateField.adjoin.finiteDimensional
     (Algebra.IsIntegral.isIntegral (R := K) x)
   refine ⟨σ • E.fixingSubgroup,
-    ⟨E.fixingSubgroup_isClosed.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
+    ⟨E.isClosed_fixingSubgroup.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
     ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, ?_⟩
   simp only [Set.mem_compl_iff, mem_leftCoset_iff, SetLike.mem_coe,
     IntermediateField.mem_fixingSubgroup_iff, not_forall]
