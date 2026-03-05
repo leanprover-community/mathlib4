@@ -64,11 +64,11 @@ instance : U.overEquivalence.functor.IsDenseSubsite
     constructor
     · intro H x hxV
       obtain ⟨W, f, hW, hxW⟩ := H ⟨x, V.hom.le hxV⟩ hxV
-      refine ⟨_, ((U.overEquivalence.symm.toAdjunction.homEquiv _ _ ).symm f).left,
+      exact ⟨_, ((U.overEquivalence.symm.toAdjunction.homEquiv _ _ ).symm f).left,
         ⟨_, _, 𝟙 _, hW, rfl⟩, _, hxW, rfl⟩
     · intro H x hxV
       obtain ⟨W, f, ⟨W', hW'V, hWW', hSW'V, rfl⟩, hxW⟩ := H x hxV
-      refine ⟨_, U.overEquivalence.functor.map hW'V,
+      exact ⟨_, U.overEquivalence.functor.map hW'V,
         S.downward_closed hSW'V (U.overEquivalence.unitInv.app W'), hWW'.le hxW⟩
 
 instance : U.overEquivalence.symm.inverse.IsDenseSubsite
@@ -94,7 +94,7 @@ def overPullbackSheafEquivOver {X : TopCat} (U : Opens X) :
 def sheafRestrictSheafEquivOver {X : TopCat} (U : Opens X) :
     U.sheafRestrict ⋙ U.sheafEquivOver.inverse ≅
       (Opens.grothendieckTopology X).overPullback A U :=
-      U.overPullbackSheafEquivOver.isoCompInverse.symm
+  U.overPullbackSheafEquivOver.isoCompInverse.symm
 
 end grothendieckTopology
 
