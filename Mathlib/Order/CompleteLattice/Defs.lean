@@ -309,6 +309,7 @@ variable [CompleteLinearOrder α] {s : Set α} {a b : α}
 theorem lt_sSup_iff : b < sSup s ↔ ∃ a ∈ s, b < a :=
   lt_isLUB_iff <| isLUB_sSup s
 
+@[to_dual existing lt_sSup_iff]
 theorem sInf_lt_iff : sInf s < b ↔ ∃ a ∈ s, a < b :=
   isGLB_lt_iff <| isGLB_sInf s
 
@@ -319,20 +320,18 @@ theorem sSup_eq_top : sSup s = ⊤ ↔ ∀ b < ⊤, ∃ a ∈ s, b < a :=
         let ⟨_, ha, h⟩ := h _ h'
         (h.trans_le <| le_sSup ha).false⟩
 
+-- `to_dual existing` fails here: the `>` in the statement causes `to_dual` to try to project
+-- through the `OrderTop → OrderBot` instance chain, producing a type-incorrect term.
 theorem sInf_eq_bot : sInf s = ⊥ ↔ ∀ b > ⊥, ∃ a ∈ s, a < b :=
   @sSup_eq_top αᵒᵈ _ _
 
+@[to_dual iInf_lt_iff]
 theorem lt_iSup_iff {f : ι → α} : a < iSup f ↔ ∃ i, a < f i :=
   lt_sSup_iff.trans exists_range_iff
 
-theorem iInf_lt_iff {f : ι → α} : iInf f < a ↔ ∃ i, f i < a :=
-  sInf_lt_iff.trans exists_range_iff
-
+@[to_dual]
 theorem lt_biSup_iff {s : Set β} {f : β → α} : a < ⨆ i ∈ s, f i ↔ ∃ i ∈ s, a < f i := by
   simp [lt_iSup_iff]
-
-theorem biInf_lt_iff {s : Set β} {f : β → α} : ⨅ i ∈ s, f i < a ↔ ∃ i ∈ s, f i < a := by
-  simp [iInf_lt_iff]
 
 end CompleteLinearOrder
 
