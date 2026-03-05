@@ -22,12 +22,12 @@ open Function
 namespace OrderDual
 
 @[to_additive]
-instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+instance isOrderedMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     IsOrderedMonoid αᵒᵈ where
   mul_le_mul_left _ _ h c := mul_le_mul_left h c
 
 @[to_additive]
-instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] :
+instance isOrderedCancelMonoid [CommMonoid α] [Preorder α] [IsOrderedCancelMonoid α] :
     IsOrderedCancelMonoid αᵒᵈ where
   le_of_mul_le_mul_left _ _ _ := le_of_mul_le_mul_left'
 

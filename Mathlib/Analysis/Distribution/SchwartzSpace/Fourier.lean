@@ -43,7 +43,6 @@ variable
 
 section definition
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The Fourier transform on a real inner product space, as a continuous linear map on the
 Schwartz space.
 
@@ -319,7 +318,6 @@ theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
   simpa [← LinearIsometry.integral_comp_comm, inner_self_eq_norm_sq_to_K] using
     integral_inner_fourier_fourier f f
 
-set_option backward.isDefEq.respectTransparency false in
 theorem inner_fourier_toL2_eq (f g : 𝓢(V, H)) :
     ⟪(𝓕 f).toLp 2, (𝓕 g).toLp 2⟫ = ⟪f.toLp 2, g.toLp 2⟫ := by simp
 

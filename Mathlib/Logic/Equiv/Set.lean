@@ -163,7 +163,7 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
 /-- The subtypes corresponding to equal sets are equivalent. -/
 @[simps! apply symm_apply]
 def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
-  subtypeEquivProp h
+  subtypeEquivProp <| h ▸ rfl
 
 -- We could construct this using `Equiv.Set.image e s e.injective`,
 -- but this definition provides an explicit inverse.
@@ -260,7 +260,6 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
 lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `a ∉ s`, then `insert a s` is equivalent to `s ⊕ PUnit`. -/
 protected def insert {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a : α} (H : a ∉ s) :
     (insert a s : Set α) ≃ s ⊕ PUnit.{u + 1} :=
@@ -409,7 +408,7 @@ protected def compl {α : Type u} {β : Type v} {s : Set α} {t : Set β} [Decid
 
 /-- The set product of two sets is equivalent to the type product of their coercions to types. -/
 protected def prod {α β} (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ s × t :=
-  @subtypeProdEquivProd α β s t
+  @subtypeProdEquivProd α β (· ∈ s) (· ∈ t)
 
 /-- The set `Set.pi Set.univ s` is equivalent to `Π a, s a`. -/
 @[simps]
@@ -451,7 +450,7 @@ protected def congr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
 /-- The set `{x ∈ s | t x}` is equivalent to the set of `x : s` such that `t x`. -/
 protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
     ({ x ∈ s | t x } : Set α) ≃ { x : s | t x } :=
-  (Equiv.subtypeSubtypeEquivSubtypeInter s t).symm
+  (Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ s) t).symm
 
 /-- The set `𝒫 S := {x | x ⊆ S}` is equivalent to the type `Set S`. -/
 protected def powerset {α} (S : Set α) :
