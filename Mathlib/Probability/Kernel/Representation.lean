@@ -5,10 +5,12 @@ Authors: Gaëtan Serré, Rémy Degenne
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Sigmoid
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
-public import Mathlib.Order.CompletePartialOrder
-public import Mathlib.Probability.CDF
+public import Mathlib.Probability.Kernel.Defs
+
+import Mathlib.Analysis.SpecialFunctions.Sigmoid
+import Mathlib.Probability.CDF
 
 /-!
 # Representation of kernels
