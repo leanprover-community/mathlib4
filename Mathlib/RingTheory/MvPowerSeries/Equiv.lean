@@ -89,6 +89,7 @@ def toAdicCompletion (σ R : Type*) [Finite σ] [CommRing R] :
 lemma toAdicCompletion_apply_eq_mk_truncTotal {n : ℕ} {p : MvPowerSeries σ R} :
     (toAdicCompletion σ R p).val n = truncTotal R n p := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSeries σ R} {n : ℕ}
     (hx : degree x < n) : (Quotient.out (((toAdicCompletion σ R) p).val n)).coeff x =
       (coeff x) p := by
