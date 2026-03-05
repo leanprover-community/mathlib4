@@ -113,10 +113,7 @@ lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKerne
     by_cases hx : x = 1
     · simp [hx, ← univ_eq_Icc, ξ.2.2]
     let g := fun y ↦ (κ a).real (Icc 0 y)
-    let nebot : NeBot (𝓝[>] x) := by
-      refine nhdsGT_neBot_of_exists_gt ?_
-      use 1
-      exact lt_of_le_of_ne x.2.2 hx
+    have : NeBot (𝓝[>] x) := nhdsGT_neBot_of_exists_gt ⟨1, lt_of_le_of_ne x.2.2 hx⟩
     refine le_of_tendsto_of_tendsto (b := 𝓝[>] x) (g := g) continuousWithinAt_const ?_ ?_
     · let h := cdf ((κ a).map Subtype.val)
       have h_continuousWithinAt := continuousWithinAt_Ioi_iff_Ici.mpr (h.right_continuous x)
