@@ -317,6 +317,8 @@ variable {I} in
     (fun _f _σ _τ hf hσ hτ ↦ aux3 cov hf hσ hτ)
     (fun σ τ τ' hσ hτ hτ' ↦ aux4 cov σ τ τ' hσ hτ hτ')
 
+-- TODO: should we have ∇ X Y and ∇ X Z instead?
+variable {I} in
 theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     MetricTensor cov x (Y x) (Z x) (X x) =
@@ -338,8 +340,21 @@ the ambient metric, i.e. for all differentiable` vector fields `X`, `Y` and `Z` 
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
 def IsCompatible [FiniteDimensional ℝ E] : Prop := MetricTensor cov = 0
 
-lemma IsCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x : M} :
-    mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x := sorry
+lemma IsCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x : M}
+    (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x := by
+  rw [IsCompatible] at hcov
+  have : MetricTensor cov x (Y x) (Z x) (X x) = 0 := by simp [hcov]
+  rw [metricTensor_apply cov x hY hZ] at this
+  simp [bar] at this
+  set A := (mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x)
+  have : A = ⟪fun x ↦ (cov Y x) (X x), Z⟫ x + ⟪Y, fun x ↦ (cov Z x) (X x)⟫ x := sorry -- use this
+  rw [this]
+
+  -- TODO: was there a mix-up in the definition of metric tensor above?
+  -- set B := ⟪fun x ↦ (cov X x) (Y x), Z⟫ x
+  -- set C := ⟪Y, fun x ↦ (cov X x) (Z x)⟫ x
+  sorry
 
 /-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
 iff it is torsion-free and compatible with `g`.
@@ -800,7 +815,9 @@ lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     (hX : MDiffAt (T% X) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
     ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ Z, X⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
   trans ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x
-  · apply cov.IsCompatible_apply I h.1
+  · -- TODO: is something wrong,
+    -- or do we just need to thread through more differentiability assumptions?
+    apply cov.IsCompatible_apply I h.1 sorry hZ
   · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
