@@ -303,6 +303,7 @@ section
 
 variable {J A}
 
+/-- The underlying presheaf of a sheaf. -/
 @[deprecated "Use ObjectProperty.obj" (since := "2026-03-03")]
 abbrev Sheaf.val (F : Sheaf J A) : Cᵒᵖ ⥤ A := F.obj
 
