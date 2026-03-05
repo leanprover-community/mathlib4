@@ -50,7 +50,7 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   This is a consequence of `ProbabilityTheory.Kernel.unitInterval_representation`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Topology Function
 
