@@ -323,6 +323,22 @@ variable {I} in
     (fun _f _σ _τ hf hτ ↦ aux3 cov hf hτ)
     (fun σ τ τ' hτ hτ' ↦ aux4 cov σ τ τ' hτ hτ')
 
+theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
+    (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
+    MetricTensor cov x (Y x) (Z x) (X x) =
+    bar _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
+  unfold MetricTensor
+  rw [mk2TensorAt_apply _ _ _ _ _ hY hZ]
+  simp only [myfun, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp', coe_innerSL_apply,
+    Pi.sub_apply, comp_apply]
+  conv =>
+    enter [1, 1]
+    erw [ContinuousLinearMap.sub_apply]
+  conv =>
+    enter [1, 1, 2]
+    erw [ContinuousLinearMap.comp_apply]
+  simp [product, real_inner_comm, bar]
+
 /-- Predicate saying for a connection `∇` on a Riemannian manifold `(M, g)` to be compatible with
 the ambient metric, i.e. for all differentiable` vector fields `X`, `Y` and `Z` on `M`, we have
 `X ⟨Y, Z⟩ = ⟨∇ X Y, Z⟩ + ⟨Y, ∇ X Z⟩`. -/
