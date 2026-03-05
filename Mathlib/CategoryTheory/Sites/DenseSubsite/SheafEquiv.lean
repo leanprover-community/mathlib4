@@ -108,7 +108,7 @@ instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.a
   apply +allowSynthFailures ReflectsIsomorphisms.reflects yoneda
   rw [NatTrans.isIso_iff_isIso_app]
   intro ⟨X⟩
-  simpa [sheafAdjunctionCocontinuous_counit_app_val]
+  simpa [sheafAdjunctionCocontinuous_counit_app_hom]
     using isIso_ranCounit_app_of_isDenseSubsite G J K Y U X
 
 instance : (G.sheafPushforwardContinuous A J K).IsEquivalence :=

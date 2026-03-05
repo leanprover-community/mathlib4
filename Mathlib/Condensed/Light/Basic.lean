@@ -43,12 +43,16 @@ namespace LightCondensed
 variable {C : Type w} [Category.{v} C]
 
 @[simp]
-lemma id_val (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
+lemma id_hom (X : LightCondensed.{u} C) : (𝟙 X : X ⟶ X).hom = 𝟙 _ := rfl
 
 @[simp]
-lemma comp_val {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma comp_hom {X Y Z : LightCondensed.{u} C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
+
+@[deprecated (since := "2026-03-05")] alias id_val := id_hom
+@[deprecated (since := "2026-03-05")] alias comp_val := comp_hom
+
 
 @[ext]
 lemma hom_ext {X Y : LightCondensed.{u} C} (f g : X ⟶ Y) (h : ∀ S, f.hom.app S = g.hom.app S) :

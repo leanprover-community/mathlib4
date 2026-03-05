@@ -268,7 +268,7 @@ noncomputable def sheafAdjunctionCocontinuous :
     (G.sheafPushforwardContinuousCompSheafToPresheafIso A J K).symm
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm
 
-lemma sheafAdjunctionCocontinuous_unit_app_val (F : Sheaf K A) :
+lemma sheafAdjunctionCocontinuous_unit_app_hom (F : Sheaf K A) :
     ((G.sheafAdjunctionCocontinuous A J K).unit.app F).hom =
       (G.op.ranAdjunction A).unit.app F.obj := by
   apply ((G.op.ranAdjunction A).map_restrictFullyFaithful_unit_app
@@ -280,8 +280,12 @@ lemma sheafAdjunctionCocontinuous_unit_app_val (F : Sheaf K A) :
   change _ ≫ 𝟙 _ ≫ 𝟙 _ = _
   simp only [Category.comp_id]
 
+@[deprecated (since := "2026-03-05")]
+alias sheafAdjunctionCocontinuous_unit_app_val :=
+  sheafAdjunctionCocontinuous_unit_app_hom
+
 set_option backward.isDefEq.respectTransparency false in
-lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
+lemma sheafAdjunctionCocontinuous_counit_app_hom (F : Sheaf J A) :
     ((G.sheafAdjunctionCocontinuous A J K).counit.app F).hom =
       (G.op.ranAdjunction A).counit.app F.obj :=
   ((G.op.ranAdjunction A).map_restrictFullyFaithful_counit_app
@@ -290,8 +294,12 @@ lemma sheafAdjunctionCocontinuous_counit_app_val (F : Sheaf J A) :
     (G.sheafPushforwardCocontinuousCompSheafToPresheafIso A J K).symm F).trans
       (by cat_disch)
 
+@[deprecated (since := "2026-03-05")]
+alias sheafAdjunctionCocontinuous_counit_app_val :=
+  sheafAdjunctionCocontinuous_counit_app_hom
+
 set_option backward.isDefEq.respectTransparency false in
-lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf J A}
+lemma sheafAdjunctionCocontinuous_homEquiv_apply_hom {F : Sheaf K A} {H : Sheaf J A}
     (f : (G.sheafPushforwardContinuous A J K).obj F ⟶ H) :
     ((G.sheafAdjunctionCocontinuous A J K).homEquiv F H f).hom =
       (G.op.ranAdjunction A).homEquiv F.obj H.obj f.hom :=
@@ -304,6 +312,10 @@ lemma sheafAdjunctionCocontinuous_homEquiv_apply_val {F : Sheaf K A} {H : Sheaf 
         erw [Functor.map_id, Category.comp_id, Category.id_comp,
           Adjunction.homEquiv_unit])
 
+@[deprecated (since := "2026-03-05")]
+alias sheafAdjunctionCocontinuous_homEquiv_apply_val :=
+  sheafAdjunctionCocontinuous_homEquiv_apply_hom
+
 variable [HasWeakSheafify J A] [HasWeakSheafify K A]
 
 /-- The natural isomorphism exhibiting compatibility between pushforward and sheafification. -/
@@ -315,7 +327,7 @@ def pushforwardContinuousSheafificationCompatibility [G.IsContinuous J K] :
 
 set_option backward.isDefEq.respectTransparency false in
 /- Implementation: This is primarily used to prove the lemma
-`pullbackSheafificationCompatibility_hom_app_val`. -/
+`pullbackSheafificationCompatibility_hom_app_hom`. -/
 lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
     toSheafify J (G.op ⋙ F) ≫
     ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).hom =
@@ -336,15 +348,19 @@ lemma toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A) :
   simp only [Adjunction.homEquiv_counit, map_comp, Category.assoc,
     Adjunction.homEquiv_unit, Adjunction.unit_naturality]
   congr 3
-  exact G.sheafAdjunctionCocontinuous_unit_app_val A J K ((presheafToSheaf K A).obj F)
+  exact G.sheafAdjunctionCocontinuous_unit_app_hom A J K ((presheafToSheaf K A).obj F)
 
 @[simp]
-lemma pushforwardContinuousSheafificationCompatibility_hom_app_val (F : Dᵒᵖ ⥤ A) :
+lemma pushforwardContinuousSheafificationCompatibility_hom_app_hom (F : Dᵒᵖ ⥤ A) :
     ((G.pushforwardContinuousSheafificationCompatibility A J K).hom.app F).hom =
     sheafifyLift J (whiskerLeft G.op <| toSheafify K F)
       ((presheafToSheaf K A ⋙ G.sheafPushforwardContinuous A J K).obj F).property := by
   apply sheafifyLift_unique
   apply toSheafify_pullbackSheafificationCompatibility
+
+@[deprecated (since := "2026-03-05")]
+alias pushforwardContinuousSheafificationCompatibility_hom_app_val :=
+  pushforwardContinuousSheafificationCompatibility_hom_app_hom
 
 end Functor
 

@@ -52,15 +52,27 @@ example : CartesianMonoidalCategory (Sheaf J A) :=
   inferInstance
 
 
-@[simp] lemma cartesianMonoidalCategoryFst_val : (fst X Y).hom = fst X.obj Y.obj := rfl
-@[simp] lemma cartesianMonoidalCategorySnd_val : (snd X Y).hom = snd X.obj Y.obj := rfl
+@[simp] lemma cartesianMonoidalCategoryFst_hom : (fst X Y).hom = fst X.obj Y.obj := rfl
+@[simp] lemma cartesianMonoidalCategorySnd_hom : (snd X Y).hom = snd X.obj Y.obj := rfl
+
+@[deprecated (since := "2026-03-05")]
+alias cartesianMonoidalCategoryFst_val := cartesianMonoidalCategoryFst_hom
+@[deprecated (since := "2026-03-05")]
+alias cartesianMonoidalCategorySnd_val := cartesianMonoidalCategorySnd_hom
 
 variable {X Y}
 variable {W : Sheaf J A} (f : W ⟶ X) (g : W ⟶ Y)
 
-@[simp] lemma cartesianMonoidalCategoryLift_val : (lift f g).hom = lift f.hom g.hom := rfl
-@[simp] lemma cartesianMonoidalCategoryWhiskerLeft_val : (X ◁ f).hom = X.obj ◁ f.hom := rfl
-@[simp] lemma cartesianMonoidalCategoryWhiskerRight_val : (f ▷ X).hom = f.hom ▷ X.obj := rfl
+@[simp] lemma cartesianMonoidalCategoryLift_hom : (lift f g).hom = lift f.hom g.hom := rfl
+@[simp] lemma cartesianMonoidalCategoryWhiskerLeft_hom : (X ◁ f).hom = X.obj ◁ f.hom := rfl
+@[simp] lemma cartesianMonoidalCategoryWhiskerRight_hom : (f ▷ X).hom = f.hom ▷ X.obj := rfl
+
+@[deprecated (since := "2026-03-05")]
+alias cartesianMonoidalCategoryLift_val := cartesianMonoidalCategoryLift_hom
+@[deprecated (since := "2026-03-05")]
+alias cartesianMonoidalCategoryWhiskerLeft_val := cartesianMonoidalCategoryWhiskerLeft_hom
+@[deprecated (since := "2026-03-05")]
+alias cartesianMonoidalCategoryWhiskerRight_val := cartesianMonoidalCategoryWhiskerRight_hom
 
 end Sheaf
 

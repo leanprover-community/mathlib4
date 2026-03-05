@@ -51,7 +51,7 @@ def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
+lemma adjunction_unit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (X : Sheaf J E) : ((adjunction J adj).unit.app X).hom =
       (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.obj ⋙ G)) F := by
   change (sheafToPresheaf _ _).map ((adjunction J adj).unit.app X) = _
@@ -61,9 +61,12 @@ lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj :
     Functor.comp_map, Functor.map_id, whiskerRight_id', Category.comp_id]
   rfl
 
+@[deprecated (since := "2026-03-05")]
+alias adjunction_unit_app_val := adjunction_unit_app_hom
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
+lemma adjunction_counit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
     (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).hom =
       sheafifyLift J (((adj.whiskerRight Cᵒᵖ).counit.app Y.obj)) Y.property :=
   ((sheafToPresheaf _ _).congr_map
@@ -76,6 +79,9 @@ lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj
           Category.id_comp]
         congr 1
         cat_disch)
+
+@[deprecated (since := "2026-03-05")]
+alias adjunction_counit_app_val := adjunction_counit_app_hom
 
 instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
   (adjunction J (Adjunction.ofIsRightAdjoint F)).isRightAdjoint

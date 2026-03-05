@@ -215,12 +215,16 @@ noncomputable def skyscraperSheafAdjunction :
         exact Φ.skyscraperPresheafHomEquiv_naturality_right f g }
 
 @[simp]
-lemma skyscraperSheafAdjunction_homEquiv_apply_val {F : Sheaf J A} {M : A}
+lemma skyscraperSheafAdjunction_homEquiv_apply_hom {F : Sheaf J A} {M : A}
     (f : Φ.presheafFiber.obj F.obj ⟶ M) :
     letI e : (Φ.presheafFiber.obj F.obj ⟶ M) ≃ _ := Φ.skyscraperSheafAdjunction.homEquiv F M
     letI a : F.obj ⟶ Φ.skyscraperPresheaf M := (e f).hom
     a = Φ.skyscraperPresheafHomEquiv f := by
   simp [skyscraperSheafAdjunction, Functor.FullyFaithful.homEquiv]
+
+@[deprecated (since := "2026-03-05")]
+alias skyscraperSheafAdjunction_homEquiv_apply_val :=
+  skyscraperSheafAdjunction_homEquiv_apply_hom
 
 @[simp]
 lemma skyscraperSheafAdjunction_homEquiv_symm_apply {F : Sheaf J A} {M : A}
