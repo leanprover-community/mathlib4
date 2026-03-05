@@ -82,20 +82,22 @@ theorem setIntegral_union₀ (hst : AEDisjoint μ s t) (ht : NullMeasurableSet t
     ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ := by
   simp only [Measure.restrict_union₀ hst ht, integral_add_measure hfs hft]
 
-@[deprecated (since := "2025-12-22")] alias integral_union_ae := setIntegral_union₀
+@[deprecated (since := "2026-03-04")] alias integral_union_ae := setIntegral_union₀
 
 theorem setIntegral_union (hst : Disjoint s t) (ht : MeasurableSet t) (hfs : IntegrableOn f s μ)
     (hft : IntegrableOn f t μ) : ∫ x in s ∪ t, f x ∂μ = ∫ x in s, f x ∂μ + ∫ x in t, f x ∂μ :=
   setIntegral_union₀ hst.aedisjoint ht.nullMeasurableSet hfs hft
 
-theorem integral_diff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
+theorem setIntegral_diff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
     ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ - ∫ x in t, f x ∂μ := by
   rw [eq_sub_iff_add_eq, ← setIntegral_union₀, diff_union_of_subset hts]
   exacts [disjoint_sdiff_self_left.aedisjoint, ht, hfs.mono_set diff_subset, hfs.mono_set hts]
 
-theorem integral_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
+theorem setIntegral_diff (ht : MeasurableSet t) (hfs : IntegrableOn f s μ) (hts : t ⊆ s) :
     ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ - ∫ x in t, f x ∂μ :=
-  integral_diff₀ ht.nullMeasurableSet hfs hts
+  setIntegral_diff₀ ht.nullMeasurableSet hfs hts
+
+@[deprecated (since := "2026-03-04")] alias integral_diff := setIntegral_diff
 
 theorem integral_inter_add_diff₀ (ht : NullMeasurableSet t μ) (hfs : IntegrableOn f s μ) :
     ∫ x in s ∩ t, f x ∂μ + ∫ x in s \ t, f x ∂μ = ∫ x in s, f x ∂μ := by
@@ -270,8 +272,8 @@ theorem tendsto_setIntegral_of_monotone₀
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
     tendsto_measure_iUnion_atTop h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
   filter_upwards [this] with i hi
-  rw [mem_closedBall_iff_norm', ← integral_diff₀ (hsm i) hfi hsub, ← coe_nnnorm, NNReal.coe_le_coe,
-    ← ENNReal.coe_le_coe]
+  rw [mem_closedBall_iff_norm', ← setIntegral_diff₀ (hsm i) hfi hsub, ← coe_nnnorm,
+    NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
   refine (enorm_integral_le_lintegral_enorm _).trans ?_
   have hsm' : NullMeasurableSet (s i) ν := (hsm i).mono_ac (withDensity_absolutelyContinuous ..)
   rw [← withDensity_apply₀ _ (hSm.diff (hsm _)), ← hν, measure_diff hsub hsm']
@@ -296,9 +298,9 @@ theorem tendsto_setIntegral_of_antitone
   suffices Tendsto (∫ x in s i₀, f x ∂μ - ∫ x in s i₀ \ s ·, f x ∂μ) atTop
       (𝓝 (∫ x in s i₀, f x ∂μ - ∫ x in ⋃ i, s i₀ \ s i, f x ∂μ)) by
     convert this.congr' <| (eventually_ge_atTop i₀).mono fun i hi ↦ ?_
-    · rw [← diff_iInter, integral_diff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
+    · rw [← diff_iInter, setIntegral_diff _ hi₀ (iInter_subset _ _), sub_sub_cancel]
       exact .iInter_of_antitone h_anti hsm
-    · rw [integral_diff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]
+    · rw [setIntegral_diff (hsm i) hi₀ (h_anti hi), sub_sub_cancel]
   apply tendsto_const_nhds.sub
   refine tendsto_setIntegral_of_monotone (by measurability) ?_ ?_
   · exact fun i j h ↦ diff_subset_diff_right (h_anti h)
