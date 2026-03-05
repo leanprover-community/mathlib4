@@ -323,7 +323,7 @@ instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap
 
 /-- An open embedding `f : X ⟶ Y` induces a functor `Opens X ⥤ Opens Y`.
 We define `IsOpenEmbedding.functor` as `IsOpenEmbedding.isOpenMap.functor`, so it won't
-default to `IsInducing.functorNhds` (which is equal but not defeq).
+default to `IsInducing.functor` (which is equal but not defeq).
 -/
 abbrev Topology.IsOpenEmbedding.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenEmbedding f) :=
     hf.isOpenMap.functor
