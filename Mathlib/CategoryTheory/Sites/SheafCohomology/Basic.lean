@@ -155,6 +155,7 @@ noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpC
   obj F := .of (H F n)
   map f := AddCommGrpCat.ofHom (H.map f n)
 
+set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (functorH J n).Additive where
   map_add {_ _ f g} := by ext; simp [H.map_apply, Ext.mk₀_add]
 
