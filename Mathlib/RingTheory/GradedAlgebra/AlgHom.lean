@@ -124,33 +124,6 @@ theorem coe_monoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R]
 theorem coe_addMonoidHom_injective : Function.Injective ((↑) : (𝒜 →ₐᵍ[R] ℬ) → A →+ B) :=
   AlgHom.coe_addMonoidHom_injective.comp coe_algHom_injective
 
--- TODO: after restrictScalars
--- section restrictScalars
-
--- /-- Restrict the base ring to a "smaller" ring. -/
--- @[coe, simps!] def restrictScalars (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R]
---     [Algebra R₀ A] [Algebra R₀ B] [IsScalarTower R₀ R A] [IsScalarTower R₀ R B]
---     (f : 𝒜 →ₐᵍ[R] ℬ) : (𝒜 · |>.restrictScalars R₀) →ₐᵍ[R₀] (ℬ · |>.restrictScalars R₀) :=
---   { f.toAlgHom.restrictScalars R₀, f with }
-
--- variable {R₀ : Type*} [CommSemiring R₀] [Algebra R₀ R]
---   [Algebra R₀ S] [Algebra R₀ T] [Algebra R₀ A] [Algebra R₀ B]
---   [IsScalarTower R₀ S A] [IsScalarTower R₀ R A] [IsScalarTower R₀ T B] [IsScalarTower R₀ R B]
-
--- lemma coe_restrictScalars : ⇑(f.restrictScalars R₀) = f := rfl
-
--- lemma restrictScalars_coe_algHom : (f : A →ₐ[R] B).restrictScalars R₀ = f.restrictScalars R₀ :=
---   rfl
-
--- lemma restrictScalars_coe_linearMap :
---     (f : A →ₗ[R] B).restrictScalars R₀ = f.restrictScalars R₀ := rfl
-
--- lemma restrictScalars_injective :
---     Function.Injective (restrictScalars R₀ : (𝒜 →ₐᵍ[R] ℬ) → (𝒜 →ₐᵍ[R₀] ℬ)) :=
---   fun _ _ h ↦ coe_fn_injective congr($h)
-
--- end restrictScalars
-
 /-- Consider using `congr($H x)` instead. -/
 protected theorem congr_fun {f₁ f₂ : 𝒜 →ₐᵍ[R] ℬ} (H : f₁ = f₂) (x : A) : f₁ x = f₂ x :=
   DFunLike.congr_fun H x
