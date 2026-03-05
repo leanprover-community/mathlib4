@@ -266,8 +266,6 @@ private lemma aux3 {x : M } (f : M → ℝ) {σ τ : (x : M) → TangentSpace I 
   -- next steps: apply the Leibniz rule, collect the other terms and suffer some more
   sorry
 
--- TODO: investigate why this takes so long!
-set_option maxHeartbeats 400000 in
 variable {I} in
 private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
     (hτ : MDiffAt (T% τ) x)
@@ -288,7 +286,7 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
   conv =>
     enter [2, 2, 1, 2]
     erw [ContinuousLinearMap.comp_apply]
-  erw [innerSL_apply_apply]
+  rw [innerSL_apply_apply]
   conv =>
     enter [2, 2, 1, 2]
     erw [innerSL_apply_apply]
