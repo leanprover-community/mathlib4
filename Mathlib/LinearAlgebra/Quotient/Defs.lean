@@ -37,6 +37,8 @@ variable (p p' : Submodule R M)
 
 open QuotientAddGroup
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- The equivalence relation associated to a submodule `p`, defined by `x ≈ y` iff `-x + y ∈ p`.
 
 Note this is equivalent to `y - x ∈ p`, but defined this way to be defeq to the `AddSubgroup`

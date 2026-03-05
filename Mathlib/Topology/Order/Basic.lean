@@ -76,6 +76,7 @@ class OrderTopology (α : Type*) [t : TopologicalSpace α] [Preorder α] : Prop 
 @[implicit_reducible]
 instance as many ordered sets are already endowed with the same topology, most often in a non-defeq
 way though. Register as a local instance when necessary. -/
+@[implicit_reducible]
 def Preorder.topology (α : Type*) [Preorder α] : TopologicalSpace α :=
   generateFrom { s : Set α | ∃ a : α, s = { b : α | a < b } ∨ s = { b : α | b < a } }
 

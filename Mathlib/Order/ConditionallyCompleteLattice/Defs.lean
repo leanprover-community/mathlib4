@@ -143,6 +143,7 @@ instance : ConditionallyCompleteLattice my_T :=
     ..conditionallyCompleteLatticeOfsSup my_T _ }
 ```
 -/
+@[implicit_reducible]
 def conditionallyCompleteLatticeOfsSup (α : Type*) [H1 : PartialOrder α] [H2 : SupSet α]
     (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
     (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))
@@ -195,6 +196,7 @@ instance : ConditionallyCompleteLattice my_T :=
     ..conditionallyCompleteLatticeOfsInf my_T _ }
 ```
 -/
+@[implicit_reducible]
 def conditionallyCompleteLatticeOfsInf (α : Type*) [H1 : PartialOrder α] [H2 : InfSet α]
     (bddAbove_pair : ∀ a b : α, BddAbove ({a, b} : Set α))
     (bddBelow_pair : ∀ a b : α, BddBelow ({a, b} : Set α))

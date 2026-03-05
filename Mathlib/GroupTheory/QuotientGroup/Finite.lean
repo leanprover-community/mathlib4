@@ -43,13 +43,15 @@ noncomputable def fintypeOfKerEqRange (h : g.ker = f.range) : Fintype G :=
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If `ker(G →* H)` and `H` are finite, then `G` is finite. -/
-@[to_additive /-- If `ker(G →+ H)` and `H` are finite, then `G` is finite. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- If `ker(G →+ H)` and `H` are finite, then `G` is finite. -/]
 noncomputable def fintypeOfKerOfCodom [Fintype g.ker] : Fintype G :=
   fintypeOfKerLeRange ((topEquiv : _ ≃* G).toMonoidHom.comp <| inclusion le_top) g fun x hx =>
     ⟨⟨x, hx⟩, rfl⟩
 
 /-- If `F` and `coker(F →* G)` are finite, then `G` is finite. -/
-@[to_additive /-- If `F` and `coker(F →+ G)` are finite, then `G` is finite. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- If `F` and `coker(F →+ G)` are finite, then `G` is finite. -/]
 noncomputable def fintypeOfDomOfCoker [Normal f.range] [Fintype <| G ⧸ f.range] : Fintype G :=
   fintypeOfKerLeRange _ (mk' f.range) fun x => (eq_one_iff x).mp
 

@@ -41,6 +41,8 @@ noncomputable def hasLocalizationOfLocallySmall
   D := ShrinkHoms D
   L := L ⋙ (ShrinkHoms.equivalence D).functor
 
+-- adding `@[implicit_reducible]` causes downstream breakage
+set_option warn.classDefReducibility false in
 /-- If `L : C ⥤ D` is a localization functor for a class of morphisms
 `W : MorphismProperty C`, and `D` is locally `w`-small, we may obtain
 a `HasLocalization.{w} W` instance. This should be used only in the

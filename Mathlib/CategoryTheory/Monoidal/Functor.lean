@@ -677,12 +677,14 @@ end CoreMonoidal
 
 /-- The `Functor.Monoidal` structure given by a lax monoidal functor such
 that `ε` and `μ` are isomorphisms. -/
+@[implicit_reducible]
 noncomputable def Monoidal.ofLaxMonoidal
     [F.LaxMonoidal] [IsIso (ε F)] [∀ X Y, IsIso (μ F X Y)] :=
   (CoreMonoidal.ofLaxMonoidal F).toMonoidal
 
 /-- The `Functor.Monoidal` structure given by an oplax monoidal functor such
 that `η` and `δ` are isomorphisms. -/
+@[implicit_reducible]
 noncomputable def Monoidal.ofOplaxMonoidal
     [F.OplaxMonoidal] [IsIso (η F)] [∀ X Y, IsIso (δ F X Y)] :=
   (CoreMonoidal.ofOplaxMonoidal F).toMonoidal

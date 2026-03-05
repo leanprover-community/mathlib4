@@ -67,7 +67,8 @@ class AddGroupFilterBasis (A : Type u) [AddGroup A] extends FilterBasis A where
 attribute [to_additive] GroupFilterBasis
 
 /-- `GroupFilterBasis` constructor in the commutative group case. -/
-@[to_additive /-- `AddGroupFilterBasis` constructor in the additive commutative group case. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- `AddGroupFilterBasis` constructor in the additive commutative group case. -/]
 def groupFilterBasisOfComm {G : Type*} [CommGroup G] (sets : Set (Set G))
     (nonempty : sets.Nonempty) (inter_sets : ∀ x y, x ∈ sets → y ∈ sets → ∃ z ∈ sets, z ⊆ x ∩ y)
     (one : ∀ U ∈ sets, (1 : G) ∈ U) (mul : ∀ U ∈ sets, ∃ V ∈ sets, V * V ⊆ U)
@@ -137,7 +138,8 @@ protected theorem hasBasis (B : GroupFilterBasis G) (x : G) :
   HasBasis.map (fun y ↦ x * y) toFilterBasis.hasBasis
 
 /-- The topological space structure coming from a group filter basis. -/
-@[to_additive /-- The topological space structure coming from an additive group filter basis. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- The topological space structure coming from an additive group filter basis. -/]
 def topology (B : GroupFilterBasis G) : TopologicalSpace G :=
   TopologicalSpace.mkOfNhds B.N
 

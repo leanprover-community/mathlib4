@@ -77,6 +77,7 @@ theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n •
       exact (I ^ n).smul_mem x hb }
 
 /-- The adic ring filter basis associated to an ideal `I` is made of powers of `I`. -/
+@[implicit_reducible]
 def ringFilterBasis (I : Ideal R) :=
   I.adic_basis.toRing_subgroups_basis.toRingFilterBasis
 

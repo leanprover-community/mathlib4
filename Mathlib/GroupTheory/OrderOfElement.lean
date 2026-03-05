@@ -942,7 +942,8 @@ lemma isOfFinOrder_of_finite (x : G) : IsOfFinOrder x := by
   by_contra h; exact infinite_not_isOfFinOrder h <| Set.toFinite _
 
 /-- Every finite left cancellative monoid is a group. -/
-@[to_additive /-- Every finite left cancellative additive monoid is an additive group. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Every finite left cancellative additive monoid is an additive group. -/]
 noncomputable def LeftCancelMonoid.groupOfFinite : Group G where
   inv x := x ^ (orderOf x - 1)
   inv_mul_cancel x := by
@@ -950,7 +951,8 @@ noncomputable def LeftCancelMonoid.groupOfFinite : Group G where
     exact (isOfFinOrder_of_finite x).orderOf_pos
 
 /-- Every finite right cancellative monoid is a group. -/
-@[to_additive /-- Every finite right cancellative additive monoid is an additive group. -/]
+@[to_additive (attr := implicit_reducible)
+  /-- Every finite right cancellative additive monoid is an additive group. -/]
 noncomputable def RightCancelMonoid.groupOfFinite {H : Type*} [RightCancelMonoid H] [Finite H] :
     Group H := by
   letI : Finite Hᵐᵒᵖ := Finite.of_equiv H MulOpposite.opEquiv
