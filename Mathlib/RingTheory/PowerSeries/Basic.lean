@@ -149,7 +149,7 @@ theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) :
   rw [coeff, ← h, ← Finsupp.unique_single s]
 
 @[simp]
-lemma coeff_coe {f : R⟦X⟧} (n : ℕ) :
+lemma coeff_coeToMvPowerSeries {f : R⟦X⟧} (n : ℕ) :
     MvPowerSeries.coeff (Finsupp.single () n) f = f.coeff n := rfl
 
 /-- Two formal power series are equal if all their coefficients are equal. -/
