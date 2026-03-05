@@ -11,8 +11,6 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 public import Mathlib.RingTheory.Valuation.ValuationRing
-public import Mathlib.Algebra.GroupWithZero.Action.Basic
-public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.KrullDimension.Zero
 
