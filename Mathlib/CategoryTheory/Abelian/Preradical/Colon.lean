@@ -126,6 +126,7 @@ noncomputable def colon : Preradical C :=
 noncomputable def colonπ : (colon Φ Ψ).r ⟶ Φ.quotient ⋙ Ψ.r := pullback.snd _ _
 
 instance : Epi (colonπ Φ Ψ) := by dsimp [colonπ]; infer_instance
+
 instance (X : C) : Epi ((colonπ Φ Ψ).app X) := instEpiAppOfFunctor (Φ.colonπ Ψ) X
 
 lemma isPullback_colon :
