@@ -403,4 +403,20 @@ theorem unop {Z X Y P : Cᵒᵖ} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {in
 
 end IsPushout
 
+lemma IsPullback.op_iff {X Y Z P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P} :
+    IsPullback inr.op inl.op g.op f.op ↔ IsPushout f g inl inr :=
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
+
+lemma IsPullback.unop_iff {X Y Z P : Cᵒᵖ} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P} :
+    IsPullback inr.unop inl.unop g.unop f.unop ↔ IsPushout f g inl inr :=
+  ⟨fun h ↦ h.op, fun h ↦ h.unop⟩
+
+lemma IsPushout.op_iff {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} :
+    IsPushout g.op f.op snd.op fst.op ↔ IsPullback fst snd f g :=
+  ⟨fun h ↦ h.unop, fun h ↦ h.op⟩
+
+lemma IsPushout.unop_iff {P X Y Z : Cᵒᵖ} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z} :
+    IsPushout g.unop f.unop snd.unop fst.unop ↔ IsPullback fst snd f g :=
+  ⟨fun h ↦ h.op, fun h ↦ h.unop⟩
+
 end CategoryTheory

@@ -96,6 +96,10 @@ instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommGroup M] [CommRing 
     IsScalarTower R S (CliffordAlgebra Q) :=
   RingQuot.instIsScalarTower _
 
+#adaptation_note /-- Needed after leanprover/lean4#12564 -/
+instance : Module R (CliffordAlgebra Q) :=
+  inferInstanceAs <| Module R (RingQuot (CliffordAlgebra.Rel Q))
+
 /-- The canonical linear map `M →ₗ[R] CliffordAlgebra Q`.
 -/
 def ι : M →ₗ[R] CliffordAlgebra Q :=
@@ -235,7 +239,6 @@ theorem mul_add_swap_eq_polar_of_forall_mul_self_eq {A : Type*} [Ring A] [Algebr
     _ = algebraMap R _ (Q (a + b) - Q a - Q b) := by rw [← map_sub, ← map_sub]
     _ = algebraMap R _ (QuadraticMap.polar Q a b) := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An alternative way to provide the argument to `CliffordAlgebra.lift` when `2` is invertible.
 
 To show a function squares to the quadratic form, it suffices to show that

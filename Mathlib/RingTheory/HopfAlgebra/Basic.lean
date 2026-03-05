@@ -129,7 +129,6 @@ variable (R : Type u) [CommSemiring R]
 
 open HopfAlgebra
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Every commutative (semi)ring is a Hopf algebra over itself -/
 instance toHopfAlgebra : HopfAlgebra R R where
   antipode := .id
