@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Abelian.Preradical.Basic
 public import Mathlib.CategoryTheory.Abelian.FunctorCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 
 /-!
 # The colon construction on preradicals
@@ -134,6 +135,16 @@ lemma isPullback_colon :
       (whiskerLeft Φ.quotient Ψ.ι ≫ (rightUnitor _).hom) :=
   .of_hasPullback _ _
 
+lemma isPullback_colon_obj (Φ Ψ : Preradical C) (X : C) :
+    IsPullback ((Φ.colon Ψ).ι.app X) ((Φ.colonπ Ψ).app X)
+      (Φ.π.app X) (Ψ.ι.app (Φ.quotient.obj X)) := by
+  simpa using (isPullback_colon Φ Ψ).map ((evaluation _ _).obj X)
+
+@[reassoc]
+lemma colon_ι_app_π_app (Φ Ψ : Preradical C) (X : C) :
+    (Φ.colon Ψ).ι.app X ≫ Φ.π.app X = (Φ.colonπ Ψ).app X ≫ Ψ.ι.app (Φ.quotient.obj X) :=
+  (isPullback_colon_obj Φ Ψ X).w
+
 /-- There is a morphism `Φ ⟶ (Φ.colon Ψ)` induced by the universal property for the pullback
 via `Φ.ι : Φ.r X ⟶ 𝟭 C` and the zero morphism `Φ.r ⟶  Φ.quotient ⋙ Ψ.r`. -/
 noncomputable def toColon : Φ ⟶ Φ.colon Ψ :=
@@ -142,20 +153,17 @@ noncomputable def toColon : Φ ⟶ Φ.colon Ψ :=
 /-- For `X : C`, the morphism `(toColon Φ Ψ)` is an isomorphism if and only if
 `(Ψ.r.obj (Φ.quotient.obj X))` is the zero object. -/
 theorem isIso_toColon_hom_left_app_iff {Φ Ψ : Preradical C} {X : C} :
-    IsIso ((toColon Φ Ψ).hom.left.app X)  ↔ IsZero (Ψ.r.obj (Φ.quotient.obj X)) := by
-  have hpb : CommSq ((Φ.colon Ψ).ι.app X) ((Φ.colonπ Ψ).app X)
-      (Φ.π.app X) (Ψ.ι.app (Φ.quotient.obj X)) := by
-    simpa using (isPullback_colon Φ Ψ).map ((evaluation _ _).obj X)
+    IsIso ((toColon Φ Ψ).hom.left.app X) ↔ IsZero (Ψ.r.obj (Φ.quotient.obj X)) := by
   have hsnd : (toColon Φ Ψ).hom.left ≫ (colonπ Φ Ψ) = 0 :=
     (isPullback_colon Φ Ψ).lift_snd Φ.ι 0 _
   have hsnd_app : (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 := by
-    simp [← NatTrans.comp_app, hsnd]
+    simpa [NatTrans.comp_app] using congrArg (fun τ => τ.app X) hsnd
   constructor <;> intro h
   · exact IsZero.of_epi_eq_zero ((colonπ Φ Ψ).app X)
       (zero_of_epi_comp ((toColon Φ Ψ).hom.left.app X) hsnd_app)
   · have hcolonπ_app : (colonπ Φ Ψ).app X = 0 := IsZero.eq_zero_of_tgt h _
     have hw : (colon Φ Ψ).ι.app X ≫ Φ.π.app X = 0 := by
-      simpa [hcolonπ_app] using congrArg (fun t => t) (hpb.w)
+      simpa [hcolonπ_app] using (colon_ι_app_π_app Φ Ψ X)
     let s : KernelFork (Φ.π.app X) := (KernelFork.ofι ((colon Φ Ψ).ι.app X) hw)
     let inv : (colon Φ Ψ).r.obj X ⟶ Φ.r.obj X := (Φ.isLimitKernelForkObj X).lift s
     have hfac : inv ≫ Φ.ι.app X = (colon Φ Ψ).ι.app X := by
