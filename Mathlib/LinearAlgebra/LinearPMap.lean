@@ -205,6 +205,29 @@ theorem snd_apply [Module R F] (p : Submodule R E) (p' : Submodule R F) (x : p.p
     LinearPMap.snd p p' x = (x : E × F).2 :=
   rfl
 
+-- need fist `LinearMap.semilinear_fst`
+
+-- /-- Projection to the first coordinate as a `LinearPMap` -/
+-- protected def semilinear_fst (p : Submodule R E) (p' : Submodule S F) :
+--     (E ×[σ] F) →ₗ.[R] E where
+--   domain := SemilinearProdModule.prod σ p p'
+--   toFun := (LinearMap.fst R E F).comp (p.prod p').subtype
+
+-- @[simp]
+-- theorem semilinear_fst_apply [Module R F] (p : Submodule R E) (p' : Submodule R F)
+--     (x : p.prod p') : LinearPMap.fst p p' x = (x : E × F).1 :=
+--   rfl
+
+-- /-- Projection to the second coordinate as a `LinearPMap` -/
+-- protected def semilinear_snd [Module R F] (p : Submodule R E) (p' : Submodule R F) : E × F →ₗ.[R] F where
+--   domain := p.prod p'
+--   toFun := (LinearMap.snd R E F).comp (p.prod p').subtype
+
+-- @[simp]
+-- theorem semilinear_snd_apply [Module R F] (p : Submodule R E) (p' : Submodule R F) (x : p.prod p') :
+--     LinearPMap.snd p p' x = (x : E × F).2 :=
+--   rfl
+
 instance le : LE (E →ₛₗ.[σ] F) :=
   ⟨fun f g => f.domain ≤ g.domain ∧ ∀ ⦃x : f.domain⦄ ⦃y : g.domain⦄ (_h : (x : E) = y), f x = g y⟩
 
