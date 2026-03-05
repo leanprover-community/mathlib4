@@ -34,8 +34,12 @@ namespace IsNonarchimedean
 
 variable {R α : Type*} [CommRing R]
 
+-- NOTE: The following cannot be moved to Mathlib.Algebra.Order.Ring.IsNonarchimedean,
+--       because it needs the target to be the reals (to have the default value zero
+--       for emtpy iSups), which are not known there.
 /-- The ultrametric triangle inequality for finite sums. -/
-lemma apply_sum_le {v : AbsoluteValue R ℝ} (hv : IsNonarchimedean v) {l : α → R} {s : Finset α} :
+lemma apply_sum_le {α β F : Type*} [AddCommMonoid β] [FunLike F β ℝ] [NonnegHomClass F β ℝ]
+    [ZeroHomClass F β ℝ] {v : F} (hv : IsNonarchimedean v) {l : α → β} {s : Finset α} :
     v (∑ i ∈ s, l i) ≤ ⨆ i : s, v (l i) := by
   classical
   induction s using Finset.induction with
@@ -62,14 +66,16 @@ namespace Height
 variable {K : Type*} [Field K] {ι ι' : Type*} [Fintype ι] [Finite ι']
 
 -- The "local" version of the bound for (archimedean) absolute values.
-lemma linearMap_apply_bound [Nonempty ι'] (v : AbsoluteValue K ℝ) (A : ι' × ι → K) (x : ι → K) :
+lemma linearMap_apply_bound (v : AbsoluteValue K ℝ) (A : ι' × ι → K) (x : ι → K) :
     ⨆ j, v (∑ i, A (j, i) * x i) ≤ Nat.card ι * (⨆ ji, v (A ji)) * ⨆ i, v (x i) := by
+  rcases isEmpty_or_nonempty ι'
+  · simp
   refine ciSup_le fun j ↦ ?_
   grw [v.sum_le]
   simp only [map_mul]
   grw [Finset.sum_le_sum (g := fun _ ↦ (⨆ ji, v (A ji)) * ⨆ i, v (x i)) fun i _ ↦ ?h]
   case h =>
-    simp only
+    dsimp only
     gcongr
     · exact Real.iSup_nonneg_of_nonnegHomClass v _
     · exact Finite.le_ciSup_of_le (j, i) le_rfl
@@ -77,9 +83,13 @@ lemma linearMap_apply_bound [Nonempty ι'] (v : AbsoluteValue K ℝ) (A : ι' ×
   rw [Finset.sum_const, nsmul_eq_mul, mul_assoc, Finset.card_univ, Nat.card_eq_fintype_card]
 
 -- The "local" version of the bound for nonarchimedean absolute values.
-lemma linearMap_apply_bound_of_isNonarchimedean [Nonempty ι] [Nonempty ι'] {v : AbsoluteValue K ℝ}
-    (hv : IsNonarchimedean v) (A : ι' × ι → K) (x : ι → K) :
+lemma linearMap_apply_bound_of_isNonarchimedean {v : AbsoluteValue K ℝ} (hv : IsNonarchimedean v)
+    (A : ι' × ι → K) (x : ι → K) :
     ⨆ j, v (∑ i, A (j, i) * x i) ≤ (⨆ ji, v (A ji)) * ⨆ i, v (x i) := by
+  rcases isEmpty_or_nonempty ι
+  · simp
+  rcases isEmpty_or_nonempty ι'
+  · simp
   refine ciSup_le fun j ↦ ?_
   grw [hv.apply_sum_le]
   simp only [map_mul]
@@ -131,12 +141,11 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
     rw [mul_comm (iSup _), ← mul_assoc]
     exact linearMap_apply_bound v A x
   · -- nonarchimedean part: reduce to "local" statement `linearMap_apply_bound_of_isNonarchimedean`
-    rw [← finprod_mul_distrib (mulSupport_iSup_nonarchAbsVal_finite hA)
-      (mulSupport_iSup_nonarchAbsVal_finite hx)]
-    refine finprod_le_finprod (mulSupport_iSup_nonarchAbsVal_finite h)
+    rw [← finprod_mul_distrib (by fun_prop (disch := assumption))
+      (by fun_prop (disch := assumption))]
+    refine finprod_le_finprod (by fun_prop (disch := assumption))
       (fun v ↦ Real.iSup_nonneg_of_nonnegHomClass v.val _) ?_ fun v ↦ ?_
-    · exact ((mulSupport_iSup_nonarchAbsVal_finite hA).union
-        (mulSupport_iSup_nonarchAbsVal_finite hx)).subset <| Function.mulSupport_mul ..
+    · fun_prop (disch := assumption)
     · exact linearMap_apply_bound_of_isNonarchimedean (isNonarchimedean _ v.prop) A x
 
 open Real in
