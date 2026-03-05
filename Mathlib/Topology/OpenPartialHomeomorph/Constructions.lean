@@ -326,10 +326,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
     rw [Opens.openPartialHomeomorphSubtypeCoe_target] at hy ⊢
     exact hUV hy.2
   refine (V.openPartialHomeomorphSubtypeCoe hV).injOn ?_ trivial ?_
-  · rw [← OpenPartialHomeomorph.symm_target]
-    apply OpenPartialHomeomorph.map_source
-    rw [OpenPartialHomeomorph.symm_source]
-    exact hyV
+  · simp
   · rw [(V.openPartialHomeomorphSubtypeCoe hV).right_inv hyV]
     change _ = U.openPartialHomeomorphSubtypeCoe hU _
     rw [(U.openPartialHomeomorphSubtypeCoe hU).right_inv hy.2]

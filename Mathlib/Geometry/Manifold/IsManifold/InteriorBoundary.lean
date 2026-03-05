@@ -235,6 +235,7 @@ lemma _root_.DifferentiableAt.mem_interior_convex_of_surjective_fderiv
 
 variable {n : WithTop ℕ∞} [IsManifold I n M] {e e' : OpenPartialHomeomorph M H} {x : M}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- For any two charts `e`, `e'` around a point `x` in a C¹ manifold, if `e` maps `x` to the
 interior of the model space, `e'` does too - in other words, the notion of interior points does not
 depend on any choice of charts.

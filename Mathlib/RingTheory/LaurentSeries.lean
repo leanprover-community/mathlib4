@@ -804,9 +804,9 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
       ext
       simp only [Set.mem_iInter, Set.mem_setOf_eq]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
-      intro _ _
-      apply coeff_tendsto hℱ
-      simp only [principal_singleton, mem_pure]; rfl
+      intro i _
+      apply (coeff_tendsto hℱ _).eventually
+      simp
 
 open scoped Topology
 open MonoidWithZeroHom.ValueGroup₀
@@ -1036,7 +1036,6 @@ abbrev comparePkg : RatFuncAdicCompl K ≃ᵤ K⸨X⸩ :=
 lemma comparePkg_eq_extension (x : RatFuncAdicCompl K) :
     (comparePkg K) x = (extensionAsRingHom K (continuous_coe' _)) x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
 equivalence: this will be the *inverse* of the fundamental one. -/
 abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
@@ -1091,7 +1090,7 @@ theorem valuation_LaurentSeries_equal_extension :
     (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤᵐ⁰) := by
   apply IsDenseInducing.extend_unique
   · intro x
-    rw [← WithVal.apply_equiv, valuation_eq_LaurentSeries_valuation K]
+    rw [← WithVal.apply_ofVal, valuation_eq_LaurentSeries_valuation K]
     rfl
   · exact Valued.continuous_valuation_of_surjective (valuation_surjective K)
 
@@ -1121,7 +1120,6 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
     rw [← valuedAdicCompletion_eq_valuation']
     exact (Valuation.restrict_inj _).mp <| Valuation.map_eq_of_sub_lt Valued.v.restrict val_y
 
-set_option backward.isDefEq.respectTransparency false in
 /- The extension of the `X`-adic valuation from `RatFunc K` up to its abstract completion coincides,
 modulo the isomorphism with `K⸨X⸩`, with the `X`-adic valuation on `K⸨X⸩`. -/
 theorem valuation_compare (f : K⸨X⸩) :

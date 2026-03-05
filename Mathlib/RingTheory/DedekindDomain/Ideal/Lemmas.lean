@@ -579,7 +579,6 @@ theorem idealFactorsFunOfQuotHom_comp {f : R ⧸ I →+* A ⧸ J} {g : A ⧸ J �
 
 variable [IsDedekindDomain R] (f : R ⧸ I ≃+* A ⧸ J)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection between ideals of `R` dividing `I` and the ideals of `A` dividing `J` induced by
   an isomorphism `f : R/I ≅ A/J`. -/
 def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A | p ∣ J } := by
@@ -587,12 +586,8 @@ def idealFactorsEquivOfQuotEquiv : { p : Ideal R | p ∣ I } ≃o { p : Ideal A 
   have fsym_surj : Function.Surjective (f.symm : A ⧸ J →+* R ⧸ I) := f.symm.surjective
   refine OrderIso.ofHomInv (idealFactorsFunOfQuotHom f_surj) (idealFactorsFunOfQuotHom fsym_surj)
     ?_ ?_
-  · have := idealFactorsFunOfQuotHom_comp fsym_surj f_surj
-    simp only [RingEquiv.comp_symm, idealFactorsFunOfQuotHom_id] at this
-    rw [← this, OrderHom.coe_eq, OrderHom.coe_eq]
-  · have := idealFactorsFunOfQuotHom_comp f_surj fsym_surj
-    simp only [RingEquiv.symm_comp, idealFactorsFunOfQuotHom_id] at this
-    rw [← this, OrderHom.coe_eq, OrderHom.coe_eq]
+  · simpa using idealFactorsFunOfQuotHom_comp fsym_surj f_surj
+  · simpa using idealFactorsFunOfQuotHom_comp f_surj fsym_surj
 
 theorem idealFactorsEquivOfQuotEquiv_symm :
     (idealFactorsEquivOfQuotEquiv f).symm = idealFactorsEquivOfQuotEquiv f.symm := rfl
