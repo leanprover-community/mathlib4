@@ -235,29 +235,28 @@ theorem coeff_one_right (b : Ordinal) : coeff b 1 = single 0 1 := by
   exact singleton_lookupFinsupp ..
 
 theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o = single 0 o := by
-  ext a
   obtain rfl | ho := eq_or_ne o 0
   · simp
-  · obtain rfl | ha := eq_or_ne a 0
-    · apply coeff_of_mem_CNF
-      rw [CNF.of_le_one hb ho]
-      simp
-    · rw [single_eq_of_ne ha]
-      apply coeff_of_notMem_CNF
-      rw [CNF.of_le_one hb ho]
-      simpa using ha
+  · simp_rw [coeff, CNF.of_le_one hb ho]
+    exact singleton_lookupFinsupp ..
 
 @[simp]
 theorem coeff_zero_left (o : Ordinal) : coeff 0 o = single 0 o :=
-  coeff_of_le_one zero_le_one o
+  coeff_of_le_one bot_le o
 
 @[simp]
 theorem coeff_one_left (o : Ordinal) : coeff 1 o = single 0 o :=
   coeff_of_le_one le_rfl o
 
-theorem coeff_opow_mul_add {b e x y : Ordinal}
-    (hb : 1 < b) (hx : x ≠ 0) (hxb : x < b) (hy : y < b ^ e) :
+theorem coeff_of_lt {b e : Ordinal} (hb : e < b) : coeff b e = single 0 e := by
+  obtain rfl | he := eq_or_ne e 0
+  · simp
+  · simp_rw [coeff, CNF.of_lt he hb]
+    exact singleton_lookupFinsupp ..
+
+theorem coeff_opow_mul_add {b e x y : Ordinal} (hb : 1 < b) (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
+  obtain rfl | hx := eq_or_ne x 0; · simp
   ext e'
   rw [add_apply]
   obtain rfl | he := eq_or_ne e e'
@@ -277,6 +276,14 @@ theorem coeff_opow_mul_add {b e x y : Ordinal}
       rw [mem_map] at h ⊢
       rw [CNF.opow_mul_add hb hx hxb hy]
       simp_all
+
+theorem coeff_opow_mul {b e x : Ordinal} (hb : 1 < b) (hxb : x < b) :
+    coeff b (b ^ e * x) = single e x := by
+  simpa using coeff_opow_mul_add hb hxb (opow_pos e hb.pos)
+
+@[simp]
+theorem coeff_opow {b e : Ordinal} (hb : 1 < b) : coeff b (b ^ e) = single e 1 := by
+  simpa using coeff_opow_mul hb hb
 
 /-! ### Evaluate a Cantor normal form -/
 
