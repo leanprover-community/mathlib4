@@ -28,8 +28,7 @@ noncomputable section
 
 namespace FormalGroup
 
-variable {R σ : Type*} [CommRing R] (f g : PowerSeries R) (F : FormalGroup R)
-  (φ : MvPowerSeries (Fin 2) R) (n : ℕ)
+variable {R σ : Type*} [CommRing R] (f g : PowerSeries R) (F : FormalGroup R) (n : ℕ)
 
 open PowerSeries Finset Fin Finsupp
 
@@ -186,5 +185,29 @@ theorem subst_addInv_eq_zero : F.toFun.subst ![X, (addInv_X F)] = 0 := by
   · simp [hn, constantCoeff, MvPowerSeries.constantCoeff_subst_eq_zero
       (MvPowerSeries.HasSubst.addInv_aux F) (by simp) F.zero_constantCoeff]
   rw [coeff_subst_addInv_trunc _ _ hn, addInv_trunc_aux, coeff_n_aux, map_zero]
+
+variable (φ : MvPowerSeries σ R)
+
+/-- For any multivariate power series `φ` with zero constant coefficient, `addInv F φ` is the
+additive inverse of `φ` under formal group `F` sense. -/
+def addInv : MvPowerSeries σ R := subst φ (addInv_X F)
+
+@[simp]
+theorem addInv_apply : addInv F φ = subst φ (addInv_X F) := rfl
+
+/-- For any multivariate power series `φ` with zero constant coefficient, then
+`φ` plus (under `F` sense) additive inverse of `φ` (under `F` sense) equals zero. -/
+lemma add_addInv_eq_zero {f : MvPowerSeries σ R} (h : f.constantCoeff = 0) :
+  f +[F] addInv F f = 0 := calc
+  _ = subst f (MvPowerSeries.subst ![ PowerSeries.X, addInv_X F] F.toFun) := by
+    rw [subst, MvPowerSeries.subst_comp_subst_apply (MvPowerSeries.HasSubst.addInv_aux F)
+      (MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ h)]
+    congr! 1
+    funext s; fin_cases s
+    · simp [X, MvPowerSeries.subst_X <| MvPowerSeries.hasSubst_of_constantCoeff_zero fun s ↦ h]
+    · simp [subst]
+  _ = _ := by
+    rw [subst_addInv_eq_zero]; ext n
+    simp [coeff_subst <| HasSubst.of_constantCoeff_zero h]
 
 end FormalGroup
