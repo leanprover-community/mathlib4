@@ -39,7 +39,7 @@ variable {P Q : MorphismProperty C}
 /-- This is the precoverage on `C` where covering presieves are those where every
 morphism satisfies `P`. -/
 def precoverage (P : MorphismProperty C) : Precoverage C where
-  coverings X S := ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f
+  coverings X := {S | ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → P f}
 
 @[simp]
 lemma ofArrows_mem_precoverage {X : C} {ι : Type*} {Y : ι → C} {f : ∀ i, Y i ⟶ X} :

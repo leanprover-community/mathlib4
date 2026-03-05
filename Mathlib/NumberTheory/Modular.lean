@@ -449,7 +449,6 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
 
 section UniqueRepresentative
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An auxiliary result en route to `ModularGroup.c_eq_zero`. -/
 theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| ≤ 1 := by
   let c' : ℤ := g 1 0
@@ -534,7 +533,6 @@ lemma coe_truncatedFundamentalDomain (y : ℝ) :
         ← h3, ← sq] using h2.trans_lt (by norm_num)
     exact ⟨⟨z, hz'⟩, ⟨⟨by simpa [Complex.normSq_eq_norm_sq], h2⟩, h1⟩, rfl⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For any `y : ℝ`, the standard fundamental domain truncated at height `y` is compact. -/
 lemma isCompact_truncatedFundamentalDomain (y : ℝ) :
     IsCompact (truncatedFundamentalDomain y) := by

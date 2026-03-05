@@ -403,7 +403,6 @@ instance : IsStandardEtale R R :=
       (by ext) (by ext; simp [this])
     exact e.bijective⟩⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     {Sₛ : Type*} [CommRing Sₛ] [Algebra S Sₛ]
     [Algebra R Sₛ] [IsScalarTower R S Sₛ] (s : S) [IsLocalization.Away s Sₛ] :
