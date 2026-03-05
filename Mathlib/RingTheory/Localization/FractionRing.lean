@@ -110,6 +110,15 @@ theorem of_field [Field K] [Algebra R K] [FaithfulSMul R K]
 
 variable {R K}
 
+section CommSemiring
+
+theorem of_ringEquiv_left {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
+    {K : Type*} [CommSemiring K] [Algebra R K] (e : R ≃+* S) [Algebra S K]
+    (h : ∀ x, algebraMap R K x = algebraMap S K (e x)) [IsFractionRing S K] :
+    IsFractionRing R K := IsLocalization.of_ringEquiv_left e (MulEquivClass.map_nonZeroDivisors e) h
+
+end CommSemiring
+
 section CommRing
 
 variable [CommRing K] [Algebra R K] [IsFractionRing R K] [Algebra A K] [IsFractionRing A K]
@@ -217,6 +226,7 @@ noncomputable abbrev toField : Field K where
   qsmul := _
   qsmul_def := fun _ _ => rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
   mp h := (RingEquiv.ofBijective (algebraMap R K)
       ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField (IsFractionRing.toField R).toIsField
@@ -584,6 +594,14 @@ instance : IsFractionRing (FractionRing R) (FractionRing R) := IsFractionRing.id
 instance unique [Subsingleton R] : Unique (FractionRing R) := inferInstance
 
 instance [Nontrivial R] : Nontrivial (FractionRing R) := inferInstance
+
+variable {R} in
+instance [DecidableEq R] : DecidableEq (FractionRing R) := by
+  intro x y
+  apply Localization.recOnSubsingleton₂ x y (r := fun x y ↦ Decidable (x = y))
+  intro a c b d
+  simp only [Localization.mk_eq_mk_iff, Localization.r_iff_of_le_nonZeroDivisors (le_refl _)]
+  infer_instance
 
 variable [IsDomain A]
 

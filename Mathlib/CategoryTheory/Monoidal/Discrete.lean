@@ -94,6 +94,7 @@ def Discrete.monoidalFunctorComp (F : M →* N) (G : N →* K) :
     Discrete.monoidalFunctor F ⋙ Discrete.monoidalFunctor G ≅
       Discrete.monoidalFunctor (G.comp F) := Iso.refl _
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive Discrete.addMonoidalFunctorComp_isMonoidal]
 instance Discrete.monoidalFunctorComp_isMonoidal (F : M →* N) (G : N →* K) :
     NatTrans.IsMonoidal (Discrete.monoidalFunctorComp F G).hom where

@@ -333,7 +333,8 @@ def monitorCurl (args : Array String) (size : Nat)
       match Lean.Json.parse line.copy with
       | .ok result =>
         match result.getObjValAs? Nat "http_code" with
-        | .ok 200 =>
+        | .ok 200
+        | .ok 201 =>
           if let .ok fn := result.getObjValAs? String "filename_effective" then
             if (← System.FilePath.pathExists fn) && fn.endsWith ".part" then
               IO.FS.rename fn (fn.dropEnd 5).copy
@@ -473,11 +474,14 @@ where
 /-- Downloads missing files, and unpacks files. -/
 def getFiles
     (repo? : Option String) (hashMap : IO.ModuleHashMap)
-    (forceDownload forceUnpack parallel decompress : Bool)
+    (forceDownload forceUnpack parallel decompress skipProofWidgets : Bool)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
   unless isMathlibRoot do checkForToolchainMismatch
-  getProofWidgets (← read).proofWidgetsBuildDir
+  if skipProofWidgets then
+    IO.println "Skipping ProofWidgets release fetch"
+  else
+    getProofWidgets (← read).proofWidgetsBuildDir
 
   if let some repo := repo? then
     let failed ← downloadFiles repo hashMap forceDownload parallel (warnOnMissing := true)
@@ -524,21 +528,21 @@ initialize UPLOAD_URL : String ← do
   return url?.getD defaultUrl
 
 /-- Formats the config file for `curl`, containing the list of files to be uploaded -/
-def mkPutConfigContent (repo : String) (fileNames : Array String) (token : String) : IO String := do
+def mkPutConfigContent (repo : String) (files : Array FilePath) (token : String) : IO String := do
   let token := if useCloudflareCache then "" else s!"?{token}" -- the Cloudflare cache doesn't pass the token here
-  let l ← fileNames.toList.mapM fun fileName : String => do
-    pure s!"-T {(IO.CACHEDIR / fileName).toString}\nurl = {mkFileURL repo UPLOAD_URL fileName}{token}"
+  let l ← files.toList.mapM fun file : FilePath => do
+    pure s!"-T {file.toString}\nurl = {mkFileURL repo UPLOAD_URL file.fileName.get!}{token}"
   return "\n".intercalate l
 
-/-- Calls `curl` to send a set of cached files to the server -/
-def putFiles
-  (repo : String) (fileNames : Array String)
+/-- Calls `curl` to send a set of files to the server -/
+def putFilesAbsolute
+  (repo : String) (files : Array FilePath) (tempConfigFilePath : FilePath)
   (overwrite : Bool) (token : String) : IO Unit := do
   -- TODO: reimplement using HEAD requests?
   let _ := overwrite
-  let size := fileNames.size
+  let size := files.size
   if size > 0 then
-    IO.FS.writeFile IO.CURLCFG (← mkPutConfigContent repo fileNames token)
+    IO.FS.writeFile tempConfigFilePath (← mkPutConfigContent repo files token)
     IO.println s!"Attempting to upload {size} file(s) to {repo} cache"
     let args := if useCloudflareCache then
       -- TODO: reimplement using HEAD requests?
@@ -551,12 +555,61 @@ def putFiles
     let args := args ++ #[
       "-X", "PUT", "--parallel",
       "--retry", "5", -- there seem to be some intermittent failures
-      "--write-out", "%{json}\n", "--config", IO.CURLCFG.toString]
+      "--write-out", "%{json}\n", "--config", tempConfigFilePath.toString]
     discard <| monitorCurl args size "Uploaded" "speed_upload"
-    IO.FS.removeFile IO.CURLCFG
+    IO.FS.removeFile tempConfigFilePath
   else IO.println "No files to upload"
 
+/-- Calls `curl` to send a set of cached files to the server -/
+def putFiles
+  (repo : String) (fileNames : Array String)
+  (overwrite : Bool) (token : String) : IO Unit := do
+  -- TODO: reimplement using HEAD requests?
+  let files : Array FilePath := fileNames.map (fun (f : String) => (IO.CACHEDIR / f))
+  putFilesAbsolute repo files IO.CURLCFG overwrite token
 end Put
+
+section Stage
+
+def copyCmd : String := if System.Platform.isWindows then "COPY" else "cp"
+
+/-- Copies cached files to a directory, intended for 'staging' -/
+def stageFiles
+    (destinationPath : FilePath) (fileNames : Array String) : IO Unit := do
+  let size := fileNames.size
+  if size > 0 then
+    IO.FS.createDirAll destinationPath
+    let paths := fileNames.map (s!"{IO.CACHEDIR / ↑·}")
+    let args := paths.push destinationPath.toString
+    IO.println s!"Copying {size} file(s) to {destinationPath}"
+    discard <| IO.runCmd copyCmd args
+  else IO.println "No files to stage"
+
+/-- Copies staged files into the local cache directory. -/
+def unstageFiles (stagingDir : FilePath) (overwrite : Bool) : IO Unit := do
+  unless (← stagingDir.isDir) do
+    IO.println "--staging-dir must be a directory"
+    return
+  let files ← IO.getFilesWithExtension stagingDir "ltar"
+  let enumerationSize := files.size
+  IO.println s!"{enumerationSize} files found in staging directory"
+  let files ← if overwrite then pure files else
+    files.filterM fun file => do
+      let dest := IO.CACHEDIR / file.fileName.get!
+      return !(← dest.pathExists)
+  let size := files.size
+  if !overwrite then
+    IO.println s!"{enumerationSize -  size} files will be skipped because they exist in the cache"
+
+  if size > 0 then
+    IO.FS.createDirAll IO.CACHEDIR
+    let args := files.map (·.toString) ++ #[IO.CACHEDIR.toString]
+    IO.println s!"Placing {size} file(s) from {stagingDir} into {IO.CACHEDIR}"
+    discard <| IO.runCmd copyCmd args
+  else
+    IO.println "No files to unstage"
+
+end Stage
 
 section Commit
 

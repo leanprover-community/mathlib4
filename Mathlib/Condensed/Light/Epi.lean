@@ -48,6 +48,7 @@ namespace LightCondSet
 
 variable {X Y : LightCondSet.{u}} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
     ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
@@ -61,6 +62,7 @@ namespace LightCondMod
 
 variable (R : Type u) [Ring R] {X Y : LightCondMod.{u} R} (f : X ⟶ Y)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
     ∀ (S : LightProfinite) (y : Y.val.obj ⟨S⟩),
       (∃ (S' : LightProfinite) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : X.val.obj ⟨S'⟩),
@@ -68,11 +70,13 @@ lemma epi_iff_locallySurjective_on_lightProfinite : Epi f ↔
   rw [← isLocallySurjective_iff_epi']
   exact LightCondensed.isLocallySurjective_iff_locallySurjective_on_lightProfinite _ f
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (LightCondensed.forget R).ReflectsEpimorphisms where
   reflects f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
     exact (Presheaf.isLocallySurjective_iff_whisker_forget _ f.val).mpr hf
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (LightCondensed.forget R).PreservesEpimorphisms where
   preserves f hf := by
     rw [← Sheaf.isLocallySurjective_iff_epi'] at hf ⊢
@@ -86,6 +90,7 @@ variable (R : Type*) [Ring R]
 variable {F : ℕᵒᵖ ⥤ LightCondMod R} {c : Cone F} (hc : IsLimit c)
   (hF : ∀ n, Epi (F.map (homOfLE (Nat.le_succ n)).op))
 
+set_option backward.isDefEq.respectTransparency false in
 include hc hF in
 lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
   apply Functor.epi_of_epi_map (forget R)
@@ -114,6 +119,7 @@ instance : Epi (Limits.Pi.map f) := by
   rw [this]
   exact epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simpa using by infer_instance)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
   preserves f _ := by
     have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by

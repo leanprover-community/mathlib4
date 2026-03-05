@@ -180,9 +180,6 @@ theorem normLeOne_eq_preimage_image :
     ← mem_normLeOne] at hy₁ ⊢
   rwa [← hy₂]
 
-@[deprecated (since := "2025-07-27")]
-alias normLeOne_eq_primeage_image := normLeOne_eq_preimage_image
-
 open scoped Classical in
 theorem normAtAllPlaces_normLeOne :
     normAtAllPlaces '' (normLeOne K) =
@@ -327,6 +324,7 @@ variable [NumberField K]
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 /--
 A fixed equiv between `Fin (rank K)` and `{w : InfinitePlace K // w ≠ w₀}`.
@@ -351,8 +349,8 @@ linearly independent, see `linearIndependent_completeFamily`.
 -/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
   toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
-  map_add' := fun _ _ ↦ funext fun _ ↦ by simpa [sum_add_distrib] using by ring
-  map_smul' := fun _ _ ↦ funext fun _ ↦ by simpa [← mul_sum] using by ring
+  map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
+  map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
@@ -832,6 +830,7 @@ theorem isBounded_normLeOne :
   refine IsBounded.subset ?_ (Set.image_mono subset_closure)
   exact (isCompact_compactSet K).isBounded.subset (expMapBasis_closure_subset_compactSet K)
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_normLeOne : volume (normLeOne K) =
     2 ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K * .ofReal (regulator K) := by
@@ -848,6 +847,7 @@ theorem volume_normLeOne : volume (normLeOne K) =
     ← mul_assoc, ← mul_assoc, ENNReal.inv_mul_cancel_right (pow_ne_zero _ two_ne_zero)
     (pow_ne_top ENNReal.ofNat_ne_top)]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_interior_eq_volume_closure :
     volume (interior (normLeOne K)) = volume (closure (normLeOne K)) := by
@@ -869,6 +869,7 @@ theorem volume_interior_eq_volume_closure :
     setLIntegral_expMapBasis_image measurableSet_interior (by fun_prop),
     setLIntegral_congr (closure_paramSet_ae_interior K)]
 
+set_option backward.isDefEq.respectTransparency false in
 open scoped Classical in
 theorem volume_frontier_normLeOne :
      volume (frontier (normLeOne K)) = 0 := by
