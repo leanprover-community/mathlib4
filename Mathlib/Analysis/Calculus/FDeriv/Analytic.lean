@@ -735,7 +735,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     by_cases hke : k ∈ Set.range e
     · simp only [hke, ↓reduceDIte]
       split_ifs with hkf
-      · simp only [← Equiv.succ_embeddingFinSucc_fst_symm_apply e hkf hke, Fin.cons_succ]
+      · rw [← Equiv.succ_embeddingFinSucc_fst_symm_apply e hkf hke, Fin.cons_succ]
       · obtain rfl : k = e 0 := by
           rcases hke with ⟨j, rfl⟩
           simpa using hkf
