@@ -16,7 +16,7 @@ This file contains some results about matrices and dual spaces.
 
 ## Tags
 
-matrix, linear_map, transpose, dual
+matrix, `LinearMap`, transpose, dual
 -/
 
 @[expose] public section

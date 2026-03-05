@@ -39,7 +39,7 @@ TODO (anyone): Add "Main results" section.
 
 ## Tags
 
-pseudo_metric, dist
+`PseudoMetric`, dist
 -/
 
 @[expose] public section

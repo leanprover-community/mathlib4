@@ -71,7 +71,7 @@ can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_i
 
 ## Tags
 
-graded ring, filtered ring, direct sum, add_submonoid
+graded ring, filtered ring, direct sum, `AddSubmonoid`
 -/
 
 @[expose] public section

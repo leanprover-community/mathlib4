@@ -20,7 +20,7 @@ Various results on Cauchy sequences in (pseudo-)metric spaces, including
 
 ## Tags
 
-metric, pseudo_metric, Cauchy sequence
+metric, `PseudoMetric`, Cauchy sequence
 -/
 
 public section

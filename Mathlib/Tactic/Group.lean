@@ -22,7 +22,7 @@ some `ring` invocations.
 
 ## Tags
 
-group_theory
+group theory, GroupTheory
 -/
 
 public meta section
