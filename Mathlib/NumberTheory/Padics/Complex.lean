@@ -186,8 +186,11 @@ instance : RankOne (PadicComplex.valued p).v where
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
 
+@[simp]
+theorem RankOne.hom_eq_embedding : RankOne.hom (PadicComplex.valued p).v = embedding := rfl
+
 /- lemma rankOne_hom_eq :
-    RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlgCl.valued p).v := rfl -/
+    RankOne.hom (PadicComplex.valued p).v = RankOne.hom (PadicAlgCl.valued p).v := rfl  -/
 
 /-- `ℂ_[p]` is a normed field, where the norm extends from `PadicAlgCl` along completion. -/
 instance normedField : NormedField ℂ_[p] := inferInstance
@@ -219,7 +222,8 @@ theorem norm_eq_norm' : (‖·‖ : ℂ_[p] → ℝ) = Valued.norm := by
     letI := S.toNonUnitalSeminormedRing.toSeminormedAddCommGroup.toSeminormedAddGroup
     exact @uniformContinuous_norm ℂ_[p] this
   · intro x
-    simp only [Valued.norm_def, valuation_extends]
+    simp only [Valued.norm_def, RankOne.hom_eq_embedding]
+    erw [embedding_restrict (PadicComplex.valued p).v x, valuation_extends]
     exact (PadicAlgCl.valuation_coe p x).symm
 
 /-- The norm on `ℂ_[p]` is compatible with the valuation. -/
