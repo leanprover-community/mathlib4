@@ -340,11 +340,7 @@ noncomputable def adjunction [HasExplicitFiniteCoproducts.{u} P] :
     exact adjunction_left_triangle P hs X
   right_triangle_components X := by
     ext (x : X.obj.obj _)
-    dsimp only [Functor.comp_obj, Functor.id_obj, Functor.flip_obj_obj,
-      functorToPresheaves_obj_obj, types_id_apply,
-      Functor.flip_obj_map, ObjectProperty.ι_obj, functor_obj_obj,
-      functorToPresheaves_obj_obj, ObjectProperty.ι_map, types_comp_apply, unit_app,
-      counit_app_hom_app]
+    dsimp
     have := CompHausLike.preregular hs
     letI : PreservesFiniteProducts ((sheafToPresheaf (coherentTopology _) _).obj X) :=
       inferInstanceAs (PreservesFiniteProducts X.obj)
