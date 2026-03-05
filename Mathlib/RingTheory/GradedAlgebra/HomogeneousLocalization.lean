@@ -683,7 +683,7 @@ at `P` embeds into the homogeneous localization of `A` at `Q`.
 -/
 abbrev mapId {P Q : Submonoid A} (h : P ≤ Q) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization 𝒜 Q :=
-  map 𝒜 𝒜 (GradedRingHom.id _) h
+  map 𝒜 𝒜 (.id _) h
 
 lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
     map 𝒜 ℬ g comap_le (mk x) =
