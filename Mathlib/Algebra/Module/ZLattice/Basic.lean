@@ -265,7 +265,6 @@ theorem exist_unique_vadd_mem_fundamentalDomain [Finite ι] (x : E) :
   · exact (vadd_mem_fundamentalDomain b (-floor b x) x).mpr rfl
   · exact (vadd_mem_fundamentalDomain b y x).mp h
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The map `ZSpan.fractRestrict` defines an equiv map between `E ⧸ span ℤ (Set.range b)`
 and `ZSpan.fundamentalDomain b`. -/
 def quotientEquiv [Fintype ι] :

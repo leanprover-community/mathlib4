@@ -274,14 +274,12 @@ theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
     rw [Set.range_inclusion i]
     exact U.isOpen.preimage continuous_subtype_val
 
-set_option backward.isDefEq.respectTransparency false in
 theorem not_nonempty_iff_eq_bot (U : Opens α) : ¬Set.Nonempty (U : Set α) ↔ U = ⊥ := by
   rw [← coe_inj, coe_bot, ← Set.not_nonempty_iff_eq_empty]
 
 theorem ne_bot_iff_nonempty (U : Opens α) : U ≠ ⊥ ↔ Set.Nonempty (U : Set α) := by
   rw [Ne, ← not_nonempty_iff_eq_bot, not_not]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An open set in the indiscrete topology is either empty or the whole space. -/
 theorem eq_bot_or_top [IndiscreteTopology α] (U : Opens α) :
     U = ⊥ ∨ U = ⊤ := by

@@ -116,7 +116,6 @@ class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
 
 namespace Valued
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Alternative `Valued` constructor for use when there is no preferred `UniformSpace` structure. -/
 @[implicit_reducible]
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
@@ -142,7 +141,6 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
 
-set_option backward.isDefEq.respectTransparency false in
 theorem toUniformSpace_eq :
     toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
   ext : 1
@@ -187,7 +185,6 @@ lemma discreteTopology_of_forall_lt [MulArchimedean Γ₀] [Valued K Γ₀] {r :
 
 end Discrete
 
-set_option backward.isDefEq.respectTransparency false in
 theorem cauchy_iff {F : Filter R} : Cauchy F ↔
     F.NeBot ∧ ∀ γ : Γ₀ˣ, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), (v (y - x) : Γ₀) < γ := by
   rw [toUniformSpace_eq, AddGroupFilterBasis.cauchy_iff]

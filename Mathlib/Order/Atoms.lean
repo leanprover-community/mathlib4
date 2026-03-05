@@ -920,7 +920,6 @@ protected noncomputable def completeLattice : CompleteLattice α :=
         intro con
         exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
 
-set_option backward.isDefEq.respectTransparency false in
 open Classical in
 /-- A simple `BoundedOrder` is also a `CompleteBooleanAlgebra`. -/
 @[implicit_reducible]
@@ -928,7 +927,6 @@ protected noncomputable def completeBooleanAlgebra : CompleteBooleanAlgebra α :
   { __ := IsSimpleOrder.completeLattice
     __ := IsSimpleOrder.booleanAlgebra }
 
-set_option backward.isDefEq.respectTransparency false in
 instance : ComplementedLattice α :=
   letI := IsSimpleOrder.completeBooleanAlgebra (α := α); inferInstance
 

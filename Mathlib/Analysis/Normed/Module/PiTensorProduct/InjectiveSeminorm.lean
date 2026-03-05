@@ -154,7 +154,6 @@ theorem injectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
   simpa only [injectiveSeminorm, Set.coe_setOf, Set.mem_setOf_eq]
     using Seminorm.sSup_apply dualSeminorms_bounded
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (x : ⨂[𝕜] i, E i) :
     ‖lift f.toMultilinearMap x‖ ≤ ‖f‖ * injectiveSeminorm x := by
     /- If `F` were in `Type (max uι u𝕜 uE)` (which is the type of `⨂[𝕜] i, E i`), then the

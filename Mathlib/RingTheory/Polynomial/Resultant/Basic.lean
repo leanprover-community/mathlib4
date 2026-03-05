@@ -476,7 +476,6 @@ lemma resultant_eq_prod_roots_sub
   · rw [f.modByMonic_add_div, natDegree_divByMonic _ hg, Nat.sub_add_cancel hfg]
   · simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `f` splits with leading coeff `a` and degree `n`,
 then `Res(f, g) = aⁿ * ∏ g(α)` where `α` runs through the roots of `f`. -/
 nonrec lemma resultant_eq_prod_eval [IsDomain R]
@@ -526,7 +525,6 @@ nonrec lemma resultant_eq_prod_eval [IsDomain R]
   simp only [eval_map_algebraMap, Function.comp_apply, Multiset.map_map, L]
   congr; ext; simp [aeval_algebraMap_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option linter.unusedVariables false in
 -- the variable names are used in the code action of `induction`.
 /-- An induction principle useful to prove statements about resultants.

@@ -29,7 +29,6 @@ namespace ModN
 
 instance : Module (ZMod n) (ModN G n) := QuotientAddGroup.zmodModule (by simp)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The universal property of `ModN G n` in terms of monoids: Monoid homomorphisms from `ModN G n`
 are the same as monoid homomorphisms from `G` whose values are `n`-torsion. -/
 protected def liftEquiv [AddMonoid M] : (ModN G n →+ M) ≃ {φ : G →+ M // ∀ g, n • φ g = 0} where

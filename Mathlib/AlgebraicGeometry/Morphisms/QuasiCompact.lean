@@ -117,7 +117,6 @@ theorem quasiCompact_iff_forall_isAffineOpen :
 @[deprecated (since := "2025-10-14")]
 alias quasiCompact_iff_forall_affine := quasiCompact_iff_forall_isAffineOpen
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set X))
     (f : Γ(X, U)) : IsCompact (X.basicOpen f : Set X) := by
   classical
@@ -336,7 +335,6 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot {X : Scheme.{u}}
     IsNilpotent f ↔ X.basicOpen f = ⊥ :=
   isNilpotent_iff_basicOpen_eq_bot_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) f
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The zero locus of a set of sections over a compact open of a scheme is `X` if and only if
 `s` is contained in the nilradical of `Γ(X, U)`. -/
 lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact {X : Scheme.{u}} {U : X.Opens}

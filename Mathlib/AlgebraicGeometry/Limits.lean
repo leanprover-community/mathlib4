@@ -473,7 +473,6 @@ instance : FinitaryExtensive Scheme where
 
 variable {X Y}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The sections on coproducts of schemes are the (categorical) product of the sections
 on the components -/
 noncomputable def Scheme.coprodPresheafObjIso (U : (X ⨿ Y).Opens) :
@@ -696,7 +695,6 @@ lemma IsAffineOpen.sup_of_disjoint {U V : X.Opens} (hU : IsAffineOpen U) (hV : I
     (by simp_all [_root_.Pairwise, Unique.forall_iff, ← Opens.coe_disjoint, disjoint_comm])
   aesop
 
-set_option backward.isDefEq.respectTransparency false in
 instance (priority := low) [Finite X] [DiscreteTopology X] : IsAffine X :=
   have : IsAffineOpen (⨆ (x : X), (⟨{x}, isOpen_discrete _⟩ : X.Opens)) :=
     .iSup_of_disjoint (fun i ↦ .of_subsingleton Set.subsingleton_singleton)
@@ -713,7 +711,6 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa using f.isOpenEmbedding.injective
   · simpa using g.isOpenEmbedding.injective
 
-set_option backward.isDefEq.respectTransparency false in
 instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpenImmersion g]
     {i j : WalkingSpan} (t : i ⟶ j) : IsOpenImmersion ((span f g).map t) := by
   obtain (a | (a | a)) := t
@@ -723,7 +720,6 @@ instance {U X Y : Scheme} (f : U ⟶ X) (g : U ⟶ Y) [IsOpenImmersion f] [IsOpe
   · simpa
 
 -- Test that instances on locally directed colimits fire correctly.
-set_option backward.isDefEq.respectTransparency false in
 example {U X Y : Scheme.{u}} (f : U ⟶ X) (g : U ⟶ Y)
     [IsOpenImmersion f] [IsOpenImmersion g] : HasPushout f g :=
   inferInstance

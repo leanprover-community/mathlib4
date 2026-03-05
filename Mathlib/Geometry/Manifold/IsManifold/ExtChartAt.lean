@@ -805,21 +805,17 @@ The manifold derivative of `f` will just be the derivative of this conjugated fu
 def writtenInExtChartAt (x : M) (f : M → M') : E → E' :=
   extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I x (chartAt H x) y = y := by simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_chartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I I (chartAt H x x) (chartAt H x).symm y = y := by
   simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt I 𝓘(𝕜, E) x (extChartAt I x) y = y := by
   simp_all only [mfld_simps]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
@@ -851,7 +847,6 @@ theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
 theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by

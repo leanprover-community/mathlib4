@@ -246,7 +246,6 @@ instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U]
     Nontrivial Γ(X, U) :=
   LocallyRingedSpace.component_nontrivial (hU := ‹_›)
 
-set_option backward.isDefEq.respectTransparency false in
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
   replace H : ¬IsPreirreducible (⊤ : Set X) := fun h =>

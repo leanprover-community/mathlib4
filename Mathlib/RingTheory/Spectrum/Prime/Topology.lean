@@ -535,7 +535,6 @@ theorem basicOpen_eq_zeroLocus_compl (r : R) :
 theorem basicOpen_one : basicOpen (1 : R) = ⊤ :=
   TopologicalSpace.Opens.ext <| by simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basicOpen_zero : basicOpen (0 : R) = ⊥ :=
   TopologicalSpace.Opens.ext <| by simp
@@ -591,7 +590,6 @@ theorem isBasis_basic_opens : TopologicalSpace.Opens.IsBasis (Set.range (@basicO
   rw [← Set.range_comp]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem basicOpen_eq_bot_iff (f : R) : basicOpen f = ⊥ ↔ IsNilpotent f := by
   rw [← TopologicalSpace.Opens.coe_inj, basicOpen_eq_zeroLocus_compl]

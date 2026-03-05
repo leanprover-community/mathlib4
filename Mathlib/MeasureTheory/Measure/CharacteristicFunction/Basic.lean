@@ -156,7 +156,6 @@ lemma charFun_eq_integral_innerProbChar : charFun μ t = ∫ v, innerProbChar t 
 lemma charFun_eq_integral_probChar (t : E) : charFun μ t = ∫ x, (probChar ⟪x, t⟫ : ℂ) ∂μ := by
   simp [charFun_apply, probChar_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `charFun` is a Fourier integral for the inner product and the character `probChar`. -/
 lemma charFun_eq_fourierIntegral (t : E) :
     charFun μ t = VectorFourier.fourierIntegral probChar μ (innerₗ E) 1 (-t) := by
