@@ -125,6 +125,9 @@ noncomputable def colon : Preradical C :=
 /-- The second projection of the pullback defining the colon preradical. -/
 noncomputable def colonπ : (colon Φ Ψ).r ⟶ Φ.quotient ⋙ Ψ.r := pullback.snd _ _
 
+instance : Epi (colonπ Φ Ψ) := by dsimp [colonπ]; infer_instance
+instance (X : C) : Epi ((colonπ Φ Ψ).app X) := instEpiAppOfFunctor (Φ.colonπ Ψ) X
+
 lemma isPullback_colon :
     IsPullback (colon Φ Ψ).ι (colonπ Φ Ψ) Φ.π
       (whiskerLeft Φ.quotient Ψ.ι ≫ (rightUnitor _).hom) :=
@@ -142,8 +145,6 @@ theorem isIso_toColon_hom_left_app_iff {Φ Ψ : Preradical C} {X : C} :
   have hpb : CommSq ((Φ.colon Ψ).ι.app X) ((Φ.colonπ Ψ).app X)
       (Φ.π.app X) (Ψ.ι.app (Φ.quotient.obj X)) := by
     simpa using (isPullback_colon Φ Ψ).map ((evaluation _ _).obj X)
-  haveI : Epi (colonπ Φ Ψ) := by dsimp [colonπ]; infer_instance
-  haveI : Epi ((colonπ Φ Ψ).app X) := instEpiAppOfFunctor (Φ.colonπ Ψ) X
   have hsnd : (toColon Φ Ψ).hom.left ≫ (colonπ Φ Ψ) = 0 :=
     (isPullback_colon Φ Ψ).lift_snd Φ.ι 0 _
   have hsnd_app : (toColon Φ Ψ).hom.left.app X ≫ (colonπ Φ Ψ).app X = 0 := by
