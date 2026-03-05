@@ -952,7 +952,7 @@ lemma rpow_rpow_inv_iff {x : ℝ≥0∞} {y : ℝ} : (x ^ y) ^ y⁻¹ = x ↔ y 
   · rw [or_iff_not_imp_left, ne_eq, not_not]
     rintro h rfl
     simpa using h.symm
-  · rintro (h|rfl)
+  · rintro (h | rfl)
     · apply ENNReal.rpow_rpow_inv h
     simp
 
