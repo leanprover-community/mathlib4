@@ -153,6 +153,7 @@ def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
 lemma toAdicCompletionAlgEquiv_apply (p : MvPowerSeries σ R) :
     toAdicCompletionAlgEquiv σ R p = toAdicCompletion σ R p := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toAdicCompletionAlgEquiv_symm_apply
     (x : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)) :
