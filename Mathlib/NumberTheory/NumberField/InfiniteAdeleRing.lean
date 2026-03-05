@@ -5,6 +5,7 @@ Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
 module
 
+public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
 
@@ -113,6 +114,30 @@ theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K (Infi
   (DenseRange.piMap fun _ => UniformSpace.Completion.denseRange_coe).comp
     (InfinitePlace.denseRange_algebraMap_pi K)
       (.piMap fun _ => UniformSpace.Completion.continuous_coe _)
+
+/-- The norm on the infinite adele ring is given by the product of the normalized norms
+across infinite places. The normalized norm is the real norm at real places and the
+square of the complex norm at complex places. -/
+instance [NumberField K] : Norm (InfiniteAdeleRing K) where
+  norm x := ∏ v, ‖x v‖ ^ v.mult
+
+variable {K}
+
+theorem norm_def [NumberField K] (x : InfiniteAdeleRing K) :
+    ‖x‖ = ∏ v, ‖x v‖ ^ v.mult := rfl
+
+set_option backward.isDefEq.respectTransparency false in
+theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : InfiniteAdeleRing K} (hx : ¬IsUnit x) :
+    ‖x‖ = 0 := by
+  rw [Pi.isUnit_iff, not_forall] at hx
+  obtain ⟨v, hv⟩ := hx
+  exact Finset.prod_eq_zero_iff.2 ⟨v, Finset.mem_univ v, by simpa [isUnit_iff_ne_zero] using hv⟩
+
+/-- The product formula for the infinite adele ring. This is the adelic version of
+`NumberField.InfinitePlace.prod_eq_abs_norm`. -/
+theorem coe_norm_eq_abs_norm [NumberField K] (x : K) :
+    ‖algebraMap K (InfiniteAdeleRing K) x‖ = |Algebra.norm ℚ x| := by
+  simpa [-Rat.cast_abs, norm_def] using InfinitePlace.prod_eq_abs_norm x
 
 end InfiniteAdeleRing
 
