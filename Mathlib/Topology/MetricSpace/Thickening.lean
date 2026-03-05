@@ -112,7 +112,6 @@ theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
     frontier (thickening δ E) ⊆ { x : α | infEDist x E = ENNReal.ofReal δ } :=
   frontier_lt_subset_eq continuous_infEDist continuous_const
 
-set_option backward.isDefEq.respectTransparency false in
 open scoped Function in -- required for scoped `on` notation
 theorem frontier_thickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ => frontier (thickening r A)) := by
@@ -693,7 +692,7 @@ lemma IsClopen.of_thickening_subset_self {δ : ℝ} (hδ : 0 < δ) (hs : thicken
   replace hs : thickening δ s = s := le_antisymm hs (self_subset_thickening hδ s)
   refine ⟨?_, hs ▸ isOpen_thickening⟩
   rw [← closure_subset_iff_isClosed, closure_eq_iInter_thickening]
-  exact Set.biInter_subset_of_mem hδ |>.trans_eq hs
+  exact Set.iInter₂_subset δ hδ |>.trans_eq hs
 
 lemma IsClopen.of_cthickening_subset_self {δ : ℝ} (hδ : 0 < δ) (hs : cthickening δ s ⊆ s) :
     IsClopen s :=
