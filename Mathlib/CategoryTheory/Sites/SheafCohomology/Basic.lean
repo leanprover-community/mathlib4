@@ -168,23 +168,21 @@ variable [HasExt.{w} (Sheaf J AddCommGrpCat.{w})]
 omit [HasExt.{w'} (Sheaf J AddCommGrpCat)]
 
 variable (J) in
-/-- see `CategoryTheory.Sheaf.functorHNatIsoSheafSections` -/
-noncomputable def functorHNatIsoSheafSections_aux :
-    functorH J 0 ⟶ (sheafSections J _).obj (op T) where
-  app F := AddCommGrpCat.ofHom (H.equiv₀ F hT).toAddMonoidHom
-  naturality {F G} f := by
-    ext
-    simp [H.equiv₀_comp]
-
-instance functorHNatIsoSheafSections_aux_isIso : IsIso (functorHNatIsoSheafSections_aux J hT) := by
-  rw[NatTrans.isIso_iff_isIso_app]
-  intro
-  rw[← isIso_iff_of_reflects_iso _ (forget AddCommGrpCat), isIso_iff_bijective]
-  exact (H.equiv₀ _ hT).bijective
-
 /-- The natural isomorphism between cohomology in degree `0` and global sections. -/
-noncomputable def functorHNatIsoSheafSections : functorH J 0 ≅ (sheafSections J _).obj (op T) :=
-  asIso (functorHNatIsoSheafSections_aux J hT)
+noncomputable def functorHNatIsoSheafSections :
+    functorH J 0 ≅ (sheafSections J _).obj (op T) where
+  hom := {
+    app F := AddCommGrpCat.ofHom (H.equiv₀ F hT).toAddMonoidHom
+    naturality _ _ _ := by
+      ext
+      simp [H.equiv₀_comp]
+  }
+  inv := {
+    app F := AddCommGrpCat.ofHom (H.equiv₀ F hT).symm.toAddMonoidHom
+    naturality _ _ _ := by
+      ext
+      simp [H.equiv₀_symm_comp]
+  }
 
 end
 
