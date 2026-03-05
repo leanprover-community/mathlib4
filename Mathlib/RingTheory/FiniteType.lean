@@ -6,7 +6,7 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.FreeAlgebra
-public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Polynomial.Basic
 public import Mathlib.RingTheory.Adjoin.Tower
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Noetherian.Orzech
@@ -118,7 +118,6 @@ instance {ι : Type*} [Finite ι] [FiniteType R S] : FiniteType R (FreeAlgebra S
   rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
   exact FreeAlgebra.adjoin_range_ι ..
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An algebra is finitely generated if and only if it is a quotient
 of a free algebra whose variables are indexed by a finset. -/
 theorem iff_quotient_freeAlgebra :
@@ -132,7 +131,6 @@ theorem iff_quotient_freeAlgebra :
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A commutative algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a finset. -/
 theorem iff_quotient_mvPolynomial :
@@ -142,14 +140,11 @@ theorem iff_quotient_mvPolynomial :
   · rintro ⟨s, hs⟩
     use s, MvPolynomial.aeval (↑)
     intro x
-    have hrw : (↑s : Set S) = fun x : S => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range]
-    simp_rw [← hrw, hs]
-    exact Set.mem_univ x
+    rw [← Set.mem_range, ← AlgHom.coe_range, ← adjoin_eq_range, SetLike.mem_coe, hs]
+    apply mem_top
   · rintro ⟨s, f, hsur⟩
     exact .of_surjective f hsur
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An algebra is finitely generated if and only if it is a quotient
 of a polynomial ring whose variables are indexed by a fintype. -/
 theorem iff_quotient_freeAlgebra' : FiniteType R A ↔
@@ -189,7 +184,6 @@ theorem iff_quotient_mvPolynomial'' :
 instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B) :=
   ⟨by rw [← Subalgebra.prod_top]; exact hA.1.prod hB.1⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [h : Algebra.FiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
   obtain ⟨s, hs⟩ := h.1
@@ -617,7 +611,6 @@ end MonoidAlgebra
 
 section Orzech
 
-set_option backward.isDefEq.respectTransparency false in
 open Submodule Module Module.Finite in
 /-- Any commutative ring `R` satisfies the `OrzechProperty`, that is, for any finitely generated
 `R`-module `M`, any surjective homomorphism `f : N →ₗ[R] M` from a submodule `N` of `M` to `M`
