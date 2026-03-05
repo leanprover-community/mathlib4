@@ -233,8 +233,10 @@ private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
   rw [product_add_left,
     mfderiv_add (hσ.inner_bundle' hτ) (hσ'.inner_bundle' hτ),
     cov.isCovariantDerivativeOn.addσ hσ hσ',
-    ContinuousLinearMap.comp_add, ContinuousLinearMap.coe_sub', Pi.sub_apply,
-    ContinuousLinearMap.add_apply, Pi.add_apply, inner_add_left]
+    ContinuousLinearMap.comp_add]
+  erw [ContinuousLinearMap.coe_sub']
+  rw [Pi.sub_apply]
+  erw [ContinuousLinearMap.add_apply, Pi.add_apply, inner_add_left]
   -- set A := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x
   -- set A' := mfderiv I 𝓘(ℝ, ℝ) ⟪σ', τ⟫ x
   -- set B := ((innerSL ℝ) (τ x)).comp (cov σ x)

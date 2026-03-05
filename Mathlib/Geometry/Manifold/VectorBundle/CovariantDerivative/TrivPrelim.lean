@@ -101,10 +101,6 @@ lemma funToSec_congr {s s' : B → F} {b : B} (h : s b = s' b) :
     e.funToSec s b = e.funToSec s' b := by
   simp [funToSec, h]
 
-lemma totalSpace_mk'_funToSec {v : TotalSpace F E} (s : B → F) :
-    (T% (e.funToSec s) v.proj) = e.symm v.proj (s v.proj) :=
-  rfl
-
 @[simp]
 lemma secToFun_funToSec_eventuallyEq {x : B} (hx : x ∈ e.baseSet) (s : B → F) :
     e.secToFun (e.funToSec s) =ᶠ[𝓝 x] s := by
