@@ -134,8 +134,8 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     · exact UniqueMDiffOn.uniqueDiffOn_target_inter h'u (g x₀)
   -- reformulate the previous point as `C^n` in the manifold sense (but still for a map between
   -- vector spaces)
-  have : CMDiffAt[t'] m (fun x =>
-      fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ f x ∘ (extChartAt I (g x₀)).symm)
+  have : CMDiffAt[t'] m (
+      fun x ↦ fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ f x ∘ (extChartAt I (g x₀)).symm)
       ((extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
         (extChartAt I (g x₀) (g x))) x₀ := by
     simp_rw [contMDiffWithinAt_iff_source (x := x₀),
@@ -194,7 +194,7 @@ theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
     (hf : CMDiffAt[s] n f x₀) (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiffOn I s) :
     CMDiffAt[s] m (inTangentCoordinates I I' id f (mfderiv[s] f) x₀) x₀ := by
   have : CMDiffAt[s ×ˢ s] n (fun x : M × M => f x.2) (x₀, x₀) :=
-    .comp (x₀, x₀) hf contMDiffWithinAt_snd mapsTo_snd_prod
+    hf.comp (x₀, x₀) contMDiffWithinAt_snd mapsTo_snd_prod
   exact this.mfderivWithin contMDiffWithinAt_id hx (mapsTo_id _) hmn hs
 
 /-- The function that sends `x` to the `y`-derivative of `f(x,y)` at `g(x)` applied to `g₂(x)` is
