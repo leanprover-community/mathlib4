@@ -183,7 +183,7 @@ protected theorem AEDisjoint.of_le
     AEDisjoint ν s t :=
   h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
 
-@[mono]
+@[gcongr, mono]
 theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
   h.absolutelyContinuous.ae_le
 
