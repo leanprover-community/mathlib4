@@ -152,7 +152,7 @@ lemma integral_comp_eval [NormedSpace ℝ E] [∀ i, IsProbabilityMeasure (μ i)
 lemma integral_eval [∀ i, NormedAddCommGroup (X i)] [∀ i, NormedSpace ℝ (X i)]
     [∀ i, IsProbabilityMeasure (μ i)] {i : ι} [OpensMeasurableSpace (X i)]
     [SecondCountableTopology (X i)] :
-    ∫ x : Π i, X i, x i ∂Measure.pi μ = ∫ x, x ∂μ i :=
+    ∫ x, x i ∂Measure.pi μ = ∫ x, x ∂μ i :=
   integral_comp_eval aestronglyMeasurable_id
 
 end MeasureTheory
