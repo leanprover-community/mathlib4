@@ -171,6 +171,33 @@ lemma HasFiniteMulSupport.inf' [SemilatticeInf M] {ι : Type*} {f : ι → α �
   contrapose! ha
   exact Finset.inf'_eq_of_forall hs (fun x ↦ f x a) ha
 
+@[to_additive]
+lemma HasFiniteMulSupport.subset {f g : α → M} (hg : g.HasFiniteMulSupport)
+    (h : f.mulSupport ⊆ g.mulSupport) :
+    f.HasFiniteMulSupport := by
+  simp only [HasFiniteMulSupport] at hg ⊢
+  exact hg.subset h
+
+@[to_additive]
+lemma HasFiniteMulSupport.comp_of_injective {β : Type*} {f : β → M} {g : α → β} (hg : Injective g)
+    (hf : f.HasFiniteMulSupport) :
+    (f ∘ g).HasFiniteMulSupport := by
+  simp only [HasFiniteMulSupport] at hf ⊢
+  refine Set.Finite.of_injOn (f := g) ?_ (Set.injOn_of_injective hg) hf
+  exact Set.mapsTo_iff_subset_preimage.mpr fun ⦃_⦄ a ↦ a
+
+@[to_additive]
+lemma HasFiniteMulSupport.fun_comp_of_injective {β : Type*} {f : β → M} {g : α → β}
+    (hg : Injective g) (hf : f.HasFiniteMulSupport) :
+    (fun a ↦ f (g a)).HasFiniteMulSupport :=
+  hf.comp_of_injective hg
+
+@[to_additive]
+lemma hasFiniteMulSupport_iff {f g : α → M} (h : f.mulSupport = g.mulSupport) :
+    f.HasFiniteMulSupport ↔ g.HasFiniteMulSupport := by
+  simp only [HasFiniteMulSupport]
+  rw [h]
+
 end Function
 
 end
