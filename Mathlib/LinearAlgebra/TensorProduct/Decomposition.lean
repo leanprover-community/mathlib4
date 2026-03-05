@@ -3,15 +3,19 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+module
+
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
 /-! # Decomposition of tensor product
 
-In this file we show that if `ℳ` is a graded `R`-module, and `S` is any `R`-algebra, then
-`S ⊗[R] ℳ` (which is actually `fun i ↦ (ℳ i).baseChange S`) is a graded `S`-module with the same
-grading.
+In this file we show that if `ℳ` is a decomposition of an `R`-module `M` indexed by a type `ι`,
+then the `S`-module `S ⊗[R] M` has a decomposition `fun i ↦ (ℳ i).baseChange S` indexed by the
+same `ι`.
 -/
+
+@[expose] public section
 
 open TensorProduct LinearMap
 
@@ -19,8 +23,11 @@ namespace DirectSum
 
 variable {ι R M S : Type*} [DecidableEq ι]
   [CommSemiring R] [AddCommMonoid M] [Module R M]
-  (ℳ : ι → Submodule R M) [Decomposition ℳ]
+  (ℳ : ι → Submodule R M)
   [CommSemiring S] [Algebra R S]
+
+section Decomposition
+variable [Decomposition ℳ]
 
 instance Decomposition.baseChange : Decomposition fun i ↦ (ℳ i).baseChange S := by
   refine .ofLinearMap _ (lmap (ℳ ·|>.toBaseChange S) ∘ₗ
@@ -45,18 +52,18 @@ theorem toBaseChange_injective (i : ι) : Function.Injective ((ℳ i).toBaseChan
 theorem toBaseChange_bijective (i : ι) : Function.Bijective ((ℳ i).toBaseChange S) :=
   ⟨toBaseChange_injective ℳ i, (ℳ i).toBaseChange_surjective S⟩
 
-namespace IsInternal
+end Decomposition
 
-omit [Decomposition ℳ]
+namespace IsInternal
 
 theorem baseChange (hm : IsInternal ℳ) : IsInternal fun i ↦ (ℳ i).baseChange S :=
   haveI := hm.chooseDecomposition
   Decomposition.isInternal _
 
-nonrec theorem toBaseChange_bijective (hm : IsInternal ℳ) (i : ι) :
+theorem toBaseChange_bijective (hm : IsInternal ℳ) (i : ι) :
     Function.Bijective ((ℳ i).toBaseChange S) :=
   haveI := hm.chooseDecomposition
-  toBaseChange_bijective ℳ i
+  DirectSum.toBaseChange_bijective ℳ i
 
 theorem toBaseChange_injective (hm : IsInternal ℳ) (i : ι) :
     Function.Injective ((ℳ i).toBaseChange S) :=

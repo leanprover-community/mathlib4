@@ -202,13 +202,8 @@ theorem hahnCoeff_apply {x : seed.baseDomain} {f : Π₀ c, seed.stratum c}
     seed.hahnCoeff x c = seed.coeff c (f c) := by
   suffices seed.baseDomain.subtype.submoduleComap
       (seed.stratum c) (DirectSum.decompose seed.stratum' x c) = f c by
-<<<<<<< HEAD
     simp [Seed.hahnCoeff, coeff', decomposeLinearEquiv_apply, this]
   have hxm {c : ArchimedeanClass M} (x : seed.stratum c) : x.val ∈ seed.baseDomain := by
-=======
-    simp [Seed.hahnCoeff, coeff', this]
-  have hxm {c : FiniteArchimedeanClass M} (x : seed.stratum c) : x.val ∈ seed.baseDomain := by
->>>>>>> origin/master
     apply Set.mem_of_mem_of_subset x.prop
     simpa using le_iSup _ _
   let f' : ⨁ c, seed.stratum' c :=

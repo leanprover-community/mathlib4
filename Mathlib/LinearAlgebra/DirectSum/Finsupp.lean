@@ -54,15 +54,9 @@ variable (ι : Type*) [DecidableEq ι]
 
 /-- The tensor product of `ι →₀ M` and `N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
 noncomputable def finsuppLeft :
-<<<<<<< HEAD
-    (ι →₀ M) ⊗[R] N ≃ₗ[R] ι →₀ M ⊗[R] N :=
-  congr (finsuppLEquivDirectSum R M ι) (.refl R N) ≪≫ₗ
-    directSumLeft R R (fun _ ↦ M) N ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
-=======
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ M ⊗[R] N :=
   AlgebraTensorModule.congr (finsuppLEquivDirectSum S M ι) (.refl R N) ≪≫ₗ
     directSumLeft _ S (fun _ ↦ M) N ≪≫ₗ (finsuppLEquivDirectSum _ _ ι).symm
->>>>>>> origin/master
 
 variable {R S M N ι}
 
@@ -95,24 +89,16 @@ lemma finsuppLeft_symm_apply_single (i : ι) (m : M) (n : N) :
 variable (R S M N ι) in
 /-- The tensor product of `M` and `ι →₀ N` is linearly equivalent to `ι →₀ M ⊗[R] N` -/
 noncomputable def finsuppRight :
-<<<<<<< HEAD
-    M ⊗[R] (ι →₀ N) ≃ₗ[R] ι →₀ M ⊗[R] N :=
-  congr (.refl R M) (finsuppLEquivDirectSum R N ι) ≪≫ₗ
-    directSumRight R R M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum R _ ι).symm
-
-variable {R M N ι}
-=======
     M ⊗[R] (ι →₀ N) ≃ₗ[S] ι →₀ M ⊗[R] N :=
   AlgebraTensorModule.congr (.refl S M) (finsuppLEquivDirectSum R N ι) ≪≫ₗ
-    directSumRight' R S M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum _ _ ι).symm
->>>>>>> origin/master
+    directSumRight R S M (fun _ : ι ↦ N) ≪≫ₗ (finsuppLEquivDirectSum _ _ ι).symm
 
 lemma finsuppRight_apply_tmul (m : M) (p : ι →₀ N) :
     finsuppRight R S M N ι (m ⊗ₜ[R] p) = p.sum fun i n ↦ Finsupp.single i (m ⊗ₜ[R] n) := by
   induction p using Finsupp.induction_linear with
   | zero => simp
   | add f g hf hg => simp [tmul_add, map_add, hf, hg, Finsupp.sum_add_index]
-  | single => simp [finsuppRight, directSumRight']; simp [lof_eq_of R, ← lof_eq_of S]
+  | single => simp [finsuppRight]
 
 @[simp]
 lemma finsuppRight_apply_tmul_apply (m : M) (p : ι →₀ N) (i : ι) :
