@@ -270,6 +270,13 @@ private abbrev kerFun (x : X) :
     _ ≤ ‖K x x‖ * ‖v‖ * ‖v‖ := by simp [mul_le_mul_of_nonneg_right, le_opNorm]
     _ ≤ _ := by simp [mul_pow, mul_assoc, ← sq]
 
+#synth UniformContinuousConstSMul 𝕜 (X × V →₀ 𝕜)
+#synth UniformContinuousConstSMul 𝕜 (H₀ K)
+--instance insttest : UniformContinuousConstSMul 𝕜 (X × V →₀ 𝕜) := sorry
+instance insttestt : UniformContinuousConstSMul 𝕜 (H₀ K) := sorry
+#synth UniformContinuousConstSMul 𝕜 (X × V →₀ 𝕜)
+#synth UniformContinuousConstSMul 𝕜 (H₀ K)
+
 @[no_expose]
 instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
   coeCLM := .pi fun x ↦ (OfKernel.kerFun K x).adjoint
@@ -282,7 +289,7 @@ instance instRKHS : RKHS 𝕜 (OfKernel K) X V where
       simp [this]
     | single_add i a =>
     simp only [UniformSpace.Completion.coe_add, inner_add_left, *, add_zero]
-    --rw [← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜)]
+    rw [← UniformSpace.Completion.coe_toComplL (𝕜 := 𝕜)]
     have := (ext_iff_inner_left 𝕜).mp (congrFun h i.1) i.2
     have := by simpa [OfKernel.kerFun, adjoint_inner_right] using this
     rw [← mul_zero (conj a), ← this, ← inner_smul_left]
