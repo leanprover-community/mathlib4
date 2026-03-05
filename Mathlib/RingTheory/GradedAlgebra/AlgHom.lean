@@ -52,7 +52,6 @@ variable {F : Type*} [FunLike F A B] [GradedFunLike F 𝒜 ℬ] [AlgHomClass F R
 `[FunLike F A B] [GradedFunLike F 𝒜 ℬ] [AlgHomClass F R A B]` into an actual `GradedAlgHom`.
 
 In future mathlib this will be deprioritised in favour of using structural projections. -/
-@[coe]
 def ofClass (f : F) : 𝒜 →ₐᵍ[R] ℬ :=
   { (AlgHomClass.toAlgHom f : A →ₐ[R] B), (.ofClass f : 𝒜 →+*ᵍ ℬ) with }
 
