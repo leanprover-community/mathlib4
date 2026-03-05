@@ -29,6 +29,7 @@ theorem mem_saturation_iff_isUnit_algebraMap [IsLocalization S A] {x : R} :
     x ∈ S.saturation ↔ IsUnit (algebraMap R A x) := by
   rw [IsLocalization.algebraMap_isUnit_iff S, Submonoid.mem_saturation_iff_exists_dvd]
 
+@[simp]
 theorem saturation_iff : IsLocalization S.saturation.toSubmonoid A ↔ IsLocalization S A :=
   .symm <| iff_of_le_of_exists_dvd _ _ le_toSubmonoid_saturation <| by
     simp [mem_saturation_iff_exists_dvd]
@@ -37,5 +38,15 @@ variable (S T) in
 theorem of_saturation_eq [IsLocalization S A] (ih : S.saturation = T.saturation) :
     IsLocalization T A := by
   rwa [← saturation_iff, ← ih, saturation_iff]
+
+variable (S T) in
+theorem isLocalization_iff_of_saturation_eq (ih : S.saturation = T.saturation) :
+    IsLocalization S A ↔ IsLocalization T A := by
+  rw [← saturation_iff, ih, saturation_iff]
+
+variable (S T) in
+theorem ext_saturation [IsLocalization S A] [IsLocalization T A] : S.saturation = T.saturation :=
+  SaturatedSubmonoid.ext <| Submonoid.ext fun x ↦ by
+    simp [mem_saturation_iff_isUnit_algebraMap S A, mem_saturation_iff_isUnit_algebraMap T A]
 
 end IsLocalization
