@@ -1314,24 +1314,18 @@ end Sigma
 section Div
 
 /-- Given a finitely supported function `d` where every value is divisible by `p`,
-`d.div p h` is the finitely supported function scaled down by `p`. -/
-def div (p : ℕ) {d : α →₀ ℕ} (h : ∀ (i : α), p ∣ d i) : α →₀ ℕ where
+`d.divConst h` is the finitely supported function scaled down by `p`. -/
+def divConst {p : ℕ} {d : α →₀ ℕ} (h : ∀ (i : α), p ∣ d i) : α →₀ ℕ where
   support := d.support
   toFun i := d i / p
   mem_support_toFun i := by
-    constructor
-    · intro hi
-      obtain ⟨j, hj⟩ := h i
-      simp only [mem_support_iff, hj, ne_eq, mul_eq_zero, not_or, Nat.div_eq_zero_iff,
-        not_lt] at hi ⊢
-      exact ⟨hi.1, Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero hi.2)⟩
-    · intro hi
-      simp only [ne_eq, Nat.div_eq_zero_iff, not_or, not_lt,
-        Finsupp.mem_support_iff] at hi ⊢
-      omega
+    refine ⟨fun hi ↦ ?_, by aesop⟩
+    obtain ⟨j, hj⟩ := h i
+    simp only [mem_support_iff, hj, ne_eq, mul_eq_zero, not_or, Nat.div_eq_zero_iff, not_lt] at hi ⊢
+    exact ⟨hi.1, Nat.le_mul_of_pos_right _ (Nat.pos_of_ne_zero hi.2)⟩
 
-theorem mul_div_cancel' (p : ℕ) {d : α →₀ ℕ} (h : ∀ (i : α), p ∣ d i) :
-    d = p • Finsupp.div p h := by ext i; simp [Finsupp.div, (Nat.mul_div_cancel' (h i))]
+theorem smul_divConst_cancel' {p : ℕ} {d : α →₀ ℕ} (h : ∀ (i : α), p ∣ d i) :
+    p • divConst h = d := by ext i; simp [divConst, (Nat.mul_div_cancel' (h i))]
 
 end Div
 
