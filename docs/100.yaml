@@ -193,6 +193,8 @@
   authors: Thomas Zhu
 47:
   title  : The Central Limit Theorem
+  decl   : ProbabilityTheory.tendstoInDistribution_sqrt_inv_mul_sum
+  authors: Thomas Zhu, Etienne Marion
 48:
   title  : Dirichlet’s Theorem
   decl   : Nat.infinite_setOf_prime_and_eq_mod

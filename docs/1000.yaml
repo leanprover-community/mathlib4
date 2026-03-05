@@ -135,7 +135,8 @@ Q190391X:
 
 Q190391:
   title: Central limit theorem
-  # in 100.yaml also
+  decl: ProbabilityTheory.tendstoInDistribution_sqrt_inv_mul_sum
+  authors: Thomas Zhu, Etienne Marion
 
 Q190556:
   title: De Moivre's theorem
