@@ -119,7 +119,7 @@ theorem coe_pointwise_smul {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Modu
     (f : ι → R) (g : ι →₀ M) : ⇑(f • g) = f • ⇑g := by rfl
 
 /-- The pointwise multiplicative action of functions on finitely supported functions -/
-instance pointwiseScalarModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
+instance pointwiseModule {ι R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ι → R) (ι →₀ M) :=
   Function.Injective.module _ coeFnAddHom DFunLike.coe_injective (by intros; rfl)
 
