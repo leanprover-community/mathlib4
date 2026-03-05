@@ -275,8 +275,7 @@ private lemma mulHeight_constantCoeff_le_mulHeightBound {p : ι' → MvPolynomia
     rw [show constantCoeff (p j) = coeff 0 (p j) from rfl]
     rcases eq_or_ne (coeff 0 (p j)) 0 with h₀ | h₀
     · simp [h₀]
-    · set_option backward.isDefEq.respectTransparency false in -- temporary measure
-      exact le_sup_of_le_left <| Finite.le_ciSup_of_le ⟨0, by simp [h₀]⟩ le_rfl
+    · exact le_sup_of_le_left <| Finite.le_ciSup_of_le ⟨0, by simp [h₀]⟩ le_rfl
 
 variable [Finite ι]
 
