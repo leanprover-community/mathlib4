@@ -320,7 +320,7 @@ def smulPosKernel (r : ℝ) (hr : r ≥ 0) (K : Kernel X) : Kernel X := {
 }
 
 @[simp]
-theorem smulPoseKernel_apply (r : ℝ) (hr : r ≥ 0) (K : Kernel X) (x y : X) :
+theorem smulPosKernel_apply (r : ℝ) (hr : r ≥ 0) (K : Kernel X) (x y : X) :
     (smulPosKernel r hr K).kernel x y = r * K x y :=
   rfl
 
@@ -699,8 +699,8 @@ lemma natPowKernel_apply (K : Kernel X) (N : ℕ) (x y : X) : (natPowKernel K N)
 instance : NatPow (Kernel X) where
   pow := natPowKernel
 
-/-- Any map `φ` mapping `X` to a pre-Hilbert space `F` can define a kernel through the map
-  `(x₁,x₂)↦⟪φ(x₁),φ(x₂)`. Essential part of the 'Kernel trick'. -/
+/-- Any map `φ` mapping `X` to a pre-Hilbert space `α` can define a kernel through the map
+  `(x₁,x₂)↦⟪φ(x₁),φ(x₂)⟫`. Essential part of the 'Kernel trick'. -/
 def featureKernel {α : Type*} [NormedAddCommGroup α] [InnerProductSpace ℝ α] (φ : X → α) : Kernel X
                                                                                                 := {
   kernel := fun x y => inner ℝ (φ x) (φ y)
@@ -1041,7 +1041,7 @@ theorem finsetSumKernel_apply {α : Type*} (s : Finset α) (K : α → Kernel X)
       simp
 
 /-- Any power series $x↦∑_{n=1}^∞ f_n x^n$ with nonnegative coefficients yields the kernel
-  $(x₁,x₂)↦∑_{n=1}^∞ f_n K(x₁,x₂)^n`. -/
+  $(x₁,x₂)↦∑_{n=1}^∞ f_n K(x₁,x₂)^n$. -/
 noncomputable def posPowerSeriesKernel (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 ≤ PowerSeries.coeff n p)
     (hp₂ : ∀ x : ℝ, Summable (fun n => PowerSeries.coeff n p * x ^ n)) (K : Kernel X) : Kernel X :=
   let Kseq : ℕ → Kernel X := fun N => finsetSumKernel (Finset.range N)
@@ -1050,7 +1050,7 @@ noncomputable def posPowerSeriesKernel (p : PowerSeries ℝ) (hp₁ : ∀ n, 0 �
   pointwiseLimitKernel Kseq Klim (by
     intro x y
     unfold Kseq Klim
-    simp only [finsetSumKernel_apply, smulPoseKernel_apply, natPowKernel_apply]
+    simp only [finsetSumKernel_apply, smulPosKernel_apply, natPowKernel_apply]
     apply HasSum.tendsto_sum_nat
     exact (hp₂ (K x y)).hasSum
   )
