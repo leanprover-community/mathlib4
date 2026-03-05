@@ -300,7 +300,15 @@ variable (𝕜 E F G ι : Type*) [NormedField 𝕜]
   [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [ContinuousConstSMul 𝕜 G]
 
-/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous bilinear map. -/
+/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous bilinear map.
+
+Given a continuous linear map `g : F →L[𝕜] G` and a continuous alternating map `f : E [⋀^ι]→L[𝕜] F`,
+it returns the continuous alternating map `g ∘ f`.
+This function is continuous in `f` (for each `g`)
+and in `g` (as a function takinv values in continuous linear maps).
+Note that for a general topological vector space,
+the map is not guaranteed to be continuous in `(g, f)`.
+-/
 @[simps! apply_apply]
 def compContinuousAlternatingMapCLM :
     (F →L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) where
@@ -332,7 +340,13 @@ variable {𝕜 E E' F G ι : Type*} [NormedField 𝕜]
   [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [IsTopologicalAddGroup G]
   [ContinuousConstSMul 𝕜 G]
 
-/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv. -/
+/-- `ContinuousLinearMap.compContinuousAlternatingMap` as a bundled continuous linear equiv.
+
+Given a continuous linear equivalence `g : F ≃L[𝕜] G`,
+this function returns the equivalence between continuous alternating maps with codomain `F`
+and continuous alternating maps with codomain `G`
+that acts by composing these maps with `g`.
+ -/
 @[simps +simpRhs apply]
 def continuousAlternatingMapCongrRight (g : F ≃L[𝕜] G) :
     (E [⋀^ι]→L[𝕜] F) ≃L[𝕜] (E [⋀^ι]→L[𝕜] G) where
