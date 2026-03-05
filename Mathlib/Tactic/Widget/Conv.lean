@@ -170,7 +170,7 @@ Given a `path : Path` and `xs : TSepArray ``enterArg ","`, generate the `conv` s
 corresponding to `enter [xs,*]` followed by traversing `path`. If `loc` is `some fvar`,
 start with `conv at fvar =>`, otherwise if `loc` is `none` start with `conv =>`.
 -/
-public def pathToStx {m} [Monad m] [MonadEnv m] [MonadQuotation m] (convStx : TSyntax `conv)
+public def pathToStx {m} [Monad m] [MonadQuotation m] (convStx : TSyntax `conv)
     (path : Path) (loc : Option Name) (xs : Syntax.TSepArray ``enterArg "," := {}) :
     m (TSyntax `tactic) := do
   match path with
