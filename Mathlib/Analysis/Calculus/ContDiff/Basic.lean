@@ -57,6 +57,8 @@ theorem iteratedFDerivWithin_zero_fun {i : ℕ} :
   ext
   simp [ftaylorSeriesWithin]
 
+@[deprecated (since := "2026-03-05")] alias iteratedFDeriv_zero_fun := ftaylorSeriesWithin_zero_fun
+
 @[to_fun (attr := simp)]
 theorem iteratedFDeriv_zero_fun {n : ℕ} : iteratedFDeriv 𝕜 n (0 : E → F) = 0 :=
   funext fun x ↦ by simp only [← iteratedFDerivWithin_univ, iteratedFDerivWithin_zero_fun]
