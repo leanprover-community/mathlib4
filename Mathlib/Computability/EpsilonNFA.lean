@@ -385,7 +385,7 @@ theorem matches'_foldl_sum {α : Type*} (L : List α) (f : α → RegularExpress
   simp only [matches'_foldl_acc, matches', add_eq_sup, zero_le, sup_of_le_right]
   rfl
 
-lemma mem_matches_mul_star_mul {R_to R_loop R_from : RegularExpression α} {w : List α} :
+theorem mem_matches_mul_star_mul {R_to R_loop R_from : RegularExpression α} {w : List α} :
     w ∈ (R_to * R_loop.star * R_from).matches' ↔
     ∃ w₁ w₂ w₃, w = w₁ ++ w₂ ++ w₃ ∧
                 w₁ ∈ R_to.matches' ∧
@@ -398,7 +398,7 @@ lemma mem_matches_mul_star_mul {R_to R_loop R_from : RegularExpression α} {w : 
   · rintro ⟨w₁, w₂, w₃, rfl, hw₁, hw₂, hw₃⟩
     exact ⟨w₁ ++ w₂, ⟨w₁, hw₁, w₂, hw₂, rfl⟩, w₃, hw₃, rfl⟩
 
-lemma mem_matches_star_concat {R : RegularExpression α} {w₁ w₂ : List α}
+theorem mem_matches_star_concat {R : RegularExpression α} {w₁ w₂ : List α}
     (h₁ : w₁ ∈ R.star.matches') (h₂ : w₂ ∈ R.star.matches') :
     w₁ ++ w₂ ∈ R.star.matches' := by
   rw [matches'_star, Language.mem_kstar] at *
@@ -406,7 +406,7 @@ lemma mem_matches_star_concat {R : RegularExpression α} {w₁ w₂ : List α}
   rcases h₂ with ⟨L₂, rfl, hL₂⟩
   exact ⟨L₁ ++ L₂, by simp, List.forall_mem_append.mpr ⟨hL₁, hL₂⟩⟩
 
-lemma mem_matches_star_singleton {R : RegularExpression α} {w : List α}
+theorem mem_matches_star_singleton {R : RegularExpression α} {w : List α}
     (h : w ∈ R.matches') : w ∈ R.star.matches' := by
   rw [matches'_star, Language.mem_kstar]
   exact ⟨[w], by simpa⟩
@@ -444,7 +444,8 @@ def toSingleεNFA : εNFA α (ExtendedState σ) where
   start := { .start }
   accept := { .accept }
 
-lemma IsPath.toSingleεNFA_lift_extendedState {s t : σ} {x : List (Option α)} (h : M.IsPath s t x) :
+theorem IsPath.toSingleεNFA_lift_extendedState {s t : σ} {x : List (Option α)}
+    (h : M.IsPath s t x) :
     M.toSingleεNFA.IsPath (.state s) (.state t) x := by
   induction h with
   | nil _ => simp
@@ -453,14 +454,14 @@ lemma IsPath.toSingleεNFA_lift_extendedState {s t : σ} {x : List (Option α)} 
     · cases oa <;> simpa
     · exact ih
 
-lemma IsPath.from_accept {u : ExtendedState σ} {x : List (Option α)}
+theorem IsPath.from_accept {u : ExtendedState σ} {x : List (Option α)}
     (h : M.toSingleεNFA.IsPath .accept u x) :
     u = .accept ∧ x = [] := by
   cases h with
   | nil => simp
   | cons _ _ _ _ _ h_step _ => simp at h_step
 
-lemma IsPath.state_accept {s : σ} {x : List (Option α)}
+theorem IsPath.state_accept {s : σ} {x : List (Option α)}
     (h : M.toSingleεNFA.IsPath (.state s) .accept x) :
     ∃ t x', t ∈ M.accept ∧ x = x' ++ [none] ∧ M.IsPath s t x' := by
   generalize hs : (ExtendedState.state s) = ss at h
@@ -771,7 +772,7 @@ theorem isRestrictedMatch_iff_exists_isPath {i j : Fin n} {x : (List α)} :
   rw [isRestrictedMatch_iff_exists_isRestrictedPath]
   simp_rw [isRestrictedPath_iff_isPath]
 
-lemma IsRestrictedMatch.mono {k k' : ℕ} {i j : Fin n} {w : List α}
+theorem IsRestrictedMatch.mono {k k' : ℕ} {i j : Fin n} {w : List α}
     (h : IsRestrictedMatch M k i j w) (hle : k ≤ k') : IsRestrictedMatch M k' i j w := by
   induction h with
   | direct i' j' x hx => exact direct i' j' x hx
