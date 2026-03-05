@@ -276,8 +276,6 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
 
 variable (G α)
 
--- adding `@[implicit_reducible]` causes downstream breakage
-set_option warn.classDefReducibility false in
 /-- The relation 'in the same orbit'. -/
 @[to_additive /-- The relation 'in the same orbit'. -/]
 def orbitRel : Setoid α where
