@@ -396,7 +396,7 @@ theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf :
         exact (hf' _ he').ne
       · rw [notMem_support_iff.1 he']
         exact hb.pos
-    rw [eval_single_add' _ hf', coeff_opow_mul_add hb hx, IH IH']
+    rw [eval_single_add' _ hf', coeff_opow_mul_add, IH IH']
     · apply (hf e).trans_eq'
       rw [add_apply, single_eq_same, notMem_support_iff.1, add_zero]
       exact fun h ↦ (hf' _ h).false
