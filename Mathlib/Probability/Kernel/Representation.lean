@@ -36,7 +36,6 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq`:
   for a probability measure `μ` on a standard Borel space `β`,
   there exists a measurable function `f : I → β` such that `volume.map f = μ`.
-  This is a consequence of `ProbabilityTheory.Kernel.unitInterval_representation`.
 -/
 
 @[expose] public section
@@ -80,12 +79,10 @@ lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKerne
     have hκ := κ.measurable_coe (s := Icc 0 ⟨b, bI⟩) measurableSet_Icc
     fun_prop
   refine ⟨f, measurable_f, fun a ↦ (volume.map (f a)).ext_of_Iic (κ a) fun x ↦ ?_⟩
-  rw [volume.map_apply measurable_f.of_uncurry_left measurableSet_Iic, preimage]
-  simp only [mem_Iic]
   have Iic_to_Icc : Iic x = Icc 0 x := by ext; simp
-  rw [Iic_to_Icc, ← ofReal_measureReal (measure_ne_top (κ a) _)]
   have κ_in_I : ((κ a).real (Icc 0 x)) ∈ I := ⟨measureReal_nonneg, measureReal_le_one⟩
-  rw [← volume_Iic ⟨_, κ_in_I⟩]
+  simp_rw [volume.map_apply measurable_f.of_uncurry_left measurableSet_Iic, preimage,
+    mem_Iic, Iic_to_Icc, ← ofReal_measureReal (measure_ne_top (κ a) _), ← volume_Iic ⟨_, κ_in_I⟩]
   congr with ξ
   constructor
   swap
