@@ -814,12 +814,12 @@ variable [FiniteDimensional ℝ E] in
 variable (Y) in
 lemma aux (h : cov.IsLeviCivitaConnection) {x : M}
     (hX : MDiffAt (T% X) x) (hZ : MDiffAt (T% Z) x) : rhs_aux I X Y Z x =
-    ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ Z, X⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
-  trans ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x
+    ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ X, Z⟫ x + ⟪Y, VectorField.mlieBracket I X Z⟫ x := by
+  trans ⟪∇ Y, X, Z⟫ x + ⟪Y, ∇ Z, X⟫ x
   · -- TODO: is something wrong,
     -- or do we just need to thread through more differentiability assumptions?
-    apply cov.IsCompatible_apply I h.1 sorry hZ
-  · sorry -- simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
+    sorry--apply cov.IsCompatible_apply I h.1 sorry hZ
+  · simp [← cov.isTorsionFree_iff.mp h.2 hX hZ, product, inner_sub_right]
 
 variable {cov} in
 /-- Auxiliary lemma towards the uniquness of the Levi-Civita connection: expressing the term
@@ -827,7 +827,7 @@ variable {cov} in
 lemma IsLeviCivitaConnection.eq_leviCivitaRhs [FiniteDimensional ℝ E]
     (h : cov.IsLeviCivitaConnection)
     {x : M} (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
-    ⟪∇ X, Y, Z⟫ x = leviCivitaRhs I X Y Z x := by
+    ⟪∇ Y, X, Z⟫ x = leviCivitaRhs I X Y Z x := by
   unfold leviCivitaRhs leviCivitaRhs'
   have eq1 := aux I Y cov h hX hZ
   have eq2 := aux I Z cov h hY hX
@@ -866,8 +866,7 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
     {X Y : Π x : M, TangentSpace I x} {x : M}
     (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) :
-    -- almost, only agree on smooth functions
-    cov X x (Y x) = cov' X x (Y x) := by
+    cov Y x (X x) = cov' Y x (X x) := by
   have : FiniteDimensional ℝ (TangentSpace I x) := inferInstanceAs (FiniteDimensional ℝ E)
   have : CompleteSpace (TangentSpace I x) := FiniteDimensional.complete ℝ _
   set Φ := InnerProductSpace.toDual ℝ (TangentSpace I x)
@@ -875,7 +874,7 @@ theorem IsLeviCivitaConnection.uniqueness [FiniteDimensional ℝ E]
   ext Z₀
   let Z := _root_.extend I E Z₀
   have hZ := mdifferentiableAt_extend I E Z₀ x
-  suffices inner ℝ (cov X x (Y x)) (Z x) = inner ℝ (cov' X x (Y x)) (Z x) by simpa [Φ, Z]
+  suffices inner ℝ (cov Y x (X x)) (Z x) = inner ℝ (cov' Y x (X x)) (Z x) by simpa [Φ, Z]
   trans leviCivitaRhs I X Y Z x
   · rw [← hcov.eq_leviCivitaRhs I hX hY hZ]
   · rw [← hcov'.eq_leviCivitaRhs I hX hY hZ]
