@@ -294,7 +294,7 @@ protected lemma memAddSubgroup [AddGroup Y] (D : locallyFinsuppWithin U Y) :
 Assign a function with locally finite support within `U` to a function in the subgroup.
 -/
 @[simps]
-def mk_of_mem [AddMonoid Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
+def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
 instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
