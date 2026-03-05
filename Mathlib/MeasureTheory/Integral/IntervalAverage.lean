@@ -49,7 +49,6 @@ notation3 "⨍ "(...)" in "a".."b",
 theorem interval_average_symm (f : ℝ → E) (a b : ℝ) : (⨍ x in a..b, f x) = ⨍ x in b..a, f x := by
   rw [setAverage_eq, setAverage_eq, uIoc_comm]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
     (⨍ x in a..b, f x) = (b - a)⁻¹ • ∫ x in a..b, f x := by
   rcases le_or_gt a b with h | h

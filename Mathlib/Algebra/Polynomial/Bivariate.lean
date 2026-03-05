@@ -129,11 +129,12 @@ lemma evalEval_prod {ι : Type*} (s : Finset ι) (x y : R) (p : ι → R[X][Y]) 
 
 lemma evalEval_list_prod (x y : R) (l : List R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
-  simpa only [evalEval, eval_list_prod, List.map_map] using by rfl
+  simp only [evalEval, eval_list_prod, List.map_map]
+  rfl -- todo: add the missing lemma
 
 lemma evalEval_multiset_prod (x y : R) (l : Multiset R[X][Y]) :
     l.prod.evalEval x y = (l.map <| evalEval x y).prod := by
-  simpa only [evalEval, eval_multiset_prod, Multiset.map_map] using by rfl
+  simp [evalEval, eval_multiset_prod, Multiset.map_map]
 
 @[simp]
 lemma evalEval_pow (x y : R) (p : R[X][Y]) (n : ℕ) : (p ^ n).evalEval x y = p.evalEval x y ^ n := by

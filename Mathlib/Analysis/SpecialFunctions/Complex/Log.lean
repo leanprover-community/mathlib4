@@ -59,7 +59,6 @@ theorem log_exp_eq_re_add_toIocMod (x : ℂ) :
     log (exp x) = x.re + (toIocMod Real.two_pi_pos (-π) x.im) * I := by
   rw [log, norm_exp, Real.log_exp, arg_exp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem log_exp_eq_sub_toIocDiv (x : ℂ) :
     log (exp x) = x - (toIocDiv Real.two_pi_pos (-π) x.im) * (2 * π * I) := by
   rw [log_exp_eq_re_add_toIocMod, toIocMod, ofReal_sub, sub_mul, ← add_sub_assoc]
@@ -139,7 +138,6 @@ theorem log_inv (x : ℂ) (hx : x.arg ≠ π) : log x⁻¹ = -log x := by rw [lo
 
 theorem two_pi_I_ne_zero : (2 * π * I : ℂ) ≠ 0 := by simp [Real.pi_ne_zero, I_ne_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exp_eq_one_iff {x : ℂ} : exp x = 1 ↔ ∃ n : ℤ, x = n * (2 * π * I) := by
   constructor
   · intro h
@@ -156,6 +154,11 @@ theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y
 
 theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
   simp only [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
+
+@[grind .] lemma re_eq_re_of_cexp_eq_cexp {x y : ℂ} (h : cexp x = cexp y) :
+    x.re = y.re := by
+  obtain ⟨n, hn⟩ := exp_eq_exp_iff_exists_int.1 h
+  simp [hn]
 
 theorem log_exp_exists (z : ℂ) :
     ∃ n : ℤ, log (exp z) = z + n * (2 * π * I) := by

@@ -26,6 +26,13 @@ if all monomials occurring in `φ` have degree `n`.
   their summand that is homogeneous of degree `n`.
 * `sum_homogeneousComponent`: every polynomial is the sum of its homogeneous components.
 
+## Library notes
+
+* The `MvPolynomial.weightedGradedAlgebra` instance provides a `GradedAlgebra` structure, yielding
+  the isomorphism `MvPolynomial σ R ≃ₐ[R] ⨁ m, weightedHomogeneousSubmodule R w m` for a weight
+  function `w`.
+* The special case with `w = 1` of the above yields the algebra isomorphism
+  `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`.
 -/
 
 @[expose] public section
@@ -34,11 +41,6 @@ if all monomials occurring in `φ` have degree `n`.
 namespace MvPolynomial
 
 variable {σ : Type*} {τ : Type*} {R : Type*} {S : Type*}
-
-/-
-TODO
-* show that `MvPolynomial σ R ≃ₐ[R] ⨁ i, homogeneousSubmodule σ R i`
--/
 
 open Finsupp
 
@@ -309,6 +311,10 @@ theorem totalDegree (hφ : IsHomogeneous φ n) (h : φ ≠ 0) : totalDegree φ =
   simp only [weight_apply, Pi.one_apply, smul_eq_mul, mul_one]
   -- Porting note: Original proof did not define `f`
   exact Finset.le_sup (f := fun s ↦ ∑ x ∈ s.support, s x) hd
+
+lemma degree_eq_sum_deg_support (hφ : φ.IsHomogeneous n) {s : σ →₀ ℕ} (hs : s ∈ φ.support) :
+    n = ∑ i ∈ s.support, s i := by
+  simp [← hφ <| mem_support_iff.mp hs, ← degree_apply, degree_eq_weight_one, Pi.one_def]
 
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by

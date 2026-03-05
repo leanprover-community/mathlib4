@@ -120,10 +120,10 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
   map_mul' x y := Subtype.ext <| funext (fun v ↦
-    UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) y)
+    UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) _)
   map_zero' := rfl
   map_add' x y := Subtype.ext <| funext (fun v ↦
-    UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
+    UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) _)
 
 @[simp] theorem algebraMap_apply (k : K) (v : HeightOneSpectrum R) :
     FiniteAdeleRing.algebraMap R K k v = k := rfl

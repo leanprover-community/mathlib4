@@ -27,7 +27,6 @@ local notation "absR" => @abs ℝ _ _
 
 open Topology RCLike Real Filter InnerProductSpace
 
-set_option backward.isDefEq.respectTransparency false in
 /-- **Existence of minimizers**, aka the **Hilbert projection theorem**.
 
 Let `u` be a point in a real inner product space, and let `K` be a nonempty complete convex subset.

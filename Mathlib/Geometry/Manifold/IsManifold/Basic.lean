@@ -845,13 +845,10 @@ class _root_.ENat.LEInfty (m : WithTop ℕ∞) where
 
 open ENat
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ∞) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : WithTop ℕ∞) :=
   inferInstanceAs (LEInfty (n : WithTop ℕ∞))
 
@@ -863,7 +860,6 @@ instance {a : WithTop ℕ∞} [IsManifold I ∞ M] [h : LEInfty a] :
     IsManifold I a M :=
   IsManifold.of_le h.out
 
-set_option backward.isDefEq.respectTransparency false in
 instance {a : WithTop ℕ∞} [IsManifold I ω M] :
     IsManifold I a M :=
   IsManifold.of_le le_top
@@ -879,7 +875,6 @@ instance [IsManifold I 2 M] :
     IsManifold I 1 M :=
   IsManifold.of_le one_le_two
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsManifold I 3 M] : IsManifold I 2 M := IsManifold.of_le (n := 3) (by norm_cast)
 
 variable (I n M) in

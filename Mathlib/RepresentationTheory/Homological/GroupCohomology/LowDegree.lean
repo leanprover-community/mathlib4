@@ -112,7 +112,6 @@ theorem d₀₁_ker_eq_invariants : LinearMap.ker (d₀₁ A).hom = invariants A
   rw [d₀₁_hom_apply, isTrivial_apply, sub_self]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma subtype_comp_d₀₁ : ModuleCat.ofHom (A.ρ.invariants.subtype) ≫ d₀₁ A = 0 := by
   ext ⟨x, hx⟩ g
@@ -757,7 +756,6 @@ def dArrowIso₀₁ :
     Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅ Arrow.mk (d₀₁ A) :=
   Arrow.isoMk (cochainsIso₀ A) (cochainsIso₁ A) (comp_d₀₁_eq A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
 def cocyclesIso₀ : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
@@ -799,7 +797,6 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
     isoMk (cochainsIso₀ A) (cochainsIso₁ A) (cochainsIso₂ A)
       (comp_d₀₁_eq A) (comp_d₁₂_eq A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₁ A`, which is a simpler type. -/
 def isoCocycles₁ : cocycles A 1 ≅ ModuleCat.of k (cocycles₁ A) :=
@@ -849,7 +846,6 @@ def isoShortComplexH2 :
     isoMk (cochainsIso₁ A) (cochainsIso₂ A) (cochainsIso₃ A)
       (comp_d₁₂_eq A) (comp_d₂₃_eq A)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `cocycles₂ A`, which is a simpler type. -/
 def isoCocycles₂ : cocycles A 2 ≅ ModuleCat.of k (cocycles₂ A) :=
@@ -897,7 +893,6 @@ section H0
 defined as the 0th cohomology of the complex of inhomogeneous cochains of `A`. -/
 abbrev H0 := groupCohomology A 0
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
 def H0Iso : H0 A ≅ ModuleCat.of k A.ρ.invariants :=
@@ -945,7 +940,6 @@ section H1
 defined as the 1st cohomology of the complex of inhomogeneous cochains of `A`. -/
 abbrev H1 := groupCohomology A 1
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient map from the 1-cocycles of `A`, as a submodule of `G → A`, to `H¹(G, A)`. -/
 def H1π : ModuleCat.of k (cocycles₁ A) ⟶ H1 A :=
   (isoCocycles₁ A).inv ≫ π A 1
@@ -966,7 +960,6 @@ lemma H1π_eq_zero_iff (x : cocycles₁ A) : H1π A x = 0 ↔ ⇑x ∈ coboundar
     ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₁, shortComplexH1, cocycles₁]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma H1π_eq_iff (x y : cocycles₁ A) :
     H1π A x = H1π A y ↔ ⇑x - ⇑y ∈ coboundaries₁ A := by
   rw [← sub_eq_zero, ← map_sub, H1π_eq_zero_iff]
@@ -1028,7 +1021,6 @@ section H2
 defined as the 2nd cohomology of the complex of inhomogeneous cochains of `A`. -/
 abbrev H2 := groupCohomology A 2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The quotient map from the 2-cocycles of `A`, as a submodule of `G × G → A`, to `H²(G, A)`. -/
 def H2π : ModuleCat.of k (cocycles₂ A) ⟶ H2 A :=
   (isoCocycles₂ A).inv ≫ π A 2
@@ -1049,7 +1041,6 @@ lemma H2π_eq_zero_iff (x : cocycles₂ A) : H2π A x = 0 ↔ ⇑x ∈ coboundar
     ((ModuleCat.mono_iff_injective <| _).1 inferInstance)]
   simp [LinearMap.range_codRestrict, coboundaries₂, shortComplexH2, cocycles₂]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma H2π_eq_iff (x y : cocycles₂ A) :
     H2π A x = H2π A y ↔ ⇑x - ⇑y ∈ coboundaries₂ A := by
   rw [← sub_eq_zero, ← map_sub, H2π_eq_zero_iff]
