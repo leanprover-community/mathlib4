@@ -15,7 +15,7 @@ public import Mathlib.Order.WithBotTop
 
 This file prepares for the construction of the spectral sequence
 of a spectral object in an abelian category which shall be conducted
-in the file `Mathlib/Algebra/Homology/SpectralObject/SpectralSequence.lean`.
+in the file `Mathlib/Algebra/Homology/SpectralObject/SpectralSequence.lean` (TODO).
 
 In this file, we introduce a structure `SpectralSequenceDataCore` which
 contains a recipe for the construction of the pages of the spectral sequence.
