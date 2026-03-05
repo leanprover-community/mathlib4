@@ -543,4 +543,3 @@ lemma irrelevant_le {P : HomogeneousIdeal 𝒜} :
 end HomogeneousIdeal
 
 end IrrelevantIdeal
-#lint

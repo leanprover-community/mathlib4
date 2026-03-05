@@ -172,15 +172,41 @@ theorem Submodule.smul_homogeneous_element_mem_of_mem (r : A) (x : M)
     coe_of_apply]
   aesop
 
+-- MOVE
+@[simp] theorem decompose_finsuppSum {ι M σ : Type*} [DecidableEq ι]
+    [AddCommMonoid M] [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ) [Decomposition ℳ]
+    {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → M) :
+    decompose ℳ (s.sum f) = s.sum fun r x ↦ decompose ℳ (f r x) :=
+  map_finsuppSum (decomposeAddEquiv ℳ) ..
+
+-- MOVE
+@[simp] theorem DirectSum.sum_apply {ι κ : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    {f : κ → ⨁ i, M i} {s : Finset κ} {j : ι} : (∑ i ∈ s, f i) j = ∑ i ∈ s, f i j :=
+  DFinsupp.finset_sum_apply ..
+
+-- MOVE
+@[simp] theorem DirectSum.finsuppSum_apply {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
+    {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → ⨁ i, M i) {j : ι} :
+    (s.sum f) j = s.sum fun r x ↦ f r x j :=
+  DFinsupp.finset_sum_apply ..
+
+-- MOVE
+@[to_additive (attr := simp)] theorem SubmonoidClass.coe_finsuppProd {B M : Type*}
+    [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
+    {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → S) :
+    (↑(s.prod f) : M) = s.prod fun r x ↦ (f r x : M) :=
+  map_finsuppProd (SubmonoidClass.subtype S) ..
+
 include 𝒜 in
 theorem Submodule.homogeneous_span (s : Set M) (h : ∀ x ∈ s, IsHomogeneousElem ℳ x) :
     (Submodule.span A s).IsHomogeneous ℳ := by
   rintro i r hr
   rw [mem_span_set] at hr
   obtain ⟨c, hc, rfl⟩ := hr
-  rw [Finsupp.sum, decompose_sum, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
-  exact Submodule.sum_mem _ fun z hz1 ↦ Submodule.smul_homogeneous_element_mem_of_mem 𝒜 ℳ _ _ _
-    (h _ (hc hz1)) (Submodule.subset_span (hc hz1)) _
+  rw [decompose_finsuppSum, finsuppSum_apply, AddSubmonoidClass.coe_finsuppSum]
+  exact Submodule.finsuppSum_mem _ _ _ _ fun r hr0 ↦
+    Submodule.smul_homogeneous_element_mem_of_mem 𝒜 ℳ _ _ _
+      (h _ (hc <| by simpa)) (Submodule.subset_span (hc <| by simpa)) _
 
 /-- For any `p : Submodule A M`, not necessarily homogeneous, `p.homogeneousCore' ℳ`
 is the largest homogeneous `A`-submodule contained in `p`. -/
@@ -332,8 +358,7 @@ variable [DecidableEq ιA] [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σ
 variable [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
 variable [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
 
-instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) :=
-  SetLike.instPartialOrder
+instance : PartialOrder (HomogeneousSubmodule 𝒜 ℳ) := .ofSetLike ..
 
 instance : Top (HomogeneousSubmodule 𝒜 ℳ) :=
   ⟨⟨⊤, Submodule.IsHomogeneous.top ℳ⟩⟩
@@ -425,8 +450,8 @@ theorem eq_bot_iff (I : HomogeneousSubmodule 𝒜 ℳ) : I = ⊥ ↔ I.toSubmodu
   (toSubmodule_injective 𝒜 ℳ).eq_iff.symm
 
 instance completeLattice : CompleteLattice (HomogeneousSubmodule 𝒜 ℳ) :=
-  (toSubmodule_injective 𝒜 ℳ).completeLattice _ toSubmodule_sup toSubmodule_inf toSubmodule_sSup
-    toSubmodule_sInf toSubmodule_top toSubmodule_bot
+  (toSubmodule_injective 𝒜 ℳ).completeLattice _ Iff.rfl Iff.rfl toSubmodule_sup toSubmodule_inf
+    toSubmodule_sSup toSubmodule_sInf toSubmodule_top toSubmodule_bot
 
 instance : Add (HomogeneousSubmodule 𝒜 ℳ) := ⟨(· ⊔ ·)⟩
 
