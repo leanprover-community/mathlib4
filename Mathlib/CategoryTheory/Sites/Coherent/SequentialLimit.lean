@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Functor.OfSequence
-import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
-import Mathlib.CategoryTheory.Sites.EpiMono
-import Mathlib.CategoryTheory.Sites.Subcanonical
+module
+
+public import Mathlib.CategoryTheory.Functor.OfSequence
+public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.CategoryTheory.Sites.Subcanonical
 /-!
 
 # Limits of epimorphisms in coherent topoi
@@ -25,6 +27,8 @@ This is deduced from the corresponding statement about locally surjective morphi
 (see `coherentTopology.isLocallySurjective_π_app_zero_of_isLocallySurjective_map`).
 -/
 
+public section
+
 universe w v u
 
 open CategoryTheory Limits Opposite
@@ -32,8 +36,6 @@ open CategoryTheory Limits Opposite
 namespace CategoryTheory.coherentTopology
 
 variable {C : Type u} [Category.{v} C] [Preregular C] [FinitaryExtensive C]
-
-attribute [local instance] Types.instFunLike Types.instConcreteCategory
 variable {F : ℕᵒᵖ ⥤ Sheaf (coherentTopology C) (Type v)} {c : Cone F}
     (hc : IsLimit c)
     (hF : ∀ n, Sheaf.IsLocallySurjective (F.map (homOfLE (Nat.le_succ n)).op))
@@ -73,6 +75,7 @@ private noncomputable def preimageDiagram (X : C) (y : (F.obj ⟨0⟩).val.obj �
 
 variable [HasLimitsOfShape ℕᵒᵖ C]
 
+set_option backward.isDefEq.respectTransparency false in
 private noncomputable def cone (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : Cone F where
   pt := ((coherentTopology C).yoneda).obj (limit (preimageDiagram hF X y))
   π := NatTrans.ofOpSequence
@@ -89,6 +92,7 @@ private noncomputable def cone (X : C) (y : (F.obj ⟨0⟩).val.obj ⟨X⟩) : C
 variable (h : ∀ (G : ℕᵒᵖ ⥤ C),
   (∀ n, EffectiveEpi (G.map (homOfLE (Nat.le_succ n)).op)) → EffectiveEpi (limit.π G ⟨0⟩))
 
+set_option backward.isDefEq.respectTransparency false in
 include hF h hc in
 lemma isLocallySurjective_π_app_zero_of_isLocallySurjective_map :
     Sheaf.IsLocallySurjective (c.π.app ⟨0⟩) := by

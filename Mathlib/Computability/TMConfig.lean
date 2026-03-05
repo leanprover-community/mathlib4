@@ -3,9 +3,10 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Halting
-import Mathlib.Computability.PostTuringMachine
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Computability.Halting
+public import Mathlib.Computability.PostTuringMachine
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -21,6 +22,8 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
   `List ℕ →. List ℕ`.
   * `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
 -/
+
+@[expose] public section
 
 open List (Vector)
 
@@ -255,9 +258,12 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
     obtain ⟨cl, hl⟩ := IH fun i => hg i.succ
     exact
       ⟨cons cg cl, fun v => by
-        simp [Vector.mOfFn, hg₁, map_bind, hl]
+        simp [Vector.mOfFn, hg₁, hl]
         rfl⟩
 
+set_option backward.isDefEq.respectTransparency false in
+-- TODO: fix non-terminal simp (operates on two goals, with long simp sets)
+set_option linter.flexible false in
 theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
     ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
@@ -299,8 +305,8 @@ theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
                 else Sum.inr
                   (v.headI.succ :: v.tail.headI.pred :: x.headI :: v.tail.tail.tail))))
             (a :: b :: Nat.rec (f v.tail) (fun y IH => g (y ::ᵥ IH ::ᵥ v.tail)) a :: v.val.tail) by
-        erw [Part.eq_some_iff.2 (this 0 n (zero_add n))]
-        simp only [List.headI, Part.bind_some, List.tail_cons]
+        have := Part.eq_some_iff.mpr (this _ _ (zero_add _))
+        simp_all
       intro a b e
       induction b generalizing a with
       | zero =>
@@ -557,6 +563,8 @@ theorem stepRet_then {k k' : Cont} {v} : stepRet (k.then k') v = (stepRet k v).t
       rfl
   | _ => simp only [Cfg.then]
 
+open StateTransition
+
 /-- This is a temporary definition, because we will prove in `code_is_ok` that it always holds.
 It asserts that `c` is semantically correct; that is, for any `k` and `v`,
 `eval (stepNormal c k v) = eval (Cfg.ret k (Code.eval c v))`, as an equality of partial values
@@ -565,11 +573,11 @@ It asserts that `c` is semantically correct; that is, for any `k` and `v`,
 In particular, we can let `k = Cont.halt`, and then this asserts that `stepNormal c Cont.halt v`
 evaluates to `Cfg.halt (Code.eval c v)`. -/
 def Code.Ok (c : Code) :=
-  ∀ k v, Turing.eval step (stepNormal c k v) =
-    Code.eval c v >>= fun v => Turing.eval step (Cfg.ret k v)
+  ∀ k v, StateTransition.eval step (stepNormal c k v) =
+    Code.eval c v >>= fun v => StateTransition.eval step (Cfg.ret k v)
 
 theorem Code.Ok.zero {c} (h : Code.Ok c) {v} :
-    Turing.eval step (stepNormal c Cont.halt v) = Cfg.halt <$> Code.eval c v := by
+    StateTransition.eval step (stepNormal c Cont.halt v) = Cfg.halt <$> Code.eval c v := by
   rw [h, ← bind_pure_comp]; congr; funext v
   exact Part.eq_some_iff.2 (mem_eval.2 ⟨ReflTransGen.single rfl, rfl⟩)
 
@@ -585,8 +593,8 @@ theorem stepNormal.is_ret (c k v) : ∃ k' v', stepNormal c k v = Cfg.ret k' v' 
   | _ => exact ⟨_, _, rfl⟩
 
 theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
-    Turing.eval step (stepNormal f (Cont.fix f k) v) =
-      f.fix.eval v >>= fun v => Turing.eval step (Cfg.ret k v) := by
+    eval step (stepNormal f (Cont.fix f k) v) =
+      f.fix.eval v >>= fun v => eval step (Cfg.ret k v) := by
   refine Part.ext fun x => ?_
   simp only [Part.bind_eq_bind, Part.mem_bind_iff]
   constructor

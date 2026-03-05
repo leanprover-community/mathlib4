@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.FieldTheory.KrullTopology
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
+module
+
+public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.Topology.Algebra.Group.TopologicalAbelianization
 
 /-!
 # The topological abelianization of the absolute Galois group.
@@ -28,6 +30,8 @@ field, algebraic closure, galois group, abelianization
 
 -/
 
+@[expose] public section
+
 namespace Field
 
 variable (K : Type*) [Field K]
@@ -47,10 +51,12 @@ noncomputable instance : TopologicalSpace (G_K K) := krullTopology K (AlgebraicC
 
 /-! ### The topological abelianization of the absolute Galois group -/
 
+set_option backward.isDefEq.respectTransparency false in
 instance absoluteGaloisGroup.commutator_closure_isNormal :
     (commutator (G_K K)).topologicalClosure.Normal :=
   Subgroup.is_normal_topologicalClosure (commutator (G_K K))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The topological abelianization of `absoluteGaloisGroup`, that is, the quotient of
   `absoluteGaloisGroup` by the topological closure of its commutator subgroup. -/
 abbrev absoluteGaloisGroupAbelianization := TopologicalAbelianization (G_K K)

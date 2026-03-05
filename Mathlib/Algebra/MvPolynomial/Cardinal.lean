@@ -3,9 +3,11 @@ Copyright (c) 2021 Chris Hughes, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.SetTheory.Cardinal.Finsupp
+module
+
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Cardinality of Multivariate Polynomial Ring
@@ -14,6 +16,8 @@ The main result in this file is `MvPolynomial.cardinalMk_le_max`, which says tha
 the cardinality of `MvPolynomial σ R` is bounded above by the maximum of `#R`, `#σ`
 and `ℵ₀`.
 -/
+
+public section
 
 
 universe u v

@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Rat.Init
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Common
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Rat.Init
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Basics for the Rational Numbers
@@ -27,6 +29,8 @@ once the `Field` class has been defined.
 - `/.` is infix notation for `Rat.divInt`.
 
 -/
+
+@[expose] public section
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid
@@ -49,10 +53,16 @@ lemma intCast_injective : Injective (Int.cast : ℤ → ℚ) := fun _ _ ↦ cong
 lemma natCast_injective : Injective (Nat.cast : ℕ → ℚ) :=
   intCast_injective.comp fun _ _ ↦ Int.natCast_inj.1
 
-@[simp high, norm_cast] lemma intCast_eq_zero {n : ℤ} : (n : ℚ) = 0 ↔ n = 0 := intCast_inj
-@[simp high, norm_cast] lemma natCast_eq_zero {n : ℕ} : (n : ℚ) = 0 ↔ n = 0 := natCast_inj
-@[simp high, norm_cast] lemma intCast_eq_one {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
-@[simp high, norm_cast] lemma natCast_eq_one {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
+@[deprecated (since := "2025-10-24")] alias intCast_eq_zero := intCast_eq_zero_iff
+@[deprecated (since := "2025-10-24")] alias natCast_eq_zero := natCast_eq_zero_iff
+
+@[simp high, norm_cast] lemma intCast_eq_one_iff {n : ℤ} : (n : ℚ) = 1 ↔ n = 1 := intCast_inj
+
+@[deprecated (since := "2025-10-24")] alias intCast_eq_one := intCast_eq_one_iff
+
+@[simp high, norm_cast] lemma natCast_eq_one_iff {n : ℕ} : (n : ℚ) = 1 ↔ n = 1 := natCast_inj
+
+@[deprecated (since := "2025-10-24")] alias natCast_eq_one := natCast_eq_one_iff
 
 lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 
@@ -72,7 +82,7 @@ theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
 -- TODO: Rename `mkRat_num_den` in Lean core
 alias mkRat_num_den' := mkRat_self
 
-theorem intCast_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := mk'_eq_divInt
+theorem intCast_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := mk_eq_divInt
 
 theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → ℤ → ℤ) (f₂ : ℤ → ℤ → ℤ → ℤ → ℤ)
     (fv :
@@ -84,17 +94,13 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
       ∀ {n₁ d₁ n₂ d₂}, a * d₁ = n₁ * b → c * d₂ = n₂ * d →
         f₁ n₁ d₁ n₂ d₂ * f₂ a b c d = f₁ a b c d * f₂ n₁ d₁ n₂ d₂) :
     f (a /. b) (c /. d) = f₁ a b c d /. f₂ a b c d := by
-  generalize ha : a /. b = x; obtain ⟨n₁, d₁, h₁, c₁⟩ := x; rw [mk'_eq_divInt] at ha
-  generalize hc : c /. d = x; obtain ⟨n₂, d₂, h₂, c₂⟩ := x; rw [mk'_eq_divInt] at hc
+  generalize ha : a /. b = x; obtain ⟨n₁, d₁, h₁, c₁⟩ := x; rw [mk_eq_divInt] at ha
+  generalize hc : c /. d = x; obtain ⟨n₂, d₂, h₂, c₂⟩ := x; rw [mk_eq_divInt] at hc
   rw [fv]
   have d₁0 := Int.ofNat_ne_zero.2 h₁
   have d₂0 := Int.ofNat_ne_zero.2 h₂
   exact (divInt_eq_divInt_iff (f0 d₁0 d₂0) (f0 b0 d0)).2
     (H ((divInt_eq_divInt_iff b0 d₁0).1 ha) ((divInt_eq_divInt_iff d0 d₂0).1 hc))
-
-attribute [simp] divInt_add_divInt
-
-attribute [simp] neg_divInt
 
 lemma neg_def (q : ℚ) : -q = -q.num /. q.den := by rw [← neg_divInt, num_divInt_den]
 
@@ -142,7 +148,7 @@ variable (a b c : ℚ)
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, Rat.intCast_one]
 
 protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
-  rw [ne_comm, ← divInt_one_one, divInt_ne_zero] <;> omega
+  rw [ne_comm, ← divInt_one_one, divInt_ne_zero] <;> lia
 
 attribute [simp] mkRat_eq_zero
 
@@ -153,9 +159,6 @@ instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide�
 /-! ### The rational numbers are a group -/
 
 instance addCommGroup : AddCommGroup ℚ where
-  zero := 0
-  add := (· + ·)
-  neg := Neg.neg
   zero_add := Rat.zero_add
   add_zero := Rat.add_zero
   add_comm := Rat.add_comm
@@ -188,8 +191,6 @@ instance addCommSemigroup : AddCommSemigroup ℚ := by infer_instance
 instance addSemigroup : AddSemigroup ℚ := by infer_instance
 
 instance commMonoid : CommMonoid ℚ where
-  one := 1
-  mul := (· * ·)
   mul_one := Rat.mul_one
   one_mul := Rat.one_mul
   mul_comm := Rat.mul_comm
@@ -203,14 +204,6 @@ instance monoid : Monoid ℚ := by infer_instance
 instance commSemigroup : CommSemigroup ℚ := by infer_instance
 
 instance semigroup : Semigroup ℚ := by infer_instance
-
-theorem eq_iff_mul_eq_mul {p q : ℚ} : p = q ↔ p.num * q.den = q.num * p.den := by
-  conv =>
-    lhs
-    rw [← num_divInt_den p, ← num_divInt_den q]
-  apply Rat.divInt_eq_divInt_iff <;>
-    · rw [← Int.natCast_zero, Ne, Int.ofNat_inj]
-      apply den_nz
 
 @[simp]
 theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
@@ -300,6 +293,6 @@ cases r with
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def divCasesOn {C : ℚ → Sort*} (a : ℚ)
     (div : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
-  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
+  a.casesOn fun n d nz red => by rw [Rat.mk_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
 
 end Rat

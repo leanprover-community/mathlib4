@@ -12,7 +12,7 @@ Note: This linter can be disabled with `set_option linter.ppRoundtrip false`
 -/
 #guard_msgs in
 set_option linter.ppRoundtrip true in
-#eval "    a   a\n       "    |>.trim
+#eval "    a   a\n       "    |>.trimAscii.copy
 
 /--
 warning: source context

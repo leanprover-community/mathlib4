@@ -3,8 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.Analysis.SpecificLimits.Normed
+module
+
+public import Mathlib.Analysis.Normed.Group.Hom
+public import Mathlib.Analysis.SpecificLimits.Normed
 
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
@@ -13,6 +15,8 @@ Possible TODO (from the PR's review, https://github.com/leanprover-community/mat
 (`exists_preimage_norm_le`) ... wonder if it would be possible to refactor it using one of [the
 lemmas in this file]."
 -/
+
+public section
 
 
 open Filter Finset
@@ -44,7 +48,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
   have b_pos (i) : 0 < b i := by positivity
   obtain
     ⟨v : ℕ → H, lim_v : Tendsto (fun n : ℕ => ∑ k ∈ range (n + 1), v k) atTop (𝓝 h), v_in :
-      ∀ n, v n ∈ K, hv₀ : ‖v 0 - h‖ < b 0, hv : ∀ n > 0, ‖v n‖ < b n⟩ :=
+      ∀ n, v n ∈ K, hv₀ : ‖-v 0 + h‖ < b 0, hv : ∀ n > 0, ‖v n‖ < b n⟩ :=
     controlled_sum_of_mem_closure h_in b_pos
   /- The controlled surjectivity assumption on `f` allows to build preimages `u n` for all
     elements `v n` of the `v` sequence. -/
@@ -81,7 +85,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       have :=
         calc
           ‖v 0‖ ≤ ‖h‖ + ‖v 0 - h‖ := norm_le_insert' _ _
-          _ ≤ ‖h‖ + b 0 := by gcongr
+          _ ≤ ‖h‖ + b 0 := by rw [← norm_neg_add]; gcongr
       calc
         ‖u 0‖ ≤ C * ‖v 0‖ := hnorm_u 0
         _ ≤ C * (‖h‖ + b 0) := by gcongr

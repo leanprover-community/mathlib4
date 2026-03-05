@@ -3,11 +3,12 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Convex.Deriv
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+public import Mathlib.Analysis.Convex.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 /-!
 # Derivative of Γ at positive integers
@@ -17,6 +18,8 @@ We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 `deriv Real.Gamma (n + 1) = Nat.factorial n * (-Real.eulerMascheroniConstant + harmonic n)`
 
 -/
+
+public section
 
 open Nat Set Filter Topology
 
@@ -94,6 +97,7 @@ lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,
     cast_zero, zero_add] using hasDerivAt_Gamma_nat 0
 
+set_option backward.isDefEq.respectTransparency false in
 lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (1 / 2) := by
   have h_diff {s : ℝ} (hs : 0 < s) : DifferentiableAt ℝ Gamma s :=
     differentiableAt_Gamma fun m ↦ ((neg_nonpos.mpr m.cast_nonneg).trans_lt hs).ne'
@@ -120,9 +124,8 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
     · exact (differentiableAt_const _).rpow (by fun_prop) two_ne_zero
   _ = √π * (deriv (fun s ↦ Gamma (2 * s)) (1 / 2) +
               deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
-    congr 2
     rw [deriv_fun_mul]
-    · congr 1 <;> norm_num
+    · simp
     · exact h_diff' one_half_pos
     · exact DifferentiableAt.rpow (by fun_prop) (by fun_prop) two_ne_zero
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
@@ -164,9 +167,6 @@ lemma differentiableAt_Gamma_nat_add_one (n : ℕ) :
   simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity
-
-@[deprecated (since := "2025-06-06")] alias differentiable_at_Gamma_nat_add_one :=
-  differentiableAt_Gamma_nat_add_one
 
 lemma hasDerivAt_Gamma_nat (n : ℕ) :
     HasDerivAt Gamma (n ! * (-γ + harmonic n)) (n + 1) := by

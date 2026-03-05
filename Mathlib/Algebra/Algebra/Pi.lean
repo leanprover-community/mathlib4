@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Algebra.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -18,6 +20,8 @@ The R-algebra structure on `Π i : I, A i` when each `A i` is an R-algebra.
 * `Pi.evalAlgHom`
 * `Pi.constAlgHom`
 -/
+
+@[expose] public section
 
 namespace Pi
 
@@ -36,6 +40,7 @@ instance algebra : Algebra R (Π i, A i) where
   commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
   smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
 
+@[push ←]
 theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i ↦ algebraMap R (A i) a :=
   rfl
 

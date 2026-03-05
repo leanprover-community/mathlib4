@@ -3,10 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Strict
-import Mathlib.Analysis.Convex.StdSimplex
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Analysis.Convex.Strict
+public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topological properties of convex sets
@@ -20,6 +23,8 @@ We prove the following facts:
 * `Set.Finite.isCompact_convexHull` : convex hull of a finite set is compact;
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Norm
 
@@ -324,23 +329,29 @@ theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
 
 end ContinuousConstSMul
 
-section ContinuousSMul
-
-variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
-  [ContinuousSMul ℝ E]
+section Compact
+variable (𝕜 : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
 
 /-- Convex hull of a finite set is compact. -/
 theorem Set.Finite.isCompact_convexHull {s : Set E} (hs : s.Finite) :
-    IsCompact (convexHull ℝ s) := by
+    IsCompact (convexHull 𝕜 s) := by
   rw [hs.convexHull_eq_image]
-  apply (@isCompact_stdSimplex _ hs.fintype).image
-  haveI := hs.fintype
-  apply LinearMap.continuous_on_pi
+  let := hs.fintype
+  exact (isCompact_stdSimplex 𝕜 s).image (LinearMap.continuous_on_pi _)
 
 /-- Convex hull of a finite set is closed. -/
 theorem Set.Finite.isClosed_convexHull [T2Space E] {s : Set E} (hs : s.Finite) :
-    IsClosed (convexHull ℝ s) :=
-  hs.isCompact_convexHull.isClosed
+    IsClosed (convexHull 𝕜 s) :=
+  (hs.isCompact_convexHull 𝕜).isClosed
+
+end Compact
+
+section ContinuousSMul
+variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
+  [ContinuousSMul ℝ E]
 
 open AffineMap
 
@@ -385,6 +396,9 @@ section LinearOrderedField
 variable {𝕜 : Type*} [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
   [TopologicalSpace 𝕜] [OrderTopology 𝕜]
 
+open scoped Topology
+open Filter
+
 theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
     s.Nontrivial ↔ (interior s).Nonempty := by
   constructor
@@ -398,4 +412,100 @@ theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜
       exact hx.elim
     · exact h
 
+lemma Convex.Ioo_subset_of_mem_closure {s : Set 𝕜} (hs : Convex 𝕜 s) {a b : 𝕜}
+    (has : a ∈ closure s) (hbs : b ∈ closure s) :
+    Ioo a b ⊆ s := by
+  cases subsingleton_or_nontrivial s with
+  | inl hs_sub =>
+    simp only [subsingleton_coe] at hs_sub
+    simp [hs_sub.closure has hbs]
+  | inr h' =>
+    simp only [nontrivial_coe_sort] at h'
+    calc Ioo a b
+    _ = interior (Ioo a b) := interior_Ioo.symm
+    _ ⊆ interior (openSegment 𝕜 a b) := interior_mono <| Ioo_subset_openSegment
+    _ ⊆ interior (closure s) := interior_mono <| hs.closure.openSegment_subset has hbs
+    _ = interior s := hs.interior_closure_eq_interior_of_nonempty_interior <|
+      hs.nontrivial_iff_nonempty_interior.1 h'
+    _ ⊆ s := interior_subset
+
+lemma Convex.nhdsWithin_inter_Iio_eq_nhdsLT {s : Set 𝕜} (hs : Convex 𝕜 s) {a : 𝕜}
+    (has : a ∈ closure s) (h' : (s ∩ Iio a).Nonempty) :
+    𝓝[s ∩ Iio a] a = 𝓝[<] a := by
+  obtain ⟨b, hbs, hba⟩ := h'
+  refine nhdsWithin_inter_of_mem (mem_nhdsLT_iff_exists_Ioo_subset.2 ⟨b, hba, ?_⟩)
+  exact hs.Ioo_subset_of_mem_closure (subset_closure hbs) has
+
+lemma Convex.nhdsWithin_inter_Ioi_eq_nhdsGT {s : Set 𝕜} (hs : Convex 𝕜 s) {a : 𝕜}
+    (has : a ∈ closure s) (h' : (s ∩ Ioi a).Nonempty) :
+    𝓝[s ∩ Ioi a] a = 𝓝[>] a := by
+  obtain ⟨b, hbs, hba⟩ := h'
+  refine nhdsWithin_inter_of_mem (mem_nhdsGT_iff_exists_Ioo_subset.2 ⟨b, hba, ?_⟩)
+  exact hs.Ioo_subset_of_mem_closure has (subset_closure hbs)
+
+lemma Convex.nhdsWithin_diff_eq_nhdsNE {s : Set 𝕜} (hs : Convex 𝕜 s) {a : 𝕜}
+    (has : a ∈ closure s) (h_Iio : (s ∩ Iio a).Nonempty) (h_Ioi : (s ∩ Ioi a).Nonempty) :
+    𝓝[s \ {a}] a = 𝓝[≠] a := by
+  rw [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left, nhdsWithin_union, nhdsWithin_union]
+  simp [hs.nhdsWithin_inter_Ioi_eq_nhdsGT has h_Ioi, hs.nhdsWithin_inter_Iio_eq_nhdsLT has h_Iio]
+
+lemma Convex.nhdsWithin_diff_eq_nhdsLT {s : Set 𝕜} (hs : Convex 𝕜 s) {a : 𝕜}
+    (has : a ∈ closure s) (h_Iio : (s ∩ Iio a).Nonempty) (h_Ioi : s ∩ Ioi a = ∅) :
+    𝓝[s \ {a}] a = 𝓝[<] a := by
+  rw [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left, nhdsWithin_union]
+  simp [h_Ioi, hs.nhdsWithin_inter_Iio_eq_nhdsLT has h_Iio]
+
+lemma Convex.nhdsWithin_diff_eq_nhdsGT {s : Set 𝕜} (hs : Convex 𝕜 s) {a : 𝕜}
+    (has : a ∈ closure s) (h_Iio : s ∩ Iio a = ∅) (h_Ioi : (s ∩ Ioi a).Nonempty) :
+    𝓝[s \ {a}] a = 𝓝[>] a := by
+  rw [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left, nhdsWithin_union]
+  simp [h_Iio, hs.nhdsWithin_inter_Ioi_eq_nhdsGT has h_Ioi]
+
+omit [Field 𝕜] [IsStrictOrderedRing 𝕜] in
+private lemma diff_singleton_eventually_mem_nhds_left {s : Set 𝕜} {a : 𝕜}
+    (h : ∀ x ∈ closure s, Ioo x a ⊆ s) : ∀ᶠ (x : 𝕜) in 𝓝[s ∩ Iio a] a, s \ {a} ∈ 𝓝 x := by
+  rcases eq_empty_or_nonempty (s ∩ Iio a) with hs' | ⟨b, hbs, hba⟩
+  · simp [hs']
+  have : Ioo b a ⊆ s := h b (subset_closure hbs)
+  apply eventually_of_mem (U := Ioo b a) ?_ fun x hx ↦ ?_
+  · exact mem_nhdsWithin.2 ⟨Ioi b, isOpen_Ioi, hba, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+  · exact mem_nhds_iff.2 ⟨Ioo b a, subset_diff_singleton this right_notMem_Ioo, isOpen_Ioo, hx⟩
+
+theorem Convex.diff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex 𝕜 s) (a : 𝕜) :
+    ∀ᶠ x in 𝓝[s \ {a}] a, s \ {a} ∈ 𝓝 x := by
+  rcases eq_or_neBot (𝓝[s \ {a}] a) with h | has
+  · rw [h]
+    exact eventually_bot
+  replace has := closure_mono diff_subset (mem_closure_iff_nhdsWithin_neBot.2 has)
+  conv in 𝓝[s \ {a}] a => rw [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left]
+  rw [nhdsWithin_union, eventually_sup]
+  exact ⟨diff_singleton_eventually_mem_nhds_left fun x hx ↦ hs.Ioo_subset_of_mem_closure hx has,
+    diff_singleton_eventually_mem_nhds_left (𝕜 := 𝕜ᵒᵈ) fun x hx z hz ↦
+      hs.Ioo_subset_of_mem_closure has hx hz.symm⟩
+
 end LinearOrderedField
+
+namespace Affine.Simplex
+
+variable {𝕜 V P : Type*}
+  [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜]
+  [OrderClosedTopology 𝕜] [CompactIccSpace 𝕜] [ContinuousAdd 𝕜]
+  [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V]
+  [Module 𝕜 V] [ContinuousSMul 𝕜 V] [AddTorsor V P]
+  [TopologicalSpace P] [IsTopologicalAddTorsor P]
+
+/-- The closed interior of a simplex is compact. -/
+theorem isCompact_closedInterior {n : ℕ} (s : Simplex 𝕜 P n) : IsCompact s.closedInterior := by
+  suffices IsCompact ((AffineEquiv.vaddConst 𝕜 (s.points 0)).symm.toAffineMap ''
+      s.closedInterior) by
+    apply (Homeomorph.vaddConst (s.points 0)).symm.isCompact_image.mp
+    simpa
+  rw [← s.closedInterior_map (AffineEquiv.injective _), ← convexHull_eq_closedInterior]
+  exact (Set.finite_range _).isCompact_convexHull 𝕜
+
+/-- The closed interior of a simplex is a closed set. -/
+theorem isClosed_closedInterior [T2Space P] {n : ℕ} (s : Simplex 𝕜 P n) :
+    IsClosed s.closedInterior :=
+  s.isCompact_closedInterior.isClosed
+
+end Affine.Simplex

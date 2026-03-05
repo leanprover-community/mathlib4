@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # The constant functor
@@ -15,6 +17,8 @@ When `J` is nonempty, `const` is faithful.
 
 We have `(const J).obj X ⋙ F ≅ (const J).obj (F.obj X)` for any `F : C ⥤ D`.
 -/
+
+@[expose] public section
 
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation

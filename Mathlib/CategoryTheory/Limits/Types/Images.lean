@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Images
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # Images in the category of types
@@ -13,6 +15,8 @@ In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -67,6 +71,7 @@ instance : HasImage f :=
 instance : HasImages (Type u) where
   has_image := by infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : HasImageMaps (Type u) where
   has_image_map {f g} st :=
     HasImageMap.transport st (monoFactorisation f.hom) (isImage g.hom)
@@ -102,6 +107,7 @@ lemma surjective_π_app_zero_of_surjective_map_aux :
       types_comp_apply, (hF p _).choose_spec]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
 -/
