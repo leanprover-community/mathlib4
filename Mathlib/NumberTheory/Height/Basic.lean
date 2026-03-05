@@ -390,6 +390,63 @@ lemma logHeight_comp_le (f : ι → ι') (x : ι' → K) :
     logHeight (x ∘ f) ≤ logHeight x := by
   simpa [logHeight_eq_log_mulHeight] using log_le_log (mulHeight_pos _) <| mulHeight_comp_le ..
 
+open Function in
+lemma mulHeight_sumElim_zero_eq (x : ι → K) :
+    mulHeight (Sum.elim x (0 : ι' → K)) = mulHeight x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  obtain ⟨i, hi⟩ := ne_iff.mp hx
+  have : Nonempty ι := .intro i
+  have hx' : Sum.elim x (0 : ι' → K) ≠ 0 := ne_iff.mpr ⟨.inl i, by simpa using hi⟩
+  rw [mulHeight_eq hx, mulHeight_eq hx']
+  have H (v : AbsoluteValue K ℝ) :  ⨆ j, v (Sum.elim x (0 : ι' → K) j) = ⨆ i, v (x i) := by
+    refine le_antisymm ?_ <| ciSup_le fun i ↦ Finite.le_ciSup_of_le (.inl i) le_rfl
+    refine ciSup_le fun j ↦ ?_
+    cases j with
+    | inl i => exact Finite.le_ciSup_of_le i le_rfl
+    | inr _ => simpa using Real.iSup_nonneg_of_nonnegHomClass v _
+  congr <;> ext1 v
+  · exact H v
+  · exact H v.val
+
+lemma logHeight_sumElim_zero_eq (x : ι → K) :
+    logHeight (Sum.elim x (0 : ι' → K)) = logHeight x :=
+  congrArg log <| mulHeight_sumElim_zero_eq ..
+
+lemma mulHeight_eq_mulHeight_restrict_support (x : ι → K) :
+    mulHeight x = mulHeight fun i : x.support ↦ x i.val := by
+  classical
+  let e := Equiv.Set.sumCompl x.support
+  have hx : x ∘ e = Sum.elim (fun i : x.support ↦ x i.val) 0 := by
+    ext1 i
+    simp only [comp_apply]
+    cases i with
+    | inl val => simp [e]
+    | inr val => exact notMem_support.mp <| (Set.mem_compl_iff _ _ ).mp val.prop
+  rw [← mulHeight_comp_equiv e, hx]
+  exact mulHeight_sumElim_zero_eq ..
+
+lemma logHeight_eq_logHeight_restrict_support (x : ι → K) :
+    logHeight x = logHeight fun i : x.support ↦ x i.val :=
+  congrArg log <| mulHeight_eq_mulHeight_restrict_support x
+
+@[simp]
+lemma mulHeight_eq_one_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι → K) :
+    mulHeight x = 1 := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  obtain ⟨i, hi⟩ := Function.ne_iff.mp hx
+  have : Nonempty ι := .intro i
+  rw [← mulHeight_smul_eq_mulHeight x (inv_ne_zero hi)]
+  convert mulHeight_one
+  ext1 j
+  simpa [Subsingleton.elim j i] using inv_mul_cancel₀ hi
+
+@[simp]
+lemma logHeight_eq_zero_of_subsingleton {ι : Type*} [Subsingleton ι] (x : ι → K) :
+    logHeight x = 0 := by
+  simp [logHeight_eq_log_mulHeight]
+
 end Height
 
 /-!
