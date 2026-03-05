@@ -221,7 +221,6 @@ lemma natCast_le_rank_iff_finset [Nontrivial R] {n : ℕ} :
   ⟨exists_finset_linearIndependent_of_le_rank,
     fun ⟨s, h₁, h₂⟩ ↦ by simpa [h₁] using h₂.cardinal_le_rank⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma exists_finset_linearIndependent_of_le_finrank {n : ℕ} (hn : n ≤ finrank R M) :
     ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
   by_cases h : finrank R M = 0
@@ -296,7 +295,6 @@ section
 
 open Finset
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a finset has cardinality larger than the rank of a module,
 then there is a nontrivial linear relation amongst its elements. -/
 theorem Module.exists_nontrivial_relation_of_finrank_lt_card {t : Finset M}
@@ -436,7 +434,6 @@ lemma Submodule.bot_eq_top_of_rank_eq_zero (h : Module.rank R M = 0) : (⊥ : Su
   rw [rank_zero_iff] at h
   subsingleton
 
-set_option backward.isDefEq.respectTransparency false in
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
 @[simp]
 theorem Submodule.rank_eq_zero {S : Submodule R M} : Module.rank R S = 0 ↔ S = ⊥ :=

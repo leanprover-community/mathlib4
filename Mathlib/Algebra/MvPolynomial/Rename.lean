@@ -256,7 +256,6 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
     · simp only [rename_rename, rename_X, map_mul]
       rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `exists_finset_rename` for two polynomials at once: for any two polynomials `p₁`, `p₂` in a
   polynomial semiring `R[σ]` of possibly infinitely many variables, `exists_finset_rename₂` yields
   a finite subset `s` of `σ` such that both `p₁` and `p₂` are contained in the polynomial semiring
@@ -267,8 +266,8 @@ theorem exists_finset_rename₂ (p₁ p₂ : MvPolynomial σ R) :
   obtain ⟨s₂, q₂, rfl⟩ := exists_finset_rename p₂
   classical
     use s₁ ∪ s₂
-    use rename (Set.inclusion s₁.subset_union_left) q₁
-    use rename (Set.inclusion s₁.subset_union_right) q₂
+    use rename (fun x ↦ ⟨x, Finset.subset_union_left x.2⟩) q₁
+    use rename (fun x ↦ ⟨x, Finset.subset_union_right x.2⟩) q₂
     constructor <;> simp [Function.comp_def]
 
 /-- Every polynomial is a polynomial in finitely many variables. -/
@@ -292,12 +291,11 @@ section Coeff
 theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPolynomial σ R) (d : σ →₀ ℕ) :
     (rename f φ).coeff (d.mapDomain f) = φ.coeff d := by
   classical
-  apply φ.induction_on' (P := fun ψ => coeff (Finsupp.mapDomain f d) ((rename f) ψ) = coeff d ψ)
-  -- Lean could no longer infer the motive
-  · intro u r
+  induction φ using MvPolynomial.induction_on' with
+  | monomial u r =>
     rw [rename_monomial, coeff_monomial, coeff_monomial]
     simp only [(Finsupp.mapDomain_injective hf).eq_iff]
-  · intros
+  | add =>
     simp only [*, map_add, coeff_add]
 
 @[simp]

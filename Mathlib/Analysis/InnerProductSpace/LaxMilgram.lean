@@ -50,7 +50,6 @@ variable {B : V →L[ℝ] V →L[ℝ] ℝ}
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin (𝕜 := ℝ)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem bounded_below (coercive : IsCoercive B) : ∃ C, 0 < C ∧ ∀ v, C * ‖v‖ ≤ ‖B♯ v‖ := by
   rcases coercive with ⟨C, C_ge_0, coercivity⟩
   refine ⟨C, C_ge_0, ?_⟩

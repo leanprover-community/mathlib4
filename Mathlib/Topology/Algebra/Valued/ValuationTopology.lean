@@ -39,7 +39,6 @@ namespace Valuation
 
 variable (v : Valuation R Γ₀)
 
-set_option backward.isDefEq.respectTransparency false in
 lemma map_eq_one_of_forall_lt [MulArchimedean Γ₀] {v : Valuation K Γ₀} {r : Γ₀} (hr : r ≠ 0)
     (h : ∀ x : K, v x ≠ 0 → r < v x) (x : K) (hx : v x ≠ 0) : v x = 1 := by
   lift r to Γ₀ˣ using IsUnit.mk0 _ hr
@@ -144,9 +143,11 @@ theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem toUniformSpace_eq :
-    toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ :=
-  UniformSpace.ext
-    ((hasBasis_uniformity R Γ₀).eq_of_same_basis <| v.subgroups_basis.hasBasis_nhds_zero.comap _)
+    toUniformSpace = @IsTopologicalAddGroup.rightUniformSpace R _ v.subgroups_basis.topology _ := by
+  ext : 1
+  apply (hasBasis_uniformity R Γ₀).eq_of_same_basis
+  simp only [sub_eq_add_neg]
+  exact v.subgroups_basis.hasBasis_nhds_zero.comap _
 
 variable {R Γ₀}
 
