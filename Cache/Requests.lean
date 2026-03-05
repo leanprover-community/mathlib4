@@ -429,6 +429,45 @@ into the `lean-toolchain` file at the root directory of your project"
     IO.Process.exit 1
   return ()
 
+/-- Extract the `(name, rev)` pairs from a `lake-manifest.json` file. -/
+def readManifestRevs (path : FilePath) : IO (Std.HashMap String String) := do
+  let contents ← IO.FS.readFile path
+  let .ok json := Lean.Json.parse contents | return ∅
+  let .ok packages := json.getObjValAs? (Array Lean.Json) "packages" | return ∅
+  let mut result : Std.HashMap String String := ∅
+  for pkg in packages do
+    if let (.ok name, .ok rev) :=
+        (pkg.getObjValAs? String "name", pkg.getObjValAs? String "rev") then
+      result := result.insert name rev
+  return result
+
+/-- Check if the project's `lake-manifest.json` pins shared dependencies at different versions
+than mathlib's `lake-manifest.json`. Print a warning and exit if so, since the cache will compute
+wrong hashes. -/
+def checkForManifestMismatch : IO.CacheM Unit := do
+  let mathlibDepPath := (← read).mathlibDepPath
+  let downstreamManifest := "lake-manifest.json"
+  let mathlibManifest := mathlibDepPath / "lake-manifest.json"
+  if !(← mathlibManifest.pathExists) || !(← (FilePath.mk downstreamManifest).pathExists) then
+    return
+  let downstreamRevs ← readManifestRevs downstreamManifest
+  let mathlibRevs ← readManifestRevs mathlibManifest
+  let mut mismatches : Array (String × String × String) := #[]
+  for (name, mathlibRev) in mathlibRevs do
+    if let some downstreamRev := downstreamRevs[name]? then
+      if downstreamRev != mathlibRev then
+        mismatches := mismatches.push (name, downstreamRev, mathlibRev)
+  unless mismatches.isEmpty do
+    IO.println "Warning: your project pins different versions of some dependencies than Mathlib."
+    IO.println "This will cause `lake exe cache get` to compute wrong hashes.\n"
+    for (name, downstreamRev, mathlibRev) in mismatches do
+      IO.println s!"  {name}:"
+      IO.println s!"    project: {downstreamRev.take 12}"
+      IO.println s!"    mathlib: {mathlibRev.take 12}"
+    IO.println "\nRemove these dependencies from your lakefile and let them come \
+      transitively from Mathlib."
+    IO.Process.exit 1
+
 /-- Fetches the ProofWidgets cloud release and prunes non-JS files. -/
 def getProofWidgets (buildDir : FilePath) : IO Unit := do
   if (← buildDir.pathExists) then
@@ -477,7 +516,9 @@ def getFiles
     (forceDownload forceUnpack parallel decompress skipProofWidgets : Bool)
     : IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
-  unless isMathlibRoot do checkForToolchainMismatch
+  unless isMathlibRoot do
+    checkForToolchainMismatch
+    checkForManifestMismatch
   if skipProofWidgets then
     IO.println "Skipping ProofWidgets release fetch"
   else
