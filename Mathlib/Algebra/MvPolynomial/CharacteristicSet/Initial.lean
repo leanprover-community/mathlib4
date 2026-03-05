@@ -499,7 +499,7 @@ variable [NoZeroDivisors R] (i : σ) (p : MvPolynomial σ R)
   classical simp [initialOf_eq_leadingCoeff]
 
 @[simp] theorem initialOf_smul {r : R} : (r • p).initialOf i = r • p.initialOf i := by
-  rw [smul_eq_C_mul, smul_eq_C_mul, p.initialOf_C_mul i]
+  rw [smul_eq_C_mul, smul_eq_C_mul, initialOf_mul_eq, initialOf_C]
 
 @[simp] theorem initialOf_pow_eq (n : ℕ) : (p ^ n).initialOf i = p.initialOf i ^ n := by
   induction n with
