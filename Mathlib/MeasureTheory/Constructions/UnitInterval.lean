@@ -6,7 +6,6 @@ Authors: Eric Wieser, Gaëtan Serré
 module
 
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
-public import Mathlib.Analysis.Real.Cardinality
 
 /-!
 # The canonical measure on the unit interval
