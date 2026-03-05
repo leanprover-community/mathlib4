@@ -67,10 +67,10 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
 
     We define this sequence using `Nat.strongRec`, then restate it as `Dn` and `memD`.
   -/
-  set D : ℕ → ι → Set α := fun n =>
-    Nat.strongRec (fun n D' i =>
+  set D : ℕ → ι → Set α :=
+    Nat.strongRec fun n D' i ↦
       ⋃ (x : α) (hxs : ind x = i) (hb : eball x (3 * 2⁻¹ ^ n) ⊆ s i) (hlt :
-        ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), eball x (2⁻¹ ^ n)) n with hD
+        ∀ (m : ℕ) (H : m < n), ∀ (j : ι), x ∉ D' m H j), eball x (2⁻¹ ^ n) with hD
   have Dn (n i) : D n i = ⋃ (x : α) (hxs : ind x = i) (hb : eball x (3 * 2⁻¹ ^ n) ⊆ s i)
       (hlt : ∀ m < n, ∀ (j : ι), x ∉ D m j), eball x (2⁻¹ ^ n) := by
     simp only [hD]
