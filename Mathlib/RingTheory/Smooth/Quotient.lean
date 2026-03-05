@@ -25,11 +25,9 @@ open IsLocalRing
 
 universe u v
 
-variable {R : Type u} [CommRing R] {S : Type v} [CommRing S]
+variable {R : Type u} [CommRing R]
 
 section
-
-variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
 
 lemma IsBaseChange.surjective_of_surjective {M : Type*} [AddCommGroup M] [Module R M]
     {R' M' : Type*} [CommRing R'] [Algebra R R'] [AddCommGroup M'] [Module R' M']
@@ -50,9 +48,30 @@ lemma IsBaseChange.ker_of_surjective {M : Type*} [AddCommGroup M] [Module R M]
   rw [LinearMap.exact_iff.mp (rTensor_exact M exac surj), ← Submodule.map_equiv_eq_comap_symm,
     ← LinearMap.range_comp, Ideal.subtype_rTensor_range]
 
-lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat (I : Ideal R) (f : M →ₗ[R] N)
-    (surj : Function.Surjective f) [Module.Flat R N] :
-    f.ker ⊓ (I • (⊤ : Submodule R M)) = I • f.ker := by
+lemma IsBaseChange.of_ker_eq_smul_top {M : Type*} [AddCommGroup M] [Module R M] {R' M' : Type*}
+    [CommRing R'] [AddCommGroup M'] [Algebra R R'] [Module R M'] [Module R' M']
+    [IsScalarTower R R' M'] (f : M →ₗ[R] M')
+    (surjR : Function.Surjective (algebraMap R R')) (surj : Function.Surjective f)
+    (eq : f.ker = (RingHom.ker (algebraMap R R')) • (⊤ : Submodule R M)) : IsBaseChange R' f := by
+  have exac : Function.Exact (RingHom.ker (algebraMap R R')).subtype _ :=
+    (Algebra.linearMap R R').exact_subtype_ker_map
+  let f' := (((Algebra.linearMap R R').rTensor M).comp (TensorProduct.lid R M).symm.toLinearMap)
+  have eq' : f'.ker = f.ker := by
+    rw [eq, ← Ideal.subtype_rTensor_range, ← LinearMap.exact_iff, LinearEquiv.conj_exact_iff_exact]
+    exact rTensor_exact M exac surjR
+  have surj' : Function.Surjective f' :=
+    ((Algebra.linearMap R R').rTensor_surjective M surjR).comp
+    (TensorProduct.lid R M).symm.surjective
+  let e : TensorProduct R R' M ≃ₗ[R] M' :=
+    ((f'.quotKerEquivOfSurjective surj').symm.trans (Submodule.quotEquivOfEq _ _ eq')).trans
+    (f.quotKerEquivOfSurjective surj)
+  refine IsBaseChange.of_equiv (e.extendScalarsOfSurjective surjR) (fun x ↦ ?_)
+  have : f' x = 1 ⊗ₜ[R] x := by simp [f']
+  simp [e, ← this]
+
+lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] (I : Ideal R) (f : M →ₗ[R] N) (surj : Function.Surjective f)
+    [Module.Flat R N] : f.ker ⊓ (I • (⊤ : Submodule R M)) = I • f.ker := by
   refine le_antisymm (fun x hx ↦ ?_) (fun x hx ↦ ?_)
   · rcases (Submodule.ext_iff.mp (I.subtype_rTensor_range M) x).mpr hx.2 with ⟨y, hy⟩
     have inj : Function.Injective ((TensorProduct.lid R N).comp (I.subtype.rTensor N)) := by
@@ -85,7 +104,7 @@ end
 /-- For flat ring homomorphism `f : R →+* S`, `I` an ideal of `R` which is square zero,
 if `R ⧸ I →+* S ⧸ IS` is formally smooth, so do `f`. -/
 @[stacks 031L]
-lemma RingHom.FormallySmooth.of_surjective_of_isBaseChange_of_flat {S : Type v} [CommRing S]
+lemma Algebra.FormallySmooth.of_surjective_of_isPushout_of_flat {S : Type v} [CommRing S]
     [Algebra R S] {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra R' S']
     [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
     [Module.Flat R S] (surj : Function.Surjective (algebraMap R R'))
@@ -183,7 +202,7 @@ lemma RingHom.FormallySmooth.of_surjective_of_isBaseChange_of_flat {S : Type v} 
   let cottoTen' := KaehlerDifferential.kerCotangentToTensor R' P'.Ring S'
   let mapTen : TensorProduct P.Ring S Ω[P.Ring⁄R] →ₗ[P.Ring]
     TensorProduct P'.Ring S' Ω[P'.Ring⁄R'] :=
-    TensorProduct.lift ((((TensorProduct.mk P'.Ring S' Ω[P'.Ring⁄R']).restrictScalars₁₂
+    _root_.TensorProduct.lift ((((TensorProduct.mk P'.Ring S' Ω[P'.Ring⁄R']).restrictScalars₁₂
       P.Ring P.Ring).compl₂ (KaehlerDifferential.map R R' P.Ring P'.Ring)).comp
       (IsScalarTower.toAlgHom P.Ring S S').toLinearMap)
   have comm : (cottoTen'.restrictScalars P.Ring).comp mapcot = mapTen.comp cottoTen := by
@@ -198,7 +217,7 @@ lemma RingHom.FormallySmooth.of_surjective_of_isBaseChange_of_flat {S : Type v} 
   let ediff : Ω[P.Ring⁄R] ≃ₗ[P.Ring] S →₀ P.Ring := KaehlerDifferential.mvPolynomialEquiv R S
   let eTen : TensorProduct P.Ring S Ω[P.Ring⁄R] ≃ₗ[P.Ring] (S →₀ S) :=
     ((ediff.lTensor S).trans (TensorProduct.finsuppRight P.Ring P.Ring _ _ S)).trans
-    (Finsupp.mapRange.linearEquiv (TensorProduct.rid P.Ring _))
+    (Finsupp.mapRange.linearEquiv (_root_.TensorProduct.rid P.Ring _))
   let toJ'cot : (S →₀ S) →ₗ[P.Ring] J'.Cotangent :=
     ((σ.restrictScalars P.Ring).comp mapTen).comp eTen.symm.toLinearMap
   let eS : (P.Ring ⧸ J) ≃ₗ[P.Ring] S :=
