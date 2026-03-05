@@ -62,6 +62,7 @@ noncomputable instance limitMonoid :
     Monoid (Types.Small.limitCone.{v, u} (F ⋙ forget MonCat.{u})).pt :=
   inferInstanceAs <| Monoid (Shrink (F ⋙ forget MonCat.{u}).sections)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `limit.π (F ⋙ forget MonCat) j` as a `MonoidHom`. -/
 @[to_additive /-- `limit.π (F ⋙ forget AddMonCat) j` as an `AddMonoidHom`. -/]
 noncomputable def limitπMonoidHom (j : J) :
@@ -91,6 +92,7 @@ noncomputable def limitCone : Cone F :=
       naturality := fun _ _ f => MonCat.ext fun x =>
         ConcreteCategory.congr_hom ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x } }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Witness that the limit cone in `MonCat` is a limit cone.
 (Internal use only; use the limits API.)
 -/
@@ -123,7 +125,7 @@ end HasLimits
 open HasLimits
 
 /-- The category of monoids has all limits. -/
-@[to_additive (relevant_arg := _) /-- The category of additive monoids has all limits. -/]
+@[to_additive /-- The category of additive monoids has all limits. -/]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} MonCat.{u} where
   has_limits_of_shape _ _ := { }
 
@@ -142,7 +144,7 @@ noncomputable instance forget_preservesLimitsOfShape [Small.{u} J] :
 /-- The forgetful functor from monoids to types preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of types. -/
-@[to_additive (relevant_arg := _)
+@[to_additive
 /-- The forgetful functor from additive monoids to types preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of types. -/]
@@ -154,6 +156,7 @@ noncomputable instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
 noncomputable instance forget_preservesLimits : PreservesLimits (forget MonCat.{u}) :=
   MonCat.forget_preservesLimitsOfSize.{u, u}
 
+set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance forget_createsLimit :
     CreatesLimit F (forget MonCat.{u}) := by
@@ -276,8 +279,7 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommMonCat.{u} wher
   has_limit _ := inferInstance
 
 /-- The category of commutative monoids has all limits. -/
-@[to_additive (relevant_arg := _)
-/-- The category of additive commutative monoids has all limits. -/]
+@[to_additive /-- The category of additive commutative monoids has all limits. -/]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommMonCat.{u} where
   has_limits_of_shape _ _ := { }
 
@@ -288,7 +290,7 @@ instance hasLimits : HasLimits CommMonCat.{u} :=
 /-- The forgetful functor from commutative monoids to monoids preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of monoids. -/
-@[to_additive (relevant_arg := _) AddCommMonCat.forget₂AddMonPreservesLimitsOfSize
+@[to_additive AddCommMonCat.forget₂AddMonPreservesLimitsOfSize
 /-- The forgetful functor from
 additive commutative monoids to additive monoids preserves all limits.
 

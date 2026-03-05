@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Real.ENatENNReal
 public import Mathlib.Data.Set.Card
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Tactic.Bound
 
 /-!
 # Infinite sums in extended nonnegative reals
@@ -386,6 +387,7 @@ theorem hasSum_iff_tendsto_nat {f : ℕ → ℝ≥0} {r : ℝ≥0} :
   simp only [← ENNReal.coe_finset_sum]
   exact ENNReal.tendsto_coe
 
+set_option backward.isDefEq.respectTransparency false in
 theorem not_summable_iff_tendsto_nat_atTop {f : ℕ → ℝ≥0} :
     ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i ∈ Finset.range n, f i) atTop atTop := by
   constructor
@@ -583,6 +585,7 @@ end tprod
 
 variable [PseudoEMetricSpace α]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)

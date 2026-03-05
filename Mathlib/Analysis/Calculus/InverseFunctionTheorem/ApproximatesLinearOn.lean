@@ -217,7 +217,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
       dist (u n) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n) /
         (1 - (c : ℝ) * f'symm.nnnorm) * dist (f b) y := fun n ↦ by
     induction n with
-    | zero => simp [hu, le_refl]
+    | zero => simp [hu]
     | succ n IH => ?_
     rw [usucc]
     have Ign : dist (g (u n)) b ≤ f'symm.nnnorm * (1 - ((c : ℝ) * f'symm.nnnorm) ^ n.succ) /

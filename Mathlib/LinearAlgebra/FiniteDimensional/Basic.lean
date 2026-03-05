@@ -240,6 +240,8 @@ end Submodule
 
 namespace Subalgebra
 
+set_option backward.isDefEq.respectTransparency false
+
 variable {K L : Type*} [Field K] [Ring L] [Algebra K L] {F E : Subalgebra K L}
   [hfin : FiniteDimensional K E]
 
@@ -376,7 +378,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
       ker_comp_eq_of_commute_of_disjoint_ker]
     · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
     · exact s.noncommProd_commute _ _ _ fun j hj ↦
-        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by lia)
     · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
       simpa [ih, hi, Finset.sup_eq_iSup] using h
 
@@ -521,6 +523,22 @@ theorem finrank_span_singleton {v : V} (hv : v ≠ 0) : finrank K (K ∙ v) = 1 
     apply Subtype.coe_ne_coe.mp
     simp [hv]
 
+/-- A submodule over a division ring is an atom of the submodule lattice iff it has `finrank` 1. -/
+theorem Submodule.isAtom_iff_finrank_eq_one {S : Submodule K V} :
+    IsAtom S ↔ finrank K S = 1 := by
+  refine ⟨fun hS ↦ ?_, fun hS ↦ ⟨by aesop, fun T hT ↦ ?_⟩⟩
+  · obtain ⟨v : V, hv : v ∈ S, hv_ne : v ≠ 0⟩ := S.ne_bot_iff.mp hS.ne_bot
+    suffices K ∙ v = S by rw [← this, finrank_span_singleton hv_ne]
+    have : K ∙ v ≠ ⊥ := by
+      rw [Submodule.ne_bot_iff]
+      exact ⟨v, mem_span_singleton_self v, hv_ne⟩
+    rwa [← hS.le_iff_eq this, span_le, Set.singleton_subset_iff]
+  · have : FiniteDimensional K S := .of_finrank_eq_succ hS
+    have : FiniteDimensional K T := .of_injective (inclusion hT.le) (inclusion_injective hT.le)
+    rw [← finrank_eq_zero (R := K)]
+    by_contra h
+    exact hT.ne <| eq_of_le_of_finrank_le hT.le <| by lia
+
 /-- In a one-dimensional space, any vector is a multiple of any nonzero vector -/
 lemma exists_smul_eq_of_finrank_eq_one
     (h : finrank K V = 1) {x : V} (hx : x ≠ 0) (y : V) :
@@ -582,6 +600,7 @@ open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
     FiniteDimensional F (Subalgebra.toSubmodule S) ↔ FiniteDimensional F S :=
@@ -590,6 +609,7 @@ theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
 alias ⟨FiniteDimensional.of_subalgebra_toSubmodule, FiniteDimensional.subalgebra_toSubmodule⟩ :=
   Subalgebra.finiteDimensional_toSubmodule
 
+set_option backward.isDefEq.respectTransparency false in
 instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
     (S : Subalgebra F E) : FiniteDimensional F S :=
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance

@@ -90,6 +90,7 @@ instance instCoeToCompletelyPositiveMap [CompletelyPositiveMapClass F A₁ A₂]
     CoeHead F (A₁ →CP A₂) where
   coe f := toCompletelyPositiveLinearMap f
 
+set_option backward.isDefEq.respectTransparency false in
 open CStarMatrix in
 /-- Linear maps which are completely positive are order homomorphisms (i.e., positive maps). -/
 lemma _root_.OrderHomClass.of_map_cstarMatrix_nonneg
@@ -130,6 +131,7 @@ instance : LinearMapClass (A₁ →CP A₂) ℂ A₁ A₂ where
 instance : CompletelyPositiveMapClass (A₁ →CP A₂) A₁ A₂ where
   map_cstarMatrix_nonneg' f := f.map_cstarMatrix_nonneg'
 
+set_option backward.isDefEq.respectTransparency false in
 open CStarMatrix in
 lemma map_cstarMatrix_nonneg {n : Type*} [Fintype n] (φ : A₁ →CP A₂) (M : CStarMatrix n n A₁)
     (hM : 0 ≤ M) : 0 ≤ M.map φ := by
@@ -153,6 +155,7 @@ variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgeb
   [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂] [FunLike F A₁ A₂]
   [NonUnitalAlgHomClass F ℂ A₁ A₂] [StarHomClass F A₁ A₂]
 
+set_option backward.isDefEq.respectTransparency false in
 open CStarMatrix CFC in
 /-- Non-unital star algebra homomorphisms are completely positive. -/
 instance instCompletelyPositiveMapClass : CompletelyPositiveMapClass F A₁ A₂ where

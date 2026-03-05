@@ -1,3 +1,4 @@
+module
 import Mathlib.Tactic.CategoryTheory.CategoryStar
 import Mathlib.CategoryTheory.Functor.Category
 
