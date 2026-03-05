@@ -88,13 +88,11 @@ theorem HasFPowerSeriesWithinAt.hasStrictFDerivWithinAt (h : HasFPowerSeriesWith
   refine h.isBigO_image_sub_norm_mul_norm_sub.trans_isLittleO (IsLittleO.of_norm_right ?_)
   refine isLittleO_iff_exists_eq_mul.2 ⟨fun y => ‖y - (x, x)‖, ?_, EventuallyEq.rfl⟩
   apply Tendsto.mono_left _ nhdsWithin_le_nhds
-  refine (continuous_id.sub continuous_const).norm.tendsto' _ _ ?_
-  rw [_root_.id, sub_self, norm_zero]
+  exact (continuous_id.sub continuous_const).norm.tendsto' _ _ (by simp)
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
     HasStrictFDerivAt f (continuousMultilinearCurryFin1 𝕜 E F (p 1)) x := by
-  simpa only [hasStrictFDerivAt_iff_isLittleO, Set.insert_eq_of_mem, Set.mem_univ,
-      Set.univ_prod_univ, nhdsWithin_univ]
+  simpa [hasStrictFDerivAt_iff_isLittleO]
     using (h.hasFPowerSeriesWithinAt (s := Set.univ)).hasStrictFDerivWithinAt
 
 theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f p s x) :
@@ -182,8 +180,7 @@ theorem HasFPowerSeriesWithinOnBall.hasFDerivWithinAt [CompleteSpace F]
     HasFDerivWithinAt f (continuousMultilinearCurryFin1 𝕜 E F (p.changeOrigin y 1))
       (insert x s) (x + y) := by
   rcases eq_or_ne y 0 with rfl | h''y
-  · convert (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
-    simp
+  · simpa using (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
   · have Z := (h.changeOrigin hy h'y).hasFPowerSeriesWithinAt.hasFDerivWithinAt
     apply (Z.mono (subset_insert _ _)).mono_of_mem_nhdsWithin
     rw [nhdsWithin_insert_of_ne]
@@ -286,10 +283,8 @@ lemma AnalyticOnNhd.hasFTaylorSeriesUpToOn [CompleteSpace F]
     (n : WithTop ℕ∞) (h : AnalyticOnNhd 𝕜 f s) :
     HasFTaylorSeriesUpToOn n f (ftaylorSeries 𝕜 f) s := by
   refine ⟨fun x _hx ↦ rfl, fun m _hm x hx ↦ ?_, fun m _hm x hx ↦ ?_⟩
-  · apply HasFDerivAt.hasFDerivWithinAt
-    exact ((h.iteratedFDeriv m x hx).differentiableAt).hasFDerivAt
-  · apply (DifferentiableAt.continuousAt (𝕜 := 𝕜) ?_).continuousWithinAt
-    exact (h.iteratedFDeriv m x hx).differentiableAt
+  · exact ((h.iteratedFDeriv m x hx).differentiableAt).hasFDerivAt.hasFDerivWithinAt
+  · exact ((h.iteratedFDeriv m x hx).differentiableAt.continuousAt).continuousWithinAt
 
 lemma AnalyticWithinAt.exists_hasFTaylorSeriesUpToOn [CompleteSpace F]
     (n : WithTop ℕ∞) (h : AnalyticWithinAt 𝕜 f s x) :
@@ -347,8 +342,7 @@ protected theorem HasFPowerSeriesWithinOnBall.fderivWithin_of_mem_of_analyticOn
   refine ⟨hr.r_le.trans p.radius_le_radius_derivSeries, hr.r_pos, fun {y} hy h'y ↦ ?_⟩
   apply hr.hasSum_derivSeries_of_hasFDerivWithinAt (by simpa [edist_zero_right] using h'y) hy
   · rw [insert_eq_of_mem hx] at hy ⊢
-    apply DifferentiableWithinAt.hasFDerivWithinAt
-    exact h.differentiableOn _ hy
+    exact (h.differentiableOn _ hy).hasFDerivWithinAt
   · rwa [insert_eq_of_mem hx]
 
 /-- If a function is analytic within a set with unique differentials, then so is its derivative.
@@ -357,7 +351,7 @@ protected theorem AnalyticOn.fderivWithin (h : AnalyticOn 𝕜 f s) (hu : Unique
     AnalyticOn 𝕜 (fderivWithin 𝕜 f s) s := by
   intro x hx
   rcases h x hx with ⟨p, r, hr⟩
-  refine ⟨p.derivSeries, r, hr.fderivWithin_of_mem_of_analyticOn h hu hx⟩
+  exact ⟨p.derivSeries, r, hr.fderivWithin_of_mem_of_analyticOn h hu hx⟩
 
 /-- If a function is analytic on a set `s`, so are its successive Fréchet derivative within this
 set. Note that this theorem does not require completeness of the space. -/
@@ -521,8 +515,7 @@ theorem HasFiniteFPowerSeriesOnBall.fderiv' (h : HasFiniteFPowerSeriesOnBall f p
           Metric.isOpen_eball.mem_nhds hy, fun z hz ↦ by rw [h.eq_zero_of_bound_zero z hz]⟩
     · apply ContinuousMultilinearMap.ext; intro a
       change (continuousMultilinearCurryFin1 𝕜 E F) (p.changeOriginSeries 1 n a) = 0
-      rw [p.changeOriginSeries_finite_of_finite h.finite 1 (Nat.zero_le _)]
-      exact map_zero _
+      simp [p.changeOriginSeries_finite_of_finite h.finite 1 (Nat.zero_le _)]
   · rw [← Nat.succ_pred hn] at h
     exact h.fderiv
 
@@ -576,7 +569,7 @@ open FormalMultilinearSeries
 theorem changeOriginSeries_support {k l : ℕ} (h : k + l ≠ Fintype.card ι) :
     f.toFormalMultilinearSeries.changeOriginSeries k l = 0 :=
   Finset.sum_eq_zero fun _ _ ↦ by
-    simp_rw [FormalMultilinearSeries.changeOriginSeriesTerm,
+    rw [FormalMultilinearSeries.changeOriginSeriesTerm,
       toFormalMultilinearSeries, dif_neg h.symm, LinearIsometryEquiv.map_zero]
 
 variable {n : WithTop ℕ∞} (x : ∀ i, E i)
@@ -589,9 +582,8 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   rw [continuousMultilinearCurryFin1_apply, linearDeriv_apply,
       changeOrigin, FormalMultilinearSeries.sum]
   cases isEmpty_or_nonempty ι
-  · have (l : _) : 1 + l ≠ Fintype.card ι := by
-      rw [add_comm, Fintype.card_eq_zero]; exact Nat.succ_ne_zero _
-    simp_rw [Fintype.sum_empty, changeOriginSeries_support _ (this _), zero_apply _, tsum_zero]; rfl
+  · have (l : _) : 1 + l ≠ Fintype.card ι := by norm_num
+    simp [changeOriginSeries_support _ (this _)]
   rw [tsum_eq_single (Fintype.card ι - 1), changeOriginSeries]; swap
   · intro m hm
     rw [Ne, eq_tsub_iff_add_eq_of_le (by exact Fintype.card_pos), add_comm] at hm
@@ -600,8 +592,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   simp_rw [changeOriginSeriesTerm_apply]
   refine (Fintype.sum_bijective (?_ ∘ Fintype.equivFinOfCardEq (Nat.add_sub_of_le
     Fintype.card_pos).symm) (.comp ?_ <| Equiv.bijective _) _ _ fun i ↦ ?_).symm
-  · exact (⟨{·}ᶜ, by
-      rw [card_compl, Fintype.card_fin, Finset.card_singleton, Nat.add_sub_cancel_left]⟩)
+  · exact (⟨{·}ᶜ, by simp [card_compl]⟩)
   · use fun _ _ ↦ (singleton_injective <| compl_injective <| Subtype.ext_iff.mp ·)
     intro ⟨s, hs⟩
     have h : #sᶜ = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
@@ -615,9 +606,8 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
   grind
 
 protected theorem hasStrictFDerivAt [DecidableEq ι] : HasStrictFDerivAt f (f.linearDeriv x) x := by
-  rw [← changeOrigin_toFormalMultilinearSeries]
-  convert f.hasFiniteFPowerSeriesOnBall.hasStrictFDerivAt (y := x) ENNReal.coe_lt_top
-  rw [zero_add]
+  simpa [changeOrigin_toFormalMultilinearSeries]
+    using f.hasFiniteFPowerSeriesOnBall.hasStrictFDerivAt ENNReal.coe_lt_top
 
 protected theorem hasFDerivAt [DecidableEq ι] : HasFDerivAt f (f.linearDeriv x) x :=
   (f.hasStrictFDerivAt _).hasFDerivAt
@@ -711,11 +701,10 @@ private lemma _root_.Equiv.succ_embeddingFinSucc_fst_symm_apply {ι : Type*} [De
       = e.toEquivRange.symm ⟨k, hk⟩ := by
   rcases hk with ⟨j, rfl⟩
   have hj : j ≠ 0 := by
-    rintro rfl
+    intro rfl
     simp at h'k
-  simp only [Function.Embedding.toEquivRange_symm_apply_self]
   have : e j = (Equiv.embeddingFinSucc n ι e).1 (Fin.pred j hj) := by simp
-  simp_rw [this]
+  simp_rw [Function.Embedding.toEquivRange_symm_apply_self, this]
   simp [-Equiv.embeddingFinSucc_fst]
 
 /-- A continuous multilinear function `f` admits a Taylor series, whose successive terms are given
@@ -750,8 +739,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
       · obtain rfl : k = e 0 := by
           rcases hke with ⟨j, rfl⟩
           simpa using hkf
-        simp only [Function.Embedding.toEquivRange_symm_apply_self, Fin.cons_zero, Function.update,
-          Pi.compRightL_apply]
+        rw [Function.Embedding.toEquivRange_symm_apply_self, Function.update]
         split_ifs with h
         · congr!
         · exfalso
@@ -792,8 +780,7 @@ theorem derivSeries_apply_diag (n : ℕ) (x : E) :
     derivSeries p n (fun _ ↦ x) x = (n + 1) • p (n + 1) fun _ ↦ x := by
   simp only [derivSeries, compFormalMultilinearSeries_apply, changeOriginSeries,
     compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe,
-    Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum, coe_sum', Finset.sum_apply,
-    continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
+    Function.comp_apply, ContinuousMultilinearMap.sum_apply, continuousMultilinearCurryFin1_apply]
   convert Finset.sum_const _
   · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]
   · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,
