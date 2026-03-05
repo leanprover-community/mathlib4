@@ -115,6 +115,23 @@ jobs:
               --header 'authorization: Bearer ${{ steps.app-token.outputs.token }}'
           done
 
+      - name: Checkout mathlib-ci
+        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.extract-data.outputs.bot == 'true' ) }}
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: leanprover-community/mathlib-ci
+          ref: 7355aeb4f32cb2a181d02abd7a9d6ab4fe033286
+          fetch-depth: 1
+          path: ci-tools
+
+      - name: Set up CI scripts paths
+        if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
+          ( steps.user_permission.outputs.require-result == 'true' ||
+            steps.extract-data.outputs.bot == 'true' ) }}
+        uses: ./ci-tools/.github/actions/setup-ci-scripts
+
       - name: Set up Python
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
@@ -129,16 +146,7 @@ jobs:
             steps.extract-data.outputs.bot == 'true' ) }}
         run: |
           python -m pip install --upgrade pip
-          pip install zulip
-
-      - if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
-          ( steps.user_permission.outputs.require-result == 'true' ||
-            steps.extract-data.outputs.bot == 'true' ) }}
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          ref: master
-          sparse-checkout: |
-            scripts/zulip_emoji_reactions.py
+          pip install -r "$CI_SCRIPTS_DIR/zulip/requirements.txt"
 
       - name: update zulip emoji reactions
         if: ${{ ! steps.extract-data.outputs.mOrD == '' &&
@@ -149,4 +157,4 @@ jobs:
           ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
           ZULIP_SITE: https://leanprover.zulipchat.com
         run: |
-          python scripts/zulip_emoji_reactions.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"
+          python "${CI_SCRIPTS_DIR}/zulip/zulip_emoji_reactions.py" "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.mOrD }}" "${{ steps.extract-data.outputs.pr_number }}"

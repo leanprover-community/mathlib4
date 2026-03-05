@@ -210,10 +210,6 @@ lemma mul_vle_mul_right {x y : R} (h : x ≤ᵥ y) (z) : z * x ≤ᵥ z * y := b
   rw [mul_comm z x, mul_comm z y]
   exact mul_vle_mul_left h z
 
-@[deprecated mul_vle_mul_right (since := "2025-01-06")]
-lemma vle_mul_left {x y : R} (z) (h : x ≤ᵥ y) : z * x ≤ᵥ z * y :=
-  mul_vle_mul_right h z
-
 @[deprecated (since := "2025-12-20")] alias rel_mul_left := mul_vle_mul_right
 
 instance : @Trans R R R vle vle vle where
@@ -745,9 +741,6 @@ lemma one_vlt_iff : 1 <ᵥ x ↔ 1 < v x := by simp [v.vlt_iff_lt]
 lemma apply_posSubmonoid_ne_zero (x : posSubmonoid R) : v (x : R) ≠ 0 := by
   simp [(isEquiv v (valuation R)).eq_zero, valuation_posSubmonoid_ne_zero]
 
-@[deprecated (since := "2025-08-06")]
-alias _root_.ValuativeRel.valuation_posSubmonoid_ne_zero_of_compatible := apply_posSubmonoid_ne_zero
-
 @[simp]
 lemma apply_posSubmonoid_pos (x : posSubmonoid R) : 0 < v x :=
   zero_lt_iff.mpr <| v.apply_posSubmonoid_ne_zero x
@@ -931,12 +924,12 @@ lemma veq_zero_iff : 0 =ᵥ a ↔ 0 = a := by
   rw [veq_comm, eq_comm, zero_veq_iff]
 
 lemma vle_div_iff (hc : c ≠ 0) : a ≤ᵥ b / c ↔ a * c ≤ᵥ b := by
-  rw [← mul_vle_mul_iff_left (by simpa), div_mul_cancel₀ _ (by aesop)]
+  rw [← mul_vle_mul_iff_left (by simpa), div_mul_cancel₀ _ (by lia)]
 
 @[deprecated (since := "2025-12-20")] alias rel_div_iff := vle_div_iff
 
 lemma div_vle_iff (hc : c ≠ 0) : a / c ≤ᵥ b ↔ a ≤ᵥ b * c := by
-  rw [← mul_vle_mul_iff_left (by simpa), div_mul_cancel₀ _ (by aesop)]
+  rw [← mul_vle_mul_iff_left (by simpa), div_mul_cancel₀ _ (by lia)]
 
 @[deprecated (since := "2025-12-20")] alias div_rel_iff := div_vle_iff
 
@@ -1105,8 +1098,6 @@ are determined by the relation `· ≤ᵥ ·`. -/
 class IsValuativeTopology (R : Type*) [CommRing R] [ValuativeRel R] [TopologicalSpace R] where
   mem_nhds_iff {s : Set R} {x : R} : s ∈ 𝓝 (x : R) ↔
     ∃ γ : (ValueGroupWithZero R)ˣ, (x + ·) '' { z | valuation _ z < γ } ⊆ s
-
-@[deprecated (since := "2025-08-01")] alias ValuativeTopology := IsValuativeTopology
 
 namespace ValuativeRel
 

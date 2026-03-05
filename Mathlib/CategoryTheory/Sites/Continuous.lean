@@ -120,6 +120,11 @@ abbrev PreservesOneHypercovers :=
 
 /-- A functor `F` is continuous if the precomposition with `F.op` sends sheaves of `Type t`
 to sheaves. -/
+-- After https://github.com/leanprover/lean4/pull/12286 and
+-- https://github.com/leanprover/lean4/pull/12423, the sheaf type universe `t` would default
+-- to a universe output parameter, causing failures when a lemma needs `IsContinuous` at two
+-- different universe levels. See Note [universe output parameters and typeclass caching].
+@[univ_out_params]
 class IsContinuous : Prop where
   op_comp_isSheaf_of_types (G : Sheaf K (Type t)) : Presieve.IsSheaf J (F.op ⋙ G.val)
 
@@ -130,6 +135,10 @@ lemma op_comp_isSheaf_of_types [Functor.IsContinuous.{t} F J K] (G : Sheaf K (Ty
 lemma op_comp_isSheaf [Functor.IsContinuous.{t} F J K] (G : Sheaf K A) :
     Presheaf.IsSheaf J (F.op ⋙ G.val) :=
   fun T => F.op_comp_isSheaf_of_types J K ⟨_, (isSheaf_iff_isSheaf_of_type _ _).2 (G.cond T)⟩
+
+lemma op_comp_isSheaf_of_isSheaf [IsContinuous.{t} F J K] (P : Dᵒᵖ ⥤ A) (h : Presheaf.IsSheaf K P) :
+    Presheaf.IsSheaf J (F.op ⋙ P) :=
+  F.op_comp_isSheaf J K ⟨P, h⟩
 
 lemma isContinuous_of_iso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂)
     (J : GrothendieckTopology C) (K : GrothendieckTopology D)

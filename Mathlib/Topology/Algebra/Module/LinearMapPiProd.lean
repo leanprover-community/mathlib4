@@ -212,6 +212,30 @@ theorem iInf_ker_proj :
     (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i).toLinearMap : Submodule R (∀ i, φ i)) = ⊥ :=
   LinearMap.iInf_ker_proj
 
+section PiMap
+variable {ψ : ι → Type*} [∀ i, TopologicalSpace (ψ i)] [∀ i, AddCommMonoid (ψ i)]
+  [∀ i, Module R (ψ i)]
+
+/-- Construct a continuous linear map between two (dependent) function spaces
+by applying index-dependent linear maps to the coordinates.
+A bundled version of `Pi.map`.
+
+If the index type is finite, then this map can be seen as a “block diagonal” map
+between indexed products of modules. -/
+def piMap (f : ∀ i, φ i →L[R] ψ i) : (∀ i, φ i) →L[R] (∀ i, ψ i) :=
+  .pi fun i ↦ f i ∘L .proj i
+
+@[simp]
+theorem coe_piMap (f : ∀ i, φ i →L[R] ψ i) :
+    (piMap f : (∀ i, φ i) →ₗ[R] (∀ i, ψ i)) = .piMap fun i ↦ f i :=
+  rfl
+
+@[simp]
+theorem coe_piMap' (f : ∀ i, φ i →L[R] ψ i) : ⇑(piMap f) = Pi.map fun i ↦ f i :=
+  rfl
+
+end PiMap
+
 variable (R φ)
 
 /-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
@@ -330,6 +354,11 @@ lemma comp_coprod (f : M →L[R] N) (g₁ : M₁ →L[R] M) (g₂ : M₂ →L[R]
 @[simp]
 lemma coprod_inl_inr : ContinuousLinearMap.coprod (.inl R M N) (.inr R M N) = .id R (M × N) :=
   coe_injective <| LinearMap.coprod_inl_inr
+
+@[simp]
+lemma coprod_comp_inl_inr [ContinuousAdd M₁] [ContinuousAdd M₂] (f : M × M₁ →L[R] M₂) :
+    (f ∘L .inl R M M₁).coprod (f ∘L .inr R M M₁) = f := by
+  rw [← ContinuousLinearMap.comp_coprod, coprod_inl_inr, comp_id]
 
 /-- Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.

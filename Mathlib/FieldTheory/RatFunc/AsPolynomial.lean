@@ -62,6 +62,7 @@ theorem algebraMap_C (a : K) : algebraMap K[X] (RatFunc K) (Polynomial.C a) = C 
 theorem algebraMap_comp_C : (algebraMap K[X] (RatFunc K)).comp Polynomial.C = C :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem smul_eq_C_mul (r : K) (x : RatFunc K) : r • x = C r * x := by
   rw [Algebra.smul_def, algebraMap_eq_C]
 
@@ -82,6 +83,7 @@ theorem algebraMap_monomial (n : ℕ) (a : K) :
     algebraMap K[X] (RatFunc K) (Polynomial.monomial n a) = C a * X ^ n := by
   simp [← Polynomial.C_mul_X_pow_eq_monomial]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem aeval_X_left_eq_algebraMap (p : K[X]) :
     p.aeval (X : RatFunc K) = algebraMap K[X] (RatFunc K) p := by
@@ -211,6 +213,52 @@ theorem eval_mul {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
 end Field
 
 end Eval
+
+section algEquivOfTranscendental
+
+open Polynomial IntermediateField algebraAdjoinAdjoin
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (f : L) (h : Transcendental K f)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Given a transcendental `f : L`, the `K`-algebra isomorphism between `RatFunc K` and `L` given
+by sending `X` to `f`. -/
+noncomputable def algEquivOfTranscendental : RatFunc K ≃ₐ[K] K⟮f⟯ :=
+  IsFractionRing.algEquivOfAlgEquiv (Polynomial.algEquivOfTranscendental K f h)
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_algebraMap (g : K[X]) :
+    algEquivOfTranscendental f h (algebraMap K[X] (RatFunc K) g) =
+    aeval (AdjoinSimple.gen K f) g := by
+  ext
+  simp [algEquivOfTranscendental]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_X :
+    algEquivOfTranscendental f h (X : RatFunc K) = f := by
+  simp [← algebraMap_X]
+
+set_option backward.isDefEq.respectTransparency false in
+theorem algEquivOfTranscendental_apply (u : RatFunc K) :
+    algEquivOfTranscendental f h u = aeval f u.num / aeval f u.denom := by
+  conv_lhs => rw [← num_div_denom u]
+  simp [-num_div_denom]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_symm_aeval (g : K[X]) :
+    (algEquivOfTranscendental f h).symm (aeval (AdjoinSimple.gen _ f) g) = algebraMap _ _ g := by
+  simp [algEquivOfTranscendental, ← algebraMap_eq_gen_self, aeval_algebraMap_apply]
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem algEquivOfTranscendental_symm_gen :
+    (algEquivOfTranscendental f h).symm (AdjoinSimple.gen _ f) = (X : RatFunc K) := by
+  simp [algEquivOfTranscendental, ← algebraMap_eq_gen_self]
+
+end algEquivOfTranscendental
 
 section Algebra
 

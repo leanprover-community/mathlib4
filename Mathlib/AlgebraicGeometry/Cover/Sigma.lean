@@ -24,6 +24,7 @@ namespace AlgebraicGeometry.Scheme.Cover
 variable {P : MorphismProperty Scheme.{u}} {S : Scheme.{u}} [IsZariskiLocalAtSource P]
   [UnivLE.{v, u}] [P.IsStableUnderBaseChange] [IsJointlySurjectivePreserving P]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `𝒰` is a cover of `S`, this is the single object cover where the covering
 object is the disjoint union. -/
 @[simps]
@@ -42,12 +43,14 @@ variable [P.IsMultiplicative] {𝒰 𝒱 : Scheme.Cover.{v} (precoverage P) S}
 variable (𝒰) in
 instance : Unique 𝒰.sigma.I₀ := inferInstanceAs <| Unique PUnit.{v + 1}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `𝒰` refines the single object cover defined by `𝒰`. -/
 @[simps]
 noncomputable def toSigma (𝒰 : Cover.{v} (precoverage P) S) : 𝒰 ⟶ 𝒰.sigma where
   s₀ _ := default
   h₀ i := Sigma.ι _ i
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A refinement of coverings induces a refinement on the single object coverings. -/
 @[simps]
 noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma where
@@ -55,6 +58,7 @@ noncomputable def Hom.sigma (f : 𝒰 ⟶ 𝒱) : 𝒰.sigma ⟶ 𝒱.sigma wher
   h₀ _ := Sigma.desc fun j ↦ f.h₀ j ≫ Sigma.ι _ (f.s₀ j)
   w₀ _ := Sigma.hom_ext _ _ (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Collapsing a cover to a single object cover is functorial. -/
 @[simps]
 noncomputable def sigmaFunctor : S.Cover (precoverage P) ⥤ S.Cover (precoverage P) where

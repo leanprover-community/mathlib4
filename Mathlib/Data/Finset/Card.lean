@@ -278,7 +278,7 @@ theorem eq_iff_card_ge_of_superset (hst : s ⊆ t) : #t ≤ #s ↔ t = s :=
   (eq_iff_card_le_of_subset hst).trans eq_comm
 
 theorem subset_iff_eq_of_card_le (h : #t ≤ #s) : s ⊆ t ↔ s = t :=
-  ⟨fun hst => eq_of_subset_of_card_le hst h, Eq.subset'⟩
+  ⟨fun hst => eq_of_subset_of_card_le hst h, Eq.subset⟩
 
 theorem map_eq_of_subset {f : α ↪ α} (hs : s.map f ⊆ s) : s.map f = s :=
   eq_of_subset_of_card_le hs (card_map _).ge
@@ -722,8 +722,6 @@ theorem one_lt_card_iff : 1 < #s ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ b :=
 theorem one_lt_card_iff_nontrivial : 1 < #s ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
-
-@[deprecated (since := "2025-08-14")] alias exists_ne_of_one_lt_card := exists_mem_ne
 
 /-- If a Finset in a Pi type is nontrivial (has at least two elements), then
   its projection to some factor is nontrivial, and the fibers of the projection
