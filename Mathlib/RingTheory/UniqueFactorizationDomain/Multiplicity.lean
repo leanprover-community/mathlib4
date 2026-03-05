@@ -128,13 +128,6 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 
-theorem emultiplicity_eq_zero_of_ne {R : Type*} [CommMonoidWithZero R]
-    [UniqueFactorizationMonoid R] [Subsingleton Rˣ] {a b : R}
-    (ha : Irreducible a) (hb : Irreducible b) (h : a ≠ b) :
-    emultiplicity a b = 0 :=
-  emultiplicity_eq_zero.2 <|
-    (prime_dvd_prime_iff_eq (irreducible_iff_prime.1 ha) (irreducible_iff_prime.1 hb)).not.2 h
-
 end multiplicity
 
 end UniqueFactorizationMonoid

@@ -289,7 +289,7 @@ private theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDom
   · simp [hvp, (FiniteMultiplicity.of_prime_left hp hp.ne_zero).emultiplicity_self,
       ramificationIdx_eq_normalizedFactors_count hp_bot (isPrime_of_prime hw.prime) hw_bot,
       emultiplicity_eq_count_normalizedFactors hw hp_bot]
-  · rw [emultiplicity_eq_zero_of_ne hv hp.irreducible hvp, mul_zero,
+  · rw [emultiplicity_eq_zero_of_irreducible_ne hv hp.irreducible hvp, mul_zero,
       emultiplicity_map_eq_zero_of_ne hv hp hvp]
 
 /-- If `v` is an irreducible ideal of `R`, `w` is an irreducible ideal of `S` lying over `v`, and
