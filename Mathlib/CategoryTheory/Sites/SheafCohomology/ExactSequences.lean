@@ -32,7 +32,7 @@ variable {S : ShortComplex (Sheaf J AddCommGrpCat.{w})} (hS : S.ShortExact) (n�
     (n₁ : ℕ := n₀ + 1)
 
 /-- The connecting homomorphism from `Hⁿ(S.X₃)` to `Hⁿ⁺¹(S.X₁)` -/
-noncomputable def H.connectingHom (h : n₀ + 1 = n₁ := by lia) : H S.X₃ n₀ →+ H S.X₁ n₁ :=
+noncomputable def H.connectingHom (h : n₀ + 1 = n₁ := by omega) : H S.X₃ n₀ →+ H S.X₁ n₁ :=
   hS.extClass.postcomp _ h
 
 open AddCommGrpCat
@@ -40,23 +40,23 @@ open AddCommGrpCat
 namespace H
 
 /-- The long exact sequence on sheaf cohomology. -/
-noncomputable def longSequence (h : n₀ + 1 = n₁ := by lia) :
+noncomputable def longSequence (h : n₀ + 1 = n₁ := by omega) :
     ComposableArrows AddCommGrpCat.{w'} 5 := ComposableArrows.mk₅
-  (AddCommGrpCat.ofHom (H.map S.f n₀))
-  (AddCommGrpCat.ofHom (H.map S.g n₀))
-  (AddCommGrpCat.ofHom (H.connectingHom hS n₀ n₁))
-  (AddCommGrpCat.ofHom (H.map S.f n₁))
-  (AddCommGrpCat.ofHom (H.map S.g n₁))
+  (ofHom (H.map S.f n₀))
+  (ofHom (H.map S.g n₀))
+  (ofHom (H.connectingHom hS n₀ n₁))
+  (ofHom (H.map S.f n₁))
+  (ofHom (H.map S.g n₁))
 
-theorem longSequence_exact (h : n₀ + 1 = n₁ := by lia) : (longSequence hS n₀ n₁ h).Exact :=
+theorem longSequence_exact (h : n₀ + 1 = n₁ := by omega) : (longSequence hS n₀ n₁ h).Exact :=
   Ext.covariantSequence_exact _ hS n₀ n₁ h
 
-lemma longSequence_exact₁' (h : n₀ + 1 = n₁ := by lia) :
+lemma longSequence_exact₁' (h : n₀ + 1 = n₁ := by omega) :
     (ShortComplex.mk (ofHom (H.connectingHom hS n₀ n₁ h)) (ofHom (H.map S.f n₁)) (by
       convert ((longSequence_exact hS n₀ n₁ h).sc 2).zero)).Exact := by
   convert (longSequence_exact hS n₀ n₁ h).exact 2
 
-lemma longSequence_exact₃' (h : n₀ + 1 = n₁ := by lia) :
+lemma longSequence_exact₃' (h : n₀ + 1 = n₁ := by omega) :
     (ShortComplex.mk (ofHom (H.map S.g n₀)) (ofHom (H.connectingHom hS n₀ n₁ h)) (by
       convert ((longSequence_exact hS n₀ n₁ h).sc 1).zero)).Exact := by
   convert (longSequence_exact hS n₀ n₁ h).exact 1
@@ -73,19 +73,30 @@ lemma longSequence_exact₂ (x₂ : H S.X₂ n) (hx₂ : H.map S.g n x₂ = 0) :
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₂ hx₂
 
-lemma longSequence_exact₃ (h : n₀ + 1 = n₁ := by lia) (x₃ : H S.X₃ n₀)
+lemma longSequence_exact₃ (h : n₀ + 1 = n₁ := by omega) (x₃ : H S.X₃ n₀)
     (hx₃ : H.connectingHom hS n₀ n₁ h x₃ = 0) :
     ∃ x₂ : H S.X₂ n₀, H.map S.g n₀ x₂ = x₃ := by
   have := longSequence_exact₃' hS n₀ n₁ h
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₃ hx₃
 
-lemma longSequence_exact₁ (h : n₀ + 1 = n₁ := by lia) (x₁ : H S.X₁ n₁)
+lemma longSequence_exact₁ (h : n₀ + 1 = n₁ := by omega) (x₁ : H S.X₁ n₁)
     (hx₁ : H.map S.f n₁ x₁ = 0) :
     ∃ x₃ : H S.X₃ n₀, H.connectingHom hS n₀ n₁ h x₃ = x₁ := by
   have := longSequence_exact₁' hS n₀ n₁ h
   rw [ShortComplex.ab_exact_iff] at this
   exact this x₁ hx₁
+
+variable {T : C} (hT : Limits.IsTerminal T)
+
+open Opposite
+
+lemma longSequence_equiv₀_exact₃ (x₃ : S.X₃.val.obj (op T))
+    (hx₃ : (H.connectingHom hS 0 1) ((H.equiv₀ S.X₃ hT).symm x₃) = 0) :
+    ∃ x₂ : S.X₂.val.obj (op T), S.g.val.app (op T) x₂ = x₃ := by
+  obtain ⟨x₂', hx₂'⟩ := longSequence_exact₃ hS 0 _ _ ((H.equiv₀ S.X₃ hT).symm x₃) hx₃
+  use H.equiv₀ S.X₂ hT x₂'
+  simp [H.equiv₀_naturality, hx₂']
 
 end H
 
