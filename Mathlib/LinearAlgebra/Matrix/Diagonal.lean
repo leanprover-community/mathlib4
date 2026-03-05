@@ -16,7 +16,7 @@ diagonal matrix (`range`, `ker` and `rank`).
 
 ## Tags
 
-matrix, diagonal, `LinearMap`
+matrix, diagonal, linear map
 -/
 
 public section

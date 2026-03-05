@@ -47,7 +47,7 @@ variable {M} {N : Type u'} [Monoid N]
 discrete monoidal categories.
 -/
 @[to_additive Discrete.addMonoidalFunctor /--
-An additive morphism between `AddMonoid` gives a
+An additive morphism between `AddMonoid`s gives a
 monoidal functor between the corresponding discrete monoidal categories. -/]
 def Discrete.monoidalFunctor (F : M →* N) : Discrete M ⥤ Discrete N :=
   Discrete.functor (fun X ↦ Discrete.mk (F X))

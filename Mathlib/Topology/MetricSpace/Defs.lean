@@ -24,7 +24,7 @@ for `PseudoMetricSpace`s in `PseudoMetric.lean`.
 
 ## Tags
 
-metric, `PseudoMetric`, dist
+metric, pseudometric space, dist
 -/
 
 @[expose] public section

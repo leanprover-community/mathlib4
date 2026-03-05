@@ -31,7 +31,7 @@ For most uses, typically `Submodule R M` is more powerful.
 
 ## Tags
 
-submodule, `MulAction`
+submodule, multiplicative action
 -/
 
 @[expose] public section

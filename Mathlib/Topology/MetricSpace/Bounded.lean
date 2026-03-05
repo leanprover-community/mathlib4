@@ -31,7 +31,7 @@ This file contains one definition, and various results on boundedness in pseudo-
 
 ## Tags
 
-metric, `PseudoMetric`, bounded, diameter, Heine-Borel theorem
+metric, pseudometric space, bounded, diameter, Heine-Borel theorem
 -/
 
 @[expose] public section
