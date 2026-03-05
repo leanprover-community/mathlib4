@@ -5,10 +5,8 @@ Authors: María Inés de Frutos-Fernández
 -/
 module
 
-public import Mathlib.Analysis.Normed.Algebra.Ultra
-public import Mathlib.Analysis.Normed.Field.Krasner
+public import Mathlib.Analysis.Normed.Field.Dense
 public import Mathlib.Analysis.Normed.Module.Completion
-public import Mathlib.Analysis.Normed.Unbundled.SpectralNorm
 public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
@@ -30,6 +28,7 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
 * `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
+* `PadicComplex.isAlgClosed` : `ℂ_[p]` is algebraically closed.
 
 ## Notation
 
@@ -263,3 +262,4 @@ notation "𝓞_ℂ_[" p "]" => PadicComplexInt p
 /-- `𝓞_ℂ_[p]` is the ring of integers of `ℂ_[p]`. -/
 theorem PadicComplexInt.integers : Valuation.Integers (PadicComplex.valued p).v 𝓞_ℂ_[p] :=
   Valuation.integer.integers _
+#min_imports

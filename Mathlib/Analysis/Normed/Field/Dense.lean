@@ -6,10 +6,7 @@ Authors: Jiedong Jiang
 module
 
 public import Mathlib.Analysis.Normed.Field.Approximation
-public import Mathlib.Topology.MetricSpace.Ultra.Basic
-public import Mathlib.Analysis.Normed.Algebra.Basic
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.FieldTheory.Minpoly.IsConjRoot
+public import Mathlib.Analysis.Normed.Field.Krasner
 
 /-!
 # Transfer algebraic properties from dense subfields
@@ -19,7 +16,7 @@ zero can be inherited from its dense subfields. Let `K` be a dense subfield of a
 field `L`.
 
 ## Main results
-- `IsAlgClosed.of_denseRange`: If `K` is an algebraically closed dense subfield of a complete
+- `IsAlgClosed.of_denseRange` : If `K` is an algebraically closed dense subfield of a complete
 nonarchimedean normed field `L` of characteristic zero, then `L` is also algebraically closed.
 
 ## TODO
@@ -95,7 +92,7 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
   obtain ⟨g, gmon, gdeg, gcoeff⟩ :=
     exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt hi fmon hε
   let ⟨b, hb, hab⟩ := exists_aroots_norm_sub_lt_of_norm_coeff_sub_lt
-      a hε fa0 fmon (gmon.map _) (gdeg ▸ (g.natDegree_map _)) gcoeff
+      hε fa0 fmon (gmon.map _) (gdeg ▸ (g.natDegree_map _)) gcoeff
       (by simpa [Polynomial.map_map] using (IsAlgClosed.splits g).map ((algebraMap L F).comp i))
   have hab : ‖a - b‖ < δ := by
     rw [← Real.rpow_natCast, ← mul_comm_div, div_self, one_mul,
@@ -124,5 +121,3 @@ theorem IsAlgClosed.of_denseRange {K L : Type*} [Field K] [NontriviallyNormedFie
   apply_fun algebraMap L F
   · rwa [← Polynomial.aeval_algebraMap_apply_eq_algebraMap_eval, haCp, map_zero]
   · exact RingHom.injective _
-
-#min_imports
