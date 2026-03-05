@@ -181,6 +181,7 @@ theorem MeasureTheory.Measure.IsMulLeftInvariant.quotientMeasureEqMeasurePreimag
     · exact trans hV.symm neTopV
   exact measurableSet_quotient.mp meas_V
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a measure `μ` is left-invariant and satisfies the right scaling condition, then it
   satisfies `QuotientMeasureEqMeasurePreimage`. -/
 @[to_additive /-- If a measure `μ` is
@@ -194,7 +195,7 @@ theorem MeasureTheory.leftInvariantIsQuotientMeasureEqMeasurePreimage [IsFiniteM
   rw [fund_dom_s.covolume_eq_volume] at h
   by_cases meas_s_ne_zero : ν s = 0
   · convert fund_dom_s.quotientMeasureEqMeasurePreimage_of_zero meas_s_ne_zero
-    rw [← @measure_univ_eq_zero, ← h, meas_s_ne_zero]
+    rw [← measure_univ_eq_zero, ← h, meas_s_ne_zero]
   apply IsMulLeftInvariant.quotientMeasureEqMeasurePreimage_of_set (fund_dom_s := fund_dom_s)
     (meas_V := MeasurableSet.univ)
   · rw [← h]
@@ -212,6 +213,7 @@ variable [Countable Γ] (ν : Measure G) [IsHaarMeasure ν] [IsMulRightInvariant
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a measure `μ` on the quotient `G ⧸ Γ` of a group `G` by a discrete normal subgroup `Γ` having
 fundamental domain, satisfies `QuotientMeasureEqMeasurePreimage` relative to a standardized choice
 of Haar measure on `G`, and assuming `μ` is finite, then `μ` is itself Haar.

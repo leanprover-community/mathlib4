@@ -279,6 +279,7 @@ namespace ConnectedComponent
 
 section Finite
 
+set_option backward.isDefEq.respectTransparency false in
 lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
     (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
