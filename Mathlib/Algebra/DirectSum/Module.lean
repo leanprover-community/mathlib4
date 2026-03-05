@@ -496,7 +496,6 @@ theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
     IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
   simp [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isInternal_biSup_submodule_of_iSupIndep {A : ι → Submodule R M} (s : Set ι)
     (h : iSupIndep <| fun i : s ↦ A i) :
     IsInternal <| fun (i : s) ↦ (A i).comap (⨆ i ∈ s, A i).subtype := by
