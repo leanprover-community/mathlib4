@@ -490,12 +490,10 @@ theorem hadamard_mul {m : Type*} [Finite m] {A : Matrix m m ℝ} {B : Matrix m m
     constructor
     · apply Matrix.IsHermitian.ext
       intro n₁ n₂
-      simp only [hadamard_apply, star_trivial]
-      rw [<-Matrix.IsHermitian.apply hA.1 n₁ n₂]
-      rw [<-Matrix.IsHermitian.apply hB.1 n₁ n₂]
-      simp
+      rw [hadamard_apply, hadamard_apply, star_mul',
+        <-Matrix.IsHermitian.apply hA.1 n₁ n₂, <-Matrix.IsHermitian.apply hB.1 n₁ n₂]
     · intro c
-      simp only [star_trivial, hadamard_apply]
+      simp only [hadamard_apply]
       set A' := CFC.sqrt A
       have hA := CFC.sqrt_nonneg A
       have hA₁ : A'.IsHermitian := by simpa using hA.1
