@@ -461,12 +461,12 @@ lemma Classifier.hom_comp_hom (𝒞₁ 𝒞₂ 𝒞₃ : Classifier C) : 𝒞₁
 
 @[simp]
 lemma Classifier.hom_refl (𝒞₁ : Classifier C) : 𝒞₁.hom 𝒞₁ = 𝟙 _ :=
-  (𝒞₁.uniq (χ₀' := 𝟙 _) (𝒞₁.truth) (IsPullback.of_id_snd)).symm
+  (𝒞₁.uniq (χ₀' := 𝟙 _) 𝒞₁.truth IsPullback.of_id_snd).symm
 
 @[reassoc (attr := simp)]
 lemma Classifier.χ_comp_hom {𝒞₁ 𝒞₂ : Classifier C} {X Y : C} (m : X ⟶ Y) [Mono m] :
     𝒞₁.χ m ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ m :=
-  𝒞₂.uniq m ((𝒞₁.isPullback m).paste_vert (𝒞₂.isPullback (𝒞₁.truth)))
+  𝒞₂.uniq m ((𝒞₁.isPullback m).paste_vert (𝒞₂.isPullback 𝒞₁.truth))
 
 @[reassoc (attr := simp)]
 lemma Classifier.truth_comp_hom {𝒞₁ 𝒞₂ : Classifier C} :
@@ -499,7 +499,7 @@ def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω)
     have : χ' ≫ eΩ.inv = 𝒞.χ m := by
       apply 𝒞.uniq m (χ₀' := χ₀' ≫ eΩ₀.inv)
       exact hχ'.paste_vert (IsPullback.of_vert_isIso_mono (by simp [ht]))
-    simpa using congr($this ≫ eΩ.hom)
+    simpa using this =≫ eΩ.hom
 
 alias Classifier.copy := Classifier.ofIso
 
@@ -527,7 +527,7 @@ def Classifier.ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier
     intro χ₀' χ' hχ'
     have : e.inverse.map χ' ≫ e.unitInv.app _ = 𝒞₁.χ (e.inverse.map m) := by
       apply 𝒞₁.uniq (e.inverse.map m) (χ₀' := e.inverse.map χ₀' ≫ e.unitInv.app _)
-      exact (hχ'.map (e.inverse)).paste_vert <| IsPullback.of_vert_isIso_mono (by simp)
+      exact (hχ'.map e.inverse).paste_vert <| IsPullback.of_vert_isIso_mono .mk
     simpa using congr(e.counitInv.app G ≫ e.functor.map $this)
 
 end Equivalence
