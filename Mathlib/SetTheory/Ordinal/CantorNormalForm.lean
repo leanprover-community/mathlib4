@@ -384,7 +384,7 @@ theorem eval_coeff (b o : Ordinal) : eval b (coeff b o) = o := by
   · exact (CNF.sortedGT b o).sortedGE.pairwise
   · exact (CNF.sortedGT b o).nodup
 
-theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e < b) :
+theorem coeff_eval {b : Ordinal} {f : Ordinal →₀ Ordinal} (hf : ∀ e, f e < b) :
     coeff b (eval b f) = f := by
   induction f using Finsupp.induction_on_max with
   | zero => simp
@@ -395,7 +395,7 @@ theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf :
         rw [add_apply, single_eq_of_ne, zero_add]
         exact (hf' _ he').ne
       · rw [notMem_support_iff.1 he']
-        exact hb.pos
+        exact (hf 0).pos
     rw [eval_single_add' _ hf', coeff_opow_mul_add, IH IH']
     · apply (hf e).trans_eq'
       rw [add_apply, single_eq_same, notMem_support_iff.1, add_zero]
