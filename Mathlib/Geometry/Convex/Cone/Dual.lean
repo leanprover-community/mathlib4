@@ -130,6 +130,4 @@ lemma dual_eval (s : Set M) : dual p s = comap p.flip (dual (Module.Dual.eval R 
 
 @[simp] lemma dual_neg {s : Set M} : dual p (-s) = -dual p s := by ext; simp
 
-@[simp] lemma neg_dual_neg (s : Set M) : -dual p (-s) = dual p s := by ext; simp
-
 end PointedCone
