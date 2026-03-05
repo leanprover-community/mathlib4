@@ -3,14 +3,13 @@ Copyright (c) 2025 Gaëtan Serré. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gaëtan Serré, Rémy Degenne
 -/
+
 module
 
-public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.Analysis.SpecialFunctions.Sigmoid
 public import Mathlib.MeasureTheory.Constructions.UnitInterval
-public import Mathlib.Probability.Kernel.Defs
-
-import Mathlib.Analysis.SpecialFunctions.Sigmoid
-import Mathlib.Probability.CDF
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Probability.CDF
 
 /-!
 # Representation of kernels
@@ -26,7 +25,7 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   for a Markov kernel `κ : Kernel α I`, there exists a jointly measurable function
   `f : α → I → I` such that for all `a : α`, `volume.map (f a) = κ a`.
 
-## Main results
+## Main theorems
 
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq_unitInterval`:
   for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space,
@@ -50,9 +49,9 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   This is a consequence of `ProbabilityTheory.Kernel.unitInterval_representation`.
 -/
 
-public section
+@[expose] public section
 
-open MeasureTheory ProbabilityTheory Set unitInterval Filter Topology Function
+open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Topology Function
 
 namespace ProbabilityTheory.Kernel
 
@@ -113,7 +112,10 @@ lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKerne
     by_cases hx : x = 1
     · simp [hx, ← univ_eq_Icc, ξ.2.2]
     let g := fun y ↦ (κ a).real (Icc 0 y)
-    have : NeBot (𝓝[>] x) := nhdsGT_neBot_of_exists_gt ⟨1, lt_of_le_of_ne x.2.2 hx⟩
+    let nebot : NeBot (𝓝[>] x) := by
+      refine nhdsGT_neBot_of_exists_gt ?_
+      use 1
+      exact lt_of_le_of_ne x.2.2 hx
     refine le_of_tendsto_of_tendsto (b := 𝓝[>] x) (g := g) continuousWithinAt_const ?_ ?_
     · let h := cdf ((κ a).map Subtype.val)
       have h_continuousWithinAt := continuousWithinAt_Ioi_iff_Ici.mpr (h.right_continuous x)
@@ -160,5 +162,6 @@ end ProbabilityTheory.Kernel
 theorem MeasureTheory.Measure.exists_measurable_map_eq {β : Type*} {mβ : MeasurableSpace β}
     [Nonempty β] [StandardBorelSpace β] (μ : Measure β) [IsProbabilityMeasure μ] :
     ∃ (f : I → β), Measurable f ∧ volume.map f = μ := by
-  obtain ⟨f, hf_meas, hf_map⟩ := (Kernel.const Unit μ).exists_measurable_map_eq_unitInterval
-  exact ⟨f (), by fun_prop, by simpa using hf_map ()⟩
+  obtain ⟨f, hf_meas, hf_map⟩ := Kernel.exists_measurable_map_eq_unitInterval (Kernel.const Unit μ)
+  specialize hf_map ()
+  exact ⟨f (), by fun_prop, by simpa⟩

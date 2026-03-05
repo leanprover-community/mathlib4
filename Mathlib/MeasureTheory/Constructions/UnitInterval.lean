@@ -129,6 +129,3 @@ lemma volume_uIoo : volume (uIoo x y) = edist y x := by
     max_sub_min_eq_abs, edist_dist, Subtype.dist_eq, Real.dist_eq]
 
 end unitInterval
-
-lemma not_countable_unitInterval : ¬ Countable I := by
-  simp only [countable_coe_iff, Cardinal.Real.Icc_countable_iff, not_le, zero_lt_one]
