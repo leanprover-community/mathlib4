@@ -863,3 +863,11 @@ attribute [to_additive someOtherTranslation] abstractMul
 -- Test that we don't blindly translate the prefix of a name.
 def Mul.test : Nat := 5
 @[to_additive] def Mul.test' := Mul.test
+
+-- Test that arguments of free variables aren't considered by `shouldTranslate`
+@[to_additive_dont_translate]
+def dontTranslateId {α} : α → α := id
+
+@[to_additive]
+theorem functionTypeMonoid {ι : Type*} {R : ι → Type*} [(i : ι) → Monoid (R i)] (i : ι)
+  (a : R (dontTranslateId i)) : a * a = a * a := rfl
