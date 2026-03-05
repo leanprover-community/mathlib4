@@ -9,6 +9,7 @@ public import Mathlib.RingTheory.DedekindDomain.Basic
 public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 
