@@ -256,6 +256,7 @@ where
     if f.etaExpandedStrict?.isSome then
       expandSubterms (f.beta args)
     else
+      -- We use `expandSubterms` for `f` to avoid creating a beta-redex
       return mkAppN (← expandSubterms f) (← args.mapM etaExpandAll)
   | .mdata d e =>
     return .mdata d (← etaExpandAll e)
