@@ -671,6 +671,9 @@ theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f 
   delta UniformContinuousOn UniformContinuous
   rw [← map_uniformity_set_coe, tendsto_map'_iff]; rfl
 
+alias ⟨UniformContinuousOn.restrict, UniformContinuousOn.of_restrict⟩ :=
+  uniformContinuousOn_iff_restrict
+
 theorem tendsto_of_uniformContinuous_subtype [UniformSpace α] [UniformSpace β] {f : α → β}
     {s : Set α} {a : α} (hf : UniformContinuous fun x : s => f x.val) (ha : s ∈ 𝓝 a) :
     Tendsto f (𝓝 a) (𝓝 (f a)) := by

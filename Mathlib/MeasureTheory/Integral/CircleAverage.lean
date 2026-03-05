@@ -181,7 +181,7 @@ theorem circleAverage_zero_one_congr_inv {f : ℂ → E} :
     rw [intervalIntegral.integral_comp_neg (fun w ↦ f (circleMap 0 1 w))]
     have t₀ : Function.Periodic (fun w ↦ f (circleMap 0 1 w)) (2 * π) :=
       fun x ↦ by simp [periodic_circleMap 0 1 x]
-    simpa using (t₀.intervalIntegral_add_eq_of_pos two_pi_pos (-(2 * π)) 0)
+    simpa using (t₀.intervalIntegral_add_eq (-(2 * π)) 0)
 
 /-!
 ## Constant Functions

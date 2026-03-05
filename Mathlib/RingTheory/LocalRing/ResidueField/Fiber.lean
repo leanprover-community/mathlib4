@@ -58,7 +58,6 @@ lemma Ideal.ResidueField.exists_smul_eq_tmul_one
     ← IsLocalRing.ResidueField.algebraMap_eq, ← algebraMap.coe_smul,
     ← IsScalarTower.algebraMap_apply] using congr(t • $e)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The fiber of a prime `p` of `R` in an `R`-algebra `S`, defined to be `κ(p) ⊗ S`.
 
 See `PrimeSpectrum.preimageHomeomorphFiber` for the homeomorphism between the spectrum of it
