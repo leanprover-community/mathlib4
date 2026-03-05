@@ -52,7 +52,7 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
 
 public section
 
-open MeasureTheory ProbabilityTheory Set ENNReal unitInterval Filter Topology Function
+open MeasureTheory ProbabilityTheory Set unitInterval Filter Topology Function
 
 namespace ProbabilityTheory.Kernel
 
