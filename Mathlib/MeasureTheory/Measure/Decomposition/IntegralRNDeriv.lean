@@ -29,6 +29,7 @@ public section
 
 
 open Set ProbabilityTheory
+open scoped ENNReal
 
 namespace MeasureTheory
 
@@ -114,8 +115,23 @@ lemma mul_le_integral_rnDeriv_of_ac [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 section Integrable
 
 variable {β : Type*} {mβ : MeasurableSpace β} {κ η : Kernel α β} {f : ℝ → ℝ}
-  [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsMarkovKernel κ] [IsMarkovKernel η]
+  [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
+lemma lintegral_rnDeriv_compProd [IsSFiniteKernel κ] [IsFiniteKernel η]
+    (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
+    ∀ᵐ a ∂μ, ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂η a = κ a univ := by
+  refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (by fun_prop) (κ.measurable_coe .univ) ?_
+  intro s hs hsμ
+  calc ∫⁻ a in s, ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) ∂μ
+  _ = ∫⁻ a in s, ∫⁻ b in univ, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) ∂μ := by simp
+  _ = ∫⁻ (a : α) in s, (κ a) univ ∂μ := by
+    rw [← Measure.setLIntegral_compProd (by fun_prop) hs .univ, Measure.setLIntegral_rnDeriv hκη,
+      Measure.compProd_apply_prod hs .univ]
+
+variable [IsMarkovKernel κ] [IsMarkovKernel η]
+
+/-- The value of a convex function applied at a Radon-Nikodym derivative can be bounded by the
+integral of the function applied to the Radon-Nikodym derivative of composition-products. -/
 lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont_at : ContinuousWithinAt f (Ici 0) 0)
     (h_int : Integrable (fun p ↦ f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
@@ -130,33 +146,24 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral (hf : StronglyMeasurable f)
       simp only [nonempty_Iio, interior_Ici',
         continuousWithinAt_iff_continuousAt (Ioi_mem_nhds hx_pos)] at h
       exact h.continuousWithinAt
-  have h_compProd : (fun p ↦ μ.rnDeriv ν p.1 * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
-      (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) := (rnDeriv_compProd hκη ν).symm
-  have h_lt_top := Measure.ae_ae_of_ae_compProd <| (μ ⊗ₘ κ).rnDeriv_lt_top (ν ⊗ₘ η)
-  have h_integrable := Measure.integrable_toReal_rnDeriv (μ := μ ⊗ₘ κ) (ν := ν ⊗ₘ η)
+  have h_lt_top : ∀ᵐ a ∂ν, ∀ᵐ b ∂η a, (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b) < ∞ :=
+    Measure.ae_ae_of_ae_compProd <| (μ ⊗ₘ κ).rnDeriv_lt_top (ν ⊗ₘ η)
+  have h_integrable : Integrable (fun x ↦ ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) x).toReal) (ν ⊗ₘ η) :=
+    Measure.integrable_toReal_rnDeriv (μ := μ ⊗ₘ κ) (ν := ν ⊗ₘ η)
   rw [Measure.integrable_compProd_iff] at h_integrable h_int
   rotate_left
   · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
   · exact StronglyMeasurable.aestronglyMeasurable (by fun_prop)
-  have h_ae1 : ∀ᵐ a ∂ν, μ.rnDeriv ν a * ∫⁻ b,
-      (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) = (μ.rnDeriv ν) a := by
-    suffices ∀ᵐ a ∂ν, μ.rnDeriv ν a ≠ 0 → ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) = 1 by
-      filter_upwards [this] with a ha
-      by_cases h0 : μ.rnDeriv ν a = 0
-      · simp [h0]
-      · rw [ha h0, mul_one]
-    refine Measure.ae_rnDeriv_ne_zero_imp_of_ae ?_
-    refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite (by fun_prop) measurable_const ?_
-    intro s hs hsμ
-    simp only [lintegral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter, one_mul]
-    calc ∫⁻ a in s, ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) ∂μ
-    _ = ∫⁻ a in s, ∫⁻ b in univ, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) ∂μ := by simp
-    _ = μ s := by
-      rw [← Measure.setLIntegral_compProd (by fun_prop) hs .univ, Measure.setLIntegral_rnDeriv hκη,
-        Measure.compProd_apply_prod hs .univ]
-      simp
+  have h_ae1 : ∀ᵐ a ∂ν,
+      μ.rnDeriv ν a * ∫⁻ b, (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) ∂(η a) = μ.rnDeriv ν a := by
+    filter_upwards [Measure.ae_rnDeriv_ne_zero_imp_of_ae (lintegral_rnDeriv_compProd hκη)] with a ha
+    by_cases h0 : μ.rnDeriv ν a = 0
+    · simp [h0]
+    · simp [ha h0]
   have h_ae2 : ∀ᵐ a ∂ν, ∀ᵐ b ∂(η a), μ.rnDeriv ν a * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) (a, b) =
       (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b) := by
+    have h_compProd : (fun p ↦ μ.rnDeriv ν p.1 * (μ ⊗ₘ κ).rnDeriv (μ ⊗ₘ η) p) =ᵐ[ν ⊗ₘ η]
+        (μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) := (rnDeriv_compProd hκη ν).symm
     rwa [Filter.EventuallyEq, Measure.ae_compProd_iff] at h_compProd
     simp only [measurableSet_setOf]
     fun_prop
@@ -176,6 +183,8 @@ lemma _root_.ConvexOn.apply_rnDeriv_ae_le_integral (hf : StronglyMeasurable f)
     rw [← average_eq_integral, ← average_eq_integral]
     exact ConvexOn.map_average_le hf_cvx hf_cont isClosed_Ici (by simp) h_int' h_int
 
+/-- For `f` a convex function on `Ici 0`, if `f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b))` is integrable,
+then `f (μ.rnDeriv ν a)` is integrable. -/
 lemma _root_.ConvexOn.integrable_apply_rnDeriv_of_integrable_compProd (hf : StronglyMeasurable f)
     (hf_cvx : ConvexOn ℝ (Ici 0) f) (hf_cont_at : ContinuousWithinAt f (Ici 0) 0)
     (hf_int : Integrable (fun p ↦ f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) p).toReal) (ν ⊗ₘ η))
