@@ -6,6 +6,7 @@ Authors: Jujian Zhang, Eric Wieser
 module
 
 public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Algebra.DirectSum.Finsupp
 public import Mathlib.Algebra.Module.GradedModule
 
 /-!
@@ -172,38 +173,13 @@ theorem Submodule.smul_homogeneous_element_mem_of_mem (r : A) (x : M)
     coe_of_apply]
   aesop
 
--- MOVE
-@[simp] theorem decompose_finsuppSum {ι M σ : Type*} [DecidableEq ι]
-    [AddCommMonoid M] [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ) [Decomposition ℳ]
-    {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → M) :
-    decompose ℳ (s.sum f) = s.sum fun r x ↦ decompose ℳ (f r x) :=
-  map_finsuppSum (decomposeAddEquiv ℳ) ..
-
--- MOVE
-@[simp] theorem DirectSum.sum_apply {ι κ : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
-    {f : κ → ⨁ i, M i} {s : Finset κ} {j : ι} : (∑ i ∈ s, f i) j = ∑ i ∈ s, f i j :=
-  DFinsupp.finset_sum_apply ..
-
--- MOVE
-@[simp] theorem DirectSum.finsuppSum_apply {ι : Type*} {M : ι → Type*} [∀ i, AddCommMonoid (M i)]
-    {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → ⨁ i, M i) {j : ι} :
-    (s.sum f) j = s.sum fun r x ↦ f r x j :=
-  DFinsupp.finset_sum_apply ..
-
--- MOVE
-@[to_additive (attr := simp)] theorem SubmonoidClass.coe_finsuppProd {B M : Type*}
-    [CommMonoid M] [SetLike B M] [SubmonoidClass B M] {S : B}
-    {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → S) :
-    (↑(s.prod f) : M) = s.prod fun r x ↦ (f r x : M) :=
-  map_finsuppProd (SubmonoidClass.subtype S) ..
-
 include 𝒜 in
 theorem Submodule.homogeneous_span (s : Set M) (h : ∀ x ∈ s, IsHomogeneousElem ℳ x) :
     (Submodule.span A s).IsHomogeneous ℳ := by
   rintro i r hr
   rw [mem_span_set] at hr
   obtain ⟨c, hc, rfl⟩ := hr
-  rw [decompose_finsuppSum, finsuppSum_apply, AddSubmonoidClass.coe_finsuppSum]
+  rw [decompose_finsuppSum, DirectSum.finsuppSum_apply, AddSubmonoidClass.coe_finsuppSum]
   exact Submodule.finsuppSum_mem _ _ _ _ fun r hr0 ↦
     Submodule.smul_homogeneous_element_mem_of_mem 𝒜 ℳ _ _ _
       (h _ (hc <| by simpa)) (Submodule.subset_span (hc <| by simpa)) _

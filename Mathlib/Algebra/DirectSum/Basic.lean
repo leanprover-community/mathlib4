@@ -101,6 +101,10 @@ variable {β}
 theorem add_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ + g₂) i = g₁ i + g₂ i :=
   rfl
 
+@[simp] theorem sum_apply {κ : Type*} {f : κ → ⨁ i, β i} {s : Finset κ} {j : ι} :
+    (∑ i ∈ s, f i) j = ∑ i ∈ s, f i j :=
+  DFinsupp.finset_sum_apply ..
+
 section DecidableEq
 
 variable [DecidableEq ι]

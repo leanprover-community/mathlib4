@@ -178,6 +178,10 @@ theorem decompose_symm_sum {ι'} (s : Finset ι') (f : ι' → ⨁ i, ℳ i) :
     (decompose ℳ).symm (∑ i ∈ s, f i) = ∑ i ∈ s, (decompose ℳ).symm (f i) :=
   map_sum (decomposeAddEquiv ℳ).symm f s
 
+@[simp] theorem decompose_finsuppSum {κ α : Type*} [Zero α] (s : κ →₀ α) (f : κ → α → M) :
+    decompose ℳ (s.sum f) = s.sum fun r x ↦ decompose ℳ (f r x) :=
+  map_finsuppSum (decomposeAddEquiv ℳ) ..
+
 theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M) :
     (∑ i ∈ (decompose ℳ r).support, (decompose ℳ r i : M)) = r := by
   conv_rhs =>
