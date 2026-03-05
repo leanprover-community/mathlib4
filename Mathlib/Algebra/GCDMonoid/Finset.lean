@@ -284,4 +284,20 @@ theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
 
 end IsDomain
 
+section Int
+
+/-- The gcd of a finset of integers is positive if some element in the finset is nonzero. -/
+theorem gcd_pos_of_ne_zero {ι : Type*} {f : ι → ℤ} {s : Finset ι} (hf : ∃ i ∈ s, f i ≠ 0) :
+    0 < s.gcd f := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp at hf
+  | cons a s has ih =>
+    classical
+    rw [cons_eq_insert, gcd_insert, ← Int.coe_gcd, Int.natCast_pos]
+    simp only [Int.gcd_pos_iff, ne_eq]
+    simp only [cons_eq_insert, mem_insert, ne_eq, exists_eq_or_imp] at hf
+    grind
+
+end Int
+
 end Finset
