@@ -569,6 +569,8 @@ theorem AdjoinSimple.coe_gen : (AdjoinSimple.gen F α : E) = α :=
 theorem AdjoinSimple.algebraMap_gen : algebraMap F⟮α⟯ E (AdjoinSimple.gen F α) = α :=
   rfl
 
+-- Note: After unfolding `AdjoinSimple.gen`, the simp lemma `coe_aeval_mk_apply`
+-- does not fire, so we have to add this.
 @[simp]
 theorem AdjoinSimple.coe_aeval_gen_apply (f : F[X]) :
     aeval (AdjoinSimple.gen F α) f = aeval α f :=
