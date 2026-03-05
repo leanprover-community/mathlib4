@@ -48,23 +48,43 @@ a fundamental operation in the Characteristic Set Method.
 
 namespace MvPolynomial
 
-/-- The result of a pseudo-division of `g` by `f`.
-`exponent` is the power `s` such that `init(f) ^ s * g = quotient * f + remainder`. -/
+/-- The result of a pseudo-division of `g` by `f`,
+satisfying the equation `init(f) ^ s * g = q * f + r`. -/
 structure PseudoResult (α : Type*) where
+  /-- The power `s`. -/
   exponent : ℕ
+  /-- The quotient `q`. -/
   quotient : α
+  /-- The remainder `r`. -/
   remainder : α
 
-/-- The result of pseudo-dividing `g` by a sequence of polynomials (a triangulated set).
-`exponents` and `quotients` correspond to each step of the division. -/
+/-- The result of pseudo-dividing `g` by a sequence of polynomials (a triangulated set)
+satisfying the equation `(∏ i, (S i).initial ^ es[i]) * g = (∑ i, qs[i] * S i) + r`. -/
 structure SetPseudoResult (α : Type*) where
+  /-- The powers of the initials `es`. -/
   exponents : List ℕ
+  /-- The quotients `qs`. -/
   quotients : List α
+  /-- The remainder `r`. -/
   remainder : α
 
 section CommRing
 
 variable {R σ : Type*} [CommRing R] (i : σ) (g f : MvPolynomial σ R)
+
+/-- The recursive algorithm of pseudo-division -/
+noncomputable def pseudoOf.go (I : MvPolynomial σ R) (n fuel : ℕ) (s : ℕ)
+    (q r : MvPolynomial σ R) : PseudoResult (MvPolynomial σ R) :=
+  if fuel = 0 then ⟨s, q, r⟩
+  else if r.degreeOf i < n then ⟨s, q, r⟩
+  else
+    letI d := r.degreeOf i
+    letI Ic_r := r.initialOf i
+    letI x_power := X i ^ (d - n)
+    let term := Ic_r * x_power
+    let q' := I * q + term
+    let r' := I * r - term * f
+    go I n (fuel - 1) (s + 1) q' r'
 
 /-- Pseudo-division of `g` by `f` regarding the variable `i`.
 This algorithm computes `q` and `r` such that `initᵢ(f) ^ s * g = q * f + r`,
@@ -73,18 +93,7 @@ It uses a `fuel` parameter to guarantee termination. -/
 noncomputable def pseudoOf : PseudoResult (MvPolynomial σ R) :=
   let I := f.initialOf i
   let n := f.degreeOf i
-  let rec go (fuel : ℕ) (s : ℕ) (q r : MvPolynomial σ R) : PseudoResult (MvPolynomial σ R) :=
-    if fuel = 0 then ⟨s, q, r⟩
-    else if r.degreeOf i < n then ⟨s, q, r⟩
-    else
-      letI d := r.degreeOf i
-      letI Ic_r := r.initialOf i
-      letI x_power := X i ^ (d - n)
-      let term := Ic_r * x_power
-      let q' := I * q + term
-      let r' := I * r - term * f
-      go (fuel - 1) (s + 1) q' r'
-  go (g.degreeOf i + 1 - n) 0 0 g
+  pseudoOf.go i f I n (g.degreeOf i + 1 - n) 0 0 g
 
 @[simp] theorem zero_pseudoOf : (0 : MvPolynomial σ R).pseudoOf i f = ⟨1 - f.degreeOf i, 0, 0⟩ := by
   rewrite [pseudoOf, degreeOf_zero, zero_add]
@@ -392,18 +401,21 @@ open TriangulatedSet List
 
 variable (S : TriangulatedSet σ R)
 
+/-- The recursive algorithm of successive pseudo-division by a triangulated set -/
+noncomputable def setPseudo.go (f : ℕ → MvPolynomial σ R) (fuel : ℕ) (es : List ℕ)
+    (qs : List (MvPolynomial σ R)) (r : MvPolynomial σ R) : SetPseudoResult (MvPolynomial σ R) :=
+  if fuel = 0 then ⟨es, qs, r⟩
+  else
+    let p := r.pseudo (f (fuel - 1))
+    let es' := p.exponent :: es
+    let qs' := p.quotient :: qs.map (· * (f (fuel - 1)).initial ^ p.exponent)
+    let r' := p.remainder
+    go f (fuel - 1) es' qs' r'
+
 /-- Pseudo-divides `g` successively by elements of `S`.
 Typically, this involves dividing by `Sₗ₋₁`, then `Sₗ₋₂`, ..., down to `S₀`. -/
 noncomputable def setPseudo : SetPseudoResult (MvPolynomial σ R) :=
-  let rec go (f : ℕ → MvPolynomial σ R) (fuel : ℕ) (es : List ℕ) (qs) (r : MvPolynomial σ R) :=
-    if fuel = 0 then ⟨es, qs, r⟩
-    else
-      let p := r.pseudo (f (fuel - 1))
-      let es' := p.exponent :: es
-      let qs' := p.quotient :: qs.map (· * (f (fuel - 1)).initial ^ p.exponent)
-      let r' := p.remainder
-      go f (fuel - 1) es' qs' r'
-  go S S.length ([]) ([]) g
+  setPseudo.go S S.length [] [] g
 
 lemma length_setPseudoGo (f : ℕ → MvPolynomial σ R) (fuel : ℕ) : ∀ (es : List ℕ) (qs) (r),
     (setPseudo.go f fuel es qs r).exponents.length = es.length + fuel ∧

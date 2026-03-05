@@ -494,18 +494,18 @@ section NoZeroDivisors
 
 variable [NoZeroDivisors R] (i : σ) (p : MvPolynomial σ R)
 
-@[simp] theorem initialOf_C_mul {r : R} : (C r * p).initialOf i = C r * p.initialOf i :=
-  by classical simp [initialOf_eq_leadingCoeff]
-
-@[simp] theorem initialOf_mul_C {r : R} : (p * C r).initialOf i = p.initialOf i * C r := by
-  rw [mul_comm _ (C r), mul_comm _ (C r), p.initialOf_C_mul i]
-
-@[simp] theorem initialOf_smul {r : R} : (r • p).initialOf i = r • p.initialOf i := by
-  rw [smul_eq_C_mul, smul_eq_C_mul, p.initialOf_C_mul i]
-
 @[simp] theorem initialOf_mul_eq (q : MvPolynomial σ R) :
     (p * q).initialOf i = p.initialOf i * q.initialOf i := by
   classical simp [initialOf_eq_leadingCoeff]
+
+@[simp] theorem initialOf_C_mul {r : R} : (C r * p).initialOf i = C r * p.initialOf i :=
+  by simp only [initialOf_mul_eq, initialOf_C]
+
+@[simp] theorem initialOf_mul_C {r : R} : (p * C r).initialOf i = p.initialOf i * C r :=
+  by simp only [initialOf_mul_eq, initialOf_C]
+
+@[simp] theorem initialOf_smul {r : R} : (r • p).initialOf i = r • p.initialOf i := by
+  rw [smul_eq_C_mul, smul_eq_C_mul, p.initialOf_C_mul i]
 
 @[simp] theorem initialOf_pow_eq (n : ℕ) : (p ^ n).initialOf i = p.initialOf i ^ n := by
   induction n with

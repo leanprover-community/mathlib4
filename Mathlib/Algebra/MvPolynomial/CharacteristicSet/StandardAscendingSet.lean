@@ -75,6 +75,25 @@ end AscendingSet
 
 variable (l : List (MvPolynomial σ R))
 
+/-- The recursive algorithm for computing the Standard Basic Set. -/
+noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
+    (hl1 : ∀ p ∈ l, p ≠ 0) : TriangulatedSet σ R :=
+  if h : l = [] then BS
+  else
+    let B : MvPolynomial σ R := l.head h
+    let BS' := BS.takeConcat B
+    let l' := l.filter (reducedToSet · BS')
+    go l' BS' (fun p hp ↦ hl1 p <| List.mem_of_mem_filter hp)
+  termination_by l.length
+  decreasing_by
+    have : B ∈ l := List.head_mem h
+    refine List.length_filter_lt_length_iff_exists.mpr ⟨B, this, ?_⟩
+    refine ne_true_of_eq_false <| decide_eq_false ?_
+    change ¬B.reducedToSet (BS.takeConcat B)
+    simp only [reducedToSet, not_forall]
+    have : B ≠ 0 := hl1 B this
+    exact ⟨B, mem_takeConcat BS this, not_reduceTo_self this⟩
+
 /--
 Computes the Standard Basic Set of a list of polynomials.
 The algorithm works by:
@@ -84,24 +103,7 @@ The algorithm works by:
 4. Filter the remaining list to keep only elements reduced w.r.t. the new `BS` and go to step 2.
 -/
 noncomputable def basicSet : TriangulatedSet σ R :=
-  let rec go (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0) :
-      TriangulatedSet σ R :=
-    if h : l = [] then BS
-    else
-      let B : MvPolynomial σ R := l.head h
-      let BS' := BS.takeConcat B
-      let l' := l.filter (reducedToSet · BS')
-      go l' BS' (fun p hp ↦ hl1 p <| List.mem_of_mem_filter hp)
-    termination_by l.length
-    decreasing_by
-      have : B ∈ l := List.head_mem h
-      refine List.length_filter_lt_length_iff_exists.mpr ⟨B, this, ?_⟩
-      refine ne_true_of_eq_false <| decide_eq_false ?_
-      change ¬B.reducedToSet (BS.takeConcat B)
-      simp only [reducedToSet, not_forall]
-      have : B ≠ 0 := hl1 B this
-      exact ⟨B, mem_takeConcat BS this, not_reduceTo_self this⟩
-  go (l.mergeSort.filter (· ≠ 0)) ∅ (fun _ hp ↦ of_decide_eq_true (List.mem_filter.mp hp).2)
+  basicSet.go (l.mergeSort.filter (· ≠ 0)) ∅ (fun _ h ↦ of_decide_eq_true (List.mem_filter.mp h).2)
 
 lemma basicSetGo_lt : ∀ (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
     (hl1 : ∀ p ∈ l, p ≠ 0) (h : l ≠ []), (l.head h).reducedToSet BS → basicSet.go l BS hl1 < BS :=

@@ -151,6 +151,7 @@ theorem Set.has_min (h : PS.Nonempty) : ∃ p ∈ PS, ∀ q ∈ PS, ¬q < p :=
   haveI : WellFounded (· < ·) := @wellFounded_lt (MvPolynomial σ R) _ _
   WellFounded.has_min this PS h
 
+/-- The minimal element of a nonempty set of multivariate polynomials. -/
 noncomputable def Set.min (h : PS.Nonempty) : MvPolynomial σ R := Exists.choose (has_min PS h)
 
 theorem Set.min_mem (h : PS.Nonempty) : (min PS h) ∈ PS := (Exists.choose_spec (has_min PS h)).1
@@ -509,6 +510,7 @@ theorem Set.has_min (h : S'.Nonempty) : ∃ S ∈ S', ∀ T ∈ S', S ≤ T :=
   have ⟨S, hS1, hS2⟩ := WellFounded.has_min this S' h
   ⟨S, hS1, fun T hT ↦ not_lt_iff_ge.mp (hS2 T hT)⟩
 
+/-- The minimal element of a nonempty set of triangulated sets. -/
 noncomputable def Set.min (h : S'.Nonempty) : TriangulatedSet σ R := Exists.choose (has_min S' h)
 
 theorem Set.min_mem (h : S'.Nonempty) : min S' h ∈ S' :=

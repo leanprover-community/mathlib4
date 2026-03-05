@@ -165,6 +165,18 @@ lemma characteristicSetGo_decreasing (BS : TriangulatedSet σ R) (lBS RS : List 
     exact hq2 ▸ q.setPseudo_remainder_reducedToSet _
   exact Setoid.symm l.basicSet_toList_equiv
 
+/-- The recursive algorithm for computing the Characteristic Set -/
+noncomputable def characteristicSet.go [Finite σ] (l₀ l : List (MvPolynomial σ R))
+    : TriangulatedSet σ R :=
+  let BS := l.basicSet.val
+  let lBS := BS.toList
+  let RS : List _ := ((l \ lBS).map fun p ↦ (p.setPseudo BS).remainder).filter (· ≠ 0)
+  if RS = [] then BS
+  else go l₀ (l₀ ++ RS ++ lBS)
+  termination_by l.basicSet
+  decreasing_by
+    exact characteristicSetGo_decreasing l₀ l _ _ _ (by assumption) rfl rfl rfl
+
 /--
 Computes the Characteristic Set of a polynomial list `l`.
 Algorithm:
@@ -175,18 +187,7 @@ Algorithm:
 5. If not, set `l = l₀ ++ RS ++ BS` and go to step 2.
 Termination is guaranteed by the well-ordering of orders.
 -/
-noncomputable def characteristicSet : TriangulatedSet σ R :=
-  let l₀ := l
-  let rec go [Finite σ] (l : List (MvPolynomial σ R)) : TriangulatedSet σ R :=
-    let BS := l.basicSet.val
-    let lBS := BS.toList
-    let RS : List _ := ((l \ lBS).map fun p ↦ (p.setPseudo BS).remainder).filter (· ≠ 0)
-    if RS = [] then BS
-    else go (l₀ ++ RS ++ lBS)
-    termination_by l.basicSet
-    decreasing_by
-      exact characteristicSetGo_decreasing l₀ l _ _ _ (by assumption) rfl rfl rfl
-  go l
+noncomputable def characteristicSet : TriangulatedSet σ R := characteristicSet.go l l
 
 lemma zero_isSetRemainder_characteristicSetGo : l₀ ⊆ l → ∀ p ∈ l₀,
     (0 : MvPolynomial σ R).isSetRemainder p (characteristicSet.go l₀ l) := by

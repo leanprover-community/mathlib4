@@ -241,6 +241,7 @@ theorem mem_of_subset (p : MvPolynomial σ R) (h : S ⊆ T) : p ∈ S → p ∈ 
 
 theorem ssubset_def : S ⊂ T ↔ S ⊆ T ∧ ¬T ⊆ S := Iff.rfl
 
+/-- Converts a triangulated set to a finite set. -/
 def toFinset (S : TriangulatedSet σ R) : Finset (MvPolynomial σ R) :=
   (@Finset.univ (Fin S.length) _).map
     ⟨fun i ↦ S i.1, fun ⟨_, hi⟩ ⟨_, hj⟩ hij ↦ (Fin.mk.injEq ..) ▸ index_eq_of_apply_eq hi hj hij⟩
@@ -268,6 +269,7 @@ theorem length_lt_of_ssubset : S ⊂ T → S.length < T.length := fun h ↦ by
   rewrite [← card_toFinset, ← card_toFinset]
   exact Finset.card_lt_card <| Finset.coe_ssubset.mp (by simpa [toFinset_eq_coe_set] using h)
 
+/-- Converts a triangulated set to a list. -/
 def toList (S : TriangulatedSet σ R) : List (MvPolynomial σ R) :=
   List.ofFn fun i : Fin S.length ↦ S i.1
 
@@ -294,6 +296,7 @@ theorem toList_pairwise : S.toList.Pairwise fun p q ↦ p.mainVariable < q.mainV
 instance [DecidableEq (MvPolynomial σ R)] : DecidableEq (TriangulatedSet σ R) :=
   fun _ _ ↦ decidable_of_iff _ toList_eq_iff_eq
 
+/-- The empty triangulated set. -/
 protected noncomputable def empty : TriangulatedSet σ R where
   length' := 0
   seq := 0
@@ -326,6 +329,8 @@ theorem eq_empty_of_forall_notMem : (∀ p, p ∉ S) → S = ∅ := fun h ↦ by
   contrapose! h
   exact ⟨S 0, apply_mem <| length_gt_zero_iff.mpr h⟩
 
+
+/-- A triangulated set with exactly one non-zero element. -/
 noncomputable def single_of_ne_zero (hp : p ≠ 0) : TriangulatedSet σ R where
   length' := 1
   seq n := if n = 0 then p else 0
@@ -339,7 +344,7 @@ theorem single_of_ne_zero_apply (hp : p ≠ 0) :
 
 theorem length_single_of_ne_zero (hp : p ≠ 0) : (single_of_ne_zero hp).length = 1 := rfl
 
-
+/-- Takes the first `n` elements of a triangulated set. -/
 noncomputable def take (S : TriangulatedSet σ R) (n : ℕ) : TriangulatedSet σ R where
   length' := n ⊓ S.length
   seq m := if m < n then S m else 0
@@ -384,6 +389,7 @@ theorem toList_take_comm (S : TriangulatedSet σ R) (n : ℕ) :
       toList_getElem (lt_of_lt_of_le (List.length_take ▸ h2) (Nat.min_le_right ..)),
       take_apply' (S.length_toList ▸ List.length_take ▸ h2)]
 
+/-- Drops the first `n` elements of a triangulated set. -/
 def drop (S : TriangulatedSet σ R) (n : ℕ) : TriangulatedSet σ R where
   length' := S.length - n
   seq m := S (m + n)
@@ -547,6 +553,7 @@ theorem list!_eq_list (l : List (MvPolynomial σ R)) (h1 : ∀ p ∈ l, p ≠ 0)
   · rfl
   exact absurd ⟨h1, h2⟩ h
 
+/-- A triangulated set with exactly one element. -/
 noncomputable def single (p : MvPolynomial σ R) : TriangulatedSet σ R :=
   if h : p = 0 then ∅ else single_of_ne_zero h
 

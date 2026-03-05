@@ -76,6 +76,31 @@ end AscendingSet
 
 variable (l : List (MvPolynomial σ R))
 
+/-- The recursive algorithm for computing the Weak Basic Set. -/
+noncomputable def basicSet.go (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R)
+    (hl1 : ∀ p ∈ l, p ≠ 0) (hl2 : ∀ p ∈ l, BS.canConcat p) : TriangulatedSet σ R :=
+  if h : l = [] then BS
+  else
+    let B : MvPolynomial σ R := l.head h
+    have hB : BS.canConcat B := hl2 B (List.head_mem h)
+    let BS' := BS.concat B
+    -- Explicitly check main variable ordering here:
+    let l' := l.filter fun p ↦ B.mainVariable < p.mainVariable ∧ p.initial.reducedToSet BS'
+    have hl1' : ∀ p ∈ l', p ≠ 0 := fun p hp ↦ hl1 p (List.mem_of_mem_filter hp)
+    have hl2' : ∀ p ∈ l', BS'.canConcat p := fun p hp ↦
+      have := List.mem_filter.mp hp
+      ⟨hl1 p this.1, fun _ ↦ by
+        rewrite [concat_apply, length_concat]
+        simp only [add_tsub_cancel_right, lt_self_iff_false, ↓reduceIte]
+        exact (of_decide_eq_true this.2).1⟩
+    go l' BS' hl1' hl2'
+  termination_by l.length
+  decreasing_by
+    refine List.length_filter_lt_length_iff_exists.mpr ⟨B, List.head_mem h, ?_⟩
+    refine ne_true_of_eq_false <| decide_eq_false ?_
+    rewrite [not_and_or, not_lt]
+    exact Or.inl (le_refl _)
+
 /--
 Computes the Weak Basic Set of a list of polynomials.
 Difference from Standard:
@@ -85,32 +110,9 @@ This is because `p.initial.reducedTo B` does NOT imply `B.mainVariable < p.mainV
 We must enforce the triangular structure explicitly.
 -/
 noncomputable def basicSet : TriangulatedSet σ R :=
-  let rec go (l : List (MvPolynomial σ R)) (BS : TriangulatedSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
-      (hl2 : ∀ p ∈ l, BS.canConcat p) : TriangulatedSet σ R :=
-    if h : l = [] then BS
-    else
-      let B : MvPolynomial σ R := l.head h
-      have hB : BS.canConcat B := hl2 B (List.head_mem h)
-      let BS' := BS.concat B
-      -- Explicitly check main variable ordering here:
-      let l' := l.filter fun p ↦ B.mainVariable < p.mainVariable ∧ p.initial.reducedToSet BS'
-      have hl1' : ∀ p ∈ l', p ≠ 0 := fun p hp ↦ hl1 p (List.mem_of_mem_filter hp)
-      have hl2' : ∀ p ∈ l', BS'.canConcat p := fun p hp ↦
-        have := List.mem_filter.mp hp
-        ⟨hl1 p this.1, fun _ ↦ by
-          rewrite [concat_apply, length_concat]
-          simp only [add_tsub_cancel_right, lt_self_iff_false, ↓reduceIte]
-          exact (of_decide_eq_true this.2).1⟩
-      go l' BS' hl1' hl2'
-    termination_by l.length
-    decreasing_by
-      refine List.length_filter_lt_length_iff_exists.mpr ⟨B, List.head_mem h, ?_⟩
-      refine ne_true_of_eq_false <| decide_eq_false ?_
-      rewrite [not_and_or, not_lt]
-      exact Or.inl (le_refl _)
   let sl := l.mergeSort.filter (· ≠ 0)
   have hsl1 : ∀ p ∈ sl, p ≠ 0 := fun _ hp ↦ of_decide_eq_true (List.mem_filter.mp hp).2
-  go sl ∅ hsl1 (fun p hp ↦ empty_canConcat <| hsl1 p hp)
+  basicSet.go sl ∅ hsl1 (fun p hp ↦ empty_canConcat <| hsl1 p hp)
 
 lemma basicSetGo_lt (BS : TriangulatedSet σ R) (hl1 : ∀ p ∈ l, p ≠ 0)
     (hl2 : ∀ p ∈ l, BS.canConcat p) : (h : l ≠ []) →

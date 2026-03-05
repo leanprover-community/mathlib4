@@ -153,6 +153,7 @@ theorem initial_reducedToSet_of_mainVariable_ne_bot' {S : TriangulatedSet σ R}
     p ∈ S → p.mainVariable ≠ ⊥ → p.initial.reducedToSet S := fun ⟨_, _, hi2⟩ hc ↦
   hi2 ▸ AscendingSet.initial_reducedToSet_of_mainVariable_ne_bot h (hi2 ▸ hc)
 
+/-- Construct an ascending set from a triangulated set and a proof of the ascending property. -/
 def mk {S : TriangulatedSet σ R} (h : S.isAscendingSet) : AscendingSet σ R := ⟨S, h⟩
 
 instance : Coe (AscendingSet σ R) (TriangulatedSet σ R) := ⟨Subtype.val⟩
@@ -169,9 +170,10 @@ theorem coe_eq_coe : S.val = T.val ↔ S = T := Subtype.ext_iff.symm
 
 theorem coe_ne_coe : S.val ≠ T.val ↔ S ≠ T := Subtype.coe_ne_coe
 
+/-- The length of the ascending set. -/
 def length (S : AscendingSet σ R) : ℕ := S.val.length
 
-def length_coe : S.length = S.val.length := rfl
+theorem length_coe : S.length = S.val.length := rfl
 
 instance : FunLike (AscendingSet σ R) ℕ (MvPolynomial σ R) where
   coe S := S.val
@@ -199,8 +201,10 @@ theorem subset_def : S ⊆ T ↔ S.val ⊆ T.val := Iff.rfl
 
 theorem ssubset_def : S ⊂ T ↔ S.val ⊂ T.val := Iff.rfl
 
+/-- Converts a ascending set to a finite set. -/
 def toFinset (S : AscendingSet σ R) : Finset (MvPolynomial σ R) := S.val.toFinset
 
+/-- Converts a ascending set to a list. -/
 def toList (S : AscendingSet σ R) : List (MvPolynomial σ R) := S.val.toList
 
 noncomputable instance : EmptyCollection (AscendingSet σ R) := ⟨⟨∅, isAscendingSet_empty⟩⟩
@@ -211,6 +215,7 @@ theorem empty_coe : (∅ : AscendingSet σ R) = (∅ : TriangulatedSet σ R) := 
 
 theorem empty_eq_default : (∅ : AscendingSet σ R) = default := rfl
 
+/-- The order on the ascending set is exactly the order on the underlying triangulated set. -/
 noncomputable def order (S : AscendingSet σ R) : Lex (ℕ → WithTop (WithBot σ ×ₗ ℕ)) :=
   S.val.order
 
@@ -253,6 +258,7 @@ theorem Set.has_min' (h : S'.Nonempty) : ∃ S, Minimal (· ∈ S') S :=
   have ⟨S, hS1, hS2⟩ := has_min S' h
   ⟨S, minimal_iff_forall_lt.mpr ⟨hS1, fun T hT1 hT2 ↦ absurd (hS2 T hT2) <| not_le_of_gt hT1⟩⟩
 
+/-- The minimal element of a nonempty set of ascending sets. -/
 noncomputable def Set.min (h : S'.Nonempty) : AscendingSet σ R := Exists.choose (has_min S' h)
 
 theorem Set.min_mem (h : S'.Nonempty) : min S' h ∈ S' :=
