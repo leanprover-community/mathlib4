@@ -158,3 +158,35 @@ instance testInv_clean : TestInv TestNat := inferInstanceAs% (TestInv Nat)
 -- through projection. So no warnings should fire:
 #guard_msgs in
 instance testField_with_clean_inv : TestField TestNat := inferInstanceAs% (TestField Nat)
+
+/-! ## Head alignment: universe mismatches and type abbreviations
+
+`inferInstanceAs%` should handle cases where the source and expected types have
+different head expressions due to:
+1. Universe-level differences (same constant name, different universe levels)
+2. Type abbreviations (different constant names that unfold to a common head)
+
+These are reproductions of failures reported by Sébastien Gouëzel.
+-/
+
+-- Universe mismatch: `MyVec α n` is a `def` with type `Type u`, but its body
+-- `{l : List α // l.length = n}` has type `Sort (max 1 (u+1))`.
+-- This causes `DecidableEq` to be elaborated at `DecidableEq.{u+1}` for the expected
+-- type vs `DecidableEq.{max 1 (u+1)}` for the source — structurally different but equal.
+def MyVec (α : Type u) (n : Nat) := {l : List α // l.length = n}
+
+#guard_msgs in
+instance [DecidableEq α] : DecidableEq (MyVec α n) :=
+  inferInstanceAs% (DecidableEq {l : List α // l.length = n})
+
+-- Abbreviation head mismatch: `TestAbbrevRel` unfolds to `TestBaseRel`
+class TestBaseRel (r : Nat → Nat → Prop) where
+  decide : Nat → Nat → Bool
+
+abbrev TestAbbrevRel := TestBaseRel (· < ·)
+
+instance : TestBaseRel (· < ·) where
+  decide := (· < ·)
+
+#guard_msgs in
+instance : TestAbbrevRel := inferInstanceAs% (TestBaseRel (· < ·))
