@@ -92,7 +92,7 @@ lemma mul_ω₁_add_mul_ω₂_mem_lattice {L : PeriodPair} {α β : ℚ} :
   refine ⟨fun H ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · obtain ⟨m, n, e⟩ := mem_lattice.mp H
     have := LinearIndependent.pair_iff.mp L.indep (m - α) (n - β)
-      (by simpa using by linear_combination e)
+      (by simp; linear_combination e)
     simp only [sub_eq_zero] at this
     norm_cast at this
     aesop
