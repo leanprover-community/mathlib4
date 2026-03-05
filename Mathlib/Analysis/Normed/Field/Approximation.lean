@@ -21,7 +21,7 @@ polynomials `f` and `g` are sufficiently close, then every root of `f` has a cor
 of `g` nearby.
 
 - `Polynomial.exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt` : Let `K` be a
-densed subfield of a normed field `L`. Every monic polynomial in `L` can be approximated by
+dense subfield of a normed field `L`. Every monic polynomial in `L` can be approximated by
 a monic polynomial in `K` of the same degree.
 
 ## TODO
