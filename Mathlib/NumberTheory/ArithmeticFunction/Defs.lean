@@ -618,10 +618,21 @@ theorem eq_zero_of_squarefree_of_dvd_eq_zero [MonoidWithZero R] {f : ArithmeticF
 
 end IsMultiplicative
 
-@[arith_mult]
+@[simp, arith_mult]
 theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : ArithmeticFunction R) :=
   IsMultiplicative.iff_ne_zero.2 ⟨by simp, by
     intro m n hm hn hmn
     by_cases h : m = 1 <;> aesop⟩
+
+@[arith_mult]
+theorem isMultiplicative_finsetProd [CommSemiring R] {ι : Type*}
+    (f : ι → ArithmeticFunction R) (s : Finset ι) (hf : ∀ i ∈ s, IsMultiplicative (f i)) :
+    IsMultiplicative (∏ i ∈ s, f i) := by
+  classical
+  induction s using Finset.induction
+  case empty => simp
+  case insert a s ha ih =>
+    rw [Finset.prod_insert ha]
+    exact (hf a (s.mem_insert_self a)).mul (ih fun i hi ↦ hf i (Finset.mem_insert_of_mem hi))
 
 end ArithmeticFunction
