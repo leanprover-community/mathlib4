@@ -3,8 +3,10 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Submonoid.Saturation
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Saturation
+public import Mathlib.RingTheory.Localization.Defs
 
 /-! # Localization and submonoid saturation
 
@@ -14,6 +16,8 @@ saturation of `S`.
 Crucially, the saturation of `S` is precisely the elements that become a unit in `A`.
 
 -/
+
+@[expose] public section
 
 namespace IsLocalization
 variable {R : Type*} [CommRing R] {S : Submonoid R} {A : Type*} [CommRing A] [Algebra R A]
@@ -32,10 +36,10 @@ theorem of_saturation_eq [IsLocalization S A] (T : Submonoid R) (ih : S.saturati
   · rw [← mem_saturation_iff_isUnit_algebraMap S A, ih]
     exact le_toSubmonoid_saturation x.2
   · obtain ⟨⟨x₁, ⟨x₂, hx₂⟩⟩, h⟩ := IsLocalization.surj S y
-    obtain ⟨x₃, hx₃⟩ : x₂ ∈ T.saturation := ih ▸ le_toSubmonoid_saturation hx₂
+    obtain ⟨x₃, hx₃⟩ := mem_saturation_iff.mp <| ih ▸ le_toSubmonoid_saturation hx₂
     exact ⟨(x₁ * x₃, ⟨_, hx₃⟩), by simpa [mul_assoc] using congr($h * algebraMap R A x₃)⟩
   · obtain ⟨⟨x₃, hx₃⟩, eq⟩ := IsLocalization.exists_of_eq (M := S) eq
-    obtain ⟨x₄, hx₄⟩ : x₃ ∈ T.saturation := ih ▸ le_toSubmonoid_saturation hx₃
+    obtain ⟨x₄, hx₄⟩ := mem_saturation_iff.mp <| ih ▸ le_toSubmonoid_saturation hx₃
     exact ⟨⟨_, hx₄⟩, by simpa [mul_right_comm] using congr($eq * x₄)⟩
 
 theorem saturation_iff : IsLocalization S.saturation.toSubmonoid A ↔ IsLocalization S A :=
