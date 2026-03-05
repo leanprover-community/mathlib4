@@ -60,7 +60,6 @@ lemma continuous_coinducingCoprod {S : LightProfinite.{u}} (x : X.val.obj ⟨S�
 
 variable {X} {Y : LightCondSet} (f : X ⟶ Y)
 
-attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The map part of the functor `LightCondSet ⥤ TopCat` -/
 @[simps!]
 def toTopCatMap : X.toTopCat ⟶ Y.toTopCat :=
@@ -118,6 +117,7 @@ noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat
         TopCat.toSheafCompHausLike_val_map, ← FunctorToTypes.map_comp_apply]
       rfl }
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 noncomputable def topCatAdjunction : lightCondSetToTopCat.{u} ⊣ topCatToLightCondSet where
   unit := { app := topCatAdjunctionUnit }

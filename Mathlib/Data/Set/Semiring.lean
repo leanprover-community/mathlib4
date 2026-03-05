@@ -196,11 +196,12 @@ noncomputable instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
 
 /-- If `α` is a monoid, the map that sends `a : α` to
 the singleton set `{a}` is a monoid homomorphism. -/
-def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
+noncomputable def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
   toFun a := up {a}
   map_one' := rfl
   map_mul' _ _ := image2_singleton.symm
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The image of a set under a multiplicative homomorphism is a ring homomorphism
 with respect to the pointwise operations on sets. -/
 noncomputable def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) :

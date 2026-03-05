@@ -42,7 +42,7 @@ initialize_simps_projections SemiRingCat (-semiring)
 
 namespace SemiRingCat
 
-instance : CoeSort (SemiRingCat) (Type u) :=
+instance : CoeSort SemiRingCat (Type u) :=
   ⟨SemiRingCat.carrier⟩
 
 attribute [coe] SemiRingCat.carrier
@@ -163,6 +163,12 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
     { obj := fun R ↦ AddCommMonCat.of R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
+@[simp] lemma forget₂_monCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
+    (forget₂ SemiRingCat MonCat).map f x = f x := rfl
+
+@[simp] lemma forget₂_addCommMonCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
+    (forget₂ SemiRingCat AddCommMonCat).map f x = f x := rfl
+
 /-- Ring equivalences are isomorphisms in category of semirings -/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
@@ -194,7 +200,7 @@ initialize_simps_projections RingCat (-ring)
 
 namespace RingCat
 
-instance : CoeSort (RingCat) (Type u) :=
+instance : CoeSort RingCat (Type u) :=
   ⟨RingCat.carrier⟩
 
 attribute [coe] RingCat.carrier
@@ -313,6 +319,9 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
+
+@[simp] lemma forget₂_map {R S : RingCat} (f : R ⟶ S) (x) :
+    (forget₂ RingCat SemiRingCat).map f x = f x := rfl
 
 /-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToSemiRingCat :
@@ -523,7 +532,7 @@ initialize_simps_projections CommRingCat (-commRing)
 
 namespace CommRingCat
 
-instance : CoeSort (CommRingCat) (Type u) :=
+instance : CoeSort CommRingCat (Type u) :=
   ⟨CommRingCat.carrier⟩
 
 attribute [coe] CommRingCat.carrier

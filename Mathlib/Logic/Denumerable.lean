@@ -89,6 +89,7 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
     decode_inv := fun n => by
       simp [decode_ofEquiv, encode_ofEquiv] }
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by

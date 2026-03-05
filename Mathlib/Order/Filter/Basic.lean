@@ -249,7 +249,8 @@ end CompleteLattice
 
 theorem NeBot.ne {f : Filter α} (hf : NeBot f) : f ≠ ⊥ := hf.ne'
 
-@[simp] theorem not_neBot {f : Filter α} : ¬f.NeBot ↔ f = ⊥ := neBot_iff.not_left
+@[simp, push]
+theorem not_neBot {f : Filter α} : ¬f.NeBot ↔ f = ⊥ := neBot_iff.not_left
 
 theorem NeBot.mono {f g : Filter α} (hf : NeBot f) (hg : f ≤ g) : NeBot g :=
   ⟨ne_bot_of_le_ne_bot hf.1 hg⟩
@@ -351,10 +352,9 @@ theorem le_principal_iff {s : Set α} {f : Filter α} : f ≤ 𝓟 s ↔ s ∈ f
 theorem Iic_principal (s : Set α) : Iic (𝓟 s) = { l | s ∈ l } :=
   Set.ext fun _ => le_principal_iff
 
+@[gcongr]
 theorem principal_mono {s t : Set α} : 𝓟 s ≤ 𝓟 t ↔ s ⊆ t := by
   simp only [le_principal_iff, mem_principal]
-
-@[gcongr] alias ⟨_, _root_.GCongr.filter_principal_mono⟩ := principal_mono
 
 @[mono]
 theorem monotone_principal : Monotone (𝓟 : Set α → Filter α) := fun _ _ => principal_mono.2
@@ -616,7 +616,7 @@ theorem eventually_mem_set {s : Set α} {l : Filter α} : (∀ᶠ x in l, x ∈ 
 
 protected theorem ext' {f₁ f₂ : Filter α}
     (h : ∀ p : α → Prop, (∀ᶠ x in f₁, p x) ↔ ∀ᶠ x in f₂, p x) : f₁ = f₂ :=
-  Filter.ext h
+  Filter.ext <| Set.setOf_bijective.surjective.forall.mpr h
 
 theorem Eventually.filter_mono {f₁ f₂ : Filter α} (h : f₁ ≤ f₂) {p : α → Prop}
     (hp : ∀ᶠ x in f₂, p x) : ∀ᶠ x in f₁, p x :=
@@ -655,14 +655,10 @@ theorem Eventually.mp {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f, p
     (hq : ∀ᶠ x in f, p x → q x) : ∀ᶠ x in f, q x :=
   mp_mem hp hq
 
+@[gcongr]
 theorem Eventually.mono {p q : α → Prop} {f : Filter α} (hp : ∀ᶠ x in f, p x)
     (hq : ∀ x, p x → q x) : ∀ᶠ x in f, q x :=
   hp.mp (Eventually.of_forall hq)
-
-@[gcongr]
-theorem GCongr.eventually_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
-    (∀ᶠ x in f, p x) → ∀ᶠ x in f, q x :=
-  (·.mono h)
 
 theorem forall_eventually_of_eventually_forall {f : Filter α} {p : α → β → Prop}
     (h : ∀ᶠ x in f, ∀ y, p x y) : ∀ y, ∀ᶠ x in f, p x y :=
@@ -761,14 +757,10 @@ theorem Frequently.filter_mono {p : α → Prop} {f g : Filter α} (h : ∃ᶠ x
     ∃ᶠ x in g, p x :=
   mt (fun h' => h'.filter_mono hle) h
 
+@[gcongr]
 theorem Frequently.mono {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ x, p x → q x) : ∃ᶠ x in f, q x :=
   h.mp (Eventually.of_forall hpq)
-
-@[gcongr]
-theorem GCongr.frequently_mono {p q : α → Prop} {f : Filter α} (h : ∀ x, p x → q x) :
-    (∃ᶠ x in f, p x) → ∃ᶠ x in f, q x :=
-  (·.mono h)
 
 theorem Frequently.and_eventually {p q : α → Prop} {f : Filter α} (hp : ∃ᶠ x in f, p x)
     (hq : ∀ᶠ x in f, q x) : ∃ᶠ x in f, p x ∧ q x := by
@@ -802,8 +794,8 @@ theorem frequently_iff_forall_eventually_exists_and {p : α → Prop} {f : Filte
 
 theorem frequently_iff {f : Filter α} {P : α → Prop} :
     (∃ᶠ x in f, P x) ↔ ∀ {U}, U ∈ f → ∃ x ∈ U, P x := by
-  simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _)]
-  rfl
+  simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _),
+    Set.setOf_bijective.surjective.forall, Filter.Eventually, mem_setOf]
 
 @[simp, push]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by

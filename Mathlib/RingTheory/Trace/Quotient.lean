@@ -85,6 +85,7 @@ lemma trace_quotient_eq_trace_localization_quotient (x) :
       equivQuotientMapMaximalIdeal, Ideal.Quotient.algebraMap_quotient_map_quotient]
     rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 open nonZeroDivisors in
 /-- The trace map on `B → A` coincides with the trace map on `B⧸pB → A⧸p`. -/
 lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [IsDomain S]

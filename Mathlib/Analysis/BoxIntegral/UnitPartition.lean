@@ -180,6 +180,8 @@ lemma box.upper_sub_lower (ν : ι → ℤ) (i : ι) :
     (box n ν).upper i - (box n ν).lower i = 1 / n := by
   simp_rw [box, add_div, add_sub_cancel_left]
 
+section fintype
+
 variable [Fintype ι]
 
 theorem diam_boxIcc (ν : ι → ℤ) :
@@ -316,7 +318,9 @@ theorem prepartition_isPartition {B : Box ι} (hB : hasIntegralVertices B) :
   rw [TaggedPrepartition.mem_toPrepartition, mem_prepartition_iff]
   exact ⟨index n x, mem_admissibleIndex_of_mem_box n hB hx, rfl⟩
 
-open Submodule Pointwise BigOperators
+end fintype
+
+open Submodule Pointwise
 
 open scoped Pointwise
 
@@ -325,9 +329,14 @@ variable (c : ℝ) (s : Set (ι → ℝ)) (F : (ι → ℝ) → ℝ)
 -- The image of `ι → ℤ` inside `ι → ℝ`
 local notation "L" => span ℤ (Set.range (Pi.basisFun ℝ ι))
 
+section finite
+
+variable [Finite ι]
+
 variable {n} in
 theorem mem_smul_span_iff {v : ι → ℝ} :
     v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
+  have := Fintype.ofFinite ι
   rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Module.Basis.mem_span_iff_repr_mem]
   simp_rw [Module.Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
     IsUnit.unit_spec, inv_inv, smul_eq_mul]
@@ -349,6 +358,28 @@ theorem tag_index_eq_self_of_mem_smul_span {x : ι → ℝ} (hx : x ∈ (n : ℝ
 theorem eq_of_mem_smul_span_of_index_eq_index {x y : ι → ℝ} (hx : x ∈ (n : ℝ)⁻¹ • L)
     (hy : y ∈ (n : ℝ)⁻¹ • L) (h : index n x = index n y) : x = y := by
   rw [← tag_index_eq_self_of_mem_smul_span n hx, ← tag_index_eq_self_of_mem_smul_span n hy, h]
+
+private def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
+    ↑(s ∩ c⁻¹ • L) ≃ ↑(c • s ∩ L) :=
+  Equiv.subtypeEquiv (Equiv.smulRight hc) (fun x ↦ by
+    simp_rw [Set.mem_inter_iff, Equiv.smulRight_apply, Set.smul_mem_smul_set_iff₀ hc,
+      ← Set.mem_inv_smul_set_iff₀ hc])
+
+private theorem tendsto_card_div_pow₂ (hs₁ : IsBounded s)
+    (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) {x y : ℝ} (hx : 0 < x) (hy : x ≤ y) :
+    Nat.card ↑(s ∩ x⁻¹ • L) ≤ Nat.card ↑(s ∩ y⁻¹ • L) := by
+  have := Fintype.ofFinite ι
+  rw [Nat.card_congr (tendsto_card_div_pow₁ s hx.ne'),
+      Nat.card_congr (tendsto_card_div_pow₁ s (hx.trans_le hy).ne')]
+  refine Nat.card_mono ?_ ?_
+  · exact ZSpan.setFinite_inter _ (IsBounded.smul₀ hs₁ y)
+  · exact Set.inter_subset_inter_left _ <| hs₄ hx hy
+
+end finite
+
+section fintype
+
+variable [Fintype ι]
 
 theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀ : s ≤ B) :
     integralSum (Set.indicator s F) (BoxAdditiveMap.toSMul (Measure.toBoxAdditive volume))
@@ -431,21 +462,6 @@ theorem _root_.tendsto_card_div_pow_atTop_volume (hs₁ : IsBounded s)
   · rw [tsum_const, nsmul_eq_mul, mul_one, Nat.cast_inj]
   · rw [setIntegral_const, smul_eq_mul, mul_one]
 
-private def tendsto_card_div_pow₁ {c : ℝ} (hc : c ≠ 0) :
-    ↑(s ∩ c⁻¹ • L) ≃ ↑(c • s ∩ L) :=
-  Equiv.subtypeEquiv (Equiv.smulRight hc) (fun x ↦ by
-    simp_rw [Set.mem_inter_iff, Equiv.smulRight_apply, Set.smul_mem_smul_set_iff₀ hc,
-      ← Set.mem_inv_smul_set_iff₀ hc])
-
-private theorem tendsto_card_div_pow₂ (hs₁ : IsBounded s)
-    (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) {x y : ℝ} (hx : 0 < x) (hy : x ≤ y) :
-    Nat.card ↑(s ∩ x⁻¹ • L) ≤ Nat.card ↑(s ∩ y⁻¹ • L) := by
-  rw [Nat.card_congr (tendsto_card_div_pow₁ s hx.ne'),
-      Nat.card_congr (tendsto_card_div_pow₁ s (hx.trans_le hy).ne')]
-  refine Nat.card_mono ?_ ?_
-  · exact ZSpan.setFinite_inter _ (IsBounded.smul₀ hs₁ y)
-  · exact Set.inter_subset_inter_left _ <| hs₄ hx hy
-
 private theorem tendsto_card_div_pow₃ (hs₁ : IsBounded s)
     (hs₄ : ∀ ⦃x y : ℝ⦄, 0 < x → x ≤ y → x • s ⊆ y • s) :
     ∀ᶠ x : ℝ in atTop, (Nat.card ↑(s ∩ (⌊x⌋₊ : ℝ)⁻¹ • L) : ℝ) / x ^ card ι ≤
@@ -491,5 +507,7 @@ theorem _root_.tendsto_card_div_pow_atTop_volume' (hs₁ : IsBounded s)
   · refine Tendsto.congr' (tendsto_card_div_pow₆ s) (Tendsto.mul ?_ (Tendsto.pow ?_ _))
     · exact Tendsto.comp (tendsto_card_div_pow_atTop_volume s hs₁ hs₂ hs₃) tendsto_nat_ceil_atTop
     · exact tendsto_nat_ceil_div_atTop
+
+end fintype
 
 end BoxIntegral.unitPartition

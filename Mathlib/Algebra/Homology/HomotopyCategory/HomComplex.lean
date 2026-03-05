@@ -71,6 +71,7 @@ instance : AddCommGroup (Cochain F G n) := by
   dsimp only [Cochain]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 instance : Module R (Cochain F G n) := by
   dsimp only [Cochain]
   infer_instance
@@ -486,6 +487,7 @@ lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n�
     add_zero, add_neg_cancel, Units.neg_smul,
     Linear.units_smul_comp, Linear.comp_units_smul]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
     (m₁ m₂ m₁₂ : ℤ) (h₁₂ : n₁₂ + 1 = m₁₂) (h₁ : n₁ + 1 = m₁) (h₂ : n₂ + 1 = m₂) :
     δ n₁₂ m₁₂ (z₁.comp z₂ h) = z₁.comp (δ n₂ m₂ z₂) (by rw [← h₁₂, ← h₂, ← h, add_assoc]) +
@@ -711,6 +713,7 @@ def toCochainAddMonoidHom : Cocycle K L n →+ Cochain K L n where
   map_zero' := by simp
   map_add' := by simp
 
+set_option backward.isDefEq.respectTransparency false in
 variable (L n) in
 /-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
 def isKernel (hm : n + 1 = m) :
@@ -721,8 +724,17 @@ def isKernel (hm : n + 1 = m) :
       { toFun x := ⟨s.ι x, by
           rw [mem_iff _ _ hm]
           exact ConcreteCategory.congr_hom s.condition x⟩
-        map_zero' := by cat_disch
-        map_add' := by cat_disch })
+        map_zero' := by
+          #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+          this was just `cat_disch`. -/
+          simp +instances only [HomComplex_X, Functor.const_obj_obj, parallelPair_obj_zero,
+            map_zero]
+          cat_disch
+        map_add' := by
+          #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
+          this was just `cat_disch`. -/
+          simp +instances only [HomComplex_X, Functor.const_obj_obj, parallelPair_obj_zero, map_add]
+          cat_disch })
     (by cat_disch) (fun s l hl ↦ by ext : 3; simp [← hl])
 
 end Cocycle
@@ -851,6 +863,7 @@ lemma single_zero (p q n : ℤ) :
     · simp [single_v_eq_zero' _ _ _ _ _ hq]
   · simp [single_v_eq_zero _ _ _ _ _ hp]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma δ_single {p q : ℤ} (f : K.X p ⟶ L.X q) (n m : ℤ) (hm : n + 1 = m)
     (p' q' : ℤ) (hp' : p' + 1 = p) (hq' : q + 1 = q') :
     δ n m (single f n) = single (f ≫ L.d q q') m + m.negOnePow • single (K.d p' p ≫ f) m := by
@@ -911,6 +924,7 @@ variable (K L n)
 @[simp]
 protected lemma map_zero : (0 : Cochain K L n).map Φ = 0 := by cat_disch
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂)
     (Φ : C ⥤ D) [Φ.Additive] :
@@ -927,6 +941,7 @@ end Cochain
 
 variable (n)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma δ_map : δ n m (z.map Φ) = (δ n m z).map Φ := by
   by_cases hnm : n + 1 = m

@@ -56,6 +56,7 @@ theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullbac
     TopCat.pullbackIsoProdSubtype_inv_snd_apply] at ha'
   simpa using ha'
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `G` preserves the relevant pullbacks and every effective epi in `C` is a quotient map (which is
 the case when `C` is `CompHaus` or `Profinite`), then `yonedaPresheaf` satisfies the equalizer

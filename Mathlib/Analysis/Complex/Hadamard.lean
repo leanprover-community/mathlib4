@@ -16,17 +16,17 @@ In this file we present a proof of Hadamard's three-lines Theorem.
 ## Main result
 
 - `norm_le_interp_of_mem_verticalClosedStrip` :
-Hadamard three-line theorem: If `f` is a bounded function, continuous on
-`re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
-`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value of
-`f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
-`‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
-This can be seen to be equivalent to the statement
-that `log M(re z)` is a convex function on `[0, 1]`.
+  Hadamard three-line theorem: If `f` is a bounded function, continuous on
+  `re ⁻¹' [l, u]` and differentiable on `re ⁻¹' (l, u)`, then for
+  `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value
+  of `f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [l, u]` the inequality
+  `‖f(z)‖ ≤ M(0) ^ (1 - ((z.re - l) / (u - l))) * M(1) ^ ((z.re - l) / (u - l))` holds.
+  This can be seen to be equivalent to the statement
+  that `log M(re z)` is a convex function on `[0, 1]`.
 
 - `norm_le_interp_of_mem_verticalClosedStrip'` :
-Variant of the above lemma in simpler terms. In particular, it makes no mention of the helper
-functions defined in this file.
+  Variant of the above lemma in simpler terms. In particular, it makes no mention of the helper
+  functions defined in this file.
 
 ## Main definitions
 
