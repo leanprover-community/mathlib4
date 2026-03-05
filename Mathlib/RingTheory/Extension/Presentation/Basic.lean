@@ -82,7 +82,7 @@ lemma relation_mem_ker (i) : P.relation i ∈ P.ker := by
 protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.ker
 
 /-- `P.Quotient` is `P.Ring`-isomorphic to `S` and in particular `R`-isomorphic to `S`. -/
-def quotientEquiv : P.Quotient ≃ₐ[P.Ring] S :=
+noncomputable def quotientEquiv : P.Quotient ≃ₐ[P.Ring] S :=
   Ideal.quotientKerAlgEquivOfRightInverse (f := Algebra.ofId P.Ring S) (g := P.σ) <| fun x ↦ by
     rw [Algebra.ofId_apply, P.algebraMap_apply, P.aeval_val_σ]
 
@@ -160,7 +160,7 @@ section Construction
 
 /-- Transport a presentation along an algebra isomorphism. -/
 @[simps toGenerators relation]
-def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
+noncomputable def ofAlgEquiv (P : Presentation R S ι σ) {T : Type*} [CommRing T] [Algebra R T]
     (e : S ≃ₐ[R] T) :
     Presentation R T ι σ where
   __ := Generators.ofAlgEquiv P.toGenerators e

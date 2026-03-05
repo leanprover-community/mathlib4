@@ -150,7 +150,7 @@ lemma locallyCoverDense_of_le (hPQ : P ≤ Q) :
       rw [← comp_over (𝒰.f i) S]
       exact Q.comp_mem _ _ (hPQ _ <| 𝒰.map_prop i) X.prop
     use (𝒰.X i).asOverProp S p, MorphismProperty.Over.homMk (𝒰.f i) (comp_over (𝒰.f i) S), 𝟙 _
-    exact ⟨hle _ ⟨i⟩, rfl⟩
+    exact ⟨hle _ _ ⟨i⟩, rfl⟩
 
 instance : (MorphismProperty.Over.forget P ⊤ S).LocallyCoverDense (overGrothendieckTopology P S) :=
   locallyCoverDense_of_le S le_rfl
@@ -218,13 +218,13 @@ lemma smallGrothendieckTopologyOfLE_eq_toGrothendieck_smallPretopology (hPQ : P 
     · use 𝒰, h, hj
     · rintro - - ⟨i⟩
       let fi : (𝒰.X i).asOverProp S (hj i) ⟶ X := (𝒰.f i).asOverProp S
-      have : R.functorPushforward _ ((MorphismProperty.Over.forget Q ⊤ S).map fi) := le _ ⟨i⟩
+      have : R.functorPushforward _ ((MorphismProperty.Over.forget Q ⊤ S).map fi) := le _ _ ⟨i⟩
       rwa [Sieve.functorPushforward_apply,
         Sieve.mem_functorPushforward_iff_of_full_of_faithful] at this
   · rintro ⟨T, ⟨𝒰, h, p, rfl⟩, le⟩
     use 𝒰, h
     rintro - - ⟨i⟩
-    exact ⟨(𝒰.X i).asOverProp S (p i), (𝒰.f i).asOverProp S, 𝟙 _, le _ ⟨i⟩, rfl⟩
+    exact ⟨(𝒰.X i).asOverProp S (p i), (𝒰.f i).asOverProp S, 𝟙 _, le _ _ ⟨i⟩, rfl⟩
 
 lemma smallGrothendieckTopology_eq_toGrothendieck_smallPretopology [P.HasOfPostcompProperty P] :
     S.smallGrothendieckTopology P = (S.smallPretopology P P).toGrothendieck :=
@@ -241,7 +241,7 @@ lemma mem_toGrothendieck_smallPretopology (X : Q.Over ⊤ S) (R : Sieve X) :
   · rintro ⟨T, ⟨𝒰, h, p, rfl⟩, hle⟩
     intro x
     obtain ⟨y, hy⟩ := 𝒰.covers x
-    refine ⟨(𝒰.X (𝒰.idx x)).asOverProp S (p _), (𝒰.f (𝒰.idx x)).asOverProp S, y, hle _ ?_,
+    refine ⟨(𝒰.X (𝒰.idx x)).asOverProp S (p _), (𝒰.f (𝒰.idx x)).asOverProp S, y, hle _ _ ?_,
       𝒰.map_prop _, hy⟩
     use 𝒰.idx x
   · choose Y f y hf hP hy using h

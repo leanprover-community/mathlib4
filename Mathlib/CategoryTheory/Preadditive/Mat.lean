@@ -280,7 +280,6 @@ end Functor
 
 namespace Mat_
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The embedding of `C` into `Mat_ C` as one-by-one matrices.
 (We index the summands by `PUnit`.) -/
 @[simps]
@@ -418,7 +417,6 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
 set_option backward.isDefEq.respectTransparency false in
 instance lift_additive (F : C ⥤ D) [Functor.Additive F] : Functor.Additive (lift F) where
 
-set_option backward.isDefEq.respectTransparency false in
 /-- An additive functor `C ⥤ D` factors through its lift to `Mat_ C ⥤ D`. -/
 @[simps!]
 def embeddingLiftIso (F : C ⥤ D) [Functor.Additive F] : embedding C ⋙ lift F ≅ F :=

@@ -5,8 +5,11 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.Ideal.Cotangent
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.KrullDimension.PID
 
 /-!
 # Define Regular Local Ring
@@ -59,5 +62,16 @@ lemma of_ringEquiv [IsRegularLocalRing R] {R' : Type*} [CommRing R']
 lemma iff_finrank_cotangentSpace [IsLocalRing R] [IsNoetherianRing R] :
     IsRegularLocalRing R ↔ Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R := by
   rw [isRegularLocalRing_def, spanFinrank_maximalIdeal_eq_finrank_cotangentSpace]
+
+instance {k : Type*} [Field k] : IsRegularLocalRing k := by
+  simp [isRegularLocalRing_def, maximalIdeal_eq_bot]
+
+set_option backward.isDefEq.respectTransparency false in
+instance [IsDomain R] [IsDiscreteValuationRing R] : IsRegularLocalRing R := by
+  apply of_spanFinrank_maximalIdeal_le
+  rcases IsPrincipalIdealRing.principal (maximalIdeal R) with ⟨x, hx⟩
+  simpa only [(IsPrincipalIdealRing.ringKrullDim_eq_one R) (IsDiscreteValuationRing.not_isField R),
+    Nat.cast_le_one, ← Set.ncard_singleton x, hx] using
+    Submodule.spanFinrank_span_le_ncard_of_finite (Set.finite_singleton x)
 
 end IsRegularLocalRing

@@ -557,6 +557,11 @@ variable (R S) [NoZeroDivisors R]
 theorem rank_polynomial_polynomial : Module.rank R[X] S[X] = Module.rank R S :=
   ((Algebra.isPushout_iff ..).mp inferInstance).rank_eq
 
+#adaptation_note /-- Needed after leanprover/lean4#12564 -/
+noncomputable instance (σ : Type u) [Algebra R S] : Module R (MvPolynomial σ S) :=
+  inferInstanceAs <| Module R (AddMonoidAlgebra S (σ →₀ ℕ))
+
+set_option backward.isDefEq.respectTransparency false in
 theorem rank_mvPolynomial_mvPolynomial (σ : Type u) :
     Module.rank (MvPolynomial σ R) (MvPolynomial σ S) = Cardinal.lift.{u} (Module.rank R S) := by
   have := Algebra.isPushout_iff R (MvPolynomial σ R) S (MvPolynomial σ S)
