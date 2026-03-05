@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Bases in normed affine spaces.
@@ -19,6 +21,8 @@ This file contains results about bases in normed affine spaces.
 * `IsOpen.exists_subset_affineIndependent_span_eq_top`
 * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
+
+public section
 
 assert_not_exists HasFDerivAt
 
@@ -109,12 +113,14 @@ theorem IsOpen.exists_subset_affineIndependent_span_eq_top {u : Set P} (hu : IsO
     (singleton_nonempty _) (affineIndependent_of_subsingleton _ _) with ⟨s, -, hsu, hs⟩
   exact ⟨s, hsu, hs⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The affine span of a nonempty open set is `⊤`. -/
 theorem IsOpen.affineSpan_eq_top {u : Set P} (hu : IsOpen u) (hne : u.Nonempty) :
     affineSpan ℝ u = ⊤ :=
   let ⟨_, hsu, _, hs'⟩ := hu.exists_subset_affineIndependent_span_eq_top hne
   top_unique <| hs' ▸ affineSpan_mono _ hsu
 
+set_option backward.isDefEq.respectTransparency false in
 theorem affineSpan_eq_top_of_nonempty_interior {s : Set V}
     (hs : (interior <| convexHull ℝ s).Nonempty) : affineSpan ℝ s = ⊤ :=
   top_unique <| isOpen_interior.affineSpan_eq_top hs ▸

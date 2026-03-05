@@ -3,7 +3,6 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module

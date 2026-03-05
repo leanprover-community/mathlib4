@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -15,6 +17,8 @@ In this file we show that `Algebra.FiniteType` and `Algebra.FinitePresentation` 
 stable under base change.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -35,6 +39,7 @@ theorem baseChangeAux_surj {σ : Type*} {f : MvPolynomial σ R →ₐ[R] A} (hf 
   · exact Function.RightInverse.surjective (congrFun rfl)
   · exact hf
 
+set_option backward.isDefEq.respectTransparency false in
 instance baseChange [hfa : FiniteType R A] : Algebra.FiniteType B (B ⊗[R] A) := by
   rw [iff_quotient_mvPolynomial''] at *
   obtain ⟨n, f, hf⟩ := hfa
@@ -48,6 +53,7 @@ end FiniteType
 
 namespace FinitePresentation
 
+set_option backward.isDefEq.respectTransparency false in
 instance baseChange [FinitePresentation R A] : FinitePresentation B (B ⊗[R] A) := by
   obtain ⟨n, f, hsurj, hfg⟩ := ‹FinitePresentation R A›
   let g : B ⊗[R] MvPolynomial (Fin n) R →ₐ[B] B ⊗[R] A :=

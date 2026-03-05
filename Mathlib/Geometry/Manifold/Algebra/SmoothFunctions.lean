@@ -3,13 +3,17 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.Structures
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Structures
 
 /-!
 # Algebraic structures over `C^n` functions
 
 In this file, we define instances of algebraic structures over `C^n` functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -106,7 +110,7 @@ variable (I N)
 `C^n⟮I, N; I'', G''⟯`. -/]
 def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G']
     [ContMDiffMul I' n G'] {G'' : Type*} [Monoid G''] [TopologicalSpace G''] [ChartedSpace H'' G'']
-    [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : ContMDiff I' I'' n φ) :
+    [ContMDiffMul I'' n G''] (φ : G' →* G'') (hφ : CMDiff n φ) :
     C^n⟮I, N; I', G'⟯ →* C^n⟮I, N; I'', G''⟯ where
   toFun f := ⟨φ ∘ f, hφ.comp f.contMDiff⟩
   map_one' := by ext; change φ 1 = 1; simp
@@ -191,7 +195,7 @@ variable (I N)
 'left-composition-by-`φ`' ring homomorphism from `C^n⟮I, N; I', R'⟯` to `C^n⟮I, N; I'', R''⟯`. -/
 def compLeftRingHom {R' : Type*} [Ring R'] [TopologicalSpace R'] [ChartedSpace H' R']
     [ContMDiffRing I' n R'] {R'' : Type*} [Ring R''] [TopologicalSpace R''] [ChartedSpace H'' R'']
-    [ContMDiffRing I'' n R''] (φ : R' →+* R'') (hφ : ContMDiff I' I'' n φ) :
+    [ContMDiffRing I'' n R''] (φ : R' →+* R'') (hφ : CMDiff n φ) :
     C^n⟮I, N; I', R'⟯ →+* C^n⟮I, N; I'', R''⟯ :=
   { ContMDiffMap.compLeftMonoidHom I N φ.toMonoidHom hφ,
     ContMDiffMap.compLeftAddMonoidHom I N φ.toAddMonoidHom hφ with
@@ -324,7 +328,6 @@ theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : 
 functions with values in `𝕜`. -/
 instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     Module C^n⟮I, N; 𝓘(𝕜), 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ where
-  smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)

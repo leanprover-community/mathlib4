@@ -3,29 +3,30 @@ Copyright (c) 2025 Beibei Xiong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Beibei Xiong, Yu Shao, Weijie Jiang, Zhengfeng Yang
 -/
-import Mathlib.Tactic.Ring
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.Choose.Basic
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Tactic.NormNum.Inv
+public import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # Stirling Numbers
 
 This file defines Stirling numbers of the first and second kinds, proves their fundamental
 recurrence relations, and establishes some of their key properties and identities.
--/
 
-/-!
-# The Stirling numbers of the first kind
+## The Stirling numbers of the first kind
 
 The unsigned Stirling numbers of the first kind, represent the number of ways
 to partition `n` distinct elements into `k` non-empty cycles.
 
-# The Stirling numbers of the second kind
+## The Stirling numbers of the second kind
 
 The Stirling numbers of the second kind, represent the number of ways to partition
 `n` distinct elements into `k` non-empty subsets.
 
-# Main definitions
+## Main definitions
 
 * `Nat.stirlingFirst`: the number of ways to partition `n` distinct elements into `k` non-empty
   cycles, defined by the recursive relationship it satisfies.
@@ -36,6 +37,8 @@ The Stirling numbers of the second kind, represent the number of ways to partiti
 
 * [Knuth, *The Art of Computer Programming*, Volume 1, §1.2.6][knuth1997]
 -/
+
+@[expose] public section
 
 open Nat
 

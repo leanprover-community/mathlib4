@@ -3,7 +3,9 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge
 -/
-import Mathlib.Algebra.Group.Submonoid.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Defs
 
 /-!
 
@@ -16,6 +18,8 @@ This defines left Ore sets on arbitrary monoids.
 * https://ncatlab.org/nlab/show/Ore+set
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -116,6 +120,14 @@ instance (priority := 100) oreSetComm {R} [CommMonoid R] (S : Submonoid R) : Ore
   oreNum r _ := r
   oreDenom _ s := s
   ore_eq r s := by rw [mul_comm]
+
+@[to_additive (attr := simp) AddOreLocalization.addOreSetComm_oreMin]
+lemma oreSetComm_oreNum {R : Type*} [CommMonoid R] (S : Submonoid R) (r : R) (s : S) :
+    oreNum r s = r := rfl
+
+@[to_additive (attr := simp) AddOreLocalization.addOreSetComm_oreSubtra]
+lemma oreSetComm_oreDenom {R : Type*} [CommMonoid R] (S : Submonoid R) (r : R) (s : S) :
+    oreDenom r s = s := rfl
 
 end Monoid
 

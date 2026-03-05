@@ -1,0 +1,35 @@
+/-
+Copyright (c) 2025 Yaël Dillies, Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yaël Dillies, Joël Riou
+-/
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+
+/-!
+# (Co)kernels in functor categories
+-/
+
+@[expose] public section
+
+namespace CategoryTheory.Limits
+universe u
+variable (C : Type*) [Category.{u} C] [HasZeroMorphisms C]
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The kernel inclusion is itself a kernel in the functor category. -/
+noncomputable def kerIsKernel [HasKernels C] :
+    IsLimit (KernelFork.ofι (ker.ι C) (ker.condition C)) :=
+  evaluationJointlyReflectsLimits _ fun f ↦ (KernelFork.isLimitMapConeEquiv ..).2 <|
+    (kernelIsKernel f.hom).ofIsoLimit <| Fork.ext <| .refl _
+
+set_option backward.isDefEq.respectTransparency false in
+/-- The cokernel projection is itself a cokernel in the functor category. -/
+noncomputable def cokerIsCokernel [HasCokernels C] :
+    IsColimit (CokernelCofork.ofπ (coker.π C) (coker.condition C)) :=
+  evaluationJointlyReflectsColimits _ fun f ↦ (CokernelCofork.isColimitMapCoconeEquiv ..).2 <|
+    (cokernelIsCokernel f.hom).ofIsoColimit <| Cofork.ext <| .refl _
+
+end CategoryTheory.Limits

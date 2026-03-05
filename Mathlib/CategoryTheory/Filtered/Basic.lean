@@ -3,7 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.Data.Fin.VecNotation
 
 /-!
 # Filtered categories
@@ -15,8 +18,14 @@ We give a simple characterisation of this condition as
    are equal, and
 3. there exists some object.
 
+An important example of filtered category is given by nonempty directed types;
+actually, filtered categories may be considered as a generalization of nonempty directed types.
+In the file `CategoryTheory.Presentable.Directed`, we show that "conversely"
+if `C` is a filtered category, there exists a final functor `α ⥤ C` from
+a nonempty directed type (`IsFiltered.isDirected`).
+
 Filtered colimits are often better behaved than arbitrary colimits.
-See `CategoryTheory/Limits/Types` for some details.
+See `Mathlib/CategoryTheory/Limits/Types/` for some details.
 
 Filtered categories are nice because colimits indexed by filtered categories tend to be
 easier to describe than general colimits (and more often preserved by functors).
@@ -41,14 +50,16 @@ All of the above API, except for the `bowtie` and the `tulip`, is also provided 
 categories.
 
 ## See also
-In `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit` we show that filtered colimits
-commute with finite limits.
+In `Mathlib/CategoryTheory/Limits/FilteredColimitCommutesFiniteLimit.lean` we show that filtered
+colimits commute with finite limits.
 
 There is another characterization of filtered categories, namely that whenever `F : J ⥤ C` is a
 functor from a finite category, there is `X : C` such that `Nonempty (limit (F.op ⋙ yoneda.obj X))`.
-This is shown in `CategoryTheory.Limits.Filtered`.
+This is shown in `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 
 -/
+
+@[expose] public section
 
 
 open Function
@@ -94,14 +105,14 @@ instance (priority := 100) isFiltered_of_semilatticeSup_nonempty (α : Type u) [
     [Nonempty α] : IsFiltered α where
 
 instance (priority := 100) isFilteredOrEmpty_of_directed_le (α : Type u) [Preorder α]
-    [IsDirected α (· ≤ ·)] : IsFilteredOrEmpty α where
+    [IsDirectedOrder α] : IsFilteredOrEmpty α where
   cocone_objs X Y :=
     let ⟨Z, h1, h2⟩ := exists_ge_ge X Y
     ⟨Z, homOfLE h1, homOfLE h2, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by subsingleton⟩
 
 instance (priority := 100) isFiltered_of_directed_le_nonempty (α : Type u) [Preorder α]
-    [IsDirected α (· ≤ ·)] [Nonempty α] : IsFiltered α where
+    [IsDirectedOrder α] [Nonempty α] : IsFiltered α where
 
 -- Sanity checks
 example (α : Type u) [SemilatticeSup α] [OrderBot α] : IsFiltered α := by infer_instance
@@ -161,6 +172,10 @@ theorem coeq_condition {j j' : C} (f f' : j ⟶ j') : f ≫ coeqHom f f' = f' �
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose_spec
 
 end AllowEmpty
+
+lemma isDirectedOrder (α : Type u) [Preorder α] [IsFiltered α] :
+    IsDirectedOrder α where
+  directed i j := ⟨max i j, leOfHom (leftToMax i j), leOfHom (rightToMax i j)⟩
 
 end IsFiltered
 
@@ -241,12 +256,7 @@ theorem sup_exists :
     rw [← Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
     · rcases h with ⟨rfl, rfl⟩
-      by_cases hf : f = f'
-      · subst hf
-        apply coeq_condition
-      · rw [@w' _ _ mX mY f']
-        simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        grind
+      grind [coeq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -281,9 +291,8 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
-    Finset.univ.biUnion   fun X : J =>
-      Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
+    Finset.univ.biUnion fun X : J => Finset.univ.biUnion fun Y : J =>
+      Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
   refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
   intro j j' g
@@ -315,12 +324,17 @@ theorem of_isRightAdjoint (R : C ⥤ D) [R.IsRightAdjoint] : IsFiltered D :=
 theorem of_equivalence (h : C ≌ D) : IsFiltered D :=
   of_right_adjoint h.symm.toAdjunction
 
+omit [IsFiltered C] in
+lemma iff_of_equivalence (e : C ≌ D) : IsFiltered C ↔ IsFiltered D :=
+  ⟨fun _ ↦ .of_equivalence e, fun _ ↦ .of_equivalence e.symm⟩
+
 end Nonempty
 
 section OfCocone
 
 open CategoryTheory.Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If every finite diagram in `C` admits a cocone, then `C` is filtered. It is sufficient to verify
 this for diagrams whose shape lives in any one fixed universe. -/
 theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
@@ -410,6 +424,7 @@ theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
     f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h := by
   simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
     g ≫ coeq₃Hom f g h = h ≫ coeq₃Hom f g h := by
   dsimp [coeq₃Hom]
@@ -449,6 +464,69 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶
   simp_rw [Category.assoc] at hs
   exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by simp only [← Category.assoc, ht], hs⟩
 
+/-- Given a "crown" of morphisms
+```
+  j₁   j₂   j₃  ... jₙ
+ /  \  /\  /  \
+|    \/  \/    |
+|    /\  /\    |
+|   |  \/  |   |
+ \  |  /\  |  /
+  \ | /  \ | /
+   vvv    vvv
+    k₁    k₂
+```
+in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
+making the resulting squares commute.
+-/
+theorem crown
+    {ι : Type*} [Finite ι] (j : ι → C) {k₁ k₂ : C} (f : ∀ i, j i ⟶ k₁) (g : ∀ i, j i ⟶ k₂) :
+    ∃ (s : C) (α : k₁ ⟶ s) (β : k₂ ⟶ s), ∀ i, f i ≫ α = g i ≫ β := by
+  induction ι using Finite.induction_empty_option with
+  | @of_equiv ι₁ ι₂ e IH =>
+    obtain ⟨s, α, β, H⟩ := IH (j ∘ e) (f <| e ·) (g <| e ·)
+    exact ⟨s, α, β, e.forall_congr_right.mp H⟩
+  | h_empty => exact ⟨max k₁ k₂, leftToMax k₁ k₂, rightToMax k₁ k₂, by simp⟩
+  | @h_option ι _ IH =>
+    obtain ⟨s₁, α₁, β₁, H₁⟩ := IH (j ·) (f ·) (g ·)
+    obtain ⟨s₂, α₂, β₂, H₂⟩ := span (f .none) (g .none)
+    obtain ⟨t, α, β, h₁, h₂⟩ := bowtie α₁ α₂ β₁ β₂
+    exact ⟨t, α₁ ≫ α, β₁ ≫ α, Option.rec (by grind) (by grind)⟩
+
+/-- Given a "crown" of morphisms
+```
+  j₁   j₂   j₃
+ /  \  /\  /  \
+|    \/  \/    |
+|    /\  /\    |
+|   |  \/  |   |
+ \  |  /\  |  /
+  \ | /  \ | /
+   vvv    vvv
+    k₁    k₂
+```
+in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
+making the resulting squares commute.
+-/
+theorem crown₃
+    {j₁ j₂ j₃ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁)
+    (g₂ : j₂ ⟶ k₂) (f₃ : j₃ ⟶ k₁) (g₃ : j₃ ⟶ k₂) :
+    ∃ (s : C) (α : k₁ ⟶ s) (β : k₂ ⟶ s),
+      f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = g₂ ≫ β ∧ f₃ ≫ α = g₃ ≫ β := by
+  obtain ⟨s, α, β, H⟩ := crown ![j₁, j₂, j₃] (Fin.cons f₁ (Fin.cons f₂ (Fin.cons f₃ nofun)))
+     (Fin.cons g₁ (Fin.cons g₂ (Fin.cons g₃ nofun)))
+  exact ⟨s, α, β, H 0, H 1, H 2⟩
+
+theorem crown₄
+    {j₁ j₂ j₃ j₄ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶ k₂) (f₂ : j₂ ⟶ k₁)
+    (g₂ : j₂ ⟶ k₂) (f₃ : j₃ ⟶ k₁) (g₃ : j₃ ⟶ k₂) (f₄ : j₄ ⟶ k₁) (g₄ : j₄ ⟶ k₂) :
+    ∃ (s : C) (α : k₁ ⟶ s) (β : k₂ ⟶ s),
+      f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = g₂ ≫ β ∧ f₃ ≫ α = g₃ ≫ β ∧ f₄ ≫ α = g₄ ≫ β := by
+  obtain ⟨s, α, β, H⟩ := crown ![j₁, j₂, j₃, j₄]
+      (Fin.cons f₁ (Fin.cons f₂ (Fin.cons f₃ (Fin.cons f₄ nofun))))
+     (Fin.cons g₁ (Fin.cons g₂ (Fin.cons g₃ (Fin.cons g₄ nofun))))
+  exact ⟨s, α, β, H 0, H 1, H 2, H 3⟩
+
 /-- Given a "tulip" of morphisms
 ```
  j₁    j₂    j₃
@@ -474,6 +552,15 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
   obtain ⟨s, ls, l's, hs₁, hs₂⟩ := bowtie g₁ (f₁ ≫ k₁l) g₂ (f₄ ≫ k₂l)
   refine ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, ?_, by simp only [← Category.assoc, hl], ?_⟩ <;>
     simp only [hs₁, hs₂, Category.assoc]
+
+lemma wideSpan {I : Type*} [Finite I] {i : C} {j : I → C} (f : ∀ x, i ⟶ j x) :
+    ∃ k fik, ∃ g : ∀ x, j x ⟶ k, ∀ x, f x ≫ g x = fik := by
+  have : IsFiltered C := { nonempty := ⟨i⟩ }
+  classical
+  cases nonempty_fintype I
+  obtain ⟨k, fk, hk⟩ := sup_exists (insert i (Finset.univ.image j))
+    (Finset.univ.image fun x ↦ ⟨i, j x, by simp, by simp, f x⟩)
+  exact ⟨k, _, _, fun x ↦ hk _ _ (Finset.mem_image_of_mem _ (Finset.mem_univ _))⟩
 
 end SpecialShapes
 
@@ -514,7 +601,7 @@ instance (priority := 100) isCofiltered_of_semilatticeInf_nonempty (α : Type u)
     [Nonempty α] : IsCofiltered α where
 
 instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Preorder α]
-    [IsDirected α (· ≥ ·)] : IsCofilteredOrEmpty α where
+    [IsCodirectedOrder α] : IsCofilteredOrEmpty α where
   cone_objs X Y :=
     let ⟨Z, hX, hY⟩ := exists_le_le X Y
     ⟨Z, homOfLE hX, homOfLE hY, trivial⟩
@@ -523,7 +610,7 @@ instance (priority := 100) isCofilteredOrEmpty_of_directed_ge (α : Type u) [Pre
     subsingleton⟩
 
 instance (priority := 100) isCofiltered_of_directed_ge_nonempty (α : Type u) [Preorder α]
-    [IsDirected α (· ≥ ·)] [Nonempty α] : IsCofiltered α where
+    [IsCodirectedOrder α] [Nonempty α] : IsCofiltered α where
 
 -- Sanity checks
 example (α : Type u) [SemilatticeInf α] [OrderBot α] : IsCofiltered α := by infer_instance
@@ -698,12 +785,7 @@ theorem inf_exists :
     rw [Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
     · rcases h with ⟨rfl, rfl⟩
-      by_cases hf : f = f'
-      · subst hf
-        apply eq_condition
-      · rw [@w' _ _ mX mY f']
-        simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
-        grind
+      grind [eq_condition]
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
       contrapose! h
@@ -774,6 +856,21 @@ theorem of_isLeftAdjoint (L : C ⥤ D) [L.IsLeftAdjoint] : IsCofiltered D :=
 theorem of_equivalence (h : C ≌ D) : IsCofiltered D :=
   of_left_adjoint h.toAdjunction
 
+omit [IsCofiltered C] in
+lemma iff_of_equivalence (e : C ≌ D) : IsCofiltered C ↔ IsCofiltered D :=
+  ⟨fun _ ↦ .of_equivalence e, fun _ ↦ .of_equivalence e.symm⟩
+
+omit [IsCofiltered C] in
+lemma wideCospan [IsCofilteredOrEmpty C]
+    {I : Type*} [Finite I] {i : C} {j : I → C} (f : ∀ x, j x ⟶ i) :
+    ∃ k fki, ∃ g : ∀ x, k ⟶ j x, ∀ x, g x ≫ f x = fki := by
+  have : IsCofiltered C := { nonempty := ⟨i⟩ }
+  classical
+  cases nonempty_fintype I
+  obtain ⟨k, fk, hk⟩ := IsCofiltered.inf_exists (insert i (Finset.univ.image j))
+    (Finset.univ.image fun x ↦ ⟨j x, i, by simp, by simp, f x⟩)
+  exact ⟨k, _, _, fun x ↦ hk _ _ (Finset.mem_image_of_mem _ (Finset.mem_univ _))⟩
+
 end Nonempty
 
 
@@ -781,6 +878,7 @@ section OfCone
 
 open CategoryTheory.Limits
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If every finite diagram in `C` admits a cone, then `C` is cofiltered. It is sufficient to
 verify this for diagrams whose shape lives in any one fixed universe. -/
 theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
@@ -868,6 +966,12 @@ lemma isCofiltered_of_isFiltered_op [IsFiltered Cᵒᵖ] : IsCofiltered C :=
 lemma isFiltered_of_isCofiltered_op [IsCofiltered Cᵒᵖ] : IsFiltered C :=
   IsFiltered.of_equivalence (opOpEquivalence _)
 
+lemma isCofiltered_op_iff_isFiltered : IsCofiltered Cᵒᵖ ↔ IsFiltered C :=
+  ⟨fun _ ↦ isFiltered_of_isCofiltered_op _, fun _ ↦ inferInstance⟩
+
+lemma isFiltered_op_iff_isCofiltered : IsFiltered Cᵒᵖ ↔ IsCofiltered C :=
+  ⟨fun _ ↦ isCofiltered_of_isFiltered_op _, fun _ ↦ inferInstance⟩
+
 end Opposite
 
 section ULift
@@ -922,6 +1026,7 @@ section Prod
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
+set_option backward.isDefEq.respectTransparency false in
 open IsFiltered in
 instance [IsFilteredOrEmpty C] [IsFilteredOrEmpty D] : IsFilteredOrEmpty (C × D) where
   cocone_objs k l := ⟨(max k.1 l.1, max k.2 l.2), (leftToMax k.1 l.1, leftToMax k.2 l.2),
@@ -932,6 +1037,7 @@ instance [IsFilteredOrEmpty C] [IsFilteredOrEmpty D] : IsFilteredOrEmpty (C × D
 attribute [local instance] IsFiltered.nonempty in
 instance [IsFiltered C] [IsFiltered D] : IsFiltered (C × D) where
 
+set_option backward.isDefEq.respectTransparency false in
 open IsCofiltered in
 instance [IsCofilteredOrEmpty C] [IsCofilteredOrEmpty D] : IsCofilteredOrEmpty (C × D) where
   cone_objs k l := ⟨(min k.1 l.1, min k.2 l.2), (minToLeft k.1 l.1, minToLeft k.2 l.2),

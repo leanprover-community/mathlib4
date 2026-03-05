@@ -3,7 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.CompHausLike.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
 # The sigma-comparison map
@@ -16,6 +19,8 @@ The map `sigmaComparison` is the canonical map `X(S₁ ⊔ ... ⊔ Sₙ) ⟶ X(S
 the inclusion maps `Sᵢ ⟶ S₁ ⊔ ... ⊔ Sₙ`, and it is an isomorphism when `X` preserves finite
 products.
 -/
+
+@[expose] public section
 
 universe u w
 
@@ -38,6 +43,7 @@ values on the components.
 def sigmaComparison : X.obj ⟨(of P ((a : α) × σ a))⟩ ⟶ ((a : α) → X.obj ⟨of P (σ a)⟩) :=
   fun x a ↦ X.map (ofHom _ ⟨Sigma.mk a, continuous_sigmaMk⟩).op x
 
+set_option backward.isDefEq.respectTransparency false in
 theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
     (X.mapIso (opCoproductIsoProduct'
       (finiteCoproduct.isColimit.{u, u} (fun a ↦ of P (σ a)))
@@ -59,6 +65,7 @@ theorem sigmaComparison_eq_comp_isos : sigmaComparison X σ =
   erw [IsColimit.fac]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance isIsoSigmaComparison : IsIso <| sigmaComparison X σ := by
   rw [sigmaComparison_eq_comp_isos]
   infer_instance

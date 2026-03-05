@@ -3,10 +3,13 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Tactic.Ring
-import Mathlib.Util.AtomM
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Tactic.Ring
+public import Mathlib.Util.AtomM
+public meta import Mathlib.Algebra.Algebra.Defs
 
 /-! # A tactic for normalization over modules
 
@@ -21,13 +24,17 @@ The scalar type `R` is not pre-determined: instead it starts as `ℕ` (when each
 given a scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are
 encountered.  However, to permit this, it is assumed that there is a "linear order" on all the
 semirings which appear in the expression: for any two semirings `R` and `S` which occur, we have
-either `Algebra R S` or `Algebra S R`).
+either `Algebra R S` or `Algebra S R`.
 -/
+
+public meta section
 
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic List
 
 namespace Mathlib.Tactic.Module
+
+@[expose] section
 
 /-! ### Theory of lists of pairs (scalar, vector)
 
@@ -132,7 +139,7 @@ instance [Neg R] : Neg (NF R M) where
   neg l := l.map fun (a, x) ↦ (-a, x)
 
 theorem eval_neg [AddCommGroup M] [Ring R] [Module R M] (l : NF R M) : (-l).eval = - l.eval := by
-  simp only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
+  simp +instances only [NF.eval, List.map_map, List.sum_neg, NF.instNeg]
   congr
   ext p
   simp
@@ -206,7 +213,9 @@ theorem eval_algebraMap [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid M
   simp [IsScalarTower.algebraMap_smul]
 
 end NF
+end
 
+public meta section
 variable {u v : Level}
 
 /-! ### Lists of expressions representing scalars and vectors, and operations on such lists -/
@@ -257,7 +266,7 @@ the same `ℕ`-component `k`, then the expressions `x₁` and `x₂` are equal.
 The construction is as follows: merge the two lists, except that if pairs `(a₁, x₁)` and `(a₂, x₂)`
 appear in `l₁`, `l₂` respectively with the same `ℕ`-component `k`, then contribute a term
 `(a₁ + a₂, x₁)` to the output list with `ℕ`-component `k`. -/
-def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
+meta def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
   | [], l => l
   | l, [] => l
   | ((a₁, x₁), k₁) ::ᵣ t₁, ((a₂, x₂), k₂) ::ᵣ t₂ =>
@@ -272,7 +281,7 @@ def add (iR : Q(Semiring $R)) : qNF R M → qNF R M → qNF R M
 and a natural number), recursively construct a proof that in the `$R`-module `$M`, the sum of the
 "linear combinations" represented by `l₁` and `l₂` is the linear combination represented by
 `Module.qNF.add iR l₁ l₁`. -/
-def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
+meta def mkAddProof {iR : Q(Semiring $R)} {iM : Q(AddCommMonoid $M)} (iRM : Q(Module $R $M))
     (l₁ l₂ : qNF R M) :
     Q(NF.eval $(l₁.toNF) + NF.eval $(l₂.toNF) = NF.eval $((qNF.add iR l₁ l₂).toNF)) :=
   match l₁, l₂ with
@@ -392,7 +401,7 @@ expression is not pre-determined: instead it starts as `ℕ` (when each atom is 
 scalar `(1:ℕ)`) and gets bumped up into bigger semirings when such semirings are encountered.
 
 It is assumed that there is a "linear order" on all the semirings which appear in the expression:
-for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`).
+for any two semirings `R` and `S` which occur, we have either `Algebra R S` or `Algebra S R`.
 
 TODO: implement a variant in which a semiring `R` is provided by the user, and the assumption is
 instead that for any semiring `S` which occurs, we have `Algebra S R`. The PR https://github.com/leanprover-community/mathlib4/pull/16984 provides a
@@ -453,7 +462,7 @@ partial def parse (iM : Q(AddCommMonoid $M)) (x : Q($M)) :
     -- lift from original semiring of scalars (say `R₀`) to `R₀ ⊗ S`
     let ⟨u, R, iR, iRM, ⟨l, pf_l⟩, _, ⟨s, pf_r⟩⟩ ← qNF.matchRings iRM₀ i₁ i₂ l₀ [] s₀ y
     -- build the new list and proof
-    pure ⟨u, R, iR, iRM, l.onScalar q(HMul.hMul $s), (q(NF.smul_eq_eval $pf₀ $pf_l $pf_r):)⟩
+    pure ⟨u, R, iR, iRM, l.onScalar q(HMul.hMul $s), (q(NF.smul_eq_eval $pf₀ $pf_l $pf_r) :)⟩
   /- parse a `(0:M)` -/
   | ~q(0) =>
     pure ⟨0, q(Nat), q(Nat.instSemiring), q(AddCommMonoid.toNatModule), [], q(NF.zero_eq_eval $M)⟩
@@ -646,4 +655,5 @@ elab "module" : tactic => Tactic.liftMetaFinishingTactic fun g ↦ do
   let l ← matchScalars g
   discard <| l.mapM fun mvar ↦ AtomM.run .instances (Ring.proveEq mvar)
 
+end
 end Mathlib.Tactic.Module
