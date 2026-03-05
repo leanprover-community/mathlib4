@@ -94,8 +94,7 @@ instance instIsProbabilityMeasure_uniformOn_univ [Finite Ω] [Nonempty Ω] :
     IsProbabilityMeasure (uniformOn (.univ : Set Ω)) :=
   isProbabilityMeasure_uniformOn' Set.finite_univ Set.univ_nonempty .univ
 
-omit [MeasurableSpace Ω] in
-lemma uniformOn_apply_finset' [DecidableEq Ω] {_ : MeasurableSpace Ω} {s t : Finset Ω}
+lemma uniformOn_apply_finset' {Ω : Type*} [DecidableEq Ω] {_ : MeasurableSpace Ω} {s t : Finset Ω}
     (hs : MeasurableSet (s : Set Ω)) (ht : MeasurableSet (t : Set Ω)) :
     uniformOn (s : Set Ω) (t : Set Ω) = #(s ∩ t) / #s := by
   rw [uniformOn, cond_apply hs, Measure.count_apply_finset' hs, ← coe_inter,
@@ -106,8 +105,7 @@ lemma uniformOn_apply_finset' [DecidableEq Ω] {_ : MeasurableSpace Ω} {s t : F
 
 variable [MeasurableSingletonClass Ω]
 
-omit [MeasurableSingletonClass Ω] in
-lemma uniformOn_apply_finset [DecidableEq Ω] [MeasurableSingletonClass Ω] {s t : Finset Ω} :
+lemma uniformOn_apply_finset [DecidableEq Ω] {s t : Finset Ω} :
     uniformOn (s : Set Ω) (t : Set Ω) = #(s ∩ t) / #s :=
   uniformOn_apply_finset' s.measurableSet t.measurableSet
 
