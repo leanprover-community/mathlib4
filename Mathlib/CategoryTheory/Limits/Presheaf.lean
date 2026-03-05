@@ -819,14 +819,10 @@ noncomputable def isInitialElementsMkShrinkYonedaObjObjEquivId (X : C) :
     IsInitial (Functor.elementsMk (shrinkYoneda.{w}.flip.obj (op X)) X
       (shrinkYonedaObjObjEquiv.symm (𝟙 X))) :=
   IsInitial.ofUniqueHom (fun u ↦ ⟨shrinkYonedaObjObjEquiv.{w} u.2, by
-    dsimp
-    rw [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
-    simp⟩) (by
+    simp [shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}]⟩) (by
     rintro u ⟨m, hm⟩
     ext
-    dsimp at hm ⊢
-    rw [← hm, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm]
-    simp)
+    simp [← hm, shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm.{w}])
 
 instance (X : C) : HasInitial (shrinkYoneda.{w}.flip.obj (op X)).Elements :=
   (isInitialElementsMkShrinkYonedaObjObjEquivId X).hasInitial
