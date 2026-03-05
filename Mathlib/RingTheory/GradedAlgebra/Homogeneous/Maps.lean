@@ -3,14 +3,18 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.GradedAlgebra.Hom
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+module
+
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
+public import Mathlib.RingTheory.GradedAlgebra.RingHom
 
 /-!
 # Maps on homogeneous ideals
 
 In this file we define `HomogeneousIdeal.map` and `HomogeneousIdeal.comap`.
 -/
+
+@[expose] public section
 
 variable {A B C σ τ ω ι F G : Type*}
   [Semiring A] [Semiring B] [Semiring C]
@@ -19,8 +23,7 @@ variable {A B C σ τ ω ι F G : Type*}
   [DecidableEq ι] [AddMonoid ι]
   {𝒜 : ι → σ} {ℬ : ι → τ} {𝒞 : ι → ω}
   [GradedRing 𝒜] [GradedRing ℬ] [GradedRing 𝒞]
-  [GradedRingHomClass F 𝒜 ℬ] [GradedRingHomClass G ℬ 𝒞]
-  (f : F) (g : G)
+  (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞)
 
 namespace HomogeneousIdeal
 
@@ -35,7 +38,7 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
     | add => simp [*, Ideal.add_mem]
     | mem a ha =>
       obtain ⟨a, ha, rfl⟩ := ha
-      rw [← map_coe_decompose]
+      rw [← f.map_directSumDecompose]
       exact Ideal.mem_map_of_mem _ (I.2 _ ha)
     | smul a₁ a₂ ha₂ ih =>
       classical rw [smul_eq_mul, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
@@ -47,7 +50,7 @@ definitionally equal to the preimage. -/
 def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
   __ := I.toIdeal.comap f
   is_homogeneous' n a ha := by
-    rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff, map_coe_decompose 𝒜 ℬ]
+    rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff, f.map_directSumDecompose]
     exact I.2 _ ha
 
 variable {I I₁ I₂ I₃ : HomogeneousIdeal 𝒜} {J J₁ J₂ J₃ : HomogeneousIdeal ℬ}
