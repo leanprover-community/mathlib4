@@ -10,7 +10,7 @@ public import Mathlib.Topology.Sheaves.Sheaf
 public import Mathlib.Topology.Sets.Opens
 
 /-!
-# The standard conservative families of points for the site attached to a topological space
+# The standard conservative family of points for the site attached to a topological space
 
 If `X` is a topological space, any `x : X` defines a point of the site
 attached to `X`.
