@@ -77,6 +77,7 @@ lemma isCohenMacaulayLocalRing_of_isRegularLocalRing [IsRegularLocalRing R] :
   · rw [Finset.length_toList, this]
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isField_of_isRegularLocalRing_of_dimension_zero [IsRegularLocalRing R]
     (h : ringKrullDim R = 0) : IsField R := by
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, ← Submodule.spanRank_eq_zero_iff_eq_bot]
