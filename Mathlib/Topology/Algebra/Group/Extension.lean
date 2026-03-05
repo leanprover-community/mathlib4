@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Thomas Browning. All rights reserved.
+Copyright (c) 2026 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
@@ -11,7 +11,7 @@ public import Mathlib.Topology.Algebra.Group.Quotient
 /-!
 # Short exact sequences of topological groups
 
-In this file, we define a short exact sequence of topological groups to a closed embedding `φ`
+In this file, we define a short exact sequence of topological groups to be a closed embedding `φ`
 followed by an open quotient map `ψ` satisfying `φ.range = ψ.ker`.
 
 ## Main definitions

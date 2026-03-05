@@ -81,6 +81,7 @@ lemma ιMulti_span_fixedDegree :
     Submodule.span R (Set.range (ExteriorAlgebra.ιMulti R n)) = ⋀[R]^n M :=
   ExteriorAlgebra.ιMulti_span_fixedDegree R n
 
+set_option backward.isDefEq.respectTransparency false in
 open Set Submodule in
 /-- If a set `s` spans the module `M`, then the set of all elements of the form `x₁ ∧ ⋯ ∧ xₙ`
 where `xᵢ ∈ s` spans `⋀ⁿ M`. -/
@@ -144,6 +145,7 @@ noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
         r • Finsupp.single (update m i x) 1
     | .alt m _ _ _ _ => Finsupp.single m 1
 
+set_option backward.isDefEq.respectTransparency false in
 variable {R} in
 /-- The solutions in a module `N` to the linear equations
 given by `exteriorPower.relations R ι M` identify to alternating maps to `N`. -/

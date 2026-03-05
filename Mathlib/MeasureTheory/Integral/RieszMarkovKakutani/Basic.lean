@@ -51,12 +51,6 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   rw [← hg]
   simp
 
-/-- The positivity of a linear functional `Λ` implies that `Λ` is monotone. -/
-@[deprecated PositiveLinearMap.mk₀ (since := "2025-08-08")]
-lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ}
-    (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) : Monotone Λ :=
-  (PositiveLinearMap.mk₀ Λ hΛ).monotone
-
 end Monotone
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`
@@ -93,6 +87,7 @@ theorem rieszContentAux_image_nonempty (K : Compacts X) :
   rw [← Real.toNNReal_one, Real.toNNReal_eq_toNNReal_iff (zero_le_one' ℝ) (hfinicc x).1]
   exact hfeq1onK.symm hx
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Riesz content `λ` (associated with a positive linear functional `Λ`) is
 monotone: if `K₁ ⊆ K₂` are compact subsets in `X`, then `λ(K₁) ≤ λ(K₂)`. -/
 theorem rieszContentAux_mono {K₁ K₂ : Compacts X} (h : K₁ ≤ K₂) :
