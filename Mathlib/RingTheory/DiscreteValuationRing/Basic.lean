@@ -11,8 +11,6 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 public import Mathlib.RingTheory.Valuation.ValuationRing
-public import Mathlib.RingTheory.DedekindDomain.Basic
-public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # Discrete valuation rings
@@ -70,17 +68,6 @@ theorem not_a_field : maximalIdeal R ≠ ⊥ :=
 /-- A discrete valuation ring `R` is not a field. -/
 theorem not_isField : ¬IsField R :=
   IsLocalRing.isField_iff_maximalIdeal_eq.not.mpr (not_a_field R)
-
-open Ring in
-lemma ringKrullDim_eq_one : ringKrullDim R = 1 := by
-  refine eq_of_le_of_not_lt (krullDimLE_iff (n := 1).mp ?_) fun h ↦ ?_
-  · exact krullDimLE_one_iff_of_isPrime_bot.mpr fun I hI hI' ↦ hI'.isMaximal hI
-  · have : KrullDimLE 0 R := krullDimLE_iff.mpr (WithBot.lt_add_one_iff.mp h)
-    exact IsDiscreteValuationRing.not_isField R KrullDimLE.isField_of_isDomain
-
-open Ring in
-lemma not_krullDimLE_zero : ¬ KrullDimLE 0 R := by
-  simp [krullDimLE_iff, ringKrullDim_eq_one R]
 
 variable {R}
 
