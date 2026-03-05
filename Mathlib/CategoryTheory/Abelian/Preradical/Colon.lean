@@ -14,10 +14,10 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 # The colon construction on preradicals
 
 Given preradicals `Φ` and `Ψ` on an abelian category `C`, this file defines their **colon** `Φ : Ψ`
-in the sense of Stenström.  Following Stenström, one can realize the colon object `r : s` as the
-pullback of `X ⟶ X / r X` along `s (X / r X) ⟶ X / r X`. We encode this categorically by
-constructing `Φ : Ψ` as a pullback of the canonical projection
-`Φ.π : 𝟭 C ⟶ Φ.quotient` along
+in the sense of Stenström.  Following Stenström, one can realize the colon object `r : s` evaluated
+at `X : C` as the pullback of `X ⟶ X / r X` along `s (X / r X) ⟶ X / r X`. We encode this
+categorically by constructing `Φ : Ψ` as a pullback in the category of endofunctors of the canonical
+projection `Φ.π : 𝟭 C ⟶ Φ.quotient` along
 `Φ.quotient.whiskerLeft Ψ.ι ≫ Φ.quotient.rightUnitor.hom : Φ.quotient ⋙ Ψ.r ⟶ Φ.quotient`.
 
 ## Main definitions
@@ -100,20 +100,20 @@ noncomputable def shortComplexObj (X : C) : ShortComplex C where
 instance (X : C) : Mono (Φ.shortComplexObj X).f := by dsimp; infer_instance
 instance (X : C) : Epi (Φ.shortComplexObj X).g := by dsimp; infer_instance
 
-lemma shortExact_shortComplex_obj (X : C) : (Φ.shortComplexObj X).ShortExact where
+lemma shortExact_shortComplexObj (X : C) : (Φ.shortComplexObj X).ShortExact where
   exact :=
     (ShortComplex.ShortExact.map_of_exact Φ.shortExact_shortComplex ((evaluation C C).obj X)).exact
 
 /-- For `X : C`, the kernel fork `KernelFork.ofι (Φ.ι.app X) (Φ.ι_π_app X)` exhibits
 `Φ.ι.app X : Φ.r.obj X ⟶ X` as the kernel of the projection `Φ.π.app X : X ⟶ Φ.quotient.obj X`. -/
 noncomputable def isLimitKernelForkObj (X : C) : IsLimit (KernelFork.ofι _ (Φ.ι_π_app X)) :=
-  (Φ.shortExact_shortComplex_obj X).fIsKernel
+  (Φ.shortExact_shortComplexObj X).fIsKernel
 
 /-- For `X : C`, the cokernel cofork `CokernelCofork.ofπ (Φ.π.app X) (Φ.ι_π_app X)` exhibits
 `Φ.π.app X : X ⟶ Φ.quotient.obj X` as the cokernel of `Φ.ι.app X : Φ.r.obj X ⟶ X`. -/
 noncomputable def isColimitCokernelCoforkObj (X : C) :
     IsColimit (CokernelCofork.ofπ _ (Φ.ι_π_app X)) :=
-  (Φ.shortExact_shortComplex_obj X).gIsCokernel
+  (Φ.shortExact_shortComplexObj X).gIsCokernel
 
 open Functor
 
