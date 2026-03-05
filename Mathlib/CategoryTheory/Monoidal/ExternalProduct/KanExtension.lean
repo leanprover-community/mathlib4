@@ -15,7 +15,7 @@ public import Mathlib.CategoryTheory.Limits.Final
 We prove that if a functor `H' : D' ⥤ V` is a pointwise left Kan extension of
 `H : D ⥤ V` along `L : D ⥤ D'`, and if `K : E ⥤ V` is any functor such that
 for any `e : E`, the functor `tensorRight (K.obj e)` commutes with colimits of
-shape `CostructuredArrow L d`, then the functor `H' ⊠ K` is a pointwise left kan extension
+shape `CostructuredArrow L d`, then the functor `H' ⊠ K` is a pointwise left Kan extension
 of `H ⊠ K` along `L.prod (𝟭 E)`.
 
 We also prove a similar criterion to establish that `K ⊠ H'` is a pointwise left Kan
