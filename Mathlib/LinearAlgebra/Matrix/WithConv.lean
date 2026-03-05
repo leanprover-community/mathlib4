@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Star.LinearMap
 public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Algebra.WithConv
 public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
-/-! The convolutive star ring on matrices
+/-! # The convolutive star ring on matrices
 
 In this file, we provide the star algebra instance on `WithConv (Matrix m n R)` given by
 the Hadamard product and intrinsic star (i.e., the star of each element in the matrix). -/
@@ -108,9 +109,9 @@ theorem Matrix.WithConv.IsIdempotentElem.isSelfAdjoint [Semiring α] [IsLeftCanc
   obtain (h | h) := hf i j <;> simp_all
 
 section toLin'
+variable [CommSemiring α] [StarRing α] [Fintype n] [DecidableEq n]
 
 namespace WithConv
-variable [CommSemiring α] [StarRing α] [Fintype n] [DecidableEq n]
 
 variable (m n α) in
 /-- `WithConv (Matrix m n α)` is ⋆-algebraically equivalent to `WithConv ((n → α) →ₗ m → α)`.
@@ -120,9 +121,9 @@ on matrices and the intrinsic star on linear maps corresponds to taking the star
 the matrix. -/
 def matrixToLin'StarAlgEquiv :
     WithConv (Matrix m n α) ≃⋆ₐ[α] WithConv ((n → α) →ₗ[α] m → α) where
-  __ := WithConv.congrLinearEquiv toLin'
+  __ := congrLinearEquiv toLin'
   map_mul' _ _ := by ext; simp
-  map_star' _ := by ext; simp
+  map_star' _ := by classical exact Matrix.intrinsicStar_toLin' _ |>.symm
 
 @[simp] lemma matrixToLin'StarAlgEquiv_apply (x : WithConv (Matrix m n α)) :
     matrixToLin'StarAlgEquiv m n α x = toConv x.ofConv.toLin' := rfl
@@ -130,5 +131,14 @@ def matrixToLin'StarAlgEquiv :
     (matrixToLin'StarAlgEquiv m n α).symm x = toConv x.ofConv.toMatrix' := rfl
 
 end WithConv
+
+omit [StarRing α] in
+lemma Matrix.toLin'_hadamard (x y : Matrix m n α) :
+    (x ⊙ y).toLin' = (toConv x.toLin' * toConv y.toLin').ofConv := by ext; simp
+
+theorem Matrix.isSymm_iff_intrinsicStar_toLin' {A : Matrix n n α} :
+    A.IsSymm ↔ star (toConv A.toLin') = toConv (star A).toLin' := by
+  rw [intrinsicStar_toLin', toConv_injective.eq_iff, toLin'.injective.eq_iff,
+    ← transpose_conjTranspose, star_eq_conjTranspose, conjTranspose_inj, IsSymm]
 
 end toLin'
