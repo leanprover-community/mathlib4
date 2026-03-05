@@ -31,9 +31,7 @@ section Normed
 variable {A : Type*} [NormedAddCommGroup A] [NormedSpace ℝ A]
 
 lemma StrictConvexSpace.sphere_subset_extremePoints_closedBall [StrictConvexSpace ℝ A]
-    (a : A) {r : ℝ} (hr : r ≠ 0) :
-    sphere a r ⊆ extremePoints ℝ (closedBall a r) := by
-  intro x hx
+    (a : A) {r : ℝ} (hr : r ≠ 0) : sphere a r ⊆ extremePoints ℝ (closedBall a r) := fun x hx ↦ by
   rw [← frontier_closedBall _ hr, frontier, closure_closedBall] at hx
   apply (_root_.strictConvex_closedBall ℝ _ _).mem_extremePoints_of_mem_sdiff_interior hx
 
