@@ -3287,6 +3287,7 @@ public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.AbelianSubcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Heart
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLEGT
