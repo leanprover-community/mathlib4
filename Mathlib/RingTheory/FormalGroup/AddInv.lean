@@ -14,14 +14,8 @@ such that $F(X, i(X)) = F(i(X),X) = 0$.
 
 ## Main definitions/lemmas
 
-* Definition of one dimensional formal group law.
-
-* Properties: `F(X,0) = 0` and `F(0,X) = X`.
-
-* Additive formal group laws and multiplicative formal group laws.
-
-* Instance: Group instance defined by the formal group law `F` over the ideal
-  `PowerSeries.hasEvalIdeal`.
+* The power series `addInv_X`, which is the additive inverse of `X` under formal group $F$ sense,
+namely, $F(X, i (X)) = 0$.
 
 ## References
 * [Hazewinkel, Michiel. «Formal Groups and Applications»]
@@ -86,16 +80,6 @@ lemma coeff_subst_addInv_trunc (hn : n ≠ 0) :
   congr! 3 with i
   fin_cases i <;>  simp [this]
 
--- lemma coeff_n_aux (n : ℕ) :
---   coeff n (MvPowerSeries.subst ![X, (∑ i : Fin (n + 1),
---     C (addInv_aux F i.1) * X ^ i.1)] F.toFun) = 0 := by
---   rw [Fin.sum_univ_eq_sum_range (fun i => (C (addInv_aux F i) * X ^ i))]
---   induction n with
---   | zero =>
-
---     sorry
---   | succ k ih => sorry
-
 lemma _root_.MvPowerSeries.HasSubst.X_zero : MvPowerSeries.HasSubst ![X (R := R), 0] :=
   MvPowerSeries.hasSubst_of_constantCoeff_zero (by simp)
 
@@ -140,11 +124,6 @@ lemma coeff_n_aux (n : ℕ) :
       coeff_coe]
     generalize hB : (∑ i ∈ range (k + 1), Polynomial.C (F.addInv_aux i) * Polynomial.X ^ i) = B
     have coeff_B : B.coeff 0 = 0 := by simp [← hB]
-    have {i : ℕ} {d : Fin 2 →₀ ℕ} : (B.toPowerSeries ^ i * (C (F.addInv_aux (k + 1))
-      * X ^ (k + 1)) ^ (d 1 - i) * ((d 1).choose i : PowerSeries R)) = (B.toPowerSeries ^ i *
-        C (F.addInv_aux (k + 1)) ^ (d 1 - i) * ((d 1).choose i : PowerSeries R)
-          * X ^ ((k + 1) * (d 1 - i))) := by
-      rw [mul_pow, pow_mul]; ring
     calc
       _ = ∑ᶠ (d : Fin 2 →₀ ℕ), (MvPowerSeries.coeff d) F.toFun * (coeff (k + 1))
           (X ^ d 0 * (↑B + C (F.addInv_aux (k + 1)) * X ^ (k + 1)) ^ d 1) := by
@@ -160,49 +139,41 @@ lemma coeff_n_aux (n : ℕ) :
           rw [if_neg hd, add_zero]
           by_cases hd_le : d 0 ≤ k + 1
           · simp_rw [if_pos hd_le, add_pow, map_sum]
-            rw [Finset.sum_eq_single (d 1)]
+            rw [Finset.sum_eq_single (d 1) _ (by simp)]
             · simp
             · intro i hi_mem hi
-              calc
-                _ = (coeff (k + 1 - d 0)) (B.toPowerSeries ^ i * C (F.addInv_aux (k + 1))
-                  ^ (d 1 - i) * ((d 1).choose i : PowerSeries R) * X ^ ((k + 1) * (d 1 - i))) := by
-                  congr! 1; rw [mul_pow, pow_mul]; ring
-                _ = _ := by
-                  rw [coeff_mul_X_pow']
-                  by_cases! hd₀ : d 0 = 0 ∧ d 1 - i = 1
-                  · have i_ne_zero : i ≠ 0 := by grind
-                    simp [hd₀, coeff_B, zero_pow i_ne_zero]
-                  have : k + 1 ≤ (k + 1) * (d 1 - i) := by
-                    simp only [isValue, mem_range, Order.lt_add_one_iff, _root_.zero_le,
-                      le_mul_iff_one_le_right] at ⊢ hi_mem
-                    omega
-                  rw [if_neg]
-                  by_cases hd₀' : d 0 = 0
-                  · have aux : (k + 1) * 2 ≤ (k + 1) * (d 1 - i) := by
-                      refine Nat.mul_le_mul_left _ ?_
-                      grind only [= mem_range]
-                    omega
-                  omega
-            simp
+              rw [mul_pow, mul_assoc, mul_assoc, mul_comm ((X ^ (k + 1)) ^ (d 1 - i)),
+                ← mul_assoc, ← mul_assoc, ← pow_mul, coeff_mul_X_pow']
+              by_cases! hd₀ : d 0 = 0 ∧ d 1 - i = 1
+              · have i_ne_zero : i ≠ 0 := by grind
+                simp [hd₀, coeff_B, zero_pow i_ne_zero]
+              have : k + 1 ≤ (k + 1) * (d 1 - i) := by
+                simp only [isValue, mem_range, Order.lt_add_one_iff, _root_.zero_le,
+                  le_mul_iff_one_le_right] at ⊢ hi_mem
+                omega
+              rw [if_neg _]
+              by_cases hd₀' : d 0 = 0
+              · have aux : (k + 1) * 2 ≤ (k + 1) * (d 1 - i) :=
+                  Nat.mul_le_mul_left _ (by grind only [= mem_range])
+                omega
+              omega
           simp_rw [if_neg hd_le]
         have Beq : B.toPowerSeries = ∑ i ∈ range (k + 1), C (F.addInv_aux i) * X ^ i := by
           ext n; simp [← hB]
         simp_rw [eq_aux, mul_add]
         rw [finsum_add_distrib]
-        · nth_rw 2 [finsum_eq_single _ (Finsupp.single 1 1)]
+        · nth_rw 2 [finsum_eq_single _ (single 1 1) fun d hd => by rw [if_neg hd, mul_zero]]
           · rw [if_pos rfl, F.lin_coeff_Y, one_mul, addInv_aux]
             · simp [sum_univ_eq_sum_range (fun i => (C (addInv_aux F i) * X ^ i)), ← Beq,
                 coeff, MvPowerSeries.coeff_subst (hB ▸ MvPowerSeries.HasSubst.addInv_fin F k)]
             · exact hk
-          intro d hd
-          rw [if_neg hd, mul_zero]
         · obtain h := MvPowerSeries.coeff_subst_finite
             (MvPowerSeries.HasSubst.addInv_fin F k) F.toFun
           simp only [Nat.succ_eq_add_one, Nat.reduceAdd, hB, Finsupp.prod_pow, prod_univ_two,
             isValue, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one,
             smul_eq_mul] at h
           exact h _
-        refine Set.Finite.subset (Set.finite_singleton (Finsupp.single 1 1))
+        refine Set.Finite.subset (Set.finite_singleton (single 1 1))
           (Function.support_subset_iff'.mpr fun d hd => ?_)
         simp only [isValue, Set.mem_singleton_iff] at hd
         simp [hd]
