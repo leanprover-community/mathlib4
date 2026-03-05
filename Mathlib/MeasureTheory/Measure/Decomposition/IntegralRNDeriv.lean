@@ -10,7 +10,7 @@ public import Mathlib.Analysis.Convex.Integral
 public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
-import Mathlib.Analysis.Convex.Deriv
+import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Composition.RadonNikodym
 
@@ -177,7 +177,7 @@ lemma _root_.ConvexOn.integrable_apply_rnDeriv_of_integrable_compProd
     (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
     Integrable (fun a ↦ f (μ.rnDeriv ν a).toReal) ν := by
   obtain ⟨c, c', h⟩ : ∃ c c', ∀ x, 0 ≤ x → c * x + c' ≤ f x :=
-    hf_cvx.exists_affine_le (convex_Ici 0)
+    hf_cvx.exists_affine_le_real isClosed_Ici hf_cont.lowerSemicontinuousOn
   refine integrable_of_le_of_le (f := fun a ↦ f (μ.rnDeriv ν a).toReal)
     (g₁ := fun x ↦ c * (μ.rnDeriv ν x).toReal + c')
     (g₂ := fun x ↦ ∫ b, f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (x, b)).toReal ∂(η x))
