@@ -173,10 +173,10 @@ lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
 lemma _root_.Unique.count_eq_dirac [Unique α] : count = dirac (default : α) :=
   Subsingleton.count_eq_dirac _
 
-lemma _root_.Function.Injective.map_count_le [DiscreteMeasurableSpace α] {f : α → β}
-    (hf : f.Injective) : count.map f ≤ count := by
+lemma _root_.Function.Injective.map_count_le {f : α → β}
+    (hf : f.Injective) (h2f : Measurable f) : count.map f ≤ count := by
   refine le_intro fun s hs _ ↦ ?_
-  rw [map_apply .of_discrete hs, count_apply .of_discrete, count_apply hs, ← hf.encard_image]
+  rw [map_apply h2f hs, count_apply (hs.preimage h2f), count_apply hs, ← hf.encard_image]
   have := image_preimage_subset f s
   gcongr
 
