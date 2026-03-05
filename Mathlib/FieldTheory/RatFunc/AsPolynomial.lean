@@ -234,6 +234,8 @@ variable (K : Type*) [Field K]
 
 namespace Polynomial
 
+open RatFunc
+
 section HeightOneSpectrum
 
 open IsDedekindDomain.HeightOneSpectrum WithZero

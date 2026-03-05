@@ -422,7 +422,7 @@ def idealX : IsDedekindDomain.HeightOneSpectrum K⟦X⟧ where
   isPrime := PowerSeries.span_X_isPrime
   ne_bot  := by rw [ne_eq, Ideal.span_singleton_eq_bot]; exact X_ne_zero
 
-open IsDedekindDomain.HeightOneSpectrum WithZero⟮X⟯
+open IsDedekindDomain.HeightOneSpectrum WithZero RatFunc
 
 variable {K}
 
@@ -487,7 +487,7 @@ end RatFunc
 namespace LaurentSeries
 
 
-open IsDedekindDomain.HeightOneSpectrum PowerSeries WithZero⟮X⟯
+open IsDedekindDomain.HeightOneSpectrum PowerSeries WithZero RatFunc
 
 set_option backward.isDefEq.respectTransparency false in
 instance : Valued K⸨X⸩ ℤᵐ⁰ := Valued.mk' ((PowerSeries.idealX K).valuation _)
@@ -887,7 +887,7 @@ end Dense
 
 section Comparison
 
-open AbstractCompletion⟮X⟯ IsDedekindDomain.HeightOneSpectrum WithZero
+open AbstractCompletion RatFunc IsDedekindDomain.HeightOneSpectrum WithZero
 
 lemma exists_ratFunc_eq_v (x : K⸨X⸩) : ∃ f : K⟮X⟯, Valued.v f = Valued.v x := by
   by_cases hx : Valued.v x = 0

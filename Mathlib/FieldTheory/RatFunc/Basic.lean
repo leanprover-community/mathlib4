@@ -795,7 +795,7 @@ theorem rank_ratFunc_ratFunc : Module.rank (k⟮X⟯) (K⟮X⟯) = Module.rank k
 
 theorem finrank_ratFunc_ratFunc : Module.finrank (k⟮X⟯) (K⟮X⟯) = Module.finrank k K := by
   by_cases hf : Module.Finite (k⟮X⟯) (K⟮X⟯)
-  · have hrank := rank_ratFunc_k⟮X⟯ K
+  · have hrank := rank_ratFunc_ratFunc k K
     rw [← Module.finrank_eq_rank] at hrank
     exact (Module.finrank_eq_of_rank_eq hrank.symm).symm
   · have hf' : ¬ Module.Finite k K := by
