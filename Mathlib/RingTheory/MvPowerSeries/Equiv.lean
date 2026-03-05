@@ -74,6 +74,7 @@ def truncTotalAlgHom (σ R : Type*) [Finite σ] [CommRing R] (n : ℕ) :
     intro x h
     rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ h, MvPolynomial.coeff_coe]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from multivariate power series to the adic completion of
 multivariate polynomials at the ideal spanned by all variables when the index is finite. -/
 def toAdicCompletion (σ R : Type*) [Finite σ] [CommRing R] :
