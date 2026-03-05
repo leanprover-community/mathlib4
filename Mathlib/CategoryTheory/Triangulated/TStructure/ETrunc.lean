@@ -36,11 +36,7 @@ variable (t : TStructure C)
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to the zero functor,
 `n : ℤ` to `t.truncLT n` and `⊤` to `𝟭 C`. -/
 noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
-  obj n := by
-    induction n using WithBotTop.rec with
-    | bot => exact 0
-    | coe a => exact t.truncLT a
-    | top => exact 𝟭 C
+  obj n := WithBotTop.rec 0 (t.truncLT ·) (𝟭 C) n
   map {x y} f := by
     induction x using WithBotTop.rec with
     | bot =>
