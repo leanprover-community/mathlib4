@@ -70,8 +70,8 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     (hf : CMDiffAt[t ×ˢ u] n (Function.uncurry f) (x₀, g x₀))
     (hg : CMDiffAt[t] m g x₀) (hx₀ : x₀ ∈ t)
     (hu : MapsTo g t u) (hmn : m + 1 ≤ n) (h'u : UniqueMDiffOn I u) :
-    CMDiffAt[t] m (inTangentCoordinates I I' g (fun x => f x (g x))
-      (fun x => mfderiv[u] (f x) (g x)) x₀) x₀ := by
+    CMDiffAt[t] m (inTangentCoordinates I I' g (fun x ↦ f x (g x))
+      (fun x ↦ mfderiv[u] (f x) (g x)) x₀) x₀ := by
   -- first localize the result to a smaller set, to make sure everything happens in chart domains
   let t' := t ∩ g ⁻¹' ((extChartAt I (g x₀)).source)
   have ht't : t' ⊆ t := inter_subset_left
@@ -211,7 +211,7 @@ theorem ContMDiffWithinAt.mfderivWithin_apply {x₀ : N'}
     (hg : CMDiffAt[t] m g (g₁ x₀)) (hg₁ : CMDiffAt[v] m g₁ x₀)
     (hg₂ : CMDiffAt[v] m g₂ x₀) (hmn : m + 1 ≤ n) (h'g₁ : MapsTo g₁ v t)
     (hg₁x₀ : g₁ x₀ ∈ t) (h'g : MapsTo g t u) (hu : UniqueMDiffOn I u) :
-    CMDiffAt[v] m (fun x => (inTangentCoordinates I I' g (fun x => f x (g x))
+    CMDiffAt[v] m (fun x ↦ (inTangentCoordinates I I' g (fun x ↦ f x (g x))
       (fun x => mfderiv[u] (f x) (g x)) (g₁ x₀) (g₁ x)) (g₂ x)) x₀ :=
   ((hf.mfderivWithin hg hg₁x₀ h'g hmn hu).comp_of_eq hg₁ h'g₁ rfl).clm_apply hg₂
 
@@ -242,7 +242,7 @@ This is a special case of `ContMDiffAt.mfderiv` where `f` does not contain any p
 theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : CMDiffAt n f x₀)
     (hmn : m + 1 ≤ n) :
     CMDiffAt m (inTangentCoordinates I I' id f (mfderiv% f) x₀) x₀ :=
-  haveI : CMDiffAt n (fun x : M × M => f x.2) (x₀, x₀) :=
+  haveI : CMDiffAt n (fun x : M × M ↦ f x.2) (x₀, x₀) :=
     ContMDiffAt.comp (x₀, x₀) hf contMDiffAt_snd
   this.mfderiv (fun _ => f) id contMDiffAt_id hmn
 
@@ -258,8 +258,8 @@ theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M)
     (hf : CMDiffAt n (Function.uncurry f) (g₁ x₀, g (g₁ x₀)))
     (hg : CMDiffAt m g (g₁ x₀)) (hg₁ : CMDiffAt m g₁ x₀) (hg₂ : CMDiffAt m g₂ x₀)
     (hmn : m + 1 ≤ n) :
-    CMDiffAt m (fun x => inTangentCoordinates I I' g (fun x => f x (g x))
-      (fun x => mfderiv% (f x) (g x)) (g₁ x₀) (g₁ x) (g₂ x)) x₀ :=
+    CMDiffAt m (fun x ↦ inTangentCoordinates I I' g (fun x => f x (g x))
+      (fun x ↦ mfderiv% (f x) (g x)) (g₁ x₀) (g₁ x) (g₂ x)) x₀ :=
   ((hf.mfderiv f g hg hmn).comp_of_eq hg₁ rfl).clm_apply hg₂
 
 end mfderiv
