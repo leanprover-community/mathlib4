@@ -84,11 +84,13 @@ noncomputable def infLERight (U V : Opens X) : U ⊓ V ⟶ V :=
 noncomputable def leSupr {ι : Type*} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
   (le_iSup U i).hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion `⊥ ⟶ U` as a morphism in the category of open sets.
 -/
 noncomputable def botLE (U : Opens X) : ⊥ ⟶ U :=
   bot_le.hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The inclusion `U ⟶ ⊤` as a morphism in the category of open sets.
 -/
 noncomputable def leTop (U : Opens X) : U ⟶ ⊤ :=
@@ -153,6 +155,10 @@ def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
 @[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
   rfl
+
+@[simp]
+theorem mem_map {f : X ⟶ Y} {U : Opens Y} {x : X} :
+    x ∈ (map f).obj U ↔ f.hom x ∈ U := .rfl
 
 @[simp]
 theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, p.preimage f.hom.continuous⟩ :=
@@ -283,12 +289,20 @@ def mapMapIso {X Y : TopCat.{u}} (H : X ≅ Y) : Opens Y ≌ Opens X where
 
 end TopologicalSpace.Opens
 
+/-- If `f : X ⟶ Y` is a map of topological spaces and `U ⊆ V` are open subsets of `X` whose
+images are open, this is the morphism `f'' U ⟶ f'' Y` in `Opens Y`. Useful for applications
+to presheaves when we don't want to suppose that `f` is an open map.
+-/
+def IsOpenMap.functorMap {X Y : TopCat.{u}} {f : X ⟶ Y} {U V : Opens X}
+     (HU : IsOpen (f '' U)) (HV : IsOpen (f '' V)) (le : U ≤ V) :
+     (⟨_, HU⟩ : Opens Y) ⟶ ⟨_, HV⟩ := ⟨⟨Set.image_mono le⟩⟩
+
 /-- An open map `f : X ⟶ Y` induces a functor `Opens X ⥤ Opens Y`.
 -/
 @[simps obj_coe]
 def IsOpenMap.functor {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) : Opens X ⥤ Opens Y where
   obj U := ⟨f '' (U : Set X), hf (U : Set X) U.2⟩
-  map h := ⟨⟨Set.image_mono h.down.down⟩⟩
+  map {U V} h := IsOpenMap.functorMap (hf _ U.2) (hf _ V.2) h.down.down
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `Opens X` and `Opens Y`.
 -/

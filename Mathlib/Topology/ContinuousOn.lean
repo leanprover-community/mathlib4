@@ -22,7 +22,7 @@ equipped with the subspace topology.
 
 -/
 
-@[expose] public section
+public section
 
 open Set Filter Function Topology
 
@@ -48,9 +48,6 @@ theorem continuousWithinAt_univ (f : α → β) (x : α) :
 theorem continuousOn_univ {f : α → β} : ContinuousOn f univ ↔ Continuous f := by
   simp [continuous_iff_continuousAt, ContinuousOn, ContinuousAt, ContinuousWithinAt,
     nhdsWithin_univ]
-
-@[deprecated (since := "2025-07-04")]
-alias continuous_iff_continuousOn_univ := continuousOn_univ
 
 theorem continuousWithinAt_iff_continuousAt_restrict (f : α → β) {x : α} {s : Set α} (h : x ∈ s) :
     ContinuousWithinAt f s x ↔ ContinuousAt (s.restrict f) ⟨x, h⟩ :=
@@ -89,9 +86,6 @@ theorem continuousWithinAt_of_notMem_closure (hx : x ∉ closure s) :
   rw [ContinuousWithinAt, hx]
   exact tendsto_bot
 
-@[deprecated (since := "2025-05-23")]
-alias continuousWithinAt_of_not_mem_closure := continuousWithinAt_of_notMem_closure
-
 /-!
 ## `ContinuousOn`
 -/
@@ -119,7 +113,7 @@ theorem ContinuousOn.mapsToRestrict {t : Set β} (hf : ContinuousOn f s) (ht : M
     Continuous (ht.restrict f s t) :=
   hf.restrict.codRestrict _
 
-@[deprecated (since := "05-09-2025")]
+@[deprecated (since := "2025-09-05")]
 alias ContinuousOn.restrict_mapsTo := ContinuousOn.mapsToRestrict
 
 theorem continuousOn_iff' :
@@ -491,7 +485,7 @@ theorem ContinuousWithinAt.comp_of_mem_nhdsWithin_image_of_eq {g : β → γ} {t
     (hs : t ∈ 𝓝[f '' s] y) (hy : f x = y) : ContinuousWithinAt (g ∘ f) s x := by
   subst hy; exact hg.comp_of_mem_nhdsWithin_image hf hs
 
-theorem ContinuousAt.comp_continuousWithinAt {g : β → γ}
+@[fun_prop] theorem ContinuousAt.comp_continuousWithinAt {g : β → γ}
     (hg : ContinuousAt g (f x)) (hf : ContinuousWithinAt f s x) : ContinuousWithinAt (g ∘ f) s x :=
   hg.continuousWithinAt.comp hf (mapsTo_univ _ _)
 
@@ -732,6 +726,7 @@ theorem continuousOn_apply {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSp
 theorem continuousOn_const {s : Set α} {c : β} : ContinuousOn (fun _ => c) s :=
   continuous_const.continuousOn
 
+@[fun_prop]
 theorem continuousWithinAt_const {b : β} {s : Set α} {x : α} :
     ContinuousWithinAt (fun _ : α => b) s x :=
   continuous_const.continuousWithinAt
@@ -884,10 +879,13 @@ theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) 
     rwa [ht.closure_eq]
 
 /-- A function is continuous on two closed sets iff it is also continuous on their union. -/
-theorem continouousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
+theorem continuousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isClosed h.right hs ht⟩
+
+@[deprecated (since := "2026-02-20")]
+alias continouousOn_union_iff_of_isClosed := continuousOn_union_iff_of_isClosed
 
 /-- If a function is continuous on two open sets, it is also continuous on their union. -/
 theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (hft : ContinuousOn f t)
@@ -895,10 +893,13 @@ theorem ContinuousOn.union_of_isOpen {f : α → β} (hfs : ContinuousOn f s) (h
   union_continuousAt hs hfs fun _ hx ↦ ht.continuousOn_iff.mp hft hx
 
 /-- A function is continuous on two open sets iff it is also continuous on their union. -/
-theorem continouousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
+theorem continuousOn_union_iff_of_isOpen {f : α → β} (hs : IsOpen s) (ht : IsOpen t) :
     ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
   ⟨fun h ↦ ⟨h.mono s.subset_union_left, h.mono s.subset_union_right⟩,
    fun h ↦ h.left.union_of_isOpen h.right hs ht⟩
+
+@[deprecated (since := "2026-02-20")]
+alias continouousOn_union_iff_of_isOpen := continuousOn_union_iff_of_isOpen
 
 /-- If a function is continuous on open sets `s i`, it is continuous on their union -/
 lemma ContinuousOn.iUnion_of_isOpen {ι : Type*} {s : ι → Set α}

@@ -14,8 +14,8 @@ public import Mathlib.Data.Set.Countable
 In this file we define `CountableInterFilter` to be the class of filters with the following
 property: for any countable collection of sets `s ∈ l` their intersection belongs to `l` as well.
 
-Two main examples are the `residual` filter defined in `Mathlib/Topology/GDelta.lean` and
-the `MeasureTheory.ae` filter defined in `Mathlib/MeasureTheory.OuterMeasure/AE`.
+Two main examples are the `residual` filter defined in `Mathlib/Topology/GDelta/Basic.lean` and
+the `MeasureTheory.ae` filter defined in `Mathlib/MeasureTheory/OuterMeasure/AE.lean`.
 
 We reformulate the definition in terms of indexed intersection and in terms of `Filter.Eventually`
 and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.principal`, `Filter.map`,
@@ -69,14 +69,22 @@ theorem eventually_countable_ball {ι : Type*} {S : Set ι} (hS : S.Countable)
   simpa only [Filter.Eventually, setOf_forall] using
     @countable_bInter_mem _ l _ _ _ hS fun i hi => { x | p x i hi }
 
+namespace Filter
+
 theorem EventuallyLE.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
     ⋃ i, s i ≤ᶠ[l] ⋃ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs => mem_iUnion.2 <| (mem_iUnion.1 hs).imp hst
+
+@[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iUnion :=
+  EventuallyLE.countable_iUnion
 
 theorem EventuallyEq.countable_iUnion [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋃ i, s i =ᶠ[l] ⋃ i, t i :=
   (EventuallyLE.countable_iUnion fun i => (h i).le).antisymm
     (EventuallyLE.countable_iUnion fun i => (h i).symm.le)
+
+@[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_iUnion :=
+  EventuallyEq.countable_iUnion
 
 theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
@@ -85,21 +93,33 @@ theorem EventuallyLE.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countabl
   haveI := hS.toEncodable
   exact EventuallyLE.countable_iUnion fun i => h i i.2
 
+@[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_bUnion :=
+  EventuallyLE.countable_bUnion
+
 theorem EventuallyEq.countable_bUnion {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋃ i ∈ S, s i ‹_› =ᶠ[l] ⋃ i ∈ S, t i ‹_› :=
   (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.countable_bUnion hS fun i hi => (h i hi).symm.le)
 
+@[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bUnion :=
+  EventuallyEq.countable_bUnion
+
 theorem EventuallyLE.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i ≤ᶠ[l] t i) :
     ⋂ i, s i ≤ᶠ[l] ⋂ i, t i :=
   (eventually_countable_forall.2 h).mono fun _ hst hs =>
     mem_iInter.2 fun i => hst _ (mem_iInter.1 hs i)
 
+@[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_iInter :=
+  EventuallyLE.countable_iInter
+
 theorem EventuallyEq.countable_iInter [Countable ι] {s t : ι → Set α} (h : ∀ i, s i =ᶠ[l] t i) :
     ⋂ i, s i =ᶠ[l] ⋂ i, t i :=
   (EventuallyLE.countable_iInter fun i => (h i).le).antisymm
     (EventuallyLE.countable_iInter fun i => (h i).symm.le)
+
+@[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_iInter :=
+  EventuallyEq.countable_iInter
 
 theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi ≤ᶠ[l] t i hi) :
@@ -108,15 +128,21 @@ theorem EventuallyLE.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countabl
   haveI := hS.toEncodable
   exact EventuallyLE.countable_iInter fun i => h i i.2
 
+@[deprecated (since := "2026-03-03")] alias _root_.EventuallyLE.countable_bInter :=
+  EventuallyLE.countable_bInter
+
 theorem EventuallyEq.countable_bInter {ι : Type*} {S : Set ι} (hS : S.Countable)
     {s t : ∀ i ∈ S, Set α} (h : ∀ i hi, s i hi =ᶠ[l] t i hi) :
     ⋂ i ∈ S, s i ‹_› =ᶠ[l] ⋂ i ∈ S, t i ‹_› :=
   (EventuallyLE.countable_bInter hS fun i hi => (h i hi).le).antisymm
     (EventuallyLE.countable_bInter hS fun i hi => (h i hi).symm.le)
 
+@[deprecated (since := "2026-03-03")] alias _root_.EventuallyEq.countable_bInter :=
+  EventuallyEq.countable_bInter
+
 /-- Construct a filter with countable intersection property. This constructor deduces
 `Filter.univ_sets` and `Filter.inter_sets` from the countable intersection property. -/
-def Filter.ofCountableInter (l : Set (Set α))
+def ofCountableInter (l : Set (Set α))
     (hl : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) : Filter α where
   sets := l
@@ -125,14 +151,14 @@ def Filter.ofCountableInter (l : Set (Set α))
   inter_sets {s t} hs ht := sInter_pair s t ▸
     hl _ ((countable_singleton _).insert _) (insert_subset_iff.2 ⟨hs, singleton_subset_iff.2 ht⟩)
 
-instance Filter.countableInter_ofCountableInter (l : Set (Set α))
+instance countableInter_ofCountableInter (l : Set (Set α))
     (hl : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l)
     (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l) :
     CountableInterFilter (Filter.ofCountableInter l hl h_mono) :=
   ⟨hl⟩
 
 @[simp]
-theorem Filter.mem_ofCountableInter {l : Set (Set α)}
+theorem mem_ofCountableInter {l : Set (Set α)}
     (hl : ∀ S : Set (Set α), S.Countable → S ⊆ l → ⋂₀ S ∈ l) (h_mono : ∀ s t, s ∈ l → s ⊆ t → t ∈ l)
     {s : Set α} : s ∈ Filter.ofCountableInter l hl h_mono ↔ s ∈ l :=
   Iff.rfl
@@ -142,7 +168,7 @@ Similarly to `Filter.comk`, a set belongs to this filter if its complement satis
 Similarly to `Filter.ofCountableInter`,
 this constructor deduces some properties from the countable intersection property
 which becomes the countable union property because we take complements of all sets. -/
-def Filter.ofCountableUnion (l : Set (Set α))
+def ofCountableUnion (l : Set (Set α))
     (hUnion : ∀ S : Set (Set α), S.Countable → (∀ s ∈ S, s ∈ l) → ⋃₀ S ∈ l)
     (hmono : ∀ t ∈ l, ∀ s ⊆ t, s ∈ l) : Filter α := by
   refine .ofCountableInter {s | sᶜ ∈ l} (fun S hSc hSp ↦ ?_) fun s t ht hsub ↦ ?_
@@ -156,14 +182,16 @@ def Filter.ofCountableUnion (l : Set (Set α))
     rw [← compl_subset_compl] at hsub
     exact hmono sᶜ ht tᶜ hsub
 
-instance Filter.countableInter_ofCountableUnion (l : Set (Set α)) (h₁ h₂) :
+instance countableInter_ofCountableUnion (l : Set (Set α)) (h₁ h₂) :
     CountableInterFilter (Filter.ofCountableUnion l h₁ h₂) :=
   countableInter_ofCountableInter ..
 
 @[simp]
-theorem Filter.mem_ofCountableUnion {l : Set (Set α)} {hunion hmono s} :
+theorem mem_ofCountableUnion {l : Set (Set α)} {hunion hmono s} :
     s ∈ ofCountableUnion l hunion hmono ↔ l sᶜ :=
   Iff.rfl
+
+end Filter
 
 instance countableInterFilter_principal (s : Set α) : CountableInterFilter (𝓟 s) :=
   ⟨fun _ _ hS => subset_sInter hS⟩

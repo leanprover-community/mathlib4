@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # A binary product of finite simplicial sets is finite

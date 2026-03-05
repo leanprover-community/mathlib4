@@ -197,6 +197,10 @@ instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
   neg f := ⟨fun n => -f n, by simp⟩
 
+@[simp]
+theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n = -f n := by
+  rfl
+
 instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoid with
     neg_add_cancel := fun _ => ext fun _ => neg_add_cancel _
@@ -341,6 +345,77 @@ instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     ext
     simp only [smul_apply, sum_const_zero, zero_smul, zero_apply]
 
+section DirichletInverse
+
+section Ring
+
+/- We use `(hf : Invertible (f 1))` instead of `[hf : Invertible (f 1)]` because in practice such
+an instance is unlikely to be automatically synthesized due to the presence of `f`. -/
+variable [Ring R] (f : ℕ → R) (hf : Invertible (f 1))
+
+/-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. We use `Invertible` to make
+this definition computable when `f` is computable. -/
+def dirichletInverseFun (n : ℕ) : R :=
+  if n = 0 then 0
+  else if n = 1 then ⅟(f 1)
+  else - ⅟(f 1) * ∑ d : n.properDivisors,
+    have : d < n := (Nat.mem_properDivisors.mp d.2).2
+    f (n / d) * dirichletInverseFun d
+
+@[simp]
+theorem dirichletInverseFun_apply_zero : dirichletInverseFun f hf 0 = 0 := by
+  rw [dirichletInverseFun, if_pos rfl]
+
+@[simp]
+theorem dirichletInverseFun_apply_one : dirichletInverseFun f hf 1 = ⅟(f 1) := by
+  rw [dirichletInverseFun, if_neg one_ne_zero, if_pos rfl]
+
+@[simp]
+theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
+    dirichletInverseFun f hf n =
+      - ⅟(f 1) * ∑ d ∈ n.properDivisors, f (n / d) * dirichletInverseFun f hf d := by
+  rw [dirichletInverseFun, if_neg hn0, if_neg hn1]
+  conv_rhs => rw [← Finset.sum_attach, Finset.attach_eq_univ]
+
+/-- Given an inverse of `f 1`, construct the Dirichlet inverse of `f`. -/
+@[simp]
+def dirichletInverse : ArithmeticFunction R :=
+  ⟨dirichletInverseFun f hf, dirichletInverseFun_apply_zero f hf⟩
+
+theorem self_mul_dirichletInverse (f : ArithmeticFunction R) (hf : Invertible (f 1)) :
+    f * dirichletInverse f hf = 1 := by
+  ext n
+  by_cases hn0 : n = 0
+  · simp [hn0]
+  by_cases hn1 : n = 1
+  · simp [hn1]
+  rw [dirichletInverse, mul_apply, coe_mk,
+    Nat.sum_divisorsAntidiagonal' fun x y ↦ f x * dirichletInverseFun f hf y,
+    ← Nat.cons_self_properDivisors hn0]
+  simp [hn0, hn1, pos_of_ne_zero]
+
+end Ring
+
+section CommRing
+
+variable [CommRing R] (f : ArithmeticFunction R)
+
+theorem dirichletInverse_mul_self (hf : Invertible (f 1)) : dirichletInverse f hf * f = 1 := by
+  rw [mul_comm, self_mul_dirichletInverse]
+
+variable {f} in
+theorem isUnit_iff_isUnit_apply_one : IsUnit f ↔ IsUnit (f 1) := by
+  constructor
+  · rintro ⟨f, rfl⟩
+    refine ⟨⟨f.val 1, f⁻¹.val 1, ?_, ?_⟩, rfl⟩
+    · rw [← ArithmeticFunction.mul_apply_one, Units.mul_inv, one_one]
+    · rw [← ArithmeticFunction.mul_apply_one, Units.inv_mul, one_one]
+  · suffices Invertible (f 1) → Invertible f by simpa using Nonempty.map this
+    exact fun hf ↦ ⟨_, dirichletInverse_mul_self f hf, self_mul_dirichletInverse f hf⟩
+
+end CommRing
+
+end DirichletInverse
 
 /-- Multiplicative functions -/
 def IsMultiplicative [MonoidWithZero R] (f : ArithmeticFunction R) : Prop :=

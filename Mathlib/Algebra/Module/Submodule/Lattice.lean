@@ -22,8 +22,6 @@ This file defines the lattice structure on submodules, `Submodule.CompleteLattic
 defined as `{0}` and `⊓` defined as intersection of the underlying carrier.
 If `p` and `q` are submodules of a module, `p ≤ q` means that `p ⊆ q`.
 
-Many results about operations on this lattice structure are defined in `LinearAlgebra/Basic.lean`,
-most notably those which use `span`.
 
 ## Implementation notes
 
@@ -75,6 +73,9 @@ variable (R) in
 @[simp]
 theorem mem_bot {x : M} : x ∈ (⊥ : Submodule R M) ↔ x = 0 :=
   Set.mem_singleton_iff
+
+@[simp] lemma mk_eq_bot (carrier : AddSubmonoid M) (smul_mem') :
+    mk carrier smul_mem' = (⊥ : Submodule R M) ↔ carrier = ⊥ := by simp [← toAddSubmonoid_inj]
 
 instance uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
@@ -135,6 +136,10 @@ instance : Top (Submodule R M) :=
 theorem top_coe : ((⊤ : Submodule R M) : Set M) = Set.univ :=
   rfl
 
+@[simp]
+theorem coe_eq_univ : (p : Set M) = Set.univ ↔ p = ⊤ := by
+  rw [iff_comm, ← SetLike.coe_set_eq, top_coe]
+
 @[simp] lemma mem_top {x : M} : x ∈ (⊤ : Submodule R M) := trivial
 
 @[simp]
@@ -148,6 +153,9 @@ lemma top_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
 @[simp]
 lemma toAddSubgroup_eq_top {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     {p : Submodule R M} : p.toAddSubgroup = ⊤ ↔ p = ⊤ := by simp [← toAddSubgroup_inj]
+
+@[simp] lemma mk_eq_top (carrier : AddSubmonoid M) (smul_mem') :
+    mk carrier smul_mem' = (⊤ : Submodule R M) ↔ carrier = ⊤ := by simp [← toAddSubmonoid_inj]
 
 instance : OrderTop (Submodule R M) where
   le_top _ _ _ := trivial
@@ -292,7 +300,7 @@ theorem sum_mem_biSup {ι : Type*} {s : Finset ι} {f : ι → M} {p : ι → Su
     (h : ∀ i ∈ s, f i ∈ p i) : (∑ i ∈ s, f i) ∈ ⨆ i ∈ s, p i :=
   sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_iSup_of_mem hi (h i hi)
 
-/-! Note that `Submodule.mem_iSup` is provided in `Mathlib/LinearAlgebra/Span.lean`. -/
+/-! Note that `Submodule.mem_iSup` is provided in `Mathlib/LinearAlgebra/Span/Defs.lean`. -/
 
 
 theorem mem_sSup_of_mem {S : Set (Submodule R M)} {s : Submodule R M} (hs : s ∈ S) :
@@ -370,6 +378,13 @@ theorem mem_right_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p
 theorem mem_left_iff_eq_zero_of_disjoint {p p' : Submodule R M} (h : Disjoint p p') {x : p'} :
     (x : M) ∈ p ↔ x = 0 :=
   ⟨fun hx => coe_eq_zero.1 <| disjoint_def.1 h x hx x.2, fun h => h.symm ▸ p.zero_mem⟩
+
+/-- Version of `AddSubgroup.disjoint_iff_add_eq_zero` for submodules. -/
+theorem disjoint_iff_add_eq_zero {M R : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    {N₁ N₂ : Submodule R M} :
+    Disjoint N₁ N₂ ↔ ∀ {x y : M}, x ∈ N₁ → y ∈ N₂ → x + y = 0 → x = 0 ∧ y = 0 := by
+  simp only [← Submodule.mem_toAddSubgroup, ← AddSubgroup.disjoint_iff_add_eq_zero]
+  aesop (add norm [disjoint_def', AddSubgroup.disjoint_def'])
 
 end Submodule
 

@@ -33,6 +33,8 @@ forms.
   subalgebra `H`, we have a natural decomposition of `H` as the kernel of `α` and the span of the
   coroot corresponding to `α`.
 * `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
+* `LieAlgebra.IsKilling.lieIdeal_eq_inf_cartan_sup_biSup_rootSpace`: a Lie ideal decomposes as its
+  intersection with the Cartan subalgebra plus a sum of root spaces.
 
 -/
 
@@ -74,7 +76,8 @@ lemma ker_restrict_eq_bot_of_isCartanSubalgebra
 lemma traceForm_cartan_nondegenerate
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     (LieModule.traceForm R H L).Nondegenerate := by
-  simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
+  simp [LinearMap.separatingLeft_iff_ker_eq_bot,
+    (LieModule.traceForm_isSymm R H L).isRefl.nondegenerate_iff_separatingLeft]
 
 variable [Module.Free R L] [Module.Finite R L]
 
@@ -560,7 +563,7 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
       mul_one, two_smul, two_smul]
   refine ⟨⁅e, f⁆, e, f, ⟨fun contra ↦ ?_, rfl, hef, ?_⟩, heα, Submodule.smul_mem _ _ hfα⟩
   · rw [contra] at hef
-    have : IsAddTorsionFree L := .of_noZeroSMulDivisors K L
+    have : IsAddTorsionFree L := .of_isTorsionFree K L
     simp only [zero_lie, eq_comm (a := (0 : L)), smul_eq_zero, OfNat.ofNat_ne_zero, false_or] at hef
     contradiction
   · have : ⁅⁅e, f'⁆, f'⁆ = - α h • f' := lie_eq_smul_of_mem_rootSpace hfα h
@@ -706,6 +709,11 @@ lemma sl2SubmoduleOfRoot_eq_sup (α : Weight K H L) (hα : α.IsNonZero) :
     use c₁, c₂, c₃
     simp [ht.lie_e_f, IsSl2Triple.h_eq_coroot hα ht heα hfα, -LieSubmodule.incl_coe]
 
+lemma sl2SubmoduleOfRoot_ne_bot (α : Weight K H L) (hα : α.IsNonZero) :
+    sl2SubmoduleOfRoot hα ≠ ⊥ := by
+  rw [sl2SubmoduleOfRoot_eq_sup]
+  exact ne_bot_of_le_ne_bot α.genWeightSpace_ne_bot (le_sup_of_le_left le_sup_left)
+
 /-- The collection of roots as a `Finset`. -/
 noncomputable abbrev _root_.LieSubalgebra.root : Finset (Weight K H L) := {α | α.IsNonZero}
 
@@ -715,6 +723,21 @@ lemma restrict_killingForm_eq_sum :
   refine Finset.sum_congr rfl fun χ hχ ↦ ?_
   replace hχ : χ.IsNonZero := by simpa [LieSubalgebra.root] using hχ
   simp [finrank_rootSpace_eq_one _ hχ]
+
+/-- In a Lie algebra with non-degenerate Killing form, a Lie ideal decomposes as its intersection
+with the Cartan subalgebra plus a sum of root spaces corresponding to some subset of roots. -/
+lemma lieIdeal_eq_inf_cartan_sup_biSup_rootSpace (I : LieIdeal K L) :
+    I.restr H = (I.restr H ⊓ H.toLieSubmodule) ⊔
+      ⨆ (α : H.root) (_ : rootSpace H α.val ≤ I.restr H), rootSpace H α.val := by
+  refine le_antisymm ?_ (sup_le inf_le_left (iSup₂_le fun _ hα ↦ hα))
+  conv_lhs => rw [lieIdeal_eq_inf_cartan_sup_biSup_inf_rootSpace]
+  refine sup_le_sup_left (iSup₂_le fun α hα ↦ ?_) _
+  by_cases h : rootSpace H α ≤ I.restr H
+  · exact le_iSup₂_of_le ⟨α, Finset.mem_filter.mpr ⟨Finset.mem_univ _, hα⟩⟩ h inf_le_right
+  · have ha := Submodule.isAtom_iff_finrank_eq_one.mpr (finrank_rootSpace_eq_one α hα)
+    have : I.restr H ⊓ rootSpace H (α : H → K) = ⊥ :=
+      LieSubmodule.toSubmodule_injective ((ha.not_le_iff_disjoint.mp h).symm.eq_bot)
+    simp only [this, bot_le]
 
 end CharZero
 

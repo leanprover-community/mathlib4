@@ -124,8 +124,9 @@ unit disk is a root of unity. -/
 theorem pow_eq_one_of_norm_le_one {x : K} (hx₀ : x ≠ 0) (hxi : IsIntegral ℤ x)
     (hx : ∀ φ : K →+* A, ‖φ x‖ ≤ 1) : ∃ (n : ℕ) (_ : 0 < n), x ^ n = 1 := by
   obtain ⟨a, -, b, -, habne, h⟩ :=
-    @Set.Infinite.exists_ne_map_eq_of_mapsTo _ _ _ _ (x ^ · : ℕ → K) Set.infinite_univ
-      (by exact fun a _ => ⟨hxi.pow a, fun φ => by simp [pow_le_one₀ (norm_nonneg (φ x)) <| hx φ]⟩)
+    Set.Infinite.exists_ne_map_eq_of_mapsTo (f := (x ^ · : ℕ → K)) Set.infinite_univ
+      (fun a _ => mem_setOf.mpr <|
+        ⟨hxi.pow a, fun φ => by simp [pow_le_one₀ (norm_nonneg (φ x)) <| hx φ]⟩)
       (finite_of_norm_le K A (1 : ℝ))
   wlog hlt : b < a
   · exact this K A hx₀ hxi hx b a habne.symm h.symm (habne.lt_or_gt.resolve_right hlt)
@@ -302,17 +303,24 @@ lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
 
 section Extension
 
-variable {K : Type*} (L : Type*) [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+variable {K : Type*} {L : Type*} [Field K] [Field L] (ψ : K →+* ℂ) [Algebra K L]
+
+/-- If `L/K`, `ψ : K →+* ℂ`, and `φ : L →+* ℂ`, then `φ` lies over `ψ` if the restriction of
+`φ` to `K` is `ψ`. -/
+class LiesOver (ψ : K →+* ℂ) (φ : L →+* ℂ) : Prop where
+  over (ψ φ) : φ.comp (algebraMap K L) = ψ
+
+variable (L)
 
 /-- If `L/K` and `ψ : K →+* ℂ`, then the type of `ComplexEmbedding.Extension L ψ` consists of all
 `φ : L →+* ℂ` such that `φ.comp (algebraMap K L) = ψ`. -/
-protected abbrev Extension := { φ : L →+* ℂ // φ.comp (algebraMap K L) = ψ }
+protected abbrev Extension := { φ : L →+* ℂ // LiesOver ψ φ }
 
 namespace Extension
 
 variable (φ : ComplexEmbedding.Extension L ψ) {L ψ}
 
-theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2
+theorem comp_eq : φ.1.comp (algebraMap K L) = ψ := φ.2.over
 
 theorem conjugate_comp_ne (h : ¬IsReal ψ) : (conjugate φ).comp (algebraMap K L) ≠ ψ := by
   simp_all [ComplexEmbedding.isReal_iff, comp_eq]

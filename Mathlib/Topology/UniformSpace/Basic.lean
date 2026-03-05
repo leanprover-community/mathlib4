@@ -429,6 +429,7 @@ lemma ball_preimage {f : α → β} {U : SetRel β β} {x : α} :
   ext : 1
   simp only [UniformSpace.ball, mem_preimage, Prod.map_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem uniformSpace_comap_id {α : Type*} : UniformSpace.comap (id : α → α) = id := by
   ext : 2
@@ -670,6 +671,9 @@ theorem uniformContinuousOn_iff_restrict [UniformSpace α] [UniformSpace β] {f 
   delta UniformContinuousOn UniformContinuous
   rw [← map_uniformity_set_coe, tendsto_map'_iff]; rfl
 
+alias ⟨UniformContinuousOn.restrict, UniformContinuousOn.of_restrict⟩ :=
+  uniformContinuousOn_iff_restrict
+
 theorem tendsto_of_uniformContinuous_subtype [UniformSpace α] [UniformSpace β] {f : α → β}
     {s : Set α} {a : α} (hf : UniformContinuous fun x : s => f x.val) (ha : s ∈ 𝓝 a) :
     Tendsto f (𝓝 a) (𝓝 (f a)) := by
@@ -681,6 +685,9 @@ theorem UniformContinuousOn.continuousOn [UniformSpace α] [UniformSpace β] {f 
   rw [uniformContinuousOn_iff_restrict] at h
   rw [continuousOn_iff_continuous_restrict]
   exact h.continuous
+
+instance [UniformSpace α] [(𝓤 α).IsCountablyGenerated] (s : Set α) : (𝓤 s).IsCountablyGenerated :=
+  Filter.comap.isCountablyGenerated _ _
 
 @[to_additive]
 instance [UniformSpace α] : UniformSpace αᵐᵒᵖ :=
@@ -769,6 +776,23 @@ theorem ball_entourageProd (u : SetRel α α) (v : SetRel β β) (x : α × β) 
 instance IsSymm_entourageProd {u : SetRel α α} {v : SetRel β β} [u.IsSymm] [v.IsSymm] :
     (entourageProd u v).IsSymm where
   symm _ _ := .imp u.symm v.symm
+
+@[simp]
+theorem inv_entourageProd (u : SetRel α α) (v : SetRel β β) :
+    (entourageProd u v).inv = entourageProd u.inv v.inv :=
+  rfl
+
+@[simp]
+theorem image_entourageProd_prod (u : SetRel α α) (v : SetRel β β) (s : Set α) (t : Set β) :
+    (entourageProd u v).image (s ×ˢ t) = u.image s ×ˢ v.image t := by
+  ext
+  simp only [mem_entourageProd, SetRel.mem_image, Set.mem_prod, Prod.exists]
+  grind
+
+@[simp]
+theorem preimage_entourageProd_prod (u : SetRel α α) (v : SetRel β β) (s : Set α) (t : Set β) :
+    (entourageProd u v).preimage (s ×ˢ t) = u.preimage s ×ˢ v.preimage t :=
+  image_entourageProd_prod u.inv v.inv s t
 
 theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [UniformSpace β]
     {pa : ιa → Prop} {pb : ιb → Prop} {sa : ιa → SetRel α α} {sb : ιb → SetRel β β}

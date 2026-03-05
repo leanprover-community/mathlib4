@@ -15,7 +15,7 @@ public import Mathlib.Order.Filter.Bases.Basic
 
 assert_not_exists Set.Finite
 
-@[expose] public section
+public section
 
 open Set Filter Function
 

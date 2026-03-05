@@ -20,7 +20,7 @@ injectivity, surjectivity, bijectivity and exactness of linear maps are local pr
 More precisely, we show that these can be checked at maximal ideals and on standard covers.
 -/
 
-@[expose] public section
+public section
 
 open Submodule LocalizedModule Ideal LinearMap
 
@@ -296,6 +296,7 @@ variable (f : R →+* S) [∀ r, IsLocalization.Away r.val (Rᵣ r)]
     [∀ r, IsLocalization.Away (f r.val) (Sᵣ r)]
 include hs
 
+set_option backward.isDefEq.respectTransparency false in
 lemma injective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Injective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
     Function.Injective f := by
@@ -310,6 +311,7 @@ lemma injective_of_isLocalization_of_span_eq_top
     (fun r : s ↦ ((IsScalarTower.toAlgHom R S (Sᵣ r)).toLinearMap)) (Algebra.linearMap R S)
   simpa [IsLocalization.map_linearMap_eq_toLinearMap_mapₐ] using h
 
+set_option backward.isDefEq.respectTransparency false in
 lemma surjective_of_isLocalization_of_span_eq_top
     (h : ∀ r : s, Function.Surjective (IsLocalization.Away.map (Rᵣ r) (Sᵣ r) f r.1)) :
     Function.Surjective f := by

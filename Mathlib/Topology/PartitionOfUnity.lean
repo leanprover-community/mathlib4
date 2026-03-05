@@ -43,7 +43,7 @@ If `f` is a bump function covering indexed by a linearly ordered type, then
 `BumpCovering.toPartitionOfUnity`. Note that only finitely many terms `1 - f j x` are not equal
 to one, so this product is well-defined.
 
-Note that `g i x = ∏ᶠ j ≤ i, (1 - f j x) - ∏ᶠ j < i, (1 - f j x)`, so most terms in the sum
+Note that `g i x = ∏ᶠ j < i, (1 - f j x) - ∏ᶠ j ≤ i, (1 - f j x)`, so most terms in the sum
 `∑ᶠ i, g i x` cancel, and we get `∑ᶠ i, g i x = 1 - ∏ᶠ i, (1 - f i x)`, and the latter product
 equals zero because one of `f i x` is equal to one.
 
@@ -179,7 +179,7 @@ section finsupport
 variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
 
 /-- The support of a partition of unity at a point `x₀` as a `Finset`.
-  This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
+This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i x₀ ≠ 0`. -/
 def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
 
 @[simp]
@@ -289,23 +289,16 @@ theorem exists_finset_nhds' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X
   have : ∑ᶠ i : ι, ρ i x = ∑ i ∈ I, ρ i x := finsum_eq_sum_of_support_subset _ hx
   rwa [eq_comm, ρ.sum_eq_one x_in] at this
 
-@[deprecated (since := "2025-05-22")] alias exists_finset_nhd' := exists_finset_nhds'
-
 theorem exists_finset_nhds (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
     ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, ∑ i ∈ I, ρ i x = 1 ∧ support (ρ · x) ⊆ I := by
   rcases ρ.exists_finset_nhds' x₀ with ⟨I, H⟩
   use I
   rwa [nhdsWithin_univ, ← eventually_and] at H
 
-@[deprecated (since := "2025-05-22")] alias exists_finset_nhd := exists_finset_nhds
-
 theorem exists_finset_nhds_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
     ∃ is : Finset ι, ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
   f.locallyFinite.exists_finset_nhds_support_subset hso ho x
-
-@[deprecated (since := "2025-05-22")]
-alias exists_finset_nhd_support_subset := exists_finset_nhds_support_subset
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
 `g : ι → X → E` is a family of functions such that each `g i` is continuous on `U i`, then the sum
@@ -481,7 +474,7 @@ theorem exists_isSubordinate_hasCompactSupport_of_locallyFinite_t2space [Locally
         (exists_continuous_zero_one_of_isCompact' hs ht hd.symm).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
 
-/-- Index of a bump function such that `fs i =ᶠ[𝓝 x] 1`. -/
+/-- Index of a bump function such that `f i =ᶠ[𝓝 x] 1`. -/
 def ind (x : X) (hx : x ∈ s) : ι :=
   (f.eventuallyEq_one' x hx).choose
 
@@ -569,7 +562,7 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_eq_self]
     apply finprod_eq_zero (fun i => 1 - f i x) (f.ind x hx)
     · simp only [f.ind_apply x hx, sub_self]
-    · rw [mulSupport_one_sub]
+    · rw [HasFiniteMulSupport, mulSupport_one_sub]
       exact f.point_finite x
   sum_le_one' x := by
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_le_self_iff]

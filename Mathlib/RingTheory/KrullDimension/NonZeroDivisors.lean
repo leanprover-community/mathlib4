@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 
@@ -22,7 +23,7 @@ public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
 
-@[expose] public section
+public section
 
 open scoped nonZeroDivisors
 
@@ -75,6 +76,7 @@ lemma ringKrullDim_mvPolynomial_of_isEmpty (σ : Type*) [IsEmpty σ] :
     ringKrullDim (MvPolynomial σ R) = ringKrullDim R :=
   ringKrullDim_eq_of_ringEquiv (isEmptyRingEquiv _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 open MvPolynomial in
 lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite σ] :
     ringKrullDim R + Nat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by
@@ -90,6 +92,7 @@ lemma ringKrullDim_add_natCard_le_ringKrullDim_mvPolynomial (σ : Type*) [Finite
     grw [IH, ringKrullDim_succ_le_ringKrullDim_polynomial]
     exact (ringKrullDim_eq_of_ringEquiv (MvPolynomial.optionEquivLeft _ _).toRingEquiv).ge
 
+set_option backward.isDefEq.respectTransparency false in
 open MvPolynomial in
 lemma ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial (σ : Type*) :
     ringKrullDim R + ENat.card σ ≤ ringKrullDim (MvPolynomial σ R) := by

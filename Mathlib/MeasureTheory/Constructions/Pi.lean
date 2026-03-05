@@ -38,7 +38,7 @@ For a collection of σ-finite measures `μ` and a collection of measurable sets 
 `Measure.pi μ (pi univ s) = ∏ i, m i (s i)`. To do this, we follow the following steps:
 * We know that there is some ordering on `ι`, given by an element of `[Countable ι]`.
 * Using this, we have an equivalence `MeasurableEquiv.piMeasurableEquivTProd` between
-  `∀ ι, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
+  `∀ i, α i` and an iterated product of `α i`, called `List.tprod α l` for some list `l`.
 * On this iterated product we can easily define a product measure `MeasureTheory.Measure.tprod`
   by iterating `MeasureTheory.Measure.prod`
 * Using the previous two steps we construct `MeasureTheory.Measure.pi'` on `(i : ι) → α i` for
@@ -150,12 +150,14 @@ theorem tprod_cons (i : δ) (l : List δ) (μ : ∀ i, Measure (X i)) :
     Measure.tprod (i :: l) μ = (μ i).prod (Measure.tprod l μ) :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance sigmaFinite_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)] :
     SigmaFinite (Measure.tprod l μ) := by
   induction l with
   | nil => rw [tprod_nil]; infer_instance
   | cons i l ih => rw [tprod_cons]; exact @prod.instSigmaFinite _ _ _ _ _ _ _ ih
 
+set_option backward.isDefEq.respectTransparency false in
 theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinite (μ i)]
     (s : ∀ i, Set (X i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
@@ -202,7 +204,7 @@ theorem pi_caratheodory :
   intro t
   simp_rw [piPremeasure]
   refine Finset.prod_add_prod_le' (Finset.mem_univ i) ?_ ?_ ?_
-  · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs, le_refl]
+  · simp [image_inter_preimage, image_diff_preimage, measure_inter_add_diff _ hs]
   · rintro j - _; gcongr; apply inter_subset_left
   · rintro j - _; gcongr; apply diff_subset
 
@@ -237,13 +239,13 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
     (Measure.pi μ).FiniteSpanningSetsIn (pi univ '' pi univ C) := by
   haveI := fun i => (hμ i).sigmaFinite
   haveI := Fintype.toEncodable ι
-  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).iget i),
+  refine ⟨fun n => Set.pi univ fun i => (hμ i).set ((@decode (ι → ℕ) _ n).getD default i),
     fun n => ?_, fun n => ?_, ?_⟩ <;>
   -- TODO (kmill) If this let comes before the refine, while the noncomputability checker
   -- correctly sees this definition is computable, the Lean VM fails to see the binding is
   -- computationally irrelevant. The `noncomputable section` doesn't help because all it does
   -- is insert `noncomputable` for you when necessary.
-  let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).iget
+  let e : ℕ → ι → ℕ := fun n => (@decode (ι → ℕ) _ n).getD default
   · refine mem_image_of_mem _ fun i _ => (hμ i).set_mem _
   · calc
       Measure.pi μ (Set.pi univ fun i => (hμ i).set (e n i)) ≤
@@ -253,7 +255,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
         (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
       _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
       _ < ∞ := ENNReal.prod_lt_top fun i _ => (hμ i).finite _
-  · simp_rw [(surjective_decode_iget (ι → ℕ)).iUnion_comp fun x =>
+  · simp_rw [(surjective_decode_getD (ι → ℕ) default).iUnion_comp fun x =>
         Set.pi univ fun i => (hμ i).set (x i),
       iUnion_univ_pi fun i => (hμ i).set, (hμ _).spanning, Set.pi_univ]
 
@@ -553,6 +555,24 @@ instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace
     [∀ i, IsLocallyFiniteMeasure (volume : Measure (X i))] :
     IsLocallyFiniteMeasure (volume : Measure (∀ i, X i)) :=
   pi.isLocallyFiniteMeasure
+
+instance _root_.IsUnifLocDoublingMeasure.pi {ι : Type*} [Fintype ι] {X : ι → Type*}
+    [∀ i, PseudoMetricSpace (X i)] [∀ i, MeasurableSpace (X i)] (μ : ∀ i, Measure (X i))
+    [∀ i, SigmaFinite (μ i)] [∀ i, IsUnifLocDoublingMeasure (μ i)] :
+    IsUnifLocDoublingMeasure (Measure.pi μ) := by
+  use ∏ i, IsUnifLocDoublingMeasure.doublingConstant (μ i)
+  filter_upwards [Filter.eventually_all.mpr fun i ↦
+      IsUnifLocDoublingMeasure.eventually_measure_le_doublingConstant_mul (μ i),
+    eventually_mem_nhdsWithin] with r hr (hr₀ : 0 < r) x
+  simpa (disch := positivity) [Finset.prod_mul_distrib, closedBall_pi, pi_pi]
+    using Fintype.prod_mono' fun i ↦ hr i (x i)
+
+instance IsUnifLocDoublingMeasure.volume_pi {ι : Type*} [Fintype ι] {X : ι → Type*}
+    [∀ i, PseudoMetricSpace (X i)] [∀ i, MeasureSpace (X i)]
+    [∀ i, SigmaFinite (volume : Measure (X i))]
+    [∀ i, IsUnifLocDoublingMeasure (volume : Measure (X i))] :
+    IsUnifLocDoublingMeasure (volume : Measure (∀ i, X i)) :=
+  .pi _
 
 variable (μ)
 
@@ -864,7 +884,7 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype �
       (Measure.dirac ()) := by
   set e := MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit
   refine ⟨e.measurable, ?_⟩
-  rw [Measure.pi_of_empty, Measure.map_dirac e.measurable]
+  rw [Measure.pi_of_empty, Measure.map_dirac' e.measurable]
 
 theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype ι] [IsEmpty ι]
     [∀ i, MeasureSpace (α i)] :

@@ -59,6 +59,9 @@ noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :
   Functor.CommShift.ofInduced _ _ _ _
 
 -- the construction is made irreducible in order to prevent timeouts and abuse of defeq
+#adaptation_note /-- After https://github.com/leanprover/lean4/pull/12247
+doing so requires `allowUnsafeReducibility`. -/
+set_option allowUnsafeReducibility true in
 attribute [irreducible] HasShift.quotient Quotient.functor_commShift
 
 namespace Quotient
@@ -78,6 +81,7 @@ noncomputable def iso (a : A) :
     Functor.associator _ _ _ ≪≫ Functor.isoWhiskerLeft _ (lift.isLift r F hF) ≪≫ F.commShiftIso a ≪≫
     Functor.isoWhiskerRight (lift.isLift r F hF).symm _ ≪≫ Functor.associator _ _ _)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma iso_hom_app (a : A) (X : C) :
     (iso F r hF a).hom.app ((functor r).obj X) =
@@ -88,6 +92,7 @@ lemma iso_hom_app (a : A) (X : C) :
   dsimp
   erw [comp_id, id_comp, id_comp, id_comp, Functor.map_id, comp_id]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma iso_inv_app (a : A) (X : C) :
     (iso F r hF a).inv.app ((functor r).obj X) =
@@ -102,6 +107,7 @@ attribute [irreducible] iso
 
 end LiftCommShift
 
+set_option backward.isDefEq.respectTransparency false in
 /-- When `r : HomRel C` is compatible with the shift by an additive monoid, and
 `F : C ⥤ D` is a functor which commutes with the shift and is compatible with `r`, then
 the induced functor `Quotient.lift r F _ : Quotient r ⥤ D` also commutes with the shift. -/
@@ -139,6 +145,7 @@ noncomputable instance liftCommShift :
     simp only [Functor.comp_obj, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app,
       Functor.map_id, id_comp, Iso.hom_inv_id_app, lift_obj_functor_obj]
 
+set_option backward.isDefEq.respectTransparency false in
 instance liftCommShift_compatibility :
     NatTrans.CommShift (Quotient.lift.isLift r F hF).hom A where
   shift_comm a := by

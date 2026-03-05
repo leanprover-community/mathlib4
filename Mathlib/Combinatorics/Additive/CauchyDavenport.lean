@@ -51,7 +51,7 @@ Version for `circle`.
 additive combinatorics, number theory, sumset, cauchy-davenport
 -/
 
-@[expose] public section
+public section
 
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise
@@ -107,6 +107,7 @@ private lemma wellFoundedOn_devosMulRel :
     add_le_add ((card_le_card_mul_right hx.1.2).trans_eq hx.2) <|
       (card_le_card_mul_left hx.1.1).trans_eq hx.2
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A generalisation of the **Cauchy-Davenport theorem** to arbitrary groups. The size of `s * t` is
 lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the smallest
 subgroup. -/
@@ -182,6 +183,7 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
 
 end General
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Cauchy-Davenport Theorem** for torsion-free groups. The size of `s * t` is lower-bounded
 by `|s| + |t| - 1`. -/
 @[to_additive
@@ -194,6 +196,7 @@ lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsi
 
 /-! ### $ℤ/nℤ$ -/
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in `ℤ/pℤ`, then the size of
 `s + t` is lower-bounded by `|s| + |t| - 1`, unless this quantity is greater than `p`. -/
 lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs : s.Nonempty)

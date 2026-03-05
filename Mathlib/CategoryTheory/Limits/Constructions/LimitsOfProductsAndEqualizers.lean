@@ -50,6 +50,7 @@ namespace HasLimitOfHasProductsOfHasEqualizers
 variable {F : J ⥤ C} {c₁ : Fan F.obj} {c₂ : Fan fun f : Σ p : J × J, p.1 ⟶ p.2 => F.obj f.1.2}
   (s t : c₁.pt ⟶ c₂.pt)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 (Implementation) Given the appropriate product and equalizer cones, build the cone for `F` which is
 limiting if the given cones are also.
@@ -71,6 +72,7 @@ variable
   (ht : ∀ f : Σ p : J × J, p.1 ⟶ p.2, t ≫ c₂.π.app ⟨f⟩ = c₁.π.app ⟨f.1.2⟩)
   {i : Fork s t}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 (Implementation) Show the cone constructed in `buildLimit` is limiting, provided the cones used in
 its construction are.
@@ -91,6 +93,7 @@ end HasLimitOfHasProductsOfHasEqualizers
 
 open HasLimitOfHasProductsOfHasEqualizers
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given the existence of the appropriate (possibly finite) products and equalizers,
 we can construct a limit cone for `F`.
 (This assumes the existence of all equalizers, which is technically stronger than needed.)
@@ -120,6 +123,7 @@ noncomputable def limitSubobjectProduct [HasLimitsOfSize.{w, w} C] (F : J ⥤ C)
   have := hasFiniteLimits_of_hasLimitsOfSize C
   (limit.isoLimitCone (limitConeOfEqualizerAndProduct F)).hom ≫ equalizer.ι _ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
     Mono (limitSubobjectProduct F) :=
   mono_comp _ _
@@ -149,6 +153,7 @@ variable (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
   [PreservesLimitsOfShape (Discrete.{w} J) G]
   [PreservesLimitsOfShape (Discrete.{w} (Σ p : J × J, p.1 ⟶ p.2)) G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a functor preserves equalizers and the appropriate products, it preserves limits. -/
 lemma preservesLimit_of_preservesEqualizers_and_product :
     PreservesLimitsOfShape J G where
@@ -174,7 +179,6 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
     · intro f
       dsimp [P, Q, t, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
-      apply congrArg G.map
       dsimp
     · apply Fork.ofι (G.map i)
       rw [← G.map_comp, ← G.map_comp]
@@ -307,6 +311,7 @@ namespace HasColimitOfHasCoproductsOfHasCoequalizers
 variable {F : J ⥤ C} {c₁ : Cofan fun f : Σ p : J × J, p.1 ⟶ p.2 => F.obj f.1.1} {c₂ : Cofan F.obj}
   (s t : c₁.pt ⟶ c₂.pt)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Given the appropriate coproduct and coequalizer cocones,
 build the cocone for `F` which is colimiting if the given cocones are also.
 -/
@@ -330,6 +335,7 @@ variable
   (ht : ∀ f : Σ p : J × J, p.1 ⟶ p.2, c₁.ι.app ⟨f⟩ ≫ t = c₂.ι.app ⟨f.1.1⟩)
   {i : Cofork s t}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- (Implementation) Show the cocone constructed in `buildColimit` is colimiting,
 provided the cocones used in its construction are.
 -/
@@ -357,6 +363,7 @@ end HasColimitOfHasCoproductsOfHasCoequalizers
 
 open HasColimitOfHasCoproductsOfHasCoequalizers
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given the existence of the appropriate (possibly finite) coproducts and coequalizers,
 we can construct a colimit cocone for `F`.
 (This assumes the existence of all coequalizers, which is technically stronger than needed.)
@@ -412,6 +419,7 @@ variable (G : C ⥤ D) [PreservesColimitsOfShape WalkingParallelPair G]
   [PreservesColimitsOfShape (Discrete.{w} J) G]
   [PreservesColimitsOfShape (Discrete.{w} (Σ p : J × J, p.1 ⟶ p.2)) G]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If a functor preserves coequalizers and the appropriate coproducts, it preserves colimits. -/
 lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     PreservesColimitsOfShape J G where
@@ -449,8 +457,7 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     · apply isColimitCoforkMapOfIsColimit
       apply coequalizerIsCoequalizer
     refine Cocones.ext (Iso.refl _) ?_
-    intro j
-    dsimp [P, Q, I, i]
+    dsimp [i]
     simp
 
 end

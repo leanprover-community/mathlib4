@@ -33,7 +33,7 @@ is represented by a Galois object.
 
 -/
 
-@[expose] public section
+public section
 
 universe u₁ u₂ w
 
@@ -217,6 +217,7 @@ private noncomputable def selfProdProj (x : F.obj X) : A ⟶ X := u ≫ Pi.π _ 
 
 variable {u a}
 
+set_option backward.isDefEq.respectTransparency false in
 set_option backward.privateInPublic true in
 private lemma selfProdProj_fiber (x : F.obj X) :
     F.map (selfProdProj u x) a = x := by

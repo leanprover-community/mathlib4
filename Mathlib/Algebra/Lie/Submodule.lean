@@ -55,13 +55,15 @@ instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
   coe_injective' N O h := by cases N; cases O; congr; exact SetLike.coe_injective' h
 
+instance : PartialOrder (LieSubmodule R L M) := .ofSetLike (LieSubmodule R L M) M
+
 instance : AddSubgroupClass (LieSubmodule R L M) M where
   add_mem {N} _ _ := N.add_mem'
   zero_mem N := N.zero_mem'
   neg_mem {N} x hx := show -x ∈ N.toSubmodule from neg_mem hx
 
 instance instSMulMemClass : SMulMemClass (LieSubmodule R L M) R M where
-  smul_mem {s} c _ h := s.smul_mem'  c h
+  smul_mem {s} c _ h := s.smul_mem' c h
 
 /-- The zero module is a Lie submodule of any Lie module. -/
 instance : Zero (LieSubmodule R L M) :=
@@ -185,10 +187,27 @@ instance [IsNoetherian R M] (N : LieSubmodule R L M) : IsNoetherian R N :=
 instance [IsArtinian R M] (N : LieSubmodule R L M) : IsArtinian R N :=
   inferInstanceAs <| IsArtinian R N.toSubmodule
 
-instance [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R N :=
-  inferInstanceAs <| NoZeroSMulDivisors R N.toSubmodule
+instance [Module.IsTorsionFree R M] : Module.IsTorsionFree R N :=
+  inferInstanceAs <| Module.IsTorsionFree R N.toSubmodule
 
-variable [LieAlgebra R L] [LieModule R L M]
+variable [LieAlgebra R L]
+
+/-- Given a Lie submodule `N` of a Lie module `M` over a Lie algebra `L`, and a Lie subalgebra
+`H ≤ L`, `N.restr H` is the same submodule but viewed as a Lie submodule over `H`. -/
+def restr (N : LieSubmodule R L M) (H : LieSubalgebra R L) : LieSubmodule R H M where
+  carrier := N
+  add_mem' := N.add_mem'
+  zero_mem' := N.zero_mem'
+  smul_mem' := SMulMemClass.smul_mem
+  lie_mem hm := N.lie_mem hm
+
+@[simp] lemma mem_restr {N : LieSubmodule R L M} {H : LieSubalgebra R L} {m : M} :
+    m ∈ N.restr H ↔ m ∈ N := Iff.rfl
+
+@[simp] lemma restr_toSubmodule (N : LieSubmodule R L M) (H : LieSubalgebra R L) :
+    (N.restr H).toSubmodule = N.toSubmodule := rfl
+
+variable [LieModule R L M]
 
 instance instLieModule : LieModule R L N where
   lie_smul := by intro t x y; apply SetCoe.ext; apply lie_smul
@@ -408,9 +427,8 @@ theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
 
 /-- The Lie submodules of a Lie module form a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
-  { toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
-      sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with
-    toPartialOrder := SetLike.instPartialOrder }
+  toSubmodule_injective.completeLattice toSubmodule .rfl .rfl sup_toSubmodule inf_toSubmodule
+    sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl
 
 theorem mem_iSup_of_mem {ι} {b : M} {N : ι → LieSubmodule R L M} (i : ι) (h : b ∈ N i) :
     b ∈ ⨆ i, N i :=
@@ -461,8 +479,6 @@ variable {N N'}
   rw [← iSup_toSubmodule, ← top_toSubmodule (L := L), toSubmodule_inj]
 
 instance : Add (LieSubmodule R L M) where add := max
-
-instance : Zero (LieSubmodule R L M) where zero := ⊥
 
 instance : AddCommMonoid (LieSubmodule R L M) where
   add_assoc := sup_assoc
@@ -530,12 +546,11 @@ instance [Nontrivial M] : Nontrivial (LieSubmodule R L M) :=
   (nontrivial_iff R L M).mpr ‹_›
 
 theorem nontrivial_iff_ne_bot {N : LieSubmodule R L M} : Nontrivial N ↔ N ≠ ⊥ := by
-  constructor <;> contrapose!
-  · rintro rfl
-    by_contra!
-      ⟨⟨m₁, h₁ : m₁ ∈ (⊥ : LieSubmodule R L M)⟩, ⟨m₂, h₂ : m₂ ∈ (⊥ : LieSubmodule R L M)⟩, h₁₂⟩
+  constructor
+  · rintro ⟨⟨m₁, h₁⟩, ⟨m₂, h₂⟩, h₁₂⟩ rfl
     simp [(LieSubmodule.mem_bot _).mp h₁, (LieSubmodule.mem_bot _).mp h₂] at h₁₂
-  · rw [LieSubmodule.eq_bot_iff]
+  · contrapose!
+    rw [LieSubmodule.eq_bot_iff]
     rintro ⟨h⟩ m hm
     simpa using h ⟨m, hm⟩ ⟨_, N.zero_mem⟩
 
@@ -673,7 +688,7 @@ theorem lieSpan_induction {p : (x : M) → x ∈ lieSpan R L s → Prop}
   exact lieSpan_le (N := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 lemma isCompactElement_lieSpan_singleton (m : M) :
-    CompleteLattice.IsCompactElement (lieSpan R L {m}) := by
+    IsCompactElement (lieSpan R L {m}) := by
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro s hne hdir hsup
   replace hsup : m ∈ (↑(sSup s) : Set M) := (SetLike.le_def.mp hsup) (subset_lieSpan rfl)
@@ -943,6 +958,10 @@ theorem comap_incl_self : comap N.incl N = ⊤ := by
   rw [Submodule.comap_subtype_self]
 
 theorem map_incl_top : (⊤ : LieSubmodule R L N).map N.incl = N := by simp
+
+theorem map_restrictLie_incl_top [LieAlgebra R L] (H : LieSubalgebra R L) :
+    (⊤ : LieSubmodule R H N).map (N.incl.restrictLie H) = N.restr H := by
+  ext; simp
 
 variable {N}
 

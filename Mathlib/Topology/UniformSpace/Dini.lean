@@ -32,7 +32,7 @@ is `nhds_basis_ball`, and the fact that this basis satisfies the monotonicity cr
 corresponds to `HasSolidNorm`.
 -/
 
-@[expose] public section
+public section
 
 open Filter Topology
 
@@ -103,6 +103,7 @@ end Monotone
 
 namespace Antitone
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 converging pointwise to a continuous function `f`, then `F n` converges locally uniformly to `f`. -/
 lemma tendstoLocallyUniformly_of_forall_tendsto
@@ -111,6 +112,7 @@ lemma tendstoLocallyUniformly_of_forall_tendsto
     TendstoLocallyUniformly F f atTop :=
   Monotone.tendstoLocallyUniformly_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 set `s` converging pointwise to a continuous function `f`, then `F n` converges locally uniformly
 to `f`. -/
@@ -120,6 +122,7 @@ lemma tendstoLocallyUniformlyOn_of_forall_tendsto {s : Set α}
     TendstoLocallyUniformlyOn F f atTop s :=
   Monotone.tendstoLocallyUniformlyOn_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 compact space converging pointwise to a continuous function `f`, then `F n` converges uniformly
 to `f`. -/
@@ -128,6 +131,7 @@ lemma tendstoUniformly_of_forall_tendsto [CompactSpace α] (hF_cont : ∀ i, Con
     TendstoUniformly F f atTop :=
   Monotone.tendstoUniformly_of_forall_tendsto (G := Gᵒᵈ) hF_cont hF_anti hf h_tendsto
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions on a
 compact set `s` converging pointwise to a continuous `f`, then `F n` converges uniformly to `f`. -/
 lemma tendstoUniformlyOn_of_forall_tendsto {s : Set α} (hs : IsCompact s)
@@ -153,6 +157,7 @@ lemma tendsto_of_monotone_of_pointwise (hF_mono : Monotone F)
   tendsto_of_tendstoLocallyUniformly <|
     hF_mono.tendstoLocallyUniformly_of_forall_tendsto (F · |>.continuous) f.continuous h_tendsto
 
+set_option backward.isDefEq.respectTransparency false in
 /-- **Dini's theorem**: if `F n` is a monotone decreasing collection of continuous functions
 converging pointwise to a continuous function `f`, then `F n` converges to `f` in the
 compact-open topology. -/

@@ -18,7 +18,7 @@ We collect lemmas that require that the underlying ring has characteristic zero.
 midpoint
 -/
 
-@[expose] public section
+public section
 
 
 open AffineMap AffineEquiv

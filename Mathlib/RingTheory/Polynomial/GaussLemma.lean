@@ -37,7 +37,7 @@ Gauss's Lemma is one of a few results pertaining to irreducibility of primitive 
 
 -/
 
-@[expose] public section
+public section
 
 
 open scoped nonZeroDivisors Polynomial
@@ -54,6 +54,7 @@ open IsIntegrallyClosed
 
 variable (K : Type*) [Field K] [Algebra R K]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) {g : K[X]}
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
     g ∈ lifts (algebraMap (integralClosure R K) K) := by
@@ -220,8 +221,8 @@ variable [IsDomain R]
 theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCDMonoid R]
     {p : K[X]} (h0 : p ≠ 0) (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by
   rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
-  obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ p
-  rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hc
+  obtain ⟨c, c0, hc⟩ := integerNormalization_spec R⁰ p
+  rw [Algebra.smul_def, algebraMap_apply] at hc
   apply isUnit_of_mul_isUnit_right
   rw [← hc, (integerNormalization R⁰ p).eq_C_content_mul_primPart, ← hu, ← map_mul, isUnit_iff]
   refine
@@ -242,9 +243,9 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
   refine
     ⟨fun hi => ⟨fun h => hi.not_isUnit (hp.isUnit_iff_isUnit_map.2 h), fun a b hab => ?_⟩,
       hp.irreducible_of_irreducible_map_of_injective (IsFractionRing.injective _ _)⟩
-  obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ a
-  obtain ⟨⟨d, d0⟩, hd⟩ := integerNormalization_map_to_map R⁰ b
-  rw [Algebra.smul_def, algebraMap_apply, Subtype.coe_mk] at hc hd
+  obtain ⟨c, c0, hc⟩ := integerNormalization_spec R⁰ a
+  obtain ⟨d, d0, hd⟩ := integerNormalization_spec R⁰ b
+  rw [Algebra.smul_def, algebraMap_apply] at hc hd
   rw [mem_nonZeroDivisors_iff_ne_zero] at c0 d0
   have hcd0 : c * d ≠ 0 := mul_ne_zero c0 d0
   rw [Ne, ← C_eq_zero] at hcd0
@@ -281,8 +282,8 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
 theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.IsPrimitive)
     (hq : q.IsPrimitive) (h_dvd : p.map (algebraMap R K) ∣ q.map (algebraMap R K)) : p ∣ q := by
   rcases h_dvd with ⟨r, hr⟩
-  obtain ⟨⟨s, s0⟩, hs⟩ := integerNormalization_map_to_map R⁰ r
-  rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hs
+  obtain ⟨s, s0, hs⟩ := integerNormalization_spec R⁰ r
+  rw [Algebra.smul_def, algebraMap_apply] at hs
   have h : p ∣ q * C s := by
     use integerNormalization R⁰ r
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _)

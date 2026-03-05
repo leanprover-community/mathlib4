@@ -106,8 +106,6 @@ theorem mem_iff {r : R} {a : A} : r ∈ σ a ↔ ¬IsUnit (↑ₐ r - a) :=
 theorem notMem_iff {r : R} {a : A} : r ∉ σ a ↔ IsUnit (↑ₐ r - a) := by
   simp [mem_iff]
 
-@[deprecated (since := "2025-05-23")] alias not_mem_iff := notMem_iff
-
 variable (R)
 
 theorem zero_mem_iff {a : A} : (0 : R) ∈ σ a ↔ ¬IsUnit a := by
@@ -118,19 +116,11 @@ alias ⟨not_isUnit_of_zero_mem, zero_mem⟩ := spectrum.zero_mem_iff
 theorem zero_notMem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
 
-@[deprecated (since := "2025-05-23")] alias zero_not_mem_iff := zero_notMem_iff
-
-alias ⟨isUnit_of_zero_notMem, zero_notMem⟩ := spectrum.zero_not_mem_iff
-
-@[deprecated (since := "2025-05-23")] alias isUnit_of_zero_not_mem := isUnit_of_zero_notMem
-@[deprecated (since := "2025-05-23")] alias zero_not_mem := zero_notMem
+alias ⟨isUnit_of_zero_notMem, zero_notMem⟩ := spectrum.zero_notMem_iff
 
 @[simp]
 lemma _root_.Units.zero_notMem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
   spectrum.zero_notMem R a.isUnit
-
-@[deprecated (since := "2025-05-23")]
-alias _root_.Units.zero_not_mem_spectrum := _root_.Units.zero_notMem_spectrum
 
 lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
   Set.subset_compl_singleton_iff.mpr <| spectrum.zero_notMem R ha
@@ -301,9 +291,12 @@ theorem add_singleton_eq (a : A) (r : R) : σ a + {r} = σ (a + ↑ₐ r) :=
 theorem vadd_eq (a : A) (r : R) : r +ᵥ σ a = σ (↑ₐ r + a) :=
   singleton_add.symm.trans <| singleton_add_eq a r
 
-theorem neg_eq (a : A) : -σ a = σ (-a) :=
+theorem _root_.resolventSet_neg (a : A) : resolventSet R (-a) = -resolventSet R a :=
   Set.ext fun x => by
-    simp only [mem_neg, mem_iff, map_neg, ← neg_add', IsUnit.neg_iff, sub_neg_eq_add]
+    simp only [mem_neg, mem_resolventSet_iff, map_neg, ← neg_add', IsUnit.neg_iff, sub_neg_eq_add]
+
+theorem neg_eq (a : A) : -σ a = σ (-a) := by
+  rw [spectrum, Set.compl_neg, spectrum, resolventSet_neg]
 
 theorem singleton_sub_eq (a : A) (r : R) : {r} - σ a = σ (↑ₐ r - a) := by
   rw [sub_eq_add_neg, neg_eq, singleton_add_eq, sub_eq_add_neg]
@@ -374,9 +367,9 @@ theorem smul_eq_smul [Nontrivial A] (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
 theorem nonzero_mul_comm (a b : A) : σ (a * b) \ {0} = σ (b * a) \ {0} := by
   suffices h : ∀ x y : A, σ (x * y) \ {0} ⊆ σ (y * x) \ {0} from
     Set.eq_of_subset_of_subset (h a b) (h b a)
-  rintro _ _ k ⟨k_mem, k_neq⟩
-  change ((Units.mk0 k k_neq) : 𝕜) ∈ _ at k_mem
-  exact ⟨unit_mem_mul_comm.mp k_mem, k_neq⟩
+  rintro _ _ k ⟨k_mem, k_ne⟩
+  change ((Units.mk0 k k_ne) : 𝕜) ∈ _ at k_mem
+  exact ⟨unit_mem_mul_comm.mp k_mem, k_ne⟩
 
 protected theorem map_inv (a : Aˣ) : (σ (a : A))⁻¹ = σ (↑a⁻¹ : A) := by
   ext

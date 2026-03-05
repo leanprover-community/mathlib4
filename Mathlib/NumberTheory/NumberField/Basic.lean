@@ -73,6 +73,7 @@ theorem of_module_finite [NumberField K] [Algebra K L] [Module.Finite K L] : Num
     letI := charZero_of_injective_algebraMap (algebraMap K L).injective
     Module.Finite.trans K L
 
+set_option backward.isDefEq.respectTransparency false in
 variable {K} {L} in
 instance of_intermediateField [NumberField K] [NumberField L] [Algebra K L]
     (E : IntermediateField K L) : NumberField E :=
@@ -111,22 +112,33 @@ namespace RingOfIntegers
 
 instance : CommRing (𝓞 K) :=
   inferInstanceAs (CommRing (integralClosure _ _))
+
 instance : IsDomain (𝓞 K) :=
   inferInstanceAs (IsDomain (integralClosure _ _))
+
+set_option backward.isDefEq.respectTransparency false in
 instance [NumberField K] : CharZero (𝓞 K) :=
   inferInstanceAs (CharZero (integralClosure _ _))
+
 instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
-instance : NoZeroSMulDivisors (𝓞 K) K :=
-  inferInstanceAs (NoZeroSMulDivisors (integralClosure _ _) _)
+
+set_option backward.isDefEq.respectTransparency false in
+instance : IsTorsionFree (𝓞 K) K :=
+  inferInstanceAs (IsTorsionFree (integralClosure _ _) _)
+
 instance : Nontrivial (𝓞 K) :=
   inferInstanceAs (Nontrivial (integralClosure _ _))
+
 instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
+
 instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
+
 instance {G : Type*} [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) :=
   inferInstanceAs (MulSemiringAction G (integralClosure ℤ K))
+
 instance {G : Type*} [Group G] [MulSemiringAction G K] : SMulDistribClass G (𝓞 K) K :=
   inferInstanceAs (SMulDistribClass G (integralClosure ℤ K) K)
 
@@ -178,7 +190,7 @@ def mapRingHom {K L : Type*} [Field K] [Field L] (f : K →+* L) : (𝓞 K) →+
   toFun k := ⟨f k.val, map_isIntegral_int f k.2⟩
   map_zero' := by ext; simp only [map_mk, map_zero]
   map_one' := by ext; simp only [map_mk, map_one]
-  map_add' x y:= by ext; simp only [map_mk, map_add]
+  map_add' x y := by ext; simp only [map_mk, map_add]
   map_mul' x y := by ext; simp only [map_mk, map_mul]
 
 @[simp]
@@ -322,6 +334,7 @@ variable {K} {M : Type*}
 def restrict (f : M → K) (h : ∀ x, IsIntegral ℤ (f x)) (x : M) : 𝓞 K :=
   ⟨f x, h x⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : M →+ K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →+ 𝓞 K`. -/
 def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral ℤ (f x)) :
@@ -330,6 +343,7 @@ def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral
   map_zero' := by simp only [restrict, map_zero, mk_zero]
   map_add' x y := by simp only [restrict, map_add, mk_add_mk _]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →* 𝓞 K`. -/
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where
@@ -356,6 +370,7 @@ protected noncomputable def algEquiv (R : Type*) [CommRing R] [Algebra (𝓞 K) 
 instance extension_algebra_isIntegral : Algebra.IsIntegral (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isIntegral_algebra (𝓞 K) L
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Any extension between ring of integers of number fields is Noetherian. -/
 instance extension_isNoetherian [NumberField K] [NumberField L] : IsNoetherian (𝓞 K) (𝓞 L) :=
   IsIntegralClosure.isNoetherian (𝓞 K) K L (𝓞 L)
@@ -371,11 +386,11 @@ theorem ker_algebraMap_eq_bot : RingHom.ker (algebraMap (𝓞 K) (𝓞 L)) = ⊥
 theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L)) :=
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
-instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) :=
-  NoZeroSMulDivisors.iff_algebraMap_injective.mpr <| algebraMap.injective K L
+set_option backward.isDefEq.respectTransparency false in
+instance : IsTorsionFree (𝓞 K) (𝓞 L) :=
+  isTorsionFree_iff_algebraMap_injective.mpr <| algebraMap.injective K L
 
-instance : NoZeroSMulDivisors (𝓞 K) L :=
-  NoZeroSMulDivisors.trans_faithfulSMul (𝓞 K) (𝓞 L) L
+instance : IsTorsionFree (𝓞 K) L := .trans_faithfulSMul (𝓞 K) (𝓞 L) L
 
 end extension
 
@@ -400,8 +415,7 @@ theorem integralBasis_repr_apply (x : (𝓞 K)) (i : Free.ChooseBasisIndex ℤ (
 
 theorem mem_span_integralBasis {x : K} :
     x ∈ Submodule.span ℤ (Set.range (integralBasis K)) ↔ x ∈ (algebraMap (𝓞 K) K).range := by
-  rw [integralBasis, Basis.localizationLocalization_span, LinearMap.mem_range,
-      IsScalarTower.coe_toAlgHom', RingHom.mem_range]
+  simp [integralBasis, Basis.localizationLocalization_span]
 
 theorem RingOfIntegers.rank : Module.finrank ℤ (𝓞 K) = Module.finrank ℚ K :=
   IsIntegralClosure.rank ℤ ℚ K (𝓞 K)

@@ -138,15 +138,11 @@ instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigrou
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp
-    mul_left_cancel _ _ := by simp }
+  { mul_left_cancel _ _ := by simp }
 
 @[to_additive]
 instance [RightCancelMonoid M] [RightCancelMonoid N] : RightCancelMonoid (M × N) :=
-  { mul_one := by simp,
-    one_mul := by simp
-    mul_right_cancel _ _ := by simp }
+  { mul_right_cancel _ _ := by simp }
 
 @[to_additive]
 instance [CancelMonoid M] [CancelMonoid N] : CancelMonoid (M × N) :=
@@ -413,7 +409,7 @@ theorem snd_comp_prod (f : M →* N) (g : M →* P) : (snd N P).comp (f.prod g) 
 
 @[to_additive (attr := simp) prod_unique]
 theorem prod_unique (f : M →* N × P) : ((fst N P).comp f).prod ((snd N P).comp f) = f :=
-  ext fun x => by simp only [prod_apply, coe_fst, coe_snd, comp_apply]
+  ext fun _ => by simp
 
 end Prod
 

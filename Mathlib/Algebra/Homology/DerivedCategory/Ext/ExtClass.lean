@@ -81,11 +81,12 @@ noncomputable def extClass : Ext.{w} S.X₃ S.X₁ 1 := by
   change SmallHom W (S').X₃ ((S').X₁⟦(1 : ℤ)⟧)
   exact (SmallHom.mkInv qis hqis).comp (SmallHom.mk W δ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma extClass_hom [HasDerivedCategory.{w'} C] : hS.extClass.hom = hS.singleδ := by
   change SmallShiftedHom.equiv W Q hS.extClass = _
   dsimp [extClass, SmallShiftedHom.equiv]
-  erw [SmallHom.equiv_comp, Iso.homToEquiv_apply]
+  erw [SmallHom.equiv_comp]
   rw [SmallHom.equiv_mkInv, SmallHom.equiv_mk]
   dsimp [singleδ, triangleOfSESδ]
   rw [Category.assoc, Category.assoc, Category.assoc,

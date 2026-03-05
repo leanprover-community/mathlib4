@@ -21,7 +21,7 @@ In this file, we prove various properties of unique derivative sets in manifolds
   its preimage under the tangent bundle projection also has
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -138,6 +138,7 @@ open Bundle
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {Z : M → Type*}
   [TopologicalSpace (TotalSpace F Z)] [∀ b, TopologicalSpace (Z b)] [FiberBundle F Z]
 
+set_option backward.isDefEq.respectTransparency false in
 private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
     (hs : UniqueMDiffWithinAt I s p.proj) (h's : s ⊆ (trivializationAt F Z p.proj).baseSet) :
     UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
@@ -192,13 +193,5 @@ in the base has unique differentials in the bundle. -/
 theorem UniqueMDiffOn.bundle_preimage (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) := fun _p hp ↦
   (hs _ hp).bundle_preimage
-
--- TODO: move me to `Mathlib/Geometry/Manifold/VectorBundle/MDifferentiable.lean`
-variable [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
-
-theorem Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]
-    (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
-    e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
-  ⟨e.contMDiffOn.mdifferentiableOn one_ne_zero, e.contMDiffOn_symm.mdifferentiableOn one_ne_zero⟩
 
 end UniqueMDiff

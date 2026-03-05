@@ -43,6 +43,7 @@ variable [∀ i₁, AddCommMonoid (M₁ i₁)] [AddCommMonoid M₁']
 variable [∀ i₂, AddCommMonoid (M₂ i₂)] [AddCommMonoid M₂']
 variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (M₂ i₂)] [Module R M₂']
 variable [∀ i₁, Module S (M₁ i₁)] [∀ i₁, IsScalarTower R S (M₁ i₁)]
+variable [Module S M₁'] [IsScalarTower R S M₁']
 
 /-- The linear equivalence `(⨁ i₁, M₁ i₁) ⊗ (⨁ i₂, M₂ i₂) ≃ (⨁ i₁, ⨁ i₂, M₁ i₁ ⊗ M₂ i₂)`, i.e.
 "tensor product distributes over direct sum". -/
@@ -63,29 +64,18 @@ protected def directSum :
       AlgebraTensorModule.map_tmul, id_coe, id_eq]
 
 /-- Tensor products distribute over a direct sum on the left . -/
-def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i ⊗[R] M₂' :=
-  LinearEquiv.ofLinear
-    (lift <|
-      DirectSum.toModule R _ _ fun _ =>
-        (mk R _ _).compr₂ <| DirectSum.lof R ι₁ (fun i => M₁ i ⊗[R] M₂') _)
-    (DirectSum.toModule R _ _ fun _ => rTensor _ (DirectSum.lof R ι₁ _ _))
-    (DirectSum.linearMap_ext R fun i =>
-      TensorProduct.ext <|
-        LinearMap.ext₂ fun m₁ m₂ => by
-          dsimp only [comp_apply, compr₂ₛₗ_apply, id_apply, mk_apply]
-          simp_rw [DirectSum.toModule_lof, rTensor_tmul, lift.tmul, DirectSum.toModule_lof,
-            compr₂_apply, mk_apply])
-    (TensorProduct.ext <|
-      DirectSum.linearMap_ext R fun i =>
-        LinearMap.ext₂ fun m₁ m₂ => by
-          dsimp only [comp_apply, compr₂ₛₗ_apply, id_apply, mk_apply]
-          simp_rw [lift.tmul, DirectSum.toModule_lof, compr₂_apply,
-            mk_apply, DirectSum.toModule_lof, rTensor_tmul])
+def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[S] ⨁ i, M₁ i ⊗[R] M₂' :=
+  TensorProduct.AlgebraTensorModule.congr 1 (DirectSum.lid _ _).symm ≪≫ₗ
+  TensorProduct.directSum R S M₁ (fun _ : Unit ↦ M₂') ≪≫ₗ
+  DirectSum.lequivCongrLeft S (Equiv.prodUnique _ _)
 
 /-- Tensor products distribute over a direct sum on the right. -/
-def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[R] ⨁ i, M₁' ⊗[R] M₂ i :=
-  TensorProduct.comm R _ _ ≪≫ₗ directSumLeft R M₂ M₁' ≪≫ₗ
-    DFinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
+def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[S] ⨁ i, M₁' ⊗[R] M₂ i :=
+  TensorProduct.AlgebraTensorModule.congr (DirectSum.lid _ _).symm 1 ≪≫ₗ
+  TensorProduct.directSum R S (fun _ : Unit ↦ M₁') M₂ ≪≫ₗ
+  DirectSum.lequivCongrLeft S (Equiv.uniqueProd _ _)
+
+@[deprecated (since := "2026-03-04")] alias directSumRight' := directSumRight
 
 variable {M₁ M₁' M₂ M₂'}
 
@@ -104,24 +94,22 @@ theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂)
 
 @[simp]
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :
-    directSumLeft R M₁ M₂' (DirectSum.lof R _ _ i x ⊗ₜ[R] y) =
-    DirectSum.lof R _ _ i (x ⊗ₜ[R] y) := by
-  dsimp only [directSumLeft, LinearEquiv.ofLinear_apply, lift.tmul]
-  rw [DirectSum.toModule_lof R i]
-  rfl
+    directSumLeft R S M₁ M₂' (DirectSum.lof S _ _ i x ⊗ₜ[R] y) =
+    DirectSum.lof S _ _ i (x ⊗ₜ[R] y) := by
+  simpa [directSumLeft] using lequivCongrLeft_lof S (by simp) _ _ rfl
 
 @[simp]
 theorem directSumLeft_symm_lof_tmul (i : ι₁) (x : M₁ i) (y : M₂') :
-    (directSumLeft R M₁ M₂').symm (DirectSum.lof R _ _ i (x ⊗ₜ[R] y)) =
-      DirectSum.lof R _ _ i x ⊗ₜ[R] y := by
+    (directSumLeft R S M₁ M₂').symm (DirectSum.lof S _ _ i (x ⊗ₜ[R] y)) =
+      DirectSum.lof S _ _ i x ⊗ₜ[R] y := by
   rw [LinearEquiv.symm_apply_eq, directSumLeft_tmul_lof]
 
 @[simp]
 lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
-    directSumLeft R M₁ M₂' (m ⊗ₜ[R] n) i = (m i) ⊗ₜ[R] n := by
-  suffices (DirectSum.component R ι₁ _ i) ∘ₗ (directSumLeft R M₁ M₂').toLinearMap ∘ₗ
-      ((TensorProduct.mk R (⨁ i, M₁ i) M₂').flip n) =
-        ((TensorProduct.mk R (M₁ i) M₂').flip n) ∘ₗ (DirectSum.component R ι₁ M₁ i) by
+    directSumLeft R S M₁ M₂' (m ⊗ₜ[R] n) i = (m i) ⊗ₜ[R] n := by
+  suffices (DirectSum.component S ι₁ _ i) ∘ₗ (directSumLeft R S M₁ M₂').toLinearMap ∘ₗ
+      ((AlgebraTensorModule.mk R S (⨁ i, M₁ i) M₂').flip n) =
+        ((AlgebraTensorModule.mk R S (M₁ i) M₂').flip n) ∘ₗ (DirectSum.component S ι₁ M₁ i) by
     simpa using LinearMap.congr_fun this m
   ext j n
   by_cases hj : j = i
@@ -130,65 +118,49 @@ lemma directSumLeft_tmul (m : ⨁ i, M₁ i) (n : M₂') (i : ι₁) :
 
 @[simp]
 theorem directSumRight_tmul_lof (x : M₁') (i : ι₂) (y : M₂ i) :
-    directSumRight R M₁' M₂ (x ⊗ₜ[R] DirectSum.lof R _ _ i y) =
-    DirectSum.lof R _ _ i (x ⊗ₜ[R] y) := by
-  dsimp only [directSumRight, LinearEquiv.trans_apply, TensorProduct.comm_tmul]
-  rw [directSumLeft_tmul_lof]
-  exact DFinsupp.mapRange_single (hf := fun _ => rfl)
+    directSumRight R S M₁' M₂ (x ⊗ₜ[R] DirectSum.lof R _ _ i y) =
+    DirectSum.lof S _ _ i (x ⊗ₜ[R] y) := by
+  simpa [directSumRight] using lequivCongrLeft_lof S (by simp) _ _ rfl
 
 @[simp]
 theorem directSumRight_symm_lof_tmul (x : M₁') (i : ι₂) (y : M₂ i) :
-    (directSumRight R M₁' M₂).symm (DirectSum.lof R _ _ i (x ⊗ₜ[R] y)) =
+    (directSumRight R S M₁' M₂).symm (DirectSum.lof S _ _ i (x ⊗ₜ[R] y)) =
       x ⊗ₜ[R] DirectSum.lof R _ _ i y := by
   rw [LinearEquiv.symm_apply_eq, directSumRight_tmul_lof]
 
 lemma directSumRight_comp_rTensor (f : M₁' →ₗ[R] M₂') :
-    (directSumRight R M₂' M₁).toLinearMap ∘ₗ f.rTensor _ =
-      (lmap fun _ ↦ f.rTensor _) ∘ₗ directSumRight R M₁' M₁ := by
+    (directSumRight R R M₂' M₁).toLinearMap ∘ₗ f.rTensor _ =
+      (lmap fun _ ↦ f.rTensor _) ∘ₗ directSumRight R R M₁' M₁ := by
   ext; simp
 
 @[simp]
 lemma directSumRight_tmul (m : M₁') (n : ⨁ i, M₂ i) (i : ι₂) :
-    directSumRight R M₁' M₂ (m ⊗ₜ[R] n) i = m ⊗ₜ[R] (n i) := by
-  suffices (DirectSum.component R ι₂ _ i) ∘ₗ (directSumRight R M₁' M₂).toLinearMap ∘ₗ
-      (TensorProduct.mk R M₁' (⨁ i, M₂ i) m) =
-        (TensorProduct.mk R M₁' (M₂ i) m) ∘ₗ (DirectSum.component R ι₂ M₂ i) by
+    directSumRight R S M₁' M₂ (m ⊗ₜ[R] n) i = m ⊗ₜ[R] (n i) := by
+  suffices (DirectSum.component S ι₂ _ i).restrictScalars R ∘ₗ
+      (directSumRight R S M₁' M₂).toLinearMap.restrictScalars R ∘ₗ
+        (TensorProduct.mk R M₁' (⨁ i, M₂ i) m) =
+          (TensorProduct.mk R M₁' (M₂ i) m) ∘ₗ (DirectSum.component R ι₂ M₂ i) by
     simpa using LinearMap.congr_fun this n
   ext j n
   by_cases hj : j = i
   · subst hj; simp
   · simp [DirectSum.component.of, hj]
 
-variable [Module S M₁'] [IsScalarTower R S M₁']
+variable (S₀ : Type*) [CommSemiring S₀] [Algebra R S₀] [Algebra S₀ S]
+  [Module S₀ M₁'] [IsScalarTower R S₀ M₁'] [IsScalarTower S₀ S M₁']
 
--- NB. Why not giving `TensorProduct.directSumRight` the adequate linearity?
-variable (M₁' M₂) in
-/-- Tensor products distribute over a direct sum on the right.
+lemma restrictScalar_directSumRight :
+    (directSumRight R S M₁' M₂).restrictScalars S₀ = directSumRight R S₀ M₁' M₂ :=
+  LinearEquiv.restrictScalars_injective R <| LinearEquiv.toLinearMap_injective <| by ext; simp [lof]
 
-This version has more linearity than `TensorProduct.directSumRight`. -/
-def directSumRight' : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[S] ⨁ i, M₁' ⊗[R] M₂ i where
-  toAddEquiv := (directSumRight ..).toAddEquiv
-  map_smul' s t := by
-    induction t using TensorProduct.induction_on with
-    | zero => simp
-    | add x y hx hy =>
-      simp only [AddHom.toFun_eq_coe, coe_toAddHom,
-        LinearEquiv.coe_coe, RingHom.id_apply] at hx hy ⊢
-      simp only [smul_add, map_add, hx, hy]
-    | tmul m n =>
-      simp only [AddHom.toFun_eq_coe, coe_toAddHom, LinearEquiv.coe_coe, RingHom.id_apply]
-      rw [TensorProduct.smul_tmul']
-      ext i
-      rw [DirectSum.smul_apply, directSumRight_tmul,
-        directSumRight_tmul, TensorProduct.smul_tmul']
+@[deprecated (since := "2026-03-04")]
+alias directSumRight'_restrict := restrictScalar_directSumRight
 
-lemma directSumRight'_restrict :
-    (directSumRight' R S M₁' M₂).restrictScalars R = directSumRight R M₁' M₂ :=
-  rfl
+lemma coe_directSumRight :
+    ⇑(directSumRight R S M₁' M₂) = directSumRight R R M₁' M₂ :=
+  congr($(restrictScalar_directSumRight ..))
 
-lemma coe_directSumRight' :
-    ⇑(directSumRight' R S M₁' M₂) = directSumRight R M₁' M₂ :=
-  rfl
+@[deprecated (since := "2026-03-04")] alias coe_directSumRight' := coe_directSumRight
 
 end TensorProduct
 

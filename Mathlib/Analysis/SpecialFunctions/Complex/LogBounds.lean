@@ -33,11 +33,13 @@ namespace Complex
 ### Integral representation of the complex log
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 lemma continuousOn_one_add_mul_inv {z : ℂ} (hz : 1 + z ∈ slitPlane) :
     ContinuousOn (fun t : ℝ ↦ (1 + t • z)⁻¹) (Set.Icc 0 1) :=
   ContinuousOn.inv₀ (by fun_prop)
     (fun _ ht ↦ slitPlane_ne_zero <| StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)
 
+set_option backward.isDefEq.respectTransparency false in
 open intervalIntegral in
 /-- Represent `log (1 + z)` as an integral over the unit interval -/
 lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
@@ -47,6 +49,7 @@ lemma log_eq_integral {z : ℂ} (hz : 1 + z ∈ slitPlane) :
       StarConvex.add_smul_mem starConvex_one_slitPlane hz ht.1 ht.2)).symm using 1
   simp only [log_one, sub_zero]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Represent `log (1 - z)⁻¹` as an integral over the unit interval -/
 lemma log_inv_eq_integral {z : ℂ} (hz : 1 - z ∈ slitPlane) :
     log (1 - z)⁻¹ = z * ∫ (t : ℝ) in (0 : ℝ)..1, (1 - t • z)⁻¹ := by
@@ -132,6 +135,7 @@ lemma integrable_pow_mul_norm_one_add_mul_inv (n : ℕ) {z : ℂ} (hz : ‖z‖ 
   rw [← Set.uIcc_of_le zero_le_one] at this
   exact ContinuousOn.intervalIntegrable (by fun_prop)
 
+set_option backward.isDefEq.respectTransparency false in
 open intervalIntegral in
 /-- The difference of `log (1+z)` and its `(n+1)`st Taylor polynomial can be bounded in
 terms of `‖z‖`. -/
@@ -179,6 +183,7 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 open scoped Topology in
 lemma log_sub_logTaylor_isBigO (n : ℕ) :
     (fun z ↦ log (1 + z) - logTaylor (n + 1) z) =O[𝓝 0] fun z ↦ z ^ (n + 1) := by
@@ -205,13 +210,13 @@ lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
   exact norm_add_le_of_le (Complex.norm_log_one_add_sub_self_le hz) le_rfl
 
 /-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
-lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3/2) * ‖z‖ := by
+lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1 / 2) : ‖log (1 + z)‖ ≤ (3 / 2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
     rw [inv_eq_one_div, div_le_iff₀]
     · linarith
     · linarith
-  have hz4 : ‖z‖^2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖/2 * 2 / 2 := by
+  have hz4 : ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 ≤ ‖z‖ / 2 * 2 / 2 := by
     gcongr
     · rw [inv_nonneg]
       linarith
@@ -237,6 +242,7 @@ lemma norm_log_one_sub_inv_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
   · simp [logTaylor_succ, logTaylor_zero, sub_eq_add_neg]
   · norm_num
 
+set_option backward.isDefEq.respectTransparency false in
 open Filter Asymptotics in
 /-- The Taylor series of the complex logarithm at `1` converges to the logarithm in the
 open unit disk. -/
@@ -362,13 +368,17 @@ end Complex
 
 namespace Real
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The limit of `x * log (1 + g x)` as `(x : ℝ) → ∞` is `t`,
 where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_mul_log_one_add_of_tendsto {g : ℝ → ℝ} {t : ℝ}
     (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
     Tendsto (fun x ↦ x * log (1 + g x)) atTop (𝓝 t) := by
+  #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12179,
+  `Real.cobounded_eq` was marked `@[simp]`, so didn't have to be passed explicitly here.
+  Now the `simpNF` linter complains about it. -/
   have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
-    hg.norm.isBoundedUnder_le (tendsto_id'.mpr (by simp))
+    hg.norm.isBoundedUnder_le (tendsto_id'.mpr (by simp [Real.cobounded_eq]))
   rw [← tendsto_ofReal_iff] at hg ⊢
   push_cast at hg ⊢
   apply (Complex.tendsto_mul_log_one_add_of_tendsto hg).congr'
@@ -382,16 +392,17 @@ theorem tendsto_mul_log_one_add_div_atTop (t : ℝ) :
       (EventuallyEq.div_mul_cancel_atTop tendsto_id).symm.trans <|
         .of_eq <| funext fun _ => mul_comm _ _
 
-@[deprecated (since := "2025-05-22")]
-alias tendsto_mul_log_one_plus_div_atTop := tendsto_mul_log_one_add_div_atTop
-
+set_option backward.isDefEq.respectTransparency false in
 /-- The limit of `(1 + g x) ^ x` as `(x : ℝ) → ∞` is `exp t`,
 where `t : ℝ` is the limit of `x * g x`. -/
 lemma tendsto_one_add_rpow_exp_of_tendsto {g : ℝ → ℝ} {t : ℝ}
     (hg : Tendsto (fun x ↦ x * g x) atTop (𝓝 t)) :
     Tendsto (fun x ↦ (1 + g x) ^ x) atTop (𝓝 (exp t)) := by
+  #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12179,
+  `Real.cobounded_eq` was marked `@[simp]`, so didn't have to be passed explicitly here.
+  Now the `simpNF` linter complains about it. -/
   have hg0 := tendsto_zero_of_isBoundedUnder_smul_of_tendsto_cobounded
-    hg.norm.isBoundedUnder_le (tendsto_id'.mpr (by simp))
+    hg.norm.isBoundedUnder_le (tendsto_id'.mpr (by simp [Real.cobounded_eq]))
   rw [← tendsto_ofReal_iff] at hg ⊢
   push_cast at hg ⊢
   apply (Complex.tendsto_one_add_cpow_exp_of_tendsto hg).congr'
@@ -405,9 +416,6 @@ lemma tendsto_one_add_div_rpow_exp (t : ℝ) :
   apply tendsto_nhds_of_eventually_eq
   filter_upwards [eventually_ne_atTop 0] with x hx0
   exact mul_div_cancel₀ t (mod_cast hx0)
-
-@[deprecated (since := "2025-05-22")]
-alias tendsto_one_plus_div_rpow_exp := tendsto_one_add_div_rpow_exp
 
 /-- The limit of `n * log (1 + g n)` as `(n : ℝ) → ∞` is `t`,
 where `t : ℝ` is the limit of `n * g n`. -/
@@ -429,9 +437,6 @@ lemma tendsto_one_add_pow_exp_of_tendsto {g : ℕ → ℝ} {t : ℝ}
 lemma tendsto_one_add_div_pow_exp (t : ℝ) :
     Tendsto (fun n : ℕ ↦ (1 + t / n) ^ n) atTop (𝓝 (exp t)) :=
   tendsto_one_add_div_rpow_exp t |>.comp tendsto_natCast_atTop_atTop |>.congr (by simp)
-
-@[deprecated (since := "2025-05-22")]
-alias tendsto_one_plus_div_pow_exp := tendsto_one_add_div_pow_exp
 
 end Real
 

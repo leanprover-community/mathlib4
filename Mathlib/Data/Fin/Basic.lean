@@ -183,10 +183,6 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 @[simp]
 theorem mk_zero' (n : ℕ) [NeZero n] : (⟨0, pos_of_neZero n⟩ : Fin n) = 0 := rfl
 
-@[deprecated Fin.zero_le (since := "2025-05-13")]
-protected theorem zero_le' [NeZero n] (a : Fin n) : 0 ≤ a :=
-  Nat.zero_le a.val
-
 @[simp, norm_cast]
 theorem val_pos_iff [NeZero n] {a : Fin n} : 0 < a.val ↔ 0 < a := by
   rw [← val_fin_lt, val_zero]
@@ -327,7 +323,8 @@ lemma castLT_sub_nezero {n : ℕ} {i j : Fin n} (hij : i < j) :
     haveI : NeZero (n - i.1) := neZero_iff.mpr (by lia)
     (j - i).castLT (sub_val_lt_sub (Fin.le_of_lt hij)) ≠ 0 := by
   refine Ne.symm (ne_of_val_ne ?_)
-  simpa [coe_sub_iff_le.mpr (Fin.le_of_lt hij)] using by lia
+  simp [coe_sub_iff_le.mpr (Fin.le_of_lt hij)]
+  lia
 
 lemma one_le_of_ne_zero {n : ℕ} {k : Fin n} :
     haveI := k.neZero
@@ -357,9 +354,6 @@ open Fin.NatCast
 theorem ofNat_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat n a = (a : Fin n) :=
   rfl
 
-@[deprecated ofNat_eq_cast (since := "2025-05-30")]
-alias ofNat'_eq_cast := ofNat_eq_cast
-
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
@@ -379,6 +373,9 @@ theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).
 
 @[simp] lemma natCast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
   simp [Fin.ext_iff, Nat.dvd_iff_mod_eq_zero]
+
+@[simp] lemma natCast_zero {n : ℕ} [NeZero n] : ((0 : ℕ) : Fin n) = 0 := by
+  simp
 
 @[simp]
 theorem natCast_eq_last (n) : (n : Fin (n + 1)) = Fin.last n := by ext; simp

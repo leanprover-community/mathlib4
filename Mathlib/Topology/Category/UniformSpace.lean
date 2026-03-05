@@ -6,7 +6,7 @@ Authors: Reid Barton, Patrick Massot, Kim Morrison
 module
 
 public import Mathlib.CategoryTheory.Adjunction.Reflective
-public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Monad.Limits  -- shake: keep (used in `example` only)
 public import Mathlib.Topology.Category.TopCat.Basic
 public import Mathlib.Topology.UniformSpace.Completion
 
@@ -205,7 +205,7 @@ noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace wh
     exact (Completion.map_comp g.hom.property f.hom.property).symm))
 
 /-- The inclusion of a uniform space into its completion. -/
-def completionHom (X : UniformSpaceCat) :
+noncomputable def completionHom (X : UniformSpaceCat) :
     X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj (completionFunctor.obj X) where
   hom'.val := ((↑) : X → Completion X)
   hom'.property := Completion.uniformContinuous_coe X
@@ -234,6 +234,7 @@ theorem extension_comp_hom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
 
 @[deprecated (since := "2025-12-18")] alias extension_comp_coe := extension_comp_hom
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The completion functor is left adjoint to the forgetful functor. -/
 noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace UniformSpaceCat :=
   Adjunction.mkOfHomEquiv

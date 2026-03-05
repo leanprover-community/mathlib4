@@ -32,7 +32,7 @@ See `nonempty_oreSet_of_strongRankCondition` for a start.
 @[expose] public section
 universe u v
 
-open Function Set Cardinal Submodule LinearMap
+open Function Set Cardinal Module Submodule LinearMap
 
 variable {R} {M M₁ M₂ M₃ : Type u} {M' : Type v} [Ring R]
 variable [AddCommGroup M] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGroup M']
@@ -95,6 +95,7 @@ theorem LinearMap.rank_eq_of_surjective {f : M →ₗ[R] M₁} (h : Surjective f
     Module.rank R M = Module.rank R M₁ + Module.rank R (LinearMap.ker f) := by
   rw [← rank_range_add_rank_ker f, ← rank_range_of_surjective f h]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     {s : Set M} (hs : LinearIndepOn R id s) :
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndepOn R id t := by
@@ -140,14 +141,15 @@ theorem exists_linearIndependent_snoc_of_lt_rank [StrongRankCondition R] {n : �
 
 /-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
 independent of the first one. -/
-theorem exists_linearIndependent_pair_of_one_lt_rank [StrongRankCondition R]
-    [NoZeroSMulDivisors R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
+theorem exists_linearIndependent_pair_of_one_lt_rank [IsDomain R] [StrongRankCondition R]
+    [IsTorsionFree R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] := by
   obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (.of_subsingleton (v := ![x]) 0 hx) h
   have : Fin.snoc ![x] y = ![x, y] := by simp [Fin.snoc, ← List.ofFn_inj]
   rw [this] at hy
   exact ⟨y, hy⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
     (h : Module.rank R N < Module.rank R M) : ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   have : Module.rank R (M ⧸ N) ≠ 0 := by
@@ -158,9 +160,6 @@ theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
   push_neg at this
   simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
   exact this
-
-@[deprecated (since := "2025-05-23")]
-alias Submodule.exists_smul_not_mem_of_rank_lt := Submodule.exists_smul_notMem_of_rank_lt
 
 open Cardinal Basis Submodule Function Set LinearMap
 
@@ -202,7 +201,7 @@ theorem exists_linearIndependent_cons_of_lt_finrank {n : ℕ} {v : Fin n → M}
 
 /-- Given a nonzero vector in a finite-dimensional space of dimension `> 1`, one may find another
 vector linearly independent of the first one. -/
-theorem exists_linearIndependent_pair_of_one_lt_finrank [NoZeroSMulDivisors R M]
+theorem exists_linearIndependent_pair_of_one_lt_finrank [IsDomain R] [Module.IsTorsionFree R M]
     (h : 1 < finrank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] :=
   exists_linearIndependent_pair_of_one_lt_rank (one_lt_rank_of_one_lt_finrank h) hx
@@ -220,8 +219,8 @@ lemma Submodule.finrank_quotient [Module.Finite R M] {S : Type*} [Ring S] [SMul 
   rw [← (N.restrictScalars R).finrank_quotient_add_finrank]
   exact Nat.eq_sub_of_add_eq rfl
 
-lemma Submodule.disjoint_ker_of_finrank_le [NoZeroSMulDivisors R M] {N : Type*} [AddCommGroup N]
-    [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
+lemma Submodule.disjoint_ker_of_finrank_le [IsDomain R] [IsTorsionFree R M] {N : Type*}
+    [AddCommGroup N] [Module R N] {L : Submodule R M} [Module.Finite R L] (f : M →ₗ[R] N)
     (h : finrank R L ≤ finrank R (L.map f)) :
     Disjoint L (LinearMap.ker f) := by
   refine disjoint_iff.mpr <| LinearMap.injective_domRestrict_iff.mp <| LinearMap.ker_eq_bot.mp <|
@@ -240,6 +239,7 @@ open Submodule Module
 
 variable [StrongRankCondition R] [Module.Finite R M]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finrank R M) :
     ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   obtain ⟨s, hs, hs'⟩ :=

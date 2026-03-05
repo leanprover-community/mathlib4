@@ -15,7 +15,7 @@ public import Mathlib.Data.Finset.Sum
 In this file we prove theorems about products and sums indexed by a `Finset`.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
@@ -62,15 +62,7 @@ the product over `s`, as long as `a` is in `s` or `f a = 1`. -/
 the sum over `s`, as long as `a` is in `s` or `f a = 0`. -/]
 theorem prod_insert_of_eq_one_if_notMem [DecidableEq ι] (h : a ∉ s → f a = 1) :
     ∏ x ∈ insert a s, f x = ∏ x ∈ s, f x := by
-  by_cases hm : a ∈ s
-  · simp_rw [insert_eq_of_mem hm]
-  · rw [prod_insert hm, h hm, one_mul]
-
-@[deprecated (since := "2025-05-23")]
-alias sum_insert_of_eq_zero_if_not_mem := sum_insert_of_eq_zero_if_notMem
-
-@[to_additive existing, deprecated (since := "2025-05-23")]
-alias prod_insert_of_eq_one_if_not_mem := prod_insert_of_eq_one_if_notMem
+  by_cases a ∈ s <;> grind
 
 /-- The product of `f` over `insert a s` is the same as
 the product over `s`, as long as `f a = 1`. -/
@@ -95,7 +87,11 @@ theorem prod_pair [DecidableEq ι] {a b : ι} (h : a ≠ b) :
     (∏ x ∈ ({a, b} : Finset ι), f x) = f a * f b := by
   rw [prod_insert (notMem_singleton.2 h), prod_singleton]
 
-@[to_additive (attr := simp)]
+/-- If a function is injective on a finset, products over the original finset or its image coincide.
+See also `prod_image_of_pairwise_eq_one` for a version with weaker assumptions. -/
+@[to_additive (attr := simp) /-- If a function is injective on a finset, sums over the original
+finset or its image coincide.
+See also `sum_image_of_pairwise_eq_zero` for a version with weaker assumptions. -/]
 theorem prod_image [DecidableEq ι] {s : Finset κ} {g : κ → ι} :
     Set.InjOn g s → ∏ x ∈ s.image g, f x = ∏ x ∈ s, f (g x) :=
   fold_image
@@ -206,12 +202,6 @@ theorem prod_disjSum (s : Finset ι) (t : Finset κ) (f : ι ⊕ κ → M) :
   rw [← map_inl_disjUnion_map_inr, prod_disjUnion, prod_map, prod_map]
   rfl
 
-@[deprecated (since := "2025-06-11")]
-alias sum_disj_sum := sum_disjSum
-
-@[to_additive existing, deprecated (since := "2025-06-11")]
-alias prod_disj_sum := prod_disjSum
-
 @[to_additive]
 lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι ⊕ κ → M) :
     ∏ x ∈ s, f x = (∏ x ∈ s.toLeft, f (Sum.inl x)) * ∏ x ∈ s.toRight, f (Sum.inr x) := by
@@ -222,7 +212,12 @@ lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (ι ⊕ κ)) (f : ι 
 theorem prod_sumElim (s : Finset ι) (t : Finset κ) (f : ι → M) (g : κ → M) :
     ∏ x ∈ s.disjSum t, Sum.elim f g x = (∏ x ∈ s, f x) * ∏ x ∈ t, g x := by simp
 
-@[to_additive]
+/-- Given a finite family of pairwise disjoint finsets, the product over their union is the product
+of the products over the sets.
+See also `prod_biUnion_of_pairwise_eq_one` for a version with weaker assumptions. -/
+@[to_additive /-- Given a finite family of pairwise disjoint finsets, the sum over their union is
+the sum of the sums over the sets.
+See also `sum_biUnion_of_pairwise_eq_zero` for a version with weaker assumptions. -/]
 theorem prod_biUnion [DecidableEq ι] {s : Finset κ} {t : κ → Finset ι}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
@@ -287,9 +282,9 @@ lemma prod_fiberwise' (s : Finset ι) (g : ι → κ) (f : κ → M) :
 end bij
 
 @[to_additive (attr := simp)]
-lemma prod_diag [DecidableEq ι] (s : Finset ι) (f : ι × ι → M) :
+lemma prod_diag (s : Finset ι) (f : ι × ι → M) :
     ∏ i ∈ s.diag, f i = ∏ i ∈ s, f (i, i) := by
-  apply prod_nbij' Prod.fst (fun i ↦ (i, i)) <;> simp
+  simp [diag]
 
 @[to_additive]
 theorem prod_image' [DecidableEq ι] {s : Finset κ} {g : κ → ι} (h : κ → M)
@@ -359,7 +354,7 @@ theorem prod_eq_single {s : Finset ι} {f : ι → M} (a : ι) (h₀ : ∀ b ∈
 @[to_additive (attr := simp)]
 lemma prod_ite_mem_eq [Fintype ι] (s : Finset ι) (f : ι → M) [DecidablePred (· ∈ s)] :
     (∏ i, if i ∈ s then f i else 1) = ∏ i ∈ s, f i := by
-  rw [← Finset.prod_filter]; congr; aesop
+  rw [← Finset.prod_filter]; congr; grind
 
 @[to_additive]
 lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
@@ -367,7 +362,7 @@ lemma prod_eq_ite [DecidableEq ι] {s : Finset ι} {f : ι → M} (a : ι)
     ∏ x ∈ s, f x = if a ∈ s then f a else 1 := by
   by_cases h : a ∈ s
   · simp [Finset.prod_eq_single_of_mem a h h₀, h]
-  · replace h₀ : ∀ b ∈ s, f b = 1 := by aesop
+  · replace h₀ : ∀ b ∈ s, f b = 1 := by grind
     simp +contextual [h₀]
 
 @[to_additive]
@@ -466,8 +461,7 @@ variable {f s}
 @[to_additive]
 theorem prod_subtype {p : ι → Prop} {F : Fintype (Subtype p)} (s : Finset ι) (h : ∀ x, x ∈ s ↔ p x)
     (f : ι → M) : ∏ a ∈ s, f a = ∏ a : Subtype p, f a := by
-  have : (· ∈ s) = p := Set.ext h
-  subst p
+  obtain rfl : p = (· ∈ s) := by simp [h]
   rw [← prod_coe_sort]
   congr!
 
@@ -522,10 +516,8 @@ theorem prod_bij_ne_one {s : Finset ι} {t : Finset κ} {f : ι → M} {g : κ �
 
 @[to_additive]
 theorem exists_ne_one_of_prod_ne_one (h : ∏ x ∈ s, f x ≠ 1) : ∃ a ∈ s, f a ≠ 1 := by
-  classical
-    rw [← prod_filter_ne_one] at h
-    rcases nonempty_of_prod_ne_one h with ⟨x, hx⟩
-    exact ⟨x, (mem_filter.1 hx).1, by simpa using (mem_filter.1 hx).2⟩
+  contrapose! h
+  exact prod_eq_one h
 
 @[to_additive]
 theorem prod_range_succ_comm (f : ℕ → M) (n : ℕ) :
@@ -799,6 +791,22 @@ lemma prod_mul_eq_prod_mul_of_exists {s : Finset ι} {f : ι → M} {b₁ b₂ :
   rw [mul_assoc, mul_comm, mul_assoc, mul_comm b₁, h, ← mul_assoc, mul_comm _ (f a)]
 
 @[to_additive]
+theorem prod_biUnion_of_pairwise_eq_one [DecidableEq ι] {s : Finset κ} {t : κ → Finset ι}
+    (hs : (s : Set κ).Pairwise fun i j ↦ ∀ k ∈ t i ∩ t j, f k = 1) :
+    ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
+  classical
+  let t' k := (t k).filter (fun i ↦ f i ≠ 1)
+  have : s.biUnion t' = (s.biUnion t).filter (fun i ↦ f i ≠ 1) := by grind
+  rw [← prod_filter_ne_one, ← this, prod_biUnion]
+  swap
+  · intro i hi j hj hij a hai haj k hk
+    have hki : k ∈ t' i := hai hk
+    have hkj : k ∈ t' j := haj hk
+    simp only [ne_eq, mem_filter, t'] at hki hkj
+    exact (hki.2 (hs hi hj hij k (by grind))).elim
+  exact Finset.prod_congr rfl (fun i hi ↦ prod_filter_ne_one (t i))
+
+@[to_additive]
 lemma prod_filter_of_pairwise_eq_one [DecidableEq ι] {f : κ → ι} {g : ι → M} {n : κ} {I : Finset κ}
     (hn : n ∈ I) (hf : (I : Set κ).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
     ∏ j ∈ I with f j = f n, g (f j) = g (f n) := by
@@ -1062,6 +1070,14 @@ lemma mem_sum {a : M} {s : Finset ι} {m : ι → Multiset M} :
 theorem _root_.Finset.mem_sum {f : ι → Multiset M} (s : Finset ι) (b : M) :
     (b ∈ ∑ x ∈ s, f x) ↔ ∃ a ∈ s, b ∈ f a := Multiset.mem_sum
 
+@[to_additive]
+lemma prod_map_prod {α : Type*} [CommMonoid M] {m : Multiset ι} {s : Finset α} {f : ι → α → M} :
+    (m.map fun i ↦ ∏ a ∈ s, f i a).prod = ∏ a ∈ s, (m.map fun i ↦ f i a).prod := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha ih => simp [Finset.prod_insert ha, prod_map_mul, ih]
+
 variable [DecidableEq ι]
 
 theorem toFinset_sum_count_eq (s : Multiset ι) : ∑ a ∈ s.toFinset, s.count a = card s := by
@@ -1105,6 +1121,9 @@ lemma IsUnit.prod_iff [CommMonoid M] {f : ι → M} :
 lemma IsUnit.prod_univ_iff [Fintype ι] [CommMonoid M] {f : ι → M} :
     IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by simp
 
-theorem nat_abs_sum_le (s : Finset ι) (f : ι → ℤ) :
+theorem Int.natAbs_sum_le (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   induction s using Finset.cons_induction with grind
+
+@[deprecated (since := "2026-02-14")]
+alias nat_abs_sum_le := Int.natAbs_sum_le

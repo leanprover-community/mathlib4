@@ -5,9 +5,10 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
+public import Mathlib.Algebra.GroupWithZero.Range
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Ring.Torsion
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.Tactic.TFAE
 
@@ -117,7 +118,7 @@ variable [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZer
 instance : FunLike (Valuation R Γ₀) R Γ₀ where
   coe f := f.toFun
   coe_injective' f g h := by
-    obtain ⟨⟨⟨_,_⟩, _⟩, _⟩ := f
+    obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := f
     congr
 
 instance : ValuationClass (Valuation R Γ₀) R Γ₀ where
@@ -314,7 +315,7 @@ theorem map_sum_eq_of_lt {ι : Type*} [DecidableEq ι] {s : Finset ι} {f : ι �
     v (∑ i ∈ s, f i) = v (f j) := by
   rcases eq_or_ne (v (f j)) 0 with h0 | h0
   · aesop
-  rw [Finset.sum_eq_add_sum_diff_singleton hj]
+  rw [Finset.sum_eq_add_sum_diff_singleton_of_mem hj]
   exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 
 theorem map_sub_eq_of_lt_left (h : v y < v x) : v (x - y) = v x := by
@@ -499,9 +500,23 @@ lemma not_isNontrivial_one [IsDomain R] [DecidablePred fun x : R ↦ x = 0] :
   rcases eq_or_ne x 0 with rfl | hx0 <;>
   simp_all [one_apply_of_ne_zero]
 
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueMonoid v) := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
+  rw [Submonoid.nontrivial_iff_exists_ne_one]
+  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueMonoid v (Set.mem_range_self x)
+  simpa [Units.ext_iff] using h1
+
+instance {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {v : Valuation R Γ₀}
+    [hv : v.IsNontrivial] : Nontrivial (MonoidWithZeroHom.valueGroup v) := by
+  obtain ⟨x, h0, h1⟩ := hv.exists_val_nontrivial
+  rw [Subgroup.nontrivial_iff_exists_ne_one]
+  use (Units.mk0 (v x) h0), MonoidWithZeroHom.mem_valueGroup v (Set.mem_range_self x)
+  simpa [Units.ext_iff] using h1
+
 section Field
 
-variable {K : Type*} [Field K] {w : Valuation K Γ₀}
+variable {K : Type*} [DivisionRing K] {w : Valuation K Γ₀}
 
 /-- For fields, being nontrivial is equivalent to the existence of a unit with valuation
 not equal to `1`. -/
@@ -516,7 +531,7 @@ lemma isNontrivial_iff_exists_unit :
 
 lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
-    ∃ x : K, v x ≠ 0 ∧ v x < 1 := by
+    ∃ x ≠ 0, v x < 1 := by
   obtain ⟨x, hx⟩ := isNontrivial_iff_exists_unit.mp hv
   rw [ne_iff_lt_or_gt] at hx
   rcases hx with hx | hx
@@ -525,21 +540,48 @@ lemma IsNontrivial.exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero
   · use x⁻¹
     simp [-map_inv₀, ← one_lt_val_iff, hx]
 
-theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*}
-    [LinearOrderedCommGroupWithZero Γ₀] (v : Valuation K Γ₀) :
-    v.IsNontrivial ↔ ∃ x, x ≠ 0 ∧ v x < 1 :=
+theorem isNontrivial_iff_exists_lt_one {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    (v : Valuation K Γ₀) : v.IsNontrivial ↔ ∃ x ≠ 0, v x < 1 :=
   ⟨fun h ↦ by simpa using h.exists_lt_one (v := v), fun ⟨x, hx0, hx1⟩ ↦ ⟨x, by simp [hx0, hx1.ne]⟩⟩
 
 lemma IsNontrivial.exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
     {v : Valuation K Γ₀} [hv : v.IsNontrivial] :
-    ∃ x : K, v x ≠ 0 ∧ 1 < v x := by
+    ∃ x, 1 < v x := by
   obtain ⟨x, h0, h1⟩ := hv.exists_lt_one
   use x⁻¹
-  simp [one_lt_inv₀ (zero_lt_iff.mpr h0), h0, h1]
+  simp [one_lt_inv₀ (zero_lt_iff.mpr (by simp [h0] : v x ≠ 0)), h1]
+
+lemma IsNontrivial_iff_exists_one_lt {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+    {v : Valuation K Γ₀} : v.IsNontrivial ↔ ∃ x, 1 < v x :=
+  ⟨fun h ↦ by simpa using h.exists_one_lt (v := v), fun ⟨x, hx1⟩ ↦ ⟨x, by aesop⟩⟩
 
 end Field
 
 end IsNontrivial
+
+section IsTrivialOn
+
+variable [LinearOrderedCommMonoidWithZero Γ₀]
+
+/-- A valuation on an `A`-algebra `B` is trivial on constants if the nonzero elements of the
+  base ring `A` are mapped to `1`.
+
+  This is true, for example, when `A` is a finite field.
+  See `Valuation.FiniteField.instIsTrivialOn`. -/
+class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
+    (v : Valuation B Γ₀) where
+  eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1
+
+attribute [grind =>] Valuation.IsTrivialOn.eq_one
+
+variable {B : Type*} {A : Type*} [CommSemiring A] [Ring B] [Algebra A B] (v : Valuation B Γ₀)
+  [v.IsTrivialOn A]
+
+@[simp]
+theorem IsTrivialOn.valuation_algebraMap_le_one (a : A) : v (algebraMap A B a) ≤ 1 := by
+  by_cases a = 0 <;> grind [zero_le']
+
+end IsTrivialOn
 
 namespace IsEquiv
 
@@ -574,9 +616,16 @@ theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
 
-theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 := by
-  have : v₁ r ≠ v₁ 0 ↔ v₂ r ≠ v₂ 0 := not_congr h.val_eq
+theorem eq_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r = 0 ↔ v₂ r = 0 := by
+  have : v₁ r = v₁ 0 ↔ v₂ r = v₂ 0 := h.val_eq
   rwa [v₁.map_zero, v₂.map_zero] at this
+
+@[deprecated "use `(eq_zero _).ne` instead." (since := "2026-01-05")]
+theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 :=
+  (eq_zero h).ne
+
+lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
+  rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]
 
 lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
     v₁ x < v₁ y ↔ v₂ x < v₂ y := by
@@ -584,6 +633,10 @@ lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
 
 lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
+  rw [← v₁.map_one, h, map_one]
+
+lemma one_le_iff_one_le (h : v₁.IsEquiv v₂) {x : R} :
+    1 ≤ v₁ x ↔ 1 ≤ v₂ x := by
   rw [← v₁.map_one, h, map_one]
 
 lemma eq_one_iff_eq_one (h : v₁.IsEquiv v₂) {x : R} :
@@ -594,43 +647,60 @@ lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x < 1 ↔ v₂ x < 1 := by
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
-lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} :
-    0 < v₁ x ↔ 0 < v₂ x := by
-  rw [zero_lt_iff, zero_lt_iff, h.ne_zero]
+lemma one_lt_iff_one_lt (h : v₁.IsEquiv v₂) {x : R} :
+    1 < v₁ x ↔ 1 < v₂ x := by
+  rw [← v₁.map_one, h.lt_iff_lt, map_one]
+
+theorem isTrivialOn {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂)
+    (h₁ : IsTrivialOn A v₁) : IsTrivialOn A v₂ where
+  eq_one _ ha := h.eq_one_iff_eq_one.mp (IsTrivialOn.eq_one _ ha)
+
+theorem isTrivialOn_iff {A : Type*} [CommSemiring A] [Algebra A R] (h : v₁.IsEquiv v₂) :
+    IsTrivialOn A v₁ ↔ IsTrivialOn A v₂ :=
+  ⟨fun h₁ ↦ h.isTrivialOn h₁, fun h₂ ↦ h.symm.isTrivialOn h₂⟩
 
 end IsEquiv
 
--- end of namespace
-section
+section LinearOrderedCommMonoidWithZero
 
-theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
-    [LinearOrderedCommMonoidWithZero Γ'₀] [Ring R] {v : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀)
-    (H : StrictMono f) : IsEquiv (v.map f H.monotone) v := fun _x _y =>
+variable [Ring R] [LinearOrderedCommMonoidWithZero Γ₀] [LinearOrderedCommMonoidWithZero Γ'₀]
+  {v : Valuation R Γ₀} {v' : Valuation R Γ'₀}
+
+theorem isEquiv_map_self_of_strictMono (f : Γ₀ →*₀ Γ'₀) (H : StrictMono f) :
+    IsEquiv (v.map f H.monotone) v := fun _x _y =>
   ⟨H.le_iff_le.mp, fun h => H.monotone h⟩
 
-theorem isEquiv_iff_val_lt_val [LinearOrderedCommMonoidWithZero Γ₀]
-    [LinearOrderedCommMonoidWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
-    v.IsEquiv v' ↔ ∀ {x y : K}, v x < v y ↔ v' x < v' y := by
+theorem isEquiv_iff_val_lt_val : v.IsEquiv v' ↔ ∀ {x y : R}, v x < v y ↔ v' x < v' y := by
   simp only [IsEquiv, le_iff_le_iff_lt_iff_lt]
   exact forall_comm
 
-theorem isEquiv_of_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
-    (h : ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
+theorem isNontrivial_of_isEquiv (h : v.IsEquiv v') (hv : v.IsNontrivial) : v'.IsNontrivial := by
+  obtain ⟨x, hx⟩ := hv
+  use x
+  simpa [← Valuation.IsEquiv.eq_one_iff_eq_one h, ← Valuation.IsEquiv.eq_zero h]
+
+theorem IsEquiv.isNontrivial_iff (h : v.IsEquiv v') :
+    v.IsNontrivial ↔ v'.IsNontrivial :=
+  ⟨fun hv ↦ isNontrivial_of_isEquiv h hv, fun hv ↦ isNontrivial_of_isEquiv h.symm hv⟩
+
+end LinearOrderedCommMonoidWithZero
+
+section LinearOrderedCommGroupWithZero
+
+variable [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
+  {v : Valuation K Γ₀} {v' : Valuation K Γ'₀}
+
+theorem isEquiv_of_val_le_one (h : ∀ x, v x ≤ 1 ↔ v' x ≤ 1) : v.IsEquiv v' := by
   intro x y
   obtain rfl | hy := eq_or_ne y 0
   · simp
   · rw [← div_le_one₀, ← v.map_div, h, v'.map_div, div_le_one₀] <;>
       rwa [zero_lt_iff, ne_zero_iff]
 
-theorem isEquiv_iff_val_le_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
-    v.IsEquiv v' ↔ ∀ {x : K}, v x ≤ 1 ↔ v' x ≤ 1 :=
+theorem isEquiv_iff_val_le_one : v.IsEquiv v' ↔ ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1 :=
   ⟨IsEquiv.le_one_iff_le_one, isEquiv_of_val_le_one⟩
 
-theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
-    v.IsEquiv v' ↔ ∀ {x : K}, v x = 1 ↔ v' x = 1 := by
+theorem isEquiv_iff_val_eq_one : v.IsEquiv v' ↔ ∀ {x}, v x = 1 ↔ v' x = 1 := by
   constructor
   · intro h x
     rw [h.eq_one_iff_eq_one]
@@ -663,9 +733,7 @@ theorem isEquiv_iff_val_eq_one [LinearOrderedCommGroupWithZero Γ₀]
       · rw [← h] at hx'
         exact le_of_eq hx'
 
-theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
-    v.IsEquiv v' ↔ ∀ {x : K}, v x < 1 ↔ v' x < 1 := by
+theorem isEquiv_iff_val_lt_one : v.IsEquiv v' ↔ ∀ {x}, v x < 1 ↔ v' x < 1 := by
   constructor
   · intro h x
     rw [h.lt_one_iff_lt_one]
@@ -689,16 +757,15 @@ theorem isEquiv_iff_val_lt_one [LinearOrderedCommGroupWithZero Γ₀]
         rw [← inv_one, ← inv_eq_iff_eq_inv, ← map_inv₀] at hh
         exact hh.not_lt (h.1 ((one_lt_val_iff v hx).1 h_2))
 
-theorem isEquiv_iff_val_sub_one_lt_one [LinearOrderedCommGroupWithZero Γ₀]
-    [LinearOrderedCommGroupWithZero Γ'₀] {v : Valuation K Γ₀} {v' : Valuation K Γ'₀} :
-    v.IsEquiv v' ↔ ∀ {x : K}, v (x - 1) < 1 ↔ v' (x - 1) < 1 := by
+theorem isEquiv_iff_val_sub_one_lt_one :
+    v.IsEquiv v' ↔ ∀ {x}, v (x - 1) < 1 ↔ v' (x - 1) < 1 := by
   rw [isEquiv_iff_val_lt_one]
   exact (Equiv.subRight 1).surjective.forall
 
 alias ⟨IsEquiv.val_sub_one_lt_one_iff, _⟩ := isEquiv_iff_val_sub_one_lt_one
 
-theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGroupWithZero Γ'₀]
-    (v : Valuation K Γ₀) (v' : Valuation K Γ'₀) :
+variable (v v') in
+theorem isEquiv_tfae :
     [ v.IsEquiv v',
       ∀ {x y}, v x < v y ↔ v' x < v' y,
       ∀ {x}, v x ≤ 1 ↔ v' x ≤ 1,
@@ -712,7 +779,7 @@ theorem isEquiv_tfae [LinearOrderedCommGroupWithZero Γ₀] [LinearOrderedCommGr
   tfae_have 1 ↔ 6 := isEquiv_iff_val_sub_one_lt_one
   tfae_finish
 
-end
+end LinearOrderedCommGroupWithZero
 
 section Supp
 
@@ -764,7 +831,6 @@ theorem comap_supp {S : Type*} [CommRing S] (f : S →+* R) :
 
 end Supp
 
--- end of section
 end Valuation
 
 section AddMonoid
@@ -785,6 +851,7 @@ section Basic
 
 section Monoid
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A valuation is coerced to the underlying function `R → Γ₀`. -/
 instance (R) (Γ₀) [Ring R] [LinearOrderedAddCommMonoidWithTop Γ₀] :
     FunLike (AddValuation R Γ₀) R Γ₀ where
@@ -1042,7 +1109,7 @@ theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = 
   Valuation.IsEquiv.val_eq h
 
 theorem ne_top (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ (⊤ : Γ₀) ↔ v₂ r ≠ (⊤ : Γ'₀) :=
-  Valuation.IsEquiv.ne_zero h
+  (Valuation.IsEquiv.eq_zero h).ne
 
 end IsEquiv
 
@@ -1063,7 +1130,6 @@ theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a :=
 
 end Supp
 
--- end of section
 end AddValuation
 
 namespace Valuation

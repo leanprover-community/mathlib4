@@ -43,6 +43,7 @@ lemma stdSimplex.mem_horn_iff {n : ℕ} (i : Fin (n + 1)) {m : SimplexCategory�
     (x : (Δ[n] : SSet.{u}).obj m) :
     x ∈ (horn n i).obj m ↔ Set.range (stdSimplex.asOrderHom x) ∪ {i} ≠ Set.univ := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma horn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
     horn.{u} n i =
       ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.1}ᶜ := by
@@ -198,6 +199,7 @@ def face {n : ℕ} (i j : Fin (n + 2)) (h : j ≠ i) : (Λ[n + 1, i] : SSet.{u})
   yonedaEquiv (Subfunctor.lift (stdSimplex.δ j) (by
     simpa using face_le_horn _ _ h))
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
 lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i] : SSet.{u}) ⟶ S)
@@ -233,6 +235,7 @@ lemma yonedaEquiv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ 
     yonedaEquiv (ι i j hij) = face i j hij := by
   rw [ι, Equiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
     ι i j hij ≫ Λ[n + 1, i].ι =

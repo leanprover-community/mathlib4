@@ -122,7 +122,7 @@ variable (C)
 @[simps] noncomputable def toSkeletonFunctor : C ⥤ Skeleton C where
   obj := toSkeleton
   map {X Y} f :=
-    { hom := (fromSkeletonToSkeletonIso X).hom ≫ f ≫ (fromSkeletonToSkeletonIso Y).inv  }
+    { hom := (fromSkeletonToSkeletonIso X).hom ≫ f ≫ (fromSkeletonToSkeletonIso Y).inv }
   map_id _ := by aesop
   map_comp _ _ := InducedCategory.hom_ext (by simp)
 
@@ -184,6 +184,7 @@ instance [F.Faithful] : F.mapSkeleton.Faithful := by unfold mapSkeleton; infer_i
 
 instance [F.EssSurj] : F.mapSkeleton.EssSurj := by unfold mapSkeleton; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A natural isomorphism between `X ↦ ⟦X⟧ ↦ ⟦FX⟧` and `X ↦ FX ↦ ⟦FX⟧`. On the level of
 categories, these are `C ⥤ Skeleton C ⥤ Skeleton D` and `C ⥤ D ⥤ Skeleton D`. So this says that
 the square formed by these 4 objects and 4 functors commutes. -/

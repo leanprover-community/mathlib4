@@ -6,6 +6,9 @@ Authors: Wenrong Zou
 module
 
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
+public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.MvPolynomial.Expand
+public import Mathlib.RingTheory.MvPolynomial.Expand
 
 /-!
 ## Expand multivariate power series
@@ -16,8 +19,8 @@ This operation is called `MvPowerSeries.expand` and it is an algebra homomorphis
 
 ### Main declaration
 
-* `MvPowerSeries.expand`: expand a multi variate power series by a factor of p, so `∑ aₙ xⁿ`
-becomes `∑ aₙ xⁿᵖ`.
+* `MvPowerSeries.expand`: expand a multi variate power series by a nonzero factor of p,
+so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 -/
 
 @[expose] public section
@@ -75,11 +78,15 @@ theorem expand_substAlgHom {f : σ → MvPowerSeries τ S} (hf : HasSubst f) {φ
     expand p hp (substAlgHom hf φ) = substAlgHom (HasSubst.expand p hp hf) φ := by
   rw [← AlgHom.comp_apply, expand_comp_substAlgHom]
 
+theorem expand_subst {f : σ → MvPowerSeries τ R} (hf : HasSubst f) {φ : MvPowerSeries σ R} :
+    expand p hp (subst f φ) = subst (fun i ↦ (f i).expand p hp) φ := by
+  rw [← substAlgHom_apply hf, expand_substAlgHom, substAlgHom_apply]
+
 end
 
-/- TODO : In the original file of multi variate polynomial, there are two theorem about rename
-here, but we don't have rename for multi variate power series. And for `eval₂Hom`, `eval₂`
-and `aevel`, the expression does't look good. -/
+/- TODO : In the original file of `MvPolynomial`, there are two theorems about `rename`
+here, but we don't have `rename` for `MvPowerSeries`. And for `eval₂Hom`, `eval₂`
+and `aeval`, the expression doesn't look good. -/
 
 variable (q : ℕ) (hq : q ≠ 0)
 
@@ -106,16 +113,21 @@ theorem coeff_expand_smul (φ : MvPowerSeries σ R) (m : σ →₀ ℕ) :
     rw [this, coeff_monomial, if_neg _, mul_zero]
     simp [nsmul_right_inj hp, hd.symm]
 
+@[simp]
+theorem constantCoeff_expand (φ : MvPowerSeries σ R) :
+    (φ.expand p hp).constantCoeff = φ.constantCoeff := by
+  conv_lhs => rw [← coeff_zero_eq_constantCoeff, ← smul_zero p, coeff_expand_smul]
+  simp
+
 theorem coeff_expand_of_not_dvd (φ : MvPowerSeries σ R) {m : σ →₀ ℕ} {i : σ} (h : ¬ p ∣ m i) :
     (expand p hp φ).coeff m = 0 := by
   classical
   contrapose! h
   simp only [expand, substAlgHom_apply, coeff_subst (HasSubst.X_pow hp)] at h
-  have : ∃ (d : σ →₀ ℕ), (coeff m) (d.prod fun s e ↦ ((X s (R := R)) ^ p) ^ e) ≠ 0 := by
+  obtain ⟨d, hd⟩ : ∃ (d : σ →₀ ℕ), (coeff m) (d.prod fun s e ↦ ((X s (R := R)) ^ p) ^ e) ≠ 0 := by
     by_contra! hc
     rw [finsum_eq_zero_of_forall_eq_zero fun d => by simp [hc d]] at h
     contradiction
-  obtain ⟨d, hd⟩ := this
   have : (d.prod fun s e ↦ ((X s (R := R)) ^ p) ^ e) = monomial (p • d) 1 := by
     simp [monomial_smul_eq]
   rw [this, coeff_monomial] at hd
@@ -145,5 +157,107 @@ theorem support_expand (φ : MvPowerSeries σ R) :
   by_contra hc
   rw [Function.mem_support, ← coeff_apply φ, ← coeff_expand_smul p hp, coeff_apply, hc] at hn₁
   contradiction
+
+set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem order_expand (φ : MvPowerSeries σ R) :
+    (φ.expand p hp).order = p • φ.order := by
+  by_cases! hφ : φ = 0
+  · simpa [hφ] using (ENat.mul_top (by norm_cast)).symm
+  · apply eq_of_le_of_ge
+    · obtain ⟨d, hd₁, hd₂⟩ := exists_coeff_ne_zero_and_order (ne_zero_iff_order_finite.mp hφ)
+      have : p • φ.order = (p • d).degree := by simp [← hd₂]
+      rw [this]
+      exact order_le <| (coeff_expand_smul p hp φ _) ▸ hd₁
+    · refine MvPowerSeries.le_order fun d hd => ?_
+      by_cases! h : ∀ i, p ∣ d i
+      · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.equivFunOnFinite.symm fun i => d i / p,
+          by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
+        rw [hm, coeff_expand_smul, coeff_of_lt_order]
+        simp only [hm, map_nsmul, smul_eq_mul, Nat.cast_mul, nsmul_eq_mul] at hd
+        exact lt_of_mul_lt_mul_left' hd
+      · obtain ⟨i, hi⟩ := h
+        exact coeff_expand_of_not_dvd p hp φ hi
+
+section MvPolynomial
+
+/-- For any multivariate polynomial `φ`, then `MvPolynomial.expand p φ` and
+`MvPowerSeries.expand p hp ↑φ` coincide. -/
+@[simp]
+theorem expand_eq_expand {φ : MvPolynomial σ R} :
+    expand p hp (↑φ) = (φ.expand p : MvPowerSeries σ R) := by
+  ext n
+  simp only [MvPolynomial.coeff_coe]
+  by_cases! h : ∀ i, p ∣ n i
+  · obtain ⟨m, hm⟩ : ∃ m, n = p • m :=
+      ⟨Finsupp.equivFunOnFinite.symm fun i => n i / p, by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
+    rw [hm, coeff_expand_smul p hp _ _, φ.coeff_expand_smul _ hp, φ.coeff_coe]
+  · obtain ⟨i, hi⟩ := h
+    rw [coeff_expand_of_not_dvd p hp _ hi, MvPolynomial.coeff_expand_of_not_dvd _ hi]
+
+theorem trunc'_expand [DecidableEq σ] {n : σ →₀ ℕ} (φ : MvPowerSeries σ R) :
+    trunc' R (p • n) (expand p hp φ) = (trunc' R n φ).expand p := by
+  ext d
+  by_cases! h : ∀ i, p ∣ d i
+  · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.equivFunOnFinite.symm fun i => d i / p,
+      by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
+    by_cases! h_le : m ≤ n
+    · rw [hm, coeff_trunc', if_pos (nsmul_le_nsmul_right h_le p), coeff_expand_smul,
+        MvPolynomial.coeff_expand_smul _ hp, coeff_trunc', if_pos h_le]
+    · have not_le : ¬ p • m ≤ p • n := by
+        obtain ⟨i, hi⟩ : ∃ i, m i > n i := by
+          by_contra! hc
+          exact h_le (Finsupp.coe_le_coe.mp hc)
+        have : ¬ p • m i ≤ p • n i := by
+          simp [Nat.mul_lt_mul_of_pos_left hi (p.ne_zero_iff_zero_lt.mp hp)]
+        exact Not.intro fun a ↦ this (a i)
+      rw [coeff_trunc', hm, if_neg not_le, MvPolynomial.coeff_expand_smul _ hp, coeff_trunc',
+        if_neg h_le]
+  · obtain ⟨i, hi⟩ := h
+    rw [MvPolynomial.coeff_expand_of_not_dvd _ hi]
+    by_cases! hd : d ≤ p • n
+    · rw [coeff_trunc', if_pos hd, coeff_expand_of_not_dvd _ hp _ hi]
+    rw [coeff_trunc', if_neg hd]
+
+include hp in
+theorem trunc'_expand_trunc' {n m : σ →₀ ℕ} (h : n ≤ m) [DecidableEq σ] (f : MvPowerSeries σ R) :
+    (MvPolynomial.expand p) (trunc' R n f) = (trunc' R (p • n))
+    ↑((MvPolynomial.expand p) (trunc' R m f)) := by
+  rw [← expand_eq_expand p hp, trunc'_expand, ← trunc'_trunc' h]
+
+end MvPolynomial
+
+section ExpChar
+
+variable [ExpChar R p]
+
+theorem map_frobenius_expand {f : MvPowerSeries σ R} :
+    (f.expand p hp).map (frobenius R p) = f ^ p := by
+  classical
+  rw [eq_iff_frequently_trunc'_eq, Filter.frequently_atTop]
+  intro n
+  use (p • n)
+  refine ⟨le_self_nsmul (zero_le n) hp, ?_⟩
+  · have : (((trunc' R (p • n) f).expand p).map (frobenius R p)).toMvPowerSeries =
+      MvPowerSeries.map (frobenius R p) ((trunc' R (p • n) f).expand p) := by
+      simp only [MvPolynomial.map_expand, ← expand_eq_expand p hp, map_expand]
+      congr
+      ext m
+      simp only [MvPolynomial.coeff_coe, MvPolynomial.coeff_map, coeff_map]
+    rw [trunc'_map, trunc'_expand, ← trunc'_trunc'_pow (Nat.one_le_iff_ne_zero.mpr
+      (expChar_ne_zero R p)), ← MvPolynomial.coe_pow p, ← MvPolynomial.map_frobenius_expand, this,
+        trunc'_map, trunc'_expand_trunc' p hp (le_self_nsmul (zero_le n) hp)]
+
+theorem map_iterateFrobenius_expand (f : MvPowerSeries σ R) (n : ℕ) :
+    map (iterateFrobenius R p n) (expand (p ^ n) (pow_ne_zero n hp) f) = f ^ p ^ n := by
+  induction n with
+  | zero => simp [map_id]
+  | succ k n_ih =>
+    symm
+    conv_lhs => rw [pow_succ, pow_mul, ← n_ih]
+    simp_rw [← map_frobenius_expand p hp, pow_succ', add_comm k, iterateFrobenius_add,
+      ← map_map, ← map_expand, ← expand_mul, iterateFrobenius_one]
+
+end ExpChar
 
 end MvPowerSeries

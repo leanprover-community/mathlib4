@@ -29,7 +29,7 @@ root pairings.
 
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
@@ -65,12 +65,8 @@ lemma coxeterWeightIn_le_four (S : Type*)
   rw [hsj'] at hsj
   have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
     rw [mul_le_mul_iff_right₀ four_pos]
-    refine (P.posRootForm S).posForm.apply_sq_le_of_symm ?_ (P.posRootForm S).isSymm_posForm ri rj
-    intro x
-    obtain ⟨s, hs, hs'⟩ := P.exists_ge_zero_eq_rootForm S x x.property
-    change _ = (P.posRootForm S).form x x at hs'
-    rw [(P.posRootForm S).algebraMap_apply_eq_form_iff] at hs'
-    rwa [← hs']
+    exact (P.posRootForm S).posForm.apply_sq_le_of_symm (zero_le_posForm _ _ ·)
+      (P.posRootForm S).isSymm_posForm ri rj
   have key : 4 • lij ^ 2 = P.coxeterWeightIn S i j • (li * lj) := by
     apply algebraMap_injective S R
     simpa [map_ofNat, lij, posRootForm, ri, rj, li, lj] using
@@ -158,10 +154,6 @@ lemma RootPositiveForm.rootLength_lt_of_pairingIn_notMem
   rcases aux₁ with hji | hji <;> rcases hij' with hij' | hij' | hij' | hij' | hij' | hij' <;>
   rw [hji, hij'] at aux₂ <;> lia
 
-@[deprecated (since := "2025-05-23")]
-alias RootPositiveForm.rootLength_lt_of_pairingIn_nmem :=
-  RootPositiveForm.rootLength_lt_of_pairingIn_notMem
-
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
     (len_eq : B.form (α i) (α i) = B.form (α j) (α j)) :
@@ -197,7 +189,7 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     α i - α j ∈ Φ := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
   have : Module.IsReflexive R N := .of_isPerfPair P.flip.toLinearMap
-  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
+  have : IsAddTorsionFree M := .of_isTorsionFree R M
   by_cases hli : LinearIndependent R ![α i, α j]
   · -- The case where the two roots are linearly independent
     suffices P.pairingIn ℤ i j = 1 ∨ P.pairingIn ℤ j i = 1 by

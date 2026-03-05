@@ -92,6 +92,7 @@ section
 variable [Semiring S] [AddCommMonoid M]
 
 /-- We temporarily install an action of the original ring on `RestrictScalars R S M`. -/
+@[instance_reducible]
 def RestrictScalars.moduleOrig [I : Module S M] : Module S (RestrictScalars R S M) := I
 
 variable [CommSemiring R] [Algebra R S]

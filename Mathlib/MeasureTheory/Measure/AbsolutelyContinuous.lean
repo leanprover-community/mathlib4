@@ -75,7 +75,7 @@ protected theorem refl {_m0 : MeasurableSpace α} (μ : Measure α) : μ ≪ μ 
 
 protected theorem rfl : μ ≪ μ := fun _s hs => hs
 
-instance instIsRefl {_ : MeasurableSpace α} : IsRefl (Measure α) (· ≪ ·) :=
+instance instRefl {_ : MeasurableSpace α} : @Std.Refl (Measure α) (· ≪ ·) :=
   ⟨fun _ => AbsolutelyContinuous.rfl⟩
 
 @[simp]
@@ -122,6 +122,9 @@ lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
   exact h1 hs.1
 
+lemma add_right' (h : μ ≪ ν') (ν : Measure α) : μ ≪ ν + ν' := by
+  simp [add_comm, add_right h]
+
 lemma null_mono {μ ν : Measure α} (hμν : μ ≪ ν) ⦃t : Set α⦄
     (ht : ν t = 0) : μ t = 0 :=
   hμν ht
@@ -158,6 +161,9 @@ theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ
 
 lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • μ := by
   simp [AbsolutelyContinuous, hc]
+
+lemma AbsolutelyContinuous.smul_right (hμν : μ ≪ ν) {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • ν :=
+  (absolutelyContinuous_smul hc).trans (hμν.smul c)
 
 theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
   ⟨fun h s => by

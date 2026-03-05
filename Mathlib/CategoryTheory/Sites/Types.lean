@@ -27,7 +27,7 @@ namespace CategoryTheory
 /-- A Grothendieck topology associated to the category of all types.
 A sieve is a covering iff it is jointly surjective. -/
 def typesGrothendieckTopology : GrothendieckTopology (Type u) where
-  sieves α S := ∀ x : α, S fun _ : PUnit => x
+  sieves α := {S | ∀ x : α, S fun _ : PUnit => x}
   top_mem' _ _ := trivial
   pullback_stable' _ _ _ f hs x := hs (f x)
   transitive' _ _ hs _ hr x := hr (hs x) PUnit.unit
@@ -87,10 +87,10 @@ open Presieve
 `(α → S(*)) → S(α)` that is inverse to `eval`. -/
 noncomputable def typesGlue (S : Type uᵒᵖ ⥤ Type u) (hs : IsSheaf typesGrothendieckTopology S)
     (α : Type u) (f : α → S.obj (op PUnit)) : S.obj (op α) :=
-  (hs.isSheafFor _ _ (generate_discretePresieve_mem α)).amalgamate
+  (hs.isSheafFor _ (generate_discretePresieve_mem α)).amalgamate
     (fun _ g hg => S.map (↾fun _ => PUnit.unit).op <| f <| g <| Classical.choose hg)
     fun β γ δ g₁ g₂ f₁ f₂ hf₁ hf₂ h =>
-    (hs.isSheafFor _ _ (generate_discretePresieve_mem δ)).isSeparatedFor.ext fun ε g ⟨x, _⟩ => by
+    (hs.isSheafFor _ (generate_discretePresieve_mem δ)).isSeparatedFor.ext fun ε g ⟨x, _⟩ => by
       have : f₁ (Classical.choose hf₁) = f₂ (Classical.choose hf₂) :=
         Classical.choose_spec hf₁ (g₁ <| g x) ▸
           Classical.choose_spec hf₂ (g₂ <| g x) ▸ congr_fun h _
@@ -103,7 +103,7 @@ theorem eval_typesGlue {S hs α} (f) : eval.{u} S α (typesGlue S hs α f) = f :
   convert FunctorToTypes.map_id_apply S _
 
 theorem typesGlue_eval {S hs α} (s) : typesGlue.{u} S hs α (eval S α s) = s := by
-  apply (hs.isSheafFor _ _ (generate_discretePresieve_mem α)).isSeparatedFor.ext
+  apply (hs.isSheafFor _ (generate_discretePresieve_mem α)).isSeparatedFor.ext
   intro β f hf
   apply (IsSheafFor.valid_glue _ _ _ hf).trans
   apply (FunctorToTypes.map_comp_apply _ _ _ _).symm.trans
@@ -119,7 +119,7 @@ noncomputable def evalEquiv (S : Type uᵒᵖ ⥤ Type u)
     (hs : Presheaf.IsSheaf typesGrothendieckTopology S)
     (α : Type u) : S.obj (op α) ≃ (α → S.obj (op PUnit)) where
   toFun := eval S α
-  invFun := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _ ).1 hs) α
+  invFun := typesGlue S ((isSheaf_iff_isSheaf_of_type _ _).1 hs) α
   left_inv := typesGlue_eval
   right_inv := eval_typesGlue
 
@@ -149,7 +149,8 @@ theorem eval_app (S₁ S₂ : Sheaf typesGrothendieckTopology (Type u)) (f : S�
     eval S₂.1 α (f.val.app (op α) s) x = f.val.app (op PUnit) (eval S₁.1 α s x) :=
   (congr_fun (f.val.naturality (↾fun _ : PUnit => x).op) s).symm
 
-/-- `yoneda'` induces an equivalence of category between `Type u` and
+set_option backward.isDefEq.respectTransparency false in
+/-- `yoneda'` induces an equivalence of categories between `Type u` and
 `Sheaf typesGrothendieckTopology (Type u)`. -/
 @[simps!]
 noncomputable def typeEquiv : Type u ≌ Sheaf typesGrothendieckTopology (Type u) where

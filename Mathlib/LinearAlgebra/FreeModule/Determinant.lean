@@ -20,7 +20,7 @@ free (finite) modules over any commutative ring.
   nontrivial module.
 -/
 
-@[expose] public section
+public section
 
 
 @[simp high]

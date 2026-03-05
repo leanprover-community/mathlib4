@@ -358,10 +358,6 @@ lemma _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
   rw [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_insert_iff, Set.mem_singleton_iff,
     ← h.ext_iff, eq_comm (a := σ)]
 
-@[deprecated (since := "2025-07-08")]
-alias _root_.NumberField.ComplexEmbedding.IsConj.coe_stabilzer_mk :=
-NumberField.ComplexEmbedding.IsConj.coe_stabilizer_mk
-
 variable (k w)
 
 lemma nat_card_stabilizer_eq_one_or_two :
@@ -370,11 +366,8 @@ lemma nat_card_stabilizer_eq_one_or_two :
   rw [← SetLike.coe_sort_coe, ← mk_embedding w]
   by_cases! h : ∃ σ, ComplexEmbedding.IsConj (k := k) (embedding w) σ
   · obtain ⟨σ, hσ⟩ := h
-    simp only [hσ.coe_stabilizer_mk, Nat.card_eq_fintype_card, card_ofFinset,
-      Set.toFinset_singleton]
-    by_cases 1 = σ
-    · left; simp [*]
-    · right; simp [*]
+    rw [hσ.coe_stabilizer_mk]
+    simp
   · left
     trans Nat.card ({1} : Set Gal(K/k))
     · congr with x
@@ -475,7 +468,6 @@ open scoped Classical in
 lemma card_isUnramified [NumberField k] [IsGalois k K] :
     #{w : InfinitePlace K | w.IsUnramified k} =
       #{w : InfinitePlace k | w.IsUnramifiedIn K} * finrank k K := by
-  letI := Module.Finite.of_restrictScalars_finite ℚ k K
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := {w : InfinitePlace k | w.IsUnramifiedIn K}), ← smul_eq_mul, ← sum_const]
@@ -499,7 +491,6 @@ open scoped Classical in
 lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
     #({w : InfinitePlace K | w.IsUnramified k} : Finset _)ᶜ =
       #({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ * (finrank k K / 2) := by
-  letI := Module.Finite.of_restrictScalars_finite ℚ k K
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := ({w : InfinitePlace k | w.IsUnramifiedIn K} : Finset _)ᶜ), ← smul_eq_mul, ← sum_const]

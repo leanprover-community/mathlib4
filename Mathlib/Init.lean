@@ -1,8 +1,8 @@
-module
+module  -- shake: keep-all, shake: keep-downstream
 
 public import Lean.Linter.Sets -- for the definition of linter sets
 public import Lean.LibrarySuggestions.Default -- for `+suggestions` modes in tactics
-public import Mathlib.Tactic.Linter.CommandStart
+public import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 public import Mathlib.Tactic.Linter.DirectoryDependency
 public import Mathlib.Tactic.Linter.DocPrime
@@ -12,8 +12,6 @@ public import Mathlib.Tactic.Linter.GlobalAttributeIn
 public import Mathlib.Tactic.Linter.HashCommandLinter
 public import Mathlib.Tactic.Linter.Header
 public import Mathlib.Tactic.Linter.FlexibleLinter
--- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
-public import Mathlib.Tactic.Linter.Lint
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PrivateModule
@@ -23,13 +21,23 @@ public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.Style
--- This import makes the `#min_imports` command available globally.
-public import Mathlib.Tactic.MinImports
+public import Mathlib.Tactic.Linter.Whitespace
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 -- This is a redundant import, but it is needed so that
 -- the linter doesn't complain about `ParseCommand` not importing `Header`.
 -- This can be removed after https://github.com/leanprover-community/mathlib4/pull/32419
 public import Mathlib.Util.ParseCommand
+-- This import makes the `#help` command available globally.
+public import Batteries.Tactic.HelpCmd
+-- This import makes the `proof_wanted` command available globally.
+public import Batteries.Util.ProofWanted
+-- This import makes the `#redundant_imports`/`#min_imports`/`#find_home`/`#import_diff` commands
+-- available globally.
+public import ImportGraph.Tools
+-- The following module imports `Batteries.Tactic.Lint`, where `#lint` is defined.
+public import Mathlib.Tactic.Linter.Lint
+-- This import makes the `#min_imports in` command available globally.
+public import Mathlib.Tactic.MinImports
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -53,7 +61,7 @@ as early as possible.
 
 All linters imported here have no bulk imports;
 **Not** imported in this file are
-- the text-based linters in `Linters/TextBased.lean`, as they can be imported later
+- the text-based linters in `Mathlib/Tactic/Linter/TextBased.lean`, as they can be imported later
 - the `haveLet` linter, as it is currently disabled by default due to crashes
 - the `ppRoundTrip` linter, which is currently disabled (as this is not mature enough)
 - the `minImports` linter, as that linter is disabled by default (and has an informational function;
@@ -62,7 +70,7 @@ All linters imported here have no bulk imports;
 
 -/
 
-@[expose] public section
+public section
 
 /-- Define a linter set of all mathlib syntax linters which are enabled by default.
 
@@ -79,7 +87,6 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cases
   linter.style.induction
   linter.style.refine
-  linter.style.commandStart
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
@@ -91,11 +98,13 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.multiGoal
   linter.style.nativeDecide
   linter.style.openClassical
+  linter.style.maxHeartbeats
   linter.style.missingEnd
   linter.style.setOption
   linter.style.show
-  linter.style.maxHeartbeats
+  linter.style.whitespace
   linter.unusedDecidableInType
+  linter.unusedFintypeInType
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
 /-- Define a set of linters that are used in the `nightly-testing` branch

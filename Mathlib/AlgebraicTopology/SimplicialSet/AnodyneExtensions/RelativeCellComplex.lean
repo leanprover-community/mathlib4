@@ -194,7 +194,7 @@ lemma Cells.preimage_filtration_map {j : ι} (c : f.Cells j) :
   obtain ⟨x, hx⟩ := c
   sorry
 
-def Cells.mapHorn {j : ι} (c : f.Cells j) : (c.horn : SSet) ⟶ f.filtration j :=
+noncomputable def Cells.mapHorn {j : ι} (c : f.Cells j) : (c.horn : SSet) ⟶ f.filtration j :=
   Subcomplex.lift (c.horn.ι ≫ c.map) (by
     simp [← image_top, image_le_iff, preimage_comp, c.preimage_filtration_map])
 
@@ -205,6 +205,7 @@ lemma Cells.mapHorn_ι {j : ι} (c : f.Cells j) :
 noncomputable def t (j : ι) : f.sigmaHorn j ⟶ f.filtration j :=
   Limits.Sigma.desc (fun c ↦ c.mapHorn)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Cells.ιSigmaHorn_t {j : ι} (c : f.Cells j) :
     c.ιSigmaHorn ≫ f.t j = c.mapHorn:= by
@@ -216,6 +217,7 @@ noncomputable def b (j : ι) :
     f.sigmaStdSimplex j ⟶ f.filtration (Order.succ j) :=
   Sigma.desc (fun c ↦ c.mapToSucc)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma ι_b {j : ι} (c : f.Cells j) :
     c.ιSigmaStdSimplex ≫ f.b j = c.mapToSucc := by simp [b]
@@ -226,6 +228,7 @@ lemma w (j : ι) :
   ext c : 1
   simp [← cancel_mono (Subcomplex.ι _)]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPullback (j : ι) (hj : ¬ IsMax j) :
     IsPullback (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where
@@ -244,6 +247,7 @@ lemma isPullback (j : ι) (hj : ¬ IsMax j) :
     · sorry
     )⟩
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
       (homOfLE (f.filtration_monotone (Order.le_succ j))) (f.b j) where

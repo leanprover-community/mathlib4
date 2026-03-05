@@ -113,7 +113,7 @@ end Functoriality
 
 namespace MulAction
 
-open scoped BigOperators Pointwise Cardinal
+open scoped Pointwise Cardinal
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
@@ -583,19 +583,9 @@ theorem isMultiplyPretransitive (n : ℕ) :
       · obtain ⟨i, rfl⟩ := hb
         use x i
         simp only [ψ, x.injective.extend_apply]
-      · rw [← Set.mem_compl_iff] at hb
-        use φ.invFun ⟨b, hb⟩
-        simp only [ψ]
-        rw [Function.extend_apply' _ _ _ ?_]
-        · simp only [φ']
-          set a : α := (φ.invFun ⟨b, hb⟩ : α)
-          have ha : a ∈ (range x)ᶜ := Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← Subtype.coe_mk a ha]
-          simp [a]
-        · rintro ⟨i, hi⟩
-          apply Subtype.coe_prop (φ.invFun ⟨b, hb⟩)
-          rw [← hi]
-          exact mem_range_self i
+      · use φ.invFun ⟨b, hb⟩
+        simp only [invFun_as_coe]
+        grind [Function.extend_apply', Function.extend_val_apply]
   use Equiv.ofBijective ψ this
   ext i
   simp [ψ, x.injective.extend_apply]
@@ -743,3 +733,16 @@ theorem isPreprimitive_of_three_le_card (h : 3 ≤ Nat.card α) :
   { isTrivialBlock_of_isBlock := isTrivialBlock_of_isBlock α }
 
 end alternatingGroup
+
+namespace AlternatingGroup
+
+@[deprecated (since := "2025-12-16")]
+alias isMultiplyPretransitive := alternatingGroup.isMultiplyPretransitive
+@[deprecated (since := "2025-12-16")]
+alias isPretransitive_of_three_le_card := alternatingGroup.isPretransitive_of_three_le_card
+@[deprecated (since := "2025-12-16")]
+alias isTrivialBlock_of_isBlock := alternatingGroup.isTrivialBlock_of_isBlock
+@[deprecated (since := "2025-12-16")]
+alias isPreprimitive_of_three_le_card := alternatingGroup.isPreprimitive_of_three_le_card
+
+end AlternatingGroup
