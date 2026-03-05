@@ -595,10 +595,7 @@ lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
 
 /-- Given a bijective function, there is an isomorphism from a graph into the mapped graph. -/
 protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
-  { f with map_rel_iff' := by {
-    rw [Equiv.coe_toEmbedding]
-    grind [Equiv.apply_eq_iff_eq, map_adj', Adj.ne]
-  } }
+  { f with map_rel_iff' := by aesop (add simp map_adj') }
 
 @[simp]
 lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) :
