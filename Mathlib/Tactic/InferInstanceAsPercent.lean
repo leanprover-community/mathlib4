@@ -76,6 +76,44 @@ private def addUnfoldings (acc : Array (Expr × Expr)) (e target : Expr)
       acc := acc.push (form, target)
   return acc
 
+/-- Check whether two expressions have the same head constant name (ignoring universe levels). -/
+private def sameHeadConstName (a b : Expr) : Bool :=
+  match a.getAppFn, b.getAppFn with
+  | .const n₁ _, .const n₂ _ => n₁ == n₂
+  | _, _ => false
+
+/-- Try to unfold `sourceType` and `expectedType` until they share a common head constant.
+Returns the aligned pair, or throws an error if no common head is found.
+
+This handles two cases:
+- Universe-polymorphic aliases: e.g. `DecidableEq.{max 0 u}` vs `DecidableEq.{u}`
+  (same constant name, different universe levels)
+- Type abbreviations: e.g. `DecidableLT α` vs `DecidableRel (· < ·)`
+  (different constants that unfold to a common head) -/
+private def alignHeads (sourceType expectedType : Expr) :
+    MetaM (Expr × Expr) := do
+  -- Fast path: same head constant name (handles universe mismatches)
+  if sameHeadConstName sourceType expectedType then
+    return (sourceType, expectedType)
+  -- Try unfolding both to find a common head
+  let sourceChain ← unfoldChain sourceType (skipHead := true)
+  let expectedChain ← unfoldChain expectedType (skipHead := true)
+  -- Try unfolding source only
+  for s in sourceChain do
+    if sameHeadConstName s expectedType then
+      return (s, expectedType)
+  -- Try unfolding expected only
+  for e in expectedChain do
+    if sameHeadConstName sourceType e then
+      return (sourceType, e)
+  -- Try unfolding both
+  for s in sourceChain do
+    for e in expectedChain do
+      if sameHeadConstName s e then
+        return (s, e)
+  throwError "inferInstanceAs%: source type head{indentExpr sourceType.getAppFn}\n\
+    does not match expected type head{indentExpr expectedType.getAppFn}"
+
 /-- Build the replacement table for differing arguments between `sourceType` and
 `expectedType`. For each differing argument position, all unfoldings of both the
 source and expected arguments are mapped to the expected argument. -/
@@ -247,10 +285,9 @@ elab "inferInstanceAs% " source:term : term <= expectedType => do
   let inst ← synthInstance sourceType
   let inst ← instantiateMVars inst
   let expectedType ← instantiateMVars expectedType
-  -- Check that the class heads match before comparing arguments pairwise
-  unless sourceType.getAppFn == expectedType.getAppFn do
-    throwError "inferInstanceAs%: source type head{indentExpr sourceType.getAppFn}\n\
-      does not match expected type head{indentExpr expectedType.getAppFn}"
+  -- Align heads: unfold both types until they share a common head constant.
+  -- This handles universe mismatches and type abbreviations like DecidableLT vs DecidableRel.
+  let (sourceType, expectedType) ← alignHeads sourceType expectedType
   -- Build replacement table from differing carrier type arguments
   let replacements ← buildReplacements sourceType expectedType
   if replacements.isEmpty then return inst
