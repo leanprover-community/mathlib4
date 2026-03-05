@@ -197,7 +197,6 @@ lemma quotient_isRegularLocalRing_tfae [IsRegularLocalRing R] (S : Finset R)
       exact Submodule.spanFinrank_span_le_ncard_of_finite (Set.toFinite (S ∪ U))
   tfae_finish
 
-set_option backward.isDefEq.respectTransparency false in
 lemma quotient_span_singleton [IsRegularLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (nmem : x ∉ (maximalIdeal R) ^ 2) : IsRegularLocalRing (R ⧸ Ideal.span {x}) ∧
     (ringKrullDim (R ⧸ Ideal.span {x}) + 1 = ringKrullDim R) := by
@@ -214,6 +213,7 @@ lemma exist_nat_eq [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := b
   exact (WithBot.coe_unbot (ringKrullDim R) ringKrullDim_ne_bot).symm.trans
     (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
 
+set_option backward.isDefEq.respectTransparency false in
 open Pointwise in
 theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
   obtain ⟨n, hn⟩ := exist_nat_eq R
@@ -269,6 +269,7 @@ theorem isDomain_of_isRegularLocalRing [IsRegularLocalRing R] : IsDomain R := by
 
 instance [IsRegularLocalRing R] : IsDomain R := isDomain_of_isRegularLocalRing R
 
+set_option backward.isDefEq.respectTransparency false in
 lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRegularLocalRing R]
     (dim : ringKrullDim R = 1) : IsDiscreteValuationRing R := by
   have nisf : ¬ IsField R := by
@@ -282,6 +283,7 @@ lemma IsDiscreteValuationRing.of_isRegularLocalRing_of_ringKrullDim_eq_one [IsRe
   use a
   simpa [← ha] using (maximalIdeal R).span_generators.symm
 
+set_option backward.isDefEq.respectTransparency false in
 open RingTheory.Sequence in
 theorem isRegular_of_span_eq_maximalIdeal [IsRegularLocalRing R] (rs : List R)
     (span : Ideal.ofList rs = maximalIdeal R) (len : rs.length = ringKrullDim R) :

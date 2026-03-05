@@ -275,10 +275,11 @@ lemma spanRank_map_le [RingHomSurjective σ] (f : M →ₛₗ[σ] N)
   exact ⟨f '' p.generators, Cardinal.mk_image_le, le_antisymm (span_le.2 (fun n ⟨m, hm, h⟩ ↦
     ⟨m, span_generators p ▸ subset_span hm, h⟩)) (by simp [span_generators])⟩
 
-lemma spanFinrank_map_le_of_fg [RingHomSurjective σ] (f : M →ₛₗ[σ] N)
-    {p : Submodule R M} (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank :=
-  (Cardinal.toNat_le_iff_le_of_lt_aleph0 (spanRank_finite_iff_fg.mpr (FG.map f hp))
-    (spanRank_finite_iff_fg.mpr hp)).2 (p.spanRank_map_le f)
+lemma spanFinrank_map_le_of_fg {L : Type*} [AddCommMonoid L] [Module S L] [RingHomSurjective σ]
+    (f : M →ₛₗ[σ] L) {p : Submodule R M} (hp : p.FG) : (p.map f).spanFinrank ≤ p.spanFinrank := by
+  nth_rw 1 [← p.span_generators, Submodule.map_span, ← hp.generators_ncard]
+  exact (Submodule.spanFinrank_span_le_ncard_of_finite (hp.finite_generators.image f)).trans
+    (Set.ncard_image_le hp.finite_generators)
 
 lemma spanRank_map_eq_of_injective [RingHomSurjective σ] (f : M →ₛₗ[σ] N)
     (hf : Function.Injective f) (p : Submodule R M) : (p.map f).spanRank = p.spanRank := by
@@ -288,6 +289,19 @@ lemma spanRank_map_eq_of_injective [RingHomSurjective σ] (f : M →ₛₗ[σ] N
     ((subset_span.trans e.le).trans LinearMap.map_le_range)
   obtain rfl : span R s = p := by simpa [(map_injective_of_injective hf).eq_iff] using e
   grw [← hs, spanRank_span_le_card, Cardinal.mk_image_eq hf]
+
+lemma spanFinrank_map_eq_of_injective {L : Type*} [AddCommMonoid L] [Module S L]
+    [RingHomSurjective σ] (f : M →ₛₗ[σ] L) (hf : Function.Injective f) {p : Submodule R M}
+    (hp : p.FG) : (p.map f).spanFinrank = p.spanFinrank := by
+  refine (spanFinrank_map_le_of_fg f hp).antisymm ?_
+  obtain ⟨s, hs⟩ : ∃ y, f '' y = (p.map f).generators := Set.subset_range_iff_exists_image_eq.mp
+    ((subset_span.trans (p.map f).span_generators.le).trans LinearMap.map_le_range)
+  have fin : s.Finite :=
+    Set.Finite.of_finite_image (by simpa [hs] using (hp.map f).finite_generators) hf.injOn
+  have : span R s = p := map_injective_of_injective hf
+    (by rw [Submodule.map_span, hs, (p.map f).span_generators])
+  nth_grw 1 [← this, Submodule.spanFinrank_span_le_ncard_of_finite fin,
+    ← (hp.map f).generators_ncard, ← hf.injOn.ncard_image, hs]
 
 lemma spanRank_range_le [RingHomSurjective σ] (f : M →ₛₗ[σ] N) :
     (LinearMap.range f).spanRank ≤ (⊤ : Submodule R M).spanRank := by
@@ -342,9 +356,12 @@ lemma Ideal.spanRank_map_le : (I.map f).spanRank ≤ I.spanRank := by
 
 open Submodule in
 variable {I} in
-lemma Ideal.spanFinrank_map_le_of_fg (hI : I.FG) : (I.map f).spanFinrank ≤ I.spanFinrank :=
-  (Cardinal.toNat_le_iff_le_of_lt_aleph0 (spanRank_finite_iff_fg.mpr (Ideal.FG.map hI f))
-    ((spanRank_finite_iff_fg.mpr hI))).2 (spanRank_map_le f I)
+lemma Ideal.spanFinrank_map_le_of_fg {S : Type*} [Semiring S] (f : R →+* S) (hI : I.FG) :
+    (I.map f).spanFinrank ≤ I.spanFinrank := by
+  nth_rw 1 [← Submodule.FG.generators_ncard hI, ← I.span_generators, Ideal.submodule_span_eq,
+    Ideal.map_span]
+  exact (Submodule.spanFinrank_span_le_ncard_of_finite ((Submodule.FG.finite_generators hI).image
+    f)).trans (Set.ncard_image_le (Submodule.FG.finite_generators hI))
 
 end Ideal
 

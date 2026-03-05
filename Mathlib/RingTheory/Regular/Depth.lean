@@ -336,6 +336,7 @@ noncomputable def Ideal.depth (I : Ideal R) (M : ModuleCat.{v} R) : ℕ∞ :=
 noncomputable def IsLocalRing.depth [IsLocalRing R] (M : ModuleCat.{v} R) : ℕ∞ :=
   (IsLocalRing.maximalIdeal R).depth M
 
+set_option backward.isDefEq.respectTransparency false in
 open Classical in
 lemma moduleDepth_eq_find (N M : ModuleCat.{v} R) (h : ∃ n, Nontrivial (Ext N M n)) :
     moduleDepth N M = Nat.find h := by
@@ -365,6 +366,7 @@ lemma moduleDepth_lt_top_iff (N M : ModuleCat.{v} R) :
   · push_neg
     rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma moduleDepth_eq_iff (N M : ModuleCat.{v} R) (n : ℕ) : moduleDepth N M = n ↔
     Nontrivial (Ext N M n) ∧ ∀ i < n, Subsingleton (Ext N M i) := by
   classical
@@ -445,6 +447,7 @@ lemma IsLocalRing.depth_eq_of_iso [IsLocalRing R] {M M' : ModuleCat.{v} R} (e : 
     IsLocalRing.depth M = IsLocalRing.depth M' :=
   (maximalIdeal R).depth_eq_of_iso e
 
+set_option backward.isDefEq.respectTransparency false in
 lemma moduleDepth_eq_zero_of_hom_nontrivial (N M : ModuleCat.{v} R) :
     moduleDepth N M = 0 ↔ Nontrivial (N →ₗ[R] M) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -564,6 +567,7 @@ lemma moduleDepth_ge_min_of_shortExact_trd_snd
     (Ext.covariant_sequence_exact₃' N hS i (i + 1) rfl)
     (zero2.eq_zero_of_src _) (zero1.eq_zero_of_tgt _)
 
+set_option backward.isDefEq.respectTransparency false in
 lemma moduleDepth_eq_sSup_length_regular [IsNoetherianRing R] (I : Ideal R)
     (N M : ModuleCat.{v} R) [Module.Finite R M] [Nfin : Module.Finite R N]
     [Nntr : Nontrivial N] (smul_lt : I • (⊤ : Submodule R M) < ⊤)
