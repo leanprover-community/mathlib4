@@ -162,6 +162,16 @@ def functorExt {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
   NatIso.ofComponents (fun j ↦ match j with | .left i => left i | .right i => right i) <| by
     rintro _ _ ⟨_⟩ <;> simp [wl, wr]
 
+lemma functor_ext {C : Type*} [Category* C] {F G : WalkingMulticospan J ⥤ C}
+    (left : ∀ i, F.obj (.left i) = G.obj (.left i))
+    (right : ∀ i, F.obj (.right i) = G.obj (.right i))
+    (wl : ∀ i, F.map (Hom.fst i) ≫ eqToHom (right i) = eqToHom (left _) ≫ G.map (Hom.fst i))
+    (wr : ∀ i, F.map (Hom.snd i) ≫ eqToHom (right i) = eqToHom (left _) ≫ G.map (Hom.snd i)) :
+    F = G :=
+  Functor.ext_of_iso
+    (functorExt (fun _ ↦ eqToIso (left _)) (fun _ ↦ eqToIso (right _)) wl wr)
+    (by rintro (_ | _) <;> grind) (by rintro (_ | _) <;> simp)
+
 end WalkingMulticospan
 
 namespace WalkingMultispan

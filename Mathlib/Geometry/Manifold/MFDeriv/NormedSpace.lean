@@ -264,14 +264,12 @@ theorem MDifferentiable.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → 
 
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MDifferentiableWithinAt.smul {f : M → 𝕜} {g : M → V}
     (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) (hg : MDifferentiableWithinAt I 𝓘(𝕜, V) g s x) :
     MDifferentiableWithinAt I 𝓘(𝕜, V) (fun p => f p • g p) s x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp_mdifferentiableWithinAt x
     (hf.prodMk hg)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem MDifferentiableAt.smul {f : M → 𝕜} {g : M → V} (hf : MDifferentiableAt I 𝓘(𝕜) f x)
     (hg : MDifferentiableAt I 𝓘(𝕜, V) g x) : MDifferentiableAt I 𝓘(𝕜, V) (fun p => f p • g p) x :=
   ((contMDiff_smul.of_le le_top).mdifferentiable one_ne_zero _).comp x (hf.prodMk hg)

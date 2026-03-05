@@ -356,6 +356,7 @@ lemma isInvertible_mfderiv_extChartAt {y : M} (hy : y ∈ (extChartAt I x).sourc
   have : (extChartAt I x).symm ((extChartAt I x) y) = y := (extChartAt I x).left_inv hy
   rwa [this] at Z
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The trivialization of the tangent bundle at a point is the manifold derivative of the
 extended chart.
 Use with care as this abuses the defeq `TangentSpace 𝓘(𝕜, E) y = E` for `y : E`. -/
