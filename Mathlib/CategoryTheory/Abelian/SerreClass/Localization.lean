@@ -294,9 +294,7 @@ lemma preservesKernel {X Y : C} (f : X ⟶ Y) :
   obtain ⟨Z', t, ht, fac⟩ := hw
   have := Localization.inverts L P.isoModSerre t ht
   rw [← Category.assoc] at fac
-  refine ⟨inv (L.map t) ≫ L.map (kernel.lift _ _ fac), ?_⟩
-  simp only [Category.assoc, eqToHom_refl, Category.id_comp, IsIso.inv_comp_eq,
-    ← L.map_comp, kernel.lift_ι]
+  exact ⟨inv (L.map t) ≫ L.map (kernel.lift _ _ fac), by simp [← Functor.map_comp]⟩
 
 lemma preservesCokernel {X Y : C} (f : X ⟶ Y) :
     PreservesColimit (parallelPair f 0) L := by
