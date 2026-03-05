@@ -31,14 +31,13 @@ section Normed
 variable {A : Type*} [NormedAddCommGroup A] [NormedSpace ℝ A]
 
 lemma StrictConvexSpace.sphere_subset_extremePoints_closedBall [StrictConvexSpace ℝ A]
-    (a : A) {r : ℝ} (hr : r ≠ 0) : sphere a r ⊆ extremePoints ℝ (closedBall a r) := fun x hx ↦ by
+    (a : A) {r : ℝ} (hr : r ≠ 0) : sphere a r ⊆ extremePoints ℝ (closedBall a r) := fun _ hx ↦ by
   rw [← frontier_closedBall _ hr, frontier, closure_closedBall] at hx
-  apply (_root_.strictConvex_closedBall ℝ _ _).mem_extremePoints_of_mem_sdiff_interior hx
+  exact (_root_.strictConvex_closedBall ℝ _ _).mem_extremePoints_of_mem_sdiff_interior hx
 
-lemma StrictConvexSpace.sphere_subset_extremePoints_closedBall' [Nontrivial A]
-    [StrictConvexSpace ℝ A] {a : A} {r : ℝ} : sphere a r ⊆ extremePoints ℝ (closedBall a r) := by
-  intro x hx
+lemma StrictConvexSpace.sphere_subset_extremePoints_closedBall' [Nontrivial A] {a : A} {r : ℝ}
+    [StrictConvexSpace ℝ A] : sphere a r ⊆ extremePoints ℝ (closedBall a r) := fun _ hx ↦ by
   rw [← frontier_closedBall', frontier, closure_closedBall] at hx
-  apply (_root_.strictConvex_closedBall ℝ _ _).mem_extremePoints_of_mem_sdiff_interior hx
+  exact (_root_.strictConvex_closedBall ℝ _ _).mem_extremePoints_of_mem_sdiff_interior hx
 
 end Normed
