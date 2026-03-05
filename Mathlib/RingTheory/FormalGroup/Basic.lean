@@ -30,34 +30,32 @@ of the formal group law `F(X,Y)`.
   `PowerSeries.hasEvalIdeal`.
 
 ## References
-* [Hazewinkel, Michiel. «Formal Groups and Applications»]
+* [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
 
 -/
 
 @[expose] public section
 
-variable {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S]
-  {σ τ : Type*}
-  -- (F : MvPowerSeries (Fin 2) R) (α : PowerSeries R)
+variable {R : Type*} [CommRing R] {S : Type*} [CommRing S] [Algebra R S] {σ τ : Type*}
 
 noncomputable section
 
 open MvPowerSeries Finsupp
 
 /-- The first indeterminate for a power series in two variables. -/
-abbrev X₀ : MvPowerSeries (Fin 2) R := X (0 : Fin 2)
+local notation "X₀" => (X (0 : Fin 2) : MvPowerSeries (Fin 2) R)
 
 /-- The second indeterminate for a power series in two variables. -/
-abbrev X₁ : MvPowerSeries (Fin 2) R := X (1 : Fin 2)
+local notation "X₁" => (X (1 : Fin 2) : MvPowerSeries (Fin 2) R)
 
 /-- The first indeterminate for a power series in three variables. -/
-abbrev Y₀ : MvPowerSeries (Fin 3) R := X (0 : Fin 3)
+local notation "Y₀" => (X (0 : Fin 3) : MvPowerSeries (Fin 3) R)
 
 /-- The second indeterminate for a power series in three variables. -/
-abbrev Y₁ : MvPowerSeries (Fin 3) R := X (1 : Fin 3)
+local notation "Y₁" => (X (1 : Fin 3) : MvPowerSeries (Fin 3) R)
 
 /-- The third indeterminate for a power series in three variables. -/
-abbrev Y₂ : MvPowerSeries (Fin 3) R := X (2 : Fin 3)
+local notation "Y₂" => (X (2 : Fin 3) : MvPowerSeries (Fin 3) R)
 
 variable (R) in
 /-- A structure for a 1-dimensional formal group law over `R`. -/
@@ -137,14 +135,14 @@ def Gₐ : CommFormalGroup R where
   lin_coeff_X := by simp [coeff_index_single_X]
   lin_coeff_Y := by simp [coeff_index_single_X]
   assoc := by
-    obtain aux₁ := HasSubst.cons_subst_zero_left (F := X₀ + X₁ (R := R)) (by simp)
-    obtain aux₂ := HasSubst.cons_subst_zero_right (F := X₀ + X₁ (R := R)) (by simp)
+    obtain aux₁ := HasSubst.cons_subst_zero_left (F := X₀ + X₁) (by simp)
+    obtain aux₂ := HasSubst.cons_subst_zero_right (F := X₀ + X₁) (by simp)
     simp_rw [subst_add aux₁, subst_X aux₁, subst_add aux₂, subst_X aux₂]
     simp [subst_add .X_two, subst_X .X_two, add_assoc]
   comm := by simp [subst_add .X_two, subst_X .X_two, add_comm]
 
 @[simp]
-lemma Gₐ_apply : Gₐ.toFun = X₀ + X₁ (R := R) := rfl
+lemma Gₐ_apply : Gₐ.toFun = X₀ + X₁ := rfl
 
 /-- Multiplicative formal group law `Gₘ(X,Y) = X + Y + XY`. -/
 def Gₘ : CommFormalGroup R where
@@ -155,8 +153,8 @@ def Gₘ : CommFormalGroup R where
   lin_coeff_Y := by
     simp [X, monomial_mul_monomial, coeff_monomial, single_left_inj (one_ne_zero : (1 : ℕ) ≠ 0)]
   assoc := by
-    obtain aux₁ := HasSubst.cons_subst_zero_left (F := X₀ + X₁ + X₀ * X₁ (R := R)) (by simp)
-    obtain aux₂ := HasSubst.cons_subst_zero_right (F := X₀ + X₁ + X₀ * X₁ (R := R)) (by simp)
+    obtain aux₁ := HasSubst.cons_subst_zero_left (F := X₀ + X₁ + X₀ * X₁) (by simp)
+    obtain aux₂ := HasSubst.cons_subst_zero_right (F := X₀ + X₁ + X₀ * X₁) (by simp)
     simp_rw [subst_add aux₁, subst_mul aux₁, subst_X aux₁, subst_add aux₂, subst_mul aux₂,
       subst_X aux₂]
     simp only [Nat.succ_eq_add_one, Nat.reduceAdd, subst_add .X_two, Fin.isValue, subst_X .X_two,
@@ -166,7 +164,7 @@ def Gₘ : CommFormalGroup R where
     simp [subst_add .X_two, subst_mul .X_two, subst_X .X_two, add_comm, mul_comm]
 
 @[simp]
-lemma Gₘ_apply : Gₘ.toFun = X₀ + X₁ + X₀ * X₁ (R := R) := rfl
+lemma Gₘ_apply : Gₘ.toFun = X₀ + X₁ + X₀ * X₁ := rfl
 
 omit [Algebra R S] in
 /-- Given a algebra map `f : R →+* S` and a formal group law `F` over `R`, then `f_* F` is a
