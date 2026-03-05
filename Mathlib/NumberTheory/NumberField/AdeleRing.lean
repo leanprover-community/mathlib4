@@ -100,7 +100,7 @@ theorem mulSupport_finite (x : (FiniteAdeleRing (𝓞 K) K)ˣ) :
   simpa [Function.mulSupport, Valued.toNormedField.norm_eq_one_iff] using
     FiniteAdeleRing.unitsEquiv_finite_valued_eq_one x
 
-theorem hasProd_subset_valued_lt_one (x : FiniteAdeleRing (𝓞 K) K) :
+private theorem hasProd_subset_valued_lt_one (x : FiniteAdeleRing (𝓞 K) K) :
     HasProd (fun v : {v | 1 < Valued.v (x v)} ↦ ‖x v‖)
       (∏ᶠ v : {v | 1 < Valued.v (x v)}, ‖x v‖) := by
   have : {v | 1 < Valued.v (x v)}.Finite := by
@@ -109,52 +109,23 @@ theorem hasProd_subset_valued_lt_one (x : FiniteAdeleRing (𝓞 K) K) :
   rw [finprod_eq_prod_of_fintype]
   exact hasProd_fintype _
 
-theorem hasProd_zero_subset_one_lt_valued {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x)
-    (hx₀ : ∀ v, x v ≠ 0) :
-    HasProd (fun v : {v | Valued.v (x v) < 1} ↦ ‖x v‖) 0 := by
-  replace hx := FiniteAdeleRing.infinite_valued_ne_one_of_not_isUnit (by simpa using hx₀) hx
-  have hT : {v | Valued.v (x v) < 1}.Infinite := by
-    have := hx.diff (t := {v | 1 < Valued.v (x v)})
-       (by simpa [HeightOneSpectrum.mem_adicCompletionIntegers] using x.2)
-    have : {v | Valued.v (x v) ≠ 1} \ {v | 1 < Valued.v (x v)} = {v | Valued.v (x v) < 1} := by
-      ext; grind
-    rwa [← this]
-  have : Filter.atTop.Tendsto (fun s : Finset {v | Valued.v (x v) < 1} ↦ (∏ v ∈ s, ‖x v‖)⁻¹)
-      Filter.atTop := by
-    have h : ∀ v ∈ {v | Valued.v (x v) < 1}, 2 ≤ ‖x v‖⁻¹ := by
-      intro v hv
-      rw [← norm_inv]
-      apply FinitePlace.two_le_norm_of_one_lt_norm
-      rw [Valued.toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv_iff₀]
-      constructor
-      · contrapose! hx₀
-        use v
-        simp_all
-      · grind
-    have h_le : ∀ S : Finset {v | Valued.v (x v) < 1}, 2 ^ S.card ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
-      intro S
-      have : ∀ v ∈ S, 2 ≤ ‖x v‖⁻¹  := by
-        intro v hv
-        exact h v v.2
-      have := Finset.prod_le_prod (by grind) this
-      rw [Finset.prod_const] at this
-      apply this.trans
-      simp
-    apply Filter.tendsto_atTop_mono h_le
-    have := tendsto_pow_atTop_atTop_of_one_lt (r := (2 : ℝ)) (by norm_num)
-    apply this.comp
-    apply Filter.tendsto_atTop_atTop_of_monotone
-    · exact Finset.card_mono
-    · intro N
-      obtain ⟨t, ht, ht'⟩ := hT.exists_subset_card_eq N
-      use t.subtype _
-      rw [Finset.card_subtype, ← ht']
-      apply le_of_eq
-      symm
-      rw [Finset.card_filter_eq_iff.2 ht]
-  apply (tendsto_inv_atTop_zero.comp this).congr
-  intro
-  simp
+open Filter HeightOneSpectrum Valued in
+private theorem hasProd_zero_subset_one_lt_valued {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x)
+    (hx₀ : ∀ v, x v ≠ 0) : HasProd (fun v : {v | Valued.v (x v) < 1} ↦ ‖x v‖) 0 :=
+  have hx := FiniteAdeleRing.infinite_valued_ne_one_of_not_isUnit (by simpa using hx₀) hx
+  have hx_prop : {v | 1 < Valued.v (x v)}.Finite := by simpa [mem_adicCompletionIntegers] using x.2
+  have hx_inf : {v | Valued.v (x v) < 1}.Infinite := (hx.diff hx_prop).mono (by grind)
+  have : atTop.Tendsto (fun s : Finset {v | Valued.v (x v) < 1} ↦ (∏ v ∈ s, ‖x v‖)⁻¹) atTop := by
+    have h_le (S : Finset {v | Valued.v (x v) < 1}) : 2 ^ S.card ≤ (∏ v ∈ S, ‖x v‖)⁻¹ := by
+      have (v : _) (h : v ∈ S) : 2 ≤ ‖(x v)⁻¹‖  := by
+        apply FinitePlace.two_le_norm_of_one_lt_norm
+        grind [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ (Valued.v.pos_iff.2 (hx₀ v))]
+      simpa [Finset.prod_const] using (Finset.prod_le_prod (by grind) this).trans (by simp)
+    apply tendsto_atTop_mono h_le ((tendsto_pow_atTop_atTop_of_one_lt (by norm_num)).comp ?_)
+    apply Filter.tendsto_atTop_atTop_of_monotone Finset.card_mono fun N ↦ ?_
+    obtain ⟨t, ht, _⟩ := hx_inf.exists_subset_card_eq N
+    exact ⟨t.subtype _, by grind [Finset.card_subtype, Finset.card_filter_eq_iff.2 ht]⟩
+  (tendsto_inv_atTop_zero.comp this).congr (by simp)
 
 theorem hasProd_zero_of_not_isUnit {x : FiniteAdeleRing (𝓞 K) K} (hx : ¬IsUnit x) :
     HasProd (fun v ↦ ‖x v‖) 0 := by
