@@ -35,7 +35,7 @@ set_option linter.unusedVariables false in
 /-- A `E ×[σ] F` or `E ×[σ] F` is a module structure on the product `E × F` with
 the `SMul` given by `s • ⟨x, y⟩ := ⟨s • x, σ s • y⟩`. -/
 @[ext]
-structure SemilinearProdModule {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) (E : Type*)
+structure SemilinearProdModule {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (E : Type*)
     [AddCommGroup E] [Module R E] (F : Type*) [AddCommGroup F] [Module S F] where
   /-- The first element of a pair. -/
   fst : E
@@ -46,7 +46,7 @@ structure SemilinearProdModule {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) 
 
 namespace SemilinearProdModule
 
-variable {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) {E : Type*} [AddCommGroup E]
+variable {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) {E : Type*} [AddCommGroup E]
   [Module R E] {F : Type*} [AddCommGroup F] [Module S F]
 
 instance : Add (E ×[σ] F) where
@@ -131,7 +131,7 @@ lemma prodEquiv_snd (x : (E ×[σ] F)) : (prodEquiv σ E F x).snd = x.snd := rfl
 
 section Submodule
 
-variable {R S : Type*} [Ring R] [Ring S] (σ : R →+* S) {E : Type*} [AddCommGroup E]
+variable {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) {E : Type*} [AddCommGroup E]
   [Module R E] {F : Type*} [AddCommGroup F] [Module S F]
 
 open Submodule
