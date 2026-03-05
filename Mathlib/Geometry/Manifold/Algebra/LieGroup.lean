@@ -149,11 +149,11 @@ theorem ContMDiffAt.inv {f : M → G} {x₀ : M} (hf : CMDiffAt n f x₀) :
 
 @[to_additive]
 theorem ContMDiffOn.inv {f : M → G} {s : Set M} (hf : CMDiff[s] n f) :
-    CMDiff[s] n (fun x => (f x)⁻¹) := fun x hx ↦ (hf x hx).inv
+    CMDiff[s] n (fun x ↦ (f x)⁻¹) := fun x hx ↦ (hf x hx).inv
 
 @[to_additive]
-theorem ContMDiff.inv {f : M → G} (hf : CMDiff n f) : CMDiff n fun x => (f x)⁻¹ :=
-  fun x => (hf x).inv
+theorem ContMDiff.inv {f : M → G} (hf : CMDiff n f) : CMDiff n fun x ↦ (f x)⁻¹ :=
+  fun x ↦ (hf x).inv
 
 @[to_additive]
 theorem ContMDiffWithinAt.div {f g : M → G} {s : Set M} {x₀ : M}
@@ -270,8 +270,8 @@ theorem continuousInv₀_of_contMDiffInv₀ : ContinuousInv₀ G :=
 @[deprecated (since := "2025-09-01")] alias hasContinuousInv₀_of_hasContMDiffInv₀ :=
   continuousInv₀_of_contMDiffInv₀
 
-theorem contMDiffOn_inv₀ : CMDiff[{0}ᶜ] n (Inv.inv : G → G) := fun _x hx =>
-  (contMDiffAt_inv₀ hx).contMDiffWithinAt
+theorem contMDiffOn_inv₀ : CMDiff[{0}ᶜ] n (Inv.inv : G → G) :=
+  fun _x hx ↦ (contMDiffAt_inv₀ hx).contMDiffWithinAt
 
 variable {s : Set M} {a : M}
 
@@ -287,7 +287,7 @@ theorem ContMDiff.inv₀ (hf : CMDiff n f) (h0 : ∀ x, f x ≠ 0) :
   fun x ↦ ContMDiffAt.inv₀ (hf x) (h0 x)
 
 theorem ContMDiffOn.inv₀ (hf : CMDiff[s] n f) (h0 : ∀ x ∈ s, f x ≠ 0) :
-    CMDiff[s] n (fun x => (f x)⁻¹) :=
+    CMDiff[s] n (fun x ↦ (f x)⁻¹) :=
   fun x hx ↦ ContMDiffWithinAt.inv₀ (hf x hx) (h0 x hx)
 
 end ContMDiffInv₀

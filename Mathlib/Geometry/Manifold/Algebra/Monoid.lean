@@ -50,7 +50,7 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
-  contMDiff_add : CMDiff n fun p : G × G => p.1 + p.2
+  contMDiff_add : CMDiff n fun p : G × G ↦ p.1 + p.2
 
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
@@ -62,7 +62,7 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] : Prop
     extends IsManifold I n G where
-  contMDiff_mul : CMDiff n fun p : G × G => p.1 * p.2
+  contMDiff_mul : CMDiff n fun p : G × G ↦ p.1 * p.2
 
 section ContMDiffMul
 
@@ -102,7 +102,7 @@ section
 variable (I n)
 
 @[to_additive]
-theorem contMDiff_mul [ContMDiffMul I n G] : CMDiff n fun p : G × G => p.1 * p.2 :=
+theorem contMDiff_mul [ContMDiffMul I n G] : CMDiff n fun p : G × G ↦ p.1 * p.2 :=
   ContMDiffMul.contMDiff_mul
 
 include I n in
@@ -259,7 +259,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
   {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpace H' G'] [ContMDiffMul I' n G']
 
 @[to_additive]
-theorem contMDiff_pow : ∀ i : ℕ, CMDiff n fun a : G => a ^ i
+theorem contMDiff_pow : ∀ i : ℕ, CMDiff n fun a : G ↦ a ^ i
   | 0 => by simp only [pow_zero, contMDiff_const]
   | k + 1 => by simpa [pow_succ] using (contMDiff_pow _).mul contMDiff_id
 
@@ -379,13 +379,13 @@ theorem contMDiffOn_finprod
 
 @[to_additive]
 theorem contMDiffOn_finset_prod' (h : ∀ i ∈ t, CMDiff[s] n (f i)) :
-    CMDiff[s] n (∏ i ∈ t, f i) := fun x hx =>
-  contMDiffWithinAt_finset_prod' fun i hi => h i hi x hx
+    CMDiff[s] n (∏ i ∈ t, f i) :=
+  fun x hx ↦ contMDiffWithinAt_finset_prod' fun i hi ↦ h i hi x hx
 
 @[to_additive]
 theorem contMDiffOn_finset_prod (h : ∀ i ∈ t, CMDiff[s] n (f i)) :
-    CMDiff[s] n (fun x => ∏ i ∈ t, f i x) := fun x hx =>
-  contMDiffWithinAt_finset_prod fun i hi => h i hi x hx
+    CMDiff[s] n (fun x ↦ ∏ i ∈ t, f i x) :=
+  fun x hx ↦ contMDiffWithinAt_finset_prod fun i hi ↦ h i hi x hx
 
 @[to_additive]
 theorem ContMDiff.prod (h : ∀ i ∈ t, CMDiff n (f i)) :
@@ -394,12 +394,12 @@ theorem ContMDiff.prod (h : ∀ i ∈ t, CMDiff n (f i)) :
 
 @[to_additive]
 theorem contMDiff_finset_prod' (h : ∀ i ∈ t, CMDiff n (f i)) :
-    CMDiff n (∏ i ∈ t, f i) := fun x ↦ contMDiffAt_finset_prod' fun i hi => h i hi x
+    CMDiff n (∏ i ∈ t, f i) := fun x ↦ contMDiffAt_finset_prod' fun i hi ↦ h i hi x
 
 @[to_additive]
 theorem contMDiff_finset_prod (h : ∀ i ∈ t, CMDiff n (f i)) :
-    CMDiff n fun x => ∏ i ∈ t, f i x := fun x =>
-  contMDiffAt_finset_prod fun i hi => h i hi x
+    CMDiff n fun x ↦ ∏ i ∈ t, f i x :=
+  fun x ↦ contMDiffAt_finset_prod fun i hi ↦ h i hi x
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, CMDiff n (f i))
@@ -408,10 +408,10 @@ theorem contMDiff_finprod (h : ∀ i, CMDiff n (f i))
 
 @[to_additive]
 theorem contMDiff_finprod_cond (hc : ∀ i, p i → CMDiff n (f i))
-    (hf : LocallyFinite fun i => mulSupport (f i)) :
+    (hf : LocallyFinite fun i ↦ mulSupport (f i)) :
     CMDiff n fun x ↦ ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
-  exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
+  exact contMDiff_finprod (fun i ↦ hc i i.2) (hf.comp_injective Subtype.coe_injective)
 
 variable {g : M → G}
 
