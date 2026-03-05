@@ -189,6 +189,11 @@ theorem mk_comp_teichmuller' :
   funext mk_teichmuller
 
 set_option backward.isDefEq.respectTransparency false in
+/-- If `R` is `I`-adically complete and `R ⧸ I` has characteristic `p`, then
+`Perfection R p` and `Perfection (R ⧸ I) p` are isomorphic as monoids.
+
+Note that `Perfection R p` is generally not a ring, and the forward map is induced by
+the quotient map, and the backwards map is constructed using the Teichmüller map. -/
 noncomputable def quotientMulEquiv (p : ℕ) [Fact p.Prime]
     {R : Type*} [CommRing R] (I : Ideal R) [CharP (R ⧸ I) p] [IsAdicComplete I R] :
     Perfection R p ≃* Perfection (R ⧸ I) p := MonoidHom.toMulEquiv
