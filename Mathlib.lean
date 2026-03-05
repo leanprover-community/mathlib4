@@ -3134,6 +3134,7 @@ public import Mathlib.CategoryTheory.Sites.Pullback
 public import Mathlib.CategoryTheory.Sites.RegularEpi
 public import Mathlib.CategoryTheory.Sites.Sheaf
 public import Mathlib.CategoryTheory.Sites.SheafCohomology.Basic
+public import Mathlib.CategoryTheory.Sites.SheafCohomology.ExactSequences
 public import Mathlib.CategoryTheory.Sites.SheafHom
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 public import Mathlib.CategoryTheory.Sites.Sheafification
