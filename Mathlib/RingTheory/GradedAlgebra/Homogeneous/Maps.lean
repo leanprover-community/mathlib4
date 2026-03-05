@@ -77,20 +77,14 @@ theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦
 instance isPrime_comap [J.toIdeal.IsPrime] : (J.comap f).toIdeal.IsPrime :=
   inferInstanceAs (J.toIdeal.comap f).IsPrime -- this shows that the simpNF is already covered
 
-@[simp] lemma map_id : I.map (GradedRingHom.id 𝒜) = I :=
-  ext <| Ideal.map_id _
+@[simp] lemma map_id : I.map (GradedRingHom.id 𝒜) = I := ext <| Ideal.map_id _
 
-lemma map_map (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) : (I.map f).map g = I.map (g.comp f) :=
-  ext <| Ideal.map_map _ _
+lemma map_map : (I.map f).map g = I.map (g.comp f) := ext <| Ideal.map_map _ _
 
-lemma map_comp (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) : I.map (g.comp f) = (I.map f).map g :=
-  (map_map f g).symm
+lemma map_comp : I.map (g.comp f) = (I.map f).map g := (map_map f g).symm
 
-@[simp] lemma comap_id : I.comap (GradedRingHom.id 𝒜) = I :=
-  rfl
+@[simp] lemma comap_id : I.comap (GradedRingHom.id 𝒜) = I := rfl
 
-lemma comap_comap (f : 𝒜 →+*ᵍ ℬ) (g : ℬ →+*ᵍ 𝒞) :
-    (K.comap g).comap f = K.comap (g.comp f) :=
-  rfl
+lemma comap_comap : (K.comap g).comap f = K.comap (g.comp f) := rfl
 
 end HomogeneousIdeal
