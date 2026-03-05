@@ -62,13 +62,13 @@ def IsInitial (o : Ordinal) : Prop :=
 
 theorem IsInitial.ord_card {o : Ordinal} (h : IsInitial o) : o.card.ord = o := h
 
-theorem IsInitial.le_ord {o : Ordinal} (ho : o.IsInitial) (c : Cardinal) :
+theorem IsInitial.le_ord_iff_card_le {o : Ordinal} (ho : o.IsInitial) (c : Cardinal) :
     o ≤ c.ord ↔ o.card ≤ c := by
   grw [← ord_le_ord, ho.ord_card]
 
 theorem IsInitial.card_le_card {a b : Ordinal} (ha : IsInitial a) : a.card ≤ b.card ↔ a ≤ b := by
   refine ⟨fun h ↦ ?_, Ordinal.card_le_card⟩
-  rw [← ha.le_ord] at h
+  rw [← ha.le_ord_iff_card_le] at h
   grw [h, ord_card_le]
 
 theorem IsInitial.card_lt_card {a b : Ordinal} (hb : IsInitial b) : a.card < b.card ↔ a < b :=
