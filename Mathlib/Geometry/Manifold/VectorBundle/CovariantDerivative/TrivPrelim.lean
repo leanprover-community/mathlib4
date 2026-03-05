@@ -566,6 +566,14 @@ lemma _root_.mdifferentiableAt_section_trivial_iff {σ : (x : M) → Trivial M F
   rw [mdifferentiableAt_section I]
   simp
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+
+@[simp]
+theorem Bundle.Trivial.mdifferentiableAt_iff (σ : (x : E) → Trivial E E' x) (e : E) :
+    MDiffAt (T% σ) e ↔ DifferentiableAt 𝕜 σ e := by
+  simp [mdifferentiableAt_totalSpace, mdifferentiableAt_iff_differentiableAt]
+
 end to_trivialization
 
 end Bundle.Trivialization

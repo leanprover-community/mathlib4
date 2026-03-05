@@ -9,6 +9,7 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.Misc
 public import Mathlib.Geometry.Manifold.VectorBundle.Extend
 import Mathlib.Geometry.Manifold.VectorBundle.LocalFrame
+public import Mathlib.Geometry.Manifold.VectorBundle.IsBilinearPrelim
 
 /-!
 # The tensoriality criterion
