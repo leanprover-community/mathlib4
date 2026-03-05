@@ -594,7 +594,7 @@ namespace LiesOver
 
 instance {φ : K →+* ℂ} {ψ : L →+* ℂ} [ComplexEmbedding.LiesOver ψ φ] :
     AbsoluteValue.LiesOver (mk ψ).1 (mk φ).1 where
-  comp_eq := by simp [← ComplexEmbedding.LiesOver.over ψ φ, ← coe_mk_comp]
+  comp_eq := by simp [← LiesOver.over ψ φ, ← coe_mk_comp]
 
 variable [w.1.LiesOver v.1]
 
