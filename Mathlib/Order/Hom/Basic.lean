@@ -611,7 +611,7 @@ def ofMapLEIff {α β} [PartialOrder α] [Preorder β] (f : α → β) (hf : ∀
     α ↪o β :=
   RelEmbedding.ofMapRelIff f hf
 
-@[simp, to_dual self (reorder := h (a b))]
+@[simp, to_dual self]
 theorem coe_ofMapLEIff {α β} [PartialOrder α] [Preorder β] {f : α → β} (h) :
     ⇑(ofMapLEIff f h) = f :=
   rfl

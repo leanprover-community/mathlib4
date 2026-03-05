@@ -88,8 +88,7 @@ class SemilatticeInf (α : Type u) extends PartialOrder α where
   /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
 
-attribute [to_dual existing] SemilatticeSup.sup_le SemilatticeSup.mk
-attribute [to_dual existing (reorder := mk (sup_le (a b c)))] SemilatticeSup.casesOn
+attribute [to_dual existing] SemilatticeSup.sup_le SemilatticeSup.mk SemilatticeSup.casesOn
 
 @[to_dual]
 instance SemilatticeSup.toMax [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b

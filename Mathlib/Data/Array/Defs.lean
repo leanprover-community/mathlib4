@@ -23,6 +23,7 @@ variable {α : Type u}
 /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
   `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
+@[deprecated "This is now in `Mathlib.Tactic.Translate.Reorder.permute!`" (since := "2026-03-05")]
 def cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
   | a, [] => a
   | a, i :: is => cyclicPermuteAux a is a[i]! i
@@ -32,7 +33,10 @@ where cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
   let (y, a) := a.swapAt! i x
   cyclicPermuteAux a is y i0
 
+set_option linter.deprecated false
+
 /-- Permute the array using a list of cycles. -/
+@[deprecated "This is now in `Mathlib.Tactic.Translate.Reorder.permute!`" (since := "2026-03-05")]
 def permute! [Inhabited α] (a : Array α) (ls : List (List Nat)) : Array α :=
 ls.foldl (init := a) (·.cyclicPermute! ·)
 

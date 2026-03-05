@@ -37,7 +37,7 @@ instance [Min α] (le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ 
   le_inf
 
 -- we can reorder arguments of arguments of arguments in `SemilatticeInf.casesOn`
-attribute [to_dual existing (reorder := 4 (sup_le (a b c)))] SemilatticeSup.casesOn
+attribute [to_dual existing] SemilatticeSup.casesOn
 @[to_dual]
 theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
     (my_sorry : ∀ {p : Prop}, p) :

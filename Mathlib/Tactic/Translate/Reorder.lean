@@ -10,8 +10,9 @@ public meta import Mathlib.Data.Array.Defs
 /-!
 # Reordering arguments in a translation
 
-This module defines reorders, which are used by `to_dual (reorder := ...)` to deal with
-definitions and theorems that need to have their arguments reordered.
+This module defines reorders, which are used by `to_dual (reorder := ...)` and
+`to_additive (reorder := ...)` to deal with definitions and theorems that need to have their
+arguments reordered.
 
 A reordering is specified using disjoint cycle notation. For example, `1 2 3, 4 5` will
 move the 1st argument to the 2nd, move the 2nd to the 3rd, and the 3rd to the 1st, and it will
@@ -73,6 +74,18 @@ def Reorder.isEmpty (r : Reorder) : Bool := r matches {}
 /-- Permute an array of arguments using the given reorder. -/
 def Reorder.permute! {α} [Inhabited α] (r : Reorder) : Array α → Array α :=
   r.perm.foldl (·.cyclicPermute! ·.1)
+where
+  /-- Permute the array using a sequence of indices defining a cyclic permutation.
+  If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then
+  `(cyclicPermute! a l)[iₖ₊₁] = a[iₖ]` and `(cyclicPermute! a l)[i₀] = a[iₙ]` -/
+  cyclicPermute! [Inhabited α] : Array α → List Nat → Array α
+    | a, [] => a
+    | a, i :: is => cyclicPermuteAux a is a[i]! i
+  cyclicPermuteAux : Array α → List Nat → α → Nat → Array α
+    | a, [], x, i0 => a.set! i0 x
+    | a, i :: is, x, i0 =>
+      let (y, a) := a.swapAt! i x
+      cyclicPermuteAux a is y i0
 
 /-- Return the reorder that reverses the action of the given reorder. -/
 def Reorder.reverse (r : Reorder) : Reorder := {
@@ -192,11 +205,15 @@ partial def guessReorder (src tgt : Expr) : MetaM Reorder := withReducible do
   forallBoundedTelescope tgt depth fun tgtVars tgt ↦ do
   let srcMap : Std.HashMap FVarId Nat := .ofArray <| srcVars.mapIdx fun i x => (x.fvarId!, i)
   let tgtMap : Std.HashMap FVarId Nat := .ofArray <| tgtVars.mapIdx fun i x => (x.fvarId!, i)
-  let mut n := srcMap.size
-  let perm := (visit src tgt (.replicate n none) (srcMap, tgtMap)).elim [] decomposePerm
+  let perm := (visit src tgt (.replicate depth none) (srcMap, tgtMap)).elim [] decomposePerm
   -- Recursively guess the reorder in the hypotheses
-  let mut src := src; let mut tgt := tgt
   let mut argReorders := #[]
+  for i in *...depth do
+    let r ← guessReorder (← inferType srcVars[i]!) (← inferType tgtVars[i]!)
+    unless r.isEmpty do
+      argReorders := argReorders.push (i, r)
+  let mut src := src; let mut tgt := tgt
+  let mut n := depth
   while src.isForall && tgt.isForall do
     let r ← guessReorder src.bindingDomain! tgt.bindingDomain!
     unless r.isEmpty do
