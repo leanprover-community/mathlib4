@@ -773,9 +773,9 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
       ext
       simp only [Set.mem_iInter, Set.mem_setOf_eq]; rfl
     · rw [biInter_mem (Set.finite_Icc ℓ N)]
-      intro _ _
-      apply coeff_tendsto hℱ
-      simp only [principal_singleton, mem_pure]; rfl
+      intro i _
+      apply (coeff_tendsto hℱ _).eventually
+      simp
 
 open scoped Topology
 
