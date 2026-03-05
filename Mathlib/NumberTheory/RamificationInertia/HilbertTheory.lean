@@ -23,16 +23,17 @@ the inertia field `E` of `P` in `L/K` is the subfield of elements of `L` fixed b
 group of `P` in `Gal(L/K)`.
 
 Let `e` and `f` the ramification index and inertia degree of `P` over `p` and let `g`
-be the number of prime ideals above `p` in `L`. Then we have the following properties
+be the number of prime ideals above `p` in `L`. Denote by `𝓟D`, resp. `𝓟E`, the prime ideal of `D`,
+resp. `E`, below `P`. Then we have the following properties
 ```
-degree         ramif. index   inertia deg.
-     L      P
-  e  |      |     e               1
-     E      𝓟E
-  f  |      |     1               f
-     D      𝓟D
-  g  |      |     1               1
-     K      p
+degree            ramif. index   inertia deg.
+        L      P
+  e     |      |      e               1
+        E      𝓟E
+  f     |      |      1               f
+        D      𝓟D
+  g     |      |      1               1
+        K      p
 ```
 
 -/
