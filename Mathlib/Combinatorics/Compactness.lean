@@ -58,7 +58,7 @@ Informally, we are stitching together the local functions `g s` into a global `�
 each `s`, `χ` can be expressed in terms of one of the `g`.
 -/
 theorem Finset.rado_selection {α : Type*} {β : α → Type*} [∀ a, Finite (β a)]
-    (g : (s : Finset α) → (a : α) → β a) :
+    (g : Finset α → (a : α) → β a) :
     ∃ χ : (a : α) → β a, ∀ s : Finset α, ∃ t : Finset α, s ⊆ t ∧ ∀ x ∈ s, χ x = g t x := by
   classical
   let instTop (a : α) : TopologicalSpace (β a) := ⊥
