@@ -530,24 +530,6 @@ def Classifier.ofEquivalence (𝒞₁ : Classifier C) (e : C ≌ D) : Classifier
       exact (hχ'.map (e.inverse)).paste_vert <| IsPullback.of_vert_isIso_mono (by simp)
     simpa using congr(e.counitInv.app G ≫ e.functor.map $this)
 
-/--
-the construction respects composition of equivalences
--/
-example (𝒞₁ : Classifier C) (e₁ : C ≌ D) (e₂ : D ≌ E) :
-    (𝒞₁.ofEquivalence e₁).ofEquivalence e₂ = 𝒞₁.ofEquivalence (e₁.trans e₂) := by
-  cases 𝒞₁
-  dsimp [Classifier.ofEquivalence]
-  congr <;> simp [Equivalence.counitInv]
-
-/--
-the construction using the identity equivalence gives the same object.
--/
-example (𝒞₁ : Classifier C) :
-    𝒞₁.ofEquivalence (.refl) = 𝒞₁ := by
-  cases 𝒞₁
-  dsimp [Classifier.ofEquivalence]
-  congr <;> simp [Equivalence.counitInv]
-
 end Equivalence
 
 end CategoryTheory
