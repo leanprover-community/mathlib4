@@ -294,17 +294,23 @@ protected lemma memAddSubgroup [AddGroup Y] (D : locallyFinsuppWithin U Y) :
 Assign a function with locally finite support within `U` to a function in the subgroup.
 -/
 @[simps]
-def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
+def mk_of_mem_addSubmonoid [AddMonoid Y] (f : X → Y)
+    (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
+@[deprecated mk_of_mem_addSubmonoid (since := "2026-03-05")]
+def mk_of_mem [AddMonoid Y] (f : X → Y)
+    (hf : f ∈ locallyFinsuppWithin.addSubmonoid U) :
+    locallyFinsuppWithin U Y := mk_of_mem_addSubmonoid f hf
+
 instance [AddMonoid Y] : Zero (locallyFinsuppWithin U Y) where
-  zero := mk_of_mem 0 <| zero_mem _
+  zero := mk_of_mem_addSubmonoid 0 <| zero_mem _
 
 instance [AddMonoid Y] : Add (locallyFinsuppWithin U Y) where
-  add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
+  add D₁ D₂ := mk_of_mem_addSubmonoid (D₁ + D₂) <| add_mem D₁.memAddSubmonoid D₂.memAddSubmonoid
 
 instance [AddMonoid Y] : SMul ℕ (locallyFinsuppWithin U Y) where
-  smul n D := mk_of_mem (n • D) <| nsmul_mem D.memAddSubmonoid n
+  smul n D := mk_of_mem_addSubmonoid (n • D) <| nsmul_mem D.memAddSubmonoid n
 
 /--
 Assign a function with locally finite support within `U` to a function in the subgroup.
@@ -314,13 +320,13 @@ def mk_of_mem_addSubgroup [AddGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppW
     locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
 instance [AddGroup Y] : Neg (locallyFinsuppWithin U Y) where
-  neg D := mk_of_mem' (-D) <| neg_mem D.memAddSubgroup
+  neg D := mk_of_mem_addSubgroup (-D) <| neg_mem D.memAddSubgroup
 
 instance [AddGroup Y] : Sub (locallyFinsuppWithin U Y) where
-  sub D₁ D₂ := mk_of_mem' (D₁ - D₂) <| sub_mem D₁.memAddSubgroup D₂.memAddSubgroup
+  sub D₁ D₂ := mk_of_mem_addSubgroup (D₁ - D₂) <| sub_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
 instance [AddGroup Y] : SMul ℤ (locallyFinsuppWithin U Y) where
-  smul n D := mk_of_mem' (n • D) <| zsmul_mem D.memAddSubgroup n
+  smul n D := mk_of_mem_addSubgroup (n • D) <| zsmul_mem D.memAddSubgroup n
 
 @[simp] lemma coe_zero [AddMonoid Y] :
     ((0 : locallyFinsuppWithin U Y) : X → Y) = 0 := rfl
