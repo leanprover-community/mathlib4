@@ -23,6 +23,11 @@ on:
         required: false
         type: string
         default: 'master'
+      runner_label_override:
+        description: override runner label for the build job (default chosen dynamically)
+        required: false
+        type: string
+        default: ''
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -32,7 +37,30 @@ permissions:
   # pull-requests: write
 
 jobs:
+  select_runner:
+    name: select runner label
+    runs-on: ubuntu-latest
+    outputs:
+      runs_on: ${{ steps.pick.outputs.runs_on }}
+    steps:
+      - name: choose runner label
+        id: pick
+        shell: bash
+        env:
+          RUNNER_LABEL_OVERRIDE: ${{ inputs.runner_label_override }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          if [ -n "${RUNNER_LABEL_OVERRIDE}" ]; then
+            runs_on="${RUNNER_LABEL_OVERRIDE}"
+          else
+            runs_on="pr"
+          fi
+
+          echo "runs_on=${runs_on}" >> "${GITHUB_OUTPUT}"
+          echo "Selected runner label: ${runs_on}"
+
   build:
+    needs: select_runner
     name: ci (dev branch)
     # For sanity and intentionality, let's only trigger this from branches ci-dev/*
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.ref_type == 'branch' && startsWith(github.ref_name, 'ci-dev/') }}
@@ -44,5 +72,5 @@ jobs:
       pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
       run_post_ci: ${{ inputs.run_post_ci }}
       mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
-      runs_on: pr
+      runs_on: ${{ needs.select_runner.outputs.runs_on }}
     secrets: inherit
