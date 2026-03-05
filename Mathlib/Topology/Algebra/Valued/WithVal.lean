@@ -455,6 +455,7 @@ def WithVal.valueGroup₀_equiv : ValueGroup₀ (instValued w).v ≃*o ValueGrou
         · assumption
     · exact (WithVal.strictMono_valueGroup₀_equiv w).monotone h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : v.IsEquiv w) : UniformContinuous (WithVal.equiv v) := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
@@ -464,13 +465,13 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   obtain ⟨r, s, hr₀, hs₀, hr⟩ := exists_div_eq_of_unit Valued.v γ
   use .mk0 ((instValued v).v.restrict ((WithVal.equiv v).symm r) /
     (instValued v).v.restrict ((WithVal.equiv v).symm s)) (by
-    simp [restrict₀_eq_zero_iff, (eq_zero h (r := r)).ne, ← hv, (eq_zero h (r := s)).ne,
-      hr₀.ne', hs₀.ne'])
+    simp [Valuation.restrict_def, restrict₀_eq_zero_iff, (eq_zero h (r := r)).ne, ← hv,
+      (eq_zero h (r := s)).ne, hr₀.ne', hs₀.ne'])
   intro x hx
   let y := (WithVal.equiv v) x
   have hy : toVal v y = x := rfl
   have hs0' : 0 < Valued.v.restrict (toVal v s) := by
-    simp only [restrict_pos_iff, apply_symm_equiv, h.pos_iff, ← hv, hs₀]
+    simp [restrict_pos_iff, h.pos_iff, ← hv, hs₀]
   have h' : v.restrict.IsEquiv w.restrict := h.restrict
   rw [← hr, equiv_apply, Set.mem_setOf_eq, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), hv,
     ← map_mul, ← lt_def, ← ofVal_mul,
@@ -481,6 +482,7 @@ theorem IsEquiv.uniformContinuous_equiv [hval : Valued R Γ₀'] (hv : Valued.v 
   rw [restrict_lt_iff] at hx
   exact hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valued.v = w)
     (h : w.IsEquiv v) : UniformContinuous (WithVal.equiv v).symm := by
   refine uniformContinuous_of_continuousAt_zero _ ?_
@@ -501,7 +503,7 @@ theorem IsEquiv.uniformContinuous_equiv_symm [hval : Valued R Γ₀'] (hv : Valu
   · rw [← hr, lt_div_iff₀ ((restrict_pos_iff Valued.v s).mpr hs₀), ← map_mul, ← lt_def,
       ← h.orderRingIso_apply]
     simp only [orderRingIso_apply, toVal_mul, lt_def, ofVal_mul, restrict_lt_iff]
-    rw [map_mul, apply_symm_equiv]
+    rw [map_mul]
     exact hx
   · rw [restrict_pos_iff, hv, h.pos_iff]
     exact hs₀
@@ -577,6 +579,7 @@ theorem restrict_exists_div_eq {K : Type*} [Field K] {Γ₀ : Type*}
       embedding_strictMono.lt_iff_lt, map_zero]
     refine WithZero.pos_iff_ne_zero.mpr (Units.ne_zero γ)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 open UniformSpace.Completion in
 theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation K Γ₀}
     {w : Valuation K Γ₀'} (h : v.IsEquiv w) {x : v.Completion} :
@@ -591,7 +594,7 @@ theorem IsEquiv.valuedCompletion_le_one_iff {K : Type*} [Field K] {v : Valuation
     rw [restrict_le_one_iff]
     rfl
   | ih a =>
-    simpa [Valued.valuedCompletion_apply, ← WithVal.apply_equiv] using h.le_one_iff_le_one
+    simpa [Valued.valuedCompletion_apply] using h.le_one_iff_le_one
 
 end Equivalence
 

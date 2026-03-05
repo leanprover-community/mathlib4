@@ -93,8 +93,7 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
   ext x
   simp only [Set.mem_setOf_eq, Homeomorph.coe_symm_toEquiv, Homeomorph.mulLeft₀_symm_apply, inv_div,
     Set.preimage_setOf_eq, map_mul, map_div₀, Valuation.restrict_le_iff]
-  rw [div_mul_eq_mul_div, div_le_iff₀ (by
-    simp [MonoidWithZeroHom.ValueGroup₀.restrict₀_apply, hγ])]
+  rw [div_mul_eq_mul_div, div_le_iff₀ (by simp [hγ])]
   simp only [IsValuativeTopology.v_eq_valuation, ← map_mul, Valuation.restrict_le_iff]
   simp [hr]
 

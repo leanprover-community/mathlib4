@@ -686,7 +686,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
     convert (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto)
     swap
     · exact u
-    · simp [hu_def]
+    · simp [Valuation.restrict_def, hu_def]
   rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
   exact mem_uniformity_of_eq hS rfl
 
@@ -737,7 +737,7 @@ lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy �
   intro g hg
   have h_prod : (f, g) ∈ S ×ˢ T := by simp [hf.1, hg.2]
   refine hN g (le_of_lt ?_)
-  simpa [← Valuation.restrict_lt_one_iff] using H h_prod
+  simpa [Valuation.restrict_def, ← Valuation.restrict_lt_one_iff] using H h_prod
 
 /- The support of `Cauchy.coeff` has a lower bound. -/
 theorem Cauchy.exists_lb_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
@@ -952,7 +952,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
     · obtain ⟨x, hx⟩ := valuation_surjective' K (embedding d.1)
       use Units.mk0 (Valued.v.restrict x) (by
         rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff]; simp [hx])
-      simp [ -Valuation.restrict_def, v_def, Valuation.restrict_lt_iff, ← hx]
+      simp [v_def, Valuation.restrict_lt_iff, ← hx]
     apply hd
     simp only [sub_zero, Set.mem_setOf_eq]
     rw [← map_sub, Valuation.restrict_lt_iff_lt_embedding]
@@ -1108,13 +1108,13 @@ theorem tendsto_valuation (a : (idealX K).adicCompletion (RatFunc K)) :
       obtain ⟨x, hx⟩ := valuedAdicCompletion_surjective (RatFunc K) (idealX K) γ
       use Units.mk0 (Valued.v.restrict x) (by
         rwa [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff, hx])
-      simp  [-Valuation.restrict_def, Units.val_mk0, Valuation.restrict_lt_iff, hx]
+      simp  [Units.val_mk0, Valuation.restrict_lt_iff, hx]
     · refine Set.Subset.trans (fun a _ ↦ ?_) (Set.preimage_mono γ_le)
       rw [Set.mem_preimage, Set.mem_Iio, ← Valued.valuedCompletion_apply a]
       simp_all
   · rw [WithZeroTopology.tendsto_of_ne_zero ((Valuation.ne_zero_iff Valued.v).mpr ha),
       Filter.eventually_comap, Filter.Eventually, Valued.mem_nhds]
-    use Units.mk0 (Valued.v.restrict a) (by simp [ha])
+    use Units.mk0 (Valued.v.restrict a) (by simp [Valuation.restrict_def, ha])
     simp only [Units.val_mk0, v_def, Set.setOf_subset_setOf]
     rintro y val_y b rfl
     rw [← valuedAdicCompletion_eq_valuation']
