@@ -400,6 +400,14 @@ instance : (tilde M).IsQuasicoherent :=
 
 end IsQuasicoherent
 
+open CategoryTheory TopologicalSpace
+
+variable {X : Scheme.{u}} (M : X.Modules) [M.IsQuasicoherent]
+
+lemma Scheme.Modules.exists_opens_nonempty_presentation (x : X) (U : X.Opens) (hx : x ∈ U) :
+    ∃ V ≤ U, x ∈ V ∧ Nonempty ((Scheme.Modules.restrictFunctor V.ι).obj M).Presentation := by
+  sorry
+
 end AlgebraicGeometry
 
 namespace ModuleCat
