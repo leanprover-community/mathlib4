@@ -663,9 +663,9 @@ theorem liesOver_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L} {v : 
 theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlace L}
     {v : InfinitePlace K} (hw : w ∈ ramifiedPlacesOver L v) :
     ComplexEmbedding.LiesOver (conjugate w.embedding) v.embedding where
-  over := by
+  over :=
     have := hw.1
-    exact hw.2.comap_embedding_conjugate ▸ congrArg embedding (LiesOver.comap_eq w v)
+    hw.2.comap_embedding_conjugate ▸ congrArg embedding (LiesOver.comap_eq w v)
 
 theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} {v : InfinitePlace K}
     (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
