@@ -670,8 +670,7 @@ theorem liesOver_conjugate_embedding_of_mem_ramifiedPlacesOver {w : InfinitePlac
 theorem mk_mem_ramifiedPlacesOver {φ : L →+* ℂ} {v : InfinitePlace K}
     (h : φ ∈ mixedEmbeddingsOver L (v.embedding)) :
     mk φ ∈ ramifiedPlacesOver L v :=
-  ⟨⟨have := h.1; mk_embedding v ▸ (AbsoluteValue.LiesOver.comp_eq (mk φ).1 (mk v.embedding).1)⟩,
-    h.2.mk_isRamified⟩
+  ⟨⟨have := h.1; mk_embedding v ▸ LiesOver.comp_eq (mk φ).1 (mk v.embedding).1⟩, h.2.mk_isRamified⟩
 
 theorem embedding_mem_mixedEmbeddingsOver
     {v : InfinitePlace K} (w : InfinitePlace L) (hw : w ∈ ramifiedPlacesOver L v) :
