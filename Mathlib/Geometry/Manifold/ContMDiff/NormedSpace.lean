@@ -13,7 +13,7 @@ public import Mathlib.Analysis.Normed.Operator.Prod
 * `contMDiff_iff_contDiff`: for functions between vector spaces,
   manifold-smoothness is equivalent to usual smoothness.
 * `ContinuousLinearMap.contMDiff`: continuous linear maps between normed spaces are smooth
-* `SmoothConstSMul`, `SmoothSMul`: typeclasses for smooth scalar multiplication
+* `ContMDiffConstSMul`, `ContMDiffSMul`: typeclasses for smooth scalar multiplication
 * `contMDiff_smul`: multiplication by scalars is a smooth operation
 
 -/
@@ -39,31 +39,31 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {s : Set M} {x : M} {n : WithTop ℕ∞}
 
 /-- Typeclass asserting that scalar multiplication by any constant is smooth. -/
-class SmoothConstSMul (I : ModelWithCorners 𝕜 E H) (Γ : Type*) (N : Type*)
+class ContMDiffConstSMul (I : ModelWithCorners 𝕜 E H) (Γ : Type*) (N : Type*)
     [TopologicalSpace N] [ChartedSpace H N] [SMul Γ N] : Prop where
-  smooth_const_smul : ∀ c : Γ, ContMDiff I I ⊤ (fun x : N => c • x)
+  contMDiff_const_smul : ∀ c : Γ, ContMDiff I I ⊤ (fun x : N => c • x)
 
 /-- Typeclass asserting that scalar multiplication is smooth in both variables. -/
-class SmoothSMul (I : ModelWithCorners 𝕜 E H) {H' : Type*} [TopologicalSpace H']
+class ContMDiffSMul (I : ModelWithCorners 𝕜 E H) {H' : Type*} [TopologicalSpace H']
     (J : ModelWithCorners 𝕜 E' H') (Γ : Type*) (N : Type*) [TopologicalSpace Γ]
     [ChartedSpace H Γ] [TopologicalSpace N] [ChartedSpace H' N] [SMul Γ N] : Prop where
-  smooth_smul : ContMDiff (I.prod J) J ⊤ (fun p : Γ × N => p.1 • p.2)
+  contMDiff_smul_map : ContMDiff (I.prod J) J ⊤ (fun p : Γ × N => p.1 • p.2)
 
-export SmoothConstSMul (smooth_const_smul)
-export SmoothSMul (smooth_smul)
+export ContMDiffConstSMul (contMDiff_const_smul)
+export ContMDiffSMul (contMDiff_smul_map)
 
-section SmoothSMul
+section ContMDiffSMul
 
 variable {Γ N : Type*} [TopologicalSpace Γ] [ChartedSpace H Γ]
     [TopologicalSpace N] [ChartedSpace H N] [SMul Γ N]
 
-instance (priority := 100) SmoothSMul.smoothConstSMul [SmoothSMul I I Γ N] :
-    SmoothConstSMul I Γ N where
-  smooth_const_smul c :=
-    (smooth_smul (I := I) (J := I) (Γ := Γ) (N := N)).comp
+instance (priority := 100) ContMDiffSMul.contMDiffConstSMul [ContMDiffSMul I I Γ N] :
+    ContMDiffConstSMul I Γ N where
+  contMDiff_const_smul c :=
+    (contMDiff_smul_map (I := I) (J := I) (Γ := Γ) (N := N)).comp
       ((contMDiff_const : ContMDiff I I ⊤ fun _ : N => c).prodMk contMDiff_id)
 
-end SmoothSMul
+end ContMDiffSMul
 
 section Module
 
@@ -296,11 +296,11 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
   contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
 
-instance : SmoothSMul 𝓘(𝕜) 𝓘(𝕜, V) 𝕜 V where
-  smooth_smul := contMDiff_smul
+instance : ContMDiffSMul 𝓘(𝕜) 𝓘(𝕜, V) 𝕜 V where
+  contMDiff_smul_map := contMDiff_smul
 
-instance : SmoothConstSMul 𝓘(𝕜, V) 𝕜 V where
-  smooth_const_smul c := (contDiff_id.const_smul c).contMDiff
+instance : ContMDiffConstSMul 𝓘(𝕜, V) 𝕜 V where
+  contMDiff_const_smul c := (contDiff_id.const_smul c).contMDiff
 
 theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
     (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
