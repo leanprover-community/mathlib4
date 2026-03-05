@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Floris van Doorn. All rights reserved.
+Copyright (c) 2022 Focallyoris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
@@ -106,7 +106,7 @@ lemma LocallyIntegrableOn.congr (h : f =ᵐ[μ.restrict s] g) (hf : LocallyInteg
   gcongr
   exact inter_subset_left
 
-lemma locallyIntegrable_congr (h : f =ᵐ[μ.restrict s] g) :
+lemma locallyIntegrableOn_congr (h : f =ᵐ[μ.restrict s] g) :
     LocallyIntegrableOn f s μ ↔ LocallyIntegrableOn g s μ :=
   ⟨(·.congr h), (·.congr h.symm)⟩
 
