@@ -92,27 +92,27 @@ lemma ι_π_app (X : C) : Φ.ι.app X ≫ Φ.π.app X = 0 := by
 /-- For `X : C`, the short complex `Φ.r.obj X ⟶ X ⟶ Φ.quotient.obj X` obtained by evaluating
 `Φ.shortComplex` at `X`. -/
 @[simps]
-noncomputable def shortComplex_app (X : C) : ShortComplex C where
+noncomputable def shortComplexObj (X : C) : ShortComplex C where
   f := Φ.ι.app X
   g := Φ.π.app X
 
-instance (X : C) : Mono (Φ.shortComplex_app X).f := by dsimp; infer_instance
-instance (X : C) : Epi (Φ.shortComplex_app X).g := by dsimp; infer_instance
+instance (X : C) : Mono (Φ.shortComplexObj X).f := by dsimp; infer_instance
+instance (X : C) : Epi (Φ.shortComplexObj X).g := by dsimp; infer_instance
 
-lemma shortExact_shortComplex_app (X : C) : (Φ.shortComplex_app X).ShortExact where
+lemma shortExact_shortComplex_obj (X : C) : (Φ.shortComplexObj X).ShortExact where
   exact :=
     (ShortComplex.ShortExact.map_of_exact Φ.shortExact_shortComplex ((evaluation C C).obj X)).exact
 
 /-- For `X : C`, the kernel fork `KernelFork.ofι (Φ.ι.app X) (Φ.ι_π_app X)` exhibits
 `Φ.ι.app X : Φ.r.obj X ⟶ X` as the kernel of the projection `Φ.π.app X : X ⟶ Φ.quotient.obj X`. -/
-noncomputable def isLimitKernelFork_app (X : C) : IsLimit (KernelFork.ofι _ (Φ.ι_π_app X)) :=
-  (Φ.shortExact_shortComplex_app X).fIsKernel
+noncomputable def isLimitKernelForkObj (X : C) : IsLimit (KernelFork.ofι _ (Φ.ι_π_app X)) :=
+  (Φ.shortExact_shortComplex_obj X).fIsKernel
 
 /-- For `X : C`, the cokernel cofork `CokernelCofork.ofπ (Φ.π.app X) (Φ.ι_π_app X)` exhibits
 `Φ.π.app X : X ⟶ Φ.quotient.obj X` as the cokernel of `Φ.ι.app X : Φ.r.obj X ⟶ X`. -/
-noncomputable def isColimitCokernelCofork_app (X : C) :
+noncomputable def isColimitCokernelCoforkObj (X : C) :
     IsColimit (CokernelCofork.ofπ _ (Φ.ι_π_app X)) :=
-  (Φ.shortExact_shortComplex_app X).gIsCokernel
+  (Φ.shortExact_shortComplex_obj X).gIsCokernel
 
 open Functor
 
@@ -157,9 +157,9 @@ theorem isIso_toColon_hom_left_app_iff {Φ Ψ : Preradical C} {X : C} :
     have hw : (colon Φ Ψ).ι.app X ≫ Φ.π.app X = 0 := by
       simpa [hcolonπ_app] using congrArg (fun t => t) (hpb.w)
     let s : KernelFork (Φ.π.app X) := (KernelFork.ofι ((colon Φ Ψ).ι.app X) hw)
-    let inv : (colon Φ Ψ).r.obj X ⟶ Φ.r.obj X := (Φ.isLimitKernelFork_app X).lift s
+    let inv : (colon Φ Ψ).r.obj X ⟶ Φ.r.obj X := (Φ.isLimitKernelForkObj X).lift s
     have hfac : inv ≫ Φ.ι.app X = (colon Φ Ψ).ι.app X := by
-      simpa using (Φ.isLimitKernelFork_app X).fac s WalkingParallelPair.zero
+      simpa using (Φ.isLimitKernelForkObj X).fac s WalkingParallelPair.zero
     refine ⟨inv, ?_, ?_⟩
     · refine (cancel_mono (Φ.ι.app X)).mp ?_
       simp [← NatTrans.comp_app, hfac]
