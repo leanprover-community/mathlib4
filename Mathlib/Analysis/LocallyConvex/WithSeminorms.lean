@@ -845,7 +845,7 @@ controlled image by `q`. The control of `q` at the original element follows by r
 lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
     (hq : Continuous q) : ∃ C, 0 < C ∧ (∀ x : F, q x ≤ C * ‖x‖) := by
   have hq' : Tendsto q (𝓝 0) (𝓝 0) := map_zero q ▸ hq.tendsto 0
-  rcases NormedAddCommGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' <| Iio_mem_nhds one_pos)
+  rcases NormedAddGroup.nhds_zero_basis_norm_lt.mem_iff.mp (hq' <| Iio_mem_nhds one_pos)
     with ⟨ε, ε_pos, hε⟩
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
   have : 0 < ‖c‖ / ε := by positivity
@@ -874,8 +874,10 @@ lemma bound_of_continuous [t : TopologicalSpace E] (hp : WithSeminorms p)
   let _ : SeminormedAddCommGroup E := (s.sup p).toSeminormedAddCommGroup
   let _ : NormedSpace 𝕜 E := { norm_smul_le := fun a b ↦ le_of_eq (map_smul_eq_mul (s.sup p) a b) }
   -- The inclusion `hε` tells us exactly that `q` is *still* continuous for this new topology
-  have : Continuous q :=
-    Seminorm.continuous (r := 1) (mem_of_superset (Metric.ball_mem_nhds _ ε_pos) hε)
+  have : Continuous q := by
+    apply Seminorm.continuous (r := 1) (mem_of_superset (Metric.ball_mem_nhds _ ε_pos) ?_)
+    rw [← ball_eq_metric]
+    exact hε
   -- Hence we can conclude by applying `bound_of_continuous_normedSpace`.
   rcases bound_of_continuous_normedSpace q this with ⟨C, C_pos, hC⟩
   exact ⟨s, ⟨C, C_pos.le⟩, fun H ↦ C_pos.ne.symm (congr_arg NNReal.toReal H), hC⟩
@@ -981,7 +983,6 @@ theorem Topology.IsInducing.polynormableSpace [PolynormableSpace 𝕜₂ F]
     PolynormableSpace 𝕜 E :=
   hf.withSeminorms (PolynormableSpace.withSeminorms 𝕜₂ F) |>.toPolynormableSpace
 
-set_option backward.isDefEq.respectTransparency false in
 instance [PolynormableSpace 𝕜₂ F] {S : Submodule 𝕜₂ F} :
     PolynormableSpace 𝕜₂ S :=
   IsInducing.polynormableSpace (f := S.subtype) .subtypeVal

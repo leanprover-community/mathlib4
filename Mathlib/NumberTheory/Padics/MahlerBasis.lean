@@ -221,13 +221,12 @@ lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
     · exact div_le_div_of_nonneg_left (norm_nonneg _)
         (mod_cast pow_pos hp.out.pos _) (mod_cast pow_le_pow_right₀ hp.out.one_le hk)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Key lemma for Mahler's theorem: for `f` a continuous function on `ℤ_[p]`, the sequence
 `n ↦ Δ^[n] f 0` tends to 0. See `PadicInt.fwdDiff_iter_le_of_forall_le` for an explicit
 estimate of the decay rate. -/
 lemma fwdDiff_tendsto_zero (f : C(ℤ_[p], E)) : Tendsto (Δ_[1]^[·] f 0) atTop (𝓝 0) := by
   -- first extract an `s`
-  refine NormedAddCommGroup.tendsto_nhds_zero.mpr (fun ε hε ↦ ?_)
+  refine NormedAddGroup.tendsto_nhds_zero.mpr (fun ε hε ↦ ?_)
   have : Tendsto (fun s ↦ ‖f‖ / p ^ s) _ _ := tendsto_const_nhds.div_atTop
     (tendsto_pow_atTop_atTop_of_one_lt (mod_cast hp.out.one_lt))
   obtain ⟨s, hs⟩ := (this.eventually_lt_const hε).exists

@@ -159,11 +159,9 @@ theorem PiLp.volume_preserving_ofLp : MeasurePreserving (@ofLp 2 (ι → ℝ)) :
 theorem PiLp.volume_preserving_toLp : MeasurePreserving (@toLp 2 (ι → ℝ)) :=
   (EuclideanSpace.volume_preserving_symm_measurableEquiv_toLp ι).symm
 
-set_option backward.isDefEq.respectTransparency false in
 lemma volume_euclideanSpace_eq_dirac [IsEmpty ι] :
     (volume : Measure (EuclideanSpace ℝ ι)) = Measure.dirac 0 := by
-  rw [← (PiLp.volume_preserving_toLp ι).map_eq, volume_pi_eq_dirac 0,
-    map_dirac (measurable_toLp 2 _), toLp_zero]
+  rw [← (PiLp.volume_preserving_toLp ι).map_eq, volume_pi_eq_dirac 0, map_dirac, toLp_zero]
 
 end PiLp
 
