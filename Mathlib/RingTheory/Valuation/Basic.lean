@@ -702,6 +702,7 @@ theorem map {v' : Valuation R Γ₀} (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f
 theorem comap {S : Type*} [Ring S] (f : S →+* R) (h : v₁.IsEquiv v₂) :
     (v₁.comap f).IsEquiv (v₂.comap f) := fun r s => h (f r) (f s)
 
+-- TODO: rename to eq_iff?
 theorem val_eq (h : v₁.IsEquiv v₂) {r s : R} : v₁ r = v₁ s ↔ v₂ r = v₂ s := by
   simpa only [le_antisymm_iff] using and_congr (h r s) (h s r)
 
@@ -716,14 +717,13 @@ theorem ne_zero (h : v₁.IsEquiv v₂) {r : R} : v₁ r ≠ 0 ↔ v₂ r ≠ 0 
 lemma pos_iff (h : v₁.IsEquiv v₂) {x : R} : 0 < v₁ x ↔ 0 < v₂ x := by
   rw [zero_lt_iff, zero_lt_iff, h.eq_zero.ne]
 
+lemma le_iff_le (h : v₁.IsEquiv v₂) {x y : R} :
+    v₁ x ≤ v₁ y ↔ v₂ x ≤ v₂ y := by
+  rw [h]
+
 lemma lt_iff_lt (h : v₁.IsEquiv v₂) {x y : R} :
     v₁ x < v₁ y ↔ v₂ x < v₂ y := by
   rw [← le_iff_le_iff_lt_iff_lt, h]
-
-lemma eq_iff (h : v₁.IsEquiv v₂) {x y : R} :
-    v₁ x = v₁ y ↔ v₂ x = v₂ y := by
-  simp only [IsEquiv] at h
-  simp [eq_iff_le_not_lt, h]
 
 lemma le_one_iff_le_one (h : v₁.IsEquiv v₂) {x : R} :
     v₁ x ≤ 1 ↔ v₂ x ≤ 1 := by
@@ -787,29 +787,28 @@ section Ring
 
 variable [Ring R] {v : Valuation R Γ₀} {w : Valuation R Γ₀}
 
-open MonoidWithZeroHom
+open MonoidWithZeroHom MonoidWithZeroHom.ValueGroup₀
 
 noncomputable def equivFun (h : v.IsEquiv w) (x : ValueGroup₀ v) : ValueGroup₀ w :=
   if hx : x = 0 then 0 else
     have c := (x.zero_or_exists_mk'.resolve_left hx).choose
     .mk w c.1.1 c.1.2 ((h.eq_zero).ne.mp c.2.1) (h.eq_zero.ne.mp c.2.2)
 
-theorem equivFun_spec (h : v.IsEquiv w) (r s hr hs) :
+theorem equivFun_spec (h : v.IsEquiv w) (r s : R) (hr : v r ≠ 0) (hs : v s ≠ 0) :
     equivFun h (.mk v r s hr hs) = .mk w r s ((h.eq_zero).ne.mp hr) ((h.eq_zero).ne.mp hs) := by
   rw [equivFun, dif_neg (by simp)]
   generalize_proofs _ _ _ H _
   have c_spec := H.choose_spec
   set c := H.choose
-  simp only [ne_eq, ValueGroup₀.mk_inj, map_mul] at c_spec ⊢
-  -- simp only [mk_inj] at c_spec ⊢
-  rwa [h.val_eq, eq_comm]
+  --simp only [ne_eq, ValueGroup₀.mk_inj, map_mul] at c_spec ⊢
+  simp only [ne_eq, mk_inj] at c_spec ⊢
+  rwa [← h.val_eq, eq_comm]
 
-theorem equivFun_zero : equivFun e 0 = 0 := by simp [equivFun]
+theorem equivFun_zero (h : v.IsEquiv w) : equivFun h 0 = 0 := by simp [equivFun]
 
-include e in
-noncomputable def equiv : ValueGroup₀ v ≃* ValueGroup₀ w where
-  toFun := equivFun e
-  invFun := equivFun e.symm
+noncomputable def equiv (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w where
+  toFun := equivFun h
+  invFun := equivFun h.symm
   map_mul' x y := by
     obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
     · simp_all [equivFun_zero]
@@ -824,6 +823,35 @@ noncomputable def equiv : ValueGroup₀ v ≃* ValueGroup₀ w where
     obtain _ | ⟨r₁, s₁, hr₁, hs₁, rfl⟩ := x.zero_or_exists_mk
     · simp_all [equivFun_zero]
     simp [equivFun_spec]
+  map_le_map_iff' {x} {y} := by
+    simp only [equivFun, ne_eq]
+    split_ifs with hx0 hy0 hy0
+    · simp [hx0, hy0]
+    · simp [hx0]
+    · simp [hx0, hy0]
+    · generalize_proofs _ _ _ hx _ _ hy
+      have := hx.choose_spec
+      conv_rhs => rw [hx.choose_spec, hy.choose_spec]
+      simp only [ValueGroup₀.mk, WithZero.coe_le_coe, Subtype.mk_le_mk]
+      rw [le_mul_inv_iff_mul_le, mul_comm, ← mul_assoc]
+      rw [← le_mul_inv_iff_mul_le, inv_inv]
+      conv_rhs => rw [le_mul_inv_iff_mul_le, mul_comm, ← mul_assoc,
+        ← le_mul_inv_iff_mul_le, inv_inv]
+      rw [← Units.mk0_mul, ← Units.mk0_mul, ← Units.mk0_mul, ← Units.mk0_mul]
+      · simp only [← Units.val_le_val]
+        rw [Units.val_mk0, Units.val_mk0]
+        rw [Units.val_mk0, Units.val_mk0]
+        simp only [← map_mul w, ← h.le_iff_le]
+        rw [map_mul v, map_mul v, mul_comm]
+
+      · generalize_proofs
+        rw [← map_mul v, h.eq_zero.ne]
+        --simp?
+        sorry
+      sorry
+      sorry
+      sorry
+
 
 end Ring
 
