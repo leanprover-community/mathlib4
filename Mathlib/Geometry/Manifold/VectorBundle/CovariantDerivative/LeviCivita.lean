@@ -296,6 +296,7 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
   rw [inner_add_right]
   erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply,
     ContinuousLinearMap.add_apply, ContinuousLinearMap.comp_apply]
+  /- TODO: proof used to be done before merging rc4; was:
   conv =>
     enter [2, 2, 1, 2]
     erw [ContinuousLinearMap.comp_apply]
@@ -303,12 +304,13 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
   conv =>
     enter [2, 2, 1, 2]
     erw [innerSL_apply_apply]
+  module -/
+  sorry
   -- set A := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x
   -- set A' := mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ'⟫ x
   -- set C := inner ℝ (σ x) ((cov τ x) X)
   -- set C' := inner ℝ (σ x) ((cov τ' x) X)
   -- set D := (cov σ x) X
-  module
 
 variable {I} in
 /-- The tensor `∇ g` defined by a connection `∇` on a Riemannian manifold `(M, g)`. -/
