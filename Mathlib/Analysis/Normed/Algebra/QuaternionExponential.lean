@@ -37,7 +37,6 @@ set_option backward.isDefEq.respectTransparency false in
 theorem exp_coe (r : ℝ) : exp (r : ℍ[ℝ]) = ↑(exp r) :=
   (map_exp (algebraMap ℝ ℍ[ℝ]) (continuous_algebraMap _ _) _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The even terms of `expSeries` are real, and correspond to the series for $\cos ‖q‖$. -/
 theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :
     expSeries ℝ (Quaternion ℝ) (2 * n) (fun _ => q) =
@@ -57,7 +56,6 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
     norm_cast
     ring_nf
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The odd terms of `expSeries` are real, and correspond to the series for
 $\frac{q}{‖q‖} \sin ‖q‖$. -/
 theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :

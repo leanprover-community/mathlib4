@@ -78,7 +78,6 @@ instance convNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (WithConv (C 
     toConv (toSpanSingleton R A x) * toConv (toSpanSingleton R A y) =
       toConv (toSpanSingleton R A (x * y)) := by ext; simp
 
-set_option backward.isDefEq.respectTransparency false in
 theorem _root_.TensorProduct.map_convMul_map {D : Type*} [AddCommMonoid B] [Module R B]
     [CoalgebraStruct R B] [NonUnitalNonAssocSemiring D] [Module R D] [SMulCommClass R D D]
     [IsScalarTower R D D] {f h : WithConv (C →ₗ[R] A)} {g k : WithConv (B →ₗ[R] D)} :

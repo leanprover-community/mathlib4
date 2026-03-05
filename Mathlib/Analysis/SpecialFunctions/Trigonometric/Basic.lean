@@ -698,7 +698,6 @@ theorem sin_sq_pi_over_two_pow_succ (n : ℕ) :
     · norm_num
   · exact add_nonneg two_pos.le (sqrtTwoAddSeries_zero_nonneg _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem sin_pi_over_two_pow_succ (n : ℕ) :
     sin (π / 2 ^ (n + 2)) = √(2 - sqrtTwoAddSeries 0 n) / 2 := by
@@ -838,7 +837,6 @@ theorem quadratic_root_cos_pi_div_five :
                  _ = s * (2 * c * c) + s * (2 * c ^ 2 - 1) := by linarith
                  _ = s * (4 * c ^ 2 - 1) := by linarith
 
-set_option backward.isDefEq.respectTransparency false in
 open Polynomial in
 theorem Polynomial.isRoot_cos_pi_div_five :
     (4 • X ^ 2 - 2 • X - C 1 : ℝ[X]).IsRoot (cos (π / 5)) := by

@@ -162,7 +162,7 @@ theorem liftCover_coe {i : ι} (x : S i) : liftCover S f hf hS x = f i x :=
 
 theorem liftCover_of_mem {i : ι} {x : α} (hx : (x : α) ∈ S i) :
     liftCover S f hf hS x = f i ⟨x, hx⟩ :=
-  iUnionLift_of_mem (⟨x, trivial⟩ : {_z // True}) hx
+  iUnionLift_of_mem ⟨x, mem_univ x⟩ hx
 
 theorem preimage_liftCover (t : Set β) : liftCover S f hf hS ⁻¹' t = ⋃ i, (↑) '' (f i ⁻¹' t) := by
   change (iUnionLift S f hf univ hS.symm.subset ∘ fun a => ⟨a, mem_univ a⟩) ⁻¹' t = _

@@ -18,6 +18,11 @@ on:
         required: false
         type: boolean
         default: false # We shouldn't need this job in typical experiments
+      mathlib_ci_ref:
+        description: ref for mathlib-ci checkout (defaults to 'master')
+        required: false
+        type: string
+        default: 'master'
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow
 permissions:
@@ -38,5 +43,6 @@ jobs:
       tools_branch_ref: ${{ inputs.tools_branch_ref != '' && inputs.tools_branch_ref || github.sha }}
       pr_branch_ref: ${{ inputs.pr_branch_ref != '' && inputs.pr_branch_ref || github.sha }}
       run_post_ci: ${{ inputs.run_post_ci }}
+      mathlib_ci_ref: ${{ inputs.mathlib_ci_ref }}
       runs_on: pr
     secrets: inherit
