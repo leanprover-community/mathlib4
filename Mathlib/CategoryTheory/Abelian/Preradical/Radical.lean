@@ -73,12 +73,12 @@ theorem isRadical_iff {Φ : Preradical C} :
       (Φ.quotient.whiskerLeft Φ.ι ≫ (rightUnitor _).hom)
       (zero_of_epi_comp (colonπ Φ Φ) ?_)
     calc
-        _ = (colon Φ Φ).ι ≫ Φ.π := by
-          simp [colonπ, Preradical.ι, Preradical.colon, ← pullback.condition]
-        _ = (μ.hom.hom.left ≫ Φ.ι) ≫ Φ.π := by
-          rw [MonoOver.w μ.hom]
+        _ = (colon Φ Φ).ι ≫ Φ.π :=
+          (isPullback_colon Φ Φ).w.symm
+        _ = μ.hom.hom.left ≫ Φ.ι ≫ Φ.π := by
+          rw [← Category.assoc, MonoOver.w μ.hom]
         _ = 0 := by
-          rw [Category.assoc, Φ.ι_π, comp_zero]
+          simp
   · intro h
     constructor
     haveI := (isIso_toColon_iff.mpr h : IsIso (Φ.toColon Φ))
