@@ -483,7 +483,7 @@ instance (𝒞₁ 𝒞₂ : Classifier C) : IsIso (𝒞₁.hom 𝒞₂) := (𝒞
 /-- Being a subobject classifier is preserved under isomorphism. -/
 @[simps]
 def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω) (eΩ₀ : 𝒞.Ω₀ ≅ Ω₀)
-    (from' : ∀ C, C ⟶ Ω₀) {t : Ω₀ ⟶ Ω} (ht : t = eΩ₀.inv ≫ 𝒞.truth ≫ eΩ.hom := by cat_disch) :
+    (from' : ∀ C, C ⟶ Ω₀) (t : Ω₀ ⟶ Ω) (ht : t = eΩ₀.inv ≫ 𝒞.truth ≫ eΩ.hom := by cat_disch) :
     Classifier C where
   Ω₀ := Ω₀
   Ω := Ω
