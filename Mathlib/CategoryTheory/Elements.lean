@@ -40,8 +40,6 @@ namespace CategoryTheory
 
 universe w v u
 
-open Opposite Limits
-
 variable {C : Type u} [Category.{v} C]
 
 /-- The type of objects for the category of elements of a functor `F : C ⥤ Type`
@@ -320,7 +318,7 @@ def Elements.initialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.Rep
 /-- If `F` is represented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
 def Elements.isInitialOfRepresentableBy {F : Cᵒᵖ ⥤ Type*} {X : C} (h : F.RepresentableBy X) :
-    IsInitial (initialOfRepresentableBy h) :=
+    Limits.IsInitial (initialOfRepresentableBy h) :=
   .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd |>.op, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
     simp [← m.2, ← h.homEquiv_unop_comp]
 
@@ -333,7 +331,7 @@ def Elements.initialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.Corepre
 /-- If `F` is corepresented by `X`, `X` with its universal element is the initial object of
 `F.Elements.` -/
 def Elements.isInitialOfCorepresentableBy {F : C ⥤ Type*} {X : C} (h : F.CorepresentableBy X) :
-    IsInitial (initialOfCorepresentableBy h) :=
+    Limits.IsInitial (initialOfCorepresentableBy h) :=
   .ofUniqueHom (fun Y ↦ ⟨h.homEquiv.symm Y.snd, by simp [← h.homEquiv_comp]⟩) fun Y m ↦ by
     simp [← m.2, ← h.homEquiv_comp]
 
@@ -346,7 +344,7 @@ def Elements.initial (A : C) : (yoneda.obj A).Elements :=
 
 /-- Show that `Elements.initial A` is initial in the category of elements for the `yoneda` functor.
 -/
-def Elements.isInitial (A : C) : IsInitial (Elements.initial A) :=
+def Elements.isInitial (A : C) : Limits.IsInitial (Elements.initial A) :=
   isInitialOfRepresentableBy (.yoneda A)
 
 end Functor
