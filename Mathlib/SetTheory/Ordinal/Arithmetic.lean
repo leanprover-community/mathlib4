@@ -571,10 +571,8 @@ theorem type_prod_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
   rfl
 
 private theorem mul_eq_zero' {a b : Ordinal} : a * b = 0 ↔ a = 0 ∨ b = 0 := by
-  refine inductionOn₂ a b fun α _ _ β _ _ ↦ ?_
-  simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty]
-  rw [or_comm]
-  exact isEmpty_prod
+  induction a, b using inductionOn₂ with | _ α _ β _
+  simp_rw [← type_prod_lex, type_eq_zero_iff_isEmpty, isEmpty_prod, iff_true_intro or_comm]
 
 instance monoidWithZero : MonoidWithZero Ordinal where
   mul_zero _ := by exact mul_eq_zero'.2 (.inr rfl)
