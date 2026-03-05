@@ -156,8 +156,9 @@ lemma isTightMeasureSet_of_tendsto_charFun {μ : ℕ → Measure E} [∀ i, IsPr
   _ < ε := by simp [hε]
 
 /-- Let `μ` be a tight sequence of probability measures and `μ₀` a probability measure.
-If `A` is a star sub-algebra that separates points and the integrals of elements of `A` with
-respect to `μ` converge to the integrals with respect to `μ₀`, then `μ` converges weakly to `μ₀`. -/
+If `A` is a star sub-algebra of bounded continuous scalar functions that separates points
+and the integrals of elements of `A` with respect to `μ` converge to the integrals
+with respect to `μ₀`, then `μ` converges weakly to `μ₀`. -/
 lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCLike 𝕜]
     {E : Type*} [MetricSpace E] [CompleteSpace E] [SecondCountableTopology E]
     [MeasurableSpace E] [BorelSpace E]
