@@ -200,11 +200,10 @@ lemma homologyFunctorFactors_hom_app_homologyδOfTriangle (n₀ n₁ : ℤ) (h :
     DerivedCategory.HomologySequence.δ
       (DerivedCategory.Q.mapTriangle.obj T) n₀ n₁ h ≫
         (DerivedCategory.homologyFunctorFactors C n₁).hom.app T.obj₁ := by
-  have := DerivedCategory.shiftMap_homologyFunctor_map_Q T.mor₃ n₀ n₁ (by lia)
-  dsimp [ShiftedHom.map] at this
   dsimp [DerivedCategory.HomologySequence.δ]
-  simp only [this, Category.assoc, Iso.inv_hom_id_app, homologyFunctor_obj,
-    NatIso.cancel_natIso_hom_left]
+  simp only [dsimp% [ShiftedHom.map]
+      DerivedCategory.shiftMap_homologyFunctor_map_Q T.mor₃ n₀ n₁ (by lia),
+    Category.assoc, Iso.inv_hom_id_app, NatIso.cancel_natIso_hom_left]
   exact (Category.comp_id _).symm
 
 variable (hT : DerivedCategory.Q.mapTriangle.obj T ∈ distTriang _)
@@ -215,34 +214,30 @@ set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyMap_comp_eq_zero_of_distTriang (n : ℤ) :
     homologyMap T.mor₁ n ≫ homologyMap T.mor₂ n = 0 := by
-  have := comp_distTriang_mor_zero₁₂ _ hT
-  dsimp at this
   rw [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
     ← DerivedCategory.homologyFunctorFactors_hom_naturality_assoc,
     ← DerivedCategory.homologyFunctorFactors_hom_naturality,
-    ← Functor.map_comp_assoc, this, Functor.map_zero,
+    ← Functor.map_comp_assoc, dsimp% comp_distTriang_mor_zero₁₂ _ hT, Functor.map_zero,
     Limits.zero_comp, Limits.comp_zero]
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyδOfTriangle_homologyMap (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     homologyδOfTriangle T n₀ n₁ h ≫ homologyMap T.mor₁ n₁ = 0 := by
-  have := DerivedCategory.HomologySequence.δ_comp _ hT n₀ n₁ h
   rw [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
     homologyFunctorFactors_hom_app_homologyδOfTriangle_assoc,
     ← DerivedCategory.homologyFunctorFactors_hom_naturality]
-  dsimp at this ⊢
-  rw [reassoc_of% this]
+  dsimp
+  rw [reassoc_of% dsimp% DerivedCategory.HomologySequence.δ_comp _ hT n₀ n₁ h]
   simp
 
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyMap_homologyδOfTriangle (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     homologyMap T.mor₂ n₀ ≫ homologyδOfTriangle T n₀ n₁ h = 0 := by
-  have := DerivedCategory.HomologySequence.comp_δ _ hT n₀ n₁ h
-  dsimp at this
   simp [← cancel_epi ((DerivedCategory.homologyFunctorFactors _ _).hom.app _),
-    ← DerivedCategory.homologyFunctorFactors_hom_naturality_assoc, reassoc_of% this]
+    ← DerivedCategory.homologyFunctorFactors_hom_naturality_assoc,
+    reassoc_of% dsimp% DerivedCategory.HomologySequence.comp_δ _ hT n₀ n₁ h]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_exact₁_of_distTriang (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
