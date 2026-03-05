@@ -22,10 +22,10 @@ variable {α : Type}
 
 open Lean Meta
 
-namespace Lean
+namespace Lean.Meta
 
 /-- Information about a failed import. -/
-public structure ImportFailure where
+public structure FoldDeclFailure where
   /-- Module containing the constant whose import failed. -/
   module : Name
   /-- Constant whose import failed. -/
@@ -34,10 +34,10 @@ public structure ImportFailure where
   exception : Exception
 
 /-- Log a warning for the given import failure. -/
-public def ImportFailure.log (f : ImportFailure) : CoreM Unit :=
+public def FoldDeclFailure.log (f : FoldDeclFailure) : CoreM Unit :=
   logError m!"Processing failure with {f.const} in {f.module}:\n  {f.exception.toMessageData}"
 
-abbrev ImportErrorRef := IO.Ref (List ImportFailure)
+abbrev ImportErrorRef := IO.Ref (List FoldDeclFailure)
 
 /-- Run `act env name constInfo`, catching potential errors. -/
 @[inline]
@@ -47,7 +47,7 @@ def visitConst (modName : Name) (errorRef : ImportErrorRef)
   try
     act a name constInfo
   catch e =>
-    let i : ImportFailure := {
+    let i : FoldDeclFailure := {
       module := modName,
       const := name,
       exception := e }
@@ -80,7 +80,7 @@ The results can then be combined using `Array.foldl`. -/
 @[specialize]
 public def foldImportedDecls (init : α) (cfg : Config)
     (act : α → Name → ConstantInfo → MetaM α) (constantsPerTask : Nat := 5000) :
-    CoreM (Array (Task (Except Exception α)) × List ImportFailure) := do
+    CoreM (Array (Task (Except Exception α)) × List FoldDeclFailure) := do
   let env ← getEnv
   let numModules := env.header.moduleData.size
   let mctx := { keyedConfig := cfg.toConfigWithKey }
@@ -108,7 +108,7 @@ public def foldImportedDecls (init : α) (cfg : Config)
 /-- Fold through all constants of the current file using `act`. -/
 @[specialize]
 public def foldCurrFileDecls (init : α) (cfg : Config)
-    (act : α → Name → ConstantInfo → MetaM α) : CoreM (α × List ImportFailure) := do
+    (act : α → Name → ConstantInfo → MetaM α) : CoreM (α × List FoldDeclFailure) := do
   let env ← getEnv
   let modName := env.header.mainModule
   let errorRef ← IO.mkRef {}
@@ -119,4 +119,4 @@ public def foldCurrFileDecls (init : α) (cfg : Config)
     |>.run' { (← read) with maxHeartbeats := 0 } { env, ngen := childNGen }
   return (result, ← errorRef.get)
 
-end Lean
+end Lean.Meta
