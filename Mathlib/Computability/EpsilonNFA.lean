@@ -592,10 +592,10 @@ theorem mem_matches'_directRegex {i j : Fin n} {x : List α} :
         contradiction
   · rintro (⟨a, rfl, h_step⟩ | ⟨rfl, h_step⟩)
     · left
-      use { [a] }
-      simp only [mem_range, mem_singleton_iff, and_true]
+      apply Set.mem_iUnion.mpr
       use a
       simp [h_step]
+      rfl
     · right
       simp [h_step]
 
