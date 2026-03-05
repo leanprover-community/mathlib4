@@ -174,9 +174,8 @@ lemma HasFiniteMulSupport.inf' [SemilatticeInf M] {ι : Type*} {f : ι → α �
 @[to_additive]
 lemma HasFiniteMulSupport.subset {f g : α → M} (hg : g.HasFiniteMulSupport)
     (h : f.mulSupport ⊆ g.mulSupport) :
-    f.HasFiniteMulSupport := by
-  simp only [HasFiniteMulSupport] at hg ⊢
-  exact hg.subset h
+    f.HasFiniteMulSupport :=
+  Set.Finite.subset hg h
 
 @[to_additive]
 lemma HasFiniteMulSupport.comp_of_injective {β : Type*} {f : β → M} {g : α → β} (hg : Injective g)
