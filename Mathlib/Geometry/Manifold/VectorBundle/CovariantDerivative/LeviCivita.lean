@@ -181,7 +181,8 @@ namespace CovariantDerivative
 -- TODO: include in cheat sheet!
 variable (cov : CovariantDerivative I E (TangentSpace I : M → Type _))
 
-local notation "∇" X "," Y => fun (x:M) ↦ cov X x (Y x)
+/-- Local notation for a connection. Caution: `∇ Y, X` corresponds to `∇ₓ Y` in textbooks -/
+local notation "∇" Y "," X => fun (x:M) ↦ cov Y x (X x)
 
 noncomputable def myfun (Y Z : Π x : M, TangentSpace I x) :
     Π (x : M), TangentSpace I x →L[ℝ] ℝ := fun x ↦
