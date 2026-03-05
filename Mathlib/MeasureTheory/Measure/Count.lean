@@ -163,20 +163,18 @@ instance count.isFiniteMeasure [Finite α] :
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
 
-lemma _root_.Subsingleton.count_eq_dirac {ι : Type*} [MeasurableSpace ι] [Subsingleton ι] (i : ι) :
+lemma _root_.Subsingleton.count_eq_dirac [Subsingleton α] (i : α) :
     count = dirac i := by
   calc count
       = count.restrict univ := by simp
     _ = count.restrict {i} := by congr; ext j; simp [Subsingleton.elim j i]
     _ = dirac i := by simp
 
-lemma _root_.Unique.count_eq_dirac {ι : Type*} [MeasurableSpace ι] [Unique ι] :
-    count = dirac (default : ι) :=
+lemma _root_.Unique.count_eq_dirac [Unique α] : count = dirac (default : α) :=
   Subsingleton.count_eq_dirac _
 
-lemma _root_.Function.Injective.map_count_le {α β : Type*} [MeasurableSpace α] [MeasurableSpace β]
-    [DiscreteMeasurableSpace α] {f : α → β} (hf : f.Injective) :
-    count.map f ≤ count := by
+lemma _root_.Function.Injective.map_count_le [DiscreteMeasurableSpace α] {f : α → β}
+    (hf : f.Injective) : count.map f ≤ count := by
   refine le_intro fun s hs _ ↦ ?_
   rw [map_apply .of_discrete hs, count_apply .of_discrete, count_apply hs, ← hf.encard_image]
   have := image_preimage_subset f s
