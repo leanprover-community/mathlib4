@@ -11,7 +11,7 @@ public import Mathlib.RingTheory.MvPolynomial.Ideal
 public import Mathlib.RingTheory.MvPowerSeries.Trunc
 
 /-!
-# Equivalences between power series rings
+# Equivalences related to power series rings
 
 This file establishes a number of equivalences related to power series rings.
 
