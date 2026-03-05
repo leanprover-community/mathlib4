@@ -142,18 +142,49 @@ theorem H.equiv₀_symm_comp (x : F.val.obj (op T)) :
   apply (H.equiv₀ G hT).injective
   simp [← H.equiv₀_comp]
 
-variable (n : ℕ)
+lemma H.map_apply {n : ℕ} (x : H F n) :
+    H.map f n x = x.comp (Ext.mk₀ f) (add_zero n) := rfl
 
+@[simp]
+lemma H.map_id_apply {n : ℕ} (x : H F n) : H.map (𝟙 F) n x = x := by
+  simp [H.map_apply]
+
+lemma H.map_comp_apply {n : ℕ} {G' : Sheaf J AddCommGrpCat.{w}} (g : G ⟶ G') (x : H F n) :
+    H.map (f ≫ g) n x = H.map g n (H.map f n x) := by
+  simp [H.map_apply]
+
+attribute [local simp] H.map_comp_apply in
+variable (J) in
 /-- `H` as a functor. -/
-noncomputable def Hfunctor (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} :=
-    (extFunctor n).obj
-      (op ((constantSheaf J AddCommGrpCat.{w}).obj (AddCommGrpCat.of.{w} (ULift ℤ))))
+@[simps]
+noncomputable def functorH (n : ℕ) : Sheaf J AddCommGrpCat.{w} ⥤ AddCommGrpCat.{w'} where
+  obj F := .of (H F n)
+  map f := AddCommGrpCat.ofHom (H.map f n)
 
-theorem Hfunctor_obj (n : ℕ) : (Hfunctor n).obj F = of (H F n) := rfl
+instance (n : ℕ) : (functorH J n).Additive where
+  map_add {_ _ f g} := by ext; simp [H.map_apply, Ext.mk₀_add]
 
-theorem Hfunctor_map (n : ℕ) :
-    eqToHom (F.Hfunctor_obj n) ≫ ofHom (H.map f n) ≫ eqToHom (G.Hfunctor_obj n).symm =
-    (Hfunctor n).map f := rfl
+variable [HasExt.{w} (Sheaf J AddCommGrpCat.{w})]
+omit [HasExt.{w'} (Sheaf J AddCommGrpCat)]
+
+variable (J) in
+/-- see `CategoryTheory.Sheaf.functorHNatIsoSheafSections` -/
+noncomputable def functorHNatIsoSheafSections_aux :
+    functorH J 0 ⟶ (sheafSections J _).obj (op T) where
+  app F := AddCommGrpCat.ofHom (H.equiv₀ F hT).toAddMonoidHom
+  naturality {F G} f := by
+    ext
+    simp [H.equiv₀_comp]
+
+instance functorHNatIsoSheafSections_aux_isIso : IsIso (functorHNatIsoSheafSections_aux J hT) := by
+  rw[NatTrans.isIso_iff_isIso_app]
+  intro
+  rw[← isIso_iff_of_reflects_iso _ (forget AddCommGrpCat), isIso_iff_bijective]
+  exact (H.equiv₀ _ hT).bijective
+
+/-- The natural isomorphism between cohomology in degree `0` and global sections. -/
+noncomputable def functorHNatIsoSheafSections : functorH J 0 ≅ (sheafSections J _).obj (op T) :=
+  asIso (functorHNatIsoSheafSections_aux J hT)
 
 end
 
