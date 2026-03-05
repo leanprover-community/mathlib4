@@ -99,7 +99,8 @@ namespace IsContraction
 
 theorem ofIso (φ : G ≃g G') : G ≼c G' := by
   refine ⟨φ.symm, φ.symm.surjective, .of_injective φ.symm.injective, ?_⟩
-  ext x y ; refine ⟨fun h => ⟨h.ne, φ x, φ y, by simp [φ.map_rel_iff, h]⟩, ?_⟩
+  ext x y
+  refine ⟨fun h => ⟨h.ne, φ x, φ y, by simp [φ.map_rel_iff, h]⟩, ?_⟩
   rintro ⟨-, u, v, h2, rfl, rfl⟩
   simp only [← φ.map_rel_iff, RelIso.apply_symm_apply, h2]
 
