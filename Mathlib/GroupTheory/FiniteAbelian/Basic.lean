@@ -192,3 +192,71 @@ theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [CommGroup G] [hG :
           (DirectSum.addEquivProd _ )).trans <| (AddEquiv.prodAdditive _ _).symm⟩⟩
 
 end CommGroup
+
+namespace Subgroup
+
+/-- If `B` is a subgroup of the finitely generated commutative group `A` such that
+`B` contains all `n`th powers in `A`, then `B` has finite index in `A`. -/
+@[to_additive /-- If `B` is a subgroup of the finitely generated commutative
+additive group `A` such that `B` contains `n • A`, then `B` has finite index in `A`. -/]
+lemma index_ne_zero_of_range_powMonoidHom_le {A : Type*} [CommGroup A] [Group.FG A]
+    (B : Subgroup A) {n : ℕ} (hn : n ≠ 0) (h : (powMonoidHom (α := A) n).range ≤ B) :
+    B.index ≠ 0 := by
+  refine index_ne_zero_iff_finite.mpr <| CommGroup.finite_of_fg_torsion _ ?_
+  simp only [Monoid.IsTorsion, isOfFinOrder_iff_pow_eq_one]
+  refine fun g ↦ ⟨n, Nat.zero_lt_of_ne_zero hn, ?_⟩
+  have H a : a ^ n ∈ B := by
+    rw [SetLike.le_def] at h
+    have ha : a ^ n ∈ (powMonoidHom n).range := by simp
+    exact h ha
+  suffices Quotient.out g ^ n ∈ B by
+    obtain ⟨b, hb₁, hb₂⟩ : ∃ b ∈ B, b = Quotient.out g ^ n := ⟨_, this, rfl⟩
+    apply_fun QuotientGroup.mk (s := B) at hb₂
+    rw [(QuotientGroup.eq_one_iff b).mpr hb₁] at hb₂
+    rw [hb₂, QuotientGroup.mk_pow, QuotientGroup.out_eq']
+  exact H _
+
+/-- If `B` and `C` are subgroups of the commutative group `A` such that `B` is finitely generated
+and `C` contains all `n`th powers of elements of `B`, then `C` has finite relative index in `B`. -/
+@[to_additive /-- If `B` and `C` are subgroups of the commutative additive group `A` such that `B`
+is finitely generated and `C` contains `n • B`, then `C` has finite relative index in `B`. -/]
+lemma relIndex_ne_zero_of_range_powMonoidHom_le {A : Type*} [CommGroup A] (B C : Subgroup A)
+    (hB : B.FG) {n : ℕ} (hn : n ≠ 0) (h : B.map (powMonoidHom (α := A) n) ≤ C) :
+    C.relIndex B ≠ 0 := by
+  simp only [relIndex]
+  have : Group.FG B := (Group.fg_iff_subgroup_fg B).mpr hB
+  refine index_ne_zero_of_range_powMonoidHom_le (A := B) (C.subgroupOf B) hn ?_
+  rw [SetLike.le_def] at h ⊢
+  rintro ⟨b, hbmem⟩ hb
+  simp only [mem_map, powMonoidHom_apply, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
+    MonoidHom.mem_range, Subtype.exists, SubmonoidClass.mk_pow, Subtype.mk.injEq,
+    exists_prop] at h hb
+  rw [mem_subgroupOf, show Subtype.val ⟨b, hbmem⟩ = b from rfl]
+  obtain ⟨a, hamem, rfl⟩ := hb
+  exact mem_carrier.mp (h a hamem)
+
+end Subgroup
+
+namespace Submodule
+
+variable {R M : Type*} [CommRing R] [CommRing M] [Algebra R M] [Module.Finite ℤ R]
+
+/-- If `A` and `B` are two submodules of the `R`-algebra `M`, where `R` is finitely generated
+as a `ℤ`-module, `A` is finitely generated, and `B` contains `n • A`, then `B` has finite
+relative index in `A`. -/
+lemma relIndex_ne_zero_of_map_linearMapMulLeft_le {A B : Submodule R M} {n : ℕ} (hn : n ≠ 0)
+    (hfg : A.FG) (h : A.map (LinearMap.mulLeft R (n : M)) ≤ B) :
+    B.toAddSubgroup.relIndex A.toAddSubgroup ≠ 0 := by
+  have hA : A.toAddSubgroup.FG := by
+    suffices A.toAddSubgroup.toIntSubmodule.FG by
+      rwa [fg_iff_addSubgroup_fg, AddSubgroup.toIntSubmodule_toAddSubgroup] at this
+    rw [Submodule.toIntSubmodule_toAddSubgroup A]
+    have : Module.Finite R ↥(restrictScalars ℤ A) := by
+      rwa [← Module.Finite.iff_fg] at hfg
+    nth_rw 1 [← Module.Finite.iff_fg]
+    exact Module.Finite.trans R _
+  refine A.toAddSubgroup.relIndex_ne_zero_of_range_nsmulAddMonoidHom_le B.toAddSubgroup hA hn ?_
+  rw [SetLike.le_def] at h ⊢
+  simpa using h
+
+end Submodule
