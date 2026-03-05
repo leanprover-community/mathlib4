@@ -51,19 +51,18 @@ lemma exists_measurable_map_eq_unitInterval₀ (κ : Kernel α I) [IsMarkovKerne
     have sSup_eq_iUnion_rat : {x : α × I | a < f x.1 x.2} =
         ⋃ (q : ℚ) (hqI : ↑q ∈ I) (_ : a < (q : ℝ)), {e | (κ e.1).real (Icc 0 ⟨q, hqI⟩) < e.2} := by
       ext e
-      simp only [f]
+      simp_all only [lt_sSup_iff, mem_setOf_eq, Subtype.exists, mem_Icc, Rat.cast_nonneg,
+        mem_iUnion, exists_prop, exists_and_left, f]
       constructor
-      · intro (he : a < sSup {x | (κ e.1).real (Icc 0 x) < e.2})
-        simp_rw [Set.mem_iUnion]
-        rw [lt_sSup_iff] at he
-        obtain ⟨y, y_mem, (hy : a.1 < y.1)⟩ := he
+      · rintro ⟨y, hyI,y_mem, (hy : a.1 < y)⟩
         obtain ⟨q, hqa, hqy⟩ := exists_rat_btwn hy
-        have q_in_I : (q : ℝ) ∈ I := ⟨a.2.1.trans hqa.le, hqy.le.trans y.2.2⟩
-        exact ⟨q, q_in_I, hqa, lt_of_lt_of_le' y_mem (h_monotone e.1 hqy.le)⟩
+        refine ⟨q, hqa, ⟨?_, hqy.le.trans hyI.2⟩, lt_of_lt_of_le' y_mem (h_monotone e.1 hqy.le)⟩
+        simp [← Rat.cast_nonneg (K := ℝ), a.2.1.trans hqa.le]
       · intro he
-        simp_all only [lt_sSup_iff, Set.mem_iUnion]
-        obtain ⟨q, q_in_I, hqa, h⟩ := he
-        exact ⟨⟨q, q_in_I⟩, h, hqa⟩
+        obtain ⟨q, hqa, hqI, h⟩ := he
+        refine ⟨q, ⟨by simp [hqI.1], hqI.2⟩, h, ?_⟩
+        change a.1 < q
+        simp [hqa]
     rw [sSup_eq_iUnion_rat]
     refine MeasurableSet.iUnion (fun b ↦ MeasurableSet.iUnion
       (fun bI ↦ MeasurableSet.iUnion (fun _ ↦ ?_)))
