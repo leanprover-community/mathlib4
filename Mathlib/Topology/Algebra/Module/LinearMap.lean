@@ -601,6 +601,7 @@ theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
   rfl
 
 /-- Construct a homeomorphism from an invertible continuous linear map. -/
+@[simps]
 def homeomorphOfUnit (T : (M₁ →L[R₁] M₁)ˣ) : M₁ ≃ₜ M₁ where
   toFun := T.1
   invFun := T⁻¹.1
