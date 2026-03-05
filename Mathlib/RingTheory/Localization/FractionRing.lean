@@ -476,8 +476,8 @@ lemma semilinearEquivOfRingEquiv_comp {C : Type*} (M : Type*) [CommRing C] [Comm
       (semilinearEquivOfRingEquiv K L f)
       (semilinearEquivOfRingEquiv L M g) := by
   ext a
-  simp [semilinearEquivOfRingEquiv_apply, semilinearEquivOfRingEquiv_apply K M,
-    ringEquivOfRingEquiv_comp K L M]
+  simp [-RingEquiv.coe_ringHom_trans, semilinearEquivOfRingEquiv_apply,
+    semilinearEquivOfRingEquiv_apply K M, ringEquivOfRingEquiv_comp K L M]
 
 end semilinearEquivOfRingEquiv
 
