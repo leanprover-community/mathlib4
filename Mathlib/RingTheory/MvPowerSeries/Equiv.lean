@@ -100,6 +100,7 @@ theorem coeff_toAdicCompletion_val_apply_out {x : σ →₀ ℕ} {p : MvPowerSer
       Ideal.Quotient.mk_out]
   exact hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem toAdicCompletion_coe (p : MvPolynomial σ R) :
     toAdicCompletion σ R p = .of (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R) p := by
   symm; ext n
@@ -118,6 +119,7 @@ lemma coeff_toAdicCompletionInv {x : σ →₀ ℕ}
     {f : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)} :
       coeff x (toAdicCompletionInv σ R f) = (f.val (degree x + 1)).out.coeff x := by rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
     {f : AdicCompletion (MvPolynomial.idealOfVars σ R) (MvPolynomial σ R)} :
       Ideal.Quotient.mk (MvPolynomial.idealOfVars σ R ^ n • ⊤)
@@ -135,6 +137,7 @@ theorem mk_truncTotal_toAdicCompletionInv {n : ℕ}
     convert f.prop h; simp
   simp
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from multivariate power series to the adic completion of
 multivariate polynomials at the ideal spanned by all variables when the index is finite. -/
 def toAdicCompletionAlgEquiv (σ R : Type*) [Finite σ] [CommRing R] :
