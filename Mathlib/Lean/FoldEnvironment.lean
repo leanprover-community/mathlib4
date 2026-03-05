@@ -24,6 +24,8 @@ open Lean Meta
 
 namespace Lean.Meta
 
+/-- An `IO.Ref` that keeps track of any errors that could have been thrown by `act`
+when folding over the constants in the environment. -/
 public abbrev FoldDeclErrorRef := IO.Ref (List MessageData)
 
 /-- Run `act env name constInfo`, catching potential errors. -/
