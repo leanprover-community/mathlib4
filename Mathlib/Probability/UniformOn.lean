@@ -42,7 +42,7 @@ noncomputable section
 
 open ProbabilityTheory
 
-open MeasureTheory MeasurableSpace
+open MeasureTheory MeasurableSpace Finset
 
 namespace ProbabilityTheory
 
@@ -94,7 +94,21 @@ instance instIsProbabilityMeasure_uniformOn_univ [Finite Ω] [Nonempty Ω] :
     IsProbabilityMeasure (uniformOn (.univ : Set Ω)) :=
   isProbabilityMeasure_uniformOn' Set.finite_univ Set.univ_nonempty .univ
 
+lemma uniformOn_apply_finset' {Ω : Type*} [DecidableEq Ω] [MeasurableSpace Ω] {s t : Finset Ω}
+    (hs : MeasurableSet (s : Set Ω)) (ht : MeasurableSet (t : Set Ω)) :
+    uniformOn (s : Set Ω) (t : Set Ω) = #(s ∩ t) / #s := by
+  rw [uniformOn, cond_apply hs, Measure.count_apply_finset' hs, ← coe_inter,
+    Measure.count_apply_finset']
+  · rw [div_eq_mul_inv, mul_comm]
+  rw [coe_inter]
+  exact hs.inter ht
+
 variable [MeasurableSingletonClass Ω]
+
+lemma uniformOn_apply_finset {Ω : Type*} [DecidableEq Ω] [MeasurableSpace Ω]
+    [MeasurableSingletonClass Ω] {s t : Finset Ω} :
+    uniformOn (s : Set Ω) (t : Set Ω) = #(s ∩ t) / #s :=
+  uniformOn_apply_finset' s.measurableSet t.measurableSet
 
 theorem isProbabilityMeasure_uniformOn {s : Set Ω} (hs : s.Finite) (hs' : s.Nonempty) :
     IsProbabilityMeasure (uniformOn s) := by
