@@ -100,19 +100,19 @@ variable {s : Set M} {m : M}
 
 variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑φ) s : M → Prop -/
+/-- info: MDiffAt[s] ↑φ : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] φ
 
-/-- info: MDifferentiableWithinAt I 𝓘(𝕜, E) (↑ψ) s : M → Prop -/
+/-- info: MDiffAt[s] ↑ψ : M → Prop -/
 #guard_msgs in
 #check MDiffAt[s] ψ
 
-/-- info: MDifferentiableAt I 𝓘(𝕜, E) ↑φ : M → Prop -/
+/-- info: MDiffAt ↑φ : M → Prop -/
 #guard_msgs in
 #check MDiffAt φ
 
-/-- info: MDifferentiableAt I 𝓘(𝕜, E) ↑ψ : M → Prop -/
+/-- info: MDiffAt ↑ψ : M → Prop -/
 #guard_msgs in
 #check MDiffAt ψ
 
@@ -144,7 +144,7 @@ variable {φ : OpenPartialHomeomorph M E} {ψ : PartialEquiv M E}
 #guard_msgs in
 #check CMDiff 2 ψ
 
-/-- info: mfderiv I 𝓘(𝕜, E) ↑φ : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑φ x) -/
+/-- info: mfderiv% ↑φ : (x : M) → TangentSpace I x →L[𝕜] TangentSpace 𝓘(𝕜, E) (↑φ x) -/
 #guard_msgs in
 #check mfderiv% φ
 
@@ -161,13 +161,13 @@ info: mfderivWithin I 𝓘(𝕜, E) (↑ψ) s : (x : M) → TangentSpace I x →
 variable {f : ContMDiffSection I F n V} in
 #check mfderiv[s] ψ
 
-/-- info: mfderiv I I' ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
+/-- info: mfderiv% ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
 #guard_msgs in
 variable {g : ContMDiffMap I I' M M' n} in
 #check mfderiv% g
 
 -- An example of "any type" which coerces to functions.
-/-- info: mfderiv I I' ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
+/-- info: mfderiv% ⇑g : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (g x) -/
 #guard_msgs in
 variable {g : Equiv M M'} in
 #check mfderiv% g
@@ -182,17 +182,15 @@ section interaction
 
 -- Note: these tests might be incomplete; extend as needed!
 
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, E)) fun m ↦ TotalSpace.mk' E m (X m) : M → Prop -/
+/-- info: MDiffAt (T% X) : M → Prop -/
 #guard_msgs in
 #check MDiffAt (T% X)
 
-/-- info: MDifferentiableAt I (I.prod 𝓘(𝕜, F)) fun x ↦ TotalSpace.mk' F x (σ x) : M → Prop -/
+/-- info: MDiffAt (T% σ) : M → Prop -/
 #guard_msgs in
 #check MDiffAt (T% σ)
 
-/--
-info: MDifferentiableAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) fun x ↦ TotalSpace.mk' E' x (σ' x) : E → Prop
--/
+/-- info: MDiffAt (T% σ') : E → Prop -/
 #guard_msgs in
 #check MDiffAt (T% σ')
 
@@ -589,12 +587,12 @@ variable [h: Fact ((0 : ℝ) < (2 : ℝ))] {g : Set.Icc (0 : ℝ) (2 : ℝ) → 
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- info: MDifferentiableAt 𝓘(ℝ, E'') (𝓡∂ 1) h : E'' → Prop -/
+/-- info: MDiffAt h : E'' → Prop -/
 #guard_msgs in
 #check MDiffAt h
 
 variable (h : x ≤ y) in
-/-- info: MDifferentiableAt (𝓡∂ 1) 𝓘(ℝ, ℝ) k ⟨x, ⋯⟩ : Prop -/
+/-- info: MDiffAt k ⟨x, ⋯⟩ : Prop -/
 #guard_msgs in
 #check MDiffAt k ⟨x, by simp; linarith⟩
 
@@ -696,7 +694,7 @@ variable {n m n' m' : ℕ} [NeZero n] [NeZero m] [NeZero n'] [NeZero m']
 #guard_msgs in
 #check MDiff f
 
-/-- info: MDifferentiableAt (𝓡 n') (𝓡 m') g : EuclideanSpace ℝ (Fin n') → Prop -/
+/-- info: MDiffAt g : EuclideanSpace ℝ (Fin n') → Prop -/
 #guard_msgs in
 #check MDiffAt g
 
@@ -711,11 +709,11 @@ variable {f' : EuclideanHalfSpace 2 → ℝ} {x : EuclideanHalfSpace 2}
 #guard_msgs in
 #check CMDiff 2 f'
 
-/-- info: MDifferentiableAt (𝓡∂ 2) 𝓘(ℝ, ℝ) f' x : Prop -/
+/-- info: MDiffAt f' x : Prop -/
 #guard_msgs in
 #check MDiffAt f' x
 
-/-- info: MDifferentiableAt (𝓡∂ n) (𝓡∂ m) g' y : Prop -/
+/-- info: MDiffAt g' y : Prop -/
 #guard_msgs in
 #check MDiffAt g' y
 
@@ -770,11 +768,11 @@ variable {g : ℍ → M} in
 #guard_msgs in
 #check CMDiff 2 g
 
-/-- info: MDifferentiableAt 𝓘(ℂ, E'') 𝓘(ℂ, ℂ) h : E'' → Prop -/
+/-- info: MDiffAt h : E'' → Prop -/
 #guard_msgs in
 #check MDiffAt h
 
-/-- info: MDifferentiableAt 𝓘(ℂ, ℂ) 𝓘(ℂ, ℂ) k y : Prop -/
+/-- info: MDiffAt k y : Prop -/
 #guard_msgs in
 #check MDiffAt k y
 
@@ -822,11 +820,11 @@ variable {EM' : Type*} [NormedAddCommGroup EM']
 
 variable {f : M → M'} {s : Set M} {m : M}
 
-/-- info: mfderiv I I' f : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (f x) -/
+/-- info: mfderiv% f : (x : M) → TangentSpace I x →L[𝕜] TangentSpace I' (f x) -/
 #guard_msgs in
 #check mfderiv% f
 
-/-- info: mfderiv I I' f m : TangentSpace I m →L[𝕜] TangentSpace I' (f m) -/
+/-- info: mfderiv% f m : TangentSpace I m →L[𝕜] TangentSpace I' (f m) -/
 #guard_msgs in
 #check mfderiv% f m
 
@@ -840,15 +838,11 @@ variable {f : M → M'} {s : Set M} {m : M}
 
 variable {f : E → EM'} {s : Set E} {m : E}
 
-/--
-info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f x)
--/
+/-- info: mfderiv% f : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f x) -/
 #guard_msgs in
 #check mfderiv% f
 
-/--
-info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f m : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m)
--/
+/-- info: mfderiv% f m : TangentSpace 𝓘(𝕜, E) m →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f m) -/
 #guard_msgs in
 #check mfderiv% f m
 
@@ -867,32 +861,26 @@ info: mfderivWithin 𝓘(𝕜, E) 𝓘(𝕜, EM') f s m : TangentSpace 𝓘(𝕜
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
 
-/--
-info: mfderiv I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m))
-  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))
--/
+/-- info: mfderiv% (T% X) x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) ⟨x, X x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% X) x
 
-/--
-info: mfderiv I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x))
-  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))
--/
+/-- info: mfderiv% (T% σ) x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, σ x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% σ) x
 
 variable {t : Set E} {p : E}
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) t
-  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩) t
+  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⟨p, σ' p⟩
 -/
 #guard_msgs in
 #check mfderiv[t] (T% σ') p
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x))
-  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' x (σ' x))
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩)
+  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⟨x, σ' x⟩
 -/
 #guard_msgs in
 #check mfderiv[t] (T% σ')
@@ -910,9 +898,9 @@ has type
 of sort `Type u_4` but is expected to have type
   E
 of sort `Type u_2` in the application
-  mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f m'
+  mfderiv% f m'
 ---
-info: mfderiv 𝓘(𝕜, E) 𝓘(𝕜, EM') f sorry : TangentSpace 𝓘(𝕜, E) sorry →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f sorry)
+info: mfderiv% f sorry : TangentSpace 𝓘(𝕜, E) sorry →L[𝕜] TangentSpace 𝓘(𝕜, EM') (f sorry)
 -/
 #guard_msgs in
 #check mfderiv% f m'
@@ -1000,38 +988,32 @@ variable {f : E → EM'} {s : Set E} {m : E}
 variable {σ : Π x : M, V x} {σ' : (x : E) → Trivial E E' x} {s : E → E'}
 variable (X : (m : M) → TangentSpace I m) [IsManifold I 1 M] {x : M}
 
-/--
-info: mfderiv I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m))
-  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))
--/
+/-- info: mfderiv% (T% X) x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) ⟨x, X x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% X) x
 
 variable {dXm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, E)) (TotalSpace.mk' E x (X x))}
 
-/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) x dXm : Prop -/
+/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ ⟨m, X m⟩) x dXm : Prop -/
 #guard_msgs in
 #check HasMFDerivAt% (T% X) x dXm
 
-/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ TotalSpace.mk' E m (X m)) t x dXm : Prop -/
+/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, E)) (fun m ↦ ⟨m, X m⟩) t x dXm : Prop -/
 #guard_msgs in
 variable {t : Set M} in
 #check HasMFDerivAt[t] (T% X) x dXm
 
-/--
-info: mfderiv I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x))
-  x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))
--/
+/-- info: mfderiv% (T% σ) x : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) ⟨x, σ x⟩ -/
 #guard_msgs in
 #check mfderiv% (T% σ) x
 
 variable {dσm : TangentSpace I x →L[𝕜] TangentSpace (I.prod 𝓘(𝕜, F)) (TotalSpace.mk' F x (σ x))}
 
-/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) x dσm : Prop -/
+/-- info: HasMFDerivAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ ⟨x, σ x⟩) x dσm : Prop -/
 #guard_msgs in
 #check HasMFDerivAt% (T% σ) x dσm
 
-/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ TotalSpace.mk' F x (σ x)) t x dσm : Prop -/
+/-- info: HasMFDerivWithinAt I (I.prod 𝓘(𝕜, F)) (fun x ↦ ⟨x, σ x⟩) t x dσm : Prop -/
 #guard_msgs in
 variable {t : Set M} in
 #check HasMFDerivAt[t] (T% σ) x dσm
@@ -1039,29 +1021,25 @@ variable {t : Set M} in
 variable {t : Set E} {p : E}
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) t
-  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩) t
+  p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⟨p, σ' p⟩
 -/
 #guard_msgs in
 #check mfderiv[t] (T% σ') p
 
 variable {dσ'p : TangentSpace 𝓘(𝕜, E) p →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' p (σ' p))}
 
-/--
-info: HasMFDerivAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) p dσ'p : Prop
--/
+/-- info: HasMFDerivAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩) p dσ'p : Prop -/
 #guard_msgs in
 #check HasMFDerivAt% (T% σ') p dσ'p
 
-/--
-info: HasMFDerivWithinAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x)) t p dσ'p : Prop
--/
+/-- info: HasMFDerivWithinAt 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩) t p dσ'p : Prop -/
 #guard_msgs in
 #check HasMFDerivAt[t] (T% σ') p dσ'p
 
 /--
-info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ TotalSpace.mk' E' x (σ' x))
-  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (TotalSpace.mk' E' x (σ' x))
+info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦ ⟨x, σ' x⟩)
+  t : (x : E) → TangentSpace 𝓘(𝕜, E) x →L[𝕜] TangentSpace (𝓘(𝕜, E).prod 𝓘(𝕜, E')) ⟨x, σ' x⟩
 -/
 #guard_msgs in
 #check mfderiv[t] (T% σ')
@@ -1069,3 +1047,48 @@ info: mfderivWithin 𝓘(𝕜, E) (𝓘(𝕜, E).prod 𝓘(𝕜, E')) (fun x ↦
 -- TODO: skipped the test about error messages (analogous to mfderiv(Within))
 
 end HasMFDeriv
+
+section delaborators
+open Bundle
+open scoped Bundle Manifold ContDiff
+
+variable
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M]
+  [ChartedSpace H M] [IsManifold I ∞ M]
+  (f : M → M) (x : M) (s : Set M)
+  (v : (x : M) → TangentSpace I x)
+
+/-- info: MDiffAt f x : Prop -/
+#guard_msgs in
+#check MDiffAt f x
+
+/-- info: MDiffAt[s] f x : Prop -/
+#guard_msgs in
+#check MDiffAt[s] f x
+
+/-- info: MDiffAt (T% v) x : Prop -/
+#guard_msgs in
+#check MDiffAt (T% v) x
+
+/-- info: MDiffAt[s] (T% v) x : Prop -/
+#guard_msgs in
+#check MDiffAt[s] (T% v) x
+
+/-- info: mfderiv% f x : TangentSpace I x →L[ℝ] TangentSpace I (f x) -/
+#guard_msgs in
+#check mfderiv% f x
+
+/-- info: mfderiv% (T% v) x : TangentSpace I x →L[ℝ] TangentSpace (I.prod 𝓘(ℝ, E)) ⟨x, v x⟩ -/
+#guard_msgs in
+#check mfderiv% (T% v) x
+
+/-- info: ⟨x, v x⟩ : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check TotalSpace.mk' E x (v x)
+
+/-- info: ⟨x, v x⟩ : TotalSpace E (TangentSpace I) -/
+#guard_msgs in
+#check TotalSpace.mk (F := E) x (v x)
+
+end delaborators
