@@ -649,15 +649,6 @@ section Complete
 
 open Filter WithZero PowerSeries
 
--- TODO: move, rename
-variable (K) in
-lemma valuation_surjective' :
-    Function.Surjective (Valued.v (R := RatFunc K)) := by
-  intro n
-  by_cases hn0 : n = 0
-  · use 0; simp [hn0]
-  · use (RatFunc.X ^ (-WithZero.log n))
-    simp [exp_log hn0]
 
 variable (K) in
 lemma valuation_surjective :
@@ -668,7 +659,6 @@ lemma valuation_surjective :
   · use ((HahnSeries.single (-WithZero.log n)) 1)
     simp [LaurentSeries.valuation_single_zpow, exp_log hn0]
 
---TODO: golf
 /- Sending a Laurent series to its `d`-th coefficient is uniformly continuous (independently of the
 uniformity with which `K` is endowed). -/
 theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
@@ -676,19 +666,15 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
   refine uniformContinuous_iff_eventually.mpr fun S hS ↦ eventually_iff_exists_mem.mpr ?_
   let γ : (ℤᵐ⁰)ˣ := Units.mk0 (exp (-(d + 1))) coe_ne_zero
   use {P | Valued.v (P.snd - P.fst) < ↑γ}
-  refine ⟨?_, fun P hP ↦ ?_⟩
-  · obtain ⟨x, hx⟩ := valuation_surjective K γ
+  refine ⟨?_, fun _ hP ↦ by simpa [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
+    using  mem_uniformity_of_eq hS rfl⟩
+  · obtain ⟨x, hx⟩ := LaurentSeries.valuation_surjective K γ
     have : Valued.v.restrict x ≠ 0 := fun h ↦ NeZero.ne γ.1 <|
       hx ▸ MonoidWithZeroHom.ValueGroup₀.restrict₀_eq_zero_iff.1 h
-    set u := Units.mk0 (Valued.v.restrict x) this with hu_def
     rw [← hx, ← MonoidWithZeroHom.ValueGroup₀.embedding_restrict₀]
     simp_rw [ ← Valued.v.restrict_lt_iff_lt_embedding]
-    convert (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem (by tauto)
-    swap
-    · exact u
-    · simp [Valuation.restrict_def, hu_def]
-  rw [eq_coeff_of_valuation_sub_lt K (le_of_lt hP) (lt_add_one _)]
-  exact mem_uniformity_of_eq hS rfl
+    exact (Valued.hasBasis_uniformity K⸨X⸩ ℤᵐ⁰).mem_of_mem
+      (i := Units.mk0 (Valued.v.restrict x) this) (by tauto)
 
 /-- Since extracting coefficients is uniformly continuous, every Cauchy filter in
 `K⸨X⸩` gives rise to a Cauchy filter in `K` for every `d : ℤ`, and such Cauchy filter
@@ -949,7 +935,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
     use {P : RatFunc K | Valued.v P < embedding d.1}
     simp only [Valued.mem_nhds, sub_zero]
     refine ⟨?_, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
-    · obtain ⟨x, hx⟩ := valuation_surjective' K (embedding d.1)
+    · obtain ⟨x, hx⟩ := RatFunc.valuation_surjective K (embedding d.1)
       use Units.mk0 (Valued.v.restrict x) (by
         rw [Valuation.restrict_def, ne_eq, restrict₀_eq_zero_iff]; simp [hx])
       simp [v_def, Valuation.restrict_lt_iff, ← hx]
@@ -1133,7 +1119,7 @@ theorem valuation_compare (f : K⸨X⸩) :
       Valued.valuedCompletion_apply (Valued.continuous_valuation_of_surjective
         (valuedAdicCompletion_surjective _ _))).symm _
   · refine Valued.continuous_valuation_of_surjective (fun x ↦ ?_)
-    obtain ⟨y, rfl⟩ := valuation_surjective' K x
+    obtain ⟨y, rfl⟩ := RatFunc.valuation_surjective K x
     exact ⟨.toVal _ y, rfl⟩
   · intro x
     have h_cont := Valued.continuous_valuation_of_surjective
