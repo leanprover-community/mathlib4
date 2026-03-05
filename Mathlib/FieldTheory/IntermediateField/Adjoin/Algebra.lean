@@ -40,6 +40,11 @@ scoped instance : Algebra (Algebra.adjoin F S) (adjoin F S) :=
 theorem coe_algebraMap (x : Algebra.adjoin F S) :
     (algebraMap (Algebra.adjoin F S) (adjoin F S) x : E) = x := rfl
 
+@[simp]
+theorem algebraMap_eq_gen_self {x : E} :
+    algebraMap (Algebra.adjoin F {x}) F⟮x⟯ ⟨x, Algebra.self_mem_adjoin_singleton F x⟩ =
+    AdjoinSimple.gen F x := rfl
+
 scoped instance (X) [SMul X F] [SMul X E] [IsScalarTower X F E] :
     IsScalarTower X (Algebra.adjoin F S) (adjoin F S) :=
   Subalgebra.inclusion.isScalarTower_left (algebra_adjoin_le_adjoin F S) _

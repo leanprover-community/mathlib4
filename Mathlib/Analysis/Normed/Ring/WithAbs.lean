@@ -322,15 +322,11 @@ end WithAbs
 namespace AbsoluteValue
 
 variable {K L S : Type*} [CommRing K] [IsSimpleRing K] [CommRing L] [Algebra K L] [PartialOrder S]
-  [Nontrivial L] [Semiring S] (w : AbsoluteValue L S) (v : AbsoluteValue K S)
+  [Nontrivial L] [Semiring S]
 
 /-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
 restriction of `w` to `K`. -/
-class LiesOver : Prop where
-  comp_eq' : w.comp (algebraMap K L).injective = v
-
-variable [w.LiesOver v]
-
-theorem LiesOver.comp_eq : w.comp (algebraMap K L).injective = v := LiesOver.comp_eq'
+class LiesOver (w : AbsoluteValue L S) (v : AbsoluteValue K S) : Prop where
+  comp_eq (w) (v) : w.comp (algebraMap K L).injective = v
 
 end AbsoluteValue
