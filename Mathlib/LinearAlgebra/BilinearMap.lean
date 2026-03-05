@@ -625,8 +625,4 @@ def IsBilinearMap.toLinearMap {f : E → F → G} (hf : IsBilinearMap R f) :
     E →ₗ[R] F →ₗ[R] G :=
   LinearMap.mk₂ _ f hf.add_left hf.smul_left hf.add_right hf.smul_right
 
-/-- Evaluation of linear maps is bilinear. -/
-lemma isBilinearMap_eval : IsBilinearMap R (fun (e : E) (φ : E →ₗ[R] F) ↦ φ e) := by
-  constructor <;> simp
-
 end IsBilinearMap
