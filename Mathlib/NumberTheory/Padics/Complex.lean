@@ -262,4 +262,3 @@ notation "𝓞_ℂ_[" p "]" => PadicComplexInt p
 /-- `𝓞_ℂ_[p]` is the ring of integers of `ℂ_[p]`. -/
 theorem PadicComplexInt.integers : Valuation.Integers (PadicComplex.valued p).v 𝓞_ℂ_[p] :=
   Valuation.integer.integers _
-#min_imports
