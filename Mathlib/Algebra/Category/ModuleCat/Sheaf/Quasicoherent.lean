@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
-public import Mathlib.CategoryTheory.FiberedCategory.HomLift
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
@@ -320,7 +318,6 @@ variable [∀ X, (J.over X).HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat
   [∀ X Y, ((J.over X).over Y).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 #adaptation_note /-- After nightly-2026-02-23 we need this to avoid timeouts. -/
-set_option backward.whnf.reducibleClassField false in
 /-- Given an cover `X` and a quasicoherent data for `M` restricted onto each `Mᵢ`, we may glue them
 into a quasicoherent data of `M` itself. -/
 noncomputable def QuasicoherentData.bind {R : Sheaf J RingCat.{u}}

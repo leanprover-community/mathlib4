@@ -73,7 +73,6 @@ theorem isPreprimitive_stabilizer_subgroup [IsPreprimitive (stabilizer M s) s]
       map_smul' _ _ := rfl }
   IsPreprimitive.of_surjective (f := f) Function.surjective_id
 
-set_option backward.isDefEq.respectTransparency false in
 theorem IsPretransitive.of_partition
     (hs : ∀ a ∈ s, ∀ b ∈ s, ∃ g : M, g • a = b)
     (hs' : ∀ a ∈ sᶜ, ∀ b ∈ sᶜ, ∃ g : M, g • a = b)
@@ -342,7 +341,6 @@ open MulAction Equiv
 
 variable [Finite α]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     {s : Set α} (h0 : s.Nonempty) (hα : s.ncard < sᶜ.ncard) :
     IsCoatom (stabilizer (Perm α) s) := by
@@ -403,7 +401,6 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   apply MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl hG.le <;>
     grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `MulAction.stabilizer (Perm α) s` is a maximal subgroup of `Perm α`,
 provided `s` and `sᶜ` are nonempty, and `Nat.card α ≠ 2 * Nat.card s`.
 

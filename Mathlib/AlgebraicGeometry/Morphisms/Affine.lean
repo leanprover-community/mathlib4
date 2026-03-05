@@ -86,6 +86,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
 lemma isRetrocompact_basicOpen (s : Γ(X, ⊤)) : IsRetrocompact (X := X) (X.basicOpen s) :=
   IsRetrocompact_iff_isSpectralMap_subtypeVal.mpr (X.basicOpen s).ι.isSpectralMap
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Superseded by `isAffine_of_isAffineOpen_basicOpen`. -/
 private lemma isAffine_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
@@ -105,6 +106,7 @@ private lemma isAffine_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
   · rw [← Opens.coe_inf, ← X.basicOpen_res _ (homOfLE le_top).op]
     exact (V.2.basicOpen _).isCompact
 
+set_option backward.isDefEq.respectTransparency false in
 @[stacks 01QF]
 lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
@@ -130,6 +132,7 @@ lemma isAffine_of_isAffineOpen_basicOpen (s : Set Γ(X, ⊤))
     convert isIso_ΓSpec_adjunction_unit_app_basicOpen i.1 using 0
     exact congr(IsIso ((ΓSpec.adjunction.unit.app X).app $(by simp)))
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 If `s` is a spanning set of `Γ(X, U)`, such that each `X.basicOpen i` is affine, then `U` is also
 affine.
@@ -182,6 +185,7 @@ instance (priority := 100) isAffineHom_of_isAffine [IsAffine X] [IsAffine Y] : I
 lemma isAffine_of_isAffineHom [IsAffineHom f] [IsAffine Y] : IsAffine X :=
   (HasAffineProperty.iff_of_isAffine (P := @IsAffineHom) (f := f)).mp inferInstance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isAffineHom_of_forall_exists_isAffineOpen
     (H : ∀ x : Y, ∃ U : Y.Opens, x ∈ U ∧ IsAffineOpen U ∧ IsAffineOpen (f ⁻¹ᵁ U)) :
     IsAffineHom f := by
@@ -200,6 +204,7 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [IsAffineHom g] [IsAffine 
   letI : IsAffineHom (pullback.fst f g) := MorphismProperty.pullback_fst _ _ ‹_›
   isAffine_of_isAffineHom (pullback.fst f g)
 
+set_option backward.isDefEq.respectTransparency false in
 instance {U V X : Scheme.{u}} (f : U ⟶ X) (g : V ⟶ X) [IsAffineHom f] [IsAffineHom g] :
     IsAffineHom (coprod.desc f g) := by
   refine ⟨fun W hW ↦ ?_⟩
@@ -263,6 +268,7 @@ lemma IsAffineOpen.isCompact_pullback_inf {X Y Z : Scheme.{u}} {f : X ⟶ Z} {g 
   convert isCompact_range p.continuous
   simp [p, Scheme.Pullback.range_map]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isIso_morphismRestrict_iff_isIso_app [IsAffineHom f] {U : Y.Opens} (hU : IsAffineOpen U) :
     IsIso (f ∣_ U) ↔ IsIso (f.app U) := by
   have : IsAffine U := hU

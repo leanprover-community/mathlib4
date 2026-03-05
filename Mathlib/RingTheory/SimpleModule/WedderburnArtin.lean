@@ -46,7 +46,6 @@ public import Mathlib.RingTheory.SimpleRing.Matrix
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A simple ring is semisimple iff it is Artinian, iff it has a minimal left ideal. -/
 theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
     [IsSemisimpleRing R, IsArtinianRing R, ∃ I : Ideal R, IsAtom I] := by
@@ -83,7 +82,6 @@ instance (priority := low) : IsSemisimpleRing R :=
 theorem isIsotypic (M) [AddCommGroup M] [Module R M] : IsIsotypic R M :=
   (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).2.1.of_self M
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**: an Artinian simple ring is isomorphic to a matrix
 ring over the opposite of the endomorphism ring of its simple module. -/
 theorem exists_ringEquiv_matrix_end_mulOpposite :
@@ -93,7 +91,6 @@ theorem exists_ringEquiv_matrix_end_mulOpposite :
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
   exact .trans (.moduleEndSelf R) <| .trans e.conjRingEquiv (endVecRingEquivMatrixEnd ..)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**: an Artinian simple ring is isomorphic to a matrix
 ring over a division ring. -/
 theorem exists_ringEquiv_matrix_divisionRing :
@@ -102,7 +99,6 @@ theorem exists_ringEquiv_matrix_divisionRing :
   have ⟨n, hn, I, _, ⟨e⟩⟩ := exists_ringEquiv_matrix_end_mulOpposite R
   classical exact ⟨n, hn, _, _, ⟨e⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**, algebra form: an Artinian simple algebra is isomorphic
 to a matrix algebra over the opposite of the endomorphism algebra of its simple module. -/
 theorem exists_algEquiv_matrix_end_mulOpposite :
@@ -112,7 +108,6 @@ theorem exists_algEquiv_matrix_end_mulOpposite :
   refine ⟨n, hn, S, hS, ⟨.trans (.opOp R₀ R) <| .trans (.op ?_) (.symm .mopMatrix)⟩⟩
   exact .trans (.moduleEndSelf R₀) <| .trans (e.conjAlgEquiv R₀) (endVecAlgEquivMatrixEnd ..)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**, algebra form: an Artinian simple algebra is isomorphic
 to a matrix algebra over a division algebra. -/
 theorem exists_algEquiv_matrix_divisionRing :
@@ -142,7 +137,6 @@ universe v
 variable (R) (M : Type v) [AddCommGroup M] [Module R₀ M] [Module R M] [IsScalarTower R₀ R M]
   [IsSemisimpleModule R M] [Module.Finite R M]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_end_algEquiv_pi_matrix_end :
     ∃ (n : ℕ) (S : Fin n → Submodule R M) (d : Fin n → ℕ),
       (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
@@ -153,7 +147,6 @@ theorem exists_end_algEquiv_pi_matrix_end :
     (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
     (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem exists_end_ringEquiv_pi_matrix_end :
     ∃ (n : ℕ) (S : Fin n → Submodule R M) (d : Fin n → ℕ),
       (∀ i, IsSimpleModule R (S i)) ∧ (∀ i, NeZero (d i)) ∧
@@ -164,7 +157,6 @@ theorem exists_end_ringEquiv_pi_matrix_end :
 @[deprecated (since := "2025-11-16")]
 alias exists_end_ringEquiv := exists_end_ringEquiv_pi_matrix_end
 
-set_option backward.isDefEq.respectTransparency false in
 -- TODO: can also require D be in `Type u`, since every simple module is the quotient by an ideal.
 theorem exists_end_algEquiv_pi_matrix_divisionRing :
     ∃ (n : ℕ) (D : Fin n → Type v) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (D i))
@@ -190,7 +182,6 @@ namespace IsSemisimpleRing
 
 variable (R) [IsSemisimpleRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**, algebra form: a semisimple algebra is isomorphic to a
 product of matrix algebras over the opposite of the endomorphism algebras of its simple modules. -/
 theorem exists_algEquiv_pi_matrix_end_mulOpposite :
@@ -201,7 +192,6 @@ theorem exists_algEquiv_pi_matrix_end_mulOpposite :
   ⟨n, S, d, hS, hd, ⟨.trans (.opOp R₀ R) <| .trans (.op <| .trans (.moduleEndSelf R₀) e) <|
     .trans (.piMulOpposite _ _) (.piCongrRight fun _ ↦ .symm .mopMatrix)⟩⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**, algebra form: a semisimple algebra is isomorphic to a
 product of matrix algebras over division algebras. -/
 theorem exists_algEquiv_pi_matrix_divisionRing :
@@ -224,7 +214,6 @@ theorem exists_algEquiv_pi_matrix_divisionRing_finite [Module.Finite R₀ R] :
     .proj (φ := fun i ↦ Matrix (Fin (d i)) (Fin (d i)) _) i
   exact .of_surjective l fun x ↦ ⟨fun j _ _ ↦ Function.update (fun _ ↦ 0) i x j, by simp [l]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The **Wedderburn–Artin Theorem**: a semisimple ring is isomorphic to a
 product of matrix rings over the opposite of the endomorphism rings of its simple modules. -/
 theorem exists_ringEquiv_pi_matrix_end_mulOpposite :
