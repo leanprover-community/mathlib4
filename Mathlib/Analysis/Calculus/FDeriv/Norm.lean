@@ -64,8 +64,7 @@ theorem ContDiffAt.contDiffAt_norm_smul (ht : t ≠ 0) (h : ContDiffAt ℝ n (�
   conv at h2 => enter [4]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
   convert h2.comp (t • x) h1 using 1
   ext y
-  simp only [Function.comp_apply]
-  rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
+  simp [norm_smul, field]
 
 theorem contDiffAt_norm_smul_iff (ht : t ≠ 0) :
     ContDiffAt ℝ n (‖·‖) x ↔ ContDiffAt ℝ n (‖·‖) (t • x) where
@@ -77,8 +76,7 @@ theorem contDiffAt_norm_smul_iff (ht : t ≠ 0) :
 theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t • x)) :
     ContDiffAt ℝ n (‖·‖) x := by
   rcases eq_or_ne n 0 with rfl | hn
-  · apply contDiffAt_zero.2
-    exact ⟨univ, univ_mem, continuous_norm.continuousOn⟩
+  · exact contDiffAt_zero.2 ⟨univ, univ_mem, continuous_norm.continuousOn⟩
   obtain rfl | ht := eq_or_ne t 0
   · suffices Subsingleton E by
       rw [eq_const_of_subsingleton (‖·‖) 0]
@@ -98,9 +96,7 @@ theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
   convert h2.comp (t • x) h1 with y
   · rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
   ext y
-  simp only [coe_smul', Pi.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply,
-    comp_id]
-  rw [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc, self_mul_sign]
+  simp [eq_inv_mul_iff_mul_eq₀ ht, field]
 
 theorem HasStrictFDerivAt.hasStrictDerivAt_norm_smul_neg
     (ht : t < 0) (h : HasStrictFDerivAt (‖·‖) f x) :
@@ -120,12 +116,10 @@ theorem HasFDerivAt.hasFDerivAt_norm_smul
   have h2 : HasFDerivAt (fun y ↦ |t| * ‖y‖) (|t| • f) x := h.const_smul |t|
   conv at h2 => enter [3]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
   convert h2.comp (t • x) h1 using 2 with y
-  · simp only [Function.comp_apply]
-    rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
+  · rw [Function.comp_apply, norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht,
+      abs_one, one_mul]
   · ext y
-    simp only [coe_smul', Pi.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply,
-      comp_id]
-    rw [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc, self_mul_sign]
+    simp [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc]
 
 theorem HasFDerivAt.hasFDerivAt_norm_smul_neg
     (ht : t < 0) (h : HasFDerivAt (‖·‖) f x) :
@@ -174,8 +168,7 @@ theorem fderiv_norm_smul :
   · simp_rw [(hasFDerivAt_of_subsingleton _ _).fderiv, smul_zero]
   · by_cases hd : DifferentiableAt ℝ (‖·‖) x
     · obtain rfl | ht := eq_or_ne t 0
-      · simp only [zero_smul, _root_.sign_zero, SignType.coe_zero]
-        exact fderiv_zero_of_not_differentiableAt <| not_differentiableAt_norm_zero E
+      · simpa using fderiv_zero_of_not_differentiableAt <| not_differentiableAt_norm_zero E
       · rw [(hd.hasFDerivAt.hasFDerivAt_norm_smul ht).fderiv]
     · rw [fderiv_zero_of_not_differentiableAt hd, fderiv_zero_of_not_differentiableAt]
       · simp
