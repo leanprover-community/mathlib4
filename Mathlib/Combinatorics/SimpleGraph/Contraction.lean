@@ -5,8 +5,8 @@ Authors: Vincent Beffara
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 
 /-!
 # Simple graph contractions
