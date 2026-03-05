@@ -169,7 +169,7 @@ theorem hasBasis_nhds_zero :
       fun SV => { f | MapsTo f SV.1 SV.2 } :=
   hasBasis_nhds_zero_of_basis (Filter.basis_sets _)
 
-/-- The inclusion of *alternating* continuous multi-linear maps into continuous multi-linear maps
+/-- The inclusion of *alternating* continuous multilinear maps into continuous multilinear maps
 as a continuous linear map. -/
 @[simps! -fullyApplied]
 def toContinuousMultilinearMapCLM
