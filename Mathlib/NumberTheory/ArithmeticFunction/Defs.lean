@@ -167,48 +167,42 @@ section AddMonoid
 
 variable [AddMonoid R]
 
-instance add : Add (ArithmeticFunction R) :=
-  ⟨fun f g => ⟨fun n => f n + g n, by simp⟩⟩
+instance add : Add (ArithmeticFunction R) where
+  add f g := ⟨f + g, by simp⟩
 
 @[simp]
 theorem add_apply {f g : ArithmeticFunction R} {n : ℕ} : (f + g) n = f n + g n :=
   rfl
 
-instance instAddMonoid : AddMonoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.zero R,
-    ArithmeticFunction.add with
-    add_assoc := fun _ _ _ => ext fun _ => add_assoc _ _ _
-    zero_add := fun _ => ext fun _ => zero_add _
-    add_zero := fun _ => ext fun _ => add_zero _
-    nsmul := nsmulRec }
+instance instAddMonoid : AddMonoid (ArithmeticFunction R) where
+  add_assoc _ _ _ := ext fun _ ↦ add_assoc _ _ _
+  zero_add _ := ext fun _ ↦ zero_add _
+  add_zero _ := ext fun _ ↦ add_zero _
+  nsmul := nsmulRec
 
 end AddMonoid
 
-instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid,
-    ArithmeticFunction.one with
-    natCast := fun n => ⟨fun x => if x = 1 then (n : R) else 0, by simp⟩
-    natCast_zero := by ext; simp
-    natCast_succ := fun n => by ext x; by_cases h : x = 1 <;> simp [h] }
+instance instAddMonoidWithOne [AddMonoidWithOne R] : AddMonoidWithOne (ArithmeticFunction R) where
+  natCast n := ⟨fun x ↦ if x = 1 then (n : R) else 0, by simp⟩
+  natCast_zero := by ext; simp
+  natCast_succ n := by ext x; by_cases h : x = 1 <;> simp [h]
 
-instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid with add_comm := fun _ _ => ext fun _ => add_comm _ _ }
+instance instAddCommMonoid [AddCommMonoid R] : AddCommMonoid (ArithmeticFunction R) where
+  add_comm _ _ := ext fun _ ↦ add_comm _ _
 
 instance [NegZeroClass R] : Neg (ArithmeticFunction R) where
-  neg f := ⟨fun n => -f n, by simp⟩
+  neg f := ⟨-f, by simp⟩
 
 @[simp]
 theorem neg_apply [NegZeroClass R] {f : ArithmeticFunction R} {n : ℕ} : (-f) n = -f n := by
   rfl
 
-instance [AddGroup R] : AddGroup (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoid with
-    neg_add_cancel := fun _ => ext fun _ => neg_add_cancel _
-    zsmul := zsmulRec }
+instance [AddGroup R] : AddGroup (ArithmeticFunction R) where
+  neg_add_cancel _ := ext fun _ ↦ neg_add_cancel _
+  zsmul := zsmulRec
 
-instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) :=
-  { show AddGroup (ArithmeticFunction R) by infer_instance with
-    add_comm := fun _ _ ↦ add_comm _ _ }
+instance [AddCommGroup R] : AddCommGroup (ArithmeticFunction R) where
+  add_comm := fun _ _ ↦ add_comm _ _
 
 section SMul
 
@@ -216,8 +210,8 @@ variable {M : Type*} [Zero R] [AddCommMonoid M] [SMul R M]
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
-instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) :=
-  ⟨fun f g => ⟨fun n => ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩⟩
+instance : SMul (ArithmeticFunction R) (ArithmeticFunction M) where
+  smul f g := ⟨fun n ↦ ∑ x ∈ divisorsAntidiagonal n, f x.fst • g x.snd, by simp⟩
 
 @[simp]
 theorem smul_apply {f : ArithmeticFunction R} {g : ArithmeticFunction M} {n : ℕ} :
@@ -228,8 +222,8 @@ end SMul
 
 /-- The Dirichlet convolution of two arithmetic functions `f` and `g` is another arithmetic function
   such that `(f * g) n` is the sum of `f x * g y` over all `(x,y)` such that `x * y = n`. -/
-instance [Semiring R] : Mul (ArithmeticFunction R) :=
-  ⟨(· • ·)⟩
+instance [Semiring R] : Mul (ArithmeticFunction R) where
+  mul f g := f • g
 
 @[simp]
 theorem mul_apply [Semiring R] {f g : ArithmeticFunction R} {n : ℕ} :
@@ -281,7 +275,7 @@ variable [Semiring R]
 
 instance instMonoid : Monoid (ArithmeticFunction R) where
   one_mul := one_smul'
-  mul_one := fun f => by
+  mul_one f := by
     ext x
     rw [mul_apply]
     by_cases x0 : x = 0
@@ -296,37 +290,24 @@ instance instMonoid : Monoid (ArithmeticFunction R) where
     simp [y2ne]
   mul_assoc := mul_smul'
 
-instance instSemiring : Semiring (ArithmeticFunction R) :=
-  { ArithmeticFunction.instAddMonoidWithOne,
-    ArithmeticFunction.instMonoid,
-    ArithmeticFunction.instAddCommMonoid with
-    zero_mul := fun f => by
-      ext
-      simp
-    mul_zero := fun f => by
-      ext
-      simp
-    left_distrib := fun a b c => by
-      ext
-      simp [← sum_add_distrib, mul_add]
-    right_distrib := fun a b c => by
-      ext
-      simp [← sum_add_distrib, add_mul] }
+instance instSemiring : Semiring (ArithmeticFunction R) where
+  zero_mul f := by ext; simp
+  mul_zero f := by ext; simp
+  left_distrib a b c := by ext; simp [← sum_add_distrib, mul_add]
+  right_distrib a b c := by ext; simp [← sum_add_distrib, add_mul]
 
 end Semiring
 
-instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) :=
-  { ArithmeticFunction.instSemiring with
-    mul_comm := fun f g => by
-      ext
-      rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
-      simp [mul_comm] }
+instance [CommSemiring R] : CommSemiring (ArithmeticFunction R) where
+  mul_comm f g := by
+    ext
+    rw [mul_apply, ← map_swap_divisorsAntidiagonal, sum_map]
+    simp [mul_comm]
 
-instance [CommRing R] : CommRing (ArithmeticFunction R) :=
-  { ArithmeticFunction.instSemiring with
-    neg_add_cancel := neg_add_cancel
-    mul_comm := mul_comm
-    zsmul := (· • ·) }
+instance [CommRing R] : CommRing (ArithmeticFunction R) where
+  neg_add_cancel := neg_add_cancel
+  mul_comm := mul_comm
+  zsmul n f := n • f
 
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
