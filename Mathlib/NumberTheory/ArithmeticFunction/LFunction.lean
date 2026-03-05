@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
+public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.RingTheory.PowerSeries.Substitution
 
 /-!
@@ -41,12 +42,11 @@ For context, here is a diagram of the possible routes from polynomials to L-func
           v                 T=q⁻ˢ     V               s ∈ ℂ       V
 [multivariate power series] ----> [Dirichlet series] ----> [L-function in s] (the Euler product)
 
-## TODO
-* If each `f i` is multiplicative, then `ArithmeticFunction.eulerProduct f` is multiplicative.
 -/
 
 @[expose] public section
 
+-- PRed
 namespace ArithmeticFunction
 
 instance {R : Type*} [Semiring R] : Module R (ArithmeticFunction R) where
@@ -78,7 +78,7 @@ namespace ArithmeticFunction
 
 section PowerSeries
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommSemiring R]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The arithmetic function corresponding to the Dirichlet series `f(q⁻ˢ)`.
@@ -185,6 +185,8 @@ theorem _root_.PowerSeries.constantCoeff_subst_X_pow
   · simp
   · intro n hn
     simp [hk, hn]
+
+variable {R : Type*} [CommRing R]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem ofPowerSeries_pow (q k : ℕ) (hk : k ≠ 0) (f : PowerSeries R) :
@@ -365,6 +367,16 @@ theorem tendsTo_eulerProduct_of_tendsTo (f : ι → ArithmeticFunction R)
       rw [h1, h2]
   intro k hk
   rw [key (u \ t) hu k hk, key (v \ t) hv k hk]
+
+theorem tendsTo_eulerProduct_ofPowerSeries
+    (f : ι → PowerSeries R) (hf : ∀ i, (f i).constantCoeff = 1) (q : ι → ℕ) [Northcott q] (n : ℕ) :
+    Tendsto (fun s : Finset ι ↦ (∏ i ∈ s, ArithmeticFunction.ofPowerSeries (q i) (f i)) n) atTop
+      (pure (eulerProduct (fun i ↦ ArithmeticFunction.ofPowerSeries (q i) (f i)) n)) := by
+  revert n
+  apply tendsTo_eulerProduct_of_tendsTo
+  intro n
+
+  sorry
 
 theorem IsMultiplicative.finsetProd (f : ι → ArithmeticFunction R) (s : Finset ι)
     (hf : ∀ i ∈ s, IsMultiplicative (f i)) : IsMultiplicative (∏ i ∈ s, f i) := by
