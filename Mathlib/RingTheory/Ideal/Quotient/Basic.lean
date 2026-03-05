@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
-import Mathlib.GroupTheory.QuotientGroup.Finite
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.GroupTheory.QuotientGroup.Finite
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Ideal quotients
@@ -24,20 +26,16 @@ See `Algebra.RingQuot` for quotients of semirings.
 
 -/
 
-
-universe u v w
-
-namespace Ideal
+@[expose] public section
 
 open Set
 
-variable {R : Type u} [Ring R] (I J : Ideal R) {a b : R}
-variable {S : Type v}
+variable {ι ι' R S : Type*} [Ring R] (I J : Ideal R) {a b : R}
 
-namespace Quotient
+namespace Ideal.Quotient
 
 @[simp]
-lemma mk_span_range {ι : Type*} (f : ι → R) [(span (range f)).IsTwoSided] (i : ι) :
+lemma mk_span_range (f : ι → R) [(span (range f)).IsTwoSided] (i : ι) :
     mk (span (.range f)) (f i) = 0 := by
   rw [Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span ⟨i, rfl⟩
@@ -50,12 +48,14 @@ theorem zero_eq_one_iff : (0 : R ⧸ I) = 1 ↔ I = ⊤ :=
 theorem zero_ne_one_iff : (0 : R ⧸ I) ≠ 1 ↔ I ≠ ⊤ :=
   not_congr zero_eq_one_iff
 
-protected theorem nontrivial (hI : I ≠ ⊤) : Nontrivial (R ⧸ I) :=
-  ⟨⟨0, 1, zero_ne_one_iff.2 hI⟩⟩
+protected lemma subsingleton_iff : Subsingleton (R ⧸ I) ↔ I = ⊤ :=
+  Submodule.Quotient.subsingleton_iff
 
-theorem subsingleton_iff : Subsingleton (R ⧸ I) ↔ I = ⊤ := by
-  rw [Submodule.Quotient.subsingleton_iff, eq_top_iff, SetLike.le_def]
-  simp_rw [Submodule.mem_top, true_implies]
+protected lemma nontrivial_iff : Nontrivial (R ⧸ I) ↔ I ≠ ⊤ :=
+  Submodule.Quotient.nontrivial_iff
+
+@[deprecated Quotient.nontrivial_iff (since := "2025-11-02")]
+protected theorem nontrivial (hI : I ≠ ⊤) : Nontrivial (R ⧸ I) := Quotient.nontrivial_iff.2 hI
 
 instance : Unique (R ⧸ (⊤ : Ideal R)) :=
   ⟨⟨0⟩, by rintro ⟨x⟩; exact Quotient.eq_zero_iff_mem.mpr Submodule.mem_top⟩
@@ -90,10 +90,12 @@ instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
         (Or.inr ∘ eq_zero_iff_mem.2)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
-  let _ := Quotient.nontrivial hI.1
+  let _ := Quotient.nontrivial_iff.mpr hI.1
   NoZeroDivisors.to_isDomain _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
   refine ⟨fun H => ⟨zero_ne_one_iff.1 ?_, fun {x y} h => ?_⟩, fun h => inferInstance⟩
   · haveI : Nontrivial (R ⧸ I) := ⟨H.2.1⟩
@@ -102,6 +104,7 @@ theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
     haveI := @IsDomain.to_noZeroDivisors (R ⧸ I) _ H
     exact eq_zero_or_eq_zero_of_mul_eq_zero h
 
+set_option backward.isDefEq.respectTransparency false in
 variable {I} in
 theorem exists_inv [hI : I.IsMaximal] :
     ∀ {a : R ⧸ I}, a ≠ 0 → ∃ b : R ⧸ I, a * b = 1 := by
@@ -124,7 +127,7 @@ protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl
-    __ := Quotient.nontrivial hI.out.1 }
+    __ := Quotient.nontrivial_iff.mpr hI.out.1 }
 
 /-- The quotient by a two-sided ideal that is maximal as a left ideal is a division ring.
 This is a `def` rather than `instance`, since users
@@ -174,8 +177,6 @@ end Quotient
 
 section Pi
 
-variable (ι : Type v)
-
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi [I.IsTwoSided] : Module (R ⧸ I) ((ι → R) ⧸ pi fun _ ↦ I) where
   smul c m :=
@@ -192,6 +193,7 @@ instance modulePi [I.IsTwoSided] : Module (R ⧸ I) ((ι → R) ⧸ pi fun _ ↦
   add_smul := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; exact congr_arg _ (add_smul _ _ _)
   zero_smul := by rintro ⟨a⟩; exact congr_arg _ (zero_smul _ _)
 
+variable (ι) in
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
 noncomputable def piQuotEquiv [I.IsTwoSided] : ((ι → R) ⧸ pi fun _ ↦ I) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
   toFun x := Quotient.liftOn' x (fun f i ↦ Ideal.Quotient.mk I (f i)) fun _ _ hab ↦
@@ -206,7 +208,7 @@ noncomputable def piQuotEquiv [I.IsTwoSided] : ((ι → R) ⧸ pi fun _ ↦ I) �
 
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
     contained in `I^m`. -/
-theorem map_pi [I.IsTwoSided] {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ i, x i ∈ I)
+theorem map_pi [I.IsTwoSided] [Finite ι] (x : ι → R) (hi : ∀ i, x i ∈ I)
     (f : (ι → R) →ₗ[R] ι' → R) (i : ι') : f x i ∈ I := by
   classical
     cases nonempty_fintype ι
@@ -221,8 +223,13 @@ open scoped Pointwise in
 lemma univ_eq_iUnion_image_add : (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out +ᵥ (I : Set R) :=
   QuotientAddGroup.univ_eq_iUnion_vadd I.toAddSubgroup
 
-variable {I} in
-lemma _root_.Finite.of_finite_quot_finite_ideal [hI : Finite I] [h : Finite (R ⧸ I)] : Finite R :=
-  @Finite.of_finite_quot_finite_addSubgroup _ _ _ hI h
-
 end Ideal
+
+lemma finite_iff_ideal_quotient (I : Ideal R) : Finite R ↔ Finite I ∧ Finite (R ⧸ I) :=
+  finite_iff_addSubgroup_quotient I.toAddSubgroup
+
+lemma Finite.of_ideal_quotient (I : Ideal R) [Finite I] [Finite (R ⧸ I)] : Finite R := by
+  rw [finite_iff_ideal_quotient]; constructor <;> assumption
+
+@[deprecated (since := "2025-11-11")]
+alias Finite.of_finite_quot_finite_ideal := Finite.of_ideal_quotient

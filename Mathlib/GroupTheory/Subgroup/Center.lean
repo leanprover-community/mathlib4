@@ -3,13 +3,17 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.Submonoid.Center
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
 # Centers of subgroups
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero Multiset
 
@@ -38,8 +42,6 @@ theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
 
 instance center.isMulCommutative : IsMulCommutative (center G) :=
   ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
-
-@[deprecated (since := "2025-04-09")] alias center.isCommutative := Subgroup.center.isMulCommutative
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/

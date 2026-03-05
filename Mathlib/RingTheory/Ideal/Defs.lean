@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Tactic.Abel
 
 /-!
 
@@ -21,6 +23,8 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -141,6 +145,12 @@ theorem mul_sub_mul_mem [I.IsTwoSided]
     (h1 : a - b ∈ I) (h2 : c - d ∈ I) : a * c - b * d ∈ I := by
   rw [show a * c - b * d = (a - b) * c + b * (c - d) by rw [sub_mul, mul_sub]; abel]
   exact I.add_mem (I.mul_mem_right _ h1) (I.mul_mem_left _ h2)
+
+/--
+The subgroup of elements `g` of `G` such that `∀ x, g • x - x ∈ I`.
+-/
+abbrev inertia (G : Type*) [Group G] [MulAction G α] (I : Ideal α) :
+    Subgroup G := AddSubgroup.inertia I.toAddSubgroup G
 
 end Ideal
 

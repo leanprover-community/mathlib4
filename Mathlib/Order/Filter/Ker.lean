@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Kernel of a filter
@@ -14,6 +16,8 @@ to be the intersection of all its sets.
 We also prove that `Filter.principal` and `Filter.ker` form a Galois coinsertion
 and prove other basic theorems about `Filter.ker`.
 -/
+
+@[expose] public section
 
 open Function Set
 

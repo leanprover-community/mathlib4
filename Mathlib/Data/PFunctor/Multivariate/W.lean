@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
 
 /-!
 # The W construction as a multivariate polynomial functor.
@@ -14,7 +16,7 @@ as the least fixpoint of a polynomial functor.
 ## Main definitions
 
 * `W_mk`     - constructor
-* `W_dest    - destructor
+* `W_dest`   - destructor
 * `W_rec`    - recursor: basis for defining functions by structural recursion on `P.W α`
 * `W_rec_eq` - defining equation for `W_rec`
 * `W_ind`    - induction principle for `P.W α`
@@ -42,6 +44,8 @@ its valid paths to values of `α`
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -194,6 +198,7 @@ theorem wMk_eq {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (g' : P.
     (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     (P.wMk a g' fun i => ⟨f i, g i⟩) = ⟨⟨a, f⟩, P.wPathCasesOn g' g⟩ := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a ⟹ α)
     (f : P.last.B a → P.W α) : g <$$> P.wMk a f' f = P.wMk a (g ⊚ f') fun i => g <$$> f i := by
   change _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)

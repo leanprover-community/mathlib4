@@ -3,11 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Intermediate fields
@@ -37,6 +39,8 @@ A `Subalgebra` is closed under all operations except `⁻¹`,
 intermediate field, field extension
 -/
 
+@[expose] public section
+
 
 open Polynomial
 
@@ -60,8 +64,10 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
+instance : PartialOrder (IntermediateField K L) := .ofSetLike (IntermediateField K L) L
+
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
-  change -x ∈S.toSubalgebra; simpa
+  change -x ∈ S.toSubalgebra; simpa
 
 /-- Reinterpret an `IntermediateField` as a `Subfield`. -/
 def toSubfield : Subfield L :=
@@ -215,24 +221,35 @@ protected theorem zsmul_mem {x : L} (hx : x ∈ S) (n : ℤ) : n • x ∈ S :=
 protected theorem intCast_mem (n : ℤ) : (n : L) ∈ S :=
   intCast_mem S n
 
+@[simp, norm_cast]
 protected theorem coe_add (x y : S) : (↑(x + y) : L) = ↑x + ↑y :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_neg (x : S) : (↑(-x) : L) = -↑x :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_mul (x y : S) : (↑(x * y) : L) = ↑x * ↑y :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_inv (x : S) : (↑x⁻¹ : L) = (↑x)⁻¹ :=
   rfl
 
+@[simp, norm_cast]
+protected theorem coe_div (x y : S) : (↑(x / y) : L) = ↑x / ↑y :=
+  rfl
+
+@[simp, norm_cast]
 protected theorem coe_zero : ((0 : S) : L) = 0 :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_one : ((1 : S) : L) = 1 :=
   rfl
 
+@[simp, norm_cast]
 protected theorem coe_pow (x : S) (n : ℕ) : (↑(x ^ n : S) : L) = (x : L) ^ n :=
   SubmonoidClass.coe_pow x n
 
@@ -384,6 +401,7 @@ instance [Semiring X] [MulSemiringAction L X] (F : IntermediateField K L) : MulS
 instance toAlgebra : Algebra S L :=
   inferInstanceAs (Algebra S.toSubalgebra L)
 
+set_option backward.isDefEq.respectTransparency false in
 instance module' {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] : Module R S :=
   inferInstanceAs (Module R S.toSubalgebra)
 
@@ -391,6 +409,7 @@ instance algebra' {R' K L : Type*} [Field K] [Field L] [Algebra K L] (S : Interm
     [CommSemiring R'] [SMul R' K] [Algebra R' L] [IsScalarTower R' K L] : Algebra R' S :=
   inferInstanceAs (Algebra R' S.toSubalgebra)
 
+set_option backward.isDefEq.respectTransparency false in
 instance isScalarTower {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] :
     IsScalarTower R K S :=
   inferInstanceAs (IsScalarTower R K S.toSubalgebra)
@@ -418,11 +437,19 @@ instance isScalarTower_mid' : IsScalarTower K S L :=
 instance {E} [Semiring E] [Algebra L E] : Algebra S E := inferInstanceAs (Algebra S.toSubalgebra E)
 
 section shortcut_instances
+
+set_option backward.isDefEq.respectTransparency false
+
 variable {E} [Field E] [Algebra L E] (T : IntermediateField S E) {S}
+
 instance : Algebra S T := T.algebra
+
 instance : Module S T := Algebra.toModule
+
 instance : SMul S T := Algebra.toSMul
+
 instance [Algebra K E] [IsScalarTower K L E] : IsScalarTower K S T := T.isScalarTower
+
 end shortcut_instances
 
 /-- Given `f : L →ₐ[K] L'`, `S.comap f` is the intermediate field between `K` and `L`
@@ -454,6 +481,18 @@ theorem toSubfield_map (f : L →ₐ[K] L') : (S.map f).toSubfield = S.toSubfiel
 /-- Mapping intermediate fields along the identity does not change them. -/
 theorem map_id : S.map (AlgHom.id K L) = S :=
   SetLike.coe_injective <| Set.image_id _
+
+@[simp]
+lemma mem_map {f : L →ₐ[K] L'} {y : L'} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y :=
+  Set.mem_image f S y
+
+-- Higher priority to apply before `mem_map`.
+@[simp 1100]
+theorem map_mem_map (f : L →ₐ[K] L') {x : L} :
+    f x ∈ map f S ↔ x ∈ S :=
+  calc
+    _ ↔ f x ∈ (map f S : Set L') := Iff.rfl
+    _ ↔ _ := by simp [Function.Injective.mem_set_image (f := f) f.injective]
 
 theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L₁] [Field L₂] [Algebra K L₂]
     [Field L₃] [Algebra K L₃] (E : IntermediateField K L₁) (f : L₁ →ₐ[K] L₂) (g : L₂ →ₐ[K] L₃) :
@@ -619,6 +658,11 @@ def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateF
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
   map_injective F.val
 
+@[simp]
+theorem lift_inj {F : IntermediateField K L} (E E' : IntermediateField K F) :
+    lift E = lift E' ↔ E = E' :=
+  (lift_injective F).eq_iff
+
 theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
   rintro _ ⟨x, _, rfl⟩
   exact x.2
@@ -675,8 +719,14 @@ theorem restrictScalars_injective :
     Function.Injective (restrictScalars K : IntermediateField L' L → IntermediateField K L) :=
   fun U V H => ext fun x => by rw [← mem_restrictScalars K, H, mem_restrictScalars]
 
+@[simp]
+theorem restrictScalars_inj {E E' : IntermediateField L' L} :
+    E.restrictScalars K = E'.restrictScalars K ↔ E = E' :=
+  (restrictScalars_injective K).eq_iff
+
 end RestrictScalars
 
+set_option backward.isDefEq.respectTransparency false in
 /-- This was formerly an instance called `lift2_alg`, but an instance above already provides it. -/
 example {F : IntermediateField K L} {E : IntermediateField F L} : Algebra K E := by infer_instance
 
@@ -773,6 +823,7 @@ namespace IntermediateField
 
 variable {F E E' : IntermediateField K L} (h : F ≤ E) (h' : F ≤ E') {x : L}
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `F ≤ E` are two intermediate fields of `L / K`, then `E` is also an intermediate field of
 `L / F`. It can be viewed as an inverse to `IntermediateField.restrictScalars`. -/
 def extendScalars : IntermediateField F L :=
@@ -781,6 +832,7 @@ def extendScalars : IntermediateField F L :=
 @[simp]
 theorem coe_extendScalars : (extendScalars h : Set L) = (E : Set L) := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_toSubfield : (extendScalars h).toSubfield = E.toSubfield :=
   SetLike.coe_injective rfl
@@ -788,19 +840,23 @@ theorem extendScalars_toSubfield : (extendScalars h).toSubfield = E.toSubfield :
 @[simp]
 theorem mem_extendScalars : x ∈ extendScalars h ↔ x ∈ E := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_restrictScalars : (extendScalars h).restrictScalars K = E := rfl
 
 theorem extendScalars_le_extendScalars_iff : extendScalars h ≤ extendScalars h' ↔ E ≤ E' := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem extendScalars_le_iff (E' : IntermediateField F L) :
     extendScalars h ≤ E' ↔ E ≤ E'.restrictScalars K := Iff.rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem le_extendScalars_iff (E' : IntermediateField F L) :
     E' ≤ extendScalars h ↔ E'.restrictScalars K ≤ E := Iff.rfl
 
 variable (F)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `IntermediateField.extendScalars.orderIso` bundles `IntermediateField.extendScalars`
 into an order isomorphism from
 `{ E : IntermediateField K L // F ≤ E }` to `IntermediateField F L`. Its inverse is

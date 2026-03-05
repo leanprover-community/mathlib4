@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
 # Exact sequences with free modules
@@ -25,6 +27,8 @@ This file proves results about linear independence and span in exact sequences o
 linear algebra, module, free
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Module
 
@@ -118,7 +122,7 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
   rw [← hn, map_finsuppSum] at hnm
-  rw [← sub_add_cancel m m', ← hnm,]
+  rw [← sub_add_cancel m m', ← hnm]
   simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
       (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) := by

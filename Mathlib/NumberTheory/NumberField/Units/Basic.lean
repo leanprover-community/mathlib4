@@ -3,10 +3,12 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.GroupTheory.Torsion
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.GroupTheory.Torsion
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Units of a number field
@@ -30,6 +32,8 @@ field `K` and its torsion subgroup.
 number field, units
 -/
 
+@[expose] public section
+
 open scoped NumberField
 
 noncomputable section
@@ -38,6 +42,7 @@ open NumberField Units
 
 section Rat
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
@@ -225,14 +230,14 @@ section odd
 
 variable {K}
 
+set_option backward.isDefEq.respectTransparency false in
 theorem torsion_eq_one_or_neg_one_of_odd_finrank
     (h : Odd (Module.finrank ℚ K)) (x : torsion K) : (x : (𝓞 K)ˣ) = 1 ∨ (x : (𝓞 K)ˣ) = -1 := by
-  by_cases hc : 2 < orderOf (x : (𝓞 K)ˣ)
+  by_cases! hc : 2 < orderOf (x : (𝓞 K)ˣ)
   · rw [← orderOf_units, ← orderOf_submonoid] at hc
     linarith [IsPrimitiveRoot.nrRealPlaces_eq_zero_of_two_lt hc (IsPrimitiveRoot.orderOf (x.1 : K)),
         NumberField.InfinitePlace.nrRealPlaces_pos_of_odd_finrank h]
-  · push_neg at hc
-    interval_cases hi : orderOf (x : (𝓞 K)ˣ)
+  · interval_cases hi : orderOf (x : (𝓞 K)ˣ)
     · linarith [orderOf_pos_iff.2 ((CommGroup.mem_torsion _ x.1).1 x.2)]
     · exact Or.intro_left _ (orderOf_eq_one_iff.1 hi)
     · rw [← orderOf_units, CharP.orderOf_eq_two_iff 0 (by decide)] at hi

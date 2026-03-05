@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Monomorphisms in `Module R`
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 This file shows that an `R`-linear map is a monomorphism in the category of `R`-modules
 if and only if it is injective, and similarly an epimorphism if and only if it is surjective.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -56,12 +60,14 @@ instance mono_as_hom'_subtype (U : Submodule R X) : Mono (ModuleCat.ofHom U.subt
 instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (ModuleCat.ofHom U.mkQ) :=
   (epi_iff_range_eq_top _).mpr <| Submodule.range_mkQ _
 
+set_option backward.isDefEq.respectTransparency false in
 instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
     preserves f hf := by
       rw [CategoryTheory.epi_iff_surjective, ConcreteCategory.forget_map_eq_coe,
         ← epi_iff_surjective]
       exact hf
 
+set_option backward.isDefEq.respectTransparency false in
 instance forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
     preserves f hf := by
       rw [CategoryTheory.mono_iff_injective, ConcreteCategory.forget_map_eq_coe,

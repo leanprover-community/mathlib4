@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
 
-import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.ArithmeticFunction.Moebius
 
 
 open ArithmeticFunction
+
+-- access notation `ζ`, `μ` and `σ`
+open scoped zeta Moebius sigma
 
 variable {R : Type*} [Field R]
 

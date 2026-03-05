@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Tangent
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-!
 ### Interactions between differentiability, smoothness and manifold derivatives
@@ -20,6 +22,8 @@ and related notions.
 * `ContMDiff.contMDiff_tangentMap` states that the bundled derivative
   of a `Cⁿ` function is `Cᵐ` when `m + 1 ≤ n`.
 -/
+
+@[expose] public section
 
 open Set Function Filter ChartedSpace IsManifold Bundle
 
@@ -109,7 +113,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     rw [contMDiffWithinAt_iff] at hf' hg'
     simp_rw [Function.comp_def, uncurry, extChartAt_prod, PartialEquiv.prod_coe_symm,
       ModelWithCorners.range_prod] at hf' ⊢
-    apply ContDiffWithinAt.fderivWithin _ _ _ (show (m : WithTop ℕ∞) + 1 ≤ n from mod_cast hmn )
+    apply ContDiffWithinAt.fderivWithin _ _ _ (show (m : WithTop ℕ∞) + 1 ≤ n from mod_cast hmn)
     · simp [hx₀, t']
     · apply inter_subset_left.trans
       rw [preimage_subset_iff]
@@ -168,14 +172,14 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   · exact mfderivWithin_eq_fderivWithin
   · exact mdifferentiableAt_extChartAt (by simpa using h'x)
   · apply MDifferentiableWithinAt.comp (I' := I) (u := u) _ _ _ inter_subset_right
-    · convert hx.mdifferentiableWithinAt le_rfl
+    · convert hx.mdifferentiableWithinAt one_ne_zero
       exact PartialEquiv.left_inv (extChartAt I (g x₀)) h2
     · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
       · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
       · exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
   · exact h3
   · simp only [Function.comp_def, PartialEquiv.left_inv (extChartAt I (g x₀)) h2]
-  · exact hx.mdifferentiableWithinAt le_rfl
+  · exact hx.mdifferentiableWithinAt one_ne_zero
   · apply (mdifferentiableWithinAt_extChartAt_symm _).mono
     · exact inter_subset_left.trans (extChartAt_target_subset_range (g x₀))
     · exact PartialEquiv.map_source (extChartAt I (g x₀)) h2
@@ -338,6 +342,7 @@ namespace TangentBundle
 
 open Bundle
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The derivative of the zero section of the tangent bundle maps `⟨x, v⟩` to `⟨⟨x, 0⟩, ⟨v, 0⟩⟩`.
 
 Note that, as currently framed, this is a statement in coordinates, thus reliant on the choice
@@ -361,9 +366,9 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     · apply (OpenPartialHomeomorph.open_target _).preimage I.continuous_invFun
     · simp only [mfld_simps]
   have A : MDifferentiableAt I I.tangent (fun x => @TotalSpace.mk M E (TangentSpace I) x 0) x :=
-    haveI : ContMDiff I (I.prod 𝓘(𝕜, E)) ⊤ (zeroSection E (TangentSpace I : M → Type _)) :=
+    haveI : ContMDiff I (I.prod 𝓘(𝕜, E)) 1 (zeroSection E (TangentSpace I : M → Type _)) :=
       Bundle.contMDiff_zeroSection 𝕜 (TangentSpace I : M → Type _)
-    this.mdifferentiableAt le_top
+    this.mdifferentiableAt one_ne_zero
   have B : fderivWithin 𝕜 (fun x' : E ↦ (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v
       = (v, 0) := by
     rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prodMk]
@@ -374,7 +379,7 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     · exact differentiableAt_id.prodMk (differentiableAt_const _)
   simp +unfoldPartialApp only [Bundle.zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
-    Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
+    Function.comp_def, map_zero, mfld_simps]
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
   congr 1
@@ -393,11 +398,11 @@ namespace ContMDiffMap
 -- They could be moved to another file (perhaps a new file) if desired.
 open scoped Manifold ContDiff
 
-protected theorem mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : 1 ≤ n) : MDifferentiable I I' f :=
+protected theorem mdifferentiable' (f : C^n⟮I, M; I', M'⟯) (hn : n ≠ 0) : MDifferentiable I I' f :=
   f.contMDiff.mdifferentiable hn
 
 protected theorem mdifferentiable (f : C^∞⟮I, M; I', M'⟯) : MDifferentiable I I' f :=
-  f.contMDiff.mdifferentiable (mod_cast le_top)
+  f.mdifferentiable' (by simp)
 
 protected theorem mdifferentiableAt (f : C^∞⟮I, M; I', M'⟯) {x} : MDifferentiableAt I I' f x :=
   f.mdifferentiable x
@@ -430,6 +435,7 @@ lemma contMDiff_equivTangentBundleProd :
   exact (contMDiff_fst.contMDiff_tangentMap le_rfl).prodMk
     (contMDiff_snd.contMDiff_tangentMap le_rfl)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical equivalence between the product of tangent bundles and the tangent bundle of a
 product is smooth. -/
 lemma contMDiff_equivTangentBundleProd_symm :
@@ -473,7 +479,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I) (I ((chartAt H p.1.proj) p.1.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := 1) _ le_rfl
+      apply ContDiffWithinAt.differentiableWithinAt _ one_ne_zero
       apply contDiffWithinAt_ext_coord_change
       simp [hp.1]
     have D (w : TangentBundle I' M') :
@@ -486,7 +492,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     · let φ' (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
       have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I')
           (I' ((chartAt H' p.2.proj) p.2.proj)) := by
-        apply ContDiffWithinAt.differentiableWithinAt (n := 1) _ le_rfl
+        apply ContDiffWithinAt.differentiableWithinAt _ one_ne_zero
         apply contDiffWithinAt_ext_coord_change
         simp [hp.2]
       have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.snd) (Set.range (Prod.map I I'))
@@ -512,7 +518,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I') (I' ((chartAt H' p.2.proj) p.2.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+      apply ContDiffWithinAt.differentiableWithinAt _ one_ne_zero
       apply contDiffWithinAt_ext_coord_change
       simp [hp.2]
     have D (w : TangentBundle I M) :
@@ -525,7 +531,7 @@ lemma contMDiff_equivTangentBundleProd_symm :
     · let φ' (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
       have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I)
           (I ((chartAt H p.1.proj) p.1.proj)) := by
-        apply ContDiffWithinAt.differentiableWithinAt _ le_rfl
+        apply ContDiffWithinAt.differentiableWithinAt _ one_ne_zero
         apply contDiffWithinAt_ext_coord_change
         simp [hp.1]
       have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.fst) (Set.range (Prod.map I I'))

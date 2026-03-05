@@ -3,9 +3,11 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Data.Set.Functor
-import Mathlib.Order.Sublattice
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Data.Set.Functor
+public import Mathlib.Order.Sublattice
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Complete Sublattices
@@ -23,6 +25,8 @@ invariant submodules of some module with respect to a linear map.
 * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
 
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -59,6 +63,8 @@ variable {L : CompleteSublattice α}
 instance instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; cases M; congr; exact SetLike.coe_injective' h
+
+instance : PartialOrder (CompleteSublattice α) := .ofSetLike (CompleteSublattice α) α
 
 theorem top_mem : ⊤ ∈ L := by simpa using L.sInfClosed' <| empty_subset _
 
@@ -105,7 +111,7 @@ instance : Max {x // x ∈ L} := Sublattice.instSupCoe
 instance : Min {x // x ∈ L} := Sublattice.instInfCoe
 
 instance instCompleteLattice : CompleteLattice L :=
-  Subtype.coe_injective.completeLattice _
+  Subtype.coe_injective.completeLattice _ .rfl .rfl
     Sublattice.coe_sup Sublattice.coe_inf coe_sSup' coe_sInf' coe_top coe_bot
 
 /-- The natural complete lattice hom from a complete sublattice to the original lattice. -/
