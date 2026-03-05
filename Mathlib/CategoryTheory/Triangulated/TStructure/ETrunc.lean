@@ -36,7 +36,7 @@ variable (t : TStructure C)
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to the zero functor,
 `n : ℤ` to `t.truncLT n` and `⊤` to `𝟭 C`. -/
 noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
-  obj n := WithBotTop.rec 0 (t.truncLT ·) (𝟭 C) n
+  obj := WithBotTop.rec 0 (t.truncLT ·) (𝟭 C)
   map {x y} f := by
     induction x using WithBotTop.rec with
     | bot =>
@@ -62,7 +62,7 @@ noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
       induction z using WithBotTop.rec <;> cat_disch
 
 @[simp]
-lemma eTruncLT_obj_top : t.eTruncLT.obj ⊤ = 𝟭 _ := rfl
+lemma eTruncLT_obj_top : t.eTruncLT.obj ⊤ = 𝟭 _ :=rfl
 
 @[simp]
 lemma eTruncLT_obj_bot : t.eTruncLT.obj ⊥ = 0 := rfl
@@ -74,18 +74,14 @@ lemma eTruncLT_obj_coe (n : ℤ) : t.eTruncLT.obj n = t.truncLT n := rfl
 lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
     t.eTruncLT.map (homOfLE (show (n : EInt) ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
-  induction i using WithBotTop.rec <;> constructor <;> cat_disch
+  induction i using WithBotTop.rec
+  all_goals dsimp; infer_instance
 
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to `𝟭 C`,
 `n : ℤ` to `t.truncGE n` and `⊤` to the zero functor. -/
 noncomputable def eTruncGE : EInt ⥤ C ⥤ C where
-  obj n := by
-    induction n using WithBotTop.rec with
-    | bot => exact 𝟭 C
-    | coe a => exact t.truncGE a
-    | top => exact 0
+  obj := WithBotTop.rec (𝟭 C) t.truncGE 0
   map {x y} f := by
     induction x using WithBotTop.rec with
     | bot =>
@@ -121,9 +117,9 @@ lemma eTruncGE_obj_top :
 @[simp]
 lemma eTruncGE_obj_coe (n : ℤ) : t.eTruncGE.obj n = t.truncGE n := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
-  induction i using WithBotTop.rec <;> constructor <;> cat_disch
+  induction i using WithBotTop.rec
+  all_goals dsimp; infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The connecting homomorphism from `t.eTruncGE` to the
