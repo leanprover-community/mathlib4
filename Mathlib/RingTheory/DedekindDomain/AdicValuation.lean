@@ -411,6 +411,7 @@ theorem eq_of_valuation_isEquiv_valuation {p q : HeightOneSpectrum R}
   simp_all [Valuation.isEquiv_iff_val_lt_one, HeightOneSpectrum.ext_iff, Ideal.ext_iff,
     ← valuation_lt_one_iff_mem (K := K)]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- All `x ∈ K` can be written as `n / d` or `d / n` with `n ∈ R` and `d ∈ v.asIdealᶜ`. -/
 lemma exists_primeCompl_mul_eq_or_mul_eq (x : K) :
     ∃ (n : R) (d : v.asIdeal.primeCompl), x * (algebraMap R K d) = (algebraMap R K n) ∨
@@ -430,39 +431,16 @@ lemma exists_primeCompl_mul_eq_or_mul_eq (x : K) :
   <;> apply_fun algebraMap _ K at hnd
   <;> grind [=_ IsScalarTower.algebraMap_apply]
 
-variable (K) in
-/-- Map from `R` to the `v`-adic integers of `K` given by `algebraMap R K`. -/
-@[simps]
-def toInteger : R →+* (v.valuation K).integer where
-  toFun x := ⟨algebraMap R K x, valuation_le_one v x⟩
-  map_zero' := by ext; simp
-  map_one' := by ext; simp
-  map_add' x y := by ext; simp
-  map_mul' x y := by ext; simp
-
-/-- The `v`-adic integers of `K` are a localization of `R` at `v`. -/
-theorem isLocalizationMapAlgebraMapToInteger :
-    v.asIdeal.primeCompl.IsLocalizationMap <| v.toInteger K where
-  map_units := by
-    intro ⟨x, hx⟩
-    rwa [Valuation.Integers.isUnit_iff_valuation_eq_one
-      (Valuation.integer.integers (v.valuation K)), Algebra.algebraMap_ofSubsemiring_apply,
-      toInteger_apply_coe, v.valuation_of_algebraMap, intValuation_eq_one_iff_mem_primeCompl]
-  exists_of_eq h := by
-    use 1
-    rw [Subtype.ext_iff] at h
-    simpa using FaithfulSMul.algebraMap_injective R K h
-  surj := by
-    intro ⟨z, hz⟩
-    obtain ⟨n, d, (hnd | hnd)⟩ := exists_primeCompl_mul_eq_or_mul_eq v z
-    · use (n, d)
-      ext
-      simpa
-    · refine ⟨(d, ⟨n, ?_⟩), by ext; simpa⟩
-      rw [← v.intValuation_eq_one_iff_mem_primeCompl]
-      apply eq_one_of_one_le_mul_right hz (intValuation_le_one v n)
-      rw [← (v.intValuation_eq_one_iff_mem_primeCompl d).mpr d.prop,
-        ← valuation_of_algebraMap (K := K), ← valuation_of_algebraMap (K := K), ← map_mul, hnd]
+/-- All `x ∈ 𝓞[K]` can be written as `n / d` with `n ∈ R` and `d ∈ v.asIdealᶜ`. -/
+theorem exists_primeCompl_mul_eq_of_integer (x : K) (hv : v.valuation K x ≤ 1) :
+    ∃ (n : R) (d : v.asIdeal.primeCompl), x * (algebraMap R K d) = algebraMap R K n := by
+  obtain ⟨n, d, (hnd | hnd)⟩ := exists_primeCompl_mul_eq_or_mul_eq v x
+  · use n, d
+  · refine ⟨d, ⟨n, ?_⟩, hnd⟩
+    rw [← v.intValuation_eq_one_iff_mem_primeCompl]
+    apply eq_one_of_one_le_mul_right hv (intValuation_le_one v n)
+    rw [← (v.intValuation_eq_one_iff_mem_primeCompl d).mpr d.prop,
+      ← valuation_of_algebraMap (K := K), ← valuation_of_algebraMap (K := K), ← map_mul, hnd]
 
 /-! ### Completions with respect to adic valuations
 
