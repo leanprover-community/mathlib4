@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Data.Array.Defs
+public import Mathlib.Init
 
 /-!
 # Reordering arguments in a translation
@@ -73,7 +73,7 @@ def Reorder.isEmpty (r : Reorder) : Bool := r matches {}
 
 /-- Permute an array of arguments using the given reorder. -/
 def Reorder.permute! {α} [Inhabited α] (r : Reorder) : Array α → Array α :=
-  r.perm.foldl (·.cyclicPermute! ·.1)
+  r.perm.foldl (cyclicPermute! · ·.1)
 where
   /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then

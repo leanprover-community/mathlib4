@@ -6,12 +6,16 @@ Authors: Arthur Paulino, Floris van Doorn
 module
 
 public import Mathlib.Init
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
 /-!
 # Definitions on Arrays
 
 This file contains various definitions on `Array`. It does not contain
 proofs about these definitions.
 -/
+
+deprecated_module (since := "2026-03-05")
 
 @[expose] public section
 
