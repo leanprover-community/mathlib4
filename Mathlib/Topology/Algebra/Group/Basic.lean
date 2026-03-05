@@ -809,7 +809,7 @@ theorem continuous_of_tendsto_nhds_one {M hom : Type*} [MulOneClass M] [Topologi
     [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
     (hf : Tendsto f (𝓝 1) (𝓝 1)) :
     Continuous f :=
-  continuous_iff_continuousAt.2 fun x => by
+  continuous_iff_continuousAt.2 fun x ↦ by
     simpa only [ContinuousAt, ← map_mul_left_nhds_one x, tendsto_map'_iff, Function.comp_def,
       map_mul, mul_one] using hf.const_mul (f x)
 

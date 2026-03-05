@@ -57,7 +57,7 @@ variable {S T : Submodule R M}
 lemma IsPrimary.ne_top (h : S.IsPrimary) : S ≠ ⊤ := h.left
 
 lemma IsPrimary.mem_or_mem (h : S.IsPrimary) {r : R} {m : M} (hrm : r • m ∈ S) :
-    m ∈ S ∨ r ∈ (S.colon ⊤).radical :=
+    m ∈ S ∨ r ∈ (S.colon Set.univ).radical :=
   h.right hrm
 
 protected lemma IsPrimary.inf (hS : S.IsPrimary) (hT : T.IsPrimary)
