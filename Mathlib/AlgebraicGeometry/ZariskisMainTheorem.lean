@@ -109,7 +109,7 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
   · exact ⟨⟨P', ‹_›⟩, heP', rfl⟩
   · simp [isCompl_iff, disjoint_iff, codisjoint_iff, W₂, SetLike.ext'_iff]
   · trans hV.fromSpec ⟨P'.comap Algebra.TensorProduct.includeRight.toRingHom, inferInstance⟩
-    · simp [← Scheme.Hom.comp_apply, - Scheme.Hom.comp_base, g, reassoc_of% he₁]; rfl
+    · simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, g, reassoc_of% he₁]; rfl
     convert hV.fromSpec_primeIdealOf ⟨x, hxV⟩
 
 variable {X Y S : Scheme.{u}} (f : X ⟶ Y)

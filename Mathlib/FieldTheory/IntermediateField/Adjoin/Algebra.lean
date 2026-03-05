@@ -109,7 +109,6 @@ variable (F E) in
 lemma fg_top [Algebra.EssFiniteType F E] : (⊤ : IntermediateField F E).FG := by
   rwa [fg_top_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma essFiniteType_iff {K : IntermediateField F E} :
     Algebra.EssFiniteType F K ↔ K.FG := by
   suffices (∃ s : Finset E, (s : Set E) ⊆ K ∧ adjoin F ↑s = K) ↔

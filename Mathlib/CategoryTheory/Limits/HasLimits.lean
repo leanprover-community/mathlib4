@@ -246,6 +246,10 @@ theorem limit.hom_ext {F : J ⥤ C} [HasLimit F] {X : C} {f f' : X ⟶ limit F}
     (w : ∀ j, f ≫ limit.π F j = f' ≫ limit.π F j) : f = f' :=
   (limit.isLimit F).hom_ext w
 
+instance isIso_limMap {F G : J ⥤ C} [HasLimit F] [HasLimit G] (α : F ⟶ G) [IsIso α] :
+    IsIso (limMap α) :=
+  ⟨limMap (inv α), by cat_disch , by cat_disch⟩
+
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 theorem limit.lift_map {F G : J ⥤ C} [HasLimit F] [HasLimit G] (c : Cone F) (α : F ⟶ G) :
@@ -808,6 +812,10 @@ theorem colimit.isoColimitCocone_ι_inv {F : J ⥤ C} [HasColimit F] (t : Colimi
 theorem colimit.hom_ext {F : J ⥤ C} [HasColimit F] {X : C} {f f' : colimit F ⟶ X}
     (w : ∀ j, colimit.ι F j ≫ f = colimit.ι F j ≫ f') : f = f' :=
   (colimit.isColimit F).hom_ext w
+
+instance isIso_colimMap {F G : J ⥤ C} [HasColimit F] [HasColimit G] (α : F ⟶ G) [IsIso α] :
+    IsIso (colimMap α) :=
+  ⟨colimMap (inv α), by cat_disch , by cat_disch⟩
 
 @[simp]
 theorem colimit.desc_cocone {F : J ⥤ C} [HasColimit F] :

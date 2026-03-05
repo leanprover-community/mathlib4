@@ -140,7 +140,7 @@ lemma overEquiv_symm_generate {X : C} {Y : Over X} (R : Presieve Y.left) :
     ext
     exact hpq
   · rw [generate_le_iff]
-    exact fun Z g hg ↦ le_generate _ _ hg
+    exact fun Z g hg ↦ le_generate _ _ _ hg
 
 @[simp]
 lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
