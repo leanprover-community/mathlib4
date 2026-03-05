@@ -19,20 +19,12 @@ when the target space is a standard Borel space, any Markov kernel can be repres
 of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemma 4.22 in
 "Foundations of Modern Probability" by Olav Kallenberg, 2021.
 
-## Auxiliary lemmas
-
-* `ProbabilityTheory.Kernel.exists_measurable_map_eq_unitInterval₀`:
-  for a Markov kernel `κ : Kernel α I`, there exists a jointly measurable function
-  `f : α → I → I` such that for all `a : α`, `volume.map (f a) = κ a`.
-
 ## Main theorems
 
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq_unitInterval`:
   for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space,
   there exists a jointly measurable function `f : α → I → β` such that for all `a : α`,
   `volume.map (f a) = κ a`.
-  This is a consequence of `ProbabilityTheory.Kernel.embedding_representation` and the fact that
-  any standard Borel space can be embedded in `ℝ`, and then composed with `unitInterval.sigmoid`.
 
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq_not_countable`:
   for a Markov kernel `κ : Kernel α β` with `β` a standard Borel space
@@ -40,8 +32,6 @@ of the uniform measure on `[0,1]` by a deterministic map. It corresponds to Lemm
   measurable function `f : α → ι → β` such that for all `a : α`,
   `volume.map (f a ∘ equiv) = κ a`, where `equiv : I ≃ᵐ ι` is a measurable equivalence
   between `I` and `ι`.
-  This is a consequence of `ProbabilityTheory.Kernel.unitInterval_representation` and the
-  fact that any non-countable standard Borel space is measurably equivalent to `I`.
 
 * `ProbabilityTheory.Kernel.exists_measurable_map_eq`:
   for a probability measure `μ` on a standard Borel space `β`,
