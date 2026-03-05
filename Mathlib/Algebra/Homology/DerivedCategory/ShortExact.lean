@@ -69,4 +69,27 @@ lemma triangleOfSES_distinguished :
   rw [mem_distTriang_iff]
   exact ⟨_, _, S.f, ⟨triangleOfSESIso hS⟩⟩
 
+section map
+
+variable {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (h₁ : S₁.ShortExact) (h₂ : S₂.ShortExact)
+  (f : S₁ ⟶ S₂)
+
+/-- The morphism `mappingCone φ₁ ⟶ mappingCone φ₂` that is induced by a commutative square. -/
+noncomputable def triangleOfSES.map : triangleOfSES h₁ ⟶ triangleOfSES h₂ :=
+  (DerivedCategory.triangleOfSESIso h₁).hom ≫ Q.mapTriangle.map
+  (CochainComplex.mappingCone.triangleMap S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm) ≫
+  (DerivedCategory.triangleOfSESIso h₂).inv
+
+lemma triangleOfSES.map_hom₁ : (triangleOfSES.map h₁ h₂ f).hom₁ = Q.map f.τ₁ := by
+  dsimp [triangleOfSES.map, triangleOfSESIso]; simp
+
+lemma triangleOfSES.map_hom₂ : (triangleOfSES.map h₁ h₂ f).hom₂ = Q.map f.τ₂ := by
+  dsimp [triangleOfSES.map, triangleOfSESIso]; simp
+
+lemma triangleOfSES.map_hom₃ : (triangleOfSES.map h₁ h₂ f).hom₃ = Q.map f.τ₃ := by
+  dsimp [triangleOfSES.map, triangleOfSESIso]
+  rw [IsIso.inv_comp_eq, ← Q.map_comp, CochainComplex.mappingCone.map_descShortComplex, Q.map_comp]
+
+end map
+
 end DerivedCategory
