@@ -244,7 +244,7 @@ theorem depth_le_ringKrullDim_associatedPrime [IsNoetherianRing R] [IsLocalRing 
     rw [moduleDepth_eq_zero_of_hom_nontrivial,
       (LinearEquiv.congrLeft M R (Shrink.linearEquiv R (R ⧸ P))).nontrivial_congr]
     rcases ((isAssociatedPrime_iff_exists_injective_linearMap P M).mp
-      (AssociatePrimes.mem_iff.mp ass)).2 with ⟨f, hf⟩
+      (AssociatedPrimes.mem_iff.mp ass)).2 with ⟨f, hf⟩
     exact nontrivial_of_ne f 0 (ne_zero_of_injective hf)
   have := moduleDepth_ge_depth_sub_dim M (ModuleCat.of R (Shrink.{v} (R ⧸ P)))
   simp only [dep0, ge_iff_le, nonpos_iff_eq_zero, tsub_eq_zero_iff_le] at this
