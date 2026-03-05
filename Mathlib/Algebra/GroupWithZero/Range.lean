@@ -154,11 +154,6 @@ lemma restrict₀_of_ne_zero {a : A} (h : f a ≠ 0) :
 @[simp]
 lemma restrict₀_eq_zero_iff {a : A} : restrict₀ f a = 0 ↔ f a = 0 := by simp [restrict₀_apply]
 
-lemma restrict₀_eq_one_iff {a : A} : restrict₀ f a = 1 ↔ f a = 1 := by
-  simp only [restrict₀_apply]
-  split_ifs with H <;>
-  simp [H, ← WithZero.coe_one, ← Units.mk0_one]
-
 @[simp]
 lemma restrict₀_eq_one_iff {a : A} : restrict₀ f a = 1 ↔ f a = 1 := by
   simp only [restrict₀_apply]

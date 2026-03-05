@@ -471,8 +471,6 @@ def restrict : Valuation R (MonoidWithZeroHom.ValueGroup₀ (v : R →*₀ Γ₀
         le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
       simpa using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
 
--- ToDo: this should not be a simp lemma!
-@[simp]
 lemma restrict_def (x : R) : v.restrict x = restrict₀ v x := rfl
 
 lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x = ValueGroup₀.mk v 1 x (by simp) hx := by
@@ -480,12 +478,14 @@ lemma restrict_eq_mk {x : R} (hx : v x ≠ 0) : v.restrict x = ValueGroup₀.mk 
   simp only [restrict_def, map_one, Units.mk0_one, inv_one, one_mul, restrict₀_apply]
   grind
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_pos_iff (x : R) : 0 < v.restrict x ↔ 0 < v x := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with h
   · simp [h]
   · simp [zero_lt_iff.mpr h]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma restrict_lt_iff {x y : R} : v.restrict x < v.restrict y ↔ v x < v y := by
   simp only [restrict_def, restrict₀_apply]
   split_ifs with hx hy <;> simp_all [zero_lt_iff.mpr, ← Units.val_lt_val]
@@ -557,7 +557,7 @@ lemma exists_div_eq_of_unit (γ : (ValueGroup₀ v)ˣ) :
 lemma IsEquiv.restrict {Γ₀' : Type*} [LinearOrderedCommGroupWithZero Γ₀']
     {w : Valuation R Γ₀'} (h : v.IsEquiv w) : v.restrict.IsEquiv w.restrict := by
   simp only [IsEquiv] at h ⊢
-  simp [restrict_le_iff, h]
+  simp [h]
 
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
 @[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
@@ -827,6 +827,7 @@ theorem valueGroup₀Fun_spec (h : v.IsEquiv w) {r s : R} (hr : v r ≠ 0) (hs :
 
 theorem valueGroup₀Fun_zero (h : v.IsEquiv w) : valueGroup₀Fun h 0 = 0 := by simp [valueGroup₀Fun]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism between the `ValueGroup₀`'s of two equivalent valuations. -/
 noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o ValueGroup₀ w where
   toFun := valueGroup₀Fun h
@@ -871,6 +872,7 @@ noncomputable def orderMonoidIso (h : v.IsEquiv w) : ValueGroup₀ v ≃*o Value
       · rw [← map_mul w, ne_eq, ← h.eq_zero, map_mul v]
         exact mul_ne_zero hx20 hy10
 
+set_option backward.isDefEq.respectTransparency false in
 theorem orderMonoidIso_spec (h : v.IsEquiv w) (a : R) :
     h.orderMonoidIso (v.restrict a) = w.restrict a := by
   have h_res := h.restrict

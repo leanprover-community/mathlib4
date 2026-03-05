@@ -61,6 +61,7 @@ instance : RankLeOne (valuation (K := K)) where
   hom' := embedding
   strictMono' := embedding_strictMono
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 @[instance_reducible]
 def toValued : Valued K ℝ≥0 :=
@@ -85,7 +86,7 @@ def toValued : Valued K ℝ≥0 :=
             simpa only [Units.ext_iff, hx0.unit_spec, Units.val_one,
               Submonoid.mk_eq_one] using H.elim hx0.unit 1
         · obtain ⟨x, hx, hxy⟩ := H (γ := ⟨ε, le_of_lt hε⟩) (pos_iff_ne_zero.mp hε)
-          use Units.mk0 (valuation.restrict x) (by simp [hx])
+          use Units.mk0 (valuation.restrict x) (by simp [Valuation.restrict_def, hx])
           intro y hy
           apply h
           simp only [Metric.mem_ball, dist_zero_right]
@@ -138,8 +139,9 @@ theorem norm_add_le (x y : L) : norm (x + y) ≤ max (norm x) (norm y) := by
   exact le_max_iff.mp (Valuation.map_add_le_max' val.v.restrict _ _)
 
 theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
-  simpa [norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
+  simpa [v.restrict_def, norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
 
+set_option backward.isDefEq.respectTransparency false in
 theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) < v x := by
   rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom (v (R := L))),
     StrictMono.lt_iff_lt (RankOne.strictMono v)]
@@ -147,6 +149,7 @@ theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) <
 
 variable (L) (Γ₀)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The normed field structure determined by a rank one valuation. -/
 @[instance_reducible]
 def toNormedField : NormedField L :=
@@ -227,11 +230,13 @@ namespace toNormedField
 
 variable {x x' : L}
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_le_iff : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' := by
   rw [← v.restrict_le_iff, ← (Valuation.RankOne.strictMono val.v).le_iff_le]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem norm_lt_iff : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' := by
   rw [← v.restrict_lt_iff, ← (Valuation.RankOne.strictMono val.v).lt_iff_lt]

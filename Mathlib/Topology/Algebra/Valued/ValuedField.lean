@@ -174,6 +174,7 @@ variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
 
 local notation "hat " => Completion
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A valued field is completable. -/
 instance (priority := 100) completable : CompletableTopField K :=
   { ValuedRing.separated with
@@ -239,6 +240,7 @@ local instance : LinearOrderedCommGroupWithZero (ValueGroup₀ hv.v) :=
 noncomputable def extension : hat K → ValueGroup₀ hv.v :=
   Completion.isDenseInducing_coe.extend (v.restrict : K → (ValueGroup₀ hv.v))
 
+set_option backward.isDefEq.respectTransparency false in
 theorem continuous_extension : Continuous (Valued.extension : hat K → ValueGroup₀ hv.v) := by
   refine Completion.isDenseInducing_coe.continuous_extend ?_
   intro x₀
@@ -321,6 +323,7 @@ theorem extension_extends (x : K) : extension (x : hat K) = v.restrict x := by
 
 open MonoidWithZeroHom.ValueGroup₀
 
+set_option backward.isDefEq.respectTransparency false in
 /-- the extension of a valuation on a division ring to its completion. -/
 noncomputable def extensionValuation : Valuation (hat K) Γ₀ where
   toFun := ValueGroup₀.embedding ∘ Valued.extension
@@ -438,12 +441,13 @@ theorem closure_coe_completion_v_mul_v_lt {r s : K} (hr : r ≠ 0) (hs : s ≠ 0
   convert closure_coe_completion_v_lt (γ := .mk0 _ hrs) using 3
   all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
   that of the extension to its completion. -/
 noncomputable def valueGroup₀_hom_extensionValuation :
     (ValueGroup₀ hv.v) →*₀ (ValueGroup₀ hv.extensionValuation) where
   toFun x := hv.extensionValuation.restrict (restrict₀_surjective hv.v x).choose
-  map_zero' := by simp
+  map_zero' := by simp [Valuation.restrict_def]
   map_one' := by
     rw [← embedding_strictMono.injective.eq_iff, Valuation.restrict_def, map_one]
     erw [embedding_restrict₀]
@@ -484,6 +488,7 @@ noncomputable def valueGroup₀_hom_extensionValuation :
         · rw [extensionValuation_apply_coe, ← restrict₀_eq_zero_iff, hxy, ← hx, ← hy]
           simp [hx0, hy0]
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: golf,  add rw lemmas
 /-- The zero-preserving monoid homomorphism from the `ValueGroup₀` of the valuation on `K` to
   that of the extension to its completion. -/
@@ -544,6 +549,7 @@ noncomputable def valueGroup₀_equiv_extensionValuation :
     rw [embedding_strictMono.injective.eq_iff]
     exact (restrict₀_surjective hv.v _).choose_spec
 
+set_option backward.isDefEq.respectTransparency false in
 -- TODO: golf
 noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   v := extensionValuation

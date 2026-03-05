@@ -133,12 +133,13 @@ instance : IsNontrivial v where
 
 section Restrict
 
+set_option backward.isDefEq.respectTransparency false in
 instance restrict_Nontrivial [v.IsNontrivial] : (v.restrict).IsNontrivial where
   exists_val_nontrivial := by
     obtain ⟨x, ⟨hx0, hx1⟩⟩ := IsNontrivial.exists_val_nontrivial (v := v)
     use x
     constructor
-    · simp [restrict₀_apply, hx0]
+    · simp [hx0]
     · rw [restrict_def]
       intro H
       rw [restrict₀_eq_one_iff] at H
@@ -154,6 +155,7 @@ instance restrict_RankOne : RankOne (v.restrict) where
 lemma restrict_RankOne_hom_eq :
   RankOne.hom v.restrict = (RankOne.hom v).comp embedding := rfl
 
+set_option backward.isDefEq.respectTransparency false in
 theorem exists_val_lt {K : Type*} [Field K] (v : Valuation K Γ₀) [hv : RankOne v]
     {γ : ℝ≥0} (hγ : γ ≠ 0) :
     (∃ (x : K), x ≠ 0 ∧ RankOne.hom v (v.restrict x) < γ) := by

@@ -1151,6 +1151,7 @@ lemma ValueGroupWithZero.embedding_embed_valuation (γ : ValueGroupWithZero R) :
   induction γ using ValueGroupWithZero.ind
   simp [mk_eq_div]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma ValueGroupWithZero.embed_strictMono [v.Compatible] : StrictMono (embed v) := by
   classical
   intro a b h
