@@ -279,6 +279,8 @@ theorem emultiplicity_map_eq_zero_of_ne [IsDedekindDomain R] [Algebra R S] {v : 
   rw [Ideal.dvd_iff_le, Ideal.map_le_iff_le_comap, ← under_def, ← Ideal.over_def w v] at h
   exact ((isPrime_of_prime hp).isMaximal hp.ne_zero).eq_of_le (isPrime_of_prime hv.prime).ne_top h
 
+/-- Use the more general result `emultiplicity_map_eq_ramificationIdx_mul`.
+This is a helper lemma. -/
 private theorem emultiplicity_map_eq_ramificationIdx_mul_of_prime [IsDedekindDomain R] [Algebra R S]
     [FaithfulSMul R S] {v : Ideal R} {w : Ideal S} {p : Ideal R}
     (hv : Irreducible v) (hp : Prime p) (hw : Irreducible w) (hw_bot : w ≠ ⊥)
