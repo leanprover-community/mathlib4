@@ -698,6 +698,8 @@ equals its logarithmic height. -/
 lemma logHeight_neg (x : ι → K) : logHeight (-x) = logHeight x := by
   simp [logHeight_eq_log_mulHeight]
 
+section tuples
+
 variable [Finite ι]
 
 /-- The multiplicative height of a pointwise product of tuples is bounded by the product
@@ -721,6 +723,8 @@ lemma logHeight_mul_le (x y : ι → K) : logHeight (x * y) ≤ logHeight x + lo
   pull (disch := positivity) log
   exact log_le_log (by positivity) <| mulHeight_mul_le ..
 
+end tuples
+
 /-- The multiplicative height of `x * y` is at most the product of the multiplicative heights
 of `x` and `y`. -/
 lemma mulHeight₁_mul_le (x y : K) : mulHeight₁ (x * y) ≤ mulHeight₁ x * mulHeight₁ y := by
@@ -738,24 +742,24 @@ lemma logHeight₁_mul_le (x y : K) : logHeight₁ (x * y) ≤ logHeight₁ x + 
 
 /-- The multiplicative height of a product of field elements is bounded above by the product
 of their multiplicative heights. -/
-lemma mulHeight₁_prod_le {α : Type*} (s : Finset α) (x : α → K) :
-    mulHeight₁ (∏ a ∈ s, x a) ≤ ∏ a ∈ s, mulHeight₁ (x a) := by
+lemma mulHeight₁_prod_le (s : Finset ι) (x : ι → K) :
+    mulHeight₁ (∏ i ∈ s, x i) ≤ ∏ i ∈ s, mulHeight₁ (x i) := by
   classical
   induction s using Finset.induction with
   | empty => simp
   | insert b s hb ih =>
     simp only [Finset.prod_insert hb]
     grw [← ih]
-    exact mulHeight₁_mul_le (x b) (∏ a ∈ s, x a)
+    exact mulHeight₁_mul_le ..
 
 open Real in
 /-- The logarithmic height of a product of field elements is bounded above by the sum
 of their logarithmic heights. -/
-lemma logHeight₁_prod_le {α : Type*} (s : Finset α) (x : α → K) :
-    logHeight₁ (∏ a ∈ s, x a) ≤ ∑ a ∈ s, logHeight₁ (x a) := by
+lemma logHeight₁_prod_le (s : Finset ι) (x : ι → K) :
+    logHeight₁ (∏ i ∈ s, x i) ≤ ∑ i ∈ s, logHeight₁ (x i) := by
   simp only [logHeight₁_eq_log_mulHeight₁]
-  rw [← log_prod (fun a _ ↦ by positivity)]
-  exact log_le_log (by positivity) <| mulHeight₁_prod_le s x
+  rw [← log_prod (fun _ _ ↦ by positivity)]
+  exact log_le_log (by positivity) <| mulHeight₁_prod_le ..
 
 end Height
 
