@@ -229,7 +229,7 @@ lemma mk' [HasSheafify J (Type w)]
     P.IsConservativeFamilyOfPoints where
   jointlyReflectIsomorphisms_type :=
     JointlyFaithful.jointlyReflectsIsomorphisms
-      (JointlyFaithful.of_jointly_reflects_isIso_of_mono (fun F₁ F₂ f _ hf ↦ by
+      (JointlyFaithful.of_jointly_reflects_isIso_of_mono (fun _ _ f _ hf ↦ by
         have : Epi f := by
           have : Mono f.val := inferInstanceAs (Mono ((sheafToPresheaf _ _).map f))
           rw [← Sheaf.isLocallySurjective_iff_epi]
