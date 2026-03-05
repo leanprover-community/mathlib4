@@ -6,9 +6,11 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.SqrtDeriv
+public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
+public import Mathlib.NumberTheory.ModularForms.QExpansion
 
 /-!
 # The modular discriminant Δ
@@ -33,7 +35,7 @@ function, and proves its key properties including invariance under the generator
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005], section 1.2
 -/
 
-open Set Function Complex
+open Set Function Complex Filter Topology
 
 open UpperHalfPlane hiding I
 
@@ -149,22 +151,78 @@ lemma delta_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
   field_simp [z.ne_zero]
 
-end
-
-
-open Filter in
-theorem tendsto_tprod_one_add_of_dominated_convergence
-    {α β R : Type*} {𝓕 : Filter α} [NormedCommRing R] [CompleteSpace R] [NormOneClass R]
-    {f : α → β → R} {g : β → R} {bound : β → ℝ} (h_sum : Summable bound)
-    (hab : ∀ k, Tendsto (f · k) 𝓕 (nhds (g k)))
-    (h_bound : ∀ᶠ n in 𝓕, ∀ k, ‖f n k‖ ≤ bound k) :
-    Tendsto (∏' k, (1 + f · k)) 𝓕 (nhds (∏' k, (1 + g k))) := by
-  --have h : Summable fun a =>  fun b => ‖f a b‖ := by sorry
-
-  --have hn := Summable.norm h
-  have := prod_vanishing_of_summable_norm h_sum.norm (ε := 1) (by sorry)
+theorem Delta_boundedfactor_step3 :
+  Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * Complex.I * (n + 1) * x)) ^ 24) atImInfty
+    (𝓝 1) := by
+  nth_rw 3 [show (1 : ℂ) = 1 ^ 24 by simp]
+  conv =>
+    enter [1, x]
+    rw [Multipliable.tprod_pow (by sorry)]
+  apply Tendsto.pow
+  have := tendsto_tprod_one_add_of_dominated_convergence (𝓕 := atImInfty) (g := 0)
+      (f := (fun z : ℍ ↦ fun n : ℕ  => -cexp (2 * π * Complex.I * (n + 1) * z)))
+      (bound := fun n ↦ (1 / 2 : ℝ) ^ (n + 1))
+  simp at this
+  simp_rw [sub_eq_add_neg]
+  apply this
 
   sorry
 
+theorem continuousOn_tprod_one_add_of_dominated_convergence {ι X R : Type*} [NormedCommRing R]
+    [NormOneClass R] [CompleteSpace R] [UniformSpace X]
+    {f : ι → X → R} {bound : ι → ℝ} (h_sum : Summable bound) {s : Set X} (hs : IsCompact s)
+    (hab : ∀ i, ContinuousOn (f i) s) (h_bound : ∀ᶠ i in cofinite, ∀ x ∈ s, ‖f i x‖ ≤ bound i) :
+    ContinuousOn (fun x ↦ ∏' i, (1 + f i x)) s := by
+  apply TendstoUniformlyOn.continuousOn
+  · exact (Summable.hasProdUniformlyOn_one_add hs h_sum h_bound hab).tendstoUniformlyOn
+  · exact .of_forall fun _ ↦ continuousOn_finset_prod _ fun _ _ ↦ by fun_prop
 
-end ModularForm
+
+open Metric
+theorem Delta_boundedfactor'_step1 :
+    ContinuousAt (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) 0 := by
+  refine ContinuousOn.continuousAt ?_ (closedBall_mem_nhds _ one_half_pos)
+  simp only [sub_eq_add_neg]
+  refine continuousOn_tprod_one_add_of_dominated_convergence ?_ (isCompact_closedBall 0 _)
+      (fun i ↦ by fun_prop) ?_ (bound := fun n ↦ (1 / 2 : ℝ) ^ (n + 1))
+  · simp only [pow_succ']
+    exact (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _
+  · filter_upwards with i x hx
+    simpa only [norm_neg, norm_pow] using pow_le_pow_left₀ (norm_nonneg _) (by simpa using hx) _
+
+theorem Delta_boundedfactor_step4 :
+  Tendsto (fun x : ℍ ↦ ∏' (n : ℕ), (1 - cexp (2 * π * Complex.I * (n + 1) * x)) ^ 24) atImInfty
+    (𝓝 1) := by
+  have : Tendsto (fun q : ℂ ↦ ∏' (n : ℕ), (1 - q ^ (n + 1))) (𝓝 0) (𝓝 1) := by
+      have := tendsto_tprod_one_add_of_dominated_convergence (𝓕 := (𝓝 0)) (g := 0)
+        (f := (fun q : ℂ => fun n : ℕ  => -q ^ (n + 1)))
+        (bound := fun (n : ℕ) ↦ (1 / 2 : ℝ) ^ (n + 1))
+      simp only [ Pi.zero_apply, norm_neg, norm_pow, add_zero, tprod_one] at this
+      simp_rw [sub_eq_add_neg]
+      apply this
+      · simp only [pow_succ']
+        exact (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _
+      · intro k
+
+        sorry
+      · rw [@Metric.eventually_nhds_iff]
+        use 1/2
+        simp
+        intro y hy
+        sorry
+
+  have := (this.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
+  simp only [one_pow, comp_def, Periodic.qParam, ofReal_one, div_one] at this
+  convert this using 2 with τ
+  rw [Multipliable.tprod_pow]
+  · congr
+    congr 1 with n
+    rw [ ← exp_nat_mul]
+    push_cast
+    ring_nf
+  · apply (ModularForm.multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
+    simp only [eta_q, Periodic.qParam, ofReal_one, div_one, ← exp_nat_mul, Nat.cast_add,
+      Nat.cast_one, sub_right_inj]
+    intro x; ring_nf
+
+end
