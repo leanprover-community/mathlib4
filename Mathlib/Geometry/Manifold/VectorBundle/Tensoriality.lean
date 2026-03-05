@@ -116,21 +116,21 @@ lemma tensoriality_criterion₂
     (hττ' : τ x = τ' x)
     (σ_smul : ∀ f : M → ℝ, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
       φ (f • σ) τ x = f x • φ σ τ x)
-    (σ_add : ∀ σ σ' τ, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+    (σ_add : ∀ σ σ' τ, MDiffAt (T% σ) x → MDiffAt (T% σ') x → MDiffAt (T% τ) x →
       φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
     (τ_smul : ∀ f : M → ℝ, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
         φ σ (f • τ) x = f x • φ σ τ x)
-    (τ_add : ∀ σ τ τ', MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+    (τ_add : ∀ σ τ τ', MDiffAt (T% σ) x → MDiffAt (T% τ) x → MDiffAt (T% τ') x →
         φ σ (τ + τ') x = φ σ τ x + φ σ τ' x) : φ σ τ x = φ σ' τ' x := by
   trans φ σ' τ x
   · let φ1 : (Π x : M, V x) → (Π x, V' x) := fun X ↦ φ X τ
     change φ1 σ x = φ1 σ' x
     apply tensoriality_criterion I F V V' hσ hσ' hσσ'
-    exacts [fun f σ hf hσ ↦ σ_smul _ hf hσ, fun σ σ' hσ hσ' ↦ σ_add _ _ _ hσ hσ']
+    exacts [fun f σ hf hσ ↦ σ_smul _ hf hσ, fun σ σ' hσ hσ' ↦ σ_add _ _ _ hσ hσ' hτ]
   · let φ1 : (Π x : M, V x) → (Π x, V' x) := fun X ↦ φ σ' X
     change φ1 τ x = φ1 τ' x
     apply tensoriality_criterion I F V V' hτ hτ' hττ'
-    exacts [fun f τ hf hτ ↦ τ_smul _ hf hτ, fun τ τ' hτ hτ' ↦ τ_add _ _ _ hτ hτ']
+    exacts [fun f τ hf hτ ↦ τ_smul _ hf hτ, fun τ τ' hτ hτ' ↦ τ_add _ _ _ hσ' hτ hτ']
 
 section tensoriality
 
@@ -239,11 +239,11 @@ noncomputable def mk2TensorAt
     (φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)) {x}
     (σ_smul : ∀ f : M → ℝ, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
       φ (f • σ) τ x = f x • φ σ τ x)
-    (σ_add : ∀ σ σ' τ, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+    (σ_add : ∀ σ σ' τ, MDiffAt (T% σ) x → MDiffAt (T% σ') x → MDiffAt (T% τ) x →
       φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
     (τ_smul : ∀ f : M → ℝ, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
         φ σ (f • τ) x = f x • φ σ τ x)
-    (τ_add : ∀ σ τ τ', MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+    (τ_add : ∀ σ τ τ', MDiffAt (T% σ) x → MDiffAt (T% τ) x → MDiffAt (T% τ') x →
         φ σ (τ + τ') x = φ σ τ x + φ σ τ' x) :
     V x →L[ℝ] V x →L[ℝ] V' x :=
     let Ψ : V x ≃L[ℝ] F := (trivializationAt F V x).continuousLinearEquivAt ℝ x
@@ -262,6 +262,7 @@ noncomputable def mk2TensorAt
           · exact mdifferentiable_extend ..
           · exact mdifferentiable_extend ..
           · simp
+        · exact mdifferentiable_extend ..
         · exact mdifferentiable_extend ..
         · exact mdifferentiable_extend ..
       smul_left c v w := by
@@ -288,6 +289,7 @@ noncomputable def mk2TensorAt
           · simp
         · exact mdifferentiable_extend ..
         · exact mdifferentiable_extend ..
+        · exact mdifferentiable_extend ..
       smul_right c v w := by
         rw [← τ_smul (f := fun _ ↦ c)]
         · apply tensoriality_criterion₂ I F _ _ _ _ _ _ rfl _ σ_smul σ_add τ_smul τ_add
@@ -308,11 +310,11 @@ theorem mk2TensorAt_apply
     {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
     (σ_smul : ∀ f : M → ℝ, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
       φ (f • σ) τ x = f x • φ σ τ x)
-    (σ_add : ∀ σ σ' τ, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+    (σ_add : ∀ σ σ' τ, MDiffAt (T% σ) x → MDiffAt (T% σ') x → MDiffAt (T% τ) x →
       φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
     (τ_smul : ∀ f : M → ℝ, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
         φ σ (f • τ) x = f x • φ σ τ x)
-    (τ_add : ∀ σ τ τ', MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+    (τ_add : ∀ σ τ τ', MDiffAt (T% σ) x → MDiffAt (T% τ) x → MDiffAt (T% τ') x →
         φ σ (τ + τ') x = φ σ τ x + φ σ τ' x)
     {σ : Π x : M, V x} (hσ : MDiffAt (T% σ) x) {τ : Π x : M, V x} (hτ : MDiffAt (T% τ) x) :
     mk2TensorAt I F φ σ_smul σ_add τ_smul τ_add (σ x) (τ x) = φ σ τ x := by
@@ -328,11 +330,11 @@ theorem mk2TensorAt_apply_eq_extend
     {φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)} {x}
     (σ_smul : ∀ f : M → ℝ, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
       φ (f • σ) τ x = f x • φ σ τ x)
-    (σ_add : ∀ σ σ' τ, MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+    (σ_add : ∀ σ σ' τ, MDiffAt (T% σ) x → MDiffAt (T% σ') x → MDiffAt (T% τ) x →
       φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
     (τ_smul : ∀ f : M → ℝ, ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
         φ σ (f • τ) x = f x • φ σ τ x)
-    (τ_add : ∀ σ τ τ', MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+    (τ_add : ∀ σ τ τ', MDiffAt (T% σ) x → MDiffAt (T% τ) x → MDiffAt (T% τ') x →
         φ σ (τ + τ') x = φ σ τ x + φ σ τ' x)
     (σ τ : V x) :
     mk2TensorAt I F φ σ_smul σ_add τ_smul τ_add σ τ
@@ -343,34 +345,34 @@ theorem mk2TensorAt_add
     (φ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x)) {x}
     (φ_σ_smul : ∀ (f : M → ℝ), ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
       φ (f • σ) τ x = f x • φ σ τ x)
-    (φ_σ_add : ∀ (σ σ' τ), MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+    (φ_σ_add : ∀ (σ σ' τ), MDiffAt (T% σ) x → MDiffAt (T% σ') x → MDiffAt (T% τ) x →
       φ (σ + σ') τ x = φ σ τ x + φ σ' τ x)
     (φ_τ_smul : ∀ (f : M → ℝ), ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
         φ σ (f • τ) x = f x • φ σ τ x)
-    (φ_τ_add : ∀ (σ τ τ'), MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+    (φ_τ_add : ∀ (σ τ τ'), MDiffAt (T% σ) x → MDiffAt (T% τ) x → MDiffAt (T% τ') x →
         φ σ (τ + τ') x = φ σ τ x + φ σ τ' x)
     (ψ : (Π x : M, V x) → (Π x : M, V x) → (Π x, V' x))
     (ψ_σ_smul : ∀ (f : M → ℝ), ∀ {σ τ}, MDiffAt f x → MDiffAt (T% σ) x →
       ψ (f • σ) τ x = f x • ψ σ τ x)
-    (ψ_σ_add : ∀ (σ σ' τ), MDiffAt (T% σ) x → MDiffAt (T% σ') x →
+    (ψ_σ_add : ∀ (σ σ' τ), MDiffAt (T% σ) x → MDiffAt (T% σ') x → MDiffAt (T% τ) x →
       ψ (σ + σ') τ x = ψ σ τ x + ψ σ' τ x)
     (ψ_τ_smul : ∀ (f : M → ℝ), ∀ {σ τ}, MDiffAt f x → MDiffAt (T% τ) x →
         ψ σ (f • τ) x = f x • ψ σ τ x)
-    (ψ_τ_add : ∀ (σ τ τ'), MDiffAt (T% τ) x → MDiffAt (T% τ') x →
+    (ψ_τ_add : ∀ (σ τ τ'), MDiffAt (T% σ) x → MDiffAt (T% τ) x → MDiffAt (T% τ') x →
         ψ σ (τ + τ') x = ψ σ τ x + ψ σ τ' x) :
     mk2TensorAt I F (φ + ψ)
       (fun {_ _ τ} hf hσ ↦
       (congr($(φ_σ_smul _ hf hσ (τ := τ)) + $(ψ_σ_smul _ hf hσ (τ := τ)))).trans
         (smul_add _ _ _).symm)
-      (fun σ₁ σ₂ τ hσ₁ hσ₂ ↦
-        (congr($(φ_σ_add _ _ _ hσ₁ hσ₂) + $(ψ_σ_add _ _ _ hσ₁ hσ₂))).trans <| by
+      (fun σ₁ σ₂ τ hσ₁ hσ₂ hτ ↦
+        (congr($(φ_σ_add _ _ _ hσ₁ hσ₂ hτ) + $(ψ_σ_add _ _ _ hσ₁ hσ₂ hτ))).trans <| by
         dsimp
         abel)
       (fun {_ σ _} hf hτ ↦
       (congr($(φ_τ_smul _ hf hτ (σ := σ)) + $(ψ_τ_smul _ hf hτ (σ := σ)))).trans
         (smul_add _ _ _).symm)
-      (fun σ {τ₁ τ₂} hτ₁ hτ₂ ↦
-        (congr($(φ_τ_add _ _ _ hτ₁ hτ₂) + $(ψ_τ_add _ _ _ hτ₁ hτ₂))).trans <| by
+      (fun σ {τ₁ τ₂} hσ hτ₁ hτ₂ ↦
+        (congr($(φ_τ_add _ _ _ hσ hτ₁ hτ₂) + $(ψ_τ_add _ _ _ hσ hτ₁ hτ₂))).trans <| by
         dsimp
         abel)
     = mk2TensorAt I F φ φ_σ_smul φ_σ_add φ_τ_smul φ_τ_add

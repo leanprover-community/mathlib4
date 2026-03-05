@@ -224,10 +224,8 @@ private lemma aux1 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
 
 variable {I} in
 private lemma aux2 {x : M} (σ σ' τ : (x : M) → TangentSpace I x)
-    (hσ : MDiffAt (T% σ) x)
-    (hσ' : MDiffAt (T% σ') x) :
+    (hσ : MDiffAt (T% σ) x) (hσ' : MDiffAt (T% σ') x) (hτ : MDiffAt (T% τ) x) :
     myfun I cov (σ + σ') τ x = myfun I cov σ τ x + myfun I cov σ' τ x := by
-  have hτ : MDiffAt (T% τ) x := sorry -- missing hypothesis?
   simp only [myfun]
   ext X
   simp only [ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp', coe_innerSL_apply,
@@ -284,10 +282,8 @@ private lemma aux3 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
 
 variable {I} in
 private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
-    (hτ : MDiffAt (T% τ) x)
-    (hτ' : MDiffAt (T% τ') x) :
+    (hσ : MDiffAt (T% σ) x) (hτ : MDiffAt (T% τ) x) (hτ' : MDiffAt (T% τ') x) :
     myfun I cov σ (τ + τ') x = myfun I cov σ τ x + myfun I cov σ τ' x := by
-  have hσ : MDiffAt (T% σ) x := sorry -- missing hypothesis!
   unfold myfun
   ext X
   simp only [Pi.add_apply, map_add, ContinuousLinearMap.add_comp, ContinuousLinearMap.coe_sub',
@@ -314,14 +310,14 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
   module
 
 variable {I} in
-/-- Given a connecion `∇` on `(M, g)`, the tensor `∇ g`. -/
+/-- The tensor `∇ g` defined by a connection `∇` on a Riemannian manifold `(M, g)`. -/
 @[no_expose] noncomputable def MetricTensor [FiniteDimensional ℝ E] (x : M) :
     TangentSpace I x →L[ℝ] TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
   mk2TensorAt I E (myfun I cov)
     (fun _f _σ _τ hf hσ ↦ aux1 cov hf hσ)
-    (fun σ σ' τ hσ hσ' ↦ aux2 cov σ σ' τ hσ hσ')
+    (fun σ σ' τ hσ hσ' hτ ↦ aux2 cov σ σ' τ hσ hσ' hτ)
     (fun _f _σ _τ hf hτ ↦ aux3 cov hf hτ)
-    (fun σ τ τ' hτ hτ' ↦ aux4 cov σ τ τ' hτ hτ')
+    (fun σ τ τ' hσ hτ hτ' ↦ aux4 cov σ τ τ' hσ hτ hτ')
 
 theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
@@ -346,6 +342,8 @@ def IsCompatible [FiniteDimensional ℝ E] : Prop := MetricTensor cov = 0
 
 lemma IsCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x : M} :
     mfderiv% ⟪Y, Z⟫ x (X x) = ⟪∇ X, Y, Z⟫ x + ⟪Y, ∇ X, Z⟫ x := sorry
+
+#exit
 
 /-- A covariant derivative on a Riemannian bundle `TM` is called the **Levi-Civita connection**
 iff it is torsion-free and compatible with `g`.
