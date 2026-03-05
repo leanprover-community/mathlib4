@@ -430,7 +430,7 @@ def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
   haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.isOpenMap.adjunctionNhds x)
   (toPresheaf _ ⋙ (Functor.whiskeringLeft (OpenNhds (f x))ᵒᵖ Y.Opensᵒᵖ Ab).obj
       (OpenNhds.inclusion (f x)).op).isoWhiskerLeft
-      (Functor.Final.colimIso (f.isOpenEmbedding.isOpenMap.functorNhds x).op)
+      (Functor.Final.colimIso (f.isOpenEmbedding.functorNhds x).op)
 
 @[simp]
 lemma germ_restrictStalkNatIso_hom_app (f : X ⟶ Y) [IsOpenImmersion f]
@@ -439,7 +439,7 @@ lemma germ_restrictStalkNatIso_hom_app (f : X ⟶ Y) [IsOpenImmersion f]
       (restrictStalkNatIso f x).hom.app M = M.presheaf.germ _ _ (by simpa) :=
   haveI := Functor.initial_of_adjunction (f.isOpenEmbedding.isOpenMap.adjunctionNhds x)
   Functor.Final.ι_colimitIso_hom
-    (f.isOpenEmbedding.isOpenMap.functorNhds x).op
+    (f.isOpenEmbedding.functorNhds x).op
     ((OpenNhds.inclusion ((ConcreteCategory.hom f.base) x)).op ⋙ M.presheaf) _
 
 set_option backward.isDefEq.respectTransparency false in

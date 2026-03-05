@@ -235,7 +235,7 @@ variable [HasLimits C]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
-    (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U) =
+    (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).functor.obj U) =
       (opensFunctor (D.f j i)).obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
   ext1
@@ -260,7 +260,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
 def opensImagePreimageMap (i j : D.J) (U : Opens (D.U i).carrier) :
     (D.U i).presheaf.obj (op U) ⟶
     (D.U j).presheaf.obj (op <|
-      (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)) :=
+      (Opens.map (𝖣.ι j).base).obj ((D.ι_isOpenEmbedding i).functor.obj U)) :=
   (D.f i j).c.app (op U) ≫
     (D.t j i).c.app _ ≫
       (D.f_open j i).invApp _ (unop _) ≫
@@ -307,7 +307,7 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
 the image `ι '' U` in the glued space is the limit of this diagram. -/
 abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
     (WalkingMultispan (.prod D.J))ᵒᵖ ⥤ C :=
-  componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)
+  componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).functor.obj U)
 
 /-- (Implementation)
 The projection from the limit of `diagram_over_open` to a component of `D.U j`. -/
