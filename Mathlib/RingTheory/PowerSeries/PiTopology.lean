@@ -154,7 +154,7 @@ theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFinite
   intro n
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, Filter.eventually_atTop] at h
   obtain ⟨i, hi⟩ := h n
-  refine summable_of_finite_support <| (Set.finite_Iic i).subset ?_
+  refine summable_of_hasFiniteSupport <| (Set.finite_Iic i).subset ?_
   simp_rw [Function.support_subset_iff, Set.mem_Iic]
   intro k hk
   contrapose! hk
@@ -193,7 +193,7 @@ theorem summable_prod_of_tendsto_order_atTop_nhds_top
     (h : Tendsto (fun i ↦ (f i).order) atTop (𝓝 ⊤)) : Summable (∏ i ∈ ·, f i) := by
   rcases isEmpty_or_nonempty ι with hempty | hempty
   · apply Summable.of_finite
-  refine (summable_iff_summable_coeff _).mpr fun n ↦ summable_of_finite_support ?_
+  refine (summable_iff_summable_coeff _).mpr fun n ↦ summable_of_hasFiniteSupport ?_
   simp_rw [ENat.tendsto_nhds_top_iff_natCast_lt, eventually_atTop] at h
   obtain ⟨i, hi⟩ := h n
   apply (Finset.Iio i).powerset.finite_toSet.subset
@@ -216,6 +216,7 @@ end Prod
 section ProdOneSubPow
 variable (R : Type*) [CommRing R] [TopologicalSpace R]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem multipliable_one_sub_X_pow : Multipliable fun n ↦ (1 : R⟦X⟧) - X ^ (n + 1) := by
   nontriviality R
   simp_rw [sub_eq_add_neg]

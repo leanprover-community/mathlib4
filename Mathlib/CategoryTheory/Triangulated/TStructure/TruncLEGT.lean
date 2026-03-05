@@ -80,6 +80,7 @@ noncomputable def truncGTIsoTruncGE (a b : ℤ) (h : a + 1 = b) :
 on a category `C` and `n : ℤ`. -/
 noncomputable def truncLEι (n : ℤ) : t.truncLE n ⟶ 𝟭 C := t.truncLTι (n + 1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma truncLEIsoTruncLT_hom_ι (a b : ℤ) (h : a + 1 = b) :
     (t.truncLEIsoTruncLT a b h).hom ≫ t.truncLTι b = t.truncLEι a := by
@@ -115,6 +116,7 @@ lemma natTransTruncLEOfLE_ι_app (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (X : C) :
       (t.truncLEι n₀).app X :=
   t.natTransTruncLTOfLE_ι_app _ _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma natTransTruncLEOfLE_ι (a b : ℤ) (h : a ≤ b) :
     t.natTransTruncLEOfLE a b h ≫ t.truncLEι b = t.truncLEι a := by cat_disch
@@ -144,6 +146,7 @@ lemma natTransTruncLEOfLE_trans_app (a b c : ℤ) (hab : a ≤ b) (hbc : b ≤ c
 on a category `C` and `n : ℤ`. -/
 noncomputable def truncGTπ (n : ℤ) : 𝟭 C ⟶ t.truncGT n := t.truncGEπ (n + 1)
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma π_truncGTIsoTruncGE_hom (a b : ℤ) (h : a + 1 = b) :
     t.truncGTπ a ≫ (t.truncGTIsoTruncGE a b h).hom = t.truncGEπ b := by
@@ -181,6 +184,7 @@ category `C` and `a + 1 = b`. -/
 noncomputable def triangleLEGE (a b : ℤ) (h : a + 1 = b) : C ⥤ Triangle C :=
   Triangle.functorMk (t.truncLEι a) (t.truncGEπ b) (t.truncGEδLE a b h)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism of triangles `t.triangleLEGE a b h ≅ t.triangleLTGE b`
 when `a + 1 = b`. -/
 noncomputable def triangleLEGEIsoTriangleLTGE (a b : ℤ) (h : a + 1 = b) :
@@ -211,6 +215,7 @@ category `C` and `n : ℤ`. -/
 noncomputable def triangleLEGT (n : ℤ) : C ⥤ Triangle C :=
   Triangle.functorMk (t.truncLEι n) (t.truncGTπ n) (t.truncGTδLE n)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism `t.triangleLEGT a ≅ t.triangleLEGE a b h`
 when `a + 1 = b`. -/
 noncomputable def triangleLEGTIsoTriangleLEGE (a b : ℤ) (h : a + 1 = b) :
@@ -231,6 +236,7 @@ lemma isLE_iff_isIso_truncLEι_app (n : ℤ) (X : C) :
     t.IsLE X n ↔ IsIso ((t.truncLEι n).app X) :=
   t.isLE_iff_isIso_truncLTι_app n (n + 1) rfl X
 
+set_option backward.isDefEq.respectTransparency false in
 lemma isGE_iff_isIso_truncGTπ_app (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) (X : C) :
     t.IsGE X n₁ ↔ IsIso ((t.truncGTπ n₀).app X) := by
   rw [t.isGE_iff_isIso_truncGEπ_app n₁ X]
@@ -256,6 +262,7 @@ lemma isZero_truncLE_obj_of_isGE (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) (X : C)
   rw [← t.isGE_iff_isZero_truncLE_obj _ _ h X]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 lemma to_truncLE_obj_ext {n : ℤ} {Y : C} {X : C}
     {f₁ f₂ : Y ⟶ (t.truncLE n).obj X} (h : f₁ ≫ (t.truncLEι n).app X = f₂ ≫ (t.truncLEι n).app X)
     [t.IsLE Y n] :

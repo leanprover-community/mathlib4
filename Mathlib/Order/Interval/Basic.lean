@@ -548,6 +548,7 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
 
 end Decidable
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 theorem disjoint_coe (s t : Interval α) : Disjoint (s : Set α) t ↔ Disjoint s t := by
   classical

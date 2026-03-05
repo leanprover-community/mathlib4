@@ -221,6 +221,7 @@ theorem coe_algebraMap_over_bot :
       IntermediateField.botEquiv F E :=
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 instance isScalarTower_over_bot : IsScalarTower (⊥ : IntermediateField F E) F E :=
   IsScalarTower.of_algebraMap_eq
     (by
@@ -238,6 +239,7 @@ def topEquiv : (⊤ : IntermediateField F E) ≃ₐ[F] E :=
 
 section RestrictScalars
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem restrictScalars_bot_eq_self (K : IntermediateField F E) :
     (⊥ : IntermediateField K E).restrictScalars _ = K :=
@@ -369,6 +371,7 @@ theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : 
     (subset_adjoin _ _).trans h⟩, fun ⟨hF, hS⟩ =>
       (Subfield.closure_le (t := (adjoin F' S').toSubfield)).mpr (Set.union_subset hF hS)⟩
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Adjoining S and then T is the same as adjoining `S ∪ T`. -/
 theorem adjoin_adjoin_left (T : Set E) :
     (adjoin (adjoin F S) T).restrictScalars _ = adjoin F (S ∪ T) := by
@@ -392,6 +395,7 @@ theorem adjoin_insert_adjoin (x : E) :
           adjoin_le_iff.mpr (subset_adjoin_of_subset_right _ _ (Set.subset_insert _ _))⟩))
     (by grw [← subset_adjoin])
 
+set_option backward.isDefEq.respectTransparency false in
 /-- `F[S][T] = F[T][S]` -/
 theorem adjoin_adjoin_comm (T : Set E) :
     (adjoin (adjoin F S) T).restrictScalars F = (adjoin (adjoin F T) S).restrictScalars F := by
@@ -432,10 +436,12 @@ theorem lift_inf (K : IntermediateField F E) (L L' : IntermediateField F K) :
 theorem adjoin_self (K : IntermediateField F E) :
     adjoin F K = K := le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_adjoin (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = adjoin F (K ∪ S) := by
   rw [← adjoin_self _ K, adjoin_adjoin_left, adjoin_self _ K]
 
+set_option backward.isDefEq.respectTransparency false in
 variable {F} in
 theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ adjoin F S) :
     extendScalars h = adjoin K S := restrictScalars_injective F <| by
@@ -446,6 +452,7 @@ theorem extendScalars_adjoin {K : IntermediateField F E} {S : Set E} (h : K ≤ 
 theorem adjoin_union {S T : Set E} : adjoin F (S ∪ T) = adjoin F S ⊔ adjoin F T :=
   gc.l_sup
 
+set_option backward.isDefEq.respectTransparency false in
 theorem restrictScalars_adjoin_eq_sup (K : IntermediateField F E) (S : Set E) :
     restrictScalars F (adjoin K S) = K ⊔ adjoin F S := by
   rw [restrictScalars_adjoin, adjoin_union, adjoin_self]
@@ -562,9 +569,18 @@ theorem AdjoinSimple.coe_gen : (AdjoinSimple.gen F α : E) = α :=
 theorem AdjoinSimple.algebraMap_gen : algebraMap F⟮α⟯ E (AdjoinSimple.gen F α) = α :=
   rfl
 
+-- Note: After unfolding `AdjoinSimple.gen`, the simp lemma `coe_aeval_mk_apply`
+-- does not fire, so we have to add this.
+@[simp]
+theorem AdjoinSimple.coe_aeval_gen_apply (f : F[X]) :
+    aeval (AdjoinSimple.gen F α) f = aeval α f :=
+  Polynomial.coe_aeval_mk_apply ..
+
+set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_simple_adjoin_simple (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮α, β⟯ :=
   adjoin_adjoin_left _ _ _
 
+set_option backward.isDefEq.respectTransparency false in
 theorem adjoin_simple_comm (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮β⟯⟮α⟯.restrictScalars F :=
   adjoin_adjoin_comm _ _ _
 
@@ -590,6 +606,7 @@ def RingHom.adjoinAlgebraMap : A⟮b⟯ →+* A⟮((algebraMap B C) b)⟯ :=
 instance : Algebra A⟮b⟯ A⟮(algebraMap B C) b⟯ :=
   RingHom.toAlgebra (RingHom.adjoinAlgebraMap _)
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsScalarTower A⟮b⟯ A⟮(algebraMap B C) b⟯ C :=
   IsScalarTower.of_algebraMap_eq' (by rfl)
 
@@ -663,6 +680,7 @@ theorem fg_iSup {ι : Sort*} [Finite ι] {S : ι → IntermediateField F E} (h :
   simp_rw [← hs, ← adjoin_iUnion]
   exact fg_adjoin_of_finite (Set.finite_iUnion fun _ ↦ Finset.finite_toSet _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E), ∀ x ∈ S, P K → P (K⟮x⟯.restrictScalars F)) :
     P (adjoin F S) := by
@@ -672,6 +690,7 @@ theorem induction_on_adjoin_finset (S : Finset E) (P : IntermediateField F E →
   · rw [Finset.coe_insert, Set.insert_eq, Set.union_comm, ← adjoin_adjoin_left]
     exact ih (adjoin F _) _ ha h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem induction_on_adjoin_fg (P : IntermediateField F E → Prop) (base : P ⊥)
     (ih : ∀ (K : IntermediateField F E) (x : E), P K → P (K⟮x⟯.restrictScalars F))
     (K : IntermediateField F E) (hK : K.FG) : P K := by
@@ -739,10 +758,12 @@ namespace IntermediateField
 
 variable (F : IntermediateField K L)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_self : extendScalars (le_refl F) = ⊥ :=
   restrictScalars_injective K (by simp)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem extendScalars_top : extendScalars (le_top : F ≤ ⊤) = ⊤ :=
   restrictScalars_injective K (by simp)

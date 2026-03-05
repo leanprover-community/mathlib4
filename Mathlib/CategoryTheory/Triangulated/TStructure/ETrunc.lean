@@ -36,11 +36,7 @@ variable (t : TStructure C)
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to the zero functor,
 `n : ℤ` to `t.truncLT n` and `⊤` to `𝟭 C`. -/
 noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
-  obj n := by
-    induction n using WithBotTop.rec with
-    | bot => exact 0
-    | coe a => exact t.truncLT a
-    | top => exact 𝟭 C
+  obj := WithBotTop.rec 0 (t.truncLT ·) (𝟭 C)
   map {x y} f := by
     induction x using WithBotTop.rec with
     | bot =>
@@ -79,16 +75,13 @@ lemma eTruncLT_map_eq_truncLTι (n : ℤ) :
     t.eTruncLT.map (homOfLE (show (n : EInt) ≤ ⊤ by simp)) = t.truncLTι n := rfl
 
 instance (i : EInt) : (t.eTruncLT.obj i).Additive := by
-  induction i using WithBotTop.rec <;> constructor <;> cat_disch
+  induction i using WithBotTop.rec
+  all_goals dsimp; infer_instance
 
 /-- The functor `EInt ⥤ C ⥤ C` which sends `⊥` to `𝟭 C`,
 `n : ℤ` to `t.truncGE n` and `⊤` to the zero functor. -/
 noncomputable def eTruncGE : EInt ⥤ C ⥤ C where
-  obj n := by
-    induction n using WithBotTop.rec with
-    | bot => exact 𝟭 C
-    | coe a => exact t.truncGE a
-    | top => exact 0
+  obj := WithBotTop.rec (𝟭 C) t.truncGE 0
   map {x y} f := by
     induction x using WithBotTop.rec with
     | bot =>
@@ -125,17 +118,15 @@ lemma eTruncGE_obj_top :
 lemma eTruncGE_obj_coe (n : ℤ) : t.eTruncGE.obj n = t.truncGE n := rfl
 
 instance (i : EInt) : (t.eTruncGE.obj i).Additive := by
-  induction i using WithBotTop.rec <;> constructor <;> cat_disch
+  induction i using WithBotTop.rec
+  all_goals dsimp; infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The connecting homomorphism from `t.eTruncGE` to the
 shift by `1` of `t.eTruncLT`. -/
 noncomputable def eTruncGEδLT :
-    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight C C C).obj (shiftFunctor C (1 : ℤ))) where
-  app a := by
-    induction a using WithBotTop.rec with
-    | bot => exact 0
-    | coe a => exact t.truncGEδLT a
-    | top => exact 0
+    t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight ..).obj (shiftFunctor C (1 : ℤ))) where
+  app a := WithBotTop.rec 0 (t.truncGEδLT ·) 0 a
   naturality {a b} hab := by
     replace hab := leOfHom hab
     induction a using WithBotTop.rec; rotate_right
@@ -166,20 +157,19 @@ instance : IsIso (t.eTruncLTι ⊤) := by
   dsimp [eTruncLTι]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncLT_map_app_eTruncLTι_app {i j : EInt} (f : i ⟶ j) (X : C) :
     (t.eTruncLT.map f).app X ≫ (t.eTruncLTι j).app X = (t.eTruncLTι i).app X := by
   simp only [← NatTrans.comp_app, ← Functor.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma eTruncLT_obj_map_eTruncLTι_app (i : EInt) (X : C) :
     (t.eTruncLT.obj i).map ((t.eTruncLTι i).app X) =
     (t.eTruncLTι i).app ((t.eTruncLT.obj i).obj X) := by
-  induction i using WithBotTop.rec with
-  | bot => simp
-  | coe n => simp [truncLT_map_truncLTι_app]
-  | top => simp
+  induction i using WithBotTop.rec with simp [truncLT_map_truncLTι_app]
 
 /-- The natural transformation `𝟭 C ⟶ t.eTruncGE.obj i` for all `i : EInt`. -/
 noncomputable abbrev eTruncGEπ (i : EInt) : 𝟭 C ⟶ t.eTruncGE.obj i :=
@@ -198,21 +188,21 @@ instance : IsIso (t.eTruncGEπ ⊥) := by
   dsimp [eTruncGEπ]
   infer_instance
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma eTruncGEπ_app_eTruncGE_map_app {i j : EInt} (f : i ⟶ j) (X : C) :
     (t.eTruncGEπ i).app X ≫ (t.eTruncGE.map f).app X = (t.eTruncGEπ j).app X := by
   simp only [← NatTrans.comp_app, ← Functor.map_comp]
   rfl
 
+set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma eTruncGE_obj_map_eTruncGEπ_app (i : EInt) (X : C) :
     (t.eTruncGE.obj i).map ((t.eTruncGEπ i).app X) =
     (t.eTruncGEπ i).app ((t.eTruncGE.obj i).obj X) := by
-  induction i using WithBotTop.rec with
-  | bot => simp
-  | coe n => simp [truncGE_map_truncGEπ_app]
-  | top => simp
+  induction i using WithBotTop.rec with simp [truncGE_map_truncGEπ_app]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The (distinguished) triangles given by the natural transformations
 `t.eTruncLT.obj i ⟶ 𝟭 C ⟶ t.eTruncGE.obj i ⟶ ...` for all `i : EInt`. -/
 @[simps!]

@@ -59,7 +59,8 @@ namespace OreLocalization
 variable {R : Type*} [Monoid R] (S : Submonoid R) [OreSet S] (X) [MulAction R X]
 
 /-- The setoid on `R × S` used for the Ore localization. -/
-@[to_additive AddOreLocalization.oreEqv /-- The setoid on `R × S` used for the Ore localization. -/]
+@[to_additive (attr := instance_reducible) AddOreLocalization.oreEqv
+  /-- The setoid on `R × S` used for the Ore localization. -/]
 def oreEqv : Setoid (X × S) where
   r rs rs' := ∃ (u : S) (v : R), u • rs'.1 = v • rs.1 ∧ u * rs'.2 = v * rs.2
   iseqv := by

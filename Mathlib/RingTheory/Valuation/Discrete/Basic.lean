@@ -323,6 +323,7 @@ theorem exists_pow_Uniformizer {r : K₀} (hr : r ≠ 0) (π : Uniformizer v) :
   rw [IsUnit.unit_spec, Subring.coe_pow, ha, ← mul_assoc, zpow_neg, hn, zpow_natCast,
     mul_inv_cancel₀ (pow_ne_zero _ π.ne_zero), one_mul]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem Uniformizer.is_generator (π : Uniformizer v) :
     maximalIdeal v.valuationSubring = Ideal.span {π.1} := by
   apply (maximalIdeal.isMaximal _).eq_of_le
@@ -344,6 +345,7 @@ theorem IsUniformizer.is_generator {π : v.valuationSubring} (hπ : IsUniformize
     maximalIdeal v.valuationSubring = Ideal.span {π} :=
   Uniformizer.is_generator ⟨π, hπ⟩
 
+set_option backward.isDefEq.respectTransparency false in
 theorem pow_Uniformizer_is_pow_generator (π : Uniformizer v) (n : ℕ) :
     maximalIdeal v.valuationSubring ^ n = Ideal.span {π.1 ^ n} := by
   rw [← Ideal.span_singleton_pow, Uniformizer.is_generator]
@@ -362,6 +364,7 @@ theorem valuationSubring_not_isField [Nontrivial ↥(valueGroup v)] [IsCyclic (v
   rw [← isUnit_iff_exists_inv] at h
   exact hπ.not_isUnit h
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
     (hr : maximalIdeal v.valuationSubring = Ideal.span {r}) :
     IsUniformizer v r := by
@@ -375,6 +378,7 @@ theorem isUniformizer_of_maximalIdeal_eq_span [v.IsRankOneDiscrete] {r : K₀}
   rw [Uniformizer.is_generator ⟨π, hπ⟩, span_singleton_eq_span_singleton] at hr
   exact hπ.of_associated hr
 
+set_option backward.isDefEq.respectTransparency false in
 theorem ideal_isPrincipal [IsCyclic (valueGroup v)] [Nontrivial (valueGroup v)] (I : Ideal K₀) :
     I.IsPrincipal := by
   suffices ∀ P : Ideal K₀, P.IsPrime → Submodule.IsPrincipal P by

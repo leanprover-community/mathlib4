@@ -96,6 +96,7 @@ so it does not make much sense using `do` notation in general.
 Moreover, this would cause monad-related coercions and monad lifting logic to become activated.
 Either use `attribute [local instance] Set.monad` to make it be a local instance
 or use `SetM.run do ...` when `do` notation is wanted. -/
+@[instance_reducible]
 protected def monad : AlternativeMonad.{u} Set where
   __ : Alternative Set := inferInstance
   bind s f := ⋃ i ∈ s, f i

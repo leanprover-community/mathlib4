@@ -479,8 +479,8 @@ variable [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [
 /-- The rescaling homeomorphism between additive circles with different periods. -/
 def homeomorphAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃ₜ AddCircle q :=
   ⟨equivAddCircle p q hp hq,
-    (continuous_quotient_mk'.comp (continuous_mul_right (p⁻¹ * q))).quotient_lift _,
-    (continuous_quotient_mk'.comp (continuous_mul_right (q⁻¹ * p))).quotient_lift _⟩
+    (continuous_quotient_mk'.comp (continuous_mul_const (p⁻¹ * q))).quotient_lift _,
+    (continuous_quotient_mk'.comp (continuous_mul_const (q⁻¹ * p))).quotient_lift _⟩
 
 @[simp]
 theorem homeomorphAddCircle_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : 𝕜) :
@@ -616,11 +616,6 @@ lemma not_isOfFinAddOrder_iff_forall_rat_ne_div {a : 𝕜} :
 lemma isOfFinAddOrder_iff_exists_rat_eq_div {a : 𝕜} :
     IsOfFinAddOrder (a : AddCircle p) ↔ ∃ q : ℚ, (q : 𝕜) = a / p := by
   simpa using not_isOfFinAddOrder_iff_forall_rat_ne_div.not_right
-
-@[deprecated not_isOfFinAddOrder_iff_forall_rat_ne_div (since := "2025-08-13")]
-theorem addOrderOf_coe_eq_zero_iff_forall_rat_ne_div {a : 𝕜} :
-    addOrderOf (a : AddCircle p) = 0 ↔ ∀ q : ℚ, (q : 𝕜) ≠ a / p := by
-  simp [not_isOfFinAddOrder_iff_forall_rat_ne_div]
 
 variable (p)
 

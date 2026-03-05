@@ -116,6 +116,7 @@ theorem terminates_parallel.aux :
       have := H1 _ h
       rcases Seq.destruct S with (_ | ⟨_ | c, S'⟩) <;> apply IH <;> simp [this]
 
+set_option backward.isDefEq.respectTransparency false in
 theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : Terminates c] :
     Terminates (parallel S) := by
   suffices
