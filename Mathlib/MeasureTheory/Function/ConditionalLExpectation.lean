@@ -150,6 +150,16 @@ theorem lintegral_condLExp (P : Measure[mΩ₀] Ω) [hσ : SigmaFinite (P.trim h
     ∫⁻ ω, P⁻[X|mΩ] ω ∂P = ∫⁻ ω, X ω ∂P := by
   simpa [← setLIntegral_univ] using setLIntegral_condLExp _ _ _ .univ
 
+lemma condLExp_lt_top {f : Ω → ℝ≥0∞} (hf : ∫⁻ x, f x ∂P ≠ ∞) : ∀ᵐ x ∂P, P⁻[f | mΩ] x < ⊤ := by
+  by_cases hm : mΩ ≤ mΩ₀
+  swap; · simp [condLExp_of_not_le hm]
+  by_cases hσ : SigmaFinite (P.trim hm)
+  · exact ae_lt_top' (by fun_prop) (by rwa [lintegral_condLExp])
+  · simp [condLExp_of_not_sigmaFinite hm hσ]
+
+lemma condLExp_ne_top {f : Ω → ℝ≥0∞} (hf : ∫⁻ x, f x ∂P ≠ ∞) : ∀ᵐ x ∂P, P⁻[f | mΩ] x ≠ ⊤ := by
+  filter_upwards [condLExp_lt_top hf] with x hx using hx.ne
+
 theorem ae_eq_condLExp₀ {P : Measure[mΩ₀] Ω} [hσ : SigmaFinite (P.trim hm)]
     (X : Ω → ℝ≥0∞) (hY : AEMeasurable[mΩ] Y (P.trim hm))
     (hXY : ∀ s, MeasurableSet[mΩ] s → ∫⁻ ω in s, Y ω ∂P = ∫⁻ ω in s, X ω ∂P) :
