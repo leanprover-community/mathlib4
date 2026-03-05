@@ -62,7 +62,7 @@ noncomputable def eTruncLT : EInt ⥤ C ⥤ C where
       induction z using WithBotTop.rec <;> cat_disch
 
 @[simp]
-lemma eTruncLT_obj_top : t.eTruncLT.obj ⊤ = 𝟭 _ :=rfl
+lemma eTruncLT_obj_top : t.eTruncLT.obj ⊤ = 𝟭 _ := rfl
 
 @[simp]
 lemma eTruncLT_obj_bot : t.eTruncLT.obj ⊥ = 0 := rfl
