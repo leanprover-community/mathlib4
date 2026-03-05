@@ -9,10 +9,9 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
-# Miscellaneous pre-requisites for covariant derivatives
+# Bilinear map pre-requisites for covariant derivatives
 
-TODO: this file should not exist; move everything in here to a proper place
-(and PR it accordingly)
+PRed as #36193
 
 -/
 
