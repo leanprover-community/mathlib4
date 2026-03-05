@@ -153,12 +153,15 @@ end IsKrasner
 
 namespace Polynomial
 
+/-- **Continuity of Roots.** If the coefficients of two polynomials `f` and `g` are sufficiently
+close, then every root of `f` has a corresponding root of `g` nearby. -/
 theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt {K : Type*}
     [NormedField K] {f g : Polynomial K}
     (a : K) {ε : ℝ} (hε : 0 < ε) (ha : f.eval a = 0) (hfm : f.Monic)
     (hgm : g.Monic) (hdeg : g.natDegree = f.natDegree)
     (hcoeff : ∀ i : ℕ, ‖g.coeff i - f.coeff i‖ < ε) (hg : g.Splits) :
     ∃ b ∈ g.roots, ‖a - b‖ < ((f.natDegree + 1) * ε) ^ (f.natDegree : ℝ)⁻¹ * max ‖a‖ 1 := by
+  --  Fix a root of It suffices to show that
   suffices this : (g.roots.map fun x => ‖a - x‖).prod <
       ((f.natDegree + 1) * ε) * (max ‖a‖ 1) ^ (f.natDegree : ℝ) by
     by_contra! h

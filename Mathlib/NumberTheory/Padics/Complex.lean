@@ -30,7 +30,6 @@ structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 * `PadicComplex.norm_extends` : the norm on `ℂ_[p]` extends the norm on `PadicAlgCl p`, and hence
   the norm on `ℚ_[p]`.
 * `PadicComplex.isNonarchimedean` : The norm on `ℂ_[p]` is nonarchimedean.
-* `PadicComplex.isAlgClosed`: the `p`-adic complex number field is algebraically closed.
 
 ## Notation
 
@@ -141,12 +140,6 @@ abbrev PadicComplex := UniformSpace.Completion (PadicAlgCl p)
 /-- `ℂ_[p]` is the field of `p`-adic complex numbers. -/
 notation "ℂ_[" p "]" => PadicComplex p
 
-instance : Algebra ℚ_[p] ℂ_[p] := inferInstance
-
-instance : NormedField ℂ_[p] := inferInstance
-
-instance : IsScalarTower ℚ_[p] (PadicAlgCl p) ℂ_[p] := inferInstance
-
 namespace PadicComplex
 
 set_option backward.isDefEq.respectTransparency false in
@@ -249,6 +242,7 @@ instance charZero : CharZero ℂ_[p] :=
   (RingHom.charZero_iff (algebraMap ℚ_[p] ℂ_[p]).injective).mp inferInstance
 
 set_option backward.isDefEq.respectTransparency false in
+/-- `ℂ_[p]` is algebrically closed. -/
 instance isAlgClosed : IsAlgClosed ℂ_[p] :=
   IsAlgClosed.of_denseRange (i := algebraMap (PadicAlgCl p) ℂ_[p])
     UniformSpace.Completion.denseRange_coe
