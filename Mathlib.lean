@@ -871,6 +871,7 @@ public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Algebra.Order.Algebra
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
+public import Mathlib.Algebra.Order.Antidiag.FinsuppEquiv
 public import Mathlib.Algebra.Order.Antidiag.Nat
 public import Mathlib.Algebra.Order.Antidiag.Pi
 public import Mathlib.Algebra.Order.Antidiag.Prod
