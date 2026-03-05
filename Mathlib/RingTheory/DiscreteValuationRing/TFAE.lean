@@ -243,14 +243,16 @@ lemma IsLocalRing.finrank_CotangentSpace_eq_one [IsDomain R] [IsDiscreteValuatio
   finrank_CotangentSpace_eq_one_iff.mpr ‹_›
 
 open Ring in
-lemma IsDiscreteValuationRing.ringKrullDim_eq_one [IsDomain R] [IsDiscreteValuationRing R] : ringKrullDim R = 1 := by
+lemma IsDiscreteValuationRing.ringKrullDim_eq_one [IsDomain R] [IsDiscreteValuationRing R] :
+    ringKrullDim R = 1 := by
   refine eq_of_le_of_not_lt (krullDimLE_iff (n := 1).mp ?_) fun h ↦ ?_
   · exact krullDimLE_one_iff_of_isPrime_bot.mpr fun I hI hI' ↦ hI'.isMaximal hI
   · have : KrullDimLE 0 R := krullDimLE_iff.mpr (WithBot.lt_add_one_iff.mp h)
     exact IsDiscreteValuationRing.not_isField R KrullDimLE.isField_of_isDomain
 
 open Ring in
-lemma IsDiscreteValuationRing.not_krullDimLE_zero [IsDomain R] [IsDiscreteValuationRing R] : ¬ KrullDimLE 0 R := by
+lemma IsDiscreteValuationRing.not_krullDimLE_zero [IsDomain R] [IsDiscreteValuationRing R] :
+      ¬ KrullDimLE 0 R := by
   simp [krullDimLE_iff, ringKrullDim_eq_one R]
 
 instance (priority := 100) IsDedekindDomain.isPrincipalIdealRing
