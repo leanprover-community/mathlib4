@@ -71,14 +71,7 @@ lemma adjunction_counit_app_hom [HasWeakSheafify J D] [HasSheafCompose J F] (adj
       sheafifyLift J (((adj.whiskerRight Cᵒᵖ).counit.app Y.obj)) Y.property :=
   ((sheafToPresheaf _ _).congr_map
     (Adjunction.map_restrictFullyFaithful_counit_app _ _ (Functor.FullyFaithful.id _)
-      (L := composeAndSheafify J G) (R := sheafCompose J F) _ _ Y)).trans (by
-        dsimp
-        simp only [Adjunction.comp_counit_app, ObjectProperty.ι_obj, comp_obj,
-          whiskeringRight_obj_obj, id_obj, ObjectProperty.FullSubcategory.comp_hom,
-          sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift, Category.comp_id,
-          Category.id_comp]
-        congr 1
-        cat_disch)
+      (L := composeAndSheafify J G) (R := sheafCompose J F) _ _ Y)).trans (by cat_disch)
 
 @[deprecated (since := "2026-03-05")]
 alias adjunction_counit_app_val := adjunction_counit_app_hom
