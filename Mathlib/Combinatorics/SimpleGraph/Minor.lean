@@ -26,9 +26,11 @@ namespace SimpleGraph
 
 variable {V V'}
 
+/-- A graph `G` is a minor of a graph `G'` if it is a contraction of a subgraph of `G'`. -/
 def IsMinor (G : SimpleGraph V) (G' : SimpleGraph V') : Prop :=
   ∃ K : Subgraph G', G ≼c K.coe
 
+/-- Infix notation for graph minor. -/
 infix:50 " ≼ " => IsMinor
 
 end SimpleGraph

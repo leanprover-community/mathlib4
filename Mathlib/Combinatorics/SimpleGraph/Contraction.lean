@@ -33,7 +33,7 @@ namespace SimpleGraph
 variable {V V' V'' : Type*} {G : SimpleGraph V} {G' : SimpleGraph V'} {G'' : SimpleGraph V''}
   {f : V → V'} {g : V' → V''} {x y z : V} {u v w : V'}
 
-/-! A function is adapted to a graph if it has connected fibers. -/
+/-- A function is adapted to a graph if it has connected fibers. -/
 def Adapted (G : SimpleGraph V) (f : V → V') : Prop :=
   ∀ ⦃x y : V⦄, f x = f y → ∃ p : G.Walk x y, ∀ z ∈ p.support, f z = f x
 
@@ -46,7 +46,7 @@ lemma of_injective (h : Injective f) : Adapted G f := by
 lemma id : Adapted G id :=
   of_injective injective_id
 
-/-! Lift a walk from a contraction to the original graph. -/
+/-- Lift a walk from a contraction to the original graph. -/
 noncomputable def lift_walk (hf : Adapted G f) (p : Walk (G.map f) u v) :
     ∀ x y, f x = u → f y = v → { q : Walk G x y // ∀ z ∈ q.support, f z ∈ p.support } := by
   induction p with
@@ -67,7 +67,7 @@ noncomputable def lift_walk (hf : Adapted G f) (p : Walk (G.map f) u v) :
     simp only [Walk.mem_support_append_iff, Walk.support_cons, List.mem_cons] at hz
     obtain h | h | h := hz <;> simp_all
 
-/-! Variant of `lift_walk` where the endpoints are explicit images by the function. -/
+/-- Variant of `lift_walk` where the endpoints are explicit images by the function. -/
 noncomputable def lift_walk' (hf : Adapted G f) (p : Walk (G.map f) (f x) (f y)) :
     { q : Walk G x y // ∀ z ∈ q.support, f z ∈ p.support } :=
   lift_walk hf p x y rfl rfl
@@ -79,13 +79,13 @@ theorem comp (hf : Adapted G f) (hg : Adapted (G.map f) g) : Adapted G (g ∘ f)
 
 end Adapted
 
-/-! A graph `G` is a contraction of a graph `G'` if it is the image of `G'` via `SimpleGraph.map`
+/-- A graph `G` is a contraction of a graph `G'` if it is the image of `G'` via `SimpleGraph.map`
   through a function `f` that is surjective and has connected fibers. This can in particular be used
-  when `f` is a quotient map with connected cosets.
-  -/
+  when `f` is a quotient map with connected cosets. -/
 def IsContraction (G : SimpleGraph V) (G' : SimpleGraph V') : Prop :=
   ∃ φ : V' → V, Surjective φ ∧ Adapted G' φ ∧ G = G'.map φ
 
+/-- Infix notation for graph contraction. -/
 infix:50 " ≼c " => IsContraction
 
 namespace IsContraction
