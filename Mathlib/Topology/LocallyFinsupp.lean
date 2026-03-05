@@ -112,7 +112,7 @@ lemma LocallyFiniteSupport.finite_inter_support_of_isCompact {W : Set X}
 
 lemma Function.locallyFinsupp.locallyFiniteSupport [Zero Y] (f : locallyFinsupp X Y) :
     LocallyFiniteSupport f.toFun :=
-  fun z ↦ f.supportLocallyFiniteWithinDomain' z (mem_of_subset_of_mem (fun _ a ↦ a) trivial)
+  (f.supportLocallyFiniteWithinDomain' · (by trivial))
 
 namespace Function.locallyFinsuppWithin
 
