@@ -390,7 +390,7 @@ lemma congr_σ_of_eqOn [IsManifold I 1 M]
     · simpa using hσσ' _ hx's
     · simp
   have hψ' : HasMFDerivAt I 𝓘(𝕜) ψ x 0 := by
-    have : HasMFDerivAt I 𝓘(𝕜, 𝕜) (fun x_1 ↦ (1:𝕜)) x 0 := hasMFDerivAt_const ..
+    have : HasMFDerivAt I 𝓘(𝕜, 𝕜) (fun (_x : M) ↦ (1 : 𝕜)) x 0 := hasMFDerivAt_const ..
     refine this.congr_of_eventuallyEq ?_
     apply Filter.eventuallyEq_of_mem hxs
     intro t ht

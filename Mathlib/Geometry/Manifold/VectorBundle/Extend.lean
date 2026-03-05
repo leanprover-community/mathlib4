@@ -46,36 +46,32 @@ The details of the extension are mostly unspecified: for covariant derivatives, 
 noncomputable def extend {x : M} (v₀ : V x) :
     (x' : M) → V x' :=
   letI t := trivializationAt F V x
-  let w : F := (t ⟨x, v₀⟩).2
+  letI w : F := (t ⟨x, v₀⟩).2
   fun x' ↦ t.symm x' w
 
-variable {I F}
-
+variable {I F} in
 @[simp] lemma extend_apply_self {x : M} (v : V x) :
     extend F v x = v := by
   unfold extend
-  rw [Trivialization.symm_apply_apply_mk]
-  exact FiberBundle.mem_baseSet_trivializationAt' x
-
-variable (I F)
+  simp [FiberBundle.mem_baseSet_trivializationAt' x]
 
 variable [NormedSpace 𝕜 F]
 
 -- TODO there is a lemma already with this name which should be renamed to something like
--- `Chart.contMDiffAt_extend`
+-- `Chart.contMDiffAt_extend` or `OpenPartialHomeomorph.contMDiffAt_extend`
 lemma contMDiffAt_extend' {k} [IsManifold I k M] {x : M} (σ₀ : V x) :
     CMDiffAt k (T% (extend F σ₀)) x := by
   rw [contMDiffAt_section]
   set t := trivializationAt F V x
   let w : F := (t ⟨x, σ₀⟩).2
-  have : ContMDiffAt I 𝓘(𝕜, F) k (fun x_1 ↦ w) x := contMDiffAt_const
+  have : CMDiffAt k (fun (_x : M) ↦ w) x := contMDiffAt_const
   refine this.congr_of_eventuallyEq ?_
   apply eventually_nhds_iff.mpr
   refine ⟨t.baseSet, ?_, t.open_baseSet, ?_⟩
   · intro x hx
     dsimp only
     unfold extend
-    rw [t.mk_symm hx, t.apply_symm_apply' hx]
+    simp [t, hx, w]
   · exact FiberBundle.mem_baseSet_trivializationAt' x
 
 lemma mdifferentiableAt_extend [IsManifold I 1 M] {x : M} (σ₀ : V x) :

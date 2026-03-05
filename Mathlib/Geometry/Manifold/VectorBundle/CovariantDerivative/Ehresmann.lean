@@ -262,9 +262,7 @@ lemma coordChangeL_mem_horiz [FiniteDimensional 𝕜 E]
   rintro ⟨s, sdiff, sxv, sxuw, covs⟩
   use fun x ↦ e.coordChangeL 𝕜 e' x (s x), ?_, ?_, ?_
   · let X := extend E u
-    have hX : MDiffAt (T% X) x := by
-      -- TODO: extract as lemma?
-      exact mdifferentiableAt_extend I E u
+    -- have hX : MDiffAt (T% X) x := mdifferentiableAt_extend I E u
     -- TODO: investigate whether the following line comes from inconsistent ways to
     -- state assumptions
     rw [mdifferentiableAt_section_trivial_iff] at sdiff

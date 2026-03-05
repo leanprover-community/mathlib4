@@ -21,8 +21,7 @@ open scoped Bundle Manifold ContDiff
 @[expose] public section -- TODO: think if we want to expose all definitions!
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
-
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
@@ -60,19 +59,19 @@ lemma tensoriality_criterion
     obtain ⟨t, htσσ', ht, hxt⟩ := hσσ'
     let ψ (x' : M) : 𝕜 := if x' ∈ t then 1 else 0
     have hψx : ψ x = 1 := by simp [ψ, hxt]
-    have (x' : M) : ((ψ : M → 𝕜) • σ) x' = ((ψ : M → 𝕜) • σ') x' := by
+    have (x' : M) : (ψ • σ) x' = (ψ • σ') x' := by
       dsimp [ψ]
       split_ifs with hx't
       · simpa using htσσ' _ hx't
       · simp
-    have hψ' : MDifferentiableAt I 𝓘(𝕜) ψ x := by
-      have : MDifferentiableAt I 𝓘(𝕜, 𝕜) (fun x_1 ↦ (1:𝕜)) x := mdifferentiableAt_const
+    have hψ' : MDiffAt ψ x := by
+      have : MDiffAt (fun (_x : M) ↦ (1 : 𝕜)) x := mdifferentiableAt_const
       refine this.congr_of_eventuallyEq ?_
       apply eventually_nhds_iff.mpr
       exact ⟨t, by simp [ψ], ht, hxt⟩
     calc φ σ x
-      _ = φ ((ψ : M → 𝕜) • σ) x := by simp [φ_smul _ _ hψ' hσ, hψx]
-      _ = φ ((ψ : M → 𝕜) • σ') x := by rw [funext this]
+      _ = φ (ψ • σ) x := by simp [φ_smul _ _ hψ' hσ, hψx]
+      _ = φ (ψ • σ') x := by rw [funext this]
       _ = φ σ' x := by simp [φ_smul _ _ hψ' hσ', hψx]
   let ι : Type _ := Basis.ofVectorSpaceIndex 𝕜 F
   classical
