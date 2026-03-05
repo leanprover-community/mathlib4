@@ -16,11 +16,18 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 /-!
 # Multivariate Gaussian distributions
 
-
+In this file we define the standard Gaussian distribution over a Euclidean space and multivariate
+Gaussian distributions over `EuclideanSpace ℝ ι`.
 
 ## Main definitions
 
-## Main statements
+* `stdGaussian E`: The standard Gaussian measure over a EuclideanSpace `E`.
+* `multivariateGaussian μ S`: The multivariate Gaussian distribution with mean `μ` and covariance
+  matrix `S`.
+
+## Tags
+
+multivariate Gaussian distribution
 
 -/
 
