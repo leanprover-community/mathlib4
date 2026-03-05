@@ -536,7 +536,7 @@ lemma max_abv_sum_one_le_of_isNonarchimedean {v : AbsoluteValue R S} (hv : IsNon
     max (v (∑ i ∈ s, x i)) 1 ≤ ∏ i ∈ s, max (v (x i)) 1 := by
   rcases s.eq_empty_or_nonempty with rfl | hs
   · simp
-  refine sup_le ?_ <| s.one_le_prod fun _ ↦ le_max_right ..
+  refine sup_le ?_ <| s.one_le_prod fun _ _ ↦ le_max_right ..
   grw [hv.apply_sum_le_sup_of_isNonarchimedean hs]
   exact sup'_le hs (fun i ↦ v (x i)) fun i hi ↦ le_prod_max_one hi fun i ↦ v (x i)
 
