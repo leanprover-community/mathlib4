@@ -147,7 +147,7 @@ theorem transcendental_of_ne_C (hf : ¬∃ c, f = C c) : Transcendental K f := b
 
 set_option backward.isDefEq.respectTransparency false in
 theorem irreducible_minpolyX' (hf : ¬∃ c, f = C c) : Irreducible (f.minpolyX K[f]) := by
-  let e := algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
+  let e := Polynomial.algEquivOfTranscendental K f (f.transcendental_of_ne_C hf)
   let φ : K[X][X] := f.num.map (algebraMap ..) -
     Polynomial.C Polynomial.X * f.denom.map (algebraMap ..)
   have φ_map : φ.mapEquiv e.toRingEquiv = (f.minpolyX K[f]) := by
