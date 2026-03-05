@@ -17,7 +17,7 @@ TODO: add a more complete doc-string
 
 -/
 
-open Bundle Filter Module Topology Set
+open Bundle Filter Module Topology Set NormedSpace
 open scoped Bundle Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -53,7 +53,8 @@ structure IsCovariantDerivativeOn [IsManifold I 1 M]
     (hσ : MDiffAt (T% σ) x) (hg : MDiffAt g x) (hx : x ∈ s := by trivial):
     f (g • σ) x = g x • f σ x
       + .toSpanSingleton 𝕜 (σ x) ∘L
-        (((bar (g x)).toContinuousLinearMap ∘L (mfderiv I 𝓘(𝕜) g x)))
+        (((fromTangentSpace (g x)).toContinuousLinearMap ∘L (mfderiv% g x)))
+
 
 /--
 A covariant derivative ∇ is called of class `C^k` iff,
@@ -88,7 +89,7 @@ lemma of_subsingleton [hE : Subsingleton E] [TopologicalSpace (TotalSpace E V)] 
   exact {
     addσ {σ σ' x} hσ hσ' hx := by simp [this]
     leibniz {σ g x} hσ hg hx := by
-      have H : (mfderiv I 𝓘(𝕜, 𝕜) g x) = 0 :=
+      have H : (mfderiv% g x) = 0 :=
         have : Subsingleton (TangentSpace I x) := inferInstanceAs (Subsingleton E)
         Subsingleton.eq_zero _
       simp [this, H] }
@@ -192,7 +193,7 @@ def affineCombination' {ι : Type*} {s : Finset ι} [Nonempty s]
     rw [← smul_add, (h i).addσ hσ hσ' hx]
   leibniz {σ g x} hσ hg hx := by
     set B := (ContinuousLinearMap.toSpanSingleton 𝕜 (σ x) ∘L
-            ((bar (g x)).toContinuousLinearMap ∘L (mfderiv I 𝓘(𝕜, 𝕜) g x)))
+      ((fromTangentSpace (g x)).toContinuousLinearMap ∘L (mfderiv% g x)))
     calc ∑ i ∈ s, f i x • cov i (g • σ) x
       _ = ∑ i ∈ s, (g x • f i x • cov i σ x + f i x • B) := by
           congr! 1 with i hi

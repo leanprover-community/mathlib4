@@ -21,7 +21,7 @@ TODO: add a more complete doc-string
 
 @[expose] public section -- TODO: think if we want to expose all definitions!
 
-open Bundle Filter Module Topology Set
+open Bundle Filter Module Topology Set NormedSpace
 
 open scoped Bundle Manifold ContDiff
 
@@ -89,7 +89,7 @@ lemma torsionFun_smul_left_apply [CompleteSpace E] (hcov : IsCovariantDerivative
   set B := f x • (cov Y x) (X x)
   set C := f x • VectorField.mlieBracket I X Y x
   set D := mfderiv% f x (Y x)
-  change B - (A + (bar _ D) • X x) - (-(bar _ D) • X x + C) = B - A - C
+  change B - (A + (fromTangentSpace _ D) • X x) - (-(fromTangentSpace _ D) • X x + C) = B - A - C
   module
 
 lemma torsionFun_smul_right_apply [CompleteSpace E]

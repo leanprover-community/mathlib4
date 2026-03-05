@@ -24,7 +24,7 @@ is an isometry) and prove the Levi-Civita connection is a metric connection
 
 -/
 
-open Bundle Filter Function Module Topology
+open Bundle Filter Function Module NormedSpace Topology
 
 open scoped Bundle Manifold ContDiff
 
@@ -213,7 +213,7 @@ private lemma aux1 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
     ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply,
     innerSL_apply_apply, innerSL_apply_apply, ContinuousLinearMap.toSpanSingleton_apply,
     inner_smul_right, mfderiv_smul (hσ.inner_bundle' hτ) hf]
-  simp only [smul_eq_mul, Pi.mul_apply, bar, ContinuousLinearEquiv.coe_coe,
+  simp only [smul_eq_mul, Pi.mul_apply, fromTangentSpace, ContinuousLinearEquiv.coe_coe,
     ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
   conv =>
     enter [1, 1, 1, 2, 2]
@@ -273,8 +273,8 @@ private lemma aux3 {x : M} {f : M → ℝ} {σ τ : (x : M) → TangentSpace I x
   erw [mfderiv_smul (hσ.inner_bundle' hτ) hf]
   --set C := (mfderiv I 𝓘(ℝ, ℝ) ⟪σ, τ⟫ x) X
   --set D := (mfderiv I 𝓘(ℝ, ℝ) f x) X
-  simp only [smul_eq_mul, bar, ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk,
-    AddHom.coe_mk, inner_smul_right]
+  simp only [smul_eq_mul, fromTangentSpace, ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk,
+    LinearMap.coe_mk, AddHom.coe_mk, inner_smul_right]
   -- would be nice to finish by a tactic now!
   erw [mul_add, mul_add]
   rw [Pi.mul_apply, mul_neg, mul_neg,
@@ -327,7 +327,7 @@ variable {I} in
 theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
     (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     MetricTensor cov x (Y x) (Z x) (X x) =
-    bar _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
+    fromTangentSpace _ (mfderiv% ⟪Y, Z⟫ x (X x)) - ⟪∇ Y, X, Z⟫ x - ⟪Y, ∇ Z, X⟫ x := by
   unfold MetricTensor
   rw [mk2TensorAt_apply _ _ _ _ _ _ hY hZ]
   simp only [myfun, ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_comp', coe_innerSL_apply,
@@ -338,7 +338,7 @@ theorem metricTensor_apply [FiniteDimensional ℝ E] (x : M)
   conv =>
     enter [1, 1, 2]
     erw [ContinuousLinearMap.comp_apply]
-  simp [product, real_inner_comm, bar]
+  simp [product, real_inner_comm, fromTangentSpace]
 
 /-- Predicate saying for a connection `∇` on a Riemannian manifold `(M, g)` to be compatible with
 the ambient metric, i.e. for all differentiable` vector fields `X`, `Y` and `Z` on `M`, we have
@@ -356,7 +356,7 @@ lemma isCompatible_apply [FiniteDimensional ℝ E] (hcov : cov.IsCompatible) {x 
   rw [IsCompatible] at hcov
   have : MetricTensor cov x (Y x) (Z x) (X x) = 0 := by simp [hcov]
   rw [metricTensor_apply cov x hY hZ] at this
-  change (bar _ ((mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x))) = _
+  change (fromTangentSpace _ ((mfderiv I 𝓘(ℝ, ℝ) ⟪Y, Z⟫ x) (X x))) = _
   exact isCompatible_apply_aux this
 
 lemma isCompatible_iff [FiniteDimensional ℝ E] :
@@ -687,25 +687,25 @@ lemma leviCivitaRhs_smulY_const [CompleteSpace E] {a : ℝ}
 lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs' I X (f • Y) Z x =
-      f x • leviCivitaRhs' I X Y Z x + ((bar _).toFun <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
+      f x • leviCivitaRhs' I X Y Z x + ((fromTangentSpace _).toFun <| mfderiv% f x (X x)) • 2 * ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs']
   simp_rw [rhs_aux_smulX I Y Z X f]
   simp only [product_smul_left, Pi.add_apply, Pi.sub_apply, smul_eq_mul, Pi.mul_apply]
   rw [rhs_aux_smulY_apply I X hf hY hZ, rhs_aux_smulZ_apply I Z hf hX hY]
   -- TODO: is there a better abstraction for this kind of "Lie bracket conv mode"?
   have h1 : ⟪Z, mlieBracket I (f • Y) X⟫ x =
-      - (bar _).toFun (((mfderiv% f x) (X x))) • ⟪Z, Y⟫ x + f x • ⟪Z, mlieBracket I Y X⟫ x := by
+      - (fromTangentSpace _).toFun (((mfderiv% f x) (X x))) • ⟪Z, Y⟫ x + f x • ⟪Z, mlieBracket I Y X⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_left (W := X) hf hY, inner_add_right]
     congr
-    · simp only [neg_smul, inner_neg_right, bar, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul,
+    · simp only [neg_smul, inner_neg_right, fromTangentSpace, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul,
       neg_mul, neg_inj]
       rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   have h2 : ⟪X, mlieBracket I Z (f • Y)⟫ x =
-      (bar _).toFun (((mfderiv% f x) (Z x))) • ⟪X, Y⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
+      (fromTangentSpace _).toFun (((mfderiv% f x) (Z x))) • ⟪X, Y⟫ x + f x • ⟪X, mlieBracket I Z Y⟫ x := by
     simp_rw [product_apply, mlieBracket_smul_right (V := Z) hf hY, inner_add_right]
     congr
-    · simp only [bar, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul]; rw [real_inner_smul_right]
+    · simp only [fromTangentSpace, AddHom.toFun_eq_coe, AddHom.coe_mk, smul_eq_mul]; rw [real_inner_smul_right]
     · rw [inner_smul_right_eq_smul]
   rw [h1, h2, product_swap I Y Z]
   set A := rhs_aux I X Y Z x
@@ -717,10 +717,10 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
   set G1 := ⟪Y, Z⟫ x
   set G2 := ⟪X, Y⟫ x
   set dfx := (mfderiv I 𝓘(ℝ, ℝ) f x)
-  set H := (bar (f x)) (dfx (X x)) with H_eq
-  set K := (bar (f x)) (dfx (Z x)) with K_eq
-  change f x * A + (bar _).toFun (dfx (X x)) * G1 + f x * B
-    - (f x * C + (bar _).toFun (dfx (Z x)) * G2)
+  set H := (fromTangentSpace (f x)) (dfx (X x)) with H_eq
+  set K := (fromTangentSpace (f x)) (dfx (Z x)) with K_eq
+  change f x * A + (fromTangentSpace _).toFun (dfx (X x)) * G1 + f x * B
+    - (f x * C + (fromTangentSpace _).toFun (dfx (Z x)) * G2)
     - f x * D - (-H * G1 + f x * E) + (K * G2 + f x * F) = _
   dsimp
   rw [← H_eq, ← K_eq]
@@ -729,7 +729,7 @@ lemma leviCivitaRhs'_smulY_apply [CompleteSpace E] {f : M → ℝ}
 lemma leviCivitaRhs_smulY_apply [CompleteSpace E] {f : M → ℝ}
     (hf : MDiffAt f x) (hX : MDiffAt (T% X) x) (hY : MDiffAt (T% Y) x) (hZ : MDiffAt (T% Z) x) :
     leviCivitaRhs I X (f • Y) Z x =
-      f x • leviCivitaRhs I X Y Z x + ((bar _).toFun <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
+      f x • leviCivitaRhs I X Y Z x + ((fromTangentSpace _).toFun <| mfderiv% f x (X x)) • ⟪Y, Z⟫ x := by
   simp only [leviCivitaRhs, Pi.smul_apply, leviCivitaRhs'_smulY_apply I hf hX hY hZ]
   rw [smul_add, smul_comm]
   congr 1
