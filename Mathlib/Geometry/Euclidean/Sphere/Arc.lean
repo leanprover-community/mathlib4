@@ -127,7 +127,7 @@ def opposite (a : Arc s) : Arc s where
   left_mem := a.left_mem
   mid_mem := Sphere.pointReflection_center_mem_sphere a.mid_mem
 
-lemma line_center_opposite_mid_eq_line_center_mid (a : Arc s) :
+lemma line_center_opposite_mid (a : Arc s) :
     line[ℝ, s.center, a.opposite.mid] = line[ℝ, s.center, a.mid] := by
   simp only [opposite]
   apply AffineSubspace.ext_of_direction_eq
@@ -145,7 +145,7 @@ lemma opposite_left (a : Arc s) : a.opposite.left = a.left := rfl
 lemma opposite_right (a : Arc s) : a.opposite.right = a.right := by
   simp only [right, opposite]
   exact eq_reflection_of_eq_subspace
-    (line_center_opposite_mid_eq_line_center_mid a) a.left
+    (line_center_opposite_mid a) a.left
 
 @[simp]
 lemma opposite_opposite (a : Arc s) : a.opposite.opposite = a := by
@@ -173,17 +173,17 @@ lemma sum_vsub_center_ne_zero_of_not_isDiameter {A C : P} (hA : A ∈ s)
     add_eq_zero_iff_eq_neg.mp h, neg_neg, vsub_vadd]
 
 /-- Helper to compute the mid of the minor arc. -/
-def minormid (s : Sphere P) (A C : P) : P :=
+def minorMidpoint (s : Sphere P) (A C : P) : P :=
   let v := (A -ᵥ s.center) + (C -ᵥ s.center)
   (s.radius / ‖v‖) • v +ᵥ s.center
 
-/-- The `minormid` lies on the sphere. -/
-lemma minormid_mem {A C : P} (hA : A ∈ s) (hC : C ∈ s)
-    (hNotDiam : ¬s.IsDiameter A C) : minormid s A C ∈ s := by
+/-- The `minorMidpoint` lies on the sphere. -/
+lemma minorMidpoint_mem {A C : P} (hA : A ∈ s) (hC : C ∈ s)
+    (hNotDiam : ¬s.IsDiameter A C) : minorMidpoint s A C ∈ s := by
   have hv : ‖(A -ᵥ s.center) + (C -ᵥ s.center)‖ ≠ 0 :=
     norm_ne_zero_iff.mpr (sum_vsub_center_ne_zero_of_not_isDiameter hA hNotDiam)
   have hradius : 0 ≤ s.radius := hC ▸ dist_nonneg
-  rw [mem_sphere, minormid, dist_vadd_left, norm_smul,
+  rw [mem_sphere, minorMidpoint, dist_vadd_left, norm_smul,
     Real.norm_of_nonneg (div_nonneg hradius (norm_nonneg _)), div_mul_cancel₀ _ hv]
 
 /-- The minor arc from `A` to `C`. The mid is chosen on the shorter arc.
@@ -191,9 +191,9 @@ Requires `A` and `C` are not diametrically opposite (but `A = C` is allowed,
 giving a single-point arc). -/
 def minor {A C : P} (hA : A ∈ s) (hC : C ∈ s) (hNotDiam : ¬s.IsDiameter A C) : Arc s where
   left := A
-  mid := minormid s A C
+  mid := minorMidpoint s A C
   left_mem := hA
-  mid_mem := minormid_mem hA  hC hNotDiam
+  mid_mem := minorMidpoint_mem hA  hC hNotDiam
 
 @[simp]
 lemma minor_left {A C : P} (hA : A ∈ s) (hC : C ∈ s) (hNotDiam : ¬s.IsDiameter A C) :
@@ -208,7 +208,7 @@ lemma minor_mid {A C : P} (hA : A ∈ s) (hC : C ∈ s) (hNotDiam : ¬s.IsDiamet
 @[simp]
 lemma minor_right {A C : P} (hA : A ∈ s) (hC : C ∈ s) (hNotDiam : ¬s.IsDiameter A C) :
     (minor hA hC hNotDiam).right = C := by
-  simp only [minor, right, minormid]
+  simp only [minor, right, minorMidpoint]
   set a := A -ᵥ s.center with ha_def
   set c := C -ᵥ s.center with hc_def
   set v := a + c with hv_def
@@ -420,6 +420,125 @@ lemma through_right [Fact (Module.finrank ℝ V = 2)] {A B C : P}
               _root_.midpoint_vsub_right, ← smul_neg, neg_vsub_eq_vsub_rev, invOf_eq_inv],
         vsub_vadd]
 
+/-- When `A = C`, the `throughMidpoint` coincides with the antipodal point of `A`. -/
+lemma throughMidpoint_eq_antipodal_of_eq {A B : P}
+    (hA : A ∈ s) (hB : B ∈ s) (hBA : B ≠ A) :
+    throughMidpoint s A B A =
+      AffineEquiv.pointReflection ℝ s.center A := by
+  simp only [throughMidpoint, ite_true]
+  set rv := A -ᵥ s.center with hrv_def
+  set t := ⟪B -ᵥ A, rv⟫ / ⟪rv, rv⟫
+  have hrv_ne : rv ≠ 0 := by
+    intro h
+    have hAc := vsub_eq_zero_iff_eq.mp h
+    have : s.radius = 0 := by rw [← mem_sphere.mp hA, hAc, dist_self]
+    exact hBA ((dist_eq_zero.mp (by linarith [mem_sphere.mp hB])).trans hAc.symm)
+  have ht_neg : t < 0 := div_neg_of_neg_of_pos
+    (Sphere.inner_vsub_vsub_center_lt_zero hA hB hBA) (real_inner_self_pos.mpr hrv_ne)
+  have hrn : ‖rv‖ = s.radius := by rw [← dist_eq_norm_vsub']; exact mem_sphere'.mp hA
+  have hr_ne : s.radius ≠ 0 := hrn ▸ norm_ne_zero_iff.mpr hrv_ne
+  have ht_ne : t ≠ 0 := ne_of_lt ht_neg
+  rw [AffineEquiv.pointReflection_apply, ← neg_vsub_eq_vsub_rev A s.center]
+  congr 1
+  rw [smul_smul, norm_smul, Real.norm_eq_abs, abs_of_neg ht_neg, hrn,
+      show s.radius / (-t * s.radius) * t = (-1 : ℝ) from by field_simp, neg_one_smul]
+
+/-- The specified second point lies in the interior of the `through` arc. -/
+lemma mem_interior_through [Fact (Module.finrank ℝ V = 2)] {A B C : P}
+    (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) :
+    B ∈ (through hA hB hC hBA hBC).interior := by
+  refine ⟨hB, ?_⟩
+  change (s.lineOrOrthRadius A (through hA hB hC hBA hBC).right).SSameSide
+    (throughMidpoint s A B C) B
+  rw [through_right hA hB hC hBA hBC]
+  have hB_not := not_mem_lineOrOrthRadius_of_mem_sphere hA hB hC hBA hBC
+  by_cases hAC : A = C
+  · subst hAC
+    rw [lineOrOrthRadius_of_eq rfl, throughMidpoint_eq_antipodal_of_eq hA hB hBA]
+    set rv := A -ᵥ s.center with hrv_def
+    have hrv_ne : rv ≠ 0 := by
+      intro h
+      have hAc := vsub_eq_zero_iff_eq.mp h
+      have hr0 : s.radius = 0 := by rw [← mem_sphere.mp hA, hAc, dist_self]
+      exact hBA (dist_eq_zero.mp (by linarith [mem_sphere.mp hB]) |>.trans hAc.symm)
+    set t := ⟪B -ᵥ A, rv⟫ / ⟪rv, rv⟫ with ht_def
+    have ht_neg : t < 0 := div_neg_of_neg_of_pos
+      (Sphere.inner_vsub_vsub_center_lt_zero hA hB hBA) (real_inner_self_pos.mpr hrv_ne)
+    have hcA : s.center -ᵥ A = -rv := by rw [hrv_def, neg_vsub_eq_vsub_rev]
+    set foot := ((B -ᵥ A) - t • rv) +ᵥ A
+    have hfoot_mem : foot ∈ s.orthRadius A := by
+      rw [mem_orthRadius_iff_inner_left, vadd_vsub, inner_sub_left,
+          inner_smul_left, conj_trivial, ht_def,
+          div_mul_cancel₀ _ (inner_self_ne_zero.mpr hrv_ne), sub_self]
+    have hB_foot : B -ᵥ foot = t • rv := by
+      conv_lhs => rw [show B = ((B -ᵥ A) +ᵥ A) from (vsub_vadd B A).symm]
+      rw [vadd_vsub_vadd_cancel_right, sub_sub_cancel]
+    refine ⟨⟨A, self_mem_orthRadius s A, foot, hfoot_mem, ?_⟩, ?_, ?_⟩
+    · rw [AffineEquiv.pointReflection_apply, vadd_vsub_assoc, hcA, hB_foot,
+        show -rv + -rv = (-2 : ℝ) • rv from by rw [← neg_one_smul ℝ rv, ← add_smul]; norm_num]
+      exact Or.inr (Or.inr ⟨-t, 2, neg_pos.mpr ht_neg, two_pos,
+        by rw [smul_smul, smul_smul]; congr 1; ring⟩)
+    · intro h
+      rw [mem_orthRadius_iff_inner_left, AffineEquiv.pointReflection_apply,
+          vadd_vsub_assoc, hcA, inner_add_left, inner_neg_left] at h
+      linarith [real_inner_self_pos.mpr hrv_ne]
+    · rwa [lineOrOrthRadius_of_eq rfl] at hB_not
+  · unfold throughMidpoint
+    rw [if_neg hAC, lineOrOrthRadius_of_ne hAC]
+    set d := C -ᵥ A with hd_def
+    set w : V := (B -ᵥ A) - (⟪B -ᵥ A, d⟫ / ⟪d, d⟫) • d with hw_def
+    set tm := (s.radius / ‖w‖) • w +ᵥ s.center with htm_def
+    set M := midpoint ℝ A C with hM_def
+    have hd_ne : d ≠ 0 := vsub_ne_zero.mpr (Ne.symm hAC)
+    have hw_ne : w ≠ 0 := by
+      intro heq; exact hB_not (lineOrOrthRadius_of_ne hAC ▸
+        show B ∈ line[ℝ, A, C] from
+          (show B = (⟪B -ᵥ A, d⟫ / ⟪d, d⟫) • d +ᵥ A by rw [← sub_eq_zero.mp heq, vsub_vadd]) ▸
+          smul_vsub_vadd_mem_affineSpan_pair _ A C)
+    have hw_perp : ⟪w, d⟫ = 0 := real_inner_sub_smul_div_inner_self_eq_zero ..
+    have hmw : w ∈ (Submodule.span ℝ {d})ᗮ :=
+      Submodule.mem_orthogonal_singleton_iff_inner_left.mpr hw_perp
+    obtain ⟨β, hβ⟩ := Submodule.mem_span_singleton.mp
+      (Submodule.mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero hd_ne hw_ne
+        (by rw [real_inner_comm]; exact Sphere.inner_vsub_center_midpoint_vsub hA hC)
+        (by rw [real_inner_comm]; exact hw_perp))
+    have hβ_bound : |β| * ‖w‖ < s.radius := by
+      have := Sphere.dist_center_midpoint_lt_radius hA hC hAC
+      rwa [dist_eq_norm_vsub V, ← hβ, norm_smul, Real.norm_eq_abs] at this
+    have hw_pos : (0 : ℝ) < ‖w‖ := norm_pos_iff.mpr hw_ne
+    have hcoeff : 0 < s.radius / ‖w‖ + β := by
+      have habs : |β| < s.radius / ‖w‖ := by rwa [lt_div_iff₀ hw_pos]
+      linarith [neg_abs_le β]
+    set proj_B := (⟪B -ᵥ A, d⟫ / ⟪d, d⟫) • d +ᵥ A with hproj_def
+    have hBproj : B -ᵥ proj_B = w := by
+      conv_lhs => rw [show B = ((B -ᵥ A) +ᵥ A) from (vsub_vadd B A).symm]
+      rw [hproj_def, vadd_vsub_vadd_cancel_right]
+    have htm_M : tm -ᵥ M = (s.radius / ‖w‖ + β) • w := by
+      rw [htm_def, vadd_vsub_assoc, hM_def, ← hβ, ← add_smul]
+    have hM_mem : M ∈ line[ℝ, A, C] := hM_def ▸ AffineMap.lineMap_mem_affineSpan_pair _ _ _
+    have hproj_mem : proj_B ∈ line[ℝ, A, C] :=
+      smul_vsub_vadd_mem_affineSpan_pair _ A C
+    refine ⟨⟨M, hM_mem, proj_B, hproj_mem, ?_⟩, ?_, ?_⟩
+    · rw [htm_M, hBproj]
+      exact SameRay.symm (SameRay.sameRay_pos_smul_right w hcoeff)
+    · intro htm
+      exact hw_ne <| by
+        have h : (s.radius / ‖w‖ + β) • w ∈ Submodule.span ℝ {d} := by
+          have := htm_M ▸ AffineSubspace.vsub_mem_direction htm hM_mem
+          rwa [direction_affineSpan, Set.pair_comm, vectorSpan_pair] at this
+        have h2 : w ∈ Submodule.span ℝ {d} :=
+          (Submodule.smul_mem_iff _ hcoeff.ne').mp h
+        have hmem := Submodule.mem_inf.mpr ⟨h2, hmw⟩
+        rwa [disjoint_iff.mp (Submodule.orthogonal_disjoint _), Submodule.mem_bot] at hmem
+    · exact lineOrOrthRadius_of_ne hAC ▸ hB_not
+
+/-- The specified second point lies in the `through` arc. -/
+lemma mem_through [Fact (Module.finrank ℝ V = 2)] {A B C : P}
+    (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
+    (hBA : B ≠ A) (hBC : B ≠ C) : B ∈ through hA hB hC hBA hBC :=
+  ⟨hB, (mem_interior_through hA hB hC hBA hBC).2.wSameSide⟩
+
 /-- The arc on `s` from `A` to `C` not passing through `B`. -/
 noncomputable def avoiding {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
     (hBA : B ≠ A) (hBC : B ≠ C) : Arc s :=
@@ -440,6 +559,66 @@ lemma avoiding_right [Fact (Module.finrank ℝ V = 2)] {A B C : P}
     (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s) (hBA : B ≠ A) (hBC : B ≠ C) :
     (avoiding hA hB hC hBA hBC).right = C := by
   simp [avoiding, opposite_right, through_right]
+
+/-- The specified second point does not lie in the `avoiding` arc when `A ≠ C`. -/
+lemma not_mem_avoiding [Fact (Module.finrank ℝ V = 2)] {A B C : P}
+    (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s) (hBA : B ≠ A) (hBC : B ≠ C)
+    (hAC : A ≠ C) :
+    B ∉ avoiding hA hB hC hBA hBC := by
+  intro ⟨_, hws⟩
+  have h_ss := (mem_interior_through hA hB hC hBA hBC).2
+  simp only [avoiding_left, avoiding_right hA hB hC hBA hBC,
+             through_left, through_right hA hB hC hBA hBC] at hws h_ss
+  rw [lineOrOrthRadius_of_ne hAC] at hws h_ss
+  set d := C -ᵥ A; set w : V := (B -ᵥ A) - (⟪B -ᵥ A, d⟫ / ⟪d, d⟫) • d
+  set M := midpoint ℝ A C
+  have hd_ne : d ≠ 0 := vsub_ne_zero.mpr hAC.symm
+  have hw_ne : w ≠ 0 := by
+    intro heq; exact (lineOrOrthRadius_of_ne hAC ▸
+      not_mem_lineOrOrthRadius_of_mem_sphere hA hB hC hBA hBC)
+      ((show B = (⟪B -ᵥ A, d⟫ / ⟪d, d⟫) • d +ᵥ A by rw [← sub_eq_zero.mp heq, vsub_vadd]) ▸
+       smul_vsub_vadd_mem_affineSpan_pair _ A C)
+  have hw_perp : ⟪w, d⟫ = 0 := real_inner_sub_smul_div_inner_self_eq_zero ..
+  obtain ⟨β, hβ⟩ := Submodule.mem_span_singleton.mp
+    (Submodule.mem_span_singleton_of_inner_eq_zero_of_inner_eq_zero hd_ne hw_ne
+      (by rw [real_inner_comm]; exact Sphere.inner_vsub_center_midpoint_vsub hA hC)
+      (by rw [real_inner_comm]; exact hw_perp))
+  have hw_pos := norm_pos_iff.mpr hw_ne
+  have hβ_bound : |β| * ‖w‖ < s.radius := by
+    have h := Sphere.dist_center_midpoint_lt_radius hA hC hAC
+    rwa [dist_eq_norm_vsub V, ← hβ, norm_smul, Real.norm_eq_abs] at h
+  have hβ_div : |β| < s.radius / ‖w‖ := (lt_div_iff₀ hw_pos).mpr hβ_bound
+  have hM_mem : M ∈ line[ℝ, A, C] := by
+    rw [show M = (2⁻¹ : ℝ) • (C -ᵥ A) +ᵥ A from by
+      simp [M, midpoint, AffineMap.lineMap_apply, invOf_eq_inv]]
+    exact smul_vsub_vadd_mem_affineSpan_pair 2⁻¹ A C
+  have htm_M : throughMidpoint s A B C -ᵥ M = (s.radius / ‖w‖ + β) • w := by
+    simp only [throughMidpoint, if_neg hAC]; rw [vadd_vsub_assoc, ← hβ, ← add_smul]
+  have htm'_M : AffineEquiv.pointReflection ℝ s.center (throughMidpoint s A B C) -ᵥ M =
+      (β - s.radius / ‖w‖) • w := by
+    have hvs : s.center -ᵥ (throughMidpoint s A B C) =
+        (s.center -ᵥ M) - (throughMidpoint s A B C -ᵥ M) :=
+      (vsub_sub_vsub_cancel_right s.center (throughMidpoint s A B C) M).symm
+    rw [AffineEquiv.pointReflection_apply, vadd_vsub_assoc, hvs,
+        ← hβ, htm_M, ← sub_smul, ← add_smul]; ring_nf
+  have h_opp : (line[ℝ, A, C]).SOppSide (throughMidpoint s A B C)
+      (AffineEquiv.pointReflection ℝ s.center (throughMidpoint s A B C)) := by
+    refine ⟨⟨M, hM_mem, M, hM_mem, ?_⟩, h_ss.2.1, ?_⟩
+    · rw [htm_M, ← neg_vsub_eq_vsub_rev, htm'_M, ← neg_smul, neg_sub]
+      exact .inr (.inr ⟨s.radius / ‖w‖ - β, s.radius / ‖w‖ + β,
+        by linarith [le_abs_self β], by linarith [neg_abs_le β],
+        by rw [smul_smul, smul_smul]; congr 1; ring⟩)
+    · intro h
+      have h1 : (β - s.radius / ‖w‖) • w ∈ (line[ℝ, A, C]).direction :=
+        htm'_M ▸ AffineSubspace.vsub_mem_direction h hM_mem
+      rw [direction_affineSpan, Set.pair_comm, vectorSpan_pair] at h1
+      have h2 := (Submodule.smul_mem_iff _
+        (show (β - s.radius / ‖w‖) ≠ 0 by linarith [le_abs_self β])).mp h1
+      have h3 := Submodule.mem_inf.mpr
+        ⟨h2, Submodule.mem_orthogonal_singleton_iff_inner_left.mpr hw_perp⟩
+      rw [(Submodule.orthogonal_disjoint (𝕜 := ℝ) (E := V) _).eq_bot, Submodule.mem_bot] at h3
+      exact hw_ne h3
+  exact (h_opp.symm.trans_sSameSide h_ss).not_wSameSide hws
 
 @[simp]
 lemma through_opposite {A B C : P} (hA : A ∈ s) (hB : B ∈ s) (hC : C ∈ s)
