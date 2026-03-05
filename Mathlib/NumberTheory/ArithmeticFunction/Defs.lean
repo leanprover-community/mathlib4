@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Nat.Factorization.Induction
 public import Mathlib.Data.Nat.GCD.BigOperators
@@ -327,6 +328,26 @@ instance [CommRing R] : CommRing (ArithmeticFunction R) :=
     neg_add_cancel := neg_add_cancel
     mul_comm := mul_comm
     zsmul := (· • ·) }
+
+instance [Semiring R] : Module R (ArithmeticFunction R) where
+  smul x f := ⟨x • f, by simp⟩
+  smul_zero x := ext fun n ↦ smul_zero x
+  smul_add x f g := ext fun n ↦ smul_add x (f n) (g n)
+  zero_smul f := ext fun n ↦ zero_smul R (f n)
+  one_smul f := ext fun n ↦ one_smul R (f n)
+  add_smul x y f := ext fun n ↦ add_smul x y (f n)
+  mul_smul x y f := ext fun n ↦ mul_smul x y (f n)
+
+@[simp]
+theorem smul_map [Semiring R] (x : R) (f : ArithmeticFunction R) (n : ℕ) :
+    (x • f) n = x • f n := by
+  rfl
+
+-- We can deduce the `Algebra` structure from the `Module` structure here due to the lack of
+-- a more natural definition of `algebraMap`.
+instance [CommSemiring R] : Algebra R (ArithmeticFunction R) :=
+  .ofModule (fun x f g ↦ ext fun n ↦ by simp [mul_assoc, Finset.mul_sum])
+    fun x f g ↦ ext fun n ↦ by simp [mul_assoc, mul_comm x, Finset.sum_mul]
 
 instance {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] :
     Module (ArithmeticFunction R) (ArithmeticFunction M) where
