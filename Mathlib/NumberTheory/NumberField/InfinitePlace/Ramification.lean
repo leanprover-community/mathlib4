@@ -687,7 +687,7 @@ variable (L)
 
 theorem disjoint_ramifiedPlacesOver_unramifiedPlacesOver (v : InfinitePlace K) :
     Disjoint (ramifiedPlacesOver L v) (unramifiedPlacesOver L v) := by
-  grind [Set.disjoint_iff, ramifiedPlacesOver, unramifiedPlacesOver]
+  grind [ramifiedPlacesOver, unramifiedPlacesOver]
 
 theorem union_ramifiedPlacesOver_unramifiedPlacesOver (v : InfinitePlace K) :
     (ramifiedPlacesOver L v) ∪ (unramifiedPlacesOver L v) = placesOver L v := by
