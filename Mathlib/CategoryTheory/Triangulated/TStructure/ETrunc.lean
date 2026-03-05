@@ -130,11 +130,7 @@ set_option backward.isDefEq.respectTransparency false in
 shift by `1` of `t.eTruncLT`. -/
 noncomputable def eTruncGEδLT :
     t.eTruncGE ⟶ t.eTruncLT ⋙ ((Functor.whiskeringRight ..).obj (shiftFunctor C (1 : ℤ))) where
-  app a := by
-    induction a using WithBotTop.rec with
-    | bot => exact 0
-    | coe a => exact t.truncGEδLT a
-    | top => exact 0
+  app a := WithBotTop.rec 0 (t.truncGEδLT ·) 0 a
   naturality {a b} hab := by
     replace hab := leOfHom hab
     induction a using WithBotTop.rec; rotate_right
