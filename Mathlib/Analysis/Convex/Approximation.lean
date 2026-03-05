@@ -88,6 +88,25 @@ lemma exists_affine_le_of_lt {x : E} {a : ℝ} (hx : x ∈ s) (hax : a < φ x) (
       using mul_le_mul_of_nonneg_left (hine z.2).le hc.le
   · simp [u, c, smul_re]
 
+lemma exists_affine_le_of_lt_real {s : Set ℝ} {f : ℝ → ℝ} {x : ℝ} {a : ℝ} (hx : x ∈ s)
+    (hax : a < f x) (hsc : IsClosed s) (hfc : LowerSemicontinuousOn f s) (hf : ConvexOn ℝ s f) :
+    ∃ (c c' : ℝ), (∀ y ∈ s, c * y + c' ≤ f y) ∧ c * x + c' = a := by
+  obtain ⟨l, c', hlc'_le, hlc'_eq⟩ := exists_affine_le_of_lt (𝕜 := ℝ) hx hax hsc hfc hf
+  have h1 y : l 1 * y = l y := by rw [mul_comm, ← smul_eq_mul, ← map_smul, smul_eq_mul, mul_one]
+  refine ⟨l 1, c', fun y hy ↦ ?_, ?_⟩
+  · specialize hlc'_le ⟨y, hy⟩
+    simpa [h1] using hlc'_le
+  · simpa [h1] using hlc'_eq
+
+lemma exists_affine_le_real {s : Set ℝ} {f : ℝ → ℝ}
+    (hsc : IsClosed s) (hfc : LowerSemicontinuousOn f s) (hf : ConvexOn ℝ s f) :
+    ∃ c c', ∀ x ∈ s, c * x + c' ≤ f x := by
+  rcases Set.eq_empty_or_nonempty s with rfl | ⟨x, hxs⟩
+  · simp
+  obtain ⟨c, c', hlc'_le, -⟩ :=
+    hf.exists_affine_le_of_lt_real (a := f x - 1) hxs (by simp) hsc hfc
+  exact ⟨c, c', hlc'_le⟩
+
 /-- A function `φ : E → ℝ` that is convex and lower-semicontinuous on a closed convex subset `s` is
 the supremum of a family of functions that are the restrictions to `s` of continuous affine linear
 functions in `E`. -/
