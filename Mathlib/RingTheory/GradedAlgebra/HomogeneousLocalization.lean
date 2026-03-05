@@ -9,6 +9,7 @@ public import Mathlib.Algebra.Group.Submonoid.Finsupp
 public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
+public import Mathlib.RingTheory.GradedAlgebra.RingHom
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Away.Basic
 
@@ -651,6 +652,8 @@ variable {B τ : Type*} [CommRing B] [SetLike τ B] [AddSubgroupClass τ B]
 variable (ℬ : ι → τ) [GradedRing ℬ]
 variable {P : Submonoid A} {Q : Submonoid B}
 
+open Graded
+
 /--
 Let `A, B` be two graded rings with the same indexing set and `g : 𝒜 →+*ᵍ ℬ` be a graded ring
 homomorphism. Let `P ≤ A` be a submonoid and `Q ≤ B` be a submonoid such that `P ≤ g⁻¹ Q`, then `g`
@@ -692,11 +695,10 @@ lemma map_mk (g : 𝒜 →+*ᵍ ℬ) (comap_le : P ≤ Q.comap g) (x) :
 protected def Away.map (g : 𝒜 →+*ᵍ ℬ) (f : A) : Away 𝒜 f →+* Away ℬ (g f) :=
   map _ _ g <| by rintro _ ⟨n, rfl⟩; exact ⟨n, by simp⟩
 
-@[simp] nonrec lemma Away.map_mk {d : ι} (g : 𝒜 →+*ᵍ ℬ) (f : A) (hf : f ∈ 𝒜 d) (n : ℕ) (x : A)
+@[simp] lemma Away.map_mk {d : ι} (g : 𝒜 →+*ᵍ ℬ) (f : A) (hf : f ∈ 𝒜 d) (n : ℕ) (x : A)
     (hx : x ∈ 𝒜 (n • d)) :
-    Away.map 𝒜 ℬ g f (Away.mk 𝒜 hf n x hx) =
-    Away.mk ℬ (map_mem g hf) n (g x) (map_mem g hx) := by
-  simp [Away.map, Away.mk, map_mk]
+    Away.map 𝒜 ℬ g f (.mk 𝒜 hf n x hx) = .mk ℬ (map_mem g hf) n (g x) (map_mem g hx) := by
+  simp [Away.map, Away.mk, HomogeneousLocalization.map_mk]
 
 end
 
