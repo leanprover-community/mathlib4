@@ -74,8 +74,8 @@ instance (e : C ≌ D) [MonoidalCategory C] [BraidedCategory C] :
       simp only [((e' e).functor ⋙ (e' e).inverse).map_braiding X Y,
         assoc, Functor.Monoidal.μ_δ, comp_id, Functor.Monoidal.μ_δ_assoc]
     simp? [-Adjunction.rightAdjointLaxMonoidal_μ] at this says
-      simp only [Functor.comp_obj, comp_μ, Functor.comp_map,
-        Equivalence.inv_fun_map, Functor.id_obj, comp_δ, assoc] at this
+      simp only [Functor.comp_obj, comp_μ, Functor.comp_map, Equivalence.inv_fun_map,
+        Functor.id_obj, comp_δ, ↓assoc] at this
     simp [-Adjunction.rightAdjointLaxMonoidal_μ, ← this]
 
 end

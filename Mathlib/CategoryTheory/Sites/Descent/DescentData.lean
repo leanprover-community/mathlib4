@@ -225,7 +225,7 @@ def pullFunctorObj (D : F.DescentData f) :
     simp
   hom_comp Y q j₁ j₂ j₃ f₁ f₂ f₃ hf₁ hf₂ hf₃ := by
     rw [pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₂ ≫ p' j₂),
-      pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₂ ≫ p' j₂) (f₃ ≫ p' j₃),
+      pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₂ ≫ p' j₂) (f₃ ≫ p' j₃) (hq' := by grind),
       pullFunctorObjHom_eq _ _ _ _ _ (q ≫ p) (f₁ ≫ p' j₁) (f₃ ≫ p' j₃)]
     simp
 
@@ -383,7 +383,7 @@ def pullFunctorEquivalence {S' : C} {ι' : Type t'} {X' : ι' → C} {f' : ∀ j
     dsimp
     simp only [Category.id_comp, Functor.map_comp, Category.assoc]
     rw [pullFunctorObjHom_eq_assoc _ _ _ _ _ (p' _ ≫ f _) (p' _ ≫ q' _ ≫ p' _) (p' _) (by simp)
-        (by simp [w', reassoc_of% w]),
+        (by simp [w', reassoc_of% w]) (hq' := by grind),
       map_eq_pullHom_assoc _ (p' j) (p' j) (p' _ ≫ q' _ ≫ p' _) (by simp) (by simp),
       D.pullHom_hom _ _ (p' j ≫ f _) (by simp) _ _ (by simp)
         (by simp [w, reassoc_of% w']) _ _ (by simp) rfl]
