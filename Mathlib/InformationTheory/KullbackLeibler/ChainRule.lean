@@ -96,7 +96,7 @@ lemma integrable_llr_of_integrable_llr_compProd
   have ⟨hμν_ac, hκη_ac⟩ := Measure.absolutelyContinuous_compProd_iff.mp h_ac
   rw [← integrable_rnDeriv_mul_log_iff h_ac] at h_int
   replace h_int := convexOn_mul_log.integrable_apply_rnDeriv_of_integrable_compProd
-    continuous_mul_log.stronglyMeasurable continuous_mul_log.continuousOn h_int hκη_ac
+    continuous_mul_log.stronglyMeasurable continuous_mul_log.continuousWithinAt h_int hκη_ac
   exact (integrable_rnDeriv_mul_log_iff hμν_ac).mp h_int
 
 lemma rnDeriv_compProd_mul_log_eq_mul_add [IsMarkovKernel κ]
