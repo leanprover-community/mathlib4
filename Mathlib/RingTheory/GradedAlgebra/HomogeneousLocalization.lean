@@ -625,7 +625,7 @@ lemma Away.mk_surjective {d : ι} (hf : f ∈ 𝒜 d) (x : Away 𝒜 f) :
   obtain rfl := DirectSum.degree_eq_of_mem_mem 𝒜 hn (SetLike.pow_mem_graded n hf) hfn
   exact ⟨n, s, hs, by ext; simp⟩
 
-variable {𝒜 : ι → σ} [GradedRing 𝒜] {f : A}
+variable {𝒜}
 
 theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
     ∀ᶠ n in Filter.atTop, f ^ n • z.val ∈ algebraMap _ _ '' (𝒜 (n • m) : Set A) := by
