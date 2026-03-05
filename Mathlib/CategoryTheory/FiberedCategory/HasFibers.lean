@@ -136,6 +136,7 @@ noncomputable def Fib.homMk {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (�
     [IsHomLift p (𝟙 S) φ] : a ⟶ b :=
   (inducedFunctor _ S).preimage (Fiber.homMk p S φ)
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma Fib.map_homMk {S : 𝒮} {a b : Fib p S} (φ : (ι S).obj a ⟶ (ι S).obj b)
     [IsHomLift p (𝟙 S) φ] : (ι S).map (homMk φ) = φ := by

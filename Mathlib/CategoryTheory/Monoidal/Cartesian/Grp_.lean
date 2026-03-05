@@ -195,6 +195,16 @@ then `Hom(X, G) → Hom(F X, F G)` preserves inverses. -/
 
 @[deprecated (since := "2025-09-13")] alias Grp_Class.inv_eq_inv := GrpObj.inv_eq_inv
 
+/-- Conjugation in `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹`,
+see `CategoryTheory.GrpObj.lift_conj_eq_mul_mul_inv`. -/
+def GrpObj.conj (G : C) [GrpObj G] : G ⊗ G ⟶ G :=
+  fst _ _ * snd _ _ * (fst _ _)⁻¹
+
+@[reassoc (attr := simp)]
+lemma GrpObj.lift_conj_eq_mul_mul_inv {X G : C} [GrpObj G] (f₁ f₂ : X ⟶ G) :
+    lift f₁ f₂ ≫ conj G = f₁ * f₂ * f₁⁻¹ := by
+  simp [conj, comp_mul, comp_inv]
+
 /-- The commutator of `G` as a morphism. This is the map `(x, y) ↦ x * y * x⁻¹ * y⁻¹`,
 see `CategoryTheory.GrpObj.lift_commutator_eq_mul_mul_inv_inv`.
 This morphism is constant with value `1` if and only if `G` is commutative
