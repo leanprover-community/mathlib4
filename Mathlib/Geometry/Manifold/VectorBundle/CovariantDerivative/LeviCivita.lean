@@ -196,31 +196,23 @@ private lemma aux1 {x : M} (f : M → ℝ) {σ τ : (x : M) → TangentSpace I x
     myfun I cov (f • σ) τ x = f x • myfun I cov σ τ x := by
   have hτ : MDiffAt (T% τ) x := sorry -- missing hypothesis?
   unfold myfun
-  rw [product_smul_left]
-  rw [cov.isCovariantDerivativeOn.leibniz hσ hf]
+  rw [product_smul_left, cov.isCovariantDerivativeOn.leibniz hσ hf]
   ext X
   simp only [ContinuousLinearMap.comp_add, ContinuousLinearMap.comp_smulₛₗ,
     RingHom.id_apply, Pi.smul_apply', map_smul, ContinuousLinearMap.smul_comp,
     ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_smul', ContinuousLinearMap.coe_comp',
     coe_innerSL_apply, Pi.sub_apply, Pi.smul_apply, comp_apply]
-  erw [ContinuousLinearMap.sub_apply]
-  erw [ContinuousLinearMap.sub_apply]
-  erw [ContinuousLinearMap.comp_apply]
+  erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply, ContinuousLinearMap.comp_apply]
   conv =>
     enter [1, 1, 2]
     erw [ContinuousLinearMap.add_apply]
   conv =>
     enter [1, 1, 2, 1]
     erw [ContinuousLinearMap.smul_apply]
-  rw [ContinuousLinearMap.comp_apply]
-  rw [ContinuousLinearMap.comp_apply]
-  rw [ContinuousLinearMap.comp_apply]
-  rw [ContinuousLinearMap.comp_apply]
-  rw [innerSL_apply_apply]
-  rw [innerSL_apply_apply]
-  rw [ContinuousLinearMap.toSpanSingleton_apply]
-  rw [inner_smul_right]
-  rw [mfderiv_smul (hσ.inner_bundle' hτ) hf]
+  rw [ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply,
+    ContinuousLinearMap.comp_apply, ContinuousLinearMap.comp_apply,
+    innerSL_apply_apply, innerSL_apply_apply, ContinuousLinearMap.toSpanSingleton_apply,
+    inner_smul_right, mfderiv_smul (hσ.inner_bundle' hτ) hf]
   simp only [smul_eq_mul, Pi.mul_apply, bar, ContinuousLinearEquiv.coe_coe,
     ContinuousLinearEquiv.coe_mk, LinearEquiv.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
   conv =>
@@ -291,10 +283,8 @@ private lemma aux4 {x : M} (σ τ τ' : (x : M) → TangentSpace I x)
     cov.isCovariantDerivativeOn.addσ hτ hτ']
   dsimp
   rw [inner_add_right]
-  erw [ContinuousLinearMap.sub_apply]
-  erw [ContinuousLinearMap.sub_apply]
-  erw [ContinuousLinearMap.add_apply]
-  erw [ContinuousLinearMap.comp_apply]
+  erw [ContinuousLinearMap.sub_apply, ContinuousLinearMap.sub_apply,
+    ContinuousLinearMap.add_apply, ContinuousLinearMap.comp_apply]
   conv =>
     enter [2, 2, 1, 2]
     erw [ContinuousLinearMap.comp_apply]
