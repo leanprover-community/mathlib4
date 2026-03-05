@@ -6,18 +6,17 @@ Authors: Rémy Degenne, Etienne Marion
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Matrix
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 public import Mathlib.Probability.Moments.CovarianceBilin
-public import Mathlib.Probability.Moments.Variance
-public import Mathlib.LinearAlgebra.Matrix.BilinearForm
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 
-import Mathlib.Analysis.Matrix.Order
 import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 /-!
 # Multivariate Gaussian distributions
+
+
 
 ## Main definitions
 
@@ -25,17 +24,22 @@ import Mathlib.Probability.Distributions.Gaussian.Fernique
 
 -/
 
-open WithLp ENNReal
-
 @[expose] public section
 
-open MeasureTheory Matrix WithLp Module
+
+open MeasureTheory Matrix WithLp Module Complex
 open scoped RealInnerProductSpace MatrixOrder
 
 namespace ProbabilityTheory
 
-variable {E ι : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
-  [MeasurableSpace E] [Fintype ι]
+variable {ι : Type*} [Fintype ι]
+
+section stdGaussian
+
+/-! ### Standard Gaussian measure over a Euclidean space -/
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+  [MeasurableSpace E]
 
 variable (E) in
 /-- Standard Gaussian distribution on `E`. -/
@@ -63,7 +67,8 @@ theorem _root_.OrthonormalBasis.norm_dual {ι E : Type*} [Fintype ι] [NormedAdd
   simp_rw [← (InnerProductSpace.toDual ℝ E).symm.norm_map, ← b.sum_sq_inner_left,
     InnerProductSpace.toDual_symm_apply]
 
-lemma variance_dual_stdGaussian (L : StrongDual ℝ E) : Var[L; stdGaussian E] = ‖L‖ ^ 2 := by
+lemma variance_dual_stdGaussian (L : StrongDual ℝ E) :
+    Var[L; stdGaussian E] = ‖L‖ ^ 2 := by
   rw [stdGaussian, variance_map L.continuous.aemeasurable (Measurable.aemeasurable (by fun_prop))]
   have : L ∘ (fun x : Fin (Module.finrank ℝ E) → ℝ ↦ ∑ i, x i • stdOrthonormalBasis ℝ E i) =
       ∑ i, (fun x : Fin (Module.finrank ℝ E) → ℝ ↦ L (stdOrthonormalBasis ℝ E i) * x i) := by
@@ -75,18 +80,18 @@ lemma variance_dual_stdGaussian (L : StrongDual ℝ E) : Var[L; stdGaussian E] =
   · exact fun i ↦ IsGaussian.memLp_two_id.const_mul _
 
 set_option backward.isDefEq.respectTransparency false in
-lemma charFun_stdGaussian (t : E) : charFun (stdGaussian E) t = Complex.exp (- ‖t‖ ^ 2 / 2) := by
+lemma charFun_stdGaussian (t : E) :
+    charFun (stdGaussian E) t = exp (- ‖t‖ ^ 2 / 2) := by
   rw [charFun_apply, stdGaussian, integral_map (Measurable.aemeasurable (by fun_prop))
     (Measurable.aestronglyMeasurable (by fun_prop))]
-  simp_rw [sum_inner, Complex.ofReal_sum, Finset.sum_mul, Complex.exp_sum,
-    integral_fintype_prod_eq_prod
-      (f := fun i x ↦ Complex.exp (⟪x • stdOrthonormalBasis ℝ E i, t⟫ * Complex.I)),
-    real_inner_smul_left, mul_comm _ (⟪_, _⟫), Complex.ofReal_mul, ← charFun_apply_real,
+  simp_rw [sum_inner, ofReal_sum, Finset.sum_mul, exp_sum,
+    integral_fintype_prod_eq_prod (f := fun i x ↦ exp (⟪x • stdOrthonormalBasis ℝ E i, t⟫ * I)),
+    real_inner_smul_left, mul_comm _ (⟪_, _⟫), ofReal_mul, ← charFun_apply_real,
     charFun_gaussianReal]
-  simp only [Complex.ofReal_zero, mul_zero, zero_mul, NNReal.coe_one, Complex.ofReal_one, one_mul,
+  simp only [ofReal_zero, mul_zero, zero_mul, NNReal.coe_one, ofReal_one, one_mul,
     zero_sub]
-  simp_rw [← Complex.exp_sum, Finset.sum_neg_distrib, ← Finset.sum_div, ← Complex.ofReal_pow,
-    ← Complex.ofReal_sum, (stdOrthonormalBasis ℝ E).sum_sq_inner_right, neg_div]
+  simp_rw [← exp_sum, Finset.sum_neg_distrib, ← Finset.sum_div, ← ofReal_pow,
+    ← ofReal_sum, (stdOrthonormalBasis ℝ E).sum_sq_inner_right, neg_div]
 
 set_option backward.isDefEq.respectTransparency false in
 instance isGaussian_stdGaussian : IsGaussian (stdGaussian E) := by
@@ -100,7 +105,7 @@ lemma integral_strongDual_stdGaussian (L : StrongDual ℝ E) : (stdGaussian E)[L
 
 set_option backward.isDefEq.respectTransparency false in
 lemma charFunDual_stdGaussian (L : StrongDual ℝ E) :
-    charFunDual (stdGaussian E) L = Complex.exp (- ‖L‖ ^ 2 / 2) := by
+    charFunDual (stdGaussian E) L = exp (- ‖L‖ ^ 2 / 2) := by
   simp [IsGaussian.charFunDual_eq, integral_complex_ofReal, variance_dual_stdGaussian, neg_div]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -123,8 +128,8 @@ lemma map_pi_eq_stdGaussian :
     (Measure.pi (fun _ ↦ gaussianReal 0 1)).map (toLp 2) = stdGaussian (EuclideanSpace ℝ ι) := by
   apply Measure.ext_of_charFun (E := EuclideanSpace ℝ ι)
   ext t
-  simp_rw [charFun_stdGaussian, charFun_pi, charFun_gaussianReal, ← Complex.exp_sum,
-    ← Complex.ofReal_pow, EuclideanSpace.real_norm_sq_eq]
+  simp_rw [charFun_stdGaussian, charFun_pi, charFun_gaussianReal, ← exp_sum, ← ofReal_pow,
+    EuclideanSpace.real_norm_sq_eq]
   simp [Finset.sum_div, neg_div]
 
 /-- The definition of `stdGaussian` does not depend on the basis. -/
@@ -136,6 +141,12 @@ lemma stdGaussian_eq_map_pi_orthonormalBasis (b : OrthonormalBasis ι ℝ E) :
     rfl
   rw [this, ← Measure.map_map, map_pi_eq_stdGaussian, stdGaussian_map]
   all_goals fun_prop
+
+end stdGaussian
+
+section multivariateGaussian
+
+/-! ### Multivariate Gaussian measures over `ℝⁿ` -/
 
 variable [DecidableEq ι]
 
@@ -200,9 +211,10 @@ lemma variance_eval_multivariateGaussian (hS : S.PosSemidef) (i : ι) :
   rw [← covariance_self, covariance_eval_multivariateGaussian hS]
   exact Measurable.aemeasurable <| by fun_prop
 
-lemma hasLaw_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
-    HasLaw (fun x ↦ x i) (gaussianReal (μ i) (S i i).toNNReal) (multivariateGaussian μ S) where
-  aemeasurable := Measurable.aemeasurable (by fun_prop)
+lemma measurePreserving_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
+    MeasurePreserving (fun x ↦ x i) (multivariateGaussian μ S)
+      (gaussianReal (μ i) (S i i).toNNReal) where
+  measurable := by fun_prop
   map_eq := by
     rw [← EuclideanSpace.coe_proj, IsGaussian.map_eq_gaussianReal,
       ContinuousLinearMap.integral_comp_id_comm]
@@ -211,52 +223,39 @@ lemma hasLaw_eval_multivariateGaussian (hS : S.PosSemidef) {i : ι} :
 
 lemma charFun_multivariateGaussian (hS : S.PosSemidef) (x : EuclideanSpace ℝ ι) :
     charFun (multivariateGaussian μ S) x =
-      Complex.exp (⟪x, μ⟫ * Complex.I - x ⬝ᵥ S *ᵥ x / 2) := by
+      exp (⟪x, μ⟫ * I - x ⬝ᵥ S *ᵥ x / 2) := by
   simp [IsGaussian.charFun_eq', covarianceBilin_multivariateGaussian hS]
 
-/-- `Finset.restrict₂` as a continuous linear map. -/
-def _root_.Finset.restrict₂CLM {ι : Type*} (R : Type*) {M : ι → Type*} [Semiring R]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)]
-    {I J : Finset ι} (hIJ : I ⊆ J) :
-    (Π i : J, M i) →L[R] Π i : I, M i where
-  toFun := Finset.restrict₂ hIJ
-  map_add' x y := by ext; simp
-  map_smul' m x := by ext; simp
-  cont := by fun_prop
+section restrict₂
 
-lemma _root_.Finset.coe_restrict₂CLM {ι R : Type*} {M : ι → Type*} [Semiring R]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)] {I J : Finset ι}
-    (hIJ : I ⊆ J) :
-    ⇑(Finset.restrict₂CLM (R := R) (M := M) hIJ) = Finset.restrict₂ hIJ := rfl
-
-@[simp]
-lemma _root_.Finset.restrict₂CLM_apply {ι R : Type*} {M : ι → Type*} [Semiring R]
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, TopologicalSpace (M i)] {I J : Finset ι}
-    (hIJ : I ⊆ J) (x : Π i : J, M i) (i : I) :
-    Finset.restrict₂CLM (R := R) hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
+variable {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Finset ι}
 
 /-- The restriction from `EuclideanSpace 𝕜 J` to `EuclideanSpace κ I` when `I ⊆ J`. -/
 noncomputable
-def _root_.EuclideanSpace.restrict₂ {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Finset ι} (hIJ : I ⊆ J) :
+def _root_.EuclideanSpace.restrict₂ (hIJ : I ⊆ J) :
     EuclideanSpace 𝕜 J →L[𝕜] EuclideanSpace 𝕜 I where
   toFun x := toLp 2 (Finset.restrict₂ (π := fun _ ↦ 𝕜) hIJ x.ofLp)
   map_add' x y := by ext; simp
   map_smul' m x := by ext; simp
 
 @[simp]
-lemma _root_.EuclideanSpace.restrict₂_apply {ι 𝕜 : Type*} [RCLike 𝕜] {I J : Finset ι}
-    (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
+lemma _root_.EuclideanSpace.restrict₂_apply (hIJ : I ⊆ J) (x : EuclideanSpace 𝕜 J) (i : I) :
     EuclideanSpace.restrict₂ hIJ x i = x ⟨i.1, hIJ i.2⟩ := rfl
 
-variable {ι : Type*} [DecidableEq ι] {I J : Finset ι}
+end restrict₂
 
-variable {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} {hS : S.PosSemidef}
+variable {ι : Type*} [DecidableEq ι] {I J : Finset ι}
+  {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} {hS : S.PosSemidef}
 
 set_option backward.isDefEq.respectTransparency false in
-lemma measurePreserving_restrict₂_multivariateGaussian (hS : S.PosSemidef) (hJI : J ⊆ I) :
+/-- If one restricts a multivariate Gaussian measure indexed by a finite set `I` to
+coordinates indexed by `J ⊆ I`, one obtains the multivariate Gaussian measure whose
+covariance matrix is given by the corresponding submatrix. -/
+lemma measurePreserving_restrict₂_multivariateGaussian {ι : Type*} [DecidableEq ι] {I J : Finset ι}
+    {μ : EuclideanSpace ℝ I} {S : Matrix I I ℝ} (hS : S.PosSemidef) (hJI : J ⊆ I) :
     MeasurePreserving (EuclideanSpace.restrict₂ hJI) (multivariateGaussian μ S)
       (multivariateGaussian (μ.restrict₂ hJI)
-      (S.submatrix (fun i : J ↦ ⟨i.1, hJI i.2⟩) (fun i : J ↦ ⟨i.1, hJI i.2⟩))) where
+        (S.submatrix (fun i : J ↦ ⟨i.1, hJI i.2⟩) (fun i : J ↦ ⟨i.1, hJI i.2⟩))) where
   measurable := by fun_prop
   map_eq := by
     apply IsGaussian.ext
@@ -265,8 +264,8 @@ lemma measurePreserving_restrict₂_multivariateGaussian (hS : S.PosSemidef) (hJ
       exact IsGaussian.integrable_id
     rw [← ContinuousLinearMap.toBilinForm_inj]
     refine LinearMap.BilinForm.ext_basis (EuclideanSpace.basisFun J ℝ).toBasis fun i j ↦ ?_
-    simp_rw [ContinuousLinearMap.toBilinForm_apply]
-    rw [covarianceBilin_apply_eq_cov, covariance_map]
+    rw [ContinuousLinearMap.toBilinForm_apply, ContinuousLinearMap.toBilinForm_apply,
+      covarianceBilin_apply_eq_cov, covariance_map]
     · have (i : J) : (fun u ↦ ⟪(EuclideanSpace.basisFun J ℝ).toBasis i, u⟫) ∘
           EuclideanSpace.restrict₂ hJI = fun u ↦ u ⟨i.1, hJI i.2⟩ := by ext; simp [PiLp.inner_apply]
       simp_rw [this, covariance_eval_multivariateGaussian hS,
@@ -275,5 +274,7 @@ lemma measurePreserving_restrict₂_multivariateGaussian (hS : S.PosSemidef) (hJ
     any_goals exact Measurable.aestronglyMeasurable (by fun_prop)
     · fun_prop
     · exact IsGaussian.memLp_two_id
+
+end multivariateGaussian
 
 end ProbabilityTheory
