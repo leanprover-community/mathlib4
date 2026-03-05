@@ -60,7 +60,7 @@ lemma LinearMap.ker_inf_smul_top_eq_smul_of_flat {M N : Type*} [AddCommGroup M] 
 /-- For flat ring homomorphism `f : R →+* S`, `I` an ideal of `R` which is square zero,
 if `R ⧸ I →+* S ⧸ IS` is formally smooth, so do `f`. -/
 @[stacks 031L]
-lemma Algebra.FormallySmooth.of_surjective_of_isPushout_of_flat {S : Type v} [CommRing S]
+lemma Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat {S : Type v} [CommRing S]
     [Algebra R S] {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra R' S']
     [Algebra S S'] [Algebra R S'] [IsScalarTower R S S'] [IsScalarTower R R' S']
     [Module.Flat R S] (surj : Function.Surjective (algebraMap R R'))
@@ -235,3 +235,14 @@ lemma Algebra.FormallySmooth.of_surjective_of_isPushout_of_flat {S : Type v} [Co
   change σ'.comp cottoTen + δ.comp ((σ.restrictScalars P.Ring).comp (mapTen.comp cottoTen)) = _
   rw [← comm, ← LinearMap.comp_assoc mapcot, ← LinearMap.restrictScalars_comp, hσ]
   exact add_eq_of_eq_sub' δ_spec
+
+/-- A pure `RingHom` variant of `Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat` -/
+lemma RingHom.FormallySmooth.of_flat_of_ker_eq_map_of_square_zero {S : Type v} [CommRing S]
+    (f : R →+* S) (flat : f.Flat) {R' S' : Type*} [CommRing R'] [CommRing S']
+    (qR : R →+* R') (qS : S →+* S') (g : R' →+* S') (surjR : Function.Surjective qR)
+    (surjS : Function.Surjective qS) (comm : qS.comp f = g.comp qR)
+    (sq0 : (RingHom.ker qR) ^ 2 = ⊥) (eqmap : RingHom.ker qS = (RingHom.ker qR).map f)
+    (smoothq : g.FormallySmooth) : f.FormallySmooth := by
+  algebraize [f, qR, qS, g, qS.comp f]
+  let _ : IsScalarTower R R' S' := IsScalarTower.of_algebraMap_eq' comm
+  exact Algebra.FormallySmooth.of_surjective_of_ker_eq_map_of_flat surjR surjS eqmap sq0 ‹_›
