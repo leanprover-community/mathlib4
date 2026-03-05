@@ -468,13 +468,17 @@ lemma Classifier.χ_comp_hom {𝒞₁ 𝒞₂ : Classifier C} {X Y : C} (m : X �
     𝒞₁.χ m ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ m :=
   𝒞₂.uniq m ((𝒞₁.isPullback m).paste_vert (𝒞₂.isPullback (𝒞₁.truth)))
 
+@[reassoc (attr := simp)]
+lemma Classifier.truth_comp_hom {𝒞₁ 𝒞₂ : Classifier C} :
+  𝒞₁.truth ≫ 𝒞₁.hom 𝒞₂ = 𝒞₂.χ₀ _ ≫ 𝒞₂.truth := (𝒞₂.isPullback _).w
+
 /-- a concrete equivalence of any two subobject classifiers -/
 @[simps]
 def Classifier.uniqueUpToIso (𝒞₁ 𝒞₂ : Classifier C) : 𝒞₁.Ω ≅ 𝒞₂.Ω where
   hom := 𝒞₁.hom 𝒞₂
   inv := 𝒞₂.hom 𝒞₁
-  hom_inv_id := by simp
-  inv_hom_id := by simp
+
+instance (𝒞₁ 𝒞₂ : Classifier C) : IsIso (𝒞₁.hom 𝒞₂) := (𝒞₁.uniqueUpToIso 𝒞₂).isIso_hom
 
 @[simps]
 def Classifier.ofIso (𝒞 : Classifier C) {Ω₀ Ω : C} (eΩ : 𝒞.Ω ≅ Ω) (eΩ₀ : 𝒞.Ω₀ ≅ Ω₀)
