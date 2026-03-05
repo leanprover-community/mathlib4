@@ -150,7 +150,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
           (D.V _).presheaf.map
             (eqToHom
               (by
-                delta IsOpenImmersion.opensFunctor
+                delta IsOpenImmersion.opensFunctor IsOpenEmbedding.functor
                 dsimp only [Functor.op, IsOpenMap.functor, Opens.map, unop_op]
                 congr
                 apply pullback_base)) := by
@@ -176,7 +176,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
         (D.t' k i j).c.app _ ≫ (π₁⁻¹ k, j, i) (unop _) := by
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
-  · delta IsOpenImmersion.opensFunctor
+  · delta IsOpenImmersion.opensFunctor IsOpenEmbedding.functor
     dsimp only [Functor.op, Opens.map, IsOpenMap.functor, unop_op, Opens.coe_mk]
     congr 2
     have := (𝖣.t_fac k i j).symm

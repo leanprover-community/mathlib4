@@ -158,6 +158,18 @@ def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ Ope
 
 end IsOpenMap
 
+section
+
+variable {f}
+
+abbrev Topology.IsOpenEmbedding.functorNhds (h : Topology.IsOpenEmbedding f) (x : X) :=
+    h.isOpenMap.functorNhds x
+
+abbrev Topology.IsOpenEmbedding.adjunctionNhds (h : Topology.IsOpenEmbedding f) (x : X) :=
+  h.isOpenMap.adjunctionNhds x
+
+end
+
 namespace Topology.IsInducing
 
 open TopologicalSpace
