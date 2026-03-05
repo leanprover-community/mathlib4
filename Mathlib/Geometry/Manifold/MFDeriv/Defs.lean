@@ -275,6 +275,7 @@ variable (I I') in
 /-- `MDifferentiable I I' f` indicates that the function `f` between manifolds
 has a derivative everywhere.
 This is a generalization of `Differentiable` to manifolds. -/
+@[fun_prop]
 def MDifferentiable (f : M → M') :=
   ∀ x, MDifferentiableAt I I' f x
 
