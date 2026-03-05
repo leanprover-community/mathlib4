@@ -48,6 +48,7 @@ lemma truncTotal_mul_sub_mul_truncTotal_mem_pow_idealOfVars (p q : MvPowerSeries
   rw [MvPolynomial.coeff_sub, sub_eq_zero, coeff_truncTotal _ hx,
     coeff_truncTotal_mul_truncTotal_eq_coeff_mul _ _ hx]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map induced by `truncTotal` from multivariate power series to
 the quotient ring of multivariate polynomials with respect to the `n`-th power of
 the ideal spanned by all variables. -/
