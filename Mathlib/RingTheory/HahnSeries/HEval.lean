@@ -597,7 +597,6 @@ theorem coeff_heval (f : PowerSeries R) (g : Γ) :
   rw [heval_apply, coeff_hsum]
   exact rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem coeff_heval_zero (f : PowerSeries R) :
     (heval x f).coeff 0 = PowerSeries.constantCoeff f := by
   rw [coeff_heval, finsum_eq_single (fun n => ((powerSeriesFamily x f).coeff 0) n) 0,

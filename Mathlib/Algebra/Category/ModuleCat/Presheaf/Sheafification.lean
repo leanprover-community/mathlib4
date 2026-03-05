@@ -156,6 +156,7 @@ lemma toSheaf_map_sheafificationAdjunction_counit_app (M : SheafOfModules.{v} R)
 instance : (sheafification.{v} α).IsLeftAdjoint :=
   (sheafificationAdjunction α).isLeftAdjoint
 
+set_option backward.isDefEq.respectTransparency false in
 instance : IsIso (sheafificationAdjunction α).counit := by
   rw [NatTrans.isIso_iff_isIso_app]
   intro F
