@@ -171,7 +171,7 @@ lemma ProbabilityMeasure.tendsto_of_tight_of_separatesPoints (𝕜 : Type*) [RCL
     isCompact_closure_of_isTightMeasureSet (S := {μ n | n}) (by simpa using h_tight)
   obtain ⟨μ', hμ'_mem, φ, hφ_mono, hφ_tendsto⟩ : ∃ μ' ∈ closure {μ n | n},
       ∃ φ, StrictMono φ ∧ Tendsto ((fun n ↦ μ (ns n)) ∘ φ) atTop (𝓝 μ') :=
-    IsCompact.tendsto_subseq h_compact (x := fun n ↦ μ (ns n)) fun n ↦ subset_closure ⟨ns n, rfl⟩
+    h_compact.tendsto_subseq fun n ↦ subset_closure ⟨ns n, rfl⟩
   refine ⟨φ, ?_⟩
   suffices μ' = μ₀ from this ▸ hφ_tendsto
   suffices (μ' : Measure E) = μ₀ by ext; rw [this]
