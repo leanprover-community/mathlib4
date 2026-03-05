@@ -1424,8 +1424,8 @@ theorem card_eq_zero {o} : card o = 0 ↔ o = 0 := by
 theorem card_eq_one {o} : card o = 1 ↔ o = 1 := by
   simpa using card_eq_nat (n := 1)
 
-theorem _root_.Cardinal.le_ord_of_lt_aleph0 (o : Ordinal) {c : Cardinal}
-    (hc : c < ℵ₀) : o ≤ c.ord ↔ o.card ≤ c := by
+theorem _root_.Cardinal.le_ord_iff_card_le_of_lt_aleph0 (o : Ordinal) {c : Cardinal} (hc : c < ℵ₀) :
+    o ≤ c.ord ↔ o.card ≤ c := by
   rcases lt_aleph0.mp hc with ⟨n, rfl⟩
   simp
 
