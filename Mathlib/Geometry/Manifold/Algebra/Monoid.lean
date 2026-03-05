@@ -340,12 +340,12 @@ theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f 
 @[to_additive]
 theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x) :
     CMDiffAt[s] n (∏ i ∈ t, f i) x :=
-  Finset.prod_induction f (fun f => CMDiffAt[s] n f x) (fun _ _ hf hg => hf.mul hg)
+  Finset.prod_induction f (fun f ↦ CMDiffAt[s] n f x) (fun _ _ hf hg ↦ hf.mul hg)
     (contMDiffWithinAt_const (c := 1)) h
 
 @[to_additive]
 theorem contMDiffWithinAt_finset_prod (h : ∀ i ∈ t, CMDiffAt[s] n (f i) x) :
-    CMDiffAt[s] n (fun x => ∏ i ∈ t, f i x) x := by
+    CMDiffAt[s] n (fun x ↦ ∏ i ∈ t, f i x) x := by
   simp only [← Finset.prod_apply]
   exact contMDiffWithinAt_finset_prod' h
 
@@ -368,7 +368,7 @@ theorem contMDiffAt_finset_prod' (h : ∀ i ∈ t, CMDiffAt n (f i) x) :
 
 @[to_additive]
 theorem contMDiffAt_finset_prod (h : ∀ i ∈ t, CMDiffAt n (f i) x) :
-    CMDiffAt n (fun x => ∏ i ∈ t, f i x) x :=
+    CMDiffAt n (fun x ↦ ∏ i ∈ t, f i x) x :=
   contMDiffWithinAt_finset_prod h
 
 @[to_additive]
@@ -394,7 +394,7 @@ theorem ContMDiff.prod (h : ∀ i ∈ t, CMDiff n (f i)) :
 
 @[to_additive]
 theorem contMDiff_finset_prod' (h : ∀ i ∈ t, CMDiff n (f i)) :
-    CMDiff n (∏ i ∈ t, f i) := fun x => contMDiffAt_finset_prod' fun i hi => h i hi x
+    CMDiff n (∏ i ∈ t, f i) := fun x ↦ contMDiffAt_finset_prod' fun i hi => h i hi x
 
 @[to_additive]
 theorem contMDiff_finset_prod (h : ∀ i ∈ t, CMDiff n (f i)) :
@@ -403,13 +403,13 @@ theorem contMDiff_finset_prod (h : ∀ i ∈ t, CMDiff n (f i)) :
 
 @[to_additive]
 theorem contMDiff_finprod (h : ∀ i, CMDiff n (f i))
-    (hfin : LocallyFinite fun i => mulSupport (f i)) : CMDiff n fun x => ∏ᶠ i, f i x :=
+    (hfin : LocallyFinite fun i ↦ mulSupport (f i)) : CMDiff n fun x ↦ ∏ᶠ i, f i x :=
   fun x ↦ contMDiffAt_finprod hfin fun i ↦ h i x
 
 @[to_additive]
 theorem contMDiff_finprod_cond (hc : ∀ i, p i → CMDiff n (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) :
-    CMDiff n fun x => ∏ᶠ (i) (_ : p i), f i x := by
+    CMDiff n fun x ↦ ∏ᶠ (i) (_ : p i), f i x := by
   simp only [← finprod_subtype_eq_finprod_cond]
   exact contMDiff_finprod (fun i => hc i i.2) (hf.comp_injective Subtype.coe_injective)
 
@@ -473,10 +473,10 @@ nonrec theorem ContMDiffAt.div_const (hf : CMDiffAt n f x) :
 
 @[to_additive]
 theorem ContMDiffOn.div_const (hf : CMDiff[s] n f) :
-    CMDiff[s] n (fun x ↦ f x / c) := fun x hx => (hf x hx).div_const c
+    CMDiff[s] n (fun x ↦ f x / c) := fun x hx ↦ (hf x hx).div_const c
 
 @[to_additive]
 theorem ContMDiff.div_const (hf : CMDiff n f) :
-    CMDiff n (fun x ↦ f x / c) := fun x => (hf x).div_const c
+    CMDiff n (fun x ↦ f x / c) := fun x ↦ (hf x).div_const c
 
 end DivConst

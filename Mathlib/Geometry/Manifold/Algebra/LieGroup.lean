@@ -64,7 +64,7 @@ class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Top
     (n : WithTop ℕ∞) (G : Type*)
     [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffAdd I n G where
   /-- Negation is smooth in an additive Lie group. -/
-  contMDiff_neg : CMDiff n fun a : G => -a
+  contMDiff_neg : CMDiff n fun a : G ↦ -a
 
 -- See note [Design choices about smooth algebraic structures]
 /-- A (multiplicative) Lie group is a group and a `C^n` manifold at the same time in which
@@ -75,7 +75,7 @@ class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topolo
     (n : WithTop ℕ∞) (G : Type*)
     [Group G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffMul I n G where
   /-- Inversion is smooth in a Lie group. -/
-  contMDiff_inv : CMDiff n fun a : G => a⁻¹
+  contMDiff_inv : CMDiff n fun a : G ↦ a⁻¹
 
 /-!
   ### Smoothness of inversion, negation, division and subtraction
@@ -124,7 +124,7 @@ variable (I n)
 
 /-- In a Lie group, inversion is `C^n`. -/
 @[to_additive /-- In an additive Lie group, inversion is a smooth map. -/]
-theorem contMDiff_inv : CMDiff n fun x : G => x⁻¹ :=
+theorem contMDiff_inv : CMDiff n fun x : G ↦ x⁻¹ :=
   LieGroup.contMDiff_inv
 
 include I n in
@@ -139,17 +139,17 @@ end
 
 @[to_additive]
 theorem ContMDiffWithinAt.inv {f : M → G} {s : Set M} {x₀ : M}
-    (hf : CMDiffAt[s] n f x₀) : CMDiffAt[s] n (fun x => (f x)⁻¹) x₀ :=
+    (hf : CMDiffAt[s] n f x₀) : CMDiffAt[s] n (fun x ↦ (f x)⁻¹) x₀ :=
   (contMDiff_inv I n).contMDiffAt.contMDiffWithinAt.comp x₀ hf <| Set.mapsTo_univ _ _
 
 @[to_additive]
 theorem ContMDiffAt.inv {f : M → G} {x₀ : M} (hf : CMDiffAt n f x₀) :
-    CMDiffAt n (fun x => (f x)⁻¹) x₀ :=
+    CMDiffAt n (fun x ↦ (f x)⁻¹) x₀ :=
   (contMDiff_inv I n).contMDiffAt.comp x₀ hf
 
 @[to_additive]
 theorem ContMDiffOn.inv {f : M → G} {s : Set M} (hf : CMDiff[s] n f) :
-    CMDiff[s] n (fun x => (f x)⁻¹) := fun x hx => (hf x hx).inv
+    CMDiff[s] n (fun x => (f x)⁻¹) := fun x hx ↦ (hf x hx).inv
 
 @[to_additive]
 theorem ContMDiff.inv {f : M → G} (hf : CMDiff n f) : CMDiff n fun x => (f x)⁻¹ :=
@@ -158,22 +158,22 @@ theorem ContMDiff.inv {f : M → G} (hf : CMDiff n f) : CMDiff n fun x => (f x)�
 @[to_additive]
 theorem ContMDiffWithinAt.div {f g : M → G} {s : Set M} {x₀ : M}
     (hf : CMDiffAt[s] n f x₀) (hg : CMDiffAt[s] n g x₀) :
-    CMDiffAt[s] n (fun x => f x / g x) x₀ := by
+    CMDiffAt[s] n (fun x ↦ f x / g x) x₀ := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
 @[to_additive]
 theorem ContMDiffAt.div {f g : M → G} {x₀ : M} (hf : CMDiffAt n f x₀)
-    (hg : CMDiffAt n g x₀) : CMDiffAt n (fun x => f x / g x) x₀ := by
+    (hg : CMDiffAt n g x₀) : CMDiffAt n (fun x ↦ f x / g x) x₀ := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
 @[to_additive]
 theorem ContMDiffOn.div {f g : M → G} {s : Set M} (hf : CMDiff[s] n f)
-    (hg : CMDiff[s] n g) : CMDiff[s] n (fun x => f x / g x) := by
+    (hg : CMDiff[s] n g) : CMDiff[s] n (fun x ↦ f x / g x) := by
   simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
 @[to_additive]
 theorem ContMDiff.div {f g : M → G} (hf : CMDiff n f) (hg : CMDiff n g) :
-    CMDiff n fun x => f x / g x := by simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
+    CMDiff n fun x ↦ f x / g x := by simp_rw [div_eq_mul_inv]; exact hf.mul hg.inv
 
 end PointwiseDivision
 
@@ -276,7 +276,7 @@ theorem contMDiffOn_inv₀ : CMDiff[{0}ᶜ] n (Inv.inv : G → G) := fun _x hx =
 variable {s : Set M} {a : M}
 
 theorem ContMDiffWithinAt.inv₀ (hf : CMDiffAt[s] n f a) (ha : f a ≠ 0) :
-    CMDiffAt[s] n (fun x => (f x)⁻¹) a :=
+    CMDiffAt[s] n (fun x ↦ (f x)⁻¹) a :=
   (contMDiffAt_inv₀ ha).comp_contMDiffWithinAt a hf
 
 theorem ContMDiffAt.inv₀ (hf : CMDiffAt n f a) (ha : f a ≠ 0) : CMDiffAt n (fun x ↦ (f x)⁻¹) a :=
