@@ -694,6 +694,7 @@ lemma UniversalCoprimeFactorizationRing.exists_liesOver_residueFieldMap_bijectiv
         MonicDegreeEq.map, Polynomial.map_map]
       rfl
 
+set_option maxHeartbeats 400000 in -- Needed after nightly-2026-03-04
 open UniversalCoprimeFactorizationRing in
 /-- If a monic polynomial `p : R[X]` factors into a product of coprime monic polynomials `p = f * g`
 in the residue field `κ(P)` of some `P : Spec R`,

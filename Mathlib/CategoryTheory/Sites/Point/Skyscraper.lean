@@ -45,6 +45,7 @@ section
 
 variable {P Q : Cᵒᵖ ⥤ A} {M N : A} [HasColimitsOfSize.{w, w} A]
 
+set_option backward.whnf.reducibleClassField false in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `Φ` is a point of a site `(C, J)`, `P : Cᵒᵖ ⥤ A` and `M : A`, this is
 the bijection `(Φ.presheafFiber.obj P ⟶ M) ≃ (P ⟶ Φ.skyscraperPresheaf M)`
@@ -64,6 +65,7 @@ noncomputable def skyscraperPresheafHomEquiv :
   left_inv f := by cat_disch
   right_inv g := by cat_disch
 
+set_option backward.whnf.reducibleClassField false in
 @[reassoc (attr := simp)]
 lemma toPresheafFiber_skyscraperPresheafHomEquiv_symm
     (g : P ⟶ Φ.skyscraperPresheaf M) (X : C) (x : Φ.fiber.obj X) :

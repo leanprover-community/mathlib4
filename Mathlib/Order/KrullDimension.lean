@@ -137,6 +137,7 @@ lemma coheight_le_iff {a : α} {n : ℕ∞} :
     coheight a ≤ n ↔ ∀ ⦃p : LTSeries α⦄, a ≤ p.head → p.length ≤ n := by
   rw [coheight_eq, iSup₂_le_iff]
 
+set_option backward.isDefEq.respectTransparency false in
 lemma height_le {a : α} {n : ℕ∞} (h : ∀ (p : LTSeries α), p.last = a → p.length ≤ n) :
     height a ≤ n := by
   apply height_le_iff.mpr
@@ -382,6 +383,7 @@ lemma exists_series_of_coheight_eq_coe (a : α) {n : ℕ} (h : coheight a = n) :
     ∃ p : LTSeries α, p.head = a ∧ p.length = n :=
   exists_series_of_le_coheight a (le_of_eq h.symm)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Another characterization of height, based on the supremum of the heights of elements below. -/
 lemma height_eq_iSup_lt_height (x : α) : height x = ⨆ y < x, height y + 1 := by
   apply le_antisymm
@@ -442,6 +444,7 @@ lemma coheight_eq_top_iff {x : α} :
   convert height_eq_top_iff (α := αᵒᵈ) (x := x) using 2 with n
   constructor <;> (intro ⟨p, hp, hl⟩; use p.reverse; constructor <;> simpa)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The elements of height zero are the minimal elements. -/
 @[simp] lemma height_eq_zero {x : α} : height x = 0 ↔ IsMin x := by
   simpa [isMin_iff_forall_not_lt] using height_le_coe_iff (x := x) (n := 0)
@@ -496,6 +499,7 @@ lemma coe_lt_coheight_iff {x : α} {n : ℕ} (hfin : coheight x < ⊤) :
     n < coheight x ↔ ∃ y > x, coheight y = n :=
   coe_lt_height_iff (α := αᵒᵈ) hfin
 
+set_option backward.isDefEq.respectTransparency false in
 lemma height_eq_coe_add_one_iff {x : α} {n : ℕ} :
     height x = n + 1 ↔ height x < ⊤ ∧ (∃ y < x, height y = n) ∧ (∀ y < x, height y ≤ n) := by
   wlog hfin : height x < ⊤
@@ -535,6 +539,7 @@ lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
       coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y > x, coheight y < n) :=
   height_eq_coe_iff (α := αᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The elements of finite height `n` are the minimal elements among those of height `≥ n`. -/
 lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
     height a = n ↔ Minimal (fun y => n ≤ height y) a := by
@@ -725,6 +730,7 @@ lemma le_krullDim_iff {n : ℕ} : n ≤ krullDim α ↔ ∃ l : LTSeries α, l.l
     · exact fun ⟨l, hl⟩ ↦ hl ▸ l.longestOf_is_longest
   · simpa [krullDim_eq_top] using SetRel.InfiniteDimensional.exists_relSeries_with_length n
 
+set_option backward.isDefEq.respectTransparency false in
 /-- A definition of krullDim for nonempty `α` that avoids `WithBot` -/
 lemma krullDim_eq_iSup_length [Nonempty α] :
     krullDim α = ⨆ (p : LTSeries α), (p.length : ℕ∞) := by
@@ -763,6 +769,7 @@ lemma height_le_krullDim (a : α) : height a ≤ krullDim α := by
 lemma coheight_le_krullDim (a : α) : coheight a ≤ krullDim α := by
   simpa using height_le_krullDim (α := αᵒᵈ) a
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.LTSeries.height_last_longestOf [FiniteDimensionalOrder α] :
     height (LTSeries.longestOf α).last = krullDim α := by
@@ -803,6 +810,7 @@ lemma krullDim_eq_iSup_coheight_of_nonempty [Nonempty α] :
     krullDim α = ↑(⨆ (a : α), coheight a) := by
   simpa using krullDim_eq_iSup_height_of_nonempty (α := αᵒᵈ)
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 The Krull dimension is the supremum of the elements' height plus coheight.
 -/
@@ -994,6 +1002,7 @@ lemma coheight_int (n : ℤ) : coheight n = ⊤ := coheight_of_noMaxOrder ..
 
 lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma height_coe_withBot (x : α) : height (x : WithBot α) = height x + 1 := by
   apply le_antisymm
   · apply height_le
@@ -1127,6 +1136,7 @@ lemma coheight_le_of_krullDim_preimage_le (x : α) :
   apply height_le_of_krullDim_preimage_le (f := f.dual)
   exact fun x ↦ le_of_eq_of_le (krullDim_orderDual (α := f ⁻¹' {x})) (h x)
 
+set_option backward.isDefEq.respectTransparency false in
 include f h in
 lemma krullDim_le_of_krullDim_preimage_le :
     Order.krullDim α ≤ (m + 1) * Order.krullDim β + m := by

@@ -127,6 +127,7 @@ theorem vertexCoverNum_eq_zero : vertexCoverNum G = 0 ↔ G = ⊥ := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
   simpa [h] using vertexCoverNum_exists G
 
+set_option backward.isDefEq.respectTransparency false in
 theorem vertexCoverNum_le_card_sub_one : vertexCoverNum G ≤ ENat.card V - 1 := by
   nontriviality V
   obtain ⟨x⟩ := not_subsingleton_iff_nontrivial.mp (not_subsingleton V) |>.to_nonempty
@@ -145,6 +146,7 @@ theorem vertexCoverNum_lt_card [Nonempty V] [Finite V] : vertexCoverNum G < ENat
   enat_to_nat
   exact Nat.add_le_of_le_sub (Order.one_le_iff_pos.mpr Nat.card_pos) (le_refl _)
 
+set_option backward.isDefEq.respectTransparency false in
 theorem vertexCoverNum_le_encard_edgeSet : vertexCoverNum G ≤ G.edgeSet.encard := by
   by_cases h' : G.edgeSet = ∅
   · simp [h', SimpleGraph.edgeSet_eq_empty.mp]
@@ -158,6 +160,7 @@ theorem vertexCoverNum_le_encard_edgeSet : vertexCoverNum G ≤ G.edgeSet.encard
 theorem vertexCoverNum_ne_top_of_finite_edgeSet (h : G.edgeSet.Finite) : vertexCoverNum G ≠ ⊤ :=
   ne_top_of_le_ne_top (Set.encard_ne_top_iff.mpr h) vertexCoverNum_le_encard_edgeSet
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem vertexCoverNum_top : vertexCoverNum (completeGraph V) = ENat.card V - 1 := by
   nontriviality V using tsub_eq_zero_of_le

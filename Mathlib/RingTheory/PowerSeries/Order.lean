@@ -193,6 +193,7 @@ theorem le_order_smul {a : R} :
     φ.order ≤ (a • φ).order :=
   le_order _ φ.order fun i hi => by simp [coeff_of_lt_order i hi]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The order of the product of two formal power series
 is at least the sum of their orders. -/
 theorem le_order_mul (φ ψ : R⟦X⟧) : order φ + order ψ ≤ order (φ * ψ) := by

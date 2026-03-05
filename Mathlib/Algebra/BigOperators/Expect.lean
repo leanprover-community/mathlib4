@@ -125,6 +125,7 @@ lemma expect_univ [Fintype ι] : 𝔼 i, f i = (∑ i, f i) /ℚ Fintype.card ι
 set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma expect_singleton (f : ι → M) (i : ι) : 𝔼 j ∈ {i}, f j = f i := by simp [expect]
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp] lemma expect_const_zero (s : Finset ι) : 𝔼 _i ∈ s, (0 : M) = 0 := by simp [expect]
 
 @[congr]

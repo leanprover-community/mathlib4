@@ -56,15 +56,18 @@ lemma IsEdgeReachable.trans (h1 : G.IsEdgeReachable k u v) (h2 : G.IsEdgeReachab
 lemma IsEdgeReachable.mono (hGH : G ≤ H) (h : G.IsEdgeReachable k u v) : H.IsEdgeReachable k u v :=
   fun _ hk ↦ h hk |>.mono <| deleteEdges_mono hGH
 
+set_option backward.isDefEq.respectTransparency false in
 @[gcongr]
 lemma IsEdgeReachable.anti (hkl : k ≤ l) (h : G.IsEdgeReachable l u v) : G.IsEdgeReachable k u v :=
   fun _ hk ↦ h <| by grw [← hkl]; exact hk
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 protected lemma IsEdgeReachable.zero : G.IsEdgeReachable 0 u v := by simp [IsEdgeReachable]
 
 @[simp] protected lemma IsEdgeConnected.zero : G.IsEdgeConnected 0 := fun _ _ ↦ .zero
 
+set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma isEdgeReachable_one : G.IsEdgeReachable 1 u v ↔ G.Reachable u v := by
   simp [IsEdgeReachable, ENat.lt_one_iff_eq_zero]
