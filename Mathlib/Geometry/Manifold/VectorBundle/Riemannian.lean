@@ -78,7 +78,6 @@ instance {a : WithTop ℕ∞} [IsContMDiffRiemannianBundle IB ∞ F E] [h : LEIn
     IsContMDiffRiemannianBundle IB a F E :=
   IsContMDiffRiemannianBundle.of_le h.out
 
-set_option backward.isDefEq.respectTransparency false in
 instance {a : WithTop ℕ∞} [IsContMDiffRiemannianBundle IB ω F E] :
     IsContMDiffRiemannianBundle IB a F E :=
   IsContMDiffRiemannianBundle.of_le le_top
@@ -89,7 +88,6 @@ instance [IsContMDiffRiemannianBundle IB 1 F E] : IsContMDiffRiemannianBundle IB
 instance [IsContMDiffRiemannianBundle IB 2 F E] : IsContMDiffRiemannianBundle IB 1 F E :=
   IsContMDiffRiemannianBundle.of_le one_le_two
 
-set_option backward.isDefEq.respectTransparency false in
 instance [IsContMDiffRiemannianBundle IB 3 F E] : IsContMDiffRiemannianBundle IB 2 F E :=
   IsContMDiffRiemannianBundle.of_le (n := 3) (by norm_cast)
 

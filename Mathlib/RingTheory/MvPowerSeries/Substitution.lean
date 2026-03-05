@@ -273,10 +273,10 @@ theorem continuous_subst (ha : HasSubst a)
 
 set_option backward.isDefEq.respectTransparency false in
 theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
-    Set.Finite (fun d ↦ coeff d f • (coeff e (d.prod fun s e => (a s) ^ e))).support :=
+    (fun d ↦ coeff d f • (coeff e (d.prod fun s e => (a s) ^ e))).HasFiniteSupport :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
-  Summable.finite_support_of_discreteTopology _
+  Summable.hasFiniteSupport_of_discreteTopology _
     ((hasSum_aeval ha.hasEval f).map (coeff e) (continuous_coeff S e)).summable
 
 set_option backward.isDefEq.respectTransparency false in

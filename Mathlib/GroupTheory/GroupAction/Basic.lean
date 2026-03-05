@@ -395,7 +395,6 @@ end MulAction
 section
 variable (R M : Type*) [Ring R] [IsDomain R] [AddCommGroup M] [Module R M] [IsTorsionFree R M]
 
-set_option backward.isDefEq.respectTransparency false in
 variable {M} in
 lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
     MulAction.stabilizer Rˣ x = ⊥ := by

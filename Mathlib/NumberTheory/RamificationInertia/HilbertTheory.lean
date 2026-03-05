@@ -34,30 +34,39 @@ section basic
 variable (D : Type*) [Field D] [Algebra D L]
 
 /--
-Let `L/K` be a Galois extension of fields and let `P` be a prime ideal of `B`. The decomposition
-field of `P` in `L/K` is the subfield fixed the decomposition subgroup of `P`, that is the
-stabilizer of `P` in `Gal(L/K)`.
+Let `L/K` be a Galois extension of fields and let `P` be a prime ideal of `B`. The predicate that
+says that `D` is the decomposition field of `P` in `L/K`, that is the subfield fixed the
+decomposition subgroup of `P`, that is the stabilizer of `P` in `Gal(L/K)`.
 -/
 @[mk_iff]
 class IsDecompositionField [MulSemiringAction Gal(L/K) B] extends
     IsGaloisGroup (stabilizer Gal(L/K) P) D L
 
+instance [MulSemiringAction Gal(L/K) B] [h : IsGaloisGroup (stabilizer Gal(L/K) P) D L] :
+    IsDecompositionField K L P D := { toIsGaloisGroup := h }
+
 variable (E : Type*) [Field E] [Algebra E L]
 
 /--
-Let `L/K` be a Galois extension of fields and let `P` be a prime ideal of `B`. The inertia field
-of `P` in `L/K` is the subfield fixed the inertia subgroup of `P` in `Gal(L/K)`.
+Let `L/K` be a Galois extension of fields and let `P` be a prime ideal of `B`. The predicate that
+says that `E` is the inertia field of `P` in `L/K`, that is the subfield fixed the inertia
+subgroup of `P` in `Gal(L/K)`.
 -/
 @[mk_iff]
 class IsInertiaField [MulSemiringAction Gal(L/K) B] extends
     IsGaloisGroup (inertia Gal(L/K) P) E L
 
+instance [MulSemiringAction Gal(L/K) B] [h : IsGaloisGroup (inertia Gal(L/K) P) D L] :
+    IsInertiaField K L P D := { toIsGaloisGroup := h }
+
 variable [MulSemiringAction Gal(L/K) B]
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsGalois K L] : IsDecompositionField K L P
     (FixedPoints.intermediateField (stabilizer Gal(L/K) P) : IntermediateField K L) where
   toIsGaloisGroup := IsGaloisGroup.subgroup Gal(L/K) K L (stabilizer Gal(L/K) P)
 
+set_option backward.isDefEq.respectTransparency false in
 instance [IsGalois K L] : IsInertiaField K L P
     (FixedPoints.intermediateField (inertia Gal(L/K) P) : IntermediateField K L) where
   toIsGaloisGroup := IsGaloisGroup.subgroup Gal(L/K) K L (inertia Gal(L/K) P)
