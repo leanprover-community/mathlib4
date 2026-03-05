@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Spec
 public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.AlgebraicGeometry.Spec
 public import Mathlib.CategoryTheory.Elementwise
 
 /-!
@@ -536,6 +536,11 @@ theorem Spec.map_id (R : CommRingCat) : Spec.map (𝟙 R) = 𝟙 (Spec R) :=
 theorem Spec.map_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
     Spec.map (f ≫ g) = Spec.map g ≫ Spec.map f :=
   Scheme.Hom.ext' <| Spec.locallyRingedSpaceMap_comp f g
+
+/-- The map of `Spec` functors induced by an `algebraMap`. -/
+protected noncomputable abbrev Spec.algebraMap (R : Type u) [CommRing R] (A : Type u) [CommRing A]
+    [Algebra R A] : Spec (.of A) ⟶ Spec (.of R) :=
+  map <| CommRingCat.ofHom <| algebraMap R A
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes. -/
 @[simps]
