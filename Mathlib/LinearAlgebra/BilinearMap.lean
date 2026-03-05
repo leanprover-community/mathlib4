@@ -609,7 +609,7 @@ variable
   {G : Type*} [AddCommMonoid G] [Module R G]
 
 -- TODO Also make a semi-linear version.
-/-- Bundled statement of bilinearity for a function. 
+/-- Bundled statement of bilinearity for a function.
 
 The bundled type `E →ₗ[R] F →ₗ[R] G` should be preferred in cases where that can be used.
 `IsBilinearMap` can be useful to have `IsBilinearMap (myFunction ..)` as a hypothesis to a declaration. -/
